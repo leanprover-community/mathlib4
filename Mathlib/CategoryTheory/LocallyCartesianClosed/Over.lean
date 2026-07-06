@@ -68,7 +68,6 @@ abbrev binaryFan [ChosenPullbacksAlong Z.hom] : BinaryFan Y Z :=
     (fst' Y.hom Z.hom) (snd' Y.hom Z.hom)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The binary fan provided by `fst'` and `snd'` is a binary product in `Over X`. -/
 def binaryFanIsBinaryProduct [ChosenPullbacksAlong Z.hom] :
     IsLimit (binaryFan Y Z) :=
@@ -296,7 +295,6 @@ def toOverUnitPullback (X : C) :
   NatIso.ofComponents fun X => Iso.refl _
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The functor `toOver X` is the right adjoint to the functor `Over.forget X`. -/
 @[simps! unit_app counit_app]
 def forgetAdjToOver (X : C) : Over.forget X ⊣ toOver X where
@@ -304,9 +302,9 @@ def forgetAdjToOver (X : C) : Over.forget X ⊣ toOver X where
   counit.app Z := fst Z X
 
 theorem forgetAdjToOver.homEquiv_symm {X : C} (Z : Over X) (A : C) (f : Z ⟶ (toOver X).obj A) :
-     ((forgetAdjToOver X).homEquiv Z A).symm f = f.left ≫ (fst _ _) := by
-   rw [Adjunction.homEquiv_counit, forgetAdjToOver_counit_app]
-   simp
+    ((forgetAdjToOver X).homEquiv Z A).symm f = f.left ≫ (fst _ _) := by
+  rw [Adjunction.homEquiv_counit, forgetAdjToOver_counit_app]
+  simp
 
 /-- The isomorphism of functors `toOver (𝟙_ C)` and `toOverUnit C`. -/
 @[simps!]

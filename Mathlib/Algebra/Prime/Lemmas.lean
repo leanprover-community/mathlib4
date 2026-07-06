@@ -62,6 +62,21 @@ theorem MulEquiv.prime_iff {E : Type*} [EquivLike E M N] [MulEquivClass E M N] (
 
 end Map
 
+variable {x y : M}
+
+theorem prime_units_mul (u : Mˣ) : Prime (↑u * y) ↔ Prime y := by simp [Prime]
+
+theorem prime_isUnit_mul (h : IsUnit x) : Prime (x * y) ↔ Prime y :=
+  let ⟨u, hu⟩ := h
+  hu ▸ prime_units_mul u
+
+theorem prime_mul_units (u : Mˣ) : Prime (y * ↑u) ↔ Prime y := by
+  rw [mul_comm, prime_units_mul]
+
+theorem prime_mul_isUnit (h : IsUnit x) : Prime (y * x) ↔ Prime y :=
+  let ⟨u, hu⟩ := h
+  hu ▸ prime_mul_units u
+
 end Prime
 
 section IsCancelMulZero

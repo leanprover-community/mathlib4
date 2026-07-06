@@ -284,7 +284,7 @@ theorem lintegral_prod_lintegral_pow_le [Fintype ι] [∀ i, SigmaFinite (μ i)]
   have h3 : (#ι - 1 : ℝ) * ((1 : ℝ) / (#ι - 1 : ℝ)) ≤ 1 := by field_simp; rfl
   have h4 : p = 1 + 1 / (↑#ι - 1) := by simp [field]; rw [mul_comm, hp.sub_one_mul_conj]
   rw [h4]
-  convert! lintegral_mul_prod_lintegral_pow_le μ h2 h3 hf using 2
+  convert lintegral_mul_prod_lintegral_pow_le μ h2 h3 hf
   field_simp
   simp
 
@@ -458,7 +458,6 @@ def eLpNormLESNormFDerivOfEqInnerConst (p : ℝ) : ℝ≥0 :=
 
 variable {F' : Type*} [NormedAddCommGroup F'] [InnerProductSpace ℝ F']
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The **Gagliardo-Nirenberg-Sobolev inequality**.  Let `u` be a continuously differentiable
 compactly-supported function `u` on a normed space `E` of finite dimension `n`, equipped
 with Haar measure, let `1 ≤ p < n` and let `p'⁻¹ := p⁻¹ - n⁻¹`.

@@ -581,7 +581,7 @@ theorem countable_setOf_covBy_right [SecondCountableTopology α] :
     exact isOpen_of_mem_countableBasis ha
   intro a ha
   suffices H : Set.Countable { x | (x ∈ s ∧ x ∈ a ∧ y x ∉ a) ∧ ¬IsBot x } from
-    H.of_diff (subsingleton_isBot α).countable
+    H.of_sdiff (subsingleton_isBot α).countable
   simp only [and_assoc]
   let t := { x | x ∈ s ∧ x ∈ a ∧ y x ∉ a ∧ ¬IsBot x }
   have : ∀ x ∈ t, ∃ z < x, Ioc z x ⊆ a := by
@@ -620,9 +620,9 @@ theorem Set.PairwiseDisjoint.countable_of_Ioo [SecondCountableTopology α]
     {y : α → α} {s : Set α} (h : PairwiseDisjoint s fun x => Ioo x (y x))
     (h' : ∀ x ∈ s, x < y x) : s.Countable :=
   have : (s \ { x | ∃ y, x ⋖ y }).Countable :=
-    (h.subset diff_subset).countable_of_isOpen (fun _ _ ↦ isOpen_Ioo) fun x hx ↦
+    (h.subset sdiff_subset).countable_of_isOpen (fun _ _ ↦ isOpen_Ioo) fun x hx ↦
       (not_covBy_iff_exists_mem_Ioo (h' _ hx.1)).1 <| mt (Exists.intro (y x)) hx.2
-  this.of_diff countable_setOf_covBy_right
+  this.of_sdiff countable_setOf_covBy_right
 
 /-- For a function taking values in a second countable space, the set of points `x` for
 which the image under `f` of `(x, ∞)` is separated above from `f x` is countable. We give
@@ -777,25 +777,33 @@ end LinearOrder
 section ConditionallyCompleteLinearOrder
 variable {X : Type*} [ConditionallyCompleteLinearOrder X] [TopologicalSpace X] [OrderTopology X]
 variable {Y : Type*} [ConditionallyCompleteLinearOrder Y] [TopologicalSpace Y] [OrderTopology Y]
-variable [DenselyOrdered X] {f : X → Y} {x : X}
+variable {f : X → Y} {x : X}
 
 /-- An order-theoretically left-continuous function is topologically left-continuous, assuming
-the function is between conditionally complete linear orders with order topologies, and the domain
-is densely ordered. -/
+the function is between conditionally complete linear orders with order topologies. -/
 lemma LeftOrdContinuous.continuousWithinAt_Iic (hf : LeftOrdContinuous f) :
     ContinuousWithinAt f (Iic x) x := by
   rw [ContinuousWithinAt, OrderTopology.topology_eq_generate_intervals (α := Y)]
   simp_rw [TopologicalSpace.tendsto_nhds_generateFrom_iff, mem_nhdsWithin]
   rintro V ⟨z, rfl | rfl⟩ hxz
   -- The case `V = Ioi z`.
-  · obtain ⟨_, ⟨a, hax, rfl⟩, hza⟩ := (lt_isLUB_iff <| hf isLUB_Iio).mp hxz
-    exact ⟨Ioi a, isOpen_Ioi, hax, fun b hab ↦ hza.trans_le <| hf.mono hab.1.le⟩
+  · obtain hz | ne := em' (f ⁻¹' Iic z).Nonempty
+    · exact ⟨univ, isOpen_univ, mem_univ _, fun a ha ↦ not_le.mp fun h ↦ hz ⟨a, h⟩⟩
+    have bdd : BddAbove (f ⁻¹' Iic z) := ⟨x, fun a ha ↦ (hf.mono.reflect_lt (ha.trans_lt hxz)).le⟩
+    have u_eq : Ioi (sSup (f ⁻¹' Iic z)) = f ⁻¹' Ioi z := by
+      refine Set.ext fun a ↦ ⟨fun ha ↦ ?_, fun ha ↦ ?_⟩
+      · exact not_le.mp fun h ↦ ha.not_ge (le_csSup bdd h)
+      · apply lt_of_le_of_ne
+        · exact csSup_le ne fun b hb ↦ (hf.mono.reflect_lt (hb.trans_lt ha)).le
+        · have : sSup (f '' f ⁻¹' Iic z) ≤ z := csSup_le (.image _ ne) fun _ ⟨b, hb, heq⟩ ↦ heq ▸ hb
+          exact fun h ↦ this.not_gt ((h ▸ ha).trans_eq (hf.map_csSup ne bdd))
+    exact ⟨f ⁻¹' Ioi z, u_eq ▸ isOpen_Ioi, hxz, fun _ h ↦ h.1⟩
   -- The case `V = Iio z`.
   · exact ⟨univ, isOpen_univ, trivial, fun a ha ↦ (hf.mono ha.2).trans_lt hxz⟩
 
 /-- An order-theoretically right-continuous function is topologically right-continuous, assuming
-the function is between conditionally complete linear orders with order topologies, and the domain
-is densely ordered. -/
+the function is between conditionally complete linear orders with order topologies. -/
+@[to_dual existing]
 lemma RightOrdContinuous.continuousWithinAt_Ici (hf : RightOrdContinuous f) :
     ContinuousWithinAt f (Ici x) x := hf.dual.continuousWithinAt_Iic
 
