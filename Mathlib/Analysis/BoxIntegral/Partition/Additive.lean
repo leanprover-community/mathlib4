@@ -98,8 +98,13 @@ instance {R} [Monoid R] [DistribMulAction R M] : SMul R (ι →ᵇᵃ[I₀] M) :
     ⟨r • (f : Box ι → M), fun I hI π hπ => by
       simp only [Pi.smul_apply, ← smul_sum, sum_partition_boxes _ hI hπ]⟩⟩
 
+instance : SMul ℕ+ (ι →ᵇᵃ[I₀] M) :=
+  ⟨fun n f ↦ ⟨n • (f : Box ι → M),
+    fun I hI π hπ ↦ by simp only [Pi.smul_apply, ← smul_sum, sum_partition_boxes _ hI hπ]⟩⟩
+
 instance : AddCommMonoid (ι →ᵇᵃ[I₀] M) :=
-  Function.Injective.addCommMonoid _ coe_injective rfl (fun _ _ => rfl) fun _ _ => rfl
+  Function.Injective.addCommMonoid _ coe_injective rfl (fun _ _ => rfl) (fun _ _ => rfl)
+    fun _ _ => rfl
 
 @[simp]
 theorem map_split_add (f : ι →ᵇᵃ[I₀] M) (hI : ↑I ≤ I₀) (i : ι) (x : ℝ) :
