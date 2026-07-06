@@ -153,6 +153,11 @@ def uniqueUpToIso {s t : Cone F} (P : IsLimit s) (Q : IsLimit t) : s ≅ t where
   hom_inv_id := P.uniq_cone_morphism
   inv_hom_id := Q.uniq_cone_morphism
 
+set_option linter.translateOverwrite false in
+attribute [to_dual existing uniqueUpToIso_inv] uniqueUpToIso_hom
+set_option linter.translateOverwrite false in
+attribute [to_dual existing uniqueUpToIso_hom] uniqueUpToIso_inv
+
 /-- Any cone morphism between limit cones is an isomorphism. -/
 @[to_dual (reorder := P Q) /-- Any cocone morphism between colimit cocones is an isomorphism. -/]
 theorem hom_isIso {s t : Cone F} (P : IsLimit s) (Q : IsLimit t) (f : s ⟶ t) : IsIso f :=
