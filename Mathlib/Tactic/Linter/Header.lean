@@ -312,8 +312,10 @@ def duplicateImportsCheck (imports : Array ImportRef) : CommandElabM Unit := do
 The set of files outside the `Mathlib` package to run the header style linter on,
 because they are files that test the linter.
 -/
-def headerTestFiles : NameSet := .ofList
-  [`MathlibTest.Linter.Header.Basic, `MathlibTest.Linter.Header.Fail, `MathlibTest.Linter.Header.Verso,
+def headerTestFiles : NameSet := .ofList [
+  `MathlibTest.Linter.Header.Basic,
+  `MathlibTest.Linter.Header.Fail,
+  `MathlibTest.Linter.Header.Verso,
   `MathlibTest.DirectoryDependencyLinter.Test]
 
 @[inherit_doc Mathlib.Linter.linter.style.header]
