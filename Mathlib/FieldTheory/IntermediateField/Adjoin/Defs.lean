@@ -385,6 +385,14 @@ theorem adjoin_adjoin_left (T : Set E) :
       (fun x hx ↦ Subfield.subset_closure <| .inl ⟨⟨x, Subfield.subset_closure (.inr hx)⟩, rfl⟩)
       (fun x hx ↦ Subfield.subset_closure <| .inr hx)
 
+/-- Adjoining is idempotent: adjoining an adjoin is the same as a single adjoin. -/
+@[simp]
+lemma adjoin_adjoin_right {K : Type*} [Field K] [Algebra K F] [Algebra K E] [IsScalarTower K F E] :
+    adjoin F (adjoin K S) = adjoin F S := by
+  refine le_antisymm ?_ (adjoin.mono F S (adjoin K S) (subset_adjoin K S))
+  rw [adjoin_le_iff, ← (adjoin F S).coe_restrictScalars K, SetLike.coe_subset_coe]
+  simp
+
 @[simp]
 theorem adjoin_insert_adjoin (x : E) :
     adjoin F (insert x (adjoin F S : Set E)) = adjoin F (insert x S) :=
