@@ -83,34 +83,36 @@ instance preservesLimitsOfSize_algSpec : PreservesLimitsOfSize.{w, v} (algSpec R
   inferInstanceAs <| PreservesLimitsOfSize.{w, v} <|
     (commAlgCatEquivUnder R).op.functor ⋙ (Over.opEquivOpUnder R).inverse ⋙ Over.post Scheme.Spec
 
-set_option backward.isDefEq.respectTransparency false in
 instance preservesColimitsOfSize_algΓ : PreservesColimitsOfSize.{w, v} (algΓ R) := by
-  unfold algΓ; infer_instance
+  infer_instance
 
 instance braidedAlgSpec : (algSpec R).Braided := .ofChosenFiniteProducts _
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
-@[simp] lemma algSpec_ε_left : (LaxMonoidal.ε (algSpec R)).left = 𝟙 (Spec R) := by
-  convert! (LaxMonoidal.ε (algSpec R)).w
-  simpa [-Category.comp_id] using! (Category.comp_id _).symm
+@[simp] lemma algSpec_obj_hom (X : (CommAlgCat R)ᵒᵖ) :
+    ((algSpec R).obj X).hom = Spec.map (CommRingCat.ofHom (algebraMap R X.unop)) := rfl
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
+lemma preservesTerminalIso_algSpec :
+    CartesianMonoidalCategory.preservesTerminalIso (algSpec R) =
+      Over.isoMk (Iso.refl (Spec R)) (by simp [CommRingCat.of_carrier]) := by
+  ext : 1; exact CartesianMonoidalCategory.toUnit_unique _ _
+
+@[simp] lemma preservesTerminalIso_algSpec_inv_left :
+    (CartesianMonoidalCategory.preservesTerminalIso (algSpec R)).inv.left = 𝟙 (Spec R) := by
+  simp [preservesTerminalIso_algSpec]
+
+@[simp] lemma algSpec_ε_left : (LaxMonoidal.ε (algSpec R)).left = 𝟙 (Spec R) := by
+  simp [ε_of_cartesianMonoidalCategory]
+
 @[simp] lemma algSpec_η_left : (OplaxMonoidal.η (algSpec R)).left = 𝟙 (Spec R) := by
-  simpa using (OplaxMonoidal.η (algSpec R)).w
+  simp [OplaxMonoidal.η_of_cartesianMonoidalCategory, CommRingCat.of_carrier]
 
 @[simp] lemma algSpec_δ_left (X Y : (CommAlgCat R)ᵒᵖ) :
     (OplaxMonoidal.δ (algSpec R) X Y).left = (pullbackSpecIso R X.unop Y.unop).inv :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
-@[simp] lemma algSpec_μ_left (X Y : (CommAlgCat R)ᵒᵖ) :
+lemma algSpec_μ_left (X Y : (CommAlgCat R)ᵒᵖ) :
     (LaxMonoidal.μ (algSpec R) X Y).left = (pullbackSpecIso R X.unop Y.unop).hom := by
-  rw [← cancel_epi (pullbackSpecIso R X.unop Y.unop).inv, Iso.inv_hom_id, ← algSpec_δ_left,
-    ← Over.comp_left]
-  simp [-Over.comp_left]
-  rfl
+  rw [← Iso.comp_inv_eq_id, ← algSpec_δ_left, ← Over.comp_left, Monoidal.μ_δ, Over.id_left]
 
 @[simp]
 lemma prodComparison_algSpec_left (A B : (CommAlgCat R)ᵒᵖ) :
@@ -123,18 +125,6 @@ lemma prodComparisonIso_algSpec_inv_left (A B : (CommAlgCat R)ᵒᵖ) :
       (pullbackSpecIso R A.unop B.unop).hom := by
   rw [← Iso.comp_inv_eq_id, ← prodComparison_algSpec_left, ← Over.comp_left,
     ← CartesianMonoidalCategory.prodComparisonIso_hom, Iso.inv_hom_id, Over.id_left]
-
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
-lemma preservesTerminalIso_algSpec :
-    CartesianMonoidalCategory.preservesTerminalIso (algSpec R) =
-      Over.isoMk (Iso.refl (Spec R)) (by simp) := by
-  ext1; exact CartesianMonoidalCategory.toUnit_unique _ _
-
-@[simp]
-lemma preservesTerminalIso_algSpec_inv_left :
-    (CartesianMonoidalCategory.preservesTerminalIso (algSpec R)).inv.left = 𝟙 (Spec R) := by
-  simp [preservesTerminalIso_algSpec]
 
 /-- `Spec` is full on `R`-algebras. -/
 instance algSpec.instFull : (algSpec R).Full :=
