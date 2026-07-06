@@ -353,6 +353,18 @@ lemma RingEquiv.height_comap {S : Type*} [CommRing S] (e : R ≃+* S) (I : Ideal
     simp only [EquivLike.coe_coe, RingEquiv.idealComapOrderIso_apply,
       ← Ideal.height_eq_primeHeight, RingEquiv.height_comap_of_isPrime]
 
+theorem RingHom.height_le_height_comap_of_surjective {S : Type*} [CommRing S] {f : R →+* S}
+    (hf : Function.Surjective f) (J : Ideal S) :
+    J.height ≤ (Ideal.comap f J).height := by
+  iterate 2 rw [height_eq_inf_minimalPrimes]
+  refine le_iInf₂_iff.mpr fun I hI ↦ ?_
+  obtain ⟨K, hK₁, hK₂⟩ := exists_minimalPrimes_comap_eq f I hI
+  have := f.strictMono_comap_of_surjective hf
+  have := Order.height_le_height_apply_of_strictMono _ this ⟨K, hK₁.1.1⟩
+  simp only [← PrimeSpectrum.height_eq_orderHeight, PrimeSpectrum.comap_asIdeal] at this
+  grw [← hK₂, ← this]
+  exact iInf₂_le K hK₁
+
 @[simp]
 lemma RingEquiv.height_map {S : Type*} [CommRing S] (e : R ≃+* S) (I : Ideal R) :
     (I.map e).height = I.height := by
