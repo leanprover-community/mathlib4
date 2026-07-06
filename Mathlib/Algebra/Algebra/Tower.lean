@@ -247,10 +247,12 @@ theorem restrictScalars_apply (f : A ≃ₐ[S] B) (x : A) : f.restrictScalars R 
     (f.restrictScalars R).toLinearEquiv = f.toLinearEquiv.restrictScalars R := rfl
 
 @[simp]
-theorem coe_restrictScalars (f : A ≃ₐ[S] B) : (f.restrictScalars R : A ≃+* B) = f := rfl
+theorem toMulEquiv_restrictScalars (f : A ≃ₐ[S] B) : (f.restrictScalars R : A ≃+* B) = f := rfl
 
 @[simp]
-theorem coe_restrictScalars' (f : A ≃ₐ[S] B) : (restrictScalars R f : A → B) = f := rfl
+theorem coe_restrictScalars (f : A ≃ₐ[S] B) : (restrictScalars R f : A → B) = f := rfl
+
+@[deprecated (since := "2026-07-06")] alias coe_restrictScalars' := coe_restrictScalars
 
 theorem restrictScalars_injective :
     Function.Injective (restrictScalars R : (A ≃ₐ[S] B) → A ≃ₐ[R] B) := fun _ _ h =>
@@ -260,12 +262,14 @@ lemma restrictScalars_symm_apply (f : A ≃ₐ[S] B) (x : B) :
     (f.restrictScalars R).symm x = f.symm x := rfl
 
 @[simp]
-lemma coe_restrictScalars_symm (f : A ≃ₐ[S] B) :
+lemma toMulEquiv_restrictScalars_symm (f : A ≃ₐ[S] B) :
     ((f.restrictScalars R).symm : B ≃+* A) = f.symm := rfl
 
 @[simp]
-lemma coe_restrictScalars_symm' (f : A ≃ₐ[S] B) :
+lemma coe_restrictScalars_symm (f : A ≃ₐ[S] B) :
     ((restrictScalars R f).symm : B → A) = f.symm := rfl
+
+@[deprecated (since := "2026-07-06")] alias coe_restrictScalars_symm' := coe_restrictScalars_symm
 
 /-- `AlgEquiv.restrictScalars` as a homomorphism. -/
 def restrictScalarsHom : (A ≃ₐ[S] A) →* (A ≃ₐ[R] A) :=
@@ -276,8 +280,8 @@ theorem restrictScalarsHom_apply (f : A ≃ₐ[S] A) : f.restrictScalarsHom R = 
   rfl
 
 @[simp]
-theorem restrictScalarsHom_apply_symm (f : A ≃ₐ[S] A) :
-    f.symm.restrictScalarsHom R = (f.restrictScalars R).symm :=
+theorem restrictScalars_symm (f : A ≃ₐ[S] B) :
+    f.symm.restrictScalars R = (f.restrictScalars R).symm :=
   rfl
 
 theorem restrictScalarsHom_injective :
