@@ -205,4 +205,20 @@ lemma cycleGraph_isContained_iff {n : ℕ} (hn : 2 < n) :
 
 end IsContained
 
+section Acyclic
+
+variable {V : Type*} {G : SimpleGraph V}
+
+theorem isAcyclic_iff_free_cycleGraph : G.IsAcyclic ↔ ∀ n ≥ 3, (cycleGraph n).Free G := by
+  refine ⟨fun h n hn hle ↦ ?_, fun h v p hcyc ↦ h p.length hcyc.three_le_length ?_⟩
+  · have ⟨v, p, hcyc, hlen⟩ := cycleGraph_isContained_iff hn |>.mp hle
+    exact h p hcyc
+  · exact cycleGraph_isContained_iff hcyc.three_le_length |>.mpr ⟨v, p, hcyc, rfl⟩
+
+theorem IsAcyclic.cliqueFree (h : G.IsAcyclic) {n : ℕ} (hn : 3 ≤ n) : G.CliqueFree n := by
+  refine not_cliqueFree_iff_top_isContained n |>.not_right.mpr fun hle ↦ ?_
+  exact isAcyclic_iff_free_cycleGraph.mp h n hn <| hle.trans' <| .of_le le_top
+
+end Acyclic
+
 end SimpleGraph
