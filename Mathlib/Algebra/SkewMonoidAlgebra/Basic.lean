@@ -47,14 +47,17 @@ namespace SkewMonoidAlgebra
 
 initialize_simps_projections SkewMonoidAlgebra (as_prefix coeff)
 
+@[deprecated (since := "2026-07-06")] alias ofFinsupp := ofCoeff
+@[deprecated (since := "2026-07-06")] alias toFinsupp := coeff
+
 variable {k G : Type*}
 
 section AddMonoid
 
 variable [AddMonoid k]
 
-@[simp]
-theorem eta (f : SkewMonoidAlgebra k G) : ofCoeff f.coeff = f := rfl
+@[simp] lemma eta (f : SkewMonoidAlgebra k G) : ofCoeff f.coeff = f := rfl
+@[simp] lemma coeff_ofCoeff (f : G →₀ k) : coeff (ofCoeff f) = f := rfl
 
 set_option backward.privateInPublic true in
 @[irreducible]
@@ -203,11 +206,10 @@ end Support
 
 section Coeff
 
-@[simp]
-theorem coeff_ofCoeff (p) : coeff (⟨p⟩ : SkewMonoidAlgebra k G) = p := rfl
+@[deprecated (since := "2026-07-06")] alias coeff_ofFinsupp := coeff_ofCoeff
 
 @[deprecated "Now a syntactic tautology" (since := "2026-07-04"), nolint synTaut]
-theorem coeff_apply (f : SkewMonoidAlgebra k G) (g) : f.coeff g = f.coeff g := rfl
+theorem toFinsupp_apply (f : SkewMonoidAlgebra k G) (g) : f.coeff g = f.coeff g := rfl
 
 @[simp]
 theorem mem_support_iff {f : SkewMonoidAlgebra k G} {a : G} : a ∈ f.support ↔ f.coeff a ≠ 0 := by
@@ -240,6 +242,8 @@ theorem coeff_single (a : G) (b : k) : (single a b).coeff = Finsupp.single a b :
 
 @[simp]
 theorem ofCoeff_single (a : G) (b : k) : ⟨Finsupp.single a b⟩ = single a b := rfl
+
+@[deprecated (since := "2026-07-06")] alias ofFinsupp_single := ofCoeff_single
 
 theorem coeff_single_apply {a a' : G} {b : k} [Decidable (a = a')] :
     coeff (single a b) a' = if a = a' then b else 0 := by

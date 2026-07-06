@@ -112,6 +112,8 @@ and the function backwards. -/
 def equivMapDomain (f : G ≃ H) (l : SkewMonoidAlgebra k G) : SkewMonoidAlgebra k H where
   coeff := l.coeff.equivMapDomain f
 
+@[deprecated (since := "2026-07-06")] alias toFinsupp_equivMapDomain := coeff_equivMapDomain
+
 theorem equivMapDomain_eq_mapDomain (f : G ≃ H) (l : SkewMonoidAlgebra k G) :
     equivMapDomain f l = mapDomain f l := by
   apply coeff_injective
