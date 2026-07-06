@@ -263,16 +263,16 @@ theorem _root_.Real.finsetProd_rpow
 end Real
 
 @[gcongr] theorem rpow_le_rpow {x y : ℝ≥0} {z : ℝ} (h₁ : x ≤ y) (h₂ : 0 ≤ z) : x ^ z ≤ y ^ z :=
-  Real.rpow_le_rpow x.2 h₁ h₂
+  Real.rpow_le_rpow_left x.2 h₁ h₂
 
 @[gcongr] theorem rpow_lt_rpow {x y : ℝ≥0} {z : ℝ} (h₁ : x < y) (h₂ : 0 < z) : x ^ z < y ^ z :=
-  Real.rpow_lt_rpow x.2 h₁ h₂
+  Real.rpow_lt_rpow_left x.2 h₁ h₂
 
 theorem rpow_lt_rpow_iff {x y : ℝ≥0} {z : ℝ} (hz : 0 < z) : x ^ z < y ^ z ↔ x < y :=
-  Real.rpow_lt_rpow_iff x.2 y.2 hz
+  Real.rpow_lt_rpow_iff_left x.2 y.2 hz
 
 theorem rpow_le_rpow_iff {x y : ℝ≥0} {z : ℝ} (hz : 0 < z) : x ^ z ≤ y ^ z ↔ x ≤ y :=
-  Real.rpow_le_rpow_iff x.2 y.2 hz
+  Real.rpow_le_rpow_iff_left x.2 y.2 hz
 
 theorem le_rpow_inv_iff {x y : ℝ≥0} {z : ℝ} (hz : 0 < z) : x ≤ y ^ z⁻¹ ↔ x ^ z ≤ y := by
   rw [← rpow_le_rpow_iff hz, ← one_div, rpow_self_rpow_inv hz.ne']
@@ -290,16 +290,16 @@ section
 variable {y : ℝ≥0}
 
 lemma rpow_lt_rpow_of_neg (hx : 0 < x) (hxy : x < y) (hz : z < 0) : y ^ z < x ^ z :=
-  Real.rpow_lt_rpow_of_neg hx hxy hz
+  Real.rpow_lt_rpow_left_of_exponent_neg hx hxy hz
 
 lemma rpow_le_rpow_of_nonpos (hx : 0 < x) (hxy : x ≤ y) (hz : z ≤ 0) : y ^ z ≤ x ^ z :=
-  Real.rpow_le_rpow_of_nonpos hx hxy hz
+  Real.rpow_le_rpow_left_of_exponent_nonpos hx hxy hz
 
 lemma rpow_lt_rpow_iff_of_neg (hx : 0 < x) (hy : 0 < y) (hz : z < 0) : x ^ z < y ^ z ↔ y < x :=
-  Real.rpow_lt_rpow_iff_of_neg hx hy hz
+  Real.rpow_lt_rpow_iff_left_of_exponent_neg hx hy hz
 
 lemma rpow_le_rpow_iff_of_neg (hx : 0 < x) (hy : 0 < y) (hz : z < 0) : x ^ z ≤ y ^ z ↔ y ≤ x :=
-  Real.rpow_le_rpow_iff_of_neg hx hy hz
+  Real.rpow_le_rpow_iff_left_of_exponent_neg hx hy hz
 
 lemma le_rpow_inv_iff_of_pos (hy : 0 ≤ y) (hz : 0 < z) (x : ℝ≥0) : x ≤ y ^ z⁻¹ ↔ x ^ z ≤ y :=
   Real.le_rpow_inv_iff_of_pos x.2 hy hz
@@ -329,19 +329,19 @@ end
 
 @[gcongr] theorem rpow_lt_rpow_of_exponent_lt {x : ℝ≥0} {y z : ℝ} (hx : 1 < x) (hyz : y < z) :
     x ^ y < x ^ z :=
-  Real.rpow_lt_rpow_of_exponent_lt hx hyz
+  Real.rpow_lt_rpow_right hx hyz
 
 @[gcongr] theorem rpow_le_rpow_of_exponent_le {x : ℝ≥0} {y z : ℝ} (hx : 1 ≤ x) (hyz : y ≤ z) :
     x ^ y ≤ x ^ z :=
-  Real.rpow_le_rpow_of_exponent_le hx hyz
+  Real.rpow_le_rpow_right hx hyz
 
 theorem rpow_lt_rpow_of_exponent_gt {x : ℝ≥0} {y z : ℝ} (hx0 : 0 < x) (hx1 : x < 1) (hyz : z < y) :
     x ^ y < x ^ z :=
-  Real.rpow_lt_rpow_of_exponent_gt hx0 hx1 hyz
+  Real.rpow_lt_rpow_right_of_base_lt_one hx0 hx1 hyz
 
 theorem rpow_le_rpow_of_exponent_ge {x : ℝ≥0} {y z : ℝ} (hx0 : 0 < x) (hx1 : x ≤ 1) (hyz : z ≤ y) :
     x ^ y ≤ x ^ z :=
-  Real.rpow_le_rpow_of_exponent_ge hx0 hx1 hyz
+  Real.rpow_le_rpow_right_of_base_le_one hx0 hx1 hyz
 
 theorem rpow_pos {p : ℝ} {x : ℝ≥0} (hx_pos : 0 < x) : 0 < x ^ p := by
   have rpow_pos_of_nonneg : ∀ {p : ℝ}, 0 < p → 0 < x ^ p := by
