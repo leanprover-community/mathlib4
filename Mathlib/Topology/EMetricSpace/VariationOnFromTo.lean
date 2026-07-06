@@ -17,6 +17,7 @@ and use it to show that a bounded variation real function is the difference of t
 functions.
  -/
 
+@[expose] public section
 
 open scoped ENNReal Topology
 open Set Filter
