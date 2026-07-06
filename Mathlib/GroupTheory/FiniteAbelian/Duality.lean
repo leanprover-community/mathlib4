@@ -70,7 +70,7 @@ theorem exists_apply_ne_one_of_hasEnoughRootsOfUnity {a : G} (ha : a ≠ 1) :
 
 variable {M} in
 @[simp]
- theorem forall_apply_eq_apply_iff {g g' : G} :
+theorem forall_apply_eq_apply_iff {g g' : G} :
     (∀ φ : G →* Mˣ, φ g = φ g') ↔ g = g' := by
   refine ⟨fun h ↦ ?_, fun h ↦ by simp [h]⟩
   simpa [← not_forall, not_imp_not, mul_inv_eq_one, h] using

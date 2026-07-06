@@ -260,7 +260,7 @@ lemma Submodule.disjoint_ker_of_finrank_le [IsDomain R] [IsTorsionFree R M] {N :
     [AddCommGroup N] [Module R N] {L : Submodule R M} [Module.Finite R L] (f : M →ₗ[R] N)
     (h : finrank R L ≤ finrank R (L.map f)) :
     Disjoint L (LinearMap.ker f) := by
-  refine disjoint_iff.mpr <| LinearMap.injective_domRestrict_iff.mp <| LinearMap.ker_eq_bot.mp <|
+  refine LinearMap.injective_domRestrict_iff.mp <| LinearMap.ker_eq_bot.mp <|
     Submodule.rank_eq_zero.mp ?_
   rw [← Submodule.finrank_eq_rank, Nat.cast_eq_zero]
   rw [← LinearMap.range_domRestrict] at h
