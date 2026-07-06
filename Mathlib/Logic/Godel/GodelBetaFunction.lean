@@ -80,6 +80,10 @@ lemma coprimes_lt (a : Fin m → ℕ) (i) : a i < coprimes a i := by
   simpa only [coprimes] using lt_of_lt_of_le h₁ h₂
 
 open scoped Function in -- required for scoped `on` notation
+<<<<<<< privateimprtextended
+=======
+set_option backward.privateInPublic true in
+>>>>>>> master
 private lemma pairwise_coprime_coprimes (a : Fin m → ℕ) : Pairwise (Coprime on coprimes a) := by
   intro i j hij
   wlog! ltij : i < j
