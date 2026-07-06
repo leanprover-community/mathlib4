@@ -322,6 +322,18 @@ theorem setToSimpleFunc_eq_sum_filter [DecidablePred fun x ↦ x ≠ (0 : F)]
   rw [hx0]
   exact map_zero _
 
+/-- The `setToSimpleFunc` is equal to a sum over any set that includes `f.range` (except `0`). -/
+theorem setToSimpleFunc_eq_sum_of_subset [DecidablePred fun x : F => x ≠ 0]
+    (T : Set α → F →L[ℝ] F') (hT : T ∅ = 0) {f : α →ₛ F} {s : Finset F}
+    (hs : {x ∈ f.range | x ≠ 0} ⊆ s) :
+    setToSimpleFunc T f = ∑ x ∈ s, T (f ⁻¹' {x}) x := by
+  rw [setToSimpleFunc_eq_sum_filter, Finset.sum_subset hs]
+  rintro x - hx; rw [Finset.mem_filter, not_and_or, Ne, Classical.not_not] at hx
+  rcases hx.symm with (rfl | hx)
+  · simp
+  rw [SimpleFunc.mem_range] at hx
+  rw [preimage_eq_empty] <;> simp [Set.disjoint_singleton_left, hx, hT]
+
 theorem map_setToSimpleFunc (T : Set α → F →L[ℝ] F') (h_add : FinMeasAdditive μ T) {f : α →ₛ G}
     (hf : Integrable f μ) {g : G → F} (hg : g 0 = 0) :
     (f.map g).setToSimpleFunc T = ∑ x ∈ f.range, T (f ⁻¹' {x}) (g x) := by
