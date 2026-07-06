@@ -254,37 +254,30 @@ theorem serreDerivative_slash_invariant {k : ℤ} {F : ℍ → ℂ} (hF : MDiff 
 Boundedness of the normalized derivative and Serre derivative at infinity.
 -/
 
-/-- The closed ball of radius `z.im / 2` centred at `z` is contained in the upper half-plane. -/
-private lemma closedBall_subset_upperHalfPlane (z : ℍ) :
-    Metric.closedBall (z : ℂ) (z.im / 2) ⊆ {w : ℂ | 0 < w.im} := fun w hw => by
-  have habs := abs_im_le_norm (w - (z : ℂ))
-  rw [Complex.sub_im, ← dist_eq_norm, UpperHalfPlane.coe_im] at habs
-  simp only [Set.mem_setOf_eq]
-  linarith [Metric.mem_closedBall.mp hw, (abs_le.mp habs).1, z.im_pos]
+/-- Every point of the closed ball of radius `z.im / 2` centred at `z : ℍ` has imaginary part at
+least `z.im / 2`; in particular, this ball is contained in the upper half-plane. -/
+private lemma le_im_of_mem_closedBall {z : ℍ} {w : ℂ}
+    (hw : w ∈ Metric.closedBall (z : ℂ) (z.im / 2)) : z.im / 2 ≤ w.im := by
+  have h := (abs_im_le_norm (w - (z : ℂ))).trans (mem_closedBall_iff_norm.mp hw)
+  rw [Complex.sub_im, UpperHalfPlane.coe_im, abs_le] at h
+  linarith [h.1]
 
-/-- A holomorphic function on `ℍ`, composed with `ofComplex`, is differentiable on (and continuous
-on the closure of) any open ball contained in the upper half-plane. -/
-private lemma diffContOnCl_comp_ofComplex {F : ℍ → ℂ} (hF : MDiff F) {c : ℂ} {R : ℝ}
-    (hcl : Metric.closedBall c R ⊆ {z : ℂ | 0 < z.im}) :
-    DiffContOnCl ℂ (F ∘ ofComplex) (Metric.ball c R) :=
-  ⟨fun z hz => (mdifferentiableAt_iff.mp
-      (hF ⟨z, hcl (Metric.ball_subset_closedBall hz)⟩)).differentiableWithinAt,
-    fun z hz => (mdifferentiableAt_iff.mp
-      (hF ⟨z, hcl (Metric.closure_ball_subset_closedBall hz)⟩)).continuousAt.continuousWithinAt⟩
-
-/-- A Cauchy estimate for the normalized derivative `D F`: if `F ∘ ofComplex` is bounded by `M` on
-the sphere of radius `r` centred at `z`, then `‖D F z‖ ≤ M / (2 π r)`. -/
-private lemma norm_normalizedDerivOfComplex_le {F : ℍ → ℂ} {z : ℍ} {r M : ℝ} (hr : 0 < r)
-    (hd : DiffContOnCl ℂ (F ∘ ofComplex) (Metric.ball (z : ℂ) r))
-    (hb : ∀ w ∈ Metric.sphere (z : ℂ) r, ‖(F ∘ ofComplex) w‖ ≤ M) :
-    ‖D F z‖ ≤ M / (2 * π * r) := by
-  have hnorm : ‖(2 * ↑π * I)⁻¹‖ = (2 * π)⁻¹ := by
-    simp [norm_inv, Complex.norm_I, abs_of_pos Real.pi_pos]
+/-- A Cauchy estimate for the normalized derivative: if `F` is holomorphic on `ℍ` and bounded by
+`M` at every point with imaginary part at least `z.im / 2`, then `‖D F z‖ ≤ M / (π * z.im)`. -/
+private lemma norm_normalizedDerivOfComplex_le {F : ℍ → ℂ} (hF : MDiff F) {z : ℍ} {M : ℝ}
+    (hM : ∀ w : ℍ, z.im / 2 ≤ w.im → ‖F w‖ ≤ M) : ‖D F z‖ ≤ M / (π * z.im) := by
+  have h2 : 0 < z.im / 2 := half_pos z.im_pos
+  have hd : ‖deriv (F ∘ ofComplex) (z : ℂ)‖ ≤ M / (z.im / 2) := by
+    refine norm_deriv_le_of_forall_mem_sphere_norm_le h2
+      ((UpperHalfPlane.mdifferentiable_iff.mp hF).diffContOnCl_ball fun w hw =>
+        h2.trans_le (le_im_of_mem_closedBall hw)) fun w hw => ?_
+    have him := le_im_of_mem_closedBall (Metric.sphere_subset_closedBall hw)
+    rw [Function.comp_apply, ofComplex_apply_of_im_pos (h2.trans_le him)]
+    exact hM _ him
   calc ‖D F z‖ = (2 * π)⁻¹ * ‖deriv (F ∘ ofComplex) (z : ℂ)‖ := by
-        simp only [normalizedDerivOfComplex, norm_mul, hnorm]
-    _ ≤ (2 * π)⁻¹ * (M / r) := by
-        gcongr; exact norm_deriv_le_of_forall_mem_sphere_norm_le hr hd hb
-    _ = M / (2 * π * r) := by ring
+        simp [normalizedDerivOfComplex, Real.pi_pos.le]
+    _ ≤ (2 * π)⁻¹ * (M / (z.im / 2)) := by gcongr
+    _ = M / (π * z.im) := by ring
 
 /-- The normalized derivative `D F` of a holomorphic function `F` that is bounded at infinity is
 again bounded at infinity. This is a Cauchy estimate: differentiating loses at most a factor
@@ -293,35 +286,20 @@ theorem normalizedDerivOfComplex_isBoundedAtImInfty {F : ℍ → ℂ} (hF : MDif
     (hb : IsBoundedAtImInfty F) : IsBoundedAtImInfty (D F) := by
   rw [isBoundedAtImInfty_iff] at hb ⊢
   obtain ⟨M, A, hMA⟩ := hb
-  refine ⟨M / π, 2 * max A 0 + 1, fun z hz => ?_⟩
-  have hcl := closedBall_subset_upperHalfPlane z
-  have hsphere : ∀ w ∈ Metric.sphere (z : ℂ) (z.im / 2), ‖(F ∘ ofComplex) w‖ ≤ M := by
-    intro w hw
-    have hw_im : 0 < w.im := hcl (Metric.sphere_subset_closedBall hw)
-    have habs := abs_im_le_norm (w - (z : ℂ))
-    rw [Complex.sub_im, ← dist_eq_norm, Metric.mem_sphere.mp hw, UpperHalfPlane.coe_im] at habs
-    have hw_im_ge_A : A ≤ w.im := by
-      linarith [(abs_le.mp habs).1, le_max_left A 0, le_max_right A 0]
-    simpa only [Function.comp_apply, ofComplex_apply_of_im_pos hw_im] using
-      hMA ⟨w, hw_im⟩ hw_im_ge_A
-  have hM_nonneg : 0 ≤ M :=
-    le_trans (norm_nonneg _) (hMA z (by linarith [le_max_left A 0, le_max_right A 0]))
-  calc ‖D F z‖ ≤ M / (2 * π * (z.im / 2)) :=
-        norm_normalizedDerivOfComplex_le (by linarith [z.im_pos])
-          (diffContOnCl_comp_ofComplex hF hcl) hsphere
-    _ ≤ M / π := by gcongr; nlinarith [hz, le_max_right A 0, Real.pi_pos]
+  refine ⟨M / π, max (2 * A) 1, fun z hz => ?_⟩
+  obtain ⟨hzA, hz1⟩ := max_le_iff.mp hz
+  have hM : 0 ≤ M := (norm_nonneg _).trans (hMA z (by linarith))
+  calc ‖D F z‖ ≤ M / (π * z.im) :=
+        norm_normalizedDerivOfComplex_le hF fun w hw => hMA w (by linarith)
+    _ ≤ M / π := by gcongr; exact le_mul_of_one_le_right Real.pi_pos.le hz1
 
 /-- The Serre derivative of a holomorphic function that is bounded at infinity is again bounded at
 infinity. -/
 theorem serreDerivative_isBoundedAtImInfty {F : ℍ → ℂ} (k : ℂ) (hF : MDiff F)
-    (hb : IsBoundedAtImInfty F) : IsBoundedAtImInfty (serreDerivative k F) := by
-  have hE2 : IsBoundedAtImInfty (fun z : ℍ ↦ k * 12⁻¹ * EisensteinSeries.E2 z * F z) :=
-    Filter.BoundedAtFilter.mul (Filter.BoundedAtFilter.mul
-      (Filter.const_boundedAtFilter atImInfty (k * 12⁻¹)) EisensteinSeries.isBoundedAtImInfty_E2) hb
-  change IsBoundedAtImInfty (D F - (fun z : ℍ ↦ k * 12⁻¹ * EisensteinSeries.E2 z * F z))
-  rw [sub_eq_add_neg]
-  exact Filter.BoundedAtFilter.add (normalizedDerivOfComplex_isBoundedAtImInfty hF hb)
-    (Filter.BoundedAtFilter.neg hE2)
+    (hb : IsBoundedAtImInfty F) : IsBoundedAtImInfty (serreDerivative k F) :=
+  Asymptotics.IsBigO.sub (normalizedDerivOfComplex_isBoundedAtImInfty hF hb) <|
+    ((Filter.const_boundedAtFilter atImInfty (k * 12⁻¹)).mul
+      EisensteinSeries.isBoundedAtImInfty_E2).mul hb
 
 /--
 The Serre derivative preserves modularity: if `f` is a modular form of weight `k` for a subgroup
