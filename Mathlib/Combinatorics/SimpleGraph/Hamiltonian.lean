@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.GroupWithZero.Nat
 public import Mathlib.Algebra.Order.Group.Nat
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
+public import Mathlib.SetTheory.Cardinal.Finite
 
 import Mathlib.Combinatorics.SimpleGraph.Connectivity.EdgeConnectivity
 
@@ -38,6 +39,11 @@ namespace Walk
 /-- A Hamiltonian path is a walk `p` that visits every vertex exactly once. Note that while
 this definition doesn't contain that `p` is a path, `p.isPath` gives that. -/
 def IsHamiltonian (p : G.Walk a b) : Prop := ∀ a, p.support.count a = 1
+
+@[simp]
+theorem isHamiltonian_copy {a' b' : α} {p : G.Walk a b} {ha : a = a'} {hb : b = b'} :
+    (p.copy ha hb).IsHamiltonian ↔ p.IsHamiltonian := by
+  simp [IsHamiltonian]
 
 variable (f) in
 lemma IsHamiltonian.map (hf : Bijective f) (hp : p.IsHamiltonian) :
@@ -148,6 +154,13 @@ structure IsHamiltonianCycle (p : G.Walk a a) : Prop extends p.IsCycle where
 
 variable {p : G.Walk a a}
 
+theorem isHamiltonian_dropLast_iff : p.dropLast.IsHamiltonian ↔ p.tail.IsHamiltonian := by
+  simp_rw [IsHamiltonian, p.support_tail_perm_support_dropLast.count_eq]
+
+theorem IsHamiltonianCycle.isHamiltonian_dropLast (hp : p.IsHamiltonianCycle) :
+    p.dropLast.IsHamiltonian :=
+  isHamiltonian_dropLast_iff.mpr hp.isHamiltonian_tail
+
 lemma IsHamiltonianCycle.isCycle (hp : p.IsHamiltonianCycle) : p.IsCycle :=
   hp.toIsCycle
 
@@ -178,6 +191,11 @@ lemma isHamiltonianCycle_iff_isCycle_and_support_count_tail_eq_one :
     p.IsHamiltonianCycle ↔ p.IsCycle ∧ ∀ a, (support p).tail.count a = 1 := by
   simp +contextual [isHamiltonianCycle_isCycle_and_isHamiltonian_tail,
     IsHamiltonian, support_tail_of_not_nil, IsCycle.not_nil]
+
+@[simp]
+theorem isHamiltonianCycle_copy {p : G.Walk a a} {h : a = b} :
+    (p.copy h h).IsHamiltonianCycle ↔ p.IsHamiltonianCycle := by
+  simp [isHamiltonianCycle_iff_isCycle_and_support_count_tail_eq_one]
 
 /-- A Hamiltonian cycle visits every vertex. -/
 lemma IsHamiltonianCycle.mem_support (hp : p.IsHamiltonianCycle) (b : α) :
@@ -217,6 +235,17 @@ lemma isHamiltonianCycle_rotate (hv : v ∈ p.support) :
 
 protected alias ⟨IsHamiltonianCycle.of_rotate, IsHamiltonianCycle.rotate⟩ :=
   isHamiltonianCycle_rotate
+
+theorem isHamiltonianCycle_iff_isHamiltonian_tail_and_le_card {p : G.Walk v v} :
+    p.IsHamiltonianCycle ↔ p.tail.IsHamiltonian ∧ 3 ≤ Nat.card α := by
+  refine ⟨fun hp ↦ ⟨hp.isHamiltonian_tail, ?_⟩, fun ⟨hp, hcard⟩ ↦ ?_⟩
+  · have := @Fintype.ofFinite α hp.finite
+    grw [hp.three_le_length, hp.length_eq, Fintype.card_eq_nat_card]
+  · rw [isHamiltonianCycle_isCycle_and_isHamiltonian_tail, isCycle_iff_isPath_tail_and_le_length]
+    refine ⟨⟨hp.isPath, ?_⟩, hp⟩
+    have := @Fintype.ofFinite α hp.finite
+    grind [hp.length_eq, Fintype.card_eq_nat_card, Nil.tail, length_eq_zero_iff,
+      length_tail_add_one]
 
 end Walk
 
@@ -270,6 +299,21 @@ lemma not_isHamiltonian_bot_of_card_ne_one (h : Fintype.card α ≠ 1) :
 
 lemma IsHamiltonian.of_unique [Unique α] : G.IsHamiltonian :=
   of_card_eq_one <| Fintype.card_unique
+
+theorem Walk.IsHamiltonian.isHamiltonian_of_adj {G : SimpleGraph α} {u v : α} {p : G.Walk u v}
+    (hp : p.IsHamiltonian) (hadj : G.Adj u v) (hlen : p.length ≠ 1) : G.IsHamiltonian := by
+  refine fun _ ↦ ⟨v, p.cons hadj.symm, ?_⟩
+  rw [isHamiltonianCycle_iff_isHamiltonian_tail_and_le_card, tail_cons]
+  simp_rw [getVert_cons_succ, isHamiltonian_copy]
+  grind [hp.length_eq, Fintype.card_eq_nat_card, Fintype.card_pos_iff.mpr ⟨v⟩]
+
+theorem isHamiltonian_iff_exists_adj_and_isHamiltonian [Nontrivial α] {G : SimpleGraph α} :
+    G.IsHamiltonian ↔ ∃ (u v : α) (p : G.Walk u v), G.Adj u v ∧ p.IsHamiltonian ∧ p.length ≠ 1 := by
+  refine ⟨fun h ↦ ?_, fun ⟨u, v, p, hadj, hp, hlen⟩ ↦ hp.isHamiltonian_of_adj hadj hlen⟩
+  have v := Classical.arbitrary α
+  have ⟨p, hp⟩ := h.exists_isHamiltonianCycle v
+  refine ⟨_, _, p.tail, p.adj_snd hp.not_nil |>.symm, hp.isHamiltonian_tail, ?_⟩
+  grind [hp.three_le_length, p.length_tail_add_one hp.not_nil]
 
 /-- A finite simple graph with a bridge is not hamiltonian. -/
 theorem IsBridge.not_isHamiltonian {e : Sym2 α} (he : G.IsBridge e) : ¬G.IsHamiltonian := by
