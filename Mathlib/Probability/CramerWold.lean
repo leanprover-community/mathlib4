@@ -44,7 +44,6 @@ lemma charFun_map_eq_integral_map_inner {α : Type*} {mα : MeasurableSpace α}
   simp only [innerProbChar_apply, real_inner_comm]
   have H : ⟪t, Y ω⟫ • (1 : ℝ) = ⟪t, Y ω⟫ := by simp
   conv_rhs => rw [← H]
-  rw [inner_smul_left]
   simp
 
 lemma tendsto_charFun_of_tendsto_inner (hX : Measurable X) (hXn : ∀ n, Measurable (Xn n))
