@@ -176,7 +176,7 @@ theorem IsBase.compl_isBase_dual (h : M.IsBase B) : M✶.IsBase (M.E \ B) := by
 theorem IsBase.compl_inter_isBasis_of_inter_isBasis (hB : M.IsBase B) (hBX : M.IsBasis (B ∩ X) X) :
     M✶.IsBasis ((M.E \ B) ∩ (M.E \ X)) (M.E \ X) := by
   refine Indep.isBasis_of_forall_insert ?_ inter_subset_right (fun e he ↦ ?_)
-  · rw [dual_indep_iff_exists]
+  · rw [dual_indep_iff_exists (hI := inter_subset_left.trans sdiff_subset)]
     exact ⟨B, hB, disjoint_of_subset_left inter_subset_left disjoint_sdiff_left⟩
   simp only [sdiff_inter_self_eq_sdiff, mem_sdiff, not_and, not_not, imp_iff_right he.1.1] at he
   simp_rw [dual_dep_iff_forall, insert_subset_iff, and_iff_right he.1.1,
@@ -229,7 +229,8 @@ theorem Indep.coindep (hI : M.Indep I) : M✶.Coindep I :=
   dual_coindep_iff.2 hI
 
 theorem coindep_iff_exists' : M.Coindep X ↔ (∃ B, M.IsBase B ∧ B ⊆ M.E \ X) ∧ X ⊆ M.E := by
-  simp_rw [Coindep, dual_indep_iff_exists', and_comm (a := _ ⊆ _), and_congr_left_iff, subset_sdiff]
+  simp_rw [Coindep, dual_indep_iff_exists', and_comm (a := (_ : Set α) ⊆ _), and_congr_left_iff,
+    subset_sdiff]
   exact fun _ ↦ ⟨fun ⟨B, hB, hXB⟩ ↦ ⟨B, hB, hB.subset_ground, hXB.symm⟩,
     fun ⟨B, hB, _, hBX⟩ ↦ ⟨B, hB, hBX.symm⟩⟩
 

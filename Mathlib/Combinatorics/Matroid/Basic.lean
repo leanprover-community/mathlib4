@@ -323,8 +323,6 @@ end exchange
 
 section aesop
 
-set_option backward.privateInPublic true
-
 /-- The `aesop_mat` tactic attempts to prove a set is contained in the ground set of a matroid.
   It uses a `[Matroid]` ruleset, and is allowed to fail. -/
 macro (name := aesop_mat) "aesop_mat" c:Aesop.tactic_clause* : tactic =>
@@ -345,10 +343,12 @@ private theorem inter_right_subset_ground (hX : X ⊆ M.E) :
 private theorem inter_left_subset_ground (hX : X ⊆ M.E) :
     Y ∩ X ⊆ M.E := inter_subset_right.trans hX
 
+set_option backward.privateInPublic true
 @[aesop unsafe 5% (rule_sets := [Matroid])]
 private theorem sdiff_subset_ground (hX : X ⊆ M.E) : X \ Y ⊆ M.E :=
   sdiff_subset.trans hX
 
+set_option backward.privateInPublic true in
 @[deprecated (since := "2026-06-03")] alias diff_subset_ground := sdiff_subset_ground
 
 @[aesop unsafe 10% (rule_sets := [Matroid])]
@@ -532,7 +532,7 @@ theorem indep_iff : M.Indep I ↔ ∃ B, M.IsBase B ∧ I ⊆ B :=
   M.indep_iff' (I := I)
 
 theorem setOf_indep_eq (M : Matroid α) : {I | M.Indep I} = lowerClosure ({B | M.IsBase B}) := by
-  simp_rw [indep_iff, lowerClosure, LowerSet.coe_mk, mem_setOf, le_eq_subset]
+  simp_rw [indep_iff, lowerClosure, LowerSet.coe_mk, mem_setOf]
 
 theorem Indep.exists_isBase_superset (hI : M.Indep I) : ∃ B, M.IsBase B ∧ I ⊆ B :=
   indep_iff.1 hI
