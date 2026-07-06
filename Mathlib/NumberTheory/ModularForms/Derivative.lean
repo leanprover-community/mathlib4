@@ -23,9 +23,8 @@ and (Ramanujan-)Serre derivative $\partial_k := D - \frac{k}{12} E_2$ of modular
 - `serreDerivativeMF`: the Serre derivative preserves modularity, i.e. for a subgroup `Γ` of
   `SL(2, ℤ)` it maps a weight `k` level `Γ` modular form to a weight `k + 2` level `Γ` modular form.
 
-TODO:
-- Use the above to prove Ramanujan's identities. See [here](https://github.com/thefundamentaltheor3m/Sphere-Packing-Lean/blob/main/SpherePacking/ModularForms/RamanujanIdentities.lean)
-  for `sorry`-free proofs.
+Ramanujan's formulas for the (Serre) derivatives of the Eisenstein series `E₂`, `E₄`, `E₆` are
+proved in `Mathlib/NumberTheory/ModularForms/RamanujanFormula.lean`.
 -/
 
 open UpperHalfPlane hiding I
@@ -275,19 +274,27 @@ private lemma norm_normalizedDerivOfComplex_le {F : ℍ → ℂ} (hF : MDiff F) 
     _ ≤ (2 * π)⁻¹ * (M / (z.im / 2)) := by gcongr
     _ = M / (π * z.im) := by ring
 
-/-- The normalized derivative `D F` of a holomorphic function `F` that is bounded at infinity is
-again bounded at infinity. This is a Cauchy estimate: differentiating loses at most a factor
+/-- The normalized derivative `D F` of a holomorphic function `F` that is bounded at infinity
+tends to `0` at infinity. This is a Cauchy estimate: differentiating loses a factor
 of `1 / z.im`. -/
-theorem normalizedDerivOfComplex_isBoundedAtImInfty {F : ℍ → ℂ} (hF : MDiff F)
-    (hb : IsBoundedAtImInfty F) : IsBoundedAtImInfty (D F) := by
-  rw [isBoundedAtImInfty_iff] at hb ⊢
+theorem normalizedDerivOfComplex_isZeroAtImInfty {F : ℍ → ℂ} (hF : MDiff F)
+    (hb : IsBoundedAtImInfty F) : IsZeroAtImInfty (D F) := by
+  rw [isBoundedAtImInfty_iff] at hb
   obtain ⟨M, A, hMA⟩ := hb
-  refine ⟨M / π, max (2 * A) 1, fun z hz => ?_⟩
-  obtain ⟨hzA, hz1⟩ := max_le_iff.mp hz
-  have hM : 0 ≤ M := (norm_nonneg _).trans (hMA z (by linarith))
-  calc ‖D F z‖ ≤ M / (π * z.im) :=
-        norm_normalizedDerivOfComplex_le hF fun w hw => hMA w (by linarith)
-    _ ≤ M / π := by gcongr; exact le_mul_of_one_le_right Real.pi_pos.le hz1
+  rw [isZeroAtImInfty_iff]
+  intro ε hε
+  refine ⟨max (2 * A) (M / (π * ε)), fun z hz => ?_⟩
+  obtain ⟨hzA, hzε⟩ := max_le_iff.mp hz
+  have hM : 0 ≤ M := (norm_nonneg _).trans (hMA z (by linarith [z.im_pos]))
+  refine (norm_normalizedDerivOfComplex_le hF fun w hw => hMA w (by linarith)).trans ?_
+  rw [div_le_iff₀ (by positivity)]
+  nlinarith [(div_le_iff₀ (show (0 : ℝ) < π * ε by positivity)).mp hzε]
+
+/-- The normalized derivative `D F` of a holomorphic function `F` that is bounded at infinity is
+again bounded at infinity. -/
+theorem normalizedDerivOfComplex_isBoundedAtImInfty {F : ℍ → ℂ} (hF : MDiff F)
+    (hb : IsBoundedAtImInfty F) : IsBoundedAtImInfty (D F) :=
+  (normalizedDerivOfComplex_isZeroAtImInfty hF hb).isBoundedAtImInfty
 
 /-- The Serre derivative of a holomorphic function that is bounded at infinity is again bounded at
 infinity. -/
@@ -315,6 +322,10 @@ noncomputable def serreDerivativeMF {Γ : Subgroup (GL (Fin 2) ℝ)} (k : ℤ)
     rw [serreDerivative_slash_equivariant (F := (f : ℍ → ℂ)) f.holo']
     exact serreDerivative_isBoundedAtImInfty (k : ℂ) (f.holo'.slash k γ)
       ((OnePoint.isBoundedAt_iff_forall_SL2Z (hc.mono hΓ)).mp (f.bdd_at_cusps' hc) γ hγ)
+
+@[simp]
+lemma coe_serreDerivativeMF {Γ : Subgroup (GL (Fin 2) ℝ)} (k : ℤ) (f : ModularForm Γ k)
+    (hΓ : Γ ≤ 𝒮ℒ) : ⇑(serreDerivativeMF k f hΓ) = serreDerivative (k : ℂ) f := rfl
 
 end
 
