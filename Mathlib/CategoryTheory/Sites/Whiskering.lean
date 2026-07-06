@@ -177,8 +177,6 @@ lemma Presheaf.IsSheaf.isSeparated {F : Cᵒᵖ ⥤ A} {FA : A → A → Type*} 
 variable {FA : A → A → Type*} {CA : A → Type v₂} [∀ X Y, FunLike (FA X Y) (CA X) (CA Y)]
   [ConcreteCategory A FA]
 
-/-- If the forgetful functor of a concrete category is corepresentable, then it preserves
-sheaves. -/
 instance [(forget A).IsCorepresentable] : J.HasSheafCompose (forget A) where
   isSheaf P hP := by
     rw [isSheaf_iff_isSheaf_of_type]
