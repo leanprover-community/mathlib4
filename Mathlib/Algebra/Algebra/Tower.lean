@@ -258,6 +258,12 @@ theorem restrictScalars_injective :
     Function.Injective (restrictScalars R : (A ≃ₐ[S] B) → A ≃ₐ[R] B) := fun _ _ h =>
   AlgEquiv.ext (AlgEquiv.congr_fun h :)
 
+@[simp]
+lemma restrictScalars_symm (f : A ≃ₐ[S] B) :
+    f.symm.restrictScalars R = (f.restrictScalars R).symm :=
+  rfl
+
+@[simp]
 lemma restrictScalars_symm_apply (f : A ≃ₐ[S] B) (x : B) :
     (f.restrictScalars R).symm x = f.symm x := rfl
 
@@ -275,12 +281,8 @@ lemma coe_restrictScalars_symm (f : A ≃ₐ[S] B) :
 def restrictScalarsHom : (A ≃ₐ[S] A) →* (A ≃ₐ[R] A) :=
   MulSemiringAction.toAlgAut (A ≃ₐ[S] A) R A
 
-theorem restrictScalarsHom_apply (f : A ≃ₐ[S] A) : f.restrictScalarsHom R = f.restrictScalars R :=
-  rfl
-
 @[simp]
-theorem restrictScalars_symm (f : A ≃ₐ[S] B) :
-    f.symm.restrictScalars R = (f.restrictScalars R).symm :=
+theorem restrictScalarsHom_apply (f : A ≃ₐ[S] A) : f.restrictScalarsHom R = f.restrictScalars R :=
   rfl
 
 theorem restrictScalarsHom_injective :
