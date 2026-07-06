@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
 public import Mathlib.Combinatorics.SimpleGraph.Copy
-public import Mathlib.Combinatorics.SimpleGraph.Paths
 public import Mathlib.Data.ZMod.Defs
 
 /-!
@@ -49,7 +48,6 @@ theorem cycleGraph_one_eq_top : cycleGraph 1 = ⊤ := Subsingleton.elim _ _
 theorem cycleGraph_eq_top_of_le_three {n : ℕ} (hn : n ≤ 3) : cycleGraph n = ⊤ := by
   match n with
   | 0 | 1 | 2 | 3 => simp only [SimpleGraph.ext_iff, funext_iff]; decide
-  | n + 4 => contradiction
 
 theorem cycleGraph_two_eq_top : cycleGraph 2 = ⊤ := cycleGraph_eq_top_of_le_three (by simp)
 theorem cycleGraph_three_eq_top : cycleGraph 3 = ⊤ := cycleGraph_eq_top_of_le_three (by simp)
@@ -153,18 +151,25 @@ theorem cycleGraph.isCycle_cycle : (cycleGraph.cycle n).IsCycle :=
 theorem cycleGraph.mem_support_cycle {n : ℕ} (u : Fin (n + 3)) :
     u ∈ (cycleGraph.cycle n).support := by
   refine mem_support_iff_exists_getVert.mpr ⟨n + 3 - u, ?_, by simp⟩
-  simp [cycleGraph.getVert_cycle (Nat.sub_le _ _), Fin.ext_iff, Nat.sub_sub_self]
+  simp [cycleGraph.getVert_cycle, Fin.ext_iff, Nat.sub_sub_self]
 
 end cycle
 
-theorem cycleGraph_preconnected {n : ℕ} : (cycleGraph n).Preconnected := by
+theorem preconnected_cycleGraph {n : ℕ} : (cycleGraph n).Preconnected := by
   match n with
   | 0 | 1 | 2 => simp [cycleGraph_eq_top_of_le_three]
   | n + 3 =>
-    exact fun _ _ ↦ .of_walk_mem _ (cycleGraph.mem_support_cycle _) (cycleGraph.mem_support_cycle _)
+    exact fun _ _ ↦ Walk.reachable_of_mem_support _
+      (cycleGraph.mem_support_cycle _) (cycleGraph.mem_support_cycle _)
 
-theorem cycleGraph_connected {n : ℕ} : (cycleGraph (n + 1)).Connected :=
-  SimpleGraph.connected_iff _ |>.mpr ⟨cycleGraph_preconnected, inferInstance⟩
+@[deprecated (since := "2026-07-06")]
+alias cycleGraph_preconnected := preconnected_cycleGraph
+
+theorem connected_cycleGraph {n : ℕ} : (cycleGraph (n + 1)).Connected where
+  preconnected := preconnected_cycleGraph
+
+@[deprecated (since := "2026-07-06")]
+alias cycleGraph_connected := connected_cycleGraph
 
 section IsContained
 
