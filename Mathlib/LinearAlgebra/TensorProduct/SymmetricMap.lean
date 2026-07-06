@@ -250,10 +250,10 @@ def compLinearMapₗ (f : M →ₗ[R] N) : (N [Σ^ι]→ₗ[R] P) →ₗ[S] (M [
   { __ := compLinearMapAddHom P ι f
     map_smul' _ _ := rfl }
 
-@[simp] lemma compLinearMapₗ_coe [Module R S] (f : M →ₗ[R] N) :
+@[simp] lemma compLinearMapₗ_coe (f : M →ₗ[R] N) :
     ⇑(compLinearMapₗ P ι S f) = (compLinearMap · f) := rfl
 
-lemma compLinearMapₗ_apply [Module R S] (f : M →ₗ[R] N) (g : N [Σ^ι]→ₗ[R] P) :
+lemma compLinearMapₗ_apply (f : M →ₗ[R] N) (g : N [Σ^ι]→ₗ[R] P) :
     compLinearMapₗ P ι S f g = compLinearMap g f := rfl
 
 end Module
