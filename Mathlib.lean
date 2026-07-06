@@ -6465,7 +6465,6 @@ public import Mathlib.RingTheory.Coalgebra.Quotient
 public import Mathlib.RingTheory.Coalgebra.TensorProduct
 public import Mathlib.RingTheory.Complex
 public import Mathlib.RingTheory.Conductor
-public import Mathlib.RingTheory.Congruence.Algebra
 public import Mathlib.RingTheory.Congruence.Basic
 public import Mathlib.RingTheory.Congruence.BigOperators
 public import Mathlib.RingTheory.Congruence.Defs
@@ -8211,6 +8210,5 @@ public import Mathlib.Util.TermReduce
 public import Mathlib.Util.TransImports
 public import Mathlib.Util.WhatsNew
 public import Mathlib.Util.WithWeakNamespace
-public import Mathlib.tmp
 
 set_option linter.style.longLine false
