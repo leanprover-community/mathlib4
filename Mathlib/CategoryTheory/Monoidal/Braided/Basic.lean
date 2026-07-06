@@ -506,14 +506,6 @@ set_option backward.privateInPublic true in
 lemma isoOfComponents_inv_hom_hom_app (X : C) :
     (isoOfComponents e naturality unit tensor).inv.hom.hom.app X = (e X).inv := rfl
 
-set_option backward.privateInPublic true in
-@[deprecated (since := "2025-12-18")] alias isoOfComponents_hom_hom_app :=
-  isoOfComponents_hom_hom_hom_app
-
-set_option backward.privateInPublic true in
-@[deprecated (since := "2025-12-18")] alias isoOfComponents_inv_hom_app :=
-  isoOfComponents_inv_hom_hom_app
-
 end
 
 end LaxBraidedFunctor
