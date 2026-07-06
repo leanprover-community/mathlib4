@@ -261,6 +261,7 @@ private lemma selfProdTermIncl_fib_eq (b : F.obj A) :
     rw [← map_comp, Pi.map'_comp_π, Category.comp_id, mkSelfProdFib_map_π F X (fiberPerm h b t)]
     rfl
 
+set_option backward.privateInPublic true in
 /-- There exists an automorphism `f` of `A` that maps `b` to `a`.
 `f` is obtained by considering `u` and `selfProdPermIncl h b`.
 Both are inclusions of `A` into `selfProd F X` mapping `b` respectively `a` to the same element
@@ -271,6 +272,7 @@ private lemma subobj_selfProd_trans [Mono u] (b : F.obj A) : ∃ (f : A ≅ A), 
 
 end GaloisRepAux
 
+set_option backward.privateInPublic true in
 /-- The fiber of any object in a Galois category is represented by a Galois object. -/
 lemma exists_galois_representative (X : C) : ∃ (A : C) (a : F.obj A),
     IsGalois A ∧ Function.Bijective (fun (f : A ⟶ X) ↦ F.map f a) := by

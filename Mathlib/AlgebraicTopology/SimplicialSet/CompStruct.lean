@@ -84,6 +84,7 @@ set_option backward.privateInPublic true in
 /-- Constructor for edges in a simplicial set. -/
 def mk : Edge x₀ x₁ := ofTruncated { edge := edge }
 
+set_option backward.privateInPublic true in
 @[simp]
 lemma mk_edge : (mk edge src_eq tgt_eq).edge = edge := rfl
 
@@ -181,6 +182,7 @@ set_option backward.privateInPublic true in
 def mk : CompStruct e₀₁ e₁₂ e₀₂ where
   simplex := simplex
 
+set_option backward.privateInPublic true in
 @[simp]
 lemma mk_simplex : (mk simplex).simplex = simplex := rfl
 
