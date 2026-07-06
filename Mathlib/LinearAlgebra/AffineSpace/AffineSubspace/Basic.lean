@@ -813,58 +813,60 @@ end MapComap
 
 namespace AffineSubspace
 
-variable {k V₁ V₂ P₁ P₂ : Type*} [Ring k] [AddCommGroup V₁] [Module k V₁] [AffineSpace V₁ P₁]
-  [AddCommGroup V₂] [Module k V₂] [AffineSpace V₂ P₂]
+open AffineEquiv
+
+variable {k V W P Q : Type*} [Ring k] [AddCommGroup V] [Module k V] [AffineSpace V P]
+  [AddCommGroup W] [Module k W] [AffineSpace W Q]
 
 /-- The product of two affine subspaces as an affine subspace. -/
-def prod (s : AffineSubspace k P₁) (t : AffineSubspace k P₂) : AffineSubspace k (P₁ × P₂) where
-  carrier := (s : Set P₁) ×ˢ (t : Set P₂)
+def prod (s : AffineSubspace k P) (t : AffineSubspace k Q) : AffineSubspace k (P × Q) where
+  carrier := (s : Set P) ×ˢ (t : Set Q)
   smul_vsub_vadd_mem' c _ _ _ hp₁ hp₂ hp₃ :=
     ⟨s.smul_vsub_vadd_mem' c hp₁.1 hp₂.1 hp₃.1, t.smul_vsub_vadd_mem' c hp₁.2 hp₂.2 hp₃.2⟩
 
 @[simp]
-theorem coe_prod (s : AffineSubspace k P₁) (t : AffineSubspace k P₂) :
-    (s.prod t : Set (P₁ × P₂)) = (s : Set P₁) ×ˢ (t : Set P₂) :=
+theorem coe_prod (s : AffineSubspace k P) (t : AffineSubspace k Q) :
+    (s.prod t : Set (P × Q)) = (s : Set P) ×ˢ (t : Set Q) :=
   rfl
 
 @[simp]
-theorem mem_prod (s : AffineSubspace k P₁) (t : AffineSubspace k P₂) (x : P₁ × P₂) :
+theorem mem_prod (s : AffineSubspace k P) (t : AffineSubspace k Q) (x : P × Q) :
     x ∈ s.prod t ↔ x.1 ∈ s ∧ x.2 ∈ t :=
   Set.mem_prod
 
 @[gcongr]
-theorem prod_mono {s₁ s₂ : AffineSubspace k P₁} {t₁ t₂ : AffineSubspace k P₂}
+theorem prod_mono {s₁ s₂ : AffineSubspace k P} {t₁ t₂ : AffineSubspace k Q}
     (hs : s₁ ≤ s₂) (ht : t₁ ≤ t₂) : s₁.prod t₁ ≤ s₂.prod t₂ :=
   Set.prod_mono hs ht
 
 @[simp]
-theorem prod_top_top : (⊤ : AffineSubspace k P₁).prod (⊤ : AffineSubspace k P₂) = ⊤ := by
+theorem prod_top_top : (⊤ : AffineSubspace k P).prod (⊤ : AffineSubspace k Q) = ⊤ := by
   ext; simp
 
 @[simp]
-theorem prod_bot_right (s : AffineSubspace k P₁) : s.prod (⊥ : AffineSubspace k P₂) = ⊥ := by
+theorem prod_bot_right (s : AffineSubspace k P) : s.prod (⊥ : AffineSubspace k Q) = ⊥ := by
   simp [AffineSubspace.ext_iff]
 
 @[simp]
-theorem prod_bot_left (t : AffineSubspace k P₂) : (⊥ : AffineSubspace k P₁).prod t = ⊥ := by
+theorem prod_bot_left (t : AffineSubspace k P) : (⊥ : AffineSubspace k Q).prod t = ⊥ := by
   simp [AffineSubspace.ext_iff]
 
 @[simp]
-theorem prod_inf_prod (s₁ s₂ : AffineSubspace k P₁) (t₁ t₂ : AffineSubspace k P₂) :
+theorem prod_inf_prod (s₁ s₂ : AffineSubspace k P) (t₁ t₂ : AffineSubspace k Q) :
     s₁.prod t₁ ⊓ s₂.prod t₂ = (s₁ ⊓ s₂).prod (t₁ ⊓ t₂) :=
   SetLike.coe_injective Set.prod_inter_prod
 
-theorem _root_.vectorSpan_prod {s : Set P₁} {t : Set P₂} (hs : s.Nonempty) (ht : t.Nonempty) :
+theorem _root_.vectorSpan_prod {s : Set P} {t : Set Q} (hs : s.Nonempty) (ht : t.Nonempty) :
     vectorSpan k (s ×ˢ t) = (vectorSpan k s).prod (vectorSpan k t) := by
   rw [vectorSpan_def, Set.prod_vsub_prod]
-  exact Submodule.span_prod_eq k V₁ V₂ hs.zero_mem_vsub ht.zero_mem_vsub
+  exact Submodule.span_prod_eq k V W hs.zero_mem_vsub ht.zero_mem_vsub
 
-theorem direction_prod {s : AffineSubspace k P₁} {t : AffineSubspace k P₂}
+theorem direction_prod {s : AffineSubspace k P} {t : AffineSubspace k Q}
     (hs : s ≠ ⊥) (ht : t ≠ ⊥) :
     (s.prod t).direction = s.direction.prod t.direction := by
   simp [direction_eq_vectorSpan, vectorSpan_prod, nonempty_iff_ne_bot, ht, hs]
 
-theorem _root_.affineSpan_prod (s : Set P₁) (t : Set P₂) :
+theorem _root_.affineSpan_prod (s : Set P) (t : Set Q) :
     affineSpan k (s ×ˢ t) = (affineSpan k s).prod (affineSpan k t) := by
   rcases s.eq_empty_or_nonempty with rfl | hs
   · simp
@@ -878,18 +880,9 @@ theorem _root_.affineSpan_prod (s : Set P₁) (t : Set P₂) :
     use ⟨x, y⟩
     aesop (add simp mem_spanPoints)
 
-theorem _root_.coe_affineSpan_prod (s : Set P₁) (t : Set P₂) :
-    affineSpan k (s ×ˢ t) = (affineSpan k s : Set P₁) ×ˢ (affineSpan k t : Set P₂) := by
+theorem _root_.coe_affineSpan_prod (s : Set P) (t : Set Q) :
+    affineSpan k (s ×ˢ t) = (affineSpan k s : Set P) ×ˢ (affineSpan k t : Set Q) := by
   simp [affineSpan_prod]
-
-end AffineSubspace
-
-namespace AffineSubspace
-
-open AffineEquiv
-
-variable {k : Type*} {V : Type*} {P : Type*} [Ring k] [AddCommGroup V] [Module k V]
-variable [AffineSpace V P]
 
 /-- Two affine subspaces are parallel if one is related to the other by adding the same vector
 to all points. -/
