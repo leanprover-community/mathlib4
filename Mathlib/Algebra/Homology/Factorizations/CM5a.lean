@@ -218,8 +218,7 @@ a factorisation of `f` as `ι f n ≫ π f n = f` where
 `ι f n : K ⟶ mid f n` is a monomorphism which is a quasi-isomorphism
 in degrees `≤ n`, `π f n` is a degreewise epimorphism with an injective kernel
 which also induces isomorphisms in degrees `≤ n`.
- -/
-
+-/
 
 open HomComplex
 
