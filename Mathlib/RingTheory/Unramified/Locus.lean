@@ -89,6 +89,21 @@ theorem IsUnramifiedAt.residueField
 
 end
 
+section IsUnramifiedIn
+
+variable {R : Type*} [CommRing R]
+
+/-- A prime `𝔭` of `R` is unramified in `A` if every prime ideal `𝔓` of `A` lying over `𝔭` is
+unramified . -/
+def IsUnramifiedIn (A : Type*) [CommRing A] [Algebra R A] (𝔭 : Ideal R) : Prop :=
+  ∀ (𝔓 : Ideal A) (_ : 𝔓.IsPrime), 𝔓.LiesOver 𝔭 → Algebra.IsUnramifiedAt R 𝔓
+
+variable (A : Type*) [CommRing A] [Algebra R A]
+
+theorem isUnramifiedIn_top : IsUnramifiedIn A (⊤ : Ideal R) :=
+  fun P hP _ ↦ (hP.ne_top ((Ideal.eq_top_iff_of_liesOver P (⊤ : Ideal R)).mpr rfl)).elim
+
+end IsUnramifiedIn
 section
 
 variable {R A : Type*} [CommRing R] [CommRing A] [Algebra R A]

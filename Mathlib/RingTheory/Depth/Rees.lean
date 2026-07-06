@@ -24,11 +24,10 @@ certain `Ext` groups and the length of a maximal regular sequence in a certain i
 * `ModuleCat.exists_isRegular_tfae` (Rees theorem) : For any `n : ℕ`, Noetherian ring `R`,
   `I : Ideal R`, and finitely generated and nontrivial `R`-module `M` satisfying `IM < M`,
   the following are equivalent:
-  · for any `N : ModuleCat R` finitely generated and nontrivial with support contained in the
-    zero locus of `I`, `∀ i < n, Ext N M i = 0`
+  · for any `N : ModuleCat R` finitely generated such that `Supp N ⊆ V(I)`, `∀ i < n, Ext N M i = 0`
   · `∀ i < n, Ext (R ⧸ I) M i = 0`
-  · there exists a `N : ModuleCat R` finitely generated and nontrivial with support equal to the
-    zero locus of `I`, `∀ i < n, Ext N M i = 0`
+  · there exists a `N : ModuleCat R` finitely generated and nontrivial with `Supp N = V(I)`
+    such that `∀ i < n, Ext N M i = 0`
   · there exists a `M`-regular sequence of length `n` with every element in `I`
 
 ## References
@@ -57,9 +56,13 @@ private lemma smul_top_quotSMulTop_ne_top_of_smul_top_ne_top {M : Type*} [AddCom
 
 namespace ModuleCat
 
+/-- The implication `(3) → (4)` of `exists_isRegular_tfae`: for `M N` finitely generated
+module over Noetherian ring `R` and ideal `I` satisfying `IM < M` and `Supp N = V(I)`,
+if `Ext N M i = 0` for all `i < n`,
+then there exists an `M`-regular sequence of length `n` contained in `I`. -/
 lemma exists_isRegular_of_exists_subsingleton_ext [Small.{v} R] [IsNoetherianRing R] (I : Ideal R)
     (n : ℕ) (M : ModuleCat.{v} R) [Module.Finite R M] (smul_lt : I • (⊤ : Submodule R M) < ⊤)
-    (N : ModuleCat.{v} R) [Nontrivial N] [Module.Finite R N]
+    (N : ModuleCat.{v} R) [Module.Finite R N]
     (h_supp : Module.support R N = PrimeSpectrum.zeroLocus I)
     (h_ext : ∀ i < n, Subsingleton (Ext N M i)) :
     ∃ rs : List R, rs.length = n ∧ (∀ r ∈ rs, r ∈ I) ∧ IsRegular M rs := by
@@ -91,6 +94,10 @@ lemma exists_isRegular_of_exists_subsingleton_ext [Small.{v} R] [IsNoetherianRin
     use x ^ k :: rs
     simpa [len, hk] using ⟨mem, hx.pow k, reg⟩
 
+/-- The implication `(4) → (1)` of `exists_isRegular_tfae`: for `M N` finitely generated
+module over Noetherian ring `R` and ideal `I` satisfying `IM < M` and `Supp N ⊆ V(I)`,
+if there is an `M`-regular sequence `rs` contained in `I`,
+then `Ext N M i = 0` for all `i < rs.length`. -/
 lemma subsingleton_ext_of_exists_isRegular [Small.{v} R] [IsNoetherianRing R] (I : Ideal R)
     (N : ModuleCat.{v} R) [Nfin : Module.Finite R N]
     (Nsupp : Module.support R N ⊆ PrimeSpectrum.zeroLocus I)
