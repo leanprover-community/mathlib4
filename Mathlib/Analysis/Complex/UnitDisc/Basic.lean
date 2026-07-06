@@ -179,28 +179,31 @@ theorem coe_circle_smul (z : Circle) (w : 𝔻) : ↑(z • w) = (z * w : ℂ) :
 alias coe_smul_circle := coe_circle_smul
 
 instance : Pow UnitDisc ℕ+ where
-  pow z n := ⟨z ^ (n : ℕ), by simp [pow_lt_one_iff_of_nonneg, z.norm_lt_one]⟩
+  pow z n := ⟨(z : ℂ) ^ n, by simp [← npow_val_eq_ppow, pow_lt_one_iff_of_nonneg, z.norm_lt_one]⟩
 
 @[simp, norm_cast]
-theorem coe_pow (z : 𝔻) (n : ℕ+) : ((z ^ n : 𝔻) : ℂ) = z ^ (n : ℕ) := rfl
+theorem coe_ppow (z : 𝔻) (n : ℕ+) : ((z ^ n : 𝔻) : ℂ) = z ^ (n : ℕ) := by
+  induction n using Semigroup.ppow_induction z with
+  | h1 => simp
+  | hsucc n IH => simp [pow_succ _ (n + 1), IH]
 
 @[fun_prop]
-theorem continuous_pow (n : ℕ+) : Continuous (· ^ n : 𝔻 → 𝔻) := by
-  simp only [isEmbedding_coe.continuous_iff, Function.comp_def, coe_pow]
+theorem continuous_ppow (n : ℕ+) : Continuous (· ^ n : 𝔻 → 𝔻) := by
+  simp only [isEmbedding_coe.continuous_iff, Function.comp_def, coe_ppow]
   fun_prop
 
 @[simp]
-theorem pow_eq_zero {z : 𝔻} {n : ℕ+} : z ^ n = 0 ↔ z = 0 := by
-  rw [← coe_inj, coe_pow]
+theorem ppow_eq_zero {z : 𝔻} {n : ℕ+} : z ^ n = 0 ↔ z = 0 := by
+  rw [← coe_inj, coe_ppow]
   simp
 
 instance : PNatPowAssoc 𝔻 where
-  ppow_add m n z := mod_cast pow_add (z : ℂ) m n
-  ppow_one z := by simp [← coe_inj]
+  ppow_add' m n z := by simpa [← coe_inj] using mod_cast pow_add (z : ℂ) m n
+  ppow_one' z := by simp [← coe_inj]
 
-theorem tendsto_pow_atTop_nhds_zero (z : 𝔻) :
+theorem tendsto_ppow_atTop_nhds_zero (z : 𝔻) :
     Tendsto (fun n : ℕ+ ↦ z ^ n) atTop (𝓝 0) := by
-  simp only [isEmbedding_coe.tendsto_nhds_iff, comp_def, coe_pow]
+  simp only [isEmbedding_coe.tendsto_nhds_iff, comp_def, coe_ppow]
   exact tendsto_pow_atTop_nhds_zero_iff_norm_lt_one.mpr z.norm_lt_one
     |>.comp tendsto_PNat_val_atTop_atTop
 
