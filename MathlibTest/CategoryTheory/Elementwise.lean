@@ -1,5 +1,6 @@
 import Mathlib.Tactic.CategoryTheory.Elementwise
 import Mathlib.Algebra.Category.MonCat.Basic
+import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 
 set_option autoImplicit true
 
@@ -231,5 +232,31 @@ example {α β : Type} (f g : α ⟶ β) (w : f ≫ 𝟙 β = g) (a : α) : f a 
   rw [w]
 
 end ConcreteCategory
+
+section AlreadyDeclared
+
+open CategoryTheory.Limits
+
+-- Regenerating an `_apply` lemma that was already generated in an imported module
+-- (here `Mathlib.CategoryTheory.ConcreteCategory.Elementwise`) gives a clear error
+-- instead of a panic in `addDeclarationRangesFromSyntax`.
+/--
+error: cannot create related declaration `CategoryTheory.Limits.limit.w_apply`: it has already been declared in the imported module `Mathlib.CategoryTheory.ConcreteCategory.Elementwise`
+-/
+#guard_msgs in
+attribute [elementwise] limit.w
+
+@[elementwise]
+theorem dup [Category C] {M N K : C} {f : M ⟶ N} {g : N ⟶ K} {h : M ⟶ K} (w : f ≫ g = h) :
+    f ≫ 𝟙 N ≫ g = h := by
+  simp [w]
+
+/--
+error: cannot create related declaration `ElementwiseTest.dup_apply`: it has already been declared in the current module
+-/
+#guard_msgs in
+attribute [elementwise] dup
+
+end AlreadyDeclared
 
 end ElementwiseTest
