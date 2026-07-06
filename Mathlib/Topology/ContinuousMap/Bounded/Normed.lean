@@ -196,8 +196,8 @@ theorem coe_zsmul (r : ℤ) (f : α →ᵇ β) : ⇑(r • f) = r • ⇑f := rf
 theorem zsmul_apply (r : ℤ) (f : α →ᵇ β) (v : α) : (r • f) v = r • f v := rfl
 
 instance instAddCommGroup : AddCommGroup (α →ᵇ β) := fast_instance%
-  DFunLike.coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => coe_nsmul _ _)
-    fun _ _ => coe_zsmul _ _
+  DFunLike.coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub
+    (fun _ _ => coe_psmul _ _) (fun _ _ => coe_nsmul _ _) fun _ _ => coe_zsmul _ _
 
 instance instSeminormedAddCommGroup : SeminormedAddCommGroup (α →ᵇ β) where
   dist_eq f g := by simp only [norm_eq, dist_eq, dist_eq_norm_neg_add, add_apply, neg_apply]
@@ -297,7 +297,8 @@ variable [NonUnitalSeminormedRing R]
 
 instance instNonUnitalRing : NonUnitalRing (α →ᵇ R) := fast_instance%
   DFunLike.coe_injective.nonUnitalRing _ coe_zero coe_add coe_mul coe_neg coe_sub
-    (fun _ _ => coe_nsmul _ _) fun _ _ => coe_zsmul _ _
+    (fun _ _ => coe_psmul _ _) (fun _ _ => coe_nsmul _ _) (fun _ _ => coe_zsmul _ _)
+    (fun _ _ => coe_ppow _ _)
 
 instance instNonUnitalSeminormedRing : NonUnitalSeminormedRing (α →ᵇ R) where
   __ := instSeminormedAddCommGroup
@@ -368,11 +369,6 @@ theorem coe_npowRec (f : α →ᵇ R) : ∀ n, ⇑(npowRec n f) = (⇑f) ^ n
   | 0 => by rw [npowRec, pow_zero, coe_one]
   | n + 1 => by rw [npowRec, pow_succ, coe_mul, coe_npowRec f n]
 
-instance hasNatPow : Pow (α →ᵇ R) ℕ where
-  pow f n :=
-    { toContinuousMap := f.toContinuousMap ^ n
-      map_bounded' := by simpa [coe_npowRec] using (npowRec n f).map_bounded' }
-
 instance : NatCast (α →ᵇ R) :=
   ⟨fun n => BoundedContinuousFunction.const _ n⟩
 
@@ -392,8 +388,8 @@ theorem coe_intCast (n : ℤ) : ((n : α →ᵇ R) : α → R) = n := rfl
 
 instance instRing : Ring (α →ᵇ R) := fast_instance%
   DFunLike.coe_injective.ring _ coe_zero coe_one coe_add coe_mul coe_neg coe_sub
-    (fun _ _ => coe_nsmul _ _) (fun _ _ => coe_zsmul _ _) (fun _ _ => coe_pow _ _) coe_natCast
-    coe_intCast
+    (fun _ _ => coe_psmul _ _) (fun _ _ => coe_nsmul _ _) (fun _ _ => coe_zsmul _ _)
+    (fun _ _ => coe_ppow _ _) (fun _ _ => coe_pow _ _) coe_natCast coe_intCast
 
 instance instSeminormedRing : SeminormedRing (α →ᵇ R) where
   __ := instRing

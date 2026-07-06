@@ -518,7 +518,7 @@ theorem coe_nsmulRec [PseudoMetricSpace β] [AddMonoid β] [BoundedAdd β] [Cont
   | n + 1 => by rw [nsmulRec, succ_nsmul, coe_add, coe_nsmulRec _ n]
 
 @[to_additive]
-instance instPPow [Monoid R] [BoundedMul R] [ContinuousMul R] : Pow (α →ᵇ R) ℕ+ where
+instance instPPow [Semigroup R] [BoundedMul R] [ContinuousMul R] : Pow (α →ᵇ R) ℕ+ where
   pow f n :=
     { toFun := fun x ↦ (f x) ^ n
       continuous_toFun := f.continuous.ppow n
@@ -527,11 +527,11 @@ instance instPPow [Monoid R] [BoundedMul R] [ContinuousMul R] : Pow (α →ᵇ R
         exact ⟨C, fun x y ↦ hC (by simp) (by simp)⟩ }
 
 @[to_additive]
-theorem coe_ppow [Monoid R] [BoundedMul R] [ContinuousMul R] (n : ℕ+) (f : α →ᵇ R) :
+theorem coe_ppow [Semigroup R] [BoundedMul R] [ContinuousMul R] (n : ℕ+) (f : α →ᵇ R) :
     ⇑(f ^ n) = (⇑f) ^ n := rfl
 
 @[to_additive (attr := simp)]
-theorem ppow_apply [Monoid R] [BoundedMul R] [ContinuousMul R] (n : ℕ+) (f : α →ᵇ R) (x : α) :
+theorem ppow_apply [Semigroup R] [BoundedMul R] [ContinuousMul R] (n : ℕ+) (f : α →ᵇ R) (x : α) :
     (f ^ n) x = f x ^ n := rfl
 
 @[to_additive]
