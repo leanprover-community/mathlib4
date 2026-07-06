@@ -88,10 +88,10 @@ def mk' {R : Type u} {M : Type v} [Semiring R] [AddCommMonoid M] [Module R M]
     (c : ModuleCon R M) : M →ₗ[R] c.Quotient where
   toFun := AddCon.mk' c.toAddCon
   map_add' := (AddCon.mk' c.toAddCon).map_add
-  map_smul' _ _ := rfl  
-  
-/-- Two elements are related by a `ModuleCon` `c` iff they are represented by the same element of 
-the quotient by `c`. -/  
+  map_smul' _ _ := rfl
+
+/-- Two elements are related by a `ModuleCon` `c` iff they are represented by the same element of
+the quotient by `c`. -/
 theorem eq {R : Type u} {M : Type v} [Semiring R] [AddCommMonoid M] [Module R M]
     {c : ModuleCon R M} {x y : M} :
     c.mk' x = c.mk' y ↔ c.r x y :=
@@ -104,8 +104,8 @@ theorem lift_mk' {R : Type u} {M : Type v} [Semiring R] [AddCommMonoid M] [Modul
     ModuleCon.lift c f H (c.mk' x) = f x :=
   rfl
 
-/-- The natural homomorphism from a `Module` to its quotient by a congruence relation is 
-surjective. -/    
+/-- The natural homomorphism from a `Module` to its quotient by a congruence relation is
+surjective. -/
 theorem mk'_surjective
     {R : Type u} {M : Type v} [Semiring R] [AddCommMonoid M] [Module R M]
     (c : ModuleCon R M) : Function.Surjective c.mk' :=
@@ -179,7 +179,7 @@ variable {R M n} in
 i.e. its range is all of `SymmetricPower`. -/
 theorem range_mk : LinearMap.range (mk R ι M) = ⊤ :=
   LinearMap.range_eq_top_of_surjective _ AddCon.mk'_surjective
-  
+
 /-- The pure tensors (i.e. the elements of the image of `SymmetricPower.tprod`) span the symmetric
 tensor power. -/
 theorem span_tprod_eq_top : Submodule.span R (Set.range (tprod R (ι := ι) (M := M))) = ⊤ := by
@@ -250,18 +250,18 @@ def lift {N : Type*} [AddCommMonoid N] [Module R N] :
     left_inv := fun f => by
       apply SymmetricMap.ext
       intro v
-      change ((liftFun f) ∘ₗ (SymmetricPower.con R ι M).mk').compMultilinearMap 
+      change ((liftFun f) ∘ₗ (SymmetricPower.con R ι M).mk').compMultilinearMap
         (PiTensorProduct.tprod R) v = f.toMultilinearMap v
       simp only [LinearMap.compMultilinearMap_apply, LinearMap.comp_apply, liftFun]
-      exact (ModuleCon.lift_mk' (SymmetricPower.con R ι M) 
-        (PiTensorProduct.lift f.toMultilinearMap) _ (PiTensorProduct.tprod R v)).trans 
+      exact (ModuleCon.lift_mk' (SymmetricPower.con R ι M)
+        (PiTensorProduct.lift f.toMultilinearMap) _ (PiTensorProduct.tprod R v)).trans
         (PiTensorProduct.lift.tprod v)
 
     right_inv := fun g => by
       apply LinearMap.ext
       intro x
       obtain ⟨y, rfl⟩ := (SymmetricPower.con R ι M).mk'_surjective x
-      change liftFun (inv g) ((SymmetricPower.con R ι M).mk' y) = 
+      change liftFun (inv g) ((SymmetricPower.con R ι M).mk' y) =
         g ((SymmetricPower.con R ι M).mk' y)
       simp only [liftFun, inv]
       have key : PiTensorProduct.lift
