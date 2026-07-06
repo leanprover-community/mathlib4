@@ -9,11 +9,17 @@ public import Mathlib.MeasureTheory.Function.SpecialFunctions.Inner
 public import Mathlib.MeasureTheory.Measure.LevyConvergence
 
 /-!
-# Cramèr-Wold Theorem
+# Cramèr-Wold Device
 
-We prove the Cramér-Wold theorem: convergence in distribution of a sequence of
-random variables in a finite-dimensional real inner product space is equivalent
-to convergence in distribution of all their 1-dimensional scalar projections.
+We prove one direction of the Cramér-Wold device.
+
+## Main statement
+
+* `tendsto_map_of_tendsto_map_inner`: Given measurable `E`-valued random variables `Xn : ℕ → Ω → E`
+  and `X : Ω' → E`, if for every `t : E` the pushforward distributions of the inner products
+  `⟪Xn n, t⟫` under `P` converge to the pushforward distribution of `⟪X, t⟫` under `Q`, then the
+  distributions of `Xn` under `P` converge to the distribution of `X` under `Q`.
+
 -/
 
 open MeasureTheory Filter Complex BoundedContinuousFunction RealInnerProductSpace ProbabilityMeasure
