@@ -384,7 +384,7 @@ theorem integral_inv_div_log_sq (ha : 1 < a) (hb : 1 < b) :
     linarith
   refine integral_deriv_eq_sub (fun _ _ ↦ ?_) (ContinuousOn.intervalIntegrable ?_)
   · exact differentiableOn_inv_log.differentiableAt (Ioi_mem_nhds (by grind [Set.uIcc]))
-  suffices ContinuousOn (fun x ↦ (-x⁻¹) * ((log x)⁻¹)^2) (.uIcc a b) by
+  suffices ContinuousOn (fun x ↦ (-x⁻¹) * ((log x)⁻¹) ^ 2) (.uIcc a b) by
     convert this using 2 with x
     simp [field]
   fun_prop (disch := grind [log_pos, Set.uIcc])
