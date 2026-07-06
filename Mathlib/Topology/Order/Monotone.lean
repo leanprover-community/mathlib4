@@ -177,8 +177,8 @@ variable [TopologicalSpace β] [OrderTopology β]
 /-- A monotone right-continuous function is right-continuous in the order-theoretic sense. -/
 ]
 theorem Monotone.leftOrdContinuous (hf : Monotone f)
-    (cont : ∀ x, ContinuousWithinAt f (Iic x) x) : LeftOrdContinuous f where
-  isLUB_image s x hs hx := IsLUB.isLUB_of_tendsto (hf.monotoneOn s) hx hs ((cont x).mono hx.1)
+    (cont : ∀ x, ContinuousWithinAt f (Iic x) x) : LeftOrdContinuous f :=
+  fun s x hs hx ↦ IsLUB.isLUB_of_tendsto (hf.monotoneOn s) hx hs ((cont x).mono hx.1)
 
 /-- A monotone continuous function is left-continuous in the order-theoretic sense. -/
 @[to_dual
