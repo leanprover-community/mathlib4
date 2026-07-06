@@ -178,8 +178,8 @@ instance IsCardinalPure.map [IsCardinalAccessibleCategory C κ]
         rw [Category.assoc, Category.assoc, hr', ← Functor.map_comp, ha,
           Functor.map_comp, reassoc_of% hl', sq.w])
     have := pY.prop_diag_obj j'
-    have sq' : CommSq (a ≫ pY.diag.map b) (pX.ι.app i) (pY.ι.app j') f := ⟨by simpa [pY.w]⟩
-    obtain ⟨ρ, hρ⟩ := IsCardinalPure.exists_of_commSq κ (f := f) sq'
+    obtain ⟨ρ, hρ⟩ := IsCardinalPure.exists_of_commSq κ (f := f) (t := a ≫ pY.diag.map b)
+      (l := pX.ι.app i) (r := pY.ι.app j') ⟨by simpa [pY.w]⟩
     simp only [Category.assoc] at hb hρ
     refine ⟨r' ≫ F.map (pY.diag.map b) ≫ F.map ρ, ?_⟩
     rw [reassoc_of% hb, ← Functor.map_comp, ← Functor.map_comp, hρ, hl']
