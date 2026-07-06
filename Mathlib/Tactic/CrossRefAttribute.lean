@@ -37,19 +37,29 @@ inductive Database where
   | kerodon
   | stacks
   | wikidata
-  deriving BEq, Hashable
+  deriving BEq, Hashable, Ord
+
+namespace Database
 
 /-- The base URL for an external database's tag pages. Always ends with `/`. -/
-def databaseURL : Database → String
+def url : Database → String
   | .kerodon => "https://kerodon.net/tag/"
   | .stacks => "https://stacks.math.columbia.edu/tag/"
   | .wikidata => "https://www.wikidata.org/wiki/"
 
 /-- The display label used in docstring links and trace output. -/
-def databaseLabel : Database → String
+def label : Database → String
   | .kerodon => "Kerodon Tag"
   | .stacks => "Stacks Tag"
   | .wikidata => "Wikidata"
+
+/-- A lowercase short name for the given database. Useful when exporting to JSON. -/
+def shortName : Database → String
+  | .kerodon  => "kerodon"
+  | .stacks   => "stacks"
+  | .wikidata => "wikidata"
+
+end Database
 
 /-- A cross-reference from a Mathlib declaration to an entry in an external database. -/
 structure Tag where
@@ -82,7 +92,7 @@ This is the database-agnostic core of every cross-reference attribute's `add` ha
 def addCrossRefDoc (db : Database) (decl : Name) (idStr comment : String) : CoreM Unit := do
   let oldDoc := (← findDocString? (← getEnv) decl).getD ""
   let commentInDoc := if comment.isEmpty then "" else s!" ({comment})"
-  let link := s!"[{databaseLabel db} {idStr}]({databaseURL db}{idStr}){commentInDoc}"
+  let link := s!"[{db.label} {idStr}]({db.url}{idStr}){commentInDoc}"
   addDocStringCore decl <| "\n\n".intercalate ([oldDoc, link].filter (· != ""))
   addTagEntry decl db idStr comment
 
@@ -224,9 +234,9 @@ initialize Lean.registerBuiltinAttribute {
   name := `stacksTag
   descr := "Apply a Stacks or Kerodon project tag to a theorem."
   add := fun decl stx _attrKind => do
-    let (db, tag, comment) := ← match stx with
-      | `(attr| stacks $tag $[$comment]?) => return (Database.stacks, tag, comment)
-      | `(attr| kerodon $tag $[$comment]?) => return (Database.kerodon, tag, comment)
+    let (db, tag, comment) ← match stx with
+      | `(attr| stacks $tag $[$comment]?) => pure (Database.stacks, tag, comment)
+      | `(attr| kerodon $tag $[$comment]?) => pure (Database.kerodon, tag, comment)
       | _ => throwUnsupportedSyntax
     addCrossRefDoc db decl (← tag.getStacksTag) ((comment.map (·.getString)).getD "")
   -- docstrings are immutable once an asynchronous elaboration task has been started
@@ -247,8 +257,8 @@ initialize Lean.registerBuiltinAttribute {
   name := `wikidataTag
   descr := "Apply a Wikidata identifier to a declaration."
   add := fun decl stx _attrKind => do
-    let (id, comment) := ← match stx with
-      | `(attr| wikidata $id $[$comment]?) => return (id, comment)
+    let (id, comment) ← match stx with
+      | `(attr| wikidata $id $[$comment]?) => pure (id, comment)
       | _ => throwUnsupportedSyntax
     addCrossRefDoc .wikidata decl (← id.getWikidataId) ((comment.map (·.getString)).getD "")
   -- docstrings are immutable once an asynchronous elaboration task has been started
@@ -281,7 +291,7 @@ def traceCrossRefs (db : Database) (verbose : Bool := false) :
     let (parL, parR) := if d.comment.isEmpty then ("", "") else (" (", ")")
     let cmt := parL ++ d.comment ++ parR
     msgs := msgs.push
-      m!"[{databaseLabel db} {d.tag}]({databaseURL db ++ d.tag}) \
+      m!"[{db.label} {d.tag}]({db.url ++ d.tag}) \
         corresponds to declaration '{.ofConstName d.declName}'.{cmt}"
     if verbose then
       let dType := ((env.find? d.declName).getD default).type

@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
 module
 
+public import Mathlib.Order.Filter.CountableInter
 public import Mathlib.Topology.Order.LeftRightNhds
 
 /-!
