@@ -6,7 +6,7 @@ Authors: Kenny Lau
 module
 
 public import Mathlib.LinearAlgebra.TensorProduct.SymmetricMap
-public import Mathlib.LinearAlgebra.PiTensorProduct
+public import Mathlib.LinearAlgebra.PiTensorProduct.Basic
 public import Mathlib.Tactic.SuppressCompilation
 
 public import Mathlib.Algebra.Module.Congruence.Defs
@@ -177,9 +177,6 @@ theorem span_tprod_eq_top : Submodule.span R (Set.range (tprod R (ι := ι) (M :
 
 -- UMP
 
-#check @PiTensorProduct.lift.tprod
-
-#check PiTensorProduct.lift.tprod
 
 def lift {N : Type*} [AddCommMonoid N] [Module R N] :
     (M [Σ^ι]→ₗ[R] N) ≃ₗ[R] ((Sym[R] ι M) →ₗ[R] N) :=
@@ -281,9 +278,6 @@ example (N : Type*) [AddCommMonoid N] [Module R N] (f : (M [Σ^ι]→ₗ[R] N))
   exact PiTensorProduct.lift f 
 
 
-#check SymmetricMap.ext
-
-    
 example (N : Type) [AddCommGroup N] [Module R N] (φ : Sym[R] ι M →ₗ[R] N)
     : (⨂[R] (_ : ι), M) →ₗ[R] N := by
   let π : (⨂[R] (_ : ι), M) →ₗ[R] (Sym[R] ι M) := mk R ι M
@@ -292,11 +286,4 @@ example (N : Type) [AddCommGroup N] [Module R N] (φ : Sym[R] ι M →ₗ[R] N)
     
 end SymmetricPower
 
-#check SymmetricMap
-
-#check AddCon
-
-#check AddCon.lift
-
-#check addConGen
 
