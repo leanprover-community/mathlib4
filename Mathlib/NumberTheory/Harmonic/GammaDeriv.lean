@@ -19,7 +19,7 @@ We prove the formula for the derivative of `Real.Gamma` at a positive integer:
 
 -/
 
-@[expose] public section
+public section
 
 open Nat Set Filter Topology
 
@@ -123,18 +123,15 @@ lemma hasDerivAt_Gamma_one_half : HasDerivAt Gamma (-√π * (γ + 2 * log 2)) (
     · exact (differentiableAt_const _).rpow (by fun_prop) two_ne_zero
   _ = √π * (deriv (fun s ↦ Gamma (2 * s)) (1 / 2) +
               deriv (fun s : ℝ ↦ 2 ^ (1 - 2 * s)) (1 / 2) + γ) := by
-    congr 2
     rw [deriv_fun_mul]
-    · congr 1 <;> norm_num
+    · simp
     · exact h_diff' one_half_pos
     · exact DifferentiableAt.rpow (by fun_prop) (by fun_prop) two_ne_zero
   _ = √π * (-2 * γ + deriv (fun s : ℝ ↦ 2 ^ (1 - 2 * s)) (1 / 2) + γ) := by
     congr 3
     change deriv (Gamma ∘ fun s ↦ 2 * s) _ = _
-    rw [deriv_comp, deriv_const_mul, mul_one_div, div_self two_ne_zero, deriv_id''] <;>
-    dsimp only
-    · rw [mul_one, mul_comm, hasDerivAt_Gamma_one.deriv, mul_neg, neg_mul]
-    · fun_prop
+    rw [deriv_comp, deriv_const_mul_id, mul_one_div, div_self two_ne_zero]
+    · rw [mul_comm, hasDerivAt_Gamma_one.deriv, mul_neg, neg_mul]
     · apply h_diff; simp -- s = 1
     · fun_prop
   _ = √π * (-2 * γ + -(2 * log 2) + γ) := by
@@ -142,7 +139,7 @@ lemma hasDerivAt_Gamma_one_half : HasDerivAt Gamma (-√π * (γ + 2 * log 2)) (
     apply HasDerivAt.deriv
     have := HasDerivAt.rpow (hasDerivAt_const (1 / 2 : ℝ) (2 : ℝ))
       (?_ : HasDerivAt (fun s : ℝ ↦ 1 - 2 * s) (-2) (1 / 2)) two_pos
-    · norm_num at this; exact this
+    · simpa
     simp_rw [mul_comm (2 : ℝ) _]
     apply HasDerivAt.const_sub
     exact hasDerivAt_mul_const (2 : ℝ)
@@ -167,9 +164,6 @@ lemma differentiableAt_Gamma_nat_add_one (n : ℕ) :
   simp only [Ne, ← ofReal_natCast, ← ofReal_one, ← ofReal_add, ← ofReal_neg, ofReal_inj,
     eq_neg_iff_add_eq_zero]
   positivity
-
-@[deprecated (since := "2025-06-06")] alias differentiable_at_Gamma_nat_add_one :=
-  differentiableAt_Gamma_nat_add_one
 
 lemma hasDerivAt_Gamma_nat (n : ℕ) :
     HasDerivAt Gamma (n ! * (-γ + harmonic n)) (n + 1) := by
@@ -205,7 +199,6 @@ lemma hasDerivAt_Gammaℂ_one : HasDerivAt Gammaℂ (-(γ + log (2 * π)) / π) 
     rw [mul_neg_one, mul_neg, cpow_neg_one, ← div_eq_inv_mul, ← mul_div_assoc,
       mul_div_mul_left _ _ two_ne_zero, neg_div]
   have := this.mul hasDerivAt_Gamma_one
-  simp only at this
   rwa [Gamma_one, mul_one, cpow_neg_one, ← div_eq_mul_inv, ← div_div, div_self two_ne_zero,
     mul_comm (1 / _), mul_one_div, ← _root_.add_div, ← neg_add, add_comm] at this
 

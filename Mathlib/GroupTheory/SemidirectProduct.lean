@@ -40,7 +40,7 @@ variable (N : Type*) (G : Type*) {H : Type*} [Group N] [Group G] [Group H]
 set_option genSizeOfSpec false in
 set_option genInjectivity false in
 /-- The semidirect product of groups `N` and `G`, given a map `φ` from `G` to the automorphism
-  group of `N`. It the product of sets with the group operation
+  group of `N`. It is the product of sets with the group operation
   `⟨n₁, g₁⟩ * ⟨n₂, g₂⟩ = ⟨n₁ * φ g₁ n₂, g₁ * g₂⟩` -/
 @[ext]
 structure SemidirectProduct (φ : G →* MulAut N) where
@@ -229,7 +229,7 @@ theorem hom_ext {f g : N ⋊[φ] G →* H} (hl : f.comp inl = g.comp inl)
 
 /-- The homomorphism from a semidirect product of subgroups to the ambient group. -/
 @[simps!]
-def monoidHomSubgroup {H K : Subgroup G} (h : K ≤ H.normalizer) :
+def monoidHomSubgroup {H K : Subgroup G} (h : K ≤ normalizer H) :
     H ⋊[(H.normalizerMonoidHom).comp (inclusion h)] K →* G :=
   lift H.subtype K.subtype (by simp [DFunLike.ext_iff])
 

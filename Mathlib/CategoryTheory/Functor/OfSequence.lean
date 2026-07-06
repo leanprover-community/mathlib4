@@ -30,7 +30,7 @@ namespace CategoryTheory
 
 open Category
 
-variable {C : Type*} [Category C]
+variable {C : Type*} [Category* C]
 
 namespace Functor
 
@@ -48,9 +48,9 @@ the form `X n ⟶ X (n + 1)` when `i ≤ j`. -/
 def map : ∀ {X : ℕ → C} (_ : ∀ n, X n ⟶ X (n + 1)) (i j : ℕ), i ≤ j → (X i ⟶ X j)
   | _, _, 0, 0 => fun _ ↦ 𝟙 _
   | _, f, 0, 1 => fun _ ↦ f 0
-  | _, f, 0, l + 1 => fun _ ↦ f 0 ≫ map (fun n ↦ f (n + 1)) 0 l (by omega)
+  | _, f, 0, l + 1 => fun _ ↦ f 0 ≫ map (fun n ↦ f (n + 1)) 0 l (by lia)
   | _, _, _ + 1, 0 => nofun
-  | _, f, k + 1, l + 1 => fun _ ↦ map (fun n ↦ f (n + 1)) k l (by omega)
+  | _, f, k + 1, l + 1 => fun _ ↦ map (fun n ↦ f (n + 1)) k l (by lia)
 
 lemma map_id (i : ℕ) : map f i i (by lia) = 𝟙 _ := by
   revert X f
@@ -130,17 +130,17 @@ def ofSequence : F ⟶ G where
   naturality := by
     intro i j φ
     obtain ⟨k, hk⟩ := Nat.exists_eq_add_of_le (leOfHom φ)
-    obtain rfl := Subsingleton.elim φ (homOfLE (by omega))
+    obtain rfl := Subsingleton.elim φ (homOfLE (by lia))
     revert i j
     induction k with
     | zero =>
         intro i j hk
-        obtain rfl : j = i := by omega
+        obtain rfl : j = i := by lia
         simp
     | succ k hk =>
         intro i j hk'
-        obtain rfl : j = i + k + 1 := by omega
-        simp only [← homOfLE_comp (show i ≤ i + k by omega) (show i + k ≤ i + k + 1 by omega),
+        obtain rfl : j = i + k + 1 := by lia
+        simp only [← homOfLE_comp (show i ≤ i + k by lia) (show i + k ≤ i + k + 1 by lia),
           Functor.map_comp, assoc, naturality, reassoc_of% (hk rfl)]
 
 end NatTrans
@@ -160,6 +160,7 @@ example : (ofOpSequence f).map (homOfLE (show 0 ≤ 3 by lia)).op = (f 2 ≫ f 1
 example : (ofOpSequence f).map (homOfLE (show 3 ≤ 7 by lia)).op =
     ((f 6 ≫ f 5) ≫ f 4) ≫ f 3 := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma ofOpSequence_map_homOfLE_succ (n : ℕ) :
     (ofOpSequence f).map (homOfLE (Nat.le_add_right n 1)).op = f n := by

@@ -5,10 +5,11 @@ Authors: Kyle Miller
 -/
 module
 
-public meta import Mathlib.Tactic.ProxyType
-public meta import Mathlib.Data.Fintype.Basic
-public meta import Mathlib.Data.Fintype.Sigma
-public meta import Mathlib.Data.Fintype.Sum
+public import Mathlib.Data.Fintype.OfMap  -- shake: keep (metaprogram output dependency)
+public import Mathlib.Tactic.ProxyType
+public meta import Mathlib.Tactic.ToAdditive
+public meta import Mathlib.Tactic.ToDual
+public meta import Lean.Elab.Deriving.Util
 
 /-!
 # The `Fintype` derive handler

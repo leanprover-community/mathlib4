@@ -56,6 +56,7 @@ By taking the lexicographic product of the two, we get both properties, so we ca
 get a well-order that extend our original order `r`. Another way to view this is that we choose an
 arbitrary well-order to serve as a tiebreak between two elements of same rank.
 -/
+@[implicit_reducible]
 noncomputable def wellOrderExtension : LinearOrder α :=
   @LinearOrder.lift' α (Ordinal ×ₗ Cardinal) _ (fun a : α => (rank r a, embeddingToCardinal a))
     fun _ _ h => embeddingToCardinal.injective <| congr_arg Prod.snd h
@@ -82,7 +83,7 @@ def toWellOrderExtension : α ≃ WellOrderExtension α :=
   Equiv.refl _
 
 noncomputable instance [LT α] [h : WellFoundedLT α] : LinearOrder (WellOrderExtension α) :=
-  h.wellOrderExtension
+  fast_instance% h.wellOrderExtension
 
 instance WellOrderExtension.wellFoundedLT [LT α] [WellFoundedLT α] :
     WellFoundedLT (WellOrderExtension α) :=

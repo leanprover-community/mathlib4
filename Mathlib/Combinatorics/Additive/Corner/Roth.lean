@@ -45,14 +45,8 @@ private lemma mk_mem_triangleIndices : (a, b, c) ∈ triangleIndices A ↔ (a, b
 
 @[simp] private lemma card_triangleIndices : #(triangleIndices A) = #A := card_map _
 
--- TODO: fix non-terminal simp (operates on three goals, leaving two)
-set_option linter.flexible false in
 private instance triangleIndices.instExplicitDisjoint : ExplicitDisjoint (triangleIndices A) := by
-  constructor
-  all_goals
-    simp only [mk_mem_triangleIndices, and_imp]
-    rintro a b _ a' - rfl - h'
-    simp [*] at * <;> assumption
+  constructor <;> simp +contextual
 
 private lemma noAccidental (hs : IsCornerFree (A : Set (G × G))) :
     NoAccidental (triangleIndices A) where
@@ -98,7 +92,7 @@ theorem corners_theorem (ε : ℝ) (hε : 0 < ε) (hG : cornersTheoremBound ε �
   classical
   have h₁ := (farFromTriangleFree_graph hAε).le_card_cliqueFinset
   rw [card_triangles, card_triangleIndices] at h₁
-  convert h₁.trans (Nat.cast_le.2 <| card_le_univ _) using 1 <;> simp <;> ring
+  convert! h₁.trans (Nat.cast_le.2 <| card_le_univ _) using 1 <;> simp <;> ring
 
 open Fin.NatCast in -- TODO: refactor to avoid needing the coercion
 /-- The **corners theorem** for `ℕ`.
@@ -118,7 +112,7 @@ theorem corners_theorem_nat (hε : 0 < ε) (hn : cornersTheoremBound (ε / 9) �
     rintro a b hab
     have := hAn hab
     simp at this
-    omega
+    lia
   rw [this] at hA
   have := Fin.isAddFreimanIso_Iio two_ne_zero (le_refl (2 * n))
   have := hA.of_image this.isAddFreimanHom Fin.val_injective.injOn <| by
@@ -177,7 +171,7 @@ theorem roth_3ap_theorem_nat (ε : ℝ) (hε : 0 < ε) (hG : cornersTheoremBound
     rintro a ha
     have := hAn ha
     simp at this
-    omega
+    lia
   rw [this] at hA
   have := Fin.isAddFreimanIso_Iio two_ne_zero (le_refl (2 * n))
   have := hA.of_image this.isAddFreimanHom Fin.val_injective.injOn <| Set.image_subset_iff.2 <|

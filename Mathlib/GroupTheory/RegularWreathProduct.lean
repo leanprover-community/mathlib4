@@ -5,10 +5,10 @@ Authors: Francisco Silva
 -/
 module
 
-public import Mathlib.GroupTheory.Sylow
 public import Mathlib.Algebra.Group.PUnit
 public import Mathlib.Data.Finite.Perm
-public import Mathlib.Algebra.Group.End
+public import Mathlib.Data.Nat.Multiplicity
+public import Mathlib.GroupTheory.Sylow
 
 /-!
 # Regular wreath product
@@ -213,9 +213,9 @@ theorem IteratedWreathProduct.card [Finite G] : Nat.card (IteratedWreathProduct 
 variable [Group G]
 
 instance : Group (IteratedWreathProduct G n) := by
- induction n with
- | zero => rw [IteratedWreathProduct_zero]; infer_instance
- | succ n ih => rw [IteratedWreathProduct_succ]; infer_instance
+  induction n with
+  | zero => rw [IteratedWreathProduct_zero]; infer_instance
+  | succ n ih => rw [IteratedWreathProduct_succ]; infer_instance
 
 /-- The homomorphism from `IteratedWreathProduct G n` to `Perm (Fin n → G)`. -/
 def iteratedWreathToPermHom (G : Type*) [Group G] :

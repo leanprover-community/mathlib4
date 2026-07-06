@@ -75,6 +75,12 @@ theorem eq_of_le_of_finrank_eq [FiniteDimensional K E] (h_le : F ≤ E)
     (h_finrank : finrank K F = finrank K E) : F = E :=
   eq_of_le_of_finrank_le h_le h_finrank.ge
 
+/-- If `F ≤ E` are two intermediate fields of `L / K` such that `[E : K]` is finite,
+then `F = E` iff `[F : K] = [E : K]`. -/
+theorem eq_iff_finrank_eq_of_le [FiniteDimensional K E] (h_le : F ≤ E) :
+    F = E ↔ finrank K F = finrank K E :=
+  ⟨fun h ↦ by rw [h], eq_of_le_of_finrank_eq h_le⟩
+
 -- If `F ≤ E` are two intermediate fields of a finite extension `L / K` such that
 -- `[L : F] ≤ [L : E]`, then `F = E`. Marked as private since it's a direct corollary of
 -- `eq_of_le_of_finrank_le'` (the `FiniteDimensional K L` implies `FiniteDimensional F L`
@@ -100,6 +106,12 @@ then `F = E`. -/
 theorem eq_of_le_of_finrank_eq' [FiniteDimensional F L] (h_le : F ≤ E)
     (h_finrank : finrank F L = finrank E L) : F = E :=
   eq_of_le_of_finrank_le' h_le h_finrank.le
+
+/-- If `F ≤ E` are two intermediate fields of `L / K` such that `[L : F]` is finite,
+then `F = E` iff `[L : F] = [L : E]`. -/
+theorem eq_iff_finrank_eq_of_le' [FiniteDimensional F L] (h_le : F ≤ E) :
+    F = E ↔ finrank F L = finrank E L :=
+  ⟨fun h ↦ by rw [h], eq_of_le_of_finrank_eq' h_le⟩
 
 lemma finrank_lt_of_gt [FiniteDimensional F L] (H : F < E) :
     Module.finrank E L < Module.finrank F L := by
@@ -129,9 +141,6 @@ a finite-dimensional intermediate field. -/
 instance finiteDimensional_map (f : L →ₐ[K] L) [FiniteDimensional K E] :
     FiniteDimensional K (E.map f) :=
   LinearEquiv.finiteDimensional (IntermediateField.equivMap E f).toLinearEquiv
-
-@[deprecated (since := "2025-05-02")]
-alias _root_.im_finiteDimensional := IntermediateField.finiteDimensional_map
 
 end FiniteDimensional
 

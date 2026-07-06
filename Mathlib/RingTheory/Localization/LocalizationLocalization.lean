@@ -41,7 +41,7 @@ variable [Algebra S T] [IsScalarTower R S T]
 
 -- This should only be defined when `S` is the localization `M⁻¹R`, hence the nolint.
 /-- Localizing w.r.t. `M ⊆ R` and then w.r.t. `N ⊆ S = M⁻¹R` is equal to the localization of `R`
-w.r.t. this module. See `localization_localization_isLocalization`.
+w.r.t. this submonoid. See `localization_localization_isLocalization`.
 -/
 @[nolint unusedArguments]
 def localizationLocalizationSubmodule : Submonoid R :=
@@ -120,7 +120,7 @@ localization is a localization.
 -/
 theorem localization_localization_isLocalization_of_has_all_units [IsLocalization N T]
     (H : ∀ x : S, IsUnit x → x ∈ N) : IsLocalization (N.comap (algebraMap R S)) T := by
-  convert localization_localization_isLocalization M N T using 1
+  convert! localization_localization_isLocalization M N T using 1
   dsimp [localizationLocalizationSubmodule]
   congr
   symm
@@ -196,12 +196,12 @@ theorem isLocalization_of_submonoid_le (M N : Submonoid R) (h : M ≤ N) [IsLoca
     IsLocalization (N.map (algebraMap R S)) T where
   map_units := by
     rintro ⟨_, ⟨y, hy, rfl⟩⟩
-    convert IsLocalization.map_units T ⟨y, hy⟩
+    convert! IsLocalization.map_units T ⟨y, hy⟩
     exact (IsScalarTower.algebraMap_apply _ _ _ _).symm
   surj y := by
     obtain ⟨⟨x, s⟩, e⟩ := IsLocalization.surj N y
     refine ⟨⟨algebraMap R S x, _, _, s.prop, rfl⟩, ?_⟩
-    simpa [← IsScalarTower.algebraMap_apply] using e
+    simpa [← IsScalarTower.algebraMap_apply] using! e
   exists_of_eq {x₁ x₂} := by
     obtain ⟨⟨y₁, s₁⟩, e₁⟩ := IsLocalization.surj M x₁
     obtain ⟨⟨y₂, s₂⟩, e₂⟩ := IsLocalization.surj M x₂
@@ -220,10 +220,10 @@ theorem isLocalization_of_submonoid_le (M N : Submonoid R) (h : M ≤ N) [IsLoca
         (IsLocalization.map_units S s₁).mul_left_inj,
         (IsLocalization.map_units S s₂).mul_left_inj] at this
       rw [h₂, h₁] at this
-      simpa only [mul_comm] using this
+      simpa only [mul_comm] using! this
     simp_rw [IsLocalization.eq_iff_exists N T, IsLocalization.eq_iff_exists M S]
     intro ⟨a, e⟩
-    exact ⟨a, 1, by convert e using 1 <;> simp⟩
+    exact ⟨a, 1, by convert! e using 1 <;> simp⟩
 
 /-- If `M ≤ N` are submonoids of `R` such that `∀ x : N, ∃ m : R, m * x ∈ M`, then the
 localization at `N` is equal to the localization of `M`. -/

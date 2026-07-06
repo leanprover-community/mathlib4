@@ -109,11 +109,11 @@ theorem isMaximal_inf_right_of_isMaximal_sup {x y : X} (hxz : IsMaximal x (x ⊔
 theorem isMaximal_of_eq_inf (x b : X) {a y : X} (ha : x ⊓ y = a) (hxy : x ≠ y) (hxb : IsMaximal x b)
     (hyb : IsMaximal y b) : IsMaximal a y := by
   have hb : x ⊔ y = b := sup_eq_of_isMaximal hxb hyb hxy
-  substs a b
+  subst a b
   exact isMaximal_inf_right_of_isMaximal_sup hxb hyb
 
 theorem second_iso_of_eq {x y a b : X} (hm : IsMaximal x a) (ha : x ⊔ y = a) (hb : x ⊓ y = b) :
-    Iso (x, a) (b, y) := by substs a b; exact second_iso hm
+    Iso (x, a) (b, y) := by subst a b; exact second_iso hm
 
 theorem IsMaximal.iso_refl {x y : X} (h : IsMaximal x y) : Iso (x, y) (x, y) :=
   second_iso_of_eq h (sup_eq_right.2 (le_of_lt (lt_of_isMaximal h)))
@@ -211,7 +211,7 @@ theorem mem_eraseLast {s : CompositionSeries X} {x : X} (h : 0 < s.length) :
   simp only [RelSeries.mem_def, eraseLast]
   constructor
   · rintro ⟨i, rfl⟩
-    have hi : (i : ℕ) < s.length := by omega
+    have hi : (i : ℕ) < s.length := by lia
     simp [last, Fin.ext_iff, ne_of_lt hi, -Set.mem_range, Set.mem_range_self]
   · intro h
     exact mem_eraseLast_of_ne_of_mem h.1 h.2
@@ -225,7 +225,7 @@ theorem isMaximal_eraseLast_last {s : CompositionSeries X} (h : 0 < s.length) :
   rw [last_eraseLast, last]
   have := s.step ⟨s.length - 1, by lia⟩
   simp only [Fin.castSucc_mk, Fin.succ_mk, mem_setOf_eq] at this
-  convert this using 3
+  convert! this using 3
   exact (tsub_add_cancel_of_le h).symm
 
 theorem eq_snoc_eraseLast {s : CompositionSeries X} (h : 0 < s.length) :
@@ -265,6 +265,8 @@ theorem trans {s₁ s₂ s₃ : CompositionSeries X} (h₁ : Equivalent s₁ s�
   ⟨h₁.choose.trans h₂.choose,
     fun i => iso_trans (h₁.choose_spec i) (h₂.choose_spec (h₁.choose i))⟩
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 protected theorem smash {s₁ s₂ t₁ t₂ : CompositionSeries X}
     (hs : s₁.last = s₂.head) (ht : t₁.last = t₂.head)
     (h₁ : Equivalent s₁ t₁) (h₂ : Equivalent s₂ t₂) :
@@ -282,19 +284,51 @@ protected theorem smash {s₁ s₂ t₁ t₂ : CompositionSeries X}
     · intro i
       simpa [e, -Fin.castSucc_natAdd, smash_natAdd, smash_succ_natAdd] using h₂.choose_spec i⟩
 
+#adaptation_note /-- Proof repaired after leanprover/lean4#13492.
+The proof body used to be a single term
+```
+⟨e, fun i => by
+  refine Fin.lastCases ?_ ?_ i
+  · simpa [e, apply_last] using hlast
+  · intro i
+    simpa [e, ← Fin.castSucc_succ] using hequiv.choose_spec i⟩
+```
+(where `e` was defined via the same `calc` block; the signature had `: ... :=` rather
+than `: ... := by`).
+The replacement proof is a short-term fix, and we request that the authors/maintainers of
+this file review the proof, and either approve it by removing this note, revise
+the proof or the prerequisites appropriately, or minimize a problem in lean4 that still
+needs addressing. -/
+set_option backward.isDefEq.respectTransparency false in
 protected theorem snoc {s₁ s₂ : CompositionSeries X} {x₁ x₂ : X} {hsat₁ : IsMaximal s₁.last x₁}
     {hsat₂ : IsMaximal s₂.last x₂} (hequiv : Equivalent s₁ s₂)
-    (hlast : Iso (s₁.last, x₁) (s₂.last, x₂)) : Equivalent (s₁.snoc x₁ hsat₁) (s₂.snoc x₂ hsat₂) :=
+    (hlast : Iso (s₁.last, x₁) (s₂.last,
+      x₂)) : Equivalent (s₁.snoc x₁ hsat₁) (s₂.snoc x₂ hsat₂) := by
   let e : Fin s₁.length.succ ≃ Fin s₂.length.succ :=
     calc
       Fin (s₁.length + 1) ≃ Option (Fin s₁.length) := finSuccEquivLast
       _ ≃ Option (Fin s₂.length) := Functor.mapEquiv Option hequiv.choose
       _ ≃ Fin (s₂.length + 1) := finSuccEquivLast.symm
-  ⟨e, fun i => by
-    refine Fin.lastCases ?_ ?_ i
-    · simpa [e, apply_last] using hlast
-    · intro i
-      simpa [e, ← Fin.castSucc_succ] using hequiv.choose_spec i⟩
+  have he_last : e (Fin.last s₁.length) = Fin.last s₂.length := by
+    simp [e, finSuccEquivLast_last, Functor.mapEquiv_apply]
+  have he_castSucc (j : Fin s₁.length) :
+      e j.castSucc = (hequiv.choose j).castSucc := by
+    simp [e, finSuccEquivLast_castSucc, Functor.mapEquiv_apply]
+  refine ⟨e, fun i => ?_⟩
+  refine Fin.lastCases ?_ ?_ i
+  · change Iso ((snoc s₁ x₁ hsat₁).toFun (Fin.last s₁.length).castSucc,
+        (snoc s₁ x₁ hsat₁).toFun (Fin.last s₁.length).succ)
+      ((snoc s₂ x₂ hsat₂).toFun (e (Fin.last s₁.length)).castSucc,
+        (snoc s₂ x₂ hsat₂).toFun (e (Fin.last s₁.length)).succ)
+    rw [he_last]
+    simpa [apply_last] using hlast
+  · intro i
+    change Iso ((snoc s₁ x₁ hsat₁).toFun i.castSucc.castSucc,
+        (snoc s₁ x₁ hsat₁).toFun i.castSucc.succ)
+      ((snoc s₂ x₂ hsat₂).toFun (e i.castSucc).castSucc,
+        (snoc s₂ x₂ hsat₂).toFun (e i.castSucc).succ)
+    rw [he_castSucc]
+    simpa [snoc_castSucc, ← Fin.castSucc_succ] using hequiv.choose_spec i
 
 theorem length_eq {s₁ s₂ : CompositionSeries X} (h : Equivalent s₁ s₂) : s₁.length = s₂.length := by
   simpa using Fintype.card_congr h.choose

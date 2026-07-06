@@ -22,7 +22,7 @@ finite sets, finset
 
 -/
 
-@[expose] public section
+public section
 
 -- Assert that we define `Finset` without the material on `List.sublists`.
 -- Note that we cannot use `List.sublists` itself as that is defined very early.
@@ -67,12 +67,7 @@ instance : GeneralizedBooleanAlgebra (Finset α) where
 
 theorem notMem_sdiff_of_mem_right (h : a ∈ t) : a ∉ s \ t := by grind
 
-@[deprecated (since := "2025-05-23")] alias not_mem_sdiff_of_mem_right := notMem_sdiff_of_mem_right
-
 theorem notMem_sdiff_of_notMem_left (h : a ∉ s) : a ∉ s \ t := by simp [h]
-
-@[deprecated (since := "2025-05-23")]
-alias not_mem_sdiff_of_not_mem_left := notMem_sdiff_of_notMem_left
 
 theorem union_sdiff_of_subset (h : s ⊆ t) : s ∪ t \ s = t := by grind
 
@@ -111,9 +106,15 @@ theorem sdiff_empty : s \ ∅ = s :=
 @[mono, gcongr]
 theorem sdiff_subset_sdiff (hst : s ⊆ t) (hvu : v ⊆ u) : s \ u ⊆ t \ v := by grind
 
+variable (u) in
+lemma sdiff_subset_sdiff_left (h : s ⊆ t) : s \ u ⊆ t \ u := by gcongr
+
+variable (u) in
+lemma sdiff_subset_sdiff_right (h : s ⊆ t) : u \ t ⊆ u \ s := by gcongr
+
 theorem sdiff_subset_sdiff_iff_subset {r : Finset α} (hs : s ⊆ r) (ht : t ⊆ r) :
-    r \ s ⊆ r \ t ↔ t ⊆ s := by
-  simpa only [← le_eq_subset] using sdiff_le_sdiff_iff_le hs ht
+    r \ s ⊆ r \ t ↔ t ⊆ s :=
+  sdiff_le_sdiff_iff_le hs ht
 
 @[simp, grind =, norm_cast]
 theorem coe_sdiff (s₁ s₂ : Finset α) : ↑(s₁ \ s₂) = (s₁ \ s₂ : Set α) :=
@@ -139,6 +140,14 @@ theorem union_sdiff_cancel_left (h : Disjoint s t) : (s ∪ t) \ s = t :=
 theorem union_sdiff_cancel_right (h : Disjoint s t) : (s ∪ t) \ t = s :=
   h.sup_sdiff_cancel_right
 
+/-- `· ∪ s` is injective on finsets disjoint from `s`. -/
+lemma disjoint_injOn_union_left (s : Finset α) : {t | Disjoint s t}.InjOn (· ∪ s) := by
+  grind [Set.InjOn, union_sdiff_cancel_right]
+
+/-- `· \ s` is injective on finsets containing `s`. -/
+lemma superset_injOn_sdiff (s : Finset α) : {t | s ⊆ t}.InjOn (· \ s) := by
+  grind [Set.InjOn, sdiff_union_of_subset]
+
 theorem union_sdiff_symm : s ∪ t \ s = t ∪ s \ t := by simp [union_comm]
 
 theorem sdiff_union_inter (s t : Finset α) : s \ t ∪ s ∩ t = s :=
@@ -148,7 +157,7 @@ theorem sdiff_idem (s t : Finset α) : (s \ t) \ t = s \ t :=
   _root_.sdiff_idem
 
 theorem subset_sdiff : s ⊆ t \ u ↔ s ⊆ t ∧ Disjoint s u :=
-  le_iff_subset.symm.trans le_sdiff
+  le_sdiff
 
 @[simp]
 theorem sdiff_eq_empty_iff_subset : s \ t = ∅ ↔ s ⊆ t :=
@@ -164,8 +173,6 @@ theorem empty_sdiff (s : Finset α) : ∅ \ s = ∅ :=
 
 theorem insert_sdiff_of_notMem (s : Finset α) {t : Finset α} {x : α} (h : x ∉ t) :
     insert x s \ t = insert x (s \ t) := by grind
-
-@[deprecated (since := "2025-05-23")] alias insert_sdiff_of_not_mem := insert_sdiff_of_notMem
 
 theorem insert_sdiff_of_mem (s : Finset α) {x : α} (h : x ∈ t) : insert x s \ t = s \ t := by grind
 
@@ -185,9 +192,7 @@ lemma cons_sdiff_cons (hab : a ≠ b) (ha hb) : s.cons a ha \ s.cons b hb = {a} 
 theorem sdiff_insert_of_notMem {x : α} (h : x ∉ s) (t : Finset α) : s \ insert x t = s \ t := by
   grind
 
-@[deprecated (since := "2025-05-23")] alias sdiff_insert_of_not_mem := sdiff_insert_of_notMem
-
-@[simp] theorem sdiff_subset {s t : Finset α} : s \ t ⊆ s := le_iff_subset.mp sdiff_le
+theorem sdiff_subset {s t : Finset α} : s \ t ⊆ s := by simp
 
 theorem sdiff_ssubset (h : t ⊆ s) (ht : t.Nonempty) : s \ t ⊂ s := by grind
 

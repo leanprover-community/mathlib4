@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Group.Even
 public import Mathlib.Algebra.Group.Pi.Basic
 public import Mathlib.Algebra.Order.Group.Lattice
+public meta import Mathlib.Tactic.ToDual
 
 /-!
 # Absolute values in ordered groups
@@ -132,10 +133,10 @@ lemma mabs_mabs_div_mabs_le (a b : α) : |(|a|ₘ / |b|ₘ)|ₘ ≤ |a / b|ₘ :
   rw [mabs, sup_le_iff]
   constructor
   · apply div_le_iff_le_mul.2
-    convert mabs_mul_le (a / b) b
+    convert! mabs_mul_le (a / b) b
     rw [div_mul_cancel]
   · rw [div_eq_mul_inv, mul_inv_rev, inv_inv, mul_inv_le_iff_le_mul, mabs_div_comm]
-    convert mabs_mul_le (b / a) a
+    convert! mabs_mul_le (b / a) a
     · rw [div_mul_cancel]
 
 @[to_additive] lemma sup_div_inf_eq_mabs_div (a b : α) : (a ⊔ b) / (a ⊓ b) = |b / a|ₘ := by
@@ -296,11 +297,18 @@ lemma solidClosure_min (hst : s ⊆ t) (ht : IsSolid t) : solidClosure s ⊆ t :
 end LatticeOrderedAddCommGroup
 
 namespace Pi
-variable {ι : Type*} {α : ι → Type*} [∀ i, AddGroup (α i)] [∀ i, Lattice (α i)]
 
-@[simp] lemma abs_apply (f : ∀ i, α i) (i : ι) : |f| i = |f i| := rfl
+variable {ι : Type*} {α : ι → Type*} [∀ i, Group (α i)] (f : (i : ι) → α i)
 
-@[push ←]
-lemma abs_def (f : ∀ i, α i) : |f| = fun i ↦ |f i| := rfl
+@[to_additive (attr := simp)]
+lemma mabs_apply [∀ i, Lattice (α i)] (i : ι) : |f|ₘ i = |f i|ₘ := rfl
+
+@[to_additive (attr := push ←)]
+lemma mabs_def [∀ i, Lattice (α i)] : |f|ₘ = fun i ↦ |f i|ₘ := rfl
+
+@[to_additive (attr := simp)]
+lemma mabs_eq_one [∀ i, LinearOrder (α i)] [∀ i, MulLeftMono (α i)] [∀ i, MulRightMono (α i)] :
+    |f|ₘ = 1 ↔ f = 1 :=
+  ⟨fun h ↦ funext fun i ↦ by simpa using congr_fun h i, fun h ↦ funext fun i ↦ by simp [h]⟩
 
 end Pi

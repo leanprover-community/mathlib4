@@ -18,33 +18,31 @@ In a separate file as we need to import `Mathlib/Data/Set/Lattice.lean`.
 
 -/
 
-@[expose] public section
+public section
 
 variable {α : Type*} [Preorder α] {ι : Sort*} {s : ι → Set α}
 
 open Set
 
+@[to_dual]
 theorem gc_upperBounds_lowerBounds : GaloisConnection
     (OrderDual.toDual ∘ upperBounds : Set α → (Set α)ᵒᵈ)
     (lowerBounds ∘ OrderDual.ofDual : (Set α)ᵒᵈ → Set α) := by
   simpa [GaloisConnection, subset_def, mem_upperBounds, mem_lowerBounds]
-    using fun S T ↦ forall₂_swap
+    using fun S T ↦ forall₂_comm
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem upperBounds_iUnion :
     upperBounds (⋃ i, s i) = ⋂ i, upperBounds (s i) :=
   gc_upperBounds_lowerBounds.l_iSup
 
-@[simp]
-theorem lowerBounds_iUnion :
-    lowerBounds (⋃ i, s i) = ⋂ i, lowerBounds (s i) :=
-  gc_upperBounds_lowerBounds.u_iInf
-
+@[to_dual]
 theorem isLUB_iUnion_iff_of_isLUB {u : ι → α} (hs : ∀ i, IsLUB (s i) (u i)) (c : α) :
     IsLUB (Set.range u) c ↔ IsLUB (⋃ i, s i) c := by
   refine isLUB_congr ?_
   simp_rw [range_eq_iUnion, upperBounds_iUnion, upperBounds_singleton, (hs _).upperBounds_eq]
 
+@[deprecated isGLB_iUnion_iff_of_isGLB (since := "2026-06-04")]
 theorem isGLB_iUnion_iff_of_isLUB {u : ι → α} (hs : ∀ i, IsGLB (s i) (u i)) (c : α) :
     IsGLB (Set.range u) c ↔ IsGLB (⋃ i, s i) c := by
   refine isGLB_congr ?_

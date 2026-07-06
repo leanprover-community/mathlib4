@@ -20,7 +20,7 @@ This file develops theory about the `List.Perm` relation.
 The notation `~` is used for permutation equivalence.
 -/
 
-@[expose] public section
+public section
 
 -- Make sure we don't import algebra
 assert_not_exists Monoid Preorder
@@ -37,7 +37,7 @@ lemma perm_rfl : l ~ l := Perm.refl _
 attribute [symm] Perm.symm
 attribute [trans] Perm.trans
 
-instance : IsSymm (List α) Perm := ⟨fun _ _ ↦ .symm⟩
+instance : Std.Symm (α := List α) Perm := ⟨fun _ _ ↦ .symm⟩
 
 theorem Perm.subset_congr_left {l₁ l₂ l₃ : List α} (h : l₁ ~ l₂) : l₁ ⊆ l₃ ↔ l₂ ⊆ l₃ :=
   ⟨h.symm.subset.trans, h.subset.trans⟩
@@ -164,6 +164,7 @@ end Rel
 lemma count_eq_count_filter_add [DecidableEq α] (P : α → Prop) [DecidablePred P]
     (l : List α) (a : α) :
     count a l = count a (l.filter P) + count a (l.filter (¬ P ·)) := by
+  unfold count
   convert countP_eq_countP_filter_add l _ P
   simp only [decide_not]
 

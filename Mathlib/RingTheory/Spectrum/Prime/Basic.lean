@@ -264,7 +264,7 @@ theorem zeroLocus_empty : zeroLocus (∅ : Set R) = Set.univ :=
 
 @[simp]
 theorem vanishingIdeal_empty : vanishingIdeal (∅ : Set (PrimeSpectrum R)) = ⊤ := by
-  simpa using (gc R).u_top
+  simpa using! (gc R).u_top
 
 theorem zeroLocus_empty_of_one_mem {s : Set R} (h : (1 : R) ∈ s) : zeroLocus s = ∅ := by
   rw [Set.eq_empty_iff_forall_notMem]
@@ -371,16 +371,16 @@ theorem mem_compl_zeroLocus_iff_notMem {f : R} {I : PrimeSpectrum R} :
     I ∈ (zeroLocus {f} : Set (PrimeSpectrum R))ᶜ ↔ f ∉ I.asIdeal := by
   rw [Set.mem_compl_iff, mem_zeroLocus, Set.singleton_subset_iff]; rfl
 
-@[deprecated (since := "2025-05-23")]
-alias mem_compl_zeroLocus_iff_not_mem := mem_compl_zeroLocus_iff_notMem
-
 @[simp]
 lemma zeroLocus_insert_zero (s : Set R) : zeroLocus (insert 0 s) = zeroLocus s := by
   rw [← Set.union_singleton, zeroLocus_union, zeroLocus_singleton_zero, Set.inter_univ]
 
 @[simp]
-lemma zeroLocus_diff_singleton_zero (s : Set R) : zeroLocus (s \ {0}) = zeroLocus s := by
+lemma zeroLocus_sdiff_singleton_zero (s : Set R) : zeroLocus (s \ {0}) = zeroLocus s := by
   rw [← zeroLocus_insert_zero, ← zeroLocus_insert_zero (s := s)]; simp
+
+@[deprecated (since := "2026-06-03")]
+alias zeroLocus_diff_singleton_zero := zeroLocus_sdiff_singleton_zero
 
 lemma zeroLocus_smul_of_isUnit {r : R} (hr : IsUnit r) (s : Set R) :
     zeroLocus (r • s) = zeroLocus s := by
@@ -389,8 +389,11 @@ lemma zeroLocus_smul_of_isUnit {r : R} (hr : IsUnit r) (s : Set R) :
 section Order
 
 instance [IsDomain R] : OrderBot (PrimeSpectrum R) where
-  bot := ⟨⊥, Ideal.bot_prime⟩
+  bot := ⟨⊥, Ideal.isPrime_bot⟩
   bot_le I := @bot_le _ _ _ I.asIdeal
+
+@[simp]
+theorem asIdeal_bot [IsDomain R] : (⊥ : PrimeSpectrum R).asIdeal = ⊥ := rfl
 
 instance {R : Type*} [Field R] : Unique (PrimeSpectrum R) where
   default := ⊥

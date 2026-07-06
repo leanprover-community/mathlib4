@@ -12,7 +12,7 @@ public import Mathlib.Algebra.Order.Ring.Defs
 # Pulling back ordered rings along injective maps
 -/
 
-@[expose] public section
+public section
 
 variable {R S : Type*}
 

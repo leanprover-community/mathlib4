@@ -5,7 +5,7 @@ Authors: Stefan Kebekus
 -/
 module
 
-public import Mathlib.MeasureTheory.Measure.Typeclasses.NoAtoms
+public import Mathlib.MeasureTheory.Measure.Typeclasses.NullSingletonClass
 public import Mathlib.Topology.DiscreteSubset
 
 /-!
@@ -15,14 +15,14 @@ This file gathers theorems that combine measure theory and topology, and cannot 
 the existing files without introducing massive dependencies between the subjects.
 -/
 
-@[expose] public section
+public section
 open Filter MeasureTheory
 
 /-- Under reasonable assumptions, sets that are codiscrete within `U` are contained in the "almost
 everywhere" filter of co-null sets. -/
 theorem ae_restrict_le_codiscreteWithin
     {α : Type*} [MeasurableSpace α] [TopologicalSpace α] [SecondCountableTopology α]
-    {μ : Measure α} [NoAtoms μ] {U : Set α} (hU : MeasurableSet U) :
+    {μ : Measure α} [NullSingletonClass μ] {U : Set α} (hU : MeasurableSet U) :
     ae (μ.restrict U) ≤ codiscreteWithin U := by
   intro s hs
   have : DiscreteTopology ↑(sᶜ ∩ U) := isDiscrete_iff_discreteTopology.mp

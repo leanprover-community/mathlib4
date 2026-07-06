@@ -115,7 +115,7 @@ section ProjectiveFamilyContent
 cylinders, by setting `projectiveFamilyContent s = P I S` for `s = cylinder I S`, where `I` is
 a finite set of indices and `S` is a measurable set in `Π i : I, α i`. -/
 noncomputable def projectiveFamilyContent (hP : IsProjectiveMeasureFamily P) :
-    AddContent (measurableCylinders α) :=
+    AddContent ℝ≥0∞ (measurableCylinders α) :=
   isSetRing_measurableCylinders.addContent_of_union (projectiveFamilyFun P)
     (projectiveFamilyFun_empty hP) (projectiveFamilyFun_union hP)
 
@@ -150,21 +150,27 @@ lemma projectiveFamilyContent_ne_top [∀ J, IsFiniteMeasure (P J)]
     (hP : IsProjectiveMeasureFamily P) :
     projectiveFamilyContent hP s ≠ ∞ := by
   rw [projectiveFamilyContent_eq hP, projectiveFamilyFun]
-  split_ifs with hs <;> finiteness
+  finiteness
 
-lemma projectiveFamilyContent_diff (hP : IsProjectiveMeasureFamily P)
+lemma projectiveFamilyContent_sdiff (hP : IsProjectiveMeasureFamily P)
     (hs : s ∈ measurableCylinders α) (ht : t ∈ measurableCylinders α) :
     projectiveFamilyContent hP s - projectiveFamilyContent hP t
       ≤ projectiveFamilyContent hP (s \ t) :=
-  le_addContent_diff (projectiveFamilyContent hP) isSetRing_measurableCylinders hs ht
+  le_addContent_sdiff (projectiveFamilyContent hP) isSetRing_measurableCylinders hs ht
 
-lemma projectiveFamilyContent_diff_of_subset [∀ J, IsFiniteMeasure (P J)]
+@[deprecated (since := "2026-06-03")]
+alias projectiveFamilyContent_diff := projectiveFamilyContent_sdiff
+
+lemma projectiveFamilyContent_sdiff_of_subset [∀ J, IsFiniteMeasure (P J)]
     (hP : IsProjectiveMeasureFamily P) (hs : s ∈ measurableCylinders α)
     (ht : t ∈ measurableCylinders α) (hts : t ⊆ s) :
     projectiveFamilyContent hP (s \ t)
       = projectiveFamilyContent hP s - projectiveFamilyContent hP t :=
-  addContent_diff_of_ne_top (projectiveFamilyContent hP) isSetRing_measurableCylinders
+  addContent_sdiff_of_ne_top (projectiveFamilyContent hP) isSetRing_measurableCylinders
     (fun _ _ ↦ projectiveFamilyContent_ne_top hP) hs ht hts
+
+@[deprecated (since := "2026-06-03")]
+alias projectiveFamilyContent_diff_of_subset := projectiveFamilyContent_sdiff_of_subset
 
 end ProjectiveFamilyContent
 

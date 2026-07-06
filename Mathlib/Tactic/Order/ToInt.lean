@@ -5,22 +5,24 @@ Authors: Vasilii Nesterov
 -/
 module
 
-public meta import Batteries.Data.List.Pairwise
-public meta import Mathlib.Tactic.Order.CollectFacts
-public meta import Batteries.Tactic.GeneralizeProofs
+public import Batteries.Data.List.Pairwise
+public import Batteries.Tactic.GeneralizeProofs
+public import Mathlib.Tactic.Order.CollectFacts
+public meta import Mathlib.Util.AtomM
 public meta import Mathlib.Util.Qq
+public meta import Std.Data.HashMap.AdditionalOperations
 
 /-!
 # Translating linear orders to ℤ
 
 In this file we implement the translation of a problem in any linearly ordered type to a problem in
-`ℤ`. This allows us to use the `omega` tactic to solve it.
+`ℤ`. This allows us to use the `lia` tactic to solve it.
 
 While the core algorithm of the `order` tactic is complete for the theory of linear orders in the
 signature (`<`, `≤`),
 it becomes incomplete in the signature with lattice operations `⊓` and `⊔`. With these operations,
 the problem becomes NP-hard, and the idea is to reuse a smart and efficient procedure, such as
-`omega`.
+`lia`.
 
 ## TODO
 
@@ -59,7 +61,7 @@ theorem exists_translation : ∃ tr : Fin n → ℤ, ∀ i j, val i ≤ val j �
   · contrapose! h
     exact lt_of_le_of_ne (by simpa using (this hj.choose hi.choose (by simpa)))
       (fun h ↦ h_eq (h.symm))
-  · simpa using this hi.choose hj.choose (by apply lt_of_le_of_ne h; contrapose! h_eq; simp [h_eq])
+  · simpa using this hi.choose hj.choose (by apply lt_of_le_of_ne h; contrapose h_eq; simp [h_eq])
 
 /-- Auxiliary definition used by the `order` tactic to transfer facts in a linear order to `ℤ`. -/
 noncomputable def toInt (k : Fin n) : ℤ :=

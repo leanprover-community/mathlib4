@@ -90,11 +90,8 @@ end LE_β
 
 section Composition
 
-variable {𝕜 E β : Type*} [Semiring 𝕜] [PartialOrder 𝕜]
-  [AddCommMonoid E] [SMul 𝕜 E]
-
+variable {𝕜 E : Type*} [Semiring 𝕜] [PartialOrder 𝕜] [AddCommMonoid E] [SMul 𝕜 E]
 variable {β γ : Type*} [LinearOrder β] [Preorder γ]
-
 variable {s : Set E} {f : E → β} {g : β → γ}
 
 theorem QuasiconvexOn.monotone_comp
@@ -224,7 +221,7 @@ theorem quasilinearOn_iff_mem_uIcc : QuasilinearOn 𝕜 s f ↔ Convex 𝕜 s �
 
 theorem QuasiconvexOn.convex_lt (hf : QuasiconvexOn 𝕜 s f) (r : β) :
     Convex 𝕜 ({ x ∈ s | f x < r }) := by
-  refine fun x hx y hy a b ha hb hab => ?_
+  intro x hx y hy a b ha hb hab
   have h := hf _ ⟨hx.1, le_max_left _ _⟩ ⟨hy.1, le_max_right _ _⟩ ha hb hab
   exact ⟨h.1, h.2.trans_lt <| max_lt hx.2 hy.2⟩
 

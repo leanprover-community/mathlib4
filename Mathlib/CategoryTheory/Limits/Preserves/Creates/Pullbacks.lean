@@ -14,11 +14,11 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
 We show some lemmas relating creation of (co)limits and pullbacks (resp. pushouts).
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory.Limits
 
-variable {C : Type*} [Category C] {D : Type*} [Category D]
+variable {C : Type*} [Category* C] {D : Type*} [Category* D]
 
 lemma HasPullback.of_createsLimit (F : C ⥤ D) {X Y S : C} (f : X ⟶ S) (g : Y ⟶ S)
     [CreatesLimit (cospan f g) F] [HasPullback (F.map f) (F.map g)] :

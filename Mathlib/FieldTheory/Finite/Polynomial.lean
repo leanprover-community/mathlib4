@@ -94,7 +94,7 @@ theorem indicator_mem_restrictDegree (c : σ → K) :
   trans
   · refine Finset.sum_eq_single n ?_ ?_
     · intro b _ ne
-      simp [Multiset.count_singleton, ne, if_neg (Ne.symm _)]
+      simp [ne, eqComm]
     · intro h; exact (h <| Finset.mem_univ _).elim
   · rw [Multiset.count_singleton_self, mul_one]
 
@@ -116,6 +116,7 @@ section
 
 variable (K σ)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `MvPolynomial.eval` as a `K`-linear map. -/
 @[simps]
 def evalₗ [CommSemiring K] : MvPolynomial σ K →ₗ[K] (σ → K) → K where
@@ -184,7 +185,7 @@ theorem rank_R [Fintype σ] : Module.rank K (R σ K) = Fintype.card (σ → K) :
     Module.rank K (R σ K) =
         Module.rank K (↥{ s : σ →₀ ℕ | ∀ n : σ, s n ≤ Fintype.card K - 1 } →₀ K) :=
       LinearEquiv.rank_eq
-        (Finsupp.supportedEquivFinsupp { s : σ →₀ ℕ | ∀ n : σ, s n ≤ Fintype.card K - 1 })
+        (AddMonoidAlgebra.supportedEquivFinsupp { s : σ →₀ ℕ | ∀ n : σ, s n ≤ Fintype.card K - 1 })
     _ = #{ s : σ →₀ ℕ | ∀ n : σ, s n ≤ Fintype.card K - 1 } := by rw [rank_finsupp_self']
     _ = #{ s : σ → ℕ | ∀ n : σ, s n < Fintype.card K } := by
       refine Quotient.sound ⟨Equiv.subtypeEquiv Finsupp.equivFunOnFinite fun f => ?_⟩
@@ -199,16 +200,14 @@ theorem rank_R [Fintype σ] : Module.rank K (R σ K) = Fintype.card (σ → K) :
 
 instance [Finite σ] : FiniteDimensional K (R σ K) := by
   cases nonempty_fintype σ
-  classical
-  exact
-    IsNoetherian.iff_fg.1
-      (IsNoetherian.iff_rank_lt_aleph0.mpr <| by
-        simpa only [rank_R] using Cardinal.nat_lt_aleph0 (Fintype.card (σ → K)))
+  rw [FiniteDimensional, ← IsNoetherian.iff_fg, IsNoetherian.iff_rank_lt_aleph0]
+  simpa only [rank_R] using Cardinal.natCast_lt_aleph0
 
 open Classical in
 theorem finrank_R [Fintype σ] : Module.finrank K (R σ K) = Fintype.card (σ → K) :=
   Module.finrank_eq_of_rank_eq (rank_R σ K)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem range_evalᵢ [Finite σ] : range (evalᵢ σ K) = ⊤ := by
   rw [evalᵢ, LinearMap.range_comp, range_subtype]
   exact map_restrict_dom_evalₗ K σ

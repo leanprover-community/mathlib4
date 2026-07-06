@@ -28,8 +28,10 @@ namespace DerivedCategory
 
 variable {C : Type u} [Category.{v} C] [Abelian C] [HasDerivedCategory.{w} C]
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- The canonical t-structure on `DerivedCategory C`. -/
-def TStructure.t : TStructure (DerivedCategory C) where
+noncomputable def TStructure.t : TStructure (DerivedCategory C) where
   le n X := ∃ (K : CochainComplex C ℤ) (_ : X ≅ DerivedCategory.Q.obj K), K.IsStrictlyLE n
   ge n X := ∃ (K : CochainComplex C ℤ) (_ : X ≅ DerivedCategory.Q.obj K), K.IsStrictlyGE n
   le_isClosedUnderIsomorphisms n :=
@@ -56,25 +58,25 @@ def TStructure.t : TStructure (DerivedCategory C) where
     apply (subsingleton_hom_of_isStrictlyLE_of_isStrictlyGE K L 0 1 (by simp)).elim
   le_zero_le := by
     rintro X ⟨K, e, _⟩
-    exact ⟨K, e, K.isStrictlyLE_of_le 0 1 (by omega)⟩
+    exact ⟨K, e, K.isStrictlyLE_of_le 0 1 (by lia)⟩
   ge_one_le := by
     rintro X ⟨K, e, _⟩
-    exact ⟨K, e, K.isStrictlyGE_of_ge 0 1 (by omega)⟩
+    exact ⟨K, e, K.isStrictlyGE_of_ge 0 1 (by lia)⟩
   exists_triangle_zero_one X := by
     obtain ⟨K, ⟨e₂⟩⟩ : ∃ K, Nonempty (Q.obj K ≅ X) := ⟨_, ⟨Q.objObjPreimageIso X⟩⟩
     have h := K.shortComplexTruncLE_shortExact 0
     refine ⟨Q.obj (K.truncLE 0), Q.obj (K.truncGE 1),
       ⟨_, Iso.refl _, inferInstance⟩, ⟨_, Iso.refl _, inferInstance⟩,
       Q.map (K.ιTruncLE 0) ≫ e₂.hom, e₂.inv ≫ Q.map (K.πTruncGE 1),
-      inv (Q.map (K.shortComplexTruncLEX₃ToTruncGE 0 1 (by omega))) ≫ (triangleOfSES h).mor₃,
+      inv (Q.map (K.shortComplexTruncLEX₃ToTruncGE 0 1 (by lia))) ≫ (triangleOfSES h).mor₃,
       isomorphic_distinguished _ (triangleOfSES_distinguished h) _ (Iso.symm ?_)⟩
     refine Triangle.isoMk _ _ (Iso.refl _) e₂
-      (asIso (Q.map (K.shortComplexTruncLEX₃ToTruncGE 0 1 (by omega)))) ?_ ?_ (by simp)
+      (asIso (Q.map (K.shortComplexTruncLEX₃ToTruncGE 0 1 (by lia)))) ?_ ?_ (by simp)
     · dsimp
       rw [id_comp]
       rfl
     · dsimp
-      rw [← Q.map_comp, CochainComplex.g_shortComplexTruncLEX₃ToTruncGE,
+      rw [← Q.map_comp, CochainComplex.g_shortComplexTruncLEX₃ToTruncGE ..,
         Iso.hom_inv_id_assoc]
 
 /-- Given `X : DerivedCategory C` and `n : ℤ`, this property means
@@ -153,11 +155,13 @@ instance (K : CochainComplex C ℤ) (n : ℤ) [K.IsLE n] :
   rw [isLE_Q_obj_iff]
   infer_instance
 
+set_option backward.defeqAttrib.useBackward true in
 instance (X : C) (n : ℤ) : ((singleFunctor C n).obj X).IsGE n := by
   let e := (singleFunctorIsoCompQ C n).app X
   dsimp only [Functor.comp_obj] at e
   exact TStructure.t.isGE_of_iso e.symm n
 
+set_option backward.defeqAttrib.useBackward true in
 instance (X : C) (n : ℤ) : ((singleFunctor C n).obj X).IsLE n := by
   let e := (singleFunctorIsoCompQ C n).app X
   dsimp only [Functor.comp_obj] at e
@@ -188,5 +192,29 @@ lemma exists_iso_singleFunctor_obj_of_isGE_of_isLE
   obtain ⟨K, _, _, ⟨e⟩⟩ := exists_iso_Q_obj_of_isGE_of_isLE X n n
   obtain ⟨Y, ⟨e'⟩⟩ := CochainComplex.exists_iso_single K n
   exact ⟨Y, ⟨e ≪≫ Q.mapIso e'⟩⟩
+
+open DerivedCategory.TStructure
+
+variable (C)
+
+/-- The bounded above derived category of an abelian category. -/
+abbrev Minus : Type max u v := (t : TStructure (DerivedCategory C)).minus.FullSubcategory
+
+/-- The bounded below derived category of an abelian category. -/
+abbrev Plus : Type max u v := (t : TStructure (DerivedCategory C)).plus.FullSubcategory
+
+/-- The bounded derived category of an abelian category. -/
+abbrev Bounded : Type max u v := (t : TStructure (DerivedCategory C)).bounded.FullSubcategory
+
+variable {C}
+
+/-- The inclusion of the bounded above derived category. -/
+noncomputable abbrev Minus.ι : Minus C ⥤ DerivedCategory C := t.minus.ι
+
+/-- The inclusion of the bounded below derived category. -/
+noncomputable abbrev Plus.ι : Plus C ⥤ DerivedCategory C := t.plus.ι
+
+/-- The inclusion of the bounded derived category. -/
+noncomputable abbrev Bounded.ι : Bounded C ⥤ DerivedCategory C := t.bounded.ι
 
 end DerivedCategory

@@ -21,7 +21,7 @@ sets is a simplicial category.
 
 -/
 
-@[expose] public section
+public section
 
 universe v u
 
@@ -31,7 +31,7 @@ variable {D : Type u} [Category.{v} D]
 
 namespace SimplicialObject
 
-instance : EnrichedCategory SSet.{v} (SimplicialObject D)  :=
+instance : EnrichedCategory SSet.{v} (SimplicialObject D) :=
   inferInstanceAs (EnrichedCategory (_ ⥤ Type v) (_ ⥤ D))
 
 instance : SimplicialCategory (SimplicialObject D) where

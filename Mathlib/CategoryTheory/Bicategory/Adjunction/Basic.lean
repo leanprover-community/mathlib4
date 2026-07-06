@@ -1,10 +1,12 @@
 /-
 Copyright (c) 2023 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yuma Mizuno
+Authors: Yuma Mizuno, Fernando Chu
 -/
 module
 
+public import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
+public import Mathlib.CategoryTheory.Bicategory.Functor.StrictPseudofunctor
 public import Mathlib.Tactic.CategoryTheory.Bicategory.Basic
 public import Mathlib.Tactic.CategoryTheory.BicategoricalComp
 
@@ -12,19 +14,24 @@ public import Mathlib.Tactic.CategoryTheory.BicategoricalComp
 # Adjunctions in bicategories
 
 For 1-morphisms `f : a ⟶ b` and `g : b ⟶ a` in a bicategory, an adjunction between `f` and `g`
-consists of a pair of 2-morphism `η : 𝟙 a ⟶ f ≫ g` and `ε : g ≫ f ⟶ 𝟙 b` satisfying the triangle
+consists of a pair of 2-morphisms `η : 𝟙 a ⟶ f ≫ g` and `ε : g ≫ f ⟶ 𝟙 b` satisfying the triangle
 identities. The 2-morphism `η` is called the unit and `ε` is called the counit.
 
 ## Main definitions
 
 * `Bicategory.Adjunction`: adjunctions between two 1-morphisms.
 * `Bicategory.Equivalence`: adjoint equivalences between two objects.
-* `Bicategory.mkOfAdjointifyCounit`: construct an adjoint equivalence from 2-isomorphisms
+* `Bicategory.Equivalence.mkOfAdjointifyCounit`: construct an adjoint equivalence from
+  2-isomorphisms
   `η : 𝟙 a ≅ f ≫ g` and `ε : g ≫ f ≅ 𝟙 b`, by upgrading `ε` to a counit.
+* `Pseudofunctor.mapAdjunction`: a pseudofunctor `F` carries an adjunction `f ⊣ g`
+  between 1-morphisms to an adjunction `F.map f ⊣ F.map g`. An analogous definition is given
+  for `StrictPseudofunctor`.
 
 ## TODO
 
-* `Bicategory.mkOfAdjointifyUnit`: construct an adjoint equivalence from 2-isomorphisms
+* `Bicategory.Equivalence.mkOfAdjointifyUnit`: construct an adjoint equivalence from
+  2-isomorphisms
   `η : 𝟙 a ≅ f ≫ g` and `ε : g ≫ f ≅ 𝟙 b`, by upgrading `η` to a unit.
 -/
 
@@ -32,15 +39,14 @@ identities. The 2-morphism `η` is called the unit and `ε` is called the counit
 
 namespace CategoryTheory
 
+open Category Bicategory
+
+universe w₁ w₂ v₁ v₂ u₁ u₂
+
+variable {B : Type u₁} [Bicategory.{w₁, v₁} B] {C : Type u₂} [Bicategory.{w₂, v₂} C]
+  {a b c : B} {f : a ⟶ b} {g : b ⟶ a}
+
 namespace Bicategory
-
-open Category
-
-open scoped Bicategory
-
-universe w v u
-
-variable {B : Type u} [Bicategory.{w, v} B] {a b c : B} {f : a ⟶ b} {g : b ⟶ a}
 
 /-- The 2-morphism defined by the following pasting diagram:
 ```
@@ -81,6 +87,7 @@ theorem rightZigzag_idempotent_of_left_triangle
       rw [h]; bicategory
 
 /-- Adjunction between two 1-morphisms. -/
+@[ext]
 structure Adjunction (f : a ⟶ b) (g : b ⟶ a) where
   /-- The unit of an adjunction. -/
   unit : 𝟙 a ⟶ f ≫ g
@@ -111,12 +118,12 @@ section Composition
 
 variable {f₁ : a ⟶ b} {g₁ : b ⟶ a} {f₂ : b ⟶ c} {g₂ : c ⟶ b}
 
-/-- Auxiliary definition for `adjunction.comp`. -/
+/-- Auxiliary definition for `Adjunction.comp`. -/
 @[simp]
 def compUnit (adj₁ : f₁ ⊣ g₁) (adj₂ : f₂ ⊣ g₂) : 𝟙 a ⟶ (f₁ ≫ f₂) ≫ g₂ ≫ g₁ :=
   adj₁.unit ⊗≫ f₁ ◁ adj₂.unit ▷ g₁ ⊗≫ 𝟙 _
 
-/-- Auxiliary definition for `adjunction.comp`. -/
+/-- Auxiliary definition for `Adjunction.comp`. -/
 @[simp]
 def compCounit (adj₁ : f₁ ⊣ g₁) (adj₂ : f₂ ⊣ g₂) : (g₂ ≫ g₁) ≫ f₁ ≫ f₂ ⟶ 𝟙 c :=
   𝟙 _ ⊗≫ g₂ ◁ adj₁.counit ▷ f₂ ⊗≫ adj₂.counit
@@ -215,6 +222,7 @@ theorem right_triangle_of_left_triangle (h : leftZigzag η.hom ε.hom = (λ_ f).
 def adjointifyCounit (η : 𝟙 a ≅ f ≫ g) (ε : g ≫ f ≅ 𝟙 b) : g ≫ f ≅ 𝟙 b :=
   whiskerLeftIso g ((ρ_ f).symm ≪≫ rightZigzagIso ε.symm η.symm ≪≫ λ_ f) ≪≫ ε
 
+set_option backward.defeqAttrib.useBackward true in
 theorem adjointifyCounit_left_triangle (η : 𝟙 a ≅ f ≫ g) (ε : g ≫ f ≅ 𝟙 b) :
     leftZigzagIso η (adjointifyCounit η ε) = λ_ f ≪≫ (ρ_ f).symm := by
   apply Iso.ext
@@ -303,7 +311,7 @@ def getRightAdjoint (f : a ⟶ b) [IsLeftAdjoint f] : RightAdjoint f :=
 def rightAdjoint (f : a ⟶ b) [IsLeftAdjoint f] : b ⟶ a :=
   (getRightAdjoint f).right
 
-/-- Evidence that `f⁺⁺` is a right adjoint of `f`. -/
+/-- Evidence that `rightAdjoint f` is a right adjoint of `f`. -/
 def Adjunction.ofIsLeftAdjoint (f : a ⟶ b) [IsLeftAdjoint f] : f ⊣ rightAdjoint f :=
   (getRightAdjoint f).adj
 
@@ -314,7 +322,7 @@ structure LeftAdjoint (right : b ⟶ a) where
   /-- The adjunction between `left` and `right`. -/
   adj : left ⊣ right
 
-/-- The existence of a left adjoint of `f`. -/
+/-- The existence of a left adjoint of `right`. -/
 class IsRightAdjoint (right : b ⟶ a) : Prop where mk' ::
   nonempty : Nonempty (LeftAdjoint right)
 
@@ -329,12 +337,63 @@ def getLeftAdjoint (f : b ⟶ a) [IsRightAdjoint f] : LeftAdjoint f :=
 def leftAdjoint (f : b ⟶ a) [IsRightAdjoint f] : a ⟶ b :=
   (getLeftAdjoint f).left
 
-/-- Evidence that `f⁺` is a left adjoint of `f`. -/
+/-- Evidence that `leftAdjoint f` is a left adjoint of `f`. -/
 def Adjunction.ofIsRightAdjoint (f : b ⟶ a) [IsRightAdjoint f] : leftAdjoint f ⊣ f :=
   (getLeftAdjoint f).adj
 
 end
 
 end Bicategory
+
+namespace Pseudofunctor
+
+variable (F : Pseudofunctor B C) (adj : f ⊣ g)
+
+lemma leftZigzag_map :
+    leftZigzag ((F.mapId a).inv ≫ F.map₂ adj.unit ≫ (F.mapComp f g).hom)
+      ((F.mapComp g f).inv ≫ F.map₂ adj.counit ≫ (F.mapId b).hom) =
+    (F.mapId a).inv ▷ F.map f ⊗≫ (F.mapComp (𝟙 a) f).inv ≫
+      F.map₂ (leftZigzag adj.unit adj.counit) ≫
+        (F.mapComp f (𝟙 b)).hom ⊗≫ F.map f ◁ (F.mapId b).hom := by
+  simp [leftZigzag, bicategoricalComp]
+
+lemma rightZigzag_map :
+    rightZigzag ((F.mapId a).inv ≫ F.map₂ adj.unit ≫ (F.mapComp f g).hom)
+      ((F.mapComp g f).inv ≫ F.map₂ adj.counit ≫ (F.mapId b).hom) =
+    F.map g ◁ (F.mapId a).inv ⊗≫ (F.mapComp g (𝟙 a)).inv ≫
+      F.map₂ (rightZigzag adj.unit adj.counit) ≫
+        (F.mapComp (𝟙 b) g).hom ⊗≫ (F.mapId b).hom ▷ F.map g := by
+  simp [rightZigzag, bicategoricalComp, F.map₂_iso_inv]
+
+/-- A pseudofunctor carries an adjunction `f ⊣ g` to an adjunction `F.map f ⊣ F.map g`. -/
+@[simps]
+def mapAdjunction : F.map f ⊣ F.map g where
+  unit := (F.mapId a).inv ≫ F.map₂ adj.unit ≫ (F.mapComp f g).hom
+  counit := (F.mapComp g f).inv ≫ F.map₂ adj.counit ≫ (F.mapId b).hom
+  left_triangle := by simp [leftZigzag_map, bicategoricalComp, F.map₂_iso_inv]
+  right_triangle := by simp [rightZigzag_map, bicategoricalComp, F.map₂_iso_inv]
+
+end Pseudofunctor
+
+namespace StrictPseudofunctor
+
+variable (F : StrictPseudofunctor B C) (adj : f ⊣ g)
+
+/-- A strict pseudofunctor carries an adjunction `f ⊣ g` to an adjunction
+`F.map f ⊣ F.map g`. -/
+@[simps!]
+def mapAdjunction : F.map f ⊣ F.map g := F.toPseudofunctor.mapAdjunction adj
+
+lemma mapAdjunction_unit' :
+    (F.mapAdjunction adj).unit =
+      eqToHom (F.map_id a).symm ≫ F.map₂ adj.unit ≫ eqToHom (F.map_comp f g) := by
+  simp [F.mapId_eq_eqToIso, F.mapComp_eq_eqToIso]
+
+lemma mapAdjunction_counit' :
+    (F.mapAdjunction adj).counit =
+      eqToHom (F.map_comp g f).symm ≫ F.map₂ adj.counit ≫ eqToHom (F.map_id b) := by
+  simp [F.mapId_eq_eqToIso, F.mapComp_eq_eqToIso]
+
+end StrictPseudofunctor
 
 end CategoryTheory

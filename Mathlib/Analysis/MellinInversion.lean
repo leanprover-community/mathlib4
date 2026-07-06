@@ -17,7 +17,7 @@ We derive the Mellin inversion formula as a consequence of the Fourier inversion
 - `mellin_inversion`: The inverse Mellin transform of the Mellin transform applied to `x > 0` is x.
 -/
 
-@[expose] public section
+public section
 
 open Real Complex Set MeasureTheory
 
@@ -112,7 +112,7 @@ theorem mellinInv_mellin_eq (σ : ℝ) (f : ℝ → E) {x : ℝ} (hx : 0 < x) (h
     simp_rw [neg_mul_eq_neg_mul] at this
     exact this
   replace hfx : ContinuousAt g (-Real.log x) := by
-    refine ContinuousAt.smul (by fun_prop) (ContinuousAt.comp ?_ (by fun_prop))
+    refine ContinuousAt.fun_smul (by fun_prop) (ContinuousAt.comp ?_ (by fun_prop))
     simpa [Real.exp_log hx] using hfx
   calc
     mellinInv σ (mellin f) x

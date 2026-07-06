@@ -6,7 +6,6 @@ Authors: Rémy Degenne, Sébastien Gouëzel
 module
 
 public import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
-public import Mathlib.Dynamics.Ergodic.MeasurePreserving
 public import Mathlib.MeasureTheory.Function.StronglyMeasurable.AEStronglyMeasurable
 public import Mathlib.MeasureTheory.Measure.WithDensity
 public import Mathlib.Topology.Algebra.Module.FiniteDimension
@@ -24,7 +23,7 @@ functions, started in `Mathlib/MeasureTheory/Function/StronglyMeasurable/Basic.l
 
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory Filter Set ENNReal NNReal
 

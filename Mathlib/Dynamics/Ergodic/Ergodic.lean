@@ -31,8 +31,7 @@ preserving condition is relaxed to quasi-measure-preserving.
 
 -/
 
-@[expose] public section
-
+public section
 
 open Set Function Filter MeasureTheory MeasureTheory.Measure
 
@@ -70,8 +69,6 @@ theorem measure_self_or_compl_eq_zero (hf : PreErgodic f μ) (hs : MeasurableSet
 theorem ae_mem_or_ae_notMem (hf : PreErgodic f μ) (hsm : MeasurableSet s) (hs : f ⁻¹' s = s) :
     (∀ᵐ x ∂μ, x ∈ s) ∨ ∀ᵐ x ∂μ, x ∉ s :=
   eventuallyConst_set.1 <| hf.aeconst_set hsm hs
-
-@[deprecated (since := "2025-05-24")] alias ae_mem_or_ae_nmem := ae_mem_or_ae_notMem
 
 /-- On a probability space, the (pre)ergodicity condition is a zero-one law. -/
 theorem prob_eq_zero_or_one [IsProbabilityMeasure μ] (hf : PreErgodic f μ) (hs : MeasurableSet s)
@@ -147,8 +144,6 @@ theorem ae_mem_or_ae_notMem₀ (hf : QuasiErgodic f μ) (hsm : NullMeasurableSet
     (∀ᵐ x ∂μ, x ∈ s) ∨ ∀ᵐ x ∂μ, x ∉ s :=
   eventuallyConst_set.mp <| hf.aeconst_set₀ hsm hs
 
-@[deprecated (since := "2025-05-24")] alias ae_mem_or_ae_nmem₀ := ae_mem_or_ae_notMem₀
-
 theorem smul_measure {R : Type*} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
     (hf : QuasiErgodic f μ) (c : R) : QuasiErgodic f (c • μ) :=
   ⟨hf.1.smul_measure _, hf.2.smul_measure _⟩
@@ -184,7 +179,7 @@ theorem ae_empty_or_univ_of_ae_le_preimage' (hf : Ergodic f μ) (hs : NullMeasur
 theorem ae_empty_or_univ_of_image_ae_le' (hf : Ergodic f μ) (hs : NullMeasurableSet s μ)
     (hs' : f '' s ≤ᵐ[μ] s) (h_fin : μ s ≠ ∞) : s =ᵐ[μ] (∅ : Set α) ∨ s =ᵐ[μ] univ := by
   replace hs' : s ≤ᵐ[μ] f ⁻¹' s :=
-    (HasSubset.Subset.eventuallyLE (subset_preimage_image f s)).trans
+    (LE.le.eventuallyLE (subset_preimage_image f s)).trans
       (hf.quasiMeasurePreserving.preimage_mono_ae hs')
   exact ae_empty_or_univ_of_ae_le_preimage' hf hs hs' h_fin
 

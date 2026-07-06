@@ -94,7 +94,7 @@ theorem primitive_element_inf_aux_exists_c (f g : F[X]) :
   obtain ⟨c, hc⟩ := Infinite.exists_notMem_finset s'
   simp_rw [s', s, Finset.mem_preimage, Multiset.mem_toFinset, Multiset.mem_bind, Multiset.mem_map]
     at hc
-  push_neg at hc
+  push Not at hc
   exact ⟨c, hc⟩
 
 variable (F)
@@ -145,7 +145,7 @@ theorem primitive_element_inf_aux [Algebra.IsSeparable F E] : ∃ γ : E, F⟮α
     · rw [eval_map_algebraMap, minpoly.aeval]
   have h_splits : Splits (h.map ιEE') := by
     rw [← Polynomial.gcd_map]
-    exact (SplittingField.splits _).splits_of_dvd (map_ne_zero map_g_ne_zero)
+    exact (SplittingField.splits _).of_dvd (map_ne_zero map_g_ne_zero)
       (EuclideanDomain.gcd_dvd_right _ _)
   have h_roots : ∀ x ∈ (h.map ιEE').roots, x = ιEE' β := by
     intro x hx
@@ -165,7 +165,7 @@ theorem primitive_element_inf_aux [Algebra.IsSeparable F E] : ∃ γ : E, F⟮α
   rw [← eq_X_sub_C_of_separable_of_root_eq h_sep h_root h_splits h_roots]
   trans EuclideanDomain.gcd (?_ : E[X]) (?_ : E[X])
   · dsimp only [γ]
-    convert (gcd_map (algebraMap F⟮γ⟯ E)).symm
+    convert! (gcd_map (algebraMap F⟮γ⟯ E)).symm
   · simp only [map_comp, Polynomial.map_map, ← IsScalarTower.algebraMap_eq, Polynomial.map_sub,
       map_C, AdjoinSimple.algebraMap_gen, Polynomial.map_mul, map_X]
     congr
@@ -190,7 +190,7 @@ private theorem primitive_element_inf_aux_of_finite_intermediateField
     replace β_in_K := smul_mem _ β_in_K (x := (x - y)⁻¹)
     rw [smul_smul, inv_mul_eq_div, div_self (sub_ne_zero.2 hneq), one_smul] at β_in_K
     have α_in_K : α ∈ F⟮α + x • β⟯ := by
-      convert ← sub_mem αxβ_in_K (smul_mem _ β_in_K)
+      convert! ← sub_mem αxβ_in_K (smul_mem _ β_in_K)
       apply add_sub_cancel_right
     rintro x (rfl | rfl) <;> assumption
   · rw [adjoin_simple_le_iff]
@@ -320,7 +320,7 @@ theorem finite_intermediateField_of_exists_primitive_element [Algebra.IsAlgebrai
   -- which is a monic factor of `f`
   let g : IntermediateField F E → G := fun K ↦
     ⟨(minpoly K α).map (algebraMap K E), (minpoly.monic <| .of_finite K α).map _, by
-      convert Polynomial.map_dvd (algebraMap K E) (minpoly.dvd_map_of_isScalarTower F K α)
+      convert! Polynomial.map_dvd (algebraMap K E) (minpoly.dvd_map_of_isScalarTower F K α)
       rw [Polynomial.map_map]; rfl⟩
   -- The map `K ↦ g` is injective
   have hinj : Function.Injective g := fun K K' heq ↦ by
@@ -402,7 +402,6 @@ theorem primitive_element_iff_algHom_eq_of_eval (α : E)
   refine ⟨fun h ψ hψ ↦ (Field.primitive_element_iff_algHom_eq_of_eval' F A hA α).mp h hψ,
     fun h ↦ eq_of_le_of_finrank_eq' le_top ?_⟩
   letI : Algebra F⟮α⟯ A := (φ.comp F⟮α⟯.val).toAlgebra
-  haveI := Algebra.isSeparable_tower_top_of_isSeparable F F⟮α⟯ E
   rw [IntermediateField.finrank_top, ← AlgHom.card_of_splits _ _ A, Fintype.card_eq_one_iff]
   · exact ⟨{ __ := φ, commutes' := fun _ ↦ rfl }, fun ψ ↦ AlgHom.restrictScalars_injective F <|
       Eq.symm <| h _ (ψ.commutes <| AdjoinSimple.gen F α).symm⟩

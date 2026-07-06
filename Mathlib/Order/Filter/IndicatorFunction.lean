@@ -20,7 +20,7 @@ Properties of additive and multiplicative indicator functions involving `=ᶠ` a
 indicator, characteristic, filter
 -/
 
-@[expose] public section
+public section
 
 variable {α β M E : Type*}
 

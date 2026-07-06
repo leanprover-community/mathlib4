@@ -37,7 +37,7 @@ unnecessarily.
 
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -149,7 +149,7 @@ private theorem sin_angle_eq_sin_angle_add_add_angle_add {x y : V} (hx : x ≠ 0
     simp only [← real_inner_self_eq_norm_sq, inner_add_right, inner_add_left, real_inner_comm]
     ring_nf
 
-/-- In a paralellogram, the two parts of the inner angle add to the inner angle,
+/-- In a parallelogram, the two parts of the inner angle add to the inner angle,
 vector angle form. -/
 theorem angle_eq_angle_add_add_angle_add (x : V) {y : V} (hy : y ≠ 0) :
     angle x y = angle x (x + y) + angle y (x + y) := by
@@ -177,7 +177,7 @@ theorem angle_eq_angle_add_add_angle_add (x : V) {y : V} (hy : y ≠ 0) :
     obtain ⟨-, r₂, r₂_pos, hr₂⟩ := h
     have : (r₁ + r₂ - 1) • (x + y) = 0 := by
       rw [sub_smul, add_smul, one_smul, ← hr₁, ← hr₂, sub_eq_zero]
-    cases eq_zero_or_eq_zero_of_smul_eq_zero this
+    cases smul_eq_zero.1 this
     · linarith
     · contradiction
   obtain rfl : n = 0 := by lia
@@ -244,8 +244,9 @@ theorem dist_sq_eq_dist_sq_add_dist_sq_sub_two_mul_dist_mul_dist_mul_cos_angle (
       2 * dist p₁ p₂ * dist p₃ p₂ * Real.cos (∠ p₁ p₂ p₃) := by
   rw [dist_eq_norm_vsub V p₁ p₃, dist_eq_norm_vsub V p₁ p₂, dist_eq_norm_vsub V p₃ p₂]
   unfold angle
-  convert norm_sub_sq_eq_norm_sq_add_norm_sq_sub_two_mul_norm_mul_norm_mul_cos_angle
-    (p₁ -ᵥ p₂ : V) (p₃ -ᵥ p₂ : V)
+  convert!
+    norm_sub_sq_eq_norm_sq_add_norm_sq_sub_two_mul_norm_mul_norm_mul_cos_angle (p₁ -ᵥ p₂ : V)
+      (p₃ -ᵥ p₂ : V)
   · exact (vsub_sub_vsub_cancel_right p₁ p₃ p₂).symm
   · exact (vsub_sub_vsub_cancel_right p₁ p₃ p₂).symm
 
@@ -285,7 +286,7 @@ theorem angle_eq_angle_of_dist_eq {p₁ p₂ p₃ : P} (h : dist p₁ p₂ = dis
     ∠ p₁ p₂ p₃ = ∠ p₁ p₃ p₂ := by
   rw [dist_eq_norm_vsub V p₁ p₂, dist_eq_norm_vsub V p₁ p₃] at h
   unfold angle
-  convert angle_sub_eq_angle_sub_rev_of_norm_eq h
+  convert! angle_sub_eq_angle_sub_rev_of_norm_eq h
   · exact (vsub_sub_vsub_cancel_left p₃ p₂ p₁).symm
   · exact (vsub_sub_vsub_cancel_left p₂ p₃ p₁).symm
 
@@ -302,15 +303,16 @@ theorem dist_eq_of_angle_eq_angle_of_angle_ne_pi {p₁ p₂ p₃ : P} (h : ∠ p
 theorem dist_eq_of_two_zsmul_oangle_eq [Module.Oriented ℝ V (Fin 2)]
     [Fact (Module.finrank ℝ V = 2)] {p₁ p₂ p₃ : P} (h : (2 : ℤ) • ∡ p₁ p₂ p₃ = (2 : ℤ) • ∡ p₂ p₃ p₁)
     (h0 : ∡ p₃ p₁ p₂ ≠ 0) (hpi : ∡ p₃ p₁ p₂ ≠ π) : dist p₁ p₂ = dist p₁ p₃ := by
-  convert (Orientation.norm_eq_of_two_zsmul_oangle_sub_eq (x := p₃ -ᵥ p₁) (y := p₂ -ᵥ p₁) ?_ ?_
-    h0 hpi).symm
+  convert!
+    (Orientation.norm_eq_of_two_zsmul_oangle_sub_eq (x := p₃ -ᵥ p₁) (y := p₂ -ᵥ p₁) ?_ ?_ h0
+        hpi).symm
   · rw [dist_eq_norm_vsub']
   · rw [dist_eq_norm_vsub']
   · rw [eq_comm, o.oangle_rev, ← o.oangle_neg_neg]
     nth_rw 2 [o.oangle_rev, ← o.oangle_neg_neg]
     simp_rw [smul_neg, neg_inj]
     simp_rw [oangle] at h
-    convert h <;> simp
+    convert! h <;> simp
 
 /-- The **sum of the angles of a triangle** (possibly degenerate, where two
 given vertices are distinct), angle-at-point. -/
@@ -323,12 +325,19 @@ theorem angle_add_angle_add_angle_eq_pi {p₁ p₂ : P} (p₃ : P) (h : p₂ ≠
     vsub_sub_vsub_cancel_right p₃ p₂ p₁, ← vsub_sub_vsub_cancel_right p₂ p₃ p₁]
   exact angle_add_angle_sub_add_angle_sub_eq_pi _ fun he => h (vsub_eq_zero_iff_eq.1 he)
 
+/-- The **Exterior angle theorem**. an exterior angle of a triangle is equal to the sum of the
+measures of the remote interior angles. -/
+theorem exterior_angle_eq_angle_add_angle {p₁ p₂ p₃ : P} (p : P) (h : Sbtw ℝ p p₁ p₂) :
+    ∠ p₃ p₁ p = ∠ p₁ p₃ p₂ + ∠ p₃ p₂ p₁ := by
+  linarith [angle_add_angle_eq_pi_of_angle_eq_pi p₃ h.angle₁₂₃_eq_pi,
+    angle_add_angle_add_angle_eq_pi p₃ h.right_ne.symm, angle_comm p₃ p₁ p₂]
+
 /-- The **sum of the angles of a triangle** (possibly degenerate, where the triangle is a line),
 oriented angles at point. -/
 theorem oangle_add_oangle_add_oangle_eq_pi [Module.Oriented ℝ V (Fin 2)]
     [Fact (Module.finrank ℝ V = 2)] {p₁ p₂ p₃ : P} (h21 : p₂ ≠ p₁) (h32 : p₃ ≠ p₂)
     (h13 : p₁ ≠ p₃) : ∡ p₁ p₂ p₃ + ∡ p₂ p₃ p₁ + ∡ p₃ p₁ p₂ = π := by
-  simpa only [neg_vsub_eq_vsub_rev] using
+  simpa only [neg_vsub_eq_vsub_rev] using!
     positiveOrientation.oangle_add_cyc3_neg_left (vsub_ne_zero.mpr h21) (vsub_ne_zero.mpr h32)
       (vsub_ne_zero.mpr h13)
 
@@ -347,6 +356,31 @@ lemma angle_add_of_ne_of_ne {a b c p : P} (hb : a ≠ b) (hc : a ≠ c) (hp : Wb
   rw [angle_eq_angle_of_angle_eq_pi a hp', angle_comm c p a] at ec
   have ep := angle_add_angle_eq_pi_of_angle_eq_pi a hp
   linarith only [ea, eb, ec, ep]
+
+/-- If `X` lies strictly between `A` and `C`, then `∠ A P X + ∠ X P C = ∠ A P C`,
+with no nondegeneracy assumption on the point `P`. -/
+lemma angle_add_angle_eq_of_sbtw {a c p x : P} (hx : Sbtw ℝ a x c) :
+    ∠ a p x + ∠ x p c = ∠ a p c := by
+  rcases eq_or_ne p a with rfl | hpa
+  · simp [(hx.angle_eq_right x).symm.trans (angle_self_of_ne hx.ne_left)]
+  rcases eq_or_ne p c with rfl | hpc
+  · simp [(hx.symm.angle_eq_right a).trans (angle_self_of_ne hx.left_ne_right)]
+  exact angle_add_of_ne_of_ne hpa hpc hx.wbtw
+
+/-- If `B` lies on the same ray from `P` as a point `X` strictly between `A` and `C`,
+then `∠ A P B + ∠ B P C = ∠ A P C`. -/
+theorem angle_add_angle_eq_of_sbtw_of_sameRay {a b c p x : P}
+    (hx : Sbtw ℝ a x c) (hxb : SameRay ℝ (x -ᵥ p) (b -ᵥ p)) (hb : b ≠ p) :
+    ∠ a p b + ∠ b p c = ∠ a p c := by
+  rcases eq_or_ne p x with rfl | hpx
+  · have hpi : ∠ a p c = π := hx.angle₁₂₃_eq_pi
+    rw [hpi, angle_comm a p b]
+    exact angle_add_angle_eq_pi_of_angle_eq_pi b hpi
+  obtain ⟨r, hr, hrb⟩ := (exists_pos_left_iff_sameRay (by aesop) (by aesop)).2 hxb
+  have hab : ∠ a p b = ∠ a p x := angle_smul_right_of_pos a hr hrb
+  have hbc : ∠ b p c = ∠ x p c := angle_smul_left_of_pos c hr hrb
+  rw [hab, hbc]
+  exact angle_add_angle_eq_of_sbtw hx
 
 /-- **Stewart's Theorem**. -/
 theorem dist_sq_mul_dist_add_dist_sq_mul_dist (a b c p : P) (h : ∠ b p c = π) :

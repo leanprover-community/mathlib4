@@ -9,6 +9,8 @@ public import Mathlib.RingTheory.AdicCompletion.AsTensorProduct
 public import Mathlib.RingTheory.Flat.Stability
 public import Mathlib.RingTheory.Smooth.AdicCompletion
 public import Mathlib.RingTheory.Smooth.NoetherianDescent
+public import Mathlib.RingTheory.RingHom.Flat
+public import Mathlib.RingTheory.RingHom.Smooth
 
 /-!
 # Smooth algebras are flat
@@ -30,7 +32,7 @@ The proof proceeds in two steps:
 - [Conde-Lago, A short proof of smooth implies flat][condelago2016shortproofsmoothimplies]
 -/
 
-@[expose] public section
+public section
 
 namespace Algebra
 
@@ -47,15 +49,21 @@ lemma FormallySmooth.flat_of_algHom_of_isNoetherianRing (f : S →ₐ[R] A) (hf 
 variable (R A)
 
 /-- If `A` is `R`-smooth and `R` is Noetherian, then `A` is `R`-flat. -/
-instance Smooth.flat_of_isNoetherianRing [IsNoetherianRing R] [Algebra.Smooth R A] :
+theorem Smooth.flat_of_isNoetherianRing [IsNoetherianRing R] [Smooth R A] :
     Module.Flat R A := by
   obtain ⟨k, f, hf⟩ := (FiniteType.iff_quotient_mvPolynomial'' (R := R) (S := A)).mp inferInstance
   exact FormallySmooth.flat_of_algHom_of_isNoetherianRing f hf
 
 /-- Any smooth algebra is flat. -/
-instance Smooth.flat [Algebra.Smooth R A] : Module.Flat R A := by
+instance Smooth.flat [Smooth R A] : Module.Flat R A := by
   obtain ⟨A₀, B₀, _, _, _, _, _, _, _, _, ⟨e⟩⟩ := exists_finiteType ℤ R A
   have : IsNoetherianRing A₀ := Algebra.FiniteType.isNoetherianRing ℤ _
+  have : Module.Flat A₀ B₀ := Smooth.flat_of_isNoetherianRing _ _
   exact .of_linearEquiv e.toLinearEquiv
 
 end Algebra
+
+lemma RingHom.Smooth.flat {R S : Type*} [CommRing R] [CommRing S] {f : R →+* S} (hf : f.Smooth) :
+    f.Flat := by
+  algebraize [f]
+  exact Algebra.Smooth.flat R S

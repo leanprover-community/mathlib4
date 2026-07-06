@@ -10,6 +10,7 @@ public import Mathlib.Data.List.Pairwise
 public import Mathlib.Data.List.Nodup
 public import Mathlib.Data.List.Lookmap
 public import Mathlib.Data.Sigma.Basic
+public import Mathlib.Data.Nat.Basic
 
 /-!
 # Utilities for lists of sigmas
@@ -73,13 +74,8 @@ theorem mem_keys {a} {l : List (Sigma β)} : a ∈ l.keys ↔ ∃ b : β a, Sigm
 theorem notMem_keys {a} {l : List (Sigma β)} : a ∉ l.keys ↔ ∀ b : β a, Sigma.mk a b ∉ l := by
   grind
 
-@[deprecated (since := "2025-05-23")] alias not_mem_keys := notMem_keys
-
 theorem ne_key {a} {l : List (Sigma β)} : a ∉ l.keys ↔ ∀ s : Sigma β, s ∈ l → a ≠ s.1 := by
   grind
-
-@[deprecated (since := "2025-04-27")]
-alias not_eq_key := ne_key
 
 /-! ### `NodupKeys` -/
 
@@ -111,9 +107,6 @@ theorem nodupKeys_middle {s : Sigma β} :
 theorem notMem_keys_of_nodupKeys_cons {s : Sigma β} {l : List (Sigma β)} (h : NodupKeys (s :: l)) :
     s.1 ∉ l.keys := by grind
 
-@[deprecated (since := "2025-05-23")]
-alias not_mem_keys_of_nodupKeys_cons := notMem_keys_of_nodupKeys_cons
-
 theorem nodupKeys_of_nodupKeys_cons {s : Sigma β} {l : List (Sigma β)} (h : NodupKeys (s :: l)) :
     NodupKeys l :=
   (nodupKeys_cons.1 h).2
@@ -121,7 +114,7 @@ theorem nodupKeys_of_nodupKeys_cons {s : Sigma β} {l : List (Sigma β)} (h : No
 theorem NodupKeys.eq_of_fst_eq {l : List (Sigma β)} (nd : NodupKeys l) {s s' : Sigma β} (h : s ∈ l)
     (h' : s' ∈ l) : s.1 = s'.1 → s = s' :=
   @Pairwise.forall_of_forall _ (fun s s' : Sigma β => s.1 = s'.1 → s = s') _
-    (fun _ _ H h => (H h.symm).symm) (fun _ _ _ => rfl)
+    ⟨fun _ _ H h => (H h.symm).symm⟩ (fun _ _ _ => rfl)
     ((nodupKeys_iff_pairwise.1 nd).imp fun h h' => (h h').elim) _ h _ h'
 
 theorem NodupKeys.eq_of_mk_mem {a : α} {b b' : β a} {l : List (Sigma β)} (nd : NodupKeys l)
@@ -145,7 +138,6 @@ theorem nodupKeys_flatten {L : List (List (Sigma β))} :
     NodupKeys (flatten L) ↔ (∀ l ∈ L, NodupKeys l) ∧ Pairwise Disjoint (L.map keys) := by
   rw [nodupKeys_iff_pairwise, pairwise_flatten, pairwise_map]
   refine and_congr (forall₂_congr fun l _ => by simp [nodupKeys_iff_pairwise]) ?_
-  apply iff_of_eq; congr! with (l₁ l₂)
   simp [keys, disjoint_iff_ne, Sigma.forall]
 
 theorem nodup_zipIdx_map_snd (l : List α) : (l.zipIdx.map Prod.snd).Nodup := by
@@ -235,16 +227,31 @@ theorem dlookup_map₂ {γ δ : α → Type*} {l : List (Σ a, γ a)} {f : ∀ a
     (l.map (.map id f) : List (Σ a, δ a)).dlookup a = (l.dlookup a).map (f a) :=
   dlookup_map l Function.injective_id _ _
 
-omit [DecidableEq α] [DecidableEq α'] in
-theorem NodupKeys.map₁ {β : Type v} (f : α → α') (hf : Function.Injective f) {l : List (Σ _ : α, β)}
-    (nd : l.NodupKeys) : (l.map (.map f fun _ => id) : List (Σ _ : α', β)).NodupKeys := by
-  classical
+#adaptation_note /-- Before leanprover/lean4#13166
+the grind proof here worked, but after changes to the canonicalizer it now times out.
+Changes to grind attributes in Batteries in
+https://github.com/leanprover-community/batteries/pull/1744
+may allow restoring the original proof:
+```
   induction l with
   | nil => grind [nodupKeys_nil]
   | cons hd tl =>
     have := dlookup_map₁ tl hf hd.fst
     grind [dlookup_isSome, → notMem_keys_of_nodupKeys_cons, nodupKeys_of_nodupKeys_cons,
       nodupKeys_cons]
+```
+-/
+omit [DecidableEq α] [DecidableEq α'] in
+theorem NodupKeys.map₁ {β : Type v} (f : α → α') (hf : Function.Injective f) {l : List (Σ _ : α, β)}
+    (nd : l.NodupKeys) : (l.map (.map f fun _ => id) : List (Σ _ : α', β)).NodupKeys := by
+  induction l with
+  | nil => exact nodupKeys_nil
+  | cons hd tl ih =>
+    simp only [map_cons, nodupKeys_cons] at nd ⊢
+    exact ⟨mt (fun h => by
+      simp only [keys, map_map] at h ⊢
+      obtain ⟨x, hm, he⟩ := mem_map.mp h
+      exact mem_map.mpr ⟨x, hm, hf he⟩) nd.1, ih nd.2⟩
 
 omit [DecidableEq α] in
 theorem map₂_keys {β β' : α → Type*} (f : (a : α) → β a → β' a) (l : List (Σ a, β a)) :
@@ -321,7 +328,7 @@ theorem lookupAll_sublist (a : α) : ∀ l : List (Sigma β), (lookupAll a l).ma
     by_cases h : a = a'
     · subst h
       simp only [lookupAll_cons_eq, List.map]
-      exact (lookupAll_sublist a l).cons₂ _
+      exact (lookupAll_sublist a l).cons_cons _
     · simp only [ne_eq, h, not_false_iff, lookupAll_cons_ne]
       exact (lookupAll_sublist a l).cons _
 
@@ -413,8 +420,6 @@ theorem kerase_of_notMem_keys {a} {l : List (Sigma β)} (h : a ∉ l.keys) : ker
   | nil => rfl
   | cons _ _ ih => simp [not_or] at h; simp [h.1, ih h.2]
 
-@[deprecated (since := "2025-05-23")] alias kerase_of_not_mem_keys := kerase_of_notMem_keys
-
 theorem kerase_sublist (a : α) (l : List (Sigma β)) : kerase a l <+ l :=
   eraseP_sublist
 
@@ -490,8 +495,6 @@ theorem notMem_keys_kerase (a) {l : List (Sigma β)} (nd : l.NodupKeys) :
       simp [nd.1]
     · simp [h, ih nd.2]
 
-@[deprecated (since := "2025-05-23")] alias not_mem_keys_kerase := notMem_keys_kerase
-
 @[simp]
 theorem dlookup_kerase (a) {l : List (Sigma β)} (nd : l.NodupKeys) :
     dlookup a (kerase a l) = none :=
@@ -505,7 +508,7 @@ theorem dlookup_kerase_ne {a a'} {l : List (Sigma β)} (h : a ≠ a') :
   | cons hd tl ih =>
     obtain ⟨ah, bh⟩ := hd
     by_cases h₁ : a = ah <;> by_cases h₂ : a' = ah
-    · substs h₁ h₂
+    · subst h₁ h₂
       cases Ne.irrefl h
     · subst h₁
       simp [h₂]
@@ -546,7 +549,6 @@ theorem kerase_comm (a₁ a₂) (l : List (Sigma β)) :
 
 theorem sizeOf_kerase [SizeOf (Sigma β)] (x : α)
     (xs : List (Sigma β)) : SizeOf.sizeOf (List.kerase x xs) ≤ SizeOf.sizeOf xs := by
-  simp only [SizeOf.sizeOf, _sizeOf_1]
   induction xs with
   | nil => simp
   | cons y ys => by_cases x = y.1 <;> simp [*]
@@ -614,7 +616,6 @@ theorem dedupKeys_cons {x : Sigma β} (l : List (Sigma β)) :
     dedupKeys (x :: l) = kinsert x.1 x.2 (dedupKeys l) :=
   rfl
 
-
 theorem nodupKeys_dedupKeys (l : List (Sigma β)) : NodupKeys (dedupKeys l) := by
   dsimp [dedupKeys]
   generalize hl : nil = l'
@@ -643,16 +644,19 @@ theorem dlookup_dedupKeys (a : α) (l : List (Sigma β)) : dlookup a (dedupKeys 
     · rw [dedupKeys_cons, dlookup_kinsert_ne h, l_ih, dlookup_cons_ne]
       exact h
 
+theorem sizeOf_cons_le_sizeOf_cons {α : Type*} [SizeOf α] {l r : List α} (a : α)
+    (h : SizeOf.sizeOf l ≤ SizeOf.sizeOf r) :
+    SizeOf.sizeOf (a :: l) ≤ SizeOf.sizeOf (a :: r) := by
+  rw [cons.sizeOf_spec, cons.sizeOf_spec]
+  exact Nat.add_le_add_iff_left.mpr h
+
 theorem sizeOf_dedupKeys [SizeOf (Sigma β)]
     (xs : List (Sigma β)) : SizeOf.sizeOf (dedupKeys xs) ≤ SizeOf.sizeOf xs := by
-  simp only [SizeOf.sizeOf, _sizeOf_1]
   induction xs with
   | nil => simp [dedupKeys]
-  | cons x xs =>
-    simp only [dedupKeys_cons, kinsert_def, Nat.add_le_add_iff_left, Sigma.eta]
-    trans
-    · apply sizeOf_kerase
-    · assumption
+  | cons x xs h =>
+    simp only [dedupKeys_cons, kinsert_def, Sigma.eta]
+    exact sizeOf_cons_le_sizeOf_cons x (le_trans (sizeOf_kerase x.fst xs.dedupKeys) h)
 
 /-! ### `kunion` -/
 

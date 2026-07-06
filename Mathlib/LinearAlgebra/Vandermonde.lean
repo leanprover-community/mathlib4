@@ -127,7 +127,7 @@ theorem rectVandermonde_apply_zero_right {α : Type*} {v w : α → R} {i : α} 
   obtain rfl | hlt := j.le_last.eq_or_lt
   · simp [rectVandermonde_apply]
   rw [rectVandermonde_apply, Pi.single_eq_of_ne hlt.ne, hw, zero_pow, mul_zero]
-  simpa [Nat.sub_eq_zero_iff_le] using hlt
+  simpa [Nat.sub_eq_zero_iff_le] using! hlt
 
 theorem projVandermonde_apply_of_ne_zero
     {v w : Fin (n + 1) → K} {i j : Fin (n + 1)} (hw : w i ≠ 0) :
@@ -140,7 +140,7 @@ theorem projVandermonde_apply_zero_right {v w : Fin (n + 1) → R} {i : Fin (n +
   obtain rfl | hlt := j.le_last.eq_or_lt
   · simp [projVandermonde_apply]
   rw [projVandermonde_apply, Pi.single_eq_of_ne hlt.ne, hw, zero_pow, mul_zero]
-  simpa [Nat.sub_eq_zero_iff_le] using hlt
+  simpa [Nat.sub_eq_zero_iff_le] using! hlt
 
 theorem projVandermonde_comp {v w : Fin n → R} (f : Fin n → Fin n) :
     projVandermonde (v ∘ f) (w ∘ f) = (projVandermonde v w).submatrix f id := rfl
@@ -177,7 +177,7 @@ private theorem det_projVandermonde_of_field (v w : Fin n → K) :
       projVandermonde (v ∘ succ) (w ∘ succ) i j := by
     ext i j
     simp only [projVandermonde_apply, val_zero, rev_zero, val_last, val_succ,
-      coe_castSucc, submatrix_apply, Function.comp_apply, rev_succ,
+      val_castSucc, submatrix_apply, Function.comp_apply, rev_succ,
       W, r, rev_castSucc]
     simp
     ring
@@ -197,7 +197,7 @@ private theorem det_projVandermonde_of_field (v w : Fin n → K) :
   obtain ⟨j, rfl⟩ := j.eq_succ_of_ne_zero hj0
   rw [mul_eq_zero, mul_eq_zero]
   refine .inl (.inr ?_)
-  simp only [of_apply, projVandermonde_apply_of_ne_zero h0, val_succ, coe_castSucc, cons_succ, W, r]
+  simp only [of_apply, projVandermonde_apply_of_ne_zero h0, val_succ, val_castSucc, cons_succ, W, r]
   ring
 
 /-- The formula for the determinant of a projective Vandermonde matrix. -/
@@ -211,7 +211,7 @@ theorem det_projVandermonde (v w : Fin n → R) : (projVandermonde v w).det =
   rw [projVandermonde_map, ← RingHom.map_det, IsFractionRing.coe_inj] at hdet
   apply_fun MvPolynomial.eval₂Hom (Int.castRingHom R) (fun x ↦ (if x.2 then v else w) x.1) at hdet
   rw [RingHom.map_det] at hdet
-  convert hdet <;>
+  convert! hdet <;>
   simp [← Matrix.ext_iff, projVandermonde_apply]
 
 /-- The formula for the determinant of a Vandermonde matrix. -/
@@ -267,7 +267,7 @@ theorem eval_matrixOfPolynomials_eq_vandermonde_mul_matrixOfPolynomials (v : Fin
     Matrix.of (fun i j => ((p j).eval (v i))) =
     (Matrix.vandermonde v) * (Matrix.of (fun (i j : Fin n) => (p j).coeff i)) := by
   ext i j
-  simp_rw [Matrix.mul_apply, eval, Matrix.of_apply, eval₂]
+  simp_rw [Matrix.mul_apply, eval, Matrix.of_apply, eval₂_eq_sum]
   simp only [Matrix.vandermonde]
   have : (p j).support ⊆ range n := supp_subset_range <| Nat.lt_of_le_of_lt (h_deg j) <| Fin.prop j
   rw [sum_eq_of_subset _ (fun j => zero_mul ((v i) ^ j)) this, ← Fin.sum_univ_eq_sum_range]
@@ -300,7 +300,7 @@ private lemma of_eval_descPochhammer_eq_mul_of_choose {n : ℕ} (v : Fin n → �
     (of fun i j : Fin n => (descPochhammer ℤ j).eval (v i : ℤ)).det =
     (∏ i : Fin n, Nat.factorial i) *
       (of fun i j : Fin n => (Nat.choose (v i) j : ℤ)).det := by
-  convert det_mul_row (fun (i : Fin n) => ((Nat.factorial (i : ℕ)) : ℤ)) _
+  convert! det_mul_row (fun (i : Fin n) => ((Nat.factorial (i : ℕ)) : ℤ)) _
   · rw [of_apply, descPochhammer_eval_eq_descFactorial ℤ _ _]
     congr
     exact Nat.descFactorial_eq_factorial_mul_choose _ _

@@ -5,7 +5,7 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Presentable.LocallyPresentable
+public import Mathlib.CategoryTheory.Presentable.CardinalFilteredPresentation
 
 /-!
 # Accessible categories are essentially large
@@ -17,7 +17,7 @@ of objects is in `Type (w + 1)` and whose types of morphisms are in `Type w`.
 
 -/
 
-@[expose] public section
+public section
 
 universe w v u
 
@@ -44,7 +44,7 @@ lemma essentiallyLarge_top :
   let G : J ⥤ P.FullSubcategory := P.lift p.diag p.prop_diag_obj
   let iso : (G ⋙ e.functor) ⋙ e.inverse ⋙ P.ι ≅ p.diag :=
     Functor.associator _ _ _ ≪≫
-    G.isoWhiskerLeft ((Functor.associator _ _ _ ).symm ≪≫
+    G.isoWhiskerLeft ((Functor.associator _ _ _).symm ≪≫
     Functor.isoWhiskerRight e.unitIso.symm P.ι) ≪≫
     (Functor.associator _ _ _).symm ≪≫
     Functor.isoWhiskerRight (Functor.rightUnitor _) _

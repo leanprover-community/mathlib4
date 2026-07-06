@@ -55,8 +55,7 @@ theorem isQuadratic_χ₄ : χ₄.IsQuadratic := by
   decide
 
 /-- The value of `χ₄ n`, for `n : ℕ`, depends only on `n % 4`. -/
-theorem χ₄_nat_mod_four (n : ℕ) : χ₄ n = χ₄ (n % 4 : ℕ) := by
-  rw [← ZMod.natCast_mod n 4]
+theorem χ₄_nat_mod_four (n : ℕ) : χ₄ n = χ₄ (n % 4 : ℕ) := by grind
 
 /-- The value of `χ₄ n`, for `n : ℤ`, depends only on `n % 4`. -/
 theorem χ₄_int_mod_four (n : ℤ) : χ₄ n = χ₄ (n % 4 : ℤ) := by

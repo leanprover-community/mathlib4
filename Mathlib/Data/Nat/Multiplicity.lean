@@ -45,7 +45,7 @@ Derive results from the corresponding ones `Mathlib.Data.Nat.Factorization.Multi
 Legendre, p-adic
 -/
 
-@[expose] public section
+public section
 
 open Finset
 
@@ -125,6 +125,7 @@ theorem sub_one_mul_multiplicity_factorial {n p : ℕ} (hp : p.Prime) :
     ← Finset.sum_Ico_add' _ 0 _ 1, Ico_zero_eq_range, ←
     sub_one_mul_sum_log_div_pow_eq_sub_sum_digits]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The multiplicity of `p` in `(p * (n + 1))!` is one more than the sum
   of the multiplicities of `p` in `(p * n)!` and `n + 1`. -/
 theorem emultiplicity_factorial_mul_succ {n p : ℕ} (hp : p.Prime) :
@@ -133,7 +134,7 @@ theorem emultiplicity_factorial_mul_succ {n p : ℕ} (hp : p.Prime) :
   have h0 : 2 ≤ p := hp.two_le
   have h1 : 1 ≤ p * n + 1 := Nat.le_add_left _ _
   have h2 : p * n + 1 ≤ p * (n + 1) := by linarith
-  have h3 : p * n + 1 ≤ p * (n + 1) + 1 := by omega
+  have h3 : p * n + 1 ≤ p * (n + 1) + 1 := by lia
   have hm : emultiplicity p (p * n)! ≠ ⊤ := by
     rw [Ne, emultiplicity_eq_top, Classical.not_not, Nat.finiteMultiplicity_iff]
     exact ⟨hp.ne_one, factorial_pos _⟩
@@ -160,8 +161,8 @@ theorem emultiplicity_factorial_mul {n p : ℕ} (hp : p.Prime) :
     congr 1
     rw [add_comm, add_assoc]
 
-/- The multiplicity of a prime `p` in `p ^ n` is the sum of `p ^ i`, where `i` ranges between `0`
-  and `n - 1`. -/
+/-- The multiplicity of a prime `p` in `p ^ n` is the sum of `p ^ i`, where `i` ranges between `0`
+and `n - 1`. -/
 theorem multiplicity_factorial_pow {n p : ℕ} (hp : p.Prime) :
     multiplicity p (p ^ n).factorial = ∑ i ∈ Finset.range n, p ^ i := by
   rw [← ENat.coe_inj, ← (Nat.finiteMultiplicity_iff.2
@@ -171,6 +172,7 @@ theorem multiplicity_factorial_pow {n p : ℕ} (hp : p.Prime) :
   | succ n h =>
     rw [pow_succ', hp.emultiplicity_factorial_mul, h, Finset.sum_range_succ, ENat.coe_add]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A prime power divides `n!` iff it is at most the sum of the quotients `n / p ^ i`.
   This sum is expressed over the set `Ico 1 b` where `b` is any bound greater than `log p n` -/
 theorem pow_dvd_factorial_iff {p : ℕ} {n r b : ℕ} (hp : p.Prime) (hbn : log p n < b) :
@@ -209,7 +211,7 @@ theorem emultiplicity_choose' {p n k b : ℕ} (hp : p.Prime) (hnb : log p (n + k
 theorem emultiplicity_choose {p n k b : ℕ} (hp : p.Prime) (hkn : k ≤ n) (hnb : log p n < b) :
     emultiplicity p (choose n k) = #{i ∈ Ico 1 b | p ^ i ≤ k % p ^ i + (n - k) % p ^ i} := by
   have := Nat.sub_add_cancel hkn
-  convert @emultiplicity_choose' p (n - k) k b hp _
+  convert! @emultiplicity_choose' p (n - k) k b hp _
   · rw [this]
   exact this.symm ▸ hnb
 

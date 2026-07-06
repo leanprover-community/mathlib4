@@ -35,7 +35,7 @@ open CategoryTheory Category Limits Preadditive
 
 namespace HomologicalComplex₂
 
-variable {C : Type*} [Category C] [Preadditive C]
+variable {C : Type*} [Category* C] [Preadditive C]
   {I₁ I₂ I₁₂ : Type*} {c₁ : ComplexShape I₁} {c₂ : ComplexShape I₂}
   (K L M : HomologicalComplex₂ C c₁ c₂) (φ : K ⟶ L) (e : K ≅ L) (ψ : L ⟶ M)
   (c₁₂ : ComplexShape I₁₂) [TotalComplexShape c₁ c₂ c₁₂]
@@ -114,12 +114,14 @@ lemma d₂_eq (i₁ : I₁) {i₂ i₂' : I₂} (h : c₂.Rel i₂ i₂') (i₁�
 
 end totalAux
 
+set_option backward.isDefEq.respectTransparency false in
 lemma d₁_eq_zero' {i₁ i₁' : I₁} (h : c₁.Rel i₁ i₁') (i₂ : I₂) (i₁₂ : I₁₂)
     (h' : ComplexShape.π c₁ c₂ c₁₂ ⟨i₁', i₂⟩ ≠ i₁₂) :
     K.d₁ c₁₂ i₁ i₂ i₁₂ = 0 := by
   rw [totalAux.d₁_eq' K c₁₂ h i₂ i₁₂, K.toGradedObject.ιMapObjOrZero_eq_zero, comp_zero, smul_zero]
   exact h'
 
+set_option backward.isDefEq.respectTransparency false in
 lemma d₂_eq_zero' (i₁ : I₁) {i₂ i₂' : I₂} (h : c₂.Rel i₂ i₂') (i₁₂ : I₁₂)
     (h' : ComplexShape.π c₁ c₂ c₁₂ ⟨i₁, i₂'⟩ ≠ i₁₂) :
     K.d₂ c₁₂ i₁ i₂ i₁₂ = 0 := by
@@ -156,6 +158,7 @@ lemma ιMapObj_D₂ (i₁₂ i₁₂' : I₁₂) (i : I₁ × I₂) (h : Complex
 
 end totalAux
 
+set_option backward.isDefEq.respectTransparency false in
 lemma D₁_shape (i₁₂ i₁₂' : I₁₂) (h₁₂ : ¬ c₁₂.Rel i₁₂ i₁₂') : K.D₁ c₁₂ i₁₂ i₁₂' = 0 := by
   ext ⟨i₁, i₂⟩ h
   simp only [totalAux.ιMapObj_D₁, comp_zero]
@@ -165,6 +168,7 @@ lemma D₁_shape (i₁₂ i₁₂' : I₁₂) (h₁₂ : ¬ c₁₂.Rel i₁₂ 
     exact h₁₂ (by simpa only [← h, ← h₂] using ComplexShape.rel_π₁ c₂ c₁₂ h₁ i₂)
   · exact d₁_eq_zero _ _ _ _ _ h₁
 
+set_option backward.isDefEq.respectTransparency false in
 lemma D₂_shape (i₁₂ i₁₂' : I₁₂) (h₁₂ : ¬ c₁₂.Rel i₁₂ i₁₂') : K.D₂ c₁₂ i₁₂ i₁₂' = 0 := by
   ext ⟨i₁, i₂⟩ h
   simp only [totalAux.ιMapObj_D₂, comp_zero]
@@ -174,6 +178,7 @@ lemma D₂_shape (i₁₂ i₁₂' : I₁₂) (h₁₂ : ¬ c₁₂.Rel i₁₂ 
     exact h₁₂ (by simpa only [← h, ← h₁] using ComplexShape.rel_π₂ c₁ c₁₂ i₁ h₂)
   · exact d₂_eq_zero _ _ _ _ _ h₂
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma D₁_D₁ (i₁₂ i₁₂' i₁₂'' : I₁₂) : K.D₁ c₁₂ i₁₂ i₁₂' ≫ K.D₁ c₁₂ i₁₂' i₁₂'' = 0 := by
   by_cases h₁ : c₁₂.Rel i₁₂ i₁₂'
@@ -194,6 +199,7 @@ lemma D₁_D₁ (i₁₂ i₁₂' i₁₂'' : I₁₂) : K.D₁ c₁₂ i₁₂ 
     · rw [K.D₁_shape c₁₂ _ _ h₂, comp_zero]
   · rw [K.D₁_shape c₁₂ _ _ h₁, zero_comp]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma D₂_D₂ (i₁₂ i₁₂' i₁₂'' : I₁₂) : K.D₂ c₁₂ i₁₂ i₁₂' ≫ K.D₂ c₁₂ i₁₂' i₁₂'' = 0 := by
   by_cases h₁ : c₁₂.Rel i₁₂ i₁₂'
@@ -214,6 +220,7 @@ lemma D₂_D₂ (i₁₂ i₁₂' i₁₂'' : I₁₂) : K.D₂ c₁₂ i₁₂ 
     · rw [K.D₂_shape c₁₂ _ _ h₂, comp_zero]
   · rw [K.D₂_shape c₁₂ _ _ h₁, zero_comp]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma D₂_D₁ (i₁₂ i₁₂' i₁₂'' : I₁₂) :
     K.D₂ c₁₂ i₁₂ i₁₂' ≫ K.D₁ c₁₂ i₁₂' i₁₂'' = - K.D₁ c₁₂ i₁₂ i₁₂' ≫ K.D₂ c₁₂ i₁₂' i₁₂'' := by
@@ -337,6 +344,7 @@ variable {A : C} {i₁₂ : I₁₂}
 noncomputable def totalDesc : (K.total c₁₂).X i₁₂ ⟶ A :=
   K.toGradedObject.descMapObj _ (fun ⟨i₁, i₂⟩ hi => f i₁ i₂ hi)
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma ι_totalDesc (i₁ : I₁) (i₂ : I₂) (hi : ComplexShape.π c₁ c₂ c₁₂ (i₁, i₂) = i₁₂) :
     K.ιTotal c₁₂ i₁ i₂ i₁₂ hi ≫ K.totalDesc f = f i₁ i₂ hi := by
@@ -360,6 +368,7 @@ variable [L.HasTotal c₁₂]
 
 namespace mapAux
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma d₁_mapMap (i₁ : I₁) (i₂ : I₂) (i₁₂ : I₁₂) :
     K.d₁ c₁₂ i₁ i₂ i₁₂ ≫ GradedObject.mapMap (toGradedObjectMap φ) _ i₁₂ =
@@ -368,6 +377,7 @@ lemma d₁_mapMap (i₁ : I₁) (i₂ : I₂) (i₁₂ : I₁₂) :
   · simp [totalAux.d₁_eq' _ c₁₂ h]
   · simp [d₁_eq_zero _ c₁₂ i₁ i₂ i₁₂ h]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma d₂_mapMap (i₁ : I₁) (i₂ : I₂) (i₁₂ : I₁₂) :
     K.d₂ c₁₂ i₁ i₂ i₁₂ ≫ GradedObject.mapMap (toGradedObjectMap φ) _ i₁₂ =
@@ -376,12 +386,14 @@ lemma d₂_mapMap (i₁ : I₁) (i₂ : I₂) (i₁₂ : I₁₂) :
   · simp [totalAux.d₂_eq' _ c₁₂ i₁ h]
   · simp [d₂_eq_zero _ c₁₂ i₁ i₂ i₁₂ h]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma mapMap_D₁ (i₁₂ i₁₂' : I₁₂) :
     GradedObject.mapMap (toGradedObjectMap φ) _ i₁₂ ≫ L.D₁ c₁₂ i₁₂ i₁₂' =
       K.D₁ c₁₂ i₁₂ i₁₂' ≫ GradedObject.mapMap (toGradedObjectMap φ) _ i₁₂' := by
   cat_disch
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma mapMap_D₂ (i₁₂ i₁₂' : I₁₂) :
     GradedObject.mapMap (toGradedObjectMap φ) _ i₁₂ ≫ L.D₂ c₁₂ i₁₂ i₁₂' =
@@ -431,12 +443,14 @@ section
 
 variable [L.HasTotal c₁₂]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma ιTotal_map (i₁ : I₁) (i₂ : I₂) (i₁₂ : I₁₂) (h : ComplexShape.π c₁ c₂ c₁₂ (i₁, i₂) = i₁₂) :
     K.ιTotal c₁₂ i₁ i₂ i₁₂ h ≫ (total.map φ c₁₂).f i₁₂ =
       (φ.f i₁).f i₂ ≫ L.ιTotal c₁₂ i₁ i₂ i₁₂ h := by
   simp [total.map, ιTotal]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma ιTotalOrZero_map (i₁ : I₁) (i₂ : I₂) (i₁₂ : I₁₂) :
     K.ιTotalOrZero c₁₂ i₁ i₂ i₁₂ ≫ (total.map φ c₁₂).f i₁₂ =

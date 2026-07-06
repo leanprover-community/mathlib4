@@ -35,7 +35,7 @@ Hermann Minkowski.
 * [Pete L. Clark, *Geometry of Numbers with Applications to Number Theory*][clark_gon] p.28
 -/
 
-@[expose] public section
+public section
 
 
 namespace MeasureTheory
@@ -71,8 +71,7 @@ theorem exists_ne_zero_mem_lattice_of_measure_mul_two_pow_lt_measure [NormedAddC
     rw [addHaar_smul_of_nonneg μ (by simp : 0 ≤ (2 : ℝ)⁻¹) s,
       ← ENNReal.mul_lt_mul_iff_left (pow_ne_zero (finrank ℝ E) (two_ne_zero' _)) (by finiteness),
       mul_right_comm, ofReal_pow (by simp : 0 ≤ (2 : ℝ)⁻¹), ofReal_inv_of_pos zero_lt_two]
-    norm_num
-    rwa [← mul_pow, ENNReal.inv_mul_cancel two_ne_zero ofNat_ne_top, one_pow, one_mul]
+    simpa [← mul_pow, ENNReal.inv_mul_cancel two_ne_zero ofNat_ne_top]
   obtain ⟨x, y, hxy, h⟩ :=
     exists_pair_mem_lattice_not_disjoint_vadd fund ((h_conv.smul _).nullMeasurableSet _) h_vol
   obtain ⟨_, ⟨v, hv, rfl⟩, w, hw, hvw⟩ := Set.not_disjoint_iff.mp h

@@ -5,14 +5,14 @@ Authors: Johan Commelin, Eric Wieser, Jujian Zhang
 -/
 import Mathlib.Algebra.Divisibility.Finite
 import Mathlib.Algebra.Divisibility.Prod
-import Mathlib.Data.Fintype.Units
+import Mathlib.Algebra.GroupWithZero.Units.Fintype
 import Mathlib.RingTheory.GradedAlgebra.Homogeneous.Ideal
 
 /-!
 # A homogeneous ideal that is homogeneously prime but not prime
 
 In `Ideal.IsHomogeneous.isPrime_of_homogeneous_mem_or_mem`, we assumed that the underlying grading
-is indexed by a `LinearOrderedCancelAddCommMonoid` to prove that a homogeneous ideal is prime
+is indexed by a linearly ordered cancellative monoid to prove that a homogeneous ideal is prime
 if and only if it is homogeneously prime. This file shows that even if this assumption isn't
 strictly necessary, the assumption of "being cancellative" is. We construct a counterexample where
 the underlying indexing set is a `LinearOrderedAddCommMonoid` but is not cancellative and the
@@ -141,7 +141,7 @@ theorem I_isHomogeneous : Ideal.IsHomogeneous (grading R) I := by
 theorem homogeneous_mem_or_mem : ∀ {x y : R × R},
     SetLike.IsHomogeneousElem (grading R) x → SetLike.IsHomogeneousElem (grading R) y →
     x * y ∈ I → x ∈ I ∨ y ∈ I := by
-  have h2 : Prime (2:R) := by
+  have h2 : Prime (2 : R) := by
     unfold Prime
     decide +kernel
   simp only [I, Ideal.mem_span_singleton]

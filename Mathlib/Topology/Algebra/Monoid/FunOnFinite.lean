@@ -13,7 +13,7 @@ public import Mathlib.LinearAlgebra.Finsupp.Pi
 
 -/
 
-@[expose] public section
+public section
 
 namespace FunOnFinite
 
@@ -25,7 +25,7 @@ lemma continuous_map
   have := Fintype.ofFinite X
   refine continuous_pi (fun y ↦ ?_)
   simp only [FunOnFinite.map_apply_apply]
-  exact continuous_finset_sum _ (fun _ _ ↦ continuous_apply _)
+  exact continuous_finsetSum _ (fun _ _ ↦ continuous_apply _)
 
 lemma continuous_linearMap
     (R M : Type*) [Semiring R] [AddCommMonoid M]

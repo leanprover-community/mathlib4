@@ -9,6 +9,7 @@ public import Mathlib.LinearAlgebra.RootSystem.Defs
 
 /-!
 # Root pairings made from bilinear forms
+
 A common construction of root systems is given by taking the set of all vectors in an integral
 lattice for which reflection yields an automorphism of the lattice.  In this file, we generalize
 this construction, replacing the ring of integers with an arbitrary commutative ring and the
@@ -47,7 +48,7 @@ namespace IsReflective
 
 lemma of_dvd_two [IsCancelMulZero R] [NeZero (2 : R)] (hx : B x x ∣ 2) :
     IsReflective B x where
-  regular := isRegular_of_ne_zero <| fun contra ↦ by simp [contra, two_ne_zero (α := R)] at hx
+  regular := .of_ne_zero <| fun contra ↦ by simp [contra, two_ne_zero (α := R)] at hx
   dvd_two_mul y := hx.mul_right (B x y)
 
 variable (hx : IsReflective B x)
@@ -112,6 +113,7 @@ namespace RootPairing
 
 open LinearMap IsReflective
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The root pairing given by all reflective vectors for a bilinear form. -/
 def ofBilinear [IsReflexive R M] (B : M →ₗ[R] M →ₗ[R] R) (hNB : LinearMap.Nondegenerate B)
     (hSB : LinearMap.IsSymm B) (h2 : IsRegular (2 : R)) :
@@ -159,8 +161,8 @@ def ofBilinear [IsReflexive R M] (B : M →ₗ[R] M →ₗ[R] R) (hNB : LinearMa
       right_inv := by
         intro y
         simp [involutive_reflection (coroot_apply_self B x.2) y] }
-  reflectionPerm_root x y := by
-    simp [Module.reflection_apply]
+  reflectionPerm_root := by
+    simp [coe_setOf, Module.reflection_apply]
   reflectionPerm_coroot x y := by
     simp only [coe_setOf, mem_setOf_eq, Embedding.coeFn_mk, Embedding.subtype_apply,
       Dual.eval_apply, Equiv.coe_fn_mk]

@@ -20,7 +20,7 @@ The values of additive characters on finite cancellative monoids have norm 1.
 
 -/
 
-@[expose] public section
+public section
 
 variable {α β : Type*}
 

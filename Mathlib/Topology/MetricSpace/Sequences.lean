@@ -14,7 +14,7 @@ public import Mathlib.Topology.MetricSpace.Bounded
 In this file we prove 2 versions of Bolzano-Weierstrass theorem for proper metric spaces.
 -/
 
-@[expose] public section
+public section
 
 open Filter Bornology Metric
 open scoped Topology

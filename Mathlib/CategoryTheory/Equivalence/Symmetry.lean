@@ -25,6 +25,8 @@ and provides the definition of the functor that takes an equivalence to its inve
 
 -/
 
+set_option backward.defeqAttrib.useBackward true
+
 @[expose] public section
 
 namespace CategoryTheory
@@ -33,8 +35,9 @@ open CategoryTheory.Functor NatIso Category
 
 namespace Equivalence
 
-variable (C : Type*) [Category C] (D : Type*) [Category D]
+variable (C : Type*) [Category* C] (D : Type*) [Category* D]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The forward functor of the equivalence `(C ≌ D) ≌ (D ≌ C)ᵒᵖ`. -/
 @[simps]
 def symmEquivFunctor : (C ≌ D) ⥤ (D ≌ C)ᵒᵖ where
@@ -42,6 +45,7 @@ def symmEquivFunctor : (C ≌ D) ⥤ (D ≌ C)ᵒᵖ where
   map {e f} α := (mkHom <| conjugateEquiv f.toAdjunction e.toAdjunction <| asNatTrans α).op
   map_comp _ _ := Quiver.Hom.unop_inj (by cat_disch)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The inverse functor of the equivalence `(C ≌ D) ≌ (D ≌ C)ᵒᵖ`. -/
 @[simps!]
 def symmEquivInverse : (D ≌ C)ᵒᵖ ⥤ (C ≌ D) :=
@@ -51,6 +55,8 @@ def symmEquivInverse : (D ≌ C)ᵒᵖ ⥤ (C ≌ D) :=
         conjugateEquiv e.symm.toAdjunction f.symm.toAdjunction |>.invFun <| asNatTrans α
       map_comp _ _ := Quiver.Hom.unop_inj (by cat_disch) }
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- Taking the symmetric of an equivalence induces an equivalence of categories
 `(C ≌ D) ≌ (D ≌ C)ᵒᵖ`. -/
 @[simps]
@@ -96,7 +102,7 @@ def inverseFunctorObj' (e : C ≌ D) :
 variable (C D) in
 /-- Promoting `Equivalence.congrLeft` to a functor. -/
 @[simps!]
-def congrLeftFunctor (E : Type*) [Category E] : (C ≌ D) ⥤ ((C ⥤ E) ≌ (D ⥤ E))ᵒᵖ :=
+def congrLeftFunctor (E : Type*) [Category* E] : (C ≌ D) ⥤ ((C ⥤ E) ≌ (D ⥤ E))ᵒᵖ :=
   Functor.rightOp
     { obj f := f.unop.congrLeft
       map {e f} α := mkHom <| (whiskeringLeft _ _ _).map <|

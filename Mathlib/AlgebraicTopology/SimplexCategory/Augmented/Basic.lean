@@ -20,7 +20,7 @@ This definition provides a canonical full and faithful inclusion functor
 
 We prove that functors out of `AugmentedSimplexCategory` are equivalent to augmented cosimplicial
 objects and that functors out of `AugmentedSimplexCategoryᵒᵖ` are equivalent to augmented simplicial
-objects, and we provide a translation of the main constrcutions on augmented (co)simplicial objects
+objects, and we provide a translation of the main constructions on augmented (co)simplicial objects
 (i.e `drop`, `point` and `toArrow`) in terms of these equivalences.
 
 -/
@@ -35,7 +35,7 @@ abbrev AugmentedSimplexCategory := WithInitial SimplexCategory
 
 namespace AugmentedSimplexCategory
 
-variable {C : Type*} [Category C]
+variable {C : Type*} [Category* C]
 
 /-- The canonical inclusion from `SimplexCategory` to `AugmentedSimplexCategory`. -/
 @[simps!]
@@ -70,9 +70,6 @@ def equivAugmentedCosimplicialObjectFunctorCompPointIso :
     equivAugmentedCosimplicialObject.functor ⋙ CosimplicialObject.Augmented.point ≅
     ((evaluation _ _).obj .star : (AugmentedSimplexCategory ⥤ C) ⥤ C) :=
   .refl _
-
-@[deprecated (since := "2025-08-22")] alias equivAugmentedCosimplicialObjecFunctorCompPointIso :=
-  equivAugmentedCosimplicialObjectFunctorCompPointIso
 
 /-- Through the equivalence `(AugmentedSimplexCategory ⥤ C) ≌ CosimplicialObject.Augmented C`,
 the arrow attached to the cosimplicial object is the one obtained by evaluation at the unique arrow

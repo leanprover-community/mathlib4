@@ -19,7 +19,7 @@ and `a : ZMod q` is invertible, then there are infinitely many prime numbers `p`
 
 The main steps of the proof are as follows.
 1. Define `ArithmeticFunction.vonMangoldt.residueClass a` for `a : ZMod q`, which is
-   a function `ℕ → ℝ` taking the value zero when `(n : ℤMod q) ≠ a` and `Λ n` else
+   a function `ℕ → ℝ` taking the value zero when `(n : ZMod q) ≠ a` and `Λ n` else
    (where `Λ` is the von Mangoldt function `ArithmeticFunction.vonMangoldt`; we have
    `Λ (p^k) = log p` for prime powers and `Λ n = 0` otherwise.)
 2. Show that this function can be written as a linear combination of functions
@@ -90,7 +90,7 @@ lemma tprod_eq_tprod_primes_of_mulSupport_subset_prime_powers {f : ℕ → α}
   have hfm' : Multipliable fun pk : Nat.Primes × ℕ ↦ f (pk.fst ^ (pk.snd + 1)) :=
     prodNatEquiv.symm.multipliable_iff.mp <| by
       simpa only [← coe_prodNatEquiv_apply, Prod.eta, Function.comp_def, Equiv.apply_symm_apply]
-        using hfm.subtype _
+        using! hfm.subtype _
   simp only [← tprod_subtype_eq_of_mulSupport_subset hf, Set.coe_setOf, ← prodNatEquiv.tprod_eq,
     ← hfm'.tprod_prod]
   refine tprod_congr fun (p, k) ↦ congrArg f <| coe_prodNatEquiv_apply ..
@@ -148,7 +148,7 @@ lemma abscissaOfAbsConv_residueClass_le_one :
   refine abscissaOfAbsConv_le_of_forall_lt_LSeriesSummable fun y hy ↦ ?_
   unfold LSeriesSummable
   have := LSeriesSummable_vonMangoldt <| show 1 < (y : ℂ).re by simp only [ofReal_re, hy]
-  convert this.indicator {n : ℕ | (n : ZMod q) = a}
+  convert! this.indicator {n : ℕ | (n : ZMod q) = a}
   ext1 n
   by_cases hn : (n : ZMod q) = a
   · simp +contextual only [term, Set.indicator, Set.mem_setOf_eq, hn, ↓reduceIte, apply_ite,
@@ -314,11 +314,10 @@ lemma continuousOn_LFunctionResidueClassAux' :
   simp only [LFunctionResidueClassAux, sub_eq_add_neg]
   refine continuousOn_const.mul <| ContinuousOn.add ?_ ?_
   · refine (continuousOn_neg_logDeriv_LFunctionTrivChar₁ q).mono fun s hs ↦ ?_
-    have := LFunction_ne_zero_of_one_le_re (1 : DirichletCharacter ℂ q) (s := s)
     simp only [ne_eq, Set.mem_setOf_eq] at hs
     tauto
   · simp only [← Finset.sum_neg_distrib, mul_div_assoc, ← mul_neg, ← neg_div]
-    refine continuousOn_finset_sum _ fun χ hχ ↦ continuousOn_const.mul ?_
+    refine continuousOn_finsetSum _ fun χ hχ ↦ continuousOn_const.mul ?_
     replace hχ : χ ≠ 1 := by simpa only [ne_eq, Finset.mem_compl, Finset.mem_singleton] using hχ
     refine (continuousOn_neg_logDeriv_LFunction_of_nontriv hχ).mono fun s hs ↦ ?_
     simp only [ne_eq, Set.mem_setOf_eq] at hs
@@ -425,13 +424,13 @@ lemma not_summable_residueClass_prime_div (ha : IsUnit a) :
     ¬ Summable fun n : ℕ ↦ (if n.Prime then residueClass a n else 0) / n := by
   intro H
   have key : Summable fun n : ℕ ↦ residueClass a n / n := by
-    convert (summable_residueClass_non_primes_div a).add H using 2 with n
+    convert! (summable_residueClass_non_primes_div a).add H using 2 with n
     simp only [← add_div, ite_add_ite, zero_add, add_zero, ite_self]
   let C := ∑' n, residueClass a n / n
   have H₁ {x : ℝ} (hx : 1 < x) : ∑' n, residueClass a n / (n : ℝ) ^ x ≤ C := by
     refine Summable.tsum_le_tsum (fun n ↦ ?_) ?_ key
     · rcases n.eq_zero_or_pos with rfl | hn
-      · simp only [Nat.cast_zero, Real.zero_rpow (zero_lt_one.trans hx).ne', div_zero, le_refl]
+      · simp
       · refine div_le_div_of_nonneg_left (residueClass_nonneg a _) (mod_cast hn) ?_
         conv_lhs => rw [← Real.rpow_one n]
         exact Real.rpow_le_rpow_of_exponent_le (by norm_cast) hx.le
@@ -477,10 +476,7 @@ theorem infinite_setOf_prime_and_eq_mod (ha : IsUnit a) :
     {p : ℕ | p.Prime ∧ (p : ZMod q) = a}.Infinite := by
   by_contra! H
   exact not_summable_residueClass_prime_div ha <|
-    summable_of_finite_support <| support_residueClass_prime_div a ▸ H
-
-@[deprecated (since := "2025-11-01")]
-alias setOf_prime_and_eq_mod_infinite := infinite_setOf_prime_and_eq_mod
+    summable_of_hasFiniteSupport <| show Set.Finite _ from support_residueClass_prime_div a ▸ H
 
 /-- **Dirichlet's Theorem** on primes in arithmetic progression: if `q` is a positive
 integer and `a : ZMod q` is a unit, then there are infinitely many prime numbers `p`

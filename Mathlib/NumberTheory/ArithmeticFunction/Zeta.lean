@@ -13,7 +13,7 @@ public import Mathlib.NumberTheory.ArithmeticFunction.Defs
 We define `ζ` to be the arithmetic function with `ζ n = 1` for `0 < n` (whose Dirichlet series
 is the Riemann zeta function).
 
-# Main Definitions
+## Main Definitions
 
 * `ArithmeticFunction.zeta` is the arithmetic function such that `ζ x = 1` for `0 < x`. The notation
   `ζ` for this function is available by opening `ArithmeticFunction.zeta`.
@@ -74,22 +74,18 @@ theorem sum_divisorsAntidiagonal_eq_sum_divisors {M} [Semiring R] [AddCommMonoid
       ∑ i ∈ divisors x, f i := by
   simp [← coe_zeta_smul_apply (R := R)]
 
+theorem coe_zeta_mul_comm [Semiring R] {f : ArithmeticFunction R} : ζ * f = f * ζ := by
+  ext n
+  simp_rw [mul_apply, natCoe_apply, (cast_commute ..).eq]
+  rw [sum_divisorsAntidiagonal fun x y ↦ f y * ζ x, sum_divisorsAntidiagonal' fun x y ↦ f x * ζ y]
+
 theorem coe_zeta_mul_apply [Semiring R] {f : ArithmeticFunction R} {x : ℕ} :
     (ζ * f) x = ∑ i ∈ divisors x, f i :=
   coe_zeta_smul_apply
 
 theorem coe_mul_zeta_apply [Semiring R] {f : ArithmeticFunction R} {x : ℕ} :
     (f * ζ) x = ∑ i ∈ divisors x, f i := by
-  rw [mul_apply]
-  trans ∑ i ∈ divisorsAntidiagonal x, f i.1
-  · refine sum_congr rfl fun i hi => ?_
-    rcases mem_divisorsAntidiagonal.1 hi with ⟨rfl, h⟩
-    rw [natCoe_apply, zeta_apply_ne (right_ne_zero_of_mul h), cast_one, mul_one]
-  · rw [← map_div_right_divisors, sum_map, Function.Embedding.coeFn_mk]
-
-theorem coe_zeta_mul_comm [Semiring R] {f : ArithmeticFunction R} : ζ * f = f * ζ := by
-  ext x
-  rw [coe_zeta_mul_apply, coe_mul_zeta_apply]
+  rw [← coe_zeta_mul_comm, coe_zeta_mul_apply]
 
 theorem zeta_mul_apply {f : ArithmeticFunction ℕ} {x : ℕ} : (ζ * f) x = ∑ i ∈ divisors x, f i := by
   rw [← natCoe_nat ζ, coe_zeta_mul_apply]
@@ -226,11 +222,12 @@ open Lean Meta Qq
 
 /-- Extension for `ArithmeticFunction.zeta`. -/
 @[positivity ArithmeticFunction.zeta _]
-meta def evalArithmeticFunctionZeta : PositivityExt where eval {u α} z p e := do
+meta def evalArithmeticFunctionZeta : PositivityExt where eval {u α} z p? e :=
+  match p? with | none => throwError "no PartialOrder instance" | some p => do
   match u, α, e with
   | 0, ~q(ℕ), ~q(ArithmeticFunction.zeta $n) =>
-    let rn ← core z p n
     assumeInstancesCommute
+    let rn ← core z p n
     match rn with
     | .positive pn => return .positive q(Iff.mpr ArithmeticFunction.zeta_pos $pn)
     | _ => return .nonnegative q(Nat.zero_le _)

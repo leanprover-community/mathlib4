@@ -16,13 +16,13 @@ Lemmas on topological sums in rings with a strictly multiplicative norm, of whic
 the most familiar examples.
 -/
 
-@[expose] public section
+public section
 
 
 section NormMulClass
 
 variable {α E : Type*} [SeminormedCommRing E] [NormMulClass E] [NormOneClass E]
- {f : α → E} {x : E}
+  {f : α → E} {x : E}
 
 nonrec theorem HasProd.norm (hfx : HasProd f x) : HasProd (‖f ·‖) ‖x‖ := by
   simp only [HasProd, ← norm_prod]

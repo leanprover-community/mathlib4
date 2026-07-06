@@ -26,7 +26,7 @@ We closely follow the elementary proof given by Barry Mitchell.
 The left adjoint `tensorObj G` actually exists as soon as `C` is cocomplete and additive, so the
 construction could be generalized.
 
-The theorem as stated here implies that `C` is a Serre quotient of `ModuleCat (End R)ᵐᵒᵖ`.
+The theorem as stated here implies that `C` is a Serre quotient of `ModuleCat (End G)ᵐᵒᵖ`.
 
 ## References
 
@@ -67,11 +67,13 @@ noncomputable def d {G A : C} {M : ModuleCat (End G)ᵐᵒᵖ}
     (g : M ⟶ ModuleCat.of (End G)ᵐᵒᵖ (G ⟶ A)) : ∐ (fun (_ : M) => G) ⟶ A :=
   Sigma.desc fun (m : M) => g m
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 theorem ι_d {G A : C} {M : ModuleCat (End G)ᵐᵒᵖ} (g : M ⟶ ModuleCat.of (End G)ᵐᵒᵖ (G ⟶ A)) (m : M) :
     Sigma.ι _ m ≫ d g = g.hom m := by
   simp [d]
 
+set_option backward.defeqAttrib.useBackward true in
 attribute [local instance] IsFiltered.isConnected in
 /-- This is the "Lemma" in [mitchell1981]. -/
 theorem kernel_ι_d_comp_d {G : C} (hG : IsSeparator G) {A B : C} {M : ModuleCat (End G)ᵐᵒᵖ}
@@ -109,6 +111,7 @@ end GabrielPopescuAux
 
 open GabrielPopescuAux
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Faithfulness follows because `G` is a separator, see
 `isSeparator_iff_faithful_preadditiveCoyonedaObj`. -/
 theorem GabrielPopescu.full (G : C) (hG : IsSeparator G) : (preadditiveCoyonedaObj G).Full where
@@ -118,14 +121,15 @@ theorem GabrielPopescu.full (G : C) (hG : IsSeparator G) : (preadditiveCoyonedaO
     simp only [ModuleCat.hom_id, LinearMap.id_coe, id_eq, d] at h
     refine ⟨epiDesc _ _ h, ?_⟩
     ext q
-    simpa [-comp_epiDesc] using Sigma.ι _ q ≫= comp_epiDesc _ _ h
+    simpa [-comp_epiDesc] using! Sigma.ι _ q ≫= comp_epiDesc _ _ h
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 theorem GabrielPopescu.preservesInjectiveObjects (G : C) (hG : IsSeparator G) :
     (preadditiveCoyonedaObj G).PreservesInjectiveObjects where
   injective_obj {B} hB := by
     rw [← Module.injective_iff_injective_object]
-    simp only [preadditiveCoyonedaObj_obj_carrier, preadditiveCoyonedaObj_obj_isAddCommGroup,
-      preadditiveCoyonedaObj_obj_isModule]
+    simp only [preadditiveCoyonedaObj_obj_carrier]
     refine Module.Baer.injective (fun M g => ?_)
     have h := exists_d_comp_eq_d hG B (ModuleCat.ofHom
       ⟨⟨fun i => i.1.unop, by cat_disch⟩, by cat_disch⟩) ?_ (ModuleCat.ofHom g)
@@ -133,11 +137,12 @@ theorem GabrielPopescu.preservesInjectiveObjects (G : C) (hG : IsSeparator G) :
       refine ⟨((preadditiveCoyonedaObj G).map l).hom ∘ₗ
         (Preadditive.homSelfLinearEquivEndMulOpposite G).symm.toLinearMap, ?_⟩
       intro f hf
-      simpa [d] using Sigma.ι _ ⟨f, hf⟩ ≫= hl
+      simpa [d] using! Sigma.ι _ ⟨f, hf⟩ ≫= hl
     · rw [ModuleCat.mono_iff_injective]
       cat_disch
 
-/-- Right exactness follows because `tensorObj G` is a left adjoint. -/
+/-- `tensorObj G` is left exact: it is additive and preserves monomorphisms and cokernels,
+so it preserves homology and therefore finite limits. -/
 theorem GabrielPopescu.preservesFiniteLimits (G : C) (hG : IsSeparator G) :
     PreservesFiniteLimits (tensorObj G) := by
   have := preservesInjectiveObjects G hG

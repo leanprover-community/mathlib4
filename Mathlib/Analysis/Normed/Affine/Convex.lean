@@ -12,6 +12,7 @@ public import Mathlib.Analysis.Normed.Module.Convex
 
 /-!
 # Simplices in normed affine spaces
+
 We prove the following facts:
 
 * `exists_mem_interior_convexHull_affineBasis` : We can intercalate a simplex between a point and
@@ -20,7 +21,7 @@ We prove the following facts:
   polytope between a compact convex set and one of its neighborhoods.
 -/
 
-@[expose] public section
+public section
 
 variable {E P : Type*}
 

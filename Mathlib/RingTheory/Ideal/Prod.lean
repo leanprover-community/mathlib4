@@ -37,6 +37,11 @@ theorem mem_prod {x : R × S} : x ∈ prod I J ↔ x.1 ∈ I ∧ x.2 ∈ J :=
   Iff.rfl
 
 @[simp]
+theorem _root_.RingHom.ker_prodMap {T U : Type*} [Semiring T] [Semiring U] (f : R →+* S)
+    (g : T →+* U) : RingHom.ker (f.prodMap g) = (RingHom.ker f).prod (RingHom.ker g) := by
+  ext ⟨⟩; simp
+
+@[simp]
 theorem prod_top_top : prod (⊤ : Ideal R) (⊤ : Ideal S) = ⊤ :=
   Ideal.ext <| by simp
 
@@ -99,7 +104,7 @@ def idealProdEquiv : Ideal (R × S) ≃o Ideal R × Ideal S where
   left_inv I := (ideal_prod_eq I).symm
   right_inv := fun ⟨I, J⟩ => by simp
   map_rel_iff' {I J} := by
-    simp only [Equiv.coe_fn_mk, ge_iff_le, Prod.mk_le_mk]
+    simp only [Equiv.coe_fn_mk, Prod.mk_le_mk]
     refine ⟨fun h ↦ ?_, fun h ↦ ⟨map_mono h, map_mono h⟩⟩
     rw [ideal_prod_eq I, ideal_prod_eq J]
     exact inf_le_inf (comap_mono h.1) (comap_mono h.2)
@@ -133,8 +138,6 @@ theorem prod_inj {I I' : Ideal R} {J J' : Ideal S} :
     prod I J = prod I' J' ↔ I = I' ∧ J = J' := by
   simp only [← idealProdEquiv_symm_apply, idealProdEquiv.symm.injective.eq_iff, Prod.mk_inj]
 
-@[deprecated (since := "2025-05-22")] alias prod.ext_iff := prod_inj
-
 @[simp]
 theorem prod_eq_bot_iff {I : Ideal R} {J : Ideal S} :
     prod I J = ⊥ ↔ I = ⊥ ∧ J = ⊥ := by
@@ -148,7 +151,7 @@ theorem prod_eq_top_iff {I : Ideal R} {J : Ideal S} :
 theorem isPrime_of_isPrime_prod_top {I : Ideal R} (h : (Ideal.prod I (⊤ : Ideal S)).IsPrime) :
     I.IsPrime := by
   constructor
-  · contrapose! h
+  · contrapose h
     rw [h, prod_top_top, isPrime_iff]
     simp
   · intro x y hxy

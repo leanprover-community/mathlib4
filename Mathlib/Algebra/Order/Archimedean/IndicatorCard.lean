@@ -14,6 +14,7 @@ public import Mathlib.SetTheory.Cardinal.Finite
 
 /-!
 # Cardinality and limit of sum of indicators
+
 This file contains results relating the cardinality of subsets of ℕ and limits,
 limsups of sums of indicators.
 
@@ -21,7 +22,7 @@ limsups of sums of indicators.
 finite, indicator, limsup, tendsto
 -/
 
-@[expose] public section
+public section
 
 namespace Set
 
@@ -63,7 +64,7 @@ lemma infinite_iff_tendsto_sum_indicator_atTop {R : Type*}
   · contrapose!
     intro hs
     rw [tendsto_congr' (sum_indicator_eventually_eq_card r hs), tendsto_atTop_atTop]
-    push_neg
+    push Not
     obtain ⟨m, hm⟩ := exists_lt_nsmul h (Nat.card s • r)
     exact ⟨m • r, fun n ↦ ⟨n, le_refl n, not_le_of_gt hm⟩⟩
 
