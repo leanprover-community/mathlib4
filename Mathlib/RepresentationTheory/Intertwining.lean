@@ -599,6 +599,8 @@ def centralMul (g : G) (hg : g ∈ Submonoid.center G) : IntertwiningMap ρ ρ w
   toLinearMap := ρ g
   isIntertwining' x := LinearMap.ext <| (isIntertwiningMap_of_mem_center ρ g hg).isIntertwining x
 
+/-- If `z` is a central element of the monoid algebra `A[G]`, then this is the action of `z`,
+  considered as an intertwining map from any representation of `G` to itself. -/
 noncomputable def centralAlgebraMul (z : A[G]) (hz : z ∈ Submonoid.center A[G]) :
     ρ.IntertwiningMap ρ where
   toLinearMap := ρ.asAlgebraHom z
