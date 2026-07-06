@@ -1,4 +1,4 @@
-import Mathlib.AlgebraicGeometry.AlgebraicCycle.Sheaf
+import Mathlib.AlgebraicGeometry.AlgebraicCycle.StalkUFD
 import Mathlib.AlgebraicGeometry.AlgebraicCycle.Skyscraper
 import Mathlib.AlgebraicGeometry.AlgebraicCycle.Testing
 import Mathlib.Algebra.Category.Grp.Abelian

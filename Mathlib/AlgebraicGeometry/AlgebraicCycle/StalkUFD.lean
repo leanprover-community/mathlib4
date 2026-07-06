@@ -7,8 +7,9 @@ import Mathlib.RingTheory.Localization.LocalizationLocalization
 # The stalk of `𝒪ₓ(D)` at a point with factorial local ring
 
 This file computes stalks of the divisorial sheaf `𝒪ₓ(D)` at points `x` of arbitrary
-codimension whose local ring is a UFD, generalizing the codimension-one (DVR) computation
-`stalkEquiv` of `Mathlib.AlgebraicGeometry.AlgebraicCycle.Sheaf`.
+codimension whose local ring is a UFD. The codimension-one computation `stalkEquiv` (where the
+stalk is a DVR and the local equation is a power of a uniformizer) is derived at the end of the
+file as a special case.
 
 The dictionary between prime elements of `𝒪_{X,x}` and codimension-one points `z ⤳ x`:
 
@@ -29,6 +30,14 @@ The stalk computation:
   factorial points).
 - `stalkEquivUFD`: multiplication by `g` identifies the stalk of `𝒪ₓ(D)` at `x` with
   `𝒪_{X,x}` as `𝒪_{X,x}`-modules; `algebraMap_stalkEquivUFD_apply` is its defining property.
+- `stalkEquiv`, `algebraMap_stalkEquiv_apply`: the specialization to a codimension-one point,
+  where the local equation is `ϖ ^ D x` for a uniformizer `ϖ`.
+
+Auxiliary API: `isPrime_map_of_le`/`comap_map_of_le`/`height_map_of_le` (primes below `𝔭`
+extend to primes of the localization at `𝔭`, preserving height; TODO upstream),
+`height_primeIdealOf`/`primeIdealOf_le_primeIdealOf_iff` (the prime attached to a point of an
+affine chart remembers its coheight and the specialization order), and arithmetic of the order
+of vanishing (`ord_one`, `ord_inv`, `ord_zpow`, `ord_prod`).
 -/
 
 open AlgebraicGeometry Scheme CategoryTheory Order Opposite TopologicalSpace
@@ -37,7 +46,113 @@ universe u
 
 namespace AlgebraicGeometry.AlgebraicCycle
 
+section LocalizationAtPrime
+
+/-!
+### Extensions of primes to a localization at a prime
+
+Primes contained in `𝔭` correspond to primes of the localization at `𝔭`; we record the
+resulting API for the extension `𝔮 ↦ 𝔮.map (algebraMap R A)`.
+
+TODO: upstream to `Mathlib.RingTheory.Localization.Ideal`.
+-/
+
+variable {R A : Type*} [CommRing R] [CommRing A] [Algebra R A]
+
+/-- If the image of `r` in a localization of `R` lies in the extension of an ideal `I`,
+then `r * t ∈ I` for some `t` in the localizing submonoid. -/
+lemma exists_mul_mem_of_algebraMap_mem_map (M : Submonoid R) [IsLocalization M A]
+    {I : Ideal R} {r : R} (h : algebraMap R A r ∈ I.map (algebraMap R A)) :
+    ∃ t ∈ M, r * t ∈ I := by
+  obtain ⟨⟨⟨v, hv⟩, ⟨t, ht⟩⟩, hvt⟩ := (IsLocalization.mem_map_algebraMap_iff M A).mp h
+  have hvt' : algebraMap R A (r * t) = algebraMap R A v := by
+    rw [map_mul]; exact hvt
+  obtain ⟨⟨c, hc⟩, hcc⟩ := (IsLocalization.eq_iff_exists (M := M) (S := A)).mp hvt' 
+  refine ⟨t * c, mul_mem ht hc, ?_⟩
+  have hrtc : r * (t * c) = v * c := by
+    rw [show r * (t * c) = c * (r * t) by ring, hcc]
+    ring
+  rw [hrtc]
+  exact I.mul_mem_right c hv
+
+variable (A) {𝔭 : Ideal R} [𝔭.IsPrime] [IsLocalization.AtPrime A 𝔭] {𝔮 : Ideal R} [𝔮.IsPrime]
+
+omit [𝔮.IsPrime] in
+lemma disjoint_primeCompl_of_le (h : 𝔮 ≤ 𝔭) :
+    Disjoint (𝔭.primeCompl : Set R) (𝔮 : Set R) :=
+  Set.disjoint_left.mpr fun _ ht ht' => ht (h ht')
+
+/-- The extension of a prime `𝔮 ≤ 𝔭` to the localization at `𝔭` is prime. -/
+lemma isPrime_map_of_le (h : 𝔮 ≤ 𝔭) : (𝔮.map (algebraMap R A)).IsPrime :=
+  IsLocalization.isPrime_of_isPrime_disjoint 𝔭.primeCompl A 𝔮 inferInstance
+    (disjoint_primeCompl_of_le h)
+
+/-- A prime `𝔮 ≤ 𝔭` is recovered from its extension to the localization at `𝔭`. -/
+lemma comap_map_of_le (h : 𝔮 ≤ 𝔭) :
+    ((𝔮.map (algebraMap R A)).comap (algebraMap R A) : Ideal R) = 𝔮 :=
+  IsLocalization.under_map_of_isPrime_disjoint 𝔭.primeCompl A inferInstance
+    (disjoint_primeCompl_of_le h)
+
+/-- Extending a prime `𝔮 ≤ 𝔭` to the localization at `𝔭` preserves its height. -/
+lemma height_map_of_le (h : 𝔮 ≤ 𝔭) : (𝔮.map (algebraMap R A)).height = 𝔮.height := by
+  haveI := isPrime_map_of_le A h
+  have h1 := IsLocalization.height_under 𝔭.primeCompl (𝔮.map (algebraMap R A))
+  have h2 : (Ideal.under R (𝔮.map (algebraMap R A)) : Ideal R) = 𝔮 := comap_map_of_le A h
+  rw [h2] at h1
+  exact h1.symm
+
+end LocalizationAtPrime
+
 variable {X : Scheme.{u}} [IsIntegral X] [IsLocallyNoetherian X]
+
+section ChartPrimes
+
+/-!
+### Prime ideals attached to points of an affine chart
+
+For an affine open `U` and a point `w : U`, the stalk at `w` is the localization of `Γ(X, U)`
+at `hU.primeIdealOf w`; we record that this prime remembers the coheight of `w` and the
+specialization order.
+-/
+
+omit [IsIntegral X] [IsLocallyNoetherian X] in
+/-- The height of the prime ideal attached to a point of an affine open is the coheight of
+the point: both compute the Krull dimension of the local ring. -/
+lemma height_primeIdealOf {U : X.Opens} (hU : IsAffineOpen U) (w : U) :
+    (hU.primeIdealOf w).asIdeal.height = coheight (w : X) := by
+  haveI : Nonempty U := ⟨w⟩
+  letI := TopCat.Presheaf.algebra_section_stalk X.presheaf w
+  haveI := hU.isLocalization_stalk w
+  have h1 : ringKrullDim (X.presheaf.stalk (w : X)) = (hU.primeIdealOf w).asIdeal.height :=
+    IsLocalization.AtPrime.ringKrullDim_eq_height _ _
+  have h2 := ringKrullDim_stalk_eq_coheight (w : X)
+  rw [h1] at h2
+  exact_mod_cast h2
+
+omit [IsIntegral X] [IsLocallyNoetherian X] in
+/-- Specialization of points of an affine chart corresponds to inclusion of the attached
+prime ideals. -/
+lemma primeIdealOf_le_primeIdealOf_iff {U : X.Opens} (hU : IsAffineOpen U) (w x : U) :
+    (hU.primeIdealOf w).asIdeal ≤ (hU.primeIdealOf x).asIdeal ↔ (w : X) ⤳ (x : X) := by
+  constructor
+  · intro h
+    have := ((PrimeSpectrum.le_iff_specializes _ _).mp h).map hU.fromSpec.continuous
+    rwa [hU.fromSpec_primeIdealOf, hU.fromSpec_primeIdealOf] at this
+  · intro h
+    refine (PrimeSpectrum.le_iff_specializes _ _).mpr
+      (hU.fromSpec.isOpenEmbedding.toIsEmbedding.toIsInducing.specializes_iff.mp ?_)
+    rw [hU.fromSpec_primeIdealOf, hU.fromSpec_primeIdealOf]
+    exact h
+
+omit [IsIntegral X] [IsLocallyNoetherian X] in
+/-- Distinct points of an affine chart have distinct attached prime ideals. -/
+lemma primeIdealOf_injective {U : X.Opens} (hU : IsAffineOpen U) :
+    Function.Injective hU.primeIdealOf := fun w x h => by
+  have h1 := hU.fromSpec_primeIdealOf w
+  rw [h, hU.fromSpec_primeIdealOf] at h1
+  exact Subtype.ext h1.symm
+
+end ChartPrimes
 
 /--
 Every prime element `ϖ` of the local ring at `x` determines a codimension-one point `z`
@@ -80,24 +195,17 @@ lemma exists_coheight_eq_one_specializes_of_prime {x : X} {ϖ : X.presheaf.stalk
       IsLocalRing.le_maximalIdeal fun hT => hϖ.not_unit (Ideal.span_singleton_eq_top.mp hT)
     exact (IsLocalization.AtPrime.to_map_mem_maximal_iff _
       (hU.primeIdealOf ⟨x, hxU⟩).asIdeal r).mp (hm hr)
-  have hzx : z ⤳ x := by
-    have hspec : (𝔮 : PrimeSpectrum Γ(X, U)) ⤳ hU.primeIdealOf ⟨x, hxU⟩ :=
-      (PrimeSpectrum.le_iff_specializes _ _).mp hle
-    have := hspec.map hU.fromSpec.continuous
-    rwa [hU.fromSpec_primeIdealOf ⟨x, hxU⟩] at this
-  -- `coheight z = 1`: the stalk at `z` is the localization of `R` at `𝔮`, whose Krull dimension
-  -- is `ht 𝔮 = ht (ϖ) = 1`.
+  have hzx : z ⤳ x :=
+    (primeIdealOf_le_primeIdealOf_iff hU ⟨z, hzU⟩ ⟨x, hxU⟩).mp (by rw [hround]; exact hle)
+  -- `coheight z = 1`: the prime of `z` in the chart is `𝔮`, of height `ht (ϖ) = 1`.
   have hcoh : coheight z = 1 := by
-    have h1 : ringKrullDim (X.presheaf.stalk z) = 𝔮.asIdeal.height :=
-      IsLocalization.AtPrime.ringKrullDim_eq_height _ _
-    have h2 : 𝔮.asIdeal.height = (Ideal.span {ϖ}).height :=
-      IsLocalization.height_under (hU.primeIdealOf ⟨x, hxU⟩).asIdeal.primeCompl _
-    have h3 : (Ideal.span {ϖ} : Ideal (X.presheaf.stalk x)).height = 1 :=
+    have h0 := height_primeIdealOf hU ⟨z, hzU⟩
+    rw [hround,
+      show 𝔮.asIdeal.height = (Ideal.span {ϖ}).height from
+        IsLocalization.height_under (hU.primeIdealOf ⟨x, hxU⟩).asIdeal.primeCompl _,
       Ideal.height_span_singleton_eq_one_of_mem_nonZeroDivisors
-        (mem_nonZeroDivisors_of_ne_zero hϖ.ne_zero) hϖ.not_unit
-    have h4 := ringKrullDim_stalk_eq_coheight z
-    rw [h1, h2, h3] at h4
-    exact_mod_cast h4.symm
+        (mem_nonZeroDivisors_of_ne_zero hϖ.ne_zero) hϖ.not_unit] at h0
+    exact h0.symm
   refine ⟨z, hcoh, hzx, ?_⟩
   -- Germs at `z` are fractions `r / s` with `s ∉ 𝔮`, i.e. `ϖ ∤ s` in the stalk at `x`.
   rintro f ⟨g, rfl⟩
@@ -113,6 +221,17 @@ lemma exists_coheight_eq_one_specializes_of_prime {x : X} {ϖ : X.presheaf.stalk
   rw [← IsScalarTower.algebraMap_apply, ← IsScalarTower.algebraMap_apply]
   exact hpush
 
+omit [IsLocallyNoetherian X] in
+/-- The image of a germ in the function field does not depend on the point at which the germ
+is taken. -/
+lemma algebraMap_germ_eq_algebraMap_germ {W : X.Opens} {x z : X} (hxW : x ∈ W) (hzW : z ∈ W)
+    (s : Γ(X, W)) :
+    algebraMap (X.presheaf.stalk x) X.functionField (X.presheaf.germ W x hxW s) =
+      algebraMap (X.presheaf.stalk z) X.functionField (X.presheaf.germ W z hzW s) := by
+  haveI : Nonempty W := ⟨⟨x, hxW⟩⟩
+  rw [Scheme.algebraMap_germ_eq_germToFunctionField hxW,
+    Scheme.algebraMap_germ_eq_germToFunctionField hzW]
+
 /--
 **Geometric Hartogs for factorial stalks.** If the local ring of `X` at `x` is a UFD, then a
 rational function belongs to `𝒪_{X,x}` if and only if it has nonnegative order of vanishing at
@@ -127,14 +246,9 @@ lemma mem_range_algebraMap_stalk_iff_forall_ord_nonneg [IsRegularInCodimensionOn
     -- nonnegative order.
     rintro ⟨a, rfl⟩ hne z hz hzx
     obtain ⟨W, hxW, s, rfl⟩ := TopCat.Presheaf.exists_germ_eq X.presheaf a
-    haveI : Nonempty W := ⟨⟨x, hxW⟩⟩
     have hzW : z ∈ W := hzx.mem_open W.2 hxW
-    have hcompat : algebraMap (X.presheaf.stalk x) X.functionField (X.presheaf.germ W x hxW s) =
-        algebraMap (X.presheaf.stalk z) X.functionField (X.presheaf.germ W z hzW s) := by
-      rw [Scheme.algebraMap_germ_eq_germToFunctionField hxW,
-        Scheme.algebraMap_germ_eq_germToFunctionField hzW]
     exact (mem_range_algebraMap_iff_ord_nonneg hz _).mp
-      ⟨X.presheaf.germ W z hzW s, hcompat.symm⟩ hne
+      ⟨X.presheaf.germ W z hzW s, (algebraMap_germ_eq_algebraMap_germ hxW hzW s).symm⟩ hne
   · -- Conversely, apply Hartogs for UFDs: each prime `ϖ` of the stalk has a corresponding
     -- codimension-one point `z ⤳ x` where the order bound gives a `ϖ`-integral representation.
     intro h
@@ -156,6 +270,76 @@ lemma ord_algebraMap_eq_zero_of_isUnit [IsRegularInCodimensionOne X] {z : X}
   push Not at hlt
   exact mem_nonunits_iff.mp ((mem_maximalIdeal_iff_one_le_ord hz hane).mpr (by omega)) ha
 
+/-- The image in the function field of `u * ϖ ^ n`, for `u` a unit and `ϖ` irreducible in the
+local ring at a codimension-one point, has order of vanishing `n`. -/
+lemma ord_algebraMap_unit_mul_pow [IsRegularInCodimensionOne X] {z : X}
+    (hz : coheight z = 1) {ϖ : X.presheaf.stalk z} (hϖ : Irreducible ϖ)
+    (u : (X.presheaf.stalk z)ˣ) (n : ℕ) :
+    X.ord (algebraMap (X.presheaf.stalk z) X.functionField ((u : X.presheaf.stalk z) * ϖ ^ n))
+      z = n := by
+  have hne1 : algebraMap (X.presheaf.stalk z) X.functionField (u : X.presheaf.stalk z) ≠ 0 :=
+    algebraMap_functionField_ne_zero u.isUnit.ne_zero
+  have hne2 : (algebraMap (X.presheaf.stalk z) X.functionField ϖ) ^ n ≠ 0 :=
+    pow_ne_zero n (algebraMap_functionField_ne_zero hϖ.ne_zero)
+  rw [map_mul, map_pow, X.ord_mul hz hne1 hne2, ord_algebraMap_eq_zero_of_isUnit hz u.isUnit,
+    ← zpow_natCast (algebraMap (X.presheaf.stalk z) X.functionField ϖ) n,
+    ord_zpow_algebraMap_irreducible hz hϖ (n : ℤ), zero_add]
+
+section SectionOrd
+
+/-!
+### Orders of vanishing of sections of a chart
+
+For a section `r : Γ(X, U)` with nonzero image in the function field, membership of `r` in the
+prime attached to a codimension-one point `w` of the chart measures whether (the image of) `r`
+vanishes at `w`. Stating these at subtype points `w : U` lets the ambient
+`algebra_section_stalk` instances apply.
+-/
+
+variable {U : X.Opens} [Nonempty U]
+
+omit [IsLocallyNoetherian X] in
+/-- A section with nonzero image in the function field has nonzero germs. -/
+lemma algebraMap_section_stalk_ne_zero (w : U) {r : Γ(X, U)}
+    (hr : algebraMap Γ(X, U) X.functionField r ≠ 0) :
+    algebraMap Γ(X, U) (X.presheaf.stalk (w : X)) r ≠ 0 := fun h0 =>
+  hr (by rw [IsScalarTower.algebraMap_apply Γ(X, U) (X.presheaf.stalk (w : X)) X.functionField,
+    h0, map_zero])
+
+/-- Sections have nonnegative order of vanishing at every codimension-one point of the chart. -/
+lemma ord_algebraMap_section_nonneg [IsRegularInCodimensionOne X] (w : U)
+    (hw : coheight (w : X) = 1) {r : Γ(X, U)}
+    (hr : algebraMap Γ(X, U) X.functionField r ≠ 0) :
+    0 ≤ X.ord (algebraMap Γ(X, U) X.functionField r) (w : X) := by
+  rw [IsScalarTower.algebraMap_apply Γ(X, U) (X.presheaf.stalk (w : X)) X.functionField]
+  exact ord_algebraMap_nonneg hw (algebraMap_section_stalk_ne_zero w hr)
+
+/-- A section vanishes at a codimension-one point of an affine chart if and only if it lies
+in the attached prime ideal. -/
+lemma one_le_ord_algebraMap_section_iff [IsRegularInCodimensionOne X] (hU : IsAffineOpen U)
+    (w : U) (hw : coheight (w : X) = 1) {r : Γ(X, U)}
+    (hr : algebraMap Γ(X, U) X.functionField r ≠ 0) :
+    1 ≤ X.ord (algebraMap Γ(X, U) X.functionField r) (w : X) ↔
+      r ∈ (hU.primeIdealOf w).asIdeal := by
+  haveI := hU.isLocalization_stalk w
+  rw [IsScalarTower.algebraMap_apply Γ(X, U) (X.presheaf.stalk (w : X)) X.functionField,
+    ← mem_maximalIdeal_iff_one_le_ord hw (algebraMap_section_stalk_ne_zero w hr)]
+  exact IsLocalization.AtPrime.to_map_mem_maximal_iff _ (hU.primeIdealOf w).asIdeal r
+
+/-- A section not in the prime attached to a codimension-one point of an affine chart has
+order of vanishing zero there. -/
+lemma ord_algebraMap_section_eq_zero_of_notMem [IsRegularInCodimensionOne X]
+    (hU : IsAffineOpen U) (w : U) (hw : coheight (w : X) = 1) {r : Γ(X, U)}
+    (hr : algebraMap Γ(X, U) X.functionField r ≠ 0)
+    (hmem : r ∉ (hU.primeIdealOf w).asIdeal) :
+    X.ord (algebraMap Γ(X, U) X.functionField r) (w : X) = 0 := by
+  have h1 := ord_algebraMap_section_nonneg w hw hr
+  have h2 : ¬ 1 ≤ X.ord (algebraMap Γ(X, U) X.functionField r) (w : X) := fun h =>
+    hmem ((one_le_ord_algebraMap_section_iff hU w hw hr).mp h)
+  omega
+
+end SectionOrd
+
 /--
 **Local equations for prime divisors.** If the local ring of `X` at `x` is a UFD, then every
 codimension-one point `z ⤳ x` admits a local equation at `x`: a prime element `ϖ` of `𝒪_{X,x}`
@@ -175,60 +359,17 @@ lemma exists_prime_ord_eq_one_of_specializes [IsRegularInCodimensionOne X] {x z 
   letI := TopCat.Presheaf.algebra_section_stalk X.presheaf (⟨x, hxU⟩ : U)
   haveI hLocx := hU.isLocalization_stalk ⟨x, hxU⟩
   haveI := functionField_isScalarTower X U (⟨x, hxU⟩ : U)
-  -- For `w ⤳ x` in `U`, the chart prime of `w` is contained in that of `x`, and its extension
-  -- to the stalk at `x` is a prime lying over it, of height `coheight w`.
-  have hkey : ∀ w, w ⤳ x → ∀ hwU : w ∈ U,
-      (hU.primeIdealOf ⟨w, hwU⟩).asIdeal ≤ (hU.primeIdealOf ⟨x, hxU⟩).asIdeal ∧
-      ((hU.primeIdealOf ⟨w, hwU⟩).asIdeal.map
-          (algebraMap Γ(X, U) (X.presheaf.stalk x))).IsPrime ∧
-      Ideal.comap (algebraMap Γ(X, U) (X.presheaf.stalk x))
-          ((hU.primeIdealOf ⟨w, hwU⟩).asIdeal.map (algebraMap Γ(X, U) (X.presheaf.stalk x))) =
-        (hU.primeIdealOf ⟨w, hwU⟩).asIdeal ∧
-      (coheight w = 1 → ((hU.primeIdealOf ⟨w, hwU⟩).asIdeal.map
-          (algebraMap Γ(X, U) (X.presheaf.stalk x))).height = 1) := by
-    intro w hwx hwU
-    have hle : (hU.primeIdealOf ⟨w, hwU⟩).asIdeal ≤ (hU.primeIdealOf ⟨x, hxU⟩).asIdeal := by
-      refine (PrimeSpectrum.le_iff_specializes _ _).mpr
-        (hU.fromSpec.isOpenEmbedding.toIsEmbedding.toIsInducing.specializes_iff.mp ?_)
-      rw [hU.fromSpec_primeIdealOf, hU.fromSpec_primeIdealOf]
-      exact hwx
-    have hdisj : Disjoint ((hU.primeIdealOf ⟨x, hxU⟩).asIdeal.primeCompl : Set Γ(X, U))
-        ((hU.primeIdealOf ⟨w, hwU⟩).asIdeal : Set Γ(X, U)) :=
-      Set.disjoint_left.mpr fun t ht ht' => ht (hle ht')
-    have hprime := IsLocalization.isPrime_of_isPrime_disjoint
-      (hU.primeIdealOf ⟨x, hxU⟩).asIdeal.primeCompl (X.presheaf.stalk x)
-      (hU.primeIdealOf ⟨w, hwU⟩).asIdeal (hU.primeIdealOf ⟨w, hwU⟩).2 hdisj
-    have hcomap : Ideal.comap (algebraMap Γ(X, U) (X.presheaf.stalk x))
-        ((hU.primeIdealOf ⟨w, hwU⟩).asIdeal.map (algebraMap Γ(X, U) (X.presheaf.stalk x))) =
-        (hU.primeIdealOf ⟨w, hwU⟩).asIdeal :=
-      IsLocalization.under_map_of_isPrime_disjoint
-        (hU.primeIdealOf ⟨x, hxU⟩).asIdeal.primeCompl (X.presheaf.stalk x)
-        (hU.primeIdealOf ⟨w, hwU⟩).2 hdisj
-    refine ⟨hle, hprime, hcomap, fun hw => ?_⟩
-    -- The height of the extension equals `coheight w`, computed via the stalk at `w`.
-    letI := TopCat.Presheaf.algebra_section_stalk X.presheaf (⟨w, hwU⟩ : U)
-    haveI hLocw := hU.isLocalization_stalk ⟨w, hwU⟩
-    haveI := hprime
-    have hhu : (Ideal.comap (algebraMap Γ(X, U) (X.presheaf.stalk x))
-        ((hU.primeIdealOf ⟨w, hwU⟩).asIdeal.map
-          (algebraMap Γ(X, U) (X.presheaf.stalk x)))).height =
-        ((hU.primeIdealOf ⟨w, hwU⟩).asIdeal.map
-          (algebraMap Γ(X, U) (X.presheaf.stalk x))).height :=
-      IsLocalization.height_under (hU.primeIdealOf ⟨x, hxU⟩).asIdeal.primeCompl _
-    rw [hcomap] at hhu
-    have h2 : ringKrullDim (X.presheaf.stalk w) =
-        (hU.primeIdealOf ⟨w, hwU⟩).asIdeal.height :=
-      IsLocalization.AtPrime.ringKrullDim_eq_height _ _
-    have h3 := ringKrullDim_stalk_eq_coheight w
-    rw [hw] at h3
-    rw [h3] at h2
-    rw [← hhu]
-    exact_mod_cast h2.symm
-  -- The height-one prime of the stalk corresponding to `z`, and a prime generator `ϖ`.
+  -- `ϖ` is a generator of the extension of the chart prime of `z` to the stalk at `x`,
+  -- which is a height-one prime.
   have hzU : z ∈ U := hzx.mem_open U.2 hxU
-  obtain ⟨hlez, hprimez, hcomapz, hhtz⟩ := hkey z hzx hzU
-  haveI := hprimez
-  obtain ⟨ϖ, hϖ, hq⟩ := Ideal.exists_prime_span_of_height_eq_one (hhtz hz)
+  have hlez := (primeIdealOf_le_primeIdealOf_iff hU ⟨z, hzU⟩ ⟨x, hxU⟩).mpr hzx
+  haveI := isPrime_map_of_le (X.presheaf.stalk x) hlez
+  have hcomapz := comap_map_of_le (X.presheaf.stalk x) hlez
+  have hhtz : ((hU.primeIdealOf ⟨z, hzU⟩).asIdeal.map
+      (algebraMap Γ(X, U) (X.presheaf.stalk x))).height = 1 := by
+    rw [height_map_of_le (X.presheaf.stalk x) hlez, height_primeIdealOf hU ⟨z, hzU⟩]
+    exact hz
+  obtain ⟨ϖ, hϖ, hq⟩ := Ideal.exists_prime_span_of_height_eq_one hhtz
   -- Write `ϖ = r / s` over `R = Γ(X, U)` with `s` invertible near `x`.
   obtain ⟨⟨r, s⟩, hrs⟩ :=
     IsLocalization.surj (M := (hU.primeIdealOf ⟨x, hxU⟩).asIdeal.primeCompl) ϖ
@@ -250,65 +391,39 @@ lemma exists_prime_ord_eq_one_of_specializes [IsRegularInCodimensionOne X] {x z 
   -- `r` lies in the chart prime of `z`.
   have hr𝔮z : r ∈ (hU.primeIdealOf ⟨z, hzU⟩).asIdeal := by
     rw [← hcomapz]
-    refine Ideal.mem_comap.mpr ?_
-    rw [hq]
-    exact Ideal.mem_span_singleton.mpr ⟨_, hrs.symm⟩
+    exact Ideal.mem_comap.mpr (by rw [hq]; exact Ideal.mem_span_singleton.mpr ⟨_, hrs.symm⟩)
   -- At every codimension-one `w ⤳ x`, `ord ϖ = ord r` since `s` is a unit near `x`.
-  have hordEq : ∀ w, coheight w = 1 → ∀ hwx : w ⤳ x, ∀ hwU : w ∈ U,
+  have hordEq : ∀ w, coheight w = 1 → w ⤳ x →
       X.ord (algebraMap (X.presheaf.stalk x) X.functionField ϖ) w =
       X.ord (algebraMap Γ(X, U) X.functionField r) w := by
-    intro w hw hwx hwU
-    letI := TopCat.Presheaf.algebra_section_stalk X.presheaf (⟨w, hwU⟩ : U)
-    haveI hLocw := hU.isLocalization_stalk ⟨w, hwU⟩
-    haveI := functionField_isScalarTower X U (⟨w, hwU⟩ : U)
-    have hsW : IsUnit (algebraMap Γ(X, U) (X.presheaf.stalk w) (s : Γ(X, U))) := by
-      by_contra hns
-      exact s.2 ((hkey w hwx hwU).1 ((IsLocalization.AtPrime.to_map_mem_maximal_iff _
-        (hU.primeIdealOf ⟨w, hwU⟩).asIdeal (s : Γ(X, U))).mp
-        (mem_nonunits_iff.mpr hns)))
-    have hs0 : X.ord (algebraMap Γ(X, U) X.functionField (s : Γ(X, U))) w = 0 := by
-      rw [IsScalarTower.algebraMap_apply Γ(X, U) (X.presheaf.stalk w) X.functionField]
-      exact ord_algebraMap_eq_zero_of_isUnit hw hsW
+    intro w hw hwx
+    have hwU : w ∈ U := hwx.mem_open U.2 hxU
+    have hs0 : X.ord (algebraMap Γ(X, U) X.functionField (s : Γ(X, U))) w = 0 :=
+      ord_algebraMap_section_eq_zero_of_notMem hU ⟨w, hwU⟩ hw hsK fun hmem =>
+        s.2 ((primeIdealOf_le_primeIdealOf_iff hU ⟨w, hwU⟩ ⟨x, hxU⟩).mpr hwx hmem)
     have hmul := X.ord_mul hw hϖK hsK
     rw [hK, hs0] at hmul
     omega
   refine ⟨ϖ, hϖ, ?_, ?_⟩
-  · -- At `z` the order is exactly one: `r` maps to a uniformizer of the DVR stalk, since
-    -- `r ∈ 𝔮z` but `r ∉ 𝔮z²` (else `ϖ` would divide a unit times a non-multiple).
-    rw [hordEq z hz hzx hzU]
+  · -- At `z` the order is exactly one: at least one since `r ∈ 𝔮z`, and at most one since
+    -- `r ∈ 𝔮z²` would descend to a factorization contradicting the primality of `ϖ`.
+    rw [hordEq z hz hzx]
+    have hn1 : 1 ≤ X.ord (algebraMap Γ(X, U) X.functionField r) z :=
+      (one_le_ord_algebraMap_section_iff hU ⟨z, hzU⟩ hz hrK).mpr hr𝔮z
     letI := TopCat.Presheaf.algebra_section_stalk X.presheaf (⟨z, hzU⟩ : U)
     haveI hLocz := hU.isLocalization_stalk ⟨z, hzU⟩
     haveI := functionField_isScalarTower X U (⟨z, hzU⟩ : U)
     haveI : IsDiscreteValuationRing (X.presheaf.stalk z) :=
       IsRegularInCodimensionOne.stalk_dvr z hz
-    have hrZ0 : algebraMap Γ(X, U) (X.presheaf.stalk z) r ≠ 0 := by
-      intro h0
-      apply hrK
-      rw [IsScalarTower.algebraMap_apply Γ(X, U) (X.presheaf.stalk z) X.functionField, h0,
-        map_zero]
+    -- Factor the image of `r` in the DVR at `z` as a unit times a power of a uniformizer.
+    have hrZ0 : algebraMap Γ(X, U) (X.presheaf.stalk z) r ≠ 0 :=
+      algebraMap_section_stalk_ne_zero (⟨z, hzU⟩ : U) hrK
     obtain ⟨ϖ', hϖ'⟩ := IsDiscreteValuationRing.exists_irreducible (X.presheaf.stalk z)
     obtain ⟨n, u, hu⟩ := IsDiscreteValuationRing.eq_unit_mul_pow_irreducible hrZ0 hϖ'
     have hordr : X.ord (algebraMap Γ(X, U) X.functionField r) z = n := by
-      have hne1 : algebraMap (X.presheaf.stalk z) X.functionField (u : X.presheaf.stalk z) ≠ 0 :=
-        algebraMap_functionField_ne_zero u.isUnit.ne_zero
-      have hne2 : (algebraMap (X.presheaf.stalk z) X.functionField ϖ') ^ n ≠ 0 :=
-        pow_ne_zero n (algebraMap_functionField_ne_zero hϖ'.ne_zero)
-      rw [IsScalarTower.algebraMap_apply Γ(X, U) (X.presheaf.stalk z) X.functionField, hu,
-        map_mul, map_pow, X.ord_mul hz hne1 hne2,
-        ord_algebraMap_eq_zero_of_isUnit hz u.isUnit,
-        ← zpow_natCast (algebraMap (X.presheaf.stalk z) X.functionField ϖ') n,
-        ord_zpow_algebraMap_irreducible hz hϖ' (n : ℤ), zero_add]
-    -- `n ≥ 1` since `r` vanishes at `z`.
-    have hrZmem : algebraMap Γ(X, U) (X.presheaf.stalk z) r ∈
-        IsLocalRing.maximalIdeal (X.presheaf.stalk z) :=
-      (IsLocalization.AtPrime.to_map_mem_maximal_iff _
-        (hU.primeIdealOf ⟨z, hzU⟩).asIdeal r).mpr hr𝔮z
-    have hn1 : 1 ≤ n := by
-      by_contra hn
-      push Not at hn
-      obtain rfl : n = 0 := Nat.lt_one_iff.mp hn
-      rw [pow_zero, mul_one] at hu
-      exact mem_nonunits_iff.mp (hu ▸ hrZmem) u.isUnit
+      rw [IsScalarTower.algebraMap_apply Γ(X, U) (X.presheaf.stalk z) X.functionField, hu]
+      exact ord_algebraMap_unit_mul_pow hz hϖ' u n
+    rw [hordr] at hn1 ⊢
     -- `n ≤ 1`: otherwise `r ∈ 𝔮z²` descends to a factorization contradicting primality of `ϖ`.
     have hn2 : n ≤ 1 := by
       by_contra hn
@@ -322,24 +437,13 @@ lemma exists_prime_ord_eq_one_of_specializes [IsRegularInCodimensionOne X] {x z 
           Ideal.span_singleton_pow, Ideal.mem_span_singleton]
         exact dvd_trans (pow_dvd_pow ϖ' hn') ⟨↑u, by rw [hu]; ring⟩
       -- Descend to the chart: `r * t ∈ 𝔮z ^ 2` for some `t ∉ 𝔮z`.
-      obtain ⟨⟨⟨v, hv⟩, ⟨t, ht⟩⟩, hvt⟩ := (IsLocalization.mem_map_algebraMap_iff
-        (hU.primeIdealOf ⟨z, hzU⟩).asIdeal.primeCompl (X.presheaf.stalk z)).mp hmem2
-      have hvt' : algebraMap Γ(X, U) (X.presheaf.stalk z) (r * t) =
-          algebraMap Γ(X, U) (X.presheaf.stalk z) v := by
-        rw [map_mul]; exact hvt
-      have hrt : r * t = v := by
-        obtain ⟨⟨c, hcmem⟩, hc⟩ := (IsLocalization.eq_iff_exists
-          (M := (hU.primeIdealOf ⟨z, hzU⟩).asIdeal.primeCompl)
-          (S := X.presheaf.stalk z)).mp hvt'
-        have hc0 : c ≠ 0 := fun h0 =>
-          hcmem (by rw [h0]; exact (hU.primeIdealOf ⟨z, hzU⟩).asIdeal.zero_mem)
-        exact mul_left_cancel₀ hc0 hc
+      obtain ⟨t, ht, hrt⟩ := exists_mul_mem_of_algebraMap_mem_map
+        (hU.primeIdealOf ⟨z, hzU⟩).asIdeal.primeCompl hmem2
       -- Push into the stalk at `x`: `ϖ²` divides `ϖ * s * t` with `s` a unit and `ϖ ∤ t`.
-      have hvq : algebraMap Γ(X, U) (X.presheaf.stalk x) v ∈ Ideal.span {ϖ} ^ 2 := by
-        rw [← hq, ← Ideal.map_pow]
-        exact Ideal.mem_map_of_mem _ hv
-      rw [Ideal.span_singleton_pow, Ideal.mem_span_singleton] at hvq
-      obtain ⟨d, hd⟩ := hvq
+      have hdvd2 : ϖ ^ 2 ∣ algebraMap Γ(X, U) (X.presheaf.stalk x) (r * t) := by
+        rw [← Ideal.mem_span_singleton, ← Ideal.span_singleton_pow, ← hq, ← Ideal.map_pow]
+        exact Ideal.mem_map_of_mem _ hrt
+      obtain ⟨d, hd⟩ := hdvd2
       have hst : algebraMap Γ(X, U) (X.presheaf.stalk x) (s : Γ(X, U)) *
           algebraMap Γ(X, U) (X.presheaf.stalk x) t = ϖ * d := by
         apply mul_left_cancel₀ hϖ.ne_zero
@@ -349,59 +453,57 @@ lemma exists_prime_ord_eq_one_of_specializes [IsRegularInCodimensionOne X] {x z 
               algebraMap Γ(X, U) (X.presheaf.stalk x) t := by ring
           _ = algebraMap Γ(X, U) (X.presheaf.stalk x) (r * t) := by
               rw [map_mul, hrs]
-          _ = algebraMap Γ(X, U) (X.presheaf.stalk x) v := by rw [hrt]
           _ = ϖ ^ 2 * d := hd
           _ = ϖ * (ϖ * d) := by ring
       rcases hϖ.2.2 _ _ ⟨d, hst⟩ with hdvd | hdvd
       · exact hϖ.not_unit (isUnit_of_dvd_unit hdvd hsA)
-      · have ht𝔮 : t ∈ (hU.primeIdealOf ⟨z, hzU⟩).asIdeal := by
+      · exact ht (by
           rw [← hcomapz]
-          exact Ideal.mem_comap.mpr (by rw [hq]; exact Ideal.mem_span_singleton.mpr hdvd)
-        exact ht ht𝔮
-    rw [hordr]
+          exact Ideal.mem_comap.mpr (by rw [hq]; exact Ideal.mem_span_singleton.mpr hdvd))
     omega
   · -- At `z' ≠ z` the order vanishes: a positive order would put `ϖ` in the height-one prime
     -- of `z'`, forcing the primes (hence the points) to coincide.
     intro z' hz' hz'x hne
     have hz'U : z' ∈ U := hz'x.mem_open U.2 hxU
-    obtain ⟨hlez', hprimez', hcomapz', hhtz'⟩ := hkey z' hz'x hz'U
-    rw [hordEq z' hz' hz'x hz'U]
-    letI := TopCat.Presheaf.algebra_section_stalk X.presheaf (⟨z', hz'U⟩ : U)
-    haveI hLocz' := hU.isLocalization_stalk ⟨z', hz'U⟩
-    haveI := functionField_isScalarTower X U (⟨z', hz'U⟩ : U)
-    have hrZ'0 : algebraMap Γ(X, U) (X.presheaf.stalk z') r ≠ 0 := by
-      intro h0
-      apply hrK
-      rw [IsScalarTower.algebraMap_apply Γ(X, U) (X.presheaf.stalk z') X.functionField, h0,
-        map_zero]
-    have hnonneg : 0 ≤ X.ord (algebraMap Γ(X, U) X.functionField r) z' := by
-      rw [IsScalarTower.algebraMap_apply Γ(X, U) (X.presheaf.stalk z') X.functionField]
-      exact ord_algebraMap_nonneg hz' hrZ'0
+    have hlez' := (primeIdealOf_le_primeIdealOf_iff hU ⟨z', hz'U⟩ ⟨x, hxU⟩).mpr hz'x
+    haveI hprimez' := isPrime_map_of_le (X.presheaf.stalk x) hlez'
+    rw [hordEq z' hz' hz'x]
+    have hnonneg : 0 ≤ X.ord (algebraMap Γ(X, U) X.functionField r) z' :=
+      ord_algebraMap_section_nonneg (⟨z', hz'U⟩ : U) hz' hrK
     by_contra hne0
-    have hr𝔮z' : r ∈ (hU.primeIdealOf ⟨z', hz'U⟩).asIdeal := by
-      have hmem := (mem_maximalIdeal_iff_one_le_ord hz' hrZ'0).mpr (by
-        rw [← IsScalarTower.algebraMap_apply Γ(X, U) (X.presheaf.stalk z') X.functionField]
-        omega)
-      exact (IsLocalization.AtPrime.to_map_mem_maximal_iff _
-        (hU.primeIdealOf ⟨z', hz'U⟩).asIdeal r).mp hmem
-    haveI := hprimez'
+    have h1 : 1 ≤ X.ord (algebraMap Γ(X, U) X.functionField r) z' := by omega
+    have hr𝔮z' := (one_le_ord_algebraMap_section_iff hU ⟨z', hz'U⟩ hz' hrK).mp h1
+    -- `ϖ ∈ q'` since `ϖ * (unit) = image of r`, so `q' = (ϖ)` by comparing heights.
     have hϖq' : ϖ ∈ (hU.primeIdealOf ⟨z', hz'U⟩).asIdeal.map
         (algebraMap Γ(X, U) (X.presheaf.stalk x)) := by
       have hrq' := Ideal.mem_map_of_mem (algebraMap Γ(X, U) (X.presheaf.stalk x)) hr𝔮z'
       rw [← hrs] at hrq'
-      rcases hprimez'.mem_or_mem hrq' with h | h
-      · exact h
-      · exact absurd (Ideal.eq_top_of_isUnit_mem _ h hsA) hprimez'.ne_top
-    have hq' : (hU.primeIdealOf ⟨z', hz'U⟩).asIdeal.map
-        (algebraMap Γ(X, U) (X.presheaf.stalk x)) = Ideal.span {ϖ} :=
-      Ideal.eq_span_singleton_of_height_eq_one (hhtz' hz') hϖq' hϖ
-    have hPeq : hU.primeIdealOf ⟨z', hz'U⟩ = hU.primeIdealOf ⟨z, hzU⟩ := by
-      refine PrimeSpectrum.ext ?_
-      rw [← hcomapz', ← hcomapz, hq', hq]
-    have h1 := hU.fromSpec_primeIdealOf ⟨z', hz'U⟩
-    have h2 := hU.fromSpec_primeIdealOf ⟨z, hzU⟩
-    rw [hPeq] at h1
-    exact hne (h1.symm.trans h2)
+      exact (hprimez'.mem_or_mem hrq').resolve_right fun h =>
+        hprimez'.ne_top (Ideal.eq_top_of_isUnit_mem _ h hsA)
+    have hhtz' : ((hU.primeIdealOf ⟨z', hz'U⟩).asIdeal.map
+        (algebraMap Γ(X, U) (X.presheaf.stalk x))).height = 1 := by
+      rw [height_map_of_le (X.presheaf.stalk x) hlez', height_primeIdealOf hU ⟨z', hz'U⟩]
+      exact hz'
+    refine hne (congrArg Subtype.val (show (⟨z', hz'U⟩ : U) = ⟨z, hzU⟩ from
+      primeIdealOf_injective hU (PrimeSpectrum.ext ?_)))
+    rw [← comap_map_of_le (X.presheaf.stalk x) hlez', ← hcomapz,
+      Ideal.eq_span_singleton_of_height_eq_one hhtz' hϖq' hϖ, hq]
+
+/-- The order of vanishing of `1` is zero. -/
+@[simp]
+lemma ord_one {z : X} : X.ord 1 z = 0 := by
+  by_cases hz : coheight z = 1
+  · have h := X.ord_mul hz (one_ne_zero (α := X.functionField)) one_ne_zero
+    rw [mul_one] at h
+    omega
+  · exact X.ord_eq_zero_of_coheight_neq_one hz 1
+
+/-- The order of vanishing of an inverse is the negative of the order. -/
+lemma ord_inv {z : X} (hz : coheight z = 1) {f : X.functionField} (hf : f ≠ 0) :
+    X.ord f⁻¹ z = - X.ord f z := by
+  have h := X.ord_mul hz hf (inv_ne_zero hf)
+  rw [mul_inv_cancel₀ hf, ord_one] at h
+  omega
 
 /-- The order of vanishing of an integer power is the multiple of the order. -/
 lemma ord_zpow {z : X} (hz : coheight z = 1) {f : X.functionField} (hf : f ≠ 0) (n : ℤ) :
@@ -419,10 +521,7 @@ lemma ord_prod {ι : Type*} (T : Finset ι) (F : ι → X.functionField)
     X.ord (∏ i ∈ T, F i) z = ∑ i ∈ T, X.ord (F i) z := by
   classical
   induction T using Finset.induction_on with
-  | empty =>
-    have h2 := X.ord_mul hz (one_ne_zero (α := X.functionField)) one_ne_zero
-    rw [mul_one] at h2
-    simpa using by omega
+  | empty => simp
   | insert a T haT ih =>
     have hprod : (∏ i ∈ T, F i) ≠ 0 :=
       Finset.prod_ne_zero_iff.mpr fun i hi => hF i (Finset.mem_insert_of_mem hi)
@@ -501,14 +600,8 @@ lemma range_linearMap_eq_range_mulLeft_stalkToFunctionFieldLinearMap_of_ord_eq
     LinearMap.mulLeft_apply]
   have hHar := mem_range_algebraMap_stalk_iff_forall_ord_nonneg (X := X) (x := x) w
   -- The order of `g⁻¹` at every relevant point is `- D z`.
-  have hginv : ∀ z, coheight z = 1 → z ⤳ x → X.ord g⁻¹ z = - D z := by
-    intro z hz hzx
-    have h1 := X.ord_mul hz hg0 (inv_ne_zero hg0)
-    rw [mul_inv_cancel₀ hg0] at h1
-    have h2 := X.ord_mul hz (one_ne_zero (α := X.functionField)) one_ne_zero
-    rw [mul_one] at h2
-    have h3 := hgord z hz hzx
-    omega
+  have hginv : ∀ z, coheight z = 1 → z ⤳ x → X.ord g⁻¹ z = - D z := fun z hz hzx => by
+    rw [ord_inv hz hg0, hgord z hz hzx]
   constructor
   · -- A function with everywhere-nonnegative order is `g` times a section of `𝒪ₓ(D)`.
     intro hw
@@ -613,5 +706,59 @@ lemma algebraMap_stalkEquivUFD_apply [IsRegularInCodimensionOne X] (D : Algebrai
     rwa [he_def, Submodule.comap_equiv_self_of_inj_of_le_apply] at h3
   rw [h1]
   exact h2
+
+/-!
+At a codimension-one point `x` the stalk is a discrete valuation ring — in particular a UFD —
+and `ϖ ^ D x` is already a local equation for `D` at `x`, since the only codimension-one point
+specializing to `x` is `x` itself. The classical stalk computation is therefore a special case
+of `stalkEquivUFD`.
+-/
+
+/-- At a codimension-one point `x`, `ϖ ^ D x` is a local equation for `D` at `x`. -/
+lemma ord_zpow_algebraMap_irreducible_of_specializes [IsRegularInCodimensionOne X]
+    (D : AlgebraicCycle X ℤ) (x : X) (hx : coheight x = 1)
+    {ϖ : X.presheaf.stalk x} (hϖ : Irreducible ϖ) :
+    ∀ z, coheight z = 1 → z ⤳ x →
+      X.ord ((algebraMap (X.presheaf.stalk x) X.functionField ϖ) ^ (D x)) z = D z :=
+  fun z hz hzx => by
+    rw [hzx.eq_of_coheight_eq_one hz hx]
+    exact ord_zpow_algebraMap_irreducible hx hϖ (D x)
+
+/--
+The stalk of `𝒪ₓ(D)` at a codimension-one point `x` is isomorphic to `𝒪_{X,x}` as an
+`𝒪_{X,x}`-module, via multiplication by `ϖ ^ D x` for a uniformizer `ϖ` of the DVR `𝒪_{X,x}`.
+This is the special case of `stalkEquivUFD` where the local equation is a power of a single
+uniformizer.
+-/
+noncomputable def stalkEquiv [IsRegularInCodimensionOne X] (D : AlgebraicCycle X ℤ)
+    (hD : D.support ⊆ {x | coheight x = 1})
+    (x : X) (hx : coheight x = 1)
+    (ϖ : X.presheaf.stalk x) (hϖ : Irreducible ϖ) :
+    ↑(TopCat.Presheaf.stalk D.sheaf.val.presheaf x) ≃ₗ[X.presheaf.stalk x]
+      X.presheaf.stalk x :=
+  haveI : IsDiscreteValuationRing (X.presheaf.stalk x) :=
+    IsRegularInCodimensionOne.stalk_dvr x hx
+  stalkEquivUFD D hD x
+    (zpow_ne_zero (D x) (algebraMap_functionField_ne_zero hϖ.ne_zero))
+    (ord_zpow_algebraMap_irreducible_of_specializes D x hx hϖ)
+
+/--
+The defining property of `stalkEquiv`: its value on a stalk element `m` is the unique element
+of the structure sheaf stalk whose image in the function field is `ϖ ^ D x` times the
+function-field realization of `m`.
+-/
+lemma algebraMap_stalkEquiv_apply [IsRegularInCodimensionOne X] (D : AlgebraicCycle X ℤ)
+    (hD : D.support ⊆ {x | coheight x = 1})
+    (x : X) (hx : coheight x = 1)
+    (ϖ : X.presheaf.stalk x) (hϖ : Irreducible ϖ)
+    (m : ↑(TopCat.Presheaf.stalk D.sheaf.val.presheaf x)) :
+    algebraMap (X.presheaf.stalk x) X.functionField (stalkEquiv D hD x hx ϖ hϖ m) =
+      (algebraMap (X.presheaf.stalk x) X.functionField ϖ) ^ (D x) *
+        D.stalkToFunctionFieldLinearMap x m := by
+  haveI : IsDiscreteValuationRing (X.presheaf.stalk x) :=
+    IsRegularInCodimensionOne.stalk_dvr x hx
+  exact algebraMap_stalkEquivUFD_apply D hD x
+    (zpow_ne_zero (D x) (algebraMap_functionField_ne_zero hϖ.ne_zero))
+    (ord_zpow_algebraMap_irreducible_of_specializes D x hx hϖ) m
 
 end AlgebraicGeometry.AlgebraicCycle
