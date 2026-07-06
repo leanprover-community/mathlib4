@@ -263,14 +263,17 @@ lemma restrictScalars_symm (f : A ≃ₐ[S] B) :
     (f.restrictScalars R).symm = f.symm.restrictScalars R :=
   rfl
 
+@[deprecated "Use `restrictScalars_symm` instead." (since := "2026-07-06")]
 lemma restrictScalars_symm_apply (f : A ≃ₐ[S] B) (x : B) :
     (f.restrictScalars R).symm x = f.symm x := by
   simp
 
+@[deprecated "Use `restrictScalars_symm` instead." (since := "2026-07-06")]
 lemma toRingEquiv_restrictScalars_symm (f : A ≃ₐ[S] B) :
     ((f.restrictScalars R).symm : B ≃+* A) = f.symm := by
   simp
 
+@[deprecated "Use `restrictScalars_symm` instead." (since := "2026-07-06")]
 lemma coe_restrictScalars_symm (f : A ≃ₐ[S] B) :
     ((restrictScalars R f).symm : B → A) = f.symm := by
   simp
