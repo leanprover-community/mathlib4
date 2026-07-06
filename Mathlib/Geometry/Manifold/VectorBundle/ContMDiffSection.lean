@@ -354,6 +354,14 @@ instance instNeg : Neg Cₛ^n⟮I; F, V⟯ :=
 theorem coe_neg (s : Cₛ^n⟮I; F, V⟯) : ⇑(-s : Cₛ^n⟮I; F, V⟯) = -s :=
   rfl
 
+instance instPSMul : SMul ℕ+ Cₛ^n⟮I; F, V⟯ :=
+  ⟨fun n f ↦ psmulRec n n.property f⟩
+
+theorem coe_psmul (s : Cₛ^n⟮I; F, V⟯) (k : ℕ+) : ⇑(k • s : Cₛ^n⟮I; F, V⟯) = k • ⇑s := by
+  induction k using AddSemigroup.psmul_induction ⇑s with
+  | h1 => rfl
+  | hsucc n IH => rw [← IH, ←coe_add]; rfl
+
 instance instNSMul : SMul ℕ Cₛ^n⟮I; F, V⟯ :=
   ⟨nsmulRec⟩
 
@@ -375,7 +383,7 @@ theorem coe_zsmul (s : Cₛ^n⟮I; F, V⟯) (z : ℤ) : ⇑(z • s : Cₛ^n⟮I
     simp only [negSucc_zsmul]
 
 instance instAddCommGroup : AddCommGroup Cₛ^n⟮I; F, V⟯ :=
-  coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub coe_nsmul coe_zsmul
+  coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub coe_psmul coe_nsmul coe_zsmul
 
 instance instSMul : SMul 𝕜 Cₛ^n⟮I; F, V⟯ :=
   ⟨fun c s ↦ ⟨c • ⇑s, s.contMDiff.const_smul_section⟩⟩
