@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.MonoidAlgebra.Ideal
 public import Mathlib.Algebra.MvPolynomial.Division
+public import Mathlib.Algebra.MvPolynomial.Variables
 public import Mathlib.RingTheory.Ideal.Quotient.Operations
 public import Mathlib.RingTheory.MvPolynomial.MonomialOrder
 public import Mathlib.RingTheory.MvPolynomial.Basic
@@ -58,6 +59,25 @@ theorem mem_ideal_span_X_image {x : MvPolynomial σ R} {s : Set σ} :
   rw [Set.image_image] at this
   refine this.trans ?_
   simp [Nat.one_le_iff_ne_zero]
+
+theorem span_X_image_eq_ker_aeval_ite_mem (s : Set σ) [DecidablePred (· ∈ s)] :
+    Ideal.span (X '' sᶜ : Set (MvPolynomial σ R)) =
+    RingHom.ker (aeval (fun x ↦ if x ∈ s then X (R := R) x else 0)) := by
+  refine Submodule.span_eq_of_le _ (fun _ ⟨_, hx⟩ ↦ ?_) (fun _ hx ↦ ?_)
+  · simp [← hx.2, ← Set.mem_compl_iff, hx.1]
+  rw [mem_ideal_span_X_image]
+  by_contra! hh
+  obtain ⟨y, _, _⟩ := hh
+  classical
+  rw [RingHom.mem_ker, MvPolynomial.aeval_ite_mem_eq, eq_zero_iff] at hx
+  specialize hx y
+  rw [coeff_sum, Finset.sum_eq_single y (by grind [coeff_monomial, coeff_zero]) (by grind)] at hx
+  grind [coeff_monomial]
+
+open Classical in
+theorem span_X_image_isPrime [IsCancelAdd R] [IsDomain R] (s : Set σ) :
+    Ideal.span (X '' s : Set (MvPolynomial σ R)) |>.IsPrime :=
+  compl_compl s ▸ span_X_image_eq_ker_aeval_ite_mem (R := R) sᶜ ▸ RingHom.ker_isPrime _
 
 section idealOfVars
 
