@@ -120,11 +120,14 @@ def setOptionLinter : Linter where run := withSetOptionIn fun stx => do
                is only intended for development and not for final code. \
                If you intend to submit this contribution to the Mathlib project, \
                please remove 'set_option {name}'."
-        else if name.components.contains `maxHeartbeats || name == `linter.flexible ||
-            (`backward).isPrefixOf name then
+        else if name.components.contains `maxHeartbeats || name == `linter.flexible then
           Linter.logLint linter.style.setOption head m!"Unscoped option {name} is not allowed:\n\
           Please scope this to individual declarations, as in\n```\nset_option {name} in\n\
           -- comment explaining why this is necessary\n\
+          example : ... := ...\n```"
+        else if (`backward).isPrefixOf name then
+          Linter.logLint linter.style.setOption head m!"Unscoped option {name} is not allowed:\n\
+          Please scope this to individual declarations, as in\n```\nset_option {name} in\n\
           example : ... := ...\n```"
         else if name == `backward.inferInstanceAs.wrap.reuseSubInstances then
           logWarningAt stx "The `backward.inferInstanceAs.wrap.reuseSubInstances` option \
