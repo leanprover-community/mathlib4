@@ -14,6 +14,16 @@ namespace CategoryTheory
 
 variable {C : Type u} [Category.{v} C] [Abelian C] {X Y : C} {x : Subobject X} (f : X ⟶ Y)
 
+lemma Abelian.Subobject.le_iff_comp_cokernel (s t : Subobject X) :
+    s ≤ t ↔ s.arrow ≫ cokernel.π (t.arrow) = 0 := by
+  constructor
+  · intro h
+    rw [← Subobject.ofLE_arrow h, Category.assoc, cokernel.condition, comp_zero]
+  · intro h
+    exact Subobject.le_of_comm
+      (kernel.lift (cokernel.π t.arrow) s.arrow h ≫ (isoKernelCokernel t.arrow).inv) (by simp)
+
+set_option linter.style.emptyLine false in
 open Subobject in
 /-- Given `Y ⊆ X`, there is an order-preserving bijection between subobjects of `X/Y` and
   subobjects of `X` containing `Y`. -/
@@ -50,10 +60,21 @@ def Abelian.Subobject.cokernelOrderIso (Y : Subobject X) :
     intro a b
     simp only [inverseImage, homOfLE_leOfHom, image, Equiv.coe_fn_mk, Subtype.mk_le_mk]
     constructor
-    · rintro (h : kernelSubobject (cokernel.π Y.arrow ≫ cokernel.π a.arrow) ≤
-        kernelSubobject (cokernel.π Y.arrow ≫ cokernel.π b.arrow))
+    · intro h
+      have eq : kernel.ι (cokernel.π Y.arrow ≫ cokernel.π a.arrow) ≫
+          cokernel.π Y.arrow ≫ cokernel.π b.arrow = 0 := by
+        rw [← Preadditive.IsIso.comp_left_eq_zero (kernelSubobjectIso _).hom _, ← Category.assoc,
+          kernelSubobject_arrow]
+        simp only [← ofLE_arrow h, ← kernelSubobject_arrow, Category.assoc, kernel.condition,
+          comp_zero]
 
-      sorry
+      have := (cokernel.π_desc
+            (kernel.ι (cokernel.π Y.arrow ≫ cokernel.π a.arrow))
+            (cokernel.π Y.arrow ≫ cokernel.π b.arrow) eq)
+      simp only [← isoCokernelKernel_hom_arrow (cokernel.π Y.arrow ≫ cokernel.π a.arrow),
+        Category.assoc, cancel_epi] at this
+      rw [le_iff_comp_cokernel, ← this]
+      simp
     · intro h
       exact mk_le_mk_of_comm
         (kernel.map _ _ (𝟙 _) (cokernel.map _ _ (ofLE a b h) (𝟙 _) (by simp)) (by simp)) (by simp)

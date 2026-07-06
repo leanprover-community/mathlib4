@@ -166,13 +166,7 @@ lemma Subobject.inverseImage_mk_eq {X Y : C} (f : X ⟶ Y) {A : C} (g : A ⟶ Y)
       (cokernel.mapIso _ _ (underlyingIso _) (Iso.refl _) (by simp)) (by simp))
     (by simp)
 
-def Subobject.isoKernelCokernel {X Y : C} {A : Subobject X} (f : (A : C) ⟶ Y) [Mono f] :
-    (A : C) ≅ kernel (cokernel.π f) := by
-  have := ((monoIsKernelOfCokernel _ (cokernelIsCokernel f)).conePointUniqueUpToIso
-    (kernelIsKernel (cokernel.π f)))
-  exact this
-
-def Subobject.isoKernelCokernel' {X Y : C} (f : X ⟶ Y) [Mono f] :
+def Subobject.isoKernelCokernel {X Y : C} (f : X ⟶ Y) [Mono f] :
     X ≅ kernel (cokernel.π f) := by
   have := ((monoIsKernelOfCokernel _ (cokernelIsCokernel f)).conePointUniqueUpToIso
     (kernelIsKernel (cokernel.π f)))
@@ -185,14 +179,26 @@ def Subobject.isoCokernelKernel {X Y : C} (f : X ⟶ Y) [Epi f] :
   exact this
 
 @[simp]
-lemma Subobject.isoKernelCokernel_hom_arrow {X Y : C} {A : Subobject X} (f : (A : C) ⟶ Y) [Mono f] :
+lemma Subobject.isoKernelCokernel_hom_arrow {X Y : C} (f : X ⟶ Y) [Mono f] :
     (isoKernelCokernel f).hom ≫ kernel.ι (cokernel.π f) = f :=
   (IsLimit.conePointUniqueUpToIso_hom_comp _ _) WalkingParallelPair.zero
 
 @[simp]
-lemma Subobject.isoKernelCokernel_inv_arrow {A Y : C} {X : Subobject A} (f : (X : C) ⟶ Y) [Mono f] :
+lemma Subobject.isoKernelCokernel_inv_arrow {X Y : C} (f : X ⟶ Y) [Mono f] :
     (isoKernelCokernel f).inv ≫ f = kernel.ι (cokernel.π f) :=
   (IsLimit.conePointUniqueUpToIso_inv_comp _ _) WalkingParallelPair.zero
+
+@[simp]
+lemma Subobject.isoCokernelKernel_hom_arrow {X Y : C} (f : X ⟶ Y) [Epi f] :
+    f ≫ (isoCokernelKernel f).hom = cokernel.π (kernel.ι f) :=
+  (IsColimit.comp_coconePointUniqueUpToIso_hom
+    (epiIsCokernelOfKernel _ (kernelIsKernel f)) (cokernelIsCokernel _)) WalkingParallelPair.one
+
+@[simp]
+lemma Subobject.isoCokernelKernel_inv_arrow {X Y : C} (f : X ⟶ Y) [Epi f] :
+    cokernel.π (kernel.ι f) ≫ (isoCokernelKernel f).inv = f :=
+  (IsColimit.comp_coconePointUniqueUpToIso_inv
+    (epiIsCokernelOfKernel _ (kernelIsKernel f)) (cokernelIsCokernel _)) WalkingParallelPair.one
 
 /-
 @[to_dual (attr := reassoc (attr := simp)) coconePointUniqueUpToIso_inv_desc]
@@ -239,6 +245,7 @@ lemma Subobject.mono_inverseImage_image {X Y : C} (f : X ⟶ Y) (X' : Subobject 
     simp
   · exact inverseImage_image_le f X'
 
+set_option linter.style.emptyLine false in
 @[simp]
 lemma Subobject.epi_image_inverseImage {X Y : C} (f : X ⟶ Y) (Y' : Subobject Y) [Epi f] :
     (image f).obj ((inverseImage f).obj Y') = Y' := by
