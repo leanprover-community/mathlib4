@@ -30,7 +30,7 @@ namespace CategoryTheory
 
 open Limits
 
-variable {C : Type*} [Category* C]
+variable {C D : Type*} [Category* C] [Category* D] (F : C ⥤ D)
 
 /-- Given a regular cardinal `κ`, we say that a morphism `f : X ⟶ Y`
 is `κ`-pure if for any commutative square:
@@ -139,5 +139,7 @@ instance (J : Type*) [Category* J] [EssentiallySmall.{w} J] [IsCardinalFiltered 
   have := hf j'
   obtain ⟨ρ, _⟩ := IsCardinalPure.exists_of_commSq κ sq'
   exact ⟨ρ ≫ c₁.ι.app j', by cat_disch⟩
+
+example [F.IsCardinalAccessible κ] : 0 = 1 := sorry
 
 end CategoryTheory
