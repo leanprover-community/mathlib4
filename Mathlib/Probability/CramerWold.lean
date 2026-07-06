@@ -29,7 +29,7 @@ variable {Ω : Type*} [MeasurableSpace Ω] {P : ProbabilityMeasure Ω}
   {Ω' : Type*} [MeasurableSpace Ω'] {Q : ProbabilityMeasure Ω'}
   {X : Ω' → E} {Xn : ℕ → Ω → E}
 
-lemma charFun_map_eq_integral_map_inner {α : Type*} [MeasurableSpace α]
+lemma charFun_map_eq_integral_map_inner {α : Type*} {mα : MeasurableSpace α}
   (μ : ProbabilityMeasure α) {Y : α → E} (hY : Measurable Y) (t : E) :
   charFun (↑(μ.map hY.aemeasurable)) t =
     ∫ (ω : ℝ), innerProbChar (1 : ℝ) ω ∂((μ.map (hY.inner_const (c := t)).aemeasurable).toMeasure)
