@@ -76,7 +76,7 @@ theorem hasDerivAt_inv_log {x : ℝ} (hx₀ : x ≠ 0) (hx₁ : x ≠ 1) (hx₂ 
 theorem differentiableOn_inv_log : DifferentiableOn ℝ (fun x ↦ (log x)⁻¹) (.Ioi 1) :=
   (differentiableOn_log.mono (by grind)).inv (by simp; grind)
 
-theorem inv_log_isLittleO_one : (fun x ↦ (log x)⁻¹) =o[atTop] fun _ ↦ (1:ℝ) := by
+theorem inv_log_isLittleO_one : (fun x ↦ (log x)⁻¹) =o[atTop] fun _ ↦ (1 : ℝ) := by
   rw [isLittleO_one_iff]
   convert tendsto_log_atTop.inv_tendsto_atTop; simp
 
