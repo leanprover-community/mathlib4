@@ -214,12 +214,12 @@ namespace IsHomogeneous
 variable [CommSemiring S] {φ ψ : MvPolynomial σ R} {m n : ℕ}
 
 theorem coeff_eq_zero (hφ : IsHomogeneous φ n) {d : σ →₀ ℕ} (hd : d.degree ≠ n) :
-    coeff d φ = 0 := by
+    φ.coeff d = 0 := by
   rw [degree_eq_weight_one] at hd
   exact IsWeightedHomogeneous.coeff_eq_zero hφ d hd
 
 theorem inj_right (hm : IsHomogeneous φ m) (hn : IsHomogeneous φ n) (hφ : φ ≠ 0) : m = n := by
-  obtain ⟨d, hd⟩ : ∃ d, coeff d φ ≠ 0 := exists_coeff_ne_zero hφ
+  obtain ⟨d, hd⟩ : ∃ d, φ.coeff d ≠ 0 := exists_coeff_ne_zero hφ
   rw [← hm hd, ← hn hd]
 
 theorem add (hφ : IsHomogeneous φ n) (hψ : IsHomogeneous ψ n) : IsHomogeneous (φ + ψ) n :=
@@ -318,7 +318,7 @@ lemma totalDegree_le (hφ : IsHomogeneous φ n) : φ.totalDegree ≤ n := by
 
 theorem totalDegree (hφ : IsHomogeneous φ n) (h : φ ≠ 0) : totalDegree φ = n := by
   apply le_antisymm hφ.totalDegree_le
-  obtain ⟨d, hd⟩ : ∃ d, coeff d φ ≠ 0 := exists_coeff_ne_zero h
+  obtain ⟨d, hd⟩ : ∃ d, φ.coeff d ≠ 0 := exists_coeff_ne_zero h
   simp only [← hφ hd, MvPolynomial.totalDegree, Finsupp.sum]
   replace hd := Finsupp.mem_support_iff.mpr hd
   simp only [weight_apply, Pi.one_apply, smul_eq_mul, mul_one]
@@ -398,7 +398,7 @@ lemma exists_eval_ne_zero_of_coeff_finSuccEquiv_ne_zero_aux
     eval_zero, one_pow, mul_one, map_sum, Finset.sum_range_succ, Finset.sum_eq_zero aux, zero_add]
   contrapose hFn
   ext d
-  rw [coeff_zero]
+  rw [AddMonoidAlgebra.coeff_zero, Finsupp.zero_apply]
   obtain rfl | hd := eq_or_ne d 0
   · apply hFn
   · contrapose! hd
@@ -529,12 +529,12 @@ theorem homogeneousComponent_mem :
   weightedHomogeneousComponent_mem _ φ n
 
 theorem coeff_homogeneousComponent (d : σ →₀ ℕ) :
-    coeff d (homogeneousComponent n φ) = if d.degree = n then coeff d φ else 0 := by
+    (homogeneousComponent n φ).coeff d = if d.degree = n then φ.coeff d else 0 := by
   rw [degree_eq_weight_one]
   convert! coeff_weightedHomogeneousComponent n φ d
 
 theorem homogeneousComponent_apply :
-    homogeneousComponent n φ = ∑ d ∈ φ.support with d.degree = n, monomial d (coeff d φ) := by
+    homogeneousComponent n φ = ∑ d ∈ φ.support with d.degree = n, monomial d (φ.coeff d) := by
   simp_rw [degree_eq_weight_one]
   convert! weightedHomogeneousComponent_apply n φ
 
@@ -542,7 +542,7 @@ theorem homogeneousComponent_isHomogeneous : (homogeneousComponent n φ).IsHomog
   weightedHomogeneousComponent_isWeightedHomogeneous n φ
 
 @[simp]
-theorem homogeneousComponent_zero : homogeneousComponent 0 φ = C (coeff 0 φ) :=
+theorem homogeneousComponent_zero : homogeneousComponent 0 φ = C (φ.coeff 0) :=
   weightedHomogeneousComponent_zero φ (fun _ => Nat.succ_ne_zero Nat.zero)
 
 @[simp]
@@ -564,7 +564,7 @@ theorem homogeneousComponent_eq_zero (h : φ.totalDegree < n) : homogeneousCompo
 theorem sum_homogeneousComponent :
     (∑ i ∈ range (φ.totalDegree + 1), homogeneousComponent i φ) = φ := by
   ext1 d
-  suffices φ.totalDegree < d.support.sum d → 0 = coeff d φ by
+  suffices φ.totalDegree < d.support.sum d → 0 = φ.coeff d by
     simpa [coeff_sum, coeff_homogeneousComponent]
   exact fun h => (coeff_eq_zero_of_totalDegree_lt h).symm
 

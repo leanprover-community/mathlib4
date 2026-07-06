@@ -93,7 +93,7 @@ theorem eq_zero_of_eval_zero_at_prod_finset {σ : Type*} [Finite σ] [IsDomain R
       rw [this, eval_C] at Heval
       rw [this, Heval, C_0]
     ext m
-    suffices m = 0 by simp [this, ← constantCoeff_eq]
+    suffices m = 0 by simp [this, constantCoeff_eq]
     ext d; exact PEmpty.elim d
   | @h_option σ _ h =>
     set Q := optionEquivLeft R σ P with hQ
@@ -113,7 +113,7 @@ theorem eq_zero_of_eval_zero_at_prod_finset {σ : Type*} [Finite σ] [IsDomain R
         rw [MvPolynomial.coeff_eval_eq_eval_coeff]
         convert! map_zero (MvPolynomial.eval x)
         ext m
-        simp only [coeff_zero]
+        simp only [AddMonoidAlgebra.coeff_zero, Finsupp.zero_apply]
         set n := (embDomain Function.Embedding.some m).update none d with hn
         rw [eq_option_embedding_update_none_iff] at hn
         rw [← hn.1, ← hn.2, optionEquivLeft_coeff_some_coeff_none]
@@ -124,8 +124,7 @@ theorem eq_zero_of_eval_zero_at_prod_finset {σ : Type*} [Finite σ] [IsDomain R
         convert! Finset.le_sup hm
         exact hn.1.symm
     ext m d
-    simp only [Polynomial.coeff_zero, coeff_zero]
-    suffices Q.coeff m = 0 by simp only [this, coeff_zero]
+    suffices Q.coeff m = 0 by simp [this]
     apply h _ (fun i ↦ S (some i))
     · intro i
       apply lt_of_le_of_lt _ (Hdeg (some i))

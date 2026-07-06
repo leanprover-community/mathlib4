@@ -78,7 +78,7 @@ def truncFinset (R : Type*) [CommSemiring R] (s : Finset (σ →₀ ℕ)) :
   map_smul' _ _ := by
     classical
     ext
-    simp [MvPolynomial.coeff, single, MvPolynomial.monomial]
+    simp [single, MvPolynomial.monomial]
 
 theorem truncFinset_apply (p : MvPowerSeries σ R) :
     truncFinset R s p = ∑ x ∈ s, MvPolynomial.monomial x (p.coeff x) := by rfl
@@ -87,17 +87,17 @@ theorem truncFinset_apply (p : MvPowerSeries σ R) :
 theorem coeff_truncFinset_of_mem {x : σ →₀ ℕ} (p : MvPowerSeries σ R) (h : x ∈ s) :
     (truncFinset R s p).coeff x = p.coeff x := by
   classical
-  simp [truncFinset_apply, MvPolynomial.coeff_sum, h]
+  simp [truncFinset_apply, h]
 
 @[grind =]
 theorem coeff_truncFinset_eq_zero {x : σ →₀ ℕ} (p : MvPowerSeries σ R) (h : x ∉ s) :
     (truncFinset R s p).coeff x = 0 := by
   classical
-  simp [truncFinset_apply, MvPolynomial.coeff_sum, h]
+  simp [truncFinset_apply, h]
 
 lemma coeff_truncFinset [DecidableEq σ] {x : σ →₀ ℕ} (p : MvPowerSeries σ R) :
     (truncFinset R s p).coeff x = if x ∈ s then p.coeff x else 0 := by
-  simp [truncFinset_apply, MvPolynomial.coeff_sum]
+  simp [truncFinset_apply]
 
 theorem truncFinset_monomial {x : σ →₀ ℕ} (r : R) (h : x ∈ s) :
     truncFinset R s (monomial x r) = MvPolynomial.monomial x r := by
@@ -108,7 +108,7 @@ theorem truncFinset_monomial {x : σ →₀ ℕ} (r : R) (h : x ∈ s) :
 theorem truncFinset_monomial_eq_zero {x : σ →₀ ℕ} (r : R) (h : x ∉ s) :
     truncFinset R s (monomial x r) = 0 := by
   classical
-  ext; simp [truncFinset, MvPolynomial.coeff_sum, coeff_monomial]
+  ext; simp [truncFinset, coeff_monomial]
   grind
 
 theorem truncFinset_C (h : 0 ∈ s) (r : R) : truncFinset R s (C r) = MvPolynomial.C r :=
@@ -350,7 +350,7 @@ lemma truncTotal_one (h : n ≠ 0) : truncTotal n (1 : MvPowerSeries σ R) = 1 :
   truncFinset_one (by revert h; contrapose; simp)
 
 lemma coeff_truncTotal_mul_truncTotal_eq_coeff_mul (hx : degree x < n) :
-    MvPolynomial.coeff x (p.truncTotal n * q.truncTotal n) =
+    (p.truncTotal n * q.truncTotal n).coeff x =
       (coeff x) (p * q) := coeff_truncFinset_mul_truncFinset_eq_coeff_mul
   (fun _ _ h ↦ by simp; grind [degree_mono h]) p q (by simpa)
 

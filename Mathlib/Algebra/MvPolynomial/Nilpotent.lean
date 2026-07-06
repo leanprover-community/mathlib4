@@ -64,7 +64,9 @@ theorem isUnit_iff : IsUnit P ↔ IsUnit (P.coeff 0) ∧ ∀ i ≠ 0, IsNilpoten
     have H := (Polynomial.coeff_isUnit_isNilpotent_of_isUnit (H.map e.symm)).2 (n i) hi
     simp only [ne_eq, isNilpotent_iff] at H
     convert! ← H (n.equivMapDomain (Equiv.optionSubtypeNe i).symm).some
-    refine (optionEquivLeft_coeff_some_coeff_none _ _ _ _).trans ?_
+    refine (optionEquivLeft_coeff_some_coeff_none R { b // b ≠ i }
+      (Finsupp.equivMapDomain (Equiv.optionSubtypeNe i).symm n)
+      ((renameEquiv R (Equiv.optionSubtypeNe i)).symm P)).trans ?_
     simp [Finsupp.equivMapDomain_eq_mapDomain,
       coeff_rename_mapDomain _ (Equiv.optionSubtypeNe i).symm.injective]
   · have : IsNilpotent (P - C (P.coeff 0)) := by

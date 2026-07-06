@@ -293,11 +293,11 @@ section
 theorem vars_bind₁ [DecidableEq τ] (f : σ → MvPolynomial τ R) (φ : MvPolynomial σ R) :
     (bind₁ f φ).vars ⊆ φ.vars.biUnion fun i => (f i).vars := by
   calc (bind₁ f φ).vars
-    _ = (φ.support.sum fun x : σ →₀ ℕ => (bind₁ f) (monomial x (coeff x φ))).vars := by
+    _ = (φ.support.sum fun x : σ →₀ ℕ => (bind₁ f) (monomial x (φ.coeff x))).vars := by
       rw [← map_sum, ← φ.as_sum]
-    _ ≤ φ.support.biUnion fun i : σ →₀ ℕ => ((bind₁ f) (monomial i (coeff i φ))).vars :=
+    _ ≤ φ.support.biUnion fun i : σ →₀ ℕ => ((bind₁ f) (monomial i (φ.coeff i))).vars :=
       (vars_sum_subset _ _)
-    _ = φ.support.biUnion fun d : σ →₀ ℕ => vars (C (coeff d φ) * ∏ i ∈ d.support, f i ^ d i) := by
+    _ = φ.support.biUnion fun d : σ →₀ ℕ => vars (C (φ.coeff d) * ∏ i ∈ d.support, f i ^ d i) := by
       simp only [bind₁_monomial]
     _ ≤ φ.support.biUnion fun d : σ →₀ ℕ => d.support.biUnion fun i => vars (f i) := ?_
     -- proof below
@@ -306,8 +306,8 @@ theorem vars_bind₁ [DecidableEq τ] (f : σ → MvPolynomial τ R) (φ : MvPol
   · apply Finset.biUnion_mono
     intro d _hd
     calc
-      vars (C (coeff d φ) * ∏ i ∈ d.support, f i ^ d i) ≤
-          (C (coeff d φ)).vars ∪ (∏ i ∈ d.support, f i ^ d i).vars :=
+      vars (C (φ.coeff d) * ∏ i ∈ d.support, f i ^ d i) ≤
+          (C (φ.coeff d)).vars ∪ (∏ i ∈ d.support, f i ^ d i).vars :=
         vars_mul _ _
       _ ≤ (∏ i ∈ d.support, f i ^ d i).vars := by
         simp only [Finset.empty_union, vars_C, Finset.le_iff_subset, Finset.Subset.refl]

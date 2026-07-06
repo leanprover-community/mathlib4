@@ -209,7 +209,7 @@ lemma mem_image_comap_C_basicOpen (f : MvPolynomial σ R) (x : PrimeSpectrum R) 
     congr!
     ext
     · simp [scalarRTensorAlgEquiv, e, Algebra.smul_def]
-    · simp [e, scalarRTensorAlgEquiv, coeff, map, X, monomial]
+    · simp [e, scalarRTensorAlgEquiv, map, X, monomial]
   · simp [MvPolynomial.ext_iff, coeff_map]
 
 lemma image_comap_C_basicOpen (f : MvPolynomial σ R) :

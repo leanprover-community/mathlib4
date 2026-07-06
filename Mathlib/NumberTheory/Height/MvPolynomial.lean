@@ -201,12 +201,12 @@ lemma AbsoluteValue.eval_mvPolynomial_le [Finite ι] (v : AbsoluteValue K ℝ)
 -- The "local" version of the height bound for nonarchimedean absolute values.
 lemma IsNonarchimedean.eval_mvPolynomial_le [Finite ι] {v : AbsoluteValue K ℝ}
     (hv : IsNonarchimedean v) {p : MvPolynomial ι K} {N : ℕ} (hp : p.IsHomogeneous N) (x : ι → K) :
-    v (p.eval x) ≤ (⨆ s : p.support, v (coeff s p)) * (⨆ i, v (x i)) ^ N := by
+    v (p.eval x) ≤ (⨆ s : p.support, v (p.coeff s)) * (⨆ i, v (x i)) ^ N := by
   rcases eq_or_ne p 0 with rfl | hp₀
   · simp_all
   rw [eval_eq]
   obtain ⟨s, hs₁, hs₂⟩ :=
-    hv.finset_image_add_of_nonempty (fun d ↦ coeff d p * ∏ i ∈ d.support, x i ^ d i)
+    hv.finset_image_add_of_nonempty (fun d ↦ p.coeff d * ∏ i ∈ d.support, x i ^ d i)
       (support_nonempty.mpr hp₀)
   grw [hs₂]
   simp_rw [v.map_mul, v.map_prod, v.map_pow]
@@ -229,18 +229,18 @@ open AdmissibleAbsValues
 @[expose] noncomputable
 def mulHeightBound (p : ι' → MvPolynomial ι K) : ℝ :=
   (archAbsVal.map fun v ↦ ⨆ j, (AddMonoidAlgebra.coeff <| p j).sum (fun _ c ↦ v c)).prod *
-    ∏ᶠ v : nonarchAbsVal, ⨆ j, max (⨆ s : (p j).support, v.val (coeff s (p j))) 1
+    ∏ᶠ v : nonarchAbsVal, ⨆ j, max (⨆ s : (p j).support, v.val ((p j).coeff s)) 1
 
 lemma mulHeightBound_eq (p : ι' → MvPolynomial ι K) :
     mulHeightBound p =
      (archAbsVal.map fun v ↦ ⨆ j, (AddMonoidAlgebra.coeff <| p j).sum (fun _ c ↦ v c)).prod *
-        ∏ᶠ v : nonarchAbsVal, ⨆ j, max (⨆ s : (p j).support, v.val (coeff s (p j))) 1 :=
+        ∏ᶠ v : nonarchAbsVal, ⨆ j, max (⨆ s : (p j).support, v.val ((p j).coeff s)) 1 :=
   rfl
 
 variable (K ι ι') in
 lemma max_mulHeightBound_zero_one_eq_one :
     max (mulHeightBound (0 : ι' → MvPolynomial ι K)) 1 = 1 := by
-  simp only [mulHeightBound_eq, Pi.zero_apply, support_zero, coeff_zero, AbsoluteValue.map_zero,
+  simp only [mulHeightBound_eq, Pi.zero_apply, support_zero,
     Real.iSup_of_isEmpty, zero_le_one, sup_of_le_right, AddMonoidAlgebra.coeff_zero,
     Finsupp.sum_zero_index, Real.iSup_const_zero, Multiset.map_const', Multiset.prod_replicate,
     sup_eq_right, zero_pow_eq]
@@ -257,11 +257,11 @@ open Function in
 @[fun_prop]
 private lemma hasFiniteMulSupport_iSup_max_iSup_one (h : Nonempty ι') (p : ι' → MvPolynomial ι K) :
     (fun v : nonarchAbsVal ↦
-      ⨆ j, max (⨆ s : (p j).support, v.val (coeff s.val (p j))) 1).HasFiniteMulSupport := by
+      ⨆ j, max (⨆ s : (p j).support, v.val ((p j).coeff s.val)) 1).HasFiniteMulSupport := by
   refine HasFiniteMulSupport.iSup fun j ↦ ?_
   rcases isEmpty_or_nonempty (p j).support with hs₀ | hs₀
   · simp [hasFiniteMulSupport_one]
-  have H (s : (p j).support) : coeff s.val (p j) ≠ 0 := mem_support_iff.mp s.prop
+  have H (s : (p j).support) : (p j).coeff s.val ≠ 0 := mem_support_iff.mp s.prop
   fun_prop (disch := simp [H])
 
 open Real Multiset Finsupp in
@@ -281,8 +281,8 @@ private lemma mulHeight_constantCoeff_le_mulHeightBound {p : ι' → MvPolynomia
     refine finprod_le_finprod (by fun_prop)
       (fun v ↦ Real.iSup_nonneg_of_nonnegHomClass ..) (by fun_prop) ?_
     refine fun v ↦ Finite.ciSup_mono fun j ↦ ?_
-    rw [show constantCoeff (p j) = coeff 0 (p j) from rfl]
-    rcases eq_or_ne (coeff 0 (p j)) 0 with h₀ | h₀
+    rw [show constantCoeff (p j) = (p j).coeff 0 from rfl]
+    rcases eq_or_ne ((p j).coeff 0) 0 with h₀ | h₀
     · simp [h₀]
     · exact le_sup_of_le_left <| Finite.le_ciSup_of_le ⟨0, by simp [h₀]⟩ le_rfl
 

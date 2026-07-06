@@ -114,16 +114,16 @@ private lemma degreeOf_zero_t {a : k} (ha : a ≠ 0) : ((T f) (monomial v a)).de
 
 /-- `T` maps different monomials of `f` to polynomials with different degrees in `X_0`. -/
 private lemma degreeOf_t_ne_of_ne (hv : v ∈ f.support) (hw : w ∈ f.support) (ne : v ≠ w) :
-    (T f <| monomial v <| coeff v f).degreeOf 0 ≠
-    (T f <| monomial w <| coeff w f).degreeOf 0 := by
+    (T f <| monomial v <| f.coeff v).degreeOf 0 ≠
+    (T f <| monomial w <| f.coeff w).degreeOf 0 := by
   rw [degreeOf_zero_t _ _ <| mem_support_iff.mp hv, degreeOf_zero_t _ _ <| mem_support_iff.mp hw]
   refine sum_r_mul_ne f v w (fun i ↦ ?_) (fun i ↦ ?_) ne <;>
   exact lt_of_le_of_lt ((monomial_le_degreeOf i ‹_›).trans (degreeOf_le_totalDegree f i))
     (by lia)
 
 private lemma leadingCoeff_finSuccEquiv_t :
-    (finSuccEquiv k n ((T f) ((monomial v) (coeff v f)))).leadingCoeff =
-    algebraMap k _ (coeff v f) := by
+    (finSuccEquiv k n <| T f <| monomial v <| f.coeff v).leadingCoeff =
+    algebraMap k _ (f.coeff v) := by
   rw [monomial_eq, Finsupp.prod_fintype]
   · simp only [map_mul, map_prod, leadingCoeff_mul, leadingCoeff_prod]
     rw [AlgEquiv.ofAlgHom_apply, algHom_C, algebraMap_eq, finSuccEquiv_apply,
@@ -143,8 +143,8 @@ private lemma leadingCoeff_finSuccEquiv_t :
 private lemma T_leadingcoeff_isUnit (fne : f ≠ 0) :
     IsUnit (finSuccEquiv k n (T f f)).leadingCoeff := by
   obtain ⟨v, vin, vs⟩ := Finset.exists_max_image f.support
-    (fun v ↦ (T f ((monomial v) (coeff v f))).degreeOf 0) (support_nonempty.mpr fne)
-  set h := fun w ↦ (MvPolynomial.monomial w) (coeff w f)
+    (fun v ↦ (T f <| monomial v <| f.coeff v).degreeOf 0) (support_nonempty.mpr fne)
+  set h := fun w ↦ MvPolynomial.monomial w (f.coeff w)
   simp only [← natDegree_finSuccEquiv] at vs
   replace vs : ∀ x ∈ f.support \ {v}, (finSuccEquiv k n ((T f) (h x))).degree <
       (finSuccEquiv k n ((T f) (h v))).degree := by
@@ -244,7 +244,7 @@ theorem exists_integral_inj_algHom_of_quotient (I : Ideal (MvPolynomial (Fin n) 
     rw [Quotient.mkₐ_eq_mk, Ideal.Quotient.eq] at hab
     by_contra ne
     have eq := eq_C_of_isEmpty (a - b)
-    have ne : coeff 0 (a - b) ≠ 0 := fun h ↦ h ▸ eq ▸ sub_ne_zero_of_ne ne <| map_zero _
+    have ne : (a - b).coeff 0 ≠ 0 := fun h ↦ h ▸ eq ▸ sub_ne_zero_of_ne ne <| map_zero _
     obtain ⟨c, _, eqr⟩ := isUnit_iff_exists.mp ne.isUnit
     have one : c • (a - b) = 1 := by
       rw [MvPolynomial.smul_eq_C_mul, eq, ← map_mul, eqr, MvPolynomial.C_1]
