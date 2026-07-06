@@ -110,7 +110,7 @@ def SuccOrder.ofCore (succ : α → α) (hn : ∀ {a}, ¬IsMax a → ∀ b, a < 
 
 variable (α)
 
-open Classical in
+open scoped Classical in
 /-- A well-order is a `SuccOrder`. -/
 @[to_dual (attr := implicit_reducible)
 /-- A linear order with well-founded greater-than relation is a `PredOrder`. -/]

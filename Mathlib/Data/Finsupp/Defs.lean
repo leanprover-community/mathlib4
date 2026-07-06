@@ -432,7 +432,7 @@ theorem support_embDomain (f : α ↪ β) (v : α →₀ M) : (embDomain f v).su
 theorem embDomain_zero (f : α ↪ β) : (embDomain f 0 : β →₀ M) = 0 :=
   rfl
 
-open Classical in
+open scoped Classical in
 @[grind =]
 theorem embDomain_apply (f : α ↪ β) (v : α →₀ M) (b : β) :
     embDomain f v b = if h : ∃ a, f a = b then v h.choose else 0 := by

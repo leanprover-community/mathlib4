@@ -38,7 +38,7 @@ theorem Subtype.nontrivial_iff_exists_ne (p : α → Prop) (x : Subtype p) :
     Nontrivial (Subtype p) ↔ ∃ (y : α) (_ : p y), y ≠ x := by
   simp only [_root_.nontrivial_iff_exists_ne x, Subtype.exists, Ne, Subtype.ext_iff]
 
-open Classical in
+open scoped Classical in
 /-- An inhabited type is either nontrivial, or has a unique element. -/
 noncomputable def nontrivialPSumUnique (α : Type*) [Inhabited α] :
     Nontrivial α ⊕' Unique α :=

@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3 /tmp/claude-1000/-home-batixx-Documents-mathlib4/627f0ef9-8aa3-48e9-b4c9-43637c1e9d5d/scratchpad/declassify.py --no-apply --jobs 2 --files Mathlib/Analysis/Calculus/DSlope.lean Mathlib/Order/SuccPred/Limit.lean Mathlib/RingTheory/DividedPowers/Basic.lean)",
+      "Bash(python3 -c ' *)",
+      "Bash(python3 /tmp/claude-1000/-home-batixx-Documents-mathlib4/627f0ef9-8aa3-48e9-b4c9-43637c1e9d5d/scratchpad/declassify.py --jobs 2)",
+      "Bash(xargs grep -n \".\\\\{101,\\\\}\")",
+      "Bash(git -C . diff Archive/Sensitivity.lean)"
+    ]
+  }
+}
