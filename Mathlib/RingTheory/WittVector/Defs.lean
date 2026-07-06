@@ -382,12 +382,20 @@ theorem wittMul_vars (n : ℕ) : (wittMul p n).vars ⊆ Finset.univ ×ˢ Finset.
 theorem wittNeg_vars (n : ℕ) : (wittNeg p n).vars ⊆ Finset.univ ×ˢ Finset.range (n + 1) :=
   wittStructureInt_vars _ _ _
 
+theorem wittPSMul_vars (m : ℕ+) (n : ℕ) :
+    (wittPSMul p m n).vars ⊆ Finset.univ ×ˢ Finset.range (n + 1) :=
+  wittStructureInt_vars _ _ _
+
 theorem wittNSMul_vars (m : ℕ) (n : ℕ) :
     (wittNSMul p m n).vars ⊆ Finset.univ ×ˢ Finset.range (n + 1) :=
   wittStructureInt_vars _ _ _
 
 theorem wittZSMul_vars (m : ℤ) (n : ℕ) :
     (wittZSMul p m n).vars ⊆ Finset.univ ×ˢ Finset.range (n + 1) :=
+  wittStructureInt_vars _ _ _
+
+theorem wittPPow_vars (m : ℕ+) (n : ℕ) :
+    (wittPPow p m n).vars ⊆ Finset.univ ×ˢ Finset.range (n + 1) :=
   wittStructureInt_vars _ _ _
 
 theorem wittPow_vars (m : ℕ) (n : ℕ) : (wittPow p m n).vars ⊆ Finset.univ ×ˢ Finset.range (n + 1) :=
