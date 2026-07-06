@@ -121,7 +121,7 @@ theorem eq_empty_or_singleton_of_unique [Unique α] (s : Set α) :
 @[simp, norm_cast]
 theorem subsingleton_coe (s : Set α) : Subsingleton s ↔ s.Subsingleton := by
   constructor
-  · refine fun h => fun a ha b hb => ?_
+  · intro h a ha b hb
     exact SetCoe.ext_iff.2 (@Subsingleton.elim s h ⟨a, ha⟩ ⟨b, hb⟩)
   · exact fun h => Subsingleton.intro fun a b => SetCoe.ext (h a.property b.property)
 

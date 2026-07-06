@@ -55,7 +55,6 @@ A presentation of an `R`-algebra `S` is a family of
 generators with `σ → MvPolynomial ι R`: The assignment of
 each relation to a polynomial in the generators.
 -/
-@[nolint checkUnivs]
 structure Algebra.Presentation extends Algebra.Generators R S ι where
   /-- The assignment of each relation to a polynomial in the generators. -/
   relation : σ → toGenerators.Ring

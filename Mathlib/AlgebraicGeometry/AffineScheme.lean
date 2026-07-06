@@ -807,7 +807,7 @@ theorem isLocalization_stalk' (y : PrimeSpectrum Γ(X, U)) (hy : hU.fromSpec y �
       (S := X.presheaf.stalk (hU.fromSpec y)) _ y.asIdeal.primeCompl _
       (TopCat.Presheaf.algebra_section_stalk X.presheaf ⟨hU.fromSpec y, hy⟩) _ _
       (asIso <| hU.fromSpec.stalkMap y).commRingCatIsoToRingEquiv).mpr
-  convert! StructureSheaf.IsLocalization.to_stalk Γ(X, U) y using 1
+  convert StructureSheaf.IsLocalization.to_stalk Γ(X, U) y
   delta IsLocalization.AtPrime StructureSheaf.stalkAlgebra
   congr!
   simp [RingHom.algebraMap_toAlgebra, ← CommRingCat.hom_comp, IsAffineOpen.fromSpec_app_self]
