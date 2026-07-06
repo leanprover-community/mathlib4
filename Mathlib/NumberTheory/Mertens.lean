@@ -1166,29 +1166,28 @@ private lemma Weight.prime_sum_inv_log_mul_eq {N : ℕ} :
 theorem sum_vonMangoldt_div_mul_log_sub_sub_bound (hx : 2 ≤ x) :
     |∑ n ∈ Ioc 0 ⌊x⌋₊, Λ n / (n * log n) - log (log x) - eulerMascheroniConstant| ≤
       (log 4 + 3) / log x := by
-    rw [← Weight.vonMangoldt_M_eq]
-    convert! Weight.vonMangoldt.sum_div_log_sub_sub_bound hx using 2
-    · rw [Weight.vonMangoldt_sum_inv_log_mul_eq]
-    simp
+  rw [← Weight.vonMangoldt_M_eq]
+  convert! Weight.vonMangoldt.sum_div_log_sub_sub_bound hx using 2
+  · rw [Weight.vonMangoldt_sum_inv_log_mul_eq]
+  simp
 
 theorem sum_vonMangoldt_div_mul_log_sub_sub_bound_nat (hN : 2 ≤ N) :
     |∑ n ∈ Ioc 0 N, Λ n / (n * log n) - log (log N) - eulerMascheroniConstant| ≤
       (log 4 + 3) / log N := by
-    convert sum_vonMangoldt_div_mul_log_sub_sub_bound (x := ↑N) (mod_cast hN)
-    simp
+  convert sum_vonMangoldt_div_mul_log_sub_sub_bound (x := ↑N) (mod_cast hN)
+  simp
 
 theorem sum_prime_inv_sub_sub_bound (hx : 2 ≤ x) :
-    |∑ p ∈ primesLE ⌊x⌋₊, 1 / (p : ℝ) - log (log x) - Weight.prime.M| ≤
-      (log 4 + 3) / log x := by
-    convert! Weight.prime.sum_div_log_sub_sub_bound hx using 2
-    · rw [Weight.prime_sum_inv_log_mul_eq]
-    simp
+    |∑ p ∈ primesLE ⌊x⌋₊, 1 / (p : ℝ) - log (log x) - Weight.prime.M| ≤ (log 4 + 3) / log x := by
+  convert! Weight.prime.sum_div_log_sub_sub_bound hx using 2
+  · rw [Weight.prime_sum_inv_log_mul_eq]
+  simp
 
 theorem sum_prime_inv_sub_sub_bound_nat (hN : 2 ≤ N) :
     |∑ p ∈ primesLE N, 1 / (p : ℝ) - log (log N) - Weight.prime.M| ≤
       (log 4 + 3) / log N := by
-    convert sum_prime_inv_sub_sub_bound (x := ↑N) (mod_cast hN)
-    simp
+  convert sum_prime_inv_sub_sub_bound (x := ↑N) (mod_cast hN)
+  simp
 
 theorem sum_vonMangoldt_div_mul_log_sub_sub_isBigO :
     (fun x ↦ ∑ n ∈ Ioc 0 ⌊x⌋₊, Λ n / (n * log n) - log (log x) - eulerMascheroniConstant)
@@ -1381,17 +1380,15 @@ theorem E₃_isBigO : E₃ =O[atTop] fun x ↦ (log x)⁻¹ := by
   · apply Eventually.isBigO
     filter_upwards [eventually_ge_atTop 2] with x hx
     simpa using E₃_bound hx
-  · apply IsBigO.add
-    · simp_rw [division_def]
-      apply isBigO_const_mul_self
-    · apply IsBigO.of_bound 2
-      filter_upwards [eventually_gt_atTop 2] with x hx
-      have := log_pos (by linarith : 1 < x)
-      simp [abs_of_pos this]
-      have := lt_floor_add_one x
-      have : 0 < (⌊x⌋₊ : ℝ) := by linarith
-      field_simp
-      grw [Real.log_le_self] <;> linarith
+  · simp_rw [division_def]
+    refine (isBigO_const_mul_self ..).add (IsBigO.of_bound 2 ?_)
+    filter_upwards [eventually_gt_atTop 2] with x hx
+    have := log_pos (by linarith : 1 < x)
+    simp [abs_of_pos this]
+    have := lt_floor_add_one x
+    have : 0 < (⌊x⌋₊ : ℝ) := by linarith
+    field_simp
+    grw [Real.log_le_self] <;> linarith
 
 theorem E₃_isLittleO : E₃ =o[atTop] fun _ ↦ (1 : ℝ) :=
   E₃_isBigO.trans_isLittleO inv_log_isLittleO_one
@@ -1413,11 +1410,8 @@ theorem exp_E₃_tendsto : Tendsto (fun x ↦ exp (E₃ x)) atTop (𝓝 1) := by
 theorem sum_primes_log_sub_add_isBigO :
     (fun x : ℝ ↦ ∑ p ∈ primesLE ⌊x⌋₊, log (1 - 1 / (p : ℝ)) + log (log x))
     =O[atTop] fun _ ↦ (1 : ℝ) := by
-  suffices (fun x : ℝ ↦ E₃ x - eulerMascheroniConstant) =O[atTop] fun _ ↦ (1 : ℝ) by
-    apply this.congr _ (by simp)
-    intro
-    rw [sum_prime_log_sub_inv_eq]
-    abel
+  suffices (fun x : ℝ ↦ E₃ x - eulerMascheroniConstant) =O[atTop] fun _ ↦ (1 : ℝ) from
+    this.congr (by grind [sum_prime_log_sub_inv_eq]) (by simp)
   exact E₃_isLittleO.isBigO.sub (isBigO_const_one ..)
 
 theorem log_mul_prod_prime_one_minus_inv_tendsto :
@@ -1426,10 +1420,8 @@ theorem log_mul_prod_prime_one_minus_inv_tendsto :
   have := exp_E₃_tendsto.const_mul (exp (-eulerMascheroniConstant))
   rw [mul_one] at this
   apply this.congr'
-  filter_upwards [eventually_gt_atTop 1] with x hx
-  have := log_pos hx
-  rw [prod_prime_one_minus_inv_eq hx]
-  field_simp
+  filter_upwards [eventually_gt_atTop 1]
+  grind [prod_prime_one_minus_inv_eq, log_pos]
 
 theorem prod_prime_one_minus_inv_asymp :
     (fun x ↦ ∏ p ∈ primesLE ⌊x⌋₊, (1 - (1 : ℝ) / p)) ~[atTop]
@@ -1437,10 +1429,9 @@ theorem prod_prime_one_minus_inv_asymp :
   have := log_mul_prod_prime_one_minus_inv_tendsto.const_mul (exp eulerMascheroniConstant)
   simp [← exp_add] at this
   refine isEquivalent_of_tendsto_one (this.congr' ?_)
-  filter_upwards [eventually_gt_atTop 1] with x hx
-  have := log_pos hx
+  filter_upwards [eventually_gt_atTop 1] 
   simp [exp_neg]
-  field_simp
+  grind [log_pos]
 
 end ThirdTheorem
 
