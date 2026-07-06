@@ -83,8 +83,8 @@ macro "map_fun_tac" : tactic => `(tactic| (
   ext n
   simp only [mapFun, mk, comp_apply, zero_coeff, map_zero,
     -- the lemmas on the next line do not have the `simp` tag in mathlib4
-    add_coeff, sub_coeff, mul_coeff, neg_coeff, nsmul_coeff, zsmul_coeff, pow_coeff,
-    peval, map_aeval, algebraMap_int_eq, coe_eval₂Hom] <;>
+    add_coeff, sub_coeff, mul_coeff, neg_coeff, psmul_coeff, nsmul_coeff, zsmul_coeff, ppow_coeff,
+    pow_coeff, peval, map_aeval, algebraMap_int_eq, coe_eval₂Hom] <;>
   try { cases n <;> simp <;> done } <;> -- this line solves `one`
   apply eval₂Hom_congr (RingHom.ext_int _ _) _ rfl <;>
   ext ⟨i, k⟩ <;>
@@ -108,11 +108,15 @@ theorem mul : mapFun f (x * y) = mapFun f x * mapFun f y := by map_fun_tac
 
 theorem neg : mapFun f (-x) = -mapFun f x := by map_fun_tac
 
+theorem psmul (n : ℕ+) (x : WittVector p R) : mapFun f (n • x) = n • mapFun f x := by map_fun_tac
+
 theorem nsmul (n : ℕ) (x : WittVector p R) : mapFun f (n • x) = n • mapFun f x := by map_fun_tac
 
 theorem zsmul (z : ℤ) (x : WittVector p R) : mapFun f (z • x) = z • mapFun f x := by map_fun_tac
 
-theorem pow (n : ℕ) : mapFun f (x ^ n) = mapFun f x ^ n := by map_fun_tac
+theorem ppow (x : WittVector p R) (n : ℕ+) : mapFun f (x ^ n) = mapFun f x ^ n := by map_fun_tac
+
+theorem pow (x : WittVector p R) (n : ℕ) : mapFun f (x ^ n) = mapFun f x ^ n := by map_fun_tac
 
 theorem natCast (n : ℕ) : mapFun f (n : 𝕎 R) = n :=
   show mapFun f n.unaryCast = (n : WittVector p S) by
@@ -146,9 +150,9 @@ elab "ghost_fun_tac " φ:term ", " fn:term : tactic => do
   have := congr_fun (congr_arg (@peval R _ _) (wittStructureInt_prop p $φ n)) $fn
   simp only [wittZero, OfNat.ofNat, Zero.zero, wittOne, One.one,
     HAdd.hAdd, Add.add, HSub.hSub, Sub.sub, Neg.neg, HMul.hMul, Mul.mul, HPow.hPow, Pow.pow,
-    wittNSMul, wittZSMul, HSMul.hSMul, SMul.smul]
+    wittPSMul, wittNSMul, wittZSMul, wittPPow, HSMul.hSMul, SMul.smul]
   simpa +unfoldPartialApp [WittVector.ghostFun, aeval_rename, aeval_bind₁,
-    comp, uncurry, peval, eval] using! this
+    comp, uncurry, peval, eval, map_ppow, map_psmul] using! this
   )))
 
 end Tactic
@@ -194,11 +198,17 @@ private theorem ghostFun_intCast (i : ℤ) : ghostFun (i : 𝕎 R) = i :=
   show ghostFun i.castDef = _ by
     cases i <;> simp [*, Int.castDef, ghostFun_natCast, ghostFun_neg]
 
+private lemma ghostFun_psmul (m : ℕ+) (x : WittVector p R) : ghostFun (m • x) = m • ghostFun x := by
+  ghost_fun_tac m • (X 0), ![x.coeff]
+
 private lemma ghostFun_nsmul (m : ℕ) (x : WittVector p R) : ghostFun (m • x) = m • ghostFun x := by
   ghost_fun_tac m • (X 0), ![x.coeff]
 
 private lemma ghostFun_zsmul (m : ℤ) (x : WittVector p R) : ghostFun (m • x) = m • ghostFun x := by
   ghost_fun_tac m • (X 0), ![x.coeff]
+
+private theorem ghostFun_ppow (m : ℕ+) : ghostFun (x ^ m) = ghostFun x ^ m := by
+  ghost_fun_tac X 0 ^ m, ![x.coeff]
 
 private theorem ghostFun_pow (m : ℕ) : ghostFun (x ^ m) = ghostFun x ^ m := by
   ghost_fun_tac X 0 ^ m, ![x.coeff]
@@ -231,14 +241,15 @@ variable [Fact p.Prime]
 
 private local instance comm_ring_aux₁ : CommRing (𝕎 (MvPolynomial R ℚ)) :=
   (ghostEquiv' p (MvPolynomial R ℚ)).injective.commRing ghostFun ghostFun_zero ghostFun_one
-    ghostFun_add ghostFun_mul ghostFun_neg ghostFun_sub ghostFun_nsmul ghostFun_zsmul
-    ghostFun_pow ghostFun_natCast ghostFun_intCast
+    ghostFun_add ghostFun_mul ghostFun_neg ghostFun_sub ghostFun_psmul ghostFun_nsmul
+    ghostFun_zsmul ghostFun_ppow ghostFun_pow ghostFun_natCast ghostFun_intCast
 
 set_option backward.privateInPublic true in
 private local instance comm_ring_aux₂ : CommRing (𝕎 (MvPolynomial R ℤ)) :=
   (mapFun.injective _ <| map_injective (Int.castRingHom ℚ) Int.cast_injective).commRing _
     (mapFun.zero _) (mapFun.one _) (mapFun.add _) (mapFun.mul _) (mapFun.neg _) (mapFun.sub _)
-    (mapFun.nsmul _) (mapFun.zsmul _) (mapFun.pow _) (mapFun.natCast _) (mapFun.intCast _)
+    (mapFun.psmul _) (mapFun.nsmul _) (mapFun.zsmul _) (mapFun.ppow _) (mapFun.pow _)
+    (mapFun.natCast _) (mapFun.intCast _)
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
@@ -246,7 +257,8 @@ set_option backward.privateInPublic.warn false in
 instance : CommRing (𝕎 R) :=
   (mapFun.surjective _ <| counit_surjective _).commRing (mapFun <| MvPolynomial.counit _)
     (mapFun.zero _) (mapFun.one _) (mapFun.add _) (mapFun.mul _) (mapFun.neg _) (mapFun.sub _)
-    (mapFun.nsmul _) (mapFun.zsmul _) (mapFun.pow _) (mapFun.natCast _) (mapFun.intCast _)
+    (mapFun.psmul _) (mapFun.nsmul _) (mapFun.zsmul _) (mapFun.ppow _) (mapFun.pow _)
+    (mapFun.natCast _) (mapFun.intCast _)
 
 variable {p R}
 
