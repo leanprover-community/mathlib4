@@ -22,6 +22,39 @@ public import Mathlib.MeasureTheory.VectorMeasure.WithDensityVec
 open Filter Set MeasureTheory MeasurableSpace MeasureTheory
 open scoped Topology NNReal ENNReal
 
+namespace BoundedVariationOn
+
+variable {α E M : Type*} [LinearOrder α] [TopologicalSpace α] [OrderTopology α]
+  [SecondCountableTopology α] [hα : MeasurableSpace α] [BorelSpace α]
+  [NormedAddCommGroup E] [PseudoEMetricSpace M]
+
+theorem stronglyMeasurable {f : α → M} (hf : BoundedVariationOn f univ) :
+    StronglyMeasurable f :=
+  StronglyMeasurable.stronglyMeasurable_of_countable_not_continuousAt hf.countable_not_continuousAt
+
+theorem measurable [MeasurableSpace M] [BorelSpace M] {f : α → M} (hf : BoundedVariationOn f univ) :
+    Measurable f :=
+  hf.stronglyMeasurable.measurable
+
+variable {μ : Measure α} {f : α → E}
+
+theorem memLp_top (hf : BoundedVariationOn f univ) : MemLp f ∞ μ := by
+  rcases isEmpty_or_nonempty α with hα | ⟨⟨x⟩⟩
+  · simp only [MemLp.of_discrete]
+  apply memLp_top_of_bound hf.stronglyMeasurable.aestronglyMeasurable
+    (‖f x‖ + (eVariationOn f univ).toReal)
+  filter_upwards with y
+  grw [← hf.dist_le (mem_univ x) (mem_univ y), dist_comm, dist_eq_norm_sub]
+  exact norm_le_norm_add_norm_sub' (f y) (f x)
+
+theorem memLp [IsFiniteMeasure μ] {p : ℝ≥0∞} (hf : BoundedVariationOn f univ) : MemLp f p μ :=
+  hf.memLp_top.mono_exponent le_top
+
+theorem integrable [IsFiniteMeasure μ] (hf : BoundedVariationOn f univ) : Integrable f μ :=
+  memLp_one_iff_integrable.1 hf.memLp
+
+end BoundedVariationOn
+
 variable {α : Type*} [LinearOrder α] [DenselyOrdered α] [TopologicalSpace α] [OrderTopology α]
   [SecondCountableTopology α] [CompactIccSpace α] [hα : MeasurableSpace α] [BorelSpace α]
   {E F G : Type*}
@@ -34,7 +67,7 @@ namespace MeasureTheory.VectorMeasure
 
 omit [NormedSpace ℝ E] [CompleteSpace E] in
 /-- Two vector measures which agree on closed intervals are equal. -/
-theorem VectorMeasure.ext_of_Icc {α : Type*} [TopologicalSpace α] {m : MeasurableSpace α}
+theorem ext_of_Icc {α : Type*} [TopologicalSpace α] {m : MeasurableSpace α}
     [SecondCountableTopology α] [LinearOrder α] [OrderTopology α] [BorelSpace α]
     (μ ν : VectorMeasure α E) (hμ : ∀ ⦃a b⦄, a ≤ b → μ (Icc a b) = ν (Icc a b)) : μ = ν := by
   rcases isEmpty_or_nonempty α with hα | hα
@@ -105,17 +138,17 @@ lemma glouk (hf : BoundedVariationOn f univ) (hg : BoundedVariationOn g univ)
       show Icc a b ∩ Icc y b = Icc y b by grind]
     simp [hy.2]
 
-#check Continuous.stronglyMeasurable
+lemma foo (hf : BoundedVariationOn f univ) (hg : BoundedVariationOn g univ)
+    (B : E →L[ℝ] F →L[ℝ] G) :
+    (fun x ↦ B (f x) (g x)).rightLim = fun x ↦ B (f.rightLim x) (g.rightLim x) := by
+  ext x
+  rcases eq_or_neBot (𝓝[>] x) with hx | hx
+  · simp [rightLim_eq_of_eq_bot _ hx]
+  apply rightLim_eq_of_tendsto
+  have : Continuous (fun (p : E × F) ↦ B p.1 p.2) := by exact?
 
-#check Continuous.measurable
 
-#check Measurable.dite
-
-#check measurable_of_continuousOn_compl_singleton
-
-#check measurable_of_measurable_on_compl_countable
-
-#check ContinuousOn.measurable_of_countable_compl
+#exit
 
 lemma foo (hf : BoundedVariationOn f univ) (hg : BoundedVariationOn g univ)
     {B : E →L[ℝ] F →L[ℝ] G} :
@@ -123,7 +156,13 @@ lemma foo (hf : BoundedVariationOn f univ) (hg : BoundedVariationOn g univ)
       + hg.vectorMeasure.withDensity f.leftLim B := by
   apply VectorMeasure.ext_of_Icc _ _ (fun a b hab ↦ ?_)
   have := glouk hf hg B a b
-  rw [integral_fun_sub] at this
+  rw [integral_fun_sub hg.rightLim.integrable (integrable_const _),
+    integral_fun_sub (integrable_const _) hf.leftLim.integrable, sub_eq_iff_eq_add] at this
+  rw [add_apply, withDensity_apply hg.rightLim.integrable, withDensity_apply hf.leftLim.integrable,
+    this]
+  simp [hab]
+  abel_nf
+
 
 
 

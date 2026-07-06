@@ -843,7 +843,7 @@ theorem _root_.ContinuousOn.stronglyMeasurable_of_countable_compl [MeasurableSpa
     exact MeasureTheory.StronglyMeasurable.of_discrete
 
 /-- If a function is continuous outside of a countable set, then it is strongly measurable. -/
-theorem stronglyMeasurable_of_countable_not_continuousAt [MeasurableSpace α] [TopologicalSpace α]
+theorem of_countable_not_continuousAt [MeasurableSpace α] [TopologicalSpace α]
     [OpensMeasurableSpace α] [MeasurableSingletonClass α]
     [TopologicalSpace β] [PseudoMetrizableSpace β]
     [h : SecondCountableTopologyEither α β] {f : α → β}
