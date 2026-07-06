@@ -271,7 +271,6 @@ lemma coe_restrictScalars_symm' (f : A ≃ₐ[S] B) :
 def restrictScalarsHom : (A ≃ₐ[S] A) →* (A ≃ₐ[R] A) :=
   MulSemiringAction.toAlgAut (A ≃ₐ[S] A) R A
 
-@[simp]
 theorem restrictScalarsHom_apply (f : A ≃ₐ[S] A) : f.restrictScalarsHom R = f.restrictScalars R :=
   rfl
 
