@@ -24,7 +24,7 @@ case.
 * `SimpleGraph.deleteIncidenceSet G v` is the simple graph `G` with the incidence set of `v`
   removed from the edge set.
 
-* `SimpleGraph.deleteFar G p r` is the predicate that a graph is `r`-*delete-far* from a property
+* `SimpleGraph.DeleteFar G p r` is the predicate that a graph is `r`-*delete-far* from a property
   `p`, that is, at least `r` edges must be deleted to satisfy `p`.
 -/
 
