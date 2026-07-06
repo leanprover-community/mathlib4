@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.MonoidAlgebra.Ideal
 public import Mathlib.Algebra.MvPolynomial.Division
-public import Mathlib.Algebra.MvPolynomial.Variables
 public import Mathlib.RingTheory.Ideal.Quotient.Operations
 public import Mathlib.RingTheory.MvPolynomial.MonomialOrder
 public import Mathlib.RingTheory.MvPolynomial.Basic
