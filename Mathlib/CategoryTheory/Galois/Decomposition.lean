@@ -272,7 +272,6 @@ private lemma subobj_selfProd_trans [Mono u] (b : F.obj A) : ∃ (f : A ≅ A), 
 
 end GaloisRepAux
 
-set_option backward.privateInPublic true in
 /-- The fiber of any object in a Galois category is represented by a Galois object. -/
 lemma exists_galois_representative (X : C) : ∃ (A : C) (a : F.obj A),
     IsGalois A ∧ Function.Bijective (fun (f : A ⟶ X) ↦ F.map f a) := by

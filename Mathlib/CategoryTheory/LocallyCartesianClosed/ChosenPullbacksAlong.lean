@@ -238,8 +238,8 @@ theorem lift_fst : lift a b h ≫ fst f g = a := by
     simp only [← Adjunction.homEquiv_counit, Equiv.symm_apply_apply, adj, a']
   exact congr_arg CommaMorphism.left this
 
-set_option backward.privateInPublic true in
 set_option backward.isDefEq.respectTransparency false in
+set_option backward.privateInPublic true in
 @[reassoc (attr := simp)]
 theorem lift_snd : lift a b h ≫ snd f g = b := by
   simp [lift]
