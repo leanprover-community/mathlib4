@@ -65,9 +65,9 @@ theorem deriv_inv_log {x : ℝ} : deriv (fun x ↦ (log x)⁻¹) x = -x⁻¹ / l
 theorem deriv_inv_log' : deriv (fun x ↦ (log x)⁻¹) = fun x ↦ -x⁻¹ / log x ^ 2 :=
   funext fun _ ↦ deriv_inv_log
 
-theorem differentiableAt_inv_log {x : ℝ} (hx₀ : x ≠ 0) (hx₁ : x ≠ 1) (hx₂ : x ≠ -1)
-    : DifferentiableAt ℝ (fun x ↦ (log x)⁻¹) x :=
-  by fun_prop (disch := grind [log_ne_zero])
+theorem differentiableAt_inv_log {x : ℝ} (hx₀ : x ≠ 0) (hx₁ : x ≠ 1) (hx₂ : x ≠ -1) :
+    DifferentiableAt ℝ (fun x ↦ (log x)⁻¹) x := by
+  fun_prop (disch := grind [log_ne_zero])
 
 theorem hasDerivAt_inv_log {x : ℝ} (hx₀ : x ≠ 0) (hx₁ : x ≠ 1) (hx₂ : x ≠ -1) :
     HasDerivAt (fun x ↦ (log x)⁻¹) (-x⁻¹ / (log x ^ 2)) x := by
