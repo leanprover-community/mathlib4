@@ -351,8 +351,8 @@ theorem image_exp_uIcc (a b : ℝ) : exp '' uIcc a b = uIcc (exp a) (exp b) :=
 
 @[simp]
 theorem image_exp_Iio (a : ℝ) : exp '' Iio a = Ioo 0 (exp a) := by
-  rw [← coe_comp_expOrderIso, image_comp, expOrderIso.image_Iio, image_subtype_val_Ioi_Iio]
-  rfl
+  rw [← coe_comp_expOrderIso, image_comp, expOrderIso.image_Iio, image_subtype_val_Ioi_Iio,
+    Function.comp_apply]
 
 @[simp]
 theorem image_exp_Iic (a : ℝ) : exp '' Iic a = Ioc 0 (exp a) := by
