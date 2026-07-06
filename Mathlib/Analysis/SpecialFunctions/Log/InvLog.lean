@@ -123,7 +123,7 @@ theorem hasDerivAt_log_log {x : ℝ} (hx₀ : x ≠ 0) (hx₁ : x ≠ 1) (hx₂ 
 theorem differentiableOn_log_log : DifferentiableOn ℝ (fun x ↦ log (log x)) (.Ioi 1) :=
   (differentiableOn_log.mono (by grind)).log (by simp; grind)
 
-theorem one_isLittleO_log_log : (fun _ ↦ (1:ℝ)) =o[atTop] fun x ↦ log (log x) := by
+theorem one_isLittleO_log_log : (fun _ ↦ (1 : ℝ)) =o[atTop] fun x ↦ log (log x) := by
   simp only [isLittleO_one_left_iff, norm_eq_abs]
   exact tendsto_abs_atTop_atTop.comp (tendsto_log_atTop.comp tendsto_log_atTop)
 
