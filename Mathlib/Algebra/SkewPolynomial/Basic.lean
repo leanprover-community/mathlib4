@@ -674,9 +674,11 @@ lemma erase_zero (n : ℕ) : (0 : SkewPolynomial R).erase n = 0 := by
 lemma erase_monomial {n : ℕ} {a : R} : erase n (monomial n a) = 0 := by
   simp [erase, monomial_def, zero_def]
 
+@[deprecated coeff_erase (since := "2026-07-06")]
 lemma erase_same (p : SkewPolynomial R) (n : ℕ) : coeff (p.erase n) n = 0 := by
     simp [coeff_erase]
 
+@[deprecated coeff_erase (since := "2026-07-06")]
 lemma erase_ne (p : SkewPolynomial R) {n i : ℕ} (h : i ≠ n) :
     coeff (p.erase n) i = coeff p i := by
   simp [coeff_erase, h]
