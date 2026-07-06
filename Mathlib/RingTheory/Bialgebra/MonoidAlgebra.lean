@@ -5,7 +5,7 @@ Authors: Amelia Livingston, Yaël Dillies, Michał Mrugała
 -/
 module
 
-public import Mathlib.RingTheory.Bialgebra.Hom
+public import Mathlib.RingTheory.Bialgebra.Equiv
 public import Mathlib.RingTheory.Coalgebra.MonoidAlgebra
 
 /-!
@@ -82,6 +82,26 @@ lemma mapDomainBialgHom_mapDomainBialgHom (f : N →* O) (g : M →* N) (x : R[M
   ext; simp
 
 end MonoidAlgebra
+
+namespace AddMonoidAlgebra
+variable [CommSemiring R] [Semiring A] [Bialgebra R A] [AddMonoid M]
+
+variable (R A M) in
+/-- The bialgebra equivalence between `AddMonoidAlgebra` and `MonoidAlgebra` in terms of
+`Multiplicative`. -/
+def toMultiplicativeBialgEquiv : A[M] ≃ₐc[R] MonoidAlgebra A (Multiplicative M) :=
+  .ofAlgEquiv (toMultiplicativeAlgEquiv R A M)
+    (by ext x; induction x using AddMonoidAlgebra.induction_linear <;> simp_all)
+    (by
+      ext x
+      induction x using AddMonoidAlgebra.induction_linear with
+      | zero => simp
+      | add x y hx hy => simp_all
+      | single m a =>
+      simp [← (Coalgebra.Repr.arbitrary R a).eq, TensorProduct.map_tmul, map_sum,
+        Algebra.TensorProduct.map_tmul])
+
+end AddMonoidAlgebra
 
 namespace LaurentPolynomial
 
