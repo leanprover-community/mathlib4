@@ -297,12 +297,12 @@ theorem MeromorphicAt.meromorphicOrderAt_nonneg_iff_exists_analyticAt_and_eventu
     (hf : MeromorphicAt f x) :
     0 ≤ meromorphicOrderAt f x ↔ ∃ g : 𝕜 → E, AnalyticAt 𝕜 g x ∧ f =ᶠ[𝓝[≠] x] g := by
   refine ⟨fun nneg ↦ ?_, fun ⟨g, hg₁, hg₂⟩ ↦ ?_⟩
-  · by_cases h' : meromorphicOrderAt f x = ⊤
-    · exact ⟨0, analyticAt_const, meromorphicOrderAt_eq_top_iff.mp h'⟩
-    obtain ⟨n, h₀ : meromorphicOrderAt f x = n⟩ := Option.ne_none_iff_exists'.mp h'
-    obtain ⟨g, hg, -, hfg⟩ := (meromorphicOrderAt_eq_int_iff hf).mp h₀
-    refine ⟨fun z ↦ (z - x) ^ n • g z, ?_, hfg⟩
-    exact (AnalyticAt.zpow_nonneg (by fun_prop) (by simpa [h₀] using nneg)).smul hg
+  · cases h₀ : meromorphicOrderAt f x with
+    | top => exact ⟨0, analyticAt_const, meromorphicOrderAt_eq_top_iff.mp h₀⟩
+    | coe n =>
+      obtain ⟨g, hg, -, hfg⟩ := (meromorphicOrderAt_eq_int_iff hf).mp h₀
+      refine ⟨fun z ↦ (z - x) ^ n • g z, ?_, hfg⟩
+      exact (AnalyticAt.zpow_nonneg (by fun_prop) (by simpa [h₀] using nneg)).smul hg
   · simp [meromorphicOrderAt_congr hg₂, hg₁.meromorphicOrderAt_nonneg]
 
 /-- If a function is both meromorphic and continuous at a point, then it is analytic there. -/
