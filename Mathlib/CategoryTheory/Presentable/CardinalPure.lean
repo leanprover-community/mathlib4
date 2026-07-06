@@ -17,8 +17,7 @@ in a category `C`, where `κ` is a regular cardinal. This class contains
 split monomorphisms and is stable under `κ`-filtered colimits.
 When `C` is a `κ`-accessible category, we show that `κ`-pure
 morphisms are monomorphisms, and that a `κ`-accessible functor
-`F : C ⥤ D` which preserves `κ`-presentable objects also
-preserves `κ`-pure morphisms.
+`F : C ⥤ D` preserves `κ`-pure morphisms.
 
 ## References
 * [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
@@ -144,8 +143,12 @@ instance (J : Type*) [Category* J] [EssentiallySmall.{w} J] [IsCardinalFiltered 
   exact ⟨ρ ≫ c₁.ι.app j', by cat_disch⟩
 
 set_option backward.defeqAttrib.useBackward true in
-instance IsCardinalPure.map [IsCardinalAccessibleCategory C κ]
-    [F.IsCardinalAccessible κ] [F.PreservesCardinalPresentable κ]
+/-- If `F : C ⥤ D` is a `κ`-accessible functor (with `C` a `κ`-accessible category),
+then `F` maps `κ`-pure morphisms to `κ`-morphisms.
+(This is proposition 2.29 in [Adamek_Rosicky_1994], without the unnecessary
+assumption that `F` preserves `κ`-presentable objects.) -/
+instance IsCardinalPure.map
+    [IsCardinalAccessibleCategory C κ] [F.IsCardinalAccessible κ]
     {X Y : C} (f : X ⟶ Y) [IsCardinalPure κ f] :
     IsCardinalPure κ (F.map f) where
   exists_of_commSq {X' Y' t l r _ _ } sq := by
