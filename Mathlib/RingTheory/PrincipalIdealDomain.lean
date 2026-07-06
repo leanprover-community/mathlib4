@@ -555,7 +555,7 @@ lemma span_singleton_inf_span_singleton [EuclideanDomain R] [GCDMonoid R] (n m :
 
 lemma Ideal.exists_normalized_span_of_isPrincipal {R : Type*} [CommSemiring R]
     [NormalizationMonoid R] (I : Ideal R) [I.IsPrincipal] :
-    ∃ x : R, normalize x = x ∧ I = Ideal.span {x} := by
+    ∃ x, normalize x = x ∧ I = Ideal.span {x} := by
   obtain ⟨x, rfl⟩ := ‹I.IsPrincipal›
-  refine ⟨normalize x, normalize_idem x, le_antisymm ?_ ?_⟩
-  <;> simp [Ideal.mem_span_singleton]
+  refine ⟨normalize x, normalize_idem x, le_antisymm ?_ ?_⟩ <;>
+  simp [Ideal.mem_span_singleton]

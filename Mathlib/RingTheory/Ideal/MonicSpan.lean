@@ -20,9 +20,11 @@ public import Mathlib.RingTheory.Polynomial.Basic
 
 variable (R : Type*) [CommRing R]
 
-open Polynomial Ideal
+open Ideal
 
-lemma Polynomial.exists_monic_span {k : Type*} [Field k] (I : Ideal k[X]) (ne : I ≠ ⊥) :
+namespace Polynomial
+
+lemma exists_monic_span {k : Type*} [Field k] (I : Ideal k[X]) (ne : I ≠ ⊥) :
     ∃ f, f.Monic ∧ I = Ideal.span {f} := by
   classical
   obtain ⟨x, h, spanx⟩ := Ideal.exists_normalized_span_of_isPrincipal I
@@ -30,7 +32,7 @@ lemma Polynomial.exists_monic_span {k : Type*} [Field k] (I : Ideal k[X]) (ne : 
   by_contra eq0
   simp [eq0, spanx] at ne
 
-lemma Polynomial.exists_monic_span_sup_map_eq (p : Ideal R[X]) [p.IsPrime]
+lemma exists_monic_span_sup_map_eq (p : Ideal R[X])
     (ism : (p.comap C).IsMaximal) (ne : p ≠ (p.comap C).map C) :
     ∃ f : R[X], f.Monic ∧ p = (p.comap C).map C ⊔ Ideal.span {f} := by
   let q := p.comap C
@@ -48,3 +50,5 @@ lemma Polynomial.exists_monic_span_sup_map_eq (p : Ideal R[X]) [p.IsPrime]
     simpa [Polynomial.ker_mapRingHom, q] using Ideal.map_comap_le
   · rw [Ideal.comap_map_of_surjective' _ (map_surjective _ Ideal.Quotient.mk_surjective),
       sup_comm, Polynomial.ker_mapRingHom, mk_ker]
+
+end Polynomial
