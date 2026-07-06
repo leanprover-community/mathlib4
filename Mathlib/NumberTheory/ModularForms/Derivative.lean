@@ -251,10 +251,7 @@ theorem serreDerivative_slash_invariant {k : ℤ} {F : ℍ → ℂ} (hF : MDiff 
   grind [serreDerivative_slash_equivariant]
 
 /-!
-## Boundedness at infinity
-
-We show that the Serre derivative of a function bounded at infinity is again bounded at infinity.
-This is needed to show that the Serre derivative preserves modularity.
+Boundedness of the normalized derivative and Serre derivative at infinity.
 -/
 
 /-- The closed ball of radius `z.im / 2` centred at `z` is contained in the upper half-plane. -/
