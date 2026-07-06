@@ -74,10 +74,12 @@ namespace MeasureTheory.Measure
 variable [MeasurableSpace E] [BorelSpace E] [SecondCountableTopology E]
   (μ : Measure E := by volume_tac) [hμ : μ.HasTemperateGrowth]
 
+set_option backward.privateInPublic true in
 /-- Every temperate growth measure defines a tempered distribution. -/
 def toTemperedDistribution : 𝓢'(E, ℂ) :=
   toPointwiseConvergenceCLM _ _ _ _ (integralCLM ℂ μ)
 
+set_option backward.privateInPublic true in
 @[simp]
 theorem toTemperedDistribution_apply (g : 𝓢(E, ℂ)) :
     μ.toTemperedDistribution g = ∫ (x : E), g x ∂μ := by
@@ -90,11 +92,13 @@ namespace Function.HasTemperateGrowth
 variable [MeasurableSpace E] [BorelSpace E] [SecondCountableTopology E]
   (μ : Measure E := by volume_tac) [hμ : μ.HasTemperateGrowth]
 
+set_option backward.privateInPublic true in
 /-- A function of temperate growth `f` defines a tempered distribution via integration, namely
 `g ↦ ∫ (x : E), g x • f x ∂μ`. -/
 def toTemperedDistribution {f : E → F} (hf : f.HasTemperateGrowth) : 𝓢'(E, F) :=
   toPointwiseConvergenceCLM _ _ _ _ ((integralCLM ℂ μ) ∘L (bilinLeftCLM (lsmul ℂ ℂ) hf))
 
+set_option backward.privateInPublic true in
 @[simp]
 theorem toTemperedDistribution_apply {f : E → F} (hf : f.HasTemperateGrowth) (g : 𝓢(E, ℂ)) :
     toTemperedDistribution μ hf g = ∫ (x : E), g x • f x ∂μ := rfl
