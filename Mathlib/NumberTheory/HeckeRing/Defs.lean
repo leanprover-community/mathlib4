@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2024 Chris Birkbeck. All rights reserved.
+Copyright (c) 2026 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
@@ -91,37 +91,32 @@ theorem of_diagonal {H : Subgroup G} (h : H.toSubmonoid ≤ Δ)
     (hc : Δ ≤ (commensurator H).toSubmonoid) : IsHeckeTriple Δ H H :=
   ⟨h, h, .refl H, hc⟩
 
-/-- Elements of the left subgroup lie in `Δ`. The right subgroup is explicit, since it cannot
-be inferred. -/
+/-- Elements of the left subgroup lie in `Δ`. -/
 theorem mem_of_mem_left (H₂ : Subgroup G) [IsHeckeTriple Δ H₁ H₂] {x : G} (hx : x ∈ H₁) : x ∈ Δ :=
-  left_le (H₂ := H₂) hx
+  left_le H₂ hx
 
-/-- Elements of the right subgroup lie in `Δ`. The left subgroup is explicit, since it cannot
-be inferred. -/
+/-- Elements of the right subgroup lie in `Δ`. -/
 theorem mem_of_mem_right (H₁ : Subgroup G) [IsHeckeTriple Δ H₁ H₂] {x : G} (hx : x ∈ H₂) : x ∈ Δ :=
-  right_le (H₁ := H₁) hx
+  right_le H₁ hx
 
 /-- The submonoid `Δ` also lies in the commensurator of the left subgroup. -/
-theorem le_commensurator_left [h : IsHeckeTriple Δ H₁ H₂] :
+theorem le_commensurator_left (H₂ : Subgroup G) [h : IsHeckeTriple Δ H₁ H₂] :
     Δ ≤ (commensurator H₁).toSubmonoid := by
   rw [h.commensurable.eq]
   exact h.le_commensurator_right
 
-/-- Elements of `Δ` lie in the commensurator of the right subgroup. The left subgroup is
-explicit, since it cannot be inferred. -/
+/-- Elements of `Δ` lie in the commensurator of the right subgroup. -/
 theorem mem_commensurator_right (H₁ : Subgroup G) [IsHeckeTriple Δ H₁ H₂] (g : Δ) :
     (g : G) ∈ commensurator H₂ :=
   le_commensurator_right H₁ g.2
 
-/-- Elements of `Δ` lie in the commensurator of the left subgroup. The right subgroup is
-explicit, since it cannot be inferred. -/
+/-- Elements of `Δ` lie in the commensurator of the left subgroup. -/
 theorem mem_commensurator_left (H₂ : Subgroup G) [IsHeckeTriple Δ H₁ H₂] (g : Δ) :
     (g : G) ∈ commensurator H₁ :=
-  le_commensurator_left (H₂ := H₂) g.2
+  le_commensurator_left H₂ g.2
 
 /-- Conjugating the right subgroup by an element of `Δ` gives a subgroup commensurable with
-the left one; the intersection `H₁ ∩ gH₂g⁻¹` this bounds is the one underlying
-`DoubleCoset.DecompQuotient H₁ H₂ g`. -/
+the left one. -/
 theorem commensurable_conjAct_right [IsHeckeTriple Δ H₁ H₂] (g : Δ) :
     Commensurable (ConjAct.toConjAct (g : G) • H₂) H₁ := by
   have hg : Commensurable (ConjAct.toConjAct (g : G) • H₂) H₂ := mem_commensurator_right H₁ g
@@ -131,29 +126,29 @@ theorem commensurable_conjAct_right [IsHeckeTriple Δ H₁ H₂] (g : Δ) :
 inferred from the goal. -/
 theorem trans [IsHeckeTriple Δ H₁ H₂] [IsHeckeTriple Δ H₂ H₃] :
     IsHeckeTriple Δ H₁ H₃ :=
-  ⟨left_le (H₂ := H₂), right_le (H₁ := H₂),
+  ⟨left_le H₂, right_le H₂,
     (commensurable (Δ := Δ) (H₁ := H₁) (H₂ := H₂)).trans
       (commensurable (Δ := Δ) (H₁ := H₂) (H₂ := H₃)),
-    le_commensurator_right (H₁ := H₂)⟩
+    le_commensurator_right H₂⟩
 
 /-- The left diagonal datum `(H₁, Δ, H₁)`. Not an instance, since `H₂` cannot be inferred. -/
 theorem diag_left [IsHeckeTriple Δ H₁ H₂] : IsHeckeTriple Δ H₁ H₁ :=
-  ⟨left_le (H₂ := H₂), left_le (H₂ := H₂), .refl H₁, le_commensurator_left (H₂ := H₂)⟩
+  ⟨left_le H₂, left_le H₂, .refl H₁, le_commensurator_left H₂⟩
 
 /-- The right diagonal datum `(H₂, Δ, H₂)`. Not an instance, since `H₁` cannot be inferred. -/
 theorem diag_right [IsHeckeTriple Δ H₁ H₂] : IsHeckeTriple Δ H₂ H₂ :=
-  ⟨right_le (H₁ := H₁), right_le (H₁ := H₁), .refl H₂, le_commensurator_right (H₁ := H₁)⟩
+  ⟨right_le H₁, right_le H₁, .refl H₂, le_commensurator_right H₁⟩
 
 end IsHeckeTriple
 
 /-- The setoid on `Δ` identifying elements with the same double coset `H₁gH₂ = H₁hH₂`, pulled
 back from `DoubleCoset.setoid` along the inclusion `Δ ↪ G`.
 
-This is a `def` rather than a global instance: the subgroups `H₁, H₂` cannot be inferred from
-the submonoid `Δ`, so this cannot participate in instance search (and a global instance would
-also create a `Setoid` diamond on `↥Δ` with the left-coset setoid). The quotient map is
+This is an `abbrev` rather than a global instance: the subgroups `H₁, H₂` cannot be inferred
+from the submonoid `Δ`, so this cannot participate in instance search (and a global instance
+would also create a `Setoid` diamond on `↥Δ` with the left-coset setoid). The quotient map is
 `HeckeCoset.mk`. -/
-@[reducible] def HeckeCoset.setoid (Δ : Submonoid G) (H₁ H₂ : Subgroup G) : Setoid Δ :=
+abbrev HeckeCoset.setoid (Δ : Submonoid G) (H₁ H₂ : Subgroup G) : Setoid Δ :=
   (DoubleCoset.setoid (H₁ : Set G) H₂).comap Subtype.val
 
 /-- A Hecke double coset: an equivalence class of `Δ`-elements under `H₁gH₂ = H₁hH₂`. This is
