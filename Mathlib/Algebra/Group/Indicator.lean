@@ -209,7 +209,7 @@ lemma mulSupport_subset_subsingleton_of_disjoint_on_mulSupport [One β] {s : γ 
     (fun d ↦ (s d).mulIndicator f i).mulSupport ⊆ {j} := by
   suffices ∀ j', j' ≠ j → {i} ⊆ s j → {i} ⊆ s j' → {i} ⊆ mulSupport f → False by by_contra; aesop
   intro j' h hj hj' hi
-  simp only [Pairwise, Disjoint, Set.le_eq_subset, Set.subset_inter_iff] at hs
+  simp only [Pairwise, Disjoint, Set.subset_inter_iff] at hs
   simpa using hs h ⟨hj', hi⟩ ⟨hj, hi⟩
 
 end One
