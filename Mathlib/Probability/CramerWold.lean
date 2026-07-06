@@ -63,12 +63,10 @@ lemma tendsto_charFun_of_tendsto_inner (hX : Measurable X) (hXn : ∀ n, Measura
 Convergence in distribution of all 1-dimensional scalar projections of a sequence of
 random variables in a finite-dimensional real inner product space implies the
 convergence in distribution of the sequence itself. -/
-theorem tendsto_map_of_tendsto_map_inner (hX : Measurable X) (hXn : ∀ n, Measurable (Xn n)) :
-  (∀ t : E, Tendsto (fun n : ℕ => P.map ((hXn n).inner_const (c := t)).aemeasurable)
-  atTop (𝓝 (Q.map (hX.inner_const (c := t)).aemeasurable : ProbabilityMeasure ℝ))) →
-  (Tendsto (fun n : ℕ => P.map (hXn n).aemeasurable) atTop (𝓝 (Q.map hX.aemeasurable))) := by
-  intro h
-  apply ProbabilityMeasure.tendsto_iff_tendsto_charFun.mpr
-  exact tendsto_charFun_of_tendsto_inner hX hXn h
+theorem tendsto_map_of_tendsto_map_inner (hX : Measurable X) (hXn : ∀ n, Measurable (Xn n))
+    (h : ∀ t, Tendsto (fun n => P.map ((hXn n).inner_const (c := t)).aemeasurable)
+      atTop (𝓝 (Q.map (hX.inner_const (c := t)).aemeasurable : ProbabilityMeasure ℝ))) :
+    Tendsto (fun n => P.map (hXn n).aemeasurable) atTop (𝓝 (Q.map hX.aemeasurable)) :=
+  ProbabilityMeasure.tendsto_iff_tendsto_charFun.mpr (tendsto_charFun_of_tendsto_inner hX hXn h)
 
 end
