@@ -592,6 +592,13 @@ def centralMul (g : G) (hg : g ∈ Submonoid.center G) : IntertwiningMap ρ ρ w
   toLinearMap := ρ g
   isIntertwining' x := LinearMap.ext <| (isIntertwiningMap_of_mem_center ρ g hg).isIntertwining x
 
+noncomputable def centralAlgebraMul (z : A[G]) (hg : z ∈ Submonoid.center A[G]) :
+    ρ.IntertwiningMap ρ where
+  toLinearMap := ρ.asAlgebraHom z
+  isIntertwining' _ := by
+    rw [← Module.End.mul_eq_comp, ← Module.End.mul_eq_comp, ← asAlgebraHom_of,
+      ← map_mul, ← Submonoid.mem_center_iff.1 hg _, map_mul, asAlgebraHom_of]
+
 /-- `IntertwiningMap.toLinearMap` as a linear map. -/
 @[simps] def toLinearMapl : IntertwiningMap ρ σ →ₗ[A] V →ₗ[A] W where
   toFun := toLinearMap
