@@ -225,7 +225,6 @@ protected noncomputable def lift₂ (z : DirectLimit F₁ f₁) (w : DirectLimit
         (lift₂Aux ..).2 _ (hyj.trans hji) (hz.trans hki),
         ← map_map' _ hx hji, jeq, ← map_map' _ hz hki, ← keq, map_map']
 
-set_option backward.privateInPublic true in
 theorem lift₂_def₂ (x : Σ i, F₁ i) (y : Σ i, F₂ i) (i) (hxi : x.1 ≤ i) (hyi : y.1 ≤ i) :
     DirectLimit.lift₂ f₁ f₂ ih compat ⟦x⟧ ⟦y⟧ = ih i (f₁ _ _ hxi x.2) (f₂ _ _ hyi y.2) :=
   (lift₂Aux _ _ _ compat _ _).2 ..
@@ -501,7 +500,6 @@ set_option backward.privateInPublic.warn false in
 noncomputable def globalEquiv (i : ι) : F i ≃ piLT X i :=
   (globalEquivAux equivSucc equivLim i).equiv ⟨i, le_rfl⟩
 
-set_option backward.privateInPublic true in
 theorem globalEquiv_naturality ⦃i j⦄ (h : i ≤ j) (x : F j) :
     letI e := globalEquiv equivSucc equivLim
     e i (f h x) = piLTProj h (e j x) := by

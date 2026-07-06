@@ -139,7 +139,6 @@ set_option backward.privateInPublic true in
 private instance : UniformSpace (MvPolynomial σ R) :=
   comap toMvPowerSeries inferInstance
 
-set_option backward.privateInPublic true in
 /-- The induced uniform structure of MvPolynomial σ R is an additive group uniform structure -/
 private instance [IsUniformAddGroup R] : IsUniformAddGroup (MvPolynomial σ R) :=
   IsUniformAddGroup.comap coeToMvPowerSeries.ringHom

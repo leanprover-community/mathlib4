@@ -70,7 +70,6 @@ lemma of_V : (of ρ).V = X := by with_reducible rfl
 variable (X ρ) in
 lemma of_ρ : (of ρ).ρ = ρ := by with_reducible rfl
 
-set_option backward.privateInPublic true in
 /-- The type of morphisms in `TopRep k G`. -/
 @[ext]
 structure Hom (A B : TopRep k G) where

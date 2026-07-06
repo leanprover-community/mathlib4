@@ -357,7 +357,6 @@ lemma cfc_apply_mkD :
   · rw [cfc_apply_of_not_continuousOn a hf, mkD_of_not_continuousOn hf,
       map_zero]
 
-set_option backward.privateInPublic true in
 /-- A version of `cfc_eq_cfcL` in terms of `ContinuousMapZero.mkD` -/
 lemma cfc_eq_cfcL_mkD :
     cfc f a = cfcL (a := a) ha (mkD ((spectrum R a).restrict f) 0) :=
@@ -431,7 +430,6 @@ lemma eqOn_of_cfc_eq_cfc {f g : R → R} {a : A} (h : cfc f a = cfc g a)
   rw [cfc_apply f a, cfc_apply g a] at h
   exact fun x hx ↦ congr($(cfcHom_injective ha h) ⟨x, hx⟩)
 
-set_option backward.privateInPublic true in
 variable {a f g} in
 include ha hf hg in
 lemma cfc_eq_cfc_iff_eqOn : cfc f a = cfc g a ↔ (spectrum R a).EqOn f g :=
@@ -866,7 +864,6 @@ variable [Ring A] [StarRing A] [Algebra R A] [ContinuousFunctionalCalculus R A p
 variable (f g : R → R) (a : A) (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac)
 variable (hg : ContinuousOn g (spectrum R a) := by cfc_cont_tac)
 
-set_option backward.privateInPublic true in
 include hf hg in
 lemma cfc_sub : cfc (fun x ↦ f x - g x) a = cfc f a - cfc g a := by
   by_cases ha : p a

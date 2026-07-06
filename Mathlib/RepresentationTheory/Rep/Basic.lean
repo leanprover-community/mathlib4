@@ -26,7 +26,6 @@ universe w w' u u' v v'
 open CategoryTheory
 open scoped MonoidAlgebra
 
-set_option backward.privateInPublic true in
 /-- The category of representations of monoid `G` and their morphisms. -/
 structure Rep (k : Type u) (G : Type v) [Semiring k] [Monoid G] where
   private mk ::
@@ -68,7 +67,6 @@ lemma of_V : (of ρ).V = X := by with_reducible rfl
 variable (X ρ) in
 lemma of_ρ : (of ρ).ρ = ρ := by with_reducible rfl
 
-set_option backward.privateInPublic true in
 /-- The type of morphisms in `Rep.{w} k G`. -/
 @[ext]
 structure Hom where

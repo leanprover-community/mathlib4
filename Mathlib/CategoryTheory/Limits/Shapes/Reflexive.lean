@@ -422,11 +422,9 @@ def mkNatTrans : F ⟶ G where
       simp only [Functor.map_id, Category.id_comp, Category.comp_id, Functor.map_comp, h₁, h₂, h₃,
         reassoc_of% h₁, reassoc_of% h₂, Category.assoc]
 
-set_option backward.privateInPublic true in
 @[simp]
 lemma mkNatTrans_app_zero : (mkNatTrans e₀ e₁ h₁ h₂ h₃).app zero = e₀ := rfl
 
-set_option backward.privateInPublic true in
 @[simp]
 lemma mkNatTrans_app_one : (mkNatTrans e₀ e₁ h₁ h₂ h₃).app one = e₁ := rfl
 

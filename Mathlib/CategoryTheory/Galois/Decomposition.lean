@@ -201,7 +201,6 @@ which has at index `x : F.obj X` the element `g x`. -/
 private noncomputable def mkSelfProdFib : F.obj (selfProd F X) :=
   (PreservesProduct.iso F _).inv ((Concrete.productEquiv (fun _ : F.obj X ↦ F.obj X)).symm id)
 
-set_option backward.privateInPublic true in
 @[simp]
 private lemma mkSelfProdFib_map_π (t : F.obj X) : F.map (Pi.π _ t) (mkSelfProdFib F X) = t := by
   rw [← piComparison_comp_π]
@@ -262,7 +261,6 @@ private lemma selfProdTermIncl_fib_eq (b : F.obj A) :
     rw [← map_comp, Pi.map'_comp_π, Category.comp_id, mkSelfProdFib_map_π F X (fiberPerm h b t)]
     rfl
 
-set_option backward.privateInPublic true in
 /-- There exists an automorphism `f` of `A` that maps `b` to `a`.
 `f` is obtained by considering `u` and `selfProdPermIncl h b`.
 Both are inclusions of `A` into `selfProd F X` mapping `b` respectively `a` to the same element

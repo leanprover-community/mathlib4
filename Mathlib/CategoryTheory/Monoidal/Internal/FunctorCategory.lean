@@ -171,7 +171,6 @@ def functorObj (A : (C ⥤ D)) [ComonObj A] : C ⥤ Comon D where
   map_comp f g := by ext; dsimp; rw [Functor.map_comp]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.privateInPublic true in
 /-- Functor translating a comonoid object in a functor category
 to a functor into the category of comonoid objects.
 -/

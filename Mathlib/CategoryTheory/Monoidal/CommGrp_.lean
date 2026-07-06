@@ -168,9 +168,7 @@ abbrev mkIso : G ≅ H :=
   have : IsMonHom e.hom := ⟨one_f, mul_f⟩
   mkIso' e
 
-set_option backward.privateInPublic true in
 @[simp] lemma mkIso_hom_hom_hom_hom : (mkIso e one_f mul_f).hom.hom.hom.hom = e.hom := rfl
-set_option backward.privateInPublic true in
 @[simp] lemma mkIso_inv_hom_hom_hom : (mkIso e one_f mul_f).inv.hom.hom.hom = e.inv := rfl
 
 @[deprecated (since := "2025-12-18")] alias mkIso_hom_hom := mkIso_hom_hom_hom_hom
