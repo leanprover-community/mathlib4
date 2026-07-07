@@ -52,21 +52,20 @@ variable (F) in
 /-- The linear map from `⨂[𝕜] i, Eᵢ` to `ContinuousMultilinearMap 𝕜 E F →L[𝕜] F` sending
 `x` in `⨂[𝕜] i, Eᵢ` to the map `f ↦ f.lift x`. -/
 @[simps!]
-noncomputable def toDualContinuousMultilinearMap : (⨂[𝕜] i, E i) →ₗ[𝕜]
-    ContinuousMultilinearMap 𝕜 E F →L[𝕜] F where
+noncomputable def toDualContinuousMultilinearMap :
+    (⨂[𝕜] i, E i) →ₗ[𝕜] ContinuousMultilinearMap 𝕜 E F →L[𝕜] F where
   toFun x := LinearMap.mkContinuous
-    (lift.toLinearMap.flip x ∘ₗ ContinuousMultilinearMap.toMultilinearMapLinear)
-    (projectiveSeminorm x)
-    (fun _ ↦ by simpa [mul_comm] using! norm_eval_le_projectiveSeminorm ..)
+    (lift.toLinearMap.flip x ∘ₗ ContinuousMultilinearMap.toMultilinearMapLinear) ‖x‖
+    (fun f ↦ by simpa [mul_comm] using norm_eval_le_projectiveSeminorm f x)
   map_add' x y := by
     ext; simp
   map_smul' a x := by
     ext; simp
 
 theorem toDualContinuousMultilinearMap_le_projectiveSeminorm (x : ⨂[𝕜] i, E i) :
-    ‖toDualContinuousMultilinearMap F x‖ ≤ projectiveSeminorm x := by
+    ‖toDualContinuousMultilinearMap F x‖ ≤ ‖x‖ := by
   simp only [toDualContinuousMultilinearMap, LinearMap.coe_mk, AddHom.coe_mk]
-  apply LinearMap.mkContinuous_norm_le _ (apply_nonneg _ _)
+  apply LinearMap.mkContinuous_norm_le _ (by positivity)
 
 /-- The injective seminorm on `⨂[𝕜] i, Eᵢ`. Morally, it sends `x` in `⨂[𝕜] i, Eᵢ` to the
 `sup` of the operator norms of the `PiTensorProduct.toDualContinuousMultilinearMap F x`, for all
@@ -89,7 +88,7 @@ lemma dualSeminorms_bounded : BddAbove {p | ∃ (G : Type (max uι u𝕜 uE))
   use projectiveSeminorm
   simp only [mem_upperBounds, Set.mem_setOf_eq, forall_exists_index]
   intro p G _ _ hp x
-  simpa [hp] using toDualContinuousMultilinearMap_le_projectiveSeminorm _
+  simpa [hp] using! toDualContinuousMultilinearMap_le_projectiveSeminorm _
 
 @[deprecated
   "`injectiveSeminorm` is deprecated in favor of the extensionally equal `projectiveSeminorm`"
