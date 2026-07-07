@@ -109,17 +109,14 @@ theorem add_le_add_iff_right {a b : Ordinal} : ∀ n : ℕ, a + n ≤ b + n ↔ 
 theorem add_right_cancel {a b : Ordinal} (n : ℕ) : a + n = b + n ↔ a = b := by
   simp only [le_antisymm_iff, add_le_add_iff_right]
 
-@[simp]
-theorem add_eq_zero_iff {a b : Ordinal} : a + b = 0 ↔ a = 0 ∧ b = 0 :=
-  inductionOn₂ a b fun α r _ β s _ => by
-    simp_rw [← type_sum_lex, type_eq_zero_iff_isEmpty]
-    exact isEmpty_sum
+@[deprecated (since := "2026-07-07")]
+alias left_eq_zero_of_add_eq_zero := eq_zero_of_add_right
 
-theorem left_eq_zero_of_add_eq_zero {a b : Ordinal} (h : a + b = 0) : a = 0 :=
-  (add_eq_zero_iff.1 h).1
+@[deprecated (since := "2026-07-07")]
+alias right_eq_zero_of_add_eq_zero := eq_zero_of_add_left
 
-theorem right_eq_zero_of_add_eq_zero {a b : Ordinal} (h : a + b = 0) : b = 0 :=
-  (add_eq_zero_iff.1 h).2
+@[deprecated (since := "2026-07-07")]
+alias add_eq_zero_iff := add_eq_zero
 
 /-! ### Limit ordinals -/
 
