@@ -80,14 +80,13 @@ class JordanHolderLattice (X : Type u) [Lattice X] where
   iso_trans : ∀ {x y z}, Iso x y → Iso y z → Iso x z
   second_iso : ∀ {x y}, IsMaximal x (x ⊔ y) → Iso (x, x ⊔ y) (x ⊓ y, y)
 
-section ModularLattice
+namespace JordanHolderLattice
 
 /-- Every modular lattice is a Jordan Hölder lattice. This should not be an instance because for
 specific modular lattices (e.g., the lattice of submodules) we will want a stronger choice of `Iso`
 (e.g., isomorphism of quotient submodules) beyond order-theoretic isomorphism of the intervals. -/
 @[implicit_reducible]
-def JordanHolderLattice.ofModularLattice (X : Type*) [Lattice X] [IsModularLattice X] :
-    JordanHolderLattice X where
+def ofModularLattice (X : Type u) [Lattice X] [IsModularLattice X] : JordanHolderLattice X where
   IsMaximal := (· ⋖ ·)
   lt_of_isMaximal := CovBy.lt
   sup_eq_of_isMaximal hxz hyz := hxz.wcovBy.sup_eq hyz.wcovBy
@@ -96,10 +95,6 @@ def JordanHolderLattice.ofModularLattice (X : Type*) [Lattice X] [IsModularLatti
   iso_symm := .map .symm
   iso_trans := .map2 .trans
   second_iso {x y} _ := ⟨(infIccOrderIsoIccSup' x y).symm⟩
-
-end ModularLattice
-
-namespace JordanHolderLattice
 
 variable {X : Type u} [Lattice X] [JordanHolderLattice X]
 
