@@ -741,7 +741,7 @@ lemma mem_limsup_iff_frequently_mem : (a ∈ limsup s 𝓕) ↔ (∃ᶠ i in �
 
 theorem cofinite.blimsup_set_eq :
     blimsup s cofinite p = { x | { n | p n ∧ x ∈ s n }.Infinite } := by
-  simp only [blimsup_eq, le_eq_subset, eventually_cofinite, not_forall, sInf_eq_sInter, exists_prop]
+  simp only [blimsup_eq, eventually_cofinite, not_forall, sInf_eq_sInter, exists_prop]
   ext x
   refine ⟨fun h => ?_, fun hx t h => ?_⟩ <;> contrapose h
   · simp only [mem_sInter, mem_setOf_eq, not_forall, exists_prop]
