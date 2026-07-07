@@ -419,7 +419,7 @@ section RingEquiv
 variable {R S : Type*} [EuclideanDomain R] [CommRing S]
 
 /-- If `S` is a nontrivial commutative ring isomorphic to a Euclidean domain
- `R` then it is also a Euclidean domain. -/
+`R` then it is also a Euclidean domain. -/
 protected abbrev RingEquiv.euclideanDomain (e : S ≃+* R) : EuclideanDomain S where
   toNontrivial := e.nontrivial
   quotient a b := e.symm (e a / e b)
@@ -429,12 +429,12 @@ protected abbrev RingEquiv.euclideanDomain (e : S ≃+* R) : EuclideanDomain S w
   quotient_zero a := by simp
   quotient_mul_add_remainder_eq a b := by
     apply e.injective
-    simpa using EuclideanDomain.quotient_mul_add_remainder_eq (e a) (e b)
+    simpa using! EuclideanDomain.quotient_mul_add_remainder_eq (e a) (e b)
   remainder_lt a b hb := by
     have hb' : e b ≠ 0 := by simpa using hb
-    simpa using EuclideanDomain.remainder_lt (e a) hb'
+    simpa using! EuclideanDomain.remainder_lt (e a) hb'
   mul_left_not_lt a b hb := by
     have hb' : e b ≠ 0 := by simpa using hb
-    simpa using EuclideanDomain.mul_left_not_lt (e a) hb'
+    simpa using! EuclideanDomain.mul_left_not_lt (e a) hb'
 
 end RingEquiv

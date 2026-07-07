@@ -202,8 +202,7 @@ noncomputable def OrderIso.lowerSetSupIrred [OrderBot α] : α ≃o LowerSet {a 
         refine ⟨fun ha ↦ ?_, fun ha ↦ ?_⟩
         · obtain ⟨i, hi, ha⟩ := a.2.supPrime.le_finset_sup.1 ha
           exact s.lower ha (Set.mem_toFinset.1 hi)
-        · dsimp
-          exact le_sup (Set.mem_toFinset.2 ha) }
+        · exact le_sup (Set.mem_toFinset.2 ha) }
     (fun _ _ hbc _ ↦ le_trans' hbc) fun _ _ hst ↦ Finset.sup_mono <| Set.toFinset_mono hst
 
 namespace OrderEmbedding
@@ -244,15 +243,13 @@ variable [DecidableEq α]
     birkhoffFinset (a ⊔ b) = birkhoffFinset a ∪ birkhoffFinset b := by
   classical
   dsimp [OrderEmbedding.birkhoffFinset]
-  rw [birkhoffSet_sup, OrderIso.coe_toOrderEmbedding]
-  simp
+  simp [birkhoffSet_sup]
 
 @[simp] lemma birkhoffFinset_inf (a b : α) :
     birkhoffFinset (a ⊓ b) = birkhoffFinset a ∩ birkhoffFinset b := by
   classical
   dsimp [OrderEmbedding.birkhoffFinset]
-  rw [birkhoffSet_inf, OrderIso.coe_toOrderEmbedding]
-  simp
+  simp [birkhoffSet_inf]
 
 end OrderEmbedding
 

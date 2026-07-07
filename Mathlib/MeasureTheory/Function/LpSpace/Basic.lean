@@ -5,6 +5,7 @@ Authors: Rémy Degenne, Sébastien Gouëzel
 -/
 module
 
+public import Mathlib.Analysis.Normed.Operator.Bilinear
 public import Mathlib.Analysis.Normed.Operator.NNNorm
 public import Mathlib.MeasureTheory.Function.LpSeminorm.ChebyshevMarkov
 public import Mathlib.MeasureTheory.Function.LpSeminorm.CompareExp
@@ -198,6 +199,15 @@ theorem coeFn_add (f g : Lp E p μ) : ⇑(f + g) =ᵐ[μ] f + g :=
 theorem coeFn_sub (f g : Lp E p μ) : ⇑(f - g) =ᵐ[μ] f - g :=
   AEEqFun.coeFn_sub _ _
 
+theorem coeFn_finsetSum {ι : Type*} (s : Finset ι) (f : ι → Lp E p μ) :
+    ⇑(∑ i ∈ s, f i) =ᵐ[μ] ∑ i ∈ s, ⇑(f i) := by
+  simp [AEEqFun.coeFn_finsetSum]
+
+theorem coeFn_fun_finsetSum {ι : Type*} (s : Finset ι) (f : ι → Lp E p μ) :
+    ⇑(∑ i ∈ s, f i) =ᵐ[μ] fun x ↦ ∑ i ∈ s, f i x := by
+  grw [coeFn_finsetSum]
+  filter_upwards with x using by simp
+
 theorem const_mem_Lp (α) {_ : MeasurableSpace α} (μ : Measure α) (c : E) [IsFiniteMeasure μ] :
     @AEEqFun.const α _ _ μ _ c ∈ Lp E p μ :=
   (memLp_const c).eLpNorm_mk_lt_top
@@ -222,7 +232,6 @@ theorem nnnorm_def (f : Lp E p μ) : ‖f‖₊ = ENNReal.toNNReal (eLpNorm f p 
 protected theorem coe_nnnorm (f : Lp E p μ) : (‖f‖₊ : ℝ) = ‖f‖ :=
   rfl
 
-@[simp]
 theorem enorm_def (f : Lp E p μ) : ‖f‖ₑ = eLpNorm f p μ :=
   ENNReal.coe_toNNReal <| Lp.eLpNorm_ne_top f
 
@@ -235,6 +244,7 @@ theorem nnnorm_toLp (f : α → E) (hf : MemLp f p μ) :
     ‖hf.toLp f‖₊ = ENNReal.toNNReal (eLpNorm f p μ) :=
   NNReal.eq <| norm_toLp f hf
 
+@[simp]
 lemma enorm_toLp {f : α → E} (hf : MemLp f p μ) : ‖hf.toLp f‖ₑ = eLpNorm f p μ := by
   simp_rw [enorm, nnnorm_toLp f hf, ENNReal.coe_toNNReal hf.2.ne]
 
@@ -371,7 +381,10 @@ theorem norm_le_of_ae_bound [IsFiniteMeasure μ] {f : Lp E p μ} {C : ℝ} (hC :
   have := nnnorm_le_of_ae_bound hfC
   rwa [← NNReal.coe_le_coe, NNReal.coe_mul, NNReal.coe_rpow] at this
 
+instance instAddCommGroup : AddCommGroup (Lp E p μ) := inferInstance
+
 instance instNormedAddCommGroup [hp : Fact (1 ≤ p)] : NormedAddCommGroup (Lp E p μ) :=
+  fast_instance%
   { AddGroupNorm.toNormedAddCommGroup
       { toFun := (norm : Lp E p μ → ℝ)
         map_zero' := norm_zero
@@ -379,7 +392,7 @@ instance instNormedAddCommGroup [hp : Fact (1 ≤ p)] : NormedAddCommGroup (Lp E
         add_le' := fun f g => by
           suffices ‖f + g‖ₑ ≤ ‖f‖ₑ + ‖g‖ₑ by
             -- Squeezed for performance reasons
-            simpa only [ge_iff_le, enorm, ← ENNReal.coe_add, ENNReal.coe_le_coe] using this
+            simpa only [ge_iff_le, enorm, ← ENNReal.coe_add, ENNReal.coe_le_coe] using! this
           simp only [Lp.enorm_def]
           exact (eLpNorm_congr_ae (AEEqFun.coeFn_add _ _)).trans_le
             (eLpNorm_add_le (Lp.aestronglyMeasurable _) (Lp.aestronglyMeasurable _) hp.out)
@@ -774,7 +787,7 @@ theorem norm_compLp_le (L : E →SL[σ] F) (f : Lp E p μ) : ‖L.compLp f‖ �
 variable (μ p)
 
 /-- Composing `f : Lp E p μ` with `L : E →L[𝕜] F`, seen as a `𝕜`-linear map on `Lp E p μ`. -/
-def compLpₗ (L : E →SL[σ] F) : Lp E p μ →ₛₗ[σ] Lp F p μ where
+@[simps] def compLpₗ (L : E →SL[σ] F) : Lp E p μ →ₛₗ[σ] Lp F p μ where
   toFun f := L.compLp f
   map_add' f g := by
     ext1
@@ -815,9 +828,109 @@ theorem smul_compLpL [Fact (1 ≤ p)] {𝕜''} [NormedRing 𝕜''] [Module 𝕜'
 theorem norm_compLpL_le [Fact (1 ≤ p)] (L : E →SL[σ] F) : ‖L.compLpL p μ‖ ≤ ‖L‖ :=
   LinearMap.mkContinuous_norm_le _ (norm_nonneg _) _
 
+section Bilinear
+
+variable {F G : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+  [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+
+variable (μ p) in
+/-- Given a continuous bilinear map `G → E → F`, construct the associated bilinear map
+`G → Lp E p μ → Lp F p μ`. -/
+@[simps] def compLpₗ₂ (B : G →L[𝕜] E →L[𝕜] F) : G →ₗ[𝕜] Lp E p μ →ₗ[𝕜] Lp F p μ where
+  toFun g := (B g).compLpₗ p μ
+  map_add' g h := by
+    ext f
+    filter_upwards [(B (g + h)).coeFn_compLp f, (B g).coeFn_compLp f, (B h).coeFn_compLp f,
+      Lp.coeFn_add ((B g).compLp f) ((B h).compLp f)] with x hx hg hh hadd
+    simp only [compLpₗ_apply, LinearMap.add_apply, hx, hadd]
+    simp only [map_add, add_apply, Pi.add_apply, hg, hh]
+  map_smul' c g := by
+    ext f
+    filter_upwards [(c • B g).coeFn_compLp f, (B g).coeFn_compLp f,
+      Lp.coeFn_smul c ((B g).compLp f)] with x hx hg hsmul
+    simp [hx, hsmul, hg]
+
+variable (μ p) in
+/-- Given a continuous bilinear map `G → E → F`, construct the associated continuous bilinear map
+`G → Lp E p μ → Lp F p μ`. -/
+def compLpL₂ [Fact (1 ≤ p)] (B : G →L[𝕜] E →L[𝕜] F) :
+    G →L[𝕜] Lp E p μ →L[𝕜] Lp F p μ :=
+  (B.compLpₗ₂ p μ).mkContinuous₂ ‖B‖ (fun c f ↦ by
+    simp only [compLpₗ₂_apply, compLpₗ_apply]
+    grw [norm_compLp_le, le_opNorm])
+
+@[simp] theorem compLpL₂_apply_apply [Fact (1 ≤ p)] (B : G →L[𝕜] E →L[𝕜] F) (g : G) (f : Lp E p μ) :
+    compLpL₂ p μ B g f = (B g).compLp f := rfl
+
+theorem norm_compLpL₂_le [Fact (1 ≤ p)] (B : G →L[𝕜] E →L[𝕜] F) :
+    ‖B.compLpL₂ p μ‖ ≤ ‖B‖ :=
+  LinearMap.mkContinuous₂_norm_le _ (norm_nonneg _) _
+
+end Bilinear
+
 end ContinuousLinearMap
 
 namespace MeasureTheory.Lp
+
+section LpToLpOfMeasureLeSMul
+
+variable [NormedSpace ℝ E] {ν : Measure α} {c : ℝ≥0∞}
+
+/-- The canonical map from `Lᵖ ν` to `Lᵖ μ` when `μ` is bounded by a finite multiple of `ν`.
+This is the linear map version. Use instead the continuous linear map
+version `LpToLpOfMeasureLeSMul` -/
+private noncomputable def LpToLpOfMeasureLeSMulₗ (hc : c ≠ ∞) (h : μ ≤ c • ν) :
+    Lp E p ν →ₗ[ℝ] Lp E p μ where
+  toFun f := ((Lp.memLp f).of_measure_le_smul hc h).toLp f
+  map_add' f g := by
+    ext
+    grw [MemLp.coeFn_toLp, Lp.coeFn_add, MemLp.coeFn_toLp, MemLp.coeFn_toLp]
+    have : μ ≪ ν := Measure.absolutelyContinuous_of_le_smul h
+    apply this.ae_eq
+    grw [Lp.coeFn_add]
+  map_smul' c f := by
+    ext
+    grw [MemLp.coeFn_toLp, Lp.coeFn_smul, MemLp.coeFn_toLp]
+    have : μ ≪ ν := Measure.absolutelyContinuous_of_le_smul h
+    apply this.ae_eq
+    grw [Lp.coeFn_smul]
+    rfl
+
+private lemma coeFn_LpToLpOfMeasureLeSMulₗ (hc : c ≠ ∞) (h : μ ≤ c • ν) (f : Lp E p ν) :
+    LpToLpOfMeasureLeSMulₗ hc h f =ᵐ[μ] f := by
+  simp [LpToLpOfMeasureLeSMulₗ, MemLp.coeFn_toLp]
+
+private lemma enorm_LpToLpOfMeasureLeSMulₗ_apply_le
+    (hc : c ≠ ∞) (h : μ ≤ c • ν) [Fact (1 ≤ p)] {f : Lp E p ν} :
+    ‖LpToLpOfMeasureLeSMulₗ hc h f‖ₑ ≤ c ^ (1 / p).toReal * ‖f‖ₑ := by
+  simp only [Lp.enorm_def]
+  rw [eLpNorm_congr_ae (coeFn_LpToLpOfMeasureLeSMulₗ hc h f)]
+  exact eLpNorm_le_of_measure_le_smul h
+
+private lemma norm_LpToLpOfMeasureLeSMulₗ_apply_le
+    (hc : c ≠ ∞) (h : μ ≤ c • ν) [Fact (1 ≤ p)] {f : Lp E p ν} :
+    ‖LpToLpOfMeasureLeSMulₗ hc h f‖ ≤ c.toReal ^ (1 / p).toReal * ‖f‖ := by
+  simp only [← toReal_enorm]
+  rw [ENNReal.toReal_rpow, ← ENNReal.toReal_mul]
+  grw [enorm_LpToLpOfMeasureLeSMulₗ_apply_le]
+  simp [ENNReal.mul_eq_top, hc]
+
+/-- The canonical map from `Lᵖ ν` to `Lᵖ μ` when `μ` is bounded by a finite multiple of `ν`. -/
+@[no_expose]
+noncomputable def LpToLpOfMeasureLeSMul [Fact (1 ≤ p)] (hc : c ≠ ∞) (h : μ ≤ c • ν) :
+    Lp E p ν →L[ℝ] Lp E p μ :=
+  LinearMap.mkContinuous (LpToLpOfMeasureLeSMulₗ hc h) (c.toReal ^ (1 / p).toReal)
+    (fun _ ↦ norm_LpToLpOfMeasureLeSMulₗ_apply_le hc h)
+
+lemma coeFn_LpToLpOfMeasureLeSMul [Fact (1 ≤ p)] (hc : c ≠ ∞) (h : μ ≤ c • ν) (f : Lp E p ν) :
+    LpToLpOfMeasureLeSMul hc h f =ᵐ[μ] f :=
+  coeFn_LpToLpOfMeasureLeSMulₗ hc h f
+
+lemma norm_LpToLpOfMeasureLeSMul_le [Fact (1 ≤ p)] (hc : c ≠ ∞) (h : μ ≤ c • ν) :
+    ‖(LpToLpOfMeasureLeSMul hc h : Lp E p ν →L[ℝ] Lp E p μ)‖ ≤ c.toReal ^ (1 / p).toReal :=
+  LinearMap.mkContinuous_norm_le _ (Real.rpow_nonneg (by simp) _) _
+
+end LpToLpOfMeasureLeSMul
 
 section PosPart
 

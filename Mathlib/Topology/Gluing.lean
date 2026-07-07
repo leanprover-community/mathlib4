@@ -132,7 +132,7 @@ theorem rel_equiv : Equivalence D.Rel :=
     clear_value z
     use (pullback.fst _ _ : _ ⟶ D.V (i, k)) (D.t' _ _ _ z)
     dsimp +instances only at *
-    substs eq₁ eq₂ e₁ e₃ e₄
+    subst eq₁ eq₂ e₁ e₃ e₄
     have h₁ : D.t' j i k ≫ pullback.fst _ _ ≫ D.f i k = pullback.fst _ _ ≫ D.t j i ≫ D.f i j := by
       rw [← 𝖣.t_fac_assoc]; congr 1; exact pullback.condition
     have h₂ : D.t' j i k ≫ pullback.fst _ _ ≫ D.t i k ≫ D.f k i =
@@ -184,7 +184,7 @@ theorem ι_eq_iff_rel (i j : D.J) (x : D.U i) (y : D.U j) :
       show _ = Sigma.mk j y from ConcreteCategory.congr_hom (sigmaIsoSigma.{_, u} D.U).inv_hom_id _]
     change InvImage D.Rel (sigmaIsoSigma.{_, u} D.U).hom _ _
     rw [← (InvImage.equivalence _ _ D.rel_equiv).eqvGen_iff]
-    refine Relation.EqvGen.mono ?_ (D.eqvGen_of_π_eq h :)
+    refine Relation.EqvGen.mono ?_ _ _ (D.eqvGen_of_π_eq h :)
     rintro _ _ ⟨x⟩
     obtain ⟨⟨⟨i, j⟩, y⟩, rfl⟩ :=
       (ConcreteCategory.bijective_of_isIso (sigmaIsoSigma.{u, u} _).inv).2 x
@@ -219,7 +219,7 @@ theorem image_inter (i j : D.J) :
   constructor
   · rintro ⟨⟨x₁, eq₁⟩, ⟨x₂, eq₂⟩⟩
     obtain ⟨y, e₁, -⟩ := (D.ι_eq_iff_rel _ _ _ _).mp (eq₁.trans eq₂.symm)
-    · substs eq₁
+    · subst eq₁
       exact ⟨y, by simp [e₁]⟩
   · rintro ⟨x, hx⟩
     refine ⟨⟨D.f i j x, hx⟩, ⟨D.f j i (D.t _ _ x), ?_⟩⟩

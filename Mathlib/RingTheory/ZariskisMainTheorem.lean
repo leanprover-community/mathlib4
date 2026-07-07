@@ -241,7 +241,7 @@ lemma exists_leadingCoeff_pow_smul_mem_conductor
       exists_isIntegral_leadingCoeff_pow_smul_sub_of_isIntegralElem_of_mul_mem_range φ _ p
         (hφ.to_isIntegral (t * x)) (by convert! this using 1; ring)
     obtain ⟨r, hr : algebraMap _ _ r = _⟩ := hRS.le hn
-    exact ⟨n, (C r + q), by simp [← Polynomial.algebraMap_eq, - Polynomial.algebraMap_apply, hr]⟩
+    exact ⟨n, (C r + q), by simp [← Polynomial.algebraMap_eq, -Polynomial.algebraMap_apply, hr]⟩
   choose n hn using this
   obtain ⟨s, hs⟩ := Module.Finite.fg_top (R := R[X]) (M := S)
   refine ⟨s.sup n, fun x ↦ ?_⟩
@@ -478,7 +478,7 @@ private lemma ZariskisMainProperty.of_adjoin_eq_top
     rwa [← AlgHom.range_eq_top, ← Algebra.adjoin_singleton_eq_range_aeval]
   have ⟨f, (hf : aeval x f = 0), hfp⟩ := SetLike.not_le_iff_exists.mp
     (Polynomial.not_ker_le_map_C_of_surjective_of_weaklyQuasiFiniteAt _ H₀ p)
-  obtain ⟨n, hfn⟩ : ∃ x, algebraMap R S (f.coeff x) ∉ p := by simpa [Ideal.mem_map_C_iff] using hfp
+  obtain ⟨n, hfn⟩ : ∃ x, algebraMap R S (f.coeff x) ∉ p := by simpa [Ideal.mem_map_C_iff] using! hfp
   clear hfp
   induction hm : f.natDegree using Nat.strong_induction_on generalizing f n with | h m IH =>
   obtain (_ | m) := m
@@ -495,13 +495,13 @@ private lemma ZariskisMainProperty.of_adjoin_eq_top
         simpa [eraseLead_coeff, show n ≠ f.natDegree by rintro rfl; exact hfn (by simpa)]
       rwa [Ideal.add_mem_iff_left]
       split_ifs
-      · convert! p.mul_mem_right x Hfp
-        simpa [Algebra.smul_def] using ha
+      · convert p.mul_mem_right x Hfp
+        simpa [Algebra.smul_def] using! ha
       · simp
   · refine zariskisMainProperty_iff_exists_saturation_eq_top.mpr ⟨_, Hfp, isIntegral_algebraMap, ?_⟩
     rw [← top_le_iff, ← hx]
     refine Algebra.adjoin_singleton_le ⟨_, ⟨1, rfl⟩, ?_⟩
-    simpa [Algebra.smul_def] using isIntegral_leadingCoeff_smul f x hf
+    simpa [Algebra.smul_def] using! isIntegral_leadingCoeff_smul f x hf
 
 -- Subsumed by `ZariskisMainProperty.of_finiteType`.
 private lemma ZariskisMainProperty.of_algHom_polynomial
@@ -716,9 +716,8 @@ lemma ZariskisMainProperty.quasiFiniteAt
   have : Algebra.QuasiFinite R (Localization.Away r.1) :=
     .of_surjective_algHom (Localization.awayMapₐ S'.val r) H.2
   let f : Localization.Away r.1 →ₐ[S] Localization.AtPrime p :=
-    IsLocalization.liftAlgHom (M := .powers r.1) (f := Algebra.ofId _ _) (by
-      simpa [Submonoid.mem_powers_iff] using
-        (IsLocalization.map_units (M := p.primeCompl) (Localization.AtPrime p) ⟨r, hrp⟩).pow)
+    IsLocalization.Away.liftAlgHom r.1 (f := Algebra.ofId _ _) <|
+      IsLocalization.map_units (M := p.primeCompl) (Localization.AtPrime p) ⟨r, hrp⟩
   refine .of_forall_exists_mul_mem_range (f.restrictScalars R) fun x ↦ ?_
   obtain ⟨x, ⟨s, hs⟩, rfl⟩ := IsLocalization.exists_mk'_eq p.primeCompl x
   exact ⟨algebraMap _ _ s, by simpa using IsLocalization.map_units _ ⟨s, hs⟩,

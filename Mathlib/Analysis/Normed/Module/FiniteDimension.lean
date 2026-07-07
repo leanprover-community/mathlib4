@@ -131,13 +131,30 @@ theorem AffineMap.continuous_of_finiteDimensional (f : PE →ᵃ[𝕜] PF) : Con
 theorem AffineEquiv.continuous_of_finiteDimensional (f : PE ≃ᵃ[𝕜] PF) : Continuous f :=
   f.toAffineMap.continuous_of_finiteDimensional
 
+/-- Reinterpret an affine equivalence as a continuous affine equivalence in finite dimension. -/
+def AffineEquiv.toContinuousAffineEquiv : (PE ≃ᵃ[𝕜] PF) ≃ (PE ≃ᴬ[𝕜] PF) where
+  toFun f :=
+    haveI := f.linear.finiteDimensional
+    ⟨f, f.continuous_of_finiteDimensional, f.symm.continuous_of_finiteDimensional⟩
+  invFun f := f.toAffineEquiv
+  left_inv _ := rfl
+  right_inv _ := ContinuousAffineEquiv.toAffineEquiv_injective rfl
+
+@[simp]
+theorem AffineEquiv.coe_toContinuousAffineEquiv (f : PE ≃ᵃ[𝕜] PF) :
+    ⇑(toContinuousAffineEquiv f) = f := rfl
+
+@[simp]
+theorem AffineEquiv.toAffineEquiv_toContinuousAffineEquiv (f : PE ≃ᵃ[𝕜] PF) :
+    (toContinuousAffineEquiv f).toAffineEquiv = f := rfl
+
+@[simp]
+theorem AffineEquiv.toContinuousAffineEquiv_symm_apply (f : PE ≃ᴬ[𝕜] PF) :
+    toContinuousAffineEquiv.symm f = f.toAffineEquiv := rfl
+
 /-- Reinterpret an affine equivalence as a homeomorphism. -/
-def AffineEquiv.toHomeomorphOfFiniteDimensional (f : PE ≃ᵃ[𝕜] PF) : PE ≃ₜ PF where
-  toEquiv := f.toEquiv
-  continuous_toFun := f.continuous_of_finiteDimensional
-  continuous_invFun :=
-    haveI : FiniteDimensional 𝕜 F := f.linear.finiteDimensional
-    f.symm.continuous_of_finiteDimensional
+def AffineEquiv.toHomeomorphOfFiniteDimensional (f : PE ≃ᵃ[𝕜] PF) : PE ≃ₜ PF :=
+  (toContinuousAffineEquiv f).toHomeomorph
 
 @[simp]
 theorem AffineEquiv.coe_toHomeomorphOfFiniteDimensional (f : PE ≃ᵃ[𝕜] PF) :
@@ -148,6 +165,9 @@ theorem AffineEquiv.coe_toHomeomorphOfFiniteDimensional (f : PE ≃ᵃ[𝕜] PF)
 theorem AffineEquiv.coe_toHomeomorphOfFiniteDimensional_symm (f : PE ≃ᵃ[𝕜] PF) :
     ⇑f.toHomeomorphOfFiniteDimensional.symm = f.symm :=
   rfl
+
+attribute [deprecated AffineEquiv.toContinuousAffineEquiv (since := "2026-05-11")]
+  AffineEquiv.toHomeomorphOfFiniteDimensional
 
 /-- An affine map from a finite-dimensional space is automatically Lipschitz. -/
 theorem AffineMap.lipschitzWith_of_finiteDimensional (f : PE →ᵃ[𝕜] PF) :
@@ -266,9 +286,6 @@ where `ι` is a finite type. -/
 def ContinuousLinearEquiv.piRing (ι : Type*) [Fintype ι] [DecidableEq ι] :
     ((ι → 𝕜) →L[𝕜] E) ≃L[𝕜] ι → E :=
   { LinearMap.toContinuousLinearMap.symm.trans (LinearEquiv.piRing 𝕜 E ι 𝕜) with
-    continuous_toFun := by
-      refine continuous_pi fun i ↦ ?_
-      exact (apply 𝕜 E (Pi.single i 1)).continuous
     continuous_invFun := by
       simp_rw [LinearEquiv.invFun_eq_symm, LinearEquiv.trans_symm, LinearEquiv.symm_symm]
       refine AddMonoidHomClass.continuous_of_bound
@@ -331,7 +348,7 @@ theorem isOpen_setOf_affineIndependent {ι : Type*} [Finite ι] :
     let ι' := { x // x ≠ i₀ }
     cases nonempty_fintype ι
     haveI : Fintype ι' := Subtype.fintype _
-    convert_to
+    convert_to!
       IsOpen ((fun (p : ι → E) (i : ι') ↦ p i -ᵥ p i₀) ⁻¹' {p : ι' → E | LinearIndependent 𝕜 p})
     exact isOpen_setOf_linearIndependent.preimage (by fun_prop)
 
@@ -358,7 +375,7 @@ theorem opNNNorm_le {ι : Type*} [Fintype ι] (v : Basis ι 𝕜 E) {u : E →L[
 theorem opNorm_le {ι : Type*} [Fintype ι] (v : Basis ι 𝕜 E) {u : E →L[𝕜] F} {M : ℝ}
     (hM : 0 ≤ M) (hu : ∀ i, ‖u (v i)‖ ≤ M) :
     ‖u‖ ≤ Fintype.card ι • ‖v.equivFunL.toContinuousLinearMap‖ * M := by
-  simpa using NNReal.coe_le_coe.mpr (v.opNNNorm_le ⟨M, hM⟩ hu)
+  simpa using! NNReal.coe_le_coe.mpr (v.opNNNorm_le ⟨M, hM⟩ hu)
 
 /-- A weaker version of `Basis.opNNNorm_le` that abstracts away the value of `C`. -/
 theorem exists_opNNNorm_le {ι : Type*} [Finite ι] (v : Basis ι 𝕜 E) :
@@ -375,7 +392,7 @@ theorem exists_opNorm_le {ι : Type*} [Finite ι] (v : Basis ι 𝕜 E) :
   obtain ⟨C, hC, h⟩ := v.exists_opNNNorm_le (F := F)
   refine ⟨C, hC, ?_⟩
   intro u M hM H
-  simpa using h ⟨M, hM⟩ H
+  simpa using! h ⟨M, hM⟩ H
 
 end Module.Basis
 
@@ -530,7 +547,7 @@ theorem FiniteDimensional.proper [FiniteDimensional 𝕜 E] : ProperSpace E := b
 
 end LocallyCompactField
 
-/- Over the real numbers, we can register the previous statement as an instance as it will not
+/-- Over the real numbers, we can register the previous statement as an instance as it will not
 cause problems in instance resolution since the properness of `ℝ` is already known. -/
 instance (priority := 900) FiniteDimensional.proper_real (E : Type u) [NormedAddCommGroup E]
     [NormedSpace ℝ E] [FiniteDimensional ℝ E] : ProperSpace E :=

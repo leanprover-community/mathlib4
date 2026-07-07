@@ -7,12 +7,15 @@ module
 
 public import Mathlib.Data.Subtype
 public import Mathlib.Order.Defs.LinearOrder
+public import Mathlib.Order.Defs.Prop
 public import Mathlib.Order.Notation
 public import Mathlib.Tactic.Spread
 public import Mathlib.Tactic.Convert
 public import Mathlib.Tactic.Inhabit
 public import Mathlib.Tactic.SimpRw
 public import Mathlib.Tactic.GCongr.Core
+public import Mathlib.Tactic.Attr.Register
+public import Mathlib.Tactic.FastInstance
 
 /-!
 # Basic definitions about `≤` and `<`
@@ -176,11 +179,28 @@ theorem le_imp_le_of_le_of_le (h₁ : c ≤ a) (h₂ : b ≤ d) : a ≤ b → c 
 theorem lt_imp_lt_of_le_of_le (h₁ : c ≤ a) (h₂ : b ≤ d) : a < b → c < d :=
   fun hab ↦ (h₁.trans_lt hab).trans_le h₂
 
+/-- monotonicity of `≥` with respect to `→` -/
+@[gcongr, to_dual self (reorder := a b, c d, h₁ h₂)]
+theorem ge_imp_ge_of_le_of_le (h₁ : a ≤ c) (h₂ : d ≤ b) : a ≥ b → c ≥ d :=
+  fun hab ↦ (h₂.trans hab).trans h₁
+
+/-- monotonicity of `>` with respect to `→` -/
+@[gcongr, to_dual self (reorder := a b, c d, h₁ h₂)]
+theorem gt_imp_gt_of_le_of_le (h₁ : a ≤ c) (h₂ : d ≤ b) : a > b → c > d :=
+  fun hab ↦ (h₂.trans_lt hab).trans_le h₁
+
+attribute [gcongr strict] lt_of_lt_of_le lt_of_lt_of_le'
+
 namespace Mathlib.Tactic.GCongr
+open Lean Meta
 
 /-- See if the term is `a < b` and the goal is `a ≤ b`. -/
 @[gcongr_forward] meta def exactLeOfLt : ForwardExt where
-  eval h goal := do goal.assignIfDefEq (← Lean.Meta.mkAppM ``le_of_lt #[h])
+  eval h goal := do
+    let le_of_lt := .const ``le_of_lt [← mkFreshLevelMVar]
+    let (mvars, _, _) ← forallMetaTelescope (← inferType le_of_lt)
+    mvars[4]!.mvarId!.assignIfDefEq h
+    goal.assignIfDefEq (mkAppN le_of_lt mvars)
 
 end Mathlib.Tactic.GCongr
 
@@ -532,15 +552,6 @@ instance Ne.instIsEquiv_compl : IsEquiv α (· ≠ ·)ᶜ := by
 
 /-! ### Order instances on the function space -/
 
-
-instance Pi.hasLe [∀ i, LE (π i)] :
-    LE (∀ i, π i) where le x y := ∀ i, x i ≤ y i
-
-@[to_dual self]
-theorem Pi.le_def [∀ i, LE (π i)] {x y : ∀ i, π i} :
-    x ≤ y ↔ ∀ i, x i ≤ y i :=
-  Iff.rfl
-
 instance Pi.preorder [∀ i, Preorder (π i)] : Preorder (∀ i, π i) where
   __ := (inferInstance : LE (∀ i, π i))
   le_refl := fun a i ↦ le_refl (a i)
@@ -834,10 +845,10 @@ theorem coe_lt_coe [LT α] {p : α → Prop} {x y : Subtype p} : (x : α) < y �
   Iff.rfl
 
 instance preorder [Preorder α] (p : α → Prop) : Preorder (Subtype p) :=
-  Preorder.lift (fun (a : Subtype p) ↦ (a : α))
+  fast_instance% Preorder.lift (fun (a : Subtype p) ↦ (a : α))
 
 instance partialOrder [PartialOrder α] (p : α → Prop) : PartialOrder (Subtype p) :=
-  PartialOrder.lift (fun (a : Subtype p) ↦ (a : α)) Subtype.coe_injective
+  fast_instance% PartialOrder.lift (fun (a : Subtype p) ↦ (a : α)) Subtype.coe_injective
 
 instance decidableLE [Preorder α] [h : DecidableLE α] {p : α → Prop} :
     DecidableLE (Subtype p) := fun a b ↦ h a b
@@ -849,7 +860,7 @@ instance decidableLT [Preorder α] [h : DecidableLT α] {p : α → Prop} :
 equality and decidable order in order to ensure the decidability instances are all definitionally
 equal. -/
 instance instLinearOrder [LinearOrder α] (p : α → Prop) : LinearOrder (Subtype p) :=
-  @LinearOrder.lift (Subtype p) _ _ ⟨fun x y ↦ ⟨max x y, max_rec' _ x.2 y.2⟩⟩
+  fast_instance% @LinearOrder.lift (Subtype p) _ _ ⟨fun x y ↦ ⟨max x y, max_rec' _ x.2 y.2⟩⟩
     ⟨fun x y ↦ ⟨min x y, min_rec' _ x.2 y.2⟩⟩ (fun (a : Subtype p) ↦ (a : α))
     Subtype.coe_injective (fun _ _ ↦ rfl) fun _ _ ↦
     rfl
@@ -1080,14 +1091,6 @@ instance : DenselyOrdered PUnit :=
 end PUnit
 
 section «Prop»
-
-/-- Propositions form a complete Boolean algebra, where the `≤` relation is given by implication. -/
-instance Prop.le : LE Prop :=
-  ⟨(· → ·)⟩
-
-@[simp]
-theorem le_Prop_eq : ((· ≤ ·) : Prop → Prop → Prop) = (· → ·) :=
-  rfl
 
 theorem subrelation_iff_le {r s : α → α → Prop} : Subrelation r s ↔ r ≤ s :=
   Iff.rfl
