@@ -100,11 +100,11 @@ theorem emultiplicity_eq_zero_iff_multiplicity_eq_zero :
     emultiplicity a b = 0 ↔ multiplicity a b = 0 :=
   emultiplicity_eq_iff_multiplicity_eq_of_ne_one zero_ne_one
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem multiplicity_eq_one_of_not_finiteMultiplicity (h : ¬FiniteMultiplicity a b) :
     multiplicity a b = 1 := by
-  simp [multiplicity, emultiplicity_eq_top.2 h]
+  rw [multiplicity, emultiplicity_eq_top.mpr h]
+  decide
 
 @[simp]
 theorem multiplicity_le_emultiplicity :
