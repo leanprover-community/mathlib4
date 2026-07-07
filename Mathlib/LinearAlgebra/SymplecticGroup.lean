@@ -380,7 +380,7 @@ The proof strategy comes in two steps:
 form `fromBlocks 1 X 0 1` s.t. the upper-left block of `(fromBlocks 1 X 0 1) * M` is invertible.
 From this we can calculate the determinant.
 
-2. For symplectic matrix `M` over general commutative ring `R`, we note that by step 1,
+2. For a symplectic matrix `M` over general commutative ring `R`, we note that by step 1,
 `M.det - 1 = 0` in any localization at a maximal ideal in `R`. Therefore `M.det = 1` in `R`. -/
 theorem det_eq_one {M : Matrix (l ⊕ l) (l ⊕ l) R} (hM : M ∈ symplecticGroup l R) :
     M.det = 1 := by
