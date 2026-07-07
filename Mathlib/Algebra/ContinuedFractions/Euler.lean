@@ -51,20 +51,17 @@ $$
                        {1 + \rho_1 - \cfrac{\rho_2}
                                            {1 + \rho_2 - \cfrac{\rho_3}
                                                                {1 + \rho_3 - \dots}}}}
-$$
--/
+$$ -/
 def IsEuler (g : GenContFract K) : Prop :=
   ∀ (n : ℕ) (aₙ bₙ : K), g.s.get? n = some ⟨aₙ, bₙ⟩ -> if n = 0 then bₙ = 1 else aₙ + bₙ = 1
 
 /-- `euler h ρ` constructs an Euler continued fraction whose coefficients are obtained
-from the stream `ρ` with head term `h`.
--/
+from the stream `ρ` with head term `h`. -/
 def euler (h : K) (ρ : Stream'.Seq K) : GenContFract K :=
   ⟨h, ρ.enum.map fun (n, ρ) => n.casesOn ⟨ρ, 1⟩ fun _ => ⟨-ρ, 1 + ρ⟩⟩
 
 /-- `toEuler g` is the Euler continued fraction equivalent to `g`, where `ρ₀` = `a₀ / b₀` and
-`ρₙ` = `- aₙ * Bₙ₋₁ / Bₙ₊₁` for `n > 0`.
--/
+`ρₙ` = `- aₙ * Bₙ₋₁ / Bₙ₊₁` for `n > 0`. -/
 def toEuler (g : GenContFract K) : GenContFract K :=
   euler g.h <| g.s.enum.map fun (n, ⟨a, b⟩) =>
     n.casesOn (a / b) fun n' => - a * g.dens n' / g.dens (n' + 2)
@@ -100,8 +97,7 @@ theorem isEuler_euler : IsEuler (euler h ρ) := by
 that there exists coefficients `ρ` such that `g = euler g.h ρ`.
 
 It is not derived from `IsEuler.toEuler` because that lemma depends on `dens_eq_one`,
-which itself requires this lemma to extract the coefficients.
--/
+which itself requires this lemma to extract the coefficients. -/
 private theorem IsEuler.exists_euler (h : g.IsEuler) : ∃ ρ, euler g.h ρ = g := by
   simp only [eq_comm]
   use g.s.enum.map fun (n, ⟨a, b⟩) => n.casesOn a fun _ => -a
@@ -123,7 +119,7 @@ private theorem IsEuler.exists_euler (h : g.IsEuler) : ∃ ρ, euler g.h ρ = g 
     rintro ⟨⟨a, b⟩, h', rfl, rfl⟩
     grind [h (n' + 1) a b h']
 
-theorem isEuler_iff_exists : IsEuler g ↔ ∃ ρ, euler g.h ρ = g :=
+theorem isEuler_iff_exists_euler : IsEuler g ↔ ∃ ρ, euler g.h ρ = g :=
   ⟨IsEuler.exists_euler, fun ⟨_, hρ⟩ => hρ ▸ isEuler_euler⟩
 
 @[simp]
@@ -159,6 +155,9 @@ end Translation
 
 @[simp]
 theorem euler_h : (euler h ρ).h = h := by rfl
+
+@[simp]
+theorem toEuler_h : g.toEuler.h = g.h := by rfl
 
 @[simp]
 theorem partNums_euler_zero : (euler h ρ).partNums.get? 0 = ρ.get? 0 := by
@@ -213,15 +212,14 @@ private theorem nums_euler_aux : (euler h ρ).nums (n + 1) - (euler h ρ).nums n
   have det := determinant (g := euler h ρ) (n := n)
   simp only [isEuler_euler, IsEuler.dens_eq_one, mul_one, one_mul] at det
   rw [← neg_sub, det, Finset.prod_range_succ', Finset.prod_range_succ']
-  simp only [partNums_euler_succ, partNums_euler_zero, mul_neg, neg_neg, mul_eq_mul_right_iff]
-  left; congr; ext n'
+  simp only [partNums_euler_succ, partNums_euler_zero, mul_neg, neg_neg]
+  congr; ext n'
   rcases ρ.get? (n' + 1) with _ | _ <;> simp
 
 /-- The numerators of an Euler continued fraction are given by the formula
 $$
   A_n = h + \sum_{i = 0}^{n - 1} \prod_{j = 0}^i \rho_j
-$$
--/
+$$ -/
 theorem nums_euler :
     (euler h ρ).nums n =
       h + ∑ i ∈ Finset.range n, ∏ j ∈ Finset.range (i + 1), (ρ.get? j).getD 0 := by
@@ -237,8 +235,7 @@ for example:
 - `A₀ / B₀ = h`
 - `A₁ / B₁ = h + ρ₀`
 - `A₂ / B₂ = h + ρ₀ + ρ₀ * ρ₁`
-- `Aₙ / Bₙ = h + ρ₀ + ρ₀ * ρ₁ + ρ₀ * ρ₁ * ρ₂ + ... + ρ₀ * ρ₁ * ρ₂ * ... * ρₙ₋₁`
--/
+- `Aₙ / Bₙ = h + ρ₀ + ρ₀ * ρ₁ + ρ₀ * ρ₁ * ρ₂ + ... + ρ₀ * ρ₁ * ρ₂ * ... * ρₙ₋₁` -/
 @[wikidata Q5361532]
 theorem convs_euler :
     (euler h ρ).convs n =
@@ -302,5 +299,65 @@ theorem convs_toEuler_of_forall_le (hB : ∀ m ≤ n, g.dens m ≠ 0) :
 /-- The transformation `toEuler` preserves the convergents. -/
 theorem convs_toEuler (hB : ∀ m, g.dens m ≠ 0) : g.toEuler.convs = g.convs :=
   funext fun m => convs_toEuler_of_forall_le (fun m _ => hB m) m m.le_succ
+
+theorem convs_eq_sum_of_forall_le (hB : ∀ m ≤ n, g.dens m ≠ 0) :
+    g.convs n = g.h + ∑ i ∈ Finset.range n,
+      - (∏ j ∈ Finset.range (i + 1), -(g.partNums.get? j).getD 0) /
+        (g.dens i * g.dens (i + 1)) := by
+  obtain ⟨ρ, hρ⟩ := isEuler_toEuler (g := g) |>.exists_euler
+  rw [toEuler_h] at hρ
+  rw [← convs_toEuler_of_forall_le hB _ le_rfl, ← hρ, convs_euler, add_left_cancel_iff]
+  apply Finset.sum_congr rfl fun i hi => ?_
+  rw [Finset.prod_range_succ', Finset.prod_range_succ']
+  have hj_zero : (ρ.get? 0).getD 0 = (g.partNums.get? 0).getD 0 / g.dens 1 := by
+    erw [Stream'.Seq.map_get?]
+    rcases Decidable.em <| TerminatedAt g 0 with hj | hj
+    · rw [hj]
+      rw [← terminatedAt_toEuler, ← hρ, terminatedAt_euler] at hj
+      rw [hj]
+      simp
+    · haveI := toEuler_s_zero (g := g)
+      rw [← hρ, euler_s_zero] at this
+      obtain ⟨⟨a₀, b₀⟩, hg1⟩ : ∃ gp, g.s.get? 0 = some gp :=
+        Option.ne_none_iff_exists'.mp hj
+      have ⟨ρ₀, hg2⟩ : ∃ ρ₀, ρ.get? 0 = some ρ₀ :=
+        Option.ne_none_iff_exists'.mp <| show ¬ρ.TerminatedAt 0 by
+          rwa [← terminatedAt_toEuler, ← hρ, terminatedAt_euler] at hj
+      grind [first_den_eq hg1]
+  have hj_succ (j : ℕ) : (ρ.get? (j + 1)).getD 0 = - (g.partNums.get? (j + 1)).getD 0 *
+      g.dens j / g.dens (j + 2) := by
+    erw [Stream'.Seq.map_get?]
+    rcases Decidable.em <| TerminatedAt g (j + 1) with hj | hj
+    · rw [hj]
+      rw [← terminatedAt_toEuler, ← hρ, terminatedAt_euler] at hj
+      rw [hj]
+      simp
+    · haveI := toEuler_s_succ (n := j) (g := g)
+      rw [← hρ, euler_s_succ] at this
+      obtain ⟨⟨aₙ, bₙ⟩, hg1⟩ : ∃ gp, g.s.get? (j + 1) = some gp :=
+        Option.ne_none_iff_exists'.mp hj
+      obtain ⟨ρₙ, hg2⟩ : ∃ ρ₀, ρ.get? (j + 1) = some ρ₀ :=
+        Option.ne_none_iff_exists'.mp <| show ¬ρ.TerminatedAt (j + 1) by
+          rwa [← terminatedAt_toEuler, ← hρ, terminatedAt_euler] at hj
+      grind
+  simp only [hj_zero, hj_succ]
+  induction i with
+  | zero => simp
+  | succ i' ih => grind [Finset.prod_range_succ]
+
+theorem _root_.SimpContFract.convs_eq_sum_of_forall_le {s : SimpContFract K}
+    (not_terminatedAt_n : ¬(↑s : GenContFract K).TerminatedAt n)
+    (hB : ∀ m ≤ n, (↑s : GenContFract K).dens m ≠ 0) :
+    (↑s : GenContFract K).convs n = (↑s : GenContFract K).h + ∑ i ∈ Finset.range n,
+      (-1) ^ i / ((↑s : GenContFract K).dens i * (↑s : GenContFract K).dens (i + 1)) := by
+  rw [GenContFract.convs_eq_sum_of_forall_le hB, add_left_cancel_iff]
+  apply Finset.sum_congr rfl fun i hi => ?_
+  congr
+  calc
+    _ = -∏ j ∈ Finset.range (i + 1), (-1 : K) := neg_inj.mpr <| Finset.prod_congr rfl fun j hj => by
+      obtain ⟨gp, s_ith_eq⟩ : ∃ gp, (↑s : GenContFract K).s.get? j = some gp :=
+        Option.ne_none_iff_exists'.1 <| mt (terminated_stable <| show j ≤ n by grind) ‹_›
+      rw [partNum_eq_s_a s_ith_eq, s.property j gp.a <| partNum_eq_s_a s_ith_eq, Option.getD_some]
+    _ = (-1) ^ i := by simp [pow_succ]
 
 end GenContFract
