@@ -20,8 +20,8 @@ name: Lake cache shadow (master)
 #     LAKE_CACHE_ARTIFACT_ENDPOINT_PUBLIC    — e.g. https://pub-<hash>.r2.dev/<prefix>/artifacts
 #     LAKE_CACHE_REVISION_ENDPOINT_PUBLIC    — e.g. https://pub-<hash>.r2.dev/<prefix>/revisions
 #     # Optional. Default toolchain override for every run, including
-#     # scheduled ones; the dispatch input takes precedence. Unset for the
-#     # stock pipeline.
+#     # scheduled ones; the dispatch input takes precedence. Unset to run
+#     # on the repo pin.
 #     LAKE_SHADOW_TOOLCHAIN_OVERRIDE         — e.g. leanprover/lean4-pr-releases:pr-release-14301
 #
 # Jobs:
@@ -79,7 +79,7 @@ on:
           optional Lean toolchain to run the pipeline on instead of the repo
           pin; see the "Toolchain override" note at the top of this file.
           Empty falls back to the LAKE_SHADOW_TOOLCHAIN_OVERRIDE repository
-          variable; the stock pipeline runs when both are empty.
+          variable; the pipeline runs on the repo pin when both are empty.
         required: false
         type: string
         default: ''
@@ -97,7 +97,7 @@ defaults:
 
 env:
   # Effective toolchain override: dispatch input, else repository variable,
-  # else stock.
+  # else the repo pin.
   TOOLCHAIN_OVERRIDE: ${{ inputs.toolchain_override || vars.LAKE_SHADOW_TOOLCHAIN_OVERRIDE || '' }}
   # Scope prefix for all puts and gets in this workflow. Namespaces the
   # workflow's artifacts within the cache bucket.
