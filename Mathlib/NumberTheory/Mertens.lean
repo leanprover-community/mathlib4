@@ -20,6 +20,7 @@ public import Mathlib.NumberTheory.Harmonic.GammaDeriv
 public import Mathlib.NumberTheory.Harmonic.ZetaAsymp
 public import Mathlib.NumberTheory.EulerProduct.DirichletLSeries
 public import Mathlib.NumberTheory.LSeries.PrimesInAP
+public import Mathlib.NumberTheory.SumPrimeReciprocals
 public import Mathlib.Tactic.NormNum.Prime
 
 /-!
@@ -957,12 +958,6 @@ private lemma tsum_inv_mul_pow_le {s : ℝ} (hs : 1 ≤ s) (p : Primes) :
       gcongr; field_simp; grind
     _ ≤ _ := by rw [mul_neg_geom_sum, sub_le_self_iff]; positivity
 
-lemma tsum_primes_eq {α} [AddCommMonoid α] [TopologicalSpace α] (f : ℕ → α) :
-    ∑' p : Primes, f p = ∑' n : ℕ, if n.Prime then f n else 0 := calc
-  _ = ∑' n : ℕ, Set.indicator { n | Nat.Prime n } f n := by
-    rw [← _root_.tsum_subtype]; rfl
-  _ = _ := by congr!; simp [Set.indicator]
-
 /-- The standard formula for the Meissel-Mertens constant. -/
 theorem Weight.prime_M_eq : prime.M = eulerMascheroniConstant
   + ∑' p : Primes, (log (1 - 1 / p) + 1 / p) := by
@@ -978,7 +973,7 @@ theorem Weight.prime_M_eq : prime.M = eulerMascheroniConstant
     nth_rw 1 [tsum_eq_tsum_primes_add_tsum_primes_of_support_subset_prime_powers]
     · have : ∑' (p : Primes), Λ p / (p ^ s * log p)
           = ∑' (n : ℕ), (log n)⁻¹ * prime n * (n : ℝ) ^ (1 - s) := by
-        rw [tsum_primes_eq (fun p ↦ Λ p / (p ^ s * log p))]
+        rw [Nat.Primes.tsum_eq_tsum_ite (fun p ↦ Λ p / (p ^ s * log p))]
         congr! 2 with n
         split_ifs with h
         · simp [vonMangoldt_apply_prime, h]
@@ -1311,7 +1306,7 @@ theorem E₃_bound {x : ℝ} (hx : 2 ≤ x) : |E₃ x| ≤ (log 4 + 3) / log x +
   have hx' := floor_mono hx
   simp only [floor_ofNat] at hx'
   have := sum_prime_inv_sub_sub_bound hx
-  rw [Weight.prime_M_eq, tsum_primes_eq fun p ↦ log (1 - 1 / p) + 1 / p,
+  rw [Weight.prime_M_eq, Nat.Primes.tsum_eq_tsum_ite fun p ↦ log (1 - 1 / p) + 1 / p,
       ← Summable.sum_add_tsum_nat_add (⌊x⌋₊ + 1)] at this
   · have h {a b c d : ℝ} (ha : |a| ≤ b) (hac : |a + c| ≤ d) : |c| ≤ b + d := by
       grw [abs_add' c a, ha, hac]
