@@ -100,7 +100,7 @@ lemma addEquiv_monomial (a : A) (x : L) :
 lemma monomial_smul (r : R) (a : A) (x : L) : monomial R L a (r • x) = r • (monomial R L a x) :=
   LinearMap.map_smul (monomial R L a) r x
 
-open Classical in
+open scoped Classical in
 /-- A linear isomorphism to finitely supported functions. -/
 def toFinsupp : loopAlgebra R A L ≃ₗ[R] A →₀ L :=
   TensorProduct.equivFinsuppOfBasisLeft (AddMonoidAlgebra.basis A R)

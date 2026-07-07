@@ -598,7 +598,7 @@ noncomputable def restrict [Zero Y] {V : Set X} (D : locallyFinsuppWithin U Y) (
     intro _ _
     simp_all
 
-open Classical in
+open scoped Classical in
 lemma restrict_apply [Zero Y] {V : Set X} (D : locallyFinsuppWithin U Y) (h : V ⊆ U) (z : X) :
     (D.restrict h) z = if z ∈ V then D z else 0 := rfl
 
