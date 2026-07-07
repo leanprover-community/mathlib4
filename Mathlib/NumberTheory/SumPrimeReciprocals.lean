@@ -30,11 +30,36 @@ public section
 open Set Nat
 open scoped Topology
 
-/-- A sum over the primes, viewed as a sum over the subtype `Nat.Primes`, rewritten as a sum
-over all of `ℕ` with the composite terms sent to `0`. -/
-theorem Nat.Primes.tsum_eq_tsum_ite {M : Type*} [AddCommMonoid M] [TopologicalSpace M]
-    (f : ℕ → M) : ∑' p : Nat.Primes, f p = ∑' n : ℕ, if n.Prime then f n else 0 := by
-  simp [Nat.Primes, ← Set.coe_setOf Nat.Prime, tsum_subtype, Set.indicator_apply]
+section PrimeSums
+
+variable {M : Type*} [CommMonoid M] [TopologicalSpace M] (f : ℕ → M)
+
+omit [TopologicalSpace M] in
+@[to_additive]
+private lemma ite_prime_eq_mulIndicator :
+    (fun n : ℕ ↦ if n.Prime then f n else 1) = {n | n.Prime}.mulIndicator f := by
+  ext; simp [Set.mulIndicator_apply]
+
+/-- Reindex a product over `Nat.Primes` as a product over `ℕ`, extending `f` by `1`. -/
+@[to_additive /-- Reindex a sum over `Nat.Primes` as a sum over `ℕ`, extending `f` by `0`. -/]
+theorem Nat.Primes.tprod_eq_tprod_ite :
+    ∏' p : Nat.Primes, f p = ∏' n : ℕ, if n.Prime then f n else 1 := by
+  rw [ite_prime_eq_mulIndicator]; exact tprod_subtype {n | n.Prime} f
+
+/-- `Multipliable` over `Nat.Primes` iff over `ℕ` extending `f` by `1`. -/
+@[to_additive /-- `Summable` over `Nat.Primes` iff over `ℕ` extending `f` by `0`. -/]
+theorem Nat.Primes.multipliable_iff_multipliable_ite :
+    Multipliable (fun p : Nat.Primes ↦ f p) ↔
+      Multipliable (fun n : ℕ ↦ if n.Prime then f n else 1) := by
+  rw [ite_prime_eq_mulIndicator]; exact multipliable_subtype_iff_mulIndicator
+
+/-- `HasProd` over `Nat.Primes` iff over `ℕ` extending `f` by `1`. -/
+@[to_additive /-- `HasSum` over `Nat.Primes` iff over `ℕ` extending `f` by `0`. -/]
+theorem Nat.Primes.hasProd_iff_hasProd_ite {a : M} :
+    HasProd (fun p : Nat.Primes ↦ f p) a ↔ HasProd (fun n : ℕ ↦ if n.Prime then f n else 1) a := by
+  rw [ite_prime_eq_mulIndicator]; exact hasProd_subtype_iff_mulIndicator
+
+end PrimeSums
 
 /-- The cardinality of the set of `k`-rough numbers `≤ N` is bounded by `N` times the sum
 of `1/p` over the primes `k ≤ p ≤ N`. -/
