@@ -171,14 +171,6 @@ where `1 < b` and `c₀` are real numbers, then the torsion subgroup of `G` is f
 theorem CommGroup.finite_torsion_of_descent {G : Type*} [CommGroup G] {n : ℕ} {h : G → ℝ}
     {b c₀ : ℝ} (H₀ : 1 < b) (H₃ : ∀ x, b * h x - c₀ ≤ h (x ^ n)) [Northcott h] :
     Finite (torsion G) := by
-  by_cases! H : ∃ C, ∀ x, h x ≤ C
-  · obtain ⟨C, hC⟩ := H
-    have : Finite G := by
-      suffices {x | h x ≤ C}.Finite by
-        simp only [hC, Set.setOf_true] at this
-        exact Set.finite_univ_iff.mp this
-      exact Northcott.finite_le C
-    exact instFiniteSubtypeMem _
   have H' := Northcott.finite_le (h := h) (c₀ / (b - 1))
   refine Set.Finite.subset (Set.finite_coe_iff.mp H') fun t ht ↦ ?_
   rw [SetLike.mem_coe, mem_torsion, ← finite_powers] at ht
