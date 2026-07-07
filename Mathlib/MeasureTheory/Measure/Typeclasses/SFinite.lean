@@ -149,14 +149,14 @@ noncomputable def spanningSetsIndex (μ : Measure α) [SigmaFinite μ] (x : α) 
   Nat.find <| iUnion_eq_univ_iff.1 (iUnion_spanningSets μ) x
 
 theorem measurableSet_spanningSetsIndex (μ : Measure α) [SigmaFinite μ] :
-    Measurable (spanningSetsIndex μ) :=
-  open scoped Classical in
-  measurable_find _ <| measurableSet_spanningSets μ
+    Measurable (spanningSetsIndex μ) := by
+  classical
+  exact measurable_find _ <| measurableSet_spanningSets μ
 
 theorem preimage_spanningSetsIndex_singleton (μ : Measure α) [SigmaFinite μ] (n : ℕ) :
-    spanningSetsIndex μ ⁻¹' {n} = disjointed (spanningSets μ) n :=
-  open scoped Classical in
-  preimage_find_eq_disjointed _ _ _
+    spanningSetsIndex μ ⁻¹' {n} = disjointed (spanningSets μ) n := by
+  classical
+  exact preimage_find_eq_disjointed _ _ _
 
 theorem spanningSetsIndex_eq_iff (μ : Measure α) [SigmaFinite μ] {x : α} {n : ℕ} :
     spanningSetsIndex μ x = n ↔ x ∈ disjointed (spanningSets μ) n := by

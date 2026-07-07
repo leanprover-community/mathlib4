@@ -52,9 +52,9 @@ noncomputable def ruzsaSzemerediNumber : ℕ := by
   exact Nat.findGreatest (fun m ↦ ∃ (G : SimpleGraph α) (_ : DecidableRel G.Adj),
     #(G.cliqueFinset 3) = m ∧ G.LocallyLinear) ((card α).choose 3)
 
-lemma ruzsaSzemerediNumber_le : ruzsaSzemerediNumber α ≤ (card α).choose 3 :=
-  open scoped Classical in
-  Nat.findGreatest_le _
+lemma ruzsaSzemerediNumber_le : ruzsaSzemerediNumber α ≤ (card α).choose 3 := by
+  classical
+  exact Nat.findGreatest_le _
 
 lemma ruzsaSzemerediNumber_spec :
     ∃ (G : SimpleGraph α) (_ : DecidableRel G.Adj),
