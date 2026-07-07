@@ -104,7 +104,7 @@ theorem IsAbelian : 1 + 1 = 2 := by
   rfl
 
 /--
-info: some ([LMFDB group.abelian](https://www.lmfdb.org/knowledge/show/group.abelian) (A vacouous comment))
+info: some ([LMFDB group.abelian](https://www.lmfdb.org/knowledge/show/group.abelian) (A vacuous comment))
 -/
 #guard_msgs in
 run_cmd
@@ -125,7 +125,7 @@ error: <input>:1:5: LMFDB ids must consist only of lowercase letters, digits, pe
 
 /--
 info:
-[LMFDB group.abelian](https://www.lmfdb.org/knowledge/show/group.abelian) corresponds to declaration 'IsAbelian'. (A vacouous comment)
+[LMFDB group.abelian](https://www.lmfdb.org/knowledge/show/group.abelian) corresponds to declaration 'IsAbelian'. (A vacuous comment)
 -/
 #guard_msgs in
 #lmfdb_tags
