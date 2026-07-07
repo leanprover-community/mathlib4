@@ -362,9 +362,9 @@ theorem rank_cotangentSpace_eq_spanrank_maximalIdeal_of_fg (fg : (maximalIdeal R
             change Submodule.span R s = ⊤
             rw [← Submodule.restrictScalars_span R (ResidueField R)
               Ideal.Quotient.mk_surjective, hs_span, Submodule.restrictScalars_top])
-    rw [← hs_card, ← ht_span]
+    rw [← hs_card, ← ht_span, ← ht_image]
     exact le_of_le_of_eq (Submodule.spanRank_span_le_card t)
-      (by rw [← ht_image]; exact (Cardinal.mk_image_eq_of_injOn _ _ ht_inj).symm)
+      (Cardinal.mk_image_eq_of_injOn _ _ ht_inj).symm
 
 /--
 In a Noetherian local ring,
