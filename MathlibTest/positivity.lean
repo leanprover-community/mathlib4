@@ -674,3 +674,9 @@ example (p : ℕ) (hp : p.Prime) : Real.log p ≠ 0 := by positivity
 example (p : Nat.Primes) : 0 < (p : ℕ) := by positivity
 example (p : Nat.Primes) : 0 < (p : ℝ) := by positivity
 example (p : Nat.Primes) : 0 < Real.log p := by positivity
+
+-- Without an order on `ℂ`, `positivity` still proves `(p : ℂ) ≠ 0` via `CharZero`;
+-- with `ComplexOrder` open it gives the stronger `0 < (p : ℂ)`.
+example (p : ℕ) (hp : p.Prime) : (p : ℂ) ≠ 0 := by positivity
+open scoped ComplexOrder in
+example (p : ℕ) (hp : p.Prime) : 0 < (p : ℂ) := by positivity
