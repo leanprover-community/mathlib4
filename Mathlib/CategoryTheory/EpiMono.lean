@@ -247,7 +247,7 @@ variable {M000 M001 M010 M011 M100 M101 M110 M111 : C}
 
 /-- This is a theorem saying if five faces of a cube commute and one edge is an epimorphism,
   then the sixth face must also commute. -/
-theorem cubeLemma (h0xx : f0x0 ≫ f01x = f00x ≫ f0x1) (h1xx : f1x0 ≫ f11x = f10x ≫ f1x1)
+theorem cube_lemma_of_epi (h0xx : f0x0 ≫ f01x = f00x ≫ f0x1) (h1xx : f1x0 ≫ f11x = f10x ≫ f1x1)
     (hx0x : fx00 ≫ f10x = f00x ≫ fx01) (hx1x : fx10 ≫ f11x = f01x ≫ fx11)
     (hxx0 : f0x0 ≫ fx10 = fx00 ≫ f1x0) [Epi f00x] : f0x1 ≫ fx11 = fx01 ≫ f1x1 := by
   rw [← cancel_epi f00x]
