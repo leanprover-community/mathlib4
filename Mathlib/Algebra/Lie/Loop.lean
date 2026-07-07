@@ -110,7 +110,7 @@ noncomputable instance [DecidableEq A] [AddCommMonoid A] :
   left_inv := (DirectSum.tensorDecomposition _ L).left_inv
   right_inv := (DirectSum.tensorDecomposition _ L).right_inv
 
-open Classical in
+open scoped Classical in
 /-- A linear isomorphism to finitely supported functions. -/
 def toFinsupp : loopAlgebra R A L ≃ₗ[R] A →₀ L :=
   TensorProduct.equivFinsuppOfBasisLeft (AddMonoidAlgebra.basis A R)
