@@ -244,7 +244,7 @@ theorem prod_factors [Nontrivial α] (s : FactorSet α) : s.prod.factors = s :=
 @[nontriviality]
 theorem factors_subsingleton [Subsingleton α] {a : Associates α} : a.factors = ⊤ := by
   have : Subsingleton (Associates α) := inferInstance
-  convert factors_zero
+  convert! factors_zero
 
 theorem factors_eq_top_iff_zero {a : Associates α} : a.factors = ⊤ ↔ a = 0 := by
   nontriviality α
@@ -581,7 +581,7 @@ theorem eq_pow_count_factors_of_dvd_pow {p a : Associates α}
   apply eq_of_eq_counts ha (pow_ne_zero _ hp.ne_zero)
   have eq_zero_of_ne : ∀ q : Associates α, Irreducible q → q ≠ p → _ = 0 := fun q hq h' =>
     Nat.eq_zero_of_le_zero <| by
-      convert count_le_count_of_le hph hq h
+      convert! count_le_count_of_le hph hq h
       symm
       rw [count_pow hp.ne_zero hq, count_eq_zero_of_ne hq hp h', mul_zero]
   intro q hq
@@ -601,7 +601,7 @@ theorem count_factors_eq_find_of_dvd_pow {a p : Associates α}
   · have hph := pow_ne_zero (@Nat.find (fun n => a ∣ p ^ n) _ ⟨n, h⟩) hp.ne_zero
     rcases subsingleton_or_nontrivial α with hα | hα
     · simp [eq_iff_true_of_subsingleton] at hph
-    convert count_le_count_of_le hph hp (@Nat.find_spec (fun n => a ∣ p ^ n) _ ⟨n, h⟩)
+    convert! count_le_count_of_le hph hp (@Nat.find_spec (fun n => a ∣ p ^ n) _ ⟨n, h⟩)
     rw [count_pow hp.ne_zero hp, count_self hp, mul_one]
 
 end count
