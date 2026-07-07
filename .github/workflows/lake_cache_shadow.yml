@@ -38,19 +38,12 @@ name: Lake cache shadow (master)
 #
 # Toolchain override:
 #   The `toolchain_override` input, or else the LAKE_SHADOW_TOOLCHAIN_OVERRIDE
-#   variable, swaps the toolchain the whole pipeline runs on — e.g. a lean4
-#   pr-release that cherry-picks a Lake change onto the pinned release's
-#   lineage, such as pr-release-14301 = v4.32.0-rc1 + lean4#14235. Its lean
-#   must be behaviorally compatible with the repo pin: mathlib sources build
-#   as-is.
-#
-#   All runs share one scope and one carryover chain: module input hashes
-#   incorporate the toolchain, so runs on different toolchains never resolve
-#   each other's artifacts, and byte-identical content dedups. Every run
-#   warm-starts from the previous run via `lake cache get`; a toolchain
-#   switch misses everything and shows up once as a full-turnover source
-#   build. The legacy cache covers only the repo pin, so override runs skip
-#   hydration.
+#   variable, swaps the toolchain the whole pipeline runs on. Its lean must be
+#   behaviorally compatible with the repo pin, e.g. a Lake change
+#   cherry-picked onto the pinned release's lineage as a lean4 pr-release.
+#   Input hashes incorporate the toolchain, so all runs safely share one
+#   scope and carryover chain; a toolchain switch misses the legacy cache and
+#   all prior artifacts, costing one full-turnover source build.
 
 on:
   schedule:
