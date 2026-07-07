@@ -550,15 +550,12 @@ end LinearMap
 namespace JordanHolderLattice
 
 /-- The isomorphism relation for composition series of modules implies isomorphism of quotients. -/
-theorem Iso.linearEquiv {X Y : Submodule R M × Submodule R M} (h : Iso X Y) :
-    Nonempty <| (X.2 ⧸ X.1.comap X.2.subtype) ≃ₗ[R] Y.2 ⧸ Y.1.comap Y.2.subtype := by
-  let e : Submodule R M × Submodule R M → Submodule R M × Submodule R M → Prop :=
+noncomputable def Iso.linearEquiv {X Y : Submodule R M × Submodule R M} (h : Iso X Y) :
+    (X.2 ⧸ X.1.comap X.2.subtype) ≃ₗ[R] Y.2 ⧸ Y.1.comap Y.2.subtype :=
+  letI e : Submodule R M × Submodule R M → Submodule R M × Submodule R M → Prop :=
     fun X Y ↦ Nonempty <| (X.2 ⧸ X.1.comap X.2.subtype) ≃ₗ[R] Y.2 ⧸ Y.1.comap Y.2.subtype
-  apply h.rel e (fun X ↦ ⟨.refl R _⟩) (fun X Y ⟨f⟩ ↦ ⟨f.symm⟩) (fun X Y Z ⟨f⟩ ⟨g⟩ ↦ ⟨f.trans g⟩)
-  intro X Y h
-  constructor
-  rw [sup_comm, inf_comm]
-  exact (LinearMap.quotientInfEquivSupQuotient Y X).symm
+  Nonempty.some <| h.rel e ⟨.refl R _⟩ (fun ⟨f⟩ ↦ ⟨f.symm⟩) (fun ⟨f⟩ ⟨g⟩ ↦ ⟨f.trans g⟩)
+    fun h ↦ by rw [sup_comm, inf_comm]; exact ⟨(LinearMap.quotientInfEquivSupQuotient ..).symm⟩
 
 end JordanHolderLattice
 
