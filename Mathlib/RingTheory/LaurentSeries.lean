@@ -1018,11 +1018,11 @@ abbrev ratfuncAdicComplRingEquiv : RatFuncAdicCompl K ≃+* K⸨X⸩ :=
     map_mul' := by
       intro x y
       simp only [Equiv.toFun_as_coe, UniformEquiv.coe_toEquiv, comparePkg_eq_extension]
-      exact map_mul (extensionAsRingHom K (continuous_coe' _)) x y
+      exact RingHom.map_mul _ x y
     map_add' := by
       intro x y
       simp only [Equiv.toFun_as_coe, UniformEquiv.coe_toEquiv, comparePkg_eq_extension]
-      exact map_add (extensionAsRingHom K (continuous_coe' _)) x y }
+      exact RingHom.map_add _ x y }
 
 /-- The uniform space equivalence between two abstract completions of `ratfunc K` as a ring
 equivalence: it goes from `K⸨X⸩` to `RatFuncAdicCompl K` -/
