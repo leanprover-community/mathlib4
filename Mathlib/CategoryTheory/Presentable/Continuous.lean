@@ -7,18 +7,20 @@ module
 
 public import Mathlib.CategoryTheory.Limits.Types.PreservesLimit
 public import Mathlib.CategoryTheory.SmallRepresentatives
+public import Mathlib.CategoryTheory.MorphismProperty.IsSmall
 
 /-!
 # `κ`-continuous functors
 
-Given categories `C`, `D` and a regular cardinal `κ : Cardinal.{w}`, we define
-`isCardinalContinuous C D κ : ObjectProperty (C ⥤ D)` as the property
-of functors which preserves limits indexed by categories `J`
+Given categories `C`, `D` and a (regular) cardinal `κ : Cardinal.{w}`,
+we define `isCardinalContinuous C D κ : ObjectProperty (C ⥤ D)` as
+the property of functors which preserves limits indexed by categories `J`
 such that `HasCardinalLT (Arrow J) κ`.
 
 When `C : Type w` is a small category, we show that `κ`-continuous
 functors `Cᵒᵖ ⥤ Type w` are exactly the objects that are local with
-respect to a suitable `w`-small family of morphisms.
+respect to a suitable `w`-small family of morphisms, see the lemma
+`Presheaf.isCardinalContinuous_eq_isLocal`.
 
 ## TODO (@joelriou)
 * Show that `(isCardinalContinuous Cᵒᵖ (Type w) κ).FullSubcategory` is
@@ -40,14 +42,18 @@ namespace Functor
 section
 
 variable {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
-  (κ : Cardinal.{w}) [Fact κ.IsRegular]
+  (κ : Cardinal.{w})
 
 variable (C D) in
+/-- Given a cardinal `κ`, this is the property of objects
+in the category of functors `C ⥤ D` that is satisfied by `κ`-continuous
+functors, i.e. functors which preserve limits indexed by categories `J`
+such that `Arrow J` is of cardinality `< κ`. -/
 def isCardinalContinuous : ObjectProperty (C ⥤ D) :=
   ⨅ (J : Type w) (_ : Category.{w} J) (_ : HasCardinalLT (Arrow J) κ),
     ObjectProperty.preservesLimitsOfShape J
 
-lemma isCardinalContinuous_iff (F : C ⥤ D) (κ : Cardinal.{w}) [Fact κ.IsRegular] :
+lemma isCardinalContinuous_iff (F : C ⥤ D) (κ : Cardinal.{w}) :
     isCardinalContinuous C D κ F ↔
       ∀ (J : Type w) [SmallCategory J] (_ : HasCardinalLT (Arrow J) κ),
         PreservesLimitsOfShape J F := by
@@ -68,10 +74,15 @@ namespace Presheaf
 
 open Functor
 
-variable (C : Type w) [SmallCategory C] (κ : Cardinal.{w}) [Fact κ.IsRegular]
+variable (C : Type w) [SmallCategory C] (κ : Cardinal.{w})
 
+/-- Given a `w`-small category `C` and a cardinal `κ`, this is a
+`w`-small family of morphisms in `Cᵒᵖ ⥤ Type w` such that `κ`-continuous
+functors `Cᵒᵖ ⥤ Type w` are exactly the objects that are local with
+respect to this family of morphisms,
+see the lemma `isCardinalContinuous_eq_isLocal`. -/
 abbrev isCardinalContinuousMorphismProperty : MorphismProperty (Cᵒᵖ ⥤ Type w) :=
-  ⨆ (J) (F : SmallCategoryCardinalLT.categoryFamily κ J ⥤ Cᵒᵖ),
+  ⨆ (J : SmallCategoryCardinalLT κ) (F : SmallCategoryCardinalLT.categoryFamily κ J ⥤ Cᵒᵖ),
     MorphismProperty.ofHoms (Presheaf.preservesLimitHomFamily F)
 
 lemma isCardinalContinuous_eq_isLocal :
