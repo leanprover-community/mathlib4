@@ -661,9 +661,6 @@ noncomputable def vonMangoldtFun : ℕ → ℝ := fun n ↦ Λ n / n
 /-- The bare form of the prime weight.  Should not be directly needed in applications. -/
 noncomputable def primeFun : ℕ → ℝ := fun n ↦ if n.Prime then log n / n else 0
 
-private lemma sum_vonMangoldt_eq : ∑ n ∈ Ioc 0 N, vonMangoldtFun n = ∑ n ∈ Ioc 0 N, Λ n / n :=
-  rfl
-
 private lemma sum_prime_eq : ∑ n ∈ Ioc 0 N, primeFun n = ∑ p ∈ primesLE N, log p / p := by
   simp [primeFun, primesLE_eq_filter_Ioc_zero, sum_filter]
 
@@ -677,8 +674,7 @@ private lemma le_mul_sum_vonMangoldt {x : ℝ} (hx : 0 ≤ x) :
 
 private lemma mul_sum_prime_le :
     x * ∑ n ∈ Ioc 0 ⌊x⌋₊, primeFun n ≤ ∑ n ∈ Ioc 0 ⌊x⌋₊, log n + θ x := calc
-  _ = ∑ p ∈ primesLE ⌊x⌋₊, log p * (x / p) := by
-    rw [sum_prime_eq, mul_sum]; ring_nf
+  _ = ∑ p ∈ primesLE ⌊x⌋₊, log p * (x / p) := by rw [sum_prime_eq, mul_sum]; ring_nf
   _ ≤ ∑ p ∈ primesLE ⌊x⌋₊, log p * (⌊x / p⌋₊ + 1) := by gcongr; exact lt_floor_add_one _|>.le
   _ = ∑ p ∈ primesLE ⌊x⌋₊, log p * ⌊x / p⌋₊ + θ x := by
     simp [mul_add, sum_add_distrib, theta, primesLE_eq_filter_Ioc_zero]
@@ -729,7 +725,7 @@ theorem E₁_nonneg : 0 ≤ E₁ := tsum_nonneg e₁_nonneg
 /-- An upper bound for `E₁`. -/
 theorem E₁_le : E₁ ≤ 1 := by
   refine e₁_summable.tsum_le_of_sum_range_le (fun N ↦ ?_)
-  have : ∑ n ∈ range N, e₁ n ≤ ∑ n ∈ range (2 * N + 5), e₁ n :=
+  have : ∑ n ∈ range N, _ ≤ ∑ n ∈ range (2 * N + 5), _ :=
     sum_le_sum_of_subset_of_nonneg (by grind) (fun n _ _ ↦ e₁_nonneg n)
   have : ∑ n ∈ range (2 * N + 5), e₁ n = log 2 / 2 + log 3 / 6 + ∑ n ∈ .Ico 5 (2 * N + 5), e₁ n
       := by
@@ -748,7 +744,7 @@ theorem E₁_le : E₁ ≤ 1 := by
   let g : ℝ → ℝ := fun t ↦ log (2 * t + 3) / (2 * t + 3) ^ 2
   have : ∑ n ∈ .range N, e₁ (2 * n + 5) ≤ (5 / 4) * ∑ n ∈ .range N, g (n + 1) := by
     simp only [e₁, g, cast_add, cast_mul, cast_ofNat, mul_sum]
-    gcongr with i hi
+    gcongr with i _
     ring_nf
     have : 0 ≤ log (5 + (i : ℝ) * 2) := log_nonneg (by norm_cast; omega)
     split_ifs
@@ -774,7 +770,7 @@ theorem E₁_le : E₁ ≤ 1 := by
         deriv_comp_mul_left 2 (fun t ↦ (t + 3) ^ 2)]
       simp
       field_simp
-      have : 3 ≤ 2 * t + 3 := by linarith
+      have : 0 ≤ 2 * t + 3 := by linarith
       have : 2 * log (2 * t + 3) ≥ 1 := by grw [← ht.1]; simp; linarith [log_three_gt_d9]
       grw [this]; simp
   have : ∫ x in 0..N, g x ≤ (log 3 + 1) / 6 := by
@@ -791,8 +787,7 @@ theorem E₁_le : E₁ ≤ 1 := by
       linarith
     have hN : 0 ≤ (N : ℝ) := cast_nonneg' N
     rw [integral_eq_sub_of_hasDerivAt (f := f)]
-    · have : 0 ≤ log (3 + N * 2) := log_nonneg (by norm_cast; linarith)
-      simp [f]; field_simp; grind
+    · simp [f]; field_simp; grind [log_nonneg]
     · simp; grind
     · exact ContinuousOn.log (f := (2 * · + 3)) (by fun_prop) (by simp; grind)|>.div₀
         (by fun_prop) (by simp; grind)|>.intervalIntegrable
@@ -815,8 +810,7 @@ theorem sum_vonMangoldt_le_sum_prime_add_E₁ {x : ℝ} (hx : 1 ≤ x) :
     exact div_le_one₀ (by norm_cast; linarith)|>.mpr (mod_cast hk.1)
   _ ≤ ∑ k ∈ Icc 1 (max 1 ⌊log x / log 2⌋₊), ∑ p ∈ primesLE ⌊x⌋₊, log p / (p ^ k : ℕ) := by
     apply sum_le_sum_of_subset_of_nonneg _ fun _ _ _ ↦ sum_nonneg fun _ _ ↦ (by positivity)
-    gcongr
-    apply le_max_right
+    grw [← le_max_right]
   _ = ∑ p ∈ primesLE ⌊x⌋₊, log p / p +
       ∑ k ∈ Ioc 1 (max 1 ⌊log x / log 2⌋₊), ∑ p ∈ primesLE ⌊x⌋₊, log p / (p ^ k : ℕ) := by
     simp [← add_sum_Ioc_eq_sum_Icc (le_max_left ..)]
@@ -830,11 +824,9 @@ theorem sum_vonMangoldt_le_sum_prime_add_E₁ {x : ℝ} (hx : 1 ≤ x) :
       simp_rw [← mul_one_div (log p), cast_pow, ← one_div_pow, ← mul_sum]
       rw [primesLE_eq_filter_Ioc_zero, mem_filter, mem_Ioc] at hp
       gcongr
-      rw [(by rfl : Ioc 1 (max 1 ⌊log x / log 2⌋₊) = Ico 2 (max 1 ⌊log x / log 2⌋₊  + 1))]
-      grw [geom_sum_Ico_le_of_lt_one (by simp)]
+      grw [← Ico_add_one_add_one_eq_Ioc, geom_sum_Ico_le_of_lt_one (by simp)]
       · have : 0 < (p : ℝ) := mod_cast hp.1.1.pos
-        apply le_of_eq
-        field
+        norm_num; field_simp; simp
       · simpa using inv_lt_one_of_one_lt₀ (mod_cast hp.2.one_lt)
     _ ≤ _ := e₁_summable.sum_le_tsum _ fun p _ ↦ e₁_nonneg p
 
@@ -857,8 +849,7 @@ noncomputable def Weight.vonMangoldt : Weight := {
   C₀ := 1
   toFun_bound n := by
     unfold vonMangoldtFun
-    rw [abs_of_nonneg (by positivity), one_mul]
-    grw [vonMangoldt_le_log]
+    grw [abs_of_nonneg (by positivity), one_mul, vonMangoldt_le_log]
 }
 
 @[simp]
@@ -891,7 +882,8 @@ lemma Weight.vonMangoldt_M_eq : vonMangoldt.M = eulerMascheroniConstant := by
   rcases eq_or_ne 0 n with rfl | h <;> simp
   field_simp
   rw [mul_assoc, ← rpow_add (mod_cast (by omega))]
-  congr; ring_nf; simp
+  ring_nf
+  grind [rpow_one]
 
 /-- The prime weight `f : ℕ → ℝ := fun n ↦ 1 / n` if `n` is prime and `0` otherwise. -/
 @[reducible]
@@ -928,35 +920,33 @@ lemma Weight.prime_C₁_eq : prime.C₁ = 3 := by simp [C₁]; linarith [log_fou
 @[simp]
 lemma Weight.prime_C₂_eq : prime.C₂ = log 4 + 3 := by simp [C₂]
 
-private lemma neg_inv_sub_log_sub_inv_eq (p : Primes) : - 1 / p - log (1 - 1 / p)
+private lemma neg_inv_sub_log_sub_inv_eq (p : Primes) : - (1 / p + log (1 - 1 / p))
     = ∑' (k : ℕ), 1 / ((↑k + 2) * (p : ℝ) ^ ((k + 2))) := by
   symm; apply HasSum.tsum_eq
   let c : ℕ → ℝ := fun k ↦ 1 / ((k + 1 : ℝ) * (p : ℝ) ^ ((k + 1)))
-  suffices HasSum (fun k ↦ c (k + 1)) (- 1 / p - log (1 - 1 / p)) by
+  suffices HasSum (fun k ↦ c (k + 1)) (- (1 / p + log (1 - 1 / p))) by
     convert this using 2 with n; unfold c; norm_cast
   rw [hasSum_nat_add_iff 1]
-  have : 1 < (p : ℝ) := mod_cast p.property.one_lt
+  have : 1 < (p : ℝ) := mod_cast p.prop.one_lt
   convert! (1 / (p : ℝ)).hasSum_pow_div_log_of_abs_lt_one
       (by grw [abs_of_pos (by positivity), ← this]; simp) using 1
-  · ext; simp [c, division_def]
-  simp [c, division_def]; abel
+  <;> simp +contextual [c, division_def]
 
 private lemma tsum_inv_mul_pow_le {s : ℝ} (hs : 1 ≤ s) (p : Primes) :
     ∑' (k : ℕ), 1 / ((↑k + 2) * (p : ℝ) ^ ((↑k + 2) * s)) ≤ 1 / p ^ 2 := by
-  have h0 : 0 < (p : ℝ) := mod_cast p.property.pos
-  have h1 : 1 ≤ (p : ℝ) := mod_cast p.property.one_le
-  have h2 : 2 ≤ (p : ℝ) := mod_cast p.property.two_le
-  refine tsum_le_of_sum_range_le (fun n ↦ by positivity) fun N ↦ ?_
+  have h0 : 0 < (p : ℝ) := mod_cast p.prop.pos
+  have h2 : 2 ≤ (p : ℝ) := mod_cast p.prop.two_le
+  refine tsum_le_of_sum_range_le (by intro; positivity) fun N ↦ ?_
   grw [← hs]
-  simp only [mul_one, rpow_add h0, rpow_natCast, rpow_ofNat, one_div, mul_inv_rev, mul_assoc,
-    ← mul_sum]
-  apply mul_le_of_le_one_right (by positivity)
-  calc
-    _ ≤ (1 - (2 : ℝ)⁻¹) * ∑ n ∈ range N, ((2 : ℝ)⁻¹) ^ n := by
-      rw [mul_sum]; apply sum_le_sum; intro n hn
-      grw [← h2, inv_pow, mul_comm]
-      gcongr; field_simp; grind
-    _ ≤ _ := by rw [mul_neg_geom_sum, sub_le_self_iff]; positivity
+  · simp_rw [mul_one, rpow_add h0, rpow_ofNat, one_div, mul_inv_rev, mul_assoc, ← mul_sum]
+    apply mul_le_of_le_one_right (by positivity)
+    calc
+      _ ≤ ∑ n ∈ range N, (1 - (2 : ℝ)⁻¹) * ((2 : ℝ)⁻¹) ^ n := by
+        apply sum_le_sum; intros
+        grw [← h2, inv_pow, rpow_natCast]
+        field_simp; grind
+      _ ≤ _ := by rw [← mul_sum, mul_neg_geom_sum, sub_le_self_iff]; positivity
+  · linarith
 
 /-- The standard formula for the Meissel-Mertens constant. -/
 theorem Weight.prime_M_eq : prime.M = eulerMascheroniConstant
@@ -966,59 +956,54 @@ theorem Weight.prime_M_eq : prime.M = eulerMascheroniConstant
   have h := log_riemannZeta_add_log_sub_isLittleO_ofReal
   rw [isLittleO_one_iff] at h
   suffices Tendsto (fun s : ℝ ↦ ∑' (p : Primes) (k : ℕ), 1 / ((k + 2) * (p : ℝ) ^ ((k + 2) * s)))
-    (𝓝[>] 1) (𝓝 (∑' (p : Primes), (- 1 / p - log (1 - 1 / p)))) by
+    (𝓝[>] 1) (𝓝 (∑' (p : Primes), (- (1 / p + log (1 - 1 / p))))) by
     convert tendsto_nhdsWithin_congr (fun s hs ↦ ?_) (h.sub this)
-    · simp [← tsum_neg, division_def]
+    · grind [tsum_neg]
     rw [log_riemannZeta_eq hs]
     nth_rw 1 [tsum_eq_tsum_primes_add_tsum_primes_of_support_subset_prime_powers]
     · have : ∑' (p : Primes), Λ p / (p ^ s * log p)
           = ∑' (n : ℕ), (log n)⁻¹ * prime n * (n : ℝ) ^ (1 - s) := by
-        rw [Nat.Primes.tsum_eq_tsum_ite (fun p ↦ Λ p / (p ^ s * log p))]
+        rw [Primes.tsum_eq_tsum_ite (fun p ↦ Λ p / (p ^ s * log p))]
         congr! 2 with n
-        split_ifs with h
-        · simp [vonMangoldt_apply_prime, h]
-          field_simp (disch := positivity); rw [← rpow_add (by positivity)]; simp
-        · simp [h]
+        split_ifs with h <;> simp [vonMangoldt_apply_prime, h]
+        field_simp (disch := positivity); rw [← rpow_add (by positivity)]; simp
       have :  ∑' (p : Primes) (k : ℕ),
           Λ (p ^ (k + 2)) / ((p ^ (k + 2) : ℕ) ^ s * log (p ^ (k + 2) : ℕ))
           = ∑' (p : Primes) (k : ℕ), 1 / ((k + 2) * (p : ℝ) ^ ((k + 2 : ℝ) * s)) := by
         congr! 4 with p k
-        simp [ArithmeticFunction.vonMangoldt, p.property.isPrimePow.pow, p.property.pow_minFac]
+        simp [ArithmeticFunction.vonMangoldt, p.prop.isPrimePow.pow, p.prop.pow_minFac]
         field_simp (disch := positivity)
         rw [rpow_mul (by positivity)]
         norm_cast
       linarith
     · apply (summable_one_div_nat_rpow.mpr hs).of_norm_bounded
       intro n
-      rcases eq_or_ne 0 n with rfl | h
+      rcases (by omega : n = 0 ∨ n = 1 ∨ 1 < n) with rfl | rfl | h
       · simp [zero_rpow_nonneg]
-      rcases eq_or_ne 1 n with rfl | h
       · simp
-      simp only [norm_div, norm_eq_abs, norm_mul, one_div]
-      grw [vonMangoldt_le_log]
-      have : 0 < log n := log_pos (mod_cast (by omega))
-      field_simp
-      apply le_abs_self
+      · have : 0 < log n := log_pos (mod_cast h)
+        grw [norm_eq_abs, abs_div, abs_mul, vonMangoldt_le_log]
+        field_simp
+        apply le_abs_self
     · intro; simp +contextual [vonMangoldt_ne_zero_iff]
-  apply tendsto_tsum_of_dominated_convergence
-    ((summable_one_div_nat_pow.mpr (by norm_num : 1 < 2)).subtype Nat.Prime)
+  apply tendsto_tsum_of_dominated_convergence ((summable_one_div_nat_pow.mpr one_lt_two).subtype _)
   · intro p
     rw [neg_inv_sub_log_sub_inv_eq p]
-    have : (p : ℝ) ≠ 0 := mod_cast p.property.ne_zero
-    have : 1 ≤ (p : ℝ) := mod_cast p.property.one_le
-    have : 2 ≤ (p : ℝ) := mod_cast p.property.two_le
+    have : 1 ≤ (p : ℝ) := mod_cast p.prop.one_le
+    have : 2 ≤ (p : ℝ) := mod_cast p.prop.two_le
     apply tendsto_tsum_of_dominated_convergence summable_geometric_two
     · intro k
       convert! tendsto_const_nhds.div (b := (k + 2) * (p : ℝ) ^ (k + 2))
         (Tendsto.mono_left _ nhdsWithin_le_nhds) (by positivity) using 1
-      have : Continuous (fun s : ℝ ↦ (k + 2) * (p : ℝ) ^ ((k + 2) * s)) := by fun_prop
+      have : Continuous (fun s : ℝ ↦ (k + 2) * (p : ℝ) ^ ((k + 2) * s)) := by
+        fun_prop (disch := positivity)
       convert this.tendsto 1
       norm_cast; simp
     · filter_upwards [eventually_mem_nhdsWithin] with s hs
       rw [Set.mem_Ioi] at hs
       intro
       rw [norm_eq_abs, abs_of_nonneg (by positivity)]
-      grw [← hs, ← this, mul_one, one_div_pow]
+      grw [← hs, ← this, one_div_pow]
       norm_cast; gcongr; grind
   · filter_upwards [eventually_mem_nhdsWithin] with s hs
     rw [Set.mem_Ioi] at hs
@@ -1047,7 +1032,7 @@ theorem le_sum_vonMangoldt_div_sub_nat : - 1 ≤ ∑ n ∈ Ioc 0 N, Λ n / n - l
   suffices N * (log N - 1) ≤ N * ∑ n ∈ Ioc 0 ⌊(N : ℝ)⌋₊, Weight.vonMangoldt n by
     simp at this
     linarith [le_of_mul_le_mul_left this (by norm_cast; omega)]
-  have := le_mul_sum_vonMangoldt (mod_cast (by omega) : 0 ≤ (N : ℝ))
+  have := le_mul_sum_vonMangoldt (x := N) (by positivity)
   simp only [floor_natCast, Weight.vonMangoldt_apply, vonMangoldtFun] at this ⊢
   grw [← this, ←le_sum_log_nat]
   ring_nf; rfl
@@ -1134,8 +1119,7 @@ private lemma Weight.vonMangoldt_sum_inv_log_mul_eq :
 
 private lemma Weight.prime_sum_inv_log_mul_eq :
     ∑ n ∈ Ioc 0 N, (log n)⁻¹ * Weight.prime n = ∑ p ∈ primesLE N, 1 / (p : ℝ) := by
-  simp only [Weight.prime_apply, mul_ite, mul_zero, primesLE_eq_filter_Ioc_zero, one_div,
-    sum_filter]
+  simp only [Weight.prime_apply, mul_ite, mul_zero, primesLE_eq_filter_Ioc_zero, sum_filter]
   congr! 2
   field_simp (disch := positivity)
 
@@ -1268,11 +1252,11 @@ It will be convenient to express the third Mertens theorem in terms of an error 
 `E₃ x = ∑ p ∈ primesLE ⌊x⌋₊, log (1 - 1 / (p : ℝ)) + log (log x) + eulerMascheroniConstant`.
 -/
 
-private lemma neg_inv_sub_log_sub_inv_nonneg (p : Primes) : 0 ≤ - 1 / p - log (1 - 1 / p) := by
-  have : 1 < (p : ℝ) := mod_cast p.property.one_lt
+private lemma neg_inv_sub_log_sub_inv_nonneg (p : Primes) : 0 ≤ - (1 / p + log (1 - 1 / p)) := by
+  have : 1 < (p : ℝ) := mod_cast p.prop.one_lt
   grw [log_le_sub_one_of_pos] <;> field_simp <;> grind
 
-private lemma neg_inv_sub_log_sub_inv_le (p : Primes) : - 1 / p - log (1 - 1 / p)
+private lemma neg_inv_sub_log_sub_inv_le (p : Primes) : - (1 / p + log (1 - 1 / p))
     ≤ 1 / p ^ 2 := by
   rw [neg_inv_sub_log_sub_inv_eq p]
   have := tsum_inv_mul_pow_le (le_refl _) p
@@ -1284,8 +1268,7 @@ noncomputable def E₃ (x : ℝ) :=
   ∑ p ∈ primesLE ⌊x⌋₊, log (1 - 1 / (p : ℝ)) + log (log x) + eulerMascheroniConstant
 
 theorem sum_prime_log_sub_inv_eq (x : ℝ) : ∑ p ∈ primesLE ⌊x⌋₊, log (1 - 1 / (p : ℝ))
-    = - log (log x) - eulerMascheroniConstant + E₃ x := by
-  unfold E₃; ring
+    = - log (log x) - eulerMascheroniConstant + E₃ x := by grind [E₃]
 
 theorem sum_prime_log_sub_inv_eq_nat (N : ℕ) : ∑ p ∈ primesLE N, log (1 - 1 / (p : ℝ))
     = - log (log N) - eulerMascheroniConstant + E₃ N := by
@@ -1295,9 +1278,8 @@ theorem prod_prime_one_minus_inv_eq {x : ℝ} (hx : 1 < x) : ∏ p ∈ primesLE 
     exp (-eulerMascheroniConstant) * exp (E₃ x) / log x := by
   have hlog : 0 < log x := log_pos hx
   have hpos {p : ℕ} (hp : p.Prime) : (0 : ℝ) < 1 - 1 / p := by
-    have : (2 : ℝ) ≤ p := mod_cast hp.two_le
-    grind [one_div_le_one_div_of_le two_pos this]
-  rw [E₃, exp_add, exp_add, exp_sum, exp_log hlog, exp_neg]
+    grind [one_div_le_one_div_of_le two_pos (mod_cast hp.two_le : (2 : ℝ) ≤ p)]
+  simp_rw [E₃, exp_add, exp_sum, exp_log hlog, exp_neg]
   field_simp
   exact prod_congr rfl fun p hp ↦ (exp_log (hpos (mem_filter.mp hp).2)).symm
 
@@ -1326,7 +1308,6 @@ theorem E₃_bound {x : ℝ} (hx : 2 ≤ x) : |E₃ x| ≤ (log 4 + 3) / log x +
         split_ifs with h
         · calc
             _ ≤ 1 / ((1 + i + ⌊x⌋₊ : ℕ) : ℝ) ^ 2 := by
-              rw [neg_add']
               convert neg_inv_sub_log_sub_inv_le ⟨ _, h ⟩ <;> grind
             _ ≤ _ := by
               rw [inv_sub_inv (by positivity) (by positivity)]
@@ -1335,22 +1316,21 @@ theorem E₃_bound {x : ℝ} (hx : 2 ≤ x) : |E₃ x| ≤ (log 4 + 3) / log x +
       _ ≤ _ := by
         rw [sum_range_sub', add_zero, cast_add, tsub_le_iff_right, le_add_iff_nonneg_right]
         positivity
-  · apply (summable_one_div_nat_rpow.mpr (by norm_num : 1 < (2 : ℝ))).of_norm_bounded
-    intro
-    split_ifs with h
-    · have h1 := neg_inv_sub_log_sub_inv_nonneg ⟨ _, h ⟩
-      have h2 := neg_inv_sub_log_sub_inv_le ⟨ _, h ⟩
-      simp at h1 h2 ⊢
-      grind
-    simp
+  · rw [← Nat.Primes.summable_iff_summable_ite]
+    apply ((summable_one_div_nat_rpow.mpr (by norm_num : 1 < (2 : ℝ))).subtype _).of_norm_bounded
+    intro p
+    have h1 := neg_inv_sub_log_sub_inv_nonneg p
+    have h2 := neg_inv_sub_log_sub_inv_le p
+    simp at h1 h2 ⊢
+    grind
 
 theorem E₃_isBigO : E₃ =O[atTop] fun x ↦ (log x)⁻¹ := by
-  trans (fun x ↦ (log 4 + 3) / log x + 1 / ⌊x⌋₊)
+  trans fun x ↦ (log 4 + 3) / log x + 1 / ⌊x⌋₊
   · apply Eventually.isBigO
     filter_upwards [eventually_ge_atTop 2] with x hx
     simpa using E₃_bound hx
   · simp_rw [division_def]
-    refine (isBigO_const_mul_self ..).add (IsBigO.of_bound 2 ?_)
+    refine (isBigO_const_mul_self ..).add (.of_bound 2 ?_)
     filter_upwards [eventually_gt_atTop 2] with x hx
     have := log_pos (by linarith : 1 < x)
     simp [abs_of_pos this]
@@ -1409,8 +1389,8 @@ theorem prod_prime_one_minus_inv_asymp :
   simp [← exp_add] at this
   refine isEquivalent_of_tendsto_one (this.congr' ?_)
   filter_upwards [eventually_gt_atTop 1]
-  simp [exp_neg]
-  grind [log_pos]
+  simp
+  grind [log_pos, exp_neg]
 
 theorem prod_prime_one_minus_inv_asymp_nat :
     (∏ p ∈ primesLE ·, (1 - (1 : ℝ) / p)) ~[atTop] (exp (-eulerMascheroniConstant) / log ·) := by
