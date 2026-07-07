@@ -28,18 +28,14 @@ comes in two steps:
 
 1. Consider a symplectic matrix `M` over a local ring, we can construct a matrix of the
 form `fromBlocks 1 X 0 1` s.t. the upper-left block of `(fromBlocks 1 X 0 1) * M` is invertible.
-From this we can calculate the determinate.
+From this we can calculate the determinant.
 
-2. For symplectic matrix `M` over general commutative ring `R`, we note that by step 1,
+2. For a symplectic matrix `M` over general commutative ring `R`, we note that by step 1,
 `M.det - 1 = 0` in any localization at a maximal ideal in `R`. Therefore `M.det = 1` in `R`.
 
 Developing the proof in two steps is helpful, since the local ring hypothesis allows us to
-construct the desired `X` in step 1 within residue field, and lift back to the ring while keeping
-the upper-left block invertible.
-
-Note that theoretically we can inline everything and directly consider localization at all
-maximal ideals throughout the proof. But that will result in excessively long and heavy single
-proof. Hence current code structure is an abstraction for the sake of clarity.
+construct the desired `X` in step 1 at the residue field level, and lift back to the ring while
+keeping the upper-left block invertible.
 
 ## TODO
 * For `n = 1` the symplectic group coincides with the special linear group.
@@ -323,7 +319,7 @@ private lemma exists_symmetric_X_invertible_add_mul_of_ker_inter_eq_bot {R : Typ
 a symmetric `X` s.t. `A + X * C` is invertible.
 
 Introducing local ring hypothesis enables us to transport the construction of `X`
-(from the previous lemma, which operates only over field) back to `R` while keeping
+(from the previous lemma, which works only over fields) back to `R` while keeping
 `A + X * C` invertible. -/
 private lemma exists_symmetric_X_isUnit_det_add_mul_of_symplectic [IsLocalRing R]
     (hA : fromBlocks A B C D ∈ symplecticGroup l R) :
