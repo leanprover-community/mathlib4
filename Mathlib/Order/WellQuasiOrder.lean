@@ -113,7 +113,7 @@ theorem RelIso.wellQuasiOrdered_iff {α β} {r : α → α → Prop} {s : β →
   congr! with g a b
   simp [f.map_rel_iff]
 
-theorem RelHom.wellQuasiOrdered_of_wellQuasiOrdered_of_surjective {α β} {r : α → α → Prop}
+theorem WellQuasiOrdered.of_surjective {α β} {r : α → α → Prop}
     {s : β → β → Prop} (h : WellQuasiOrdered r) (f : r →r s) (hf : Function.Surjective f) :
     WellQuasiOrdered s := by
   intro seq
