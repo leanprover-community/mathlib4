@@ -304,7 +304,7 @@ instance : Pow (Submodule R A) ℕ+ where
   pow s n := ppowRec n n.prop s -- as opposed to `s.toAddSubmonoid ^ n`
 
 @[simp]
-protected theorem ppow_zero : M ^ (1 : ℕ+) = M := rfl
+protected theorem ppow_one : M ^ (1 : ℕ+) = M := rfl
 
 protected theorem ppow_succ {n : ℕ+} : M ^ (n + 1) = M ^ n * M := by
   rcases n with ⟨_|n, hn⟩
