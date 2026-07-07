@@ -409,22 +409,13 @@ theorem IsPath.length_lt [Fintype V] {u v : V} {p : G.Walk u v} (hp : p.IsPath) 
 
 lemma IsPath.getVert_injOn {p : G.Walk u v} (hp : p.IsPath) :
     Set.InjOn p.getVert (.Iic p.length) := by
-  intro n hn m hm hnm
-  induction p generalizing n m with
-  | nil => simp_all
+  induction p with
+  | nil => simp [Set.InjOn]
   | @cons v w u h p ihp =>
-    simp only [length_cons, Set.mem_Iic] at hn hm hnm
-    by_cases hn0 : n = 0 <;> by_cases hm0 : m = 0
-    · lia
-    · simp only [hn0, getVert_zero, Walk.getVert_cons p h hm0] at hnm
-      have hvp : v ∉ p.support := by aesop
-      exact (hvp (Walk.mem_support_iff_exists_getVert.mpr ⟨(m - 1), ⟨hnm.symm, by lia⟩⟩)).elim
-    · simp only [hm0, Walk.getVert_cons p h hn0] at hnm
-      have hvp : v ∉ p.support := by simp_all
-      exact (hvp (Walk.mem_support_iff_exists_getVert.mpr ⟨(n - 1), ⟨hnm, by lia⟩⟩)).elim
-    · simp only [Walk.getVert_cons _ _ hn0, Walk.getVert_cons _ _ hm0] at hnm
-      suffices n - 1 = m - 1 by lia
-      exact ihp hp.of_cons (by grind) (by grind) hnm
+    rw [show ∀ n, Set.Iic n = insert 0 (.Icc 1 n) by grind, Set.injOn_insert <| by simp]
+    constructor
+    · grind [getVert_cons, ihp hp.of_cons, Set.InjOn, length_cons]
+    · grind [getVert_cons, hp.support_nodup, getVert_eq_support_getElem]
 
 lemma IsPath.getVert_eq_start_iff_of_not_nil {i : ℕ} {p : G.Walk u w} (hp : p.IsPath) (h : ¬p.Nil) :
     p.getVert i = u ↔ i = 0 := by
