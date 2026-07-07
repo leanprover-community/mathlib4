@@ -32,14 +32,22 @@ name: Lake cache shadow (master)
 #   report           Post a per-run summary to the `CI admins` Zulip
 #                    stream (topic `Lake cache shadow`).
 #
-# Lake override (`lake_ref` input):
-#   Dispatching with `lake_ref` runs the whole pipeline with a patched `lake`
-#   built from that ref of marcelolynch/lean4 (src/lake must be a standalone
-#   Lake package pinned to this repo's toolchain, e.g. branch
-#   `lake-ltar-strip-rc1` = v4.32.0-rc1 + leanprover/lean4#14235). The
-#   override lake is compiled with the stock pinned toolchain, so module
-#   traces stay byte-compatible with the hydrated tree; `leantar` is upgraded
-#   to >= 0.1.20 via a shadow sysroot (lean4#14235 needs its `-s`/`-j` flags).
+# Toolchain override (`toolchain_override` input):
+#   Dispatching with `toolchain_override` runs the whole pipeline on that
+#   toolchain instead of the repo pin — e.g. a lean4 pr-release that
+#   cherry-picks a Lake change onto the pinned release's lineage (such as
+#   `leanprover/lean4-pr-releases:pr-release-14301` = v4.32.0-rc1 +
+#   leanprover/lean4#14235). The override toolchain's lean must be
+#   behaviorally compatible with the repo pin, since mathlib sources are
+#   built as-is.
+#
+#   A non-pinned toolchain has a different lean githash, so both the legacy
+#   cache and the stock shadow scope are cold for it: the legacy hydration
+#   step is skipped and the build warm-starts from the *previous override
+#   run* via `lake cache get` (only the changed cone plus deps compiles).
+#   The first run of a new toolchain generation matches nothing and is a
+#   full source build.
+#
 #   Override runs upload under the isolated `mathlib4-master-shadow-lakeovr`
 #   scope and keep their carryover chain in `analysis-lakeovr/`, so they never
 #   pollute the stock daily chain (and vice versa).
@@ -66,11 +74,12 @@ on:
         #   Mathlib.Topology.Basic Mathlib.Combinatorics.SimpleGraph.Basic Mathlib.RingTheory.Ideal.Basic
         # or add `Archive Counterexamples` to also shadow those libraries.
         default: Mathlib
-      lake_ref:
+      toolchain_override:
         description: >-
-          optional ref of marcelolynch/lean4 to build `lake` from (see the
-          "Lake override" note at the top of this file). Leave empty for the
-          stock pipeline.
+          optional Lean toolchain to run the pipeline on instead of the repo
+          pin (see the "Toolchain override" note at the top of this file),
+          e.g. leanprover/lean4-pr-releases:pr-release-14301. Leave empty for
+          the stock pipeline.
         required: false
         type: string
         default: ''
@@ -88,10 +97,10 @@ defaults:
 
 env:
   # Scope prefix for all puts and gets in this workflow. Namespaces the
-  # workflow's artifacts within the cache bucket. Lake-override runs use an
-  # isolated scope + analysis namespace so the stock daily chain stays clean.
-  SHADOW_SCOPE: ${{ inputs.lake_ref != '' && 'mathlib4-master-shadow-lakeovr' || 'mathlib4-master-shadow' }}
-  ANALYSIS_NS: ${{ inputs.lake_ref != '' && 'analysis-lakeovr' || 'analysis' }}
+  # workflow's artifacts within the cache bucket. Toolchain-override runs use
+  # an isolated scope + analysis namespace so the stock daily chain stays clean.
+  SHADOW_SCOPE: ${{ inputs.toolchain_override != '' && 'mathlib4-master-shadow-lakeovr' || 'mathlib4-master-shadow' }}
+  ANALYSIS_NS: ${{ inputs.toolchain_override != '' && 'analysis-lakeovr' || 'analysis' }}
   # NOTE: STAGE_TARGETS is set per-job (not here) from the `targets` input, so
   # it can be overridden per dispatch — see the `build_and_stage`/`consume` env.
 
@@ -100,7 +109,9 @@ jobs:
     name: Build + stage
     if: ${{ github.repository == 'leanprover-community/mathlib4' }}
     runs-on: pr
-    timeout-minutes: 90
+    # A toolchain-override run compiles everything its warm start can't serve —
+    # up to a full source build on the first run of a new toolchain generation.
+    timeout-minutes: ${{ inputs.toolchain_override != '' && 240 || 90 }}
     outputs:
       sha: ${{ steps.resolve.outputs.sha }}
       toolchain: ${{ steps.resolve.outputs.toolchain }}
@@ -132,6 +143,17 @@ jobs:
           fetch-depth: 2
           path: pr-branch
 
+      # Before the resolve step, so the run's recorded toolchain is the one
+      # actually used.
+      - name: Apply toolchain override
+        if: ${{ inputs.toolchain_override != '' }}
+        shell: bash -euo pipefail {0}
+        env:
+          TOOLCHAIN_OVERRIDE: ${{ inputs.toolchain_override }}
+        run: |
+          printf '%s\n' "$TOOLCHAIN_OVERRIDE" > pr-branch/lean-toolchain
+          echo "::notice::toolchain override: $TOOLCHAIN_OVERRIDE"
+
       - name: Resolve sha & toolchain
         id: resolve
         shell: bash -euo pipefail {0}
@@ -156,6 +178,15 @@ jobs:
           chmod +x elan-init.sh
           ./elan-init.sh -y --default-toolchain none
           echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
+
+      # `elan which` below does not auto-install, so a non-pinned toolchain
+      # must be installed explicitly.
+      - name: Install override toolchain
+        if: ${{ inputs.toolchain_override != '' }}
+        shell: bash -euo pipefail {0}
+        env:
+          TOOLCHAIN_OVERRIDE: ${{ inputs.toolchain_override }}
+        run: elan toolchain install "$TOOLCHAIN_OVERRIDE"
 
       - name: set toolchain directory
         shell: bash -euo pipefail {0}
@@ -184,77 +215,17 @@ jobs:
           cd tools-branch
           lake build cache
 
-      # --- Lake override (only when the `lake_ref` input is set) -------------
-      # Interposes a patched `lake` for every `lake` invocation below, via a
-      # PATH shim. The shim also points LEAN_SYSROOT at a shadow sysroot (the
-      # pinned toolchain with `leantar` upgraded), so no landrun --env plumbing
-      # changes are needed and scheduled stock runs are untouched.
-      - name: Checkout lake override source
-        if: ${{ inputs.lake_ref != '' }}
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-        with:
-          repository: marcelolynch/lean4
-          ref: ${{ inputs.lake_ref }}
-          path: lake-override
-          sparse-checkout: src/lake
-          fetch-depth: 1
-
-      - name: Build override lake + shadow sysroot
-        if: ${{ inputs.lake_ref != '' }}
-        shell: bash -euo pipefail {0}
-        env:
-          LEANTAR_VERSION: v0.1.20
-        run: |
-          # The override lake must be built with (and run against) the repo's
-          # pinned toolchain, or module traces would not match the tree the
-          # legacy cache hydrates.
-          PIN="$(tr -d '[:space:]' < pr-branch/lean-toolchain)"
-          OVR="$(tr -d '[:space:]' < lake-override/src/lake/lean-toolchain)"
-          if [ "$PIN" != "$OVR" ]; then
-            echo "::error::lake override pins toolchain '$OVR' but the repo pins '$PIN'"
-            exit 1
-          fi
-          (cd lake-override/src/lake && lake build)
-          LAKE_BIN="$PWD/lake-override/src/lake/.lake/build/bin/lake"
-          "$LAKE_BIN" --version
-          # Shadow sysroot: the pinned toolchain with only bin/leantar swapped.
-          # Lake resolves leantar from the *Lean* install, so the override
-          # binary sees the new leantar through LEAN_SYSROOT.
-          TOOLCHAIN_DIR="$(cd pr-branch && dirname "$(dirname "$(elan which lake)")")"
-          SHADOW="$PWD/shadow-sysroot"
-          mkdir -p "$SHADOW/bin"
-          for e in "$TOOLCHAIN_DIR"/*; do
-            [ "$(basename "$e")" = bin ] || ln -s "$e" "$SHADOW/$(basename "$e")"
-          done
-          for f in "$TOOLCHAIN_DIR"/bin/*; do
-            ln -s "$f" "$SHADOW/bin/$(basename "$f")"
-          done
-          rm "$SHADOW/bin/leantar"
-          case "$(uname -m)" in
-            x86_64) TRIPLE=x86_64-unknown-linux-musl ;;
-            aarch64) TRIPLE=aarch64-unknown-linux-musl ;;
-            *) echo "::error::unsupported arch $(uname -m)"; exit 1 ;;
-          esac
-          curl -sSfL -o /tmp/leantar.tar.gz \
-            "https://github.com/digama0/leangz/releases/download/${LEANTAR_VERSION}/leantar-${LEANTAR_VERSION}-${TRIPLE}.tar.gz"
-          tar -xzf /tmp/leantar.tar.gz -C /tmp
-          install -m755 "/tmp/leantar-${LEANTAR_VERSION}-${TRIPLE}/leantar" "$SHADOW/bin/leantar"
-          # PATH shim: `lake` resolves to the override binary, which detects
-          # the (non-collocated) Lean install through LEAN_SYSROOT.
-          SHIM="$PWD/lake-override-bin"
-          mkdir -p "$SHIM"
-          printf '#!/usr/bin/env bash\nexport LEAN_SYSROOT="%s"\nexec "%s" "$@"\n' "$SHADOW" "$LAKE_BIN" > "$SHIM/lake"
-          chmod +x "$SHIM/lake"
-          echo "$SHIM" >> "$GITHUB_PATH"
-          echo "::notice::lake override active: $("$LAKE_BIN" --version); leantar $("$SHADOW/bin/leantar" --version)"
-
       - name: download dependencies
         shell: landrun --unrestricted-network --rox /etc --rox /usr --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rw pr-branch/.lake/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI -- bash -euxo pipefail {0}
         run: |
           cd pr-branch
           lake env
 
+      # The legacy cache is keyed to the repo's pinned toolchain, so it has
+      # nothing for an override toolchain — skip it there (the warm-start
+      # step below takes its place).
       - name: Hydrate .lake/build via legacy cache
+        if: ${{ inputs.toolchain_override == '' }}
         shell: bash -euo pipefail {0}
         run: |
           cd pr-branch
@@ -284,6 +255,28 @@ jobs:
           echo "::group::patched package block"
           awk '/^package mathlib where/,/^$/' lakefile.lean
           echo "::endgroup::"
+
+      # Warm start for override runs: seed Lake's artifact cache from the
+      # previous override run's revision manifest, so the build only compiles
+      # the changed cone (plus deps, which Lake never caches). The previous
+      # rev comes from the analysis chain's `_latest` pointer. Best-effort:
+      # with no prior run — or a fresh toolchain generation whose input
+      # hashes match nothing — the build falls back to compiling from source.
+      - name: Warm start from shadow scope (toolchain override)
+        if: ${{ inputs.toolchain_override != '' }}
+        shell: bash -euo pipefail {0}
+        env:
+          LAKE_CACHE_ARTIFACT_ENDPOINT: ${{ vars.LAKE_CACHE_ARTIFACT_ENDPOINT_PUBLIC }}
+          LAKE_CACHE_REVISION_ENDPOINT: ${{ vars.LAKE_CACHE_REVISION_ENDPOINT_PUBLIC }}
+        run: |
+          prev="$(curl -fsS "${LAKE_CACHE_ARTIFACT_ENDPOINT%/artifacts}/${ANALYSIS_NS}/_latest.txt" 2>/dev/null || true)"
+          if [ -z "$prev" ]; then
+            echo "::notice::no prior override run recorded; building from source"
+            exit 0
+          fi
+          cd pr-branch
+          lake cache get --scope="$SHADOW_SCOPE" --rev="$prev" \
+            || echo "::warning::warm start from rev ${prev:0:12} failed; building from source"
 
       # Incremental build: with the legacy cache having hydrated .lake/build/
       # and the lakefile patched, Lake's pipeline runs to pack/cache any
@@ -482,8 +475,6 @@ jobs:
     needs: [build_and_stage, upload]
     if: ${{ github.repository == 'leanprover-community/mathlib4' }}
     runs-on: ubuntu-latest
-    # 90 rather than 60: a lake-override run spends ~10-15 extra minutes
-    # building the override lake before the consume proper starts.
     timeout-minutes: 90
     outputs:
       cache_health: ${{ steps.cachehealth.outputs.health }}
@@ -504,6 +495,12 @@ jobs:
           path: pr-branch
           fetch-depth: 1
 
+      - name: Apply toolchain override
+        if: ${{ inputs.toolchain_override != '' }}
+        env:
+          TOOLCHAIN_OVERRIDE: ${{ inputs.toolchain_override }}
+        run: printf '%s\n' "$TOOLCHAIN_OVERRIDE" > pr-branch/lean-toolchain
+
       - name: install elan
         run: |
           curl -o elan-init.sh -sSfL https://elan.lean-lang.org/elan-init.sh
@@ -511,61 +508,11 @@ jobs:
           ./elan-init.sh -y --default-toolchain none
           echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
 
-      # --- Lake override (only when the `lake_ref` input is set) -------------
-      # Same recipe as build_and_stage: the override binary is arch/glibc
-      # sensitive, so each job builds its own rather than sharing an artifact.
-      - name: Checkout lake override source
-        if: ${{ inputs.lake_ref != '' }}
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-        with:
-          repository: marcelolynch/lean4
-          ref: ${{ inputs.lake_ref }}
-          path: lake-override
-          sparse-checkout: src/lake
-          fetch-depth: 1
-
-      - name: Build override lake + shadow sysroot
-        if: ${{ inputs.lake_ref != '' }}
+      - name: Install override toolchain
+        if: ${{ inputs.toolchain_override != '' }}
         env:
-          LEANTAR_VERSION: v0.1.20
-        run: |
-          PIN="$(tr -d '[:space:]' < pr-branch/lean-toolchain)"
-          OVR="$(tr -d '[:space:]' < lake-override/src/lake/lean-toolchain)"
-          if [ "$PIN" != "$OVR" ]; then
-            echo "::error::lake override pins toolchain '$OVR' but the repo pins '$PIN'"
-            exit 1
-          fi
-          (cd lake-override/src/lake && lake build)
-          LAKE_BIN="$PWD/lake-override/src/lake/.lake/build/bin/lake"
-          "$LAKE_BIN" --version
-          TOOLCHAIN_DIR="$(cd pr-branch && dirname "$(dirname "$(elan which lake)")")"
-          SHADOW="$PWD/shadow-sysroot"
-          mkdir -p "$SHADOW/bin"
-          for e in "$TOOLCHAIN_DIR"/*; do
-            [ "$(basename "$e")" = bin ] || ln -s "$e" "$SHADOW/$(basename "$e")"
-          done
-          for f in "$TOOLCHAIN_DIR"/bin/*; do
-            ln -s "$f" "$SHADOW/bin/$(basename "$f")"
-          done
-          rm "$SHADOW/bin/leantar"
-          case "$(uname -m)" in
-            x86_64) TRIPLE=x86_64-unknown-linux-musl ;;
-            aarch64) TRIPLE=aarch64-unknown-linux-musl ;;
-            *) echo "::error::unsupported arch $(uname -m)"; exit 1 ;;
-          esac
-          curl -sSfL -o /tmp/leantar.tar.gz \
-            "https://github.com/digama0/leangz/releases/download/${LEANTAR_VERSION}/leantar-${LEANTAR_VERSION}-${TRIPLE}.tar.gz"
-          tar -xzf /tmp/leantar.tar.gz -C /tmp
-          install -m755 "/tmp/leantar-${LEANTAR_VERSION}-${TRIPLE}/leantar" "$SHADOW/bin/leantar"
-          SHIM="$PWD/lake-override-bin"
-          mkdir -p "$SHIM"
-          printf '#!/usr/bin/env bash\nexport LEAN_SYSROOT="%s"\nexec "%s" "$@"\n' "$SHADOW" "$LAKE_BIN" > "$SHIM/lake"
-          chmod +x "$SHIM/lake"
-          echo "$SHIM" >> "$GITHUB_PATH"
-          # The override lake is invoked directly (no elan shim), so it would
-          # not see the per-toolchain default cache dir; pin one explicitly.
-          echo "LAKE_CACHE_DIR=$HOME/.cache/lake-shadow" >> "$GITHUB_ENV"
-          echo "::notice::lake override active: $("$LAKE_BIN" --version); leantar $("$SHADOW/bin/leantar" --version)"
+          TOOLCHAIN_OVERRIDE: ${{ inputs.toolchain_override }}
+        run: elan toolchain install "$TOOLCHAIN_OVERRIDE"
 
       - name: download dependencies
         run: |
@@ -598,10 +545,9 @@ jobs:
             --rev="${{ needs.build_and_stage.outputs.sha }}"
           # Artifacts fetched here = the root-package outputs served from cache
           # (a non-verbose build replays them silently). Hand the count to the
-          # provenance step. LAKE_CACHE_DIR is set only by a lake-override run;
-          # stock runs use Lake's per-toolchain default under ~/.elan.
+          # provenance step.
           # `|| true`: an informational count must not trip pipefail if find fails.
-          FETCHED=$(find "${LAKE_CACHE_DIR:-$HOME/.elan/toolchains}" -name '*.ltar' 2>/dev/null | wc -l || true)
+          FETCHED=$(find ~/.elan/toolchains -name '*.ltar' 2>/dev/null | wc -l || true)
           echo "ltar count after get: $FETCHED"
           echo "FETCHED_ARTIFACTS=$FETCHED" >> "$GITHUB_ENV"
 
@@ -666,7 +612,7 @@ jobs:
           CACHE_HEALTH: ${{ needs.consume.outputs.cache_health }}
           SHA: ${{ needs.build_and_stage.outputs.sha }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-          LAKE_REF: ${{ inputs.lake_ref }}
+          TOOLCHAIN_OVERRIDE: ${{ inputs.toolchain_override }}
         run: |
           emoji() {
             case "$1" in
@@ -679,8 +625,8 @@ jobs:
           {
             echo "msg<<MSG_EOF"
             echo "**Lake cache shadow** ([run](${RUN_URL}), rev \`${SHA:0:12}\`)"
-            if [ -n "${LAKE_REF:-}" ]; then
-              echo "🧪 lake override: \`${LAKE_REF}\` (scope \`${SHADOW_SCOPE}\`)"
+            if [ -n "${TOOLCHAIN_OVERRIDE:-}" ]; then
+              echo "🧪 toolchain override: \`${TOOLCHAIN_OVERRIDE}\` (scope \`${SHADOW_SCOPE}\`)"
             fi
             echo ""
             echo "- $(emoji "$BUILD") build_and_stage: \`$BUILD\`"
