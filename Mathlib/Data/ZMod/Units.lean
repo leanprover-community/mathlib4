@@ -153,4 +153,22 @@ theorem isUnit_inv {m : ℕ} {n : ℤ} (h : IsUnit (n : ZMod m)) :
   rw [isUnit_iff_exists]
   exact ⟨n, inv_mul_of_unit _ h, mul_inv_of_unit _ h⟩
 
+theorem coe_int_isUnit_iff_isCoprime (n : ℤ) (m : ℕ) :
+    IsUnit (n : ZMod m) ↔ IsCoprime (m : ℤ) n := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ⟨unitOfIsCoprime n (isCoprime_comm.mp h), by simp⟩⟩
+  obtain rfl | hm := eq_or_ne m 0
+  · rw [Nat.cast_zero, isCoprime_zero_left]
+    exact_mod_cast h
+  · have : NeZero m := ⟨hm⟩
+    obtain ⟨u, hu⟩ := h
+    have h_coprime := val_coe_unit_coprime u
+    rw [hu, Nat.coprime_iff_gcd_eq_one, ← Int.gcd_natCast_natCast,
+      val_intCast, Int.gcd_emod] at h_coprime
+    rwa [isCoprime_comm, Int.isCoprime_iff_gcd_eq_one]
+
+/-- For each `n ≥ 0`, the unit group of `ZMod n` is finite. -/
+instance instFiniteZModUnits : (n : ℕ) → Finite (ZMod n)ˣ
+  | 0 => Finite.of_fintype ℤˣ
+  | _ + 1 => inferInstance
+
 end ZMod

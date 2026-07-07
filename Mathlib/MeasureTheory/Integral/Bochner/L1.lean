@@ -139,7 +139,7 @@ theorem dominatedFinMeasAdditive_weightedSMul {_ : MeasurableSpace α} (μ : Mea
 
 theorem weightedSMul_nonneg [PartialOrder F] [IsOrderedModule ℝ F]
     (s : Set α) (x : F) (hx : 0 ≤ x) : 0 ≤ weightedSMul μ s x := by
-  simp only [weightedSMul, coe_smul', _root_.id, coe_id', Pi.smul_apply]
+  simp only [weightedSMul, _root_.id, coe_id', smul_apply]
   exact smul_nonneg toReal_nonneg hx
 
 end WeightedSMul
@@ -226,6 +226,7 @@ theorem integral_const {m : MeasurableSpace α} (μ : Measure α) (y : F) :
       integral_eq_sum_of_subset <| (filter_subset _ _).trans (range_const_subset _ _)
     _ = μ.real univ • y := by simp [Set.preimage]
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 theorem integral_piecewise_zero {m : MeasurableSpace α} (f : α →ₛ F) (μ : Measure α) {s : Set α}
     (hs : MeasurableSet s) : (piecewise s hs f 0).integral μ = f.integral (μ.restrict s) := by

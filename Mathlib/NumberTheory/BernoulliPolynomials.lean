@@ -111,7 +111,7 @@ theorem derivative_bernoulli_add_one (k : ℕ) :
   rw [range_add_one, sum_insert notMem_range_self, tsub_self, cast_zero, mul_zero,
     map_zero, zero_add, mul_sum]
   -- the rest of the sum is termwise equal:
-  refine sum_congr (by rfl) fun m _ => ?_
+  refine sum_congr rfl fun m _ => ?_
   conv_rhs => rw [← Nat.cast_one, ← Nat.cast_add, ← C_eq_natCast, C_mul_monomial, mul_comm]
   rw [mul_assoc, mul_assoc, ← Nat.cast_mul, ← Nat.cast_mul]
   congr 3
@@ -179,6 +179,7 @@ theorem bernoulli_succ_eval (n p : ℕ) : (bernoulli p.succ).eval (n : ℚ) =
   apply eq_add_of_sub_eq'
   rw [sum_range_pow_eq_bernoulli_sub]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem bernoulli_comp_one_add_X (n : ℕ) :
     (bernoulli n).comp (1 + X) = bernoulli n + n • X ^ (n - 1) := by
   refine Nat.strong_induction_on n fun d hd => ?_

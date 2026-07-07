@@ -95,8 +95,8 @@ theorem lintegral_mul_eq_lintegral_mul_lintegral_of_independent_measurableSpace
   · intro f' g _ h_measMg_f' _ h_ind_f' h_ind_g'
     have h_measM_f' : Measurable f' := h_measMg_f'.mono hMg le_rfl
     simp_rw [Pi.add_apply, left_distrib]
-    rw [lintegral_add_left h_measM_f', lintegral_add_left (h_measM_f.mul h_measM_f'), left_distrib,
-      h_ind_f', h_ind_g']
+    rw [lintegral_add_left h_measM_f',
+      lintegral_add_left (h_measM_f.fun_mul h_measM_f'), left_distrib, h_ind_f', h_ind_g']
   · intro f' h_meas_f' h_mono_f' h_ind_f'
     have h_measM_f' : ∀ n, Measurable (f' n) := fun n => (h_meas_f' n).mono hMg le_rfl
     simp_rw [mul_iSup]
@@ -258,9 +258,9 @@ theorem IndepFun.integral_bilin_comp_comp
     (hf.comp_aemeasurable hX).isProbabilityMeasure_of_indepFun (f ∘ X) (g ∘ Y) h
       (hXY.comp₀ hX hY hf.1.aemeasurable hg.1.aemeasurable)
   rw [← integral_map (f := fun z ↦ B (f z.1) (g z.2)) (φ := fun ω ↦ (X ω, Y ω)) (by fun_prop),
-    (indepFun_iff_map_prod_eq_prod_map_map hX hY).1 hXY,
-    integral_prod_bilin _ hf hg, integral_map hX hf.1, integral_map hY hg.1]
-  rw [(indepFun_iff_map_prod_eq_prod_map_map hX hY).1 hXY]
+    hXY.map_prod_eq_prod_map_map hX hY, integral_prod_bilin _ hf hg, integral_map hX hf.1,
+    integral_map hY hg.1]
+  rw [hXY.map_prod_eq_prod_map_map hX hY]
   exact Continuous.comp_aestronglyMeasurable₂ (g := (B · ·)) (by fun_prop)
     hf.1.comp_fst hg.1.comp_snd
 
@@ -312,11 +312,11 @@ theorem IndepFun.integral_bilin_comp_comp'
 /-- If `X` and `Y` are independent and integrable random variables and `B`
 is a continuous bilinear map, then `∫ ω, B (X ω) (Y ω) ∂μ = B μ[X] μ[Y].` -/
 theorem IndepFun.integral_bilin
-    [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedSpace 𝕜 E] [CompleteSpace E]
+    [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
     [MeasurableSpace E] [BorelSpace E]
-    [NormedAddCommGroup F] [NormedSpace ℝ F] [NormedSpace 𝕜 F] [CompleteSpace F]
+    [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F]
     [MeasurableSpace F] [BorelSpace F]
-    [NormedAddCommGroup G] [NormedSpace ℝ G] [NormedSpace 𝕜 G] [CompleteSpace G]
+    [NormedAddCommGroup G] [NormedSpace ℝ G] [CompleteSpace G]
     {X : Ω → E} {Y : Ω → F} (hXY : X ⟂ᵢ[μ] Y) (hX : Integrable X μ) (hY : Integrable Y μ)
     (B : E →L[ℝ] F →L[ℝ] G) :
     ∫ ω, B (X ω) (Y ω) ∂μ = B μ[X] μ[Y] :=
@@ -333,11 +333,11 @@ The assumption on `B` allows to drop the integrability condition in
 `IndepFun.integral_bilin'`, which is useful for the versions where `B` is the scalar
 multiplication or the multiplication. -/
 theorem IndepFun.integral_bilin'
-    [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedSpace 𝕜 E] [CompleteSpace E]
+    [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
     [MeasurableSpace E] [BorelSpace E]
-    [NormedAddCommGroup F] [NormedSpace ℝ F] [NormedSpace 𝕜 F] [CompleteSpace F]
+    [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F]
     [MeasurableSpace F] [BorelSpace F]
-    [NormedAddCommGroup G] [NormedSpace ℝ G] [NormedSpace 𝕜 G] [CompleteSpace G]
+    [NormedAddCommGroup G] [NormedSpace ℝ G] [CompleteSpace G]
     {X : Ω → E} {Y : Ω → F} (hXY : X ⟂ᵢ[μ] Y) (hX : AEStronglyMeasurable X μ)
     (hY : AEStronglyMeasurable Y μ)
     (B : E →L[ℝ] F →L[ℝ] G) (c : ℝ≥0) (hc : c ≠ 0) (hB : ∀ x y, c * ‖x‖ * ‖y‖ ≤ ‖B x y‖) :
@@ -405,7 +405,7 @@ lemma IndepFun.integral_smul_eq_smul_integral
     (hX : AEStronglyMeasurable X μ) (hY : AEStronglyMeasurable Y μ) :
     μ[X • Y] = μ[X] • μ[Y] := by
   by_cases hE : CompleteSpace E
-  · exact hXY.integral_bilin' (𝕜 := 𝕜) hX hY (.lsmul ℝ 𝕜) 1 (by simp) (by simp [norm_smul])
+  · exact hXY.integral_bilin' hX hY (.lsmul ℝ 𝕜) 1 (by simp) (by simp [norm_smul])
   · simp [integral, hE]
 
 lemma IndepFun.integral_mul_eq_mul_integral
@@ -457,11 +457,11 @@ lemma iIndepFun.integral_fun_prod_comp (hX : iIndepFun X μ)
   have := hX.isProbabilityMeasure
   change ∫ ω, (fun x ↦ ∏ i, f i (x i)) (X · ω) ∂μ = _
   rw [← integral_map (f := fun x ↦ ∏ i, f i (x i)) (φ := fun ω ↦ (X · ω)),
-    (iIndepFun_iff_map_fun_eq_pi_map mX).1 hX, integral_fintype_prod_eq_prod]
+    hX.map_fun_eq_pi_map mX, integral_fintype_prod_eq_prod]
   · congr with i
     rw [integral_map (mX i) (hf i)]
   · fun_prop
-  rw [(iIndepFun_iff_map_fun_eq_pi_map mX).1 hX]
+  rw [hX.map_fun_eq_pi_map mX]
   exact Finset.aestronglyMeasurable_fun_prod Finset.univ fun i _ ↦
     (hf i).comp_quasiMeasurePreserving (Measure.quasiMeasurePreserving_eval _ i)
 

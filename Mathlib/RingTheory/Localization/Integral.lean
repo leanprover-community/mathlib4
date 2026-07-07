@@ -64,14 +64,12 @@ theorem integerNormalization_support (p : S[X]) :
 noncomputable def coeffIntegerNormalization (p : S[X]) (i : ℕ) : R :=
   (integerNormalization M p).coeff i
 
-set_option linter.deprecated false in
 @[deprecated integerNormalization_support (since := "2026-02-05")]
 theorem coeffIntegerNormalization_of_coeff_zero (p : S[X]) (i : ℕ) (h : coeff p i = 0) :
     coeffIntegerNormalization M p i = 0 :=
   notMem_support_iff.mp <| Finset.not_mem_subset (integerNormalization_support M p) <|
     notMem_support_iff.mpr h
 
-set_option linter.deprecated false in
 @[deprecated integerNormalization_support (since := "2026-02-05")]
 theorem coeffIntegerNormalization_mem_support (p : S[X]) (i : ℕ)
     (h : coeffIntegerNormalization M p i ≠ 0) : i ∈ p.support := by
@@ -79,7 +77,6 @@ theorem coeffIntegerNormalization_mem_support (p : S[X]) (i : ℕ)
   simp only [mem_support_iff, ne_eq, not_not] at h
   exact coeffIntegerNormalization_of_coeff_zero M p i h
 
-set_option linter.deprecated false in
 @[deprecated integerNormalization_spec (since := "2026-02-05")]
 theorem integerNormalization_coeff (p : S[X]) (i : ℕ) :
     (integerNormalization M p).coeff i = coeffIntegerNormalization M p i :=
@@ -284,7 +281,7 @@ lemma IsLocalization.exists_isIntegral_smul_of_isIntegral_map
     IsLocalization.map_eq_zero_iff (Algebra.algebraMapSubmonoid S M), Algebra.algebraMapSubmonoid,
     Subtype.exists, Submonoid.mem_map, exists_prop, exists_exists_and_eq_and] at hp
   obtain ⟨m, hm, e⟩ := hp
-  exact ⟨m, hm, by simpa [Algebra.smul_def, leadingCoeff_mul_monic hpm] using
+  exact ⟨m, hm, by simpa [Algebra.smul_def, leadingCoeff_mul_monic hpm] using!
     RingHom.isIntegralElem_leadingCoeff_mul (algebraMap R S) (C m * p) x (by simpa)⟩
 
 /-- If `t` is `R`-integral in `S[1/r]` where `r : S` is integral over `R`,
@@ -468,7 +465,7 @@ protected lemma IsLocalization.integralClosure
   · rintro ⟨a, ha⟩ ⟨b, hb⟩ e
     have := congr(algebraMap _ Sf $e)
     have : algebraMap S Sf a = algebraMap S Sf b := by
-      simpa only [← IsScalarTower.algebraMap_apply] using this
+      simpa only [← IsScalarTower.algebraMap_apply] using! this
     obtain ⟨⟨_, m, hm, rfl⟩, h⟩ :=
       (IsLocalization.eq_iff_exists (Algebra.algebraMapSubmonoid S M) _).mp this
     refine ⟨⟨_, m, hm, rfl⟩, FaithfulSMul.algebraMap_injective (integralClosure R S) S ?_⟩
@@ -554,7 +551,7 @@ theorem ideal_span_singleton_map_subset {L : Type*} [IsDomain R] [IsDomain S] [F
 end IsFractionRing
 
 open nonZeroDivisors in
-lemma isAlgebraic_of_isFractionRing {R S} (K L) [CommRing R] [CommRing S] [Field K] [CommRing L]
+lemma isAlgebraic_of_isFractionRing (R S K L) [CommRing R] [CommRing S] [Field K] [CommRing L]
     [Algebra R S] [Algebra R K] [Algebra R L] [Algebra S L] [Algebra K L] [IsScalarTower R S L]
     [IsScalarTower R K L] [IsFractionRing S L]
     [Algebra.IsIntegral R S] : Algebra.IsAlgebraic K L := by

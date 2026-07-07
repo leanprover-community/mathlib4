@@ -36,7 +36,7 @@ variable [LE α]
 @[to_dual]
 instance : SetLike (UpperSet α) α where
   coe := UpperSet.carrier
-  coe_injective' s t h := by cases s; cases t; congr
+  coe_injective s t h := by cases s; cases t; congr
 
 /-- See Note [custom simps projection]. -/
 @[to_dual /-- See Note [custom simps projection]. -/]
@@ -337,7 +337,7 @@ def map (f : α ≃o β) : UpperSet α ≃o UpperSet β where
 
 @[to_dual (attr := simp)]
 theorem symm_map (f : α ≃o β) : (map f).symm = map f.symm := by
- ext; simp [map, OrderIso.symm_apply_eq]
+  ext; simp [map, OrderIso.symm_apply_eq]
 
 @[to_dual (attr := simp)]
 theorem mem_map : b ∈ map f s ↔ f.symm b ∈ s := by
@@ -356,7 +356,7 @@ theorem map_map (g : β ≃o γ) (f : α ≃o β) : map g (map f s) = map (f.tra
 
 variable (f s t)
 
-@[to_dual (attr := simp, norm_cast)]
+@[to_dual (attr := norm_cast)]
 theorem coe_map : (map f s : Set β) = f '' s :=
   rfl
 
