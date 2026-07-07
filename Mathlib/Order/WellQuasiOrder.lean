@@ -117,8 +117,8 @@ theorem WellQuasiOrdered.of_surjective {α β} {r : α → α → Prop}
     {s : β → β → Prop} (h : WellQuasiOrdered r) (f : r →r s) (hf : Function.Surjective f) :
     WellQuasiOrdered s := by
   intro seq
-  have ⟨_, _, hmn⟩ := h (Function.surjInv hf ∘ seq)
-  exact ⟨_, _, hmn.1, by simpa [Function.surjInv_eq] using f.map_rel hmn.2⟩
+  have ⟨_, _, hle, hr⟩ := h (Function.surjInv hf ∘ seq)
+  exact ⟨_, _, hle, by simpa [Function.surjInv_eq] using f.map_rel hr⟩
 
 /-- A typeclass for an order with a well-quasi-ordered `≤` relation.
 
