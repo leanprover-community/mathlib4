@@ -401,7 +401,6 @@ theorem unit_mul_pow_congr_unit {ϖ : R} (hirr : Irreducible ϖ) (u v : Rˣ) (m 
 ## The additive valuation on a DVR
 -/
 
-open Classical in
 /-- The `ℕ∞`-valued additive valuation on a DVR. -/
 noncomputable def addVal (R : Type u) [CommRing R] [IsDomain R] [IsDiscreteValuationRing R] :
     AddValuation R ℕ∞ :=
@@ -575,13 +574,13 @@ variable {R : Type*} [CommRing R] [IsDomain R] [IsDiscreteValuationRing R]
 two steps to terminate. Given `GCD(x,y)`, if `x ∣ y` then `y%x = 0` so we're done in one step;
 otherwise `y%x = y` and then `GCD(x,y) = GCD(y,x)` which brings us back to the first case. -/
 def quotient (x y : R) : R :=
-  open Classical in if y = 0 then 0 else if h : y ∣ x then h.choose else 0
+  open scoped Classical in if y = 0 then 0 else if h : y ∣ x then h.choose else 0
 
 /-- A noncomputable remainder to define the Euclidean domain structure. The GCD algorithm only takes
 two steps to terminate. Given `GCD(x,y)`, if `x ∣ y` then `y%x = 0` so we're done in one step;
 otherwise `y%x = y` and then `GCD(x,y) = GCD(y,x)` which brings us back to the first case. -/
 def remainder (x y : R) : R :=
-  open Classical in if y ∣ x then 0 else x
+  open scoped Classical in if y ∣ x then 0 else x
 
 /-- A modification of the valuation, sending `0` to `⊥` instead of `⊤`. -/
 def toWithBotNat (x : R) : WithBot ℕ :=
