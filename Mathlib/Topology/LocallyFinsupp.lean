@@ -692,4 +692,18 @@ lemma restrict_negPart {V : Set X} (D : locallyFinsuppWithin U ℤ) (h : V ⊆ U
   simp only [locallyFinsuppWithin.restrict_apply, locallyFinsuppWithin.negPart_apply]
   aesop
 
+lemma disjoint_nhdsWithin_cofinite_of_mem [Zero Y]
+    (f : locallyFinsuppWithin U Y) (p : X) (hp : p ∈ U) :
+    Disjoint (𝓝[f.support] p) cofinite := by
+  rw [disjoint_cofinite_right]
+  obtain ⟨t, h₁t, h₂t⟩ := f.supportLocallyFiniteWithinDomain p hp
+  refine ⟨t ∩ f.support, ?_, h₂t⟩
+  rw [mem_nhdsWithin_iff_exists_mem_nhds_inter]
+  grind
+
+lemma _root_.Function.locallyFinsupp.disjoint_nhdsWithin_cofinite
+    [Zero Y] (f : locallyFinsupp X Y) (p : X) :
+    Disjoint (𝓝[f.support] p) cofinite :=
+  disjoint_nhdsWithin_cofinite_of_mem f p (mem_univ _)
+
 end Function.locallyFinsuppWithin
