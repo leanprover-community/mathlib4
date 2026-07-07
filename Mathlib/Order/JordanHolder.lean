@@ -82,9 +82,11 @@ class JordanHolderLattice (X : Type u) [Lattice X] where
 
 namespace JordanHolderLattice
 
-/-- Every modular lattice is a Jordan Hölder lattice. This should not be an instance because for
+/-- Every modular lattice is a Jordan Hölder lattice. This should never be used in practice: for
 specific modular lattices (e.g., the lattice of submodules) we will want a stronger choice of `Iso`
-(e.g., isomorphism of quotient submodules) beyond order-theoretic isomorphism of the intervals. -/
+(e.g., isomorphism of quotient submodules) beyond just order-theoretic isomorphism of the intervals.
+
+One application of this is that modular lattices have a well-defined notion of length. -/
 @[implicit_reducible]
 def ofModularLattice (X : Type u) [Lattice X] [IsModularLattice X] : JordanHolderLattice X where
   IsMaximal := (· ⋖ ·)
