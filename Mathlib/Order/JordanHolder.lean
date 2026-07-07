@@ -6,6 +6,7 @@ Authors: Chris Hughes
 module
 
 public import Mathlib.Order.Lattice
+public import Mathlib.Order.ModularLattice
 public import Mathlib.Data.List.Sort
 public import Mathlib.Logic.Equiv.Fin.Basic
 public import Mathlib.Logic.Equiv.Functor
@@ -50,24 +51,7 @@ then they are `Equivalent`.
 
 ## TODO
 
-Provide instances of `JordanHolderLattice` for subgroups, and potentially for modular lattices.
-
-It is not entirely clear how this should be done. Possibly there should be no global instances
-of `JordanHolderLattice`, and the instances should only be defined locally in order to prove
-the Jordan-Hölder theorem for modules/groups and the API should be transferred because many of the
-theorems in this file will have stronger versions for modules. There will also need to be an API for
-mapping composition series across homomorphisms. It is also probably possible to
-provide an instance of `JordanHolderLattice` for any `ModularLattice`, and in this case the
-Jordan-Hölder theorem will say that there is a well-defined notion of length of a modular lattice.
-However an instance of `JordanHolderLattice` for a modular lattice will not be able to contain
-the correct notion of isomorphism for modules, so a separate instance for modules will still be
-required and this will clash with the instance for modular lattices, and so at least one of these
-instances should not be a global instance.
-
-> [!NOTE]
-> The previous paragraph indicates that the instance of `JordanHolderLattice` for submodules should
-> be obtained via `ModularLattice`. This is not the case in `mathlib4`.
-> See `JordanHolderModule.instJordanHolderLattice`.
+Provide instances of `JordanHolderLattice` for subgroups.
 -/
 
 @[expose] public section
@@ -95,6 +79,32 @@ class JordanHolderLattice (X : Type u) [Lattice X] where
   iso_symm : ∀ {x y}, Iso x y → Iso y x
   iso_trans : ∀ {x y z}, Iso x y → Iso y z → Iso x z
   second_iso : ∀ {x y}, IsMaximal x (x ⊔ y) → Iso (x, x ⊔ y) (x ⊓ y, y)
+
+section ModularLattice
+
+/-- Every modular lattice is a Jordan Hölder lattice. This should not be an instance because for
+specific modular lattices (e.g., the lattice of submodules) we will want a stronger choice of `Iso`
+(e.g., isomorphism of quotient submodules) beyond order-theoretic isomorphism of the intervals. -/
+@[implicit_reducible]
+def JordanHolderLattice.ofModularLattice (X : Type*) [Lattice X] [IsModularLattice X] :
+    JordanHolderLattice X where
+  IsMaximal := (· ⋖ ·)
+  lt_of_isMaximal := CovBy.lt
+  sup_eq_of_isMaximal {x y z} hxz hyz hxy := by
+    apply eq_of_le_of_not_lt (sup_le hxz.le hyz.le)
+    contrapose! hxy
+    apply le_antisymm
+    · contrapose! hyz
+      exact not_covBy_of_lt_of_lt (right_lt_sup.mpr hyz) hxy
+    · contrapose! hxz
+      exact not_covBy_of_lt_of_lt (left_lt_sup.mpr hxz) hxy
+  isMaximal_inf_left_of_isMaximal_sup :=  inf_covBy_of_covBy_sup_of_covBy_sup_left
+  Iso x y := Nonempty (OrderIso (Set.Icc x.1 x.2) (Set.Icc y.1 y.2))
+  iso_symm := .map .symm
+  iso_trans := .map2 .trans
+  second_iso {x y} h := ⟨(infIccOrderIsoIccSup' x y).symm⟩
+
+end ModularLattice
 
 namespace JordanHolderLattice
 
