@@ -261,16 +261,18 @@ theorem cube_lemma_of_mono (h0xx : f0x0 ≫ f01x = f00x ≫ f0x1) (h1xx : f1x0 �
   rw [← cancel_mono f11x]
   grind
 
-theorem CommSq.cube_lemma_of_epi (h0xx : CommSq f0x0 f00x f01x f0x1) (h1xx : CommSq f1x0 f10x f11x f1x1)
-    (hx0x : CommSq fx00 f00x f10x fx01) (hx1x : CommSq fx10 f01x f11x fx11)
-    (hxx0 : CommSq f0x0 fx00 fx10 f1x0) [Epi f00x] : CommSq f0x1 fx01 fx11 f1x1 :=
-  ⟨CategoryTheory.cubeLemma f00x f01x f10x f11x
+theorem CommSq.cube_lemma_of_epi (h0xx : CommSq f0x0 f00x f01x f0x1)
+    (h1xx : CommSq f1x0 f10x f11x f1x1) (hx0x : CommSq fx00 f00x f10x fx01)
+    (hx1x : CommSq fx10 f01x f11x fx11) (hxx0 : CommSq f0x0 fx00 fx10 f1x0) [Epi f00x] :
+    CommSq f0x1 fx01 fx11 f1x1 :=
+  ⟨CategoryTheory.cube_lemma_of_epi f00x f01x f10x f11x
       f0x0 f0x1 f1x0 f1x1 fx00 fx01 fx10 fx11 h0xx.w h1xx.w hx0x.w hx1x.w hxx0.w⟩
 
-theorem CommSq.cube_lemma_of_mono (h0xx : CommSq f0x0 f00x f01x f0x1) (h1xx : CommSq f1x0 f10x f11x f1x1)
-    (hx0x : CommSq fx00 f00x f10x fx01) (hx1x : CommSq fx10 f01x f11x fx11)
-    (hxx1 : CommSq f0x1 fx01 fx11 f1x1) [Mono f11x] : CommSq f0x0 fx00 fx10 f1x0 :=
-  ⟨CategoryTheory.cubeLemma' f00x f01x f10x f11x
+theorem CommSq.cube_lemma_of_mono (h0xx : CommSq f0x0 f00x f01x f0x1)
+    (h1xx : CommSq f1x0 f10x f11x f1x1) (hx0x : CommSq fx00 f00x f10x fx01)
+    (hx1x : CommSq fx10 f01x f11x fx11) (hxx1 : CommSq f0x1 fx01 fx11 f1x1) [Mono f11x] :
+    CommSq f0x0 fx00 fx10 f1x0 :=
+  ⟨CategoryTheory.cube_lemma_of_mono f00x f01x f10x f11x
       f0x0 f0x1 f1x0 f1x1 fx00 fx01 fx10 fx11 h0xx.w h1xx.w hx0x.w hx1x.w hxx1.w⟩
 
 end cubeLemma
