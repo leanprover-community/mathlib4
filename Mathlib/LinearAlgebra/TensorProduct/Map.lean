@@ -601,19 +601,23 @@ variable (g : P ≃ₗ[R] Q) (f : N ≃ₗ[R] P) (m : M) (n : N) (p : P) (x : M 
 
 @[simp] theorem coe_lTensor : lTensor M f = (f : N →ₗ[R] P).lTensor M := rfl
 
-@[deprecated (since := "2026-07-04")] alias coe_lTensor_symm := symm_lTensor
+@[deprecated "use symm_lTensor and coe_lTensor" (since := "2026-07-04")]
+theorem coe_lTensor_symm : (lTensor M f).symm = (f.symm : P →ₗ[R] N).lTensor M := rfl
 
 @[simp] theorem coe_rTensor : rTensor M f = (f : N →ₗ[R] P).rTensor M := rfl
 
-@[deprecated (since := "2026-07-04")] alias coe_rTensor_symm := symm_rTensor
+@[deprecated "use symm_rTensor and coe_rTensor" (since := "2026-07-04")]
+theorem coe_rTensor_symm : (rTensor M f).symm = (f.symm : P →ₗ[R] N).rTensor M := rfl
 
 @[simp] theorem lTensor_tmul : f.lTensor M (m ⊗ₜ n) = m ⊗ₜ f n := rfl
 
-@[deprecated (since := "2026-07-04")] alias lTensor_symm_tmul := symm_lTensor
+@[deprecated "use symm_lTensor and lTensor_tmul" (since := "2026-07-04")]
+theorem lTensor_symm_tmul : (f.lTensor M).symm (m ⊗ₜ p) = m ⊗ₜ f.symm p := rfl
 
 @[simp] theorem rTensor_tmul : f.rTensor M (n ⊗ₜ m) = f n ⊗ₜ m := rfl
 
-@[deprecated (since := "2026-07-04")] alias rTensor_symm_tmul := symm_rTensor
+@[deprecated "use symm_rTensor and rTensor_tmul" (since := "2026-07-04")]
+theorem rTensor_symm_tmul : (f.rTensor M).symm (p ⊗ₜ m) = f.symm p ⊗ₜ m := rfl
 
 lemma comm_trans_rTensor_trans_comm_eq (g : N ≃ₗ[R] P) :
     TensorProduct.comm R Q N ≪≫ₗ rTensor Q g ≪≫ₗ TensorProduct.comm R P Q = lTensor Q g :=
