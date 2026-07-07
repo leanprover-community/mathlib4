@@ -155,7 +155,35 @@ theorem CommGroup.fg_of_descent' {G : Type*} [CommGroup G] {h : G → ℝ} {C : 
   have H₂' g x : h x ≤ 2 * h (g * x) + (2 * h g⁻¹ + C) := by grind [mul_inv_cancel_comm]
   exact fg_of_descent (b := 4) (by norm_num) (by norm_num) H₁ H₂' H₃'
 
-open Subgroup QuotientGroup in
+/--
+If `M` is a monoid and `n : ℕ`, `h : M → ℝ` satisfy
+* for all `M : G`, `h (x ^ n) ≥ b * h x - c₀`,
+* for all `B : ℝ`, there are only finitely many `x : M` such that `h x ≤ B`,
+
+where `1 < b` and `c₀` are real numbers, then set of elements of finite order in `M` is finite.
+-/
+@[to_additive /-- If `M` is an additive monoid and `n : ℕ`, `h : M → ℝ` satisfy
+* for all `x : M`, `h (n • x) ≥ b * h x - c₀`,
+* for all `B : ℝ`, there are only finitely many `x : M` such that `h x ≤ B`,
+
+where `1 < b` and `c₀` are real numbers, then the set of elements of finite order in `M`
+is finite. -/]
+theorem Monoid.finite_torsion_of_descent {M : Type*} [Monoid M] {n : ℕ} {h : M → ℝ}
+    {b c₀ : ℝ} (hb : 1 < b) (H : ∀ x, b * h x - c₀ ≤ h (x ^ n)) [Northcott h] :
+    Finite { x : M | IsOfFinOrder x } := by
+  have H' := Northcott.finite_le (h := h) (c₀ / (b - 1))
+  refine Set.Finite.subset (Set.finite_coe_iff.mp H') fun t ht ↦ ?_
+  have ht' : Finite ↥(Submonoid.powers t) := ht.finite_powers
+  let C : ℝ := ⨆ g : Submonoid.powers t, h g
+  have hC : ∀ g ∈ Submonoid.powers t, h g ≤ C :=
+    fun g hg ↦ Finite.le_ciSup (fun g : Submonoid.powers t ↦ h g) ⟨g, hg⟩
+  refine (hC t (Submonoid.mem_powers t)).trans ?_
+  obtain ⟨t₀, ht₀⟩ : ∃ g : Submonoid.powers t, h g = C := exists_eq_ciSup_of_finite
+  replace H := (H t₀).trans <| hC _ <| Submonoid.pow_mem _ (SetLike.coe_mem t₀) n
+  rw [ht₀] at H
+  rw [le_div_iff₀' (by grind)]
+  grind
+
 /--
 If `G` is a commutative group and `n : ℕ`, `h : G → ℝ` satisfy
 * for all `x : G`, `h (x ^ n) ≥ b * h x - c₀`,
@@ -169,22 +197,9 @@ where `1 < b` and `c₀` are real numbers, then the torsion subgroup of `G` is f
 
 where `1 < b` and `c₀` are real numbers, then the torsion subgroup of `G` is finite. -/]
 theorem CommGroup.finite_torsion_of_descent {G : Type*} [CommGroup G] {n : ℕ} {h : G → ℝ}
-    {b c₀ : ℝ} (H₀ : 1 < b) (H₃ : ∀ x, b * h x - c₀ ≤ h (x ^ n)) [Northcott h] :
-    Finite (torsion G) := by
-  have H' := Northcott.finite_le (h := h) (c₀ / (b - 1))
-  refine Set.Finite.subset (Set.finite_coe_iff.mp H') fun t ht ↦ ?_
-  rw [SetLike.mem_coe, mem_torsion, ← finite_powers] at ht
-  have ht' : Finite ↥(Submonoid.powers t) := ht
-  let C : ℝ := ⨆ g : Submonoid.powers t, h g
-  have hC : ∀ g ∈ Submonoid.powers t, h g ≤ C :=
-    fun g hg ↦ Finite.le_ciSup (fun g : Submonoid.powers t ↦ h g) ⟨g, hg⟩
-  have hC' : C ≤ c₀ / (b - 1) := by
-    obtain ⟨t₀, ht₀⟩ : ∃ g : Submonoid.powers t, h g = C := exists_eq_ciSup_of_finite
-    replace H₃ := (H₃ t₀).trans <| hC _ <| Submonoid.pow_mem _ (SetLike.coe_mem t₀) n
-    rw [ht₀] at H₃
-    rw [le_div_iff₀' (by grind)]
-    grind
-  exact (hC t (Submonoid.mem_powers t)).trans hC'
+    {b c₀ : ℝ} (hb : 1 < b) (H : ∀ x, b * h x - c₀ ≤ h (x ^ n)) [Northcott h] :
+    Finite (torsion G) :=
+  Monoid.finite_torsion_of_descent hb H
 
 /--
 If `G` is a commutative group and `n : ℕ`, `h : G → ℝ` satisfy
@@ -199,9 +214,9 @@ then the torsion subgroup of `G` is finite.
 
 then the torsion subgroup of `G` is finite. -/]
 theorem CommGroup.finite_torsion_of_descent' {G : Type*} [CommGroup G] {h : G → ℝ} {C : ℝ}
-    (H₃ : ∀ x y, |h (x * y) + h (x / y) - 2 * (h x + h y)| ≤ C) [Northcott h] :
+    (H : ∀ x y, |h (x * y) + h (x / y) - 2 * (h x + h y)| ≤ C) [Northcott h] :
     Finite (torsion G) := by
-  have H x : 4 * h x - (h 1 + C) ≤ h (x ^ 2) := by grind [pow_two, div_self']
-  exact finite_torsion_of_descent (b := 4) (by norm_num) H
+  have H' x : 4 * h x - (h 1 + C) ≤ h (x ^ 2) := by grind [pow_two, div_self']
+  exact finite_torsion_of_descent (b := 4) (by norm_num) H'
 
 end
