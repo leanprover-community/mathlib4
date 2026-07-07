@@ -126,6 +126,7 @@ lemma netMaxcard_finite_iff (T : X → X) (F : Set X) (U : SetRel X X) (n : ℕ)
       = sSup (WithTop.some '' Finset.card '' {s : Finset X | IsDynNetIn T F U n s}) := by
       rw [netMaxcard, ← image_comp, sSup_image]
       simp only [mem_setOf_eq, ENat.some_eq_coe, Function.comp_apply]
+      exact biSup_congr (fun _ _ ↦ rfl)
     rw [this] at k_max
     have h_bdda : BddAbove (Finset.card '' {s : Finset X | IsDynNetIn T F U n s}) := by
       refine ⟨k, mem_upperBounds.2 ?_⟩
@@ -139,7 +140,6 @@ lemma netMaxcard_finite_iff (T : X → X) (F : Set X) (U : SetRel X X) (n : ℕ)
       simp only [mem_image, mem_setOf_eq, Finset.card_eq_zero, exists_eq_right, Finset.coe_empty]
       exact isDynNetIn_empty
     rw [← WithTop.coe_sSup' h_bdda] at k_max
-    norm_cast at k_max
     have key := Nat.sSup_mem h_nemp h_bdda
     rw [← Nat.cast_inj.mp k_max, mem_image] at key
     simp only [mem_setOf_eq] at key
