@@ -45,6 +45,19 @@ Note: This linter can be disabled with `set_option linter.translateGenerateName 
 @[to_additive AddCommGroup.foo]
 lemma _root_.CommGroup.foo {g h : G} : g * h = h * g := mul_comm g h
 
+#guard_msgs in
+@[to_additive _root_.AddCommGroup.bar]
+lemma _root_.CommGroup.Bar.foo {g h : G} : g * h = h * g := mul_comm g h
+#guard_msgs(drop info) in #check AddCommGroup.bar
+
+#guard_msgs in
+@[to_additive _root_.fooz]
+lemma _root_.CommGroup.Bar.bar {g h : G} : g * h = h * g := mul_comm g h
+/-- info: fooz.{u_1} {G : Type u_1} [AddCommGroup G] {g h : G} : g + h = h + g -/
+#guard_msgs in #check fooz
+/-- error: Unknown constant `AddCommGroup._root_.fooz` -/
+#guard_msgs in #check AddCommGroup._root_.fooz -- this name was previously generated, due to a bug
+
 end
 
 @[to_additive bar0]
@@ -83,17 +96,19 @@ class my_has_scalar (M : Type u) (α : Type v) where
 
 instance : my_has_scalar Nat Nat := ⟨fun a b => a * b⟩
 attribute [to_additive (reorder := α β) my_has_scalar] my_has_pow
+set_option pp.mvars.anonymous false in
 /--
 error: `to_additive` validation failed: expected
-  {α : Type u} → {β : Type v} → [self : my_has_scalar β α] → α → β → α
+  {α : Type _} → {β : Type _} → [self : my_has_scalar β α] → α → β → α
 but 'Test.my_has_scalar.smul' has type
   {M : Type u} → {α : Type v} → [self : my_has_scalar M α] → M → α → α
 -/
 #guard_msgs in
 attribute [to_additive existing] my_has_pow.pow
+set_option pp.mvars.anonymous false in
 /--
 error: `to_additive` validation failed: expected
-  {β : Type u} → {α : Type v} → [self : my_has_scalar β α] → α → β → α
+  {β : Type _} → {α : Type _} → [self : my_has_scalar β α] → α → β → α
 but 'Test.my_has_scalar.smul' has type
   {M : Type u} → {α : Type v} → [self : my_has_scalar M α] → M → α → α
 -/
@@ -129,6 +144,7 @@ def foo4 {α : Type u} : Type v → Type (max u v) := @my_has_pow α
 @[to_additive bar4_test]
 lemma foo4_test {α β : Type u} : @foo4 α β = @my_has_pow α β := rfl
 
+set_option linter.defProp false in
 @[to_additive bar5]
 def foo5 {α} [my_has_pow α ℕ] [my_has_pow ℕ ℤ] : True := True.intro
 
@@ -291,6 +307,7 @@ attribute [to_additive add_some_def] some_def
 
 run_cmd do liftCoreM <| successIfFail (getConstInfo `Test.add_some_def.in_namespace)
 
+set_option linter.defProp false in
 set_option linter.unusedVariables false in
 def foo_mul {I J K : Type} (n : ℕ) {f : I → Type} (L : Type) [∀ i, One (f i)]
   [Add I] [Mul L] : true := by trivial
@@ -568,7 +585,7 @@ lemma one_eq_one'' {α : Type*} [One α] : (1 : α) = 1 := rfl
 
 /--
 error: `to_additive` validation failed: expected
-  ∀ {α : Type u} [inst : Zero α], 0 = 0
+  ∀ {α : Type ?u.1} [inst : Zero α], 0 = 0
 but 'Eq.trans' has type
   ∀ {α : Sort u} {a b c : α}, a = b → b = c → a = c
 -/
@@ -672,7 +689,7 @@ theorem mulTrivial : True := trivial
 /-- info: (via `docComment` syntax) I am an additive docstring! -/
 #guard_msgs in
 run_cmd
-  let some doc  ← findDocString? (← getEnv) ``addTrivial
+  let some doc ← findDocString? (← getEnv) ``addTrivial
     | throwError "no `docComment` docstring found"
   logInfo doc
 
@@ -898,6 +915,7 @@ def monoidAlgebraFoo₂ {k G : Type} [Inhabited k] : MonoidAlgebra k G × Nat :=
   (⟨fun _ ↦ default⟩, 2)
 
 -- Proofs in types aren't abstracted:
+set_option linter.defProp false in
 @[to_additive]
 def abstractMul : Function.const _ True (id Nat.zero_lt_one) := trivial
 
@@ -941,3 +959,70 @@ attribute [to_additive existing] MulClass MulClass.mk.congr_simp
 #guard_msgs in
 @[to_additive]
 axiom MulAxiom {α} : Mul α
+
+/-! Docstring on `alias` -/
+
+@[to_additive] alias HMulAlias := HMul
+
+/--
+info: **Alias** of `HAdd`.
+
+---
+
+The notation typeclass for heterogeneous addition.
+This enables the notation `a + b : γ` where `a : α`, `b : β`.
+-/
+#guard_msgs in
+run_cmd
+  let some doc ← findDocString? (← getEnv) ``HAddAlias
+    | throwError "no `docComment` docstring found"
+  logInfo doc
+
+@[to_additive /-- Overriding docstring -/] alias HMulAlias' := HMul
+
+/-- info: Overriding docstring -/
+#guard_msgs in
+run_cmd
+  let some doc ← findDocString? (← getEnv) ``HAddAlias'
+    | throwError "no `docComment` docstring found"
+  logInfo doc
+
+/-! Deprecated attribute -/
+
+@[to_additive (attr := deprecated mul_comm (since := "today"))]
+theorem old_mul_comm {α} [CommMagma α] (a b : α) : a * b = b * a := mul_comm a b
+
+/--
+warning: `old_mul_comm` has been deprecated: Use `mul_comm` instead
+---
+info: @old_mul_comm : ∀ {α : Type u_1} [inst : CommMagma α] (a b : α), a * b = b * a
+-/
+#guard_msgs in
+#check @old_mul_comm
+
+/--
+warning: `old_add_comm` has been deprecated: Use `add_comm` instead
+---
+info: @old_add_comm : ∀ {α : Type u_1} [inst : AddCommMagma α] (a b : α), a + b = b + a
+-/
+#guard_msgs in
+#check @old_add_comm
+
+@[to_additive (attr := deprecated (since := "today"))]
+alias mul_comm_alias := mul_comm
+
+/--
+warning: `mul_comm_alias` has been deprecated: Use `mul_comm` instead
+---
+info: @mul_comm_alias : ∀ {G : Type u_1} [inst : CommMagma G] (a b : G), a * b = b * a
+-/
+#guard_msgs in
+#check @mul_comm_alias
+
+/--
+warning: `add_comm_alias` has been deprecated: Use `add_comm` instead
+---
+info: @add_comm_alias : ∀ {G : Type u_1} [inst : AddCommMagma G] (a b : G), a + b = b + a
+-/
+#guard_msgs in
+#check @add_comm_alias

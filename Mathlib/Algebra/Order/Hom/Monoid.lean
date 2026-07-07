@@ -67,7 +67,7 @@ variable {F α β γ δ : Type*}
 
 section AddMonoid
 
-/-- `α →+o β` is the type of monotone functions `α → β` that preserve the `OrderedAddCommMonoid`
+/-- `α →+o β` is the type of monotone functions `α → β` that preserve the ordered additive monoid
 structure.
 
 `OrderAddMonoidHom` is also used for ordered group homomorphisms.
@@ -83,7 +83,7 @@ structure OrderAddMonoidHom (α β : Type*) [Preorder α] [Preorder β] [AddZero
 /-- Infix notation for `OrderAddMonoidHom`. -/
 infixr:25 " →+o " => OrderAddMonoidHom
 
-/-- `α ≃+o β` is the type of monotone isomorphisms `α ≃ β` that preserve the `OrderedAddCommMonoid`
+/-- `α ≃+o β` is the type of isomorphisms `α ≃ β` that preserve the ordered additive monoid
 structure.
 
 `OrderAddMonoidIso` is also used for ordered group isomorphisms.
@@ -104,7 +104,7 @@ end AddMonoid
 
 section Monoid
 
-/-- `α →*o β` is the type of functions `α → β` that preserve the `OrderedCommMonoid` structure.
+/-- `α →*o β` is the type of functions `α → β` that preserve the ordered monoid structure.
 
 `OrderMonoidHom` is also used for ordered group homomorphisms.
 
@@ -139,7 +139,7 @@ def OrderMonoidHomClass.toOrderMonoidHom [OrderHomClass F α β] [MonoidHomClass
 instance [OrderHomClass F α β] [MonoidHomClass F α β] : CoeTC F (α →*o β) :=
   ⟨OrderMonoidHomClass.toOrderMonoidHom⟩
 
-/-- `α ≃*o β` is the type of isomorphisms `α ≃ β` that preserve the `OrderedCommMonoid` structure.
+/-- `α ≃*o β` is the type of isomorphisms `α ≃ β` that preserve the ordered monoid structure.
 
 `OrderMonoidIso` is also used for ordered group isomorphisms.
 
@@ -270,7 +270,7 @@ variable [Preorder α] [Preorder β] [Preorder γ] [Preorder δ] [MulOneClass α
 @[to_additive]
 instance : FunLike (α →*o β) α β where
   coe f := f.toFun
-  coe_injective' f g h := by
+  coe_injective f g h := by
     obtain ⟨⟨⟨_, _⟩⟩, _⟩ := f
     obtain ⟨⟨⟨_, _⟩⟩, _⟩ := g
     congr
