@@ -162,7 +162,8 @@ def MonoidHom.pi {γ : Type w} [MulOneClass γ] (g : ∀ i, γ →* f i) :
 
 @[to_additive (attr := deprecated (since := "2026-05-29"))] alias Pi.monoidHom := MonoidHom.pi
 
-@[to_additive (attr := deprecated (since := "2026-05-29"))] alias Pi.monoidHom_apply := MonoidHom.pi_apply
+@[to_additive (attr := deprecated (since := "2026-05-29"))]
+alias Pi.monoidHom_apply := MonoidHom.pi_apply
 
 @[to_additive]
 theorem MonoidHom.pi_injective {γ : Type w} [Nonempty I] [MulOneClass γ]
