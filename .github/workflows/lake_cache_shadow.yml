@@ -19,6 +19,9 @@ name: Lake cache shadow (master)
 #     # host than the S3 API endpoint; e.g. an R2 public r2.dev/custom domain).
 #     LAKE_CACHE_ARTIFACT_ENDPOINT_PUBLIC    — e.g. https://pub-<hash>.r2.dev/<prefix>/artifacts
 #     LAKE_CACHE_REVISION_ENDPOINT_PUBLIC    — e.g. https://pub-<hash>.r2.dev/<prefix>/revisions
+#     # Optional. Default toolchain override for every run, incl. scheduled
+#     # ones (the dispatch input takes precedence). Unset for the stock pipeline.
+#     LAKE_SHADOW_TOOLCHAIN_OVERRIDE         — e.g. leanprover/lean4-pr-releases:pr-release-14301
 #
 # Jobs:
 #   build_and_stage  Build mathlib + deps with Lake's artifact cache
@@ -32,25 +35,18 @@ name: Lake cache shadow (master)
 #   report           Post a per-run summary to the `CI admins` Zulip
 #                    stream (topic `Lake cache shadow`).
 #
-# Toolchain override (`toolchain_override` input):
-#   Dispatching with `toolchain_override` runs the whole pipeline on that
-#   toolchain instead of the repo pin — e.g. a lean4 pr-release that
-#   cherry-picks a Lake change onto the pinned release's lineage (such as
-#   `leanprover/lean4-pr-releases:pr-release-14301` = v4.32.0-rc1 +
-#   leanprover/lean4#14235). The override toolchain's lean must be
-#   behaviorally compatible with the repo pin, since mathlib sources are
-#   built as-is.
+# Toolchain override (input `toolchain_override`, else the
+# LAKE_SHADOW_TOOLCHAIN_OVERRIDE variable):
+#   Runs the whole pipeline on an alternate toolchain — e.g. a lean4
+#   pr-release cherry-picking a Lake change onto the pinned release's lineage
+#   (pr-release-14301 = v4.32.0-rc1 + lean4#14235). Its lean must be
+#   behaviorally compatible with the repo pin: mathlib sources build as-is.
 #
-#   A non-pinned toolchain has a different lean githash, so both the legacy
-#   cache and the stock shadow scope are cold for it: the legacy hydration
-#   step is skipped and the build warm-starts from the *previous override
-#   run* via `lake cache get` (only the changed cone plus deps compiles).
-#   The first run of a new toolchain generation matches nothing and is a
-#   full source build.
-#
-#   Override runs upload under the isolated `mathlib4-master-shadow-lakeovr`
-#   scope and keep their carryover chain in `analysis-lakeovr/`, so they never
-#   pollute the stock daily chain (and vice versa).
+#   The legacy cache is cold for a non-pinned toolchain (different lean
+#   githash), so hydration is skipped and the build warm-starts from the
+#   previous override run via `lake cache get`; the first run of a toolchain
+#   generation is a full source build. Override runs are isolated in the
+#   `mathlib4-master-shadow-lakeovr` scope + `analysis-lakeovr/` chain.
 
 on:
   schedule:
@@ -77,9 +73,9 @@ on:
       toolchain_override:
         description: >-
           optional Lean toolchain to run the pipeline on instead of the repo
-          pin (see the "Toolchain override" note at the top of this file),
-          e.g. leanprover/lean4-pr-releases:pr-release-14301. Leave empty for
-          the stock pipeline.
+          pin (see the "Toolchain override" note at the top of this file).
+          Empty falls back to the LAKE_SHADOW_TOOLCHAIN_OVERRIDE repository
+          variable; the stock pipeline runs when both are empty.
         required: false
         type: string
         default: ''
@@ -96,11 +92,14 @@ defaults:
     shell: bash -euo pipefail {0}
 
 env:
-  # Scope prefix for all puts and gets in this workflow. Namespaces the
-  # workflow's artifacts within the cache bucket. Toolchain-override runs use
-  # an isolated scope + analysis namespace so the stock daily chain stays clean.
-  SHADOW_SCOPE: ${{ inputs.toolchain_override != '' && 'mathlib4-master-shadow-lakeovr' || 'mathlib4-master-shadow' }}
-  ANALYSIS_NS: ${{ inputs.toolchain_override != '' && 'analysis-lakeovr' || 'analysis' }}
+  # Effective toolchain override: dispatch input, else repository variable,
+  # else stock. (Workflow-level env can't self-reference, so the two derived
+  # values below repeat the fallback chain.)
+  TOOLCHAIN_OVERRIDE: ${{ inputs.toolchain_override || vars.LAKE_SHADOW_TOOLCHAIN_OVERRIDE || '' }}
+  # Scope prefix for all puts and gets in this workflow. Override runs use an
+  # isolated scope + analysis namespace so the stock chain stays clean.
+  SHADOW_SCOPE: ${{ (inputs.toolchain_override || vars.LAKE_SHADOW_TOOLCHAIN_OVERRIDE) && 'mathlib4-master-shadow-lakeovr' || 'mathlib4-master-shadow' }}
+  ANALYSIS_NS: ${{ (inputs.toolchain_override || vars.LAKE_SHADOW_TOOLCHAIN_OVERRIDE) && 'analysis-lakeovr' || 'analysis' }}
   # NOTE: STAGE_TARGETS is set per-job (not here) from the `targets` input, so
   # it can be overridden per dispatch — see the `build_and_stage`/`consume` env.
 
@@ -109,9 +108,8 @@ jobs:
     name: Build + stage
     if: ${{ github.repository == 'leanprover-community/mathlib4' }}
     runs-on: pr
-    # A toolchain-override run compiles everything its warm start can't serve —
-    # up to a full source build on the first run of a new toolchain generation.
-    timeout-minutes: ${{ inputs.toolchain_override != '' && 240 || 90 }}
+    # 240 covers a full source build (first run of a toolchain generation).
+    timeout-minutes: ${{ (inputs.toolchain_override || vars.LAKE_SHADOW_TOOLCHAIN_OVERRIDE) && 240 || 90 }}
     outputs:
       sha: ${{ steps.resolve.outputs.sha }}
       toolchain: ${{ steps.resolve.outputs.toolchain }}
@@ -146,10 +144,8 @@ jobs:
       # Before the resolve step, so the run's recorded toolchain is the one
       # actually used.
       - name: Apply toolchain override
-        if: ${{ inputs.toolchain_override != '' }}
+        if: ${{ env.TOOLCHAIN_OVERRIDE != '' }}
         shell: bash -euo pipefail {0}
-        env:
-          TOOLCHAIN_OVERRIDE: ${{ inputs.toolchain_override }}
         run: |
           printf '%s\n' "$TOOLCHAIN_OVERRIDE" > pr-branch/lean-toolchain
           echo "::notice::toolchain override: $TOOLCHAIN_OVERRIDE"
@@ -182,13 +178,10 @@ jobs:
           ./elan-init.sh -y --default-toolchain none
           echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
 
-      # `elan which` below does not auto-install, so a non-pinned toolchain
-      # must be installed explicitly.
+      # `elan which` below does not auto-install non-pinned toolchains.
       - name: Install override toolchain
-        if: ${{ inputs.toolchain_override != '' }}
+        if: ${{ env.TOOLCHAIN_OVERRIDE != '' }}
         shell: bash -euo pipefail {0}
-        env:
-          TOOLCHAIN_OVERRIDE: ${{ inputs.toolchain_override }}
         run: elan toolchain install "$TOOLCHAIN_OVERRIDE"
 
       - name: set toolchain directory
@@ -224,11 +217,10 @@ jobs:
           cd pr-branch
           lake env
 
-      # The legacy cache is keyed to the repo's pinned toolchain, so it has
-      # nothing for an override toolchain — skip it there (the warm-start
-      # step below takes its place).
+      # The legacy cache is keyed to the repo's pinned toolchain — cold for an
+      # override toolchain, where the warm-start step below takes its place.
       - name: Hydrate .lake/build via legacy cache
-        if: ${{ inputs.toolchain_override == '' }}
+        if: ${{ env.TOOLCHAIN_OVERRIDE == '' }}
         shell: bash -euo pipefail {0}
         run: |
           cd pr-branch
@@ -259,14 +251,11 @@ jobs:
           awk '/^package mathlib where/,/^$/' lakefile.lean
           echo "::endgroup::"
 
-      # Warm start for override runs: seed Lake's artifact cache from the
-      # previous override run's revision manifest, so the build only compiles
-      # the changed cone (plus deps, which Lake never caches). The previous
-      # rev comes from the analysis chain's `_latest` pointer. Best-effort:
-      # with no prior run — or a fresh toolchain generation whose input
-      # hashes match nothing — the build falls back to compiling from source.
+      # Seed Lake's artifact cache from the previous override run (rev from
+      # the analysis chain's `_latest` pointer), so only the changed cone plus
+      # deps compiles. Best-effort: whatever it can't serve builds from source.
       - name: Warm start from shadow scope (toolchain override)
-        if: ${{ inputs.toolchain_override != '' }}
+        if: ${{ env.TOOLCHAIN_OVERRIDE != '' }}
         shell: bash -euo pipefail {0}
         env:
           LAKE_CACHE_ARTIFACT_ENDPOINT: ${{ vars.LAKE_CACHE_ARTIFACT_ENDPOINT_PUBLIC }}
@@ -499,9 +488,7 @@ jobs:
           fetch-depth: 1
 
       - name: Apply toolchain override
-        if: ${{ inputs.toolchain_override != '' }}
-        env:
-          TOOLCHAIN_OVERRIDE: ${{ inputs.toolchain_override }}
+        if: ${{ env.TOOLCHAIN_OVERRIDE != '' }}
         run: printf '%s\n' "$TOOLCHAIN_OVERRIDE" > pr-branch/lean-toolchain
 
       - name: install elan
@@ -512,9 +499,7 @@ jobs:
           echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
 
       - name: Install override toolchain
-        if: ${{ inputs.toolchain_override != '' }}
-        env:
-          TOOLCHAIN_OVERRIDE: ${{ inputs.toolchain_override }}
+        if: ${{ env.TOOLCHAIN_OVERRIDE != '' }}
         run: elan toolchain install "$TOOLCHAIN_OVERRIDE"
 
       - name: download dependencies
@@ -615,7 +600,6 @@ jobs:
           CACHE_HEALTH: ${{ needs.consume.outputs.cache_health }}
           SHA: ${{ needs.build_and_stage.outputs.sha }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-          TOOLCHAIN_OVERRIDE: ${{ inputs.toolchain_override }}
         run: |
           emoji() {
             case "$1" in
