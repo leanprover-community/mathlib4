@@ -6,6 +6,7 @@ Authors: Etienne Marion
 module
 
 public import Mathlib.MeasureTheory.Function.SimpleFuncDenseLp
+public import Mathlib.MeasureTheory.Function.StronglyMeasurable.Lp
 public import Mathlib.MeasureTheory.SetAlgebra
 
 /-!
@@ -45,13 +46,16 @@ of separability in the metric space made by constant indicators equipped with th
 * `MeasureTheory.instSecondCountableLp`: If `μ` is separable, `E` is second-countable and
   `1 ≤ p < ∞` then `Lp E p μ` is second-countable. This is in particular true if `X` is countably
   generated and `μ` is s-finite.
+* `MeasureTheory.separableSpace_of_separableSpace_Lp`: If `Lp E p μ` is nontrivial and separable,
+  then `E` is separable.
 
 ## Implementation notes
 
-Through the whole file we consider a measurable space `X` equipped with a measure `μ`, and also
-a normed commutative group `E`. We also consider an extended non-negative real `p` such that
+For the sufficient-condition results, we consider a measurable space `X` equipped with a
+measure `μ`, a normed commutative group `E`, and an extended non-negative real `p` such that
 `1 ≤ p < ∞`. This is registered as instances via `one_le_p : Fact (1 ≤ p)` and
-`p_ne_top : Fact (p ≠ ∞)`, so the properties are accessible via `one_le_p.elim` and `p_ne_top.elim`.
+`p_ne_top : Fact (p ≠ ∞)`, so the properties are accessible via `one_le_p.elim` and
+`p_ne_top.elim`.
 
 Through the whole file, when we write that an extended non-negative real is finite, it is always
 written `≠ ∞` rather than `< ∞`. See `Ne.lt_top` and `ne_of_lt` to switch from one to the other.
@@ -67,12 +71,14 @@ separable measure, measure-dense, Lp space, second-countable
 
 public section
 
+open scoped NNReal
+
 open MeasurableSpace Set ENNReal TopologicalSpace symmDiff Real
 
 namespace MeasureTheory
 
 variable {X E : Type*} [m : MeasurableSpace X] [NormedAddCommGroup E] {μ : Measure X}
-variable {p : ℝ≥0∞} [one_le_p : Fact (1 ≤ p)] [p_ne_top : Fact (p ≠ ∞)] {𝒜 : Set (Set X)}
+variable {p : ℝ≥0∞} {𝒜 : Set (Set X)}
 
 section MeasureDense
 
@@ -127,6 +133,8 @@ lemma Measure.MeasureDense.fin_meas_approx (h𝒜 : μ.MeasureDense 𝒜) {s : S
     ∃ t ∈ 𝒜, μ t ≠ ∞ ∧ μ (s ∆ t) < ENNReal.ofReal ε := by
   rcases h𝒜.approx s ms hμs ε ε_pos with ⟨t, t_mem, ht⟩
   exact ⟨t, t_mem, (measure_ne_top_iff_of_symmDiff <| ne_top_of_lt ht).1 hμs, ht⟩
+
+variable [one_le_p : Fact (1 ≤ p)] [p_ne_top : Fact (p ≠ ∞)]
 
 variable (p) in
 /-- If `𝒜` is a measure-dense family of sets and `c : E`, then the set of constant indicators
@@ -415,9 +423,69 @@ instance [hμ : IsSeparable μ] : IsSeparable μ.completion := by
 
 end IsSeparable
 
+section NontrivialLp
+
+lemma FinStronglyMeasurable.exists_measurableSet_measure_pos_lt_top {f : X → E}
+    (hf : FinStronglyMeasurable f μ) (h'f : ¬(f =ᵐ[μ] 0)) :
+    ∃ s, MeasurableSet s ∧ 0 < μ s ∧ μ s < ∞ := by
+  contrapose! h'f
+  rcases hf with ⟨fn, hfn, hfn_lim⟩
+  have A n : μ (Function.support (fn n)) = 0 := by
+    by_contra!
+    have := h'f (Function.support (fn n)) (fn n).measurableSet_support (by positivity)
+    grind
+  have B : ∀ᵐ x ∂μ, ∀ n, fn n x = 0 := ae_all_iff.mpr A
+  filter_upwards [B] with x hx
+  apply tendsto_nhds_unique (hfn_lim x)
+  simp [hx]
+
+lemma AEFinStronglyMeasurable.exists_measurableSet_measure_pos_lt_top {f : X → E}
+    (hf : AEFinStronglyMeasurable f μ) (h'f : ¬(f =ᵐ[μ] 0)) :
+    ∃ s, MeasurableSet s ∧ 0 < μ s ∧ μ s < ∞ := by
+  apply hf.finStronglyMeasurable_mk.exists_measurableSet_measure_pos_lt_top
+  contrapose! h'f
+  exact hf.ae_eq_mk.trans h'f
+
+variable (E p μ) in
+lemma nontrivial_Lp_real_of_nontrivial_Lp [Nontrivial (Lp E p μ)] : Nontrivial (Lp ℝ p μ) := by
+  obtain ⟨f, hf⟩ : ∃ f : Lp E p μ, f ≠ 0 := exists_ne 0
+  have hfne : ¬ (f =ᵐ[μ] 0) := by
+    contrapose! hf
+    ext
+    grw [hf, Lp.coeFn_zero E p μ]
+  rcases eq_top_or_lt_top p with rfl | h'p
+  · apply nontrivial_of_ne ((memLp_top_const (1 : ℝ)).toLp _) 0
+    contrapose! hfne
+    have := Lp.ext_iff.1 hfne
+    grw [Lp.coeFn_zero, MemLp.coeFn_toLp] at this
+    filter_upwards [this] with x hx using by simp at hx
+  rcases eq_or_ne p 0 with rfl | hp
+  · have : MemLp (fun (_ : X) ↦ (1 : ℝ)) 0 μ := by simpa using aestronglyMeasurable_const
+    apply nontrivial_of_ne (this.toLp _) 0
+    contrapose! hfne
+    have := Lp.ext_iff.1 hfne
+    grw [Lp.coeFn_zero, MemLp.coeFn_toLp] at this
+    filter_upwards [this] with x hx using by simp at hx
+  · have h'f : AEFinStronglyMeasurable f μ :=
+      MemLp.aefinStronglyMeasurable (Lp.memLp f) hp h'p.ne
+    obtain ⟨s, s_meas, s_pos, s_top⟩ : ∃ s, MeasurableSet s ∧ 0 < μ s ∧ μ s < ∞ :=
+      h'f.exists_measurableSet_measure_pos_lt_top hfne
+    apply nontrivial_of_ne (indicatorConstLp p s_meas s_top.ne 1) 0
+    intro hzero
+    have : ‖indicatorConstLp p s_meas s_top.ne (1 : ℝ)‖ = ‖(0 : Lp ℝ p μ)‖ := by
+      rw [hzero]
+    simp only [norm_indicatorConstLp hp h'p.ne, norm_one, one_div, one_mul, Lp.norm_zero] at this
+    rw [Real.rpow_eq_zero (by positivity) (by simp [ENNReal.toReal_eq_zero_iff, hp, h'p.ne]),
+      measureReal_eq_zero_iff] at this
+    order
+
+end NontrivialLp
+
 section SecondCountableLp
 
 /-! ### A sufficient condition for $L^p$ spaces to be second-countable -/
+
+variable [one_le_p : Fact (1 ≤ p)] [p_ne_top : Fact (p ≠ ∞)]
 
 /-- If the measure `μ` is separable (in particular if `X` is countably generated and `μ` is
 `s`-finite), if `E` is a second-countable `NormedAddCommGroup`, and if `1 ≤ p < +∞`,
@@ -526,5 +594,88 @@ instance Lp.SecondCountableTopology [IsSeparable μ] [TopologicalSpace.Separable
           _ < ε := by linarith [hbf, hbg]
 
 end SecondCountableLp
+
+section SeparableSpaceOfLp
+
+/-! ### A necessary condition for `L^p` spaces to be separable -/
+
+/-- The map sending `x` to the indicator of a set with value `x` is an embedding into `L^p`. -/
+theorem isEmbedding_indicatorConstLp [Fact (1 ≤ p)] (hp_zero : p ≠ 0) {s : Set X}
+    (hs : MeasurableSet s) (hμs_pos : μ s ≠ 0) (hμs_top : μ s ≠ ∞) :
+    Topology.IsEmbedding fun x : E ↦ indicatorConstLp p hs hμs_top x := by
+  let r : ℝ := μ.real s ^ (1 / p.toReal)
+  have hμs_real_pos : 0 < μ.real s := by
+    rw [measureReal_def]
+    exact ENNReal.toReal_pos hμs_pos hμs_top
+  have hr_pos : 0 < r := by
+    dsimp [r]
+    positivity
+  have hdist (x y : E) :
+      dist (indicatorConstLp p hs hμs_top x) (indicatorConstLp p hs hμs_top y) =
+        dist x y * r := by
+    rw [dist_eq_norm, indicatorConstLp_sub, norm_indicatorConstLp' hp_zero hμs_pos,
+      dist_eq_norm]
+  let C : ℝ≥0 := ⟨r, le_of_lt hr_pos⟩
+  let K : ℝ≥0 := ⟨r⁻¹, inv_nonneg.2 (le_of_lt hr_pos)⟩
+  have hLip : LipschitzWith C fun x : E ↦ indicatorConstLp p hs hμs_top x := by
+    refine LipschitzWith.of_dist_le_mul fun x y ↦ ?_
+    rw [hdist]
+    exact le_of_eq (mul_comm _ _)
+  have hanti : AntilipschitzWith K fun x : E ↦ indicatorConstLp p hs hμs_top x := by
+    refine AntilipschitzWith.of_le_mul_dist fun x y ↦ ?_
+    rw [hdist]
+    change dist x y ≤ r⁻¹ * (dist x y * r)
+    exact le_of_eq <| by field_simp [hr_pos.ne']
+  exact hanti.isEmbedding hLip.continuous
+
+/-- Constant functions embed the target space into `L^∞` when the measure is nonzero. -/
+theorem isEmbedding_toLp_const_top (hμ : μ ≠ 0) :
+    Topology.IsEmbedding fun x : E ↦
+      ((memLp_top_const (μ := μ) x).toLp (fun _ : X ↦ x) : Lp E ∞ μ) := by
+  let F : E → Lp E ∞ μ := fun x ↦ (memLp_top_const (μ := μ) x).toLp (fun _ : X ↦ x)
+  have hdist (x y : E) : dist (F x) (F y) = dist x y := by
+    have hsub : F x - F y =
+        ((memLp_top_const (μ := μ) (x - y)).toLp (fun _ : X ↦ x - y) : Lp E ∞ μ) := by
+      dsimp [F]
+      rw [← MemLp.toLp_sub]
+      rfl
+    rw [dist_eq_norm, hsub, Lp.norm_toLp, eLpNorm_const _ ENNReal.top_ne_zero hμ,
+      ENNReal.toReal_mul]
+    simp [ENNReal.toReal_top, dist_eq_norm]
+  have hLip : LipschitzWith 1 F := LipschitzWith.of_dist_le_mul fun x y ↦ by simp [hdist]
+  have hanti : AntilipschitzWith 1 F := AntilipschitzWith.of_le_mul_dist fun x y ↦ by
+    simp [hdist]
+  exact hanti.isEmbedding hLip.continuous
+
+variable (E p μ) in
+/-- If an `L^p` space is separable and nontrivial, then the target space is separable. -/
+lemma separableSpace_of_separableSpace_Lp [hp : Fact (1 ≤ p)]
+    [TopologicalSpace.SeparableSpace (Lp E p μ)] [Nontrivial (Lp E p μ)] :
+    TopologicalSpace.SeparableSpace E := by
+  have hp_zero : p ≠ 0 := ne_of_gt (lt_of_lt_of_le zero_lt_one hp.out)
+  haveI : SecondCountableTopology (Lp E p μ) := UniformSpace.secondCountable_of_separable _
+  by_cases hp_top : p = ∞
+  · subst p
+    have hμ : μ ≠ 0 := by
+      obtain ⟨f, hf⟩ : ∃ f : Lp E ∞ μ, f ≠ 0 := exists_ne 0
+      contrapose! hf
+      subst hf
+      exact norm_eq_zero.1 (Lp.norm_measure_zero f)
+    exact (isEmbedding_toLp_const_top (E := E) hμ).separableSpace
+  · obtain ⟨f, hf⟩ : ∃ f : Lp ℝ p μ, f ≠ 0 := by
+      have : Nontrivial (Lp ℝ p μ) :=
+        nontrivial_Lp_real_of_nontrivial_Lp (E := E) (p := p) (μ := μ)
+      exact exists_ne 0
+    have hfne : ¬ (f =ᵐ[μ] 0) := by
+      contrapose! hf
+      ext
+      grw [hf, Lp.coeFn_zero ℝ p μ]
+    have h'f : AEFinStronglyMeasurable f μ :=
+      MemLp.aefinStronglyMeasurable (Lp.memLp f) hp_zero hp_top
+    obtain ⟨s, hs, hμs_pos, hμs_top⟩ : ∃ s, MeasurableSet s ∧ 0 < μ s ∧ μ s < ∞ :=
+      h'f.exists_measurableSet_measure_pos_lt_top hfne
+    exact (isEmbedding_indicatorConstLp hp_zero hs hμs_pos.ne' hμs_top.ne).separableSpace
+
+end SeparableSpaceOfLp
 
 end MeasureTheory
