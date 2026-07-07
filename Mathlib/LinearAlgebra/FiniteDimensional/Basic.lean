@@ -585,7 +585,7 @@ lemma exists_smul_eq_of_finrank_eq_one
 /-- A submodule of finrank 1 is spanned by any of its nonzero elements. -/
 theorem eq_span_singleton_of_mem_of_finrank_eq_one {S : Submodule K V} {w : V}
     (hS : finrank K S = 1) (hw : w ∈ S) (hw0 : w ≠ 0) :
-    S = span K {w} := by
+    S = K ∙ w := by
   haveI : FiniteDimensional K S := Module.finite_of_finrank_pos (by lia)
   exact Eq.symm <| eq_of_le_of_finrank_le (by simpa)
     (by rw [hS, finrank_span_singleton hw0])
