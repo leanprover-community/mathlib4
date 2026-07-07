@@ -192,7 +192,8 @@ theorem Monotone.wellQuasiOrderedLE_of_wellQuasiOrderedLE_of_surjective [Preorde
 
 theorem OrderHom.wellQuasiOrderedLE_of_wellQuasiOrderedLE_of_surjective [Preorder β]
     [WellQuasiOrderedLE α] (f : α →o β) (hf : Function.Surjective f) :
-    WellQuasiOrderedLE β := f.monotone.wellQuasiOrderedLE_of_wellQuasiOrderedLE_of_surjective hf
+    WellQuasiOrderedLE β :=
+  f.monotone.wellQuasiOrderedLE_of_wellQuasiOrderedLE_of_surjective hf
 
 end Preorder
 
