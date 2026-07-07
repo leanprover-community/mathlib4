@@ -102,8 +102,8 @@ lemma ext {X Y : StructuredArrow S T} (f g : X ⟶ Y) (h : f.right = g.right) : 
 
 attribute [simp] StructuredArrow.ext_iff CostructuredArrow.ext_iff
 
-@[deprecated (since := "2026-06-23"), to_dual] alias hom_ext := ext
-@[deprecated (since := "2026-06-23"), to_dual] alias hom_eq_iff := StructuredArrow.ext_iff
+@[to_dual (attr := deprecated (since := "2026-06-23"))] alias hom_ext := ext
+@[to_dual (attr := deprecated (since := "2026-06-23"))] alias hom_eq_iff := StructuredArrow.ext_iff
 
 /-- Construct a structured arrow from a morphism. -/
 @[to_dual /-- Construct a costructured arrow from a morphism. -/]
