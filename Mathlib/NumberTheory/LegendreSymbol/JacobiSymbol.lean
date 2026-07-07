@@ -497,6 +497,10 @@ section FastJacobi
 We follow the implementation as in `Mathlib/Tactic/NormNum/LegendreSymbol.lean`.
 -/
 
+-- `fastLegendreSym` is used for computing the Legendre symbol in a `norm_num` extension,
+-- i.e. needs to be used publicly.
+set_option backward.privateInPublic true
+
 open NumberTheorySymbols jacobiSym
 
 /-- Computes `J(a | b)` (or `-J(a | b)` if `flip` is set to `true`) given assumptions, by reducing
