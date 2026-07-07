@@ -725,7 +725,7 @@ where
     match e with
     | .lam n _ b _ => lambdaBinderNames b (acc.push n)
     | _ => acc
-  /-- Remove any redundant eta expansions in the arguments on either side of `e`.
+  /-- Remove any redundant eta expansions in the arguments on either side of the relation `e`.
   As a result, the corresponding binder names are removed, so they cannot end up in the expression
   produced by `grw`. -/
   preprocess (e : Expr) : Expr :=
