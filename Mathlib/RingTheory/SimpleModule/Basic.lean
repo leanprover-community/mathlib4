@@ -547,23 +547,20 @@ instance (R) [DivisionRing R] [Module R M] [Nontrivial M] : IsSimpleModule (Modu
 
 end LinearMap
 
-namespace JordanHolderModule
+namespace JordanHolderLattice
 
-instance instJordanHolderLattice : JordanHolderLattice (Submodule R M) where
-  IsMaximal := (· ⋖ ·)
-  lt_of_isMaximal := CovBy.lt
-  sup_eq_of_isMaximal hxz hyz := WCovBy.sup_eq hxz.wcovBy hyz.wcovBy
-  isMaximal_inf_left_of_isMaximal_sup := inf_covBy_of_covBy_sup_of_covBy_sup_left
-  Iso X Y := Nonempty <| (X.2 ⧸ X.1.comap X.2.subtype) ≃ₗ[R] Y.2 ⧸ Y.1.comap Y.2.subtype
-  iso_symm := fun ⟨f⟩ => ⟨f.symm⟩
-  iso_trans := fun ⟨f⟩ ⟨g⟩ => ⟨f.trans g⟩
-  second_iso {X} {Y} _ := by
-    constructor
-    rw [sup_comm, inf_comm]
-    dsimp
-    exact (LinearMap.quotientInfEquivSupQuotient Y X).symm
+/-- The isomorphism relation for composition series of modules implies isomorphism of quotients. -/
+theorem Iso.linearEquiv {X Y : Submodule R M × Submodule R M} (h : Iso X Y) :
+    Nonempty <| (X.2 ⧸ X.1.comap X.2.subtype) ≃ₗ[R] Y.2 ⧸ Y.1.comap Y.2.subtype := by
+  let e : Submodule R M × Submodule R M → Submodule R M × Submodule R M → Prop :=
+    fun X Y ↦ Nonempty <| (X.2 ⧸ X.1.comap X.2.subtype) ≃ₗ[R] Y.2 ⧸ Y.1.comap Y.2.subtype
+  apply h.rel e (fun X ↦ ⟨.refl R _⟩) (fun X Y ⟨f⟩ ↦ ⟨f.symm⟩) (fun X Y Z ⟨f⟩ ⟨g⟩ ↦ ⟨f.trans g⟩)
+  intro X Y h
+  constructor
+  rw [sup_comm, inf_comm]
+  exact (LinearMap.quotientInfEquivSupQuotient Y X).symm
 
-end JordanHolderModule
+end JordanHolderLattice
 
 section jacobson_density
 
