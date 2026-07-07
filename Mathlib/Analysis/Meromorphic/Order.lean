@@ -29,6 +29,9 @@ open scoped Topology
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  {R : Type*} [NormedRing R] [NoZeroDivisors R]
+  [Module R E] [IsBoundedSMul R E] [Module.IsTorsionFree R E]
+  {𝕜' : Type*} [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜 𝕜']
   {f f₁ f₂ : 𝕜 → E} {x : 𝕜}
 
 /-!
@@ -355,24 +358,24 @@ lemma meromorphicOrderAt_id : meromorphicOrderAt (𝕜 := 𝕜) id 0 = 1 := by
 /--
 The order of a constant function is `⊤` if the constant is zero and `0` otherwise.
 -/
-theorem meromorphicOrderAt_const_intCast (z₀ : 𝕜) (n : ℤ) [Decidable ((n : 𝕜) = 0)] :
-    meromorphicOrderAt (n : 𝕜 → 𝕜) z₀ = if (n : 𝕜) = 0 then ⊤ else (0 : WithTop ℤ) :=
-  meromorphicOrderAt_const z₀ (n : 𝕜)
+theorem meromorphicOrderAt_const_intCast (z₀ : 𝕜) (n : ℤ) [Decidable ((n : 𝕜') = 0)] :
+    meromorphicOrderAt (n : 𝕜 → 𝕜') z₀ = if (n : 𝕜') = 0 then ⊤ else (0 : WithTop ℤ) :=
+  meromorphicOrderAt_const z₀ (n : 𝕜')
 
 /--
 The order of a constant function is `⊤` if the constant is zero and `0` otherwise.
 -/
-theorem meromorphicOrderAt_const_natCast (z₀ : 𝕜) (n : ℕ) [Decidable ((n : 𝕜) = 0)] :
-    meromorphicOrderAt (n : 𝕜 → 𝕜) z₀ = if (n : 𝕜) = 0 then ⊤ else (0 : WithTop ℤ) :=
-  meromorphicOrderAt_const z₀ (n : 𝕜)
+theorem meromorphicOrderAt_const_natCast (z₀ : 𝕜) (n : ℕ) [Decidable ((n : 𝕜') = 0)] :
+    meromorphicOrderAt (n : 𝕜 → 𝕜') z₀ = if (n : 𝕜') = 0 then ⊤ else (0 : WithTop ℤ) :=
+  meromorphicOrderAt_const z₀ (n : 𝕜')
 
 /--
 The order of a constant function is `⊤` if the constant is zero and `0` otherwise.
 -/
-@[simp] theorem meromorphicOrderAt_const_ofNat (z₀ : 𝕜) (n : ℕ) [Decidable ((n : 𝕜) = 0)] :
-    meromorphicOrderAt (ofNat(n) : 𝕜 → 𝕜) z₀ = if (n : 𝕜) = 0 then ⊤ else (0 : WithTop ℤ) := by
-  convert! meromorphicOrderAt_const z₀ (n : 𝕜)
-  simp [Semiring.toGrindSemiring_ofNat 𝕜 n]
+@[simp] theorem meromorphicOrderAt_const_ofNat (z₀ : 𝕜) (n : ℕ) [Decidable ((n : 𝕜') = 0)] :
+    meromorphicOrderAt (ofNat(n) : 𝕜 → 𝕜') z₀ = if (n : 𝕜') = 0 then ⊤ else (0 : WithTop ℤ) := by
+  convert! meromorphicOrderAt_const z₀ (n : 𝕜')
+  simp [Semiring.toGrindSemiring_ofNat 𝕜' n]
 
 /-- The order of `(· - x) ^ n` at `x` is `n`. -/
 @[simp, to_fun] theorem meromorphicOrderAt_zpow_id_sub_const {n : ℤ} :
@@ -417,8 +420,8 @@ theorem meromorphicOrderAt_fun_neg {f : 𝕜 → E} :
     meromorphicOrderAt f x = meromorphicOrderAt (fun z ↦ -f z) x := meromorphicOrderAt_neg
 
 /-- The order is additive when multiplying scalar-valued and vector-valued meromorphic functions. -/
-@[to_fun] theorem meromorphicOrderAt_smul {f : 𝕜 → 𝕜} {g : 𝕜 → E}
-    (hf : MeromorphicAt f x) (hg : MeromorphicAt g x) :
+@[to_fun] theorem meromorphicOrderAt_smul [NormedAlgebra 𝕜 R] [IsScalarTower 𝕜 R E]
+    {f : 𝕜 → R} {g : 𝕜 → E} (hf : MeromorphicAt f x) (hg : MeromorphicAt g x) :
     meromorphicOrderAt (f • g) x = meromorphicOrderAt f x + meromorphicOrderAt g x := by
   -- Trivial cases: one of the functions vanishes around z₀
   cases h₂f : meromorphicOrderAt f x with
@@ -439,7 +442,7 @@ theorem meromorphicOrderAt_fun_neg {f : 𝕜 → E} :
       simp [hfa, hga, smul_comm (F a), zpow_add₀ (sub_ne_zero.mpr ha), mul_smul]
 
 /-- The order is additive when multiplying meromorphic functions. -/
-@[to_fun] theorem meromorphicOrderAt_mul {f g : 𝕜 → 𝕜} (hf : MeromorphicAt f x)
+@[to_fun] theorem meromorphicOrderAt_mul {f g : 𝕜 → 𝕜'} (hf : MeromorphicAt f x)
     (hg : MeromorphicAt g x) :
     meromorphicOrderAt (f * g) x = meromorphicOrderAt f x + meromorphicOrderAt g x :=
   meromorphicOrderAt_smul hf hg
@@ -447,7 +450,7 @@ theorem meromorphicOrderAt_fun_neg {f : 𝕜 → E} :
 /--
 The order is additive in products of meromorphic functions.
 -/
-theorem meromorphicOrderAt_prod {x : 𝕜} {ι : Type*} {s : Finset ι} {f : ι → 𝕜 → 𝕜}
+theorem meromorphicOrderAt_prod {x : 𝕜} {ι : Type*} {s : Finset ι} {f : ι → 𝕜 → 𝕜'}
     (hf : ∀ i ∈ s, MeromorphicAt (f i) x) :
     meromorphicOrderAt (∏ i ∈ s, f i) x = ∑ i ∈ s, meromorphicOrderAt (f i) x := by
   classical
@@ -466,7 +469,7 @@ theorem meromorphicOrderAt_prod {x : 𝕜} {ι : Type*} {s : Finset ι} {f : ι 
 /--
 The order is additive in products of meromorphic functions.
 -/
-theorem meromorphicOrderAt_fun_prod {x : 𝕜} {ι : Type*} {s : Finset ι} {f : ι → 𝕜 → 𝕜}
+theorem meromorphicOrderAt_fun_prod {x : 𝕜} {ι : Type*} {s : Finset ι} {f : ι → 𝕜 → 𝕜'}
     (hf : ∀ i ∈ s, MeromorphicAt (f i) x) :
     meromorphicOrderAt (fun a ↦ ∏ i ∈ s, f i a) x = ∑ i ∈ s, meromorphicOrderAt (f i) x := by
   convert! meromorphicOrderAt_prod hf
@@ -484,7 +487,7 @@ lemma meromorphicOrderAt_finprod_ne_top {x : 𝕜} {ι : Type*} {F : ι → 𝕜
   simp [finprod_of_not_hasFiniteMulSupport hF]
 
 /-- The order multiplies by `n` when taking a meromorphic function to its `n`th power. -/
-@[to_fun] theorem meromorphicOrderAt_pow {f : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) {n : ℕ} :
+@[to_fun] theorem meromorphicOrderAt_pow {f : 𝕜 → 𝕜'} {x : 𝕜} (hf : MeromorphicAt f x) {n : ℕ} :
     meromorphicOrderAt (f ^ n) x = n * meromorphicOrderAt f x := by
   induction n
   case zero =>
@@ -502,7 +505,7 @@ lemma meromorphicOrderAt_finprod_ne_top {x : 𝕜} {ι : Type*} {F : ι → 𝕜
       ring
 
 /-- The order multiplies by `n` when taking a meromorphic function to its `n`th power. -/
-@[to_fun] theorem meromorphicOrderAt_zpow {f : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) {n : ℤ} :
+@[to_fun] theorem meromorphicOrderAt_zpow {f : 𝕜 → 𝕜'} {x : 𝕜} (hf : MeromorphicAt f x) {n : ℤ} :
     meromorphicOrderAt (f ^ n) x = n * meromorphicOrderAt f x := by
   -- Trivial case: n = 0
   by_cases hn : n = 0
@@ -526,12 +529,12 @@ lemma meromorphicOrderAt_finprod_ne_top {x : 𝕜} {ι : Type*} {F : ι → 𝕜
   · simp_all [zpow_eq_zero_iff hn]
   · filter_upwards [h₃g]
     intro y hy
-    rw [Pi.pow_apply, hy, smul_eq_mul, mul_zpow]
+    rw [Pi.pow_apply, hy, Algebra.smul_def, Algebra.smul_def, mul_zpow, ← map_zpow₀]
     congr 1
     rw [mul_comm, zpow_mul]
 
 /-- The order of the inverse is the negative of the order. -/
-@[to_fun] theorem meromorphicOrderAt_inv {f : 𝕜 → 𝕜} :
+@[to_fun] theorem meromorphicOrderAt_inv {f : 𝕜 → 𝕜'} :
     meromorphicOrderAt (f⁻¹) x = -meromorphicOrderAt f x := by
   by_cases hf : MeromorphicAt f x; swap
   · have : ¬ MeromorphicAt (f⁻¹) x := by
@@ -550,13 +553,12 @@ lemma meromorphicOrderAt_finprod_ne_top {x : 𝕜} {ι : Type*} {F : ι → 𝕜
   rw [eventually_nhdsWithin_iff] at *
   filter_upwards [h₃g]
   intro _ h₁a h₂a
-  simp only [Pi.inv_apply, h₁a h₂a, smul_eq_mul, mul_inv_rev, zpow_neg]
-  ring
+  simp [h₁a h₂a, Algebra.smul_def, mul_comm]
 
 /--
 The order of a quotient is the difference of the orders.
 -/
-@[to_fun] theorem meromorphicOrderAt_div {f g : 𝕜 → 𝕜} (hf : MeromorphicAt f x)
+@[to_fun] theorem meromorphicOrderAt_div {f g : 𝕜 → 𝕜'} (hf : MeromorphicAt f x)
     (hg : MeromorphicAt g x) :
     meromorphicOrderAt (f / g) x = meromorphicOrderAt f x - meromorphicOrderAt g x := by
   rw [div_eq_mul_inv, meromorphicOrderAt_mul hf hg.inv, meromorphicOrderAt_inv, sub_eq_add_neg]
