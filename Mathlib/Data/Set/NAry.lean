@@ -65,7 +65,7 @@ theorem image2_subset_iff_left : image2 f s t ⊆ u ↔ ∀ a ∈ s, (fun b => f
   simp_rw [image2_subset_iff, image_subset_iff, subset_def, mem_preimage]
 
 theorem image2_subset_iff_right : image2 f s t ⊆ u ↔ ∀ b ∈ t, (fun a => f a b) '' s ⊆ u := by
-  simp_rw [image2_subset_iff, image_subset_iff, subset_def, mem_preimage, @forall₂_swap α]
+  simp_rw [image2_subset_iff, image_subset_iff, subset_def, mem_preimage, @forall₂_comm α]
 
 variable (f)
 
@@ -139,15 +139,19 @@ theorem image2_inter_subset_left : image2 f (s ∩ s') t ⊆ image2 f s t ∩ im
 theorem image2_inter_subset_right : image2 f s (t ∩ t') ⊆ image2 f s t ∩ image2 f s t' :=
   Monotone.map_inf_le (fun _ _ ↦ image2_subset_left) t t'
 
-theorem subset_image2_diff_left :
+theorem subset_image2_sdiff_left :
     image2 f s t \ image2 f s' t ⊆ image2 f (s \ s') t := by
   rintro - ⟨⟨a, ha, b, hb, rfl⟩, h⟩
   exact ⟨_, ⟨ha, fun ha' ↦ h ⟨_, ha', _, hb, rfl⟩⟩, _, hb, rfl⟩
 
-theorem subset_image2_diff_right :
+@[deprecated (since := "2026-06-03")] alias subset_image2_diff_left := subset_image2_sdiff_left
+
+theorem subset_image2_sdiff_right :
     image2 f s t \ image2 f s t' ⊆ image2 f s (t \ t') := by
   rintro - ⟨⟨a, ha, b, hb, rfl⟩, h⟩
   exact ⟨_, ha, _, ⟨hb, fun hb' ↦ h ⟨_, ha, _, hb', rfl⟩⟩, rfl⟩
+
+@[deprecated (since := "2026-06-03")] alias subset_image2_diff_right := subset_image2_sdiff_right
 
 @[simp]
 theorem image2_singleton_left : image2 f {a} t = f a '' t :=

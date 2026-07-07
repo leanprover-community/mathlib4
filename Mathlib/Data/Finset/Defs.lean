@@ -30,7 +30,7 @@ Finsets give a basic foundation for defining finite sums and products over types
   2. `∏ i ∈ (s : Finset α), f i`.
 
 Lean refers to these operations as big operators.
-More information can be found in `Mathlib/Algebra/BigOperators/Group/Finset/Basic.lean`.
+More information can be found in `Mathlib/Algebra/BigOperators/Group/Finset/Defs.lean`.
 
 Finsets are directly used to define fintypes in Lean.
 A `Fintype α` instance for a type `α` consists of a universal `Finset α` containing every term of
@@ -49,9 +49,7 @@ Most constructions involving `Finset`s have been split off to their own files.
 * `Finset`: Defines a type for the finite subsets of `α`.
   Constructing a `Finset` requires two pieces of data: `val`, a `Multiset α` of elements,
   and `nodup`, a proof that `val` has no duplicates.
-* `Finset.instMembershipFinset`: Defines membership `a ∈ (s : Finset α)`.
-* `Finset.instSetLike`: Provides a coercion `s : Finset α` to `s : Set α`.
-* `Finset.instCoeSortFinsetType`: Coerce `s : Finset α` to the type of all `x ∈ s`.
+* `a ∈ (s : Finset α)` is defined through coercion to `Set α`.
 
 ## Tags
 
@@ -73,6 +71,7 @@ variable {α : Type*} {β : Type*} {γ : Type*}
 
 /-- `Finset α` is the type of finite sets of elements of `α`. It is implemented
   as a multiset (a list up to permutation) which has no duplicate elements. -/
+@[use_set_notation_for_order, to_dual_dont_translate]
 structure Finset (α : Type*) where
   /-- The underlying multiset -/
   val : Multiset α
@@ -96,11 +95,12 @@ theorem val_inj {s t : Finset α} : s.1 = t.1 ↔ s = t :=
 instance decidableEq [DecidableEq α] : DecidableEq (Finset α)
   | _, _ => decidable_of_iff _ val_inj
 
-/-! ### membership -/
+/-! ### set coercion -/
 
-
-instance : Membership α (Finset α) :=
-  ⟨fun s a => a ∈ s.1⟩
+/-- Convert a finset to a set in the natural way. -/
+instance : SetLike (Finset α) α where
+  coe s := {a | a ∈ s.1}
+  coe_injective s₁ s₂ h := (val_inj.symm.trans <| s₁.nodup.ext s₂.nodup).2 <| Set.ext_iff.mp h
 
 theorem mem_def {a : α} {s : Finset α} : a ∈ s ↔ a ∈ s.1 :=
   Iff.rfl
@@ -120,18 +120,7 @@ instance decidableMem [_h : DecidableEq α] (a : α) (s : Finset α) : Decidable
 @[simp] lemma forall_mem_not_eq {s : Finset α} {a : α} : (∀ b ∈ s, ¬ a = b) ↔ a ∉ s := by grind
 @[simp] lemma forall_mem_not_eq' {s : Finset α} {a : α} : (∀ b ∈ s, ¬ b = a) ↔ a ∉ s := by grind
 
-/-! ### set coercion -/
-
-/-- Convert a finset to a set in the natural way. -/
-instance : SetLike (Finset α) α where
-  coe s := {a | a ∈ s}
-  coe_injective' s₁ s₂ h := (val_inj.symm.trans <| s₁.nodup.ext s₂.nodup).2 <| Set.ext_iff.mp h
-
 instance : PartialOrder (Finset α) := .ofSetLike (Finset α) α
-
-/-- Convert a finset to a set in the natural way. -/
-@[deprecated SetLike.coe (since := "2025-10-22")]
-abbrev toSet (s : Finset α) : Set α := s
 
 @[norm_cast, grind =]
 theorem mem_coe {a : α} {s : Finset α} : a ∈ (s : Set α) ↔ a ∈ (s : Finset α) :=
@@ -196,36 +185,8 @@ section Subset
 
 variable {s t : Finset α}
 
-instance : HasSubset (Finset α) :=
-  ⟨fun s t => ∀ ⦃a⦄, a ∈ s → a ∈ t⟩
-
-instance : HasSSubset (Finset α) :=
-  ⟨fun s t => s ⊆ t ∧ ¬t ⊆ s⟩
-
-instance partialOrder : PartialOrder (Finset α) := inferInstance
-
+@[deprecated "This is now a syntactic identity" (since := "2026-05-24")]
 theorem subset_of_le : s ≤ t → s ⊆ t := id
-
-instance : @Std.Refl (Finset α) (· ⊆ ·) :=
-  inferInstanceAs <| Std.Refl (· ≤ ·)
-
-instance : IsTrans (Finset α) (· ⊆ ·) :=
-  inferInstanceAs <| IsTrans (Finset α) (· ≤ ·)
-
-instance : @Std.Antisymm (Finset α) (· ⊆ ·) :=
-  inferInstanceAs <| Std.Antisymm (· ≤ ·)
-
-instance : @Std.Irrefl (Finset α) (· ⊂ ·) :=
-  inferInstanceAs <| Std.Irrefl (· < ·)
-
-instance : IsTrans (Finset α) (· ⊂ ·) :=
-  inferInstanceAs <| IsTrans (Finset α) (· < ·)
-
-instance : Std.Asymm (α := Finset α) (· ⊂ ·) :=
-  inferInstanceAs <| Std.Asymm (· < ·)
-
-instance : IsNonstrictStrictOrder (Finset α) (· ⊆ ·) (· ⊂ ·) :=
-  ⟨fun _ _ => Iff.rfl⟩
 
 theorem subset_def : s ⊆ t ↔ s.1 ⊆ t.1 :=
   Iff.rfl
@@ -248,7 +209,6 @@ theorem Subset.trans {s₁ s₂ s₃ : Finset α} : s₁ ⊆ s₂ → s₂ ⊆ s
 theorem Superset.trans {s₁ s₂ s₃ : Finset α} : s₁ ⊇ s₂ → s₂ ⊇ s₃ → s₁ ⊇ s₃ := fun h' h =>
   Subset.trans h h'
 
-@[gcongr]
 theorem mem_of_subset {s₁ s₂ : Finset α} {a : α} : s₁ ⊆ s₂ → a ∈ s₁ → a ∈ s₂ :=
   Multiset.mem_of_subset
 
@@ -264,6 +224,9 @@ theorem Subset.antisymm {s₁ s₂ : Finset α} (H₁ : s₁ ⊆ s₂) (H₂ : s
 theorem subset_iff {s₁ s₂ : Finset α} : s₁ ⊆ s₂ ↔ ∀ ⦃x⦄, x ∈ s₁ → x ∈ s₂ :=
   Iff.rfl
 
+theorem subset_iff_notMem : s ⊆ t ↔ ∀ ⦃a⦄, a ∉ t → a ∉ s := by
+  simp only [subset_iff, not_imp_not]
+
 @[norm_cast, gcongr]
 theorem coe_subset {s₁ s₂ : Finset α} : (s₁ : Set α) ⊆ s₂ ↔ s₁ ⊆ s₂ :=
   Iff.rfl
@@ -277,17 +240,19 @@ theorem Subset.antisymm_iff {s₁ s₂ : Finset α} : s₁ = s₂ ↔ s₁ ⊆ s
 
 theorem not_subset : ¬s ⊆ t ↔ ∃ x ∈ s, x ∉ t := by simp only [← coe_subset, Set.not_subset, mem_coe]
 
-@[simp]
+@[deprecated "This is now a syntactic equality" (since := "2026-05-24"), nolint synTaut]
 theorem le_eq_subset : ((· ≤ ·) : Finset α → Finset α → Prop) = (· ⊆ ·) :=
   rfl
 
-@[simp]
+@[deprecated "This is now a syntactic equality" (since := "2026-05-24"), nolint synTaut]
 theorem lt_eq_subset : ((· < ·) : Finset α → Finset α → Prop) = (· ⊂ ·) :=
   rfl
 
+@[deprecated "This is now a syntactic equality" (since := "2026-05-24"), nolint synTaut]
 theorem le_iff_subset {s₁ s₂ : Finset α} : s₁ ≤ s₂ ↔ s₁ ⊆ s₂ :=
   Iff.rfl
 
+@[deprecated "This is now a syntactic equality" (since := "2026-05-24"), nolint synTaut]
 theorem lt_iff_ssubset {s₁ s₂ : Finset α} : s₁ < s₂ ↔ s₁ ⊂ s₂ :=
   Iff.rfl
 

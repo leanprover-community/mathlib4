@@ -59,8 +59,7 @@ theorem natDegree_comp_le : natDegree (p.comp q) ≤ natDegree p * natDegree q :
                 simp
               _ ≤ (natDegree p * natDegree q : ℕ) :=
                 WithBot.coe_le_coe.2 <|
-                  mul_le_mul_of_nonneg_right (le_natDegree_of_ne_zero (mem_support_iff.1 hn))
-                    (Nat.zero_le _)
+                  by gcongr; exact le_natDegree_of_ne_zero (mem_support_iff.1 hn)
 
 theorem natDegree_comp_eq_of_mul_ne_zero (h : p.leadingCoeff * q.leadingCoeff ^ p.natDegree ≠ 0) :
     natDegree (p.comp q) = natDegree p * natDegree q := by
@@ -83,7 +82,7 @@ theorem natDegree_add_le_iff_left {n : ℕ} (p q : R[X]) (qn : q.natDegree ≤ n
     (p + q).natDegree ≤ n ↔ p.natDegree ≤ n := by
   refine ⟨fun h => ?_, fun h => natDegree_add_le_of_degree_le h qn⟩
   refine natDegree_le_iff_coeff_eq_zero.mpr fun m hm => ?_
-  convert natDegree_le_iff_coeff_eq_zero.mp h m hm using 1
+  convert! natDegree_le_iff_coeff_eq_zero.mp h m hm using 1
   rw [coeff_add, natDegree_le_iff_coeff_eq_zero.mp qn _ hm, add_zero]
 
 theorem natDegree_add_le_iff_right {n : ℕ} (p q : R[X]) (pn : p.natDegree ≤ n) :
@@ -148,9 +147,6 @@ theorem natDegree_lt_coeff_mul (h : p.natDegree + q.natDegree < m + n) :
     (p * q).coeff (m + n) = 0 :=
   coeff_eq_zero_of_natDegree_lt (natDegree_mul_le.trans_lt h)
 
-@[deprecated (since := "2025-08-14")] alias coeff_mul_of_natDegree_le :=
-  coeff_mul_add_eq_of_natDegree_le
-
 theorem coeff_pow_of_natDegree_le (pn : p.natDegree ≤ n) :
     (p ^ m).coeff (m * n) = p.coeff n ^ m := by
   induction m with
@@ -158,7 +154,7 @@ theorem coeff_pow_of_natDegree_le (pn : p.natDegree ≤ n) :
   | succ m hm =>
     rw [pow_succ, pow_succ, ← hm, Nat.succ_mul, coeff_mul_add_eq_of_natDegree_le _ pn]
     refine natDegree_pow_le.trans (le_trans ?_ (le_refl _))
-    exact mul_le_mul_of_nonneg_left pn m.zero_le
+    gcongr
 
 theorem coeff_pow_eq_ite_of_natDegree_le_of_le {o : ℕ}
     (pn : natDegree p ≤ n) (mno : m * n ≤ o) :
@@ -219,7 +215,7 @@ theorem natDegree_sum_eq_of_disjoint (f : S → R[X]) (s : Finset S)
       · rw [Finset.sup'_le_iff]
         intro b hb
         by_cases hb' : f b = 0
-        · simpa [hb'] using hs
+        · simpa [hb'] using! hs
         rw [degree_eq_natDegree hb', Nat.cast_withBot]
         exact Finset.le_sup' (fun i : S => (natDegree (f i) : WithBot ℕ)) hb
       · rw [Finset.sup'_le_iff]
@@ -228,7 +224,7 @@ theorem natDegree_sum_eq_of_disjoint (f : S → R[X]) (s : Finset S)
         by_cases hb' : f b = 0
         · refine ⟨x, hx, ?_⟩
           contrapose! hx'
-          simpa [← Nat.cast_withBot, hb', degree_eq_bot] using hx'
+          simpa [← Nat.cast_withBot, hb', degree_eq_bot] using! hx'
         exact ⟨b, hb, (degree_eq_natDegree hb').ge⟩
     · exact h.imp fun x y hxy hxy' => hxy (natDegree_eq_of_degree_eq hxy')
   · rw [Finset.sum_eq_zero H, natDegree_zero, eq_comm, show 0 = ⊥ from rfl, Finset.sup_eq_bot_iff]

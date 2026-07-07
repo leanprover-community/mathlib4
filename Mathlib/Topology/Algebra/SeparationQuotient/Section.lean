@@ -79,7 +79,7 @@ variable (K E : Type*) [DivisionRing K] [AddCommGroup E] [Module K E]
     [UniformSpace E] [IsUniformAddGroup E] [ContinuousConstSMul K E]
 
 theorem outCLM_isUniformInducing : IsUniformInducing (outCLM K E) := by
-  rw [← isUniformInducing_mk.isUniformInducing_comp_iff, mk_comp_outCLM]
+  rw [← isUniformInducing_mk.of_comp_iff, mk_comp_outCLM]
   exact .id
 
 theorem outCLM_isUniformEmbedding : IsUniformEmbedding (outCLM K E) where

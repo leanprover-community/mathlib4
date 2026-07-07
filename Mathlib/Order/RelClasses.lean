@@ -5,8 +5,9 @@ Authors: Jeremy Avigad, Mario Carneiro, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Logic.IsEmpty
+public import Mathlib.Logic.IsEmpty.Basic
 public import Mathlib.Order.OrderDual
+public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Tactic.MkIffOfInductiveProp
 
 /-!
@@ -26,41 +27,51 @@ variable {α : Type u} {β : Type v} {r : α → α → Prop} {s : β → β →
 
 open Function
 
+@[deprecated inferInstance (since := "2026-04-28")]
 theorem Std.Refl.swap (r : α → α → Prop) [Std.Refl r] : Std.Refl (swap r) :=
-  ⟨refl_of r⟩
+  inferInstance
 
 @[deprecated (since := "2026-01-09")] alias IsRefl.swap := Std.Refl.swap
 
+@[deprecated inferInstance (since := "2026-04-28")]
 theorem Std.Irrefl.swap (r : α → α → Prop) [Std.Irrefl r] : Std.Irrefl (swap r) :=
-  ⟨irrefl_of r⟩
+  inferInstance
 
+@[deprecated inferInstance (since := "2026-04-28")]
 theorem IsTrans.swap (r) [IsTrans α r] : IsTrans α (swap r) :=
-  ⟨fun _ _ _ h₁ h₂ => trans_of r h₂ h₁⟩
+  inferInstance
 
+@[deprecated inferInstance (since := "2026-04-28")]
 theorem Std.Antisymm.swap (r : α → α → Prop) [Std.Antisymm r] : Std.Antisymm (swap r) :=
-  ⟨fun _ _ h₁ h₂ => _root_.antisymm h₂ h₁⟩
+  inferInstance
 
+@[deprecated inferInstance (since := "2026-04-28")]
 theorem Std.Asymm.swap (r : α → α → Prop) [Std.Asymm r] : Std.Asymm (swap r) :=
-  ⟨fun _ _ h₁ h₂ => asymm_of r h₂ h₁⟩
+  inferInstance
 
 @[deprecated (since := "2026-01-05")] alias IsAsymm.swap := Std.Asymm.swap
 
+@[deprecated inferInstance (since := "2026-04-28")]
 theorem Std.Total.swap (r : α → α → Prop) [Std.Total r] : Std.Total (swap r) :=
-  ⟨fun a b => (total_of r a b).symm⟩
+  inferInstance
 
+@[deprecated inferInstance (since := "2026-04-28")]
 theorem Std.Trichotomous.swap (r : α → α → Prop) [Std.Trichotomous r] : Std.Trichotomous (swap r) :=
-  ⟨fun a b hab hba ↦ trichotomous a b hba hab⟩
+  inferInstance
 
 @[deprecated (since := "2026-01-24")] alias IsTrichotomous.swap := Std.Trichotomous.swap
 
+@[deprecated inferInstance (since := "2026-04-28")]
 theorem IsPreorder.swap (r) [IsPreorder α r] : IsPreorder α (swap r) :=
-  { Std.Refl.swap r, IsTrans.swap r with }
+  inferInstance
 
+@[deprecated inferInstance (since := "2026-04-28")]
 theorem IsStrictOrder.swap (r) [IsStrictOrder α r] : IsStrictOrder α (swap r) :=
-  { Std.Irrefl.swap r, IsTrans.swap r with }
+  inferInstance
 
+@[deprecated inferInstance (since := "2026-04-28")]
 theorem IsPartialOrder.swap (r) [IsPartialOrder α r] : IsPartialOrder α (swap r) :=
-  { IsPreorder.swap r, Std.Antisymm.swap r with }
+  inferInstance
 
 theorem eq_empty_relation (r : α → α → Prop) [Std.Irrefl r] [Subsingleton α] : r = emptyRelation :=
   funext₂ <| by simpa using not_rel_of_subsingleton r
@@ -103,8 +114,9 @@ abbrev linearOrderOfSTO (r) [IsStrictTotalOrder α r] [DecidableRel r] : LinearO
     toMax := maxOfLe,
     toDecidableLE := hD }
 
+@[deprecated inferInstance (since := "2026-04-28")]
 theorem IsStrictTotalOrder.swap (r) [IsStrictTotalOrder α r] : IsStrictTotalOrder α (swap r) :=
-  { Std.Trichotomous.swap r, IsStrictOrder.swap r with }
+  inferInstance
 
 /-! ### Order connection -/
 
@@ -216,6 +228,7 @@ theorem fix_eq {motive : α → Sort*} (ind : ∀ x : α, (∀ y : α, r y x →
   wf.fix_eq ind
 
 /-- Derive a `WellFoundedRelation` instance from an `isWellFounded` instance. -/
+@[instance_reducible]
 def toWellFoundedRelation : WellFoundedRelation α :=
   ⟨r, IsWellFounded.wf⟩
 
@@ -254,8 +267,16 @@ theorem wellFoundedGT_dual_iff (α : Type*) [LT α] : WellFoundedGT αᵒᵈ ↔
   ⟨fun h => ⟨h.wf⟩, fun h => ⟨h.wf⟩⟩
 
 /-- A well order is a well-founded linear order. -/
+@[wikidata Q659746]
 class IsWellOrder (α : Type u) (r : α → α → Prop) : Prop
-    extends Std.Trichotomous r, IsTrans α r, IsWellFounded α r
+    extends IsWellFounded α r, Std.Trichotomous r
+
+instance (r) [IsWellOrder α r] : IsTrans α r where
+  trans a b c hab hbc := by
+    rcases trichotomous_of r a c with (hac | rfl | hca)
+    · exact hac
+    · exact asymm_of r hab hbc |>.elim
+    · exact IsWellFounded.wf.asymmetric₃ a b c hab hbc hca |>.elim
 
 -- see Note [lower instance priority]
 instance (priority := 100) {α} (r : α → α → Prop) [IsWellOrder α r] :
@@ -291,37 +312,37 @@ theorem fix_eq {motive : α → Sort*} (ind : ∀ x : α, (∀ y : α, y < x →
   IsWellFounded.fix_eq _ ind
 
 /-- Derive a `WellFoundedRelation` instance from a `WellFoundedLT` instance. -/
-@[to_dual /-- Derive a `WellFoundedRelation` instance from a `WellFoundedGT` instance. -/]
+@[to_dual (attr := implicit_reducible)
+  /-- Derive a `WellFoundedRelation` instance from a `WellFoundedGT` instance. -/]
 def toWellFoundedRelation : WellFoundedRelation α :=
   IsWellFounded.toWellFoundedRelation (· < ·)
 
 end WellFoundedLT
 
-open Classical in
+open scoped Classical in
 /-- Construct a decidable linear order from a well-founded linear order. -/
+@[implicit_reducible]
 noncomputable def IsWellOrder.linearOrder (r : α → α → Prop) [IsWellOrder α r] : LinearOrder α :=
   linearOrderOfSTO r
 
 /-- Derive a `WellFoundedRelation` instance from an `IsWellOrder` instance. -/
+@[instance_reducible]
 def IsWellOrder.toHasWellFounded [LT α] [hwo : IsWellOrder α (· < ·)] : WellFoundedRelation α where
   rel := (· < ·)
   wf := hwo.wf
 
 -- This isn't made into an instance as it loops with `Std.Irrefl r`.
-theorem Subsingleton.isWellOrder [Subsingleton α] (r : α → α → Prop) [hr : Std.Irrefl r] :
-    IsWellOrder α r :=
-  { hr with
-    trichotomous := fun a b _ _ ↦ Subsingleton.elim a b,
-    trans := fun a b _ h => (not_rel_of_subsingleton r a b h).elim,
-    wf := ⟨fun a => ⟨_, fun y h => (not_rel_of_subsingleton r y a h).elim⟩⟩ }
+theorem Subsingleton.isWellOrder [Subsingleton α] (r : α → α → Prop) [Std.Irrefl r] :
+    IsWellOrder α r where
+  wf := .intro fun a ↦ ⟨_, fun y h ↦ not_rel_of_subsingleton r y a h |>.elim⟩
+  trichotomous a b _ _ := Subsingleton.elim a b
 
 instance [Subsingleton α] : IsWellOrder α emptyRelation :=
   Subsingleton.isWellOrder _
 
 instance (priority := 100) [IsEmpty α] (r : α → α → Prop) : IsWellOrder α r where
-  trichotomous := isEmptyElim
-  trans := isEmptyElim
   wf := wellFounded_of_isEmpty r
+  trichotomous := isEmptyElim
 
 instance Prod.Lex.instIsWellFounded [IsWellFounded α r] [IsWellFounded β s] :
     IsWellFounded (α × β) (Prod.Lex r s) :=
@@ -334,10 +355,6 @@ instance [IsWellOrder α r] [IsWellOrder β s] : IsWellOrder (α × β) (Prod.Le
     obtain rfl := Std.Trichotomous.trichotomous a₂ b₂
       (mt (Prod.Lex.right a₁) hab) (mt (Prod.Lex.right a₁) hba)
     rfl
-  trans a b c h₁ h₂ := by
-    rcases h₁ with ⟨a₂, b₂, ab⟩ | ⟨a₁, ab⟩ <;> rcases h₂ with ⟨c₁, c₂, bc⟩ | ⟨c₂, bc⟩
-    exacts [.left _ _ (_root_.trans ab bc), .left _ _ ab, .left _ _ bc,
-      .right _ (_root_.trans ab bc)]
 
 instance (r : α → α → Prop) [IsWellFounded α r] (f : β → α) : IsWellFounded _ (InvImage r f) :=
   ⟨InvImage.wf f IsWellFounded.wf⟩
@@ -451,183 +468,96 @@ instance {s : α → α → Prop} [IsNonstrictStrictOrder α r s] : Std.Irrefl s
 /-! #### `⊆` and `⊂` -/
 
 section Subset
-variable [HasSubset α] {a b c : α}
 
-lemma subset_of_eq_of_subset (hab : a = b) (hbc : b ⊆ c) : a ⊆ c := by rwa [hab]
+attribute [to_set_notation]
+  le_of_eq_of_le le_of_le_of_eq le_refl le_rfl le_of_eq ge_of_eq ne_of_not_le ne_of_not_ge
+  le_trans le_antisymm ge_antisymm Eq.trans_le Eq.le Eq.ge le_antisymm_iff ge_antisymm_iff
 
-lemma subset_of_subset_of_eq (hab : a ⊆ b) (hbc : b = c) : a ⊆ c := by rwa [← hbc]
+@[deprecated (since := "2026-05-24")] alias HasSubset.subset.trans_eq := LE.le.trans_eq
 
-@[refl, simp]
-lemma subset_refl [@Std.Refl α (· ⊆ ·)] (a : α) : a ⊆ a := refl _
+@[deprecated (since := "2026-01-24")] alias Eq.subset' := Eq.subset
 
-lemma subset_rfl [@Std.Refl α (· ⊆ ·)] : a ⊆ a := refl _
-
-lemma subset_of_eq [@Std.Refl α (· ⊆ ·)] : a = b → a ⊆ b := fun h => h ▸ subset_rfl
-
-lemma superset_of_eq [@Std.Refl α (· ⊆ ·)] : a = b → b ⊆ a := fun h => h ▸ subset_rfl
-
-lemma ne_of_not_subset [@Std.Refl α (· ⊆ ·)] : ¬a ⊆ b → a ≠ b := mt subset_of_eq
-
-lemma ne_of_not_superset [@Std.Refl α (· ⊆ ·)] : ¬a ⊆ b → b ≠ a := mt superset_of_eq
-
-@[trans]
-lemma subset_trans [IsTrans α (· ⊆ ·)] {a b c : α} : a ⊆ b → b ⊆ c → a ⊆ c := _root_.trans
-
-lemma subset_antisymm [@Std.Antisymm α (· ⊆ ·)] : a ⊆ b → b ⊆ a → a = b := antisymm
-
-lemma superset_antisymm [@Std.Antisymm α (· ⊆ ·)] : a ⊆ b → b ⊆ a → b = a := antisymm'
-
-alias Eq.trans_subset := subset_of_eq_of_subset
-
-alias HasSubset.subset.trans_eq := subset_of_subset_of_eq
-
-alias Eq.subset' := subset_of_eq --TODO: Fix it and kill `Eq.subset`
-
-alias Eq.superset := superset_of_eq
-
+@[deprecated LE.le.trans (since := "2026-05-24")]
 alias HasSubset.Subset.trans := subset_trans
 
+@[deprecated LE.le.antisymm (since := "2026-05-24")]
 alias HasSubset.Subset.antisymm := subset_antisymm
 
+@[deprecated LE.le.antisymm' (since := "2026-05-24")]
 alias HasSubset.Subset.antisymm' := superset_antisymm
-
-theorem subset_antisymm_iff [@Std.Refl α (· ⊆ ·)] [@Std.Antisymm α (· ⊆ ·)] :
-    a = b ↔ a ⊆ b ∧ b ⊆ a :=
-  ⟨fun h => ⟨h.subset', h.superset⟩, fun h => h.1.antisymm h.2⟩
-
-theorem superset_antisymm_iff [@Std.Refl α (· ⊆ ·)] [@Std.Antisymm α (· ⊆ ·)] :
-    a = b ↔ b ⊆ a ∧ a ⊆ b :=
-  ⟨fun h => ⟨h.superset, h.subset'⟩, fun h => h.1.antisymm' h.2⟩
 
 end Subset
 
-section Ssubset
-variable [HasSSubset α] {a b c : α}
+section SSubset
 
-lemma ssubset_of_eq_of_ssubset (hab : a = b) (hbc : b ⊂ c) : a ⊂ c := by rwa [hab]
+attribute [to_set_notation]
+  lt_of_eq_of_lt lt_of_lt_of_eq lt_irrefl ne_of_lt ne_of_gt lt_trans lt_asymm Eq.trans_lt
 
-lemma ssubset_of_ssubset_of_eq (hab : a ⊂ b) (hbc : b = c) : a ⊂ c := by rwa [← hbc]
+@[deprecated (since := "2026-06-11")] alias ssubset_irrfl := ssubset_irrefl
 
-lemma ssubset_irrefl [@Std.Irrefl α (· ⊂ ·)] (a : α) : ¬a ⊂ a := irrefl _
+@[deprecated (since := "2026-05-24")] alias HasSSubset.SSubset.trans_eq := LT.lt.trans_eq
 
-lemma ssubset_irrfl [@Std.Irrefl α (· ⊂ ·)] {a : α} : ¬a ⊂ a := irrefl _
+@[deprecated (since := "2026-05-24")] alias HasSSubset.SSubset.false := LT.lt.false
 
-lemma ne_of_ssubset [@Std.Irrefl α (· ⊂ ·)] {a b : α} : a ⊂ b → a ≠ b := ne_of_irrefl
+@[deprecated (since := "2026-05-24")] alias HasSSubset.SSubset.ne := LT.lt.ne
 
-lemma ne_of_ssuperset [@Std.Irrefl α (· ⊂ ·)] {a b : α} : a ⊂ b → b ≠ a := ne_of_irrefl'
+@[deprecated (since := "2026-05-24")] alias HasSSubset.SSubset.ne' := LT.lt.ne'
 
-@[trans]
-lemma ssubset_trans [IsTrans α (· ⊂ ·)] {a b c : α} : a ⊂ b → b ⊂ c → a ⊂ c := _root_.trans
+@[deprecated (since := "2026-05-24")] alias HasSSubset.SSubset.trans := LT.lt.trans
 
-lemma ssubset_asymm [Std.Asymm (α := α) (· ⊂ ·)] {a b : α} : a ⊂ b → ¬b ⊂ a := asymm
+@[deprecated (since := "2026-05-24")] alias HasSSubset.SSubset.asymm := LT.lt.asymm
 
-alias Eq.trans_ssubset := ssubset_of_eq_of_ssubset
+end SSubset
 
-alias HasSSubset.SSubset.trans_eq := ssubset_of_ssubset_of_eq
+section SubsetSSubset
 
-alias HasSSubset.SSubset.false := ssubset_irrfl
+attribute [to_set_notation] lt_iff_le_not_ge le_of_lt
+  not_le_of_gt not_lt_of_ge lt_of_le_not_ge
+  LT.lt.le LT.lt.not_ge LE.le.not_gt LE.le.lt_of_not_ge
+  lt_of_le_of_lt lt_of_lt_of_le lt_of_le_of_ne lt_of_ne_of_le eq_or_lt_of_le lt_or_eq_of_le
+  eq_of_le_of_not_lt eq_of_le_of_not_lt'
+  LE.le.trans_lt LT.lt.trans_le LE.le.lt_of_ne Ne.lt_of_le
+  LE.le.eq_or_lt LE.le.lt_or_eq
+  LE.le.eq_of_not_lt LE.le.eq_of_not_lt'
+  lt_iff_le_and_ne le_iff_lt_or_eq
 
-alias HasSSubset.SSubset.ne := ne_of_ssubset
+-- TODO: deprecate these aliases
+alias ssubset_iff_subset_not_subset := ssubset_iff_subset_not_superset
+alias not_subset_of_ssubset := not_subset_of_ssuperset
+alias not_ssubset_of_subset := not_ssubset_of_superset
+alias ssubset_of_subset_not_subset := ssubset_of_subset_not_superset
+alias LT.lt.not_subset := LT.lt.not_superset
+alias LE.le.not_ssubset := LE.le.not_ssuperset
+alias LE.le.ssubset_of_not_subset := LE.le.ssubset_of_not_superset
 
-alias HasSSubset.SSubset.ne' := ne_of_ssuperset
+@[deprecated (since := "2026-05-24")] alias HasSSubset.SSubset.subset := LT.lt.subset
+@[deprecated (since := "2026-05-24")] alias HasSSubset.SSubset.not_subset := LT.lt.not_superset
+@[deprecated (since := "2026-05-24")] alias HasSubset.Subset.not_ssubset := LE.le.not_ssuperset
+@[deprecated (since := "2026-05-24")]
+alias HasSubset.Subset.ssubset_of_not_subset := LE.le.ssubset_of_not_superset
 
-alias HasSSubset.SSubset.trans := ssubset_trans
+alias eq_of_superset_of_not_ssuperset := eq_of_subset_of_not_ssubset'
+alias LE.le.eq_of_not_ssuperset := LE.le.eq_of_not_ssubset'
 
-alias HasSSubset.SSubset.asymm := ssubset_asymm
+@[deprecated (since := "2026-05-24")]
+alias HasSubset.Subset.trans_ssubset := LE.le.trans_ssubset
+@[deprecated (since := "2026-05-24")]
+alias HasSSubset.SSubset.trans_subset := LT.lt.trans_subset
+@[deprecated (since := "2026-05-24")]
+alias HasSubset.Subset.ssubset_of_ne := LE.le.ssubset_of_ne
+@[deprecated (since := "2026-05-24")]
+alias HasSubset.Subset.eq_or_ssubset := LE.le.eq_or_ssubset
+@[deprecated (since := "2026-05-24")]
+alias HasSubset.Subset.ssubset_or_eq := LE.le.ssubset_or_eq
+@[deprecated (since := "2026-05-24")]
+alias HasSubset.Subset.eq_of_not_ssubset := LE.le.eq_of_not_ssubset
+@[deprecated (since := "2026-05-24")]
+alias HasSubset.Subset.eq_of_not_ssuperset := LE.le.eq_of_not_ssuperset
 
-end Ssubset
+-- TODO: deprecate
+alias ssubset_iff_subset_ne := ssubset_iff_subset_and_ne
 
-section SubsetSsubset
-
-variable [HasSubset α] [HasSSubset α] [IsNonstrictStrictOrder α (· ⊆ ·) (· ⊂ ·)] {a b c : α}
-
-theorem ssubset_iff_subset_not_subset : a ⊂ b ↔ a ⊆ b ∧ ¬b ⊆ a :=
-  right_iff_left_not_left
-
-theorem subset_of_ssubset (h : a ⊂ b) : a ⊆ b :=
-  (ssubset_iff_subset_not_subset.1 h).1
-
-theorem not_subset_of_ssubset (h : a ⊂ b) : ¬b ⊆ a :=
-  (ssubset_iff_subset_not_subset.1 h).2
-
-theorem not_ssubset_of_subset (h : a ⊆ b) : ¬b ⊂ a := fun h' => not_subset_of_ssubset h' h
-
-theorem ssubset_of_subset_not_subset (h₁ : a ⊆ b) (h₂ : ¬b ⊆ a) : a ⊂ b :=
-  ssubset_iff_subset_not_subset.2 ⟨h₁, h₂⟩
-
-alias HasSSubset.SSubset.subset := subset_of_ssubset
-
-alias HasSSubset.SSubset.not_subset := not_subset_of_ssubset
-
-alias HasSubset.Subset.not_ssubset := not_ssubset_of_subset
-
-alias HasSubset.Subset.ssubset_of_not_subset := ssubset_of_subset_not_subset
-
-theorem ssubset_of_subset_of_ssubset [IsTrans α (· ⊆ ·)] (h₁ : a ⊆ b) (h₂ : b ⊂ c) : a ⊂ c :=
-  (h₁.trans h₂.subset).ssubset_of_not_subset fun h => h₂.not_subset <| h.trans h₁
-
-theorem ssubset_of_ssubset_of_subset [IsTrans α (· ⊆ ·)] (h₁ : a ⊂ b) (h₂ : b ⊆ c) : a ⊂ c :=
-  (h₁.subset.trans h₂).ssubset_of_not_subset fun h => h₁.not_subset <| h₂.trans h
-
-theorem ssubset_of_subset_of_ne [@Std.Antisymm α (· ⊆ ·)] (h₁ : a ⊆ b) (h₂ : a ≠ b) : a ⊂ b :=
-  h₁.ssubset_of_not_subset <| mt h₁.antisymm h₂
-
-theorem ssubset_of_ne_of_subset [@Std.Antisymm α (· ⊆ ·)] (h₁ : a ≠ b) (h₂ : a ⊆ b) : a ⊂ b :=
-  ssubset_of_subset_of_ne h₂ h₁
-
-theorem eq_or_ssubset_of_subset [@Std.Antisymm α (· ⊆ ·)] (h : a ⊆ b) : a = b ∨ a ⊂ b :=
-  (em (b ⊆ a)).imp h.antisymm h.ssubset_of_not_subset
-
-theorem ssubset_or_eq_of_subset [@Std.Antisymm α (· ⊆ ·)] (h : a ⊆ b) : a ⊂ b ∨ a = b :=
-  (eq_or_ssubset_of_subset h).symm
-
-lemma eq_of_subset_of_not_ssubset [@Std.Antisymm α (· ⊆ ·)] (hab : a ⊆ b) (hba : ¬ a ⊂ b) : a = b :=
-  (eq_or_ssubset_of_subset hab).resolve_right hba
-
-lemma eq_of_superset_of_not_ssuperset [@Std.Antisymm α (· ⊆ ·)] (hab : a ⊆ b) (hba : ¬ a ⊂ b) :
-    b = a := ((eq_or_ssubset_of_subset hab).resolve_right hba).symm
-
-alias HasSubset.Subset.trans_ssubset := ssubset_of_subset_of_ssubset
-
-alias HasSSubset.SSubset.trans_subset := ssubset_of_ssubset_of_subset
-
-alias HasSubset.Subset.ssubset_of_ne := ssubset_of_subset_of_ne
-
-alias Ne.ssubset_of_subset := ssubset_of_ne_of_subset
-
-alias HasSubset.Subset.eq_or_ssubset := eq_or_ssubset_of_subset
-
-alias HasSubset.Subset.ssubset_or_eq := ssubset_or_eq_of_subset
-
-alias HasSubset.Subset.eq_of_not_ssubset := eq_of_subset_of_not_ssubset
-alias HasSubset.Subset.eq_of_not_ssuperset := eq_of_superset_of_not_ssuperset
-
-theorem ssubset_iff_subset_ne [@Std.Antisymm α (· ⊆ ·)] : a ⊂ b ↔ a ⊆ b ∧ a ≠ b :=
-  ⟨fun h => ⟨h.subset, h.ne⟩, fun h => h.1.ssubset_of_ne h.2⟩
-
-theorem subset_iff_ssubset_or_eq [@Std.Refl α (· ⊆ ·)] [@Std.Antisymm α (· ⊆ ·)] :
-    a ⊆ b ↔ a ⊂ b ∨ a = b :=
-  ⟨fun h => h.ssubset_or_eq, fun h => h.elim subset_of_ssubset subset_of_eq⟩
-
-namespace GCongr
-
-variable [IsTrans α (· ⊆ ·)] {a b c d : α}
-
-@[gcongr]
-theorem ssubset_imp_ssubset (h₁ : c ⊆ a) (h₂ : b ⊆ d) : a ⊂ b → c ⊂ d :=
-  fun h => (h₁.trans_ssubset h).trans_subset h₂
-
-@[gcongr]
-theorem ssuperset_imp_ssuperset (h₁ : a ⊆ c) (h₂ : d ⊆ b) : a ⊃ b → c ⊃ d :=
-  ssubset_imp_ssubset h₂ h₁
-
-/-- See if the term is `a ⊂ b` and the goal is `a ⊆ b`. -/
-@[gcongr_forward] meta def exactSubsetOfSSubset : Mathlib.Tactic.GCongr.ForwardExt where
-  eval h goal := do goal.assignIfDefEq (← Lean.Meta.mkAppM ``subset_of_ssubset #[h])
-
-end GCongr
-
-end SubsetSsubset
+end SubsetSSubset
 
 /-! ### Conversion of bundled order typeclasses to unbundled relation typeclasses -/
 
@@ -635,6 +565,14 @@ end SubsetSsubset
 @[to_dual instReflGe]
 instance instReflLe [Preorder α] : @Std.Refl α (· ≤ ·) :=
   ⟨le_refl⟩
+
+/-- A version of `Std.le_refl` that works with `Std.Refl (· ≥ ·)`.
+This is needed for `to_dual` translations because `Std.le_refl` requires `Std.Refl (· ≤ ·)`,
+but after translation `instReflLe` becomes `instReflGe : Std.Refl (· ≥ ·)`. -/
+theorem Std.ge_refl {α : Type*} [LE α] [inst : @Std.Refl α (· ≥ ·)] (a : α) : a ≤ a :=
+  @Std.Refl.refl α (· ≥ ·) inst a
+
+attribute [to_dual existing Std.ge_refl] Std.le_refl
 
 @[to_dual instIsTransGe]
 instance [Preorder α] : IsTrans α (· ≤ ·) :=
@@ -691,17 +629,27 @@ instance instTrichotomousLe [LinearOrder α] : @Std.Trichotomous α (· ≤ ·) 
 @[to_dual instIsStrictTotalOrderGt]
 instance [LinearOrder α] : IsStrictTotalOrder α (· < ·) where
 
-@[to_dual transitive_ge]
-theorem transitive_le [Preorder α] : Transitive (@LE.le α _) :=
-  transitive_of_trans _
+@[to_dual isTrans_ge]
+theorem isTrans_le [Preorder α] : IsTrans α LE.le :=
+  inferInstance
 
-@[to_dual transitive_gt]
-theorem transitive_lt [Preorder α] : Transitive (@LT.lt α _) :=
-  transitive_of_trans _
+@[deprecated (since := "2026-02-21")]
+alias transitive_ge := isTrans_ge
+@[to_dual existing transitive_ge, deprecated (since := "2026-02-21")]
+alias transitive_le := isTrans_le
+
+@[to_dual isTrans_gt]
+theorem isTrans_lt [Preorder α] : IsTrans α LT.lt :=
+  inferInstance
+
+@[deprecated (since := "2026-02-21")]
+alias transitive_gt := isTrans_gt
+@[to_dual existing transitive_gt, deprecated (since := "2026-02-21")]
+alias transitive_lt := isTrans_lt
 
 @[to_dual total_ge]
 instance OrderDual.total_le [LE α] [h : @Std.Total α (· ≤ ·)] : @Std.Total αᵒᵈ (· ≤ ·) :=
-  @Std.Total.swap α _ h
+  inferInstanceAs <| @Std.Total α <| swap (· ≤ ·)
 
 instance : WellFoundedLT ℕ :=
   ⟨Nat.lt_wfRel.wf⟩

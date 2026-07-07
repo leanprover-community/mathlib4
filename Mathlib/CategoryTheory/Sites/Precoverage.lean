@@ -81,7 +81,7 @@ instance : Bot (Precoverage C) where
 
 instance : CompleteLattice (Precoverage C) :=
   Function.Injective.completeLattice Precoverage.coverings (fun _ _ hab ↦ Precoverage.ext hab)
-    (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ ↦ rfl) rfl rfl
+    .rfl .rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ ↦ rfl) rfl rfl
 
 /-- A precoverage has isomorphisms if singleton presieves by isomorphisms are covering. -/
 class HasIsos (J : Precoverage C) : Prop where
@@ -126,6 +126,7 @@ alias mem_coverings_of_isIso := HasIsos.mem_coverings_of_isIso
 alias sup_mem_coverings := IsStableUnderSup.sup_mem_coverings
 alias hasPullbacks_of_mem := HasPullbacks.hasPullbacks_of_mem
 
+set_option warning.simp.varHead false in
 attribute [local simp] Presieve.ofArrows.obj_idx Presieve.ofArrows.hom_idx in
 lemma mem_coverings_of_isPullback {J : Precoverage C} [IsStableUnderBaseChange J]
     {ι : Type w} {S : C} {X : ι → C}
@@ -142,10 +143,11 @@ lemma mem_coverings_of_isPullback {J : Precoverage C} [IsStableUnderBaseChange J
     exact .mk' (Sum.inr ⟨⟨_, _⟩, hg⟩) (by cat_disch) (by cat_disch)
   · refine IsStableUnderBaseChange.mem_coverings_of_isPullback (fun i ↦ f (a i)) ?_ g _
       (fun i ↦ p₂ (a i)) fun i ↦ h _
-    convert hR
+    convert! hR
     refine le_antisymm (fun Z g ⟨i⟩ ↦ .mk _) fun Z g hg ↦ ?_
     exact .mk' (Sum.inl ⟨⟨_, _⟩, hg⟩) (by cat_disch) (by cat_disch)
 
+set_option warning.simp.varHead false in
 attribute [local simp] Presieve.ofArrows.obj_idx Presieve.ofArrows.hom_idx in
 lemma comp_mem_coverings {J : Precoverage C} [IsStableUnderComposition J] {ι : Type w}
     {S : C} {X : ι → C} (f : ∀ i, X i ⟶ S) (hf : Presieve.ofArrows X f ∈ J S)
@@ -170,10 +172,10 @@ lemma comp_mem_coverings {J : Precoverage C} [IsStableUnderComposition J] {ι : 
     exact .mk' ⟨Sum.inr ⟨⟨_, _⟩, hu⟩, .inl ⟨⟩⟩ hu.obj_idx.symm hu.eq_eqToHom_comp_hom_idx
   · refine IsStableUnderComposition.comp_mem_coverings (f := fun i ↦ f (incl i))
         (g := fun i j ↦ g (incl i) (fibincl i j)) ?_ fun i ↦ ?_
-    · convert hf
+    · convert! hf
       refine le_antisymm (fun T u ⟨p⟩ ↦ .mk _) fun T u hu ↦ ?_
       exact .mk' (Sum.inl ⟨⟨_, _⟩, hu⟩) (by cat_disch) (by cat_disch)
-    · convert hg (incl i)
+    · convert! hg (incl i)
       refine le_antisymm (fun T u ⟨p⟩ ↦ .mk _) fun T u hu ↦ ?_
       match i with
       | .inl i => exact .mk' ⟨⟨_, _⟩, hu⟩ (by cat_disch) (by cat_disch)
@@ -223,7 +225,7 @@ open Limits
 /-- If `J` is a precoverage on `D`, we obtain a precoverage on `C` by declaring a presieve on `D`
 to be covering if its image under `F` is. -/
 def comap (F : C ⥤ D) (J : Precoverage D) : Precoverage C where
-  coverings Y R := R.map F ∈ J (F.obj Y)
+  coverings Y := {R | R.map F ∈ J (F.obj Y)}
 
 @[simp]
 lemma mem_comap_iff {X : C} {R : Presieve X} :
@@ -231,16 +233,23 @@ lemma mem_comap_iff {X : C} {R : Presieve X} :
 
 lemma comap_inf : (J ⊓ K).comap F = J.comap F ⊓ K.comap F := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma comap_id (K : Precoverage C) : K.comap (𝟭 C) = K := by
   ext
   simp
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 lemma comap_comp {E : Type*} [Category* E] (F : C ⥤ D) (G : D ⥤ E) (J : Precoverage E) :
     J.comap (F ⋙ G) = (J.comap G).comap F := by
   ext X R
   obtain ⟨ι, Y, f, rfl⟩ := R.exists_eq_ofArrows
   simp
+
+@[mono, gcongr]
+lemma comap_monotone : Monotone (comap F) :=
+  fun _ _ hJK _ _ hR ↦ hJK _ hR
 
 instance [HasIsos J] : HasIsos (J.comap F) where
   mem_coverings_of_isIso {S T} f hf := by simpa using mem_coverings_of_isIso (F.map f)

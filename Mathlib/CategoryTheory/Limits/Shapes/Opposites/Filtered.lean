@@ -15,7 +15,7 @@ We construct filtered colimits and cofiltered limits in the opposite categories.
 
 -/
 
-@[expose] public section
+public section
 
 universe v₁ v₂ u₁ u₂
 

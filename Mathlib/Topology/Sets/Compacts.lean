@@ -44,7 +44,7 @@ namespace Compacts
 
 instance : SetLike (Compacts α) α where
   coe := Compacts.carrier
-  coe_injective' s t h := by cases s; cases t; congr
+  coe_injective s t h := by cases s; cases t; congr
 
 instance : PartialOrder (Compacts α) := .ofSetLike (Compacts α) α
 
@@ -99,16 +99,16 @@ instance : Bot (Compacts α) :=
   ⟨⟨∅, isCompact_empty⟩⟩
 
 instance : SemilatticeSup (Compacts α) :=
-  SetLike.coe_injective.semilatticeSup _ fun _ _ => rfl
+  fast_instance% SetLike.coe_injective.semilatticeSup _ .rfl .rfl fun _ _ ↦ rfl
 
 instance [T2Space α] : DistribLattice (Compacts α) :=
-  SetLike.coe_injective.distribLattice _ (fun _ _ => rfl) fun _ _ => rfl
+  fast_instance% SetLike.coe_injective.distribLattice _ .rfl .rfl (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
 instance : OrderBot (Compacts α) :=
-  OrderBot.lift ((↑) : _ → Set α) (fun _ _ => id) rfl
+  fast_instance% OrderBot.lift ((↑) : _ → Set α) (fun _ _ => id) rfl
 
 instance [CompactSpace α] : BoundedOrder (Compacts α) :=
-  BoundedOrder.lift ((↑) : _ → Set α) (fun _ _ => id) rfl rfl
+  fast_instance% BoundedOrder.lift ((↑) : _ → Set α) (fun _ _ => id) rfl rfl
 
 /-- The type of compact sets is inhabited, with default element the empty set. -/
 instance : Inhabited (Compacts α) := ⟨⊥⟩
@@ -256,15 +256,14 @@ space. -/
 instance : SProd (Compacts α) (Compacts β) (Compacts (α × β)) where
   sprod K L := { carrier := K ×ˢ L, isCompact' := IsCompact.prod K.2 L.2 }
 
-/-- The product of two `TopologicalSpace.Compacts`, as a `TopologicalSpace.Compacts` in the product
-space. -/
-@[deprecated "Use `K ×ˢ L` instead" (since := "2025-11-15")]
-protected abbrev prod (K : Compacts α) (L : Compacts β) : Compacts (α × β) :=
-  K ×ˢ L
-
 @[simp]
 theorem coe_prod (K : Compacts α) (L : Compacts β) :
     (K ×ˢ L : Compacts (α × β)) = (K : Set α) ×ˢ (L : Set β) :=
+  rfl
+
+@[simp]
+theorem toCloseds_prod [T2Space α] [T2Space β] (K : Compacts α) (L : Compacts β) :
+    (K ×ˢ L).toCloseds = K.toCloseds ×ˢ L.toCloseds := by
   rfl
 
 @[simp]
@@ -274,7 +273,112 @@ theorem singleton_prod_singleton (x : α) (y : β) :
 
 -- todo: add `pi`
 
+open Topology
+
+/-- The compacts neigbourhoods of a compact -/
+def compactNhds (K : Compacts α) : Set (Compacts α) :=
+  {K' | ∀ (x : K), (K': Set α) ∈ 𝓝 x.val}
+
+lemma subset_of_mem_compactNhds {K K' : Compacts α} (h : K' ∈ K.compactNhds) :
+    (K : Set α) ⊆ K' :=
+  fun x hx ↦ mem_of_mem_nhds (h ⟨x, hx⟩)
+
+lemma exists_open_set_nhds_of_compactsNhds {K : Compacts α} (L : K.compactNhds) :
+    ∃ U : Opens α, (K : Set α) ⊆ U ∧ (U : Set α) ⊆ L := by
+  obtain ⟨U, KsubU, openU, UsubL⟩ := exists_open_set_nhds (fun x hx ↦ L.2 ⟨x, hx⟩)
+  exact ⟨⟨U, openU⟩, KsubU, UsubL⟩
+
+lemma exists_open_set_nhds_of_mem_compactsNhds {K K' : Compacts α} (h : K' ∈ K.compactNhds) :
+    ∃ U : Opens α, (K : Set α) ⊆ U ∧ (U : Set α) ⊆ K' :=
+  exists_open_set_nhds_of_compactsNhds ⟨K', h⟩
+
+/-- The compact neigbourhood induced by the existence of an open subset between two compacts -/
+def compactNhdsMkOfOpens {K : Compacts α} (L : Compacts α) (U : Opens α)
+    (h1 : (K : Set α) ⊆ U) (h2 : (U : Set α) ⊆ L) :
+    K.compactNhds :=
+  ⟨L, fun _ ↦ Filter.mem_of_superset (IsOpen.mem_nhds U.is_open' (h1 (Subtype.coe_prop _))) h2⟩
+
+instance [T2Space α] (K : Compacts α) : SemilatticeInf (K.compactNhds) where
+  inf L M := ⟨L.1 ⊓ M.1, fun x ↦ Filter.inter_mem_iff.2 ⟨L.2 x, M.2 x⟩⟩
+  inf_le_right _ _ := Subtype.coe_le_coe.mp inf_le_right
+  inf_le_left _ _:= Subtype.coe_le_coe.mp inf_le_left
+  le_inf _ _ _ h k :=
+    Subtype.coe_le_coe.mp (le_inf (Subtype.coe_le_coe.mpr h) (Subtype.coe_le_coe.mpr k))
+
+/-- The set of opens neighbourhood of a compact subset -/
+def openNhds (K : Compacts α) : Set (Opens α) := {U | (K : Set α) ⊆ U}
+
+instance (K : Compacts α) : IsCodirectedOrder K.openNhds where
+  directed U1 U2 := ⟨⟨U1.val ⊓ U2.val, Set.subset_inter U1.property U2.property⟩,
+  ⟨Subtype.mk_le_mk.2 inf_le_left, Subtype.mk_le_mk.2 inf_le_right⟩⟩
+
+instance (K : Compacts α) : Top K.openNhds := ⟨⊤, Set.subset_univ _⟩
+-- in particular `K.openNhds` is not empty and thus the induced catgory is cofiltered
+
+instance : Bot (⊥ : Compacts α).openNhds := ⟨⊥, fun _ h ↦ h⟩
+
+/-- The opens neighbourhood of a compact subset that are relatively compact -/
+def openRcNhds (K : Compacts α) : Set (Opens α) :=
+  {U | IsCompact (closure (U : Set α )) ∧ (K : Set α) ⊆ U}
+
+lemma subset_of_mem_openRcNhds {K : Compacts α} {U : Opens α} (h : U ∈ K.openRcNhds) :
+    (K : Set α) ⊆ U :=
+  fun _ hx ↦ h.right hx
+
+lemma isCompact_closure_of_mem_openRcNhds {K : Compacts α} {U : Opens α} (h : U ∈ K.openRcNhds) :
+  IsCompact (closure (U : Set α)) := h.left
+
+lemma closure_mem_compactNhds_of_mem_openRcNhds {K : Compacts α} {U : Opens α}
+    (h : U ∈ K.openRcNhds) :
+    ⟨closure (U : Set α), isCompact_closure_of_mem_openRcNhds h⟩ ∈ K.compactNhds := by
+  intro x
+  have H : (U : Set α) ∈ 𝓝 (x : α) :=
+    U.isOpen.mem_nhds <| Compacts.subset_of_mem_openRcNhds h (by simp)
+  exact Filter.mem_of_superset H subset_closure
+
+/-- The converting map from relatively compact opens
+neighbourhood of a compact subset to its opens neighbourhoods -/
+def openRcNhdsToOpenNhds (K : Compacts α) : K.openRcNhds → K.openNhds :=
+  fun U ↦ ⟨_, U.property.2⟩
+
+lemma openRcNhdsToOpenNhds_mono (K : Compacts α) :
+    Monotone K.openRcNhdsToOpenNhds := fun _ _ h ↦ h
+
+/-- An open relatively compact neighbourhood of `K` induces a compact neighbourhood by taking
+the closure
+-/
+def openRcNhdsToCompactNhds (K : Compacts α) : K.openRcNhds → K.compactNhds :=
+  fun U ↦ ⟨_, closure_mem_compactNhds_of_mem_openRcNhds (Subtype.coe_prop U)⟩
+
+lemma openRcNhdsToCompactNhds_mono (K : Compacts α) : Monotone K.openRcNhdsToCompactNhds :=
+  fun _ _ h ↦ closure_mono h
+
+instance [T2Space α] (K : Compacts α) : IsCodirectedOrder K.openRcNhds where
+  directed U1 U2 := ⟨⟨U1 ⊓ U2, (isCompact_closure_of_mem_openRcNhds (Subtype.coe_prop U1) |>.inter
+    <| isCompact_closure_of_mem_openRcNhds U2.coe_prop).of_isClosed_subset
+      isClosed_closure <| closure_inter_subset_inter_closure ..,
+      le_inf (subset_of_mem_openRcNhds (Subtype.coe_prop U1))
+      <| subset_of_mem_openRcNhds (Subtype.coe_prop U2)⟩,
+         Subtype.coe_le_coe.mp inf_le_left,
+         Subtype.coe_le_coe.mp inf_le_right⟩
+
 end Compacts
+
+namespace Opens
+
+/-- The set of compacts inside an open subset -/
+def compactsInside (U : Opens α) : Set (Compacts α) := {K | (K : Set α) ⊆ U}
+
+/-- For `K` a compact subset insde an open subset `U`, `U` has a structure of open neighbourhood
+of `K` -/
+def openNhdsOfCompactsInside {U : Opens α} (K : U.compactsInside) : (K.val).openNhds :=
+  ⟨U, K.property⟩
+
+end Opens
+
+/-- For `U` an open neighbourhood of `K`, `K` has a structure of compact insde `U` -/
+def Compacts.compactsInsideOfOpenNhds {K : Compacts α} (U : K.openNhds) : (U.val).compactsInside :=
+  ⟨K, U.property⟩
 
 /-! ### Nonempty compact sets -/
 
@@ -286,7 +390,7 @@ namespace NonemptyCompacts
 
 instance : SetLike (NonemptyCompacts α) α where
   coe s := s.carrier
-  coe_injective' s t h := by
+  coe_injective s t h := by
     obtain ⟨⟨_, _⟩, _⟩ := s
     obtain ⟨⟨_, _⟩, _⟩ := t
     congr
@@ -359,13 +463,18 @@ instance [CompactSpace α] [Nonempty α] : Top (NonemptyCompacts α) :=
   ⟨⟨⊤, univ_nonempty⟩⟩
 
 instance : SemilatticeSup (NonemptyCompacts α) :=
-  SetLike.coe_injective.semilatticeSup _ fun _ _ => rfl
+  fast_instance% SetLike.coe_injective.semilatticeSup _ .rfl .rfl fun _ _ ↦ rfl
 
 instance [CompactSpace α] [Nonempty α] : OrderTop (NonemptyCompacts α) :=
-  OrderTop.lift ((↑) : _ → Set α) (fun _ _ => id) rfl
+  fast_instance% OrderTop.lift ((↑) : _ → Set α) (fun _ _ => id) rfl
 
 @[simp]
 theorem coe_sup (s t : NonemptyCompacts α) : (↑(s ⊔ t) : Set α) = ↑s ∪ ↑t :=
+  rfl
+
+@[simp]
+theorem toCompacts_sup (s t : NonemptyCompacts α) :
+    (s ⊔ t).toCompacts = s.toCompacts ⊔ t.toCompacts :=
   rfl
 
 @[simp]
@@ -485,16 +594,19 @@ in the product space. -/
 instance : SProd (NonemptyCompacts α) (NonemptyCompacts β) (NonemptyCompacts (α × β)) where
   sprod K L := { K.toCompacts ×ˢ L.toCompacts with nonempty' := K.nonempty.prod L.nonempty }
 
-/-- The product of two `TopologicalSpace.NonemptyCompacts`, as a `TopologicalSpace.NonemptyCompacts`
-in the product space. -/
-@[deprecated "Use `K ×ˢ L` instead" (since := "2025-11-15")]
-protected abbrev prod (K : NonemptyCompacts α) (L : NonemptyCompacts β) :
-    NonemptyCompacts (α × β) :=
-  K ×ˢ L
-
 @[simp]
 theorem coe_prod (K : NonemptyCompacts α) (L : NonemptyCompacts β) :
     (K ×ˢ L : NonemptyCompacts (α × β)) = (K : Set α) ×ˢ (L : Set β) :=
+  rfl
+
+@[simp]
+theorem toCompacts_prod (K : NonemptyCompacts α) (L : NonemptyCompacts β) :
+    (K ×ˢ L).toCompacts = K.toCompacts ×ˢ L.toCompacts :=
+  rfl
+
+@[simp]
+theorem toCloseds_prod [T2Space α] [T2Space β] (K : NonemptyCompacts α) (L : NonemptyCompacts β) :
+    (K ×ˢ L).toCloseds = K.toCloseds ×ˢ L.toCloseds := by
   rfl
 
 @[simp]
@@ -515,7 +627,7 @@ namespace PositiveCompacts
 
 instance : SetLike (PositiveCompacts α) α where
   coe s := s.carrier
-  coe_injective' s t h := by
+  coe_injective s t h := by
     obtain ⟨⟨_, _⟩, _⟩ := s
     obtain ⟨⟨_, _⟩, _⟩ := t
     congr
@@ -564,10 +676,10 @@ instance [CompactSpace α] [Nonempty α] : Top (PositiveCompacts α) :=
   ⟨⟨⊤, interior_univ.symm.subst univ_nonempty⟩⟩
 
 instance : SemilatticeSup (PositiveCompacts α) :=
-  SetLike.coe_injective.semilatticeSup _ fun _ _ => rfl
+  fast_instance% SetLike.coe_injective.semilatticeSup _ .rfl .rfl fun _ _ ↦ rfl
 
 instance [CompactSpace α] [Nonempty α] : OrderTop (PositiveCompacts α) :=
-  OrderTop.lift ((↑) : _ → Set α) (fun _ _ => id) rfl
+  fast_instance% OrderTop.lift ((↑) : _ → Set α) (fun _ _ => id) rfl
 
 @[simp]
 theorem coe_sup (s t : PositiveCompacts α) : (↑(s ⊔ t) : Set α) = ↑s ∪ ↑t :=
@@ -627,13 +739,6 @@ instance : SProd (PositiveCompacts α) (PositiveCompacts β) (PositiveCompacts (
         simp only [Compacts.carrier_eq_coe, Compacts.coe_prod, interior_prod_eq]
         exact K.interior_nonempty.prod L.interior_nonempty }
 
-/-- The product of two `TopologicalSpace.PositiveCompacts`, as a `TopologicalSpace.PositiveCompacts`
-in the product space. -/
-@[deprecated "Use `K ×ˢ L` instead" (since := "2025-11-15")]
-protected abbrev prod (K : PositiveCompacts α) (L : PositiveCompacts β) :
-    PositiveCompacts (α × β) :=
-  K ×ˢ L
-
 @[simp]
 theorem coe_prod (K : PositiveCompacts α) (L : PositiveCompacts β) :
     (K ×ˢ L : PositiveCompacts (α × β)) = (K : Set α) ×ˢ (L : Set β) :=
@@ -652,7 +757,7 @@ namespace CompactOpens
 
 instance : SetLike (CompactOpens α) α where
   coe s := s.carrier
-  coe_injective' s t h := by
+  coe_injective s t h := by
     obtain ⟨⟨_, _⟩, _⟩ := s
     obtain ⟨⟨_, _⟩, _⟩ := t
     congr
@@ -695,8 +800,11 @@ instance : Bot (CompactOpens α) where bot := ⟨⊥, isOpen_empty⟩
 @[simp, norm_cast] lemma coe_sup (s t : CompactOpens α) : ↑(s ⊔ t) = (s ∪ t : Set α) := rfl
 @[simp, norm_cast] lemma coe_bot : ↑(⊥ : CompactOpens α) = (∅ : Set α) := rfl
 
-instance : SemilatticeSup (CompactOpens α) := SetLike.coe_injective.semilatticeSup _ coe_sup
-instance : OrderBot (CompactOpens α) := OrderBot.lift ((↑) : _ → Set α) (fun _ _ => id) coe_bot
+instance : SemilatticeSup (CompactOpens α) :=
+  fast_instance% SetLike.coe_injective.semilatticeSup _ .rfl .rfl coe_sup
+
+instance : OrderBot (CompactOpens α) :=
+  fast_instance% OrderBot.lift ((↑) : _ → Set α) (fun _ _ => id) coe_bot
 
 @[simp]
 lemma coe_finsetSup {ι : Type*} {f : ι → CompactOpens α} {s : Finset ι} :
@@ -717,7 +825,7 @@ instance instInf : Min (CompactOpens α) where
 @[simp, norm_cast] lemma coe_inf (s t : CompactOpens α) : ↑(s ⊓ t) = (s ∩ t : Set α) := rfl
 
 instance instSemilatticeInf : SemilatticeInf (CompactOpens α) :=
-  SetLike.coe_injective.semilatticeInf _ coe_inf
+  fast_instance% SetLike.coe_injective.semilatticeInf _ .rfl .rfl coe_inf
 
 end Inf
 
@@ -730,7 +838,8 @@ instance instSDiff : SDiff (CompactOpens α) where
 @[simp, norm_cast] lemma coe_sdiff (s t : CompactOpens α) : ↑(s \ t) = (s \ t : Set α) := rfl
 
 instance instGeneralizedBooleanAlgebra : GeneralizedBooleanAlgebra (CompactOpens α) :=
-  SetLike.coe_injective.generalizedBooleanAlgebra _ coe_sup coe_inf coe_bot coe_sdiff
+  fast_instance% SetLike.coe_injective.generalizedBooleanAlgebra _
+    .rfl .rfl coe_sup coe_inf coe_bot coe_sdiff
 
 end SDiff
 
@@ -742,7 +851,7 @@ instance instTop : Top (CompactOpens α) where top := ⟨⊤, isOpen_univ⟩
 @[simp, norm_cast] lemma coe_top : ↑(⊤ : CompactOpens α) = (univ : Set α) := rfl
 
 instance instBoundedOrder : BoundedOrder (CompactOpens α) :=
-  BoundedOrder.lift ((↑) : _ → Set α) (fun _ _ => id) coe_top coe_bot
+  fast_instance% BoundedOrder.lift ((↑) : _ → Set α) (fun _ _ => id) coe_top coe_bot
 
 section Compl
 variable [T2Space α]
@@ -759,8 +868,8 @@ instance instHImp : HImp (CompactOpens α) where
 @[simp, norm_cast] lemma coe_himp (s t : CompactOpens α) : ↑(s ⇨ t) = (s ⇨ t : Set α) := rfl
 
 instance instBooleanAlgebra : BooleanAlgebra (CompactOpens α) :=
-  SetLike.coe_injective.booleanAlgebra _ coe_sup coe_inf coe_top coe_bot coe_compl coe_sdiff
-    coe_himp
+  fast_instance% SetLike.coe_injective.booleanAlgebra _
+    .rfl .rfl coe_sup coe_inf coe_top coe_bot coe_compl coe_sdiff coe_himp
 
 end Top.Compl
 
@@ -768,8 +877,6 @@ end Top.Compl
 @[simps toCompacts]
 def map (f : α → β) (hf : Continuous f) (hf' : IsOpenMap f) (s : CompactOpens α) : CompactOpens β :=
   ⟨s.toCompacts.map f hf, hf' _ s.isOpen⟩
-
-@[deprecated (since := "2025-11-13")] alias map_toCompacts := toCompacts_map
 
 @[simp, norm_cast]
 theorem coe_map {f : α → β} (hf : Continuous f) (hf' : IsOpenMap f) (s : CompactOpens α) :
@@ -789,13 +896,6 @@ theorem map_comp (f : β → γ) (g : α → β) (hf : Continuous f) (hg : Conti
 product space. -/
 instance : SProd (CompactOpens α) (CompactOpens β) (CompactOpens (α × β)) where
   sprod K L := { K.toCompacts ×ˢ L.toCompacts with isOpen' := K.isOpen.prod L.isOpen }
-
-/-- The product of two `TopologicalSpace.CompactOpens`, as a `TopologicalSpace.CompactOpens` in the
-product space. -/
-@[deprecated "Use `K ×ˢ L` instead" (since := "2025-11-15")]
-protected abbrev prod (K : CompactOpens α) (L : CompactOpens β) :
-    CompactOpens (α × β) :=
-  K ×ˢ L
 
 @[simp]
 theorem coe_prod (K : CompactOpens α) (L : CompactOpens β) :

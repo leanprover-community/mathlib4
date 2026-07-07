@@ -288,7 +288,7 @@ theorem uniformContinuous_uncurry_lift₂ {f : α → β → γ}
 theorem comap_mk_uniformity : (𝓤 (SeparationQuotient α)).comap (Prod.map mk mk) = 𝓤 α :=
   comap_map_mk_uniformity
 
-open Classical in
+open scoped Classical in
 /-- Factoring functions to a separated space through the separation quotient.
 
 TODO: unify with `SeparationQuotient.lift`. -/
@@ -314,6 +314,7 @@ theorem map_mk {f : α → β} (h : UniformContinuous f) (a : α) : map f (mk a)
 theorem uniformContinuous_map (f : α → β) : UniformContinuous (map f) :=
   uniformContinuous_lift' _
 
+set_option backward.isDefEq.respectTransparency false in
 theorem map_unique {f : α → β} (hf : UniformContinuous f)
     {g : SeparationQuotient α → SeparationQuotient β} (comm : mk ∘ f = g ∘ mk) : map f = g := by
   ext ⟨a⟩
@@ -329,3 +330,27 @@ theorem map_comp {f : α → β} {g : β → γ} (hf : UniformContinuous f) (hg 
   (map_unique (hg.comp hf) <| by simp only [Function.comp_def, map_mk, hf, hg]).symm
 
 end SeparationQuotient
+
+namespace IndiscreteTopology
+
+variable {α : Type*} [u : UniformSpace α]
+
+theorem of_uniformity_eq_top (h : uniformity α = ⊤) : IndiscreteTopology α :=
+  ⟨(UniformSpace.ext h.symm : ⊤ = u) ▸ rfl⟩
+
+lemma eq_top_uniformSpace [IndiscreteTopology α] : u = ⊤ := by
+  refine UniformSpace.ext ?_
+  rw [top_uniformity, ← Filter.ker_eq_univ]
+  ext x
+  rw [← inseparable_iff_ker_uniformity]
+  simp
+
+lemma eq_top_iff_indiscrete : u = ⊤ ↔ IndiscreteTopology α :=
+  ⟨fun h ↦ IndiscreteTopology.mk <| h ▸ UniformSpace.toTopologicalSpace_top (α := α),
+  fun _ ↦ eq_top_uniformSpace⟩
+
+lemma uniformContinuous [IndiscreteTopology β] {f : α → β} : UniformContinuous f := by
+  rw [UniformContinuous, eq_top_uniformSpace (α := β), top_uniformity]
+  exact Filter.tendsto_top
+
+end IndiscreteTopology

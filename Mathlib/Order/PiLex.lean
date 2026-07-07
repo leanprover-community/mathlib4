@@ -5,6 +5,7 @@ Authors: Chris Hughes
 -/
 module
 
+public import Mathlib.Order.Lex
 public import Mathlib.Order.WellFounded
 public import Mathlib.Tactic.Common
 
@@ -56,7 +57,7 @@ notation3 (prettyPrint := false) "Πₗ " (...) ", " r:(scoped p => Lex (∀ i, 
 theorem lex_lt_of_lt_of_preorder [∀ i, Preorder (β i)] {r} (hwf : WellFounded r) {x y : ∀ i, β i}
     (hlt : x < y) : ∃ i, (∀ j, r j i → x j ≤ y j ∧ y j ≤ x j) ∧ x i < y i :=
   let h' := Pi.lt_def.1 hlt
-  let ⟨i, hi, hl⟩ := hwf.has_min _ h'.2
+  let ⟨i, hi, hl⟩ := hwf.has_min {i | x i < y i} h'.2
   ⟨i, fun j hj => ⟨h'.1 j, not_not.1 fun h => hl j (lt_of_le_not_ge (h'.1 j) h) hj⟩, hi⟩
 
 theorem lex_lt_of_lt [∀ i, PartialOrder (β i)] {r} (hwf : WellFounded r) {x y : ∀ i, β i}
@@ -73,18 +74,23 @@ theorem trichotomous_lex [∀ i, Std.Trichotomous (α := β i) s] (wf : WellFoun
   { trichotomous a b hab hba := by
       by_contra! h
       rw [Function.ne_iff] at h
-      let i := wf.min _ h
-      have hri j (hr : r j i) : a j = b j := not_not.mp (wf.not_lt_min _ _ · hr)
+      let i := wf.min {i | a i ≠ b i} h
+      have hri j (hr : r j i) : a j = b j := not_not.mp (wf.not_lt_min _ · hr)
       have := Std.Trichotomous.trichotomous (a i) (b i) (hab ⟨i, hri, ·⟩)
-      exact hba ⟨i, (hri · · |>.symm), Not.imp_symm this <| wf.min_mem _ h⟩ }
+      exact hba ⟨i, (hri · · |>.symm), Not.imp_symm this <| wf.min_mem {i | a i ≠ b i} h⟩ }
 
 @[deprecated (since := "2026-01-24")] alias isTrichotomous_lex := trichotomous_lex
 
+/-
+These instances are leaky, because they define the relation on `∀ i, β i` instead of
+`Lex (∀ i, β i)`/`Colex (∀ i, β i)`. So, we would like to mark them `@[semireducible]`.
+But the linter doesn't allow this, so we wrap them in `id` instead.
+-/
 instance [LT ι] [∀ a, LT (β a)] : LT (Lex (∀ i, β i)) :=
-  ⟨Pi.Lex (· < ·) (· < ·)⟩
+  id ⟨Pi.Lex (· < ·) (· < ·)⟩
 
 instance [LT ι] [∀ a, LT (β a)] : LT (Colex (∀ i, β i)) :=
-  ⟨Pi.Lex (· > ·) (· < ·)⟩
+  id ⟨Pi.Lex (· > ·) (· < ·)⟩
 
 -- If `Lex` and `Colex` are ever made into one-field structures, we need a `CoeFun` instance.
 -- This will make `x i` syntactically equal to `ofLex x i` for `x : Πₗ i, α i`, thus making
@@ -141,11 +147,13 @@ noncomputable instance Colex.linearOrder [LinearOrder ι] [WellFoundedGT ι]
     [∀ a, LinearOrder (β a)] : LinearOrder (Colex (∀ i, β i)) :=
   Lex.linearOrder (ι := ιᵒᵈ)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem lex_le_iff_of_unique [Unique ι] [LinearOrder ι] [∀ i, PartialOrder (β i)]
     {x y : Lex (∀ i, β i)} : x ≤ y ↔ x default ≤ y default := by
   simp_rw [le_iff_lt_or_eq, Pi.Lex.lt_iff_of_unique, ← ofLex_inj, funext_iff, Unique.forall_iff,
     ofLex_apply]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem colex_le_iff_of_unique [Unique ι] [LinearOrder ι] [∀ i, PartialOrder (β i)]
     {x y : Colex (∀ i, β i)} : x ≤ y ↔ x default ≤ y default := by
   simp_rw [le_iff_lt_or_eq, Pi.Colex.lt_iff_of_unique, ← ofColex_inj, funext_iff, Unique.forall_iff,
@@ -196,10 +204,12 @@ theorem toLex_update_lt_self_iff : toLex (update x i a) < toLex x ↔ a < x i :=
     exact h.false
   rwa [update_self] at h
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem le_toLex_update_self_iff : toLex x ≤ toLex (update x i a) ↔ x i ≤ a := by
   simp_rw [le_iff_lt_or_eq, lt_toLex_update_self_iff, toLex_inj, eq_update_self_iff]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem toLex_update_le_self_iff : toLex (update x i a) ≤ toLex x ↔ a ≤ x i := by
   simp_rw [le_iff_lt_or_eq, toLex_update_lt_self_iff, toLex_inj, update_eq_self_iff]

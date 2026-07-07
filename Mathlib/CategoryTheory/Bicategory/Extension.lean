@@ -7,7 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.Bicategory.Basic
 public import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
-public import Mathlib.Tactic.CategoryTheory.CancelIso
 
 /-!
 # Extensions and lifts in bicategories
@@ -120,6 +119,7 @@ def whiskering {x : B} (h : c ⟶ x) : LeftExtension f g ⥤ LeftExtension f (g 
   map η := LeftExtension.homMk (η.right ▷ h) <| by
     simp [-LeftExtension.w, ← LeftExtension.w η]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Define a morphism between left extensions by cancelling the whiskered identities. -/
 @[simps! right]
 def whiskerIdCancel
@@ -127,6 +127,7 @@ def whiskerIdCancel
     s.ofCompId ⟶ t :=
   LeftExtension.homMk (τ.right ≫ (ρ_ _).hom)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Construct a morphism between whiskered extensions. -/
 @[simps! right]
 def whiskerHom (i : s ⟶ t) {x : B} (h : c ⟶ x) :
@@ -151,6 +152,7 @@ def whiskerIso (i : s ≅ t) {x : B} (h : c ⟶ x) :
         _ = (i.inv ≫ i.hom).right ▷ h := by simp [-Iso.inv_hom_id]
         _ = 𝟙 _ := by simp [Iso.inv_hom_id])
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The isomorphism between left extensions induced by a right unitor. -/
 @[simps! hom_right inv_right]
 def whiskerOfCompIdIsoSelf (t : LeftExtension f g) : (t.whisker (𝟙 c)).ofCompId ≅ t :=
@@ -240,6 +242,7 @@ def whiskering {x : B} (h : x ⟶ c) : LeftLift f g ⥤ LeftLift f (h ≫ g) whe
     rw [← LeftLift.w η]
     simp [-LeftLift.w]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Define a morphism between left lifts by cancelling the whiskered identities. -/
 @[simps! right]
 def whiskerIdCancel
@@ -247,6 +250,7 @@ def whiskerIdCancel
     s.ofIdComp ⟶ t :=
   LeftLift.homMk (τ.right ≫ (λ_ _).hom)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Construct a morphism between whiskered lifts. -/
 @[simps! right]
 def whiskerHom (i : s ⟶ t) {x : B} (h : x ⟶ c) :
@@ -271,6 +275,7 @@ def whiskerIso (i : s ≅ t) {x : B} (h : x ⟶ c) :
         _ = h ◁ (i.inv ≫ i.hom).right := by simp [-Iso.inv_hom_id]
         _ = 𝟙 _ := by simp [Iso.inv_hom_id])
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The isomorphism between left lifts induced by a left unitor. -/
 @[simps! hom_right inv_right]
 def whiskerOfIdCompIsoSelf (t : LeftLift f g) : (t.whisker (𝟙 c)).ofIdComp ≅ t :=
@@ -308,7 +313,7 @@ abbrev mk (h : b ⟶ c) (counit : f ≫ h ⟶ g) : RightExtension f g :=
 /-- To construct a morphism between right extensions, we need a 2-morphism between the extensions,
 and to check that it is compatible with the counits. -/
 abbrev homMk {s t : RightExtension f g} (η : s.extension ⟶ t.extension)
-    (w : f ◁ η ≫ t.counit = s.counit) : s ⟶ t :=
+    (w : f ◁ η ≫ t.counit = s.counit := by cat_disch) : s ⟶ t :=
   CostructuredArrow.homMk η w
 
 @[reassoc (attr := simp)]
@@ -350,21 +355,99 @@ abbrev counit (t : RightLift f g) : t.lift ≫ f ⟶ g := t.hom
 abbrev mk (h : c ⟶ b) (counit : h ≫ f ⟶ g) : RightLift f g :=
   CostructuredArrow.mk counit
 
+variable {s t : RightLift f g}
+
 /-- To construct a morphism between right lifts, we need a 2-morphism between the lifts,
 and to check that it is compatible with the counits. -/
-abbrev homMk {s t : RightLift f g} (η : s.lift ⟶ t.lift) (w : η ▷ f ≫ t.counit = s.counit) :
+abbrev homMk (η : s.lift ⟶ t.lift) (w : η ▷ f ≫ t.counit = s.counit := by cat_disch) :
     s ⟶ t :=
   CostructuredArrow.homMk η w
 
 @[reassoc (attr := simp)]
-theorem w {s t : RightLift f g} (h : s ⟶ t) :
-    h.left ▷ f ≫ t.counit = s.counit :=
+theorem w (h : s ⟶ t) : h.left ▷ f ≫ t.counit = s.counit :=
   CostructuredArrow.w h
 
 /-- The right lift along the identity. -/
 def alongId (g : c ⟶ a) : RightLift (𝟙 a) g := .mk _ (ρ_ g).hom
 
 instance : Inhabited (RightLift (𝟙 a) g) := ⟨alongId g⟩
+
+/-- Construct a right lift along `g : c ⟶ a` from a right lift along `𝟙 c ≫ g`. -/
+@[simps!]
+def ofIdComp (t : RightLift f (𝟙 c ≫ g)) : RightLift f g :=
+  mk (lift t) (counit t ≫ (λ_ _).hom)
+
+/-- Whisker a 1-morphism to a lift.
+```
+                    b
+                  ◹ |
+           lift /   |      | counit
+              /     | f    ▽
+            /       ▽
+x - - - ▷ c - - - ▷ a
+     h         g
+```
+-/
+def whisker (t : RightLift f g) {x : B} (h : x ⟶ c) : RightLift f (h ≫ g) :=
+  .mk _ <| (α_ _ _ _).hom ≫ h ◁ t.counit
+
+@[simp]
+theorem whisker_lift (t : RightLift f g) {x : B} (h : x ⟶ c) :
+    (t.whisker h).lift = h ≫ t.lift :=
+  rfl
+
+@[simp]
+theorem whisker_counit (t : RightLift f g) {x : B} (h : x ⟶ c) :
+    (t.whisker h).counit = (α_ h t.lift f).hom ≫ h ◁ t.counit :=
+  rfl
+
+/-- Whiskering a 1-morphism is a functor. -/
+@[simps]
+def whiskering {x : B} (h : x ⟶ c) : RightLift f g ⥤ RightLift f (h ≫ g) where
+  obj t := t.whisker h
+  map η := RightLift.homMk (h ◁ η.left) <| by
+    dsimp only [whisker_lift, whisker_counit]
+    rw [← RightLift.w η]
+    simp [-RightLift.w]
+
+set_option backward.isDefEq.respectTransparency false in
+/-- Define a morphism between right lifts by cancelling the whiskered identities. -/
+@[simps! left]
+def whiskerIdCancel
+    (t : RightLift f (𝟙 c ≫ g)) {s : RightLift f g} (τ : s.whisker (𝟙 c) ⟶ t) :
+    s ⟶ t.ofIdComp :=
+  RightLift.homMk ((λ_ _).inv ≫ τ.left)
+
+set_option backward.isDefEq.respectTransparency false in
+/-- Construct a morphism between whiskered lifts. -/
+@[simps! left]
+def whiskerHom (i : s ⟶ t) {x : B} (h : x ⟶ c) :
+    s.whisker h ⟶ t.whisker h :=
+  CostructuredArrow.homMk (h ◁ i.left) <| by
+    rw [← cancel_epi (α_ h _ _).inv]
+    calc
+      _ = h ◁ (i.left ▷ f ≫ t.counit) := by simp [-RightLift.w]
+      _ = h ◁ s.counit := congrArg (h ◁ ·) (RightLift.w i)
+      _ = _ := by simp
+
+/-- Construct an isomorphism between whiskered lifts. -/
+def whiskerIso (i : s ≅ t) {x : B} (h : x ⟶ c) :
+    s.whisker h ≅ t.whisker h :=
+  Iso.mk (whiskerHom i.hom h) (whiskerHom i.inv h)
+    (CostructuredArrow.hom_ext _ _ <|
+      calc
+        _ = h ◁ (i.hom ≫ i.inv).left := by simp [-Iso.hom_inv_id]
+        _ = 𝟙 _ := by simp [Iso.hom_inv_id])
+    (CostructuredArrow.hom_ext _ _ <|
+      calc
+        _ = h ◁ (i.inv ≫ i.hom).left := by simp [-Iso.inv_hom_id]
+        _ = 𝟙 _ := by simp [Iso.inv_hom_id])
+
+set_option backward.defeqAttrib.useBackward true in
+/-- The isomorphism between right lifts induced by a left unitor. -/
+@[simps! hom_left inv_left]
+def whiskerOfIdCompIsoSelf (t : RightLift f g) : (t.whisker (𝟙 c)).ofIdComp ≅ t :=
+  CostructuredArrow.isoMk (λ_ (lift t))
 
 end RightLift
 

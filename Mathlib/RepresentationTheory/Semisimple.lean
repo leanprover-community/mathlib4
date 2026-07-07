@@ -23,7 +23,7 @@ namespace Representation
 
 variable {k G V : Type*}
 
-@[expose] public section
+public section
 
 open scoped MonoidAlgebra
 
@@ -39,6 +39,7 @@ theorem isSemisimpleRepresentation_iff_isSemisimpleModule_asModule :
   rw [isSemisimpleModule_iff]
   exact OrderIso.complementedLattice_iff Subrepresentation.subrepresentationSubmoduleOrderIso
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isSemisimpleModule_iff_isSemisimpleRepresentation_ofModule (M : Type*) [AddCommGroup M]
     [Module k[G] M] :
     IsSemisimpleModule k[G] M ↔ IsSemisimpleRepresentation (ofModule (k := k) (G := G) M) := by

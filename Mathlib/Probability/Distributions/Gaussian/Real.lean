@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.SpecialFunctions.Gaussian.FourierTransform
 public import Mathlib.Probability.HasLaw
 public import Mathlib.Probability.Moments.MGFAnalytic
+public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Gaussian distributions over ℝ
@@ -69,14 +70,22 @@ lemma gaussianPDFReal_nonneg (μ : ℝ) (v : ℝ≥0) (x : ℝ) : 0 ≤ gaussian
 
 /-- The Gaussian pdf is measurable. -/
 @[fun_prop]
-lemma measurable_gaussianPDFReal (μ : ℝ) (v : ℝ≥0) : Measurable (gaussianPDFReal μ v) :=
-  (((measurable_id.add_const _).pow_const _).neg.div_const _).exp.const_mul _
+lemma measurable_uncurry_gaussianPDFReal : Measurable (fun (μ, v, x) ↦ gaussianPDFReal μ v x) := by
+  unfold gaussianPDFReal
+  fun_prop
+
+lemma measurable_gaussianPDFReal (μ : ℝ) (v : ℝ≥0) : Measurable (gaussianPDFReal μ v) := by
+  fun_prop
 
 /-- The Gaussian pdf is strongly measurable. -/
 @[fun_prop]
+lemma stronglyMeasurable_uncurry_gaussianPDFReal :
+    StronglyMeasurable (fun (μ, v, x) ↦ gaussianPDFReal μ v x) :=
+  measurable_uncurry_gaussianPDFReal.stronglyMeasurable
+
 lemma stronglyMeasurable_gaussianPDFReal (μ : ℝ) (v : ℝ≥0) :
-    StronglyMeasurable (gaussianPDFReal μ v) :=
-  (measurable_gaussianPDFReal μ v).stronglyMeasurable
+    StronglyMeasurable (gaussianPDFReal μ v) := by
+  fun_prop
 
 @[fun_prop]
 lemma integrable_gaussianPDFReal (μ : ℝ) (v : ℝ≥0) :
@@ -89,7 +98,7 @@ lemma integrable_gaussianPDFReal (μ : ℝ) (v : ℝ≥0) :
     suffices g = fun x ↦ (√(2 * π * v))⁻¹ * rexp (-(2 * v)⁻¹ * x ^ 2) by
       rw [this]
       refine (integrable_exp_neg_mul_sq ?_).const_mul (√(2 * π * v))⁻¹
-      simp [lt_of_le_of_ne (zero_le _) (Ne.symm hv)]
+      simpa [pos_iff_ne_zero]
     ext x
     simp only [g, NNReal.zero_le_coe, Real.sqrt_mul',
       mul_inv_rev, NNReal.coe_mul, NNReal.coe_inv, NNReal.coe_ofNat, neg_mul, mul_eq_mul_left_iff,
@@ -135,7 +144,8 @@ lemma gaussianPDFReal_add {μ : ℝ} {v : ℝ≥0} (x y : ℝ) :
   rw [sub_eq_add_neg, ← gaussianPDFReal_sub, sub_eq_add_neg, neg_neg]
 
 lemma gaussianPDFReal_inv_mul {μ : ℝ} {v : ℝ≥0} {c : ℝ} (hc : c ≠ 0) (x : ℝ) :
-    gaussianPDFReal μ v (c⁻¹ * x) = |c| * gaussianPDFReal (c * μ) (⟨c ^ 2, sq_nonneg _⟩ * v) x := by
+    gaussianPDFReal μ v (c⁻¹ * x)
+      = |c| * gaussianPDFReal (c * μ) (.mk (c ^ 2) (sq_nonneg _) * v) x := by
   simp only [gaussianPDFReal.eq_1, NNReal.zero_le_coe,
     Real.sqrt_mul', mul_inv_rev, NNReal.coe_mul, NNReal.coe_mk]
   rw [← mul_assoc]
@@ -147,7 +157,7 @@ lemma gaussianPDFReal_inv_mul {μ : ℝ} {v : ℝ≥0} {c : ℝ} (hc : c ≠ 0) 
 
 lemma gaussianPDFReal_mul {μ : ℝ} {v : ℝ≥0} {c : ℝ} (hc : c ≠ 0) (x : ℝ) :
     gaussianPDFReal μ v (c * x)
-      = |c⁻¹| * gaussianPDFReal (c⁻¹ * μ) (⟨(c ^ 2)⁻¹, inv_nonneg.mpr (sq_nonneg _)⟩ * v) x := by
+      = |c⁻¹| * gaussianPDFReal (c⁻¹ * μ) (.mk (c ^ 2)⁻¹ (inv_nonneg.mpr (sq_nonneg _)) * v) x := by
   conv_lhs => rw [← inv_inv c, gaussianPDFReal_inv_mul (inv_ne_zero hc)]
   simp
 
@@ -182,8 +192,20 @@ lemma support_gaussianPDF {μ : ℝ} {v : ℝ≥0} (hv : v ≠ 0) :
   exact (gaussianPDF_pos _ hv x).ne'
 
 @[fun_prop]
-lemma measurable_gaussianPDF (μ : ℝ) (v : ℝ≥0) : Measurable (gaussianPDF μ v) :=
-  (measurable_gaussianPDFReal _ _).ennreal_ofReal
+lemma measurable_uncurry_gaussianPDF : Measurable (fun (μ, v, x) ↦ gaussianPDF μ v x) :=
+  Measurable.ennreal_ofReal (by fun_prop)
+
+lemma measurable_gaussianPDF (μ : ℝ) (v : ℝ≥0) : Measurable (gaussianPDF μ v) := by
+  fun_prop
+
+@[fun_prop]
+lemma stronglyMeasurable_uncurry_gaussianPDF :
+    StronglyMeasurable (fun (μ, v, x) ↦ gaussianPDF μ v x) :=
+  measurable_uncurry_gaussianPDF.stronglyMeasurable
+
+lemma stronglyMeasurable_gaussianPDF (μ : ℝ) (v : ℝ≥0) :
+    StronglyMeasurable (gaussianPDF μ v) := by
+  fun_prop
 
 @[simp]
 lemma lintegral_gaussianPDF_eq_one (μ : ℝ) {v : ℝ≥0} (h : v ≠ 0) :
@@ -195,6 +217,7 @@ end GaussianPDF
 section GaussianReal
 
 /-- A Gaussian distribution on `ℝ` with mean `μ` and variance `v`. -/
+@[wikidata Q133871]
 noncomputable
 def gaussianReal (μ : ℝ) (v : ℝ≥0) : Measure ℝ :=
   if v = 0 then Measure.dirac μ else volume.withDensity (gaussianPDF μ v)
@@ -209,9 +232,13 @@ instance instIsProbabilityMeasureGaussianReal (μ : ℝ) (v : ℝ≥0) :
     IsProbabilityMeasure (gaussianReal μ v) where
   measure_univ := by by_cases h : v = 0 <;> simp [gaussianReal_of_var_ne_zero, h]
 
-lemma noAtoms_gaussianReal {μ : ℝ} {v : ℝ≥0} (h : v ≠ 0) : NoAtoms (gaussianReal μ v) := by
+lemma nullSingletonClass_gaussianReal {μ : ℝ} {v : ℝ≥0} (h : v ≠ 0) :
+    NullSingletonClass (gaussianReal μ v) := by
   rw [gaussianReal_of_var_ne_zero _ h]
   infer_instance
+
+@[deprecated (since := "2026-06-09")]
+alias noAtoms_gaussianReal := nullSingletonClass_gaussianReal
 
 lemma gaussianReal_apply (μ : ℝ) {v : ℝ≥0} (hv : v ≠ 0) (s : Set ℝ) :
     gaussianReal μ v s = ∫⁻ x in s, gaussianPDF μ v x := by
@@ -252,6 +279,11 @@ lemma integral_gaussianReal_eq_integral_smul {E : Type*} [NormedAddCommGroup E] 
     integral_withDensity_eq_integral_toReal_smul (measurable_gaussianPDF _ _)
       (ae_of_all _ fun _ ↦ gaussianPDF_lt_top)]
 
+@[fun_prop]
+lemma measurable_gaussianReal :
+    Measurable gaussianReal.uncurry :=
+  Measurable.ite (by measurability) (by fun_prop) (by fun_prop)
+
 section Transformations
 
 variable {μ : ℝ} {v : ℝ≥0}
@@ -277,8 +309,7 @@ lemma _root_.MeasurableEquiv.gaussianReal_map_symm_apply (hv : v ≠ 0) (f : ℝ
 lemma gaussianReal_map_add_const (y : ℝ) :
     (gaussianReal μ v).map (· + y) = gaussianReal (μ + y) v := by
   by_cases hv : v = 0
-  · simp only [hv, gaussianReal_zero_var]
-    exact Measure.map_dirac (measurable_id'.add_const _) _
+  · simp [hv, gaussianReal_zero_var]
   let e : ℝ ≃ᵐ ℝ := (Homeomorph.addRight y).symm.toMeasurableEquiv
   have he' : ∀ x, HasDerivAt e ((fun _ ↦ 1) x) x := fun _ ↦ (hasDerivAt_id _).sub_const y
   change (gaussianReal μ v).map e.symm = gaussianReal (μ + y) v
@@ -296,22 +327,16 @@ lemma gaussianReal_map_const_add (y : ℝ) :
 
 /-- The map of a Gaussian distribution by multiplication by a constant is a Gaussian. -/
 lemma gaussianReal_map_const_mul (c : ℝ) :
-    (gaussianReal μ v).map (c * ·) = gaussianReal (c * μ) (⟨c ^ 2, sq_nonneg _⟩ * v) := by
+    (gaussianReal μ v).map (c * ·) = gaussianReal (c * μ) (.mk (c ^ 2) (sq_nonneg _) * v) := by
   by_cases hv : v = 0
-  · simp only [hv, mul_zero, gaussianReal_zero_var]
-    exact Measure.map_dirac (measurable_id'.const_mul c) μ
+  · simp [hv, mul_zero, gaussianReal_zero_var]
   by_cases hc : c = 0
-  · simp only [hc, zero_mul]
-    rw [Measure.map_const]
-    simp only [measure_univ, one_smul]
-    convert (gaussianReal_zero_var 0).symm
-    simp only [ne_eq, zero_pow, mul_eq_zero, hv, or_false, not_false_eq_true, reduceCtorEq,
-      NNReal.mk_zero]
+  · simp [hc, zero_mul]
   let e : ℝ ≃ᵐ ℝ := (Homeomorph.mulLeft₀ c hc).symm.toMeasurableEquiv
   have he' : ∀ x, HasDerivAt e ((fun _ ↦ c⁻¹) x) x := by
     suffices ∀ x, HasDerivAt (fun x => c⁻¹ * x) (c⁻¹ * 1) x by rwa [mul_one] at this
     exact fun _ ↦ HasDerivAt.const_mul _ (hasDerivAt_id _)
-  change (gaussianReal μ v).map e.symm = gaussianReal (c * μ) (⟨c ^ 2, sq_nonneg _⟩ * v)
+  change (gaussianReal μ v).map e.symm = gaussianReal (c * μ) (.mk (c ^ 2) (sq_nonneg _) * v)
   ext s' hs'
   rw [MeasurableEquiv.gaussianReal_map_symm_apply hv e he' hs',
     gaussianReal_apply_eq_integral _ _ s']
@@ -329,12 +354,19 @@ lemma gaussianReal_map_const_mul (c : ℝ) :
 
 /-- The map of a Gaussian distribution by multiplication by a constant is a Gaussian. -/
 lemma gaussianReal_map_mul_const (c : ℝ) :
-    (gaussianReal μ v).map (· * c) = gaussianReal (c * μ) (⟨c ^ 2, sq_nonneg _⟩ * v) := by
+    (gaussianReal μ v).map (· * c) = gaussianReal (c * μ) (.mk (c ^ 2) (sq_nonneg _) * v) := by
   simp_rw [mul_comm _ c]
   exact gaussianReal_map_const_mul c
 
 lemma gaussianReal_map_neg : (gaussianReal μ v).map (fun x ↦ -x) = gaussianReal (-μ) v := by
   simpa using gaussianReal_map_const_mul (μ := μ) (v := v) (-1)
+
+/-- The map of a Gaussian distribution by multiplication by a constant is a Gaussian. -/
+lemma gaussianReal_map_div_const (c : ℝ) :
+    (gaussianReal μ v).map (· / c) = gaussianReal (μ / c) (v / .mk (c ^ 2) (sq_nonneg _)) := by
+  simp_rw [div_eq_mul_inv]
+  convert! gaussianReal_map_mul_const c⁻¹ using 2 <;> rw [mul_comm]
+  ext; simp
 
 lemma gaussianReal_map_sub_const (y : ℝ) :
     (gaussianReal μ v).map (· - y) = gaussianReal (μ - y) v := by
@@ -370,19 +402,25 @@ lemma gaussianReal_sub_const (hX : HasLaw X (gaussianReal μ v) P) (y : ℝ) :
 /-- If `X` is a real random variable with Gaussian law with mean `μ` and variance `v`, then `c * X`
 has Gaussian law with mean `c * μ` and variance `c ^ 2 * v`. -/
 lemma gaussianReal_const_mul (hX : HasLaw X (gaussianReal μ v) P) (c : ℝ) :
-    HasLaw (fun ω ↦ c * X ω) (gaussianReal (c * μ) (⟨c ^ 2, sq_nonneg _⟩ * v)) P :=
+    HasLaw (fun ω ↦ c * X ω) (gaussianReal (c * μ) (.mk (c ^ 2) (sq_nonneg _) * v)) P :=
   HasLaw.comp ⟨by fun_prop, gaussianReal_map_const_mul c⟩ hX
 
 /-- If `X` is a real random variable with Gaussian law with mean `μ` and variance `v`, then `X * c`
 has Gaussian law with mean `c * μ` and variance `c ^ 2 * v`. -/
 lemma gaussianReal_mul_const (hX : HasLaw X (gaussianReal μ v) P) (c : ℝ) :
-    HasLaw (fun ω ↦ X ω * c) (gaussianReal (c * μ) (⟨c ^ 2, sq_nonneg _⟩ * v)) P :=
+    HasLaw (fun ω ↦ X ω * c) (gaussianReal (c * μ) (.mk (c ^ 2) (sq_nonneg _) * v)) P :=
   HasLaw.comp ⟨by fun_prop, gaussianReal_map_mul_const c⟩ hX
 
 lemma gaussianReal_neg (hX : HasLaw X (gaussianReal μ v) P) :
     HasLaw (-X) (gaussianReal (-μ) v) P := by
   rw [Pi.neg_def, ← Function.comp_def]
   exact HasLaw.comp ⟨by fun_prop, gaussianReal_map_neg⟩ hX
+
+/-- If `X` is a real random variable with Gaussian law with mean `μ` and variance `v`, then `X * c`
+has Gaussian law with mean `c * μ` and variance `c ^ 2 * v`. -/
+lemma gaussianReal_div_const (hX : HasLaw X (gaussianReal μ v) P) (c : ℝ) :
+    HasLaw (fun ω ↦ X ω / c) (gaussianReal (μ / c) (v / .mk (c ^ 2) (sq_nonneg _))) P :=
+  HasLaw.comp ⟨by fun_prop, gaussianReal_map_div_const c⟩ hX
 
 /-- If `X` is a real random variable with Gaussian law with mean `μ` and variance `v`, then `y - X`
 has Gaussian law with mean `y - μ` and variance `v`. -/
@@ -566,10 +604,7 @@ variable {μ : ℝ} {v : ℝ≥0}
 
 lemma gaussianReal_map_linearMap (L : ℝ →ₗ[ℝ] ℝ) :
     (gaussianReal μ v).map L = gaussianReal (L μ) ((L 1 ^ 2).toNNReal * v) := by
-  have : (L : ℝ → ℝ) = fun x ↦ L 1 * x := by
-    ext x
-    have : x = x • 1 := by simp
-    conv_lhs => rw [this, L.map_smul, smul_eq_mul, mul_comm]
+  have : (L : ℝ → ℝ) = fun x ↦ L 1 * x := by simp
   rw [this, gaussianReal_map_const_mul]
   congr
   simp only [mul_one, left_eq_sup]

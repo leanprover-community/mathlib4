@@ -19,7 +19,7 @@ We say that a filter `f` is measurably generated if every set `s ∈ f` includes
 set `t ∈ f`. This property is useful, e.g., to extract a measurable witness of `Filter.Eventually`.
 -/
 
-@[expose] public section
+public section
 
 open Set Filter
 
@@ -42,13 +42,19 @@ lemma generateFrom_singleton_le {m : MeasurableSpace α} {s : Set α} (hs : Meas
     MeasurableSpace.generateFrom {s} ≤ m :=
   generateFrom_le (fun _ ht ↦ mem_singleton_iff.1 ht ▸ hs)
 
+lemma comap_indicator_const_le_generateFrom_singleton {M : Type*} [Zero M] [MeasurableSpace M]
+    (s : Set α) (c : M) :
+    MeasurableSpace.comap (s.indicator (fun _ ↦ c)) inferInstance ≤
+      MeasurableSpace.generateFrom {s} :=
+  (measurable_const.indicator (measurableSet_generateFrom (by simp))).comap_le
+
 end MeasurableSpace
 
 namespace MeasureTheory
 
 theorem measurableSet_generateFrom_singleton_iff {s t : Set α} :
     MeasurableSet[MeasurableSpace.generateFrom {s}] t ↔ t = ∅ ∨ t = s ∨ t = sᶜ ∨ t = univ := by
-  simp_rw [MeasurableSpace.generateFrom_singleton]
+  simp_rw +instances [MeasurableSpace.generateFrom_singleton]
   unfold MeasurableSet MeasurableSpace.MeasurableSet' MeasurableSpace.comap
   simp_rw [MeasurableSpace.measurableSet_top, true_and]
   constructor
@@ -283,8 +289,8 @@ theorem coe_top : ↑(⊤ : Subtype (MeasurableSet : Set α → Prop)) = (⊤ : 
 
 noncomputable instance Subtype.instBooleanAlgebra :
     BooleanAlgebra (Subtype (MeasurableSet : Set α → Prop)) :=
-  Subtype.coe_injective.booleanAlgebra _ coe_union coe_inter coe_top coe_bot coe_compl coe_sdiff
-    coe_himp
+  Subtype.coe_injective.booleanAlgebra _ .rfl .rfl coe_union coe_inter coe_top coe_bot coe_compl
+    coe_sdiff coe_himp
 
 @[measurability]
 theorem measurableSet_blimsup {s : ℕ → Set α} {p : ℕ → Prop} (h : ∀ n, p n → MeasurableSet (s n)) :

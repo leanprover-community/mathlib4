@@ -58,11 +58,11 @@ open CategoryTheory Functor Category IsCartesian IsHomLift Fiber
 
 variable {𝒮 : Type u₁} {𝒳 : Type u₂} [Category.{v₁} 𝒮] [Category.{v₂} 𝒳]
 
+set_option linter.checkUnivs false in
 /-- HasFibers is an extrinsic notion of fibers on a functor `p : 𝒳 ⥤ 𝒮`. It is given by a
 collection of categories `Fib S` for every `S : 𝒮` (the fiber categories), each equipped with a
 functors `ι : Fib S ⥤ 𝒳` which map constantly to `S` on the base such that the induced functor
 `Fib S ⥤ Fiber p S` is an equivalence. -/
-@[nolint checkUnivs]
 class HasFibers (p : 𝒳 ⥤ 𝒮) where
   /-- The type of objects of the category `Fib S` for each `S`. -/
   Fib (S : 𝒮) : Type u₃
@@ -78,6 +78,7 @@ class HasFibers (p : 𝒳 ⥤ 𝒮) where
 namespace HasFibers
 
 /-- The `HasFibers` on `p : 𝒳 ⥤ 𝒮` given by the fibers of `p` -/
+@[implicit_reducible]
 def canonical (p : 𝒳 ⥤ 𝒮) : HasFibers p where
   Fib := Fiber p
   ι S := fiberInclusion
@@ -88,7 +89,7 @@ section
 
 variable (p : 𝒳 ⥤ 𝒮) [HasFibers p] (S : 𝒮)
 
-attribute [instance] category
+attribute [instance_reducible, instance] category
 
 /-- The induced functor from `Fib p S` to the standard fiber. -/
 @[simps!]
@@ -123,6 +124,7 @@ def projMap {R S : 𝒮} {a : Fib p R} {b : Fib p S}
     (φ : (ι R).obj a ⟶ (ι S).obj b) : R ⟶ S :=
   eqToHom (proj_eq a).symm ≫ (p.map φ) ≫ eqToHom (proj_eq b)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- For any homomorphism `φ` in a fiber `Fib S`, its image under `ι S` lies over `𝟙 S`. -/
 instance homLift {S : 𝒮} {a b : Fib p S} (φ : a ⟶ b) : IsHomLift p (𝟙 S) ((ι S).map φ) := by
   apply of_fac p _ _ (proj_eq a) (proj_eq b)
@@ -135,6 +137,7 @@ noncomputable def Fib.homMk {S : 𝒮} {a b : Fib p S} (φ : (ι S).obj a ⟶ (�
     [IsHomLift p (𝟙 S) φ] : a ⟶ b :=
   (inducedFunctor _ S).preimage (Fiber.homMk p S φ)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma Fib.map_homMk {S : 𝒮} {a b : Fib p S} (φ : (ι S).obj a ⟶ (ι S).obj b)
     [IsHomLift p (𝟙 S) φ] : (ι S).map (homMk φ) = φ := by
@@ -180,6 +183,7 @@ noncomputable def pullbackMap : (ι R).obj (mkPullback f ha) ⟶ a :=
   (Fib.mkIsoSelf (domain_eq p f (IsPreFibered.pullbackMap ha f))).hom ≫
     (IsPreFibered.pullbackMap ha f)
 
+set_option backward.isDefEq.respectTransparency false in
 instance pullbackMap.isCartesian : IsCartesian p f (pullbackMap f ha) := by
   conv in f => rw [← id_comp f]
   simp only [id_comp, pullbackMap]

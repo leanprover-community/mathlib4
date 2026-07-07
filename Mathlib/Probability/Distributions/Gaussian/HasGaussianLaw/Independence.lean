@@ -29,7 +29,7 @@ We also prove that independent Gaussian random variables are jointly Gaussian.
 * `IndepFun.hasGaussianLaw`: Independent Gaussian random variables are jointly Gaussian,
   product version.
 * `HasGaussianLaw.iIndepFun_of_covariance_eq_zero`: If $(X_i)_{i \in \iota}$ are jointly Gaussian,
-  then they are independent if for all $i \ne j$, \mathrm{Cov}(X_i, X_j) = 0$.
+  then they are independent if for all $i \ne j$, $\mathrm{Cov}(X_i, X_j) = 0$.
 * `HasGaussianLaw.indepFun_of_covariance_eq_zero`: If $(X, Y)$ is Gaussian,
   then $X$ and $Y$ are independent if $\mathrm{Cov}(X, Y) = 0$.
 
@@ -74,8 +74,8 @@ def diagonalStrongDualPi (L : (i : ι) → StrongDual ℝ (E i) →L[ℝ] Strong
     simp only [LinearMap.mk₂_apply, g]
     grw [norm_sum_le, sum_mul, sum_mul]
     gcongr with i _
-    grw [le_opNorm₂, opNorm_comp_le, opNorm_comp_le, norm_single_le_one]
-    simp
+    grw [le_opNorm₂]
+    gcongr <;> grw [opNorm_comp_le, norm_single_le_one, mul_one]
 
 lemma diagonalStrongDualPi_apply (x y : StrongDual ℝ (Π i, E i)) :
     diagonalStrongDualPi L x y = ∑ i, L i (x ∘L (.single ℝ E i)) (y ∘L (.single ℝ E i)) := rfl
@@ -123,10 +123,10 @@ def diagonalStrongDualProd
     simp only [LinearMap.mk₂_apply, g]
     grw [norm_add_le, add_mul, add_mul]
     gcongr
-    · grw [le_opNorm₂, opNorm_comp_le, opNorm_comp_le, norm_inl_le_one]
-      simp
-    · grw [le_opNorm₂, opNorm_comp_le, opNorm_comp_le, norm_inr_le_one]
-      simp
+    · grw [le_opNorm₂]
+      gcongr <;> grw [opNorm_comp_le, norm_inl_le_one, mul_one]
+    · grw [le_opNorm₂]
+      gcongr <;> grw [opNorm_comp_le, norm_inr_le_one, mul_one]
 
 lemma diagonalStrongDualProd_apply (x y : StrongDual ℝ (E × F)) :
     diagonalStrongDualProd L₁ L₂ x y =
@@ -205,7 +205,7 @@ lemma HasGaussianLaw.iIndepFun_of_covariance_strongDual (hX : HasGaussianLaw (fu
     sum_sub_distrib, ← sum_mul, this]
   congr
   · simp_rw [← Complex.ofReal_sum]
-    rw [integral_finset_sum _ fun i _ ↦ ((hX.eval i).map_fun _).integrable.ofReal]
+    rw [integral_finsetSum _ fun i _ ↦ ((hX.eval i).map_fun _).integrable.ofReal]
   · rw [variance_fun_sum fun i ↦ ((hX.eval i).map_fun _).memLp_two]
     simp only [← sum_div, ← ofReal_sum, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true,
       div_left_inj', ofReal_inj]
@@ -226,7 +226,7 @@ lemma HasGaussianLaw.iIndepFun_of_covariance_inner
       cov[fun ω ↦ ⟪x, X i ω⟫, fun ω ↦ ⟪y, X j ω⟫; P] = 0) :
     iIndepFun X P :=
   hX.iIndepFun_of_covariance_strongDual fun i j hij L₁ L₂ ↦ by
-    simpa using h i j hij ((toDual ℝ (E i)).symm L₁) ((toDual ℝ (E j)).symm L₂)
+    simpa using! h i j hij ((toDual ℝ (E i)).symm L₁) ((toDual ℝ (E j)).symm L₂)
 
 end InnerProductSpace
 
@@ -257,7 +257,7 @@ lemma HasGaussianLaw.iIndepFun_of_covariance_eval {κ : ι → Type*} [∀ i, Fi
   · simpa using fun i ↦ ((hX.eval j).eval i).memLp_two.const_mul _
 
 /-- If $(X_i)_{i \in \iota}$ are jointly Gaussian, then they are independent if for all $i \ne j$,
-\mathrm{Cov}(X_i, X_j) = 0$. -/
+$\mathrm{Cov}(X_i, X_j) = 0$. -/
 lemma HasGaussianLaw.iIndepFun_of_covariance_eq_zero {X : ι → Ω → ℝ}
     (hX : HasGaussianLaw (fun ω ↦ (X · ω)) P) (h : ∀ i j : ι, i ≠ j → cov[X i, X j; P] = 0) :
     iIndepFun X P :=
@@ -316,7 +316,7 @@ lemma HasGaussianLaw.indepFun_of_covariance_strongDual [NormedSpace ℝ E] [Norm
   rw [indepFun_iff_charFunDual_prod hXY.fst.aemeasurable hXY.snd.aemeasurable]
   intro L
   have : L ∘ (fun ω ↦ (X ω, Y ω)) = (L ∘L (.inl ℝ E F)) ∘ X + (L ∘L (.inr ℝ E F)) ∘ Y := by
-    ext; simp [-coe_comp', ← comp_inl_add_comp_inr]
+    ext; simp [-comp_apply, ← comp_inl_add_comp_inr]
   rw [hXY.charFunDual_map_eq, hXY.fst.charFunDual_map_eq, hXY.snd.charFunDual_map_eq, ← exp_add,
     sub_add_sub_comm, ← add_mul, ← ofReal_add, ← integral_add, ← add_div, ← ofReal_add, this,
     variance_add, h, mul_zero, add_zero]
@@ -332,7 +332,7 @@ lemma HasGaussianLaw.indepFun_of_covariance_inner [InnerProductSpace ℝ E] [Inn
     (h : ∀ x y, cov[fun ω ↦ ⟪x, X ω⟫, fun ω ↦ ⟪y, Y ω⟫; P] = 0) :
     IndepFun X Y P :=
   hXY.indepFun_of_covariance_strongDual fun L₁ L₂ ↦ by
-    simpa using h ((toDual ℝ E).symm L₁) ((toDual ℝ F).symm L₂)
+    simpa using! h ((toDual ℝ E).symm L₁) ((toDual ℝ F).symm L₂)
 
 /-- If $((X_i)_{i \in \iota}, (Y_j)_{j \in \kappa})$ is Gaussian, then $(X_i)_{i \in \iota}$ and
 $(Y_j)_{j \in \kappa}$ are independent if for all $i \in \iota, j \in \kappa$,

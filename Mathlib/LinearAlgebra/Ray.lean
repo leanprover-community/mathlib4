@@ -50,8 +50,20 @@ set_option linter.unusedVariables false in
 def RayVector (R M : Type*) [Zero M] :=
   { v : M // v ≠ 0 }
 
+/-- Equivalence between `RayVector` and non-zero vectors. -/
+def RayVector.equiv (R M : Type*) [Zero M] : RayVector R M ≃ { v : M // v ≠ 0 } :=
+  Equiv.refl _
+
 instance RayVector.coe {R M : Type*} [Zero M] : CoeOut (RayVector R M) M where
-  coe := Subtype.val
+  coe x := (equiv R M x).val
+
+@[simp]
+theorem RayVector.coe_equiv_symm {R M : Type*} [Zero M] {v : M} (h : v ≠ 0) :
+    (RayVector.equiv R M).symm ⟨v, h⟩ = v := rfl
+
+@[ext]
+theorem RayVector.ext {R M : Type*} [Zero M] {x y : RayVector R M} (h : (x : M) = (y : M)) :
+    x = y := Subtype.ext h
 
 instance {R M : Type*} [Zero M] [Nontrivial M] : Nonempty (RayVector R M) :=
   ⟨Classical.indefiniteDescription _ <| exists_ne (0 : M)⟩
@@ -193,7 +205,7 @@ theorem add_left (hx : SameRay R x z) (hy : SameRay R y z) : SameRay R (x + y) z
   rcases hy.exists_pos hy₀ hz₀ with ⟨ry, rz₂, hry, hrz₂, Hy⟩
   refine Or.inr (Or.inr ⟨rx * ry, ry * rz₁ + rx * rz₂, mul_pos hrx hry, ?_, ?_⟩)
   · positivity
-  · convert congr(ry • $Hx + rx • $Hy) using 1 <;> module
+  · convert! congr(ry • $Hx + rx • $Hy) using 1 <;> module
 
 /-- If `y` and `z` are on the same ray as `x`, then so is `y + z`. -/
 theorem add_right (hy : SameRay R x y) (hz : SameRay R x z) : SameRay R x (y + z) :=
@@ -225,7 +237,7 @@ variable (R)
 
 /-- The ray given by a nonzero vector. -/
 def rayOfNeZero (v : M) (h : v ≠ 0) : Module.Ray R M :=
-  ⟦⟨v, h⟩⟧
+  ⟦(RayVector.equiv R M).symm ⟨v, h⟩⟧
 
 /-- An induction principle for `Module.Ray`, used as `induction x using Module.Ray.ind`. -/
 theorem Module.Ray.ind {C : Module.Ray R M → Prop} (h : ∀ (v) (hv : v ≠ 0), C (rayOfNeZero R v hv))
@@ -371,7 +383,7 @@ namespace RayVector
 
 /-- Negating a nonzero vector. -/
 instance {R : Type*} : Neg (RayVector R M) :=
-  ⟨fun v => ⟨-v, neg_ne_zero.2 v.prop⟩⟩
+  ⟨fun v => (equiv R M).symm ⟨-v, neg_ne_zero.2 v.prop⟩⟩
 
 /-- Negating a nonzero vector commutes with coercion to the underlying module. -/
 @[simp, norm_cast]
@@ -380,7 +392,7 @@ theorem coe_neg {R : Type*} (v : RayVector R M) : ↑(-v) = -(v : M) :=
 
 /-- Negating a nonzero vector twice produces the original vector. -/
 instance {R : Type*} : InvolutiveNeg (RayVector R M) where
-  neg_neg v := by rw [Subtype.ext_iff, coe_neg, coe_neg, neg_neg]
+  neg_neg v := by rw [RayVector.ext_iff, coe_neg, coe_neg, neg_neg]
 
 /-- If two nonzero vectors are equivalent, so are their negations. -/
 @[simp]
@@ -451,6 +463,19 @@ theorem units_inv_smul (u : Rˣ) (v : Module.Ray R M) : u⁻¹ • v = u • v :
   calc
     u⁻¹ • v = (u * u) • u⁻¹ • v := Eq.symm <| (u⁻¹ • v).units_smul_of_pos _ (by exact this)
     _ = u • v := by rw [mul_smul, smul_inv_smul]
+
+/-- Two scalar multiples of a common vector whose coefficients have nonnegative product
+lie on a common ray. -/
+theorem sameRay_smul_smul_of_mul_nonneg {v : M} {c₁ c₂ : R} (h : 0 ≤ c₁ * c₂) :
+    SameRay R (c₁ • v) (c₂ • v) := by
+  rcases eq_or_ne c₁ 0 with hc₁ | hc₁
+  · rw [hc₁, zero_smul]; exact SameRay.zero_left _
+  rcases eq_or_ne c₂ 0 with hc₂ | hc₂
+  · rw [hc₂, zero_smul]; exact SameRay.zero_right _
+  have hpos : 0 < c₁ * c₂ := h.lt_of_ne (mul_ne_zero hc₁ hc₂).symm
+  rcases mul_pos_iff.mp hpos with ⟨h₁, h₂⟩ | ⟨h₁, h₂⟩
+  · exact Or.inr (Or.inr ⟨c₂, c₁, h₂, h₁, by module⟩)
+  · exact Or.inr (Or.inr ⟨-c₂, -c₁, neg_pos.2 h₂, neg_pos.2 h₁, by module⟩)
 
 section
 

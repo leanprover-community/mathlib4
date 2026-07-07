@@ -20,7 +20,7 @@ one-liners from the corresponding axioms. For the definitions of semigroups, mon
 `Mathlib/Algebra/Group/Defs.lean`.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists MonoidWithZero DenselyOrdered
 
@@ -31,24 +31,21 @@ variable {α β G M : Type*}
 section ite
 variable [Pow α β]
 
-@[to_additive (attr := simp) dite_smul]
+@[to_additive (attr := simp, to_additive) dite_smul]
 lemma pow_dite (p : Prop) [Decidable p] (a : α) (b : p → β) (c : ¬ p → β) :
     a ^ (if h : p then b h else c h) = if h : p then a ^ b h else a ^ c h := by split_ifs <;> rfl
 
-@[to_additive (attr := simp) smul_dite]
+@[to_additive (attr := simp, to_additive) smul_dite]
 lemma dite_pow (p : Prop) [Decidable p] (a : p → α) (b : ¬ p → α) (c : β) :
     (if h : p then a h else b h) ^ c = if h : p then a h ^ c else b h ^ c := by split_ifs <;> rfl
 
-@[to_additive (attr := simp) ite_smul]
+@[to_additive (attr := simp, to_additive) ite_smul]
 lemma pow_ite (p : Prop) [Decidable p] (a : α) (b c : β) :
     a ^ (if p then b else c) = if p then a ^ b else a ^ c := pow_dite _ _ _ _
 
-@[to_additive (attr := simp) smul_ite]
+@[to_additive (attr := simp, to_additive) smul_ite]
 lemma ite_pow (p : Prop) [Decidable p] (a b : α) (c : β) :
     (if p then a else b) ^ c = if p then a ^ c else b ^ c := dite_pow _ _ _ _
-
-set_option linter.existingAttributeWarning false in
-attribute [to_additive (attr := simp)] dite_smul smul_dite ite_smul smul_ite
 
 end ite
 
@@ -283,6 +280,10 @@ variable [InvolutiveInv G] {a b : G}
 theorem inv_involutive : Function.Involutive (Inv.inv : G → G) :=
   inv_inv
 
+@[to_additive]
+theorem inv_bijective : Function.Bijective (Inv.inv : G → G) :=
+  inv_involutive.bijective
+
 @[to_additive (attr := simp)]
 theorem inv_surjective : Function.Surjective (Inv.inv : G → G) :=
   inv_involutive.surjective
@@ -297,7 +298,7 @@ theorem inv_inj : a⁻¹ = b⁻¹ ↔ a = b :=
 
 @[to_additive]
 theorem inv_eq_iff_eq_inv : a⁻¹ = b ↔ a = b⁻¹ :=
-  ⟨fun h => h ▸ (inv_inv a).symm, fun h => h.symm ▸ inv_inv b⟩
+  inv_involutive.eq_iff
 
 variable (G)
 
@@ -726,6 +727,14 @@ theorem div_mul_div_cancel (a b c : G) : a / b * (b / c) = a / c := by
   rw [← mul_div_assoc, div_mul_cancel]
 
 @[to_additive (attr := simp)]
+lemma mul_mul_inv_mul_cancel (a b c : G) : a * b * (b⁻¹ * c) = a * c := by
+  rw [mul_assoc, ← mul_assoc b, mul_inv_cancel, one_mul]
+
+@[to_additive (attr := simp)]
+lemma mul_inv_mul_mul_cancel (a b c : G) : a * b⁻¹ * (b * c) = a * c := by
+  rw [mul_assoc, ← mul_assoc b⁻¹, inv_mul_cancel, one_mul]
+
+@[to_additive (attr := simp)]
 theorem div_div_div_cancel_right (a b c : G) : a / c / (b / c) = a / b := by
   rw [← inv_div c b, div_inv_eq_mul, div_mul_div_cancel]
 
@@ -997,9 +1006,9 @@ section multiplicative
 
 variable [Monoid β] (p r : α → α → Prop) [Std.Total r] (f : α → α → β)
 
-@[to_additive additive_of_symmetric_of_total]
-lemma multiplicative_of_symmetric_of_total
-    (hsymm : Symmetric p) (hf_swap : ∀ {a b}, p a b → f a b * f b a = 1)
+@[to_additive additive_of_symm_of_total]
+lemma multiplicative_of_symm_of_total [Std.Symm p]
+    (hf_swap : ∀ {a b}, p a b → f a b * f b a = 1)
     (hmul : ∀ {a b c}, r a b → r b c → p a b → p b c → p a c → f a c = f a b * f b c)
     {a b c : α} (pab : p a b) (pbc : p b c) (pac : p a c) : f a c = f a b * f b c := by
   have hmul' : ∀ {b c}, r b c → p a b → p b c → p a c → f a c = f a b * f b c := by
@@ -1008,16 +1017,21 @@ lemma multiplicative_of_symmetric_of_total
     · exact hmul rab rbc pab pbc pac
     rw [← one_mul (f a c), ← hf_swap pab, mul_assoc]
     obtain rac | rca := total_of r a c
-    · rw [hmul rba rac (hsymm pab) pac pbc]
-    · rw [hmul rbc rca pbc (hsymm pac) (hsymm pab), mul_assoc, hf_swap (hsymm pac), mul_one]
+    · rw [hmul rba rac (symm pab) pac pbc]
+    · rw [hmul rbc rca pbc (symm pac) (symm pab), mul_assoc, hf_swap (symm pac), mul_one]
   obtain rbc | rcb := total_of r b c
   · exact hmul' rbc pab pbc pac
-  · rw [hmul' rcb pac (hsymm pbc) pab, mul_assoc, hf_swap (hsymm pbc), mul_one]
+  · rw [hmul' rcb pac (symm pbc) pab, mul_assoc, hf_swap (symm pbc), mul_one]
+
+@[deprecated (since := "2026-06-10")]
+alias additive_of_symmetric_of_total := additive_of_symm_of_total
+@[to_additive existing additive_of_symmetric_of_total, deprecated (since := "2026-06-10")]
+alias multiplicative_of_symmetric_of_total := multiplicative_of_symm_of_total
 
 @[deprecated (since := "2026-01-09")]
-alias additive_of_symmetric_of_isTotal := additive_of_symmetric_of_total
+alias additive_of_symmetric_of_isTotal := additive_of_symm_of_total
 @[to_additive existing additive_of_symmetric_of_isTotal, deprecated (since := "2026-01-09")]
-alias multiplicative_of_symmetric_of_isTotal := multiplicative_of_symmetric_of_total
+alias multiplicative_of_symmetric_of_isTotal := multiplicative_of_symm_of_total
 
 /-- If a binary function from a type equipped with a total relation `r` to a monoid is
   anti-symmetric (i.e. satisfies `f a b * f b a = 1`), in order to show it is multiplicative
@@ -1030,7 +1044,8 @@ alias multiplicative_of_symmetric_of_isTotal := multiplicative_of_symmetric_of_t
 theorem multiplicative_of_total (p : α → Prop) (hswap : ∀ {a b}, p a → p b → f a b * f b a = 1)
     (hmul : ∀ {a b c}, r a b → r b c → p a → p b → p c → f a c = f a b * f b c) {a b c : α}
     (pa : p a) (pb : p b) (pc : p c) : f a c = f a b * f b c := by
-  apply multiplicative_of_symmetric_of_total (fun a b => p a ∧ p b) r f fun _ _ => And.symm
+  have : Std.Symm (p · ∧ p ·) := { symm _ _ := And.symm }
+  apply multiplicative_of_symm_of_total (p · ∧ p ·) r f
   · simp_rw [and_imp]; exact @hswap
   · exact fun rab rbc pab _pbc pac => hmul rab rbc pab.1 pab.2 pac.2
   exacts [⟨pa, pb⟩, ⟨pb, pc⟩, ⟨pa, pc⟩]

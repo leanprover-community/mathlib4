@@ -16,23 +16,30 @@ public meta section
 
 attribute [aesop (rule_sets := [Continuous]) unfold norm] Function.comp
 
-/--
-The `continuity` attribute used to tag continuity statements for the `continuity` tactic. -/
+/-- `@[continuity]` adds the tagged definition to the set of lemmas used by the `continuity` tactic.
+Lemmas are used without backtracking: when the conclusion of this lemma matches the goal, the lemma
+is applied unconditionally. Thus a lemma should preserve provability: if the goal can be proven,
+then after applying a `@[continuity]` lemma to it, the generated subgoals should remain provable.
+-/
 macro "continuity" : attr =>
   `(attr|aesop safe apply (rule_sets := [$(Lean.mkIdent `Continuous):ident]))
 
 /--
-The tactic `continuity` solves goals of the form `Continuous f` by applying lemmas tagged with the
-`continuity` user attribute.
+`continuity` solves goals of the form `Continuous f` by applying lemmas tagged with the attribute
+`@[continuity]`. If the goal is not solved after attempting all rules, `continuity` fails.
 
-`fun_prop` is a (usually more powerful) alternative to `continuity`. -/
+`fun_prop` is a (usually more powerful) alternative to `continuity`.
+
+This tactic is extensible. Tagging lemmas with the `@[continuity]` attribute can allow `continuity`
+to solve more goals.
+
+* `continuity?` reports the proof script found by `continuity`.
+-/
 macro "continuity" : tactic =>
   `(tactic| aesop (config := { terminal := true })
      (rule_sets := [$(Lean.mkIdent `Continuous):ident]))
 
-/--
-The tactic `continuity` solves goals of the form `Continuous f` by applying lemmas tagged with the
-`continuity` user attribute. -/
+@[tactic_alt tacticContinuity]
 macro "continuity?" : tactic =>
   `(tactic| aesop? (config := { terminal := true })
     (rule_sets := [$(Lean.mkIdent `Continuous):ident]))
