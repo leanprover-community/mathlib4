@@ -177,12 +177,24 @@ variable {Y : TopCat.{w}} [T2Space Y] [LocallyCompactSpace Y] {f : X ⟶ Y}
 /-- The pushforward of a Ksheaf by a proper map as a Ksheaf -/
 def pushforwardObj (F : KSheaf A X) : (KSheaf A Y) := ⟨_, F.pushforwardObj_isKSheaf pf⟩
 
+
 /-- The pushforward of a KSheaf as a functor -/
 def pushforward : KSheaf A X ⥤ KSheaf A Y :=
   ObjectProperty.lift _
   (ObjectProperty.ι KPresheaf.IsKSheaf ⋙ (KPresheaf.pushforward pf))
   (fun F ↦ F.pushforwardObj_isKSheaf pf)
 
+set_option backward.isDefEq.respectTransparency false in
+lemma pushforward_id [LocallyCompactSpace X] :
+    pushforward (f := 𝟙 X) (isProperMap_id) = Functor.id (KSheaf A X) := CategoryTheory.Functor.ext
+  (fun _ => rfl) (fun _ _ _ => by ext;simp;rfl)
+
+set_option backward.isDefEq.respectTransparency false in
+lemma pushforward_comp {Z : TopCat.{w}} [T2Space Z] [LocallyCompactSpace Z] {g : Y ⟶ Z}
+    (pg : IsProperMap g.hom') :
+    pushforward (A := A) pf ⋙ pushforward pg =
+    pushforward (f := f ≫ g ) (IsProperMap.comp (f := f) (g := g) pg pf) :=
+  CategoryTheory.Functor.ext (fun _ => rfl) (fun _ _ _ => by ext;simp;rfl)
 end KSheaf
 
 end TopCat
