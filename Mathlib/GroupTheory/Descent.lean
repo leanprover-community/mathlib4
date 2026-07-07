@@ -168,7 +168,7 @@ where `1 < b` and `c₀` are real numbers, then set of elements of finite order 
 
 where `1 < b` and `c₀` are real numbers, then the set of elements of finite order in `M`
 is finite. -/]
-theorem Monoid.finite_torsion_of_descent {M : Type*} [Monoid M] {n : ℕ} {h : M → ℝ}
+theorem Monoid.finite_set_isOfFiniteOrder_of_descent {M : Type*} [Monoid M] {n : ℕ} {h : M → ℝ}
     {b c₀ : ℝ} (hb : 1 < b) (H : ∀ x, b * h x - c₀ ≤ h (x ^ n)) [Northcott h] :
     Finite { x : M | IsOfFinOrder x } := by
   refine (Northcott.finite_le (h := h) (c₀ / (b - 1))).subset fun t ht ↦ ?_
@@ -196,7 +196,7 @@ where `1 < b` and `c₀` are real numbers, then the torsion subgroup of `G` is f
 theorem CommGroup.finite_torsion_of_descent {G : Type*} [CommGroup G] {n : ℕ} {h : G → ℝ}
     {b c₀ : ℝ} (hb : 1 < b) (H : ∀ x, b * h x - c₀ ≤ h (x ^ n)) [Northcott h] :
     Finite (torsion G) :=
-  Monoid.finite_torsion_of_descent hb H
+  Monoid.finite_set_isOfFiniteOrder_of_descent hb H
 
 /--
 If `G` is a commutative group and `n : ℕ`, `h : G → ℝ` satisfy
