@@ -168,7 +168,6 @@ end OrdConnected
 
 section Icc
 
-open Classical in
 /-- Complete lattice structure on `Set.Icc` -/
 noncomputable instance Set.Icc.completeLattice [ConditionallyCompleteLattice α]
     {a b : α} [Fact (a ≤ b)] : CompleteLattice (Set.Icc a b) where
