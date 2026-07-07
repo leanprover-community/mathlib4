@@ -866,7 +866,7 @@ theorem direction_prod_le (s : AffineSubspace k P) (t : AffineSubspace k Q) :
 theorem _root_.vectorSpan_prod_eq {s : Set P} {t : Set Q} (hs : s.Nonempty) (ht : t.Nonempty) :
     vectorSpan k (s ×ˢ t) = (vectorSpan k s).prod (vectorSpan k t) := by
   rw [vectorSpan_def, Set.prod_vsub_prod]
-  exact Submodule.span_prod_eq k hs.zero_mem_vsub ht.zero_mem_vsub
+  exact Submodule.span_prod_eq k hs.zero_mem_vsub_self ht.zero_mem_vsub_self
 
 theorem direction_prod_eq {s : AffineSubspace k P} {t : AffineSubspace k Q}
     (hs : s ≠ ⊥) (ht : t ≠ ⊥) :
