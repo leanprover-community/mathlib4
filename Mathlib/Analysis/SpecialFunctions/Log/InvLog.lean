@@ -101,16 +101,13 @@ lemma not_continuousAt_log_log_neg_one : ¬ ContinuousAt (fun x ↦ log (log x))
 
 @[simp]
 theorem deriv_log_log {x : ℝ} : deriv (fun x ↦ log (log x)) x = x⁻¹ / log x := by
-  rcases eq_or_ne x 0 with rfl | _
-  · simpa using deriv_zero_of_not_differentiableAt <|
-      mt continuousAt not_continuousAt_log_log_zero
-  rcases eq_or_ne x 1 with rfl | _
-  · simpa using deriv_zero_of_not_differentiableAt <|
-      mt continuousAt not_continuousAt_log_log_one
-  rcases eq_or_ne x (-1) with rfl | _
-  · simpa using deriv_zero_of_not_differentiableAt <|
-      mt continuousAt not_continuousAt_log_log_neg_one
-  simp_all
+  have _ := not_continuousAt_log_log_neg_one
+  have _ := not_continuousAt_log_log_zero
+  have _ := not_continuousAt_log_log_one
+  obtain (⟨_, _, _⟩ | rfl | rfl | rfl) :
+      (x ≠ -1 ∧ x ≠ 0 ∧ x ≠ 1) ∨ x = -1 ∨ x = 0 ∨ x = 1 := by tauto
+  · simp_all
+  all_goals rw [deriv_zero_of_not_differentiableAt (mt continuousAt ‹_›)]; simp
 
 theorem differentiableAt_log_log {x : ℝ} (hx₀ : x ≠ 0) (hx₁ : x ≠ 1) (hx₂ : x ≠ -1) :
     DifferentiableAt ℝ (fun x ↦ log (log x)) x :=
