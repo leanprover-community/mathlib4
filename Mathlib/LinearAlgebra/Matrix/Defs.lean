@@ -82,6 +82,10 @@ which performs elementwise multiplication, vs `Matrix.mul`).
 If you are defining a matrix, in terms of its entries, use `of (fun i j ↦ _)`. The
 purpose of this approach is to ensure that terms of the form `(fun i j ↦ _) * (fun i j ↦ _)` do not
 appear, as the type of `*` can be misleading.
+
+This is available in bundled forms as:
+* `Matrix.ofAddEquiv`
+* `Matrix.ofLinearEquiv`
 -/
 def of : (m → n → α) ≃ Matrix m n α :=
   Equiv.refl _
@@ -99,6 +103,7 @@ theorem of_symm_apply (f : Matrix m n α) (i j) : of.symm f i j = f i j :=
 This is available in bundled forms as:
 * `AddMonoidHom.mapMatrix`
 * `LinearMap.mapMatrix`
+* `LinearMap.mapMatrixLinear`
 * `RingHom.mapMatrix`
 * `AlgHom.mapMatrix`
 * `Equiv.mapMatrix`
@@ -498,7 +503,14 @@ theorem submatrix_map (f : α → β) (e₁ : l → m) (e₂ : o → n) (A : Mat
   rfl
 
 /-- The natural map that reindexes a matrix's rows and columns with equivalent types is an
-equivalence. -/
+equivalence.
+
+This is available in bundled forms as:
+* `Matrix.reindexAddEquiv`
+* `Matrix.reindexLinearEquiv`
+* `Matrix.reindexRingEquiv`
+* `Matrix.reindexAlgEquiv`
+-/
 def reindex (eₘ : m ≃ l) (eₙ : n ≃ o) : Matrix m n α ≃ Matrix l o α where
   toFun M := M.submatrix eₘ.symm eₙ.symm
   invFun M := M.submatrix eₘ eₙ
