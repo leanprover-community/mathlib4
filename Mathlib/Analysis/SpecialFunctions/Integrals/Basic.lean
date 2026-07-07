@@ -376,6 +376,7 @@ theorem integral_inv_div_log (ha : 1 < a) (hb : 1 < b) :
   refine (?_ : ContinuousOn _ _).congr (fun _ _ ↦ deriv_log_log) |>.intervalIntegrable
   fun_prop (disch := grind [log_pos, Set.uIcc])
 
+/-- The integrand is chosen to match the conclusion of `Real.deriv_inv_log`. -/
 @[simp]
 theorem integral_inv_div_log_sq (ha : 1 < a) (hb : 1 < b) :
     ∫ t in a..b, t⁻¹ / log t ^ 2 = (log a)⁻¹ - (log b)⁻¹ := by
