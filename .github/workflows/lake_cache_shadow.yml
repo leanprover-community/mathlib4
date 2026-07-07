@@ -19,8 +19,9 @@ name: Lake cache shadow (master)
 #     # host than the S3 API endpoint; e.g. an R2 public r2.dev/custom domain).
 #     LAKE_CACHE_ARTIFACT_ENDPOINT_PUBLIC    — e.g. https://pub-<hash>.r2.dev/<prefix>/artifacts
 #     LAKE_CACHE_REVISION_ENDPOINT_PUBLIC    — e.g. https://pub-<hash>.r2.dev/<prefix>/revisions
-#     # Optional. Default toolchain override for every run, incl. scheduled
-#     # ones (the dispatch input takes precedence). Unset for the stock pipeline.
+#     # Optional. Default toolchain override for every run, including
+#     # scheduled ones; the dispatch input takes precedence. Unset for the
+#     # stock pipeline.
 #     LAKE_SHADOW_TOOLCHAIN_OVERRIDE         — e.g. leanprover/lean4-pr-releases:pr-release-14301
 #
 # Jobs:
@@ -35,18 +36,19 @@ name: Lake cache shadow (master)
 #   report           Post a per-run summary to the `CI admins` Zulip
 #                    stream (topic `Lake cache shadow`).
 #
-# Toolchain override (input `toolchain_override`, else the
-# LAKE_SHADOW_TOOLCHAIN_OVERRIDE variable):
-#   Runs the whole pipeline on an alternate toolchain — e.g. a lean4
-#   pr-release cherry-picking a Lake change onto the pinned release's lineage
-#   (pr-release-14301 = v4.32.0-rc1 + lean4#14235). Its lean must be
-#   behaviorally compatible with the repo pin: mathlib sources build as-is.
+# Toolchain override:
+#   The `toolchain_override` input, or else the LAKE_SHADOW_TOOLCHAIN_OVERRIDE
+#   variable, runs the whole pipeline on an alternate toolchain — e.g. a lean4
+#   pr-release that cherry-picks a Lake change onto the pinned release's
+#   lineage, such as pr-release-14301 = v4.32.0-rc1 + lean4#14235. Its lean
+#   must be behaviorally compatible with the repo pin: mathlib sources build
+#   as-is.
 #
-#   The legacy cache is cold for a non-pinned toolchain (different lean
-#   githash), so hydration is skipped and the build warm-starts from the
-#   previous override run via `lake cache get`; the first run of a toolchain
+#   A non-pinned toolchain has a different lean githash, so the legacy cache
+#   is cold for it: hydration is skipped and the build warm-starts from the
+#   previous override run via `lake cache get`. The first run of a toolchain
 #   generation is a full source build. Override runs are isolated in the
-#   `mathlib4-master-shadow-lakeovr` scope + `analysis-lakeovr/` chain.
+#   `mathlib4-master-shadow-lakeovr` scope and `analysis-lakeovr/` chain.
 
 on:
   schedule:
@@ -73,7 +75,7 @@ on:
       toolchain_override:
         description: >-
           optional Lean toolchain to run the pipeline on instead of the repo
-          pin (see the "Toolchain override" note at the top of this file).
+          pin; see the "Toolchain override" note at the top of this file.
           Empty falls back to the LAKE_SHADOW_TOOLCHAIN_OVERRIDE repository
           variable; the stock pipeline runs when both are empty.
         required: false
@@ -93,8 +95,8 @@ defaults:
 
 env:
   # Effective toolchain override: dispatch input, else repository variable,
-  # else stock. (Workflow-level env can't self-reference, so the two derived
-  # values below repeat the fallback chain.)
+  # else stock. Workflow-level env can't self-reference, so the derived
+  # values below repeat the fallback chain.
   TOOLCHAIN_OVERRIDE: ${{ inputs.toolchain_override || vars.LAKE_SHADOW_TOOLCHAIN_OVERRIDE || '' }}
   # Scope prefix for all puts and gets in this workflow. Override runs use an
   # isolated scope + analysis namespace so the stock chain stays clean.
@@ -108,7 +110,7 @@ jobs:
     name: Build + stage
     if: ${{ github.repository == 'leanprover-community/mathlib4' }}
     runs-on: pr
-    # 240 covers a full source build (first run of a toolchain generation).
+    # 240 covers the full source build of a toolchain generation's first run.
     timeout-minutes: ${{ (inputs.toolchain_override || vars.LAKE_SHADOW_TOOLCHAIN_OVERRIDE) && 240 || 90 }}
     outputs:
       sha: ${{ steps.resolve.outputs.sha }}
@@ -164,9 +166,9 @@ jobs:
         shell: bash -euo pipefail {0}
         run: |
           mkdir -p pr-branch/.lake/
-          # The landrun ruleset mounts $HOME/.cache/mathlib read-only; landrun
-          # errors out if the path is missing (runs that skip legacy hydration
-          # reach the first landrun step with it absent).
+          # The landrun ruleset mounts $HOME/.cache/mathlib read-only and
+          # errors out if the path is missing. Runs that skip legacy hydration
+          # reach the first landrun step with it absent.
           mkdir -p "$HOME/.cache/mathlib/"
           mkdir -p _work
 
@@ -251,9 +253,10 @@ jobs:
           awk '/^package mathlib where/,/^$/' lakefile.lean
           echo "::endgroup::"
 
-      # Seed Lake's artifact cache from the previous override run (rev from
-      # the analysis chain's `_latest` pointer), so only the changed cone plus
-      # deps compiles. Best-effort: whatever it can't serve builds from source.
+      # Seed Lake's artifact cache from the previous override run, whose rev
+      # comes from the analysis chain's `_latest` pointer; only the changed
+      # cone plus deps compiles. Best-effort: whatever the cache can't serve
+      # builds from source.
       - name: Warm start from shadow scope (toolchain override)
         if: ${{ env.TOOLCHAIN_OVERRIDE != '' }}
         shell: bash -euo pipefail {0}
