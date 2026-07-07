@@ -32,7 +32,7 @@ open Filter Asymptotics Bornology Metric IsOrderBornology DifferentiableAt
 lemma not_differentiableAt_inv_log_zero : ¬ DifferentiableAt ℝ (fun x ↦ (log x)⁻¹) 0 := by
   simp only [← hasDerivAt_deriv_iff, hasDerivAt_iff_tendsto_slope_zero, zero_add, log_zero,
     inv_zero, sub_zero, smul_eq_mul, ← mul_inv, mul_comm _ (log _)]
-  refine fun H ↦ (tendsto_nhdsWithin_mono_left (by grind : .Iio (0 : ℝ) ⊆ _) H).not_tendsto
+  refine fun H ↦ (tendsto_nhdsWithin_mono_left (by grind : Set.Iio (0 : ℝ) ⊆ _) H).not_tendsto
     (by simp) (tendsto_inv_nhdsGT_zero.comp ?_)
   refine tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _
     tendsto_log_mul_self_nhdsLT_zero ?_
