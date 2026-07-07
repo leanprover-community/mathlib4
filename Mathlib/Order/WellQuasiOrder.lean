@@ -188,7 +188,7 @@ instance [WellQuasiOrderedLE α] [Preorder β] [WellQuasiOrderedLE β] : WellQua
 theorem Monotone.wellQuasiOrderedLE_of_wellQuasiOrderedLE_of_surjective [Preorder β]
     [WellQuasiOrderedLE α] {f : α → β} (mono : Monotone f) (hf : Function.Surjective f) :
     WellQuasiOrderedLE β :=
-  ⟨RelHom.wellQuasiOrdered_of_wellQuasiOrdered_of_surjective wellQuasiOrdered_le ⟨_, (mono ·)⟩ hf⟩
+  ⟨wellQuasiOrdered_le.of_surjective ⟨_, (mono ·)⟩ hf⟩
 
 theorem OrderHom.wellQuasiOrderedLE_of_wellQuasiOrderedLE_of_surjective [Preorder β]
     [WellQuasiOrderedLE α] (f : α →o β) (hf : Function.Surjective f) :
