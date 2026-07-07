@@ -5,10 +5,8 @@ Authors: Jakob von Raumer
 -/
 module
 
-public import Mathlib.LinearAlgebra.Basis.Basic
 public import Mathlib.LinearAlgebra.DirectSum.Finsupp
 public import Mathlib.LinearAlgebra.Finsupp.VectorSpace
-public import Mathlib.LinearAlgebra.FreeModule.Basic
 
 /-!
 # Bases and dimensionality of tensor products of modules

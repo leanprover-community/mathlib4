@@ -5,7 +5,6 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.AlgebraicGeometry.AffineScheme
 public import Mathlib.AlgebraicGeometry.RelativeGluing
 public import Mathlib.CategoryTheory.Sites.DenseSubsite.InducedTopology
 

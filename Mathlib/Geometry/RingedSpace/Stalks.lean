@@ -6,7 +6,6 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.Geometry.RingedSpace.PresheafedSpace
-public import Mathlib.CategoryTheory.Limits.Final
 public import Mathlib.Topology.Sheaves.Stalks
 
 /-!

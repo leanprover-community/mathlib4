@@ -5,7 +5,6 @@ Authors: Joël Riou, Johan Commelin
 -/
 module
 
-public import Mathlib.Algebra.Field.Defs
 public import Mathlib.Algebra.Ring.NegOnePow
 public import Mathlib.Tactic.NormNum
 

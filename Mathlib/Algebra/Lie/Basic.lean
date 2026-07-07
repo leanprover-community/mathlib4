@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Module.Submodule.Equiv
 public import Mathlib.Algebra.Module.Equiv.Basic
 public import Mathlib.Algebra.Module.Rat
-public import Mathlib.Data.Bracket
 public import Mathlib.Tactic.Abel
 
 /-!

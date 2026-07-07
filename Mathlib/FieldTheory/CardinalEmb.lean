@@ -5,13 +5,10 @@ Authors: Junyan Xu
 -/
 module
 
-public import Mathlib.FieldTheory.SeparableClosure
 public import Mathlib.FieldTheory.PurelyInseparable.Basic
 public import Mathlib.LinearAlgebra.FreeAlgebra
-public import Mathlib.Order.Interval.Set.WithBotTop
 public import Mathlib.Order.DirectedInverseSystem
 
-import Mathlib.SetTheory.Ordinal.Basic
 
 /-!
 # Number of embeddings of an algebraic extension of infinite separable degree

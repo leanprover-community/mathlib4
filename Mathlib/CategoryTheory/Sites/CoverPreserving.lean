@@ -7,7 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.Functor.Flat
 public import Mathlib.CategoryTheory.Sites.Continuous
-public import Mathlib.Tactic.ApplyFun
 /-!
 # Cover-preserving functors between sites.
 

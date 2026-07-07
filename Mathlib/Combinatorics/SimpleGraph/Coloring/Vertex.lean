@@ -7,12 +7,9 @@ module
 
 public import Mathlib.Combinatorics.SimpleGraph.Clique
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
-public import Mathlib.Combinatorics.SimpleGraph.Copy
 public import Mathlib.Data.ENat.Lattice
 public import Mathlib.Data.Nat.Cast.Order.Ring
 public import Mathlib.Data.Setoid.Partition
-public import Mathlib.Order.Antichain
-public import Mathlib.Order.Lattice.Nat
 
 /-!
 # Graph Coloring

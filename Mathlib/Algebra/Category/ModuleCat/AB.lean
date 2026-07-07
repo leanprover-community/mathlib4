@@ -7,8 +7,6 @@ module
 
 public import Mathlib.Algebra.Category.Grp.AB
 public import Mathlib.Algebra.Category.ModuleCat.Colimits
-public import Mathlib.Algebra.Module.Shrink
-public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Basic
 /-!
 
 # AB axioms in module categories

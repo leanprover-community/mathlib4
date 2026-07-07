@@ -5,7 +5,6 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Connected
 public import Mathlib.CategoryTheory.Limits.Shapes.Preorder.TransfiniteCompositionOfShape
 public import Mathlib.CategoryTheory.MorphismProperty.Limits
 public import Mathlib.Order.Interval.Set.SuccOrder

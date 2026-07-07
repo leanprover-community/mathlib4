@@ -6,7 +6,6 @@ Authors: Christopher Hoskin
 module
 
 public import Mathlib.Order.Hom.CompleteLattice
-public import Mathlib.Topology.Homeomorph.Defs
 public import Mathlib.Topology.Order.Lattice
 
 /-!

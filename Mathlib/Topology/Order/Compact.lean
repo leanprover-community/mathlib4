@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Topology.Algebra.Support
 public import Mathlib.Topology.Order.IntermediateValue
-public import Mathlib.Topology.Order.IsLUB
 public import Mathlib.Topology.Order.LocalExtr
 
 /-!

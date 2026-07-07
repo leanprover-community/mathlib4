@@ -6,10 +6,7 @@ Authors: Junyan Xu
 module
 
 public import Mathlib.AlgebraicTopology.FundamentalGroupoid.SimplyConnected  -- shake: keep (`p_w`)
-public import Mathlib.Geometry.Manifold.Diffeomorph
 public import Mathlib.Geometry.Manifold.Instances.Sphere
-public import Mathlib.Topology.Homotopy.Equiv
-public import Mathlib.Util.Superscript
 
 /-!
 # Statement of the generalized Poincaré conjecture

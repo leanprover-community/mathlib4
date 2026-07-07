@@ -9,7 +9,6 @@ public import Mathlib.Order.UpperLower.Closure
 public import Mathlib.Order.UpperLower.Fibration
 public import Mathlib.Tactic.TFAE
 public import Mathlib.Topology.ContinuousOn
-public import Mathlib.Topology.Maps.OpenQuotient
 
 /-!
 # Inseparable points in a topological space

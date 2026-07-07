@@ -5,7 +5,6 @@ Authors: Chris Birkbeck, David Loeffler, Michael Stoll
 -/
 module
 
-public import Mathlib.Analysis.Complex.TaylorSeries
 public import Mathlib.Analysis.Complex.Positivity
 public import Mathlib.NumberTheory.ArithmeticFunction.Defs
 public import Mathlib.NumberTheory.LSeries.Deriv

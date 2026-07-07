@@ -9,7 +9,6 @@ public import Mathlib.Algebra.NeZero
 public import Mathlib.Data.Finset.Attach
 public import Mathlib.Data.Finset.Disjoint
 public import Mathlib.Data.Finset.Erase
-public import Mathlib.Data.Finset.Filter
 public import Mathlib.Data.Finset.Range
 public import Mathlib.Data.Finset.Lattice.Lemmas
 public import Mathlib.Data.Finset.SDiff

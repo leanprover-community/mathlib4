@@ -5,7 +5,6 @@ Authors: Oliver Nash
 -/
 module
 
-public import Mathlib.Algebra.Order.Ring.Abs
 public import Mathlib.Dynamics.FixedPoints.Prufer
 public import Mathlib.Dynamics.Ergodic.Ergodic
 public import Mathlib.MeasureTheory.Covering.DensityTheorem

@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Ring.CentroidHom
 public import Mathlib.Algebra.Star.StarRingHom
 public import Mathlib.Algebra.Star.Subsemiring
-public import Mathlib.Algebra.Star.Basic
 
 /-!
 # Centroid homomorphisms on Star Rings

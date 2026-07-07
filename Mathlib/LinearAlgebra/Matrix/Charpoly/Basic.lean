@@ -6,7 +6,6 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.Algebra.Polynomial.Eval.SMul
-public import Mathlib.LinearAlgebra.Matrix.Adjugate
 public import Mathlib.LinearAlgebra.Matrix.Block
 public import Mathlib.RingTheory.MatrixPolynomialAlgebra
 

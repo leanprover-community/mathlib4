@@ -5,7 +5,6 @@ Authors: Aaron Anderson
 -/
 module
 
-public import Mathlib.Algebra.Notation.Support
 public import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
 public import Mathlib.Data.Finsupp.Defs
 public import Mathlib.Order.WellFoundedSet

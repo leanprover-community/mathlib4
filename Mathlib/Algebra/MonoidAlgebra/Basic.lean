@@ -5,14 +5,10 @@ Authors: Johannes Hölzl, Yury Kudryashov, Kim Morrison
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Equiv
 public import Mathlib.Algebra.Algebra.NonUnitalHom
 public import Mathlib.Algebra.Algebra.Tower
-public import Mathlib.Algebra.Module.BigOperators
 public import Mathlib.Algebra.MonoidAlgebra.MapDomain
 public import Mathlib.Algebra.MonoidAlgebra.Module
-public import Mathlib.Data.Finsupp.SMul
-public import Mathlib.LinearAlgebra.Finsupp.LSum
 
 /-!
 # Algebra structure on monoid algebras

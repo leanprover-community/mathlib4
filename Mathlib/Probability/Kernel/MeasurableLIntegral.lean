@@ -5,7 +5,6 @@ Authors: Rémy Degenne
 -/
 module
 
-public import Mathlib.MeasureTheory.MeasurableSpace.Prod
 public import Mathlib.Probability.Kernel.Basic
 
 /-!

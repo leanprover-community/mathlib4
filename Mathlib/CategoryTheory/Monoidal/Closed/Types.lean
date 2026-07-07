@@ -8,7 +8,6 @@ module
 public import Mathlib.CategoryTheory.Monoidal.Closed.Cartesian
 public import Mathlib.CategoryTheory.Limits.Presheaf
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.FunctorCategory
-public import Mathlib.CategoryTheory.Monoidal.Types.Basic
 
 /-!
 # Cartesian closure of Type

@@ -6,7 +6,6 @@ Authors: Yury Kudryashov, Heather Macbeth, Sébastien Gouëzel
 module
 
 public import Mathlib.LinearAlgebra.Alternating.Basic
-public import Mathlib.LinearAlgebra.BilinearMap
 public import Mathlib.Topology.Algebra.Module.Equiv
 public import Mathlib.Topology.Algebra.Module.Multilinear.Basic
 

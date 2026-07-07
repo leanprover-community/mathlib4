@@ -6,7 +6,6 @@ Authors: Yury Kudryashov, Fabrizio Barroero, Christopher Hoskin
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Complex.Log
-public import Mathlib.Order.Interval.Set.Defs
 
 /-!
 # circleMap

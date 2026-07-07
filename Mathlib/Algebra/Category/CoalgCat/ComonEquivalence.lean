@@ -7,9 +7,7 @@ module
 
 public import Mathlib.Algebra.Category.CoalgCat.Basic
 public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Symmetric
-public import Mathlib.CategoryTheory.Monoidal.Braided.Opposite
 public import Mathlib.CategoryTheory.Monoidal.Comon_
-public import Mathlib.LinearAlgebra.TensorProduct.Tower
 public import Mathlib.RingTheory.Coalgebra.TensorProduct
 public import Mathlib.Tactic.SuppressCompilation
 

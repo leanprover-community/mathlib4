@@ -5,7 +5,6 @@ Authors: Oliver Nash
 -/
 module
 
-public import Mathlib.Order.CompleteLatticeIntervals
 public import Mathlib.Order.CompactlyGenerated.Basic
 
 /-!

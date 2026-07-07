@@ -5,7 +5,6 @@ Authors: David Loeffler
 -/
 module
 
-public import Mathlib.Algebra.Group.EvenFunction
 public import Mathlib.Analysis.SpecialFunctions.Complex.CircleAddChar
 public import Mathlib.Analysis.Fourier.FourierTransform
 public import Mathlib.NumberTheory.DirichletCharacter.GaussSum

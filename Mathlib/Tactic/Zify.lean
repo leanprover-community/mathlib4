@@ -10,7 +10,6 @@ public import Mathlib.Order.Basic
 public meta import Mathlib.Tactic.ToAdditive
 public meta import Mathlib.Tactic.ToDual
 
-import Mathlib.Tactic.Attr.Register
 
 /-!
 # `zify` tactic

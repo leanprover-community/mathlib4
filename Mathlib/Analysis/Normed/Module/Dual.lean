@@ -7,10 +7,6 @@ module
 
 public import Mathlib.Analysis.LocallyConvex.Polar
 public import Mathlib.Analysis.Normed.Module.HahnBanach
-public import Mathlib.Analysis.Normed.Module.RCLike.Basic
-public import Mathlib.Data.Set.Finite.Lemmas
-public import Mathlib.Analysis.LocallyConvex.AbsConvex
-public import Mathlib.Analysis.Normed.Module.Convex
 public import Mathlib.Analysis.RCLike.Lemmas
 public import Mathlib.Analysis.LocallyConvex.SeparatingDual
 

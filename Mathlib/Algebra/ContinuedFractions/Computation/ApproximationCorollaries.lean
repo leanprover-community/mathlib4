@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.ContinuedFractions.Computation.Approximations
 public import Mathlib.Algebra.ContinuedFractions.ConvergentsEquiv
 public import Mathlib.Algebra.Order.Archimedean.Basic
-public import Mathlib.Tactic.GCongr
 public import Mathlib.Topology.Order.LeftRightNhds
 
 /-!

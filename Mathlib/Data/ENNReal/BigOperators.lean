@@ -5,7 +5,6 @@ Authors: Johannes Hölzl, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Finsupp.Basic
 public import Mathlib.Algebra.BigOperators.WithTop
 public import Mathlib.Data.NNReal.Basic
 public import Mathlib.Data.ENNReal.Inv

@@ -6,9 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 module
 
 public import Mathlib.Data.Finite.Sigma
-public import Mathlib.Data.Set.Subset
 public import Mathlib.Topology.Clopen
-public import Mathlib.Topology.Compactness.Compact
 public import Mathlib.Topology.Connected.Basic
 
 /-!

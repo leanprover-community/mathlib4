@@ -5,11 +5,8 @@ Authors: Chris Hughes
 -/
 module
 
-public import Mathlib.RingTheory.Algebraic.Basic
-public import Mathlib.Data.Fintype.Pigeonhole
 public import Mathlib.ModelTheory.Algebra.Field.IsAlgClosed
 public import Mathlib.ModelTheory.Algebra.Ring.Definability
-public import Mathlib.RingTheory.Polynomial.Basic
 
 /-!
 # Ax-Grothendieck
