@@ -168,7 +168,10 @@ jobs:
         shell: bash -euo pipefail {0}
         run: |
           mkdir -p pr-branch/.lake/
-          mkdir -p .cache/mathlib/
+          # The landrun ruleset mounts $HOME/.cache/mathlib read-only; landrun
+          # errors out if the path is missing (runs that skip legacy hydration
+          # reach the first landrun step with it absent).
+          mkdir -p "$HOME/.cache/mathlib/"
           mkdir -p _work
 
       - name: install elan
