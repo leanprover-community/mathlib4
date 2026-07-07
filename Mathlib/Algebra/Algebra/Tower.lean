@@ -323,6 +323,11 @@ def extendScalarsHomOfSurjective (h : Function.Surjective ⇑(algebraMap R S)) :
   __ := extendScalarsOfSurjective h
   map_mul' _ _ := rfl
 
+@[simp]
+lemma toMonoidHom_symm_extendScalarsHomOfSurjective (h : Function.Surjective (algebraMap R S)) :
+    (extendScalarsHomOfSurjective h (A := A).symm : (A ≃ₐ[S] A) →* _) = restrictScalarsHom R :=
+  rfl
+
 end
 
 end AlgEquiv
