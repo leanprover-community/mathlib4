@@ -372,7 +372,7 @@ theorem disjoint : (K.parts : Set (Finset V)).Pairwise Disjoint :=
 /-- The finset of vertices in a complete equipartite subgraph. -/
 def verts : Finset V := K.parts.disjiUnion id K.disjoint
 
-open Classical in
+open scoped Classical in
 /-- The finset of vertices in a complete equipartite subgraph as a `biUnion`. -/
 lemma verts_eq_biUnion : K.verts = K.parts.biUnion id := by rw [verts, disjiUnion_eq_biUnion]
 

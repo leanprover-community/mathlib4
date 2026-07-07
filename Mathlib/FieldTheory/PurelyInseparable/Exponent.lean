@@ -108,13 +108,13 @@ open Polynomial
 variable [Field K] [Field L] [Algebra K L] [IsPurelyInseparable K L]
 variable {L}
 
-open Classical in
+open scoped Classical in
 /-- The exponent of an element `a ∈ L` of a purely inseparable field extension `L / K`
 is the smallest natural number `e` such that `a ^ ringExpChar K ^ e ∈ K`. -/
 noncomputable def elemExponent (a : L) : ℕ :=
   Nat.find <| minpoly_eq_X_pow_sub_C K (ringExpChar K) a
 
-open Classical in
+open scoped Classical in
 variable {K} in
 theorem elemExponent_eq_zero_of_mem_range {a : L} (h : a ∈ (algebraMap K L).range) :
     elemExponent K a = 0 := by
@@ -127,7 +127,7 @@ theorem elemExponent_eq_zero_of_charZero (a : L) [CharZero K] :
     elemExponent K a = 0 :=
   elemExponent_eq_zero_of_mem_range <| surjective_algebraMap_of_isSeparable K L a
 
-open Classical in
+open scoped Classical in
 /-- The element `y` of the base field `K` such that
 `a ^ ringExpChar K ^ elemExponent K a = algebraMap K L y`.
 See `IsPurelyInseparable.algebraMap_elemReduct_eq`. -/
