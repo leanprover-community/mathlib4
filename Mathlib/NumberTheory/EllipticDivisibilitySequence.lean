@@ -151,7 +151,6 @@ lemma atom_odd (a b : ℤ) : atom W (2 * a + 1) (2 * b + 1) = W (a + b + 1) * W 
   simp_rw [atom, add_add_add_comm _ (1 : ℤ), ← two_mul, ← mul_add, add_sub_add_comm, sub_self,
     add_zero, ← mul_sub, Int.mul_tdiv_cancel_left _ two_ne_zero]
 
-@[simp]
 lemma map_atom (a b : ℤ) : f (atom W a b) = atom (f ∘ W) a b := by
   simp_rw [atom, map_mul, Function.comp]
 
@@ -234,7 +233,6 @@ lemma atomRel_avg_sub {a b c d : ℤ} (parity : d % 2 = a % 2 ∧ d % 2 = b % 2 
   simp_rw [add_assoc <| a + b, atomRel, atom, sub_add_sub_comm, ← two_mul]
   repeat rw [Int.mul_ediv_cancel'] <;> grind
 
-@[simp]
 lemma map_atomRel (a b c d : ℤ) : f (atomRel W a b c d) = atomRel (f ∘ W) a b c d := by
   simp_rw [atomRel, map_add, map_sub, map_mul, map_atom]
 
@@ -263,19 +261,18 @@ lemma rel_neg (odd : W.Odd) (p q r s : ℤ) : rel W (-p) (-q) (-r) (-s) = rel W 
   simp_rw [rel_eq, mul_neg, ← neg_add, atomRel_neg₁ odd, atomRel_neg₂ odd, atomRel_neg₃ odd,
     atomRel_neg₄]
 
-/-- The even elliptic relator `ER(m + 1, m - 1, 1, 0)` for all `m ∈ ℤ`. -/
+/-- The even elliptic relator `ER(m + 1, m - 1, 1, 0)` for `m ∈ ℤ`. -/
 lemma rel_even (m : ℤ) : rel W (m + 1) (m - 1) 1 0 = W (2 * m) * W 2 * W 1 ^ 2 -
     W (m - 1) ^ 2 * W m * W (m + 2) + W (m - 2) * W m * W (m + 1) ^ 2 := by
   rw [rel]
   ring_nf
 
-/-- The odd elliptic relator `ER(m + 1, m, 1, 0)` for all `m ∈ ℤ`. -/
+/-- The odd elliptic relator `ER(m + 1, m, 1, 0)` for `m ∈ ℤ`. -/
 lemma rel_odd (m : ℤ) : rel W (m + 1) m 1 0 =
     W (2 * m + 1) * W 1 ^ 3 - W (m + 2) * W m ^ 3 + W (m - 1) * W (m + 1) ^ 3 := by
   rw [rel]
   ring_nf
 
-@[simp]
 lemma map_rel (p q r s : ℤ) : f (rel W p q r s) = rel (f ∘ W) p q r s := by
   simp_rw [rel, map_add, map_sub, map_mul, Function.comp]
 
