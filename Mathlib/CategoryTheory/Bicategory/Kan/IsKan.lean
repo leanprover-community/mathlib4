@@ -5,7 +5,9 @@ Authors: Yuma Mizuno
 -/
 module
 
+public import Mathlib.CategoryTheory.Adjunction.Limits
 public import Mathlib.CategoryTheory.Bicategory.Extension
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
 
 /-!
 # Kan extensions and Kan lifts in bicategories
@@ -209,6 +211,12 @@ def whiskerOfCommute (s t : LeftLift f g) (i : s ≅ t) {x : B} (h : x ⟶ c)
     IsKan (t.whisker h) :=
   P.ofIsoKan <| whiskerIso i h
 
+/-- `LeftLift.ofIso` preserves Kan lifts: being a left Kan lift is invariant under transporting
+the boundary 1-cells along isomorphisms. -/
+noncomputable def ofIso {f' : b ⟶ a} {g' : c ⟶ a} (H : IsKan t) (ef : f ≅ f') (eg : g ≅ g') :
+    IsKan (t.ofIso ef eg) :=
+  Limits.IsInitial.isInitialObj (LeftLift.mapIso ef eg).functor t H
+
 end IsKan
 
 namespace IsAbsKan
@@ -227,6 +235,11 @@ def isKan (H : IsAbsKan t) : IsKan t :=
 /-- Transport evidence that a left lift is a Kan lift across an isomorphism of lifts. -/
 def ofIsoAbsKan (P : IsAbsKan s) (i : s ≅ t) : IsAbsKan t :=
   fun h ↦ (P h).ofIsoKan (whiskerIso i h)
+
+/-- `LeftLift.ofIso` preserves absolute left Kan lifts. -/
+noncomputable def ofIso {f' : b ⟶ a} {g' : c ⟶ a} (H : IsAbsKan t) (ef : f ≅ f') (eg : g ≅ g') :
+    IsAbsKan (t.ofIso ef eg) :=
+  fun h ↦ ((H h).ofIso ef (whiskerLeftIso h eg)).ofIsoKan (whiskerOfIso ef eg t h)
 
 end IsAbsKan
 
