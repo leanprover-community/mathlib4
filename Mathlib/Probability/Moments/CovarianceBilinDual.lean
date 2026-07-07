@@ -53,7 +53,7 @@ section LinearMap
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 E]
 
-open Classical in
+open scoped Classical in
 /-- Linear map from the dual to `Lp` equal to `MemLp.toLp` if `MemLp id p μ` and to 0 otherwise. -/
 noncomputable
 def toLpₗ (μ : Measure E) (p : ℝ≥0∞) :
