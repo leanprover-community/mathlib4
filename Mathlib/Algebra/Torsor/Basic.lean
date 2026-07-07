@@ -38,7 +38,7 @@ theorem one_mem_sdiv_iff {s t : Set P} : (1 : G) ∈ s /ₛ t ↔ ¬Disjoint s t
   simp [not_disjoint_iff_nonempty_inter, mem_sdiv, Set.Nonempty]
 
 @[to_additive]
-theorem Nonempty.one_mem_sdiv {s : Set P} (h : s.Nonempty) : (1 : G) ∈ s /ₛ s :=
+theorem Nonempty.one_mem_sdiv_self {s : Set P} (h : s.Nonempty) : (1 : G) ∈ s /ₛ s :=
   let ⟨p, hp⟩ := h
   ⟨p, hp, p, hp, sdiv_self _⟩
 

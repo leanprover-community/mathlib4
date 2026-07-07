@@ -851,7 +851,6 @@ theorem prod_bot_right (s : AffineSubspace k P) : s.prod (⊥ : AffineSubspace k
 theorem prod_bot_left (t : AffineSubspace k P) : (⊥ : AffineSubspace k Q).prod t = ⊥ := by
   simp [AffineSubspace.ext_iff]
 
-@[simp]
 theorem prod_inf_prod (s₁ s₂ : AffineSubspace k P) (t₁ t₂ : AffineSubspace k Q) :
     s₁.prod t₁ ⊓ s₂.prod t₂ = (s₁ ⊓ s₂).prod (t₁ ⊓ t₂) :=
   SetLike.coe_injective Set.prod_inter_prod
