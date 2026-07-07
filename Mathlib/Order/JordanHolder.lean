@@ -90,19 +90,12 @@ def JordanHolderLattice.ofModularLattice (X : Type*) [Lattice X] [IsModularLatti
     JordanHolderLattice X where
   IsMaximal := (· ⋖ ·)
   lt_of_isMaximal := CovBy.lt
-  sup_eq_of_isMaximal {x y z} hxz hyz hxy := by
-    apply eq_of_le_of_not_lt (sup_le hxz.le hyz.le)
-    contrapose! hxy
-    apply le_antisymm
-    · contrapose! hyz
-      exact not_covBy_of_lt_of_lt (right_lt_sup.mpr hyz) hxy
-    · contrapose! hxz
-      exact not_covBy_of_lt_of_lt (left_lt_sup.mpr hxz) hxy
-  isMaximal_inf_left_of_isMaximal_sup :=  inf_covBy_of_covBy_sup_of_covBy_sup_left
+  sup_eq_of_isMaximal hxz hyz := hxz.wcovBy.sup_eq hyz.wcovBy
+  isMaximal_inf_left_of_isMaximal_sup := inf_covBy_of_covBy_sup_of_covBy_sup_left
   Iso x y := Nonempty (OrderIso (Set.Icc x.1 x.2) (Set.Icc y.1 y.2))
   iso_symm := .map .symm
   iso_trans := .map2 .trans
-  second_iso {x y} h := ⟨(infIccOrderIsoIccSup' x y).symm⟩
+  second_iso {x y} _ := ⟨(infIccOrderIsoIccSup' x y).symm⟩
 
 end ModularLattice
 
