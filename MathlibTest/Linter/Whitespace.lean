@@ -10,9 +10,6 @@ section
 
 set_option linter.style.setOption true
 
-/--
-warning: The `linter.style.commandStart` option is deprecated, use `linter.style.whitespace` instead.
--/
 #guard_msgs in
 set_option linter.style.commandStart true
 
