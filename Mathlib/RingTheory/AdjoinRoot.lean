@@ -12,6 +12,7 @@ public import Mathlib.RingTheory.Adjoin.Basic
 public import Mathlib.RingTheory.FinitePresentation
 public import Mathlib.RingTheory.FiniteType
 public import Mathlib.RingTheory.Ideal.Quotient.Noetherian
+public import Mathlib.RingTheory.Localization.Algebra
 public import Mathlib.RingTheory.PowerBasis
 public import Mathlib.RingTheory.PrincipalIdealDomain
 public import Mathlib.RingTheory.Polynomial.Quotient
@@ -262,7 +263,11 @@ theorem isRoot_root (f : R[X]) : IsRoot (f.map (of f)) (root f) := by
 theorem isAlgebraic_root (hf : f ≠ 0) : IsAlgebraic R (root f) :=
   ⟨f, hf, eval₂_root f⟩
 
-theorem of.injective_of_degree_ne_zero [IsDomain R] (hf : f.degree ≠ 0) :
+theorem isAlgebraic [NoZeroDivisors R] (hf : f ≠ 0) : Algebra.IsAlgebraic R (AdjoinRoot f) :=
+  Algebra.isAlgebraic_iff.mpr <| by simpa only [adjoinRoot_eq_top] using
+    Algebra.isAlgebraic_adjoin_singleton_iff.mpr (isAlgebraic_root hf)
+
+theorem of.injective_of_degree_ne_zero [NoZeroDivisors R] (hf : f.degree ≠ 0) :
     Function.Injective (AdjoinRoot.of f) := by
   rw [injective_iff_map_eq_zero]
   intro p hp
@@ -1097,3 +1102,42 @@ lemma Polynomial.Monic.exists_splits_map.{u}
   refine ⟨S, ‹_›, ‹_›, .trans (AdjoinRoot p) _, .trans (S := AdjoinRoot p), ‹_›, ?_⟩
   rw [IsScalarTower.algebraMap_eq R (AdjoinRoot p), ← Polynomial.map_map, hq, Polynomial.map_mul]
   exact .mul (by simp) hS
+
+namespace AdjoinRoot
+
+open scoped nonZeroDivisors
+
+variable [CommRing R] [CommRing K] [Algebra R K] {p : R[X]}
+
+attribute [local instance] Polynomial.algebra
+
+/-- If `f : R → K` is an algebra map, then `K[X] / f(p)` is an algebra over `R[X] / p`. -/
+abbrev algebra : Algebra (AdjoinRoot p) (AdjoinRoot (p.map (algebraMap R K))) :=
+  Quotient.algebraQuotientOfLEComap <| le_comap_of_map_le <| by simp [map_span]
+
+attribute [local instance] AdjoinRoot.algebra
+
+instance : IsScalarTower R (AdjoinRoot p) (AdjoinRoot (p.map (algebraMap R K))) :=
+  .of_algebraMap_eq fun r ↦ (IsScalarTower.algebraMap_apply R K ..).trans <|
+    .symm <| quotientMap_mk.trans <| by simp; rfl
+
+variable [NoZeroDivisors R]
+
+lemma faithfulSMul (hp : p.degree ≠ 0) : FaithfulSMul R (AdjoinRoot p) :=
+  .of_injective (Algebra.ofId R _) (of.injective_of_degree_ne_zero hp)
+
+/-- If `f : R → K` is the canonical map from a domain `R` to its fraction ring `K`, and `p` is a
+non-constant prime polynomial over `R`, then `K[X] / f(p)` is a fraction ring of `R[X] / p`. -/
+theorem isFractionRing [IsFractionRing R K] (prime : Prime p) (degree : p.degree ≠ 0) :
+    IsFractionRing (AdjoinRoot p) (AdjoinRoot (p.map (algebraMap R K))) := by
+  have : IsDomain (AdjoinRoot p) := isDomain_of_prime prime
+  have : Algebra.IsAlgebraic R (AdjoinRoot p) := isAlgebraic prime.ne_zero
+  have : FaithfulSMul R (AdjoinRoot p) := faithfulSMul degree
+  rw [← Algebra.IsAlgebraic.isLocalization_iff_isFractionRing R]
+  convert IsLocalization.of_surjective (R⁰.map C) K[X] _ mk_surjective _ mk_surjective _ fun _ h ↦ _
+  · ext; simp [Algebra.algebraMapSubmonoid]
+  · rfl
+  rcases mem_span_singleton'.mp <| Quotient.eq_zero_iff_mem.mp h with ⟨_, rfl⟩
+  exact mul_mem_left _ _ <| mem_map_of_mem _ <| Quotient.mk_singleton_self p
+
+end AdjoinRoot

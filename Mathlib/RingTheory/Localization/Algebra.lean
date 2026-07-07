@@ -189,7 +189,7 @@ attribute [local instance] Polynomial.algebra in
 `R[X]` at `S.map Polynomial.C`.
 
 See also `MvPolynomial.isLocalization` for the multivariate case. -/
-lemma isLocalization {R} [CommSemiring R] (S : Submonoid R) (A) [CommSemiring A] [Algebra R A]
+instance isLocalization {R} [CommSemiring R] (S : Submonoid R) (A) [CommSemiring A] [Algebra R A]
     [IsLocalization S A] : IsLocalization (S.map C) A[X] :=
   isLocalizedModule_iff_isLocalization.mp <| (isLocalizedModule_iff_isBaseChange S A _).mpr <|
     .of_equiv (polyEquivTensor' R A).symm.toLinearEquiv fun _ ↦ by simp
