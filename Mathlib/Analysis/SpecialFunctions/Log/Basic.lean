@@ -470,6 +470,50 @@ theorem isLittleO_const_log_atTop {c : ℝ} : (fun _ => c) =o[atTop] log := by
   continuousOn_toFun := continuousOn_exp
   continuousOn_invFun x hx := (continuousAt_log (ne_of_gt hx)).continuousWithinAt
 
+@[simp]
+theorem image_log_Ioi {a : ℝ} (ha : 0 < a) : log '' Ioi a = Ioi (log a) :=
+  (continuousOn_log.mono fun _ hx ↦ (ha.trans_le hx).ne').image_Ioi_of_strictMonoOn
+    (strictMonoOn_log.mono fun _ hx ↦ ha.trans_le hx) tendsto_log_atTop
+
+@[simp]
+theorem image_log_Ici {a : ℝ} (ha : 0 < a) : log '' Ici a = Ici (log a) :=
+  (continuousOn_log.mono fun _ hx ↦ (ha.trans_le hx).ne').image_Ici_of_monotoneOn
+    (strictMonoOn_log.monotoneOn.mono fun _ hx ↦ ha.trans_le hx) tendsto_log_atTop
+
+@[simp]
+theorem image_log_Icc {a b : ℝ} (ha : 0 < a) (hab : a ≤ b) : log '' Icc a b = Icc (log a) (log b) :=
+  (continuousOn_log.mono fun _ hx ↦ (ha.trans_le hx.1).ne').image_Icc_of_monotoneOn hab
+    (strictMonoOn_log.monotoneOn.mono fun _ hx ↦ ha.trans_le hx.1)
+
+@[simp]
+theorem image_log_Ico {a b : ℝ} (ha : 0 < a) (hab : a ≤ b) : log '' Ico a b = Ico (log a) (log b) :=
+  (continuousOn_log.mono fun _ hx ↦ (ha.trans_le hx.1).ne').image_Ico_of_strictMonoOn hab
+    (strictMonoOn_log.mono fun _ hx ↦ ha.trans_le hx.1)
+
+@[simp]
+theorem image_log_Ioc {a b : ℝ} (ha : 0 < a) (hab : a ≤ b) : log '' Ioc a b = Ioc (log a) (log b) :=
+  (continuousOn_log.mono fun _ hx ↦ (ha.trans_le hx.1).ne').image_Ioc_of_strictMonoOn hab
+    (strictMonoOn_log.mono fun _ hx ↦ ha.trans_le hx.1)
+
+@[simp]
+theorem image_log_Ioo {a b : ℝ} (ha : 0 < a) (hab : a ≤ b) : log '' Ioo a b = Ioo (log a) (log b) :=
+  (continuousOn_log.mono fun _ hx ↦ (ha.trans_le hx.1).ne').image_Ioo_of_strictMonoOn hab
+    (strictMonoOn_log.mono fun _ hx ↦ ha.trans_le hx.1)
+
+@[simp]
+theorem image_log_uIcc {a b : ℝ} (ha : 0 < a) (hb : 0 < b) :
+    log '' uIcc a b = uIcc (log a) (log b) :=
+  (continuousOn_log.mono fun _ hx ↦ ((lt_min ha hb).trans_le hx.1).ne').image_uIcc_of_monotoneOn
+    (strictMonoOn_log.monotoneOn.mono fun _ hx ↦ (lt_min ha hb).trans_le hx.1)
+
+@[simp]
+theorem image_log_Ioo_zero {a : ℝ} (ha : 0 < a) : log '' Ioo 0 a = Iio (log a) := by
+  nth_rw 1 [← exp_log ha, ← image_exp_Iio, ← image_comp, log_comp_exp, image_id]
+
+@[simp]
+theorem image_log_Ioc_zero {a : ℝ} (ha : 0 < a) : log '' Ioc 0 a = Iic (log a) := by
+  nth_rw 1 [← exp_log ha, ← image_exp_Iic, ← image_comp, log_comp_exp, image_id]
+
 end Real
 
 namespace Nat.Prime

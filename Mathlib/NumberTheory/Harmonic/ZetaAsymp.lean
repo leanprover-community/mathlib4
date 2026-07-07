@@ -9,6 +9,9 @@ public import Mathlib.NumberTheory.LSeries.Dirichlet
 public import Mathlib.NumberTheory.Harmonic.GammaDeriv
 public import Mathlib.Analysis.Asymptotics.Lemmas
 
+import Mathlib.Analysis.Calculus.Deriv.Star
+import Mathlib.Analysis.Normed.Module.Connected
+
 /-!
 # Asymptotics of `ζ s` as `s → 1` or `s → 0`
 
@@ -25,6 +28,8 @@ The goal of this file is to evaluate the limit of `ζ s - 1 / (s - 1)` as `s →
   for certain entire functions `riemannZeta₀` and `riemannZeta₁`.
 * Asymptotics for `deriv riemannZeta s`, `log (riemannZeta s)`,
   `(deriv riemannZeta s) / (riemannZeta s)` and `(riemannZeta s)⁻¹` as `s → 1`.
+* `riemannZeta_conj`: the conjugation symmetry `ζ (conj s) = conj (ζ s)` (valid for all `s`,
+  since the junk value `ζ 1` is real).
 
 ### Outline of arguments
 
@@ -406,7 +411,7 @@ end val_at_one
 end ZetaAsymptotics
 
 open scoped Real
-open Complex
+open Complex ComplexConjugate
 
 /-- Formula for `ζ 1`. Note that mathematically `ζ 1` is undefined, but our construction ascribes
 this particular value to it. -/
@@ -443,6 +448,38 @@ lemma riemannZeta_one_ne_zero : riemannZeta 1 ≠ 0 := by
   · rw [Real.lt_log_iff_exp_lt (by positivity)]
     exact (lt_trans Real.exp_one_lt_d9 (by norm_num)).trans_le
       <| mul_le_mul_of_nonneg_left Real.two_le_pi (by simp)
+
+/-- **Conjugation symmetry of the Riemann zeta function**: `ζ (conj s) = conj (ζ s)`.
+
+Since `ζ` has real Dirichlet coefficients, `conj (ζ (conj z)) = ζ z` holds termwise for
+`1 < re z`, and the identity principle propagates this to all `s ≠ 1`; the junk value `ζ 1` is
+real, so the identity also holds at `s = 1`. -/
+@[simp]
+theorem riemannZeta_conj (s : ℂ) : riemannZeta (conj s) = conj (riemannZeta s) := by
+  rcases eq_or_ne s 1 with rfl | hs
+  · have h : riemannZeta 1 = ((γ - Real.log (4 * π)) / 2 : ℝ) := by
+      rw [riemannZeta_one, ofReal_div, ofReal_sub, ofReal_log (by positivity : (0 : ℝ) ≤ 4 * π)]
+      norm_cast
+    rw [map_one, h, conj_ofReal]
+  · -- `conj ∘ ζ ∘ conj` is analytic on `{1}ᶜ` and agrees with `ζ` termwise on `1 < re z`, so
+    -- the identity principle propagates the equality to the connected set `{1}ᶜ`.
+    have hg_an : AnalyticOnNhd ℂ (fun z ↦ conj (riemannZeta (conj z))) {1}ᶜ :=
+      DifferentiableOn.analyticOnNhd
+        (fun z hz ↦ (differentiableAt_conj_conj_iff.mpr <| differentiableAt_riemannZeta <|
+          (map_ne_one_iff _ (starRingEnd ℂ).injective).mpr hz).differentiableWithinAt)
+        isOpen_compl_singleton
+    have hgz (z : ℂ) (hz : 1 < z.re) : conj (riemannZeta (conj z)) = riemannZeta z := by
+      rw [zeta_eq_tsum_one_div_nat_cpow (by rwa [conj_re]), conj_tsum,
+        zeta_eq_tsum_one_div_nat_cpow hz]
+      exact tsum_congr fun n ↦ by
+        rw [map_div₀, map_one, ← conj_cpow _ _ (by rw [natCast_arg]; positivity), conj_natCast]
+    have heq : EqOn (fun z ↦ conj (riemannZeta (conj z))) riemannZeta {1}ᶜ :=
+      hg_an.eqOn_of_preconnected_of_eventuallyEq analyticOn_riemannZeta
+        (isConnected_compl_singleton_of_one_lt_rank (by simp) 1).isPreconnected
+        (by norm_num : (2 : ℂ) ∈ _)
+        (eventuallyEq_of_mem
+          ((isOpen_lt continuous_const continuous_re).mem_nhds (by norm_num)) hgz)
+    simpa using congrArg (starRingEnd ℂ) (heq hs)
 
 lemma riemannZeta_eventually_ne_zero_nhds_one : ∀ᶠ s in 𝓝 1, riemannZeta s ≠ 0 := by
   filter_upwards [eventually_nhdsWithin_iff.1 <| riemannZeta_residue_one.eventually_ne one_ne_zero]
