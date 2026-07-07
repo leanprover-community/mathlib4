@@ -154,13 +154,6 @@ structure IsHamiltonianCycle (p : G.Walk a a) : Prop extends p.IsCycle where
 
 variable {p : G.Walk a a}
 
-theorem isHamiltonian_dropLast_iff : p.dropLast.IsHamiltonian ↔ p.tail.IsHamiltonian := by
-  simp_rw [IsHamiltonian, p.support_tail_perm_support_dropLast.count_eq]
-
-theorem IsHamiltonianCycle.isHamiltonian_dropLast (hp : p.IsHamiltonianCycle) :
-    p.dropLast.IsHamiltonian :=
-  isHamiltonian_dropLast_iff.mpr hp.isHamiltonian_tail
-
 lemma IsHamiltonianCycle.isCycle (hp : p.IsHamiltonianCycle) : p.IsCycle :=
   hp.toIsCycle
 
