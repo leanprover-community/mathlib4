@@ -357,12 +357,10 @@ theorem emultiplicity_le_emultiplicity_iff {c d : β} :
       simp_all only [not_exists, Decidable.not_not, not_true_eq_false, top_le_iff,
         dite_eq_right_iff, ENat.coe_ne_top, imp_false, not_false_eq_true, implies_true]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem FiniteMultiplicity.multiplicity_le_multiplicity_iff {c d : β} (hab : FiniteMultiplicity a b)
     (hcd : FiniteMultiplicity c d) :
     multiplicity a b ≤ multiplicity c d ↔ ∀ n : ℕ, a ^ n ∣ b → c ^ n ∣ d := by
-  rw [← WithTop.coe_le_coe, ENat.some_eq_coe, ← hab.emultiplicity_eq_multiplicity,
-    ← hcd.emultiplicity_eq_multiplicity]
+  rw [← ENat.coe_le_coe, ← hab.emultiplicity_eq_multiplicity, ← hcd.emultiplicity_eq_multiplicity]
   apply emultiplicity_le_emultiplicity_iff
 
 theorem emultiplicity_eq_emultiplicity_iff {c d : β} :
