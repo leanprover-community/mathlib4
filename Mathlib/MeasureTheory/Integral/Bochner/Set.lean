@@ -666,7 +666,7 @@ theorem setIntegral_trim {X} {m m0 : MeasurableSpace X} {μ : Measure X} (hm : m
 /-! ### Lemmas about adding and removing interval boundaries
 
 The primed lemmas take explicit arguments about the endpoint having zero measure, while the
-unprimed ones use `[NoAtoms μ]`.
+unprimed ones use `[NullSingletonClass μ]`.
 -/
 
 section PartialOrder
@@ -701,7 +701,7 @@ theorem integral_Ici_eq_integral_Ioi' (hx : μ {x} = 0) :
     ∫ t in Ici x, f t ∂μ = ∫ t in Ioi x, f t ∂μ :=
   setIntegral_congr_set (Ioi_ae_eq_Ici' hx).symm
 
-variable [NoAtoms μ]
+variable [NullSingletonClass μ]
 
 theorem integral_Icc_eq_integral_Ioc : ∫ t in Icc x y, f t ∂μ = ∫ t in Ioc x y, f t ∂μ :=
   integral_Icc_eq_integral_Ioc' <| measure_singleton x
@@ -884,6 +884,23 @@ lemma integral_le_measure {f : X → ℝ} {s : Set X}
       simpa [g] using h's x H
   · intro x hx
     simpa [g] using h's x hx
+
+lemma setIntegral_mono_of_nonneg {g : X → ℝ} (hf : ∀ x ∈ s, 0 ≤ f x)
+    (h : ∀ x ∈ s, f x ≤ g x) (hg : IntegrableOn g s μ) :
+    ∫ x in s, f x ∂μ ≤ ∫ x in s, g x ∂μ := by
+  by_cases h'f : AEStronglyMeasurable f (μ.restrict s); swap
+  · rw [integral_non_aestronglyMeasurable h'f]
+    apply integral_nonneg_of_ae
+    apply (ae_restrict_iff₀ ?_).2
+    · filter_upwards with x hx using (hf x hx).trans (h x hx)
+    · exact nullMeasurableSet_le aemeasurable_const hg.aemeasurable
+  refine integral_mono_of_nonneg ?_ hg ?_
+  · apply (ae_restrict_iff₀ ?_).2
+    · filter_upwards with x hx using hf x hx
+    · exact nullMeasurableSet_le aemeasurable_const h'f.aemeasurable
+  · apply (ae_restrict_iff₀ ?_).2
+    · filter_upwards with x hx using h x hx
+    · exact nullMeasurableSet_le h'f.aemeasurable hg.aemeasurable
 
 end Nonneg
 

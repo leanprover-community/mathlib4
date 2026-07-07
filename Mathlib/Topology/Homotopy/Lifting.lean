@@ -7,7 +7,7 @@ module
 
 public import Mathlib.AlgebraicTopology.FundamentalGroupoid.FundamentalGroup
 public import Mathlib.AlgebraicTopology.FundamentalGroupoid.SimplyConnected
-public import Mathlib.Topology.Connected.LocPathConnected
+public import Mathlib.Topology.Connected.LocallyPathConnected
 public import Mathlib.Topology.Covering.Quotient
 public import Mathlib.Topology.Homotopy.Path
 public import Mathlib.Topology.UnitInterval
@@ -168,7 +168,7 @@ open PathConnectedSpace (somePath) in
   path `f ∘ γ` in `X` lifts to `E` with endpoint only dependent on the endpoint of `γ` and
   independent of the path chosen. In this theorem, we require that a specific point `a₀ : A` is
   lifted to a specific point `e₀ : E` over `a₀`. -/
-theorem existsUnique_continuousMap_lifts [PathConnectedSpace A] [LocPathConnectedSpace A]
+theorem existsUnique_continuousMap_lifts [PathConnectedSpace A] [LocallyPathConnectedSpace A]
     (f : C(A, X)) (a₀ : A) (e₀ : E) (he : p e₀ = f a₀)
     (ex : ∀ γ : C(I, A), γ 0 = a₀ → ∃ Γ : C(I, E), Γ 0 = e₀ ∧ p ∘ Γ = f.comp γ)
     (uniq : ∀ γ γ' : C(I, A), ∀ Γ Γ' : C(I, E), γ 0 = a₀ → γ' 0 = a₀ → Γ 0 = e₀ → Γ' 0 = e₀ →
@@ -466,7 +466,7 @@ alias injective_path_homotopic_mapFn := injective_path_homotopic_map
 /-- A continuous map `f` from a simply-connected, locally path-connected space `A` to another
   space `X` lifts uniquely through a covering map `p : E → X`, after specifying any lift
   `e₀ : E` of any point `a₀ : A`. -/
-theorem existsUnique_continuousMap_lifts [SimplyConnectedSpace A] [LocPathConnectedSpace A]
+theorem existsUnique_continuousMap_lifts [SimplyConnectedSpace A] [LocallyPathConnectedSpace A]
     (f : C(A, X)) (a₀ : A) (e₀ : E) (he : p e₀ = f a₀) :
     ∃! F : C(A, E), F a₀ = e₀ ∧ p ∘ F = f := by
   refine cov.isLocalHomeomorph.existsUnique_continuousMap_lifts f a₀ e₀ he (fun γ γ_0 ↦ ?_)
@@ -488,7 +488,7 @@ open FundamentalGroup Path.Homotopic.Quotient in
   if `f⁎ π₁(A, a₀) ⊆ p⁎ π₁(E, e₀)`. Proposition 1.33 of [hatcher02], known as
   the lifting criterion. -/
 theorem existsUnique_continuousMap_lifts_of_range_le
-    [PathConnectedSpace A] [LocPathConnectedSpace A]
+    [PathConnectedSpace A] [LocallyPathConnectedSpace A]
     {f : C(A, X)} {a₀ : A} {e₀ : E} (he : p e₀ = f a₀)
     (le : (map f a₀).range ≤ (mapOfEq ⟨p, cov.continuous⟩ he).range) :
     ∃! F : C(A, E), F a₀ = e₀ ∧ p ∘ F = f := by
@@ -525,7 +525,7 @@ Given a point `a₀` in the domain of `f` and a lift `e₀` of `f a₀` along `p
 there exists a unique lift `F` of `f` along `p` such that `F a₀ = e₀`.
 -/
 theorem IsCoveringMapOn.existsUnique_continuousMap_lifts [SimplyConnectedSpace A]
-    [LocPathConnectedSpace A] {s : Set X} (cov : IsCoveringMapOn p s) (f : C(A, X)) {a₀ : A}
+    [LocallyPathConnectedSpace A] {s : Set X} (cov : IsCoveringMapOn p s) (f : C(A, X)) {a₀ : A}
     {e₀ : E} (he : p e₀ = f a₀) (hs : ∀ a, f a ∈ s) :
     ∃! F : C(A, E), F a₀ = e₀ ∧ p ∘ F = f := by
   obtain ⟨f, rfl⟩ : ∃ f' : C(A, s), f = .comp ⟨Subtype.val, by fun_prop⟩ f' :=
@@ -681,3 +681,83 @@ def fundamentalGroupEquiv [SimplyConnectedSpace E] :
      hp.fundamentalGroupToMulOpposite_surjective e⟩
 
 end IsQuotientCoveringMap
+
+namespace IsAddQuotientCoveringMap
+
+variable {G : Type*} [AddGroup G] [AddAction G E] (hp : IsAddQuotientCoveringMap p G) {g : G}
+
+theorem monodromy_toPermFiber {x y : X} {γ : Path.Homotopic.Quotient x y} {e : p ⁻¹' {x}} :
+    letI monodromy := hp.isCoveringMap.monodromy
+    monodromy γ (hp.toMultiplicative.toPermFiber x g e) =
+      hp.toMultiplicative.toPermFiber y g (monodromy γ e) :=
+  hp.toMultiplicative.monodromy_toPermFiber
+
+theorem commute_monodromyPerm_toPermFiber {x : X} {γ : FundamentalGroup X x} :
+    Commute
+      (hp.isCoveringMap.monodromyPerm x γ)
+      (hp.toMultiplicative.toPermFiber x g) :=
+  hp.toMultiplicative.commute_monodromyPerm_toPermFiber
+
+theorem monodromy_ext_iff {x y : X} {γ γ' : Path.Homotopic.Quotient x y} (e : p ⁻¹' {x}) :
+    letI monodromy := hp.isCoveringMap.monodromy
+    monodromy γ e = monodromy γ' e ↔ monodromy γ = monodromy γ' :=
+  hp.toMultiplicative.monodromy_ext_iff e
+
+alias ⟨monodromy_ext, _⟩ := monodromy_ext_iff
+
+variable {x : X} (e : p ⁻¹' {x}) {γ : FundamentalGroup X x}
+
+theorem monodromy_eq_id_iff :
+    hp.isCoveringMap.monodromy γ = id ↔ hp.isCoveringMap.monodromy γ e = e :=
+  hp.toMultiplicative.monodromy_eq_id_iff e
+
+theorem ker_monodromyPerm :
+    (hp.isCoveringMap.monodromyPerm x).ker =
+    (FundamentalGroup.mapOfEq ⟨p, hp.continuous⟩ e.2).range :=
+  hp.toMultiplicative.ker_monodromyPerm e
+
+theorem monodromyPerm_injective [SimplyConnectedSpace E] :
+    Injective (hp.isCoveringMap.monodromyPerm x) :=
+  hp.toMultiplicative.monodromyPerm_injective
+
+/-- Choosing an arbitrary basepoint `e ∈ f ⁻¹' {x}` induces a bijection `f ⁻¹' {x} ≃ G`, and the
+`G`-action on `f ⁻¹' {x}` corresponds to left multiplication. The monodromy action commutes
+with the `G`-action, so each monodromy must corresponds must correspond to a right multiplication.
+-/
+def fundamentalGroupToMulOpposite : FundamentalGroup X x →* (Multiplicative G)ᵐᵒᵖ :=
+  hp.toMultiplicative.fundamentalGroupToMulOpposite e
+
+variable {e} in
+theorem fundamentalGroupToMulOpposite_apply_eq_Iff {g : (Multiplicative G)ᵐᵒᵖ} :
+    hp.fundamentalGroupToMulOpposite e γ = g ↔ g.unop • e.1 = hp.isCoveringMap.monodromy γ e :=
+  hp.toMultiplicative.fundamentalGroupToMulOpposite_apply_eq_Iff
+
+variable {e} in
+theorem unop_fundamentalGroupToMulOpposite_smul :
+    (hp.fundamentalGroupToMulOpposite e γ).unop • e.1 = hp.isCoveringMap.monodromy γ e :=
+  hp.toMultiplicative.unop_fundamentalGroupToMulOpposite_smul
+
+variable {e} in
+theorem fundamentalGroupToMulOpposite_eq_one_iff :
+    hp.fundamentalGroupToMulOpposite e γ = 1 ↔ hp.isCoveringMap.monodromy γ e = e :=
+  hp.toMultiplicative.fundamentalGroupToMulOpposite_eq_one_iff
+
+theorem ker_fundamentalGroupToMulOpposite :
+    (hp.fundamentalGroupToMulOpposite e).ker = (hp.isCoveringMap.monodromyPerm x).ker :=
+  hp.toMultiplicative.ker_fundamentalGroupToMulOpposite e
+
+theorem fundamentalGroupToMulOpposite_surjective [PathConnectedSpace E] :
+    Surjective (hp.fundamentalGroupToMulOpposite e) :=
+  hp.toMultiplicative.fundamentalGroupToMulOpposite_surjective e
+
+lemma fundamentalGroupToMulOpposite_injective [SimplyConnectedSpace E] :
+    Injective (hp.fundamentalGroupToMulOpposite e) :=
+  hp.toMultiplicative.fundamentalGroupToMulOpposite_injective e
+
+/-- The fundamental group of the base of simply-connected covering map is contravariantly
+equivalent to the group of the covering map. -/
+def fundamentalGroupEquiv [SimplyConnectedSpace E] :
+    FundamentalGroup X x ≃* (Multiplicative G)ᵐᵒᵖ :=
+  hp.toMultiplicative.fundamentalGroupEquiv e
+
+end IsAddQuotientCoveringMap

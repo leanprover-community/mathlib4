@@ -33,7 +33,7 @@ open Ordinal in
 -- intended to be used with explicit universe parameters
 /-- The ordinal `univ.{u, v}` is the order type of `Ordinal.{u}` or `Cardinal.{u}`, as an element of
 `Ordinal.{v}` (when `u < v`). -/
-@[pp_with_univ, nolint checkUnivs]
+@[pp_with_univ]
 def Ordinal.univ : Ordinal.{max (u + 1) v} :=
   lift.{v, u + 1} (typeLT Ordinal)
 
@@ -42,7 +42,7 @@ open Cardinal in
 -- intended to be used with explicit universe parameters
 /-- The cardinal `univ.{u, v}` is the cardinality of `Ordinal.{u}` or `Cardinal.{u}`, as an element
 of `Cardinal.{v}` (when `u < v`). -/
-@[pp_with_univ, nolint checkUnivs]
+@[pp_with_univ]
 def Cardinal.univ : Cardinal.{max (u + 1) v} :=
   lift.{v, u + 1} #Ordinal
 
