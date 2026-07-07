@@ -148,20 +148,32 @@ noncomputable def adicCompletion.padicEquiv (v : HeightOneSpectrum R) :
   __ := (mapRingEquiv _ (withValEquiv v).continuous
       (withValEquiv v).symm.continuous).trans Padic.withValRingEquiv
   __ := ((mapEquiv (withValEquiv v)).trans Padic.withValUniformEquiv).toHomeomorph
-  commutes' := by simp
+  commutes' := by
+    intro r
+    simp only [eq_ratCast, RingEquiv.toEquiv_eq_coe, Equiv.toFun_as_coe, EquivLike.coe_coe]
+    exact map_ratCast _ r
+
+/-- The ring isomorphism between `v.adicCompletionIntegers ℚ` and `ℤ_[primesEquiv v]` underlying
+`adicCompletionIntegers.padicIntEquiv`. -/
+noncomputable def adicCompletionIntegers.padicIntRingEquiv (v : HeightOneSpectrum R) :
+    v.adicCompletionIntegers ℚ ≃+* ℤ_[primesEquiv v] :=
+  ((mapRingEquiv _ (withValEquiv v).continuous (withValEquiv v).symm.continuous).restrict _ _
+    fun _ ↦ by
+      simpa using! (valuation_equiv_padicValuation v).valuedCompletion_le_one_iff).trans
+    withValIntegersRingEquiv
 
 /-- The continuous `ℤ`-algebra isomorphism between `v.adicCompletionIntegers ℚ` and
 `ℤ_[primesEquiv v]`. -/
 noncomputable def adicCompletionIntegers.padicIntEquiv (v : HeightOneSpectrum R) :
     v.adicCompletionIntegers ℚ ≃A[ℤ] ℤ_[primesEquiv v] where
-  __ := let e := (mapRingEquiv _ (withValEquiv v).continuous
-          (withValEquiv v).symm.continuous).restrict _ _ fun _ ↦ by
-            simpa using! (valuation_equiv_padicValuation v).valuedCompletion_le_one_iff
-        e.trans withValIntegersRingEquiv
+  __ := padicIntRingEquiv v
   __ := let e := (mapEquiv (withValEquiv v)).subtype fun _ ↦ by
           simpa using! (valuation_equiv_padicValuation v).valuedCompletion_le_one_iff
         (e.trans withValIntegersUniformEquiv).toHomeomorph
-  commutes' := by simp
+  commutes' r :=
+    DFunLike.congr_fun (RingHom.ext_int
+      ((padicIntRingEquiv v).toRingHom.comp (algebraMap ℤ (v.adicCompletionIntegers ℚ)))
+      (algebraMap ℤ ℤ_[primesEquiv v])) r
 
 /-- The diagram
 ```
