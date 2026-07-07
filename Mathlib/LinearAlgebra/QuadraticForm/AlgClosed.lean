@@ -62,7 +62,6 @@ theorem equivalent_of_isAlgClosed [Invertible (2 : K)] {M : Type*} [AddCommGroup
     [FiniteDimensional K M] (Q₁ Q₂ : QuadraticForm K M)
     (hQ₁ : (associated Q₁).SeparatingLeft)
     (hQ₂ : (associated Q₂).SeparatingLeft) : Equivalent Q₁ Q₂ :=
-  open Classical in
   (Q₁.equivalent_weightedSumSquares_of_isAlgClosed hQ₁).trans
   (Q₂.equivalent_weightedSumSquares_of_isAlgClosed hQ₂).symm
 
