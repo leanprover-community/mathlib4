@@ -856,6 +856,14 @@ theorem prod_inf_prod (s₁ s₂ : AffineSubspace k P) (t₁ t₂ : AffineSubspa
     s₁.prod t₁ ⊓ s₂.prod t₂ = (s₁ ⊓ s₂).prod (t₁ ⊓ t₂) :=
   SetLike.coe_injective Set.prod_inter_prod
 
+theorem _root_.vectorSpan_prod_le (s : Set P) (t : Set Q) :
+    vectorSpan k (s ×ˢ t) ≤ (vectorSpan k s).prod (vectorSpan k t) := by
+  simpa [vectorSpan_def, Set.prod_vsub_prod] using Submodule.span_prod_le (s -ᵥ s) (t -ᵥ t)
+
+theorem direction_prod_le (s : AffineSubspace k P) (t : AffineSubspace k Q) :
+    (s.prod t).direction ≤ s.direction.prod t.direction := by
+  simpa [direction_eq_vectorSpan, coe_prod] using vectorSpan_prod_le (s : Set P) (t : Set Q)
+
 theorem _root_.vectorSpan_prod_eq {s : Set P} {t : Set Q} (hs : s.Nonempty) (ht : t.Nonempty) :
     vectorSpan k (s ×ˢ t) = (vectorSpan k s).prod (vectorSpan k t) := by
   rw [vectorSpan_def, Set.prod_vsub_prod]
