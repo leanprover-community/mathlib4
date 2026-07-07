@@ -55,9 +55,8 @@ instance isCoverDense_toOver_Spec :
     let 𝒰 : Cover.{u} (precoverage P) U.left :=
       U.left.affineCover.changeProp
       (fun _ ↦ IsZariskiLocalAtSource.of_isOpenImmersion _)
-    let _ (i : 𝒰.I₀) : (𝒰.X i).Over S := ⟨𝒰.f i ≫ U.hom⟩
-    let _ : Cover.Over S 𝒰 := { isOver_map _ := ⟨rfl⟩ }
-    refine ⟨𝒰, inferInstance,
+    let _ : Cover.Over S 𝒰 (fun i ↦ 𝒰.f i ≫ U.hom) := { comp_over _ := rfl }
+    refine ⟨𝒰, fun i ↦ 𝒰.f i ≫ U.hom, inferInstance,
       fun i ↦ P.comp_mem _ _ (𝒰.map_prop i) U.prop, fun X f ⟨i⟩ ↦ ?_⟩
     rw [Sieve.coverByImage]
     exact ⟨⟨affineOverMk (𝒰.f i ≫ U.hom) (P.comp_mem _ _ (𝒰.map_prop i) U.prop),
@@ -72,13 +71,12 @@ instance isOneHypercoverDense_toOver_Spec :
     let 𝒰 := affineOpenCover X.left
     let 𝒱 : Cover (precoverage P) X.left :=
       𝒰.openCover.changeProp (fun _ ↦ IsZariskiLocalAtSource.of_isOpenImmersion _)
-    let _ (i : 𝒱.I₀) : (𝒱.X i).Over S := ⟨𝒰.f i ≫ X.hom⟩
-    let : Cover.Over S 𝒱 := { isOver_map _ := ⟨rfl⟩ }
+    let : Cover.Over S 𝒱 (fun i ↦ 𝒰.f i ≫ X.hom) := { comp_over _ := rfl }
     refine ⟨𝒰.I₀, fun i ↦ affineOverMk (𝒰.f i ≫ X.hom)
       (P.comp_mem _ _ (IsZariskiLocalAtSource.of_isOpenImmersion (𝒰.f i)) X.prop),
       fun i ↦ CostructuredArrow.homMk (𝒰.f i) (by simp), ?_⟩
     rw [Scheme.mem_smallGrothendieckTopology]
-    exact ⟨𝒱, inferInstance, fun i ↦ P.comp_mem _ _ (𝒱.map_prop i) X.prop,
+    exact ⟨𝒱, fun i ↦ 𝒰.f i ≫ X.hom, inferInstance, fun i ↦ P.comp_mem _ _ (𝒱.map_prop i) X.prop,
       fun _ _ ⟨i⟩ ↦ (Sieve.mem_ofArrows_iff ..).mpr ⟨i, 𝟙 _, by cat_disch⟩⟩
 
 end AlgebraicGeometry.Scheme
