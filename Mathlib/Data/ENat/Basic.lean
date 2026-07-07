@@ -471,7 +471,7 @@ instance : Unique ℕ∞ˣ where
     obtain ⟨y, x_y⟩ := ne_top_iff_exists.1 x_top
     obtain ⟨z, x_z⟩ := ne_top_iff_exists.1 x_inv_top
     replace x_y := x_y.symm
-    rw [x_y, ← x_z, ← coe_mul, ← coe_one, coe_inj, _root_.mul_eq_one] at this
+    rw [x_y, ← x_z, ← coe_mul, ← coe_one, coe_inj, mul_eq_one] at this
     rwa [this.1, Nat.cast_one, Units.val_eq_one] at x_y
 
 section withTop_enat
