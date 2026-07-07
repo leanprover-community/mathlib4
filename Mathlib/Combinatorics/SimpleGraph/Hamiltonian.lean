@@ -60,7 +60,7 @@ lemma IsPath.isHamiltonian_of_mem (hp : p.IsPath) (hp' : ∀ w, w ∈ p.support)
 lemma IsPath.isHamiltonian_iff (hp : p.IsPath) : p.IsHamiltonian ↔ ∀ w, w ∈ p.support :=
   ⟨(·.mem_support), hp.isHamiltonian_of_mem⟩
 
-lemma isHamiltonian_iff_isPath_and_forall_mem_support :
+theorem isHamiltonian_iff_isPath_and_forall_mem_support :
     p.IsHamiltonian ↔ p.IsPath ∧ ∀ w, w ∈ p.support :=
   ⟨fun hp ↦ ⟨hp.isPath, hp.mem_support⟩, fun hp ↦ hp.left.isHamiltonian_of_mem hp.right⟩
 
