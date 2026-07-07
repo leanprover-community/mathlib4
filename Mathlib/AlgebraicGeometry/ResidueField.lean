@@ -243,11 +243,9 @@ instance {X : Scheme.{u}} (x : X) : IsPreimmersion (X.fromSpecResidueField x) :=
   rw [IsPreimmersion.comp_iff]
   infer_instance
 
-@[simps] noncomputable
-instance (x : X) : (Spec (X.residueField x)).Over X := ⟨X.fromSpecResidueField x⟩
+instance (x : X) : (Spec (X.residueField x)).Over X (X.fromSpecResidueField x) where
 
-noncomputable
-instance (x : X) : (Spec (X.residueField x)).CanonicallyOver X where
+instance (x : X) : (Spec (X.residueField x)).CanonicallyOver X (X.fromSpecResidueField x) where
 
 @[reassoc (attr := simp)]
 lemma residueFieldCongr_fromSpecResidueField {x y : X} (h : x = y) :
@@ -266,7 +264,7 @@ lemma Hom.SpecMap_residueFieldMap_fromSpecResidueField (x : X) :
     ← Spec.map_comp_assoc]
   rfl
 
-instance [X.Over Y] (x : X) : Spec.map ((X ↘ Y).residueFieldMap x) |>.IsOver Y where
+instance {f : X ⟶ Y} [X.Over Y f] (x : X) : Spec.map ((X ↘ Y).residueFieldMap x) |>.IsOver Y where
 
 @[simp]
 lemma fromSpecResidueField_apply (x : X.carrier) (s : Spec (X.residueField x)) :

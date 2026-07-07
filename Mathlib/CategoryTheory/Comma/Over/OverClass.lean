@@ -89,8 +89,7 @@ lemma comp_over [OverClass X S fX] [OverClass Y S fY] [HomIsOver f S] : f ≫ Y 
 
 instance {fX : X ⟶ S} [OverClass X S fX] : HomIsOver (𝟙 X) S where
 
-instance {fX : X ⟶ S} {fY : Y ⟶ S} {fZ : Z ⟶ S}
-    [OverClass X S fX] [OverClass Y S fY] [OverClass Z S fZ]
+instance [OverClass X S fX] [OverClass Y S fY] [OverClass Z S fZ]
     (f : X ⟶ Y) (g : Y ⟶ Z) [HomIsOver f S] [HomIsOver g S] :
     HomIsOver (f ≫ g) S where
   comp_over := by simp [comp_over]

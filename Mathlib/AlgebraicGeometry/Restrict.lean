@@ -56,10 +56,9 @@ lemma ι_apply (x : U) : U.ι x = x.val := rfl
 
 instance : IsOpenImmersion U.ι := inferInstanceAs (IsOpenImmersion (X.ofRestrict _))
 
-@[simps! over] instance : U.toScheme.CanonicallyOver X where
-  hom := U.ι
+@[simps!] instance : U.toScheme.CanonicallyOver X U.ι where
 
-lemma ι_comp_over (S : Scheme.{u}) [X.Over S] : U.ι ≫ X ↘ S = U.toScheme ↘ S := rfl
+lemma ι_comp_over (S : Scheme.{u}) {f : X ⟶ S} [X.Over S f] : U.ι ≫ X ↘ S = U.toScheme ↘ S := rfl
 
 instance (U : X.Opens) : U.ι.IsOver X where
 

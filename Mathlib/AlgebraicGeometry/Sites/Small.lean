@@ -63,8 +63,7 @@ lemma Cover.overEquiv_generate_toPresieveOver_eq_ofArrows {X : Over S}
   · rintro ⟨U, h, g, ⟨k⟩, hcomp⟩
     exact ⟨𝒰.X k, h.left, 𝒰.f k, ⟨k⟩, congrArg CommaMorphism.left hcomp⟩
   · rintro ⟨U, h, g, ⟨k⟩, hcomp⟩
-    have : 𝒰.f k ≫ X.hom = 𝒰.X k ↘ S := comp_over (𝒰.f k) S
-    refine ⟨(𝒰.X k).asOver S, Over.homMk h (by simp [← hcomp, this]), (𝒰.f k).asOver S, ⟨k⟩, ?_⟩
+    refine ⟨(𝒰.X k).asOver S, Over.homMk h (by simp [← hcomp]), (𝒰.f k).asOver S, ⟨k⟩, ?_⟩
     ext : 1
     simpa
 

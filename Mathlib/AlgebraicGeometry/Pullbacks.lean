@@ -807,11 +807,11 @@ lemma diagonal_SpecMap :
 end Spec
 
 namespace Scheme
-variable {M S T : Scheme.{u}} [M.Over S] {f : T ⟶ S}
+variable {M S T : Scheme.{u}} {fMS : M ⟶ S} [M.Over S fMS] {f : T ⟶ S}
 
 @[simps]
-instance canonicallyOverPullback : (pullback (M ↘ S) f).CanonicallyOver T where
-  hom := pullback.snd (M ↘ S) f
+instance canonicallyOverPullback :
+    (pullback (M ↘ S) f).CanonicallyOver T (pullback.snd (M ↘ S) f) where
 
 @[simps! -isSimp mul one]
 instance monObjAsOverPullback [MonObj (asOver M S)] : MonObj (asOver (pullback (M ↘ S) f) T) := by
