@@ -171,7 +171,7 @@ the same in this logic.
 See also `Prop.heytingAlgebra`. -/
 section GeneralizedHeytingAlgebra
 
-@[simp]
+@[simp low] -- low priority so that it doesn't overwrite user-provided simp lemmas
 theorem sdiff_le_iff [GeneralizedCoheytingAlgebra α] {a b c : α} : a \ b ≤ c ↔ a ≤ b ⊔ c :=
   GeneralizedCoheytingAlgebra.sdiff_le_iff _ _ _
 

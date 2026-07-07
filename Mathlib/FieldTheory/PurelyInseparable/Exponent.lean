@@ -67,10 +67,10 @@ noncomputable def exponent [HasExponent K L] : ℕ :=
 
 variable {L}
 
-open Classical in
 theorem exponent_def [HasExponent K L] (a : L) :
-    a ^ ringExpChar K ^ exponent K L ∈ (algebraMap K L).range :=
-  Nat.find_spec ‹HasExponent K L›.has_exponent a
+    a ^ ringExpChar K ^ exponent K L ∈ (algebraMap K L).range := by
+  classical
+  exact Nat.find_spec ‹HasExponent K L›.has_exponent a
 
 /-- Version of `exponent_def` using `ExpChar`. -/
 theorem exponent_def' [HasExponent K L] (p : ℕ) [ExpChar K p] (a : L) :
@@ -79,10 +79,10 @@ theorem exponent_def' [HasExponent K L] (p : ℕ) [ExpChar K p] (a : L) :
 
 variable {K}
 
-open Classical in
 theorem exponent_min [HasExponent K L] {e : ℕ} (h : e < exponent K L) :
-    ∃ a, a ^ ringExpChar K ^ e ∉ (algebraMap K L).range :=
-  not_forall.mp <| Nat.find_min ‹HasExponent K L›.has_exponent h
+    ∃ a, a ^ ringExpChar K ^ e ∉ (algebraMap K L).range := by
+  classical
+  exact not_forall.mp <| Nat.find_min ‹HasExponent K L›.has_exponent h
 
 /-- Version of `exponent_min` using `ExpChar`. -/
 theorem exponent_min' [HasExponent K L] (p : ℕ) [ExpChar K p] {e : ℕ} (h : e < exponent K L) :
@@ -134,12 +134,11 @@ See `IsPurelyInseparable.algebraMap_elemReduct_eq`. -/
 noncomputable def elemReduct (a : L) : K :=
   Classical.choose <| Nat.find_spec <| minpoly_eq_X_pow_sub_C K (ringExpChar K) a
 
-open Classical in
 theorem minpoly_eq (a : L) :
-    minpoly K a = X ^ ringExpChar K ^ elemExponent K a - C (elemReduct K a) :=
-  Classical.choose_spec <| Nat.find_spec <| minpoly_eq_X_pow_sub_C K (ringExpChar K) a
+    minpoly K a = X ^ ringExpChar K ^ elemExponent K a - C (elemReduct K a) := by
+  classical
+  exact Classical.choose_spec <| Nat.find_spec <| minpoly_eq_X_pow_sub_C K (ringExpChar K) a
 
-open Classical in
 /-- Version of `minpoly_eq` using `ExpChar`. -/
 theorem minpoly_eq' (p : ℕ) [ExpChar K p] (a : L) :
     minpoly K a = X ^ p ^ elemExponent K a - C (elemReduct K a) :=
