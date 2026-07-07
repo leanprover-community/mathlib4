@@ -163,6 +163,19 @@ theorem IsTrail.of_append_right {u v w : V} {p : G.Walk u v} {q : G.Walk v w}
     (h : (p.append q).IsTrail) : q.IsTrail := by
   simp_all
 
+theorem isPath_append (p : G.Walk u v) (q : G.Walk v w) :
+    (p.append q).IsPath ↔ p.IsPath ∧ q.tail.IsPath ∧ p.support.Disjoint q.support.tail := by
+  cases q
+  · simp [isPath_def]
+  simp_rw [isPath_def, support_append, List.nodup_append', support_tail_of_not_nil _ not_nil_cons]
+
+theorem isPath_append' (p : G.Walk u v) (q : G.Walk v w) :
+    (p.append q).IsPath ↔ p.dropLast.IsPath ∧ q.IsPath ∧ p.support.dropLast.Disjoint q.support := by
+  cases p
+  · simp [isPath_def]
+  simp_rw [isPath_def, support_append_eq_support_dropLast_append, List.nodup_append',
+    support_dropLast not_nil_cons]
+
 theorem IsTrail.count_edges_le_one [DecidableEq V] {u v : V} {p : G.Walk u v} (h : p.IsTrail)
     (e : Sym2 V) : p.edges.count e ≤ 1 :=
   List.nodup_iff_count_le_one.mp h.edges_nodup e
@@ -220,14 +233,11 @@ theorem isPath_reverse_iff {u v : V} (p : G.Walk u v) : p.reverse.IsPath ↔ p.I
 
 theorem IsPath.of_append_left {u v w : V} {p : G.Walk u v} {q : G.Walk v w} :
     (p.append q).IsPath → p.IsPath := by
-  simp only [isPath_def, support_append]
-  exact List.Nodup.of_append_left
+  simpa [isPath_def, support_append] using List.Nodup.of_append_left
 
-theorem IsPath.of_append_right {u v w : V} {p : G.Walk u v} {q : G.Walk v w}
-    (h : (p.append q).IsPath) : q.IsPath := by
-  rw [← isPath_reverse_iff] at h ⊢
-  rw [reverse_append] at h
-  apply h.of_append_left
+theorem IsPath.of_append_right {u v w : V} {p : G.Walk u v} {q : G.Walk v w} :
+    (p.append q).IsPath → q.IsPath := by
+  simpa [isPath_def, support_append_eq_support_dropLast_append] using List.Nodup.of_append_right
 
 theorem isTrail_of_isSubwalk {v w v' w'} {p₁ : G.Walk v w} {p₂ : G.Walk v' w'}
     (h : p₁.IsSubwalk p₂) (h₂ : p₂.IsTrail) : p₁.IsTrail := by
@@ -331,9 +341,18 @@ theorem IsCycle.nodup_dropLast_support {p : G.Walk u u} (h : p.IsCycle) :
     p.support.dropLast.Nodup :=
   p.tail_support_perm_dropLast_support.nodup_iff.mp h.support_nodup
 
+protected lemma IsCircuit.reverse {p : G.Walk u u} (h : p.IsCircuit) : p.reverse.IsCircuit := by
+  rw [isCircuit_def] at h ⊢
+  exact ⟨h.left.reverse, fun h' ↦ by simp_all⟩
+
+@[simp]
+lemma isCircuit_reverse {p : G.Walk u u} : p.reverse.IsCircuit ↔ p.IsCircuit where
+  mp h := by simpa using h.reverse
+  mpr := .reverse
+
 protected lemma IsCycle.reverse {p : G.Walk u u} (h : p.IsCycle) : p.reverse.IsCycle := by
   simp only [Walk.isCycle_def, nodup_tail_support_reverse] at h ⊢
-  exact ⟨h.1.reverse, fun h' ↦ h.2.1 (by simp_all [← Walk.length_eq_zero_iff]), h.2.2⟩
+  exact ⟨h.1.reverse, fun h' ↦ by simp_all, h.2.2⟩
 
 @[simp]
 lemma isCycle_reverse {p : G.Walk u u} : p.reverse.IsCycle ↔ p.IsCycle where
