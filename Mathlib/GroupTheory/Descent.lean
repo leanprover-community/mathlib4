@@ -8,8 +8,11 @@ module
 public import Mathlib.Data.Real.Basic
 public import Mathlib.GroupTheory.Finiteness
 public import Mathlib.GroupTheory.Index
+public import Mathlib.GroupTheory.Torsion
 public import Mathlib.Order.Northcott
 
+import Mathlib.Algebra.Order.Archimedean.Real.Basic
+import Mathlib.Data.Fintype.Order
 import Mathlib.Data.Set.Finite.Lemmas
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Linarith
@@ -42,6 +45,8 @@ See `CommGroup.fg_of_descent` / `AddCommGroup.fg_of_descent` and
 This last version is one of the main ingredients of the standard proof of the
 **Mordell-Weil Theorem**. It allows to reduce the statement to showing that `G / 2 • G` is finite
 (where `G` is the Mordell-Weil group).
+
+We also provide versions that prove that the torsion subgroup is finite under weaker assumptions.
 
 ### Implementation note
 
@@ -149,5 +154,64 @@ theorem CommGroup.fg_of_descent' {G : Type*} [CommGroup G] {h : G → ℝ} {C : 
   have H₃' x : 4 * h x - (h 1 + C) ≤ h (x ^ 2) := by grind [pow_two, div_self']
   have H₂' g x : h x ≤ 2 * h (g * x) + (2 * h g⁻¹ + C) := by grind [mul_inv_cancel_comm]
   exact fg_of_descent (b := 4) (by norm_num) (by norm_num) H₁ H₂' H₃'
+
+open Subgroup QuotientGroup in
+/--
+If `G` is a commutative group and `n : ℕ`, `h : G → ℝ` satisfy
+* for all `x : G`, `h (x ^ n) ≥ b * h x - c₀`,
+* for all `B : ℝ`, there are only finitely many `x : G` such that `h x ≤ B`,
+
+where `1 < b` and `c₀` are real numbers, then the torsion subgroup of `G` is finite.
+-/
+@[to_additive /-- If `G` is a commutative additive group and `n : ℕ`, `h : G → ℝ` satisfy
+* for all `x : G`, `h (n • x) ≥ b * h x - c₀`,
+* for all `B : ℝ`, there are only finitely many `x : G` such that `h x ≤ B`,
+
+where `1 < b` and `c₀` are real numbers, then the torsion subgroup of `G` is finite. -/]
+theorem CommGroup.finite_torsion_of_descent {G : Type*} [CommGroup G] {n : ℕ} {h : G → ℝ}
+    {b c₀ : ℝ} (H₀ : 1 < b) (H₃ : ∀ x, b * h x - c₀ ≤ h (x ^ n)) [Northcott h] :
+    Finite (torsion G) := by
+  by_cases! H : ∃ C, ∀ x, h x ≤ C
+  · obtain ⟨C, hC⟩ := H
+    have : Finite G := by
+      suffices {x | h x ≤ C}.Finite by
+        simp only [hC, Set.setOf_true] at this
+        exact Set.finite_univ_iff.mp this
+      exact Northcott.finite_le C
+    exact instFiniteSubtypeMem _
+  have H' := Northcott.finite_le (h := h) (c₀ / (b - 1))
+  refine Set.Finite.subset (Set.finite_coe_iff.mp H') fun t ht ↦ ?_
+  rw [SetLike.mem_coe, mem_torsion, ← finite_powers] at ht
+  have ht' : Finite ↥(Submonoid.powers t) := ht
+  let C : ℝ := ⨆ g : Submonoid.powers t, h g
+  have hC : ∀ g ∈ Submonoid.powers t, h g ≤ C :=
+    fun g hg ↦ Finite.le_ciSup (fun g : Submonoid.powers t ↦ h g) ⟨g, hg⟩
+  have hC' : C ≤ c₀ / (b - 1) := by
+    obtain ⟨t₀, ht₀⟩ : ∃ g : Submonoid.powers t, h g = C := exists_eq_ciSup_of_finite
+    replace H₃ := (H₃ t₀).trans <| hC _ <| Submonoid.pow_mem _ (SetLike.coe_mem t₀) n
+    rw [ht₀] at H₃
+    rw [le_div_iff₀' (by grind)]
+    grind
+  exact (hC t (Submonoid.mem_powers t)).trans hC'
+
+/--
+If `G` is a commutative group and `n : ℕ`, `h : G → ℝ` satisfy
+* `0 ≤ h x` for all `x : G`,
+* there is `C : ℝ` such that for all `x y : G`, `|h (x * y) + h(x / y) - 2 * (h x + h y)| ≤ C`,
+* for all `B : ℝ`, there are only finitely many `x : G` such that `h x ≤ B`,
+
+then the torsion subgroup of `G` is finite.
+-/
+@[to_additive /-- If `G` is a commutative additive group and `n : ℕ`, `h : G → ℝ` satisfy
+* `0 ≤ h x` for all `x : G`,
+* there is `C : ℝ` such that for all `x y : G`, `|h (x + y) + h(x - y) - 2 * (h x + h y)| ≤ C`,
+* for all `B : ℝ`, there are only finitely many `x : G` such that `h x ≤ B`,
+
+then the torsion subgroup of `G` is finite. -/]
+theorem CommGroup.finite_torsion_of_descent' {G : Type*} [CommGroup G] {h : G → ℝ} {C : ℝ}
+    (H₃ : ∀ x y, |h (x * y) + h (x / y) - 2 * (h x + h y)| ≤ C) [Northcott h] :
+    Finite (torsion G) := by
+  have H x : 4 * h x - (h 1 + C) ≤ h (x ^ 2) := by grind [pow_two, div_self']
+  exact finite_torsion_of_descent (b := 4) (by norm_num) H
 
 end
