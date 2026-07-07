@@ -259,7 +259,7 @@ lemma separableClosure_le_separableClosure_iff
     [Algebra K E] [IsScalarTower F K E] {L : IntermediateField F E} :
     (separableClosure L E).restrictScalars F ≤ (separableClosure K E).restrictScalars F ↔
       L ≤ (separableClosure K E).restrictScalars F :=
-   (isClosed_restrictScalars_separableClosure F E K).closure_le_iff
+  (isClosed_restrictScalars_separableClosure F E K).closure_le_iff
 
 end separableClosure
 

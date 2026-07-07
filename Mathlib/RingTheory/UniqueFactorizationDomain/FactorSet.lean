@@ -387,9 +387,9 @@ theorem mem_factors_iff_dvd {a p : α} (ha0 : a ≠ 0) (hp : Irreducible p) :
     apply dvd_of_mem_factors
   · apply mem_factors_of_dvd ha0 hp
 
-open Classical in
 theorem exists_prime_dvd_of_not_inf_one {a b : α} (ha : a ≠ 0) (hb : b ≠ 0)
     (h : Associates.mk a ⊓ Associates.mk b ≠ 1) : ∃ p : α, Prime p ∧ p ∣ a ∧ p ∣ b := by
+  classical
   have hz : factors (Associates.mk a) ⊓ factors (Associates.mk b) ≠ 0 := by
     contrapose h with hf
     change (factors (Associates.mk a) ⊓ factors (Associates.mk b)).prod = 1

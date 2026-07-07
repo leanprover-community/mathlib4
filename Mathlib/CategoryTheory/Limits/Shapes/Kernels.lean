@@ -474,12 +474,7 @@ def kernelIsIsoComp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso f] [HasKernel
   hom := kernel.lift _ (kernel.ι _ ≫ f) (by simp)
   inv := kernel.lift _ (kernel.ι _ ≫ inv f) (by simp)
 
-set_option backward.defeqAttrib.useBackward true in
-/-- Equal maps have isomorphic kernels. -/
-@[simps] def kernel.congr {X Y : C} (f g : X ⟶ Y) [HasKernel f] [HasKernel g]
-    (h : f = g) : kernel f ≅ kernel g where
-  hom := kernel.lift _ (kernel.ι f) (by simp [← h])
-  inv := kernel.lift _ (kernel.ι g) (by simp [h])
+@[deprecated (since := "2026-07-03")] alias kernel.congr := kernelIsoOfEq
 
 lemma isZero_kernel_of_mono {X Y : C} (f : X ⟶ Y) [Mono f] [HasKernel f] :
     IsZero (kernel f) :=
@@ -1005,12 +1000,7 @@ def cokernelEpiComp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [Epi f] [HasCokernel
         rw [← cancel_epi f, ← Category.assoc]
         simp)
 
-set_option backward.defeqAttrib.useBackward true in
-/-- Equal maps have isomorphic cokernels. -/
-@[simps] def cokernel.congr {X Y : C} (f g : X ⟶ Y) [HasCokernel f] [HasCokernel g]
-    (h : f = g) : cokernel f ≅ cokernel g where
-  hom := cokernel.desc _ (cokernel.π g) (by simp [h])
-  inv := cokernel.desc _ (cokernel.π f) (by simp [← h])
+@[deprecated (since := "2026-07-03")] alias cokernel.congr := cokernelIsoOfEq
 
 lemma isZero_cokernel_of_epi {X Y : C} (f : X ⟶ Y) [Epi f] [HasCokernel f] :
     IsZero (cokernel f) :=
@@ -1098,7 +1088,7 @@ variable (f : X ⟶ Y) [HasKernel f] [HasImage f] [HasKernel (factorThruImage f)
 
 /-- The kernel of the morphism `X ⟶ image f` is just the kernel of `f`. -/
 def kernelFactorThruImage : kernel (factorThruImage f) ≅ kernel f :=
-  (kernelCompMono (factorThruImage f) (image.ι f)).symm ≪≫ (kernel.congr _ _ (by simp))
+  (kernelCompMono (factorThruImage f) (image.ι f)).symm ≪≫ (kernelIsoOfEq (by simp))
 
 @[reassoc (attr := simp)]
 theorem kernelFactorThruImage_hom_comp_ι :
@@ -1324,4 +1314,5 @@ set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)] lemma coker.condition : Arrow.leftToRight ≫ π C = 0 := by cat_disch
 
 end HasCokernels
+
 end CategoryTheory.Limits
