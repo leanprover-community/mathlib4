@@ -554,6 +554,14 @@ set_option backward.isDefEq.respectTransparency false in
 lemma drop_getVert (p : G.Walk u v) (n m : ℕ) : (p.drop n).getVert m = p.getVert (n + m) := by
   induction p generalizing n <;> cases n <;> simp [*, drop, add_right_comm]
 
+@[simp]
+theorem support_drop {u v : V} (p : G.Walk u v) (n : ℕ) :
+    (p.drop n).support = p.support.drop (min n p.length) := by
+  match p, n with
+  | .nil, _ => simp [drop]
+  | .cons _ _, 0 => simp [drop]
+  | .cons _ _, n + 1 => simp [drop, support_drop]
+
 set_option backward.isDefEq.respectTransparency false in
 lemma drop_add_heq (p : G.Walk u v) (n m : ℕ) : p.drop (n + m) ≍ (p.drop n).drop m := by
   rw [add_comm]
@@ -562,6 +570,13 @@ lemma drop_add_heq (p : G.Walk u v) (n m : ℕ) : p.drop (n + m) ≍ (p.drop n).
 lemma drop_add_eq (p : G.Walk u v) (n m : ℕ) :
     p.drop (n + m) = ((p.drop n).drop m).copy (drop_getVert ..) rfl :=
   eq_of_heq <| drop_add_heq .. |>.trans <| by simp [Walk.copy]
+
+@[simp]
+theorem drop_drop (p : G.Walk u v) (n m : ℕ) :
+    (p.drop n).drop m = (p.drop (n + m)).copy (drop_getVert ..).symm rfl := by
+  apply ext_support
+  simp
+  grind
 
 set_option backward.isDefEq.respectTransparency false in
 lemma nil_drop_iff (p : G.Walk u v) (n : ℕ) : (p.drop n).Nil ↔ p.length ≤ n := by
@@ -621,6 +636,7 @@ lemma support_take {u v} (p : G.Walk u v) (n : ℕ) :
 
 @[deprecated (since := "2026-05-20")] alias take_support_eq_support_take_succ := support_take
 
+@[simp]
 lemma take_take (p : G.Walk u v) (n m : ℕ) :
     (p.take n).take m = (p.take (min n m)).copy rfl (p.take_getVert n m).symm := by
   apply ext_support
@@ -738,6 +754,11 @@ lemma concat_dropLast {p : G.Walk u v} (hp : G.Adj p.penultimate v) : p.dropLast
     u :: p.tail.support = p.support := by
   rw [← support_cons (p.adj_snd hp), cons_tail_eq _ hp]
 
+@[simp]
+lemma support_tail_of_not_nil (p : G.Walk u v) (hp : ¬ p.Nil) :
+    p.tail.support = p.support.tail := by
+  rw [← cons_support_tail hp, List.tail_cons]
+
 theorem support_dropLast_concat {p : G.Walk u v} (hp : ¬p.Nil) :
     p.dropLast.support ++ [v] = p.support := by
   rw [← support_concat _ <| adj_penultimate hp, concat_dropLast]
@@ -747,7 +768,11 @@ theorem support_dropLast {p : G.Walk u v} (hp : ¬p.Nil) :
     p.dropLast.support = p.support.dropLast := by
   simp [← support_dropLast_concat hp]
 
-@[simp] lemma length_tail_add_one {p : G.Walk u v} (hp : ¬ p.Nil) :
+@[simp]
+theorem length_tail (p : G.Walk u v) : p.tail.length = p.length - 1 := by
+  cases p <;> simp
+
+lemma length_tail_add_one {p : G.Walk u v} (hp : ¬ p.Nil) :
     p.tail.length + 1 = p.length := by
   rw [← length_cons (p.adj_snd hp), cons_tail_eq _ hp]
 
@@ -758,6 +783,24 @@ lemma length_dropLast_add_one {p : G.Walk u v} (hp : ¬p.Nil) :
 @[simp]
 lemma length_dropLast (p : G.Walk u v) : p.dropLast.length = p.length - 1 := by
   cases p <;> simp [← length_dropLast_add_one not_nil_cons]
+
+@[simp]
+theorem reverse_tail (p : G.Walk u v) :
+    p.tail.reverse = p.reverse.dropLast.copy rfl p.penultimate_reverse := by
+  match p with
+  | nil => simp
+  | cons hadj p =>
+    apply ext_support
+    simp [-reverse_cons]
+
+@[simp]
+theorem reverse_dropLast (p : G.Walk u v) :
+    p.dropLast.reverse = p.reverse.tail.copy p.snd_reverse rfl := by
+  match p with
+  | nil => simp
+  | cons hadj p =>
+    apply ext_support
+    simp [-reverse_cons, List.dropLast_cons_of_ne_nil p.support_ne_nil]
 
 protected lemma Nil.tail {p : G.Walk v w} (hp : p.Nil) : p.tail.Nil := by
   cases p <;> simp at hp ⊢
@@ -778,10 +821,6 @@ lemma Nil.eq_copy_nil {p : G.Walk u v} (h : p.Nil) : p = Walk.nil.copy rfl h.eq 
 lemma drop_of_length_le {u v n} {p : G.Walk u v} (h : p.length ≤ n) :
     p.drop n = nil.copy rfl (p.getVert_of_length_le h) :=
   (nil_drop_of_length_le h).eq_copy_nil
-
-lemma support_tail_of_not_nil (p : G.Walk u v) (hp : ¬ p.Nil) :
-    p.tail.support = p.support.tail := by
-  rw [← cons_support_tail hp, List.tail_cons]
 
 @[simp] lemma getVert_copy {u v w x : V} (p : G.Walk u v) (i : ℕ) (h : u = w) (h' : v = x) :
     (p.copy h h').getVert i = p.getVert i := by
