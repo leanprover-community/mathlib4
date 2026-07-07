@@ -666,17 +666,15 @@ example {α : Type*} [Semiring α] [Nontrivial α] (a : α) : a ^ 0 ≠ 0 := by 
 example {α : Type*} [AddGroup α] {a b : α} (ha : a ≠ b) : 0 ≠ b - a := by positivity
 example {α : Type*} [AddGroup α] {a b : α} (ha : a ≠ b) : 0 ≠ a - b := by positivity
 
--- `positivity` for prime naturals: from a `Nat.Prime` hypothesis or a `Nat.Primes` coercion.
-example (p : ℕ) (hp : p.Prime) : 0 < (p : ℝ) := by positivity
-example (p : ℕ) (hp : p.Prime) : (p : ℝ) ≠ 0 := by positivity
-example (p : ℕ) (hp : p.Prime) : 0 < Real.log p := by positivity
-example (p : ℕ) (hp : p.Prime) : Real.log p ≠ 0 := by positivity
+-- `positivity` for coercions of a term of the subtype `Nat.Primes`.
 example (p : Nat.Primes) : 0 < (p : ℕ) := by positivity
 example (p : Nat.Primes) : 0 < (p : ℝ) := by positivity
+example (p : Nat.Primes) : (p : ℝ) ≠ 0 := by positivity
 example (p : Nat.Primes) : 0 < Real.log p := by positivity
+example (p : Nat.Primes) : Real.log p ≠ 0 := by positivity
 
 -- Without an order on `ℂ`, `positivity` still proves `(p : ℂ) ≠ 0` via `CharZero`;
 -- with `ComplexOrder` open it gives the stronger `0 < (p : ℂ)`.
-example (p : ℕ) (hp : p.Prime) : (p : ℂ) ≠ 0 := by positivity
+example (p : Nat.Primes) : (p : ℂ) ≠ 0 := by positivity
 open scoped ComplexOrder in
-example (p : ℕ) (hp : p.Prime) : 0 < (p : ℂ) := by positivity
+example (p : Nat.Primes) : 0 < (p : ℂ) := by positivity
