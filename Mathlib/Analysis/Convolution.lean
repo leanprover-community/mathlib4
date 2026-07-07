@@ -645,6 +645,13 @@ theorem convolution_flip : g ⋆[L.flip, μ] f = f ⋆[L, μ] g := by
   rw [← integral_sub_left_eq_self _ μ x]
   simp_rw [sub_sub_self, flip_apply]
 
+/-- Special case of `convolution_flip` when `L` is symmetric. -/
+theorem convolution_symm (L : E →L[𝕜] E →L[𝕜] F) (hL : ∀ (x y : E), L x y = L y x) {μ : Measure G}
+    [μ.IsAddLeftInvariant] [μ.IsNegInvariant] :
+    f ⋆[L, μ] f' = f' ⋆[L, μ] f := by
+  suffices L.flip = L by rw [← convolution_flip, this]
+  aesop
+
 /-- The symmetric definition of convolution. -/
 theorem convolution_eq_swap : (f ⋆[L, μ] g) x = ∫ t, L (f (x - t)) (g t) ∂μ := by
   rw [← convolution_flip]; rfl
