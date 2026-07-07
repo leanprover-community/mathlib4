@@ -188,14 +188,12 @@ theorem CommGroup.finite_torsion_of_descent {G : Type*} [CommGroup G] {n : ℕ} 
 
 /--
 If `G` is a commutative group and `n : ℕ`, `h : G → ℝ` satisfy
-* `0 ≤ h x` for all `x : G`,
 * there is `C : ℝ` such that for all `x y : G`, `|h (x * y) + h(x / y) - 2 * (h x + h y)| ≤ C`,
 * for all `B : ℝ`, there are only finitely many `x : G` such that `h x ≤ B`,
 
 then the torsion subgroup of `G` is finite.
 -/
 @[to_additive /-- If `G` is a commutative additive group and `n : ℕ`, `h : G → ℝ` satisfy
-* `0 ≤ h x` for all `x : G`,
 * there is `C : ℝ` such that for all `x y : G`, `|h (x + y) + h(x - y) - 2 * (h x + h y)| ≤ C`,
 * for all `B : ℝ`, there are only finitely many `x : G` such that `h x ≤ B`,
 
