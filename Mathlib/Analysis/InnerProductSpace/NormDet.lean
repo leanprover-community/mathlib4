@@ -9,6 +9,7 @@ public import Mathlib.Analysis.InnerProductSpace.Adjoint
 public import Mathlib.Analysis.InnerProductSpace.GramMatrix
 public import Mathlib.Analysis.InnerProductSpace.SingularValues
 public import Mathlib.Geometry.Euclidean.Volume.Measure
+
 import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 import Mathlib.Topology.MetricSpace.HausdorffDimension
 
@@ -17,12 +18,12 @@ import Mathlib.Topology.MetricSpace.HausdorffDimension
 
 Given a rectangular matrix $T$, it is common to talk about $\sqrt{det(T^{H}T)}$, where $T^{H}$ is
 the conjugate transpose of $T$, as a generalization to the determinant of a square matrix. It is the
-$m$-dimensional volume factor for $\mathbb{R}^m \to \mathbb{R}^n$. It is given various names in
-literature:
+$m$-dimensional volume factor for linear maps $\mathbb{R}^m \to \mathbb{R}^n$. It is given various
+names in the literature:
 * "Jacobian" (definition 3.4 of [lawrenceronald2025]), in the context of volume factor
-  for non-linear map. However, we choose to reserve this name for the matrix consists of
+  for a non-linear map. However, we choose to reserve this name for the matrix consisting of
   derivatives.
-* "Gram determinant", which is already used by `Matrix.gram`, and it is often referring to the
+* "Gram determinant", which is already used by `Matrix.gram`, and it is often referring to
   $det(T^{H}T)$ without the square root.
 * "Nonnegative determinant" (definition 1 of [haruoyoshiohidetoki2006]).
 
@@ -38,7 +39,7 @@ spaces instead of matrices, and allow the codomain to have infinite dimension.
 * `ContinuousLinearMap.normDet_sq` and `LinearMap.normDet_sq`: The square of `f.normDet`
   equals to the determinant of `f.adjoint ∘ₗ f`.
 * `LinearMap.normDet_sq_eq_det_gram`: The square of `LinearMap.normDet` equals to the determinant of
-  the gram matrix formed by vectors mapped from an orthonormal basis.
+  the Gram matrix formed by vectors mapped from an orthonormal basis.
 * `LinearMap.normDet_eq_prod_singularValues`: `LinearMap.normDet` equals to the product of singular
   values.
 * `LinearMap.hausdorffMeasure_image`: `LinearMap.normDet` is the volume factor for Hausdorff
@@ -59,10 +60,11 @@ variable {𝕜 U V W : Type*} [RCLike 𝕜] [NormedAddCommGroup U] [InnerProduct
 open Classical in
 /--
 The norm determinant of a linear map `f : U →ₗ[𝕜] V` is defined as the norm of the determinant of
-the square matrix from `U →ₗ[𝕜] f.range` using a pair of orthonormal basis of equal dimensions.
+the square matrix representing the linear map `U →ₗ[𝕜] f.range` over a pair of orthonormal basis of
+equal dimensions.
 (See `LinearMap.normDet_eq_norm_det_toMatrix_rangeRestrict` for using arbitrary orthonormal basis)
 
-If such basis doesn't exist (i.e. the map is not injective), the norm determinant is zero.
+If such basis doesn't exist (e.g. the map is not injective), the norm determinant is zero.
 (See `LinearMap.normDet_eq_zero_iff_ker_ne_bot`)
 -/
 noncomputable def normDet (f : U →ₗ[𝕜] V) : ℝ :=
@@ -200,7 +202,7 @@ theorem normDet_eq_norm_det_toMatrix {ι : Type*} [Fintype ι] [DecidableEq ι] 
     simpa using f'.finrank_eq
 
 /--
-`LinearMap.normDet` equals to the norm of `LinearMap.det` for an endomorphism.
+`LinearMap.normDet` equals the norm of `LinearMap.det` for an endomorphism.
 -/
 theorem normDet_eq_norm_det (f : U →ₗ[𝕜] U) : f.normDet = ‖f.det‖ := by
   simp [f.normDet_eq_norm_det_toMatrix (stdOrthonormalBasis 𝕜 U) (stdOrthonormalBasis 𝕜 U)]
@@ -261,7 +263,7 @@ theorem normDet_neg (f : U →ₗ[𝕜] V) : (-f).normDet = f.normDet := by
   simpa using f.normDet_smul (-1)
 
 /--
-The square of `f.normDet` equals to the determinant of `f.adjoint ∘L f`.
+The square of `f.normDet` equals the determinant of `f.adjoint ∘L f`.
 -/
 theorem _root_.ContinuousLinearMap.normDet_sq [CompleteSpace V] (f : U →L[𝕜] V) :
     haveI : CompleteSpace U := FiniteDimensional.complete 𝕜 U
@@ -287,7 +289,7 @@ theorem _root_.ContinuousLinearMap.normDet_sq [CompleteSpace V] (f : U →L[𝕜
     exact h
 
 /--
-The square of `f.normDet` equals to the determinant of `f.adjoint ∘ₗ f` when the codomain is finite
+The square of `f.normDet` equals the determinant of `f.adjoint ∘ₗ f` when the codomain is finite
 dimensional.
 -/
 theorem normDet_sq [FiniteDimensional 𝕜 V] (f : U →ₗ[𝕜] V) :
@@ -296,7 +298,7 @@ theorem normDet_sq [FiniteDimensional 𝕜 V] (f : U →ₗ[𝕜] V) :
   exact f.toContinuousLinearMap.normDet_sq
 
 /--
-The square of `f.normDet` equals to the determinant of the gram matrix formed by vectors mapped from
+The square of `f.normDet` equals the determinant of the Gram matrix formed by vectors mapped from
 an orthonormal basis.
 -/
 theorem normDet_sq_eq_det_gram {ι : Type*} [Fintype ι] [DecidableEq ι] (f : U →ₗ[𝕜] V)
