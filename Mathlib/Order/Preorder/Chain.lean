@@ -300,10 +300,10 @@ theorem succChain_spec (h : ∃ t, IsChain r s ∧ SuperChain r s t) :
   have : IsChain r s ∧ SuperChain r s h.choose := h.choose_spec
   simpa [SuccChain, dif_pos, exists_and_left.mp h] using this.2
 
-theorem IsChain.succ (hs : IsChain r s) : IsChain r (SuccChain r s) :=
-  open scoped Classical in
-  if h : ∃ t, IsChain r s ∧ SuperChain r s t then (succChain_spec h).1
-  else by
+theorem IsChain.succ (hs : IsChain r s) : IsChain r (SuccChain r s) := by
+  classical
+  if h : ∃ t, IsChain r s ∧ SuperChain r s t then exact (succChain_spec h).1
+  else
     rw [exists_and_left] at h
     simpa [SuccChain, dif_neg, h] using hs
 
@@ -313,10 +313,10 @@ theorem IsChain.superChain_succChain (hs₁ : IsChain r s) (hs₂ : ¬IsMaxChain
   obtain ⟨t, ht, hst⟩ := hs₂ hs₁
   exact succChain_spec ⟨t, hs₁, ht, ssubset_iff_subset_ne.2 hst⟩
 
-theorem subset_succChain : s ⊆ SuccChain r s :=
-  open scoped Classical in
-  if h : ∃ t, IsChain r s ∧ SuperChain r s t then (succChain_spec h).2.1
-  else by
+theorem subset_succChain : s ⊆ SuccChain r s := by
+  classical
+  if h : ∃ t, IsChain r s ∧ SuperChain r s t then exact (succChain_spec h).2.1
+  else
     simp [SuccChain, h]
 
 end Chain
