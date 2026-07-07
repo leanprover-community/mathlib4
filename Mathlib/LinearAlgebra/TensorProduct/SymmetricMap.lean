@@ -5,9 +5,7 @@ Authors: Kenny Lau, George McNinch
 -/
 module
 
---public import Mathlib.Tactic
 public import Mathlib.LinearAlgebra.Multilinear.Basic
--- import Mathlib.Algebra.NoZeroSMulDivisors.Defs
 
 /-!
 # Symmetric Multilinear Maps
@@ -41,10 +39,9 @@ public structure SymmetricMap extends MultilinearMap R (fun _ : ι => M) N where
 @[inherit_doc]
 notation M:arg " [Σ^" ι "]→ₗ[" R "] " N:arg => SymmetricMap R M N ι
 
-
 namespace SymmetricMap
 
-variable {R M N P ι} (f f₁ f₂ g g₁ g₂ : M [Σ^ι]→ₗ[R] N) (v x y : ι → M)
+variable {R M N P ι} (f g : M [Σ^ι]→ₗ[R] N) (v x y : ι → M)
 
 instance : FunLike (M [Σ^ι]→ₗ[R] N) (ι → M) N where
   coe f := f.toFun
@@ -195,19 +192,12 @@ instance : Module S (M [Σ^ι]→ₗ[R] N) where
   add_smul _ _ _ := ext fun _ => add_smul _ _ _
   zero_smul _ := ext fun _ => zero_smul _ _
 
--- something broken about this ??
-
--- instance [NoZeroSMulDivisors S N] :
---     NoZeroSMulDivisors S (M [Σ^ι]→ₗ[R] N) :=
---   coe_injective.noZeroSMulDivisors _ rfl coeFn_smul
-
 /-- Embedding of symmetric maps into multilinear maps as a linear map. -/
 @[simps]
 def toMultilinearMapLM : (M [Σ^ι]→ₗ[R] N) →ₗ[S] MultilinearMap R (fun _ : ι ↦ M) N where
   toFun := toMultilinearMap
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
-
 
 end Module
 
@@ -316,7 +306,6 @@ namely the (unique, constant) value it takes on the empty argument. -/
   left_inv f := ext fun _ ↦ congrArg f <| Subsingleton.elim _ _
   right_inv _ := rfl
 
-
 variable {ι} in
 /-- When `ι` is a subsingleton, a symmetric map `M [Σ^ι]→ₗ[R] N` is equivalent to a linear
 map `M →ₗ[R] N`, via evaluation at the constant function determined by any fixed `i : ι`. -/
@@ -388,7 +377,6 @@ variable {R M N} in
 end SymmetricMap
 
 end Semiring
-
 
 section CommSemiring
 
