@@ -171,18 +171,15 @@ is finite. -/]
 theorem Monoid.finite_torsion_of_descent {M : Type*} [Monoid M] {n : ℕ} {h : M → ℝ}
     {b c₀ : ℝ} (hb : 1 < b) (H : ∀ x, b * h x - c₀ ≤ h (x ^ n)) [Northcott h] :
     Finite { x : M | IsOfFinOrder x } := by
-  have H' := Northcott.finite_le (h := h) (c₀ / (b - 1))
-  refine Set.Finite.subset (Set.finite_coe_iff.mp H') fun t ht ↦ ?_
-  have ht' : Finite ↥(Submonoid.powers t) := ht.finite_powers
+  refine (Northcott.finite_le (h := h) (c₀ / (b - 1))).subset fun t ht ↦ ?_
+  have : Finite ↥(Submonoid.powers t) := ht.finite_powers
   let C : ℝ := ⨆ g : Submonoid.powers t, h g
   have hC : ∀ g ∈ Submonoid.powers t, h g ≤ C :=
     fun g hg ↦ Finite.le_ciSup (fun g : Submonoid.powers t ↦ h g) ⟨g, hg⟩
   refine (hC t (Submonoid.mem_powers t)).trans ?_
   obtain ⟨t₀, ht₀⟩ : ∃ g : Submonoid.powers t, h g = C := exists_eq_ciSup_of_finite
-  replace H := (H t₀).trans <| hC _ <| Submonoid.pow_mem _ (SetLike.coe_mem t₀) n
-  rw [ht₀] at H
   rw [le_div_iff₀' (by grind)]
-  grind
+  grind [Submonoid.pow_mem]
 
 /--
 If `G` is a commutative group and `n : ℕ`, `h : G → ℝ` satisfy
