@@ -119,7 +119,7 @@ theorem encard_ne_zero_of_mem {a : α} (h : a ∈ s) : s.encard ≠ 0 :=
   (encard_pos.mpr ⟨a, h⟩).ne.symm
 
 @[simp] theorem encard_singleton (e : α) : ({e} : Set α).encard = 1 := by
-  rw_mod_cast [encard, ENat.card_eq_coe_fintype_card]
+  rw [encard, ENat.card_eq_coe_fintype_card, card_singleton, Nat.cast_eq_one]
 
 theorem encard_union_eq (h : Disjoint s t) : (s ∪ t).encard = s.encard + t.encard := by
   classical
