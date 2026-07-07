@@ -504,6 +504,7 @@ lemma map_sub_sprod_roots_eq_prod_map_eval
   congr! with x hx
   ext; simp
 
+set_option backward.isDefEq.respectTransparency false in
 lemma map_sub_roots_sprod_eq_prod_map_eval
     (s : Multiset R) (g : R[X]) (hg : g.Monic) (hg' : g.Splits) :
     ((g.roots ×ˢ s).map fun ij ↦ ij.1 - ij.2).prod =

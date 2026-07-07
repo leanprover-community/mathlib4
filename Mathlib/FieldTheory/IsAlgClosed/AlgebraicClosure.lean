@@ -82,6 +82,7 @@ def toSplittingField (s : Finset (Monics k)) :
   MvPolynomial.aeval fun fi ↦
     if hf : fi.1 ∈ s then (finEquivRoots (Monics.splits_finsetProd hf) fi.2).1.1 else 37
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem toSplittingField_coeff {s : Finset (Monics k)} {f} (h : f ∈ s) (n) :
     toSplittingField s ((subProdXSubC f).coeff n) = 0 := by
   classical
@@ -195,6 +196,7 @@ instance isAlgebraic : Algebra.IsAlgebraic k (AlgebraicClosure k) :=
           erw [eval_C]
           simp⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : IsAlgClosure k (AlgebraicClosure k) := .of_splits fun f hf _ ↦ by
   rw [show f = (⟨f, hf⟩ : Monics k) from rfl, Monics.map_eq_prod]
   exact Splits.prod fun _ _ ↦ (Splits.X_sub_C _).map _

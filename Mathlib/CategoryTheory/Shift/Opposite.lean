@@ -129,12 +129,14 @@ lemma oppositeShiftFunctorAdd_hom_app :
     Iso.hom_inv_id_app, op_id]
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma oppositeShiftFunctorAdd'_inv_app :
     (shiftFunctorAdd' (OppositeShift C A) a b c h).inv.app X =
       ((shiftFunctorAdd' C a b c h).hom.app X.unop).op := by
   subst h
   simp only [shiftFunctorAdd'_eq_shiftFunctorAdd, oppositeShiftFunctorAdd_inv_app]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma oppositeShiftFunctorAdd'_hom_app :
     (shiftFunctorAdd' (OppositeShift C A) a b c h).hom.app X =
       ((shiftFunctorAdd' C a b c h).inv.app X.unop).op := by
@@ -165,6 +167,7 @@ def OppositeShift.natTrans {G : C ⥤ D} (τ : F ⟶ G) :
 
 namespace Functor
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /--
 Given a `CommShift` structure on `F`, this is the corresponding `CommShift` structure on
@@ -188,6 +191,7 @@ instance commShiftOp [CommShift F A] :
     erw [oppositeShiftFunctorAdd_inv_app, oppositeShiftFunctorAdd_hom_app]
     rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma commShiftOp_iso_eq [CommShift F A] (a : A) :
     (OppositeShift.functor A F).commShiftIso a = (NatIso.op (F.commShiftIso a)).symm := rfl
 

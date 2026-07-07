@@ -858,6 +858,7 @@ lemma Matrix.comp_toSquareBlock {b : m → α}
 
 variable [Zero R] [DecidableEq m]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Matrix.comp_diagonal (d) :
     comp m m n n R (diagonal d) =
       (blockDiagonal d).reindex (.prodComm ..) (.prodComm ..) := by

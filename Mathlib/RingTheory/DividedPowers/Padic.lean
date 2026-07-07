@@ -133,6 +133,7 @@ private theorem dpow'_mem {n : ℕ} {x : ℤ_[p]} (hm : n ≠ 0) (hx : x ∈ Ide
   simp only [cast_one, zpow_neg_one]
   exact dpow'_norm_le_of_ne_zero p hm hx
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- The family `ℕ → Ideal.span {(p : ℤ_[p])} → ℤ_[p]` given by `dpow n x = x ^ n / n!` is a
@@ -152,6 +153,7 @@ noncomputable def dividedPowers : DividedPowers (Ideal.span {(p : ℤ_[p])}) := 
 
 open Function
 
+set_option backward.isDefEq.respectTransparency false in
 private lemma dividedPowers_eq (n : ℕ) (x : ℤ_[p]) :
     (dividedPowers p).dpow n x = open Classical in
       if hx : x ∈ Ideal.span {(p : ℤ_[p])} then ⟨dpow' p n x, dpow'_int p n hx⟩ else 0 := by
@@ -166,6 +168,7 @@ private lemma dividedPowers_eq (n : ℕ) (x : ℤ_[p]) :
       RatAlgebra.dpow_apply, Submodule.mem_top] using! heq.symm
   · rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma coe_dpow_eq (n : ℕ) (x : ℤ_[p]) :
     ((dividedPowers p).dpow n x : ℚ_[p]) = open Classical in
       if _ : x ∈ Ideal.span {(p : ℤ_[p])} then inverse (n ! : ℚ_[p]) * x ^ n else 0 := by

@@ -121,6 +121,7 @@ lemma toPGL_injective :
     Function.Injective (ProjectiveSpecialLinearGroup.toPGL (n := n) (R := R)) :=
   QuotientGroup.injective_lift_iff _ _ _ |>.2 toPGL_ker.symm
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma toPGL_surj_of_roots
     (hR : ∀ r : Rˣ, ∃ k : Rˣ, k ^ Fintype.card n = r) :
     Function.Surjective (ProjectiveSpecialLinearGroup.toPGL (n := n) (R := R)) := fun g ↦ by

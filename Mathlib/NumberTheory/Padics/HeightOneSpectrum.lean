@@ -126,6 +126,7 @@ noncomputable def primesEquiv : HeightOneSpectrum R ≃ Nat.Primes where
     simp [Ideal.map_comap_of_surjective _ (IsIntegralClosure.intEquiv R).surjective,
       Int.associated_iff_natAbs.1 (Submodule.IsPrincipal.associated_generator_span_self _)]
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem valuation_equiv_padicValuation (v : HeightOneSpectrum R) :
     (v.valuation ℚ).IsEquiv (padicValuation (primesEquiv v)) := by
   simp [primesEquiv, Valuation.isEquiv_iff_val_le_one, valuation_le_one_iff_den,
@@ -228,6 +229,7 @@ noncomputable def adicCompletionIntegersEquiv (p : Nat.Primes) :
   apply (ContinuousAlgEquiv.cast (primesEquiv.apply_symm_apply p).symm).trans
     (adicCompletionIntegers.padicIntEquiv (primesEquiv.symm p)).symm
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The diagram
 ```
 ℤ_[p]  -------->  (primesEquiv.symm p).adicCompletionIntegers ℚ
@@ -247,6 +249,7 @@ theorem coe_adicCompletionIntegersEquiv_apply (p : Nat.Primes) (x : ℤ_[p]) :
     (by rw [primesEquiv.apply_symm_apply])]
   exact cast_heq _ _
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The diagram
 ```
 ℤ_[p]  <--------  (primesEquiv.symm p).adicCompletionIntegers ℚ

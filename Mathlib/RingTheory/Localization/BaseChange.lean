@@ -312,6 +312,7 @@ theorem tensorLeftAlgEquiv_apply_tmul_one (x : S) :
     tensorLeftAlgEquiv M S (x ⊗ₜ[R] 1) = algebraMap _ _ x :=
   (tensorLeftAlgEquiv M S).commutes x
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem tensorLeftAlgEquiv_apply_one_tmul (x : Localization M) :
     tensorLeftAlgEquiv M S (1 ⊗ₜ[R] x) = algebraMap _ _ x := by

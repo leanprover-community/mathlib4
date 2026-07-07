@@ -8,6 +8,7 @@ open Lake DSL
 
 require "leanprover-community" / "batteries" @ git "nightly-testing"
 require "leanprover-community" / "Qq" @ git "nightly-testing"
+
 require "leanprover-community" / "aesop" @ git "nightly-testing"
 require "leanprover-community" / "proofwidgets" @ git "v0.0.100"
   with NameMap.empty.insert `errorOnBuild

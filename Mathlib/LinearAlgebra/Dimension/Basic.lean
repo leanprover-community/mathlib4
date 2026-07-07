@@ -244,6 +244,7 @@ theorem rank_eq_of_equiv_equiv (i : R → R') (j : M ≃+ M₁)
 end
 end Semiring
 
+set_option backward.isDefEq.respectTransparency false in
 /-- TODO: prove that nontrivial commutative semirings satisfy the strong rank condition,
 following *Free sets and free subsemimodules in a semimodule* by Yi-Jia Tan, Theorem 3.2.
 

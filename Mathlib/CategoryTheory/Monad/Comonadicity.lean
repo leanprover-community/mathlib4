@@ -127,6 +127,9 @@ def rightAdjointComparison
     apply equalizer.hom_ext
     simp [Adjunction.homEquiv_unit]
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Provided we have the appropriate equalizers, we have an adjunction to the comparison functor.
 -/
 @[simps! counit]
@@ -146,6 +149,7 @@ theorem comparisonAdjunction_counit_f_aux
       (adj.homEquiv _ A.A).symm (equalizer.ι (G.map A.a) (adj.unit.app (G.obj A.A))) :=
   congr_arg (adj.homEquiv _ _).symm (Category.id_comp _)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- This is a fork which is helpful for establishing comonadicity: the morphism from this fork to
 the Beck equalizer is the counit for the adjunction on the comparison functor.
 -/
@@ -181,6 +185,7 @@ def unitFork (B : C) :
       (adj.unit.app (G.obj (F.obj B))) :=
   Fork.ofι (adj.unit.app B) (adj.unit_naturality _)
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable {adj} in
 /-- The counit fork is a limit provided `F` preserves it. -/
 def counitLimitOfPreservesEqualizer (A : adj.toComonad.Coalgebra)
@@ -276,6 +281,7 @@ instance [ReflectsLimitOfIsCosplitPair F] : ∀ (A : Coalgebra adj.toComonad),
       (NatTrans.app adj.unit (G.obj A.A))) F :=
   fun _ => ReflectsLimitOfIsCosplitPair.out _ _
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- To show `F` is a comonadic left adjoint, we can show it preserves and reflects `F`-split
 equalizers, and `C` has them.
 -/
@@ -371,6 +377,7 @@ instance [PreservesLimitOfIsCoreflexivePair F] : ∀ X : Coalgebra adj.toComonad
 
 variable [PreservesLimitOfIsCoreflexivePair F]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Coreflexive (crude) comonadicity theorem. If `F` has a right adjoint, `C` has and `F` preserves
 coreflexive equalizers and `F` reflects isomorphisms, then `F` is comonadic.
 -/

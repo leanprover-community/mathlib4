@@ -121,9 +121,11 @@ theorem exists_iff_exists_of_mono {P : F α → Prop} {q : F β → Prop}
     rw [h₁]
     simp only [MvFunctor.map_map, h₀, LawfulMvFunctor.id_map, h₂]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem LiftP_def (x : F α) : LiftP' P x ↔ ∃ u : F (Subtype_ P), subtypeVal P <$$> u = x :=
   exists_iff_exists_of_mono F _ _ (toSubtype_of_subtype P) (by simp [MvFunctor.map_map])
 
+set_option backward.isDefEq.respectTransparency false in
 theorem LiftR_def (x y : F α) :
     LiftR' R x y ↔
       ∃ u : F (Subtype_ R),
@@ -154,6 +156,7 @@ private def f :
     ⟨x.val, cast (by grind [PredLast]) x.property⟩
   | _, _, Fin2.fz, x => ⟨x.val, x.property⟩
 
+set_option backward.isDefEq.respectTransparency false in
 private def g :
     ∀ n α,
       (fun i : Fin2 (n + 1) => { p_1 : (α ::: β) i // PredLast α pp p_1 }) ⟹ fun i : Fin2 (n + 1) =>
@@ -162,6 +165,7 @@ private def g :
     ⟨x.val, cast (by simp only [PredLast]; erw [const_iff_true]) x.property⟩
   | _, _, Fin2.fz, x => ⟨x.val, x.property⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem LiftP_PredLast_iff {β} (P : β → Prop) (x : F (α ::: β)) :
     LiftP' (PredLast' _ P) x ↔ LiftP (PredLast _ P) x := by
   dsimp only [LiftP, LiftP']
@@ -197,6 +201,7 @@ private def g' :
     ⟨x.val, cast (by simp only [RelLast]; erw [repeatEq_iff_eq]) x.property⟩
   | _, _, Fin2.fz, x => ⟨x.val, x.property⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem LiftR_RelLast_iff (x y : F (α ::: β)) :
     LiftR' (RelLast' _ rr) x y ↔ LiftR (RelLast _ rr) x y := by
   dsimp only [LiftR, LiftR']

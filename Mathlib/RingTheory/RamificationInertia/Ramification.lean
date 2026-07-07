@@ -252,6 +252,7 @@ theorem ramificationIdx_above_le [r.IsPrime] [r.LiesOver q] [Module.Finite R T] 
 
 @[deprecated (since := "2026-07-01")] alias ramificationIdx'_above_le := ramificationIdx_above_le
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable (R) in
 open Pointwise in
 @[simp]

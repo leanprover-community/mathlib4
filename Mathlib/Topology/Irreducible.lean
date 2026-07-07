@@ -499,6 +499,7 @@ lemma image_mem_irreducibleComponents_of_isPreirreducible_fiber
     rw [← Set.image_preimage_eq Z hf₄]
     exact Set.image_mono this⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `f : X → Y` is continuous, open, and has irreducible fibers, then it induces an
 bijection between irreducible components -/
 @[stacks 037A]

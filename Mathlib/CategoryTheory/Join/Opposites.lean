@@ -25,6 +25,7 @@ universe v₁ v₂ u₁ u₂
 
 variable (C : Type u₁) (D : Type u₂) [Category.{v₁} C] [Category.{v₂} D]
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The equivalence `(C ⋆ D)ᵒᵖ ≌ Dᵒᵖ ⋆ Cᵒᵖ` induced by `Join.opEquivFunctor` and
 `Join.opEquivInverse`. -/
@@ -48,105 +49,123 @@ def opEquiv : (C ⋆ D)ᵒᵖ ≌ Dᵒᵖ ⋆ Cᵒᵖ where
     | op (left _) => by cat_disch
     | op (right _) => by cat_disch
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable {C} in
 @[simp]
 lemma opEquiv_functor_obj_op_left (c : C) :
     (opEquiv C D).functor.obj (op <| left c) = right (op c) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable {D} in
 @[simp]
 lemma opEquiv_functor_obj_op_right (d : D) :
     (opEquiv C D).functor.obj (op <| right d) = left (op d) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable {C} in
 @[simp]
 lemma opEquiv_functor_map_op_inclLeft {c c' : C} (f : c ⟶ c') :
     (opEquiv C D).functor.map (op <| (inclLeft C D).map f) = (inclRight _ _).map (op f) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable {D} in
 @[simp]
 lemma opEquiv_functor_map_op_inclRight {d d' : D} (f : d ⟶ d') :
     (opEquiv C D).functor.map (op <| (inclRight C D).map f) = (inclLeft _ _).map (op f) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable {C D} in
 lemma opEquiv_functor_map_op_edge (c : C) (d : D) :
     (opEquiv C D).functor.map (op <| edge c d) = edge (op d) (op c) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Characterize (up to a rightOp) the action of the left inclusion on `Join.opEquivFunctor`. -/
 @[simps!]
 def InclLeftCompRightOpOpEquivFunctor :
     inclLeft C D ⋙ (opEquiv C D).functor.rightOp ≅ (inclRight _ _).rightOp :=
   isoWhiskerLeft _ (leftOpRightOpIso _) ≪≫ mkFunctorLeft _ _ _
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Characterize (up to a rightOp) the action of the right inclusion on `Join.opEquivFunctor`. -/
 @[simps!]
 def InclRightCompRightOpOpEquivFunctor :
     inclRight C D ⋙ (opEquiv C D).functor.rightOp ≅ (inclLeft _ _).rightOp :=
   isoWhiskerLeft _ (leftOpRightOpIso _) ≪≫ mkFunctorRight _ _ _
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable {D} in
 @[simp]
 lemma opEquiv_inverse_obj_left_op (d : D) :
     (opEquiv C D).inverse.obj (left <| op d) = op (right d) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable {C} in
 @[simp]
 lemma opEquiv_inverse_obj_right_op (c : C) :
     (opEquiv C D).inverse.obj (right <| op c) = op (left c) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable {D} in
 @[simp]
 lemma opEquiv_inverse_map_inclLeft_op {d d' : D} (f : d ⟶ d') :
     (opEquiv C D).inverse.map ((inclLeft Dᵒᵖ Cᵒᵖ).map f.op) = op ((inclRight _ _).map f) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable {D} in
 @[simp]
 lemma opEquiv_inverse_map_inclRight_op {c c' : C} (f : c ⟶ c') :
     (opEquiv C D).inverse.map ((inclRight Dᵒᵖ Cᵒᵖ).map f.op) = op ((inclLeft _ _).map f) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable {C D} in
 @[simp]
 lemma opEquiv_inverse_map_edge_op (c : C) (d : D) :
     (opEquiv C D).inverse.map (edge (op d) (op c)) = op (edge c d) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Characterize `Join.opEquivInverse` with respect to the left inclusion -/
 def inclLeftCompOpEquivInverse :
     Join.inclLeft Dᵒᵖ Cᵒᵖ ⋙ (opEquiv C D).inverse ≅ (inclRight _ _).op :=
   Join.mkFunctorLeft _ _ _
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Characterize `Join.opEquivInverse` with respect to the right inclusion -/
 def inclRightCompOpEquivInverse :
     Join.inclRight Dᵒᵖ Cᵒᵖ ⋙ (opEquiv C D).inverse ≅ (inclLeft _ _).op :=
   Join.mkFunctorRight _ _ _
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable {D} in
 @[simp]
 lemma inclLeftCompOpEquivInverse_hom_app_op (d : D) :
     (inclLeftCompOpEquivInverse C D).hom.app (op d) = 𝟙 (op <| right d) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable {C} in
 @[simp]
 lemma inclRightCompOpEquivInverse_hom_app_op (c : C) :
     (inclRightCompOpEquivInverse C D).hom.app (op c) = 𝟙 (op <| left c) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable {D} in
 @[simp]
 lemma inclLeftCompOpEquivInverse_inv_app_op (d : D) :
     (inclLeftCompOpEquivInverse C D).inv.app (op d) = 𝟙 (op <| right d) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable {C} in
 @[simp]
 lemma inclRightCompOpEquivInverse_inv_app_op (c : C) :

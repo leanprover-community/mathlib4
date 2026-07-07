@@ -194,6 +194,7 @@ lemma equiv_apply [HasSmallLocalizedShiftedHom.{w} W M X Y] {m : M}
 section
 variable [W.IsCompatibleWithShift M]
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
 lemma equiv_shift' {a : M} [HasSmallLocalizedShiftedHom.{w} W M X Y]
     [HasSmallLocalizedShiftedHom.{w} W M Y Y]

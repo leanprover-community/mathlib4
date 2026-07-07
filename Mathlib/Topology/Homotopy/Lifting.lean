@@ -325,6 +325,7 @@ lemma eq_liftHomotopy_iff' (H' : C(I × A, E)) :
 
 variable {f₀ f₁ : C(A, X)} {S : Set A} (F : f₀.HomotopyRel f₁ S)
 
+set_option backward.isDefEq.respectTransparency.types false in
 open ContinuousMap in
 /-- The lift to a covering space of a homotopy between two continuous maps relative to a set
 given compatible lifts of the continuous maps. -/
@@ -348,6 +349,7 @@ def liftHomotopyRel [PreconnectedSpace A]
       exact (congr_fun (cov.liftHomotopy_lifts F f₀' _) (1, a)).trans (F.apply_one a)
     prop' := rel }
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Two continuous maps from a preconnected space to the total space of a covering map
   are homotopic relative to a set `S` if and only if their compositions with the covering map
   are homotopic relative to `S`, assuming that they agree at a point in `S`. -/
@@ -362,6 +364,7 @@ theorem homotopicRel_liftPath {γ₀ γ₁ : C(I, X)}
   h.map fun H ↦ cov.liftHomotopyRel (f₀' := cov.liftPath γ₀ e h₀) (f₁' := cov.liftPath γ₁ e h₁) H
     ⟨0, .inl rfl, by simp_rw [liftPath_zero]⟩ (liftPath_lifts ..) (liftPath_lifts ..)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Lifting two paths that are homotopic relative to `{0,1}`
   starting from the same point also ends up in the same point. -/
 theorem liftPath_apply_one_eq_of_homotopicRel {γ₀ γ₁ : C(I, X)}
@@ -405,6 +408,7 @@ theorem monodromy_map {x y : E} (γ : Path.Homotopic.Quotient x y) :
   obtain ⟨γ⟩ := γ
   exact congr($((cov.eq_liftPath_iff' _).mpr ⟨rfl, γ.source⟩) 1).symm.trans γ.target
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem monodromy_eq_of_map_eq {x y : X} {γ : Path.Homotopic.Quotient x y}
     {ex : p ⁻¹' {x}} {ey : p ⁻¹' {y}} (Γ : Path.Homotopic.Quotient ex.1 ey)
     (eq : Γ.map ⟨p, cov.continuous⟩ = γ.cast ex.2 ey.2) :
@@ -482,6 +486,7 @@ theorem existsUnique_continuousMap_lifts [SimplyConnectedSpace A] [LocallyPathCo
     rw [eq_liftPath_iff']
   exacts [⟨Γ_lifts, Γ_0⟩, ⟨Γ'_lifts, Γ'_0⟩]
 
+set_option backward.isDefEq.respectTransparency.types false in
 open FundamentalGroup Path.Homotopic.Quotient in
 /-- A continuous map `f` from a path connected, locally path-connected space `A` to another
   space `X` lifts uniquely through a covering map `p : E → X` (such that `f a₀` is lifted to `e₀`)
@@ -548,6 +553,7 @@ namespace IsQuotientCoveringMap
 
 variable {G : Type*} [Group G] [MulAction G E] (hp : IsQuotientCoveringMap p G) {g : G}
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The monodromy action of a quotient covering map commutes with the group action. -/
 theorem monodromy_toPermFiber {x y : X} {γ : Path.Homotopic.Quotient x y} {e : p ⁻¹' {x}} :
     letI monodromy := hp.isCoveringMap.monodromy
@@ -561,7 +567,6 @@ theorem monodromy_toPermFiber {x y : X} {γ : Path.Homotopic.Quotient x y} {e : 
     convert hp.isCoveringMap.map_liftPathQuotient γ e using 2
     · simp [g', p', hp.map_smul]
     · simp [g', p', hp.map_smul]
-    · grind
     · grind
 
 theorem commute_monodromyPerm_toPermFiber {x : X} {γ : FundamentalGroup X x} :
@@ -587,6 +592,7 @@ theorem monodromy_eq_id_iff :
   mpr eq := (hp.monodromy_ext e (eq.trans congr($hp.isCoveringMap.monodromy_refl e).symm)).trans
     hp.isCoveringMap.monodromy_refl
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem ker_monodromyPerm :
     (hp.isCoveringMap.monodromyPerm x).ker =
     (FundamentalGroup.mapOfEq ⟨p, hp.continuous⟩ e.2).range := by

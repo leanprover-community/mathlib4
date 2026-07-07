@@ -767,6 +767,7 @@ theorem measurable_tProd_mk (l : List δ) : Measurable (@TProd.mk δ X l) := by
   | nil => exact measurable_const
   | cons i l ih => exact (measurable_pi_apply i).prodMk ih
 
+set_option backward.isDefEq.respectTransparency false in
 theorem measurable_tProd_elim [DecidableEq δ] :
     ∀ {l : List δ} {i : δ} (hi : i ∈ l), Measurable fun v : TProd X l => v.elim hi
   | i::is, j, hj => by

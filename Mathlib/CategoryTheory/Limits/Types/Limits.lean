@@ -111,6 +111,7 @@ noncomputable def limitCone : Cone F where
   π :=
     { app j := ↾fun u => ((equivShrink F.sections).symm u).val j }
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[ext]
 lemma limitCone_pt_ext {x y : (limitCone F).pt}
     (w : (equivShrink F.sections).symm x = (equivShrink F.sections).symm y) : x = y := by

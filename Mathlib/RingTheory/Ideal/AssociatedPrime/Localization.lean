@@ -127,6 +127,7 @@ lemma preimage_comap_associatedPrimes_eq_associatedPrimes_of_isLocalizedModule
     fun h ↦ comap_mem_associatedPrimes_of_mem_associatedPrimes_of_isLocalizedModule_of_fg S f p h
     ((isNoetherianRing_iff_ideal_fg R).mp ‹_› _)⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable (R M) in
 lemma minimalPrimes_annihilator_subset_associatedPrimes [IsNoetherianRing R] [Module.Finite R M] :
     (Module.annihilator R M).minimalPrimes ⊆ associatedPrimes R M := by

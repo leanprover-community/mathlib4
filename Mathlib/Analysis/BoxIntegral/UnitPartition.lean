@@ -243,6 +243,7 @@ def prepartition (B : Box ι) : TaggedPrepartition B where
     · simp_rw [dif_neg hI]
       exact Box.coe_subset_Icc B.exists_mem.choose_spec
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable {n} in
 @[simp]
 theorem mem_prepartition_iff {B I : Box ι} :

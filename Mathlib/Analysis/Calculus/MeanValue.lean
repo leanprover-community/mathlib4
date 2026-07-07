@@ -418,6 +418,7 @@ instance (priority := 100) : PathConnectedSpace 𝕜 := by
   letI : RCLike 𝕜 := IsRCLikeNormedField.rclike 𝕜
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The mean value theorem on a convex set: if the derivative of a function is bounded by `C`, then
 the function is `C`-Lipschitz. Version with `HasFDerivWithinAt`. -/
 theorem norm_image_sub_le_of_norm_hasFDerivWithin_le

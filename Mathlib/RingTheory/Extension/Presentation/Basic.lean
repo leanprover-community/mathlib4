@@ -358,6 +358,7 @@ noncomputable def compRelationAux (r : σ') : MvPolynomial (ι' ⊕ ι) R :=
 private lemma aux_X (i : ι' ⊕ ι) : (Q.aux P) (X i) = Sum.elim X (C ∘ P.val) i :=
   aeval_X (Sum.elim X (C ∘ P.val)) i
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The pre-images constructed in `compRelationAux` are indeed pre-images under `aux`. -/
 private lemma compRelationAux_map (r : σ') :
     (Q.aux P) (Q.compRelationAux P r) = Q.relation r := by

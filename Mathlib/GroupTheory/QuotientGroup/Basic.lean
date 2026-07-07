@@ -319,6 +319,7 @@ instance map_normal : (M.map (QuotientGroup.mk' N)).Normal :=
 
 variable (h : N ≤ M)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The map from the third isomorphism theorem for groups: `(G / N) / (M / N) → G / M`. -/
 @[to_additive /-- The map from the third isomorphism theorem for additive groups:
 `(A / N) / (M / N) → A / M`. -/]
@@ -339,6 +340,7 @@ theorem quotientQuotientEquivQuotientAux_mk_mk (x : G) :
     quotientQuotientEquivQuotientAux N M h (x : G ⧸ N) = x :=
   QuotientGroup.lift_mk' (M.map (mk' N)) _ x
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Noether's third isomorphism theorem** for groups: `(G / N) / (M / N) ≃* G / M`. -/
 @[to_additive
 /-- **Noether's third isomorphism theorem** for additive groups: `(A / N) / (M / N) ≃+ A / M`. -/]

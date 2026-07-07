@@ -406,6 +406,7 @@ theorem quotient_mk_eq_mk [Monoid M] (a : M) : ⟦a⟧ = Associates.mk a :=
 theorem quot_mk_eq_mk [Monoid M] (a : M) : Quot.mk Setoid.r a = Associates.mk a :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem quot_out [Monoid M] (a : Associates M) : Associates.mk (Quot.out a) = a := by
   rw [← quot_mk_eq_mk, Quot.out_eq]

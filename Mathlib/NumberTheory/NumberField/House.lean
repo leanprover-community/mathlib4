@@ -84,6 +84,7 @@ lemma norm_embedding_le_house (α : K) (σ : K →+* ℂ) : ‖σ α‖ ≤ hous
   rw [house_eq_sup']
   exact Finset.le_sup' (f := (‖· α‖₊)) (Finset.mem_univ σ)
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma one_le_house_of_isIntegral {α : K} (hα : IsIntegral ℤ α) (hα0 : α ≠ 0) :
     1 ≤ house α := by
   have ⟨σ, hσ⟩ : ∃ σ : K →+* ℂ, 1 ≤ ‖σ α‖ := by
