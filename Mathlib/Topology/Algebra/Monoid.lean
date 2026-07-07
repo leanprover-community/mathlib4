@@ -835,10 +835,28 @@ instance AddMonoid.continuousSMul_nat {A} [AddMonoid A] [TopologicalSpace A]
     [ContinuousAdd A] : ContinuousSMul ℕ A :=
   ⟨continuous_prod_of_discrete_left.mpr continuous_nsmul⟩
 
+section Semigroup
+
+variable {S : Type*} [TopologicalSpace S] [Semigroup S] [ContinuousMul S]
+
 @[to_additive (attr := aesop safe -100 (rule_sets := [Continuous]), fun_prop)]
-theorem Continuous.ppow {M : Type*} [TopologicalSpace M] [Semigroup M] [ContinuousMul M] {f : X → M}
-    (h : Continuous f) (n : ℕ+) : Continuous fun b => f b ^ n :=
+theorem Continuous.ppow {f : X → S} (h : Continuous f) (n : ℕ+) : Continuous fun b => f b ^ n :=
   (continuous_ppow n).comp h
+
+@[to_additive]
+theorem continuousOn_ppow {s : Set S} (n : ℕ+) : ContinuousOn (fun (x : S) => x ^ n) s :=
+  (continuous_ppow n).continuousOn
+
+@[to_additive]
+theorem continuousAt_ppow (x : S) (n : ℕ+) : ContinuousAt (fun (x : S) => x ^ n) x :=
+  (continuous_ppow n).continuousAt
+
+@[to_additive]
+theorem Filter.Tendsto.ppow {l : Filter α} {f : α → S} {x : S} (hf : Tendsto f l (𝓝 x)) (n : ℕ+) :
+    Tendsto (fun x => f x ^ n) l (𝓝 (x ^ n)) :=
+  (continuousAt_ppow _ _).tendsto.comp hf
+
+end Semigroup
 
 -- We register `Continuous.pow` as a `continuity` lemma with low penalty (so
 -- `continuity` will try it before other `continuity` lemmas). This is a
