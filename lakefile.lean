@@ -10,7 +10,7 @@ require "leanprover-community" / "batteries" @ git "nightly-testing"
 require "leanprover-community" / "Qq" @ git "nightly-testing"
 
 require "leanprover-community" / "aesop" @ git "nightly-testing"
-require "leanprover-community" / "proofwidgets" @ git "v0.0.100"
+require "leanprover-community" / "proofwidgets" @ git "nightly-testing"
   with NameMap.empty.insert `errorOnBuild
     "ProofWidgets failed to reuse pre-built JS code. \
     Please report this issue on the Lean Zulip."
