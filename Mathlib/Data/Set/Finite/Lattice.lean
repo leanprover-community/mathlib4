@@ -304,7 +304,7 @@ theorem Finite.iSup_biInf_of_monotone {ι ι' α : Type*} [Preorder ι'] [Nonemp
     [IsDirectedOrder ι'] [Order.Frame α] {s : Set ι} (hs : s.Finite) {f : ι → ι' → α}
     (hf : ∀ i ∈ s, Monotone (f i)) : ⨆ j, ⨅ i ∈ s, f i j = ⨅ i ∈ s, ⨆ j, f i j := by
   induction s, hs using Set.Finite.induction_on with
-  | empty => simp [iSup_const]
+  | empty => simp
   | insert _ _ ihs =>
     rw [forall_mem_insert] at hf
     simp only [iInf_insert, ← ihs hf.2]
@@ -380,7 +380,7 @@ theorem _root_.iInf_iSup_eq_of_finite {ι : Sort v} {κ : ι → Sort w} [Order.
   intro ι κ _ f
   induction ι using Finite.induction_empty_option with
   | of_equiv e h => simp [← e.iInf_comp, ← e.piCongrLeft κ |>.iSup_comp, h]
-  | h_empty => simp [iInf_of_empty, iSup_const]
+  | h_empty => simp [iInf_of_empty]
   | h_option h =>
     simp only [iInf_option, h, ← (Equiv.piOptionEquivProd (β := κ)).symm.iSup_comp,
       Equiv.piOptionEquivProd_symm_apply, iSup_prod, ← inf_iSup_eq, ← iSup_inf_eq]
@@ -402,7 +402,7 @@ theorem Finite.biInf_iSup_eq {ι : Type v} {κ : ι → Sort w} [Nonempty (Π a,
   haveI := hs.to_subtype
   haveI : Nonempty (Π a : { a // a ∉ s }, κ ↑a) := ‹Nonempty (Π a, κ a)›.map fun f a ↦ f a
   simp [← iInf_subtype'', iInf_iSup_eq_of_finite (ι := s),
-    ← Equiv.piEquivPiSubtypeProd (· ∈ s) _ |>.symm.iSup_comp, iSup_prod, iSup_const]
+    ← Equiv.piEquivPiSubtypeProd (· ∈ s) _ |>.symm.iSup_comp, iSup_prod]
 
 theorem Finite.biSup_iInf_eq {ι : Type v} {κ : ι → Sort w} [Nonempty (∀ a, κ a)] [Order.Coframe α]
     {s : Set ι} (hs : s.Finite) {f : ∀ a, κ a → α} :
