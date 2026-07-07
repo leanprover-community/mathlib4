@@ -30,6 +30,12 @@ public section
 open Set Nat
 open scoped Topology
 
+/-- A sum over the primes, viewed as a sum over the subtype `Nat.Primes`, rewritten as a sum
+over all of `ℕ` with the composite terms sent to `0`. -/
+theorem Nat.Primes.tsum_eq_tsum_ite {M : Type*} [AddCommMonoid M] [TopologicalSpace M]
+    (f : ℕ → M) : ∑' p : Nat.Primes, f p = ∑' n : ℕ, if n.Prime then f n else 0 := by
+  simp [Nat.Primes, ← Set.coe_setOf Nat.Prime, tsum_subtype, Set.indicator_apply]
+
 /-- The cardinality of the set of `k`-rough numbers `≤ N` is bounded by `N` times the sum
 of `1/p` over the primes `k ≤ p ≤ N`. -/
 -- This needs `Mathlib/Analysis/RCLike/Basic.lean`, so we put it here
