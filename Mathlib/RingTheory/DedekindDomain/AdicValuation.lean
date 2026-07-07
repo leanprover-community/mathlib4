@@ -601,12 +601,7 @@ theorem adicValued_apply' (x : WithVal (v.valuation K)) :
 
 variable (K)
 
-/-- The completion of `K` with respect to its `v`-adic valuation.
-
-This is a `def` rather than an `abbrev` (i.e. it is not reducible): unfolding it to
-`(v.valuation K).Completion` during type-class resolution can be expensive and lead to
-undesirable instances leaking through, so the algebraic and topological structure is instead
-re-exposed explicitly via the instances below. -/
+/-- The completion of `K` with respect to its `v`-adic valuation. -/
 def adicCompletion := (v.valuation K).Completion
 
 instance : Field (v.adicCompletion K) :=
@@ -637,9 +632,7 @@ instance : Coe K (v.adicCompletion K) :=
   inferInstanceAs (Coe K (v.valuation K).Completion)
 
 /-- The valuation on the completion agrees with the `v`-adic valuation on elements coming from
-`WithVal (v.valuation K)`. This and `valuedAdicCompletion_eq_valuation'` are the analogous
-statements for the two coercions into `adicCompletion K v` (the codomain is a `def`, so the two
-coercions do not reduce to a common head and both `simp` lemmas are needed). -/
+`WithVal (v.valuation K)`. -/
 @[simp]
 theorem valuedAdicCompletion_coe_withVal (x : WithVal (v.valuation K)) :
     Valued.v (x : v.adicCompletion K) = v.valuation K (WithVal.equiv _ x) :=
