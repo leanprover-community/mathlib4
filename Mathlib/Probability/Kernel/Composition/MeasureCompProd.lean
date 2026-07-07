@@ -105,7 +105,7 @@ lemma compProd_id [SFinite μ] : μ ⊗ₘ Kernel.id = μ.map Function.diag := b
   have h_meas a : MeasurableSet (Prod.mk a ⁻¹' s) := measurable_prodMk_left hs
   simp_rw [Kernel.id_apply, dirac_apply' _ (h_meas _)]
   calc ∫⁻ a, (Prod.mk a ⁻¹' s).indicator 1 a ∂μ
-  _ = ∫⁻ a, ((Function.diag) ⁻¹' s).indicator 1 a ∂μ := rfl
+  _ = ∫⁻ a, (Function.diag ⁻¹' s).indicator 1 a ∂μ := rfl
   _ = μ (Function.diag ⁻¹' s) := by
     rw [lintegral_indicator_one]
     exact (measurable_id.prod measurable_id) hs
