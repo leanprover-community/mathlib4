@@ -220,6 +220,12 @@ lemma IsHamiltonianCycle.support_count_of_ne (hp : p.IsHamiltonianCycle) (h : a 
     p.support.count b = 1 := by
   rw [← cons_support_tail hp.1.not_nil, List.count_cons_of_ne h, hp.isHamiltonian_tail]
 
+theorem isHamiltonianCycle_iff_isCycle_and_forall_mem_support :
+    p.IsHamiltonianCycle ↔ p.IsCycle ∧ ∀ v, v ∈ p.support := by
+  refine ⟨fun hp ↦ ⟨hp.isCycle, hp.mem_support⟩, fun hp ↦ ⟨hp.left, ?_⟩⟩
+  refine IsPath.isHamiltonian_of_mem hp.left.isPath_tail fun v ↦ ?_
+  grind [cons_support_tail hp.left.not_nil, end_mem_support]
+
 lemma isHamiltonianCycle_iff_isCycle_and_length_eq [Fintype α] :
     p.IsHamiltonianCycle ↔ p.IsCycle ∧ p.length = Fintype.card α := by
   refine ⟨fun h ↦ ⟨h.isCycle, h.length_eq⟩, fun ⟨h₁, h₂⟩ ↦ ⟨h₁, ?_⟩⟩
