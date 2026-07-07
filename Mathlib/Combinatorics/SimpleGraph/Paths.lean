@@ -360,6 +360,9 @@ lemma IsPath.tail {p : G.Walk u v} (hp : p.IsPath) : p.tail.IsPath := by
   | cons hadj p =>
     simp_all [Walk.isPath_def]
 
+theorem isPath_dropLast_iff_isPath_tail {p : G.Walk u u} : p.dropLast.IsPath ↔ p.tail.IsPath := by
+  rw [isPath_def, isPath_def, p.support_tail_perm_support_dropLast.nodup_iff]
+
 theorem IsCycle.isPath_dropLast {p : G.Walk u u} (h : p.IsCycle) : p.dropLast.IsPath :=
   .mk' <| p.support_dropLast h.not_nil ▸ h.nodup_dropLast_support
 
@@ -559,6 +562,10 @@ theorem isCycle_iff_isPath_tail_and_le_length {p : G.Walk u u} :
       simp [← List.head_eq_getElem_zero, h₁.eq_penultimate_of_mem_edges hh]
     have := p.isPath_iff_injective_get_support.mp h₁ this
     lia
+
+theorem isCycle_iff_isPath_dropLast_and_le_length {p : G.Walk u u} :
+    p.IsCycle ↔ p.dropLast.IsPath ∧ 3 ≤ p.length := by
+  rw [isPath_dropLast_iff_isPath_tail, isCycle_iff_isPath_tail_and_le_length]
 
 /-! ### Walk decompositions -/
 
