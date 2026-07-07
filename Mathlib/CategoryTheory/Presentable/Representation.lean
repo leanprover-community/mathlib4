@@ -221,9 +221,8 @@ instance (C : Type u) [Category.{v} C] [IsLocallyPresentable.{w} C] :
   exact IsCardinalLocallyPresentable.hasLimitsOfSize C κ
 
 instance (C : Type u) [Category.{v} C] [IsLocallyPresentable.{w} C] :
-    HasFiniteLimits C := by
-  obtain ⟨κ, _, _⟩ := IsLocallyPresentable.exists_cardinal.{w} C
-  exact IsCardinalLocallyPresentable.hasFiniteLimits C κ
+    HasFiniteLimits C :=
+  hasFiniteLimits_of_hasLimitsOfSize.{w, w} C
 
 end IsCardinalPresentable
 

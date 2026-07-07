@@ -9,20 +9,23 @@ public import Mathlib.CategoryTheory.Limits.Types.PreservesLimit
 public import Mathlib.CategoryTheory.Presentable.OrthogonalReflection
 public import Mathlib.CategoryTheory.Presentable.Presheaf
 public import Mathlib.CategoryTheory.Presentable.Type
+public import Mathlib.CategoryTheory.SmallRepresentatives
+public import Mathlib.CategoryTheory.MorphismProperty.IsSmall
 
 /-!
 # `κ`-continuous functors
 
-Given categories `C`, `D` and a regular cardinal `κ : Cardinal.{w}`, we define
-`isCardinalContinuous C D κ : ObjectProperty (C ⥤ D)` as the property
-of functors which preserves limits indexed by categories `J`
+Given categories `C`, `D` and a (regular) cardinal `κ : Cardinal.{w}`,
+we define `isCardinalContinuous C D κ : ObjectProperty (C ⥤ D)` as
+the property of functors which preserves limits indexed by categories `J`
 such that `HasCardinalLT (Arrow J) κ`.
 
 We show that if `C` is an essentially `w`-small category, then
 the category of `κ`-continuous functors `Cᵒᵖ ⥤ Type w` is locally
 `κ`-presentable. This is done by showing that `κ`-continuous
 functors `Cᵒᵖ ⥤ Type w` are exactly the objects that are local with
-respect to a suitable `w`-small family of morphisms.
+respect to a suitable `w`-small family of morphisms, see the lemma
+`Presheaf.isCardinalContinuous_eq_isLocal`.
 
 ## TODO (@joelriou)
 * Show that any locally `κ`-presentable category is equivalent to
@@ -45,30 +48,34 @@ section
 variable {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
 
 variable (C D) in
-def isCardinalContinuous (κ : Cardinal.{w}) [Fact κ.IsRegular] : ObjectProperty (C ⥤ D) :=
+/-- Given a cardinal `κ`, this is the property of objects
+in the category of functors `C ⥤ D` that is satisfied by `κ`-continuous
+functors, i.e. functors which preserve limits indexed by categories `J`
+such that `Arrow J` is of cardinality `< κ`. -/
+def isCardinalContinuous (κ : Cardinal.{w}) : ObjectProperty (C ⥤ D) :=
   ⨅ (J : Type w) (_ : Category.{w} J) (_ : HasCardinalLT (Arrow J) κ),
     ObjectProperty.preservesLimitsOfShape J
 
-lemma isCardinalContinuous_iff (F : C ⥤ D) (κ : Cardinal.{w}) [Fact κ.IsRegular] :
+lemma isCardinalContinuous_iff (F : C ⥤ D) (κ : Cardinal.{w}) :
     isCardinalContinuous C D κ F ↔
       ∀ (J : Type w) [SmallCategory J] (_ : HasCardinalLT (Arrow J) κ),
         PreservesLimitsOfShape J F := by
   simp [isCardinalContinuous]
 
 lemma isCardinalContinuous.preservesColimitsOfShape {F : C ⥤ D}
-    {κ : Cardinal.{w}} [Fact κ.IsRegular] (hF : isCardinalContinuous C D κ F)
+    {κ : Cardinal.{w}} (hF : isCardinalContinuous C D κ F)
     (J : Type w) [SmallCategory.{w} J] (hκ : HasCardinalLT (Arrow J) κ) :
     PreservesLimitsOfShape J F :=
   (isCardinalContinuous_iff F κ).1 hF J hκ
 
-instance (κ : Cardinal.{w}) [Fact κ.IsRegular] :
+instance (κ : Cardinal.{w}) :
     (isCardinalContinuous C D κ).IsClosedUnderIsomorphisms := by
   dsimp only [isCardinalContinuous]
   infer_instance
 
 @[simp]
 lemma isCardinalContinuous_precomp_iff {C' : Type u''} [Category.{v''} C']
-    (G : C' ⥤ C) [G.IsEquivalence] (F : C ⥤ D) (κ : Cardinal.{w}) [Fact κ.IsRegular] :
+    (G : C' ⥤ C) [G.IsEquivalence] (F : C ⥤ D) (κ : Cardinal.{w}) :
     isCardinalContinuous C' D κ (G ⋙ F) ↔ isCardinalContinuous C D κ F := by
   simp only [isCardinalContinuous_iff]
   refine forall_congr' (fun J ↦ forall_congr' (fun _ ↦ forall_congr' (fun hκ ↦ ?_)))
@@ -78,8 +85,7 @@ lemma isCardinalContinuous_precomp_iff {C' : Type u''} [Category.{v''} C']
   exact preservesLimitsOfShape_of_natIso e
 
 def isCardinalContinuousCongrLeft {C' : Type u'} [Category.{v'} C']
-    (e : C ≌ C') (D : Type u'') [Category.{v''} D]
-    (κ : Cardinal.{w}) [Fact κ.IsRegular] :
+    (e : C ≌ C') (D : Type u'') [Category.{v''} D] (κ : Cardinal.{w}) :
     (isCardinalContinuous C D κ).FullSubcategory ≌
       (isCardinalContinuous C' D κ).FullSubcategory :=
   e.congrLeft.congrFullSubcategory (by aesop)
@@ -94,10 +100,15 @@ open Functor
 
 section Small
 
-variable (C : Type w) [SmallCategory C] (κ : Cardinal.{w}) [Fact κ.IsRegular]
+variable (C : Type w) [SmallCategory C] (κ : Cardinal.{w})
 
+/-- Given a `w`-small category `C` and a cardinal `κ`, this is a
+`w`-small family of morphisms in `Cᵒᵖ ⥤ Type w` such that `κ`-continuous
+functors `Cᵒᵖ ⥤ Type w` are exactly the objects that are local with
+respect to this family of morphisms,
+see the lemma `isCardinalContinuous_eq_isLocal`. -/
 abbrev isCardinalContinuousMorphismProperty : MorphismProperty (Cᵒᵖ ⥤ Type w) :=
-  ⨆ (J) (F : SmallCategoryCardinalLT.categoryFamily κ J ⥤ Cᵒᵖ),
+  ⨆ (J : SmallCategoryCardinalLT κ) (F : SmallCategoryCardinalLT.categoryFamily κ J ⥤ Cᵒᵖ),
     MorphismProperty.ofHoms (Presheaf.preservesLimitHomFamily F)
 
 lemma isCardinalContinuous_eq_isLocal :
@@ -117,9 +128,12 @@ lemma isCardinalContinuous_eq_isLocal :
       apply iInf_le
   · simp [preservesLimitsOfShape_eq_isLocal]
 
+variable [Fact κ.IsRegular]
+
 set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
-instance (X : C) : IsCardinalPresentable (shrinkYoneda.{w}.obj X) κ where
+instance (X : C) :
+    IsCardinalPresentable (shrinkYoneda.{w}.obj X) κ where
   preservesColimitOfShape J _ := ⟨fun {F} ↦ ⟨fun {c} hc ↦ ⟨by
     have := isFiltered_of_isCardinalFiltered J κ
     refine Types.FilteredColimit.isColimitOf' _ _ (fun f ↦ ?_) (fun j f₁ f₂ hf ↦ ?_)

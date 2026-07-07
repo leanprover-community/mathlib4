@@ -20,7 +20,7 @@ depending on whether the limit of `F` exists or not).
 
 @[expose] public section
 
-universe w w' v v' u u'
+universe w v v' u u'
 
 namespace CategoryTheory
 
