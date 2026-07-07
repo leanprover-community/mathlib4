@@ -163,71 +163,40 @@ theorem inv_eq_one_divp' (u : αˣ) : ((1 / u : αˣ) : α) = 1 /ₚ u := by
 
 end Monoid
 
-namespace LeftCancelMonoid
+section IsDedekindFiniteMonoid
 
-variable [LeftCancelMonoid α] [Subsingleton αˣ] {a b : α}
-
-@[to_additive]
-protected theorem eq_one_of_mul_right (h : a * b = 1) : a = 1 :=
-  congr_arg Units.inv <| Subsingleton.elim (Units.mk _ _ (by
-    rw [← mul_left_cancel_iff (a := a), ← mul_assoc, h, one_mul, mul_one]) h) 1
+variable [Monoid α] [IsDedekindFiniteMonoid α] [Subsingleton αˣ] {a b : α}
 
 @[to_additive]
-protected theorem eq_one_of_mul_left (h : a * b = 1) : b = 1 := by
-  rwa [LeftCancelMonoid.eq_one_of_mul_right h, one_mul] at h
+theorem eq_one_of_mul_right (h : a * b = 1) : a = 1 :=
+  congr_arg Units.inv <| Subsingleton.elim (Units.mk _ _ (mul_eq_one_symm h) h) 1
+
+@[to_additive]
+theorem eq_one_of_mul_left (h : a * b = 1) : b = 1 := by
+  rwa [eq_one_of_mul_right h, one_mul] at h
 
 @[to_additive (attr := simp)]
-protected theorem mul_eq_one : a * b = 1 ↔ a = 1 ∧ b = 1 :=
-  ⟨fun h => ⟨LeftCancelMonoid.eq_one_of_mul_right h, LeftCancelMonoid.eq_one_of_mul_left h⟩, by
+theorem mul_eq_one : a * b = 1 ↔ a = 1 ∧ b = 1 :=
+  ⟨fun h => ⟨eq_one_of_mul_right h, eq_one_of_mul_left h⟩, by
     rintro ⟨rfl, rfl⟩
     exact mul_one _⟩
 
 @[to_additive]
-protected theorem mul_ne_one : a * b ≠ 1 ↔ a ≠ 1 ∨ b ≠ 1 := by rw [not_iff_comm]; simp
+theorem mul_ne_one : a * b ≠ 1 ↔ a ≠ 1 ∨ b ≠ 1 := by rw [not_iff_comm]; simp
 
-end LeftCancelMonoid
+@[deprecated (since := "2026-07-07")]
+alias eq_one_of_mul_left' := eq_one_of_mul_left
 
-namespace RightCancelMonoid
+@[deprecated (since := "2026-07-07")]
+alias eq_one_of_mul_right' := eq_one_of_mul_right
 
-variable [RightCancelMonoid α] [Subsingleton αˣ] {a b : α}
+@[deprecated (since := "2026-07-07")]
+alias mul_eq_one' := mul_eq_one
 
-@[to_additive]
-protected theorem eq_one_of_mul_right (h : a * b = 1) : a = 1 :=
-  congr_arg Units.inv <| Subsingleton.elim (Units.mk _ _ (by
-    rw [← mul_right_cancel_iff (a := b), mul_assoc, h, one_mul, mul_one]) h) 1
+@[deprecated (since := "2026-07-07")]
+alias mul_ne_one' := mul_ne_one
 
-@[to_additive]
-protected theorem eq_one_of_mul_left (h : a * b = 1) : b = 1 := by
-  rwa [RightCancelMonoid.eq_one_of_mul_right h, one_mul] at h
-
-@[to_additive (attr := simp)]
-protected theorem mul_eq_one : a * b = 1 ↔ a = 1 ∧ b = 1 :=
-  ⟨fun h => ⟨RightCancelMonoid.eq_one_of_mul_right h, RightCancelMonoid.eq_one_of_mul_left h⟩, by
-    rintro ⟨rfl, rfl⟩
-    exact mul_one _⟩
-
-@[to_additive]
-protected theorem mul_ne_one : a * b ≠ 1 ↔ a ≠ 1 ∨ b ≠ 1 := by rw [not_iff_comm]; simp
-
-end RightCancelMonoid
-
-section CancelMonoid
-
-variable [CancelMonoid α] [Subsingleton αˣ] {a b : α}
-
-@[to_additive]
-theorem eq_one_of_mul_right' (h : a * b = 1) : a = 1 := LeftCancelMonoid.eq_one_of_mul_right h
-
-@[to_additive]
-theorem eq_one_of_mul_left' (h : a * b = 1) : b = 1 := LeftCancelMonoid.eq_one_of_mul_left h
-
-@[to_additive]
-theorem mul_eq_one' : a * b = 1 ↔ a = 1 ∧ b = 1 := LeftCancelMonoid.mul_eq_one
-
-@[to_additive]
-theorem mul_ne_one' : a * b ≠ 1 ↔ a ≠ 1 ∨ b ≠ 1 := LeftCancelMonoid.mul_ne_one
-
-end CancelMonoid
+end IsDedekindFiniteMonoid
 
 section CommMonoid
 
@@ -241,24 +210,6 @@ theorem divp_eq_divp_iff {x y : α} {ux uy : αˣ} : x /ₚ ux = y /ₚ uy ↔ x
 
 theorem divp_mul_divp (x y : α) (ux uy : αˣ) : x /ₚ ux * (y /ₚ uy) = x * y /ₚ (ux * uy) := by
   rw [divp_mul_eq_mul_divp, ← divp_assoc, divp_divp_eq_divp_mul]
-
-variable [Subsingleton αˣ] {a b : α}
-
-@[to_additive]
-theorem eq_one_of_mul_right (h : a * b = 1) : a = 1 :=
-  congr_arg Units.inv <| Subsingleton.elim (Units.mk _ _ (by rwa [mul_comm]) h) 1
-
-@[to_additive]
-theorem eq_one_of_mul_left (h : a * b = 1) : b = 1 :=
-  congr_arg Units.inv <| Subsingleton.elim (Units.mk _ _ h <| by rwa [mul_comm]) 1
-
-@[to_additive (attr := simp)]
-theorem mul_eq_one : a * b = 1 ↔ a = 1 ∧ b = 1 :=
-  ⟨fun h => ⟨eq_one_of_mul_right h, eq_one_of_mul_left h⟩, by
-    rintro ⟨rfl, rfl⟩
-    exact mul_one _⟩
-
-@[to_additive] theorem mul_ne_one : a * b ≠ 1 ↔ a ≠ 1 ∨ b ≠ 1 := by rw [not_iff_comm]; simp
 
 end CommMonoid
 
