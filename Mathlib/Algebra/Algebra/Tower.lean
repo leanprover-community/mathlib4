@@ -269,16 +269,14 @@ lemma restrictScalars_symm_apply (f : A ≃ₐ[S] B) (x : B) :
   simp
 
 @[deprecated "Use `symm_restrictScalars` instead." (since := "2026-07-06")]
-lemma toRingEquiv_restrictScalars_symm (f : A ≃ₐ[S] B) :
+lemma coe_restrictScalars_symm (f : A ≃ₐ[S] B) :
     ((f.restrictScalars R).symm : B ≃+* A) = f.symm := by
   simp
 
 @[deprecated "Use `symm_restrictScalars` instead." (since := "2026-07-06")]
-lemma coe_restrictScalars_symm (f : A ≃ₐ[S] B) :
+lemma coe_restrictScalars_symm' (f : A ≃ₐ[S] B) :
     ((restrictScalars R f).symm : B → A) = f.symm := by
   simp
-
-@[deprecated (since := "2026-07-06")] alias coe_restrictScalars_symm' := coe_restrictScalars_symm
 
 /-- `AlgEquiv.restrictScalars` as a homomorphism. -/
 def restrictScalarsHom : (A ≃ₐ[S] A) →* (A ≃ₐ[R] A) :=
