@@ -101,8 +101,7 @@ theorem iso_symm {x y : X × X} (h : Iso x y) : Iso y x :=
 theorem iso_trans {x y z : X × X} (hxy : Iso x y) (hyz : Iso y z) : Iso x z :=
   Relation.EqvGen.trans  x y z hxy hyz
 
-theorem second_iso {x y : X} (h : IsMaximal x (x ⊔ y)) :
-    Iso (x, x ⊔ y) (x ⊓ y, y) :=
+theorem second_iso {x y : X} (h : IsMaximal x (x ⊔ y)) : Iso (x, x ⊔ y) (x ⊓ y, y) :=
   Relation.EqvGen.rel (x, x ⊔ y) (x ⊓ y, y) ⟨h, rfl, rfl⟩
 
 /-- The equivalence relation on intervals implies any other notions of isomorphism. -/
