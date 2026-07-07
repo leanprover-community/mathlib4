@@ -69,7 +69,7 @@ theorem range_extend (hs : LinearIndepOn K id s) :
 /-- Auxiliary definition: the index for the new basis vectors in `Basis.sumExtend`.
 
 The specific value of this definition should be considered an implementation detail. -/
-def sumExtendIndex (hs : LinearIndependent K v) : Set V :=
+noncomputable def sumExtendIndex (hs : LinearIndependent K v) : Set V :=
   LinearIndepOn.extend hs.linearIndepOn_id (subset_univ _) \ range v
 
 /-- If `v` is a linear independent family of vectors, extend it to a basis indexed by a sum type. -/

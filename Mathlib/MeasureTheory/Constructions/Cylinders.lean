@@ -294,7 +294,7 @@ noncomputable def measurableCylinders.finset (ht : t ∈ measurableCylinders α)
   ((mem_measurableCylinders t).mp ht).choose
 
 /-- A set `S` such that `t = cylinder s S`. `s` is given by `measurableCylinders.finset`. -/
-def measurableCylinders.set (ht : t ∈ measurableCylinders α) :
+noncomputable def measurableCylinders.set (ht : t ∈ measurableCylinders α) :
     Set (∀ i : measurableCylinders.finset ht, α i) :=
   ((mem_measurableCylinders t).mp ht).choose_spec.choose
 

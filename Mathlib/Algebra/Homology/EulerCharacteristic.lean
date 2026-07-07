@@ -103,7 +103,7 @@ variable (c : ComplexShape ι) [c.EulerCharSigns]
 
 /-- The support of a graded object with respect to finite rank:
 the set of indices where the rank is nonzero. -/
-def finrankSupport (X : CategoryTheory.GradedObject ι (ModuleCat R)) : Set ι :=
+noncomputable def finrankSupport (X : CategoryTheory.GradedObject ι (ModuleCat R)) : Set ι :=
   Function.support (fun i => Module.finrank R (X i))
 
 /-- The finite rank support is contained in a set if and only if

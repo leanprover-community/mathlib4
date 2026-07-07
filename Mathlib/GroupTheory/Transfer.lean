@@ -101,14 +101,14 @@ lemma coe_transferFunction (q : G ⧸ H) : ↑(transferFunction H g q) = q := by
 variable (H) in
 /-- The transfer transversal as a set. Contains elements of the form `g ^ k • g₀` for fixed choices
 of representatives `g₀` of fixed choices of representatives `q₀` of `⟨g⟩`-orbits in `G ⧸ H`. -/
-def transferSet : Set G := Set.range (transferFunction H g)
+noncomputable def transferSet : Set G := Set.range (transferFunction H g)
 
 lemma mem_transferSet (q : G ⧸ H) : transferFunction H g q ∈ transferSet H g := ⟨q, rfl⟩
 
 variable (H) in
 /-- The transfer transversal. Contains elements of the form `g ^ k • g₀` for fixed choices
   of representatives `g₀` of fixed choices of representatives `q₀` of `⟨g⟩`-orbits in `G ⧸ H`. -/
-def transferTransversal : H.LeftTransversal :=
+noncomputable def transferTransversal : H.LeftTransversal :=
   ⟨transferSet H g, isComplement_range_left (coe_transferFunction g)⟩
 
 lemma transferTransversal_apply (q : G ⧸ H) :
