@@ -90,16 +90,10 @@ variable (R A M) in
 /-- The bialgebra equivalence between `AddMonoidAlgebra` and `MonoidAlgebra` in terms of
 `Multiplicative`. -/
 def toMultiplicativeBialgEquiv : A[M] ≃ₐc[R] MonoidAlgebra A (Multiplicative M) :=
-  .ofAlgEquiv (toMultiplicativeAlgEquiv R A M)
-    (by ext x; induction x using AddMonoidAlgebra.induction_linear <;> simp_all)
-    (by
-      ext x
-      induction x using AddMonoidAlgebra.induction_linear with
-      | zero => simp
-      | add x y hx hy => simp_all
-      | single m a =>
-      simp [← (Coalgebra.Repr.arbitrary R a).eq, TensorProduct.map_tmul, map_sum,
-        Algebra.TensorProduct.map_tmul])
+  .ofAlgEquiv (toMultiplicativeAlgEquiv R A M) (by ext <;> simp) <| by
+    ext a
+    · simp [Algebra.TensorProduct.one_def]
+    · simp [← (Coalgebra.Repr.arbitrary R a).eq]
 
 end AddMonoidAlgebra
 
