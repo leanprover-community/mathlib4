@@ -98,7 +98,7 @@ theorem sum_log_le {x : ℝ} (hx : 1 ≤ x) : ∑ n ∈ Ioc 0 ⌊x⌋₊, log n 
     _ ≤ (∫ t in (1:ℕ)..⌊x⌋₊, log t) + log x := by
       rw [← sum_Ico_add_eq_sum_Icc (by simpa)]
       gcongr
-      exact (strictMonoOn_log.monotoneOn.mono (by grind)).sum_le_integral_Ico (f := log) h2
+      exact (strictMonoOn_log.monotoneOn.mono (by grind)).sum_le_integral_Ico h2
     _ ≤ (∫ t in 1..x, log t) + log x := by
       norm_cast; gcongr
       apply integral_mono_interval (by rfl) (mod_cast h2) h1 _ intervalIntegrable_log'
@@ -612,7 +612,7 @@ theorem sum_div_log_mul_pow_add_tendsto :
       grw [h, log_two_lt_d9]
       norm_num
   · rw [lintegral_ofReal_ne_top_iff_integrable (Measurable.aestronglyMeasurable (by fun_prop))
-        (Eventually.of_forall (fun _ ↦ by simp only [Pi.zero_apply, rpow_neg_ofNat]; positivity))]
+        (Eventually.of_forall fun _ ↦ by simp only [Pi.zero_apply, rpow_neg_ofNat]; positivity)]
     simp_rw [add_assoc, add_mul _ (|M| + C₂ / log 2)]
     apply Integrable.add
     exacts [IntegrableOn.congr_fun (integrableOn_log_log_mul_rpow (by norm_num : 1 < (2 : ℝ))).abs
@@ -1135,14 +1135,13 @@ variable {x : ℝ} {N : ℕ}
 
 private lemma Weight.vonMangoldt_sum_inv_log_mul_eq :
     ∑ n ∈ Ioc 0 N, (log n)⁻¹ * Weight.vonMangoldt n = ∑ n ∈ Ioc 0 N, Λ n / (n * log n) := by
-  congr! 1 with n hn
-  simp; field
+  congr! 1; simp; field
 
 private lemma Weight.prime_sum_inv_log_mul_eq :
     ∑ n ∈ Ioc 0 N, (log n)⁻¹ * Weight.prime n = ∑ p ∈ primesLE N, 1 / (p : ℝ) := by
   simp only [Weight.prime_apply, mul_ite, mul_zero, primesLE_eq_filter_Ioc_zero, one_div,
     sum_filter]
-  congr! 2 with p h hp
+  congr! 2
   field_simp (disch := positivity)
 
 theorem sum_vonMangoldt_div_mul_log_sub_sub_bound (hx : 2 ≤ x) :
@@ -1156,7 +1155,7 @@ theorem sum_vonMangoldt_div_mul_log_sub_sub_bound (hx : 2 ≤ x) :
 theorem sum_vonMangoldt_div_mul_log_sub_sub_bound_nat (hN : 2 ≤ N) :
     |∑ n ∈ Ioc 0 N, Λ n / (n * log n) - log (log N) - eulerMascheroniConstant| ≤
       (log 4 + 3) / log N := by
-  convert sum_vonMangoldt_div_mul_log_sub_sub_bound (x := ↑N) (mod_cast hN)
+  convert sum_vonMangoldt_div_mul_log_sub_sub_bound (x := N) (mod_cast hN)
   simp
 
 theorem sum_prime_inv_sub_sub_bound (hx : 2 ≤ x) :
@@ -1167,7 +1166,7 @@ theorem sum_prime_inv_sub_sub_bound (hx : 2 ≤ x) :
 
 theorem sum_prime_inv_sub_sub_bound_nat (hN : 2 ≤ N) :
     |∑ p ∈ primesLE N, 1 / (p : ℝ) - log (log N) - Weight.prime.M| ≤ (log 4 + 3) / log N := by
-  convert sum_prime_inv_sub_sub_bound (x := ↑N) (mod_cast hN)
+  convert sum_prime_inv_sub_sub_bound (x := N) (mod_cast hN)
   simp
 
 theorem sum_vonMangoldt_div_mul_log_sub_sub_isBigO :
@@ -1178,7 +1177,7 @@ theorem sum_vonMangoldt_div_mul_log_sub_sub_isBigO :
   rw [Weight.vonMangoldt_sum_inv_log_mul_eq]
 
 theorem sum_vonMangoldt_div_mul_log_sub_sub_isBigO_nat :
-    (fun (N : ℕ) ↦ ∑ n ∈ Ioc 0 N, Λ n / (n * log n) - log (log N) - eulerMascheroniConstant)
+    (fun N : ℕ ↦ ∑ n ∈ Ioc 0 N, Λ n / (n * log n) - log (log N) - eulerMascheroniConstant)
     =O[atTop] fun N ↦ (log N)⁻¹ := by
   rw [← Weight.vonMangoldt_M_eq]
   convert Weight.vonMangoldt.sum_div_log_sub_sub_isBigO_nat using 4
@@ -1198,67 +1197,68 @@ theorem sum_prime_div_mul_log_sub_sub_isBigO_nat :
 
 theorem sum_vonMangoldt_div_mul_log_sub_sub_isLittleO :
     (fun x ↦ ∑ n ∈ Ioc 0 ⌊x⌋₊, Λ n / (n * log n) - log (log x) - eulerMascheroniConstant)
-    =o[atTop] fun _ ↦ (1:ℝ) := by
+    =o[atTop] fun _ ↦ (1 : ℝ) := by
   rw [← Weight.vonMangoldt_M_eq]
   convert Weight.vonMangoldt.sum_div_log_sub_sub_isLittleO using 4
   rw [Weight.vonMangoldt_sum_inv_log_mul_eq]
 
 theorem sum_vonMangoldt_div_mul_log_sub_sub_isLittleO_nat :
     (fun (N : ℕ) ↦ ∑ n ∈ Ioc 0 N, Λ n / (n * log n) - log (log N) - eulerMascheroniConstant)
-    =o[atTop] fun _ ↦ (1:ℝ) := by
+    =o[atTop] fun _ ↦ (1 : ℝ) := by
   rw [← Weight.vonMangoldt_M_eq]
   convert Weight.vonMangoldt.sum_div_log_sub_sub_isLittleO_nat using 4
   rw [Weight.vonMangoldt_sum_inv_log_mul_eq]
 
 theorem sum_prime_inv_sub_sub_isLittleO :
     (fun x ↦ ∑ p ∈ primesLE ⌊x⌋₊, 1 / (p : ℝ) - log (log x) - Weight.prime.M)
-    =o[atTop] fun _ ↦ (1:ℝ) := by
+    =o[atTop] fun _ ↦ (1 : ℝ) := by
   convert Weight.prime.sum_div_log_sub_sub_isLittleO using 4
   rw [Weight.prime_sum_inv_log_mul_eq]
 
 theorem sum_prime_inv_sub_sub_isLittleO_nat :
     (fun (N : ℕ) ↦ ∑ p ∈ primesLE N, 1 / (p : ℝ) - log (log N) - Weight.prime.M)
-    =o[atTop] fun _ ↦ (1:ℝ) := by
+    =o[atTop] fun _ ↦ (1 : ℝ) := by
   convert Weight.prime.sum_div_log_sub_sub_isLittleO_nat using 4
   rw [Weight.prime_sum_inv_log_mul_eq]
 
 theorem sum_vonMangoldt_div_mul_log_sub_isBigO :
-    (fun x ↦ ∑ n ∈ Ioc 0 ⌊x⌋₊, Λ n / (n * log n) - log (log x)) =O[atTop] fun _ ↦ (1:ℝ) := by
+    (fun x ↦ ∑ n ∈ Ioc 0 ⌊x⌋₊, Λ n / (n * log n) - log (log x)) =O[atTop] fun _ ↦ (1 : ℝ) := by
   convert Weight.vonMangoldt.sum_div_log_sub_isBigO using 3
   rw [Weight.vonMangoldt_sum_inv_log_mul_eq]
 
 theorem sum_vonMangoldt_div_mul_log_sub_isBigO_nat
-    : (fun (N : ℕ) ↦ ∑ n ∈ Ioc 0 N, Λ n / (n * log n) - log (log N)) =O[atTop] fun _ ↦ (1:ℝ) := by
+    : (fun (N : ℕ) ↦ ∑ n ∈ Ioc 0 N, Λ n / (n * log n) - log (log N)) =O[atTop] fun _ ↦ (1 : ℝ)
+    := by
   convert Weight.vonMangoldt.sum_div_log_sub_isBigO_nat using 3
   rw [Weight.vonMangoldt_sum_inv_log_mul_eq]
 
 theorem sum_prime_inv_sub_isBigO :
-    (fun x ↦ ∑ p ∈ primesLE ⌊x⌋₊, 1 / (p : ℝ) - log (log x)) =O[atTop] fun _ ↦ (1:ℝ) := by
+    (fun x ↦ ∑ p ∈ primesLE ⌊x⌋₊, 1 / (p : ℝ) - log (log x)) =O[atTop] fun _ ↦ (1 : ℝ) := by
   convert Weight.prime.sum_div_log_sub_isBigO using 3
   rw [Weight.prime_sum_inv_log_mul_eq]
 
 theorem sum_prime_inv_sub_isBigO_nat
-    : (fun (N : ℕ) ↦ ∑ p ∈ primesLE N, 1 / (p : ℝ) - log (log N)) =O[atTop] fun _ ↦ (1:ℝ) := by
+    : (fun (N : ℕ) ↦ ∑ p ∈ primesLE N, 1 / (p : ℝ) - log (log N)) =O[atTop] fun _ ↦ (1 : ℝ) := by
   convert Weight.prime.sum_div_log_sub_isBigO_nat using 3
   rw [Weight.prime_sum_inv_log_mul_eq]
 
 theorem sum_vonMangoldt_div_mul_log_asymp :
-    (fun x ↦ ∑ n ∈ Ioc 0 ⌊x⌋₊, Λ n / (n * log n)) ~[atTop] fun x ↦ log (log x) := by
+    (∑ n ∈ Ioc 0 ⌊·⌋₊, Λ n / (n * log n)) ~[atTop] fun x ↦ log (log x) := by
   convert Weight.vonMangoldt.sum_div_log_asymp using 2
   rw [Weight.vonMangoldt_sum_inv_log_mul_eq]
 
 theorem sum_vonMangoldt_div_mul_log_asymp_nat :
-    (fun (N : ℕ) ↦ ∑ n ∈ Ioc 0 N, Λ n / (n * log n)) ~[atTop] fun N ↦ log (log N) := by
+    (∑ n ∈ Ioc 0 ·, Λ n / (n * log n)) ~[atTop] fun N ↦ log (log N) := by
   convert Weight.vonMangoldt.sum_div_log_asymp_nat using 2
   rw [Weight.vonMangoldt_sum_inv_log_mul_eq]
 
 theorem sum_prime_inv_asymp :
-    (fun x ↦ ∑ p ∈ primesLE ⌊x⌋₊, 1 / (p : ℝ)) ~[atTop] fun x ↦ log (log x) := by
+    (∑ p ∈ primesLE ⌊·⌋₊, 1 / (p : ℝ)) ~[atTop] fun x ↦ log (log x) := by
   convert Weight.prime.sum_div_log_asymp using 2
   rw [Weight.prime_sum_inv_log_mul_eq]
 
 theorem sum_prime_inv_asymp_nat :
-    (fun (N : ℕ) ↦ ∑ p ∈ primesLE N, 1 / (p : ℝ)) ~[atTop] fun N ↦ log (log N) := by
+    (∑ p ∈ primesLE ·, 1 / (p : ℝ)) ~[atTop] fun N ↦ log (log N) := by
   convert Weight.prime.sum_div_log_asymp_nat using 2
   rw [Weight.prime_sum_inv_log_mul_eq]
 
@@ -1370,8 +1370,7 @@ theorem E₃_isLittleO : E₃ =o[atTop] fun _ ↦ (1 : ℝ) :=
 theorem E₃_tendsto : Tendsto E₃ atTop (𝓝 0) := by simpa [isLittleO_one_iff] using E₃_isLittleO
 
 theorem exp_E₃_sub_isBigO : (fun x ↦ exp (E₃ x) - 1) =O[atTop] fun x ↦ (log x)⁻¹ := by
-  suffices (fun y ↦ exp y - 1) =O[𝓝 0] fun y ↦ y from
-    this.comp_tendsto E₃_tendsto|>.trans E₃_isBigO
+  suffices (exp · - 1) =O[𝓝 0] (·) from this.comp_tendsto E₃_tendsto|>.trans E₃_isBigO
   simpa using differentiable_exp.differentiableAt.isBigO_sub (x₀ := 0)
 
 theorem exp_E₃_sub_isLittleO : (fun x ↦ exp (E₃ x) - 1) =o[atTop] fun _ ↦ (1 : ℝ) :=
