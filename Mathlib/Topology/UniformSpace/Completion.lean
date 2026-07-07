@@ -218,7 +218,7 @@ instance [h : Nonempty α] : Nonempty (CauchyFilter α) :=
 
 section Extend
 
-open Classical in
+open scoped Classical in
 /-- Extend a uniformly continuous function `α → β` to a function `CauchyFilter α → β`.
 Outputs junk when `f` is not uniformly continuous. -/
 def extend (f : α → β) : CauchyFilter α → β :=

@@ -74,7 +74,6 @@ theorem exists_eq_forall_mem_Icc_hasDerivWithinAt₀
       ∀ t ∈ Icc tmin tmax, HasDerivWithinAt α (f t (α t)) (Icc tmin tmax) t :=
   exists_eq_forall_mem_Icc_hasDerivWithinAt hf (mem_closedBall_self le_rfl)
 
-open Classical in
 /-- **Picard-Lindelöf (Cauchy-Lipschitz) theorem**, differential form. This version shows the
 existence of a local flow and that it is Lipschitz continuous in the initial point. -/
 theorem exists_forall_mem_closedBall_eq_hasDerivWithinAt_lipschitzOnWith
@@ -82,6 +81,7 @@ theorem exists_forall_mem_closedBall_eq_hasDerivWithinAt_lipschitzOnWith
     ∃ α : E → ℝ → E, (∀ x ∈ closedBall x₀ r, α x t₀ = x ∧
       ∀ t ∈ Icc tmin tmax, HasDerivWithinAt (α x) (f t (α x t)) (Icc tmin tmax) t) ∧
       ∃ L' : ℝ≥0, ∀ t ∈ Icc tmin tmax, LipschitzOnWith L' (α · t) (closedBall x₀ r) := by
+  classical
   have (x) (hx : x ∈ closedBall x₀ r) := FunSpace.exists_isFixedPt_next hf hx
   choose α hα using this
   set α' := fun (x : E) ↦ if hx : x ∈ closedBall x₀ r then
@@ -162,7 +162,6 @@ theorem exists_forall_mem_closedBall_exists_eq_forall_mem_Ioo_hasDerivAt₀
   have ⟨α, hα1, hα2⟩ := H x₀ (mem_closedBall_self (le_of_lt hr))
   ⟨α, hα1, ε, hε, hα2⟩
 
-open Classical in
 /-- If a vector field `f : E → E` is continuously differentiable at `x₀ : E`, then it admits a flow
 `α : E → ℝ → E` defined on an open domain, with initial condition `α x t₀ = x` for all `x` within
 the domain. -/
@@ -170,6 +169,7 @@ theorem exists_eventually_eq_hasDerivAt
     (hf : ContDiffAt ℝ 1 f x₀) (t₀ : ℝ) :
     ∃ α : E → ℝ → E, ∀ᶠ xt in 𝓝 x₀ ×ˢ 𝓝 t₀,
       α xt.1 t₀ = xt.1 ∧ HasDerivAt (α xt.1) (f (α xt.1 xt.2)) xt.2 := by
+  classical
   obtain ⟨r, hr, ε, hε, H⟩ := exists_forall_mem_closedBall_exists_eq_forall_mem_Ioo_hasDerivAt hf t₀
   choose α hα using H
   refine ⟨fun (x : E) ↦ if hx : x ∈ closedBall x₀ r then α x hx else 0, ?_⟩

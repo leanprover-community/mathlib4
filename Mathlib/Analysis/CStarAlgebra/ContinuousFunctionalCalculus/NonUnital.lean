@@ -201,7 +201,7 @@ end cfcₙL
 
 section CFCn
 
-open Classical in
+open scoped Classical in
 /-- This is the *continuous functional calculus* of an element `a : A` in a non-unital algebra
 applied to bare functions.  When either `a` does not satisfy the predicate `p` (i.e., `a` is not
 `IsStarNormal`, `IsSelfAdjoint`, or `0 ≤ a` when `R` is `ℂ`, `ℝ`, or `ℝ≥0`, respectively), or when

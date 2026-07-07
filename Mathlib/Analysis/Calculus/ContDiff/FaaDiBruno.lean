@@ -631,7 +631,6 @@ def eraseMiddle (c : OrderedFinpartition (n + 1)) (hc : range (c.emb 0) ≠ {0})
       exact ⟨i, Fin.cast A.symm j, by simp [hi, hij]⟩
 
 set_option backward.isDefEq.respectTransparency false in
-open Classical in
 /-- Extending the ordered partitions of `Fin n` bijects with the ordered partitions
 of `Fin (n+1)`. -/
 @[simps apply]

@@ -59,7 +59,7 @@ namespace MeasureTheory
 
 variable {α : Type*} {mα : MeasurableSpace α} {μ ν : Measure α} {s t : Set α}
 
-open Classical in
+open scoped Classical in
 /-- A measurable set such that `μ.restrict (μ.sigmaFiniteSetWRT ν)` is sigma-finite and for all
 measurable sets `t ⊆ sᶜ`, either `ν t = 0` or `μ t = ∞`. -/
 def Measure.sigmaFiniteSetWRT (μ ν : Measure α) : Set α :=

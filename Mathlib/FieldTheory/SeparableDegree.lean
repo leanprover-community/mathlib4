@@ -299,7 +299,7 @@ namespace Polynomial
 variable {F E}
 variable (f : F[X])
 
-open Classical in
+open scoped Classical in
 /-- The separable degree `Polynomial.natSepDegree` of a polynomial is a natural number,
 defined to be the number of distinct roots of it over its splitting field.
 This is similar to `Polynomial.natDegree` but not to `Polynomial.degree`, namely, the separable

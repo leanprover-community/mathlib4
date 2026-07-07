@@ -40,6 +40,8 @@ lemma smul_dvd_smul [Monoid α] [Monoid β] [SMul α β] [IsScalarTower α β β
 def IsDvdSequence [Dvd α] [Dvd β] (f : α → β) : Prop :=
   ∀ a b, a ∣ b → f a ∣ f b
 
+@[deprecated (since := "2026-06-30")] alias IsDivSequence := IsDvdSequence
+
 namespace IsDvdSequence
 
 variable (α) in
@@ -55,16 +57,19 @@ protected theorem smul' [Dvd α] [Monoid β] [Monoid γ] {f : α → β} {g : α
     (hf : IsDvdSequence f) (hg : IsDvdSequence g) : IsDvdSequence (f • g) :=
   fun a b hab ↦ smul_dvd_smul (hf a b hab) (hg a b hab)
 
-protected theorem mul [Dvd α] [CommMonoid β] {f g : α → β}
-    (hf : IsDvdSequence f) (hg : IsDvdSequence g) : IsDvdSequence (f * g) :=
+protected theorem mul [Dvd α] [CommMonoid β] {f g : α → β} (hf : IsDvdSequence f)
+    (hg : IsDvdSequence g) : IsDvdSequence (f * g) :=
   .smul' hf hg
 
-protected theorem smul [Dvd α] [Monoid β] [Monoid γ] {f : α → γ} [SMul β γ]
-    [IsScalarTower β γ γ] [IsScalarTower β β γ] [SMulCommClass β γ γ]
-    (b : β) (hg : IsDvdSequence f) : IsDvdSequence (b • f) :=
+protected theorem smul [Dvd α] [Monoid β] [Monoid γ] {f : α → γ} [SMul β γ] [IsScalarTower β γ γ]
+    [IsScalarTower β β γ] [SMulCommClass β γ γ] (b : β) (hg : IsDvdSequence f) :
+    IsDvdSequence (b • f) :=
   .smul' (.const α b) hg
 
 end IsDvdSequence
+
+@[deprecated (since := "2026-06-30")] alias IsDivSequence.smul := IsDvdSequence.smul
+@[deprecated (since := "2026-06-30")] alias isDivSequence_id := IsDvdSequence.id
 
 namespace Nat
 

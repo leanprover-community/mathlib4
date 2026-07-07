@@ -41,7 +41,7 @@ noncomputable def DividedPowers.ofInjective (f : A →+* B) (hf : Injective f)
     (hJ : DividedPowers J) (hIJ : I.map f = J)
     (hmem : ∀ (n : ℕ) {x : A} (_ : x ∈ I), ∃ (y : A) (_ : n ≠ 0 → y ∈ I), f y = hJ.dpow n (f x)) :
     DividedPowers I where
-  dpow n x := open Classical in if hx : x ∈ I then Exists.choose (hmem n hx) else 0
+  dpow n x := open scoped Classical in if hx : x ∈ I then Exists.choose (hmem n hx) else 0
   dpow_null hx := by simp [dif_neg hx]
   dpow_zero {x} hx := by
     simp only [dif_pos hx, ← hf.eq_iff, (Exists.choose_spec (hmem 0 hx)).2, map_one]
@@ -153,7 +153,7 @@ noncomputable def dividedPowers : DividedPowers (Ideal.span {(p : ℤ_[p])}) := 
 open Function
 
 private lemma dividedPowers_eq (n : ℕ) (x : ℤ_[p]) :
-    (dividedPowers p).dpow n x = open Classical in
+    (dividedPowers p).dpow n x = open scoped Classical in
       if hx : x ∈ Ideal.span {(p : ℤ_[p])} then ⟨dpow' p n x, dpow'_int p n hx⟩ else 0 := by
   simp only [dividedPowers, ofInjective]
   split_ifs with hx
@@ -167,7 +167,7 @@ private lemma dividedPowers_eq (n : ℕ) (x : ℤ_[p]) :
   · rfl
 
 lemma coe_dpow_eq (n : ℕ) (x : ℤ_[p]) :
-    ((dividedPowers p).dpow n x : ℚ_[p]) = open Classical in
+    ((dividedPowers p).dpow n x : ℚ_[p]) = open scoped Classical in
       if _ : x ∈ Ideal.span {(p : ℤ_[p])} then inverse (n ! : ℚ_[p]) * x ^ n else 0 := by
   simp only [dividedPowers_eq, dpow', inverse_eq_inv', dite_eq_ite]
   split_ifs <;> simp

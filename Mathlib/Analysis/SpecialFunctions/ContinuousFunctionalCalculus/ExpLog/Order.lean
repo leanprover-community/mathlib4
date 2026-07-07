@@ -60,7 +60,7 @@ lemma CFC.tendsto_ite_cfc_rpow_sub_one_ite_log :
   · simpa [ha] using CFC.tendsto_cfc_rpow_sub_one_log ha
   · simp_all
 
-open Classical in
+open scoped Classical in
 private lemma CFC.cfc_rpow_sub_one_eqOn {p : ℝ} :
     {a : A | IsStrictlyPositive a}.EqOn
       (fun a => if a ∈ {b : A | IsStrictlyPositive b}

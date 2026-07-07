@@ -601,7 +601,7 @@ section CompleteLattice
 
 variable [CompleteLattice α]
 
-open Classical in
+open scoped Classical in
 noncomputable instance completeLattice [DecidableLE α] : CompleteLattice (Interval α) where
   sSup := fun S =>
     if h : S ⊆ {⊥} then ⊥

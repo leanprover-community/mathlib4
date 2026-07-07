@@ -47,7 +47,7 @@ open Polynomial
 
 section SplittingField
 
-open Classical in
+open scoped Classical in
 /-- Non-computably choose an irreducible factor from a polynomial. -/
 def factor (f : K[X]) : K[X] :=
   if H : ∃ g, Irreducible g ∧ g ∣ f then Classical.choose H else X

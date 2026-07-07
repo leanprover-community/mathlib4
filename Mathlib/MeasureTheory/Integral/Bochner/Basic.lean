@@ -151,7 +151,7 @@ variable [NormedAddCommGroup E] [NormedDivisionRing 𝕜]
   [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F]
   {G : Type*} [NormedAddCommGroup G] [NormedSpace ℝ G]
 
-open Classical in
+open scoped Classical in
 /-- The Bochner integral -/
 irreducible_def integral {_ : MeasurableSpace α} (μ : Measure α) (f : α → G) : G :=
   if _ : CompleteSpace G then

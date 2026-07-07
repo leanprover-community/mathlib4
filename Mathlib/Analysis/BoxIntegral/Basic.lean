@@ -105,7 +105,7 @@ theorem integralSum_inf_partition (f : ℝⁿ → E) (vol : ι →ᵇᵃ E →L[
     integralSum f vol (π.infPrepartition π') = integralSum f vol π :=
   integralSum_biUnion_partition f vol π _ fun _J hJ => h.restrict (Prepartition.le_of_mem _ hJ)
 
-open Classical in
+open scoped Classical in
 theorem integralSum_fiberwise {α} (g : Box ι → α) (f : ℝⁿ → E) (vol : ι →ᵇᵃ E →L[ℝ] F)
     (π : TaggedPrepartition I) :
     (∑ y ∈ π.boxes.image g, integralSum f vol (π.filter (g · = y))) = integralSum f vol π :=
@@ -164,7 +164,7 @@ predicate. -/
 def Integrable (I : Box ι) (l : IntegrationParams) (f : ℝⁿ → E) (vol : ι →ᵇᵃ E →L[ℝ] F) :=
   ∃ y, HasIntegral I l f vol y
 
-open Classical in
+open scoped Classical in
 /-- The integral of a function `f` over a box `I` along a filter `l` w.r.t. a volume `vol`.
 Returns zero on non-integrable functions. -/
 def integral (I : Box ι) (l : IntegrationParams) (f : ℝⁿ → E) (vol : ι →ᵇᵃ E →L[ℝ] F) :=

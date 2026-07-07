@@ -689,7 +689,7 @@ theorem mulTrivial : True := trivial
 /-- info: (via `docComment` syntax) I am an additive docstring! -/
 #guard_msgs in
 run_cmd
-  let some doc  ← findDocString? (← getEnv) ``addTrivial
+  let some doc ← findDocString? (← getEnv) ``addTrivial
     | throwError "no `docComment` docstring found"
   logInfo doc
 
@@ -959,3 +959,70 @@ attribute [to_additive existing] MulClass MulClass.mk.congr_simp
 #guard_msgs in
 @[to_additive]
 axiom MulAxiom {α} : Mul α
+
+/-! Docstring on `alias` -/
+
+@[to_additive] alias HMulAlias := HMul
+
+/--
+info: **Alias** of `HAdd`.
+
+---
+
+The notation typeclass for heterogeneous addition.
+This enables the notation `a + b : γ` where `a : α`, `b : β`.
+-/
+#guard_msgs in
+run_cmd
+  let some doc ← findDocString? (← getEnv) ``HAddAlias
+    | throwError "no `docComment` docstring found"
+  logInfo doc
+
+@[to_additive /-- Overriding docstring -/] alias HMulAlias' := HMul
+
+/-- info: Overriding docstring -/
+#guard_msgs in
+run_cmd
+  let some doc ← findDocString? (← getEnv) ``HAddAlias'
+    | throwError "no `docComment` docstring found"
+  logInfo doc
+
+/-! Deprecated attribute -/
+
+@[to_additive (attr := deprecated mul_comm (since := "today"))]
+theorem old_mul_comm {α} [CommMagma α] (a b : α) : a * b = b * a := mul_comm a b
+
+/--
+warning: `old_mul_comm` has been deprecated: Use `mul_comm` instead
+---
+info: @old_mul_comm : ∀ {α : Type u_1} [inst : CommMagma α] (a b : α), a * b = b * a
+-/
+#guard_msgs in
+#check @old_mul_comm
+
+/--
+warning: `old_add_comm` has been deprecated: Use `add_comm` instead
+---
+info: @old_add_comm : ∀ {α : Type u_1} [inst : AddCommMagma α] (a b : α), a + b = b + a
+-/
+#guard_msgs in
+#check @old_add_comm
+
+@[to_additive (attr := deprecated (since := "today"))]
+alias mul_comm_alias := mul_comm
+
+/--
+warning: `mul_comm_alias` has been deprecated: Use `mul_comm` instead
+---
+info: @mul_comm_alias : ∀ {G : Type u_1} [inst : CommMagma G] (a b : G), a * b = b * a
+-/
+#guard_msgs in
+#check @mul_comm_alias
+
+/--
+warning: `add_comm_alias` has been deprecated: Use `add_comm` instead
+---
+info: @add_comm_alias : ∀ {G : Type u_1} [inst : AddCommMagma G] (a b : G), a + b = b + a
+-/
+#guard_msgs in
+#check @add_comm_alias

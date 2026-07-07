@@ -101,7 +101,7 @@ def Witness.eval (hF : ∀ ⦃X : C⦄ (R : Presieve X), R ∈ K X → Presieve.
   | _, .base X i => t _ i
   | _, .restrict f i => do F.map f.op (← eval hF _ t i)
   | _, .amalgamate (R := R) hR h =>
-    open Classical in
+    open scoped Classical in
     let vals := fun W (r : W ⟶ _) (hr : R r) ↦ eval hF _ t (h r hr)
     /- If all elements of the family are evaluatable and the resulting family is compatible, take
     the glued section. Otherwise, return `none`. -/

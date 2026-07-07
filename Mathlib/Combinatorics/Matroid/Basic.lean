@@ -323,6 +323,8 @@ end exchange
 
 section aesop
 
+-- This is necessary as `aesop` uses private lemmas for its proof terms: without this option,
+-- the aesop proofs will not work, and any `aesop` auto-params will not fire.
 set_option backward.privateInPublic true
 
 /-- The `aesop_mat` tactic attempts to prove a set is contained in the ground set of a matroid.

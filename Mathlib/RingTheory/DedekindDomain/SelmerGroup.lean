@@ -85,7 +85,6 @@ variable {R : Type u} [CommRing R] [IsDedekindDomain R] {K : Type v} [Field K]
 
 namespace HeightOneSpectrum
 
-open Classical in
 /-- The multiplicative `v`-adic valuation on `Kˣ`. -/
 def valuationOfNeZeroToFun (x : Kˣ) : Multiplicative ℤ :=
   let hx := IsLocalization.sec R⁰ (x : K)

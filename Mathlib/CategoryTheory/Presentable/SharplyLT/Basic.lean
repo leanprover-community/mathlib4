@@ -143,7 +143,7 @@ lemma hφ₀ (B : Set X) (hB : HasCardinalLT B κ₂) {T : Type w} (f : T → B)
   exact ⟨⟨m B hB C hC, Set.subset_iUnion _ ⟨C, hC⟩ (Or.inr (by simp))⟩,
     fun t ↦ hm B hB C hC (f t) (hC' (by simp [C₀]))⟩
 
-open Classical in
+open scoped Classical in
 /-- This coincides with `φ₀` when `HasCardinalLT B κ₂` holds. -/
 def φ (B : Set X) : Set X :=
   if hB : HasCardinalLT B κ₂ then φ₀ Y m B hB else B

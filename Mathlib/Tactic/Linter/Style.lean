@@ -81,7 +81,7 @@ public def isSetOption : Syntax → Bool :=
 /-- The `setOption` linter: this lints any `set_option` command, term or tactic
 which sets a `debug`, `pp`, `profiler` or `trace` option.
 This also warns if an option containing `maxHeartbeats` (typically, the `maxHeartbeats` or
-`synthInstance.maxHeartbeats` option) or the `linter.flexible`, `linter.style.commandStart` or
+`synthInstance.maxHeartbeats` option) or the `linter.flexible` or
 `backward.inferInstanceAs.wrap.reuseSubInstances ` option is set.
 
 **Why is this bad?** The `debug`, `pp`, `profiler` and `trace` options are good for debugging,
@@ -92,8 +92,7 @@ explaining the need for them; another linter enforces this).
 The `linter.flexible` option should be scoped as `set_option opt in ...`.
 
 **How to fix this?** The `maxHeartbeats` and `linter.flexible` option changes can be scoped to
-individual commands, if they are truly necessary. The `linter.style.commandStart` option is
-deprecated and should be replaced by `linter.style.whitespace`.
+individual commands, if they are truly necessary.
 New `backward.inferInstanceAs.wrap.reuseSubInstances` instances are technical debt,
 and should not be introduced.
 
@@ -120,9 +119,6 @@ def setOptionLinter : Linter where run := withSetOptionIn fun stx => do
           Please scope this to individual declarations, as in\n```\nset_option {name} in\n\
           -- comment explaining why this is necessary\n\
           example : ... := ...\n```"
-        else if name == `linter.style.commandStart then
-          logWarningAt stx "The `linter.style.commandStart` option is deprecated, \
-            use `linter.style.whitespace` instead."
         else if name == `backward.inferInstanceAs.wrap.reuseSubInstances then
           logWarningAt stx "The `backward.inferInstanceAs.wrap.reuseSubInstances` option \
             marks the introduction of technical debt, so please don't use it."

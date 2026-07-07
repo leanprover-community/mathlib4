@@ -124,7 +124,7 @@ section
 
 variable {f : σ → τ} (hf : Function.Injective f) {p q : MvPolynomial τ R}
 
-open Classical in
+open scoped Classical in
 /-- Given a function between sets of variables `f : σ → τ` that is injective with proof `hf`,
   `MvPolynomial.killCompl hf` is the `AlgHom` from `R[τ]` to `R[σ]` that is left inverse to
   `rename f : R[σ] → R[τ]` and sends the variables in the complement of the range of `f` to `0`. -/

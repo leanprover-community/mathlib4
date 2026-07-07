@@ -515,7 +515,7 @@ extension isn't necessarily linear.
 -/
 noncomputable
 def evalCoeff (x : M) (c : FiniteArchimedeanClass M) : R :=
-  open Classical in
+  open scoped Classical in
   if h : ∃ y : f.val.domain, y.val - x ∈ ball K c then
     (ofLex (f.val h.choose)).coeff c
   else

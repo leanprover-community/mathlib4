@@ -294,7 +294,7 @@ lemma LSeries_residueClass_eq (ha : IsUnit a) {s : ℂ} (hs : 1 < s.re) :
 
 variable (a)
 
-open Classical in
+open scoped Classical in
 /-- The auxiliary function used, e.g., with the Wiener-Ikehara Theorem to prove
 Dirichlet's Theorem. On `re s > 1`, it agrees with the L-series of the von Mangoldt
 function restricted to the residue class `a : ZMod q` minus the principal part

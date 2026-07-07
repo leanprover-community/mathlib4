@@ -314,7 +314,7 @@ def HasMFDerivAt (f : M → M') (x : M) (f' : TangentSpace I x →L[𝕜] Tangen
   ContinuousAt f x ∧
     HasFDerivWithinAt (writtenInExtChartAt I I' x f : E → E') f' (range I) ((extChartAt I x) x)
 
-open Classical in
+open scoped Classical in
 variable (I I') in
 /-- `mfderivWithin I I' f s x`, given a function `f` between two manifolds,
 is the derivative of `f` at `x` within `s`,
@@ -326,7 +326,7 @@ def mfderivWithin (f : M → M') (s : Set M) (x : M) : TangentSpace I x →L[�
       _)
   else 0
 
-open Classical in
+open scoped Classical in
 variable (I I') in
 /-- `mfderiv I I' f x`, given a function `f` between two manifolds, is the derivative of `f` at `x`,
 as a continuous linear map from the tangent space at `x` to the tangent space at `f x`. -/

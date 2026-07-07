@@ -194,7 +194,7 @@ protected theorem MeasurableSet.ite {t s₁ s₂ : Set α} (ht : MeasurableSet t
     (h₁ : MeasurableSet s₁) (h₂ : MeasurableSet s₂) : MeasurableSet (t.ite s₁ s₂) :=
   (h₁.inter ht).union (h₂.diff ht)
 
-open Classical in
+open scoped Classical in
 theorem MeasurableSet.ite' {s t : Set α} {p : Prop} (hs : p → MeasurableSet s)
     (ht : ¬p → MeasurableSet t) : MeasurableSet (ite p s t) := by
   split_ifs with h

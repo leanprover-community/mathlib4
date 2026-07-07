@@ -138,7 +138,7 @@ section CountablyGeneratedAtom
 
 variable {mα : MeasurableSpace α} [CountablyGenerated α]
 
-open Classical in
+open scoped Classical in
 /-- The atoms in a countably generated measurable space.
 
 Some of those sets may be empty, but the nonempty ones are the atoms of the measurable space.
@@ -175,7 +175,7 @@ lemma mem_countablyGeneratedAtom_natGeneratingSequence (x : α) :
     x ∈ countablyGeneratedAtom α (x ∈ natGeneratingSequence α ·) := by
   simp [countablyGeneratedAtom]; grind
 
-open Classical in
+open scoped Classical in
 /-- Any measurable set in a countably generated measurable space can be expressed as a union of
 atoms. -/
 lemma exists_eq_iUnion_countablyGeneratedAtom {s : Set α} (hs : MeasurableSet s) :
@@ -391,7 +391,7 @@ theorem exists_countablyGenerated_le_of_countablySeparated [m : MeasurableSpace 
 
 open Function
 
-open Classical in
+open scoped Classical in
 /-- A map from a measurable space to the Cantor space `ℕ → Bool` induced by a countable
 sequence of sets generating the measurable space. -/
 noncomputable

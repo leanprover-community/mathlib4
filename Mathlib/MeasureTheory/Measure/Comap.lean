@@ -32,7 +32,7 @@ namespace Measure
 
 variable {α β γ : Type*} {s : Set α}
 
-open Classical in
+open scoped Classical in
 /-- Pullback of a `Measure` as a linear map. If `f` sends each measurable set to a measurable
 set, then for each measurable set `s` we have `comapₗ f μ s = μ (f '' s)`.
 
@@ -54,7 +54,7 @@ theorem comapₗ_apply {_ : MeasurableSpace α} {_ : MeasurableSpace β} (f : α
   rw [comapₗ, dif_pos, liftLinear_apply _ hs, OuterMeasure.comap_apply, coe_toOuterMeasure]
   exact ⟨hfi, hf⟩
 
-open Classical in
+open scoped Classical in
 /-- Pullback of a `Measure`. If `f` sends each measurable set to a null-measurable set,
 then for each measurable set `s` we have `comap f μ s = μ (f '' s)`.
 

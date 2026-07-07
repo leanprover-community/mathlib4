@@ -262,7 +262,7 @@ instance [Subsingleton M] : Subsingleton (MulArchimedeanClass M) :=
 @[to_additive]
 noncomputable
 instance : LinearOrder (MulArchimedeanClass M) :=
-  open Classical in
+  open scoped Classical in
   -- TODO: why does `inferInstanceAs` not work here?
   fast_instance% (inferInstance : LinearOrder (Antisymmetrization (MulArchimedeanOrder M) (· ≤ ·)))
 
@@ -605,7 +605,6 @@ s = ⊤ with a junk value ⊥. -/
 s = ⊤ with a junk value ⊥. -/]
 noncomputable
 def subgroup (s : UpperSet (MulArchimedeanClass M)) : Subgroup M :=
-  open Classical in
   if hs : s = ⊤ then
     ⊥
   else {

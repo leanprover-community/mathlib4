@@ -203,20 +203,32 @@ def liftNCAlgHom (f : A →ₐ[R] B) (g : M →* B) (h_comm : ∀ x y, Commute (
 @[simp] lemma coe_liftNCAlgHom (f : A →ₐ[R] B) (g : M →* B) (h_comm) :
     ⇑(liftNCAlgHom f g h_comm) = liftNC f g := rfl
 
-/-- A `R`-algebra homomorphism from `R[M]` is uniquely defined by its
-values on the functions `single a 1`. -/
-@[to_additive (dont_translate := R) /--
-A `R`-algebra homomorphism from `R[M]` is uniquely defined by its
-values on the functions `single a 1`. -/]
-theorem algHom_ext ⦃φ₁ φ₂ : R[M] →ₐ[R] A⦄ (h : ∀ x, φ₁ (single x 1) = φ₂ (single x 1)) : φ₁ = φ₂ :=
-  AlgHom.toLinearMap_injective <| lhom_ext' fun a ↦ LinearMap.ext_ring (h a)
-
 -- The priority must be `high`.
-/-- See note [partially-applied ext lemmas]. -/
-@[ext high]
-theorem algHom_ext' ⦃φ₁ φ₂ : R[M] →ₐ[R] A⦄
-    (h : (φ₁ : R[M] →* A).comp (of R M) = (φ₂ : R[M] →* A).comp (of R M)) : φ₁ = φ₂ :=
-  algHom_ext <| DFunLike.congr_fun h
+/-- A `R`-algebra homomorphism from `A[M]` is uniquely defined by its
+values on the functions `single m 1` and `single 1 a`.
+
+See note [partially-applied ext lemmas]. Note that the first assumption isn't written as an
+equality of `MonoidHom`s because `of` doesn't additivise. -/
+@[to_additive (dont_translate := R A B) (attr := ext high) /--
+A `R`-algebra homomorphism from `R[M]` is uniquely defined by its
+values on the functions `single m 1` and `single 1 a`.
+
+See note [partially-applied ext lemmas]. Note that the first assumption isn't written as an
+equality of `AddMonoidHom`s because `of` doesn't multiplicativise. -/]
+lemma algHom_ext ⦃φ₁ φ₂ : A[M] →ₐ[R] B⦄ (single_one_right : ∀ m, φ₁ (single m 1) = φ₂ (single m 1))
+    (single_one_left : φ₁.comp singleOneAlgHom = φ₂.comp singleOneAlgHom) :
+    φ₁ = φ₂ := by
+  ext x
+  induction x using induction_linear with
+  | zero => simp
+  | add => simp_all
+  | single m a => simpa [← map_mul] using congr($(single_one_right m) * $single_one_left a)
+
+/-- Version of `algHom_ext` where both assumptions are written as equalities of bundled homs. -/
+lemma algHom_ext' ⦃φ₁ φ₂ : A[M] →ₐ[R] B⦄
+    (single_one_right : (φ₁ : A[M] →* B).comp (of A M) = (φ₂ : A[M] →* B).comp (of A M))
+    (single_one_left : φ₁.comp singleOneAlgHom = φ₂.comp singleOneAlgHom) : φ₁ = φ₂ :=
+  algHom_ext (congr($single_one_right ·)) single_one_left
 
 variable (R A M) in
 /-- Any monoid homomorphism `M →* A` can be lifted to an algebra homomorphism `R[M] →ₐ[R] A`. -/
@@ -276,14 +288,13 @@ def mapDomainAlgHom (f : M →* N) : A[M] →ₐ[R] A[N] where
   toRingHom := mapDomainRingHom A f
   commutes' := by simp
 
-@[to_additive (attr := simp)]
-lemma mapDomainAlgHom_id : mapDomainAlgHom R A (.id M) = .id R A[M] := by
-  ext; simp [MonoidHom.id, ← Function.id_def]
+@[to_additive (dont_translate := A) (attr := simp)]
+lemma mapDomainAlgHom_id : mapDomainAlgHom R A (.id M) = .id R A[M] := by ext <;> simp
 
-@[to_additive (attr := simp)]
+@[to_additive (dont_translate := A) (attr := simp)]
 lemma mapDomainAlgHom_comp (f : M →* N) (g : N →* O) :
     mapDomainAlgHom R A (g.comp f) = (mapDomainAlgHom R A g).comp (mapDomainAlgHom R A f) := by
-  ext; simp [mapDomain_comp]
+  ext <;> simp
 
 variable (R A) in
 /-- If `e : M ≃* N` is a multiplicative equivalence between two monoids, then
@@ -407,16 +418,12 @@ lemma mapAlgHom_single (f : A →ₐ[R] B) (m : M) (a : A) :
     mapAlgHom M f (single m a) = single m (f a) := by
   classical ext; simp [single_apply, apply_ite f]
 
-@[to_additive (attr := simp)]
-lemma mapAlgHom_id {k R G} [CommSemiring k] [Semiring R] [Algebra k R] [Monoid G] :
-    mapAlgHom G (AlgHom.id k R) = AlgHom.id k (MonoidAlgebra R G) := by
-  ext; simp
+@[to_additive (dont_translate := A) (attr := simp)]
+lemma mapAlgHom_id : mapAlgHom M (.id R A) = .id R A[M] := by ext <;> simp
 
-@[to_additive (attr := simp)]
-lemma mapRangeAlgHom_comp {k R S T G} [CommSemiring k] [Semiring R] [Algebra k R] [Semiring S]
-    [Algebra k S] [Semiring T] [Algebra k T] [Monoid G] (f : R →ₐ[k] S) (g : S →ₐ[k] T) :
-    mapAlgHom G (g.comp f) = (mapAlgHom G g).comp (mapAlgHom G f) := by
-  ext; simp
+@[to_additive (dont_translate := A B C) (attr := simp)]
+lemma mapRangeAlgHom_comp (f : A →ₐ[R] B) (g : B →ₐ[R] C) :
+    mapAlgHom M (g.comp f) = (mapAlgHom M g).comp (mapAlgHom M f) := by ext <;> simp
 
 @[deprecated (since := "2026-06-18")] alias mapRangeAlgHom_single := mapAlgHom_single
 
@@ -580,12 +587,11 @@ def liftNCAlgHom (f : A →ₐ[R] B) (g : Multiplicative M →* B) (h_comm : ∀
 @[simp] lemma coe_liftNCAlgHom (f : A →ₐ[R] B) (g : Multiplicative M →* B) (h_comm) :
     ⇑(liftNCAlgHom f g h_comm) = liftNC f g := rfl
 
-/-- See note [partially-applied ext lemmas]. -/
-@[ext high]
-theorem algHom_ext' ⦃φ₁ φ₂ : R[M] →ₐ[R] A⦄
-    (h : (φ₁ : R[M] →* A).comp (of R M) = (φ₂ : R[M] →* A).comp (of R M)) :
-    φ₁ = φ₂ :=
-  algHom_ext <| DFunLike.congr_fun h
+/-- Version of `algHom_ext` where both assumptions are written as equalities of bundled homs. -/
+lemma algHom_ext' ⦃φ₁ φ₂ : A[M] →ₐ[R] B⦄
+    (single_one_right : (φ₁ : A[M] →* B).comp (of A M) = (φ₂ : A[M] →* B).comp (of A M))
+    (single_one_left : φ₁.comp singleZeroAlgHom = φ₂.comp singleZeroAlgHom) : φ₁ = φ₂ :=
+  algHom_ext (congr($single_one_right ·)) single_one_left
 
 variable (R M A) in
 /-- Any monoid homomorphism `M →* A` can be lifted to an algebra homomorphism
@@ -645,9 +651,6 @@ lemma lift_mapRingHom_algebraMap [CommSemiring S] [Algebra S A] [Algebra R S] [I
 
 @[deprecated (since := "2026-06-18")]
 alias lift_mapRangeRingHom_algebraMap := lift_mapRingHom_algebraMap
-
-lemma algHom_ext_iff {φ₁ φ₂ : R[M] →ₐ[R] A} : (∀ x, φ₁ (single x 1) = φ₂ (single x 1)) ↔ φ₁ = φ₂ :=
-  ⟨fun h => algHom_ext h, by rintro rfl _; rfl⟩
 
 variable (R A) in
 /-- `AddMonoidAlgebra.domCongr` as an `AddMonoidHom` from `AddAut`. -/

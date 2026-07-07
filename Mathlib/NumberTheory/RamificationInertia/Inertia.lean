@@ -56,7 +56,6 @@ section DecEq
 
 variable {S₁ : Type*} [CommRing S₁] [Algebra R S₁]
 
-open Classical in
 /-- The inertia degree of `P : Ideal S` lying over `p : Ideal R` is the degree of the
 extension `(S / P) : (R / p)`.
 

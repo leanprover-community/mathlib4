@@ -45,7 +45,7 @@ Extension of `sSup` and `sInf` from a preorder `α` to `WithTop α` and `WithBot
 
 variable [LE α]
 
-open Classical in
+open scoped Classical in
 @[to_dual]
 noncomputable instance WithTop.instSupSet [SupSet α] :
     SupSet (WithTop α) :=
@@ -53,7 +53,7 @@ noncomputable instance WithTop.instSupSet [SupSet α] :
     if ⊤ ∈ S then ⊤ else if BddAbove ((fun (a : α) ↦ ↑a) ⁻¹' S : Set α) then
       ↑(sSup ((fun (a : α) ↦ (a : WithTop α)) ⁻¹' S : Set α)) else ⊤⟩
 
-open Classical in
+open scoped Classical in
 @[to_dual]
 noncomputable instance WithTop.instInfSet [InfSet α] : InfSet (WithTop α) :=
   ⟨fun S => if S ⊆ {⊤} ∨ ¬BddBelow S then ⊤ else ↑(sInf ((fun (a : α) ↦ ↑a) ⁻¹' S : Set α))⟩
@@ -954,7 +954,7 @@ noncomputable instance [ConditionallyCompleteLinearOrder α] :
   csInf_of_not_bddBelow s := absurd <| OrderBot.bddBelow s
   csSup_empty := WithBot.sSup_empty
 
-open Classical in
+open scoped Classical in
 noncomputable instance WithTop.WithBot.completeLattice {α : Type*}
     [ConditionallyCompleteLattice α] : CompleteLattice (WithTop (WithBot α)) where
   isLUB_sSup S := ⟨fun a haS ↦ (WithTop.isLUB_sSup' ⟨a, haS⟩).1 haS, fun a ha ↦ by

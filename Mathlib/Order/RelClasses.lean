@@ -319,7 +319,7 @@ def toWellFoundedRelation : WellFoundedRelation α :=
 
 end WellFoundedLT
 
-open Classical in
+open scoped Classical in
 /-- Construct a decidable linear order from a well-founded linear order. -/
 @[implicit_reducible]
 noncomputable def IsWellOrder.linearOrder (r : α → α → Prop) [IsWellOrder α r] : LinearOrder α :=

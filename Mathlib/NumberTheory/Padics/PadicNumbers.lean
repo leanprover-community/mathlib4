@@ -204,7 +204,7 @@ theorem stationaryPoint_spec {f : PadicSeq p} (hf : ¬f ≈ 0) :
       stationaryPoint hf ≤ m → stationaryPoint hf ≤ n → padicNorm p (f n) = padicNorm p (f m) :=
   @(Classical.choose_spec <| stationary hf)
 
-open Classical in
+open scoped Classical in
 /-- Since the norm of the entries of a Cauchy sequence is eventually stationary,
 we can lift the norm to sequences. -/
 def norm (f : PadicSeq p) : ℚ :=
@@ -295,7 +295,7 @@ variable {p : ℕ} [Fact p.Prime]
 
 /-! ### Valuation on `PadicSeq` -/
 
-open Classical in
+open scoped Classical in
 /-- The `p`-adic valuation on `ℚ` lifts to `PadicSeq p`.
 `Valuation f` is defined to be the valuation of the (`ℚ`-valued) stationary point of `f`. -/
 def valuation (f : PadicSeq p) : ℤ :=
@@ -1135,7 +1135,7 @@ lemma valuation_zpow (x : ℚ_[p]) : ∀ n : ℤ, (x ^ n).valuation = n * x.valu
   | (n : ℕ) => by simp
   | .negSucc n => by simp [← neg_mul]; simp [Int.negSucc_eq]
 
-open Classical in
+open scoped Classical in
 /-- The additive `p`-adic valuation on `ℚ_[p]`, with values in `WithTop ℤ`. -/
 def addValuationDef : ℚ_[p] → WithTop ℤ :=
   fun x ↦ if x = 0 then ⊤ else x.valuation
@@ -1175,7 +1175,7 @@ theorem AddValuation.map_add (x y : ℚ_[p]) :
 
 open WithZero
 
-open Classical in
+open scoped Classical in
 /-- The `p`-adic valuation on `ℚ_[p]`, as a `Valuation`, bundled `Padic.valuation`. -/
 @[simps]
 noncomputable def mulValuation : Valuation ℚ_[p] ℤᵐ⁰ where

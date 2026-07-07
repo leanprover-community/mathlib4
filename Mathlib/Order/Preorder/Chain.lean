@@ -289,7 +289,7 @@ protected theorem IsMaxChain.nonempty_iff (h : IsMaxChain r s) : Nonempty α ↔
 theorem IsMaxChain.symm (h : IsMaxChain r s) : IsMaxChain (flip r) s :=
   ⟨h.isChain.symm, fun _ ht₁ ht₂ ↦ h.2 ht₁.symm ht₂⟩
 
-open Classical in
+open scoped Classical in
 /-- Given a set `s`, if there exists a chain `t` strictly including `s`, then `SuccChain s`
 is one of these chains. Otherwise it is `s`. -/
 def SuccChain (r : α → α → Prop) (s : Set α) : Set α :=
@@ -300,10 +300,10 @@ theorem succChain_spec (h : ∃ t, IsChain r s ∧ SuperChain r s t) :
   have : IsChain r s ∧ SuperChain r s h.choose := h.choose_spec
   simpa [SuccChain, dif_pos, exists_and_left.mp h] using this.2
 
-open Classical in
-theorem IsChain.succ (hs : IsChain r s) : IsChain r (SuccChain r s) :=
-  if h : ∃ t, IsChain r s ∧ SuperChain r s t then (succChain_spec h).1
-  else by
+theorem IsChain.succ (hs : IsChain r s) : IsChain r (SuccChain r s) := by
+  classical
+  if h : ∃ t, IsChain r s ∧ SuperChain r s t then exact (succChain_spec h).1
+  else
     rw [exists_and_left] at h
     simpa [SuccChain, dif_neg, h] using hs
 
@@ -313,10 +313,10 @@ theorem IsChain.superChain_succChain (hs₁ : IsChain r s) (hs₂ : ¬IsMaxChain
   obtain ⟨t, ht, hst⟩ := hs₂ hs₁
   exact succChain_spec ⟨t, hs₁, ht, ssubset_iff_subset_ne.2 hst⟩
 
-open Classical in
-theorem subset_succChain : s ⊆ SuccChain r s :=
-  if h : ∃ t, IsChain r s ∧ SuperChain r s t then (succChain_spec h).2.1
-  else by
+theorem subset_succChain : s ⊆ SuccChain r s := by
+  classical
+  if h : ∃ t, IsChain r s ∧ SuperChain r s t then exact (succChain_spec h).2.1
+  else
     simp [SuccChain, h]
 
 end Chain

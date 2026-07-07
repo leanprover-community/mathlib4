@@ -25,7 +25,7 @@ open LinearMap PiTensorProduct Module TensorProduct
 variable {ι R : Type*} {M : ι → Type*} {κ : ι → Type*} [CommSemiring R] [∀ i, AddCommMonoid (M i)]
   [∀ i, Module R (M i)]
 
-open Classical in
+open scoped Classical in
 /-- Let `ι` be a `Finite` type and `M` be a family of modules indexed by `ι`. If `b i : κ i → M i`
 is a basis for every `i` in `ι`, then `fun (p : Π i, κ i) ↦ ⨂ₜ[R] i, b i (p i)` is a basis
 of `⨂[R] i, M i`.

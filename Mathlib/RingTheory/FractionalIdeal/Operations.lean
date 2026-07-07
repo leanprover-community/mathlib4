@@ -390,7 +390,7 @@ theorem isFractional_div_of_ne_zero {I J : FractionalIdeal R₁⁰ K} (h : J ≠
   I.isFractional.div_of_nonzero J.isFractional fun H =>
     h <| coeToSubmodule_injective <| H.trans coe_zero.symm
 
-open Classical in
+open scoped Classical in
 noncomputable instance : Div (FractionalIdeal R₁⁰ K) :=
   ⟨fun I J => if h : J = 0 then 0 else ⟨I / J, isFractional_div_of_ne_zero h⟩⟩
 

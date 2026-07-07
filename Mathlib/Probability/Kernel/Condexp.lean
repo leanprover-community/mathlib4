@@ -61,7 +61,7 @@ end AuxLemmas
 variable {Ω F : Type*} {m : MeasurableSpace Ω} [mΩ : MeasurableSpace Ω]
   [StandardBorelSpace Ω] {μ : Measure Ω} [IsFiniteMeasure μ]
 
-open Classical in
+open scoped Classical in
 /-- Kernel associated with the conditional expectation with respect to a σ-algebra. It satisfies
 `μ[f | m] =ᵐ[μ] fun ω => ∫ y, f y ∂(condExpKernel μ m ω)`.
 It is defined as the conditional distribution of the identity given the identity, where the second

@@ -97,7 +97,7 @@ lemma quotMapEquivQuotQuotMap_symm_apply (hx : (conductor R x).comap (algebraMap
   simp only [RingEquiv.apply_symm_apply, adjoin.powerBasis'_gen, quotAdjoinEquivQuotMap_apply_mk,
     coe_aeval_mk_apply]
 
-open Classical in
+open scoped Classical in
 /-- The first half of the **Kummer-Dedekind Theorem**, stating that the prime
 factors of `I*S` are in bijection with those of the minimal polynomial of the generator of `S`
 over `R`, taken `mod I`. -/
@@ -115,7 +115,6 @@ noncomputable def normalizedFactorsMapEquivNormalizedFactorsMinPolyMk (hI : IsMa
   · refine (Ideal.normalizedFactorsEquivSpanNormalizedFactors ?_).symm
     exact Polynomial.map_monic_ne_zero (minpoly.monic hx')
 
-open Classical in
 /-- The second half of the **Kummer-Dedekind Theorem**, stating that the
 bijection `FactorsEquiv'` defined in the first half preserves multiplicities. -/
 theorem emultiplicity_factors_map_eq_emultiplicity
@@ -125,12 +124,13 @@ theorem emultiplicity_factors_map_eq_emultiplicity
     emultiplicity J (I.map (algebraMap R S)) =
       emultiplicity (↑(normalizedFactorsMapEquivNormalizedFactorsMinPolyMk hI hI' hx hx' ⟨J, hJ⟩))
         (Polynomial.map (Ideal.Quotient.mk I) (minpoly R x)) := by
+  classical
   rw [normalizedFactorsMapEquivNormalizedFactorsMinPolyMk, Equiv.coe_trans, Function.comp_apply,
     Ideal.emultiplicity_normalizedFactorsEquivSpanNormalizedFactors_symm_eq_emultiplicity,
     IsDedekindDomain.normalizedFactorsEquivOfQuotEquiv_emultiplicity_eq_emultiplicity]
 
 set_option backward.isDefEq.respectTransparency false in
-open Classical in
+open scoped Classical in
 /-- The **Kummer-Dedekind Theorem**. -/
 theorem normalizedFactors_ideal_map_eq_normalizedFactors_min_poly_mk_map (hI : IsMaximal I)
     (hI' : I ≠ ⊥) (hx : (conductor R x).comap (algebraMap R S) ⊔ I = ⊤) (hx' : IsIntegral R x) :

@@ -624,7 +624,7 @@ section Function
 variable {T T' T'' : Set α → E →L[ℝ] F} {C C' C'' : ℝ} {f g : α → E}
 variable (μ T)
 
-open Classical in
+open scoped Classical in
 /-- Extend `T : Set α → E →L[ℝ] F` to `(α → E) → F` (for integrable functions `α → E`). We set it to
 0 if the function is not integrable or if the target space is not complete. -/
 def setToFun (hT : DominatedFinMeasAdditive μ T C) (f : α → E) : F :=

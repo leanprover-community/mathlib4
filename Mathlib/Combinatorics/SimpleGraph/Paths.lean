@@ -990,7 +990,7 @@ alias map_isTrail_iff_of_injective := isTrail_map_iff_of_injective
 
 alias ⟨_, IsTrail.map⟩ := isTrail_map_iff_of_injective
 
-@[deprecated (since := "2026-06-16")] alias isTrmap_ail_of_injective := IsTrail.map
+@[deprecated (since := "2026-06-16")] alias map_isTrail_of_injective := IsTrail.map
 
 protected theorem IsPath.of_map (hp : (p.map f).IsPath) : p.IsPath := by
   rw [isPath_def]
@@ -1006,7 +1006,7 @@ alias map_isPath_iff_of_injective := isPath_map_iff_of_injective
 
 alias ⟨_, IsPath.map⟩ := isPath_map_iff_of_injective
 
-@[deprecated (since := "2026-06-16")] alias isPmap_ath_of_injective := IsPath.map
+@[deprecated (since := "2026-06-16")] alias map_isPath_of_injective := IsPath.map
 
 protected theorem IsCircuit.of_map {p : G.Walk u u} (hp : (p.map f).IsCircuit) : p.IsCircuit := by
   rw [isCircuit_def, ne_eq, eq_nil_iff_nil]

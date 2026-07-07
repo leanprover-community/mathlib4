@@ -78,7 +78,7 @@ def generatorIndex (h : E ≠ ⊥) : ℕ :=
   (exists_φ_coeff_not_mem h).choose
 
 variable (E) in
-open Classical in
+open scoped Classical in
 /-- A choice of a generator for Lüroth's theorem, see `Luroth.eq_adjoin_generator`. -/
 public def generator : K⟮X⟯ :=
   if h : E = ⊥ then 0 else (φ E).coeff (generatorIndex h)
@@ -149,19 +149,19 @@ lemma Φ'_map :
   (IsLocalization.integerNormalization_spec _ ((φ E).map (algebraMap ..))).choose_spec.2
 
 variable (E) in
-open Classical in
+open scoped Classical in
 /-- A rational function `c` that satisfies `c * φ = Φ`. This is `ν₀(x)` in Cohn's notation. -/
 abbrev c : K⟮X⟯ :=
   (algebraMap K[X] K⟮X⟯ (Φ' E).content)⁻¹ * (algebraMap K[X] K⟮X⟯ (b E))
 
-open Classical in
+open scoped Classical in
 lemma c_ne_zero (h : E ≠ ⊥) : c E ≠ 0 :=
   mul_ne_zero_iff.mpr ⟨inv_ne_zero <| (FaithfulSMul.algebraMap_eq_zero_iff _ _).not.mpr <|
     content_eq_zero_iff.not.mpr (Φ'_ne_zero h),
   (FaithfulSMul.algebraMap_eq_zero_iff _ _).not.mpr b_ne_zero⟩
 
 variable (E) in
-open Classical in
+open scoped Classical in
 /-- The primitive part of `Φ'`. -/
 abbrev Φ : K[X][Y] := (Φ' E).primPart
 

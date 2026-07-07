@@ -71,7 +71,7 @@ namespace PiNat
 
 /-! ### The firstDiff function -/
 
-open Classical in
+open scoped Classical in
 /-- In a product space `Π n, E n`, then `firstDiff x y` is the first index at which `x` and `y`
 differ. If `x = y`, then by convention we set `firstDiff x x = 0`. -/
 irreducible_def firstDiff (x y : ∀ n, E n) : ℕ :=
@@ -249,7 +249,7 @@ a `MetricSpace` instance, as other distances may be used on these spaces, but we
 local instances in this section.
 -/
 
-open Classical in
+open scoped Classical in
 /-- The distance function on a product space `Π n, E n`, given by `dist x y = (1/2)^n` where `n` is
 the first index at which `x` and `y` differ. -/
 @[instance_reducible]
@@ -482,7 +482,7 @@ theorem exists_disjoint_cylinder {s : Set (∀ n, E n)} (hs : IsClosed s) {x : �
       exact mem_cylinder_iff_dist_le.1 hy
     _ < infDist x s := hn
 
-open Classical in
+open scoped Classical in
 /-- Given a point `x` in a product space `Π (n : ℕ), E n`, and `s` a subset of this space, then
 `shortestPrefixDiff x s` if the smallest `n` for which there is no element of `s` having the same
 prefix of length `n` as `x`. If there is no such `n`, then use `0` by convention. -/

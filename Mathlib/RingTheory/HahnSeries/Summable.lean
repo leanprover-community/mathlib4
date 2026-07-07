@@ -609,7 +609,7 @@ section EmbDomain
 
 variable [PartialOrder Γ] [AddCommMonoid R]
 
-open Classical in
+open scoped Classical in
 /-- A summable family can be reindexed by an embedding without changing its sum. -/
 def embDomain (s : SummableFamily Γ R α) (f : α ↪ β) : SummableFamily Γ R β where
   toFun b := if h : b ∈ Set.range f then s (Classical.choose h) else 0
@@ -630,7 +630,7 @@ def embDomain (s : SummableFamily Γ R α) (f : α ↪ β) : SummableFamily Γ R
 
 variable (s : SummableFamily Γ R α) (f : α ↪ β) {a : α} {b : β}
 
-open Classical in
+open scoped Classical in
 theorem embDomain_apply :
     s.embDomain f b = if h : b ∈ Set.range f then s (Classical.choose h) else 0 :=
   rfl

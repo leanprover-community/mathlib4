@@ -14,6 +14,7 @@ public meta import Lean.Meta.Tactic.Symm
 public meta import Lean.Meta.CoeAttr
 public meta import Mathlib.Lean.Meta.Simp
 public import Batteries.Lean.NameMapAttribute
+public import Batteries.Tactic.Alias
 public import Batteries.Tactic.Trans
 public import Mathlib.Tactic.Eqns
 public import Mathlib.Tactic.Translate.Attributes
@@ -865,6 +866,20 @@ def copyInstanceAttribute (src tgt : Name) : CoreM Unit := do
     trace[translate_detail] "Making {tgt} an instance with priority {prio}."
     addInstance tgt attr_kind prio |>.run'
 
+open Batteries.Tactic.Alias in
+/-- If `src` was declared with `alias`, then record `tgt` as an alias,
+and give it an alias-style docstring if it doesn't have a doc-string already -/
+def copyAliasAttribute (t : TranslateData) (src tgt : Name) : CoreM Unit := do
+  if let some srcInfo ← getAliasInfo? src then
+    let env ← getEnv
+    let tgtInfo? := match srcInfo with
+      | .plain n => .plain <$> findTranslationName? env t n
+      | .forward n => .forward <$> findTranslationName? env t n
+      | .reverse n => .reverse <$> findTranslationName? env t n
+    if let some tgtInfo := tgtInfo? then
+      setAliasInfo tgtInfo tgt
+      addAliasDocstring tgt tgtInfo
+
 /-- Warn the user when the declaration has an attribute. -/
 def warnAttrCore (stx : Syntax) (f : Environment → Name → Bool)
     (thisAttr attrName src tgt : Name) : CoreM Unit := do
@@ -1151,8 +1166,10 @@ mutual
 /-- Apply attributes to the original and translated declarations. -/
 partial def applyAttributes (t : TranslateData) (cfg : Config) (src tgt : Name) (reorder : Reorder)
     (relevantArg : RelevantArg) : TermElabM (Array Name) := do
-  -- we only copy the `instance` attribute, since it is nice to directly tag `instance` declarations
-  copyInstanceAttribute src tgt
+  if !cfg.existing && !cfg.none then
+    -- Copy the `instance` attribute, since it is nice to directly tag `instance` declarations.
+    copyInstanceAttribute src tgt
+    copyAliasAttribute t src tgt
   -- Warn users if the original declaration has an attribute
   if !cfg.existing && !cfg.none && linter.existingAttributeWarning.get (← getOptions) then
     let appliedAttrs ← getAllSimpAttrs src
@@ -1193,7 +1210,22 @@ partial def applyAttributes (t : TranslateData) (cfg : Config) (src tgt : Name) 
         translateLemmas t allDecls reorder relevantArg "simps lemmas" cfg.ref
           (impl · attr.stx attr.kind)
     else
-      for decl in allDecls do
+      let mut attr := attr
+      -- Set the target of `(attr := deprecated)` when applied to an `alias`.
+      if attr.name == `deprecated then
+        if let some info ← Batteries.Tactic.Alias.getAliasInfo? src then
+          if let `(attr| deprecated%$tk $[$desc:str]? $[(since := $since)]?) := attr.stx then
+            attr := { attr with stx := ← `(attr|
+              deprecated%$tk $(mkCIdent info.name) $[$desc:str]? $[(since := $since)]?) }
+      for decl in allDecls, i in 0...* do
+        if i != 0 then
+          -- Translate the target of `(attr := deprecated)` if possible.
+          if attr.name == `deprecated then
+            if let `(attr| deprecated%$tk $name $[$desc]? $[(since := $since)]?) := attr.stx then
+              let name ← realizeGlobalConstNoOverload name
+              if let some name := findTranslationName? (← getEnv) t name then
+                attr := { attr with stx := ← `(attr|
+                  deprecated%$tk $(mkCIdent name) $[$desc]? $[(since := $since)]?) }
         Term.applyAttributes decl #[attr]
   return nestedDecls
 
@@ -1249,13 +1281,13 @@ partial def addTranslationAttr (t : TranslateData) (src : Name) (cfg : Config)
     let reorder := cfg.reorder?.getD {}
     -- tgt doesn't exist, so let's make it
     transformDeclRec t cfg src tgt src reorder cfg.rename
+  if let some doc := cfg.doc then
+    addDocStringCore tgt doc
   let nestedNames ← copyMetaData t cfg src
   -- add pop-up information when mousing over the given translated name
   -- (the information will be over the attribute if no translated name is given)
   Term.addTermInfo' cfg.ref (← mkConstWithLevelParams tgt) (isBinder := !alreadyExists)
     |>.run' |>.run'
-  if let some doc := cfg.doc then
-    addDocStringCore tgt doc
   return nestedNames.push tgt
 
 end

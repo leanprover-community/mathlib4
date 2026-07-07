@@ -55,7 +55,7 @@ variable {Q}
 
 end Equiv
 
-open Classical in
+open scoped Classical in
 /-- For quadratic forms on finite-dimensional spaces, the maximal finrank of a positive-definite
 subspace of `M`. (Defined as `0` if `M` is infinite-dimensional). -/
 /-

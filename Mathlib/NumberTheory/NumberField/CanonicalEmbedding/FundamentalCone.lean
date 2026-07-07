@@ -93,7 +93,6 @@ open NumberField.Units NumberField.Units.dirichletUnitTheorem Module
 
 variable [NumberField K] {K}
 
-open Classical in
 /-- The map from the mixed space to `logSpace K` defined in such way that: 1) it factors the map
 `logEmbedding`, see `logMap_eq_logEmbedding`; 2) it is constant on the sets
 `{c • x | c ∈ ℝ, c ≠ 0}` if `norm x ≠ 0`, see `logMap_real_smul`. -/
@@ -173,7 +172,7 @@ open NumberField.Units NumberField.Units.dirichletUnitTheorem
 
 variable [NumberField K]
 
-open Classical in
+open scoped Classical in
 /-- The fundamental cone is a cone in the mixed space, i.e. a subset fixed by multiplication by
 a nonzero real number, see `smul_mem_of_mem`, that is also a fundamental domain for the action
 of `(𝓞 K)ˣ` modulo torsion, see `exists_unit_smul_mem` and `torsion_smul_mem_of_mem`. -/

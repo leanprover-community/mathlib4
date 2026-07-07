@@ -108,7 +108,7 @@ noncomputable
 instance instFintype_memPartition (f : ℕ → Set α) (n : ℕ) : Fintype (memPartition f n) :=
   (finite_memPartition f n).fintype
 
-open Classical in
+open scoped Classical in
 /-- The set in `memPartition f n` to which `a : α` belongs. -/
 def memPartitionSet (f : ℕ → Set α) : ℕ → α → Set α
   | 0 => fun _ ↦ univ

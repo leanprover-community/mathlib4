@@ -107,7 +107,7 @@ noncomputable def setDiffEquiv {s t : Set α} [Fintype s] [Fintype t]
   rw [← Fintype.subtype_card (fs \ ft) hst, ← Fintype.subtype_card (ft \ fs) hts] at hc
   exact ((Fintype.card_eq (_F := (_)) (_G := (_))).mp hc).some
 
-open Classical in
+open scoped Classical in
 /-- If `e` is an equivalence between two subtypes of a type `α`, `e.toCompl`
 is an equivalence between the complement of those subtypes.
 

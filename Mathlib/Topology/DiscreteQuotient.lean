@@ -351,7 +351,7 @@ instance [CompactSpace X] : Finite S := by
 
 variable (X)
 
-open Classical in
+open scoped Classical in
 /--
 If `X` is a compact space, then we associate to any discrete quotient on `X` a finite set of
 clopen subsets of `X`, given by the fibers of `proj`.

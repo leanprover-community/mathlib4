@@ -1060,7 +1060,7 @@ noncomputable def iteratedFDerivComponent {α : Type*}
   map_update_add' := by intros; ext; simp
   map_update_smul' := by intros; ext; simp
 
-open Classical in
+open scoped Classical in
 /-- The `k`-th iterated derivative of a multilinear map `f` at the point `x`. It is a multilinear
 map of `k` vectors `v₁, ..., vₖ` (with the same type as `x`), mapping them
 to `∑ f (x₁, (v_{i₁})₂, x₃, ...)`, where at each index `j` one uses either `xⱼ` or one

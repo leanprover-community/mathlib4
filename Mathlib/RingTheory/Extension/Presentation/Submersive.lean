@@ -597,7 +597,7 @@ end Constructions
 
 variable {R S ι σ}
 
-open Classical in
+open scoped Classical in
 /-- If `P` is submersive, `PreSubmersivePresentation.aevalDifferential` is an isomorphism. -/
 noncomputable def aevalDifferentialEquiv (P : SubmersivePresentation R S ι σ) :
     (σ → S) ≃ₗ[S] (σ → S) :=

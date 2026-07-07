@@ -188,7 +188,7 @@ def iterateEquiv [PartialOrder Γ'] : R⟦Γ'⟧⟦Γ⟧ ≃ R⟦Γ ×ₗ Γ'⟧
   left_inv := congrFun rfl
   right_inv := congrFun rfl
 
-open Classical in
+open scoped Classical in
 /-- `single a r` is the Hahn series which has coefficient `r` at `a` and zero otherwise. -/
 def single (a : Γ) : ZeroHom R R⟦Γ⟧ where
   toFun r :=
@@ -206,7 +206,7 @@ theorem coeff_single_same (a : Γ) (r : R) : (single a r).coeff a = r := by
 theorem coeff_single_of_ne (h : b ≠ a) : (single a r).coeff b = 0 := by
   classical exact Pi.single_eq_of_ne (M := fun _ => R) h r
 
-open Classical in
+open scoped Classical in
 theorem coeff_single : (single a r).coeff b = if b = a then r else 0 := by
   split_ifs with h <;> simp [h]
 
@@ -248,7 +248,7 @@ instance [Nonempty Γ] [Nontrivial R] : Nontrivial R⟦Γ⟧ :=
 section Order
 variable {x : R⟦Γ⟧}
 
-open Classical in
+open scoped Classical in
 /-- The orderTop of a Hahn series `x` is a minimal element of `WithTop Γ` where `x` has a nonzero
 coefficient if `x ≠ 0`, and is `⊤` when `x = 0`. -/
 def orderTop (x : R⟦Γ⟧) : WithTop Γ :=
@@ -323,7 +323,6 @@ theorem coeff_eq_zero_of_lt_orderTop {x : R⟦Γ⟧} {i : Γ} (hi : i < x.orderT
   rw [orderTop_of_ne_zero hx, WithTop.coe_lt_coe]
   exact Set.IsWF.not_lt_min _ _ hi
 
-open Classical in
 /-- A leading coefficient of a Hahn series is the coefficient of a lowest-order nonzero term, or
 zero if the series vanishes. -/
 def leadingCoeff (x : R⟦Γ⟧) : R := x.orderTop.recTopCoe 0 x.coeff
@@ -353,7 +352,7 @@ theorem coeff_untop_eq_leadingCoeff {x : R⟦Γ⟧} (hx) :
 
 variable [Zero Γ]
 
-open Classical in
+open scoped Classical in
 /-- The order of a nonzero Hahn series `x` is a minimal element of `Γ` where `x` has a
   nonzero coefficient, the order of 0 is 0. -/
 def order (x : R⟦Γ⟧) : Γ :=
@@ -436,7 +435,7 @@ section Domain
 
 variable [PartialOrder Γ']
 
-open Classical in
+open scoped Classical in
 /-- Extends the domain of a `HahnSeries` by an `OrderEmbedding`. -/
 def embDomain (f : Γ ↪o Γ') : R⟦Γ⟧ → R⟦Γ'⟧ := fun x =>
   { coeff := fun b : Γ' => if h : b ∈ f '' x.support then x.coeff (Classical.choose h) else 0

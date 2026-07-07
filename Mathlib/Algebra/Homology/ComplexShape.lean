@@ -133,7 +133,7 @@ instance subsingleton_next (c : ComplexShape ι) (i : ι) : Subsingleton { j // 
   congr
   exact c.next_eq rij rik
 
-open Classical in
+open scoped Classical in
 /-- An arbitrary choice of index `j` such that `Rel i j`, if such exists.
 Returns `i` otherwise.
 -/

@@ -39,7 +39,7 @@ open TopologicalSpace
 variable {μ : Measure α}
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
-open Classical in
+open scoped Classical in
 /-- Given a measure `μ` and an integrable function `f`, `μ.withDensityᵥ f` is
 the vector measure which maps the set `s` to `∫ₛ f ∂μ`. -/
 def Measure.withDensityᵥ {m : MeasurableSpace α} (μ : Measure α) (f : α → E) : VectorMeasure α E :=

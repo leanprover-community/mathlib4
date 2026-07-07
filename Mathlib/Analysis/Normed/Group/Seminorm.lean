@@ -254,7 +254,7 @@ theorem coe_add : ⇑(p + q) = p + q :=
 theorem add_apply (x : E) : (p + q) x = p x + q x :=
   rfl
 
-open Classical in
+open scoped Classical in
 @[to_additive]
 noncomputable instance : SupSet (GroupSeminorm E) where
   sSup s :=
@@ -530,7 +530,7 @@ theorem zero_apply (x : E) : (0 : NonarchAddGroupSeminorm E) x = 0 :=
 instance : Inhabited (NonarchAddGroupSeminorm E) :=
   ⟨0⟩
 
-open Classical in
+open scoped Classical in
 noncomputable instance : SupSet (NonarchAddGroupSeminorm E) where
   sSup s :=
     if h : BddAbove s then
