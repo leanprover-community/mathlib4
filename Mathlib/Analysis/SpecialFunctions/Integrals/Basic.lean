@@ -367,6 +367,7 @@ theorem integral_div_sq_add_sq {c : ℝ} :
     · rw [integral_const_mul, integral_inv_sq_add_sq hc]
       field_simp
 
+/-- The integrand is chosen to match the conclusion of `Real.deriv_log_log`. -/
 @[simp]
 theorem integral_inv_div_log (ha : 1 < a) (hb : 1 < b) :
     ∫ t in a..b, t⁻¹ / log t = log (log b) - log (log a) := by
