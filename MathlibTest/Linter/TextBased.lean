@@ -191,6 +191,19 @@ Note: This linter can be disabled with `set_option linter.style.setOption false`
 #guard_msgs in
 set_option linter.flexible false
 
+/--
+warning: Unscoped option backward.privateInPublic is not allowed:
+Please scope this to individual declarations, as in
+```
+set_option backward.privateInPublic in
+example : ... := ...
+```
+
+Note: This linter can be disabled with `set_option linter.style.setOption false`
+-/
+#guard_msgs in
+set_option backward.privateInPublic true
+
 end setOption
 
 section cdotLinter
