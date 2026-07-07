@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Group.Subsemigroup.MulOpposite
 public import Mathlib.Algebra.Group.Submonoid.Basic
+public import Mathlib.Algebra.Group.Equiv.Opposite
 public import Mathlib.Algebra.Group.Opposite
 
 /-!
@@ -20,7 +21,11 @@ For every monoid `M`, we construct an equivalence between submonoids of `M` and 
 
 assert_not_exists MonoidWithZero
 
-variable {ι : Sort*} {M : Type*} [MulOneClass M]
+variable {ι : Sort*} {M : Type*}
+
+section MulOneClass
+
+variable [MulOneClass M]
 
 namespace Submonoid
 
@@ -185,3 +190,34 @@ def equivOp (H : Submonoid M) : H ≃ H.op :=
   MulOpposite.opEquiv.subtypeEquiv fun _ => Iff.rfl
 
 end Submonoid
+
+end MulOneClass
+
+section CommMonoid
+
+variable [CommMonoid M]
+
+namespace Submonoid
+
+/-- Bijection between a submonoid `S` and its opposite as a monoid equivalence. -/
+@[to_additive (attr := simps!)
+  /-- Bijection between an additive submonoid and its opposite as an additive equivalence. -/]
+def mulMonoidEquivOp (S : Submonoid M) : S ≃* S.op where
+  toEquiv := S.equivOp
+  map_mul' x y := by ext; simp [equivOp, MulOpposite.op_mul, mul_comm]
+
+/-- Bijection between a submonoid `S` and `MulOpposite` of its opposite. -/
+@[to_additive (attr := simps!)
+  /-- Bijection between an additive submonoid and `AddOpposite` of its opposite. -/]
+def mulMonoidEquivOpMop (S : Submonoid M) : S ≃* (S.op)ᵐᵒᵖ where
+  __ := S.mulMonoidEquivOp.trans (MulOpposite.opMulEquiv : S.op ≃* (S.op)ᵐᵒᵖ)
+
+/-- Bijection between `MulOpposite` of a submonoid `S` and its opposite. -/
+@[to_additive (attr := simps!)
+  /-- Bijection between `AddOpposite` of an additive submonoid and its opposite. -/]
+def mopMulMonoidEquivOp (S : Submonoid M) : Sᵐᵒᵖ ≃* S.op where
+  __ := (MulOpposite.opMulEquiv : S ≃* Sᵐᵒᵖ).symm.trans S.mulMonoidEquivOp
+
+end Submonoid
+
+end CommMonoid
