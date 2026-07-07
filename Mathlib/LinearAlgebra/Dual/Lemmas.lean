@@ -577,7 +577,7 @@ def dualCopairing (W : Submodule R M) : W.dualAnnihilator →ₗ[R] M ⧸ W →�
 
 instance (W : Submodule R M) : FunLike (W.dualAnnihilator) M R where
   coe φ := φ.val
-  coe_injective' φ ψ h := by
+  coe_injective φ ψ h := by
     ext
     simp only [funext_iff] at h
     exact h _

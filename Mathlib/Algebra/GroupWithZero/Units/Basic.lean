@@ -74,7 +74,7 @@ theorem not_isUnit_zero [Nontrivial M₀] : ¬IsUnit (0 : M₀) :=
 
 namespace Ring
 
-open Classical in
+open scoped Classical in
 /-- Introduce a function `inverse` on a monoid with zero `M₀`, which sends `x` to `x⁻¹` if `x` is
 invertible and to `0` otherwise.  This definition is somewhat ad hoc, but one needs a fully (rather
 than partially) defined inverse function for some purposes, including for calculus.
@@ -170,7 +170,7 @@ theorem Ring.inverse_mul {a b : M₀} (h : IsUnit a ∨ IsUnit b) : (a * b)⁻¹
     simp
 
 theorem Ring.isUnit_iff_inverse_ne_zero [Nontrivial M₀] {x : M₀} : IsUnit x ↔ x⁻¹ʳ ≠ 0 :=
- ⟨(IsUnit.ringInverse · |>.ne_zero), by simpa using mt <| Ring.inverse_non_unit (x := x)⟩
+  ⟨(IsUnit.ringInverse · |>.ne_zero), by simpa using mt <| Ring.inverse_non_unit (x := x)⟩
 
 grind_pattern Ring.isUnit_iff_inverse_ne_zero => IsUnit x, x⁻¹ʳ
 
@@ -508,7 +508,7 @@ section NoncomputableDefs
 
 variable {M : Type*} [Nontrivial M]
 
-open Classical in
+open scoped Classical in
 /-- Constructs a `GroupWithZero` structure on a `MonoidWithZero`
   consisting only of units and 0. -/
 @[implicit_reducible]

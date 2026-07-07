@@ -83,7 +83,7 @@ lemma convexCombPair_eq_sum (a b : R) (ha hb hab) (x y : M) :
   classical simp [convexCombPair, sConvexComb_eq_sum, Finsupp.sum_add_index, add_smul]
 
 lemma IsAffineMap.map_sum_weights (hf : IsAffineMap R f) (w : StdSimplex R I) (g : I → M) :
-   f (w.weights.sum fun i r ↦ r • g i) = w.weights.sum fun i r ↦ r • f (g i) := by
+    f (w.weights.sum fun i r ↦ r • g i) = w.weights.sum fun i r ↦ r • f (g i) := by
   simpa using hf.map_iConvexComb w g
 
 lemma IsAffineMap.map_smul_add_smul (hf : IsAffineMap R f) (ha : 0 ≤ a) (hb : 0 ≤ b)
