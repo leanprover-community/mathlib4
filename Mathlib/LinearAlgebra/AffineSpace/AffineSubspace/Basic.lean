@@ -856,25 +856,25 @@ theorem prod_inf_prod (s₁ s₂ : AffineSubspace k P) (t₁ t₂ : AffineSubspa
     s₁.prod t₁ ⊓ s₂.prod t₂ = (s₁ ⊓ s₂).prod (t₁ ⊓ t₂) :=
   SetLike.coe_injective Set.prod_inter_prod
 
-theorem _root_.vectorSpan_prod {s : Set P} {t : Set Q} (hs : s.Nonempty) (ht : t.Nonempty) :
+theorem _root_.vectorSpan_prod_eq {s : Set P} {t : Set Q} (hs : s.Nonempty) (ht : t.Nonempty) :
     vectorSpan k (s ×ˢ t) = (vectorSpan k s).prod (vectorSpan k t) := by
   rw [vectorSpan_def, Set.prod_vsub_prod]
-  exact Submodule.span_prod_eq k V W hs.zero_mem_vsub ht.zero_mem_vsub
+  exact Submodule.span_prod_eq k hs.zero_mem_vsub ht.zero_mem_vsub
 
-theorem direction_prod {s : AffineSubspace k P} {t : AffineSubspace k Q}
+theorem direction_prod_eq {s : AffineSubspace k P} {t : AffineSubspace k Q}
     (hs : s ≠ ⊥) (ht : t ≠ ⊥) :
     (s.prod t).direction = s.direction.prod t.direction := by
-  simp [direction_eq_vectorSpan, vectorSpan_prod, nonempty_iff_ne_bot, ht, hs]
+  simp [direction_eq_vectorSpan, vectorSpan_prod_eq, nonempty_iff_ne_bot, ht, hs]
 
-theorem _root_.affineSpan_prod (s : Set P) (t : Set Q) :
+theorem _root_.affineSpan_prod_eq (s : Set P) (t : Set Q) :
     affineSpan k (s ×ˢ t) = (affineSpan k s).prod (affineSpan k t) := by
   rcases s.eq_empty_or_nonempty with rfl | hs
   · simp
   rcases t.eq_empty_or_nonempty with rfl | ht
   · simp
   apply AffineSubspace.ext_of_direction_eq
-  · simp [direction_prod, Set.nonempty_iff_ne_empty.mp, hs, ht, direction_affineSpan,
-      vectorSpan_prod]
+  · simp [direction_prod_eq, Set.nonempty_iff_ne_empty.mp, hs, ht, direction_affineSpan,
+      vectorSpan_prod_eq]
   · obtain ⟨x, hx⟩ := hs
     obtain ⟨y, hy⟩ := ht
     use ⟨x, y⟩
