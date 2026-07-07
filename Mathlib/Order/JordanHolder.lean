@@ -80,8 +80,7 @@ class JordanHolderLattice (X : Type u) [Lattice X] where
 namespace JordanHolderLattice
 
 /-- Every modular lattice is a Jordan Hölder lattice. -/
-instance ofModularLattice (X : Type u) [Lattice X] [IsModularLattice X] :
-    JordanHolderLattice X where
+instance (X : Type u) [Lattice X] [IsModularLattice X] : JordanHolderLattice X where
   IsMaximal := (· ⋖ ·)
   lt_of_isMaximal := CovBy.lt
   sup_eq_of_isMaximal hxz hyz := hxz.wcovBy.sup_eq hyz.wcovBy
