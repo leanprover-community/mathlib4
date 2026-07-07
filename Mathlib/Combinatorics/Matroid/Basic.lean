@@ -343,7 +343,7 @@ private theorem inter_right_subset_ground (hX : X ⊆ M.E) :
 private theorem inter_left_subset_ground (hX : X ⊆ M.E) :
     Y ∩ X ⊆ M.E := inter_subset_right.trans hX
 
-set_option backward.privateInPublic true
+set_option backward.privateInPublic true in
 @[aesop unsafe 5% (rule_sets := [Matroid])]
 private theorem sdiff_subset_ground (hX : X ⊆ M.E) : X \ Y ⊆ M.E :=
   sdiff_subset.trans hX
@@ -351,6 +351,7 @@ private theorem sdiff_subset_ground (hX : X ⊆ M.E) : X \ Y ⊆ M.E :=
 set_option backward.privateInPublic true in
 @[deprecated (since := "2026-06-03")] alias diff_subset_ground := sdiff_subset_ground
 
+set_option backward.privateInPublic true in
 @[aesop unsafe 10% (rule_sets := [Matroid])]
 private theorem ground_sdiff_subset_ground : M.E \ X ⊆ M.E :=
   sdiff_subset_ground rfl.subset
