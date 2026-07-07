@@ -158,8 +158,7 @@ set_option backward.privateInPublic true in
 variable (R₀ R n e) in
 /-- The statement we induct on in the `C : R → R[X]` case of Chevalley's theorem with complexity
 bound. -/
-private def Statement [Algebra ℤ R] : Prop :=
-  ∀ f : R[X], ∃ T : ConstructibleSetData R,
+private def Statement : Prop := ∀ f : R[X], ∃ T : ConstructibleSetData R,
     comap Polynomial.C '' (zeroLocus (Set.range e) \ zeroLocus {f}) = T.toSet ∧
     ∀ C ∈ T, C.n ≤ e.degBound ∧ ∀ i, C.g i ∈ e.coeffSubmodule R₀ ^ e.powBound
 

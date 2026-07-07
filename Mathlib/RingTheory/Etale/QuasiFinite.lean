@@ -447,9 +447,9 @@ attribute [local instance] Localization.AtPrime.algebraOfLiesOver
 
 /-- A key induction step of `exists_etale_completeOrthogonalIdempotents_forall_liesOver_eq`. -/
 private theorem Algebra.exists_etale_completeOrthogonalIdempotents_forall_liesOver_eq_aux
-    {R : Type u} {S : Type (max u v)} [CommRing R] [CommRing S] [Algebra R S] [Module.Finite R S]
-    (p : Ideal R) [p.IsPrime] (q : Ideal S) [q.IsPrime]
-    [q.LiesOver p] (R' : Type u) [CommRing R'] [Algebra R R'] [Algebra.Etale R R'] (P : Ideal R')
+    {R : Type u} {S : Type (max u v)} [CommRing R] [CommRing S] [Algebra R S]
+    (p : Ideal R) [p.IsPrime] (q : Ideal S)
+    (R' : Type u) [CommRing R'] [Algebra R R'] [Algebra.Etale R R'] (P : Ideal R')
     [P.IsPrime] [P.LiesOver p] (e : R' ⊗[R] S) (P' : Ideal (R' ⊗[R] S))
     [P'.IsPrime] [P'.LiesOver P]
     (hP'q : Ideal.comap Algebra.TensorProduct.includeRight.toRingHom P' = q)

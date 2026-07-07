@@ -164,7 +164,7 @@ private theorem Alon.degree_P [Nontrivial R] (m : MonomialOrder σ) (S : Finset 
     exact isRegular_one
 
 /-- The leading coefficient of `Alon.P S i` is `1`. -/
-private theorem Alon.monic_P [Nontrivial R] (m : MonomialOrder σ) (S : Finset R) (i : σ) :
+private theorem Alon.monic_P (m : MonomialOrder σ) (S : Finset R) (i : σ) :
     m.Monic (P S i) :=
   Monic.prod (fun r _ ↦ m.monic_X_sub_C i r)
 
