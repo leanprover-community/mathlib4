@@ -14,6 +14,8 @@ public import Mathlib.Data.Finset.Density
 public import Mathlib.Data.Fintype.BigOperators
 public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 
+import Mathlib.Algebra.BigOperators.Group.Finset.Indicator
+
 /-!
 # Average over a finset
 
@@ -51,7 +53,7 @@ open Finset Function
 open Fintype (card)
 open scoped Pointwise
 
-variable {ι κ M N : Type*}
+variable {ι κ K M N : Type*}
 
 local notation a " /ℚ " q => (q : ℚ≥0)⁻¹ • a
 
@@ -350,26 +352,30 @@ lemma expect_pow (s : Finset ι) (f : ι → M) (n : ℕ) :
 end CommSemiring
 
 section Semifield
-variable [Semifield M] [CharZero M]
+variable [Semifield K] [CharZero K]
 
-lemma expect_boole_mul [Fintype ι] [Nonempty ι] [DecidableEq ι] (f : ι → M) (i : ι) :
-    𝔼 j, ite (i = j) (Fintype.card ι : M) 0 * f j = f i := by
+@[simp] lemma expect_indicator_one [Fintype ι] (s : Finset ι) :
+    𝔼 i : ι, (Set.indicator s 1 i : K) = s.dens := by
+  classical simp [expect, sum_indicator_eq_sum_inter, dens, div_eq_inv_mul, NNRat.smul_def]
+
+lemma expect_boole_mul [Fintype ι] [Nonempty ι] [DecidableEq ι] (f : ι → K) (i : ι) :
+    𝔼 j, ite (i = j) (Fintype.card ι : K) 0 * f j = f i := by
   simp_rw [expect_univ, ite_mul, zero_mul, sum_ite_eq, if_pos (mem_univ _)]
-  rw [← @NNRat.cast_natCast M, ← NNRat.smul_def, inv_smul_smul₀]
+  rw [← @NNRat.cast_natCast K, ← NNRat.smul_def, inv_smul_smul₀]
   simp [Fintype.card_ne_zero]
 
-lemma expect_boole_mul' [Fintype ι] [Nonempty ι] [DecidableEq ι] (f : ι → M) (i : ι) :
-    𝔼 j, ite (j = i) (Fintype.card ι : M) 0 * f j = f i := by
+lemma expect_boole_mul' [Fintype ι] [Nonempty ι] [DecidableEq ι] (f : ι → K) (i : ι) :
+    𝔼 j, ite (j = i) (Fintype.card ι : K) 0 * f j = f i := by
   simp_rw [@eq_comm _ _ i, expect_boole_mul]
 
-lemma expect_eq_sum_div_card (s : Finset ι) (f : ι → M) :
+lemma expect_eq_sum_div_card (s : Finset ι) (f : ι → K) :
     𝔼 i ∈ s, f i = (∑ i ∈ s, f i) / #s := by
   rw [expect, NNRat.smul_def, div_eq_inv_mul, NNRat.cast_inv, NNRat.cast_natCast]
 
-lemma _root_.Fintype.expect_eq_sum_div_card [Fintype ι] (f : ι → M) :
+lemma _root_.Fintype.expect_eq_sum_div_card [Fintype ι] (f : ι → K) :
     𝔼 i, f i = (∑ i, f i) / Fintype.card ι := Finset.expect_eq_sum_div_card _ _
 
-lemma expect_div (s : Finset ι) (f : ι → M) (a : M) : (𝔼 i ∈ s, f i) / a = 𝔼 i ∈ s, f i / a := by
+lemma expect_div (s : Finset ι) (f : ι → K) (a : K) : (𝔼 i ∈ s, f i) / a = 𝔼 i ∈ s, f i / a := by
   simp_rw [div_eq_mul_inv, expect_mul]
 
 end Semifield

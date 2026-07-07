@@ -7,7 +7,7 @@ module
 
 public import Mathlib.MeasureTheory.MeasurableSpace.CountablyGenerated
 public import Mathlib.MeasureTheory.Measure.MutuallySingular
-public import Mathlib.MeasureTheory.Measure.Typeclasses.NoAtoms
+public import Mathlib.MeasureTheory.Measure.Typeclasses.NullSingletonClass
 public import Mathlib.MeasureTheory.Measure.Typeclasses.Probability
 public import Mathlib.MeasureTheory.Measure.Typeclasses.SFinite
 
@@ -278,7 +278,8 @@ theorem restrict_dirac [MeasurableSingletonClass α] [Decidable (a ∈ s)] :
     rwa [ae_dirac_eq]
   · rw [restrict_eq_zero, dirac_apply, indicator_of_notMem has]
 
-lemma mutuallySingular_dirac [MeasurableSingletonClass α] (x : α) (μ : Measure α) [NoAtoms μ] :
+lemma mutuallySingular_dirac [MeasurableSingletonClass α] (x : α) (μ : Measure α)
+    [NullSingletonClass μ] :
     Measure.dirac x ⟂ₘ μ :=
   ⟨{x}ᶜ, (MeasurableSet.singleton x).compl, by simp, by simp⟩
 
