@@ -146,14 +146,14 @@ theorem mul_hatInv_cancel {x : hat K} (x_ne : x ≠ 0) : x * hatInv x = 1 := by
   replace fxclo := closure_mono this fxclo
   rwa [closure_singleton, mem_singleton_iff] at fxclo
 
-instance instField : Field (hat K) where
-  mul_inv_cancel := fun x x_ne => by simp only [Inv.inv, if_neg x_ne, mul_hatInv_cancel x_ne]
-  inv_zero := by simp only [Inv.inv, ite_true]
-  -- TODO: use a better defeq
-  nnqsmul := _
-  nnqsmul_def := fun _ _ => rfl
-  qsmul := _
-  qsmul_def := fun _ _ => rfl
+instance instField : Field (hat K) := fast_instance%
+  { mul_inv_cancel := fun x x_ne => by simp only [Inv.inv, if_neg x_ne, mul_hatInv_cancel x_ne]
+    inv_zero := by simp only [Inv.inv, ite_true]
+    -- TODO: use a better defeq
+    nnqsmul := _
+    nnqsmul_def := fun _ _ => rfl
+    qsmul := _
+    qsmul_def := fun _ _ => rfl }
 
 instance : IsTopologicalDivisionRing (hat K) :=
   { Completion.topologicalRing with

@@ -81,7 +81,7 @@ instance : ContinuousMul (Completion α) where
     have di : IsDenseInducing (toCompl : α → Completion α) := isDenseInducing_coe
     exact (di.extend_Z_bilin di this :)
 
-instance ring : Ring (Completion α) :=
+instance ring : Ring (Completion α) := fast_instance%
   { AddMonoidWithOne.unary, ((inferInstance : AddCommGroup (Completion α))),
       ((inferInstance : Mul (Completion α))), ((inferInstance : One (Completion α))) with
     zero_mul a :=
@@ -195,13 +195,13 @@ theorem map_smul_eq_mul_coe (r : R) :
   · exact isClosed_eq Completion.continuous_map (continuous_const_mul _)
   · simp_rw [map_coe (uniformContinuous_const_smul r) a, Algebra.smul_def, coe_mul]
 
-instance algebra : Algebra R (Completion A) where
-  algebraMap := (UniformSpace.Completion.coeRingHom : A →+* Completion A).comp (algebraMap R A)
-  commutes' := fun r x =>
-    Completion.induction_on x (isClosed_eq (continuous_const_mul _) (continuous_mul_const _))
-      fun a => by
-      simpa only [coe_mul] using! congr_arg ((↑) : A → Completion A) (Algebra.commutes r a)
-  smul_def' := fun r x => congr_fun (map_smul_eq_mul_coe A R r) x
+instance algebra : Algebra R (Completion A) := fast_instance%
+  { algebraMap := (UniformSpace.Completion.coeRingHom : A →+* Completion A).comp (algebraMap R A)
+    commutes' := fun r x =>
+      Completion.induction_on x (isClosed_eq (continuous_const_mul _) (continuous_mul_const _))
+        fun a => by
+        simpa only [coe_mul] using! congr_arg ((↑) : A → Completion A) (Algebra.commutes r a)
+    smul_def' := fun r x => congr_fun (map_smul_eq_mul_coe A R r) x }
 
 theorem algebraMap_def (r : R) :
     algebraMap R (Completion A) r = (algebraMap R A r : Completion A) :=
@@ -213,7 +213,7 @@ section CommRing
 
 variable (R : Type*) [CommRing R] [UniformSpace R] [IsUniformAddGroup R] [IsTopologicalRing R]
 
-instance commRing : CommRing (Completion R) :=
+instance commRing : CommRing (Completion R) := fast_instance%
   { Completion.ring with
     mul_comm a b :=
       Completion.induction_on₂ a b
