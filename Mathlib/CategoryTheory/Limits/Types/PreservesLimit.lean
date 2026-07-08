@@ -60,7 +60,7 @@ noncomputable def coconeCompShrinkYonedaHomEquiv :
         dsimp
         rw [shrinkYonedaEquiv_symm_map, Category.comp_id] })
   left_inv f := hc'.hom_ext (by simp)
-  right_inv u := by ext; simp
+  right_inv u := by cat_disch
 
 /-- Let `F : J ⥤ Cᵒᵖ` be a functor, `c'` a colimit cocone for `F.leftOp ⋙ shrinkYoneda.{w}`.
 For any cone `c` for `F`, this is the canonical natural transformation
