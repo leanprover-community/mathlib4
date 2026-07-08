@@ -56,7 +56,7 @@ namespace Int
 
 section NormalizationMonoid
 
-instance normalizationMonoid : StrongNormalizationMonoid ℤ where
+instance strongNormalizationMonoid : StrongNormalizationMonoid ℤ where
   normUnit a := if 0 ≤ a then 1 else -1
   normUnit_zero := if_pos le_rfl
   normUnit_mul {a b} hna hnb := by
@@ -65,6 +65,9 @@ instance normalizationMonoid : StrongNormalizationMonoid ℤ where
   normUnit_coe_units u :=
     (units_eq_one_or u).elim (fun eq => eq.symm ▸ if_pos Int.one_nonneg) fun eq =>
       eq.symm ▸ if_neg (not_le_of_gt <| show (-1 : ℤ) < 0 by decide)
+
+@[deprecated (since := "2026-07-08")]
+alias normalizationMonoid := strongNormalizationMonoid
 
 theorem normUnit_eq (z : ℤ) : normUnit z = if 0 ≤ z then 1 else -1 := rfl
 

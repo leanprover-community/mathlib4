@@ -15,8 +15,11 @@ This file defines extra structures on `CommMonoidWithZero`s.
 ## Main Definitions
 
 * `NormalizationMonoid`
+* `StrongNormalizationMonoid`
 * `GCDMonoid`
+* `IsGCDMonoid`
 * `NormalizedGCDMonoid`
+* `StrongNormalizedGCDMonoid`
 * `gcdMonoidOfGCD`, `gcdMonoidOfExistsGCD`, `normalizedGCDMonoidOfGCD`,
   `normalizedGCDMonoidOfExistsGCD`
 * `gcdMonoidOfLCM`, `gcdMonoidOfExistsLCM`, `normalizedGCDMonoidOfLCM`,
@@ -27,15 +30,21 @@ For the `NormalizedGCDMonoid` instances on `ℕ` and `ℤ`, see `Mathlib/Algebra
 ## Implementation Notes
 
 * `NormalizationMonoid` is defined by assigning to each element a `normUnit` such that multiplying
-  by that unit normalizes the monoid, and `normalize` is an idempotent monoid homomorphism. This
+  by that unit normalizes the monoid, and `normalize` is an idempotent function. This
   definition as currently implemented does casework on `0`.
+
+* `StrongNormalizationMonoid` further requires `normalize` to be a monoid homomorphism.
 
 * `GCDMonoid` contains the definitions of `gcd` and `lcm` with the usual properties. They are
   both determined up to a unit.
 
+* `IsGCDMonoid` is the predicate for the existence of a `GCDMonoid` structure.
+
 * `NormalizedGCDMonoid` extends `NormalizationMonoid`, so the `gcd` and `lcm` are always
   normalized. This makes `gcd`s of polynomials easier to work with, but excludes Euclidean domains,
   and monoids without zero.
+
+* `StrongNormalizedGCDMonoid` similarly extends `StrongNormalizationMonoid`.
 
 * `gcdMonoidOfGCD` and `normalizedGCDMonoidOfGCD` noncomputably construct a `GCDMonoid`
   (resp. `NormalizedGCDMonoid`) structure just from the `gcd` and its properties.
@@ -93,6 +102,7 @@ noncomputable abbrev NormalizationMonoid.ofRightInverse {α : Type*} [MonoidWith
         (assoc a).choose_spec, ← mul_assoc, (assoc _).choose_spec,
         Associates.mk_eq_mk_iff_associated.mpr (associated_mul_unit_right a u u.isUnit)] }
 
+/-- A cancellative monoid with zero always admits a `NormalizationMonoid` structure. -/
 instance (α) [MonoidWithZero α] [IsLeftCancelMulZero α] :
     Nonempty (NormalizationMonoid α) := .intro <| by
   classical

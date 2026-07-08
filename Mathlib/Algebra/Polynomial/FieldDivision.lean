@@ -217,15 +217,8 @@ instance [StrongNormalizationMonoid R] : StrongNormalizationMonoid R[X] where
       (by
         dsimp
         rw [Ne, ← leadingCoeff_eq_zero] at *
-        rw [leadingCoeff_mul, normUnit_mul hp0 hq0, Units.val_mul, C_mul])
-  normUnit_coe_units u :=
-    Units.ext
-      (by
-        dsimp
-        rw [← mul_one u⁻¹, Units.val_mul, Units.eq_inv_mul_iff_mul_eq]
-        rcases Polynomial.isUnit_iff.1 ⟨u, rfl⟩ with ⟨_, ⟨w, rfl⟩, h2⟩
-        rw [← h2, leadingCoeff_C, normUnit_coe_units, ← C_mul, Units.mul_inv, C_1]
-        rfl)
+        simp_rw [normUnit, leadingCoeff_mul, normUnit_mul hp0 hq0, Units.val_mul, C_mul])
+  normUnit_coe_units := normUnit_coe_units
 
 section NormalizationMonoid
 
