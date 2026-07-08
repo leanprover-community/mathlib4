@@ -38,8 +38,7 @@ theorem support_single_subset : (single a b).support ⊆ {a} := Finsupp.support_
 theorem support_sum {k' G' : Type*} [DecidableEq G'] [AddCommMonoid k'] {f : G →₀ k}
     {g : G → k → SkewMonoidAlgebra k' G'} :
     (f.sum g).support ⊆ f.support.biUnion fun a ↦ (g a (f a)).support := by
-  simp_rw [support, coeff_sum']
-  apply Finsupp.support_sum
+  simpa [support, coeff_finsuppSum] using Finsupp.support_sum
 
 end AddCommMonoid
 

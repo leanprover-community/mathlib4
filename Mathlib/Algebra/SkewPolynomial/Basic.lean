@@ -156,8 +156,7 @@ lemma sum_sum_index {R' P : Type*} [AddCommMonoid P] [Semiring R']
     (h_zero : ∀ (a : ℕ), h a 0 = 0)
     (h_add : ∀ (a : ℕ) (b₁ b₂ : R'), h a (b₁ + b₂) = h a b₁ + h a b₂) :
     sum (sum f g) h = sum f fun (a : ℕ) (b : R) ↦ sum (g a b) h := by
-  simp only [sum_def', coeff_sum', Finsupp.sum_sum_index (fun a ↦ h_zero (toAdd a))
-    (fun a ↦ h_add (toAdd a))]
+  simp [sum_def', Finsupp.sum_sum_index, h_zero, h_add]
 
 @[simp]
 lemma sum_zero {N : Type*} [AddCommMonoid N] {f : SkewPolynomial R} :
@@ -239,8 +238,7 @@ lemma monomial_mul_monomial [MulSemiringAction (Multiplicative ℕ) R] (n m : �
 lemma mul_def {f g : SkewPolynomial R} [MulSemiringAction (Multiplicative ℕ) R] : f * g =
     f.sum fun (a₁ : ℕ) b₁ ↦ g.sum fun (a₂ : ℕ) b₂ ↦ monomial (a₁ + a₂) (b₁ * φ^[a₁] b₂) := by
   ext
-  simp [φ_iterate_apply, sum_def', coeff_mul, monomial, lsingle_apply, SkewMonoidAlgebra.coeff_sum']
-  simp [Finsupp.single_apply]
+  simp [φ_iterate_apply, sum_def', coeff_mul, monomial, lsingle_apply, Finsupp.single_apply]
 
 section Constant
 
