@@ -554,7 +554,7 @@ lemma coeff_addMonoidAlgebraMap (g : S₁ →+ R) (φ : MvPolynomial σ S₁) (m
 
 @[deprecated (since := "2026-03-27")] alias coeff_mapRange := coeff_addMonoidAlgebraMap
 
-/-- `MvPolynomial.coeff m` but promoted to an `AddMonoidHom`. -/
+/-- `AddMonoidAlgebra.coeff · m` but promoted to an `AddMonoidHom`. -/
 @[simps]
 def coeffAddMonoidHom (m : σ →₀ ℕ) : MvPolynomial σ R →+ R where
   toFun := (coeff · m)
@@ -562,7 +562,7 @@ def coeffAddMonoidHom (m : σ →₀ ℕ) : MvPolynomial σ R →+ R where
   map_add' := by simp
 
 variable (R) in
-/-- `MvPolynomial.coeff m` but promoted to a `LinearMap`. -/
+/-- `AddMonoidAlgebra.coeff · m` but promoted to a `LinearMap`. -/
 @[simps]
 def lcoeff (m : σ →₀ ℕ) : MvPolynomial σ R →ₗ[R] R where
   toFun := (coeff · m)
