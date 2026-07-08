@@ -155,12 +155,7 @@ theorem decomposeAux_coe {i : ι} (x : gradeBy R f i) :
     congr 2
 
 instance gradeBy.gradedAlgebra : GradedAlgebra (gradeBy R f) :=
-  GradedAlgebra.ofAlgHom _ (decomposeAux f)
-    (by
-      ext : 4
-      dsimp
-      rw [decomposeAux_single, DirectSum.coeAlgHom_of, Subtype.coe_mk])
-    fun i x => by rw [decomposeAux_coe f x]
+  .ofAlgHom _ (decomposeAux f) (by ext; simp [decomposeAux_single]) <| by simp [decomposeAux_coe]
 
 @[simp]
 theorem decomposeAux_eq_decompose :
