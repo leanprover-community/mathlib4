@@ -63,35 +63,28 @@ def overEquiv {X : C} (Y : Over X) : Presieve Y ≃o Presieve Y.left where
 
 end Presieve
 
-@[gcongr]
-theorem Sieve.arrows_mono {C : Type*} [Category C] {X : C} {S T : Sieve X} (h : S ≤ T) : S.arrows ≤ T.arrows := h
-
-theorem Sieve.le_arrows_generate
-    {C : Type*} [Category C] {X : C} (S : Presieve X) : S ≤ (Sieve.generate S).arrows := by
-  rw [← generate_le_iff]
-
-theorem Presieve.map_le_functorPushforward {C D : Type*} [Category C] [Category D]
-    (F : C ⥤ D) {X : C} (S : Presieve X) : S.map F ≤ S.functorPushforward F := by
-  grw [← Sieve.arrows_generate_map_eq_functorPushforward, ← Sieve.le_arrows_generate]
-
 namespace Sieve
 
+@[simp]
 lemma functorPushforward_overForget_arrows {X : C} {Y : Over X} (S : Sieve Y) :
     S.arrows.functorPushforward (Over.forget X) = S.arrows.map (Over.forget X) := by
   refine le_antisymm ?_ (S.arrows.map_le_functorPushforward (Over.forget X))
   rintro Z - ⟨W, fW, fZ, h, rfl⟩
   exact Presieve.map_map (S.downward_closed h (Over.homMk fZ : Over.mk (fZ ≫ W.hom) ⟶ W))
 
+@[simp]
 lemma functorPullback_functorPushforward_overForget {X : C} {Y : Over X} (S : Sieve Y) :
     (S.functorPushforward (Over.forget X)).functorPullback (Over.forget X) = S := by
   apply arrows_ext
   simp
 
+@[simp]
 lemma functorPushforward_functorPullback_overForget {X : C} {Y : Over X} (S : Sieve Y.left) :
     (S.functorPullback (Over.forget X)).functorPushforward (Over.forget X) = S := by
   apply arrows_ext
   simp [← arrows_generate_map_eq_functorPushforward]
 
+/-- The equivalence `Sieve Y ≃ Sieve Y.left` for all `Y : Over X`. -/
 @[simps]
 def overEquiv {X : C} (Y : Over X) : Sieve Y ≃o Sieve Y.left where
   toFun := functorPushforward (Over.forget X)
@@ -256,7 +249,7 @@ lemma mem_over_iff {X : C} {Y : Over X} (S : Sieve Y) :
 
 lemma overEquiv_symm_mem_over {X : C} (Y : Over X) (S : Sieve Y.left) (hS : S ∈ J Y.left) :
     (Sieve.overEquiv Y).symm S ∈ (J.over X) Y := by
-  simpa only [mem_over_iff, Equiv.apply_symm_apply] using hS
+  simpa only [mem_over_iff, OrderIso.apply_symm_apply] using hS
 
 lemma over_forget_coverPreserving (X : C) :
     CoverPreserving (J.over X) J (Over.forget X) where
@@ -539,7 +532,7 @@ lemma over_toGrothendieck_eq_toGrothendieck_comap_forget (X : C) :
   refine le_antisymm ?_ ?_
   · intro ⟨Y, right, (s : Y ⟶ X)⟩ R hR
     obtain ⟨(R : Sieve Y), rfl⟩ := (Sieve.overEquiv _).symm.surjective R
-    simp +instances only [GrothendieckTopology.mem_over_iff, Equiv.apply_symm_apply,
+    simp +instances only [GrothendieckTopology.mem_over_iff, OrderIso.apply_symm_apply,
       ← Precoverage.toGrothendieck_toCoverage, Coverage.mem_toGrothendieck,
       Over.left] at hR
     induction hR with
@@ -547,7 +540,6 @@ lemma over_toGrothendieck_eq_toGrothendieck_comap_forget (X : C) :
       rw [Sieve.overEquiv_symm_generate]
       exact .of _ _ (by simpa)
     | top =>
-      rw [Sieve.overEquiv_symm_top]
       simp
     | transitive Y R S hR H ih ih' =>
       refine GrothendieckTopology.transitive _ (ih s) _ fun Z g hg ↦ ?_
@@ -558,7 +550,8 @@ lemma over_toGrothendieck_eq_toGrothendieck_comap_forget (X : C) :
     intro Y R hR
     rw [Precoverage.mem_comap_iff] at hR
     rw [GrothendieckTopology.mem_toPrecoverage_iff, GrothendieckTopology.mem_over_iff,
-      Sieve.overEquiv, Equiv.coe_fn_mk, ← Sieve.generate_map_eq_functorPushforward]
+      Sieve.overEquiv, RelIso.coe_fn_mk, Equiv.coe_fn_mk,
+      ← Sieve.generate_map_eq_functorPushforward]
     exact Precoverage.Saturate.of _ _ hR
 
 end
