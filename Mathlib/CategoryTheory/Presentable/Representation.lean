@@ -152,15 +152,15 @@ instance : (toCardinalContinuous C κ).EssSurj where
       Presheaf.exists_presentation_of_isCardinalContinuous.{w} (fun J _ hJ ↦ by
         have := isClosedUnderColimitsOfShape_isCardinalPresentable C hJ
         infer_instance) F.2
-    let G₁ := G ⋙ CostructuredArrow.proj _ _ ⋙ ObjectProperty.ι _
-    let G₂ := G ⋙ CostructuredArrow.proj _ _ ⋙ shrinkYoneda.{w}
+    let G₁ := G ⋙ ObjectProperty.ι _
+    let G₂ := G ⋙ shrinkYoneda.{w}
     refine ⟨colimit G₁,
       ⟨(ObjectProperty.fullyFaithfulι _).preimageIso ?_⟩⟩
     dsimp [toCardinalContinuous, Presheaf.restrictedShrinkYoneda]
     let c' : Cocone G₂ :=
       { pt := (isCardinalPresentable C κ).ι.op ⋙ shrinkYoneda.{w, v, u}.obj (colimit G₁)
         ι.app j :=
-          shrinkYonedaMap (F := (isCardinalPresentable C κ).ι) (G.obj j).left ≫
+          shrinkYonedaMap (F := (isCardinalPresentable C κ).ι) (G.obj j) ≫
             Functor.whiskerLeft _ (shrinkYoneda.{w}.map (colimit.ι G₁ j))
         ι.naturality j j' f := by
           ext
@@ -177,7 +177,7 @@ instance : (toCardinalContinuous C κ).EssSurj where
       refine (IsColimit.equivOfNatIsoOfIso
         (NatIso.ofComponents
           (fun j ↦ ((isCardinalPresentable C κ).fullyFaithfulι.shrinkYonedaIso
-            (G.obj j).left).app _) (fun _ ↦ ?_)) _ _ ?_).2
+            (G.obj j)).app _) (fun _ ↦ ?_)) _ _ ?_).2
         (isColimitOfPreserves
           (shrinkYoneda.{w}.flip.obj (op X.1)) (colimit.isColimit G₁))
       · ext
@@ -185,7 +185,7 @@ instance : (toCardinalContinuous C κ).EssSurj where
         rfl
       · refine (Cocone.ext (Iso.refl _) (fun j ↦ ?_))
         simp [c', dsimp% ((isCardinalPresentable C κ).fullyFaithfulι.shrinkYonedaIso
-          (G.obj j).left).inv_hom_id_app_assoc (op X)])
+          (G.obj j)).inv_hom_id_app_assoc (op X)])
     exact IsColimit.coconePointUniqueUpToIso h' h
 
 instance : (toCardinalContinuous C κ).IsEquivalence where

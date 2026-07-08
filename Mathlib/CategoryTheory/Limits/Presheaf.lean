@@ -697,6 +697,38 @@ def isColimitTautologicalCocone (P : Cᵒᵖ ⥤ Type v₁) :
     (CategoryOfElements.costructuredArrowYonedaEquivalence P)).2
       ((IsColimit.precomposeHomEquiv e _).1 (colimitOfRepresentable.{v₁} P))
 
+noncomputable abbrev tautologicalCoconeShrink [LocallySmall.{w} C] (P : Cᵒᵖ ⥤ Type max w) :
+    Cocone (CostructuredArrow.proj shrinkYoneda.{w} P ⋙ shrinkYoneda.{w}) :=
+  Cocone.mk _ (CostructuredArrow.ι shrinkYoneda.{w} P)
+
+set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
+noncomputable def isColimitTautologicalCoconeShrink
+    [LocallySmall.{w} C] (P : Cᵒᵖ ⥤ Type w) :
+    IsColimit (tautologicalCoconeShrink.{w} P) :=
+  evaluationJointlyReflectsColimits _
+    (fun X ↦ Nonempty.some (by
+      rw [Types.isColimit_iff_coconeTypesIsColimit]
+      refine ⟨⟨fun y₁ y₂ hy ↦ ?_, fun x ↦ ?_⟩⟩
+      · have (Y : CostructuredArrow shrinkYoneda.{w} P)
+            (y : (shrinkYoneda.{w}.obj Y.left).obj X) :
+          ((CostructuredArrow.proj shrinkYoneda.{w} P ⋙ shrinkYoneda.{w}) ⋙
+            (evaluation _ _).obj X).ιColimitType Y y =
+              Functor.ιColimitType _ (CostructuredArrow.mk
+                (shrinkYonedaEquiv.symm (Y.hom.app X y)))
+                  (shrinkYonedaObjObjEquiv.symm (𝟙 X.unop)) :=
+          Functor.ιColimitType_eq_of_map_eq_map _ _ _ (𝟙 _)
+            (CostructuredArrow.homMk (shrinkYonedaObjObjEquiv y) (by
+              rw [← shrinkYonedaEquiv_symm_comp]
+              rfl)) (by
+              simp [shrinkYoneda_map_app_shrinkYonedaObjObjEquiv_symm])
+        obtain ⟨Y₁, y₁, rfl⟩ := Functor.ιColimitType_jointly_surjective _ y₁
+        obtain ⟨Y₂, y₂, rfl⟩ := Functor.ιColimitType_jointly_surjective _ y₂
+        rw [this Y₁ y₁, this Y₂ y₂, dsimp% hy]
+      · exact ⟨Functor.ιColimitType _ (CostructuredArrow.mk (shrinkYonedaEquiv.symm x))
+          (shrinkYonedaObjObjEquiv.symm (𝟙 X.unop)),
+          by simp [shrinkYonedaEquiv_symm_app_shrinkYonedaObjObjEquiv_symm.{w}]⟩))
+
 variable {I : Type v₁} [SmallCategory I] (F : I ⥤ C)
 
 set_option backward.defeqAttrib.useBackward true in
