@@ -32,14 +32,12 @@ and various descriptions of the complement of the support are provided.
 * `isClosed_support` : the support is a closed set.
 * `support_mem_ae_of_isLindelof` and `support_mem_ae` : under Lindelöf (or hereditarily
   Lindelöf) hypotheses, the support is conull.
-* `measure_compl_support_of_innerRegularWRT_isCompact_isOpen`,
-  `measure_compl_support_of_innerRegular`, and `measure_compl_support_of_regular` : inner
-  regularity by compact sets on open sets, inner regularity on measurable sets, and in particular
-  regularity, imply that the support is conull.
+* `measure_compl_support_of_innerRegularWRT_isCompact_isOpen` : inner
+  regularity by compact sets on open sets imply that the support is conull.
 
 ## Tags
 
-measure, support, Lindelöf, regularity
+measure, support, Lindelöf
 -/
 
 @[expose] public section
@@ -143,27 +141,25 @@ section Regular
 /-- Any compact set contained in the complement of the support has zero measure. -/
 lemma measure_eq_zero_of_isCompact_subset_compl_support {K : Set X} (hK : IsCompact K)
     (hKsub : K ⊆ μ.supportᶜ) : μ K = 0 := by
-  apply hK.induction_on (p := fun t ↦ μ t = 0)
-  · exact measure_empty
+  refine hK.induction_on measure_empty ?_ ?_ ?_
   · exact fun _ _ hst ht ↦ measure_mono_null hst ht
   · exact fun _ _ hs ht ↦ measure_union_null hs ht
   · intro x hxK
-    obtain ⟨U, hUnhds, hU0⟩ := notMem_support_iff_exists.mp (by simpa using hKsub hxK)
+    obtain ⟨U, hUnhds, hU0⟩ := notMem_support_iff_exists.1 (hKsub hxK)
     exact ⟨U, mem_nhdsWithin_of_mem_nhds hUnhds, hU0⟩
 
 /-- A measure which is compact-inner-regular on open sets has conull support. -/
 lemma measure_compl_support_of_innerRegularWRT_isCompact_isOpen
     (hμ : μ.InnerRegularWRT IsCompact IsOpen) : μ μ.supportᶜ = 0 := by
   by_contra hne
-  obtain ⟨K, hKsub, hKcompact, hKpos⟩ :=
-    hμ (isOpen_compl_support (μ := μ)) (0 : ℝ≥0∞) (pos_iff_ne_zero.mpr hne)
+  obtain ⟨K, hKsub, hKcompact, hKpos⟩ := hμ isOpen_compl_support 0 (pos_iff_ne_zero.2 hne)
   simp [measure_eq_zero_of_isCompact_subset_compl_support hKcompact hKsub] at hKpos
 
 /-- An inner regular measure has conull support when open sets are measurable. -/
 @[simp]
 lemma measure_compl_support_of_innerRegular [OpensMeasurableSpace X] [μ.InnerRegular] :
     μ μ.supportᶜ = 0 :=
-  measure_compl_support_of_innerRegularWRT_isCompact_isOpen fun _U hU r hr =>
+  measure_compl_support_of_innerRegularWRT_isCompact_isOpen fun _ hU r hr =>
     InnerRegular.innerRegular hU.measurableSet r hr
 
 /-- A regular measure has conull support. -/
