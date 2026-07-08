@@ -15,10 +15,10 @@ public import Mathlib.Order.Interval.Finset.Nat
 For a `FloorRing` (resp. `FloorSemiring`) `α`, we relate membership of a cast `↑n` in an interval
 of `α` to membership of the integer (resp. natural number) `n` in the corresponding interval with
 floor/ceil endpoints, for instance `Int.coe_mem_Ioc_iff : ↑n ∈ Set.Ioc a b ↔ n ∈ Set.Ioc ⌊a⌋ ⌊b⌋`.
-If the right-hand side is finite, we express them as `Finset` instead.
+If the right-hand side set is finite, we express it as `Finset` instead.
 
 In the natural number case, non-negativity hypotheses are required when the `Nat.floor` function
-is involved.
+is involved.  In the `IsStrictOrderedRing` case, one of these hypotheses can be omitted.
 -/
 
 @[expose] public section
