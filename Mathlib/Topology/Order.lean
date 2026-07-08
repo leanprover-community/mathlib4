@@ -5,7 +5,6 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
-public import Mathlib.Order.SupClosed
 public import Mathlib.Topology.Continuous
 public import Mathlib.Topology.Defs.Induced
 
@@ -645,16 +644,6 @@ lemma generateFrom_insert_empty {α : Type*} {s : Set (Set α)} :
     generateFrom (insert ∅ s) = generateFrom s := by
   rw [← sUnion_empty]
   exact generateFrom_insert_of_generateOpen (.sUnion ∅ (fun s_1 a ↦ False.elim a))
-
-lemma generateFrom_latticeClosure {α : Type*} (s : Set (Set α)) :
-    generateFrom (latticeClosure s) = generateFrom s := by
-  let : TopologicalSpace α := generateFrom s
-  refine le_antisymm (generateFrom_anti subset_latticeClosure) ?_
-  refine le_generateFrom fun o hos => ?_
-  induction hos using latticeClosure_sup_inf_induction with
-  | mem _ has => exact isOpen_generateFrom_of_mem has
-  | sup _ _ _ _ ha hb => exact ha.union hb
-  | inf _ _ _ _ ha hb => exact ha.inter hb
 
 /-- This construction is left adjoint to the operation sending a topology on `α`
   to its neighborhood filter at a fixed point `a : α`. -/

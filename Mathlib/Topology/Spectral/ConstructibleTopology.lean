@@ -6,6 +6,7 @@ Authors: Johan Commelin, Jiedong Jiang, Fangming Li, Christian Merten
 module
 
 public import Mathlib.Topology.Constructible
+public import Mathlib.Topology.Order.GenerateFromLattice
 public import Mathlib.Topology.Spectral.Basic
 public import Mathlib.Topology.WithTopology
 public import Mathlib.Topology.JacobsonSpace
