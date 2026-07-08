@@ -837,14 +837,8 @@ theorem measurable [MeasurableSpace 𝕜] [SecondCountableTopology 𝕜] [BorelS
 /-- `Meromorphic` is invariant under translation. -/
 @[simp] theorem meromorphic_comp_add_const_iff_meromorphic {c : 𝕜} :
     Meromorphic (f ∘ (· + c)) ↔ Meromorphic f := by
-  constructor
-  · intro h x
-    rw [← meromorphicAt_comp_add_const_iff_meromorphicAt (c := c)]
-    exact h (x - c)
-  · intro h x
-    rw [← meromorphicAt_comp_sub_const_iff_meromorphicAt (c := c)]
-    convert h (x + c)
-    aesop
+  rw [Meromorphic, Meromorphic, (Equiv.subRight c).surjective.forall]
+  simp [meromorphicAt_comp_add_const_iff_meromorphicAt]
 
 /-- `Meromorphic` is invariant under translation. -/
 @[simp] theorem meromorphic_fun_comp_add_const_iff_meromorphic {c : 𝕜} :
