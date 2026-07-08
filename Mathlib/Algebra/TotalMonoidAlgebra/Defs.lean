@@ -532,6 +532,58 @@ def uniqueRingEquiv [Unique M] : R⟦M⟧ ≃+* R where
     refine (coeff_mul ..).trans ?_
     simp [this, Unique.eq_default]
 
+variable (M) in
+@[to_additive (dont_translate := R) (attr := simp)]
+lemma uniqueRingEquiv_symm_apply [Unique M] (r : R) : (uniqueRingEquiv M).symm r = single 1 r := by
+  ext m; simp [uniqueRingEquiv, Subsingleton.elim m 1]
+
+-- We want this lemma to fire before `uniqueRingEquiv_symm_apply`.
+@[to_additive (dont_translate := R) (attr := simp↓ high)]
+lemma coeff_uniqueRingEquiv_symm [Unique M] (r : R) (m : M) :
+    ((uniqueRingEquiv M).symm r).coeff m = r := by simp [Subsingleton.elim m 1]
+
+/-- A product total monoid algebra is a nested total monoid algebra. -/
+@[to_additive (dont_translate := R)
+/-- An product total additive monoid algebra is a nested additive monoid algebra. -/]
+def curryAddEquiv [DecidableEq M] [DecidableEq N] : R⟦M × N⟧ ≃+ R⟦N⟧⟦M⟧ :=
+  coeffAddEquiv.trans <| .trans (AddEquiv.curry ..) <| .trans
+    (AddEquiv.arrowCongr (Equiv.refl _) coeffAddEquiv.symm) coeffAddEquiv.symm
+
+@[to_additive (attr := simp)]
+lemma curryAddEquiv_single [DecidableEq M] [DecidableEq N] (m : M) (n : N) (r : R) :
+    curryAddEquiv (single (m, n) r) = single m (single n r) := by
+  ext; simp [curryAddEquiv, Pi.single_apply, apply_ite, ite_apply]
+  grind
+
+@[to_additive (attr := simp)]
+lemma curryAddEquiv_symm_single [DecidableEq M] [DecidableEq N] (m : M) (n : N) (r : R) :
+    curryAddEquiv.symm (single m (single n r)) = (single (m, n) r) :=
+  (AddEquiv.symm_apply_eq _).mpr (curryAddEquiv_single m n r).symm
+
+/-- A product total monoid algebra is a nested total monoid algebra. -/
+@[to_additive (dont_translate := R)
+/-- An product total additive monoid algebra is a nested additive monoid algebra. -/]
+def curryRingEquiv [DecidableEq M] [DecidableEq N] : R⟦M × N⟧ ≃+* R⟦N⟧⟦M⟧ where
+  toAddEquiv := curryAddEquiv
+  map_mul' x y := by
+    ext m n
+    suffices ∑ p ∈ mulAntidiagonal (m, n), x.coeff p.1 * y.coeff p.2 =
+      ∑ x_1 ∈ (mulAntidiagonal m).sigma fun a => mulAntidiagonal n,
+        x.coeff (x_1.fst.1, x_1.snd.1) * y.coeff (x_1.fst.2, x_1.snd.2) by
+          simpa [curryAddEquiv, coeff_mul, sum_sigma']
+    refine sum_bij (fun p _ ↦ ⟨(p.1.1, p.2.1), (p.1.2, p.2.2)⟩) ?_ ?_ ?_ ?_
+    any_goals intros; simp_all [Prod.ext_iff]
+    grind
+
+@[to_additive (dont_translate := R) (attr := simp)]
+lemma curryRingEquiv_single [DecidableEq M] [DecidableEq N] (m : M) (n : N) (r : R) :
+    curryRingEquiv (single (m, n) r) = single m (single n r) := by simp [curryRingEquiv]
+
+@[to_additive (attr := simp)]
+lemma curryRingEquiv_symm_single [DecidableEq M] [DecidableEq N] (m : M) (n : N) (r : R) :
+    curryRingEquiv.symm (single m <| single n r) = (single (m, n) r) := by
+  simp [curryRingEquiv]
+
 end Semiring
 
 end TotalMonoidAlgebra
