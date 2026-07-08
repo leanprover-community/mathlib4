@@ -643,6 +643,9 @@ variable [AddCommGroup M] [Module R M] [AddCommGroup M₂] [Module R₂ M₂]
 variable {τ₁₂ : R →+* R₂} [RingHomSurjective τ₁₂]
 variable {p p' : Submodule R M}
 
+/-- Let `f : M →ₗ N`. Assume that `p` and `q` are disjoint submodules of `M`,
+and that the kernel of `f` "decomposes well" wrt. `p` and `q`, in the sense that
+`f.ker = (f.ker ⊓ p) ⊔ (f.ker ⊓ q)`. Then `map f p` and `map f q` are disjoint. -/
 lemma disjoint_map_of_ker_le_inf_sup {f : M →ₛₗ[τ₁₂] M₂} {p q : Submodule R M}
     (hpq : Disjoint p q) (hker : f.ker ≤ (f.ker ⊓ p) ⊔ (f.ker ⊓ q)) :
     Disjoint (p.map f) (q.map f) := by
