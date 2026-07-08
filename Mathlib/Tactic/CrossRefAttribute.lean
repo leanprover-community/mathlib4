@@ -60,6 +60,7 @@ def label : Database → String
 /-- A lowercase short name for the given database. Useful when exporting to JSON. -/
 def shortName : Database → String
   | .kerodon  => "kerodon"
+  | .lmfdb    => "lmfdb"
   | .stacks   => "stacks"
   | .wikidata => "wikidata"
 
