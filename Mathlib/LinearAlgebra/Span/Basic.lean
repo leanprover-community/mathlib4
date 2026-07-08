@@ -561,6 +561,16 @@ theorem comap_map_sup_of_comap_le {f : M →ₛₗ[τ₁₂] M₂} {p : Submodul
   rw [add_comm, ← eq_sub_iff_add_eq, ← map_sub] at eq; subst eq
   simpa using p.add_mem (le hz) hy
 
+lemma disjoint_map_of_ker_le_right {f : M →ₛₗ[τ₁₂] M₂} {p q : Submodule R M}
+    (hpq : Disjoint p q) (hker : f.ker ≤ q) : Disjoint (p.map f) (q.map f) := by
+  rw [disjoint_iff, map_inf_eq_map_inf_comap, comap_map_eq, eq_bot_iff, map_le_iff_le_comap,
+    comap_bot, sup_eq_left.mpr hker, hpq.eq_bot]
+  exact bot_le
+
+lemma disjoint_map_of_ker_le_left {f : M →ₛₗ[τ₁₂] M₂} {p q : Submodule R M}
+    (hpq : Disjoint p q) (hker : f.ker ≤ p) : Disjoint (p.map f) (q.map f) :=
+  disjoint_map_of_ker_le_right hpq.symm hker |>.symm
+
 theorem isCoatom_comap_or_eq_top (f : M →ₛₗ[τ₁₂] M₂) {p : Submodule R₂ M₂} (hp : IsCoatom p) :
     IsCoatom (comap f p) ∨ comap f p = ⊤ :=
   or_iff_not_imp_right.mpr fun h ↦ ⟨h, fun q lt ↦ by
@@ -632,6 +642,20 @@ variable [Ring R] [Semiring R₂]
 variable [AddCommGroup M] [Module R M] [AddCommGroup M₂] [Module R₂ M₂]
 variable {τ₁₂ : R →+* R₂} [RingHomSurjective τ₁₂]
 variable {p p' : Submodule R M}
+
+/-- Let `f : M →ₗ N`. Assume that `p` and `q` are disjoint submodules of `M`,
+and that the kernel of `f` "decomposes well" wrt. `p` and `q`, in the sense that
+`f.ker = (f.ker ⊓ p) ⊔ (f.ker ⊓ q)`. Then `map f p` and `map f q` are disjoint. -/
+lemma disjoint_map_of_ker_le_inf_sup {f : M →ₛₗ[τ₁₂] M₂} {p q : Submodule R M}
+    (hpq : Disjoint p q) (hker : f.ker ≤ (f.ker ⊓ p) ⊔ (f.ker ⊓ q)) :
+    Disjoint (p.map f) (q.map f) := by
+  replace hker : f.ker = (f.ker ⊓ p) ⊔ (f.ker ⊓ q) :=
+    le_antisymm hker (sup_le inf_le_left inf_le_left)
+  have : q ⊔ f.ker = q ⊔ (p ⊓ f.ker) := by
+    conv_lhs => rw [hker, inf_comm]; simp only [← sup_assoc, inf_left_le_sup_right, sup_of_le_left]
+  rw [disjoint_iff, map_inf_eq_map_inf_comap, comap_map_eq, eq_bot_iff, map_le_iff_le_comap,
+    comap_bot, this, ← inf_sup_assoc_of_le _ inf_le_left, hpq.eq_bot, bot_sup_eq]
+  exact inf_le_right
 
 theorem map_strict_mono_or_ker_sup_lt_ker_sup (f : M →ₛₗ[τ₁₂] M₂) (hab : p < p') :
     Submodule.map f p < Submodule.map f p' ∨ LinearMap.ker f ⊓ p < LinearMap.ker f ⊓ p' := by

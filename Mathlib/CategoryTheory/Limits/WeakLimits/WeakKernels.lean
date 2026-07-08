@@ -12,7 +12,7 @@ public import Mathlib.CategoryTheory.Preadditive.Basic
 /-!
 # Weak kernels
 
-These are weak equalizes for functors of the form `ParallelPair f 0`.
+These are weak equalizers for functors of the form `parallelPair f 0`.
 
 If the category is preadditive, then weak equalizers exist if and only if weak kernels exist.
 (See `hasWeakEqualizer_of_hasWeakKernel` and `hasWeakKernel_of_hasWeakEqualizer`.)

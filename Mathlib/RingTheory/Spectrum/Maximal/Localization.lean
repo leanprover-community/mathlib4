@@ -176,9 +176,9 @@ localizations at maximal ideals. -/
 def piLocalizationToMaximal : PiLocalization R →ₐ[R] MaximalSpectrum.PiLocalization R :=
   AlgHom.pi fun I ↦ Pi.evalAlgHom _ _ I.toPrimeSpectrum
 
-open scoped Classical in
-theorem piLocalizationToMaximal_surjective : Function.Surjective (piLocalizationToMaximal R) :=
-  fun r ↦ ⟨fun I ↦ if h : I.1.IsMaximal then r ⟨_, h⟩ else 0, funext fun _ ↦ dif_pos _⟩
+theorem piLocalizationToMaximal_surjective : Function.Surjective (piLocalizationToMaximal R) := by
+  classical
+  exact fun r ↦ ⟨fun I ↦ if h : I.1.IsMaximal then r ⟨_, h⟩ else 0, funext fun _ ↦ dif_pos _⟩
 
 variable {R}
 
