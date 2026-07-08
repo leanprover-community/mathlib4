@@ -112,34 +112,7 @@ lemma FormalGroup.comm' (F : FormalGroup R) [F.IsComm] {f g : MvPowerSeries σ R
 
 namespace FormalGroup
 
-variable (F : FormalGroup R) (S : Type*) [CommRing S] [UniformSpace S] [IsLinearTopology S S]
-  [UniformSpace R]
-
--- set_option linter.unusedVariables false in
-/-- `F.Point σ` represents the mathematical space of points of a formal group $F$
-taking values in the formal power series ring `MvPowerSeries σ R` with the property
-that constant coefficient is nilpotent.
-
-TODO: Mathematically, a 1-dimensional formal group law $F$ over a ring $R$ defines a group
-structure on the elements of a complete local $R$-algebra (specifically, its maximal ideal)
-via the substitution operation $x +_F y = F(x, y)$. -/
-@[nolint unusedArguments]
-def Point (_F : FormalGroup R) := topologicalNilradical S
-
--- instance : Add (F.Point S) where
---   add x y := by
---     refine ⟨F.toPowerSeries.aeval ![x.val, y.val],
---     ?_⟩
-
--- @[simp]
--- lemma add_apply {x y : F.Point σ} : (x + y).val = F.toPowerSeries.subst ![x.val, y.val] := by
---   rfl
-
--- instance : Zero (F.Point σ) where
---   zero := ⟨0, PowerSeries.HasSubst.zero⟩
-
--- @[simp]
--- lemma zero_apply : (0 : F.Point σ).val = (0 : MvPowerSeries σ R) := rfl
+variable (F : FormalGroup R) (S : Type*) [CommRing S] [UniformSpace S]
 
 /-- Additive formal group law `𝔾ₐ(X,Y) = X + Y`. -/
 @[simps]
@@ -303,37 +276,119 @@ lemma zeroX_eq_X : F.zeroX = PowerSeries.X := by
     _ = _ := by
       rw [zeroX_subst_zeroX, F.zeroX.subst_substInv_left F.constantCoeff_zeroX]
 
-theorem add_zero {f : MvPowerSeries σ R} (hf : PowerSeries.HasSubst f) :
-    F.toPowerSeries.subst ![f, 0] = f := by
-  calc
-    _ = PowerSeries.subst f (F.toPowerSeries.subst ![PowerSeries.X (R := R), 0]) := by
-      rw [PowerSeries.subst, subst_comp_subst_apply _ hf.const]
-      · congr! 2 with s
-        fin_cases s
-        · simp [PowerSeries.X, subst]
-        · simp [subst, eval₂]
-      exact HasSubst.X_zero
-    _ = _ := by
-      simp [Xzero_eq_X, PowerSeries.subst_X hf]
+variable {S : Type*} [CommRing S] [UniformSpace S] [IsUniformAddGroup S] [IsLinearTopology S S]
+  [CompleteSpace S] [T2Space S] [IsTopologicalRing S]
+  [UniformSpace R] [DiscreteUniformity R] [Algebra R S]
 
-theorem zero_add {f : MvPowerSeries σ R} (hf : PowerSeries.HasSubst f) :
-    F.toPowerSeries.subst ![0, f] = f := by
-  calc
-    _ = PowerSeries.subst f (F.toPowerSeries.subst ![0, PowerSeries.X (R := R)]) := by
-      rw [PowerSeries.subst, subst_comp_subst_apply _ hf.const]
-      · congr! 2 with s
-        fin_cases s
-        · simp [subst, eval₂]
-        · simp [PowerSeries.X, subst]
-      · exact HasSubst.zero_X
-    _ = _ := by
-      simp [zeroX_eq_X, PowerSeries.subst_X hf]
+theorem add_zero {a : S} (ha : IsTopologicallyNilpotent a) :
+    F.toPowerSeries.eval₂ (algebraMap R S) ![a, 0] = a := by
+  have hb : HasEval (fun _ : Unit ↦ a) := ⟨fun _ ↦ ha, by simp⟩
+  calc F.toPowerSeries.eval₂ (algebraMap R S) ![a, 0]
+      = eval₂ (algebraMap R S) (fun _ : Unit ↦ a) F.Xzero := by
+        rw [eval₂_subst (a := ![PowerSeries.X, 0]) HasSubst.X_zero hb]
+        congr! 2 with i
+        fin_cases i <;> simp [PowerSeries.X, ← MvPolynomial.coe_zero]
+    _ = a := by simp [Xzero_eq_X, PowerSeries.X]
 
--- instance : AddMonoid (F.Point σ) where
---   zero_add x := Subtype.ext (zero_add F x.prop)
---   add_zero x := Subtype.ext (add_zero F x.prop)
---   nsmul := nsmulRec
---   add_assoc x y z := Subtype.ext <| F.assoc' x.prop y.prop z.prop
+theorem zero_add {a : S} (ha : IsTopologicallyNilpotent a) :
+    F.toPowerSeries.eval₂ (algebraMap R S) ![0, a] = a := by
+  have hb : HasEval (fun _ : Unit ↦ a) := ⟨fun _ ↦ ha, by simp⟩
+  calc F.toPowerSeries.eval₂ (algebraMap R S) ![0, a]
+      = eval₂ (algebraMap R S) (fun _ : Unit ↦ a) F.zeroX := by
+        rw [eval₂_subst (a := ![0, PowerSeries.X]) HasSubst.zero_X hb]
+        congr! 2 with i
+        fin_cases i <;> simp [PowerSeries.X, ← MvPolynomial.coe_zero]
+    _ = a := by simp [zeroX_eq_X, PowerSeries.X]
+
+theorem add_assoc {a b c : S} (ha : IsTopologicallyNilpotent a) (hb : IsTopologicallyNilpotent b)
+    (hc : IsTopologicallyNilpotent c) :
+    F.toPowerSeries.eval₂ (algebraMap R S) ![F.toPowerSeries.eval₂ (algebraMap R S) ![a, b], c] =
+      F.toPowerSeries.eval₂ (algebraMap R S)
+        ![a, F.toPowerSeries.eval₂ (algebraMap R S) ![b, c]] := by
+  have he : HasEval ![a, b, c] := ⟨fun s ↦ by fin_cases s <;> assumption, by simp⟩
+  have key : ∀ i j : Fin 3, eval₂ (algebraMap R S) ![a, b, c] (F.toPowerSeries.subst ![X i, X j])
+      = F.toPowerSeries.eval₂ (algebraMap R S) ![![a, b, c] i, ![a, b, c] j] := fun i j ↦ by
+    rw [eval₂_subst HasSubst.X_X he]
+    congr! 2 with s
+    fin_cases s <;> simp
+  calc F.toPowerSeries.eval₂ (algebraMap R S) ![F.toPowerSeries.eval₂ (algebraMap R S) ![a, b], c]
+      = (F.toPowerSeries.subst ![F.toPowerSeries.subst ![Y₀, Y₁], Y₂]).eval₂
+          (algebraMap R S) ![a, b, c] := by
+        rw [eval₂_subst (HasSubst.cons_subst_zero_left (0 : Fin 3) 1 2 F.zero_constantCoeff) he]
+        congr! 2 with i
+        fin_cases i <;> simp [key]
+    _ = (F.toPowerSeries.subst ![Y₀, F.toPowerSeries.subst ![Y₁, Y₂]]).eval₂
+          (algebraMap R S) ![a, b, c] := by rw [F.assoc]
+    _ = F.toPowerSeries.eval₂ (algebraMap R S)
+          ![a, F.toPowerSeries.eval₂ (algebraMap R S) ![b, c]] := by
+        rw [eval₂_subst (HasSubst.cons_subst_zero_right (0 : Fin 3) 1 2 F.zero_constantCoeff) he]
+        congr! 2 with i
+        fin_cases i <;> simp [key]
+
+end FormalGroup
+
+end
+
+section
+
+namespace FormalGroup
+
+variable (F : FormalGroup R) (S : Type*) [CommRing S] [UniformSpace S]
+
+/-- `F.Point S` is the space of points of a formal group `F` with values in a topological
+ring `S`: its elements are the topologically nilpotent elements of `S`. When `S` is a complete
+linearly topologized `R`-algebra, the substitution operation `x +_F y = F(x, y)` makes it an
+additive monoid.
+
+This is a type synonym for the subtype of topologically nilpotent elements, so that the
+formal group addition does not clash with the addition inherited from `S`. -/
+@[nolint unusedArguments]
+def Point (_F : FormalGroup R) := {a : S // IsTopologicallyNilpotent a}
+
+variable {S} in
+lemma hasEval_point (x y : F.Point S) : HasEval ![x.val, y.val] := by
+  refine { hpow := ?_, tendsto_zero := ?_ }
+  · intro s
+    fin_cases s
+    exacts [x.prop, y.prop]
+  · simp
+
+instance : Zero (F.Point S) where
+  zero := ⟨0, .zero⟩
+
+@[simp]
+lemma zero_apply : (0 : F.Point S).val = 0 := rfl
+
+variable [UniformSpace R] [IsTopologicalSemiring R] [IsUniformAddGroup R]
+  [IsUniformAddGroup S] [CompleteSpace S] [T2Space S] [IsTopologicalRing S]
+  [IsLinearTopology S S] [Algebra R S] [ContinuousSMul R S]
+
+open WithPiTopology in
+instance : Add (F.Point S) where
+  add x y :=
+    ⟨F.toPowerSeries.aeval (F.hasEval_point x y),
+      .map (continuous_aeval (F.hasEval_point x y))
+        (isTopologicallyNilpotent_of_constantCoeff_zero F.zero_constantCoeff)⟩
+
+@[simp]
+lemma add_apply {x y : F.Point S} :
+    (x + y).val = F.toPowerSeries.aeval (F.hasEval_point x y) :=
+  rfl
+
+@[simp]
+lemma add_eq_eval₂ {x y : F.Point S} :
+    (x + y).val = F.toPowerSeries.eval₂ (algebraMap R S) ![x.val, y.val] :=
+  congrFun (coe_aeval (F.hasEval_point x y)) F.toPowerSeries
+
+variable [DiscreteUniformity R]
+
+instance : AddMonoid (F.Point S) where
+  zero_add x := Subtype.ext <| by rw [add_eq_eval₂, zero_apply]; exact F.zero_add x.prop
+  add_zero x := Subtype.ext <| by rw [add_eq_eval₂, zero_apply]; exact F.add_zero x.prop
+  nsmul := nsmulRec
+  add_assoc x y z := Subtype.ext <| by
+    simp only [add_eq_eval₂]
+    exact F.add_assoc x.prop y.prop z.prop
 
 -- instance [F.IsComm] : AddCommMonoid (F.Point σ) where
 --   add_comm x y := Subtype.ext <| F.comm' x.prop y.prop
