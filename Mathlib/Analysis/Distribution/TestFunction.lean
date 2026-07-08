@@ -744,4 +744,35 @@ lemma integralAgainstBilinCLM_ofSupportedIn {B : F₁ →L[𝕜] F₂ →L[𝕜]
 
 end Integral
 
+section Multiplication
+
+section bilin
+
+variable {m : MeasurableSpace E} [OpensMeasurableSpace E] {F₁ F₂ F₃ G : Type*}
+  [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁] [NormedSpace ℝ F₁]
+  [NormedAddCommGroup F₂] [NormedSpace 𝕜 F₂] [NormedSpace ℝ F₂]
+  [NormedAddCommGroup F₃] [NormedSpace 𝕜 F₃]
+
+variable [NormedAlgebra ℝ 𝕜] [IsScalarTower ℝ 𝕜 F₁] [IsScalarTower ℝ 𝕜 F₂] [NormedSpace ℝ F₃]
+  [IsScalarTower ℝ 𝕜 F₃] [SMulCommClass ℝ 𝕜 F₁] [SMulCommClass ℝ 𝕜 F₂] [SMulCommClass ℝ 𝕜 F₃]
+
+open ContinuousLinearMap Finset
+
+/-- The map `f ↦ (x ↦ B (f x) (g x))` as a continuous `𝕜`-linear map on 𝓓^{n}_(E, F₁),
+where `B` is a continuous `𝕜`-linear map and `g` is a C^n function. -/
+noncomputable def bilinLeftCLM (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) {g : E → F₂} (hg : ContDiff ℝ n g) :
+    𝓓^{n}(Ω, F₁) →L[𝕜] 𝓓^{n}(Ω, F₃) :=
+  letI T : 𝓓^{n}(Ω, F₁) → 𝓓^{n}(Ω, F₃) :=
+    fun φ ↦ ⟨fun x ↦ B (φ x) (g x),
+      ((B.bilinearRestrictScalars ℝ).isBoundedBilinearMap.contDiff.comp ((φ.contDiff).prodMk hg)),
+      (by exact (φ.hasCompactSupport).mono (by aesop)),
+      (by exact le_trans (closure_mono (by aesop)) (tsupport_map_subset φ))⟩
+  TestFunction.limitCLM 𝕜 T
+    (fun K K_sub_Ω ↦ ofSupportedInCLM 𝕜 K_sub_Ω ∘L ContDiffMapSupportedIn.bilinLeftCLM B hg)
+    (fun K K_sub_Ω f ↦ by congr)
+
+end bilin
+
+end Multiplication
+
 end TestFunction
