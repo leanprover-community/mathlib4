@@ -183,6 +183,7 @@ theorem JoinedIn.target_mem (h : JoinedIn F x y) : y ∈ F :=
 def JoinedIn.somePath (h : JoinedIn F x y) : Path x y :=
   Classical.choose h
 
+@[simp]
 theorem JoinedIn.somePath_mem (h : JoinedIn F x y) (t : I) : h.somePath t ∈ F :=
   Classical.choose_spec h t
 
@@ -609,25 +610,20 @@ variable {s : Set X} {t : Set Y}
 /-- If `x₁` is joined to `x₂` within `s` and `y₁` to `y₂` within `t`, then `(x₁, y₁)` is joined
 to `(x₂, y₂)` within `s ×ˢ t`. -/
 theorem JoinedIn.prod {x₁ x₂ : X} {y₁ y₂ : Y} (hx : JoinedIn s x₁ x₂) (hy : JoinedIn t y₁ y₂) :
-    JoinedIn (s ×ˢ t) (x₁, y₁) (x₂, y₂) := by
-  obtain ⟨p, hp⟩ := hx
-  obtain ⟨q, hq⟩ := hy
-  exact ⟨p.prod q, fun u ↦ Set.mk_mem_prod (hp u) (hq u)⟩
+    JoinedIn (s ×ˢ t) (x₁, y₁) (x₂, y₂) :=
+  ⟨hx.somePath.prod hy.somePath, by simp⟩
 
 /-- The product of two path-connected sets is path-connected. -/
 theorem IsPathConnected.prod (hs : IsPathConnected s) (ht : IsPathConnected t) :
     IsPathConnected (s ×ˢ t) := by
-  obtain ⟨x, hx, hsx⟩ := hs
-  obtain ⟨y, hy, hty⟩ := ht
-  refine ⟨(x, y), Set.mk_mem_prod hx hy, ?_⟩
-  rintro ⟨a, b⟩ hab
-  rw [Set.mem_prod] at hab
-  exact (hsx hab.1).prod (hty hab.2)
+  rw [isPathConnected_iff]
+  refine ⟨hs.nonempty.prod ht.nonempty, fun (x₁, y₁) ⟨hx₁, hy₁⟩ (x₂, y₂) ⟨hx₂, hy₂⟩ ↦ ?_⟩
+  exact hs.joinedIn x₁ hx₁ x₂ hx₂ |>.prod <| ht.joinedIn y₁ hy₁ y₂ hy₂
 
 instance Prod.instPathConnectedSpace [PathConnectedSpace X] [PathConnectedSpace Y] :
     PathConnectedSpace (X × Y) := by
   rw [pathConnectedSpace_iff_univ, ← Set.univ_prod_univ]
-  exact (pathConnectedSpace_iff_univ.mp ‹_›).prod (pathConnectedSpace_iff_univ.mp ‹_›)
+  exact isPathConnected_univ.prod isPathConnected_univ
 
 end Prod
 
@@ -638,24 +634,19 @@ variable {Z : ι → Type*} [∀ i, TopologicalSpace (Z i)]
 /-- If for each `i`, `x i` is joined to `y i` within `s i`, then `x` is joined to `y` within the
 product set `Set.univ.pi s`. -/
 theorem JoinedIn.pi {s : ∀ i, Set (Z i)} {x y : ∀ i, Z i}
-    (h : ∀ i, JoinedIn (s i) (x i) (y i)) : JoinedIn (Set.univ.pi s) x y := by
-  choose p hp using h
-  exact ⟨Path.pi p, fun u ↦ Set.mem_univ_pi.mpr fun i ↦ hp i u⟩
+    (h : ∀ i, JoinedIn (s i) (x i) (y i)) : JoinedIn (Set.univ.pi s) x y :=
+  ⟨.pi (fun i ↦ (h i).somePath), by simp⟩
 
 /-- The product of a family of path-connected sets is path-connected. -/
 theorem IsPathConnected.pi {s : ∀ i, Set (Z i)} (h : ∀ i, IsPathConnected (s i)) :
     IsPathConnected (Set.univ.pi s) := by
   choose x hx hjoin using h
-  refine ⟨x, Set.mem_univ_pi.mpr hx, ?_⟩
-  intro y hy
-  rw [Set.mem_univ_pi] at hy
-  exact JoinedIn.pi fun i ↦ hjoin i (hy i)
+  exact ⟨x, by simpa, fun y hy ↦ .pi fun i ↦ hjoin i (by grind)⟩
 
 instance Pi.instPathConnectedSpace [∀ i, PathConnectedSpace (Z i)] :
     PathConnectedSpace (∀ i, Z i) := by
-  rw [pathConnectedSpace_iff_univ, ← Set.pi_univ (univ : Set ι)]
-  exact IsPathConnected.pi fun i ↦
-    pathConnectedSpace_iff_univ.mp (inferInstance : PathConnectedSpace (Z i))
+  rw [pathConnectedSpace_iff_univ, ← Set.pi_univ]
+  exact .pi fun _ ↦ isPathConnected_univ
 
 end Pi
 
