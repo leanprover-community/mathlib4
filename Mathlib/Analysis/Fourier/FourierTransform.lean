@@ -140,7 +140,7 @@ theorem fourierIntegral_convergent_iff (he : Continuous e)
   have aux {g : V → E} (hg : Integrable g μ) (x : W) :
       Integrable (fun v : V ↦ e (-L v x) • g v) μ := by
     have c : Continuous fun v ↦ e (-L v x) := he.comp (hL.comp (.prodMk_left _)).neg
-    simp_rw [← integrable_norm_iff (c.aestronglyMeasurable.smul hg.1), Circle.norm_smul]
+    simp_rw [← integrable_norm_iff (c.aestronglyMeasurable.fun_smul hg.1), Circle.norm_smul]
     exact hg.norm
   -- then use it for both directions
   refine ⟨fun hf ↦ ?_, fun hf ↦ aux hf w⟩
@@ -196,7 +196,7 @@ theorem integral_fourierIntegral_swap
   apply this.mono
   · change AEStronglyMeasurable (fun p : W × V ↦ (M (g p.1) (e (-(L p.2) p.1) • f p.2))) _
     have A : AEStronglyMeasurable (fun (p : W × V) ↦ e (-L p.2 p.1) • f p.2) (ν.prod μ) := by
-      refine (Continuous.aestronglyMeasurable ?_).smul hf.1.comp_snd
+      refine (Continuous.aestronglyMeasurable ?_).fun_smul hf.1.comp_snd
       exact he.comp (hL.comp continuous_swap).neg
     have A' : AEStronglyMeasurable (fun p ↦ (g p.1, e (-(L p.2) p.1) • f p.2) : W × V → F × E)
       (Measure.prod ν μ) := hg.1.comp_fst.prodMk A
