@@ -260,6 +260,10 @@ theorem sup_mem (s : Set α) (w₁ : ⊥ ∈ s) (w₂ : ∀ᵉ (x ∈ s) (y ∈ 
 protected theorem sup_eq_bot_iff (f : β → α) (S : Finset β) : S.sup f = ⊥ ↔ ∀ s ∈ S, f s = ⊥ := by
   classical induction S using Finset.induction <;> simp [*]
 
+@[to_additive (attr := simp)]
+lemma sup_eq_one [One α] [IsBotOneClass α] : s.sup f = 1 ↔ ∀ i ∈ s, f i = 1 := by
+  simp [← bot_eq_one]
+
 @[to_dual (attr := simp)]
 lemma sup_disjSum (s : Finset β) (t : Finset γ) (f : β ⊕ γ → α) :
     (s.disjSum t).sup f = (s.sup fun x ↦ f (.inl x)) ⊔ (t.sup fun x ↦ f (.inr x)) :=
@@ -663,14 +667,18 @@ end Sup'
 
 section Sup
 
-variable [SemilatticeSup α] [OrderBot α]
+variable [SemilatticeSup α] [OrderBot α] {s : Finset β} {f : β → α}
 
 @[to_dual]
-theorem sup'_eq_sup {s : Finset β} (H : s.Nonempty) (f : β → α) : s.sup' H f = s.sup f :=
+theorem sup'_eq_sup (H : s.Nonempty) (f : β → α) : s.sup' H f = s.sup f :=
   le_antisymm (sup'_le H f fun _ => le_sup) (Finset.sup_le fun _ => le_sup' f)
 
+@[to_additive (attr := simp)]
+lemma sup'_eq_one [One α] [IsBotOneClass α] (hs) : s.sup' hs f = 1 ↔ ∀ i ∈ s, f i = 1 := by
+  simp [sup'_eq_sup]
+
 @[to_dual]
-theorem coe_sup_of_nonempty {s : Finset β} (h : s.Nonempty) (f : β → α) :
+theorem coe_sup_of_nonempty (h : s.Nonempty) (f : β → α) :
     (↑(s.sup f) : WithBot α) = s.sup ((↑) ∘ f) := by simp only [← sup'_eq_sup h, coe_sup' h]
 
 end Sup

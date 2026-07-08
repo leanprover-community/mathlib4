@@ -13,6 +13,7 @@ import Mathlib.Analysis.LocallyConvex.Separation
 
 /-!
 # Interior and boundary of a manifold
+
 Define the interior and boundary of a manifold.
 
 ## Main definitions
