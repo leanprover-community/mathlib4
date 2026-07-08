@@ -428,7 +428,12 @@ variable {f : α → β}
 open Completion (cPkg)
 
 /-- "Extension" to the completion. It is defined for any map `f` but
-returns an arbitrary constant value if `f` is not uniformly continuous -/
+returns an arbitrary constant value if `f` is not uniformly continuous.
+
+When creating bundled morphisms with this as the underlying function, the name given should be
+of the form `FooHom.fromCompletion` unless it is not clear which completion we are taking,
+in that case please use `UniformSpace.FooHom.fromCompletion`
+(just like the function definition here). -/
 def Function.fromCompletion (f : α → β) : Completion α → β :=
   cPkg.extend f
 
@@ -500,7 +505,12 @@ section Map
 
 variable {f : α → β}
 
-/-- Completion functor acting on morphisms -/
+/-- Completion functor acting on morphisms.
+
+When creating bundled morphisms with this as the underlying function, the name given should be
+of the form `FooHom.completion` unless it is not clear which completion we are taking,
+in that case please use `UniformSpace.FooHom.completion`
+(just like the function definition here). -/
 def Function.completion (f : α → β) : Completion α → Completion β :=
   cPkg.map cPkg f
 

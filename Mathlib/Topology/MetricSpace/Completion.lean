@@ -247,12 +247,7 @@ theorem Isometry.ringHomCompletion_coe {f : α →+* β} (h : Isometry f) (x : �
 alias Isometry.mapRingHom_coe := Isometry.ringHomCompletion_coe
 
 theorem Isometry.ringHomCompletion_isometry {f : α →+* β} (h : Isometry f) :
-    Isometry h.ringHomCompletion :=
-  Isometry.of_dist_eq fun x y => by
-    induction x, y using induction_on₂ with
-    | hp => exact isClosed_eq (continuous_dist.comp₂ (Function.continuous_completion.comp
-        continuous_fst) (Function.continuous_completion.comp continuous_snd)) (by fun_prop)
-    | ih x y => simp only [Completion.dist_eq, ringHomCompletion_coe, h.dist_eq]
+    Isometry h.ringHomCompletion := by eta_expand; simpa [ringHomCompletion] using h.completion
 
 @[deprecated (since := "2026-06-26")]
 alias Isometry.isometry_mapRingHom := Isometry.ringHomCompletion_isometry
