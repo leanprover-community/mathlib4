@@ -145,6 +145,22 @@ theorem Convex.openSegment_interior_closure_subset_interior {s : Set E} (hs : Co
   rintro _ ⟨a, b, ha, hb, hab, rfl⟩
   exact hs.combo_interior_closure_mem_interior hx hy ha hb.le hab
 
+omit [TopologicalSpace E] [IsTopologicalAddGroup E] [ContinuousConstSMul 𝕜 E] in
+/-- For a convex set `s`, the open segment between affine images of points in
+`interior (A ⁻¹' s)` and `closure (A ⁻¹' s)` is contained in the affine image of
+`interior (A ⁻¹' s)`. -/
+theorem Convex.openSegment_image_interior_closure_preimage_subset {F : Type*}
+    [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F] [IsTopologicalAddGroup F]
+    [ContinuousConstSMul 𝕜 F] {A : F →ᵃ[𝕜] E} {s} (hs : Convex 𝕜 s)
+    {x y} (hx : x ∈ interior (A ⁻¹' s)) (hy : y ∈ closure (A ⁻¹' s)) :
+    openSegment 𝕜 (A x) (A y) ⊆ A '' interior (A ⁻¹' s) := by
+  rintro _ ⟨a, b, ha, hb, hab, rfl⟩
+  refine ⟨AffineMap.lineMap x y b, ?_, ?_⟩
+  · apply (hs.affine_preimage A).openSegment_interior_closure_subset_interior hx hy
+    refine ⟨a, b, ha, hb, hab, ?_⟩
+    rw [AffineMap.lineMap_apply_module, sub_eq_iff_eq_add.2 hab.symm]
+  · rw [A.apply_lineMap, AffineMap.lineMap_apply_module, sub_eq_iff_eq_add.2 hab.symm]
+
 theorem Convex.openSegment_interior_self_subset_interior {s : Set E} (hs : Convex 𝕜 s) {x y : E}
     (hx : x ∈ interior s) (hy : y ∈ s) : openSegment 𝕜 x y ⊆ interior s :=
   hs.openSegment_interior_closure_subset_interior hx (subset_closure hy)
