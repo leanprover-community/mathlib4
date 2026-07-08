@@ -27,10 +27,10 @@ so that in particular any compact subset of `ℂ` contains only finitely many ze
   `S ∩ riemannZetaZeros` is finite.
 -/
 
-@[expose] public section
+@[expose] public noncomputable section
 
 /-- The zeros of Riemann's ζ-function. -/
-noncomputable def riemannZetaZeros : Set ℂ := riemannZeta ⁻¹' {0}
+def riemannZetaZeros : Set ℂ := riemannZeta ⁻¹' {0}
 
 lemma mem_riemannZetaZeros {z : ℂ} :
     z ∈ riemannZetaZeros ↔ riemannZeta z = 0 := .rfl

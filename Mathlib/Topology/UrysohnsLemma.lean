@@ -82,7 +82,7 @@ lemmas about `midpoint`.
 Urysohn's lemma, normal topological space, locally compact topological space
 -/
 
-@[expose] public section
+@[expose] public noncomputable section
 
 
 variable {X : Type*} [TopologicalSpace X]
@@ -123,7 +123,7 @@ variable {P : Set X → Set X → Prop}
 /-- By assumption, for each `c : CU P` there exists an open set `u`
 such that `c.C ⊆ u` and `closure u ⊆ c.U`. `c.left` is the pair `(c.C, u)`. -/
 @[simps C]
-noncomputable def left (c : CU P) : CU P where
+def left (c : CU P) : CU P where
   C := c.C
   U := (c.hP c.closed_C c.P_C_U c.open_U c.subset).choose
   closed_C := c.closed_C
@@ -135,7 +135,7 @@ noncomputable def left (c : CU P) : CU P where
 /-- By assumption, for each `c : CU P` there exists an open set `u`
 such that `c.C ⊆ u` and `closure u ⊆ c.U`. `c.right` is the pair `(closure u, c.U)`. -/
 @[simps U]
-noncomputable def right (c : CU P) : CU P where
+def right (c : CU P) : CU P where
   C := closure (c.hP c.closed_C c.P_C_U c.open_U c.subset).choose
   U := c.U
   closed_C := isClosed_closure
@@ -155,7 +155,7 @@ theorem subset_right_C (c : CU P) : c.C ⊆ c.right.C :=
 
 /-- `n`-th approximation to a continuous function `f : X → ℝ` such that `f = 0` on `c.C` and `f = 1`
 outside of `c.U`. -/
-noncomputable def approx : ℕ → CU P → X → ℝ
+def approx : ℕ → CU P → X → ℝ
   | 0, c, x => indicator c.Uᶜ 1 x
   | n + 1, c, x => midpoint ℝ (approx n c.left x) (approx n c.right x)
 
@@ -237,7 +237,7 @@ theorem approx_mono (c : CU P) (x : X) : Monotone fun n => c.approx n x :=
 * `0 ≤ f x ≤ 1` for all `x`;
 * `f` equals zero on `c.C` and equals one outside of `c.U`;
 -/
-protected noncomputable def lim (c : CU P) (x : X) : ℝ :=
+protected def lim (c : CU P) (x : X) : ℝ :=
   ⨆ n, c.approx n x
 
 theorem tendsto_approx_atTop (c : CU P) (x : X) :

@@ -37,7 +37,7 @@ This file defines the extension of a fractional ideal along a ring homomorphism.
 fractional ideal, fractional ideals, extended, extension
 -/
 
-@[expose] public section
+@[expose] public noncomputable section
 
 open IsLocalization FractionalIdeal Module Submodule
 
@@ -54,7 +54,7 @@ variable (I : FractionalIdeal M K) (J : FractionalIdeal M K)
 /-- Given commutative rings `A` and `B` with respective localizations `IsLocalization M K` and
 `IsLocalization N L`, and a ring homomorphism `f : A →+* B` satisfying `M ≤ Submonoid.comap f N`, a
 fractional ideal `I` of `A` can be extended along `f` to a fractional ideal of `B`. -/
-noncomputable def extended (I : FractionalIdeal M K) : FractionalIdeal N L where
+def extended (I : FractionalIdeal M K) : FractionalIdeal N L where
   val := span B <| (IsLocalization.map (S := K) L f hf) '' I
   property := by
     have ⟨a, ha, frac⟩ := I.isFractional
@@ -211,7 +211,7 @@ The ring homomorphism version of `FractionalIdeal.extended`.
 See `FractionalIdeal.extendedHom` for a more convenient version that is often enough.
 -/
 @[simps]
-noncomputable def extendedHom' : FractionalIdeal M K →+* FractionalIdeal N L where
+def extendedHom' : FractionalIdeal M K →+* FractionalIdeal N L where
   toFun := extended L hf
   map_one' := extended_one L hf
   map_zero' := extended_zero L hf
@@ -244,7 +244,7 @@ variable {A K : Type*} (L B : Type*) [CommRing A] [IsDomain A] [CommRing B] [IsD
 The ring homomorphism that extends a fractional ideal of `A` to a fractional ideal of `B` for
 an extension of domains `A ⊆ B`.
 -/
-noncomputable abbrev extendedHom : FractionalIdeal A⁰ K →+* FractionalIdeal B⁰ L :=
+abbrev extendedHom : FractionalIdeal A⁰ K →+* FractionalIdeal B⁰ L :=
   extendedHom' L <|
     nonZeroDivisors_le_comap_nonZeroDivisors_of_injective _ (FaithfulSMul.algebraMap_injective _ _)
 
