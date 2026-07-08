@@ -36,7 +36,7 @@ lemma Forall₂.prod_le_prod [Preorder M] [MulRightMono M]
 
 /-- If `l₁` is a sublist of `l₂` and all elements of `l₂` are greater than or equal to one, then
 `l₁.prod ≤ l₂.prod`. One can prove a stronger version assuming `∀ a ∈ l₂.diff l₁, 1 ≤ a` instead
-of `∀ a ∈ l₂, 1 ≤ a`; see `Sublist.prod_le_prod'_of_mem_diff`. -/
+of `∀ a ∈ l₂, 1 ≤ a`; see `Sublist.prod_le_prod_of_mem_diff`. -/
 @[to_additive /-- If `l₁` is a sublist of `l₂` and all elements of `l₂` are nonnegative,
   then `l₁.sum ≤ l₂.sum`. See also `Sublist.sum_le_sum_of_mem_diff`. -/]
 lemma Sublist.prod_le_prod [Preorder M] [MulRightMono M]
@@ -187,21 +187,14 @@ end Monoid
 
 /-- If `l₁` is a sublist of `l₂` and all elements of `l₂.diff l₁` are greater than or equal to one,
 then `l₁.prod ≤ l₂.prod`. -/
-lemma Sublist.prod_le_prod'_of_mem_diff [BEq M] [LawfulBEq M] [CommMonoid M] [Preorder M]
+@[to_additive /-- If `l₁` is a sublist of `l₂` and all elements of `l₂.diff l₁` are nonnegative,
+  then `l₁.sum ≤ l₂.sum`. -/]
+lemma Sublist.prod_le_prod_of_mem_diff [BEq M] [LawfulBEq M] [CommMonoid M] [Preorder M]
     [MulLeftMono M] {l₁ l₂ : List M} (h : l₁ <+ l₂) (h₁ : ∀ a ∈ l₂.diff l₁, (1 : M) ≤ a) :
     l₁.prod ≤ l₂.prod := by
   have hperm := (subperm_append_diff_self_of_count_le (subperm_ext_iff.mp h.subperm)).symm
   rw [Perm.prod_eq hperm, prod_append]
   exact le_mul_of_one_le_right' (one_le_prod_of_one_le h₁)
-
-/-- If `l₁` is a sublist of `l₂` and all elements of `l₂.diff l₁` are nonnegative, then
-`l₁.sum ≤ l₂.sum`. -/
-lemma Sublist.sum_le_sum_of_mem_diff [BEq M] [LawfulBEq M] [AddCommMonoid M] [Preorder M]
-    [AddLeftMono M] {l₁ l₂ : List M} (h : l₁ <+ l₂) (h₁ : ∀ a ∈ l₂.diff l₁, (0 : M) ≤ a) :
-    l₁.sum ≤ l₂.sum := by
-  have hperm := (subperm_append_diff_self_of_count_le (subperm_ext_iff.mp h.subperm)).symm
-  rw [Perm.sum_eq hperm, sum_append]
-  exact le_add_of_nonneg_right (sum_nonneg h₁)
 
 section
 variable {α β : Type*} [Monoid α] [CommMonoid β] [Preorder β] [IsOrderedMonoid β]
