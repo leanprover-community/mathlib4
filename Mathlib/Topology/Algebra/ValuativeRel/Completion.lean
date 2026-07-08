@@ -372,6 +372,34 @@ lemma exists_coe_eq_v (x : Completion K) : ∃ r : K, v.extensionValuation x = v
       simp_rw [eq_comm (a := v.extension _)]
       grind
 
+lemma exist_foo (x : Completion K) : ∀ U ∈ 𝓝 x, ∃ r : K, (r : Completion K) ∈ U ∧
+  v.extensionValuation x = v r := by
+  sorry
+
+lemma exist_foo₂ (x y : Completion K) : ∀ U ∈ 𝓝 (x, y),
+  ∃ r s : K, ((r : Completion K), (s : Completion K)) ∈ U ∧ v.extensionValuation x = v r ∧ v.extensionValuation y = v s := by
+  sorry
+
+lemma exists_nhds (x : Completion K) (h : x ≠ 0) : v.extensionValuation ⁻¹' {v.extensionValuation x} ∈ 𝓝 x := by
+  have : v.extensionValuation ⁻¹' {v.extensionValuation x} = v.extension ⁻¹' {v.extension x} := by
+    simp only [extensionValuation, coe_mk, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk,
+      Function.comp_apply, preimage_comp]
+    congr 1
+    ext x
+    simp
+  rw [this]
+  have h' : v.extension x ≠ 0 := by simpa
+  exact (continuous_extension v).continuousAt.preimage_mem_nhds
+    (WithZeroTopology.singleton_mem_nhds_of_ne_zero h')
+
+lemma closure_image_coe_le : closure ((Prod.map (↑) (↑)) '' {(x, y) : K × K | v x ≤ v y}) =
+    {(x, y) : (Completion K) × (Completion K) | v.extensionValuation x ≤ v.extensionValuation y} := by
+  ext ⟨x, y⟩
+  rw [mem_closure_iff_nhds']
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · sorry
+  · sorry
+
 -- Bourbaki CA VI §5 no.3 Proposition 5 (d)
 theorem closure_coe_completion_v_lt {γ : Γ₀ˣ} :
     closure ((↑) '' { x : K | v x < (γ : Γ₀) }) =
@@ -520,6 +548,13 @@ noncomputable instance UniformSpace.Completion.valuativeRel : ValuativeRel (Comp
 instance Valuation.extensionValuation.compatible' :
     (ValuativeRel.valuation K).extensionValuation.Compatible := Valuation.Compatible.ofValuation _
 
+instance UniformSpace.Completion.valuativeExtension : ValuativeExtension K (Completion K) where
+  vle_iff_vle x y := by
+    calc
+      _ ↔ (valuation K).extensionValuation x ≤ (valuation K).extensionValuation y := vle_iff_le _
+      _ ↔ valuation K x ≤ valuation K y := by simp
+      _ ↔ x ≤ᵥ y := (vle_iff_le _).symm
+
 variable {Γ₀ Γ₀' : Type*} [LinearOrderedCommGroupWithZero Γ₀]
   [LinearOrderedCommGroupWithZero Γ₀'] (v : Valuation K Γ₀) [v.Compatible]
   (v' : Valuation K Γ₀') [v'.Compatible]
@@ -578,13 +613,16 @@ theorem foo (x : Completion K) (γ : (ValueGroup₀ (.ofClass v))ˣ) : v.extensi
         simp [hy]
 
 
+-- 2. IsValuativeTopology
+
+-- 3. IsEquiv for extensions of IsEquiv
+
 
 -- need a intro method of IsValuativeTopology only talk about nbhd of zero (with uniform add group)
 -- refactor file Mathlib.Topology.Algebra.Valued.ValuativeRel
 -- theorem IsValuativeTopology.mk₀ : IsValuativeTopology := sorry
 -- given any valuation compatible, can be checked using this valuation
-#check Real
-instance : IsValuativeTopology (Completion K) := by
+instance UniformSpace.Completion.isValuativeTopology : IsValuativeTopology (Completion K) := by
   apply IsValuativeTopology.of_zero
   intro s
   let v := valuation K
@@ -643,10 +681,12 @@ instance : IsValuativeTopology (Completion K) := by
   convert! v.hasBasis_nhds_zero.hasBasis_of_isDenseInducing Completion.isDenseInducing_coe
   simp [Valuation.restrict_lt_iff_lt_embedding]
 
+-- 1. v.extensionValuation compatible with ValuativeRel for any v
+
+
 @[simp]
 theorem Valuation.extensionValuation.isEquiv_iff :
     v.extensionValuation.IsEquiv v'.extensionValuation := by
-
   have := isEquiv v v'
   intro x y
   apply UniformSpace.Completion.induction_on₂ (p := fun x y ↦ v.extensionValuation x ≤
@@ -654,65 +694,43 @@ theorem Valuation.extensionValuation.isEquiv_iff :
   · sorry -- union of closed
   · simpa
 
-instance Valuation.extensionValuation.compatible : v.extensionValuation.Compatible := by
-  apply Valuation.IsEquiv.compatible (v₁ := (ValuativeRel.valuation K).extensionValuation)
-  simp [ValuativeRel.isEquiv]
+instance Valuation.extensionValuation.compatible : v.extensionValuation.Compatible := by sorry
+
+  -- constructor
+  -- intro x y
+  -- obtain ⟨x', hx'⟩ := v.exists_apply_eq_extensionValuation_apply x
+  -- obtain ⟨y', hy'⟩ := v.exists_apply_eq_extensionValuation_apply y
+  -- calc
+  -- _ ↔ (x' : Completion K) ≤ᵥ y' := by sorry
+  -- _ ↔ x' ≤ᵥ y' := by sorry
+  -- _ ↔ v x' ≤ v y' := vle_iff_le v
+  -- _ ↔ _ := by rw [hx', hy']
+
+lemma extensionValuation_surjective_iff :
+    Function.Surjective (v.extensionValuation : Completion K → Γ₀) ↔
+      Function.Surjective (v : K → Γ₀) := by
+  constructor <;> intro h γ <;> obtain ⟨a, ha⟩ := h γ
+  · induction a using Completion.induction_on
+    · by_cases H : ∃ x : K, (v : K → Γ₀) x = γ
+      · simp [H]
+      · simp only [H, imp_false]
+        rcases eq_or_ne γ 0 with rfl | hγ
+        · simp at H
+        · obtain ⟨r, hr⟩ := h γ
+          have hr' : restrict₀ (.ofClass v.extensionValuation) r ≠ 0 := by
+            rw [ne_eq, ← embedding_inj, embedding_restrict₀ r]
+            simpa [hr]
+          convert! isClosed_univ.sdiff (v.extensionValuation.isOpen_sphere hr') using 1
+          ext x
+          simp [← hr, ← v.extensionValuation.restrict_def, v.extensionValuation.restrict_inj]
+    · exact ⟨_, by simpa using ha⟩
+  · exact ⟨a, by simp [ha]⟩
+
+instance {R : Type*} [CommSemiring R] [Algebra R K] [UniformContinuousConstSMul R K]
+    [FaithfulSMul R K] : FaithfulSMul R (Completion K) := by
+  rw [faithfulSMul_iff_algebraMap_injective]
+  exact (FaithfulSMul.algebraMap_injective K _).comp (FaithfulSMul.algebraMap_injective R K)
 
 end Completion
 
-
-
--- @[simp]
--- theorem valuedCompletion_apply (x : K) : Valued.v (x : Completion K) = v x := by
---   simp [Valued.v]
-
--- lemma valuedCompletion_surjective_iff :
---     Function.Surjective (v : Completion K → Γ₀) ↔ Function.Surjective (v : K → Γ₀) := by
---   constructor <;> intro h γ <;> obtain ⟨a, ha⟩ := h γ
---   · induction a using Completion.induction_on
---     · by_cases H : ∃ x : K, (v : K → Γ₀) x = γ
---       · simp [H]
---       · simp only [H, imp_false]
---         rcases eq_or_ne γ 0 with rfl | hγ
---         · simp at H
---         · obtain ⟨r, hr⟩ := h γ
---           have hr' : restrict₀ (.ofClass (valuedCompletion (K := K)).v) r ≠ 0 := by
---             rw [ne_eq, ← embedding_inj, embedding_restrict₀ r]
---             simpa [hr]
---           convert! isClosed_univ.sdiff (isOpen_sphere (Completion K) hr') using 1
---           ext x
---           simp [← hr, ← v.restrict_def, v.restrict_inj]
---     · exact ⟨_, by simpa using ha⟩
---   · exact ⟨a, by simp [ha]⟩
-
--- instance {R : Type*} [CommSemiring R] [Algebra R K] [UniformContinuousConstSMul R K]
---     [FaithfulSMul R K] : FaithfulSMul R (Completion K) := by
---   rw [faithfulSMul_iff_algebraMap_injective R (Completion K)]
---   exact (FaithfulSMul.algebraMap_injective K (Completion K)).comp (FaithfulSMul.algebraMap_injective R K)
-
 end Field
-
-
-
-
--- section ValuativeRel
-
--- variable [Ring R] [UniformSpace R] [IsTopologicalRing R] [IsUniformAddGroup R] [ValuativeRel R]
---   [IsValuativeTopology R]
-
--- instance UniformSpace.Completion.valuativeRel : ValuativeRel R := sorry
--- -- UniformSpace.Completion.extension₂ for relations
-
--- instance UniformSpace.Completion.isValuativeTopology : IsValuativeTopology R := sorry
-
--- end ValuativeRel
-
--- section Compatible
-
--- variable [Ring R] [UniformSpace R] [IsTopologicalRing R] [IsUniformAddGroup R] [ValuativeRel R]
---   [IsValuativeTopology R] [LinearOrderedCommGroupWithZero Γ₀]
-
--- instance Valuation.compatible_completion (v : Valuation R Γ₀) [v.Compatible] :
---     v.completion.Compatible := sorry
-
--- end Compatible
