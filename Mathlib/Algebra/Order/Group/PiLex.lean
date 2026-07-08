@@ -33,4 +33,23 @@ instance isOrderedCancelMonoid [∀ i, CommMonoid (α i)] [∀ i, PartialOrder (
     hxyz.elim (fun h => (mul_left_cancel h).le) fun ⟨i, hi⟩ =>
       Or.inr ⟨i, fun j hj => (mul_left_cancel <| hi.1 j hj), lt_of_mul_lt_mul_left' hi.2⟩
 
+/-- For the lexicographic order on a pi type, left multiplication is strictly monotone as soon as it
+is strictly monotone on every factor. This does not require commutativity, unlike
+`Pi.Lex.isOrderedCancelMonoid`. -/
+@[to_additive /-- For the lexicographic order on a pi type, left addition is strictly monotone as
+soon as it is strictly monotone on every summand. -/]
+instance mulLeftStrictMono [∀ i, Mul (α i)] [∀ i, Preorder (α i)] [∀ i, MulLeftStrictMono (α i)] :
+    MulLeftStrictMono (Lex (∀ i, α i)) :=
+  ⟨fun z _ _ ⟨i, hi₁, hi₂⟩ =>
+    ⟨i, fun j hj => congr_arg (z j * ·) (hi₁ j hj), mul_lt_mul_right hi₂ (z i)⟩⟩
+
+/-- For the lexicographic order on a pi type, left multiplication is monotone as soon as it is
+strictly monotone on every factor. This does not require commutativity, unlike
+`Pi.Lex.isOrderedCancelMonoid`. -/
+@[to_additive /-- For the lexicographic order on a pi type, left addition is monotone as soon as it
+is strictly monotone on every summand. -/]
+instance mulLeftMono [∀ i, Mul (α i)] [∀ i, PartialOrder (α i)] [∀ i, MulLeftStrictMono (α i)] :
+    MulLeftMono (Lex (∀ i, α i)) :=
+  mulLeftMono_of_mulLeftStrictMono _
+
 end Pi.Lex
