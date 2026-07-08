@@ -603,27 +603,7 @@ variable (K)
 
 /-- The completion of `K` with respect to its `v`-adic valuation. -/
 def adicCompletion := (v.valuation K).Completion
-
-instance : Field (v.adicCompletion K) :=
-  inferInstanceAs (Field (v.valuation K).Completion)
-
-instance : Inhabited (v.adicCompletion K) :=
-  inferInstanceAs (Inhabited (v.valuation K).Completion)
-
-instance : Valued (v.adicCompletion K) ℤᵐ⁰ :=
-  inferInstanceAs (Valued (v.valuation K).Completion ℤᵐ⁰)
-
-instance : IsTopologicalRing (v.adicCompletion K) :=
-  inferInstanceAs (IsTopologicalRing (v.valuation K).Completion)
-
-instance : CompletableTopField (v.adicCompletion K) :=
-  inferInstanceAs (CompletableTopField (v.valuation K).Completion)
-
-instance : CompleteSpace (v.adicCompletion K) :=
-  inferInstanceAs (CompleteSpace (v.valuation K).Completion)
-
-instance : T2Space (v.adicCompletion K) :=
-  inferInstanceAs (T2Space (v.valuation K).Completion)
+  deriving Field, Inhabited, Valued, IsTopologicalRing, CompletableTopField, CompleteSpace, T2Space
 
 instance : Coe (WithVal (v.valuation K)) (v.adicCompletion K) :=
   inferInstanceAs (Coe (WithVal (v.valuation K)) (v.valuation K).Completion)
@@ -706,6 +686,12 @@ instance : Algebra S (v.adicCompletion K) :=
 
 instance : IsScalarTower S K (v.adicCompletion K) :=
   IsScalarTower.of_algebraMap_eq fun _ ↦ rfl
+
+instance : Algebra (WithVal (v.valuation K)) (v.adicCompletion K) :=
+  inferInstanceAs (Algebra (WithVal (v.valuation K)) (v.valuation K).Completion)
+
+instance : IsScalarTower K (WithVal (v.valuation K)) (v.adicCompletion K) :=
+  inferInstanceAs (IsScalarTower K (WithVal (v.valuation K)) (v.valuation K).Completion)
 
 theorem coe_smul_adicCompletion (r : S) (x : WithVal (v.valuation K)) :
     (↑(r • x) : v.adicCompletion K) = r • (↑x : v.adicCompletion K) :=
