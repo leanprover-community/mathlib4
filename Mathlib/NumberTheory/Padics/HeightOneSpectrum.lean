@@ -148,10 +148,7 @@ noncomputable def adicCompletion.padicEquiv (v : HeightOneSpectrum R) :
   __ := (mapRingEquiv _ (withValEquiv v).continuous
       (withValEquiv v).symm.continuous).trans Padic.withValRingEquiv
   __ := ((mapEquiv (withValEquiv v)).trans Padic.withValUniformEquiv).toHomeomorph
-  commutes' := by
-    intro r
-    simp only [eq_ratCast, RingEquiv.toEquiv_eq_coe, Equiv.toFun_as_coe, EquivLike.coe_coe]
-    exact map_ratCast _ r
+  commutes' _ := by simpa [-RingEquiv.coe_trans] using! map_ratCast _ _
 
 /-- The ring isomorphism between `v.adicCompletionIntegers ℚ` and `ℤ_[primesEquiv v]` underlying
 `adicCompletionIntegers.padicIntEquiv`. -/
