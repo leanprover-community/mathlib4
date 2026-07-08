@@ -480,6 +480,9 @@ example (h₁ : a ≤ b) (h₂ : b < c) : a < c := by
 example (h₁ : a < b) (h₂ : b ≤ c) : c > a := by
   grw [h₁, h₂]
 
+example (h₁ : a < b) (h₂ : b ≤ c) : c > a := by
+  grw [← h₂, ← h₁]
+
 -- Strict inequalities can also be used as non-strict ones:
 example (h₁ : a < b) (h₂ : b < c) : a ≤ c := by
   grw [h₁, h₂]
