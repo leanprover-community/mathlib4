@@ -30,7 +30,7 @@ variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
 
 /-- A real-valued function `f` on a normed real vector space `F` is `K`-smooth
 if the first-order Taylor remainder is bounded quadratically:
-`|f y - f x - lineDeriv ℝ f x (y - x)| ≤ (K / 2) (dist x y)²` for all `x, y`.
+`|f y - f x - lineDeriv ℝ f x (y - x)| ≤ (K / 2) * (dist x y) ^ 2` for all `x, y`.
 
 The predicate is two-sided (absolute value), so closed under `f ↦ -f` and
 matching the textbook L-smoothness / `C^{1,1}` class. The `lineDeriv` form is
