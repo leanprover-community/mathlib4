@@ -1005,16 +1005,14 @@ section bilin
 
 open ContDiffMapSupportedIn
 
-variable {m : MeasurableSpace E} [OpensMeasurableSpace E] {F₁ F₂ F₃ G : Type*}
+variable {m : MeasurableSpace E} [OpensMeasurableSpace E] {F₁ F₂ F₃ G : Type*} [NormedAlgebra ℝ 𝕜]
   [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁] [NormedSpace ℝ F₁]
   [NormedAddCommGroup F₂] [NormedSpace 𝕜 F₂] [NormedSpace ℝ F₂]
-  [NormedAddCommGroup F₃] [NormedSpace 𝕜 F₃]
-
-variable [NormedAlgebra ℝ 𝕜] [IsScalarTower ℝ 𝕜 F₁] [IsScalarTower ℝ 𝕜 F₂] [NormedSpace ℝ F₃]
-  [IsScalarTower ℝ 𝕜 F₃] [SMulCommClass ℝ 𝕜 F₁] [SMulCommClass ℝ 𝕜 F₂] [SMulCommClass ℝ 𝕜 F₃]
+  [NormedAddCommGroup F₃] [NormedSpace 𝕜 F₃] [NormedSpace ℝ F₃]
 
 open ContinuousLinearMap Finset
 
+variable {𝕜}
 /-- The map `f ↦ (x ↦ B (f x) (g x))` as a continuous `𝕜`-linear map on 𝓓^{n}_{K}(E, F₁),
 where `B` is a continuous `𝕜`-linear map and `g` is a C^n function. -/
 noncomputable def bilinLeftCLM (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) {g : E → F₂} (hg : ContDiff ℝ n g) :
@@ -1069,6 +1067,10 @@ noncomputable def bilinLeftCLM (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) {g : E
     · refine ⟨{0}, 0, fun φ ↦ ?_⟩
       simp [ContDiffMapSupportedIn.seminorm_eq_bot_of_gt 𝕜 (not_le.1 k_le_n)]
   }⟩
+
+@[simp]
+theorem bilinLeftCLM_apply (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) {g : E → F₂} (hg : ContDiff ℝ n g)
+    (φ : 𝓓^{n}_{K}(E, F₁)) : bilinLeftCLM B hg φ = fun x => B (φ x) (g x) := rfl
 
 end bilin
 
