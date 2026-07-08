@@ -87,6 +87,9 @@ def generalTransitionMap : OpenPartialHomeomorph H H :=
 
 variable {x y : orbitRel.Quotient G M}
 
+/-
+locally the change of charts on the quotient is the same as the action of a single group element g
+on M. -/
 omit [ChartedSpace H M] in
 lemma general_f_eq_φρφ
     {g : G} {u : M} (hu : u ∈ e.source)
@@ -96,6 +99,87 @@ lemma general_f_eq_φρφ
   rw [e.left_inv hu, quotient_IsLocalHomeomorph.localInverseAt_symm,
     ← orbitRel.Quotient.quotient_smul_eq (g:=g),
     ← quotient_IsLocalHomeomorph.localInverseAt_symm, (πinv y).right_inv hu']
+
+variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
+  {f : OpenPartialHomeomorph X Y}
+
+example (y : Y) (hy : y ∈ f.target) :
+  f (f.symm y) = y := by exact OpenPartialHomeomorph.right_inv f hy
+
+lemma aux (y : Y) (hy : y ∈ f.target) :
+  ∃ x ∈ f.source, f x = y := by
+  use f.symm y
+  sorry
+
+example (m : M) (g : G) :
+    (πinv x).symm.trans (πinv y) m = g • m := by
+  simp only [OpenPartialHomeomorph.coe_trans, Function.comp_apply]
+  rw [quotient_IsLocalHomeomorph.localInverseAt_symm,
+  ← orbitRel.Quotient.quotient_smul_eq (g:=g),
+  ← quotient_IsLocalHomeomorph.localInverseAt_symm m]
+
+  sorry
+
+omit [ChartedSpace H M] in
+lemma general_f_eq_φρφ' {g : G} (h : H)
+    (hh : h ∈ e.target) (hh' : g • e.symm h ∈ (πinv y).target) :
+    generalTransitionMap x y e e' h = e' (g • ((e.symm h))) := by
+  simp only [generalTransitionMap, OpenPartialHomeomorph.coe_trans, Function.comp_apply]
+  rw [← e.right_inv hh, e.left_inv (e.map_target hh),
+    quotient_IsLocalHomeomorph.localInverseAt_symm, ← orbitRel.Quotient.quotient_smul_eq (g:=g),
+    ← quotient_IsLocalHomeomorph.localInverseAt_symm, (πinv y).right_inv hh']
+
+example (h : H) (g : G) :
+  (h ∈ e '' ((Homeomorph.smul g⁻¹) '' (πinv y).target))→ (g • e.symm h ∈ (πinv y).target) := by sorry
+
+lemma general_eqOn {g : G} (t : Set H) :
+    (e.target ∩ e '' ((Homeomorph.smul g⁻¹) '' (πinv y).target)).EqOn
+    (generalTransitionMap x y e e')
+    (e.symm.trans ((Homeomorph.smul g).toOpenPartialHomeomorph.trans e')) := by
+  intro h ⟨hh, hh'⟩
+  refine general_f_eq_φρφ' e e' h hh ?_
+  simp at hh'
+  obtain ⟨a, ha⟩ := hh'
+  rw [← ha.2]
+  rw [e.left_inv]
+  simpa using ha.1
+  rw [← ha.2] at hh
+  apply e.map_target' at hh
+
+
+
+variable (s : OpenPartialHomeomorph (orbitRel.Quotient G M) M)
+
+
+omit [ChartedSpace H M] in
+lemma general_f_eqOn {g : G} :
+    (e.source ∩ Homeomorph.smul g⁻¹ '' (πinv y).target).EqOn
+    (e.trans (generalTransitionMap x y e e'))
+    (e.trans (e.symm.trans ((Homeomorph.smul g).toOpenPartialHomeomorph.trans e'))) := by
+  intro _ ⟨hu, ⟨_, hv⟩⟩
+  simpa using general_f_eq_φρφ _ _ hu (by simpa [← hv.2] using hv.1)
+
+omit [ChartedSpace H M] in
+example {g : G} :
+    (e.target ∩ e '' (Homeomorph.smul g⁻¹ '' (πinv y).target)).EqOn
+    (generalTransitionMap x y e e')
+    (e.symm.trans ((Homeomorph.smul g).toOpenPartialHomeomorph.trans e')) := by
+  intro eu ⟨hu, hu'⟩
+  --simp only [generalTransitionMap, OpenPartialHomeomorph.coe_trans, Function.comp_apply]
+  have ⟨v, hv⟩ : ∃ u ∈ e.source, e u = eu := by
+    use e.symm eu
+    exact ⟨e.map_target' hu, e.right_inv' hu⟩
+  rw [← hv.2]
+  apply general_f_eq_φρφ _ _ hv.1
+
+  rw [← hv.2] at hu'
+  --simp at hu'
+  obtain ⟨a, ha⟩ := hu'
+  obtain ⟨⟨b, hb⟩, ha⟩ := ha
+
+  sorry
+
+
 
 omit [ChartedSpace H M] in
 lemma general_hfg_t
