@@ -164,8 +164,7 @@ instance compactSpace_withConstructibleTopology [CompactSpace X] [QuasiSober X]
       refine hB.prop.2.1 (_ ∪ F) ?_ <| (hA₁'.sdiff.union hA₂'.sdiff).union hF
       grind [Set.sdiff_singleton_subset_iff, Set.union_subset_iff]
 
-instance t2Space_constructibleTopology₁ [T0Space X]
-    [CompactSpace X] [QuasiSeparatedSpace X] [PrespectralSpace X] :
+instance t2Space_constructibleTopology₁ [T0Space X] [PrespectralSpace X] :
     @T2Space X (constructibleTopology X) := by
   simp only [t2Space_iff, exists_and_left]
   intro x y hxy
@@ -185,8 +184,7 @@ instance t2Space_constructibleTopology₁ [T0Space X]
     · exact isOpen_generateFrom_of_mem <| Set.mem_union_left _ ⟨ht1, ht2⟩
     · exact ⟨fun h => hxs (ht4 h), ht3, Set.disjoint_compl_left_iff_subset.mpr fun _ h => h⟩
 
-instance t2Space_withConstructibleTopology₁ [T0Space X]
-    [CompactSpace X] [QuasiSeparatedSpace X] [PrespectralSpace X] :
+instance t2Space_withConstructibleTopology₁ [T0Space X] [PrespectralSpace X] :
     T2Space <| WithConstructibleTopology X :=
   @T2Space.of_injective_continuous (WithConstructibleTopology X) X _
     (constructibleTopology X) t2Space_constructibleTopology₁ WithTopology.ofTopology
