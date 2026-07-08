@@ -165,17 +165,6 @@ instance [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] [SMul R' �
 
 @[deprecated (since := "2026-06-22")] protected alias smul_apply := smul_apply
 
-instance : SMul ℕ (Seminorm 𝕜 E) where
-  smul r p :=
-    { r • p.toAddGroupSeminorm with
-      toFun x := r • p x
-      smul' _ _ := by
-        simp only [← smul_one_smul ℝ≥0 r (_ : ℝ), NNReal.smul_def, smul_eq_mul]
-        rw [map_smul_eq_mul, mul_left_comm] }
-
-instance : IsSMulApply ℕ (Seminorm 𝕜 E) E ℝ where
-  smul_apply _ _ _ := rfl
-
 instance instAdd : Add (Seminorm 𝕜 E) where
   add p q :=
     { p.toAddGroupSeminorm + q.toAddGroupSeminorm with
