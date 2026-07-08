@@ -50,20 +50,18 @@ lemma not_continuousAt_inv_log_neg_one : ¬ ContinuousAt (fun x ↦ (log x)⁻¹
   fun H ↦ not_continuousAt_inv_log_one
     (by simpa only [log_neg_eq_log] using H.comp' continuousAt_neg)
 
-theorem deriv_inv_log {x : ℝ} : deriv (fun x ↦ (log x)⁻¹) x = -x⁻¹ / log x ^ 2 := by
-  rcases eq_or_ne x 0 with rfl | _
-  · simpa using deriv_zero_of_not_differentiableAt not_differentiableAt_inv_log_zero
-  rcases eq_or_ne x 1 with rfl | _
-  · simpa using deriv_zero_of_not_differentiableAt <|
-      mt continuousAt not_continuousAt_inv_log_one
-  rcases eq_or_ne x (-1) with rfl | _
-  · simpa using deriv_zero_of_not_differentiableAt <|
-      mt continuousAt not_continuousAt_inv_log_neg_one
-  simp_all
+theorem deriv_inv_log_apply {x : ℝ} : deriv (fun x ↦ (log x)⁻¹) x = -x⁻¹ / log x ^ 2 := by
+  have := mt (continuousAt (𝕜 := ℝ)) not_continuousAt_inv_log_neg_one
+  have := mt (continuousAt (𝕜 := ℝ)) not_continuousAt_inv_log_one
+  have := not_differentiableAt_inv_log_zero
+  obtain (⟨_, _, _⟩ | rfl | rfl | rfl) :
+      (x ≠ -1 ∧ x ≠ 0 ∧ x ≠ 1) ∨ x = -1 ∨ x = 0 ∨ x = 1 := by tauto
+  · simp_all
+  all_goals rw [deriv_zero_of_not_differentiableAt ‹_›]; simp
 
 @[simp]
-theorem deriv_inv_log' : deriv (fun x ↦ (log x)⁻¹) = fun x ↦ -x⁻¹ / log x ^ 2 :=
-  funext fun _ ↦ deriv_inv_log
+theorem deriv_inv_log : deriv (fun x ↦ (log x)⁻¹) = fun x ↦ -x⁻¹ / log x ^ 2 :=
+  funext fun _ ↦ deriv_inv_log_apply
 
 theorem differentiableAt_inv_log {x : ℝ} (hx₀ : x ≠ 0) (hx₁ : x ≠ 1) (hx₂ : x ≠ -1) :
     DifferentiableAt ℝ (fun x ↦ (log x)⁻¹) x := by
@@ -73,8 +71,11 @@ theorem hasDerivAt_inv_log {x : ℝ} (hx₀ : x ≠ 0) (hx₁ : x ≠ 1) (hx₂ 
     HasDerivAt (fun x ↦ (log x)⁻¹) (-x⁻¹ / (log x ^ 2)) x := by
   simpa using (differentiableAt_inv_log hx₀ hx₁ hx₂).hasDerivAt
 
+theorem differentiableOn_inv_log' : DifferentiableOn ℝ (fun x ↦ (log x)⁻¹) {-1,0,1}ᶜ :=
+  (differentiableOn_log.mono (by grind)).inv (by simp; tauto)
+
 theorem differentiableOn_inv_log : DifferentiableOn ℝ (fun x ↦ (log x)⁻¹) (.Ioi 1) :=
-  (differentiableOn_log.mono (by grind)).inv (by simp; grind)
+  differentiableOn_inv_log'.mono (by grind)
 
 theorem inv_log_isLittleO_one : (fun x ↦ (log x)⁻¹) =o[atTop] fun _ ↦ (1 : ℝ) := by
   rw [isLittleO_one_iff]
@@ -99,15 +100,18 @@ lemma not_continuousAt_log_log_neg_one : ¬ ContinuousAt (fun x ↦ log (log x))
   fun H ↦ not_continuousAt_log_log_one
     (by simpa only [log_neg_eq_log] using H.comp' continuousAt_neg)
 
-@[simp]
-theorem deriv_log_log {x : ℝ} : deriv (fun x ↦ log (log x)) x = x⁻¹ / log x := by
-  have _ := not_continuousAt_log_log_neg_one
-  have _ := not_continuousAt_log_log_zero
-  have _ := not_continuousAt_log_log_one
+theorem deriv_log_log_apply {x : ℝ} : deriv (fun x ↦ log (log x)) x = x⁻¹ / log x := by
+  have := not_continuousAt_log_log_neg_one
+  have := not_continuousAt_log_log_zero
+  have := not_continuousAt_log_log_one
   obtain (⟨_, _, _⟩ | rfl | rfl | rfl) :
       (x ≠ -1 ∧ x ≠ 0 ∧ x ≠ 1) ∨ x = -1 ∨ x = 0 ∨ x = 1 := by tauto
   · simp_all
   all_goals rw [deriv_zero_of_not_differentiableAt (mt continuousAt ‹_›)]; simp
+
+@[simp]
+theorem deriv_log_log : deriv (fun x ↦ log (log x)) = fun x ↦ x⁻¹ / log x :=
+  funext fun _ ↦ deriv_log_log_apply
 
 theorem differentiableAt_log_log {x : ℝ} (hx₀ : x ≠ 0) (hx₁ : x ≠ 1) (hx₂ : x ≠ -1) :
     DifferentiableAt ℝ (fun x ↦ log (log x)) x :=
@@ -117,8 +121,11 @@ theorem hasDerivAt_log_log {x : ℝ} (hx₀ : x ≠ 0) (hx₁ : x ≠ 1) (hx₂ 
     HasDerivAt (fun x ↦ log (log x)) (x⁻¹ / log x) x := by
   simpa using (differentiableAt_log_log hx₀ hx₁ hx₂).hasDerivAt
 
+theorem differentiableOn_log_log' : DifferentiableOn ℝ (fun x ↦ log (log x)) {-1,0,1}ᶜ :=
+  (differentiableOn_log.mono (by grind)).log (by simp; tauto)
+
 theorem differentiableOn_log_log : DifferentiableOn ℝ (fun x ↦ log (log x)) (.Ioi 1) :=
-  (differentiableOn_log.mono (by grind)).log (by simp; grind)
+  differentiableOn_log_log'.mono (by grind)
 
 theorem one_isLittleO_log_log : (fun _ ↦ (1 : ℝ)) =o[atTop] fun x ↦ log (log x) := by
   simp only [isLittleO_one_left_iff, norm_eq_abs]

@@ -371,10 +371,10 @@ theorem integral_div_sq_add_sq {c : ℝ} :
 @[simp]
 theorem integral_inv_div_log (ha : 1 < a) (hb : 1 < b) :
     ∫ t in a..b, t⁻¹ / log t = log (log b) - log (log a) := by
-  rw [← intervalIntegral.integral_congr (fun _ _ ↦ deriv_log_log)]
+  rw [← intervalIntegral.integral_congr (fun _ _ ↦ deriv_log_log_apply)]
   refine integral_deriv_eq_sub (fun _ _ ↦ ?_) ?_
   · exact differentiableOn_log_log.differentiableAt (Ioi_mem_nhds (by grind [Set.uIcc]))
-  refine (?_ : ContinuousOn _ _).congr (fun _ _ ↦ deriv_log_log) |>.intervalIntegrable
+  refine (?_ : ContinuousOn _ _).congr (fun _ _ ↦ deriv_log_log_apply) |>.intervalIntegrable
   fun_prop (disch := grind [log_pos, Set.uIcc])
 
 /-- The integrand is chosen to match the conclusion of `Real.deriv_inv_log`. -/
