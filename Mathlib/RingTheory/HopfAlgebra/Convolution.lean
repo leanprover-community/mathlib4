@@ -146,11 +146,11 @@ instance [IsCocomm R A] : CommGroup (WithConv <| A →ₐ[R] C) where
 
 lemma antipode_id_cancel :
     toConv (HopfAlgebra.antipodeAlgHom R A) * toConv (AlgHom.id R A) = 1 := by
-  apply WithConv.ofConv_injective
-  apply AlgHom.toLinearMap_injective
-  apply WithConv.toConv_injective
-  rw [AlgHom.toLinearMap_convMul, AlgHom.toLinearMap_convOne]
-  simp [LinearMap.antipode_mul_id]
+  ext _; exact congr($HopfAlgebra.mul_antipode_rTensor_comul _)
+
+lemma id_antipode_cancel :
+    toConv (AlgHom.id R A) * toConv (HopfAlgebra.antipodeAlgHom R A) = 1 := by
+  ext _; exact congr($HopfAlgebra.mul_antipode_lTensor_comul _)
 
 lemma counitAlgHom_comp_antipodeAlgHom :
     (counitAlgHom R A).comp (HopfAlgebra.antipodeAlgHom R A) = counitAlgHom R A :=
