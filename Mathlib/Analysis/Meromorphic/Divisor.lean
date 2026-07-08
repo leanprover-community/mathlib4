@@ -471,77 +471,47 @@ lemma divisor_sub_const_self {z₀ : 𝕜} {U : Set 𝕜} (h : z₀ ∈ U) : div
   congr
   exact (meromorphicOrderAt_eq_int_iff (by fun_prop)).mpr ⟨fun _ ↦ 1, analyticAt_const, by simp⟩
 
+open scoped Pointwise
+
 /-- Divisors are invariant under translation. -/
-@[simp] theorem divisor_comp_add_const_eq_divisor {c x : 𝕜} {f : 𝕜 → E} :
-    divisor (f ∘ (· + c)) {x | x + c ∈ U} (x - c) = divisor f U x := by
-  by_cases h : ¬ MeromorphicOn f U
-  · have := (meromorphicOn_comp_add_const_iff_meromorphicOn (c := c) (U := U) (f := f)).not.2 h
+@[to_fun divisor_fun_comp_add_const_eq_divisor]
+theorem divisor_comp_add_const_eq_divisor {c x : 𝕜} {f : 𝕜 → E} :
+    divisor (f ∘ (· + c)) U (x - c) = divisor f (U + {c}) x := by
+  by_cases h : ¬ MeromorphicOn f (U + {c})
+  · have := meromorphicOn_comp_add_const_iff_meromorphicOn.not.2 h
     simp_all
   rw [not_not] at h
-  have := (meromorphicOn_comp_add_const_iff_meromorphicOn (c := c) (U := U) (f := f)).2 h
-  by_cases h₁ : ¬ x ∈ U
+  have := meromorphicOn_comp_add_const_iff_meromorphicOn.2 h
+  by_cases h₁ : ¬ x ∈ (U + {c})
   · rw [Function.locallyFinsuppWithin.apply_eq_zero_of_notMem,
       Function.locallyFinsuppWithin.apply_eq_zero_of_notMem]
-    <;> aesop
+    <;> simp_all [← sub_eq_add_neg]
   rw [divisor_apply, divisor_apply]
-  <;> aesop
+  <;> simp_all [← sub_eq_add_neg, meromorphicOrderAt_comp_add_const_eq_meromorphicOrderAt]
 
 /-- Divisors are invariant under translation. -/
-@[simp] theorem divisor_fun_comp_add_const_eq_divisor {c x : 𝕜} {f : 𝕜 → E} :
-    divisor (fun z ↦ f (z + c)) {x | x + c ∈ U} (x - c) = divisor f U x :=
-  divisor_comp_add_const_eq_divisor
-
-/-- Divisors are invariant under translation. -/
-@[simp] theorem divisor_comp_sub_const_eq_divisor {c : 𝕜} {f : 𝕜 → E} :
-    divisor (f ∘ (· - c)) {x | x - c ∈ U} (z + c) = divisor f U z := by
-  nth_rw 2 [← divisor_comp_add_const_eq_divisor (c := -c)]
-  congr 2
-  <;> simp [sub_eq_add_neg]
-
-/-- Divisors are invariant under translation. -/
-@[simp] theorem divisor_fun_comp_sub_const_eq_divisor {c : 𝕜} {f : 𝕜 → E} :
-    divisor (fun z ↦ f (z - c)) {x | x - c ∈ U} (z + c) = divisor f U z :=
-  divisor_comp_sub_const_eq_divisor
+@[to_fun divisor_fun_comp_sub_const_eq_divisor]
+theorem divisor_comp_sub_const_eq_divisor {c : 𝕜} {f : 𝕜 → E} :
+    divisor (f ∘ (· - c)) U (z + c) = divisor f (U - {c}) z := by
+  rw [sub_eq_add_neg, Set.neg_singleton, ← divisor_comp_add_const_eq_divisor]
+  simp_rw [← sub_eq_add_neg, sub_neg_eq_add]
 
 /-- Divisors are invariant under translation, special case where the set is a ball.. -/
-@[simp] theorem divisor_ball_comp_add_const_eq_divisor_ball {c : 𝕜} {R : ℝ} {f : 𝕜 → E} :
+@[to_fun (attr := simp) divisor_ball_fun_comp_sub_const_eq_divisor_ball]
+theorem divisor_ball_comp_sub_const_eq_divisor_ball {c : 𝕜} {R : ℝ} {f : 𝕜 → E} :
     divisor (f ∘ (· - c)) (ball c R) (z + c) = divisor f (ball 0 R) z := by
-  nth_rw 2 [← divisor_comp_sub_const_eq_divisor (c := c)]
-  congr
-  all_goals
-    rw [setOf_sub_mem_ball_eq_ball]
-
-/-- Divisors are invariant under translation, special case where the set is a ball. -/
-@[simp] theorem divisor_ball_fun_comp_add_const_eq_divisor_ball {c : 𝕜} {R : ℝ} {f : 𝕜 → E} :
-    divisor (fun z ↦ f (z - c)) (ball c R) (z + c) = divisor f (ball 0 R) z :=
-  divisor_ball_comp_add_const_eq_divisor_ball
+  rw [divisor_comp_sub_const_eq_divisor, ball_sub_singleton, sub_self]
 
 /-- Divisors are invariant under translation, special case where the set is a closed ball. -/
-@[simp] theorem divisor_closedBall_comp_add_const_eq_divisor_closedBall {c : 𝕜} {R : ℝ}
-    {f : 𝕜 → E} :
+@[to_fun (attr := simp) divisor_closedBall_fun_comp_sub_const_eq_divisor_closedBall]
+theorem divisor_closedBall_comp_sub_const_eq_divisor_closedBall {c : 𝕜} {R : ℝ} {f : 𝕜 → E} :
     divisor (f ∘ (· - c)) (closedBall c R) (z + c) = divisor f (closedBall 0 R) z := by
-  nth_rw 2 [← divisor_comp_sub_const_eq_divisor (c := c)]
-  congr
-  all_goals
-    rw [setOf_sub_mem_closedBall_eq_closedBall]
-
-/-- Divisors are invariant under translation, special case where the set is a closed ball. -/
-@[simp] theorem divisor_closedBall_fun_comp_add_const_eq_divisor_closedBall {c : 𝕜} {R : ℝ}
-    {f : 𝕜 → E} :
-    divisor (fun z ↦ f (z - c)) (closedBall c R) (z + c) = divisor f (closedBall 0 R) z :=
-  divisor_closedBall_comp_add_const_eq_divisor_closedBall
+  rw [divisor_comp_sub_const_eq_divisor, closedBall_sub_singleton, sub_self]
 
 /-- Divisors are invariant under translation, special case where the set is a sphere. -/
-@[simp] theorem divisor_sphere_comp_add_const_eq_divisor_sphere {c : 𝕜} {R : ℝ} {f : 𝕜 → E} :
+@[to_fun (attr := simp) divisor_sphere_fun_comp_sub_const_eq_divisor_sphere]
+theorem divisor_sphere_comp_sub_const_eq_divisor_sphere {c : 𝕜} {R : ℝ} {f : 𝕜 → E} :
     divisor (f ∘ (· - c)) (sphere c R) (z + c) = divisor f (sphere 0 R) z := by
-  nth_rw 2 [← divisor_comp_sub_const_eq_divisor (c := c)]
-  congr
-  all_goals
-    rw [setOf_sub_mem_sphere_eq_sphere]
-
-/-- Divisors are invariant under translation, special case where the set is a sphere. -/
-@[simp] theorem divisor_sphere_fun_comp_add_const_eq_divisor_sphere {c : 𝕜} {R : ℝ} {f : 𝕜 → E} :
-    divisor (fun z ↦ f (z - c)) (sphere c R) (z + c) = divisor f (sphere 0 R) z :=
-  divisor_sphere_comp_add_const_eq_divisor_sphere
+  rw [divisor_comp_sub_const_eq_divisor, sphere_sub_singleton, sub_self]
 
 end MeromorphicOn

@@ -467,23 +467,21 @@ lemma meromorphicAt_comp_iff_of_deriv_ne_zero [CompleteSpace 𝕜] [CharZero �
   exact EventuallyEq.fun_comp (HasStrictDerivAt.eventually_right_inverse ..) f
 
 /-- `MeromorphicAt` is invariant under translation. -/
-@[to_fun (attr := simp) meromorphicAt_fun_comp_add_const_iff_meromorphicAt]
+@[to_fun meromorphicAt_fun_comp_add_const_iff_meromorphicAt]
 theorem meromorphicAt_comp_add_const_iff_meromorphicAt {c : 𝕜} {f : 𝕜 → E} :
-    MeromorphicAt (f ∘ (· + c)) (x - c) ↔ MeromorphicAt f x := by
+    MeromorphicAt (f ∘ (· + c)) x ↔ MeromorphicAt f (x + c) := by
   constructor
   · intro h
-    convert h.comp_analyticAt (g := fun z ↦ z - c) (by fun_prop)
-    aesop
-  · intro h
-    rw [(by ring : x = (x - c) + c)] at h
-    exact h.comp_analyticAt (g := fun z ↦ z + c) (by fun_prop)
+    rw [show f = ((f ∘ fun x ↦ x + c) ∘ fun z ↦ z - c) by aesop]
+    rw [show x = (x + c) - c by ring] at h
+    exact h.comp_analyticAt (g := fun z ↦ z - c) (by fun_prop)
+  · exact (·.comp_analyticAt (g := fun z ↦ z + c) (by fun_prop))
 
 /-- `MeromorphicAt` is invariant under translation. -/
-@[to_fun (attr := simp) meromorphicAt_fun_comp_sub_const_iff_meromorphicAt]
+@[to_fun meromorphicAt_fun_comp_sub_const_iff_meromorphicAt]
 theorem meromorphicAt_comp_sub_const_iff_meromorphicAt {c : 𝕜} {f : 𝕜 → E} :
-    MeromorphicAt (f ∘ (· - c)) (x + c) ↔ MeromorphicAt f x := by
-  simp [← meromorphicAt_fun_comp_add_const_iff_meromorphicAt (f := f) (c := -c), ← sub_eq_add_neg]
-  rfl
+    MeromorphicAt (f ∘ (· - c)) x ↔ MeromorphicAt f (x - c) := by
+  simp_rw [sub_eq_add_neg, meromorphicAt_comp_add_const_iff_meromorphicAt]
 
 end composition
 
@@ -641,46 +639,40 @@ theorem fun_iterated_deriv [CompleteSpace E] {n : ℕ} :
   hf.iterated_deriv
 
 /-- `MeromorphicOn` is invariant under translation. -/
-@[to_fun (attr := simp) meromorphicOn_fun_comp_add_const_iff_meromorphicOn]
+@[to_fun meromorphicOn_fun_comp_add_const_iff_meromorphicOn]
 theorem meromorphicOn_comp_add_const_iff_meromorphicOn {c : 𝕜} {U : Set 𝕜} :
-    MeromorphicOn (f ∘ (· + c)) (U - {c}) ↔ MeromorphicOn f U := by
+    MeromorphicOn (f ∘ (· + c)) U ↔ MeromorphicOn f (U + {c}) := by
   constructor
-  · intro h y hy
-    rw [← meromorphicAt_fun_comp_add_const_iff_meromorphicAt (c := c)]
-    apply h
+  <;> intro h y hy
+  · rw [add_singleton, mem_image] at hy
+    obtain ⟨x, h₁x, h₂x⟩ := hy
+    simpa [← h₂x, ← meromorphicAt_comp_add_const_iff_meromorphicAt] using h x h₁x
+  · rw [meromorphicAt_comp_add_const_iff_meromorphicAt]
     aesop
-  · intro h y hy
-    rw [← meromorphicAt_comp_sub_const_iff_meromorphicAt (c := c),
-      (by aesop : ((f ∘ fun z ↦ z + c) ∘ fun z ↦ z - c) = f)]
-    apply h (y + c) (by aesop)
 
 /-- `MeromorphicOn` is invariant under translation. -/
-@[to_fun (attr := simp) meromorphicOn_fun_comp_sub_const_iff_meromorphicOn]
+@[to_fun meromorphicOn_fun_comp_sub_const_iff_meromorphicOn]
 theorem meromorphicOn_comp_sub_const_iff_meromorphicOn {c : 𝕜} {U : Set 𝕜} :
-    MeromorphicOn (f ∘ (· - c)) (U + {c}) ↔ MeromorphicOn f U := by
-  simp_rw [← meromorphicOn_comp_add_const_iff_meromorphicOn (f := f) (c := -c), sub_singleton,
-    add_singleton, sub_neg_eq_add, sub_eq_add_neg]
+    MeromorphicOn (f ∘ (· - c)) U ↔ MeromorphicOn f (U - {c}) := by
+  simp_rw [sub_eq_add_neg, meromorphicOn_comp_add_const_iff_meromorphicOn, neg_singleton]
 
 /-- `MeromorphicOn` is invariant under translation, special case where the set is a ball. -/
 @[to_fun (attr := simp) meromorphicOn_ball_fun_comp_sub_const_iff_meromorphicOn_ball]
 theorem meromorphicOn_ball_comp_sub_const_iff_meromorphicOn_ball {c : 𝕜} {R : ℝ} :
     MeromorphicOn (f ∘ (· - c)) (ball c R) ↔ MeromorphicOn f (ball 0 R) := by
-  convert meromorphicOn_comp_sub_const_iff_meromorphicOn
-  exact (ball_zero_add_singleton R c).symm
+  rw [meromorphicOn_comp_sub_const_iff_meromorphicOn, ball_sub_singleton, sub_self]
 
 /-- `MeromorphicOn` is invariant under translation, special case where the set is a closed ball. -/
 @[to_fun (attr := simp) meromorphicOn_closedBall_fun_comp_sub_const_iff_meromorphicOn_closedBall]
 theorem meromorphicOn_closedBall_comp_sub_const_iff_meromorphicOn_closedBall {c : 𝕜} {R : ℝ} :
     MeromorphicOn (f ∘ (· - c)) (closedBall c R) ↔ MeromorphicOn f (closedBall 0 R) := by
-  convert meromorphicOn_comp_sub_const_iff_meromorphicOn
-  exact (closedBall_zero_add_singleton R c).symm
+  rw [meromorphicOn_comp_sub_const_iff_meromorphicOn, closedBall_sub_singleton, sub_self]
 
 /-- `MeromorphicOn` is invariant under translation, special case where the set is a sphere. -/
 @[to_fun (attr := simp) meromorphicOn_sphere_fun_comp_sub_const_iff_meromorphicOn_sphere]
 theorem meromorphicOn_sphere_comp_sub_const_iff_meromorphicOn_sphere {c : 𝕜} {R : ℝ} :
     MeromorphicOn (f ∘ (· - c)) (sphere c R) ↔ MeromorphicOn f (sphere 0 R) := by
-  convert meromorphicOn_comp_sub_const_iff_meromorphicOn
-  exact (sphere_zero_add_singleton R c).symm
+  rw [meromorphicOn_comp_sub_const_iff_meromorphicOn, sphere_sub_singleton, sub_self]
 
 end arithmetic
 
