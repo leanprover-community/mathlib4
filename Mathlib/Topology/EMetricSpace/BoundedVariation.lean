@@ -452,6 +452,14 @@ theorem comp_le_of_antitoneOn (f : α → E) {s : Set α} {t : Set β} (φ : β 
   rw [edist_comm]
   congr 4 <;> lia
 
+theorem comp_le_of_monotone (f : α → E) {s : Set α} {t : Set β} (φ : β → α)
+    (hφ : Monotone φ) (φst : MapsTo φ t s) : eVariationOn (f ∘ φ) t ≤ eVariationOn f s :=
+  comp_le_of_monotoneOn f φ (hφ.monotoneOn t) φst
+
+theorem comp_le_of_antitone (f : α → E) {s : Set α} {t : Set β} (φ : β → α)
+    (hφ : Antitone φ) (φst : MapsTo φ t s) : eVariationOn (f ∘ φ) t ≤ eVariationOn f s :=
+  comp_le_of_antitoneOn f φ (hφ.antitoneOn t) φst
+
 theorem comp_eq_of_monotoneOn (f : α → E) {t : Set β} (φ : β → α) (hφ : MonotoneOn φ t) :
     eVariationOn (f ∘ φ) t = eVariationOn f (φ '' t) := by
   apply le_antisymm (comp_le_of_monotoneOn f φ hφ (mapsTo_image φ t))
@@ -497,6 +505,61 @@ theorem comp_eq_of_antitoneOn (f : α → E) {t : Set β} (φ : β → α) (hφ 
   change eVariationOn (f ∘ id) (φ '' t) ≤ eVariationOn (f ∘ φ) t
   rw [← eq_of_eqOn (ψφs.comp_left : EqOn (f ∘ φ ∘ ψ) (f ∘ id) (φ '' t))]
   exact comp_le_of_antitoneOn _ ψ hψ ψts
+
+theorem _root_.BoundedVariationOn.comp_monotoneOn {f : α → E} {s : Set α}
+    (hf : BoundedVariationOn f s) {φ : β → α} {t : Set β} (hφ : MonotoneOn φ t)
+    (hφst : MapsTo φ t s) : BoundedVariationOn (f ∘ φ) t :=
+  ne_top_of_le_ne_top hf (comp_le_of_monotoneOn f φ hφ hφst)
+
+theorem _root_.BoundedVariationOn.comp_antitoneOn {f : α → E} {s : Set α}
+    (hf : BoundedVariationOn f s) {φ : β → α} {t : Set β} (hφ : AntitoneOn φ t)
+    (hφst : MapsTo φ t s) : BoundedVariationOn (f ∘ φ) t :=
+  ne_top_of_le_ne_top hf (comp_le_of_antitoneOn f φ hφ hφst)
+
+theorem _root_.BoundedVariationOn.comp_monotone {f : α → E} {s : Set α}
+    (hf : BoundedVariationOn f s) {φ : β → α} {t : Set β} (hφ : Monotone φ)
+    (hφst : MapsTo φ t s) : BoundedVariationOn (f ∘ φ) t :=
+  hf.comp_monotoneOn (hφ.monotoneOn t) hφst
+
+theorem _root_.BoundedVariationOn.comp_antitone {f : α → E} {s : Set α}
+    (hf : BoundedVariationOn f s) {φ : β → α} {t : Set β} (hφ : Antitone φ)
+    (hφst : MapsTo φ t s) : BoundedVariationOn (f ∘ φ) t :=
+  hf.comp_antitoneOn (hφ.antitoneOn t) hφst
+
+theorem _root_.LocallyBoundedVariationOn.comp_monotoneOn {f : α → E} {s : Set α}
+    (hf : LocallyBoundedVariationOn f s) {φ : β → α} {t : Set β}
+    (hφ : MonotoneOn φ t) (hφst : MapsTo φ t s) :
+    LocallyBoundedVariationOn (f ∘ φ) t := by
+  intro x y hx hy
+  change eVariationOn (f ∘ φ) (t ∩ Icc x y) ≠ ∞
+  rw [comp_inter_Icc_eq_of_monotoneOn f φ hφ hx hy]
+  exact (hf (φ x) (φ y) (hφst hx) (hφst hy)).mono (by
+    rintro _ ⟨⟨z, hz, rfl⟩, hzy⟩
+    exact ⟨hφst hz, hzy⟩)
+
+theorem _root_.LocallyBoundedVariationOn.comp_antitoneOn {f : α → E} {s : Set α}
+    (hf : LocallyBoundedVariationOn f s) {φ : β → α} {t : Set β}
+    (hφ : AntitoneOn φ t) (hφst : MapsTo φ t s) :
+    LocallyBoundedVariationOn (f ∘ φ) t := by
+  intro x y hx hy
+  rcases le_total x y with hxy | hyx
+  · exact ne_top_of_le_ne_top (hf (φ y) (φ x) (hφst hy) (hφst hx))
+      (comp_le_of_antitoneOn f φ (hφ.mono inter_subset_left) (by
+        rintro z ⟨hz, hxz, hzy⟩
+        exact ⟨hφst hz, hφ hz hy hzy, hφ hx hz hxz⟩))
+  · rw [BoundedVariationOn, eVariationOn.subsingleton]
+    · simp
+    · exact (Set.subsingleton_Icc_of_ge hyx).anti inter_subset_right
+
+theorem _root_.LocallyBoundedVariationOn.comp_monotone {f : α → E} {s : Set α}
+    (hf : LocallyBoundedVariationOn f s) {φ : β → α} {t : Set β} (hφ : Monotone φ)
+    (hφst : MapsTo φ t s) : LocallyBoundedVariationOn (f ∘ φ) t :=
+  hf.comp_monotoneOn (hφ.monotoneOn t) hφst
+
+theorem _root_.LocallyBoundedVariationOn.comp_antitone {f : α → E} {s : Set α}
+    (hf : LocallyBoundedVariationOn f s) {φ : β → α} {t : Set β} (hφ : Antitone φ)
+    (hφst : MapsTo φ t s) : LocallyBoundedVariationOn (f ∘ φ) t :=
+  hf.comp_antitoneOn (hφ.antitoneOn t) hφst
 
 open OrderDual
 
