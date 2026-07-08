@@ -990,8 +990,13 @@ abbrev extensionAsRingHom :=
   UniformSpace.Completion.extensionHom <|
     (algebraMap K⟮X⟯ K⸨X⸩).comp (WithVal.equiv (polynomialValuationX K)).toRingHom
 
-/-- An abbreviation for the `X`-adic completion of `K⟮X⟯` -/
-abbrev RatFuncAdicCompl := adicCompletion K⟮X⟯ (idealX K)
+/-- An abbreviation for the `X`-adic completion of `K⟮X⟯`.
+
+This is spelled as `(polynomialValuationX K).Completion` rather than
+`adicCompletion K⟮X⟯ (idealX K)` (to which it is definitionally equal) so that the unifier does not
+have to delta-unfold the semireducible `adicCompletion` when bridging with `ratfuncAdicComplPkg` /
+`LaurentSeriesPkg` throughout this file. -/
+abbrev RatFuncAdicCompl := (polynomialValuationX K).Completion
 
 instance : Field (ratfuncAdicComplPkg (K := K).space) :=
   inferInstanceAs <| Field (RatFuncAdicCompl K)
@@ -1118,6 +1123,12 @@ theorem valuation_compare (f : K⸨X⸩) :
     exact (h_cont.continuousAt.tendsto.comp tendsto_comap).congr
       Valued.valuedCompletion_apply
 
+/-- The valuation of an element of `K⸨X⸩` transported to the `X`-adic completion of `K⟮X⟯` via
+`LaurentSeriesRingEquiv` agrees with its valuation in `K⸨X⸩`. -/
+lemma valued_laurentSeriesRingEquiv (f : K⸨X⸩) :
+    Valued.v (LaurentSeriesRingEquiv K f) = Valued.v f :=
+  valuation_compare _ f
+
 section PowerSeries
 
 /-- In order to compare `K⟦X⟧` with the valuation subring in the `X`-adic completion of
@@ -1143,9 +1154,10 @@ lemma powerSeriesEquivSubring_coe_apply (f : K⟦X⟧) :
 completion of `K⟮X⟯`. -/
 theorem mem_integers_of_powerSeries (F : K⟦X⟧) :
     (LaurentSeriesRingEquiv K) F ∈ (idealX K).adicCompletionIntegers K⟮X⟯ := by
-  simp only [mem_adicCompletionIntegers, LaurentSeriesRingEquiv_def,
-    valuation_compare, val_le_one_iff_eq_coe]
-  exact ⟨F, rfl⟩
+  have : Valued.v ((LaurentSeriesRingEquiv K) F) ≤ 1 := by
+    rw [valued_laurentSeriesRingEquiv, val_le_one_iff_eq_coe]
+    exact ⟨F, rfl⟩
+  exact this
 
 /-- Conversely, all elements in the unit ball inside the completion of `K⟮X⟯` come from a power
 series through the isomorphism `LaurentSeriesRingEquiv`. -/
@@ -1155,7 +1167,8 @@ theorem exists_powerSeries_of_memIntegers {x : RatFuncAdicCompl K}
   set f := (ratfuncAdicComplRingEquiv K) x with hf
   have H_x : (LaurentSeriesPkg K).compare ratfuncAdicComplPkg ((ratfuncAdicComplRingEquiv K) x) =
       x := congr_fun (inverse_compare (LaurentSeriesPkg K) ratfuncAdicComplPkg) x
-  rw [mem_adicCompletionIntegers, ← H_x] at hx
+  replace hx : Valued.v x ≤ 1 := hx
+  rw [← H_x] at hx
   obtain ⟨F, hF⟩ := (val_le_one_iff_eq_coe K f).mp (valuation_compare _ f ▸ hx)
   exact ⟨F, by rw [hF, hf, RingEquiv.symm_apply_apply]⟩
 
@@ -1164,7 +1177,7 @@ theorem powerSeries_ext_subring :
       ((idealX K).adicCompletionIntegers K⟮X⟯).toSubring := by
   ext x
   refine ⟨fun ⟨f, ⟨F, _, coe_F⟩, hF⟩ ↦ ?_, fun H ↦ ?_⟩
-  · simp only [ValuationSubring.mem_toSubring, ← hF, ← coe_F]
+  · simp only [← hF, ← coe_F]
     apply mem_integers_of_powerSeries
   · obtain ⟨F, hF⟩ := exists_powerSeries_of_memIntegers K H
     simp only [Subring.mem_map]
@@ -1177,13 +1190,14 @@ abbrev powerSeriesRingEquiv : K⟦X⟧ ≃+* (idealX K).adicCompletionIntegers K
     <| RingEquiv.subringCongr (powerSeries_ext_subring K)
 
 lemma powerSeriesRingEquiv_coe_apply (f : K⟦X⟧) :
-    powerSeriesRingEquiv K f = LaurentSeriesRingEquiv K (f : K⸨X⸩) :=
+    (powerSeriesRingEquiv K f : adicCompletion K⟮X⟯ (idealX K)) =
+      LaurentSeriesRingEquiv K (f : K⸨X⸩) :=
   rfl
 
 lemma LaurentSeriesRingEquiv_mem_valuationSubring (f : K⟦X⟧) :
     LaurentSeriesRingEquiv K f ∈ Valued.v.valuationSubring := by
   simp only [Valuation.mem_valuationSubring_iff]
-  rw [LaurentSeriesRingEquiv_def, valuation_compare, val_le_one_iff_eq_coe]
+  rw [valued_laurentSeriesRingEquiv, val_le_one_iff_eq_coe]
   use f
 
 lemma algebraMap_C_mem_adicCompletionIntegers (x : K) :
@@ -1204,10 +1218,9 @@ instance : Algebra K ((idealX K).adicCompletionIntegers K⟮X⟯) :=
 def powerSeriesAlgEquiv : K⟦X⟧ ≃ₐ[K] (idealX K).adicCompletionIntegers K⟮X⟯ := by
   apply AlgEquiv.ofRingEquiv (f := powerSeriesRingEquiv K)
   intro a
-  rw [PowerSeries.algebraMap_eq, RingHom.algebraMap_toAlgebra, ← Subtype.coe_inj,
-    powerSeriesRingEquiv_coe_apply,
-    RingHom.codRestrict_apply _ _ (algebraMap_C_mem_adicCompletionIntegers K)]
-  simp
+  apply Subtype.ext
+  exact congrArg (LaurentSeriesRingEquiv K)
+    (by push_cast [algebraMap_apply]; simp [ofPowerSeries_C])
 
 end PowerSeries
 
