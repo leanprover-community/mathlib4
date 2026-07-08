@@ -610,6 +610,13 @@ instance : Coe (WithVal (v.valuation K)) (v.adicCompletion K) :=
 instance : Coe K (v.adicCompletion K) :=
   inferInstanceAs (Coe K (v.valuation K).Completion)
 
+/-- `adicCompletion K v` packaged as an abstract completion of `WithVal (v.valuation K)`. -/
+noncomputable def adicCompletionPkg : AbstractCompletion (WithVal (v.valuation K)) :=
+  { UniformSpace.Completion.cPkg with space := v.adicCompletion K }
+
+@[simp]
+theorem adicCompletionPkg_space : (v.adicCompletionPkg K).space = v.adicCompletion K := rfl
+
 /-- The valuation on the completion agrees with the `v`-adic valuation on elements coming from
 `WithVal (v.valuation K)`. -/
 @[simp]

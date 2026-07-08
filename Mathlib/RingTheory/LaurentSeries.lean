@@ -954,9 +954,9 @@ theorem uniformContinuous_withVal_equiv :
 theorem continuous_coe : Continuous ((↑) : K⟮X⟯ → K⸨X⸩) :=
   (isUniformInducing_iff'.1 (inducing_coe)).1.continuous
 
-/-- The `X`-adic completion as an abstract completion of `K⟮X⟯` -/
+/-- The `X`-adic completion as an abstract completion of `K⟮X⟯`. -/
 abbrev ratfuncAdicComplPkg : AbstractCompletion (WithVal (polynomialValuationX K)) :=
-  UniformSpace.Completion.cPkg
+  (Polynomial.idealX K).adicCompletionPkg K⟮X⟯
 
 variable (K)
 /-- Having established that the `K⸨X⸩` is complete and contains `K⟮X⟯` as a dense
@@ -990,21 +990,10 @@ abbrev extensionAsRingHom :=
   UniformSpace.Completion.extensionHom <|
     (algebraMap K⟮X⟯ K⸨X⸩).comp (WithVal.equiv (polynomialValuationX K)).toRingHom
 
-/-- An abbreviation for the `X`-adic completion of `K⟮X⟯`.
+/-- An abbreviation for the `X`-adic completion of `K⟮X⟯`. -/
+abbrev RatFuncAdicCompl := (Polynomial.idealX K).adicCompletion K⟮X⟯
 
-This is spelled as `(polynomialValuationX K).Completion` to avoid slowdown after making
-`adicCompletion` a `def`. -/
-abbrev RatFuncAdicCompl := (polynomialValuationX K).Completion
-
-instance : Field (ratfuncAdicComplPkg (K := K).space) :=
-  inferInstanceAs <| Field (RatFuncAdicCompl K)
-
--- help typeclass inference along
-instance : Valued (ratfuncAdicComplPkg (K := K).space) (WithZero (Multiplicative ℤ)) :=
-  inferInstanceAs <| Valued (RatFuncAdicCompl K) (WithZero (Multiplicative ℤ))
-
-/-! The two instances below make `comparePkg` and `comparePkg_eq_extension` slightly faster. -/
-instance : UniformSpace (RatFuncAdicCompl K) := inferInstance
+/-! The instance below makes `comparePkg` and `comparePkg_eq_extension` slightly faster. -/
 instance : UniformSpace K⸨X⸩ := inferInstance
 
 /-- The uniform space isomorphism between two abstract completions of `ratfunc K` -/
