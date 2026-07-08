@@ -42,6 +42,9 @@ Montgomery–Vaughan, *Multiplicative Number Theory I: Classical Theory*, Append
 * `BoxIntegral.stieltjesIntegral a b B f g`: the value of `∫ˢ x in a..b, f x ∂[B; g]` if it
 exists, or the junk value of `0` otherwise.
 
+These notions are named in analogy with `BoxInterval.Integrable`, `BoxInterval.HasIntegral`, and
+`BoxInterval.integral`.
+
 ## Implementation notes
 
 Mathematically, one can define `∫ˢ x in a..b, f x ∂[B; g]` for `a < b` as the limit of
@@ -80,9 +83,8 @@ variable (a b : ℝ) (B : E →L[ℝ] F →L[ℝ] G) (f : ℝ → E) (g : ℝ �
 its Riemann--Stieltjes sums converge to a limit `L : G`, given a bilinear map `B : E → F → G` and
 endpoints `a`, `b` takes values in `G`. Initially defined under the implicit assumption that
 `a < b`, with junk values otherwise. -/
-def HasStieltjesIntegral' : Prop :=
-  HasIntegral (uIoc a b) IntegrationParams.Riemann
-    (fun x ↦ f (x 0)) (BoxAdditiveMap.ofDiff (fun x ↦ B.flip (g x))) L
+def HasStieltjesIntegral' : Prop := HasIntegral (uIoc a b) IntegrationParams.Riemann
+  (f <| · 0) (BoxAdditiveMap.ofDiff (B.flip <| g ·)) L
 
 /-- Extension of the Stieltjes integral predicate to cover the cases `a = b` and `a > b`. Prefer
 this notion over `HasStieltjesIntegral'`, as it has a more developed API. -/
@@ -307,10 +309,8 @@ section Riemann
 
 variable {a b : ℝ} {f f₁ f₂ : ℝ → E} {L L₁ L₂ : E}
 
-theorem HasRiemannIntegral.iff_hasIntegral (hab : a < b) :
-    HasRiemannIntegral a b f L ↔
-      HasIntegral (uIoc a b) IntegrationParams.Riemann (f <| · 0)
-        BoxAdditiveMap.volume L := by
+theorem HasRiemannIntegral.iff_hasIntegral (hab : a < b) : HasRiemannIntegral a b f L ↔
+    HasIntegral (uIoc a b) IntegrationParams.Riemann (f <| · 0) BoxAdditiveMap.volume L := by
   simp [HasRiemannIntegral, hab, HasStieltjesIntegral.of_lt, HasStieltjesIntegral',
     BoxAdditiveMap.ofDiff_lsmul_eq_volume]
 
