@@ -233,13 +233,14 @@ instance : IsSubApply 𝓓^{n}_{K}(E, F) E F where
 
 @[deprecated (since := "2026-06-15")] alias coe_sub := FunLike.coe_sub
 
-instance instSMul {R} [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstSMul R F] :
-   SMul R 𝓓^{n}_{K}(E, F) where
+instance instSMul {R} [AddSemigroup R] [DistribSMul R F] [SMulCommClass ℝ R F]
+    [ContinuousConstSMul R F] :
+    SMul R 𝓓^{n}_{K}(E, F) where
   smul c f := .mk (c • (f : E → F)) (f.contDiff.const_smul c) <| by
     rw [← smul_zero c]
     exact f.zero_on_compl.comp_left
 
-instance {R} [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstSMul R F] :
+instance {R} [AddSemigroup R] [DistribSMul R F] [SMulCommClass ℝ R F] [ContinuousConstSMul R F] :
     IsSMulApply R 𝓓^{n}_{K}(E, F) E F where
   smul_apply _ _ _ := rfl
 
