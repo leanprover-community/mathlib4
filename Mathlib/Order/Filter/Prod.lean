@@ -555,3 +555,15 @@ lemma Tendsto.coprod_of_prod_top_left {f : α × β → γ} {la : Filter α} {lb
 end Coprod
 
 end Filter
+
+
+-- Dual/order lemmas discovered by the Manifold Destiny verifier-mediated learner.
+-- Paper: https://github.com/sumofagents/manifold-destiny
+section
+theorem Filter.sUnion_lift_sets : ∀ {α : Type u_1} {β : Type u_2} {f : Filter α} {g : Set α → Filter β}, Monotone g → ⋃₀ {s | s ∈ f.lift g} = ⋃ s ∈ f, ⋃₀ {t | t ∈ g s} := by
+  open Filter Set Function in
+    intro α β f g hg
+    simp only [sUnion_eq_biUnion, mem_setOf_eq, mem_lift_sets hg, iUnion_exists,
+    iUnion_and, @iUnion_comm _ (Set β)]
+
+end

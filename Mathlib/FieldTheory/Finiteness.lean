@@ -104,3 +104,16 @@ theorem iff_fg : IsNoetherian K V ↔ Module.Finite K V :=
   ⟨fun _ ↦ IsNoetherian.finite _ _, fun _ ↦ isNoetherian_of_isNoetherianRing_of_finite _ _⟩
 
 end IsNoetherian
+
+
+-- Dual/order lemmas discovered by the Manifold Destiny verifier-mediated learner.
+-- Paper: https://github.com/sumofagents/manifold-destiny
+section
+theorem IntermediateField.adjoin_eq_bot_iff_of_isAlgebraic : ∀ {F : Type u_1} [inst : Field F] {E : Type u_2} [inst_1 : Field E] [inst_2 : Algebra F E] {S : Set E}, (∀ x ∈ S, IsAlgebraic F x) → (IntermediateField.adjoin F S = ⊥ ↔ Algebra.adjoin F S = ⊥) := by
+  open IntermediateField Module Polynomial Algebra in
+    intro F inst E inst_1 inst_2 S hS
+    rw [← IntermediateField.adjoin_toSubalgebra_of_isAlgebraic hS,
+    ← IntermediateField.toSubalgebra_inj,
+    IntermediateField.bot_toSubalgebra]
+
+end

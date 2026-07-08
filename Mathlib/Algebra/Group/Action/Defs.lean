@@ -717,3 +717,54 @@ instance [Group G] [MulAction G P] : IsLeftCancelSMul G P where
   left_cancel' a b c h := by rw [← inv_smul_smul a b, h, inv_smul_smul]
 
 end IsCancelSMul
+
+
+-- Dual/order lemmas discovered by the Manifold Destiny verifier-mediated learner.
+-- Paper: https://github.com/sumofagents/manifold-destiny
+section
+theorem Set.preimage_inv_Icc : ∀ {α : Type u_1} [inst : CommGroup α] [inst_1 : PartialOrder α] [IsOrderedMonoid α] (a b : α), Inv.inv ⁻¹' Set.Icc a b = Set.Icc b⁻¹ a⁻¹ := by
+  open Set Interval Pointwise in
+    intro α inst inst_1 _ a b
+    simp
+
+theorem Set.preimage_inv_Ici : ∀ {α : Type u_1} [inst : CommGroup α] [inst_1 : PartialOrder α] [IsOrderedMonoid α] (a : α), Inv.inv ⁻¹' Set.Ici a = Set.Iic a⁻¹ := by
+  open Set Interval Pointwise in
+    intro α inst inst_1 _ a
+    simp
+
+theorem Set.preimage_inv_Iic : ∀ {α : Type u_1} [inst : CommGroup α] [inst_1 : PartialOrder α] [IsOrderedMonoid α] (a : α), Inv.inv ⁻¹' Set.Iic a = Set.Ici a⁻¹ := by
+  open Set Interval Pointwise in
+    intro α inst inst_1 _ a
+    simp
+
+theorem Set.preimage_inv_Ico : ∀ {α : Type u_1} [inst : CommGroup α] [inst_1 : PartialOrder α] [IsOrderedMonoid α] (a b : α), Inv.inv ⁻¹' Set.Ico a b = Set.Ioc b⁻¹ a⁻¹ := by
+  open Set Interval Pointwise in
+    intro α inst inst_1 _ a b
+    simp
+
+theorem Set.preimage_inv_Iio : ∀ {α : Type u_1} [inst : CommGroup α] [inst_1 : PartialOrder α] [IsOrderedMonoid α] (a : α), Inv.inv ⁻¹' Set.Iio a = Set.Ioi a⁻¹ := by
+  open Set Interval Pointwise in
+    intro α inst inst_1 _ a
+    simp
+
+theorem Set.preimage_inv_Ioc : ∀ {α : Type u_1} [inst : CommGroup α] [inst_1 : PartialOrder α] [IsOrderedMonoid α] (a b : α), Inv.inv ⁻¹' Set.Ioc a b = Set.Ico b⁻¹ a⁻¹ := by
+  open Set Interval Pointwise in
+    intro α inst inst_1 _ a b
+    simp
+
+theorem Set.preimage_inv_Ioo : ∀ {α : Type u_1} [inst : CommGroup α] [inst_1 : PartialOrder α] [IsOrderedMonoid α] (a b : α), Inv.inv ⁻¹' Set.Ioo a b = Set.Ioo b⁻¹ a⁻¹ := by
+  open Set Interval Pointwise in
+    intro α inst inst_1 _ a b
+    simp
+
+theorem Set.preimage_inv_Ioi : ∀ {α : Type u_1} [inst : CommGroup α] [inst_1 : PartialOrder α] [IsOrderedMonoid α] (a : α), Inv.inv ⁻¹' Set.Ioi a = Set.Iio a⁻¹ := by
+  open Set Interval Pointwise in
+    intro α inst inst_1 _ a
+    simp
+
+theorem Set.preimage_neg_uIcc : ∀ {α : Type u_1} [inst : AddCommGroup α] [inst_1 : LinearOrder α] [IsOrderedAddMonoid α] (a b : α), Neg.neg ⁻¹' Set.uIcc a b = Set.uIcc (-a) (-b) := by
+  open Set Interval Pointwise in
+    intro α inst inst_1 _ a b
+    simp
+
+end

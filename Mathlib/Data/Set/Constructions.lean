@@ -95,3 +95,15 @@ the empty finset, but `s` is a family of sets, not finsets). -/
 theorem Set.biUnion_empty_finset {ι X : Type*} {s : ι → Set X} :
     ⋃ i ∈ (∅ : Finset ι), s i = ∅ := by
   simp
+
+
+-- Dual/order lemmas discovered by the Manifold Destiny verifier-mediated learner.
+-- Paper: https://github.com/sumofagents/manifold-destiny
+section
+theorem TopologicalSpace.IsTopologicalBasis.insert_univ : ∀ {α : Type u} [t : TopologicalSpace α] {s : Set (Set α)}, TopologicalSpace.IsTopologicalBasis s → TopologicalSpace.IsTopologicalBasis (insert Set.univ s) := by
+  open TopologicalSpace TopologicalSpace.IsTopologicalBasis Set Filter Function Topology in
+    intro α t s h
+    exact (h.of_isOpen_of_subset (by rintro _ (rfl | hu); exacts [isOpen_univ, h.isOpen hu])
+      (subset_insert ..))
+
+end

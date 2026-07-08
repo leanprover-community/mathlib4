@@ -462,3 +462,14 @@ end Bool
 
 end Kernel
 end ProbabilityTheory
+
+
+-- Dual/order lemmas discovered by the Manifold Destiny verifier-mediated learner.
+-- Paper: https://github.com/sumofagents/manifold-destiny
+section
+theorem MeasureTheory.Measure.comp_apply_empty : ∀ {α : Type u_1} {β : Type u_2} {mα : MeasurableSpace α} {mβ : MeasurableSpace β} {μ : MeasureTheory.Measure α} {κ : ProbabilityTheory.Kernel α β} [ProbabilityTheory.IsMarkovKernel κ], (μ.bind ⇑κ) ∅ = μ ∅ := by
+  open MeasureTheory MeasureTheory.Measure ProbabilityTheory in
+    intro α β mα mβ μ κ _
+    simp [bind_apply .empty κ.aemeasurable]
+
+end

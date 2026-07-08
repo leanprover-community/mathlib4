@@ -248,3 +248,19 @@ lemma DeleteFar.le_card_edgeFinset (h : G.DeleteFar p r) (hp : p ⊥) : r ≤ #G
 end DeleteFar
 
 end SimpleGraph
+
+
+-- Dual/order lemmas discovered by the Manifold Destiny verifier-mediated learner.
+-- Paper: https://github.com/sumofagents/manifold-destiny
+section
+theorem SimpleGraph.Subgraph.comap_equiv_bot : ∀ {V : Type u} {W : Type v} {G : SimpleGraph V} {H : SimpleGraph W} (f : G →g H), SimpleGraph.Subgraph.comap f ⊥ = ⊥ := by
+  open SimpleGraph SimpleGraph.Subgraph in
+    intro V W G H f
+    ext <;> simp +contextual [f.map_adj]
+
+theorem SimpleGraph.Subgraph.map_iso_bot : ∀ {V : Type u} {W : Type v} {G : SimpleGraph V} {H : SimpleGraph W} (e : G ≃g H), SimpleGraph.Subgraph.map e.toHom ⊥ = ⊥ := by
+  open SimpleGraph SimpleGraph.Subgraph in
+    intro V W G H e
+    ext <;> simp [Relation.Map, e.apply_eq_iff_eq_symm_apply, ← e.map_rel_iff]
+
+end

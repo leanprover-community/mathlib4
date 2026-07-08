@@ -700,3 +700,16 @@ TODO
 -/
 
 end SimpleGraph
+
+
+-- Dual/order lemmas discovered by the Manifold Destiny verifier-mediated learner.
+-- Paper: https://github.com/sumofagents/manifold-destiny
+section
+theorem SimpleGraph.IsClique.sdiff_of_inf_edge : ∀ {α : Type u_1} {G : SimpleGraph α} {v w : α} {s : Set α}, (G ⊓ SimpleGraph.edge v w).IsClique s → G.IsClique (s \ {v}) := by
+  open SimpleGraph SimpleGraph.IsClique Finset Fintype Function SimpleGraph.Walk in
+    intro α G v w s hc
+    intro _ hx _ hy hxy
+    have := hc hx.1 hy.1 hxy
+    simp_all [inf_adj, edge_adj]
+
+end

@@ -486,3 +486,14 @@ end Distortion
 end Box
 
 end BoxIntegral
+
+
+-- Dual/order lemmas discovered by the Manifold Destiny verifier-mediated learner.
+-- Paper: https://github.com/sumofagents/manifold-destiny
+section
+theorem BoxIntegral.Box.lower_sub_upper_splitCenterBox : ∀ {ι : Type u_1} (I : BoxIntegral.Box ι) (s : Set ι) (i : ι), (I.splitCenterBox s).lower i - (I.splitCenterBox s).upper i = (I.lower i - I.upper i) / 2 := by
+  open BoxIntegral BoxIntegral.Box Set Function Filter Topology Classical in
+    intro ι I s i
+    by_cases i ∈ s <;> simp [field, splitCenterBox, *] <;> ring
+
+end

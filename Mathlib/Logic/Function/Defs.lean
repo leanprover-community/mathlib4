@@ -205,3 +205,14 @@ protected def map (f : ∀ i, α i → β i) : (∀ i, α i) → (∀ i, β i) :
 lemma map_apply (f : ∀ i, α i → β i) (a : ∀ i, α i) (i : ι) : Pi.map f a i = f i (a i) := rfl
 
 end Pi
+
+
+-- Dual/order lemmas discovered by the Manifold Destiny verifier-mediated learner.
+-- Paper: https://github.com/sumofagents/manifold-destiny
+section
+theorem Relator.RightUnique.flip : ∀ {α : Type u_1} {β : Type u_2} {r : α → β → Prop}, Relator.RightUnique r → Relator.LeftUnique (flip r) := by
+  open Relator Relator.LeftUnique in
+    intro α β r h
+    exact (fun _ _ _ h₁ h₂ => h h₁ h₂)
+
+end

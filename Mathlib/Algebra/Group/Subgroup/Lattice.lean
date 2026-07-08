@@ -692,3 +692,14 @@ theorem mul_injective_of_disjoint {H₁ H₂ : Subgroup G} (h : Disjoint H₁ H�
     Subtype.ext_iff, eq_comm, ← Prod.ext_iff] at hxy
 
 end Subgroup
+
+
+-- Dual/order lemmas discovered by the Manifold Destiny verifier-mediated learner.
+-- Paper: https://github.com/sumofagents/manifold-destiny
+section
+theorem Submodule.toAddSubgroup_eq_bot : ∀ {R : Type u_4} {M : Type u_5} [inst : Ring R] [inst_1 : AddCommGroup M] [inst_2 : _root_.Module R M] {p : Submodule R M}, p.toAddSubgroup = ⊥ ↔ p = ⊥ := by
+  open Submodule in
+    intro R M inst inst_1 inst_2 p
+    simp [← toAddSubgroup_inj]
+
+end

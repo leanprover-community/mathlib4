@@ -41,3 +41,29 @@ protected lemma isUnit_iff {n : ℕ} : IsUnit n ↔ n = 1 := isUnit_iff_eq_one
 protected lemma isAddUnit_iff {n : ℕ} : IsAddUnit n ↔ n = 0 := isAddUnit_iff_eq_zero
 
 end Nat
+
+
+-- Dual/order lemmas discovered by the Manifold Destiny verifier-mediated learner.
+-- Paper: https://github.com/sumofagents/manifold-destiny
+section
+theorem ENat.WithTop.natCast_add_cancel : ∀ {a b : WithTop ℕ∞} {c : ℕ}, ↑c + a = ↑c + b ↔ a = b := by
+  open ENat ENat.WithBot Function in
+    intro a b c
+    exact ((IsAddLeftRegular.all c).withBot.withTop.eq_iff)
+
+theorem ENat.WithTop.one_add_cancel : ∀ {a b : WithTop ℕ∞}, 1 + a = 1 + b ↔ a = b := by
+  open ENat ENat.WithBot Function in
+    intro a b
+    exact ((IsAddLeftRegular.all 1).withBot.withTop.eq_iff)
+
+theorem ENat.WithTop.add_natCast_cancel : ∀ {a b : WithTop ℕ∞} {c : ℕ}, a + ↑c = b + ↑c ↔ a = b := by
+  open ENat ENat.WithBot Function in
+    intro a b c
+    exact ((IsAddRightRegular.all c).withBot.withTop.eq_iff)
+
+theorem ENat.WithTop.add_one_cancel : ∀ {a b : WithTop ℕ∞}, a + 1 = b + 1 ↔ a = b := by
+  open ENat ENat.WithBot Function in
+    intro a b
+    exact ((IsAddRightRegular.all 1).withBot.withTop.eq_iff)
+
+end

@@ -109,3 +109,14 @@ theorem isRegular_iff_ne_zero [Nontrivial R] : IsRegular a ↔ a ≠ 0 :=
   ⟨IsRegular.ne_zero, .of_ne_zero⟩
 
 end CancelMonoidWithZero
+
+
+-- Dual/order lemmas discovered by the Manifold Destiny verifier-mediated learner.
+-- Paper: https://github.com/sumofagents/manifold-destiny
+section
+theorem AbsoluteValue.map_one_of_isRightRegular : ∀ {R : Type u_5} {S : Type u_6} [inst : Semiring R] [inst_1 : Semiring S] [inst_2 : PartialOrder S] (abv : AbsoluteValue R S), IsRightRegular (abv 1) → abv 1 = 1 := by
+  open AbsoluteValue in
+    intro R S inst inst_1 inst_2 abv h
+    exact (h <| by simp [← abv.map_mul])
+
+end

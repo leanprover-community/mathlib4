@@ -1486,3 +1486,16 @@ lemma Presieve.functorPushforward_overForget
   (Sieve.arrows_generate_map_eq_functorPushforward (Over.forget S)).symm
 
 end CategoryTheory
+
+
+-- Dual/order lemmas discovered by the Manifold Destiny verifier-mediated learner.
+-- Paper: https://github.com/sumofagents/manifold-destiny
+section
+theorem CategoryTheory.GrothendieckTopology.eq_bot_of_isEmpty : ∀ {C : Type u} [inst : CategoryTheory.Category.{v, u} C] [IsEmpty C] (J : CategoryTheory.GrothendieckTopology C), J = ⊥ := by
+  open CategoryTheory CategoryTheory.GrothendieckTopology Category in
+    intro C inst _ J
+    rw [eq_bot_iff]
+    intro X
+    exact IsEmpty.elim ‹IsEmpty C› X
+
+end

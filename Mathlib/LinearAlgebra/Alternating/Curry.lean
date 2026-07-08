@@ -85,3 +85,24 @@ theorem curryLeft_compLinearMap (g : M₂ →ₗ[R] M) (f : M [⋀^Fin n.succ]�
   ext fun v ↦ congr_arg f <| funext fun i ↦ by cases i using Fin.cases <;> simp
 
 end AlternatingMap
+
+
+-- Dual/order lemmas discovered by the Manifold Destiny verifier-mediated learner.
+-- Paper: https://github.com/sumofagents/manifold-destiny
+section
+theorem ContinuousAlternatingMap.curryRight_add : ∀ {𝕜 : Type u_1} {E : Type u_2} {F : Type u_3} [inst : NontriviallyNormedField 𝕜] [inst_1 : NormedAddCommGroup E] [inst_2 : NormedSpace 𝕜 E] [inst_3 : NormedAddCommGroup F] [inst_4 : NormedSpace 𝕜 F] {n : ℕ} (f g : E [⋀^Fin (n + 1)]→L[𝕜] F), (f + g).curryRight = f.curryRight + g.curryRight := by
+  open ContinuousAlternatingMap in
+    intro 𝕜 E F inst inst_1 inst_2 inst_3 inst_4 n f g
+    exact (rfl)
+
+theorem ContinuousAlternatingMap.curryRight_smul : ∀ {𝕜 : Type u_1} {E : Type u_2} {F : Type u_3} [inst : NontriviallyNormedField 𝕜] [inst_1 : NormedAddCommGroup E] [inst_2 : NormedSpace 𝕜 E] [inst_3 : NormedAddCommGroup F] [inst_4 : NormedSpace 𝕜 F] {n : ℕ} (r : 𝕜) (f : E [⋀^Fin (n + 1)]→L[𝕜] F), (r • f).curryRight = r • f.curryRight := by
+  open ContinuousAlternatingMap in
+    intro 𝕜 E F inst inst_1 inst_2 inst_3 inst_4 n r f
+    exact (rfl)
+
+theorem ContinuousAlternatingMap.norm_curryRight : ∀ {𝕜 : Type u_1} {E : Type u_2} {F : Type u_3} [inst : NontriviallyNormedField 𝕜] [inst_1 : NormedAddCommGroup E] [inst_2 : NormedSpace 𝕜 E] [inst_3 : NormedAddCommGroup F] [inst_4 : NormedSpace 𝕜 F] {n : ℕ} (f : E [⋀^Fin (n + 1)]→L[𝕜] F), ‖f.curryRight‖ = ‖f‖ := by
+  open ContinuousAlternatingMap in
+    intro 𝕜 E F inst inst_1 inst_2 inst_3 inst_4 n f
+    exact (f.toContinuousMultilinearMap.curryRight_norm)
+
+end

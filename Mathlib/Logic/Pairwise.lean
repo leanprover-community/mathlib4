@@ -112,3 +112,15 @@ end Set
 theorem Pairwise.set_pairwise (h : Pairwise r) (s : Set α) : s.Pairwise r := fun _ _ _ _ w => h w
 
 end Pairwise
+
+
+-- Dual/order lemmas discovered by the Manifold Destiny verifier-mediated learner.
+-- Paper: https://github.com/sumofagents/manifold-destiny
+section
+theorem Set.iInter_sumElim : ∀ {α : Type u_1} {ι : Type u_12} {σ : Type u_13} (s : ι → Set α) (t : σ → Set α), ⋂ x, Sum.elim s t x = (⋂ x, s x) ∩ ⋂ x, t x := by
+  open Set Function in
+    intro α ι σ s t
+    ext
+    simp
+
+end

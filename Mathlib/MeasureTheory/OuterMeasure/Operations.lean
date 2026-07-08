@@ -361,3 +361,16 @@ end Basic
 end OuterMeasure
 
 end MeasureTheory
+
+
+-- Dual/order lemmas discovered by the Manifold Destiny verifier-mediated learner.
+-- Paper: https://github.com/sumofagents/manifold-destiny
+section
+theorem MeasureTheory.OuterMeasure.restrict_biSup : ∀ {α : Type u_1} {ι : Type u_2} {I : Set ι}, I.Nonempty → ∀ (s : Set α) (m : ι → MeasureTheory.OuterMeasure α), (MeasureTheory.OuterMeasure.restrict s) (⨆ i ∈ I, m i) = ⨆ i ∈ I, (MeasureTheory.OuterMeasure.restrict s) (m i) := by
+  open MeasureTheory MeasureTheory.OuterMeasure Set Function Filter in
+    intro α ι I hI s m
+    haveI := hI.to_subtype
+    rw [← iSup_subtype'', ← iSup_subtype'']
+    exact restrict_iSup _ _
+
+end

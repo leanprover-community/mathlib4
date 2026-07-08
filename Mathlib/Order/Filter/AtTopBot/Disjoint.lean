@@ -48,3 +48,14 @@ theorem disjoint_atBot_atTop [PartialOrder α] [Nontrivial α] :
     exact Iic_disjoint_Ici.2 hle
 
 end Filter
+
+
+-- Dual/order lemmas discovered by the Manifold Destiny verifier-mediated learner.
+-- Paper: https://github.com/sumofagents/manifold-destiny
+section
+theorem Filter.Tendsto.eventually_ne_atBot' : ∀ {α : Type u_3} {β : Type u_4} [inst : Preorder β] [NoBotOrder β] {f : α → β} {l : Filter α}, Filter.Tendsto f l Filter.atBot → ∀ (c : α), ∀ᶠ (x : α) in l, x ≠ c := by
+  open Filter Filter.Tendsto Set in
+    intro α β inst _ f l hf c
+    exact ((hf.eventually_ne_atBot (f c)).mono fun _ => ne_of_apply_ne f)
+
+end

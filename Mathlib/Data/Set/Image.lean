@@ -1412,3 +1412,29 @@ lemma sigma_mk_preimage_image_eq_self : Sigma.mk i ⁻¹' Sigma.mk i '' s = s :=
   simp [image]
 
 end Sigma
+
+
+-- Dual/order lemmas discovered by the Manifold Destiny verifier-mediated learner.
+-- Paper: https://github.com/sumofagents/manifold-destiny
+section
+theorem Set.inter_sigma : ∀ {ι : Type u_1} {α : ι → Type u_3} {s₁ s₂ : Set ι} {t : (i : ι) → Set (α i)}, (s₁ ∩ s₂).sigma t = s₁.sigma t ∩ s₂.sigma t := by
+  open Set in
+    intro ι α s₁ s₂ t
+    grind
+
+theorem Nat.zero_inter_range_succ : {0} ∩ Set.range Nat.succ = ∅ := by
+  open Nat Set in
+    ext n
+    cases n <;> simp
+
+theorem isOpen_iUnion₂ : ∀ {ι : Sort u_1} {κ : ι → Sort u_2} {α : Type u_3} [inst : TopologicalSpace α] [AlexandrovDiscrete α] {f : (i : ι) → κ i → Set α}, (∀ (i : ι) (j : κ i), IsOpen (f i j)) → IsOpen (⋃ i, ⋃ j, f i j) := by
+  open Filter Set TopologicalSpace Topology in
+    intro ι κ α inst _ f hf
+    exact (isOpen_iUnion fun _ ↦ isOpen_iUnion <| hf _)
+
+theorem isClosed_iInter₂ : ∀ {ι : Sort u_1} {κ : ι → Sort u_2} {α : Type u_3} [inst : TopologicalSpace α] [AlexandrovDiscrete α] {f : (i : ι) → κ i → Set α}, (∀ (i : ι) (j : κ i), IsClosed (f i j)) → IsClosed (⋂ i, ⋂ j, f i j) := by
+  open Filter Set TopologicalSpace Topology in
+    intro ι κ α inst _ f hf
+    exact (isClosed_iInter fun _ ↦ isClosed_iInter <| hf _)
+
+end

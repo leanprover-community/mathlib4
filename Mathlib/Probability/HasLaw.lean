@@ -246,3 +246,16 @@ lemma iIndepFun_iff_hasLaw_pi_pi [IsProbabilityMeasure P] {ι : Type*} [Fintype 
     simp_rw [fun i ↦ (hX i).map_eq]
 
 end ProbabilityTheory
+
+
+-- Dual/order lemmas discovered by the Manifold Destiny verifier-mediated learner.
+-- Paper: https://github.com/sumofagents/manifold-destiny
+section
+theorem ProbabilityTheory.IdentDistrib.essInf_eq : ∀ {α : Type u_1} {β : Type u_2} {γ : Type u_3} [inst : MeasurableSpace α] [inst_1 : MeasurableSpace β] [inst_2 : MeasurableSpace γ] {μ : MeasureTheory.Measure α} {ν : MeasureTheory.Measure β} {f : α → γ} {g : β → γ} [inst_3 : ConditionallyCompleteLinearOrder γ] [inst_4 : TopologicalSpace γ] [OpensMeasurableSpace γ] [OrderClosedTopology γ], ProbabilityTheory.IdentDistrib f g μ ν → essInf f μ = essInf g ν := by
+  open ProbabilityTheory ProbabilityTheory.IdentDistrib MeasureTheory Filter Finset TopologicalSpace in
+    intro α β γ inst inst_1 inst_2 μ ν f g inst_3 inst_4 _ _ h
+    have I : ∀ a, μ {x : α | a > f x} = ν {x : β | a > g x} := fun a =>
+      h.measure_mem_eq measurableSet_Iio
+    simp_rw [essInf_eq_sSup, I]
+
+end

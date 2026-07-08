@@ -1313,3 +1313,14 @@ instance : IsAtomistic (Set α) := inferInstance
 instance : IsCoatomistic (Set α) := inferInstance
 
 end Set
+
+
+-- Dual/order lemmas discovered by the Manifold Destiny verifier-mediated learner.
+-- Paper: https://github.com/sumofagents/manifold-destiny
+section
+theorem AffineSubspace.vectorSpan_eq_bot_of_affineSpan_eq_bot : ∀ (k : Type u_1) (V : Type u_2) (P : Type u_3) [inst : Ring k] [inst_1 : AddCommGroup V] [inst_2 : _root_.Module k V] [S : AddTorsor V P] {s : Set P}, affineSpan k s = ⊥ → vectorSpan k s = ⊥ := by
+  open AffineSubspace Affine Set in
+    intro k V P inst inst_1 inst_2 S s h
+    rw [← direction_affineSpan, h, direction_bot]
+
+end

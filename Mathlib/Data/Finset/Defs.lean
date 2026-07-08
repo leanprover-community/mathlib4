@@ -380,3 +380,19 @@ theorem pairwise_subtype_iff_pairwise_finset (r : α → α → Prop) :
 end Pairwise
 
 end Finset
+
+
+-- Dual/order lemmas discovered by the Manifold Destiny verifier-mediated learner.
+-- Paper: https://github.com/sumofagents/manifold-destiny
+section
+theorem Finset.inter_union_cancel_left : ∀ {α : Type u_1} [inst : DecidableEq α] {s t : Finset α}, (s ∩ t) ∪ s = s := by
+  open Finset Multiset Subtype Function in
+    intro α inst s t
+    grind
+
+theorem Finset.inter_union_cancel_right : ∀ {α : Type u_1} [inst : DecidableEq α] {s t : Finset α}, (s ∩ t) ∪ t = t := by
+  open Finset Multiset Subtype Function in
+    intro α inst s t
+    grind
+
+end

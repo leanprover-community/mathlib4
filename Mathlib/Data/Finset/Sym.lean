@@ -302,3 +302,14 @@ theorem val_prod_eq_prod_count_pow [CommMonoid α] {n : ℕ} {k : Sym α n}
 end Sym
 
 end Finset
+
+
+-- Dual/order lemmas discovered by the Manifold Destiny verifier-mediated learner.
+-- Paper: https://github.com/sumofagents/manifold-destiny
+section
+theorem LinearMap.BilinForm.separatingRight_of_anisotropic : ∀ {R : Type u_3} {M : Type u_4} [inst : CommSemiring R] [inst_1 : AddCommMonoid M] [inst_2 : _root_.Module R M] {B : LinearMap.BilinForm R M}, (LinearMap.BilinMap.toQuadraticMap B).Anisotropic → LinearMap.SeparatingRight B := by
+  open LinearMap LinearMap.BilinForm QuadraticMap Matrix Module in
+    intro R M inst inst_1 inst_2 B hB
+    exact (fun x hx => hB _ (hx x))
+
+end

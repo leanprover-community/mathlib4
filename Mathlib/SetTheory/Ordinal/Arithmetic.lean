@@ -1150,3 +1150,14 @@ abbrev orderBotAleph0OrdToType : OrderBot Cardinal.aleph0.{u}.ord.ToType :=
   WellFoundedLT.toOrderBot _
 
 end Cardinal
+
+
+-- Dual/order lemmas discovered by the Manifold Destiny verifier-mediated learner.
+-- Paper: https://github.com/sumofagents/manifold-destiny
+section
+theorem Ordinal.iInf_eq_of_range_eq : ∀ {ι : Sort u_3} {ι' : Sort u_4} {f : ι → Ordinal.{u_5}} {g : ι' → Ordinal.{u_5}}, Set.range f = Set.range g → iInf f = iInf g := by
+  open Ordinal Function Cardinal Set Order in
+    intro ι ι' f g h
+    exact (congr_arg _ h)
+
+end

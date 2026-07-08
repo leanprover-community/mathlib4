@@ -58,3 +58,14 @@ theorem mem_attach (s : Finset α) : ∀ x, x ∈ s.attach :=
 theorem coe_attach (s : Finset α) : (s.attach : Set s) = Set.univ := by ext; simp
 
 end Finset
+
+
+-- Dual/order lemmas discovered by the Manifold Destiny verifier-mediated learner.
+-- Paper: https://github.com/sumofagents/manifold-destiny
+section
+theorem Finset.erase_inter_distrib : ∀ {α : Type u_1} [inst : DecidableEq α] (s t : Finset α) (a : α), (s ∩ t).erase a = s.erase a ∩ t.erase a := by
+  open Finset Multiset Subtype Function in
+    intro α inst s t a
+    grind
+
+end

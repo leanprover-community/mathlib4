@@ -923,3 +923,14 @@ theorem contMDiffOn_of_locally_contMDiffOn
 theorem contMDiff_of_locally_contMDiffOn (h : ∀ x, ∃ u, IsOpen u ∧ x ∈ u ∧ ContMDiffOn I I' n f u) :
     ContMDiff I I' n f :=
   (contDiffWithinAt_localInvariantProp n).liftProp_of_locally_liftPropOn h
+
+
+-- Dual/order lemmas discovered by the Manifold Destiny verifier-mediated learner.
+-- Paper: https://github.com/sumofagents/manifold-destiny
+section
+theorem ContMDiff.piecewise_Ici : ∀ {n : WithBot ℕ∞} {E : Type u_11} [inst : NormedAddCommGroup E] [inst_1 : NormedSpace ℝ E] {H : Type u_12} [inst_2 : TopologicalSpace H] {I : ModelWithCorners ℝ E H} {M : Type u_13} [inst_3 : TopologicalSpace M] [inst_4 : ChartedSpace H M] {f g : ℝ → M} {s : ℝ}, ContMDiff (modelWithCornersSelf ℝ ℝ) I n f → ContMDiff (modelWithCornersSelf ℝ ℝ) I n g → f =ᶠ[nhds s] g → ContMDiff (modelWithCornersSelf ℝ ℝ) I n ((Set.Ici s).piecewise f g) := by
+  open ContMDiff Filter Function Set Topology in
+    intro n E inst inst_1 H inst_2 I M inst_3 inst_4 f g s hf hg hfg
+    exact (hf.piecewise hg (by simpa using hfg))
+
+end

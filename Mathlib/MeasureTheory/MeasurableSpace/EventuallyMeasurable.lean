@@ -119,3 +119,14 @@ theorem Measurable.eventuallyMeasurable_of_eventuallyEq
   hf.eventuallyMeasurable.congr hgf
 
 end EventuallyMeasurable
+
+
+-- Dual/order lemmas discovered by the Manifold Destiny verifier-mediated learner.
+-- Paper: https://github.com/sumofagents/manifold-destiny
+section
+theorem MeasureTheory.NullMeasurableSet.inter_null : ∀ {α : Type u_2} {m0 : MeasurableSpace α} {μ : MeasureTheory.Measure α} {s t : Set α}, MeasureTheory.NullMeasurableSet s μ → μ t = 0 → MeasureTheory.NullMeasurableSet (s ∩ t) μ := by
+  open MeasureTheory MeasureTheory.NullMeasurableSet Filter Set Encodable in
+    intro α m0 μ s t hs ht
+    exact (hs.inter (of_null ht))
+
+end

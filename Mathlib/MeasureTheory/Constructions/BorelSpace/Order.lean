@@ -1118,3 +1118,14 @@ theorem measure_eq_measure_preimage_add_measure_tsum_Ico_zpow {α : Type*} {mα 
   rw [A, B, C, add_assoc]
 
 end ENNReal
+
+
+-- Dual/order lemmas discovered by the Manifold Destiny verifier-mediated learner.
+-- Paper: https://github.com/sumofagents/manifold-destiny
+section
+theorem StieltjesFunction.id_rightLim : ∀ (x : ℝ), Function.rightLim (↑StieltjesFunction.id) x = x := by
+  open StieltjesFunction Set Filter Function ENNReal NNReal Topology MeasureTheory in
+    intro x
+    exact (continuousWithinAt_id.rightLim_eq)
+
+end

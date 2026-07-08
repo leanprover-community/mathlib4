@@ -1088,3 +1088,79 @@ protected lemma setSubtypeComm_symm_apply (p : α → Prop) (s : {s // ∀ a ∈
   rfl
 
 end Equiv
+
+
+-- Dual/order lemmas discovered by the Manifold Destiny verifier-mediated learner.
+-- Paper: https://github.com/sumofagents/manifold-destiny
+section
+theorem Set.codisjoint_empty : ∀ {α : Type u} {s : Set α}, Codisjoint s ∅ ↔ s = Set.univ := by
+  open Set Function in
+    intro α s
+    exact (codisjoint_bot)
+
+theorem Set.empty_codisjoint : ∀ {α : Type u} {s : Set α}, Codisjoint ∅ s ↔ s = Set.univ := by
+  open Set Function in
+    intro α s
+    exact (bot_codisjoint)
+
+theorem Codisjoint.union_left : ∀ {α : Type u_1} {s t : Set α} (u : Set α), Codisjoint s t → Codisjoint (s ∪ u) t := by
+  open Disjoint Function in
+    intro α s t u h
+    exact (h.sup_left _)
+
+theorem Set.codisjoint_iff_union_eq_univ : ∀ {α : Type u} {s t : Set α}, Codisjoint s t ↔ s ∪ t = Set.univ := by
+  open Set Function in
+    intro α s t
+    exact (codisjoint_iff)
+
+theorem Codisjoint.union_left' : ∀ {α : Type u_1} {s t : Set α} (u : Set α), Codisjoint s t → Codisjoint (u ∪ s) t := by
+  open Disjoint Function in
+    intro α s t u h
+    exact (h.sup_left' _)
+
+theorem Codisjoint.union_right : ∀ {α : Type u_1} {s t : Set α} (u : Set α), Codisjoint s t → Codisjoint s (t ∪ u) := by
+  open Disjoint Function in
+    intro α s t u h
+    exact (h.sup_right _)
+
+theorem Codisjoint.union_right' : ∀ {α : Type u_1} {s t : Set α} (u : Set α), Codisjoint s t → Codisjoint s (u ∪ t) := by
+  open Disjoint Function in
+    intro α s t u h
+    exact (h.sup_right' _)
+
+theorem Codisjoint.inter_left : ∀ {α : Type u_1} {s t u : Set α}, Codisjoint s u → Codisjoint t u → Codisjoint (s ∩ t) u := by
+  open Disjoint Function in
+    intro α s t u hs ht
+    exact (hs.inf_left ht)
+
+theorem Codisjoint.union_eq : ∀ {α : Type u} {s t : Set α}, Codisjoint s t → s ∪ t = Set.univ := by
+  open Disjoint Function in
+    intro α s t
+    exact (Codisjoint.eq_top)
+
+theorem Codisjoint.inter_right : ∀ {α : Type u_1} {s t u : Set α}, Codisjoint s t → Codisjoint s u → Codisjoint s (t ∩ u) := by
+  open Disjoint Function in
+    intro α s t u ht hu
+    exact (ht.inf_right hu)
+
+theorem Set.codisjoint_inter_left : ∀ {α : Type u} {s t u : Set α}, Codisjoint (s ∩ t) u ↔ Codisjoint s u ∧ Codisjoint t u := by
+  open Set Function in
+    intro α s t u
+    exact (codisjoint_inf_left)
+
+theorem Set.univ_codisjoint : ∀ {α : Type u} (s : Set α), Codisjoint Set.univ s := by
+  open Set Function in
+    intro α s
+    exact (codisjoint_top_left)
+
+theorem Set.codisjoint_univ : ∀ {α : Type u} (s : Set α), Codisjoint s Set.univ := by
+  open Set Function in
+    intro α s
+    exact (codisjoint_top_right)
+
+theorem Set.codisjoint_inter_right : ∀ {α : Type u} {s t u : Set α}, Codisjoint s (t ∩ u) ↔ Codisjoint s t ∧ Codisjoint s u := by
+  open Set Function in
+    intro α s t u
+    exact (codisjoint_inf_right)
+
+end

@@ -589,3 +589,15 @@ lemma Function.Exact.linearEquivOfSurjective_symm_apply (h : Function.Exact f g)
   simp [LinearEquiv.symm_apply_eq]
 
 end Ring
+
+
+-- Dual/order lemmas discovered by the Manifold Destiny verifier-mediated learner.
+-- Paper: https://github.com/sumofagents/manifold-destiny
+section
+theorem LieAlgebra.Extension.lie_apply_proj_of_rightInverse_eq : ∀ {R : Type u_1} {L : Type u_3} {M : Type u_4} [inst : CommRing R] [inst_1 : LieRing L] [inst_2 : LieAlgebra R L] [inst_3 : LieRing M] [inst_4 : LieAlgebra R M] [IsLieAbelian M] (E : LieAlgebra.Extension R M L) {s : L →ₗ[R] E.L}, Function.RightInverse ⇑E.proj ⇑s → ∀ (x : E.L) (y : ↥E.proj.ker), ⁅s (E.proj x), y⁆ = ⁅x, y⁆ := by
+  open LieAlgebra LieAlgebra.Extension Function LieModule.Cohomology in
+    intro R L M inst inst_1 inst_2 inst_3 inst_4 _ E s hs x y
+    rw [← sub_eq_zero, ← sub_lie]
+    exact trivial_lie_zero E.proj.ker E.proj.ker ⟨_, (by simp [hs.eq])⟩ y
+
+end

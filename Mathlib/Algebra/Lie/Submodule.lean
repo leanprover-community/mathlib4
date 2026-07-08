@@ -1023,3 +1023,14 @@ theorem LieSubalgebra.topEquiv_apply (x : (⊤ : LieSubalgebra R L)) : LieSubalg
   rfl
 
 end TopEquiv
+
+
+-- Dual/order lemmas discovered by the Manifold Destiny verifier-mediated learner.
+-- Paper: https://github.com/sumofagents/manifold-destiny
+section
+theorem LieIdeal.bot_toLieSubalgebra : ∀ {R : Type u} {L : Type v} [inst : CommRing R] [inst_1 : LieRing L] [inst_2 : LieAlgebra R L], LieIdeal.toLieSubalgebra R L ⊥ = ⊥ := by
+  open LieIdeal in
+    intro R L inst inst_1 inst_2
+    exact (rfl)
+
+end

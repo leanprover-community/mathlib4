@@ -1068,3 +1068,16 @@ end
 end ModuleCat
 
 end ModuleCat
+
+
+-- Dual/order lemmas discovered by the Manifold Destiny verifier-mediated learner.
+-- Paper: https://github.com/sumofagents/manifold-destiny
+section
+theorem ModuleCat.preservesFiniteLimits_tensorRight_of_ringHomFlat : ∀ {A B : Type u} [inst : CommRing A] [inst_1 : CommRing B] {f : A →+* B}, f.Flat → CategoryTheory.Limits.PreservesFiniteLimits (CategoryTheory.MonoidalCategory.tensorRight ((ModuleCat.restrictScalars f).obj (ModuleCat.of B B))) := by
+  open ModuleCat CategoryTheory Comonad Limits MonoidalCategory in
+    intro A B inst inst_1 f hf
+    algebraize [f]
+    change PreservesFiniteLimits <| tensorRight (ModuleCat.of A B)
+    infer_instance
+
+end

@@ -1193,3 +1193,19 @@ noncomputable def dualDistribEquiv : Dual R M ⊗[R] Dual R N ≃ₗ[R] Dual R (
   dualDistribEquivOfBasis (Module.Free.chooseBasis R M) (Module.Free.chooseBasis R N)
 
 end TensorProduct
+
+
+-- Dual/order lemmas discovered by the Manifold Destiny verifier-mediated learner.
+-- Paper: https://github.com/sumofagents/manifold-destiny
+section
+theorem LinearMap.IsPerfectCompl.left_bot_iff : ∀ {R : Type u_1} {M : Type u_2} {N : Type u_3} [inst : CommRing R] [inst_1 : AddCommGroup M] [inst_2 : _root_.Module R M] [inst_3 : AddCommGroup N] [inst_4 : _root_.Module R N] {p : M →ₗ[R] N →ₗ[R] R} [inst_5 : p.IsPerfPair] {V : Submodule R N}, p.IsPerfectCompl ⊥ V ↔ V = ⊥ := by
+  open LinearMap LinearMap.IsPerfectCompl Function Module in
+    intro R M N inst inst_1 inst_2 inst_3 inst_4 p inst_5 V
+    refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+    · exact eq_bot_of_isCompl_top <| by simpa using h.isCompl_right
+    · rw [h]
+      exact
+        { isCompl_left := by simpa using isCompl_bot_top
+          isCompl_right := by simpa using isCompl_bot_top }
+
+end

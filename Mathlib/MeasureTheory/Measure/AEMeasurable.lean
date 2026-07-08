@@ -458,3 +458,14 @@ instance (μ : Measure α) (f : α → β) [SFinite μ] : SFinite (μ.map f) := 
 
 end Measure
 end MeasureTheory
+
+
+-- Dual/order lemmas discovered by the Manifold Destiny verifier-mediated learner.
+-- Paper: https://github.com/sumofagents/manifold-destiny
+section
+theorem Finset.measurable_inf' : ∀ {α : Type u_2} {m : MeasurableSpace α} {δ : Type u_3} [inst : MeasurableSpace δ] [inst_1 : SemilatticeInf α] [MeasurableInf₂ α] {ι : Type u_4} {s : Finset ι} (hs : s.Nonempty) {f : ι → δ → α}, (∀ n ∈ s, Measurable (f n)) → Measurable (s.inf' hs f) := by
+  open Finset MeasureTheory in
+    intro α m δ inst inst_1 _ ι s hs f hf
+    exact (Finset.inf'_induction hs _ (fun _f hf _g hg => hf.inf hg) fun n hn => hf n hn)
+
+end

@@ -83,3 +83,19 @@ lemma IsCover.of_maximal_isSeparated [U.IsRefl] [U.IsSymm]
 @[deprecated (since := "2025-12-19")] alias isCover_relId := isCover_id
 
 end SetRel
+
+
+-- Dual/order lemmas discovered by the Manifold Destiny verifier-mediated learner.
+-- Paper: https://github.com/sumofagents/manifold-destiny
+section
+theorem UniformSpace.ball_union : ∀ {β : Type ub} (x : β) (V W : Set (β × β)), UniformSpace.ball x (V ∪ W) = UniformSpace.ball x V ∪ UniformSpace.ball x W := by
+  open UniformSpace Set Filter Topology in
+    intro β x V W
+    exact (preimage_union)
+
+theorem UniformSpace.ball_iUnion : ∀ {β : Type ub} {ι : Sort u_1} {x : β} {V : ι → Set (β × β)}, UniformSpace.ball x (⋃ i, V i) = ⋃ i, UniformSpace.ball x (V i) := by
+  open UniformSpace Set Filter Topology in
+    intro β ι x V
+    exact (preimage_iUnion)
+
+end

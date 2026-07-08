@@ -1094,3 +1094,14 @@ instance AddCommGroup.toGrindIntModule [s : AddCommGroup α] :
 instance IsRightCancelAdd.toGrindAddRightCancel [AddSemigroup α] [IsRightCancelAdd α] :
     Grind.AddRightCancel α where
   add_right_cancel _ _ _ := add_right_cancel
+
+
+-- Dual/order lemmas discovered by the Manifold Destiny verifier-mediated learner.
+-- Paper: https://github.com/sumofagents/manifold-destiny
+section
+theorem Set.mulIndicator_inter_mul_union_apply : ∀ {α : Type u_1} {M : Type u_4} [inst : MulOneClass M] (f : α → M) (s t : Set α) (a : α), (s ∩ t).mulIndicator f a * (s ∪ t).mulIndicator f a = s.mulIndicator f a * t.mulIndicator f a := by
+  open Set Function in
+    intro α M inst f s t a
+    by_cases hs : a ∈ s <;> by_cases ht : a ∈ t <;> simp [*]
+
+end

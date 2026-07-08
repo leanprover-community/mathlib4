@@ -911,3 +911,14 @@ def Lattice.ofIsLUBofIsGLB [PartialOrder α] (sup inf : α → α → α)
     Lattice α where
   __ := SemilatticeSup.ofIsLUB sup isLUB_pair
   __ := SemilatticeInf.ofIsGLB inf isGLB_pair
+
+
+-- Dual/order lemmas discovered by the Manifold Destiny verifier-mediated learner.
+-- Paper: https://github.com/sumofagents/manifold-destiny
+section
+theorem Set.Ici.eq_bot_iff : ∀ {α : Type u_1} {a : α} [inst : Preorder α] {x : ↑(Set.Ici a)}, x = ⊥ ↔ ↑x = a := by
+  open Set Set.Iic in
+    intro α a inst x
+    simp [Subtype.ext_iff]
+
+end

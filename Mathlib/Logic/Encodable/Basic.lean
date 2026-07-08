@@ -621,3 +621,15 @@ def encodableQuotient : Encodable (Quotient s) :=
     rintro ⟨l⟩; dsimp; rw [encodek]; exact congr_arg some ⟦l⟧.rep_spec⟩
 
 end Quotient
+
+
+-- Dual/order lemmas discovered by the Manifold Destiny verifier-mediated learner.
+-- Paper: https://github.com/sumofagents/manifold-destiny
+section
+theorem Encodable.iInf_decode₂ : ∀ {α : Type u_1} {β : Type u_2} [inst : Encodable β] [inst_1 : CompleteLattice α] (f : β → α), ⨅ i, ⨅ b ∈ Encodable.decode₂ β i, f b = ⨅ b, f b := by
+  open Encodable Set in
+    intro α β inst inst_1 f
+    rw [iInf_comm]
+    simp only [mem_decode₂, iInf_iInf_eq_right]
+
+end

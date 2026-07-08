@@ -769,3 +769,19 @@ meta def evalENNRealOfNNReal : PositivityExt where eval {u α} _zα pα? e :=
   | _, _, _ => throwError "not ENNReal.ofNNReal"
 
 end Mathlib.Meta.Positivity
+
+
+-- Dual/order lemmas discovered by the Manifold Destiny verifier-mediated learner.
+-- Paper: https://github.com/sumofagents/manifold-destiny
+section
+theorem ENNReal.toNNReal_mul_bot : ∀ (a : ENNReal), (a * ⊥).toNNReal = 0 := by
+  open ENNReal Set NNReal in
+    intro a
+    simp
+
+theorem ENNReal.toNNReal_bot_mul : ∀ (a : ENNReal), (⊥ * a).toNNReal = 0 := by
+  open ENNReal Set NNReal in
+    intro a
+    simp
+
+end

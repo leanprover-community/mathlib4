@@ -445,3 +445,20 @@ lemma Arrow.functor_ext {F G : C ⥤ D} (h : ∀ ⦃X Y : C⦄ (f : X ⟶ Y),
     tauto)
 
 end CategoryTheory
+
+
+-- Dual/order lemmas discovered by the Manifold Destiny verifier-mediated learner.
+-- Paper: https://github.com/sumofagents/manifold-destiny
+section
+theorem CategoryTheory.MorphismProperty.toSet_min : ∀ {C : Type u} [inst : CategoryTheory.Category.{v, u} C] (W₁ W₂ : CategoryTheory.MorphismProperty C), (W₁ ⊓ W₂).toSet = W₁.toSet ∩ W₂.toSet := by
+  open CategoryTheory CategoryTheory.MorphismProperty Opposite in
+    intro C inst W₁ W₂
+    exact (rfl)
+
+theorem CategoryTheory.MorphismProperty.toSet_iInf : ∀ {C : Type u} [inst : CategoryTheory.Category.{v, u} C] {ι : Type u_3} (W : ι → CategoryTheory.MorphismProperty C), (⨅ i, W i).toSet = ⋂ i, (W i).toSet := by
+  open CategoryTheory CategoryTheory.MorphismProperty Opposite in
+    intro C inst ι W
+    ext
+    simp [mem_toSet_iff]
+
+end

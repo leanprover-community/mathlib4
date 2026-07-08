@@ -33,3 +33,14 @@ lemma HasPushout.of_createsColimit (F : C ⥤ D) {X Y S : C} (f : S ⟶ X) (g : 
   hasColimit_of_created _ F
 
 end CategoryTheory.Limits
+
+
+-- Dual/order lemmas discovered by the Manifold Destiny verifier-mediated learner.
+-- Paper: https://github.com/sumofagents/manifold-destiny
+section
+theorem CategoryTheory.Precoverage.comap_sup : ∀ {C : Type u} [inst : CategoryTheory.Category.{v, u} C] {D : Type u_1} [inst_1 : CategoryTheory.Category.{v_1, u_1} D] {F : CategoryTheory.Functor C D} {J K : CategoryTheory.Precoverage D}, CategoryTheory.Precoverage.comap F (J ⊔ K) = CategoryTheory.Precoverage.comap F J ⊔ CategoryTheory.Precoverage.comap F K := by
+  open CategoryTheory CategoryTheory.Precoverage Limits in
+    intro C inst D inst_1 F J K
+    exact (rfl)
+
+end

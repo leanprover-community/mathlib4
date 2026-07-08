@@ -1025,3 +1025,14 @@ lemma exists_eq_mgraphOn_univ {s : Set (β × γ)}
     fun a b h ↦ congr_arg (Prod.snd ∘ (Subtype.val : s → β × γ)) (hs₁.injective h)
 
 end Set
+
+
+-- Dual/order lemmas discovered by the Manifold Destiny verifier-mediated learner.
+-- Paper: https://github.com/sumofagents/manifold-destiny
+section
+theorem FirstOrder.Language.Formula.equivSentence_sup : ∀ {L : FirstOrder.Language} {α : Type u'} (φ ψ : L.Formula α), FirstOrder.Language.Formula.equivSentence (φ ⊔ ψ) = FirstOrder.Language.Formula.equivSentence φ ⊔ FirstOrder.Language.Formula.equivSentence ψ := by
+  open FirstOrder FirstOrder.Language FirstOrder.Language.Formula Structure Fin Finset Term BoundedFormula in
+    intro L α φ ψ
+    exact (rfl)
+
+end

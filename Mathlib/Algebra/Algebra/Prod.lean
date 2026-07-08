@@ -160,3 +160,14 @@ def uniqueProd [Unique B] : (B × A) ≃ₐ[R] A where
   commutes' _ := rfl
 
 end AlgEquiv
+
+
+-- Dual/order lemmas discovered by the Manifold Destiny verifier-mediated learner.
+-- Paper: https://github.com/sumofagents/manifold-destiny
+section
+theorem LinearMap.inf_range_inl_inr : ∀ {R : Type u} {M : Type v} {M₂ : Type w} [inst : Semiring R] [inst_1 : AddCommMonoid M] [inst_2 : AddCommMonoid M₂] [inst_3 : _root_.Module R M] [inst_4 : _root_.Module R M₂], (LinearMap.inl R M M₂).range ⊓ (LinearMap.inr R M M₂).range = ⊥ := by
+  open LinearMap Submodule in
+    intro R M M₂ inst inst_1 inst_2 inst_3 inst_4
+    exact (IsCompl.inf_eq_bot isCompl_range_inl_inr)
+
+end

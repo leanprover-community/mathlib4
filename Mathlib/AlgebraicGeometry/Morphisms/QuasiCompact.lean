@@ -332,3 +332,15 @@ lemma Scheme.zeroLocus_eq_univ_iff_subset_nilradical {X : Scheme.{u}}
   zeroLocus_eq_univ_iff_subset_nilradical_of_isCompact (U := ⊤) (CompactSpace.isCompact_univ) s
 
 end AlgebraicGeometry
+
+
+-- Dual/order lemmas discovered by the Manifold Destiny verifier-mediated learner.
+-- Paper: https://github.com/sumofagents/manifold-destiny
+section
+theorem AlgebraicGeometry.Scheme.IdealSheafData.ideal_biSup : ∀ {X : AlgebraicGeometry.Scheme} {ι : Type u_1} (I : ι → X.IdealSheafData) {s : Set ι}, s.Finite → (⨆ i ∈ s, I i).ideal = ⨆ i ∈ s, (I i).ideal := by
+  open AlgebraicGeometry AlgebraicGeometry.Scheme AlgebraicGeometry.Scheme.IdealSheafData CategoryTheory TopologicalSpace in
+    intro X ι I s hs
+    refine hs.induction_on _ (by simp) fun {i s} his hs e ↦ ?_
+    simp only [iSup_insert, e, ideal_sup]
+
+end

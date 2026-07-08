@@ -405,3 +405,59 @@ map. In this lemma we state that for each `i : Fin n` we have `(e i : ℕ) = (i 
   · rwa [← h j hj (hj.trans hi), ← lt_def, e.lt_iff_lt]
 
 end Fin
+
+
+-- Dual/order lemmas discovered by the Manifold Destiny verifier-mediated learner.
+-- Paper: https://github.com/sumofagents/manifold-destiny
+section
+theorem Fin.image_rev_uIoo : ∀ {n : ℕ} (i j : Fin n), Fin.rev '' Set.uIoo i j = Set.uIoo i.rev j.rev := by
+  open Fin Function Set in
+    intro n i j
+    simp [uIoo, ← rev_anti.map_min, ← rev_anti.map_max]
+
+theorem Fin.image_rev_Ici : ∀ {n : ℕ} (i : Fin n), Fin.rev '' Set.Ici i = Set.Iic i.rev := by
+  open Fin Function Set in
+    intro n i
+    ext; simp [le_rev_iff]
+
+theorem Fin.image_rev_Iic : ∀ {n : ℕ} (i : Fin n), Fin.rev '' Set.Iic i = Set.Ici i.rev := by
+  open Fin Function Set in
+    intro n i
+    ext; simp [rev_le_iff]
+
+theorem Fin.image_rev_Iio : ∀ {n : ℕ} (i : Fin n), Fin.rev '' Set.Iio i = Set.Ioi i.rev := by
+  open Fin Function Set in
+    intro n i
+    ext; simp [rev_lt_iff]
+
+theorem Fin.image_rev_Ioi : ∀ {n : ℕ} (i : Fin n), Fin.rev '' Set.Ioi i = Set.Iio i.rev := by
+  open Fin Function Set in
+    intro n i
+    ext; simp [lt_rev_iff]
+
+theorem Fin.image_rev_Icc : ∀ {n : ℕ} (i j : Fin n), Fin.rev '' Set.Icc i j = Set.Icc j.rev i.rev := by
+  open Fin Function Set in
+    intro n i j
+    ext; simp [le_rev_iff, rev_le_iff, and_comm]
+
+theorem Fin.image_rev_Ico : ∀ {n : ℕ} (i j : Fin n), Fin.rev '' Set.Ico i j = Set.Ioc j.rev i.rev := by
+  open Fin Function Set in
+    intro n i j
+    ext; simp [le_rev_iff, rev_lt_iff, and_comm]
+
+theorem Fin.image_rev_Ioc : ∀ {n : ℕ} (i j : Fin n), Fin.rev '' Set.Ioc i j = Set.Ico j.rev i.rev := by
+  open Fin Function Set in
+    intro n i j
+    ext; simp [lt_rev_iff, rev_le_iff, and_comm]
+
+theorem Fin.image_rev_Ioo : ∀ {n : ℕ} (i j : Fin n), Fin.rev '' Set.Ioo i j = Set.Ioo j.rev i.rev := by
+  open Fin Function Set in
+    intro n i j
+    ext; simp [lt_rev_iff, rev_lt_iff, and_comm]
+
+theorem Fin.image_rev_uIcc : ∀ {n : ℕ} (i j : Fin n), Fin.rev '' Set.uIcc i j = Set.uIcc i.rev j.rev := by
+  open Fin Function Set in
+    intro n i j
+    simp [uIcc, ← rev_anti.map_min, ← rev_anti.map_max]
+
+end

@@ -771,3 +771,29 @@ lemma Iio_False : Iio False = ∅ := by aesop
 lemma Ioi_True : Ioi True = ∅ := by aesop
 
 end Set
+
+
+-- Dual/order lemmas discovered by the Manifold Destiny verifier-mediated learner.
+-- Paper: https://github.com/sumofagents/manifold-destiny
+section
+theorem Set.Ioc_inter_Ioc_left : ∀ {α : Type u_1} [inst : LinearOrder α] {a b c : α}, Set.Ioc a c ∩ Set.Ioc b c = Set.Ioc (max a b) c := by
+  open Set Function in
+    intro α inst a b c
+    grind
+
+theorem Set.Ioc_inter_Ioc_right : ∀ {α : Type u_1} [inst : LinearOrder α] {a b c : α}, Set.Ioc a b ∩ Set.Ioc a c = Set.Ioc a (min b c) := by
+  open Set Function in
+    intro α inst a b c
+    grind
+
+theorem Set.Ioc_inter_Ioc_symm : ∀ {α : Type u_1} [inst : LinearOrder α] {a b : α}, Set.Ioc a b ∩ Set.Ioc b a = Set.Ioc (max a b) (min a b) := by
+  open Set Function in
+    intro α inst a b
+    grind
+
+theorem Set.Ioc_inter_Ioc_inter_Ioc_cycle : ∀ {α : Type u_1} [inst : LinearOrder α] {a b c : α}, Set.Ioc a b ∩ Set.Ioc b c ∩ Set.Ioc c a = Set.Ioc (max a (max b c)) (min a (min b c)) := by
+  open Set Function in
+    intro α inst a b c
+    grind
+
+end

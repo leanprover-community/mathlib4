@@ -215,3 +215,14 @@ theorem nat_trans_naturality (f : F' ⟶ G.toFunctor) {U V : C} (i : U ⟶ V)
 end Subfunctor
 
 end CategoryTheory
+
+
+-- Dual/order lemmas discovered by the Manifold Destiny verifier-mediated learner.
+-- Paper: https://github.com/sumofagents/manifold-destiny
+section
+theorem CategoryTheory.Subfunctor.image_id : ∀ {C : Type u} [inst : CategoryTheory.Category.{v, u} C] {F : CategoryTheory.Functor C (Type w)} (G : CategoryTheory.Subfunctor F), G.image (CategoryTheory.CategoryStruct.id F) = G := by
+  open CategoryTheory CategoryTheory.Subfunctor in
+    intro C inst F G
+    aesop
+
+end

@@ -414,3 +414,17 @@ open Set
 
 @[simp] theorem Prop.compl_singleton (p : Prop) : ({p}ᶜ : Set Prop) = {¬p} :=
   ext fun q ↦ by simpa [@Iff.comm q] using not_iff
+
+
+-- Dual/order lemmas discovered by the Manifold Destiny verifier-mediated learner.
+-- Paper: https://github.com/sumofagents/manifold-destiny
+section
+theorem Set.ite_union_union : ∀ {α : Type u_1} (t s₁ s₂ s₁' s₂' : Set α), t.ite (s₁ ∪ s₂) (s₁' ∪ s₂') = t.ite s₁ s₁' ∪ t.ite s₂ s₂' := by
+  open Set Function in
+    intro α t s₁ s₂ s₁' s₂'
+    ext x
+    unfold Set.ite
+    push _ ∈ _
+    tauto
+
+end

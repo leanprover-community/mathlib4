@@ -1246,3 +1246,15 @@ theorem _root_.MeasureTheory.volume_preserving_prodAssoc {α₁ β₁ γ₁ : Ty
 end MeasurePreserving
 
 end MeasureTheory
+
+
+-- Dual/order lemmas discovered by the Manifold Destiny verifier-mediated learner.
+-- Paper: https://github.com/sumofagents/manifold-destiny
+section
+theorem ProbabilityTheory.Kernel.parallelComp_apply_empty : ∀ {α : Type u_1} {β : Type u_2} {γ : Type u_3} {δ : Type u_4} {mα : MeasurableSpace α} {mβ : MeasurableSpace β} {mγ : MeasurableSpace γ} {mδ : MeasurableSpace δ} {κ : ProbabilityTheory.Kernel α β} {η : ProbabilityTheory.Kernel γ δ} {x : α × γ} [ProbabilityTheory.IsSFiniteKernel κ] [ProbabilityTheory.IsSFiniteKernel η], ((κ.parallelComp η) x) ∅ = (κ x.1) ∅ * (η x.2) ∅ := by
+  open ProbabilityTheory ProbabilityTheory.Kernel MeasureTheory Classical in
+    intro α β γ δ mα mβ mγ mδ κ η x _ _
+    rw [parallelComp_apply, Measure.prod_apply .empty, mul_comm]
+    simp
+
+end

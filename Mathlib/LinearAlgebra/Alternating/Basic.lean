@@ -932,3 +932,19 @@ def AlternatingMap.constLinearEquivOfIsEmpty [IsEmpty ι] : N'' ≃ₗ[R'] (M'' 
   map_smul' _ _ := rfl
   invFun f := f 0
   right_inv f := ext fun _ => AlternatingMap.congr_arg f <| Subsingleton.elim _ _
+
+
+-- Dual/order lemmas discovered by the Manifold Destiny verifier-mediated learner.
+-- Paper: https://github.com/sumofagents/manifold-destiny
+section
+theorem AlternatingMap.curryRight_add : ∀ {R : Type u_1} {M : Type u_2} {N : Type u_4} [inst : CommSemiring R] [inst_1 : AddCommMonoid M] [inst_2 : AddCommMonoid N] [inst_3 : _root_.Module R M] [inst_4 : _root_.Module R N] {n : ℕ} (f g : M [⋀^Fin n.succ]→ₗ[R] N), (f + g).curryRight = f.curryRight + g.curryRight := by
+  open AlternatingMap in
+    intro R M N inst inst_1 inst_2 inst_3 inst_4 n f g
+    exact (rfl)
+
+theorem AlternatingMap.curryRight_smul : ∀ {R : Type u_1} {M : Type u_2} {N : Type u_4} [inst : CommSemiring R] [inst_1 : AddCommMonoid M] [inst_2 : AddCommMonoid N] [inst_3 : _root_.Module R M] [inst_4 : _root_.Module R N] {n : ℕ} (r : R) (f : M [⋀^Fin n.succ]→ₗ[R] N), (r • f).curryRight = r • f.curryRight := by
+  open AlternatingMap in
+    intro R M N inst inst_1 inst_2 inst_3 inst_4 n r f
+    exact (rfl)
+
+end

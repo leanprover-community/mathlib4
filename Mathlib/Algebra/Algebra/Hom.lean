@@ -541,3 +541,19 @@ lemma AlgHom.default_apply (x : S) : (default : S →ₐ[R] T) x = 0 :=
   rfl
 
 end
+
+
+-- Dual/order lemmas discovered by the Manifold Destiny verifier-mediated learner.
+-- Paper: https://github.com/sumofagents/manifold-destiny
+section
+theorem RingCon.inf_def : ∀ {R : Type u_3} [inst : Add R] [inst_1 : Mul R] (c d : RingCon R), c ⊓ d = ringConGen (⇑c ⊓ ⇑d) := by
+  open RingCon in
+    intro R inst inst_1 c d
+    exact (RingCon.gi R |>.l_inf_u _ _ |>.symm)
+
+theorem RingCon.sInf_def : ∀ {R : Type u_3} [inst : Add R] [inst_1 : Mul R] (S : Set (RingCon R)), sInf S = ringConGen (sInf (DFunLike.coe '' S)) := by
+  open RingCon in
+    intro R inst inst_1 S
+    exact (RingCon.gi R |>.l_sInf_u_image _ |>.symm)
+
+end

@@ -465,3 +465,14 @@ end sInfGen
 end OuterMeasure
 
 end MeasureTheory
+
+
+-- Dual/order lemmas discovered by the Manifold Destiny verifier-mediated learner.
+-- Paper: https://github.com/sumofagents/manifold-destiny
+section
+theorem MeasureTheory.OuterMeasure.isCaratheodory_univ : ∀ {α : Type u} (m : MeasureTheory.OuterMeasure α), m.IsCaratheodory Set.univ := by
+  open MeasureTheory MeasureTheory.OuterMeasure Set Function Filter in
+    intro α m
+    simp [IsCaratheodory, sdiff_univ]
+
+end

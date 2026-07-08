@@ -667,3 +667,17 @@ lemma re_inner_starProjection_nonneg [K.HasOrthogonalProjection] (v : E) :
 end
 
 end Submodule
+
+
+-- Dual/order lemmas discovered by the Manifold Destiny verifier-mediated learner.
+-- Paper: https://github.com/sumofagents/manifold-destiny
+section
+theorem Submodule.topologicalClosure_eq_bot_iff : ∀ {𝕜 : Type u_1} {E : Type u_2} [inst : RCLike 𝕜] [inst_1 : NormedAddCommGroup E] [inst_2 : InnerProductSpace 𝕜 E] {K : Submodule 𝕜 E} [CompleteSpace E], K.topologicalClosure = ⊥ ↔ Kᗮ = ⊤ := by
+  open Submodule Topology Finsupp RCLike Real Filter in
+    intro 𝕜 E inst inst_1 inst_2 K _
+    rw [← K.orthogonal_orthogonal_eq_closure]
+    constructor <;> intro h
+    · rw [← Submodule.triorthogonal_eq_orthogonal, h, Submodule.bot_orthogonal_eq_top]
+    · rw [h, Submodule.top_orthogonal_eq_bot]
+
+end

@@ -406,3 +406,13 @@ noncomputable def _root_.Ordinal.toZFSetIso : Ordinal ≃o {x // ZFSet.IsOrdinal
   map_rel_iff' {a b} := by simp
 
 end ZFSet
+
+
+-- Dual/order lemmas discovered by the Manifold Destiny verifier-mediated learner.
+-- Paper: https://github.com/sumofagents/manifold-destiny
+section
+theorem Class.congToClass_univ : Class.congToClass Set.univ = Set.univ := by
+  open Class in
+    rfl
+
+end

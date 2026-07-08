@@ -1084,3 +1084,14 @@ lemma add_sub_of_mutuallySingular {ξ : Measure α} (h : μ ⟂ₘ ξ) : μ + (�
 end Measure
 
 end MeasureTheory
+
+
+-- Dual/order lemmas discovered by the Manifold Destiny verifier-mediated learner.
+-- Paper: https://github.com/sumofagents/manifold-destiny
+section
+theorem MeasureTheory.Measure.compProd_apply_empty : ∀ {α : Type u_1} {β : Type u_2} {mα : MeasurableSpace α} {mβ : MeasurableSpace β} {μ : MeasureTheory.Measure α} {κ : ProbabilityTheory.Kernel α β} [MeasureTheory.SFinite μ] [ProbabilityTheory.IsMarkovKernel κ], (μ.compProd κ) ∅ = μ ∅ := by
+  open MeasureTheory MeasureTheory.Measure ProbabilityTheory Set in
+    intro α β mα mβ μ κ _ _
+    simp [compProd]
+
+end

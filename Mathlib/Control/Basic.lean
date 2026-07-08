@@ -221,3 +221,19 @@ theorem CommApplicative.commutative_map {m : Type u → Type v} [h : Applicative
       rw [@CommApplicative.commutative_prod m h]
       simp [map_seq, map_map]
       rfl
+
+
+-- Dual/order lemmas discovered by the Manifold Destiny verifier-mediated learner.
+-- Paper: https://github.com/sumofagents/manifold-destiny
+section
+theorem Filter.comap_sInf : ∀ {α : Type u_1} {β : Type u_2} {s : Set (Filter β)} {m : α → β}, Filter.comap m (sInf s) = ⨅ f ∈ s, Filter.comap m f := by
+  open Filter Function Set Order in
+    intro α β s m
+    simp only [sInf_eq_iInf, comap_iInf]
+
+theorem Filter.codisjoint_comap : ∀ {α : Type u_1} {β : Type u_2} {g₁ g₂ : Filter β} {m : α → β}, Codisjoint g₁ g₂ → Codisjoint (Filter.comap m g₁) (Filter.comap m g₂) := by
+  open Filter Function Set Order in
+    intro α β g₁ g₂ m h
+    simp only [codisjoint_iff, ← comap_sup, h.eq_top, comap_top]
+
+end

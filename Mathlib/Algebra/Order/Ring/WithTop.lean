@@ -496,3 +496,14 @@ instance instIsOrderedRing [CommSemiring α] [PartialOrder α] [IsOrderedRing α
     IsOrderedRing (WithBot α) where
 
 end WithBot
+
+
+-- Dual/order lemmas discovered by the Manifold Destiny verifier-mediated learner.
+-- Paper: https://github.com/sumofagents/manifold-destiny
+section
+theorem ENNReal.coe_mem_lowerBounds : ∀ {r : NNReal} {s : Set NNReal}, ↑r ∈ lowerBounds (ENNReal.ofNNReal '' s) ↔ r ∈ lowerBounds s := by
+  open ENNReal Function Set NNReal in
+    intro r s
+    simp +contextual [lowerBounds, forall_mem_image, -mem_image, *]
+
+end

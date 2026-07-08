@@ -370,3 +370,14 @@ lemma salient_iff_inter_neg_eq_singleton (C : PointedCone R E) :
 end Salient
 
 end PointedCone
+
+
+-- Dual/order lemmas discovered by the Manifold Destiny verifier-mediated learner.
+-- Paper: https://github.com/sumofagents/manifold-destiny
+section
+theorem PointedCone.dual_inf : ∀ {R : Type u_1} [inst : CommSemiring R] [inst_1 : PartialOrder R] [inst_2 : IsOrderedRing R] {M : Type u_2} [inst_3 : AddCommMonoid M] [inst_4 : _root_.Module R M] {N : Type u_3} [inst_5 : AddCommMonoid N] [inst_6 : _root_.Module R N] {p : M →ₗ[R] N →ₗ[R] R} (C D : PointedCone R M), PointedCone.dual p ↑(C ⊓ D) = PointedCone.dual p (↑C ∩ ↑D) := by
+  open PointedCone Function LinearMap Pointwise Set in
+    intro R inst inst_1 inst_2 M inst_3 inst_4 N inst_5 inst_6 p C D
+    simp [← dual_hull]
+
+end

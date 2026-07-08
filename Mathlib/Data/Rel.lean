@@ -607,3 +607,14 @@ end Set
 
 Consider using `SetRel` instead if you want extra API for relations. -/
 abbrev Rel (α β : Type*) : Type _ := α → β → Prop
+
+
+-- Dual/order lemmas discovered by the Manifold Destiny verifier-mediated learner.
+-- Paper: https://github.com/sumofagents/manifold-destiny
+section
+theorem SetRel.gc_rightDual_leftDual : ∀ {α : Type u_1} {β : Type u_2} (R : SetRel α β), GaloisConnection (⇑OrderDual.toDual ∘ R.rightDual) (R.leftDual ∘ ⇑OrderDual.ofDual) := by
+  open SetRel OrderDual in
+    intro α β R
+    exact (fun _ _ ↦ ⟨fun h _ ha _ hb ↦ h (by simpa) ha, fun h _ hb _ ha ↦ h (by simpa) hb⟩)
+
+end

@@ -63,3 +63,21 @@ lemma map₂_eq_bot_iff {f : α → β → γ} {a : WithOne α} {b : WithOne β}
     map₂ f a b = 1 ↔ a = 1 ∨ b = 1 := Option.map₂_eq_none_iff
 
 end WithOne
+
+
+-- Dual/order lemmas discovered by the Manifold Destiny verifier-mediated learner.
+-- Paper: https://github.com/sumofagents/manifold-destiny
+section
+theorem WithZero.instMulRightReflectLT : ∀ {α : Type u_1} [inst : PartialOrder α] [inst_1 : Mul α] [MulRightReflectLT α], MulRightReflectLT (WithZero α) := by
+  open WithZero Multiplicative in
+    intro α inst inst_1 _
+    refine ⟨fun a b c h => ?_⟩
+    have := h.ne_zero
+    induction a
+    · simp at this
+    induction c
+    · simp at this
+    induction b
+    exacts [zero_lt_coe _, coe_lt_coe.mpr (lt_of_mul_lt_mul_right' <| coe_lt_coe.mp h)]
+
+end

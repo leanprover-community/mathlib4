@@ -1474,3 +1474,24 @@ lemma forall_sUnion {S : Set (Set α)} {p : α → Prop} :
 lemma exists_sUnion {S : Set (Set α)} {p : α → Prop} :
     (∃ x ∈ ⋃₀ S, p x) ↔ ∃ s ∈ S, ∃ x ∈ s, p x := by
   simp_rw [← exists_prop, ← iSup_Prop_eq, iSup_sUnion]
+
+
+-- Dual/order lemmas discovered by the Manifold Destiny verifier-mediated learner.
+-- Paper: https://github.com/sumofagents/manifold-destiny
+section
+theorem Set.iInter_prod' : ∀ {α : Type u_1} {β : Type u_2} {γ : Type u_3} (f : β × γ → Set α), ⋂ x, f x = ⋂ i, ⋂ j, f (i, j) := by
+  open Set Function in
+    intro α β γ f
+    exact (iInf_prod)
+
+theorem Set.biInter_prod' : ∀ {α : Type u_1} {β : Type u_2} {γ : Type u_3} (s : Set β) (t : Set γ) (f : β × γ → Set α), ⋂ x ∈ s ×ˢ t, f x = ⋂ i ∈ s, ⋂ j ∈ t, f (i, j) := by
+  open Set Function in
+    intro α β γ s t f
+    exact (biInf_prod)
+
+theorem Pi.eq_top_iff : ∀ {ι : Type u_4} {π : ι → Type u} [inst : (i : ι) → Top (π i)] {f : (i : ι) → π i}, f = ⊤ ↔ ∀ (i : ι), f i = ⊤ := by
+  open Pi Order Classical in
+    intro ι π inst f
+    exact (funext_iff)
+
+end

@@ -1038,3 +1038,19 @@ instance : Countable {f : ℕ → ℕ // Computable f} :=
     (fun _ _ h => Subtype.val_inj.1 (PFun.lift_injective (by simpa using h)))
 
 end Nat.Partrec.Code
+
+
+-- Dual/order lemmas discovered by the Manifold Destiny verifier-mediated learner.
+-- Paper: https://github.com/sumofagents/manifold-destiny
+section
+theorem min_ack_left : ∀ (m₁ m₂ n : ℕ), ack (min m₁ m₂) n = min (ack m₁ n) (ack m₂ n) := by
+  open Nat in
+    intro m₁ m₂ n
+    exact ((ack_mono_left n).map_min)
+
+theorem min_ack_right : ∀ (m n₁ n₂ : ℕ), ack m (min n₁ n₂) = min (ack m n₁) (ack m n₂) := by
+  open Nat in
+    intro m n₁ n₂
+    exact ((ack_mono_right m).map_min)
+
+end

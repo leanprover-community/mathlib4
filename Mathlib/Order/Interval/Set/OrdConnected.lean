@@ -333,3 +333,19 @@ theorem image_subtype_val_uIoo [OrdConnected s] (a b : s) :
 end LinearOrder
 
 end Set
+
+
+-- Dual/order lemmas discovered by the Manifold Destiny verifier-mediated learner.
+-- Paper: https://github.com/sumofagents/manifold-destiny
+section
+theorem Filter.tendsto_Ico_Iic_Iic : ∀ {α : Type u_1} [inst : Preorder α] {a : α}, Filter.TendstoIxxClass Set.Ico (Filter.principal (Set.Iic a)) (Filter.principal (Set.Iic a)) := by
+  open Filter Set Function in
+    intro α inst a
+    exact (tendstoIxxClass_of_subset fun _ _ => Ico_subset_Icc_self)
+
+theorem Filter.tendsto_Ioc_Ici_Ici : ∀ {α : Type u_1} [inst : Preorder α] {a : α}, Filter.TendstoIxxClass Set.Ioc (Filter.principal (Set.Ici a)) (Filter.principal (Set.Ici a)) := by
+  open Filter Set Function in
+    intro α inst a
+    exact (tendstoIxxClass_of_subset fun _ _ => Ioc_subset_Icc_self)
+
+end

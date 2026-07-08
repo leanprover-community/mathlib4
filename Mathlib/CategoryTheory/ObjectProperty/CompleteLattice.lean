@@ -128,3 +128,21 @@ lemma ι_map_top (P : ObjectProperty C) :
     exact ⟨⟨Y, hY⟩, by simp, ⟨e.symm⟩⟩
 
 end CategoryTheory.ObjectProperty
+
+
+-- Dual/order lemmas discovered by the Manifold Destiny verifier-mediated learner.
+-- Paper: https://github.com/sumofagents/manifold-destiny
+section
+theorem CategoryTheory.ObjectProperty.shift_iInf : ∀ {C : Type u_1} [inst : CategoryTheory.Category.{v_1, u_1} C] {A : Type u_2} [inst_1 : AddMonoid A] [inst_2 : CategoryTheory.HasShift C A] {ι : Sort u_4} (P : ι → CategoryTheory.ObjectProperty C) (a : A), (⨅ i, P i).shift a = ⨅ i, (P i).shift a := by
+  open CategoryTheory CategoryTheory.ObjectProperty Category in
+    intro C inst A inst_1 inst_2 ι P a
+    ext
+    simp [prop_shift_iff]
+
+theorem CategoryTheory.ObjectProperty.shift_inf : ∀ {C : Type u_1} [inst : CategoryTheory.Category.{v_1, u_1} C] (P Q : CategoryTheory.ObjectProperty C) {A : Type u_2} [inst_1 : AddMonoid A] [inst_2 : CategoryTheory.HasShift C A] (a : A), (P ⊓ Q).shift a = P.shift a ⊓ Q.shift a := by
+  open CategoryTheory CategoryTheory.ObjectProperty Category in
+    intro C inst P Q A inst_1 inst_2 a
+    ext
+    simp [prop_shift_iff]
+
+end

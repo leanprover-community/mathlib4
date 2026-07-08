@@ -432,3 +432,19 @@ protected abbrev commGroup [CommGroup M₁] (f : M₁ → M₂) (hf : Surjective
 end Surjective
 
 end Function
+
+
+-- Dual/order lemmas discovered by the Manifold Destiny verifier-mediated learner.
+-- Paper: https://github.com/sumofagents/manifold-destiny
+section
+theorem Con.inf_def : ∀ {M : Type u_1} [inst : Mul M] (c d : Con M), c ⊓ d = conGen (⇑c ⊓ ⇑d) := by
+  open Con Function Setoid in
+    intro M inst c d
+    exact (Con.gi M |>.l_inf_u _ _ |>.symm)
+
+theorem Con.sInf_def : ∀ {M : Type u_1} [inst : Mul M] (S : Set (Con M)), sInf S = conGen (sInf (DFunLike.coe '' S)) := by
+  open Con Function Setoid in
+    intro M inst S
+    exact (Con.gi M |>.l_sInf_u_image _ |>.symm)
+
+end

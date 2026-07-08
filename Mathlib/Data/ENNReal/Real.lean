@@ -403,3 +403,39 @@ meta def evalENNRealOfReal : PositivityExt where eval {u α} _zα pα? e :=
     | _ => pure .none
   | _, _, _ => throwError "not ENNReal.ofReal"
 end Mathlib.Meta.Positivity
+
+
+-- Dual/order lemmas discovered by the Manifold Destiny verifier-mediated learner.
+-- Paper: https://github.com/sumofagents/manifold-destiny
+section
+theorem ENNReal.preimage_coe_Ioo : ∀ (x y : NNReal), ENNReal.ofNNReal ⁻¹' Set.Ioo x y = Set.Ioo ↑x ↑y := by
+  open ENNReal Set NNReal in
+    intro x y
+    exact (WithTop.preimage_coe_Ioo)
+
+theorem ENNReal.preimage_coe_Icc : ∀ (x y : NNReal), ENNReal.ofNNReal ⁻¹' Set.Icc x y = Set.Icc ↑x ↑y := by
+  open ENNReal Set NNReal in
+    intro x y
+    exact (WithTop.preimage_coe_Icc)
+
+theorem ENNReal.preimage_coe_Ico : ∀ (x y : NNReal), ENNReal.ofNNReal ⁻¹' Set.Ico x y = Set.Ico ↑x ↑y := by
+  open ENNReal Set NNReal in
+    intro x y
+    exact (WithTop.preimage_coe_Ico)
+
+theorem ENNReal.preimage_coe_Iic : ∀ (x : NNReal), ENNReal.ofNNReal ⁻¹' Set.Iic x = Set.Iic ↑x := by
+  open ENNReal Set NNReal in
+    intro x
+    exact (WithTop.preimage_coe_Iic)
+
+theorem ENNReal.preimage_coe_Iio : ∀ (x : NNReal), ENNReal.ofNNReal ⁻¹' Set.Iio x = Set.Iio ↑x := by
+  open ENNReal Set NNReal in
+    intro x
+    exact (WithTop.preimage_coe_Iio)
+
+theorem ENNReal.preimage_coe_Ioc : ∀ (x y : NNReal), ENNReal.ofNNReal ⁻¹' Set.Ioc x y = Set.Ioc ↑x ↑y := by
+  open ENNReal Set NNReal in
+    intro x y
+    exact (WithTop.preimage_coe_Ioc)
+
+end

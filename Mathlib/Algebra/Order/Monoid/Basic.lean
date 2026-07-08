@@ -76,3 +76,29 @@ See also `OrderIso.mulRight` when working in an ordered group. -/
 def OrderEmbedding.mulRight {α : Type*} [Mul α] [LinearOrder α]
     [MulRightStrictMono α] (m : α) : α ↪o α :=
   OrderEmbedding.ofStrictMono (fun n => n * m) mul_left_strictMono
+
+
+-- Dual/order lemmas discovered by the Manifold Destiny verifier-mediated learner.
+-- Paper: https://github.com/sumofagents/manifold-destiny
+section
+theorem Cardinal.aleph_min : ∀ (o₁ o₂ : Ordinal.{u_1}), Cardinal.aleph (min o₁ o₂) = min (Cardinal.aleph o₁) (Cardinal.aleph o₂) := by
+  open Cardinal Function Set Equiv Order Ordinal in
+    intro o₁ o₂
+    exact (aleph.monotone.map_min)
+
+theorem Ordinal.omega_min : ∀ (o₁ o₂ : Ordinal.{u_1}), Ordinal.omega (min o₁ o₂) = min (Ordinal.omega o₁) (Ordinal.omega o₂) := by
+  open Ordinal Function Set Cardinal Equiv Order in
+    intro o₁ o₂
+    exact (omega.monotone.map_min)
+
+theorem Cardinal.preAleph_min : ∀ (o₁ o₂ : Ordinal.{u_1}), Cardinal.preAleph (min o₁ o₂) = min (Cardinal.preAleph o₁) (Cardinal.preAleph o₂) := by
+  open Cardinal Function Set Equiv Order Ordinal in
+    intro o₁ o₂
+    exact (preAleph.monotone.map_min)
+
+theorem Ordinal.preOmega_min : ∀ (o₁ o₂ : Ordinal.{u_1}), Ordinal.preOmega (min o₁ o₂) = min (Ordinal.preOmega o₁) (Ordinal.preOmega o₂) := by
+  open Ordinal Function Set Cardinal Equiv Order in
+    intro o₁ o₂
+    exact (preOmega.monotone.map_min)
+
+end

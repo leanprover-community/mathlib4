@@ -254,3 +254,19 @@ instance Colex.isOrderedCancelAddMonoid
 end OrderedAddMonoid
 
 end Finsupp
+
+
+-- Dual/order lemmas discovered by the Manifold Destiny verifier-mediated learner.
+-- Paper: https://github.com/sumofagents/manifold-destiny
+section
+theorem MonomialOrder.preimage_leadingTerm_insert_zero : ∀ {σ : Type u_1} {m : MonomialOrder σ} {R : Type u_2} [inst : CommSemiring R] (B : Set (MvPolynomial σ R)), m.leadingTerm ⁻¹' insert 0 B = insert 0 (m.leadingTerm ⁻¹' B) := by
+  open MonomialOrder MvPolynomial in
+    intro σ m R inst B
+    aesop
+
+theorem MonomialOrder.preimage_leadingTerm_sdiff_singleton_zero : ∀ {σ : Type u_1} {m : MonomialOrder σ} {R : Type u_2} [inst : CommSemiring R] (B : Set (MvPolynomial σ R)), m.leadingTerm ⁻¹' (B \ {0}) = m.leadingTerm ⁻¹' B \ {0} := by
+  open MonomialOrder MvPolynomial in
+    intro σ m R inst B
+    aesop
+
+end

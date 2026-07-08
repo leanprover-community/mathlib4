@@ -166,3 +166,20 @@ lemma Odd.map_zero [NegZeroClass α] (hf : f.Odd) : f 0 = 0 := by simp [← neg_
 end torsionfree
 
 end Function
+
+
+-- Dual/order lemmas discovered by the Manifold Destiny verifier-mediated learner.
+-- Paper: https://github.com/sumofagents/manifold-destiny
+section
+theorem tprod_iInf_decode₂ : ∀ {M : Type u_1} [inst : CommMonoid M] [inst_1 : TopologicalSpace M] {α : Type u_3} {β : Type u_4} [inst_2 : Encodable β] [inst_3 : CompleteLattice α] (m : α → M), m ⊤ = 1 → ∀ (s : β → α), ∏' (i : ℕ), m (⨅ b ∈ Encodable.decode₂ β i, s b) = ∏' (b : β), m (s b) := by
+  open Filter Finset Function Encodable in
+    intro M inst inst_1 α β inst_2 inst_3 m m0 s
+    rw [← tprod_extend_one (@encode_injective β _)]
+    refine tprod_congr fun n ↦ ?_
+    rcases em (n ∈ Set.range (encode : β → ℕ)) with ⟨a, rfl⟩ | hn
+    · simp [encode_injective.extend_apply]
+    · rw [extend_apply' _ _ _ hn]
+      rw [← decode₂_ne_none_iff, ne_eq, not_not] at hn
+      simp [hn, m0]
+
+end

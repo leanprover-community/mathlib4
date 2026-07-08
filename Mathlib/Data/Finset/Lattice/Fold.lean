@@ -807,3 +807,19 @@ theorem sup_singleton_eq_self (s : Finset α) : s.sup singleton = s :=
   (s.sup_singleton_apply _).trans image_id
 
 end Finset
+
+
+-- Dual/order lemmas discovered by the Manifold Destiny verifier-mediated learner.
+-- Paper: https://github.com/sumofagents/manifold-destiny
+section
+theorem InfIrred.not_isMax : ∀ {α : Type u_2} [inst : SemilatticeInf α] {a : α}, InfIrred a → ¬IsMax a := by
+  open SupIrred Finset OrderDual in
+    intro α inst a ha
+    exact (ha.1)
+
+theorem InfPrime.not_isMax : ∀ {α : Type u_2} [inst : SemilatticeInf α] {a : α}, InfPrime a → ¬IsMax a := by
+  open SupPrime Finset OrderDual in
+    intro α inst a ha
+    exact (ha.1)
+
+end

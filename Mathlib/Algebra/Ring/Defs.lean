@@ -529,3 +529,14 @@ scoped instance (priority := 50) [Ring R] [IsMulCommutative R] :
     CommRing R where
 
 end IsMulCommutative
+
+
+-- Dual/order lemmas discovered by the Manifold Destiny verifier-mediated learner.
+-- Paper: https://github.com/sumofagents/manifold-destiny
+section
+theorem SimpleGraph.deleteEdges_inf : ∀ {V : Type u_1} (G H : SimpleGraph V) (s : Set (Sym2 V)), (G ⊓ H).deleteEdges s = G.deleteEdges s ⊓ H.deleteEdges s := by
+  open SimpleGraph Finset Fintype in
+    intro V G H s
+    exact (inf_sdiff)
+
+end

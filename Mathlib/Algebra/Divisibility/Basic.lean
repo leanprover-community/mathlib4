@@ -210,3 +210,14 @@ lemma pow_dvd_pow_of_dvd_of_le {m n : ℕ} (hab : a ∣ b) (hmn : m ≤ n) : a ^
   trans (a ^ n) <;> [gcongr; apply_rules [pow_dvd_pow_of_dvd]]
 
 end CommMonoid
+
+
+-- Dual/order lemmas discovered by the Manifold Destiny verifier-mediated learner.
+-- Paper: https://github.com/sumofagents/manifold-destiny
+section
+theorem SaturatedSubmonoid.iInf_def : ∀ {M : Type u_1} [inst : MulOneClass M] {ι : Sort u_2} {f : ι → SaturatedSubmonoid M}, iInf f = (⨅ i, (f i).toSubmonoid).saturation := by
+  open SaturatedSubmonoid in
+    intro M inst ι f
+    exact ((Submonoid.giSaturation M).l_iInf_u f |>.symm)
+
+end

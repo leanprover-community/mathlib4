@@ -280,3 +280,19 @@ theorem image_coe_uIoo (x y : ℝ≥0) : toReal '' uIoo x y = uIoo ↑x ↑y :=
   image_subtype_val_uIoo (s := Ici 0) ..
 
 end NNReal
+
+
+-- Dual/order lemmas discovered by the Manifold Destiny verifier-mediated learner.
+-- Paper: https://github.com/sumofagents/manifold-destiny
+section
+theorem ENNReal.iInf_pow_of_ne_zero : ∀ {ι : Sort u_1} {n : ℕ}, n ≠ 0 → ∀ (f : ι → ENNReal), (⨅ i, f i) ^ n = ⨅ i, f i ^ n := by
+  open ENNReal Filter Metric Set TopologicalSpace Topology Finset in
+    intro ι n hn f
+    exact ((powOrderIso n hn).map_iInf _)
+
+theorem ENNReal.iInf₂_pow_of_ne_zero : ∀ {ι : Sort u_1} {κ : ι → Sort u_2} (f : (i : ι) → κ i → ENNReal) {n : ℕ}, n ≠ 0 → (⨅ i, ⨅ j, f i j) ^ n = ⨅ i, ⨅ j, f i j ^ n := by
+  open ENNReal Filter Metric Set TopologicalSpace Topology Finset in
+    intro ι κ f n hn
+    exact ((powOrderIso n hn).map_iInf₂ f)
+
+end

@@ -332,3 +332,19 @@ lemma card_fintype [Semiring R] [AddCommMonoid M] [Module R M] [Fintype ι] (b :
       _ = card R ^ card ι := by simp
 
 end Module
+
+
+-- Dual/order lemmas discovered by the Manifold Destiny verifier-mediated learner.
+-- Paper: https://github.com/sumofagents/manifold-destiny
+section
+theorem LinearMap.IsRefl.ker_eq_top_iff_ker_flip_eq_top : ∀ {R : Type u_1} {R₁ : Type u_2} {M : Type u_5} {M₁ : Type u_6} [inst : CommSemiring R] [inst_1 : AddCommMonoid M] [inst_2 : _root_.Module R M] [inst_3 : CommSemiring R₁] [inst_4 : AddCommMonoid M₁] [inst_5 : _root_.Module R₁ M₁] {I₁ I₂ : R₁ →+* R} {B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₂] M}, B.IsRefl → (B.ker = ⊤ ↔ B.flip.ker = ⊤) := by
+  open LinearMap LinearMap.IsRefl Module in
+    intro R R₁ M M₁ inst inst_1 inst_2 inst_3 inst_4 inst_5 I₁ I₂ B H
+    rwa [ker_flip]
+
+theorem LinearMap.IsRefl.ker_flip_eq_top : ∀ {R : Type u_1} {R₁ : Type u_2} {M : Type u_5} {M₁ : Type u_6} [inst : CommSemiring R] [inst_1 : AddCommMonoid M] [inst_2 : _root_.Module R M] [inst_3 : CommSemiring R₁] [inst_4 : AddCommMonoid M₁] [inst_5 : _root_.Module R₁ M₁] {I₁ I₂ : R₁ →+* R} {B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₂] M}, B.IsRefl → B.ker = ⊤ → B.flip.ker = ⊤ := by
+  open LinearMap LinearMap.IsRefl Module in
+    intro R R₁ M M₁ inst inst_1 inst_2 inst_3 inst_4 inst_5 I₁ I₂ B H h
+    rwa [H.ker_flip]
+
+end

@@ -214,3 +214,15 @@ lemma Ideal.map_sup_mem_minimalPrimes_of_map_quotientMk_mem_minimalPrimes
     simpa [h1] using Ideal.comap_mono (f := Ideal.Quotient.mk (p.map (algebraMap R S))) h2
 
 end
+
+
+-- Dual/order lemmas discovered by the Manifold Destiny verifier-mediated learner.
+-- Paper: https://github.com/sumofagents/manifold-destiny
+section
+theorem PrimeSpectrum.inter_zeroLocus : ∀ {R : Type u} [inst : CommSemiring R] (s s' : Set R), PrimeSpectrum.zeroLocus s ∩ PrimeSpectrum.zeroLocus s' = PrimeSpectrum.zeroLocus ↑(Ideal.span s ⊔ Ideal.span s') := by
+  open PrimeSpectrum in
+    intro R inst s s'
+    rw [zeroLocus_sup]
+    simp
+
+end

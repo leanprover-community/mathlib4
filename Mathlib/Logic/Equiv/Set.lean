@@ -624,3 +624,19 @@ theorem Equiv.swap_bijOn_exchange (ha : a ∈ s) (hb : b ∉ s) :
   grind [Equiv.bijOn]
 
 end Swap
+
+
+-- Dual/order lemmas discovered by the Manifold Destiny verifier-mediated learner.
+-- Paper: https://github.com/sumofagents/manifold-destiny
+section
+theorem iInf_codisjoint_iff : ∀ {α : Type u} {ι : Sort w} [inst : Order.Coframe α] {a : α} {f : ι → α}, Codisjoint (⨅ i, f i) a ↔ ∀ (i : ι), Codisjoint (f i) a := by
+  open Function Set Order in
+    intro α ι inst a f
+    simp only [codisjoint_iff, iInf_sup_eq, iInf_eq_top]
+
+theorem sInf_codisjoint_iff : ∀ {α : Type u} [inst : Order.Coframe α] {a : α} {s : Set α}, Codisjoint (sInf s) a ↔ ∀ b ∈ s, Codisjoint b a := by
+  open Function Set Order in
+    intro α inst a s
+    simp only [codisjoint_iff, sInf_sup_eq, iInf_eq_top]
+
+end

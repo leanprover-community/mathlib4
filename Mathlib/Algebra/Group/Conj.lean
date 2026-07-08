@@ -295,3 +295,14 @@ theorem carrier_eq_preimage_mk {a : ConjClasses α} : a.carrier = ConjClasses.mk
   Set.ext fun _ => mem_carrier_iff_mk_eq
 
 end ConjClasses
+
+
+-- Dual/order lemmas discovered by the Manifold Destiny verifier-mediated learner.
+-- Paper: https://github.com/sumofagents/manifold-destiny
+section
+theorem Subgroup.prod_eq_top_iff : ∀ {G : Type u_1} [inst : Group G] {N : Type u_5} [inst_1 : Group N] {H : Subgroup G} {K : Subgroup N}, H.prod K = ⊤ ↔ H = ⊤ ∧ K = ⊤ := by
+  open Subgroup Function Set in
+    intro G inst N inst_1 H K
+    simpa only [← Subgroup.toSubmonoid_inj] using! Submonoid.prod_eq_top_iff
+
+end

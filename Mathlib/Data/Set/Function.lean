@@ -1366,3 +1366,19 @@ lemma bijOn_swap (ha : a ∈ s) (hb : b ∈ s) : BijOn (swap a b) s s :=
     simp [*, swap_apply_of_ne_of_ne]
 
 end Equiv
+
+
+-- Dual/order lemmas discovered by the Manifold Destiny verifier-mediated learner.
+-- Paper: https://github.com/sumofagents/manifold-destiny
+section
+theorem Pairwise.codisjoint_extend_top : ∀ {α : Type u_1} {β : Type u_2} {γ : Type u_3} [inst : PartialOrder γ] [inst_1 : OrderTop γ] {e : α → β} {f : α → γ}, Pairwise (Function.onFun Codisjoint f) → Function.FactorsThrough f e → Pairwise (Function.onFun Codisjoint (Function.extend e f ⊤)) := by
+  open Pairwise Function Order Set in
+    intro α β γ inst inst_1 e f hf he
+    intro b₁ b₂ hne
+    rcases em (∃ a₁, e a₁ = b₁) with ⟨a₁, rfl⟩ | hb₁
+    · rcases em (∃ a₂, e a₂ = b₂) with ⟨a₂, rfl⟩ | hb₂
+      · simpa only [onFun, he.extend_apply] using! hf (ne_of_apply_ne e hne)
+      · simpa only [onFun, extend_apply' _ _ _ hb₂] using! codisjoint_top_right
+    · simpa only [onFun, extend_apply' _ _ _ hb₁] using! codisjoint_top_left
+
+end

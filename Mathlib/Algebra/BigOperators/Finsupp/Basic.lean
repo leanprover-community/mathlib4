@@ -672,3 +672,14 @@ variable {ι M N : Type*} [CommMonoid M] [Zero N]
     unop (f.prod g) = f.prod fun i n ↦ unop (g i n) := unop_prod ..
 
 end AddOpposite
+
+
+-- Dual/order lemmas discovered by the Manifold Destiny verifier-mediated learner.
+-- Paper: https://github.com/sumofagents/manifold-destiny
+section
+theorem NNReal.iInf_div : ∀ {ι : Sort u_3} (f : ι → NNReal) (a : NNReal), (⨅ i, f i) / a = ⨅ i, f i / a := by
+  open NNReal Function Set Real in
+    intro ι f a
+    simp only [div_eq_mul_inv, iInf_mul]
+
+end

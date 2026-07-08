@@ -397,3 +397,15 @@ end Support
 
 
 end
+
+
+-- Dual/order lemmas discovered by the Manifold Destiny verifier-mediated learner.
+-- Paper: https://github.com/sumofagents/manifold-destiny
+section
+theorem differentiableWithinAt_Iio_iff_Iic : ∀ {𝕜 : Type u} [inst : NontriviallyNormedField 𝕜] {F : Type v} [inst_1 : NormedAddCommGroup F] [inst_2 : NormedSpace 𝕜 F] {f : 𝕜 → F} {x : 𝕜} [inst_3 : PartialOrder 𝕜], DifferentiableWithinAt 𝕜 f (Set.Iio x) x ↔ DifferentiableWithinAt 𝕜 f (Set.Iic x) x := by
+  open Filter Asymptotics Set in
+    intro 𝕜 inst F inst_1 inst_2 f x inst_3
+    exact (⟨fun h => h.hasDerivWithinAt.Iic_of_Iio.differentiableWithinAt, fun h =>
+      h.hasDerivWithinAt.Iio_of_Iic.differentiableWithinAt⟩)
+
+end

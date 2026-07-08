@@ -285,3 +285,19 @@ instance [LinearOrder G] [IsOrderedAddMonoid G] : LinearOrderedAddCommGroupWithT
   add_neg_cancel_of_ne_top | (a : G), _ => mod_cast add_neg_cancel a
 
 end WithTop.LinearOrderedAddCommGroup
+
+
+-- Dual/order lemmas discovered by the Manifold Destiny verifier-mediated learner.
+-- Paper: https://github.com/sumofagents/manifold-destiny
+section
+theorem Tropical.trop_min_def : ∀ {R : Type u} [inst : LinearOrder R] (x y : Tropical R), min x y = Tropical.trop (min (Tropical.untrop x) (Tropical.untrop y)) := by
+  open Tropical in
+    intro R inst x y
+    exact (rfl)
+
+theorem Tropical.untrop_min : ∀ {R : Type u} [inst : LinearOrder R] (x y : Tropical R), Tropical.untrop (min x y) = min (Tropical.untrop x) (Tropical.untrop y) := by
+  open Tropical in
+    intro R inst x y
+    exact (rfl)
+
+end

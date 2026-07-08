@@ -435,3 +435,14 @@ lemma biInf_mem {ι : Type*} {t : Set ι} {f : ι → α} (ht : t.Finite) (hf : 
 
 end CompleteBooleanAlgebra
 end BooleanSubalgebra
+
+
+-- Dual/order lemmas discovered by the Manifold Destiny verifier-mediated learner.
+-- Paper: https://github.com/sumofagents/manifold-destiny
+section
+theorem Topology.IsLocallyConstructible.biInter : ∀ {X : Type u_2} [inst : TopologicalSpace X] {ι : Type u_4} {f : ι → Set X} {s : Set ι}, s.Finite → (∀ i ∈ s, Topology.IsLocallyConstructible (f i)) → Topology.IsLocallyConstructible (⋂ i ∈ s, f i) := by
+  open Topology Topology.IsLocallyConstructible Set TopologicalSpace in
+    intro X inst ι f s hs hf
+    exact (InfClosed.biInf_mem (s := {s | IsLocallyConstructible s}) (fun _ h₁ _ ↦ h₁.inter) hs .univ hf)
+
+end

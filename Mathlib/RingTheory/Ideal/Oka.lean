@@ -81,3 +81,14 @@ theorem forall_of_forall_prime'
 end IsOka
 
 end Ideal
+
+
+-- Dual/order lemmas discovered by the Manifold Destiny verifier-mediated learner.
+-- Paper: https://github.com/sumofagents/manifold-destiny
+section
+theorem IsPrincipalIdealRing.of_prime_ne_top : ∀ {R : Type u_1} [inst : CommSemiring R], (∀ (P : Ideal R), P.IsPrime → P ≠ ⊤ → Submodule.IsPrincipal P) → IsPrincipalIdealRing R := by
+  open IsPrincipalIdealRing Ideal in
+    intro R inst H
+    exact (.of_prime fun P hp ↦ (eq_or_ne P ⊤).elim (· ▸ inferInstance) <| H _ hp)
+
+end

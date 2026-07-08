@@ -909,3 +909,19 @@ lemma index_smul (a : G) (S : AddSubgroup A) : (a • S).index = S.index :=
   index_map_of_bijective (MulAction.bijective _) _
 
 end AddSubgroup
+
+
+-- Dual/order lemmas discovered by the Manifold Destiny verifier-mediated learner.
+-- Paper: https://github.com/sumofagents/manifold-destiny
+section
+theorem Subgroup.IsComplement'.codisjoint : ∀ {G : Type u_1} [inst : Group G] {H K : Subgroup G}, H.IsComplement' K → Codisjoint H K := by
+  open Subgroup Subgroup.IsComplement' Function Set MulAction in
+    intro G inst H K h
+    exact (h.isCompl.codisjoint)
+
+theorem Subgroup.IsComplement'.inf_eq_bot : ∀ {G : Type u_1} [inst : Group G] {H K : Subgroup G}, H.IsComplement' K → H ⊓ K = ⊥ := by
+  open Subgroup Subgroup.IsComplement' Function Set MulAction in
+    intro G inst H K h
+    exact (h.isCompl.inf_eq_bot)
+
+end

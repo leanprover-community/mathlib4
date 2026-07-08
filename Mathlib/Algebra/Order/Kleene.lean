@@ -376,3 +376,14 @@ protected abbrev kleeneAlgebra [KleeneAlgebra α] [LE β] [LT β] [Zero β] [One
     exact kstar_mul_le_self h
 
 end Function.Injective
+
+
+-- Dual/order lemmas discovered by the Manifold Destiny verifier-mediated learner.
+-- Paper: https://github.com/sumofagents/manifold-destiny
+section
+theorem Language.sub_iInf : ∀ {α : Type u_1} {ι : Sort v} [Nonempty ι] (l : ι → Language α) (m : Language α), m - ⨅ i, l i = ⨆ i, m - l i := by
+  open Language List Set Computability in
+    intro α ι _ l m
+    exact (sdiff_iInter _ _)
+
+end
