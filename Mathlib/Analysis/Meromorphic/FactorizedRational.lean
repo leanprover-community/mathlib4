@@ -60,6 +60,7 @@ lemma mulSupport (d : 𝕜 → ℤ) :
     use u
     simp_all [zero_zpow_eq_one₀]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Helper Lemma: If the support of `d` is finite, then evaluation of functions commutes with finprod,
 and the function `∏ᶠ u, (· - u) ^ d u` equals `fun x ↦ ∏ᶠ u, (x - u) ^ d u`.
@@ -100,6 +101,7 @@ theorem ne_zero {d : 𝕜 → ℤ} {x : 𝕜} (h : d x = 0) :
     by_cases h₂ : x = z <;> simp_all [zpow_ne_zero, sub_ne_zero]
   · simp [finprod_of_infinite_mulSupport h₁]
 
+set_option backward.isDefEq.respectTransparency false in
 open Classical in
 /--
 Helper Lemma for Computations: Extract one factor out of a factorized rational function.
@@ -191,6 +193,7 @@ private lemma mulSupport_update {d : 𝕜 → ℤ} {x : 𝕜}
     simp
   · simp_all
 
+set_option backward.isDefEq.respectTransparency false in
 open Classical in
 /--
 Compute the trailing coefficient of the factorized rational function associated with `d : 𝕜 → ℤ`.
@@ -214,6 +217,7 @@ theorem meromorphicTrailingCoeffAt_factorizedRational {d : 𝕜 → ℤ} {x : �
     simp_all
   · grind [meromorphicTrailingCoeffAt_id_sub_const]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Variant of `meromorphicTrailingCoeffAt_factorizedRational`: Compute the trailing coefficient of the
 factorized rational function associated with `d : 𝕜 → ℤ` at points outside the support of `d`.
@@ -235,6 +239,7 @@ theorem meromorphicTrailingCoeffAt_factorizedRational_off_support {d : 𝕜 → 
   by_contra hCon
   simp_all
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Variant of `meromorphicTrailingCoeffAt_factorizedRational`: Compute log of the norm of the trailing
 coefficient.  The convention that `log 0 = 0` gives a closed formula easier than the one in

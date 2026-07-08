@@ -94,7 +94,7 @@ theorem nonempty_sections_of_finite_cofiltered_system {J : Type u} [Category.{w}
   use fun j => (u ⟨j⟩).down
   intro j j' f
   have h := @hu (⟨j⟩ : J') (⟨j'⟩ : J') (ULift.up f)
-  simp only [F', down, AsSmall.down, Functor.comp_map, uliftFunctor_map] at h
+  simp only [F', down, AsSmall.down] at h
   simp_rw [← h]
   rfl
 
@@ -239,7 +239,7 @@ theorem isMittagLeffler_of_exists_finite_range
   rintro _ ⟨⟨k', g'⟩, rfl⟩ hl
   refine (eq_of_le_of_not_lt hl ?_).ge
   have := hmin _ ⟨k', g', (m.finite_toSet.subset <| hm.substr hl).coe_toFinset⟩
-  rwa [Finset.lt_iff_ssubset, ← Finset.coe_ssubset, Set.Finite.coe_toFinset, hm] at this
+  rwa [← Finset.coe_ssubset, Set.Finite.coe_toFinset, hm] at this
 
 /-- The subfunctor of `F` obtained by restricting to the eventual range at each index. -/
 @[simps obj map]
@@ -307,6 +307,7 @@ variable [∀ j : J, Nonempty (F.obj j)] [∀ j : J, Finite (F.obj j)]
   (Fsur : ∀ ⦃i j : J⦄ (f : i ⟶ j), Function.Surjective (F.map f))
 include Fsur
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 theorem eval_section_surjective_of_surjective (i : J) :
     (fun s : F.sections => s.val i).Surjective := fun x => by

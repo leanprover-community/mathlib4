@@ -199,6 +199,7 @@ theorem exists_algEquiv_pi_matrix_divisionRing :
   have ⟨n, S, d, _, hd, ⟨e⟩⟩ := exists_algEquiv_pi_matrix_end_mulOpposite R₀ R
   classical exact ⟨n, _, d, inferInstance, inferInstance, hd, ⟨e⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The **Wedderburn–Artin Theorem**, algebra form, finite case: a finite semisimple algebra is
 isomorphic to a product of matrix algebras over finite division algebras. -/
 theorem exists_algEquiv_pi_matrix_divisionRing_finite [Module.Finite R₀ R] :

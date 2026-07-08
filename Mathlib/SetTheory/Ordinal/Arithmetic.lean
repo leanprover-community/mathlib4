@@ -194,6 +194,7 @@ def boundedLimitRecOn {l : Ordinal} (lLim : IsSuccLimit l) {motive : Iio l → S
     exact succ ⟨o, ho'⟩ (IH ho')
   | limit o ho' IH => exact limit _ ho' fun a ha ↦ IH a.1 ha (ha.trans (c := l) ho)
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[deprecated limitRecOn_zero (since := "2025-12-26")]
 theorem boundedLimitRec_zero {l} (lLim : IsSuccLimit l) {motive} (H₁ H₂ H₃) :
     @boundedLimitRecOn l lLim motive ⟨0, lLim.bot_lt⟩ H₁ H₂ H₃ = H₁ := by
@@ -201,6 +202,7 @@ theorem boundedLimitRec_zero {l} (lLim : IsSuccLimit l) {motive} (H₁ H₂ H₃
   dsimp
   rw [limitRecOn_zero]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[deprecated limitRecOn_succ (since := "2025-12-26")]
 theorem boundedLimitRec_succ {l} (lLim : IsSuccLimit l) {motive} (o H₁ H₂ H₃) :
     @boundedLimitRecOn l lLim motive ⟨succ o.1, lLim.succ_lt o.2⟩ H₁ H₂ H₃ = H₂ o
@@ -210,6 +212,7 @@ theorem boundedLimitRec_succ {l} (lLim : IsSuccLimit l) {motive} (o H₁ H₂ H�
   rw [limitRecOn_succ]
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[deprecated limitRecOn_limit (since := "2025-12-26")]
 theorem boundedLimitRec_limit {l} (lLim : IsSuccLimit l) {motive} (o H₁ H₂ H₃ oLim) :
     @boundedLimitRecOn l lLim motive o H₁ H₂ H₃ = H₃ o oLim (fun x _ ↦
@@ -226,6 +229,7 @@ theorem enum_succ_eq_top {o : Ordinal} :
     enum (α := (succ o).ToType) (· < ·) ⟨o, type_toType _ ▸ lt_succ o⟩ = ⊤ :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[deprecated isSuccPrelimit_type_lt_iff (since := "2026-04-12")]
 theorem has_succ_of_type_succ_lt {α} {r : α → α → Prop} [wo : IsWellOrder α r]
     (h : ∀ a < type r, succ a < type r) (x : α) : ∃ y, r x y := by
@@ -238,6 +242,7 @@ theorem has_succ_of_type_succ_lt {α} {r : α → α → Prop} [wo : IsWellOrder
 theorem toType_noMax_of_succ_lt {o : Ordinal} (ho : ∀ a < o, succ a < o) : NoMaxOrder o.ToType :=
   ⟨has_succ_of_type_succ_lt (type_toType _ ▸ ho)⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem bounded_singleton {r : α → α → Prop} [IsWellOrder α r] (hr : IsSuccLimit (type r)) (x) :
     Bounded r {x} := by
   refine ⟨enum r ⟨succ (typein r x), hr.succ_lt (typein_lt_type r x)⟩, ?_⟩
@@ -579,6 +584,7 @@ theorem le_mul_right (a : Ordinal) {b : Ordinal} (hb : 0 < b) : a ≤ b * a := b
   convert! mul_le_mul_left (one_le_iff_pos.2 hb) a
   rw [one_mul a]
 
+set_option backward.isDefEq.respectTransparency false in
 private theorem mul_le_of_limit_aux {α β r s} [IsWellOrder α r] [IsWellOrder β s] {c}
     (h : IsSuccLimit (type s)) (H : ∀ b' < type s, type r * b' ≤ c) (l : c < type r * type s) :
     False := by
@@ -768,8 +774,7 @@ theorem mul_add_div_mul {a c : Ordinal} (hc : c < a) (b d : Ordinal) :
   · have H := mul_ne_zero hc.ne_zero hd
     apply le_antisymm
     · rw [← lt_succ_iff, ← lt_mul_iff_div_lt H, mul_assoc]
-      · apply (add_lt_add_right hc _).trans_le
-        rw [← mul_succ]
+      · grw [hc, ← mul_succ]
         gcongr
         rw [succ_le_iff]
         exact lt_mul_succ_div b hd
@@ -934,8 +939,7 @@ theorem lt_mul_iff {a b c : Ordinal} : a < b * c ↔ ∃ q < c, ∃ r < b, a = b
   obtain rfl | hb₀ := eq_or_ne b 0; · simp
   refine ⟨fun h ↦ ⟨_, (lt_mul_iff_div_lt hb₀).1 h, _, mod_lt a hb₀, (div_add_mod ..).symm⟩, ?_⟩
   rintro ⟨q, hq, r, hr, rfl⟩
-  apply add_lt_add_right hr _ |>.trans_le
-  grw [← mul_add_one, add_one_le_iff.2 hq]
+  grw [hr, ← mul_add_one, add_one_le_iff.2 hq]
 
 theorem forall_lt_mul {b c : Ordinal} {P : Ordinal → Prop} :
     (∀ a < b * c, P a) ↔ ∀ q < c, ∀ r < b, P (b * q + r) := by
@@ -1011,6 +1015,7 @@ theorem typein_lt_fin {n : ℕ} (x : Fin n) : typein LT.lt x = x := by
   rw [← type_Iio_lt, type_fintype, Nat.cast_inj]
   exact Fintype.card_fin_lt_of_le x.is_le'
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem enum_lt_fin {n : ℕ} (x : Fin n) : enum LT.lt ⟨x, by simp⟩ = x := by
   simp [← typein_inj LT.lt]
@@ -1026,6 +1031,7 @@ theorem natCast_lt_omega0 (n : ℕ) : ↑n < ω :=
 
 @[deprecated (since := "2026-03-08")] alias nat_lt_omega0 := natCast_lt_omega0
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem enum_lt_nat (x : ℕ) : enum LT.lt ⟨x, by simp⟩ = x := by
   simp [← typein_inj LT.lt]

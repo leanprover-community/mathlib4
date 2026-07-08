@@ -154,6 +154,7 @@ theorem trans_eq_none (f : α ≃. β) (g : β ≃. γ) (a : α) :
 theorem refl_trans (f : α ≃. β) : (PEquiv.refl α).trans f = f := by
   ext; dsimp [PEquiv.trans]; rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem trans_refl (f : α ≃. β) : f.trans (PEquiv.refl β) = f := by
   ext; dsimp [PEquiv.trans]; simp
@@ -235,6 +236,7 @@ end OfSet
 theorem symm_trans_rev (f : α ≃. β) (g : β ≃. γ) : (f.trans g).symm = g.symm.trans f.symm :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem self_trans_symm (f : α ≃. β) : f.trans f.symm = ofSet { a | (f a).isSome } := by
   ext
   dsimp [PEquiv.trans]

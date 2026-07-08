@@ -156,6 +156,7 @@ section HasSheafCompose
 
 variable (adj₂ : G₂ ⊣ sheafToPresheaf J B) [J.HasSheafCompose F]
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The canonical natural transformation
 `(whiskeringRight Cᵒᵖ A B).obj F ⋙ G₂ ⟶ G₁ ⋙ sheafCompose J F`
@@ -284,6 +285,7 @@ lemma sheafToPresheaf_map_sheafComposeNatTrans_eq_sheafifyCompIso_inv (P : Cᵒ�
   dsimp [plusPlusAdjunction]
   simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance (P : Cᵒᵖ ⥤ D) :
     IsIso ((sheafComposeNatTrans J F (plusPlusAdjunction J D) (plusPlusAdjunction J E)).app P) := by
   rw [← isIso_iff_of_reflects_iso _ (sheafToPresheaf J E),

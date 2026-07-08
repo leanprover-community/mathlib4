@@ -29,6 +29,7 @@ variable {J C : Type*} [Category* J] [Category* C] [HasZeroMorphisms C]
 
 namespace ShortComplex
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- If a cone with values in `ShortComplex C` is such that it becomes limit
 when we apply the three projections `ShortComplex C ⥤ C`, then it is limit. -/
@@ -161,6 +162,7 @@ instance preservesMonomorphisms_π₃ :
 
 end
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- If a cocone with values in `ShortComplex C` is such that it becomes colimit
 when we apply the three projections `ShortComplex C ⥤ C`, then it is colimit. -/

@@ -11,6 +11,7 @@ public import Mathlib.RingTheory.Norm.Transitivity
 
 /-!
 # Norm in number fields
+
 Given a finite extension of number fields, we define the norm morphism as a function between the
 rings of integers.
 
@@ -69,6 +70,7 @@ theorem norm_algebraMap (x : 𝓞 K) : norm K (algebraMap (𝓞 K) (𝓞 L) x) =
     RingOfIntegers.algebraMap_norm_algebraMap, Algebra.norm_algebraMap,
     RingOfIntegers.coe_eq_algebraMap, map_pow]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- If `L/K` is a finite Galois extension of fields, then, for all `(x : 𝓞 L)` we have that
 `x ∣ algebraMap (𝓞 K) (𝓞 L) (norm K x)`. -/
 theorem dvd_norm [FiniteDimensional K L] [IsGalois K L] (x : 𝓞 L) :

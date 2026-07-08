@@ -134,10 +134,12 @@ instance : HasAffineProperty @QuasiCompact (fun X _ _ _ ↦ CompactSpace X) wher
         Opens.iSup_mk, Opens.coe_mk]
       exact isCompact_iUnion fun i => isCompact_iff_compactSpace.mpr (hS' i)
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem compactSpace_iff_quasiCompact (X : Scheme) :
     CompactSpace X ↔ QuasiCompact (terminal.from X) := by
   rw [HasAffineProperty.iff_of_isAffine (P := @QuasiCompact)]
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance {X : Scheme} [CompactSpace X] : QuasiCompact X.toSpecΓ :=
   HasAffineProperty.iff_of_isAffine.mpr ‹_›
 
@@ -174,12 +176,15 @@ instance quasiCompact_isStableUnderBaseChange :
 
 variable {Z : Scheme.{u}}
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance (f : X ⟶ Z) (g : Y ⟶ Z) [QuasiCompact g] : QuasiCompact (pullback.fst f g) :=
   MorphismProperty.pullback_fst f g inferInstance
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance (f : X ⟶ Z) (g : Y ⟶ Z) [QuasiCompact f] : QuasiCompact (pullback.snd f g) :=
   MorphismProperty.pullback_snd f g inferInstance
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance (f : X ⟶ Y) (V : Y.Opens) [QuasiCompact f] : QuasiCompact (f ∣_ V) :=
   IsZariskiLocalAtTarget.restrict ‹_› V
 
@@ -206,6 +211,7 @@ lemma isCompact_iff_exists {U : X.Opens} :
   simp only [Set.image_univ, Scheme.Opens.range_ι]
   rwa [← Set.range_comp, ← TopCat.coe_comp, ← Scheme.Hom.comp_base, IsOpenImmersion.lift_fac]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[stacks 01K9]
 nonrec lemma isClosedMap_iff_specializingMap (f : X ⟶ Y) [QuasiCompact f] :
     IsClosedMap f ↔ SpecializingMap f := by

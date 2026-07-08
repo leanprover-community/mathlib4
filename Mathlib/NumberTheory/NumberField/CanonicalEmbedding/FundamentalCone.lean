@@ -226,6 +226,7 @@ theorem smul_mem_iff_mem (hc : c ≠ 0) :
   convert! smul_mem_of_mem h (inv_ne_zero hc)
   rw [eq_inv_smul_iff₀ hc]
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem exists_unit_smul_mem (hx : mixedEmbedding.norm x ≠ 0) :
     ∃ u : (𝓞 K)ˣ, u • x ∈ fundamentalCone K := by
   classical
@@ -480,6 +481,7 @@ the integral ideal `J`. -/
 def idealSet : Set (mixedSpace K) :=
   fundamentalCone K ∩ (mixedEmbedding.idealLattice K (FractionalIdeal.mk0 K J))
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable {K J} in
 theorem mem_idealSet :
     x ∈ idealSet K J ↔ x ∈ fundamentalCone K ∧ ∃ a : (𝓞 K), (a : 𝓞 K) ∈ (J : Set (𝓞 K)) ∧
@@ -521,6 +523,7 @@ variable {K J}
 theorem idealSetEquiv_apply (a : idealSet K J) :
     (idealSetEquiv K J a : mixedSpace K) = a := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem idealSetEquiv_symm_apply
     (a : {a : integerSet K // (preimageOfMemIntegerSet a : 𝓞 K) ∈ (J : Set (𝓞 K)) }) :
     ((idealSetEquiv K J).symm a : mixedSpace K) = a := by

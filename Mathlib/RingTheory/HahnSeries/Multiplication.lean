@@ -15,6 +15,7 @@ public import Mathlib.RingTheory.HahnSeries.Addition
 
 /-!
 # Multiplicative properties of Hahn series
+
 If `Γ` is ordered and `R` has zero, then `R⟦Γ⟧` consists of formal series over `Γ` with
 coefficients in `R`, whose supports are partially well-ordered. This module introduces
 multiplication and scalar multiplication on Hahn series. If `Γ` is an ordered cancellative
@@ -984,7 +985,7 @@ instance [IsCancelAdd R] [IsCancelMulZero R] : IsCancelMulZero R⟦Γ⟧ where
       rintro b c hxb - hbc hbc'
       contrapose! hbc'
       rwa [eq_comm, eq_comm (a := c), ← add_eq_add_iff_eq_and_eq (order_le_of_coeff_ne_zero hxb)
-        (Set.IsWF.min_le _ _ hbc'), eq_comm]
+        (Set.IsWF.min_le this hyz hbc'), eq_comm]
     · simp +contextual [← and_or_left, ← or_and_right]
     · simp +contextual [← and_or_left, ← or_and_right]
   mul_right_cancel_of_ne_zero {x} hx y z hyz := by
@@ -1006,7 +1007,8 @@ instance [IsCancelAdd R] [IsCancelMulZero R] : IsCancelMulZero R⟦Γ⟧ where
       rintro b c - hxb hbc hbc'
       contrapose! hbc'
       rwa [eq_comm, eq_comm (a := c), ← add_eq_add_iff_eq_and_eq
-        (Set.IsWF.min_le _ _ hbc') (order_le_of_coeff_ne_zero hxb), eq_comm]
+        (Set.IsWF.min_le this hyz ((Set.mem_setOf (p := fun a => y.coeff a ≠ z.coeff a)).mpr hbc'))
+        (order_le_of_coeff_ne_zero hxb), eq_comm]
     · simp +contextual [← or_and_right]
     · simp +contextual [← or_and_right]
 

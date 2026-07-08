@@ -176,6 +176,7 @@ end OfLocalizationSpanTarget
 
 section Stability
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- If `P` respects isomorphism, so does `Locally P`. -/
 lemma locally_respectsIso (hPi : RespectsIso P) : RespectsIso (Locally P) where
   left {R S T} _ _ _ f e := fun ⟨s, hsone, hs⟩ ↦ by

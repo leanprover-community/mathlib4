@@ -601,6 +601,7 @@ lemma frobenius_norm_replicateCol (v : n → α) : ‖replicateCol ι v‖ = ‖
 lemma frobenius_nnnorm_replicateCol (v : n → α) : ‖replicateCol ι v‖₊ = ‖toLp 2 v‖₊ :=
   Subtype.ext <| frobenius_norm_replicateCol v
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma frobenius_nnnorm_diagonal [DecidableEq n] (v : n → α) : ‖diagonal v‖₊ = ‖toLp 2 v‖₊ := by
   simp_rw [frobenius_nnnorm_def, ← Finset.sum_product', Finset.univ_product_univ,

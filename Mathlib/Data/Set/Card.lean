@@ -287,7 +287,7 @@ theorem encard_strictMono [Finite α] : StrictMono (encard : Set α → ℕ∞) 
   fun _ _ h ↦ (toFinite _).encard_lt_encard h
 
 theorem Finite.encard_strictMonoOn : StrictMonoOn (α := Set α) encard (setOf Set.Finite) :=
-  fun _ hs _ _ hlt ↦ hs.encard_lt_encard hlt.ssubset
+  fun _ hs _ _ hlt ↦ hs.encard_lt_encard hlt
 
 theorem Finite.encard_lt_card (hfin : s.Finite) (hne : s ≠ univ) : s.encard < ENat.card α :=
   encard_univ α ▸ hfin.encard_lt_encard (ssubset_univ_iff.mpr hne)
@@ -553,6 +553,7 @@ open Notation in
 lemma encard_preimage_val_le_encard_left (P Q : Set α) : (P ↓∩ Q).encard ≤ P.encard :=
   (Function.Embedding.subtype _).encard_le
 
+set_option backward.isDefEq.respectTransparency false in
 open Notation in
 lemma encard_preimage_val_le_encard_right (P Q : Set α) : (P ↓∩ Q).encard ≤ Q.encard :=
   Function.Embedding.encard_le ⟨fun ⟨⟨x, _⟩, hx⟩ ↦ ⟨x, hx⟩, fun _ _ h ↦ by
@@ -901,7 +902,7 @@ theorem ncard_strictMono [Finite α] : @StrictMono (Set α) _ _ _ ncard :=
   fun _ _ h ↦ ncard_lt_ncard h
 
 theorem Finite.ncard_strictMonoOn : StrictMonoOn (α := Set α) ncard (setOf Set.Finite) :=
-  fun _ _ _ ht hlt ↦ ncard_lt_ncard hlt.ssubset ht
+  fun _ _ _ ht hlt ↦ ncard_lt_ncard hlt ht
 
 theorem ncard_eq_of_bijective {n : ℕ} (f : ∀ i, i < n → α)
     (hf : ∀ a ∈ s, ∃ i, ∃ h : i < n, f i h = a) (hf' : ∀ (i) (h : i < n), f i h ∈ s)

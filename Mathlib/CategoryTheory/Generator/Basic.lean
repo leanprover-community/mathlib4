@@ -549,7 +549,7 @@ theorem IsSeparator.of_equivalence {G : C} (h : IsSeparator G) (α : C ≌ D) :
 
 theorem IsCoseparator.of_equivalence {G : C} (h : IsCoseparator G) (α : C ≌ D) :
     IsCoseparator (α.functor.obj G) := by
- simpa using! ObjectProperty.IsCoseparating.of_equivalence h α
+  simpa using! ObjectProperty.IsCoseparating.of_equivalence h α
 
 end Equivalence
 
@@ -736,6 +736,7 @@ lemma isCoseparator_of_isLimit_fan {β : Type w} {f : β → C}
   obtain ⟨b⟩ := h
   classical simpa using huv (hc.lift (Fan.mk _ (Pi.single b g))) =≫ c.proj b
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma isCoseparator_iff_of_isLimit_fan {β : Type w} {f : β → C}
     {c : Fan f} (hc : IsLimit c) :
     IsCoseparator c.pt ↔ ObjectProperty.IsCoseparating (.ofObj f) := by

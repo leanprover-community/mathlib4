@@ -263,6 +263,7 @@ lemma preservesLimitsOfSize_iff_of_natIso {F G : C ⥤ D} (h : F ≅ G) :
     PreservesLimitsOfSize.{w, w'} F ↔ PreservesLimitsOfSize.{w, w'} G :=
   ⟨fun _ ↦ preservesLimits_of_natIso h, fun _ ↦ preservesLimits_of_natIso h.symm⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Transfer preservation of limits along an equivalence in the shape. -/
 lemma preservesLimitsOfShape_of_equiv {J' : Type w₂} [Category.{w₂'} J'] (e : J ≌ J') (F : C ⥤ D)
@@ -345,6 +346,7 @@ lemma preservesColimitsOfSize_iff_of_natIso {F G : C ⥤ D} (h : F ≅ G) :
     PreservesColimitsOfSize.{w, w'} F ↔ PreservesColimitsOfSize.{w, w'} G :=
   ⟨fun _ ↦ preservesColimits_of_natIso h, fun _ ↦ preservesColimits_of_natIso h.symm⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Transfer preservation of colimits along an equivalence in the shape. -/
 lemma preservesColimitsOfShape_of_equiv {J' : Type w₂} [Category.{w₂'} J'] (e : J ≌ J') (F : C ⥤ D)
@@ -787,6 +789,7 @@ end
 
 variable (F : C ⥤ D)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- A fully faithful functor reflects limits. -/
 instance fullyFaithful_reflectsLimits [F.Full] [F.Faithful] : ReflectsLimitsOfSize.{w, w'} F where
   reflectsLimitsOfShape {J} 𝒥₁ :=
@@ -798,6 +801,7 @@ instance fullyFaithful_reflectsLimits [F.Full] [F.Faithful] : ReflectsLimitsOfSi
               intro s m
               rw [Functor.map_preimage]
               apply t.uniq_cone_morphism⟩ } }
+set_option backward.isDefEq.respectTransparency.types false in
 /-- A fully faithful functor reflects colimits. -/
 instance fullyFaithful_reflectsColimits [F.Full] [F.Faithful] :
     ReflectsColimitsOfSize.{w, w'} F where

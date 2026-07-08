@@ -61,7 +61,9 @@ abbrev compTwoSquare (w : TwoSquare T L R B) : L.LeftExtension (T ⋙ F) :=
     (whiskerLeft _ E.hom ≫ (associator _ _ _).inv ≫
       whiskerRight w.natTrans _ ≫ (associator _ _ _).hom)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency.types false in
 /-- If `w : TwoSquare T L R B` is a Guitart exact square, and `E` is a left extension
 of `F` along `R`, then `E` is a pointwise left Kan extension of `F` along `R` at
 `B.obj X₃` iff `E.compTwoSquare w` is a pointwise left Kan extension
@@ -118,7 +120,7 @@ end Functor.LeftExtension
 namespace TwoSquare
 
 variable {T : C₁ ⥤ C₂} {L : C₁ ⥤ C₃} {R : C₂ ⥤ C₄} {B : C₃ ⥤ C₄}
-   (w : TwoSquare T L R B)
+  (w : TwoSquare T L R B)
 
 include w
 
@@ -178,6 +180,7 @@ noncomputable def lanBaseChange :
     have := R.lanUnit.naturality_app (T.obj X) τ
     simp [reassoc_of% this]
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma isIso_lanBaseChange_app_iff (F : C₂ ⥤ D) :
     IsIso (w.lanBaseChange.app F) ↔

@@ -270,6 +270,7 @@ theorem card_lt_of_injective_not_surjective (f : α → β) (h : Function.Inject
 theorem card_le_of_surjective (f : α → β) (h : Function.Surjective f) : card β ≤ card α :=
   card_le_of_injective _ (Function.injective_surjInv h)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem card_range_le {α β : Type*} (f : α → β) [Fintype α] [Fintype (Set.range f)] :
     Fintype.card (Set.range f) ≤ Fintype.card α :=
   Fintype.card_le_of_surjective (fun a => ⟨f a, by simp⟩) fun ⟨_, a, ha⟩ => ⟨a, by simpa using ha⟩
@@ -444,8 +445,7 @@ theorem wellFounded_of_trans_of_irrefl (r : α → α → Prop) [IsTrans α r] [
   cases nonempty_fintype α
   have (x y) (hxy : r x y) : #{z | r z x} < #{z | r z y} :=
     Finset.card_lt_card <| by
-      simp_rw [Finset.lt_iff_ssubset.symm, lt_iff_le_not_ge, Finset.le_iff_subset,
-        Finset.subset_iff, mem_filter_univ]
+      simp_rw [lt_iff_le_not_ge, Finset.subset_iff, mem_filter_univ]
       exact
         ⟨fun z hzx => _root_.trans hzx hxy,
           not_forall_of_exists_not ⟨x, Classical.not_imp.2 ⟨hxy, irrefl x⟩⟩⟩

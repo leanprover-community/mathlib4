@@ -20,7 +20,7 @@ public import Mathlib.Topology.Semicontinuity.Hemicontinuity
 
 This file contains the basic theory for the resolvent and spectrum of a Banach algebra.
 Theorems specific to *complex* Banach algebras, such as *Gelfand's formula* can be found in
- `Mathlib/Analysis/Normed/Algebra/GelfandFormula.lean`.
+`Mathlib/Analysis/Normed/Algebra/GelfandFormula.lean`.
 
 ## Main definitions
 
@@ -491,6 +491,7 @@ section NormedField
 variable [NormedField 𝕜] [NormedAlgebra 𝕜 A] [instSMulMem : SMulMemClass SA 𝕜 A]
 variable (S : SA) [hS : IsClosed (S : Set A)] (x : S)
 
+set_option backward.isDefEq.respectTransparency.types false in
 open SubalgebraClass in
 include instSMulMem in
 /-- Let `S` be a closed subalgebra of a Banach algebra `A`. If `a : S` is invertible in `A`,

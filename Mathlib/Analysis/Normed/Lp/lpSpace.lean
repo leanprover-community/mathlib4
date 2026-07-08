@@ -737,6 +737,7 @@ section Sum
 
 variable {E : Type*} [NormedAddCommGroup E]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma norm_tsum_le (f : ℓ¹(α, E)) :
     ‖∑' i, f i‖ ≤ ‖f‖ := calc
   ‖∑' i, f i‖ ≤ ∑' i, ‖f i‖ := norm_tsum_le_tsum_norm (.of_norm (by simpa using f.2.summable))
@@ -1079,6 +1080,7 @@ noncomputable def zeroBasis : Module.Basis α 𝕜 ℓ⁰(α, 𝕜) where
       left_inv _ := rfl
       right_inv _ := Finsupp.ext fun _ ↦ rfl }
 
+set_option backward.isDefEq.respectTransparency false in
 lemma zeroBasis_apply (i : α) : zeroBasis i = lp.single 0 i (1 : 𝕜) := by
   ext; simp [zeroBasis, Finsupp.single_apply, Pi.single, Function.update, eq_comm]
 
@@ -1243,8 +1245,7 @@ lemma toAddMonoidHom_linearMapOfLE (h : p ≤ q) :
   ext; rfl
 
 lemma linearMapOfLE_comp (hpq : p ≤ q) (hqr : q ≤ r) :
-   (linearMapOfLE 𝕜 E hqr).comp (linearMapOfLE 𝕜 E hpq) =
-     linearMapOfLE 𝕜 E (hpq.trans hqr) := by
+    (linearMapOfLE 𝕜 E hqr).comp (linearMapOfLE 𝕜 E hpq) = linearMapOfLE 𝕜 E (hpq.trans hqr) := by
   ext; rfl
 
 end OfLE
@@ -1276,6 +1277,7 @@ open Filter
 
 open scoped Topology uniformity
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The coercion from `lp E p` to `∀ i, E i` is uniformly continuous. -/
 theorem uniformContinuous_coe [_i : Fact (1 ≤ p)] :
     UniformContinuous (α := lp E p) ((↑) : lp E p → ∀ i, E i) :=

@@ -16,6 +16,7 @@ public import Mathlib.Tactic.FastInstance
 
 /-!
 # Additive properties of Hahn series
+
 If `Γ` is ordered and `R` has zero, then `R⟦Γ⟧` consists of formal series over `Γ` with coefficients
 in `R`, whose supports are partially well-ordered. With further structure on `R` and `Γ`, we can add
 further structure on `R⟦Γ⟧`.  When `R` has an addition operation, `R⟦Γ⟧` also has addition by adding
@@ -157,6 +158,7 @@ lemma addOppositeEquiv_symm_support (x : R⟦Γ⟧ᵃᵒᵖ) :
     (addOppositeEquiv.symm x).support = x.unop.support := by
   rw [← addOppositeEquiv_support, AddEquiv.apply_symm_apply]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma addOppositeEquiv_orderTop (x : Rᵃᵒᵖ⟦Γ⟧) :
     (addOppositeEquiv x).unop.orderTop = x.orderTop := by
@@ -172,6 +174,7 @@ lemma addOppositeEquiv_symm_orderTop (x : R⟦Γ⟧ᵃᵒᵖ) :
     (addOppositeEquiv.symm x).orderTop = x.unop.orderTop := by
   rw [← addOppositeEquiv_orderTop, AddEquiv.apply_symm_apply]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma addOppositeEquiv_leadingCoeff (x : Rᵃᵒᵖ⟦Γ⟧) :
     (addOppositeEquiv x).unop.leadingCoeff = x.leadingCoeff.unop := by

@@ -273,6 +273,7 @@ private lemma induction_structure (n : ℕ)
       exact hi h_eq
 
 -- TODO: fix non-terminal simp (large simp set)
+set_option backward.isDefEq.respectTransparency.types false in
 set_option linter.flexible false in
 open IsLocalization in
 open Submodule hiding comap in

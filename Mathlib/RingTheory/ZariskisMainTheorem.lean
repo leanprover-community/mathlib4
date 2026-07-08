@@ -139,6 +139,7 @@ section IsStronglyTranscendental
 
 variable (φ : R[X] →ₐ[R] S) (t : S) (p r : R[X])
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Given a map `φ : R[X] →ₐ[R] S`. Suppose `t = φ r / φ p` is integral over `R[X]` where
 `p` is monic with `deg p > deg r`, then `t` is also integral over `R`. -/
 lemma isIntegral_of_isIntegralElem_of_monic_of_natDegree_lt
@@ -716,9 +717,8 @@ lemma ZariskisMainProperty.quasiFiniteAt
   have : Algebra.QuasiFinite R (Localization.Away r.1) :=
     .of_surjective_algHom (Localization.awayMapₐ S'.val r) H.2
   let f : Localization.Away r.1 →ₐ[S] Localization.AtPrime p :=
-    IsLocalization.liftAlgHom (M := .powers r.1) (f := Algebra.ofId _ _) (by
-      simpa [Submonoid.mem_powers_iff] using
-        (IsLocalization.map_units (M := p.primeCompl) (Localization.AtPrime p) ⟨r, hrp⟩).pow)
+    IsLocalization.Away.liftAlgHom r.1 (f := Algebra.ofId _ _) <|
+      IsLocalization.map_units (M := p.primeCompl) (Localization.AtPrime p) ⟨r, hrp⟩
   refine .of_forall_exists_mul_mem_range (f.restrictScalars R) fun x ↦ ?_
   obtain ⟨x, ⟨s, hs⟩, rfl⟩ := IsLocalization.exists_mk'_eq p.primeCompl x
   exact ⟨algebraMap _ _ s, by simpa using IsLocalization.map_units _ ⟨s, hs⟩,

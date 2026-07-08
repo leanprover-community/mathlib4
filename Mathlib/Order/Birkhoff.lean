@@ -105,6 +105,7 @@ end LowerSet
 
 namespace OrderEmbedding
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The **Birkhoff Embedding** of a finite partial order as sup-irreducible elements in its
 lattice of lower sets. -/
 def supIrredLowerSet : α ↪o {s : LowerSet α // SupIrred s} where
@@ -112,6 +113,7 @@ def supIrredLowerSet : α ↪o {s : LowerSet α // SupIrred s} where
   inj' _ := by simp
   map_rel_iff' := by simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The **Birkhoff Embedding** of a finite partial order as inf-irreducible elements in its
 lattice of lower sets. -/
 def infIrredUpperSet : α ↪o {s : UpperSet α // InfIrred s} where
@@ -155,6 +157,7 @@ namespace OrderIso
 section SemilatticeSup
 variable [SemilatticeSup α] [OrderBot α] [Finite α]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma supIrredLowerSet_symm_apply (s : {s : LowerSet α // SupIrred s}) [Fintype s] :
     supIrredLowerSet.symm s = (s.1 : Set α).toFinset.sup id := by
   classical
@@ -169,6 +172,7 @@ end SemilatticeSup
 section SemilatticeInf
 variable [SemilatticeInf α] [OrderTop α] [Finite α]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma infIrredUpperSet_symm_apply (s : {s : UpperSet α // InfIrred s}) [Fintype s] :
     infIrredUpperSet.symm s = (s.1 : Set α).toFinset.inf id := by
   classical
@@ -243,15 +247,13 @@ variable [DecidableEq α]
     birkhoffFinset (a ⊔ b) = birkhoffFinset a ∪ birkhoffFinset b := by
   classical
   dsimp [OrderEmbedding.birkhoffFinset]
-  rw [birkhoffSet_sup, OrderIso.coe_toOrderEmbedding]
-  simp
+  simp [birkhoffSet_sup]
 
 @[simp] lemma birkhoffFinset_inf (a b : α) :
     birkhoffFinset (a ⊓ b) = birkhoffFinset a ∩ birkhoffFinset b := by
   classical
   dsimp [OrderEmbedding.birkhoffFinset]
-  rw [birkhoffSet_inf, OrderIso.coe_toOrderEmbedding]
-  simp
+  simp [birkhoffSet_inf]
 
 end OrderEmbedding
 

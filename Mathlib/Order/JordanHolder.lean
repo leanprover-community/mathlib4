@@ -197,6 +197,7 @@ theorem head_le_of_mem {s : CompositionSeries X} {x : X} (hx : x ∈ s) : s.head
 theorem last_eraseLast_le (s : CompositionSeries X) : s.eraseLast.last ≤ s.last := by
   simp [eraseLast, last, s.strictMono.le_iff_le, Fin.le_iff_val_le_val]
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem mem_eraseLast_of_ne_of_mem {s : CompositionSeries X} {x : X}
     (hx : x ≠ s.last) (hxs : x ∈ s) : x ∈ s.eraseLast := by
   rcases hxs with ⟨i, rfl⟩
@@ -228,12 +229,14 @@ theorem isMaximal_eraseLast_last {s : CompositionSeries X} (h : 0 < s.length) :
   convert! this using 3
   exact (tsub_add_cancel_of_le h).symm
 
+set_option backward.isDefEq.respectTransparency false in
 theorem eq_snoc_eraseLast {s : CompositionSeries X} (h : 0 < s.length) :
     s = snoc (eraseLast s) s.last (isMaximal_eraseLast_last h) := by
   ext x
   simp only [mem_snoc, mem_eraseLast h, ne_eq]
   by_cases h : x = s.last <;> simp [*, s.last_mem]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem snoc_eraseLast_last {s : CompositionSeries X} (h : IsMaximal s.eraseLast.last s.last) :
     s.eraseLast.snoc s.last h = s :=
@@ -391,6 +394,7 @@ theorem eq_of_head_eq_head_of_last_eq_last_of_length_eq_zero {s₁ s₂ : Compos
   ext
   simp [*]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a `CompositionSeries`, `s`, and an element `x`
 such that `x` is maximal inside `s.last` there is a series, `t`,
 such that `t.last = x`, `t.head = s.head`

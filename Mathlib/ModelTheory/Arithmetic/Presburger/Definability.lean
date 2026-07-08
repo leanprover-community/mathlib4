@@ -109,6 +109,7 @@ lemma term_realize_eq_add_dotProduct [Fintype α] (t : presburger[[A]].Term α) 
 
 variable [Finite α]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isSemilinearSet_boundedFormula_realize {n} (φ : presburger[[A]].BoundedFormula α n) :
     IsSemilinearSet {v : α ⊕ Fin n → ℕ | φ.Realize (v ∘ Sum.inl) (v ∘ Sum.inr)} := by
   haveI := Fintype.ofFinite α

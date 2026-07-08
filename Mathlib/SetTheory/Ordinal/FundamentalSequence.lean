@@ -77,6 +77,7 @@ protected theorem zero (f : Iio 0 → Iio 0) : IsFundamentalSeq f where
   le_ord_cof := by simp
   isCofinal_range := .of_isEmpty
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The length one sequence `(o)` is a fundamental sequence for `o + 1`. -/
 protected theorem add_one (o : Ordinal) :
     @IsFundamentalSeq 1 (o + 1) fun _ ↦ ⟨o, lt_add_one o⟩ where
@@ -227,7 +228,6 @@ theorem exists_fundamental_sequence (a : Ordinal.{u}) :
         exact (wo.wf.not_lt_min {j | r j i ∧ f i ≤ f j} ⟨IsTrans.trans _ _ _ hkj hji, H⟩) hkj
       · rwa [bfamilyOfFamily'_typein]
 
-set_option linter.deprecated false in
 @[deprecated IsFundamentalSeq.comp_isNormal (since := "2026-03-23")]
 theorem IsFundamentalSequence.of_isNormal {f : Ordinal.{u} → Ordinal.{u}} (hf : IsNormal f)
     {a o} (ha : IsSuccLimit a) {g} (hg : IsFundamentalSequence a o g) :

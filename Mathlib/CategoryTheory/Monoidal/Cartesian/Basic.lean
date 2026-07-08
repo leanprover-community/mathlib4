@@ -679,6 +679,7 @@ def prodComparisonBifunctorNatTrans :
 
 variable {E : Type u₂} [Category.{v₂} E] [CartesianMonoidalCategory E] (G : D ⥤ E)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 theorem prodComparisonBifunctorNatTrans_comp : prodComparisonBifunctorNatTrans (F ⋙ G) =
     Functor.whiskerRight
@@ -801,6 +802,7 @@ open Limits
 
 variable {P : ObjectProperty C}
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 -- TODO: Introduce `ClosedUnderFiniteProducts`?
 /-- The restriction of a Cartesian-monoidal category along an object property that's closed under
@@ -987,16 +989,21 @@ end Braided
 namespace EssImageSubcategory
 variable [F.Full] [F.Faithful] [PreservesFiniteProducts F] {T X Y Z : F.EssImageSubcategory}
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma tensor_obj (X Y : F.EssImageSubcategory) : (X ⊗ Y).obj = X.obj ⊗ Y.obj := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma lift_def (f : T ⟶ X) (g : T ⟶ Y) : lift f g = ObjectProperty.homMk (lift f.hom g.hom) := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma associator_hom_def (X Y Z : F.EssImageSubcategory) :
     (α_ X Y Z).hom = ObjectProperty.homMk (α_ X.obj Y.obj Z.obj).hom := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma associator_inv_def (X Y Z : F.EssImageSubcategory) :
     (α_ X Y Z).inv = ObjectProperty.homMk (α_ X.obj Y.obj Z.obj).inv := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma toUnit_def (X : F.EssImageSubcategory) :
     toUnit X = ObjectProperty.homMk (toUnit X.obj) := rfl
 

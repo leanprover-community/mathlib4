@@ -81,6 +81,7 @@ theorem congr_app {F G : C ⥤ D} {α β : NatTrans F G} (h : α = β) (X : C) :
 namespace NatTrans
 
 /-- `NatTrans.id F` is the identity natural transformation on a functor `F`. -/
+@[implicit_reducible]
 protected def id (F : C ⥤ D) : NatTrans F F where app X := 𝟙 (F.obj X)
 
 @[simp]

@@ -150,38 +150,46 @@ namespace Iso
 
 variable {D : Type u₂} [Category.{v₂} D]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- A natural isomorphism of functors induces a natural isomorphism between their cores. -/
 @[simps!]
 def core {F G : C ⥤ D} (α : F ≅ G) : F.core ≅ G.core :=
   NatIso.ofComponents
     (fun x ↦ Groupoid.isoEquivHom _ _ |>.symm <| .mk <| α.app x.of)
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma coreComp {F G H : C ⥤ D} (α : F ≅ G) (β : G ≅ H) : (α ≪≫ β).core = α.core ≪≫ β.core := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma coreId {F : C ⥤ D} : (Iso.refl F).core = Iso.refl F.core := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma coreWhiskerLeft {E : Type u₃} [Category.{v₃} E] (F : C ⥤ D) {G H : D ⥤ E} (η : G ≅ H) :
     (isoWhiskerLeft F η).core =
     F.coreComp G ≪≫ isoWhiskerLeft F.core η.core ≪≫ (F.coreComp H).symm := by
   cat_disch
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma coreWhiskerRight {E : Type u₃} [Category.{v₃} E] {F G : C ⥤ D} (η : F ≅ G) (H : D ⥤ E) :
     (isoWhiskerRight η H).core =
     F.coreComp H ≪≫ isoWhiskerRight η.core H.core ≪≫ (G.coreComp H).symm := by
   cat_disch
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma coreLeftUnitor {F : C ⥤ D} :
     F.leftUnitor.core =
     (𝟭 C).coreComp F ≪≫ isoWhiskerRight (Functor.coreId C) _ ≪≫ F.core.leftUnitor := by
   cat_disch
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma coreRightUnitor {F : C ⥤ D} :
     F.rightUnitor.core =
     (F).coreComp (𝟭 D) ≪≫ isoWhiskerLeft _ (Functor.coreId D) ≪≫ F.core.rightUnitor := by
   cat_disch
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma coreAssociator {E : Type u₃} [Category.{v₃} E] {E' : Type u₄} [Category.{v₄} E']
     (F : C ⥤ D) (G : D ⥤ E) (H : E ⥤ E') :
     (Functor.associator F G H).core =
@@ -196,11 +204,13 @@ namespace Core
 
 variable {G : Type u₂} [Groupoid.{v₂} G]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The functor `functorToCore (F ⋙ H)` factors through `functorToCore H`. -/
 def functorToCoreCompLeftIso {G' : Type u₃} [Groupoid.{v₃} G'] (H : G ⥤ C) (F : G' ⥤ G) :
     functorToCore (F ⋙ H) ≅ F ⋙ functorToCore H :=
   NatIso.ofComponents (fun _ ↦ Iso.refl _)
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma functorToCore_comp_left {G' : Type u₃} [Groupoid.{v₃} G'] (H : G ⥤ C) (F : G' ⥤ G) :
     functorToCore (F ⋙ H) = F ⋙ functorToCore H :=
   Functor.ext_of_iso (functorToCoreCompLeftIso H F) (by cat_disch)
@@ -214,10 +224,12 @@ lemma functorToCore_comp_right {C' : Type u₄} [Category.{v₄} C'] (H : G ⥤ 
     functorToCore (H ⋙ F) = functorToCore H ⋙ F.core :=
   Functor.ext_of_iso (functorToCoreCompRightIso H F) (by cat_disch)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The functor `functorToCore (𝟭 G)` is a section of `inclusion G`. -/
 def inclusionCompFunctorToCoreIso : inclusion G ⋙ functorToCore (𝟭 G) ≅ 𝟭 (Core G) :=
   NatIso.ofComponents (fun _ ↦ Iso.refl _)
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem inclusion_comp_functorToCore : inclusion G ⋙ functorToCore (𝟭 G) = 𝟭 (Core G) :=
   Functor.ext_of_iso inclusionCompFunctorToCoreIso (by cat_disch)
 
@@ -234,6 +246,7 @@ variable (D : Type u₂) [Category.{v₂} D]
 
 namespace Equivalence
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable {D} in
 /-- Equivalent categories have equivalent cores. -/
 @[simps!]
@@ -245,6 +258,7 @@ def core (E : C ≌ D) : Core C ≌ Core D where
 
 end Equivalence
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable (C) in
 /-- Taking the core of a functor is functorial if we discard non-invertible natural
 transformations. -/

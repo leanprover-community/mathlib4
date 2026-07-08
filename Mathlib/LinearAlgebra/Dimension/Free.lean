@@ -14,7 +14,7 @@ public import Mathlib.SetTheory.Cardinal.Finsupp
 # Rank of free modules
 
 ## Main result
-- `Module.nonempty_equiv_iff_lift_rank_eq`:
+- `Module.nonempty_linearEquiv_iff_lift_rank_eq`:
   Two free modules are isomorphic iff they have the same dimension.
 - `Module.finBasis`:
   An arbitrary basis of a finite free module indexed by `Fin n` given `finrank R M = n`.
@@ -349,6 +349,7 @@ theorem _root_.OrzechProperty.bijective_of_surjective_of_finrank_le
 variable {R : Type*} [CommSemiring R] [StrongRankCondition R]
     {M : Type*} [AddCommMonoid M] [Module R M] [Module.Free R M]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem _root_.LinearMap.existsUnique_eq_smul_id_of_finrank_eq_one
     (d1 : Module.finrank R M = 1) (u : M →ₗ[R] M) :
     ∃! c : R, u = c • LinearMap.id := by

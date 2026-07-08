@@ -296,6 +296,7 @@ section DistribLattice
 variable [DistribLattice α] [CommSemiring β] [LinearOrder β] [IsStrictOrderedRing β]
   [ExistsAddOfLE β] (f f₁ f₂ f₃ f₄ g μ : α → β)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The **Four Functions Theorem**, aka **Ahlswede-Daykin Inequality**. -/
 lemma four_functions_theorem [DecidableEq α] (h₁ : 0 ≤ f₁) (h₂ : 0 ≤ f₂) (h₃ : 0 ≤ f₃) (h₄ : 0 ≤ f₄)
     (h : ∀ a b, f₁ a * f₂ b ≤ f₃ (a ⊓ b) * f₄ (a ⊔ b)) (s t : Finset α) :

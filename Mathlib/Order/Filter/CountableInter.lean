@@ -259,6 +259,7 @@ inductive CountableGenerateSets : Set α → Prop
   | sInter {S : Set (Set α)} :
     S.Countable → (∀ s ∈ S, CountableGenerateSets s) → CountableGenerateSets (⋂₀ S)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `Filter.countableGenerate g` is the greatest `countableInterFilter` containing `g`. -/
 def countableGenerate : Filter α :=
   ofCountableInter (CountableGenerateSets g) (fun _ => CountableGenerateSets.sInter) fun _ _ =>
@@ -273,7 +274,7 @@ theorem mem_countableGenerate_iff {s : Set α} :
     s ∈ countableGenerate g ↔ ∃ S : Set (Set α), S ⊆ g ∧ S.Countable ∧ ⋂₀ S ⊆ s := by
   constructor <;> intro h
   · induction h with
-    | @basic s hs => exact ⟨{s}, by simp [hs, subset_refl]⟩
+    | @basic s hs => exact ⟨{s}, by simp [hs]⟩
     | univ => exact ⟨∅, by simp⟩
     | superset _ _ ih => refine Exists.imp (fun S => ?_) ih; tauto
     | @sInter S Sct _ ih =>

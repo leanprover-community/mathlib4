@@ -383,6 +383,7 @@ def mapRange.equiv (e : M ≃ N) (hf : e 0 = 0) : (ι →₀ M) ≃ (ι →₀ N
   left_inv x := by ext; simp
   right_inv x := by ext; simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma mapRange.equiv_refl : mapRange.equiv (.refl M) rfl = .refl (ι →₀ M) := by ext; simp
 
 lemma mapRange.equiv_trans (e : M ≃ N) (hf) (f₂ : N ≃ O) (hf₂) :

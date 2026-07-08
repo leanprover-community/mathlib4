@@ -281,6 +281,7 @@ instance : Category (BasedCategory.{v₂, u₂} 𝒮) where
   id := id
   comp := comp
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The bicategory of based categories. -/
 instance bicategory : Bicategory (BasedCategory.{v₂, u₂} 𝒮) where
@@ -294,6 +295,7 @@ instance bicategory : Bicategory (BasedCategory.{v₂, u₂} 𝒮) where
   leftUnitor {_ _} F := BasedNatIso.id F
   rightUnitor {_ _} F := BasedNatIso.id F
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The bicategory structure on `BasedCategory.{v₂, u₂} 𝒮` is strict. -/
 instance : Bicategory.Strict (BasedCategory.{v₂, u₂} 𝒮) where
 

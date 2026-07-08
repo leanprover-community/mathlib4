@@ -297,7 +297,7 @@ lemma mdifferentiableOn_of_coeff [FiniteDimensional 𝕜 F]
   have this (i) : MDiff[u] (T% ((LinearMap.piApply (hs.coeff i)) t • s i)) :=
     (h i).smul_section ((hs.contMDiffOn i).mdifferentiableOn one_ne_zero)
   have almost : MDiff[u] (T% (fun x ↦ ∑ i, hs.coeff i x (t x) • s i x)) :=
-    .sum_section (fun i _ hx ↦ this i _ hx)
+    .sum_section (fun i _ _ hx ↦ this i _ hx)
   apply almost.congr
   intro y hy
   simpa using congrArg (TotalSpace.mk' F y) (hs.coeff_sum_eq t hy)
@@ -309,7 +309,7 @@ lemma mdifferentiableAt_of_coeff [FiniteDimensional 𝕜 F]
     MDiffAt (T% t) x := by
   have := fintypeOfFiniteDimensional hs (mem_of_mem_nhds hu)
   have almost : MDiffAt (T% (fun x ↦ ∑ i, hs.coeff i x (t x) • s i x)) x :=
-    .sum_section (fun i ↦ (h i).smul_section <|
+    .sum_section (fun i _ ↦ (h i).smul_section <|
       ((hs.contMDiffOn i).mdifferentiableOn one_ne_zero).mdifferentiableAt hu)
   exact almost.congr_of_eventuallyEq <| (hs.eventually_eq_sum_coeff_smul t hu).mono (by simp)
 
@@ -451,6 +451,7 @@ variable [VectorBundle 𝕜 F V] [ContMDiffVectorBundle 1 F V I]
   {ι : Type*} (b : Basis ι 𝕜 F) {s : Π x : M, V x} {t : Set M} {k : ℕ∞ω} {x x' : M}
   [FiniteDimensional 𝕜 F] [CompleteSpace 𝕜] [ContMDiffVectorBundle k F V I]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `s` is `C^k` at `x`, so is its coefficient `b.localFrame_coeff e i` in the local frame
 near `x` induced by `e` and `b` -/
 lemma contMDiffAt_localFrame_coeff (hxe : x ∈ e.baseSet) (hs : CMDiffAt k (T% s) x) (i : ι) :
@@ -518,6 +519,7 @@ lemma contMDiffOn_baseSet_iff_localFrame_coeff :
 -- Differentiability of a section can be checked in terms of its local frame coefficients
 section MDifferentiable
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `s` is differentiable at `x`, so is its coefficient `b.localFrame_coeff e i` in the local
 frame near `x` induced by `e` and `b` -/
 lemma mdifferentiableAt_localFrame_coeff

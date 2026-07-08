@@ -263,6 +263,7 @@ theorem mem_center_iff {A : SpecialLinearGroup n R} :
   · suffices ↑ₘ(B * A) = ↑ₘ(A * B) from Subtype.val_injective this
     simpa only [coe_mul, ← hr] using! (scalar_commute (n := n) r (Commute.all r) B).symm
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An equivalence of groups, from the center of the special linear group to the roots of unity. -/
 @[simps]
 def center_equiv_rootsOfUnity' (i : n) :
@@ -370,6 +371,7 @@ section SpecialCases
 
 open scoped MatrixGroups
 
+set_option backward.isDefEq.respectTransparency false in
 theorem SL2_inv_expl_det (A : SL(2, R)) :
     det ![![A.1 1 1, -A.1 0 1], ![-A.1 1 0, A.1 0 0]] = 1 := by
   simpa [-det_coe, Matrix.det_fin_two, mul_comm] using A.2
@@ -381,6 +383,7 @@ theorem SL2_inv_expl (A : SL(2, R)) :
   rw [coe_inv, this]
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 theorem fin_two_induction (P : SL(2, R) → Prop)
     (h : ∀ (a b c d : R) (hdet : a * d - b * c = 1), P ⟨!![a, b; c, d], by rwa [det_fin_two_of]⟩)
     (g : SL(2, R)) : P g := by
@@ -388,6 +391,7 @@ theorem fin_two_induction (P : SL(2, R) → Prop)
   convert! h (m 0 0) (m 0 1) (m 1 0) (m 1 1) (by rwa [det_fin_two] at hm)
   ext i j; fin_cases i <;> fin_cases j <;> rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem fin_two_exists_eq_mk_of_apply_zero_one_eq_zero {R : Type*} [Field R] (g : SL(2, R))
     (hg : g 1 0 = 0) :
     ∃ (a b : R) (h : a ≠ 0), g = (⟨!![a, b; 0, a⁻¹], by simp [h]⟩ : SL(2, R)) := by
@@ -662,6 +666,7 @@ lemma diagonal_neZero (D : ι → F) (hD : det (diagonal D) = 1) (j : ι) :
     Finset.prod_insert (by grind), h, zero_mul] at hD
   exact zero_ne_one hD
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma diag_commute (i₀ : ι) (D : ι → F) (hD : det (diagonal D) = 1) :
     (({i | i ≠ i₀} : Finset ι) : Set ι).Pairwise (Function.onFun Commute fun i ↦
       if hi : i ≠ i₀ then diag2n hi (D i) (diagonal_neZero D hD i) else 1) := by
@@ -670,6 +675,7 @@ lemma diag_commute (i₀ : ι) (D : ι → F) (hD : det (diagonal D) = 1) :
   simp [apply_dite, diag2n_coe]
   split_ifs <;> simp [diagonal_apply]; grind
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma diag_eq_diag2n_prod (i₀ : ι) (D : ι → F) (hD : det (diagonal D) = 1) :
     (⟨diagonal D, hD⟩ : SpecialLinearGroup ι F) =
       Finset.noncommProd {i : ι | i ≠ i₀} (fun i ↦ if hi : i ≠ i₀ then
@@ -686,6 +692,7 @@ lemma diag_eq_diag2n_prod (i₀ : ι) (D : ι → F) (hD : det (diagonal D) = 1)
   rw [← Finset.map_noncommProd _ _ (fun _ _ _ _ _ ↦ Commute.all _ _), Finset.noncommProd_eq_prod]
   rw [diag_decompose i₀ D hD]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The `SpecialLinearGroup` analogue of
   `Matrix.Pivot.exists_list_transvec_mul_diagonal_mul_list_transvec`:
   every element of `SL(ι, F)` is a product of transvections,

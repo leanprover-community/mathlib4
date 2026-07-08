@@ -219,12 +219,14 @@ def gluing : Scheme.GlueData.{u} where
 lemma gluing_ι (j : 𝒰.I₀) :
     (gluing 𝒰 f g).ι j = Multicoequalizer.π (gluing 𝒰 f g).diagram j := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The first projection from the glued scheme into `X`. -/
 def p1 : (gluing 𝒰 f g).glued ⟶ X := by
   apply Multicoequalizer.desc (gluing 𝒰 f g).diagram _ fun i ↦ pullback.fst _ _ ≫ 𝒰.f i
   simp [t_fst_fst_assoc, ← pullback.condition]
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The second projection from the glued scheme into `Y`. -/
 def p2 : (gluing 𝒰 f g).glued ⟶ Y := by
@@ -318,6 +320,7 @@ theorem gluedLift_p2 : gluedLift 𝒰 f g s ≫ p2 𝒰 f g = s.snd := by
   simp_rw [(Cover.ι_glueMorphisms <| 𝒰.pullback₁ s.fst)]
   simp [p2]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- (Implementation)
 The canonical map `(W ×[X] Uᵢ) ×[W] (Uⱼ ×[Z] Y) ⟶ (Uⱼ ×[Z] Y) ×[X] Uᵢ = V j i` where `W` is
 the glued fibred product.
@@ -397,11 +400,13 @@ theorem pullbackP1Iso_hom_snd (i : 𝒰.I₀) :
     (pullbackP1Iso 𝒰 f g i).hom ≫ pullback.snd _ _ = pullback.fst _ _ ≫ p2 𝒰 f g := by
   simp_rw [pullbackP1Iso, pullback.lift_snd]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp, reassoc]
 theorem pullbackP1Iso_inv_fst (i : 𝒰.I₀) :
     (pullbackP1Iso 𝒰 f g i).inv ≫ pullback.fst _ _ = (gluing 𝒰 f g).ι i := by
   simp_rw [pullbackP1Iso, pullback.lift_fst]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp, reassoc]
 theorem pullbackP1Iso_inv_snd (i : 𝒰.I₀) :
     (pullbackP1Iso 𝒰 f g i).inv ≫ pullback.snd _ _ = pullback.fst _ _ := by
@@ -473,6 +478,7 @@ instance left_affine_comp_pullback_hasPullback {X Y Z : Scheme} (f : X ⟶ Z) (g
   simpa [pullback.condition] using
     hasPullback_assoc_symm f (Z.affineCover.f i) (Z.affineCover.f i) g
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance {X Y Z : Scheme} (f : X ⟶ Z) (g : Y ⟶ Z) : HasPullback f g :=
   hasPullback_of_cover (Z.affineCover.pullback₁ f) f g
 
@@ -635,6 +641,7 @@ def diagonalCover : (pullback.diagonalObj f).OpenCover :=
   (openCoverOfBase 𝒰 f f).bind
     fun i ↦ openCoverOfLeftRight (𝒱 i) (𝒱 i) (𝒰.pullbackHom _ _) (𝒰.pullbackHom _ _)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The image of `𝒱 i j₁ ×[𝒰 i] 𝒱 i j₂` in `diagonalCover` with `j₁ = j₂` -/
 noncomputable
 def diagonalCoverDiagonalRange : (pullback.diagonalObj f).Opens :=

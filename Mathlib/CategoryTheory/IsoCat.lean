@@ -124,6 +124,7 @@ noncomputable def strictInv : D ⥤ C where
   map f := F.preimage (eqToHom (by simp) ≫ f ≫ eqToHom (by simp))
   map_comp _ _ := by simp [← preimage_comp]
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- A functor that is an isomorphism of categories assembles into an `IsoCat`,
 with `Functor.strictInv` as its inverse. -/

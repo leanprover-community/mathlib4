@@ -47,6 +47,7 @@ def autEmbedding : Aut F →* ∀ X, Aut (F.obj X) :=
 lemma autEmbedding_apply (σ : Aut F) (X : C) : autEmbedding F σ X = σ.app X :=
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma autEmbedding_injective : Function.Injective (autEmbedding F) := by
   intro σ τ h
   ext X x
@@ -86,6 +87,7 @@ instance : TopologicalSpace (Aut F) :=
   · use NatIso.ofComponents a (fun {X Y} f ↦ h ⟨X, Y, f⟩)
     rfl-/
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The image of `Aut F` in `∀ X, Aut (F.obj X)` are precisely the compatible families of
 automorphisms. -/
 lemma autEmbedding_range :

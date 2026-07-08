@@ -11,6 +11,7 @@ public import Mathlib.Probability.ProbabilityMassFunction.Constructions
 
 /-!
 # Uniform distributions and probability mass functions
+
 This file defines two related notions of uniform distributions, which will be unified in the future.
 
 ## Uniform distributions
@@ -235,6 +236,7 @@ theorem uniformOfFinset_apply_of_mem (ha : a ∈ s) : uniformOfFinset s hs a = (
 
 theorem uniformOfFinset_apply_of_notMem (ha : a ∉ s) : uniformOfFinset s hs a = 0 := by simp [ha]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem support_uniformOfFinset : (uniformOfFinset s hs).support = s :=
   Set.ext

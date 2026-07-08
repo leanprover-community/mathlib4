@@ -107,6 +107,7 @@ theorem mapPiLocalization_comp :
       (mapPiLocalization g hg).comp (mapPiLocalization f hf) :=
   RingHom.ext fun _ ↦ funext fun _ ↦ congr($(Localization.localRingHom_comp _ _ _ _ rfl _ rfl) _)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mapPiLocalization_bijective : Function.Bijective (mapPiLocalization f hf) := by
   let f := RingEquiv.ofBijective f hf
   let e := RingEquiv.ofRingHom (mapPiLocalization f hf)
@@ -147,6 +148,7 @@ theorem finite_of_toPiLocalization_pi_surjective
 
 end Pi
 
+set_option backward.isDefEq.respectTransparency false in
 theorem finite_of_toPiLocalization_surjective
     (surj : Function.Surjective (toPiLocalization R)) :
     Finite (MaximalSpectrum R) := by
