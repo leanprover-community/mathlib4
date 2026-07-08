@@ -836,7 +836,7 @@ theorem _root_.ContinuousOn.stronglyMeasurable_of_countable_compl [MeasurableSpa
   have h's : MeasurableSet s := by simpa using hs.measurableSet.compl
   have : f = fun x ↦ if hx : x ∈ s then f (⟨x, hx⟩ : s) else f (⟨x, hx⟩ : (sᶜ : Set α)) := by simp
   rw [this]
-  apply StronglyMeasurable.dite (f := fun x ↦ f x) (g := fun x ↦ f x) ?_ ?_ h's
+  apply StronglyMeasurable.dite (f := f) (g := f) ?_ ?_ h's
   · have : SecondCountableTopologyEither s β := by cases h.out <;> infer_instance
     exact (continuousOn_iff_continuous_restrict.1 hf).stronglyMeasurable
   · have := hs.to_subtype
