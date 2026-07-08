@@ -51,7 +51,7 @@ attribute [instance] topologicalSpace isTopologicalAddGroup continuousSMul
 
 /-- Make an object in `TopModuleCat R` from an unbundled topological module. -/
 abbrev of (M : Type v) [AddCommGroup M] [Module R M] [TopologicalSpace M] [ContinuousAdd M]
-    [ContinuousSMul R M] : TopModuleCat R :=
+    [ContinuousSMul R M] : TopModuleCat.{v} R :=
   have : ContinuousNeg M := ⟨by convert! continuous_const_smul (-1 : R) (T := M); ext; simp⟩
   have : IsTopologicalAddGroup M := ⟨⟩
   ⟨.of R M⟩

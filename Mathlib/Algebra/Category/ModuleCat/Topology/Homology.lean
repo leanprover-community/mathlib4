@@ -35,7 +35,7 @@ variable {M N : TopModuleCat.{v} R} (φ : M ⟶ N)
 section kernel
 
 /-- Kernel in `TopModuleCat R` is the kernel of the linear map with the subspace topology. -/
-abbrev ker : TopModuleCat R := .of R φ.hom.ker
+abbrev ker : TopModuleCat.{v} R := .of R φ.hom.ker
 
 /-- The inclusion map from the kernel in `TopModuleCat R`. -/
 def kerι : ker φ ⟶ M := ofHom ⟨Submodule.subtype _, continuous_subtype_val⟩
