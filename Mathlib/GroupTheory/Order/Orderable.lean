@@ -5,6 +5,7 @@ Authors: Hang Lu Su
 -/
 module
 
+public import Mathlib.Algebra.Order.Monoid.Prod
 public import Mathlib.Algebra.Order.Monoid.Unbundled.Defs
 public import Mathlib.Tactic.MkIffOfInductiveProp
 
@@ -22,6 +23,9 @@ compatible linear order on `G`.
 
 * `IsLeftOrderable G`: the group `G` admits some `LinearOrder` for which left multiplication is
   monotone (`MulLeftMono`).
+* `mulLeftStrictMono_iff_mulLeftMono`: on a linearly ordered group, monotone and strictly monotone
+  left multiplication are equivalent, so `IsLeftOrderable` may equally be phrased with either.
+* `IsLeftOrderable` is closed under direct products (with the lexicographic order).
 
 ## Implementation notes
 
@@ -30,18 +34,36 @@ compatible linear order on `G`.
 instance from `[IsLeftOrderable G]`, extract it noncomputably from
 `IsLeftOrderable.exists_linearOrder_mulLeftMono`.
 
-## TODO
-
-* Right-orderable and bi-orderable groups.
-* Equivalence with the existence of a suitable positive cone.
 -/
 
 @[expose] public section
 
+variable (G : Type*) [Group G]
+
 /-- A group is left-orderable if it admits a linear order invariant under left multiplication. -/
 @[mk_iff]
-class IsLeftOrderable (G : Type*) [Group G] : Prop where
+class IsLeftOrderable : Prop where
   exists_linearOrder_mulLeftMono : ∃ _ : LinearOrder G, MulLeftMono G
 
-instance (G : Type*) [Group G] [LinearOrder G] [MulLeftMono G] : IsLeftOrderable G :=
+variable [LinearOrder G]
+
+instance [MulLeftMono G] : IsLeftOrderable G :=
   ⟨⟨‹_›, ‹_›⟩⟩
+
+/-- For a group with a linear order, left multiplication is strictly monotone if and only if it is
+monotone. Hence `IsLeftOrderable` could equivalently be defined with `MulLeftStrictMono` in place of
+`MulLeftMono`. -/
+@[to_additive /-- For an additive group with a linear order, left addition is strictly monotone if
+and only if it is monotone. -/]
+theorem mulLeftStrictMono_iff_mulLeftMono :
+    MulLeftStrictMono G ↔ MulLeftMono G :=
+  ⟨fun _ ↦ mulLeftMono_of_mulLeftStrictMono G, fun _ ↦ inferInstance⟩
+
+variable {M N : Type*} [Group M] [Group N]
+
+/-- The direct product of two left-orderable groups is left-orderable: the lexicographic order on
+the product of witnessing orders is left-invariant. -/
+instance [IsLeftOrderable M] [IsLeftOrderable N] : IsLeftOrderable (M × N) := by
+  obtain ⟨_, _⟩ := ‹IsLeftOrderable M›.exists_linearOrder_mulLeftMono
+  obtain ⟨_, _⟩ := ‹IsLeftOrderable N›.exists_linearOrder_mulLeftMono
+  exact ⟨inferInstanceAs (LinearOrder (M ×ₗ N)), inferInstanceAs (MulLeftMono (M ×ₗ N))⟩
