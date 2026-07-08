@@ -4814,8 +4814,8 @@ public import Mathlib.GroupTheory.Nilpotent
 public import Mathlib.GroupTheory.NoncommCoprod
 public import Mathlib.GroupTheory.NoncommPiCoprod
 public import Mathlib.GroupTheory.Order.Min
-public import Mathlib.GroupTheory.Order.Orderable
 public import Mathlib.GroupTheory.OrderOfElement
+public import Mathlib.GroupTheory.Orderable
 public import Mathlib.GroupTheory.OreLocalization.Basic
 public import Mathlib.GroupTheory.OreLocalization.Cardinality
 public import Mathlib.GroupTheory.OreLocalization.OreSet

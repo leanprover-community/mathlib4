@@ -16,27 +16,23 @@ public import Mathlib.Tactic.MkIffOfInductiveProp
 # Left-orderable groups
 
 A group `G` is *left-orderable* if it admits a linear order invariant under left multiplication,
-i.e. `a ≤ b → c * a ≤ c * b`. This file defines the `Prop`-valued class `IsLeftOrderable G`, which
-records the mere *existence* of such an order.
+i.e. `a ≤ b → c * a ≤ c * b`. This file defines the `Prop`-valued class `IsLeftOrderable G`,
+asserting the existence of such an order.
 
 ## Main declarations
 
 * `IsLeftOrderable G`: `G` admits some `LinearOrder` for which left multiplication is monotone
-  (`MulLeftMono`), together with the instance producing it from any concrete compatible linear order
-  on `G`.
-* `isLeftOrderable_iff_exists_linearOrder_mulLeftStrictMono`: equivalently, some linear order for
-  which left multiplication is *strictly* monotone.
+  (`MulLeftMono`).
+* `isLeftOrderable_iff_exists_linearOrder_mulLeftStrictMono`: the same with *strict* monotonicity.
 * `IsLeftOrderable.of_mulEquiv`, `MulEquiv.isLeftOrderable_congr`: left-orderability transports
   along, and is invariant under, group isomorphism.
-* `IsLeftOrderable.prod`: `IsLeftOrderable` is closed under direct products.
-* `IsLeftOrderable.pi`: `IsLeftOrderable` is closed under arbitrary indexed products, via the
-  lexicographic order for some well-order on the index type.
+* `IsLeftOrderable.prod`, `IsLeftOrderable.pi`: left-orderability is closed under direct and
+  arbitrary indexed products.
 
 ## Implementation notes
 
-`IsLeftOrderable` erases the witnessing order into `Prop`, asserting only that *some* compatible
-`LinearOrder` exists. Recover an actual (noncomputable) `LinearOrder` instance from
-`IsLeftOrderable.exists_linearOrder_mulLeftMono`.
+`IsLeftOrderable` erases the witnessing order into `Prop`. Recover a (noncomputable) `LinearOrder`
+instance from `IsLeftOrderable.exists_linearOrder_mulLeftMono`.
 -/
 
 @[expose] public section
