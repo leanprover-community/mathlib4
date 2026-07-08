@@ -77,7 +77,7 @@ lemma coconePtToShrinkYoneda_comp (x : P.obj c.pt) :
     coconePtToShrinkYoneda c hc' ≫ shrinkYonedaEquiv.symm x =
       (coconeCompShrinkYonedaHomEquiv hc').symm
         (Types.sectionOfCone (P.mapCone c) x) := by
-  refine hc'.hom_ext (fun j ↦ ?_)
+  refine hc'.hom_ext (fun _ ↦ ?_)
   dsimp [coconePtToShrinkYoneda, coconeCompShrinkYonedaHomEquiv_symm_apply]
   rw [hc'.fac_assoc, hc'.fac]
   exact (shrinkYonedaEquiv_symm_map _ _).symm
