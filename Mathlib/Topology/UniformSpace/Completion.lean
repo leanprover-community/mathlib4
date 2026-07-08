@@ -218,7 +218,7 @@ instance [h : Nonempty α] : Nonempty (CauchyFilter α) :=
 
 section Extend
 
-open Classical in
+open scoped Classical in
 /-- Extend a uniformly continuous function `α → β` to a function `CauchyFilter α → β`.
 Outputs junk when `f` is not uniformly continuous. -/
 def extend (f : α → β) : CauchyFilter α → β :=
@@ -238,6 +238,7 @@ end T0Space
 
 variable [CompleteSpace β]
 
+@[fun_prop]
 theorem uniformContinuous_extend {f : α → β} : UniformContinuous (extend f) := by
   by_cases hf : UniformContinuous f
   · rw [extend, if_pos hf]
@@ -344,6 +345,7 @@ attribute [local instance]
 theorem nonempty_completion_iff : Nonempty (Completion α) ↔ Nonempty α :=
   cPkg.dense.nonempty_iff.symm
 
+@[fun_prop]
 theorem uniformContinuous_coe : UniformContinuous ((↑) : α → Completion α) :=
   cPkg.uniformContinuous_coe
 
@@ -436,6 +438,7 @@ section CompleteSpace
 
 variable [CompleteSpace β]
 
+@[fun_prop]
 theorem Function.uniformContinuous_fromCompletion : UniformContinuous (fromCompletion f) :=
   cPkg.uniformContinuous_extend
 
@@ -503,6 +506,7 @@ def Function.completion (f : α → β) : Completion α → Completion β :=
 
 @[deprecated (since := "2026-06-26")] alias Completion.map := Function.completion
 
+@[fun_prop]
 theorem Function.uniformContinuous_completion : UniformContinuous (completion f) :=
   cPkg.uniformContinuous_map cPkg f
 
@@ -595,10 +599,12 @@ def completionSeparationQuotientEquiv (α : Type u) [UniformSpace α] :
     rw [completion_coe uniformContinuous_mk, fromCompletion_coe
       (uniformContinuous_lift' _), lift'_mk (uniformContinuous_coe _)]
 
+@[fun_prop]
 theorem uniformContinuous_completionSeparationQuotientEquiv :
     UniformContinuous (completionSeparationQuotientEquiv α) :=
   Function.uniformContinuous_fromCompletion
 
+@[fun_prop]
 theorem uniformContinuous_completionSeparationQuotientEquiv_symm :
     UniformContinuous (completionSeparationQuotientEquiv α).symm :=
   Function.uniformContinuous_completion
@@ -627,6 +633,7 @@ end T0Space
 
 variable [CompleteSpace γ]
 
+@[fun_prop]
 theorem uniformContinuous_extension₂ : UniformContinuous₂ (Completion.extension₂ f) :=
   cPkg.uniformContinuous_extension₂ cPkg f
 
@@ -640,6 +647,7 @@ open Function
 protected def map₂ (f : α → β → γ) : Completion α → Completion β → Completion γ :=
   cPkg.map₂ cPkg cPkg f
 
+@[fun_prop]
 theorem uniformContinuous_map₂ (f : α → β → γ) : UniformContinuous₂ (Completion.map₂ f) :=
   cPkg.uniformContinuous_map₂ cPkg cPkg f
 
