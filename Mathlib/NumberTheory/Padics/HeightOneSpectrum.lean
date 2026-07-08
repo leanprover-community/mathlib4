@@ -170,10 +170,7 @@ noncomputable def adicCompletionIntegers.padicIntEquiv (v : HeightOneSpectrum R)
   __ := let e := (mapEquiv (withValEquiv v)).subtype fun _ ↦ by
           simpa using! (valuation_equiv_padicValuation v).valuedCompletion_le_one_iff
         (e.trans withValIntegersUniformEquiv).toHomeomorph
-  commutes' r :=
-    DFunLike.congr_fun (RingHom.ext_int
-      ((padicIntRingEquiv v).toRingHom.comp (algebraMap ℤ (v.adicCompletionIntegers ℚ)))
-      (algebraMap ℤ ℤ_[primesEquiv v])) r
+  commutes' r := by simp
 
 /-- The diagram
 ```
