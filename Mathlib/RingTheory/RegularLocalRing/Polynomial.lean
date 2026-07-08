@@ -16,7 +16,7 @@ public import Mathlib.RingTheory.RegularLocalRing.Defs
 
 In this file we prove that the polynomial ring over a regular ring is regular.
 
-# Main results
+## Main results
 
 * `Polynomial.isRegularRing_of_isRegularRing` : the polynomial ring over a regular ring is
   a regular ring.
@@ -38,8 +38,6 @@ lemma Polynomial.isRegularLocalRing_localization_atPrime_of_comap_eq_maximalIdea
   apply IsRegularLocalRing.of_spanFinrank_maximalIdeal_le
   let q := (maximalIdeal R).map C
   have qle : q ≤ p := by simpa [q, ← max] using map_comap_le
-  have Ker : RingHom.ker (Polynomial.mapRingHom (IsLocalRing.residue R)) = q := by
-    simpa only [residue, ker_mapRingHom, q] using! congrArg (Ideal.map C) (Quotient.mkₐ_ker R _)
   have reg := (isRegularLocalRing_iff R).mp ‹_›
   have fg' := (maximalIdeal R).fg_of_isNoetherianRing
   have fg := Submodule.FG.finite_generators fg'
@@ -88,7 +86,7 @@ instance Polynomial.isRegularRing_of_isRegularRing [IsRegularRing R] : IsRegular
   have disj : Disjoint (pc : Set R[X]) (p : Set R[X]) := by
     simpa [pc, q] using! Set.disjoint_image_left.mpr
       (Set.disjoint_compl_left_iff_subset.mpr (fun _ a ↦ a))
-  have : pS.IsPrime :=  IsLocalization.isPrime_of_isPrime_disjoint pc _ _ ‹_› disj
+  have : pS.IsPrime := IsLocalization.isPrime_of_isPrime_disjoint pc _ _ ‹_› disj
   have : IsLocalization.AtPrime (Localization.AtPrime pS) p := by
     convert IsLocalization.isLocalization_isLocalization_atPrime_isLocalization pc
       (Localization.AtPrime pS) pS
@@ -113,5 +111,4 @@ instance MvPolynomial.isRegularRing_of_isRegularRing [IsRegularRing R] {ι : Typ
   | of_equiv e H => exact IsRegularRing.of_ringEquiv (renameEquiv _ e).toRingEquiv
   | h_empty => exact IsRegularRing.of_ringEquiv (isEmptyRingEquiv R _).symm
   | h_option IH =>
-    have := Polynomial.isRegularRing_of_isRegularRing
     exact IsRegularRing.of_ringEquiv (MvPolynomial.optionEquivLeft _ _).toRingEquiv.symm
