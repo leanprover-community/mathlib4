@@ -3,9 +3,11 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Limits.Preserves.Opposites
-import Mathlib.CategoryTheory.Presentable.Continuous
-import Mathlib.CategoryTheory.Presentable.Dense
+module
+
+public import Mathlib.CategoryTheory.Limits.Preserves.Opposites
+public import Mathlib.CategoryTheory.Presentable.Continuous
+public import Mathlib.CategoryTheory.Presentable.Dense
 
 /-!
 # The representation theorem
