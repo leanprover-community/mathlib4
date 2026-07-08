@@ -12,9 +12,8 @@ public import Mathlib.Order.Quotient
 
 /-! # Convex subgroups of a linearly ordered abelian group
 
-A subgroup of a linearly ordered abelian group is convex if every element that lies between two
-elements of the subgroup is also in the subgroup. This is directly captured by the predicate
-`Set.OrdConnected`.
+A subgroup of a linearly ordered abelian group is convex (currently called `Set.OrdConnected` in
+Mathlib) if every element that lies between two elements of the subgroup is also in the subgroup.
 
 ## Main definitions
 
@@ -106,7 +105,7 @@ variable (α) in
 @[to_additive (attr := simp)] theorem ConvexSubgroup.carrier_eq_coe (G : ConvexSubgroup α) :
     G.carrier = G := rfl
 
-@[to_additive] lemma ConvexSubgroup.ordConnected [IsOrderedMonoid α] (H : ConvexSubgroup α) :
+@[to_additive] lemma ConvexSubgroup.ordConnected (H : ConvexSubgroup α) :
      (H : Set α).OrdConnected := H.ordConnected'
 
 @[to_additive] instance : SubgroupClass (ConvexSubgroup α) α where
