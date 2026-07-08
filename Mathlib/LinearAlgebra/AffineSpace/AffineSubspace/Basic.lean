@@ -857,7 +857,7 @@ theorem prod_inf_prod (s₁ s₂ : AffineSubspace k P) (t₁ t₂ : AffineSubspa
 
 theorem _root_.vectorSpan_prod_le (s : Set P) (t : Set Q) :
     vectorSpan k (s ×ˢ t) ≤ (vectorSpan k s).prod (vectorSpan k t) := by
-  simpa [vectorSpan_def, Set.prod_vsub_prod] using Submodule.span_prod_le (s -ᵥ s) (t -ᵥ t)
+  simpa [vectorSpan_def, Set.prod_vsub_prod_comm] using Submodule.span_prod_le (s -ᵥ s) (t -ᵥ t)
 
 theorem direction_prod_le (s : AffineSubspace k P) (t : AffineSubspace k Q) :
     (s.prod t).direction ≤ s.direction.prod t.direction := by
@@ -865,7 +865,7 @@ theorem direction_prod_le (s : AffineSubspace k P) (t : AffineSubspace k Q) :
 
 theorem _root_.vectorSpan_prod_eq {s : Set P} {t : Set Q} (hs : s.Nonempty) (ht : t.Nonempty) :
     vectorSpan k (s ×ˢ t) = (vectorSpan k s).prod (vectorSpan k t) := by
-  rw [vectorSpan_def, Set.prod_vsub_prod]
+  rw [vectorSpan_def, Set.prod_vsub_prod_comm]
   exact Submodule.span_prod_eq k hs.zero_mem_vsub_self ht.zero_mem_vsub_self
 
 theorem direction_prod_eq {s : AffineSubspace k P} {t : AffineSubspace k Q}
