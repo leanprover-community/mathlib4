@@ -43,34 +43,30 @@ variable {G k V : Type*} [Group G] [Fintype G] [DecidableEq G] [Field k] [IsAlgC
   (g : G) (ρ : Representation k G V) [ρ.IsIrreducible]
 
 example : IsIntegral ℤ <|
-    (ConjClasses.mk g).carrier.toFinset.card • ρ.character g / (Module.finrank k V) := by
+    (Module.finrank k V : k)⁻¹ * (ConjClasses.mk g).carrier.toFinset.card • ρ.character g := by
   set c := ConjClasses.mk g with c_def
   obtain ⟨ω, hω⟩ := IsIrreducible.algebraMap_intertwiningMap_bijective_of_isAlgClosed.surjective <|
     IntertwiningMap.sumConj ρ c
   rw [IntertwiningMap.algebraMap_apply] at hω
   set X : ℤ[G] := ∑ h ∈ c.carrier, (of ℤ G h) with X_def
-  have X_int : IsIntegral ℤ X := IsIntegral.of_finite ..
   set f := ρ.asAlgebraHom.restrictScalars ℤ |>.comp <| mapAlgHom G (algebraMap ℤ k).toIntAlgHom
   have eq1 : f X = (IntertwiningMap.sumConj ρ c).toLinearMap := by
     ext; simp [f, X_def]
-  -- ↓ IsIntegral ℤ (IntertwiningMap.sumConj ρ c).toLinearMap
-  obtain ⟨P, ⟨hP_monic, hP_eq⟩⟩ := eq1 ▸ X_int.map _
+  obtain ⟨P, ⟨hP_monic, hP_eq⟩⟩ : IsIntegral ℤ (IntertwiningMap.sumConj ρ c).toLinearMap :=
+    eq1 ▸ (IsIntegral.of_finite ℤ X).map _
   have eq3 : (P.aeval ω : k) • (1 : V →ₗ[k] V) = 0 := by
-    rw [← hP_eq, ← hω, IntertwiningMap.toLinearMap_smul, ← Polynomial.aeval_def]
-    change _ = P.aeval (ω • 1); symm
-    simpa [Algebra.algebraMap_eq_smul_one] using
-      (P.aeval_algebraMap_apply (A := k) (B := V →ₗ[k] V) ω)
+    rw [← hP_eq, ← hω, IntertwiningMap.toLinearMap_smul, ← Polynomial.aeval_def,
+      IntertwiningMap.toLinearMap_one, ← Algebra.algebraMap_eq_smul_one,
+      ← Algebra.algebraMap_eq_smul_one, P.aeval_algebraMap_apply (A := k) (B := V →ₗ[k] V) ω]
   simp only [smul_eq_zero, one_ne_zero, or_false] at eq3
   have ω_int : IsIntegral ℤ ω := ⟨P, ⟨hP_monic, eq3⟩⟩
-  -- replace hω := congrArg (fun x ↦ LinearMap.trace k V x.toLinearMap) hω
   apply_fun (fun x ↦ LinearMap.trace k V x.toLinearMap) at hω
   simp only [IntertwiningMap.toLinearMap_smul, IntertwiningMap.toLinearMap_one, map_smul,
     LinearMap.trace_one, smul_eq_mul, IntertwiningMap.sumConj.toLinearMap, map_sum] at hω
   change ω * (Module.finrank k V) = ∑ x ∈ c.carrier, ρ.character x at hω
   rw [Finset.sum_eq_card_nsmul (b := ρ.character g)] at hω
-  · have : ω = c.carrier.toFinset.card • ρ.character g / (Module.finrank k V) :=
-    eq_div_of_mul_eq (Nat.cast_ne_zero.2 <| Nat.pos_iff_ne_zero.1 Module.finrank_pos) hω
-    rwa [← this]
+  · rwa [← hω, mul_comm, mul_assoc, mul_inv_cancel₀, mul_one]
+    exact Nat.cast_ne_zero.2 <| Nat.pos_iff_ne_zero.1 Module.finrank_pos
   · intro a ha
     simp only [c_def, Set.mem_toFinset, ConjClasses.mem_carrier_iff_mk_eq,
       ConjClasses.mk_eq_mk_iff_isConj, isConj_iff] at ha
