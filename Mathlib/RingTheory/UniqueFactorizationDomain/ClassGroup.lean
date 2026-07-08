@@ -76,7 +76,7 @@ lemma isPrincipal_of_exists_mul_ne_zero_isPrincipal
   -- Show `x ∣ b * g` by proving `x ∣ b * c` for all `b ∈ J` and `c ∈ T`.
   rw [← (Finset.gcd_mul_left' ..).dvd_iff_dvd_right, Finset.dvd_gcd_iff]
   intro c hc
-  rw [← mem_span_singleton, span, ← hJK, normalize]
+  rw [← mem_span_singleton, span, ← hJK, normalize_apply]
   exact mul_mem_mul (J.mul_mem_right _ hb) (hTK hc)
 
 /-- In a normalized GCD domain, an integral ideal that is invertible as a fractional ideal

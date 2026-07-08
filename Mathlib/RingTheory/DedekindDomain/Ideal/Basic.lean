@@ -448,7 +448,7 @@ instance Ideal.uniqueFactorizationMonoid : UniqueFactorizationMonoid (Ideal A) :
 noncomputable instance Ideal.strongNormalizationMonoid : StrongNormalizationMonoid (Ideal A) :=
   inferInstance
 
-@[deprecated (since := "2026-01-13")]
+@[deprecated (since := "2026-07-08")]
 alias Ideal.normalizationMonoid := Ideal.strongNormalizationMonoid
 
 end IsDedekindDomain

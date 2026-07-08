@@ -405,7 +405,7 @@ protected noncomputable def strongNormalizationMonoid : StrongNormalizationMonoi
         associated_iff_eq]
       apply prod_normalizedFactors hx)
 
-@[deprecated (since := "2026-01-13")]
+@[deprecated (since := "2026-07-08")]
 protected alias normalizationMonoid := UniqueFactorizationMonoid.strongNormalizationMonoid
 
 instance (priority := 100) : Nonempty (StrongNormalizationMonoid α) :=

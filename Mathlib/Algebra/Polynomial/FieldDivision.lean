@@ -197,11 +197,21 @@ theorem isRoot_of_isRoot_of_dvd_derivative_mul [CharZero R] {f g : R[X]} (hf0 : 
     Nat.sub_eq_iff_eq_add (Nat.succ_le_iff.2 ((rootMultiplicity_pos hf0).2 haf))] at hr'
   lia
 
-instance [StrongNormalizationMonoid R] : StrongNormalizationMonoid R[X] where
+
+instance instNormalizationMonoid [NormalizationMonoid R] : NormalizationMonoid R[X] where
   normUnit p :=
     ⟨C ↑(normUnit p.leadingCoeff), C ↑(normUnit p.leadingCoeff)⁻¹, by
       rw [← map_mul, Units.mul_inv, C_1], by rw [← map_mul, Units.inv_mul, C_1]⟩
   normUnit_zero := Units.ext (by simp)
+  normUnit_one := Units.ext (by simp)
+  normUnit_mul_units u h := Units.ext <| by
+    dsimp only [Units.val_mul]
+    obtain ⟨_, ⟨w, rfl⟩, h2⟩ := isUnit_iff.1 ⟨u, rfl⟩
+    rw [leadingCoeff_mul, ← h2, leadingCoeff_C, normUnit_mul_units _ (leadingCoeff_ne_zero.2 h),
+      Units.eq_inv_mul_iff_mul_eq, Units.val_mul, C_mul, ← mul_assoc, ← h2, ← C_mul]
+    simp
+
+instance [StrongNormalizationMonoid R] : StrongNormalizationMonoid R[X] where
   normUnit_mul hp0 hq0 :=
     Units.ext
       (by
@@ -220,19 +230,6 @@ instance [StrongNormalizationMonoid R] : StrongNormalizationMonoid R[X] where
 section NormalizationMonoid
 
 variable [NormalizationMonoid R]
-
-instance instNormalizationMonoid : NormalizationMonoid R[X] where
-  normUnit p :=
-    ⟨C ↑(normUnit p.leadingCoeff), C ↑(normUnit p.leadingCoeff)⁻¹, by
-      rw [← map_mul, Units.mul_inv, C_1], by rw [← map_mul, Units.inv_mul, C_1]⟩
-  normUnit_zero := Units.ext (by simp)
-  normUnit_one := Units.ext (by simp)
-  normUnit_mul_units u h := Units.ext <| by
-    dsimp only [Units.val_mul]
-    obtain ⟨_, ⟨w, rfl⟩, h2⟩ := isUnit_iff.1 ⟨u, rfl⟩
-    rw [leadingCoeff_mul, ← h2, leadingCoeff_C, normUnit_mul_units _ (leadingCoeff_ne_zero.2 h),
-      Units.eq_inv_mul_iff_mul_eq, Units.val_mul, C_mul, ← mul_assoc, ← h2, ← C_mul]
-    simp
 
 @[simp]
 theorem coe_normUnit {p : R[X]} : (normUnit p : R[X]) = C ↑(normUnit p.leadingCoeff) := by

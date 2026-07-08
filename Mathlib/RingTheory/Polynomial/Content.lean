@@ -318,7 +318,6 @@ theorem content_mul_aux {p q : R[X]} :
     sub_sub_cancel, leadingCoeff_mul, map_mul, mul_assoc, mul_assoc]
   apply dvd_sub (Dvd.intro _ rfl) (Dvd.intro _ rfl)
 
-@[simp]
 theorem associated_content_mul (p q : R[X]) :
     Associated ((p * q).content) (p.content * q.content) := by
   nontriviality R

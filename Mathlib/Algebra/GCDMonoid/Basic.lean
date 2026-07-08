@@ -275,7 +275,7 @@ variable [CommMonoidWithZero α] [StrongNormalizationMonoid α]
   simp_rw [normalize, normUnit_mul hx hy]
   ac_rfl
 
-/-- Chooses an element of each associate class, by multiplying by `normUnit` -/
+/-- `normalize` in a `StrongNormalizationMonoid` as a `MonoidWithZeroHom`. -/
 def normalizeHom : α →*₀ α where
   toFun := normalize
   map_zero' := normalize_zero
@@ -951,6 +951,9 @@ instance (priority := 100) : StrongNormalizationMonoid α where
   normUnit_mul _ _ := (mul_one 1).symm
   normUnit_coe_units _ := Subsingleton.elim _ _
 
+@[deprecated (since := "2026-07-08")]
+alias NormalizationMonoid.ofUniqueUnits := instStrongNormalizationMonoid
+
 instance : Unique (NormalizationMonoid α) where
   default := inferInstance
   uniq := by rintro ⟨⟩; congr; apply Subsingleton.elim
@@ -1070,7 +1073,7 @@ def strongNormalizationMonoidOfMonoidHomRightInverse [DecidableEq α] (f : Assoc
       Associates.mk_eq_mk_iff_associated.2 (associated_one_iff_isUnit.2 ⟨u, rfl⟩),
       Associates.mk_one, map_one]
 
-@[deprecated (since := "2026-01-12")]
+@[deprecated (since := "2026-07-08")]
 noncomputable alias normalizationMonoidOfMonoidHomRightInverse :=
   strongNormalizationMonoidOfMonoidHomRightInverse
 
