@@ -367,15 +367,17 @@ theorem integral_div_sq_add_sq {c : ℝ} :
     · rw [integral_const_mul, integral_inv_sq_add_sq hc]
       field_simp
 
+/-- The integrand is chosen to match the conclusion of `Real.deriv_log_log`. -/
 @[simp]
 theorem integral_inv_div_log (ha : 1 < a) (hb : 1 < b) :
     ∫ t in a..b, t⁻¹ / log t = log (log b) - log (log a) := by
-  rw [← intervalIntegral.integral_congr (fun _ _ ↦ deriv_log_log)]
+  rw [← intervalIntegral.integral_congr (fun _ _ ↦ deriv_log_log_apply)]
   refine integral_deriv_eq_sub (fun _ _ ↦ ?_) ?_
   · exact differentiableOn_log_log.differentiableAt (Ioi_mem_nhds (by grind [Set.uIcc]))
-  refine (?_ : ContinuousOn _ _).congr (fun _ _ ↦ deriv_log_log) |>.intervalIntegrable
+  refine (?_ : ContinuousOn _ _).congr (fun _ _ ↦ deriv_log_log_apply) |>.intervalIntegrable
   fun_prop (disch := grind [log_pos, Set.uIcc])
 
+/-- The integrand is chosen to match the conclusion of `Real.deriv_inv_log`. -/
 @[simp]
 theorem integral_inv_div_log_sq (ha : 1 < a) (hb : 1 < b) :
     ∫ t in a..b, t⁻¹ / log t ^ 2 = (log a)⁻¹ - (log b)⁻¹ := by
@@ -384,7 +386,7 @@ theorem integral_inv_div_log_sq (ha : 1 < a) (hb : 1 < b) :
     linarith
   refine integral_deriv_eq_sub (fun _ _ ↦ ?_) (ContinuousOn.intervalIntegrable ?_)
   · exact differentiableOn_inv_log.differentiableAt (Ioi_mem_nhds (by grind [Set.uIcc]))
-  suffices ContinuousOn (fun x ↦ (-x⁻¹) * ((log x)⁻¹)^2) (.uIcc a b) by
+  suffices ContinuousOn (fun x ↦ (-x⁻¹) * ((log x)⁻¹) ^ 2) (.uIcc a b) by
     convert this using 2 with x
     simp [field]
   fun_prop (disch := grind [log_pos, Set.uIcc])
