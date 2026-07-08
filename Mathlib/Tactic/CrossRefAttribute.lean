@@ -18,6 +18,7 @@ to entries in external mathematical databases:
 * `@[kerodon TAG]` — [Kerodon](https://kerodon.net/tag/)
 * `@[wikidata QID]` — [Wikidata](https://www.wikidata.org)
 * `@[lmfdb ID]` — [LMFDB](https://www.lmfdb.org)
+* `@[pibase ID]` — [π-Base](https://topology.pi-base.org/)
 
 Each attribute records the cross-reference in an environment extension and appends
 a link to the declaration's docstring.
@@ -37,23 +38,33 @@ namespace Mathlib.CrossRef
 inductive Database where
   | kerodon
   | lmfdb
+  | pibase
   | stacks
   | wikidata
   deriving BEq, Hashable, Ord
 
 namespace Database
 
-/-- The base URL for an external database's tag pages. Always ends with `/`. -/
-def url : Database → String
-  | .kerodon => "https://kerodon.net/tag/"
-  | .lmfdb => "https://www.lmfdb.org/knowledge/show/"
-  | .stacks => "https://stacks.math.columbia.edu/tag/"
-  | .wikidata => "https://www.wikidata.org/wiki/"
+/-- The URL for an external database entry. -/
+def url (db : Database) (id : String) : String :=
+  match db with
+  | .kerodon => "https://kerodon.net/tag/" ++ id
+  | .lmfdb => "https://www.lmfdb.org/knowledge/show/" ++ id
+  | .pibase =>
+      let path := match id.toList with
+        | 'P' :: _ => "properties/"
+        | 'S' :: _ => "spaces/"
+        | 'T' :: _ => "theorems/"
+        | _ => ""
+      "https://topology.pi-base.org/" ++ path ++ id
+  | .stacks => "https://stacks.math.columbia.edu/tag/" ++ id
+  | .wikidata => "https://www.wikidata.org/wiki/" ++ id
 
 /-- The display label used in docstring links and trace output. -/
 def label : Database → String
   | .kerodon => "Kerodon Tag"
   | .lmfdb => "LMFDB"
+  | .pibase => "π-Base"
   | .stacks => "Stacks Tag"
   | .wikidata => "Wikidata"
 
@@ -61,6 +72,7 @@ def label : Database → String
 def shortName : Database → String
   | .kerodon  => "kerodon"
   | .lmfdb    => "lmfdb"
+  | .pibase   => "pibase"
   | .stacks   => "stacks"
   | .wikidata => "wikidata"
 
@@ -97,7 +109,7 @@ This is the database-agnostic core of every cross-reference attribute's `add` ha
 def addCrossRefDoc (db : Database) (decl : Name) (idStr comment : String) : CoreM Unit := do
   let oldDoc := (← findDocString? (← getEnv) decl).getD ""
   let commentInDoc := if comment.isEmpty then "" else s!" ({comment})"
-  let link := s!"[{db.label} {idStr}]({db.url}{idStr}){commentInDoc}"
+  let link := s!"[{db.label} {idStr}]({db.url idStr}){commentInDoc}"
   addDocStringCore decl <| "\n\n".intercalate ([oldDoc, link].filter (· != ""))
   addTagEntry decl db idStr comment
 
@@ -207,6 +219,49 @@ def lmfdbIdNoAntiquot : Parser := {
 def lmfdbIdParser : Parser :=
   withAntiquot (mkAntiquot "lmfdbId" lmfdbIdKind) lmfdbIdNoAntiquot
 
+/-! ### π-Base parser -/
+
+/-- `pibaseId` is the node kind of π-Base identifiers: one of the letters `P`, `S`, or `T`,
+followed by exactly six digits. -/
+abbrev pibaseIdKind : SyntaxNodeKind := `pibaseId
+
+/-- The main parser for π-Base identifiers: it accepts canonical property, space, and theorem
+identifiers, such as `P000001`, `S000023`, and `T000010`. -/
+def pibaseIdFn : ParserFn := fun c s =>
+  let i := s.pos
+  let s := takeWhileFn (fun c => c.isAlphanum) c s
+  if s.hasError then
+    s
+  else if s.pos == i then
+    ParserState.mkError s "π-Base id"
+  else
+    let id := c.extract i s.pos
+    match id.toList with
+    | kind :: rest =>
+        if kind != 'P' && kind != 'S' && kind != 'T' then
+          ParserState.mkUnexpectedError s
+            "π-Base ids must start with P, S, or T."
+        else if rest.length != 6 then
+          ParserState.mkUnexpectedError s "π-Base ids must have exactly six digits after P/S/T."
+        else if !rest.all Char.isDigit then
+          ParserState.mkUnexpectedError s
+            "π-Base ids must consist of P, S, or T followed by six digits."
+        else
+          mkNodeToken pibaseIdKind i true c s
+    | _ =>
+        ParserState.mkUnexpectedError s
+          "π-Base ids must consist of P, S, or T followed by six digits."
+
+@[inherit_doc pibaseIdFn]
+def pibaseIdNoAntiquot : Parser := {
+  fn   := pibaseIdFn
+  info := mkAtomicInfo "pibaseId"
+}
+
+@[inherit_doc pibaseIdFn]
+def pibaseIdParser : Parser :=
+  withAntiquot (mkAntiquot "pibaseId" pibaseIdKind) pibaseIdNoAntiquot
+
 end Mathlib.CrossRef
 
 open Mathlib.CrossRef
@@ -226,6 +281,11 @@ def Lean.TSyntax.getLmfdbId (stx : TSyntax lmfdbIdKind) : CoreM String := do
   let some val := Syntax.isLit? lmfdbIdKind stx | throwError "Malformed LMFDB id"
   return val
 
+/-- Extract the underlying identifier as a string from a `pibaseId` node. -/
+def Lean.TSyntax.getPibaseId (stx : TSyntax pibaseIdKind) : CoreM String := do
+  let some val := Syntax.isLit? pibaseIdKind stx | throwError "Malformed π-Base id"
+  return val
+
 namespace Lean.PrettyPrinter
 
 namespace Formatter
@@ -242,6 +302,10 @@ namespace Formatter
 @[combinator_formatter lmfdbIdNoAntiquot] def lmfdbIdNoAntiquot.formatter :=
   visitAtom lmfdbIdKind
 
+/-- The formatter for π-Base identifier syntax. -/
+@[combinator_formatter pibaseIdNoAntiquot] def pibaseIdNoAntiquot.formatter :=
+  visitAtom pibaseIdKind
+
 end Formatter
 
 namespace Parenthesizer
@@ -254,6 +318,9 @@ namespace Parenthesizer
 
 /-- The parenthesizer for LMFDB identifier syntax. -/
 @[combinator_parenthesizer lmfdbIdNoAntiquot] def lmfdbIdAntiquot.parenthesizer := visitToken
+
+/-- The parenthesizer for π-Base identifier syntax. -/
+@[combinator_parenthesizer pibaseIdNoAntiquot] def pibaseIdAntiquot.parenthesizer := visitToken
 
 end Lean.PrettyPrinter.Parenthesizer
 
@@ -335,6 +402,28 @@ initialize Lean.registerBuiltinAttribute {
   applicationTime := .beforeElaboration
 }
 
+/-! ### π-Base attribute -/
+
+/-- The `pibase` attribute.
+Use it as `@[pibase P000001 "Optional comment"]` to associate a Mathlib declaration with
+the corresponding [π-Base](https://topology.pi-base.org/) property, space, or theorem.
+
+The identifier must start with `P`, `S`, or `T`, followed by exactly six digits.
+-/
+syntax (name := pibaseTag) "pibase" pibaseIdParser (ppSpace str)? : attr
+
+initialize Lean.registerBuiltinAttribute {
+  name := `pibaseTag
+  descr := "Apply a π-Base identifier to a declaration."
+  add := fun decl stx _attrKind => do
+    let (id, comment) ← match stx with
+      | `(attr| pibase $id $[$comment]?) => pure (id, comment)
+      | _ => throwUnsupportedSyntax
+    addCrossRefDoc .pibase decl (← id.getPibaseId) ((comment.map (·.getString)).getD "")
+  -- docstrings are immutable once an asynchronous elaboration task has been started
+  applicationTime := .beforeElaboration
+}
+
 end Mathlib.CrossRef
 
 /-- Returns the array of `Tag`s in the environment, sorted alphabetically by tag. -/
@@ -361,7 +450,7 @@ def traceCrossRefs (db : Database) (verbose : Bool := false) :
     let (parL, parR) := if d.comment.isEmpty then ("", "") else (" (", ")")
     let cmt := parL ++ d.comment ++ parR
     msgs := msgs.push
-      m!"[{db.label} {d.tag}]({db.url ++ d.tag}) \
+      m!"[{db.label} {d.tag}]({db.url d.tag}) \
         corresponds to declaration '{.ofConstName d.declName}'.{cmt}"
     if verbose then
       let dType := ((env.find? d.declName).getD default).type
@@ -417,5 +506,17 @@ or declaration type (for definitions, structures, instances, etc.) after each su
 -/
 elab (name := lmfdbTags) "#lmfdb_tags" tk:("!")? : command =>
   traceCrossRefs .lmfdb (tk.isSome)
+
+/-- The `#pibase_tags` command retrieves all declarations that have the `pibase` attribute.
+
+For each found declaration, it prints a line
+```
+'declaration_name' corresponds to tag 'declaration_tag'.
+```
+The variant `#pibase_tags!` also adds the theorem statement (for theorems)
+or declaration type (for definitions, structures, instances, etc.) after each summary line.
+-/
+elab (name := pibaseTags) "#pibase_tags" tk:("!")? : command =>
+  traceCrossRefs .pibase (tk.isSome)
 
 end Mathlib.CrossRef
