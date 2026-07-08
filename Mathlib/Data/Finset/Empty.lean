@@ -74,6 +74,10 @@ theorem Nonempty.forall_const {s : Finset α} (h : s.Nonempty) {p : Prop} : (∀
   let ⟨x, hx⟩ := h
   ⟨fun h => h x hx, fun h _ _ => h⟩
 
+@[simp]
+theorem forall_mem_const {s : Finset α} [Nonempty s] {p : Prop} : (∀ x ∈ s, p) ↔ p :=
+  (nonempty_coe_sort.mp ‹_›).forall_const
+
 theorem Nonempty.to_subtype {s : Finset α} : s.Nonempty → Nonempty s :=
   nonempty_coe_sort.2
 

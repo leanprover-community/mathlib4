@@ -24,7 +24,7 @@ section SMul
 
 open scoped Polynomial
 
-example : (SubNegMonoid.toZSMul : SMul ℤ ℂ) = (Complex.SMul.instSMulRealComplex : SMul ℤ ℂ) := by
+example : (ZSMul.toSMul : SMul ℤ ℂ) = (Complex.SMul.instSMulRealComplex : SMul ℤ ℂ) := by
   with_reducible_and_instances rfl
 
 example : Module.restrictScalars ℝ ℂ ℂ = Complex.instModule := by
@@ -35,19 +35,19 @@ example : Algebra.restrictScalars ℝ ℂ ℂ = Complex.instAlgebraOfReal := by
   rfl
 
 example (α β : Type _) [AddMonoid α] [AddMonoid β] :
-    (Prod.instSMul : SMul ℕ (α × β)) = AddMonoid.toNSMul := by
+    (Prod.instSMul : SMul ℕ (α × β)) = NSMul.toSMul := by
   with_reducible_and_instances rfl
 
 example (α β : Type _) [SubNegMonoid α] [SubNegMonoid β] :
-    (Prod.instSMul : SMul ℤ (α × β)) = SubNegMonoid.toZSMul := by
+    (Prod.instSMul : SMul ℤ (α × β)) = ZSMul.toSMul := by
   with_reducible_and_instances rfl
 
 example (α : Type _) (β : α → Type _) [∀ a, AddMonoid (β a)] :
-    (Pi.instSMul : SMul ℕ (∀ a, β a)) = AddMonoid.toNSMul := by
+    (Pi.instSMul : SMul ℕ (∀ a, β a)) = NSMul.toSMul := by
   with_reducible_and_instances rfl
 
 example (α : Type _) (β : α → Type _) [∀ a, SubNegMonoid (β a)] :
-    (Pi.instSMul : SMul ℤ (∀ a, β a)) = SubNegMonoid.toZSMul := by
+    (Pi.instSMul : SMul ℤ (∀ a, β a)) = ZSMul.toSMul := by
   with_reducible_and_instances rfl
 
 namespace TensorProduct
