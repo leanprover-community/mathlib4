@@ -37,7 +37,7 @@ namespace AffineSubspace
 section Ring
 variable [Ring k] [AddCommGroup V] [AddTorsor V P] [Module k V]
 
-open Classical in
+open scoped Classical in
 /-- `AffineSubspace.shift s c r` is an affine subspace parallel to `s`, where an arbitrary point on
 `s` is moved towards `c` with linear interpolation by `r`. When `r = 0`, that point is moved onto
 `c`. When `r = 1`, that point stays at the original position. A different choice of the point will

@@ -314,7 +314,7 @@ section Real
 
 variable (𝒢 : Subgroup (GL (Fin 2) ℝ))
 
-open Classical in
+open scoped Classical in
 /-- The strict width of the cusp `∞`, i.e. the `x` such that `𝒢.strictPeriods = zmultiples x`, or
 0 if no such `x` exists. -/
 noncomputable def strictWidthInfty : ℝ :=

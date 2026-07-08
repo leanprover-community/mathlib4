@@ -97,7 +97,7 @@ instance : IsLocalization.Away D.gbar S := by
     rw [← map_one (algebraMap P.Ring S), ← sub_eq_zero, ← map_sub, ← RingHom.mem_ker]
     exact D.hgmem
 
-open Classical in
+open scoped Classical in
 /-- The "naive" presentation of `T = R[X₁, ..., Xₙ] / (b₁, ..., bᵣ)` over `R`.
 We make sure the section `T → R[X₁, ..., Xₙ]` maps `-1` to `-1` and `0` to `0`. -/
 def presLeft : Presentation R D.T ι σ :=
