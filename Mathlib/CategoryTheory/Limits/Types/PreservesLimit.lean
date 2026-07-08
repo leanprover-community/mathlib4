@@ -47,9 +47,8 @@ noncomputable def coconeCompShrinkYonedaHomEquiv :
   toFun f :=
     { val j := shrinkYonedaEquiv (c'.ι.app (op j) ≫ f)
       property {X X'} g := by
-        have h₁ := c'.w g.op
-        dsimp at h₁ ⊢
-        rw [← h₁, Category.assoc]
+        dsimp
+        rw [← dsimp% c'.w g.op, Category.assoc]
         conv_rhs => rw [shrinkYonedaEquiv_comp]
         rw [shrinkYonedaEquiv_shrinkYoneda_map]
         apply map_shrinkYonedaEquiv }
