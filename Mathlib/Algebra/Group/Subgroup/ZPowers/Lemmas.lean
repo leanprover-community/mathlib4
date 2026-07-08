@@ -79,7 +79,7 @@ theorem zmultiples_sup (a b : ℤ) : zmultiples a ⊔ zmultiples b = zmultiples 
   simp_rw [← closure_eq_zmultiples, zmultiples_eq_closure, ← closure_union, Set.singleton_union]
 
 theorem zmultiples_inf (a b : ℤ) : zmultiples a ⊓ zmultiples b = zmultiples (a.lcm b : ℤ) := by
-  ext z
+  ext
   simp [mem_zmultiples_iff, coe_lcm_dvd_iff]
 
 end Int
