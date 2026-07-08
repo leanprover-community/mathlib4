@@ -18,6 +18,8 @@ the full subcategory of `κ`-presentable objects of `C`.
 
 -/
 
+@[expose] public section
+
 universe w v v' u u'
 
 namespace CategoryTheory
