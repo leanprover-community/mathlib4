@@ -24,9 +24,9 @@ variable [AddMonoidWithOne α] [AddMonoidWithOne β]
 
 instance instAddMonoidWithOne : AddMonoidWithOne (α × β) :=
   { Prod.instAddMonoid, @Prod.instOne α β _ _ with
-    natCast := fun n => (↑n, ↑n)
-    natCast_zero := congr_arg₂ Prod.mk Nat.cast_zero Nat.cast_zero
-    natCast_succ := fun _ => congr_arg₂ Prod.mk (Nat.cast_succ _) (Nat.cast_succ _) }
+    natCast := Function.prod Nat.cast Nat.cast
+    natCast_zero := by simp
+    natCast_succ := by simp [Prod.ext_iff] }
 
 @[simp]
 theorem fst_natCast (n : ℕ) : (n : α × β).fst = n := by induction n <;> simp [*]
