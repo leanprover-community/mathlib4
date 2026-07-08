@@ -56,7 +56,7 @@ variable (K L M : HomologicalComplex C c') (φ : K ⟶ L) (φ' : L ⟶ M)
 
 namespace truncGE'
 
-open Classical in
+open scoped Classical in
 /-- The `X` field of `truncGE'`. -/
 noncomputable def X (i : ι) : C :=
   if e.BoundaryGE i
@@ -73,7 +73,7 @@ noncomputable def XIso {i : ι} (hi : ¬ e.BoundaryGE i) :
     X K e i ≅ K.X (e.f i) :=
   eqToIso (if_neg hi)
 
-open Classical in
+open scoped Classical in
 /-- The `d` field of `truncGE'`. -/
 noncomputable def d (i j : ι) : X K e i ⟶ X K e j :=
   if hij : c.Rel i j
@@ -160,7 +160,7 @@ section
 
 variable {K L M}
 
-open Classical in
+open scoped Classical in
 /-- The morphism `K.truncGE' e ⟶ L.truncGE' e` induced by a morphism `K ⟶ L`. -/
 noncomputable def truncGE'Map : K.truncGE' e ⟶ L.truncGE' e where
   f i :=
@@ -226,7 +226,7 @@ end
 
 namespace restrictionToTruncGE'
 
-open Classical in
+open scoped Classical in
 /-- Auxiliary definition for `HomologicalComplex.restrictionToTruncGE'`. -/
 noncomputable def f (i : ι) : (K.restriction e).X i ⟶ (K.truncGE' e).X i :=
   if hi : e.BoundaryGE i then
