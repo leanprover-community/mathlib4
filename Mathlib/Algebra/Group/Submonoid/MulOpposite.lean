@@ -189,6 +189,20 @@ theorem unop_closure (s : Set Mᵐᵒᵖ) : (closure s).unop = closure (MulOppos
 def equivOp (H : Submonoid M) : H ≃ H.op :=
   MulOpposite.opEquiv.subtypeEquiv fun _ => Iff.rfl
 
+/-- Bijection between a submonoid `S` and `MulOpposite` of its opposite. -/
+@[to_additive (attr := simps!)
+  /-- Bijection between an additive submonoid and `AddOpposite` of its opposite. -/]
+def mulMonoidEquivOpMop (S : Submonoid M) : S ≃* (S.op)ᵐᵒᵖ where
+  toEquiv := S.equivOp.trans (MulOpposite.opEquiv : S.op ≃ (S.op)ᵐᵒᵖ)
+  map_mul' _ _ := rfl
+
+/-- Bijection between `MulOpposite` of a submonoid `S` and its opposite. -/
+@[to_additive (attr := simps!)
+  /-- Bijection between `AddOpposite` of an additive submonoid and its opposite. -/]
+def mopMulMonoidEquivOp (S : Submonoid M) : Sᵐᵒᵖ ≃* S.op where
+  toEquiv := (MulOpposite.opEquiv : S ≃ Sᵐᵒᵖ).symm.trans S.equivOp
+  map_mul' _ _ := rfl
+
 end Submonoid
 
 end MulOneClass
@@ -205,18 +219,6 @@ namespace Submonoid
 def mulMonoidEquivOp (S : Submonoid M) : S ≃* S.op where
   toEquiv := S.equivOp
   map_mul' x y := by ext; simp [equivOp, MulOpposite.op_mul, mul_comm]
-
-/-- Bijection between a submonoid `S` and `MulOpposite` of its opposite. -/
-@[to_additive (attr := simps!)
-  /-- Bijection between an additive submonoid and `AddOpposite` of its opposite. -/]
-def mulMonoidEquivOpMop (S : Submonoid M) : S ≃* (S.op)ᵐᵒᵖ where
-  __ := S.mulMonoidEquivOp.trans (MulOpposite.opMulEquiv : S.op ≃* (S.op)ᵐᵒᵖ)
-
-/-- Bijection between `MulOpposite` of a submonoid `S` and its opposite. -/
-@[to_additive (attr := simps!)
-  /-- Bijection between `AddOpposite` of an additive submonoid and its opposite. -/]
-def mopMulMonoidEquivOp (S : Submonoid M) : Sᵐᵒᵖ ≃* S.op where
-  __ := (MulOpposite.opMulEquiv : S ≃* Sᵐᵒᵖ).symm.trans S.mulMonoidEquivOp
 
 end Submonoid
 

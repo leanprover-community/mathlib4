@@ -129,6 +129,20 @@ theorem unop_normalizer (H : Subgroup Gᵐᵒᵖ) :
     (normalizer H).unop = normalizer (H.unop : Set G) := by
   rw [← op_inj, op_unop, op_normalizer, op_unop]
 
+/-- Bijection between a subgroup `S` and `MulOpposite` of its opposite. -/
+@[to_additive (attr := simps!)
+  /-- Bijection between an additive subgroup and `AddOpposite` of its opposite. -/]
+def mulMonoidEquivOpMop (S : Subgroup G) : S ≃* (S.op)ᵐᵒᵖ where
+  toEquiv := S.equivOp.trans (MulOpposite.opEquiv : S.op ≃ (S.op)ᵐᵒᵖ)
+  map_mul' _ _ := rfl
+
+/-- Bijection between `MulOpposite` of a subgroup `S` and its opposite. -/
+@[to_additive (attr := simps!)
+  /-- Bijection between `AddOpposite` of an additive subgroup and its opposite. -/]
+def mopMulMonoidEquivOp (S : Subgroup G) : Sᵐᵒᵖ ≃* S.op where
+  toEquiv := (MulOpposite.opEquiv : S ≃ Sᵐᵒᵖ).symm.trans S.equivOp
+  map_mul' _ _ := rfl
+
 end Subgroup
 
 end Group
@@ -145,18 +159,6 @@ namespace Subgroup
 def mulMonoidEquivOp (S : Subgroup G) : S ≃* S.op where
   toEquiv := S.equivOp
   map_mul' x y := by ext; simp [equivOp, MulOpposite.op_mul, mul_comm]
-
-/-- Bijection between a subgroup `S` and `MulOpposite` of its opposite. -/
-@[to_additive (attr := simps!)
-  /-- Bijection between an additive subgroup and `AddOpposite` of its opposite. -/]
-def mulMonoidEquivOpMop (S : Subgroup G) : S ≃* (S.op)ᵐᵒᵖ where
-  __ := S.mulMonoidEquivOp.trans (MulOpposite.opMulEquiv : S.op ≃* (S.op)ᵐᵒᵖ)
-
-/-- Bijection between `MulOpposite` of a subgroup `S` and its opposite. -/
-@[to_additive (attr := simps!)
-  /-- Bijection between `AddOpposite` of an additive subgroup and its opposite. -/]
-def mopMulMonoidEquivOp (S : Subgroup G) : Sᵐᵒᵖ ≃* S.op where
-  __ := (MulOpposite.opMulEquiv : S ≃* Sᵐᵒᵖ).symm.trans S.mulMonoidEquivOp
 
 end Subgroup
 
