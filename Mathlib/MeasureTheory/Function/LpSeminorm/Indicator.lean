@@ -60,21 +60,20 @@ lemma eLpNorm_restrict_le (f : α → ε') (p : ℝ≥0∞) (μ : Measure α) (s
 
 lemma eLpNorm_indicator_le (f : α → ε) :
     eLpNorm (s.indicator f) p μ ≤ eLpNorm f p μ := by
-  refine eLpNorm_mono_ae' <| .of_forall fun x ↦ ?_
-  rw [enorm_indicator_eq_indicator_enorm]
-  exact s.indicator_le_self _ x
+  apply eLpNorm_mono_enorm
+  simp_rw [enorm_indicator_eq_indicator_enorm]
+  exact s.indicator_le_self _
 
 lemma eLpNormEssSup_indicator_le (s : Set α) (f : α → ε) :
     eLpNormEssSup (s.indicator f) μ ≤ eLpNormEssSup f μ := by
-  refine essSup_mono_ae (Eventually.of_forall fun x => ?_)
+  refine essSup_mono_ae (.of_forall fun x => ?_)
   simp_rw [enorm_indicator_eq_indicator_enorm]
   exact Set.indicator_le_self s _ x
 
 lemma eLpNormEssSup_indicator_const_le (s : Set α) (c : ε) :
     eLpNormEssSup (s.indicator fun _ : α => c) μ ≤ ‖c‖ₑ := by
-  by_cases hμ0 : μ = 0
-  · rw [hμ0, eLpNormEssSup_measure_zero]
-    exact zero_le _
+  obtain rfl | hμ0 := eq_or_ne μ 0
+  · simp
   · exact (eLpNormEssSup_indicator_le s fun _ => c).trans (eLpNormEssSup_const c hμ0).le
 
 lemma eLpNormEssSup_indicator_const_eq (s : Set α) (c : ε) (hμs : μ s ≠ 0) :
@@ -82,7 +81,7 @@ lemma eLpNormEssSup_indicator_const_eq (s : Set α) (c : ε) (hμs : μ s ≠ 0)
   refine le_antisymm (eLpNormEssSup_indicator_const_le s c) ?_
   by_contra! h
   have h' := ae_iff.mp (ae_lt_of_essSup_lt h)
-  push_neg at h'
+  push Not at h'
   refine hμs (measure_mono_null (fun x hx_mem => ?_) h')
   rw [Set.mem_setOf_eq, Set.indicator_of_mem hx_mem]
 
@@ -193,7 +192,7 @@ theorem eLpNorm_indicator_sub_le_of_dist_bdd {β : Type*} [NormedAddCommGroup β
         Real.norm_eq_abs, abs_of_nonneg hc]
       exact hf x hx
     · simp [Set.indicator_of_notMem hx]
-  grw [eLpNorm_mono this, eLpNorm_indicator_const hs hp hp', ← ofReal_norm_eq_enorm,
+  grw [eLpNorm_mono this, eLpNorm_indicator_const hs hp hp', ← ofReal_norm,
     Real.norm_eq_abs, abs_of_nonneg hc]
 
 theorem eLpNorm_sub_le_of_dist_bdd {β : Type*} [NormedAddCommGroup β]

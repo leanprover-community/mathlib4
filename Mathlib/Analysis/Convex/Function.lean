@@ -723,8 +723,10 @@ section Module
 
 variable [Module 𝕜 E] [Module 𝕜 β] [PosSMulStrictMono 𝕜 β] {s : Set E} {f g : E → β}
 
-/- The following lemmas don't require `Module 𝕜 E` if you add the hypothesis `x ≠ y`. At the time of
-the writing, we decided the resulting lemmas wouldn't be useful. Feel free to reintroduce them. -/
+/-! The following lemmas don't require `Module 𝕜 E` if you add the hypothesis `x ≠ y`. At the time
+of the writing, we decided the resulting lemmas wouldn't be useful. Feel free to reintroduce them.
+-/
+
 theorem ConvexOn.lt_left_of_right_lt' (hf : ConvexOn 𝕜 s f) {x y : E} (hx : x ∈ s) (hy : y ∈ s)
     {a b : 𝕜} (ha : 0 < a) (hb : 0 < b) (hab : a + b = 1) (hfy : f y < f (a • x + b • y)) :
     f (a • x + b • y) < f x :=
@@ -1061,7 +1063,6 @@ variable [AddCommMonoid β] [PartialOrder β] [IsOrderedAddMonoid β]
   [AddCommMonoid E] [SMul 𝕜 E] [Module 𝕜 β] [PosSMulMono 𝕜 β]
   {f : E → β} {s : Set E} {x y : E}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A strictly convex function admits at most one global minimum. -/
 lemma StrictConvexOn.eq_of_isMinOn (hf : StrictConvexOn 𝕜 s f) (hfx : IsMinOn f s x)
     (hfy : IsMinOn f s y) (hx : x ∈ s) (hy : y ∈ s) : x = y := by

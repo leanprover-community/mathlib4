@@ -12,6 +12,7 @@ public import Mathlib.RingTheory.WittVector.TeichmullerSeries
 
 /-!
 # Fontaine's θ map
+
 In this file, we define Fontaine's `θ` map, which is a ring
 homomorphism from the Witt vector `𝕎 R♭` of the tilt of a perfectoid ring `R`
 to `R` itself. Our definition of `θ` does not require that `R` is perfectoid in the first place.
@@ -36,7 +37,7 @@ Fontaine's theta map, perfectoid theory, p-adic Hodge theory
 ## Reference
 
 * [Fontaine, *Sur Certains Types de Représentations p-Adiques du Groupe de Galois d'un Corps Local;
-Construction d'un Anneau de Barsotti-Tate*][fontaine1982certains]
+  Construction d'un Anneau de Barsotti-Tate*][fontaine1982certains]
 * [Fontaine, *Le corps des périodes p-adiques*][fontaine1994corps]
 
 -/
@@ -79,7 +80,6 @@ v                   v
 ```
 -/
 
-set_option backward.isDefEq.respectTransparency false in
 theorem ker_map_le_ker_mk_comp_ghostComponent (n : ℕ) :
     RingHom.ker (WittVector.map (Ideal.Quotient.mk 𝔭)) ≤
     RingHom.ker (((Ideal.Quotient.mk (𝔭 ^ (n + 1)))).comp
@@ -140,7 +140,6 @@ theorem fontaineThetaModPPow_teichmuller (n : ℕ) (x : R♭) :
     fontaineThetaModPPow R p n (teichmuller p x) = Ideal.Quotient.mk _ x.untilt := by
   simp [fontaineThetaModPPow]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem factorPowSucc_comp_fontaineThetaModPPow (n : ℕ) :
     (factorPowSucc _ _).comp (fontaineThetaModPPow R p (n + 1)) = fontaineThetaModPPow R p n := by
   apply eq_of_apply_teichmuller_eq ((factorPowSucc _ _).comp (fontaineThetaModPPow R p (n + 1)))

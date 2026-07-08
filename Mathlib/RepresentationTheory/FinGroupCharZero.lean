@@ -11,6 +11,7 @@ public import Mathlib.RepresentationTheory.Character
 public import Mathlib.RepresentationTheory.Maschke
 public import Mathlib.RingTheory.SimpleModule.InjectiveProjective
 public import Mathlib.Algebra.Lie.OfAssociative
+public import Mathlib.RepresentationTheory.Rep.Iso
 
 /-!
 # Applications of Maschke's theorem
@@ -30,9 +31,9 @@ an algebraically closed field in which the order of `G` is invertible:
 
 -/
 
-@[expose] public section
+public section
 
-universe u
+universe u v w
 
 variable {k : Type u} [Field k] {G : Type u} [Finite G] [Group G]
 
@@ -46,7 +47,7 @@ variable [NeZero (Nat.card G : k)]
 If `G` is finite and its order is nonzero in the field `k`, then every object of
 `Rep k G` is injective.
 -/
-instance (V : Rep k G) : Injective V := by
+instance (V : Rep.{w} k G) : Injective V := by
   rw [← Rep.equivalenceModuleMonoidAlgebra.map_injective_iff,
     ← Module.injective_iff_injective_object]
   exact Module.injective_of_isSemisimpleRing _ _
@@ -56,7 +57,7 @@ If `G` is finite and its order is nonzero in the field `k`, then every object of
 `Rep k G` is projective.
 -/
 -- Will this clash with the previously defined `Projective` instances?
-instance (V : Rep k G) : Projective V := by
+instance (V : Rep.{u} k G) : Projective V := by
   rw [← Rep.equivalenceModuleMonoidAlgebra.map_projective_iff,
     ← IsProjective.iff_projective]
   exact Module.projective_of_isSemisimpleRing _ _
@@ -81,7 +82,6 @@ instance [NeZero (Nat.card G : k)] (V : FDRep k G) : Projective V :=
 
 variable [IsAlgClosed k]
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 If `G` is finite and its order is nonzero in an algebraically closed field `k`,
 then an object of `FDRep k G` is simple if and only if its space of endomorphisms is
@@ -119,30 +119,12 @@ If `G` is finite and `k` an algebraically closed field of characteristic `0`,
 then an object of `FDRep k G` is simple if and only if its character has norm `1`.
 -/
 lemma simple_iff_char_is_norm_one [CharZero k] [Fintype G] (V : FDRep k G) :
-    Simple V ↔ ∑ g : G, V.character g * V.character g⁻¹ = Nat.card G where
-  mp h := by
-    have : NeZero (Nat.card G : k) := by
-      rw [← @Fintype.card_eq_nat_card G (by assumption)]
-      exact NeZero.charZero
-    have := invertibleOfNonzero (NeZero.ne (Nat.card G : k))
-    have := invertibleOfNonzero (NeZero.ne (Fintype.card G : k))
-    classical
-    have : ⅟(Nat.card G : k) • ∑ g, V.character g * V.character g⁻¹ = 1 := by
-      simpa only [Nonempty.intro (Iso.refl V), ↓reduceIte, Fintype.card_eq_nat_card]
-      using char_orthonormal V V
-    apply_fun (· * (Fintype.card G : k)) at this
-    rwa [mul_comm, ← smul_eq_mul, smul_smul, Fintype.card_eq_nat_card, mul_invOf_self, smul_eq_mul,
-      one_mul, one_mul] at this
-  mpr h := by
-    have : NeZero (Nat.card G : k) := by
-      rw [← @Fintype.card_eq_nat_card G (by assumption)]
-      exact NeZero.charZero
-    have := invertibleOfNonzero (NeZero.ne (Fintype.card G : k))
-    have := invertibleOfNonzero (NeZero.ne (Nat.card G : k))
-    have eq := FDRep.scalar_product_char_eq_finrank_equivariant V V
-    rw [h] at eq
-    simp only [invOf_eq_inv, smul_eq_mul, inv_mul_cancel_of_invertible, Fintype.card_eq_nat_card]
-      at eq
+    Simple V ↔ ∑ g : G, V.character g * V.character g⁻¹ = Nat.card G := by
+  have := invertibleOfNonzero (NeZero.ne (Nat.card G : k))
+  constructor <;> intro h
+  · symm; simpa [Nonempty.intro (Iso.refl V), inv_mul_eq_one₀] using char_orthonormal V V
+  · have eq := V.scalar_product_char_eq_finrank_equivariant V
+    rw [h, inv_mul_cancel_of_invertible] at eq
     rw [simple_iff_end_is_rank_one, ← Nat.cast_inj (R := k), ← eq, Nat.cast_one]
 
 end FDRep

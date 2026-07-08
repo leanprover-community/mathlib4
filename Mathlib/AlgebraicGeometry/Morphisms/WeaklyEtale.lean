@@ -27,7 +27,7 @@ morphism of finite presentation is étale.
 
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -95,7 +95,7 @@ instance (f : X ⟶ Y) (U : X.Opens) (V : Y.Opens) (e) [WeaklyEtale f] :
     WeaklyEtale (f.resLE V U e) := by
   delta Scheme.Hom.resLE; infer_instance
 
-/- This proof is by `inferInstance` and the argument goes through
+/-- This proof is by `inferInstance` and the argument goes through
 `IsImmersion (diagonal f) → Mono (diagonal f) → IsIso (diagonal (diagonal f))`. -/
 instance (f : X ⟶ Y) [WeaklyEtale f] : WeaklyEtale (pullback.diagonal f) where
 
@@ -109,5 +109,8 @@ lemma of_comp (f : X ⟶ Y) (g : Y ⟶ Z) [WeaklyEtale (f ≫ g)] [WeaklyEtale g
   MorphismProperty.of_postcomp _ _ g ‹_› ‹_›
 
 end WeaklyEtale
+
+lemma etale_le_weaklyEtale : @Etale ≤ @WeaklyEtale :=
+  fun _ _ _ _ ↦ inferInstance
 
 end AlgebraicGeometry

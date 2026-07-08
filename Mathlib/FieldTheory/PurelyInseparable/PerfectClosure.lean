@@ -100,7 +100,6 @@ instance perfectClosure.isPurelyInseparable : IsPurelyInseparable F (perfectClos
 instance perfectClosure.isAlgebraic : Algebra.IsAlgebraic F (perfectClosure F E) :=
   IsPurelyInseparable.isAlgebraic F _
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `E / F` is separable, then the perfect closure of `F` in `E` is equal to `F`. Note that
   the converse is not necessarily true (see https://math.stackexchange.com/a/3009197)
   even when `E / F` is algebraic. -/
@@ -230,7 +229,6 @@ instance isPurelyInseparable_iSup {ι : Sort*} {t : ι → IntermediateField F E
   simp_rw [← le_perfectClosure_iff] at h ⊢
   exact iSup_le h
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `F` is a field of exponential characteristic `q`, `F(S) / F` is separable, then
 `F(S) = F(S ^ (q ^ n))` for any natural number `n`. -/
 theorem adjoin_eq_adjoin_pow_expChar_pow_of_isSeparable (S : Set E)
@@ -251,7 +249,6 @@ theorem adjoin_eq_adjoin_pow_expChar_pow_of_isSeparable (S : Set E)
   simpa only [extendScalars_restrictScalars, restrictScalars_bot_eq_self] using congr_arg
     (restrictScalars F) (extendScalars hi).eq_bot_of_isPurelyInseparable_of_isSeparable
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `E / F` is a separable field extension of exponential characteristic `q`, then
 `F(S) = F(S ^ (q ^ n))` for any subset `S` of `E` and any natural number `n`. -/
 theorem adjoin_eq_adjoin_pow_expChar_pow_of_isSeparable' [Algebra.IsSeparable F E] (S : Set E)
@@ -340,11 +337,10 @@ private theorem LinearIndependent.map_pow_expChar_pow_of_fd_isSeparable
     (Field.span_map_pow_expChar_pow_eq_top_of_isSeparable q n b.span_eq).ge
     (Module.finrank_eq_card_basis b).symm
   let f (i : ι) : ι' := ⟨v i, h'.subset_extend _ ⟨i, rfl⟩⟩
-  convert H.comp f fun _ _ heq ↦ h.injective (by simpa only [f, Subtype.mk.injEq] using heq)
+  convert! H.comp f fun _ _ heq ↦ h.injective (by simpa only [f, Subtype.mk.injEq] using heq)
   simp_rw [Function.comp_apply, b]
   rw [Basis.extend_apply_self]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `E / F` is a separable extension of exponential characteristic `q`, if `{ u_i }` is a
 family of elements of `E` which is `F`-linearly independent, then `{ u_i ^ (q ^ n) }` is also
 `F`-linearly independent for any natural number `n`. -/
@@ -396,7 +392,7 @@ theorem minpoly.iterateFrobenius_of_isSeparable [ExpChar E q] (n : ℕ) {a : E}
     (minpoly.monic hai |>.map _)
     (minpoly.dvd F (a ^ q ^ n) ?haeval)
     ?hdeg
-  · simpa using Eq.symm <|
+  · simpa using! Eq.symm <|
       (minpoly F a).map_aeval_eq_aeval_map (RingHom.iterateFrobenius_comm _ q n) a
   · rw [(minpoly F a).natDegree_map_eq_of_injective (iterateFrobenius F q n).injective,
       ← IntermediateField.adjoin.finrank hai,

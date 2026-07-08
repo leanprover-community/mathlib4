@@ -45,10 +45,8 @@ graded algebra, homogeneous
 
 @[expose] public section
 
-
 open SetLike DirectSum Set
-
-open Pointwise DirectSum
+open scoped Pointwise
 
 variable {ι σ A : Type*}
 
@@ -162,8 +160,8 @@ theorem Ideal.homogeneous_span (s : Set A) (h : ∀ x ∈ s, SetLike.IsHomogeneo
   rw [Ideal.span, Finsupp.span_eq_range_linearCombination] at hr
   rw [LinearMap.mem_range] at hr
   obtain ⟨s, rfl⟩ := hr
-  rw [Finsupp.linearCombination_apply, Finsupp.sum, decompose_sum, DFinsupp.finset_sum_apply,
-    AddSubmonoidClass.coe_finset_sum]
+  rw [Finsupp.linearCombination_apply, Finsupp.sum, decompose_sum, DFinsupp.finsetSum_apply,
+    AddSubmonoidClass.coe_finsetSum]
   refine Ideal.sum_mem _ ?_
   rintro z hz1
   rw [smul_eq_mul]
@@ -204,7 +202,7 @@ theorem Ideal.IsHomogeneous.toIdeal_homogeneousCore_eq_self (h : I.IsHomogeneous
 theorem HomogeneousIdeal.toIdeal_homogeneousCore_eq_self (I : HomogeneousIdeal 𝒜) :
     I.toIdeal.homogeneousCore 𝒜 = I := by
   ext1
-  convert Ideal.IsHomogeneous.toIdeal_homogeneousCore_eq_self I.isHomogeneous
+  convert! Ideal.IsHomogeneous.toIdeal_homogeneousCore_eq_self I.isHomogeneous
 
 variable (𝒜 I)
 
@@ -456,7 +454,7 @@ theorem Ideal.homogeneousCore'_eq_sSup :
   refine (IsLUB.sSup_eq ?_).symm
   apply IsGreatest.isLUB
   have coe_mono : Monotone (toIdeal : HomogeneousIdeal 𝒜 → Ideal A) := fun x y => id
-  convert coe_mono.map_isGreatest (Ideal.homogeneousCore.gc 𝒜).isGreatest_u using 1
+  convert! coe_mono.map_isGreatest (Ideal.homogeneousCore.gc 𝒜).isGreatest_u using 1
   ext x
   rw [mem_image, mem_setOf_eq]
   refine ⟨fun hI => ⟨⟨x, hI.1⟩, ⟨hI.2, rfl⟩⟩, ?_⟩
@@ -569,10 +567,10 @@ variable [SetLike σ A] [AddSubmonoidClass σ A] (𝒜 : ι → σ) [GradedRing 
 
 open GradedRing SetLike.GradedMonoid DirectSum
 
-/-- For a graded ring `⨁ᵢ 𝒜ᵢ` graded by a `CanonicallyOrderedAddCommMonoid ι`, the irrelevant ideal
-refers to `⨁_{i>0} 𝒜ᵢ`, or equivalently `{a | a₀ = 0}`. This definition is used in `Proj`
-construction where `ι` is always `ℕ` so the irrelevant ideal is simply elements with `0` as
-0-th coordinate.
+/-- For a graded ring `⨁ᵢ 𝒜ᵢ` graded by
+`[AddCommMonoid ι] [PartialOrder ι] [CanonicallyOrderedAdd ι]`, the irrelevant ideal refers to
+`⨁_{i>0} 𝒜ᵢ`, or equivalently `{a | a₀ = 0}`. This definition is used in `Proj` construction where
+`ι` is always `ℕ` so the irrelevant ideal is simply elements with `0` as 0-th coordinate.
 -/
 def irrelevant : HomogeneousIdeal 𝒜 :=
   ⟨RingHom.ker (GradedRing.projZeroRingHom 𝒜), fun i r (hr : (decompose 𝒜 r 0 : A) = 0) => by
@@ -581,7 +579,7 @@ def irrelevant : HomogeneousIdeal 𝒜 :=
     · rw [h, hr, decompose_zero, zero_apply, ZeroMemClass.coe_zero]
     · rw [decompose_of_mem_ne 𝒜 (SetLike.coe_mem _) h]⟩
 
-local notation 𝒜 "₊" => irrelevant 𝒜
+@[inherit_doc] scoped notation 𝒜 "₊" => irrelevant 𝒜
 
 @[simp]
 theorem mem_irrelevant_iff (a : A) :

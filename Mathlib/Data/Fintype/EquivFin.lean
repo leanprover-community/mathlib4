@@ -409,6 +409,7 @@ theorem isEmpty_fintype {α : Type*} : IsEmpty (Fintype α) ↔ Infinite α :=
   ⟨fun ⟨h⟩ => ⟨fun h' => (@nonempty_fintype α h').elim h⟩, fun ⟨h⟩ => ⟨fun h' => h h'.finite⟩⟩
 
 /-- A non-infinite type is a fintype. -/
+@[implicit_reducible]
 noncomputable def fintypeOfNotInfinite {α : Type*} (h : ¬Infinite α) : Fintype α :=
   @Fintype.ofFinite _ (not_infinite_iff_finite.mp h)
 
@@ -522,7 +523,6 @@ instance [Infinite α] : Infinite (Equiv.Perm α) := by
 namespace Infinite
 
 set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 private noncomputable def natEmbeddingAux (α : Type*) [Infinite α] : ℕ → α
   | n =>
     letI := Classical.decEq α
@@ -532,7 +532,6 @@ private noncomputable def natEmbeddingAux (α : Type*) [Infinite α] : ℕ → �
             Multiset.mem_range.1).toFinset)
 
 set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 private theorem natEmbeddingAux_injective (α : Type*) [Infinite α] :
     Function.Injective (natEmbeddingAux α) := by
   rintro m n h
@@ -575,6 +574,7 @@ theorem exists_superset_card_eq [Infinite α] (s : Finset α) (n : ℕ) (hn : #s
 end Infinite
 
 /-- If every finset in a type has bounded cardinality, that type is finite. -/
+@[implicit_reducible]
 noncomputable def fintypeOfFinsetCardLe {ι : Type*} (n : ℕ) (w : ∀ s : Finset ι, #s ≤ n) :
     Fintype ι := by
   apply fintypeOfNotInfinite

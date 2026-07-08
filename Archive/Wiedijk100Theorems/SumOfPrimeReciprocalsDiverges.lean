@@ -52,7 +52,7 @@ of `p`, i.e., those `e < x` for which there is a prime `p ∈ (k, x]` that divid
 -/
 def U (x k : ℕ) : Finset ℕ := (P x k).biUnion fun p ↦ {e ∈ range x | p ∣ e + 1}
 
-open Classical in
+open scoped Classical in
 /-- Those `e < x` for which `e + 1` is a product of powers of primes smaller than or equal to `k`.
 -/
 noncomputable def M (x k : ℕ) : Finset ℕ := {e ∈ range x | ∀ p : ℕ, p.Prime ∧ p ∣ e + 1 → p ≤ k}
@@ -97,7 +97,7 @@ of `p`.
 theorem range_sdiff_eq_biUnion {x k : ℕ} : range x \ M x k = U x k := by
   ext e
   simp only [mem_biUnion, not_and, Finset.mem_sdiff, mem_filter, mem_range, U, M, P]
-  push_neg
+  push Not
   constructor
   · rintro ⟨hex, hexh⟩
     obtain ⟨p, ⟨hpp, hpe1⟩, hpk⟩ := hexh hex
@@ -117,9 +117,10 @@ theorem card_le_mul_sum {x k : ℕ} : #(U x k) ≤ x * ∑ p ∈ P x k, 1 / (p :
   have h : #(P.biUnion N) ≤ ∑ p ∈ P, #(N p) := card_biUnion_le
   calc
     (#(P.biUnion N) : ℝ) ≤ ∑ p ∈ P, (#(N p) : ℝ) := by assumption_mod_cast
-    _ ≤ ∑ p ∈ P, x * (1 / (p : ℝ)) := sum_le_sum fun p _ => ?_
+    _ ≤ ∑ p ∈ P, x * (1 / (p : ℝ)) := by
+      gcongr with p _
+      simp only [N, mul_one_div, Nat.card_multiples, Nat.cast_div_le]
     _ = x * ∑ p ∈ P, 1 / (p : ℝ) := by rw [mul_sum]
-  simp only [N, mul_one_div, Nat.card_multiples, Nat.cast_div_le]
 
 /--
 The number of `e < x` for which `e + 1` is a squarefree product of primes smaller than or equal to

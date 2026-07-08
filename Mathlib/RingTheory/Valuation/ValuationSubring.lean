@@ -11,6 +11,8 @@ public import Mathlib.Algebra.Algebra.Subalgebra.Tower
 public import Mathlib.Algebra.Ring.Subring.Pointwise
 public import Mathlib.Algebra.Ring.Action.Field
 public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
+public import Mathlib.RingTheory.KrullDimension.Basic
+public import Mathlib.RingTheory.Spectrum.Prime.Topology
 
 /-!
 
@@ -23,7 +25,6 @@ The order structure on `ValuationSubring K`.
 -/
 
 @[expose] public section
-
 
 universe u
 
@@ -47,9 +48,9 @@ variable (A : ValuationSubring K)
 
 instance : SetLike (ValuationSubring K) K where
   coe A := A.toSubring
-  coe_injective' := by
+  coe_injective := by
     intro ⟨_, _⟩ ⟨_, _⟩ h
-    replace h := SetLike.coe_injective' h
+    replace h := SetLike.coe_injective h
     congr
 
 instance : PartialOrder (ValuationSubring K) := .ofSetLike (ValuationSubring K) K
@@ -267,7 +268,7 @@ def mapOfLE (R S : ValuationSubring K) (h : R ≤ S) : R.ValueGroup →*₀ S.Va
   map_one' := rfl
   map_mul' := by rintro ⟨⟩ ⟨⟩; rfl
 
-@[mono]
+@[gcongr, mono]
 theorem monotone_mapOfLE (R S : ValuationSubring K) (h : R ≤ S) : Monotone (R.mapOfLE S h) := by
   rintro ⟨⟩ ⟨⟩ ⟨a, ha⟩; exact ⟨R.inclusion S h a, ha⟩
 
@@ -283,6 +284,13 @@ theorem mapOfLE_valuation_apply (R S : ValuationSubring K) (h : R ≤ S) (x : K)
 def idealOfLE (R S : ValuationSubring K) (h : R ≤ S) : Ideal R :=
   (IsLocalRing.maximalIdeal S).comap (R.inclusion S h)
 
+theorem idealOfLE_self : A.idealOfLE A (refl _) = IsLocalRing.maximalIdeal A := rfl
+
+@[simp]
+theorem idealOfLE_top : A.idealOfLE ⊤ (le_top _) = ⊥ := by
+  rw [ValuationSubring.idealOfLE, IsLocalRing.maximalIdeal_eq_bot, Ideal.comap_bot_of_injective]
+  exact Subring.inclusion_injective _
+
 instance prime_idealOfLE (R S : ValuationSubring K) (h : R ≤ S) : (idealOfLE R S h).IsPrime :=
   (IsLocalRing.maximalIdeal S).comap_isPrime _
 
@@ -295,7 +303,7 @@ def ofPrime (A : ValuationSubring K) (P : Ideal A) [P.IsPrime] : ValuationSubrin
 
 instance ofPrimeAlgebra (A : ValuationSubring K) (P : Ideal A) [P.IsPrime] :
     Algebra A (A.ofPrime P) :=
-  Subalgebra.algebra (Localization.subalgebra.ofField K _ P.primeCompl_le_nonZeroDivisors)
+  inferInstanceAs <| Algebra A (Localization.subalgebra.ofField K _ P.primeCompl_le_nonZeroDivisors)
 
 instance ofPrime_scalar_tower (A : ValuationSubring K) (P : Ideal A) [P.IsPrime] :
     letI : SMul A (A.ofPrime P) := SMulZeroClass.toSMul
@@ -304,10 +312,9 @@ instance ofPrime_scalar_tower (A : ValuationSubring K) (P : Ideal A) [P.IsPrime]
     (Localization.subalgebra.ofField K _ P.primeCompl_le_nonZeroDivisors)
 
 instance ofPrime_localization (A : ValuationSubring K) (P : Ideal A) [P.IsPrime] :
-    IsLocalization.AtPrime (A.ofPrime P) P := by
-  apply
-    Localization.subalgebra.isLocalization_ofField K P.primeCompl
-      P.primeCompl_le_nonZeroDivisors
+    IsLocalization.AtPrime (A.ofPrime P) P :=
+  Localization.subalgebra.isLocalization_ofField K P.primeCompl
+    P.primeCompl_le_nonZeroDivisors
 
 theorem le_ofPrime (A : ValuationSubring K) (P : Ideal A) [P.IsPrime] : A ≤ ofPrime A P :=
   fun a ha => Subalgebra.mem_toSubring.mpr <| Subalgebra.algebraMap_mem _ (⟨a, ha⟩ : A)
@@ -345,6 +352,12 @@ theorem ofPrime_idealOfLE (R S : ValuationSubring K) (h : R ≤ S) :
       simp [field]
     · simp
 
+@[simp]
+theorem ofPrime_bot : A.ofPrime ⊥ = ⊤ := by simp [← idealOfLE_top]
+
+@[simp]
+theorem ofPrime_top : A.ofPrime (IsLocalRing.maximalIdeal A) = A := by simp [← idealOfLE_self]
+
 theorem ofPrime_le_of_le (P Q : Ideal A) [P.IsPrime] [Q.IsPrime] (h : P ≤ Q) :
     ofPrime A Q ≤ ofPrime A P := fun _x ⟨a, s, hs, he⟩ => ⟨a, s, fun c => hs (h c), he⟩
 
@@ -364,6 +377,7 @@ def primeSpectrumEquiv : PrimeSpectrum A ≃ {S // A ≤ S} where
   left_inv P := by ext1; simp
   right_inv S := by ext1; simp
 
+set_option backward.defeqAttrib.useBackward true in
 /-- An ordered variant of `primeSpectrumEquiv`. -/
 @[simps!]
 def primeSpectrumOrderEquiv : (PrimeSpectrum A)ᵒᵈ ≃o {S // A ≤ S} :=
@@ -387,6 +401,28 @@ instance linearOrderOverring : LinearOrder {S // A ≤ S} where
   le_total := (le_total_ideal A).1
   max_def a b := congr_fun₂ sup_eq_maxDefault a b
   toDecidableLE := _
+
+section
+
+variable [Ring.KrullDimLE 1 A] {B : ValuationSubring K}
+
+variable {A} in
+theorem eq_self_or_eq_top_of_le (hle : A ≤ B) : A = B ∨ B = ⊤ := by
+  obtain h | h := IsLocalRing.Ring.KrullDimLE.eq_bot_or_eq_top (A.primeSpectrumEquiv.symm ⟨B, hle⟩)
+  all_goals
+    replace h := congr(primeSpectrumEquiv A $h)
+    simp_all
+
+theorem eq_of_le_of_ne_top (hle : A ≤ B) (hTop : B ≠ ⊤) : A = B := by
+  obtain h | h := eq_self_or_eq_top_of_le hle <;> simp_all
+
+theorem eq_of_le_of_ne_self (hle : A ≤ B) (hne : A ≠ B) : B = ⊤ := by
+  obtain h | h := eq_self_or_eq_top_of_le hle <;> simp_all
+
+theorem eq_of_lt (hlt : A < B) : B = ⊤ := by
+  obtain h | h := eq_self_or_eq_top_of_le hlt.le <;> simp_all
+
+end
 
 end Order
 
@@ -518,7 +554,7 @@ section nonunits
 def nonunits : NonUnitalSubring K where
   carrier := {x | A.valuation x < 1}
   mul_mem' ha hb := (mul_lt_mul'' (Set.mem_setOf.mp ha) (Set.mem_setOf.mp hb)
-    zero_le' zero_le').trans_eq <| mul_one _
+    zero_le zero_le).trans_eq <| mul_one _
   add_mem' ha hb := (A.valuation.map_add ..).trans_lt (max_lt ha hb)
   zero_mem' := by simp
   neg_mem' h := (A.valuation.map_neg _).trans_lt h
@@ -615,7 +651,7 @@ def principalUnitGroup : Subgroup Kˣ where
       Valuation.map_neg]
 
 theorem principal_units_le_units : A.principalUnitGroup ≤ A.unitGroup := fun a h => by
-  simpa only [add_sub_cancel] using A.valuation.map_one_add_of_lt h
+  simpa only [add_sub_cancel] using! A.valuation.map_one_add_of_lt h
 
 theorem mem_principalUnitGroup_iff (x : Kˣ) :
     x ∈ A.principalUnitGroup ↔ A.valuation ((x : K) - 1) < 1 :=
@@ -649,12 +685,12 @@ def principalUnitGroupOrderEmbedding : ValuationSubring K ↪o (Subgroup Kˣ)ᵒ
   inj' := principalUnitGroup_injective
   map_rel_iff' {_A _B} := principalUnitGroup_le_principalUnitGroup
 
-set_option backward.isDefEq.respectTransparency false in
 theorem coe_mem_principalUnitGroup_iff {x : A.unitGroup} :
     (x : Kˣ) ∈ A.principalUnitGroup ↔
       A.unitGroupMulEquiv x ∈ (Units.map (IsLocalRing.residue A).toMonoidHom).ker := by
   rw [MonoidHom.mem_ker, Units.ext_iff]
-  let π := Ideal.Quotient.mk (IsLocalRing.maximalIdeal A); convert_to _ ↔ π _ = 1
+  let π := Ideal.Quotient.mk (IsLocalRing.maximalIdeal A)
+  convert_to! _ ↔ π _ = 1
   rw [← π.map_one, ← sub_eq_zero, ← π.map_sub, Ideal.Quotient.eq_zero_iff_mem, valuation_lt_one_iff]
   simp [mem_principalUnitGroup_iff]
 

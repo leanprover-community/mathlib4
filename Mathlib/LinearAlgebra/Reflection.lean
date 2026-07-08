@@ -21,8 +21,8 @@ public import Mathlib.Tactic.Module
 
 Given an element `x` in a module `M` together with a linear form `f` on `M` such that `f x = 2`, the
 map `y ↦ y - (f y) • x` is an involutive endomorphism of `M`, such that:
- 1. the kernel of `f` is fixed,
- 2. the point `x` maps to `-x`.
+1. the kernel of `f` is fixed,
+2. the point `x` maps to `-x`.
 
 Such endomorphisms are often called reflections of the module `M`. When `M` carries an inner product
 for which `x` is perpendicular to the kernel of `f`, then (with mild assumptions) the endomorphism
@@ -240,7 +240,6 @@ lemma reflection_mul_reflection_pow (m : ℕ)
   ext z
   simpa using reflection_mul_reflection_pow_apply hf hg m z t ht
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A formula for $(r_1 r_2)^m z$, where $m$ is an integer and $z \in M$. -/
 lemma reflection_mul_reflection_zpow_apply (m : ℤ) (z : M)
     (t : R := f y * g x - 2) (ht : t = f y * g x - 2 := by rfl) :

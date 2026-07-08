@@ -148,7 +148,7 @@ elab "ghost_fun_tac " φ:term ", " fn:term : tactic => do
     HAdd.hAdd, Add.add, HSub.hSub, Sub.sub, Neg.neg, HMul.hMul, Mul.mul, HPow.hPow, Pow.pow,
     wittNSMul, wittZSMul, HSMul.hSMul, SMul.smul]
   simpa +unfoldPartialApp [WittVector.ghostFun, aeval_rename, aeval_bind₁,
-    comp, uncurry, peval, eval] using this
+    comp, uncurry, peval, eval] using! this
   )))
 
 end Tactic
@@ -240,8 +240,6 @@ private local instance comm_ring_aux₂ : CommRing (𝕎 (MvPolynomial R ℤ)) :
     (mapFun.zero _) (mapFun.one _) (mapFun.add _) (mapFun.mul _) (mapFun.neg _) (mapFun.sub _)
     (mapFun.nsmul _) (mapFun.zsmul _) (mapFun.pow _) (mapFun.natCast _) (mapFun.intCast _)
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- The commutative ring structure on `𝕎 R`. -/
 instance : CommRing (𝕎 R) :=
   (mapFun.surjective _ <| counit_surjective _).commRing (mapFun <| MvPolynomial.counit _)
@@ -301,7 +299,6 @@ def ghostComponent (n : ℕ) : 𝕎 R →+* R :=
 theorem ghostComponent_apply (n : ℕ) (x : 𝕎 R) : ghostComponent n x = aeval x.coeff (W_ ℤ n) :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem pow_dvd_ghostComponent_of_dvd_coeff {x : 𝕎 R} {n : ℕ}
     (hx : ∀ i ≤ n, (p : R) ∣ x.coeff i) : (p : R) ^ (n + 1) ∣ ghostComponent n x := by
   rw [WittVector.ghostComponent_apply, wittPolynomial, MvPolynomial.aeval_sum]

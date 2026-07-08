@@ -180,6 +180,7 @@ def _root_.Ideal.stableFiltration (I : Ideal R) (N : Submodule R M) : I.Filtrati
   mono i := by rw [add_comm, pow_add, mul_smul]; exact Submodule.smul_le_right
   smul_le i := by rw [add_comm, pow_add, mul_smul, pow_one]
 
+set_option backward.defeqAttrib.useBackward true in
 theorem _root_.Ideal.stableFiltration_stable (I : Ideal R) (N : Submodule R M) :
     (I.stableFiltration N).Stable := by
   use 0
@@ -202,7 +203,7 @@ theorem Stable.exists_pow_smul_eq_of_ge (h : F.Stable) :
   obtain ⟨n₀, hn₀⟩ := h.exists_pow_smul_eq
   use n₀
   intro n hn
-  convert hn₀ (n - n₀)
+  convert! hn₀ (n - n₀)
   rw [add_comm, tsub_add_cancel_of_le hn]
 
 theorem stable_iff_exists_pow_smul_eq_of_ge :
@@ -237,7 +238,7 @@ variable (F F')
 
 /-- The `R[IX]`-submodule of `M[X]` associated with an `I`-filtration. -/
 protected noncomputable def submodule : Submodule (reesAlgebra I) (PolynomialModule R M) where
-  carrier := { f | ∀ i, f i ∈ F.N i }
+  carrier := { f | ∀ i, f.coeff i ∈ F.N i }
   add_mem' hf hg i := Submodule.add_mem _ (hf i) (hg i)
   zero_mem' _ := Submodule.zero_mem _
   smul_mem' r f hf i := by
@@ -249,7 +250,7 @@ protected noncomputable def submodule : Submodule (reesAlgebra I) (PolynomialMod
     exact F.pow_smul_le j k (Submodule.smul_mem_smul (r.2 j) (hf k))
 
 @[simp]
-theorem mem_submodule (f : PolynomialModule R M) : f ∈ F.submodule ↔ ∀ i, f i ∈ F.N i :=
+theorem mem_submodule (f : PolynomialModule R M) : f ∈ F.submodule ↔ ∀ i, f.coeff i ∈ F.N i :=
   Iff.rfl
 
 theorem inf_submodule : (F ⊓ F').submodule = F.submodule ⊓ F'.submodule := by
@@ -271,12 +272,12 @@ theorem submodule_closure_single :
   apply le_antisymm
   · rw [AddSubmonoid.closure_le, Set.iUnion_subset_iff]
     rintro i _ ⟨m, hm, rfl⟩ j
-    rw [single_apply]
+    rw [coeff_single, Finsupp.single_apply]
     split_ifs with h
     · rwa [← h]
     · exact (F.N j).zero_mem
   · intro f hf
-    rw [← f.sum_single]
+    rw [← f.ofCoeff_coeff, ← f.coeff.sum_single, ofCoeff_finsuppSum]
     apply AddSubmonoid.sum_mem _ _
     rintro c -
     exact AddSubmonoid.subset_closure (Set.subset_iUnion _ c <| Set.mem_image_of_mem _ (hf c))
@@ -298,10 +299,9 @@ theorem submodule_eq_span_le_iff_stable_ge (n₀ : ℕ) :
     refine (F.smul_le n).antisymm ?_
     intro x hx
     obtain ⟨l, hl⟩ := (Finsupp.mem_span_iff_linearCombination _ _ _).mp (H _ ⟨x, hx, rfl⟩)
-    replace hl := congr_arg (fun f : ℕ →₀ M => f (n + 1)) hl
-    dsimp only at hl
-    rw [PolynomialModule.single_apply, if_pos rfl] at hl
-    rw [← hl, Finsupp.linearCombination_apply, Finsupp.sum_apply]
+    replace hl := congr_arg (fun f : PolynomialModule R M => f.coeff (n + 1)) hl
+    rw [PolynomialModule.coeff_single, Finsupp.single_apply, if_pos rfl] at hl
+    rw [← hl, Finsupp.linearCombination_apply, PolynomialModule.coeff_finsuppSum, Finsupp.sum_apply]
     apply Submodule.sum_mem _ _
     rintro ⟨_, _, ⟨n', rfl⟩, _, ⟨hn', rfl⟩, m, hm, rfl⟩ -
     dsimp only [Subtype.coe_mk]
@@ -317,7 +317,7 @@ theorem submodule_eq_span_le_iff_stable_ge (n₀ : ℕ) :
       (Set.subset_iUnion₂ (s := fun i _ => (single R i '' (N F i : Set M))) i hi).trans
         Submodule.subset_span
     induction i with
-    | zero => exact this _ (zero_le _)
+    | zero => exact this _ zero_le
     | succ j hj => ?_
     by_cases hj' : j.succ ≤ n₀
     · exact this _ hj'
@@ -328,10 +328,9 @@ theorem submodule_eq_span_le_iff_stable_ge (n₀ : ℕ) :
     · rw [add_comm, ← monomial_smul_single]
       exact F'.smul_mem
         ⟨_, reesAlgebra.monomial_mem.mpr (by rwa [pow_one])⟩ (hj <| Set.mem_image_of_mem _ hm')
-    · rw [map_add]
+    · rw [PolynomialModule.single_add]
       exact F'.add_mem hx hy
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If the components of a filtration are finitely generated, then the filtration is stable iff
 its associated submodule of is finitely generated. -/
 theorem submodule_fg_iff_stable (hF' : ∀ i, (F.N i).FG) : F.submodule.FG ↔ F.Stable := by
@@ -350,12 +349,7 @@ theorem submodule_fg_iff_stable (hF' : ∀ i, (F.N i).FG) : F.submodule.FG ↔ F
       exact hi.trans e
     · dsimp
       rw [← Submodule.span_iUnion, ← submodule_span_single]
-      congr 1
-      ext
-      simp only [Set.mem_iUnion, Set.mem_image, SetLike.mem_coe, exists_prop]
-      constructor
-      · rintro ⟨-, i, -, e⟩; exact ⟨i, e⟩
-      · rintro ⟨i, e⟩; exact ⟨i, i, le_refl i, e⟩
+      simp [Set.biUnion_le_eq_iUnion]
   · rintro ⟨n, hn⟩
     rw [hn]
     simp_rw [Submodule.span_iUnion₂, ← Finset.mem_range_succ_iff, iSup_subtype']
@@ -370,7 +364,6 @@ theorem submodule_fg_iff_stable (hF' : ∀ i, (F.N i).FG) : F.submodule.FG ↔ F
 
 variable {F}
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Stable.of_le [IsNoetherianRing R] [Module.Finite R M] (hF : F.Stable)
     {F' : I.Filtration M} (hf : F' ≤ F) : F'.Stable := by
   rw [← submodule_fg_iff_stable] at hF ⊢
@@ -437,7 +430,7 @@ theorem Ideal.iInf_pow_smul_eq_bot_of_isLocalRing [IsNoetherianRing R] [IsLocalR
 /-- **Krull's intersection theorem** for Noetherian local rings. -/
 theorem Ideal.iInf_pow_eq_bot_of_isLocalRing [IsNoetherianRing R] [IsLocalRing R] (h : I ≠ ⊤) :
     ⨅ i : ℕ, I ^ i = ⊥ := by
-  convert I.iInf_pow_smul_eq_bot_of_isLocalRing (M := R) h
+  convert! I.iInf_pow_smul_eq_bot_of_isLocalRing (M := R) h
   ext i
   rw [smul_eq_mul, ← Ideal.one_eq_top, mul_one]
 
@@ -473,5 +466,5 @@ alias Ideal.iInf_pow_smul_eq_bot_of_noZeroSMulDivisors :=
 /-- **Krull's intersection theorem** for Noetherian domains. -/
 theorem Ideal.iInf_pow_eq_bot_of_isDomain [IsNoetherianRing R] [IsDomain R] (h : I ≠ ⊤) :
     ⨅ i : ℕ, I ^ i = ⊥ := by
-  convert I.iInf_pow_smul_eq_bot_of_isTorsionFree (M := R) h
+  convert! I.iInf_pow_smul_eq_bot_of_isTorsionFree (M := R) h
   simp

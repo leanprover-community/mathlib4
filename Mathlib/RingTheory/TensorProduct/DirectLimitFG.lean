@@ -229,7 +229,7 @@ theorem TensorProduct.eq_of_fg_of_subtype_eq'
     rTensor_comp, coe_comp, Function.comp_apply] at h
   let ⟨Q, hQ_le, hQ, h⟩ := TensorProduct.eq_of_fg_of_subtype_eq (hP.sup hP') h
   use Q, le_trans le_sup_left hQ_le, le_trans le_sup_right hQ_le, hQ
-  simpa [← comp_apply, ← rTensor_comp] using h
+  simpa [← comp_apply, ← rTensor_comp] using! h
 
 end TensorProducts
 
@@ -254,7 +254,6 @@ theorem TensorProduct.Algebra.exists_of_fg :
   rw [← subtype_comp_inclusion P _ this, rTensor_comp] at hu
   exact range_comp_le_range _ _ hu
 
-set_option backward.isDefEq.respectTransparency false in
 include hA in
 theorem TensorProduct.Algebra.eq_of_fg_of_subtype_eq
     (h : rTensor N A.val.toLinearMap t = rTensor N A.val.toLinearMap t') :
@@ -321,9 +320,8 @@ theorem TensorProduct.Algebra.eq_of_fg_of_subtype_eq' {t' : A' ⊗[R] N}
   let ⟨B, hB_le, hB, h⟩ := TensorProduct.Algebra.eq_of_fg_of_subtype_eq
     (Subalgebra.FG.sup hA hA') h
   use B, le_trans le_sup_left hB_le, le_trans le_sup_right hB_le, hB
-  simpa only [← rTensor_comp, ← comp_apply] using h
+  simpa only [← rTensor_comp, ← comp_apply] using! h
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Lift an element that maps to 0 -/
 theorem Submodule.exists_fg_of_baseChange_eq_zero
     (f : M →ₗ[R] N) {t : S ⊗[R] M} (ht : f.baseChange S t = 0) :

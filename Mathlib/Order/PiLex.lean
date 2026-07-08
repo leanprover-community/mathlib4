@@ -5,6 +5,7 @@ Authors: Chris Hughes
 -/
 module
 
+public import Mathlib.Order.Lex
 public import Mathlib.Order.WellFounded
 public import Mathlib.Tactic.Common
 
@@ -74,17 +75,22 @@ theorem trichotomous_lex [∀ i, Std.Trichotomous (α := β i) s] (wf : WellFoun
       by_contra! h
       rw [Function.ne_iff] at h
       let i := wf.min {i | a i ≠ b i} h
-      have hri j (hr : r j i) : a j = b j := not_not.mp (wf.not_lt_min _ _ · hr)
+      have hri j (hr : r j i) : a j = b j := not_not.mp (wf.not_lt_min _ · hr)
       have := Std.Trichotomous.trichotomous (a i) (b i) (hab ⟨i, hri, ·⟩)
       exact hba ⟨i, (hri · · |>.symm), Not.imp_symm this <| wf.min_mem {i | a i ≠ b i} h⟩ }
 
 @[deprecated (since := "2026-01-24")] alias isTrichotomous_lex := trichotomous_lex
 
+/-
+These instances are leaky, because they define the relation on `∀ i, β i` instead of
+`Lex (∀ i, β i)`/`Colex (∀ i, β i)`. So, we would like to mark them `@[semireducible]`.
+But the linter doesn't allow this, so we wrap them in `id` instead.
+-/
 instance [LT ι] [∀ a, LT (β a)] : LT (Lex (∀ i, β i)) :=
-  ⟨Pi.Lex (· < ·) (· < ·)⟩
+  id ⟨Pi.Lex (· < ·) (· < ·)⟩
 
 instance [LT ι] [∀ a, LT (β a)] : LT (Colex (∀ i, β i)) :=
-  ⟨Pi.Lex (· > ·) (· < ·)⟩
+  id ⟨Pi.Lex (· > ·) (· < ·)⟩
 
 -- If `Lex` and `Colex` are ever made into one-field structures, we need a `CoeFun` instance.
 -- This will make `x i` syntactically equal to `ofLex x i` for `x : Πₗ i, α i`, thus making

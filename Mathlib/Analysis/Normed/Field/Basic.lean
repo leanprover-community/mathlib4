@@ -44,6 +44,9 @@ class NormedDivisionRing (α : Type*) extends Norm α, DivisionRing α, MetricSp
   protected norm_mul : ∀ a b, norm (a * b) = norm a * norm b
 
 -- see Note [lower instance priority]
+attribute [instance 10] NormedDivisionRing.toDivisionRing
+
+-- see Note [lower instance priority]
 /-- A normed division ring is a normed ring. -/
 instance (priority := 100) NormedDivisionRing.toNormedRing [β : NormedDivisionRing α] :
     NormedRing α :=
@@ -154,6 +157,9 @@ class NormedField (α : Type*) extends Norm α, Field α, MetricSpace α where
   /-- The norm is multiplicative. -/
   protected norm_mul : ∀ a b, norm (a * b) = norm a * norm b
 
+-- see Note [lower instance priority]
+attribute [instance 10] NormedField.toField
+
 /-- A nontrivially normed field is a normed field in which there is an element of norm different
 from `0` and `1`. This makes it possible to bring any element arbitrarily close to `0` by
 multiplication by the powers of any element, and thus to relate algebra and topology. -/
@@ -248,7 +254,7 @@ theorem nhdsNE_neBot (x : α) : NeBot (𝓝[≠] x) := by
 
 @[instance]
 theorem nhdsWithin_isUnit_neBot : NeBot (𝓝[{ x : α | IsUnit x }] 0) := by
-  simpa only [isUnit_iff_ne_zero] using nhdsNE_neBot (0 : α)
+  simpa only [isUnit_iff_ne_zero] using! nhdsNE_neBot (0 : α)
 
 end Nontrivially
 
@@ -280,6 +286,7 @@ end NormedField
 
 /-- A normed field is nontrivially normed
 provided that the norm of some nonzero element is not one. -/
+@[implicit_reducible]
 def NontriviallyNormedField.ofNormNeOne {𝕜 : Type*} [h' : NormedField 𝕜]
     (h : ∃ x : 𝕜, x ≠ 0 ∧ ‖x‖ ≠ 1) : NontriviallyNormedField 𝕜 where
   toNormedField := h'
@@ -324,7 +331,7 @@ variable {F : Type*} (R S : Type*) [FunLike F R S]
 See note [reducible non-instances] -/
 abbrev NormedDivisionRing.induced [DivisionRing R] [NormedDivisionRing S]
     [NonUnitalRingHomClass F R S] (f : F) (hf : Function.Injective f) : NormedDivisionRing R :=
-  { NormedAddCommGroup.induced R S f hf, ‹DivisionRing R› with
+  fast_instance% { NormedAddCommGroup.induced R S f hf, ‹DivisionRing R› with
     norm_mul x y := show ‖f _‖ = _ from (map_mul f x y).symm ▸ norm_mul (f x) (f y) }
 
 /-- An injective non-unital ring homomorphism from a `Field` to a `NormedRing` induces a
@@ -333,7 +340,7 @@ abbrev NormedDivisionRing.induced [DivisionRing R] [NormedDivisionRing S]
 See note [reducible non-instances] -/
 abbrev NormedField.induced [Field R] [NormedField S] [NonUnitalRingHomClass F R S] (f : F)
     (hf : Function.Injective f) : NormedField R :=
-  { NormedDivisionRing.induced R S f hf with
+  fast_instance% { NormedDivisionRing.induced R S f hf with
     mul_comm := mul_comm }
 
 end Induced
@@ -347,13 +354,14 @@ If `s` is a subfield of a normed field `F`, then `s` is equipped with an induced
 field structure.
 -/
 instance toNormedField [NormedField F] [SubfieldClass S F] (s : S) : NormedField s :=
-  NormedField.induced s F (SubringClass.subtype s) Subtype.val_injective
+  fast_instance% NormedField.induced s F (SubringClass.subtype s) Subtype.val_injective
 
 end SubfieldClass
 
 namespace AbsoluteValue
 
 /-- A real absolute value on a field determines a `NormedField` structure. -/
+@[implicit_reducible]
 noncomputable def toNormedField {K : Type*} [Field K] (v : AbsoluteValue K ℝ) : NormedField K where
   toField := inferInstanceAs (Field K)
   __ := v.toNormedRing

@@ -20,7 +20,7 @@ the ranges of these functions, and their monotonicity in suitable intervals.
 Here we prove the following:
 
 * `sin_lt`: for `x > 0` we have `sin x < x`.
-* `sin_gt_sub_cube`: For `0 < x ≤ 1` we have `x - x ^ 3 / 4 < sin x`.
+* `sin_gt_sub_cube`: For `0 < x` we have `x - x ^ 3 / 6 < sin x`.
 * `lt_tan`: for `0 < x < π/2` we have `x < tan x`.
 * `cos_le_one_div_sqrt_sq_add_one` and `cos_lt_one_div_sqrt_sq_add_one`: for
   `-3 * π / 2 ≤ x ≤ 3 * π / 2`, we have `cos x ≤ 1 / sqrt (x ^ 2 + 1)`, with strict inequality if
@@ -115,7 +115,6 @@ lemma sin_sq_le_sq : sin x ^ 2 ≤ x ^ 2 := by
 lemma abs_sin_lt_abs (hx : x ≠ 0) : |sin x| < |x| := sq_lt_sq.1 (sin_sq_lt_sq hx)
 lemma abs_sin_le_abs : |sin x| ≤ |x| := sq_le_sq.1 sin_sq_le_sq
 
-set_option backward.isDefEq.respectTransparency false in
 lemma one_sub_sq_div_two_lt_cos (hx : x ≠ 0) : 1 - x ^ 2 / 2 < cos x := by
   have := (sin_sq_lt_sq (by positivity)).trans_eq' (sin_sq_eq_half_sub (x / 2))
   ring_nf at this
@@ -135,7 +134,6 @@ lemma one_sub_mul_le_cos (hx₀ : 0 ≤ x) (hx : x ≤ π / 2) : 1 - 2 / π * x 
 lemma one_add_mul_le_cos (hx₀ : -(π / 2) ≤ x) (hx : x ≤ 0) : 1 + 2 / π * x ≤ cos x := by
   simpa using one_sub_mul_le_cos (x := -x) (by linarith) (by linarith)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma cos_le_one_sub_mul_cos_sq (hx : |x| ≤ π) : cos x ≤ 1 - 2 / π ^ 2 * x ^ 2 := by
   wlog hx₀ : 0 ≤ x
   case inr => simpa using this (by rwa [abs_neg]) <| neg_nonneg.2 <| le_of_not_ge hx₀
@@ -145,26 +143,38 @@ lemma cos_le_one_sub_mul_cos_sq (hx : |x| ≤ π) : cos x ≤ 1 - 2 / π ^ 2 * x
   ring_nf at this ⊢
   linarith
 
-/-- For 0 < x ≤ 1 we have x - x ^ 3 / 4 < sin x.
+/-- For 0 < x we have x - x ^ 3 / 6 < sin x.
 
-This is also true for x > 1, but it's nontrivial for x just above 1. This inequality is not
-tight; the tighter inequality is sin x > x - x ^ 3 / 6 for all x > 0, but this inequality has
-a simpler proof. -/
-theorem sin_gt_sub_cube {x : ℝ} (h : 0 < x) (h' : x ≤ 1) : x - x ^ 3 / 4 < sin x := by
-  have hx : |x| = x := abs_of_nonneg h.le
-  have := neg_le_of_abs_le (sin_bound <| show |x| ≤ 1 by rwa [hx])
-  rw [le_sub_iff_add_le, hx] at this
-  refine lt_of_lt_of_le ?_ this
-  have : x ^ 3 / ↑4 - x ^ 3 / ↑6 = x ^ 3 * 12⁻¹ := by norm_num [div_eq_mul_inv, ← mul_sub]
-  rw [add_comm, sub_add, sub_neg_eq_add, sub_lt_sub_iff_left, ← lt_sub_iff_add_lt', this]
-  refine mul_lt_mul' ?_ (by norm_num) (by norm_num) (pow_pos h 3)
-  apply pow_le_pow_of_le_one h.le h'
-  simp
+This inequality is tight, in that the constant 6 is best possible. -/
+theorem sin_gt_sub_cube {x : ℝ} (hx : 0 < x) : x - x ^ 3 / 6 < Real.sin x := by
+  let f (t : ℝ) : ℝ := Real.sin t - (t - t ^ 3 / 6)
+  have hderiv (t : ℝ) : deriv f t = cos t - 1 + t ^ 2 / 2 := by
+    simp (disch := fun_prop) [f]
+    ring
+  have hmono : StrictMonoOn f (Set.Ici 0) := by
+    apply strictMonoOn_of_deriv_pos (convex_Ici 0) (by fun_prop)
+    grind [one_sub_sq_div_two_lt_cos, interior_Ici]
+  have h0 : f 0 < f x := hmono (by simp) hx.le hx
+  grind [Real.sin_zero]
+
+/-- For 0 ≤ x we have x - x ^ 3 / 6 ≤ sin x.
+
+This inequality is tight, in that the constant 6 is best possible. -/
+theorem sin_ge_sub_cube {x : ℝ} (hx : 0 ≤ x) : x - x ^ 3 / 6 ≤ Real.sin x := by
+  obtain rfl | hx := hx.eq_or_lt
+  · simp
+  exact (sin_gt_sub_cube hx).le
+
+/-- `|x - sin x| ≤ |x|³ / 6` for every real `x`. -/
+theorem abs_sub_sin_le (x : ℝ) : |x - Real.sin x| ≤ |x| ^ 3 / 6 := by
+  wlog hx : 0 ≤ x
+  · grind [sin_neg]
+  · grind [Real.sin_le, abs_of_nonneg, sin_ge_sub_cube]
 
 /-- The derivative of `tan x - x` is `1/(cos x)^2 - 1` away from the zeroes of cos. -/
 theorem deriv_tan_sub_id (x : ℝ) (h : cos x ≠ 0) :
     deriv (fun y : ℝ => tan y - y) x = 1 / cos x ^ 2 - 1 :=
-  HasDerivAt.deriv <| by simpa using (hasDerivAt_tan h).add (hasDerivAt_id x).neg
+  HasDerivAt.deriv <| by simpa using! (hasDerivAt_tan h).add (hasDerivAt_id x).neg
 
 /-- For all `0 < x < π/2` we have `x < tan x`.
 
@@ -211,7 +221,7 @@ theorem cos_lt_one_div_sqrt_sq_add_one {x : ℝ} (hx1 : -(3 * π / 2) ≤ x) (hx
   suffices ∀ {y : ℝ}, 0 < y → y ≤ 3 * π / 2 → cos y < 1 / √(y ^ 2 + 1) by
     rcases lt_or_lt_iff_ne.mpr hx3.symm with ⟨h⟩
     · exact this h hx2
-    · convert this (by linarith : 0 < -x) (by linarith) using 1
+    · convert! this (by linarith : 0 < -x) (by linarith) using 1
       · rw [cos_neg]
       · rw [neg_sq]
   intro y hy1 hy2
@@ -236,16 +246,16 @@ theorem cos_le_one_div_sqrt_sq_add_one {x : ℝ} (hx1 : -(3 * π / 2) ≤ x) (hx
   · exact (cos_lt_one_div_sqrt_sq_add_one hx1 hx2 hx3).le
 
 theorem lipschitzWith_sin : LipschitzWith 1 sin :=
-  lipschitzWith_of_nnnorm_deriv_le differentiable_sin <| by simpa using abs_cos_le_one
+  lipschitzWith_of_nnnorm_deriv_le differentiable_sin <| by simpa using! abs_cos_le_one
 
 theorem lipschitzWith_cos : LipschitzWith 1 cos :=
-  lipschitzWith_of_nnnorm_deriv_le differentiable_cos <| by simpa using abs_sin_le_one
+  lipschitzWith_of_nnnorm_deriv_le differentiable_cos <| by simpa using! abs_sin_le_one
 
 theorem abs_sin_sub_sin_le (x y : ℝ) : |sin x - sin y| ≤ |x - y| := by
-  simpa [edist_dist] using lipschitzWith_sin x y
+  simpa [edist_dist] using! lipschitzWith_sin x y
 
 theorem abs_cos_sub_cos_le (x y : ℝ) : |cos x - cos y| ≤ |x - y| := by
-  simpa [edist_dist] using lipschitzWith_cos x y
+  simpa [edist_dist] using! lipschitzWith_cos x y
 
 theorem norm_exp_I_mul_ofReal_sub_one_le {x : ℝ} : ‖.exp (.I * x) - (1 : ℂ)‖ ≤ ‖x‖ := by
   rw [Complex.norm_exp_I_mul_ofReal_sub_one]

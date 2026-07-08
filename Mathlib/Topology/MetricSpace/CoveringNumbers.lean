@@ -22,7 +22,7 @@ We prove inequalities between these covering and packing numbers.
 
 ## Main definitions
 
-* `externalCoveringNumber`: the extenal covering number of a set `A` for radius `ε` is the minimal
+* `externalCoveringNumber`: the external covering number of a set `A` for radius `ε` is the minimal
   cardinality (in `ℕ∞`) of an `ε`-cover.
 * `coveringNumber`: the covering number (or internal covering number) of a set `A` for radius `ε` is
   the minimal cardinality (in `ℕ∞`) of an `ε`-cover contained in `A`.
@@ -246,7 +246,6 @@ lemma exists_set_encard_eq_coveringNumber (h : coveringNumber ε A ≠ ⊤) :
     simp_rw [iInf_subtype, iInf_and]
     rfl
 
-open Classical in
 /-- A finite internal `ε`-cover of a set `A` by closed balls with minimal cardinality.
 It is defined as the empty set if no such finite cover exists. -/
 noncomputable
@@ -366,7 +365,6 @@ theorem coveringNumber_two_mul_le_externalCoveringNumber (ε : ℝ≥0) (A : Set
   refine (coveringNumber_le_packingNumber _ A).trans ?_
   exact packingNumber_two_mul_le_externalCoveringNumber ε A
 
-set_option backward.isDefEq.respectTransparency false in
 lemma coveringNumber_subset_le (h : A ⊆ B) :
     coveringNumber ε A ≤ coveringNumber (ε / 2) B := calc
   coveringNumber ε A
@@ -392,7 +390,7 @@ lemma _root_.Isometry.coveringNumber_image' {f : X → Y} (hf : Isometry f) (hf_
     intro C hC_subset hC_cover
     refine (iInf_le _ (C.image f)).trans ?_
     simp only [Set.image_subset_iff]
-    have : ↑C ⊆ f ⁻¹' (f '' A) := hC_subset.trans (Set.subset_preimage_image f A)
+    have : ↑C ⊆ f ⁻¹' f '' A := hC_subset.trans (Set.subset_preimage_image f A)
     refine (iInf_le _ this).trans ?_
     rw [hf.isCover_image_iff]
     refine (iInf_le _ hC_cover).trans ?_

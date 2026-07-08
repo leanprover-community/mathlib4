@@ -6,7 +6,7 @@ Authors: Eric Wieser, Yaël Dillies, Andrew Yang
 module
 
 public import Mathlib.Algebra.Order.GroupWithZero.Canonical
-public import Mathlib.Algebra.Order.GroupWithZero.Unbundled.OrderIso
+public import Mathlib.Algebra.Order.GroupWithZero.OrderIso
 public import Mathlib.Data.Finset.Lattice.Fold
 
 /-!
@@ -46,14 +46,12 @@ end MonoidWithZero
 section GroupWithZero
 variable [GroupWithZero G₀] [SemilatticeSup G₀] {s : Finset ι} {a : G₀}
 
-set_option backward.isDefEq.respectTransparency false in
 lemma sup'_mul₀ [MulPosReflectLT G₀] (ha : 0 ≤ a) (f : ι → G₀) (s : Finset ι) (hs) :
     s.sup' hs f * a = s.sup' hs fun i ↦ f i * a := by
   by_cases! h : 0 = a
   · simp [← h]
   exact map_finset_sup' (OrderIso.mulRight₀ _ (lt_of_le_of_ne ha h)) hs f
 
-set_option backward.isDefEq.respectTransparency false in
 set_option linter.docPrime false in
 lemma mul₀_sup' [PosMulReflectLT G₀] (ha : 0 ≤ a) (f : ι → G₀) (s : Finset ι) (hs) :
     a * s.sup' hs f = s.sup' hs fun i ↦ a * f i := by
@@ -61,7 +59,6 @@ lemma mul₀_sup' [PosMulReflectLT G₀] (ha : 0 ≤ a) (f : ι → G₀) (s : F
   · simp [← h]
   exact map_finset_sup' (OrderIso.mulLeft₀ _ (lt_of_le_of_ne ha h)) hs f
 
-set_option backward.isDefEq.respectTransparency false in
 lemma sup'_div₀ [MulPosReflectLT G₀] (ha : 0 ≤ a) (f : ι → G₀) (s : Finset ι) (hs) :
     s.sup' hs f / a = s.sup' hs fun i ↦ f i / a := by
   by_cases! h : 0 = a
@@ -73,7 +70,7 @@ end GroupWithZero
 lemma sup_div₀ [LinearOrderedCommGroupWithZero G₀] {a : G₀} (ha : 0 ≤ a)
     (s : Finset ι) (f : ι → G₀) : s.sup f / a = s.sup fun i ↦ f i / a := by
   obtain rfl | hs := s.eq_empty_or_nonempty
-  · simp [← show (0 : G₀) = ⊥ from bot_unique zero_le']
+  · simp [bot_eq_zero]
   rw [← Finset.sup'_eq_sup hs, ← Finset.sup'_eq_sup hs, sup'_div₀ (ha := ha)]
 
 end Finset

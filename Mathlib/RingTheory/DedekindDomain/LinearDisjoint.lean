@@ -18,8 +18,8 @@ and `Frac R` denotes the fraction field of a domain `R`.
 
 ## Main results and definitions
 
-* `FractionalIdeal.differentIdeal_eq_map_differentIdeal`: `𝓓(B/R₁) = 𝓓(R₂/A)`
-* `FractionalIdeal.differentIdeal_eq_differentIdeal_mul_differentIdeal_of_isCoprime`:
+* `IsDedekindDomain.differentIdeal_eq_map_differentIdeal`: `𝓓(B/R₁) = 𝓓(R₂/A)`
+* `IsDedekindDomain.differentIdeal_eq_differentIdeal_mul_differentIdeal_of_isCoprime`:
   `𝓓(B/A) = 𝓓(R₁/A) * 𝓓(R₂/A)`.
 * `Module.Basis.ofIsCoprimeDifferentIdeal`: Construct a `R₁`-basis of `B` by lifting an
   `A`-basis of `R₂`.
@@ -31,8 +31,6 @@ and `Frac R` denotes the fraction field of a domain `R`.
 @[expose] public section
 
 open FractionalIdeal nonZeroDivisors IntermediateField Algebra Module Submodule
-
-set_option backward.isDefEq.respectTransparency false
 
 variable (A B : Type*) {K L : Type*} [CommRing A] [Field K] [Algebra A K] [IsFractionRing A K]
   [CommRing B] [Field L] [Algebra B L] [Algebra A L] [Algebra K L] [FiniteDimensional K L]
@@ -78,6 +76,8 @@ variable [IsDomain A] [IsDedekindDomain B] [IsDedekindDomain R₁] [IsDedekindDo
     [IsFractionRing B L] [IsFractionRing R₁ F₁] [IsFractionRing R₂ F₂] [IsIntegrallyClosed A]
     [IsIntegralClosure B R₁ L] [IsTorsionFree R₁ B] [IsTorsionFree R₂ B]
 
+set_option linter.overlappingInstances false
+
 namespace IsDedekindDomain
 
 theorem differentIdeal_dvd_map_differentIdeal [Algebra.IsIntegral R₂ B]
@@ -91,8 +91,8 @@ theorem differentIdeal_dvd_map_differentIdeal [Algebra.IsIntegral R₂ B]
     exact IsFractionRing.algEquiv_commutes (FractionRing.algEquiv A K).symm
       (FractionRing.algEquiv R₂ ↥F₂).symm _
   rw [Ideal.dvd_iff_le, ← coeIdeal_le_coeIdeal L, coeIdeal_differentIdeal R₁ F₁ L B,
-    ← extendedHomₐ_coeIdeal_eq_map L B (K := F₂), le_inv_comm _ (by simp), ← map_inv₀,
-    coeIdeal_differentIdeal A K, inv_inv, ← coe_le_coe, coe_dual_one, coe_extendedHomₐ_eq_span,
+    ← extendedHom_coeIdeal_eq_map L B (K := F₂), le_inv_comm _ (by simp), ← map_inv₀,
+    coeIdeal_differentIdeal A K, inv_inv, ← coe_le_coe, coe_dual_one, coe_extendedHom_eq_span,
     ← coeToSet_coeToSubmodule, coe_dual_one]
   · have := Submodule.span_mono (R := B) <| traceDual_le_span_map_traceDual A B R₁ R₂ h₁ h₂
     rwa [← span_coe_eq_restrictScalars, span_span_of_tower, span_span_of_tower, span_eq] at this
@@ -165,11 +165,11 @@ theorem Submodule.traceDual_eq_span_map_traceDual_of_linearDisjoint [Module.Free
   have := dvd_of_eq <|
     (IsDedekindDomain.differentIdeal_eq_map_differentIdeal A B R₁ R₂ h₁ h₂ h₃).symm
   rwa [Ideal.dvd_iff_le, ← coeIdeal_le_coeIdeal (K := L), coeIdeal_differentIdeal R₁ F₁,
-    inv_le_comm, ← extendedHomₐ_coeIdeal_eq_map (K := F₂), coeIdeal_differentIdeal A K, map_inv₀,
-    inv_inv, ← coe_le_coe, coe_extendedHomₐ_eq_span, coe_dual_one, ← coeToSet_coeToSubmodule,
+    inv_le_comm, ← extendedHom_coeIdeal_eq_map (K := F₂), coeIdeal_differentIdeal A K, map_inv₀,
+    inv_inv, ← coe_le_coe, coe_extendedHom_eq_span, coe_dual_one, ← coeToSet_coeToSubmodule,
     coe_dual_one] at this
   · simp
-  · rw [← extendedHomₐ_coeIdeal_eq_map (K := F₂), ne_eq, extendedHomₐ_eq_zero_iff]
+  · rw [← extendedHom_coeIdeal_eq_map (K := F₂), ne_eq, extendedHom_eq_zero_iff]
     rw [coeIdeal_eq_zero]
     exact differentIdeal_ne_bot
 
@@ -230,8 +230,9 @@ noncomputable def ofIsCoprimeDifferentIdeal (h₁ : F₁.LinearDisjoint F₂)
     apply map_injective_of_injective (f := (IsScalarTower.toAlgHom R₁ B L).toLinearMap)
       (FaithfulSMul.algebraMap_injective B L)
     rw [map_span, ← Set.range_comp]
-    convert Module.Basis.ofIsCoprimeDifferentIdeal_aux A B R₁ R₂ h₁ h₂ h₃ b₂
-      (b.localizationLocalization_span K A⁰ F₂)
+    convert!
+      Module.Basis.ofIsCoprimeDifferentIdeal_aux A B R₁ R₂ h₁ h₂ h₃ b₂
+        (b.localizationLocalization_span K A⁰ F₂)
     · ext
       simp [b₂, v, ← IsScalarTower.algebraMap_apply]
     · ext; simp

@@ -3,7 +3,7 @@ Copyright (c) 2024 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Data.Real.Sqrt
+import Mathlib.Analysis.Real.Sqrt
 
 /-!
 # IMO 1959 Q2
@@ -60,7 +60,7 @@ theorem sqrt_two_mul_sub_one_le_one : sqrt (2 * x - 1) ≤ 1 ↔ x ≤ 1 := by
 theorem isGood_iff_eq_sqrt_two (hx : x ∈ Icc (1 / 2) 1) : IsGood x A ↔ A = sqrt 2 := by
   have : sqrt (2 * x - 1) ≤ 1 := sqrt_two_mul_sub_one_le_one.2 hx.2
   simp only [isGood_iff, hx.1, abs_sub_comm _ (1 : ℝ), abs_of_nonneg (sub_nonneg.2 this), and_true]
-  suffices 2 = A * sqrt 2 ↔ A = sqrt 2 by convert this using 2; ring
+  suffices 2 = A * sqrt 2 ↔ A = sqrt 2 by convert this; ring
   rw [← div_eq_iff, div_sqrt, eq_comm]
   positivity
 
@@ -88,7 +88,6 @@ theorem IsGood.sqrt_two_le (h : IsGood x A) : sqrt 2 ≤ A :=
   (le_or_gt x 1).elim (fun hx ↦ (h.eq_sqrt_two_iff_le_one.2 hx).ge) fun hx ↦
     (h.sqrt_two_lt_of_one_lt hx).le
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isGood_iff_of_sqrt_two_lt (hA : sqrt 2 < A) : IsGood x A ↔ x = (A / 2) ^ 2 + 1 / 2 := by
   have : 0 < A := lt_trans (by simp) hA
   constructor

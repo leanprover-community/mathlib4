@@ -16,7 +16,7 @@ We use `ContinuousLinearEquiv.unitsEquivAut` to translate `HasStrictDerivAt f f'
 `f' ≠ 0` into `HasStrictFDerivAt f (_ : 𝕜 ≃L[𝕜] 𝕜) a`.
 -/
 
-@[expose] public section
+public section
 
 open Filter
 open scoped Topology
