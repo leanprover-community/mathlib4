@@ -246,7 +246,6 @@ lemma exists_set_encard_eq_coveringNumber (h : coveringNumber ε A ≠ ⊤) :
     simp_rw [iInf_subtype, iInf_and]
     rfl
 
-open Classical in
 /-- A finite internal `ε`-cover of a set `A` by closed balls with minimal cardinality.
 It is defined as the empty set if no such finite cover exists. -/
 noncomputable
