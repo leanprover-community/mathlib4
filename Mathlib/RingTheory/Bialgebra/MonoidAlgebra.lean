@@ -104,7 +104,8 @@ variable [CommSemiring R] [Semiring A] [Bialgebra R A] [Monoid M]
 variable (R A M) in
 /-- The bialgebra equivalence between `MonoidAlgebra` and `AddMonoidAlgebra` in terms of
 `Additive`. -/
-@[simps!]
+-- TODO: Make `BialgEquiv.toCoalgEquiv` the simp normal form so that this can be simp
+@[simps! -isSimp]
 def toAdditiveBialgEquiv : A[M] ≃ₐc[R] AddMonoidAlgebra A (Additive M) :=
   .ofAlgEquiv (toAdditiveAlgEquiv R A M) (by ext <;> simp) <| by
     ext a
