@@ -46,8 +46,9 @@ theorem cycleGraph_zero_eq_top : cycleGraph 0 = ⊤ := Subsingleton.elim _ _
 theorem cycleGraph_one_eq_top : cycleGraph 1 = ⊤ := Subsingleton.elim _ _
 
 theorem cycleGraph_eq_top_of_le_three {n : ℕ} (hn : n ≤ 3) : cycleGraph n = ⊤ := by
+  simp only [SimpleGraph.ext_iff, funext_iff]
   match n with
-  | 0 | 1 | 2 | 3 => simp only [SimpleGraph.ext_iff, funext_iff]; decide
+  | 0 | 1 | 2 | 3 => decide
 
 theorem cycleGraph_two_eq_top : cycleGraph 2 = ⊤ := cycleGraph_eq_top_of_le_three (by simp)
 theorem cycleGraph_three_eq_top : cycleGraph 3 = ⊤ := cycleGraph_eq_top_of_le_three (by simp)
@@ -159,7 +160,7 @@ theorem preconnected_cycleGraph {n : ℕ} : (cycleGraph n).Preconnected := by
   match n with
   | 0 | 1 | 2 => simp [cycleGraph_eq_top_of_le_three]
   | n + 3 =>
-    exact fun _ _ ↦ Walk.reachable_of_mem_support _
+    exact fun _ _ ↦ reachable_of_mem_support
       (cycleGraph.mem_support_cycle _) (cycleGraph.mem_support_cycle _)
 
 @[deprecated (since := "2026-07-06")]
