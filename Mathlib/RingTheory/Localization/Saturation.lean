@@ -10,8 +10,8 @@ public import Mathlib.RingTheory.Localization.Basic
 
 /-! # Localization and submonoid saturation
 
-In this file we show that `A` is a localization of `R` on the submonoid `S` iff it is so on the
-saturation of `S`.
+In this file we show that `A` is a localization of `R` on the submonoid `S` if and only if it is so
+on the saturation of `S`.
 
 Crucially, the saturation of `S` is precisely the elements that become a unit in `A`.
 
