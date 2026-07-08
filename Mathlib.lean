@@ -8005,6 +8005,7 @@ public import Mathlib.Topology.MetricSpace.GromovHausdorffRealized
 public import Mathlib.Topology.MetricSpace.HausdorffAlexandroff
 public import Mathlib.Topology.MetricSpace.HausdorffDimension
 public import Mathlib.Topology.MetricSpace.HausdorffDistance
+public import Mathlib.Topology.MetricSpace.HeineCantor
 public import Mathlib.Topology.MetricSpace.Holder
 public import Mathlib.Topology.MetricSpace.HolderNorm
 public import Mathlib.Topology.MetricSpace.Infsep
