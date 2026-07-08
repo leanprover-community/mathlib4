@@ -396,6 +396,10 @@ alias Algebra.algHom := IsScalarTower.toAlgHom
 
 alias Algebra.algHom_apply := IsScalarTower.toAlgHom_apply
 
+@[simp] lemma _root_.Algebra.coe_algHom (R A B : Type*)
+    [CommSemiring R] [CommSemiring A] [Semiring B] [Algebra R A] [Algebra R B]
+    [Algebra A B] [IsScalarTower R A B] : ⇑(Algebra.algHom R A B) = algebraMap A B := rfl
+
 namespace AlgHomClass
 
 @[simp]
