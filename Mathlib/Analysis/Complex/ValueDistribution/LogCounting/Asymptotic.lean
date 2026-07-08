@@ -121,10 +121,9 @@ lemma finite_support_of_logCounting_isBigO_log [ProperSpace E]
   obtain ⟨C, hC⟩ := isBigO_iff.1 hO
   obtain ⟨N, hCN⟩ := exists_nat_gt (max C 0)
   have hCN' : C < N := lt_of_le_of_lt (le_max_left C 0) hCN
-  -- Argue by contradiction, let t be a cardinality=N finite subset in the (infinite) supporty of D
+  -- Argue by contradiction, let t be a cardinality=N finite subset in the (infinite) support of D
   -- and let D' be the divisor for the indicator function of t
-  by_contra hInf
-  rw [Set.not_finite] at hInf
+  by_contra! hInf
   obtain ⟨t, htsub, htcard⟩ := hInf.exists_subset_card_eq N
   set D' := ∑ z ∈ t, single z (1 : ℤ) with hD'
   -- The auxiliary divisor `D'` is bounded above by `D`.
@@ -139,31 +138,22 @@ lemma finite_support_of_logCounting_isBigO_log [ProperSpace E]
       omega
     · simpa [hw, if_false] using (le_def.1 h) w
   -- A uniform bound on the norms of points in `t`.
-  obtain ⟨R₀, hR₀⟩ : ∃ R₀ : ℝ, ∀ z ∈ t, ‖z‖ ≤ R₀ := by
-    rcases t.eq_empty_or_nonempty with rfl | ht
-    · exact ⟨0, by simp⟩
-    · exact ⟨t.sup' ht (‖·‖), fun z hz ↦ Finset.le_sup' (‖·‖) hz⟩
+  obtain ⟨R₀, hR₀⟩ : ∃ R₀ : ℝ, ∀ z ∈ t, ‖z‖ ≤ R₀ := t.finite_toSet.isBounded.exists_norm_le
   set K := ∑ z ∈ t, log ‖z‖ with hK
   -- Eventually, `logCounting D' = N * log - K`.
   have hEq : ∀ᶠ r in atTop, logCounting D' r = (N : ℝ) * log r - K := by
-    filter_upwards [eventually_ge_atTop R₀] with r hr
-    have hsum : logCounting D' r = ∑ z ∈ t, (log r - log ‖z‖) := by
-      rw [hD', map_sum, Finset.sum_apply]
-      refine Finset.sum_congr rfl fun z hz ↦ ?_
-      simpa using logCounting_single_eq_log_sub_const (e := z) (n := 1) ((hR₀ z hz).trans hr)
-    rw [hsum, Finset.sum_sub_distrib, Finset.sum_const, htcard, nsmul_eq_mul, ← hK]
+    filter_upwards [eventually_ge_atTop R₀] with r hr using calc
+      logCounting D' r = ∑ c ∈ t, logCounting (single c 1) r := by simp [hD']
+       _ = ∑ z ∈ t, (log r - log ‖z‖) := by
+        congr! 1 with z hz;
+        simpa using logCounting_single_eq_log_sub_const (e := z) (n := 1) ((hR₀ z hz).trans hr)
+       _ = (N : ℝ) * log r - K := by simp [Finset.sum_sub_distrib, hK, htcard]
   -- Combine the bounds into a contradiction with `log → ∞`.
   have hFinal : ∀ᶠ r in atTop, ((N : ℝ) - C) * log r ≤ K := by
     filter_upwards [hEq, eventually_ge_atTop (1 : ℝ), hC] with r hr₁ hr₂ hr₃
-    have h₂ : 0 ≤ logCounting D r := logCounting_nonneg h hr₂
-    have h₁ : logCounting D' r ≤ logCounting D r := logCounting_le hle hr₂
-    rw [norm_eq_abs, norm_eq_abs, abs_of_nonneg h₂, abs_of_nonneg (log_nonneg hr₂)] at hr₃
-    rw [hr₁] at h₁
-    have hexp : ((N : ℝ) - C) * log r = (N : ℝ) * log r - C * log r := by ring
-    rw [hexp]
-    linarith [h₁, hr₃]
+    grind [logCounting_le hle hr₂, norm_eq_abs, abs_of_nonneg, log_nonneg, logCounting_nonneg]
   have hTendsto : Tendsto (fun r ↦ ((N : ℝ) - C) * log r) atTop atTop :=
-    Tendsto.const_mul_atTop (sub_pos.mpr hCN') tendsto_log_atTop
+    tendsto_log_atTop.const_mul_atTop (sub_pos.mpr hCN')
   obtain ⟨r, hr₁, hr₂⟩ := (hFinal.and (hTendsto.eventually_gt_atTop K)).exists
   linarith
 
