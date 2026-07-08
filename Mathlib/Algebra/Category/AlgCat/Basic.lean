@@ -252,3 +252,83 @@ instance AlgCat.forget_reflects_isos : (forget (AlgCat.{v} R)).ReflectsIsomorphi
     let i := asIso ((forget (AlgCat.{v} R)).map f)
     let e : X ≃ₐ[R] Y := { f.hom, i.toEquiv with }
     exact e.toAlgebraIso.isIso_hom
+
+namespace AlgCat
+
+/-- The restriction of scalars functor `AlgCat S ⥤ AlgCat R` induced by a ring homomorphism
+`R →+* S`. -/
+@[simps]
+def restrictScalars {R S : Type*} [CommRing R] [CommRing S] (f : R →+* S) :
+    AlgCat.{v} S ⥤ AlgCat.{v} R where
+  obj A :=
+    letI : Algebra R A := Algebra.compHom _ f
+    AlgCat.of R A
+  map {A B} g :=
+    letI : Algebra R A := Algebra.compHom _ f
+    letI : Algebra R B := Algebra.compHom _ f
+    letI : Algebra R S := f.toAlgebra
+    haveI : IsScalarTower R S A := .of_algebraMap_eq' rfl
+    haveI : IsScalarTower R S B := .of_algebraMap_eq' rfl
+    AlgCat.ofHom (g.hom.restrictScalars _)
+
+-- The option makes `simps` produce the correct lemmas
+set_option backward.isDefEq.respectTransparency false in
+/-- Restricting scalars along the identity is isomorphic to the identity. -/
+@[simps!]
+def restrictScalarsId' {R : Type*} [CommRing R] (f : R →+* R) (hf : f = .id R) :
+    AlgCat.restrictScalars.{v} f ≅ 𝟭 _ :=
+  NatIso.ofComponents
+    fun A ↦ AlgEquiv.toAlgebraIso <|
+      @AlgEquiv.ofRingEquiv (f := RingEquiv.refl _) _ _ _ _ _ _
+        ((restrictScalars f).obj A).isAlgebra _ fun _ ↦ by subst hf; rfl
+
+-- The option makes `simps` produce the correct lemmas
+set_option backward.isDefEq.respectTransparency false in
+/-- Restricting scalars along a composition is isomorphic to the composition
+of restriction of scalars. -/
+@[simps!]
+def restrictScalarsComp' {R S T : Type*} [CommRing R] [CommRing S] [CommRing T] (f : R →+* S)
+      (g : S →+* T) (gf : R →+* T) (hfg : gf = g.comp f) :
+    AlgCat.restrictScalars.{v} gf ≅
+      AlgCat.restrictScalars.{v} g ⋙ AlgCat.restrictScalars.{v} f :=
+  NatIso.ofComponents
+    fun A ↦ AlgEquiv.toAlgebraIso <|
+      @AlgEquiv.ofRingEquiv (f := RingEquiv.refl _) _ _ _ _ _ _
+        ((restrictScalars gf).obj A).isAlgebra
+        ((restrictScalars f).obj ((restrictScalars g).obj A)).isAlgebra
+        fun _ ↦ by subst hfg; rfl
+
+/-- A ring isomorphism induces an equivalence of categories of algebras. -/
+@[simps]
+def restrictScalarsEquivalenceOfRingEquiv {R S : Type*} [CommRing R] [CommRing S] (e : R ≃+* S) :
+    AlgCat.{u} S ≌ AlgCat.{u} R where
+  functor := restrictScalars e.toRingHom
+  inverse := restrictScalars e.symm.toRingHom
+  unitIso := (restrictScalarsId' _ rfl).symm ≪≫
+    restrictScalarsComp' _ _ _ e.toRingHom_comp_symm_toRingHom.symm
+  counitIso := (restrictScalarsComp' _ _ _ e.symm_toRingHom_comp_toRingHom.symm).symm ≪≫
+    restrictScalarsId' _ rfl
+
+instance {R S : Type*} [CommRing R] [CommRing S] (e : R ≃+* S) :
+    (restrictScalars e.toRingHom).IsEquivalence :=
+  inferInstanceAs <| (restrictScalarsEquivalenceOfRingEquiv e).functor.IsEquivalence
+
+instance {R S : Type*} [CommRing R] [CommRing S] (e : R ≃+* S) :
+    (restrictScalars e.symm.toRingHom).IsEquivalence :=
+  inferInstanceAs <| (restrictScalarsEquivalenceOfRingEquiv e).inverse.IsEquivalence
+
+/-- The equivalence of categories of `ℤ`-algebras and rings. -/
+@[simps! (dsimpLhs := true) functor inverse_obj inverse_map_hom unitIso_hom_app_hom_apply counitIso]
+def intEquivalence : AlgCat.{u} ℤ ≌ RingCat.{u} where
+  functor := forget₂ _ _
+  inverse.obj A := AlgCat.of ℤ A
+  inverse.map f := AlgCat.ofHom f.hom.toIntAlgHom
+  unitIso := NatIso.ofComponents
+    fun A ↦ AlgEquiv.toAlgebraIso (@.ofRingEquiv (f := RingEquiv.refl _)
+      _ _ _ _ _ _ _ (Ring.toIntAlgebra _) fun _ ↦ by simp)
+  counitIso := Iso.refl _
+
+instance : (forget₂ (AlgCat.{u} ℤ) RingCat.{u}).IsEquivalence :=
+  inferInstanceAs <| intEquivalence.functor.IsEquivalence
+
+end AlgCat

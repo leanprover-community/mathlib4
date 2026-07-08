@@ -23,6 +23,7 @@ such vector-valued measures.
 * `variation_zero`: `(0 : VectorMeasure X V).variation = 0`.
 * `variation_neg`: `(-μ).variation = μ.variation`.
 * `absolutelyContinuous`: `μ ≪ᵥ μ.variation`.
+* `ennrealVariation_eq_self`: if `μ : VectorMeasure X ℝ≥0∞` then `μ.ennrealVariation = μ`.
 
 ## References
 
@@ -38,6 +39,13 @@ open scoped ENNReal NNReal
 namespace MeasureTheory.VectorMeasure
 
 variable {X V : Type*} {mX : MeasurableSpace X}
+
+/-- The sum of a vector measure `μ` on a `Finpartition` of `Subtype MeasurableSet` equals `μ s`. -/
+lemma sum_finpartition [AddCommMonoid V] [TopologicalSpace V] [T2Space V]
+    (μ : VectorMeasure X V) {s : Set X} {hs : MeasurableSet s}
+    (P : Finpartition (⟨s, hs⟩ : Subtype MeasurableSet)) : ∑ p ∈ P.parts, μ p.val = μ s := by
+  rw [← μ.of_biUnion_finset (P.pairwiseDisjoint_apply (fun _ _ => rfl) rfl) (fun p _ => p.prop),
+      ← Finset.sup_set_eq_biUnion, P.sup_parts_apply (fun _ _ => rfl) rfl]
 
 section Basic
 
@@ -403,5 +411,34 @@ lemma _root_.MeasureTheory.SignedMeasure.exists_subset_lt_enorm_apply_of_lt_vari
     · exact hP.trans_le (by gcongr)
 
 end NormedAddCommGroup
+
+section ENNReal
+
+variable (μ : VectorMeasure X ℝ≥0∞)
+
+/-- For `μ : VectorMeasure X ℝ≥0∞` and measurable `s`, the supremum over Finpartitions of
+`⟨s, hs⟩ : Subtype MeasurableSet` of the sum of `μ` over parts equals `μ s`. -/
+@[simp]
+lemma iSup_sum_finpartition_parts {s : Set X} (hs : MeasurableSet s) :
+    ⨆ (P : Finpartition (⟨s, hs⟩ : Subtype MeasurableSet)), ∑ p ∈ P.parts, μ p.val = μ s := by
+  simp_rw [μ.sum_finpartition, iSup_const]
+
+/-- For `μ : VectorMeasure X ℝ≥0∞`, `preVariationFun μ s = μ s` for any `s`. -/
+lemma preVariationFun_apply_of_ennreal (s : Set X) : preVariationFun μ s = μ s := by
+  by_cases h : MeasurableSet s
+  · rw [preVariationFun_apply]
+    exact iSup_sum_finpartition_parts μ h
+  · rw [preVariationFun_of_not_measurableSet μ h, not_measurable μ h]
+
+theorem variation_eq_ennrealToMeasure : μ.variation = μ.ennrealToMeasure := by
+  ext _ hs
+  simp [preVariationFun_apply_of_ennreal, variation_apply, preVariation_apply,
+    ennrealPreVariation_apply, ennrealToMeasure_apply hs]
+
+@[simp]
+theorem ennrealVariation_eq_self : μ.ennrealVariation = μ := by
+  simp [variation_eq_ennrealToMeasure, ennrealVariation]
+
+end ENNReal
 
 end MeasureTheory.VectorMeasure

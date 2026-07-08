@@ -63,7 +63,7 @@ instance intrinsicStarAddMonoid : StarAddMonoid (WithConv (E →ₗ[R] F)) where
 theorem IntrinsicStar.isSelfAdjoint_iff_map_star (f : WithConv (E →ₗ[R] F)) :
     IsSelfAdjoint f ↔ ∀ x, f (star x) = star (f x) := by
   simp_rw [IsSelfAdjoint, WithConv.ext_iff, LinearMap.ext_iff, intrinsicStar_apply,
-   star_eq_iff_star_eq, eq_comm]
+    star_eq_iff_star_eq, eq_comm]
 
 @[deprecated (since := "2025-12-09")]
 alias isSelfAdjoint_iff_map_star := IntrinsicStar.isSelfAdjoint_iff_map_star
