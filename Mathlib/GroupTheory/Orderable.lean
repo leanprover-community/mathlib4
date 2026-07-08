@@ -46,12 +46,12 @@ class IsLeftOrderable (G : Type*) [Group G] : Prop where
 
 export IsLeftOrderable (exists_linearOrder_mulLeftMono)
 
-/-- A group with a linear order for which left multiplication is monotone is left-orderable: the
-given order witnesses `IsLeftOrderable`. -/
+/-- A group with a linear order and monotone left multiplication (`MulLeftMono`) is
+left-orderable. -/
 instance [LinearOrder G] [MulLeftMono G] : IsLeftOrderable G := ⟨⟨‹_›, ‹_›⟩⟩
 
-/-- `IsLeftOrderable G` may equivalently be characterized via strictly monotone left multiplication:
-the group admits some linear order for which left multiplication is strictly monotone. -/
+/-- `IsLeftOrderable G` holds iff `G` admits a linear order with strictly monotone left
+multiplication. -/
 theorem isLeftOrderable_iff_exists_linearOrder_mulLeftStrictMono :
     IsLeftOrderable G ↔ ∃ _ : LinearOrder G, MulLeftStrictMono G := by
   rw [isLeftOrderable_iff]
@@ -63,9 +63,7 @@ theorem exists_linearOrder_mulLeftStrictMono [IsLeftOrderable G] :
     ∃ _ : LinearOrder G, MulLeftStrictMono G :=
   isLeftOrderable_iff_exists_linearOrder_mulLeftStrictMono.mp ‹_›
 
-/-- Left-orderability transports along a group isomorphism: if `G` is left-orderable and
-`e : G ≃* H` is a group isomorphism, then `H` is left-orderable. The witnessing order on `H` is the
-pullback along `e` of a witnessing order on `G`. -/
+/-- Left-orderability transports along a group isomorphism `e : G ≃* H`. -/
 theorem IsLeftOrderable.of_mulEquiv [IsLeftOrderable G] (e : G ≃* H) : IsLeftOrderable H := by
   obtain ⟨_, _⟩ := exists_linearOrder_mulLeftMono G
   letI : LinearOrder H := LinearOrder.lift' e.symm e.symm.injective
@@ -79,31 +77,15 @@ theorem IsLeftOrderable.of_mulEquiv [IsLeftOrderable G] (e : G ≃* H) : IsLeftO
 theorem MulEquiv.isLeftOrderable_congr (e : G ≃* H) : IsLeftOrderable G ↔ IsLeftOrderable H :=
   ⟨fun _ ↦ .of_mulEquiv e, fun _ ↦ .of_mulEquiv e.symm⟩
 
-/-- The direct product of two left-orderable groups is left-orderable.
-Rather than defining the lexicographic order on `G × H` by hand, we transport left-orderability
-across the group isomorphism `ofLexMulEquiv (G × H) : Lex (G × H) ≃* G × H`: the lexicographic
-product `G ×ₗ H` is a left-orderable group by `Prod.Lex.mulLeftMono` (left multiplication is
-monotone once it is strictly monotone on the first factor and monotone on the second), and
-`IsLeftOrderable.of_mulEquiv` carries this order back to the plain product. -/
-instance IsLeftOrderable.prod [IsLeftOrderable G] [IsLeftOrderable H] :
-    IsLeftOrderable (G × H) := by
+/-- The direct product of two left-orderable groups is left-orderable. -/
+instance [IsLeftOrderable G] [IsLeftOrderable H] : IsLeftOrderable (G × H) := by
   obtain ⟨_, _⟩ := exists_linearOrder_mulLeftStrictMono G
   obtain ⟨_, _⟩ := exists_linearOrder_mulLeftMono H
   exact .of_mulEquiv (ofLexMulEquiv (G × H))
 
-/-- An arbitrary indexed product of left-orderable groups is left-orderable.
-As with `IsLeftOrderable.prod`, rather than defining the lexicographic order on `∀ i, G i` by hand,
-we transport left-orderability across the group isomorphism
-`ofLexMulEquiv (∀ i, G i) : Lex (∀ i, G i) ≃* ∀ i, G i`: the lexicographic product is a
-left-orderable group by `Pi.Lex.mulLeftMono` (left multiplication is monotone once it is strictly
-monotone on every factor) together with `Pi.Lex.linearOrder` (the lexicographic order on a
-well-ordered product of linear orders is linear), and `IsLeftOrderable.of_mulEquiv` carries this
-order back to the plain product. The index need not carry any order: since `IsLeftOrderable` only
-asserts the existence of a witnessing order, we may endow `ι` with an arbitrary well-order via the
-well-ordering theorem (`exists_wellFoundedLT`), which is exactly what makes the lexicographic order
-linear. -/
-instance IsLeftOrderable.pi {ι : Type*} {G : ι → Type*}
-    [∀ i, Group (G i)] [∀ i, IsLeftOrderable (G i)] : IsLeftOrderable (∀ i, G i) := by
+/-- An arbitrary indexed product of left-orderable groups is left-orderable. -/
+instance {ι : Type*} {G : ι → Type*} [∀ i, Group (G i)] [∀ i, IsLeftOrderable (G i)] :
+  IsLeftOrderable (∀ i, G i) := by
   choose l hl using fun i ↦ exists_linearOrder_mulLeftStrictMono (G i)
   obtain ⟨_, _⟩ := exists_wellFoundedLT ι
   exact .of_mulEquiv (ofLexMulEquiv (∀ i, G i))
