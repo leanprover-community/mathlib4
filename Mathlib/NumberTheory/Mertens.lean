@@ -179,11 +179,11 @@ private lemma inv_div_log_sq_nonneg {x t : ℝ} (ht : t ∈ Set.Ioi x) (hx : 1 <
 
 private lemma integrable_const_div_mul_log_sq {x : ℝ} (C : ℝ) (hx : 2 ≤ x) :
     IntegrableOn (fun t ↦ (t⁻¹ / (log t)^2) * C) (.Ioi x) volume :=
-  (integrableOn_Ioi_inv_div_log_sq (by linarith)).mul_const _
+  (integrableOn_inv_div_log_sq_Ioi (by linarith)).mul_const _
 
 private lemma integ_div_mul_log_sq {x : ℝ} (C : ℝ) (hx : 2 ≤ x) :
     ∫ (t : ℝ) in .Ioi x, (t⁻¹ / (log t)^2) * C = C / log x := by
-  rw [MeasureTheory.integral_mul_const, integral_Ioi_inv_divlog_sq (by linarith)]
+  rw [MeasureTheory.integral_mul_const, integral_inv_div_log_sq_Ioi (by linarith)]
   field
 
 /-- A weight `f` is a bundled function `f : ℕ → ℝ` for which the quantity
@@ -423,8 +423,8 @@ theorem sum_div_log_sub_sub_isBigO :
 theorem sum_div_log_sub_sub_isBigO_nat :
     (fun (N : ℕ) ↦ ∑ n ∈ Ioc 0 N, (log n)⁻¹ * f n - log (log N) - M)
     =O[atTop] fun N ↦ (log N)⁻¹ := by
-  convert! f.sum_div_log_sub_sub_isBigO.comp_tendsto tendsto_natCast_atTop_atTop
-  simp
+  simpa [Function.comp_def] using
+    f.sum_div_log_sub_sub_isBigO.comp_tendsto tendsto_natCast_atTop_atTop
 
 theorem sum_div_log_sub_sub_isLittleO :
     (fun x ↦ ∑ n ∈ Ioc 0 ⌊x⌋₊, (log n)⁻¹ * f n - log (log x) - M) =o[atTop] fun _ ↦ (1 : ℝ) :=
@@ -433,8 +433,8 @@ theorem sum_div_log_sub_sub_isLittleO :
 theorem sum_div_log_sub_sub_isLittleO_nat :
     (fun (N : ℕ) ↦ ∑ n ∈ Ioc 0 N, (log n)⁻¹ * f n - log (log N) - M)
     =o[atTop] fun _ ↦ (1 : ℝ) := by
-  convert! f.sum_div_log_sub_sub_isLittleO.comp_tendsto tendsto_natCast_atTop_atTop
-  simp
+  simpa [Function.comp_def] using
+    f.sum_div_log_sub_sub_isLittleO.comp_tendsto tendsto_natCast_atTop_atTop
 
 theorem sum_div_log_sub_bounded : ∃ C, ∀ x ≥ 2,
     |∑ n ∈ Ioc 0 ⌊x⌋₊, (log n)⁻¹ * f n - log (log x)| ≤ C := by
@@ -456,8 +456,7 @@ theorem sum_div_log_sub_isBigO :
 
 theorem sum_div_log_sub_isBigO_nat :
     (fun N : ℕ ↦ ∑ n ∈ Ioc 0 N, (log n)⁻¹ * f n - log (log N)) =O[atTop] fun _ ↦ (1 : ℝ) := by
-  convert! f.sum_div_log_sub_isBigO.comp_tendsto tendsto_natCast_atTop_atTop
-  simp
+  simpa [Function.comp_def] using f.sum_div_log_sub_isBigO.comp_tendsto tendsto_natCast_atTop_atTop
 
 theorem sum_div_log_asymp :
     (fun x ↦ ∑ n ∈ Ioc 0 ⌊x⌋₊, (log n)⁻¹ * f n) ~[atTop] fun x ↦ log (log x) :=
@@ -465,8 +464,7 @@ theorem sum_div_log_asymp :
 
 theorem sum_div_log_asymp_nat :
     (fun N : ℕ ↦ ∑ n ∈ Ioc 0 N, (log n)⁻¹ * f n) ~[atTop] fun N ↦ log (log N) := by
-  convert! f.sum_div_log_asymp.comp_tendsto tendsto_natCast_atTop_atTop
-  simp
+  simpa [Function.comp_def] using f.sum_div_log_asymp.comp_tendsto tendsto_natCast_atTop_atTop
 
 open ENNReal
 
@@ -1042,8 +1040,8 @@ theorem le_sum_vonMangoldt_div_sub_nat : - 1 ≤ ∑ n ∈ Ioc 0 N, Λ n / n - l
   grw [← this, ←le_sum_log_nat]
   simp [field]
 
-theorem le_sum_log_prime_div_sub (hx : 1 ≤ x) : - 3 ≤ ∑ p ∈ primesLE ⌊x⌋₊, log p / p - log x
-    := (sum_prime_eq _).symm ▸ prime.le_first' x hx
+theorem le_sum_log_prime_div_sub (hx : 1 ≤ x) : - 3 ≤ ∑ p ∈ primesLE ⌊x⌋₊, log p / p - log x :=
+  (sum_prime_eq _).symm ▸ prime.le_first' x hx
 
 /-- A sharper lower bound in the case of natural numbers. -/
 theorem le_sum_log_prime_div_sub_nat : - 2 ≤ ∑ p ∈ primesLE N, log p / p - log N := by
@@ -1053,22 +1051,20 @@ theorem le_sum_log_prime_div_sub_nat : - 2 ≤ ∑ p ∈ primesLE N, log p / p -
   simp at this
   linarith [le_sum_vonMangoldt_div_sub_nat N, E₁_le]
 
-theorem sum_vonMangoldt_div_sub_le (hx : 1 ≤ x) : ∑ n ∈ Ioc 0 ⌊x⌋₊, Λ n / n - log x ≤ log 4 + 1
-    := vonMangoldt.first_le' x hx
+theorem sum_vonMangoldt_div_sub_le (hx : 1 ≤ x) : ∑ n ∈ Ioc 0 ⌊x⌋₊, Λ n / n - log x ≤ log 4 + 1 :=
+  vonMangoldt.first_le' x hx
 
-theorem sum_log_prime_div_sub_le (hx : 1 ≤ x) : ∑ p ∈ primesLE ⌊x⌋₊, log p / p - log x ≤ log 4
-    := (sum_prime_eq _).symm ▸ prime.first_le' x hx
+theorem sum_log_prime_div_sub_le (hx : 1 ≤ x) : ∑ p ∈ primesLE ⌊x⌋₊, log p / p - log x ≤ log 4 :=
+  (sum_prime_eq _).symm ▸ prime.first_le' x hx
 
 theorem abs_sum_vonMangoldt_div_sub_le (hx : 1 ≤ x) :
     |∑ n ∈ Ioc 0 ⌊x⌋₊, Λ n / n - log x| ≤ log 4 + 1 :=
   vonMangoldt.sum_sub_log_bound hx|>.trans_eq vonMangoldt_C₁_eq
 
-theorem abs_sum_vonMangoldt_div_sub_le_nat :
-    |∑ n ∈ Ioc 0 N, Λ n / n - log N| ≤ log 4 + 1 :=
+theorem abs_sum_vonMangoldt_div_sub_le_nat : |∑ n ∈ Ioc 0 N, Λ n / n - log N| ≤ log 4 + 1 :=
   vonMangoldt.sum_sub_log_bound_nat N|>.trans_eq vonMangoldt_C₁_eq
 
-theorem abs_sum_log_prime_div_sub_le (hx : 1 ≤ x) :
-    |∑ p ∈ primesLE ⌊x⌋₊, log p / p - log x| ≤ 3 :=
+theorem abs_sum_log_prime_div_sub_le (hx : 1 ≤ x) : |∑ p ∈ primesLE ⌊x⌋₊, log p / p - log x| ≤ 3 :=
   (sum_prime_eq _).symm ▸ prime.sum_sub_log_bound hx|>.trans_eq prime_C₁_eq
 
 /-- A sharper bound in the case of natural numbers. -/
