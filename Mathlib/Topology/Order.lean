@@ -652,8 +652,8 @@ lemma generateFrom_latticeClosure {α : Type*} (s : Set (Set α)) :
   refine le_generateFrom fun o hos => ?_
   induction hos using latticeClosure_sup_inf_induction with
   | mem _ has => exact isOpen_generateFrom_of_mem has
-  | sup _ _ _ _ ha hb => exact IsOpen.union ha hb
-  | inf _ _ _ _ ha hb => exact IsOpen.inter ha hb
+  | sup _ _ _ _ ha hb => exact ha.union hb
+  | inf _ _ _ _ ha hb => exact ha.inter hb
 
 /-- This construction is left adjoint to the operation sending a topology on `α`
   to its neighborhood filter at a fixed point `a : α`. -/
