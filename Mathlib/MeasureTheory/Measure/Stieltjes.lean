@@ -76,7 +76,6 @@ lemma isOpen_Iotop [TopologicalSpace R] [OrderTopology R] (a b : R) : IsOpen (Io
     simp [this, isOpen_Ioi]
   · simp [isOpen_Ioo]
 
-open scoped Classical in
 /-- `botSet` is the set of all bottom elements. -/
 def botSet : Set R := {x | IsBot x}
 
@@ -479,8 +478,7 @@ theorem outer_trim [MeasurableSpace R] [BorelSpace R] [DenselyOrdered R] :
     show ∀ i, ∃ s, t i ⊆ s ∧ MeasurableSet s ∧ f.outer s ≤ f.length (t i) + ofReal (ε' i) by
       intro i
       rcases isEmpty_or_nonempty R with hR | hR
-      · refine ⟨∅, ?_, MeasurableSet.empty, by simp⟩
-        simpa using eq_empty_of_isEmpty (t i)
+      · exact ⟨∅, by simp, MeasurableSet.empty, by simp⟩
       have hl :=
         ENNReal.lt_add_right ((ENNReal.le_tsum i).trans_lt h).ne (ENNReal.coe_pos.2 (ε'0 i)).ne'
       conv at hl =>
