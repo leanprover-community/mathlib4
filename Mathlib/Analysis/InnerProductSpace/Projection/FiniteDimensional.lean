@@ -63,7 +63,7 @@ theorem det_reflection : LinearMap.det K.reflection.toLinearMap = (-1) ^ finrank
   swap
   · rw [finrank_of_infinite_dimensional hK, pow_zero, LinearMap.det_eq_one_of_finrank_eq_zero]
     exact finrank_of_infinite_dimensional fun h ↦ hK (h.finiteDimensional_submodule _)
-  let e := K.prodEquivOfIsCompl _ K.isCompl_orthogonal_of_hasOrthogonalProjection
+  let e := K.prodEquivOfIsCompl _ K.isCompl_orthogonal
   let b := (finBasis 𝕜 K).prod (finBasis 𝕜 Kᗮ)
   have : LinearMap.toMatrix b b (e.symm ∘ₗ K.reflection.toLinearMap ∘ₗ e.symm.symm) =
       Matrix.fromBlocks 1 0 0 (-1) := by
@@ -130,6 +130,18 @@ theorem finrank_orthogonal_span_singleton {n : ℕ} [_i : Fact (finrank 𝕜 E =
   exact finrank_add_finrank_orthogonal' <| by
     simp [finrank_span_singleton hv, _i.elim, add_comm]
 
+/-- If a nonzero vector `w` and a vector `u` are both orthogonal to the same nonzero vector `v`
+in a two-dimensional inner product space, then `u` lies in the span of `w`. -/
+theorem mem_span_singleton_of_inner_eq_zero_of_inner_eq_zero
+    [Fact (finrank 𝕜 E = 2)] {u v w : E} (hv : v ≠ 0) (hw : w ≠ 0)
+    (huv : ⟪v, u⟫_𝕜 = 0) (hwv : ⟪v, w⟫_𝕜 = 0) :
+    u ∈ 𝕜 ∙ w := by
+  haveI : FiniteDimensional 𝕜 E := .of_fact_finrank_eq_succ 1
+  suffices heq : (𝕜 ∙ v)ᗮ = 𝕜 ∙ w by rwa [← heq, mem_orthogonal_singleton_iff_inner_right]
+  exact eq_span_singleton_of_mem_of_finrank_eq_one
+    (finrank_orthogonal_span_singleton (n := 1) hv)
+    (mem_orthogonal_singleton_iff_inner_right.mpr hwv) hw
+
 end Submodule
 
 open Module Submodule
@@ -150,7 +162,7 @@ theorem LinearIsometryEquiv.reflections_generate_dim_aux [FiniteDimensional ℝ 
     symm
     ext x
     have := LinearMap.congr_fun (LinearMap.ker_eq_top.mp this) x
-    simpa only [sub_eq_zero, ContinuousLinearMap.coe_sub, LinearMap.sub_apply,
+    simpa only [sub_eq_zero, ContinuousLinearMap.toLinearMap_sub, LinearMap.sub_apply,
       LinearMap.zero_apply] using! this
   | succ n IH =>
     -- Inductive step.  Let `W` be the fixed subspace of `φ`.  We suppose its complement to have
@@ -267,8 +279,7 @@ theorem OrthogonalFamily.sum_projection_of_mem_iSup [Fintype ι] {V : ι → Sub
     refine
       (Finset.sum_eq_single_of_mem i (Finset.mem_univ _) fun j _ hij => ?_).trans
         (starProjection_eq_self_iff.mpr hx)
-    rw [starProjection_apply, orthogonalProjection_mem_subspace_orthogonalComplement_eq_zero,
-      Submodule.coe_zero]
+    rw [starProjection_apply, orthogonalProjectionOnto_apply_of_mem_orthogonal, Submodule.coe_zero]
     exact hV.isOrtho hij.symm hx
   | zero =>
     simp_rw [map_zero, Finset.sum_const_zero]
@@ -282,7 +293,7 @@ is just the coefficient of that direct sum. -/
 theorem OrthogonalFamily.projection_directSum_coeAddHom [DecidableEq ι] {V : ι → Submodule 𝕜 E}
     (hV : OrthogonalFamily 𝕜 (fun i => V i) fun i => (V i).subtypeₗᵢ) (x : ⨁ i, V i) (i : ι)
     [CompleteSpace (V i)] :
-    (V i).orthogonalProjection (DirectSum.coeAddMonoidHom V x) = x i := by
+    (V i).orthogonalProjectionOnto (DirectSum.coeAddMonoidHom V x) = x i := by
   induction x using DirectSum.induction_on with
   | zero => simp
   | of j x =>
@@ -290,9 +301,8 @@ theorem OrthogonalFamily.projection_directSum_coeAddHom [DecidableEq ι] {V : ι
       -- Need to unfold `DirectSum` to see through the defeq abuse.
       DirectSum, DFinsupp.singleAddHom_apply]
     obtain rfl | hij := Decidable.eq_or_ne i j
-    · rw [orthogonalProjection_mem_subspace_eq_self, DFinsupp.single_eq_same]
-    · rw [orthogonalProjection_mem_subspace_orthogonalComplement_eq_zero,
-        DFinsupp.single_eq_of_ne hij]
+    · rw [orthogonalProjectionOnto_mem_subspace_eq_self, DFinsupp.single_eq_same]
+    · rw [orthogonalProjectionOnto_apply_of_mem_orthogonal, DFinsupp.single_eq_of_ne hij]
       exact hV.isOrtho hij.symm x.prop
   | add x y hx hy =>
     simp_rw [map_add]
@@ -308,7 +318,7 @@ noncomputable abbrev OrthogonalFamily.decomposition
     [DecidableEq ι] [Fintype ι] {V : ι → Submodule 𝕜 E}
     [∀ i, CompleteSpace (V i)] (hV : OrthogonalFamily 𝕜 (fun i => V i) fun i => (V i).subtypeₗᵢ)
     (h : iSup V = ⊤) : DirectSum.Decomposition V where
-  decompose' x := DFinsupp.equivFunOnFintype.symm fun i => (V i).orthogonalProjection x
+  decompose' x := DFinsupp.equivFunOnFintype.symm fun i => (V i).orthogonalProjectionOnto x
   left_inv x := by
     dsimp only
     letI := fun i => Classical.decEq (V i)

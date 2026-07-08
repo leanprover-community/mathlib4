@@ -54,7 +54,7 @@ variable (φ : K.restriction e ⟶ L)
 
 variable {e}
 
-open Classical in
+open scoped Classical in
 /-- Auxiliary definition for `liftExtend`. -/
 noncomputable def f (i' : ι') : K.X i' ⟶ (L.extend e).X i' :=
   if hi' : ∃ i, e.f i = i' then
@@ -162,7 +162,6 @@ lemma comm (i j : ι) :
 
 end homRestrict
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The morphism `K.restriction e ⟶ L` induced by a morphism `K ⟶ L.extend e`. -/
 noncomputable def homRestrict (ψ : K ⟶ L.extend e) : K.restriction e ⟶ L where
   f i := homRestrict.f ψ i

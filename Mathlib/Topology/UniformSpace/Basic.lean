@@ -230,8 +230,7 @@ theorem closure_eq_inter_uniformity {t : SetRel α α} : closure t = ⋂ d ∈ �
   calc
     closure t = ⋂ (V) (_ : V ∈ 𝓤 α ∧ SetRel.IsSymm V), V ○ t ○ V := closure_eq_uniformity t
     _ = ⋂ V ∈ 𝓤 α, V ○ t ○ V :=
-      Eq.symm <|
-        UniformSpace.hasBasis_symmetric.biInter_mem fun _ _ hV => by dsimp at *; gcongr
+      Eq.symm <| UniformSpace.hasBasis_symmetric.biInter_mem fun _ _ hV => by gcongr
     _ = ⋂ V ∈ 𝓤 α, V ○ (t ○ V) := by simp [SetRel.comp_assoc]
 
 theorem uniformity_eq_uniformity_interior : 𝓤 α = (𝓤 α).lift' interior :=
@@ -723,7 +722,7 @@ section Prod
 
 open UniformSpace
 
-/- a similar product space is possible on the function space (uniformity of pointwise convergence),
+/-! a similar product space is possible on the function space (uniformity of pointwise convergence),
   but we want to have the uniformity of uniform convergence on function spaces -/
 instance instUniformSpaceProd [u₁ : UniformSpace α] [u₂ : UniformSpace β] : UniformSpace (α × β) :=
   u₁.comap Prod.fst ⊓ u₂.comap Prod.snd

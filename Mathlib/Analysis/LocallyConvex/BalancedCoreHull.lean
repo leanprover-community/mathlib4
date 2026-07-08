@@ -235,6 +235,17 @@ protected theorem IsClosed.balancedCore (hU : IsClosed U) : IsClosed (balancedCo
     rw [this]
     exact isClosed_empty
 
+omit [ContinuousSMul 𝕜 E] in
+protected theorem IsOpen.balancedHull [ContinuousConstSMul 𝕜 E] {s : Set E} (hs : IsOpen s)
+    (hzero : 0 ∈ s) : IsOpen (balancedHull 𝕜 s) := by
+  have : (⋃ r : 𝕜, ⋃ (_ : ‖r‖ ≤ 1), r • s) = (⋃ r : 𝕜, ⋃ (_ : ‖r‖ ≤ 1 ∧ r ≠ 0), r • s) := by
+    refine subset_antisymm (Set.iUnion₂_mono' fun r hr ↦ ?_) (Set.iUnion₂_mono' (by grind))
+    obtain rfl | hr_ne := eq_or_ne r 0
+    · exact ⟨1, by simp, by simpa [Set.zero_smul_set ⟨0, hzero⟩]⟩
+    · use r
+  rw [balancedHull, this]
+  exact isOpen_biUnion (fun r hr ↦ hs.smul₀ hr.2)
+
 -- We don't have a `NontriviallyNormedDivisionRing`, so we use a `NeBot` assumption instead
 variable [NeBot (𝓝[≠] (0 : 𝕜))]
 
