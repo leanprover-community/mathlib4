@@ -992,10 +992,8 @@ abbrev extensionAsRingHom :=
 
 /-- An abbreviation for the `X`-adic completion of `K⟮X⟯`.
 
-This is spelled as `(polynomialValuationX K).Completion` rather than
-`adicCompletion K⟮X⟯ (idealX K)` (to which it is definitionally equal) so that the unifier does not
-have to delta-unfold the semireducible `adicCompletion` when bridging with `ratfuncAdicComplPkg` /
-`LaurentSeriesPkg` throughout this file. -/
+This is spelled as `(polynomialValuationX K).Completion` to avoid slowdown after making
+`adicCompletion` a `def`. -/
 abbrev RatFuncAdicCompl := (polynomialValuationX K).Completion
 
 instance : Field (ratfuncAdicComplPkg (K := K).space) :=
