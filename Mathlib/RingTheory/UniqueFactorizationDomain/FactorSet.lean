@@ -313,15 +313,15 @@ theorem prod_le [Nontrivial α] {a b : FactorSet α} : a.prod ≤ b.prod ↔ a �
   have : a.prod.factors ≤ b.prod.factors := factors_mono h
   rwa [prod_factors, prod_factors] at this
 
-open Classical in
+open scoped Classical in
 noncomputable instance : Max (Associates α) :=
   ⟨fun a b => (a.factors ⊔ b.factors).prod⟩
 
-open Classical in
+open scoped Classical in
 noncomputable instance : Min (Associates α) :=
   ⟨fun a b => (a.factors ⊓ b.factors).prod⟩
 
-open Classical in
+open scoped Classical in
 noncomputable instance : Lattice (Associates α) :=
   { Associates.instPartialOrder with
     sup := (· ⊔ ·)
@@ -336,7 +336,7 @@ noncomputable instance : Lattice (Associates α) :=
     inf_le_left := fun a _ => le_trans (prod_mono inf_le_left) (le_of_eq (factors_prod a))
     inf_le_right := fun _ b => le_trans (prod_mono inf_le_right) (le_of_eq (factors_prod b)) }
 
-open Classical in
+open scoped Classical in
 theorem sup_mul_inf (a b : Associates α) : (a ⊔ b) * (a ⊓ b) = a * b :=
   show (a.factors ⊔ b.factors).prod * (a.factors ⊓ b.factors).prod = a * b by
     nontriviality α
@@ -387,9 +387,9 @@ theorem mem_factors_iff_dvd {a p : α} (ha0 : a ≠ 0) (hp : Irreducible p) :
     apply dvd_of_mem_factors
   · apply mem_factors_of_dvd ha0 hp
 
-open Classical in
 theorem exists_prime_dvd_of_not_inf_one {a b : α} (ha : a ≠ 0) (hb : b ≠ 0)
     (h : Associates.mk a ⊓ Associates.mk b ≠ 1) : ∃ p : α, Prime p ∧ p ∣ a ∧ p ∣ b := by
+  classical
   have hz : factors (Associates.mk a) ⊓ factors (Associates.mk b) ≠ 0 := by
     contrapose h with hf
     change (factors (Associates.mk a) ⊓ factors (Associates.mk b)).prod = 1

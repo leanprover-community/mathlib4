@@ -9,8 +9,6 @@ public import Mathlib.Algebra.BigOperators.Fin
 public import Mathlib.Logic.Encodable.Pi
 public import Mathlib.MeasureTheory.Group.Measure
 public import Mathlib.MeasureTheory.MeasurableSpace.Pi
-public import Mathlib.MeasureTheory.Measure.Prod
-public import Mathlib.Topology.Constructions
 
 /-!
 # Indexed product measures
