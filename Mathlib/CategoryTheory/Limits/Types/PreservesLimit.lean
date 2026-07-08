@@ -128,7 +128,7 @@ noncomputable abbrev preservesLimitHomFamily (h : PLift (HasLimit F)) :
 lemma preservesLimit_eq_isLocal :
     ObjectProperty.preservesLimit F =
       (MorphismProperty.ofHoms (preservesLimitHomFamily F)).isLocal := by
-  ext G
+  ext
   by_cases hF : HasLimit F
   · rw [preservesLimit_eq_isLocal_single (limit.isLimit F) (colimit.isColimit _)]
     convert Iff.rfl
