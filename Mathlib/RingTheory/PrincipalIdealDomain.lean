@@ -94,7 +94,7 @@ theorem _root_.Ideal.span_singleton_generator (I : Ideal R) [I.IsPrincipal] :
 @[simp]
 theorem generator_mem (S : Submodule R M) [S.IsPrincipal] : generator S ∈ S := by
   have : generator S ∈ span R {generator S} := subset_span (mem_singleton _)
-  convert this
+  convert! this
   exact span_singleton_generator S |>.symm
 
 theorem mem_iff_eq_smul_generator (S : Submodule R M) [S.IsPrincipal] {x : M} :
@@ -552,3 +552,10 @@ lemma span_singleton_inf_span_singleton [EuclideanDomain R] [GCDMonoid R] (n m :
   rw [Ideal.mem_inf]
   simp only [Ideal.mem_span_singleton]
   exact lcm_dvd_iff.symm
+
+lemma Ideal.exists_normalized_span_of_isPrincipal {R : Type*} [CommSemiring R]
+    [NormalizationMonoid R] (I : Ideal R) [I.IsPrincipal] :
+    ∃ x, normalize x = x ∧ I = Ideal.span {x} := by
+  obtain ⟨x, rfl⟩ := ‹I.IsPrincipal›
+  refine ⟨normalize x, normalize_idem x, le_antisymm ?_ ?_⟩ <;>
+  simp [Ideal.mem_span_singleton]

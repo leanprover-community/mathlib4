@@ -124,9 +124,9 @@ theorem eq_one_iff {N : Subgroup G} [N.Normal] (x : G) : (x : G ⧸ N) = 1 ↔ x
 @[to_additive (attr := simp)]
 lemma mk'_comp_subtype : (mk' N).comp N.subtype = 1 := by ext; simp
 
-/- Note: `range_mk'` is a lemma about the primed constructor `QuotientGroup.mk'`, not a
-  modified version of some `range_mk`. -/
 set_option linter.docPrime false in
+/-- Note: `range_mk'` is a lemma about the primed constructor `QuotientGroup.mk'`, not a
+  modified version of some `range_mk`. -/
 @[to_additive (attr := simp)]
 theorem range_mk' : (QuotientGroup.mk' N).range = ⊤ :=
   MonoidHom.range_eq_top.mpr (mk'_surjective N)
@@ -277,6 +277,12 @@ theorem ker_lift (φ : G →* M) (HN : N ≤ φ.ker) :
     (QuotientGroup.lift N φ HN).ker = Subgroup.map (QuotientGroup.mk' N) φ.ker := by
   rw [← congrArg MonoidHom.ker (lift_comp_mk' N φ HN), ← MonoidHom.comap_ker,
     Subgroup.map_comap_eq_self_of_surjective (mk'_surjective N)]
+
+@[to_additive]
+lemma injective_lift_iff (φ : G →* M) (HN : N ≤ φ.ker) :
+    Function.Injective (QuotientGroup.lift N φ HN) ↔ N = φ.ker := by
+  rw [← MonoidHom.ker_eq_bot_iff, QuotientGroup.ker_lift, Subgroup.map_eq_bot_iff]
+  grind [QuotientGroup.ker_mk']
 
 /-- A surjective group homomorphism `φ : G →* H` with `N = ker(φ)` descends (i.e. `lift`s) to a
 group isomorphism `G/N ≃* H`. -/

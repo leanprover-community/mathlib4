@@ -60,7 +60,7 @@ instance AddGroup.uniformContinuousConstSMul_int [AddGroup X] [IsUniformAddGroup
 
 /-- A `DistribSMul` that is continuous on a uniform group is uniformly continuous.
 This can't be an instance due to it forming a loop with
-`UniformContinuousConstSMul.to_continuousConstSMul` -/
+`UniformContinuousConstSMul.instContinuousConstSMul` -/
 theorem uniformContinuousConstSMul_of_continuousConstSMul [AddGroup M]
     [DistribSMul R M] [UniformSpace M] [IsUniformAddGroup M] [ContinuousConstSMul R M] :
     UniformContinuousConstSMul R M :=
@@ -83,7 +83,7 @@ section SMul
 variable [SMul M X]
 
 @[to_additive]
-instance (priority := 100) UniformContinuousConstSMul.to_continuousConstSMul
+instance (priority := 100) UniformContinuousConstSMul.instContinuousConstSMul
     [UniformContinuousConstSMul M X] : ContinuousConstSMul M X :=
   ⟨fun c => (uniformContinuous_const_smul c).continuous⟩
 
@@ -100,7 +100,7 @@ lemma IsUniformInducing.uniformContinuousConstSMul [SMul M Y] [UniformContinuous
     UniformContinuousConstSMul M X where
   uniformContinuous_const_smul c := by
     simpa only [hf.uniformContinuous_iff, Function.comp_def, hsmul]
-      using hf.uniformContinuous.const_smul c
+      using! hf.uniformContinuous.const_smul c
 
 /-- If a scalar action is central, then its right action is uniform continuous when its left action
 is. -/
@@ -119,7 +119,7 @@ instance MulOpposite.uniformContinuousConstSMul [UniformContinuousConstSMul M X]
 end SMul
 
 @[to_additive]
-instance IsUniformGroup.to_uniformContinuousConstSMul {G : Type u} [Group G] [UniformSpace G]
+instance IsUniformGroup.instUniformContinuousConstSMul {G : Type u} [Group G] [UniformSpace G]
     [IsUniformGroup G] : UniformContinuousConstSMul G G :=
   ⟨fun _ => uniformContinuous_const.mul uniformContinuous_id⟩
 
@@ -238,7 +238,7 @@ noncomputable instance [Monoid M] [MulAction M X] [UniformContinuousConstSMul M 
     MulAction M (Completion X) where
   one_smul := ext' (continuous_const_smul _) continuous_id fun a => by rw [← coe_smul, one_smul]
   mul_smul x y :=
-    ext' (continuous_const_smul _) ((continuous_const_smul _).const_smul _) fun a => by
+    ext' (continuous_const_smul _) ((continuous_const_smul _).fun_const_smul _) fun a => by
       simp only [← coe_smul, mul_smul]
 
 end Completion

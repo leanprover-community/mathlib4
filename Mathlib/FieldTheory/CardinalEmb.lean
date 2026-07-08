@@ -11,6 +11,8 @@ public import Mathlib.LinearAlgebra.FreeAlgebra
 public import Mathlib.Order.Interval.Set.WithBotTop
 public import Mathlib.Order.DirectedInverseSystem
 
+import Mathlib.SetTheory.Ordinal.Basic
+
 /-!
 # Number of embeddings of an algebraic extension of infinite separable degree
 
@@ -279,7 +281,7 @@ lemma eq_bot_of_not_nonempty (hi : ¬ Nonempty (Iio i)) : filtration i = ⊥ := 
     rw [← range_coe] at hi; exact (hi inferInstance).elim
   · exact bot_unique <| adjoin_le_iff.mpr fun _ ⟨j, hj, _⟩ ↦ (hi ⟨j, coe_lt_coe.mpr hj⟩).elim
 
-open Classical in
+open scoped Classical in
 /-- If `i` is a limit, the type of embeddings of `E⟮<i⟯` into `Ē` is
 the limit of the types of embeddings of `E⟮<j⟯` for `j < i`. -/
 def equivLim : (E⟮<i⟯ →ₐ[F] Ē) ≃ limit (embFunctor F E) i where

@@ -77,7 +77,7 @@ theorem hallMatchingsOn.nonempty {ι : Type u} {α : Type v} [DecidableEq α] (t
     refine ⟨Classical.indefiniteDescription _ ?_⟩
     apply (all_card_le_biUnion_card_iff_existsInjective' fun i : ι' => t i).mp
     intro s'
-    convert h (s'.image (↑)) using 1
+    convert! h (s'.image (↑)) using 1
     · simp only [card_image_of_injective s' Subtype.coe_injective]
     · rw [image_biUnion]
 
@@ -138,7 +138,6 @@ theorem Finset.all_card_le_biUnion_card_iff_exists_injective {ι : Type u} {α :
         intro i i'
         have subi : ({i} : Finset ι) ⊆ {i, i'} := by simp
         have subi' : ({i'} : Finset ι) ⊆ {i, i'} := by simp
-        rw [← Finset.le_iff_subset] at subi subi'
         simp only
         rw [← hu (CategoryTheory.homOfLE subi).op, ← hu (CategoryTheory.homOfLE subi').op]
         let uii' := u (Opposite.op ({i, i'} : Finset ι))
