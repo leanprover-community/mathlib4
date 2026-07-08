@@ -117,7 +117,7 @@ instance : GCDMonoid ℤ where
   lcm_zero_right _ := natCast_eq_zero.2 <| Nat.lcm_zero_right _
 
 instance : StrongNormalizedGCDMonoid ℤ :=
-  { Int.normalizationMonoid,
+  { Int.strongNormalizationMonoid,
     (inferInstance : GCDMonoid ℤ) with
     normalize_gcd := fun _ _ => normalize_coe_nat _
     normalize_lcm := fun _ _ => normalize_coe_nat _ }
