@@ -9,6 +9,8 @@ public import Mathlib.Combinatorics.SimpleGraph.Paths
 public import Mathlib.Combinatorics.SimpleGraph.Subgraph
 public import Mathlib.Combinatorics.SimpleGraph.Operations
 
+import Mathlib.Data.Set.Finite.Lattice
+
 /-!
 ## Main definitions
 
@@ -304,6 +306,45 @@ lemma mem_support_of_reachable {G : SimpleGraph V} {u v : V} (huv : u ≠ v) (h 
 theorem Preconnected.exists_isPath {G : SimpleGraph V} (h : G.Preconnected) (u v : V) :
     ∃ p : G.Walk u v, p.IsPath :=
   (h u v).exists_isPath
+
+theorem Preconnected.finite_dart_iff_finite (h : G.Preconnected) : Finite G.Dart ↔ Finite V := by
+  refine ⟨fun _ ↦ ?_, fun _ ↦ .of_injective Dart.toProd Dart.toProd_injective⟩
+  nontriviality V
+  have (v : V) : ∃ u, G.Adj v u := by simp [← mem_support, h.support_eq_univ]
+  let f (v : V) : G.Dart := { fst := v, snd := (this v).choose, adj := (this v).choose_spec }
+  exact .of_injective f fun u v huv ↦ congrArg (·.fst) huv
+
+theorem Preconnected.infinite_dart_iff_infinite (h : G.Preconnected) :
+    Infinite G.Dart ↔ Infinite V := by
+  contrapose!
+  exact h.finite_dart_iff_finite
+
+theorem Preconnected.finite_support_iff_finite (h : G.Preconnected) :
+    G.support.Finite ↔ Finite V := by
+  refine ⟨fun hfin ↦ ?_, fun _ ↦ Subtype.finite⟩
+  nontriviality V
+  rwa [h.support_eq_univ, Set.finite_univ_iff] at hfin
+
+theorem Preconnected.infinite_support_iff_infinite (h : G.Preconnected) :
+    G.support.Infinite ↔ Infinite V := by
+  contrapose!
+  exact h.finite_support_iff_finite
+
+theorem Preconnected.finite_edgeSet_iff_finite (h : G.Preconnected) :
+    G.edgeSet.Finite ↔ Finite V := by
+  refine ⟨fun hfin ↦ ?_, fun _ ↦ Subtype.finite⟩
+  nontriviality V
+  rw [← Set.finite_univ_iff, ← h.support_eq_univ]
+  classical
+  have : Finite G.edgeSet := hfin
+  suffices G.support = ⋃ e : G.edgeSet, e.val.toFinset by rw [this]; apply Set.finite_iUnion; simp
+  ext
+  simp [mem_support, Sym2.mem_iff_exists]
+
+theorem Preconnected.infinite_edgeSet_iff_infinite (h : G.Preconnected) :
+    G.edgeSet.Infinite ↔ Infinite V := by
+  contrapose!
+  exact h.finite_edgeSet_iff_finite
 
 /-- A graph is connected if it's preconnected and contains at least one vertex.
 This follows the convention observed by mathlib that something is connected iff it has
