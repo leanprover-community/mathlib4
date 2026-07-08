@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 Hang Lu Su. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Hang Lu Su
+Authors: Hang Lu Su, Yaël Dillies
 -/
 module
 
