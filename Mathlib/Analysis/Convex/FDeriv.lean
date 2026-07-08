@@ -24,17 +24,13 @@ corollaries under `DifferentiableAt`.
 
 ## Main results
 
-* `ConvexOn.add_hasFDerivAt_le` / `ConvexOn.add_fderiv_le` — the first-order convexity
-  inequality (Fréchet form).
-* `ConcaveOn.le_add_hasFDerivAt` / `ConcaveOn.le_add_fderiv` — the concave dual.
-* `ConvexOn.fderiv_sub_nonneg` — monotonicity along the chord:
-  `0 ≤ (fderiv ℝ f y - fderiv ℝ f x) (y - x)`.
-* `StrictConvexOn.add_hasFDerivAt_lt` / `StrictConvexOn.add_fderiv_lt` — strict variant.
-* `StrictConcaveOn.lt_add_hasFDerivAt` / `StrictConcaveOn.lt_add_fderiv` — strict concave dual.
-* `ConvexOn.isMinOn_of_fderiv_eq_zero` — convex + zero Fréchet derivative at `x` ⟹ `x`
-  minimises `f`.
+* `ConvexOn.add_fderiv_le` — the first-order convexity inequality (Fréchet form).
+* `ConvexOn.fderiv_sub_nonneg` — monotonicity along the chord.
+* `ConvexOn.isMinOn_of_fderiv_eq_zero` — the first-order optimality condition.
 * `convexOn_iff_add_fderiv_le` — iff converse: differentiability plus the first-order
   inequality everywhere implies `ConvexOn`.
+
+Concave duals and strict variants are provided alongside.
 -/
 
 public section

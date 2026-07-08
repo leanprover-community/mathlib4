@@ -23,13 +23,11 @@ in `Mathlib.Analysis.Convex.FDeriv`, lifted via Riesz representation
 ## Main results
 
 * `ConvexOn.add_inner_gradient_le` — the first-order convexity inequality (gradient form).
-* `ConcaveOn.le_add_inner_gradient` — the concave dual.
-* `ConvexOn.inner_gradient_sub_nonneg` — monotonicity along the chord:
-  `0 ≤ ⟪∇ f y - ∇ f x, y - x⟫`.
-* `ConvexOn.isMinOn_of_gradient_eq_zero` — convex + zero gradient at `x` ⟹ `x` minimises `f`.
-* `StrictConvexOn.add_inner_gradient_lt` — strict variant.
-* `StrictConcaveOn.lt_add_inner_gradient` — strict concave dual.
+* `ConvexOn.inner_gradient_sub_nonneg` — gradient monotonicity along the chord.
+* `ConvexOn.isMinOn_of_gradient_eq_zero` — the first-order optimality condition.
 * `convexOn_iff_add_inner_gradient_le` — iff converse.
+
+Concave duals and strict variants are provided alongside.
 -/
 
 public section

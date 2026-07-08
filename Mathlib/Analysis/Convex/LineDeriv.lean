@@ -25,15 +25,12 @@ ones are corollaries under `LineDifferentiableAt`.
 
 ## Main results
 
-* `ConvexOn.add_hasLineDerivAt_le` / `ConvexOn.add_lineDeriv_le` — the first-order
-  convexity inequality (line-derivative form).
-* `ConcaveOn.le_add_hasLineDerivAt` / `ConcaveOn.le_add_lineDeriv` — the concave dual.
+* `ConvexOn.add_lineDeriv_le` — the first-order convexity inequality
+  (line-derivative form).
 * `ConvexOn.lineDeriv_sub_nonneg` — monotonicity of the directional derivative along the
-  chord: `0 ≤ lineDeriv ℝ f y (y - x) - lineDeriv ℝ f x (y - x)`.
-* `StrictConvexOn.add_hasLineDerivAt_lt` / `StrictConvexOn.add_lineDeriv_lt` — strict
-  variant under `StrictConvexOn`.
-* `StrictConcaveOn.lt_add_hasLineDerivAt` / `StrictConcaveOn.lt_add_lineDeriv` — strict
-  concave dual.
+  chord.
+
+Concave duals and strict variants are provided alongside.
 
 The iff converse to the first-order inequality lives at the Fréchet layer
 (`convexOn_iff_add_fderiv_le` in `Mathlib.Analysis.Convex.FDeriv`); the LineDeriv layer
