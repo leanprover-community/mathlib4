@@ -13,7 +13,7 @@ public import Mathlib.Analysis.Calculus.LineDeriv.Basic
 A real-valued function `f` on a normed real vector space is **`K`-smooth** if the
 first-order Taylor remainder is bounded quadratically:
 
-`|f y - f x - lineDeriv ℝ f x (y - x)| ≤ (K / 2) (dist x y)²`
+`|f y - f x - lineDeriv ℝ f x (y - x)| ≤ (K / 2) * (dist x y) ^ 2`
 
 for all `x, y`. The predicate uses `lineDeriv` so as not to presuppose Fréchet
 differentiability; equivalent characterisations in `fderiv`, 1D `deriv`, and
