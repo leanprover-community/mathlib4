@@ -55,7 +55,6 @@ A presentation of an `R`-algebra `S` is a family of
 generators with `σ → MvPolynomial ι R`: The assignment of
 each relation to a polynomial in the generators.
 -/
-@[nolint checkUnivs]
 structure Algebra.Presentation extends Algebra.Generators R S ι where
   /-- The assignment of each relation to a polynomial in the generators. -/
   relation : σ → toGenerators.Ring
@@ -133,7 +132,7 @@ lemma exists_presentation_fin [FinitePresentation R S] :
   let v : Fin m → MvPolynomial (Fin n) R := H'.choose_spec.choose
   have hv : Ideal.span (Set.range v) = RingHom.ker f := H'.choose_spec.choose_spec
   ⟨n, m,
-    ⟨{__ := Generators.ofSurjective (fun x ↦ f (.X x)) (by convert hf; ext; simp)
+    ⟨{__ := Generators.ofSurjective (fun x ↦ f (.X x)) (by convert! hf; ext; simp)
       relation := v
       span_range_relation_eq_ker := hv.trans (by congr; ext; simp) }⟩⟩
 
@@ -211,7 +210,7 @@ lemma _root_.Algebra.Generators.ker_localizationAway :
         (Ideal.Quotient.mkₐ R (Ideal.span {C r * X () - 1})) := by
     ext x
     simp only [aeval_X, Generators.localizationAway_val, AlgHom.coe_comp,
-      AlgEquiv.coe_algHom, Ideal.Quotient.mkₐ_eq_mk, Function.comp_apply]
+      AlgEquiv.coe_toAlgHom, Ideal.Quotient.mkₐ_eq_mk, Function.comp_apply]
     rw [IsLocalization.Away.mvPolynomialQuotientEquiv_apply, aeval_X]
   rw [Generators.ker_eq_ker_aeval_val, this, ← RingHom.ker_coe_toRingHom, AlgHom.comp_toRingHom,
     ← RingHom.comap_ker]
@@ -285,7 +284,7 @@ lemma span_range_relation_eq_ker_baseChange :
       Ideal.comap_symm, ← Ideal.map_coe, ← Ideal.map_coe _ (Ideal.span _), Ideal.map_map,
       Ideal.map_span, ← Set.range_comp, AlgEquiv.toRingEquiv_toRingHom, RingHom.coe_comp,
       RingHom.coe_coe] at H'
-    convert H'
+    convert! H'
     simp [e]
 
 /-- If `P` is a presentation of `S` over `R` and `T` is an `R`-algebra, we
@@ -352,7 +351,7 @@ private noncomputable def aux (Q : Presentation S T ι' σ') (P : Presentation R
 /-- A choice of pre-image of `Q.relation r` under the canonical
 map `MvPolynomial (ι' ⊕ ι) R →ₐ[R] MvPolynomial ι' S` given by the evaluation of `P`. -/
 noncomputable def compRelationAux (r : σ') : MvPolynomial (ι' ⊕ ι) R :=
-  Finsupp.sum (Q.relation r)
+  (AddMonoidAlgebra.coeff <| Q.relation r).sum
     (fun x j ↦ (MvPolynomial.rename Sum.inr <| P.σ j) * monomial (x.mapDomain Sum.inl) 1)
 
 @[simp]
@@ -364,10 +363,13 @@ private lemma compRelationAux_map (r : σ') :
     (Q.aux P) (Q.compRelationAux P r) = Q.relation r := by
   simp only [aux, compRelationAux, map_finsuppSum]
   simp only [map_mul, aeval_rename, aeval_monomial, Sum.elim_comp_inr]
-  conv_rhs => rw [← Finsupp.sum_single (Q.relation r)]
+  conv_rhs => rw [← (Q.relation r).ofCoeff_coeff,
+    ← Finsupp.sum_single (AddMonoidAlgebra.coeff <| Q.relation r)]
+  rw [AddMonoidAlgebra.ofCoeff_finsuppSum]
   congr
   ext u s m
-  simp only [MvPolynomial.single_eq_monomial, aeval, AlgHom.coe_mk, coe_eval₂Hom]
+  simp only [aeval, AlgHom.coe_mk, coe_eval₂Hom, map_one, one_mul, AddMonoidAlgebra.ofCoeff_single,
+    single_eq_monomial]
   rw [monomial_eq, IsScalarTower.algebraMap_eq R S, algebraMap_eq, ← eval₂_comp_left, ← aeval_def]
   simp [Finsupp.prod_mapDomain_index_inj (Sum.inl_injective)]
 

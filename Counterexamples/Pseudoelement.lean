@@ -8,6 +8,7 @@ import Mathlib.Algebra.Category.ModuleCat.Biproducts
 
 /-!
 # Pseudoelements and pullbacks
+
 Borceux claims in Proposition 1.9.5 that the pseudoelement constructed in
 `CategoryTheory.Abelian.Pseudoelement.pseudo_pullback` is unique. We show here that this claim is
 false. This means in particular that we cannot have an extensionality principle for pullbacks in
@@ -58,7 +59,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem snd_x_pseudo_eq_snd_y : PseudoEqual _ (app biprod.snd x) (app biprod.snd y) := by
   refine ⟨of ℤ ℚ, 𝟙 _, 2 • 𝟙 _, inferInstance, ?_, ?_⟩
   · refine (ModuleCat.epi_iff_surjective _).2 fun a => ⟨(show ℚ from a) / 2, ?_⟩
-    simpa only [two_smul] using add_halves (show ℚ from a)
+    simpa only [two_smul] using! add_halves (show ℚ from a)
   · dsimp [x, y]
     refine ConcreteCategory.hom_ext _ _ fun a => ?_
     simp_rw [biprod.lift_snd]; rfl

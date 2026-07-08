@@ -9,6 +9,7 @@ public import Mathlib.Logic.Equiv.Fin.Basic
 public import Mathlib.Topology.Connected.LocallyConnected
 public import Mathlib.Topology.DenseEmbedding
 public import Mathlib.Topology.Connected.TotallyDisconnected
+public import Mathlib.Topology.Baire.Lemmas
 
 /-!
 # Further properties of homeomorphisms
@@ -114,7 +115,7 @@ protected lemma totallyDisconnectedSpace (h : X ≃ₜ Y) [tdc : TotallyDisconne
 
 @[simp]
 theorem map_punctured_nhds_eq (h : X ≃ₜ Y) (x : X) : map h (𝓝[≠] x) = 𝓝[≠] (h x) := by
-  convert h.isEmbedding.map_nhdsWithin_eq ({x}ᶜ) x
+  convert! h.isEmbedding.map_nhdsWithin_eq ({ x }ᶜ) x
   rw [h.image_compl, Set.image_singleton]
 
 @[simp]
@@ -153,6 +154,7 @@ theorem comp_continuousWithinAt_iff (h : X ≃ₜ Y) (f : Z → X) (s : Set Z) (
     ContinuousWithinAt f s z ↔ ContinuousWithinAt (h ∘ f) s z :=
   h.isInducing.continuousWithinAt_iff
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A homeomorphism `h : X ≃ₜ Y` lifts to a homeomorphism between subtypes corresponding to
 predicates `p : X → Prop` and `q : Y → Prop` so long as `p = q ∘ h`. -/
 @[simps!]
@@ -170,6 +172,7 @@ whenever `h` maps `s` onto `t`. -/
 abbrev sets {s : Set X} {t : Set Y} (h : X ≃ₜ Y) (h_eq : s = h ⁻¹' t) : s ≃ₜ t :=
   h.subtype <| Set.ext_iff.mp h_eq
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If two sets are equal, then they are homeomorphic. -/
 def setCongr {s t : Set X} (h : s = t) : s ≃ₜ t where
   toEquiv := Equiv.setCongr h
@@ -194,6 +197,7 @@ def uniqueProd (X Y : Type*) [TopologicalSpace X] [TopologicalSpace Y] [Unique X
 
 @[simp] theorem coe_uniqueProd [Unique X] : ⇑(uniqueProd X Y) = Prod.snd := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The product over `S ⊕ T` of a family of topological spaces
 is homeomorphic to the product of (the product over `S`) and (the product over `T`).
 
@@ -242,6 +246,7 @@ lemma piCongrLeft_apply_apply {ι ι' : Type*} {Y : ι' → Type*} [∀ j, Topol
     (e : ι ≃ ι') (x : ∀ i, Y (e i)) (i : ι) : piCongrLeft e x (e i) = x i :=
   Equiv.piCongrLeft_apply_apply ..
 
+set_option backward.defeqAttrib.useBackward true in
 /-- `Equiv.piCongrRight` as a homeomorphism: this is the natural homeomorphism
 `Π i, Y₁ i ≃ₜ Π j, Y₂ i` obtained from homeomorphisms `Y₁ i ≃ₜ Y₂ i` for each `i`. -/
 @[simps! apply toEquiv]
@@ -318,6 +323,7 @@ def sigmaProdDistrib : (Σ i, X i) × Y ≃ₜ Σ i, X i × Y :=
 
 end Distrib
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `ι` has a unique element, then `ι → X` is homeomorphic to `X`. -/
 @[simps! -fullyApplied]
 def funUnique (ι X : Type*) [Unique ι] [TopologicalSpace X] : (ι → X) ≃ₜ X where
@@ -346,8 +352,6 @@ def image (e : X ≃ₜ Y) (s : Set X) : s ≃ₜ e '' s where
 @[simps! -fullyApplied]
 def Set.univ (X : Type*) [TopologicalSpace X] : (univ : Set X) ≃ₜ X where
   toEquiv := Equiv.Set.univ X
-  -- TODO: `fun_prop` cannot apply `Continuous.subtype_mk`
-  continuous_invFun := continuous_id.subtype_mk _
 
 /-- `s ×ˢ t` is homeomorphic to `s × t`. -/
 @[simps!]
@@ -480,17 +484,6 @@ variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
 namespace IsHomeomorph
 variable (hf : IsHomeomorph f)
 include hf
-
-variable (f) in
-/-- Bundled homeomorphism constructed from a map that is a homeomorphism. -/
-@[simps! toEquiv apply symm_apply]
-noncomputable def homeomorph : X ≃ₜ Y where
-  continuous_toFun := hf.1
-  continuous_invFun := by
-    rw [← continuousOn_univ, ← hf.bijective.2.range_eq]
-    exact hf.isOpenMap.continuousOn_range_of_leftInverse
-      (Equiv.ofBijective f hf.bijective).left_inv
-  toEquiv := Equiv.ofBijective f hf.bijective
 
 protected lemma isClosedMap : IsClosedMap f := (hf.homeomorph f).isClosedMap
 lemma isInducing : IsInducing f := (hf.homeomorph f).isInducing

@@ -141,13 +141,13 @@ def map {β : Type*} [Lattice β] [OrderBot β] {a : α} (e : α ≃o β) (P : F
     have := P.supIndep hu hb (by simp [hbu]) (map_rel e.symm hx) ?_
     · rw [← e.symm.map_bot] at this
       exact e.symm.map_rel_iff.mp this
-    · convert e.symm.map_rel_iff.mpr hxu
+    · convert! e.symm.map_rel_iff.mpr hxu
       rw [map_finset_sup, sup_map]
       rfl
   sup_parts := by simp [← P.sup_parts]
   bot_notMem := by
     rw [mem_map_equiv]
-    convert P.bot_notMem
+    convert! P.bot_notMem
     exact e.symm.map_bot
 
 @[simp]
@@ -194,6 +194,24 @@ theorem ne_bot {b : α} (hb : b ∈ P.parts) : b ≠ ⊥ := by
 
 protected theorem disjoint : (P.parts : Set α).PairwiseDisjoint id :=
   P.supIndep.pairwiseDisjoint
+
+section Apply
+
+variable {β : Type*} {f : α → β}
+
+/-- The `sup` of a sup-bot-preserving map `f` over the parts of a `Finpartition` equals `f a`. -/
+theorem sup_parts_apply [SemilatticeSup β] [OrderBot β] (hf : ∀ x y, f (x ⊔ y) = f x ⊔ f y)
+    (hbot : f ⊥ = ⊥) : P.parts.sup f = f a :=
+  (apply_sup_eq_sup_comp f hf hbot).symm.trans (congrArg f P.sup_parts)
+
+/-- Parts of a `Finpartition` are pairwise disjoint under an inf-bot-preserving map. -/
+theorem pairwiseDisjoint_apply [SemilatticeInf β] [OrderBot β] (hf : ∀ x y, f (x ⊓ y) = f x ⊓ f y)
+    (hbot : f ⊥ = ⊥) : (P.parts : Set α).PairwiseDisjoint f := by
+  intro _ hx _ hy hxy
+  have := (P.disjoint hx hy hxy).eq_bot
+  simp_all [disjoint_iff, ← hf]
+
+end Apply
 
 variable {P}
 
@@ -418,7 +436,7 @@ instance : SemilatticeInf (Finpartition a) :=
 def restrict (P : Finpartition a) (hb : b ≤ a) : Finpartition b where
   parts := (P.parts.image (· ⊓ b)).erase ⊥
   supIndep := supIndep_iff_pairwiseDisjoint.mpr fun x hx y hy hxy => by
-    simp only [coe_erase, coe_image, Set.mem_diff, Set.mem_image, Set.mem_singleton_iff] at hx hy
+    simp only [coe_erase, coe_image, Set.mem_sdiff, Set.mem_image, Set.mem_singleton_iff] at hx hy
     obtain ⟨⟨px, hpx, rfl⟩, _⟩ := hx
     obtain ⟨⟨py, hpy, rfl⟩, _⟩ := hy
     simpa [Function.onFun, id_eq]
@@ -739,7 +757,7 @@ lemma exists_enumeration : ∃ f : s ≃ Σ t : P.parts, Fin #t.1,
   simp [equivSigmaParts, Equiv.sigmaCongr, Equiv.sigmaCongrLeft]
 
 theorem sum_card_parts : ∑ i ∈ P.parts, #i = #s := by
-  convert congr_arg Finset.card P.biUnion_parts
+  convert! congr_arg Finset.card P.biUnion_parts
   rw [card_biUnion P.supIndep.pairwiseDisjoint]
   rfl
 
