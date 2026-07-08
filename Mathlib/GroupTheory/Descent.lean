@@ -160,7 +160,7 @@ If `M` is a monoid and `n : ℕ`, `h : M → ℝ` satisfy
 * for all `M : G`, `h (x ^ n) ≥ b * h x - c₀`,
 * for all `B : ℝ`, there are only finitely many `x : M` such that `h x ≤ B`,
 
-where `1 < b` and `c₀` are real numbers, then set of elements of finite order in `M` is finite.
+where `1 < b` and `c₀` are real numbers, then the set of elements of finite order in `M` is finite.
 -/
 @[to_additive /-- If `M` is an additive monoid and `n : ℕ`, `h : M → ℝ` satisfy
 * for all `x : M`, `h (n • x) ≥ b * h x - c₀`,
