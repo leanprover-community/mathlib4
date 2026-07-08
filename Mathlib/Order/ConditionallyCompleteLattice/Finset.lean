@@ -51,6 +51,23 @@ theorem Set.Finite.csSup_lt_iff (hs : s.Finite) (h : s.Nonempty) : sSup s < a �
 theorem Set.Finite.lt_csInf_iff (hs : s.Finite) (h : s.Nonempty) : a < sInf s ↔ ∀ x ∈ s, a < x :=
   @Set.Finite.csSup_lt_iff αᵒᵈ _ _ _ hs h
 
+section ConditionallyCompleteLattice
+
+variable [ConditionallyCompleteLattice β] {f : α → β} (hmono : Monotone f)
+include hmono
+
+theorem Set.Finite.map_sSup_of_monotone {s : Set α} (hne : s.Nonempty) (hfin : s.Finite) :
+    f (sSup s) = sSup (f '' s) :=
+  le_antisymm (hmono.le_csSup_image (hne.csSup_mem hfin) hfin.bddAbove)
+    (hmono.csSup_image_le_map_csSup hne hfin.bddAbove)
+
+theorem Set.Finite.map_sInf_of_monotone {s : Set α} (hne : s.Nonempty) (hfin : s.Finite) :
+    f (sInf s) = sInf (f '' s) :=
+  le_antisymm (hmono.map_csInf_le_csInf_image hne hfin.bddBelow)
+    (hmono.csInf_image_le (hne.csInf_mem hfin) hfin.bddBelow)
+
+end ConditionallyCompleteLattice
+
 variable (f : ι → α)
 
 theorem Finset.ciSup_eq_max'_image {s : Finset ι} (h : ∃ x ∈ s, sSup ∅ ≤ f x)
@@ -179,6 +196,42 @@ end ListMultiset
 
 end ConditionallyCompleteLinearOrder
 
+section CompleteLinearOrder
+
+variable {α : Type*} [CompleteLinearOrder α] {ι : Sort*}
+
+theorem sSup_ne_of_notMem {s : Set α} (hfin : s.Finite) {a : α} (hne : a ≠ ⊥) (hmem : a ∉ s) :
+    sSup s ≠ a := by
+  rcases s.eq_empty_or_nonempty with rfl | hnonempty
+  · simp [eq_comm, hne]
+  exact (hmem <| · ▸ hnonempty.csSup_mem hfin)
+
+theorem sInf_ne_of_notMem {s : Set α} (hfin : s.Finite) {a : α} (hne : a ≠ ⊤) (hmem : a ∉ s) :
+    sInf s ≠ a :=
+  sSup_ne_of_notMem (α := αᵒᵈ) hfin hne hmem
+
+theorem sSup_ne_top [Nontrivial α] {s : Set α} (hfin : s.Finite) (htop : ⊤ ∉ s) : sSup s ≠ ⊤ :=
+  sSup_ne_of_notMem hfin top_ne_bot htop
+
+theorem sInf_ne_bot [Nontrivial α] {s : Set α} (hfin : s.Finite) (hbot : ⊥ ∉ s) : sInf s ≠ ⊥ :=
+  sSup_ne_top (α := αᵒᵈ) hfin hbot
+
+theorem iSup_ne_of_notMem [Finite ι] {f : ι → α} {a : α} (hne : a ≠ ⊥) (h : ∀ x, f x ≠ a) :
+    iSup f ≠ a :=
+  sSup_ne_of_notMem (Set.finite_range f) hne <| by grind
+
+theorem iInf_ne_of_notMem [Finite ι] {f : ι → α} {a : α} (hne : a ≠ ⊤) (h : ∀ x, f x ≠ a) :
+    iInf f ≠ a :=
+  iSup_ne_of_notMem (α := αᵒᵈ) hne h
+
+theorem iSup_ne_top [Finite ι] [Nontrivial α] {f : ι → α} (h : ∀ x, f x ≠ ⊤) : iSup f ≠ ⊤ :=
+  iSup_ne_of_notMem top_ne_bot h
+
+theorem iInf_ne_bot [Finite ι] [Nontrivial α] {f : ι → α} (h : ∀ x, f x ≠ ⊥) : iInf f ≠ ⊥ :=
+  iSup_ne_top (α := αᵒᵈ) h
+
+end CompleteLinearOrder
+
 /-!
 ### Relation between `sSup` / `sInf` and `Finset.sup'` / `Finset.inf'`
 
@@ -211,6 +264,7 @@ variable [Fintype ι] [Nonempty ι]
 lemma sup'_univ_eq_ciSup (f : ι → α) : univ.sup' univ_nonempty f = ⨆ i, f i := by
   simp [sup'_eq_csSup_image, iSup]
 
+@[to_dual existing]
 lemma inf'_univ_eq_ciInf (f : ι → α) : univ.inf' univ_nonempty f = ⨅ i, f i := by
   simp [inf'_eq_csInf_image, iInf]
 

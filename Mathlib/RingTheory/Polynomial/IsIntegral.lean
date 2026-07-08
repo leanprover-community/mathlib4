@@ -69,7 +69,7 @@ lemma isIntegral_coeff_of_dvd (p : R[X]) (q : S[X]) (hp : p.Monic) (hq : q.Monic
   rw [IsScalarTower.coe_toAlgHom', ← coeff_map]
   refine Polynomial.isIntegral_coeff_of_factors _ (by simp [hq.map, isIntegral_one]) hqT ?_ i
   intro x hx
-  exact ⟨p, hp, by simpa using! aeval_eq_zero_of_dvd_aeval_eq_zero (a := x) H (by simp_all)⟩
+  exact ⟨p, hp, by simpa using! aeval_eq_zero_of_dvd_aeval_eq_zero (x := x) H (by simp_all)⟩
 
 end Polynomial
 
@@ -232,7 +232,7 @@ theorem MvPolynomial.isIntegral_iff_isIntegral_coeff.{w} {σ : Type w} {f : MvPo
       (isEmptyAlgEquiv _ PEmpty).symm.injective
       (.of_comp (f := (isEmptyAlgEquiv _ PEmpty).toRingHom) ?_)
     convert! H
-    · aesop (add simp MvPolynomial.isEmptyAlgEquiv)
+    · ext r m <;> simp [Subsingleton.elim m 0, C, X, monomial, coeff, map]
     · obtain rfl := Subsingleton.elim n 0
       have : constantCoeff = (isEmptyAlgEquiv S PEmpty).toRingHom := by aesop
       simpa [-EmbeddingLike.apply_eq_iff_eq, -isEmptyAlgEquiv_apply] using!

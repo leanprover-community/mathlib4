@@ -174,8 +174,8 @@ lemma exists_infinite_setOf_apply_eq : ∃ m, {i | a i = m}.Infinite := by
     simp only [Set.mem_Ico, zero_le, true_and, not_lt] at hi hj
     simp only [add_left_inj] at h
     convert! congr(a $h) using 1 <;> simp [apply_nth_zero]
-  refine (Set.infinite_of_injOn_mapsTo hinj (fun i hi ↦ ?_) (hr.diff (Set.finite_Ico _ _))) (hi 1)
-  simp only [Set.mem_diff, Set.mem_range, Set.mem_Ico, zero_le, true_and, not_lt] at hi
+  refine (Set.infinite_of_injOn_mapsTo hinj (fun i hi ↦ ?_) (hr.sdiff (Set.finite_Ico _ _))) (hi 1)
+  simp only [Set.mem_sdiff, Set.mem_range, Set.mem_Ico, zero_le, true_and, not_lt] at hi
   rcases hi with ⟨⟨_, rfl⟩, hi⟩
   exact hc.apply_nth_add_one_eq toFinset_card_pos
     (N_lt_of_M_le_apply (a := a) (by simp only [apply_nth_zero, hi])).le
@@ -256,10 +256,10 @@ lemma infinite_setOf_apply_eq_anti {j k : ℕ} (hj : 0 < j) (hk : {i | a i = k}.
   have hk' : {i | a (i + 1) = k}.Infinite := by
     have hinj : Set.InjOn (· + 1) {i | a (i + 1) = k} := (add_left_injective _).injOn
     rw [← Set.infinite_image_iff hinj]
-    have hk0 : ({i | a i = k} \ {0}).Infinite := hk.diff (Set.finite_singleton _)
+    have hk0 : ({i | a i = k} \ {0}).Infinite := hk.sdiff (Set.finite_singleton _)
     convert! hk0 using 1
     ext i
-    simp only [Set.mem_image, Set.mem_setOf_eq, Set.mem_diff, Set.mem_singleton_iff]
+    simp only [Set.mem_image, Set.mem_setOf_eq, Set.mem_sdiff, Set.mem_singleton_iff]
     refine ⟨?_, ?_⟩
     · rintro ⟨j, rfl, rfl⟩
       simp
@@ -268,7 +268,7 @@ lemma infinite_setOf_apply_eq_anti {j k : ℕ} (hj : 0 < j) (hk : {i | a i = k}.
   have hinj : Set.InjOn (fun x ↦ Nat.nth (a · = a x) (j - 1) + 1)
       ({i | a (i + 1) = k} \ Set.Ico 0 N) := by
     intro x hx y hy h
-    simp only [Set.mem_diff, Set.mem_setOf_eq, Set.mem_Ico, zero_le, true_and, not_lt] at hx hy
+    simp only [Set.mem_sdiff, Set.mem_setOf_eq, Set.mem_Ico, zero_le, true_and, not_lt] at hx hy
     rcases hx with ⟨hxk, hNx⟩
     rcases hy with ⟨hyk, hNy⟩
     simp only [add_left_inj] at h
@@ -282,9 +282,9 @@ lemma infinite_setOf_apply_eq_anti {j k : ℕ} (hj : 0 < j) (hk : {i | a i = k}.
     by_contra hxy
     exact hc.apply_add_one_ne_of_apply_eq hNx hNy hxy hyj (hyk ▸ hxk)
   have hk'' : (_ \ Set.Ico 0 (N + 2)).Infinite :=
-    ((Set.infinite_image_iff hinj).mpr (hk'.diff (Set.finite_Ico _ _))).diff (Set.finite_Ico _ _)
+    ((Set.infinite_image_iff hinj).mpr (hk'.sdiff (Set.finite_Ico _ _))).sdiff (Set.finite_Ico _ _)
   refine hk''.mono fun _ hi ↦ ?_
-  simp only [Set.mem_image, Set.mem_diff, Set.mem_setOf_eq, Set.mem_Ico, zero_le, true_and,
+  simp only [Set.mem_image, Set.mem_sdiff, Set.mem_setOf_eq, Set.mem_Ico, zero_le, true_and,
     not_lt] at hi
   rcases hi with ⟨⟨x, -, rfl⟩, _⟩
   rw [Set.mem_setOf_eq, hc.apply_nth_add_one_eq_of_lt (by lia), Nat.sub_add_cancel hj]
@@ -320,9 +320,9 @@ lemma finite_setOf_apply_eq_k_add_one : {i | a i = k a + 1}.Finite := by
 /-- There are only finitely many `m` that appear more than `k` times. -/
 lemma finite_setOf_k_lt_card : {m | ∀ hf : {i | a i = m}.Finite, k a < #hf.toFinset}.Finite := by
   rw [← Set.finite_image_iff]
-  · refine Set.Finite.of_diff (hc.finite_setOf_apply_eq_k_add_one.subset fun i hi ↦ ?_)
+  · refine Set.Finite.of_sdiff (hc.finite_setOf_apply_eq_k_add_one.subset fun i hi ↦ ?_)
       (Set.finite_Iic N)
-    simp only [Set.mem_diff, Set.mem_image, Set.mem_setOf_eq, Set.mem_Iic, not_le] at hi
+    simp only [Set.mem_sdiff, Set.mem_image, Set.mem_setOf_eq, Set.mem_Iic, not_le] at hi
     rcases hi with ⟨⟨j, hjf, rfl⟩, hNi⟩
     rw [Set.mem_setOf_eq, hc.apply_nth_add_one_eq hjf (by lia)]
   · intro i hi j hj hij
@@ -938,7 +938,7 @@ lemma exists_a_apply_add_eq : ∃ b c, 0 < c ∧ ∀ n, b < n →
     have := hc.p_pos (N' a N + 2 * (b + 2))
     rcases hc.even_p (by lia) (hs (b + 2)) with ⟨_, _⟩
     lia
-  · convert! hc.apply_add_p_eq (by lia) (hs n) using 3
+  · convert hc.apply_add_p_eq (by lia) (hs n)
     rcases hc.even_p (by lia) (hs n) with ⟨_, ht⟩
     simp [ht, ← two_mul]
 
@@ -949,8 +949,8 @@ theorem result {a : ℕ → ℕ} {N : ℕ} (h : Condition a N) :
   obtain ⟨b, c, hc, hbc⟩ := h.exists_a_apply_add_eq a N
   obtain ⟨t, _⟩ | ⟨t, _⟩ := Nat.even_or_odd (Condition.N' a N)
   · refine .inl ⟨c, Condition.N' a N / 2 + b + 1, hc, fun m hm ↦ ?_⟩
-    convert! hbc (m - t) (by lia) using 1 <;> dsimp only <;> congr <;> lia
+    convert hbc (m - t) (by lia) <;> lia
   · refine .inr ⟨c, Condition.N' a N / 2 + b + 1, hc, fun m hm ↦ ?_⟩
-    convert! hbc (m - t) (by lia) using 1 <;> dsimp only <;> congr 1 <;> lia
+    convert hbc (m - t) (by lia) using 2 <;> lia
 
 end Imo2024Q3
