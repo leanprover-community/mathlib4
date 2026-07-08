@@ -488,23 +488,12 @@ lemma MeromorphicAt.exists_analyticAt_and_toMeromorphicNFAt_eventuallyEq (hf : M
 @[gcongr]
 lemma toMeromorphicNFAt_congr {f g : 𝕜 → E} (hfg : f =ᶠ[𝓝[≠] x] g) :
     toMeromorphicNFAt f x x = toMeromorphicNFAt g x x := by
+  refine Filter.EventuallyEq.eq_of_nhds ?_
   by_cases hf : MeromorphicAt f x
-  <;> obtain hg := (MeromorphicAt.meromorphicAt_congr hfg).eq ▸ hf
-  · by_cases hforder : meromorphicOrderAt f x = 0
-    <;> obtain hgorder := meromorphicOrderAt_congr hfg ▸ hforder
-    · obtain ⟨f', hf'anl, hf'⟩ :=
-        hf.exists_analyticAt_and_toMeromorphicNFAt_eventuallyEq hforder.ge
-      obtain ⟨g', hg'anl, hg'⟩ :=
-        hg.exists_analyticAt_and_toMeromorphicNFAt_eventuallyEq hgorder.ge
-      have hf'g' : f' =ᶠ[𝓝[≠] x] g' := (hf'.symm.filter_mono nhdsWithin_le_nhds).trans <|
-        hf.eq_nhdsNE_toMeromorphicNFAt.symm.trans <| hfg.trans <|
-        hg.eq_nhdsNE_toMeromorphicNFAt.trans <|
-        hg'.filter_mono nhdsWithin_le_nhds
-      have heq : f' x = g' x := Filter.EventuallyEq.eq_of_nhds
-        ((AnalyticAt.frequently_eq_iff_eventually_eq  hf'anl hg'anl).mp hf'g'.frequently)
-      exact hf'.eq_of_nhds.trans <| heq.trans hg'.eq_of_nhds.symm
-    · simp [hforder, hgorder]
-  · simp [hf, hg]
+  · exact meromorphicNFAt_toMeromorphicNFAt.eventuallyEq_nhdsNE_iff_eventuallyEq_nhds
+        meromorphicNFAt_toMeromorphicNFAt |>.mp <| hf.eq_nhdsNE_toMeromorphicNFAt.symm.trans
+      <| hfg.trans ((MeromorphicAt.meromorphicAt_congr hfg).mp hf).eq_nhdsNE_toMeromorphicNFAt
+  · simp [hf, MeromorphicAt.meromorphicAt_congr hfg |>.not.mp]
 
 /-- If `f` has normal form at `x`, then `f` equals `f.toNF`. -/
 @[simp] theorem toMeromorphicNFAt_eq_self :
