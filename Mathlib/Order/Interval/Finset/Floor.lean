@@ -10,7 +10,7 @@ public import Mathlib.Data.Int.Interval
 public import Mathlib.Order.Interval.Finset.Nat
 
 /-!
-# Membership in intervals via `Int.floor` / `Nat.floor`
+# Membership in intervals via `Int.floor` / `Nat.floor` / `Int.ceil` / `Nat.ceil`
 
 For a `FloorRing` (resp. `FloorSemiring`) `α`, we relate membership of a cast `↑n` in an interval
 of `α` to membership of the integer (resp. natural number) `n` in the corresponding interval with
