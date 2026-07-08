@@ -15,9 +15,10 @@ public import Mathlib.GroupTheory.DoubleCoset
 This file introduces the abstract Hecke ring of a *Hecke pair* `(H, Δ)` and, more generally, the
 Hecke coset modules attached to a triple `(H₁, Δ, H₂)`, following [Shimura][shimura1971],
 Chapter 3, and [Krieg][krieg1990], Chapter I. It sets up the underlying types: the compatibility
-conditions `IsHeckeTriple Δ H₁ H₂` on a submonoid `Δ` and a pair of subgroups, the
-double-coset quotient `HeckeCoset Δ H₁ H₂` of `Δ` by `H₁gH₂ = H₁hH₂`, and the Hecke coset module
-`HeckeCosetModule Δ H₁ H₂ Z` of formal finitely-supported linear combinations of double cosets.
+conditions `IsHeckeTriple Δ H₁ H₂` on a submonoid `Δ` of a group `G` and a pair of subgroups
+of `G`, the double-coset quotient `HeckeCoset Δ H₁ H₂` of `Δ` by `H₁gH₂ = H₁hH₂`, and the Hecke
+coset module `HeckeCosetModule Δ H₁ H₂ Z` of formal finitely-supported linear combinations of
+double cosets.
 The convolution product `HeckeCosetModule Δ H₁ H₂ Z × HeckeCosetModule Δ H₂ H₃ Z →
 HeckeCosetModule Δ H₁ H₃ Z` and the ring structure on the diagonal Hecke ring `𝕋 Δ H Z` are
 developed in later files.
@@ -86,7 +87,7 @@ namespace IsHeckeTriple
 
 variable {Δ : Submonoid G} {H₁ H₂ H₃ : Subgroup G}
 
-/-- A Hecke pair `(H, Δ)` with `H ≤ Δ ≤ commensurator H` is the diagonal case. -/
+/-- The Hecke triple `(H, Δ, H)` coming from a pair `(H, Δ)` with `H ≤ Δ ≤ commensurator H`. -/
 theorem of_diagonal {H : Subgroup G} (h : H.toSubmonoid ≤ Δ)
     (hc : Δ ≤ (commensurator H).toSubmonoid) : IsHeckeTriple Δ H H :=
   ⟨h, h, .refl H, hc⟩
@@ -99,7 +100,7 @@ theorem mem_of_mem_left (H₂ : Subgroup G) [IsHeckeTriple Δ H₁ H₂] {x : G}
 theorem mem_of_mem_right (H₁ : Subgroup G) [IsHeckeTriple Δ H₁ H₂] {x : G} (hx : x ∈ H₂) : x ∈ Δ :=
   right_le H₁ hx
 
-/-- The submonoid `Δ` also lies in the commensurator of the left subgroup. -/
+/-- The submonoid `Δ` lies in the commensurator of the left subgroup. -/
 theorem le_commensurator_left (H₂ : Subgroup G) [h : IsHeckeTriple Δ H₁ H₂] :
     Δ ≤ (commensurator H₁).toSubmonoid := by
   rw [h.commensurable.eq]
@@ -115,8 +116,8 @@ theorem mem_commensurator_left (H₂ : Subgroup G) [IsHeckeTriple Δ H₁ H₂] 
     (g : G) ∈ commensurator H₁ :=
   le_commensurator_left H₂ g.2
 
-/-- Conjugating the right subgroup by an element of `Δ` gives a subgroup commensurable with
-the left one. -/
+/-- Conjugating the right subgroup of a Hecke triple `(H₁, Δ, H₂)` by an element of `Δ` gives a
+subgroup commensurable with the left one. -/
 theorem commensurable_conjAct_right [IsHeckeTriple Δ H₁ H₂] (g : Δ) :
     Commensurable (ConjAct.toConjAct (g : G) • H₂) H₁ := by
   have hg : Commensurable (ConjAct.toConjAct (g : G) • H₂) H₂ := mem_commensurator_right H₁ g
@@ -152,7 +153,7 @@ abbrev HeckeCoset.setoid (Δ : Submonoid G) (H₁ H₂ : Subgroup G) : Setoid Δ
   (DoubleCoset.setoid (H₁ : Set G) H₂).comap Subtype.val
 
 /-- A Hecke double coset: an equivalence class of `Δ`-elements under `H₁gH₂ = H₁hH₂`. This is
-the basis type for the Hecke coset module. -/
+the basis type for the `HeckeCosetModule`. -/
 def HeckeCoset (Δ : Submonoid G) (H₁ H₂ : Subgroup G) := Quotient (HeckeCoset.setoid Δ H₁ H₂)
 
 namespace HeckeCoset
@@ -205,6 +206,18 @@ noncomputable instance [AddCommMonoid Z] : AddCommMonoid (HeckeCosetModule Δ H�
 
 noncomputable instance [AddCommGroup Z] : AddCommGroup (HeckeCosetModule Δ H₁ H₂ Z) :=
   inferInstanceAs (AddCommGroup (HeckeCoset Δ H₁ H₂ →₀ Z))
+
+/-- The sanctioned constructor of `HeckeCosetModule Δ H₁ H₂ Z` from a finitely-supported function
+on double cosets. Build elements through `of` rather than relying on the definitional unfolding
+`HeckeCosetModule Δ H₁ H₂ Z = (HeckeCoset Δ H₁ H₂ →₀ Z)`. -/
+def of {Δ : Submonoid G} {H₁ H₂ : Subgroup G} {Z : Type*} [Zero Z] :
+    (HeckeCoset Δ H₁ H₂ →₀ Z) ≃ HeckeCosetModule Δ H₁ H₂ Z :=
+  Equiv.refl _
+
+@[simp]
+lemma of_apply {Δ : Submonoid G} {H₁ H₂ : Subgroup G} {Z : Type*} [Zero Z]
+    (f : HeckeCoset Δ H₁ H₂ →₀ Z) (D : HeckeCoset Δ H₁ H₂) : of f D = f D :=
+  rfl
 
 @[ext]
 lemma ext {Δ : Submonoid G} {H₁ H₂ : Subgroup G} {Z : Type*} [Zero Z]
