@@ -126,6 +126,6 @@ instance (priority := 100) CommSemiring.strongRankCondition_of_nontrivial [Nontr
     let A := toLin'.symm (g ∘ₗ f)
     have hA : A.Nonsingular := .of_linearIndependent_col <| mulVec_injective_iff.mp <| by
       convert hg.comp hf; ext; simp [A, g]
-    have : A ⟨m, hnm⟩ = 0 := by ext; simp [A, g]
+    have : A.row ⟨m, hnm⟩ = 0 := by ext; simp [A, g]
     exact not_subsingleton R
       ⟨by simpa [Nonsingular, DetpBalanced, detp_eq_of_row_eq_zero _ this] using hA⟩
