@@ -42,14 +42,13 @@ namespace Functor
 section
 
 variable {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
-  (κ : Cardinal.{w})
 
 variable (C D) in
 /-- Given a cardinal `κ`, this is the property of objects
 in the category of functors `C ⥤ D` that is satisfied by `κ`-continuous
 functors, i.e. functors which preserve limits indexed by categories `J`
 such that `Arrow J` is of cardinality `< κ`. -/
-def isCardinalContinuous : ObjectProperty (C ⥤ D) :=
+def isCardinalContinuous (κ : Cardinal.{w}) : ObjectProperty (C ⥤ D) :=
   ⨅ (J : Type w) (_ : Category.{w} J) (_ : HasCardinalLT (Arrow J) κ),
     ObjectProperty.preservesLimitsOfShape J
 
@@ -59,9 +58,8 @@ lemma isCardinalContinuous_iff (F : C ⥤ D) (κ : Cardinal.{w}) :
         PreservesLimitsOfShape J F := by
   simp [isCardinalContinuous]
 
-variable {κ} in
 lemma isCardinalContinuous.preservesColimitsOfShape {F : C ⥤ D}
-    (hF : isCardinalContinuous C D κ F)
+    {κ : Cardinal.{w}} (hF : isCardinalContinuous C D κ F)
     (J : Type w) [SmallCategory.{w} J] (hκ : HasCardinalLT (Arrow J) κ) :
     PreservesLimitsOfShape J F :=
   (isCardinalContinuous_iff F κ).1 hF J hκ
