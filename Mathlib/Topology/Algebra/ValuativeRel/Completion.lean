@@ -10,6 +10,7 @@ public import Mathlib.Topology.Algebra.WithZeroTopology
 public import Mathlib.Topology.Algebra.UniformField
 public import Mathlib.Topology.Algebra.Valued.ValuativeRel
 public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
+public import Mathlib.Tactic.Widget.GCongr
 
 /-!
 # Completion of Valuations
@@ -559,26 +560,50 @@ variable {Γ₀ Γ₀' : Type*} [LinearOrderedCommGroupWithZero Γ₀]
   [LinearOrderedCommGroupWithZero Γ₀'] (v : Valuation K Γ₀) [v.Compatible]
   (v' : Valuation K Γ₀') [v'.Compatible]
 
-theorem IsValuativeTopology.mk_valuation [Ring R] [ValuativeRel R] [TopologicalSpace R] (v : Valuation R Γ₀)
-    [v.Compatible]
-    (h : ∀ {s : Set R} {x : R}, s ∈ nhds x ↔ ∃ (γ : (ValueGroup₀ (.ofClass v))ˣ),
-    (fun (x₁ : R) => x + x₁) '' {z : R | v.restrict z < γ} ⊆ s) :
-    IsValuativeTopology R :=
-  sorry
 
-theorem IsValuativeTopology.mk₀ [Ring R] [ValuativeRel R] [TopologicalSpace R] (v : Valuation R Γ₀)
-    [v.Compatible]
-    (h : ∀ {s : Set R} {x : R}, s ∈ nhds x ↔ ∃ (γ : (ValueGroup₀ (.ofClass v))ˣ),
-    (fun (x₁ : R) => x + x₁) '' {z : R | v.restrict z < γ} ⊆ s) :
-    IsValuativeTopology R :=
-  sorry
+open ValueGroupWithZero in
+lemma foo [Ring R] [temp : ValuativeRel R] [top : TopologicalSpace R]
+    (v : Valuation R Γ₀) [v.Compatible] (x : R) (γ : ValueGroupWithZero R) :
+    v.restrict x < (orderMonoidIso v) γ ↔ (valuation R) x < γ := sorry
 
-theorem IsValuativeTopology.mk₀_valuation [Ring R] [ValuativeRel R] [TopologicalSpace R] (v : Valuation R Γ₀)
-    [v.Compatible]
-    (h : ∀ {s : Set R} {x : R}, s ∈ nhds x ↔ ∃ (γ : (ValueGroup₀ (.ofClass v))ˣ),
-    (fun (x₁ : R) => x + x₁) '' {z : R | v.restrict z < γ} ⊆ s) :
-    IsValuativeTopology R :=
-  sorry
+open ValueGroupWithZero in
+lemma foo_star [Ring R] [temp : ValuativeRel R] [top : TopologicalSpace R]
+    (v : Valuation R Γ₀) [v.Compatible] (x : R) (γ : (ValueGroupWithZero R)ˣ) :
+    v.restrict x < (orderMonoidIso v) γ ↔ (valuation R) x < γ := by
+  rw [foo]
+
+open ValueGroupWithZero in
+lemma foo_symm [Ring R] [temp : ValuativeRel R] [top : TopologicalSpace R]
+    (v : Valuation R Γ₀) [v.Compatible] (x : R) (γ : (ValueGroup₀ (.ofClass v))) :
+    v.restrict x < γ ↔ (valuation R) (x) < (orderMonoidIso v).symm γ := sorry
+
+open ValueGroupWithZero in
+lemma foo_symm_star [Ring R] [temp : ValuativeRel R] [top : TopologicalSpace R]
+    (v : Valuation R Γ₀) [v.Compatible] (x : R) (γ : (ValueGroup₀ (.ofClass v))ˣ) :
+    v.restrict x < γ ↔ (valuation R) (x) < (orderMonoidIso v).symm γ := by rw [foo_symm]
+
+example (a b c : ℝ) : a = b → (c < a ↔ c < b) := by
+ intro h
+ rw [h]
+
+open ValueGroupWithZero in
+theorem IsValuativeTopology.mk_valuation [Ring R] [ValuativeRel R]
+    [TopologicalSpace R] (v : Valuation R Γ₀) [v.Compatible]
+    (H : ∀ {s : Set R} {x : R}, s ∈ 𝓝 x ↔ ∃ (γ : (ValueGroup₀ (.ofClass v))ˣ),
+    (fun (x₁ : R) ↦ x + x₁) '' {z : R | v.restrict z < γ} ⊆ s) :
+    IsValuativeTopology R := by
+  constructor
+  refine fun {s x} ↦ ⟨fun h_mem ↦ ?_, fun ⟨γ, hγ⟩ ↦
+    H.mpr ⟨Units.mk0 ((orderMonoidIso v) γ) (by simp), subset_trans (by simp) hγ⟩⟩
+  obtain ⟨γ, hγ⟩ := H.mp h_mem
+  exact ⟨Units.mk0 ((orderMonoidIso v).symm γ) (by simp), subset_trans (by simp) hγ⟩
+
+theorem IsValuativeTopology.mk₀_valuation [Ring R] [ValuativeRel R] [TopologicalSpace R]
+    (v : Valuation R Γ₀) [v.Compatible]
+    (H : ∀ {s : Set R} {x : R}, s ∈ 𝓝 x ↔ ∃ (γ : (ValueGroup₀ (.ofClass v))ˣ),
+    (fun (x₁ : R) ↦ x + x₁) '' {z : R | v.restrict z < γ} ⊆ s) :
+    IsValuativeTopology R := IsValuativeTopology.mk_valuation v (fun {s x} ↦ by rw [H])
+
 
 theorem foo (x : Completion K) (γ : (ValueGroup₀ (.ofClass v))ˣ) : v.extensionValuation.restrict x <
     ((Units.map v.valueGroup₀_equiv_extensionValuation.toMonoidHom) γ).1 ↔
