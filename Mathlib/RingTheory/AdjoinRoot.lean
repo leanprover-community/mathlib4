@@ -569,6 +569,13 @@ variable [CommRing R] {g : R[X]}
 theorem isIntegral_root' (hg : g.Monic) : IsIntegral R (root g) :=
   ⟨g, hg, eval₂_root g⟩
 
+theorem isIntegral (hg : g.Monic) : Algebra.IsIntegral R (AdjoinRoot g) :=
+  Subalgebra.topEquiv.isIntegral_iff.mp <| by
+    rw [← adjoinRoot_eq_top]
+    refine .adjoin ?_
+    rintro x rfl
+    exact isIntegral_root' hg
+
 /-- `AdjoinRoot.modByMonicHom` sends the equivalence class of `f` mod `g` to `f %ₘ g`.
 
 This is a well-defined right inverse to `AdjoinRoot.mk`, see `AdjoinRoot.mk_leftInverse`. -/
