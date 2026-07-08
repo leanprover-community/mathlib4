@@ -40,8 +40,8 @@ namespace LipschitzSmoothWith
 
 theorem deriv_norm_le (h : LipschitzSmoothWith K f) (x y : ℝ) (hf : DifferentiableAt ℝ f x) :
     ‖f y - f x - (y - x) • deriv f x‖ ≤ K / 2 * (y - x) ^ 2 := by
-  have := h.fderiv_norm_le x y hf
-  rwa [fderiv_eq_smul_deriv, dist_comm, Real.dist_eq, sq_abs] at this
+  simpa only [fderiv_eq_smul_deriv, dist_comm x y, Real.dist_eq, sq_abs]
+    using h.fderiv_norm_le x y hf
 
 /-! ### Real-valued functions -/
 
@@ -51,20 +51,19 @@ variable {f : ℝ → ℝ}
 
 theorem deriv_descent_le (h : LipschitzSmoothWith K f) (x y : ℝ) (hf : DifferentiableAt ℝ f x) :
     f y ≤ f x + deriv f x * (y - x) + K / 2 * (y - x) ^ 2 := by
-  have := h.fderiv_descent_le x y hf
-  rwa [fderiv_eq_deriv_mul, dist_comm, Real.dist_eq, sq_abs] at this
+  simpa only [fderiv_eq_deriv_mul, dist_comm x y, Real.dist_eq, sq_abs]
+    using h.fderiv_descent_le x y hf
 
 theorem deriv_descent_ge (h : LipschitzSmoothWith K f) (x y : ℝ) (hf : DifferentiableAt ℝ f x) :
     f x + deriv f x * (y - x) - K / 2 * (y - x) ^ 2 ≤ f y := by
-  have := h.fderiv_descent_ge x y hf
-  rwa [fderiv_eq_deriv_mul, dist_comm, Real.dist_eq, sq_abs] at this
+  simpa only [fderiv_eq_deriv_mul, dist_comm x y, Real.dist_eq, sq_abs]
+    using h.fderiv_descent_ge x y hf
 
 theorem deriv_sub_mul_le (h : LipschitzSmoothWith K f) (x y : ℝ)
     (hfx : DifferentiableAt ℝ f x) (hfy : DifferentiableAt ℝ f y) :
     (deriv f y - deriv f x) * (y - x) ≤ K * (y - x) ^ 2 := by
-  have := h.fderiv_sub_apply_le x y hfx hfy
-  rwa [sub_apply, fderiv_eq_deriv_mul, fderiv_eq_deriv_mul, ← sub_mul,
-    dist_comm, Real.dist_eq, sq_abs] at this
+  simpa only [sub_apply, fderiv_eq_deriv_mul, ← sub_mul, dist_comm x y, Real.dist_eq, sq_abs]
+    using h.fderiv_sub_apply_le x y hfx hfy
 
 end Real
 

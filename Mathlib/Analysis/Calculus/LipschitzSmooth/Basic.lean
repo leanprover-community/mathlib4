@@ -64,15 +64,10 @@ theorem lineDeriv_apply_sub_norm_le (h : LipschitzSmoothWith K f) (x y : E) :
     ‖lineDeriv ℝ f y (y - x) - lineDeriv ℝ f x (y - x)‖ ≤ K * (dist x y) ^ 2 := by
   have hyx := h.lineDeriv_norm_le y x
   rw [← neg_sub y x, lineDeriv_neg, sub_neg_eq_add, dist_comm] at hyx
-  calc ‖lineDeriv ℝ f y (y - x) - lineDeriv ℝ f x (y - x)‖
-      = ‖(f y - f x - lineDeriv ℝ f x (y - x)) + (f x - f y + lineDeriv ℝ f y (y - x))‖ := by
-        congr 1
-        abel
-    _ ≤ ‖f y - f x - lineDeriv ℝ f x (y - x)‖ + ‖f x - f y + lineDeriv ℝ f y (y - x)‖ :=
-        norm_add_le _ _
-    _ ≤ K / 2 * (dist x y) ^ 2 + K / 2 * (dist x y) ^ 2 :=
-        add_le_add (h.lineDeriv_norm_le x y) hyx
-    _ = K * (dist x y) ^ 2 := by ring
+  have key := (norm_add_le _ _).trans (add_le_add hyx (h.lineDeriv_norm_le x y))
+  rw [show f x - f y + lineDeriv ℝ f y (y - x) + (f y - f x - lineDeriv ℝ f x (y - x))
+      = lineDeriv ℝ f y (y - x) - lineDeriv ℝ f x (y - x) from by abel] at key
+  linarith
 
 /-- `K`-smoothness implies line-differentiability: the actual line derivative
 exists at every `x, v` and equals `lineDeriv ℝ f x v`. The predicate bound
@@ -116,23 +111,17 @@ variable {f : E → ℝ}
 /-- The quadratic upper bound on `f y`, traditionally called the *descent lemma*. -/
 theorem lineDeriv_descent_le (h : LipschitzSmoothWith K f) (x y : E) :
     f y ≤ f x + lineDeriv ℝ f x (y - x) + K / 2 * (dist x y) ^ 2 := by
-  have h₁ := h.lineDeriv_norm_le x y
-  rw [Real.norm_eq_abs, abs_le] at h₁
-  linarith [h₁.2]
+  linarith [(abs_le.mp (h.lineDeriv_norm_le x y)).2]
 
 /-- The quadratic lower bound on `f y`: the descent lemma applied to `-f`. -/
 theorem lineDeriv_descent_ge (h : LipschitzSmoothWith K f) (x y : E) :
     f x + lineDeriv ℝ f x (y - x) - K / 2 * (dist x y) ^ 2 ≤ f y := by
-  have h₁ := h.lineDeriv_norm_le x y
-  rw [Real.norm_eq_abs, abs_le] at h₁
-  linarith [h₁.1]
+  linarith [(abs_le.mp (h.lineDeriv_norm_le x y)).1]
 
 /-- One-sided bound on the variation of the line derivative along `y - x`. -/
 theorem lineDeriv_apply_sub_le (h : LipschitzSmoothWith K f) (x y : E) :
-    lineDeriv ℝ f y (y - x) - lineDeriv ℝ f x (y - x) ≤ K * (dist x y) ^ 2 := by
-  have h₁ := h.lineDeriv_apply_sub_norm_le x y
-  rw [Real.norm_eq_abs] at h₁
-  exact le_of_abs_le h₁
+    lineDeriv ℝ f y (y - x) - lineDeriv ℝ f x (y - x) ≤ K * (dist x y) ^ 2 :=
+  le_of_abs_le (h.lineDeriv_apply_sub_norm_le x y)
 
 /-- The one-sided variation bound in functional form: the difference of
 line-derivative maps applied to `y - x`. -/

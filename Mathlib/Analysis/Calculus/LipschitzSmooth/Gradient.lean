@@ -40,9 +40,7 @@ namespace LipschitzSmoothWith
 theorem inner_gradient_norm_le (h : LipschitzSmoothWith K f) (x y : F)
     (hf : DifferentiableAt ℝ f x) :
     ‖f y - f x - ⟪∇ f x, y - x⟫‖ ≤ K / 2 * ‖y - x‖ ^ 2 := by
-  rw [inner_gradient_left]
-  have := h.fderiv_norm_le x y hf
-  rwa [dist_eq_norm'] at this
+  simpa only [inner_gradient_left, dist_eq_norm'] using h.fderiv_norm_le x y hf
 
 theorem inner_gradient_descent_le (h : LipschitzSmoothWith K f) (x y : F)
     (hf : DifferentiableAt ℝ f x) :
