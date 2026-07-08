@@ -67,14 +67,14 @@ theorem lineDeriv_descent_ge (h : LipschitzSmoothWith K f) (x y : F) :
   have := (abs_le.mp (h.lineDeriv_abs_le x y)).1
   linarith
 
-/-- One-sided variance bound on the line derivative. -/
+/-- One-sided bound on the variation of the line derivative along `y - x`. -/
 theorem lineDeriv_apply_sub_le (h : LipschitzSmoothWith K f) (x y : F) :
     lineDeriv ℝ f y (y - x) - lineDeriv ℝ f x (y - x) ≤ K * (dist x y) ^ 2 := by
   have hyx := h.lineDeriv_descent_le y x
   rw [← neg_sub y x, lineDeriv_neg, dist_comm] at hyx
   linarith [h.lineDeriv_descent_le x y, hyx]
 
-/-- Two-sided variance bound on the line derivative. -/
+/-- Two-sided bound on the variation of the line derivative along `y - x`. -/
 theorem lineDeriv_apply_sub_abs_le (h : LipschitzSmoothWith K f) (x y : F) :
     |lineDeriv ℝ f y (y - x) - lineDeriv ℝ f x (y - x)| ≤ K * (dist x y) ^ 2 := by
   rw [abs_le]
@@ -83,7 +83,8 @@ theorem lineDeriv_apply_sub_abs_le (h : LipschitzSmoothWith K f) (x y : F) :
   rw [← neg_sub y x, lineDeriv_neg, dist_comm] at hyx
   linarith [h.lineDeriv_descent_ge x y]
 
-/-- Functional-form variance bound. -/
+/-- The one-sided variation bound in functional form: the difference of
+line-derivative maps applied to `y - x`. -/
 theorem lineDeriv_sub_apply_le (h : LipschitzSmoothWith K f) (x y : F) :
     (lineDeriv ℝ f y - lineDeriv ℝ f x) (y - x) ≤ K * (dist x y) ^ 2 :=
   Pi.sub_apply (lineDeriv ℝ f _) _ _ ▸ h.lineDeriv_apply_sub_le x y
