@@ -72,12 +72,13 @@ def viewKAbstractSubExpr' {m α}
 /-- Compute the suggestions. Use `token` for the output. -/
 public def generateSuggestions (loc : SubExpr.GoalsLocation) (parentDecl? : Option Name)
     (token : RefreshToken) : ClickSuggestionsM Unit := withReducible do
+  -- Instantiate all metavariables, so that we won't need to worry about this later on.
+  instantiateMVarDeclMVars loc.mvarId
+  loc.mvarId.withContext do
   -- TODO: instead of just putting `✝` after inaccessible names,
   -- we should figure out how to use `rename_i` to actually refer to shadowed local variables.
   let lctx := (← getLCtx).sanitizeNames.run' { options := (← getOptions) }
   Meta.withLCtx' lctx do
-  -- Instantiate all metavariables, so that we will not need to do this later on.
-  instantiateMVarDeclMVars loc.mvarId
   trackingComputation "click_suggestions" do
   let (fvarId?, pos) ← match loc.loc with
     | .hypType fvarId pos  => pure (some fvarId, pos)
