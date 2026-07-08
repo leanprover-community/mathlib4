@@ -750,14 +750,13 @@ lemma concat_dropLast {p : G.Walk u v} (hp : G.Adj p.penultimate v) : p.dropLast
     | nil => rfl
     | _ => simp [hind]
 
-@[simp] lemma cons_support_tail {p : G.Walk u v} (hp : ¬p.Nil) :
-    u :: p.tail.support = p.support := by
-  rw [← support_cons (p.adj_snd hp), cons_tail_eq _ hp]
-
 @[simp]
 lemma support_tail_of_not_nil (p : G.Walk u v) (hp : ¬ p.Nil) :
     p.tail.support = p.support.tail := by
-  rw [← cons_support_tail hp, List.tail_cons]
+  simp [← p.cons_tail_eq hp]
+
+lemma cons_support_tail {p : G.Walk u v} (hp : ¬p.Nil) : u :: p.tail.support = p.support := by
+  simp [hp]
 
 theorem support_dropLast_concat {p : G.Walk u v} (hp : ¬p.Nil) :
     p.dropLast.support ++ [v] = p.support := by
