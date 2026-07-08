@@ -62,14 +62,12 @@ theorem Units.mem [NumberField K] [IsCyclotomicExtension {3} ℚ K] :
     congr
     rw [Finset.univ_eq_empty_iff, hrank]
     infer_instance
-  obtain ⟨n, hnpos, hn⟩ := isOfFinOrder_iff_pow_eq_one.1 <| (CommGroup.mem_torsion _).1 x.2
-  replace hn : (↑u : K) ^ ((⟨n, hnpos⟩ : ℕ+) : ℕ) = 1 := by
-    rw [← map_pow]
-    convert! map_one (algebraMap (𝓞 K) K)
-    rw_mod_cast [hxu, hn]
-    simp
+  obtain ⟨n, hn⟩ := isOfFinOrder_iff_ppow_eq_one.1 <| (CommGroup.mem_torsion _).1 x.2
+  replace hn : (↑u : K) ^ (n : ℕ) = 1 := by
+    rw [← map_pow, hxu]
+    simpa [npow_val_eq_ppow, Units.ext_iff] using hn
   obtain ⟨r, hr3, hru⟩ := hζ.exists_pow_or_neg_mul_pow_of_isOfFinOrder (by decide)
-    (isOfFinOrder_iff_pow_eq_one.2 ⟨n, hnpos, hn⟩)
+    (isOfFinOrder_iff_pow_eq_one.2 ⟨n, n.property, hn⟩)
   replace hr : r ∈ Finset.Ico 0 3 := Finset.mem_Ico.2 ⟨by simp, hr3⟩
   replace hru : ↑u = η ^ r ∨ ↑u = -η ^ r := by
     rcases hru with h | h

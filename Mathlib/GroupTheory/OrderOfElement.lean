@@ -73,6 +73,10 @@ theorem isOfFinOrder_ofAdd_iff {α : Type*} [AddMonoid α] {x : α} :
 theorem isOfFinOrder_iff_pow_eq_one : IsOfFinOrder x ↔ ∃ n, 0 < n ∧ x ^ n = 1 := by
   simp [IsOfFinOrder, mem_periodicPts, isPeriodicPt_mul_iff_pow_eq_one]
 
+@[to_additive]
+theorem isOfFinOrder_iff_ppow_eq_one : IsOfFinOrder x ↔ ∃ n : ℕ+, x ^ n = 1 := by
+  simp [isOfFinOrder_iff_pow_eq_one, ← npow_val_eq_ppow, PNat.exists]
+
 @[to_additive] alias ⟨IsOfFinOrder.exists_pow_eq_one, _⟩ := isOfFinOrder_iff_pow_eq_one
 
 @[to_additive]
