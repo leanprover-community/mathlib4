@@ -569,5 +569,10 @@ lemma conjAct_pointwise_smul_eq_self {H : Subgroup G} {g : G} (hg : g ∈ normal
     ConjAct.toConjAct g • H = H :=
   conjAct_pointwise_smul_iff.2 hg
 
+lemma mem_conjAct_pointwise_smul_iff {H : Subgroup G} {g x : G} :
+    x ∈ ConjAct.toConjAct g • H ↔ g⁻¹ * x * g ∈ H := by
+  rw [mem_pointwise_smul_iff_inv_smul_mem, ← ConjAct.toConjAct_inv, ConjAct.smul_def,
+    ConjAct.ofConjAct_toConjAct, inv_inv]
+
 end Group
 end Subgroup
