@@ -434,7 +434,8 @@ theorem opNorm_neg (f : ContinuousMultilinearMap 𝕜 E G) : ‖-f‖ = ‖f‖ 
 
 section
 
-variable {𝕜' : Type*} [SeminormedRing 𝕜'] [Module 𝕜' G] [IsBoundedSMul 𝕜' G] [SMulCommClass 𝕜 𝕜' G]
+variable {𝕜' : Type*} [SeminormedRing 𝕜'] [DistribSMul 𝕜' G] [IsBoundedSMul 𝕜' G]
+  [SMulCommClass 𝕜 𝕜' G]
 
 theorem opNorm_smul_le (c : 𝕜') (f : ContinuousMultilinearMap 𝕜 E G) : ‖c • f‖ ≤ ‖c‖ * ‖f‖ :=
   (c • f).opNorm_le_bound (mul_nonneg (norm_nonneg _) (opNorm_nonneg _)) fun m ↦ by
@@ -499,7 +500,23 @@ instance seminormedAddCommGroup' :
     SeminormedAddCommGroup (ContinuousMultilinearMap 𝕜 (fun _ : ι => G) G') :=
   ContinuousMultilinearMap.seminormedAddCommGroup
 
-instance : IsBoundedSMul 𝕜' (ContinuousMultilinearMap 𝕜 E G) := .of_norm_smul_le opNorm_smul_le
+instance : IsBoundedSMul 𝕜' (ContinuousMultilinearMap 𝕜 E G) where
+  dist_smul_pair' r f g := by
+    simp only [dist_eq_norm, sub_zero]
+    refine opNorm_le_bound ?_ ?_
+    · positivity
+    · intro m
+      have h : ‖r • f m - r • g m‖ ≤ ‖r‖ * ‖(f - g) m‖ := by
+          simpa [sub_apply, dist_eq_norm, sub_zero] using dist_smul_pair r (f m) (g m)
+      grw [sub_apply, smul_apply, smul_apply, h, le_opNorm, mul_assoc]
+  dist_pair_smul' r s f := by
+    simp only [dist_eq_norm, sub_zero]
+    refine opNorm_le_bound ?_ ?_
+    · positivity
+    · intro m
+      have h : ‖r • f m - s • f m‖ ≤ ‖r - s‖ * ‖f m‖ := by
+        simpa [dist_eq_norm, sub_zero] using dist_pair_smul r s (f m)
+      grw [sub_apply, smul_apply, smul_apply, h, le_opNorm, mul_assoc]
 
 section NormedField
 variable {𝕜' : Type*} [NormedField 𝕜'] [NormedSpace 𝕜' G] [SMulCommClass 𝕜 𝕜' G]
