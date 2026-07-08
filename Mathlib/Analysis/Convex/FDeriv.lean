@@ -59,7 +59,7 @@ at `x` and `y`, `0 ≤ (fderiv ℝ f y - fderiv ℝ f x) (y - x)`. -/
 theorem fderiv_sub_nonneg (hc : ConvexOn ℝ s f) (hx : x ∈ s) (hy : y ∈ s)
     (hfx : DifferentiableAt ℝ f x) (hfy : DifferentiableAt ℝ f y) :
     0 ≤ (fderiv ℝ f y - fderiv ℝ f x) (y - x) := by
-  rw [ContinuousLinearMap.sub_apply, ← hfx.lineDeriv_eq_fderiv, ← hfy.lineDeriv_eq_fderiv]
+  rw [sub_apply, ← hfx.lineDeriv_eq_fderiv, ← hfy.lineDeriv_eq_fderiv]
   exact hc.lineDeriv_sub_nonneg hx hy hfx.lineDifferentiableAt hfy.lineDifferentiableAt
 
 /-- A convex function with a vanishing Fréchet derivative at an interior point of differentiability

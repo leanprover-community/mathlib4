@@ -54,7 +54,7 @@ theorem inner_gradient_sub_nonneg (hc : ConvexOn ℝ s f) (hx : x ∈ s) (hy : y
     (hfx : DifferentiableAt ℝ f x) (hfy : DifferentiableAt ℝ f y) :
     0 ≤ ⟪∇ f y - ∇ f x, y - x⟫ := by
   rw [inner_sub_left, inner_gradient_left, inner_gradient_left,
-    ← ContinuousLinearMap.sub_apply]
+    ← sub_apply]
   exact hc.fderiv_sub_nonneg hx hy hfx hfy
 
 /-- A convex function attains its minimum on `s` at any critical point: if `f` is convex on
