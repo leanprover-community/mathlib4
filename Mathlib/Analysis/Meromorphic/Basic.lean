@@ -467,7 +467,8 @@ lemma meromorphicAt_comp_iff_of_deriv_ne_zero [CompleteSpace 𝕜] [CharZero �
   exact EventuallyEq.fun_comp (HasStrictDerivAt.eventually_right_inverse ..) f
 
 /-- `MeromorphicAt` is invariant under translation. -/
-@[simp] theorem meromorphicAt_comp_add_const_iff_meromorphicAt {c : 𝕜} {f : 𝕜 → E} :
+@[to_fun (attr := simp) meromorphicAt_fun_comp_add_const_iff_meromorphicAt]
+theorem meromorphicAt_comp_add_const_iff_meromorphicAt {c : 𝕜} {f : 𝕜 → E} :
     MeromorphicAt (f ∘ (· + c)) (x - c) ↔ MeromorphicAt f x := by
   constructor
   · intro h
@@ -478,20 +479,11 @@ lemma meromorphicAt_comp_iff_of_deriv_ne_zero [CompleteSpace 𝕜] [CharZero �
     exact h.comp_analyticAt (g := fun z ↦ z + c) (by fun_prop)
 
 /-- `MeromorphicAt` is invariant under translation. -/
-@[simp] theorem meromorphicAt_fun_comp_add_const_iff_meromorphicAt {c : 𝕜} {f : 𝕜 → E} :
-    MeromorphicAt (fun z ↦ f (z + c)) (x - c) ↔ MeromorphicAt f x :=
-  meromorphicAt_comp_add_const_iff_meromorphicAt
-
-/-- `MeromorphicAt` is invariant under translation. -/
-@[simp] theorem meromorphicAt_comp_sub_const_iff_meromorphicAt {c : 𝕜} {f : 𝕜 → E} :
+@[to_fun (attr := simp) meromorphicAt_fun_comp_sub_const_iff_meromorphicAt]
+theorem meromorphicAt_comp_sub_const_iff_meromorphicAt {c : 𝕜} {f : 𝕜 → E} :
     MeromorphicAt (f ∘ (· - c)) (x + c) ↔ MeromorphicAt f x := by
   simp [← meromorphicAt_fun_comp_add_const_iff_meromorphicAt (f := f) (c := -c), ← sub_eq_add_neg]
   rfl
-
-/-- `MeromorphicAt` is invariant under translation. -/
-@[simp] theorem meromorphicAt_fun_comp_sub_const_iff_meromorphicAt {c : 𝕜} {f : 𝕜 → E} :
-    MeromorphicAt (fun z ↦ f (z - c)) (x + c) ↔ MeromorphicAt f x :=
-  meromorphicAt_comp_sub_const_iff_meromorphicAt
 
 end composition
 
