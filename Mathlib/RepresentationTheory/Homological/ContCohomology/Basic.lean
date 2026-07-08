@@ -43,7 +43,7 @@ See `TopRep.d`.
 
 @[expose] public section
 
-variable {k G : Type*} [Ring k] [Group G] [TopologicalSpace k] [IsTopologicalRing k]
+variable {k G : Type*} [Ring k] [Group G] [TopologicalSpace k]
   [TopologicalSpace G] [IsTopologicalGroup G]
 
 open CategoryTheory ContRepresentation Limits
@@ -69,7 +69,7 @@ lemma d_succ (X : TopRep k G) (n : ℕ) :
 
 lemma hom_d_succ (X : TopRep k G) (n : ℕ) :
     (d X (n + 1)).hom = (resolutionX X (n + 1)).ρ.coind₁ι -
-      ContRepresentation.coind₁Map _ _ (d X n).hom :=
+      ContRepresentation.coind₁Map (d X n).hom :=
   rfl
 
 @[reassoc (attr := simp)]
@@ -90,15 +90,20 @@ The `G`-invariant submodules of it is the homogeneous cochains (shifted by one).
 abbrev resolution (X : TopRep k G) : CochainComplex (TopRep k G) ℕ :=
   CochainComplex.of (resolutionX X) (d X) (d_comp_d X)
 
-/-- The shifted boundary map of the resolution. -/
-def resolution'd (X : TopRep k G) (n : ℕ) :
-    resolutionX X (n + 1) ⟶ resolutionX X (n + 1 + 1) := d X (n + 1)
+/-- The shifted object in resolution by `1` degree. -/
+abbrev resolution'X (X : TopRep k G) (n : ℕ) : TopRep k G := resolutionX X (n + 1)
 
-lemma resolution'd₀_eq (X : TopRep k G) : resolution'd X 0 = d X 1 := rfl
+/-- The shifted boundary map of the resolution. -/
+@[implicit_reducible]
+def resolution'd (X : TopRep k G) (n : ℕ) :
+    resolution'X X n ⟶ resolution'X X (n + 1) := d X (n + 1)
+
+lemma resolution'd_eq (X : TopRep k G) (n : ℕ) :
+    resolution'd X n = d X (n + 1) := rfl
 
 /-- The shifted resolution of a topological representation by `1` degree. -/
 abbrev resolution' (X : TopRep k G) : CochainComplex (TopRep k G) ℕ :=
-  CochainComplex.of (fun i ↦ (resolution X).X (i + 1))
+  CochainComplex.of (resolution'X X)
     (resolution'd X) (fun n ↦ d_comp_d X (n + 1))
 
 set_option allowUnsafeReducibility true in
@@ -109,15 +114,20 @@ abbrev homogeneousCochains (X : TopRep k G) :
     CochainComplex (TopModuleCat k) ℕ :=
   ((invariantsFunctor k G).mapHomologicalComplex _).obj (resolution' X)
 
-lemma homogeneousCochains.d₀₁_eq (X : TopRep k G) :
-    (homogeneousCochains X).d 0 1 = (invariantsFunctor k G).map (d X 1) := by
-  rw [← resolution'd₀_eq]; rfl
+lemma homogeneousCochains.d_eq (X : TopRep k G) (i : ℕ) :
+    (homogeneousCochains X).d i (i + 1) =
+      (invariantsFunctor k G).map (d X (i + 1)) := by
+  dsimp only
+  rw [← resolution'd_eq, CochainComplex.of_d]
 
-lemma homogeneousCochains.d₀₁_apply (X : TopRep k G) (σ : (homogeneousCochains X).X 0) :
-    ((homogeneousCochains X).d 0 1).hom σ = (d X 1).hom σ := rfl
+lemma homogeneousCochains.d_apply (X : TopRep k G) (i : ℕ)
+    (σ : (homogeneousCochains X).X i) :
+    ((homogeneousCochains X).d i (i + 1)).hom σ = (d X (i + 1)).hom σ := by
+  rw [homogeneousCochains.d_eq]
+  dsimp [ContIntertwiningMap.mapInvariants_apply]
 
-/-- The continuous cohomology of a continuous representation defined
-by `continuousCohomologyFunctor`. -/
+/-- The continuous cohomology of a continuous representation defined by taking homology
+of the homogeneous cochains. -/
 noncomputable abbrev _root_.continuousCohomology (n : ℕ) (A : TopRep k G) :
     TopModuleCat k := (homogeneousCochains A).homology n
 
