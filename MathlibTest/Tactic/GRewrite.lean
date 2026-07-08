@@ -3,13 +3,15 @@ Copyright (c) 2023 Sebastian Zimmer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sebastian Zimmer, Mario Carneiro, Heather Macbeth, Jovan Gerbscheid
 -/
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
+import Mathlib.Algebra.Order.Pi
+import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Data.Int.ModEq
+import Mathlib.Data.Set.Finite.Basic
 import Mathlib.Order.Antisymmetrization
 import Mathlib.Tactic.GRewrite
 import Mathlib.Tactic.GCongr
 import Mathlib.Tactic.NormNum
-import Mathlib.Algebra.Order.Ring.Abs
-import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 
 /- In many examples in this module, we rewrite expressions which do not make it into the final term.
 
@@ -46,8 +48,8 @@ example (h₁ : c ≤ b) (h₂ : a + 5 < c + 6) : a + 5 < b + 6 := by
 
 example (h₁ : a + e ≤ b + e) (h₂ : b < c) (h₃ : c ≤ d) : a + e ≤ d + e := by
   grw [h₂, h₃] at h₁
-  guard_hyp h₁ :ₛ a + e ≤ d + e
-  exact h₁
+  guard_hyp h₁ :ₛ a + e < d + e
+  exact le_of_lt h₁
 
 example (f g : α → α) (h : ∀ x : α, f x ≤ g x) (h₂ : g a + g b ≤ 5) : f a + f b ≤ 5 := by
   grw [h]
@@ -82,14 +84,9 @@ example (h₁ : a ≤ b) : a * c ≤ b * c := by
   guard_target =ₛ 0 ≤ c
   exact test_sorry
 
-/- This example has behaviour which might be weaker than some users would desire: it would be
-mathematically sound to transform the goal here to `2 * y ≤ z`, not `2 * y < z`.
-
-However, the current behavior is easier to implement, and preserves the form of the goal (`?_ < z`),
-which is a useful invariant. -/
 example {x y z : ℤ} (hx : x < y) : 2 * x < z := by
   grw [hx]
-  guard_target =ₛ 2 * y < z
+  guard_target = 2 * y ≤ z
   exact test_sorry
 
 end inequalities
@@ -115,9 +112,22 @@ example (h₁ : W ⊂ Y) (h₂ : X ⊂ (W ∪ Z)) : X ⊂ (Y ∪ Z) := by
   guard_target =ₛ X ⊂ (W ∪ Z)
   exact h₂
 
+-- binder names are not preserved:
+/--
+trace: α : Type ?u.3
+X Y Z W : Set α
+a b : ℕ
+h : a < b
+f : ℕ → ℕ
+hf : ∀ (i : ℕ), 0 ≤ f i
+⊢ ∑ i ∈ {a | a < b}.toFinset, f i ≤ ∑ i ∈ {x | x < b}.toFinset, f i
+-/
+#guard_msgs in
 example {a b : Nat} (h : a < b) (f : Nat → Nat) (hf : ∀ i, 0 ≤ f i) :
-    ∑ i ∈ ({x | x ≤ a} : Set Nat), f i ≤ ∑ i ∈ ({x | x ≤ b} : Set Nat), f i := by
-  grw [h]
+   ∑ j ∈ ({z | z ≤ a} : Set Nat), f j ≤ ∑ i ∈ ({x | x < b} : Set Nat), f i := by
+  grewrite [h]
+  trace_state
+  rfl
 
 end subsets
 
@@ -126,7 +136,7 @@ section rationals
 example (x x' y z w : ℚ) (h0 : x' = x) (h₁ : x < z) (h₂ : w ≤ y + 4) (h₃ : z + 1 < 5 * w) :
     x' + 1 < 5 * (y + 4) := by
   grw [h0, h₁, ← h₂]
-  exact h₃
+  exact le_of_lt h₃
 
 example {x y z : ℚ} (f g : ℚ → ℚ) (h : ∀ t, f t = g t) : 2 * f x * f y * f x ≤ z := by
   grw [h]
@@ -135,7 +145,7 @@ example {x y z : ℚ} (f g : ℚ → ℚ) (h : ∀ t, f t = g t) : 2 * f x * f y
 
 example {x y a b : ℚ} (h : x ≤ y) (h1 : a ≤ 3 * x) : 2 * x ≤ b := by
   grw [h] at h1
-  guard_hyp h1 :ₛ a ≤ 3 * y
+  guard_hyp h1 : a ≤ 3 * y
   exact test_sorry
 
 end rationals
@@ -185,8 +195,8 @@ example {a b : ℤ} (h1 : a ≡ 3 [ZMOD 5]) (h2 : b ≡ a ^ 2 + 1 [ZMOD 5]) :
 example {x y a b : ℚ} (h : x < y) (h1 : a ≤ 3 * x) : 2 * x ≤ b := by
   grw [h] at *
   guard_hyp h :ₛ x < y -- `grw [h] at *` does not rewrite at `h`
-  guard_hyp h1 :ₛ a ≤ 3 * y
-  guard_target =ₛ 2 * y ≤ b
+  guard_hyp h1 : a < 3 * y
+  guard_target = 2 * y ≤ b
   exact test_sorry
 
 end wildcard
@@ -213,12 +223,16 @@ relation does not have its main goals proved by `gcongr` (in the two examples he
 the inequality goes in the wrong direction). -/
 
 /--
-error: Tactic `grewrite` failed: could not discharge x ≤ y using x ≥ y
+error: Tactic `grewrite` failed: Did not find a rewrite with
+  x ≥ _
+in the target expression
+  2 * x ≤ b
 
-case hbc
+Use the command `set_option trace.Meta.grewrite true` to inspect this.
+
 x y b : ℚ
 h : x ≥ y
-⊢ x ≤ y
+⊢ 2 * x ≤ b
 -/
 #guard_msgs in
 example {x y b : ℚ} (h : x ≥ y) : 2 * x ≤ b := by
@@ -254,18 +268,9 @@ example {Prime : ℕ → Prop} {a a' : ℕ} (h₁ : Prime (a + 1)) (h₂ : a = a
   guard_hyp h₁ :ₛ Prime (a' + 1)
   exact test_sorry
 
-/--
-error: Tactic `grewrite` failed: could not discharge b ≤ a using a ≤ b
-
-case hbc
-a b c : ℚ
-h₁ : a ≤ b
-h₂ : 0 ≤ c
-⊢ b ≤ a
--/
-#guard_msgs in
 example {a b c : ℚ} (h₁ : a ≤ b) (h₂ : 0 ≤ c) : a * c ≥ 100 + a := by
   grw [h₁]
+  exact test_sorry
 
 example {a b c : ℚ} (h₁ : a ≤ b) (h₂ : 0 ≤ c) : a * c ≥ 100 + a + a := by
   nth_grw 2 3 [h₁]
@@ -295,6 +300,37 @@ example (h : p → q) (h' : q → r) : p → r := by
   apply_rw [← h] at h'
   exact h'
 
+example (h : p → q) (h' : p ∧ p) : q ∧ q := by
+  apply_rw [← h]
+  exact h'
+
+example (h : p → q) (h' : (False ∧ p) ∧ p) : (False ∧ q) ∧ q := by
+  apply_rw [← h]
+  exact h'
+
+-- When rewriting in `_ ∧ _`, side goals created in the RHS get access to the LHS as a hypothesis
+/--
+trace: case a
+p q r s : Prop
+h : True → p → q
+h' : (False ∧ p) ∧ p
+a✝ : False ∧ p
+⊢ True
+
+case a
+p q r s : Prop
+h : True → p → q
+h' : (False ∧ p) ∧ p
+a✝ : False
+⊢ True
+-/
+#guard_msgs in
+example (h : True → p → q) (h' : (False ∧ p) ∧ p) : (False ∧ q) ∧ q := by
+  apply_rw [← h, ← h]
+  exact h'
+  trace_state
+  all_goals trivial
+
 end apply
 
 -- previously, `grw` failed to rewrite in expressions with syntheticOpaque metavariables
@@ -302,7 +338,7 @@ example : ∃ n, n < 2 := by
   refine ⟨?_, ?_⟩
   on_goal 2 => grw [← one_lt_two]
   exact 0
-  refine zero_lt_one
+  refine zero_le_one
 
 section zmod
 
@@ -360,8 +396,12 @@ example (h : double (double 2) ≤ 10) : double 4 ≤ 20 := by
 
 -- `rw`/`grw` index based on the head constant, so the following fails.
 /--
-error: Tactic `grewrite` failed: did not find instance of the pattern in the target expression
-  double 2
+error: Tactic `grewrite` failed: Did not find a rewrite with
+  double 2 ≤ _
+in the target expression
+  4 ≤ 20
+
+Use the command `set_option trace.Meta.grewrite true` to inspect this.
 
 h : double 2 ≤ 10
 ⊢ 4 ≤ 20
@@ -371,3 +411,92 @@ example (h : double 2 ≤ 10) : 4 ≤ 20 := by
   grw (transparency := default) [h]
 
 end erw
+
+section binders
+
+lemma biSup_inf_le {α β : Type*} [CompleteLattice β] (f : α → β) (s : Set α) (b : β) :
+    ⨆ a ∈ s, (f a ⊓ b) ≤ (⨆ a ∈ s, f a) ⊓ b := by
+  grw [iSup_inf_le_iSup_inf, iSup_inf_le_iSup_inf]
+
+example : ∅ ∪ { a : Int | a - 1 > 5 } ⊆ { b : Int | b - 1 < 5 } := by
+  grw [sub_one_lt, sub_one_lt]
+  exact test_sorry
+
+-- The "Expected type" view includes `a` as a free variable in the local context.
+example : ∅ ∪ { a : Int | a - 1 ≥ 5 } ⊆ Set.univ := by
+  grw [sub_le_self _ (by positivity)]
+  simp
+
+example : ∅ ∪ { a : Int → Int | a - 1 ≥ 5 } ⊆ Set.univ := by
+  grw [sub_le_self _ fun x ↦ by simp]
+  simp
+
+example : ∅ ∪ { a : Int → Int | 0 ≤ a → 1 - a ≥ 5 } ⊆ Set.univ := by
+  grw [sub_le_self _ (by assumption)]
+  simp
+
+end binders
+
+section cache
+-- Test that `grw` can explore large expressions without a noticeable slowdown.
+example {a b c d e f g h i j k : Rat} : a + b + c + d + e + f + g + h + i + j + k ≤ 1 := by
+  grw [← show (0 : Rat) ≤ 1 by norm_num]
+  exact test_sorry
+
+example {a b c d e f g h i j k : Rat} : a * b * c * d * e * f * g * h * i * j * k ≤ 1 := by
+  grw [← show (0 : Rat) ≤ 1 by norm_num]
+  exact test_sorry
+
+end cache
+
+section strict
+
+variable {α : Type u} [LinearOrder α] {a b c d : α}
+
+example (h₁ : a < b) (h₂ : b ≤ c) : a < c := by
+  grw [h₁, h₂]
+
+example (h₁ : a < b) (h₂ : b ≤ c) : a < c := by
+  grw [← h₂, ← h₁]
+
+example (h₁ : a ≤ b) (h₂ : b < c) : a < c := by
+  grw [h₁, h₂]
+
+example (h₁ : a ≤ b) (h₂ : b < c) : a < c := by
+  grw [← h₂, ← h₁]
+
+example (h₁ : a < b) (h₂ : b ≤ c) : a < c := by
+  by_contra!; grw [h₁, h₂] at this; contrapose! this; rfl
+
+example (h₁ : a < b) (h₂ : b ≤ c) : a < c := by
+  by_contra!; grw [← h₂, ← h₁] at this; contrapose! this; rfl
+
+example (h₁ : a ≤ b) (h₂ : b < c) : a < c := by
+  by_contra!; grw [h₁, h₂] at this; contrapose! this; rfl
+
+example (h₁ : a ≤ b) (h₂ : b < c) : a < c := by
+  by_contra!; grw [← h₂, ← h₁] at this; contrapose! this; rfl
+
+-- Strict inequalities can also be used as non-strict ones:
+example (h₁ : a < b) (h₂ : b < c) : a ≤ c := by
+  grw [h₁, h₂]
+
+variable [CommRing α] [IsStrictOrderedRing α] in
+example (h : a < b) (_ : 0 ≤ a) : 1 + 2 * a ^ 2 < 9 := by
+  grw [h]
+  guard_target = 1 + 2 * b ^ 2 ≤ 9
+  exact test_sorry
+
+example (h₁ : a < b) (h₂ : c < d) : Set.Icc b c ⊆ Set.Ioo a d := by
+  grw [h₁, h₂]
+
+example (h₁ : a < b) (h₂ : c < d) : Set.Icc b c ⊆ Set.Ioo a d := by
+  grw [h₂, h₁]
+
+example (h₁ : a < b) : Set.Iic a ⊆ Set.Iio b := by
+  grw [h₁]
+
+example (h₁ : a < b) : Set.Ici b ⊆ Set.Ioi a := by
+  grw [h₁]
+
+end strict

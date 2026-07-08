@@ -166,4 +166,9 @@ theorem coe_int_isUnit_iff_isCoprime (n : ℤ) (m : ℕ) :
       val_intCast, Int.gcd_emod] at h_coprime
     rwa [isCoprime_comm, Int.isCoprime_iff_gcd_eq_one]
 
+/-- For each `n ≥ 0`, the unit group of `ZMod n` is finite. -/
+instance instFiniteZModUnits : (n : ℕ) → Finite (ZMod n)ˣ
+  | 0 => Finite.of_fintype ℤˣ
+  | _ + 1 => inferInstance
+
 end ZMod

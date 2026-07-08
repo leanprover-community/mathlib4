@@ -10,8 +10,8 @@ public import Mathlib.Algebra.Group.Finsupp
 public import Mathlib.Data.Finset.Pairwise
 
 /-!
-
 # Sums of collections of Finsupp, and their support
+
 This file provides results about the `Finsupp.support` of sums of collections of `Finsupp`,
 including sums of `List`, `Multiset`, and `Finset`.
 
@@ -118,7 +118,5 @@ theorem Finset.support_sum_eq [AddCommMonoid M] (s : Finset (ι →₀ M))
     refine ⟨s.toList, ?_, Finset.nodup_toList _⟩
     simp
   subst hl
-  rwa [List.toFinset_val, List.dedup_eq_self.mpr hn, Multiset.pairwise_coe_iff_pairwise, ←
-    List.pairwiseDisjoint_iff_coe_toFinset_pairwise_disjoint hn]
-  intro x y hxy
-  exact symmetric_disjoint hxy
+  rwa [List.toFinset_val, List.dedup_eq_self.mpr hn, Multiset.pairwise_coe_iff_pairwise,
+    ← List.pairwiseDisjoint_iff_coe_toFinset_pairwise_disjoint hn]

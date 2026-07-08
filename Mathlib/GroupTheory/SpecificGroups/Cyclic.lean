@@ -197,12 +197,7 @@ theorem MonoidHom.isMulCommutative_of_isCyclic_of_ker_le_center [IsCyclic G'] (f
     _ = y ^ m * y ^ n * y ^ (-m) * (y ^ (-n) * b * a) := by rw [mem_center_iff.1 hb]
     _ = b * a := by group
 
-@[deprecated AddMonoidHom.isAddCommutative_of_isAddCyclic_of_ker_le_center (since := "2026-05-26")]
-theorem commutative_of_addCyclic_center_quotient {G G' : Type*} [AddGroup G] [AddGroup G']
-    [IsAddCyclic G'] (f : G →+ G') (hf : f.ker ≤ .center G) (a b : G) : a + b = b + a :=
-  f.isAddCommutative_of_isAddCyclic_of_ker_le_center hf |>.is_comm.comm a b
-
-@[to_additive existing (attr := deprecated MonoidHom.isMulCommutative_of_isCyclic_of_ker_le_center
+@[to_additive (attr := deprecated MonoidHom.isMulCommutative_of_isCyclic_of_ker_le_center
   (since := "2026-05-26"))]
 theorem commutative_of_cyclic_center_quotient [IsCyclic G'] (f : G →* G') (hf : f.ker ≤ center G)
     (a b : G) : a * b = b * a :=
@@ -599,7 +594,6 @@ noncomputable def IsCyclic.mulAutMulEquiv [Group G] [h : IsCyclic G] :
 variable (G) in
 theorem IsCyclic.card_mulAut [Group G] [Finite G] [h : IsCyclic G] :
     Nat.card (MulAut G) = Nat.totient (Nat.card G) := by
-  have : NeZero (Nat.card G) := ⟨Nat.card_pos.ne'⟩
   rw [← ZMod.card_units_eq_totient, ← Nat.card_eq_fintype_card]
   exact Nat.card_congr (mulAutMulEquiv G)
 
@@ -796,7 +790,6 @@ theorem not_isAddCyclic_prod_of_infinite_nontrivial (M N : Type*) [AddGroup M] [
     have := isAddCyclic_of_surjective (f.prodMap f) (Prod.map_surjective.mpr ⟨hf, hf⟩)
     simpa using coprime_card_of_isAddCyclic_prod (ZMod 2) (ZMod 2)
   let ZN := ZMod (Nat.card N)
-  have : NeZero (Nat.card N) := ⟨Nat.card_pos.ne'⟩
   have := isAddCyclic_of_surjective ((ZMod.castHom (dvd_zero _) ZN).toAddMonoidHom.prodMap (.id ZN))
     (Prod.map_surjective.mpr ⟨ZMod.castHom_surjective (dvd_zero _), Function.surjective_id⟩)
   exact Finite.one_lt_card (α := N).ne' (by simpa [ZN] using coprime_card_of_isAddCyclic_prod ZN ZN)

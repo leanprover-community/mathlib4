@@ -282,10 +282,14 @@ theorem succ_def (m : ℕ∞) : Order.succ m = m + 1 :=
 theorem add_one_le_iff (hm : m ≠ ⊤) : m + 1 ≤ n ↔ m < n :=
   Order.add_one_le_iff_of_not_isMax (not_isMax_iff_ne_top.mpr hm)
 
-theorem add_one_le_iff' (hn : n ≠ ⊤) : m + 1 ≤ n ↔ m < n := by
-  rcases eq_or_ne m ⊤ with rfl | hm
-  · simpa
-  · exact add_one_le_iff hm
+theorem add_one_le_iff' (hn : n ≠ ⊤) : m + 1 ≤ n ↔ m < n :=
+  Order.add_one_le_iff_of_not_isMax' (not_isMax_iff_ne_top.mpr hn)
+
+theorem coe_add_one_le_iff {m : ℕ} {n : ℕ∞} : m + 1 ≤ n ↔ m < n :=
+  add_one_le_iff <| coe_ne_top m
+
+theorem add_one_le_coe_iff {m : ℕ∞} {n : ℕ} : m + 1 ≤ n ↔ m < n :=
+  add_one_le_iff' <| coe_ne_top n
 
 @[deprecated Order.one_le_iff_ne_zero (since := "2026-05-25")]
 protected theorem one_le_iff_ne_zero : 1 ≤ n ↔ n ≠ 0 :=
@@ -299,8 +303,11 @@ lemma lt_one_iff_eq_zero : n < 1 ↔ n = 0 :=
 lemma le_one_iff_eq_zero_or_eq_one : n ≤ 1 ↔ n = 0 ∨ n = 1 :=
   Order.le_one_iff
 
-theorem lt_add_one_iff (hm : n ≠ ⊤) : m < n + 1 ↔ m ≤ n :=
-  Order.lt_add_one_iff_of_not_isMax (not_isMax_iff_ne_top.mpr hm)
+theorem lt_add_one_iff (hn : n ≠ ⊤) : m < n + 1 ↔ m ≤ n :=
+  Order.lt_add_one_iff_of_not_isMax (not_isMax_iff_ne_top.mpr hn)
+
+theorem lt_add_one_iff' (hm : m ≠ ⊤) : m < n + 1 ↔ m ≤ n :=
+  Order.lt_add_one_iff_of_not_isMax' (not_isMax_iff_ne_top.mpr hm)
 
 @[simp]
 theorem lt_two_iff : n < 2 ↔ n ≤ 1 := by
@@ -314,12 +321,11 @@ theorem add_le_add_iff_right {m n k : ENat} (h : k ≠ ⊤) :
     n + k ≤ m + k ↔ n ≤ m :=
   WithTop.add_le_add_iff_right h
 
-theorem lt_add_one_iff' {m n : ENat} (hm : m ≠ ⊤) :
-    m < n + 1 ↔ m ≤ n := by
-  rw [← add_one_le_iff hm, add_le_add_iff_right one_ne_top]
-
 theorem lt_coe_add_one_iff {m : ℕ∞} {n : ℕ} : m < n + 1 ↔ m ≤ n :=
   lt_add_one_iff (coe_ne_top n)
+
+theorem coe_lt_add_one_iff {m : ℕ} {n : ℕ∞} : m < n + 1 ↔ m ≤ n :=
+  lt_add_one_iff' (coe_ne_top m)
 
 theorem le_coe_iff {n : ℕ∞} {k : ℕ} : n ≤ ↑k ↔ ∃ (n₀ : ℕ), n = n₀ ∧ n₀ ≤ k :=
   WithTop.le_coe_iff
@@ -618,7 +624,7 @@ protected def _root_.RingHom.ENatMap {S : Type*} [CommSemiring S] [PartialOrder 
 @[simp]
 lemma map_natCast_mul {R : Type*} [NonAssocSemiring R] [DecidableEq R] [CharZero R] (a b : ℕ∞) :
     (map Nat.cast (a * b) : WithTop R) = map Nat.cast a * map Nat.cast b :=
-  map_mul ((Nat.castRingHom R : ℕ →*₀ R).ENatMap Nat.cast_injective) a b
+  map_mul ((.ofClass (Nat.castRingHom R) : ℕ →*₀ R).ENatMap Nat.cast_injective) a b
 
 end ENat
 
@@ -626,6 +632,9 @@ namespace ENat.WithBot
 
 @[simp]
 lemma coe_eq_natCast (n : ℕ) : (n : ℕ∞) = (n : WithBot ℕ∞) := rfl
+
+lemma eq_top_iff_forall_ge {n : WithBot ℕ∞} : n = ⊤ ↔ ∀ m : ℕ, m ≤ n :=
+  _root_.WithBot.eq_top_iff_forall_ge
 
 lemma lt_add_one_iff {n : WithBot ℕ∞} {m : ℕ} : n < m + 1 ↔ n ≤ m := by
   rw [← WithBot.coe_one, ← ENat.coe_one, WithBot.coe_natCast, ← Nat.cast_add, ← WithBot.coe_natCast]

@@ -8,6 +8,7 @@ module
 public import Mathlib.RingTheory.Valuation.Basic
 public import Mathlib.NumberTheory.Padics.PadicNorm
 public import Mathlib.Analysis.Normed.Field.Lemmas
+public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Tactic.Peel
 public import Mathlib.Topology.MetricSpace.Ultra.Basic
 
@@ -203,7 +204,7 @@ theorem stationaryPoint_spec {f : PadicSeq p} (hf : ¬f ≈ 0) :
       stationaryPoint hf ≤ m → stationaryPoint hf ≤ n → padicNorm p (f n) = padicNorm p (f m) :=
   @(Classical.choose_spec <| stationary hf)
 
-open Classical in
+open scoped Classical in
 /-- Since the norm of the entries of a Cauchy sequence is eventually stationary,
 we can lift the norm to sequences. -/
 def norm (f : PadicSeq p) : ℚ :=
@@ -294,7 +295,7 @@ variable {p : ℕ} [Fact p.Prime]
 
 /-! ### Valuation on `PadicSeq` -/
 
-open Classical in
+open scoped Classical in
 /-- The `p`-adic valuation on `ℚ` lifts to `PadicSeq p`.
 `Valuation f` is defined to be the valuation of the (`ℚ`-valued) stationary point of `f`. -/
 def valuation (f : PadicSeq p) : ℤ :=
@@ -526,6 +527,7 @@ end PadicSeq
 
 /-- The `p`-adic numbers `ℚ_[p]` are the Cauchy completion of `ℚ` with respect to the `p`-adic norm.
 -/
+@[wikidata Q311627]
 def Padic (p : ℕ) [Fact p.Prime] :=
   CauSeq.Completion.Cauchy (padicNorm p)
 deriving Zero, One, Add, Neg, Sub, Mul, Div, AddCommGroup, Ring, CommRing, Field, Inhabited
@@ -601,8 +603,8 @@ def padicNormE {p : ℕ} [hp : Fact p.Prime] : AbsoluteValue ℚ_[p] ℚ where
   map_mul' q r := Quotient.inductionOn₂ q r <| PadicSeq.norm_mul
   nonneg' q := Quotient.inductionOn q <| PadicSeq.norm_nonneg
   eq_zero' q := Quotient.inductionOn q fun r ↦ by
-    erw [Padic.zero_def, Quotient.eq]
-    exact PadicSeq.norm_zero_iff r
+    rw [Padic.zero_def, Quotient.lift_mk, PadicSeq.norm_zero_iff r]
+    exact Quotient.eq.symm
   add_le' q r := by
     trans
       max ((Quotient.lift PadicSeq.norm <| @PadicSeq.norm_equiv _ _) q)
@@ -688,7 +690,7 @@ theorem rat_dense' (q : ℚ_[p]) {ε : ℚ} (hε : 0 < ε) : ∃ r : ℚ, padicN
         change padicNorm p (q' _ - q' _) < ε
         rcases Decidable.em (stationaryPoint hne' ≤ N) with hle | hle
         · have := (stationaryPoint_spec hne' le_rfl hle).symm
-          simp only [const_apply, sub_apply, padicNorm.zero, sub_self] at this
+          simp only [const_apply, CauSeq.sub_apply, padicNorm.zero, sub_self] at this
           simpa only [this]
         · exact hN _ (lt_of_not_ge hle).le _ le_rfl⟩
 
@@ -1133,7 +1135,7 @@ lemma valuation_zpow (x : ℚ_[p]) : ∀ n : ℤ, (x ^ n).valuation = n * x.valu
   | (n : ℕ) => by simp
   | .negSucc n => by simp [← neg_mul]; simp [Int.negSucc_eq]
 
-open Classical in
+open scoped Classical in
 /-- The additive `p`-adic valuation on `ℚ_[p]`, with values in `WithTop ℤ`. -/
 def addValuationDef : ℚ_[p] → WithTop ℤ :=
   fun x ↦ if x = 0 then ⊤ else x.valuation
@@ -1173,7 +1175,7 @@ theorem AddValuation.map_add (x y : ℚ_[p]) :
 
 open WithZero
 
-open Classical in
+open scoped Classical in
 /-- The `p`-adic valuation on `ℚ_[p]`, as a `Valuation`, bundled `Padic.valuation`. -/
 @[simps]
 noncomputable def mulValuation : Valuation ℚ_[p] ℤᵐ⁰ where

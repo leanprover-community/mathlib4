@@ -105,7 +105,7 @@ theorem integralSum_inf_partition (f : ℝⁿ → E) (vol : ι →ᵇᵃ E →L[
     integralSum f vol (π.infPrepartition π') = integralSum f vol π :=
   integralSum_biUnion_partition f vol π _ fun _J hJ => h.restrict (Prepartition.le_of_mem _ hJ)
 
-open Classical in
+open scoped Classical in
 theorem integralSum_fiberwise {α} (g : Box ι → α) (f : ℝⁿ → E) (vol : ι →ᵇᵃ E →L[ℝ] F)
     (π : TaggedPrepartition I) :
     (∑ y ∈ π.boxes.image g, integralSum f vol (π.filter (g · = y))) = integralSum f vol π :=
@@ -164,7 +164,7 @@ predicate. -/
 def Integrable (I : Box ι) (l : IntegrationParams) (f : ℝⁿ → E) (vol : ι →ᵇᵃ E →L[ℝ] F) :=
   ∃ y, HasIntegral I l f vol y
 
-open Classical in
+open scoped Classical in
 /-- The integral of a function `f` over a box `I` along a filter `l` w.r.t. a volume `vol`.
 Returns zero on non-integrable functions. -/
 def integral (I : Box ι) (l : IntegrationParams) (f : ℝⁿ → E) (vol : ι →ᵇᵃ E →L[ℝ] F) :=
@@ -657,7 +657,7 @@ theorem integrable_of_bounded_and_ae_continuousWithinAt [CompleteSpace E] {I : B
      every x ∈ Box.Icc I \ U, the oscillation (within Box.Icc I) of f on the ball of radius r
      centered at x is ≤ ε₁ -/
   have comp : IsCompact (Box.Icc I \ U) :=
-    I.isCompact_Icc.of_isClosed_subset (I.isCompact_Icc.isClosed.sdiff Uopen) Set.diff_subset
+    I.isCompact_Icc.of_isClosed_subset (I.isCompact_Icc.isClosed.sdiff Uopen) Set.sdiff_subset
   have : ∀ x ∈ (Box.Icc I \ U), oscillationWithin f (Box.Icc I) x < (ENNReal.ofReal ε₁) := by
     intro x hx
     suffices oscillationWithin f (Box.Icc I) x = 0 by rw [this]; exact ofReal_pos.2 ε₁0
@@ -886,6 +886,6 @@ theorem HasIntegral.mcShane_of_forall_isLittleO (B : ι →ᵇᵃ[I] ℝ) (hB0 :
     HasIntegral I McShane f vol (g I) :=
   (HasIntegral.of_bRiemann_eq_false_of_forall_isLittleO (l := McShane) rfl B hB0 g ∅ countable_empty
       (fun ⟨_x, hx⟩ => hx.elim) fun _ _ hx => hx.2.elim) <| by
-    simpa only [McShane, Bool.coe_sort_false, false_imp_iff, true_imp_iff, diff_empty] using H
+    simpa only [McShane, Bool.coe_sort_false, false_imp_iff, true_imp_iff, sdiff_empty] using H
 
 end BoxIntegral

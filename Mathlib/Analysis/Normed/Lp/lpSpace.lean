@@ -494,7 +494,6 @@ theorem norm_nonneg' (f : lp E p) : 0 ≤ ‖f‖ := by
   · rw [lp.norm_eq_tsum_rpow hp f]
     exact Real.rpow_nonneg (tsum_nonneg fun i ↦ by positivity) _
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem norm_zero : ‖(0 : lp E p)‖ = 0 := by
   rcases p.trichotomy with (rfl | rfl | hp)
@@ -1244,8 +1243,7 @@ lemma toAddMonoidHom_linearMapOfLE (h : p ≤ q) :
   ext; rfl
 
 lemma linearMapOfLE_comp (hpq : p ≤ q) (hqr : q ≤ r) :
-   (linearMapOfLE 𝕜 E hqr).comp (linearMapOfLE 𝕜 E hpq) =
-     linearMapOfLE 𝕜 E (hpq.trans hqr) := by
+    (linearMapOfLE 𝕜 E hqr).comp (linearMapOfLE 𝕜 E hpq) = linearMapOfLE 𝕜 E (hpq.trans hqr) := by
   ext; rfl
 
 end OfLE
