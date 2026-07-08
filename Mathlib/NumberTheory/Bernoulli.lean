@@ -137,6 +137,16 @@ theorem bernoulli'_four : bernoulli' 4 = -1 / 30 := by
   rw [bernoulli'_def]
   norm_num [sum_range_succ, sum_range_succ, sum_range_zero, this]
 
+@[simp]
+theorem bernoulli'_five : bernoulli' 5 = 0 := by
+  rw [bernoulli'_def]
+  norm_num [sum_range_succ, Nat.choose]
+
+@[simp]
+theorem bernoulli'_six : bernoulli' 6 = 1 / 42 := by
+  rw [bernoulli'_def]
+  norm_num [sum_range_succ, Nat.choose]
+
 end Examples
 
 @[simp]
