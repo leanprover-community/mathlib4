@@ -748,13 +748,10 @@ section Multiplication
 
 section bilin
 
-variable {m : MeasurableSpace E} [OpensMeasurableSpace E] {F₁ F₂ F₃ G : Type*}
+variable {F₁ F₂ F₃ G : Type*} [NormedAlgebra ℝ 𝕜]
   [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁] [NormedSpace ℝ F₁]
   [NormedAddCommGroup F₂] [NormedSpace 𝕜 F₂] [NormedSpace ℝ F₂]
-  [NormedAddCommGroup F₃] [NormedSpace 𝕜 F₃]
-
-variable [NormedAlgebra ℝ 𝕜] [IsScalarTower ℝ 𝕜 F₁] [IsScalarTower ℝ 𝕜 F₂] [NormedSpace ℝ F₃]
-  [IsScalarTower ℝ 𝕜 F₃] [SMulCommClass ℝ 𝕜 F₁] [SMulCommClass ℝ 𝕜 F₂] [SMulCommClass ℝ 𝕜 F₃]
+  [NormedAddCommGroup F₃] [NormedSpace 𝕜 F₃] [NormedSpace ℝ F₃]
 
 open ContinuousLinearMap Finset
 
@@ -770,6 +767,11 @@ noncomputable def bilinLeftCLM (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) {g : E
   TestFunction.limitCLM 𝕜 T
     (fun K K_sub_Ω ↦ ofSupportedInCLM 𝕜 K_sub_Ω ∘L ContDiffMapSupportedIn.bilinLeftCLM B hg)
     (fun K K_sub_Ω f ↦ by congr)
+
+@[simp]
+theorem bilinLeftCLM_apply (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) {g : E → F₂} (hg : ContDiff ℝ n g)
+    (φ : 𝓓^{n}(Ω, F₁)) : bilinLeftCLM B hg φ = fun x => B (φ x) (g x) := rfl
+
 
 end bilin
 
