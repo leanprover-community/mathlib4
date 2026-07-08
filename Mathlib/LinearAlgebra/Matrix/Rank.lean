@@ -296,6 +296,7 @@ theorem eRank_reindex {m₀ : Type um} {n : Type un} [Semiring R] (A : Matrix m 
 
 /-- The rank of a matrix equals the dimension of the range of the corresponding linear map,
 and is therefore independent of the choice of bases. -/
+set_option backward.isDefEq.respectTransparency false in
 theorem rank_eq_finrank_range_toLin [Finite m] [DecidableEq n] {M₁ M₂ : Type*} [CommSemiring R]
     [AddCommMonoid M₁] [AddCommMonoid M₂] [Module R M₁] [Module R M₂] (A : Matrix m n R)
     (v₁ : Basis m R M₁) (v₂ : Basis n R M₂) :
@@ -383,6 +384,7 @@ theorem exists_rank_normal_form [Fintype m] [DecidableEq m] (M : Matrix m m R) :
   refine congrArg _ (funext fun i ↦ ?_)
   split_ifs with hi <;> simp [he, hi]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem cRank_diagonal [DecidableEq m] (w : m → R) :
     (diagonal w).cRank = lift.{uR} #{i // (w i) ≠ 0} := by
   classical

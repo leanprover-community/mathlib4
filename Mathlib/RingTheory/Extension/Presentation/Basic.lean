@@ -341,10 +341,9 @@ assumption this span is the kernel of the evaluation map of `P`. For this, we us
 variable {ι' σ' T : Type*} [CommRing T] [Algebra S T]
 variable (Q : Presentation S T ι' σ') (P : Presentation R S ι σ)
 
-set_option linter.unusedVariables false in
 /-- The evaluation map `MvPolynomial (ι' ⊕ ι) →ₐ[R] T` factors via this map. For more
 details, see the module docstring at the beginning of the section. -/
-private noncomputable def aux (Q : Presentation S T ι' σ') (P : Presentation R S ι σ) :
+private noncomputable def aux (_Q : Presentation S T ι' σ') (P : Presentation R S ι σ) :
     MvPolynomial (ι' ⊕ ι) R →ₐ[R] MvPolynomial ι' S :=
   aeval (Sum.elim X (MvPolynomial.C ∘ P.val))
 

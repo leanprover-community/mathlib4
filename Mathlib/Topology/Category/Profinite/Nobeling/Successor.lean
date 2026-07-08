@@ -235,9 +235,9 @@ theorem C1_projOrd {x : I → Bool} (hx : x ∈ C1 C ho) : SwapTrue o (Proj (ord
 
 set_option backward.isDefEq.respectTransparency.types false in
 include hC in
-open scoped Classical in
 theorem CC_exact {f : LocallyConstant C ℤ} (hf : Linear_CC' C hsC ho f = 0) :
     ∃ y, πs C o y = f := by
+  classical
   dsimp [Linear_CC', Linear_CC'₀, Linear_CC'₁] at hf
   simp only [sub_eq_zero, ← LocallyConstant.coe_inj] at hf
   let C₀C : C0 C ho → C := fun x ↦ ⟨x.val, x.prop.1⟩

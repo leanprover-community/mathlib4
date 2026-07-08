@@ -292,9 +292,11 @@ def mapDomainAlgHom (f : M →* N) : A[M] →ₐ[R] A[N] where
   toRingHom := mapDomainRingHom A f
   commutes' := by simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive (dont_translate := A) (attr := simp)]
 lemma mapDomainAlgHom_id : mapDomainAlgHom R A (.id M) = .id R A[M] := by ext <;> simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive (dont_translate := A) (attr := simp)]
 lemma mapDomainAlgHom_comp (f : M →* N) (g : N →* O) :
     mapDomainAlgHom R A (g.comp f) = (mapDomainAlgHom R A g).comp (mapDomainAlgHom R A f) := by

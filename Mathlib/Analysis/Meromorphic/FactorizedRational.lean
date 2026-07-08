@@ -101,6 +101,7 @@ theorem ne_zero {d : 𝕜 → ℤ} {x : 𝕜} (h : d x = 0) :
     by_cases h₂ : x = z <;> simp_all [zpow_ne_zero, sub_ne_zero]
   · simp [finprod_of_infinite_mulSupport h₁]
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 /--
 Helper Lemma for Computations: Extract one factor out of a factorized rational function.
@@ -192,6 +193,7 @@ private lemma mulSupport_update {d : 𝕜 → ℤ} {x : 𝕜}
     simp
   · simp_all
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 /--
 Compute the trailing coefficient of the factorized rational function associated with `d : 𝕜 → ℤ`.

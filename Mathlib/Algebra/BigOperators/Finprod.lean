@@ -446,6 +446,14 @@ theorem finprod_ne_zero {M₀ : Type*} [CommMonoidWithZero M₀] [Nontrivial M�
   · grind [finprod_eq_prod f h₂, Finset.prod_ne_zero_iff]
   · simp [finprod_of_infinite_mulSupport h₂]
 
+theorem finprod_apply_ne_zero {ι : Type*} {N₀ M₀ : Type*} [CommMonoidWithZero M₀] [Nontrivial M₀]
+    [NoZeroDivisors M₀] {n : N₀} {f : ι → N₀ → M₀} (h : ∀ i, f i n ≠ 0) :
+    (∏ᶠ i, f i) n ≠ 0 := by
+  by_cases h₂ : f.mulSupport.Finite
+  · rw [finprod_eq_prod f h₂]
+    grind [Finset.prod_apply, Finset.prod_ne_zero_iff]
+  · simp [finprod_of_infinite_mulSupport h₂]
+
 @[to_additive]
 theorem map_finsetProd {α F : Type*} [Fintype α] [EquivLike F M N] [MulEquivClass F M N] (f : F)
     (g : α → M) : f (∏ i : α, g i) = ∏ i : α, f (g i) := by

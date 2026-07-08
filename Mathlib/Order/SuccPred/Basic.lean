@@ -110,6 +110,7 @@ def SuccOrder.ofCore (succ : α → α) (hn : ∀ {a}, ¬IsMax a → ∀ b, a < 
 
 variable (α)
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 /-- A well-order is a `SuccOrder`. -/
 @[to_dual (attr := instance_reducible)

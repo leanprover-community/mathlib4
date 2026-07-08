@@ -91,7 +91,6 @@ theorem intValuationDef_if_pos {r : R} (hr : r = 0) : v.intValuationDef r = 0 :=
 theorem intValuationDef_zero : v.intValuationDef 0 = 0 :=
   if_pos rfl
 
-open scoped Classical in
 theorem intValuationDef_if_neg {r : R} (hr : r ≠ 0) :
     v.intValuationDef r = exp
         (-(Associates.mk v.asIdeal).count (Associates.mk (Ideal.span {r} : Ideal R)).factors : ℤ) :=

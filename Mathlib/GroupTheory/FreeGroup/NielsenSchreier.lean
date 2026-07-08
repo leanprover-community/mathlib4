@@ -273,9 +273,7 @@ end SpanningTree
 
 set_option backward.privateInPublic true in
 /-- Another name for the identity function `G → G`, to help type checking. -/
-private def symgen {G : Type u} [Groupoid.{v} G] [IsFreeGroupoid G] :
-    G → Symmetrify (Generators G) :=
-  id
+private def symgen {G : Type u} [Groupoid.{v} G] : G → Symmetrify (Generators G) := id
 
 set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.privateInPublic true in
