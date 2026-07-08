@@ -21,7 +21,7 @@ Hilbert-space gradient form live in the sibling files in this directory.
 
 This two-sided (absolute-value) form is orientation-agnostic (closed under
 `f ↦ -f`) — matching the textbook notion of L-smoothness (Lipschitz gradient,
-the class `C^{1,1}`) used in Nesterov, Beck, Bauschke-Combettes, etc.
+the class `C^{1,1}`).
 -/
 
 public section
