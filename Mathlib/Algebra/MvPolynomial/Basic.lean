@@ -607,9 +607,8 @@ theorem coeff_one [DecidableEq σ] (m) : coeff (1 : MvPolynomial σ R) m = if 0 
 theorem coeff_zero_C (a) : coeff (C a : MvPolynomial σ R) 0 = a :=
   single_eq_same
 
-@[simp]
-theorem coeff_zero_one : coeff (1 : MvPolynomial σ R) 0 = 1 :=
-  coeff_zero_C 1
+@[deprecated AddMonoidAlgebra.coeff_one_zero (since := "2026-07-08")]
+theorem coeff_zero_one : coeff (1 : MvPolynomial σ R) 0 = 1 := by simp
 
 theorem coeff_X_pow [DecidableEq σ] (i : σ) (m) (k : ℕ) :
     (X i ^ k : MvPolynomial σ R).coeff m = if Finsupp.single i k = m then 1 else 0 := by

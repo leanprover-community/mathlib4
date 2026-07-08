@@ -466,7 +466,7 @@ instance one : One R[M] where one := single 1 1
 @[to_additive (dont_translate := R) one_def]
 lemma one_def : (1 : R[M]) = single 1 1 := rfl
 
-@[to_additive (attr := simp) (dont_translate := R)]
+@[to_additive (attr := simp) (dont_translate := R) coeff_one_zero]
 lemma coeff_one_one : (1 : R[M]).coeff 1 = 1 := by simp [one_def]
 
 end One
