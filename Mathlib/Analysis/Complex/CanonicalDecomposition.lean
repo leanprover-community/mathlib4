@@ -491,7 +491,7 @@ theorem _root_.MeromorphicOn.exists_ecanonicalDecomp (h₁f : MeromorphicOn f (c
         <;> simp_all
       eventuallyEq := by
         simp only [hR.symm, closedBall_zero]
-        apply mem_codiscreteWithin_of_subsingleton subsingleton_singleton
+        apply subsingleton_singleton.mem_codiscreteWithin
     }
   obtain ⟨g, D⟩ := h₁f.exists_canonicalDecomp h₂f
   have h₄g : ∀ (u : closedBall (0 : ℂ) R), meromorphicOrderAt g u ≠ ⊤ := by
