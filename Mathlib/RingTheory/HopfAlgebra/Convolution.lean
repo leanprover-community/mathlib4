@@ -88,10 +88,10 @@ namespace LinearMap
 variable [Semiring C] [HopfAlgebra R C]
 
 @[simp] lemma antipode_mul_id : toConv (antipode R (A := C)) * toConv id = 1 := by
-  ext c; rw [(ℛ R c).convMul_apply]; simp [sum_antipode_mul_eq_algebraMap_counit (ℛ R c)]
+  ext _; exact congr($HopfAlgebra.mul_antipode_rTensor_comul _)
 
 @[simp] lemma id_mul_antipode : toConv id * toConv (antipode R (A := C)) = 1 := by
-  ext c; rw [(ℛ R c).convMul_apply]; simp [sum_mul_antipode_eq_algebraMap_counit (ℛ R c)]
+  ext _; exact congr($HopfAlgebra.mul_antipode_lTensor_comul _)
 
 end LinearMap
 
