@@ -100,11 +100,11 @@ theorem finsetSup_zmultiples (s : Finset ℤ) : s.sup zmultiples = zmultiples (s
   rw [AddSubgroup.finsetSup_zmultiples, closure_eq_zmultiples_finsetGcd]
 
 theorem zmultiples_inf (a b : ℤ) : zmultiples a ⊓ zmultiples b = zmultiples (a.lcm b : ℤ) := by
-  ext z
+  ext
   simp [mem_zmultiples_iff, coe_lcm_dvd_iff]
 
 theorem finsetInf_zmultiples (s : Finset ℤ) : s.inf zmultiples = zmultiples (s.lcm id) := by
-  ext z
+  ext
   simp [s.inf_eq_sInf_image, mem_zmultiples_iff]
 
 end Int

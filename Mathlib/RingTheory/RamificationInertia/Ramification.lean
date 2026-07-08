@@ -39,7 +39,7 @@ section
 
 variable {S : Type*} [CommRing S] (q : Ideal S) (R : Type*) [CommRing R] [Algebra R S]
 
-open Classical in
+open scoped Classical in
 /-- Let `S/R` be an extension of rings, and let `q` be a prime ideal of `S` lying over a prime ideal
 `p` of `R`. Let `Sq` be the localization of `S` and `q`, and let `pSq` be the image of `p` in `Sq`.
 Then the ramification index of `q` over `R` is defined to be the length of the quotient `Sq/pSq` as
