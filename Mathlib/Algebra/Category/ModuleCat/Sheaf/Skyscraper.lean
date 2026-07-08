@@ -92,6 +92,10 @@ lemma skyscraperSMulComponent_naturality {X Y : Cᵒᵖ} (f : X ⟶ Y) (r : ↑(
   refine AddCommGrpCat.hom_ext (AddMonoidHom.ext fun m => ?_)
   rw [skyscraperSMulComponent_apply, skyscraperSMulComponent_apply, h]
 
+/--
+Underlying function of the `R.obj X` scalar multiplication on
+`(Φ.skyscraperPresheaf (AddCommGrpCat.of ↑M)).obj X`.
+-/
 noncomputable def skyscraperSMul (X : Cᵒᵖ) (r : ↑(R.obj X)) :
     (Φ.skyscraperPresheaf (AddCommGrpCat.of (↑M : Type w))).obj X ⟶
       (Φ.skyscraperPresheaf (AddCommGrpCat.of (↑M : Type w))).obj X :=
@@ -331,6 +335,12 @@ instance skyscraperSheaf_isFlasque (A : Ab.{u}) :
 
 variable (R : TopCat.Sheaf RingCat.{u} Y)
 
+/--
+Canonical map from the topos theoretic fiber
+`CategoryTheory.GrothendieckTopology.Point.presheafFiber` to `TopCat.Presheaf.stalk`.
+
+TODO: This should be upgraded to an isomorphism
+-/
 noncomputable def pointPresheafFiberToStalk :
     (Opens.pointGrothendieckTopology p).presheafFiber.obj R.presheaf ⟶ R.presheaf.stalk p :=
   (Opens.pointGrothendieckTopology p).presheafFiberDesc
@@ -349,6 +359,9 @@ noncomputable instance pointSheafFiberModule :
     Module ↑((Opens.pointGrothendieckTopology p).sheafFiber.obj R) M :=
   Module.compHom M (pointPresheafFiberToStalk p R).hom
 
+/--
+The (topological) skyscraper sheaf as a sheaf of modules.
+-/
 noncomputable def skyscraperSheafOfModules : SheafOfModules.{u} R :=
   ((Opens.pointGrothendieckTopology p).skyscraperSheafOfModulesFunctor R).obj
     (ModuleCat.of _ M)
