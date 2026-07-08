@@ -299,7 +299,7 @@ lemma locally_isStableUnderBaseChange (hPi : RespectsIso P) (hPb : IsStableUnder
     ← hf.span_eq_top, Ideal.map_le_iff_le_comap, Ideal.span_le]
   intro g hg
   apply Ideal.subset_span
-  simp only [Set.mem_setOf_eq, Algebra.TensorProduct.includeRight_apply,
+  simp only [Set.mem_ofPred_eq, Algebra.TensorProduct.includeRight_apply,
     ← IsScalarTower.algebraMap_eq] at hg ⊢
   let e := IsLocalization.Away.tensorProductEquivTMulRight R S g (Localization.Away g)
   rw [← e.toAlgHom.comp_algebraMap]

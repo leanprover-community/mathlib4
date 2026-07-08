@@ -65,12 +65,12 @@ theorem isOpen_inter_nonempty_of_isOpen {U : Set α} (h : IsOpen U) :
 /-- When `Set` is equipped with the Vietoris topology, the powerset of a closed set is closed. -/
 theorem _root_.IsClosed.powerset_vietoris {F : Set α} (h : IsClosed F) :
     IsClosed F.powerset := by
-  simp_rw [powerset, ← isOpen_compl_iff, compl_setOf, ← inter_compl_nonempty_iff]
+  simp_rw [powerset, ← isOpen_compl_iff, compl_ofPred, ← inter_compl_nonempty_iff]
   exact isOpen_inter_nonempty_of_isOpen h.isOpen_compl
 
 theorem isClosed_inter_nonempty_of_isClosed {F : Set α} (h : IsClosed F) :
     IsClosed {s | (s ∩ F).Nonempty} := by
-  simp_rw +singlePass [← compl_compl F, inter_compl_nonempty_iff, ← compl_setOf]
+  simp_rw +singlePass [← compl_compl F, inter_compl_nonempty_iff, ← compl_ofPred]
   exact h.isOpen_compl.powerset_vietoris.isClosed_compl
 
 theorem isClopen_singleton_empty : IsClopen {(∅ : Set α)} := by
@@ -86,7 +86,7 @@ theorem isTopologicalBasis :
   refine isTopologicalBasis_of_subbasis rfl |>.isTopologicalBasis_of_exists_subset ?_ ?_ <;>
     rw [forall_mem_image]
   · intro u ⟨hu₁, hu₂⟩
-    simp_rw [setOf_and, setOf_forall]
+    simp_rw [ofPred_and, ofPred_forall]
     exact (isOpen_sUnion hu₂).powerset_vietoris.inter <|
       hu₁.isOpen_biInter fun U hU => isOpen_inter_nonempty_of_isOpen (hu₂ U hU)
   · intro t ⟨ht₁, ht₂⟩ s hs
@@ -106,7 +106,7 @@ theorem isTopologicalBasis :
       at hs ⊢
     rw [mem_inter_iff, mem_powerset_iff, mem_iInter₂] at hs
     exists insert U ((U ∩ ·) '' v)
-    simp_rw [show ⋃₀ (insert U ((U ∩ ·) '' v)) = U by simp, mem_setOf, finite_insert,
+    simp_rw [show ⋃₀ (insert U ((U ∩ ·) '' v)) = U by simp, mem_ofPred, finite_insert,
       forall_mem_insert, forall_mem_image, ← inter_assoc, inter_eq_left.mpr hs.1]
     refine ⟨⟨hv₂.image _, hU, fun V hV => hU.inter (hv₁ hV)⟩, by grind,
       fun t ⟨htU, _, ht⟩ => ⟨htU, mem_iInter₂_of_mem ?_⟩⟩
@@ -123,7 +123,7 @@ theorem _root_.TopologicalSpace.IsTopologicalBasis.vietoris
   refine isTopologicalBasis.isTopologicalBasis_of_exists_subset ?_ ?_ <;>
     rw [forall_mem_image]
   · intro ⟨V, u⟩ ⟨hV, hu, huB, _⟩
-    simp_rw [setOf_and, setOf_forall]
+    simp_rw [ofPred_and, ofPred_forall]
     exact hV.powerset_vietoris.inter <|
       hu.isOpen_biInter fun V hV => isOpen_inter_nonempty_of_isOpen <| hB.isOpen <| huB hV
   · intro u ⟨hu₁, hu₂⟩ s ⟨hs₁, hs₂⟩
@@ -163,7 +163,8 @@ theorem continuous_iff {f : α → Set β} :
   rw [continuous_generateFrom_iff]
   rintro _ (⟨U, hU, rfl⟩ | ⟨U, hU, rfl⟩)
   · exact h₁ U hU
-  · simp_rw [preimage_setOf_eq, ← not_disjoint_iff_nonempty_inter, ← compl_setOf, isOpen_compl_iff,
+  · simp_rw [preimage_ofPred_eq, ← not_disjoint_iff_nonempty_inter, ← compl_ofPred,
+      isOpen_compl_iff,
       ← subset_compl_iff_disjoint_right]
     exact h₂ Uᶜ hU.isClosed_compl
 
@@ -172,8 +173,8 @@ theorem isEmbedding_singleton : IsEmbedding ({·} : α → Set α) where
   injective := Set.singleton_injective
   eq_induced := by
     simp_rw [TopologicalSpace.vietoris, induced_generateFrom_eq, image_union, image_image,
-      powerset, preimage_setOf_eq, singleton_subset_iff, singleton_inter_nonempty, union_self,
-      setOf_mem_eq, image_id', generateFrom_setOf_isOpen]
+      powerset, preimage_ofPred_eq, singleton_subset_iff, singleton_inter_nonempty, union_self,
+      ofPred_mem_eq, image_id', generateFrom_setOfPred_isOpen]
 
 @[fun_prop]
 theorem continuous_singleton : Continuous ({·} : α → Set α) :=
@@ -194,7 +195,7 @@ theorem _root_.TopologicalSpace.isClosed_range_singleton [T2Space α] {t : Topol
   obtain ⟨U, V, hU, hV, hxU, hyV, hUV⟩ := t2_separation hxy
   filter_upwards [(h₂ hU).inter (h₂ hV) |>.mem_nhds ⟨⟨x, hx, hxU⟩, ⟨y, hy, hyV⟩⟩]
   rintro _ ⟨hzU, hzV⟩ ⟨z, rfl⟩
-  rw [Set.mem_setOf, Set.singleton_inter_nonempty] at hzU hzV
+  rw [Set.mem_ofPred, Set.singleton_inter_nonempty] at hzU hzV
   exact hUV.notMem_of_mem_left hzU hzV
 
 @[fun_prop]
@@ -206,7 +207,7 @@ theorem isClosedEmbedding_singleton [T2Space α] :
 
 @[fun_prop]
 theorem continuous_union : Continuous (fun x : Set α × Set α => x.1 ∪ x.2) := by
-  simp_rw [continuous_iff, powerset, preimage_setOf_eq, union_subset_iff, setOf_and]
+  simp_rw [continuous_iff, powerset, preimage_ofPred_eq, union_subset_iff, ofPred_and]
   exact ⟨
     fun U hU => .inter
       (hU.powerset_vietoris.preimage continuous_fst)
@@ -218,7 +219,7 @@ theorem continuous_union : Continuous (fun x : Set α × Set α => x.1 ∪ x.2) 
 @[fun_prop]
 theorem continuous_range_of_finite {ι : Type*} [Finite ι] :
     Continuous (range : (ι → α) → Set α) := by
-  simp_rw [continuous_iff, powerset, preimage_setOf_eq, range_subset_iff, setOf_forall]
+  simp_rw [continuous_iff, powerset, preimage_ofPred_eq, range_subset_iff, ofPred_forall]
   exact ⟨
     fun U hU => isOpen_iInter_of_finite fun i => hU.preimage <| continuous_apply i,
     fun F hF => isClosed_iInter fun i => hF.preimage <| continuous_apply i⟩
@@ -227,7 +228,7 @@ theorem continuous_range_of_finite {ι : Type*} [Finite ι] :
 continuous. -/
 @[fun_prop]
 theorem _root_.Continuous.image_vietoris (hf : Continuous f) : Continuous (f '' ·) := by
-  simp_rw [continuous_iff, powerset, preimage_setOf_eq, image_subset_iff]
+  simp_rw [continuous_iff, powerset, preimage_ofPred_eq, image_subset_iff]
   constructor <;> exact fun U hU => (hU.preimage hf).powerset_vietoris
 
 /-- When `Set` is equipped with the Vietoris topology, taking the image under an inducing map is
@@ -238,7 +239,7 @@ theorem _root_.Topology.IsInducing.image_vietoris (hf : IsInducing f) : IsInduci
   have : {U : Set α | IsOpen U} = (f ⁻¹' ·) '' {V : Set β | IsOpen V} :=
     Set.ext fun _ => hf.isOpen_iff
   simp_rw [TopologicalSpace.vietoris, this, induced_generateFrom_eq, image_union, image_image,
-    powerset, preimage_setOf_eq, image_subset_iff, image_inter_nonempty_iff]
+    powerset, preimage_ofPred_eq, image_subset_iff, image_inter_nonempty_iff]
 
 /-- When `Set` is equipped with the Vietoris topology, taking the image under an embedding is an
 embedding. -/
@@ -264,7 +265,7 @@ private theorem isCompact_aux {K : Set α} (hK : IsCompact K)
     rw [sUnion_eq_biUnion] at hLu
     obtain ⟨T, hTS, hT, hLT⟩ := (hs L hL).elim_finite_subcover_image (fun _ h => h.1) hLu
     refine ⟨(fun U => {s | (s ∩ U).Nonempty}) '' T, by grind [image_subset_iff], hT.image _, ?_⟩
-    simp_rw [sUnion_image, ← setOf_exists, ← nonempty_iUnion, ← inter_iUnion]
+    simp_rw [sUnion_image, ← ofPred_exists, ← nonempty_iUnion, ← inter_iUnion]
     grw [← hLT]
     grind
   · -- Otherwise, the set `K \ ⋃ Uⱼ` intersects every `Lᵢ`, so it is in one of the covering sets.
@@ -357,12 +358,12 @@ theorem isOpen_inter_nonempty_of_isOpen {U : Set α} (h : IsOpen U) :
 
 theorem isClosed_subsets_of_isClosed {F : Set α} (h : IsClosed F) :
     IsClosed {K : Compacts α | ↑K ⊆ F} := by
-  simp_rw [← isOpen_compl_iff, Set.compl_setOf, ← Set.inter_compl_nonempty_iff]
+  simp_rw [← isOpen_compl_iff, Set.compl_ofPred, ← Set.inter_compl_nonempty_iff]
   exact isOpen_inter_nonempty_of_isOpen h.isOpen_compl
 
 theorem isClosed_inter_nonempty_of_isClosed {F : Set α} (h : IsClosed F) :
     IsClosed {K : Compacts α | (↑K ∩ F).Nonempty} := by
-  simp_rw +singlePass [← compl_compl F, Set.inter_compl_nonempty_iff, ← Set.compl_setOf]
+  simp_rw +singlePass [← compl_compl F, Set.inter_compl_nonempty_iff, ← Set.compl_ofPred]
   exact (isOpen_subsets_of_isOpen h.isOpen_compl).isClosed_compl
 
 theorem isClopen_singleton_bot : IsClopen {(⊥ : Compacts α)} := by
@@ -390,8 +391,11 @@ theorem closure_finite_subsets (s : Set α) :
     vietoris.closure_finite_subsets]
   exact fun K ⟨hK, _⟩ => ⟨⟨K, hK.isCompact⟩, rfl⟩
 
-theorem dense_setOf_finite : Dense {K : Compacts α | (K : Set α).Finite} := by
+theorem dense_setOfPred_finite : Dense {K : Compacts α | (K : Set α).Finite} := by
   simpa [dense_iff_closure_eq] using closure_finite_subsets univ
+
+@[deprecated (since := "2026-07-09")]
+alias dense_setOf_finite := dense_setOfPred_finite
 
 /-- Given a basis `B` on a topological space `α`, the topology of `Compacts α` has a basis
 consisting of sets of the form `{K | K ⊆ U₁ ∪ … ∪ Uₙ, K ∩ U₁ ≠ ∅, …, K ∩ Uₙ ≠ ∅}`, where
@@ -404,7 +408,7 @@ theorem _root_.TopologicalSpace.IsTopologicalBasis.compacts
   refine hB.vietoris.isInducing isEmbedding_coe.isInducing
     |>.isTopologicalBasis_of_exists_subset ?_ ?_ <;> simp_rw [forall_mem_image]
   · intro u ⟨hu, huB⟩
-    simp_rw [setOf_and, setOf_forall]
+    simp_rw [ofPred_and, ofPred_forall]
     exact .inter
       (isOpen_subsets_of_isOpen <| isOpen_sUnion fun U hU => hB.isOpen <| huB hU)
       (hu.isOpen_biInter fun U hU => isOpen_inter_nonempty_of_isOpen <| hB.isOpen <| huB hU)
@@ -472,7 +476,7 @@ theorem continuous_prod : Continuous fun p : Compacts α × Compacts β => p.1 �
   · rw [isOpen_iff_forall_mem_open]
     intro ⟨K, L⟩ ⟨⟨x, y⟩, ⟨(hx : x ∈ K), (hy : y ∈ L)⟩, hxy⟩
     obtain ⟨V, W, hV, hW, hxV, hyW, hVW⟩ := isOpen_prod_iff.mp hU x y hxy
-    grw [preimage_setOf_eq, ← hVW]
+    grw [preimage_ofPred_eq, ← hVW]
     simp_rw [Function.comp_apply, coe_prod, prod_inter_prod, prod_nonempty_iff]
     exact ⟨_, .rfl,
       (isOpen_inter_nonempty_of_isOpen hV).prod (isOpen_inter_nonempty_of_isOpen hW),
@@ -518,8 +522,8 @@ instance [DiscreteTopology α] : DiscreteTopology (Compacts α) := by
     (isOpen_subsets_of_isOpen (isOpen_discrete (K : Set α))).inter
       (K.isCompact.finite_of_discrete.isOpen_biInter fun x hx =>
         isOpen_inter_nonempty_of_isOpen (isOpen_discrete { x }))
-  simp_rw [← setOf_forall, inter_singleton_nonempty, ← Set.subset_def, ← setOf_and,
-    ← subset_antisymm_iff, SetLike.coe_set_eq, setOf_eq_eq_singleton]
+  simp_rw [← ofPred_forall, inter_singleton_nonempty, ← Set.subset_def, ← ofPred_and,
+    ← subset_antisymm_iff, SetLike.coe_set_eq, ofPred_eq_eq_singleton]
 
 @[simp]
 theorem discreteTopology_iff : DiscreteTopology (Compacts α) ↔ DiscreteTopology α :=
@@ -544,14 +548,14 @@ theorem t2Space_iff : T2Space (Compacts α) ↔ T2Space α :=
 
 instance [RegularSpace α] : RegularSpace (Compacts α) := by
   simp_rw [regularSpace_generateFrom induced_generateFrom_eq, image_union, image_image, powerset,
-    preimage_setOf_eq, Filter.disjoint_iff]
+    preimage_ofPred_eq, Filter.disjoint_iff]
   rintro _ (⟨U, hU, rfl⟩ | ⟨U, hU, rfl⟩) K hK
   · obtain ⟨V, W, hV, hW, hKV, hUW, hVW⟩ :=
       SeparatedNhds.of_isCompact_isClosed K.isCompact hU.isClosed_compl
         (disjoint_compl_right_iff_subset.mpr hK)
     refine ⟨{K | (↑K ∩ W).Nonempty}, ?_, {K | ↑K ⊆ V},
       (isOpen_subsets_of_isOpen hV).mem_nhds_iff.mpr hKV, by grind [Set.Nonempty]⟩
-    simp_rw [(isOpen_inter_nonempty_of_isOpen hW).mem_nhdsSet, compl_setOf,
+    simp_rw [(isOpen_inter_nonempty_of_isOpen hW).mem_nhdsSet, compl_ofPred,
       ← inter_compl_nonempty_iff]
     grw [hUW]
   · obtain ⟨x, hx₁, hx₂⟩ := hK
@@ -559,7 +563,7 @@ instance [RegularSpace α] : RegularSpace (Compacts α) := by
       SeparatedNhds.of_isCompact_isClosed (isCompact_singleton (x := x)) hU.isClosed_compl
         (by simpa)
     refine ⟨{K | ↑K ⊆ W}, ?_, {K | (↑K ∩ V).Nonempty}, ?_, by grind [Set.Nonempty]⟩
-    · simp_rw [(isOpen_subsets_of_isOpen hW).mem_nhdsSet, compl_setOf, not_nonempty_iff_eq_empty,
+    · simp_rw [(isOpen_subsets_of_isOpen hW).mem_nhdsSet, compl_ofPred, not_nonempty_iff_eq_empty,
         ← disjoint_iff_inter_eq_empty, ← subset_compl_iff_disjoint_right]
       gcongr
     · rw [(isOpen_inter_nonempty_of_isOpen hV).mem_nhds_iff]
@@ -575,7 +579,7 @@ theorem t3Space_iff : T3Space (Compacts α) ↔ T3Space α :=
 
 instance [SecondCountableTopology α] : SecondCountableTopology (Compacts α) := by
   obtain ⟨b, hb₁, -, hb₂⟩ := exists_countable_basis α
-  exact hb₂.compacts.secondCountableTopology <| (countable_setOf_finite_subset hb₁).image _
+  exact hb₂.compacts.secondCountableTopology <| (countable_ofPred_finite_subset hb₁).image _
 
 @[simp]
 theorem secondCountableTopology_iff :
@@ -661,7 +665,7 @@ instance [LocallyCompactSpace α] : LocallyCompactSpace (Compacts α) := by
 
 instance [SeparableSpace α] : SeparableSpace (Compacts α) := by
   obtain ⟨s, hs₁, hs₂⟩ := exists_countable_dense α
-  refine ⟨_, (countable_setOf_finite_subset hs₁).preimage SetLike.coe_injective, ?_⟩
+  refine ⟨_, (countable_ofPred_finite_subset hs₁).preimage SetLike.coe_injective, ?_⟩
   simp [dense_iff_closure_eq, closure_finite_subsets, hs₂.closure_eq]
 
 @[simp]
@@ -743,8 +747,11 @@ theorem closure_finite_subsets (s : Set α) :
   simpa [isOpenEmbedding_toCompacts.isOpenMap.preimage_closure_eq_closure_preimage
     continuous_toCompacts] using congr(toCompacts ⁻¹' $(Compacts.closure_finite_subsets s))
 
-theorem dense_setOf_finite : Dense {K : NonemptyCompacts α | (K : Set α).Finite} :=
-  Compacts.dense_setOf_finite.preimage isOpenEmbedding_toCompacts.isOpenMap
+theorem dense_setOfPred_finite : Dense {K : NonemptyCompacts α | (K : Set α).Finite} :=
+  Compacts.dense_setOfPred_finite.preimage isOpenEmbedding_toCompacts.isOpenMap
+
+@[deprecated (since := "2026-07-09")]
+alias dense_setOf_finite := dense_setOfPred_finite
 
 /-- Given a basis `B` on a topological space `α`, the topology of `NonemptyCompacts α` has a basis
 consisting of sets of the form `{K | K ⊆ U₁ ∪ … ∪ Uₙ, K ∩ U₁ ≠ ∅, …, K ∩ Uₙ ≠ ∅}`, where
@@ -757,7 +764,7 @@ theorem _root_.TopologicalSpace.IsTopologicalBasis.nonemptyCompacts
   refine hB.compacts.isInducing isEmbedding_toCompacts.isInducing
     |>.isTopologicalBasis_of_exists_subset ?_ ?_ <;> simp_rw [forall_mem_image]
   · rintro u ⟨hu, -, huB⟩
-    simp_rw [setOf_and, setOf_forall]
+    simp_rw [ofPred_and, ofPred_forall]
     exact .inter
       (isOpen_subsets_of_isOpen <| isOpen_sUnion fun U hU => hB.isOpen <| huB hU)
       (hu.isOpen_biInter fun U hU => isOpen_inter_nonempty_of_isOpen <| hB.isOpen <| huB hU)
