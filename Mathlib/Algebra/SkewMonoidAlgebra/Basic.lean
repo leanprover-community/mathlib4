@@ -406,10 +406,10 @@ theorem ofCoeff_sum {k' G' : Type*} [AddCommMonoid k'] (f : G →₀ k)
 
 @[deprecated (since := "2026-07-04")] alias ofFinsupp_sum := ofCoeff_sum
 
-theorem sum_coeff_single (f : SkewMonoidAlgebra k G) : f.coeff.sum single = f := by
-  apply coeff_injective; simp only [coeff_sum', coeff_single, Finsupp.sum_single]
+@[simp]
+lemma sum_single (f : G →₀ k) : f.sum single = ofCoeff f := coeff_injective <| by simp [coeff_sum']
 
-@[deprecated (since := "2026-07-06")] alias sum_single := sum_coeff_single
+lemma sum_coeff_single (f : SkewMonoidAlgebra k G) : f.coeff.sum single = f := by simp
 
 /-- Taking the `sum` under `h` is an additive homomorphism, if `h` is an additive homomorphism.
 This is a more specific version of `SkewMonoidAlgebra.sum_add_index` with simpler hypotheses. -/
