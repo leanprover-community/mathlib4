@@ -741,3 +741,29 @@ lemma tensorProductComm_def (eA : A ≃ A') (eB : B ≃ B') :
   ext x; induction x <;> simp [*]
 
 end Equiv
+
+namespace TensorProduct
+variable {R M N M' N' P Q : Type*} [CommSemiring R]
+  [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid M'] [AddCommMonoid N']
+  [AddCommMonoid P] [AddCommMonoid Q]
+  [Module R M] [Module R N] [Module R M'] [Module R N'] [Module R P] [Module R Q]
+
+open LinearMap
+
+attribute [local ext high] TensorProduct.ext in
+/-- `homTensorHomMap` is natural with respect to precomposition:
+```
+                        homTensorHomMap
+Hom(M, P) ⊗ Hom(N, Q) ---------------> Hom(M ⊗ N, P ⊗ Q)
+    |                                     |
+    | map f.lcomp f'.lcomp                | (map f f').lcomp
+    ↓                                     ↓
+Hom(M', P) ⊗ Hom(N', Q) -------------> Hom(M' ⊗ N', P ⊗ Q)
+                        homTensorHomMap
+```
+-/
+lemma homTensorHomMap_comp_map_lcomp (f : M' →ₗ[R] M) (f' : N' →ₗ[R] N) :
+    homTensorHomMap (.id R) M' N' P Q ∘ₗ map (f.lcomp R P) (f'.lcomp R Q) =
+      (map f f').lcomp R (P ⊗[R] Q) ∘ₗ homTensorHomMap (.id R) M N P Q := by ext; simp
+
+end TensorProduct
