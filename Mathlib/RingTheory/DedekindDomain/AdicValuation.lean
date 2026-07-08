@@ -601,26 +601,155 @@ theorem adicValued_apply' (x : WithVal (v.valuation K)) :
 
 variable (K)
 
-/-- The completion of `K` with respect to its `v`-adic valuation. -/
-abbrev adicCompletion := (v.valuation K).Completion
+/-- The completion of `K` with respect to its `v`-adic valuation, defined as a one-field structure
+wrapping the uniform-space completion `(v.valuation K).Completion`. -/
+structure adicCompletion where
+  /-- Wrap an element of the underlying completion `(v.valuation K).Completion` into
+  `adicCompletion`. -/
+  ofCompletion ::
+  /-- The underlying element of the completion `(v.valuation K).Completion`. -/
+  toCompletion : (v.valuation K).Completion
 
-theorem valuedAdicCompletion_def {x : v.adicCompletion K} :
-  Valued.v x = Valued.extensionValuation x := rfl
+namespace adicCompletion
+
+open UniformSpace MonoidWithZeroHom MonoidWithZeroHom.ValueGroup₀ Filter Topology Valuation
+
+/-- `adicCompletion.toCompletion` and `adicCompletion.ofCompletion` as an equivalence. -/
+@[simps]
+def equivCompletion : adicCompletion K v ≃ (v.valuation K).Completion where
+  toFun := toCompletion
+  invFun := ofCompletion
+  left_inv _ := rfl
+  right_inv _ := rfl
+
+noncomputable instance : Field (adicCompletion K v) := fast_instance% (equivCompletion K v).field
+
+/-- `adicCompletion.toCompletion` as a ring isomorphism onto the underlying completion. -/
+@[simps! apply]
+def equiv : adicCompletion K v ≃+* (v.valuation K).Completion where
+  toEquiv := equivCompletion K v
+  map_mul' _ _ := rfl
+  map_add' _ _ := rfl
+
+@[simp] lemma toCompletion_ofCompletion (x : (v.valuation K).Completion) :
+    toCompletion (ofCompletion x : adicCompletion K v) = x := rfl
+@[simp] lemma ofCompletion_toCompletion (x : adicCompletion K v) :
+    ofCompletion x.toCompletion = x := rfl
+
+theorem toCompletion_surjective : Function.Surjective (toCompletion (K := K) (v := v)) :=
+  (equivCompletion K v).surjective
+
+theorem ofCompletion_surjective : Function.Surjective (ofCompletion (K := K) (v := v)) :=
+  (equivCompletion K v).symm.surjective
+
+noncomputable instance : UniformSpace (adicCompletion K v) := .comap toCompletion inferInstance
+
+theorem isUniformInducing_toCompletion :
+    IsUniformInducing (toCompletion (K := K) (v := v)) := ⟨rfl⟩
+
+instance : IsUniformAddGroup (adicCompletion K v) :=
+  IsUniformInducing.isUniformAddGroup (equiv K v).toRingHom (isUniformInducing_toCompletion K v)
+
+/-! The `Valued` structure on `adicCompletion K v` is transported from the underlying completion.
+Because `adicCompletion K v` is not definitionally equal to `(v.valuation K).Completion`, the
+comapped valuation lives in a different (but equal) `ValueGroup₀`, so we build the order isomorphism
+between them explicitly, mirroring `WithVal.valueGroupOrderIso₀`. -/
+
+theorem valueGroup_eq :
+    valueGroup (.ofClass (Valued.v.comap (equiv K v).toRingHom)) =
+      valueGroup (.ofClass (Valued.v : Valuation (v.valuation K).Completion ℤᵐ⁰)) := by
+  simp [valueGroup, valueMonoid, ← (toCompletion_surjective K v).range_comp]; rfl
+
+/-- The multiplicative equivalence between the value group of the completion's valuation, pulled
+back along `equiv`, and that of the completion. -/
+def valueGroupEquiv :
+    valueGroup (.ofClass (Valued.v.comap (equiv K v).toRingHom)) ≃*
+      valueGroup (.ofClass (Valued.v : Valuation (v.valuation K).Completion ℤᵐ⁰)) where
+  __ := Equiv.setCongr (by rw [valueGroup_eq K v])
+  map_mul' _ _ := rfl
+
+@[simp] theorem coe_valueGroupEquiv
+    (a : valueGroup (.ofClass (Valued.v.comap (equiv K v).toRingHom))) :
+    ((valueGroupEquiv K v a : _) : ℤᵐ⁰ˣ) = a := rfl
+
+/-- The order-preserving multiplicative equivalence between the `ValueGroup₀` of the completion's
+valuation, pulled back along `equiv`, and that of the completion. -/
+noncomputable def valueGroupOrderIso :
+    ValueGroup₀ (.ofClass (Valued.v.comap (equiv K v).toRingHom)) ≃*o
+      ValueGroup₀ (.ofClass (Valued.v : Valuation (v.valuation K).Completion ℤᵐ⁰)) where
+  toFun := WithZero.map' (valueGroupEquiv K v)
+  invFun := WithZero.map' (valueGroupEquiv K v).symm
+  left_inv x := by match x with | 0 => simp | .coe a => simp
+  right_inv y := by match y with | 0 => simp | .coe b => simp
+  map_mul' := by simp
+  map_le_map_iff' {a b} := by
+    match a, b with
+    | 0, 0 => simp
+    | 0, .coe _ => simp
+    | .coe _, 0 => simp
+    | .coe a, .coe b => simp [← Subtype.coe_le_coe]
+
+@[simp] theorem coe_valueGroupOrderIso_coe
+    (a : valueGroup (.ofClass (Valued.v.comap (equiv K v).toRingHom))) :
+    valueGroupOrderIso K v (a : ValueGroup₀ _) = (valueGroupEquiv K v a : ValueGroup₀ _) := by
+  simp [valueGroupOrderIso]
+
+theorem embedding_valueGroupOrderIso
+    (g : ValueGroup₀ (.ofClass (Valued.v.comap (equiv K v).toRingHom))) :
+    embedding (valueGroupOrderIso K v g) = embedding g := by
+  match g with
+  | 0 => simp [valueGroupOrderIso]
+  | .coe a => simp [coe_valueGroupOrderIso_coe, embedding_apply, coe_valueGroupEquiv]
+
+theorem valueGroupOrderIso_restrict (x : adicCompletion K v) :
+    valueGroupOrderIso K v ((Valued.v.comap (equiv K v).toRingHom).restrict x) =
+      Valued.v.restrict (toCompletion x) := by
+  apply embedding_strictMono.injective
+  rw [embedding_valueGroupOrderIso, embedding_restrict, embedding_restrict]; rfl
+
+noncomputable instance : Valued (adicCompletion K v) ℤᵐ⁰ where
+  v := Valued.v.comap (equiv K v).toRingHom
+  is_topological_valuation s := by
+    rw [(isUniformInducing_toCompletion K v).isInducing.nhds_eq_comap 0,
+      show toCompletion (0 : adicCompletion K v) = 0 from rfl, Filter.mem_comap]
+    constructor
+    · rintro ⟨t, ht, hts⟩
+      rw [Valued.mem_nhds_zero] at ht
+      obtain ⟨δ, hδ⟩ := ht
+      refine ⟨Units.mapEquiv (valueGroupOrderIso K v).symm.toMulEquiv δ, fun x hx => hts (hδ ?_)⟩
+      rw [Set.mem_setOf_eq] at hx ⊢
+      rw [← map_lt_map_iff (valueGroupOrderIso K v), valueGroupOrderIso_restrict] at hx
+      simpa using hx
+    · rintro ⟨γ, hγ⟩
+      refine ⟨{y | Valued.v.restrict y < ↑(Units.mapEquiv (valueGroupOrderIso K v).toMulEquiv γ)},
+        ?_, fun x hx => hγ ?_⟩
+      · rw [Valued.mem_nhds_zero]
+        exact ⟨Units.mapEquiv (valueGroupOrderIso K v).toMulEquiv γ, subset_rfl⟩
+      · rw [Set.mem_preimage, Set.mem_setOf_eq] at hx
+        rw [Set.mem_setOf_eq, ← map_lt_map_iff (valueGroupOrderIso K v), valueGroupOrderIso_restrict]
+        simpa using hx
+
+noncomputable instance : CompleteSpace (adicCompletion K v) :=
+  ((isUniformInducing_toCompletion K v).completeSpace_congr (toCompletion_surjective K v)).mpr
+    inferInstance
+
+/-- Coercion of an element of `WithVal (v.valuation K)` into the adic completion. -/
+instance : Coe (WithVal (v.valuation K)) (adicCompletion K v) where
+  coe x := ofCompletion (x : (v.valuation K).Completion)
+
+/-- Coercion of an element of `K` into the adic completion. -/
+instance (priority := 99) : Coe K (adicCompletion K v) where
+  coe k := ofCompletion (k : (v.valuation K).Completion)
+
+theorem valuedAdicCompletion_def {x : adicCompletion K v} :
+    Valued.v x = Valued.extensionValuation x.toCompletion := rfl
+
+end adicCompletion
 
 lemma valuedAdicCompletion_surjective :
     Function.Surjective (Valued.v : (v.adicCompletion K) → ℤᵐ⁰) :=
-  Valued.valuedCompletion_surjective_iff.mpr <| .of_comp (v.valuation_surjective K)
-
-lemma adicCompletion_valueGroup_eq : MonoidWithZeroHom.valueGroup (.ofClass (Valued.v
-      (R := adicCompletion K v))) =
-    MonoidWithZeroHom.valueGroup (.ofClass (valuation K v)) := by
-  ext n
-  simp only [MonoidWithZeroHom.mem_valueGroup_iff_of_comm, ne_eq, map_eq_zero]
-  refine ⟨fun ⟨a, ha0, x, hx⟩ ↦ ?_, fun ⟨a, ha0, x, hx⟩  ↦ ⟨a, by simp [ha0], x, by simpa using hx⟩⟩
-  obtain ⟨b, hb⟩ := valuation_surjective K v (Valued.v a)
-  obtain ⟨y, hy⟩ := valuation_surjective K v (Valued.v x)
-  refine ⟨b, ?_, y, by simpa [hb, hy] using hx⟩
-  rwa [← ne_eq, ← (valuation K v).ne_zero_iff, hb, Valuation.ne_zero_iff]
+  (Valued.valuedCompletion_surjective_iff.mpr <| .of_comp (v.valuation_surjective K)).comp
+    (adicCompletion.toCompletion_surjective K v)
 
 /-- The ring of integers of `adicCompletion`. -/
 def adicCompletionIntegers : ValuationSubring (v.adicCompletion K) :=
