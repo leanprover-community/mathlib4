@@ -15,6 +15,7 @@ public import Mathlib.Analysis.Normed.Order.Lattice
 public import Mathlib.Analysis.SpecificLimits.Basic
 public import Mathlib.Data.List.TFAE
 public import Mathlib.Data.Nat.Choose.Bounds
+public import Mathlib.Data.Nat.Choose.Cast
 public import Mathlib.Order.Filter.AtTopBot.ModEq
 public import Mathlib.RingTheory.Polynomial.Pochhammer
 public import Mathlib.Tactic.NoncommRing
@@ -547,6 +548,48 @@ theorem hasSum_coe_mul_geometric_of_norm_lt_one {r : 𝕜} (hr : ‖r‖ < 1) :
 theorem tsum_coe_mul_geometric_of_norm_lt_one {r : 𝕜} (hr : ‖r‖ < 1) :
     (∑' n : ℕ, n * r ^ n : 𝕜) = r / (1 - r) ^ 2 :=
   (hasSum_coe_mul_geometric_of_norm_lt_one hr).tsum_eq
+
+/-- If `‖r‖ < 1`, then `∑' n : ℕ, n ^ 2 * r ^ n = r * (1 + r) / (1 - r) ^ 3`, `HasSum` version in
+a general ring with summable geometric series. For a version in a field, using division instead
+of `Ring.inverse`, see `hasSum_sq_mul_geometric_of_norm_lt_one`. -/
+theorem hasSum_sq_mul_geometric_of_norm_lt_one' {x : R} (h : ‖x‖ < 1) :
+    HasSum (fun n : ℕ ↦ (n : R) ^ 2 * x ^ n) (x * (1 + x) * ((1 - x)⁻¹ʳ) ^ 3) := by
+  have A : HasSum (fun n : ℕ ↦ ((n + 2).choose 2 : R) * x ^ n) ((1 - x)⁻¹ʳ ^ 3) :=
+    hasSum_choose_mul_geometric_of_norm_lt_one' 2 h
+  have B : HasSum (fun (n : ℕ) ↦ (n + 1) * x ^ n) ((1 - x)⁻¹ʳ ^ 2) := by
+    convert! hasSum_choose_mul_geometric_of_norm_lt_one' 1 h with n
+    simp
+  have C : HasSum (fun n ↦ n * x ^ n : ℕ → R) (x * (1 - x)⁻¹ʳ ^ 2) :=
+    hasSum_coe_mul_geometric_of_norm_lt_one' h
+  convert! ((A.mul_left 2).sub (B.mul_left 2)).sub C using 1
+  · ext n
+    rw [← mul_assoc, Nat.two_mul_cast_choose_two, pow_two, cast_add, cast_ofNat]
+    noncomm_ring
+  · symm
+    calc 2 * (1 - x)⁻¹ʳ ^ 3 - 2 * (1 - x)⁻¹ʳ ^ 2 - x * (1 - x)⁻¹ʳ ^ 2
+    _ = 2 * (1 - x)⁻¹ʳ ^ 3 - 2 * (((1 - x) * (1 - x)⁻¹ʳ) * (1 - x)⁻¹ʳ ^ 2)
+        - x * (((1 - x) * (1 - x)⁻¹ʳ) * (1 - x)⁻¹ʳ ^ 2) := by
+      simp [Ring.mul_inverse_cancel (1 - x) (isUnit_one_sub_of_norm_lt_one h)]
+    _ = x * (1 + x) * ((1 - x)⁻¹ʳ) ^ 3 := by noncomm_ring
+
+/-- If `‖r‖ < 1`, then `∑' n : ℕ, n ^ 2 * r ^ n = r * (1 + r) / (1 - r) ^ 3`, version in a general
+ring with summable geometric series. For a version in a field, using division instead of
+`Ring.inverse`, see `tsum_sq_mul_geometric_of_norm_lt_one`. -/
+theorem tsum_sq_mul_geometric_of_norm_lt_one' {x : R} (h : ‖x‖ < 1) :
+    ∑' n : ℕ, (n : R) ^ 2 * x ^ n = x * (1 + x) * ((1 - x)⁻¹ʳ) ^ 3 :=
+  (hasSum_sq_mul_geometric_of_norm_lt_one' h).tsum_eq
+
+/-- If `‖r‖ < 1`, then `∑' n : ℕ, n ^ 2 * r ^ n = r * (1 + r) / (1 - r) ^ 3`,
+`HasSum` version. -/
+theorem hasSum_sq_mul_geometric_of_norm_lt_one {r : 𝕜} (hr : ‖r‖ < 1) :
+    HasSum (fun n : ℕ ↦ (n : 𝕜) ^ 2 * r ^ n) (r * (1 + r) / (1 - r) ^ 3) := by
+  convert! hasSum_sq_mul_geometric_of_norm_lt_one' hr using 1
+  simp [div_eq_mul_inv]
+
+/-- If `‖r‖ < 1`, then `∑' n : ℕ, n ^ 2 * r ^ n = r * (1 + r) / (1 - r) ^ 3`. -/
+theorem tsum_sq_mul_geometric_of_norm_lt_one {r : 𝕜} (hr : ‖r‖ < 1) :
+    ∑' n : ℕ, (n : 𝕜) ^ 2 * r ^ n = r * (1 + r) / (1 - r) ^ 3 :=
+  (hasSum_sq_mul_geometric_of_norm_lt_one hr).tsum_eq
 
 end MulGeometric
 

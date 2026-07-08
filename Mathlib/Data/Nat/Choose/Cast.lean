@@ -14,7 +14,7 @@ public import Mathlib.Data.Nat.Factorial.Cast
 # Cast of binomial coefficients
 
 This file allows calculating the binomial coefficient `a.choose b` as an element of a division ring
-of characteristic `0`.
+of characteristic `0`, and provides a division-free variant of `a.choose 2` valid in any ring.
 -/
 
 public section
@@ -37,6 +37,15 @@ theorem cast_add_choose {a b : ℕ} : ((a + b).choose a : K) = (a + b)! / (a ! *
   rw [cast_choose K (le_add_right _ _), Nat.add_sub_cancel_left]
 
 end DivisionSemiring
+
+section Ring
+variable [Ring K]
+
+theorem two_mul_cast_choose_two (a : ℕ) : 2 * (a.choose 2 : K) = a * (a - 1) := by
+  rw [← cast_descFactorial_two, descFactorial_eq_factorial_mul_choose, factorial_two, cast_mul,
+    cast_ofNat]
+
+end Ring
 
 section DivisionRing
 variable [DivisionRing K] [NeZero (2 : K)]
