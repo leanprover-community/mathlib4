@@ -379,9 +379,6 @@ discriminant `Δ` of it as a Weierstrass curve. -/
 lemma coe_Δ' : W.Δ' = W.Δ :=
   rfl
 
-theorem j_eq : W.j = W.Δ⁻¹ * W.c₄ ^ 3 := by
-  rw [WeierstrassCurve.j, Units.val_inv_eq_inv_val, WeierstrassCurve.coe_Δ']
-
 /-- The j-invariant `j` of an elliptic curve, which is invariant under isomorphisms over `R`.
 Note that to prove two equal elliptic curves have the same `j`, you need to use `simp_rw`,
 as `rw` cannot transfer instance `WeierstrassCurve.IsElliptic` automatically. -/
@@ -397,6 +394,10 @@ lemma j_eq_zero (h : W.c₄ = 0) : W.j = 0 := by
 
 lemma j_eq_zero_iff [IsReduced R] : W.j = 0 ↔ W.c₄ = 0 := by
   rw [j_eq_zero_iff', pow_eq_zero_iff three_ne_zero]
+
+theorem j_eq {K : Type*} [Field K] (W : WeierstrassCurve K) [W.IsElliptic] :
+    W.j = W.Δ⁻¹ * W.c₄ ^ 3 := by
+  rw [WeierstrassCurve.j, Units.val_inv_eq_inv_val, WeierstrassCurve.coe_Δ']
 
 section CharTwo
 
