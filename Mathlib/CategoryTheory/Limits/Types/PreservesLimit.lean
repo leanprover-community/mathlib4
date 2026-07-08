@@ -132,7 +132,7 @@ lemma preservesLimit_eq_isLocal :
   by_cases hF : HasLimit F
   · rw [preservesLimit_eq_isLocal_single (limit.isLimit F) (colimit.isColimit _)]
     convert Iff.rfl
-    ext _ _ f
+    ext
     exact ⟨fun ⟨_⟩ ↦ ⟨⟨⟩⟩, fun ⟨_⟩ ↦ ⟨⟨hF⟩⟩⟩
   · exact ⟨fun _ _ _ _ ⟨h⟩ ↦ (hF h.down).elim,
       fun _ ↦ ⟨fun hc ↦ (hF ⟨_, hc⟩).elim⟩⟩
