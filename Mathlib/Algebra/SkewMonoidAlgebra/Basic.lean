@@ -272,6 +272,9 @@ def coeffAddEquiv : SkewMonoidAlgebra k G ≃+ (G →₀ k) where
   map_add' := coeff_add
 
 @[deprecated (since := "2026-07-04")] alias toFinsuppAddEquiv := coeffAddEquiv
+@[deprecated (since := "2026-07-04")] alias toFinsuppAddEquiv_apply := coeffAddEquiv_apply
+@[deprecated (since := "2026-07-04")]
+alias toFinsuppAddEquiv_symm_apply := coeffAddEquiv_symm_apply
 
 theorem smul_single {S} [SMulZeroClass S k] (s : S) (a : G) (b : k) :
     s • single a b = single a (s • b) :=

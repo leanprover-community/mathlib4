@@ -34,6 +34,8 @@ If `a` is not in the support of `f` then `erase a f = f`. -/
   map_zero' := by simp
   map_add' := by simp
 
+@[deprecated (since := "2026-07-04")] alias erase_apply_toFinsupp := coeff_erase_apply
+
 @[simp]
 theorem support_erase [DecidableEq α] : (f.erase a).support = f.support.erase a := by
   ext; simp [erase]
@@ -83,6 +85,8 @@ If `b = 0`, this amounts to removing `a` from the support of `f`.
 Otherwise, if `a` was not in the `support` of `f`, it is added to it. -/
 @[simps coeff] def update : SkewMonoidAlgebra M α :=
   ⟨f.coeff.update a b⟩
+
+@[deprecated (since := "2026-07-04")] alias update_toFinsupp := coeff_update
 
 @[simp]
 theorem update_self : f.update a (f.coeff a) = f := by ext; simp
