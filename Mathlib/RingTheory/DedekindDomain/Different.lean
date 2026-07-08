@@ -112,7 +112,6 @@ open scoped Classical in
 lemma traceDual_top' :
     (⊤ : Submodule B L)ᵛ =
       if ((LinearMap.range (Algebra.trace K L)).restrictScalars A ≤ 1) then ⊤ else ⊥ := by
-  classical
   split_ifs with h
   · rw [_root_.eq_top_iff]
     exact fun _ _ _ _ ↦ h ⟨_, rfl⟩
