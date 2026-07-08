@@ -500,8 +500,8 @@ theorem _root_.MeromorphicOn.exists_ecanonicalDecomp (h₁f : MeromorphicOn f (c
     have s₁ : (0 : ℂ) ∈ closedBall 0 R := by simp [hR.le]
     use ⟨0, s₁⟩
     simp [(D.meromorphicNFOn s₁).meromorphicOrderAt_eq_zero_iff.2 (D.ne_zero 0 (by simp [hR]))]
-  obtain ⟨h, h₁h, h₂h, h₃h⟩ := D.meromorphicNFOn.meromorphicOn.extract_zeros_poles h₄g
-    ((divisor g (closedBall 0 R)).finiteSupport (isCompact_closedBall 0 R))
+  obtain ⟨h, h₁h, h₂h, h₃h⟩ := D.meromorphicNFOn.meromorphicOn.extract_zeros_poles h₄g <|
+    (divisor g (closedBall 0 R)).finiteSupport <| isCompact_closedBall 0 R
   use h
   exact {
     meromorphicOn := h₁f
