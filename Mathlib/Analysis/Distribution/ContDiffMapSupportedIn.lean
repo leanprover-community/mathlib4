@@ -1005,7 +1005,11 @@ section bilin
 
 open ContDiffMapSupportedIn
 
+<<<<<<< HEAD
 variable {𝕜} {F₁ F₂ F₃ G : Type*} [NormedAlgebra ℝ 𝕜]
+=======
+variable {F₁ F₂ F₃ G : Type*} [NormedAlgebra ℝ 𝕜]
+>>>>>>> LM_mul_distrib
   [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁] [NormedSpace ℝ F₁]
   [NormedAddCommGroup F₂] [NormedSpace 𝕜 F₂] [NormedSpace ℝ F₂]
   [NormedAddCommGroup F₃] [NormedSpace 𝕜 F₃] [NormedSpace ℝ F₃]
