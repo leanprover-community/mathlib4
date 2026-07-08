@@ -173,8 +173,8 @@ namespace Set
 
 variable {G G' P P' : Type*} [Group G] [Group G'] [Torsor G P] [Torsor G' P']
 
-@[to_additive prod_vsub_prod]
-theorem prod_sdiv_prod (s₁ s₂ : Set P) (t₁ t₂ : Set P') :
+@[to_additive prod_vsub_prod_comm]
+theorem prod_sdiv_prod_comm (s₁ s₂ : Set P) (t₁ t₂ : Set P') :
     (s₁ ×ˢ t₁) /ₛ (s₂ ×ˢ t₂) = (s₁ /ₛ s₂) ×ˢ (t₁ /ₛ t₂) := by
   aesop (add norm simp [mem_sdiv, mem_prod])
 
