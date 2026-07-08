@@ -115,11 +115,7 @@ def equivMapDomain (f : G ≃ H) (l : SkewMonoidAlgebra k G) : SkewMonoidAlgebra
 @[deprecated (since := "2026-07-06")] alias toFinsupp_equivMapDomain := coeff_equivMapDomain
 
 theorem equivMapDomain_eq_mapDomain (f : G ≃ H) (l : SkewMonoidAlgebra k G) :
-    equivMapDomain f l = mapDomain f l := by
-  apply coeff_injective
-  ext x
-  simp_rw [coeff_equivMapDomain, Finsupp.equivMapDomain_apply, coeff_mapDomain,
-    Finsupp.mapDomain_equiv_apply]
+    equivMapDomain f l = mapDomain f l := by ext; simp
 
 theorem equivMapDomain_trans {G' G'' : Type*} (f : G ≃ G') (g : G' ≃ G'')
     (l : SkewMonoidAlgebra k G) :
