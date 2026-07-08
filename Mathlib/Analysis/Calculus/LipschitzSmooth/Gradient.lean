@@ -14,7 +14,7 @@ public import Mathlib.Analysis.Calculus.LipschitzSmooth.FDeriv
 On a Hilbert space `F`, the `LipschitzSmoothWith` predicate admits a gradient-form
 characterisation. For differentiable `f`, `fderiv ℝ f x (y - x) = ⟪∇ f x, y - x⟫`
 via Riesz representation (`inner_gradient_left`), and the two-sided Taylor bound becomes
-`|f y - f x - ⟪∇ f x, y - x⟫| ≤ K/2 · ‖y - x‖²`.
+`‖f y - f x - ⟪∇ f x, y - x⟫‖ ≤ K/2 · ‖y - x‖²`.
 
 This file also defines the **`CocoerciveWith K f`** predicate (the conclusion of the
 Baillon-Haddad theorem) and the elementary direction `K`-cocoercive ⟹ `K`-Lipschitz
@@ -30,18 +30,19 @@ open scoped Gradient RealInnerProductSpace
 
 theorem lipschitzSmoothWith_iff_inner_gradient (hf : Differentiable ℝ f) :
     LipschitzSmoothWith K f ↔
-      ∀ x y : F, |f y - f x - ⟪∇ f x, y - x⟫| ≤ K / 2 * ‖y - x‖ ^ 2 := by
+      ∀ x y : F, ‖f y - f x - ⟪∇ f x, y - x⟫‖ ≤ K / 2 * ‖y - x‖ ^ 2 := by
   rw [lipschitzSmoothWith_iff_fderiv hf]
   refine forall_congr' fun x => forall_congr' fun y => ?_
   rw [inner_gradient_left, dist_eq_norm']
 
 namespace LipschitzSmoothWith
 
-theorem inner_gradient_abs_le (h : LipschitzSmoothWith K f) (x y : F)
+theorem inner_gradient_norm_le (h : LipschitzSmoothWith K f) (x y : F)
     (hf : DifferentiableAt ℝ f x) :
-    |f y - f x - ⟪∇ f x, y - x⟫| ≤ K / 2 * ‖y - x‖ ^ 2 := by
-  rw [inner_gradient_left, ← dist_eq_norm']
-  exact h.fderiv_abs_le x y hf
+    ‖f y - f x - ⟪∇ f x, y - x⟫‖ ≤ K / 2 * ‖y - x‖ ^ 2 := by
+  rw [inner_gradient_left]
+  have := h.fderiv_norm_le x y hf
+  rwa [dist_eq_norm'] at this
 
 theorem inner_gradient_descent_le (h : LipschitzSmoothWith K f) (x y : F)
     (hf : DifferentiableAt ℝ f x) :
