@@ -441,42 +441,10 @@ lemma MeromorphicAt.eqOn_compl_singleton_toMeromorphicNFAt (hf : MeromorphicAt f
     (horder : meromorphicOrderAt f x ≠ 0) : toMeromorphicNFAt f x x = 0 := by
   simp [toMeromorphicNFAt, meromorphicAt_of_meromorphicOrderAt_ne_zero, horder]
 
-lemma MeromorphicAt.exists_analyticAt_and_toMeromorphicNFAt_eventuallyEq (hf : MeromorphicAt f x)
-    (horder : meromorphicOrderAt f x = 0) :
-    ∃ g : 𝕜 → E, AnalyticAt 𝕜 g x ∧ g x ≠ 0 ∧ toMeromorphicNFAt f x =ᶠ[𝓝 x] g := by
-  have := (meromorphicOrderAt_eq_int_iff hf).mp horder
-  obtain ⟨hanalytic, hgx, hg⟩ := this.choose_spec
-  refine ⟨this.choose, hanalytic, hgx, eventuallyEq_nhds_of_eventuallyEq_nhdsNE ?_ ?_⟩
-  · trans f
-    · classical simpa [toMeromorphicNFAt, hf] using Function.update_eventuallyEq_nhdsNE _ _ _ _
-    simpa [Filter.EventuallyEq] using hg
-  · simp [toMeromorphicNFAt, hf, horder]
-
 /-- Conversion to normal form at `x` changes the value only at x. -/
 lemma MeromorphicAt.eq_nhdsNE_toMeromorphicNFAt (hf : MeromorphicAt f x) :
     f =ᶠ[𝓝[≠] x] toMeromorphicNFAt f x :=
   eventually_nhdsWithin_of_forall (fun _ hz ↦ hf.eqOn_compl_singleton_toMeromorphicNFAt hz)
-
-@[gcongr]
-lemma toMeromorphicNFAt_congr {f g : 𝕜 → E} (hfg : f =ᶠ[𝓝[≠] x] g) :
-    toMeromorphicNFAt f x x = toMeromorphicNFAt g x x := by
-  by_cases hf : MeromorphicAt f x
-  <;> obtain hg := (MeromorphicAt.meromorphicAt_congr hfg).eq ▸ hf
-  · by_cases hforder : meromorphicOrderAt f x = 0
-    <;> obtain hgorder := meromorphicOrderAt_congr hfg ▸ hforder
-    · obtain ⟨f', hf'anl, _, hf'⟩ :=
-        hf.exists_analyticAt_and_toMeromorphicNFAt_eventuallyEq hforder
-      obtain ⟨g', hg'anl, _, hg'⟩ :=
-        hg.exists_analyticAt_and_toMeromorphicNFAt_eventuallyEq hgorder
-      have hf'g' : f' =ᶠ[𝓝[≠] x] g' := (hf'.symm.filter_mono nhdsWithin_le_nhds).trans <|
-        hf.eq_nhdsNE_toMeromorphicNFAt.symm.trans <| hfg.trans <|
-        hg.eq_nhdsNE_toMeromorphicNFAt.trans <|
-        hg'.filter_mono nhdsWithin_le_nhds
-      have heq : f' x = g' x := Filter.EventuallyEq.eq_of_nhds
-        ((AnalyticAt.frequently_eq_iff_eventually_eq  hf'anl hg'anl).mp hf'g'.frequently)
-      exact hf'.eq_of_nhds.trans <| heq.trans hg'.eq_of_nhds.symm
-    · simp [hforder, hgorder]
-  · simp [hf, hg]
 
 /-- After conversion to normal form at `x`, the function has normal form. -/
 theorem meromorphicNFAt_toMeromorphicNFAt :
@@ -507,6 +475,35 @@ theorem meromorphicNFAt_toMeromorphicNFAt :
       · simp [h₃f, zero_zpow]
   · simp only [toMeromorphicNFAt, hf, ↓reduceDIte]
     exact analyticAt_const.meromorphicNFAt
+
+lemma MeromorphicAt.exists_analyticAt_and_toMeromorphicNFAt_eventuallyEq (hf : MeromorphicAt f x)
+    (horder : 0 ≤ meromorphicOrderAt f x) :
+    ∃ g : 𝕜 → E, AnalyticAt 𝕜 g x ∧ toMeromorphicNFAt f x =ᶠ[𝓝 x] g := by
+  obtain ⟨g, hg⟩ := hf.meromorphicOrderAt_nonneg_iff.mp horder
+  refine ⟨g, hg.1, ?_⟩
+  rw [← meromorphicNFAt_toMeromorphicNFAt.eventuallyEq_nhdsNE_iff_eventuallyEq_nhds
+    hg.1.meromorphicNFAt]
+  exact hf.eq_nhdsNE_toMeromorphicNFAt.symm.trans hg.2
+
+lemma toMeromorphicNFAt_congr {f g : 𝕜 → E} (hfg : f =ᶠ[𝓝[≠] x] g) :
+    toMeromorphicNFAt f x x = toMeromorphicNFAt g x x := by
+  by_cases hf : MeromorphicAt f x
+  <;> obtain hg := (MeromorphicAt.meromorphicAt_congr hfg).eq ▸ hf
+  · by_cases hforder : meromorphicOrderAt f x = 0
+    <;> obtain hgorder := meromorphicOrderAt_congr hfg ▸ hforder
+    · obtain ⟨f', hf'anl, hf'⟩ :=
+        hf.exists_analyticAt_and_toMeromorphicNFAt_eventuallyEq hforder.ge
+      obtain ⟨g', hg'anl, hg'⟩ :=
+        hg.exists_analyticAt_and_toMeromorphicNFAt_eventuallyEq hgorder.ge
+      have hf'g' : f' =ᶠ[𝓝[≠] x] g' := (hf'.symm.filter_mono nhdsWithin_le_nhds).trans <|
+        hf.eq_nhdsNE_toMeromorphicNFAt.symm.trans <| hfg.trans <|
+        hg.eq_nhdsNE_toMeromorphicNFAt.trans <|
+        hg'.filter_mono nhdsWithin_le_nhds
+      have heq : f' x = g' x := Filter.EventuallyEq.eq_of_nhds
+        ((AnalyticAt.frequently_eq_iff_eventually_eq  hf'anl hg'anl).mp hf'g'.frequently)
+      exact hf'.eq_of_nhds.trans <| heq.trans hg'.eq_of_nhds.symm
+    · simp [hforder, hgorder]
+  · simp [hf, hg]
 
 /-- If `f` has normal form at `x`, then `f` equals `f.toNF`. -/
 @[simp] theorem toMeromorphicNFAt_eq_self :
