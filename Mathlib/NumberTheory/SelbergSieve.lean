@@ -492,7 +492,7 @@ private lemma sum_mul_subst (k n : ℕ) {f : ℕ → ℝ} (h : ∀ l, l ∣ n �
     exact (Nat.mul_right_inj hk).mp h
 
 theorem sum_selbergTerms_dvd_eq_mul_sum_coprime {d : ℕ} (hd : d ∣ s.prodPrimes) :
-    ∑ l ∈ divisors s.prodPrimes with d ∣ l ∧ ↑l ^ 2 ≤ s.level, s.selbergTerms l =
+    ∑ l ∈ divisors s.prodPrimes with d ∣ l ∧ l ^ 2 ≤ s.level, s.selbergTerms l =
       s.selbergTerms d * ∑ m ∈ divisors s.prodPrimes with (d * (m : ℕ)) ^ 2 ≤ s.level ∧ m.Coprime d,
         s.selbergTerms m := by
   rw [sum_filter, sum_mul_subst d s.prodPrimes (by simp +contextual)]
