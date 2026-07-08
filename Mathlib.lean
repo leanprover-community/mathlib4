@@ -1955,10 +1955,12 @@ public import Mathlib.Analysis.Convex.EGauge
 public import Mathlib.Analysis.Convex.Exposed
 public import Mathlib.Analysis.Convex.Extrema
 public import Mathlib.Analysis.Convex.Extreme
+public import Mathlib.Analysis.Convex.FDeriv
 public import Mathlib.Analysis.Convex.Function
 public import Mathlib.Analysis.Convex.FunctionTopology
 public import Mathlib.Analysis.Convex.Gauge
 public import Mathlib.Analysis.Convex.GaugeRescale
+public import Mathlib.Analysis.Convex.Gradient
 public import Mathlib.Analysis.Convex.Hull
 public import Mathlib.Analysis.Convex.Independent
 public import Mathlib.Analysis.Convex.Integral
@@ -1966,6 +1968,7 @@ public import Mathlib.Analysis.Convex.Intrinsic
 public import Mathlib.Analysis.Convex.Jensen
 public import Mathlib.Analysis.Convex.Join
 public import Mathlib.Analysis.Convex.KreinMilman
+public import Mathlib.Analysis.Convex.LineDeriv
 public import Mathlib.Analysis.Convex.LinearIsometry
 public import Mathlib.Analysis.Convex.Measure
 public import Mathlib.Analysis.Convex.MetricSpace
@@ -2054,6 +2057,7 @@ public import Mathlib.Analysis.InnerProductSpace.LinearMap
 public import Mathlib.Analysis.InnerProductSpace.LinearPMap
 public import Mathlib.Analysis.InnerProductSpace.MeanErgodic
 public import Mathlib.Analysis.InnerProductSpace.MulOpposite
+public import Mathlib.Analysis.InnerProductSpace.NormDet
 public import Mathlib.Analysis.InnerProductSpace.NormPow
 public import Mathlib.Analysis.InnerProductSpace.OfNorm
 public import Mathlib.Analysis.InnerProductSpace.Orientation
@@ -6961,6 +6965,7 @@ public import Mathlib.RingTheory.Regular.LinearMap
 public import Mathlib.RingTheory.Regular.ProjectiveDimension
 public import Mathlib.RingTheory.Regular.RegularSequence
 public import Mathlib.RingTheory.RegularLocalRing.Defs
+public import Mathlib.RingTheory.RegularLocalRing.Polynomial
 public import Mathlib.RingTheory.RingHom.Bijective
 public import Mathlib.RingTheory.RingHom.EssFiniteType
 public import Mathlib.RingTheory.RingHom.Etale
