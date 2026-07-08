@@ -52,6 +52,7 @@ theorem _root_.Function.Surjective.isBezout {S : Type v} [CommRing S] (f : R →
   · rw [span_gcd, Ideal.map_span, Set.image_insert_eq, Set.image_singleton]
   · rw [Ideal.map_span, Set.image_singleton]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem TFAE [IsBezout R] [IsDomain R] :
     List.TFAE
     [IsNoetherianRing R, IsPrincipalIdealRing R, UniqueFactorizationMonoid R, WfDvdMonoid R] := by

@@ -126,6 +126,7 @@ noncomputable def constructRightAdjointObj (Y : B) : C :=
   equalizer (U'.map (F.map (adj₁.unit.app Y))) (otherMap _ _ adj₁ adj₂ Y)
 
 set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- The homset equivalence which helps show that `L` is a left adjoint. -/
 @[simps!]
 noncomputable def constructRightAdjointEquiv (h : ∀ X : B, RegularMono (adj₁.unit.app X)) (Y : C)

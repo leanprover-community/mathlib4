@@ -52,6 +52,7 @@ instance [LT α] [LT N] : LT (Lex (α →₀ N)) :=
 instance [LT α] [LT N] : LT (Colex (α →₀ N)) :=
   ⟨fun f g ↦ Finsupp.Lex (· > ·) (· < ·) (ofColex f) (ofColex g)⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Lex.lt_iff [LT α] [LT N] {a b : Lex (α →₀ N)} :
     a < b ↔ ∃ i, (∀ j, j < i → a j = b j) ∧ a i < b i :=
   .rfl
@@ -59,6 +60,7 @@ theorem Lex.lt_iff [LT α] [LT N] {a b : Lex (α →₀ N)} :
 @[deprecated (since := "2025-11-29")]
 alias lex_lt_iff := Lex.lt_iff
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Colex.lt_iff [LT α] [LT N] {a b : Colex (α →₀ N)} :
     a < b ↔ ∃ i, (∀ j, i < j → a j = b j) ∧ a i < b i :=
   .rfl
@@ -75,6 +77,7 @@ theorem lex_iff_of_unique [Unique α] [LT N] {r} [Std.Irrefl r] {x y : α →₀
     Finsupp.Lex r (· < ·) x y ↔ x default < y default :=
   Pi.lex_iff_of_unique
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Lex.lt_iff_of_unique [Unique α] [LT N] [Preorder α] {x y : Lex (α →₀ N)} :
     x < y ↔ x default < y default :=
   lex_iff_of_unique
@@ -82,6 +85,7 @@ theorem Lex.lt_iff_of_unique [Unique α] [LT N] [Preorder α] {x y : Lex (α →
 @[deprecated (since := "2025-11-29")]
 alias lex_lt_iff_of_unique := Lex.lt_iff_of_unique
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Colex.lt_iff_of_unique [Unique α] [LT N] [Preorder α] {x y : Colex (α →₀ N)} :
     x < y ↔ x default < y default :=
   Lex.lt_iff_of_unique (α := αᵒᵈ)
@@ -122,6 +126,7 @@ instance Colex.linearOrder [LinearOrder N] : LinearOrder (Colex (α →₀ N)) w
   le := (· ≤ ·)
   __ := LinearOrder.lift' (toColex ∘ toDFinsupp ∘ ofColex) finsuppEquivDFinsupp.injective
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Lex.le_iff_of_unique [Unique α] [PartialOrder N] {x y : Lex (α →₀ N)} :
     x ≤ y ↔ x default ≤ y default :=
   Pi.lex_le_iff_of_unique
@@ -129,6 +134,7 @@ theorem Lex.le_iff_of_unique [Unique α] [PartialOrder N] {x y : Lex (α →₀ 
 @[deprecated (since := "2025-11-29")]
 alias lex_le_iff_of_unique := Lex.le_iff_of_unique
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Colex.le_iff_of_unique [Unique α] [PartialOrder N] {x y : Colex (α →₀ N)} :
     x ≤ y ↔ x default ≤ y default :=
   Lex.le_iff_of_unique (α := αᵒᵈ)
@@ -202,6 +208,7 @@ section Right
 
 variable [AddRightStrictMono N]
 
+set_option backward.isDefEq.respectTransparency false in
 instance Lex.addRightStrictMono : AddRightStrictMono (Lex (α →₀ N)) :=
   ⟨fun f _ _ ⟨a, lta, ha⟩ ↦ ⟨a, fun j ja ↦ congr($(lta j ja) + f j), add_lt_add_left ha _⟩⟩
 

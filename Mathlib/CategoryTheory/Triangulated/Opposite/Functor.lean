@@ -95,6 +95,9 @@ lemma op_commShiftIso_inv_app (X : Cᵒᵖ) (n m : ℤ) (h : n + m = 0) :
     op_commShiftIso_hom_app _ X n m h, assoc, assoc]
   simp [← op_comp, ← F.map_comp]
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc]
 lemma shift_map_op {X Y : C} (f : X ⟶ Y) (n : ℤ) :
     (F.map f).op⟦n⟧' = (F.op.commShiftIso n).inv.app _ ≫
@@ -191,6 +194,7 @@ noncomputable def mapTriangleOpCompTriangleOpEquivalenceFunctorApp (T : Triangle
   Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _) (by simp) (by simp)
       (by simp [shift_map_op, map_opShiftFunctorEquivalence_counitIso_inv_app_unop])
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /--
 If `F : C ⥤ D` commutes with shifts, this expresses the compatibility of `F.mapTriangle`

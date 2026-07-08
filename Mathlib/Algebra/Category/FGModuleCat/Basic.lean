@@ -186,6 +186,7 @@ variable (K : Type u) [Field K]
 instance (V W : FGModuleCat.{v} K) : Module.Finite K (V.obj ⟶ W.obj) :=
   ((inferInstance : Module.Finite K (V →ₗ[K] W))).equiv ModuleCat.homLinearEquiv.symm
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance (V W : FGModuleCat.{v} K) : Module.Finite K (V ⟶ W) :=
   ((inferInstance : Module.Finite K (V.obj ⟶ W.obj))).equiv
     InducedCategory.homLinearEquiv.symm

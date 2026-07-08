@@ -83,6 +83,7 @@ theorem mem_iInf_of_iInter {ι} {s : ι → Filter α} {U : Set α} {I : Set ι}
   refine mem_of_superset (iInter_mem.2 fun i => ?_) hU
   exact mem_iInf_of_mem (i : ι) (hV _)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mem_iInf {ι} {s : ι → Filter α} {U : Set α} :
     (U ∈ ⨅ i, s i) ↔
       ∃ I : Set ι, I.Finite ∧ ∃ V : I → Set α, (∀ (i : I), V i ∈ s i) ∧ U = ⋂ i, V i := by
@@ -132,6 +133,7 @@ theorem mem_iInf_of_finite {ι : Sort*} [Finite ι] {α : Type*} {f : ι → Fil
   rintro ⟨t, ht, rfl⟩
   exact iInter_mem.2 fun i => mem_iInf_of_mem i (ht i)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mem_biInf_principal {ι : Type*} {p : ι → Prop} {s : ι → Set α} {t : Set α} :
     t ∈ ⨅ (i : ι) (_ : p i), 𝓟 (s i) ↔
       ∃ I : Set ι, I.Finite ∧ (∀ i ∈ I, p i) ∧ ⋂ i ∈ I, s i ⊆ t := by

@@ -108,6 +108,7 @@ noncomputable def counitIso : inverse C ⋙ functor C ≅ 𝟭 _ :=
 
 end TriangleOpEquivalence
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- An anti-equivalence between the categories of triangles in `C` and in `Cᵒᵖ`.
 A triangle in `Cᵒᵖ` shall be distinguished iff it corresponds to a distinguished

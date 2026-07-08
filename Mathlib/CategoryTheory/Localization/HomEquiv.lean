@@ -141,6 +141,7 @@ lemma homEquiv_refl (f : L₁.obj X ⟶ L₁.obj Y) :
     homEquiv W L₁ L₁ f = f := by
   apply LocalizerMorphism.id_homMap
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma homEquiv_trans (f : L₁.obj X ⟶ L₁.obj Y) :
     homEquiv W L₂ L₃ (homEquiv W L₁ L₂ f) = homEquiv W L₁ L₃ f := by

@@ -215,6 +215,7 @@ section
 
 variable [MonoCoprod C] {I : Type*} (X : I → C)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma mono_inj (c : Cofan X) (h : IsColimit c) (i : I)
     [HasCoproduct (fun (k : ((Set.range (fun _ : Unit ↦ i))ᶜ : Set I)) => X k.1)] :

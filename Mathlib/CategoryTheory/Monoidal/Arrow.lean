@@ -52,6 +52,7 @@ scoped instance [HasPushouts C] [HasInitial C] [CartesianMonoidalCategory C] [Mo
 variable [HasPushouts C] [HasInitial C] [CartesianMonoidalCategory C] [MonoidalClosed C]
   [BraidedCategory C]
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma tensorHom_comp_tensorHom {X₁ Y₁ Z₁ X₂ Y₂ Z₂ : Arrow C}
     (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (g₁ : Y₁ ⟶ Z₁) (g₂ : Y₂ ⟶ Z₂) :
@@ -114,6 +115,7 @@ lemma triangle (X Y : Arrow C) :
     exact initialIsInitial.ofIso (zeroMul initialIsInitial).symm
   · simp [← comp_whiskerRight_assoc]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The monoidal category instance induced by the pushout-product. -/
 scoped instance : MonoidalCategory (Arrow C) where
   tensorHom_comp_tensorHom := tensorHom_comp_tensorHom

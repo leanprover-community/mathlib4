@@ -361,6 +361,7 @@ theorem map_obj_left (f : X ⟶ Y) [Mono f] (g : MonoOver X) : ((map f).obj g : 
 theorem map_obj_arrow (f : X ⟶ Y) [Mono f] (g : MonoOver X) : ((map f).obj g).arrow = g.arrow ≫ f :=
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance full_map (f : X ⟶ Y) [Mono f] : Functor.Full (map f) where
   map_surjective {g h} e := by
     refine ⟨homMk e.hom.left ?_, rfl⟩
@@ -382,6 +383,7 @@ section
 
 variable (X)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- An equivalence of categories `e` between `C` and `D` induces an equivalence between
 `MonoOver X` and `MonoOver (e.functor.obj X)` whenever `X` is an object of `C`. -/

@@ -453,6 +453,7 @@ lemma realPart_comp_subtype_selfAdjoint :
     realPart.comp (selfAdjoint.submodule ℝ A).subtype = LinearMap.id :=
   selfAdjointPart_comp_subtype_selfAdjoint ℝ
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma imaginaryPart_comp_subtype_selfAdjoint :
     imaginaryPart.comp (selfAdjoint.submodule ℝ A).subtype = 0 := by
   ext; simp [imaginaryPart]
@@ -504,6 +505,7 @@ lemma map_imaginaryPart (f : F) (x : A) : f (ℑ x) = ℑ (f x) := by
 
 end StarHomClass
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem ker_imaginaryPart : imaginaryPart.ker = selfAdjoint.submodule ℝ A := by
   ext x

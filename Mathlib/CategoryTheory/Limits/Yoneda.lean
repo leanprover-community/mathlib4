@@ -33,6 +33,9 @@ namespace Coyoneda
 
 variable {C : Type u} [Category.{v} C]
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The colimit cocone over `coyoneda.obj X`, with cocone point `PUnit`.
 -/
 @[simps]

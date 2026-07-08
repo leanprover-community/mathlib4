@@ -354,6 +354,7 @@ lemma endEquivAutGalois_π (f : End F) (A : PointedGaloisObject F) :
   simp only [endEquivSectionsFibers_π]
   erw [evaluationEquivOfIsGalois_symm_fiber]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem endEquivAutGalois_mul (f g : End F) :
     (endEquivAutGalois F) (g ≫ f) = (endEquivAutGalois F g) * (endEquivAutGalois F f) := by
@@ -394,10 +395,11 @@ noncomputable def autMulEquivAutGalois : Aut F ≃* (AutGalois F)ᵐᵒᵖ where
       MulEquiv.symm_apply_apply]
     exact Aut.ext rfl
   right_inv t := by
-    simp only [MonoidHom.coe_comp, MonoidHom.coe_coe, Function.comp_apply, Aut.toEnd_apply]
+    simp only [MonoidHom.coe_comp, MonoidHom.coe_coe]
     exact (MulEquiv.eq_symm_apply (endMulEquivAutGalois F)).mp rfl
   map_mul' := by simp [map_mul]
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma autMulEquivAutGalois_π (f : Aut F) (A : C) [IsGalois A] (a : F.obj A) :
     F.map (AutGalois.π F { obj := A, pt := a } (autMulEquivAutGalois F f).unop).hom a =
@@ -406,6 +408,7 @@ lemma autMulEquivAutGalois_π (f : Aut F) (A : C) [IsGalois A] (a : F.obj A) :
   rw [endEquivAutGalois_π]
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma autMulEquivAutGalois_symm_app (x : AutGalois F) (A : C) [IsGalois A] (a : F.obj A) :
     ((autMulEquivAutGalois F).symm ⟨x⟩).hom.app A a =
@@ -447,6 +450,7 @@ section General
 
 variable (F : C ⥤ FintypeCat.{w}) [FiberFunctor F]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The `Aut F` action on the fiber of a connected object is transitive. -/
 instance FiberFunctor.isPretransitive_of_isConnected (X : C) [IsConnected X] :
     MulAction.IsPretransitive (Aut F) (F.obj X) where

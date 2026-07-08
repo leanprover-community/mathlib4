@@ -116,6 +116,7 @@ theorem shortest_path_spec {a : V} (p : Path r a) : (shortestPath r a).length â‰
 def geodesicSubtree : WideSubquiver V := fun a b =>
   { e | âˆƒ p : Path r a, shortestPath r b = p.cons e }
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable instance geodesicArborescence : Arborescence (geodesicSubtree r) :=
   arborescenceMk r (fun a => (shortestPath r a).length)
     (by

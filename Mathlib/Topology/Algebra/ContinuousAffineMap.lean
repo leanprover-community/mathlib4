@@ -149,6 +149,7 @@ theorem comp_id (f : P →ᴬ[R] Q) : f.comp (id R P) = f :=
 theorem id_comp (f : P →ᴬ[R] Q) : (id R Q).comp f = f :=
   ext fun _ => rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Applying a `ContinuousAffineMap` commutes with `AffineMap.lineMap`. -/
 @[simp]
 theorem apply_lineMap (f : P →ᴬ[R] Q) (p₀ p₁ : P) (c : R) :
@@ -165,10 +166,12 @@ def lineMap (p₀ p₁ : P) [TopologicalSpace R] [TopologicalSpace V]
     [ContinuousSMul R V] [ContinuousVAdd V P] :
     (lineMap p₀ p₁).toAffineMap = AffineMap.lineMap (k := R) p₀ p₁ := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma coe_lineMap_eq (p₀ p₁ : P) [TopologicalSpace R] [TopologicalSpace V]
     [ContinuousSMul R V] [ContinuousVAdd V P] :
     ⇑(ContinuousAffineMap.lineMap p₀ p₁) = ⇑(AffineMap.lineMap (k := R) p₀ p₁) := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Applying a `ContinuousAffineMap` commutes with `ContinuousAffineMap.lineMap`. -/
 @[simp]
 theorem apply_lineMap' [TopologicalSpace R] [TopologicalSpace V] [TopologicalSpace W]
@@ -367,6 +370,7 @@ instance : AddTorsor (P →ᴬ[R] W) (P →ᴬ[R] Q) where
     (f -ᵥ g).toAffineMap = f.toAffineMap -ᵥ g.toAffineMap :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Interpolating between `ContinuousAffineMap`s with `AffineMap.lineMap` commutes with
 evaluation. -/
 @[simp]
@@ -516,6 +520,7 @@ theorem decompEquiv_symm_apply (p : Q × (V →L[R] W)) (x : V) :
     (decompEquiv R V Q).symm p x = p.2 x +ᵥ p.1 :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem decompEquiv_symm_contLinear (p : Q × (V →L[R] W)) :
     ((decompEquiv R V Q).symm p).contLinear = p.2 := by
@@ -551,6 +556,7 @@ theorem decompLinearEquiv_symm_apply (p : W × (V →L[R] W)) (x : V) :
     (decompLinearEquiv R S V W).symm p x = p.2 x + p.1 :=
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem decompLinearEquiv_symm_contLinear (p : W × (V →L[R] W)) :
     ((decompLinearEquiv R S V W).symm p).contLinear = p.2 := by

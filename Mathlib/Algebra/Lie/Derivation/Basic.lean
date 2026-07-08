@@ -107,6 +107,7 @@ lemma apply_lie_eq_add (D : LieDerivation R L L) (a b : L) :
     D ⁅a, b⁆ = ⁅a, D b⁆ + ⁅D a, b⁆ := by
   rw [LieDerivation.apply_lie_eq_sub, sub_eq_add_neg, lie_skew]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Two Lie derivations equal on a set are equal on its Lie span. -/
 theorem eqOn_lieSpan {s : Set L} (h : Set.EqOn D1 D2 s) :
     Set.EqOn D1 D2 (LieSubalgebra.lieSpan R L s) := by
@@ -317,6 +318,7 @@ instance : LieRing (LieDerivation R L L) where
   leibniz_lie d e f := by
     ext a; simp only [commutator_apply, add_apply, map_sub]; abel
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The set of Lie derivations from a Lie algebra `L` to itself is a Lie algebra. -/
 instance instLieAlgebra : LieAlgebra R (LieDerivation R L L) where
   lie_smul := fun r d e => by ext a; simp only [commutator_apply, map_smul, smul_sub, smul_apply]
@@ -381,6 +383,7 @@ instance instLieRingModule : LieRingModule L (LieDerivation R L M) where
     ⁅x, (D : L →ₗ[R] M)⁆ = ⁅x, D⁆ := by
   ext; simp
 
+set_option backward.isDefEq.respectTransparency false in
 instance instLieModule : LieModule R L (LieDerivation R L M) where
   smul_lie t x D := by ext; simp
   lie_smul t x D := by ext; simp

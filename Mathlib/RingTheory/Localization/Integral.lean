@@ -36,6 +36,7 @@ open Polynomial
 
 variable [IsLocalization M S]
 
+set_option backward.isDefEq.respectTransparency.types false in
 attribute [local instance] Polynomial.algebra Polynomial.isLocalization in
 private theorem exists_integer_polynomial_multiple_and_support_subset (p : S[X]) :
     ∃ b ∈ M, ∃ (q : R[X]), q.map (algebraMap R S) = b • p ∧ q.support ⊆ p.support := by
@@ -312,6 +313,7 @@ lemma IsLocalization.Away.exists_isIntegral_mul_of_isIntegral_mk'
   convert! (hr.pow n).algebraMap.mul hx
   exact (mk'_spec'_mk ..).symm
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- If `t` is integral over `R[1/t]`, then it is integral over `R`. -/
 lemma isIntegral_of_isIntegral_adjoin_of_mul_eq_one
     (t s : S) (hst : s * t = 1) (ht : IsIntegral (Algebra.adjoin R {s}) t) :

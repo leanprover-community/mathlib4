@@ -185,10 +185,12 @@ open Computation
 theorem destruct_nil : destruct (nil : WSeq α) = Computation.pure none :=
   Computation.destruct_eq_pure rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem destruct_cons (a : α) (s) : destruct (cons a s) = Computation.pure (some (a, s)) :=
   Computation.destruct_eq_pure <| by simp [destruct, cons, Computation.rmap]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem destruct_think (s : WSeq α) : destruct (think s) = (destruct s).think :=
   Computation.destruct_eq_think <| by simp [destruct, think, Computation.rmap]
@@ -214,6 +216,7 @@ theorem head_cons (a : α) (s) : head (cons a s) = Computation.pure (some a) := 
 @[simp]
 theorem head_think (s : WSeq α) : head (think s) = (head s).think := by simp [head]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem flatten_pure (s : WSeq α) : flatten (Computation.pure s) = s := by
   refine Seq.eq_of_bisim (fun s1 s2 => flatten (Computation.pure s2) = s1) ?_ rfl
@@ -226,6 +229,7 @@ theorem flatten_pure (s : WSeq α) : flatten (Computation.pure s) = s := by
     obtain ⟨o, s'⟩ := val
     simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem flatten_think (c : Computation (WSeq α)) : flatten c.think = think (flatten c) :=
   Seq.destruct_eq_cons <| by simp [flatten]
@@ -290,12 +294,14 @@ theorem get?_tail (s : WSeq α) (n) : get? (tail s) n = get? s (n + 1) :=
 theorem join_nil : join nil = (nil : WSeq α) :=
   Seq.join_nil
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem join_think (S : WSeq (WSeq α)) : join (think S) = think (join S) := by
   simp only [join, think]
   dsimp only [(· <$> ·)]
   simp [Seq1.ret]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem join_cons (s : WSeq α) (S) : join (cons s S) = think (append s (join S)) := by
   simp only [join, think]
@@ -550,6 +556,7 @@ theorem toList'_nil (l : List α) :
       | some (some a, s') => Sum.inr (a::l, s')) (l, nil) = Computation.pure l.reverse :=
   destruct_eq_pure rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem toList'_cons (l : List α) (s : WSeq α) (a : α) :
     Computation.corec (fun ⟨l, s⟩ =>
@@ -564,6 +571,7 @@ theorem toList'_cons (l : List α) (s : WSeq α) (a : α) :
         | some (some a, s') => Sum.inr (a::l, s')) (a::l, s)).think :=
   destruct_eq_think <| by simp [cons]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem toList'_think (l : List α) (s : WSeq α) :
     Computation.corec (fun ⟨l, s⟩ =>
@@ -623,6 +631,7 @@ theorem toList_ofList (l : List α) : l ∈ toList (ofList l) := by
   | nil => simp
   | cons a l IH => simpa [ret_mem] using! think_mem (Computation.mem_map _ IH)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem destruct_ofSeq (s : Seq α) :
     destruct (ofSeq s) = Computation.pure (s.head.map fun a => (a, ofSeq s.tail)) :=
@@ -640,6 +649,7 @@ theorem head_ofSeq (s : Seq α) : head (ofSeq s) = Computation.pure s.head := by
   simp only [head, Option.map_eq_map, destruct_ofSeq, Computation.map_pure, Option.map_map]
   cases Seq.head s <;> rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem tail_ofSeq (s : Seq α) : tail (ofSeq s) = ofSeq s.tail := by
   simp only [tail, destruct_ofSeq, map_pure', flatten_pure]
@@ -669,6 +679,7 @@ theorem map_cons (f : α → β) (a s) : map f (cons a s) = cons (f a) (map f s)
 theorem map_think (f : α → β) (s) : map f (think s) = think (map f s) :=
   Seq.map_cons _ _ _
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_id (s : WSeq α) : map id s = s := by simp [map]
 
@@ -679,6 +690,7 @@ theorem map_ret (f : α → β) (a) : map f (ret a) = ret (f a) := by simp [ret]
 theorem map_append (f : α → β) (s t) : map f (append s t) = append (map f s) (map f t) :=
   Seq.map_append _ _ _
 
+set_option backward.isDefEq.respectTransparency false in
 theorem map_comp (f : α → β) (g : β → γ) (s : WSeq α) : map (g ∘ f) s = map g (map f s) := by
   dsimp [map]; rw [← Seq.map_comp]
   apply congr_fun; apply congr_arg
@@ -789,6 +801,7 @@ theorem destruct_join (S : WSeq (WSeq α)) :
       case nil | cons => simp
       case think S => exact Or.inr ⟨S, by simp⟩
 
+set_option backward.isDefEq.respectTransparency false in
 set_option linter.flexible false in -- TODO: fix non-terminal simp
 @[simp]
 theorem map_join (f : α → β) (S) : map f (join S) = join (map (map f) S) := by

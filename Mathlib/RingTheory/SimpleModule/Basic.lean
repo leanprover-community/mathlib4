@@ -584,6 +584,7 @@ theorem jacobson_density (f : End (End R M) M) (s : Finset M) :
   have ⟨r, hr⟩ := mem_span_singleton.mp this
   ⟨r, fun m hm ↦ by simpa [x] using! congr($hr ⟨m, hm⟩).symm⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The Jacobson density theorem for a module finite over its endomorphism ring. -/
 protected theorem Module.Finite.toModuleEnd_moduleEnd_surjective [Module.Finite (End R M) M] :
     Function.Surjective (Module.toModuleEnd (End R M) (S := R) M) := by

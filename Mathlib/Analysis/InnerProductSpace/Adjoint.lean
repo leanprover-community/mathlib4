@@ -170,7 +170,10 @@ theorem _root_.LinearMap.IsSymmetric.clm_adjoint_eq {A : E →L[𝕜] E} (hA : A
     A† = A := by
   rwa [eq_comm, eq_adjoint_iff A A]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma adjoint_id : (.id 𝕜 E)† = .id 𝕜 E := by simp
+
+set_option backward.isDefEq.respectTransparency.types false in
 lemma adjoint_one : (1 : E →L[𝕜] E)† = 1 := by simp
 
 theorem _root_.Submodule.adjoint_subtypeL (U : Submodule 𝕜 E) [CompleteSpace U] :
@@ -416,6 +419,7 @@ but with stronger type class assumptions (i.e., `CompleteSpace`). -/
 theorem IsStarNormal.orthogonal_range (hT : IsStarNormal T) : T.rangeᗮ = T.ker :=
   T.orthogonal_range ▸ hT.ker_adjoint_eq_ker
 
+set_option backward.isDefEq.respectTransparency false in
 /- TODO: As we have a more general result of this for elements in non-unital C⋆-algebras
 (see `Mathlib/Analysis/CStarAlgebra/Projection.lean`), we will want to simplify the proof
 by using the complexification of an inner product space over `𝕜`. -/
@@ -900,6 +904,7 @@ theorem conjStarAlgEquiv_trans {G : Type*} [NormedAddCommGroup G] [InnerProductS
     [CompleteSpace G] (e : H ≃ₗᵢ[𝕜] K) (f : K ≃ₗᵢ[𝕜] G) :
     (e.trans f).conjStarAlgEquiv = e.conjStarAlgEquiv.trans f.conjStarAlgEquiv := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 open ContinuousLinearEquiv ContinuousLinearMap in
 theorem conjStarAlgEquiv_ext_iff (f g : H ≃ₗᵢ[𝕜] K) :
     f.conjStarAlgEquiv = g.conjStarAlgEquiv ↔ ∃ α : unitary 𝕜, f = α • g := by

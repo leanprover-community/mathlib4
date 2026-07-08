@@ -40,6 +40,7 @@ namespace Cardinal
 /-! ### Properties of `mul` -/
 section mul
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `α` is an infinite type, then `α × α` and `α` have the same cardinality. -/
 theorem mul_eq_self {c : Cardinal} (hc : ℵ₀ ≤ c) : c * c = c := by
   -- The only nontrivial part is `c * c ≤ c`. We prove it inductively.
@@ -543,6 +544,7 @@ end mul_strictMono
 /-! ### Properties about `power` -/
 section power
 
+set_option backward.isDefEq.respectTransparency false in
 theorem pow_le {κ μ : Cardinal.{u}} (H1 : ℵ₀ ≤ κ) (H2 : μ < ℵ₀) : κ ^ μ ≤ κ :=
   let ⟨n, H3⟩ := lt_aleph0.1 H2
   H3.symm ▸

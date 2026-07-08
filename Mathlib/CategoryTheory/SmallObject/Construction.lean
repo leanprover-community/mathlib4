@@ -348,6 +348,7 @@ noncomputable def functor : Arrow C ⥤ Arrow C where
             (t ≫ (τ ≫ τ').left) (by simp)]
     · dsimp
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The canonical natural transformation `𝟭 (Arrow C) ⟶ functor f`. -/
 @[simps app]

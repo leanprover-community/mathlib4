@@ -139,6 +139,7 @@ theorem map_mk_eq_bot_of_le {I J : Ideal R} [J.IsTwoSided] (h : I ≤ J) :
   rw [map_eq_bot_iff_le_ker, mk_ker]
   exact h
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ker_quotient_lift {I : Ideal R} [I.IsTwoSided] (f : R →+* S)
     (H : I ≤ ker f) :
     ker (Ideal.Quotient.lift I f H) = (RingHom.ker f).map (Quotient.mk I) := by
@@ -156,6 +157,7 @@ theorem ker_quotient_lift {I : Ideal R} [I.IsTwoSided] (f : R →+* S)
     rw [mem_ker, ← hy.right, Ideal.Quotient.lift_mk]
     exact hy.left
 
+set_option backward.isDefEq.respectTransparency false in
 lemma injective_lift_iff {I : Ideal R} [I.IsTwoSided]
     {f : R →+* S} (H : ∀ (a : R), a ∈ I → f a = 0) :
     Injective (Quotient.lift I f H) ↔ ker f = I := by
@@ -464,6 +466,7 @@ section
 
 variable [Semiring B] [Algebra R₁ B]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `Ideal.quotient.lift` as an `AlgHom`. -/
 def Quotient.liftₐ (I : Ideal A) [I.IsTwoSided] (f : A →ₐ[R₁] B) (hI : ∀ a : A, a ∈ I → f a = 0) :
     A ⧸ I →ₐ[R₁] B :=
@@ -561,6 +564,7 @@ def _root_.AlgHom.liftOfSurjective (f : A →ₐ[R] B) (hf : Function.Surjective
     (g : A →ₐ[R] C) (H : RingHom.ker f.toRingHom ≤ RingHom.ker g.toRingHom) : B →ₐ[R] C :=
   .comp (Ideal.Quotient.liftₐ _ g H) (Ideal.quotientKerAlgEquivOfSurjective hf).symm.toAlgHom
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma _root_.AlgHom.liftOfSurjective_apply (f : A →ₐ[R] B) (hf : Function.Surjective f)
     (g : A →ₐ[R] C) (H : RingHom.ker f.toRingHom ≤ RingHom.ker g.toRingHom) (x) :
@@ -611,6 +615,7 @@ theorem quotientMap_comp_mk {J : Ideal R} {I : Ideal S} [I.IsTwoSided] [J.IsTwoS
     (quotientMap I f H).comp (Quotient.mk J) = (Quotient.mk I).comp f :=
   RingHom.ext fun x => by simp only [Function.comp_apply, RingHom.coe_comp, Ideal.quotientMap_mk]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma ker_quotientMap_mk {I J : Ideal R} [I.IsTwoSided] [J.IsTwoSided] :
     RingHom.ker (quotientMap (J.map _) (Quotient.mk I) le_comap_map) = I.map (Quotient.mk J) := by
   rw [Ideal.quotientMap, Ideal.ker_quotient_lift, ← RingHom.comap_ker, Ideal.mk_ker,
@@ -689,6 +694,7 @@ section
 
 variable [Ring B] [Algebra R₁ B] {I : Ideal A} (J : Ideal B) [I.IsTwoSided] [J.IsTwoSided]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The algebra hom `A/I →+* B/J` induced by an algebra hom `f : A →ₐ[R₁] B` with `I ≤ f⁻¹(J)`. -/
 def quotientMapₐ (f : A →ₐ[R₁] B) (hIJ : I ≤ J.comap f) :
     A ⧸ I →ₐ[R₁] B ⧸ J :=
@@ -704,6 +710,7 @@ theorem quotient_map_comp_mkₐ (f : A →ₐ[R₁] B) (H : I ≤ J.comap f) :
     (quotientMapₐ J f H).comp (Quotient.mkₐ R₁ I) = (Quotient.mkₐ R₁ J).comp f :=
   AlgHom.ext fun x => by simp only [quotient_map_mkₐ, Quotient.mkₐ_eq_mk, AlgHom.comp_apply]
 
+set_option backward.isDefEq.respectTransparency false in
 variable (I) in
 /-- The algebra equiv `A/I ≃ₐ[R] B/J` induced by an algebra equiv `f : A ≃ₐ[R] B`,
 where `J = f(I)`. -/
@@ -862,6 +869,7 @@ variable [CommRing R] (I J : Ideal R)
 def quotLeftToQuotSup : R ⧸ I →+* R ⧸ I ⊔ J :=
   Ideal.Quotient.factor le_sup_left
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The kernel of `quotLeftToQuotSup` -/
 theorem ker_quotLeftToQuotSup : RingHom.ker (quotLeftToQuotSup I J) =
     J.map (Ideal.Quotient.mk I) := by

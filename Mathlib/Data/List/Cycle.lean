@@ -660,6 +660,7 @@ def lists (s : Cycle α) : Multiset (List α) :=
 theorem lists_coe (l : List α) : lists (l : Cycle α) = ↑l.cyclicPermutations :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem mem_lists_iff_coe_eq {s : Cycle α} {l : List α} : l ∈ s.lists ↔ (l : Cycle α) = s :=
   Quotient.inductionOn' s fun l => by

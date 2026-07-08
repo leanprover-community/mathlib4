@@ -76,6 +76,9 @@ def functorProdToProdFunctorAssociator :
           (associativity _ _ _).functor :=
   Iso.refl _
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The equivalence swapping the second and third categories in `(A × C) × (D × E)`. This follows
 the definition of `MonoidalCategory.tensorμ`. -/
 @[simps!]
