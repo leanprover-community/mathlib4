@@ -524,9 +524,7 @@ def mapDomain : SkewMonoidAlgebra k G →+ SkewMonoidAlgebra k G' where
   map_zero' := by simp
   map_add' _ _ := by ext; simp [Finsupp.mapDomain_add]
 
-lemma coeff_mapDomain : (mapDomain f v).coeff = v.coeff.mapDomain f := rfl
-
-@[deprecated (since := "2026-07-04")] alias toFinsupp_mapDomain := coeff_mapDomain
+@[deprecated (since := "2026-07-04")] alias toFinsupp_mapDomain := coeff_mapDomain_apply
 
 variable {f v}
 
