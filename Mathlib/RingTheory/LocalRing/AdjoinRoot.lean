@@ -122,7 +122,7 @@ theorem isLocalRing_iff_of_monic (monic : p.Monic) : IsLocalRing (AdjoinRoot p) 
     exact isLocalRing_of_isPrimePow_map_residue monic h
 
 lemma map_maximalIdeal_eq_iff_prime_map_residue (monic : p.Monic) [IsLocalRing R]
-    [IsLocalRing (AdjoinRoot p)] : 𝓂[R].map (of p) = maximalIdeal (AdjoinRoot p) ↔
+    [IsLocalRing (AdjoinRoot p)] : 𝓂[R].map (of p) = 𝓂[AdjoinRoot p] ↔
       Prime (p.map (residue R)) := by
   rw [← prime_span_singleton_iff, prime_iff_isPrime (by simpa using (monic.map _).ne_zero)]
   let e₁ : AdjoinRoot p ⧸ 𝓂[R].map (of p) ≃+* 𝓀[R][X] ⧸ span {p.map (residue R)} :=
