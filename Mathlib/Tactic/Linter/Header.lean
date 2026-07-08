@@ -8,7 +8,6 @@ module
 public meta import Lean.Elab.Command
 public meta import Lean.Elab.ParseImportsFast
 public meta import Std.Sync.Mutex
-public meta import Init
 public import Lean.Parser.Module
 public import Mathlib.Tactic.Linter.DirectoryDependency
 
@@ -307,8 +306,10 @@ namespace Style.header
 def broadImportsCheck (imports : Array Syntax) (mainModule : Name) : CommandElabM Unit := do
   for i in imports do
     match i.getId with
-    | `Mathlib.Tactic =>
-      Linter.logLint linter.style.header i "Files in mathlib cannot import the whole tactic folder."
+    | `Mathlib.Tactic | `Lean | `Lean.Meta | `Lean.Elab | `Lean.Elab.Tactic | `Std =>
+      Linter.logLint linter.style.header i
+        s!"Files in mathlib cannot import the whole `{i.getId}` folder. \
+        Doing so would cause imports to be unnecessarily slow."
     | `Mathlib.Tactic.Replace =>
       if mainModule != `Mathlib.Tactic then
         Linter.logLint linter.style.header i
@@ -365,7 +366,8 @@ The set of files outside the `Mathlib` package to run the header style linter on
 because they are files that test the linter.
 -/
 def headerTestFiles : NameSet := .ofList
-  [`MathlibTest.Header, `MathlibTest.HeaderFail, `MathlibTest.VersoHeader, `MathlibTest.DirectoryDependencyLinter.Test]
+  [`MathlibTest.Linter.Header.Basic, `MathlibTest.Linter.Header.Fail, `MathlibTest.Linter.Header.Verso,
+  `MathlibTest.DirectoryDependencyLinter.Test]
 
 @[inherit_doc Mathlib.Linter.linter.style.header]
 def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do

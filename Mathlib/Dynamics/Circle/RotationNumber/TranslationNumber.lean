@@ -6,10 +6,7 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Analysis.SpecificLimits.Basic
-public import Mathlib.Order.Iterate
 public import Mathlib.Order.SemiconjSup
-public import Mathlib.Topology.Order.MonotoneContinuity
-public import Mathlib.Algebra.CharP.Defs
 
 /-!
 # Translation number of a monotone real map that commutes with `x ↦ x + 1`
@@ -134,7 +131,7 @@ namespace CircleDeg1Lift
 
 instance : FunLike CircleDeg1Lift ℝ ℝ where
   coe f := f.toFun
-  coe_injective' | ⟨⟨_, _⟩, _⟩, ⟨⟨_, _⟩, _⟩, rfl => rfl
+  coe_injective | ⟨⟨_, _⟩, _⟩, ⟨⟨_, _⟩, _⟩, rfl => rfl
 
 instance : OrderHomClass CircleDeg1Lift ℝ ℝ where
   map_rel f _ _ h := f.monotone' h

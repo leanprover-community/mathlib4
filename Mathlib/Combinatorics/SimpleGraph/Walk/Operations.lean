@@ -90,7 +90,7 @@ theorem concat_eq_append {u v w : V} (p : G.Walk u v) (h : G.Adj v w) :
 /-- The concatenation of the reverse of the first walk with the second walk. -/
 protected def reverseAux {u v w : V} : G.Walk u v → G.Walk u w → G.Walk v w
   | nil, q => q
-  | cons h p, q => Walk.reverseAux p (cons (G.symm h) q)
+  | cons h p, q => p.reverseAux <| cons h.symm q
 
 /-- The walk in reverse. -/
 @[symm]
@@ -155,7 +155,7 @@ theorem exists_concat_eq_cons {u v w : V} :
 @[simp]
 theorem reverse_nil {u : V} : (nil : G.Walk u u).reverse = nil := rfl
 
-theorem reverse_singleton {u v : V} (h : G.Adj u v) : (cons h nil).reverse = cons (G.symm h) nil :=
+theorem reverse_singleton {u v : V} (h : G.Adj u v) : (cons h nil).reverse = cons h.symm nil :=
   rfl
 
 @[simp]
@@ -163,7 +163,7 @@ theorem reverse_toWalk {u v : V} (h : G.Adj u v) : h.toWalk.reverse = h.symm.toW
 
 @[simp]
 theorem cons_reverseAux {u v w x : V} (p : G.Walk u v) (q : G.Walk w x) (h : G.Adj w u) :
-    (cons h p).reverseAux q = p.reverseAux (cons (G.symm h) q) := rfl
+    (cons h p).reverseAux q = p.reverseAux (cons h.symm q) := rfl
 
 @[simp]
 protected theorem append_reverseAux {u v w x : V}
@@ -171,7 +171,7 @@ protected theorem append_reverseAux {u v w x : V}
     (p.append q).reverseAux r = q.reverseAux (p.reverseAux r) := by
   induction p with
   | nil => rfl
-  | cons h _ ih => exact ih q (cons (G.symm h) r)
+  | cons h _ ih => exact ih q (cons h.symm r)
 
 @[simp]
 protected theorem reverseAux_append {u v w x : V}
@@ -179,14 +179,14 @@ protected theorem reverseAux_append {u v w x : V}
     (p.reverseAux q).append r = p.reverseAux (q.append r) := by
   induction p with
   | nil => rfl
-  | cons h _ ih => simp [ih (cons (G.symm h) q)]
+  | cons h _ ih => simp [ih (cons h.symm q)]
 
 protected theorem reverseAux_eq_reverse_append {u v w : V} (p : G.Walk u v) (q : G.Walk u w) :
     p.reverseAux q = p.reverse.append q := by simp [reverse]
 
 @[simp]
 theorem reverse_cons {u v w : V} (h : G.Adj u v) (p : G.Walk v w) :
-    (cons h p).reverse = p.reverse.append (cons (G.symm h) nil) := by simp [reverse]
+    (cons h p).reverse = p.reverse.append (cons h.symm nil) := by simp [reverse]
 
 @[simp]
 theorem reverse_copy {u v u' v'} (p : G.Walk u v) (hu : u = u') (hv : v = v') :
@@ -200,7 +200,7 @@ theorem reverse_append {u v w : V} (p : G.Walk u v) (q : G.Walk v w) :
 
 @[simp]
 theorem reverse_concat {u v w : V} (p : G.Walk u v) (h : G.Adj v w) :
-    (p.concat h).reverse = cons (G.symm h) p.reverse := by simp [concat_eq_append]
+    (p.concat h).reverse = cons h.symm p.reverse := by simp [concat_eq_append]
 
 @[simp]
 theorem reverse_reverse {u v : V} (p : G.Walk u v) : p.reverse.reverse = p := by
@@ -367,13 +367,10 @@ theorem mem_tail_support_append_iff {t u v w : V} (p : G.Walk u v) (p' : G.Walk 
     t ∈ (p.append p').support.tail ↔ t ∈ p.support.tail ∨ t ∈ p'.support.tail := by
   rw [tail_support_append, List.mem_append]
 
-@[simp, nolint unusedHavesSuffices]
+@[simp]
 theorem mem_support_append_iff {t u v w : V} (p : G.Walk u v) (p' : G.Walk v w) :
     t ∈ (p.append p').support ↔ t ∈ p.support ∨ t ∈ p'.support := by
-  simp only [mem_support_iff, mem_tail_support_append_iff]
-  obtain rfl | h := eq_or_ne t v <;> obtain rfl | h' := eq_or_ne t u <;>
-    -- this `have` triggers the unusedHavesSuffices linter:
-    (try have := h'.symm) <;> simp [*]
+  grind [mem_support_iff, mem_tail_support_append_iff, end_mem_tail_support_of_ne]
 
 theorem support_prefix_support_concat {u v w : V} (p : G.Walk u v) (hadj : G.Adj v w) :
     p.support <+: (p.concat hadj).support := by
@@ -618,14 +615,16 @@ set_option backward.isDefEq.respectTransparency false in
 lemma nil_take_iff (p : G.Walk u v) (n : ℕ) : (p.take n).Nil ↔ p.Nil ∨ n = 0 := by
   cases p <;> cases n <;> simp [take]
 
-lemma take_support_eq_support_take_succ {u v} (p : G.Walk u v) (n : ℕ) :
+lemma support_take {u v} (p : G.Walk u v) (n : ℕ) :
     (p.take n).support = p.support.take (n + 1) := by
   induction p generalizing n <;> cases n <;> simp [*, take]
+
+@[deprecated (since := "2026-05-20")] alias take_support_eq_support_take_succ := support_take
 
 lemma take_take (p : G.Walk u v) (n m : ℕ) :
     (p.take n).take m = (p.take (min n m)).copy rfl (p.take_getVert n m).symm := by
   apply ext_support
-  simp [take_support_eq_support_take_succ, List.take_take, Nat.min_left_comm]
+  simp [support_take, List.take_take, Nat.min_left_comm]
 
 lemma take_of_length_le {u v n} {p : G.Walk u v} (h : p.length ≤ n) :
     p.take n = p.copy rfl (p.getVert_of_length_le h).symm := by
@@ -640,7 +639,7 @@ lemma take_of_length_le {u v n} {p : G.Walk u v} (h : p.length ≤ n) :
 lemma take_cons_eq (h : G.Adj u v) (p : G.Walk v w) (n : ℕ) (hn : n ≠ 0) :
     (cons h p).take n = cons h ((p.take <| n - 1).copy rfl (p.getVert_cons h hn).symm) := by
   apply ext_support
-  grind [support_copy, take_support_eq_support_take_succ]
+  grind [support_copy, support_take]
 
 lemma darts_take (p : G.Walk u v) (n : ℕ) : (p.take n).darts = p.darts.take n := by
   induction p generalizing n <;> cases n <;> simp [*, take]
@@ -679,7 +678,7 @@ lemma drop_support_eq_support_drop_min {u v} (p : G.Walk u v) (n : ℕ) :
 @[simp]
 theorem append_take_drop_eq (p : G.Walk u v) (n : ℕ) : (p.take n).append (p.drop n) = p := by
   apply ext_support
-  rw [support_append, take_support_eq_support_take_succ, drop_support_eq_support_drop_min,
+  rw [support_append, support_take, drop_support_eq_support_drop_min,
     List.tail_drop]
   by_cases! h : n < p.length
   · simp [min_eq_left_of_lt h]

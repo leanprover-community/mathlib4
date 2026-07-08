@@ -117,6 +117,18 @@ theorem angle_const_sub (v : V) (v₁ v₂ v₃ : V) : ∠ (v - v₁) (v - v₂)
 theorem angle_neg (v₁ v₂ v₃ : V) : ∠ (-v₁) (-v₂) (-v₃) = ∠ v₁ v₂ v₃ := by
   simpa only [zero_sub] using angle_const_sub 0 v₁ v₂ v₃
 
+theorem angle_smul_right_of_pos (p₁ : P) {p₂ p₃ p₄ : P} {r : ℝ} (hr : 0 < r)
+    (hrv : r • (p₄ -ᵥ p₂) = p₃ -ᵥ p₂) :
+    ∠ p₁ p₂ p₃ = ∠ p₁ p₂ p₄ := by
+  simp only [angle, ← hrv]
+  exact InnerProductGeometry.angle_smul_right_of_pos (p₁ -ᵥ p₂) (p₄ -ᵥ p₂) hr
+
+theorem angle_smul_left_of_pos {p₁ p₂ p₄ : P} (p₃ : P) {r : ℝ} (hr : 0 < r)
+    (hrv : r • (p₄ -ᵥ p₂) = p₁ -ᵥ p₂) :
+    ∠ p₁ p₂ p₃ = ∠ p₄ p₂ p₃ := by
+  simp only [angle, ← hrv]
+  exact InnerProductGeometry.angle_smul_left_of_pos (p₄ -ᵥ p₂) (p₃ -ᵥ p₂) hr
+
 /-- The angle at a point does not depend on the order of the other two
 points. -/
 nonrec theorem angle_comm (p₁ p₂ p₃ : P) : ∠ p₁ p₂ p₃ = ∠ p₃ p₂ p₁ :=
@@ -167,9 +179,11 @@ theorem angle_eq_angle_of_angle_eq_pi (p₁ : P) {p₂ p₃ p₄ : P} (h : ∠ p
   unfold angle at *
   rcases angle_eq_pi_iff.1 h with ⟨_, ⟨r, ⟨hr, hpr⟩⟩⟩
   rw [eq_comm]
-  convert! angle_smul_right_of_pos (p₁ -ᵥ p₂) (p₃ -ᵥ p₂) (add_pos (neg_pos_of_neg hr) zero_lt_one)
-  rw [add_smul, ← neg_vsub_eq_vsub_rev p₂ p₃, smul_neg, neg_smul, ← hpr]
-  simp
+  replace hpr : (-r + 1) • (p₃ -ᵥ p₂) = p₄ -ᵥ p₂ := by
+    rw [add_smul, ← neg_vsub_eq_vsub_rev p₂ p₃, smul_neg, neg_smul, ← hpr]
+    simp
+  replace hr : 0 < -r + 1 := by linarith
+  exact angle_smul_right_of_pos p₁ hr hpr
 
 /-- If ∠BCD = π, then ∠ACB + ∠ACD = π. -/
 nonrec theorem angle_add_angle_eq_pi_of_angle_eq_pi (p₁ : P) {p₂ p₃ p₄ : P} (h : ∠ p₂ p₃ p₄ = π) :
@@ -227,11 +241,9 @@ theorem dist_eq_abs_sub_dist_iff_angle_eq_zero {p₁ p₂ p₃ : P} (hp₁p₂ :
 
 /-- If M is the midpoint of the segment AB, then ∠AMB = π. -/
 theorem angle_midpoint_eq_pi (p₁ p₂ : P) (hp₁p₂ : p₁ ≠ p₂) : ∠ p₁ (midpoint ℝ p₁ p₂) p₂ = π := by
-  simp only [angle, left_vsub_midpoint, invOf_eq_inv, right_vsub_midpoint, inv_pos, zero_lt_two,
-    angle_smul_right_of_pos, angle_smul_left_of_pos]
-  rw [← neg_vsub_eq_vsub_rev p₁ p₂]
-  apply angle_self_neg_of_nonzero
-  simpa only [ne_eq, vsub_eq_zero_iff_eq]
+  suffices dist p₁ p₂ = dist p₁ (midpoint ℝ p₁ p₂) + dist (midpoint ℝ p₁ p₂) p₂ by
+    rwa [← dist_eq_add_dist_iff_angle_eq_pi (by simpa) (by simpa), dist_comm p₂]
+  simp [dist_eq_norm_vsub V, left_vsub_midpoint, midpoint_vsub_right, norm_smul, ← two_mul]
 
 /-- If M is the midpoint of the segment AB and C is the same distance from A as it is from B
 then ∠CMA = π / 2. -/

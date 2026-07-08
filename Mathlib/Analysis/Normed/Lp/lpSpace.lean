@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2021 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Heather Macbeth
+Authors: Heather Macbeth, Jireh Loreaux
 -/
 module
 
@@ -132,6 +132,13 @@ theorem memℓp_gen_iff'' {f : (i : α) → E i} (hp : 0 < p.toReal) :
     Memℓp f p ↔ ∃ C, 0 ≤ C ∧ ∀ (s : Finset α), ∑ i ∈ s, ‖f i‖ ^ p.toReal ≤ C := by
   refine ⟨fun hf ↦ ?_, fun ⟨C, _, hC⟩ ↦ memℓp_gen' hC⟩
   exact ⟨_, tsum_nonneg fun i ↦ (by positivity), memℓp_gen_iff' hp |>.mp hf⟩
+
+/-- When `α` is `Finite`, every `f : PreLp E p` satisfies `Memℓp f p`. -/
+theorem Memℓp.all [Finite α] (f : ∀ i, E i) : Memℓp f p := by
+  rcases p.trichotomy with (rfl | rfl | _h)
+  · exact memℓp_zero_iff.mpr { i : α | f i ≠ 0 }.toFinite
+  · exact memℓp_infty_iff.mpr (Set.Finite.bddAbove (Set.range fun i : α ↦ ‖f i‖).toFinite)
+  · cases nonempty_fintype α; exact memℓp_gen ⟨Finset.univ.sum _, hasSum_fintype _⟩
 
 theorem zero_memℓp : Memℓp (0 : ∀ i, E i) p := by
   rcases p.trichotomy with (rfl | rfl | hp)
@@ -338,8 +345,19 @@ def PreLp (E : α → Type*) [∀ i, NormedAddCommGroup (E i)] : Type _ :=
   ∀ i, E i
 deriving AddCommGroup
 
-instance PreLp.unique [IsEmpty α] : Unique (PreLp E) :=
+namespace PreLp
+
+@[simp] lemma add_apply {x y : PreLp E} {i : α} : (x + y) i = x i + y i := rfl
+@[simp] lemma zero_apply {i : α} : (0 : PreLp E) i = 0 := rfl
+@[simp] lemma sub_apply {x y : PreLp E} {i : α} : (x - y) i = x i - y i := rfl
+@[simp] lemma neg_apply {x : PreLp E} {i : α} : (-x) i = -(x i) := rfl
+@[simp] lemma nsmul_apply {n : ℕ} {x : PreLp E} {i : α} : (n • x) i = n • (x i) := rfl
+@[simp] lemma zsmul_apply {n : ℤ} {x : PreLp E} {i : α} : (n • x) i = n • (x i) := rfl
+
+instance unique [IsEmpty α] : Unique (PreLp E) :=
   inferInstanceAs <| Unique (∀ _, _)
+
+end PreLp
 
 /-- **The (little) ℓᵖ space**: The additive subgroup of a type synonym of `Π i, E i`, which consists
 of those functions `f` such that `Memℓp f p` (i.e., `f` has finite `p`-norm).
@@ -476,7 +494,6 @@ theorem norm_nonneg' (f : lp E p) : 0 ≤ ‖f‖ := by
   · rw [lp.norm_eq_tsum_rpow hp f]
     exact Real.rpow_nonneg (tsum_nonneg fun i ↦ by positivity) _
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem norm_zero : ‖(0 : lp E p)‖ = 0 := by
   rcases p.trichotomy with (rfl | rfl | hp)
@@ -1226,8 +1243,7 @@ lemma toAddMonoidHom_linearMapOfLE (h : p ≤ q) :
   ext; rfl
 
 lemma linearMapOfLE_comp (hpq : p ≤ q) (hqr : q ≤ r) :
-   (linearMapOfLE 𝕜 E hqr).comp (linearMapOfLE 𝕜 E hpq) =
-     linearMapOfLE 𝕜 E (hpq.trans hqr) := by
+    (linearMapOfLE 𝕜 E hqr).comp (linearMapOfLE 𝕜 E hpq) = linearMapOfLE 𝕜 E (hpq.trans hqr) := by
   ext; rfl
 
 end OfLE

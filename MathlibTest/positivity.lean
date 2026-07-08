@@ -8,6 +8,7 @@ import Mathlib.Analysis.SpecialFunctions.Log.Basic
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Arctan
 import Mathlib.MeasureTheory.Integral.Bochner.Basic
 import Mathlib.NumberTheory.ArithmeticFunction.Misc
+import Mathlib.NumberTheory.Chebyshev
 import Mathlib.Topology.Algebra.InfiniteSum.Order
 
 /-! # Tests for the `positivity` tactic
@@ -487,6 +488,10 @@ example {r : ℝ} (hr : 0 < r) : 0 < Real.sin (Real.arctan r) := by positivity
 example {r : ℝ} (hr : r ≠ 0) : Real.sin (Real.arctan r) ≠ 0 := by positivity
 example {r : ℝ} (hr : 0 ≤ r) : 0 ≤ Real.sin (Real.arctan r) := by positivity
 
+example (n : ℕ) : 0 ≤ ArithmeticFunction.vonMangoldt n := by positivity
+example (x : ℝ) : 0 ≤ Chebyshev.theta x := by positivity
+example (x : ℝ) : 0 ≤ Chebyshev.psi x := by positivity
+
 end SpecialFunctions
 
 /-! ### `sqrt` on `ℝ` and `ℝ≥0` -/
@@ -545,7 +550,8 @@ example {r : ℝ} (hr : 0 < r) : (0 : EReal) < r := by positivity
 example {r : ℝ≥0∞} : (0 : EReal) ≤ r := by positivity
 example {r : ℝ≥0∞} (hr : 0 < r) : (0 : EReal) < r := by positivity
 
--- example {α : Type*} [OrderedRing α] {n : ℤ} : 0 ≤ ((n ^ 2 : ℤ) : α) := by positivity
+-- example {R : Type*} [Ring R] [PartialOrder R] [IsOrderedRing R] {n : ℤ} :
+--     0 ≤ ((n ^ 2 : ℤ) : R) := by positivity
 example {r : ℝ≥0} : 0 ≤ ((r : ℝ) : EReal) := by positivity
 example {r : ℝ≥0} : 0 < ((r + 1 : ℝ) : EReal) := by positivity
 
@@ -632,3 +638,30 @@ example [Semiring S] [PartialOrder S] [IsOrderedRing S] [Semiring R]
     (abv : R → S) [IsAbsoluteValue abv] (x : R) :
     0 ≤ abv x := by
   positivity
+
+/- ## Nonzeroness -/
+
+example {α : Type*} [Zero α] {a : α} (ha : a ≠ 0) : a ≠ 0 := by positivity
+example {α : Type*} [Zero α] {a : α} (ha : a ≠ 0) : 0 ≠ a := by positivity
+example {α : Type*} [Zero α] {a : α} (ha : 0 ≠ a) : a ≠ 0 := by positivity
+
+example {α : Type*} [Semifield α] {x : α} (hx : x ≠ 0) : x⁻¹ ≠ 0 := by positivity
+example {α : Type*} [Semifield α] {x y : α} (hx : x ≠ 0) (hy : y ≠ 0) : x / y ≠ 0 := by positivity
+
+example {α : Type*} [MonoidWithZero α] [NoZeroDivisors α] {x : α} (hx : x ≠ 0) (n : ℕ) :
+    x ^ n ≠ 0 := by positivity
+
+example {α : Type*} [MonoidWithZero α] [NoZeroDivisors α] {x y : α}
+    (hx : x ≠ 0) (hy : y ≠ 0) : x * y ≠ 0 := by positivity
+
+example {α : Type*} [AddMonoidWithOne α] [CharZero α] {n : ℕ} (hn : n ≠ 0) :
+    (n : α) ≠ 0 := by positivity
+example {α : Type*} [AddGroupWithOne α] [CharZero α] {z : ℤ} (hz : z ≠ 0) :
+    (z : α) ≠ 0 := by positivity
+example {α : Type*} [DivisionRing α] [CharZero α] {q : ℚ} (hq : q ≠ 0) :
+    (q : α) ≠ 0 := by positivity
+
+example {α : Type*} [Semiring α] [Nontrivial α] (a : α) : a ^ 0 ≠ 0 := by positivity
+
+example {α : Type*} [AddGroup α] {a b : α} (ha : a ≠ b) : 0 ≠ b - a := by positivity
+example {α : Type*} [AddGroup α] {a b : α} (ha : a ≠ b) : 0 ≠ a - b := by positivity
