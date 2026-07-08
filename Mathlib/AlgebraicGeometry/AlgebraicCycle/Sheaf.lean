@@ -386,106 +386,76 @@ instance [IrreducibleSpace X] {U V : X.Opens} (k : V ≤ U) [Nonempty V] :
   change _ = (X.presheaf.map (homOfLE k).op ≫ _).hom
   simp
 
-set_option backward.isDefEq.respectTransparency false in
-/-
-TODO: Remove the rampant defeq abuse
--/
-noncomputable
-def map (D : AlgebraicCycle X ℤ) {U V : (TopologicalSpace.Opens ↥X)ᵒᵖ} (r : U ⟶ V) :
-    obj D U ⟶ (ModuleCat.restrictScalars (X.ringCatSheaf.obj.map r).hom).obj (obj D V) :=
-  ModuleCat.ofHom
-    (Y := (ModuleCat.restrictScalars (X.ringCatSheaf.obj.map r).hom).obj (obj D V))
-  {
-    toFun := mapFun D (leOfHom (unop r))
-    map_add' x y := by
-      by_cases hV : Nonempty V.unop
-      · simp [mapFun, hV]
-        rfl
-      · simp [mapFun, hV]
-        rfl
-    map_smul' m a := by
-      dsimp [mapFun]
-      split_ifs
-      · apply Subtype.ext
-        rw [smul_eq_smulVal, smulVal]
-        split_ifs
-        · let : Algebra Γ(X, U.unop) Γ(X, V.unop) := (X.sheaf.obj.map r).hom.toAlgebra
-          erw [coe_smul]
-          exact algebra_compatible_smul Γ(X, V.unop) m a.1
-        · have : ¬ Nonempty ↑(unop V) := by
-            have := leOfHom r.unop
-            suffices (unop V) = ⊥ by simp_all only [Opens.nonempty_iff,
-              TopologicalSpace.Opens.coe_bot, Set.not_nonempty_empty]
-            have a : unop U = ⊥ := by
-              rename_i _ hU
-              rw [Opens.nonempty_iff, TopologicalSpace.Opens.nonempty_coe] at hU
-              rw [← TopologicalSpace.Opens.coe_eq_empty, Set.eq_empty_iff_forall_notMem]
-              tauto
-            exact eq_bot_mono this a
-          contradiction
-      · rename_i _ hV
-        exact Subsingleton.elim (h := instSubsingleTonOfEmpty hV) _ _
-  }
+lemma mapFun_add (D : AlgebraicCycle X ℤ) {U V : X.Opens} (r : V ≤ U) (a b : carrier D U) :
+    mapFun D r (a + b) = mapFun D r a + mapFun D r b := by
+  by_cases hV : Nonempty V
+  · exact Subtype.ext (by simp)
+  · exact Subsingleton.elim (h := instSubsingleTonOfEmpty hV) _ _
 
-/-- The underlying function of `map D r` is `mapFun D` along the induced inclusion of opens. -/
+omit [IsRegularInCodimensionOne X] in
 @[simp]
-lemma map_hom_apply (D : AlgebraicCycle X ℤ) {U V : (TopologicalSpace.Opens ↥X)ᵒᵖ} (r : U ⟶ V)
-    (s : ToType (obj D U)) : (map D r).hom s = mapFun D (leOfHom r.unop) s := rfl
+lemma mapFun_id (D : AlgebraicCycle X ℤ) {U : X.Opens} (s : carrier D U) :
+    mapFun D le_rfl s = s := by
+  by_cases hU : Nonempty U
+  · exact Subtype.ext (by simp)
+  · exact Subsingleton.elim (h := instSubsingleTonOfEmpty hU) _ _
 
-set_option backward.isDefEq.respectTransparency false in
-theorem map_id (D : AlgebraicCycle X ℤ) (U : (TopologicalSpace.Opens ↥X)ᵒᵖ) :
-    map D (𝟙 U) = (ModuleCat.restrictScalarsId' (RingCat.Hom.hom (X.ringCatSheaf.obj.map (𝟙 U)))
-    (congrArg RingCat.Hom.hom (X.ringCatSheaf.obj.map_id U))).inv.app (obj D U) := by
-  by_cases h : Nonempty U.unop
-  · apply ModuleCat.hom_ext
-    rw [LinearMap.ext_iff]
-    intro x
+omit [IsRegularInCodimensionOne X] in
+@[simp]
+lemma mapFun_comp (D : AlgebraicCycle X ℤ) {U V W : X.Opens} (rVU : V ≤ U) (rWV : W ≤ V)
+    (s : carrier D U) : mapFun D rWV (mapFun D rVU s) = mapFun D (rWV.trans rVU) s := by
+  by_cases hW : Nonempty W
+  · haveI : Nonempty V := hW.map fun w => ⟨w.1, rWV w.2⟩
+    exact Subtype.ext (by simp)
+  · exact Subsingleton.elim (h := instSubsingleTonOfEmpty hW) _ _
+
+/-- The `Ab`-valued presheaf underlying `𝒪ₓ(D)`: sections restrict via `mapFun`. -/
+noncomputable
+def abPresheaf (D : AlgebraicCycle X ℤ) : TopCat.Presheaf Ab ↑X.toPresheafedSpace where
+  obj U := AddCommGrpCat.of (carrier D (unop U))
+  map r := AddCommGrpCat.ofHom (AddMonoidHom.mk' (mapFun D r.unop.le) (mapFun_add D _))
+  map_id U := by
+    ext s
+    exact congrArg Subtype.val (mapFun_id D s)
+  map_comp f g := by
+    ext s
+    exact congrArg Subtype.val (mapFun_comp D f.unop.le g.unop.le s).symm
+
+@[simp]
+lemma abPresheaf_map_apply (D : AlgebraicCycle X ℤ) {U V : (TopologicalSpace.Opens ↥X)ᵒᵖ}
+    (r : U ⟶ V) (s : ↑((abPresheaf D).obj U)) :
+    (abPresheaf D).map r s = mapFun D r.unop.le s := rfl
+
+/-- Each value of `abPresheaf` is a module over the corresponding sections of the structure
+sheaf, via `instModuleCarrier`. -/
+noncomputable instance (D : AlgebraicCycle X ℤ) (U : (TopologicalSpace.Opens ↥X)ᵒᵖ) :
+    Module ↑(X.ringCatSheaf.obj.obj U) ↑((abPresheaf D).obj U) :=
+  instModuleCarrier (U := unop U) (D := D)
+
+omit [IsRegularInCodimensionOne X] in
+/-- Restriction of sections of `𝒪ₓ(D)` is semilinear with respect to restriction in the
+structure sheaf. -/
+lemma mapFun_smul (D : AlgebraicCycle X ℤ) {U V : X.Opens} (r : V ≤ U)
+    (a : Γ(X, U)) (m : carrier D U) :
+    mapFun D r (a • m) = X.presheaf.map (homOfLE r).op a • mapFun D r m := by
+  by_cases hV : Nonempty V
+  · haveI hU : Nonempty U := hV.map fun x => ⟨x.1, r x.2⟩
+    letI := algebra_restrict r
     apply Subtype.ext
-    simp [map]
-  · apply ModuleCat.hom_ext
-    rw [LinearMap.ext_iff]
-    intro x
-    exact Subsingleton.elim (h := instSubsingleTonOfEmpty h) _ _
+    simp only [mapFunApplyNonempty, coe_smul]
+    exact algebra_compatible_smul Γ(X, V) a m.1
+  · exact Subsingleton.elim (h := instSubsingleTonOfEmpty hV) _ _
 
-set_option backward.isDefEq.respectTransparency false in
-theorem map_comp (D : AlgebraicCycle X ℤ)
-  {U V W : (TopologicalSpace.Opens ↥X)ᵒᵖ} (f : U ⟶ V) (g : V ⟶ W) :
-  map D (f ≫ g) = map D f ≫
-    (ModuleCat.restrictScalars (RingCat.Hom.hom (X.ringCatSheaf.obj.map f))).map (map D g) ≫
-    (ModuleCat.restrictScalarsComp' (RingCat.Hom.hom (X.ringCatSheaf.obj.map f))
-    (RingCat.Hom.hom (X.ringCatSheaf.obj.map g))
-    (RingCat.Hom.hom (X.ringCatSheaf.obj.map (f ≫ g)))
-    (congrArg RingCat.Hom.hom (X.ringCatSheaf.obj.map_comp f g))).inv.app (obj D W) := by
-  apply ModuleCat.hom_ext
-  rw [LinearMap.ext_iff]
-  intro x
-  dsimp [map]
-  by_cases h : Nonempty W.unop
-  · have hV : Nonempty V.unop :=
-      (Opens.nonempty_iff (unop V)).mpr <| Exists.imp (leOfHom g.unop) (nonempty_subtype.mp h)
-    apply Subtype.ext
-    simp only [mapFunApplyNonempty, op_unop]
-    change x.1 = (mapFun D (leOfHom g.unop) (mapFun D (leOfHom f.unop) x))
-    simp
-  · exact Subsingleton.elim (h := instSubsingleTonOfEmpty h) _ _
-
-open Classical in
 noncomputable
 def _root_.AlgebraicGeometry.AlgebraicCycle.presheaf (D : AlgebraicCycle X ℤ) :
-    PresheafOfModules X.ringCatSheaf.obj where
-  obj := obj D
-  map := map D
-  map_id := map_id D
-  map_comp := map_comp D
+    PresheafOfModules X.ringCatSheaf.obj :=
+  PresheafOfModules.ofPresheaf (abPresheaf D) fun _ _ f a m => mapFun_smul D f.unop.le a m
 
 lemma presheaf.obj_eq (D : AlgebraicCycle X ℤ) (U : (TopologicalSpace.Opens ↥X)ᵒᵖ) :
     (presheaf D).obj U = obj D U := rfl
 
-lemma presheaf.obj_eq' (D : AlgebraicCycle X ℤ) (U : (TopologicalSpace.Opens ↥X)ᵒᵖ) :
-    (presheaf D).presheaf.obj U = (forget₂ _ _).obj (obj D U) := rfl
-
-lemma presheaf.map_eq (D : AlgebraicCycle X ℤ) {U V : (TopologicalSpace.Opens ↥X)ᵒᵖ}
-    (r : U ⟶ V) : (presheaf D).map r = map D r := rfl
+lemma presheaf_presheaf (D : AlgebraicCycle X ℤ) :
+    (presheaf D).presheaf = abPresheaf D := rfl
 
 /--
 If sections `s : Γ(𝒪ₓ(D), U)` and `s' : Γ(𝒪ₓ(D), V)` are equal on `U ∩ V` and `U ∩ V` is nonempty,
@@ -496,10 +466,8 @@ lemma sections_equal_of_nonempty_intersection {D : AlgebraicCycle X ℤ} {I : Ty
     (s : (i : I) → ToType ((presheaf D).presheaf.obj (op (𝒰 i))))
     (hs : TopCat.Presheaf.IsCompatible (presheaf D).presheaf 𝒰 s) : (s i).1 = (s j).1 := by
   haveI : Nonempty ↥(𝒰 i ⊓ 𝒰 j) := h
-  have hs := hs i j
-  dsimp [presheaf, PresheafOfModules.presheaf, map] at hs
-  change mapFun D inf_le_left (s i) = mapFun D inf_le_right (s j) at hs
-  simpa using congrArg Subtype.val hs
+  have hs' : mapFun D inf_le_left (s i) = mapFun D inf_le_right (s j) := hs i j
+  simpa using congrArg Subtype.val hs'
 
 /--
 Compatible sections over the members of a cover linked by a chain of pairwise-intersecting
@@ -526,10 +494,9 @@ lemma isSheaf (D : AlgebraicCycle X ℤ) :
   rw [TopCat.Presheaf.isSheaf_iff_isSheafUniqueGluingNontrivial]
   on_goal 2 =>
     -- Over `⊥` the only section is `0`.
-    simp only [presheaf, PresheafOfModules.presheaf_obj_coe, obj, carrier, ne_eq, Opens.coe_bot,
-      Set.coe_setOf, Opens.nonempty_iff, Set.not_nonempty_empty, ge_iff_le, false_and, imp_false,
-      not_not]
-    infer_instance
+    haveI : Subsingleton (ToType ((presheaf D).presheaf.obj (op ⊥))) :=
+      instSubsingleTonOfEmpty (D := D) (U := (⊥ : X.Opens)) (by simp)
+    exact uniqueOfSubsingleton (0 : carrier D (⊥ : X.Opens))
   intro I hI 𝒰 h𝒰 s hs
   obtain ⟨i⟩ := hI
   have : Nonempty (iSup 𝒰 : TopologicalSpace.Opens X) := by aesop
@@ -552,17 +519,11 @@ lemma isSheaf (D : AlgebraicCycle X ℤ) :
       rw [h_eq j]
       exact (mem_carrier_iff.mp (s j).2 (h_eq j ▸ hf)).2 z hj⟩
   refine ⟨sec, fun j ↦ ?_, fun s' h' ↦ ?_⟩
-  · change mapFun D (le_iSup 𝒰 j) sec = s j
-    have : Nonempty ↑(𝒰 j) := h𝒰 j
-    simp only [mapFun, this, sec]
-    exact Subtype.ext (h_eq j)
-  · simp only [sec]
-    specialize h' i
-    change mapFun D (le_iSup 𝒰 i) s' = s i at h'
-    simp_rw [← h']
-    have : Nonempty (𝒰 i) := h𝒰 i
-    obtain ⟨p, hp⟩ := s'
-    simp
+  · haveI : Nonempty ↑(𝒰 j) := h𝒰 j
+    exact Subtype.ext ((mapFunApplyNonempty D (le_iSup 𝒰 j) sec).trans (h_eq j))
+  · haveI : Nonempty ↑(𝒰 i) := h𝒰 i
+    exact Subtype.ext ((mapFunApplyNonempty D (le_iSup 𝒰 i) s').symm.trans
+      (congrArg Subtype.val (h' i)))
 
 end Sheaf
 
@@ -615,16 +576,12 @@ def stalkToFunctionField
     forget₂ RingCat Ab).obj X.functionField) :=
   colimit.desc _ (D.stalkCocone x)
 
-/-
-TODO: Fix this awful proof
--/
 @[simp]
 lemma stalkToFunctionField_germ
     [IsRegularInCodimensionOne X] (D : AlgebraicCycle X ℤ) (x : X) (U : X.Opens) (hxU : x ∈ U)
     (s : Sheaf.carrier D U) :
-    D.stalkToFunctionField x (TopCat.Presheaf.germ D.sheaf.val.presheaf U x hxU s) = s.1 := by
-  erw [colimit.ι_desc_apply _ _ _]
-  rfl
+    D.stalkToFunctionField x (TopCat.Presheaf.germ D.sheaf.val.presheaf U x hxU s) = s.1 :=
+  ConcreteCategory.congr_hom (colimit.ι_desc (D.stalkCocone x) (op ⟨U, hxU⟩)) s
 
 lemma stalkToFunctionField_injective
     [IsRegularInCodimensionOne X] (D : AlgebraicCycle X ℤ) (x : X) :
@@ -689,6 +646,11 @@ def stalkToFunctionFieldLinearMap
         (IsScalarTower.algebraMap_smul (X.presheaf.stalk (⟨x, hxW⟩ : W).1) r_W
           (s_W.1 : X.functionField)).symm).trans
         (congrArg ((X.presheaf.germ W x hxW r_W : X.presheaf.stalk x) • ·) hR.symm)
+
+/-- The underlying function of `stalkToFunctionFieldLinearMap` is `stalkToFunctionField`. -/
+lemma coe_stalkToFunctionFieldLinearMap
+    [IsRegularInCodimensionOne X] (D : AlgebraicCycle X ℤ) (x : X) :
+    ⇑(D.stalkToFunctionFieldLinearMap x) = ⇑(D.stalkToFunctionField x).hom := rfl
 
 /--
 The range of the map from the stalk of O_X(D) at a codimension 1 point `x` is the set of all

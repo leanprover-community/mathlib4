@@ -101,36 +101,25 @@ theorem inductionOn [CompactSpace X]
   induction n using Nat.strong_induction_on with
   | _ n ih =>
     intro E hE hcard
-    by_cases hsupp : E.support = ∅
-    · -- empty support: `E = 0`.
-      have hE0 : E = 0 :=
-        DFunLike.coe_injective ((Function.support_eq_empty_iff.mp hsupp).trans coe_zero.symm)
-      exact mcongr hE0.symm zero
-    · -- nonempty support: clear the coefficient at some point `p`.
-      obtain ⟨p, hp⟩ := Set.nonempty_iff_ne_empty.mpr hsupp
-      have hps : p ∈ s := hE hp
-      set E' := E - (E p) • single p 1 with hE'_def
-      have hE'_apply : ∀ x, E' x = if x = p then 0 else E x := by
-        intro x
-        by_cases hxp : x = p
-        · subst hxp; simp [hE'_def]
-        · simp [hE'_def, hxp]
-      have hsub : E'.support ⊆ E.support := by
-        intro x hx
-        have hx' : E' x ≠ 0 := hx
-        by_cases hxp : x = p
-        · simp [hE'_apply, hxp] at hx'
-        · rw [Function.mem_support]
-          rwa [hE'_apply, if_neg hxp] at hx'
-      have hpnotin : p ∉ E'.support := by simp [Function.mem_support, hE'_apply]
-      have hssub : E'.support ⊂ E.support := hsub.ssubset_of_ne (fun he => hpnotin (he ▸ hp))
-      have hE' : E'.support ⊆ s := hsub.trans hE
-      have hfinE : E.support.Finite := by
-        have := E.locallyFiniteSupport.finite_inter_support_of_isCompact (isCompact_univ (X := X))
-        simpa using this
-      have hsmaller : E'.support.ncard < n := hcard ▸ Set.ncard_lt_ncard hssub hfinE
-      have mE' : motive E' hE' := ih _ hsmaller E' hE' rfl
-      have hEeq : E' + (E p) • single p 1 = E := by grind
-      exact mcongr hEeq (addN E' hE' mE' p hps (E p))
+    rcases eq_or_ne E 0 with rfl | hne
+    · exact mcongr rfl zero
+    -- nonempty support: clear the coefficient at some point `p`.
+    obtain ⟨p, hp⟩ : E.support.Nonempty := Function.support_nonempty_iff.mpr
+      fun h => hne (DFunLike.coe_injective (h.trans coe_zero.symm))
+    set E' := E - (E p) • single p 1 with hE'_def
+    have hE'_apply : ∀ x, E' x = if x = p then 0 else E x := fun x => by
+      rcases eq_or_ne x p with rfl | hxp
+      · simp [hE'_def]
+      · simp [hE'_def, hxp]
+    have hsub : E'.support ⊆ E.support := fun x hx => by
+      rcases eq_or_ne x p with rfl | hxp <;> simp_all [Function.mem_support]
+    have hpnotin : p ∉ E'.support := by simp [Function.mem_support, hE'_apply]
+    have hssub : E'.support ⊂ E.support := hsub.ssubset_of_ne (fun he => hpnotin (he ▸ hp))
+    have hfinE : E.support.Finite := by
+      simpa using E.locallyFiniteSupport.finite_inter_support_of_isCompact
+        (isCompact_univ (X := X))
+    have mE' : motive E' (hsub.trans hE) :=
+      ih _ (hcard ▸ Set.ncard_lt_ncard hssub hfinE) E' (hsub.trans hE) rfl
+    exact mcongr (show E' + (E p) • single p 1 = E by grind) (addN E' _ mE' p (hE hp) (E p))
 
 end Function.locallyFinsupp

@@ -198,7 +198,6 @@ noncomputable def dAux (s : ℕ) :
   | 2 => lesδ R S hS s
   | (m + 3) => dAux (s + 1) m
 
-include hS in
 /-- Consecutive maps of the long exact sequence compose to zero. -/
 lemma lesF_comp_lesG (n : ℕ) : lesMap R S.f n ≫ lesMap R S.g n = 0 := by
   have hzero : (SheafOfModules.toSheaf X.ringCatSheaf).map S.f ≫
@@ -230,7 +229,7 @@ lemma lesδ_comp_lesF (n : ℕ) : lesδ R S hS n ≫ lesMap R S.f (n + 1) = 0 :=
 
 /-- Consecutive maps in the `dAux` indexing compose to zero. -/
 lemma dAux_comp (s : ℕ) : ∀ m, dAux R S hS s m ≫ dAux R S hS s (m + 1) = 0
-  | 0 => lesF_comp_lesG R S hS s
+  | 0 => lesF_comp_lesG R S s
   | 1 => lesG_comp_lesδ R S hS s
   | 2 => lesδ_comp_lesF R S hS s
   | (m + 3) => dAux_comp (s + 1) m
@@ -554,28 +553,24 @@ theorem eulerChar_additive (hSE : S.ShortExact)
   -- `toSheaf` is exact, so the short exact sequence of sheaves of modules maps to one of abelian
   -- sheaves, which is what the long exact cohomology sequence is built from.
   have hS : (S.map (Modules.toSheafAb X)).ShortExact := shortExact_map_toSheaf hSE
-  -- Repackage the vanishing as `IsZero` of the bundled cohomology (the `lesH` implementation).
-  have hz₁ : ∀ n, N < n → IsZero (lesH (CommRingCat.of k) S.X₁ n) := fun n hn =>
-    haveI : Subsingleton (lesH (CommRingCat.of k) S.X₁ n) := hb₁ n hn
+  -- Repackage the vanishing as `IsZero` of the bundled cohomology (the `lesH` implementation)
+  -- and as vanishing of the dimensions.
+  have hz : ∀ (F : X.Modules), (∀ n, N < n → Subsingleton (F.H n)) →
+      ∀ n, N < n → IsZero (lesH (CommRingCat.of k) F n) := fun F hb n hn =>
+    haveI : Subsingleton (lesH (CommRingCat.of k) F n) := hb n hn
     ModuleCat.isZero_of_subsingleton _
-  have hz₂ : ∀ n, N < n → IsZero (lesH (CommRingCat.of k) S.X₂ n) := fun n hn =>
-    haveI : Subsingleton (lesH (CommRingCat.of k) S.X₂ n) := hb₂ n hn
-    ModuleCat.isZero_of_subsingleton _
-  have hz₃ : ∀ n, N < n → IsZero (lesH (CommRingCat.of k) S.X₃ n) := fun n hn =>
-    haveI : Subsingleton (lesH (CommRingCat.of k) S.X₃ n) := hb₃ n hn
-    ModuleCat.isZero_of_subsingleton _
+  have hz₁ := hz S.X₁ hb₁
+  have hz₂ := hz S.X₂ hb₂
+  have hz₃ := hz S.X₃ hb₃
   haveI : ∀ i, Module.Finite k ((lesComplex (CommRingCat.of k) S hS).X i) :=
     lesComplex_X_finite k S hS hf₁ hf₂ hf₃
-  -- The dimensions vanish above `N`.
-  have hbA : ∀ n, N < n → AlgebraicGeometry.Scheme.Modules.h k S.X₁ n = 0 := by
-    intro n hn; haveI := hb₁ n hn
-    exact Module.finrank_zero_of_subsingleton
-  have hbB : ∀ n, N < n → AlgebraicGeometry.Scheme.Modules.h k S.X₂ n = 0 := by
-    intro n hn; haveI := hb₂ n hn
-    exact Module.finrank_zero_of_subsingleton
-  have hbC : ∀ n, N < n → AlgebraicGeometry.Scheme.Modules.h k S.X₃ n = 0 := by
-    intro n hn; haveI := hb₃ n hn
-    exact Module.finrank_zero_of_subsingleton
+  have hdim : ∀ (F : X.Modules), (∀ n, N < n → Subsingleton (F.H n)) →
+      ∀ n, N < n → F.h k n = 0 := fun F hb n hn =>
+    haveI := hb n hn
+    Module.finrank_zero_of_subsingleton
+  have hbA := hdim S.X₁ hb₁
+  have hbB := hdim S.X₂ hb₂
+  have hbC := hdim S.X₃ hb₃
   -- Euler–Poincaré: the alternating sum of dimensions equals the (vanishing) homology version.
   have hEP : (lesComplex (CommRingCat.of k) S hS).eulerChar = 0 := by
     rw [ChainComplex.eulerChar_eq_homologyEulerChar' (lesComplex (CommRingCat.of k) S hS)

@@ -1,4 +1,4 @@
-import Mathlib.AlgebraicGeometry.AlgebraicCycle.SkyscraperEulerChar
+import Mathlib.AlgebraicGeometry.AlgebraicCycle.ResidueFieldModule
 import Mathlib.AlgebraicGeometry.AlgebraicCycle.Basic
 
 /-!
@@ -20,24 +20,21 @@ variable {X : Scheme.{u}} (k : Type u) [Field k]
 
 noncomputable def degree : ℤ := ∑ᶠ (x : X), (D x) * (Module.finrank k (X.residueField x))
 
+variable {D} in
+/-- On a compact space, the summand defining `degree` has finite support. -/
+lemma finite_support_degree_summand [CompactSpace X] :
+    (Function.support fun x => D x * (Module.finrank k (X.residueField x) : ℤ)).Finite := by
+  have := LocallyFiniteSupport.finite_inter_support_of_isCompact D.locallyFiniteSupport
+    CompactSpace.isCompact_univ
+  simp only [Function.locallyFinsuppWithin.toFun_eq_coe, Set.univ_inter,
+    Function.support_mul] at this ⊢
+  exact Set.Finite.inter_of_left this _
+
 @[simp]
 lemma degree_sum (D D' : AlgebraicCycle X ℤ) [CompactSpace X]
     : degree k (D + D') = degree k D + degree k D' := by
-  simp [degree]
-  ring_nf
-  rw [finsum_add_distrib]
-  · have :=
-      LocallyFiniteSupport.finite_inter_support_of_isCompact D.locallyFiniteSupport
-      CompactSpace.isCompact_univ
-    simp only [Function.locallyFinsuppWithin.toFun_eq_coe, Set.univ_inter,
-      Function.HasFiniteSupport, Function.support_mul] at this ⊢
-    exact Set.Finite.inter_of_left this _
-  · have :=
-      LocallyFiniteSupport.finite_inter_support_of_isCompact D'.locallyFiniteSupport
-      CompactSpace.isCompact_univ
-    simp only [Function.locallyFinsuppWithin.toFun_eq_coe, Set.univ_inter,
-      Function.HasFiniteSupport, Function.support_mul] at this ⊢
-    exact Set.Finite.inter_of_left this _
+  simp only [degree, Function.locallyFinsuppWithin.coe_add, Pi.add_apply, add_mul]
+  exact finsum_add_distrib (finite_support_degree_summand k) (finite_support_degree_summand k)
 
 @[simp]
 lemma degree_neg (D : AlgebraicCycle X ℤ)
@@ -46,19 +43,13 @@ lemma degree_neg (D : AlgebraicCycle X ℤ)
 @[simp]
 lemma degree_minus (D D' : AlgebraicCycle X ℤ) [CompactSpace X]
     : degree k (D - D') = degree k D - degree k D' := by
-  have := degree_sum k D (-D')
-  simp [-degree_sum] at this
-  ring_nf at this
-  rw [← this]
-  congr
+  rw [sub_eq_add_neg, degree_sum, degree_neg, sub_eq_add_neg]
 
 open Function.locallyFinsuppWithin Classical in
 @[simp]
 lemma degree_single (p : X) {n : ℤ} : degree k (single p n) =
     n * (Module.finrank k (X.residueField p)):= by
-  simp only [degree]
-  rw [finsum_eq_finsetSum_of_support_subset (s := {p})]
-  · simp
-  · simp
+  rw [degree, finsum_eq_finsetSum_of_support_subset _ (s := {p}) (by simp)]
+  simp
 
 end AlgebraicGeometry.AlgebraicCycle

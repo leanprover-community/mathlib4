@@ -322,6 +322,18 @@ lemma residueField_compHom_smul_eq {U : X.Opens} (hp' : p ∈ U)
   rfl
 
 /--
+`residueField_compHom_smul_eq`, restated with the scalar in `Γ(X, U)`. The section types
+`Γ(X, U)` and `X.ringCatSheaf.presheaf.obj (op U)` are definitionally equal but keyed
+differently, so this version is the one that `rw` can use in goals phrased over `Γ(X, U)`.
+-/
+lemma residueField_compHom_smul_eq' {U : X.Opens} (hp' : p ∈ U)
+    (a : ↑Γ(X, U)) (m : ↑(X.residueField p)) :
+    letI : Module ↑Γ(X, U) ↑(X.residueField p) :=
+      Module.compHom ↑(X.residueField p) (X.ringCatSheaf.presheaf.germ U p hp').hom
+    a • m = (X.evaluation U p hp').hom a * m :=
+  residueField_compHom_smul_eq p hp' a m
+
+/--
 The germ action of `Γ(X, U)` on the stalk at `p ∈ U` and the residue action of the stalk on the
 residue field form a scalar tower over the evaluation action of `Γ(X, U)` on the residue field,
 since `residue ∘ germ = evaluation`.

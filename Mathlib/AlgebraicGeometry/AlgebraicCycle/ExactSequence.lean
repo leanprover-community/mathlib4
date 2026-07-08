@@ -1,6 +1,7 @@
 import Mathlib.AlgebraicGeometry.AlgebraicCycle.StalkUFD
 import Mathlib.AlgebraicGeometry.AlgebraicCycle.Skyscraper
 import Mathlib.AlgebraicGeometry.AlgebraicCycle.Testing
+import Mathlib.AlgebraicGeometry.AlgebraicCycle.LocallyFinsupp
 import Mathlib.Algebra.Category.Grp.Abelian
 import Mathlib.Algebra.Category.Grp.EpiMono
 import Mathlib.CategoryTheory.Sites.Abelian
@@ -31,6 +32,7 @@ namespace AlgebraicGeometry.AlgebraicCycle
 namespace Sheaf
 
 open Function.locallyFinsuppWithin
+omit [IsIntegral X] [IsLocallyNoetherian X] in
 open Classical in
 /--
 A cycle supported at a single point with a positive coefficient is effective.
@@ -41,6 +43,18 @@ lemma _root_.AlgebraicGeometry.AlgebraicCycle.single_effective (x : X) (c : ℤ)
   simp [single_apply]
   by_cases o : x = z
   all_goals grind
+
+omit [IsIntegral X] [IsLocallyNoetherian X] in
+open Classical in
+/--
+If `D` is supported in codimension one and `D' - D = single p 1` for a codimension-one point
+`p`, then `D'` is supported in codimension one as well.
+-/
+lemma support_subset_of_sub_eq_single {D D' : AlgebraicCycle X ℤ}
+    (hD : support D ⊆ {x | coheight x = 1}) {p : X} (hp : coheight p = 1)
+    (hD' : D' - D = single p 1) : support D' ⊆ {x | coheight x = 1} := by
+  obtain rfl : D' = D + single p 1 := by rw [← hD']; abel
+  exact Function.locallyFinsupp.support_add_single_subset hD hp
 
 
 variable (D : AlgebraicCycle X ℤ) [IsRegularInCodimensionOne X]
@@ -53,13 +67,13 @@ noncomputable def toSkyscraperFun {U : X.Opens} (hD : support D ⊆ {x | coheigh
     (ϖ : X.presheaf.stalk p) (hϖ : Irreducible ϖ) (hp : coheight p = 1) (hp' : p ∈ U) :
     letI : Module ↑Γ(X, U) ↑(X.residueField p) := (X.evaluation U p hp').hom.toModule
     (D.sheaf).val.obj (op U) →ₗ[Γ(X, U)] ↑(X.residueField p) :=
-  letI := l (D.sheaf) U p hp'
+  letI := germModule (D.sheaf) U p hp'
   letI : Module ↑Γ(X, U) ↑(X.presheaf.stalk p) := (X.presheaf.germ U p hp').hom.toModule
   letI : Module ↑(X.presheaf.stalk p) ↑(X.residueField p) := (X.residue p).hom.toModule
   letI : Module ↑Γ(X, U) ↑(X.residueField p) := (X.evaluation U p hp').hom.toModule
   haveI := isScalarTower_evaluation p hp'
-  haveI := isScalarTower_l (D.sheaf) U p hp'
-  haveI := compatibleSMul_l (D.sheaf) U p hp'
+  haveI := isScalarTower_germModule (D.sheaf) U p hp'
+  haveI := compatibleSMul_germModule (D.sheaf) U p hp'
   (Module.compHom.toLinearMap (X.residue p).hom).restrictScalars Γ(X, U) ∘ₗ
     (stalkEquiv D hD p hp ϖ hϖ).restrictScalars Γ(X, U) ∘ₗ germModuleHom (D.sheaf) U p hp'
 
@@ -242,7 +256,7 @@ lemma toSkyscraperFun_compHom_smul {U : X.Opens} (hD : support D ⊆ {x | coheig
       (letI : Module ↑Γ(X, U) ↑(X.residueField p) :=
         Module.compHom ↑(X.residueField p) (X.ringCatSheaf.presheaf.germ U p hp').hom
        a • toSkyscraperFun p D hD ϖ hϖ hp hp' t) := by
-  erw [residueField_compHom_smul_eq p hp' a]
+  rw [residueField_compHom_smul_eq' p hp' a]
   letI : Module ↑Γ(X, U) ↑(X.residueField p) := (X.evaluation U p hp').hom.toModule
   exact (toSkyscraperFun p D hD ϖ hϖ hp hp').map_smul' a t
 
@@ -275,6 +289,8 @@ def toSkyscraper {U : X.Opens} (hD : support D ⊆ {x | coheight x = 1})
   if hp' : p ∈ U then
     letI : Module ↑Γ(X, U) ↑(X.residueField p) :=
       Module.compHom ↑(X.residueField p) (X.ringCatSheaf.presheaf.germ U p hp').hom
+    letI : Module ↑(X.ringCatSheaf.obj.obj (op U)) ↑(X.residueField p) :=
+      Module.compHom ↑(X.residueField p) (X.ringCatSheaf.presheaf.germ U p hp').hom
     ModuleCat.ofHom (X := ↑(D.sheaf.val.obj (op U))) (Y := ↑(X.residueField p))
       (toSkyscraperFun' p D hD ϖ hϖ hp hp') ≫
       eqToHom (skyscraperPresheafOfModulesObj_pos p X.ringCatSheaf
@@ -286,6 +302,8 @@ lemma toSkyscraper_pos {U : X.Opens} (hD : support D ⊆ {x | coheight x = 1})
     (ϖ : X.presheaf.stalk p) (hϖ : Irreducible ϖ) (hp : coheight p = 1) (hp' : p ∈ U) :
     toSkyscraper p D (U := U) hD ϖ hϖ hp =
       (letI : Module ↑Γ(X, U) ↑(X.residueField p) :=
+        Module.compHom ↑(X.residueField p) (X.ringCatSheaf.presheaf.germ U p hp').hom;
+       letI : Module ↑(X.ringCatSheaf.obj.obj (op U)) ↑(X.residueField p) :=
         Module.compHom ↑(X.residueField p) (X.ringCatSheaf.presheaf.germ U p hp').hom;
         ModuleCat.ofHom (X := ↑(D.sheaf.val.obj (op U))) (Y := ↑(X.residueField p))
           (toSkyscraperFun' p D hD ϖ hϖ hp hp')) ≫
@@ -697,29 +715,11 @@ def twistedClosedSubschemeComplex₂
   X₂ := D'.sheaf
   X₃ := skyscraperSheafOfModules p X.ringCatSheaf ↑(X.residueField p)
   f := extendLe (by rw [← sub_nonneg, hD']; exact single_effective p 1 (by simp))
-  g :=
-    have hsupp : support D' ⊆ {x | coheight x = 1} := by
-      intro x hx
-      by_cases hxp : x = p
-      · exact hxp ▸ hp
-      · refine hD ?_
-        have heq : D' = D + single p 1 := by rw [← hD']; abel
-        have hx' : D'.toFun x ≠ 0 := hx
-        rw [heq] at hx'
-        simpa [Function.mem_support, single_apply, hxp] using hx'
-    toSkyscraperHom p D' hsupp ϖ hϖ hp
+  g := toSkyscraperHom p D' (support_subset_of_sub_eq_single hD hp hD') ϖ hϖ hp
   zero := by
-    have hsupp : support D' ⊆ {x | coheight x = 1} := by
-      intro x hx
-      by_cases hxp : x = p
-      · exact hxp ▸ hp
-      · refine hD ?_
-        have heq : D' = D + single p 1 := by rw [← hD']; abel
-        have hx' : D'.toFun x ≠ 0 := hx
-        rw [heq] at hx'
-        simpa [Function.mem_support, single_apply, hxp] using hx'
     obtain rfl : D = D' - single p 1 := by rw [← hD']; abel
-    exact (twistedClosedSubschemeComplex p D' hsupp ϖ hϖ hp).zero
+    exact (twistedClosedSubschemeComplex p D'
+      (support_subset_of_sub_eq_single hD hp hD') ϖ hϖ hp).zero
 
 open Classical in
 /-- `twistedClosedSubschemeComplex₂` is short exact, inherited from
@@ -731,15 +731,7 @@ lemma twistedClosedSubschemeComplex₂_shortExact
     (hD' : D' - D = single p 1)
     (pClosed : ∀ x : X, x ≤ p → x = p) :
     (twistedClosedSubschemeComplex₂ p hD ϖ hϖ hp hD').ShortExact := by
-  have hsupp : support D' ⊆ {x | coheight x = 1} := by
-    intro x hx
-    by_cases hxp : x = p
-    · exact hxp ▸ hp
-    · refine hD ?_
-      have heq : D' = D + single p 1 := by rw [← hD']; abel
-      have hx' : D'.toFun x ≠ 0 := hx
-      rw [heq] at hx'
-      simpa [Function.mem_support, single_apply, hxp] using hx'
+  have hsupp := support_subset_of_sub_eq_single hD hp hD'
   obtain rfl : D = D' - single p 1 := by rw [← hD']; abel
   exact twistedClosedSubschemeComplex_shortExact p D' hsupp ϖ hϖ hp pClosed
 

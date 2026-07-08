@@ -94,7 +94,7 @@ theorem div_support [IsIntegral X] [IsLocallyNoetherian X] {f : X.functionField}
 
 theorem div_eq_zero_of_isUnit [IsIntegral X] [IsLocallyNoetherian X] {U : X.Opens} [Nonempty U]
     {g : Γ(X, U)} (hg : IsUnit g) : (div (X.germToFunctionField U g)).restrict U = 0 := by
-  apply AlgebraicCycle.homgeneous_ext (AlgebraicCycle.restrict_support_subset_inter div_support)
+  apply AlgebraicCycle.homogeneous_ext (AlgebraicCycle.restrict_support_subset_inter div_support)
     (by simp)
   intro z hz
   simp_all only [mem_inter_iff, mem_setOf_eq, SetLike.mem_coe, AlgebraicCycle.restrict_eq_of_mem,

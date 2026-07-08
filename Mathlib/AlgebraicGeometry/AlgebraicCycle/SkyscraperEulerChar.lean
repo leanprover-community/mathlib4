@@ -1,4 +1,5 @@
 import Mathlib.AlgebraicGeometry.AlgebraicCycle.EulerCharAdditive
+import Mathlib.AlgebraicGeometry.AlgebraicCycle.ResidueFieldModule
 import Mathlib.AlgebraicGeometry.AlgebraicCycle.ExactSequence
 import Mathlib.AlgebraicGeometry.AlgebraicCycle.Skyscraper
 import Mathlib.Topology.Sheaves.Flasque
@@ -10,11 +11,6 @@ universe u
 variable {X : Scheme.{u}} (k : Type u) [Field k] [X.Over (Spec (CommRingCat.of k))]
     (p : X) (M : Type u) [AddCommGroup M]
     [Module (↑(X.ringCatSheaf.presheaf.stalk p)) M]
-
-/-- The residue field at `p` is a `k`-module via the structure map `k → Γ(X, ⊤) → κ(p)`. -/
-noncomputable instance : Module k ↑(X.residueField p) :=
-  Module.compHom (↑(X.residueField p))
-    ((X.Γevaluation p).hom.comp (globalSec (X := X) (R := CommRingCat.of k)))
 
 /-- The scalar endomorphism `smulEnd r` evaluated at `U` on a section is `r • ·`. -/
 lemma smulEnd_hom_app_apply {Y : Scheme.{u}} {R : CommRingCat.{u}} [Y.Over (Spec R)]

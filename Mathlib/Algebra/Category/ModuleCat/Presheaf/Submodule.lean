@@ -135,6 +135,36 @@ instance : CompleteLattice M.Submodule where
   top.map _ := le_top
   le_top _ _ := le_top
 
+set_option backward.isDefEq.respectTransparency false in
+/-- A morphism into `N₂.toPresheafOfModules` whose values lie pointwise in `N₁ ≤ N₂` factors
+through `PresheafOfModules.Submodule.homOfLE`; see `liftOfLE_comp_homOfLE`. -/
+noncomputable def liftOfLE {N₁ N₂ : M.Submodule} (_hle : N₁ ≤ N₂)
+    {A : PresheafOfModules.{v} R} (k : A ⟶ N₂.toPresheafOfModules)
+    (hk : ∀ X (a : ↑(A.obj X)), ((k.app X) a).1 ∈ N₁.obj X) :
+    A ⟶ N₁.toPresheafOfModules :=
+  PresheafOfModules.homMk
+    { app := fun X => AddCommGrpCat.ofHom
+        (AddMonoidHom.mk' (fun a => (⟨((k.app X) a).1, hk X a⟩ : ↑(N₁.obj X)))
+          (fun a b => Subtype.ext
+            ((congrArg Subtype.val (map_add (k.app X).hom a b)).trans rfl)))
+      naturality := fun {X Y} r => by
+        ext a
+        apply Subtype.ext
+        change ((k.app Y) ((A.map r) a)).1 = ((N₂.toPresheafOfModules.map r) ((k.app X) a)).1
+        exact congrArg Subtype.val (PresheafOfModules.naturality_apply k r a) }
+    (fun X r m => Subtype.ext
+      ((congrArg Subtype.val (map_smul (k.app X).hom r m)).trans rfl))
+
+lemma liftOfLE_comp_homOfLE {N₁ N₂ : M.Submodule} (hle : N₁ ≤ N₂)
+    {A : PresheafOfModules.{v} R} (k : A ⟶ N₂.toPresheafOfModules)
+    (hk : ∀ X (a : ↑(A.obj X)), ((k.app X) a).1 ∈ N₁.obj X) :
+    liftOfLE hle k hk ≫ homOfLE hle = k := by
+  apply PresheafOfModules.hom_ext
+  intro X
+  apply ModuleCat.hom_ext
+  ext a
+  rfl
+
 end Submodule
 
 end PresheafOfModules

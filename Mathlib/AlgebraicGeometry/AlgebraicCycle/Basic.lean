@@ -200,23 +200,18 @@ namespace AlgebraicGeometry.AlgebraicCycle
 section restrict
 
 variable [Zero R] (D : AlgebraicCycle X R) (t : Set X)
+open Classical in
 /--
 Restriction of an algebraic cycle to some set. This is distinct from `Function.locallyFinsuppWithin`
 because here we get something which is still just a locally finsupp function on the whole space.
 -/
 noncomputable
 def restrict : AlgebraicCycle X R where
-  toFun z := by
-    classical
-    exact if z ∈ t then D z else 0
+  toFun z := if z ∈ t then D z else 0
   supportWithinDomain' := by simp
-  supportLocallyFiniteWithinDomain' := by
-    intro z hz
-    obtain ⟨U, hU⟩ := D.supportLocallyFiniteWithinDomain z hz
-    use U, hU.1
-    apply Finite.subset hU.2
-    apply inter_subset_inter (Subset.refl U)
-    simp
+  supportLocallyFiniteWithinDomain' z hz := by
+    obtain ⟨U, hU, hUfin⟩ := D.supportLocallyFiniteWithinDomain z hz
+    exact ⟨U, hU, hUfin.subset (inter_subset_inter_right U (by simp))⟩
 
 open Classical in
 lemma restrict_apply (z : X) : D.restrict t z = if z ∈ t then D z else 0 := rfl
@@ -301,31 +296,26 @@ def pushforward [QuasiCompact f] {N : Type*} [DecidableEq N] (c : AlgebraicCycle
   Function.locallyFinsupp.map f (Nat.cast (R := R) <| mapAux f wx wy ·) c
   f.isSpectralMap (f.preimageSupportFinite c)
 
-lemma homgeneous_ext {R : Type*} [Zero R] {D₁ D₂ : AlgebraicCycle X R}
+lemma homogeneous_ext {R : Type*} [Zero R] {D₁ D₂ : AlgebraicCycle X R}
     {t : Set X} (hD₁ : D₁.support ⊆ t) (hD₂ : D₂.support ⊆ t)
-    (h : ∀ a ∈ t, D₁ a = D₂ a) : D₁ = D₂ :=
-  have h' : ∀ a, D₁ a = D₂ a := by
-    intro a
-    by_cases o : a ∈ t
-    · exact h a o
-    rw [support_subset_iff] at hD₁ hD₂
+    (h : ∀ a ∈ t, D₁ a = D₂ a) : D₁ = D₂ := by
+  ext a
+  by_cases o : a ∈ t
+  · exact h a o
+  · rw [support_subset_iff] at hD₁ hD₂
     specialize hD₁ a
     specialize hD₂ a
     simp_all
-  DFunLike.ext _ _ h'
 
 lemma homogeneous_le_iff {R : Type*} [Zero R] [Preorder R] {D₁ D₂ : AlgebraicCycle X R}
     {t : Set X} (hD₁ : D₁.support ⊆ t) (hD₂ : ∀ z ∈ tᶜ, D₂ z ≥ 0) :
     D₁ ≤ D₂ ↔ ∀ z ∈ t, D₁ z ≤ D₂ z := by
-  peel with z
-  refine ⟨by tauto, fun m ↦ ?_⟩
+  refine ⟨fun h z _ => h z, fun h z => ?_⟩
   by_cases o : z ∈ t
-  · exact m o
-  simp only [support_subset_iff, ne_eq] at hD₁
-  specialize hD₁ z
-  by_cases p : D₁ z = 0
-  · simp_all
-  specialize hD₁ p
-  contradiction
+  · exact h z o
+  · have h1 : D₁ z = 0 := by
+      by_contra h0
+      exact o (hD₁ h0)
+    exact h1 ▸ hD₂ z o
 
 end AlgebraicGeometry.AlgebraicCycle

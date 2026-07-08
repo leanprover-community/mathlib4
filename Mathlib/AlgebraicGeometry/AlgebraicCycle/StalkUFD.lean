@@ -1,5 +1,5 @@
 import Mathlib.AlgebraicGeometry.AlgebraicCycle.Sheaf
-import Mathlib.AlgebraicGeometry.AlgebraicCycle.UFD
+import Mathlib.RingTheory.UniqueFactorizationDomain.Hartogs
 import Mathlib.RingTheory.Ideal.KrullsHeightTheorem
 import Mathlib.RingTheory.Localization.LocalizationLocalization
 
@@ -178,8 +178,7 @@ lemma exists_coheight_eq_one_specializes_of_prime {x : X} {ϖ : X.presheaf.stalk
     ⟨(Ideal.span {ϖ}).comap (algebraMap Γ(X, U) (X.presheaf.stalk x)), hspanP.comap _⟩ with h𝔮
   set z : X := hU.fromSpec 𝔮 with hz
   have hzU : z ∈ U := by
-    change z ∈ (U : Set X)
-    rw [← hU.range_fromSpec]
+    rw [← SetLike.mem_coe, ← hU.range_fromSpec]
     exact ⟨𝔮, rfl⟩
   -- The prime of `z` in the chart is `𝔮` (round trip through `fromSpec`).
   have hround : hU.primeIdealOf ⟨z, hzU⟩ = 𝔮 :=
@@ -254,7 +253,7 @@ lemma mem_range_algebraMap_stalk_iff_forall_ord_nonneg [IsRegularInCodimensionOn
     intro h
     rcases eq_or_ne f 0 with rfl | hne
     · exact ⟨0, map_zero _⟩
-    refine ufd_hartogs fun ϖ hϖ => ?_
+    refine UniqueFactorizationMonoid.hartogs fun ϖ hϖ => ?_
     obtain ⟨z, hz, hzx, hrep⟩ := exists_coheight_eq_one_specializes_of_prime hϖ
     exact hrep f ((mem_range_algebraMap_iff_ord_nonneg hz f).mpr
       (fun _ => h hne z hz hzx))
@@ -592,8 +591,8 @@ lemma range_linearMap_eq_range_mulLeft_stalkToFunctionFieldLinearMap_of_ord_eq
   simp only [LinearMap.range_comp, Submodule.map_coe, LinearMap.coe_range]
   have range_eq : Set.range (D.stalkToFunctionFieldLinearMap x) =
       {f : X.functionField | f ≠ 0 → ∀ z, coheight z = 1 → z ⤳ x → - D z ≤ X.ord f z} := by
-    simp only [stalkToFunctionFieldLinearMap]
-    erw [range_stalkToFunctionField D hD x]
+    rw [coe_stalkToFunctionFieldLinearMap]
+    exact range_stalkToFunctionField D hD x
   rw [range_eq]
   ext w
   simp only [Set.mem_range, Algebra.linearMap_apply, Set.mem_image, Set.mem_setOf_eq,

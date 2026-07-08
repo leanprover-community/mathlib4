@@ -46,9 +46,9 @@ lemma smul_presheaf_map {U V : X.Opens} (i : U ⟶ V) (r : R) (x : Γ(F, V)) :
 
 open CategoryTheory.Abelian in
 @[simp]
-lemma boobo {C : Type*} [Category* C] [Abelian C] [HasExt C] {X Y : C}
-  [HasDerivedCategory C] {n : ℕ} :
-  (Ext.homEquiv (C := C) (X := X) (Y := Y) (n := n)).symm Zero.zero = 0 := by
+lemma CategoryTheory.Abelian.Ext.homEquiv_symm_zero {C : Type*} [Category* C] [Abelian C]
+    [HasExt C] {X Y : C} [HasDerivedCategory C] {n : ℕ} :
+    (Ext.homEquiv (C := C) (X := X) (Y := Y) (n := n)).symm Zero.zero = 0 := by
   ext : 1
   simp_all only [Equiv.apply_symm_apply, Ext.zero_hom]
   rfl

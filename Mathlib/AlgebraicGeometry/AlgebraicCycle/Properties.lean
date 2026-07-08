@@ -40,10 +40,7 @@ class IsSmoothDivisor (D : AlgebraicCycle X R) where
   is_smooth : D.support ⊆ {x | ∃ _ : IsDomain (X.presheaf.stalk x), IsDiscreteValuationRing <|
     (X.presheaf.stalk x)}
 
-instance : IsSmoothDivisor (0 : AlgebraicCycle X R) := by
-  simp only [isSmoothDivisor_iff, Function.support_subset_iff, ne_eq, Set.mem_setOf_eq]
-  intro x hx
-  contradiction
+instance : IsSmoothDivisor (0 : AlgebraicCycle X R) := ⟨fun _ hx => absurd rfl hx⟩
 
 lemma AlgebraicCycle.smooth_divisor_support (D : AlgebraicCycle X R) [h : IsSmoothDivisor D] :
     D.support ⊆ {x | ∃ _ : IsDomain (X.presheaf.stalk x), IsDiscreteValuationRing <|
@@ -61,9 +58,7 @@ instance [IsIntegral X] {D : AlgebraicCycle X R}
 instance {D : AlgebraicCycle X R} [IsSmoothDivisor D] : IsWeilDivisor D := by
   rw [isWeilDivisor_iff]
   intro x hx
-  obtain ⟨_, _⟩ : ∃ (x_1 : IsDomain ↑(X.presheaf.stalk x)),
-    IsDiscreteValuationRing ↑(X.presheaf.stalk x) :=
-    Exists.imp (fun a a_1 ↦ a_1) (D.smooth_divisor_support hx)
+  obtain ⟨_, _⟩ := D.smooth_divisor_support hx
   have : ringKrullDim (X.presheaf.stalk x) = 1 :=
     IsDiscreteValuationRing.ringKrullDim_eq_one (X.presheaf.stalk x)
   simp_all [ringKrullDim_stalk_eq_coheight]
