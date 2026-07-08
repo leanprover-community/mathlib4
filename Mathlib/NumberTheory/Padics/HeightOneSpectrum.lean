@@ -153,15 +153,16 @@ noncomputable def adicCompletion.padicEquiv (v : HeightOneSpectrum R) :
 /-- The continuous `ℤ`-algebra isomorphism between `v.adicCompletionIntegers ℚ` and
 `ℤ_[primesEquiv v]`. -/
 noncomputable def adicCompletionIntegers.padicIntEquiv (v : HeightOneSpectrum R) :
-    v.adicCompletionIntegers ℚ ≃A[ℤ] ℤ_[primesEquiv v] where
-  __ := let e := (mapRingEquiv _ (withValEquiv v).continuous
-          (withValEquiv v).symm.continuous).restrict _ _ fun _ ↦ by
+    v.adicCompletionIntegers ℚ ≃A[ℤ] ℤ_[primesEquiv v] :=
+  let g := (((mapRingEquiv _ (withValEquiv v).continuous
+        (withValEquiv v).symm.continuous).restrict _ _ fun _ ↦ by
+          simpa using! (valuation_equiv_padicValuation v).valuedCompletion_le_one_iff)).trans
+      withValIntegersRingEquiv
+  { __ := g
+    __ := let e := (mapEquiv (withValEquiv v)).subtype fun _ ↦ by
             simpa using! (valuation_equiv_padicValuation v).valuedCompletion_le_one_iff
-        e.trans withValIntegersRingEquiv
-  __ := let e := (mapEquiv (withValEquiv v)).subtype fun _ ↦ by
-          simpa using! (valuation_equiv_padicValuation v).valuedCompletion_le_one_iff
-        (e.trans withValIntegersUniformEquiv).toHomeomorph
-  commutes' := by simp
+          (e.trans withValIntegersUniformEquiv).toHomeomorph
+    commutes' r := map_intCast g r }
 
 /-- The diagram
 ```
@@ -189,7 +190,8 @@ theorem adicCompletionIntegers.coe_padicIntEquiv_symm_apply (v : HeightOneSpectr
       (adicCompletion.padicEquiv v).symm x := rfl
 
 theorem adicCompletion.padicEquiv_bijOn (v : HeightOneSpectrum R) :
-    Set.BijOn (padicEquiv v) (v.adicCompletionIntegers ℚ) (subring (primesEquiv v)) := by
+    Set.BijOn (padicEquiv v) (HeightOneSpectrum.adicCompletionIntegers.valuationSubring ℚ v)
+      (subring (primesEquiv v)) := by
   refine ⟨fun x hx ↦ ?_, (padicEquiv v).injective.injOn, fun y hy ↦ ?_⟩
   · rw [← adicCompletionIntegers.coe_padicIntEquiv_apply v ⟨x, hx⟩]
     exact norm_le_one ((adicCompletionIntegers.padicIntEquiv v) ⟨x, hx⟩)

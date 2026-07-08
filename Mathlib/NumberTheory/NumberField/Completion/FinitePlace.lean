@@ -66,16 +66,20 @@ instance : IsDiscreteValuationRing (v.valuation K).integer :=
   (v.valuation K).valuationSubring_isDiscreteValuationRing
 
 instance : IsPrincipalIdealRing (v.adicCompletionIntegers K) := by
-  unfold HeightOneSpectrum.adicCompletionIntegers
-  rw [(Valuation.valuationSubring.integers (Valued.v)).isPrincipalIdealRing_iff_not_denselyOrdered,
-    WithZero.denselyOrdered_set_iff_subsingleton]
-  simpa using Valued.v.range_nontrivial
+  have h : IsPrincipalIdealRing (Valued.v (R := v.adicCompletion K)).valuationSubring := by
+    rw [(Valuation.valuationSubring.integers Valued.v).isPrincipalIdealRing_iff_not_denselyOrdered,
+      WithZero.denselyOrdered_set_iff_subsingleton]
+    simpa using Valued.v.range_nontrivial
+  exact h
+
+instance : IsLocalRing (v.adicCompletionIntegers K) :=
+  inferInstanceAs (IsLocalRing (adicCompletionIntegers.valuationSubring K v))
 
 -- TODO: make this inferred from `IsRankOneDiscrete`, or
 -- develop the API for a completion of a base `IsDVR` ring
 instance : IsDiscreteValuationRing (v.adicCompletionIntegers K) where
   not_a_field' := by
-    unfold HeightOneSpectrum.adicCompletionIntegers
+    change IsLocalRing.maximalIdeal (Valued.v (R := v.adicCompletion K)).valuationSubring ≠ ⊥
     simp only [ne_eq, Ideal.ext_iff, Valuation.mem_maximalIdeal_iff, Ideal.mem_bot, Subtype.ext_iff,
       ZeroMemClass.coe_zero, Subtype.forall, Valuation.mem_valuationSubring_iff, not_forall,
       exists_prop]
