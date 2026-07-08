@@ -663,7 +663,7 @@ theorem primeCounting_eq_theta_div_log_add_integral {x : ℝ} (hx : 2 ≤ x) :
     fun_prop
   · -- Integrability of the derivative
     refine ContinuousOn.integrableOn_Icc fun z ⟨_, _⟩ ↦ ContinuousWithinAt.congr ?_
-      (fun _ _ ↦ deriv_inv_log) deriv_inv_log
+      (fun _ _ ↦ deriv_inv_log_apply) deriv_inv_log_apply
     have : z ≠ 0 := by linarith
     have : log z ^ 2 ≠ 0 := by
       refine pow_ne_zero 2 <| log_ne_zero_of_pos_of_ne_one ?_ ?_ <;> linarith
