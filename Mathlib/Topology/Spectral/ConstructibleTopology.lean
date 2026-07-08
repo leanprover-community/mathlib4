@@ -43,8 +43,7 @@ the open and compact sets of `X` and their complements. -/
 def constructibleTopology (X : Type*) [TopologicalSpace X] : TopologicalSpace X :=
   .generateFrom (constructibleTopologySubbasis X)
 
-lemma constructibleTopology_le (X : Type*) [T : TopologicalSpace X]
-    [CompactSpace X] [QuasiSeparatedSpace X] [PrespectralSpace X] :
+lemma constructibleTopology_le (X : Type*) [T : TopologicalSpace X] [PrespectralSpace X] :
     constructibleTopology X ≤ T :=
   PrespectralSpace.isTopologicalBasis (X := X).eq_generateFrom ▸
     le_generateFrom fun _ hs => TopologicalSpace.isOpen_generateFrom_of_mem <|
@@ -94,8 +93,7 @@ lemma isCompact_sInter_of_subset_constructibleTopologySubbasis [CompactSpace X]
   · exact isCompact_of_mem_constructibleTopologySubbasis (hs ht)
 
 lemma IsSpectralMap.constructibleTopology_eq_induced_of_isEmbedding
-    {Y : Type*} [TopologicalSpace Y] [CompactSpace X] [QuasiSeparatedSpace X]
-    [PrespectralSpace X] [CompactSpace Y] [QuasiSeparatedSpace Y] [PrespectralSpace Y]
+    {Y : Type*} [TopologicalSpace Y] [PrespectralSpace X] [PrespectralSpace Y]
     {f : X → Y} (hf1 : IsSpectralMap f) (hf2 : IsEmbedding f) :
     constructibleTopology X = induced f (constructibleTopology Y) := by
   refine induced_generateFrom_eq ▸ eq_of_le_of_ge (le_generateFrom fun s ⟨t, ht, hts⟩ => ?_)
@@ -197,11 +195,11 @@ instance compactSpace_withConstructibleTopology [CompactSpace X] [QuasiSober X]
     (WithTopology.continuous_toTopology _) compactSpace_constructibleTopology
       (WithTopology.toTopology_surjective _)
 
-/-- If `X` is prespectral, T0 and quasi-sober, then `X` is T2 in the
-constructible topology. This holds in particular for spectral spaces. -/
+/-- If `X` is prespectral and T0, then `X` is T2 in the constructible topology. This holds in
+particular for spectral spaces. -/
 @[stacks 0901 "Hausdorffness"]
-instance t2Space_constructibleTopology [PrespectralSpace X] [T0Space X]
-    [QuasiSober X] : @T2Space X (constructibleTopology X) := by
+instance t2Space_constructibleTopology [PrespectralSpace X] [T0Space X] :
+    @T2Space X (constructibleTopology X) := by
   simp only [t2Space_iff]
   intro x y hxy
   wlog h : ∃ (U : Set X), IsOpen U ∧ x ∈ U ∧ y ∉ U
@@ -209,7 +207,7 @@ instance t2Space_constructibleTopology [PrespectralSpace X] [T0Space X]
       obtain ⟨U, hU1, (o | o)⟩ := exists_isOpen_xor_mem (X := X) hxy <;> use U
       · simp only [not_exists, not_and, not_not] at h
         exact (o.2 (h U hU1 o.1)).elim
-    obtain ⟨U, V, a, b, c, d, e⟩ := @this X _ _ _ _ y x hxy.symm o
+    obtain ⟨U, V, a, b, c, d, e⟩ := @this X _ _ _ y x hxy.symm o
     exact ⟨V, U, b, a, d, c, e.symm⟩
   obtain ⟨U, hU1, hU2, hU3⟩ := h
   obtain ⟨V, ⟨hVo, hVc⟩, hV, hVU⟩ :=
@@ -220,11 +218,11 @@ instance t2Space_constructibleTopology [PrespectralSpace X] [T0Space X]
         (Or.inr ⟨hVo.isClosed_compl, (compl_compl V).symm ▸ hVc⟩),
       hV, Set.mem_compl (fun h ↦ hU3 (hVU h)), disjoint_compl_right⟩
 
-/-- If `X` is prespectral, T0 and quasi-sober, then `X` is T2 in the
-constructible topology. This holds in particular for spectral spaces. -/
+/-- If `X` is prespectral and T0, then `X` is T2 in the constructible topology. This holds in
+particular for spectral spaces. -/
 @[stacks 0901 "Hausdorffness"]
-instance t2Space_withConstructibleTopology [PrespectralSpace X] [T0Space X]
-    [QuasiSober X] : T2Space <| WithConstructibleTopology X :=
+instance t2Space_withConstructibleTopology [PrespectralSpace X] [T0Space X] :
+    T2Space <| WithConstructibleTopology X :=
   @T2Space.of_injective_continuous (WithConstructibleTopology X) X _
     (constructibleTopology X) t2Space_constructibleTopology WithTopology.ofTopology
     (WithTopology.ofTopology_injective (constructibleTopology X))
@@ -302,8 +300,7 @@ lemma WithConstructibleTopology.map_continuous {f : X → Y} (hf : IsSpectralMap
       (hscl.preimage hf.continuous)
 
 lemma WithConstructibleTopology.isCompact_preimage_of_map_continuous
-    [CompactSpace X] [QuasiSober X] [QuasiSeparatedSpace X]
-    [PrespectralSpace X] [CompactSpace Y] [QuasiSeparatedSpace Y]
+    [CompactSpace X] [QuasiSober X] [QuasiSeparatedSpace X] [PrespectralSpace X]
     {f : X → Y} (hf : Continuous <| WithConstructibleTopology.map f)
     {s : Set Y} (hs1 : IsOpen s) (hs2 : IsCompact s) :
     @IsCompact X (constructibleTopology X) (f ⁻¹' s) := by
@@ -316,27 +313,26 @@ lemma WithConstructibleTopology.isCompact_preimage_of_map_continuous
 
 lemma WithConstructibleTopology.isSpectralMap_of_continuous_of_map_continuous
     [CompactSpace X] [QuasiSober X] [QuasiSeparatedSpace X] [PrespectralSpace X]
-    [CompactSpace Y] [QuasiSeparatedSpace Y] {f : X → Y} (hf1 : Continuous f)
-    (hf2 : Continuous <| WithConstructibleTopology.map f) :
+    {f : X → Y} (hf1 : Continuous f) (hf2 : Continuous <| WithConstructibleTopology.map f) :
     IsSpectralMap f :=
   ⟨hf1, fun _ hs1 hs2 => isCompact_of_le_of_isCompact (constructibleTopology_le X) <|
     isCompact_preimage_of_map_continuous hf2 hs1 hs2⟩
 
 lemma WithConstructibleTopology.isSpectralMap_iff_continuous_and_map_continuous
-    [CompactSpace X] [QuasiSober X] [QuasiSeparatedSpace X] [PrespectralSpace X]
-    [CompactSpace Y] [QuasiSeparatedSpace Y] (f : X → Y) :
+    [CompactSpace X] [QuasiSober X] [QuasiSeparatedSpace X] [PrespectralSpace X] (f : X → Y) :
     IsSpectralMap f ↔ Continuous f ∧ (Continuous <| WithConstructibleTopology.map f) :=
   ⟨fun hf => ⟨hf.toContinuous, map_continuous hf⟩,
     fun ⟨hf1, hf2⟩ => isSpectralMap_of_continuous_of_map_continuous hf1 hf2⟩
 
 /--
-A spectral map between *quasi-separated* pre-spectral, sober spaces has compact fibers.
-Note that any quasi-compact morphism of schemes has compact fibers, although the underlying
-topological space of a schemes is not necessarily quasi-separated.
+If `f : X → Y` is a spectral map, where `X` is prespectral, quasi-separated and quasi-sober, and `Y`
+is prespectral and T0, then `f` has compact fibers. Note that any quasi-compact morphism of schemes
+has compact fibers, although the underlying topological space of a schemes is not necessarily
+quasi-separated.
 -/
-lemma IsSpectralMap.hasCompactFibers [PrespectralSpace X] [T0Space X] [QuasiSeparatedSpace X]
-    [QuasiSober X] [PrespectralSpace Y] [T0Space Y] [QuasiSeparatedSpace Y] [QuasiSober Y]
-    {f : X → Y} (hf : IsSpectralMap f) : HasCompactFibers f := by
+lemma IsSpectralMap.hasCompactFibers [PrespectralSpace X] [QuasiSeparatedSpace X]
+    [QuasiSober X] [PrespectralSpace Y] [T0Space Y] {f : X → Y} (hf : IsSpectralMap f) :
+    HasCompactFibers f := by
   intro y
   -- Take a compact open neighbourhood U of y (exists since Y is prespectral)
   obtain ⟨U, ⟨hUo, hUc⟩, (hyU : y ∈ U), -⟩ :=
