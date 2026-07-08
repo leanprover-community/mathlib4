@@ -661,8 +661,8 @@ Present a function with with finite support as a finsum of singleton indicator f
 Represent a function (of locally finite support) that in fact has finite support as a `finsum` of
 singleton indicator functions.
 -/
-@[simp] lemma sum_apply_smul_single_eq_self_on_univ [DecidableEq X] [AddCommMonoid X]
-    {D : locallyFinsupp X ℤ} (h : D.support.Finite) :
+@[simp] lemma sum_apply_smul_single_eq_self_on_univ [DecidableEq X] {D : locallyFinsupp X ℤ}
+    (h : D.support.Finite) :
     ∑ z ∈ h.toFinset, single z (D z) = D := by
   ext w
   simp only [coe_sum, Finset.sum_apply, single_apply, Finset.sum_ite_eq]
