@@ -92,6 +92,7 @@ lemma degree_starGraph_center [Fintype V] [DecidableEq V] {r : V} :
 theorem cliqueFree_starGraph_three (r : V) : starGraph r |>.CliqueFree 3 :=
   isAcyclic_starGraph r |>.cliqueFree_three
 
+variable {G} in
 theorem eq_starGraph_of_isUniversal_of_cliqueFree_three {v : V} (hv : G.IsUniversal v)
     (h3 : G.CliqueFree 3) : G = starGraph v := by
   by_contra! hne
@@ -100,5 +101,10 @@ theorem eq_starGraph_of_isUniversal_of_cliqueFree_three {v : V} (hv : G.IsUniver
   classical
   refine h3 {v, a, b} <| is3Clique_triple_iff.mpr ⟨hv ?_, hv ?_, he⟩ <;>
     intro rfl <;> simp [he.ne] at he'
+
+theorem IsUniversal.isAcyclic_iff_cliqueFree_three {v : V} (hv : G.IsUniversal v) :
+    G.IsAcyclic ↔ G.CliqueFree 3 where
+  mp := IsAcyclic.cliqueFree_three
+  mpr h3 := eq_starGraph_of_isUniversal_of_cliqueFree_three hv h3 ▸ isAcyclic_starGraph v
 
 end SimpleGraph
