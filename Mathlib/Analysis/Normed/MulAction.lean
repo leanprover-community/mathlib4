@@ -217,3 +217,17 @@ theorem Metric.smul_image_sphere {s : α} (hs : s ≠ 0) (x : β) (ε : ℝ) :
     smul_image_ball hs, smul_image_closedBall hs]
 
 end NormedDivisionRingModule
+
+section UniformContinuousConstSMul
+
+variable {α β : Type*} [SeminormedRing α] [SeminormedAddCommGroup β] [DistribSMul α β]
+  [NormSMulClass α β]
+
+-- similar to `IsBoundedSMul.toUniformContinuousConstSMul`
+instance (priority := 100) NormSMulClass.toUniformContinuousConstSMul :
+    UniformContinuousConstSMul α β where
+  uniformContinuous_const_smul r := by
+    refine ((lipschitzWith_iff_dist_le_mul (K := ‖r‖₊)).2 fun x y => ?_).uniformContinuous
+    simp [dist_eq_norm, ← smul_sub, norm_smul]
+
+end UniformContinuousConstSMul
