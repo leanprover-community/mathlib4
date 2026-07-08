@@ -507,8 +507,8 @@ end LabelledCopyCount
 section CopyCount
 variable [Fintype V]
 
-/-- `Sub A B` is the type of `SimpleGraph.Subgraph`s of `B` isomorphic to `A`. The corresponding
-count is `SimpleGraph.copyCount`. -/
+/-- `UnlabeledCopy A B` is the type of `SimpleGraph.Subgraph`s of `B` isomorphic to `A`.
+The corresponding count is `SimpleGraph.copyCount`. -/
 abbrev UnlabeledCopy (A : SimpleGraph α) (B : SimpleGraph β) : Type _ :=
   {B' : B.Subgraph // Nonempty (A ≃g B'.coe)}
 
