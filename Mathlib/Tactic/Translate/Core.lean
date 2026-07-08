@@ -40,7 +40,7 @@ In the case of `to_additive`, we may want to apply it multiple times,
 (such as in `a ^ n` -> `n • a` -> `n +ᵥ a`). In this case, you should use the syntax
 `to_additive (attr := some_other_attr, to_additive)`, which will apply `some_other_attr` to all
 three generated declarations.
- -/
+-/
 syntax attrOption := &"attr" " := " Parser.Term.attrInstance,*
 
 syntax reorderOption := &"reorder" " := " translateReorder
@@ -615,20 +615,19 @@ def applyReplacementLambda (t : TranslateData) (dontTranslate : List Nat) (e : E
 
 /-- Run `applyReplacementFun` on the given `srcDecl` to make a new declaration with name `tgt`. -/
 def updateDecl (t : TranslateData) (tgt : Name) (srcDecl : ConstantInfo)
-    (reorder : Reorder) (dont : List Nat)
+    (reorder : ArgReorder) (dont : List Nat)
     (unfoldBoundaries? : Option UnfoldBoundary.UnfoldBoundaries) (rename : NameMap Name) :
     MetaM (ConstantInfo × Option RelevantArg) := do
   unless srcDecl.all == [srcDecl.name] do
     throwError "`{t.attrName}` does not support mutually recursive declarations."
   let decl := srcDecl.updateName tgt
   let decl := decl.updateAll [tgt]
-  let decl := decl.updateLevelParams (reorder.univReorder.permuteList! decl.levelParams)
   let mut value := decl.value! (allowOpaque := true)
   if let some b := unfoldBoundaries? then
     value ← b.cast (← b.insertBoundaries value t.attrName) decl.type t.attrName
   trace[translate] "Value before translation:{indentExpr value}"
   let (value', relevantArg₁) ← applyReplacementLambda t dont value
-  value ← reorderLambda reorder.reorder value'
+  value ← reorderLambda reorder value'
   if let some b := unfoldBoundaries? then
     value ← b.unfoldInsertions value
   let decl := decl.updateValue value
@@ -637,7 +636,7 @@ def updateDecl (t : TranslateData) (tgt : Name) (srcDecl : ConstantInfo)
     type ← b.insertBoundaries decl.type t.attrName
   let (type', relevantArg₂) ← applyReplacementForall t dont <|
     renameBinderNames (t.guessNameExt.getState (← getEnv)) rename type
-  type ← reorderForall reorder.reorder type'
+  type ← reorderForall reorder type'
   if let some b := unfoldBoundaries? then
     type ← b.unfoldInsertions type
   return (decl.updateType type, .merge .min relevantArg₁ relevantArg₂)
@@ -650,7 +649,7 @@ and only if that fails do we try to include them.
 The reason is that in the most common case, `to_dual` succeeds without needing to insert
 unfold boundaries, and figuring out whether to insert them can be quite expensive. -/
 def updateAndAddDecl (t : TranslateData) (tgt : Name) (srcDecl : ConstantInfo)
-    (reorder : Reorder) (dont : List Nat) (rename : NameMap Name) :
+    (reorder : ArgReorder) (dont : List Nat) (rename : NameMap Name) :
     MetaM (ConstantInfo × Option RelevantArg) :=
   -- Set `Elab.async` to `false` so that we can catch kernel errors.
   withOptions (Elab.async.set · false) do
@@ -793,7 +792,6 @@ partial def transformDeclRec (t : TranslateData) (cfg : Config) (rootSrc rootTgt
       let namesPre := (← getConstInfo rootSrc).type.getForallBinderNames
       let namesSrc := (← getConstInfo src).type.getForallBinderNames
       pure <| cfg.dontTranslate.filterMap (namesPre[·]? >>= namesSrc.idxOf?)
-  let reorder := { reorder, univReorder := guessUnivReorder reorder srcDecl }
   -- now transform the source declaration
   let (tgtDecl, relevantArg?) ←
     MetaM.run' <| updateAndAddDecl t tgt srcDecl reorder dontTranslate rename
@@ -802,7 +800,7 @@ partial def transformDeclRec (t : TranslateData) (cfg : Config) (rootSrc rootTgt
       getRelevantArg t cfg relevantArg? src
     else
       pure (relevantArg?.getD .noArg)
-  insertTranslation t src tgt reorder relevantArg cfg.ref
+  insertTranslation t src tgt { reorder } relevantArg cfg.ref
   if src == rootSrc && srcDecl.isThm && tgtDecl.type == srcDecl.type then
     Linter.logLintIf linter.translateRedundant cfg.ref m!"`{t.attrName}` did not change the type \
       of theorem `{.ofConstName src}`. Please remove the attribute."
@@ -917,7 +915,7 @@ def targetName (t : TranslateData) (cfg : Config) (src : Name) : CoreM Name := d
     return src
   if cfg.none then
     if cfg.target != .anonymous then
-      logWarning m!"`{t.attrName} private` ignores the provided name {cfg.target}"
+      logWarning m!"`{t.attrName} none` ignores the provided name {cfg.target}"
     return ← withDeclNameForAuxNaming src do
       mkAuxDeclName <| .mkSimple ("_" ++ t.attrName.toString)
   -- When re-tagging an existing translation, simply return that existing translation.
@@ -964,9 +962,9 @@ partial def checkExistingType (t : TranslateData) (src tgt : Name) (cfg : Config
     MetaM (Reorder × RelevantArg) := withoutExporting do
   let srcDecl ← getConstInfo src
   let tgtDecl ← getConstInfo tgt
-  unless srcDecl.levelParams.length == tgtDecl.levelParams.length do
-    throwError "`{t.attrName}` validation failed:\n  expected {srcDecl.levelParams.length} \
-      universe levels, but '{tgt}' has {tgtDecl.levelParams.length} universe levels"
+  unless srcDecl.numLevelParams == tgtDecl.numLevelParams do
+    throwError "`{t.attrName}` validation failed:\n  expected {srcDecl.numLevelParams} \
+      universe levels, but '{tgt}' has {tgtDecl.numLevelParams} universe levels"
   let mut srcType := srcDecl.type
   let unfoldBoundaries? ← t.unfoldBoundaries?.mapM (return ·.getState (← getEnv))
   if let some b := unfoldBoundaries? then
@@ -984,7 +982,6 @@ partial def checkExistingType (t : TranslateData) (src tgt : Name) (cfg : Config
       pure reorder
     else
       pure reorder'
-  let univReorder := guessUnivReorder reorder srcDecl
   if cfg.self && reorder.isEmpty then
     Linter.logLintIf linter.translateRedundant cfg.ref m!"\
       `{t.attrName} self` is redundant when none of the arguments are reordered.\n\
@@ -994,12 +991,19 @@ partial def checkExistingType (t : TranslateData) (src tgt : Name) (cfg : Config
   srcType ← reorderForall reorder srcType
   if let some b := unfoldBoundaries? then
     srcType ← b.unfoldInsertions srcType
-  srcType := srcType.instantiateLevelParams
-    (univReorder.permuteList! srcDecl.levelParams) (tgtDecl.levelParams.map mkLevelParam)
+  -- We rely on unification to determine how the universe parameters need to be reordered.
+  let levels ← mkFreshLevelMVars srcDecl.numLevelParams
+  srcType := srcType.instantiateLevelParams srcDecl.levelParams levels
   let tgtType := tgtDecl.type
   unless ← withReducible <| isDefEq srcType tgtType do
     throwError "`{t.attrName}` validation failed: expected{indentExpr srcType}\nbut '{tgt}' has \
       type{indentExpr tgtType}"
+  let params ← levels.mapM fun level ↦ do match ← instantiateLevelMVars level with
+    | .param u => return u
+    | _ => throwError "inferred universe `{level}` in `{srcType}` is not a parameter."
+  let some univReorder := getPermutation params.toArray tgtDecl.levelParams.toArray |
+    throwError "inferred universe parameters {params} \
+      are not a reordering of {srcDecl.levelParams}."
   return ({ univReorder, reorder }, ← getRelevantArg t cfg relevantArg? src)
 
 /-- if `f src = #[a_1, ..., a_n]` and `f tgt = #[b_1, ... b_n]` then `proceedFieldsAux src tgt f`
@@ -1149,8 +1153,8 @@ partial def applyAttributes (t : TranslateData) (cfg : Config) (src tgt : Name) 
     (relevantArg : RelevantArg) : TermElabM (Array Name) := do
   -- we only copy the `instance` attribute, since it is nice to directly tag `instance` declarations
   copyInstanceAttribute src tgt
-  -- Warn users if the original declaration has an attributee
-  if !cfg.self && !cfg.none && linter.existingAttributeWarning.get (← getOptions) then
+  -- Warn users if the original declaration has an attribute
+  if !cfg.existing && !cfg.none && linter.existingAttributeWarning.get (← getOptions) then
     let appliedAttrs ← getAllSimpAttrs src
     if appliedAttrs.size > 0 then
       let appliedAttrs := ", ".intercalate (appliedAttrs.toList.map toString)
