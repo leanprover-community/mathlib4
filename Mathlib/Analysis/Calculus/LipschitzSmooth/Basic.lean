@@ -41,10 +41,10 @@ the `lineDeriv` value is always the actual line derivative.
 Equivalent characterisations in `fderiv`, `gradient`, and `deriv` form are
 provided in the sibling files, predicated on `Differentiable` where useful. -/
 def LipschitzSmoothWith (K : NNReal) (f : F → ℝ) :=
-  ∀ (x y : F), |f y - f x - lineDeriv ℝ f x (y - x)| ≤ ↑K / 2 * (dist x y) ^ 2
+  ∀ (x y : F), |f y - f x - lineDeriv ℝ f x (y - x)| ≤ K / 2 * (dist x y) ^ 2
 
 theorem lipschitzSmoothWith_iff_lineDeriv {K : NNReal} {f : F → ℝ} : LipschitzSmoothWith K f ↔
-    ∀ x y : F, |f y - f x - lineDeriv ℝ f x (y - x)| ≤ ↑K / 2 * (dist x y) ^ 2 := Iff.rfl
+    ∀ x y : F, |f y - f x - lineDeriv ℝ f x (y - x)| ≤ K / 2 * (dist x y) ^ 2 := Iff.rfl
 
 namespace LipschitzSmoothWith
 
@@ -52,30 +52,30 @@ variable {K : NNReal} {f : F → ℝ}
 
 /-- Primary extractor: the Taylor remainder is bounded in absolute value. -/
 theorem lineDeriv_abs_le (h : LipschitzSmoothWith K f) (x y : F) :
-    |f y - f x - lineDeriv ℝ f x (y - x)| ≤ ↑K / 2 * (dist x y) ^ 2 := h x y
+    |f y - f x - lineDeriv ℝ f x (y - x)| ≤ K / 2 * (dist x y) ^ 2 := h x y
 
 /-- Descent inequality (upper-bound extractor). -/
 theorem lineDeriv_descent_le (h : LipschitzSmoothWith K f) (x y : F) :
-    f y ≤ f x + lineDeriv ℝ f x (y - x) + ↑K / 2 * (dist x y) ^ 2 := by
+    f y ≤ f x + lineDeriv ℝ f x (y - x) + K / 2 * (dist x y) ^ 2 := by
   have := (abs_le.mp (h.lineDeriv_abs_le x y)).2
   linarith
 
 /-- Ascent inequality (lower-bound extractor). -/
 theorem lineDeriv_descent_ge (h : LipschitzSmoothWith K f) (x y : F) :
-    f x + lineDeriv ℝ f x (y - x) - ↑K / 2 * (dist x y) ^ 2 ≤ f y := by
+    f x + lineDeriv ℝ f x (y - x) - K / 2 * (dist x y) ^ 2 ≤ f y := by
   have := (abs_le.mp (h.lineDeriv_abs_le x y)).1
   linarith
 
 /-- One-sided variance bound on the line derivative. -/
 theorem lineDeriv_apply_sub_le (h : LipschitzSmoothWith K f) (x y : F) :
-    lineDeriv ℝ f y (y - x) - lineDeriv ℝ f x (y - x) ≤ ↑K * (dist x y) ^ 2 := by
+    lineDeriv ℝ f y (y - x) - lineDeriv ℝ f x (y - x) ≤ K * (dist x y) ^ 2 := by
   have hyx := h.lineDeriv_descent_le y x
   rw [← neg_sub y x, lineDeriv_neg, dist_comm] at hyx
   linarith [h.lineDeriv_descent_le x y, hyx]
 
 /-- Two-sided variance bound on the line derivative. -/
 theorem lineDeriv_apply_sub_abs_le (h : LipschitzSmoothWith K f) (x y : F) :
-    |lineDeriv ℝ f y (y - x) - lineDeriv ℝ f x (y - x)| ≤ ↑K * (dist x y) ^ 2 := by
+    |lineDeriv ℝ f y (y - x) - lineDeriv ℝ f x (y - x)| ≤ K * (dist x y) ^ 2 := by
   rw [abs_le]
   refine ⟨?_, h.lineDeriv_apply_sub_le x y⟩
   have hyx := h.lineDeriv_descent_ge y x
@@ -84,7 +84,7 @@ theorem lineDeriv_apply_sub_abs_le (h : LipschitzSmoothWith K f) (x y : F) :
 
 /-- Functional-form variance bound. -/
 theorem lineDeriv_sub_apply_le (h : LipschitzSmoothWith K f) (x y : F) :
-    (lineDeriv ℝ f y - lineDeriv ℝ f x) (y - x) ≤ ↑K * (dist x y) ^ 2 :=
+    (lineDeriv ℝ f y - lineDeriv ℝ f x) (y - x) ≤ K * (dist x y) ^ 2 :=
   Pi.sub_apply (lineDeriv ℝ f _) _ _ ▸ h.lineDeriv_apply_sub_le x y
 
 /-- `K`-smoothness implies line-differentiability: the actual line derivative
@@ -97,7 +97,7 @@ theorem hasLineDerivAt (h : LipschitzSmoothWith K f) (x v : F) :
   change HasDerivAt (fun t : ℝ => f (x + t • v)) L 0
   rw [hasDerivAt_iff_isLittleO_nhds_zero, Asymptotics.isLittleO_iff]
   intro ε hε
-  have hsum_pos : (0:ℝ) < ↑K * ‖v‖^2 / 2 + 1 := by positivity
+  have hsum_pos : (0:ℝ) < K * ‖v‖^2 / 2 + 1 := by positivity
   filter_upwards [Metric.ball_mem_nhds (0 : ℝ) (div_pos hε hsum_pos)] with t ht
   simp only [Metric.mem_ball, Real.dist_eq, sub_zero] at ht
   simp only [zero_add, zero_smul, add_zero, smul_eq_mul, Real.norm_eq_abs]
@@ -105,10 +105,10 @@ theorem hasLineDerivAt (h : LipschitzSmoothWith K f) (x v : F) :
   rw [show (x + t • v) - x = t • v from by abel, lineDeriv_smul, smul_eq_mul,
       dist_self_add_right, norm_smul, Real.norm_eq_abs, mul_pow, sq_abs] at hpred
   refine hpred.trans ?_
-  have ht' : |t| * (↑K * ‖v‖^2 / 2 + 1) < ε := (lt_div_iff₀ hsum_pos).mp ht
-  have ht'' : ↑K * ‖v‖^2 / 2 * |t| ≤ ε := by nlinarith [abs_nonneg t]
-  calc ↑K / 2 * (t ^ 2 * ‖v‖ ^ 2)
-      = ↑K * ‖v‖^2 / 2 * |t| * |t| := by rw [← sq_abs t]; ring
+  have ht' : |t| * (K * ‖v‖^2 / 2 + 1) < ε := (lt_div_iff₀ hsum_pos).mp ht
+  have ht'' : K * ‖v‖^2 / 2 * |t| ≤ ε := by nlinarith [abs_nonneg t]
+  calc K / 2 * (t ^ 2 * ‖v‖ ^ 2)
+      = K * ‖v‖^2 / 2 * |t| * |t| := by rw [← sq_abs t]; ring
     _ ≤ ε * |t| := mul_le_mul_of_nonneg_right ht'' (abs_nonneg t)
 
 /-- A `K`-smooth function is line-differentiable everywhere. -/

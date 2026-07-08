@@ -30,7 +30,7 @@ open scoped Gradient RealInnerProductSpace
 
 theorem lipschitzSmoothWith_iff_inner_gradient (hf : Differentiable ℝ f) :
     LipschitzSmoothWith K f ↔
-      ∀ x y : F, |f y - f x - ⟪∇ f x, y - x⟫| ≤ ↑K / 2 * ‖y - x‖ ^ 2 := by
+      ∀ x y : F, |f y - f x - ⟪∇ f x, y - x⟫| ≤ K / 2 * ‖y - x‖ ^ 2 := by
   rw [lipschitzSmoothWith_iff_fderiv hf]
   refine forall_congr' fun x => forall_congr' fun y => ?_
   rw [inner_gradient_left, dist_eq_norm']
@@ -39,26 +39,26 @@ namespace LipschitzSmoothWith
 
 theorem inner_gradient_abs_le (h : LipschitzSmoothWith K f) (x y : F)
     (hf : DifferentiableAt ℝ f x) :
-    |f y - f x - ⟪∇ f x, y - x⟫| ≤ ↑K / 2 * ‖y - x‖ ^ 2 := by
+    |f y - f x - ⟪∇ f x, y - x⟫| ≤ K / 2 * ‖y - x‖ ^ 2 := by
   rw [inner_gradient_left, ← dist_eq_norm']
   exact h.fderiv_abs_le x y hf
 
 theorem inner_gradient_descent_le (h : LipschitzSmoothWith K f) (x y : F)
     (hf : DifferentiableAt ℝ f x) :
-    f y ≤ f x + ⟪∇ f x, y - x⟫ + ↑K / 2 * ‖y - x‖ ^ 2 := by
+    f y ≤ f x + ⟪∇ f x, y - x⟫ + K / 2 * ‖y - x‖ ^ 2 := by
   rw [inner_gradient_left, ← dist_eq_norm']
   exact h.fderiv_descent_le x y hf
 
 theorem inner_gradient_descent_ge (h : LipschitzSmoothWith K f) (x y : F)
     (hf : DifferentiableAt ℝ f x) :
-    f x + ⟪∇ f x, y - x⟫ - ↑K / 2 * ‖y - x‖ ^ 2 ≤ f y := by
+    f x + ⟪∇ f x, y - x⟫ - K / 2 * ‖y - x‖ ^ 2 ≤ f y := by
   rw [inner_gradient_left, ← dist_eq_norm']
   exact h.fderiv_descent_ge x y hf
 
 theorem inner_gradient_sub_le (h : LipschitzSmoothWith K f) (x y : F)
     (hfx : DifferentiableAt ℝ f x) (hfy : DifferentiableAt ℝ f y) :
-    ⟪∇ f y - ∇ f x, y - x⟫ ≤ ↑K * ‖y - x‖ ^ 2 := by
-  simp only [← dist_eq_norm', inner_sub_left, inner_gradient_left, ← ContinuousLinearMap.sub_apply]
+    ⟪∇ f y - ∇ f x, y - x⟫ ≤ K * ‖y - x‖ ^ 2 := by
+  simp only [← dist_eq_norm', inner_sub_left, inner_gradient_left, ← sub_apply]
   exact h.fderiv_sub_apply_le x y hfx hfy
 
 end LipschitzSmoothWith
@@ -70,7 +70,7 @@ end LipschitzSmoothWith
 `(1/K)·‖·‖² ≤ ⟪·,·⟫` form when `0 < K`, but well-defined and meaningful even at `K = 0`
 (then forces `∇ f` constant). The conclusion of the Baillon-Haddad theorem. -/
 abbrev CocoerciveWith (K : NNReal) (f : F → ℝ) : Prop :=
-  ∀ x y : F, ‖∇ f y - ∇ f x‖ ^ 2 ≤ ↑K * ⟪∇ f y - ∇ f x, y - x⟫
+  ∀ x y : F, ‖∇ f y - ∇ f x‖ ^ 2 ≤ K * ⟪∇ f y - ∇ f x, y - x⟫
 
 /-- A `K`-cocoercive gradient is `K`-Lipschitz. (One direction of the Baillon-Haddad
 characterisation; the reverse requires convexity.) -/
