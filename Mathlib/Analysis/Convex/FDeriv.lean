@@ -133,20 +133,15 @@ theorem convexOn_iff_add_fderiv_le (hs : Convex ℝ s) (hf : ∀ x ∈ s, Differ
   refine ⟨fun hc x hx y hy => hc.add_fderiv_le hx hy (hf x hx), fun H => ⟨hs, ?_⟩⟩
   intro x hx y hy a b ha hb hab
   set z := a • x + b • y with hz
-  set L := fderiv ℝ f z (x - y) with hL
-  change f z ≤ a • f x + b • f y
-  simp only [smul_eq_mul]
+  set L := fderiv ℝ f z (x - y)
   have hzs : z ∈ s := hs hx hy ha hb hab
   have hb_eq : b = 1 - a := by linarith
-  have hxz : x - z = b • (x - y) := by rw [hz, hb_eq]; module
-  have hyz : y - z = -(a • (x - y)) := by rw [hz, hb_eq]; module
   have hzx : f z + b * L ≤ f x := by
-    have h := H z hzs x hx
-    rwa [hxz, (fderiv ℝ f z).map_smul, smul_eq_mul] at h
+    simpa only [show x - z = b • (x - y) by rw [hz, hb_eq]; module, map_smul, smul_eq_mul]
+      using H z hzs x hx
   have hzy : f z - a * L ≤ f y := by
-    have h := H z hzs y hy
-    rw [hyz, map_neg, (fderiv ℝ f z).map_smul, smul_eq_mul] at h
-    linarith
+    simpa only [show y - z = -(a • (x - y)) by rw [hz, hb_eq]; module, map_neg, map_smul,
+      smul_eq_mul, ← sub_eq_add_neg] using H z hzs y hy
   calc f z
       = a * (f z + b * L) + b * (f z - a * L) := by linear_combination (f z) * hab.symm
     _ ≤ a * f x + b * f y :=

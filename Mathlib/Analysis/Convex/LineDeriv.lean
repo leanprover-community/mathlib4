@@ -50,21 +50,15 @@ private theorem lineMap_eq_add_smul_sub (x y : E) (t : ℝ) :
 is convex on `Icc 0 1` (the segment from `x` to `y` lies in `s` by convexity of `s`). -/
 theorem ConvexOn.lineRestriction (hc : ConvexOn ℝ s f) (hx : x ∈ s) (hy : y ∈ s) :
     ConvexOn ℝ (Set.Icc 0 1) (fun t : ℝ => f (x + t • (y - x))) := by
-  rw [show (fun t : ℝ => f (x + t • (y - x))) = f ∘ AffineMap.lineMap x y from
-    funext fun t => by rw [Function.comp_apply, lineMap_eq_add_smul_sub]]
-  exact (hc.comp_affineMap (AffineMap.lineMap x y)).subset
-    (fun t ht => hc.1.segment_subset hx hy (lineMap_mem_segment ℝ x y ht))
-    (convex_Icc _ _)
+  simpa only [Function.comp_def, lineMap_eq_add_smul_sub] using
+    (hc.comp_affineMap (AffineMap.lineMap x y)).subset
+      (fun t ht => hc.1.segment_subset hx hy (lineMap_mem_segment ℝ x y ht)) (convex_Icc _ _)
 
 /-- The 1D restriction `t ↦ f (x + t • (y - x))` of a function concave on `s`, where `x, y ∈ s`,
 is concave on `Icc 0 1`. -/
 theorem ConcaveOn.lineRestriction (hc : ConcaveOn ℝ s f) (hx : x ∈ s) (hy : y ∈ s) :
     ConcaveOn ℝ (Set.Icc 0 1) (fun t : ℝ => f (x + t • (y - x))) := by
-  rw [show (fun t : ℝ => f (x + t • (y - x))) = f ∘ AffineMap.lineMap x y from
-    funext fun t => by rw [Function.comp_apply, lineMap_eq_add_smul_sub]]
-  exact (hc.comp_affineMap (AffineMap.lineMap x y)).subset
-    (fun t ht => hc.1.segment_subset hx hy (lineMap_mem_segment ℝ x y ht))
-    (convex_Icc _ _)
+  simpa [Pi.neg_def] using (hc.neg.lineRestriction hx hy).neg
 
 /-- The 1D restriction `t ↦ f (x + t • (y - x))` of a function strictly convex on `s`, with
 `x ≠ y` both in `s`, is strictly convex on `Icc 0 1`. -/
@@ -72,22 +66,13 @@ theorem StrictConvexOn.lineRestriction (hc : StrictConvexOn ℝ s f) (hx : x ∈
     (hxy : x ≠ y) :
     StrictConvexOn ℝ (Set.Icc 0 1) (fun t : ℝ => f (x + t • (y - x))) := by
   refine ⟨convex_Icc _ _, fun t₁ ht₁ t₂ ht₂ ht_ne a b ha hb hab => ?_⟩
-  have hsub : (y - x : E) ≠ 0 := sub_ne_zero.mpr hxy.symm
+  have hmem : ∀ t ∈ Set.Icc (0 : ℝ) 1, x + t • (y - x) ∈ s := fun t ht =>
+    lineMap_eq_add_smul_sub x y t ▸ hc.1.segment_subset hx hy (lineMap_mem_segment ℝ x y ht)
   have hp_ne : x + t₁ • (y - x) ≠ x + t₂ • (y - x) := fun h =>
-    ht_ne (smul_left_injective ℝ hsub (add_left_cancel h))
-  have hp₁ : x + t₁ • (y - x) ∈ s := by
-    rw [← lineMap_eq_add_smul_sub]
-    exact hc.1.segment_subset hx hy (lineMap_mem_segment ℝ x y ht₁)
-  have hp₂ : x + t₂ • (y - x) ∈ s := by
-    rw [← lineMap_eq_add_smul_sub]
-    exact hc.1.segment_subset hx hy (lineMap_mem_segment ℝ x y ht₂)
-  have hb_eq : b = 1 - a := by linarith
-  have hcomb : a • (x + t₁ • (y - x)) + b • (x + t₂ • (y - x))
-      = x + (a • t₁ + b • t₂) • (y - x) := by
-    rw [hb_eq]; module
-  have key := hc.2 hp₁ hp₂ hp_ne ha hb hab
-  rw [hcomb] at key
-  exact key
+    ht_ne (smul_left_injective ℝ (sub_ne_zero.mpr hxy.symm) (add_left_cancel h))
+  simpa only [show a • (x + t₁ • (y - x)) + b • (x + t₂ • (y - x))
+        = x + (a • t₁ + b • t₂) • (y - x) by rw [show b = 1 - a by linarith]; module]
+    using hc.2 (hmem t₁ ht₁) (hmem t₂ ht₂) hp_ne ha hb hab
 
 /-- The 1D restriction `t ↦ f (x + t • (y - x))` of a function strictly concave on `s`, with
 `x ≠ y` both in `s`, is strictly concave on `Icc 0 1`. -/
@@ -124,10 +109,10 @@ theorem lineDeriv_sub_nonneg (hc : ConvexOn ℝ s f) (hx : x ∈ s) (hy : y ∈ 
     (hfy : LineDifferentiableAt ℝ f y (y - x)) :
     0 ≤ lineDeriv ℝ f y (y - x) - lineDeriv ℝ f x (y - x) := by
   have hfy' : LineDifferentiableAt ℝ f y (x - y) := by
-    have := hfy.smul (-1 : ℝ)
-    rwa [neg_one_smul, neg_sub] at this
-  have h₂ := hc.add_lineDeriv_le hy hx hfy'
-  rw [← neg_sub y x, lineDeriv_neg] at h₂
+    simpa only [neg_one_smul, neg_sub] using hfy.smul (-1 : ℝ)
+  have h₂ : f y - lineDeriv ℝ f y (y - x) ≤ f x := by
+    simpa only [← neg_sub y x, lineDeriv_neg, ← sub_eq_add_neg]
+      using hc.add_lineDeriv_le hy hx hfy'
   linarith [hc.add_lineDeriv_le hx hy hfx]
 
 end ConvexOn
