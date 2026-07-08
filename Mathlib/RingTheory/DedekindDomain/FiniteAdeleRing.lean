@@ -92,13 +92,13 @@ and the restricted product is the subring of `∏_v K_v` consisting of elements 
 are in `R_v` for all but finitely many `v`.
 -/
 def FiniteAdeleRing : Type _ :=
-  Πʳ v : HeightOneSpectrum R, [v.adicCompletion K, v.adicCompletionIntegers K]
+  Πʳ v : HeightOneSpectrum R, [v.adicCompletion K, adicCompletionIntegers.valuationSubring K v]
 
-instance : CommRing (FiniteAdeleRing R K) := inferInstanceAs <|
-  CommRing <| Πʳ v : HeightOneSpectrum R, [v.adicCompletion K, v.adicCompletionIntegers K]
+instance : CommRing (FiniteAdeleRing R K) := inferInstanceAs <| CommRing <|
+  Πʳ v : HeightOneSpectrum R, [v.adicCompletion K, adicCompletionIntegers.valuationSubring K v]
 
-instance : TopologicalSpace (FiniteAdeleRing R K) := inferInstanceAs <|
-  TopologicalSpace <| Πʳ v : HeightOneSpectrum R, [v.adicCompletion K, v.adicCompletionIntegers K]
+instance : TopologicalSpace (FiniteAdeleRing R K) := inferInstanceAs <| TopologicalSpace <|
+  Πʳ v : HeightOneSpectrum R, [v.adicCompletion K, adicCompletionIntegers.valuationSubring K v]
 
 instance : DFunLike (FiniteAdeleRing R K) (HeightOneSpectrum R) (adicCompletion K) where
   coe a := a.1
@@ -142,7 +142,7 @@ section Topology
 
 instance : IsTopologicalRing (FiniteAdeleRing R K) :=
   haveI : Fact (∀ v : HeightOneSpectrum R,
-      IsOpen (v.adicCompletionIntegers K : Set (v.adicCompletion K))) :=
+      IsOpen (adicCompletionIntegers.valuationSubring K v : Set (v.adicCompletion K))) :=
     ⟨fun _ ↦ Valued.isOpen_valuationSubring _⟩
   RestrictedProduct.isTopologicalRing (fun (v : HeightOneSpectrum R) ↦ v.adicCompletion K)
 

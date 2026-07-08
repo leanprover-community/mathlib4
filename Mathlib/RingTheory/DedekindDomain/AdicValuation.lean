@@ -622,21 +622,78 @@ lemma adicCompletion_valueGroup_eq : MonoidWithZeroHom.valueGroup (.ofClass (Val
   refine ⟨b, ?_, y, by simpa [hb, hy] using hx⟩
   rwa [← ne_eq, ← (valuation K v).ne_zero_iff, hb, Valuation.ne_zero_iff]
 
-/-- The ring of integers of `adicCompletion`. -/
-def adicCompletionIntegers : ValuationSubring (v.adicCompletion K) :=
+/-- The ring of integers of `v.adicCompletion K`, as a valuation subring of the completion. -/
+def adicCompletionIntegers.valuationSubring : ValuationSubring (v.adicCompletion K) :=
   Valued.v.valuationSubring
+
+/-- The ring of integers of `v.adicCompletion K`.
+
+This is defined as its own type, rather than a `ValuationSubring`, for performance reasons
+(compare `NumberField.RingOfIntegers`): looking for instances of the form
+`SMul (adicCompletionIntegers _ _) (adicCompletionIntegers _ _)` makes much more effective use of
+the discrimination tree than instances of the form `SMul (Subtype _) (Subtype _)`.
+The drawback is that we have to copy over instances manually.
+The underlying valuation subring is `adicCompletionIntegers.valuationSubring`. -/
+def adicCompletionIntegers : Type _ :=
+  adicCompletionIntegers.valuationSubring K v
+deriving CommRing, IsDomain, Nontrivial
+
+namespace adicCompletionIntegers
+
+instance : TopologicalSpace (adicCompletionIntegers K v) :=
+  inferInstanceAs (TopologicalSpace (adicCompletionIntegers.valuationSubring K v))
+
+instance : UniformSpace (adicCompletionIntegers K v) :=
+  inferInstanceAs (UniformSpace (adicCompletionIntegers.valuationSubring K v))
+
+instance : Algebra (adicCompletionIntegers K v) (v.adicCompletion K) :=
+  inferInstanceAs (Algebra (adicCompletionIntegers.valuationSubring K v) (v.adicCompletion K))
+
+instance : IsFractionRing (adicCompletionIntegers K v) (v.adicCompletion K) :=
+  inferInstanceAs
+    (IsFractionRing (adicCompletionIntegers.valuationSubring K v) (v.adicCompletion K))
 
 instance : Inhabited (adicCompletionIntegers K v) :=
   ⟨0⟩
 
+/-- The canonical inclusion of `adicCompletionIntegers` into the completion. -/
+@[coe]
+abbrev val (x : adicCompletionIntegers K v) : v.adicCompletion K := x.1
+
+instance : CoeHead (adicCompletionIntegers K v) (v.adicCompletion K) := ⟨val K v⟩
+
+@[ext]
+theorem ext {x y : adicCompletionIntegers K v} (h : (x : v.adicCompletion K) = y) : x = y :=
+  Subtype.ext h
+
+@[simp]
+theorem coe_mk (x : v.adicCompletion K) (hx) :
+    ((⟨x, hx⟩ : adicCompletionIntegers K v) : v.adicCompletion K) = x := rfl
+
+@[simp, norm_cast]
+theorem coe_zero : ((0 : adicCompletionIntegers K v) : v.adicCompletion K) = 0 := rfl
+
+@[simp, norm_cast]
+theorem coe_one : ((1 : adicCompletionIntegers K v) : v.adicCompletion K) = 1 := rfl
+
+@[simp, norm_cast]
+theorem coe_add (x y : adicCompletionIntegers K v) :
+    ((x + y : adicCompletionIntegers K v) : v.adicCompletion K) = ↑x + ↑y := rfl
+
+@[simp, norm_cast]
+theorem coe_mul (x y : adicCompletionIntegers K v) :
+    ((x * y : adicCompletionIntegers K v) : v.adicCompletion K) = ↑x * ↑y := rfl
+
+end adicCompletionIntegers
+
 variable (R)
 
 theorem mem_adicCompletionIntegers {x : v.adicCompletion K} :
-    x ∈ v.adicCompletionIntegers K ↔ Valued.v x ≤ 1 :=
+    x ∈ adicCompletionIntegers.valuationSubring K v ↔ Valued.v x ≤ 1 :=
   Iff.rfl
 
 theorem notMem_adicCompletionIntegers {x : v.adicCompletion K} :
-    x ∉ v.adicCompletionIntegers K ↔ 1 < Valued.v x := by
+    x ∉ adicCompletionIntegers.valuationSubring K v ↔ 1 < Valued.v x := by
   rw [not_congr <| mem_adicCompletionIntegers R K v]
   exact not_le
 
@@ -686,11 +743,14 @@ theorem denseRange_algebraMap : DenseRange (algebraMap K (v.adicCompletion K)) :
 
 end Algebra
 
-theorem coe_algebraMap_mem (r : R) : ↑((algebraMap R K) r) ∈ adicCompletionIntegers K v := by
+theorem coe_algebraMap_mem (r : R) :
+    ↑((algebraMap R K) r) ∈ adicCompletionIntegers.valuationSubring K v := by
   rw [mem_adicCompletionIntegers, Valued.valuedCompletion_apply]
   simpa using v.valuation_le_one _
 
-instance : Algebra R (v.adicCompletionIntegers K) where
+/-- The `R`-algebra structure on the valuation subring of integers. The one on the type
+`adicCompletionIntegers` is transported from this. -/
+instance : Algebra R (adicCompletionIntegers.valuationSubring K v) where
   smul r x :=
     ⟨r • (x : v.adicCompletion K), by
       rw [Algebra.smul_def]
@@ -715,6 +775,9 @@ instance : Algebra R (v.adicCompletionIntegers K) where
     simp +instances only [Algebra.smul_def]
     rfl
 
+instance : Algebra R (v.adicCompletionIntegers K) :=
+  inferInstanceAs (Algebra R (adicCompletionIntegers.valuationSubring K v))
+
 @[simp]
 lemma algebraMap_adicCompletionIntegers_apply (r : R) :
     algebraMap R (v.adicCompletionIntegers K) r = (algebraMap R K r : v.adicCompletion K) := by
@@ -723,7 +786,7 @@ lemma algebraMap_adicCompletionIntegers_apply (r : R) :
 instance [FaithfulSMul R K] : FaithfulSMul R (v.adicCompletionIntegers K) := by
   rw [faithfulSMul_iff_algebraMap_injective]
   intro x y
-  rw [Subtype.ext_iff]
+  rw [adicCompletionIntegers.ext_iff]
   simp
 
 variable {R K} in
@@ -744,7 +807,7 @@ variable {R K} in
 open scoped algebraMap in -- to make the coercion from `R` fire
 /-- A global integer is in the local integers. -/
 lemma coe_mem_adicCompletionIntegers (r : R) :
-    (r : adicCompletion K v) ∈ adicCompletionIntegers K v := by
+    (r : adicCompletion K v) ∈ adicCompletionIntegers.valuationSubring K v := by
   rw [mem_adicCompletionIntegers, valuedAdicCompletion_eq_valuation]
   exact valuation_le_one v r
 
@@ -766,8 +829,8 @@ variable {R}
 open nonZeroDivisors algebraMap in
 variable {K} in
 lemma adicCompletion.mul_nonZeroDivisor_mem_adicCompletionIntegers (v : HeightOneSpectrum R)
-    (a : v.adicCompletion K) : ∃ b ∈ R⁰, a * b ∈ v.adicCompletionIntegers K := by
-  by_cases ha : a ∈ v.adicCompletionIntegers K
+    (a : v.adicCompletion K) : ∃ b ∈ R⁰, a * b ∈ adicCompletionIntegers.valuationSubring K v := by
+  by_cases ha : a ∈ adicCompletionIntegers.valuationSubring K v
   · use 1
     simp [ha]
   · rw [notMem_adicCompletionIntegers] at ha
@@ -783,22 +846,23 @@ lemma adicCompletion.mul_nonZeroDivisor_mem_adicCompletionIntegers (v : HeightOn
     exact mul_inv_le_one_of_le₀ (le_exp_log.trans (by simp [le_abs_self])) zero_le
 
 instance : FaithfulSMul (v.adicCompletionIntegers K) (v.adicCompletion K) :=
-  Subsemiring.faithfulSMul _
+  inferInstanceAs (FaithfulSMul (adicCompletionIntegers.valuationSubring K v) (v.adicCompletion K))
 
 theorem adicCompletionIntegers.integers :
-    (Valued.v : Valuation (v.adicCompletion K) ℤᵐ⁰).Integers ↥(adicCompletionIntegers K v) where
+    (Valued.v : Valuation (v.adicCompletion K) ℤᵐ⁰).Integers (adicCompletionIntegers K v) where
   hom_inj := FaithfulSMul.algebraMap_injective _ _
-  map_le_one := by simp [mem_adicCompletionIntegers]
-  exists_of_le_one := by simp [mem_adicCompletionIntegers]
+  map_le_one x := x.2
+  exists_of_le_one {a} h := ⟨⟨a, h⟩, rfl⟩
 
 variable {K v}
 
-theorem adicCompletionIntegers.isUnit_iff_valued_eq_one {a : v.adicCompletionIntegers K} :
-    IsUnit a ↔ Valued.v a.1 = 1 := by
-  simp [Valuation.Integers.isUnit_iff_valuation_eq_one (integers K v)]
+theorem adicCompletionIntegers.isUnit_iff_valued_eq_one
+    {a : adicCompletionIntegers.valuationSubring K v} :
+    IsUnit a ↔ Valued.v a.1 = 1 :=
+  Valuation.Integers.isUnit_iff_valuation_eq_one (integers K v)
 
 theorem adicCompletionIntegers.mem_units_iff_valued_eq_one {a : (v.adicCompletion K)ˣ} :
-    a ∈ (v.adicCompletionIntegers K).units ↔ Valued.v a.1 = 1 := by
+    a ∈ (adicCompletionIntegers.valuationSubring K v).units ↔ Valued.v a.1 = 1 := by
   refine ⟨fun h ↦ ?_, fun h ↦
      ⟨h.le, by simp [mem_adicCompletionIntegers, inv_le_one_iff₀, h.symm.le]⟩⟩
   convert! isUnit_iff_valued_eq_one.1 (Submonoid.unitsEquivIsUnitSubmonoid _ ⟨_, h⟩).2
