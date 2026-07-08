@@ -5,7 +5,7 @@ Authors: Kim Morrison, Jireh Loreaux
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
+public import Mathlib.Algebra.Algebra.Subalgebra.Directed
 public import Mathlib.Algebra.Algebra.Tower
 public import Mathlib.Algebra.Star.Module
 public import Mathlib.Algebra.Star.NonUnitalSubalgebra
@@ -41,7 +41,7 @@ variable [Semiring C] [StarRing C] [Algebra R C] [StarModule R C]
 
 instance setLike : SetLike (StarSubalgebra R A) A where
   coe S := S.carrier
-  coe_injective' p q h := by obtain ⟨⟨⟨⟨⟨_, _⟩, _⟩, _⟩, _⟩, _⟩ := p; cases q; congr
+  coe_injective p q h := by obtain ⟨⟨⟨⟨⟨_, _⟩, _⟩, _⟩, _⟩, _⟩ := p; cases q; congr
 
 instance : PartialOrder (StarSubalgebra R A) := .ofSetLike (StarSubalgebra R A) A
 
@@ -273,6 +273,7 @@ theorem map_le_iff_le_comap {S : StarSubalgebra R A} {f : A →⋆ₐ[R] B} {U :
 theorem gc_map_comap (f : A →⋆ₐ[R] B) : GaloisConnection (map f) (comap f) := fun _S _U =>
   map_le_iff_le_comap
 
+@[gcongr]
 theorem comap_mono {S₁ S₂ : StarSubalgebra R B} {f : A →⋆ₐ[R] B} :
     S₁ ≤ S₂ → S₁.comap f ≤ S₂.comap f :=
   Set.preimage_mono
@@ -579,7 +580,7 @@ variable (R)
 lemma adjoin_le_centralizer_centralizer (s : Set A) :
     adjoin R s ≤ centralizer R (centralizer R s) := by
   rw [← toSubalgebra_le_iff, centralizer_toSubalgebra, adjoin_toSubalgebra]
-  convert Algebra.adjoin_le_centralizer_centralizer R (s ∪ star s)
+  convert! Algebra.adjoin_le_centralizer_centralizer R (s ∪ star s)
   rw [StarMemClass.star_coe_eq]
   simp
 
@@ -798,8 +799,8 @@ variable [FunLike F A B] [AlgHomClass F R A B] [StarHomClass F A B] (f g : F)
 
 /-- The equalizer of two star `R`-algebra homomorphisms. -/
 def equalizer : StarSubalgebra R A where
-  toSubalgebra := AlgHom.equalizer (AlgHomClass.toAlgHom f) (AlgHomClass.toAlgHom g)
-  star_mem' {a} (ha : f a = g a) := by simpa only [← map_star] using congrArg star ha
+  toSubalgebra := AlgHom.equalizer (f : A →ₐ[R] B) g
+  star_mem' {a} (ha : f a = g a) := by simpa only [← map_star] using! congrArg star ha
 
 @[simp]
 theorem mem_equalizer (x : A) : x ∈ StarAlgHom.equalizer f g ↔ f x = g x :=
@@ -869,6 +870,32 @@ end StarAlgHom
 
 section RestrictScalars
 
+section Equiv
+
+variable (R : Type*) {S A B : Type*} [CommSemiring R] [CommSemiring S]
+  [NonUnitalNonAssocSemiring A] [NonUnitalNonAssocSemiring B] [MulAction R S] [Module S A]
+  [Module S B] [Module R A] [Module R B] [IsScalarTower R S A] [IsScalarTower R S B]
+  [Star A] [Star B]
+
+/-- Restrict the scalar ring of a star algebra equivalence. -/
+@[simps]
+def StarAlgEquiv.restrictScalars (f : A ≃⋆ₐ[S] B) : A ≃⋆ₐ[R] B :=
+  { (f : A →ₗ[S] B).restrictScalars R, f with
+    toFun := f }
+
+theorem StarAlgEquiv.restrictScalars_injective :
+    Function.Injective (StarAlgEquiv.restrictScalars R : (A ≃⋆ₐ[S] B) → A ≃⋆ₐ[R] B) :=
+  fun _ _ h => ext (DFunLike.congr_fun h ·)
+
+@[simp]
+theorem StarAlgEquiv.toNonUnitalStarAlgHom_restrictScalars (e : A ≃⋆ₐ[S] B) :
+    (e.restrictScalars R).toNonUnitalStarAlgHom = e.toNonUnitalStarAlgHom.restrictScalars R :=
+  rfl
+
+end Equiv
+
+section Unital
+
 variable (R : Type*) {S A B : Type*} [CommSemiring R]
   [CommSemiring S] [Semiring A] [Semiring B] [Algebra R S] [Algebra S A] [Algebra S B]
   [Algebra R A] [Algebra R B] [IsScalarTower R S A] [IsScalarTower R S B] [Star A] [Star B]
@@ -883,16 +910,12 @@ theorem StarAlgHom.restrictScalars_injective :
   fun f g h => StarAlgHom.ext fun x =>
     show f.restrictScalars R x = g.restrictScalars R x from DFunLike.congr_fun h x
 
-@[simps]
-def StarAlgEquiv.restrictScalars (f : A ≃⋆ₐ[S] B) : A ≃⋆ₐ[R] B :=
-  { (f : A →⋆ₐ[S] B).restrictScalars R, f with
-    toFun := f
-    map_smul' := map_smul ((f : A →⋆ₐ[S] B).restrictScalars R) }
+@[simp]
+theorem StarAlgEquiv.toStarAlgHom_restrictScalars (e : A ≃⋆ₐ[S] B) :
+    (e.restrictScalars R).toStarAlgHom = e.toStarAlgHom.restrictScalars R :=
+  rfl
 
-theorem StarAlgEquiv.restrictScalars_injective :
-    Function.Injective (StarAlgEquiv.restrictScalars R : (A ≃⋆ₐ[S] B) → A ≃⋆ₐ[R] B) :=
-  fun f g h => StarAlgEquiv.ext fun x =>
-    show f.restrictScalars R x = g.restrictScalars R x from DFunLike.congr_fun h x
+end Unital
 
 end RestrictScalars
 
@@ -926,3 +949,36 @@ lemma StarAlgebra.adjoin_nonUnitalStarSubalgebra (s : Set A) :
   le_antisymm
     (adjoin_le <| NonUnitalStarAlgebra.adjoin_le_starAlgebra_adjoin R s)
     (adjoin_le <| (NonUnitalStarAlgebra.subset_adjoin R s).trans <| subset_adjoin R _)
+
+namespace StarSubalgebra
+
+section directed
+
+variable {R}
+
+theorem coe_iSup_of_directed {ι : Type*} [Nonempty ι] {S : ι → StarSubalgebra R A}
+    (dir : Directed (· ≤ ·) S) : ↑(iSup S) = ⋃ i, (S i : Set A) :=
+  let K : StarSubalgebra R A :=
+    { __ := NonUnitalStarSubalgebra.copy _ _ (NonUnitalStarSubalgebra.coe_iSup_of_directed
+        (S := fun i ↦ (S i).toNonUnitalStarSubalgebra) dir).symm
+      algebraMap_mem' x :=
+        let ⟨i⟩ := ‹Nonempty ι›
+        Set.mem_iUnion.mpr ⟨i, algebraMap_mem (S i) x⟩ }
+  have : iSup S = K := le_antisymm (iSup_le fun i ↦ le_iSup (fun i ↦ (S i : Set A)) i)
+    (Set.iUnion_subset fun _ ↦ le_iSup S _)
+  this.symm ▸ rfl
+
+theorem isMulCommutative_iSup {ι : Type*} [Nonempty ι] {S : ι → StarSubalgebra R A}
+    [hS : ∀ i, IsMulCommutative (S i)] (dir : Directed (· ≤ ·) S) :
+    IsMulCommutative (⨆ i, S i : StarSubalgebra R A) := by
+  simpa [isMulCommutative_iff, ← SetLike.mem_coe, coe_iSup_of_directed dir,
+    Subalgebra.coe_iSup_of_directed dir] using Subalgebra.isMulCommutative_iSup dir
+
+instance instIsMulCommutative_iSup {ι : Type*} [Nonempty ι] [Preorder ι] [IsDirectedOrder ι]
+    {S : ι →o StarSubalgebra R A} [hS : ∀ i, IsMulCommutative (S i)] :
+    IsMulCommutative (⨆ i, S i : StarSubalgebra R A) :=
+  isMulCommutative_iSup S.monotone.directed_le
+
+end directed
+
+end StarSubalgebra

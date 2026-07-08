@@ -161,13 +161,10 @@ open Nat
 
 section CompleteLattice
 
+@[to_dual]
 theorem iSup_unpair {α} [CompleteLattice α] (f : ℕ → ℕ → α) :
     ⨆ n : ℕ, f n.unpair.1 n.unpair.2 = ⨆ (i : ℕ) (j : ℕ), f i j := by
   rw [← (iSup_prod : ⨆ i : ℕ × ℕ, f i.1 i.2 = _), ← Nat.surjective_unpair.iSup_comp]
-
-theorem iInf_unpair {α} [CompleteLattice α] (f : ℕ → ℕ → α) :
-    ⨅ n : ℕ, f n.unpair.1 n.unpair.2 = ⨅ (i : ℕ) (j : ℕ), f i j :=
-  iSup_unpair (show ℕ → ℕ → αᵒᵈ from f)
 
 end CompleteLattice
 

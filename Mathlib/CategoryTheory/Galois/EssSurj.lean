@@ -67,8 +67,6 @@ private local instance fintypeQuotientStabilizer {X : Type*} [MulAction G X]
     Fintype (G ⧸ (MulAction.stabilizer (G) x)) :=
   fintypeQuotient ⟨MulAction.stabilizer (G) x, stabilizer_isOpen (G) x⟩
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- If `X` is a finite discrete `G`-set, it can be written as the finite disjoint union
 of quotients of the form `G ⧸ Uᵢ` for open subgroups `(Uᵢ)`. Note that this
 is simply the decomposition into orbits. -/
@@ -152,6 +150,7 @@ private def quotientDiag : SingleObj (V.toSubgroup ⧸ Subgroup.subgroupOf U V) 
 
 variable {V} (hUinV : U ≤ V)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[simps]
 private def coconeQuotientDiag :
@@ -172,6 +171,7 @@ private def coconeQuotientDiag :
     apply (QuotientGroup.leftRel_apply).mpr
     simp
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[simps]
 private def coconeQuotientDiagDesc
@@ -200,6 +200,7 @@ private def coconeQuotientDiagDesc
     rw [← this, u.inv.comm g]
     rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The constructed cocone `coconeQuotientDiag` on the diagram `quotientDiag` is colimiting. -/
 private def coconeQuotientDiagIsColimit :

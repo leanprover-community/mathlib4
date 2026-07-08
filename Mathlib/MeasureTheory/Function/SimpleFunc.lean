@@ -58,7 +58,7 @@ variable [MeasurableSpace α]
 
 instance instFunLike : FunLike (α →ₛ β) α β where
   coe := toFun
-  coe_injective' | ⟨_, _, _⟩, ⟨_, _, _⟩, rfl => rfl
+  coe_injective | ⟨_, _, _⟩, ⟨_, _, _⟩, rfl => rfl
 
 theorem coe_injective ⦃f g : α →ₛ β⦄ (H : (f : α → β) = g) : f = g := DFunLike.ext' H
 
@@ -215,11 +215,11 @@ theorem piecewise_univ (f g : α →ₛ β) : piecewise univ MeasurableSet.univ 
 theorem piecewise_empty (f g : α →ₛ β) : piecewise ∅ MeasurableSet.empty f g = g :=
   coe_injective <| by simp
 
-open scoped Classical in
 @[simp]
 theorem piecewise_same (f : α →ₛ β) {s : Set α} (hs : MeasurableSet s) :
-    piecewise s hs f f = f :=
-  coe_injective <| Set.piecewise_same _ _
+    piecewise s hs f f = f := by
+  classical
+  exact coe_injective <| Set.piecewise_same _ _
 
 theorem support_indicator [Zero β] {s : Set α} (hs : MeasurableSet s) (f : α →ₛ β) :
     Function.support (f.piecewise s hs (SimpleFunc.const α 0)) = s ∩ Function.support f :=
@@ -668,18 +668,17 @@ instance instPreorder : Preorder (α →ₛ β) := Preorder.lift (⇑)
 @[simp, norm_cast, gcongr] lemma coe_le_coe : ⇑f ≤ g ↔ f ≤ g := .rfl
 @[simp, norm_cast, gcongr] lemma coe_lt_coe : ⇑f < g ↔ f < g := .rfl
 
-@[deprecated (since := "2025-10-21")] alias coe_le := coe_le_coe
-
 @[simp, gcongr]
 lemma mk_le_mk {f g : α → β} {hf hg hf' hg'} : mk f hf hf' ≤ mk g hg hg' ↔ f ≤ g := Iff.rfl
 
 @[simp, gcongr]
 lemma mk_lt_mk {f g : α → β} {hf hg hf' hg'} : mk f hf hf' < mk g hg hg' ↔ f < g := Iff.rfl
 
-open scoped Classical in
-@[gcongr]
+@[gcongr only]
 lemma piecewise_mono (hf : ∀ a ∈ s, f₁ a ≤ f₂ a) (hg : ∀ a ∉ s, g₁ a ≤ g₂ a) :
-    piecewise s hs f₁ g₁ ≤ piecewise s hs f₂ g₂ := Set.piecewise_mono hf hg
+    piecewise s hs f₁ g₁ ≤ piecewise s hs f₂ g₂ := by
+  classical
+  exact Set.piecewise_mono hf hg
 
 end Preorder
 
@@ -753,10 +752,10 @@ theorem restrict_univ (f : α →ₛ β) : restrict f univ = f := by simp [restr
 @[simp]
 theorem restrict_empty (f : α →ₛ β) : restrict f ∅ = 0 := by simp [restrict]
 
-open scoped Classical in
 theorem map_restrict_of_zero [Zero γ] {g : β → γ} (hg : g 0 = 0) (f : α →ₛ β) (s : Set α) :
-    (f.restrict s).map g = (f.map g).restrict s :=
-  ext fun x =>
+    (f.restrict s).map g = (f.map g).restrict s := by
+  classical
+  exact ext fun x =>
     if hs : MeasurableSet s then by simp [hs, Set.indicator_comp_of_zero hg]
     else by simp [restrict_of_not_measurable hs, hg]
 
@@ -783,19 +782,19 @@ theorem mem_restrict_range {r : β} {s : Set α} {f : α →ₛ β} (hs : Measur
     r ∈ (restrict f s).range ↔ r = 0 ∧ s ≠ univ ∨ r ∈ f '' s := by
   rw [← Finset.mem_coe, coe_range, coe_restrict _ hs, mem_range_indicator]
 
-open scoped Classical in
 theorem mem_image_of_mem_range_restrict {r : β} {s : Set α} {f : α →ₛ β}
-    (hr : r ∈ (restrict f s).range) (h0 : r ≠ 0) : r ∈ f '' s :=
-  if hs : MeasurableSet s then by simpa [mem_restrict_range hs, h0, -mem_range] using hr
+    (hr : r ∈ (restrict f s).range) (h0 : r ≠ 0) : r ∈ f '' s := by
+  classical
+  exact if hs : MeasurableSet s then by simpa [mem_restrict_range hs, h0, -mem_range] using hr
   else by
     rw [restrict_of_not_measurable hs] at hr
     exact (h0 <| eq_zero_of_mem_range_zero hr).elim
 
-open scoped Classical in
 @[gcongr, mono]
 theorem restrict_mono [Preorder β] (s : Set α) {f g : α →ₛ β} (H : f ≤ g) :
-    f.restrict s ≤ g.restrict s :=
-  if hs : MeasurableSet s then fun x => by
+    f.restrict s ≤ g.restrict s := by
+  classical
+  exact if hs : MeasurableSet s then fun x => by
     simp only [coe_restrict _ hs, indicator_le_indicator (H x)]
   else by simp only [restrict_of_not_measurable hs, le_refl]
 
@@ -868,10 +867,9 @@ theorem ennrealRatEmbed_encode (q : ℚ) :
 def eapprox : (α → ℝ≥0∞) → ℕ → α →ₛ ℝ≥0∞ :=
   approx ennrealRatEmbed
 
-set_option backward.isDefEq.respectTransparency false in
 theorem eapprox_lt_top (f : α → ℝ≥0∞) (n : ℕ) (a : α) : eapprox f n a < ∞ := by
   simp only [eapprox, approx, finset_sup_apply, restrict]
-  rw [Finset.sup_lt_iff (α := ℝ≥0∞) WithTop.top_pos]
+  rw [Finset.sup_lt_iff (α := ℝ≥0∞) bot_lt_top]
   intro b _
   split_ifs
   · simp only [coe_zero, coe_piecewise, piecewise_eq_indicator, coe_const]
@@ -1014,7 +1012,7 @@ theorem lintegral_add {ν} (f : α →ₛ ℝ≥0∞) : f.lintegral (μ + ν) = 
 
 theorem lintegral_smul {R : Type*} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
     (f : α →ₛ ℝ≥0∞) (c : R) : f.lintegral (c • μ) = c • f.lintegral μ := by
-  simpa only [smul_one_smul] using (lintegralₗ f).map_smul (c • 1) μ
+  simpa only [smul_one_smul] using! (lintegralₗ f).map_smul (c • 1) μ
 
 @[simp]
 theorem lintegral_zero [MeasurableSpace α] (f : α →ₛ ℝ≥0∞) : f.lintegral 0 = 0 :=
@@ -1032,10 +1030,10 @@ theorem lintegral_sum {m : MeasurableSpace α} {ι} (f : α →ₛ ℝ≥0∞) (
     ENNReal.tsum_mul_left]
   apply ENNReal.tsum_comm
 
-open scoped Classical in
 theorem restrict_lintegral (f : α →ₛ ℝ≥0∞) {s : Set α} (hs : MeasurableSet s) :
-    (restrict f s).lintegral μ = ∑ r ∈ f.range, r * μ (f ⁻¹' {r} ∩ s) :=
-  calc
+    (restrict f s).lintegral μ = ∑ r ∈ f.range, r * μ (f ⁻¹' {r} ∩ s) := by
+  classical
+  exact calc
     (restrict f s).lintegral μ = ∑ r ∈ f.range, r * μ (restrict f s ⁻¹' {r}) :=
       lintegral_eq_of_subset _ fun x hx =>
         if hxs : x ∈ s then fun _ => by
@@ -1260,8 +1258,8 @@ protected theorem induction {α γ} [MeasurableSpace α] [AddZeroClass γ]
   rw [← Finset.coe_inj, Finset.coe_sdiff, Finset.coe_singleton, SimpleFunc.coe_range] at h
   induction s using Finset.induction generalizing f with
   | empty =>
-    rw [Finset.coe_empty, diff_eq_empty, range_subset_singleton] at h
-    convert const 0 MeasurableSet.univ
+    rw [Finset.coe_empty, sdiff_eq_empty, range_subset_singleton] at h
+    convert! const 0 MeasurableSet.univ
     ext x
     simp [h]
   | insert x s hxs ih =>
@@ -1270,13 +1268,13 @@ protected theorem induction {α γ} [MeasurableSpace α] [AddZeroClass γ]
     have Pg : motive g := by
       apply ih
       simp only [g, SimpleFunc.coe_piecewise, range_piecewise]
-      rw [image_compl_preimage, union_diff_distrib, diff_diff_comm, h, Finset.coe_insert,
-        insert_diff_self_of_notMem, diff_eq_empty.mpr, Set.empty_union]
+      rw [image_compl_preimage, union_sdiff_distrib, sdiff_sdiff_comm, h, Finset.coe_insert,
+        insert_sdiff_self_of_notMem, sdiff_eq_empty.mpr, Set.empty_union]
       · rw [Set.image_subset_iff]
-        convert Set.subset_univ _
+        convert! Set.subset_univ _
         exact preimage_const_of_mem (mem_singleton _)
       · rwa [Finset.mem_coe]
-    convert add _ Pg (const x mx)
+    convert! add _ Pg (const x mx)
     · ext1 y
       by_cases hy : y ∈ f ⁻¹' {x}
       · simpa [g, hy]
@@ -1302,8 +1300,8 @@ protected theorem induction' {α γ} [MeasurableSpace α] [Nonempty γ] {P : Sim
   rw [← Finset.coe_inj, Finset.coe_sdiff, Finset.coe_singleton, SimpleFunc.coe_range] at h
   induction s using Finset.induction generalizing f with
   | empty =>
-    rw [Finset.coe_empty, diff_eq_empty, range_subset_singleton] at h
-    convert const c
+    rw [Finset.coe_empty, sdiff_eq_empty, range_subset_singleton] at h
+    convert! const c
     ext x
     simp [h]
   | insert x s hxs ih =>
@@ -1312,13 +1310,13 @@ protected theorem induction' {α γ} [MeasurableSpace α] [Nonempty γ] {P : Sim
     have Pg : P g := by
       apply ih
       simp only [g, SimpleFunc.coe_piecewise, range_piecewise]
-      rw [image_compl_preimage, union_diff_distrib, diff_diff_comm, h, Finset.coe_insert,
-        insert_diff_self_of_notMem, diff_eq_empty.mpr, Set.empty_union]
+      rw [image_compl_preimage, union_sdiff_distrib, sdiff_sdiff_comm, h, Finset.coe_insert,
+        insert_sdiff_self_of_notMem, sdiff_eq_empty.mpr, Set.empty_union]
       · rw [Set.image_subset_iff]
-        convert Set.subset_univ _
+        convert! Set.subset_univ _
         exact preimage_const_of_mem (mem_singleton _)
       · rwa [Finset.mem_coe]
-    convert pcw mx.compl Pg (const x)
+    convert! pcw mx.compl Pg (const x)
     · ext1 y
       by_cases hy : y ∈ f ⁻¹' {x}
       · simpa [g, hy]
@@ -1362,7 +1360,7 @@ theorem Measurable.ennreal_induction {motive : (α → ℝ≥0∞) → Prop}
     (iSup : ∀ ⦃f : ℕ → α → ℝ≥0∞⦄, (∀ n, Measurable (f n)) → Monotone f →
       (∀ n, motive (f n)) → motive fun x => ⨆ n, f n x)
     ⦃f : α → ℝ≥0∞⦄ (hf : Measurable f) : motive f := by
-  convert iSup (fun n => (eapprox f n).measurable) (monotone_eapprox f) _ using 2
+  convert! iSup (fun n => (eapprox f n).measurable) (monotone_eapprox f) _ using 2
   · rw [iSup_eapprox_apply hf]
   · exact fun n =>
       SimpleFunc.induction (fun c s hs => indicator c hs)
@@ -1386,9 +1384,12 @@ lemma Measurable.ennreal_sigmaFinite_induction [SigmaFinite μ] {motive : (α �
       (∀ n, motive (f n)) → motive fun x => ⨆ n, f n x)
     ⦃f : α → ℝ≥0∞⦄ (hf : Measurable f) : motive f := by
   refine Measurable.ennreal_induction (fun c s hs ↦ ?_) add iSup hf
-  convert iSup (f := fun n ↦ (s ∩ spanningSets μ n).indicator fun _ ↦ c)
-    (fun n ↦ measurable_const.indicator (hs.inter (measurableSet_spanningSets ..)))
-    (fun m n hmn a ↦ by dsimp; grw [hmn])
-    (fun n ↦ indicator _ (hs.inter (measurableSet_spanningSets ..))
-      (measure_inter_lt_top_of_right_ne_top (measure_spanningSets_lt_top ..).ne)) with a
+  convert!
+    iSup (f := fun n ↦ (s ∩ spanningSets μ n).indicator fun _ ↦ c)
+      (fun n ↦ measurable_const.indicator (hs.inter (measurableSet_spanningSets ..)))
+      (fun m n hmn a ↦ by dsimp; grw [hmn])
+      (fun n ↦
+        indicator _ (hs.inter (measurableSet_spanningSets ..))
+          (measure_inter_lt_top_of_right_ne_top (measure_spanningSets_lt_top ..).ne)) with
+    a
   simp [← Set.indicator_iUnion_apply (M := ℝ≥0∞) rfl, ← Set.inter_iUnion]

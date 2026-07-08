@@ -70,7 +70,7 @@ lemma CompactIccSpace.mk'' [TopologicalSpace α] [PartialOrder α]
 instance [TopologicalSpace α] [Preorder α] [CompactIccSpace α] : CompactIccSpace (αᵒᵈ) where
   isCompact_Icc := by
     intro a b
-    convert isCompact_Icc (α := α) (a := b) (b := a) using 1
+    convert! isCompact_Icc (α := α) (a := b) (b := a) using 1
     exact Icc_toDual (α := α)
 
 /-- A closed interval in a conditionally complete linear order is compact. -/
@@ -194,7 +194,7 @@ theorem atBot_le_cocompact [NoMinOrder α] [ClosedIicTopology α] :
   obtain ⟨t, ht, hts⟩ := mem_cocompact.mp hs
   refine (Set.eq_empty_or_nonempty t).casesOn (fun h_empty ↦ ?_) (fun h_nonempty ↦ ?_)
   · rewrite [compl_univ_iff.mpr h_empty, univ_subset_iff] at hts
-    convert univ_mem
+    convert! univ_mem
   · haveI := h_nonempty.nonempty
     obtain ⟨a, ha⟩ := ht.exists_isLeast h_nonempty
     obtain ⟨b, hb⟩ := exists_lt a
@@ -542,18 +542,5 @@ theorem le_sSup_image_Icc (h : ContinuousOn f <| Icc a b) (hc : c ∈ Icc a b) :
   have := mem_image_of_mem f hc
   rw [h.image_Icc (hc.1.trans hc.2)] at this
   exact this.2
-
-theorem image_Icc_of_monotoneOn (hab : a ≤ b) (h : ContinuousOn f <| Icc a b)
-    (h' : MonotoneOn f <| Icc a b) : f '' Icc a b = Icc (f a) (f b) := by
-  rw [h.image_Icc hab]
-  congr!
-  · exact h'.sInf_image_Icc hab
-  · exact h'.sSup_image_Icc hab
-
-theorem image_Icc_of_antitoneOn (hab : a ≤ b) (h : ContinuousOn f <| Icc a b)
-    (h' : AntitoneOn f <| Icc a b) : f '' Icc a b = Icc (f b) (f a) := by
-  have : Icc (f b) (f a) = Icc (toDual (f a)) (toDual (f b)) := by rw [Icc_toDual]; rfl
-  rw [this]
-  exact image_Icc_of_monotoneOn (β := βᵒᵈ) hab h h'.dual_right
 
 end ContinuousOn
