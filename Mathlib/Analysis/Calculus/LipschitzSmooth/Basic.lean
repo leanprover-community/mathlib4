@@ -50,17 +50,18 @@ namespace LipschitzSmoothWith
 
 variable {K : NNReal} {f : F → ℝ}
 
-/-- Primary extractor: the Taylor remainder is bounded in absolute value. -/
+/-- The two-sided quadratic bound on the first-order Taylor remainder, restated
+from the definition for dot notation. -/
 theorem lineDeriv_abs_le (h : LipschitzSmoothWith K f) (x y : F) :
     |f y - f x - lineDeriv ℝ f x (y - x)| ≤ K / 2 * (dist x y) ^ 2 := h x y
 
-/-- Descent inequality (upper-bound extractor). -/
+/-- The quadratic upper bound on `f y`, traditionally called the *descent lemma*. -/
 theorem lineDeriv_descent_le (h : LipschitzSmoothWith K f) (x y : F) :
     f y ≤ f x + lineDeriv ℝ f x (y - x) + K / 2 * (dist x y) ^ 2 := by
   have := (abs_le.mp (h.lineDeriv_abs_le x y)).2
   linarith
 
-/-- Ascent inequality (lower-bound extractor). -/
+/-- The quadratic lower bound on `f y`: the descent lemma applied to `-f`. -/
 theorem lineDeriv_descent_ge (h : LipschitzSmoothWith K f) (x y : F) :
     f x + lineDeriv ℝ f x (y - x) - K / 2 * (dist x y) ^ 2 ≤ f y := by
   have := (abs_le.mp (h.lineDeriv_abs_le x y)).1
