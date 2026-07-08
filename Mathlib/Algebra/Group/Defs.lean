@@ -638,7 +638,7 @@ theorem npowRec_eq_npowBinRec : @npowRecAuto = @npowBinRecAuto := by
   rfl
 
 /-- `NSMul` is an implementation detail of `AddMonoid`. It is needed because it is
-impossible to extend `SMUl ℕ M` and `SMul ℤ M` at the same time. -/
+impossible to extend `SMul ℕ M` and `SMul ℤ M` at the same time. -/
 class NSMul (M : Type u) where
   /-- Multiplication by a natural number.
   Set this to `nsmulRec` unless `Module` diamonds are possible. -/
