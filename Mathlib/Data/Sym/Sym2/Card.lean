@@ -8,6 +8,8 @@ module
 public import Mathlib.Data.Set.Card
 public import Mathlib.Data.Sym.Sym2
 
+import Mathlib.SetTheory.Cardinal.Arithmetic
+
 /-!
 # Cardinality of `Sym2`
 
@@ -132,6 +134,20 @@ theorem cardinalMk_prod_eq_two_mul_cardinalMk_fromRel [Std.Irrefl r] :
   rw [← Set.coe_setOf, ← Set.preimage_singleton, ← Set.cast_ncard z.finite_mk_fiber,
     z.ncard_mk_fiber_of_not_isDiag, Nat.cast_two]
   exact fromRel_irrefl.mp ‹_› hz
+
+theorem finite_fromRel_iff : (fromRel sym).Finite ↔ Finite { p : α × α // r p.fst p.snd } := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · rw [← Set.finite_coe_iff, ← Cardinal.mk_lt_aleph0_iff] at h
+    grw [← Cardinal.mk_lt_aleph0_iff, cardinalMk_prod_le_two_mul_cardinalMk_fromRel sym]
+    simpa using Cardinal.natCast_mul_lt_natCast_mul two_ne_zero |>.mpr h
+  · refine h.of_injective (fun z ↦ ⟨z.val.out, (z.val.mk_fst_out_snd_out ▸ z.prop :)⟩) ?_
+    intro z₁ z₂ h
+    apply Quotient.out_injective (s := Sym2.Rel.setoid α) |>.comp Subtype.coe_injective
+    rwa [Subtype.mk.injEq] at h
+
+theorem infinite_fromRel_iff : (fromRel sym).Infinite ↔ { p : α × α | r p.fst p.snd }.Infinite := by
+  contrapose!
+  exact finite_fromRel_iff sym
 
 end fromRel
 
