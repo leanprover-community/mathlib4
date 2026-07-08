@@ -23,13 +23,10 @@ some extra bookkeeping. That said, in my opinion the most sensible way to do thi
 construction on integral schemes, and in any case the construction for integral schemes comes up the
 most in applications, hence our decision to formalize the version for integral schemes.
 
-Note: This is currently written in a somewhat suboptimal way, both in the sense that the code is
-messy and in the sense that the mathematical strategy uses a bit of a hack. Namely, later on in the
-file we show that the stalk of `𝒪ₓ(D)` at a regular point is isomorphic to the stalk of
-`𝒪ₓ` at that point. This codimension one assumption is a bit too strong - the principled thing to
-do is to only assume that the stalk at that point is a UFD, and the result still holds. I mainly
-did this because I wanted to make use of the valuation API as much as possible, but this should
-be refactored at some point.
+Also note: the construction given here is now somewhat out of date, though a lot of the lemmas are
+reused. In the file `SkyscraperViaSubmodule.lean` we develop the same sheaf via the skyscraper sheaf
+API. I think this results in a cleaner and more reusable design, but this is a bit of a WIP.
+
 -/
 @[expose] public section
 

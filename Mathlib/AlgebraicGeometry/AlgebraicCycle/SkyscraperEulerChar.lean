@@ -5,7 +5,7 @@ Authors: Raphael Douglas Giles
 -/
 import Mathlib.AlgebraicGeometry.AlgebraicCycle.EulerCharAdditive
 import Mathlib.AlgebraicGeometry.AlgebraicCycle.ResidueFieldModule
-import Mathlib.AlgebraicGeometry.AlgebraicCycle.ExactSequenceViaSubmodule
+import Mathlib.AlgebraicGeometry.AlgebraicCycle.ExactSequence
 import Mathlib.Topology.Sheaves.Flasque
 
 /-!

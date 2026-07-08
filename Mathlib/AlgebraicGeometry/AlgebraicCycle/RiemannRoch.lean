@@ -3,7 +3,7 @@ Copyright (c) 2026 Raphael Douglas Giles. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Raphael Douglas Giles
 -/
-import Mathlib.AlgebraicGeometry.AlgebraicCycle.SkyscraperEulerCharViaSubmodule
+import Mathlib.AlgebraicGeometry.AlgebraicCycle.SkyscraperEulerChar
 import Mathlib.AlgebraicGeometry.AlgebraicCycle.Degree
 import Mathlib.AlgebraicGeometry.AlgebraicCycle.LocallyFinsupp
 import Mathlib.AlgebraicGeometry.AlgebraicCycle.KrullDimLE
@@ -20,8 +20,8 @@ satisfied precisely when `X` is proper over `k`.
 
 The induction on `D` adds and removes codimension-one points one at a time; each step is the
 additivity of `χ` on the short exact sequence `0 ⟶ 𝒪ₓ(D - p) ⟶ 𝒪ₓ(D) ⟶ Q_p(D) ⟶ 0` of
-`ExactSequenceViaSubmodule` together with `χ(Q_p(D)) = dim_k κ(p)` from
-`SkyscraperEulerCharViaSubmodule`. In contrast to the presentation via a uniformizer-dependent
+`ExactSequence` together with `χ(Q_p(D)) = dim_k κ(p)` from
+`SkyscraperEulerChar`. In contrast to the presentation via a uniformizer-dependent
 skyscraper map, no choice of uniformizer appears anywhere in this file: the third term of the
 sequence is the canonical cokernel, and its Euler characteristic is computed once and for all
 behind the isomorphism-invariance of `χ`.
