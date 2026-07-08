@@ -506,6 +506,14 @@ theorem image_log_uIcc {a b : ℝ} (ha : 0 < a) (hb : 0 < b) :
   (continuousOn_log.mono fun _ hx ↦ ((lt_min ha hb).trans_le hx.1).ne').image_uIcc_of_monotoneOn
     (strictMonoOn_log.monotoneOn.mono fun _ hx ↦ (lt_min ha hb).trans_le hx.1)
 
+@[simp]
+theorem image_log_Ioo_zero {a : ℝ} (ha : 0 < a) : log '' Ioo 0 a = Iio (log a) := by
+  nth_rw 1 [← exp_log ha, ← image_exp_Iio, ← image_comp, log_comp_exp, image_id]
+
+@[simp]
+theorem image_log_Ioc_zero {a : ℝ} (ha : 0 < a) : log '' Ioc 0 a = Iic (log a) := by
+  nth_rw 1 [← exp_log ha, ← image_exp_Iic, ← image_comp, log_comp_exp, image_id]
+
 end Real
 
 namespace Nat.Prime

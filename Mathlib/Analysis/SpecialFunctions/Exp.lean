@@ -350,6 +350,16 @@ theorem image_exp_uIcc (a b : ℝ) : exp '' uIcc a b = uIcc (exp a) (exp b) :=
   continuous_exp.continuousOn.image_uIcc_of_monotoneOn (exp_strictMono.monotone.monotoneOn _)
 
 @[simp]
+theorem image_exp_Iio (a : ℝ) : exp '' Iio a = Ioo 0 (exp a) := by
+  rw [← coe_comp_expOrderIso, image_comp, expOrderIso.image_Iio, image_subtype_val_Ioi_Iio,
+    Function.comp_apply]
+
+@[simp]
+theorem image_exp_Iic (a : ℝ) : exp '' Iic a = Ioc 0 (exp a) := by
+  rw [← coe_comp_expOrderIso, image_comp, expOrderIso.image_Iic, image_subtype_val_Ioi_Iic,
+    Function.comp_apply]
+
+@[simp]
 theorem map_exp_atTop : map exp atTop = atTop := by
   rw [← coe_comp_expOrderIso, ← Filter.map_map, OrderIso.map_atTop, map_val_Ioi_atTop]
 
