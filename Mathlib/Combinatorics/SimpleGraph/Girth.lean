@@ -23,10 +23,6 @@ cycle, they give `0` or `∞` respectively if the graph is acyclic.
 
 @[expose] public section
 
--- #41372
-theorem ENat.coe_add_one_le_iff {m : ℕ} {n : ℕ∞} : m + 1 ≤ n ↔ m < n :=
-  ENat.add_one_le_iff <| ENat.coe_ne_top m
-
 namespace SimpleGraph
 variable {α β : Type*} {G : SimpleGraph α} {G' : SimpleGraph β}
 
