@@ -377,7 +377,7 @@ section
 
 variable {F} [HasPullbacks C] {J : Precoverage C}
   [J.HasIsos] [J.IsStableUnderBaseChange] [J.IsStableUnderComposition]
-#where
+
 /-- If a precoverage satisfies `HasIsos`, `IsStableUnderBaseChange` and
 `IsStableUnderComposition` (which is a slightly stronger condition as compared
 to pretopologies), then in order to check that a pseudofunctor is a prestack
