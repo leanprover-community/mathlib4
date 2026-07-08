@@ -89,6 +89,7 @@ variable [CommSemiring R] [Semiring A] [Bialgebra R A] [AddMonoid M]
 variable (R A M) in
 /-- The bialgebra equivalence between `AddMonoidAlgebra` and `MonoidAlgebra` in terms of
 `Multiplicative`. -/
+@[simps!]
 def toMultiplicativeBialgEquiv : A[M] ≃ₐc[R] MonoidAlgebra A (Multiplicative M) :=
   .ofAlgEquiv (toMultiplicativeAlgEquiv R A M) (by ext <;> simp) <| by
     ext a
@@ -96,6 +97,21 @@ def toMultiplicativeBialgEquiv : A[M] ≃ₐc[R] MonoidAlgebra A (Multiplicative
     · simp [← (Coalgebra.Repr.arbitrary R a).eq]
 
 end AddMonoidAlgebra
+
+namespace MonoidAlgebra
+variable [CommSemiring R] [Semiring A] [Bialgebra R A] [Monoid M]
+
+variable (R A M) in
+/-- The bialgebra equivalence between `MonoidAlgebra` and `AddMonoidAlgebra` in terms of
+`Additive`. -/
+@[simps!]
+def toAdditiveBialgEquiv : A[M] ≃ₐc[R] AddMonoidAlgebra A (Additive M) :=
+  .ofAlgEquiv (toAdditiveAlgEquiv R A M) (by ext <;> simp) <| by
+    ext a
+    · simp [Algebra.TensorProduct.one_def]
+    · simp [← (Coalgebra.Repr.arbitrary R a).eq]
+
+end MonoidAlgebra
 
 namespace LaurentPolynomial
 
