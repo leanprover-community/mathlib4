@@ -54,6 +54,35 @@ theorem encard_mk_fiber_le (z : Sym2 α) : (Sym2.mk.uncurry ⁻¹' {z}).encard �
   split_ifs <;> norm_cast
 
 variable (α) in
+theorem cardinalMk_diagSet : #(@diagSet α) = #α :=
+  Sym2.diagElemEquiv.cardinal_eq
+
+variable (α) in
+theorem two_mul_cardinalMk_diagSet_compl_add_cardinalMk :
+    2 * #(diagSetᶜ : Set (Sym2 α)) + #α = #α * #α := by
+  classical
+  have : Bool × (diagSetᶜ : Set (Sym2 α)) ⊕ α ≃ α × α := {
+    toFun
+      | .inl ⟨true, z, _⟩ => (z.out.fst, z.out.snd)
+      | .inl ⟨false, z, _⟩ => (z.out.snd, z.out.fst)
+      | .inr a => (a, a)
+    invFun
+      | ⟨a, b⟩ => if h : a = b then .inr a else .inl ⟨s(a, b).out.fst = a, s(a, b), by simpa⟩
+    left_inv := by grind [mk_fst_out_snd_out, mk_isDiag_iff, mem_diagSet]
+    right_inv _ := by grind [mk_fst_out_snd_out]
+  }
+  simpa using this.cardinal_eq
+
+variable (α) in
+theorem encard_diagSet : (@diagSet α).encard = ENat.card α :=
+  congrArg _ <| cardinalMk_diagSet α
+
+variable (α) in
+theorem two_mul_encard_diagSet_compl_add_enatCard :
+    2 * (@diagSet α)ᶜ.encard + ENat.card α = ENat.card α * ENat.card α := by
+  simpa [ENat.card] using congr($(two_mul_cardinalMk_diagSet_compl_add_cardinalMk α).toENat)
+
+variable (α) in
 theorem two_mul_cardinalMk_sym2 : 2 * #(Sym2 α) = #α * (#α + 1) := by
   classical
   have : Bool × Sym2 α ≃ α × Option α := {
