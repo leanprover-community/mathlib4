@@ -445,13 +445,13 @@ bundles the conclusions of the extended canonical decomposition theorem.
 Given functions `f`, `g` and a real number `R`, the following convenience structure packs the
 information relevant in the extended canonical decomposition.
 -/
-structure ECanonicalDecomp (f h : ℂ → E) (R : ℝ) where
+structure ECanonicalDecomp (f g : ℂ → E) (R : ℝ) where
   /-- A proof that `f` is meromorphic on `closedBall 0 R`. -/
   meromorphicOn : MeromorphicOn f (closedBall 0 R)
-  /-- A proof that `g` is analytin in a neighborhood of `closedBall 0 R`. -/
-  analyticOnNhd : AnalyticOnNhd ℂ h (closedBall 0 R)
+  /-- A proof that `g` is analytic in a neighborhood of `closedBall 0 R`. -/
+  analyticOnNhd : AnalyticOnNhd ℂ g (closedBall 0 R)
   /-- A proof that `g` does not vanish on the closed ball. -/
-  ne_zero : ∀ u ∈ (closedBall 0 R), h u ≠ 0
+  ne_zero : ∀ u ∈ (closedBall 0 R), g u ≠ 0
   /--
   A proof that `f` is equal, up to modification over a discrete set, to a product of `g`, canonical
   factors prescribed by the divisor of `f`, and a factorized rational function with poles and zeros
@@ -459,7 +459,7 @@ structure ECanonicalDecomp (f h : ℂ → E) (R : ℝ) where
   -/
   eventuallyEq : f =ᶠ[codiscreteWithin (closedBall 0 R)]
     ((∏ᶠ u, (canonicalFactor R u) ^ (-divisor f (ball 0 R) u))
-    * (∏ᶠ v, (· - v) ^ (divisor f (sphere 0 R)) v)) • h
+    * (∏ᶠ v, (· - v) ^ (divisor f (sphere 0 R)) v)) • g
 
 /--
 **Extended canonical decomposition:** A meromorphic function on a closed disk is equal, up to
