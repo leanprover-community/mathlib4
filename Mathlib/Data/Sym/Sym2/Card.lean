@@ -23,6 +23,13 @@ open scoped Cardinal
 
 variable {α : Type*}
 
+theorem finite_sym2_iff : Finite (Sym2 α) ↔ Finite α :=
+  ⟨fun _ ↦ diagElemEquiv.finite_iff.mp Subtype.finite, fun _ ↦ inferInstance⟩
+
+theorem infinite_sym2_iff : Infinite (Sym2 α) ↔ Infinite α := by
+  contrapose!
+  exact finite_sym2_iff
+
 theorem finite_mk_fiber (z : Sym2 α) : (Sym2.mk.uncurry ⁻¹' {z}).Finite := by
   cases z
   simp [mk_fiber]
