@@ -854,7 +854,7 @@ the group of the invertible `R`-submodules in `A` modulo the principal submodule
 /-- The Picard group of a domain with normalizable gcd is trivial.
 This includes unique factorization domains. -/
 @[stacks 0BCH]
-instance (R) [CommRing R] [IsDomain R] [Nonempty (NormalizedGCDMonoid R)] : Subsingleton (Pic R) :=
+instance (R) [CommRing R] [IsDomain R] [IsGCDMonoid R] : Subsingleton (Pic R) :=
   Equiv.subsingleton (ClassGroup.equivPic R).toEquiv.symm
 
 end PicardGroup

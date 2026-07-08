@@ -96,11 +96,11 @@ theorem _root_.Submodule.exists_linearEquiv_restrict_eq
   let eQ' := W'.prodEquivOfIsCompl Q' hQ'
   suffices Nonempty (Q ≃ₗ[K] Q') from
     ⟨eQ.symm ≪≫ₗ (LinearEquiv.prodCongr f this.some) ≪≫ₗ eQ', by aesop⟩
-  refine LinearEquiv.nonempty_equiv_iff_rank_eq.mpr ?_
+  refine Module.nonempty_linearEquiv_iff_rank_eq.mpr ?_
   rw [← Cardinal.add_right_inj_of_lt_aleph0 (γ := Module.rank K W),
-    add_comm, ← rank_prod', LinearEquiv.nonempty_equiv_iff_rank_eq.mp ⟨eQ⟩,
-    add_comm, LinearEquiv.nonempty_equiv_iff_rank_eq.mp ⟨f⟩,
-    ← rank_prod', LinearEquiv.nonempty_equiv_iff_rank_eq.mp ⟨eQ'⟩]
+    add_comm, ← rank_prod', Module.nonempty_linearEquiv_iff_rank_eq.mp ⟨eQ⟩,
+    add_comm, Module.nonempty_linearEquiv_iff_rank_eq.mp ⟨f⟩,
+    ← rank_prod', Module.nonempty_linearEquiv_iff_rank_eq.mp ⟨eQ'⟩]
   exact Module.rank_lt_aleph0 K ↥W
 
 section
@@ -383,7 +383,7 @@ theorem comap_eq_sup_ker_of_disjoint {p : Submodule K V} [FiniteDimensional K p]
     p.comap f = p ⊔ ker f := by
   refine le_antisymm (fun x hx ↦ ?_) (sup_le_iff.mpr ⟨h, ker_le_comap _⟩)
   obtain ⟨⟨y, hy⟩, hxy⟩ :=
-    surjective_of_injective ((injective_restrict_iff_disjoint h).mpr h') ⟨f x, hx⟩
+    surjective_of_injective ((injective_restrict_iff h).mpr h') ⟨f x, hx⟩
   replace hxy : f y = f x := by simpa [Subtype.ext_iff] using hxy
   exact Submodule.mem_sup.mpr ⟨y, hy, x - y, by simp [hxy], add_sub_cancel y x⟩
 
@@ -582,6 +582,14 @@ lemma exists_smul_eq_of_finrank_eq_one
   have : y ∈ Submodule.span K {x} := by rw [this]; exact mem_top
   exact mem_span_singleton.1 this
 
+/-- A submodule of finrank 1 is spanned by any of its nonzero elements. -/
+theorem eq_span_singleton_of_mem_of_finrank_eq_one {S : Submodule K V} {w : V}
+    (hS : finrank K S = 1) (hw : w ∈ S) (hw0 : w ≠ 0) :
+    S = K ∙ w := by
+  haveI : FiniteDimensional K S := Module.finite_of_finrank_pos (by lia)
+  exact Eq.symm <| eq_of_le_of_finrank_le (by simpa)
+    (by rw [hS, finrank_span_singleton hw0])
+
 theorem Set.finrank_mono [FiniteDimensional K V] {s t : Set V} (h : s ⊆ t) :
     s.finrank K ≤ t.finrank K :=
   Submodule.finrank_mono (span_mono h)
@@ -666,3 +674,7 @@ theorem ker_pow_constant {f : End K V} {k : ℕ}
 end End
 
 end Module
+
+theorem AlgHom.bijective {K S : Type*} [Field K] [Ring S] [IsSimpleRing S]
+    [Algebra K S] [FiniteDimensional K S] (f : S →ₐ[K] S) : Function.Bijective f :=
+  ⟨f.toRingHom.injective, f.toLinearMap.injective_iff_surjective.mp f.toRingHom.injective⟩

@@ -201,7 +201,7 @@ end cfcₙL
 
 section CFCn
 
-open Classical in
+open scoped Classical in
 /-- This is the *continuous functional calculus* of an element `a : A` in a non-unital algebra
 applied to bare functions.  When either `a` does not satisfy the predicate `p` (i.e., `a` is not
 `IsStarNormal`, `IsSelfAdjoint`, or `0 ≤ a` when `R` is `ℂ`, `ℝ`, or `ℝ≥0`, respectively), or when
@@ -580,7 +580,7 @@ lemma cfcₙ_neg : cfcₙ (fun x ↦ -(f x)) a = -(cfcₙ f a) := by
     obtain (ha | hf | h0) := h
     · simp [cfcₙ_apply_of_not_predicate a ha]
     · rw [cfcₙ_apply_of_not_continuousOn a hf, cfcₙ_apply_of_not_continuousOn, neg_zero]
-      exact fun hf_neg ↦ hf <| by simpa using hf_neg.neg
+      exact fun hf_neg ↦ hf <| by simpa using hf_neg.fun_neg
     · rw [cfcₙ_apply_of_not_map_zero a h0, cfcₙ_apply_of_not_map_zero, neg_zero]
       exact (h0 <| neg_eq_zero.mp ·)
 
