@@ -94,6 +94,7 @@ theorem closure_range : closure (range ι) = univ :=
 theorem isDenseInducing : IsDenseInducing ι :=
   ⟨pkg.isUniformInducing.isInducing, pkg.dense⟩
 
+@[fun_prop]
 theorem uniformContinuous_coe : UniformContinuous ι :=
   IsUniformInducing.uniformContinuous pkg.isUniformInducing
 
@@ -136,6 +137,7 @@ theorem extend_coe [T2Space β] (hf : UniformContinuous f) (a : α) : (pkg.exten
 
 variable [CompleteSpace β]
 
+@[fun_prop]
 theorem uniformContinuous_extend : UniformContinuous (pkg.extend f) := by
   by_cases hf : UniformContinuous f
   · rw [pkg.extend_def hf]
@@ -147,6 +149,7 @@ theorem uniformContinuous_extend : UniformContinuous (pkg.extend f) := by
 theorem continuous_extend : Continuous (pkg.extend f) :=
   pkg.uniformContinuous_extend.continuous
 
+@[fun_prop]
 lemma isUniformInducing_extend (h : IsUniformInducing f) :
     IsUniformInducing (pkg.extend f) := by
   rw [extend_def _ h.uniformContinuous]
@@ -183,6 +186,7 @@ local notation "map" => pkg.map pkg'
 
 variable (f : α → β)
 
+@[fun_prop]
 theorem uniformContinuous_map : UniformContinuous (map f) :=
   pkg.uniformContinuous_extend
 
@@ -254,6 +258,7 @@ variable (pkg' : AbstractCompletion.{vα'} α)
 def compare : pkg.space → pkg'.space :=
   pkg.extend pkg'.coe
 
+@[fun_prop]
 theorem uniformContinuous_compare : UniformContinuous (pkg.compare pkg') :=
   pkg.uniformContinuous_extend
 
@@ -277,9 +282,11 @@ def compareEquiv : pkg.space ≃ᵤ pkg'.space where
   uniformContinuous_toFun := uniformContinuous_compare _ _
   uniformContinuous_invFun := uniformContinuous_compare _ _
 
+@[fun_prop]
 theorem uniformContinuous_compareEquiv : UniformContinuous (pkg.compareEquiv pkg') :=
   pkg.uniformContinuous_compare pkg'
 
+@[fun_prop]
 theorem uniformContinuous_compareEquiv_symm : UniformContinuous (pkg.compareEquiv pkg').symm :=
   pkg'.uniformContinuous_compare pkg
 
@@ -373,6 +380,7 @@ end T0Space
 variable {f : α → β → γ}
 variable [CompleteSpace γ] (f)
 
+@[fun_prop]
 theorem uniformContinuous_extension₂ : UniformContinuous₂ (pkg.extend₂ pkg' f) := by
   rw [uniformContinuous₂_def, AbstractCompletion.extend₂, uncurry_curry]
   apply uniformContinuous_extend
@@ -399,6 +407,7 @@ local notation f " ∘₂ " g => bicompr f g
 protected def map₂ (f : α → β → γ) : hatα → hatβ → hatγ :=
   pkg.extend₂ pkg' (pkg''.coe ∘₂ f)
 
+@[fun_prop]
 theorem uniformContinuous_map₂ (f : α → β → γ) : UniformContinuous₂ (pkg.map₂ pkg' pkg'' f) :=
   AbstractCompletion.uniformContinuous_extension₂ pkg pkg' _
 
