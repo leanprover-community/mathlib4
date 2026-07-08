@@ -110,6 +110,10 @@ theorem inv_ball : (ball x δ)⁻¹ = ball x⁻¹ δ := (IsometryEquiv.inv E).pr
 theorem inv_closedBall : (closedBall x δ)⁻¹ = closedBall x⁻¹ δ :=
   (IsometryEquiv.inv E).preimage_closedBall x δ
 
+@[to_additive (attr := simp)]
+theorem inv_sphere : (sphere x δ)⁻¹ = sphere x⁻¹ δ :=
+  (IsometryEquiv.inv E).preimage_sphere x δ
+
 @[to_additive]
 theorem singleton_mul_ball : {x} * ball y δ = ball (x * y) δ := by
   simp only [preimage_mul_ball, image_mul_left, singleton_mul, div_inv_eq_mul, mul_comm y x]
@@ -175,6 +179,38 @@ theorem closedBall_one_div_singleton : closedBall 1 δ / {x} = closedBall x⁻¹
 
 @[to_additive (attr := simp 1100)]
 theorem smul_closedBall_one : x • closedBall (1 : E) δ = closedBall x δ := by simp
+
+@[to_additive (attr := simp 1100)]
+theorem singleton_mul_sphere : {x} * sphere y δ = sphere (x * y) δ := by
+  simp_rw [singleton_mul, ← smul_eq_mul, image_smul, smul_sphere]
+
+@[to_additive (attr := simp 1100)]
+theorem singleton_div_sphere : {x} / sphere y δ = sphere (x / y) δ := by
+  simp_rw [div_eq_mul_inv, inv_sphere, singleton_mul_sphere]
+
+@[to_additive (attr := simp 1100)]
+theorem sphere_mul_singleton : sphere x δ * {y} = sphere (x * y) δ := by
+  simp [mul_comm _ {y}, mul_comm y]
+
+@[to_additive (attr := simp 1100)]
+theorem sphere_div_singleton : sphere x δ / {y} = sphere (x / y) δ := by
+  simp [div_eq_mul_inv]
+
+@[to_additive]
+theorem singleton_mul_sphere_one : {x} * sphere 1 δ = sphere x δ := by simp
+
+@[to_additive]
+theorem singleton_div_sphere_one : {x} / sphere 1 δ = sphere x δ := by
+  rw [singleton_div_sphere, div_one]
+
+@[to_additive]
+theorem sphere_one_mul_singleton : sphere 1 δ * {x} = sphere x δ := by simp
+
+@[to_additive]
+theorem sphere_one_div_singleton : sphere 1 δ / {x} = sphere x⁻¹ δ := by simp
+
+@[to_additive (attr := simp 1100)]
+theorem smul_sphere_one : x • sphere (1 : E) δ = sphere x δ := by simp
 
 @[to_additive]
 theorem mul_ball_one : s * ball 1 δ = thickening δ s := by
