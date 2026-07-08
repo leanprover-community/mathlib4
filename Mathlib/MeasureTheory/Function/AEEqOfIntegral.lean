@@ -408,7 +408,7 @@ lemma ae_eq_zero_of_forall_setIntegral_isCompact_eq_zero
   · intro n
     exact (isClosed_closure.inter hs).measurableSet
   · intro m n hmn
-    simp only [t, Set.le_iff_subset]
+    simp only [t]
     gcongr
   · exact hf.integrableOn
 
