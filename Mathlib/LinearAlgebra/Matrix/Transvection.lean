@@ -113,20 +113,22 @@ theorem transvection_mul_transvection_same (h : i ≠ j) (c d : R) :
     single_add]
 
 @[simp]
-theorem transvection_mul_apply_same (b : n) (c : R) (M : Matrix n n R) :
+theorem transvection_mul_apply_same {m : Type*} (b : m) (c : R) (M : Matrix n m R) :
     (transvection i j c * M) i b = M i b + c * M j b := by simp [transvection, Matrix.add_mul]
 
 @[simp]
-theorem mul_transvection_apply_same (a : n) (c : R) (M : Matrix n n R) :
+theorem mul_transvection_apply_same {m : Type*} (a : m) (c : R) (M : Matrix m n R) :
     (M * transvection i j c) a j = M a j + c * M a i := by
   simp [transvection, Matrix.mul_add, mul_comm]
 
 @[simp]
-theorem transvection_mul_apply_of_ne (a b : n) (ha : a ≠ i) (c : R) (M : Matrix n n R) :
+theorem transvection_mul_apply_of_ne {m : Type*} (a : n) (b : m) (ha : a ≠ i) (c : R)
+    (M : Matrix n m R) :
     (transvection i j c * M) a b = M a b := by simp [transvection, Matrix.add_mul, ha]
 
 @[simp]
-theorem mul_transvection_apply_of_ne (a b : n) (hb : b ≠ j) (c : R) (M : Matrix n n R) :
+theorem mul_transvection_apply_of_ne {m : Type*} (a : m) (b : n) (hb : b ≠ j) (c : R)
+    (M : Matrix m n R) :
     (M * transvection i j c) a b = M a b := by simp [transvection, Matrix.mul_add, hb]
 
 @[simp]
@@ -216,6 +218,11 @@ theorem prod_mul_reverse_inv_prod (L : List (TransvectionStruct n R)) :
           t.inv.toMatrix = 1
       by simpa [Matrix.mul_assoc]
     simp_rw [IH, Matrix.mul_one, t.mul_inv]
+
+theorem isUnit_prod_comp_inverse (L : List (TransvectionStruct n R)) :
+    IsUnit (L.map (toMatrix ∘ .inv)).prod := by
+  refine IsUnit.of_mul_eq_one (L.reverse.map toMatrix).prod ?_
+  rw [← reverse_inv_prod_mul_prod L.reverse, L.reverse_reverse]
 
 /-- `M` is a scalar matrix if it commutes with every nontrivial transvection (elementary matrix). -/
 theorem _root_.Matrix.mem_range_scalar_of_commute_transvectionStruct {M : Matrix n n R}

@@ -82,7 +82,8 @@ theorem isChain_of_trichotomous [Std.Trichotomous r] (s : Set α) : IsChain r s 
 
 protected theorem IsChain.insert (hs : IsChain r s) (ha : ∀ b ∈ s, a ≠ b → a ≺ b ∨ b ≺ a) :
     IsChain r (insert a s) :=
-  hs.insert_of_symmetric (fun _ _ => Or.symm) ha
+  have : Std.Symm fun a b ↦ a ≺ b ∨ b ≺ a := { symm _ _ := Or.symm }
+  hs.insert_of_symm ha
 
 lemma IsChain.pair (h : r a b) : IsChain r {a, b} :=
   IsChain.singleton.insert fun _ hb _ ↦ .inl <| (eq_of_mem_singleton hb).symm.recOn ‹_›
@@ -106,7 +107,8 @@ theorem IsChain.preimage (r : α → α → Prop) (s : β → β → Prop) (f : 
 
 lemma isChain_union {s t : Set α} :
     IsChain r (s ∪ t) ↔ IsChain r s ∧ IsChain r t ∧ ∀ a ∈ s, ∀ b ∈ t, a ≠ b → r a b ∨ r b a := by
-  rw [IsChain, IsChain, IsChain, pairwise_union_of_symmetric fun _ _ ↦ Or.symm]
+  have : Std.Symm fun a b ↦ a ≺ b ∨ b ≺ a := { symm _ _ := Or.symm }
+  rw [IsChain, IsChain, IsChain, pairwise_union_of_symm]
 
 lemma Monotone.isChain_image [Preorder α] [Preorder β] {s : Set α} {f : α → β}
     (hf : Monotone f) (hs : IsChain (· ≤ ·) s) : IsChain (· ≤ ·) (f '' s) :=
@@ -116,6 +118,14 @@ theorem Monotone.isChain_range [LinearOrder α] [Preorder β] {f : α → β} (h
     IsChain (· ≤ ·) (range f) := by
   rw [← image_univ]
   exact hf.isChain_image (isChain_of_trichotomous _)
+
+lemma Antitone.isChain_image [Preorder α] [Preorder β] {s : Set α} {f : α → β}
+    (hf : Antitone f) (hs : IsChain (· ≤ ·) s) : IsChain (· ≤ ·) (f '' s) :=
+  hf.dual_left.isChain_image hs.symm
+
+theorem Antitone.isChain_range [LinearOrder α] [Preorder β] {f : α → β} (hf : Antitone f) :
+    IsChain (· ≤ ·) (range f) :=
+  hf.dual_left.isChain_range
 
 theorem IsChain.lt_of_le [PartialOrder α] {s : Set α} (h : IsChain (· ≤ ·) s) :
     IsChain (· < ·) s := fun _a ha _b hb hne ↦
@@ -220,6 +230,15 @@ theorem IsChain.exists3 (hchain : IsChain r s) [IsTrans α r] {a b c} (mem1 : a 
 
 end Total
 
+/-- A chain in a partial order is a linear order. -/
+@[implicit_reducible]
+def IsChain.linearOrder [PartialOrder α] [DecidableLE α] {s : Set α} (hs : IsChain (· ≤ ·) s) :
+    LinearOrder s where
+  le_total := by
+    rintro ⟨a, ha⟩ ⟨b, hb⟩
+    exact hs.total ha hb
+  toDecidableLE x y := inferInstanceAs (Decidable (x.1 ≤ y.1))
+
 lemma IsChain.le_of_not_gt [Preorder α] (hs : IsChain (· ≤ ·) s)
     {x y : α} (hx : x ∈ s) (hy : y ∈ s) (h : ¬ x < y) : y ≤ x := by
   cases hs.total hx hy with
@@ -270,7 +289,7 @@ protected theorem IsMaxChain.nonempty_iff (h : IsMaxChain r s) : Nonempty α ↔
 theorem IsMaxChain.symm (h : IsMaxChain r s) : IsMaxChain (flip r) s :=
   ⟨h.isChain.symm, fun _ ht₁ ht₂ ↦ h.2 ht₁.symm ht₂⟩
 
-open Classical in
+open scoped Classical in
 /-- Given a set `s`, if there exists a chain `t` strictly including `s`, then `SuccChain s`
 is one of these chains. Otherwise it is `s`. -/
 def SuccChain (r : α → α → Prop) (s : Set α) : Set α :=
@@ -281,10 +300,10 @@ theorem succChain_spec (h : ∃ t, IsChain r s ∧ SuperChain r s t) :
   have : IsChain r s ∧ SuperChain r s h.choose := h.choose_spec
   simpa [SuccChain, dif_pos, exists_and_left.mp h] using this.2
 
-open Classical in
-theorem IsChain.succ (hs : IsChain r s) : IsChain r (SuccChain r s) :=
-  if h : ∃ t, IsChain r s ∧ SuperChain r s t then (succChain_spec h).1
-  else by
+theorem IsChain.succ (hs : IsChain r s) : IsChain r (SuccChain r s) := by
+  classical
+  if h : ∃ t, IsChain r s ∧ SuperChain r s t then exact (succChain_spec h).1
+  else
     rw [exists_and_left] at h
     simpa [SuccChain, dif_neg, h] using hs
 
@@ -294,10 +313,10 @@ theorem IsChain.superChain_succChain (hs₁ : IsChain r s) (hs₂ : ¬IsMaxChain
   obtain ⟨t, ht, hst⟩ := hs₂ hs₁
   exact succChain_spec ⟨t, hs₁, ht, ssubset_iff_subset_ne.2 hst⟩
 
-open Classical in
-theorem subset_succChain : s ⊆ SuccChain r s :=
-  if h : ∃ t, IsChain r s ∧ SuperChain r s t then (succChain_spec h).2.1
-  else by
+theorem subset_succChain : s ⊆ SuccChain r s := by
+  classical
+  if h : ∃ t, IsChain r s ∧ SuperChain r s t then exact (succChain_spec h).2.1
+  else
     simp [SuccChain, h]
 
 end Chain
