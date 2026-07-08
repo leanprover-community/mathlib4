@@ -485,6 +485,7 @@ lemma MeromorphicAt.exists_analyticAt_and_toMeromorphicNFAt_eventuallyEq (hf : M
     hg.1.meromorphicNFAt]
   exact hf.eq_nhdsNE_toMeromorphicNFAt.symm.trans hg.2
 
+@[gcongr]
 lemma toMeromorphicNFAt_congr {f g : 𝕜 → E} (hfg : f =ᶠ[𝓝[≠] x] g) :
     toMeromorphicNFAt f x x = toMeromorphicNFAt g x x := by
   by_cases hf : MeromorphicAt f x
