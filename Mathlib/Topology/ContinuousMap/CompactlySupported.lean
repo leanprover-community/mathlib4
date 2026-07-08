@@ -196,6 +196,18 @@ theorem coe_mul [MulZeroClass β] [ContinuousMul β] (f g : C_c(α, β)) : ⇑(f
 theorem mul_apply [MulZeroClass β] [ContinuousMul β] (f g : C_c(α, β)) : (f * g) x = f x * g x :=
   rfl
 
+instance [SemigroupWithZero β] [ContinuousMul β] : Pow C_c(α, β) ℕ+ :=
+  ⟨fun f n => ⟨f ^ n, HasCompactSupport.ppow f.2 n⟩⟩
+
+@[simp]
+theorem coe_ppow [SemigroupWithZero β] [ContinuousMul β] (f : C_c(α, β)) (n : ℕ+) :
+    ⇑(f ^ n) = f ^ n :=
+  rfl
+
+theorem ppow_apply [SemigroupWithZero β] [ContinuousMul β] (f : C_c(α, β)) (n : ℕ+) :
+    (f ^ n) x = f x ^ n :=
+  rfl
+
 /-- the product of `f : F` assuming `ContinuousMapClass F α γ` and `ContinuousSMul γ β` and
 `g : C_c(α, β)` is in `C_c(α, β)` -/
 instance [Zero β] [TopologicalSpace γ] [SMulZeroClass γ β] [ContinuousSMul γ β]
@@ -219,7 +231,7 @@ instance [MulZeroClass β] [ContinuousMul β] : MulZeroClass C_c(α, β) := fast
 
 instance [SemigroupWithZero β] [ContinuousMul β] :
     SemigroupWithZero C_c(α, β) := fast_instance%
-  DFunLike.coe_injective.semigroupWithZero _ coe_zero coe_mul
+  DFunLike.coe_injective.semigroupWithZero _ coe_zero coe_mul coe_ppow
 
 instance [AddZeroClass β] [ContinuousAdd β] : Add C_c(α, β) :=
   ⟨fun f g => ⟨f + g, HasCompactSupport.add f.2 g.2⟩⟩
@@ -256,12 +268,12 @@ theorem smul_apply [Zero β] {R : Type*} [SMulZeroClass R β] [ContinuousConstSM
 section AddMonoid
 
 instance [AddMonoid β] [ContinuousAdd β] : AddMonoid C_c(α, β) := fast_instance%
-  DFunLike.coe_injective.addMonoid _ coe_zero coe_add fun _ _ => rfl
+  DFunLike.coe_injective.addMonoid _ coe_zero coe_add (fun _ _ => rfl) (fun _ _ => coe_smul _ _)
 
 end AddMonoid
 
 instance [AddCommMonoid β] [ContinuousAdd β] : AddCommMonoid C_c(α, β) := fast_instance%
-  DFunLike.coe_injective.addCommMonoid _ coe_zero coe_add fun _ _ => rfl
+  DFunLike.coe_injective.addCommMonoid _ coe_zero coe_add (fun _ _ => rfl) (fun _ _ => coe_smul _ _)
 
 @[simp]
 theorem coe_sum [AddCommMonoid β] [ContinuousAdd β] {ι : Type*} (s : Finset ι) (f : ι → C_c(α, β)) :
@@ -301,13 +313,14 @@ theorem sub_apply : (f - g) x = f x - g x :=
   rfl
 
 instance : AddGroup C_c(α, β) := fast_instance%
-  DFunLike.coe_injective.addGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => rfl) fun _ _ => rfl
+  DFunLike.coe_injective.addGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => rfl)
+    (fun _ _ => rfl) (fun _ _ => coe_smul _ _)
 
 end AddGroup
 
 instance [AddCommGroup β] [IsTopologicalAddGroup β] : AddCommGroup C_c(α, β) := fast_instance%
-  DFunLike.coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => rfl) fun _ _ =>
-    rfl
+  DFunLike.coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => rfl)
+    (fun _ _ => rfl) (fun _ _ => coe_smul _ _)
 
 instance [Zero β] {R : Type*} [Zero R] [SMulWithZero R β] [SMulWithZero Rᵐᵒᵖ β]
     [ContinuousConstSMul R β] [IsCentralScalar R β] : IsCentralScalar R C_c(α, β) :=
@@ -327,29 +340,32 @@ instance [AddCommMonoid β] [ContinuousAdd β] {R : Type*} [Semiring R] [Module 
 
 instance [NonUnitalNonAssocSemiring β] [IsTopologicalSemiring β] :
     NonUnitalNonAssocSemiring C_c(α, β) := fast_instance%
-  DFunLike.coe_injective.nonUnitalNonAssocSemiring _ coe_zero coe_add coe_mul fun _ _ => rfl
+  DFunLike.coe_injective.nonUnitalNonAssocSemiring _ coe_zero coe_add coe_mul
+    (fun _ _ => rfl) (fun _ _ => coe_smul _ _)
 
 instance [NonUnitalSemiring β] [IsTopologicalSemiring β] :
     NonUnitalSemiring C_c(α, β) := fast_instance%
-  DFunLike.coe_injective.nonUnitalSemiring _ coe_zero coe_add coe_mul fun _ _ => rfl
+  DFunLike.coe_injective.nonUnitalSemiring _ coe_zero coe_add coe_mul
+    (fun _ _ => rfl) (fun _ _ => coe_smul _ _) coe_ppow
 
 instance [NonUnitalCommSemiring β] [IsTopologicalSemiring β] :
     NonUnitalCommSemiring C_c(α, β) := fast_instance%
-  DFunLike.coe_injective.nonUnitalCommSemiring _ coe_zero coe_add coe_mul fun _ _ => rfl
+  DFunLike.coe_injective.nonUnitalCommSemiring _ coe_zero coe_add coe_mul
+    (fun _ _ => rfl) (fun _ _ => coe_smul _ _) coe_ppow
 
 instance [NonUnitalNonAssocRing β] [IsTopologicalRing β] :
     NonUnitalNonAssocRing C_c(α, β) := fast_instance%
   DFunLike.coe_injective.nonUnitalNonAssocRing _ coe_zero coe_add coe_mul coe_neg coe_sub
-    (fun _ _ => rfl) fun _ _ => rfl
+    (fun _ _ => rfl) (fun _ _ => coe_smul _ _) (fun _ _ => coe_smul _ _)
 
 instance [NonUnitalRing β] [IsTopologicalRing β] : NonUnitalRing C_c(α, β) := fast_instance%
   DFunLike.coe_injective.nonUnitalRing _ coe_zero coe_add coe_mul coe_neg coe_sub (fun _ _ => rfl)
-    fun _ _ => rfl
+    (fun _ _ => coe_smul _ _) (fun _ _ => coe_smul _ _) coe_ppow
 
 instance [NonUnitalCommRing β] [IsTopologicalRing β] :
     NonUnitalCommRing C_c(α, β) := fast_instance%
   DFunLike.coe_injective.nonUnitalCommRing _ coe_zero coe_add coe_mul coe_neg coe_sub
-    (fun _ _ => rfl) fun _ _ => rfl
+    (fun _ _ => coe_smul _ _) (fun _ _ => coe_smul _ _) (fun _ _ => coe_smul _ _) coe_ppow
 
 instance {R : Type*} [Semiring R] [NonUnitalNonAssocSemiring β]
     [IsTopologicalSemiring β] [Module R β] [ContinuousConstSMul R β] [IsScalarTower R β β] :

@@ -486,6 +486,18 @@ theorem HasCompactSupport.mul_left (hf : HasCompactSupport f') : HasCompactSuppo
 
 end MulZeroClass
 
+section SemigroupWithZero
+
+variable [TopologicalSpace α] [SemigroupWithZero β]
+variable {f f' : α → β}
+
+theorem HasCompactSupport.ppow (hf : HasCompactSupport f) (n : ℕ+) : HasCompactSupport (f ^ n) := by
+  induction n using Semigroup.ppow_induction f with
+  | h1 => exact hf
+  | hsucc n IH => exact IH.mul_right
+
+end SemigroupWithZero
+
 section OrderedAddGroup
 
 variable [TopologicalSpace α] [AddGroup β] [Lattice β] [AddLeftMono β]
