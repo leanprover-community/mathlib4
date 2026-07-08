@@ -26,10 +26,10 @@ When adding new definitions that transfer type-classes across an equivalence, pl
 assert_not_exists MonoidWithZero MulAction
 
 library_note «instance transfer via equivalence» /--
-For many type classes, we have a definition that let us transfer instances from one type to another
+For many type classes, we have a definition that lets us transfer instances from one type to another
 using an equivalence, such as `Equiv.mul` for `Mul`.
 Constructing data instances in this way is discouraged because the resulting data is inefficient
-to unfold. To somewhat mittigate this problem, in these definitions we don't write the
+to unfold. To somewhat mitigate this problem, in these definitions we don't write the
 projections on `Equiv` in the usual way using `Equiv.symm` and `DFunLike.coe`, and instead use
 `Equiv.toFun` and `Equiv.invFun` directly. As a result, unification has to do less unfolding.
 
