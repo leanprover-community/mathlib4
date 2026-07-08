@@ -12,8 +12,8 @@ public import Mathlib.CategoryTheory.Limits.WeakLimits.WeakEqualizers
 
 These are weak limits for diagrams of shape `WalkingCospan`.
 
-If a category has binary products and weak equalizers, then it has weak kernels
-(see `hasWeakPullbacks_of_hasBinaryProducts_of_hasWeakKernels`).
+If a category has binary products and weak equalizers, then it has weak pullbacks
+(see `hasWeakPullbacks_of_hasBinaryProducts_of_hasWeakEqualizers`).
 
 -/
 
@@ -211,7 +211,7 @@ def weakPullbackIsWeakPullback {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasWeakP
 
 variable (C)
 
-/-- A category `HasPullbacks` if it has all weak limits of shape `WalkingCospan`, i.e. if it
+/-- A category `HasWeakPullbacks` if it has all weak limits of shape `WalkingCospan`, i.e. if it
 has a weak pullback for every pair of morphisms with the same codomain. -/
 abbrev HasWeakPullbacks :=
   HasWeakLimitsOfShape WalkingCospan C
@@ -242,7 +242,7 @@ attribute [local instance] hasWeakLimit_cospan_of_hasLimit_pair_of_hasWeakLimit_
 /-- If a category has all binary products and all weak equalizers, then it also has all
 weak pullbacks. As usual, this is not an instance, since there may be a more direct way to
 construct weak pullbacks. -/
-theorem hasWeakPullbacks_of_hasBinaryProducts_of_hasWeakKernels
+theorem hasWeakPullbacks_of_hasBinaryProducts_of_hasWeakEqualizers
     [HasBinaryProducts C] [HasWeakEqualizers C] : HasWeakPullbacks C where
   hasWeakLimit F := hasWeakLimit_of_iso (diagramIsoCospan F).symm
 
