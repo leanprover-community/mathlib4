@@ -353,7 +353,7 @@ We make it irreducible so that Lean doesn't unfold it when trying to unify two d
 def _root_.TotalMonoidAlgebra.mul' [Monoid M] [HasMulAntidiagonal M] (x y : R⟦M⟧) : R⟦M⟧ :=
   .ofCoeff fun z ↦ ∑ i ∈ HasMulAntidiagonal.mulAntidiagonal z, x.coeff i.1 * y.coeff i.2
 
-variable [Monoid M] [HasMulAntidiagonal M]
+variable [Monoid M] [HasMulAntidiagonal M] [Monoid N] [HasMulAntidiagonal N]
 
 /-- The product of `x y : R⟦M⟧` is the function whose value at `m` is the sum of `x m₁ * y m₂`
 over all pairs `m₁, m₂` such that `m₁ * m₂ = m`. -/
