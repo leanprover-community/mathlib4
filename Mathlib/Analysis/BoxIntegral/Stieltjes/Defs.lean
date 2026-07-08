@@ -14,7 +14,8 @@ from `a` to `b` of a function `f : ℝ → E` against an integrator `g : ℝ →
 by a continuous bilinear map `B : E →L[ℝ] F →L[ℝ] G`.  It is not required that `a < b`.
 
 The notation here is deliberately chosen to mimic the notation `∫ x in a..b, f x ∂μ` for
-`IntervalIntegral`.
+`IntervalIntegral`, as well as the notation `∫ᵛ x, f x ∂[B; μ]` for
+`MeasureTheory.VectorMeasure.Integral`.
 
 The bilinear pairing `B` covers the three main variants of
 Stieltjes integration that appear in practice:
@@ -75,15 +76,16 @@ section Defs
 
 variable (a b : ℝ) (B : E →L[ℝ] F →L[ℝ] G) (f : ℝ → E) (g : ℝ → F) (L : G)
 
-/-- The (Riemann--)Stieltjes integral of a function `f : ℝ → E` and `g : ℝ → F` given a bilinear
-map `B : E → F → G` and endpoints `a`, `b` takes values in `G`.
-Initially defined under the implicit assumption that `a < b`. -/
+/-- The (Riemann--)Stieltjes integral predicate of a function `f : ℝ → E` and `g : ℝ → F` having
+its Riemann--Stieltjes sums converge to a limit `L : G`, given a bilinear map `B : E → F → G` and
+endpoints `a`, `b` takes values in `G`. Initially defined under the implicit assumption that
+`a < b`, with junk values otherwise. -/
 def HasStieltjesIntegral' : Prop :=
   HasIntegral (uIoc a b) IntegrationParams.Riemann
     (fun x ↦ f (x 0)) (BoxAdditiveMap.ofDiff (fun x ↦ B.flip (g x))) L
 
-/-- Extension of the Stieltjes integral to cover the cases `a = b` and `a > b`. Prefer this
-notion over `HasStieltjesIntegral'`, as it has a more developed API. -/
+/-- Extension of the Stieltjes integral predicate to cover the cases `a = b` and `a > b`. Prefer
+this notion over `HasStieltjesIntegral'`, as it has a more developed API. -/
 def HasStieltjesIntegral : Prop :=
   if a = b then L = 0 else
     if a < b then HasStieltjesIntegral' a b B f g L else
@@ -97,8 +99,8 @@ def StieltjesIntegrable' : Prop := ∃ L, HasStieltjesIntegral' a b B f g L
 /-- `StieltjesIntegrable a b B f g` asserts that the Riemann–Stieltjes integral of `f` against `g`
 paired by `B` from `a` to `b` exists, i.e. some `L` satisfies `HasStieltjesIntegral a b B f g L`.
 
-Prefer this over `StieltjesIntegrable'` as it has a better API and remains
-useful even outside of the case `a < b`.
+Prefer this over `StieltjesIntegrable'` as it has a better API and remains useful even outside of
+the case `a < b`.
 -/
 def StieltjesIntegrable : Prop := ∃ L, HasStieltjesIntegral a b B f g L
 
@@ -186,8 +188,7 @@ lemma HasStieltjesIntegral.symm (h : HasStieltjesIntegral a b B f g L) :
     HasStieltjesIntegral b a B f g (-L) := by rwa [← symm_iff]
 
 theorem stieltjesIntegrable'_iff_integrable : StieltjesIntegrable' a b B f g ↔
-    Integrable (uIoc a b) IntegrationParams.Riemann
-      (fun x ↦ f (x 0)) (BoxAdditiveMap.ofDiff (fun x ↦ B.flip (g x))) :=
+    Integrable (uIoc a b) IntegrationParams.Riemann (f <| · 0) (.ofDiff (B.flip <| g ·)) :=
   ⟨fun ⟨_, hL⟩ ↦ HasIntegral.integrable hL, fun h ↦ ⟨_, h.hasIntegral⟩⟩
 
 @[simp]
@@ -233,7 +234,7 @@ theorem HasStieltjesIntegral.stieltjesIntegrable
 
 /-- A chosen witness extracted from `StieltjesIntegrable`. -/
 theorem StieltjesIntegrable.hasStieltjesIntegral (h : StieltjesIntegrable a b B f g) :
-    HasStieltjesIntegral a b B f g (∫ˢ x in a..b, f x ∂[B; g]) := by
+    HasStieltjesIntegral a b B f g ∫ˢ x in a..b, f x ∂[B; g] := by
   simp [stieltjesIntegral, h, h.choose_spec]
 
 /-- If `HasStieltjesIntegral a b B f g L`, then `∫ˢ x in a..b, f x ∂[B; g] = L`. -/
@@ -308,7 +309,7 @@ variable {a b : ℝ} {f f₁ f₂ : ℝ → E} {L L₁ L₂ : E}
 
 theorem HasRiemannIntegral.iff_hasIntegral (hab : a < b) :
     HasRiemannIntegral a b f L ↔
-      HasIntegral (uIoc a b) IntegrationParams.Riemann (fun x ↦ f (x 0))
+      HasIntegral (uIoc a b) IntegrationParams.Riemann (f <| · 0)
         BoxAdditiveMap.volume L := by
   simp [HasRiemannIntegral, hab, HasStieltjesIntegral.of_lt, HasStieltjesIntegral',
     BoxAdditiveMap.ofDiff_lsmul_eq_volume]
@@ -337,12 +338,12 @@ lemma RiemannIntegrable.of_eq : RiemannIntegrable a a f := StieltjesIntegrable.o
 theorem riemannIntegral.integral_same : ∫ʳ x in a..a, f x = 0 := stieltjesIntegral.integral_same
 
 theorem RiemannIntegrable.iff_integrable (hab : a < b) : RiemannIntegrable a b f ↔
-    Integrable (uIoc a b) IntegrationParams.Riemann (fun x ↦ f (x 0)) BoxAdditiveMap.volume := by
+    Integrable (uIoc a b) IntegrationParams.Riemann (f <| · 0) BoxAdditiveMap.volume := by
   simp [RiemannIntegrable_def, Integrable, HasRiemannIntegral.iff_hasIntegral, hab]
 
 theorem HasRiemannIntegral.unique
-    (h₁ : HasRiemannIntegral a b f L₁) (h₂ : HasRiemannIntegral a b f L₂) :
-    L₁ = L₂ := HasStieltjesIntegral.unique h₁ h₂
+    (h₁ : HasRiemannIntegral a b f L₁) (h₂ : HasRiemannIntegral a b f L₂) : L₁ = L₂ :=
+  HasStieltjesIntegral.unique h₁ h₂
 
 theorem HasRiemannIntegral.riemannIntegrable
     (h : HasRiemannIntegral a b f L) : RiemannIntegrable a b f := ⟨L, h⟩
