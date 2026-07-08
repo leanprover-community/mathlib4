@@ -81,6 +81,9 @@ theorem not_pseudoperfect_iff_forall :
     ¬ Pseudoperfect n ↔ n = 0 ∨ ∀ s ⊆ properDivisors n, ∑ i ∈ s, i ≠ n := by
   grind [Pseudoperfect]
 
+theorem not_deficient_zero : ¬ Deficient 0 := by
+  decide
+
 theorem deficient_one : Deficient 1 := by
   decide
 
@@ -96,8 +99,20 @@ theorem not_abundant_zero : ¬ Abundant 0 := by
 theorem abundant_twelve : Abundant 12 := by
   decide
 
+theorem not_weird_zero : ¬ Weird 0 := by
+  decide
+
 theorem weird_seventy : Weird 70 := by
   decide +kernel
+
+lemma Deficient.pos (h : Deficient n) : 0 < n := by
+  grind only [not_deficient_zero]
+
+lemma Abundant.pos (h : Abundant n) : 0 < n := by
+  grind only [not_abundant_zero]
+
+lemma Weird.pos (h : Weird n) : 0 < n := by
+  grind only [not_weird_zero]
 
 lemma deficient_iff_not_abundant_and_not_perfect (hn : n ≠ 0) :
     Deficient n ↔ ¬ Abundant n ∧ ¬ Perfect n := by
