@@ -5743,6 +5743,8 @@ public import Mathlib.NumberTheory.Harmonic.EulerMascheroni
 public import Mathlib.NumberTheory.Harmonic.GammaDeriv
 public import Mathlib.NumberTheory.Harmonic.Int
 public import Mathlib.NumberTheory.Harmonic.ZetaAsymp
+public import Mathlib.NumberTheory.HeckeRing.Basic
+public import Mathlib.NumberTheory.HeckeRing.Defs
 public import Mathlib.NumberTheory.Height.Basic
 public import Mathlib.NumberTheory.Height.EllipticCurve
 public import Mathlib.NumberTheory.Height.MvPolynomial
