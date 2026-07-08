@@ -11,10 +11,11 @@ public import Mathlib.RingTheory.DedekindDomain.Dvr
 public import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
 public import Mathlib.RingTheory.Valuation.ExtendToLocalization
 public import Mathlib.Topology.Algebra.Valued.WithVal
-
+public import Mathlib.RingTheory.Valuation.Discrete.Basic
 
 /-!
 # Adic valuations on Dedekind domains
+
 Given a Dedekind domain `R` of Krull dimension 1 and a maximal ideal `v` of `R`, we define the
 `v`-adic valuation on `R` and its extension to the field of fractions `K` of `R`.
 We prove several properties of this valuation, including the existence of uniformizers.
@@ -90,7 +91,6 @@ theorem intValuationDef_if_pos {r : R} (hr : r = 0) : v.intValuationDef r = 0 :=
 theorem intValuationDef_zero : v.intValuationDef 0 = 0 :=
   if_pos rfl
 
-open scoped Classical in
 theorem intValuationDef_if_neg {r : R} (hr : r ≠ 0) :
     v.intValuationDef r = exp
         (-(Associates.mk v.asIdeal).count (Associates.mk (Ideal.span {r} : Ideal R)).factors : ℤ) :=
@@ -298,6 +298,13 @@ instance : v.intValuation.IsNontrivial :=
   have ⟨π, hπ⟩ := v.intValuation_exists_uniformizer
   ⟨π, by aesop⟩
 
+@[simp]
+theorem intValuation_uniformizer (π : v.intValuation.Uniformizer) :
+    v.intValuation (π.val : R) = WithZero.exp (-1) := by
+  simpa [Valuation.IsUniformizer.val π.valuation_gt_one, Units.ext_iff]
+    using Valuation.IsRankOneDiscrete.generator_eq_exp_neg_one_of_mem_range
+      v.intValuation_exists_uniformizer
+
 /-- The `I`-adic valuation of a generator of `I` equals `(-1 : ℤᵐ⁰)` -/
 theorem intValuation_singleton {r : R} (hr : r ≠ 0) (hv : v.asIdeal = Ideal.span {r}) :
     v.intValuation r = exp (-1 : ℤ) := by
@@ -317,6 +324,7 @@ theorem intValuation_eq_one_iff {v : HeightOneSpectrum R} {x : R} :
 variable (K) in
 /-- The `v`-adic valuation of `x : K` is the valuation of `r` divided by the valuation of `s`,
 where `r` and `s` are chosen so that `x = r/s`. -/
+@[no_expose]
 def valuation (v : HeightOneSpectrum R) : Valuation K ℤᵐ⁰ :=
   v.intValuation.extendToLocalization
     (fun r hr => Set.mem_compl <| v.intValuation_ne_zero' ⟨r, hr⟩) K
@@ -324,8 +332,7 @@ def valuation (v : HeightOneSpectrum R) : Valuation K ℤᵐ⁰ :=
 theorem valuation_def (x : K) :
     v.valuation K x =
       v.intValuation.extendToLocalization
-        (fun r hr => Set.mem_compl (v.intValuation_ne_zero' ⟨r, hr⟩)) K x :=
-  rfl
+        (fun r hr => Set.mem_compl (v.intValuation_ne_zero' ⟨r, hr⟩)) K x := by rw [valuation]
 
 /--
 The `v`-adic valuation of `r / s : K` is the valuation of `r` divided by the valuation of `s`. -/
@@ -603,15 +610,15 @@ lemma valuedAdicCompletion_surjective :
     Function.Surjective (Valued.v : (v.adicCompletion K) → ℤᵐ⁰) :=
   Valued.valuedCompletion_surjective_iff.mpr <| .of_comp (v.valuation_surjective K)
 
-lemma adicCompletion_valueGroup_eq :
-    MonoidWithZeroHom.valueGroup (Valued.v (R := adicCompletion K v)) =
-      MonoidWithZeroHom.valueGroup (valuation K v) := by
+lemma adicCompletion_valueGroup_eq : MonoidWithZeroHom.valueGroup (.ofClass (Valued.v
+      (R := adicCompletion K v))) =
+    MonoidWithZeroHom.valueGroup (.ofClass (valuation K v)) := by
   ext n
   simp only [MonoidWithZeroHom.mem_valueGroup_iff_of_comm, ne_eq, map_eq_zero]
-  refine ⟨fun ⟨a, ha0, x, hx⟩ ↦ ?_, fun ⟨a, ha0, x, hx⟩  ↦ ⟨a, by simp [ha0], x, by simp [hx]⟩⟩
+  refine ⟨fun ⟨a, ha0, x, hx⟩ ↦ ?_, fun ⟨a, ha0, x, hx⟩  ↦ ⟨a, by simp [ha0], x, by simpa using hx⟩⟩
   obtain ⟨b, hb⟩ := valuation_surjective K v (Valued.v a)
   obtain ⟨y, hy⟩ := valuation_surjective K v (Valued.v x)
-  refine ⟨b, ?_, y, by simp [hb, hy, hx]⟩
+  refine ⟨b, ?_, y, by simpa [hb, hy] using hx⟩
   rwa [← ne_eq, ← (valuation K v).ne_zero_iff, hb, Valuation.ne_zero_iff]
 
 /-- The ring of integers of `adicCompletion`. -/

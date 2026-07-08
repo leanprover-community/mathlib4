@@ -219,7 +219,7 @@ theorem refinement_of_locallyCompact_sigmaCompact_of_nhds_basis_set [WeaklyLocal
     -- Now we restate some properties of `CompactExhaustion` for `K`/`Kdiff`
     have hKcov : ∀ x, x ∈ Kdiff (K'.find x + 1) := fun x ↦ by
       simpa only [K'.find_shiftr] using
-        diff_subset_diff_right interior_subset (K'.shiftr.mem_diff_shiftr_find x)
+        sdiff_subset_sdiff_right interior_subset (K'.shiftr.mem_sdiff_shiftr_find x)
     have Kdiffc : ∀ n, IsCompact (Kdiff n ∩ s) :=
       fun n ↦ ((K.isCompact _).diff isOpen_interior).inter_right hs
     -- Next we choose a finite covering `B (c n i) (r n i)` of each

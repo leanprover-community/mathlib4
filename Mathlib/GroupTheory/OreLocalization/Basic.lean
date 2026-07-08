@@ -213,7 +213,6 @@ theorem lift₂Expand_of {C : Sort*} {P : X → S → X → S → C}
   rfl
 
 set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 @[to_additive]
 private abbrev smul' (r₁ : R) (s₁ : S) (r₂ : X) (s₂ : S) : X[S⁻¹] :=
   oreNum r₁ s₂ • r₂ /ₒ (oreDenom r₁ s₂ * s₁)
@@ -408,6 +407,16 @@ instance : Monoid R[S⁻¹] where
   mul_one := OreLocalization.mul_one
   mul_assoc := OreLocalization.mul_assoc
   npow := OreLocalization.npow
+
+@[to_additive]
+theorem oreDiv_pow (r : R) (s : S) (n : ℕ) (h : Commute r (s : R)) :
+    (r /ₒ s) ^ n = (r ^ n) /ₒ (s ^ n) := by
+  induction n with
+  | zero =>
+    rw [pow_zero, pow_zero, pow_zero, OreLocalization.one_def]
+  | succ n ih =>
+    rw [pow_succ', pow_succ', pow_succ, ih, oreDiv_mul_char (r' := r) (s' := s ^ n)]
+    exact h.pow_right _ |>.symm
 
 @[to_additive]
 instance instMulActionOreLocalization : MulAction R[S⁻¹] X[S⁻¹] where

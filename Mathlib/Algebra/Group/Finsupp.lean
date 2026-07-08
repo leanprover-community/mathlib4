@@ -57,6 +57,10 @@ lemma add_apply (g₁ g₂ : ι →₀ M) (a : ι) : (g₁ + g₂) a = g₁ a + 
 
 lemma support_add [DecidableEq ι] : (g₁ + g₂).support ⊆ g₁.support ∪ g₂.support := support_zipWith
 
+/-- The support of a sum is the union of the supports when the supports are disjoint.
+
+In the case where the coefficients satisfy `CanonicallyOrderedAdd`, there is also
+`Finsupp.support_add_eq_union`, which holds without any disjointness assumption. -/
 lemma support_add_eq [DecidableEq ι] (h : Disjoint g₁.support g₂.support) :
     (g₁ + g₂).support = g₁.support ∪ g₂.support :=
   le_antisymm support_zipWith fun a ha => by

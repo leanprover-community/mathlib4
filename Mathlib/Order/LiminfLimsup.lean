@@ -710,20 +710,20 @@ theorem liminf_compl : (liminf u f)ᶜ = limsup (compl ∘ u) f := by
   simp only [limsup_eq_iInf_iSup, compl_iInf, compl_iSup, liminf_eq_iSup_iInf, Function.comp_apply]
 
 theorem limsup_sdiff (a : α) : limsup u f \ a = limsup (fun b => u b \ a) f := by
-  simp only [limsup_eq_iInf_iSup, sdiff_eq]
+  simp only [limsup_eq_iInf_iSup, _root_.sdiff_eq]
   rw [biInf_inf (⟨univ, univ_mem⟩ : ∃ i : Set β, i ∈ f)]
   simp_rw [inf_comm, inf_iSup₂_eq, inf_comm]
 
 theorem liminf_sdiff [NeBot f] (a : α) : liminf u f \ a = liminf (fun b => u b \ a) f := by
-  simp only [sdiff_eq, inf_comm _ aᶜ, inf_liminf]
+  simp only [_root_.sdiff_eq, inf_comm _ aᶜ, inf_liminf]
 
 theorem sdiff_limsup [NeBot f] (a : α) : a \ limsup u f = liminf (fun b => a \ u b) f := by
   rw [← compl_inj_iff]
-  simp only [sdiff_eq, liminf_compl, comp_def, compl_inf, compl_compl, sup_limsup]
+  simp only [_root_.sdiff_eq, liminf_compl, comp_def, compl_inf, compl_compl, sup_limsup]
 
 theorem sdiff_liminf (a : α) : a \ liminf u f = limsup (fun b => a \ u b) f := by
   rw [← compl_inj_iff]
-  simp only [sdiff_eq, limsup_compl, comp_def, compl_inf, compl_compl, sup_liminf]
+  simp only [_root_.sdiff_eq, limsup_compl, comp_def, compl_inf, compl_compl, sup_liminf]
 
 end CompleteBooleanAlgebra
 
@@ -741,7 +741,7 @@ lemma mem_limsup_iff_frequently_mem : (a ∈ limsup s 𝓕) ↔ (∃ᶠ i in �
 
 theorem cofinite.blimsup_set_eq :
     blimsup s cofinite p = { x | { n | p n ∧ x ∈ s n }.Infinite } := by
-  simp only [blimsup_eq, le_eq_subset, eventually_cofinite, not_forall, sInf_eq_sInter, exists_prop]
+  simp only [blimsup_eq, eventually_cofinite, not_forall, sInf_eq_sInter, exists_prop]
   ext x
   refine ⟨fun h => ?_, fun hx t h => ?_⟩ <;> contrapose h
   · simp only [mem_sInter, mem_setOf_eq, not_forall, exists_prop]
@@ -971,7 +971,7 @@ theorem gt_mem_sets_of_limsInf_gt : f.IsBounded (· ≥ ·) → b < f.limsInf �
 
 section Classical
 
-open Classical in
+open scoped Classical in
 /-- Given an indexed family of sets `s j` over `j : Subtype p` and a function `f`, then
 `liminf_reparam j` is equal to `j` if `f` is bounded below on `s j`, and otherwise to some
 index `k` such that `f` is bounded below on `s k` (if there exists one).
@@ -1031,7 +1031,7 @@ theorem HasBasis.liminf_eq_ciSup_ciInf {v : Filter ι}
       · exact (hZ j0 hj0).elim
   simp_rw [hv.liminf_eq_sSup_iUnion_iInter, A, B, sSup_iUnion_Iic]
 
-open Classical in
+open scoped Classical in
 /-- Writing a liminf as a supremum of infimum, in a (possibly non-complete) conditionally complete
 linear order. A reparametrization trick is needed to avoid taking the infimum of sets which are
 not bounded below. -/
@@ -1077,7 +1077,7 @@ theorem HasBasis.limsup_eq_ciInf_ciSup {v : Filter ι}
     limsup f v = ⨅ (j : Subtype p), ⨆ (i : s (limsup_reparam f s p j)), f i :=
   HasBasis.liminf_eq_ciSup_ciInf (α := αᵒᵈ) hv hs H
 
-open Classical in
+open scoped Classical in
 /-- Writing a limsup as an infimum of supremum, in a (possibly non-complete) conditionally complete
 linear order. A reparametrization trick is needed to avoid taking the supremum of sets which are
 not bounded below. -/

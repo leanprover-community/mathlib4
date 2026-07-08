@@ -73,7 +73,7 @@ instance : Coe (r ≼i s) (r ↪r s) :=
 
 instance : FunLike (r ≼i s) α β where
   coe f := f.toFun
-  coe_injective' := by
+  coe_injective := by
     rintro ⟨f, hf⟩ ⟨g, hg⟩ h
     congr with x
     exact congr_fun h x
@@ -473,7 +473,7 @@ theorem wellFounded_iff_principalSeg {β : Type u} {s : β → β → Prop} [IsT
 
 namespace InitialSeg
 
-open Classical in
+open scoped Classical in
 /-- Every initial segment embedding into a well order can be turned into an isomorphism if
 surjective, or into a principal segment embedding if not. -/
 noncomputable def principalSumRelIso [IsWellOrder β s] (f : r ≼i s) : (r ≺i s) ⊕ (r ≃r s) :=

@@ -6,6 +6,7 @@ Authors: Rémy Degenne
 module
 
 public import Mathlib.Probability.Kernel.Disintegration.CondCDF
+public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Cumulative distribution function of a real probability measure
@@ -51,6 +52,7 @@ namespace ProbabilityTheory
 /-- Cumulative distribution function of a real measure. The definition currently makes sense only
 for probability measures. In that case, it satisfies `cdf μ x = μ.real (Iic x)` (see
 `ProbabilityTheory.cdf_eq_real`). -/
+@[wikidata Q386228]
 noncomputable
 def cdf (μ : Measure ℝ) : StieltjesFunction ℝ :=
   condCDF ((dirac Unit.unit).prod μ) Unit.unit
