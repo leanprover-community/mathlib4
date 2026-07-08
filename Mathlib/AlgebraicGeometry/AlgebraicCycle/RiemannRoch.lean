@@ -34,9 +34,9 @@ open Function.locallyFinsuppWithin
 
 universe u
 
-variable {X : Scheme.{u}} (k : Type u) [Field k]
-    (D : AlgebraicCycle X ℤ) [X.Over (Spec (CommRingCat.of k))]
+variable {X : Scheme.{u}} (k : Type u) [Field k] [X.Over (Spec (CommRingCat.of k))]
     [IsIntegral X] [IsNoetherian X] [IsRegularInCodimensionOne X]
+    (D : AlgebraicCycle X ℤ)
 
 /-- Additivity of `χ` on a short exact sequence whose third term is the canonical cokernel
 `Q_p(E)`: the middle Euler characteristic exceeds the first by `dim_k κ(p)`. -/
@@ -91,7 +91,7 @@ lemma eulerChar_sub_step {N : ℕ}
   lia
 
 /--
-**Weak Riemann–Roch.** If `X` is a curve (in the sense that `Order.KrullDimLE 1 X`) over a
+**Conditional Riemann–Roch.** If `X` is a curve (in the sense that `Order.KrullDimLE 1 X`) over a
 field `k`, and every `𝒪ₓ(D)` has finite-dimensional cohomology that vanishes above a fixed
 degree `N`, then for any Weil divisor `D`, `χ(𝒪ₓ(D)) = deg D + χ(𝒪ₓ)`.
 -/
