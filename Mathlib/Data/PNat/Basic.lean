@@ -29,6 +29,14 @@ namespace PNat
 
 instance instCancelCommMonoid : CancelCommMonoid ℕ+ where
 
+protected lemma «exists» {p : ℕ+ → Prop} :
+    (∃ n : ℕ+, p n) ↔ ∃ (n : ℕ) (hn : 0 < n), p (PNat.mk n hn) :=
+  Subtype.exists
+
+protected lemma exists_val {p : ℕ → Prop} :
+    (∃ n : ℕ+, p n) ↔ ∃ (n : ℕ), 0 < n ∧ p n := by
+  simp [PNat.exists]
+
 @[simp]
 theorem one_add_natPred (n : ℕ+) : 1 + n.natPred = n := by
   rw [natPred, add_tsub_cancel_iff_le.mpr <| show 1 ≤ (n : ℕ) from n.2]
