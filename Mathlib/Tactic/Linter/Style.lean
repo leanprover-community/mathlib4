@@ -558,7 +558,7 @@ such names violate the naming convention. -/
     -- We also exclude simprocs: these should be named like normal lemmas.
     -- check if their type is `Lean.Meta.Simp.Simproc`.
     if ((← getEnv).find? declName).get!.type.isConstOf `Lean.Meta.Simp.Simproc then return none
-    if isBadNameWithUnderscore (privateToUserName declName) then
+    if isBadNameWithUnderscore declName then
       return m!"The definition `{declName}` contains an underscore. \
         This almost surely violates mathlib's naming convention; \
         use lowerCamelCase or UpperCamelCase instead."
