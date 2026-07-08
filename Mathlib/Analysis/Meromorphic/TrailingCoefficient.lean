@@ -537,23 +537,18 @@ theorem MeromorphicAt.meromorphicTrailingCoeffAt_comp {g : 𝕜 → 𝕜} (hf : 
     apply MeromorphicAt.meromorphicTrailingCoeffAt_zpow (by fun_prop)
 
 /-- `meromorphicTrailingCoefficientAt` is invariant under translation. -/
-@[simp] theorem meromorphicTrailingCoeffAt_comp_add_const_eq_meromorphicTrailingCoeffAt {c : 𝕜} :
-    meromorphicTrailingCoeffAt (f ∘ (· + c)) (x - c) = meromorphicTrailingCoeffAt f x := by
+@[to_fun meromorphicTrailingCoeffAt_fun_comp_add_const_eq_meromorphicTrailingCoeffAt]
+theorem meromorphicTrailingCoeffAt_comp_add_const_eq_meromorphicTrailingCoeffAt {c : 𝕜} :
+    meromorphicTrailingCoeffAt (f ∘ (· + c)) x = meromorphicTrailingCoeffAt f (x + c) := by
   classical
-  by_cases h : ¬ MeromorphicAt f x
-  · simp_all
-  rw [not_not] at h
-  rw [MeromorphicAt.meromorphicTrailingCoeffAt_comp (by rwa [sub_add_cancel]) (by fun_prop),
-    sub_add_cancel]
-  · have {a b c : 𝕜} : a + b - c = a - (c - b) := by ring
-    simp [this, meromorphicTrailingCoeffAt_id_sub_const] -- simp only should be enough!
-  · rw [eventuallyConst_iff_analyticOrderAt_sub_eq_top]
-    have {a b c : 𝕜} : a + c - (b - c + c) = a - (b - c) := by ring
-    simp_rw [this]
-    simp
+  by_cases h : ¬ MeromorphicAt f (x + c)
+  · simp_all [meromorphicAt_comp_add_const_iff_meromorphicAt.not.2 h]
+  rw [MeromorphicAt.meromorphicTrailingCoeffAt_comp (by simp_all) (by fun_prop)
+    (by simp [eventuallyConst_iff_analyticOrderAt_sub_eq_top])]
+  simp [meromorphicTrailingCoeffAt_id_sub_const]
 
 /-- `meromorphicTrailingCoefficientAt` is invariant under translation. -/
-@[simp] theorem meromorphicTrailingCoeffAt_fun_comp_add_const_eq_meromorphicTrailingCoeffAt
-    {c : 𝕜} :
-    meromorphicTrailingCoeffAt (fun z ↦ f (z + c)) (x - c) = meromorphicTrailingCoeffAt f x :=
-  meromorphicTrailingCoeffAt_comp_add_const_eq_meromorphicTrailingCoeffAt
+@[to_fun meromorphicTrailingCoeffAt_fun_comp_sub_const_eq_meromorphicTrailingCoeffAt]
+theorem meromorphicTrailingCoeffAt_comp_sub_const_eq_meromorphicTrailingCoeffAt {c : 𝕜} :
+    meromorphicTrailingCoeffAt (f ∘ (· - c)) x = meromorphicTrailingCoeffAt f (x - c) := by
+  simp [sub_eq_add_neg, ← meromorphicTrailingCoeffAt_comp_add_const_eq_meromorphicTrailingCoeffAt]
