@@ -28,7 +28,7 @@ universe v u
 
 namespace CategoryTheory
 
-open Bicategory Functor
+open Bicategory CategoryTheory.Functor
 
 -- intended to be used with explicit universe parameters
 set_option linter.checkUnivs false in

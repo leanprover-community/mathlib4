@@ -215,7 +215,7 @@ end ProjectiveSpectrum
 
 section
 
-open ProjectiveSpectrum ProjectiveSpectrum.StructureSheaf Opens
+open AlgebraicGeometry.ProjectiveSpectrum ProjectiveSpectrum.StructureSheaf Opens
 
 section
 variable {U V : (Opens (ProjectiveSpectrum.top 𝒜))ᵒᵖ} (i : V ⟶ U)

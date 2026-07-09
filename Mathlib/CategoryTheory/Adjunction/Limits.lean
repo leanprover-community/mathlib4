@@ -33,7 +33,7 @@ open Opposite
 
 namespace CategoryTheory
 
-open Functor Limits
+open CategoryTheory.Functor Limits
 
 universe v u v₁ v₂ v₀ u₁ u₂
 

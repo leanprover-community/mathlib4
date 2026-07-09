@@ -31,7 +31,7 @@ variable (R M : Type*) [Semiring R] [AddCommMonoid M] [Module R M]
 def fgSystem (N₁ N₂ : {N : Submodule R M // N.FG}) (le : N₁ ≤ N₂) : N₁ →ₗ[R] N₂ :=
   Submodule.inclusion le
 
-open DirectLimit
+open Module.DirectLimit
 
 namespace fgSystem
 

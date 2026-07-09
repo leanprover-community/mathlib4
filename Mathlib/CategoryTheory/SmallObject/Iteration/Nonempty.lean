@@ -48,7 +48,6 @@ variable {Φ}
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
-open Functor in
 /-- When `j : J` is not maximal, this is the extension in `Φ.Iteration (Order.succ j)`
 of any `iter : Φ.Iteration j`. -/
 noncomputable def mkOfSucc {j : J} (hj : ¬IsMax j) (iter : Φ.Iteration j) :
@@ -75,7 +74,6 @@ noncomputable def mkOfSucc {j : J} (hj : ¬IsMax j) (iter : Φ.Iteration j) :
 
 namespace mkOfLimit
 
-open Functor
 
 variable {j : J} (hj : Order.IsSuccLimit j) (iter : ∀ (i : J), i < j → Φ.Iteration i)
 

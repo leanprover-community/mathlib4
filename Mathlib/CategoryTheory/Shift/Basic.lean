@@ -43,7 +43,7 @@ which are stated in lemmas like `shiftFunctorAdd'_assoc`, `shiftFunctorAdd'_zero
 
 namespace CategoryTheory
 
-open Functor
+open CategoryTheory.Functor
 
 noncomputable section
 

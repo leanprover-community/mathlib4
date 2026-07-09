@@ -35,7 +35,7 @@ namespace CategoryTheory
 
 namespace Comma
 
-open Limits Functor CostructuredArrow
+open Limits CategoryTheory.Functor CostructuredArrow
 
 variable {A : Type u₁} [Category.{v₁} A]
 variable {B : Type u₂} [Category.{v₂} B]

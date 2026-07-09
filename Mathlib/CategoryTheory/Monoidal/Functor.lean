@@ -45,7 +45,7 @@ universe v₁ v₂ v₃ v₁' u₁ u₂ u₃ u₁'
 
 namespace CategoryTheory
 
-open Category Functor MonoidalCategory
+open Category CategoryTheory.Functor MonoidalCategory
 
 variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory.{v₁} C]
   {D : Type u₂} [Category.{v₂} D] [MonoidalCategory.{v₂} D]
@@ -733,7 +733,7 @@ noncomputable def Monoidal.ofOplaxMonoidal
 
 section Prod
 
-open scoped Prod
+open scoped CategoryTheory.Prod
 
 variable (F : C ⥤ D) (G : E ⥤ C') [MonoidalCategory C']
 
@@ -755,7 +755,6 @@ end
 
 section
 
-open scoped Prod
 
 variable [F.OplaxMonoidal] [G.OplaxMonoidal]
 

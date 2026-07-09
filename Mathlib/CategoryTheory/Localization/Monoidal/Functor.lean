@@ -27,7 +27,8 @@ universe u
 
 namespace CategoryTheory
 
-open CategoryTheory MonoidalCategory Functor Monoidal LaxMonoidal OplaxMonoidal
+open CategoryTheory MonoidalCategory CategoryTheory.Functor MonoidalCategory.Functor Monoidal
+open LaxMonoidal OplaxMonoidal
 
 namespace Localization.Monoidal
 

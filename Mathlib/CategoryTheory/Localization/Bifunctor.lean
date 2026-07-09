@@ -33,7 +33,7 @@ which lifts `F`.
 
 namespace CategoryTheory
 
-open Category Functor
+open Category CategoryTheory.Functor
 
 variable {C₁ C₂ D₁ D₂ E E' : Type*} [Category* C₁] [Category* C₂]
   [Category* D₁] [Category* D₂] [Category* E] [Category* E']

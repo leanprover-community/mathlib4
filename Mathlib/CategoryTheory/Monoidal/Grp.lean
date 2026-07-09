@@ -768,7 +768,7 @@ noncomputable instance mapGrp.instBraided : F.mapGrp.Braided where
 end Braided
 end Functor
 
-open Functor
+open CategoryTheory.Functor
 
 namespace Adjunction
 variable {F : C ⥤ D} {G : D ⥤ C} (a : F ⊣ G) [F.Monoidal] [G.Monoidal]

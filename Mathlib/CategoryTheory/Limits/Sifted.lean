@@ -41,7 +41,7 @@ universe w v v₁ v₂ u u₁ u₂
 
 namespace CategoryTheory
 
-open Limits Functor
+open Limits CategoryTheory.Functor
 
 section
 

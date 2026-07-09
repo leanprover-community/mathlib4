@@ -157,7 +157,7 @@ end IsIso
 
 variable [MonoidalCategory.{v₁} C]
 
-open Opposite MonoidalCategory Functor LaxMonoidal OplaxMonoidal
+open Opposite MonoidalCategory CategoryTheory.Functor LaxMonoidal OplaxMonoidal
 
 set_option backward.defeqAttrib.useBackward true in
 instance monoidalCategoryOp : MonoidalCategory Cᵒᵖ where

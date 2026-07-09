@@ -28,7 +28,7 @@ variable {A C : Type*} [Category* C] [Category* A]
 
 namespace LeftResolution
 
-open Functor
+open CategoryTheory.Functor
 
 set_option backward.defeqAttrib.useBackward true in
 /-- Transport `LeftResolution` via equivalences of categories. -/

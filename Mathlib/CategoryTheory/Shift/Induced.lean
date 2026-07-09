@@ -29,7 +29,7 @@ used for both quotient and localized shifts.
 
 namespace CategoryTheory
 
-open Functor
+open CategoryTheory.Functor
 
 variable {C D : Type _} [Category* C] [Category* D]
   (F : C ⥤ D) {A : Type _} [AddMonoid A] [HasShift C A]

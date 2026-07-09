@@ -85,7 +85,7 @@ set_option backward.defeqAttrib.useBackward true
 
 namespace CategoryTheory
 
-open Category Functor
+open Category CategoryTheory.Functor
 
 -- declare the `v`'s first; see `CategoryTheory.Category` for an explanation
 universe w v₁ v₂ v₃ u₁ u₂ u₃

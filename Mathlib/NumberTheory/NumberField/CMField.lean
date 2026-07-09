@@ -257,7 +257,7 @@ end complexConj
 
 section units
 
-open Units
+open NumberField.Units
 
 /--
 The complex conjugation as an isomorphism of the units of `K`. -/

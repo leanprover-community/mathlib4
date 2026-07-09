@@ -1248,7 +1248,7 @@ theorem toMatrix'_comp (Q : QuadraticForm R (m → R)) (f : (n → R) →ₗ[R] 
 end Rn
 section Basis
 
-open Module QuadraticMap
+open Module
 
 variable [AddCommGroup N] [Module R N] (b : Basis n R N) (Q : QuadraticForm R N)
 

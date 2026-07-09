@@ -35,7 +35,7 @@ open Limits
 
 variable {C D E : Type*} [Category* C] [Category* D] [Category* E]
 
-open Opposite Presieve Functor
+open Opposite Presieve CategoryTheory.Functor
 
 /-- A presieve is *regular* if it consists of a single effective epimorphism. -/
 class Presieve.regular {X : C} (R : Presieve X) : Prop where

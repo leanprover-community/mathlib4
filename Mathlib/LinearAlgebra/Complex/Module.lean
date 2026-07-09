@@ -54,7 +54,7 @@ namespace Complex
 
 open ComplexConjugate
 
-open scoped SMul
+open scoped Complex.SMul
 
 variable {R : Type*} {S : Type*}
 

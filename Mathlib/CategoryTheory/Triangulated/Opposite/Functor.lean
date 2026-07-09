@@ -240,7 +240,7 @@ end Functor
 
 namespace Pretriangulated.Opposite
 
-open Functor in
+open CategoryTheory.Functor in
 /-- If `F` is triangulated, so is `F.op`.
 -/
 scoped instance functor_isTriangulated_op [F.IsTriangulated] : F.op.IsTriangulated where

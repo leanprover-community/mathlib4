@@ -32,7 +32,7 @@ set_option backward.defeqAttrib.useBackward true
 
 namespace CategoryTheory
 
-open Category Functor
+open Category CategoryTheory.Functor
 
 open CategoryTheory.Limits
 
