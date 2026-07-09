@@ -181,4 +181,3 @@ noncomputable abbrev inflNatTrans (n : ℕ) :
 
 end ContinuousCohomology
 end
-
