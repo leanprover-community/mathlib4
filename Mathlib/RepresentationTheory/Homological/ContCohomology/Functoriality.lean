@@ -91,12 +91,13 @@ abbrev homogeneousCochainsFunctor : TopRep k G ⥤ CochainComplex (TopModuleCat 
 lemma homogeneousCochainsFunctor_obj :
     (homogeneousCochainsFunctor k G).obj = homogeneousCochains := rfl
 
-noncomputable abbrev Functor (n : ℕ) : TopRep k G ⥤ TopModuleCat k :=
+noncomputable abbrev _root_.continuousCohomologyFunctor (n : ℕ) : TopRep k G ⥤ TopModuleCat k :=
     homogeneousCochainsFunctor k G ⋙ HomologicalComplex.homologyFunctor _ _ n
 
 notation "Hₜ" => continuousCohomology
+notation "Hₜ(" k "," G "," n ")" => continuousCohomologyFunctor k G n
 
-lemma Functor_obj (n : ℕ) : (Functor k G n).obj = Hₜ n := rfl
+lemma Functor_obj (n : ℕ) : Hₜ(k,G,n).obj = Hₜ n := rfl
 
 variable {k G}
 variable (X) in
@@ -208,7 +209,7 @@ lemma homogeneousCochainsResNatTrans_app_f (φ : H →ₜ* G) (X : TopRep k G) (
 
 variable (k) in
 noncomputable abbrev resNatTrans (φ : H →ₜ* G) (n : ℕ) :
-    (Functor k G n) ⟶ (resFunctor φ.toMonoidHom ⋙ Functor k H n) :=
+    Hₜ(k,G,n) ⟶ resFunctor φ.toMonoidHom ⋙ Hₜ(k,H,n) :=
   homogeneousCochainsResNatTrans k φ ◫ 𝟙 _
 
 lemma resNatTrans_app (φ : H →ₜ* G) (n : ℕ) (X : TopRep k G) :
@@ -417,7 +418,7 @@ lemma cochainsMap₂_id_left (f : X ⟶ X') :
 followed by the functorial map on continuous cohomology. -/
 @[reassoc]
 lemma map₂_eq (φ : H →ₜ* G) (f : res φ X ⟶ Y) (n : ℕ) :
-    map₂ φ f n = (resNatTrans k φ n).app X ≫ (Functor k H n).map f := by
+    map₂ φ f n = (resNatTrans k φ n).app X ≫ Hₜ(k,H,n).map f := by
   rw [resNatTrans_app]
   exact (congrArg (HomologicalComplex.homologyMap · n) (cochainsMap₂_eq φ f)).trans
     (HomologicalComplex.homologyMap_comp _ _ _)
@@ -432,7 +433,7 @@ lemma map₂_id_right (φ : H →ₜ* G) (n : ℕ) :
 /-- The functorial map on continuous cohomology is the special case of `map₂` along the
 identity of `G`. -/
 lemma map₂_id_left (f : X ⟶ X') (n : ℕ) :
-    map₂ (ContinuousMonoidHom.id G) f n = (Functor k G n).map f := by
+    map₂ (ContinuousMonoidHom.id G) f n = Hₜ(k,G,n).map f := by
   simp only [map₂, cochainsMap₂_id_left]
   rfl
 
