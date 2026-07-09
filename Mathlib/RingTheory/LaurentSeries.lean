@@ -954,29 +954,9 @@ theorem uniformContinuous_withVal_equiv :
 theorem continuous_coe : Continuous ((↑) : K⟮X⟯ → K⸨X⸩) :=
   (isUniformInducing_iff'.1 (inducing_coe)).1.continuous
 
-variable (K) in
-/-- An abbreviation for the `X`-adic completion of `K⟮X⟯` -/
-abbrev RatFuncAdicCompl := adicCompletion K⟮X⟯ (idealX K)
-
 /-- The `X`-adic completion as an abstract completion of `K⟮X⟯` -/
 abbrev ratfuncAdicComplPkg : AbstractCompletion (WithVal (polynomialValuationX K)) :=
   UniformSpace.Completion.cPkg
-
-instance : Field (ratfuncAdicComplPkg (K := K).space) :=
-  inferInstanceAs (Field ((polynomialValuationX K).Completion))
-
-instance : Valued (ratfuncAdicComplPkg (K := K).space) (WithZero (Multiplicative ℤ)) :=
-  inferInstanceAs (Valued ((polynomialValuationX K).Completion) (WithZero (Multiplicative ℤ)))
-
-instance : UniformSpace (ratfuncAdicComplPkg (K := K).space) :=
-  inferInstanceAs (UniformSpace ((polynomialValuationX K).Completion))
-
-variable (K) in
-/-- The ring isomorphism between the structure `RatFuncAdicCompl K` and the underlying
-uniform-space completion. -/
-abbrev ratfuncAdicComplEquiv :
-    RatFuncAdicCompl K ≃+* ratfuncAdicComplPkg (K := K).space :=
-  adicCompletion.ringEquiv K⟮X⟯ (idealX K)
 
 variable (K)
 /-- Having established that the `K⸨X⸩` is complete and contains `K⟮X⟯` as a dense
@@ -1009,6 +989,24 @@ homomorphism -/
 abbrev extensionAsRingHom :=
   UniformSpace.Completion.extensionHom <|
     (algebraMap K⟮X⟯ K⸨X⸩).comp (WithVal.equiv (polynomialValuationX K)).toRingHom
+
+/-- An abbreviation for the `X`-adic completion of `K⟮X⟯` -/
+abbrev RatFuncAdicCompl := adicCompletion K⟮X⟯ (idealX K)
+
+instance : Field (ratfuncAdicComplPkg (K := K).space) :=
+  inferInstanceAs (Field ((polynomialValuationX K).Completion))
+
+instance : Valued (ratfuncAdicComplPkg (K := K).space) (WithZero (Multiplicative ℤ)) :=
+  inferInstanceAs (Valued ((polynomialValuationX K).Completion) (WithZero (Multiplicative ℤ)))
+
+instance : UniformSpace (ratfuncAdicComplPkg (K := K).space) :=
+  inferInstanceAs (UniformSpace ((polynomialValuationX K).Completion))
+
+/-- The ring isomorphism between the structure `RatFuncAdicCompl K` and the underlying
+uniform-space completion. -/
+abbrev ratfuncAdicComplEquiv :
+    RatFuncAdicCompl K ≃+* ratfuncAdicComplPkg (K := K).space :=
+  adicCompletion.ringEquiv K⟮X⟯ (idealX K)
 
 /-! The two instances below make `comparePkg` and `comparePkg_eq_extension` slightly faster. -/
 instance : UniformSpace (RatFuncAdicCompl K) := inferInstance
