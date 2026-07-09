@@ -224,9 +224,10 @@ class AddSemigroup (G : Type u) extends Add G, PSMul G where
   /-- Addition is associative -/
   protected add_assoc : ∀ a b c : G, a + b + c = a + (b + c)
   /-- Scalar multiplication by `(1 : ℕ+)` gives the same element. -/
-  protected psmul_one (x : G) : (1 : ℕ+) • x = x := by intros; rfl
+  protected psmul_one (x : G) : (1 : ℕ+) • x = x := by first | intros; rfl | exact psmulRec_one
   /-- Scalar multiplication by `(n + 1 : ℕ+)` behaves as expected. -/
-  protected psmul_succ (n : ℕ+) (x : G) : (n + 1 : ℕ+) • x = n • x + x := by intros; rfl
+  protected psmul_succ (n : ℕ+) (x : G) : (n + 1 : ℕ+) • x = n • x + x := by
+    first | intros; rfl | exact psmulRec_succ
 
 attribute [to_additive] Semigroup
 
