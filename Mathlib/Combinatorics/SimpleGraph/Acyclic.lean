@@ -124,27 +124,17 @@ lemma IsAcyclic.anti {G' : SimpleGraph V} (hsub : G ≤ G') (h : G'.IsAcyclic) :
 theorem exists_isCircuit_forall_isCircuit_length_le_length [Finite G.edgeSet] (h : ¬G.IsAcyclic) :
     ∃ (v : V) (p : G.Walk v v), p.IsCircuit ∧
       ∀ v' (p' : G.Walk v' v'), p'.IsCircuit → p'.length ≤ p.length := by
-  let s := {(p.length) | (v : V) (p : G.Walk v v) (hp : p.IsCircuit)}
-  have := Fintype.ofFinite G.edgeSet
-  have : s.Finite := .subset (Set.finite_le_nat G.edgeFinset.card)
-    fun n ⟨v, p, hp, hn⟩ ↦ hn ▸ hp.length_le_card_edgeFinset
-  have ⟨v, p₀, hp₀⟩ := not_isAcyclic_iff_exists_isCircuit.mp h
-  have ⟨n, hmax⟩ := this.exists_maximal ⟨_, ⟨v, p₀, hp₀, rfl⟩⟩
-  obtain ⟨v, p, hp, rfl⟩ := hmax.prop
-  exact ⟨v, p, hp, (hmax.le ⟨·, ·, ·, rfl⟩)⟩
+  have ⟨v₀, p₀, hp₀⟩ := not_isAcyclic_iff_exists_isCircuit.mp h
+  grind [IsCircuit.isTrail, G.exists_isTrail_forall_length_le_of_pred
+    (fun u v p hp ↦ ∃ h : u = v, (h ▸ p).IsCircuit) ⟨v₀, v₀, _, hp₀.isTrail, rfl, hp₀⟩]
 
 /-- In a non-acyclic graph with finitely-many edges there exists a longest cycle. -/
 theorem exists_isCycle_forall_isCycle_length_le_length [Finite G.edgeSet] (h : ¬G.IsAcyclic) :
     ∃ (v : V) (p : G.Walk v v), p.IsCycle ∧
       ∀ v' (p' : G.Walk v' v'), p'.IsCycle → p'.length ≤ p.length := by
-  let s := {(p.length) | (v : V) (p : G.Walk v v) (hp : p.IsCycle)}
-  have := Fintype.ofFinite G.edgeSet
-  have : s.Finite := .subset (Set.finite_le_nat G.edgeFinset.card)
-    fun n ⟨v, p, hp, hn⟩ ↦ hn ▸ hp.length_le_card_edgeFinset
-  have ⟨v, p₀, hp₀⟩ := not_isAcyclic_iff_exists_isCycle.mp h
-  have ⟨n, hmax⟩ := this.exists_maximal ⟨_, ⟨v, p₀, hp₀, rfl⟩⟩
-  obtain ⟨v, p, hp, rfl⟩ := hmax.prop
-  exact ⟨v, p, hp, (hmax.le ⟨·, ·, ·, rfl⟩)⟩
+  have ⟨v₀, p₀, hp₀⟩ := not_isAcyclic_iff_exists_isCycle.mp h
+  grind [IsCycle.isCircuit, IsCircuit.isTrail, G.exists_isTrail_forall_length_le_of_pred
+    (fun u v p hp ↦ ∃ h : u = v, (h ▸ p).IsCycle) ⟨v₀, v₀, _, hp₀.isTrail, rfl, hp₀⟩]
 
 private lemma Walk.exists_mem_contains_edges_of_directed (Hs : Set <| SimpleGraph V)
     (hHs : Hs.Nonempty) (h_dir : DirectedOn (· ≤ ·) Hs) {u v : V} (p : (sSup Hs).Walk u v) :

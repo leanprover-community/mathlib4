@@ -226,14 +226,9 @@ trail among trails between them. -/
 theorem Reachable.exists_isTrail_forall_isTrail_length_le_length [Finite G.edgeSet] {u v : V}
     (huv : G.Reachable u v) :
     ∃ p : G.Walk u v, p.IsTrail ∧ ∀ p' : G.Walk u v, p'.IsTrail → p'.length ≤ p.length := by
-  let s := {(p.length) | (p : G.Walk u v) (hp : p.IsTrail)}
-  have := Fintype.ofFinite G.edgeSet
-  have : s.Finite := .subset (Set.finite_le_nat G.edgeFinset.card)
-    fun n ⟨p, hp, hn⟩ ↦ hn ▸ hp.length_le_card_edgeFinset
   have ⟨p₀, hp₀⟩ := huv.exists_isPath
-  have ⟨n, hmax⟩ := this.exists_maximal ⟨_, ⟨p₀, hp₀.isTrail, rfl⟩⟩
-  obtain ⟨p, hp, rfl⟩ := hmax.prop
-  exact ⟨p, hp, (hmax.le ⟨·, ·, rfl⟩)⟩
+  grind [G.exists_isTrail_forall_length_le_of_pred (fun u' v' p hp ↦ u' = u ∧ v' = v)
+    ⟨u, v, p₀, hp₀.isTrail, rfl, rfl⟩]
 
 variable {G} in
 /-- In a graph with finitely-many edges, between any reachable endpoints there exists a longest
@@ -241,14 +236,9 @@ path among paths between them. -/
 theorem Reachable.exists_isPath_forall_isPath_length_le_length [Finite G.edgeSet] {u v : V}
     (huv : G.Reachable u v) :
     ∃ p : G.Walk u v, p.IsPath ∧ ∀ p' : G.Walk u v, p'.IsPath → p'.length ≤ p.length := by
-  let s := {(p.length) | (p : G.Walk u v) (hp : p.IsPath)}
-  have := Fintype.ofFinite G.edgeSet
-  have : s.Finite := .subset (Set.finite_le_nat G.edgeFinset.card)
-    fun n ⟨p, hp, hn⟩ ↦ hn ▸ hp.length_le_card_edgeFinset
   have ⟨p₀, hp₀⟩ := huv.exists_isPath
-  have ⟨n, hmax⟩ := this.exists_maximal ⟨_, ⟨p₀, hp₀, rfl⟩⟩
-  obtain ⟨p, hp, rfl⟩ := hmax.prop
-  exact ⟨p, hp, (hmax.le ⟨·, ·, rfl⟩)⟩
+  grind [Walk.IsPath.isTrail, G.exists_isTrail_forall_length_le_of_pred
+    (fun u' v' p hp ↦ u' = u ∧ v' = v ∧ p.IsPath) ⟨u, v, p₀, hp₀.isTrail, rfl, rfl, hp₀⟩]
 
 /-- The equivalence relation on vertices given by `SimpleGraph.Reachable`. -/
 @[implicit_reducible]
