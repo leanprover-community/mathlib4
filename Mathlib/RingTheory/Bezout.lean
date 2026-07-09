@@ -31,7 +31,6 @@ namespace IsBezout
 
 theorem iff_span_pair_isPrincipal :
     IsBezout R ↔ ∀ x y : R, (Ideal.span {x, y} : Ideal R).IsPrincipal := by
-  classical
     constructor
     · intro H x y; infer_instance
     · intro H
@@ -55,7 +54,6 @@ theorem _root_.Function.Surjective.isBezout {S : Type v} [CommRing S] (f : R →
 theorem TFAE [IsBezout R] [IsDomain R] :
     List.TFAE
     [IsNoetherianRing R, IsPrincipalIdealRing R, UniqueFactorizationMonoid R, WfDvdMonoid R] := by
-  classical
     tfae_have 1 → 2
     | _ => inferInstance
     tfae_have 2 → 3

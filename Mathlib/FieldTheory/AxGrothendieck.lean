@@ -171,7 +171,6 @@ theorem realize_genericPolyMapSurjOnOfInjOn
 theorem ACF_models_genericPolyMapSurjOnOfInjOn_of_prime [Finite ι]
     {p : ℕ} (hp : p.Prime) (φ : ring.Formula (α ⊕ ι)) (mons : ι → Finset (ι →₀ ℕ)) :
     Theory.ACF p ⊨ᵇ genericPolyMapSurjOnOfInjOn φ mons := by
-  classical
   have : Fact p.Prime := ⟨hp⟩
   letI := compatibleRingOfRing (AlgebraicClosure (ZMod p))
   rw [← (ACF_isComplete (Or.inl hp)).realize_sentence_iff _

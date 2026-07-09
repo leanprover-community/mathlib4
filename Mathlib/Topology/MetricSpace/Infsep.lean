@@ -158,7 +158,6 @@ theorem Finset.coe_einfsep {s : Finset α} :
 
 theorem Nontrivial.einfsep_exists_of_finite [Finite s] (hs : s.Nontrivial) :
     ∃ x ∈ s, ∃ y ∈ s, x ≠ y ∧ s.einfsep = edist x y := by
-  classical
     cases nonempty_fintype s
     simp_rw [einfsep_of_fintype]
     rcases Finset.exists_mem_eq_inf s.offDiag.toFinset (by simpa) (uncurry edist) with ⟨w, hxy, hed⟩
@@ -432,7 +431,6 @@ theorem _root_.Finset.coe_infsep_of_offDiag_empty
 
 theorem Nontrivial.infsep_exists_of_finite [Finite s] (hs : s.Nontrivial) :
     ∃ x ∈ s, ∃ y ∈ s, x ≠ y ∧ s.infsep = dist x y := by
-  classical
     cases nonempty_fintype s
     simp_rw [hs.infsep_of_fintype]
     rcases Finset.exists_mem_eq_inf' (s := s.offDiag.toFinset) (by simpa) (uncurry dist) with

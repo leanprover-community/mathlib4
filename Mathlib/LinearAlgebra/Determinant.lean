@@ -234,7 +234,6 @@ theorem det_toLin' (f : Matrix ι ι R) : LinearMap.det (Matrix.toLin' f) = Matr
 theorem det_cases [DecidableEq M] {P : A → Prop} (f : M →ₗ[A] M)
     (hb : ∀ (s : Finset M) (b : Basis s A M), P (Matrix.det (toMatrix b b f))) (h1 : P 1) :
     P (LinearMap.det f) := by
-  classical
   if H : ∃ s : Finset M, Nonempty (Basis s A M) then
     obtain ⟨s, ⟨b⟩⟩ := H
     rw [← det_toMatrix b]

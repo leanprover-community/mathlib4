@@ -165,7 +165,6 @@ theorem transfer_eq_prod_quotient_orbitRel_zpowers_quot [FiniteIndex H] (g : G)
         ϕ
           ⟨q.out.out⁻¹ * g ^ Function.minimalPeriod (g • ·) q.out * q.out.out,
             QuotientGroup.out_conj_pow_minimalPeriod_mem H g q.out⟩ := by
-  classical
     letI := H.fintypeQuotientOfFiniteIndex
     calc
       transfer ϕ g = ∏ q : G ⧸ H, _ := transfer_def ϕ (transferTransversal H g) g

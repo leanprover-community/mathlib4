@@ -810,7 +810,6 @@ theorem exists_contMDiff_support_eq_eq_one_iff
     · have : 0 < f x := lt_of_le_of_ne (f_pos x) (Ne.symm xs)
       linarith [g_pos x]
     · have : 0 < g x := by
-        classical
         apply lt_of_le_of_ne (g_pos x) (Ne.symm ?_)
         rw [← mem_support, g_supp]
         contrapose xs

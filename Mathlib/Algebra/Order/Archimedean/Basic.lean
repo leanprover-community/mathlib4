@@ -224,7 +224,6 @@ variable [ExistsAddOfLE K]
 another `y` greater than one. This is the same as `exists_mem_Ioc_zpow`,
 but with ≤ and < the other way around. -/
 theorem exists_mem_Ico_zpow (hx : 0 < x) (hy : 1 < y) : ∃ n : ℤ, x ∈ Ico (y ^ n) (y ^ (n + 1)) := by
-  classical
   have he : ∃ m : ℤ, y ^ m ≤ x := by
     obtain ⟨N, hN⟩ := pow_unbounded_of_one_lt x⁻¹ hy
     use -N

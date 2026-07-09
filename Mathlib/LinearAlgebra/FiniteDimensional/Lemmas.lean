@@ -398,7 +398,6 @@ variable [DivisionRing K] [AddCommGroup V] [Module K V]
 
 theorem exists_ker_pow_eq_ker_pow_succ [FiniteDimensional K V] (f : End K V) :
     ∃ k : ℕ, k ≤ finrank K V ∧ LinearMap.ker (f ^ k) = LinearMap.ker (f ^ k.succ) := by
-  classical
     by_contra h_contra
     simp_rw [not_exists, not_and] at h_contra
     have h_le_ker_pow : ∀ n : ℕ, n ≤ (finrank K V).succ →

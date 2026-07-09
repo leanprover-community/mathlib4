@@ -161,7 +161,6 @@ theorem mvPolynomial_of_finitePresentation [FinitePresentation R A] (ι : Type v
     FinitePresentation R (MvPolynomial ι A) := by
   have hfp : FinitePresentation R A := inferInstance
   rw [iff_quotient_mvPolynomial'] at hfp ⊢
-  classical
   -- Make universe level `v` explicit so it matches that of `ι`
   obtain ⟨(ι' : Type v), _, f, hf_surj, hf_ker⟩ := hfp
   let g := (MvPolynomial.mapAlgHom f).comp (MvPolynomial.sumAlgEquiv R ι ι').toAlgHom

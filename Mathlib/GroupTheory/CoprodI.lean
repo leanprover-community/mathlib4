@@ -856,7 +856,6 @@ theorem lift_word_prod_nontrivial_of_head_card {i j} (w : NeWord H i j)
 include hcard in
 theorem lift_word_prod_nontrivial_of_not_empty {i j} (w : NeWord H i j) :
     lift f w.prod ≠ 1 := by
-  classical
     rcases hcard with hcard | hcard
     · obtain ⟨i, h1, h2⟩ := Cardinal.exists_ne_ne_of_three_le hcard i j
       exact lift_word_prod_nontrivial_of_other_i f X hXnonempty hXdisj hpp w h1 h2

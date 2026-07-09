@@ -648,7 +648,6 @@ theorem Ico_filter_le_left {a b : α} [DecidablePred (· ≤ a)] (hab : a < b) :
   grind
 
 theorem card_Ico_eq_card_Icc_sub_one (a b : α) : #(Ico a b) = #(Icc a b) - 1 := by
-  classical
     by_cases h : a ≤ b
     · rw [Icc_eq_cons_Ico h, card_cons]
       exact (Nat.add_sub_cancel _ _).symm
@@ -658,7 +657,6 @@ theorem card_Ioc_eq_card_Icc_sub_one (a b : α) : #(Ioc a b) = #(Icc a b) - 1 :=
   @card_Ico_eq_card_Icc_sub_one αᵒᵈ _ _ _ _
 
 theorem card_Ioo_eq_card_Ico_sub_one (a b : α) : #(Ioo a b) = #(Ico a b) - 1 := by
-  classical
     by_cases h : a < b
     · rw [Ico_eq_cons_Ioo h, card_cons]
       exact (Nat.add_sub_cancel _ _).symm

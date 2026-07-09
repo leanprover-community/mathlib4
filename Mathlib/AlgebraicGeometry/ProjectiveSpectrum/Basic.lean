@@ -98,7 +98,6 @@ lemma iSup_basicOpen_eq_top' {ι : Type*} (f : ι → A)
     (hfn : ∀ i, ∃ n, f i ∈ 𝒜 n)
     (hf : Algebra.adjoin (𝒜 0) (Set.range f) = ⊤) :
     ⨆ i, Proj.basicOpen 𝒜 (f i) = ⊤ := by
-  classical
   apply Proj.iSup_basicOpen_eq_top
   intro x hx
   convert_to x - GradedRing.projZeroRingHom 𝒜 x ∈ _

@@ -370,7 +370,6 @@ theorem mem_range_embedding_iff {j : Fin n} {i : Fin c.length} :
 /-- The embeddings of different blocks of a composition are disjoint. -/
 theorem disjoint_range {i₁ i₂ : Fin c.length} (h : i₁ ≠ i₂) :
     Disjoint (Set.range (c.embedding i₁)) (Set.range (c.embedding i₂)) := by
-  classical
     wlog h' : i₁ < i₂
     · exact (this c h.symm (h.lt_or_gt.resolve_left h')).symm
     by_contra d

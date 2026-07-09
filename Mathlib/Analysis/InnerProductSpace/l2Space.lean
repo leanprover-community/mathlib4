@@ -192,7 +192,6 @@ protected def linearIsometry (hV : OrthogonalFamily 𝕜 G V) : lp G 2 →ₗᵢ
     simpa only [LinearIsometry.map_smul, Pi.smul_apply, lp.coeFn_smul] using!
       (hV.summable_of_lp f).tsum_const_smul c
   norm_map' f := by
-    classical
       -- needed for lattice instance on `Finset ι`, for `Filter.atTop_neBot`
       have H : 0 < (2 : ℝ≥0∞).toReal := by simp
       suffices ‖∑' i : ι, V i (f i)‖ ^ (2 : ℝ≥0∞).toReal = ‖f‖ ^ (2 : ℝ≥0∞).toReal by
@@ -443,7 +442,6 @@ protected theorem hasSum_repr (b : HilbertBasis ι 𝕜 E) (x : E) :
 @[simp]
 protected theorem dense_span (b : HilbertBasis ι 𝕜 E) :
     (span 𝕜 (Set.range b)).topologicalClosure = ⊤ := by
-  classical
     rw [eq_top_iff]
     rintro x -
     refine mem_closure_of_tendsto (b.hasSum_repr x) (Eventually.of_forall ?_)

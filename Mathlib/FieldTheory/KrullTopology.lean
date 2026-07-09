@@ -326,7 +326,6 @@ theorem finrank_eq_fixingSubgroup_index (L : IntermediateField k K) [IsGalois k 
   have hle : L ≤ E := by simpa only [fieldRange_val] using L.val.fieldRange_le_normalClosure
   let L' := restrict hle
   have h := Module.finrank_mul_finrank k ↥L' ↥E
-  classical
   rw [← IsGalois.card_fixingSubgroup_eq_finrank L', ← IsGalois.card_aut_eq_finrank k E] at h
   rw [← L'.fixingSubgroup.index_mul_card, Nat.mul_left_inj Finite.card_pos.ne'] at h
   rw [(restrict_algEquiv hle).toLinearEquiv.finrank_eq, h, ← L'.map_fixingSubgroup_index K]

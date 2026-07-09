@@ -48,7 +48,6 @@ exactly one assuming stronger assumptions on the underlying field, see
 `riesz_lemma_of_lt_one`. -/
 theorem riesz_lemma {F : Subspace 𝕜 E} (hFc : IsClosed (F : Set E)) (hF : ∃ x : E, x ∉ F) {r : ℝ}
     (hr : r < 1) : ∃ x₀ : E, x₀ ∉ F ∧ ∀ y ∈ F, r * ‖x₀‖ ≤ ‖x₀ - y‖ := by
-  classical
     obtain ⟨x, hx⟩ : ∃ x : E, x ∉ F := hF
     let d := Metric.infDist x F
     have hFn : (F : Set E).Nonempty := ⟨_, F.zero_mem⟩

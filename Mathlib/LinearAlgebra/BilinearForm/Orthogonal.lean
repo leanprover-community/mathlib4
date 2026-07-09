@@ -121,7 +121,6 @@ theorem isOrtho_smul_right {x y : M₄} {a : R₄} (ha : a ≠ 0) :
   if for all `i`, `B (v i) (v i) ≠ 0`. -/
 theorem linearIndependent_of_iIsOrtho {n : Type w} {B : BilinForm K V} {v : n → V}
     (hv₁ : B.iIsOrtho v) (hv₂ : ∀ i, B (v i) (v i) ≠ 0) : LinearIndependent K v := by
-  classical
     rw [linearIndependent_iff']
     intro s w hs i hi
     have : B (s.sum fun i : n => w i • v i) (v i) = 0 := by rw [hs, zero_left]

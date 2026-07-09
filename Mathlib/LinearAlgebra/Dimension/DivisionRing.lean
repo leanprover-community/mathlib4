@@ -56,7 +56,6 @@ theorem Module.Basis.finite_ofVectorSpaceIndex_of_rank_lt_aleph0 (h : Module.ran
 /-- Also see `rank_quotient_add_rank`. -/
 theorem rank_quotient_add_rank_of_divisionRing (p : Submodule K V) :
     Module.rank K (V ⧸ p) + Module.rank K p = Module.rank K V := by
-  classical
     let ⟨f⟩ := quotient_prod_linearEquiv p
     exact rank_prod'.symm.trans f.rank_eq
 

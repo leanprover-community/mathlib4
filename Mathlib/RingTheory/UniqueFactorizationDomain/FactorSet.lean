@@ -226,7 +226,6 @@ theorem factors_zero : (0 : Associates α).factors = ⊤ :=
 
 @[simp]
 theorem factors_mk (a : α) (h : a ≠ 0) : (Associates.mk a).factors = factors' a := by
-  classical
     apply dif_neg
     apply mt mk_eq_zero.1 h
 
