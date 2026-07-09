@@ -118,7 +118,7 @@ lemma mem_image_comap_basicOpen (f : A) (x) :
     rw [Ideal.span_empty]
     exact { __ := (RingEquiv.quotientBot A).symm, __ := Algebra.ofId _ _ }
   rw [← IsNilpotent.map_iff e.injective, AlgEquiv.commutes,
-    ← mem_image_comap_zeroLocus_sdiff f ∅ x, zeroLocus_empty, ← Set.compl_eq_univ_diff,
+    ← mem_image_comap_zeroLocus_sdiff f ∅ x, zeroLocus_empty, ← Set.compl_eq_univ_sdiff,
     basicOpen_eq_zeroLocus_compl]
 
 /-- Let `A` be an `R`-algebra. If `A ⧸ I` is finite free over `R`,
@@ -200,15 +200,16 @@ lemma mem_image_comap_C_basicOpen (f : MvPolynomial σ R) (x : PrimeSpectrum R) 
   classical
   trans f.map (algebraMap R x.asIdeal.ResidueField) ≠ 0
   · refine (mem_image_comap_basicOpen _ _).trans (not_iff_not.mpr ?_)
-    let e : MvPolynomial σ R ⊗[R] x.asIdeal.ResidueField ≃ₐ[R]
+    let e : x.asIdeal.ResidueField ⊗[R] MvPolynomial σ R ≃ₐ[x.asIdeal.ResidueField]
         MvPolynomial σ x.asIdeal.ResidueField := scalarRTensorAlgEquiv
-    rw [← IsNilpotent.map_iff e.injective, isNilpotent_iff_eq_zero]
-    change (e.toAlgHom.toRingHom).comp (algebraMap _ _) f = 0 ↔ MvPolynomial.map _ f = 0
+    rw [← IsNilpotent.map_iff (Algebra.TensorProduct.comm ..).injective,
+      ← IsNilpotent.map_iff e.injective, isNilpotent_iff_eq_zero]
+    change (e.toAlgHom.toRingHom.comp (Algebra.TensorProduct.comm ..).toRingHom).comp
+      (algebraMap _ _) f = 0 ↔ MvPolynomial.map _ f = 0
     congr!
     ext
-    · simp [scalarRTensorAlgEquiv, e, coeff_map,
-        Algebra.smul_def, apply_ite (f := algebraMap _ _)]
-    · simp [e, scalarRTensorAlgEquiv, coeff_map, coeff_X]
+    · simp [scalarRTensorAlgEquiv, e, Algebra.smul_def]
+    · simp [e, scalarRTensorAlgEquiv, coeff, map, X, monomial]
   · simp [MvPolynomial.ext_iff, coeff_map]
 
 lemma image_comap_C_basicOpen (f : MvPolynomial σ R) :

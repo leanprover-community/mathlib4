@@ -12,6 +12,7 @@ public import Mathlib.NumberTheory.NumberField.Units.Basic
 
 /-!
 # Dirichlet theorem on the group of units of a number field
+
 This file is devoted to the proof of Dirichlet unit theorem that states that the group of
 units `(𝓞 K)ˣ` of units of the ring of integers `𝓞 K` of a number field `K` modulo its torsion
 subgroup is a free `ℤ`-module of rank `card (InfinitePlace K) - 1`.
@@ -453,8 +454,7 @@ instance : Monoid.FG (𝓞 K)ˣ := by
 theorem finrank_modTorsion : finrank ℤ (Additive ((𝓞 K)ˣ ⧸ (torsion K))) = rank K := by
   rw [← LinearEquiv.finrank_eq (logEmbeddingEquiv K).symm, unitLattice_rank]
 
-@[deprecated (since := "2026-06-05")]
-alias NumberField.Units.rank_modTorsion := finrank_modTorsion
+@[deprecated (since := "2026-06-05")] alias rank_modTorsion := finrank_modTorsion
 
 theorem finrank_eq : finrank ℤ (Additive (𝓞 K)ˣ) = rank K := by
   simpa [← finrank_modTorsion] using! finrank_quotient_torsion_eq.symm

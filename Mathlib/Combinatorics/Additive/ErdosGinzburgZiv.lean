@@ -31,9 +31,8 @@ variable {ι : Type*}
 section prime
 variable {p : ℕ} [Fact p.Prime] {s : Finset ι}
 
-set_option linter.unusedVariables false in
 /-- The first multivariate polynomial used in the proof of Erdős–Ginzburg–Ziv. -/
-private noncomputable def f₁ (s : Finset ι) (a : ι → ZMod p) : MvPolynomial s (ZMod p) :=
+private noncomputable def f₁ (s : Finset ι) (_a : ι → ZMod p) : MvPolynomial s (ZMod p) :=
   ∑ i, X i ^ (p - 1)
 
 /-- The second multivariate polynomial used in the proof of Erdős–Ginzburg–Ziv. -/
@@ -171,8 +170,7 @@ theorem Int.erdos_ginzburg_ziv (a : ι → ℤ) (hs : 2 * n - 1 ≤ #s) :
         simpa [← card_eq_zero, ht₀card] using sdiff_disjoint.mono ht₀ <| subset_biUnion_of_mem id h
       lia
     refine ⟨𝒜.cons t₀ this, by rw [card_cons, h𝒜card], ?_, ?_⟩
-    · simp only [cons_eq_insert, coe_insert, Set.pairwise_insert_of_symmetric symmetric_disjoint,
-        mem_coe, ne_eq]
+    · simp only [cons_eq_insert, coe_insert, Set.pairwise_insert_of_symm, mem_coe, ne_eq]
       exact ⟨h𝒜disj, fun t ht _ ↦ sdiff_disjoint.mono ht₀ <| subset_biUnion_of_mem id ht⟩
     · simp only [cons_eq_insert, mem_insert, forall_eq_or_imp, and_assoc]
       exact ⟨ht₀.trans sdiff_subset, ht₀card, ht₀sum, h𝒜⟩
