@@ -488,7 +488,7 @@ theorem closure_eq_iInter_gt_smul (hc : Convex ℝ s) (hs₀ : s ∈ 𝓝 0) :
     closure s = ⋂ (r : ℝ) (_ : 1 < r), r • s := by
   conv_lhs => rw [show closure s = {x | gauge s x ≤ 1} from
     (Set.ext fun x => (gauge_le_one_iff_mem_closure hc hs₀).symm)]
-  exact gauge_le_eq hc (mem_of_mem_nhds hs₀) (absorbent_nhds_zero hs₀) zero_le_one
+  exact setOf_gauge_le_eq hc (mem_of_mem_nhds hs₀) (absorbent_nhds_zero hs₀) zero_le_one
 
 theorem setOf_gauge_le_eq_closure_smul_of_pos (hc : Convex ℝ s) (hs₀ : s ∈ 𝓝 0)
     (ha : 0 < a) : { x | gauge s x ≤ a } = closure (a • s) := by

@@ -204,7 +204,7 @@ lemma isClosed_setOf_lt_setFinrank_smul_inter (hsc : Convex ℝ s) (hs : IsCompa
       rintro x ⟨j, rfl⟩
       simp only [Function.comp_apply, mem_inter_iff, Subtype.coe_prop, and_true]
       have : r₀ • s = ⋂ (r : ℝ) (_ : r₀ < r), r • s := by
-        have h1 := (gauge_le_eq hsc hs₀' (absorbent_nhds_zero hs₀) r₀.2)
+        have h1 := (setOf_gauge_le_eq hsc hs₀' (absorbent_nhds_zero hs₀) r₀.2)
         have h2 := setOf_gauge_le_eq_closure_smul (a := r₀) hsc
           (NormedSpace.isVonNBounded_of_isBounded ℝ hs.isBounded) hs₀ (by simp)
         have h3 := (hs.isClosed.smul₀ (r₀ : ℝ)).closure_eq
