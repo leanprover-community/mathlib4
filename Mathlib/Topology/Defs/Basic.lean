@@ -191,6 +191,9 @@ scoped[Topology] notation (name := IsOpen_of) "IsOpen[" t "]" => @IsOpen _ t
 /-- Notation for `IsClosed` with respect to a non-standard topology. -/
 scoped[Topology] notation (name := IsClosed_of) "IsClosed[" t "]" => @IsClosed _ t
 
+/-- Notation for `IsClopen` with respect to a non-standard topology. -/
+scoped[Topology] notation (name := IsClopen_of) "IsClopen[" t "]" => @IsClopen _ t
+
 /-- Notation for `closure` with respect to a non-standard topology. -/
 scoped[Topology] notation (name := closure_of) "closure[" t "]" => @closure _ t
 

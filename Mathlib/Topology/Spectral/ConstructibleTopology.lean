@@ -73,6 +73,14 @@ lemma IsCompact.isClosed_constructibleTopology_of_isClosed {s : Set X}
   apply TopologicalSpace.isOpen_generateFrom_of_mem
   simp [constructibleTopologySubbasis, ho, hs]
 
+lemma IsCompact.isClopen_constructibleTopology_of_isOpen {s : Set X}
+    (hs : IsCompact s) (ho : IsOpen s) : IsClopen[constructibleTopology X] s :=
+  ⟨isClosed_constructibleTopology_of_isOpen hs ho, isOpen_constructibleTopology_of_isOpen hs ho⟩
+
+lemma IsCompact.isClopen_constructibleTopology_of_isClosed {s : Set X}
+    (hs : IsCompact sᶜ) (ho : IsClosed s) : IsClopen[constructibleTopology X] s :=
+  ⟨isClosed_constructibleTopology_of_isClosed hs ho, isOpen_constructibleTopology_of_isClosed hs ho⟩
+
 @[simp]
 lemma compl_mem_constructibleTopologySubbasis_iff {s : Set X} :
     sᶜ ∈ constructibleTopologySubbasis X ↔ s ∈ constructibleTopologySubbasis X := by
