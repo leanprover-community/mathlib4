@@ -118,6 +118,7 @@ theorem antilipschitz_equivRealProd : AntilipschitzWith (NNReal.sqrt 2) equivRea
   AddMonoidHomClass.antilipschitz_of_bound equivRealProdLm fun z ↦ by
     simpa only [Real.coe_sqrt, NNReal.coe_ofNat] using! norm_le_sqrt_two_mul_max z
 
+@[fun_prop]
 theorem isUniformEmbedding_equivRealProd : IsUniformEmbedding equivRealProd :=
   antilipschitz_equivRealProd.isUniformEmbedding lipschitz_equivRealProd.uniformContinuous
 
@@ -153,6 +154,7 @@ def reCLM : ℂ →L[ℝ] ℝ :=
 theorem continuous_re : Continuous re :=
   reCLM.continuous
 
+@[fun_prop]
 lemma uniformContinuous_re : UniformContinuous re :=
   reCLM.uniformContinuous
 
@@ -175,6 +177,7 @@ def imCLM : ℂ →L[ℝ] ℝ :=
 theorem continuous_im : Continuous im :=
   imCLM.continuous
 
+@[fun_prop]
 lemma uniformContinuous_im : UniformContinuous im :=
   imCLM.uniformContinuous
 
