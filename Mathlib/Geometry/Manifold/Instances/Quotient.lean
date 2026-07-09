@@ -63,8 +63,7 @@ TO-DO:
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-  (I : ModelWithCorners 𝕜 E H)
-  {n : ℕ∞} [IsManifold I n M]
+  (I : ModelWithCorners 𝕜 E H) {n : ℕ∞} [IsManifold I n M]
 
 omit [T2Space M] [LocallyCompactSpace M] in
 lemma mem_contDiffGroupoid_of_contMDiff_chartAt {x y : M} {h : OpenPartialHomeomorph M M}
@@ -83,8 +82,7 @@ lemma quotient_IsLocalHomeomorph : IsLocalHomeomorph (Quotient.mk (orbitRel G M)
 
 variable (x y : orbitRel.Quotient G M)
 
-abbrev φ : OpenPartialHomeomorph M H := chartAt H x.out
-
+-- should this be deleted??
 abbrev πinv : OpenPartialHomeomorph (orbitRel.Quotient G M) M :=
   quotient_IsLocalHomeomorph.localInverseAt (Y := orbitRel.Quotient G M) x.out
 
@@ -124,29 +122,31 @@ lemma locally_smul (m : M) (hm : m ∈ ((πinv x).symm.trans (πinv y)).source) 
 
 /-- The transition map between the charts of the quotient associated to `x` and `y`. -/
 def quotientTransitionMap : OpenPartialHomeomorph H H :=
-  (φ (H := H) x).symm.trans (((πinv x).symm.trans (πinv y)).trans (φ y))
+  (chartAt H x.out).symm.trans (((πinv x).symm.trans (πinv y)).trans (chartAt H y.out))
 
 /-- For a fixed `g`, the transition map of the quotient agrees with `φ x⁻¹ ≫ (g • ·) ≫ φ y` on
 the preimage under `(φ x).symm` of the set where the section comparison is the action of `g`. -/
 lemma quotientTransitionMap_eqOn_smul (g : G) :
-    ((φ (H := H) x).symm ⁻¹' ((g • ·) ⁻¹' (πinv y).target)).EqOn
+    ((chartAt H x.out).symm ⁻¹' ((g • ·) ⁻¹' (πinv y).target)).EqOn
       (quotientTransitionMap x y)
-      ((φ x).symm.trans (((Homeomorph.smul g).toOpenPartialHomeomorph).trans (φ y))) := by
+      ((chartAt H x.out).symm.trans (((Homeomorph.smul g).toOpenPartialHomeomorph).trans
+        (chartAt H y.out))) := by -- QUESTION: should this `φ x⁻¹ ≫ (g • ·) ≫ φ y` also be a def
   intro h hh
   simp only [quotientTransitionMap, OpenPartialHomeomorph.coe_trans, Function.comp_apply]
-  simpa using congrArg (φ y) (smul_eqOn x y g hh)
+  simpa using congrArg (chartAt H y.out) (smul_eqOn x y g hh)
 
 /-- Locally, the transition map of the quotient is `φ x⁻¹ ≫ (g • ·) ≫ φ y` for a single group
 element `g`. -/
 lemma quotientTransitionMap_locally_smul {h : H} (hh : h ∈ (quotientTransitionMap x y).source) :
-    ∃ g : G, h ∈ (φ x).symm ⁻¹' ((g • ·) ⁻¹' (πinv y).target) ∧
-      ((φ (H := H) x).symm ⁻¹' ((g • ·) ⁻¹' (πinv y).target)).EqOn
+    ∃ g : G, h ∈ (chartAt H x.out).symm ⁻¹' ((g • ·) ⁻¹' (πinv y).target) ∧
+      ((chartAt H x.out).symm ⁻¹' ((g • ·) ⁻¹' (πinv y).target)).EqOn
         (quotientTransitionMap x y)
-        ((φ x).symm.trans (((Homeomorph.smul g).toOpenPartialHomeomorph).trans (φ y))) := by
+        ((chartAt H x.out).symm.trans (((Homeomorph.smul g).toOpenPartialHomeomorph).trans
+          (chartAt H y.out))) := by
   simp only [quotientTransitionMap, OpenPartialHomeomorph.trans_source, mem_inter_iff,
     mem_preimage] at hh
   obtain ⟨-, ⟨-, hmid⟩, -⟩ := hh
-  obtain ⟨g, hg⟩ := exists_smul_mem_πinv_target ((φ x).symm h)
+  obtain ⟨g, hg⟩ := exists_smul_mem_πinv_target ((chartAt H x.out).symm h)
     (by rwa [quotient_IsLocalHomeomorph.localInverseAt_symm] at hmid)
   exact ⟨g, hg, quotientTransitionMap_eqOn_smul x y g⟩
 
@@ -180,29 +180,21 @@ end
 instance : IsManifold I n (orbitRel.Quotient G M) where
   compatible := by
     rintro _ _ ⟨x, rfl⟩ ⟨y, rfl⟩
-
-    change ((πinv x).trans (φ x)).symm.trans ((πinv y).trans (φ y)) ∈ contDiffGroupoid (↑n) I
-
-    rw [(πinv x).trans_symm_eq_symm_trans_symm, (φ x).symm.trans_assoc, ← (πinv x).symm.trans_assoc]
-
-
+    rw [(πinv x).trans_symm_eq_symm_trans_symm, (chartAt H x.out).symm.trans_assoc,
+      ← (πinv x).symm.trans_assoc]
     apply StructureGroupoid.locality
-
     intro h hh
-
     obtain ⟨g0, hg0, hg0'⟩ := quotientTransitionMap_locally_smul x y hh
-
-    have hto : IsOpen ((φ (H := H) x).symm.source ∩
-        (φ x).symm ⁻¹' ((g0 • ·) ⁻¹' (πinv y).target)) :=
-      (φ x).symm.isOpen_inter_preimage ((πinv y).open_target.preimage (continuous_const_smul g0))
-
+    have hto : IsOpen ((chartAt H x.out).symm.source ∩
+        (chartAt H x.out).symm ⁻¹' ((g0 • ·) ⁻¹' (πinv y).target)) :=
+      (chartAt H x.out).symm.isOpen_inter_preimage
+        ((πinv y).open_target.preimage (continuous_const_smul g0))
     refine ⟨_, hto, ⟨hh.1, hg0⟩, ?_⟩
-
-    refine StructureGroupoid.restr_mem_of_eqOn
-      (mem_contDiffGroupoid_of_contMDiff_chartAt I ?_ ?_) hto
-      (hg0'.mono inter_subset_right) ?_
+    refine StructureGroupoid.restr_mem_of_eqOn (mem_contDiffGroupoid_of_contMDiff_chartAt I ?_ ?_)
+      hto (hg0'.mono inter_subset_right) ?_
     · sorry
-    · sorry
+    · rw [Homeomorph.toOpenPartialHomeomorph_symm_apply]
+      sorry
     · rintro h' ⟨⟨hQ1, -, hQ4⟩, -, hcert⟩
       exact ⟨hQ1, mem_univ _, by simpa [← smul_eqOn x y g0 hcert] using hQ4⟩
 
