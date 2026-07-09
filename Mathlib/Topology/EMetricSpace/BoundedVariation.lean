@@ -468,7 +468,7 @@ the distances between consecutive values. -/
 theorem image_range_of_monotone (f : α → E) {u : ℕ → α} (hu : Monotone u) (n : ℕ) :
     eVariationOn f (u '' .Iic n) = ∑ i ∈ .range n, edist (f (u i)) (f (u (i + 1))) := by
   induction n with
-  | zero => simp [(by aesop : Iic 0 = {0})]
+  | zero => simp [Iic]
   | succ n ih => calc
     _ = eVariationOn f (u '' .Iic n ∪ {u n, u (n + 1)}) := by congr; grind
     _ = eVariationOn f (u '' .Iic n) + eVariationOn f {u n, u (n + 1)} := by
