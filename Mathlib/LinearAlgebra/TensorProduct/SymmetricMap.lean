@@ -329,7 +329,7 @@ variable {R M N ι ι' ι''}
 
 /-- Reinterpret a symmetric `R`-multilinear map as a symmetric `S`-multilinear map,
 for `S` a semiring acting on `M` and `N` compatibly with the `R`-module structures. -/
-def restrictScalars (S : Type*) [Semiring S] [SMul S R] [Module S M] [Module S N]
+@[simps!] def restrictScalars (S : Type*) [Semiring S] [SMul S R] [Module S M] [Module S N]
     [IsScalarTower S R M] [IsScalarTower S R N]
     (f : M [Σ^ι]→ₗ[R] N) : M [Σ^ι]→ₗ[S] N :=
   ⟨f.1.restrictScalars S, fun v e ↦ f.2 v e⟩
