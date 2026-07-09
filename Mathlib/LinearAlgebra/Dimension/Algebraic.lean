@@ -63,8 +63,7 @@ theorem lift_rank_mul_lift_rank :
   have _ : IsScalarTower R R' M' := .to₁₂₄ (P := S') ..
   have h₂ : IsBaseChange S' f := IsLocalizedModule.isBaseChange S⁰ _ f
   have h₁ : IsBaseChange R' (f.restrictScalars R) := by
-    suffices IsLocalizedModule (algebraMapSubmonoid S R⁰) f from
-      this.restrictScalars.isBaseChange R⁰ _ _
+    refine IsLocalizedModule.restrictScalars R⁰ _ (h := ?_) |>.isBaseChange R⁰ _ _
     rwa [isLocalizedModule_iff_isBaseChange _ (A := S')]
   rw [← lift_umax.{w, v}, ← Algebra.IsAlgebraic.rank_fractionRing, ← h₂.lift_rank_eq,
     ← h₁.lift_rank_eq, ← lift_umax.{v, w}, lift_id'.{w, v}, lift_id'.{w, v},
