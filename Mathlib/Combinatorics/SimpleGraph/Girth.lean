@@ -16,8 +16,8 @@ cycle, they give `0` or `∞` respectively if the graph is acyclic.
 
 ## TODO
 
-- Prove that `G.egirth ≤ 2 * G.ediam + 1` and `G.girth ≤ 2 * G.diam + 1` when the diameter is
-  non-zero.
+- Prove that `G.egirth ≤ 2 * G.ediam + 1` when `G` is not acyclic
+- Prove that `G.girth ≤ 2 * G.diam + 1` when the diameter is non-zero
 
 -/
 
@@ -73,9 +73,22 @@ lemma exists_egirth_eq_length :
     exact ciInf_mem _
 
 lemma three_le_egirth : 3 ≤ G.egirth := by
-  simpa using fun _ _ a ↦ Walk.IsCycle.three_le_length a
+  simpa using fun _ _ h ↦ h.three_le_length
 
 @[simp] lemma egirth_bot : egirth (⊥ : SimpleGraph α) = ⊤ := by simp
+
+theorem egirth_top (h : 3 ≤ ENat.card α) : egirth (⊤ : SimpleGraph α) = 3 := by
+  classical
+  refine le_antisymm ?_ three_le_egirth
+  obtain ⟨s, hcard⟩ := Cardinal.exists_finset_eq_card <| Cardinal.ofNat_le_toENat.mp h
+  obtain ⟨x, y, z, hxy, hxz, hyz, -⟩ := s.card_eq_three.mp hcard.symm
+  set w : Walk ⊤ x x := .cons hxy <| .cons hyz <| .cons hxz.symm .nil with hw
+  have : w.IsCycle :=
+    { edges_nodup := by aesop
+      ne_nil := by aesop
+      support_nodup := by aesop }
+  grw [egirth_le_length this]
+  simp [hw]
 
 @[gcongr only]
 lemma IsContained.egirth_le (h : G ⊑ G') : G'.egirth ≤ G.egirth := by
@@ -128,6 +141,9 @@ lemma exists_girth_eq_length :
 
 @[simp] lemma girth_bot : girth (⊥ : SimpleGraph α) = 0 := by
   simp [girth]
+
+theorem girth_top (h : 3 ≤ ENat.card α) : girth (⊤ : SimpleGraph α) = 3 := by
+  simp [girth, egirth_top h]
 
 lemma IsContained.girth_le (h : G ⊑ G') (hG : ¬G.IsAcyclic) : G'.girth ≤ G.girth :=
   ENat.toNat_le_toNat h.egirth_le <| egirth_eq_top.not.mpr hG
