@@ -17,8 +17,9 @@ topological ring `k`, and shows that it is equivalent to the category `Action (T
 
 For a topological group `G` we define the invariants functor `TopRep.invariantsFunctor`, the
 coinduction functor `TopRep.coind₁Functor`, the restriction functor `TopRep.resFunctor` along a
-group homomorphism `φ : H →* G`, and the morphism `TopRep.invariantsResMap φ f` between invariant
-submodules induced by a morphism `f : res φ X ⟶ Y`.
+group homomorphism `φ : H →* G`, the morphism `TopRep.invariantsResMap φ f` between invariant
+submodules induced by a morphism `f : res φ X ⟶ Y`, and the natural transformation
+`TopRep.invariantsResNatTrans φ` given by the restriction maps `TopRep.invariantsRes φ`.
 -/
 
 @[expose] public section
@@ -105,6 +106,12 @@ abbrev ofHom (f : ρ →ⁱL σ) : of ρ ⟶ of σ :=
 @[simp] lemma hom_ofHom (f : ρ →ⁱL σ) : (ofHom f).hom = f := rfl
 
 @[simp] lemma ofHom_hom (f : A ⟶ B) : ofHom f.hom = f := rfl
+
+@[simp]
+lemma ofHom_comp {Z : Type w} [AddCommGroup Z] [Module k Z] [TopologicalSpace Z]
+    [IsTopologicalAddGroup Z] [ContinuousSMul k Z] {τ : ContRepresentation k G Z}
+    (f : ρ →ⁱL σ) (g : σ →ⁱL τ) :
+    ofHom (g.comp f) = ofHom f ≫ ofHom g := rfl
 
 variable {A B} in
 /-- The morphism of topological modules underlying a morphism in `TopRep k G`. -/
@@ -271,6 +278,8 @@ abbrev resFunctor {H : Type*} [Monoid H] (φ : H →* G) :
   obj := res φ
   map f := ofHom <| f.hom.restrict φ
 
+instance {H : Type*} [Monoid H] (φ : H →* G) : (resFunctor (k := k) φ).Additive where
+
 section invariantsResMap
 
 variable {G H : Type*} [Group G]
@@ -295,6 +304,31 @@ lemma invariantsResMap_map_comp {X X' : TopRep k G} {Y : TopRep k H} (φ : H →
     (f : X ⟶ X') (g : res φ X' ⟶ Y) :
     invariantsResMap φ ((resFunctor φ).map f ≫ g) =
       (invariantsFunctor k G).map f ≫ invariantsResMap φ g := rfl
+
+/-- The restriction map `X.invariants ⟶ (X.res φ).invariants` between invariant submodules
+along a group homomorphism `φ : H →* G`. -/
+def invariantsRes (φ : H →* G) (X : TopRep k G) :
+    X.invariants ⟶ (X.res φ).invariants :=
+  TopModuleCat.ofHom (ContIntertwiningMap.mapInvariantsOfRes φ ContIntertwiningMap.id)
+
+/-- The restriction maps `TopRep.invariantsRes φ` as a natural transformation
+`invariantsFunctor k G ⟶ resFunctor φ ⋙ invariantsFunctor k H`. -/
+abbrev invariantsResNatTrans (φ : H →* G) :
+    invariantsFunctor k G ⟶ resFunctor φ ⋙ invariantsFunctor k H where
+  app := invariantsRes φ
+  naturality X Y f := (eq_of_comp_right_eq'
+    (invariantsRes φ X ≫ (resFunctor φ ⋙ invariantsFunctor k H).map f)
+    ((invariantsFunctor k G).map f ≫ invariantsRes φ Y) rfl).symm
+
+/-- `invariantsResMap φ f` is the restriction map `invariantsRes φ` followed by the functorial
+map on invariants. -/
+lemma invariantsResMap_eq (φ : H →* G) {X : TopRep k G} {Y : TopRep k H} (f : res φ X ⟶ Y) :
+    invariantsResMap φ f = X.invariantsRes φ ≫ (invariantsFunctor k H).map f := rfl
+
+/-- `invariantsRes` is the special case of `invariantsResMap` where the coefficient map is the
+identity. -/
+lemma invariantsResMap_id (φ : H →* G) {X : TopRep k G} :
+    invariantsResMap φ (𝟙 (res φ X)) = X.invariantsRes φ := rfl
 
 end invariantsResMap
 

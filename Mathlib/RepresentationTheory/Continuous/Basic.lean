@@ -156,6 +156,12 @@ lemma toContinuousLinearMap_comp {π₁ : ContRepresentation R G V} {π₂ : Con
     {π₃ : ContRepresentation R G U} (f : π₂ →ⁱL π₃) (g : π₁ →ⁱL π₂) :
     (f.comp g).toContinuousLinearMap = f.toContinuousLinearMap.comp g.toContinuousLinearMap := rfl
 
+@[simp]
+lemma comp_id (f : π₁ →ⁱL π₂) : f.comp .id = f := rfl
+
+@[simp]
+lemma id_comp (f : π₁ →ⁱL π₂) : ContIntertwiningMap.id.comp f = f := rfl
+
 instance : Add (π₁ →ⁱL π₂) where
   add f g := ⟨f.toContinuousLinearMap + g.toContinuousLinearMap, by simp [g.2, f.2]⟩
 
@@ -618,6 +624,10 @@ def coind₁Res (φ : H →ₜ* G) (π : ContRepresentation R G V) :
 @[simp]
 lemma coind₁Res_apply (φ : H →ₜ* G) (π : ContRepresentation R G V) (F : C(G, V)) (x : H) :
     coind₁Res φ π F x = F (φ x) := rfl
+
+@[simp]
+lemma coind₁Res_id (π : ContRepresentation R G V) :
+    coind₁Res (ContinuousMonoidHom.id G) π = .id := rfl
 
 /-- Given a continuous group homomorphism `φ : H →ₜ* G`, a continuous intertwining map
 `f : π.restrict φ →ⁱL π'` induces a continuous intertwining map
