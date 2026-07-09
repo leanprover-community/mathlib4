@@ -398,20 +398,20 @@ See `Ideal.relNorm_eq_pow_of_isMaximal` for a statement that does not require th
 be Galois.
 -/
 theorem relNorm_eq_pow_of_isPrime_isGalois [p.IsMaximal] [P.IsPrime]
-    [IsGalois (FractionRing R) (FractionRing S)] : relNorm R P = p ^ P.inertiaDeg' R := by
+    [IsGalois (FractionRing R) (FractionRing S)] : relNorm R P = p ^ P.inertiaDeg R := by
   have : P.IsMaximal := IsMaximal.of_liesOver_isMaximal P p
   let G := Gal(FractionRing S/FractionRing R)
   let := IsIntegralClosure.MulSemiringAction R (FractionRing R) (FractionRing S) S
   have := IsGaloisGroup.of_isFractionRing G R S (FractionRing R) (FractionRing S)
   by_cases hp : p = ⊥
-  · have h : P.inertiaDeg' R ≠ 0 := (inertiaDeg'_pos P R).ne'
+  · have h : P.inertiaDeg R ≠ 0 := (inertiaDeg_pos P R).ne'
     have hP : P = ⊥ := by
       rw [hp] at hPp
       exact eq_bot_of_liesOver_bot R P
     rw [hp, hP, relNorm_bot, bot_pow]
     rwa [hP] at h
   obtain ⟨s, hs⟩ := exists_relNorm_eq_pow_of_isPrime P p
-  suffices s = P.inertiaDeg' R by rwa [this] at hs
+  suffices s = P.inertiaDeg R by rwa [this] at hs
   have h₀ : ∀ Q ∈ (p.primesOver S).toFinset,
       relNorm R Q ^ Q.ramificationIdx R = p ^ ((p.ramificationIdxIn S) * s) := by
     intro Q hQ
@@ -434,7 +434,7 @@ theorem relNorm_eq_pow_of_isPrime_isGalois [p.IsMaximal] [P.IsPrime]
   exact IsMaximal.ne_top inferInstance
 
 theorem relNorm_eq_pow_of_isMaximal [PerfectField (FractionRing R)] [P.IsMaximal] [p.IsMaximal] :
-    relNorm R P = p ^ P.inertiaDeg' R := by
+    relNorm R P = p ^ P.inertiaDeg R := by
   let T := Ring.NormalClosure R S
   obtain ⟨Q, hQ₁, hQ₂⟩ : ∃ Q : Ideal T, Q.IsMaximal ∧ Q.LiesOver P :=
     exists_maximal_ideal_liesOver_of_isIntegral P
@@ -443,7 +443,7 @@ theorem relNorm_eq_pow_of_isMaximal [PerfectField (FractionRing R)] [P.IsMaximal
   have : IsGalois (FractionRing S) (FractionRing T) :=
     IsGalois.tower_top_of_isGalois (FractionRing R) (FractionRing S) (FractionRing T)
   rwa [← relNorm_relNorm R S, relNorm_eq_pow_of_isPrime_isGalois Q P, map_pow,
-    inertiaDeg'_tower (R := R) P Q, pow_mul, pow_left_inj (inertiaDeg'_pos Q S).ne'] at h
+    inertiaDeg_tower (R := R) P Q, pow_mul, pow_left_inj (inertiaDeg_pos Q S).ne'] at h
 
 end relNorm_prime
 
@@ -469,8 +469,8 @@ theorem absNorm_relNorm [PerfectField (FractionRing R)] (I : Ideal S) :
     let P := under R Q
     let p := absNorm (under ℤ P)
     have : Q.LiesOver (span {(p : ℤ)}) := LiesOver.trans Q P _
-    rw [relNorm_eq_pow_of_isMaximal Q P, map_pow, ← pow_inertiaDeg' p, ← pow_inertiaDeg' p,
-      ← pow_mul, ← inertiaDeg'_tower]
+    rw [relNorm_eq_pow_of_isMaximal Q P, map_pow, ← pow_inertiaDeg p, ← pow_inertiaDeg p,
+      ← pow_mul, ← inertiaDeg_tower]
 
 theorem relNorm_int (I : Ideal S) :
     relNorm ℤ I = Ideal.span {(absNorm I : ℤ)} := by

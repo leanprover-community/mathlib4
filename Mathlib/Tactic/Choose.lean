@@ -9,6 +9,7 @@ public import Mathlib.Logic.Function.Basic
 
 /-!
 # `choose` tactic
+
 Performs Skolemization, that is, given `h : ∀ a:α, ∃ b:β, p a b |- G` produces
 `f : α → β, hf: ∀ a, p a (f a) |- G`.
 
