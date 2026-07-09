@@ -194,6 +194,7 @@ instance : SMulMemClass (TwoSidedIdeal R) R R where
 
 -- This is not an instance, because together with the instance above,
 -- it violates the `outParam` of `SMulMemClass`.
+-- See: https://github.com/leanprover-community/mathlib4/pull/40718
 theorem instSMulMemClassMulOpposite : SMulMemClass (TwoSidedIdeal R) Rᵐᵒᵖ R where
   smul_mem _ _ h := TwoSidedIdeal.mul_mem_right _ _ _ h
 
