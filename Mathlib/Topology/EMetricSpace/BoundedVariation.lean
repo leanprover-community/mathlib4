@@ -1223,7 +1223,7 @@ lemma eVariationOn_id {a b : ℝ} (hab : a ≤ b) {s : Set ℝ} (as : a ∈ s) (
 @[simp]
 lemma eVariationOn_id_Icc {a b : ℝ} (hab : a ≤ b) :
     eVariationOn id (.Icc a b) = ENNReal.ofReal (b - a) := by
-  simpa using eVariationOn_id hab (s := Set.univ) (by simp) (by simp)
+  simpa using eVariationOn_id hab (s := univ) (by simp) (by simp)
 
 /-- The identity function has bounded variation on every interval `Icc a b`. -/
 @[simp]
