@@ -49,6 +49,11 @@ instance instChartedSpaceQuotient : ChartedSpace H (orbitRel.Quotient G M) :=
   isQuotientCoveringMap_quotientMk_of_properlyDiscontinuousSMul.isCoveringMap
     |>.isLocalHomeomorph.chartedSpace Quotient.mk_surjective
 
+-- maybe we should change the ChartedSpace instance to this
+--(so we can use x.out and delete the right inverse choice)
+instance instChartedSpaceQuotient' : ChartedSpace H (orbitRel.Quotient G M) :=
+  isQuotientCoveringMap_quotientMk_of_properlyDiscontinuousSMul.isCoveringMap
+    |>.isLocalHomeomorph.chartedSpaceOfRightInverse Quotient.out_eq
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
@@ -70,15 +75,12 @@ open Set
 lemma quotient_IsLocalHomeomorph : IsLocalHomeomorph (Quotient.mk (orbitRel G M)) :=
   isQuotientCoveringMap_quotientMk_of_properlyDiscontinuousSMul.isCoveringMap.isLocalHomeomorph
 
-def quotient_RightInverse : Quotient (orbitRel G M) → M :=
-  Quotient.mk_surjective.hasRightInverse.choose
-
 variable (x y : orbitRel.Quotient G M)
 
-abbrev φ : OpenPartialHomeomorph M H := chartAt H (quotient_RightInverse x)
+abbrev φ : OpenPartialHomeomorph M H := chartAt H x.out
 
 abbrev πinv : OpenPartialHomeomorph (orbitRel.Quotient G M) M :=
-  quotient_IsLocalHomeomorph.localInverseAt (Y := orbitRel.Quotient G M) (quotient_RightInverse x)
+  quotient_IsLocalHomeomorph.localInverseAt (Y := orbitRel.Quotient G M) x.out
 
 variable (e e' : OpenPartialHomeomorph M H)
 
@@ -145,6 +147,7 @@ lemma general_eqOn {g : G} (t : Set H) :
   simpa using ha.1
   rw [← ha.2] at hh
   apply e.map_target' at hh
+  sorry
 
 
 
@@ -231,9 +234,17 @@ instance : IsManifold I n (orbitRel.Quotient G M) where
 
     have heq : (⟦(φ x).symm h⟧ : orbitRel.Quotient G M) =
       ⟦(πinv y) ((πinv x).symm ((φ x).symm h))⟧ := by
-      rw [← quotient_IsLocalHomeomorph.localInverseAt_symm (quotient_RightInverse y),
+      rw [← quotient_IsLocalHomeomorph.localInverseAt_symm y.out,
         OpenPartialHomeomorph.left_inv _ hh3, quotient_IsLocalHomeomorph.localInverseAt_symm,
         quotient_IsLocalHomeomorph.localInverseAt_symm]
+
+    /-
+    the second rw could be
+    (πinv y).left_inv (x := (πinv x).symm ((φ x).symm h)) hh3
+    or
+    (πinv y).left_inv (by simpa using hh3)
+    neither of them feel a lot better.
+    -/
 
     obtain ⟨g0, hg0⟩ := MulAction.orbitRel_apply.mp (Quotient.exact heq.symm)
 
