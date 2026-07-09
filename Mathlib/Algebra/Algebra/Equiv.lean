@@ -781,7 +781,7 @@ def toIntAlgEquiv [Ring R] [Ring S] (f : R ≃+* S) : R ≃ₐ[ℤ] S :=
   { f with commutes' := fun n ↦ by simp }
 
 @[simp]
-lemma toIntAlgEquiv_coe [Ring R] [Ring S] (f : R ≃+* S) :
+lemma coe_toIntAlgEquiv [Ring R] [Ring S] (f : R ≃+* S) :
     ⇑f.toIntAlgEquiv = ⇑f := rfl
 
 lemma toIntAlgEquiv_apply [Ring R] [Ring S] (f : R ≃+* S) (x : R) :
