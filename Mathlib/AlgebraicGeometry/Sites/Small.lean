@@ -155,9 +155,9 @@ lemma smallGrothendieckTopology_eq_toGrothendieck_smallPretopology (hPQ : P ≤ 
     S.smallGrothendieckTopology P = (S.smallPretopology P Q).toGrothendieck := by
   rw [smallGrothendieckTopology, overGrothendieckTopology_eq_toGrothendieck_overPretopology,
     Precoverage.toGrothendieck_toPretopology_eq_toGrothendieck,
-    Precoverage.toGrothendieck_toPretopology_eq_toGrothendieck,
-    ← Precoverage.toGrothendieck_comap_eq_restrictedTopology]
-  apply map_functorPullback_mem_coverings hPQ
+    Precoverage.toGrothendieck_toPretopology_eq_toGrothendieck]
+  exact (Precoverage.toGrothendieck_comap_eq_restrictedTopology _ _
+    (map_functorPullback_mem_coverings hPQ _)).symm
 
 @[deprecated (since := "2026-05-28")]
 alias smallGrothendieckTopologyOfLE_eq_toGrothendieck_smallPretopology :=
@@ -169,15 +169,12 @@ lemma mem_toGrothendieck_smallPretopology (X : Q.Over ⊤ S) (R : Sieve X) :
     R ∈ (S.smallPretopology P Q).toGrothendieck X ↔
       ∀ x : X.left, ∃ (Y : Q.Over ⊤ S) (f : Y ⟶ X) (y : Y.left), R f ∧ P f.left ∧ f.left y = x := by
   refine ⟨?_, fun h ↦ ?_⟩
-  · rintro ⟨T, ⟨hs, hP⟩, hle⟩ x
-    obtain ⟨Z, g, ⟨⟨hf⟩⟩, y, hy⟩ := (Presieve.mem_comap_jointlySurjectivePrecoverage_iff _).mp hs x
-    exact ⟨_, _, y, hle _ _ hf, hP (Presieve.map_map (Presieve.map_map hf)), hy⟩
-  · refine ⟨fun Y f ↦ R f ∧ P f.left, ⟨?_, ?_⟩, fun Y f hf ↦ hf.1⟩
-    · refine (Presieve.mem_comap_jointlySurjectivePrecoverage_iff _).mpr fun x ↦ ?_
-      obtain ⟨Y, f, y, hR, hP, hy⟩ := h x
-      exact ⟨Y.left, f.left, Presieve.map_map (Presieve.map_map ⟨hR, hP⟩), y, hy⟩
-    · rintro Z g ⟨⟨⟨-, hP⟩⟩⟩
-      exact hP
+  · rintro ⟨_, ⟨hs, hP⟩, hle⟩ x
+    obtain ⟨-, -, ⟨⟨⟨hf⟩⟩⟩, y, hy⟩ := hs x
+    exact ⟨_, _, y, hle _ _ hf, hP ⟨⟨hf⟩⟩, hy⟩
+  · refine ⟨fun _ f ↦ R f ∧ P f.left, ⟨fun x ↦ ?_, fun _ _ ⟨⟨⟨_, h⟩⟩⟩ ↦ h⟩, fun _ _ hf ↦ hf.1⟩
+    obtain ⟨Y, f, y, hR, hP, hy⟩ := h x
+    exact ⟨_, _, ⟨⟨⟨hR, hP⟩⟩⟩, y, hy⟩
 
 lemma mem_smallGrothendieckTopology (X : P.Over ⊤ S) (R : Sieve X) :
     R ∈ S.smallGrothendieckTopology P X ↔
