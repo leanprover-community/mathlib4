@@ -113,6 +113,8 @@ abbrev relInvariantsFunctor : TopRep R G ⥤ TopRep R (G ⧸ N) where
   map f         := TopRep.ofHom (relInvariantsIntertwining' _ _ N f.hom)
 
 variable {R} in
+/-- The inclusion into `π` of the `N`-invariants of `π`, regarded as a `G`-representation by
+restriction along the quotient map `G → G ⧸ N`. This is the component at `π` of `inflι`. -/
 def inflιapp (π : TopRep R G) :
     (res (QuotientGroup.mk' N)) ((relInvariantsFunctor R N).obj π) ⟶ π :=
   TopRep.ofHom {
@@ -122,6 +124,10 @@ def inflιapp (π : TopRep R G) :
     isIntertwining' _ := rfl
   }
 
+variable {R N} in
+@[simp] lemma inflιapp_apply {π : TopRep R G}
+    (v : (res (QuotientGroup.mk' N)) ((relInvariantsFunctor R N).obj π))
+    : (inflιapp N π).hom v = ↑v := rfl
 
 /-- The natural transformation whose component at a topological representation `π` of `G` is the
 inclusion of the `N`-invariants of `π`, regarded as a `G`-representation by restriction along the
@@ -144,17 +150,27 @@ def inflApp (n : ℕ) (π : TopRep R G) : Hₜ n ((relInvariantsFunctor R N).obj
   (resNatTrans R (QuotientTopGroup.mk N) n).app ((relInvariantsFunctor R N).obj π)
   ≫ (HₜFunct R G n).map ((inflι R N).app π)
 
+/-- Abstract form of `inflApp_naturality`: given `α : K ⟶ L ⋙ H` and `ι : Φ ⋙ L ⟶ 𝟭 A`, the
+maps `α.app (Φ.obj π) ≫ H.map (ι.app π)` are natural in `π`. Stating this for opaque functors
+keeps the elaboration of the concrete instance below cheap. -/
+private lemma inflApp_naturality_aux {A B M : Type*} [Category A] [Category B] [Category M]
+    (Φ : A ⥤ B) (K : B ⥤ M) (L : B ⥤ A) (H : A ⥤ M)
+    (α : K ⟶ L ⋙ H) (ι : Φ ⋙ L ⟶ 𝟭 A) {π₁ π₂ : A} (f : π₁ ⟶ π₂) :
+    (Φ ⋙ K).map f ≫ (α.app (Φ.obj π₂) ≫ H.map (ι.app π₂)) =
+      (α.app (Φ.obj π₁) ≫ H.map (ι.app π₁)) ≫ H.map f := by
+  have h := (Functor.whiskerLeft Φ α ≫ Functor.whiskerRight ι H).naturality f
+  simp only [NatTrans.comp_app, Functor.whiskerLeft_app, Functor.whiskerRight_app,
+    Functor.comp_map, Functor.id_map, Category.assoc] at h ⊢
+  exact h
+
 /-- The components `inflApp N n` are natural in the representation: they intertwine the
 functorial maps on continuous cohomology. -/
 lemma inflApp_naturality (n : ℕ) {π₁ π₂ : TopRep R G} (f : π₁ ⟶ π₂) :
     (relInvariantsFunctor R N ⋙ HₜFunct R (G ⧸ N) n).map f ≫ inflApp R N n π₂ =
-      inflApp R N n π₁ ≫ (HₜFunct R G n).map f := by
-  have h := (HₜFunct R G n).congr_map ((inflι R N).naturality f)
-  rw [Functor.map_comp, Functor.map_comp] at h
-  refine ((resNatTrans R (QuotientTopGroup.mk N) n).naturality_assoc
-    ((relInvariantsFunctor R N).map f) _).trans ?_
-  erw [Category.assoc]
-  exact whisker_eq _ h
+      inflApp R N n π₁ ≫ (HₜFunct R G n).map f :=
+  inflApp_naturality_aux (relInvariantsFunctor R N) (HₜFunct R (G ⧸ N) n)
+    (resFunctor (QuotientGroup.mk' N)) (HₜFunct R G n)
+    (resNatTrans R (QuotientTopGroup.mk N) n) (inflι R N) f
 
 /-- The inflation maps `inflApp N n` as a natural transformation
 `relInvariantsFunctor N ⋙ HₜFunct R (G ⧸ N) n ⟶ HₜFunct R G n`. -/
@@ -165,3 +181,4 @@ noncomputable abbrev inflNatTrans (n : ℕ) :
 
 end ContinuousCohomology
 end
+
