@@ -116,7 +116,7 @@ theorem _root_.MonoidHom.restrict_surjective (H : Subgroup G) :
     H.card_eq_card_quotient_mul_card_subgroup,
     mul_div_cancel_right₀ _ (Fintype.card_eq_nat_card ▸ Fintype.card_ne_zero),
     ← card_monoidHom_of_hasEnoughRootsOfUnity (G ⧸ H) M,
-    Nat.card_congr (restrictHomKerEquiv Mˣ H).toEquiv]
+    Nat.card_congr (domRestrictHomKerEquiv Mˣ H).toEquiv]
 
 @[simp]
 theorem forall_monoidHom_apply_eq_one_iff (H : Subgroup G) (x : G) :
@@ -131,7 +131,7 @@ theorem card_restrictHom_ker (H : Subgroup G) :
     Nat.card (domRestrictHom H Mˣ).ker = Nat.card (G ⧸ H) := by
   have : HasEnoughRootsOfUnity M (Monoid.exponent (G ⧸ H)) :=
     hM.of_dvd M <| Group.exponent_quotient_dvd H
-  rw [Nat.card_congr (MonoidHom.restrictHomKerEquiv Mˣ H).toEquiv,
+  rw [Nat.card_congr (MonoidHom.domRestrictHomKerEquiv Mˣ H).toEquiv,
     card_monoidHom_of_hasEnoughRootsOfUnity]
 
 variable (G) in
