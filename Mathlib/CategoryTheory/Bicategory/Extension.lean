@@ -7,6 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Bicategory.Basic
 public import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
+public import Mathlib.Tactic.CategoryTheory.Bicategory.Basic
 
 /-!
 # Extensions and lifts in bicategories
@@ -77,6 +78,16 @@ abbrev homMk (η : s.extension ⟶ t.extension) (w : s.unit ≫ f ◁ η = t.uni
 @[reassoc (attr := simp)]
 theorem w (η : s ⟶ t) : s.unit ≫ f ◁ η.right = t.unit :=
   StructuredArrow.w η
+
+@[reassoc (attr := simp)]
+theorem homMk_left (η : s.extension ⟶ t.extension) (w : s.unit ≫ f ◁ η = t.unit) :
+    (homMk η w).left = 𝟙 s.left :=
+  rfl
+
+@[reassoc (attr := simp)]
+theorem homMk_right (η : s.extension ⟶ t.extension) (w : s.unit ≫ f ◁ η = t.unit) :
+    (homMk η w).right = η :=
+  rfl
 
 /-- The left extension along the identity. -/
 def alongId (g : a ⟶ c) : LeftExtension (𝟙 a) g := .mk _ (λ_ g).inv
@@ -189,6 +200,50 @@ def whiskerOfIso (t : LeftExtension f g) {x : B} (h : c ⟶ x) :
 
 end OfIso
 
+section Paste
+
+variable {d : B} {f : a ⟶ b} {g : a ⟶ c} {h : b ⟶ d}
+
+/-- Given a left extension `t` of `g` along `f` and a left extension `s` of `t` along `h`, then we
+obtain a left extension `t.paste s` of `g` along `f ≫ h`.
+```
+  b                 d                    d
+  △ \               △ \                  △ \
+  |   \ t.ext       |   \ s.ext          |   \ paste.ext
+f |  ⇓  \         h |  ⇓  \        f ≫ h |  ⇓  \
+  |       ◿         |       ◿            |       ◿
+  a - - - ▷ c       b - - - ▷ c          a - - - ▷ c
+       g                t.ext                 g
+```
+-/
+def paste (t : LeftExtension f g) (s : LeftExtension h t.extension) : LeftExtension (f ≫ h) g :=
+  .mk s.extension (t.unit ≫ f ◁ s.unit ≫ (α_ f h s.extension).inv)
+
+variable {t : LeftExtension f g} {s : LeftExtension h t.extension}
+
+@[simp]
+theorem paste_extension : (t.paste s).extension = s.extension :=
+  rfl
+
+@[simp]
+theorem paste_unit :
+    (t.paste s).unit = t.unit ≫ f ◁ s.unit ≫ (α_ f h s.extension).inv :=
+  rfl
+
+/-- Whiskering a pasted left extension is isomorphic to pasting the whiskered left extensions. -/
+def pasteWhiskerIso (t : LeftExtension f g) (s : LeftExtension h t.extension) {x : B} (k : c ⟶ x) :
+    (t.paste s).whisker k ≅ (t.whisker k).paste (s.whisker k) :=
+  { hom := LeftExtension.homMk (𝟙 _) <| by
+      dsimp only [paste_extension, paste_unit, whisker_extension, whisker_unit]
+      bicategory
+    inv := LeftExtension.homMk (𝟙 _) <| by
+      dsimp only [paste_extension, paste_unit, whisker_extension, whisker_unit]
+      bicategory
+    hom_inv_id := by ext; simp
+    inv_hom_id := by ext; simp }
+
+end Paste
+
 end LeftExtension
 
 /-- Triangle diagrams for (left) lifts.
@@ -225,6 +280,16 @@ and to check that it is compatible with the units. -/
 abbrev homMk (η : s.lift ⟶ t.lift) (w : s.unit ≫ η ▷ f = t.unit := by cat_disch) :
     s ⟶ t :=
   StructuredArrow.homMk η w
+
+@[reassoc (attr := simp)]
+theorem homMk_left (η : s.lift ⟶ t.lift) (w : s.unit ≫ η ▷ f = t.unit) :
+    (homMk η w).left = 𝟙 s.left :=
+  rfl
+
+@[reassoc (attr := simp)]
+theorem homMk_right (η : s.lift ⟶ t.lift) (w : s.unit ≫ η ▷ f = t.unit) :
+    (homMk η w).right = η :=
+  rfl
 
 @[reassoc (attr := simp)]
 theorem w (h : s ⟶ t) : s.unit ≫ h.right ▷ f = t.unit :=
@@ -343,6 +408,50 @@ def whiskerOfIso (t : LeftLift f g) {x : B} (h : x ⟶ c) :
 
 end OfIso
 
+section Paste
+
+variable {d : B} {f : b ⟶ a} {g : d ⟶ a} {h : c ⟶ b}
+
+/-- Given a left lift `t` of `g` along `f` and a left lift `s` of `t` along `h`, then we obtain a
+left lift `t.paste s` of `g` along `f ≫ h`.
+```
+            b                 c                     c
+          ◹ |               ◹ |                   ◹ |
+ t.lift /   |      s.lift /   |      paste.lift /   |
+      /  ⇑  | f         /  ⇑  | h             /  ⇑  | f ≫ h
+    /       ▽         /       ▽             /       ▽
+  d - - - ▷ a       d - - - ▷ b           d - - - ▷ a
+       g              t.lift                   g
+```
+-/
+def paste (t : LeftLift f g) (s : LeftLift h t.lift) : LeftLift (h ≫ f) g :=
+  .mk s.lift (t.unit ≫ s.unit ▷ f ≫ (α_ s.lift h f).hom)
+
+variable {t : LeftLift f g} {s : LeftLift h t.lift}
+
+@[simp]
+theorem paste_lift : (t.paste s).lift = s.lift :=
+  rfl
+
+@[simp]
+theorem paste_unit :
+    (t.paste s).unit = t.unit ≫ s.unit ▷ f ≫ (α_ s.lift h f).hom :=
+  rfl
+
+/-- Whiskering a pasted left lift is isomorphic to pasting the whiskered left lifts. -/
+def pasteWhiskerIso (t : LeftLift f g) (s : LeftLift h t.lift) {x : B} (k : x ⟶ d) :
+    (t.paste s).whisker k ≅ (t.whisker k).paste (s.whisker k) :=
+  { hom := LeftLift.homMk (𝟙 _) <| by
+      dsimp only [paste_lift, paste_unit, whisker_lift, whisker_unit]
+      bicategory
+    inv := LeftLift.homMk (𝟙 _) <| by
+      dsimp only [paste_lift, paste_unit, whisker_lift, whisker_unit]
+      bicategory
+    hom_inv_id := by ext; simp
+    inv_hom_id := by ext; simp }
+
+end Paste
+
 end LeftLift
 
 /-- Triangle diagrams for (right) extensions.
@@ -383,6 +492,16 @@ abbrev homMk (η : s.extension ⟶ t.extension)
 @[reassoc (attr := simp)]
 theorem w (η : s ⟶ t) : f ◁ η.left ≫ t.counit = s.counit :=
   CostructuredArrow.w η
+
+@[reassoc (attr := simp)]
+theorem homMk_left (η : s.extension ⟶ t.extension) (w : f ◁ η ≫ t.counit = s.counit) :
+    (homMk η w).left = η :=
+  rfl
+
+@[reassoc (attr := simp)]
+theorem homMk_right (η : s.extension ⟶ t.extension) (w : f ◁ η ≫ t.counit = s.counit) :
+    (homMk η w).right = 𝟙 s.right :=
+  rfl
 
 /-- The right extension along the identity. -/
 def alongId (g : a ⟶ c) : RightExtension (𝟙 a) g := .mk _ (λ_ g).hom
@@ -495,6 +614,51 @@ def whiskerOfIso (t : RightExtension f g) {x : B} (h : c ⟶ x) :
 
 end OfIso
 
+section Paste
+
+variable {d : B} {f : a ⟶ b} {g : a ⟶ c} {h : b ⟶ d}
+
+/-- Given a right extension `t` of `g` along `f` and a right extension `s` of `t` along `h`, then we
+obtain a right extension `t.paste s` of `g` along `f ≫ h`.
+```
+  b                 d                    d
+  △ \               △ \                  △ \
+  |   \ t.ext       |   \ s.ext          |   \ paste.ext
+f |  ⇑  \         h |  ⇑  \        f ≫ h |  ⇑  \
+  |       ◿         |       ◿            |       ◿
+  a - - - ▷ c       b - - - ▷ c          a - - - ▷ c
+       g                t.ext                 g
+```
+-/
+def paste (t : RightExtension f g) (s : RightExtension h t.extension) : RightExtension (f ≫ h) g :=
+  .mk s.extension ((α_ f h s.extension).hom ≫ f ◁ s.counit ≫ t.counit)
+
+variable {t : RightExtension f g} {s : RightExtension h t.extension}
+
+@[simp]
+theorem paste_extension : (t.paste s).extension = s.extension :=
+  rfl
+
+@[simp]
+theorem paste_counit :
+    (t.paste s).counit = (α_ f h s.extension).hom ≫ f ◁ s.counit ≫ t.counit :=
+  rfl
+
+/-- Whiskering a pasted right extension is isomorphic to pasting the whiskered right extensions. -/
+def pasteWhiskerIso (t : RightExtension f g) (s : RightExtension h t.extension) {x : B}
+    (k : c ⟶ x) :
+    (t.paste s).whisker k ≅ (t.whisker k).paste (s.whisker k) :=
+  { hom := RightExtension.homMk (𝟙 _) <| by
+      dsimp only [paste_extension, paste_counit, whisker_extension, whisker_counit]
+      bicategory
+    inv := RightExtension.homMk (𝟙 _) <| by
+      dsimp only [paste_extension, paste_counit, whisker_extension, whisker_counit]
+      bicategory
+    hom_inv_id := by ext; simp
+    inv_hom_id := by ext; simp }
+
+end Paste
+
 end RightExtension
 
 /-- Triangle diagrams for (right) lifts.
@@ -535,6 +699,16 @@ abbrev homMk (η : s.lift ⟶ t.lift) (w : η ▷ f ≫ t.counit = s.counit := b
 @[reassoc (attr := simp)]
 theorem w (h : s ⟶ t) : h.left ▷ f ≫ t.counit = s.counit :=
   CostructuredArrow.w h
+
+@[reassoc (attr := simp)]
+theorem homMk_left (η : s.lift ⟶ t.lift) (w : η ▷ f ≫ t.counit = s.counit) :
+    (homMk η w).left = η :=
+  rfl
+
+@[reassoc (attr := simp)]
+theorem homMk_right (η : s.lift ⟶ t.lift) (w : η ▷ f ≫ t.counit = s.counit) :
+    (homMk η w).right = 𝟙 s.right :=
+  rfl
 
 /-- The right lift along the identity. -/
 def alongId (g : c ⟶ a) : RightLift (𝟙 a) g := .mk _ (ρ_ g).hom
@@ -649,6 +823,50 @@ def whiskerOfIso (t : RightLift f g) {x : B} (h : x ⟶ c) :
   CostructuredArrow.isoMk (Iso.refl _) <| by simp [postcomp]
 
 end OfIso
+
+section Paste
+
+variable {d : B} {f : b ⟶ a} {g : d ⟶ a} {h : c ⟶ b}
+
+/-- Given a right lift `t` of `g` along `f` and a right lift `s` of `t` along `h`, then we obtain a
+right lift `t.paste s` of `g` along `f ≫ h`.
+```
+            b                 c                     c
+          ◹ |               ◹ |                   ◹ |
+ t.lift /   |      s.lift /   |      paste.lift /   |
+      /  ⇓  | f         /  ⇓  | h             /  ⇓  | f ≫ h
+    /       ▽         /       ▽             /       ▽
+  d - - - ▷ a       d - - - ▷ b           d - - - ▷ a
+       g              t.lift                   g
+```
+-/
+def paste (t : RightLift f g) (s : RightLift h t.lift) : RightLift (h ≫ f) g :=
+  .mk s.lift ((α_ s.lift h f).inv ≫ s.counit ▷ f ≫ t.counit)
+
+variable {t : RightLift f g} {s : RightLift h t.lift}
+
+@[simp]
+theorem paste_lift : (t.paste s).lift = s.lift :=
+  rfl
+
+@[simp]
+theorem paste_counit :
+    (t.paste s).counit = (α_ s.lift h f).inv ≫ s.counit ▷ f ≫ t.counit :=
+  rfl
+
+/-- Whiskering a pasted right lift is isomorphic to pasting the whiskered right lifts. -/
+def pasteWhiskerIso (t : RightLift f g) (s : RightLift h t.lift) {x : B} (k : x ⟶ d) :
+    (t.paste s).whisker k ≅ (t.whisker k).paste (s.whisker k) :=
+  { hom := RightLift.homMk (𝟙 _) <| by
+      dsimp only [paste_lift, paste_counit, whisker_lift, whisker_counit]
+      bicategory
+    inv := RightLift.homMk (𝟙 _) <| by
+      dsimp only [paste_lift, paste_counit, whisker_lift, whisker_counit]
+      bicategory
+    hom_inv_id := by ext; simp
+    inv_hom_id := by ext; simp }
+
+end Paste
 
 end RightLift
 
