@@ -553,6 +553,17 @@ theorem Submodule.isClosed_sup_finiteDimensional
   rw [← comap_map_mkQ]
   exact (map s.mkQ t).closed_of_finiteDimensional.preimage continuous_quot_mk
 
+/-- Let `f : E →ₗ[𝕜] F` be a linear map, and `s` a subspace of `E` with finite codimension.
+If the image of `s` by `f` is closed, the the range of `f` is closed. -/
+theorem LinearMap.isClosed_range_of_isClosed_map_of_finiteDimensional_quotient
+    {E : Type*} [AddCommGroup E] [Module 𝕜 E] {f : E →ₗ[𝕜] F} {s : Submodule 𝕜 E}
+    [hs : FiniteDimensional 𝕜 (E ⧸ s)] (h : IsClosed (s.map f : Set F)) :
+    IsClosed (f.range : Set F) := by
+  obtain ⟨t, s_compl_t⟩ := Submodule.exists_isCompl s
+  have : FiniteDimensional 𝕜 t := .of_fg <| Submodule.CoFG.fg_of_isCompl s_compl_t hs
+  rw [← Submodule.map_top, ← s_compl_t.sup_eq_top, Submodule.map_sup]
+  exact Submodule.isClosed_sup_finiteDimensional _ _ h
+
 /-- An injective linear map with finite-dimensional domain is a closed embedding. -/
 theorem LinearMap.isClosedEmbedding_of_injective [T2Space E] [FiniteDimensional 𝕜 E] [T2Space F]
     {f : E →ₗ[𝕜] F} (hf : LinearMap.ker f = ⊥) : IsClosedEmbedding f :=

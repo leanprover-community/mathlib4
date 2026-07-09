@@ -204,14 +204,10 @@ theorem step4 [T2Space F] (u : E →L[𝕜] F) (A : Submodule 𝕜 E) (A_closed 
   -- To reduce to step 3, it suffices to show that, if `map u A` is closed, then so is `u.range`.
   suffices IsClosed (map u.toLinearMap A : Set F) → IsClosed (u.range : Set F) by
     grind only [step3]
-  -- So, we assume that `map u A` is closed.
-  intro uA_closed
-  -- Fix `S` an algebraic complement of `A` containing `u.ker`. It has finite dimension.
-  rcases h_ker.exists_isCompl with ⟨S, ker_le_S, S_compl_A⟩
-  have : FiniteDimensional 𝕜 S := .of_fg <| A_cofg.fg_of_isCompl S_compl_A.symm
-  -- It follows that `u.range = map u A ⊔ map u S` is closed.
-  rw [← Submodule.map_top, ← S_compl_A.symm.sup_eq_top, Submodule.map_sup]
-  exact isClosed_sup_finiteDimensional _ _ uA_closed
+  -- So, we assume that `map u A` is closed, and we fix `S` an algebraic complement of `A`.
+  -- It has finite dimension. Then `u.range = map u A ⊔ map u S` is the supremum of
+  -- a closed subspace and a finite dimnsional subspace, hence it is closed.
+  exact u.toLinearMap.isClosed_range_of_isClosed_map_of_finiteDimensional_quotient
 
 
 /-!
