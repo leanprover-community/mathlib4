@@ -6,6 +6,7 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Order.Interval.Set.ProjIcc
+public import Mathlib.Data.Finset.Sort
 public import Mathlib.Tactic.Finiteness
 public import Mathlib.Topology.UniformSpace.UniformConvergenceTopology
 public import Mathlib.Topology.Instances.ENNReal.Lemmas
@@ -219,6 +220,10 @@ protected theorem subsingleton (f : α → E) {s : Set α} (hs : s.Subsingleton)
     eVariationOn f s = 0 :=
   constant_on (hs.image f)
 
+@[simp]
+lemma _root_.BoundedVariationOn.ofSubsingleton {f : α → E} {s : Set α} (h : s.Subsingleton) :
+    BoundedVariationOn f s := by simp [BoundedVariationOn, h]
+
 theorem lowerSemicontinuous_aux {ι : Type*} {F : ι → α → E} {p : Filter ι} {f : α → E} {s : Set α}
     (Ffs : ∀ x ∈ s, Tendsto (fun i => F i x) p (𝓝 (f x))) {v : ℝ≥0∞} (hv : v < eVariationOn f s) :
     ∀ᶠ n : ι in p, v < eVariationOn (F n) s := by
@@ -426,6 +431,67 @@ theorem sum' (f : α → E) {I : ℕ → α} (hI : Monotone I) {n : ℕ} :
   · simp only [right_eq_inter]
     gcongr <;> (apply hI; rw [Finset.mem_range] at hi; lia)
   · simp
+
+@[simp]
+theorem pair (f : α → E) (a b : α) : eVariationOn f {a, b} = edist (f a) (f b) := by
+  wlog hab : a ≤ b generalizing a b
+  · simpa [edist_comm, pair_comm] using this b a (le_of_not_ge hab)
+  · apply le_antisymm _ (edist_le f (by simp) (by simp))
+    simp only [eVariationOn_eq_strictMonoOn, iSup_le_iff]
+    rintro ⟨ n, ⟨ u, ⟨ hmono, hi ⟩ ⟩ ⟩
+    rcases (by omega : n = 0 ∨ n = 1 ∨ 2 ≤ n) with rfl | rfl | hn
+    · simp
+    · have : u 0 < u 1 := hmono (by simp) (by simp) (by norm_num)
+      simp [(by grind : u 0 = a), (by grind : u 1 = b), edist_comm]
+    have : u 0 < u 1 := hmono (by simp) (by grind) (by norm_num)
+    have : u 1 < u 2 := hmono (by grind) (by grind) (by norm_num)
+    grind
+
+/-- A generalization of `eVariationOn.union` in which the greatest element of `s` is allowed to lie
+to the left of the least element of `t`. -/
+theorem union' (f : α → E) {s t : Set α} {x y : α} (hs : IsGreatest s x) (ht : IsLeast t y)
+    (hxy : x ≤ y) :
+    eVariationOn f (s ∪ t) = eVariationOn f s + edist (f x) (f y) + eVariationOn f t := calc
+  _ = eVariationOn f ((s ∪ {x, y}) ∪ t) := by congr 1; grind [hs.1, ht.1]
+  _ = eVariationOn f (s ∪ {x, y}) + eVariationOn f t := by
+    apply union f _ ht
+    simp [IsGreatest, hxy, upperBounds_mono_mem hxy hs.2]
+  _ = eVariationOn f s + eVariationOn f {x, y} + eVariationOn f t := by
+    congr
+    apply union f hs _
+    simp [IsLeast, hxy]
+  _ = _ := by simp [pair]
+
+theorem image_range_of_monotone (f : α → E) {u : ℕ → α} (hu : Monotone u) (n : ℕ) :
+    eVariationOn f (u '' .Iic n) = ∑ i ∈ .range n, edist (f (u i)) (f (u (i + 1))) := by
+  induction n with
+  | zero => simp [(by grind : Iic 0 = {0})]
+  | succ n ih => calc
+    _ = eVariationOn f (u '' .Iic n ∪ {u n, u (n + 1)}) := by congr; grind
+    _ = eVariationOn f (u '' .Iic n) + eVariationOn f {u n, u (n + 1)} := by
+      apply union f (x := u n) _ _
+      · simp only [IsGreatest, mem_image, mem_Iic, mem_upperBounds, forall_exists_index, and_imp,
+        forall_apply_eq_imp_iff₂]
+        refine ⟨ ⟨ n, by simp ⟩, fun a ha ↦ hu ha ⟩
+      · simp [IsLeast, hu (by omega : n ≤ n + 1)]
+    _ = _ := by
+      simp [Finset.sum_range_succ, ih]
+
+@[simp]
+theorem _root_.BoundedVariationOn.of_finset {E} [PseudoMetricSpace E] (f : α → E) (s : Finset α)
+    : BoundedVariationOn f s := by
+  let k := s.card
+  by_cases h : k = 0
+  · simp [k] at h; simp [h]
+  let u : ℕ → α := fun n ↦ s.orderEmbOfFin (by rfl : _ = k) ⟨ min n (k - 1), by grind ⟩
+  have : s = u '' .Iic (k - 1) := by
+    rw [← s.range_orderEmbOfFin (by rfl : _ = k)]
+    ext x; simp only [mem_image, mem_Iic, mem_range, u]
+    constructor
+    · rintro ⟨ i, rfl ⟩; exact ⟨ i.val, by grind ⟩
+    · rintro ⟨ i, hi, rfl ⟩; use ⟨ i, by omega ⟩; congr; omega
+  have hmono : Monotone u := fun _ _ _ ↦ OrderEmbedding.monotone _ (by grind)
+  simp [BoundedVariationOn, this, image_range_of_monotone f hmono _]
 
 /-! ### Composition of bounded variation functions with monotone functions -/
 
@@ -1127,6 +1193,26 @@ theorem MonotoneOn.boundedVariationOn
   intro a b as bs hab
   grw [hf.eVariationOn_le as bs]
   exact ENNReal.ofReal_mono (by grind)
+
+theorem MonotoneOn.eVariationOn_eq {f : α → ℝ} {s : Set α}
+    (hf : MonotoneOn f s) {a b : α} (hab : a ≤ b) (as : a ∈ s) (bs : b ∈ s) :
+    eVariationOn f (s ∩ .Icc a b) = ENNReal.ofReal (f b - f a) := by
+  have h : BoundedVariationOn f (s ∩ .Icc a b) := hf.locallyBoundedVariationOn a b as bs
+  apply eq_of_le_of_ge (eVariationOn_le hf as bs) (ENNReal.ofReal_le_of_le_toReal _)
+  grw [← BoundedVariationOn.dist_le h (x := a) (y := b)] <;> grind [Real.dist_eq]
+
+lemma eVariationOn_id {a b : ℝ} (hab : a ≤ b) {s : Set ℝ} (as : a ∈ s) (bs : b ∈ s) :
+    eVariationOn id (s ∩ .Icc a b) = ENNReal.ofReal (b - a) :=
+  MonotoneOn.eVariationOn_eq (monotone_id.monotoneOn _) hab as bs
+
+@[simp]
+lemma eVariationOn_id_Icc {a b : ℝ} (hab : a ≤ b) :
+  eVariationOn id (.Icc a b) = ENNReal.ofReal (b - a) := by
+  simpa using eVariationOn_id hab (s := Set.univ) (by simp) (by simp)
+
+@[simp]
+lemma BoundedVariationOn.id_of_Icc {a b : ℝ} :  BoundedVariationOn id (.Icc a b) := by
+  rcases lt_or_ge b a with hab | hab <;> simp [hab, BoundedVariationOn, eVariationOn_id_Icc]
 
 /-! ### Lipschitz functions and bounded variation -/
 
