@@ -55,7 +55,7 @@ instance commMagma [∀ i, CommMagma (f i)] : CommMagma (∀ i, f i) where
 @[to_additive]
 instance semigroup [∀ i, Semigroup (f i)] : Semigroup (∀ i, f i) where
   mul_assoc := by intros; ext; exact mul_assoc _ _ _
-  ppow := fun n hn x i => x i ^ PNat.mk n hn
+  ppow := fun n x i => x i ^ n
   ppow_one := by intros; ext; exact ppow_one _
   ppow_succ := by intros; ext; exact Semigroup.ppow_succ _ _
 

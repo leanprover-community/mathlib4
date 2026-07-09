@@ -110,17 +110,16 @@ theorem mul_to_nat (m) : ∀ n, ((m * n : PosNum) : ℕ) = m * n
       show (↑(m * p) + ↑(m * p) + ↑m : ℕ) = ↑m * (p + p) + m by rw [mul_to_nat m p, left_distrib]
 
 @[norm_cast]
-theorem ppowRec_to_nat (m : PosNum) : ∀ n : ℕ, (hn : 0 < n) → ppowRec n hn (m : ℕ) = ppowRec n hn m
-  | 0, h => (Nat.not_lt_zero 0 h).elim
-  | 1, _ => rfl
-  | n + 2, _ => by rw [ppowRec, ppowRec_to_nat m (n + 1)]; norm_cast
+theorem ppowRec_to_nat (m : PosNum) (n : ℕ+) : ppowRec n (m : ℕ) = ppowRec n m := by
+  induction n with
+  | one => rfl
+  | succ n IH => simp [ppowRec_succ, mul_to_nat, IH]
 
 @[norm_cast]
-theorem psmulRec_to_nat (m : PosNum) :
-    ∀ n : ℕ, (hn : 0 < n) → psmulRec n hn (m : ℕ) = psmulRec n hn m
-| 0, h => (Nat.not_lt_zero 0 h).elim
-| 1, _ => rfl
-| n + 2, _ => by rw [psmulRec, psmulRec_to_nat m (n + 1)]; norm_cast
+theorem psmulRec_to_nat (m : PosNum) (n : ℕ+) : psmulRec n (m : ℕ) = psmulRec n m := by
+  induction n with
+  | one => rfl
+  | succ n IH => simp [psmulRec_succ, add_to_nat, IH]
 
 theorem to_nat_pos : ∀ n : PosNum, 0 < (n : ℕ)
   | 1 => Nat.zero_lt_one

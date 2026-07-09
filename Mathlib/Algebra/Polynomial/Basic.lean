@@ -140,7 +140,7 @@ instance smulZeroClass {S : Type*} [SMulZeroClass S R] : SMulZeroClass S R[X] wh
 -- to avoid a bug in the `ring` tactic
 instance (priority := 1) pow : Pow R[X] ℕ where pow p n := npowRec n p
 
-instance (priority := 1) ppow : Pow R[X] ℕ+ where pow p n := ppowRec n n.property p
+instance (priority := 1) ppow : Pow R[X] ℕ+ where pow p n := ppowRec n p
 
 @[simp]
 theorem ofFinsupp_zero : (⟨0⟩ : R[X]) = 0 :=
@@ -188,7 +188,7 @@ theorem ofFinsupp_pow (a) (n : ℕ) : (⟨a ^ n⟩ : R[X]) = ⟨a⟩ ^ n := by
 theorem ofFinsupp_ppow (a) (n : ℕ+) : (⟨a ^ n⟩ : R[X]) = ⟨a⟩ ^ n := by
   induction n using Semigroup.ppow_induction a <;>
   · try simp only [ofFinsupp_mul, *]
-    rfl
+    first | rfl | exact (ppowRec_succ _ _).symm
 
 @[simp]
 theorem toFinsupp_zero : (0 : R[X]).toFinsupp = 0 :=

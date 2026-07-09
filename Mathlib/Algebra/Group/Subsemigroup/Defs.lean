@@ -291,13 +291,11 @@ theorem mul_def (x y : S') : x * y = ⟨x * y, mul_mem x.2 y.2⟩ :=
 @[to_additive]
 lemma ppow_coe_mem {M A : Type*} [Semigroup M] [SetLike A M] [hA : MulMemClass A M] {S' : A}
     (x : S') (n : ℕ+) : (x : M) ^ n ∈ S' := by
-  rcases n with ⟨n, hn⟩
-  obtain ⟨n, rfl⟩ := Nat.exists_eq_succ_of_ne_zero hn.ne'
   induction n with
-  | zero => simp [ppow_one]
+  | one => simp [ppow_one]
   | succ n IH =>
     rw [ppow_succ]
-    exact mul_mem (IH Nat.succ_pos') x.2
+    exact mul_mem IH x.2
 
 -- lower priority so other instances are found first
 /-- Iterated multiplication via exponentiation by a `ℕ+` is inherited by a submagma. -/

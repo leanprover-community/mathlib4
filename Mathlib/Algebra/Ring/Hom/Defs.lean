@@ -261,6 +261,7 @@ instance : MonoidWithZero (α →ₙ+* α) where
   mul_assoc _ _ _ := comp_assoc _ _ _
   mul_zero := comp_zero
   zero_mul := zero_comp
+  ppow_succ := @ppowRec_succ _ ⟨_⟩
 
 theorem one_def : (1 : α →ₙ+* α) = NonUnitalRingHom.id α :=
   rfl

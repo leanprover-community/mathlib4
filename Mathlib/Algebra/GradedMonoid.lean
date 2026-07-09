@@ -234,9 +234,10 @@ class GMonoid [AddMonoid ι] extends GMul A, GOne A where
 
 /-- `GMonoid` implies a `Monoid (GradedMonoid A)`. -/
 instance GMonoid.toMonoid [AddMonoid ι] [GMonoid A] : Monoid (GradedMonoid A) where
-  ppow n hn a := GradedMonoid.mk _ (GMonoid.gnpow n a.snd)
-  ppow_one a := by simp [GMonoid.gnpow_succ', GMonoid.gnpow_zero', GMonoid.one_mul]
-  ppow_succ n a := GMonoid.gnpow_succ' (n + 1) a
+  ppow n a := GradedMonoid.mk _ (GMonoid.gnpow n a.snd)
+  ppow_one a := by
+    simp [HPow.hPow, Pow.pow, GMonoid.gnpow_succ', GMonoid.gnpow_zero', GMonoid.one_mul]
+  ppow_succ n a := by simp [HPow.hPow, Pow.pow, GMonoid.gnpow_succ']
   npow n a := GradedMonoid.mk _ (GMonoid.gnpow n a.snd)
   npow_zero a := GMonoid.gnpow_zero' a
   npow_succ n a := GMonoid.gnpow_succ' n a

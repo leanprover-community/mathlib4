@@ -546,14 +546,15 @@ instance : One (IntertwiningMap ρ ρ) := ⟨id ρ⟩
 
 @[simp] lemma coe_one : ((1 : IntertwiningMap ρ ρ) : V → V) = (_root_.id : V → V) := rfl
 
-instance : Pow (IntertwiningMap ρ ρ) ℕ+ := ⟨fun f n => ppowRec n n.property f⟩
+instance : Pow (IntertwiningMap ρ ρ) ℕ+ := ⟨fun f n => ppowRec n f⟩
 
 lemma toLinearMap_ppow (f : IntertwiningMap ρ ρ) (n : ℕ+) :
     (f ^ n).toLinearMap = f.toLinearMap ^ n := by
-  induction n using Semigroup.ppow_induction f.toLinearMap
-  · rfl
-  · change (f ^ PNat.mk (_ + 1) Nat.succ_pos' * f).toLinearMap = _
-    simp_all
+  induction n using Semigroup.ppow_induction f.toLinearMap with
+  | h1 => rfl
+  | hsucc n IH =>
+    rw [← IH, ← coe_mul, (toLinearMap_injective _ _).eq_iff]
+    exact ppowRec_succ _ _
 
 instance : Semigroup (IntertwiningMap ρ ρ) :=
   Function.Injective.semigroup (fun f : IntertwiningMap ρ ρ => f.toLinearMap)

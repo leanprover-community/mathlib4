@@ -115,7 +115,7 @@ lemma nsmul_eq_nsmul (n : ℕ) (x : X[S⁻¹]) :
 lemma psmul_eq_psmul (n : ℕ+) (x : X[S⁻¹]) :
     letI inst := OreLocalization.instMulActionOfIsScalarTower (R := ℕ+) (X := X) (S := S)
     HSMul.hSMul (self := @instHSMul _ _ inst.toSMul) n x =
-    HSMul.hSMul (self := @instHSMul _ _ instAddMonoid.toAddSemigroup.instSMul) n x := by
+    HSMul.hSMul (self := @instHSMul _ _ instAddMonoid.toAddSemigroup.toPSMul.toSMul) n x := by
   letI inst := OreLocalization.instMulActionOfIsScalarTower (R := ℕ+) (X := X) (S := S)
   rw [← nsmul_val_eq_psmul, ← nsmul_eq_nsmul, ← OreLocalization.smul_one_oreDiv_one_smul n x,
     ← OreLocalization.smul_one_oreDiv_one_smul (n : ℕ) x, nsmul_val_eq_psmul]

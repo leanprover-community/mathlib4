@@ -118,7 +118,13 @@ instance : AddMonoid (Completion α) where
       (isClosed_eq continuous_map <| continuous_map₂ continuous_map continuous_id) fun a ↦
       show (n + 1) • (a : Completion α) = n • (a : Completion α) + (a : Completion α) by
         rw [← coe_smul, succ_nsmul, coe_add, coe_smul]
+  psmul_succ n a :=
+    Completion.induction_on a
+      (isClosed_eq continuous_map <| continuous_map₂ continuous_map continuous_id) fun a ↦
+      show (n + 1) • (a : Completion α) = n • (a : Completion α) + (a : Completion α) by
+        rw [← coe_smul, succ_nsmul, coe_add, coe_smul]
 
+#exit
 instance : SubNegMonoid (Completion α) where
   sub_eq_add_neg a b :=
     Completion.induction_on₂ a b

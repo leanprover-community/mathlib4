@@ -117,15 +117,15 @@ theorem coe_add (K L : ConvexBody V) : (↑(K + L) : Set V) = (K : Set V) + L :=
   rfl
 
 instance : SMul ℕ+ (ConvexBody V) where
-  smul n x := psmulRec n n.property x
+  smul n x := psmulRec n x
 
 @[simp, norm_cast]
 theorem coe_psmul (n : ℕ+) (K : ConvexBody V) : ↑(n • K) = n • (K : Set V) := by
   induction n using AddSemigroup.psmul_induction (K : Set V) with
   | h1 => rfl
   | hsucc n IH =>
-    change ((PNat.mk (n + 1) Nat.succ_pos' • K + K : ConvexBody V) : Set V) = _
-    rw [coe_add, IH]
+    rw [← IH, ← coe_add]
+    exact congr_arg _ (psmulRec_succ _ _)
 
 instance : SMul ℕ (ConvexBody V) where
   smul := nsmulRec

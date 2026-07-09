@@ -228,13 +228,13 @@ theorem inv_mul_eq_iff_eq_mul {b c : α} : ↑a⁻¹ * b = c ↔ b = a * c :=
 instance instMonoid : Monoid αˣ :=
   { (inferInstance : MulOneClass αˣ) with
     mul_assoc := fun _ _ _ => ext <| mul_assoc _ _ _,
-    ppow n hn a :=
-      { val := a ^ PNat.mk n hn
-        inv := a⁻¹ ^ PNat.mk n hn
+    ppow n a :=
+      { val := a ^ n
+        inv := a⁻¹ ^ n
         val_inv := by rw [← a.commute_coe_inv.mul_ppow]; simp
         inv_val := by rw [← a.commute_inv_coe.mul_ppow]; simp }
-    ppow_one a := by ext; simp
-    ppow_succ n a := by ext; simp [ppow_succ]
+    ppow_one a := Units.ext <| ppow_one a.val
+    ppow_succ n a := Units.ext <| ppow_succ a.val n
     npow := fun n a ↦
       { val := a ^ n
         inv := a⁻¹ ^ n

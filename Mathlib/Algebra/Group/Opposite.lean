@@ -83,9 +83,9 @@ instance instIsLeftCancelMul [Mul α] [IsRightCancelMul α] : IsLeftCancelMul α
 @[to_additive]
 instance instSemigroup [Semigroup α] : Semigroup αᵐᵒᵖ where
   mul_assoc x y z := unop_injective <| Eq.symm <| mul_assoc (unop z) (unop y) (unop x)
-  ppow n hn a := op <| a.unop ^ PNat.mk n hn
+  ppow n a := op <| a.unop ^ n
   ppow_one _ := unop_injective <| Semigroup.ppow_one _
-  ppow_succ _ _ := unop_injective <| Semigroup.ppow_succ' _ _
+  ppow_succ _ _ := unop_injective <| ppow_succ' _ _
 
 @[to_additive]
 instance instLeftCancelSemigroup [RightCancelSemigroup α] : LeftCancelSemigroup αᵐᵒᵖ where

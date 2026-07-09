@@ -20,14 +20,6 @@ section Semigroup
 
 variable [Semigroup M]
 
-@[to_additive (reorder := x n) succ_psmul']
-lemma ppow_succ' (x : M) (n : ℕ+) : x ^ (n + 1) = x * x ^ n :=
-  n.recOn (Semigroup.ppow_succ' 0 x) fun k _ => Semigroup.ppow_succ' k x
-
-@[to_additive (reorder := x n) succ_psmul]
-lemma ppow_succ (x : M) (n : ℕ+) : x ^ (n + 1) = x ^ n * x :=
-  n.recOn (Semigroup.ppow_succ 0 x) fun k _ => Semigroup.ppow_succ k x
-
 @[to_additive (reorder := n x m) add_psmul]
 lemma ppow_add (x : M) (n m : ℕ+) : x ^ (n + m) = x ^ n * x ^ m :=
   m.recOn (by simp [ppow_succ]) fun k hk => by

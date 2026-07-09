@@ -352,7 +352,7 @@ theorem const_pow (x : β) (n : ℕ) : const (x ^ n) = const x ^ n :=
 
 instance : Pow (CauSeq β abv) ℕ+ :=
   ⟨fun f n =>
-    (ofEq (ppowRec n n.prop f) fun i => f i ^ n) <| fun i ↦ by
+    (ofEq (ppowRec n f) fun i => f i ^ n) <| fun i ↦ by
       refine Semigroup.ppow_induction (f i) n ?_ ?_ <;> simp +contextual [ppowRec]⟩
 
 @[simp, norm_cast]

@@ -369,9 +369,9 @@ theorem const_pow [Pow G M] (a : G) (n : M) : (↑(a ^ n) : Germ l G) = (↑a : 
 
 @[to_additive]
 instance instSemigroup [Semigroup M] : Semigroup (Germ l M) :=
-  { ppow n hn f := f ^ (PNat.mk n hn),
+  { ppow n f := f ^ n,
     ppow_one := Quotient.ind' fun _ ↦ congrArg ofFun <| ppow_one _,
-    ppow_succ n := Quotient.ind' fun _ ↦ congrArg ofFun <| ppow_succ _,
+    ppow_succ _ := Quotient.ind' fun _ ↦ congrArg ofFun <| ppow_succ _ _,
     mul_assoc := fun a b c => Quotient.inductionOn₃' a b c
       fun _ _ _ => congrArg ofFun <| mul_assoc .. }
 
@@ -556,7 +556,7 @@ instance instNonUnitalNonAssocSemiring [NonUnitalNonAssocSemiring R] :
   __ := instMulZeroClass
 
 instance instNonUnitalSemiring [NonUnitalSemiring R] : NonUnitalSemiring (Germ l R) :=
-  { mul_assoc := mul_assoc }
+  { mul_assoc := mul_assoc, ppow_one := ppow_one, ppow_succ := Function.swap ppow_succ }
 
 instance instNonAssocSemiring [NonAssocSemiring R] : NonAssocSemiring (Germ l R) where
   __ := instNonUnitalNonAssocSemiring
@@ -569,7 +569,7 @@ instance instNonUnitalNonAssocRing [NonUnitalNonAssocRing R] :
   __ := instNonUnitalNonAssocSemiring
 
 instance instNonUnitalRing [NonUnitalRing R] : NonUnitalRing (Germ l R) :=
-  { mul_assoc := mul_assoc }
+  { mul_assoc := mul_assoc, ppow_one := ppow_one, ppow_succ := Function.swap ppow_succ }
 
 instance instNonAssocRing [NonAssocRing R] : NonAssocRing (Germ l R) where
   __ := instNonUnitalNonAssocRing

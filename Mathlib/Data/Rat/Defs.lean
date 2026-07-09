@@ -34,7 +34,7 @@ once the `Field` class has been defined.
 
 -- TODO: If `Inv` was defined earlier than `Algebra.Group.Defs`, we could have
 -- assert_not_exists Monoid
-assert_not_exists MonoidWithZero Lattice PNat Nat.gcd_greatest
+assert_not_exists MonoidWithZero Lattice Nat.gcd_greatest
 
 open Function
 
@@ -152,15 +152,11 @@ instance addCommGroup : AddCommGroup ℚ where
   add_assoc := Rat.add_assoc
   neg_add_cancel := Rat.neg_add_cancel
   sub_eq_add_neg := Rat.sub_eq_add_neg
-  psmul n hn q := n * q
+  psmul := (· * ·)
   nsmul := (· * ·)
   zsmul := (· * ·)
   psmul_one := Rat.one_mul
-  psmul_succ n q := by
-    change ((n + 2 : Int) : Rat) * q = ((n + 1 : Int) : Rat) * q + q
-    rw [Rat.intCast_add, Rat.add_mul, Rat.intCast_add, Rat.add_mul, Rat.add_assoc,
-        show (2 : Int) = 1 + 1 by rfl, Rat.intCast_add, Rat.add_mul]
-    simp
+  psmul_succ n q := by simp [HSMul.hSMul, SMul.smul, Rat.add_mul]
   nsmul_zero := Rat.zero_mul
   nsmul_succ n q := by
     change ((n + 1 : Int) : Rat) * q = _
@@ -191,9 +187,9 @@ instance commMonoid : CommMonoid ℚ where
   one_mul := Rat.one_mul
   mul_comm := Rat.mul_comm
   mul_assoc := Rat.mul_assoc
-  ppow n hn q := q ^ n
+  ppow n q := q ^ n.val
   ppow_one := Rat.pow_one
-  ppow_succ q n := by rw [Rat.pow_succ, Rat.mul_comm]
+  ppow_succ q n := Rat.pow_succ n q.val
   npow n q := q ^ n
   npow_zero := Rat.pow_zero
   npow_succ n q := Rat.pow_succ q n

@@ -802,15 +802,11 @@ theorem continuousOn_list_prod {f : ι → X → M} (l : List ι) {t : Set X}
 @[to_additive (attr := continuity)]
 theorem continuous_ppow {M : Type*} [TopologicalSpace M] [Semigroup M] [ContinuousMul M] (n : ℕ+) :
     Continuous fun a : M => a ^ n := by
-  change Continuous fun a : M => a ^ PNat.mk n _
-  rcases n with ⟨_|n, hn⟩
-  · contradiction
-  simp only [PNat.mk_coe]
   induction n with
-  | zero => simpa using continuous_id'
+  | one => simpa using continuous_id'
   | succ n IH =>
-    simp_rw [ppow_succ (n := n + 1)]
-    exact (IH Nat.succ_pos').mul continuous_id
+    simp_rw [ppow_succ]
+    exact IH.mul continuous_id
 
 @[to_additive (attr := continuity)]
 theorem continuous_pow : ∀ n : ℕ, Continuous fun a : M => a ^ n

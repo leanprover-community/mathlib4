@@ -701,7 +701,7 @@ variable [DecidableEq α] [DecidableEq β]
 /-- Repeated pointwise addition (not the same as pointwise repeated addition!) of a `Finset`. See
 note [pointwise nat action]. -/]
 protected def ppow [Mul α] : Pow (Finset α) ℕ+ :=
-  ⟨fun s n => ppowRec n n.prop s⟩
+  ⟨fun s n => ppowRec n s⟩
 
 /-- Repeated pointwise multiplication (not the same as pointwise repeated multiplication!) of a
 `Finset`. See note [pointwise nat action]. -/
@@ -724,7 +724,7 @@ scoped[Pointwise] attribute [instance] Finset.psmul Finset.ppow Finset.nsmul Fin
 
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_ppow [Semigroup α] (s : Finset α) (n : ℕ+) : ↑(s ^ n) = (s : Set α) ^ n := by
-  change ↑(ppowRec _ _ s) = (s : Set α) ^ _
+  change ↑(ppowRec _ s) = (s : Set α) ^ _
   induction n using Semigroup.ppow_induction (s : Set α)
   · rfl
   · simp_all [ppowRec]

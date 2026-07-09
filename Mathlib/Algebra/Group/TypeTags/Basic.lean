@@ -168,19 +168,19 @@ theorem ofMul_mul [Mul α] (x y : α) : ofMul (x * y) = ofMul x + ofMul y := rfl
 @[simp]
 theorem toMul_add [Mul α] (x y : Additive α) : (x + y).toMul = x.toMul * y.toMul := rfl
 
-instance Additive.addSemigroup [Semigroup α] : AddSemigroup (Additive α) where
+instance Additive.addSemigroup [h : Semigroup α] : AddSemigroup (Additive α) where
   toAdd := Additive.add
   add_assoc := @mul_assoc α _
-  psmul := @Semigroup.ppow α _
-  psmul_one := @Semigroup.ppow_one α _
-  psmul_succ := @Semigroup.ppow_succ α _
+  psmul := h.ppow
+  psmul_one := h.ppow_one
+  psmul_succ := h.ppow_succ
 
-instance Multiplicative.semigroup [AddSemigroup α] : Semigroup (Multiplicative α) where
+instance Multiplicative.semigroup [h : AddSemigroup α] : Semigroup (Multiplicative α) where
   toMul := Multiplicative.mul
   mul_assoc := @add_assoc α _
-  ppow := @AddSemigroup.psmul α _
-  ppow_one := @AddSemigroup.psmul_one α _
-  ppow_succ := @AddSemigroup.psmul_succ α _
+  ppow := h.psmul
+  ppow_one := h.psmul_one
+  ppow_succ := h.psmul_succ
 
 instance Additive.addCommSemigroup [CommSemigroup α] : AddCommSemigroup (Additive α) :=
   { Additive.addSemigroup with add_comm := @mul_comm α _ }

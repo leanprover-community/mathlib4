@@ -450,6 +450,8 @@ instance [SMul M X] [AddMonoid Y] [DistribSMul N Y] :
   add_assoc _ _ _ := ext fun _ ↦ add_assoc _ _ _
   nsmul_zero f := ext fun x ↦ AddMonoid.nsmul_zero (f x)
   nsmul_succ n f := ext fun x ↦ AddMonoid.nsmul_succ n (f x)
+  psmul_one f := ext fun x ↦ AddSemigroup.psmul_one (f x)
+  psmul_succ n f := ext fun x ↦ AddSemigroup.psmul_succ n (f x)
 
 instance [SMul M X] [AddCommMonoid Y] [DistribSMul N Y] :
     AddCommMonoid (X →ₑ[σ] Y) where

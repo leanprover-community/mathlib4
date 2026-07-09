@@ -213,10 +213,11 @@ class Semigroup (G : Type u) extends Mul G, PPow G where
   /-- Multiplication is associative -/
   protected mul_assoc : ∀ a b c : G, a * b * c = a * (b * c)
   /-- Raising to the power `(1 : ℕ+)` gives the same element.. -/
-  protected ppow_one (x : G) : x ^ (1 : ℕ+) = x := by first | intros; rfl | exact ppowRec_one
+  protected ppow_one (x : G) : x ^ (1 : ℕ+) = x := by first | intros; rfl | exact @ppowRec_one _ ⟨_⟩
   /-- Raising to the power `(n + 1 : ℕ+)` behaves as expected. -/
   protected ppow_succ (n : ℕ+) (x : G) : x ^ (n + 1) = x ^ n * x := by
-    first | intros; rfl | exact ppowRec_succ
+    -- so that Mul can be inferred when inlined
+    first | intros; rfl | exact @ppowRec_succ _ ⟨_⟩
 
 /-- An additive semigroup is a type with an associative `(+)`. -/
 class AddSemigroup (G : Type u) extends Add G, PSMul G where
@@ -224,10 +225,12 @@ class AddSemigroup (G : Type u) extends Add G, PSMul G where
   /-- Addition is associative -/
   protected add_assoc : ∀ a b c : G, a + b + c = a + (b + c)
   /-- Scalar multiplication by `(1 : ℕ+)` gives the same element. -/
-  protected psmul_one (x : G) : (1 : ℕ+) • x = x := by first | intros; rfl | exact psmulRec_one
+  protected psmul_one (x : G) : (1 : ℕ+) • x = x := by
+    first | intros; rfl | exact @psmulRec_one _ ⟨_⟩
   /-- Scalar multiplication by `(n + 1 : ℕ+)` behaves as expected. -/
   protected psmul_succ (n : ℕ+) (x : G) : (n + 1 : ℕ+) • x = n • x + x := by
-    first | intros; rfl | exact psmulRec_succ
+    -- so that Add can be inferred when inlined
+    first | intros; rfl | exact @psmulRec_succ _ ⟨_⟩
 
 attribute [to_additive] Semigroup
 
@@ -247,11 +250,11 @@ theorem ppow_eq_pow (n : ℕ+) (x : G) : PPow.ppow n x = x ^ n :=
 theorem ppow_one (a : G) : a ^ (1 : ℕ+) = a :=
   Semigroup.ppow_one _
 
-@[to_additive succ_psmul]
+@[to_additive (reorder := a n) succ_psmul]
 theorem ppow_succ (a : G) (n : ℕ+) : a ^ (n + 1) = a ^ n * a :=
   Semigroup.ppow_succ n a
 
-@[to_additive succ_psmul']
+@[to_additive (reorder := a n) succ_psmul']
 lemma ppow_succ' (a : G) (n : ℕ+) :
     a ^ (n + 1) = a * a ^ n := by
   induction n with
