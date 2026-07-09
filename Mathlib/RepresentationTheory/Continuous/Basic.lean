@@ -191,9 +191,27 @@ instance : AddZeroClass (π₁ →ⁱL π₂) :=
   fast_instance% toContinuousLinearMap_injective.addZeroClass _
     toContinuousLinearMap_zero toContinuousLinearMap_add
 
+section SMul
+
+variable {S : Type*} [DistribSMul S W] [SMulCommClass R S W]
+  [ContinuousConstSMul S W] [LinearMap.CompatibleSMul W W S R]
+
+instance instSMul :
+    SMul S (π₁ →ⁱL π₂) where
+  smul s f := ⟨s • f.toContinuousLinearMap, fun g ↦ by
+    rw [ContinuousLinearMap.smul_comp, f.2, ContinuousLinearMap.comp_smul]⟩
+
+@[simp]
+lemma toContinuousLinearMap_smul (s : S) (f : π₁ →ⁱL π₂) :
+    (s • f).toContinuousLinearMap = s • f.toContinuousLinearMap := rfl
+
+lemma smul_apply (s : S) (f : π₁ →ⁱL π₂) (v : V) : (s • f) v = s • f v := rfl
+
+end SMul
+
 instance : AddCommSemigroup (π₁ →ⁱL π₂) :=
   fast_instance% toContinuousLinearMap_injective.addCommSemigroup _
-    toContinuousLinearMap_add
+    toContinuousLinearMap_add (fun _ _ => toContinuousLinearMap_smul _ _)
 
 instance : Neg (π₁ →ⁱL π₂) where
   neg f := ⟨-f.toContinuousLinearMap, by simp [f.2]⟩
@@ -221,22 +239,11 @@ lemma comp_sub (f : π₂ →ⁱL π₃) (g h : π₁ →ⁱL π₂) :
     f.comp (g - h) = f.comp g - f.comp h := by
   ext; simp
 
-instance instSMul {S : Type*} [Monoid S] [DistribMulAction S W] [SMulCommClass R S W]
-    [ContinuousConstSMul S W] [LinearMap.CompatibleSMul W W S R] :
-    SMul S (π₁ →ⁱL π₂) where
-  smul s f := ⟨s • f.toContinuousLinearMap, fun g ↦ by
-    rw [ContinuousLinearMap.smul_comp, f.2, ContinuousLinearMap.comp_smul]⟩
 
 section addcommgroup
 
 variable {S : Type*} [Monoid S] [DistribMulAction S W] [SMulCommClass R S W]
   [ContinuousConstSMul S W] [LinearMap.CompatibleSMul W W S R]
-
-@[simp]
-lemma toContinuousLinearMap_smul (s : S) (f : π₁ →ⁱL π₂) :
-    (s • f).toContinuousLinearMap = s • f.toContinuousLinearMap := rfl
-
-lemma smul_apply (s : S) (f : π₁ →ⁱL π₂) (v : V) : (s • f) v = s • f v := rfl
 
 lemma smul_comp {S : Type*} [Monoid S] [DistribMulAction S U] [SMulCommClass R S U]
     [ContinuousConstSMul S U] [LinearMap.CompatibleSMul U U S R]
@@ -254,6 +261,7 @@ instance : AddCommGroup (π₁ →ⁱL π₂) :=
   fast_instance% toContinuousLinearMap_injective.addCommGroup _ toContinuousLinearMap_zero
     toContinuousLinearMap_add toContinuousLinearMap_neg toContinuousLinearMap_sub
     (fun _ _ ↦ toContinuousLinearMap_smul _ _) (fun _ _ ↦ toContinuousLinearMap_smul _ _)
+    (fun _ _ ↦ toContinuousLinearMap_smul _ _)
 
 instance : DistribMulAction S (π₁ →ⁱL π₂) where
   one_smul _ := by ext; simp
