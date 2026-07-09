@@ -407,7 +407,7 @@ theorem sum (f : α → E) {s : Set α} {E : ℕ → α} (hE : Monotone E) {n : 
     ∑ i ∈ Finset.range n, eVariationOn f (s ∩ Icc (E i) (E (i + 1))) =
       eVariationOn f (s ∩ Icc (E 0) (E n)) := by
   induction n with
-  | zero => simp [eVariationOn.subsingleton f Subsingleton.inter_singleton]
+  | zero => simp [Subsingleton.inter_singleton]
   | succ n ih =>
     by_cases hn₀ : n = 0
     · simp [hn₀]
