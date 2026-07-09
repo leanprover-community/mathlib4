@@ -631,7 +631,6 @@ def eraseMiddle (c : OrderedFinpartition (n + 1)) (hc : range (c.emb 0) ≠ {0})
       exact ⟨i, Fin.cast A.symm j, by simp [hi, hij]⟩
 
 set_option backward.isDefEq.respectTransparency false in
-open Classical in
 /-- Extending the ordered partitions of `Fin n` bijects with the ordered partitions
 of `Fin (n+1)`. -/
 @[simps apply]
@@ -1100,7 +1099,6 @@ theorem HasFTaylorSeriesUpToOn.comp {n : WithTop ℕ∞} {g : F → G} {f : E �
       convert! B
       ext v
       simp only [Nat.succ_eq_add_one, Fintype.sum_option, ContinuousMultilinearMap.curryLeft_apply,
-        ContinuousMultilinearMap.sum_apply, ContinuousMultilinearMap.add_apply,
         FormalMultilinearSeries.compAlongOrderedFinpartition_apply, sum_apply, add_apply]
     rw [Finset.sum_sigma']
     exact Fintype.sum_equiv (OrderedFinpartition.extendEquiv m) _ _ (fun p ↦ rfl)

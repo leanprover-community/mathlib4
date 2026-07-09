@@ -6,7 +6,7 @@ Authors: Zhouhang Zhou, Sébastien Gouëzel, Frédéric Dupuis
 module
 
 public import Mathlib.Analysis.InnerProductSpace.Subspace
-public import Mathlib.LinearAlgebra.SesquilinearForm.Basic
+public import Mathlib.LinearAlgebra.SesquilinearForm.Orthogonal
 public import Mathlib.Topology.Algebra.Module.ClosedSubmodule
 
 /-!
@@ -372,7 +372,7 @@ theorem IsOrtho.map_iff (f : E ≃ₗᵢ[𝕜] F) {U V : Submodule 𝕜 E} :
 @[simp]
 theorem IsOrtho.comap_iff (f : E ≃ₗᵢ[𝕜] F) {U V : Submodule 𝕜 F} :
     U.comap (f : E →ₗ[𝕜] F) ⟂ V.comap (f : E →ₗ[𝕜] F) ↔ U ⟂ V := by
-  convert! IsOrtho.map_iff f.symm using 2 <;>
+  convert IsOrtho.map_iff f.symm <;>
     exact Submodule.comap_equiv_eq_map_symm (f : E ≃ₗ[𝕜] F) _
 
 end Submodule
