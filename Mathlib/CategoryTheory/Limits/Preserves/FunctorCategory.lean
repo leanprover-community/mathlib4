@@ -255,7 +255,7 @@ variable [HasLimitsOfShape J C] [HasColimitsOfShape K C]
 variable [PreservesLimitsOfShape J (colim : (K ⥤ C) ⥤ _)]
 
 set_option backward.isDefEq.respectTransparency false in
-noncomputable instance : PreservesLimitsOfShape J (colim : (K ⥤ D ⥤ C) ⥤ _) :=
+instance : PreservesLimitsOfShape J (colim : (K ⥤ D ⥤ C) ⥤ _) :=
   preservesLimitsOfShape_of_evaluation _ _ (fun d =>
     let i : (colim : (K ⥤ D ⥤ C) ⥤ _) ⋙ (evaluation D C).obj d ≅
         colimit ((whiskeringRight K (D ⥤ C) C).obj ((evaluation D C).obj d)).flip :=
@@ -273,7 +273,7 @@ variable [HasColimitsOfShape J C] [HasLimitsOfShape K C]
 variable [PreservesColimitsOfShape J (lim : (K ⥤ C) ⥤ _)]
 
 set_option backward.isDefEq.respectTransparency false in
-noncomputable instance : PreservesColimitsOfShape J (lim : (K ⥤ D ⥤ C) ⥤ _) :=
+instance : PreservesColimitsOfShape J (lim : (K ⥤ D ⥤ C) ⥤ _) :=
   preservesColimitsOfShape_of_evaluation _ _ (fun d =>
     let i : (lim : (K ⥤ D ⥤ C) ⥤ _) ⋙ (evaluation D C).obj d ≅
         limit ((whiskeringRight K (D ⥤ C) C).obj ((evaluation D C).obj d)).flip :=

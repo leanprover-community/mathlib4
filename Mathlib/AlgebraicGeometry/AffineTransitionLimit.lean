@@ -537,14 +537,14 @@ set_option backward.isDefEq.respectTransparency false in
 /-- (Implementation)
 The covering of `D(i')` by the pullback of the diagonal components of `X ×ₛ X`.
 See the section docstring. -/
-noncomputable def 𝒰D₀ : Scheme.OpenCover.{u} (D.obj A.i') :=
+def 𝒰D₀ : Scheme.OpenCover.{u} (D.obj A.i') :=
   Scheme.Cover.mkOfCovers (Σ i : A.𝒰S.I₀, (A.𝒰X i).I₀) _
     (fun i ↦ ((Scheme.Pullback.diagonalCover f A.𝒰S A.𝒰X).pullback₁ A.g).f ⟨i.1, i.2, i.2⟩)
     (fun x ↦ by simpa [← Set.mem_range, Scheme.Pullback.range_fst,
         Scheme.Pullback.diagonalCoverDiagonalRange] using A.range_g_subset ⟨x, rfl⟩)
 
 /-- (Implementation) An affine open cover refining `𝒰D₀`. See the section docstring. -/
-noncomputable def 𝒰D : Scheme.OpenCover.{u} (D.obj A.i') :=
+def 𝒰D : Scheme.OpenCover.{u} (D.obj A.i') :=
   A.𝒰D₀.bind fun _ ↦ Scheme.affineCover _
 
 attribute [-simp] cast_eq eq_mpr_eq_cast

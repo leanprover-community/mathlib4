@@ -439,7 +439,6 @@ variable (R S₁ S₂) in
 /-- The algebra isomorphism between multivariable polynomials in variables `S₁` of multivariable
 polynomials in variables `S₂` and multivariable polynomials in variables `S₂` of multivariable
 polynomials in variables `S₁`. -/
-noncomputable
 def commAlgEquiv : MvPolynomial S₁ (MvPolynomial S₂ R) ≃ₐ[R] MvPolynomial S₂ (MvPolynomial S₁ R) :=
   AddMonoidAlgebra.commAlgEquiv _
 
@@ -881,7 +880,7 @@ section toMvPolynomial
 variable {R S σ τ : Type*} [CommSemiring R] [CommSemiring S] [Algebra R S]
 
 /-- The embedding of `R[X]` into `R[Xᵢ]` as an `R`-algebra homomorphism. -/
-noncomputable def Polynomial.toMvPolynomial (i : σ) : R[X] →ₐ[R] MvPolynomial σ R :=
+def Polynomial.toMvPolynomial (i : σ) : R[X] →ₐ[R] MvPolynomial σ R :=
   aeval (MvPolynomial.X i)
 
 @[simp]

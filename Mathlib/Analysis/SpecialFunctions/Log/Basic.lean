@@ -41,7 +41,7 @@ to `log |x|` for `x < 0`, and to `0` for `0`. We use this unconventional extensi
 `(-∞, 0]` as it gives the formula `log (x * y) = log x + log y` for all nonzero `x` and `y`, and
 the derivative of `log` is `1/x` away from `0`. -/
 @[pp_nodot, wikidata Q11197]
-noncomputable def log (x : ℝ) : ℝ :=
+def log (x : ℝ) : ℝ :=
   if hx : x = 0 then 0 else expOrderIso.symm ⟨|x|, abs_pos.2 hx⟩
 
 theorem log_of_ne_zero (hx : x ≠ 0) : log x = expOrderIso.symm ⟨|x|, abs_pos.2 hx⟩ :=
@@ -456,7 +456,7 @@ theorem isLittleO_const_log_atTop {c : ℝ} : (fun _ => c) =o[atTop] log := by
   aesop (add safe forward log_pos)
 
 /-- `Real.exp` as an `OpenPartialHomeomorph` with `source = univ` and `target = {z | 0 < z}`. -/
-@[simps] noncomputable def expPartialHomeomorph : OpenPartialHomeomorph ℝ ℝ where
+@[simps] def expPartialHomeomorph : OpenPartialHomeomorph ℝ ℝ where
   toFun := Real.exp
   invFun := Real.log
   source := univ

@@ -105,7 +105,7 @@ def Cofan.op (c : Cofan Z) : Fan (op <| Z ·) := Fan.mk _ (fun a ↦ (c.inj a).o
 set_option backward.defeqAttrib.useBackward true in
 /-- If a `Cofan` is colimit, then its opposite is limit. -/
 -- noncomputability is just for performance (compilation takes a while)
-noncomputable def Cofan.IsColimit.op {c : Cofan Z} (hc : IsColimit c) : IsLimit c.op := by
+def Cofan.IsColimit.op {c : Cofan Z} (hc : IsColimit c) : IsLimit c.op := by
   let e : Discrete.functor (Opposite.op <| Z ·) ≅ (Discrete.opposite α).inverse ⋙
     (Discrete.functor Z).op := Discrete.natIso (fun _ ↦ Iso.refl _)
   refine IsLimit.ofIsoLimit ((IsLimit.postcomposeInvEquiv e _).2
@@ -217,7 +217,7 @@ def Fan.op (f : Fan Z) : Cofan (op <| Z ·) := Cofan.mk _ (fun a ↦ (f.proj a).
 set_option backward.defeqAttrib.useBackward true in
 /-- If a `Fan` is limit, then its opposite is colimit. -/
 -- noncomputability is just for performance (compilation takes a while)
-noncomputable def Fan.IsLimit.op {f : Fan Z} (hf : IsLimit f) : IsColimit f.op := by
+def Fan.IsLimit.op {f : Fan Z} (hf : IsLimit f) : IsColimit f.op := by
   let e : Discrete.functor (Opposite.op <| Z ·) ≅ (Discrete.opposite α).inverse ⋙
     (Discrete.functor Z).op := Discrete.natIso (fun _ ↦ Iso.refl _)
   refine IsColimit.ofIsoColimit ((IsColimit.precomposeHomEquiv e _).2

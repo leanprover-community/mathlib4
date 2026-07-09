@@ -100,7 +100,7 @@ set_option backward.isDefEq.respectTransparency false in
 variable (F) in
 /-- The standard Riemannian metric on a vector space with an inner product, given by this inner
 product on each tangent space. -/
-noncomputable def riemannianMetricVectorSpace :
+def riemannianMetricVectorSpace :
     ContMDiffRiemannianMetric 𝓘(ℝ, F) ω F (fun (x : F) ↦ TangentSpace% x) where
   inner x := (innerSL ℝ (E := F) : F →L[ℝ] F →L[ℝ] ℝ)
   symm x v w := real_inner_comm _ _
@@ -123,7 +123,7 @@ noncomputable def riemannianMetricVectorSpace :
     ext v w
     simp [hom_trivializationAt_apply, ContinuousLinearMap.inCoordinates, TangentSpace]
 
-noncomputable instance : RiemannianBundle (fun (x : F) ↦ TangentSpace% x) :=
+instance : RiemannianBundle (fun (x : F) ↦ TangentSpace% x) :=
   ⟨(riemannianMetricVectorSpace F).toRiemannianMetric⟩
 
 set_option backward.isDefEq.respectTransparency false in
@@ -521,7 +521,7 @@ additionally the predicate `IsRiemannianManifold I M`. -/
       (fun _ hc ↦ eventually_riemannianEDist_lt I x hc))
 
 @[deprecated (since := "2026-01-08")]
-noncomputable alias PseudoEmetricSpace.ofRiemannianMetric := PseudoEMetricSpace.ofRiemannianMetric
+alias PseudoEmetricSpace.ofRiemannianMetric := PseudoEMetricSpace.ofRiemannianMetric
 
 /-- Given a manifold with a Riemannian metric, consider the associated Riemannian distance. Then
 by definition the distance is the infimum of the length of paths between the points, i.e., the
@@ -544,6 +544,6 @@ additionally the predicate `IsRiemannianManifold I M`. -/
   EMetricSpace.ofT0PseudoEMetricSpace M
 
 @[deprecated (since := "2026-01-08")]
-noncomputable alias EmetricSpace.ofRiemannianMetric := EMetricSpace.ofRiemannianMetric
+alias EmetricSpace.ofRiemannianMetric := EMetricSpace.ofRiemannianMetric
 
 end

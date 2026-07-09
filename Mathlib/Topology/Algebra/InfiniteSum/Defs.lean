@@ -139,7 +139,7 @@ separated. When the support of `f` is finite, we make the most reasonable choice
 over the support. Otherwise, we choose arbitrarily an `a` satisfying `HasSum f a`. Similar remarks
 apply to more general summation filters.)
 -/]
-noncomputable irreducible_def tprod (f : β → α) (L := unconditional β) :=
+irreducible_def tprod (f : β → α) (L := unconditional β) :=
   if h : Multipliable f L then
     if L.HasSupport ∧ (mulSupport f ∩ L.support).Finite then finprod (L.support.mulIndicator f)
     else if HasProd f 1 L then 1

@@ -241,7 +241,7 @@ lemma equivMvPolynomialQuotient_symm_apply :
   simp [equivMvPolynomialQuotient, StandardEtalePair.Ring]; rfl
 
 /-- Mapping a standard etale pair under a ring homomorphism. -/
-@[simps] protected noncomputable def map (f : R →+* S) : StandardEtalePair S where
+@[simps] protected def map (f : R →+* S) : StandardEtalePair S where
   f := P.f.map f
   monic_f := P.monic_f.map _
   g := P.g.map f
@@ -347,7 +347,6 @@ lemma StandardEtalePresentation.hom_ext {f₁ f₂ : S →ₐ[R] T} (h : f₁ P.
 open scoped TensorProduct
 
 /-- The base change of a standard etale algebra is standard etale. -/
-noncomputable
 def StandardEtalePresentation.baseChange :
     StandardEtalePresentation T (T ⊗[R] S) where
   __ := P.map (algebraMap R T)

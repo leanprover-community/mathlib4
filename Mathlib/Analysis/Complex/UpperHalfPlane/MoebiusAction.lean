@@ -89,7 +89,7 @@ lemma moebius_im (g : GL (Fin 2) ℝ) (z : ℂ) :
   ring
 
 /-- Automorphism of `ℂ`: the identity if `0 < det g` and conjugation otherwise. -/
-noncomputable def σ (g : GL (Fin 2) ℝ) : ℂ ≃A[ℝ] ℂ :=
+def σ (g : GL (Fin 2) ℝ) : ℂ ≃A[ℝ] ℂ :=
   if 0 < g.det.val then .refl ℝ ℂ else Complex.conjCAE
 
 lemma σ_conj (g : GL (Fin 2) ℝ) (z : ℂ) : σ g (conj z) = conj (σ g z) := by
@@ -280,7 +280,7 @@ end PGLAction
 
 section SLAction
 
-noncomputable instance SLAction {R : Type*} [CommRing R] [Algebra R ℝ] : MulAction SL(2, R) ℍ :=
+instance SLAction {R : Type*} [CommRing R] [Algebra R ℝ] : MulAction SL(2, R) ℍ :=
   MulAction.compHom ℍ <| SpecialLinearGroup.mapGL ℝ
 
 theorem coe_specialLinearGroup_apply {R : Type*} [CommRing R] [Algebra R ℝ] (g : SL(2, R)) (z : ℍ) :
@@ -343,7 +343,7 @@ end SLAction
 section toSL2R
 
 /-- Map from `ℍ` to `SL(2, ℝ)`, giving a continuous section of the map `g ↦ g • I`. -/
-noncomputable def toSL2R (z : ℍ) : SL(2, ℝ) :=
+def toSL2R (z : ℍ) : SL(2, ℝ) :=
   ⟨!![√z.im, z.re / √z.im; 0, 1 / √z.im], by
     simp [mul_inv_cancel₀ (Real.sqrt_ne_zero'.mpr z.im_pos)]⟩
 

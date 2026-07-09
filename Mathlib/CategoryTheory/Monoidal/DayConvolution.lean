@@ -1254,7 +1254,7 @@ variable {C V} in
 construct an `InducedLawfulDayConvolutionMonoidalCategoryStructCore` by letting all other
 data be the generic ones from the `HasPointwiseLeftKanExtension` API. -/
 @[implicit_reducible]
-noncomputable def ofHasDayConvolutions
+def ofHasDayConvolutions
     {D : Type u₃} [Category.{v₃} D]
     (ι : D ⥤ C ⥤ V)
     (ffι : ι.FullyFaithful)
@@ -1333,7 +1333,7 @@ of relevant colimits by the tensor product of `V`, we can define a `MonoidalCate
 from the data of a fully faithful functor `ι : D ⥤ C ⥤ V` whose essential image
 contains a Day convolution unit and is stable under binary Day convolutions. -/
 @[implicit_reducible]
-noncomputable def monoidalOfHasDayConvolutions : MonoidalCategory D :=
+def monoidalOfHasDayConvolutions : MonoidalCategory D :=
   letI induced : InducedLawfulDayConvolutionMonoidalCategoryStructCore C V D :=
     .ofHasDayConvolutions ι ffι essImageDayConvolution essImageDayConvolutionUnit
   letI := induced.mkMonoidalCategoryStruct
@@ -1345,7 +1345,7 @@ open InducedLawfulDayConvolutionMonoidalCategoryStructCore in
 /-- The monoidal category constructed via `monoidalOfHasDayConvolutions` has a canonical
 `LawfulDayConvolutionMonoidalCategoryStruct C V D`. -/
 @[implicit_reducible]
-noncomputable def lawfulDayConvolutionMonoidalCategoryStructOfHasDayConvolutions :
+def lawfulDayConvolutionMonoidalCategoryStructOfHasDayConvolutions :
     letI := monoidalOfHasDayConvolutions
       ι ffι essImageDayConvolution essImageDayConvolutionUnit
     LawfulDayConvolutionMonoidalCategoryStruct C V D :=

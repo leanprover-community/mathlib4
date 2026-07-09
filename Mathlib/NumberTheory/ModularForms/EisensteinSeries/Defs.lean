@@ -222,7 +222,7 @@ def eisensteinSeriesSIF (k : ℤ) : SlashInvariantForm (Gamma N) k where
     simp [SpecialLinearGroup.mapGL, ← SL_slash, eisensteinSeries_slash_apply, Gamma_mem'.mp hA]
 
 @[deprecated (since := "2026-02-10")]
-noncomputable alias eisensteinSeries_SIF := eisensteinSeriesSIF
+alias eisensteinSeries_SIF := eisensteinSeriesSIF
 
 lemma eisensteinSeriesSIF_apply (k : ℤ) (z : ℍ) :
     eisensteinSeriesSIF a k z = eisensteinSeries a k z := rfl

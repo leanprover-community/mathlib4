@@ -851,7 +851,7 @@ variable {Ω Ω' : Type*} [MeasurableSpace Ω] [MeasurableSpace Ω']
 If `f` is injective and sends each measurable set to a null-measurable set, then for each
 measurable set `s` we have `comap f μ s = μ (f '' s)`.
 Otherwise, the pullback is defined to be zero. -/
-noncomputable def comap
+def comap
     (f : Ω → Ω') (μ : FiniteMeasure Ω') : FiniteMeasure Ω :=
   ⟨Measure.comap f μ, by infer_instance⟩
 
@@ -900,7 +900,7 @@ section map
 variable {Ω Ω' : Type*} [MeasurableSpace Ω] [MeasurableSpace Ω']
 
 /-- The push-forward of a finite measure by a function between measurable spaces. -/
-noncomputable def map (ν : FiniteMeasure Ω) (f : Ω → Ω') : FiniteMeasure Ω' :=
+def map (ν : FiniteMeasure Ω) (f : Ω → Ω') : FiniteMeasure Ω' :=
   ⟨(ν : Measure Ω).map f, (ν : Measure Ω).isFiniteMeasure_map f⟩
 
 @[simp] lemma toMeasure_map (ν : FiniteMeasure Ω) (f : Ω → Ω') :
@@ -933,7 +933,7 @@ lemma map_apply (ν : FiniteMeasure Ω) {f : Ω → Ω'} (f_mble : Measurable f)
   simp [toMeasure_smul]
 
 /-- The push-forward of a finite measure by a function between measurable spaces as a linear map. -/
-noncomputable def mapHom {f : Ω → Ω'} (f_mble : Measurable f) :
+def mapHom {f : Ω → Ω'} (f_mble : Measurable f) :
     FiniteMeasure Ω →ₗ[ℝ≥0] FiniteMeasure Ω' where
   toFun := fun ν ↦ ν.map f
   map_add' := map_add f_mble
@@ -975,7 +975,7 @@ lemma continuous_map {f : Ω → Ω'} (f_cont : Continuous f) :
 
 /-- The push-forward of a finite measure by a continuous function between Borel spaces as
 a continuous linear map. -/
-noncomputable def mapCLM {f : Ω → Ω'} (f_cont : Continuous f) :
+def mapCLM {f : Ω → Ω'} (f_cont : Continuous f) :
     FiniteMeasure Ω →L[ℝ≥0] FiniteMeasure Ω' where
   toFun := fun ν ↦ ν.map f
   map_add' := map_add f_cont.measurable

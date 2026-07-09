@@ -99,11 +99,11 @@ theorem cone_snd (h : IsPullback fst snd f g) : h.cone.snd = snd :=
 
 /-- The cone obtained from `IsPullback fst snd f g` is a limit cone.
 -/
-noncomputable def isLimit (h : IsPullback fst snd f g) : IsLimit h.cone :=
+def isLimit (h : IsPullback fst snd f g) : IsLimit h.cone :=
   h.isLimit'.some
 
 /-- API for PullbackCone.IsLimit.lift for `IsPullback` -/
-noncomputable def lift (hP : IsPullback fst snd f g) {W : C} (h : W ⟶ X) (k : W ⟶ Y)
+def lift (hP : IsPullback fst snd f g) {W : C} (h : W ⟶ X) (k : W ⟶ Y)
     (w : h ≫ f = k ≫ g) : W ⟶ P :=
   PullbackCone.IsLimit.lift hP.isLimit h k w
 
@@ -163,7 +163,7 @@ variable {P' : C} {fst' : P' ⟶ X} {snd' : P' ⟶ Y}
 
 /-- Any object at the top left of a pullback square is isomorphic to the object at the top left
 of any other pullback square with the same cospan. -/
-noncomputable def isoIsPullback (h : IsPullback fst snd f g) (h' : IsPullback fst' snd' f g) :
+def isoIsPullback (h : IsPullback fst snd f g) (h' : IsPullback fst' snd' f g) :
     P ≅ P' :=
   IsLimit.conePointUniqueUpToIso h.isLimit h'.isLimit
 
@@ -191,7 +191,7 @@ end
 
 /-- Any object at the top left of a pullback square is
 isomorphic to the pullback provided by the `HasLimit` API. -/
-noncomputable def isoPullback (h : IsPullback fst snd f g) [HasPullback f g] : P ≅ pullback f g :=
+def isoPullback (h : IsPullback fst snd f g) [HasPullback f g] : P ≅ pullback f g :=
   (limit.isoLimitCone ⟨_, h.isLimit⟩).symm
 
 
@@ -239,11 +239,11 @@ theorem cocone_inr (h : IsPushout f g inl inr) : h.cocone.inr = inr :=
 
 /-- The cocone obtained from `IsPushout f g inl inr` is a colimit cocone.
 -/
-noncomputable def isColimit (h : IsPushout f g inl inr) : IsColimit h.cocone :=
+def isColimit (h : IsPushout f g inl inr) : IsColimit h.cocone :=
   h.isColimit'.some
 
 /-- API for PushoutCocone.IsColimit.lift for `IsPushout` -/
-noncomputable def desc (hP : IsPushout f g inl inr) {W : C} (h : X ⟶ W) (k : Y ⟶ W)
+def desc (hP : IsPushout f g inl inr) {W : C} (h : X ⟶ W) (k : Y ⟶ W)
     (w : f ≫ h = g ≫ k) : P ⟶ W :=
   PushoutCocone.IsColimit.desc hP.isColimit h k w
 
@@ -302,7 +302,7 @@ variable {P' : C} {inl' : X ⟶ P'} {inr' : Y ⟶ P'}
 
 /-- Any object at the bottom right of a pushout square is isomorphic to the object at the bottom
 right of any other pushout square with the same span. -/
-noncomputable def isoIsPushout (h : IsPushout f g inl inr) (h' : IsPushout f g inl' inr') :
+def isoIsPushout (h : IsPushout f g inl inr) (h' : IsPushout f g inl' inr') :
     P ≅ P' :=
   IsColimit.coconePointUniqueUpToIso h.isColimit h'.isColimit
 
@@ -330,7 +330,7 @@ end
 
 /-- Any object at the top left of a pullback square is
 isomorphic to the pullback provided by the `HasLimit` API. -/
-noncomputable def isoPushout (h : IsPushout f g inl inr) [HasPushout f g] : P ≅ pushout f g :=
+def isoPushout (h : IsPushout f g inl inr) [HasPushout f g] : P ≅ pushout f g :=
   (colimit.isoColimitCocone ⟨_, h.isColimit⟩).symm
 
 set_option backward.isDefEq.respectTransparency false in

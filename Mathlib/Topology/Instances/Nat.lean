@@ -22,7 +22,7 @@ open Filter Metric Set Topology
 
 namespace Nat
 
-noncomputable instance : Dist ℕ :=
+instance : Dist ℕ :=
   ⟨fun x y => dist (x : ℝ) y⟩
 
 theorem dist_eq (x y : ℕ) : dist x y = |(x : ℝ) - y| := rfl

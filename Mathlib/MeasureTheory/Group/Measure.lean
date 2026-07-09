@@ -295,7 +295,7 @@ namespace Measure
 
 /-- The measure `A ↦ μ (A⁻¹)`, where `A⁻¹` is the pointwise inverse of `A`. -/
 @[to_additive /-- The measure `A ↦ μ (- A)`, where `- A` is the pointwise negation of `A`. -/]
-protected noncomputable def inv [Inv G] (μ : Measure G) : Measure G :=
+protected def inv [Inv G] (μ : Measure G) : Measure G :=
   Measure.map inv μ
 
 /-- A measure is invariant under negation if `- μ = μ`. Equivalently, this means that for all

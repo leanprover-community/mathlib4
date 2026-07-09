@@ -202,7 +202,6 @@ lemma OpenCover.pullbackCoverAffineRefinementObjIso_inv_pullbackHom
 
 /-- A family of elements spanning the unit ideal of `R` gives an affine open cover of `Spec R`. -/
 @[simps]
-noncomputable
 def affineOpenCoverOfSpanRangeEqTop {R : CommRingCat} {ι : Type*} (s : ι → R)
     (hs : Ideal.span (Set.range s) = ⊤) : (Spec R).AffineOpenCover where
   I₀ := ι

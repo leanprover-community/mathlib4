@@ -350,7 +350,7 @@ variable {C}
 
 set_option backward.defeqAttrib.useBackward true in
 /-- If `x` specializes to `y`, then there is a natural map `F.stalk y ⟶ F.stalk x`. -/
-noncomputable def stalkSpecializes (F : X.Presheaf C) {x y : X} (h : x ⤳ y) :
+def stalkSpecializes (F : X.Presheaf C) {x y : X} (h : x ⤳ y) :
     F.stalk y ⟶ F.stalk x := by
   refine colimit.desc _ ⟨_, fun U => ?_, ?_⟩
   · exact

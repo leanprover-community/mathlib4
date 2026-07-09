@@ -63,7 +63,7 @@ theorem nonempty_algHom_extension [Algebra (ZMod p) k] :
     Nonempty (k →ₐ[ZMod p] Extension k p n) :=
   nonempty_algHom_of_finrank_dvd (finrank_zmod_extension k p n ▸ dvd_mul_right _ _)
 
-noncomputable instance : Algebra k (Extension k p n) :=
+instance : Algebra k (Extension k p n) :=
   letI := ZMod.algebra k p
   (nonempty_algHom_extension k p n).some.toAlgebra
 
@@ -100,7 +100,7 @@ theorem card_algEquiv_extension : Fintype.card Gal(Extension k p n / k) = n :=
   Fintype.card_eq_nat_card.trans <| natCard_algEquiv_extension k p n
 
 /-- The Frobenius automorphism `x ↦ x ^ Nat.card k` that fixes `k`. -/
-noncomputable def Extension.frob :
+def Extension.frob :
     Gal(Extension k p n / k) :=
   haveI := Fintype.ofFinite k
   FiniteField.frobeniusAlgEquivOfAlgebraic _ _
@@ -127,7 +127,7 @@ theorem Extension.exists_frob_pow_eq (g : Gal(Extension k p n/k)) :
 
 /-- Given any field extension of finite fields `l/k` of degree `n`, we have a non-unique
 isomorphism between `l` and our chosen `Extension k p n`. -/
-noncomputable def algEquivExtension (l : Type*) [Field l] [Algebra k l]
+def algEquivExtension (l : Type*) [Field l] [Algebra k l]
     (h : Module.finrank k l = n) : l ≃ₐ[k] Extension k p n := by
   refine Nonempty.some ?_
   have : Module.Finite k l := Module.finite_of_finrank_pos <| h ▸ NeZero.pos n

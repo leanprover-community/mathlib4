@@ -1004,7 +1004,7 @@ def toPiNatEquiv : X ≃ PiNatEmbed X Y f where
 
 variable (X Y f) in
 /-- `X` equipped with the distance coming from `∀ i, Y i` embeds in `∀ i, Y i`. -/
-noncomputable def embed : PiNatEmbed X Y f → ∀ i, Y i := fun x i ↦ f i x.ofPiNat
+def embed : PiNatEmbed X Y f → ∀ i, Y i := fun x i ↦ f i x.ofPiNat
 
 lemma embed_injective (separating_f : Pairwise fun x y ↦ ∃ i, f i x ≠ f i y) :
     Injective (embed X Y f) := by
@@ -1015,7 +1015,7 @@ variable [Encodable ι]
 section PseudoEMetricSpace
 variable [∀ i, PseudoEMetricSpace (Y i)]
 
-noncomputable instance : PseudoEMetricSpace (PiNatEmbed X Y f) :=
+instance : PseudoEMetricSpace (PiNatEmbed X Y f) :=
   .induced (embed X Y f) PiCountable.pseudoEMetricSpace
 
 lemma edist_def (x y : PiNatEmbed X Y f) :
@@ -1028,7 +1028,7 @@ end PseudoEMetricSpace
 section PseudoMetricSpace
 variable [∀ i, PseudoMetricSpace (Y i)]
 
-noncomputable instance : PseudoMetricSpace (PiNatEmbed X Y f) :=
+instance : PseudoMetricSpace (PiNatEmbed X Y f) :=
   .induced (embed X Y f) PiCountable.pseudoMetricSpace
 
 lemma dist_def (x y : PiNatEmbed X Y f) :
@@ -1049,7 +1049,7 @@ variable [∀ i, EMetricSpace (Y i)]
 
 /-- If the functions `f i : X → Y i` separate points of `X`, then `X` can be embedded into
 `∀ i, Y i`. -/
-noncomputable abbrev emetricSpace (separating_f : Pairwise fun x y ↦ ∃ i, f i x ≠ f i y) :
+abbrev emetricSpace (separating_f : Pairwise fun x y ↦ ∃ i, f i x ≠ f i y) :
     EMetricSpace (PiNatEmbed X Y f) :=
   .induced (embed X Y f) (embed_injective separating_f) PiCountable.emetricSpace
 
@@ -1065,7 +1065,7 @@ variable [∀ i, MetricSpace (Y i)]
 
 /-- If the functions `f i : X → Y i` separate points of `X`, then `X` can be embedded into
 `∀ i, Y i`. -/
-noncomputable abbrev metricSpace (separating_f : Pairwise fun x y ↦ ∃ i, f i x ≠ f i y) :
+abbrev metricSpace (separating_f : Pairwise fun x y ↦ ∃ i, f i x ≠ f i y) :
     MetricSpace (PiNatEmbed X Y f) :=
   (emetricSpace separating_f).toMetricSpace fun x y ↦ by simp [edist_dist]
 
@@ -1083,7 +1083,7 @@ variable (X Y f) in
 /-- Homeomorphism between `X` and its embedding into `∀ i, Y i` induced by a separating family of
 continuous functions `f i : X → Y i`. -/
 @[simps!]
-noncomputable def toPiNatHomeo (continuous_f : ∀ i, Continuous (f i))
+def toPiNatHomeo (continuous_f : ∀ i, Continuous (f i))
     (separating_f : Pairwise fun x y ↦ ∃ i, f i x ≠ f i y) :
     X ≃ₜ PiNatEmbed X Y f :=
   (toPiNatEquiv X Y f).toHomeomorphOfIsInducing
@@ -1110,7 +1110,7 @@ interval `I` so that the distances remain bounded.
 
 The function `(fun x n ↦ distDenseSeq n x) : X → ℕ → I` is a mapping from `X` to the Hilbert cube.
 -/
-noncomputable abbrev distDenseSeq (n : ℕ) (x : X) : I :=
+abbrev distDenseSeq (n : ℕ) (x : X) : I :=
   have : Nonempty X := ⟨x⟩
   projIcc _ _ zero_le_one <| dist x (denseSeq X n)
 

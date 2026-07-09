@@ -483,7 +483,7 @@ lemma Sheaf.isTerminalTerminal_from_hom {X : A} (hX : IsTerminal X) (G : Sheaf J
     ((Sheaf.isTerminalTerminal J hX).from G).hom = (Functor.isTerminalConst _ hX).from G.obj := rfl
 
 /-- If the topology is discrete, any sheaf is terminal. -/
-noncomputable def Sheaf.isTerminalOfEqTop (H : J = ⊤) (F : Sheaf J A) :
+def Sheaf.isTerminalOfEqTop (H : J = ⊤) (F : Sheaf J A) :
     IsTerminal F := by
   refine IsTerminal.isTerminalOfObj (sheafToPresheaf _ _) _ ?_
   refine Functor.isTerminal fun X ↦ Sheaf.isTerminalOfBotCover _ _ ?_

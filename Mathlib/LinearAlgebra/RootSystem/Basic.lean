@@ -267,7 +267,7 @@ def mk'' :
     refine (coroot_eq_coreflection_of_root_eq_of_span_eq_top p root coroot hp hs hsp ?_)
     rw [equiv_of_mapsTo_apply, (exist_eq_reflection_of_mapsTo p root coroot i j hs).choose_spec]
 
-@[deprecated (since := "2025-12-14")] noncomputable alias _root_.RootSystem.mk' := mk''
+@[deprecated (since := "2025-12-14")] alias _root_.RootSystem.mk' := mk''
 
 variable {p root coroot hp hs hsp} in
 lemma isRootSystem_mk'' (h_int : ∀ i j, ∃ z : ℤ, z = p (root i) (coroot j)) :

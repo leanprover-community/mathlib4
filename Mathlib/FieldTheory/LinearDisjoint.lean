@@ -267,7 +267,7 @@ Note that the condition `A.toSubalgebra ⊔ B.toSubalgebra = ⊤` is equivalent 
 `A ⊔ B = ⊤` in many cases, see `IntermediateField.sup_toSubalgebra_of_isAlgebraic_right` and similar
 results.
 -/
-noncomputable def basisOfBasisRight (H : A.LinearDisjoint B)
+def basisOfBasisRight (H : A.LinearDisjoint B)
     (H' : A.toSubalgebra ⊔ B.toSubalgebra = ⊤) {ι : Type*} (b : Basis ι F B) :
     Basis ι A E :=
   (linearDisjoint_iff'.mp H).basisOfBasisRight H' b
@@ -290,7 +290,7 @@ Note that the condition `A.toSubalgebra ⊔ B.toSubalgebra = ⊤` is equivalent 
 `A ⊔ B = ⊤` in many cases, see `IntermediateField.sup_toSubalgebra_of_isAlgebraic_right` and similar
 results.
 -/
-noncomputable def basisOfBasisLeft (H : A.LinearDisjoint B)
+def basisOfBasisLeft (H : A.LinearDisjoint B)
     (H' : A.toSubalgebra ⊔ B.toSubalgebra = ⊤) {ι : Type*} (b : Basis ι F A) :
     Basis ι B E :=
   (linearDisjoint_iff'.mp H).basisOfBasisLeft H' b

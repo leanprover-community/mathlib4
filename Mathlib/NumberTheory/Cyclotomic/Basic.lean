@@ -599,7 +599,7 @@ theorem isAbelianGalois [IsCyclotomicExtension S K L] :
   __ := isMulCommutative S K L
 
 /-- Any two `S`-cyclotomic extensions are isomorphic. -/
-noncomputable def algEquiv [IsCyclotomicExtension S K L]
+def algEquiv [IsCyclotomicExtension S K L]
     (L' : Type*) [Field L'] [Algebra K L'] [IsCyclotomicExtension S K L'] : L ≃ₐ[K] L' :=
   (nonempty_algEquiv_adjoin_of_isSepClosed S K L (AlgebraicClosure K)).some.trans
     (nonempty_algEquiv_adjoin_of_isSepClosed S K L' (AlgebraicClosure K)).some.symm

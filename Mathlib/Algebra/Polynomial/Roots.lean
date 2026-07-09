@@ -55,7 +55,7 @@ section Roots
 
 /-- `roots p` noncomputably gives a multiset containing all the roots of `p`,
 including their multiplicities. -/
-noncomputable def roots (p : R[X]) : Multiset R :=
+def roots (p : R[X]) : Multiset R :=
   haveI := Classical.decEq R
   haveI := Classical.dec (p = 0)
   if h : p = 0 then ∅ else Classical.choose (exists_multiset_roots h)
@@ -469,7 +469,7 @@ variable [CommRing T]
 
 /-- Given a polynomial `p` with coefficients in a ring `T` and a `T`-algebra `S`, `aroots p S` is
 the multiset of roots of `p` regarded as a polynomial over `S`. -/
-noncomputable abbrev aroots (p : T[X]) (S) [CommRing S] [IsDomain S] [Algebra T S] : Multiset S :=
+abbrev aroots (p : T[X]) (S) [CommRing S] [IsDomain S] [Algebra T S] : Multiset S :=
   (p.map (algebraMap T S)).roots
 
 theorem aroots_def (p : T[X]) (S) [CommRing S] [IsDomain S] [Algebra T S] :

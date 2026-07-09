@@ -86,7 +86,7 @@ variable {R S} (f : R →+* S) (g : S →+* P) (hf : Function.Bijective f) (hg :
 
 /-- Functoriality of `PiLocalization` but restricted to bijective ring homs.
 If R and S are commutative rings, surjectivity would be enough. -/
-noncomputable def mapPiLocalization : PiLocalization R →+* PiLocalization S :=
+def mapPiLocalization : PiLocalization R →+* PiLocalization S :=
   RingHom.pi fun I ↦ (Localization.localRingHom _ _ f rfl).comp <|
     Pi.evalRingHom _ (⟨_, I.2.comap_bijective f hf⟩ : MaximalSpectrum R)
 
@@ -215,7 +215,7 @@ theorem isMaximal_of_toPiLocalization_surjective (surj : Function.Surjective (to
 variable (f : R →+* S)
 
 /-- A ring homomorphism induces a homomorphism between the products of localizations at primes. -/
-noncomputable def mapPiLocalization : PiLocalization R →+* PiLocalization S :=
+def mapPiLocalization : PiLocalization R →+* PiLocalization S :=
   RingHom.pi fun I ↦ (Localization.localRingHom _ I.1 f rfl).comp (Pi.evalRingHom _ (comap f I))
 
 theorem mapPiLocalization_naturality :

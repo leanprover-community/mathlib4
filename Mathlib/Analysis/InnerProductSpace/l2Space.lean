@@ -290,7 +290,7 @@ theorem IsHilbertSum.mkInternal [∀ i, CompleteSpace <| F i]
 i.e `lp G 2`.
 
 Note that this goes in the opposite direction from `OrthogonalFamily.linearIsometry`. -/
-noncomputable def IsHilbertSum.linearIsometryEquiv (hV : IsHilbertSum 𝕜 G V) : E ≃ₗᵢ[𝕜] lp G 2 :=
+def IsHilbertSum.linearIsometryEquiv (hV : IsHilbertSum 𝕜 G V) : E ≃ₗᵢ[𝕜] lp G 2 :=
   LinearIsometryEquiv.symm <|
     LinearIsometryEquiv.ofSurjective hV.OrthogonalFamily.linearIsometry hV.surjective_isometry
 

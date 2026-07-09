@@ -117,7 +117,7 @@ theorem div_wf_lemma (h : degree q ≤ degree p ∧ p ≠ 0) (hq : Monic q) :
     h.2 (by rw [leadingCoeff_monic_mul hq, leadingCoeff_mul_X_pow, leadingCoeff_C])
 
 /-- See `divByMonic`. -/
-noncomputable def divModByMonicAux : ∀ (_p : R[X]) {q : R[X]}, Monic q → R[X] × R[X]
+def divModByMonicAux : ∀ (_p : R[X]) {q : R[X]}, Monic q → R[X] × R[X]
   | p, q, hq =>
     letI := Classical.decEq R
     if h : degree q ≤ degree p ∧ p ≠ 0 then

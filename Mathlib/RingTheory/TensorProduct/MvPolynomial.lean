@@ -64,7 +64,7 @@ variable [CommSemiring N] [Algebra R N]
 
 /-- The algebra morphism from a tensor product of a polynomial algebra
   by an algebra to a polynomial algebra -/
-noncomputable def rTensorAlgEquiv : S ⊗[R] MvPolynomial σ N ≃ₐ[S] MvPolynomial σ (S ⊗[R] N) :=
+def rTensorAlgEquiv : S ⊗[R] MvPolynomial σ N ≃ₐ[S] MvPolynomial σ (S ⊗[R] N) :=
   AddMonoidAlgebra.rTensorEquivAlgEquiv R ..
 
 @[deprecated (since := "2026-06-18")] alias rTensorAlgHom := rTensorAlgEquiv
@@ -86,7 +86,7 @@ lemma rTensorAlgEquiv_apply (x : N ⊗[R] MvPolynomial σ S) :
 /-- The tensor product of the polynomial algebra by an algebra
   is algebraically equivalent to a polynomial algebra with
   coefficients in that algebra -/
-noncomputable def scalarRTensorAlgEquiv : N ⊗[R] MvPolynomial σ R ≃ₐ[N] MvPolynomial σ N :=
+def scalarRTensorAlgEquiv : N ⊗[R] MvPolynomial σ R ≃ₐ[N] MvPolynomial σ N :=
   AddMonoidAlgebra.scalarTensorEquiv R N
 
 variable (R)
@@ -94,7 +94,7 @@ variable (A : Type*) [CommSemiring A] [Algebra R A]
 
 /-- Tensoring `MvPolynomial σ R` on the left by an `R`-algebra `A` is algebraically
 equivalent to `MvPolynomial σ A`. -/
-noncomputable def algebraTensorAlgEquiv :
+def algebraTensorAlgEquiv :
     A ⊗[R] MvPolynomial σ R ≃ₐ[A] MvPolynomial σ A :=
   AddMonoidAlgebra.scalarTensorEquiv ..
 

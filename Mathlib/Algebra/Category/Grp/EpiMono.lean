@@ -148,7 +148,7 @@ instance : DecidableEq X' :=
 
 /-- Let `τ` be the permutation on `X'` exchanging `f.hom.range` and the point at infinity.
 -/
-noncomputable def tau : SX' :=
+def tau : SX' :=
   Equiv.swap (fromCoset ⟨↑f.hom.range, ⟨1, one_leftCoset _⟩⟩) ∞
 
 local notation "τ" => tau f

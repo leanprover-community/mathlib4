@@ -625,7 +625,7 @@ variable {C}
 
 set_option backward.isDefEq.respectTransparency false in
 /-- `X ×[Y] (Y ⨯ Z) ≅ X ⨯ Z` -/
-noncomputable def pullbackProdFstIsoProd {X Y : C} (f : X ⟶ Y) (Z : C)
+def pullbackProdFstIsoProd {X Y : C} (f : X ⟶ Y) (Z : C)
     [HasBinaryProduct Y Z] [HasBinaryProduct X Z] [HasPullback f (prod.fst : Y ⨯ Z ⟶ _)] :
     pullback f (prod.fst : Y ⨯ Z ⟶ _) ≅ X ⨯ Z where
   hom := prod.lift (pullback.fst _ _) (pullback.snd _ _ ≫ prod.snd)
@@ -676,7 +676,7 @@ section
 
 set_option backward.isDefEq.respectTransparency false in
 /-- `(Z ⨯ Y) ×[Y] X ≅ Z ⨯ X` -/
-noncomputable def pullbackProdSndIsoProd {X Y : C} (f : X ⟶ Y) (Z : C)
+def pullbackProdSndIsoProd {X Y : C} (f : X ⟶ Y) (Z : C)
     [HasBinaryProduct Z Y] [HasBinaryProduct Z X] [HasPullback (prod.snd : Z ⨯ Y ⟶ Y) f] :
     pullback (prod.snd : Z ⨯ Y ⟶ Y) f ≅ Z ⨯ X where
   hom := prod.lift (pullback.fst _ _ ≫ prod.fst) (pullback.snd _ _)

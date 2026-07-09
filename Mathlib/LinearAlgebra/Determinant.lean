@@ -539,7 +539,7 @@ theorem LinearEquiv.coe_ofIsUnitDet {f : M →ₗ[R] M'} {v : Basis ι R M} {v' 
   rfl
 
 /-- Builds a linear equivalence from an endomorphism whose determinant is a unit. -/
-noncomputable def LinearMap.equivOfIsUnitDet
+def LinearMap.equivOfIsUnitDet
     [Module.Free R M] [Module.Finite R M]
     {f : M →ₗ[R] M} (h : IsUnit f.det) :
     M ≃ₗ[R] M := by

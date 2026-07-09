@@ -231,7 +231,7 @@ variable [TopologicalSpace α] [TopologicalSpace β] {s : Set α}
 is dense then the coercion `(↑) : s → α` automatically satisfies `IsUniformInducing` and
 `IsDenseInducing` so this gives access to the theorems satisfied by a uniform extension by simply
 mentioning the density hypothesis. -/
-noncomputable def extend (hs : Dense s) (f : s → β) : α → β :=
+def extend (hs : Dense s) (f : s → β) : α → β :=
     hs.isDenseInducing_val.extend f
 
 variable {f : s → β}

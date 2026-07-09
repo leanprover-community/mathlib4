@@ -39,7 +39,7 @@ variable [Semiring R] [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)]
 /-- The direct sum of free modules is free.
 
 Note that while this is stated for `DFinsupp` not `DirectSum`, the types are defeq. -/
-noncomputable def basis {η : ι → Type*} (b : ∀ i, Basis (η i) R (M i)) :
+def basis {η : ι → Type*} (b : ∀ i, Basis (η i) R (M i)) :
     Basis (Σ i, η i) R (Π₀ i, M i) :=
   .ofRepr
     ((mapRange.linearEquiv fun i => (b i).repr).trans (sigmaFinsuppLequivDFinsupp R).symm)

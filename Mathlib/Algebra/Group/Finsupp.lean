@@ -74,7 +74,7 @@ instance instIsLeftCancelAdd [IsLeftCancelAdd M] : IsLeftCancelAdd (ι →₀ M)
 
 /-- When ι is finite and M is an AddMonoid,
   then Finsupp.equivFunOnFinite gives an AddEquiv -/
-noncomputable def addEquivFunOnFinite {ι : Type*} [Finite ι] :
+def addEquivFunOnFinite {ι : Type*} [Finite ι] :
     (ι →₀ M) ≃+ (ι → M) where
   __ := Finsupp.equivFunOnFinite
   map_add' _ _ := rfl
@@ -82,7 +82,7 @@ noncomputable def addEquivFunOnFinite {ι : Type*} [Finite ι] :
 /-- If `M` is the trivial monoid, then the monoid of finitely supported functions `ι →₀ M` is
 is isomorphic to `M`. -/
 @[simps! apply symm_apply]
-noncomputable def uniqueAddEquiv (i : ι) [Subsingleton ι] : (ι →₀ M) ≃+ M where
+def uniqueAddEquiv (i : ι) [Subsingleton ι] : (ι →₀ M) ≃+ M where
   toEquiv := uniqueEquiv i
   map_add' _ _ := rfl
 
@@ -93,7 +93,7 @@ noncomputable def uniqueAddEquiv (i : ι) [Subsingleton ι] : (ι →₀ M) ≃+
 /-- If `M` is the trivial monoid, then the monoid of finitely supported functions `ι →₀ M` is
 is isomorphic to `M`. -/
 @[simps!, deprecated uniqueAddEquiv (since := "2026-05-06")]
-noncomputable def _root_.AddEquiv.finsuppUnique {ι : Type*} [Unique ι] : (ι →₀ M) ≃+ M where
+def _root_.AddEquiv.finsuppUnique {ι : Type*} [Unique ι] : (ι →₀ M) ≃+ M where
   toEquiv := .finsuppUnique
   map_add' _ _ := rfl
 
@@ -114,7 +114,7 @@ def applyAddHom (a : ι) : (ι →₀ M) →+ M where
 
 /-- Coercion from a `Finsupp` to a function type is an `AddMonoidHom`. -/
 @[simps]
-noncomputable def coeFnAddHom : (ι →₀ M) →+ ι → M where
+def coeFnAddHom : (ι →₀ M) →+ ι → M where
   toFun := (⇑)
   map_zero' := coe_zero
   map_add' := coe_add

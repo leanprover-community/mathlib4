@@ -73,7 +73,7 @@ This range of this map is contained in the range of `(↑) : A → A⁺¹` (see 
 and so we may restrict it to `A` to get the necessary homomorphism for the non-unital continuous
 functional calculus.
 -/
-noncomputable def cfcₙAux : C(σₙ 𝕜 a, 𝕜)₀ →⋆ₙₐ[𝕜] A⁺¹ :=
+def cfcₙAux : C(σₙ 𝕜 a, 𝕜)₀ →⋆ₙₐ[𝕜] A⁺¹ :=
   (cfcHom (R := 𝕜) (hp₁.mpr ha) : C(σ 𝕜 (a : A⁺¹), 𝕜) →⋆ₙₐ[𝕜] A⁺¹) |>.comp
     (Homeomorph.compStarAlgEquiv' 𝕜 𝕜 <| .setCongr <| (quasispectrum_eq_spectrum_inr' 𝕜 𝕜 a).symm)
     |>.comp ContinuousMapZero.toContinuousMapHom

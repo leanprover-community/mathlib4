@@ -533,7 +533,6 @@ lemma map_rootsOfUnity {S F} [CommRing S] [IsDomain S] [FunLike F R S] [MonoidHo
 then the `n`-th roots of unity in `R` and `S` are isomorphic.
 Also see `IsPrimitiveRoot.map_rootsOfUnity` for the equality as `Subgroup Sˣ`. -/
 @[simps! -isSimp apply_coe_val apply_coe_inv_val]
-noncomputable
 def _root_.rootsOfUnityEquivOfPrimitiveRoots {S F} [CommRing S] [IsDomain S]
     [FunLike F R S] [MonoidHomClass F R S]
     {n : ℕ} [NeZero n] {f : F} (hf : Function.Injective f) (hζ : (primitiveRoots n R).Nonempty) :
@@ -780,7 +779,7 @@ variable [CommRing S] [IsDomain S] {μ : S} {n : ℕ} (hμ : IsPrimitiveRoot μ 
 
 /-- The `MonoidHom` that takes an automorphism to the power of `μ` that `μ` gets mapped to
 under it. -/
-noncomputable def autToPow [NeZero n] : (S ≃ₐ[R] S) →* (ZMod n)ˣ :=
+def autToPow [NeZero n] : (S ≃ₐ[R] S) →* (ZMod n)ˣ :=
   let μ' := hμ.toRootsOfUnity
   have ho : orderOf μ' = n := by
     refine Eq.trans ?_ hμ.eq_orderOf.symm -- `rw [hμ.eq_orderOf]` gives "motive not type correct"

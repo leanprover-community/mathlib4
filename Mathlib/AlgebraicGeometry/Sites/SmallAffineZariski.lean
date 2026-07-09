@@ -222,7 +222,7 @@ category instance on the indices. -/
     exact ⟨U, ⟨x, hxU⟩, rfl⟩
 
 set_option backward.isDefEq.respectTransparency false in
-noncomputable instance : (Scheme.AffineZariskiSite.directedCover X).LocallyDirected where
+instance : (Scheme.AffineZariskiSite.directedCover X).LocallyDirected where
   trans f := X.homOfLE (((Scheme.AffineZariskiSite.toOpensFunctor _).map f).le)
   directed {U V} x := by
     let a := (pullback.fst _ _ ≫ U.1.ι) x
@@ -258,7 +258,7 @@ together once the theory of quasi-coherent `𝒪ₓ`-algebras are developed.
 set_option backward.defeqAttrib.useBackward true in
 variable (X) in
 /-- `X` is the colimit of its affine opens. See `isColimit_cocone` below. -/
-@[simps] noncomputable def cocone :
+@[simps] def cocone :
     Limits.Cocone (toOpensFunctor X ⋙ X.presheaf.rightOp ⋙ Scheme.Spec) where
   pt := X
   ι.app U := U.2.fromSpec
@@ -343,7 +343,7 @@ alias _root_.AlgebraicGeometry.Scheme.preservesLocalization_toOpensFunctor :=
 set_option backward.isDefEq.respectTransparency false in
 variable (X) in
 /-- `X` is the colimit of its affine opens. -/
-noncomputable def isColimitCocone : IsColimit (cocone X) :=
+def isColimitCocone : IsColimit (cocone X) :=
   letI D := relativeGluingData (X := X) (.of_isIso (𝟙 _))
   letI F := D.functor
   -- Why doesn't typeclass synthesis work here?

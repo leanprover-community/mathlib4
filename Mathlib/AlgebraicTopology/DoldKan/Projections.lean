@@ -47,7 +47,7 @@ variable {C : Type*} [Category* C] [Preadditive C] {X : SimplicialObject C}
 
 /-- This is the inductive definition of the projections `P q : K[X] ⟶ K[X]`,
 with `P 0 := 𝟙 _` and `P (q+1) := P q ≫ (𝟙 _ + Hσ q)`. -/
-noncomputable def P : ℕ → (K[X] ⟶ K[X])
+def P : ℕ → (K[X] ⟶ K[X])
   | 0 => 𝟙 _
   | q + 1 => P q ≫ (𝟙 _ + Hσ q)
 

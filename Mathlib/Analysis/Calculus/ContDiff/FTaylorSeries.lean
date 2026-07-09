@@ -395,7 +395,7 @@ variable (𝕜)
 derivative of `f` is the derivative of the `n`-th derivative of `f` along this set, together with
 an uncurrying step to see it as a multilinear map in `n+1` variables..
 -/
-noncomputable def iteratedFDerivWithin (n : ℕ) (f : E → F) (s : Set E) : E → E [×n]→L[𝕜] F :=
+def iteratedFDerivWithin (n : ℕ) (f : E → F) (s : Set E) : E → E [×n]→L[𝕜] F :=
   Nat.recOn n (fun x => ContinuousMultilinearMap.uncurry0 𝕜 E (f x)) fun _ rec x =>
     ContinuousLinearMap.uncurryLeft (fderivWithin 𝕜 rec s x)
 
@@ -800,7 +800,7 @@ lemma HasFTaylorSeriesUpTo.tsupport_subset {m : ℕ} (h : m ≤ n)
 variable (𝕜)
 
 /-- The `n`-th derivative of a function, as a multilinear map, defined inductively. -/
-noncomputable def iteratedFDeriv (n : ℕ) (f : E → F) : E → E [×n]→L[𝕜] F :=
+def iteratedFDeriv (n : ℕ) (f : E → F) : E → E [×n]→L[𝕜] F :=
   Nat.recOn n (fun x => ContinuousMultilinearMap.uncurry0 𝕜 E (f x)) fun _ rec x =>
     ContinuousLinearMap.uncurryLeft (fderiv 𝕜 rec x)
 

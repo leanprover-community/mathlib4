@@ -251,7 +251,7 @@ If `A` and `B` are linearly disjoint subalgebras in a commutative algebra `S` ov
 such that `A ⊔ B = S`, then this is the natural isomorphism
 `A ⊗[R] B ≃ₐ[A] S` induced by multiplication in `S`.
 -/
-noncomputable def mulMapLeftOfSupEqTop (H' : A ⊔ B = ⊤) :
+def mulMapLeftOfSupEqTop (H' : A ⊔ B = ⊤) :
     A ⊗[R] B ≃ₐ[A] S :=
   (AlgEquiv.ofInjective (Algebra.TensorProduct.productLeftAlgHom
     (Algebra.ofId A S) B.val) H.injective).trans ((Subalgebra.equivOfEq _ _ (by
@@ -267,7 +267,7 @@ theorem mulMapLeftOfSupEqTop_tmul (H' : A ⊔ B = ⊤) (a : A) (b : B) :
 If `A` and `B` are linearly disjoint subalgebras in a commutative algebra `S` over `R`
 such that `A ⊔ B = S`, then any `R`-basis of `B` is also an `A`-basis of `S`.
 -/
-noncomputable def basisOfBasisRight (H' : A ⊔ B = ⊤) {ι : Type*} (b : Basis ι R B) :
+def basisOfBasisRight (H' : A ⊔ B = ⊤) {ι : Type*} (b : Basis ι R B) :
     Basis ι A S :=
   (b.baseChange A).map (H.mulMapLeftOfSupEqTop H').toLinearEquiv
 
@@ -297,7 +297,7 @@ theorem leftMulMatrix_basisOfBasisRight_algebraMap (H' : A ⊔ B = ⊤) {ι : Ty
 If `A` and `B` are subalgebras in a commutative algebra `S` over `R`, and if they are
 linearly disjoint and such that `A ⊔ B = S`, then any `R`-basis of `A` is also a `B`-basis of `S`.
 -/
-noncomputable def basisOfBasisLeft (H' : A ⊔ B = ⊤) {ι : Type*} (b : Basis ι R A) :
+def basisOfBasisLeft (H' : A ⊔ B = ⊤) {ι : Type*} (b : Basis ι R A) :
     Basis ι B S :=
   (b.baseChange B).map (H.symm.mulMapLeftOfSupEqTop (by rwa [sup_comm])).toLinearEquiv
 

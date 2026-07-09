@@ -174,7 +174,6 @@ def conePostIso (F : J ⥤ C) (i : J) :
 attribute [local instance] IsCofiltered.isConnected in
 /-- The functor taking a cone over `F` to a cone over `Over.post F : Over i ⥤ Over (F.obj i)`
 preserves limit cones -/
-noncomputable
 def isLimitConePost [IsCofilteredOrEmpty J] {F : J ⥤ C} {c : Cone F} (i : J) (hc : IsLimit c) :
     IsLimit ((conePost F i).obj c) :=
   isLimitOfReflects (Over.forget _)

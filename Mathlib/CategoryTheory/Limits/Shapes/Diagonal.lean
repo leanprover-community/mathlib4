@@ -519,11 +519,11 @@ namespace pushout
 variable {X Y : C} (f : X ⟶ Y) [HasPushout f f]
 
 /-- The codiagonal object of a morphism `f : X ⟶ Y` is `pushout f f`. -/
-noncomputable abbrev codiagonalObj (f : X ⟶ Y) [HasPushout f f] : C :=
+abbrev codiagonalObj (f : X ⟶ Y) [HasPushout f f] : C :=
   pushout f f
 
 /-- The codiagonal morphism `pushout f f ⟶ Y` for a morphism `f : X ⟶ Y`. -/
-noncomputable def codiagonal (f : X ⟶ Y) [HasPushout f f] : codiagonalObj f ⟶ Y :=
+def codiagonal (f : X ⟶ Y) [HasPushout f f] : codiagonalObj f ⟶ Y :=
   pushout.desc (𝟙 Y) (𝟙 Y) rfl
 
 @[reassoc (attr := simp)]

@@ -243,10 +243,9 @@ instance {X : Scheme.{u}} (x : X) : IsPreimmersion (X.fromSpecResidueField x) :=
   rw [IsPreimmersion.comp_iff]
   infer_instance
 
-@[simps] noncomputable
+@[simps] 
 instance (x : X) : (Spec (X.residueField x)).Over X := ⟨X.fromSpecResidueField x⟩
 
-noncomputable
 instance (x : X) : (Spec (X.residueField x)).CanonicallyOver X where
 
 @[reassoc (attr := simp)]
@@ -296,7 +295,6 @@ section Spec
 variable (R : CommRingCat) (x : Spec R)
 
 /-- The residue fields of `Spec R` are isomorphic to `Ideal.ResidueField`. -/
-noncomputable
 def Spec.residueFieldIso :
     (Spec R).residueField x ≅ .of x.asIdeal.ResidueField :=
   (IsLocalRing.ResidueField.mapEquiv

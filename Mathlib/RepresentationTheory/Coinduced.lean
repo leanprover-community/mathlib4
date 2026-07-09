@@ -209,7 +209,7 @@ noncomputable section CoindIso
 such that for all `g : G`, `h : H`, `f (φ g * h) = A.ρ g (f h)`, is `k`-linearly equivalent
 to the `G`-representation morphisms `k[H] ⟶ A`. -/
 @[simps]
-noncomputable def coindVEquiv :
+def coindVEquiv :
     A.ρ.coindV φ ≃ₗ[k] (res φ (leftRegular k H) ⟶ A) where
   toFun f := Rep.ofHom ⟨linearCombination _ f.1 ∘ₗ (MonoidAlgebra.coeffLinearEquiv _).toLinearMap,
     fun g ↦ by dsimp; ext; simp [f.2 g]⟩
@@ -224,14 +224,14 @@ noncomputable def coindVEquiv :
 
 /-- `coind φ A` and `coind' φ A` are isomorphic representations, with the underlying
 `k`-linear equivalence given by `coindVEquiv`. -/
-noncomputable def coindIso : coind φ A ≅ coind' φ A :=
+def coindIso : coind φ A ≅ coind' φ A :=
   Rep.mkIso <| .mk (coindVEquiv φ A) fun h => by ext; simp [homEquiv]
 
 /-- Given a monoid homomorphism `φ : G →* H`, the coinduction functors `Rep k G ⥤ Rep k H` given by
 `coindFunctor k φ` and `coindFunctor' k φ` are naturally isomorphic, with isomorphism on objects
 given by `coindIso φ`. -/
 @[simps!]
-noncomputable def coindFunctorIso : coindFunctor k φ ≅ coindFunctor' k φ :=
+def coindFunctorIso : coindFunctor k φ ≅ coindFunctor' k φ :=
   NatIso.ofComponents (coindIso φ) fun _ => by
     ext
     exact coind'_ext _ fun _ ↦ by simp [coindIso, coindMap']
@@ -294,16 +294,16 @@ but removing it seems to be harmless. -/
 variable (k) in
 /-- Given a monoid homomorphism `φ : G →* H`, the coinduction functor `Rep k G ⥤ Rep k H` is right
 adjoint to the restriction functor along `φ`. -/
-noncomputable abbrev resCoindAdjunction : resFunctor.{max w t} φ ⊣ coindFunctor k φ :=
+abbrev resCoindAdjunction : resFunctor.{max w t} φ ⊣ coindFunctor k φ :=
   Adjunction.mkOfHomEquiv {
     homEquiv X Y := (resCoindHomEquiv φ X Y).toEquiv
     homEquiv_naturality_left_symm := by intros; rfl
     homEquiv_naturality_right := by intros; ext; rfl }
 
-noncomputable instance : (coindFunctor.{max w t} k φ).IsRightAdjoint :=
+instance : (coindFunctor.{max w t} k φ).IsRightAdjoint :=
   (resCoindAdjunction k φ).isRightAdjoint
 
-noncomputable instance : (resFunctor.{max w t} (k := k) φ).IsLeftAdjoint :=
+instance : (resFunctor.{max w t} (k := k) φ).IsLeftAdjoint :=
   (resCoindAdjunction k φ).isLeftAdjoint
 
 instance {G : Type w} [Group G] (S : Subgroup G) :

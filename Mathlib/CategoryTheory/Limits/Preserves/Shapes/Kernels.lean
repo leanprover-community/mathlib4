@@ -305,7 +305,7 @@ instance preservesKernel_zero :
     exact (Fork.ext (G.mapIso (asIso (Fork.ι c))).symm (by simp))⟩
 
 set_option backward.defeqAttrib.useBackward true in
-noncomputable instance preservesCokernel_zero :
+instance preservesCokernel_zero :
     PreservesColimit (parallelPair (0 : X ⟶ Y) 0) G where
   preserves {c} hc := ⟨by
     have := CokernelCofork.IsColimit.isIso_π c hc rfl

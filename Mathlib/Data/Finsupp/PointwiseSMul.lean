@@ -24,7 +24,7 @@ namespace Finsupp
 @[deprecated (since := "2026-02-13")] alias finite_vaddAntidiagonal :=
   Set.SMulAntidiagonal.finite_of_finite_fst
 
-@[deprecated (since := "2026-02-13")] noncomputable alias vaddAntidiagonal :=
+@[deprecated (since := "2026-02-13")] alias vaddAntidiagonal :=
   Finset.VAddAntidiagonal
 
 @[deprecated (since := "2026-02-13")] alias mem_vaddAntidiagonal_iff :=

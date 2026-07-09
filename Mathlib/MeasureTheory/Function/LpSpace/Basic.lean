@@ -879,7 +879,7 @@ variable [NormedSpace ℝ E] {ν : Measure α} {c : ℝ≥0∞}
 /-- The canonical map from `Lᵖ ν` to `Lᵖ μ` when `μ` is bounded by a finite multiple of `ν`.
 This is the linear map version. Use instead the continuous linear map
 version `LpToLpOfMeasureLeSMul` -/
-private noncomputable def LpToLpOfMeasureLeSMulₗ (hc : c ≠ ∞) (h : μ ≤ c • ν) :
+private def LpToLpOfMeasureLeSMulₗ (hc : c ≠ ∞) (h : μ ≤ c • ν) :
     Lp E p ν →ₗ[ℝ] Lp E p μ where
   toFun f := ((Lp.memLp f).of_measure_le_smul hc h).toLp f
   map_add' f g := by
@@ -917,7 +917,7 @@ private lemma norm_LpToLpOfMeasureLeSMulₗ_apply_le
 
 /-- The canonical map from `Lᵖ ν` to `Lᵖ μ` when `μ` is bounded by a finite multiple of `ν`. -/
 @[no_expose]
-noncomputable def LpToLpOfMeasureLeSMul [Fact (1 ≤ p)] (hc : c ≠ ∞) (h : μ ≤ c • ν) :
+def LpToLpOfMeasureLeSMul [Fact (1 ≤ p)] (hc : c ≠ ∞) (h : μ ≤ c • ν) :
     Lp E p ν →L[ℝ] Lp E p μ :=
   LinearMap.mkContinuous (LpToLpOfMeasureLeSMulₗ hc h) (c.toReal ^ (1 / p).toReal)
     (fun _ ↦ norm_LpToLpOfMeasureLeSMulₗ_apply_le hc h)
@@ -1011,17 +1011,17 @@ section Star
 
 variable {R : Type*} [NormedAddCommGroup R] [StarAddMonoid R] [NormedStarGroup R]
 
-protected noncomputable instance {p : ℝ≥0∞} : Star (Lp R p μ) where
+protected instance {p : ℝ≥0∞} : Star (Lp R p μ) where
   star f := ⟨star (f : α →ₘ[μ] R),
     by simpa [Lp.mem_Lp_iff_eLpNorm_lt_top] using Lp.eLpNorm_lt_top f⟩
 
 lemma coeFn_star {p : ℝ≥0∞} (f : Lp R p μ) : (star f : Lp R p μ) =ᵐ[μ] star f :=
     (f : α →ₘ[μ] R).coeFn_star
 
-noncomputable instance {p : ℝ≥0∞} : InvolutiveStar (Lp R p μ) where
+instance {p : ℝ≥0∞} : InvolutiveStar (Lp R p μ) where
   star_involutive _ := Subtype.ext <| star_involutive _
 
-noncomputable instance [TrivialStar R] {p : ℝ≥0∞} : TrivialStar (Lp R p μ) where
+instance [TrivialStar R] {p : ℝ≥0∞} : TrivialStar (Lp R p μ) where
   star_trivial _ := Subtype.ext <| star_trivial _
 
 end Star

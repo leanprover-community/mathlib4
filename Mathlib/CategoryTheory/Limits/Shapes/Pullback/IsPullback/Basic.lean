@@ -770,7 +770,7 @@ variable {X Y Z : C} {f f' : X ⟶ Y} {g g' : Y ⟶ Z}
 
 /-- If `f : X ⟶ Y`, `g g' : Y ⟶ Z` forms a pullback square, then `f` is the equalizer of
 `g` and `g'`. -/
-noncomputable def IsPullback.isLimitFork (H : IsPullback f f g g') : IsLimit (Fork.ofι f H.w) := by
+def IsPullback.isLimitFork (H : IsPullback f f g g') : IsLimit (Fork.ofι f H.w) := by
   fapply Fork.IsLimit.mk
   · exact fun s => H.isLimit.lift (PullbackCone.mk s.ι s.ι s.condition)
   · exact fun s => H.isLimit.fac _ WalkingCospan.left
@@ -780,7 +780,7 @@ noncomputable def IsPullback.isLimitFork (H : IsPullback f f g g') : IsLimit (Fo
 
 /-- If `f f' : X ⟶ Y`, `g : Y ⟶ Z` forms a pushout square, then `g` is the coequalizer of
 `f` and `f'`. -/
-noncomputable def IsPushout.isLimitFork (H : IsPushout f f' g g) :
+def IsPushout.isLimitFork (H : IsPushout f f' g g) :
     IsColimit (Cofork.ofπ g H.w) := by
   fapply Cofork.IsColimit.mk
   · exact fun s => H.isColimit.desc (PushoutCocone.mk s.π s.π s.condition)
@@ -1002,7 +1002,7 @@ namespace IsPullback
 set_option backward.defeqAttrib.useBackward true in
 /-- An `IsPullback` square yields an isomorphism `Over.mk fst ≅ Over.mk (pullback.fst f g)`
 in `Over X`. -/
-noncomputable def isoOverPullback {P : C} {fst : P ⟶ X} {snd : P ⟶ Y}
+def isoOverPullback {P : C} {fst : P ⟶ X} {snd : P ⟶ Y}
     (h : IsPullback fst snd f g) :
     Over.mk fst ≅ Over.mk (pullback.fst f g) :=
   Over.isoMk (h.isoIsPullback _ _ (IsPullback.of_hasPullback f g)) (by simp)

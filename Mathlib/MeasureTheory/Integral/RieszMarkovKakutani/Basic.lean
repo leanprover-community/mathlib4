@@ -271,7 +271,7 @@ section RieszContentRegular
 variable [T2Space X] [LocallyCompactSpace X]
 
 /-- The content induced by the linear functional `Λ`. -/
-noncomputable def rieszContent (Λ : C_c(X, ℝ≥0) →ₗ[ℝ≥0] ℝ≥0) : Content X where
+def rieszContent (Λ : C_c(X, ℝ≥0) →ₗ[ℝ≥0] ℝ≥0) : Content X where
   toFun := rieszContentAux Λ
   mono' := fun _ _ ↦ rieszContentAux_mono Λ
   sup_disjoint' := fun _ _ disj _ _ ↦ rieszContentAux_union Λ disj

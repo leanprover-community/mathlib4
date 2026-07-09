@@ -81,7 +81,6 @@ theorem divX_X_pow : divX (X ^ n : R[X]) = if (n = 0) then 0 else X ^ (n - 1) :=
     simp [coeff_X_pow]
 
 /-- `divX` as an additive homomorphism. -/
-noncomputable
 def divX_hom : R[X] →+ R[X] :=
   { toFun := divX
     map_zero' := divX_zero
@@ -133,7 +132,7 @@ theorem degree_divX_lt (hp0 : p ≠ 0) : (divX p).degree < p.degree := by
 
 /-- An induction principle for polynomials, valued in Sort* instead of Prop. -/
 @[elab_as_elim]
-noncomputable def recOnHorner {M : R[X] → Sort*} (p : R[X]) (M0 : M 0)
+def recOnHorner {M : R[X] → Sort*} (p : R[X]) (M0 : M 0)
     (MC : ∀ p a, coeff p 0 = 0 → a ≠ 0 → M p → M (p + C a))
     (MX : ∀ p, p ≠ 0 → M p → M (p * X)) : M p :=
   letI := Classical.decEq R

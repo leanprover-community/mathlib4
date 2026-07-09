@@ -860,7 +860,7 @@ Warning: This produces a diamond for
 global instance.
 -/
 @[instance_reducible]
-noncomputable def algebraMvPolynomial : Algebra (MvPolynomial σ R) (MvPolynomial σ S) :=
+def algebraMvPolynomial : Algebra (MvPolynomial σ R) (MvPolynomial σ S) :=
   inferInstanceAs <| Algebra (AddMonoidAlgebra _ _) (AddMonoidAlgebra _ _)
 
 attribute [local instance] algebraMvPolynomial

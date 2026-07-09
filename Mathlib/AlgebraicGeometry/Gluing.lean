@@ -523,7 +523,6 @@ namespace IsLocallyDirected
 
 /-- (Implementation detail)
 The intersection `V` in the glue data associated to a locally directed diagram. -/
-noncomputable
 def V (i j : J) : (F.obj i).Opens := ⨆ (k : Σ k, (k ⟶ i) × (k ⟶ j)), (F.map k.2.1).opensRange
 
 lemma V_self (i) : V F i i = ⊤ :=
@@ -734,7 +733,6 @@ The cocone associated to a locally directed diagram is a colimit.
 
 One usually does not want to use this directly, and instead use the generic `colimit` API.
 -/
-noncomputable
 def isColimit : IsColimit (cocone F) where
   desc s := Multicoequalizer.desc _ _ (fun i ↦ s.ι.app ↓i) (by
     rintro ⟨i, j⟩
@@ -759,7 +757,6 @@ The cocone associated to a locally directed diagram is a colimit as locally ring
 
 One usually does not want to use this directly, and instead use the generic `colimit` API.
 -/
-noncomputable
 def isColimitForgetToLocallyRingedSpace :
     IsColimit (Scheme.forgetToLocallyRingedSpace.mapCocone (cocone F)) where
   desc s := (glueData F).isoLocallyRingedSpace.hom ≫

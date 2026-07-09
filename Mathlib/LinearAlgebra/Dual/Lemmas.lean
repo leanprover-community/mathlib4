@@ -442,7 +442,7 @@ theorem dualAnnihilator_inj {W W' : Subspace K V} :
 /-- Given a subspace `W` of `V` and an element of its dual `φ`, `dualLift W φ` is
 an arbitrary extension of `φ` to an element of the dual of `V`.
 That is, `dualLift W φ` sends `w ∈ W` to `φ x` and `x` in a chosen complement of `W` to `0`. -/
-noncomputable def dualLift (W : Subspace K V) : Module.Dual K W →ₗ[K] Module.Dual K V :=
+def dualLift (W : Subspace K V) : Module.Dual K W →ₗ[K] Module.Dual K V :=
   W.subtype.leftInverse.dualMap
 
 variable {W : Subspace K V}
@@ -475,7 +475,7 @@ theorem dualLift_injective : Function.Injective W.dualLift :=
 
 /-- The quotient by the `dualAnnihilator` of a subspace is isomorphic to the
   dual of that subspace. -/
-noncomputable def quotAnnihilatorEquiv (W : Subspace K V) :
+def quotAnnihilatorEquiv (W : Subspace K V) :
     (Module.Dual K V ⧸ W.dualAnnihilator) ≃ₗ[K] Module.Dual K W :=
   (quotEquivOfEq _ _ W.dualRestrict_ker_eq_dualAnnihilator).symm.trans <|
     W.dualRestrict.quotKerEquivOfSurjective dualRestrict_surjective
@@ -487,7 +487,7 @@ theorem quotAnnihilatorEquiv_apply (W : Subspace K V) (φ : Module.Dual K V) :
   rfl
 
 /-- The natural isomorphism from the dual of a subspace `W` to `W.dualLift.range`. -/
-noncomputable def dualEquivDual (W : Subspace K V) :
+def dualEquivDual (W : Subspace K V) :
     Module.Dual K W ≃ₗ[K] LinearMap.range W.dualLift :=
   LinearEquiv.ofInjective _ dualLift_injective
 
@@ -525,13 +525,13 @@ theorem dualAnnihilator_dualAnnihilator_eq (W : Subspace K V) :
   rwa [← OrderIso.symm_apply_eq]
 
 /-- The quotient by the dual is isomorphic to its dual annihilator. -/
-noncomputable def quotDualEquivAnnihilator (W : Subspace K V) :
+def quotDualEquivAnnihilator (W : Subspace K V) :
     (Module.Dual K V ⧸ LinearMap.range W.dualLift) ≃ₗ[K] W.dualAnnihilator :=
   LinearEquiv.quotEquivOfQuotEquiv <| LinearEquiv.trans W.quotAnnihilatorEquiv W.dualEquivDual
 
 open scoped Classical in
 /-- The quotient by a subspace is isomorphic to its dual annihilator. -/
-noncomputable def quotEquivAnnihilator (W : Subspace K V) : (V ⧸ W) ≃ₗ[K] W.dualAnnihilator :=
+def quotEquivAnnihilator (W : Subspace K V) : (V ⧸ W) ≃ₗ[K] W.dualAnnihilator :=
   let φ := (Basis.ofVectorSpace K W).toDualEquiv.trans W.dualEquivDual
   let ψ := LinearEquiv.quotEquivOfEquiv φ (Basis.ofVectorSpace K V).toDualEquiv
   ψ ≪≫ₗ W.quotDualEquivAnnihilator

@@ -127,7 +127,6 @@ theorem IsAffine.iff_of_isIso {X Y : Scheme} (f : X ⟶ Y) [IsIso f] : IsAffine 
 
 /-- If `f : X ⟶ Y` is a morphism between affine schemes, the corresponding arrow is isomorphic
 to the arrow of the morphism on prime spectra induced by the map on global sections. -/
-noncomputable
 def arrowIsoSpecΓOfIsAffine {X Y : Scheme} [IsAffine X] [IsAffine Y] (f : X ⟶ Y) :
     Arrow.mk f ≅ Arrow.mk (Spec.map f.appTop) :=
   Arrow.isoMk X.isoSpec Y.isoSpec (ΓSpec.adjunction.unit_naturality _)
@@ -233,9 +232,9 @@ instance hasLimits : HasLimits AffineScheme.{u} := by
   haveI : HasLimits AffineScheme.{u}ᵒᵖᵒᵖ := Limits.hasLimits_op_of_hasColimits
   exact Adjunction.has_limits_of_equivalence (opOpEquivalence AffineScheme.{u}).inverse
 
-noncomputable instance Γ_preservesLimits : PreservesLimits Γ.{u}.rightOp := inferInstance
+instance Γ_preservesLimits : PreservesLimits Γ.{u}.rightOp := inferInstance
 
-noncomputable instance forgetToScheme_preservesLimits : PreservesLimits forgetToScheme := by
+instance forgetToScheme_preservesLimits : PreservesLimits forgetToScheme := by
   apply +allowSynthFailures @preservesLimits_of_natIso _ _ _ _ _ _
     (Functor.isoWhiskerRight equivCommRingCat.unitIso forgetToScheme).symm
   change PreservesLimits (equivCommRingCat.functor ⋙ Scheme.Spec)
@@ -331,7 +330,6 @@ theorem isBasis_basicOpen (X : Scheme) [IsAffine X] :
   rfl
 
 /-- The canonical map `U ⟶ Spec Γ(X, U)` for an open `U ⊆ X`. -/
-noncomputable
 def Scheme.Opens.toSpecΓ {X : Scheme.{u}} (U : X.Opens) :
     U.toScheme ⟶ Spec Γ(X, U) :=
   U.toScheme.toSpecΓ ≫ Spec.map U.topIso.inv
@@ -633,7 +631,6 @@ theorem exists_basicOpen_le {V : X.Opens} (x : V) (h : ↑x ∈ U) :
     simpa [Scheme.image_basicOpen] using! (U.ι.image_mono h₂).trans (U.ι.image_preimage_le _)
   exact ⟨U.topIso.hom.hom r, by simp [Scheme.Opens.toScheme_presheaf_obj, h₁, h₂]⟩
 
-noncomputable
 instance {R : CommRingCat} {U} : Algebra R Γ(Spec R, U) :=
   inferInstanceAs (Algebra R ((Spec.structureSheaf R).presheaf.obj _))
 
@@ -762,7 +759,7 @@ theorem _root_.AlgebraicGeometry.exists_basicOpen_le_affine_inter
   exact ⟨f', g, hf', hf'.symm ▸ hg₂⟩
 
 /-- The prime ideal of `𝒪ₓ(U)` corresponding to a point `x : U`. -/
-noncomputable def primeIdealOf (x : U) :
+def primeIdealOf (x : U) :
     PrimeSpectrum Γ(X, U) :=
   hU.isoSpec.hom x
 
@@ -964,7 +961,7 @@ set_option backward.isDefEq.respectTransparency false in
 open _root_.PrimeSpectrum in
 /-- The restriction of `Spec.map f` to a basic open `D(r)` is isomorphic to `Spec.map` of the
 localization of `f` away from `r`. -/
-noncomputable def SpecMapRestrictBasicOpenIso {R S : CommRingCat} (f : R ⟶ S) (r : R) :
+def SpecMapRestrictBasicOpenIso {R S : CommRingCat} (f : R ⟶ S) (r : R) :
     Arrow.mk (Spec.map f ∣_ (PrimeSpectrum.basicOpen r)) ≅
       Arrow.mk (Spec.map <| CommRingCat.ofHom (Localization.awayMap f.hom r)) := by
   refine Arrow.isoMk ?_ ?_ ?_
@@ -1267,7 +1264,6 @@ variable {R S : CommRingCat.{u}} (f : R ⟶ S) (p : PrimeSpectrum S) (x : PrimeS
 variable (R) (x : PrimeSpectrum R) in
 /-- The stalk of `Spec R` at `x` is isomorphic to `Rₚ`,
 where `p` is the prime corresponding to `x`. -/
-noncomputable
 def Spec.stalkIso : (Spec R).presheaf.stalk x ≅ .of (Localization.AtPrime x.asIdeal) :=
   (StructureSheaf.stalkIso ..).toCommRingCatIso.symm
 

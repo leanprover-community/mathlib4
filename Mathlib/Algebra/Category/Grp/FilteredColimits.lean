@@ -48,7 +48,7 @@ In the following, we will show that this has the structure of a group.
 @[to_additive
   /-- The colimit of `F ⋙ forget₂ AddGrpCat AddMonCat` in the category `AddMonCat`.
   In the following, we will show that this has the structure of an additive group. -/]
-noncomputable abbrev G : MonCat :=
+abbrev G : MonCat :=
   MonCat.FilteredColimits.colimit.{v, u} (F ⋙ forget₂ GrpCat MonCat.{max v u})
 
 /-- The canonical projection into the colimit, as a quotient type. -/
@@ -109,7 +109,7 @@ theorem colimit_inv_mk_eq (x : Σ j, F.obj j) : (G.mk.{v, u} F x)⁻¹ = G.mk F 
   rfl
 
 @[to_additive]
-noncomputable instance colimitGroup : Group (G.{v, u} F) :=
+instance colimitGroup : Group (G.{v, u} F) :=
   { colimitInv.{v, u} F, (G.{v, u} F).str with
     inv_mul_cancel := fun x => by
       refine Quot.inductionOn x ?_; clear x; intro x
@@ -120,12 +120,12 @@ noncomputable instance colimitGroup : Group (G.{v, u} F) :=
 
 /-- The bundled group giving the filtered colimit of a diagram. -/
 @[to_additive /-- The bundled additive group giving the filtered colimit of a diagram. -/]
-noncomputable def colimit : GrpCat.{max v u} :=
+def colimit : GrpCat.{max v u} :=
   GrpCat.of (G.{v, u} F)
 
 /-- The cocone over the proposed colimit group. -/
 @[to_additive /-- The cocone over the proposed colimit additive group. -/]
-noncomputable def colimitCocone : Cocone F where
+def colimitCocone : Cocone F where
   pt := colimit.{v, u} F
   ι.app J := GrpCat.ofHom ((MonCat.FilteredColimits.colimitCocone
     (F ⋙ forget₂ GrpCat MonCat)).ι.app J).hom
@@ -134,12 +134,12 @@ noncomputable def colimitCocone : Cocone F where
 
 /-- The proposed colimit cocone is a colimit in `GrpCat`. -/
 @[to_additive /-- The proposed colimit cocone is a colimit in `AddGroup`. -/]
-noncomputable def colimitCoconeIsColimit : IsColimit (colimitCocone.{v, u} F) :=
+def colimitCoconeIsColimit : IsColimit (colimitCocone.{v, u} F) :=
   isColimitOfReflects (forget₂ _ MonCat)
     (MonCat.FilteredColimits.colimitCoconeIsColimit (F ⋙ forget₂ GrpCat MonCat))
 
 @[to_additive forget₂AddMon_preservesFilteredColimits]
-noncomputable instance forget₂Mon_preservesFilteredColimits :
+instance forget₂Mon_preservesFilteredColimits :
     PreservesFilteredColimits.{u} (forget₂ GrpCat.{u} MonCat.{u}) where
       preserves_filtered_colimits x hx1 _ :=
       letI : Category.{u, u} x := hx1
@@ -147,7 +147,7 @@ noncomputable instance forget₂Mon_preservesFilteredColimits :
           (MonCat.FilteredColimits.colimitCoconeIsColimit.{u, u} _)⟩
 
 @[to_additive]
-noncomputable instance forget_preservesFilteredColimits :
+instance forget_preservesFilteredColimits :
     PreservesFilteredColimits (forget GrpCat.{u}) :=
   Limits.comp_preservesFilteredColimits (forget₂ GrpCat MonCat) (forget MonCat.{u})
 
@@ -169,11 +169,11 @@ In the following, we will show that this has the structure of a _commutative_ gr
 @[to_additive
   /-- The colimit of `F ⋙ forget₂ AddCommGrpCat AddGrpCat` in the category `AddGrpCat`.
   In the following, we will show that this has the structure of a _commutative_ additive group. -/]
-noncomputable abbrev G : GrpCat.{max v u} :=
+abbrev G : GrpCat.{max v u} :=
   GrpCat.FilteredColimits.colimit.{v, u} (F ⋙ forget₂ CommGrpCat.{max v u} GrpCat.{max v u})
 
 @[to_additive]
-noncomputable instance colimitCommGroup : CommGroup.{max v u} (G.{v, u} F) :=
+instance colimitCommGroup : CommGroup.{max v u} (G.{v, u} F) :=
   { (G F).str,
     CommMonCat.FilteredColimits.colimitCommMonoid
       (F ⋙ forget₂ CommGrpCat CommMonCat.{max v u}) with }
@@ -181,12 +181,12 @@ noncomputable instance colimitCommGroup : CommGroup.{max v u} (G.{v, u} F) :=
 /-- The bundled commutative group giving the filtered colimit of a diagram. -/
 @[to_additive
 /-- The bundled additive commutative group giving the filtered colimit of a diagram. -/]
-noncomputable def colimit : CommGrpCat :=
+def colimit : CommGrpCat :=
   CommGrpCat.of (G.{v, u} F)
 
 /-- The cocone over the proposed colimit commutative group. -/
 @[to_additive /-- The cocone over the proposed colimit additive commutative group. -/]
-noncomputable def colimitCocone : Cocone F where
+def colimitCocone : Cocone F where
   pt := colimit.{v, u} F
   ι.app J := CommGrpCat.ofHom
     ((GrpCat.FilteredColimits.colimitCocone (F ⋙ forget₂ CommGrpCat GrpCat)).ι.app J).hom
@@ -195,12 +195,12 @@ noncomputable def colimitCocone : Cocone F where
 
 /-- The proposed colimit cocone is a colimit in `CommGrpCat`. -/
 @[to_additive /-- The proposed colimit cocone is a colimit in `AddCommGroup`. -/]
-noncomputable def colimitCoconeIsColimit : IsColimit (colimitCocone.{v, u} F) :=
+def colimitCoconeIsColimit : IsColimit (colimitCocone.{v, u} F) :=
   isColimitOfReflects (forget₂ _ GrpCat)
     (GrpCat.FilteredColimits.colimitCoconeIsColimit (F ⋙ forget₂ CommGrpCat GrpCat))
 
 @[to_additive]
-noncomputable instance forget₂Group_preservesFilteredColimits :
+instance forget₂Group_preservesFilteredColimits :
     PreservesFilteredColimits (forget₂ CommGrpCat GrpCat.{u}) where
   preserves_filtered_colimits J hJ1 _ :=
     letI : Category J := hJ1
@@ -210,7 +210,7 @@ noncomputable instance forget₂Group_preservesFilteredColimits :
             (F ⋙ forget₂ CommGrpCat GrpCat.{u})) }
 
 @[to_additive]
-noncomputable instance forget_preservesFilteredColimits :
+instance forget_preservesFilteredColimits :
     PreservesFilteredColimits (forget CommGrpCat.{u}) :=
   Limits.comp_preservesFilteredColimits (forget₂ CommGrpCat GrpCat) (forget GrpCat.{u})
 

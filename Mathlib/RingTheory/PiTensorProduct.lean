@@ -268,7 +268,7 @@ variable (R ι)
 The algebra equivalence from the tensor product of the constant family with
 value `R` to `R`, given by multiplication of the entries.
 -/
-noncomputable def constantBaseRingEquiv : (⨂[R] _ : ι, R) ≃ₐ[R] R :=
+def constantBaseRingEquiv : (⨂[R] _ : ι, R) ≃ₐ[R] R :=
   letI toFun := lift (MultilinearMap.mkPiAlgebra R ι R)
   AlgEquiv.ofAlgHom
     (AlgHom.ofLinearMap

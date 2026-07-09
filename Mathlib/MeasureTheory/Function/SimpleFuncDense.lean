@@ -56,7 +56,7 @@ variable [MeasurableSpace α] [PseudoEMetricSpace α] [OpensMeasurableSpace α]
 /-- `nearestPtInd e N x` is the index `k` such that `e k` is the nearest point to `x` among the
 points `e 0`, ..., `e N`. If more than one point are at the same distance from `x`, then
 `nearestPtInd e N x` returns the least of their indices. -/
-noncomputable def nearestPtInd (e : ℕ → α) : ℕ → α →ₛ ℕ
+def nearestPtInd (e : ℕ → α) : ℕ → α →ₛ ℕ
   | 0 => const α 0
   | N + 1 =>
     piecewise (⋂ k ≤ N, { x | edist (e (N + 1)) x < edist (e k) x })
@@ -68,7 +68,7 @@ noncomputable def nearestPtInd (e : ℕ → α) : ℕ → α →ₛ ℕ
 /-- `nearestPt e N x` is the nearest point to `x` among the points `e 0`, ..., `e N`. If more than
 one point are at the same distance from `x`, then `nearestPt e N x` returns the point with the
 least possible index. -/
-noncomputable def nearestPt (e : ℕ → α) (N : ℕ) : α →ₛ α :=
+def nearestPt (e : ℕ → α) (N : ℕ) : α →ₛ α :=
   (nearestPtInd e N).map e
 
 @[simp]
@@ -119,7 +119,7 @@ variable [MeasurableSpace β] {f : β → α}
 
 /-- Approximate a measurable function by a sequence of simple functions `F n` such that
 `F n x ∈ s`. -/
-noncomputable def approxOn (f : β → α) (hf : Measurable f) (s : Set α) (y₀ : α) (h₀ : y₀ ∈ s)
+def approxOn (f : β → α) (hf : Measurable f) (s : Set α) (y₀ : α) (h₀ : y₀ ∈ s)
     [SeparableSpace s] (n : ℕ) : β →ₛ α :=
   haveI : Nonempty s := ⟨⟨y₀, h₀⟩⟩
   comp (nearestPt (fun k => Nat.casesOn k y₀ ((↑) ∘ denseSeq s) : ℕ → α) n) f hf

@@ -155,7 +155,7 @@ set_option backward.isDefEq.respectTransparency false in
 The cocone at `A` for the stalk functor of `skyscraperPresheaf p₀ A` when `y ∈ closure {p₀}` is a
 colimit
 -/
-noncomputable def skyscraperPresheafCoconeIsColimitOfSpecializes {y : X} (h : p₀ ⤳ y) :
+def skyscraperPresheafCoconeIsColimitOfSpecializes {y : X} (h : p₀ ⤳ y) :
     IsColimit (skyscraperPresheafCoconeOfSpecializes p₀ A h) where
   desc c := eqToHom (if_pos trivial).symm ≫ c.ι.app (op ⊤)
   fac c U := by
@@ -173,7 +173,7 @@ noncomputable def skyscraperPresheafCoconeIsColimitOfSpecializes {y : X} (h : p�
 
 /-- If `y ∈ closure {p₀}`, then the stalk of `skyscraperPresheaf p₀ A` at `y` is `A`.
 -/
-noncomputable def skyscraperPresheafStalkOfSpecializes [HasColimits C] {y : X} (h : p₀ ⤳ y) :
+def skyscraperPresheafStalkOfSpecializes [HasColimits C] {y : X} (h : p₀ ⤳ y) :
     (skyscraperPresheaf p₀ A).stalk y ≅ A :=
   colimit.isoColimitCocone ⟨_, skyscraperPresheafCoconeIsColimitOfSpecializes p₀ A h⟩
 
@@ -199,7 +199,7 @@ set_option backward.isDefEq.respectTransparency false in
 The cocone at `*` for the stalk functor of `skyscraperPresheaf p₀ A` when `y ∉ closure {p₀}` is a
 colimit
 -/
-noncomputable def skyscraperPresheafCoconeIsColimitOfNotSpecializes {y : X} (h : ¬p₀ ⤳ y) :
+def skyscraperPresheafCoconeIsColimitOfNotSpecializes {y : X} (h : ¬p₀ ⤳ y) :
     IsColimit (skyscraperPresheafCocone p₀ A y) :=
   let h1 : ∃ U : OpenNhds y, p₀ ∉ U.1 :=
     let ⟨U, ho, h₀, hy⟩ := not_specializes_iff_exists_open.mp h
@@ -220,7 +220,7 @@ noncomputable def skyscraperPresheafCoconeIsColimitOfNotSpecializes {y : X} (h :
 /-- If `y ∉ closure {p₀}`, then the stalk of `skyscraperPresheaf p₀ A` at `y` is isomorphic to a
 terminal object.
 -/
-noncomputable def skyscraperPresheafStalkOfNotSpecializes [HasColimits C] {y : X} (h : ¬p₀ ⤳ y) :
+def skyscraperPresheafStalkOfNotSpecializes [HasColimits C] {y : X} (h : ¬p₀ ⤳ y) :
     (skyscraperPresheaf p₀ A).stalk y ≅ terminal C :=
   colimit.isoColimitCocone ⟨_, skyscraperPresheafCoconeIsColimitOfNotSpecializes _ A h⟩
 
@@ -419,7 +419,7 @@ instance [HasColimits C] : (skyscraperSheafFunctor p₀ : C ⥤ Sheaf C X).IsRig
 
 /-- Taking stalks is the left adjoint of `skyscraperSheafFunctor ⋙ Sheaf.forget`. Useful
 only when the fact that `skyscraperPresheafFunctor` factors through `Sheaf C X` is relevant. -/
-noncomputable def skyscraperSheafForgetAdjunction [HasColimits C] :
+def skyscraperSheafForgetAdjunction [HasColimits C] :
     Presheaf.stalkFunctor C p₀ ⊣ skyscraperSheafFunctor p₀ ⋙ Sheaf.forget C X :=
   skyscraperPresheafStalkAdjunction p₀
 
@@ -429,7 +429,6 @@ variable {A p₀} in
 On an open set not containing `p₀`, the value of skyscraper sheaf supported at `p₀` is a terminal
 object.
 -/
-noncomputable
 def isTerminalSkyscraperSheafObjObjOfNotMem {U : (Opens X)ᵒᵖ} (h : p₀ ∉ unop U) :
     IsTerminal ((skyscraperSheaf p₀ A).obj.obj U) := by
   dsimp

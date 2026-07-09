@@ -246,7 +246,7 @@ This bijection has two key properties:
 Together these help show that `L` preserves binary products. This should be considered
 *internal implementation* towards `preservesBinaryProductsOfExponentialIdeal`.
 -/
-noncomputable def bijection (A B : C) (X : D) :
+def bijection (A B : C) (X : D) :
     ((reflector i).obj (A ⊗ B) ⟶ X) ≃ ((reflector i).obj A ⊗ (reflector i).obj B ⟶ X) :=
   calc
     _ ≃ (A ⊗ B ⟶ i.obj X) := (reflectorAdjunction i).homEquiv _ _

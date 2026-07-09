@@ -240,7 +240,7 @@ theorem _root_.Algebra.adjoin.powerBasis'_gen (hx : IsIntegral R x) :
 If `x` generates `S` over `R` and is integral over `R`, then it defines a power basis.
 See `PowerBasis.ofAdjoinEqTop` for a version over a field.
 -/
-noncomputable def _root_.PowerBasis.ofAdjoinEqTop' {x : S} (hx : IsIntegral R x)
+def _root_.PowerBasis.ofAdjoinEqTop' {x : S} (hx : IsIntegral R x)
     (hx' : adjoin R {x} = ⊤) :
     PowerBasis R S :=
   (adjoin.powerBasis' hx).map ((Subalgebra.equivOfEq _ _ hx').trans Subalgebra.topEquiv)

@@ -78,7 +78,7 @@ theorem coeff_eq_zero_of_lt_order (A : VertexOperator R V) (n : ℤ) (x : V)
 
 /-- Given an endomorphism-valued function on integers satisfying a pointwise bounded-pole condition,
 we produce a vertex operator. -/
-noncomputable def of_coeff (f : ℤ → Module.End R V)
+def of_coeff (f : ℤ → Module.End R V)
     (hf : ∀ x, BddBelow (Function.support fun y ↦ f y x)) : VertexOperator R V :=
   HVertexOperator.of_coeff f fun x ↦ (BddBelow.isWF (hf x)).isPWO
 

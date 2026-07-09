@@ -48,7 +48,7 @@ lemma exists_generator_lt_one : ∃ (a : G), a < 1 ∧ Subgroup.zpowers a = H :=
 the subgroup that is `< 1`. -/
 @[to_additive negGen /-- Given an additive subgroup of an additive cyclic linearly ordered
 commutative group, this is a negative generator of the subgroup. -/]
-protected noncomputable def genLTOne : G := H.exists_generator_lt_one.choose
+protected def genLTOne : G := H.exists_generator_lt_one.choose
 
 @[to_additive negGen_neg]
 lemma genLTOne_lt_one : H.genLTOne < 1 :=
@@ -92,7 +92,7 @@ variable (G) [Nontrivial G] [IsCyclic G]
 /-- Given a cyclic linearly ordered commutative group, this is a generator that is `< 1`. -/
 @[to_additive negGen /-- Given an additive cyclic linearly ordered commutative group, this is a
 negative generator of it. -/]
-noncomputable def genLTOne : G := (⊤ : Subgroup G).genLTOne
+def genLTOne : G := (⊤ : Subgroup G).genLTOne
 
 @[to_additive (attr := simp) negGen_eq_of_top]
 lemma genLTOne_eq_of_top : genLTOne G = (⊤ : Subgroup G).genLTOne := rfl

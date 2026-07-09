@@ -107,7 +107,7 @@ variable [hp : Fact p.Prime]
 
 This is an additive monoid hom with underlying function `verschiebung_fun`.
 -/
-noncomputable def verschiebung : 𝕎 R →+ 𝕎 R where
+def verschiebung : 𝕎 R →+ 𝕎 R where
   toFun := verschiebungFun
   map_zero' := by
     ext ⟨⟩ <;> rw [verschiebungFun_coeff] <;>

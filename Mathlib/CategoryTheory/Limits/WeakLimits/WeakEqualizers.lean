@@ -38,16 +38,16 @@ variable [HasWeakEqualizer f g]
 
 /-- If a weak equalizer of `f` and `g` exists, we can access an arbitrary choice of such by
 saying `weakEqualizer f g`. -/
-noncomputable abbrev weakEqualizer : C :=
+abbrev weakEqualizer : C :=
   weakLimit (parallelPair f g)
 
 /-- If a weak equalizer of `f` and `g` exists, we can access the morphism
 `weakEqualizer f g ⟶ X` by saying `weakEqualizer.ι f g`. -/
-noncomputable abbrev weakEqualizer.ι : weakEqualizer f g ⟶ X :=
+abbrev weakEqualizer.ι : weakEqualizer f g ⟶ X :=
   weakLimit.π (parallelPair f g) WalkingParallelPair.zero
 
 /-- A weak equalizer cone for a parallel pair `f` and `g` -/
-noncomputable abbrev weakEqualizer.fork : Fork f g :=
+abbrev weakEqualizer.fork : Fork f g :=
   weakLimit.cone (parallelPair f g)
 
 @[simp]
@@ -73,7 +73,7 @@ variable {f g}
 
 /-- A morphism `k : W ⟶ X` satisfying `k ≫ f = k ≫ g` factors through the weak equalizer of
 `f` and `g` via `weakEqualizer.lift : W ⟶ weakEqualizer f g`. -/
-noncomputable abbrev weakEqualizer.lift {W : C} (k : W ⟶ X) (h : k ≫ f = k ≫ g) :
+abbrev weakEqualizer.lift {W : C} (k : W ⟶ X) (h : k ≫ f = k ≫ g) :
     W ⟶ weakEqualizer f g :=
   weakLimit.lift (parallelPair f g) (Fork.ofι k h)
 

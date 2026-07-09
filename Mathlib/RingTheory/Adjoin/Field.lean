@@ -54,7 +54,7 @@ theorem AlgEquiv.coe_adjoinSingletonEquivAdjoinRootMinpoly_symm {R : Type*} [Com
 
 /-- Produce an algebra homomorphism `Adjoin R {x} →ₐ[R] T` sending `x` to
 a root of `x`'s minimal polynomial in `T`. -/
-noncomputable def Algebra.adjoin.liftSingleton {S T : Type*}
+def Algebra.adjoin.liftSingleton {S T : Type*}
     [CommRing S] [CommRing T] [Algebra F S] [Algebra F T]
     (x : S) (y : T) (h : aeval y (minpoly F x) = 0) :
     Algebra.adjoin F {x} →ₐ[F] T :=

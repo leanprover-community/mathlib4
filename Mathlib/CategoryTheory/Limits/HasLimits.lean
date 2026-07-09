@@ -571,7 +571,7 @@ a limit cone for any `F : J ⥤ C`. -/
 
 /-- The limit cone obtained from a right adjoint of the constant functor. -/
 @[simps]
-noncomputable def coneOfAdj (F : J ⥤ C) : Cone F where
+def coneOfAdj (F : J ⥤ C) : Cone F where
   pt := L.obj F
   π := adj.counit.app F
 

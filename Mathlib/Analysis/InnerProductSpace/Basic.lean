@@ -154,7 +154,7 @@ variable {F}
 variable {𝕜}
 
 @[deprecated (since := "2025-12-26")] alias sesqFormOfInner := innerₛₗ
-@[deprecated (since := "2025-12-26")] noncomputable alias bilinFormOfRealInner := innerₗ
+@[deprecated (since := "2025-12-26")] alias bilinFormOfRealInner := innerₗ
 
 /-- An inner product with a sum on the left. -/
 theorem sum_inner {ι : Type*} (s : Finset ι) (f : ι → E) (x : E) :
@@ -984,7 +984,7 @@ protected theorem Complex.inner (w z : ℂ) : ⟪w, z⟫_ℝ = (z * conj w).re :
 end RCLikeToReal
 
 /-- An `RCLike` field is a real inner product space. -/
-noncomputable instance RCLike.toInnerProductSpaceReal : InnerProductSpace ℝ 𝕜 where
+instance RCLike.toInnerProductSpaceReal : InnerProductSpace ℝ 𝕜 where
   __ := Inner.rclikeToReal 𝕜 𝕜
   norm_sq_eq_re_inner := norm_sq_eq_re_inner
   conj_inner_symm x y := inner_re_symm ..

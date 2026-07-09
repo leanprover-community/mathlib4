@@ -437,7 +437,7 @@ def coim : Arrow C ⥤ C where
   map {f g} u := cokernel.desc _ (u.left ≫ Abelian.coimage.π g.hom) <| by
     simp [← Category.assoc, coimage.comp_π_eq_zero]; simp
 
-@[deprecated (since := "2025-10-31")] noncomputable alias coimageFunctor := coim
+@[deprecated (since := "2025-10-31")] alias coimageFunctor := coim
 
 set_option backward.defeqAttrib.useBackward true in
 /-- The image and coimage of an arrow are naturally isomorphic. -/
@@ -516,7 +516,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- If `F : D ⥤ C` is a functor to an abelian category, `i : X ⟶ Y` is a morphism
 admitting a cokernel such that `F` preserves this cokernel and `F.map i` is a mono,
 then `F.map X` identifies to the kernel of `F.map (cokernel.π i)`. -/
-noncomputable def isLimitMapConeOfKernelForkOfι
+def isLimitMapConeOfKernelForkOfι
     {X Y : D} (i : X ⟶ Y) [HasCokernel i] (F : D ⥤ C)
     [F.PreservesZeroMorphisms] [Mono (F.map i)]
     [PreservesColimit (parallelPair i 0) F] :
@@ -533,7 +533,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- If `F : D ⥤ C` is a functor to an abelian category, `p : X ⟶ Y` is a morphism
 admitting a kernel such that `F` preserves this kernel and `F.map p` is an epi,
 then `F.map Y` identifies to the cokernel of `F.map (kernel.ι p)`. -/
-noncomputable def isColimitMapCoconeOfCokernelCoforkOfπ
+def isColimitMapCoconeOfCokernelCoforkOfπ
     {X Y : D} (p : X ⟶ Y) [HasKernel p] (F : D ⥤ C)
     [F.PreservesZeroMorphisms] [Epi (F.map p)]
     [PreservesLimit (parallelPair p 0) F] :
@@ -869,7 +869,7 @@ a kernel `i : K ⟶ X`, a cokernel `p : Y ⟶ Q` such that `f` factors as `f = �
 where `π : X ⟶ I` is a cokernel of `i` and `ι : I ⟶ Y` is a kernel of `p`.
 This assumption is packaged in a structure `AbelianStruct f`. -/
 @[implicit_reducible]
-noncomputable def mk' [HasFiniteProducts C]
+def mk' [HasFiniteProducts C]
     (h : ∀ ⦃X Y : C⦄ (f : X ⟶ Y), Nonempty (AbelianStruct f)) :
     Abelian C where
   has_kernels := ⟨fun f ↦ ⟨_, (h f).some.isLimitKernelFork⟩⟩

@@ -630,13 +630,11 @@ variable (f : X ⟶ Y) (𝒰 : OpenCover.{u} Y) (𝒱 : ∀ i, OpenCover.{w} ((�
 Given `𝒰 i` covering `Y` and `𝒱 i j` covering `𝒰 i`, this is the open cover
 `𝒱 i j₁ ×[𝒰 i] 𝒱 i j₂` ranging over all `i`, `j₁`, `j₂`.
 -/
-noncomputable
 def diagonalCover : (pullback.diagonalObj f).OpenCover :=
   (openCoverOfBase 𝒰 f f).bind
     fun i ↦ openCoverOfLeftRight (𝒱 i) (𝒱 i) (𝒰.pullbackHom _ _) (𝒰.pullbackHom _ _)
 
 /-- The image of `𝒱 i j₁ ×[𝒰 i] 𝒱 i j₂` in `diagonalCover` with `j₁ = j₂` -/
-noncomputable
 def diagonalCoverDiagonalRange : (pullback.diagonalObj f).Opens :=
   ⨆ i : Σ i, (𝒱 i).I₀, ((diagonalCover f 𝒰 𝒱).f ⟨i.1, i.2, i.2⟩).opensRange
 
@@ -654,7 +652,6 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The restriction of the diagonal `X ⟶ X ×ₛ X` to `𝒱 i j ×[𝒰 i] 𝒱 i j` is the diagonal
 `𝒱 i j ⟶ 𝒱 i j ×[𝒰 i] 𝒱 i j`. -/
-noncomputable
 def diagonalRestrictIsoDiagonal (i j) :
     Arrow.mk (pullback.diagonal f ∣_ ((diagonalCover f 𝒰 𝒱).f ⟨i, j, j⟩).opensRange) ≅
     Arrow.mk (pullback.diagonal ((𝒱 i).f j ≫ pullback.snd _ _)) := by
@@ -715,7 +712,6 @@ open TensorProduct Algebra.TensorProduct CommRingCat RingHomClass
 
 /-- The isomorphism between the fibred product of two schemes `Spec S` and `Spec T`
 over a scheme `Spec R` and the `Spec` of the tensor product `S ⊗[R] T`. -/
-noncomputable
 def pullbackSpecIso :
     pullback (Spec.map (CommRingCat.ofHom (algebraMap R S)))
       (Spec.map (CommRingCat.ofHom (algebraMap R T))) ≅ Spec (.of <| S ⊗[R] T) :=

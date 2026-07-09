@@ -214,7 +214,7 @@ instance : Module ℝ≥0 (StieltjesFunction R) where
 
 /-- If a function `f : R → ℝ` is monotone, then the function mapping `x` to the right limit of `f`
 at `x` is a Stieltjes function, i.e., it is monotone and right-continuous. -/
-noncomputable def _root_.Monotone.stieltjesFunction [OrderTopology R]
+def _root_.Monotone.stieltjesFunction [OrderTopology R]
     {f : R → ℝ} (hf : Monotone f) : StieltjesFunction R where
   toFun := rightLim f
   mono' _ _ hxy := hf.rightLim hxy

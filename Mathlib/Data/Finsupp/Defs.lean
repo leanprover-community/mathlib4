@@ -270,7 +270,7 @@ section OfSupportFinite
 variable [Zero M]
 
 /-- The natural `Finsupp` induced by the function `f` given that it has finite support. -/
-noncomputable def ofSupportFinite (f : α → M) (hf : (Function.support f).Finite) : α →₀ M where
+def ofSupportFinite (f : α → M) (hf : (Function.support f).Finite) : α →₀ M where
   support := hf.toFinset
   toFun := f
   mem_support_toFun _ := hf.mem_toFinset

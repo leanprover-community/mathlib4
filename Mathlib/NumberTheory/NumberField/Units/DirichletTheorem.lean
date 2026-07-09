@@ -170,7 +170,7 @@ theorem log_le_of_logEmbedding_le {r : ℝ} {x : (𝓞 K)ˣ} (hr : 0 ≤ r)
 variable (K)
 
 /-- The lattice formed by the image of the logarithmic embedding. -/
-noncomputable def _root_.NumberField.Units.unitLattice :
+def _root_.NumberField.Units.unitLattice :
     Submodule ℤ (logSpace K) :=
   Submodule.map (logEmbedding K).toIntLinearMap ⊤
 

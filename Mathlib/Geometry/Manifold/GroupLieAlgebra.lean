@@ -59,7 +59,7 @@ abbrev GroupLieAlgebra : Type _ := TangentSpace% (1 : G)
 is given by the image of `v` under left-multiplication by `g`. -/
 @[to_additive /-- The invariant vector field associated to a vector `v` in the Lie algebra. At a
 point `g`, it is given by the image of `v` under left-addition by `g`. -/]
-noncomputable def mulInvariantVectorField (v : GroupLieAlgebra I G) (g : G) : TangentSpace% g :=
+def mulInvariantVectorField (v : GroupLieAlgebra I G) (g : G) : TangentSpace% g :=
   mfderiv% (g * ·) (1 : G) v
 
 set_option backward.isDefEq.respectTransparency false in
@@ -90,7 +90,7 @@ open VectorField
 taking the Lie bracket of the associated invariant vector fields, at the identity. -/
 @[to_additive /-- The Lie bracket of two vectors `v` and `w` in the Lie algebra of an additive Lie
 group is obtained by taking the Lie bracket of the associated invariant vector fields, at zero. -/]
-noncomputable instance : Bracket (GroupLieAlgebra I G) (GroupLieAlgebra I G) where
+instance : Bracket (GroupLieAlgebra I G) (GroupLieAlgebra I G) where
   bracket v w := mlieBracket I (mulInvariantVectorField v) (mulInvariantVectorField w) (1 : G)
 
 @[to_additive]
@@ -226,7 +226,7 @@ lemma mulInvariantVector_mlieBracket (v w : GroupLieAlgebra I G) :
 given by the Lie bracket of invariant vector fields. -/
 @[to_additive /-- The tangent space at the identity of an additive Lie group is a Lie ring, for the
 bracket given by the Lie bracket of invariant vector fields. -/]
-noncomputable instance : LieRing (GroupLieAlgebra I G) where
+instance : LieRing (GroupLieAlgebra I G) where
   add_lie u v w := by
     simp only [GroupLieAlgebra.bracket_def, mulInvariantVectorField_add]
     rw [mlieBracket_add_left]
@@ -248,7 +248,7 @@ Therefore, we state and prove by hand the additive version. -/
 
 /-- The tangent space at the identity of an additive Lie group is a Lie algebra, for the bracket
 given by the Lie bracket of invariant vector fields. -/
-noncomputable instance instLieAlgebraAddGroupLieAlgebra
+instance instLieAlgebraAddGroupLieAlgebra
     {G : Type*} [TopologicalSpace G] [ChartedSpace H G] [AddGroup G]
     [LieAddGroup I (minSmoothness 𝕜 3) G] : LieAlgebra 𝕜 (AddGroupLieAlgebra I G) where
   lie_smul c v w := by
@@ -258,7 +258,7 @@ noncomputable instance instLieAlgebraAddGroupLieAlgebra
 
 /-- The tangent space at the identity of a Lie group is a Lie algebra, for the bracket
 given by the Lie bracket of invariant vector fields. -/
-noncomputable instance instLieAlgebraGroupLieAlgebra : LieAlgebra 𝕜 (GroupLieAlgebra I G) where
+instance instLieAlgebraGroupLieAlgebra : LieAlgebra 𝕜 (GroupLieAlgebra I G) where
   lie_smul c v w := by
     simp only [GroupLieAlgebra.bracket_def, mulInvariantVectorField_smul]
     rw [mlieBracket_const_smul_right]

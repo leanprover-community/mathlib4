@@ -762,7 +762,6 @@ lemma isPullback {U V X Y : Scheme.{u}} (g : U ⟶ V) (iU : U ⟶ X) (iV : V ⟶
 
 /-- If `f` is an open immersion `X ⟶ Y`, the global sections of `X`
 are naturally isomorphic to the sections of `Y` over the image of `f`. -/
-noncomputable
 def ΓIso {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] (U : Y.Opens) :
     Γ(X, f ⁻¹ᵁ U) ≅ Γ(Y, f.opensRange ⊓ U) :=
   (f.appIso (f ⁻¹ᵁ U)).symm ≪≫
@@ -788,7 +787,6 @@ lemma app_ΓIso_hom {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] (U : Y.
 
 /-- Given an open immersion `f : U ⟶ X`, the isomorphism between global sections
   of `U` and the sections of `X` at the image of `f`. -/
-noncomputable
 def ΓIsoTop {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] :
     Γ(X, ⊤) ≅ Γ(Y, f.opensRange) :=
   (f.appIso ⊤).symm ≪≫ Y.presheaf.mapIso (eqToIso f.image_top_eq_opensRange.symm).op
@@ -865,7 +863,7 @@ lemma image_zeroLocus {U : X.Opens} (s : Set Γ(X, U)) :
 is a pullback square and `g` is an open immersion, then the stalk map induced by `snd` at `p`
 is isomorphic to the stalk map of `f` at `fst p`.
 -/
-noncomputable def stalkMapIsoOfIsPullback {P X Y Z : Scheme.{u}}
+def stalkMapIsoOfIsPullback {P X Y Z : Scheme.{u}}
     {fst : P ⟶ X} {snd : P ⟶ Y} {f : X ⟶ Z} {g : Y ⟶ Z} (h : IsPullback fst snd f g)
     [IsOpenImmersion g] (p : P) (x : X := fst p) (hx : fst p = x := by cat_disch) :
     Arrow.mk (f.stalkMap x) ≅ Arrow.mk (snd.stalkMap p) :=

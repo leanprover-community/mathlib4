@@ -122,7 +122,7 @@ theorem id_apply' {S : Type u} [CommSemiring S] [Algebra R S] :
     (id : M →ₚₗ[R] M).toFun' S = _root_.id := rfl
 
 /-- The sum of two polynomial laws -/
-noncomputable def add : M →ₚₗ[R] N where
+def add : M →ₚₗ[R] N where
   toFun' S _ _ := f.toFun' S + g.toFun' S
 
 instance : Add (PolynomialLaw R M N) := ⟨add⟩
@@ -186,7 +186,7 @@ variable {R : Type u} [CommRing R]
   (f : M →ₚₗ[R] N)
 
 /-- The opposite of a polynomial law -/
-noncomputable def neg : M →ₚₗ[R] N where
+def neg : M →ₚₗ[R] N where
   toFun' S _ _ := (-1 : R) • f.toFun' S
 
 instance : Neg (M →ₚₗ[R] N) := ⟨neg⟩

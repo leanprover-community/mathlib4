@@ -351,7 +351,7 @@ def residueField : IsLocalRing.ResidueField ℤ_[p] ≃+* ZMod p :=
 open scoped Classical in
 /-- `appr n x` gives a value `v : ℕ` such that `x` and `↑v : ℤ_p` are congruent mod `p^n`.
 See `appr_spec`. -/
-noncomputable def appr : ℤ_[p] → ℕ → ℕ
+def appr : ℤ_[p] → ℕ → ℕ
   | _x, 0 => 0
   | x, n + 1 =>
     let y := x - appr x n

@@ -124,7 +124,7 @@ see `Mathlib/Analysis/Real/Pi/Bounds.lean`.
 
 Denoted `π`, once the `Real` namespace is opened. -/
 @[wikidata Q167]
-protected noncomputable def pi : ℝ :=
+protected def pi : ℝ :=
   2 * Classical.choose exists_cos_eq_zero
 
 @[inherit_doc]
@@ -194,7 +194,7 @@ open Real
 open Real NNReal
 
 /-- `π` considered as a nonnegative real. -/
-noncomputable def pi : ℝ≥0 :=
+def pi : ℝ≥0 :=
   ⟨π, Real.pi_pos.le⟩
 
 @[simp]
@@ -638,7 +638,7 @@ variable (x : ℝ)
   starting with `x`. We define it here because `cos (pi / 2 ^ (n+1)) = sqrtTwoAddSeries 0 n / 2`
 -/
 @[simp]
-noncomputable def sqrtTwoAddSeries (x : ℝ) : ℕ → ℝ
+def sqrtTwoAddSeries (x : ℝ) : ℕ → ℝ
   | 0 => x
   | n + 1 => √(2 + sqrtTwoAddSeries x n)
 

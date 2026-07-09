@@ -236,7 +236,7 @@ variable [Nonempty β] (p : TauPackage β α)
 
 /-- Choose inductively large balls with centers that are not contained in the union of already
 chosen balls. This is a transfinite induction. -/
-noncomputable def index : Ordinal.{u} → β
+def index : Ordinal.{u} → β
   | i =>
       -- `Z` is the set of points that are covered by already constructed balls
       let Z := ⋃ j : { j // j < i }, ball (p.c (index j)) (p.r (index j))
@@ -263,7 +263,7 @@ def R (i : Ordinal.{u}) : ℝ :=
 
 /-- Group the balls into disjoint families, by assigning to a ball the smallest color for which
 it does not intersect any already chosen ball of this color. -/
-noncomputable def color : Ordinal.{u} → ℕ
+def color : Ordinal.{u} → ℕ
   | i =>
     let A : Set ℕ :=
       ⋃ (j : { j // j < i })

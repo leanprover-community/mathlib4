@@ -58,7 +58,7 @@ variable [Finite α] [AddCommMonoid M] [Semiring R] [Module R M]
 /-- Given `Finite α`, `linearEquivFunOnFinite R` is the natural `R`-linear equivalence between
 `α →₀ β` and `α → β`. -/
 @[simps apply]
-noncomputable def linearEquivFunOnFinite : (α →₀ M) ≃ₗ[R] α → M :=
+def linearEquivFunOnFinite : (α →₀ M) ≃ₗ[R] α → M :=
   { equivFunOnFinite with
     toFun := (⇑)
     map_add' := fun _ _ => rfl
@@ -282,7 +282,7 @@ variable (R) in
 
 This is the `LinearEquiv` version of `Finsupp.curryEquiv`. -/
 @[simps +simpRhs]
-noncomputable def curryLinearEquiv : (α × β →₀ M) ≃ₗ[R] α →₀ β →₀ M where
+def curryLinearEquiv : (α × β →₀ M) ≃ₗ[R] α →₀ β →₀ M where
   toAddEquiv := curryAddEquiv
   map_smul' c f := by ext; simp
 
@@ -330,7 +330,7 @@ variable (ι : Type*) {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
 /-- If `M` is an `R`-module and `ι` is a type, then an additive endomorphism of `M` that
 commutes with all `R`-endomorphisms of `M` gives rise to an additive endomorphism of `ι →₀ M`
 that commutes with all `R`-endomorphisms of `ι →₀ M`. -/
-@[simps] noncomputable def ringHomEndFinsupp :
+@[simps] def ringHomEndFinsupp :
     End (End R M) M →+* End (End R (ι →₀ M)) (ι →₀ M) where
   toFun f :=
   { toFun := Finsupp.mapRange.addMonoidHom f
@@ -352,7 +352,7 @@ variable {ι}
 of `ι →₀ M` that commutes with all `R`-endomorphisms of `ι →₀ M` comes from an additive
 endomorphism of `M` that commutes with all `R`-endomorphisms of `M`.
 See (15) in F4 of §28 on p.131 of [Lorenz2008]. -/
-@[simps!] noncomputable def ringEquivEndFinsupp (i : ι) :
+@[simps!] def ringEquivEndFinsupp (i : ι) :
     End (End R M) M ≃+* End (End R (ι →₀ M)) (ι →₀ M) where
   __ := ringHomEndFinsupp ι
   invFun f :=

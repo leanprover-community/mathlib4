@@ -144,7 +144,7 @@ open Limits
 set_option backward.defeqAttrib.useBackward true in
 /-- The category over any object `X` factors through the category over the terminal object `T`. -/
 @[simps!]
-noncomputable def forgetMapTerminal {T : C} (hT : IsTerminal T) :
+def forgetMapTerminal {T : C} (hT : IsTerminal T) :
     forget X ≅ map (hT.from X) ⋙ (equivalenceOfIsTerminal hT).functor :=
   NatIso.ofComponents fun X ↦ .refl _
 
@@ -184,7 +184,7 @@ instance : (forget X).IsLeftAdjoint := ⟨_, ⟨forgetAdjStar X⟩⟩
 set_option backward.isDefEq.respectTransparency false in
 /-- Lifting to over `Y` and pulling back along `X ⟶ Y` is the same as lifting to over `X`. -/
 @[simps!]
-noncomputable def starPullbackIsoStar [HasPullbacks C] {X Y : C} (f : X ⟶ Y) :
+def starPullbackIsoStar [HasPullbacks C] {X Y : C} (f : X ⟶ Y) :
     star Y ⋙ pullback f ≅ star X :=
   NatIso.ofComponents
     (fun Z ↦
@@ -283,7 +283,7 @@ instance isRightAdjoint_post [HasPushouts D] {Y : D} {G : D ⥤ C} [G.IsRightAdj
 
 /-- The category under any object `X` factors through the category under the initial object `I`. -/
 @[simps!]
-noncomputable def forgetMapInitial {I : C} (hI : IsInitial I) :
+def forgetMapInitial {I : C} (hI : IsInitial I) :
     forget X ≅ map (hI.to X) ⋙ (equivalenceOfIsInitial hI).functor :=
   NatIso.ofComponents fun X ↦ .refl _
 

@@ -198,7 +198,7 @@ variable {E' : Type*} [SeminormedAddCommGroup E'] [InnerProductSpace 𝕜 E']
 -- Note: odd and expensive build behavior is explicitly turned off using `noncomputable`
 /-- Given `f : E →L[𝕜] E'`, construct the continuous sesquilinear form `fun x y ↦ ⟪x, A y⟫`, given
 as a continuous linear map. -/
-noncomputable def toSesqForm : (E →L[𝕜] E') →L[𝕜] E' →L⋆[𝕜] E →L[𝕜] 𝕜 :=
+def toSesqForm : (E →L[𝕜] E') →L[𝕜] E' →L⋆[𝕜] E →L[𝕜] 𝕜 :=
   (ContinuousLinearMap.flipₗᵢ' E E' 𝕜 (starRingEnd 𝕜) (RingHom.id 𝕜)).toContinuousLinearEquiv ∘L
     ContinuousLinearMap.compSL E E' (E' →L⋆[𝕜] 𝕜) (RingHom.id 𝕜) (RingHom.id 𝕜) (innerSLFlip 𝕜)
 
@@ -300,7 +300,7 @@ This is also sometimes referred to as an outer product of vectors on a Hilbert s
 This corresponds to the matrix outer product `Matrix.vecMulVec`, see
 `InnerProductSpace.toMatrix_rankOne` and `InnerProductSpace.symm_toEuclideanLin_rankOne` in
 `Mathlib/Analysis/InnerProductSpace/PiL2.lean`. -/
-noncomputable def rankOne : E →L[𝕜] F →L⋆[𝕜] F →L[𝕜] E :=
+def rankOne : E →L[𝕜] F →L⋆[𝕜] F →L[𝕜] E :=
   .flip <| .comp (.smulRightL 𝕜 _ _) (innerSL 𝕜)
 
 lemma rankOne_def (x : E) (y : F) : rankOne 𝕜 x y = (innerSL 𝕜 y).smulRight x := rfl

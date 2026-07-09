@@ -439,7 +439,7 @@ open Submodule Module
 
 variable (R) in
 /-- The rank of a set of vectors as a natural number. -/
-protected noncomputable def Set.finrank (s : Set M) : ℕ :=
+protected def Set.finrank (s : Set M) : ℕ :=
   finrank R (span R s)
 
 theorem finrank_span_le_card (s : Set M) [Fintype s] : finrank R (span R s) ≤ s.toFinset.card :=
@@ -570,7 +570,7 @@ variable {R V : Type*} [CommRing R] [AddCommGroup V] [Module R V]
 /-- Given a basis `bW` of a submodule of an `R`-module `V`,
 and a basis `bQ` of the quotient `V ⧸ W`,
 this is a basis of `V` combining `bW` and a lift of `bQ`. -/
-noncomputable def sumQuot :
+def sumQuot :
     Basis (m ⊕ n) R V := by
   let b : m ⊕ n → V := Sum.elim (fun i ↦ bW i) ((Function.surjInv W.mkQ_surjective) ∘ bQ)
   have br : W.mkQ ∘ b ∘ Sum.inr = bQ := by

@@ -33,10 +33,10 @@ variable {x : ℝ≥0} {w y z : ℝ}
 /-- The nonnegative real power function `x^y`, defined for `x : ℝ≥0` and `y : ℝ` as the
 restriction of the real power function. For `x > 0`, it is equal to `exp (y log x)`. For `x = 0`,
 one sets `0 ^ 0 = 1` and `0 ^ y = 0` for `y ≠ 0`. -/
-noncomputable def rpow (x : ℝ≥0) (y : ℝ) : ℝ≥0 :=
+def rpow (x : ℝ≥0) (y : ℝ) : ℝ≥0 :=
   ⟨(x : ℝ) ^ y, Real.rpow_nonneg x.2 y⟩
 
-noncomputable instance : Pow ℝ≥0 ℝ :=
+instance : Pow ℝ≥0 ℝ :=
   ⟨rpow⟩
 
 @[simp]
@@ -482,11 +482,11 @@ namespace ENNReal
 `y : ℝ` as the restriction of the real power function if `0 < x < ⊤`, and with the natural values
 for `0` and `⊤` (i.e., `0 ^ x = 0` for `x > 0`, `1` for `x = 0` and `⊤` for `x < 0`, and
 `⊤ ^ x = 1 / 0 ^ x`). -/
-noncomputable def rpow : ℝ≥0∞ → ℝ → ℝ≥0∞
+def rpow : ℝ≥0∞ → ℝ → ℝ≥0∞
   | some x, y => if x = 0 ∧ y < 0 then ⊤ else (x ^ y : ℝ≥0)
   | none, y => if 0 < y then ⊤ else if y = 0 then 1 else 0
 
-noncomputable instance : Pow ℝ≥0∞ ℝ :=
+instance : Pow ℝ≥0∞ ℝ :=
   ⟨rpow⟩
 
 @[simp]

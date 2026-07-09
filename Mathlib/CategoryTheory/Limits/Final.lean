@@ -1222,7 +1222,7 @@ variable {J C : Type*} [Category* J] [Category* C] {D : J ⥤ C}
 set_option backward.defeqAttrib.useBackward true in
 /-- If `Over j ⥤ J` is initial, restricting a limit cone to the diagram above `j`,
 preserves the limit. -/
-noncomputable def Limits.IsLimit.overPost {c : Cone D} (hc : IsLimit c) (j : J)
+def Limits.IsLimit.overPost {c : Cone D} (hc : IsLimit c) (j : J)
     [(CategoryTheory.Over.forget j).Initial] : IsLimit (c.overPost j) := by
   haveI : Nonempty (Over j) := ⟨Over.mk (𝟙 j)⟩
   letI c'' := Over.liftCone (Over.forget j ⋙ D) (X := D.obj j)
@@ -1237,7 +1237,7 @@ noncomputable def Limits.IsLimit.overPost {c : Cone D} (hc : IsLimit c) (j : J)
 set_option backward.defeqAttrib.useBackward true in
 /-- If `Over j ⥤ J` is final, restricting a colimit cocone to the diagram below `j`,
 preserves the limit. -/
-noncomputable def Limits.IsColimit.underPost {c : Cocone D} (hc : IsColimit c) (j : J)
+def Limits.IsColimit.underPost {c : Cocone D} (hc : IsColimit c) (j : J)
     [(CategoryTheory.Under.forget j).Final] : IsColimit (c.underPost j) := by
   haveI : Nonempty (Under j) := ⟨CategoryTheory.Under.mk (𝟙 j)⟩
   letI c'' := Under.liftCocone (CategoryTheory.Under.forget j ⋙ D) (X := D.obj j)

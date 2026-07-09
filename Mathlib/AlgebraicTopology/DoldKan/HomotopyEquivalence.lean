@@ -32,7 +32,7 @@ namespace DoldKan
 variable {C : Type*} [Category* C] [Preadditive C] (X : SimplicialObject C)
 
 /-- Inductive construction of homotopies from `P q` to `𝟙 _` -/
-noncomputable def homotopyPToId : ∀ q : ℕ, Homotopy (P q : K[X] ⟶ _) (𝟙 _)
+def homotopyPToId : ∀ q : ℕ, Homotopy (P q : K[X] ⟶ _) (𝟙 _)
   | 0 => Homotopy.refl _
   | q + 1 => by
     refine

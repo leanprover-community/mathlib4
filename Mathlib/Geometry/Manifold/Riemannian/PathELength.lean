@@ -205,7 +205,7 @@ variable {x y z : M} {r : ℝ≥0∞} {a b : ℝ}
 variable (I) in
 /-- The Riemannian extended distance between two points, in a manifold where the tangent spaces
 have an extended norm, defined as the infimum of the lengths of `C^1` paths between the points. -/
-noncomputable irreducible_def riemannianEDist (x y : M) : ℝ≥0∞ :=
+irreducible_def riemannianEDist (x y : M) : ℝ≥0∞ :=
   ⨅ (γ : Path x y) (_ : CMDiff 1 γ), ∫⁻ x, ‖mfderiv% γ x 1‖ₑ
 
 /-- The Riemannian edistance is bounded above by the length of any `C^1` path from `x` to `y`.

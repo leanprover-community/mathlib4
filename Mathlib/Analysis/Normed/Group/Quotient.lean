@@ -112,7 +112,7 @@ private lemma norm_aux (x : M ⧸ S) : {m : M | (m : M ⧸ S) = x}.Nonempty := Q
 @[to_additive
 /-- The norm of `x` on the quotient by a subgroup `S` is defined as the infimum of the norm on
 `x + S`. -/]
-noncomputable def groupSeminorm : GroupSeminorm (M ⧸ S) where
+def groupSeminorm : GroupSeminorm (M ⧸ S) where
   toFun x := infDist 1 {m : M | (m : M ⧸ S) = x}
   map_one' := infDist_zero_of_mem (by simp)
   mul_le' x y := by
@@ -132,7 +132,7 @@ noncomputable def groupSeminorm : GroupSeminorm (M ⧸ S) where
 @[to_additive
 /-- The norm of `x` on the quotient by a subgroup `S` is defined as the infimum of the norm on
 `x + S`. -/]
-noncomputable instance instNorm : Norm (M ⧸ S) where norm := groupSeminorm
+instance instNorm : Norm (M ⧸ S) where norm := groupSeminorm
 
 @[to_additive]
 lemma norm_eq_groupSeminorm (x : M ⧸ S) : ‖x‖ = groupSeminorm x := rfl
@@ -206,7 +206,7 @@ lemma exists_norm_mul_lt (S : Subgroup M) (m : M) {ε : ℝ} (hε : 0 < ε) :
 variable (S) in
 /-- The seminormed group structure on the quotient by a subgroup. -/
 @[to_additive /-- The seminormed group structure on the quotient by an additive subgroup. -/]
-noncomputable instance instSeminormedCommGroup : SeminormedCommGroup (M ⧸ S) where
+instance instSeminormedCommGroup : SeminormedCommGroup (M ⧸ S) where
   toUniformSpace := IsTopologicalGroup.leftUniformSpace (M ⧸ S)
   __ := groupSeminorm.toSeminormedCommGroup
   uniformity_dist := by
@@ -216,7 +216,7 @@ noncomputable instance instSeminormedCommGroup : SeminormedCommGroup (M ⧸ S) w
 variable (S) in
 /-- The quotient in the category of normed groups. -/
 @[to_additive /-- The quotient in the category of normed groups. -/]
-noncomputable instance instNormedCommGroup [hS : IsClosed (S : Set M)] :
+instance instNormedCommGroup [hS : IsClosed (S : Set M)] :
     NormedCommGroup (M ⧸ S) where
   __ := MetricSpace.ofT0PseudoMetricSpace _
 
@@ -279,7 +279,7 @@ namespace AddSubgroup
 open NormedAddGroupHom
 
 /-- The morphism from a seminormed group to the quotient by a subgroup. -/
-noncomputable def normedMk (S : AddSubgroup M) : NormedAddGroupHom M (M ⧸ S) where
+def normedMk (S : AddSubgroup M) : NormedAddGroupHom M (M ⧸ S) where
   __ := QuotientAddGroup.mk' S
   bound' := ⟨1, fun m => by simpa [one_mul] using norm_mk_le_norm⟩
 
@@ -343,7 +343,7 @@ structure IsQuotient (f : NormedAddGroupHom M N) : Prop where
 
 /-- Given `f : NormedAddGroupHom M N` such that `f s = 0` for all `s ∈ S`, where,
 `S : AddSubgroup M` is closed, the induced morphism `NormedAddGroupHom (M ⧸ S) N`. -/
-noncomputable def lift {N : Type*} [SeminormedAddCommGroup N] (S : AddSubgroup M)
+def lift {N : Type*} [SeminormedAddCommGroup N] (S : AddSubgroup M)
     (f : NormedAddGroupHom M N) (hf : ∀ s ∈ S, f s = 0) : NormedAddGroupHom (M ⧸ S) N :=
   { QuotientAddGroup.lift S f.toAddMonoidHom hf with
     bound' := ⟨‖f‖, norm_lift_apply_le f hf⟩ }

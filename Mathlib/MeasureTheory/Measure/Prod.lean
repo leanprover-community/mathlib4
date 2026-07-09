@@ -511,7 +511,7 @@ lemma nullMeasurable_comp_snd [NeZero μ] {f : β → γ} :
   forall₂_congr fun s _ ↦ nullMeasurableSet_preimage_snd (t := f ⁻¹' s)
 
 /-- `μ.prod ν` has finite spanning sets in rectangles of finite spanning sets. -/
-noncomputable def FiniteSpanningSetsIn.prod {ν : Measure β} {C : Set (Set α)} {D : Set (Set β)}
+def FiniteSpanningSetsIn.prod {ν : Measure β} {C : Set (Set α)} {D : Set (Set β)}
     (hμ : μ.FiniteSpanningSetsIn C) (hν : ν.FiniteSpanningSetsIn D) :
     (μ.prod ν).FiniteSpanningSetsIn (image2 (· ×ˢ ·) C D) := by
   haveI := hν.sigmaFinite
@@ -1083,7 +1083,7 @@ namespace Measure
 variable {ρ : Measure (α × β)}
 
 /-- Marginal measure on `α` obtained from a measure `ρ` on `α × β`, defined by `ρ.map Prod.fst`. -/
-noncomputable def fst (ρ : Measure (α × β)) : Measure α :=
+def fst (ρ : Measure (α × β)) : Measure α :=
   ρ.map Prod.fst
 
 theorem fst_apply {s : Set α} (hs : MeasurableSet s) : ρ.fst s = ρ (Prod.fst ⁻¹' s) := by
@@ -1145,7 +1145,7 @@ lemma fst_sum {ι : Type*} (μ : ι → Measure (α × β)) : (sum μ).fst = sum
 theorem fst_mono {μ : Measure (α × β)} (h : ρ ≤ μ) : ρ.fst ≤ μ.fst := map_mono h measurable_fst
 
 /-- Marginal measure on `β` obtained from a measure on `ρ` `α × β`, defined by `ρ.map Prod.snd`. -/
-noncomputable def snd (ρ : Measure (α × β)) : Measure β :=
+def snd (ρ : Measure (α × β)) : Measure β :=
   ρ.map Prod.snd
 
 theorem snd_apply {s : Set β} (hs : MeasurableSet s) : ρ.snd s = ρ (Prod.snd ⁻¹' s) := by
