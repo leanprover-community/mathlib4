@@ -348,8 +348,10 @@ theorem mem_adjoin_of_smul_prime_smul_of_minpoly_isEisensteinAt {B : PowerBasis 
       Algebra.norm_algebraMap, map_mul, algebraMap_apply R K L, Algebra.norm_algebraMap,
       finrank B, ← hr, PowerBasis.norm_gen_eq_coeff_zero_minpoly,
       minpoly.isIntegrallyClosed_eq_field_fractions' K hBint, coeff_map,
-      show (-1 : K) = algebraMap R K (-1) by simp, ← map_pow, ← map_pow, ← map_mul, ←
-      map_pow, ← map_mul, ← map_pow, ← map_mul] at hQ
+      show (-1 : K) = algebraMap R K (-1) by simp,
+      ← map_pow (algebraMap R K), ← map_pow (algebraMap R K), ← map_mul (algebraMap R K),
+      ← map_pow (algebraMap R K), ← map_mul (algebraMap R K), ← map_pow (algebraMap R K),
+      ← map_mul (algebraMap R K)] at hQ
     -- We can now finish the proof.
     have hppdiv : p ^ B.dim ∣ p ^ B.dim * r := dvd_mul_of_dvd_left dvd_rfl _
     rwa [← IsFractionRing.injective R K hQ, mul_comm, ← Units.coe_neg_one, mul_pow, ←
