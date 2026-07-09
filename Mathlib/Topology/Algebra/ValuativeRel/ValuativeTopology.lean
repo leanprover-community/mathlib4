@@ -107,19 +107,19 @@ theorem of_mem_nhds_iff_vle
   obtain ⟨γ, hγ⟩ := H.mp h_mem
   exact ⟨Units.mk0 ((orderMonoidIso v).symm γ) (by simp), subset_trans (by simp) hγ⟩
 
+open scoped Pointwise in
 /-- In a topological group, if the neighborhoods of zero are defined by a valuation `v` compatible
 with the valuative relation, then the underlying topology is valuative. -/
 theorem of_mem_nhds_zero_iff_vle [IsTopologicalAddGroup R]
     (H : ∀ {s : Set R}, s ∈ 𝓝 0 ↔ ∃ (γ : (ValueGroup₀ (.ofClass v))ˣ),
-    (fun (x₁ : R) ↦ x₁) '' {z : R | v.restrict z < γ} ⊆ s) :
-    IsValuativeTopology R := by
+    (·) '' {z : R | v.restrict z < γ} ⊆ s) : IsValuativeTopology R := by
   apply of_mem_nhds_iff_vle v (fun {s x} ↦ ?_)
   rw [← vadd_mem_nhds_vadd_iff (g := -x)]
   simp only [vadd_eq_add, neg_add_cancel, H, image_id', subset_vadd_set_iff, neg_neg,
     image_add_left, preimage_setOf_eq]
-  refine ⟨fun ⟨γ, hγ⟩ ↦ ⟨γ, subset_of_eq_of_subset (ext (fun a ↦ ⟨?_, ?_⟩)) hγ⟩,
-    fun ⟨γ, hγ⟩ ↦ ⟨γ, subset_of_eq_of_subset (ext (fun a ↦ ⟨?_, ?_⟩)) hγ⟩⟩ <;>
-  first | exact fun ⟨_, ⟨_, h⟩⟩ ↦ by simpa [← h] | exact fun h ↦ ⟨- x + a, ⟨h, by simp⟩⟩
+  suffices ∀ (γ : (ValueGroup₀ (.ofClass v))ˣ), (x +ᵥ {z | v.restrict z < ↑γ}) =
+    {a | v.restrict (-x + a) < ↑γ} by simp_all only
+  simp [Set.ext_iff, mem_vadd_set_iff_neg_vadd_mem]
 
 variable [IsValuativeTopology R]
 
