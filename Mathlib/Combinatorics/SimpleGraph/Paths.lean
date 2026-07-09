@@ -412,7 +412,7 @@ lemma IsPath.getVert_injOn {p : G.Walk u v} (hp : p.IsPath) :
   induction p with
   | nil => simp [Set.InjOn]
   | @cons v w u h p ihp =>
-    rw [show ∀ n, Set.Iic n = insert 0 (.Icc 1 n) by grind, Set.injOn_insert <| by simp]
+    rw [show ∀ n, Set.Iic n = insert 0 (.Ioc 0 n) by grind, Set.injOn_insert <| by simp]
     constructor
     · grind [getVert_cons, ihp hp.of_cons, Set.InjOn, length_cons]
     · grind [getVert_cons, hp.support_nodup, getVert_eq_support_getElem]
@@ -489,7 +489,7 @@ theorem IsPath.injOn_support_of_isPath_map (h : (p.map f).IsPath) :
 
 -- TODO: These results could possibly be less laborious with a periodic function getCycleVert
 lemma IsCycle.getVert_injOn {p : G.Walk u u} (hpc : p.IsCycle) :
-    Set.InjOn p.getVert (.Icc 1 p.length) := by
+    Set.InjOn p.getVert (.Ioc 0 p.length) := by
   intro n hn m hm hnm
   have := hpc.isPath_tail.getVert_injOn (x₁ := n - 1) (x₂ := m - 1)
   grind [getVert_tail, length_tail_add_one hpc.not_nil]
