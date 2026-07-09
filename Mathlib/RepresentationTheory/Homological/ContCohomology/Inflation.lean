@@ -108,21 +108,27 @@ namespace TopRep
 
 /-- The functor `TopRep R G ⥤ TopRep R (G ⧸ N)` sending a topological representation of `G` to
 the induced representation of `G ⧸ N` on its `N`-invariants. -/
-def relInvariantsFunctor : TopRep R G ⥤ TopRep R (G ⧸ N) where
+abbrev relInvariantsFunctor : TopRep R G ⥤ TopRep R (G ⧸ N) where
   obj rep       := TopRep.of (rep.ρ.relInvariantsInfl N)
   map f         := TopRep.ofHom (relInvariantsIntertwining' _ _ N f.hom)
 
-/-- The natural transformation whose component at a topological representation `π` of `G` is the
-inclusion of the `N`-invariants of `π`, regarded as a `G`-representation by restriction along the
-quotient map `G → G ⧸ N`. -/
-@[simps] def inflι : (relInvariantsFunctor R N ⋙ resFunctor (QuotientGroup.mk' N)) ⟶ 𝟭 (TopRep R G)
-    where
-  app _ := TopRep.ofHom {
+variable {R} in
+def inflιapp (π : TopRep R G) :
+    (res (QuotientGroup.mk' N)) ((relInvariantsFunctor R N).obj π) ⟶ π :=
+  TopRep.ofHom {
     toFun := Subtype.val
     map_add' _ _ := rfl
     map_smul' _ _ := rfl
     isIntertwining' _ := rfl
   }
+
+
+/-- The natural transformation whose component at a topological representation `π` of `G` is the
+inclusion of the `N`-invariants of `π`, regarded as a `G`-representation by restriction along the
+quotient map `G → G ⧸ N`. -/
+abbrev inflι :
+    (relInvariantsFunctor R N ⋙ resFunctor (QuotientGroup.mk' N)) ⟶ 𝟭 (TopRep R G) where
+  app := inflιapp N
   naturality _ _ _ := rfl
 
 end TopRep
@@ -134,8 +140,7 @@ namespace ContinuousCohomology
 
 /-- The inflation map from the `n`-th continuous cohomology of the `G ⧸ N`-representation on the
 `N`-invariants of `π` to the `n`-th continuous cohomology of `π`. -/
-abbrev inflApp (n : ℕ) (π : TopRep R G) :
-    (relInvariantsFunctor R N ⋙ HₜFunct R (G ⧸ N) n).obj π ⟶ (HₜFunct R G n).obj ((𝟭 _).obj π) :=
+def inflApp (n : ℕ) (π : TopRep R G) : Hₜ n ((relInvariantsFunctor R N).obj π) ⟶ Hₜ n π :=
   (resNatTrans R (QuotientTopGroup.mk N) n).app ((relInvariantsFunctor R N).obj π)
   ≫ (HₜFunct R G n).map ((inflι R N).app π)
 
@@ -148,20 +153,15 @@ lemma inflApp_naturality (n : ℕ) {π₁ π₂ : TopRep R G} (f : π₁ ⟶ π�
   rw [Functor.map_comp, Functor.map_comp] at h
   refine ((resNatTrans R (QuotientTopGroup.mk N) n).naturality_assoc
     ((relInvariantsFunctor R N).map f) _).trans ?_
-  rw [Category.assoc]
+  erw [Category.assoc]
   exact whisker_eq _ h
 
 /-- The inflation maps `inflApp N n` as a natural transformation
 `relInvariantsFunctor N ⋙ HₜFunct R (G ⧸ N) n ⟶ HₜFunct R G n`. -/
-noncomputable def inflNatTrans (n : ℕ) :
+noncomputable abbrev inflNatTrans (n : ℕ) :
     relInvariantsFunctor R N ⋙ HₜFunct R (G ⧸ N) n ⟶ HₜFunct R G n where
   app            := inflApp R N n
-  naturality _ _ f := by
-    /-
-    Note that the following proof is a lot quicker than `exact inflApp_naturality N n f`.
-    -/
-    have := inflApp_naturality R N n f
-    simpa only [Functor.id_obj] using this
+  naturality _ _ f := inflApp_naturality R N n f
 
 end ContinuousCohomology
 end
