@@ -45,8 +45,8 @@ open Filter MeasureTheory Set
 
 /--
 **Borel's Growth Lemma**: if `S : ℝ → ℝ` is monotone on `Set.Ici a` and satisfies `1 ≤ S` there,
-then the inequality `S (r + (S r)⁻¹) ≤ 2 * S r` holds for all sufficiently large `r` outside a set of
-finite Lebesgue measure.
+then the inequality `S (r + (S r)⁻¹) ≤ 2 * S r` holds for all sufficiently large `r` outside a set
+of finite Lebesgue measure.
 -/
 theorem MonotoneOn.eventually_le_two_mul {S : ℝ → ℝ} {a : ℝ}
     (h₁ : MonotoneOn S (Set.Ici a)) (h₂ : ∀ r ∈ Set.Ici a, 1 ≤ S r) :
