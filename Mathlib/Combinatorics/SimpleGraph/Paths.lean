@@ -379,11 +379,11 @@ lemma IsPath.tail {p : G.Walk u v} (hp : p.IsPath) : p.tail.IsPath := by
   | cons hadj p =>
     simp_all [Walk.isPath_def]
 
-theorem isPath_dropLast_iff_isPath_tail {p : G.Walk u u} : p.dropLast.IsPath ↔ p.tail.IsPath := by
+theorem isPath_dropLast_iff_isPath_tail {p : G.Walk v v} : p.dropLast.IsPath ↔ p.tail.IsPath := by
   simp_rw [isPath_def, p.support_tail_perm_support_dropLast.nodup_iff]
 
 theorem IsCycle.isPath_dropLast {p : G.Walk u u} (h : p.IsCycle) : p.dropLast.IsPath :=
-  isPath_dropLast_iff.mpr h.isPath_tail
+  isPath_dropLast_iff_isPath_tail.mpr h.isPath_tail
 
 theorem IsPath.dropLast (hp : p.IsPath) : p.dropLast.IsPath :=
   hp.take _
@@ -582,7 +582,7 @@ theorem isCycle_iff_isPath_tail_and_le_length {p : G.Walk u u} :
     have := p.isPath_iff_injective_get_support.mp h₁ this
     lia
 
-theorem isCycle_iff_isPath_dropLast_and_le_length {p : G.Walk u u} :
+theorem isCycle_iff_isPath_dropLast_and_le_length {p : G.Walk v v} :
     p.IsCycle ↔ p.dropLast.IsPath ∧ 3 ≤ p.length := by
   rw [isPath_dropLast_iff_isPath_tail, isCycle_iff_isPath_tail_and_le_length]
 
