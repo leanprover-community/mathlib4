@@ -1212,7 +1212,7 @@ theorem MonotoneOn.eVariationOn_eq {f : α → ℝ} {s : Set α}
     eVariationOn f (s ∩ .Icc a b) = ENNReal.ofReal (f b - f a) := by
   have h : BoundedVariationOn f (s ∩ .Icc a b) := hf.locallyBoundedVariationOn a b as bs
   apply eq_of_le_of_ge (eVariationOn_le hf as bs) (ENNReal.ofReal_le_of_le_toReal _)
-  grw [← BoundedVariationOn.dist_le h (x := a) (y := b)] <;> grind [Real.dist_eq]
+  grw [← h.dist_le (x := a) (y := b)] <;> grind [Real.dist_eq]
 
 /-- The variation of the identity on `s ∩ Icc a b` is `b - a`. -/
 lemma eVariationOn_id {a b : ℝ} (hab : a ≤ b) {s : Set ℝ} (as : a ∈ s) (bs : b ∈ s) :
