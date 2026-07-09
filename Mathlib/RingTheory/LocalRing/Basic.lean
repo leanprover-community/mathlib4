@@ -47,8 +47,8 @@ theorem nonunits_add {a b : R} (ha : a ∈ nonunits R) (hb : b ∈ nonunits R) :
   fun H => not_or_intro ha hb (isUnit_or_isUnit_of_isUnit_add H)
 
 variable (R) in
-/-- The set of nonunits of a local semiring is closed under addition. -/
-def nonunitsAddSubmonoid : AddSubmonoid R where
+/-- The nonunits of a local semiring form an additive submonoid. -/
+@[expose] def nonunitsAddSubmonoid : AddSubmonoid R where
   carrier := nonunits R
   zero_mem' := by simp
   add_mem' := nonunits_add
