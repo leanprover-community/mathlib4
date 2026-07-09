@@ -476,7 +476,7 @@ theorem image_range_of_monotone (f : α → E) {u : ℕ → α} (hu : Monotone u
       · simp only [IsGreatest, mem_image, mem_Iic, mem_upperBounds, forall_exists_index, and_imp,
         forall_apply_eq_imp_iff₂]
         refine ⟨⟨n, by simp⟩, fun a ha ↦ hu ha⟩
-      · simp [IsLeast, hu (by omega : n ≤ n + 1)]
+      · simp [IsLeast, hu n.le_succ]
     _ = _ := by
       simp [Finset.sum_range_succ, ih]
 
