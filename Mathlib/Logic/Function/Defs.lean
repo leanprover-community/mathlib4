@@ -106,7 +106,7 @@ end Prod
 /- ### The diagonal map -/
 
 /-- The diagonal map into `Prod`. -/
-@[inline] protected def diag {α} : α → α × α := Function.prod id id
+@[inline] protected def diag {α} : α → α × α := fun a : α => (a, a)
 
 @[inherit_doc] notation:max "△(" x:min ")" => Function.diag x
 
