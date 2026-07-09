@@ -821,7 +821,7 @@ protected theorem dite {s : Set α} {m : MeasurableSpace α} [TopologicalSpace �
     [(x : α) → Decidable (x ∈ s)] {f : ↑s → β} (hf : StronglyMeasurable f)
     {g : ↑sᶜ → β} (hg : StronglyMeasurable g) (hs : MeasurableSet s) :
     StronglyMeasurable fun x ↦ if hx : x ∈ s then f ⟨x, hx⟩ else g ⟨x, hx⟩ := by
-  refine ⟨fun n => SimpleFunc.dite s hs (hf.approx n) (hg.approx n), fun x => ?_⟩
+  refine ⟨fun n ↦ SimpleFunc.dite s hs (hf.approx n) (hg.approx n), fun x ↦ ?_⟩
   by_cases hx : x ∈ s
   · simpa [hx] using hf.tendsto_approx ⟨x, hx⟩
   · simpa [hx] using hg.tendsto_approx ⟨x, hx⟩

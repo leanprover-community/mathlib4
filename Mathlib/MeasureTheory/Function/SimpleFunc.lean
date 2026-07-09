@@ -221,12 +221,12 @@ theorem piecewise_same (f : α →ₛ β) {s : Set α} (hs : MeasurableSet s) :
   classical
   exact coe_injective <| Set.piecewise_same _ _
 
-open scoped Classical in
 /-- Dependent If-then-else as a `SimpleFunc`. -/
 @[simps]
 def dite (s : Set α) (hs : MeasurableSet s) (f : s →ₛ β) (g : (sᶜ : Set α) →ₛ β) : α →ₛ β where
-  toFun x := if hx : x ∈ s then f ⟨x, hx⟩ else g ⟨x, hx⟩
+  toFun x := open scoped Classical in if hx : x ∈ s then f ⟨x, hx⟩ else g ⟨x, hx⟩
   measurableSet_fiber' x := by
+    classical
     letI : MeasurableSpace β := ⊤
     exact Measurable.dite f.measurable g.measurable hs trivial
   finite_range' := (f.finite_range.union g.finite_range).subset (by grind)
@@ -877,10 +877,9 @@ theorem ennrealRatEmbed_encode (q : ℚ) :
 def eapprox : (α → ℝ≥0∞) → ℕ → α →ₛ ℝ≥0∞ :=
   approx ennrealRatEmbed
 
-set_option backward.isDefEq.respectTransparency false in
 theorem eapprox_lt_top (f : α → ℝ≥0∞) (n : ℕ) (a : α) : eapprox f n a < ∞ := by
   simp only [eapprox, approx, finset_sup_apply, restrict]
-  rw [Finset.sup_lt_iff (α := ℝ≥0∞) WithTop.top_pos]
+  rw [Finset.sup_lt_iff (α := ℝ≥0∞) bot_lt_top]
   intro b _
   split_ifs
   · simp only [coe_zero, coe_piecewise, piecewise_eq_indicator, coe_const]

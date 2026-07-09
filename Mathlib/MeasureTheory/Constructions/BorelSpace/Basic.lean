@@ -498,10 +498,9 @@ is ae-measurable. -/
 theorem Continuous.aemeasurable {f : α → γ} (h : Continuous f) {μ : Measure α} : AEMeasurable f μ :=
   h.measurable.aemeasurable
 
-/-- If a function is continuous outside of a countable set, then it is measurable. -/
+/-- If a function is continuous outside of a countable set, it is measurable. -/
 theorem ContinuousOn.measurable_of_countable_compl [MeasurableSingletonClass α]
-    {f : α → γ} {s : Set α} (hf : ContinuousOn f s)
-    (hs : (sᶜ).Countable) : Measurable f := by
+    {f : α → γ} {s : Set α} (hf : ContinuousOn f s) (hs : (sᶜ).Countable) : Measurable f := by
   apply measurable_of_measurable_on_compl_countable _ hs
   rw [compl_compl]
   exact (continuousOn_iff_continuous_restrict.1 hf).measurable
