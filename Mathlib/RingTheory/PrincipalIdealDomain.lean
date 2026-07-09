@@ -218,10 +218,10 @@ variable (R)
 /-- Any Bézout domain is a GCD domain. This is not an instance since `GCDMonoid` contains data,
 and this might not be how we would like to construct it. -/
 @[implicit_reducible]
-noncomputable def toGCDDomain [IsBezout R] [IsDomain R] [DecidableEq R] : GCDMonoid R :=
+noncomputable def toGCDDomain [IsBezout R] [IsCancelMulZero R] [DecidableEq R] : GCDMonoid R :=
   gcdMonoidOfGCD (gcd · ·) (gcd_dvd_left · ·) (gcd_dvd_right · ·) dvd_gcd
 
-instance nonemptyGCDMonoid [IsBezout R] [IsDomain R] : Nonempty (GCDMonoid R) := by
+instance [IsBezout R] [IsCancelMulZero R] : IsGCDMonoid R := by
   classical exact ⟨toGCDDomain R⟩
 
 theorem associated_gcd_gcd [GCDMonoid R] : Associated (IsBezout.gcd x y) (GCDMonoid.gcd x y) :=
@@ -552,3 +552,10 @@ lemma span_singleton_inf_span_singleton [EuclideanDomain R] [GCDMonoid R] (n m :
   rw [Ideal.mem_inf]
   simp only [Ideal.mem_span_singleton]
   exact lcm_dvd_iff.symm
+
+lemma Ideal.exists_normalized_span_of_isPrincipal {R : Type*} [CommSemiring R]
+    [NormalizationMonoid R] (I : Ideal R) [I.IsPrincipal] :
+    ∃ x, normalize x = x ∧ I = Ideal.span {x} := by
+  obtain ⟨x, rfl⟩ := ‹I.IsPrincipal›
+  refine ⟨normalize x, normalize_idem x, le_antisymm ?_ ?_⟩ <;>
+  simp [Ideal.mem_span_singleton]
