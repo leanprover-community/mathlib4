@@ -194,19 +194,33 @@ instance PPow.toPow {M : Type*} [PPow M] : Pow M ℕ+ :=
 @[to_additive ofSMul]
 instance PPow.ofPow {M : Type*} [Pow M ℕ+] : PPow M := ⟨fun n x ↦ Pow.pow x n⟩
 
+/--
+An abbreviation for `ppowRec` with an additional assumption on associativity
+so that we can use `@[csimp]` to replace it with an implementation by repeated squaring
+in compiled code.
+-/
+@[to_additive
+/-- An abbreviation for `psmulRec` with an additional assumption on associativity
+so that we can use `@[csimp]` to replace it with an implementation by repeated doubling in compiled
+code as an automatic parameter. -/]
+abbrev ppowRecAuto {M : Type*} [Mul M] (_h : ∀ a b c : M, a * b * c = a * (b * c)) (k : ℕ+)
+    (m : M) : M :=
+  ppowRec k m
+
 /-- A semigroup is a type with an associative `(*)`. -/
 class Semigroup (G : Type u) extends Mul G, PPow G where
-  ppow := ppowRec
+  ppow := ppowRecAuto mul_assoc
   /-- Multiplication is associative -/
   protected mul_assoc : ∀ a b c : G, a * b * c = a * (b * c)
   /-- Raising to the power `(1 : ℕ+)` gives the same element.. -/
-  protected ppow_one (x : G) : x ^ (1 : ℕ+) = x := by intros; rfl
+  protected ppow_one (x : G) : x ^ (1 : ℕ+) = x := by first | intros; rfl | exact ppowRec_one
   /-- Raising to the power `(n + 1 : ℕ+)` behaves as expected. -/
-  protected ppow_succ (n : ℕ+) (x : G) : x ^ (n + 1) = x ^ n * x := by intros; rfl
+  protected ppow_succ (n : ℕ+) (x : G) : x ^ (n + 1) = x ^ n * x := by
+    first | intros; rfl | exact ppowRec_succ
 
 /-- An additive semigroup is a type with an associative `(+)`. -/
 class AddSemigroup (G : Type u) extends Add G, PSMul G where
-  psmul := psmulRec
+  psmul := psmulRecAuto add_assoc
   /-- Addition is associative -/
   protected add_assoc : ∀ a b c : G, a + b + c = a + (b + c)
   /-- Scalar multiplication by `(1 : ℕ+)` gives the same element. -/
@@ -658,30 +672,22 @@ theorem npowBinRec_aux.go_spec {M : Type*} [Semigroup M] (base : M) (k : ℕ) (m
 
 /--
 An abbreviation for `ppowRec` with an additional typeclass assumption on associativity
-so that we can use `@[csimp]` to replace it with an implementation by repeated squaring
-in compiled code.
--/
-@[to_additive
-/-- An abbreviation for `psmulRec` with an additional typeclass assumptions on associativity
-so that we can use `@[csimp]` to replace it with an implementation by repeated doubling in compiled
-code as an automatic parameter. -/]
-abbrev ppowRecAuto {M : Type*} [Semigroup M] (k : ℕ+) (m : M) : M :=
-  ppowRec k m
-
-/--
-An abbreviation for `ppowRec` with an additional typeclass assumption on associativity
 so that we can use it in `@[csimp]` for more performant code generation.
 -/
 @[to_additive
-/-- An abbreviation for `psmulRec` with an additional typeclass assumption on associativity
+/-- An abbreviation for `psmulRec` with an additional assumption on associativity
 so that we can use it in `@[csimp]` for more performant code generation
 as an automatic parameter. -/]
-abbrev ppowBinRec {M : Type*} [Semigroup M] (k : ℕ+) (m : M) : M :=
+abbrev ppowBinRec {M : Type*} [Mul M] (_h : ∀ a b c : M, a * b * c = a * (b * c)) (k : ℕ+) (m : M) :
+    M :=
   npowBinRec_aux m (k.val - 1) m
 
 @[to_additive (attr := csimp)]
 theorem ppowRec_eq_ppowBinRec : @ppowRecAuto = @ppowBinRec := by
-  funext M _ k m
+  funext M _ h k m
+  let S : Semigroup M := {
+    mul_assoc := h
+  }
   rw [ppowBinRec, ppowRecAuto, npowBinRec_aux, ppowRec_eq]
   rcases k with ⟨_|k, hk⟩
   · contradiction
@@ -691,12 +697,11 @@ theorem ppowRec_eq_ppowBinRec : @ppowRecAuto = @ppowBinRec := by
   · rfl
   · rw [npowBinRec_aux.go_spec m, npowRec'_succ _ (by grind), npowRec'_mul_comm _ (by grind)]
 
-
 @[to_additive] theorem ppowBinRec_one {M : Type*} [Semigroup M] (m : M) :
-    ppowBinRec 1 m = m := rfl
+    ppowBinRec mul_assoc 1 m = m := rfl
 
 @[to_additive] theorem ppowBinRec_succ {M : Type*} [Semigroup M] (n : ℕ+) (m : M) :
-    ppowBinRec (n + 1) m = ppowBinRec n m * m := by
+    ppowBinRec mul_assoc (n + 1) m = ppowBinRec mul_assoc n m * m := by
   rw [← ppowRec_eq_ppowBinRec, ppowRecAuto, ppowRecAuto, ppowRec_succ]
 
 /-- Exponentiation by repeated squaring. -/
@@ -783,16 +788,6 @@ class Monoid (M : Type u) extends Semigroup M, MulOneClass M, NPow M where
   protected npow_zero (x : M) : x ^ 0 = 1 := by intros; rfl
   /-- Raising to the power `(n + 1 : ℕ)` behaves as expected. -/
   protected npow_succ (n : ℕ) (x : M) : x ^ (n + 1) = x ^ n * x := by intros; rfl
-  -- FIXME: can we assign this?
-  -- ppow := @ppowRecAuto M
-  --   { mul := (· * ·)
-  --     ppow := ppowRec
-  --     mul_assoc := by intros; apply mul_assoc
-  --     ppow_one := by intros; rfl
-  --     ppow_succ := by
-  --       intros n x
-  --       change ppowRec (n + 1) x = ppowRec n x * x
-  --       exact ppowRec_succ n x }
 
 section Monoid
 variable {M : Type*} [Monoid M] {a b c : M}
