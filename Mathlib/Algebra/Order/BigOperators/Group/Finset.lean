@@ -123,12 +123,26 @@ theorem _root_.Monotone.finsetProd [MulLeftMono N] {γ : Type*} [Preorder γ]
     Monotone fun x ↦ ∏ i ∈ s, f i x :=
   fun _ _ hab ↦ Finset.prod_le_prod' fun i hi ↦ hf i hi hab
 
+/-- A finite product of functions monotone on `u` is monotone on `u`. -/
+@[to_additive /-- A finite sum of functions monotone on `u` is monotone on `u`. -/]
+theorem _root_.MonotoneOn.finsetProd [MulLeftMono N] {γ : Type*} [Preorder γ] {u : Set γ}
+    {f : ι → γ → N} (hf : ∀ i ∈ s, MonotoneOn (f i) u) :
+    MonotoneOn (fun x ↦ ∏ i ∈ s, f i x) u :=
+  fun _ ha _ hb hab ↦ Finset.prod_le_prod' fun i hi ↦ hf i hi ha hb hab
+
 /-- A finite product of antitone functions is antitone. -/
 @[to_additive /-- A finite sum of antitone functions is antitone. -/]
 theorem _root_.Antitone.finsetProd [MulLeftMono N] {γ : Type*} [Preorder γ]
     {f : ι → γ → N} (hf : ∀ i ∈ s, Antitone (f i)) :
     Antitone fun x ↦ ∏ i ∈ s, f i x :=
   fun _ _ hab ↦ Finset.prod_le_prod' fun i hi ↦ hf i hi hab
+
+/-- A finite product of functions antitone on `u` is antitone on `u`. -/
+@[to_additive /-- A finite sum of functions antitone on `u` is antitone on `u`. -/]
+theorem _root_.AntitoneOn.finsetProd [MulLeftMono N] {γ : Type*} [Preorder γ] {u : Set γ}
+    {f : ι → γ → N} (hf : ∀ i ∈ s, AntitoneOn (f i) u) :
+    AntitoneOn (fun x ↦ ∏ i ∈ s, f i x) u :=
+  fun _ ha _ hb hab ↦ Finset.prod_le_prod' fun i hi ↦ hf i hi ha hb hab
 
 @[to_additive sum_nonneg]
 theorem one_le_prod' [MulLeftMono N] (h : ∀ i ∈ s, 1 ≤ f i) : 1 ≤ ∏ i ∈ s, f i :=
