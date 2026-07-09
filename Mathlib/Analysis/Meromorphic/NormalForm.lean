@@ -476,17 +476,22 @@ theorem meromorphicNFAt_toMeromorphicNFAt :
   · simp only [toMeromorphicNFAt, hf, ↓reduceDIte]
     exact analyticAt_const.meromorphicNFAt
 
+@[simp]
+lemma MeromorphicAt.meromorphicOrderAt_toMeromorphicNFAt (hf : MeromorphicAt f x) :
+    meromorphicOrderAt (toMeromorphicNFAt f x) x = meromorphicOrderAt f x :=
+  (meromorphicOrderAt_congr hf.eq_nhdsNE_toMeromorphicNFAt).symm
+
 lemma MeromorphicAt.meromorphicOrderAt_eq_zero_iff_toMeromorphicNFAt_ne_zero
     (hf : MeromorphicAt f x) :
     meromorphicOrderAt f x = 0 ↔ toMeromorphicNFAt f x x ≠ 0 := by
-  rw [meromorphicOrderAt_congr hf.eq_nhdsNE_toMeromorphicNFAt,
+  rw [← hf.meromorphicOrderAt_toMeromorphicNFAt,
     meromorphicNFAt_toMeromorphicNFAt.meromorphicOrderAt_eq_zero_iff]
 
 lemma MeromorphicAt.meromorphicOrderAt_nonneg_iff_analyticAt_toMeromorphicNFAt
     (hf : MeromorphicAt f x) :
     0 ≤ meromorphicOrderAt f x ↔ AnalyticAt 𝕜 (toMeromorphicNFAt f x) x := by
   rw [← meromorphicNFAt_toMeromorphicNFAt.meromorphicOrderAt_nonneg_iff_analyticAt,
-    meromorphicOrderAt_congr hf.eq_nhdsNE_toMeromorphicNFAt]
+    hf.meromorphicOrderAt_toMeromorphicNFAt]
 
 @[gcongr]
 lemma toMeromorphicNFAt_congr {f g : 𝕜 → E} (hfg : f =ᶠ[𝓝[≠] x] g) :
