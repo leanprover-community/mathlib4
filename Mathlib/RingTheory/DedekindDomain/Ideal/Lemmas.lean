@@ -996,6 +996,11 @@ theorem emultiplicity_eq_emultiplicity_span {a b : R} :
 @[deprecated (since := "2026-04-16")]
 alias _root_.emultiplicity_eq_emultiplicity_span := emultiplicity_eq_emultiplicity_span
 
+variable {R} in
+theorem multiplicity_eq_multiplicity_span {a b : R} :
+    multiplicity (span {a}) (span ({b} : Set R)) = multiplicity a b :=
+  multiplicity_eq_of_emultiplicity_eq emultiplicity_eq_emultiplicity_span
+
 end Ideal
 
 section PID
