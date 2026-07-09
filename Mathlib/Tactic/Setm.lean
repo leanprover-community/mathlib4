@@ -13,17 +13,17 @@ public meta import Lean.Elab.Tactic.Rewrite
 
 This module defines the `setm` tactic.
 
-The `setm` tactic ("`set` with matching") matches a pattern containing named holes to the type of
-a target, and creates local declarations for the matched named holes. By default, the target is the
-goal, and it can be selected to be a local declaration via the `using` syntax. Optionally, with the
-syntax `at loc`, it also rewrites at locations `loc` to replace the occurrences of the matched
-expressions with the newly-introduced local declarations.
+The `setm` tactic matches a pattern containing named holes to the type of a target, and creates
+local declarations for the hole names whose values are the assigned expressions. By default, the
+target is the goal, but it can be selected to be a local declaration via the `using` syntax.
+Optionally, with the syntax `at loc`, it also rewrites at locations `loc` to replace the occurrences
+of the matched expressions with the newly-introduced local declarations.
 
 
 ## Todo
 
-It would be nice if the tactic was be made to work for non-constants under binders (by adding
-forall binders to the local declarations).
+It would be nice if the tactic was be made to work for non-constants under binders (by adding forall
+binders to the local declarations).
 
 -/
 
