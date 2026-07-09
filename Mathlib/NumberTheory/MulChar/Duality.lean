@@ -83,7 +83,7 @@ character of `M`.
 theorem restrictHom_surjective (N : Submonoid M) :
     Function.Surjective (MulChar.restrictHom N R) := by
   intro χ
-  obtain ⟨ψ, hψ⟩ := (χ.toUnitHom.comp N.unitsEquivUnitsType).restrict_surjective R N.units
+  obtain ⟨ψ, hψ⟩ := (χ.toUnitHom.comp N.unitsEquivUnitsType).domRestrict_surjective R N.units
   refine ⟨MulChar.ofUnitHom ψ, ext fun _ ↦ ?_⟩
   rw [MonoidHom.domRestrictHom_apply] at hψ
   rw [restrictHom_apply, restrict_ofUnitHom]
