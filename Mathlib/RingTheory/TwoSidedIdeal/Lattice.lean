@@ -33,7 +33,7 @@ lemma mem_sup_left {I J : TwoSidedIdeal R} {x : R} (h : x ∈ I) :
     x ∈ I ⊔ J :=
   (show I ≤ I ⊔ J from le_sup_left) h
 
-lemma mem_sup_right {I J : TwoSidedIdeal R} {x : R} (h : x ∈ J) : 
+lemma mem_sup_right {I J : TwoSidedIdeal R} {x : R} (h : x ∈ J) :
     x ∈ I ⊔ J :=
   (show J ≤ I ⊔ J from le_sup_right) h
 
