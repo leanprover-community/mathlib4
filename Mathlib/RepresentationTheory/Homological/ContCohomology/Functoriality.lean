@@ -455,4 +455,3 @@ lemma ResMap_id_left (f : X ⟶ X') (n : ℕ) :
   rfl
 
 end ContinuousCohomology
-
