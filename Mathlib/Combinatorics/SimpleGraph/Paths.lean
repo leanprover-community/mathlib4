@@ -367,8 +367,8 @@ theorem IsPath.dropLast (hp : p.IsPath) : p.dropLast.IsPath :=
   hp.take _
 
 /-- There exists a trail of maximal length in a non-empty graph on finite edges. -/
-lemma exists_isTrail_forall_isTrail_length_le_length (G : SimpleGraph V) [N : Nonempty V]
-    [Finite G.edgeSet] :
+lemma _root_.SimpleGraph.exists_isTrail_forall_isTrail_length_le_length (G : SimpleGraph V)
+    [N : Nonempty V] [Finite G.edgeSet] :
     ∃ (u v : V) (p : G.Walk u v) (_ : p.IsTrail),
       ∀ (u' v' : V) (p' : G.Walk u' v') (_ : p'.IsTrail), p'.length ≤ p.length := by
   have := Fintype.ofFinite G.edgeSet
@@ -381,9 +381,13 @@ lemma exists_isTrail_forall_isTrail_length_le_length (G : SimpleGraph V) [N : No
   have := hn ⟨u', v', p', hp', Eq.refl p'.length⟩
   lia
 
+@[deprecated (since := "2026-07-08")]
+alias exists_isTrail_forall_isTrail_length_le_length :=
+  exists_isTrail_forall_isTrail_length_le_length
+
 /-- There exists a path of maximal length in a non-empty graph on finite edges. -/
-lemma exists_isPath_forall_isPath_length_le_length (G : SimpleGraph V) [N : Nonempty V]
-    [Finite G.edgeSet] :
+lemma _root_.SimpleGraph.exists_isPath_forall_isPath_length_le_length (G : SimpleGraph V)
+    [N : Nonempty V] [Finite G.edgeSet] :
     ∃ (u v : V) (p : G.Walk u v) (_ : p.IsPath),
       ∀ (u' v' : V) (p' : G.Walk u' v') (_ : p'.IsPath), p'.length ≤ p.length := by
   have := Fintype.ofFinite G.edgeSet
@@ -395,6 +399,39 @@ lemma exists_isPath_forall_isPath_length_le_length (G : SimpleGraph V) [N : None
   refine ⟨u, v, p, hp, fun u' v' p' hp' ↦ ?_⟩
   have := hn ⟨u', v', p', hp', Eq.refl p'.length⟩
   lia
+
+@[deprecated (since := "2026-07-08")]
+alias exists_isPath_forall_isPath_length_le_length := exists_isPath_forall_isPath_length_le_length
+
+variable (G) in
+/-- In a graph with finitely-many edges, from any start vertex there exists a longest trail among
+trails from that vertex. -/
+theorem _root_.SimpleGraph.exists_isTrail_forall_isTrail_length_le_length' [Finite G.edgeSet]
+    (u : V) :
+    ∃ (v : V) (p : G.Walk u v), p.IsTrail ∧
+      ∀ v' (p' : G.Walk u v'), p'.IsTrail → p'.length ≤ p.length := by
+  let s := {(p.length) | (v : V) (p : G.Walk u v) (hp : p.IsTrail)}
+  have := Fintype.ofFinite G.edgeSet
+  have : s.Finite := .subset (Set.finite_le_nat G.edgeFinset.card)
+    fun n ⟨v, p, hp, hn⟩ ↦ hn ▸ hp.length_le_card_edgeFinset
+  have ⟨n, hmax⟩ := this.exists_maximal ⟨0, ⟨u, nil, .nil, rfl⟩⟩
+  obtain ⟨v, p, hp, rfl⟩ := hmax.prop
+  exact ⟨v, p, hp, (hmax.le ⟨·, ·, ·, rfl⟩)⟩
+
+variable (G) in
+/-- In a graph with finitely-many edges, from any start vertex there exists a longest path among
+paths from that vertex. -/
+theorem _root_.SimpleGraph.exists_isPath_forall_isPath_length_le_length' [Finite G.edgeSet]
+    (u : V) :
+    ∃ (v : V) (p : G.Walk u v), p.IsPath ∧
+      ∀ v' (p' : G.Walk u v'), p'.IsPath → p'.length ≤ p.length := by
+  let s := {(p.length) | (v : V) (p : G.Walk u v) (hp : p.IsPath)}
+  have := Fintype.ofFinite G.edgeSet
+  have : s.Finite := .subset (Set.finite_le_nat G.edgeFinset.card)
+    fun n ⟨v, p, hp, hn⟩ ↦ hn ▸ hp.length_le_card_edgeFinset
+  have ⟨n, hmax⟩ := this.exists_maximal ⟨0, ⟨u, nil, .nil, rfl⟩⟩
+  obtain ⟨v, p, hp, rfl⟩ := hmax.prop
+  exact ⟨v, p, hp, (hmax.le ⟨·, ·, ·, rfl⟩)⟩
 
 /-! ### About paths -/
 
@@ -969,6 +1006,37 @@ lemma IsTrail.isCycle_cycleBypass {w : G.Walk v v} (hw : w ≠ .nil) (hw' : w.Is
   (w.isCircuit_def.mpr ⟨hw', hw⟩).isCycle_cycleBypass
 
 end Walk
+
+variable {G} in
+/-- In a graph with finitely-many edges and a circuit containing a vertex, there exists a longest
+circuit among circuits containing that vertex. -/
+theorem exists_isCircuit_forall_isCircuit_length_le_length' [Finite G.edgeSet] {v : V}
+    (h : ∃ p : G.Walk v v, p.IsCircuit) :
+    ∃ p : G.Walk v v, p.IsCircuit ∧ ∀ p' : G.Walk v v, p'.IsCircuit → p'.length ≤ p.length := by
+  let s := {(p.length) | (p : G.Walk v v) (hp : p.IsCircuit)}
+  have := Fintype.ofFinite G.edgeSet
+  have : s.Finite := .subset (Set.finite_le_nat G.edgeFinset.card)
+    fun n ⟨p, hp, hn⟩ ↦ hn ▸ hp.length_le_card_edgeFinset
+  have ⟨p₀, hp₀⟩ := h
+  have ⟨n, hmax⟩ := this.exists_maximal ⟨_, p₀, hp₀, rfl⟩
+  obtain ⟨p, hp, rfl⟩ := hmax.prop
+  exact ⟨p, hp, (hmax.le ⟨·, ·, rfl⟩)⟩
+
+variable {G} in
+/-- In a graph with finitely-many edges and a circuit containing a vertex, there exists a longest
+cycle among cycles containing that vertex. -/
+theorem exists_isCycle_forall_isCycle_length_le_length' [Finite G.edgeSet] {v : V}
+    (h : ∃ p : G.Walk v v, p.IsCircuit) :
+    ∃ p : G.Walk v v, p.IsCycle ∧ ∀ p' : G.Walk v v, p'.IsCycle → p'.length ≤ p.length := by
+  let s := {(p.length) | (p : G.Walk v v) (hp : p.IsCycle)}
+  have := Fintype.ofFinite G.edgeSet
+  have : s.Finite := .subset (Set.finite_le_nat G.edgeFinset.card)
+    fun n ⟨p, hp, hn⟩ ↦ hn ▸ hp.length_le_card_edgeFinset
+  have ⟨p₀, hp₀⟩ := h
+  classical
+  have ⟨n, hmax⟩ := this.exists_maximal ⟨_, _, hp₀.isCycle_cycleBypass, rfl⟩
+  obtain ⟨p, hp, rfl⟩ := hmax.prop
+  exact ⟨p, hp, (hmax.le ⟨·, ·, rfl⟩)⟩
 
 /-! ### Mapping paths -/
 
