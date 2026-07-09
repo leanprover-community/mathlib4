@@ -56,9 +56,10 @@ instance instChartedSpaceQuotient' : ChartedSpace H (orbitRel.Quotient G M) :=
     |>.isLocalHomeomorph.chartedSpaceOfRightInverse Quotient.out_eq
 
 
-
-
-
+/-
+TO-DO:
+* Move new results into the right places
+-/
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
@@ -86,8 +87,6 @@ abbrev φ : OpenPartialHomeomorph M H := chartAt H x.out
 
 abbrev πinv : OpenPartialHomeomorph (orbitRel.Quotient G M) M :=
   quotient_IsLocalHomeomorph.localInverseAt (Y := orbitRel.Quotient G M) x.out
-
-section
 
 variable {x} in
 /-- If `g • m` is in the target of `πinv x`, then `πinv x ⟦m⟧` is just `g • m`. -/
@@ -123,9 +122,6 @@ lemma locally_smul (m : M) (hm : m ∈ ((πinv x).symm.trans (πinv y)).source) 
   obtain ⟨g, hg⟩ := exists_smul_mem_πinv_target m hm.2
   exact ⟨g, hg, smul_eqOn x y g⟩
 
-
-end
-
 /-- The transition map between the charts of the quotient associated to `x` and `y`. -/
 def quotientTransitionMap : OpenPartialHomeomorph H H :=
   (φ (H := H) x).symm.trans (((πinv x).symm.trans (πinv y)).trans (φ y))
@@ -156,63 +152,30 @@ lemma quotientTransitionMap_locally_smul {h : H} (hh : h ∈ (quotientTransition
 
 variable {x y : orbitRel.Quotient G M}
 
+section
+
+-- move this
+
 variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
   {f : OpenPartialHomeomorph X Y}
 
-example (y : Y) (hy : y ∈ f.target) :
-  f (f.symm y) = y := by exact OpenPartialHomeomorph.right_inv f hy
-
-lemma aux (y : Y) (hy : y ∈ f.target) :
-  ∃ x ∈ f.source, f x = y := by
-  use f.symm y
-  sorry
-
-example (m : M) (g : G) :
-    (πinv x).symm.trans (πinv y) m = g • m := by
-  simp only [OpenPartialHomeomorph.coe_trans, Function.comp_apply]
-  rw [quotient_IsLocalHomeomorph.localInverseAt_symm,
-  ← orbitRel.Quotient.quotient_smul_eq (g:=g),
-  ← quotient_IsLocalHomeomorph.localInverseAt_symm m]
-
-  sorry
-
-lemma general_hfg_t
-    (t : Set M) (g : G)
-    (ht : t ⊆ (φ (H := H) x).source)
-    (is_open_t : IsOpen t)
-    (ht' : Homeomorph.smul g '' t ⊆ (φ (H := H) y).source)
-    (ht'' : Homeomorph.smul g '' t ⊆ (πinv y).target) :
-    (((φ (H := H) x).symm.trans (((Homeomorph.smul g).toOpenPartialHomeomorph).trans (φ y))).restr
-      ((φ x '' t) ∩ (quotientTransitionMap x y).source)).EqOnSource
-      ((quotientTransitionMap x y).restr (φ x '' t))
-    := by
-  have is_open_at := ((φ (H := H) x).isOpen_image_iff_of_subset_source ht).mpr is_open_t
+theorem OpenPartialHomeomorph.restr_eqOnSource_of_eqOn
+    {e e' : OpenPartialHomeomorph X Y} {s : Set X} (hs : IsOpen s)
+    (heq : s.EqOn e e') (hsub : e.source ∩ s ⊆ e'.source) :
+    e.restr s ≈ e'.restr (e.source ∩ s) := by
   refine ⟨?_, ?_⟩
-  · ext z
-    refine ⟨?_, ?_⟩
-    · intro ⟨_, hzt⟩
-      rw [(quotientTransitionMap (H := H) x y).restr_source, is_open_at.interior_eq, inter_comm]
-      simpa [(is_open_at.inter (quotientTransitionMap (H := H) x y).open_source).interior_eq]
-        using hzt
-    · intro ⟨hzf, hzt⟩
-      rw [is_open_at.interior_eq] at hzt
-      obtain ⟨u, hu, hz⟩ := hzt
-      refine ⟨?_, ?_⟩
-      · rw [← hz]
-        refine ⟨(φ x).map_source' (ht hu), ?_⟩
-        suffices h : g • (φ x).symm (φ x u) ∈ (φ y).source by simpa using h
-        rw [(φ x).left_inv (ht hu)]
-        apply ht'
-        simp [hu]
-      · rw [(is_open_at.inter (quotientTransitionMap (H := H) x y).open_source).interior_eq]
-        refine ⟨by use u;, by exact hzf⟩
-  · intro z ⟨_, hz⟩
-    rw [(is_open_at.inter (quotientTransitionMap (H := H) x y).open_source).interior_eq] at hz
-    obtain ⟨⟨u, hut, hu⟩, _⟩ := hz
-    have hmem : φ x u ∈ (φ (H := H) x).symm ⁻¹' ((g • ·) ⁻¹' (πinv y).target) := by
-      simpa [(φ x).left_inv (ht hut)] using ht'' (mem_image_of_mem _ hut)
-    simpa [hu] using (quotientTransitionMap_eqOn_smul x y g hmem).symm
+  · rw [e.restr_source' s hs, e'.restr_source' _ (e.open_source.inter hs),
+      inter_eq_right.mpr hsub]
+  · exact fun z hz ↦ heq (e.restr_source' s hs ▸ hz).2
 
+lemma StructureGroupoid.restr_mem_of_eqOn {G : StructureGroupoid X}
+    [ClosedUnderRestriction G] {e e' : OpenPartialHomeomorph X X} {s : Set X}
+    (he' : e' ∈ G) (hs : IsOpen s) (heq : s.EqOn e e') (hsub : e.source ∩ s ⊆ e'.source) :
+    e.restr s ∈ G :=
+  G.mem_of_eqOnSource (closedUnderRestriction' he' (e.open_source.inter hs))
+    (OpenPartialHomeomorph.restr_eqOnSource_of_eqOn hs heq hsub)
+
+end
 
 instance : IsManifold I n (orbitRel.Quotient G M) where
   compatible := by
@@ -222,72 +185,26 @@ instance : IsManifold I n (orbitRel.Quotient G M) where
 
     rw [(πinv x).trans_symm_eq_symm_trans_symm, (φ x).symm.trans_assoc, ← (πinv x).symm.trans_assoc]
 
-    change quotientTransitionMap x y ∈ contDiffGroupoid (↑n) I
 
     apply StructureGroupoid.locality
 
     intro h hh
 
-    have aux := quotientTransitionMap_locally_smul x y hh
-    obtain ⟨g0, hg1, hg2⟩ := aux
+    obtain ⟨g0, hg0, hg0'⟩ := quotientTransitionMap_locally_smul x y hh
 
-    let Up := (πinv x).target ∩ (φ (H := H) x).source -- U H x
-    let Uq := (πinv y).target ∩ (φ (H := H) y).source -- U H y
-    let Up' := Up ∩ Homeomorph.smul g0⁻¹ '' Uq
-    let t := φ (H:=H) x '' Up'
+    have hto : IsOpen ((φ (H := H) x).symm.source ∩
+        (φ x).symm ⁻¹' ((g0 • ·) ⁻¹' (πinv y).target)) :=
+      (φ x).symm.isOpen_inter_preimage ((πinv y).open_target.preimage (continuous_const_smul g0))
 
-    refine ⟨t, sorry, sorry, ?_⟩
+    refine ⟨_, hto, ⟨hh.1, hg0⟩, ?_⟩
 
-    #check closedUnderRestriction'
-
-    intro h ⟨hh1, ⟨hh2, hh3⟩, hh4⟩
-
-    have heq : (⟦(φ x).symm h⟧ : orbitRel.Quotient G M) =
-      ⟦(πinv y) ((πinv x).symm ((φ x).symm h))⟧ := by
-      rw [← quotient_IsLocalHomeomorph.localInverseAt_symm y.out,
-        OpenPartialHomeomorph.left_inv _ hh3, quotient_IsLocalHomeomorph.localInverseAt_symm,
-        quotient_IsLocalHomeomorph.localInverseAt_symm]
-
-    /-
-    the second rw could be
-    (πinv y).left_inv (x := (πinv x).symm ((φ x).symm h)) hh3
-    or
-    (πinv y).left_inv (by simpa using hh3)
-    neither of them feel a lot better.
-    -/
-
-    obtain ⟨g0, hg0⟩ := MulAction.orbitRel_apply.mp (Quotient.exact heq.symm)
-
-    let Up := (πinv x).target ∩ (φ (H := H) x).source -- U H x
-    let Uq := (πinv y).target ∩ (φ (H := H) y).source -- U H y
-    let Up' := Up ∩ Homeomorph.smul g0⁻¹ '' Uq
-    let t := φ (H:=H) x '' Up'
-
-    have is_open_Up' : IsOpen Up' := ((πinv x).open_target.inter (φ x).open_source).inter
-      ((Homeomorph.isOpen_image _).mpr ((πinv y).open_target.inter (φ y).open_source))
-
-    have is_open_t : IsOpen t := (φ x).isOpen_image_of_subset_source is_open_Up'
-      (inter_subset_left.trans inter_subset_right)
-
-    have h_in_t : h ∈ t := by
-      refine ⟨(φ x).symm h, ?_, (φ x).right_inv hh1⟩
-      refine ⟨⟨hh2, (φ x).map_target hh1⟩, ?_⟩
-      refine ⟨(πinv y) ((πinv x).symm ((φ x).symm h)), ?_⟩
-      exact ⟨⟨(πinv y).map_source hh3, hh4⟩, (Homeomorph.smul g0).injective (by simp [hg0])⟩
-
-    refine ⟨t, is_open_t, h_in_t, ?_⟩
-
-    have hfg_t := general_hfg_t (x:=x) (y:=y) Up' g0 (fun x hx => hx.1.2) is_open_Up'
-      (fun m ⟨_, ⟨_, _, hw⟩, hu2⟩ ↦ by simpa [← hu2, ← hw.2] using hw.1.2)
-      (fun m ⟨_, ⟨_, _, hw⟩, hu2⟩ ↦ by simpa [← hu2, ← hw.2] using hw.1.1)
-
-    refine (StructureGroupoid.mem_iff_of_eqOnSource hfg_t).mp ?_
-
-    refine closedUnderRestriction' ?_ ?_
-    · refine mem_contDiffGroupoid_of_contMDiff_chartAt I ?_ ?_
-      · sorry
-      · sorry
-    · exact is_open_t.inter (quotientTransitionMap (H := H) x y).open_source
+    refine StructureGroupoid.restr_mem_of_eqOn
+      (mem_contDiffGroupoid_of_contMDiff_chartAt I ?_ ?_) hto
+      (hg0'.mono inter_subset_right) ?_
+    · sorry
+    · sorry
+    · rintro h' ⟨⟨hQ1, -, hQ4⟩, -, hcert⟩
+      exact ⟨hQ1, mem_univ _, by simpa [← smul_eqOn x y g0 hcert] using hQ4⟩
 
 end MulAction
 
