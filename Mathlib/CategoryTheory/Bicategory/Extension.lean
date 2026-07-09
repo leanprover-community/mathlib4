@@ -79,12 +79,7 @@ abbrev homMk (η : s.extension ⟶ t.extension) (w : s.unit ≫ f ◁ η = t.uni
 theorem w (η : s ⟶ t) : s.unit ≫ f ◁ η.right = t.unit :=
   StructuredArrow.w η
 
-@[reassoc (attr := simp)]
-theorem homMk_left (η : s.extension ⟶ t.extension) (w : s.unit ≫ f ◁ η = t.unit) :
-    (homMk η w).left = 𝟙 s.left :=
-  rfl
-
-@[reassoc (attr := simp)]
+@[simp]
 theorem homMk_right (η : s.extension ⟶ t.extension) (w : s.unit ≫ f ◁ η = t.unit) :
     (homMk η w).right = η :=
   rfl
@@ -281,12 +276,7 @@ abbrev homMk (η : s.lift ⟶ t.lift) (w : s.unit ≫ η ▷ f = t.unit := by ca
     s ⟶ t :=
   StructuredArrow.homMk η w
 
-@[reassoc (attr := simp)]
-theorem homMk_left (η : s.lift ⟶ t.lift) (w : s.unit ≫ η ▷ f = t.unit) :
-    (homMk η w).left = 𝟙 s.left :=
-  rfl
-
-@[reassoc (attr := simp)]
+@[simp]
 theorem homMk_right (η : s.lift ⟶ t.lift) (w : s.unit ≫ η ▷ f = t.unit) :
     (homMk η w).right = η :=
   rfl
@@ -493,14 +483,9 @@ abbrev homMk (η : s.extension ⟶ t.extension)
 theorem w (η : s ⟶ t) : f ◁ η.left ≫ t.counit = s.counit :=
   CostructuredArrow.w η
 
-@[reassoc (attr := simp)]
+@[simp]
 theorem homMk_left (η : s.extension ⟶ t.extension) (w : f ◁ η ≫ t.counit = s.counit) :
     (homMk η w).left = η :=
-  rfl
-
-@[reassoc (attr := simp)]
-theorem homMk_right (η : s.extension ⟶ t.extension) (w : f ◁ η ≫ t.counit = s.counit) :
-    (homMk η w).right = 𝟙 s.right :=
   rfl
 
 /-- The right extension along the identity. -/
@@ -700,14 +685,9 @@ abbrev homMk (η : s.lift ⟶ t.lift) (w : η ▷ f ≫ t.counit = s.counit := b
 theorem w (h : s ⟶ t) : h.left ▷ f ≫ t.counit = s.counit :=
   CostructuredArrow.w h
 
-@[reassoc (attr := simp)]
+@[simp]
 theorem homMk_left (η : s.lift ⟶ t.lift) (w : η ▷ f ≫ t.counit = s.counit) :
     (homMk η w).left = η :=
-  rfl
-
-@[reassoc (attr := simp)]
-theorem homMk_right (η : s.lift ⟶ t.lift) (w : η ▷ f ≫ t.counit = s.counit) :
-    (homMk η w).right = 𝟙 s.right :=
   rfl
 
 /-- The right lift along the identity. -/
