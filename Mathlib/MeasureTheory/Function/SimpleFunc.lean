@@ -221,6 +221,16 @@ theorem piecewise_same (f : α →ₛ β) {s : Set α} (hs : MeasurableSet s) :
   classical
   exact coe_injective <| Set.piecewise_same _ _
 
+/-- Dependent If-then-else as a `SimpleFunc`. -/
+@[simps]
+def dite (s : Set α) (hs : MeasurableSet s) (f : s →ₛ β) (g : (sᶜ : Set α) →ₛ β) : α →ₛ β where
+  toFun x := open scoped Classical in if hx : x ∈ s then f ⟨x, hx⟩ else g ⟨x, hx⟩
+  measurableSet_fiber' x := by
+    classical
+    letI : MeasurableSpace β := ⊤
+    exact Measurable.dite f.measurable g.measurable hs trivial
+  finite_range' := (f.finite_range.union g.finite_range).subset (by grind)
+
 theorem support_indicator [Zero β] {s : Set α} (hs : MeasurableSet s) (f : α →ₛ β) :
     Function.support (f.piecewise s hs (SimpleFunc.const α 0)) = s ∩ Function.support f :=
   Set.support_indicator
