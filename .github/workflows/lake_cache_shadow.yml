@@ -29,7 +29,8 @@ name: Lake cache shadow (master)
 #                    enabled, then stage the resulting .ltar files.
 #   upload           Push staged artifacts to the cache bucket via
 #                    `lake cache put-staged`, then record a per-run manifest
-#                    under cache/analysis/ and report carryover vs the prior run.
+#                    under cache/analysis/<toolchain-slug>/ and report
+#                    carryover vs the prior run on the same toolchain.
 #   consume          Fresh checkout, fetch from the cache bucket via
 #                    `lake cache get`, run `lake build` against the
 #                    rehydrated cache, then verify with `--rehash`.
@@ -44,8 +45,12 @@ name: Lake cache shadow (master)
 #   lean must be behaviorally compatible with the repo pin, e.g. a Lake change
 #   cherry-picked onto the pinned release's lineage as a lean4 pr-release.
 #   Input hashes incorporate the toolchain, so all runs safely share one
-#   scope and carryover chain; a toolchain switch misses the legacy cache and
-#   all prior artifacts, costing one full-turnover source build.
+#   artifact scope. The analysis chain (warm-start pointer + carryover
+#   manifests) is keyed per toolchain under analysis/<slug>/, so pinned and
+#   override runs each warm-start from and diff against their own lineage.
+#   A toolchain's first run — or a pr-release tag republished under the same
+#   name — misses the legacy cache and all prior artifacts, costing one
+#   full-turnover source build.
 
 on:
   schedule:
@@ -253,19 +258,22 @@ jobs:
           awk '/^package mathlib where/,/^$/' lakefile.lean
           echo "::endgroup::"
 
-      # Seed Lake's artifact cache from the previous run, whose rev comes from
-      # the analysis chain's `_latest` pointer. Only content the cache can't
-      # serve is packed or built; a run on a different toolchain than the
-      # previous one misses everything and proceeds from source.
+      # Seed Lake's artifact cache from the previous run on the same
+      # toolchain, whose rev comes from that toolchain's analysis chain
+      # (`analysis/<slug>/_latest.txt`). Only content the cache can't serve
+      # is packed or built; a toolchain's first run has no chain yet and
+      # proceeds from source.
       - name: Warm start from shadow scope
         shell: bash -euo pipefail {0}
         env:
           LAKE_CACHE_ARTIFACT_ENDPOINT: ${{ vars.LAKE_CACHE_ARTIFACT_ENDPOINT_PUBLIC }}
           LAKE_CACHE_REVISION_ENDPOINT: ${{ vars.LAKE_CACHE_REVISION_ENDPOINT_PUBLIC }}
         run: |
-          prev="$(curl -fsS "${LAKE_CACHE_ARTIFACT_ENDPOINT%/artifacts}/analysis/_latest.txt" 2>/dev/null || true)"
+          # Must mirror the slug in the upload job's carryover step.
+          slug="$(printf %s "$(cat pr-branch/lean-toolchain)" | tr -c 'A-Za-z0-9._-' '-')"
+          prev="$(curl -fsS "${LAKE_CACHE_ARTIFACT_ENDPOINT%/artifacts}/analysis/$slug/_latest.txt" 2>/dev/null || true)"
           if [ -z "$prev" ]; then
-            echo "::notice::no prior run recorded; proceeding without a warm start"
+            echo "::notice::no prior run recorded for chain $slug; proceeding without a warm start"
             exit 0
           fi
           cd pr-branch
@@ -399,7 +407,8 @@ jobs:
             --toolchain="${{ needs.build_and_stage.outputs.toolchain }}" 2>&1 | tee /tmp/put.log
 
       # Cache carryover analysis: diff this run's uploaded artifact set against
-      # the previous run's, using a tiny per-run manifest kept in the bucket.
+      # the previous run's on the same toolchain, via tiny per-run manifests
+      # kept in the bucket under the toolchain's analysis/<slug>/ prefix.
       # Here:
       #   carryover = artifacts also present last run;
       #   new = this run's churn (≈ how much Mathlib changed since the last build).
@@ -412,8 +421,11 @@ jobs:
           AUTH: ${{ vars.LAKE_CACHE_ARTIFACT_ENDPOINT }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPO: ${{ github.repository }}
+          EFFECTIVE_TOOLCHAIN: ${{ needs.build_and_stage.outputs.toolchain }}
         run: |
-          base="${AUTH%/artifacts}/analysis"
+          # Must mirror the slug in build_and_stage's warm-start step.
+          slug="$(printf %s "$EFFECTIVE_TOOLCHAIN" | tr -c 'A-Za-z0-9._-' '-')"
+          base="${AUTH%/artifacts}/analysis/$slug"
           sha="${{ needs.build_and_stage.outputs.sha }}"
           sig=(--aws-sigv4 aws:amz:auto:s3 --user "$LAKE_CACHE_KEY")
           # grep exits 1 on no match (handled by the total==0 branch); tolerate it under pipefail.
@@ -460,7 +472,7 @@ jobs:
             new_content="$(numfmt --to=iec-i --suffix=B "$new_bytes") across ${new} new artifact(s) vs rev ${prev:0:12}${distnote}"
             pct=$(awk "BEGIN{printf \"%.1f\", ($total>0)?100*$carry/$total:0}")
             note=""
-            [ "$total" -gt 0 ] && [ "$new" -eq "$total" ] && note=" — full turnover, likely a toolchain/generation change, not source churn"
+            [ "$total" -gt 0 ] && [ "$new" -eq "$total" ] && note=" — full turnover, likely a republished toolchain binary, not source churn"
             summary="${carry}/${total} (${pct}%) carried over, ${new} new vs rev ${prev:0:12}${note}"
           fi
           echo "::notice::cache carryover: ${summary}"
