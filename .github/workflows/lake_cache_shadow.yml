@@ -175,11 +175,16 @@ jobs:
           ./elan-init.sh -y --default-toolchain none
           echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
 
-      # `elan which` below does not auto-install non-pinned toolchains.
+      # `elan which` below does not auto-install non-pinned toolchains. The
+      # uninstall forces a fresh download: pr-release tags are republished in
+      # place, and elan skips toolchains it already has, so a persistent
+      # runner would otherwise keep running a stale binary under that name.
       - name: Install override toolchain
         if: ${{ env.TOOLCHAIN_OVERRIDE != '' }}
         shell: bash -euo pipefail {0}
-        run: elan toolchain install "$TOOLCHAIN_OVERRIDE"
+        run: |
+          elan toolchain uninstall "$TOOLCHAIN_OVERRIDE" || true
+          elan toolchain install "$TOOLCHAIN_OVERRIDE"
 
       - name: set toolchain directory
         shell: bash -euo pipefail {0}
