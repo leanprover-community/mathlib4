@@ -251,7 +251,7 @@ theorem ppow_succ (a : G) (n : ℕ+) : a ^ (n + 1) = a ^ n * a :=
   Semigroup.ppow_succ n a
 
 @[to_additive succ_psmul']
-lemma ppow_succ' (n : ℕ+) (a : G) :
+lemma ppow_succ' (a : G) (n : ℕ+) :
     a ^ (n + 1) = a * a ^ n := by
   induction n with
   | one => simp [ppow_succ]

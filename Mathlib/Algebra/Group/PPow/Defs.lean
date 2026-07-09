@@ -21,79 +21,38 @@ open PNat
 
 variable {M : Type*}
 
-instance Semigroup.instPow [Semigroup M] : Pow M ℕ+ where
-  pow x n := Semigroup.ppow n n.property x
-
-instance AddSemigroup.instSMul [AddSemigroup M] : SMul ℕ+ M where
-  smul n x := AddSemigroup.psmul n n.property x
-
-attribute [to_additive existing AddSemigroup.instSMul] Semigroup.instPow
-
-@[to_additive (attr := simp)]
-lemma Semigroup.ppow_eq_pow [Semigroup M] (x : M) (n : ℕ+) :
-    Semigroup.ppow n n.property x = x ^ n :=
-  rfl
-
-@[simp]
-lemma one_psmul [AddSemigroup M] (x : M) : (1 : ℕ+) • x = x :=
-  AddSemigroup.psmul_one _
-
-@[to_additive (attr := simp) existing]
-lemma ppow_one [Semigroup M] (x : M) : x ^ (1 : ℕ+) = x :=
-  Semigroup.ppow_one _
-
 @[to_additive (attr := elab_as_elim)]
 lemma Semigroup.ppow_induction [Semigroup M] {p : ℕ+ → M → Prop} (x : M) (n : ℕ+)
-    (h1 : p 1 x) (hsucc : ∀ n : ℕ,
-    p (PNat.mk (n + 1) (Nat.succ_pos n)) (x ^ PNat.mk (n + 1) (Nat.succ_pos n)) →
-    p (PNat.mk (n + 2) (Nat.succ_pos (n + 1)))
-      (x ^ PNat.mk (n + 1) (Nat.succ_pos n) * x)) :
+    (h1 : p 1 x) (hsucc : ∀ n : ℕ+, p n (x ^ n) → p (n + 1) (x ^ n * x)) :
     p n (x ^ n) := by
-  rcases n with ⟨n, hn⟩
-  rcases Nat.exists_eq_succ_of_ne_zero (Nat.ne_of_gt hn) with ⟨k, rfl⟩
-  let q : ℕ → Prop := fun k =>
-    p (PNat.mk (k + 1) (Nat.succ_pos k)) (x ^ PNat.mk (k + 1) (Nat.succ_pos k))
-  have hq (k : ℕ) : q k := by
-    induction k with
-    | zero => simpa [q, PNat.mk] using h1
-    | succ k IH =>
-      simpa [q, PNat.mk, ← Semigroup.ppow_eq_pow, Semigroup.ppow_succ] using hsucc k IH
-  simpa [q, PNat.mk] using hq k
+  induction n
+  · simpa
+  · grind [ppow_succ]
 
 @[to_additive psmul_mk_add_one]
 lemma ppow_mk_add_one [Semigroup M] (x : M) {n : ℕ} (hn : n ≠ 0 := by exact Nat.succ_ne_zero _) :
-    x ^ (PNat.mk (n + 1) (Nat.succ_pos n)) = x ^ (PNat.mk n (Nat.pos_of_ne_zero hn)) * x := by
-  cases n
-  · contradiction
-  · simp [← Semigroup.ppow_eq_pow, PNat.mk, Semigroup.ppow_succ]
+    x ^ (PNat.mk (n + 1) (Nat.succ_pos n)) = x ^ (PNat.mk n (Nat.pos_of_ne_zero hn)) * x :=
+  ppow_succ x (mk n _)
 
 @[to_additive psmul_mk_add_one']
 lemma ppow_mk_add_one' [Semigroup M] (x : M) {n : ℕ} (hn : n ≠ 0 := by exact Nat.succ_ne_zero _) :
-    x ^ (PNat.mk (n + 1) (Nat.succ_pos n)) = x * x ^ (PNat.mk n (Nat.pos_of_ne_zero hn)) := by
-  cases n
-  · contradiction
-  · simp [← Semigroup.ppow_eq_pow, PNat.mk, Semigroup.ppow_succ']
+    x ^ (PNat.mk (n + 1) (Nat.succ_pos n)) = x * x ^ (PNat.mk n (Nat.pos_of_ne_zero hn)) :=
+  ppow_succ' x (mk n _)
 
 @[to_additive (attr := elab_as_elim)]
 lemma Semigroup.ppow_induction' [Semigroup M] {p : ℕ+ → M → Prop} (x : M) (n : ℕ+)
-    (h1 : p 1 x) (hsucc : ∀ n : ℕ,
-    p (PNat.mk (n + 1) (Nat.succ_pos n)) (x ^ PNat.mk (n + 1) (Nat.succ_pos n)) →
-    p (PNat.mk (n + 2) (Nat.succ_pos (n + 1)))
-      (x * x ^ PNat.mk (n + 1) (Nat.succ_pos n))) :
+    (h1 : p 1 x) (hsucc : ∀ n : ℕ+, p n (x ^ n) → p (n + 1) (x * x ^ n)) :
     p n (x ^ n) := by
-  induction n using Semigroup.ppow_induction x
-  · exact h1
-  · rw [← ppow_mk_add_one, ppow_mk_add_one']
-    exact hsucc _ ‹_›
+  induction n
+  · simpa
+  · grind [ppow_succ']
 
 -- not marked as `simp` because in a monoid we probably prefer powers with type `ℕ`
 @[to_additive (attr := norm_cast)]
 theorem npow_val_eq_ppow [Monoid M] (n : ℕ+) (x : M) : x ^ n.val = x ^ n := by
   induction n using Semigroup.ppow_induction x with
   | h1 => simp
-  | hsucc n IH =>
-    simp only [mk_coe] at IH
-    simp [pow_succ _ (n + 1), IH]
+  | hsucc n IH => simp [pow_succ, IH]
 
 -- This lemma is higher priority than later `smul_zero` so that the `simpNF` is happy
 @[to_additive (attr := simp high) psmul_zero] lemma one_ppow [Monoid M] (n : ℕ+) :
@@ -109,7 +68,7 @@ lemma mul_ppow (x y : M) (n : ℕ+) : (x * y) ^ n = x ^ n * y ^ n := by
   induction n using Semigroup.ppow_induction (x * y) with
   | h1 => simp
   | hsucc n IH =>
-    rw [ppow_mk_add_one x, ppow_mk_add_one y, IH, ← mul_assoc, mul_assoc _ _ x, mul_comm _ x,
+    rw [ppow_succ x, ppow_succ y, IH, ← mul_assoc, mul_assoc _ _ x, mul_comm _ x,
         ← mul_assoc, ← mul_assoc]
 
 end CommSemigroup
