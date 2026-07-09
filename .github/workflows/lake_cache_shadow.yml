@@ -38,8 +38,10 @@ name: Lake cache shadow (master)
 #
 # Toolchain override:
 #   The `toolchain_override` input, or else the LAKE_SHADOW_TOOLCHAIN_OVERRIDE
-#   variable, swaps the toolchain the whole pipeline runs on. Its lean must be
-#   behaviorally compatible with the repo pin, e.g. a Lake change
+#   variable, swaps the toolchain the whole pipeline runs on: build_and_stage
+#   resolves it into its `toolchain` output, and the downstream jobs stamp
+#   that output into their checkouts, so every job runs the same lake. Its
+#   lean must be behaviorally compatible with the repo pin, e.g. a Lake change
 #   cherry-picked onto the pinned release's lineage as a lean4 pr-release.
 #   Input hashes incorporate the toolchain, so all runs safely share one
 #   scope and carryover chain; a toolchain switch misses the legacy cache and
@@ -343,12 +345,20 @@ jobs:
       LAKE_CACHE_ARTIFACT_ENDPOINT: ${{ vars.LAKE_CACHE_ARTIFACT_ENDPOINT }}
       LAKE_CACHE_REVISION_ENDPOINT: ${{ vars.LAKE_CACHE_REVISION_ENDPOINT }}
     steps:
-      - name: Checkout mathlib (for lean-toolchain pin)
+      - name: Checkout mathlib (workspace for put-staged)
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           ref: ${{ needs.build_and_stage.outputs.sha }}
           path: pr-branch
           fetch-depth: 1
+
+      # Stamp the effective toolchain from build_and_stage's resolve step, so
+      # put-staged runs the same lake that produced the staging; the elan
+      # proxy auto-installs it on first use.
+      - name: Pin effective toolchain
+        env:
+          EFFECTIVE_TOOLCHAIN: ${{ needs.build_and_stage.outputs.toolchain }}
+        run: printf '%s\n' "$EFFECTIVE_TOOLCHAIN" > pr-branch/lean-toolchain
 
       - name: install elan + matching lake
         run: |
@@ -482,9 +492,13 @@ jobs:
           path: pr-branch
           fetch-depth: 1
 
-      - name: Apply toolchain override
-        if: ${{ env.TOOLCHAIN_OVERRIDE != '' }}
-        run: printf '%s\n' "$TOOLCHAIN_OVERRIDE" > pr-branch/lean-toolchain
+      # Stamp the effective toolchain from build_and_stage's resolve step, so
+      # the replay runs the same lake that built the artifacts; the elan
+      # proxy auto-installs it on first use.
+      - name: Pin effective toolchain
+        env:
+          EFFECTIVE_TOOLCHAIN: ${{ needs.build_and_stage.outputs.toolchain }}
+        run: printf '%s\n' "$EFFECTIVE_TOOLCHAIN" > pr-branch/lean-toolchain
 
       - name: install elan
         run: |
@@ -492,10 +506,6 @@ jobs:
           chmod +x elan-init.sh
           ./elan-init.sh -y --default-toolchain none
           echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
-
-      - name: Install override toolchain
-        if: ${{ env.TOOLCHAIN_OVERRIDE != '' }}
-        run: elan toolchain install "$TOOLCHAIN_OVERRIDE"
 
       - name: download dependencies
         run: |
