@@ -448,11 +448,9 @@ theorem pair (f : α → E) (a b : α) : eVariationOn f {a, b} = edist (f a) (f 
 to the left of the least element of `t`. -/
 theorem union' (f : α → E) {s t : Set α} {x y : α} (hs : IsGreatest s x) (ht : IsLeast t y)
     (hxy : x ≤ y) :
-    eVariationOn f (s ∪ t) = eVariationOn f s + edist (f x) (f y) + eVariationOn f t := calc
-  _ = eVariationOn f ((s ∪ {x, y}) ∪ t) := by congr 1; grind [hs.1, ht.1]
-  _ = _ := by
-    rw [union f _ ht, union f hs]
-    <;> simp [IsLeast, IsGreatest, hxy, upperBounds_mono_mem hxy hs.2]
+    eVariationOn f (s ∪ t) = eVariationOn f s + edist (f x) (f y) + eVariationOn f t := by
+  rw [(by grind [hs.1, ht.1] : s ∪ t = (s ∪ {x, y}) ∪ t), union f _ ht, union f hs]
+  <;> simp [IsLeast, IsGreatest, hxy, upperBounds_mono_mem hxy hs.2]
 
 /-- The variation of `f` along the image of `{0, …, n}` under a monotone sequence `u` is the sum of
 the distances between consecutive values. -/
@@ -460,10 +458,8 @@ theorem image_range_of_monotone (f : α → E) {u : ℕ → α} (hu : Monotone u
     eVariationOn f (u '' Iic n) = ∑ i ∈ .range n, edist (f (u i)) (f (u (i + 1))) := by
   induction n with
   | zero => simp [Iic]
-  | succ n ih => calc
-    _ = eVariationOn f (u '' Iic n ∪ {u n, u (n + 1)}) := by congr; grind
-    _ = _ := by
-      rw [union f (x := u n)]
+  | succ n ih =>
+      rw [(by grind : u '' Iic (n + 1) = u '' Iic n ∪ {u n, u (n + 1)}), union f (x := u n)]
       · simp [Finset.sum_range_succ, ih]
       · simpa [IsGreatest, upperBounds] using ⟨⟨n, by simp⟩, fun a ha ↦ hu ha⟩
       · simp [IsLeast, hu n.le_succ]
