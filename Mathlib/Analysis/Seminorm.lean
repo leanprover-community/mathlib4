@@ -458,7 +458,7 @@ theorem smul_inf [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] (r 
 
 section Classical
 
-open Classical in
+open scoped Classical in
 /-- We define the supremum of an arbitrary subset of `Seminorm 𝕜 E` as follows:
 * if `s` is `BddAbove` *as a set of functions `E → ℝ`* (that is, if `s` is pointwise bounded
   above), we take the pointwise supremum of all elements of `s`, and we prove that it is indeed a
@@ -1162,7 +1162,7 @@ theorem continuous_of_le [TopologicalSpace E] [IsTopologicalAddGroup E]
   exact isOpen_lt hq continuous_const
 
 /-- The sum over a finite set of continuous seminorms is continuous. -/
-theorem continuous_finsetSum [TopologicalSpace E] [IsTopologicalAddGroup E]
+theorem continuous_finsetSum [TopologicalSpace E]
     {p : ι → Seminorm 𝕝 E} {s : Finset ι} (hp : ∀ i ∈ s, Continuous (p i)) :
     Continuous ((∑ i ∈ s, p i : Seminorm 𝕝 E) : E → ℝ) := by
   change Continuous (fun x ↦ FunLike.coeAddMonoidHom _ _ _ (∑ i ∈ s, p i) x)
