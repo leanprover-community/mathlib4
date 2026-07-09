@@ -277,6 +277,10 @@ lemma IsHamiltonian.connected (hG : G.IsHamiltonian) : G.Connected := by
   have ⟨a, p, hp⟩ := hG h
   exact hp.connected
 
+theorem Walk.IsHamiltonianCycle.isHamiltonian {p : G.Walk v v} (hp : p.IsHamiltonianCycle) :
+    G.IsHamiltonian :=
+  fun _ ↦ ⟨v, p, hp⟩
+
 lemma IsHamiltonian.of_card_eq_one (h : Fintype.card α = 1) : G.IsHamiltonian :=
   (· h |>.elim)
 
