@@ -209,8 +209,8 @@ section Map
 variable {M₁' : Type*} [AddCommMonoid M₁'] [Module R₁ M₁']
 
 theorem orthogonalBilin_eval_map (q : M₁ →ₗ[R₁] M₁') (S : Submodule R₁ M₁) :
-    orthogonalBilin (Dual.eval R₁ M₁') (S.map q)
-      = comap q.dualMap (orthogonalBilin (Dual.eval R₁ M₁) S) := by
+    orthogonalBilin (Dual.eval R₁ M₁') (S.map q) =
+      comap q.dualMap (orthogonalBilin (Dual.eval R₁ M₁) S) := by
   ext x; simp
 
 theorem orthogonalBilin_id_map_dualMap (q : M₁ →ₗ[R₁] M₁') (S : Submodule R₁ (Dual R₁ M₁')) :
