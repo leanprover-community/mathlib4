@@ -5,7 +5,6 @@ Authors: Jiedong Jiang
 -/
 module
 
-public import Mathlib.Tactic.Peel
 public import Mathlib.RingTheory.Valuation.ValuativeRel.Basic
 public import Mathlib.Topology.Algebra.Valued.ValuationTopology
 public import Mathlib.Topology.Algebra.WithZeroTopology
