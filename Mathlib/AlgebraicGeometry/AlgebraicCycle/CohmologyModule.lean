@@ -154,3 +154,29 @@ noncomputable instance {k : Type u} [CommRing k] [X.Over (Spec (CommRingCat.of k
 type carries an `R`-module structure by functoriality (the instances above). -/
 abbrev AlgebraicGeometry.Scheme.Modules.H (F : X.Modules) (n : ℕ) :=
   ((SheafOfModules.toSheaf X.ringCatSheaf).obj F).H n
+
+/-- A sheaf of modules on a scheme over a ring `k` has finite cohomology if each of its
+cohomology modules `Hⁿ(F)` is a finite `k`-module. For a curve proper over a field `k` and `F`
+coherent this holds by the finiteness theorem for coherent cohomology (EGA III 3.2.1). -/
+def AlgebraicGeometry.Scheme.Modules.HasFiniteCohomology (k : Type u) [CommRing k]
+    [X.Over (Spec (CommRingCat.of k))] (F : X.Modules) : Prop :=
+  ∀ n, Module.Finite k (F.H n)
+
+/-- A sheaf of modules has finite cohomological dimension if its cohomology `Hⁿ(F)` vanishes in
+all sufficiently large degrees. By Grothendieck's vanishing theorem this holds (with bound
+`dim X`) for every sheaf on a finite-dimensional Noetherian scheme. -/
+def AlgebraicGeometry.Scheme.Modules.HasFiniteCohomologicalDimension (F : X.Modules) : Prop :=
+  ∃ N : ℕ, ∀ n, N < n → Subsingleton (F.H n)
+
+/-- A sheaf of modules has a (well-defined) Euler characteristic over `k` if its cohomology is
+finite dimensional in every degree and vanishes in all sufficiently large degrees. This is
+precisely the condition under which `Scheme.Modules.eulerChar` computes the honest alternating
+sum `∑ₙ (-1)ⁿ hⁿ(F)` rather than the junk value `0` of an infinite `finsum`. For a coherent
+sheaf on a scheme proper over a field `k` this holds by the finiteness theorem for coherent
+cohomology (EGA III 3.2.1) and Grothendieck vanishing. -/
+structure AlgebraicGeometry.Scheme.Modules.HasEulerCharacteristic (k : Type u) [CommRing k]
+    [X.Over (Spec (CommRingCat.of k))] (F : X.Modules) : Prop where
+  /-- Every cohomology module of `F` is a finite `k`-module. -/
+  finite : F.HasFiniteCohomology k
+  /-- The cohomology of `F` vanishes in all sufficiently large degrees. -/
+  vanishing : F.HasFiniteCohomologicalDimension

@@ -197,6 +197,18 @@ def _root_.AlgebraicGeometry.Scheme.Hom.degree (x : X) : ℕ := @Module.finrank
     (IsLocalRing.ResidueField (X.presheaf.stalk x)) _ _ _
 
 namespace AlgebraicGeometry.AlgebraicCycle
+
+/--
+A Weil divisor is an algebraic cycle supported purely in codimension one: every point of its
+support has coheight one.
+-/
+def IsWeilDivisor [Zero R] (D : AlgebraicCycle X R) : Prop :=
+  D.support ⊆ {x | Order.coheight x = 1}
+
+lemma isWeilDivisor_iff [Zero R] {D : AlgebraicCycle X R} :
+    IsWeilDivisor D ↔ D.support ⊆ {x | Order.coheight x = 1} :=
+  Iff.rfl
+
 section restrict
 
 variable [Zero R] (D : AlgebraicCycle X R) (t : Set X)

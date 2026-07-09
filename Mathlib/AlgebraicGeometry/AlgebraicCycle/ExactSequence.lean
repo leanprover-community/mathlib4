@@ -13,35 +13,24 @@ import Mathlib.Topology.Sheaves.LocallySurjective
 import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 
 /-!
-# The twisted closed subscheme exact sequence, via the canonical cokernel
+# The twisted closed subscheme exact sequence
 
-For a codimension-one point `p` of an integral scheme and a cycle `D`, we construct the
-canonical short exact sequence
+This file is a WIP where we construct the following exact sequence:
 
 `0 ⟶ 𝒪ₓ(D - p) ⟶ 𝒪ₓ(D) ⟶ Q_p(D) ⟶ 0`
 
-in the submodule design of `Mathlib.AlgebraicGeometry.AlgebraicCycle.SheafViaSubmodule`, where
-`Q_p(D)` (`residueLineSheaf`) is the skyscraper at `p` valued in the *line*
+Notably, in this formulation, we abstractly characterise the cokernel `Q_p(D)`
+(`residueLineSheaf`) as the skyscraper at `p` valued in what is sometimes in the literature called
+the "line":
 
 `L_p(D) = {f | ord_p f ≥ -D p} / {f | ord_p f ≥ 1 - D p}` (`residueLine`),
 
-a one-dimensional vector space over the residue field, but with no chosen basis. The morphism
-`𝒪ₓ(D) ⟶ Q_p(D)` sends a section to the class of its underlying rational function — no choice
-of uniformizer appears anywhere in the sequence, so the sequence is canonical: it is natural in
-automorphisms of `(X, D, p)` and compatible along the filtration `𝒪ₓ(D) ⊆ 𝒪ₓ(D + p) ⊆ ⋯` on
-the nose, not merely up to units of `κ(p)`.
-
-A choice of uniformizer `ϖ` of `𝒪_{X,p}` *trivializes* the line: `residueLineEquiv` is the
-isomorphism `L_p(D) ≃ₗ[𝒪_{X,p}] κ(p)` sending the class of `f` to the residue of the lift of
-`ϖ ^ D p * f`, and `residueLineSheafIso` is the induced isomorphism of sheaves of modules
-`Q_p(D) ≅ κ(p)`. All uniformizer-dependence is quarantined in these two declarations; Euler
-characteristic arguments consume only the existence of the isomorphism.
-
-Compared to the uniformizer-based construction (of the original
-`Mathlib.AlgebraicGeometry.AlgebraicCycle.ExactSequence` and the previous version of this
-file), the sequence itself becomes simpler as well: surjectivity onto the quotient needs no
-lifting of residue classes to units — a class in `L_p(D)` already has a rational-function
-representative, which is a section of `𝒪ₓ(D)` on a small enough neighbourhood.
+a one-dimensional vector space over the residue field, but with no chosen basis. We then construct
+an isomorphism from `Q_p(D)` to `k(P)`, the skyscraper sheaf valued in `κ(p)` at `P`.
+Previously, I had not used this basis free presentation, and so had to thread a uniformizer through
+a lot of the constructions, which was both ugly and would cause some things only to be true up to
+multiplication by units (which is not relevant for Riemann-Roch but makes for bad API long term).
+I am still working out the right API for this approach, but I think it is quite a bit better.
 
 ## TODO
 
@@ -112,15 +101,6 @@ noncomputable def stalkCompare :
     ↑(X.ringCatSheaf.presheaf.stalk p) →+* ↑(X.presheaf.stalk p) :=
   RingCat.Hom.hom
     (colimit.post ((OpenNhds.inclusion p).op ⋙ X.presheaf) (forget₂ CommRingCat RingCat))
-
-/-! ### The line `L_p(D)` and its skyscraper `Q_p(D)`
-
-`ordSubmodule hp n` is the `𝒪_{X,p}`-submodule of `k(X)` of rational functions of order at
-least `n` at `p` (the fractional ideal `𝔪_p^n`), and `residueLine hp D` is the quotient line
-`𝔪_p^{-D p}/𝔪_p^{1 - D p}` — the canonical value of the cokernel of
-`𝒪ₓ(D - p) ⟶ 𝒪ₓ(D)`. It is one-dimensional over `κ(p)`, but has no preferred basis; a choice
-of uniformizer trivializes it (`residueLineEquiv` below).
--/
 
 section Line
 
@@ -853,7 +833,7 @@ noncomputable def residueLineEquiv :
     exact Eq.trans (congrArg (X.residue p).hom
       (stalkPreimage_eq hp _ _ (a := a) hcollapse)) ha
 
-/-- **Trivialization at the sheaf level.** A uniformizer induces an isomorphism between the
+/-- A uniformizer induces an isomorphism between the
 canonical cokernel `Q_p(D)` and the residue-field skyscraper. Euler-characteristic arguments
 need only the existence of this isomorphism. -/
 noncomputable def residueLineSheafIso :

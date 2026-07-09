@@ -163,6 +163,83 @@ private lemma isZero_outside_Ico (C : ChainComplex (ModuleCat k) ℤ) (a b i : �
   simp only [Finset.coe_Ico, Set.mem_Ico, not_and, not_lt] at hi
   exact if h : i < a then hbelow i h else habove i (by omega)
 
+/-! The following private lemmas are the `ℕ`-indexed cochain complex analogues of the
+lemmas above for `ℤ`-indexed chain complexes; they are used in
+`eulerChar_eq_homologyEulerChar'` below. Eventually both versions should be unified
+over a suitable class of complex shapes. -/
+
+private lemma isZero_outside_Ico' (C : CochainComplex (ModuleCat k) ℕ) (a b i : ℕ)
+    (hi : i ∉ (Finset.Ico a (b + 1) : Set ℕ))
+    (hbelow : ∀ i < a, IsZero (C.X i))
+    (habove : ∀ i > b, IsZero (C.X i)) : IsZero (C.X i) := by
+  simp only [Finset.coe_Ico, Set.mem_Ico, not_and, not_lt] at hi
+  exact if h : i < a then hbelow i h else habove i (by omega)
+
+/-- The range of `dTo (i + 1)` has the same dimension as the range of `dFrom i`
+for ℕ-indexed cochain complexes. -/
+private lemma dTo_succ_range_finrank_eq_dFrom
+    (C : CochainComplex (ModuleCat k) ℕ) (i : ℕ) :
+    Module.finrank k (LinearMap.range (C.dTo (i + 1)).hom) =
+    Module.finrank k (LinearMap.range (C.dFrom i).hom) := by
+  have rel : (ComplexShape.up ℕ).Rel i (i + 1) := ComplexShape.up_mk i (i + 1) rfl
+  rw [dFrom_range_finrank_eq_d C rel, dTo_range_finrank_eq_d C rel]
+
+/-- The dimension of the range of moduleCatToCycles equals
+the dimension of the range of dTo. -/
+private lemma moduleCatToCycles_range_finrank_eq'
+    (C : CochainComplex (ModuleCat k) ℕ) (i : ℕ) :
+    Module.finrank k
+      (LinearMap.range (C.sc i).moduleCatToCycles) =
+    Module.finrank k (LinearMap.range (C.dTo i).hom) := by
+  have range_formula :
+      LinearMap.range (C.sc i).moduleCatToCycles =
+      (LinearMap.range (C.dTo i).hom).comap
+        (LinearMap.ker (C.dFrom i).hom).subtype := by
+    rw [LinearMap.range_codRestrict]
+    congr 1
+  rw [range_formula]
+  have h_le := range_dTo_le_ker_dFrom C i
+  rw [← LinearEquiv.finrank_eq
+    (Submodule.comapSubtypeEquivOfLe h_le)]
+  rfl
+
+/-- The dimension of homology plus the dimension of boundaries
+equals the dimension of cycles. -/
+private lemma homology_finrank_formula'
+    (C : CochainComplex (ModuleCat k) ℕ) (i : ℕ)
+    [C.HasHomology i] [Module.Finite k (C.X i)] :
+    (Module.finrank k (C.homology i) : ℤ) +
+    (Module.finrank k
+      (LinearMap.range (C.dTo i).hom) : ℤ) =
+    (Module.finrank k
+      (LinearMap.ker (C.dFrom i).hom) : ℤ) := by
+  have h_eq : Module.finrank k (C.homology i) =
+      Module.finrank k (LinearMap.ker (C.dFrom i).hom ⧸
+        LinearMap.range (C.sc i).moduleCatToCycles) :=
+    (LinearEquiv.finrank_eq (C.sc i).moduleCatHomologyIso.toLinearEquiv).trans rfl
+  have dim_im := moduleCatToCycles_range_finrank_eq' C i
+  have quot := Submodule.finrank_quotient_add_finrank
+    (LinearMap.range (C.sc i).moduleCatToCycles :
+      Submodule k (LinearMap.ker (C.dFrom i).hom))
+  exact_mod_cast show Module.finrank k (C.homology i) +
+      Module.finrank k (LinearMap.range (C.dTo i).hom) =
+      Module.finrank k (LinearMap.ker (C.dFrom i).hom) by
+    rw [h_eq, ← dim_im]; exact quot
+
+/-- Rank-nullity for `dFrom i`. -/
+private lemma chain_dimension_decomposition'
+    (C : CochainComplex (ModuleCat k) ℕ) (i : ℕ)
+    [Module.Finite k (C.X i)] :
+    (Module.finrank k (C.X i) : ℤ) =
+    (Module.finrank k
+      (LinearMap.ker (C.dFrom i).hom) : ℤ) +
+    (Module.finrank k
+      (LinearMap.range (C.dFrom i).hom) : ℤ) := by
+  have := LinearMap.finrank_range_add_finrank_ker (C.dFrom i).hom
+  omega
+
+/-- **Euler-Poincaré formula** for ℕ-indexed cochain complexes that vanish outside `[a, b]`:
+the Euler characteristic equals the homological Euler characteristic. -/
 theorem eulerChar_eq_homologyEulerChar'
     (C : CochainComplex (ModuleCat k) ℕ)
     (a b : ℕ) (hab : a ≤ b)
@@ -170,7 +247,98 @@ theorem eulerChar_eq_homologyEulerChar'
     [∀ i : ℕ, Module.Finite k (C.X i)]
     (hC_bounded_below : ∀ i < a, IsZero (C.X i))
     (hC_bounded_above : ∀ i > b, IsZero (C.X i)) :
-    C.eulerChar = C.homologyEulerChar := sorry
+    C.eulerChar = C.homologyEulerChar := by
+  -- Reduce both finsum-based definitions to finite sums over Finset.Ico a (b+1)
+  have h_supp_X : GradedObject.finrankSupport C.X ⊆
+      ↑(Finset.Ico a (b + 1)) := by
+    rw [GradedObject.finrankSupport_subset_iff]
+    intro i hi
+    exact finrank_eq_zero_of_isZero _
+      (isZero_outside_Ico' C a b i hi hC_bounded_below hC_bounded_above)
+  have h_supp_H : GradedObject.finrankSupport
+      (fun i => C.homology i) ⊆
+      ↑(Finset.Ico a (b + 1)) := by
+    rw [GradedObject.finrankSupport_subset_iff]
+    intro i hi
+    exact finrank_eq_zero_of_isZero _ (ShortComplex.isZero_homology_of_isZero_X₂ _
+      (isZero_outside_Ico' C a b i hi hC_bounded_below hC_bounded_above))
+  rw [C.eulerChar_eq_sum_finSet_of_finrankSupport_subset
+    (Finset.Ico a (b + 1)) h_supp_X,
+    C.homologyEulerChar_eq_sum_finSet_of_finrankSupport_subset
+    (Finset.Ico a (b + 1)) h_supp_H]
+  simp only [ComplexShape.eulerCharSignsUpNat_χ]
+  simp_rw [show ∀ n : ℕ, (((-1 : ℤˣ) ^ n : ℤˣ) : ℤ) = (-1 : ℤ) ^ n
+    from fun n => by norm_cast]
+  rw [show ∑ x ∈ Finset.Ico a (b + 1),
+        (-1 : ℤ) ^ x * ↑(Module.finrank k ↑(C.X x)) =
+      ∑ x ∈ Finset.Ico a (b + 1), (-1 : ℤ) ^ x *
+        (↑(Module.finrank k (C.homology x)) +
+         ↑(Module.finrank k ↥(LinearMap.range (C.dFrom x).hom)) +
+         ↑(Module.finrank k ↥(LinearMap.range (C.dTo x).hom)))
+    from Finset.sum_congr rfl fun x _ => by
+      rw [chain_dimension_decomposition' C x,
+        ← homology_finrank_formula' C x]; ring]
+  simp_rw [mul_add]
+  rw [Finset.sum_add_distrib, Finset.sum_add_distrib]
+  suffices h_cancel :
+      ∑ x ∈ Finset.Ico a (b + 1),
+        (-1 : ℤ) ^ x *
+          ↑(Module.finrank k ↥(LinearMap.range (C.dFrom x).hom)) +
+      ∑ x ∈ Finset.Ico a (b + 1),
+        (-1 : ℤ) ^ x *
+          ↑(Module.finrank k ↥(LinearMap.range (C.dTo x).hom)) = 0 by
+    linarith
+  -- p(b) = 0 and c(a) = 0: boundary ranges vanish at the edges
+  have hp_b : (Module.finrank k
+      ↥(LinearMap.range (C.dFrom b).hom) : ℤ) = 0 := by
+    rw [dFrom_zero_range C b (by
+      simp only [xNext]
+      rw [(ComplexShape.up ℕ).next_eq'
+        (ComplexShape.up_mk b (b + 1) rfl)]
+      exact hC_bounded_above _ (by omega))]
+    simp
+  have hp_split : ∑ x ∈ Finset.Ico a (b + 1),
+      (-1 : ℤ) ^ x *
+        ↑(Module.finrank k ↥(LinearMap.range (C.dFrom x).hom)) =
+      ∑ x ∈ Finset.Ico a b,
+        (-1 : ℤ) ^ x *
+          ↑(Module.finrank k ↥(LinearMap.range (C.dFrom x).hom)) := by
+    rw [← Finset.insert_Ico_right_eq_Ico_add_one hab,
+      Finset.sum_insert Finset.right_notMem_Ico,
+      hp_b, mul_zero, zero_add]
+  have hc_a : (Module.finrank k
+      ↥(LinearMap.range (C.dTo a).hom) : ℤ) = 0 := by
+    rcases Nat.eq_zero_or_pos a with rfl | ha
+    · rw [C.dTo_eq_zero (by simp), ModuleCat.hom_zero, LinearMap.range_zero]
+      simp
+    · rw [dTo_zero_range C a (by
+        simp only [xPrev]
+        rw [(ComplexShape.up ℕ).prev_eq'
+          (ComplexShape.up_mk (a - 1) a (by omega))]
+        exact hC_bounded_below _ (by omega))]
+      simp
+  have hc_split : ∑ x ∈ Finset.Ico a (b + 1),
+      (-1 : ℤ) ^ x *
+        ↑(Module.finrank k ↥(LinearMap.range (C.dTo x).hom)) =
+      ∑ x ∈ Finset.Ico (a + 1) (b + 1),
+        (-1 : ℤ) ^ x *
+          ↑(Module.finrank k ↥(LinearMap.range (C.dTo x).hom)) := by
+    rw [← Finset.insert_Ico_add_one_left_eq_Ico (show a < b + 1 by omega),
+      Finset.sum_insert (by simp [Finset.mem_Ico]),
+      hc_a, mul_zero, zero_add]
+  rw [hp_split, hc_split]
+  rw [show ∑ x ∈ Finset.Ico a b,
+        (-1 : ℤ) ^ x *
+          ↑(Module.finrank k ↥(LinearMap.range (C.dFrom x).hom)) =
+      ∑ x ∈ Finset.Ico a b,
+        (-1 : ℤ) ^ x *
+          ↑(Module.finrank k ↥(LinearMap.range (C.dTo (x + 1)).hom))
+    from Finset.sum_congr rfl fun x _ => by
+      rw [dTo_succ_range_finrank_eq_dFrom C x]]
+  have hw : Function.Antiperiodic (fun j : ℕ => (-1 : ℤ) ^ j) 1 :=
+    fun j => by simp [pow_succ]
+  rw [add_comm]
+  exact hw.sum_Ico_mul_add_sum_Ico_mul_shift_eq_zero _ a b
 
 /-- **Euler-Poincaré formula**: for bounded chain complexes that vanish outside `[a, b]`,
 the Euler characteristic equals the homological Euler characteristic. -/
