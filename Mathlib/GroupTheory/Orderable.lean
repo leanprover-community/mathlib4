@@ -48,7 +48,8 @@ export IsLeftOrderable (exists_linearOrder_mulLeftMono)
 
 /-- A group with a linear order and monotone left multiplication (`MulLeftMono`) is
 left-orderable. -/
-instance instIsLeftOrderable [LinearOrder G] [MulLeftMono G] : IsLeftOrderable G := ⟨⟨‹_›, ‹_›⟩⟩
+instance MulLeftMono.to_isLeftOrderable [LinearOrder G] [MulLeftMono G] : IsLeftOrderable G
+  := ⟨⟨‹_›, ‹_›⟩⟩
 
 /-- `IsLeftOrderable G` holds iff `G` admits a linear order with strictly monotone left
 multiplication. -/
