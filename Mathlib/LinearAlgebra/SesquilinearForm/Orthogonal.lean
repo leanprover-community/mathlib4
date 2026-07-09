@@ -60,7 +60,7 @@ alias mem_orthogonalBilin_iff := mem_orthogonalBilin
 theorem mem_orthogonalBilin_iff_le_ker_flip {y : M₂} :
     y ∈ orthogonalBilin B S ↔ S ≤ ker (B.flip y) := .rfl
 
-@[simp high] theorem mem_orthogonalBilin_span (s : Set M₁) {y : M₂} :
+@[simp high] theorem mem_orthogonalBilin_span {s : Set M₁} {y : M₂} :
     y ∈ orthogonalBilin B (span R₁ s) ↔ ∀ ⦃x⦄, x ∈ s → B x y = 0 := by
   constructor <;> intro h x hx
   · exact h _ (subset_span hx)
