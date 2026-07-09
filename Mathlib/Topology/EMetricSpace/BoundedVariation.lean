@@ -490,8 +490,8 @@ theorem _root_.BoundedVariationOn.of_finset {E} [PseudoMetricSpace E] (f : α �
   have hk : 0 < k := s.card_pos.2 hne
   let u : ℕ → α := fun n ↦ s.orderEmbOfFin (by rfl : _ = k) ⟨min n (k - 1), by grind⟩
   have : s = u '' .Iic (k - 1) := by
-    rw [← s.range_orderEmbOfFin (by rfl : _ = k)]
-    ext x; simp only [mem_image, mem_Iic, mem_range, u]
+    ext
+    simp only [← s.range_orderEmbOfFin rfl, mem_image, mem_Iic, mem_range, u]
     constructor
     · rintro ⟨i, rfl⟩; exact ⟨i.val, by grind⟩
     · rintro ⟨i, hi, rfl⟩; use ⟨i, by omega⟩; congr; omega
