@@ -55,6 +55,11 @@ instance instChartedSpaceQuotient' : ChartedSpace H (orbitRel.Quotient G M) :=
   isQuotientCoveringMap_quotientMk_of_properlyDiscontinuousSMul.isCoveringMap
     |>.isLocalHomeomorph.chartedSpaceOfRightInverse Quotient.out_eq
 
+
+
+
+
+
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   (I : ModelWithCorners 𝕜 E H)
@@ -81,6 +86,45 @@ abbrev φ : OpenPartialHomeomorph M H := chartAt H x.out
 
 abbrev πinv : OpenPartialHomeomorph (orbitRel.Quotient G M) M :=
   quotient_IsLocalHomeomorph.localInverseAt (Y := orbitRel.Quotient G M) x.out
+
+section
+
+variable {x} in
+/-- If `g • m` is in the target of `πinv x`, then `πinv x ⟦m⟧` is just `g • m`. -/
+lemma πinv_mk_eq_smul {g : G} {m : M} (hm : g • m ∈ (πinv x).target) :
+    πinv x ⟦m⟧ = g • m := by
+  rw [← orbitRel.Quotient.quotient_smul_eq (g := g),
+    ← quotient_IsLocalHomeomorph.localInverseAt_symm, (πinv x).right_inv hm]
+
+/-- On the open set `(g • ·) ⁻¹' (πinv y).target`, the section comparison
+`(πinv x).symm.trans (πinv y)` is the action of `g`. -/
+lemma smul_eqOn (g : G) :
+    ((g • ·) ⁻¹' (πinv y).target).EqOn ((πinv x).symm.trans (πinv y)) (g • ·) := by
+  intro m hm
+  simpa only [OpenPartialHomeomorph.coe_trans, Function.comp_apply,
+    quotient_IsLocalHomeomorph.localInverseAt_symm] using πinv_mk_eq_smul hm
+
+variable {x} in
+/-- If `⟦m⟧` is in the target of `πinv x`, then there is some `g ∈ G` such that
+`g • m` is also in the target of `πinv x`.
+-/
+lemma exists_smul_mem_πinv_target (m : M) (hm : (⟦m⟧ : orbitRel.Quotient G M) ∈ (πinv x).source) :
+    ∃ g : G, g • m ∈ (πinv x).target := by
+  obtain ⟨g, hg⟩ := orbitRel_apply.mp
+    (Quotient.exact (quotient_IsLocalHomeomorph.apply_localInverseAt_of_mem hm))
+  exact ⟨g, by simpa [hg] using (πinv x).map_source hm⟩
+
+/-- Locally, the comparison of two local sections is the action of a single group element. -/
+lemma locally_smul (m : M) (hm : m ∈ ((πinv x).symm.trans (πinv y)).source) :
+    ∃ g : G, m ∈ (g • ·) ⁻¹' (πinv y).target ∧
+      ((g • ·) ⁻¹' (πinv y).target).EqOn ((πinv x).symm.trans (πinv y)) (g • ·)  := by
+  rw [OpenPartialHomeomorph.trans_source, mem_inter_iff, mem_preimage,
+    quotient_IsLocalHomeomorph.localInverseAt_symm] at hm
+  obtain ⟨g, hg⟩ := exists_smul_mem_πinv_target m hm.2
+  exact ⟨g, hg, smul_eqOn x y g⟩
+
+
+end
 
 variable (e e' : OpenPartialHomeomorph M H)
 
