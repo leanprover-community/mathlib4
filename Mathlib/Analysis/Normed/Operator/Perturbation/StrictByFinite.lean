@@ -232,11 +232,11 @@ public theorem ContinuousLinearMap.isStrictMap_isClosed_range_iff_restrict [T2Sp
   set π : E →L[𝕜] E ⧸ N := N.mkQL
   set v : E ⧸ N →L[𝕜] F := N.liftQL u inf_le_right
   have π_quot : IsOpenQuotientMap π := N.isOpenQuotientMap_mkQL
-  have v_comp_π_eq_u : v ∘L π = u := rfl
+  have u_eq : u = v ∘L π := rfl
   -- We also consider the submodule `B := map π A` of `E ⧸ N`. It has finite codimension and,
   -- by construction, it is disjoint from the kernel of `v`.
   set B : Submodule 𝕜 (E ⧸ N) := map N.mkQ A
-  have codim_B : FiniteDimensional 𝕜 ((E ⧸ N) ⧸ B) :=
+  have B_cofg : B.CoFG :=
     quotientQuotientEquivQuotient N A inf_le_left |>.symm.finiteDimensional
   have v_ker : Disjoint v.ker B := by
     simp [disjoint_iff, v, B, toLinearMap_liftQL, ker_liftQ,
@@ -246,21 +246,17 @@ public theorem ContinuousLinearMap.isStrictMap_isClosed_range_iff_restrict [T2Sp
   have A_mapsTo_B : MapsTo π A B := fun _ ↦ by simp [← comap_B]
   have B_closed : IsClosed (B : Set <| E ⧸ N) := by
     rwa [← π_quot.isQuotientMap.isClosed_preimage, ← π.coe_coe, ← comap_coe, comap_B]
-  -- Thus, we can apply step 4 to `v`: we get that `v` is strict with closed range if
+  -- Thus, we can apply step 4 to `v` and `B`: we get that `v` is strict with closed range if
   -- and only if `v.domRestrict B` is strict with closed range.
   have step4_output : (IsStrictMap v ∧ IsClosed (v.range : Set F)) ↔
-      (IsStrictMap (v.domRestrict B) ∧ IsClosed (map v.toLinearMap B : Set F)) := by
-    simp [step4 v B B_closed v_ker, coe_domRestrict, ← range_restrict]
+      (IsStrictMap (v.domRestrict B) ∧ IsClosed (map v.toLinearMap B : Set F)) :=
+    step4 v B B_closed v_ker
   -- Now, we wish to reduce our statement about `u` and `u.domRestrict A`
   -- to what we know about `v` and `v.domRestrict B`.
   -- First, it is clear that `range u = range v` and `map u A = map v B`.
   have range_eq : v.range = u.range := range_liftQ _ _ _
   have image_eq : map v.toLinearMap B = map u.toLinearMap A := by
-    simp [B, ← v_comp_π_eq_u, π, ← map_comp]
-  -- Furthermore, since `π` is a quotient map and `u = v ∘ π`, we have that `u` is strict
-  -- if and only if `v` is strict.
-  have strict_iff : IsStrictMap u ↔ IsStrictMap v := by
-    rw [← v_comp_π_eq_u, coe_comp, ← π_quot.isQuotientMap.isStrictMap_iff]
+    simp [B, u_eq, π, ← map_comp]
   -- Now, recall the equality `A = comap π B`; it ensures that the restriction
   -- `π' : A → B` of the open quotient map `π` is *still* an (open) quotient map.
   set π' : A →L[𝕜] B := π.restrict A_mapsTo_B
@@ -268,14 +264,17 @@ public theorem ContinuousLinearMap.isStrictMap_isClosed_range_iff_restrict [T2Sp
     let φ : (N.mkQL ⁻¹' B) ≃ₜ A := .setCongr congr(SetLike.coe $comap_B)
     exact N.isOpenQuotientMap_mkQL.restrictPreimage B |>.comp
       φ.symm.isOpenQuotientMap
-  have v_comp_π'_eq_u : v.domRestrict B ∘L π' = u.domRestrict A := rfl
-  -- Because `v.domRestrict B ∘ π' = u.domRestrict A`, it follows that `u.domRestrict A`
-  -- is strict if and only if `v.domRestrict B` is strict.
-  have strict_iff_restrict : IsStrictMap (u.domRestrict A) ↔ IsStrictMap (v.domRestrict B) := by
-    rw [← v_comp_π'_eq_u, coe_comp, ← π'_quot.isQuotientMap.isStrictMap_iff]
-  -- Thus, we are done!
-  rw [strict_iff, strict_iff_restrict, ← range_eq, ← image_eq]
-  exact step4_output
+  -- Note that `u.domRestrict A` factors as `v.domRestrict B ∘ π'`.
+  have u_restr_eq : u.domRestrict A = v.domRestrict B ∘L π' := rfl
+  -- We conclude by invoking `IsQuotientMap.isStrictMap_iff` twice, to get that strictness of
+  -- `u` (resp. `u.domRestrict A`) is equivalent to strictness of `v` (resp. `v.domRestrict B`).
+  calc IsStrictMap u ∧ IsClosed (u.range : Set F)
+      ↔ IsStrictMap v ∧ IsClosed (v.range : Set F) := by
+        rw [← range_eq, u_eq, coe_comp, π_quot.isQuotientMap.isStrictMap_iff]
+    _ ↔ IsStrictMap (v.domRestrict B) ∧ IsClosed (map v.toLinearMap B : Set F) :=
+        step4_output
+    _ ↔ IsStrictMap (u.domRestrict A) ∧ IsClosed (map u.toLinearMap A : Set F) := by
+        rw [← image_eq, u_restr_eq, coe_comp, π'_quot.isQuotientMap.isStrictMap_iff]
 
 end FiniteCodimSubspace
 
