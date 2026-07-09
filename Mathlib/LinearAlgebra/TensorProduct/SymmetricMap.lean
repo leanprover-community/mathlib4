@@ -325,11 +325,6 @@ map `M →ₗ[R] N`, via evaluation at the constant function determined by any f
   left_inv f := ext fun v ↦ congrArg f (eq_const_of_subsingleton v i).symm
   right_inv f := rfl
 
-/-- When `ι` has a unique element, a symmetric map `M [Σ^ι]→ₗ[R] N` is equivalent to a linear
-map `M →ₗ[R] N`. -/
-@[simps!] def isUnique [Unique ι] : (M [Σ^ι]→ₗ[R] N) ≃+ (M →ₗ[R] N) :=
-  ofSubsingleton R M N default
-
 variable {R M N ι ι' ι''}
 
 /-- Reinterpret a symmetric `R`-multilinear map as a symmetric `S`-multilinear map,
