@@ -757,8 +757,10 @@ theorem le_generate (R : Presieve X) : R ≤ generate R :=
 theorem generate_sieve (S : Sieve X) : generate S = S :=
   giGenerate.l_u_eq S
 
+@[gcongr]
 theorem generate_mono : Monotone (generate : Presieve X → Sieve X) := giGenerate.gc.monotone_l
 
+@[gcongr]
 theorem arrows_mono : Monotone (arrows : Sieve X → Presieve X) := giGenerate.gc.monotone_u
 
 /-- If the identity arrow is in a sieve, the sieve is maximal. -/
