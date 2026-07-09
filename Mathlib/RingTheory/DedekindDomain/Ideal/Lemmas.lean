@@ -985,6 +985,19 @@ end DedekindDomain
 
 end ChineseRemainder
 
+namespace Ideal
+
+variable {R} in
+theorem emultiplicity_eq_emultiplicity_span {a b : R} :
+    emultiplicity (span {a}) (span ({b} : Set R)) = emultiplicity a b := by
+  rw [emultiplicity_eq_emultiplicity_iff]
+  simp [span_singleton_pow, span_singleton_dvd_span_singleton_iff_dvd]
+
+@[deprecated (since := "2026-04-16")]
+alias _root_.emultiplicity_eq_emultiplicity_span := emultiplicity_eq_emultiplicity_span
+
+end Ideal
+
 section PID
 
 open UniqueFactorizationMonoid Ideal
@@ -994,14 +1007,7 @@ variable [IsDomain R] [IsPrincipalIdealRing R]
 
 namespace Ideal
 
-theorem span_singleton_dvd_span_singleton_iff_dvd {a b : R} :
-    span {a} ∣ span ({b} : Set R) ↔ a ∣ b :=
-  ⟨fun h => mem_span_singleton.mp (dvd_iff_le.mp h (mem_span_singleton.mpr (dvd_refl b))), fun h =>
-    dvd_iff_le.mpr fun _d hd => mem_span_singleton.mpr (dvd_trans h (mem_span_singleton.mp hd))⟩
-
-@[deprecated (since := "2026-04-16")]
-alias _root_.span_singleton_dvd_span_singleton_iff_dvd := span_singleton_dvd_span_singleton_iff_dvd
-
+omit [IsDomain R] in
 @[simp]
 theorem squarefree_span_singleton {a : R} :
     Squarefree (span {a}) ↔ Squarefree a := by
@@ -1034,24 +1040,6 @@ theorem singleton_span_mem_normalizedFactors_of_mem_normalizedFactors [Normaliza
 @[deprecated (since := "2026-04-16")]
 alias _root_.singleton_span_mem_normalizedFactors_of_mem_normalizedFactors :=
   singleton_span_mem_normalizedFactors_of_mem_normalizedFactors
-
-theorem emultiplicity_eq_emultiplicity_span {a b : R} :
-    emultiplicity (span {a}) (span ({b} : Set R)) = emultiplicity a b := by
-  by_cases h : FiniteMultiplicity a b
-  · rw [h.emultiplicity_eq_multiplicity]
-    apply emultiplicity_eq_of_dvd_of_not_dvd <;>
-      rw [span_singleton_pow, span_singleton_dvd_span_singleton_iff_dvd]
-    · exact pow_multiplicity_dvd a b
-    · apply h.not_pow_dvd_of_multiplicity_lt
-      apply lt_add_one
-  · suffices ¬FiniteMultiplicity (span ({a} : Set R)) (span ({b} : Set R)) by
-      rw [emultiplicity_eq_top.2 h, emultiplicity_eq_top.2 this]
-    exact FiniteMultiplicity.not_iff_forall.mpr fun n => by
-      rw [span_singleton_pow, span_singleton_dvd_span_singleton_iff_dvd]
-      exact FiniteMultiplicity.not_iff_forall.mp h n
-
-@[deprecated (since := "2026-04-16")]
-alias _root_.emultiplicity_eq_emultiplicity_span := emultiplicity_eq_emultiplicity_span
 
 section NormalizationMonoid
 variable [NormalizationMonoid R]
