@@ -41,9 +41,8 @@ open UniformSpace CauchyFilter Filter Set
 
 variable [UniformSpace α]
 
-@[to_additive]
-instance [One α] : One (Completion α) :=
-  ⟨(1 : α)⟩
+instance [Zero α] : Zero (Completion α) :=
+  ⟨(0 : α)⟩
 
 instance [Neg α] : Neg (Completion α) :=
   ⟨Completion.map (fun a ↦ -a : α → α)⟩
@@ -54,13 +53,12 @@ instance [Add α] : Add (Completion α) :=
 instance [Sub α] : Sub (Completion α) :=
   ⟨Completion.map₂ Sub.sub⟩
 
-@[to_additive (attr := norm_cast)]
-theorem UniformSpace.Completion.coe_one [One α] : ((1 : α) : Completion α) = 1 :=
+@[norm_cast]
+theorem UniformSpace.Completion.coe_zero [Zero α] : ((0 : α) : Completion α) = 0 :=
   rfl
 
-@[to_additive (attr := simp)]
-lemma UniformSpace.Completion.coe_eq_one_iff [One α] [T0Space α] {x : α} :
-    (x : Completion α) = 1 ↔ x = 1 :=
+@[simp] lemma UniformSpace.Completion.coe_eq_zero_iff [Zero α] [T0Space α] {x : α} :
+    (x : Completion α) = 0 ↔ x = 0 :=
   Completion.coe_inj
 
 end Group
