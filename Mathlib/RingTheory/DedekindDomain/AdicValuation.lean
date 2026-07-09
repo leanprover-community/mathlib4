@@ -610,12 +610,19 @@ instance : Coe (WithVal (v.valuation K)) (v.adicCompletion K) :=
 instance : Coe K (v.adicCompletion K) :=
   inferInstanceAs (Coe K (v.valuation K).Completion)
 
-/-- `adicCompletion K v` packaged as an abstract completion of `WithVal (v.valuation K)`. -/
-noncomputable def adicCompletionPkg : AbstractCompletion (WithVal (v.valuation K)) :=
-  { UniformSpace.Completion.cPkg with space := v.adicCompletion K }
+variable {v K} in
+/-- `adicCompletion K v` viewed in its underlying completion. -/
+def adicCompletion.toCompletion (x : v.adicCompletion K) : (v.valuation K).Completion := x
 
-@[simp]
-theorem adicCompletionPkg_space : (v.adicCompletionPkg K).space = v.adicCompletion K := rfl
+variable {v K} in
+/-- An element of the underlying completion viewed in `adicCompletion K v`. -/
+def adicCompletion.ofCompletion (x : (v.valuation K).Completion) : v.adicCompletion K := x
+
+/-- The ring isomorphism between `adicCompletion K v` and its underlying completion. -/
+def adicCompletion.ringEquiv : v.adicCompletion K ≃+* (v.valuation K).Completion := RingEquiv.refl _
+
+@[simp] theorem adicCompletion.valued_ofCompletion (x : (v.valuation K).Completion) :
+    Valued.v (adicCompletion.ofCompletion x) = Valued.v x := rfl
 
 /-- The valuation on the completion agrees with the `v`-adic valuation on elements coming from
 `WithVal (v.valuation K)`. -/
