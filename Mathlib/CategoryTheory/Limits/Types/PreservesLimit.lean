@@ -47,9 +47,8 @@ noncomputable def coconeCompShrinkYonedaHomEquiv :
   toFun f :=
     { val j := shrinkYonedaEquiv (c'.ι.app (op j) ≫ f)
       property {X X'} g := by
-        have h₁ := c'.w g.op
-        dsimp at h₁ ⊢
-        rw [← h₁, Category.assoc]
+        dsimp
+        rw [← dsimp% c'.w g.op, Category.assoc]
         conv_rhs => rw [shrinkYonedaEquiv_comp]
         rw [shrinkYonedaEquiv_shrinkYoneda_map]
         apply map_shrinkYonedaEquiv }
@@ -60,7 +59,7 @@ noncomputable def coconeCompShrinkYonedaHomEquiv :
         dsimp
         rw [shrinkYonedaEquiv_symm_map, Category.comp_id] })
   left_inv f := hc'.hom_ext (by simp)
-  right_inv u := by ext; simp
+  right_inv u := by cat_disch
 
 /-- Let `F : J ⥤ Cᵒᵖ` be a functor, `c'` a colimit cocone for `F.leftOp ⋙ shrinkYoneda.{w}`.
 For any cone `c` for `F`, this is the canonical natural transformation
@@ -77,7 +76,7 @@ lemma coconePtToShrinkYoneda_comp (x : P.obj c.pt) :
     coconePtToShrinkYoneda c hc' ≫ shrinkYonedaEquiv.symm x =
       (coconeCompShrinkYonedaHomEquiv hc').symm
         (Types.sectionOfCone (P.mapCone c) x) := by
-  refine hc'.hom_ext (fun j ↦ ?_)
+  refine hc'.hom_ext (fun _ ↦ ?_)
   dsimp [coconePtToShrinkYoneda, coconeCompShrinkYonedaHomEquiv_symm_apply]
   rw [hc'.fac_assoc, hc'.fac]
   exact (shrinkYonedaEquiv_symm_map _ _).symm
@@ -128,11 +127,11 @@ noncomputable abbrev preservesLimitHomFamily (h : PLift (HasLimit F)) :
 lemma preservesLimit_eq_isLocal :
     ObjectProperty.preservesLimit F =
       (MorphismProperty.ofHoms (preservesLimitHomFamily F)).isLocal := by
-  ext G
+  ext
   by_cases hF : HasLimit F
   · rw [preservesLimit_eq_isLocal_single (limit.isLimit F) (colimit.isColimit _)]
     convert Iff.rfl
-    ext _ _ f
+    ext
     exact ⟨fun ⟨_⟩ ↦ ⟨⟨⟩⟩, fun ⟨_⟩ ↦ ⟨⟨hF⟩⟩⟩
   · exact ⟨fun _ _ _ _ ⟨h⟩ ↦ (hF h.down).elim,
       fun _ ↦ ⟨fun hc ↦ (hF ⟨_, hc⟩).elim⟩⟩
