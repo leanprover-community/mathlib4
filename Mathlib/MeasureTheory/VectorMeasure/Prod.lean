@@ -11,6 +11,16 @@ public import Mathlib.MeasureTheory.VectorMeasure.Variation.Semivariation
 
 /-!
 # Product of vector measures
+
+Given two vector measures, we define their product `μ.prod ν B` as the vector measure associating
+to a measurable set `s` the mass `B (μ s) (ν s)`, if such a measure exists. We show that it
+exists when either `μ` or `ν` has finite variation.
+
+When both measures have finite variation, we prove stronger results, notably versions
+of the Fubini theorem. We give general versions for arbitrary pairing functions, and
+specialized versions for scalar multiplication.
+
+The API is modelled on the one for the product of positive measures.
 -/
 
 public section
@@ -103,16 +113,16 @@ theorem integrable_vectorMeasure_prodMk_left [IsFiniteMeasure μ.variation]
   · exact (stronglyMeasurable_vectorMeasure_prodMk_left hs).aestronglyMeasurable
   · exact Eventually.of_forall (fun x ↦ norm_apply_le_bound)
 
-open scoped Classical in
 /-- The product of two vector measures when the first one has finite variation, obtained by
 integrating the measure of the fibers, as in the definition of the product of positive measures.
 *Do not use*: This is only used to instantiate the typeclass `HasProd`. Instead, use `μ.prod ν B`,
 which uses the typeclass instance. -/
-noncomputable def prodOfIsFiniteMeasureLeft
+private noncomputable def prodOfIsFiniteMeasureLeft
     (μ : VectorMeasure X E) (ν : VectorMeasure Y F) (B : E →L[ℝ] F →L[ℝ] G)
     [IsFiniteMeasure μ.variation] :
     VectorMeasure (X × Y) G where
-  measureOf' s := if MeasurableSet s then ∫ᵛ x, ν (Prod.mk x ⁻¹' s) ∂[B.flip; μ] else 0
+  measureOf' s := open scoped Classical in
+    if MeasurableSet s then ∫ᵛ x, ν (Prod.mk x ⁻¹' s) ∂[B.flip; μ] else 0
   empty' := by simp
   not_measurable' := by simp +contextual
   m_iUnion' f f_meas f_disj := by
@@ -285,7 +295,7 @@ theorem continuous_integral_integral {B : G →L[ℝ] F →L[ℝ] H} {C : H →L
     [SFinite ν.variation] [SFinite μ.variation] :
     Continuous fun f : X × Y →₁[μ.variation.prod ν.variation] G ↦
       ∫ᵛ x, (∫ᵛ y, f (x, y) ∂[B; ν]) ∂[C; μ] := by
-  rw [continuous_iff_continuousAt]; intro g
+  apply continuous_iff_continuousAt.2 (fun g ↦ ?_)
   apply tendsto_integral_of_L1
   · exact (Integrable.integral_vectorMeasure_prod_left (L1.integrable_coeFn g)).aestronglyMeasurable
   · filter_upwards with h
@@ -295,11 +305,10 @@ theorem continuous_integral_integral {B : G →L[ℝ] F →L[ℝ] H} {C : H →L
     (h := fun i ↦ ∫⁻ x, ‖B‖ₑ * ∫⁻ y,
       ‖i (x, y) - g (x, y)‖ₑ ∂ν.variation ∂μ.variation); swap
   · exact fun i ↦ lintegral_mono fun x ↦ enorm_integral_le_lintegral_enorm
-  have this (i : X × Y →₁[μ.variation.prod ν.variation] G) : Measurable fun z ↦ ‖i z - g z‖ₑ :=
+  have A (i : X × Y →₁[μ.variation.prod ν.variation] G) : Measurable fun z ↦ ‖i z - g z‖ₑ :=
     ((Lp.stronglyMeasurable i).sub (Lp.stronglyMeasurable g)).enorm
-  simp_rw [lintegral_const_mul' ‖B‖ₑ _ (by simp)]
-  simp_rw [← lintegral_prod _ (this _).aemeasurable, ← L1.ofReal_norm_sub_eq_lintegral,
-    ofReal_norm]
+  simp_rw [lintegral_const_mul' ‖B‖ₑ _ (by simp),
+    ← lintegral_prod _ (A _).aemeasurable, ← L1.ofReal_norm_sub_eq_lintegral, ofReal_norm]
   suffices Tendsto (fun i ↦ ‖B‖ₑ * ‖i - g‖ₑ) (𝓝 g) (𝓝 (‖B‖ₑ * 0)) by simpa
   apply ENNReal.Tendsto.const_mul _ (by simp)
   rw [← tendsto_iff_enorm_sub_tendsto_zero]
