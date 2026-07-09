@@ -1208,7 +1208,6 @@ public import Mathlib.Algebra.QuadraticDiscriminant
 public import Mathlib.Algebra.Quandle
 public import Mathlib.Algebra.Quaternion.Basic
 public import Mathlib.Algebra.Quaternion.Basis
-public import Mathlib.Algebra.Quaternion.CentralSimple
 public import Mathlib.Algebra.Quotient
 public import Mathlib.Algebra.Regular.Basic
 public import Mathlib.Algebra.Regular.Defs
