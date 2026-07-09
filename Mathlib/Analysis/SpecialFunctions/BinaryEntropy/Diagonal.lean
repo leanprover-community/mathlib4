@@ -61,9 +61,8 @@ namespace Real
 private noncomputable def eta (u : ℝ) : ℝ := exp u * negMulLog (1 - exp (-u))
 
 /-- `η` is continuous (the `negMulLog` form absorbs the `0 * log 0` boundary). -/
-private lemma continuous_eta : Continuous eta :=
-  continuous_exp.mul
-    (continuous_negMulLog.comp (continuous_const.sub (continuous_exp.comp continuous_neg)))
+private lemma continuous_eta : Continuous eta := by
+  fun_prop [eta]
 
 private lemma one_sub_exp_neg_pos {u : ℝ} (hu : 0 < u) : 0 < 1 - exp (-u) := by
   have h : exp (-u) < exp 0 := exp_lt_exp.mpr (by linarith)
@@ -110,36 +109,27 @@ private lemma hasDerivAt_eta' {u : ℝ} (hu : 0 < u) :
       rw [← mul_div_assoc, he]
     linarith
   have hprod := (hneg.mul hlog).sub_const 1
-  rw [hval] at hprod
-  exact hprod
+  rwa [hval] at hprod
 
 /-- `η'' ≤ 0` on `(0, ∞)` — equivalent to the elementary bound `log t ≤ t - 1`. -/
 private lemma eta''_nonpos {u : ℝ} (hu : 0 < u) :
     -exp u * log (1 - exp (-u)) - 1 / (1 - exp (-u)) ≤ 0 := by
   have hw0 : 0 < 1 - exp (-u) := one_sub_exp_neg_pos hu
   have hkey : -log (1 - exp (-u)) ≤ (1 - exp (-u))⁻¹ - 1 := by
-    have h := log_le_sub_one_of_pos (inv_pos.2 hw0)
-    rwa [log_inv] at h
-  have hE : exp u * exp (-u) = 1 := by rw [← exp_add]; simp
+    grw [← log_inv, log_le_sub_one_of_pos (inv_pos.2 hw0)]
   rw [sub_nonpos, le_div_iff₀ hw0]
-  have h4 : (-log (1 - exp (-u))) * (exp u * (1 - exp (-u)))
-      ≤ ((1 - exp (-u))⁻¹ - 1) * (exp u * (1 - exp (-u))) :=
-    mul_le_mul_of_nonneg_right hkey (by positivity)
-  have h5 : ((1 - exp (-u))⁻¹ - 1) * (exp u * (1 - exp (-u)))
-      = exp u * exp (-u) := by
-    field_simp
-    ring
-  calc -exp u * log (1 - exp (-u)) * (1 - exp (-u))
-      = (-log (1 - exp (-u))) * (exp u * (1 - exp (-u))) := by ring
-    _ ≤ exp u * exp (-u) := by rw [← h5]; exact h4
-    _ = 1 := hE
+  have h := mul_le_mul_of_nonneg_right (a := rexp u * (1 - rexp (-u)))
+    hkey (by positivity)
+  convert! h using 1
+  · ring
+  · simp [field, ← exp_add]
 
 /-- `η` is concave on `[0, ∞)`. -/
 private lemma concaveOn_eta : ConcaveOn ℝ (Set.Ici (0 : ℝ)) eta := by
   refine concaveOn_of_hasDerivWithinAt2_nonpos (convex_Ici 0)
-    (f' := fun u => -exp u * log (1 - exp (-u)) - 1)
-    (f'' := fun u => -exp u * log (1 - exp (-u)) - 1 / (1 - exp (-u)))
-    continuous_eta.continuousOn (fun u hu => ?_) (fun u hu => ?_) (fun u hu => ?_) <;>
+    (f' := fun u ↦ -exp u * log (1 - exp (-u)) - 1)
+    (f'' := fun u ↦ -exp u * log (1 - exp (-u)) - 1 / (1 - exp (-u)))
+    continuous_eta.continuousOn (fun u hu ↦ ?_) (fun u hu ↦ ?_) (fun u hu ↦ ?_) <;>
     rw [interior_Ici] at hu
   · exact (hasDerivAt_eta hu).hasDerivWithinAt
   · exact (hasDerivAt_eta' hu).hasDerivWithinAt
@@ -170,33 +160,24 @@ private lemma mul_eta_neg_log {x : ℝ} (hx : 0 < x) :
 theorem mul_negMulLog_one_sub_add_le {x y : ℝ} (hx0 : 0 < x) (hx1 : x ≤ 1)
     (hy0 : 0 < y) (hy1 : y ≤ 1) :
     x * negMulLog (1 - y) + y * negMulLog (1 - x)
-      ≤ 2 * sqrt (x * y) * negMulLog (1 - sqrt (x * y)) := by
+      ≤ 2 * √(x * y) * negMulLog (1 - √(x * y)) := by
   have hu : 0 ≤ -log x := neg_nonneg.2 (log_nonpos hx0.le hx1)
   have hv : 0 ≤ -log y := neg_nonneg.2 (log_nonpos hy0.le hy1)
   have hxy : 0 < x * y := mul_pos hx0 hy0
-  have hs0 : 0 < sqrt (x * y) := sqrt_pos.2 hxy
-  have hslog : -log (sqrt (x * y)) = (-log x + -log y) / 2 := by
-    rw [log_sqrt hxy.le, log_mul hx0.ne' hy0.ne']
-    ring
-  have hmid := eta_add_le hu hv
-  have h1 : x * y * (eta (-log x) + eta (-log y))
-      ≤ x * y * (2 * eta ((-log x + -log y) / 2)) :=
-    mul_le_mul_of_nonneg_left hmid hxy.le
+  have h1 := mul_le_mul_of_nonneg_left (eta_add_le hu hv) hxy.le
   have hA : x * y * eta (-log x) = y * negMulLog (1 - x) := by
-    have hid := mul_eta_neg_log hx0
-    calc x * y * eta (-log x) = y * (x * eta (-log x)) := by ring
-      _ = y * negMulLog (1 - x) := by rw [hid]
+    rw [← mul_eta_neg_log hx0]
+    ring
   have hB : x * y * eta (-log y) = x * negMulLog (1 - y) := by
-    have hid := mul_eta_neg_log hy0
-    calc x * y * eta (-log y) = x * (y * eta (-log y)) := by ring
-      _ = x * negMulLog (1 - y) := by rw [hid]
+    rw [← mul_eta_neg_log hy0]
+    ring
   have hC : x * y * (2 * eta ((-log x + -log y) / 2))
-      = 2 * sqrt (x * y) * negMulLog (1 - sqrt (x * y)) := by
-    have hid := mul_eta_neg_log hs0
-    rw [hslog] at hid
-    have hss : sqrt (x * y) * sqrt (x * y) = x * y := mul_self_sqrt hxy.le
-    linear_combination (-2 : ℝ) * eta ((-log x + -log y) / 2) * hss
-      + 2 * sqrt (x * y) * hid
+      = 2 * √(x * y) * negMulLog (1 - √(x * y)) := by
+    have : 0 < √(x * y) := by positivity
+    have : -log √(x * y) = (-log x + -log y) / 2 := by
+      rw [log_sqrt hxy.le, log_mul hx0.ne' hy0.ne']
+      ring
+    grind only [mul_eta_neg_log, mul_self_sqrt hxy.le]
   rw [mul_add, hA, hB, hC] at h1
   linarith
 
@@ -208,21 +189,21 @@ geometric mean. -/
 theorem mul_binEntropy_add_mul_binEntropy_le {x y : ℝ} (hx0 : 0 ≤ x) (hx1 : x ≤ 1)
     (hy0 : 0 ≤ y) (hy1 : y ≤ 1) :
     x * binEntropy y + y * binEntropy x
-      ≤ 2 * sqrt (x * y) * binEntropy (sqrt (x * y)) := by
-  rcases eq_or_lt_of_le hx0 with rfl | hx0'
+      ≤ 2 * √(x * y) * binEntropy √(x * y) := by
+  rcases hx0.eq_or_lt with rfl | hx0
   · simp
-  rcases eq_or_lt_of_le hy0 with rfl | hy0'
+  rcases hy0.eq_or_lt with rfl | hy0
   · simp
-  have hxy : 0 < x * y := mul_pos hx0' hy0'
-  have hpsi := mul_negMulLog_one_sub_add_le hx0' hx1 hy0' hy1
+  have hpsi := mul_negMulLog_one_sub_add_le hx0 hx1 hy0 hy1
   rw [binEntropy_eq_negMulLog_add_negMulLog_one_sub,
       binEntropy_eq_negMulLog_add_negMulLog_one_sub,
       binEntropy_eq_negMulLog_add_negMulLog_one_sub]
   have hlogpart : x * negMulLog y + y * negMulLog x
-      = 2 * sqrt (x * y) * negMulLog (sqrt (x * y)) := by
-    have hss : sqrt (x * y) * sqrt (x * y) = x * y := mul_self_sqrt hxy.le
+      = 2 * √(x * y) * negMulLog √(x * y) := by
+    have hss : √(x * y) * √(x * y) = x * y :=
+      mul_self_sqrt (by positivity)
     unfold negMulLog
-    rw [log_sqrt hxy.le, log_mul hx0'.ne' hy0'.ne']
+    rw [log_sqrt (by positivity), log_mul hx0.ne' hy0.ne']
     linear_combination (log x + log y) * hss
   nlinarith [hpsi, hlogpart]
 
