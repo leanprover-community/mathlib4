@@ -885,8 +885,9 @@ lemma factorsThrough_iff (g : α → γ) [Nonempty γ] : g.FactorsThrough f ↔ 
   fun h _ _ hf => by rw [Classical.choose_spec h, comp_apply, comp_apply, hf]⟩
 
 lemma apply_extend {δ} {g : α → γ} (F : γ → δ) (f : α → β) (e' : β → γ) (b : β) :
-    F (extend f g e' b) = extend f (F ∘ g) (F ∘ e') b :=
-  open scoped Classical in apply_dite F _ _ _
+    F (extend f g e' b) = extend f (F ∘ g) (F ∘ e') b := by
+  classical
+  exact apply_dite F _ _ _
 
 theorem extend_injective (hf : Injective f) (e' : β → γ) : Injective fun g ↦ extend f g e' := by
   intro g₁ g₂ hg
@@ -900,8 +901,9 @@ lemma FactorsThrough.extend_comp {g : α → γ} (e' : β → γ) (hf : FactorsT
   funext fun a => hf.extend_apply e' a
 
 @[simp]
-lemma extend_const (f : α → β) (c : γ) : extend f (fun _ ↦ c) (fun _ ↦ c) = fun _ ↦ c :=
-  funext fun _ ↦ open scoped Classical in ite_id _
+lemma extend_const (f : α → β) (c : γ) : extend f (fun _ ↦ c) (fun _ ↦ c) = fun _ ↦ c := by
+  classical
+  exact funext fun _ ↦ ite_id _
 
 @[simp]
 theorem extend_comp (hf : Injective f) (g : α → γ) (e' : β → γ) : extend f g e' ∘ f = g :=

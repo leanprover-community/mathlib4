@@ -257,8 +257,9 @@ protected theorem Decidable.eq_iff_le_not_lt [DecidableLE α] : a = b ↔ a ≤ 
     h₁.antisymm <| Decidable.byContradiction fun h₃ ↦ h₂ (h₁.lt_of_not_ge h₃)⟩
 
 @[to_dual eq_iff_ge_not_gt]
-theorem eq_iff_le_not_lt : a = b ↔ a ≤ b ∧ ¬a < b := open scoped Classical in
-  Decidable.eq_iff_le_not_lt
+theorem eq_iff_le_not_lt : a = b ↔ a ≤ b ∧ ¬a < b := by
+  classical
+  exact Decidable.eq_iff_le_not_lt
 
 -- See Note [decidable namespace]
 @[to_dual eq_or_lt_of_le']
@@ -290,8 +291,9 @@ protected theorem Decidable.ne_iff_lt_iff_le [DecidableEq α] : (a ≠ b ↔ a <
   ⟨fun h ↦ Decidable.byCases le_of_eq (le_of_lt ∘ h.mp), fun h ↦ ⟨lt_of_le_of_ne h, ne_of_lt⟩⟩
 
 @[to_dual (attr := simp) ne_iff_gt_iff_ge]
-theorem ne_iff_lt_iff_le : (a ≠ b ↔ a < b) ↔ a ≤ b := open scoped Classical in
-  Decidable.ne_iff_lt_iff_le
+theorem ne_iff_lt_iff_le : (a ≠ b ↔ a < b) ↔ a ≤ b := by
+  classical
+  exact Decidable.ne_iff_lt_iff_le
 
 @[to_dual eq_of_forall_ge_iff]
 lemma eq_of_forall_le_iff (H : ∀ c, c ≤ a ↔ c ≤ b) : a = b :=
