@@ -71,6 +71,7 @@ variable (σ R) in
 lemma idealOfVars_fg [Finite σ] : (idealOfVars σ R).FG :=
   Submodule.fg_span <| Set.finite_range _
 
+set_option backward.isDefEq.respectTransparency false in
 lemma idealOfVars_eq_restrictSupportIdeal :
     idealOfVars σ R = restrictSupportIdeal _ _ ((isUpperSet_Ici 1).preimage degree_mono) := by
   apply le_antisymm
@@ -84,6 +85,7 @@ lemma idealOfVars_eq_restrictSupportIdeal :
     simpa [monomial_add_single] using Ideal.mul_mem_left _ _ (Ideal.subset_span (by simp))
 
 open scoped Pointwise in
+set_option backward.isDefEq.respectTransparency false in
 theorem pow_idealOfVars (n : ℕ) :
     idealOfVars σ R ^ n = restrictSupportIdeal _ _ ((isUpperSet_Ici n).preimage degree_mono) := by
   rw [idealOfVars_eq_restrictSupportIdeal]
@@ -167,8 +169,9 @@ lemma span_leadingTerm_eq_span_monomial {B : Set (MvPolynomial σ R)}
   · rw [Set.mem_preimage, SetLike.mem_coe, ← C_mul_leadingCoeff_monomial_degree]
     exact Ideal.mul_mem_left _ _ (Ideal.subset_span ⟨_, hp, rfl⟩)
   · rw [Set.mem_preimage, SetLike.mem_coe]
-    convert (span <| m.leadingTerm '' B).mul_mem_left
-      (MvPolynomial.C (hB p hp).unit⁻¹.val) <| subset_span ⟨p, hp, rfl⟩
+    convert!
+      (span <| m.leadingTerm '' B).mul_mem_left (MvPolynomial.C (hB p hp).unit⁻¹.val) <|
+        subset_span ⟨p, hp, rfl⟩
     rw [← C_mul_leadingCoeff_monomial_degree, ← mul_assoc, ← map_mul,
       IsUnit.val_inv_mul, MvPolynomial.C_1, one_mul]
 

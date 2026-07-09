@@ -9,12 +9,13 @@ public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 public import Mathlib.LinearAlgebra.FreeModule.PID
 public import Mathlib.LinearAlgebra.Matrix.AbsoluteValue
 public import Mathlib.NumberTheory.ClassNumber.AdmissibleAbsoluteValue
-public import Mathlib.RingTheory.ClassGroup
+public import Mathlib.RingTheory.ClassGroup.Basic
 public import Mathlib.RingTheory.DedekindDomain.IntegralClosure
 public import Mathlib.RingTheory.Norm.Basic
 
 /-!
 # Class numbers of global fields
+
 In this file, we use the notion of "admissible absolute value" to prove
 finiteness of the class group for number fields and function fields.
 
@@ -77,7 +78,7 @@ theorem norm_le (a : S) {y : ℤ} (hy : ∀ k, abv (bS.repr a k) ≤ y) :
   rw [Algebra.norm_apply, ← LinearMap.det_toMatrix bS]
   simp only [map_sum, map_smul, map_sum, map_smul,
     normBound, smul_mul_assoc, ← mul_pow]
-  convert Matrix.det_sum_smul_le Finset.univ _ hy using 3
+  convert! Matrix.det_sum_smul_le Finset.univ _ hy using 3
   · rw [Finset.card_univ, smul_mul_assoc, mul_comm]
   · intro i j k
     apply Finset.le_max'
@@ -265,6 +266,8 @@ theorem ne_bot_of_prod_finsetApprox_mem (J : Ideal S)
     (h : algebraMap _ _ (∏ m ∈ finsetApprox bS adm, m) ∈ J) : J ≠ ⊥ :=
   (Submodule.ne_bot_iff _).mpr ⟨_, h, prod_finsetApprox_ne_zero _ _⟩
 
+set_option linter.overlappingInstances false
+
 /-- Each class in the class group contains an ideal `J`
 such that `M := Π m ∈ finsetApprox` is in `J`. -/
 theorem exists_mk0_eq_mk0 [IsDedekindDomain S] [Algebra.IsAlgebraic R S] (I : (Ideal S)⁰) :
@@ -316,7 +319,7 @@ theorem mkMMem_surjective [IsDedekindDomain S] [Algebra.IsAlgebraic R S] :
   obtain ⟨J, mk0_eq_mk0, J_dvd⟩ := exists_mk0_eq_mk0 bS adm ⟨I, hI⟩
   exact ⟨⟨J, J_dvd⟩, mk0_eq_mk0.symm⟩
 
-open Classical in
+open scoped Classical in
 /-- The **class number theorem**: the class group of an integral closure `S` of `R` in an
 algebraic extension `L` is finite if there is an admissible absolute value.
 

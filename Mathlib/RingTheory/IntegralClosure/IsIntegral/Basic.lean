@@ -82,7 +82,7 @@ theorem isIntegral_algHom_iff (f : A →ₐ[R] B) (hf : Function.Injective f) {x
 
 end
 
-open Classical in
+open scoped Classical in
 theorem Submodule.span_range_natDegree_eq_adjoin {R A} [CommRing R] [Semiring A] [Algebra R A]
     {x : A} {f : R[X]} (hf : f.Monic) (hfx : aeval x f = 0) :
     span R (Finset.image (x ^ ·) (Finset.range (natDegree f))) =
@@ -162,7 +162,7 @@ theorem IsIntegral.tower_top [Algebra A B] [IsScalarTower R A B] {x : B}
   let ⟨p, hp, hpx⟩ := hx
   ⟨p.map <| algebraMap R A, hp.map _, by rw [← aeval_def, aeval_map_algebraMap, aeval_def, hpx]⟩
 
-/- If `R` and `T` are isomorphic commutative rings and `S` is an `R`-algebra and a `T`-algebra in
+/-- If `R` and `T` are isomorphic commutative rings and `S` is an `R`-algebra and a `T`-algebra in
 a compatible way, then an element `a ∈ S` is integral over `R` if and only if it is integral
 over `T`. -/
 theorem RingEquiv.isIntegral_iff {R S T : Type*} [CommRing R] [Ring S] [CommRing T]

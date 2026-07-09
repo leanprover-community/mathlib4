@@ -184,7 +184,7 @@ theorem ext [Fact p.Prime] {f g} (hf : IsPoly p f) (hg : IsPoly p g)
   simp only [ghostComponent_apply, aeval_eq_eval₂Hom] at h
   apply (ULift.ringEquiv.symm : ℤ ≃+* _).injective
   simp only [← RingEquiv.coe_toRingHom, map_eval₂Hom]
-  convert h using 1
+  convert! h using 1
   all_goals
     simp only [hf, hg, MvPolynomial.eval, map_eval₂Hom]
     apply eval₂Hom_congr (RingHom.ext_int _ _) _ rfl
@@ -344,7 +344,7 @@ theorem ext [Fact p.Prime] {f g} (hf : IsPoly₂ p f) (hg : IsPoly₂ p g)
   simp only [ghostComponent_apply, aeval_eq_eval₂Hom] at h
   apply (ULift.ringEquiv.symm : ℤ ≃+* _).injective
   simp only [← RingEquiv.coe_toRingHom, map_eval₂Hom]
-  convert h using 1
+  convert! h using 1
   all_goals
     simp only [hf, hg, MvPolynomial.eval, map_eval₂Hom]
     apply eval₂Hom_congr (RingHom.ext_int _ _) _ rfl
