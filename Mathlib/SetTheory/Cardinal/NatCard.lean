@@ -5,7 +5,6 @@ Authors: Kyle Miller
 -/
 module
 
-public import Mathlib.Data.Real.ENatENNReal
 public import Mathlib.SetTheory.Cardinal.Finite
 
 /-!
@@ -241,10 +240,3 @@ theorem length_le_enatCard : l.length ≤ ENat.card α := by
     exact le_top
 
 end List.Nodup
-
-namespace ENNReal
-
-@[simp] lemma toReal_enatCard (α : Type*) : ENNReal.toReal (ENat.card α) = Nat.card α := by
-  cases finite_or_infinite α <;> simp [ENat.card_eq_coe_natCard]
-
-end ENNReal

@@ -7,7 +7,7 @@ module
 
 public import Mathlib.MeasureTheory.Measure.Dirac
 
-import Mathlib.SetTheory.Cardinal.NatCard
+import Mathlib.SetTheory.Cardinal.ENNReal
 
 /-!
 # Counting measure
