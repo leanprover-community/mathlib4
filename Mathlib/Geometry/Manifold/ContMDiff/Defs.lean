@@ -693,11 +693,11 @@ theorem ContMDiffWithinAt.mono (hf : ContMDiffWithinAt I I' n f s x) (hts : t �
     ContMDiffWithinAt I I' n f t x :=
   hf.mono_of_mem_nhdsWithin <| mem_of_superset self_mem_nhdsWithin hts
 
-theorem contMDiffWithinAt_congr_set (h : s =ᶠ[𝓝 x] t) :
+theorem contMDiffWithinAt_congr_set (h : s =ᶠˢ[𝓝 x] t) :
     ContMDiffWithinAt I I' n f s x ↔ ContMDiffWithinAt I I' n f t x :=
   (contDiffWithinAt_localInvariantProp n).liftPropWithinAt_congr_set h
 
-theorem ContMDiffWithinAt.congr_set (h : ContMDiffWithinAt I I' n f s x) (hst : s =ᶠ[𝓝 x] t) :
+theorem ContMDiffWithinAt.congr_set (h : ContMDiffWithinAt I I' n f s x) (hst : s =ᶠˢ[𝓝 x] t) :
     ContMDiffWithinAt I I' n f t x :=
   (contMDiffWithinAt_congr_set hst).1 h
 
@@ -717,7 +717,7 @@ protected theorem ContMDiffWithinAt.insert (h : ContMDiffWithinAt I I' n f s x) 
 
 /-- Being `C^n` in a set only depends on the germ of the set. Version where one only requires
 the two sets to coincide locally in the complement of a point `y`. -/
-theorem contMDiffWithinAt_congr_set' (y : M) (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
+theorem contMDiffWithinAt_congr_set' (y : M) (h : s =ᶠˢ[𝓝[{y}ᶜ] x] t) :
     ContMDiffWithinAt I I' n f s x ↔ ContMDiffWithinAt I I' n f t x := by
   have : T1Space M := I.t1Space M
   rw [← contMDiffWithinAt_insert_self (s := s), ← contMDiffWithinAt_insert_self (s := t)]

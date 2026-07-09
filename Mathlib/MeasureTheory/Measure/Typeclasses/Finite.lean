@@ -169,7 +169,7 @@ theorem summable_measure_toReal [hμ : IsFiniteMeasure μ] {f : ℕ → Set α}
   exact ne_of_lt (measure_lt_top _ _)
 
 theorem ae_eq_univ_iff_measure_eq [IsFiniteMeasure μ] (hs : NullMeasurableSet s μ) :
-    s =ᵐ[μ] univ ↔ μ s = μ univ :=
+    s =ᵐˢ[μ] univ ↔ μ s = μ univ :=
   ⟨measure_congr, fun h ↦ ae_eq_of_subset_of_measure_ge (subset_univ _) h.ge hs (by finiteness)⟩
 
 theorem ae_iff_measure_eq [IsFiniteMeasure μ] {p : α → Prop}

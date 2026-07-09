@@ -263,7 +263,7 @@ theorem mono_set (hf : IntervalIntegrable f μ a b) (h : [[c, d]] ⊆ [[a, b]]) 
     IntervalIntegrable f μ c d :=
   hf.mono h le_rfl
 
-theorem mono_set_ae (hf : IntervalIntegrable f μ a b) (h : Ι c d ≤ᵐ[μ] Ι a b) :
+theorem mono_set_ae (hf : IntervalIntegrable f μ a b) (h : Ι c d ⊆ᵐ[μ] Ι a b) :
     IntervalIntegrable f μ c d :=
   intervalIntegrable_iff.mpr <| hf.def'.mono_set_ae h
 

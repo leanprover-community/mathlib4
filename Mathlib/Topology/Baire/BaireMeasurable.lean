@@ -51,10 +51,10 @@ theorem coborder_mem_residual {s : Set α} (hs : IsLocallyClosed s) : coborder s
   residual_of_dense_open hs.isOpen_coborder dense_coborder
 
 theorem closure_residualEq {s : Set α} (hs : IsLocallyClosed s) : closure s =ᵇ s := by
-  rw [Filter.eventuallyEq_set]
   filter_upwards [coborder_mem_residual hs] with x hx
   nth_rewrite 2 [← closure_inter_coborder (s := s)]
-  simp [hx]
+  ext
+  exact (and_iff_left hx).symm
 
 /-- We say a set is a `BaireMeasurableSet` if it differs from some Borel set by
 a meager set. This forms a σ-algebra.

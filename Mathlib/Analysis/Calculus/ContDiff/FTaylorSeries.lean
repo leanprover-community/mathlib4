@@ -579,7 +579,7 @@ protected theorem Set.EqOn.iteratedFDerivWithin (hs : EqOn f₁ f s) (n : ℕ) :
     EqOn (iteratedFDerivWithin 𝕜 n f₁ s) (iteratedFDerivWithin 𝕜 n f s) s := fun _x hx =>
   iteratedFDerivWithin_congr hs hx n
 
-theorem iteratedFDerivWithin_eventually_congr_set' (y : E) (h : s =ᶠ[𝓝[{y}ᶜ] x] t) (n : ℕ) :
+theorem iteratedFDerivWithin_eventually_congr_set' (y : E) (h : s =ᶠˢ[𝓝[{y}ᶜ] x] t) (n : ℕ) :
     iteratedFDerivWithin 𝕜 n f s =ᶠ[𝓝 x] iteratedFDerivWithin 𝕜 n f t := by
   induction n generalizing x with
   | zero => rfl
@@ -588,7 +588,7 @@ theorem iteratedFDerivWithin_eventually_congr_set' (y : E) (h : s =ᶠ[𝓝[{y}�
     simp only [iteratedFDerivWithin_succ_eq_comp_left, (· ∘ ·)]
     rw [(ihn hy).fderivWithin_eq_of_nhds, fderivWithin_congr_set' _ hy]
 
-theorem iteratedFDerivWithin_eventually_congr_set (h : s =ᶠ[𝓝 x] t) (n : ℕ) :
+theorem iteratedFDerivWithin_eventually_congr_set (h : s =ᶠˢ[𝓝 x] t) (n : ℕ) :
     iteratedFDerivWithin 𝕜 n f s =ᶠ[𝓝 x] iteratedFDerivWithin 𝕜 n f t :=
   iteratedFDerivWithin_eventually_congr_set' x (h.filter_mono inf_le_left) n
 
@@ -597,7 +597,7 @@ then the corresponding iterated derivatives are equal.
 
 Note that we also allow to puncture the neighborhood of `x` at `y`.
 If `y ≠ x`, then this is a no-op. -/
-theorem iteratedFDerivWithin_congr_set' {y} (h : s =ᶠ[𝓝[{y}ᶜ] x] t) (n : ℕ) :
+theorem iteratedFDerivWithin_congr_set' {y} (h : s =ᶠˢ[𝓝[{y}ᶜ] x] t) (n : ℕ) :
     iteratedFDerivWithin 𝕜 n f s x = iteratedFDerivWithin 𝕜 n f t x :=
   (iteratedFDerivWithin_eventually_congr_set' y h n).self_of_nhds
 
@@ -607,7 +607,7 @@ theorem iteratedFDerivWithin_insert {n y} :
   iteratedFDerivWithin_congr_set' (y := x)
     (eventually_mem_nhdsWithin.mono <| by intros; simp_all).set_eq _
 
-theorem iteratedFDerivWithin_congr_set (h : s =ᶠ[𝓝 x] t) (n : ℕ) :
+theorem iteratedFDerivWithin_congr_set (h : s =ᶠˢ[𝓝 x] t) (n : ℕ) :
     iteratedFDerivWithin 𝕜 n f s x = iteratedFDerivWithin 𝕜 n f t x :=
   (iteratedFDerivWithin_eventually_congr_set h n).self_of_nhds
 

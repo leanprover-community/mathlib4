@@ -131,7 +131,7 @@ theorem mk_of_measure_univ_le [IsFiniteMeasure μ] [Countable G] (h_meas : NullM
       exact h_measure_univ_le }
 
 @[to_additive]
-theorem iUnion_smul_ae_eq (h : IsFundamentalDomain G s μ) : ⋃ g : G, g • s =ᵐ[μ] univ :=
+theorem iUnion_smul_ae_eq (h : IsFundamentalDomain G s μ) : ⋃ g : G, g • s =ᵐˢ[μ] univ :=
   eventuallyEq_univ.2 <| h.ae_covers.mono fun _ ⟨g, hg⟩ =>
     mem_iUnion.2 ⟨g⁻¹, _, hg, inv_smul_smul _ _⟩
 
@@ -286,11 +286,11 @@ is determined by the measure of its intersection with a fundamental domain for t
   finite additive group `G`, the measure of any `G`-invariant set is determined by the measure of
   its intersection with a fundamental domain for the action of `G`. -/]
 theorem measure_eq_card_smul_of_smul_ae_eq_self [Finite G] (h : IsFundamentalDomain G s μ)
-    (t : Set α) (ht : ∀ g : G, (g • t : Set α) =ᵐ[μ] t) : μ t = Nat.card G • μ (t ∩ s) := by
+    (t : Set α) (ht : ∀ g : G, (g • t : Set α) =ᵐˢ[μ] t) : μ t = Nat.card G • μ (t ∩ s) := by
   have : Fintype G := Fintype.ofFinite G
   rw [h.measure_eq_tsum]
-  replace ht : ∀ g : G, (g • t ∩ s : Set α) =ᵐ[μ] (t ∩ s : Set α) := fun g =>
-    ae_eq_set_inter (ht g) (ae_eq_refl s)
+  replace ht : ∀ g : G, (g • t ∩ s : Set α) =ᵐˢ[μ] (t ∩ s : Set α) := fun g =>
+    ae_eq_set_inter (ht g) (ae_eq_refl (· ∈ s))
   simp_rw [measure_congr (ht _), tsum_fintype, Finset.sum_const, Nat.card_eq_fintype_card,
     Finset.card_univ]
 

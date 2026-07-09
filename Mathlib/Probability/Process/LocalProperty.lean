@@ -282,7 +282,7 @@ private lemma isPreLocalizingSequence_of_isLocalizingSequence_aux
     fun n ↦ le_trans (EventuallyLE.measure_le ?_) (hnk n)⟩
   filter_upwards [(hσ n).mono] with ω hω
   specialize hω (le_mkStrictMonoAux nk n)
-  simp [Set.ofPred]
+  simp
   grind
 
 lemma IsLocalizingSequence.isPrelocalizingSequence_inf_extraction

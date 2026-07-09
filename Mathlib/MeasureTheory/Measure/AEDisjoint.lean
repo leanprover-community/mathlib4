@@ -76,13 +76,13 @@ protected theorem _root_.Set.PairwiseDisjoint.aedisjoint {f : ι → Set α} {s 
     (hf : s.PairwiseDisjoint f) : s.Pairwise (AEDisjoint μ on f) :=
   hf.mono' fun _i _j h => h.aedisjoint
 
-theorem mono_ae (h : AEDisjoint μ s t) (hu : u ≤ᵐ[μ] s) (hv : v ≤ᵐ[μ] t) : AEDisjoint μ u v :=
+theorem mono_ae (h : AEDisjoint μ s t) (hu : u ⊆ᵐ[μ] s) (hv : v ⊆ᵐ[μ] t) : AEDisjoint μ u v :=
   measure_mono_null_ae (hu.inter hv) h
 
 protected theorem mono (h : AEDisjoint μ s t) (hu : u ⊆ s) (hv : v ⊆ t) : AEDisjoint μ u v :=
   mono_ae h (LE.le.eventuallyLE hu) (LE.le.eventuallyLE hv)
 
-protected theorem congr (h : AEDisjoint μ s t) (hu : u =ᵐ[μ] s) (hv : v =ᵐ[μ] t) :
+protected theorem congr (h : AEDisjoint μ s t) (hu : u =ᵐˢ[μ] s) (hv : v =ᵐˢ[μ] t) :
     AEDisjoint μ u v :=
   mono_ae h (Filter.EventuallyEq.le hu) (Filter.EventuallyEq.le hv)
 
@@ -110,12 +110,12 @@ theorem union_left (hs : AEDisjoint μ s u) (ht : AEDisjoint μ t u) : AEDisjoin
 theorem union_right (ht : AEDisjoint μ s t) (hu : AEDisjoint μ s u) : AEDisjoint μ s (t ∪ u) :=
   union_right_iff.2 ⟨ht, hu⟩
 
-theorem sdiff_ae_eq_left (h : AEDisjoint μ s t) : (s \ t : Set α) =ᵐ[μ] s :=
+theorem sdiff_ae_eq_left (h : AEDisjoint μ s t) : (s \ t : Set α) =ᵐˢ[μ] s :=
   @sdiff_self_inter _ s t ▸ sdiff_null_ae_eq_self h
 
 @[deprecated (since := "2026-06-03")] alias diff_ae_eq_left := sdiff_ae_eq_left
 
-theorem sdiff_ae_eq_right (h : AEDisjoint μ s t) : (t \ s : Set α) =ᵐ[μ] t :=
+theorem sdiff_ae_eq_right (h : AEDisjoint μ s t) : (t \ s : Set α) =ᵐˢ[μ] t :=
   sdiff_ae_eq_left <| AEDisjoint.symm h
 
 @[deprecated (since := "2026-06-03")] alias diff_ae_eq_right := sdiff_ae_eq_right

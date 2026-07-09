@@ -519,7 +519,7 @@ theorem AnalyticWithinAt.mono_of_mem_nhdsWithin
   rcases h with ⟨p, hp⟩
   exact ⟨p, hp.mono_of_mem_nhdsWithin hst⟩
 
-theorem AnalyticWithinAt.congr_set (h : AnalyticWithinAt 𝕜 f s x) (hst : s =ᶠ[𝓝 x] t) :
+theorem AnalyticWithinAt.congr_set (h : AnalyticWithinAt 𝕜 f s x) (hst : s =ᶠˢ[𝓝 x] t) :
     AnalyticWithinAt 𝕜 f t x := by
   refine h.mono_of_mem_nhdsWithin ?_
   simp [← nhdsWithin_eq_iff_eventuallyEq.mpr hst, self_mem_nhdsWithin]

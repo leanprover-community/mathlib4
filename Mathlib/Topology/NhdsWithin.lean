@@ -116,7 +116,7 @@ theorem mem_nhdsWithin_iff_eventually {s t : Set α} {x : α} :
   eventually_inf_principal
 
 theorem mem_nhdsWithin_iff_eventuallyEq {s t : Set α} {x : α} :
-    t ∈ 𝓝[s] x ↔ s =ᶠ[𝓝 x] (s ∩ t : Set α) := by
+    t ∈ 𝓝[s] x ↔ s =ᶠˢ[𝓝 x] s ∩ t := by
   simp_rw [mem_nhdsWithin_iff_eventually, eventuallyEq_set, mem_inter_iff, iff_self_and]
 
 set_option backward.isDefEq.respectTransparency false in
@@ -127,7 +127,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma mem_nhdsWithin_self_inter {s t : Set α} {x : α} : s ∈ 𝓝[s ∩ t] x :=
   mem_nhdsWithin_iff_eventuallyEq.mpr <| by simp [inter_comm s t, inter_assoc]
 
-theorem nhdsWithin_eq_iff_eventuallyEq {s t : Set α} {x : α} : 𝓝[s] x = 𝓝[t] x ↔ s =ᶠ[𝓝 x] t :=
+theorem nhdsWithin_eq_iff_eventuallyEq {s t : Set α} {x : α} : 𝓝[s] x = 𝓝[t] x ↔ s =ᶠˢ[𝓝 x] t :=
   set_eventuallyEq_iff_inf_principal.symm
 
 theorem nhdsWithin_le_iff {s t : Set α} {x : α} : 𝓝[s] x ≤ 𝓝[t] x ↔ t ∈ 𝓝[s] x :=
@@ -308,12 +308,12 @@ theorem nhdsWithin_prod [TopologicalSpace β]
   rw [nhdsWithin_prod_eq]
   exact prod_mem_prod hu hv
 
-lemma Filter.EventuallyEq.mem_interior {x : α} {s t : Set α} (hst : s =ᶠ[𝓝 x] t)
+lemma Filter.EventuallyEq.mem_interior {x : α} {s t : Set α} (hst : s =ᶠˢ[𝓝 x] t)
     (h : x ∈ interior s) : x ∈ interior t := by
   rw [← nhdsWithin_eq_iff_eventuallyEq] at hst
   simpa [mem_interior_iff_mem_nhds, ← nhdsWithin_eq_nhds, hst] using h
 
-lemma Filter.EventuallyEq.mem_interior_iff {x : α} {s t : Set α} (hst : s =ᶠ[𝓝 x] t) :
+lemma Filter.EventuallyEq.mem_interior_iff {x : α} {s t : Set α} (hst : s =ᶠˢ[𝓝 x] t) :
     x ∈ interior s ↔ x ∈ interior t :=
   ⟨fun h ↦ hst.mem_interior h, fun h ↦ hst.symm.mem_interior h⟩
 

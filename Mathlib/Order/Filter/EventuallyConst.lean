@@ -68,7 +68,7 @@ theorem eventuallyConst_pred {p : α → Prop} :
   simp [eventuallyConst_pred', or_comm, EventuallyEq]
 
 theorem eventuallyConst_set' {s : Set α} :
-    EventuallyConst s l ↔ (s =ᶠ[l] (∅ : Set α)) ∨ s =ᶠ[l] univ :=
+    EventuallyConst s l ↔ (s =ᶠˢ[l] (∅ : Set α)) ∨ s =ᶠˢ[l] univ :=
   eventuallyConst_pred'
 
 theorem eventuallyConst_set {s : Set α} :

@@ -308,6 +308,16 @@ def EventuallyLE [LE β] (l : Filter α) (f g : α → β) : Prop :=
 @[inherit_doc]
 notation:50 f " ≤ᶠ[" l:50 "] " g:50 => EventuallyLE l f g
 
+/-- Two sets `s` and `t` are *eventually equal* along a filter `l` if the set of `x` such that
+`x ∈ s ↔ x ∈ t` belongs to `l`. This is notation for `(· ∈ s) =ᶠ[l] (· ∈ t)`, so all
+`Filter.EventuallyEq` lemmas apply. -/
+notation:50 s " =ᶠˢ[" l:50 "] " t:50 => EventuallyEq l (fun x => x ∈ s) (fun x => x ∈ t)
+
+/-- A set `s` is *eventually contained* in a set `t` along a filter `l` if the set of `x` such
+that `x ∈ s → x ∈ t` belongs to `l`. This is notation for `(· ∈ s) ≤ᶠ[l] (· ∈ t)`, so all
+`Filter.EventuallyLE` lemmas apply. -/
+notation:50 s " ⊆ᶠ[" l:50 "] " t:50 => EventuallyLE l (fun x => x ∈ s) (fun x => x ∈ t)
+
 /-- The forward map of a filter -/
 def map (m : α → β) (f : Filter α) : Filter β where
   sets := preimage m ⁻¹' f.sets

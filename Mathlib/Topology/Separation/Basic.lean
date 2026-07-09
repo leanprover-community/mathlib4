@@ -619,8 +619,8 @@ theorem insert_mem_nhdsWithin_of_subset_insert [T1Space X] {x y : X} {s t : Set 
   rw [nhdsWithin_insert_of_ne h]
   exact mem_of_superset self_mem_nhdsWithin (subset_insert x s)
 
-lemma eventuallyEq_insert [T1Space X] {s t : Set X} {x y : X} (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
-    (insert x s : Set X) =ᶠ[𝓝 x] (insert x t : Set X) := by
+lemma eventuallyEq_insert [T1Space X] {s t : Set X} {x y : X} (h : s =ᶠˢ[𝓝[{y}ᶜ] x] t) :
+    insert x s =ᶠˢ[𝓝 x] insert x t := by
   simp_rw [eventuallyEq_set] at h ⊢
   simp_rw [← union_singleton, ← nhdsWithin_univ, ← compl_union_self {x},
     nhdsWithin_union, eventually_sup, nhdsWithin_singleton,
@@ -753,7 +753,7 @@ alias continuousWithinAt_diff_singleton := continuousWithinAt_sdiff_singleton
 /-- If two sets coincide locally around `x`, except maybe at `y`, then it is equivalent to be
 continuous at `x` within one set or the other. -/
 theorem continuousWithinAt_congr_set' [TopologicalSpace Y] [T1Space X]
-    {x : X} {s t : Set X} {f : X → Y} (y : X) (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
+    {x : X} {s t : Set X} {f : X → Y} (y : X) (h : s =ᶠˢ[𝓝[{y}ᶜ] x] t) :
     ContinuousWithinAt f s x ↔ ContinuousWithinAt f t x := by
   rw [← continuousWithinAt_insert_self (s := s), ← continuousWithinAt_insert_self (s := t)]
   exact continuousWithinAt_congr_set (eventuallyEq_insert h)

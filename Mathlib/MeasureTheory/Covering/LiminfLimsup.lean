@@ -44,7 +44,7 @@ https://github.com/leanprover-community/mathlib/issues/16932. -/
 theorem blimsup_cthickening_ae_le_of_eventually_mul_le_aux (p : ℕ → Prop) {s : ℕ → Set α}
     (hs : ∀ i, IsClosed (s i)) {r₁ r₂ : ℕ → ℝ} (hr : Tendsto r₁ atTop (𝓝[>] 0)) (hrp : 0 ≤ r₁)
     {M : ℝ} (hM : 0 < M) (hM' : M < 1) (hMr : ∀ᶠ i in atTop, M * r₁ i ≤ r₂ i) :
-    (blimsup (fun i => cthickening (r₁ i) (s i)) atTop p : Set α) ≤ᵐ[μ]
+    (blimsup (fun i => cthickening (r₁ i) (s i)) atTop p : Set α) ⊆ᵐ[μ]
       (blimsup (fun i => cthickening (r₂ i) (s i)) atTop p : Set α) := by
   /- Sketch of proof:
 
@@ -157,7 +157,7 @@ https://github.com/leanprover-community/mathlib/issues/16932. -/
 theorem blimsup_cthickening_ae_le_of_eventually_mul_le (p : ℕ → Prop) {s : ℕ → Set α} {M : ℝ}
     (hM : 0 < M) {r₁ r₂ : ℕ → ℝ} (hr : Tendsto r₁ atTop (𝓝[>] 0))
     (hMr : ∀ᶠ i in atTop, M * r₁ i ≤ r₂ i) :
-    (blimsup (fun i => cthickening (r₁ i) (s i)) atTop p : Set α) ≤ᵐ[μ]
+    (blimsup (fun i => cthickening (r₁ i) (s i)) atTop p : Set α) ⊆ᵐ[μ]
       (blimsup (fun i => cthickening (r₂ i) (s i)) atTop p : Set α) := by
   let R₁ i := max 0 (r₁ i)
   let R₂ i := max 0 (r₂ i)
@@ -190,10 +190,10 @@ NB: The `: Set α` type ascription is present because of
 https://github.com/leanprover-community/mathlib/issues/16932. -/
 theorem blimsup_cthickening_mul_ae_eq (p : ℕ → Prop) (s : ℕ → Set α) {M : ℝ} (hM : 0 < M)
     (r : ℕ → ℝ) (hr : Tendsto r atTop (𝓝 0)) :
-    (blimsup (fun i => cthickening (M * r i) (s i)) atTop p : Set α) =ᵐ[μ]
+    (blimsup (fun i => cthickening (M * r i) (s i)) atTop p : Set α) =ᵐˢ[μ]
       (blimsup (fun i => cthickening (r i) (s i)) atTop p : Set α) := by
   have : ∀ (p : ℕ → Prop) {r : ℕ → ℝ} (_ : Tendsto r atTop (𝓝[>] 0)),
-      (blimsup (fun i => cthickening (M * r i) (s i)) atTop p : Set α) =ᵐ[μ]
+      (blimsup (fun i => cthickening (M * r i) (s i)) atTop p : Set α) =ᵐˢ[μ]
         (blimsup (fun i => cthickening (r i) (s i)) atTop p : Set α) := by
     clear p hr r; intro p r hr
     have hr' : Tendsto (fun i => M * r i) atTop (𝓝[>] 0) := by
@@ -229,7 +229,7 @@ theorem blimsup_cthickening_mul_ae_eq (p : ℕ → Prop) (s : ℕ → Set α) {M
 set_option backward.isDefEq.respectTransparency.types false in
 theorem blimsup_cthickening_ae_eq_blimsup_thickening {p : ℕ → Prop} {s : ℕ → Set α} {r : ℕ → ℝ}
     (hr : Tendsto r atTop (𝓝 0)) (hr' : ∀ᶠ i in atTop, p i → 0 < r i) :
-    (blimsup (fun i => cthickening (r i) (s i)) atTop p : Set α) =ᵐ[μ]
+    (blimsup (fun i => cthickening (r i) (s i)) atTop p : Set α) =ᵐˢ[μ]
       (blimsup (fun i => thickening (r i) (s i)) atTop p : Set α) := by
   refine eventuallyLE_antisymm_iff.mpr ⟨?_, LE.le.eventuallyLE ?_⟩
   · rw [eventuallyLE_congr (blimsup_cthickening_mul_ae_eq μ p s (one_half_pos (α := ℝ)) r hr).symm
@@ -242,7 +242,7 @@ theorem blimsup_cthickening_ae_eq_blimsup_thickening {p : ℕ → Prop} {s : ℕ
 /-- An auxiliary result en route to `blimsup_thickening_mul_ae_eq`. -/
 theorem blimsup_thickening_mul_ae_eq_aux (p : ℕ → Prop) (s : ℕ → Set α) {M : ℝ} (hM : 0 < M)
     (r : ℕ → ℝ) (hr : Tendsto r atTop (𝓝 0)) (hr' : ∀ᶠ i in atTop, p i → 0 < r i) :
-    (blimsup (fun i => thickening (M * r i) (s i)) atTop p : Set α) =ᵐ[μ]
+    (blimsup (fun i => thickening (M * r i) (s i)) atTop p : Set α) =ᵐˢ[μ]
       (blimsup (fun i => thickening (r i) (s i)) atTop p : Set α) := by
   have h₁ := blimsup_cthickening_ae_eq_blimsup_thickening (s := s) μ hr hr'
   have h₂ := blimsup_cthickening_mul_ae_eq μ p s hM r hr
@@ -265,7 +265,7 @@ NB: The `: Set α` type ascription is present because of
 https://github.com/leanprover-community/mathlib/issues/16932. -/
 theorem blimsup_thickening_mul_ae_eq (p : ℕ → Prop) (s : ℕ → Set α) {M : ℝ} (hM : 0 < M) (r : ℕ → ℝ)
     (hr : Tendsto r atTop (𝓝 0)) :
-    (blimsup (fun i => thickening (M * r i) (s i)) atTop p : Set α) =ᵐ[μ]
+    (blimsup (fun i => thickening (M * r i) (s i)) atTop p : Set α) =ᵐˢ[μ]
       (blimsup (fun i => thickening (r i) (s i)) atTop p : Set α) := by
   let q : ℕ → Prop := fun i => p i ∧ 0 < r i
   have hq {u : ℕ → Set α} (hu : ∀ i, u i ≠ ∅ → 0 < r i) :

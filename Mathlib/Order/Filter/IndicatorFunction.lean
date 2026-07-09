@@ -31,7 +31,7 @@ section One
 variable [One M] {s t : Set α} {f g : α → M} {a : α} {l : Filter α}
 
 @[to_additive]
-theorem mulIndicator_eventuallyEq (hf : f =ᶠ[l ⊓ 𝓟 s] g) (hs : s =ᶠ[l] t) :
+theorem mulIndicator_eventuallyEq (hf : f =ᶠ[l ⊓ 𝓟 s] g) (hs : s =ᶠˢ[l] t) :
     mulIndicator s f =ᶠ[l] mulIndicator t g :=
   (eventually_inf_principal.1 hf).mp <| hs.mem_iff.mono fun x hst hfg =>
     by_cases
@@ -103,7 +103,7 @@ theorem tendsto_mulIndicator_biUnion_finset {ι} [One β] (s : ι → Set α) (f
 @[to_additive]
 protected theorem Filter.EventuallyEq.mulSupport [One β] {f g : α → β} {l : Filter α}
     (h : f =ᶠ[l] g) :
-    Function.mulSupport f =ᶠ[l] Function.mulSupport g :=
+    Function.mulSupport f =ᶠˢ[l] Function.mulSupport g :=
   h.preimage ({1}ᶜ : Set β)
 
 @[to_additive]
@@ -119,18 +119,18 @@ theorem Filter.EventuallyEq.mulIndicator_one [One β] {l : Filter α} {f : α �
 @[to_additive]
 theorem Filter.EventuallyEq.of_mulIndicator [One β] {l : Filter α} {f : α → β}
     (hf : ∀ᶠ x in l, f x ≠ 1) {s t : Set α} (h : s.mulIndicator f =ᶠ[l] t.mulIndicator f) :
-    s =ᶠ[l] t := by
-  have : ∀ {s : Set α}, Function.mulSupport (s.mulIndicator f) =ᶠ[l] s := fun {s} ↦ by
+    s =ᶠˢ[l] t := by
+  have : ∀ {s : Set α}, Function.mulSupport (s.mulIndicator f) =ᶠˢ[l] s := fun {s} ↦ by
     rw [mulSupport_mulIndicator]
     exact (hf.mono fun x hx ↦ and_iff_left hx).set_eq
   exact this.symm.trans <| h.mulSupport.trans this
 
 @[to_additive]
 theorem Filter.EventuallyEq.of_mulIndicator_const [One β] {l : Filter α} {c : β} (hc : c ≠ 1)
-    {s t : Set α} (h : s.mulIndicator (fun _ ↦ c) =ᶠ[l] t.mulIndicator fun _ ↦ c) : s =ᶠ[l] t :=
+    {s t : Set α} (h : s.mulIndicator (fun _ ↦ c) =ᶠ[l] t.mulIndicator fun _ ↦ c) : s =ᶠˢ[l] t :=
   .of_mulIndicator (Eventually.of_forall fun _ ↦ hc) h
 
 @[to_additive]
 theorem Filter.mulIndicator_const_eventuallyEq [One β] {l : Filter α} {c : β} (hc : c ≠ 1)
-    {s t : Set α} : s.mulIndicator (fun _ ↦ c) =ᶠ[l] t.mulIndicator (fun _ ↦ c) ↔ s =ᶠ[l] t :=
+    {s t : Set α} : s.mulIndicator (fun _ ↦ c) =ᶠ[l] t.mulIndicator (fun _ ↦ c) ↔ s =ᶠˢ[l] t :=
   ⟨.of_mulIndicator_const hc, mulIndicator_eventuallyEq .rfl⟩

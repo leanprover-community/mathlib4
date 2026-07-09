@@ -75,15 +75,15 @@ theorem eventually_finset_ball {ι : Type*} {S : Finset ι} {p : α → ∀ i �
 
 namespace Filter
 
-theorem EventuallyLE.countable_iUnion [Countable ι] {s t : ι → Set α} (h : ∀ i, s i ≤ᶠ[l] t i) :
-    ⋃ i, s i ≤ᶠ[l] ⋃ i, t i :=
+theorem EventuallyLE.countable_iUnion [Countable ι] {s t : ι → Set α} (h : ∀ i, s i ⊆ᶠ[l] t i) :
+    ⋃ i, s i ⊆ᶠ[l] ⋃ i, t i :=
   (eventually_countable_forall.2 h).mono fun _ hst hs => mem_iUnion.2 <| (mem_iUnion.1 hs).imp hst
 
 @[deprecated (since := "2026-03-03")] alias _root_.EventuallyLE.countable_iUnion :=
   EventuallyLE.countable_iUnion
 
-theorem EventuallyEq.countable_iUnion [Countable ι] {s t : ι → Set α} (h : ∀ i, s i =ᶠ[l] t i) :
-    ⋃ i, s i =ᶠ[l] ⋃ i, t i :=
+theorem EventuallyEq.countable_iUnion [Countable ι] {s t : ι → Set α} (h : ∀ i, s i =ᶠˢ[l] t i) :
+    ⋃ i, s i =ᶠˢ[l] ⋃ i, t i :=
   (EventuallyLE.countable_iUnion fun i => (h i).le).antisymm
     (EventuallyLE.countable_iUnion fun i => (h i).symm.le)
 
@@ -91,8 +91,8 @@ theorem EventuallyEq.countable_iUnion [Countable ι] {s t : ι → Set α} (h : 
   EventuallyEq.countable_iUnion
 
 theorem EventuallyLE.countable_bUnion {ι : Type*} {S : Set ι} (hS : S.Countable)
-    {s t : ∀ i ∈ S, Set α} (h : ∀ i hi, s i hi ≤ᶠ[l] t i hi) :
-    ⋃ i ∈ S, s i ‹_› ≤ᶠ[l] ⋃ i ∈ S, t i ‹_› := by
+    {s t : ∀ i ∈ S, Set α} (h : ∀ i hi, s i hi ⊆ᶠ[l] t i hi) :
+    ⋃ i ∈ S, s i ‹_› ⊆ᶠ[l] ⋃ i ∈ S, t i ‹_› := by
   simp only [biUnion_eq_iUnion]
   have := hS.toEncodable
   exact EventuallyLE.countable_iUnion fun i => h i i.2
@@ -101,24 +101,24 @@ theorem EventuallyLE.countable_bUnion {ι : Type*} {S : Set ι} (hS : S.Countabl
   EventuallyLE.countable_bUnion
 
 theorem EventuallyEq.countable_bUnion {ι : Type*} {S : Set ι} (hS : S.Countable)
-    {s t : ∀ i ∈ S, Set α} (h : ∀ i hi, s i hi =ᶠ[l] t i hi) :
-    ⋃ i ∈ S, s i ‹_› =ᶠ[l] ⋃ i ∈ S, t i ‹_› :=
+    {s t : ∀ i ∈ S, Set α} (h : ∀ i hi, s i hi =ᶠˢ[l] t i hi) :
+    ⋃ i ∈ S, s i ‹_› =ᶠˢ[l] ⋃ i ∈ S, t i ‹_› :=
   (EventuallyLE.countable_bUnion hS fun i hi => (h i hi).le).antisymm
     (EventuallyLE.countable_bUnion hS fun i hi => (h i hi).symm.le)
 
 @[deprecated (since := "2026-03-03")] alias _root_.EventuallyEq.countable_bUnion :=
   EventuallyEq.countable_bUnion
 
-theorem EventuallyLE.countable_iInter [Countable ι] {s t : ι → Set α} (h : ∀ i, s i ≤ᶠ[l] t i) :
-    ⋂ i, s i ≤ᶠ[l] ⋂ i, t i :=
+theorem EventuallyLE.countable_iInter [Countable ι] {s t : ι → Set α} (h : ∀ i, s i ⊆ᶠ[l] t i) :
+    ⋂ i, s i ⊆ᶠ[l] ⋂ i, t i :=
   (eventually_countable_forall.2 h).mono fun _ hst hs =>
     mem_iInter.2 fun i => hst _ (mem_iInter.1 hs i)
 
 @[deprecated (since := "2026-03-03")] alias _root_.EventuallyLE.countable_iInter :=
   EventuallyLE.countable_iInter
 
-theorem EventuallyEq.countable_iInter [Countable ι] {s t : ι → Set α} (h : ∀ i, s i =ᶠ[l] t i) :
-    ⋂ i, s i =ᶠ[l] ⋂ i, t i :=
+theorem EventuallyEq.countable_iInter [Countable ι] {s t : ι → Set α} (h : ∀ i, s i =ᶠˢ[l] t i) :
+    ⋂ i, s i =ᶠˢ[l] ⋂ i, t i :=
   (EventuallyLE.countable_iInter fun i => (h i).le).antisymm
     (EventuallyLE.countable_iInter fun i => (h i).symm.le)
 
@@ -126,8 +126,8 @@ theorem EventuallyEq.countable_iInter [Countable ι] {s t : ι → Set α} (h : 
   EventuallyEq.countable_iInter
 
 theorem EventuallyLE.countable_bInter {ι : Type*} {S : Set ι} (hS : S.Countable)
-    {s t : ∀ i ∈ S, Set α} (h : ∀ i hi, s i hi ≤ᶠ[l] t i hi) :
-    ⋂ i ∈ S, s i ‹_› ≤ᶠ[l] ⋂ i ∈ S, t i ‹_› := by
+    {s t : ∀ i ∈ S, Set α} (h : ∀ i hi, s i hi ⊆ᶠ[l] t i hi) :
+    ⋂ i ∈ S, s i ‹_› ⊆ᶠ[l] ⋂ i ∈ S, t i ‹_› := by
   simp only [biInter_eq_iInter]
   have := hS.toEncodable
   exact EventuallyLE.countable_iInter fun i => h i i.2
@@ -136,8 +136,8 @@ theorem EventuallyLE.countable_bInter {ι : Type*} {S : Set ι} (hS : S.Countabl
   EventuallyLE.countable_bInter
 
 theorem EventuallyEq.countable_bInter {ι : Type*} {S : Set ι} (hS : S.Countable)
-    {s t : ∀ i ∈ S, Set α} (h : ∀ i hi, s i hi =ᶠ[l] t i hi) :
-    ⋂ i ∈ S, s i ‹_› =ᶠ[l] ⋂ i ∈ S, t i ‹_› :=
+    {s t : ∀ i ∈ S, Set α} (h : ∀ i hi, s i hi =ᶠˢ[l] t i hi) :
+    ⋂ i ∈ S, s i ‹_› =ᶠˢ[l] ⋂ i ∈ S, t i ‹_› :=
   (EventuallyLE.countable_bInter hS fun i hi => (h i hi).le).antisymm
     (EventuallyLE.countable_bInter hS fun i hi => (h i hi).symm.le)
 
