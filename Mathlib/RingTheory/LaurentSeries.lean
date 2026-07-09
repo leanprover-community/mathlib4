@@ -999,9 +999,6 @@ instance : Field (ratfuncAdicComplPkg (K := K).space) :=
 instance : Valued (ratfuncAdicComplPkg (K := K).space) (WithZero (Multiplicative ℤ)) :=
   inferInstanceAs (Valued ((polynomialValuationX K).Completion) (WithZero (Multiplicative ℤ)))
 
-instance : UniformSpace (ratfuncAdicComplPkg (K := K).space) :=
-  inferInstanceAs (UniformSpace ((polynomialValuationX K).Completion))
-
 /-- The ring isomorphism between the structure `RatFuncAdicCompl K` and the underlying
 uniform-space completion. -/
 abbrev ratfuncAdicComplEquiv :
