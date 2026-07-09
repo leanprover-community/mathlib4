@@ -267,7 +267,7 @@ theorem contMDiffWithinAt_iff' :
           (extChartAt I x x) := by
   simp only [ContMDiffWithinAt, liftPropWithinAt_iff']
   exact and_congr_right fun hc => contDiffWithinAt_congr_set <|
-    hc.extChartAt_symm_preimage_inter_range_eventuallyEq
+    hc.extChartAt_symm_preimage_inter_range_eventuallyEqSet
 
 /-- One can reformulate being `Cⁿ` within a set at a point as continuity within this set at this
 point, and being `Cⁿ` in the corresponding extended chart in the target. -/
@@ -423,7 +423,7 @@ theorem contMDiffWithinAt_iff_image
           (e.extend I x) := by
   rw [contMDiffWithinAt_iff_of_mem_maximalAtlas he he' hx hy, and_congr_right_iff]
   refine fun _ => contDiffWithinAt_congr_set ?_
-  simp_rw [e.extend_symm_preimage_inter_range_eventuallyEq hs hx]
+  simp_rw [e.extend_symm_preimage_inter_range_eventuallyEqSet hs hx]
 
 theorem contMDiffAt_iff_of_mem_maximalAtlas {x : M} (he : e ∈ maximalAtlas I n M)
     (he' : e' ∈ maximalAtlas I' n M') (hx : x ∈ e.source) (hy : f x ∈ e'.source) :
@@ -458,7 +458,7 @@ theorem contMDiffWithinAt_iff_of_mem_source' [IsManifold I n M] [IsManifold I' n
   rw [and_congr_right_iff]
   set e := extChartAt I x; set e' := extChartAt I' (f x)
   refine fun hc => contDiffWithinAt_congr_set ?_
-  rw [← nhdsWithin_eq_iff_eventuallyEq, ← e.image_source_inter_eq',
+  rw [← nhdsWithin_eq_iff_eventuallyEqSet, ← e.image_source_inter_eq',
     ← map_extChartAt_nhdsWithin_eq_image' hx,
     ← map_extChartAt_nhdsWithin' hx, inter_comm, nhdsWithin_inter_of_mem]
   exact hc (extChartAt_source_mem_nhds' hy)
@@ -706,7 +706,7 @@ theorem contMDiffWithinAt_insert_self :
   simp only [contMDiffWithinAt_iff, continuousWithinAt_insert_self]
   refine Iff.rfl.and <| (contDiffWithinAt_congr_set ?_).trans contDiffWithinAt_insert_self
   simp only [← map_extChartAt_nhdsWithin, nhdsWithin_insert, Filter.map_sup, Filter.map_pure,
-    ← nhdsWithin_eq_iff_eventuallyEq]
+    ← nhdsWithin_eq_iff_eventuallyEqSet]
 
 alias ⟨ContMDiffWithinAt.of_insert, _⟩ := contMDiffWithinAt_insert_self
 
@@ -721,7 +721,7 @@ theorem contMDiffWithinAt_congr_set' (y : M) (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
     ContMDiffWithinAt I I' n f s x ↔ ContMDiffWithinAt I I' n f t x := by
   have : T1Space M := I.t1Space M
   rw [← contMDiffWithinAt_insert_self (s := s), ← contMDiffWithinAt_insert_self (s := t)]
-  exact contMDiffWithinAt_congr_set (eventuallyEq_insert h)
+  exact contMDiffWithinAt_congr_set (eventuallyEqSet_insert h)
 
 protected theorem ContMDiffAt.contMDiffWithinAt (hf : ContMDiffAt I I' n f x) :
     ContMDiffWithinAt I I' n f s x :=
@@ -758,7 +758,7 @@ theorem contMDiffOn_iff_source_of_mem_maximalAtlas
   refine forall₂_congr fun x hx => ?_
   rw [contMDiffWithinAt_iff_source_of_mem_maximalAtlas he (hs hx)]
   apply contMDiffWithinAt_congr_set
-  simp_rw [e.extend_symm_preimage_inter_range_eventuallyEq hs (hs hx)]
+  simp_rw [e.extend_symm_preimage_inter_range_eventuallyEqSet hs (hs hx)]
 
 /-- A function is `C^n` within a set at a point, for `n : ℕ` or `n = ω`,
 if and only if it is `C^n` on a neighborhood of this point. -/
