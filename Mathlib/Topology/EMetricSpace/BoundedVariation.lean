@@ -450,14 +450,9 @@ theorem union' (f : α → E) {s t : Set α} {x y : α} (hs : IsGreatest s x) (h
     (hxy : x ≤ y) :
     eVariationOn f (s ∪ t) = eVariationOn f s + edist (f x) (f y) + eVariationOn f t := calc
   _ = eVariationOn f ((s ∪ {x, y}) ∪ t) := by congr 1; grind [hs.1, ht.1]
-  _ = eVariationOn f (s ∪ {x, y}) + eVariationOn f t := by
-    apply union f _ ht
-    simp [IsGreatest, hxy, upperBounds_mono_mem hxy hs.2]
-  _ = eVariationOn f s + eVariationOn f {x, y} + eVariationOn f t := by
-    congr
-    apply union f hs _
-    simp [IsLeast, hxy]
-  _ = _ := by simp [pair]
+  _ = _ := by
+    rw [union f _ ht, union f hs _]
+    <;> simp [IsLeast, IsGreatest, hxy, upperBounds_mono_mem hxy hs.2]
 
 /-- The variation of `f` along the image of `{0, …, n}` under a monotone sequence `u` is the sum of
 the distances between consecutive values. -/
