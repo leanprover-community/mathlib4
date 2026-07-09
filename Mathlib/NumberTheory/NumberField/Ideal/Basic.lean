@@ -133,7 +133,7 @@ theorem Ideal.torsionMapQuot_injective' {P : Ideal (𝓞 K)} [hP : P.IsPrime]
   let p := (Ideal.under ℤ P).absNorm
   have hp := Nat.absNorm_under_prime P
   have : Fact p.Prime := ⟨hp⟩
-  rw [P.absNorm_eq_pow_inertiaDeg' hp, Nat.coprime_pow_left_iff (Ideal.inertiaDeg_pos _ _),
+  rw [← P.pow_inertiaDeg p, Nat.coprime_pow_left_iff (P.inertiaDeg_pos ℤ),
     ← Nat.Prime.dvd_iff_not_coprime hp] at h_cpr
   obtain ⟨c, hc⟩ := h_cpr
   have hζ_pow := IsPrimitiveRoot.pow (by grind) hζ₃ (by rwa [mul_comm])
