@@ -292,7 +292,7 @@ scoped[Matrix.Norms.L2Operator] attribute [instance] Matrix.instCStarRing
 
 /-- The matrices Matrix n n ℂ with the L2 operator norm form a CStarAlgebra. -/
 @[instance_reducible] noncomputable def instCStarAlgebra {n : Type*} [Fintype n] [DecidableEq n] :
-    CStarAlgebra (Matrix n n ℂ) := {}
+    CStarAlgebra (Matrix n n ℂ) where
 
 scoped[Matrix.Norms.L2Operator] attribute [instance] Matrix.instCStarAlgebra
 
