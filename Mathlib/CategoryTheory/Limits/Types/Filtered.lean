@@ -117,7 +117,7 @@ protected theorem rel_eq_eqvGen_colimitTypeRel :
   constructor
   · apply eqvGen_colimitTypeRel_of_rel
   · rw [← (FilteredColimit.rel_equiv F).eqvGen_iff]
-    exact Relation.EqvGen.mono (rel_of_colimitTypeRel F)
+    exact Relation.EqvGen.mono (rel_of_colimitTypeRel F) _ _
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in

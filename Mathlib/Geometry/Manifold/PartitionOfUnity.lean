@@ -139,7 +139,7 @@ variable {s : Set M} (f : SmoothPartitionOfUnity ι I M s) {n : ℕ∞}
 
 instance {s : Set M} : FunLike (SmoothPartitionOfUnity ι I M s) ι C^∞⟮I, M; 𝓘(ℝ), ℝ⟯ where
   coe := toFun
-  coe_injective' f g h := by cases f; cases g; congr
+  coe_injective f g h := by cases f; cases g; congr
 
 protected theorem locallyFinite : LocallyFinite fun i => support (f i) :=
   f.locallyFinite'
@@ -449,13 +449,13 @@ theorem toSmoothPartitionOfUnity_apply (i : ι) (x : M) :
     fs.toSmoothPartitionOfUnity i x = fs i x * ∏ᶠ (j) (_ : WellOrderingRel j i), (1 - fs j x) :=
   rfl
 
-open Classical in
+open scoped Classical in
 theorem toSmoothPartitionOfUnity_eq_mul_prod (i : ι) (x : M) (t : Finset ι)
     (ht : ∀ j, WellOrderingRel j i → fs j x ≠ 0 → j ∈ t) :
     fs.toSmoothPartitionOfUnity i x = fs i x * ∏ j ∈ t with WellOrderingRel j i, (1 - fs j x) :=
   fs.toBumpCovering.toPartitionOfUnity_eq_mul_prod i x t ht
 
-open Classical in
+open scoped Classical in
 theorem exists_finset_toSmoothPartitionOfUnity_eventuallyEq (i : ι) (x : M) :
     ∃ t : Finset ι,
       fs.toSmoothPartitionOfUnity i =ᶠ[𝓝 x]
@@ -736,7 +736,7 @@ lemma IsOpen.exists_contMDiff_support_eq_aux {s : Set H} (hs : IsOpen s) :
   refine ⟨f ∘ I, ?_, ?_, ?_⟩
   · rw [support_comp_eq_preimage, f_supp, ← preimage_comp]
     simp only [ModelWithCorners.symm_comp_self, preimage_id_eq, id_eq]
-  · exact f_diff.comp_contMDiff contMDiff_model
+  · exact f_diff.comp_contMDiff I.contMDiff
   · exact Subset.trans (range_comp_subset_range _ _) f_range
 
 @[deprecated (since := "2025-12-17")]

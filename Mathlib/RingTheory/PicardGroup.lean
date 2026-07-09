@@ -472,14 +472,14 @@ instance : Free R (1 : Pic R) := mk_eq_one_iff_free.mp mk_eq_self
 
 theorem mk_tensor : Pic.mk R (M ⊗[R] N) = Pic.mk R M * Pic.mk R N :=
   congr_arg (equivShrink _) <| Units.ext <| by
-    simp_rw [Pic.mk, Equiv.symm_apply_apply]
+    simp_rw [Pic.mk, Equiv.toFun_as_coe, Equiv.symm_apply_apply]
     refine (Quotient.sound ?_).trans (Skeleton.toSkeleton_tensorObj ..)
     exact ⟨(Finite.reprEquivₛ R _ ≪≫ₗ TensorProduct.congr
       (Finite.reprEquivₛ R M).symm (Finite.reprEquivₛ R N).symm).toModuleIsoₛ⟩
 
 theorem mk_dual : Pic.mk R (Dual R M) = (Pic.mk R M)⁻¹ :=
   congr_arg (equivShrink _) <| Units.ext <| by
-    rw [Pic.mk, Equiv.symm_apply_apply]
+    rw [Pic.mk, Equiv.toFun_as_coe, Equiv.symm_apply_apply]
     exact Quotient.sound ⟨(Finite.reprEquivₛ R _ ≪≫ₗ (Finite.reprEquivₛ R _).dualMap).toModuleIsoₛ⟩
 
 theorem inv_eq_dual (M : Pic R) : M⁻¹ = Pic.mk R (Dual R M) := by
@@ -648,7 +648,7 @@ private theorem projective_units_and_mul'_comp_lTensor_bijective (I : (Submodule
     exact LinearEquiv.ofInjective_symm_apply ..
   let g : (S → R) →ₗ[R] I := .lsum _ _ ℕ fun i ↦ .toSpanSingleton _ _ ⟨b i, hT' <| hb i⟩
   have hgf : g ∘ₗ f = .id := LinearMap.ext fun x ↦ Subtype.ext <| by
-    simp only [g, lsum_apply, comp_apply, sum_apply, toSpanSingleton_apply, proj_apply]
+    simp only [g, lsum_apply, comp_apply, LinearMap.sum_apply, toSpanSingleton_apply, proj_apply]
     simp_rw [coe_sum, coe_smul, Algebra.smul_def, hf, mul_assoc, ← Finset.mul_sum,
       Algebra.smul_mul_assoc, eq, (Finset.sum_coe_sort ..).trans hr.2, mul_one, id_apply]
   set m := mul' R A ∘ₗ I.1.subtype.lTensor A
@@ -854,7 +854,7 @@ the group of the invertible `R`-submodules in `A` modulo the principal submodule
 /-- The Picard group of a domain with normalizable gcd is trivial.
 This includes unique factorization domains. -/
 @[stacks 0BCH]
-instance (R) [CommRing R] [IsDomain R] [Nonempty (NormalizedGCDMonoid R)] : Subsingleton (Pic R) :=
+instance (R) [CommRing R] [IsDomain R] [IsGCDMonoid R] : Subsingleton (Pic R) :=
   Equiv.subsingleton (ClassGroup.equivPic R).toEquiv.symm
 
 end PicardGroup
