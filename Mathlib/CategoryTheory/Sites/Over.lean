@@ -85,7 +85,7 @@ lemma functorPushforward_functorPullback_overForget {X : C} {Y : Over X} (S : Si
   simp [← arrows_generate_map_eq_functorPushforward]
 
 /-- The equivalence `Sieve Y ≃ Sieve Y.left` for all `Y : Over X`. -/
-@[simps]
+@[simps -isSimp] -- working with `overEquiv` is useful enough that we don't want `simp` unfolding it
 def overEquiv {X : C} (Y : Over X) : Sieve Y ≃o Sieve Y.left where
   toFun := functorPushforward (Over.forget X)
   invFun := functorPullback (Over.forget X)

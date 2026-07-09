@@ -397,8 +397,8 @@ lemma IsPrestack.of_precoverage
     obtain ⟨R', hR'⟩ := (Sieve.overEquiv _).symm.surjective (Sieve.generate R)
     rw [Presieve.isSheafFor_iff_generate]
     apply IsPrestackFor.isSheafFor'
-    rw [Sieve.overEquiv_generate, Presieve.functorPushforward_overForget]
-    simpa using hF _ _ hR
+    simpa [Sieve.overEquiv_generate, Presieve.functorPushforward_overForget]
+      using hF _ _ hR
 
 /-- If a precoverage satisfies `HasIsos`, `IsStableUnderBaseChange` and
 `IsStableUnderComposition` (which is a slightly stronger condition as compared
