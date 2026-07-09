@@ -1217,7 +1217,7 @@ theorem MonotoneOn.eVariationOn_eq {f : α → ℝ} {s : Set α}
 /-- The variation of the identity on `s ∩ Icc a b` is `b - a`. -/
 lemma eVariationOn_id {a b : ℝ} (hab : a ≤ b) {s : Set ℝ} (as : a ∈ s) (bs : b ∈ s) :
     eVariationOn id (s ∩ .Icc a b) = ENNReal.ofReal (b - a) :=
-  MonotoneOn.eVariationOn_eq (monotone_id.monotoneOn _) hab as bs
+  (monotone_id.monotoneOn _).eVariationOn_eq hab as bs
 
 /-- The variation of the identity on `Icc a b` is `b - a`. -/
 @[simp]
