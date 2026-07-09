@@ -20,16 +20,15 @@ public import Mathlib.RingTheory.Polynomial.Subring
 
 This is the basis of the Fundamental Theorem of Galois Theory.
 Given a (finite) group `G` that acts on a field `F`, we define `FixedPoints.subfield G F`,
-the subfield consisting of elements of `F` fixed_points by every element of `G`.
+the subfield consisting of elements of `F` fixed by every element of `G`.
 
 This subfield is then normal and separable, and in addition if `G` acts faithfully on `F`
 then `finrank (FixedPoints.subfield G F) F = Fintype.card G`.
 
 ## Main Definitions
 
-- `FixedPoints.subfield G F`, the subfield consisting of elements of `F` fixed_points by every
+- `FixedPoints.subfield G F`, the subfield consisting of elements of `F` fixed by every
   element of `G`, where `G` is a group that acts on `F`.
-
 -/
 
 @[expose] public section
@@ -155,9 +154,9 @@ theorem linearIndependent_smul_of_linearIndependent {s : Finset F} :
           (mem_attach _ _) :
         _)
   refine (sum_attach s fun i ↦ (g • l i - l i) • MulAction.toFun G F i).trans ?_
-  ext g'; dsimp only
+  ext g'
   conv_lhs =>
-    rw [sum_apply]
+    rw [Finset.sum_apply]
     congr
     · skip
     · ext

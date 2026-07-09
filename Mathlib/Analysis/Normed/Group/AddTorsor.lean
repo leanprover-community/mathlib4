@@ -8,7 +8,7 @@ module
 public import Mathlib.Analysis.Normed.Group.Constructions
 public import Mathlib.Analysis.Normed.Group.Submodule
 public import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Basic
-public import Mathlib.Topology.Algebra.Group.AddTorsor
+public import Mathlib.Topology.Algebra.Group.Torsor
 public import Mathlib.Topology.MetricSpace.IsometricSMul
 
 /-!
@@ -44,7 +44,7 @@ instance (priority := 100) NormedAddTorsor.toAddTorsor' {V P : Type*} [NormedAdd
   NormedAddTorsor.toAddTorsor
 
 variable {α V P W Q : Type*} [SeminormedAddCommGroup V] [PseudoMetricSpace P] [NormedAddTorsor V P]
-  [NormedAddCommGroup W] [MetricSpace Q] [NormedAddTorsor W Q]
+  [SeminormedAddCommGroup W] [PseudoMetricSpace Q] [NormedAddTorsor W Q]
 
 instance (priority := 100) NormedAddTorsor.to_isIsIsometricVAdd : IsIsometricVAdd V P :=
   ⟨fun c => Isometry.of_dist_eq fun x y => by
@@ -222,9 +222,11 @@ theorem LipschitzWith.vsub [PseudoEMetricSpace α] {f g : α → P} {Kf Kg : ℝ
     _ ≤ Kf * edist x y + Kg * edist x y := add_le_add (hf x y) (hg x y)
     _ = (Kf + Kg) * edist x y := (add_mul _ _ _).symm
 
+@[fun_prop]
 theorem uniformContinuous_vadd : UniformContinuous fun x : V × P => x.1 +ᵥ x.2 :=
   (LipschitzWith.prod_fst.vadd LipschitzWith.prod_snd).uniformContinuous
 
+@[fun_prop]
 theorem uniformContinuous_vsub : UniformContinuous fun x : P × P => x.1 -ᵥ x.2 :=
   (LipschitzWith.prod_fst.vsub LipschitzWith.prod_snd).uniformContinuous
 

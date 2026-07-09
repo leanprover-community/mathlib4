@@ -1,6 +1,6 @@
 import Mathlib.Tactic.Positivity
 import Mathlib.Analysis.Complex.Trigonometric
-import Mathlib.Data.Real.Sqrt
+import Mathlib.Analysis.Real.Sqrt
 import Mathlib.Data.ENNReal.Basic
 import Mathlib.Analysis.Normed.Group.Basic
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
@@ -8,6 +8,7 @@ import Mathlib.Analysis.SpecialFunctions.Log.Basic
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Arctan
 import Mathlib.MeasureTheory.Integral.Bochner.Basic
 import Mathlib.NumberTheory.ArithmeticFunction.Misc
+import Mathlib.NumberTheory.Chebyshev
 import Mathlib.Topology.Algebra.InfiniteSum.Order
 
 /-! # Tests for the `positivity` tactic
@@ -101,7 +102,7 @@ example {a b : ℤ} (h : 0 ≤ a + b) : 0 ≤ a + b := by positivity
 example {a : ℤ} (hlt : 0 ≤ a) (hne : a ≠ 0) : 0 < a := by positivity
 
 example {a b c d : ℤ} (ha : c < a) (hb : d < b) : 0 < (a - c) * (b - d) := by
-  positivity [sub_pos_of_lt ha, sub_pos_of_lt hb]
+  positivity
 
 section
 
@@ -126,6 +127,12 @@ https://leanprover.zulipchat.com/#narrow/stream/239415-metaprogramming-.2F-tacti
 
 example : 0 ≤ 0 := by apply le_trans _ (le_refl _); positivity
 
+-- Test for a bug in the Nat.cast extension: if a natural number is positive
+-- and applying `cast_pos'` fails (e.g., because our ring could be trivial),
+-- we still prove non-negativity.
+example [Ring α] [PartialOrder α] [AddLeftMono α] [ZeroLEOneClass α] (b : ℕ) (_hb : 0 < b) :
+    (0 : α) ≤ ↑b := by
+  positivity
 
 /- ## Tests of the @[positivity] plugin tactics (addition, multiplication, division) -/
 
@@ -168,6 +175,13 @@ example : 0 ≤ max (0 : ℤ) (-3) := by positivity
 example : 0 ≤ max (-3 : ℤ) 5 := by positivity
 
 end MinMax
+
+example {a b : ℚ} (ha : a ≤ b) : 0 ≤ b - a := by positivity
+example {a b : ℚ} (ha : a ≠ b) : 0 ≠ b - a := by positivity
+example {a b : ℚ} (ha : a ≠ b) : 0 ≠ a - b := by positivity
+example {a b : ℚ} (ha : a < b) : 0 < b - a := by positivity
+example {a b : ℚ} (ha : a < b) : 0 ≤ b - a := by positivity
+example {a b : ℚ} (ha : a < b) : 0 ≠ b - a := by positivity
 
 example {a b : ℚ} (ha : 0 < a) (hb : 0 < b) : 0 < a * b := by positivity
 example {a b : ℚ} (ha : 0 < a) (hb : 0 ≤ b) : 0 ≤ a * b := by positivity
@@ -360,7 +374,7 @@ example {a : ℝ} : 0 < a ^ 0 := by positivity
 example {a : ℝ≥0∞} {b : ℝ} (ha : 0 < a) (hat : a ≠ ⊤) : 0 < a ^ b := by positivity []
 example {a b c d : ℝ} (hab : 0 < a * b) (hb : 0 ≤ b) (hcd : c < d) :
     0 < a ^ c + 1 / (d - c) := by
-  positivity [sub_pos_of_lt hcd, pos_of_mul_pos_left hab hb]
+  positivity [pos_of_mul_pos_left hab hb]
 
 example {a : ℤ} (ha : 3 < a) : 0 ≤ a ^ 2 + a := by positivity
 example {a : ℤ} (ha : 3 < a) : 0 ≤ a ^ 3 + a := by positivity
@@ -474,6 +488,10 @@ example {r : ℝ} (hr : 0 < r) : 0 < Real.sin (Real.arctan r) := by positivity
 example {r : ℝ} (hr : r ≠ 0) : Real.sin (Real.arctan r) ≠ 0 := by positivity
 example {r : ℝ} (hr : 0 ≤ r) : 0 ≤ Real.sin (Real.arctan r) := by positivity
 
+example (n : ℕ) : 0 ≤ ArithmeticFunction.vonMangoldt n := by positivity
+example (x : ℝ) : 0 ≤ Chebyshev.theta x := by positivity
+example (x : ℝ) : 0 ≤ Chebyshev.psi x := by positivity
+
 end SpecialFunctions
 
 /-! ### `sqrt` on `ℝ` and `ℝ≥0` -/
@@ -532,7 +550,8 @@ example {r : ℝ} (hr : 0 < r) : (0 : EReal) < r := by positivity
 example {r : ℝ≥0∞} : (0 : EReal) ≤ r := by positivity
 example {r : ℝ≥0∞} (hr : 0 < r) : (0 : EReal) < r := by positivity
 
--- example {α : Type*} [OrderedRing α] {n : ℤ} : 0 ≤ ((n ^ 2 : ℤ) : α) := by positivity
+-- example {R : Type*} [Ring R] [PartialOrder R] [IsOrderedRing R] {n : ℤ} :
+--     0 ≤ ((n ^ 2 : ℤ) : R) := by positivity
 example {r : ℝ≥0} : 0 ≤ ((r : ℝ) : EReal) := by positivity
 example {r : ℝ≥0} : 0 < ((r + 1 : ℝ) : EReal) := by positivity
 
@@ -619,3 +638,30 @@ example [Semiring S] [PartialOrder S] [IsOrderedRing S] [Semiring R]
     (abv : R → S) [IsAbsoluteValue abv] (x : R) :
     0 ≤ abv x := by
   positivity
+
+/- ## Nonzeroness -/
+
+example {α : Type*} [Zero α] {a : α} (ha : a ≠ 0) : a ≠ 0 := by positivity
+example {α : Type*} [Zero α] {a : α} (ha : a ≠ 0) : 0 ≠ a := by positivity
+example {α : Type*} [Zero α] {a : α} (ha : 0 ≠ a) : a ≠ 0 := by positivity
+
+example {α : Type*} [Semifield α] {x : α} (hx : x ≠ 0) : x⁻¹ ≠ 0 := by positivity
+example {α : Type*} [Semifield α] {x y : α} (hx : x ≠ 0) (hy : y ≠ 0) : x / y ≠ 0 := by positivity
+
+example {α : Type*} [MonoidWithZero α] [NoZeroDivisors α] {x : α} (hx : x ≠ 0) (n : ℕ) :
+    x ^ n ≠ 0 := by positivity
+
+example {α : Type*} [MonoidWithZero α] [NoZeroDivisors α] {x y : α}
+    (hx : x ≠ 0) (hy : y ≠ 0) : x * y ≠ 0 := by positivity
+
+example {α : Type*} [AddMonoidWithOne α] [CharZero α] {n : ℕ} (hn : n ≠ 0) :
+    (n : α) ≠ 0 := by positivity
+example {α : Type*} [AddGroupWithOne α] [CharZero α] {z : ℤ} (hz : z ≠ 0) :
+    (z : α) ≠ 0 := by positivity
+example {α : Type*} [DivisionRing α] [CharZero α] {q : ℚ} (hq : q ≠ 0) :
+    (q : α) ≠ 0 := by positivity
+
+example {α : Type*} [Semiring α] [Nontrivial α] (a : α) : a ^ 0 ≠ 0 := by positivity
+
+example {α : Type*} [AddGroup α] {a b : α} (ha : a ≠ b) : 0 ≠ b - a := by positivity
+example {α : Type*} [AddGroup α] {a b : α} (ha : a ≠ b) : 0 ≠ a - b := by positivity

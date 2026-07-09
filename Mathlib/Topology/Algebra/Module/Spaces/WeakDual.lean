@@ -6,7 +6,7 @@ Authors: Kalle Kytölä, Moritz Doll
 module
 
 public import Mathlib.LinearAlgebra.BilinearMap
-public import Mathlib.Topology.Algebra.Module.LinearMap
+public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Basic
 public import Mathlib.Topology.Algebra.Module.Spaces.WeakBilin
 
 /-!
@@ -18,8 +18,8 @@ which defines the weak topology given two vector spaces `E` and `F` over a commu
 such that for all `y : F` every map `fun x => B x y` is continuous.
 
 In this file, we consider two special cases.
-In the case that `F = E →L[𝕜] 𝕜` and `B` being the canonical pairing, we obtain the weak-* topology,
-`WeakDual 𝕜 E := (E →L[𝕜] 𝕜)`. Interchanging the arguments in the bilinear form yields the
+In the case that `F = E →L[𝕜] 𝕜` and `B` being the canonical pairing, we obtain the weak-\*
+topology, `WeakDual 𝕜 E := (E →L[𝕜] 𝕜)`. Interchanging the arguments in the bilinear form yields the
 weak topology `WeakSpace 𝕜 E := E`.
 
 ## Main definitions
@@ -29,7 +29,7 @@ with the respective topology instances on it.
 
 * `WeakDual 𝕜 E` is a type synonym for `Dual 𝕜 E` (when the latter is defined): both are equal to
   the type `E →L[𝕜] 𝕜` of continuous linear maps from a module `E` over `𝕜` to the ring `𝕜`.
-* The instance `WeakDual.instTopologicalSpace` is the weak-* topology on `WeakDual 𝕜 E`, i.e., the
+* The instance `WeakDual.instTopologicalSpace` is the weak-\* topology on `WeakDual 𝕜 E`, i.e., the
   coarsest topology making the evaluation maps at all `z : E` continuous.
 * `WeakSpace 𝕜 E` is a type synonym for `E` (when the latter is defined).
 * The instance `WeakSpace.instTopologicalSpace` is the weak topology on `E`, i.e., the
@@ -138,6 +138,25 @@ def toStrongDual : WeakDual 𝕜 E ≃ₗ[𝕜] StrongDual 𝕜 E :=
   StrongDual.toWeakDual.symm
 
 @[simp]
+theorem symm_toStrongDual :
+    (toStrongDual (𝕜 := 𝕜) (E := E)).symm = StrongDual.toWeakDual :=
+  rfl
+
+@[simp]
+theorem _root_.StrongDual.symm_toWeakDual :
+    (StrongDual.toWeakDual (𝕜 := 𝕜) (E := E)).symm = toStrongDual :=
+  rfl
+
+@[simp]
+theorem _root_.StrongDual.toStrongDual_toWeakDual (x : StrongDual 𝕜 E) :
+    x.toWeakDual.toStrongDual = x :=
+  rfl
+
+@[simp]
+theorem toWeakDual_toStrongDual (x : WeakDual 𝕜 E) : x.toStrongDual.toWeakDual = x :=
+  rfl
+
+@[simp]
 theorem toStrongDual_apply (x : WeakDual 𝕜 E) (y : E) : (toStrongDual x) y = x y := rfl
 
 theorem coe_toStrongDual (x' : WeakDual 𝕜 E) : (toStrongDual x' : E → 𝕜) = x' := rfl
@@ -181,7 +200,7 @@ end WeakDual
 def WeakSpace (𝕜 E) [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜]
     [ContinuousConstSMul 𝕜 𝕜] [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E] :=
   WeakBilin (topDualPairing 𝕜 E).flip
-deriving AddCommMonoid, Module 𝕜, TopologicalSpace, ContinuousAdd
+deriving AddCommMonoid, TopologicalSpace, ContinuousAdd
 
 section Semiring
 
@@ -193,6 +212,8 @@ namespace WeakSpace
 
 instance instModule' [CommSemiring 𝕝] [Module 𝕝 E] : Module 𝕝 (WeakSpace 𝕜 E) :=
   inferInstanceAs <| Module 𝕝 (WeakBilin (topDualPairing 𝕜 E).flip)
+
+instance instModule : Module 𝕜 (WeakSpace 𝕜 E) := inferInstance
 
 instance instIsScalarTower [CommSemiring 𝕝] [Module 𝕝 𝕜] [Module 𝕝 E] [IsScalarTower 𝕝 𝕜 E] :
     IsScalarTower 𝕝 𝕜 (WeakSpace 𝕜 E) :=
