@@ -246,6 +246,11 @@ theorem getVert_append {u v w : V} (p : G.Walk u v) (q : G.Walk v w) (i : ℕ) :
     (p.append q).getVert i = if i < p.length then p.getVert i else q.getVert (i - p.length) := by
   induction p generalizing i <;> cases i <;> simp [*]
 
+/-- This uses `p` instead of `q` when `i = p.length` unlike the unprimed version. -/
+theorem getVert_append' (p : G.Walk u v) (q : G.Walk v w) (i : ℕ) :
+    (p.append q).getVert i = if i ≤ p.length then p.getVert i else q.getVert (i - p.length) := by
+  induction p generalizing i <;> cases i <;> simp [*]
+
 theorem getVert_reverse {u v : V} (p : G.Walk u v) (i : ℕ) :
     p.reverse.getVert i = p.getVert (p.length - i) := by
   induction p with
