@@ -469,9 +469,7 @@ theorem image_range_of_monotone (f : α → E) {u : ℕ → α} (hu : Monotone u
     _ = eVariationOn f (u '' Iic n ∪ {u n, u (n + 1)}) := by congr; grind
     _ = eVariationOn f (u '' Iic n) + eVariationOn f {u n, u (n + 1)} := by
       apply union f (x := u n) _ _
-      · simp only [IsGreatest, mem_image, mem_Iic, mem_upperBounds, forall_exists_index, and_imp,
-        forall_apply_eq_imp_iff₂]
-        refine ⟨⟨n, by simp⟩, fun a ha ↦ hu ha⟩
+      · simpa [IsGreatest, upperBounds] using ⟨⟨n, by simp⟩, fun a ha ↦ hu ha⟩
       · simp [IsLeast, hu n.le_succ]
     _ = _ := by simp [Finset.sum_range_succ, ih]
 
