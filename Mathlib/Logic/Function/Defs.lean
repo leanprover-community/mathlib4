@@ -44,7 +44,7 @@ theorem dcomp_apply : dcomp @f g i = f (g i) := rfl
 
 end DComp
 
-/- ### The function product -/
+/- ### The product of functions -/
 
 /-- Product of functions: `Function.prod f g i = (f i, g i)`, where the types of `f i` and
 `g i` may depend on `i`. -/
