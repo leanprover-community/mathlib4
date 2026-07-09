@@ -383,7 +383,7 @@ theorem comap_eq_sup_ker_of_disjoint {p : Submodule K V} [FiniteDimensional K p]
     p.comap f = p ⊔ ker f := by
   refine le_antisymm (fun x hx ↦ ?_) (sup_le_iff.mpr ⟨h, ker_le_comap _⟩)
   obtain ⟨⟨y, hy⟩, hxy⟩ :=
-    surjective_of_injective ((injective_restrict_iff_disjoint h).mpr h') ⟨f x, hx⟩
+    surjective_of_injective ((injective_restrict_iff h).mpr h') ⟨f x, hx⟩
   replace hxy : f y = f x := by simpa [Subtype.ext_iff] using hxy
   exact Submodule.mem_sup.mpr ⟨y, hy, x - y, by simp [hxy], add_sub_cancel y x⟩
 
@@ -581,6 +581,14 @@ lemma exists_smul_eq_of_finrank_eq_one
     exact finrank_span_singleton hx
   have : y ∈ Submodule.span K {x} := by rw [this]; exact mem_top
   exact mem_span_singleton.1 this
+
+/-- A submodule of finrank 1 is spanned by any of its nonzero elements. -/
+theorem eq_span_singleton_of_mem_of_finrank_eq_one {S : Submodule K V} {w : V}
+    (hS : finrank K S = 1) (hw : w ∈ S) (hw0 : w ≠ 0) :
+    S = K ∙ w := by
+  haveI : FiniteDimensional K S := Module.finite_of_finrank_pos (by lia)
+  exact Eq.symm <| eq_of_le_of_finrank_le (by simpa)
+    (by rw [hS, finrank_span_singleton hw0])
 
 theorem Set.finrank_mono [FiniteDimensional K V] {s t : Set V} (h : s ⊆ t) :
     s.finrank K ≤ t.finrank K :=
