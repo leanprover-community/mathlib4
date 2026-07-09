@@ -62,4 +62,39 @@ lemma val_one : (1 : ℕ+).val = 1 :=
 theorem mk_coe (n h) : (PNat.val (⟨n, h⟩ : ℕ+) : ℕ) = n :=
   rfl
 
+@[simp, norm_cast]
+theorem coe_inj {m n : ℕ+} : (m : ℕ) = n ↔ m = n :=
+  Subtype.ext_iff.symm
+
+instance : Add ℕ+ where
+  add m n := ⟨m.1 + n.1, Nat.add_pos_right m.val n.property⟩
+
+/-- An induction principle for `ℕ+`: it takes values in `Sort*`, so it applies also to Types,
+not only to `Prop`. -/
+@[elab_as_elim, induction_eliminator]
+def recOn (n : ℕ+) {p : ℕ+ → Sort*} (one : p 1) (succ : ∀ n, p n → p (n + 1)) : p n := by
+  rcases n with ⟨n, h⟩
+  induction n with
+  | zero => exact absurd h (by decide)
+  | succ n IH =>
+    rcases n with - | n
+    · exact one
+    · exact succ _ (IH n.succ_pos)
+
+@[simp]
+theorem recOn_one {p} (one succ) : @PNat.recOn 1 p one succ = one :=
+  rfl
+
+@[simp]
+theorem recOn_succ (n : ℕ+) {p : ℕ+ → Sort*} (one succ) :
+    @PNat.recOn (n + 1) p one succ = succ n (@PNat.recOn n p one succ) := by
+  obtain ⟨n, h⟩ := n
+  cases n
+  · exact absurd h (by decide)
+  · rfl
+
+@[simp, norm_cast]
+theorem add_coe (m n : ℕ+) : ((m + n : ℕ+) : ℕ) = m + n :=
+  rfl
+
 end PNat

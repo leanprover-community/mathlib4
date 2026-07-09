@@ -109,18 +109,11 @@ namespace PNat
 
 open Nat
 
-/-- We now define a long list of structures on `ℕ+` induced by
+/- We now define a long list of structures on `ℕ+` induced by
 similar structures on `ℕ`. Most of these behave in a completely
 obvious way, but there are a few things to be said about
 subtraction, division and powers.
 -/
-@[simp, norm_cast]
-theorem coe_inj {m n : ℕ+} : (m : ℕ) = n ↔ m = n :=
-  Subtype.ext_iff.symm
-
-@[simp, norm_cast]
-theorem add_coe (m n : ℕ+) : ((m + n : ℕ+) : ℕ) = m + n :=
-  rfl
 
 /-- `coe` promoted to an `AddHom`, that is, a morphism which preserves addition. -/
 @[simps]
