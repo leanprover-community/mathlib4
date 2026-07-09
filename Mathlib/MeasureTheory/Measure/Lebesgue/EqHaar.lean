@@ -5,11 +5,6 @@ Authors: Floris van Doorn, Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
-public import Mathlib.MeasureTheory.Constructions.BorelSpace.Metric
-public import Mathlib.MeasureTheory.Group.Pointwise
-public import Mathlib.MeasureTheory.Measure.Doubling
-public import Mathlib.MeasureTheory.Measure.Haar.Basic
 public import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
 
 /-!
@@ -99,8 +94,10 @@ theorem map_addHaar {ι E F : Type*} [Fintype ι] [NormedAddCommGroup E] [Normed
     (b : Basis ι ℝ E) (f : E ≃L[ℝ] F) :
     map f b.addHaar = (b.map f.toLinearEquiv).addHaar := by
   rw [eq_comm, Basis.addHaar_eq_iff, Measure.map_apply f.continuous.measurable
-    (PositiveCompacts.isCompact _).measurableSet, Basis.coe_parallelepiped, Basis.coe_map]
-  erw [← image_parallelepiped, f.toEquiv.preimage_image, addHaar_self]
+    (PositiveCompacts.isCompact _).measurableSet, Basis.coe_parallelepiped, Basis.coe_map,
+    ← addHaar_self b, ← f.toEquiv.preimage_image (_root_.parallelepiped ⇑b)]
+  have := image_parallelepiped f.toLinearMap (⇑b : ι → E)
+  simp_all
 
 end Module.Basis
 

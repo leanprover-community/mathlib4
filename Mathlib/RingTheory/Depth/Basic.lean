@@ -476,10 +476,11 @@ lemma moduleDepth_quotient_regular_sequence_add_length_eq_moduleDepth (N M : Mod
     moduleDepth N (ModuleCat.of R (M ⧸ (Ideal.ofList rs) • (⊤ : Submodule R M))) + rs.length =
     moduleDepth N M := by
   generalize len : rs.length = n
-  induction n generalizing M rs
-  · rw [List.length_eq_zero_iff.mp len, Ideal.ofList_nil, Submodule.bot_smul]
+  induction n generalizing M rs with
+  | zero =>
+    rw [List.length_eq_zero_iff.mp len, Ideal.ofList_nil, Submodule.bot_smul]
     simpa using moduleDepth_eq_of_iso_snd N (Submodule.quotEquivOfEqBot ⊥ rfl).toModuleIso
-  · rename_i n hn
+  | succ n hn =>
     match rs with
     | [] => simp at len
     | x :: rs' =>
@@ -493,16 +494,14 @@ lemma moduleDepth_quotient_regular_sequence_add_length_eq_moduleDepth (N M : Mod
         (fun r hr ↦ h r (List.mem_cons_of_mem x hr)) len, add_assoc]
 
 lemma ideal_depth_quotient_regular_sequence_add_length_eq_ideal_depth (I : Ideal R)
-    (M : ModuleCat.{v} R) (rs : List R) (reg : IsWeaklyRegular M rs)
-    (h : ∀ r ∈ rs, r ∈ I) :
+    (M : ModuleCat.{v} R) (rs : List R) (reg : IsWeaklyRegular M rs) (h : ∀ r ∈ rs, r ∈ I) :
     I.depth (ModuleCat.of R (M ⧸ (Ideal.ofList rs) • (⊤ : Submodule R M))) + rs.length =
     I.depth M := by
   apply moduleDepth_quotient_regular_sequence_add_length_eq_moduleDepth _ M rs reg
   simpa [(Shrink.linearEquiv R (R ⧸ I)).annihilator_eq , Ideal.annihilator_quotient] using h
 
 lemma depth_quotient_regular_sequence_add_length_eq_depth [IsLocalRing R]
-    (M : ModuleCat.{v} R) (rs : List R)
-    (reg : IsRegular M rs) :
+    (M : ModuleCat.{v} R) (rs : List R) (reg : IsRegular M rs) :
     IsLocalRing.depth (ModuleCat.of R (M ⧸ (Ideal.ofList rs) • (⊤ : Submodule R M))) + rs.length =
     IsLocalRing.depth M := by
   apply ideal_depth_quotient_regular_sequence_add_length_eq_ideal_depth _ M rs reg.toIsWeaklyRegular

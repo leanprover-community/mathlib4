@@ -35,8 +35,7 @@ theorem moduleDepth_ge_depth_sub_dim [IsNoetherianRing R] [IsLocalRing R] (M N :
   induction r with
   | top => simp
   | coe r =>
-    induction r using Nat.strong_induction_on generalizing N
-    rename_i r ihr
+    induction r using Nat.strong_induction_on generalizing N with | h r ihr =>
     by_cases eq0 : r = 0
     · simp only [eq0, CharP.cast_eq_zero, WithBot.unbot_eq_iff, WithBot.coe_zero] at dim
       have smul_lt := (Submodule.top_ne_ideal_smul_of_le_jacobson_annihilator
@@ -51,7 +50,7 @@ theorem moduleDepth_ge_depth_sub_dim [IsNoetherianRing R] [IsLocalRing R] (M N :
       · absurd Ltr
         exact (not_subsingleton_iff_nontrivial.mpr Lntr)
       · obtain ⟨x, hx1, hx2⟩ : ((maximalIdeal R : Set R) \ (p.asIdeal: Set R)).Nonempty  := by
-          rw [Set.diff_nonempty]
+          rw [Set.sdiff_nonempty]
           by_contra sub
           have peq := (maximalIdeal.isMaximal R).eq_of_le IsPrime.ne_top' sub
           have : Module.supportDim R (R ⧸ p.asIdeal) = 0 := by
@@ -108,7 +107,7 @@ theorem moduleDepth_ge_depth_sub_dim [IsNoetherianRing R] [IsLocalRing R] (M N :
             (Ext.contravariant_sequence_exact₁' hS M i (i + 1) (Nat.add_comm 1 i))
             ((@AddCommGrpCat.isZero_of_subsingleton _ this).eq_zero_of_tgt _)
           ext a
-          simp only [smul_apply, id_coe, id_eq, smulShortComplex, AddCommGrpCat.hom_ofHom,
+          simp only [LinearMap.smul_apply, id_coe, id_eq, smulShortComplex, AddCommGrpCat.hom_ofHom,
             Ext.bilinearComp_apply_apply]
           nth_rw 1 [← Ext.mk₀_id_comp a, ← Ext.smul_comp, ← Ext.mk₀_smul]
           congr
@@ -118,8 +117,8 @@ theorem moduleDepth_ge_depth_sub_dim [IsNoetherianRing R] [IsLocalRing R] (M N :
         absurd Submodule.top_ne_pointwise_smul_of_mem_jacobson_annihilator mem
         nth_rw 1 [← LinearMap.range_eq_top_of_surjective _ epi']
         ext y
-        simp only [mem_range, smul_apply, id_coe, id_eq, Submodule.mem_smul_pointwise_iff_exists,
-          Submodule.mem_top, true_and]
+        simp only [mem_range, LinearMap.smul_apply, id_coe, id_eq,
+          Submodule.mem_smul_pointwise_iff_exists, Submodule.mem_top, true_and]
       · intro L1 _ _ _ L2 _ _ _ L3 _ _ _ f g inj surj exac ih1' ih3' L2ntr dim_eq
         rcases subsingleton_or_nontrivial L1 with sub1|ntr1
         · have : Function.Injective g := by
@@ -180,7 +179,7 @@ theorem depth_le_ringKrullDim_associatedPrime [IsNoetherianRing R] [IsLocalRing 
     exact nontrivial_of_ne f 0 (ne_zero_of_injective hf)
   have := moduleDepth_ge_depth_sub_dim M (ModuleCat.of R (Shrink.{v} (R ⧸ P)))
   simp only [dep0, ge_iff_le, nonpos_iff_eq_zero, tsub_eq_zero_iff_le] at this
-  convert this
+  convert! this
   rw [← Module.supportDim_quotient_eq_ringKrullDim,
     Module.supportDim_eq_of_equiv (Shrink.linearEquiv R (R ⧸ P))]
 

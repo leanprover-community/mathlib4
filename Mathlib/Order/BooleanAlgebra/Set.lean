@@ -157,16 +157,15 @@ theorem union_compl_self (s : Set α) : s ∪ sᶜ = univ :=
 theorem compl_union_self (s : Set α) : sᶜ ∪ s = univ := by rw [union_comm, union_compl_self]
 
 theorem compl_subset_comm : sᶜ ⊆ t ↔ tᶜ ⊆ s :=
-  @compl_le_iff_compl_le _ s _ _
+  compl_le_iff_compl_le
 
 theorem subset_compl_comm : s ⊆ tᶜ ↔ t ⊆ sᶜ :=
-  @le_compl_iff_le_compl _ _ _ t
+  le_compl_iff_le_compl
 
-@[simp]
 theorem compl_subset_compl : sᶜ ⊆ tᶜ ↔ t ⊆ s :=
-  @compl_le_compl_iff_le (Set α) _ _ _
+  compl_le_compl_iff_le
 
-@[gcongr] theorem compl_subset_compl_of_subset (h : t ⊆ s) : sᶜ ⊆ tᶜ := compl_subset_compl.2 h
+theorem compl_subset_compl_of_subset (h : t ⊆ s) : sᶜ ⊆ tᶜ := by gcongr
 
 theorem subset_union_compl_iff_inter_subset {s t u : Set α} : s ⊆ t ∪ uᶜ ↔ s ∩ u ⊆ t :=
   (@isCompl_compl _ u _).le_sup_right_iff_inf_left_le
@@ -187,7 +186,9 @@ lemma disjoint_compl_right_iff_subset : Disjoint s tᶜ ↔ s ⊆ t := disjoint_
 
 alias ⟨_, _root_.Disjoint.subset_compl_right⟩ := subset_compl_iff_disjoint_right
 alias ⟨_, _root_.Disjoint.subset_compl_left⟩ := subset_compl_iff_disjoint_left
+@[deprecated LE.le.disjoint_compl_left (since := "2026-06-05")]
 alias ⟨_, _root_.HasSubset.Subset.disjoint_compl_left⟩ := disjoint_compl_left_iff_subset
+@[deprecated LE.le.disjoint_compl_right (since := "2026-06-05")]
 alias ⟨_, _root_.HasSubset.Subset.disjoint_compl_right⟩ := disjoint_compl_right_iff_subset
 
 @[simp] lemma nonempty_compl_of_nontrivial [Nontrivial α] (x : α) : Set.Nonempty {x}ᶜ := exists_ne x
@@ -227,7 +228,7 @@ theorem sdiff_nonempty {s t : Set α} : (s \ t).Nonempty ↔ ¬s ⊆ t :=
 
 @[deprecated (since := "2026-06-03")] alias diff_nonempty := sdiff_nonempty
 
-theorem sdiff_subset {s t : Set α} : s \ t ⊆ s := show s \ t ≤ s from sdiff_le
+theorem sdiff_subset {s t : Set α} : s \ t ⊆ s := sdiff_le
 
 @[deprecated (since := "2026-06-03")] alias diff_subset := sdiff_subset
 
@@ -308,19 +309,18 @@ theorem union_inter_compl_left_subset (s t : Set α) : (s ∪ t) ∩ sᶜ ⊆ t 
 theorem union_inter_compl_right_subset (s t : Set α) : (s ∪ t) ∩ tᶜ ⊆ s := by
   simp [union_inter_distrib_right]
 
-@[gcongr]
 theorem sdiff_subset_sdiff {s₁ s₂ t₁ t₂ : Set α} : s₁ ⊆ s₂ → t₂ ⊆ t₁ → s₁ \ t₁ ⊆ s₂ \ t₂ :=
   sdiff_le_sdiff
 
 @[deprecated (since := "2026-06-03")] alias diff_subset_diff := sdiff_subset_sdiff
 
-theorem sdiff_subset_sdiff_left {s₁ s₂ t : Set α} (h : s₁ ⊆ s₂) : s₁ \ t ⊆ s₂ \ t :=
-  sdiff_le_sdiff_right ‹s₁ ≤ s₂›
+theorem sdiff_subset_sdiff_left {s₁ s₂ t : Set α} (h : s₁ ⊆ s₂) : s₁ \ t ⊆ s₂ \ t := by
+  gcongr
 
 @[deprecated (since := "2026-06-03")] alias diff_subset_diff_left := sdiff_subset_sdiff_left
 
-theorem sdiff_subset_sdiff_right {s t u : Set α} (h : t ⊆ u) : s \ u ⊆ s \ t :=
-  sdiff_le_sdiff_left ‹t ≤ u›
+theorem sdiff_subset_sdiff_right {s t u : Set α} (h : t ⊆ u) : s \ u ⊆ s \ t := by
+  gcongr
 
 @[deprecated (since := "2026-06-03")] alias diff_subset_diff_right := sdiff_subset_sdiff_right
 
@@ -387,7 +387,7 @@ theorem sdiff_union_of_subset {s t : Set α} (h : t ⊆ s) : s \ t ∪ t = s :=
 @[deprecated (since := "2026-06-03")] alias diff_union_of_subset := sdiff_union_of_subset
 
 theorem sdiff_subset_comm {s t u : Set α} : s \ t ⊆ u ↔ s \ u ⊆ t :=
-  show s \ t ≤ u ↔ s \ u ≤ t from sdiff_le_comm
+  sdiff_le_comm
 
 @[deprecated (since := "2026-06-03")] alias diff_subset_comm := sdiff_subset_comm
 
@@ -483,7 +483,7 @@ lemma disjoint_sdiff_right : Disjoint s (t \ s) := disjoint_sdiff_self_right
 lemma disjoint_sdiff_inter : Disjoint (s \ t) (s ∩ t) :=
   disjoint_of_subset_right inter_subset_right disjoint_sdiff_left
 
-lemma subset_sdiff : s ⊆ t \ u ↔ s ⊆ t ∧ Disjoint s u := le_iff_subset.symm.trans le_sdiff
+lemma subset_sdiff : s ⊆ t \ u ↔ s ⊆ t ∧ Disjoint s u := le_sdiff
 
 @[deprecated (since := "2026-06-03")] alias subset_diff := subset_sdiff
 
@@ -496,13 +496,16 @@ lemma sdiff_ssubset_left_iff : s \ t ⊂ s ↔ (s ∩ t).Nonempty :=
 
 @[deprecated (since := "2026-06-03")] alias diff_ssubset_left_iff := sdiff_ssubset_left_iff
 
-lemma _root_.HasSubset.Subset.sdiff_ssubset_of_nonempty (hst : s ⊆ t) (hs : s.Nonempty) :
+lemma _root_.LE.le.sdiff_ssubset_of_nonempty (hst : s ⊆ t) (hs : s.Nonempty) :
     t \ s ⊂ t := by
   simpa [inter_eq_self_of_subset_right hst]
 
+@[deprecated (since := "2026-06-05")]
+alias _root_.HasSubset.Subset.sdiff_ssubset_of_nonempty := LE.le.sdiff_ssubset_of_nonempty
+
 @[deprecated (since := "2026-06-03")]
 alias _root_.HasSubset.Subset.diff_ssubset_of_nonempty :=
-  _root_.HasSubset.Subset.sdiff_ssubset_of_nonempty
+  _root_.LE.le.sdiff_ssubset_of_nonempty
 
 lemma ssubset_iff_sdiff_singleton : s ⊂ t ↔ ∃ a ∈ t, s ⊆ t \ {a} := by
   grind

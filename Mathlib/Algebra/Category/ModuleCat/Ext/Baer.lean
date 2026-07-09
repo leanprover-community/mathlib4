@@ -5,13 +5,11 @@ Authors: Nailin Guan
 -/
 module
 
-public import Mathlib.Algebra.Category.Grp.Zero
 public import Mathlib.Algebra.Category.ModuleCat.EnoughInjectives
 public import Mathlib.Algebra.Category.ModuleCat.Ext.HasExt
 public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 public import Mathlib.CategoryTheory.Abelian.Injective.Dimension
 public import Mathlib.CategoryTheory.Abelian.Injective.Resolution
-public import Mathlib.RingTheory.Ideal.Quotient.Defs
 
 /-!
 
@@ -34,8 +32,12 @@ universe than `ModuleCat.{v} R`.
   linear map `I →ₗ[R] M` extends to `R →ₗ[R] M`.
 * `ModuleCat.injective_of_subsingleton_ext_quotient_one`: if `Ext (R ⧸ I) M 1` vanishes
   for all ideals `I`, then `M` is injective.
+* `ModuleCat.injective_iff_subsingleton_ext_quotient_one`: if and only if version of
+  `ModuleCat.injective_of_subsingleton_ext_quotient_one`.
 * `ModuleCat.hasInjectiveDimensionLT_of_quotients`: if `Ext (R ⧸ I) M n` vanishes for all
   ideals `I`, then `M` has injective dimension `< n`.
+* `ModuleCat.hasInjectiveDimensionLT_iff_quotients`: if and only if version of
+  `ModuleCat.hasInjectiveDimensionLT_of_quotients`
 
 -/
 
@@ -48,20 +50,6 @@ variable {R : Type u} [CommRing R]
 open CategoryTheory Abelian
 
 namespace ModuleCat
-
-attribute [local instance] Ext.subsingleton_of_projective in
-/-- For a short exact complex whose middle object is projective, the vanishing of
-`Ext S.X₃ M 1` is equivalent to surjectivity of precomposition along `S.f` on `Ext⁰`. -/
-lemma ext_one_subsingleton_iff_of_projective [Small.{v} R] (M : ModuleCat.{v} R)
-    (S : ShortComplex.{v} (ModuleCat R)) (S_exact : S.ShortExact) (proj : Projective S.X₂) :
-    Subsingleton (Ext S.X₃ M 1) ↔
-      Function.Surjective ((Ext.mk₀ S.f).precomp M (add_zero 0)) := by
-  refine ⟨fun h x₁ ↦ Ext.contravariant_sequence_exact₁ S_exact _ x₁ (add_zero _)
-    (by subsingleton), fun h ↦ subsingleton_of_forall_eq 0 (fun x₃ ↦ ?_)⟩
-  obtain ⟨x₁, rfl⟩ := Ext.contravariant_sequence_exact₃ S_exact _ x₃
-    (by subsingleton) (add_zero 1)
-  obtain ⟨x₂, rfl⟩ := h x₁
-  simp
 
 /-- The vanishing of `Ext (R ⧸ I) M 1` is equivalent to Baer's extension property
 for maps `I →ₗ[R] M`. -/
@@ -77,7 +65,7 @@ lemma ext_quotient_one_subsingleton_iff [Small.{v} R] (M : ModuleCat.{v} R) (I :
   -- The complex `I → R → R ⧸ I` is short exact, after shrinking universes.
   have S_exact : S.ShortExact :=
     ModuleCat.shortComplexOfConj_shortExact _ _ _ _ _ exact I.subtype_injective I.mkQ_surjective
-  rw [ext_one_subsingleton_iff_of_projective M S S_exact (by dsimp [S]; infer_instance)]
+  rw [Ext.one_subsingleton_iff_of_projective M S S_exact (by dsimp [S]; infer_instance)]
   -- Reduce the vanishing of `Ext (R ⧸ I) M 1` to surjectivity of
   -- `Ext R M 0 → Ext I M 0`, keeping track of the universe-shrinking equivalences.
   refine ⟨fun h ↦ fun g ↦ ?_, fun h ↦ fun e ↦ ?_⟩
@@ -107,6 +95,11 @@ lemma injective_of_subsingleton_ext_quotient_one [Small.{v} R] (M : ModuleCat.{v
     Injective M := by
   rw [← Module.injective_iff_injective_object, ← Module.Baer.iff_injective]
   exact fun I ↦ (ext_quotient_one_subsingleton_iff M I).mp (h I)
+
+lemma injective_iff_subsingleton_ext_quotient_one [Small.{v} R] (M : ModuleCat.{v} R) :
+    Injective M ↔
+      ∀ (I : Ideal R), Subsingleton (Ext (ModuleCat.of R (Shrink.{v} (R ⧸ I))) M 1) :=
+  ⟨fun _ _ ↦ Ext.subsingleton_of_injective _ M 0, injective_of_subsingleton_ext_quotient_one M⟩
 
 attribute [local instance] Ext.subsingleton_of_injective in
 open Limits in
@@ -139,7 +132,7 @@ private noncomputable def extQuotientBotZeroEquiv [Small.{v} R] (M : ModuleCat.{
 
 /-- If `Ext⁰(R ⧸ ⊥, M)` is a subsingleton, then `M` is a subsingleton. -/
 private lemma subsingleton_of_ext_quotient_bot_zero [Small.{v} R] (M : ModuleCat.{v} R)
-    (h : Subsingleton (Ext (of R (Shrink.{v, u} (R ⧸ (⊥ : Ideal R)))) M 0)) :
+    (h : Subsingleton (Ext (of R (Shrink.{v} (R ⧸ (⊥ : Ideal R)))) M 0)) :
     Subsingleton M := by
   rw [← (extQuotientBotZeroEquiv (R := R) M).subsingleton_congr]
   exact h
@@ -155,5 +148,10 @@ lemma hasInjectiveDimensionLT_of_quotients [Small.{v} R] (M : ModuleCat.{v} R) (
     rw [ModuleCat.isZero_iff_subsingleton]
     exact subsingleton_of_ext_quotient_bot_zero M (h ⊥)
   | n + 1 => exact hasInjectiveDimensionLE_of_quotients M n h
+
+lemma hasInjectiveDimensionLT_iff_quotients [Small.{v} R] (M : ModuleCat.{v} R) (n : ℕ) :
+    HasInjectiveDimensionLT M n ↔
+      ∀ I : Ideal R, Subsingleton (Ext (ModuleCat.of R (Shrink.{v} (R ⧸ I))) M n) :=
+  ⟨fun h _ ↦ h.subsingleton M n _ (le_refl _) _, hasInjectiveDimensionLT_of_quotients M n⟩
 
 end ModuleCat
