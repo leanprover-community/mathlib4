@@ -31,11 +31,18 @@ variable {R m n : Type*}
 
 section RowScale
 
-variable [CommRing R] [DecidableEq m]
+section
+
+variable [Zero R] [One R] [DecidableEq m]
 
 /-- The elementary matrix scaling row `i` by `c`. -/
 def rowScale (i : m) (c : R) : Matrix m m R :=
-  Matrix.diagonal (Function.update (1 : m → R) i c)
+  Matrix.diagonal (Pi.mulSingle i c)
+
+@[simp]
+lemma rowScale_one (i : m) :
+    rowScale i (1 : R) = 1 := by
+  simp [rowScale]
 
 @[simp]
 lemma rowScale_apply_same (i : m) (c : R) :
@@ -52,57 +59,52 @@ lemma rowScale_apply_ne {i a b : m} (hab : a ≠ b) (c : R) :
     rowScale i c a b = 0 := by
   simp [rowScale, hab]
 
+end
+
 section
 
-variable [Fintype m]
+variable [CommRing R] [Fintype m] [DecidableEq m]
+
+lemma rowScale_mul (i : m) (c : R) (M : Matrix m n R) :
+    rowScale i c * M = M.updateRow i (c • M.row i) := by
+  aesop (add simp [rowScale, updateRow_apply])
+
+lemma mul_rowScale (i : m) (c : R) (M : Matrix n m R) :
+    M * rowScale i c = M.updateCol i (c • M.col i) := by
+  aesop (add simp [rowScale, updateCol_apply, mul_comm])
 
 @[simp]
 lemma rowScale_mul_apply_same (i : m) (c : R) (M : Matrix m n R) (j : n) :
     (rowScale i c * M) i j = c * M i j := by
-  rw [rowScale, Matrix.diagonal_mul, Function.update_self]
+  simp [rowScale_mul]
 
 @[simp]
 lemma rowScale_mul_apply_of_ne {i a : m} (ha : a ≠ i) (c : R) (M : Matrix m n R) (j : n) :
     (rowScale i c * M) a j = M a j := by
-  rw [rowScale, Matrix.diagonal_mul, Function.update_of_ne ha]
-  simp
+  simp [rowScale_mul, ha]
 
 @[simp]
 lemma mul_rowScale_apply_same (i : m) (c : R) (M : Matrix n m R) (a : n) :
     (M * rowScale i c) a i = M a i * c := by
-  rw [rowScale, Matrix.mul_diagonal, Function.update_self]
+  simp [mul_rowScale, mul_comm]
 
 @[simp]
 lemma mul_rowScale_apply_of_ne {i b : m} (hb : b ≠ i) (c : R) (M : Matrix n m R) (a : n) :
     (M * rowScale i c) a b = M a b := by
-  rw [rowScale, Matrix.mul_diagonal, Function.update_of_ne hb]
-  simp
+  simp [mul_rowScale, hb]
 
 @[simp]
 lemma rowScale_mul_rowScale (i : m) (c d : R) :
     rowScale i c * rowScale i d = rowScale i (c * d) := by
   rw [rowScale, rowScale, Matrix.diagonal_mul_diagonal]
   congr
-  ext a
-  by_cases ha : a = i
-  · subst ha
-    simp
-  · simp [ha]
-
-omit [Fintype m] in
-@[simp] lemma rowScale_one (i : m) :
-    rowScale i (1 : R) = 1 := by
-  ext a b
-  by_cases hab : a = b
-  · subst hab
-    by_cases ha : a = i <;> simp [rowScale, ha]
-  · simp [rowScale, hab]
+  exact (Pi.mulSingle_mul (f := fun _ : m ↦ R) i c d).symm
 
 end
 
 namespace GeneralLinearGroup
 
-variable [Fintype m]
+variable [CommRing R] [Fintype m] [DecidableEq m]
 
 /-- `Matrix.rowScale` as an element of `GL m R`. -/
 @[simps val]
@@ -181,9 +183,13 @@ lemma RowEquivalent.trans {A B C : Matrix m n R}
   refine ⟨h * g, ?_⟩
   simp [Matrix.mul_assoc]
 
-instance rowEquivalentSetoid : Setoid (Matrix m n R) where
-  r := RowEquivalent
-  iseqv := ⟨RowEquivalent.refl, RowEquivalent.symm, RowEquivalent.trans⟩
+namespace RowEquivalent
+
+scoped instance setoid : Setoid (Matrix m n R) where
+  r := Matrix.RowEquivalent
+  iseqv := ⟨Matrix.RowEquivalent.refl, Matrix.RowEquivalent.symm, Matrix.RowEquivalent.trans⟩
+
+end RowEquivalent
 
 lemma rowEquivalent_swap (A : Matrix m n R) (i j : m) :
     RowEquivalent A (Matrix.swap R i j * A) := by
