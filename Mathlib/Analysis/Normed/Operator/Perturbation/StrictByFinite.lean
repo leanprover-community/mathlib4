@@ -92,14 +92,13 @@ The result then follows from `AddMonoidHom.isStrictMap_prodMap_iff` and
 -/
 
 theorem step1 [T2Space F] (u : E →L[𝕜] F) (A : Submodule 𝕜 E)
-    (A_closed : IsClosed (A : Set E)) [codim_A : FiniteDimensional 𝕜 (E ⧸ A)]
+    (A_closed : IsClosed (A : Set E)) [A_cofg : A.CoFG]
     (h_ker : Disjoint u.ker A) (h_range : u.range = ⊤)
     (uA_closed : IsClosed (map u.toLinearMap A : Set F)) :
     IsStrictMap u ↔ IsStrictMap (u.domRestrict A) := by
   -- Fix `S` an algebraic complement of `A` containing `u.ker`. It has finite dimension.
   rcases h_ker.exists_isCompl with ⟨S, ker_le_S, S_compl_A⟩
-  have : FiniteDimensional 𝕜 S :=
-    quotientEquivOfIsCompl A S S_compl_A.symm |>.finiteDimensional
+  have : FiniteDimensional 𝕜 S := .of_fg <| A_cofg.fg_of_isCompl S_compl_A.symm
   -- Because `u` is assumed surjective and `S ⊔ A = ⊤`, we have `map u S ⊔ map u A = ⊤`.
   -- Furthermore, because the kernel of `u` is fully contained in `S`, we can show that
   -- `map u S ⊓ map u A = ⊥`, so that `map u S` and `map u A` are in fact algebraic complements
@@ -147,7 +146,7 @@ We prove the theorem under the assumptions that
 -/
 
 theorem step2 [T2Space F] (u : E →L[𝕜] F) (A : Submodule 𝕜 E)
-    (A_closed : IsClosed (A : Set E)) [codim_A : FiniteDimensional 𝕜 (E ⧸ A)]
+    (A_closed : IsClosed (A : Set E)) [A_cofg : A.CoFG]
     (h_ker : Disjoint u.ker A) (h_range : u.range = ⊤) :
     IsStrictMap u ↔ IsStrictMap (u.domRestrict A) ∧ IsClosed (map u.toLinearMap A : Set F) := by
   -- To reduce to step 1, it suffices to show that `IsStrictMap u → IsClosed (map u A)`.
@@ -171,7 +170,7 @@ We prove the theorem under the assumptions that
 -/
 
 theorem step3 [T2Space F] (u : E →L[𝕜] F) (A : Submodule 𝕜 E)
-    (A_closed : IsClosed (A : Set E)) [codim_A : FiniteDimensional 𝕜 (E ⧸ A)]
+    (A_closed : IsClosed (A : Set E)) [A_cofg : A.CoFG]
     (h_ker : Disjoint u.ker A) (h_range : IsClosed (u.range : Set F)) :
     IsStrictMap u ↔ IsStrictMap (u.domRestrict A) ∧ IsClosed (map u.toLinearMap A : Set F) := by
   -- Let `F' := u.range` and `i : F' →L[𝕜] F` be the inclusion map. By assumption,
@@ -199,7 +198,7 @@ We prove the theorem under the assumption that `u.ker` is disjoint from `A`
 -/
 
 theorem step4 [T2Space F] (u : E →L[𝕜] F) (A : Submodule 𝕜 E) (A_closed : IsClosed (A : Set E))
-    [codim_A : FiniteDimensional 𝕜 (E ⧸ A)] (h_ker : Disjoint u.ker A) :
+    [A_cofg : A.CoFG] (h_ker : Disjoint u.ker A) :
     (IsStrictMap u ∧ IsClosed (u.range : Set F)) ↔
       IsStrictMap (u.domRestrict A) ∧ IsClosed (map u.toLinearMap A : Set F) := by
   -- To reduce to step 3, it suffices to show that, if `map u A` is closed, then so is `u.range`.
@@ -209,8 +208,7 @@ theorem step4 [T2Space F] (u : E →L[𝕜] F) (A : Submodule 𝕜 E) (A_closed 
   intro uA_closed
   -- Fix `S` an algebraic complement of `A` containing `u.ker`. It has finite dimension.
   rcases h_ker.exists_isCompl with ⟨S, ker_le_S, S_compl_A⟩
-  have : FiniteDimensional 𝕜 S :=
-    quotientEquivOfIsCompl A S S_compl_A.symm |>.finiteDimensional
+  have : FiniteDimensional 𝕜 S := .of_fg <| A_cofg.fg_of_isCompl S_compl_A.symm
   -- It follows that `u.range = map u A ⊔ map u S` is closed.
   rw [← Submodule.map_top, ← S_compl_A.symm.sup_eq_top, Submodule.map_sup]
   exact isClosed_sup_finiteDimensional _ _ uA_closed
@@ -229,7 +227,7 @@ closed range.
 This is [N. Bourbaki, *Théories Spectrales*, Chapitre III, § 3, n° 1, Prop. 1][bourbaki2023]. -/
 public theorem ContinuousLinearMap.isStrictMap_isClosed_range_iff_restrict [T2Space F]
     (u : E →L[𝕜] F) (A : Submodule 𝕜 E) (A_closed : IsClosed (A : Set E))
-    [codim_A : FiniteDimensional 𝕜 (E ⧸ A)] :
+    [A_cofg : A.CoFG] :
     (IsStrictMap u ∧ IsClosed (u.range : Set F)) ↔
       (IsStrictMap (u.domRestrict A) ∧ IsClosed (map u.toLinearMap A : Set F)) := by
   -- To reduce to step 4, we quotient by `N := A ⊓ u.ker`. Denoting by `π : E → E ⧸ N`
@@ -295,7 +293,7 @@ section FiniteRank
 then `u` is strict with closed range if and only if `v` is strict with closed range. -/
 public theorem ContinuousLinearMap.isStrictMap_isClosed_range_iff_of_eqOn [T2Space F]
     (u v : E →L[𝕜] F) (A : Submodule 𝕜 E) (A_closed : IsClosed (A : Set E))
-    [codim_A : FiniteDimensional 𝕜 (E ⧸ A)] (h_eqOn : EqOn u v A) :
+    [A_cofg : A.CoFG] (h_eqOn : EqOn u v A) :
     (IsStrictMap u ∧ IsClosed (u.range : Set F)) ↔
       (IsStrictMap v ∧ IsClosed (v.range : Set F)) := by
   simp_rw [u.isStrictMap_isClosed_range_iff_restrict A,
@@ -316,7 +314,7 @@ public theorem ContinuousLinearMap.isStrictMap_isClosed_range_iff_of_finiteRange
       (IsStrictMap v ∧ IsClosed (v.range : Set F)) := by
   let A := u.toLinearMap.eqLocus v.toLinearMap
   have A_closed : IsClosed (A : Set E) := u.isClosed_eqLocus v
-  have : FiniteDimensional 𝕜 (E ⧸ A) := equiv_iff_eqLocus_coFG.mp h_equiv
+  have : A.CoFG := equiv_iff_eqLocus_coFG.mp h_equiv
   exact ContinuousLinearMap.isStrictMap_isClosed_range_iff_of_eqOn u v A A_closed (fun _ ↦ id)
 
 end FiniteRank
