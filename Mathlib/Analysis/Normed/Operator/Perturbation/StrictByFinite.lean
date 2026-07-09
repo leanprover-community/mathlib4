@@ -315,7 +315,8 @@ public theorem ContinuousLinearMap.isStrictMap_isClosed_range_iff_of_finiteRange
   let A := u.toLinearMap.eqLocus v.toLinearMap
   have A_closed : IsClosed (A : Set E) := u.isClosed_eqLocus v
   have : A.CoFG := equiv_iff_eqLocus_coFG.mp h_equiv
-  exact ContinuousLinearMap.isStrictMap_isClosed_range_iff_of_eqOn u v A A_closed (fun _ ↦ id)
+  exact ContinuousLinearMap.isStrictMap_isClosed_range_iff_of_eqOn u v A A_closed
+    LinearMap.eqOn_eqLocus
 
 end FiniteRank
 
