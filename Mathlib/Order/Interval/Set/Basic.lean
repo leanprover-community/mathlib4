@@ -266,7 +266,7 @@ theorem Iic_ssubset_Iic : Iic a ⊂ Iic b ↔ a < b where
   mpr h := (ssubset_iff_of_subset (Iic_subset_Iic.mpr h.le)).mpr
     ⟨b, self_mem_Iic, fun h' => h.not_ge h'⟩
 
-@[to_dual (attr := simp)]
+@[to_dual (attr := simp, gcongr strict)]
 theorem Iic_subset_Iio : Iic a ⊆ Iio b ↔ a < b :=
   ⟨fun h => h self_mem_Iic, fun h _ hx => lt_of_le_of_lt hx h⟩
 
@@ -324,7 +324,7 @@ theorem Icc_ssubset_Icc_left (h₂ : a₂ ≤ b₂) (ha : a₂ < a₁) (hb : b�
 theorem Ico_subset_Ioo (ha : a₂ < a₁) (hb : b₁ ≤ b₂) : Ico a₁ b₁ ⊆ Ioo a₂ b₂ := fun _ hx ↦
   ⟨ha.trans_le hx.1, hx.2.trans_le hb⟩
 
-@[to_dual]
+@[to_dual (attr := gcongr strict)]
 theorem Ico_subset_Ioo_left (h : a₁ < a₂) : Ico a₂ b ⊆ Ioo a₁ b :=
   Ico_subset_Ioo h le_rfl
 
@@ -332,7 +332,7 @@ theorem Ico_subset_Ioo_left (h : a₁ < a₂) : Ico a₂ b ⊆ Ioo a₁ b :=
 theorem Icc_subset_Ioc (ha : a₂ < a₁) (hb : b₁ ≤ b₂) : Icc a₁ b₁ ⊆ Ioc a₂ b₂ := fun _ hx ↦
   ⟨ha.trans_le hx.1, hx.2.trans hb⟩
 
-@[to_dual]
+@[to_dual (attr := gcongr strict)]
 theorem Icc_subset_Ioc_left (h : a₁ < a₂) : Icc a₂ b ⊆ Ioc a₁ b :=
   Icc_subset_Ioc h le_rfl
 
@@ -463,6 +463,9 @@ section matched_intervals
   eq_comm.trans Ioo_eq_Ioc_same_iff
 
 end matched_intervals
+
+@[to_additive (attr := simp)]
+lemma Ici_one_eq_univ [One α] [IsBotOneClass α] : Ici (1 : α) = univ := by ext; simp
 
 end Preorder
 

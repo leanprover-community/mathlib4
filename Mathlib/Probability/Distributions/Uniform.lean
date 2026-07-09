@@ -11,6 +11,7 @@ public import Mathlib.Probability.ProbabilityMassFunction.Constructions
 
 /-!
 # Uniform distributions and probability mass functions
+
 This file defines two related notions of uniform distributions, which will be unified in the future.
 
 ## Uniform distributions
