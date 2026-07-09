@@ -95,8 +95,8 @@ section TopologicalSpace
 variable [TopologicalSpace R] (v : Valuation R Γ₀) [v.Compatible]
 namespace IsValuativeTopology
 
-/-- If the neighborhoods of every point for a given topology are defined by a fixed valuation `v`,
-then the topology is a valuative topology. -/
+/-- If the neighborhoods of every point for a given topology are defined by a valuation `v`
+compatible with the valuative relation, then the topology is a valuative topology. -/
 theorem of_mem_nhds_iff_vle
     (H : ∀ {s : Set R} {x : R}, s ∈ 𝓝 x ↔ ∃ (γ : (ValueGroup₀ (.ofClass v))ˣ),
     (fun (x₁ : R) ↦ x + x₁) '' {z : R | v.restrict z < γ} ⊆ s) :
@@ -107,8 +107,8 @@ theorem of_mem_nhds_iff_vle
   obtain ⟨γ, hγ⟩ := H.mp h_mem
   exact ⟨Units.mk0 ((orderMonoidIso v).symm γ) (by simp), subset_trans (by simp) hγ⟩
 
-/-- In a topological group, if the neighborhoods of zero are defined by a fixed valuation `v`, then
-the underlying topology is valuative. -/
+/-- In a topological group, if the neighborhoods of zero are defined by a valuation `v` compatible
+with the valuative relation, then the underlying topology is valuative. -/
 theorem of_mem_nhds_zero_iff_vle [IsTopologicalAddGroup R]
     (H : ∀ {s : Set R}, s ∈ 𝓝 0 ↔ ∃ (γ : (ValueGroup₀ (.ofClass v))ˣ),
     (fun (x₁ : R) ↦ x₁) '' {z : R | v.restrict z < γ} ⊆ s) :
