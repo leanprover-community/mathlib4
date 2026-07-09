@@ -788,6 +788,10 @@ lemma length_dropLast_add_one {p : G.Walk u v} (hp : ¬p.Nil) :
 lemma length_dropLast (p : G.Walk u v) : p.dropLast.length = p.length - 1 := by
   cases p <;> simp [← length_dropLast_add_one not_nil_cons]
 
+theorem getVert_dropLast {n} {p : G.Walk u v} (h : n < p.length) :
+    p.dropLast.getVert n = p.getVert n := by
+  grind [getVert_eq_support_getElem, length_dropLast, support_dropLast, length_eq_zero_iff]
+
 @[simp]
 theorem reverse_tail (p : G.Walk u v) :
     p.tail.reverse = p.reverse.dropLast.copy rfl p.penultimate_reverse := by
