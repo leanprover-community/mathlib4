@@ -149,7 +149,7 @@ noncomputable def adicCompletion.padicEquiv (v : HeightOneSpectrum R) :
     (RingEquiv.completion _ (withValEquiv v).continuous
       (withValEquiv v).symm.continuous).trans Padic.withValRingEquiv
   __ := ((IsDedekindDomain.HeightOneSpectrum.adicCompletion.uniformEquiv ℚ v).trans <|
-    (mapEquiv (withValEquiv v)).trans Padic.withValUniformEquiv).toHomeomorph
+    (withValEquiv v).completion.trans Padic.withValUniformEquiv).toHomeomorph
   commutes' := by simp
 
 /-- The continuous `ℤ`-algebra isomorphism between `v.adicCompletionIntegers ℚ` and
@@ -166,7 +166,7 @@ noncomputable def adicCompletionIntegers.padicIntEquiv (v : HeightOneSpectrum R)
         (e0.trans e).trans withValIntegersRingEquiv
   __ := let e0 := (IsDedekindDomain.HeightOneSpectrum.adicCompletion.uniformEquiv ℚ v).subtype
           fun _ ↦ by rw [HeightOneSpectrum.mem_adicCompletionIntegers]; rfl
-        let e := (mapEquiv (withValEquiv v)).subtype fun _ ↦ by
+        let e := (withValEquiv v).completion.subtype fun _ ↦ by
           simpa using! (valuation_equiv_padicValuation v).valuedCompletion_le_one_iff
         ((e0.trans e).trans withValIntegersUniformEquiv).toHomeomorph
   commutes' := by simp

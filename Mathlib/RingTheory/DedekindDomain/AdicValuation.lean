@@ -866,7 +866,7 @@ theorem algebraMap_adicCompletion_toCompletion (r : S) :
 instance {S₀ : Type*} [CommSemiring S₀] [Algebra S₀ S] [Algebra S₀ K] [IsScalarTower S₀ S K] :
     IsScalarTower S₀ S ((v.valuation K).Completion) :=
   .of_algebraMap_eq fun x ↦ by
-    exact congrArg (UniformSpace.Completion.coeRingHom (α := WithVal (v.valuation K)))
+    exact congrArg (UniformSpace.RingHom.toCompletion (α := WithVal (v.valuation K)))
       (IsScalarTower.algebraMap_apply S₀ S (WithVal (v.valuation K)) x)
 
 instance {S₀ : Type*} [CommSemiring S₀] [Algebra S₀ S] [Algebra S₀ K] [IsScalarTower S₀ S K] :
