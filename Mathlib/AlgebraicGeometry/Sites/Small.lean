@@ -174,10 +174,7 @@ lemma mem_toGrothendieck_smallPretopology (X : Q.Over ⊤ S) (R : Sieve X) :
         R f ∧ P f.left ∧ f.left y = x := by
   refine ⟨?_, fun h ↦ ?_⟩
   · rintro ⟨T, ⟨hs, hP⟩, hle⟩ x
-    obtain ⟨Z, g, hg, hx⟩ := (Presieve.mem_comap_jointlySurjectivePrecoverage_iff _).mp hs x
-    obtain ⟨hg⟩ := hg
-    obtain ⟨hf⟩ := hg
-    obtain ⟨y, hy⟩ := hx
+    obtain ⟨Z, g, ⟨⟨hf⟩⟩, y, hy⟩ := (Presieve.mem_comap_jointlySurjectivePrecoverage_iff _).mp hs x
     exact ⟨_, _, y, hle _ _ hf, hP (Presieve.map_map (Presieve.map_map hf)), hy⟩
   · refine ⟨fun Y f ↦ R f ∧ P f.left, ⟨?_, ?_⟩, fun Y f hf ↦ hf.1⟩
     · refine (Presieve.mem_comap_jointlySurjectivePrecoverage_iff _).mpr fun x ↦ ?_
@@ -190,8 +187,7 @@ lemma mem_smallGrothendieckTopology (X : P.Over ⊤ S) (R : Sieve X) :
     R ∈ S.smallGrothendieckTopology P X ↔
       ∃ (𝒰 : Cover.{u} (precoverage P) X.left) (_ : 𝒰.Over S) (h : ∀ j, P (𝒰.X j ↘ S)),
           𝒰.toPresieveOverProp h ≤ R.arrows := by
-  simp only [smallGrothendieckTopology, Functor.mem_restrictedTopology_iff,
-    mem_overGrothendieckTopology]
+  rw [Functor.mem_restrictedTopology_iff, mem_overGrothendieckTopology]
   constructor
   · rintro ⟨𝒰, h𝒰, hle⟩
     have hj (j : 𝒰.I₀) : P (𝒰.X j ↘ S) := by
