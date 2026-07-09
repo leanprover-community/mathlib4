@@ -308,7 +308,7 @@ denoted `u.toLinearMap ≈ v.toLinearMap` in scope `LinearMap.FiniteRangeSetoid`
 strict with closed range if and only if `v` is strict with closed range.
 
 This is [N. Bourbaki, *Théories Spectrales*, Chapitre III, § 3, n° 1, Cor. 1][bourbaki2023]. -/
-public theorem ContinuousLinearMap.isStrictMap_isClosed_range_iff_of_finiteRangeSetoid [T1Space F]
+public theorem ContinuousLinearMap.isStrictMap_isClosed_range_iff_of_finiteRangeSetoid [T2Space F]
     (u v : E →L[𝕜] F) (h_equiv : u.toLinearMap ≈ v.toLinearMap) :
     (IsStrictMap u ∧ IsClosed (u.range : Set F)) ↔
       (IsStrictMap v ∧ IsClosed (v.range : Set F)) := by
@@ -327,7 +327,7 @@ open LinearMap.FiniteRangeSetoid
 that `u` is strict with closed range if and only if `B.mkQL ∘L u` is strict with closed range.
 
 This is [N. Bourbaki, *Théories Spectrales*, Chapitre III, § 3, n° 1, Cor. 2][bourbaki2023]. -/
-public theorem ContinuousLinearMap.isStrictMap_isClosed_range_iff_quotient [T1Space F]
+public theorem ContinuousLinearMap.isStrictMap_isClosed_range_iff_quotient [T2Space F]
     (u : E →L[𝕜] F) (A : Submodule 𝕜 F) [dim_A : FiniteDimensional 𝕜 A]
     (A_compl : ClosedComplemented A) :
     (IsStrictMap u ∧ IsClosed (u.range : Set F)) ↔
