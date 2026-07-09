@@ -153,8 +153,7 @@ lemma one_mem_iff {R : Type*} [NonAssocRing R] (I : TwoSidedIdeal R) :
 alias ⟨eq_top, one_mem⟩ := one_mem_iff
 
 theorem eq_top_of_isUnit_mem {R : Type*} [Ring R] (I : TwoSidedIdeal R) {x : R}
-    (hx : x ∈ I) (h : IsUnit x) : I = ⊤ := by
-  obtain ⟨y, hy⟩ := h.exists_right_inv
-  exact I.eq_top (by simpa only [← hy] using I.mul_mem_right x y hx)
+    (hx : x ∈ I) (h : IsUnit x) : I = ⊤ :=
+  I.eq_top (h.mul_val_inv ▸ I.mul_mem_right _ _ hx)
 
 end TwoSidedIdeal
