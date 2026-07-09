@@ -74,6 +74,7 @@ syntax (name := finiteness) "finiteness" Aesop.tactic_clause* (ppSpace "[" term,
 
 macro_rules
 | `(tactic | finiteness $c:Aesop.tactic_clause*) => `(tactic|
+  classical
   aesop $c*
     (config := { introsTransparency? := some .reducible, terminal := true, enableSimp := false })
     (rule_sets := [$(Lean.mkIdent `finiteness):ident, -default, -builtin]))
@@ -86,6 +87,7 @@ syntax (name := finiteness?) "finiteness?" Aesop.tactic_clause* (ppSpace "[" ter
 macro_rules
 | `(tactic | finiteness? $c:Aesop.tactic_clause*) =>
 `(tactic|
+  classical
   aesop? $c*
     (config := { introsTransparency? := some .reducible, terminal := true, enableSimp := false })
     (rule_sets := [$(Lean.mkIdent `finiteness):ident, -default, -builtin]))
@@ -100,6 +102,7 @@ syntax (name := finiteness_nonterminal)
 macro_rules
 | `(tactic | finiteness_nonterminal $c:Aesop.tactic_clause*) =>
 `(tactic|
+  classical
   aesop $c*
     (config := { introsTransparency? := some .reducible, terminal := false, enableSimp := false,
                  warnOnNonterminal := false })
