@@ -438,10 +438,10 @@ theorem pair (f : α → E) (a b : α) : eVariationOn f {a, b} = edist (f a) (f 
     rintro ⟨n, u, hmono, hi⟩
     rcases (by omega : n = 0 ∨ n = 1 ∨ 2 ≤ n) with rfl | rfl | hn
     · simp
-    · have : u 0 < u 1 := hmono (by simp) (by simp) zero_lt_one
+    · have := hmono (by simp) (by simp) zero_lt_one
       simp [(by grind : u 0 = a), (by grind : u 1 = b), edist_comm]
-    · have : u 0 < u 1 := hmono (by simp) (by grind) zero_lt_one
-      have : u 1 < u 2 := hmono (by grind) (by grind) one_lt_two
+    · have := hmono (by simp) (by grind) zero_lt_one
+      have := hmono (by grind) (by grind) one_lt_two
       grind
 
 /-- A generalization of `eVariationOn.union` in which the greatest element of `s` is allowed to lie
@@ -451,7 +451,7 @@ theorem union' (f : α → E) {s t : Set α} {x y : α} (hs : IsGreatest s x) (h
     eVariationOn f (s ∪ t) = eVariationOn f s + edist (f x) (f y) + eVariationOn f t := calc
   _ = eVariationOn f ((s ∪ {x, y}) ∪ t) := by congr 1; grind [hs.1, ht.1]
   _ = _ := by
-    rw [union f _ ht, union f hs _]
+    rw [union f _ ht, union f hs]
     <;> simp [IsLeast, IsGreatest, hxy, upperBounds_mono_mem hxy hs.2]
 
 /-- The variation of `f` along the image of `{0, …, n}` under a monotone sequence `u` is the sum of
@@ -462,11 +462,11 @@ theorem image_range_of_monotone (f : α → E) {u : ℕ → α} (hu : Monotone u
   | zero => simp [Iic]
   | succ n ih => calc
     _ = eVariationOn f (u '' Iic n ∪ {u n, u (n + 1)}) := by congr; grind
-    _ = eVariationOn f (u '' Iic n) + eVariationOn f {u n, u (n + 1)} := by
-      apply union f (x := u n) _ _
+    _ = _ := by
+      rw [union f (x := u n)]
+      · simp [Finset.sum_range_succ, ih]
       · simpa [IsGreatest, upperBounds] using ⟨⟨n, by simp⟩, fun a ha ↦ hu ha⟩
       · simp [IsLeast, hu n.le_succ]
-    _ = _ := by simp [Finset.sum_range_succ, ih]
 
 private theorem _root_.BoundedVariationOn.of_finset {E} [PseudoMetricSpace E] (f : α → E)
     (s : Finset α) : BoundedVariationOn f s := by
