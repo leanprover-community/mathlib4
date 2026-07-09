@@ -207,7 +207,7 @@ lemma rank_le_card_isVisible (hs : IsClosed (convexHull ℝ s)) (hx : x ∉ conv
           span ℝ (-x +ᵥ {y ∈ s | IsVisible ℝ (convexHull ℝ s) x y}) by
         rw [AffineSubspace.coe_pointwise_vadd, h, span_span]
       simp [← AffineSubspace.coe_pointwise_vadd, AffineSubspace.pointwise_vadd_span,
-        vadd_set_insert, -coe_affineSpan, affineSpan_insert_zero]
+        vadd_set_insert, affineSpan_insert_zero]
     _ ≤ #(-x +ᵥ {y ∈ s | IsVisible ℝ (convexHull ℝ s) x y}) := rank_span_le _
     _ = #{y ∈ s | IsVisible ℝ (convexHull ℝ s) x y} := by simp
 

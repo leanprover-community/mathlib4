@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Algebra.Polynomial.FieldDivision
 public import Mathlib.Algebra.Polynomial.Lifts
+public import Mathlib.RingTheory.Ideal.Quotient.Operations
 public import Mathlib.RingTheory.Polynomial.Basic
-public import Mathlib.RingTheory.Polynomial.Nilpotent
 
 /-!
 
@@ -20,20 +20,19 @@ public import Mathlib.RingTheory.Polynomial.Nilpotent
 
 variable (R : Type*) [CommRing R]
 
-open Polynomial Ideal
+open Ideal
 
-lemma Polynomial.exists_monic_span {k : Type*} [Field k] (I : Ideal k[X]) (ne : I ≠ ⊥) :
+namespace Polynomial
+
+lemma exists_monic_span {k : Type*} [Field k] (I : Ideal k[X]) (ne : I ≠ ⊥) :
     ∃ f, f.Monic ∧ I = Ideal.span {f} := by
-  obtain ⟨x, rfl⟩ := IsPrincipalIdealRing.principal I
-  have xne : x ≠ 0 := by
-    by_contra eq0
-    simp [eq0] at ne
-  refine ⟨C x.leadingCoeff⁻¹ * x, ?_, ?_⟩
-  · simp [Monic, leadingCoeff_ne_zero.mpr xne]
-  · apply (Ideal.span_singleton_mul_left_unit _ x).symm
-    simpa using xne
+  classical
+  obtain ⟨x, h, spanx⟩ := Ideal.exists_normalized_span_of_isPrincipal I
+  refine ⟨x, (Polynomial.normalize_eq_self_iff_monic ?_).mp h, spanx⟩
+  by_contra eq0
+  simp [eq0, spanx] at ne
 
-lemma Polynomial.exists_monic_span_sup_map_eq (p : Ideal R[X]) [p.IsPrime]
+lemma exists_monic_span_sup_map_eq (p : Ideal R[X])
     (ism : (p.comap C).IsMaximal) (ne : p ≠ (p.comap C).map C) :
     ∃ f : R[X], f.Monic ∧ p = (p.comap C).map C ⊔ Ideal.span {f} := by
   let q := p.comap C
@@ -51,3 +50,5 @@ lemma Polynomial.exists_monic_span_sup_map_eq (p : Ideal R[X]) [p.IsPrime]
     simpa [Polynomial.ker_mapRingHom, q] using Ideal.map_comap_le
   · rw [Ideal.comap_map_of_surjective' _ (map_surjective _ Ideal.Quotient.mk_surjective),
       sup_comm, Polynomial.ker_mapRingHom, mk_ker]
+
+end Polynomial
