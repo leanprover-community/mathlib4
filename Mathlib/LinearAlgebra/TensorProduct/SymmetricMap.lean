@@ -298,10 +298,11 @@ namespace SymmetricMap
 namely the (unique, constant) value it takes on the empty argument. -/
 @[simps] def ofIsEmpty [IsEmpty ι] : (M [Σ^ι]→ₗ[R] N) ≃+ N where
   toFun f := f isEmptyElim
-  invFun n := { toFun _ := n
-                map_update_add' _ := isEmptyElim
-                map_update_smul' _ := isEmptyElim
-                map_perm' _ _ := rfl }
+  invFun n :=
+  { toFun _ := n
+    map_update_add' _ := isEmptyElim
+    map_update_smul' _ := isEmptyElim
+    map_perm' _ _ := rfl }
   map_add' _ _ := rfl
   left_inv f := ext fun _ ↦ congrArg f <| Subsingleton.elim _ _
   right_inv _ := rfl
