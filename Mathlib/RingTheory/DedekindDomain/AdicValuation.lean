@@ -636,6 +636,13 @@ def equiv : adicCompletion K v ≃+* (v.valuation K).Completion where
 @[simp] lemma ofCompletion_toCompletion (x : adicCompletion K v) :
     ofCompletion x.toCompletion = x := rfl
 
+@[simp] lemma toCompletion_zero : (0 : adicCompletion K v).toCompletion = 0 := rfl
+@[simp] lemma toCompletion_one : (1 : adicCompletion K v).toCompletion = 1 := rfl
+@[simp] lemma toCompletion_add (x y : adicCompletion K v) :
+    (x + y).toCompletion = x.toCompletion + y.toCompletion := rfl
+@[simp] lemma toCompletion_mul (x y : adicCompletion K v) :
+    (x * y).toCompletion = x.toCompletion * y.toCompletion := rfl
+
 theorem toCompletion_surjective : Function.Surjective (toCompletion (K := K) (v := v)) :=
   (equivCompletion K v).surjective
 
@@ -651,16 +658,9 @@ instance : IsUniformAddGroup (adicCompletion K v) :=
   IsUniformInducing.isUniformAddGroup (equiv K v).toRingHom (isUniformInducing_toCompletion K v)
 
 /-- The `v`-adic valuation on `adicCompletion K v`, transported from the completion along `equiv`.
-This is definitionally the valuation of the `Valued` instance below; it is introduced as a named
-definition (rather than inlined) so that the value-group calculations do not repeatedly unfold the
-comap, which is prohibitively expensive. -/
+-/
 noncomputable def valuation : Valuation (adicCompletion K v) ℤᵐ⁰ :=
   Valued.v.comap (equiv K v).toRingHom
-
-/-! The `Valued` structure on `adicCompletion K v` is transported from the underlying completion.
-Because `adicCompletion K v` is not definitionally equal to `(v.valuation K).Completion`, the
-transported valuation lives in a different (but equal) `ValueGroup₀`, so we build the order
-isomorphism between them explicitly, mirroring `WithVal.valueGroupOrderIso₀`. -/
 
 theorem valueGroup_eq :
     valueGroup (.ofClass (valuation K v)) =
@@ -714,23 +714,18 @@ theorem valueGroupOrderIso_restrict (x : adicCompletion K v) :
 noncomputable instance : Valued (adicCompletion K v) ℤᵐ⁰ where
   v := valuation K v
   is_topological_valuation s := by
-    rw [(isUniformInducing_toCompletion K v).isInducing.nhds_eq_comap 0,
-      show toCompletion (0 : adicCompletion K v) = 0 from rfl, Filter.mem_comap]
-    constructor
-    · rintro ⟨t, ht, hts⟩
-      rw [Valued.mem_nhds_zero] at ht
-      obtain ⟨δ, hδ⟩ := ht
+    rw [(isUniformInducing_toCompletion K v).isInducing.nhds_eq_comap 0, toCompletion_zero,
+      Filter.mem_comap]
+    refine ⟨fun ⟨t, ht, hts⟩ ↦ ?_, fun ⟨γ, hγ⟩ ↦ ?_⟩
+    · obtain ⟨δ, hδ⟩ := Valued.mem_nhds_zero.1 ht
       refine ⟨Units.mapEquiv (valueGroupOrderIso K v).symm.toMulEquiv δ, fun x hx => hts (hδ ?_)⟩
       rw [Set.mem_setOf_eq] at hx ⊢
-      rw [← map_lt_map_iff (valueGroupOrderIso K v), valueGroupOrderIso_restrict] at hx
-      simpa using hx
-    · rintro ⟨γ, hγ⟩
-      refine ⟨{y | Valued.v.restrict y < ↑(Units.mapEquiv (valueGroupOrderIso K v).toMulEquiv γ)},
+      simpa [← map_lt_map_iff (valueGroupOrderIso K v), valueGroupOrderIso_restrict] using hx
+    · refine ⟨{y | Valued.v.restrict y < ↑(Units.mapEquiv (valueGroupOrderIso K v).toMulEquiv γ)},
         ?_, fun x hx => hγ ?_⟩
       · rw [Valued.mem_nhds_zero]
         exact ⟨Units.mapEquiv (valueGroupOrderIso K v).toMulEquiv γ, subset_rfl⟩
-      · rw [Set.mem_preimage, Set.mem_setOf_eq] at hx
-        rw [Set.mem_setOf_eq, ← map_lt_map_iff (valueGroupOrderIso K v),
+      · rw [Set.mem_setOf_eq, ← map_lt_map_iff (valueGroupOrderIso K v),
           valueGroupOrderIso_restrict]
         simpa using hx
 
@@ -764,13 +759,6 @@ theorem valued_coe (k : K) :
 
 @[ext] theorem ext {x y : adicCompletion K v} (h : x.toCompletion = y.toCompletion) : x = y := by
   cases x; cases y; exact congrArg ofCompletion h
-
-@[simp] lemma toCompletion_zero : (0 : adicCompletion K v).toCompletion = 0 := rfl
-@[simp] lemma toCompletion_one : (1 : adicCompletion K v).toCompletion = 1 := rfl
-@[simp] lemma toCompletion_add (x y : adicCompletion K v) :
-    (x + y).toCompletion = x.toCompletion + y.toCompletion := rfl
-@[simp] lemma toCompletion_mul (x y : adicCompletion K v) :
-    (x * y).toCompletion = x.toCompletion * y.toCompletion := rfl
 
 @[norm_cast] lemma coe_zero : ((0 : K) : adicCompletion K v) = 0 := by
   apply adicCompletion.ext; simp
