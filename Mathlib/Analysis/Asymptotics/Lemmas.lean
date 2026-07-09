@@ -192,10 +192,20 @@ theorem IsLittleO.trans_tendsto (hfg : f'' =o[l] g'') (hg : Tendsto g'' l (𝓝 
 lemma isLittleO_id_one [One F''] [NeZero (1 : F'')] : (fun x : E'' => x) =o[𝓝 0] (1 : E'' → F'') :=
   isLittleO_id_const one_ne_zero
 
-theorem continuousAt_iff_isLittleO {α : Type*} {E : Type*} [NormedRing E] [NormOneClass E]
+theorem continuousAt_iff_isLittleO {α : Type*} {E : Type*} [NormedRing E] [One F] [NormOneClass F]
     [TopologicalSpace α] {f : α → E} {x : α} :
-    (ContinuousAt f x) ↔ (fun (y : α) ↦ f y - f x) =o[𝓝 x] (fun (_ : α) ↦ (1 : E)) := by
+    (ContinuousAt f x) ↔ (f · - f x) =o[𝓝 x] (fun (_ : α) ↦ (1 : F)) := by
   simp [ContinuousAt, ← tendsto_sub_nhds_zero_iff]
+
+theorem _root_.ContinuousAt.isLittleO {α : Type*} {E : Type*} [NormedRing E] [One F]
+    [NormOneClass F] [TopologicalSpace α] {f : α → E} {x : α} (hcont : ContinuousAt f x) :
+    (f · - f x) =o[𝓝 x] (fun _ ↦ (1 : F)) :=
+  continuousAt_iff_isLittleO.mp hcont
+
+theorem _root_.ContinuousAt.isBigO {α : Type*} {E : Type*} [NormedRing E] [One F] [NormOneClass F]
+    [TopologicalSpace α] {f : α → E} {x : α} (hcont : ContinuousAt f x) :
+    f =O[𝓝 x] (fun _ ↦ (1 : F)) :=
+  hcont.isLittleO.isBigO.congr_of_sub.mpr (isBigO_const_one ..)
 
 /-! ### Multiplication -/
 

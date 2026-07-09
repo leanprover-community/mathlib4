@@ -143,7 +143,7 @@ theorem sublevelLeft_subset_union [AddCommGroup F] [Module ℝ F]
 
 The hypotheses imply that `sublevelLeft X f b z` is connected,
 and that the two other are disjoint. -/
- theorem sublevelLeft_subset_or [TopologicalSpace E] [AddCommGroup E]
+theorem sublevelLeft_subset_or [TopologicalSpace E] [AddCommGroup E]
     [IsTopologicalAddGroup E] [Module ℝ E] [ContinuousSMul ℝ E]
     [AddCommGroup F] [Module ℝ F]
     (hfx' : ∀ x ∈ X, QuasiconcaveOn ℝ Y fun y => f x y)
