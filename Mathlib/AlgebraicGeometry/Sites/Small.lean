@@ -113,17 +113,13 @@ variable {S}
 lemma mem_overGrothendieckTopology (X : Over S) (R : Sieve X) :
     R ∈ S.overGrothendieckTopology P X ↔
       ∃ (𝒰 : Cover.{u} (precoverage P) X.left) (_ : 𝒰.Over S), 𝒰.toPresieveOver ≤ R.arrows := by
-  rw [GrothendieckTopology.mem_over_iff, mem_grothendieckTopology_iff]
-  constructor
-  · rintro ⟨𝒰, hle⟩
-    letI (i : 𝒰.I₀) : (𝒰.X i).Over S := { hom := 𝒰.f i ≫ X.hom }
-    letI : 𝒰.Over S :=
-      { over := inferInstance
-        isOver_map := fun i ↦ ⟨rfl⟩ }
-    refine ⟨𝒰, inferInstance, ?_⟩
-    rwa [Cover.toPresieveOver_le_arrows_iff]
-  · rintro ⟨𝒰, h𝒰, hle⟩
-    exact ⟨𝒰, (Cover.toPresieveOver_le_arrows_iff R 𝒰).mp hle⟩
+  simp_rw [GrothendieckTopology.mem_over_iff, mem_grothendieckTopology_iff]
+  refine exists_congr fun 𝒰 ↦ ?_
+  simp_rw [Cover.toPresieveOver_le_arrows_iff]
+  rw [exists_const_iff, iff_and_self]
+  intro
+  let (i : 𝒰.I₀) : (𝒰.X i).Over S := ⟨𝒰.f i ≫ X.hom⟩
+  exact ⟨⟨inferInstance, fun i ↦ ⟨rfl⟩⟩⟩
 
 variable (S) {P Q} in
 lemma locallyCoverDense_of_le (hPQ : P ≤ Q) :
@@ -171,8 +167,7 @@ variable {P Q}
 
 lemma mem_toGrothendieck_smallPretopology (X : Q.Over ⊤ S) (R : Sieve X) :
     R ∈ (S.smallPretopology P Q).toGrothendieck X ↔
-      ∀ x : X.left, ∃ (Y : Q.Over ⊤ S) (f : Y ⟶ X) (y : Y.left),
-        R f ∧ P f.left ∧ f.left y = x := by
+      ∀ x : X.left, ∃ (Y : Q.Over ⊤ S) (f : Y ⟶ X) (y : Y.left), R f ∧ P f.left ∧ f.left y = x := by
   refine ⟨?_, fun h ↦ ?_⟩
   · rintro ⟨T, ⟨hs, hP⟩, hle⟩ x
     obtain ⟨Z, g, ⟨⟨hf⟩⟩, y, hy⟩ := (Presieve.mem_comap_jointlySurjectivePrecoverage_iff _).mp hs x
