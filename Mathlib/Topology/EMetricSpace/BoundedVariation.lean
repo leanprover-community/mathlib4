@@ -475,10 +475,8 @@ theorem image_range_of_monotone (f : α → E) {u : ℕ → α} (hu : Monotone u
       · simp [IsLeast, hu n.le_succ]
     _ = _ := by simp [Finset.sum_range_succ, ih]
 
-/-- A function valued in a metric space has bounded variation on any `Finset` (the finiteness of
-the space's distances makes the total variation finite). -/
-theorem _root_.BoundedVariationOn.of_finset {E} [PseudoMetricSpace E] (f : α → E) (s : Finset α) :
-    BoundedVariationOn f s := by
+private theorem _root_.BoundedVariationOn.of_finset {E} [PseudoMetricSpace E] (f : α → E)
+    (s : Finset α) : BoundedVariationOn f s := by
   obtain rfl | hne := s.eq_empty_or_nonempty
   · simp [BoundedVariationOn]
   have := s.card_pos.2 hne
@@ -492,7 +490,8 @@ theorem _root_.BoundedVariationOn.of_finset {E} [PseudoMetricSpace E] (f : α �
   have hmono : Monotone u := fun _ _ _ ↦ OrderEmbedding.monotone _ (by grind)
   simp [BoundedVariationOn, this, image_range_of_monotone f hmono _]
 
-/-- A version of the previous theorem for `Finite` sets. -/
+/-- A function valued in a metric space has bounded variation on any `Finset` (the finiteness of
+the space's distances makes the total variation finite). -/
 @[simp]
 theorem _root_.BoundedVariationOn.of_finite {E} [PseudoMetricSpace E] (f : α → E) (s : Set α)
 [Finite s] : BoundedVariationOn f s := by
