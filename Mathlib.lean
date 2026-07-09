@@ -2990,6 +2990,7 @@ public import Mathlib.CategoryTheory.Limits.Types.Images
 public import Mathlib.CategoryTheory.Limits.Types.Limits
 public import Mathlib.CategoryTheory.Limits.Types.Multicoequalizer
 public import Mathlib.CategoryTheory.Limits.Types.Multiequalizer
+public import Mathlib.CategoryTheory.Limits.Types.PreservesLimit
 public import Mathlib.CategoryTheory.Limits.Types.Products
 public import Mathlib.CategoryTheory.Limits.Types.Pullbacks
 public import Mathlib.CategoryTheory.Limits.Types.Pushouts
@@ -7148,6 +7149,7 @@ public import Mathlib.SetTheory.Cardinal.Continuum
 public import Mathlib.SetTheory.Cardinal.CountableCover
 public import Mathlib.SetTheory.Cardinal.Defs
 public import Mathlib.SetTheory.Cardinal.Divisibility
+public import Mathlib.SetTheory.Cardinal.ENNReal
 public import Mathlib.SetTheory.Cardinal.ENat
 public import Mathlib.SetTheory.Cardinal.Embedding
 public import Mathlib.SetTheory.Cardinal.EventuallyConst
