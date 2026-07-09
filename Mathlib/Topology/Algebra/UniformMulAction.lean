@@ -50,6 +50,10 @@ export UniformContinuousConstVAdd (uniformContinuous_const_vadd)
 
 export UniformContinuousConstSMul (uniformContinuous_const_smul)
 
+instance AddSemigroup.uniformContinuousConstSMul_pnat [AddGroup X] [IsUniformAddGroup X] :
+    UniformContinuousConstSMul ℕ+ X :=
+  ⟨uniformContinuous_const_psmul⟩
+
 instance AddMonoid.uniformContinuousConstSMul_nat [AddGroup X] [IsUniformAddGroup X] :
     UniformContinuousConstSMul ℕ X :=
   ⟨uniformContinuous_const_nsmul⟩

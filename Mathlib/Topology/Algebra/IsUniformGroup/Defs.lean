@@ -314,6 +314,17 @@ theorem Filter.Tendsto.uniformity_mul_iff_left {ι : Type*} {f g : ι → α × 
     Tendsto (f * g) l (𝓤 α) ↔ Tendsto f l (𝓤 α) :=
   ⟨fun hfg ↦ by simpa using hfg.uniformity_mul hg.uniformity_inv, fun hf ↦ hf.uniformity_mul hg⟩
 
+@[to_additive (attr := fun_prop) UniformContinuous.const_psmul]
+theorem UniformContinuous.ppow_const [UniformSpace β] {f : β → α} (hf : UniformContinuous f)
+    (n : ℕ+) : UniformContinuous fun x => f x ^ n := by
+  induction n with
+  | one => simpa using hf
+  | succ n IH => simpa [ppow_succ] using IH.mul hf
+
+@[to_additive uniformContinuous_const_psmul]
+theorem uniformContinuous_ppow_const (n : ℕ+) : UniformContinuous fun x : α => x ^ n :=
+  uniformContinuous_id.ppow_const n
+
 @[to_additive (attr := fun_prop) UniformContinuous.const_nsmul]
 theorem UniformContinuous.pow_const [UniformSpace β] {f : β → α} (hf : UniformContinuous f) :
     ∀ n : ℕ, UniformContinuous fun x => f x ^ n
