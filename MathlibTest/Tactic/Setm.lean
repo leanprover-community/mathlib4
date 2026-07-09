@@ -1,47 +1,46 @@
 /-
 Copyright (c) 2026 Lua Viana Reis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Gareth Ma, Lua Viana Reis
+Authors: Lua Viana Reis, Gareth Ma
 -/
 import Mathlib.Tactic.Setm
 
-variable {a b c : Nat}
-
-/- Basic usage -/
+/- Basic usage. -/
 example : 1 + 2 = 3 := by
-  setm ?A + ?B = _
-  guard_target =ₛ A + B = 3
-  guard_hyp A :=ₛ 1
-  guard_hyp B :=ₛ 2
+  setm ?a + ?b = _
+  guard_target =ₛ a + b = 3
+  guard_hyp a :=ₛ 1
+  guard_hyp b :=ₛ 2
   trivial
 
-/- Assignment of constants under binders -/
+/- Assignment of a constant under a binder. -/
 example : (fun x ↦ x + 2) = (fun y ↦ y + 1 + 1) := by
   setm (fun x ↦ x + ?b) = _
   guard_target =ₛ (fun x ↦ x + b) = (fun y ↦ y + 1 + 1)
   guard_hyp b :=ₛ 2
   trivial
 
-/- Usage with `at` keywords -/
+/- Usage with `using` and `at` keywords -/
 set_option linter.unusedVariables false in
 example (h1 : 1 + 1 = 5) (h2 : 1 + 3 = 5) (h3 : 1 + 2 = 5) : True := by
-  setm ?A + _ = ?B using h1 at h1 h2 h3
-  guard_hyp A :=ₛ 1
-  guard_hyp B :=ₛ 5
-  guard_hyp h1 :ₛ A + A = B
-  guard_hyp h2 :ₛ A + 3 = B
-  guard_hyp h3 :ₛ A + 2 = B
+  setm ?a + _ = ?b using h1 at h1 h2 h3
+  guard_hyp a :=ₛ 1
+  guard_hyp b :=ₛ 5
+  guard_hyp h1 :ₛ a + a = b
+  guard_hyp h2 :ₛ a + 3 = b
+  guard_hyp h3 :ₛ a + 2 = b
   trivial
 
-set_option linter.unusedVariables false in
-example (h1 : 1 + 1 = 5) (h2 : 1 + 3 = 5) (h3 : 1 + 2 = 5) : True := by
-  setm ?A + ?B = _ using h2 at h1 h2 h3
-  guard_hyp A :=ₛ 1
-  guard_hyp B :=ₛ 3
-  guard_hyp h1 :ₛ A + A = 5
-  guard_hyp h2 :ₛ A + B = 5
-  guard_hyp h3 :ₛ A + 2 = 5
+/- Conflict with a previously defined local declaration name. (The previous one gets ignored.) -/
+example : 1 + 2 = 3 := by
+  let a := "foo"
+  setm ?a + ?b = _
+  guard_target =ₛ a + b = 3
+  guard_hyp a :=ₛ 1
+  guard_hyp b :=ₛ 2
   trivial
+
+variable {a b c : Nat}
 
 /- Test reusing named holes -/
 example (h : b + a = c) : a + b = c := by
@@ -77,7 +76,7 @@ example {a b c : NotQuiteNat} (h : a + b = c) : True := by
 
 /--
 error: setm pattern
-  @Eq Nat (A + B) ?m.12
+  @Eq Nat (A + B) ?m.18
 is not definitionally equal to the target
   @Eq NotQuiteNat (a + b) c
 -/
@@ -86,7 +85,7 @@ example {a b c : NotQuiteNat} (h : a + b = c) : True := by
   /- setm 1-/
   setm (?A : Nat) + ?B = _ using h
 
-/- Test conflicts with goal metavariables (thanks to Niklas Halonen for this example!) -/
+/- Test conflicts with goal metavariables (thanks to Niklas Halonen for this example). -/
 
 inductive AOrB where | A | B
 
