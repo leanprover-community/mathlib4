@@ -68,9 +68,9 @@ def toRatAlgEquiv [Ring R] [Ring S] [Algebra ℚ R] [Algebra ℚ S] (f : R ≃+*
   { f with commutes' := f.toRingHom.map_rat_algebraMap }
 
 @[simp]
-theorem toRatAlgEquiv_toRingEquiv [Ring R] [Ring S] [Algebra ℚ R] [Algebra ℚ S] (f : R ≃+* S) :
-    ↑f.toRatAlgEquiv = f :=
-  RingEquiv.ext fun _x => rfl
+theorem toRingEquiv_toRatAlgEquiv [Ring R] [Ring S] [Algebra ℚ R] [Algebra ℚ S] (f : R ≃+* S) :
+    f.toRatAlgEquiv = f :=
+  rfl
 
 @[simp]
 theorem toRatAlgEquiv_apply [Ring R] [Ring S] [Algebra ℚ R] [Algebra ℚ S] (f : R ≃+* S) (x : R) :
@@ -93,7 +93,7 @@ def RingEquiv.equivRatAlgEquiv [Ring R] [Ring S] [Algebra ℚ R] [Algebra ℚ S]
     (R ≃+* S) ≃ (R ≃ₐ[ℚ] S) where
   toFun := RingEquiv.toRatAlgEquiv
   invFun := AlgEquiv.toRingEquiv
-  left_inv f := RingEquiv.toRatAlgEquiv_toRingEquiv f
+  left_inv f := RingEquiv.toRingEquiv_toRatAlgEquiv f
   right_inv f := AlgEquiv.toRingEquiv_toRatAlgEquiv f
 
 end
