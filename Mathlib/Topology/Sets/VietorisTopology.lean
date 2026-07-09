@@ -649,8 +649,7 @@ instance [LocallyCompactSpace α] : LocallyCompactSpace (Compacts α) := by
 instance [SeparableSpace α] : SeparableSpace (Compacts α) := by
   obtain ⟨s, hs₁, hs₂⟩ := exists_countable_dense α
   refine ⟨_, (countable_setOf_finite_subset hs₁).preimage SetLike.coe_injective, ?_⟩
-  simp_rw [preimage_setOf_eq, dense_iff_closure_eq, closure_finite_subsets, hs₂.closure_eq,
-    Set.subset_univ, setOf_true]
+  simp [dense_iff_closure_eq, closure_finite_subsets, hs₂.closure_eq]
 
 @[simp]
 theorem separableSpace_iff : SeparableSpace (Compacts α) ↔ SeparableSpace α := by
@@ -661,11 +660,9 @@ theorem separableSpace_iff : SeparableSpace (Compacts α) ↔ SeparableSpace α 
   refine ⟨(fun K => Classical.epsilon (· ∈ K)) '' s, hs₁.image _,
     dense_iff_inter_open.mpr fun U hU ⟨x, hx⟩ => ?_⟩
   obtain ⟨K, ⟨hK₁, hK₂⟩, hK₃⟩ := hs₂.inter_open_nonempty _
-    ((isOpen_subsets_of_isOpen hU).inter (isOpen_inter_nonempty_of_isOpen hU))
-    ⟨{x}, by simpa⟩
-  let y := Classical.epsilon (· ∈ K)
-  have hy : y ∈ K := Classical.epsilon_spec (hK₂.mono inter_subset_left)
-  exact ⟨y, hK₁ hy, mem_image_of_mem _ hK₃⟩
+    ((isOpen_subsets_of_isOpen hU).inter (isOpen_inter_nonempty_of_isOpen hU)) ⟨{x}, by simpa⟩
+  refine ⟨Classical.epsilon (· ∈ K), ?_, mem_image_of_mem _ hK₃⟩
+  exact hK₁ <| Classical.epsilon_spec (hK₂.mono inter_subset_left)
 
 end Compacts
 
