@@ -325,6 +325,7 @@ theorem intValuation_eq_one_iff {v : HeightOneSpectrum R} {x : R} :
 variable (K) in
 /-- The `v`-adic valuation of `x : K` is the valuation of `r` divided by the valuation of `s`,
 where `r` and `s` are chosen so that `x = r/s`. -/
+@[no_expose]
 def valuation (v : HeightOneSpectrum R) : Valuation K ℤᵐ⁰ :=
   v.intValuation.extendToLocalization
     (fun r hr => Set.mem_compl <| v.intValuation_ne_zero' ⟨r, hr⟩) K
@@ -332,8 +333,7 @@ def valuation (v : HeightOneSpectrum R) : Valuation K ℤᵐ⁰ :=
 theorem valuation_def (x : K) :
     v.valuation K x =
       v.intValuation.extendToLocalization
-        (fun r hr => Set.mem_compl (v.intValuation_ne_zero' ⟨r, hr⟩)) K x :=
-  rfl
+        (fun r hr => Set.mem_compl (v.intValuation_ne_zero' ⟨r, hr⟩)) K x := by rw [valuation]
 
 set_option backward.isDefEq.respectTransparency.types false in
 /--

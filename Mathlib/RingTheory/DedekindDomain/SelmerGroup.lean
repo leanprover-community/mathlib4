@@ -97,7 +97,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 theorem valuationOfNeZeroToFun_eq (x : Kˣ) :
     (v.valuationOfNeZeroToFun x : ℤᵐ⁰) = v.valuation K x := by
   classical
-  rw [show v.valuation K x = _ * _ by rfl]
+  rw [show v.valuation K x = _ * _ by rw [valuation_def]; rfl]
   rw [Units.val_inv_eq_inv_val]
   change _ = ite _ _ _ * (ite _ _ _)⁻¹
   simp_rw [IsLocalization.toLocalizationMap_sec, SubmonoidClass.coe_subtype,
