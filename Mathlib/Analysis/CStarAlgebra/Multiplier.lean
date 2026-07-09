@@ -305,6 +305,12 @@ theorem intCast_fst (n : ℤ) : (n : 𝓜(𝕜, A)).fst = n :=
 theorem intCast_snd (n : ℤ) : (n : 𝓜(𝕜, A)).snd = n :=
   rfl
 
+theorem ppow_fst (n : ℕ+) (a : 𝓜(𝕜, A)) : (a ^ n).fst = a.fst ^ n :=
+  rfl
+
+theorem ppow_snd (n : ℕ+) (a : 𝓜(𝕜, A)) : (a ^ n).snd = a.snd ^ n :=
+  rfl
+
 theorem pow_fst (n : ℕ) (a : 𝓜(𝕜, A)) : (a ^ n).fst = a.fst ^ n :=
   rfl
 
@@ -334,7 +340,7 @@ theorem range_toProdMulOpposite :
 `DoubleCentralizer.toProdMulOpposite : 𝓜(𝕜, A) → (A →L[𝕜] A) × (A →L[𝕜] A)ᵐᵒᵖ` -/
 instance instRing : Ring 𝓜(𝕜, A) :=
   toProdMulOpposite_injective.ring _ rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
-    (fun _ _ => rfl) (fun _x _n => Prod.ext rfl <| MulOpposite.op_smul _ _)
+    (fun _ _ => rfl) (fun n _ => Prod.ext rfl <| MulOpposite.op_smul n _)
     (fun _x _n => Prod.ext rfl <| MulOpposite.op_smul _ _)
     (fun _x _n => Prod.ext rfl <| MulOpposite.op_smul _ _)
     (fun _x _n => Prod.ext rfl <| MulOpposite.op_ppow _ _)
