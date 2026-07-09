@@ -215,15 +215,17 @@ lemma r_integral_of_u_integral : ∃ r : R, algebraMap R K r = CK.r := by
   refine IsIntegrallyClosed.isIntegral_iff.mp ⟨X ^ 4 - C (integralModel R W).b₄ * X ^ 2 -
     C (u ^ 6 * (integralModel R W').b₆ + 2 * (integralModel R W).b₆) * X -
     C ((integralModel R W).b₈ - u ^ 8 * (integralModel R W').b₈), by monicity!, ?_⟩
-  simp [map_ofNat, hu, ← hCK, variableChange_b₆, variableChange_b₈]
-  grind
+  simp [map_ofNat, hu, ← hCK, integralModel_b₄_eq, integralModel_b₆_eq,
+    integralModel_b₈_eq, variableChange_b₆, variableChange_b₈]
+  ring1
 
 lemma s_integral_of_u_integral : ∃ s : R, algebraMap R K s = CK.s := by
   rcases r_integral_of_u_integral hCK hu with ⟨r, hr⟩
   refine IsIntegrallyClosed.isIntegral_iff.mp ⟨X ^ 2 + C (integralModel R W).a₁ * X +
     C (u ^ 2 * (integralModel R W').a₂ - (integralModel R W).a₂ - 3 * r), by monicity!, ?_⟩
-  simp [map_ofNat, hu, hr, ← hCK, variableChange_a₂]
-  grind
+  simp [map_ofNat, hu, hr, ← hCK, integralModel_a₁_eq, integralModel_a₂_eq,
+    variableChange_a₂]
+  ring1
 
 lemma t_integral_of_u_integral : ∃ t : R, algebraMap R K t = CK.t := by
   rcases r_integral_of_u_integral hCK hu with ⟨r, hr⟩
@@ -231,8 +233,9 @@ lemma t_integral_of_u_integral : ∃ t : R, algebraMap R K t = CK.t := by
     C ((integralModel R W).a₃ + r * (integralModel R W).a₁) * X +
     C (u ^ 6 * (integralModel R W').a₆ - (integralModel R W).a₆ - r * (integralModel R W).a₄
       - r ^ 2 * (integralModel R W).a₂ - r ^ 3), by monicity!, ?_⟩
-  simp [hu, hr, ← hCK, variableChange_a₆]
-  grind
+  simp [hu, hr, ← hCK, integralModel_a₁_eq, integralModel_a₂_eq, integralModel_a₃_eq,
+    integralModel_a₄_eq, integralModel_a₆_eq, variableChange_a₆]
+  ring1
 
 /-- A variable change over the fraction field between integral Weierstrass equations descends to the
 base ring if its `u` coefficient descends to a unit of the base ring. -/
