@@ -466,7 +466,7 @@ theorem union' (f : α → E) {s t : Set α} {x y : α} (hs : IsGreatest s x) (h
 /-- The variation of `f` along the image of `{0, …, n}` under a monotone sequence `u` is the sum of
 the distances between consecutive values. -/
 theorem image_range_of_monotone (f : α → E) {u : ℕ → α} (hu : Monotone u) (n : ℕ) :
-    eVariationOn f (u '' .Iic n) = ∑ i ∈ .range n, edist (f (u i)) (f (u (i + 1))) := by
+    eVariationOn f (u '' Iic n) = ∑ i ∈ .range n, edist (f (u i)) (f (u (i + 1))) := by
   induction n with
   | zero => simp [Iic]
   | succ n ih => calc
