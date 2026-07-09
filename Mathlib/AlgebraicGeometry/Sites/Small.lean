@@ -181,19 +181,11 @@ lemma mem_smallGrothendieckTopology (X : P.Over ⊤ S) (R : Sieve X) :
       ∃ (𝒰 : Cover.{u} (precoverage P) X.left) (_ : 𝒰.Over S) (h : ∀ j, P (𝒰.X j ↘ S)),
           𝒰.toPresieveOverProp h ≤ R.arrows := by
   rw [Functor.mem_restrictedTopology_iff, mem_overGrothendieckTopology]
-  constructor
-  · rintro ⟨𝒰, h𝒰, hle⟩
-    have hj (j : 𝒰.I₀) : P (𝒰.X j ↘ S) := by
-      rw [← comp_over (𝒰.f j) S]
-      exact P.comp_mem _ _ (𝒰.map_prop j) X.prop
-    refine ⟨𝒰, h𝒰, hj, ?_⟩
-    rintro - - ⟨i⟩
-    let fi : (𝒰.X i).asOverProp S (hj i) ⟶ X := (𝒰.f i).asOverProp S
-    have h : R.functorPushforward _ ((MorphismProperty.Over.forget P ⊤ S).map fi) := hle _ _ ⟨i⟩
-    rwa [Sieve.functorPushforward_apply, Sieve.mem_functorPushforward_iff_of_full_of_faithful] at h
-  · rintro ⟨𝒰, h𝒰, p, hle⟩
-    refine ⟨𝒰, h𝒰, ?_⟩
-    rintro - - ⟨i⟩
-    exact ⟨(𝒰.X i).asOverProp S (p i), (𝒰.f i).asOverProp S, 𝟙 _, hle _ _ ⟨i⟩, rfl⟩
+  apply exists₂_congr
+  intro 𝒰 h𝒰
+  refine ⟨fun hle ↦ ?_, fun ⟨_, hle⟩ ↦ ?_⟩
+  · exact ⟨fun j ↦ comp_over (𝒰.f j) S ▸ P.comp_mem _ _ (𝒰.map_prop j) X.prop,
+      fun _ _ ⟨i⟩ ↦ (Sieve.mem_functorPushforward_iff_of_full_of_faithful _ _ _).mp (hle _ _ ⟨i⟩)⟩
+  · exact fun _ _ ⟨i⟩ ↦ Sieve.image_mem_functorPushforward _ _ (hle _ _ ⟨i⟩)
 
 end AlgebraicGeometry.Scheme
