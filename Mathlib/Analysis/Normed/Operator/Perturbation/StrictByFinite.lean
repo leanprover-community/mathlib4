@@ -104,12 +104,9 @@ theorem step1 [T2Space F] (u : E →L[𝕜] F) (A : Submodule 𝕜 E)
   -- Furthermore, because the kernel of `u` is fully contained in `S`, we can show that
   -- `map u S ⊓ map u A = ⊥`, so that `map u S` and `map u A` are in fact algebraic complements
   -- of each other.
-  have uS_compl_uA : IsCompl (map u.toLinearMap S) (map u.toLinearMap A) := by
-    constructor
-    · rw [disjoint_iff, inf_comm, map_inf_eq_map_inf_comap, comap_map_eq, sup_eq_left.mpr ker_le_S,
-        S_compl_A.symm.inf_eq_bot, Submodule.map_bot]
-    · rw [codisjoint_iff, ← Submodule.map_sup, S_compl_A.sup_eq_top, Submodule.map_top,
-        h_range]
+  have uS_compl_uA : IsCompl (map u.toLinearMap S) (map u.toLinearMap A) :=
+    ⟨disjoint_map_of_ker_le_left S_compl_A.disjoint ker_le_S,
+      codisjoint_map (LinearMap.range_eq_top.mp h_range) S_compl_A.codisjoint⟩
   -- Because `A` (resp. `map u A`) is closed and `S` (resp `map u S`) has finite dimension,
   -- `A` and `S` (resp `map u A` and `map u S`) are in fact *topological* complements of each other.
   replace S_compl_A : IsTopCompl S A :=
