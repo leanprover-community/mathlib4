@@ -10,6 +10,7 @@ variable {a b c : Nat}
 /- Basic usage -/
 example : 1 + 2 = 3 := by
   setm ?A + ?B = _
+  guard_target =ₛ A + B = 3
   guard_hyp A :=ₛ 1
   guard_hyp B :=ₛ 2
   trivial
@@ -17,6 +18,7 @@ example : 1 + 2 = 3 := by
 /- Assignment of constants under binders -/
 example : (fun x ↦ x + 2) = (fun y ↦ y + 1 + 1) := by
   setm (fun x ↦ x + ?b) = _
+  guard_target =ₛ (fun x ↦ x + b) = (fun y ↦ y + 1 + 1)
   guard_hyp b :=ₛ 2
   trivial
 
@@ -45,6 +47,7 @@ example (h1 : 1 + 1 = 5) (h2 : 1 + 3 = 5) (h3 : 1 + 2 = 5) : True := by
 example (h : b + a = c) : a + b = c := by
   /- setm 1-/
   setm ?A + ?B = _
+  guard_target =ₛ A + B = c
   guard_hyp A :=ₛ a
   guard_hyp B :=ₛ b
   /- clean up -/
@@ -53,9 +56,9 @@ example (h : b + a = c) : a + b = c := by
   /- setm 2 -/
   rewrite [Nat.add_comm]
   setm ?A + ?B = _ at h
+  guard_hyp h :ₛ A + B = c
   guard_hyp A :=ₛ b
   guard_hyp B :=ₛ a
-  guard_hyp h :ₛ A + B = c
   exact h
 
 /- Test reducible + instances transparency -/
@@ -67,6 +70,7 @@ instance : HAdd NotQuiteNat NotQuiteNat NotQuiteNat := inferInstanceAs (HAdd Nat
 example {a b c : NotQuiteNat} (h : a + b = c) : True := by
   /- setm 1-/
   setm ?A + ?B = _ using h
+  guard_hyp h :ₛ A + B = c
   guard_hyp A := a
   guard_hyp B := b
   trivial
@@ -89,6 +93,7 @@ inductive AOrB where | A | B
 example (h : AOrB) : 1 + 2 = 3 := by
   cases h
   · setm ?A + ?B = _
+    guard_target =ₛ A + B = 3
     guard_hyp A :=ₛ 1
     guard_hyp B :=ₛ 2
     trivial
