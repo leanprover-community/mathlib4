@@ -19,7 +19,7 @@ types, `MulOpposite`, etc.
 
 public section
 
-noncomputable section
+section
 
 open Filter Finset Function
 

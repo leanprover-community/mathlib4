@@ -18,7 +18,7 @@ TODO: merge with parts of `Mathlib/Algebra/Polynomial/AlgebraMap.lean`?
 
 public section
 
-noncomputable section
+section
 
 open Finset AddMonoidAlgebra
 

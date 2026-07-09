@@ -19,7 +19,7 @@ This file proves results about angles in circles and spheres.
 public section
 
 
-noncomputable section
+section
 
 open Module Complex
 

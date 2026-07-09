@@ -18,7 +18,7 @@ open Function Set Submodule Finsupp Module
 
 assert_not_exists Ordinal
 
-noncomputable section
+section
 
 universe u
 

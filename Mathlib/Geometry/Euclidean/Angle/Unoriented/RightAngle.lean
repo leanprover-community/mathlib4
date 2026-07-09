@@ -29,7 +29,7 @@ triangle unnecessarily.
 public section
 
 
-noncomputable section
+section
 
 open scoped EuclideanGeometry
 

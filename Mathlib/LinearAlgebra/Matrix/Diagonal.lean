@@ -22,7 +22,7 @@ matrix, diagonal, linear map
 public section
 
 
-noncomputable section
+section
 
 open LinearMap Matrix Set Submodule Matrix
 

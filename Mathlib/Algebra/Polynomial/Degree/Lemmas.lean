@@ -19,7 +19,7 @@ Some of the main results include
 public section
 
 
-noncomputable section
+section
 
 open Polynomial
 

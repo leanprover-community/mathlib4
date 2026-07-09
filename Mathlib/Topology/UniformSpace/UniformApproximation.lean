@@ -30,7 +30,7 @@ Uniform limit, uniform convergence, tends uniformly to
 public section
 
 
-noncomputable section
+section
 
 open Topology Uniformity Filter SetRel Set Uniform
 

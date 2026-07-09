@@ -29,7 +29,7 @@ public section
 
 universe v v₁ v₂ u₁ u₂
 
-noncomputable section
+section
 
 open CategoryTheory Limits
 

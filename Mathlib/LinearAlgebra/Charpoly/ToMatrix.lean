@@ -22,7 +22,7 @@ public import Mathlib.RingTheory.Finiteness.Prod
 
 public section
 
-noncomputable section
+section
 
 open Module Free Polynomial Matrix
 

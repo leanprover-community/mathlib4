@@ -20,7 +20,7 @@ public import Mathlib.Data.Nat.Choose.Multinomial
 
 public section
 
-noncomputable section
+section
 
 open scoped NNReal Nat ContDiff
 

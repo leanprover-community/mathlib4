@@ -29,7 +29,7 @@ public section
 
 assert_not_exists Module Finsupp Ordinal.log
 
-noncomputable section
+section
 
 open Function Set Cardinal Equiv Order Ordinal
 

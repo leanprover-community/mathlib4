@@ -16,7 +16,7 @@ public import Mathlib.LinearAlgebra.Matrix.CharP
 public section
 
 
-noncomputable section
+section
 
 open Polynomial Matrix
 

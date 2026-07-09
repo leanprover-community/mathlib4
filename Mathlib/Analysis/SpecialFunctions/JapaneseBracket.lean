@@ -30,7 +30,7 @@ than the dimension.
 public section
 
 
-noncomputable section
+section
 
 open scoped NNReal Filter Topology ENNReal
 

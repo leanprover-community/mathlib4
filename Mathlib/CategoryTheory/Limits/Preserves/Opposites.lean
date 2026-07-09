@@ -21,7 +21,7 @@ public section
 
 universe w w' v₁ v₂ u₁ u₂
 
-noncomputable section
+section
 
 open CategoryTheory
 

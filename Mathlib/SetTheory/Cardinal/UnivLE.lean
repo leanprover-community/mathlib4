@@ -14,7 +14,7 @@ public import Mathlib.SetTheory.Ordinal.Univ
 
 public section
 
-noncomputable section
+section
 
 universe u v
 

@@ -50,7 +50,7 @@ open Topology
 
 public section
 
-noncomputable section
+section
 
 namespace Manifold
 

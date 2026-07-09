@@ -45,7 +45,7 @@ Primed versions of the three results above are also stated for when the endpoint
 
 public section
 
-noncomputable section
+section
 
 open Finset MeasureTheory
 

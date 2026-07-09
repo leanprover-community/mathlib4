@@ -27,7 +27,7 @@ Results requiring a group (rather than monoid) structure on the target should go
 
 public section
 
-noncomputable section
+section
 
 open Filter Finset Function Topology SummationFilter
 

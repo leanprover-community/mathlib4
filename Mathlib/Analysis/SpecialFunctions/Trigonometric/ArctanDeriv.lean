@@ -17,7 +17,7 @@ Continuity and derivatives of the tangent and arctangent functions.
 public section
 
 
-noncomputable section
+section
 
 namespace Real
 

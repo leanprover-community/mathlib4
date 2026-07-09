@@ -26,7 +26,7 @@ open Set Filter Function
 
 open Topology
 
-noncomputable section
+section
 
 namespace Real
 

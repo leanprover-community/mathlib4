@@ -45,7 +45,7 @@ equivalence to an inner-product space.
 
 public section
 
-noncomputable section
+section
 
 open MeasureTheory Filter Complex Set Module
 

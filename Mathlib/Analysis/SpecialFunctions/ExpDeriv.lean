@@ -25,7 +25,7 @@ public section
 
 assert_not_exists IsConformalMap Conformal
 
-noncomputable section
+section
 
 open Filter Asymptotics Set Function
 open scoped Topology

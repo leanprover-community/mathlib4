@@ -114,7 +114,7 @@ universe u v
 open Finset NNReal ENNReal
 open scoped BigOperators
 
-noncomputable section
+section
 
 variable {ι : Type u} (s : Finset ι)
 

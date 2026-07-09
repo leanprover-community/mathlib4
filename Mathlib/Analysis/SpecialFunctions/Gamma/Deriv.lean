@@ -29,7 +29,7 @@ Gamma
 public section
 
 
-noncomputable section
+section
 
 open Filter Set Real Asymptotics
 open scoped Topology

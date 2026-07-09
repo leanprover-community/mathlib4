@@ -16,7 +16,7 @@ public import Mathlib.Algebra.MonoidAlgebra.PointwiseSMul
 
 open Finset Function
 
-noncomputable section
+section
 
 variable {G P F R S U V : Type*}
 

@@ -25,7 +25,7 @@ ambient space, which allows us to relate `AnalyticWithinAt` to analyticity of a 
 
 public section
 
-noncomputable section
+section
 
 open scoped Topology Filter ENNReal
 open Set Filter Metric

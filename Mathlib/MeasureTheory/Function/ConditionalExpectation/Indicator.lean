@@ -26,7 +26,7 @@ a restricted measure.
 public section
 
 
-noncomputable section
+section
 
 open TopologicalSpace MeasureTheory.Lp Filter ContinuousLinearMap
 

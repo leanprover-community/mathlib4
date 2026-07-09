@@ -16,7 +16,7 @@ public import Mathlib.MeasureTheory.Constructions.BorelSpace.Complex
 public section
 
 
-noncomputable section
+section
 
 open NNReal ENNReal
 

@@ -17,7 +17,7 @@ public import Mathlib.RingTheory.MvPolynomial
 
 public section
 
-noncomputable section
+section
 
 universe u v
 

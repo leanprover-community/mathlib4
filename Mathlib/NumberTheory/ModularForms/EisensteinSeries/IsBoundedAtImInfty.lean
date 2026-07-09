@@ -28,7 +28,7 @@ we then use our bounds for Eisenstein series in these vertical strips to get the
 
 public section
 
-noncomputable section
+section
 
 open ModularForm UpperHalfPlane Matrix SlashInvariantForm CongruenceSubgroup
 

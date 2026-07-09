@@ -18,7 +18,7 @@ public import Mathlib.Algebra.Polynomial.Degree.Operations
 
 public section
 
-noncomputable section
+section
 
 open Finsupp Finset
 

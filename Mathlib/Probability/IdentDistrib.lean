@@ -56,7 +56,7 @@ public section
 
 open MeasureTheory Filter Finset
 
-noncomputable section
+section
 
 open scoped Topology MeasureTheory ENNReal NNReal
 

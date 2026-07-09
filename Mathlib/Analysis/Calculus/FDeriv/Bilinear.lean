@@ -22,7 +22,7 @@ public section
 
 open Asymptotics Topology
 
-noncomputable section
+section
 
 section
 

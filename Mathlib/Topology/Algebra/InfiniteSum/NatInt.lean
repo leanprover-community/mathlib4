@@ -21,7 +21,7 @@ several results relating sums and products on `ℕ` to sums and products on `ℤ
 
 public section
 
-noncomputable section
+section
 
 open Filter Finset Function Encodable
 

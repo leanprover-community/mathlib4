@@ -35,7 +35,7 @@ We also prove that in Baire spaces, the `residual` sets are exactly those contai
 public section
 
 
-noncomputable section
+section
 
 open scoped Topology
 open Filter Set TopologicalSpace

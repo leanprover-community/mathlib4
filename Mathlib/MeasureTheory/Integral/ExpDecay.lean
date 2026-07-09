@@ -21,7 +21,7 @@ for integrability:
 public section
 
 
-noncomputable section
+section
 
 open Real intervalIntegral MeasureTheory Set Filter
 

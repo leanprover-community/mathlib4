@@ -18,7 +18,7 @@ this and related statements.
 
 public section
 
-noncomputable section
+section
 
 open scoped Manifold
 

@@ -16,7 +16,7 @@ public import Mathlib.Analysis.Normed.Module.FiniteDimension
 public section
 
 
-noncomputable section
+section
 
 universe uD uE uF
 

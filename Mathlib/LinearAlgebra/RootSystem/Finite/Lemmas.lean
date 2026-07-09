@@ -31,7 +31,7 @@ root pairings.
 
 public section
 
-noncomputable section
+section
 
 open Function Set
 open Submodule (span)

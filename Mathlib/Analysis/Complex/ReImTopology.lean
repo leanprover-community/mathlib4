@@ -37,7 +37,7 @@ public section
 
 open Set Topology
 
-noncomputable section
+section
 
 namespace Complex
 

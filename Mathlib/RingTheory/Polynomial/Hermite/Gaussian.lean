@@ -32,7 +32,7 @@ polynomial factor occurring in the `n`th derivative of a Gaussian.
 public section
 
 
-noncomputable section
+section
 
 open Polynomial
 

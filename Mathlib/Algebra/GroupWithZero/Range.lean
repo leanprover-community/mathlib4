@@ -172,7 +172,7 @@ end ValueGroup₀
 
 end Restrict
 
-noncomputable section GroupWithZero
+section GroupWithZero
 
 variable [GroupWithZero A] [GroupWithZero B] {f : A →*₀ B}
 

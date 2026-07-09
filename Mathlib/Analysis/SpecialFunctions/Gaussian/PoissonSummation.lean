@@ -29,7 +29,7 @@ open scoped Real Topology FourierTransform RealInnerProductSpace
 
 open Complex hiding exp continuous_exp
 
-noncomputable section
+section
 
 section GaussianPoisson
 

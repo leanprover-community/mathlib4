@@ -21,7 +21,7 @@ public section
 
 assert_not_exists UniformOnFun
 
-noncomputable section
+section
 
 open Filter Int Metric Set TopologicalSpace Bornology
 open scoped Topology Uniformity Interval

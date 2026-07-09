@@ -20,7 +20,7 @@ public import Mathlib.Algebra.Prime.Defs
 
 public section
 
-noncomputable section
+section
 
 open Finset AddMonoidAlgebra
 

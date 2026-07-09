@@ -15,7 +15,7 @@ public import Mathlib.RingTheory.Ideal.Maps
 
 public section
 
-noncomputable section
+section
 
 open Polynomial
 

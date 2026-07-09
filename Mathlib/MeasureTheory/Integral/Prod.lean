@@ -35,7 +35,7 @@ product measure, Fubini's theorem, Fubini-Tonelli theorem
 
 public section
 
-noncomputable section
+section
 
 open scoped Topology ENNReal MeasureTheory
 

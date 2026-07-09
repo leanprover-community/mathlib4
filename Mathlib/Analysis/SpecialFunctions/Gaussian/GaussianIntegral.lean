@@ -23,7 +23,7 @@ We prove various versions of the formula for the Gaussian integral:
 
 public section
 
-noncomputable section
+section
 
 open Real Set MeasureTheory Filter Asymptotics
 

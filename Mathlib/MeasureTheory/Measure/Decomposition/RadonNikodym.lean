@@ -47,7 +47,7 @@ public section
 assert_not_exists InnerProductSpace
 assert_not_exists MeasureTheory.VectorMeasure
 
-noncomputable section
+section
 
 open scoped MeasureTheory NNReal ENNReal
 

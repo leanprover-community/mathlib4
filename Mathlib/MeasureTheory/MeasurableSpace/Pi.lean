@@ -21,7 +21,7 @@ generate the σ-algebra on the indexed product of `α i`s.
 
 public section
 
-noncomputable section
+section
 
 open Function Set MeasurableSpace Encodable
 

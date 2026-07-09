@@ -18,7 +18,7 @@ public section
 
 assert_not_exists MeasureTheory.Measure
 
-noncomputable section
+section
 
 open Set MeasurableSpace
 

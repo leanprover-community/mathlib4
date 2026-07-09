@@ -50,7 +50,7 @@ open Filter Set Finset Metric
 
 open BoxIntegral.IntegrationParams (GP gp_le)
 
-noncomputable section
+section
 
 universe u
 

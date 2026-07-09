@@ -39,7 +39,7 @@ unnecessarily.
 
 public section
 
-noncomputable section
+section
 
 open scoped CharZero Real RealInnerProductSpace
 

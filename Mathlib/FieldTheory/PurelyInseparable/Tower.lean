@@ -47,7 +47,7 @@ public section
 
 open Polynomial IntermediateField Field
 
-noncomputable section
+section
 
 universe u v w
 

@@ -39,7 +39,7 @@ theorems that need it.
 
 public section
 
-noncomputable section
+section
 
 open RealInnerProductSpace
 

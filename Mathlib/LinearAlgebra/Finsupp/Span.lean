@@ -18,7 +18,7 @@ function with finite support, module, linear algebra
 
 public section
 
-noncomputable section
+section
 
 open Set LinearMap Submodule
 

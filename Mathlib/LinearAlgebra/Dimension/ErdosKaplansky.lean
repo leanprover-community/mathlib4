@@ -21,7 +21,7 @@ public import Mathlib.SetTheory.Cardinal.Subfield
 
 public section
 
-noncomputable section
+section
 
 universe u v
 

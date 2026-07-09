@@ -21,7 +21,7 @@ MDifferentiable.
 
 public section
 
-noncomputable section
+section
 
 open UpperHalfPlane Filter Function Complex Manifold CongruenceSubgroup
 

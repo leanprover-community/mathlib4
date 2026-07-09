@@ -30,7 +30,7 @@ easier-to-use result `Real.tsum_eq_tsum_fourierIntegral_of_rpow_decay`, in which
 public section
 
 
-noncomputable section
+section
 
 open Function hiding comp_apply
 

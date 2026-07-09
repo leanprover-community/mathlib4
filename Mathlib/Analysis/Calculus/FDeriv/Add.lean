@@ -28,7 +28,7 @@ public section
 
 open Filter Asymptotics ContinuousLinearMap
 
-noncomputable section
+section
 
 section
 

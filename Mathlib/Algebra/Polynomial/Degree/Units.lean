@@ -14,7 +14,7 @@ public import Mathlib.Algebra.Polynomial.Degree.SmallDegree
 
 public section
 
-noncomputable section
+section
 
 open Finsupp Finset Polynomial
 

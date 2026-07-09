@@ -40,7 +40,7 @@ conservative dynamical system, Poincare recurrence theorem
 public section
 
 
-noncomputable section
+section
 
 namespace MeasureTheory
 

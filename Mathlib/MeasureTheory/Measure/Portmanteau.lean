@@ -88,7 +88,7 @@ probability measure
 public section
 
 
-noncomputable section
+section
 
 open MeasureTheory Set Filter BoundedContinuousFunction
 open scoped Topology ENNReal NNReal BoundedContinuousFunction

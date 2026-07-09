@@ -27,7 +27,7 @@ satisfying relations associated to the Cartan matrix of the input root system.
 
 public section
 
-noncomputable section
+section
 
 namespace RootPairing.GeckConstruction
 

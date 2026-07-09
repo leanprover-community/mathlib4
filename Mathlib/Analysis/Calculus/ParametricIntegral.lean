@@ -58,7 +58,7 @@ integral, derivative
 public section
 
 
-noncomputable section
+section
 
 open TopologicalSpace MeasureTheory Filter Metric
 

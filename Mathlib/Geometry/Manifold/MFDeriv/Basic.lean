@@ -26,7 +26,7 @@ mimicking the API for Fréchet derivatives.
 
 public section
 
-noncomputable section
+section
 
 assert_not_exists tangentBundleCore
 

@@ -17,7 +17,7 @@ Basic facts and derivatives for the complex trigonometric functions.
 public section
 
 
-noncomputable section
+section
 
 namespace Complex
 

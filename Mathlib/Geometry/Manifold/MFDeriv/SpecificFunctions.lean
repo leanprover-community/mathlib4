@@ -23,7 +23,7 @@ In this file, we establish differentiability results for
 
 public section
 
-noncomputable section
+section
 
 open scoped Manifold
 open Bundle Set Topology

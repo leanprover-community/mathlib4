@@ -28,7 +28,7 @@ We then show in `summable_one_div_rpow_max` that the sum of `max (|c|, |d|) ^ (-
 
 public section
 
-noncomputable section
+section
 
 open Complex UpperHalfPlane Set Finset CongruenceSubgroup Topology
 
