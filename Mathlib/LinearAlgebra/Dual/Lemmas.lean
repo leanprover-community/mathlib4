@@ -1072,8 +1072,8 @@ variable (R A : Type*) (M : Type*) (N : Type*)
 variable {ι κ : Type*}
 variable [DecidableEq ι] [DecidableEq κ]
 variable [Fintype ι] [Fintype κ]
+
 open TensorProduct
-open TensorProduct LinearMap
 
 attribute [local ext] TensorProduct.ext
 
