@@ -167,6 +167,7 @@ noncomputable def dualFunctor : SmRep.{u} k G ⥤ (SmRep.{u} k G)ᵒᵖ where
   obj A := op ((ihom A).obj (𝟙_ (SmRep.{u} k G)))
   map {A B} f := op ((MonoidalClosed.pre (C := SmRep.{u} k G) f).app (𝟙_ (SmRep.{u} k G)))
 
+/-- The smooth dual representation. -/
 noncomputable abbrev dual (A : SmRep.{u} k G) := unop (dualFunctor.obj A)
 
 /-- The underlying construction of the dualizing functor is given by `contragredient`. -/
