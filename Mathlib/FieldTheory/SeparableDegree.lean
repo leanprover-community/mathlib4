@@ -159,7 +159,7 @@ def embEquivOfEquiv (i : E ≃ₐ[F] K) :
     intro x
     have h := isAlgebraic_algebraMap (R := E) (A := K) (i.symm.toAlgHom x)
     rw [show ∀ y : E, (algebraMap E K) y = i.toAlgHom y from fun y ↦ rfl] at h
-    simpa only [AlgEquiv.coe_algHom, AlgEquiv.apply_symm_apply] using h
+    simpa only [AlgEquiv.coe_toAlgHom, AlgEquiv.apply_symm_apply] using h
   apply AlgEquiv.restrictScalars (R := F) (S := E)
   exact IsAlgClosure.equivOfAlgebraic E K (AlgebraicClosure K) (AlgebraicClosure E)
 
@@ -299,7 +299,7 @@ namespace Polynomial
 variable {F E}
 variable (f : F[X])
 
-open Classical in
+open scoped Classical in
 /-- The separable degree `Polynomial.natSepDegree` of a polynomial is a natural number,
 defined to be the number of distinct roots of it over its splitting field.
 This is similar to `Polynomial.natDegree` but not to `Polynomial.degree`, namely, the separable
