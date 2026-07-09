@@ -60,7 +60,7 @@ open Function
 
 namespace Finset
 
-/-- The class of additive monoids with an antidiagonal. -/
+/-- The class of additive magmas with an antidiagonal. -/
 class HasAntidiagonal (A : Type*) [Add A] where
   /-- The antidiagonal of an element `n` is the finset of pairs `(i, j)` such that
   `i + j = n`. -/
@@ -72,7 +72,7 @@ export HasAntidiagonal (antidiagonal mem_antidiagonal)
 
 attribute [simp] mem_antidiagonal
 
-/-- The class of (multiplicative) monoids with a mulAntidiagonal. -/
+/-- The class of (multiplicative) magmas with a mulAntidiagonal. -/
 class HasMulAntidiagonal (A : Type*) [Mul A] where
   /-- The mulAntidiagonal of an element `n` is the finset of pairs `(i, j)` such that
   `i * j = n`. -/
@@ -92,14 +92,14 @@ namespace HasMulAntidiagonal
 
 /-- All `HasMulAntidiagonal` instances are equal -/
 @[to_additive /-- All `HasAntidiagonal` instances are equal -/]
-instance [Monoid A] : Subsingleton (HasMulAntidiagonal A) where
+instance [Mul A] : Subsingleton (HasMulAntidiagonal A) where
   allEq := by
     rintro ⟨a, ha⟩ ⟨b, hb⟩
     congr with n xy
     rw [ha, hb]
 
 @[to_additive]
-lemma nonempty_antidiagonal {M : Type*} [Monoid M] [Finset.HasMulAntidiagonal M] (a : M) :
+lemma nonempty_antidiagonal {M : Type*} [MulOneClass M] [Finset.HasMulAntidiagonal M] (a : M) :
     (Finset.mulAntidiagonal a).Nonempty :=
   ⟨(1, a), by simp⟩
 
@@ -107,23 +107,22 @@ lemma nonempty_antidiagonal {M : Type*} [Monoid M] [Finset.HasMulAntidiagonal M]
 -- when the decidability instances obfuscate Lean
 set_option linter.overlappingInstances false in
 @[to_additive]
-lemma congr (A : Type*) [Monoid A]
-    [H1 : HasMulAntidiagonal A] [H2 : HasMulAntidiagonal A] :
+lemma congr (A : Type*) [Mul A] [H1 : HasMulAntidiagonal A] [H2 : HasMulAntidiagonal A] :
     H1.mulAntidiagonal = H2.mulAntidiagonal := by congr!; subsingleton
 
 @[to_additive]
-theorem swap_mem_mulAntidiagonal [CommMonoid A] [HasMulAntidiagonal A] {n : A} {xy : A × A} :
+theorem swap_mem_mulAntidiagonal [CommMagma A] [HasMulAntidiagonal A] {n : A} {xy : A × A} :
     xy.swap ∈ mulAntidiagonal n ↔ xy ∈ mulAntidiagonal n := by
   simp [mul_comm]
 
 @[to_additive (attr := simp) map_prodComm_antidiagonal]
-theorem map_prodComm_mulAntidiagonal [CommMonoid A] [HasMulAntidiagonal A] {n : A} :
+theorem map_prodComm_mulAntidiagonal [CommMagma A] [HasMulAntidiagonal A] {n : A} :
     (mulAntidiagonal n).map (Equiv.prodComm A A) = mulAntidiagonal n :=
   Finset.ext fun ⟨a, b⟩ => by simp [mul_comm]
 
 /-- See also `Finset.map_prodComm_mulAntidiagonal`. -/
 @[to_additive (attr := simp)]
-theorem map_swap_mulAntidiagonal [CommMonoid A] [HasMulAntidiagonal A] {n : A} :
+theorem map_swap_mulAntidiagonal [CommMagma A] [HasMulAntidiagonal A] {n : A} :
     (mulAntidiagonal n).map ⟨Prod.swap, Prod.swap_injective⟩ = mulAntidiagonal n :=
   map_prodComm_mulAntidiagonal
 
@@ -268,7 +267,7 @@ section Multiplicative
 
 open Multiplicative
 
-variable {A : Type*} [AddMonoid A] [HasAntidiagonal A]
+variable {A : Type*} [Add A] [HasAntidiagonal A]
 
 instance : HasMulAntidiagonal (Multiplicative A) where
   mulAntidiagonal a :=
