@@ -776,8 +776,6 @@ end bilin
 
 section smul
 
-variable [SMulCommClass ℝ 𝕜 F] [ContinuousConstSMul 𝕜 F]
-
 variable (F n Ω) in
 open scoped Classical in
 /-- The map `f ↦ (x ↦ g x • f x)` as a continuous `𝕜`-linear map on Schwartz space,
@@ -797,12 +795,17 @@ theorem smulLeftCLM_apply_apply {g : E → 𝕜} (hg : ContDiff ℝ n g) (f : �
     smulLeftCLM Ω F n g f x = g x • f x := by
   simp [smulLeftCLM_apply hg]
 
--- @[simp]
--- theorem smulLeftCLM_const (c : 𝕜) :
---     smulLeftCLM Ω F n (fun (_ : E) ↦ c) = c • (ContinuousLinearMap.id 𝕜 _) := by
---   ext f x
---   have : (fun (_ : E) ↦ c).ContDiff ℝ n := by fun_prop
---   simp [this]
+instance : ContinuousConstSMul 𝕜 𝓓^{n}(Ω, F) where
+  continuous_const_smul c := by
+    have : ContDiff ℝ n (fun (_ : E) ↦ c) := contDiff_const
+    rw [show (fun f : 𝓓^{n}(Ω, F) ↦ c • f) = (smulLeftCLM Ω F n (fun _ ↦ c)) by aesop]
+    exact (smulLeftCLM Ω F n (fun _ ↦ c)).continuous
+
+@[simp]
+theorem smulLeftCLM_const (c : 𝕜) :
+    smulLeftCLM Ω F n (fun (_ : E) ↦ c) = c • (ContinuousLinearMap.id 𝕜 𝓓^{n}(Ω, F)) := by
+  ext f x
+  simp [contDiff_const]
 
 @[simp]
 theorem smulLeftCLM_smulLeftCLM_apply {g₁ g₂ : E → 𝕜} (hg₁ : ContDiff ℝ n g₁)
@@ -817,11 +820,11 @@ theorem smulLeftCLM_compL_smulLeftCLM {g₁ g₂ : E → 𝕜} (hg₁ : ContDiff
   ext1 f
   exact smulLeftCLM_smulLeftCLM_apply hg₁ hg₂ f
 
--- theorem smulLeftCLM_smul {g : E → 𝕜} (hg : ContDiff ℝ n g) (c : 𝕜) :
---     smulLeftCLM Ω F n (c • g) = c • (smulLeftCLM Ω F n g) := by
---   have : ContDiff ℝ n (fun (_ : E) ↦ c):= by fun_prop
---   convert! (smulLeftCLM_compL_smulLeftCLM this hg).symm using 1
---   simp
+theorem smulLeftCLM_smul {g : E → 𝕜} (hg : ContDiff ℝ n g) (c : 𝕜) :
+    smulLeftCLM Ω F n (c • g) = c • (smulLeftCLM Ω F n g) := by
+  have : ContDiff ℝ n (fun (_ : E) ↦ c):= by fun_prop
+  convert! (smulLeftCLM_compL_smulLeftCLM this hg).symm using 1
+  simp
 
 theorem smulLeftCLM_add {g₁ g₂ : E → 𝕜} (hg₁ : ContDiff ℝ n g₁)
     (hg₂ : ContDiff ℝ n g₂) :
@@ -839,36 +842,6 @@ theorem smulLeftCLM_neg {g : E → 𝕜} (hg : ContDiff ℝ n g) :
     smulLeftCLM Ω F n (-g) = -smulLeftCLM Ω F n g := by
   ext f x
   simp [Pi.neg_def, hg, hg.neg, neg_smul]
-
-theorem smulLeftCLM_fun_neg {g : E → 𝕜} (hg : ContDiff ℝ n g) :
-    smulLeftCLM Ω F n (fun x ↦ -g x) = -smulLeftCLM Ω F n g :=
-  smulLeftCLM_neg hg
-
--- theorem smulLeftCLM_sum {g : ι → E → 𝕜} {s : Finset ι} (hg : ∀ i ∈ s, (g i).HasTemperateGrowth) :
---     smulLeftCLM Ω F n (fun x ↦ ∑ i ∈ s, g i x) = ∑ i ∈ s, smulLeftCLM Ω F n (g i) := by
---   ext f x
---   simp +contextual [Function.HasTemperateGrowth.sum hg, Finset.sum_smul, hg]
-
--- variable {𝕜' : Type*} [RCLike 𝕜'] [NormedSpace 𝕜' F]
-
--- variable (𝕜') in
--- theorem smulLeftCLM_ofReal {g : E → ℝ} (hg : ContDiff ℝ n g) (f : 𝓓^{n}(Ω, F)) :
---     smulLeftCLM Ω F n (fun x ↦ RCLike.ofReal (K := 𝕜') (g x)) f = smulLeftCLM Ω F n g f := by
---   ext x
---   rw [smulLeftCLM_apply_apply (by fun_prop), smulLeftCLM_apply_apply (by fun_prop),
---     algebraMap_smul]
-
--- theorem smulLeftCLM_real_smul {g : E → 𝕜'} (hg : ContDiff ℝ n g) (c : ℝ) :
---     smulLeftCLM Ω F n (c • g) = c • smulLeftCLM Ω F n g := by
---   rw [RCLike.real_smul_eq_coe_smul (K := 𝕜') c, smulLeftCLM_smul hg,
---     ← RCLike.real_smul_eq_coe_smul c]
-
--- theorem tsupport_smulLeftCLM_subset (g : E → 𝕜) (f : 𝓓^{n}(Ω, F)) :
---     tsupport (smulLeftCLM Ω F n g f) ⊆ tsupport f ∩ tsupport g := by
---   by_cases hg : g.HasTemperateGrowth
---   · simpa [smulLeftCLM_apply hg] using
---       ⟨tsupport_smul_subset_right g f, tsupport_smul_subset_left g f⟩
---   · simp [smulLeftCLM, hg, FunLike.coe_zero]
 
 end smul
 
