@@ -1319,7 +1319,7 @@ theorem stoppedValue_eq {N : ℕ} (hbdd : ∀ ω, τ ω ≤ N) : stoppedValue u 
   have h_top : τ ω ≠ ⊤ := fun h_contra ↦ by simp [h_contra] at hbdd
   lift τ ω to ℕ using h_top with t ht
   simp only [Nat.cast_le] at hbdd
-  simp only [ENat.some_eq_coe, Finset.coe_range, Set.mem_image, Set.mem_Iio]
+  simp only [ENat.some_eq_coe, Finset.coe_range]
   exact ⟨t, by simpa, Nat.cast_inj.mpr rfl⟩
 
 set_option backward.isDefEq.respectTransparency.types false in
