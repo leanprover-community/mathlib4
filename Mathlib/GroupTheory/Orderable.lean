@@ -48,7 +48,7 @@ export IsLeftOrderable (exists_linearOrder_mulLeftMono)
 
 /-- A group with a linear order and monotone left multiplication (`MulLeftMono`) is
 left-orderable. -/
-instance [LinearOrder G] [MulLeftMono G] : IsLeftOrderable G := ⟨⟨‹_›, ‹_›⟩⟩
+instance instIsLeftOrderable [LinearOrder G] [MulLeftMono G] : IsLeftOrderable G := ⟨⟨‹_›, ‹_›⟩⟩
 
 /-- `IsLeftOrderable G` holds iff `G` admits a linear order with strictly monotone left
 multiplication. -/
@@ -76,6 +76,12 @@ theorem IsLeftOrderable.of_mulEquiv [IsLeftOrderable G] (e : G ≃* H) : IsLeftO
 /-- Left-orderability is invariant under group isomorphism. -/
 theorem MulEquiv.isLeftOrderable_congr (e : G ≃* H) : IsLeftOrderable G ↔ IsLeftOrderable H :=
   ⟨fun _ ↦ .of_mulEquiv e, fun _ ↦ .of_mulEquiv e.symm⟩
+
+-- set_option trace.profiler true in
+-- set_option trace.profiler.useHeartbeats true in
+set_option trace.Meta.synthInstance true in
+variable [LinearOrder G] [LinearOrder H] [MulLeftStrictMono G] [MulLeftMono H] in
+#synth IsLeftOrderable (Lex (G × H))
 
 /-- The direct product of two left-orderable groups is left-orderable. -/
 instance Prod.instIsLeftOrderable [IsLeftOrderable G] [IsLeftOrderable H] : IsLeftOrderable (G × H)
