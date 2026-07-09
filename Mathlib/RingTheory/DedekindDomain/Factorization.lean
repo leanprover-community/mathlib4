@@ -431,7 +431,7 @@ theorem count_self : count K v (v.asIdeal : FractionalIdeal R⁰ K) = 1 := by
       spanSingleton R⁰ ((algebraMap R K) 1)⁻¹ * ↑v.asIdeal := by
     rw [(algebraMap R K).map_one, inv_one, spanSingleton_one, one_mul]
   have hv_irred : Irreducible (Associates.mk v.asIdeal) := by apply v.associates_irreducible
-  classical rw [count_well_defined K v hv h_self, Associates.count_self hv_irred,
+  rw [count_well_defined K v hv h_self, Associates.count_self hv_irred,
     Ideal.span_singleton_one, ← Ideal.one_eq_top, Associates.mk_one, Associates.factors_one,
     Associates.count_zero hv_irred, ofNat_zero, sub_zero, ofNat_one]
 

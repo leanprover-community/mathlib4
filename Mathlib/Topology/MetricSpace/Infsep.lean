@@ -154,7 +154,7 @@ theorem Finite.einfsep (hs : s.Finite) : s.einfsep = hs.offDiag.toFinset.inf (un
 
 theorem Finset.coe_einfsep {s : Finset α} :
     (s : Set α).einfsep = s.offDiag.inf (uncurry edist) := by
-  classical simp_rw [einfsep_of_fintype, ← Finset.coe_offDiag, Finset.toFinset_coe]
+  simp_rw [einfsep_of_fintype, ← Finset.coe_offDiag, Finset.toFinset_coe]
 
 theorem Nontrivial.einfsep_exists_of_finite [Finite s] (hs : s.Nontrivial) :
     ∃ x ∈ s, ∃ y ∈ s, x ≠ y ∧ s.einfsep = edist x y := by

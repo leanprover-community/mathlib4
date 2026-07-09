@@ -331,53 +331,18 @@
   "status": "done"
  },
  "Mathlib/MeasureTheory/Constructions/Pi.lean": {
-  "sha256": "56cfeee42d092b72fcc531b1932ec6cf09b2e95394a4f013c1e4ce8c2772e472",
+  "sha256": "251da0b26c58c20fa587ae369fc746a6f43f12dc012bbe11ef21aeb783a9b605",
   "occurrences": [
    {
-    "kind": "line",
-    "line": 185,
+    "kind": "block",
+    "line": 317,
     "col": 0,
-    "text": "  classical",
+    "text": "  classical simp [\u2190 Set.univ_pi_ite, pi_pi, apply_ite]",
     "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 361,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 372,
-    "col": 0,
-    "text": "  classical",
-    "removed": true
-   },
-   {
-    "kind": "line",
-    "line": 379,
-    "col": 0,
-    "text": "  classical",
-    "removed": true
-   },
-   {
-    "kind": "line",
-    "line": 407,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 937,
-    "col": 0,
-    "text": "  classical",
-    "removed": true
    }
   ],
   "notes": [],
-  "baseline_seconds": 8.0,
+  "baseline_seconds": 6.2,
   "status": "done"
  },
  "Mathlib/MeasureTheory/Covering/Vitali.lean": {
@@ -1296,29 +1261,15 @@
   "sha256": "266b633ed80a70165575a0723448455dc1bdf2f82baeb3eaeec72283af8f05c4",
   "occurrences": [
    {
-    "kind": "line",
-    "line": 199,
+    "kind": "block",
+    "line": 79,
     "col": 0,
-    "text": "      classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 789,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 798,
-    "col": 0,
-    "text": "  classical",
+    "text": "    classical simpa only [mk_preimage_prod_right_eq_if, measure_if]",
     "removed": false
    }
   ],
   "notes": [],
-  "baseline_seconds": 7.4,
+  "baseline_seconds": 6.5,
   "status": "done"
  },
  "Mathlib/MeasureTheory/Measure/RegularityCompacts.lean": {
@@ -1472,36 +1423,29 @@
   "sha256": "e88a04557fe4ebe9161720d6b2210fb7d83122e367697bb733c24271f2cee93c",
   "occurrences": [
    {
-    "kind": "line",
-    "line": 378,
+    "kind": "block",
+    "line": 1043,
     "col": 0,
-    "text": "  classical",
+    "text": "  classical exact piecewise_ae_eq_restrict hs",
     "removed": false
    },
    {
-    "kind": "line",
-    "line": 1015,
+    "kind": "block",
+    "line": 1047,
     "col": 0,
-    "text": "  classical",
+    "text": "  classical exact piecewise_ae_eq_restrict_compl hs",
     "removed": false
    },
    {
-    "kind": "line",
-    "line": 1026,
+    "kind": "block",
+    "line": 1066,
     "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 1092,
-    "col": 0,
-    "text": "  classical",
+    "text": "  classical exact piecewise_ae_eq_of_ae_eq_set hst",
     "removed": false
    }
   ],
   "notes": [],
-  "baseline_seconds": 7.4,
+  "baseline_seconds": 7.2,
   "status": "done"
  },
  "Mathlib/MeasureTheory/OuterMeasure/OfAddContent.lean": {
@@ -2129,18 +2073,18 @@
   "status": "done"
  },
  "Mathlib/Algebra/BigOperators/Expect.lean": {
-  "sha256": "ae6d7d4d5ca899860dbb9e6db45573500e5251d60f2df14059789edd2eda044a",
+  "sha256": "fcfe1b3611d4ef461b3e05c1058deef2098a4b3cb00ca2feb378aeb585bc156e",
   "occurrences": [
    {
-    "kind": "line",
-    "line": 349,
+    "kind": "block",
+    "line": 358,
     "col": 0,
-    "text": "  classical",
-    "removed": true
+    "text": "  classical simp [expect, sum_indicator_eq_sum_inter, dens, div_eq_inv_mul, NNRat.smul_def]",
+    "removed": false
    }
   ],
   "notes": [],
-  "baseline_seconds": 4.8,
+  "baseline_seconds": 6.8,
   "status": "done"
  },
  "Mathlib/Algebra/BigOperators/Associated.lean": {
@@ -2166,74 +2110,39 @@
   "status": "done"
  },
  "Mathlib/Algebra/BigOperators/Finsupp/Basic.lean": {
-  "sha256": "45859804149193b4de6cee37c614076106cc0ff84965c21cbc3a849eaf52ba70",
+  "sha256": "57a51d36ce6112907b8e9a7ec66cd6af8eca86e4879a3e940b6ce52bee4e7e40",
   "occurrences": [
    {
-    "kind": "line",
-    "line": 157,
+    "kind": "block",
+    "line": 371,
     "col": 0,
-    "text": "  classical",
+    "text": "  classical exact prod_add_index (fun a _ => h_zero a) fun a _ => h_add a",
     "removed": false
    },
    {
-    "kind": "line",
-    "line": 172,
+    "kind": "block",
+    "line": 433,
     "col": 0,
-    "text": "  classical",
-    "removed": true
-   },
-   {
-    "kind": "line",
-    "line": 315,
-    "col": 0,
-    "text": "  classical",
+    "text": "  classical rw [single, coe_mk, Finset.sum_pi_single']",
     "removed": false
    },
    {
-    "kind": "line",
-    "line": 427,
+    "kind": "block",
+    "line": 440,
     "col": 0,
-    "text": "  classical",
+    "text": "  classical rw [Finset.sum_pi_single]",
     "removed": false
    },
    {
-    "kind": "line",
-    "line": 447,
+    "kind": "block",
+    "line": 552,
     "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 520,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 559,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 603,
-    "col": 0,
-    "text": "  classical",
-    "removed": true
-   },
-   {
-    "kind": "line",
-    "line": 623,
-    "col": 0,
-    "text": "  classical",
+    "text": "  classical simp_rw [\u2190 this hd, \u2190 this hd.symm, add_comm (f2 _), Finsupp.prod, support_add_eq hd,",
     "removed": false
    }
   ],
   "notes": [],
-  "baseline_seconds": 8.4,
+  "baseline_seconds": 9.6,
   "status": "done"
  },
  "Mathlib/Algebra/BigOperators/Group/Finset/Indicator.lean": {
@@ -2292,15 +2201,15 @@
   "sha256": "19e108ab207844c63402921e84a3d422fca8b0c63f3669913dc38225e4dcea25",
   "occurrences": [
    {
-    "kind": "line",
-    "line": 30,
+    "kind": "block",
+    "line": 40,
     "col": 0,
-    "text": "  classical",
+    "text": "  classical rw [prod_preimage', prod_filter_of_ne]; exact fun x hx \u21a6 Not.imp_symm (hg x hx)",
     "removed": false
    }
   ],
   "notes": [],
-  "baseline_seconds": 3.0,
+  "baseline_seconds": 3.5,
   "status": "done"
  },
  "Mathlib/Algebra/BigOperators/Group/Finset/Sigma.lean": {
@@ -2322,10 +2231,17 @@
   "sha256": "a951154bb77fd88e24fc615c102ce61cb221f212429617d0e957a057d7879790",
   "occurrences": [
    {
-    "kind": "line",
-    "line": 55,
+    "kind": "block",
+    "line": 31,
     "col": 0,
-    "text": "  classical",
+    "text": "  classical rw [\u2190 prod_erase_mul _ _ hi, h, mul_zero]",
+    "removed": false
+   },
+   {
+    "kind": "block",
+    "line": 50,
+    "col": 0,
+    "text": "  classical simp [Set.indicator, prod_boole]",
     "removed": false
    }
   ],
@@ -2349,124 +2265,54 @@
   "status": "done"
  },
  "Mathlib/Algebra/BigOperators/Group/Finset/Basic.lean": {
-  "sha256": "1779331fa2b48bf8fa8ebf277e8faea0c9efad34419bc3b3d828cc9d9eb58af4",
+  "sha256": "afa393643f788c0ea4a425189f7ffa87f69405eafbc7a20c81df18e7f4844d6c",
   "occurrences": [
    {
-    "kind": "line",
-    "line": 232,
+    "kind": "block",
+    "line": 101,
     "col": 0,
-    "text": "  classical",
+    "text": "  classical rw [\u2190 prod_image Subtype.coe_injective.injOn, attach_image_val]",
     "removed": false
    },
    {
-    "kind": "line",
-    "line": 313,
+    "kind": "block",
+    "line": 160,
     "col": 0,
-    "text": "    classical",
-    "removed": true
-   },
-   {
-    "kind": "line",
-    "line": 388,
-    "col": 0,
-    "text": "  classical",
+    "text": "  classical rw [\u2190 prod_union (disjoint_filter_and_not_filter _ _), \u2190 filter_or]",
     "removed": false
    },
    {
-    "kind": "line",
-    "line": 502,
+    "kind": "block",
+    "line": 167,
     "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 669,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 775,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 788,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 797,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 813,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 1031,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 1072,
-    "col": 0,
-    "text": "  classical",
+    "text": "    classical rw [Finset.disjUnion_eq_union, \u2190 Finset.sup_eq_union, h.sup_eq_top]; rfl",
     "removed": false
    }
   ],
   "notes": [],
-  "baseline_seconds": 13.6,
+  "baseline_seconds": 14.7,
   "status": "done"
  },
  "Mathlib/Algebra/BigOperators/Ring/Finset.lean": {
   "sha256": "472cd5000412d8ec35c8b9ee919b2aeedbf0a830033a55009aad436595923809",
   "occurrences": [
    {
-    "kind": "line",
-    "line": 115,
+    "kind": "block",
+    "line": 198,
     "col": 0,
-    "text": "  classical",
+    "text": "  classical simp only [add_comm (1 : R), prod_add, prod_const_one, mul_one]",
     "removed": false
    },
    {
-    "kind": "line",
-    "line": 126,
+    "kind": "block",
+    "line": 202,
     "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 173,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 235,
-    "col": 0,
-    "text": "  classical",
+    "text": "  classical simp only [prod_add, prod_const_one, mul_one]",
     "removed": false
    }
   ],
   "notes": [],
-  "baseline_seconds": 3.9,
+  "baseline_seconds": 4.4,
   "status": "done"
  },
  "Mathlib/Algebra/BigOperators/Ring/Nat.lean": {
@@ -2518,92 +2364,22 @@
   "sha256": "c1a977d105cda49ca7bdc836154112bc409b95d04cc57602439bce050c7a2b6a",
   "occurrences": [
    {
-    "kind": "line",
-    "line": 401,
+    "kind": "block",
+    "line": 339,
     "col": 0,
-    "text": "  classical",
-    "removed": false
+    "text": "  classical convert! finprod_eq_if (M := M) (p := a \u2208 s) (x := f a)",
+    "removed": true
    },
    {
-    "kind": "inline",
-    "line": 435,
-    "col": 46,
-    "text": "    \u220f\u1da0 i : \u03b1, f i = \u220f i \u2208 hf.toFinset, f i := by classical rw [finprod_def, dif_pos hf]",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 652,
+    "kind": "block",
+    "line": 1155,
     "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 804,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 924,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 1051,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 1113,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 1242,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 1268,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 1290,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 1333,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 1340,
-    "col": 0,
-    "text": "  classical",
+    "text": "  classical calc",
     "removed": false
    }
   ],
   "notes": [],
-  "baseline_seconds": 14.6,
+  "baseline_seconds": 17.2,
   "status": "done"
  },
  "Mathlib/Algebra/Category/Grp/Colimits.lean": {
@@ -2655,15 +2431,22 @@
   "sha256": "e077590645ca76c702c0c2e7747677960e5416b1a84467fe5883bb910af03b6b",
   "occurrences": [
    {
-    "kind": "line",
-    "line": 414,
+    "kind": "block",
+    "line": 443,
     "col": 0,
-    "text": "  classical",
-    "removed": false
+    "text": "  classical exact DFinsupp.mapRange_injective (hf := fun _ \u21a6 map_zero _)",
+    "removed": true
+   },
+   {
+    "kind": "block",
+    "line": 446,
+    "col": 0,
+    "text": "  classical exact DFinsupp.mapRange_surjective (hf := fun _ \u21a6 map_zero _)",
+    "removed": true
    }
   ],
   "notes": [],
-  "baseline_seconds": 7.1,
+  "baseline_seconds": 7.9,
   "status": "done"
  },
  "Mathlib/Algebra/Category/Ring/FinitePresentation.lean": {
@@ -2744,36 +2527,29 @@
   "sha256": "e0e320bd1f4a5a9e79da9fde6e2e3691ebbbccea8a4fba5765bda3b56e715568",
   "occurrences": [
    {
-    "kind": "line",
-    "line": 198,
+    "kind": "block",
+    "line": 104,
     "col": 0,
-    "text": "  classical",
+    "text": "  classical induction s using Finset.induction <;> simp [*]",
     "removed": false
    },
    {
-    "kind": "line",
-    "line": 214,
+    "kind": "block",
+    "line": 183,
     "col": 0,
-    "text": "  classical",
+    "text": "  classical induction s using Finset.induction <;> simp [*]",
     "removed": false
    },
    {
-    "kind": "line",
-    "line": 245,
+    "kind": "block",
+    "line": 228,
     "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 281,
-    "col": 0,
-    "text": "  classical",
+    "text": "  classical exact s.induction_on (by simp) fun b s hbs h \u21a6 by",
     "removed": false
    }
   ],
   "notes": [],
-  "baseline_seconds": 3.3,
+  "baseline_seconds": 4.0,
   "status": "done"
  },
  "Mathlib/Algebra/GCDMonoid/FinsetLemmas.lean": {
@@ -2871,46 +2647,18 @@
   "status": "done"
  },
  "Mathlib/Algebra/GCDMonoid/Basic.lean": {
-  "sha256": "cd02a33ad1838fae508875066749b35ed2e409178b85575a123843d4328f0d19",
+  "sha256": "3f1b0af3a4b2ceaa621215b35e7ebe1db9a1a3b92e28e5f0ce6324a69d94c1ae",
   "occurrences": [
    {
-    "kind": "line",
-    "line": 108,
+    "kind": "block",
+    "line": 1301,
     "col": 0,
-    "text": "  classical",
-    "removed": true
-   },
-   {
-    "kind": "inline",
-    "line": 110,
-    "col": 13,
-    "text": "    (fun a \u21a6 by classical exact if a = 1 then 1 else a.out)",
-    "removed": false
-   },
-   {
-    "kind": "inline",
-    "line": 1310,
-    "col": 62,
-    "text": "  \u27e8fun \u27e8_\u27e9 \u21a6 \u27e8inferInstance, inferInstance\u27e9, fun \u27e8\u27e8_\u27e9, \u27e8_\u27e9\u27e9 \u21a6 by classical exact",
-    "removed": false
-   },
-   {
-    "kind": "inline",
-    "line": 1344,
-    "col": 22,
-    "text": "  mpr := fun \u27e8_, h\u27e9 \u21a6 by classical exact \u27e8gcdMonoidOfExistsGCD h\u27e9",
-    "removed": false
-   },
-   {
-    "kind": "inline",
-    "line": 1349,
-    "col": 22,
-    "text": "  mpr := fun \u27e8_, h\u27e9 \u21a6 by classical exact \u27e8gcdMonoidOfExistsLCM h\u27e9",
+    "text": "    classical exact \u27e8normalizedGCDMonoidOfExistsGCD fun _ _ \u21a6 \u27e8_, fun _ \u21a6 (dvd_gcd_iff ..).symm\u27e9\u27e9",
     "removed": false
    }
   ],
   "notes": [],
-  "baseline_seconds": 8.0,
+  "baseline_seconds": 10.9,
   "status": "done"
  },
  "Mathlib/Algebra/GradedMonoid.lean": {
@@ -3152,67 +2900,18 @@
   "status": "done"
  },
  "Mathlib/Algebra/Group/Finsupp.lean": {
-  "sha256": "12ba22cbfdb939fbcb48cf8572c6ad8c2dfc95a5f684009147f5f9f28b0b37ce",
+  "sha256": "9ac52c305ac913fc6f99b71a45522fdd5357f26914d11d00790e504e0cd063b3",
   "occurrences": [
    {
-    "kind": "line",
-    "line": 155,
+    "kind": "block",
+    "line": 196,
     "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 162,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 210,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 218,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 259,
-    "col": 0,
-    "text": "    classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 272,
-    "col": 0,
-    "text": "  classical",
-    "removed": true
-   },
-   {
-    "kind": "line",
-    "line": 318,
-    "col": 0,
-    "text": "  classical",
-    "removed": true
-   },
-   {
-    "kind": "line",
-    "line": 366,
-    "col": 0,
-    "text": "  classical",
+    "text": "  classical simp_all [addCommute_iff_inter, Finset.disjoint_iff_inter_eq_empty]",
     "removed": false
    }
   ],
   "notes": [],
-  "baseline_seconds": 5.0,
+  "baseline_seconds": 6.2,
   "status": "done"
  },
  "Mathlib/Algebra/GroupWithZero/Units/Fintype.lean": {
@@ -3338,57 +3037,15 @@
   "sha256": "02171fb9801297bd644e0389636f9178a7f797365ce5c032442210c5ae2f3021",
   "occurrences": [
    {
-    "kind": "line",
-    "line": 313,
+    "kind": "block",
+    "line": 181,
     "col": 0,
-    "text": "    classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 341,
-    "col": 0,
-    "text": "    classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 367,
-    "col": 0,
-    "text": "    classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 402,
-    "col": 0,
-    "text": "    classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 434,
-    "col": 0,
-    "text": "    classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 482,
-    "col": 0,
-    "text": "    classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 512,
-    "col": 0,
-    "text": "    classical",
+    "text": "  classical simp_rw [\u2190 mulHom_image_iff \u27e8f, mul\u27e9 f.2, Finset.map_eq_image]; rfl",
     "removed": false
    }
   ],
   "notes": [],
-  "baseline_seconds": 8.4,
+  "baseline_seconds": 9.1,
   "status": "done"
  },
  "Mathlib/Algebra/Lie/CartanCriterion.lean": {
@@ -3887,90 +3544,62 @@
   "status": "done"
  },
  "Mathlib/Algebra/MonoidAlgebra/Basic.lean": {
-  "sha256": "10866d32c4d3125a70c6c086ceb88655496f955f9c473ee551f55736ddaa88f5",
+  "sha256": "56514ba1be4932c426d47226ca77fce626913195028906f9a58f5fb5677a4a73",
   "occurrences": [
    {
-    "kind": "inline",
-    "line": 131,
-    "col": 48,
-    "text": "    (uniqueAlgEquiv R M).symm a = single 1 a := by classical ext; simp [uniqueAlgEquiv]",
-    "removed": true
+    "kind": "block",
+    "line": 419,
+    "col": 0,
+    "text": "  classical ext; simp [single_apply, apply_ite f]",
+    "removed": false
    }
   ],
   "notes": [],
-  "baseline_seconds": 15.4,
+  "baseline_seconds": 16.3,
   "status": "done"
  },
  "Mathlib/Algebra/Module/ZLattice/Basic.lean": {
-  "sha256": "8ce6c3c2c10ff215772a7408f6056d4aed66d87ef07229359dba05e17097d29f",
+  "sha256": "e54c94f5f320ae826b0f58539285e6ac788ec5876221e9d1ca10660f6286ba0d",
   "occurrences": [
    {
-    "kind": "inline",
-    "line": 174,
-    "col": 28,
-    "text": "  Basis.ext_elem b fun _ => by classical simp only [repr_fract_apply, Int.fract_fract]",
-    "removed": true
-   },
-   {
-    "kind": "line",
-    "line": 179,
+    "kind": "block",
+    "line": 133,
     "col": 0,
-    "text": "  classical",
-    "removed": true
-   },
-   {
-    "kind": "line",
-    "line": 208,
-    "col": 0,
-    "text": "  classical",
-    "removed": true
-   },
-   {
-    "kind": "line",
-    "line": 215,
-    "col": 0,
-    "text": "  classical",
-    "removed": true
-   },
-   {
-    "kind": "line",
-    "line": 403,
-    "col": 0,
-    "text": "  classical",
+    "text": "  classical simp only [floor, \u2190 Int.cast_smul_eq_zsmul K, b.repr.map_smul, Finsupp.single_apply,",
     "removed": false
    },
    {
-    "kind": "line",
-    "line": 526,
+    "kind": "block",
+    "line": 139,
     "col": 0,
-    "text": "  classical",
+    "text": "  classical simp only [ceil, \u2190 Int.cast_smul_eq_zsmul K, b.repr.map_smul, Finsupp.single_apply,",
     "removed": false
+   },
+   {
+    "kind": "block",
+    "line": 191,
+    "col": 0,
+    "text": "  classical simp only [Basis.ext_elem_iff b, repr_fract_apply, Int.fract_eq_self,",
+    "removed": true
    }
   ],
   "notes": [],
-  "baseline_seconds": 16.6,
+  "baseline_seconds": 20.3,
   "status": "done"
  },
  "Mathlib/Algebra/MonoidAlgebra/Grading.lean": {
   "sha256": "86285061e0a904c105b1b32dc512683deb0607e67b2269d0d73305a67bcd78ad",
   "occurrences": [
    {
-    "kind": "line",
-    "line": 97,
+    "kind": "block",
+    "line": 54,
     "col": 0,
-    "text": "    classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 133,
-    "col": 0,
-    "text": "  classical",
+    "text": "    classical exact (Finset.mem_union.mp (Finsupp.support_add h)).elim (ha m) (hb m)",
     "removed": false
    }
   ],
   "notes": [],
-  "baseline_seconds": 5.4,
+  "baseline_seconds": 5.8,
   "status": "done"
  },
  "Mathlib/Algebra/MonoidAlgebra/Ideal.lean": {
@@ -4141,67 +3770,25 @@
   "status": "done"
  },
  "Mathlib/Algebra/MonoidAlgebra/Defs.lean": {
-  "sha256": "5de2113fc6b45700cb78803a771e57f24351799ccb5dd137157040ae076a7c97",
+  "sha256": "ed3c9c998e892006dc97ae3614de78d73924ca31742055143f2193bdf22b076c",
   "occurrences": [
    {
-    "kind": "inline",
-    "line": 506,
-    "col": 18,
-    "text": "  left_distrib := by classical simp [mul_def, mul_add, sum_add, sum_add_index]",
-    "removed": false
-   },
-   {
-    "kind": "inline",
-    "line": 507,
-    "col": 19,
-    "text": "  right_distrib := by classical simp [mul_def, add_mul, sum_add, sum_add_index]",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 523,
+    "kind": "block",
+    "line": 829,
     "col": 0,
-    "text": "  classical",
+    "text": "  classical rw [coeff_mul]; gcongr; simp +contextual [\u2190 eq_inv_mul_iff_mul_eq]",
     "removed": false
    },
    {
-    "kind": "line",
-    "line": 560,
+    "kind": "block",
+    "line": 836,
     "col": 0,
-    "text": "  classical",
+    "text": "  classical rw [coeff_mul, Finsupp.sum_comm]; gcongr; simp +contextual [\u2190 eq_mul_inv_iff_mul_eq]",
     "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 572,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "inline",
-    "line": 583,
-    "col": 37,
-    "text": "    (x * single m r).coeff m' = 0 := by classical simp [coeff_mul, h]",
-    "removed": false
-   },
-   {
-    "kind": "inline",
-    "line": 587,
-    "col": 37,
-    "text": "    (single m r * x).coeff m' = 0 := by classical simp [coeff_mul, h]",
-    "removed": false
-   },
-   {
-    "kind": "inline",
-    "line": 753,
-    "col": 47,
-    "text": "    (uniqueRingEquiv M).symm r = single 1 r := by classical ext; simp [uniqueRingEquiv]",
-    "removed": true
    }
   ],
   "notes": [],
-  "baseline_seconds": 15.6,
+  "baseline_seconds": 16.5,
   "status": "done"
  },
  "Mathlib/Algebra/MvPolynomial/Division.lean": {
@@ -4263,264 +3850,103 @@
   "status": "done"
  },
  "Mathlib/Algebra/MvPolynomial/Basic.lean": {
-  "sha256": "27d8f659aaec2e3ed366b131784a3c63f2e5010c12ab0a6505a0b93a1ce490a0",
+  "sha256": "93bfaec51b7c42bcd2db9479a74e84bebfd91478045a989771c85f997b599ad9",
   "occurrences": [
    {
-    "kind": "line",
-    "line": 488,
+    "kind": "block",
+    "line": 484,
     "col": 0,
-    "text": "  classical",
+    "text": "  classical rw [X, support_monomial, if_neg]; exact one_ne_zero",
     "removed": false
    },
    {
-    "kind": "line",
-    "line": 497,
+    "kind": "block",
+    "line": 598,
     "col": 0,
-    "text": "  classical",
+    "text": "  classical rw [coeff_C, if_neg h.symm]",
     "removed": false
    },
    {
-    "kind": "line",
-    "line": 533,
+    "kind": "block",
+    "line": 639,
     "col": 0,
-    "text": "  classical",
+    "text": "  classical rw [coeff_X, if_pos rfl]",
     "removed": false
    },
    {
-    "kind": "line",
-    "line": 643,
+    "kind": "block",
+    "line": 929,
     "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 718,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 811,
-    "col": 0,
-    "text": "    classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 846,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 875,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 879,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 885,
-    "col": 0,
-    "text": "  classical",
+    "text": "  classical simp [constantCoeff_eq]",
     "removed": true
-   },
-   {
-    "kind": "line",
-    "line": 890,
-    "col": 0,
-    "text": "  classical",
-    "removed": true
-   },
-   {
-    "kind": "inline",
-    "line": 921,
-    "col": 14,
-    "text": "  map_mul' := by classical simp [coeff_mul]",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 993,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 1005,
-    "col": 0,
-    "text": "  classical",
-    "removed": true
-   },
-   {
-    "kind": "line",
-    "line": 1026,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 1055,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
    }
   ],
   "notes": [],
-  "baseline_seconds": 7.7,
+  "baseline_seconds": 9.0,
   "status": "done"
  },
  "Mathlib/Algebra/MvPolynomial/Degrees.lean": {
-  "sha256": "69bc53a571a52415b117f3d62c5bb253ccec4bb964f89db62b649d6133d8834b",
+  "sha256": "ad6f54761a507f5ae33753cf4fb226bc62d9475c9e32279142e5b4a372f84c70",
   "occurrences": [
    {
-    "kind": "line",
-    "line": 89,
+    "kind": "block",
+    "line": 133,
     "col": 0,
-    "text": "  classical",
+    "text": "  classical exact supDegree_prod_le (map_zero _) (map_add _)",
     "removed": false
    },
    {
-    "kind": "line",
-    "line": 96,
+    "kind": "block",
+    "line": 178,
     "col": 0,
-    "text": "  classical",
+    "text": "  classical exact Finset.sup_mono <| support_map_subset ..",
     "removed": false
    },
    {
-    "kind": "line",
-    "line": 127,
+    "kind": "block",
+    "line": 241,
     "col": 0,
-    "text": "  classical",
+    "text": "  classical simp only [degreeOf_def, degrees_zero, Multiset.count_zero]",
     "removed": false
    },
    {
-    "kind": "line",
-    "line": 140,
+    "kind": "block",
+    "line": 245,
     "col": 0,
-    "text": "  classical",
+    "text": "  classical simp [degreeOf_def, degrees_one]",
     "removed": false
    },
    {
-    "kind": "line",
-    "line": 154,
+    "kind": "block",
+    "line": 249,
     "col": 0,
-    "text": "  classical",
+    "text": "  classical simp [degreeOf_def, degrees_C]",
     "removed": false
    },
    {
-    "kind": "line",
-    "line": 182,
+    "kind": "block",
+    "line": 259,
     "col": 0,
-    "text": "  classical",
+    "text": "  classical simp [degreeOf_X]",
     "removed": false
    },
    {
-    "kind": "line",
-    "line": 202,
+    "kind": "block",
+    "line": 275,
     "col": 0,
-    "text": "  classical",
+    "text": "  classical rw [degreeOf_def, degrees_monomial_eq _ _ ha, Finsupp.count_toMultiset]",
     "removed": false
    },
    {
-    "kind": "line",
-    "line": 225,
+    "kind": "block",
+    "line": 519,
     "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 253,
-    "col": 0,
-    "text": "  classical",
-    "removed": true
-   },
-   {
-    "kind": "line",
-    "line": 299,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 326,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 335,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 422,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 448,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 480,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 581,
-    "col": 0,
-    "text": "  classical",
-    "removed": true
-   },
-   {
-    "kind": "line",
-    "line": 601,
-    "col": 0,
-    "text": "    classical",
-    "removed": false
-   },
-   {
-    "kind": "inline",
-    "line": 621,
-    "col": 26,
-    "text": "  add_mem' {a b} ha hb := by classical exact degrees_add_le.trans (sup_le ha hb)",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 634,
-    "col": 0,
-    "text": "  classical",
+    "text": "  classical simp [totalDegree, support_monomial, if_neg hc]",
     "removed": false
    }
   ],
   "notes": [],
-  "baseline_seconds": 5.9,
+  "baseline_seconds": 6.2,
   "status": "done"
  },
  "Mathlib/Algebra/MvPolynomial/Monad.lean": {
@@ -4571,50 +3997,15 @@
   "sha256": "05ab2d73e55c4dfcf8f498cc27b66735a40bc13c4bcc9a48893dacddf5536db9",
   "occurrences": [
    {
-    "kind": "line",
-    "line": 119,
+    "kind": "block",
+    "line": 89,
     "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 385,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 488,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 503,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 508,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 809,
-    "col": 0,
-    "text": "  classical",
+    "text": "  classical exact Finsupp.sum_add_index (by simp [f.map_zero]) (by simp [add_mul, f.map_add])",
     "removed": false
    }
   ],
   "notes": [],
-  "baseline_seconds": 8.4,
+  "baseline_seconds": 9.0,
   "status": "done"
  },
  "Mathlib/Algebra/MvPolynomial/Nilpotent.lean": {
@@ -4696,50 +4087,15 @@
   "sha256": "fc81f4d550f4b1f5b812c355d6dc15e53100ffccf1ef9bd20c395e10bf06e288",
   "occurrences": [
    {
-    "kind": "line",
-    "line": 71,
+    "kind": "block",
+    "line": 101,
     "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "inline",
-    "line": 97,
-    "col": 73,
-    "text": "theorem pderiv_X_self (i : \u03c3) : pderiv i (X i : MvPolynomial \u03c3 R) = 1 := by classical simp",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 123,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 146,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 159,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 170,
-    "col": 0,
-    "text": "  classical",
+    "text": "  classical simp [h]",
     "removed": false
    }
   ],
   "notes": [],
-  "baseline_seconds": 4.8,
+  "baseline_seconds": 5.2,
   "status": "done"
  },
  "Mathlib/Algebra/MvPolynomial/Rename.lean": {
@@ -4833,72 +4189,72 @@
   "sha256": "c46bd3a6966bc920c2cb4f010155d4156e00c2507e4e6fb9889ed7cfc860faef",
   "occurrences": [
    {
-    "kind": "line",
-    "line": 141,
+    "kind": "block",
+    "line": 79,
     "col": 0,
-    "text": "  classical",
+    "text": "  classical rw [vars_def, degrees_zero, Multiset.toFinset_zero]",
     "removed": false
    },
    {
-    "kind": "line",
-    "line": 154,
+    "kind": "block",
+    "line": 83,
     "col": 0,
-    "text": "  classical",
+    "text": "  classical rw [vars_def, degrees_monomial_eq _ _ h, Finsupp.toFinset_toMultiset]",
     "removed": false
    },
    {
-    "kind": "line",
-    "line": 184,
+    "kind": "block",
+    "line": 87,
     "col": 0,
-    "text": "  classical",
+    "text": "  classical rw [vars_def, degrees_C, Multiset.toFinset_zero]",
     "removed": false
    },
    {
-    "kind": "line",
-    "line": 195,
+    "kind": "block",
+    "line": 94,
     "col": 0,
-    "text": "  classical",
+    "text": "  classical simp only [vars_def, Multiset.mem_toFinset, mem_degrees, mem_support_iff]",
     "removed": false
    },
    {
-    "kind": "line",
-    "line": 315,
+    "kind": "block",
+    "line": 99,
     "col": 0,
-    "text": "  classical",
+    "text": "  classical simp [degreeOf, vars_def]",
     "removed": false
    },
    {
-    "kind": "line",
-    "line": 322,
+    "kind": "block",
+    "line": 115,
     "col": 0,
-    "text": "  classical",
+    "text": "  classical rw [vars_def, Multiset.toFinset_eq_empty] at h",
     "removed": false
    },
    {
-    "kind": "line",
-    "line": 347,
+    "kind": "block",
+    "line": 212,
     "col": 0,
-    "text": "  classical",
+    "text": "  classical simp [vars_def, Multiset.subset_of_le degrees_map_le]",
     "removed": false
    }
   ],
   "notes": [],
-  "baseline_seconds": 3.8,
+  "baseline_seconds": 4.0,
   "status": "done"
  },
  "Mathlib/Algebra/Order/Archimedean/Basic.lean": {
-  "sha256": "e93be6ddf3aef0f5996697eae5f66972d6098ea8e8bfa341d9725aef5cffc127",
+  "sha256": "901dfeb489a0897cdb01f000672b04edb1f950d7126103a4392e99e0a4b5dc4c",
   "occurrences": [
    {
-    "kind": "line",
-    "line": 227,
+    "kind": "block",
+    "line": 199,
     "col": 0,
-    "text": "  classical",
+    "text": "  classical exact",
     "removed": true
    }
   ],
   "notes": [],
-  "baseline_seconds": 7.0,
+  "baseline_seconds": 7.9,
   "status": "done"
  },
  "Mathlib/Algebra/Order/Archimedean/Real/Basic.lean": {
@@ -4985,36 +4341,29 @@
   "sha256": "9b290f35de0175eb7fce6ff4fb8e3aa8803d454fce913aa1be65ef009d7d9128",
   "occurrences": [
    {
-    "kind": "line",
-    "line": 168,
+    "kind": "block",
+    "line": 134,
     "col": 0,
-    "text": "  classical",
+    "text": "  classical calc",
     "removed": false
    },
    {
-    "kind": "line",
-    "line": 520,
+    "kind": "block",
+    "line": 432,
     "col": 0,
-    "text": "  classical",
+    "text": "  classical calc",
     "removed": false
    },
    {
-    "kind": "line",
-    "line": 580,
+    "kind": "block",
+    "line": 476,
     "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 592,
-    "col": 0,
-    "text": "  classical",
+    "text": "  classical calc",
     "removed": false
    }
   ],
   "notes": [],
-  "baseline_seconds": 7.3,
+  "baseline_seconds": 8.2,
   "status": "done"
  },
  "Mathlib/Algebra/Order/Chebyshev.lean": {
@@ -5066,15 +4415,15 @@
   "sha256": "37a8af5a66e5c250f23232a92636556e3992ccd5dc7c4d103ddddb6861c3a554",
   "occurrences": [
    {
-    "kind": "line",
-    "line": 190,
+    "kind": "block",
+    "line": 169,
     "col": 0,
-    "text": "  classical",
+    "text": "  classical simp [\u2190 h.le_dedup_iff_le, hn]",
     "removed": false
    }
   ],
   "notes": [],
-  "baseline_seconds": 2.7,
+  "baseline_seconds": 3.3,
   "status": "done"
  },
  "Mathlib/Algebra/Order/Pi.lean": {
@@ -5147,22 +4496,15 @@
   "sha256": "aac9c42310c3c68ba48257d401225da11673aa0693f3a499d296961d7c43ce42",
   "occurrences": [
    {
-    "kind": "line",
-    "line": 217,
+    "kind": "block",
+    "line": 233,
     "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 225,
-    "col": 0,
-    "text": "  classical",
+    "text": "  classical simp [-mem_stabilizer_iff, mem_stabilizer_finset']",
     "removed": false
    }
   ],
   "notes": [],
-  "baseline_seconds": 5.0,
+  "baseline_seconds": 5.7,
   "status": "done"
  },
  "Mathlib/Algebra/Polynomial/Coeff.lean": {
@@ -5211,32 +4553,18 @@
   "status": "done"
  },
  "Mathlib/Algebra/Polynomial/Basic.lean": {
-  "sha256": "b0e18ad7f82b1f51fabbf44cf7af873c8dcf0f1348a5d697c6a3b86f0a58be3d",
+  "sha256": "0609707ea207b78bb203cf7195f5514c9a2381816bd02414ed8fd40253295a45",
   "occurrences": [
    {
-    "kind": "inline",
-    "line": 1030,
-    "col": 51,
-    "text": "    support (p.update n a) = insert n p.support := by classical rw [support_update, if_neg ha]",
+    "kind": "block",
+    "line": 1024,
+    "col": 0,
+    "text": "  classical simp [support, update, Finsupp.support_update]",
     "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 1047,
-    "col": 0,
-    "text": "  classical",
-    "removed": true
-   },
-   {
-    "kind": "line",
-    "line": 1052,
-    "col": 0,
-    "text": "  classical",
-    "removed": true
    }
   ],
   "notes": [],
-  "baseline_seconds": 7.5,
+  "baseline_seconds": 8.7,
   "status": "done"
  },
  "Mathlib/Algebra/Polynomial/Degree/Domain.lean": {
@@ -5645,29 +4973,22 @@
   "sha256": "9de8024f11ea0fae03cf5e374ad6d8b57b524e9b13171a9f864466f6be4ce57d",
   "occurrences": [
    {
-    "kind": "line",
-    "line": 68,
+    "kind": "block",
+    "line": 119,
     "col": 0,
-    "text": "    classical",
+    "text": "  classical ext x; by_cases hx : x = a <;> aesop (add norm coeff_single_apply)",
     "removed": false
    },
    {
-    "kind": "line",
-    "line": 109,
+    "kind": "block",
+    "line": 123,
     "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 115,
-    "col": 0,
-    "text": "  classical",
+    "text": "  classical ext; simp [coeff_erase_apply, Finsupp.erase_apply, Function.update_apply]",
     "removed": false
    }
   ],
   "notes": [],
-  "baseline_seconds": 3.7,
+  "baseline_seconds": 4.5,
   "status": "done"
  },
  "Mathlib/Algebra/SkewMonoidAlgebra/Support.lean": {
@@ -5723,130 +5044,39 @@
   "status": "done"
  },
  "Mathlib/Algebra/Polynomial/Roots.lean": {
-  "sha256": "68226d8e8c84d99b7560beb853d9683737f34ca97c086bd92729e34ae1818153",
+  "sha256": "a46b37441ba920298f439afe724cb3396663f25392e3e4bc86f3626ade554f87",
   "occurrences": [
    {
-    "kind": "line",
-    "line": 75,
+    "kind": "block",
+    "line": 199,
     "col": 0,
-    "text": "  classical",
+    "text": "  classical exact",
     "removed": false
    },
    {
-    "kind": "line",
-    "line": 100,
+    "kind": "block",
+    "line": 370,
     "col": 0,
-    "text": "  classical",
-    "removed": true
-   },
-   {
-    "kind": "line",
-    "line": 108,
-    "col": 0,
-    "text": "  classical",
+    "text": "  classical exact",
     "removed": false
    },
    {
-    "kind": "line",
-    "line": 142,
+    "kind": "block",
+    "line": 409,
     "col": 0,
-    "text": "  classical",
+    "text": "  classical simp [nthRootsFinset_def]",
     "removed": false
    },
    {
-    "kind": "line",
-    "line": 171,
+    "kind": "block",
+    "line": 812,
     "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 188,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 232,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 405,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 457,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 580,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 625,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 670,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 726,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 801,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 936,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 959,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 966,
-    "col": 0,
-    "text": "  classical",
+    "text": "  classical exact",
     "removed": false
    }
   ],
   "notes": [],
-  "baseline_seconds": 7.8,
+  "baseline_seconds": 10.7,
   "status": "done"
  },
  "Mathlib/AlgebraicGeometry/AffineScheme.lean": {
@@ -6424,29 +5654,29 @@
   "sha256": "c6a4d4bbce6899d0267d59bd12b984362ec4e4caca8507d3b92d33b376eaffdb",
   "occurrences": [
    {
-    "kind": "line",
-    "line": 443,
+    "kind": "block",
+    "line": 579,
     "col": 0,
-    "text": "  classical",
+    "text": "  classical exact Finset.mem_union",
     "removed": false
    },
    {
-    "kind": "line",
-    "line": 455,
+    "kind": "block",
+    "line": 610,
     "col": 0,
-    "text": "  classical",
+    "text": "  classical exact sup_biUnion _ _",
     "removed": false
    },
    {
-    "kind": "line",
-    "line": 532,
+    "kind": "block",
+    "line": 615,
     "col": 0,
-    "text": "  classical",
+    "text": "  classical exact sup_union",
     "removed": false
    }
   ],
   "notes": [],
-  "baseline_seconds": 4.6,
+  "baseline_seconds": 5.9,
   "status": "done"
  },
  "Mathlib/Analysis/BoxIntegral/Partition/Filter.lean": {
@@ -6504,29 +5734,50 @@
   "sha256": "e123ed5591679e8fbff485a4307c62b93299618db2753a3e9ba7f6502bdbcbe7",
   "occurrences": [
    {
-    "kind": "line",
-    "line": 208,
+    "kind": "block",
+    "line": 98,
     "col": 0,
-    "text": "  classical",
+    "text": "  classical exact Finset.mem_filter",
     "removed": false
    },
    {
-    "kind": "line",
-    "line": 328,
+    "kind": "block",
+    "line": 311,
     "col": 0,
-    "text": "  classical",
+    "text": "  classical exact Finset.mem_union",
     "removed": false
    },
    {
-    "kind": "line",
-    "line": 337,
+    "kind": "block",
+    "line": 374,
     "col": 0,
-    "text": "  classical",
+    "text": "  classical exact sup_biUnion _ _",
+    "removed": false
+   },
+   {
+    "kind": "block",
+    "line": 379,
+    "col": 0,
+    "text": "  classical exact sup_biUnion _ _",
+    "removed": false
+   },
+   {
+    "kind": "block",
+    "line": 384,
+    "col": 0,
+    "text": "  classical exact sup_union",
+    "removed": false
+   },
+   {
+    "kind": "block",
+    "line": 396,
+    "col": 0,
+    "text": "  classical exact sup_mono (filter_subset _ _)",
     "removed": false
    }
   ],
   "notes": [],
-  "baseline_seconds": 4.3,
+  "baseline_seconds": 5.7,
   "status": "done"
  },
  "Mathlib/Analysis/BoxIntegral/Partition/Split.lean": {
@@ -6846,10 +6097,10 @@
   "sha256": "51930d73c6e80a0dbb3db0fcb6b09e4d72363266c2493aec136ed40311474c13",
   "occurrences": [
    {
-    "kind": "line",
-    "line": 869,
+    "kind": "block",
+    "line": 315,
     "col": 0,
-    "text": "  classical",
+    "text": "  classical simp [fderivWithin]",
     "removed": false
    }
   ],
@@ -7804,67 +7055,46 @@
   "status": "done"
  },
  "Mathlib/Analysis/InnerProductSpace/Orthonormal.lean": {
-  "sha256": "5835a3eb57abb0878368ac8b6ed8d002176d350f4ba27571dfb0a2e90571daad",
+  "sha256": "123693cb415631fa8b6bcd518e03dfd9db42879b5921468e1a5c041e84bb461e",
   "occurrences": [
    {
-    "kind": "line",
-    "line": 114,
+    "kind": "block",
+    "line": 310,
     "col": 0,
-    "text": "  classical",
+    "text": "  classical simp_rw [orthonormal_iff_ite, Function.comp_apply, LinearIsometry.inner_map_map]",
     "removed": false
    },
    {
-    "kind": "line",
-    "line": 122,
+    "kind": "block",
+    "line": 331,
     "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 140,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 177,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 193,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 226,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 240,
-    "col": 0,
-    "text": "  classical",
+    "text": "    classical rw [\u2190 v.linearCombination_repr x, \u2190 v.linearCombination_repr y,",
     "removed": true
    },
    {
-    "kind": "line",
-    "line": 248,
+    "kind": "block",
+    "line": 352,
     "col": 0,
-    "text": "  classical",
-    "removed": false
+    "text": "    classical rw [\u2190 v.linearCombination_repr x, \u2190 v.linearCombination_repr y,",
+    "removed": true
+   },
+   {
+    "kind": "block",
+    "line": 376,
+    "col": 0,
+    "text": "      classical exact hv'.comp _ e.injective)",
+    "removed": true
+   },
+   {
+    "kind": "block",
+    "line": 439,
+    "col": 0,
+    "text": "    classical exact hv.inner_left_right_finset",
+    "removed": true
    }
   ],
   "notes": [],
-  "baseline_seconds": 7.9,
+  "baseline_seconds": 8.7,
   "status": "done"
  },
  "Mathlib/Analysis/InnerProductSpace/Subspace.lean": {
@@ -8101,81 +7331,25 @@
   "status": "done"
  },
  "Mathlib/Analysis/InnerProductSpace/PiL2.lean": {
-  "sha256": "d3f6ab1ddf3d708a90bbde43a4620efc202282158f72b7376bcea83c996c23d1",
+  "sha256": "45af8d48ce68dca2d3e80e92e86108ab608621f6756055b9821eb02c63c8f8e0",
   "occurrences": [
    {
-    "kind": "line",
-    "line": 266,
+    "kind": "block",
+    "line": 643,
     "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "inline",
-    "line": 408,
-    "col": 13,
-    "text": "  coe b i := by classical exact b.repr.symm (EuclideanSpace.single i (1 : \ud835\udd5c))",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 411,
-    "col": 0,
-    "text": "      classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 443,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 449,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 694,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 777,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 796,
-    "col": 0,
-    "text": "  classical",
+    "text": "      classical rw [OrthonormalBasis.coe_toBasis]",
     "removed": true
    },
    {
-    "kind": "line",
-    "line": 850,
+    "kind": "block",
+    "line": 723,
     "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 958,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
+    "text": "  classical rw [OrthonormalBasis.mk, _root_.Module.Basis.coe_toOrthonormalBasis, Basis.coe_mk]",
+    "removed": true
    }
   ],
   "notes": [],
-  "baseline_seconds": 31.3,
+  "baseline_seconds": 38.7,
   "status": "done"
  },
  "Mathlib/Analysis/Matrix/Order.lean": {
@@ -8473,15 +7647,15 @@
   "sha256": "533d4b6aa552433e06ae1e5ff7efc335845e4de7584a5aa9ca829b8217ade14f",
   "occurrences": [
    {
-    "kind": "line",
-    "line": 62,
+    "kind": "block",
+    "line": 145,
     "col": 0,
-    "text": "  classical",
-    "removed": false
+    "text": "    classical exact ge_of_tendsto' hg fun s => sum_nonneg fun i _hi => (norm_nonneg _).trans (h i)",
+    "removed": true
    }
   ],
   "notes": [],
-  "baseline_seconds": 3.6,
+  "baseline_seconds": 3.9,
   "status": "done"
  },
  "Mathlib/Analysis/Normed/Group/FunctionSeries.lean": {
@@ -10298,32 +9472,18 @@
   "status": "done"
  },
  "Mathlib/Combinatorics/SetFamily/FourFunctions.lean": {
-  "sha256": "5c04314cd29a91ef8f7535695c66a2291ffcf35f597efc2f1918997b4b32bfb4",
+  "sha256": "735d4eb59cd49b646f0c944e528e77da0262cabb8ef79b3e4e787308b63400d9",
   "occurrences": [
    {
-    "kind": "line",
-    "line": 303,
+    "kind": "block",
+    "line": 346,
     "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 324,
-    "col": 0,
-    "text": "  classical",
-    "removed": true
-   },
-   {
-    "kind": "line",
-    "line": 353,
-    "col": 0,
-    "text": "  classical",
+    "text": "  classical simpa using four_functions_theorem f\u2081 f\u2082 f\u2083 f\u2084 h\u2081 h\u2082 h\u2083 h\u2084 h univ univ",
     "removed": false
    }
   ],
   "notes": [],
-  "baseline_seconds": 6.9,
+  "baseline_seconds": 5.4,
   "status": "done"
  },
  "Mathlib/Combinatorics/SetFamily/KruskalKatona.lean": {
@@ -10345,15 +9505,15 @@
   "sha256": "c165d217c20f1e2137081fc6fcc9dc0b4d2ecba039171d5b267a4df61cb17f4d",
   "occurrences": [
    {
-    "kind": "line",
-    "line": 118,
+    "kind": "block",
+    "line": 838,
     "col": 0,
-    "text": "    classical",
+    "text": "  classical simp_rw [neighborSet_union_compl_neighborSet_eq, Set.toFinset_compl,",
     "removed": false
    }
   ],
   "notes": [],
-  "baseline_seconds": 7.7,
+  "baseline_seconds": 6.2,
   "status": "done"
  },
  "Mathlib/Combinatorics/SimpleGraph/Bipartite.lean": {
@@ -10712,22 +9872,36 @@
   "sha256": "64c5d49c1e3b579bbf4af5240e2b9845aec4df8656f1d2845033fec0ca7bf4de",
   "occurrences": [
    {
-    "kind": "line",
-    "line": 554,
+    "kind": "block",
+    "line": 510,
     "col": 0,
-    "text": "  classical",
+    "text": "  classical exact Fintype.card (Copy H G)",
     "removed": false
    },
    {
-    "kind": "line",
-    "line": 673,
+    "kind": "block",
+    "line": 531,
     "col": 0,
-    "text": "  classical",
+    "text": "  classical exact #{G' : G.Subgraph | Nonempty (H \u2243g G'.coe)}",
+    "removed": false
+   },
+   {
+    "kind": "block",
+    "line": 551,
+    "col": 0,
+    "text": "  classical rw [copyCount_eq_card_image_copyToSubgraph]; exact card_image_le",
+    "removed": false
+   },
+   {
+    "kind": "block",
+    "line": 609,
+    "col": 0,
+    "text": "  classical exact",
     "removed": false
    }
   ],
   "notes": [],
-  "baseline_seconds": 8.0,
+  "baseline_seconds": 4.3,
   "status": "done"
  },
  "Mathlib/Combinatorics/SimpleGraph/DeleteEdges.lean": {
@@ -11494,15 +10668,15 @@
   "sha256": "a2c45fb6d20ffdc6611b0812984dde874fa7a497a11a4ec46f4f7775a70c8283",
   "occurrences": [
    {
-    "kind": "line",
-    "line": 932,
+    "kind": "block",
+    "line": 926,
     "col": 0,
-    "text": "  classical",
+    "text": "  classical exact \u27e8fun h i x y eq \u21a6 single_injective (@h (single i x) (single i y) <| by",
     "removed": false
    }
   ],
   "notes": [],
-  "baseline_seconds": 8.0,
+  "baseline_seconds": 6.1,
   "status": "done"
  },
  "Mathlib/Data/DFinsupp/Small.lean": {
@@ -11708,15 +10882,15 @@
   "sha256": "e0daced7e7b6f389dcc65f4b975c0619b9075d1b3be9227e35165f526306fc42",
   "occurrences": [
    {
-    "kind": "line",
-    "line": 51,
+    "kind": "block",
+    "line": 79,
     "col": 0,
-    "text": "  classical",
+    "text": "  classical exact (card_map _).trans <| card_pi _ _",
     "removed": false
    }
   ],
   "notes": [],
-  "baseline_seconds": 3.4,
+  "baseline_seconds": 2.4,
   "status": "done"
  },
  "Mathlib/Data/Finset/Fold.lean": {
@@ -11796,44 +10970,44 @@
   "sha256": "3c2fd67917863bf1cd2d39e8ff5b5a1f4df550a0fcd568e285102d2973b85dbb",
   "occurrences": [
    {
-    "kind": "line",
-    "line": 228,
+    "kind": "block",
+    "line": 257,
     "col": 0,
-    "text": "  classical",
+    "text": "  classical induction S using Finset.induction <;> simp [*]",
     "removed": false
    },
    {
-    "kind": "line",
-    "line": 323,
+    "kind": "block",
+    "line": 314,
     "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 480,
-    "col": 0,
-    "text": "  classical",
+    "text": "  classical rw [\u2190 Finset.coe_image, \u2190 sup_id_eq_sSup, sup_image, Function.id_comp]",
     "removed": false
    }
   ],
   "notes": [],
-  "baseline_seconds": 12.1,
+  "baseline_seconds": 9.2,
   "status": "done"
  },
  "Mathlib/Data/Finset/Option.lean": {
   "sha256": "4be13789bf3c6e5cdf8540e1b34e0d7927d128068a482910b590a10fb4fdf55f",
   "occurrences": [
    {
-    "kind": "line",
-    "line": 160,
+    "kind": "block",
+    "line": 165,
     "col": 0,
-    "text": "  classical",
+    "text": "  classical rw [card_eraseNone_eq_card_erase, card_erase_of_mem h]",
+    "removed": false
+   },
+   {
+    "kind": "block",
+    "line": 168,
+    "col": 0,
+    "text": "  classical rw [card_eraseNone_eq_card_erase, erase_eq_of_notMem h]",
     "removed": false
    }
   ],
   "notes": [],
-  "baseline_seconds": 3.0,
+  "baseline_seconds": 2.6,
   "status": "done"
  },
  "Mathlib/Data/Finset/NoncommProd.lean": {
@@ -11877,22 +11051,15 @@
   "sha256": "c3b6a4c59061b17c8c7bebb84ffb992822dbb42bea631d15dfd6c9cf6ca0395f",
   "occurrences": [
    {
-    "kind": "line",
-    "line": 134,
+    "kind": "block",
+    "line": 99,
     "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 146,
-    "col": 0,
-    "text": "  classical",
+    "text": "  classical rw [map_eq_image, image_subset_iff_subset_preimage]",
     "removed": false
    }
   ],
   "notes": [],
-  "baseline_seconds": 4.4,
+  "baseline_seconds": 2.7,
   "status": "done"
  },
  "Mathlib/Data/Finset/Prod.lean": {
@@ -11911,81 +11078,25 @@
   "status": "done"
  },
  "Mathlib/Data/Finset/Card.lean": {
-  "sha256": "87c674ba5464c7868fb3e253e58a695821bf8841bb4e076bac5d570236dc6229",
+  "sha256": "8d9d598ea4cf496d689abb5efa019ffc7c1e25dd3a1efacf0ab1fce37aebb656",
   "occurrences": [
    {
-    "kind": "line",
-    "line": 321,
+    "kind": "block",
+    "line": 445,
     "col": 0,
-    "text": "  classical",
+    "text": "  classical unfold Set.SurjOn at hf; exact (card_le_card (mod_cast hf)).trans card_image_le",
     "removed": false
    },
    {
-    "kind": "line",
-    "line": 351,
+    "kind": "block",
+    "line": 610,
     "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 424,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 453,
-    "col": 0,
-    "text": "  classical",
-    "removed": true
-   },
-   {
-    "kind": "line",
-    "line": 487,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 514,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 646,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 656,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 804,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 819,
-    "col": 0,
-    "text": "  classical",
+    "text": "  classical simpa [Finset.Nonempty] using sdiff_nonempty_of_card_lt_card h",
     "removed": false
    }
   ],
   "notes": [],
-  "baseline_seconds": 9.9,
+  "baseline_seconds": 7.4,
   "status": "done"
  },
  "Mathlib/Data/Finset/Union.lean": {
@@ -12007,124 +11118,75 @@
   "sha256": "c6a8a1933f8dd3ba0353d266ba42eab9f709aa28941697e90ca56e867f0cc3cd",
   "occurrences": [
    {
-    "kind": "line",
-    "line": 113,
+    "kind": "block",
+    "line": 57,
     "col": 0,
-    "text": "  classical",
-    "removed": false
+    "text": "  classical convert! Multiset.support_sum_subset s.1; simp",
+    "removed": true
    }
   ],
   "notes": [],
-  "baseline_seconds": 3.4,
+  "baseline_seconds": 2.4,
   "status": "done"
  },
  "Mathlib/Data/Finsupp/AList.lean": {
   "sha256": "146d62070f5aeea554a95e160c10242c0cd993ce7a233d00078cbc29957102b1",
   "occurrences": [
    {
-    "kind": "line",
-    "line": 69,
+    "kind": "block",
+    "line": 49,
     "col": 0,
-    "text": "    classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 107,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 113,
-    "col": 0,
-    "text": "  classical",
+    "text": "  classical rw [AList.mem_keys, \u2190 List.mem_toFinset, toAList_keys_toFinset, mem_support_iff]",
     "removed": false
    }
   ],
   "notes": [],
-  "baseline_seconds": 3.8,
+  "baseline_seconds": 2.3,
   "status": "done"
  },
  "Mathlib/Data/Finsupp/Indicator.lean": {
   "sha256": "b96572da03883c9fa0563628c08a1d96348df05ae9078a403fe91bb2c450e42d",
   "occurrences": [
    {
-    "kind": "line",
-    "line": 71,
+    "kind": "block",
+    "line": 42,
     "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 82,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 93,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
+    "text": "    classical simp",
+    "removed": true
    }
   ],
   "notes": [],
-  "baseline_seconds": 3.7,
+  "baseline_seconds": 2.9,
   "status": "done"
  },
  "Mathlib/Data/Finsupp/Defs.lean": {
   "sha256": "70490d0fb49d5ffedbd936e1aa17569c82e46e0f8ea3dbd0773352851c6af727",
   "occurrences": [
    {
-    "kind": "line",
-    "line": 172,
+    "kind": "block",
+    "line": 424,
     "col": 0,
-    "text": "      classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 355,
-    "col": 0,
-    "text": "    classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 445,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 491,
-    "col": 0,
-    "text": "      classical",
+    "text": "      classical apply Finset.choose_mem",
     "removed": false
    }
   ],
   "notes": [],
-  "baseline_seconds": 4.7,
+  "baseline_seconds": 3.6,
   "status": "done"
  },
  "Mathlib/Data/Finsupp/Multiset.lean": {
   "sha256": "c0da3d452b424eaa3908cd3e782efc26f2fe1370bbb0b108ccbc8ca214b42ced",
   "occurrences": [
    {
-    "kind": "line",
-    "line": 123,
+    "kind": "block",
+    "line": 212,
     "col": 0,
-    "text": "  classical",
+    "text": "  classical exact (@orderIsoMultiset \u03b9 _).strictMono",
     "removed": false
    }
   ],
   "notes": [],
-  "baseline_seconds": 4.7,
+  "baseline_seconds": 3.2,
   "status": "done"
  },
  "Mathlib/Data/Finsupp/Option.lean": {
@@ -12179,96 +11241,82 @@
   "status": "done"
  },
  "Mathlib/Data/Finsupp/Order.lean": {
-  "sha256": "9d9b55f96b082f27374122d2501df69819de24c42ba70c4f8729b3c89df1f8a8",
+  "sha256": "8c902aaf8df9b813de20006ad6aa6b2ae3401a17cdc628c334242a082352ec0c",
   "occurrences": [
    {
-    "kind": "inline",
-    "line": 80,
-    "col": 56,
-    "text": "@[simp] lemma single_nonneg : 0 \u2264 single i a \u2194 0 \u2264 a := by classical exact Pi.single_nonneg",
+    "kind": "block",
+    "line": 76,
+    "col": 0,
+    "text": "  classical exact Pi.single_le_single",
     "removed": false
    },
    {
-    "kind": "inline",
-    "line": 81,
-    "col": 56,
-    "text": "@[simp] lemma single_nonpos : single i a \u2264 0 \u2194 a \u2264 0 := by classical exact Pi.single_nonpos",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 88,
+    "kind": "block",
+    "line": 144,
     "col": 0,
-    "text": "  classical",
-    "removed": true
-   },
-   {
-    "kind": "line",
-    "line": 330,
-    "col": 0,
-    "text": "  classical",
+    "text": "  classical exact fun g\u2081 g\u2082 h \u21a6 sum_le_sum_index h (fun _ _ \u21a6 single_mono) (by simp)",
     "removed": false
    }
   ],
   "notes": [],
-  "baseline_seconds": 5.7,
+  "baseline_seconds": 4.6,
   "status": "done"
  },
  "Mathlib/Data/Finsupp/Basic.lean": {
   "sha256": "1ad1127e19f37e7b6ad310d6e61b356f8c8e1ae60d416b165653ac2857590004",
   "occurrences": [
    {
-    "kind": "line",
-    "line": 86,
+    "kind": "block",
+    "line": 688,
     "col": 0,
-    "text": "  classical",
+    "text": "  classical rw [\u2190 support_eq_empty, support_filter, support_zero, Finset.filter_empty]",
+    "removed": true
+   },
+   {
+    "kind": "block",
+    "line": 751,
+    "col": 0,
+    "text": "  classical grind",
     "removed": false
    },
    {
-    "kind": "line",
-    "line": 91,
+    "kind": "block",
+    "line": 1057,
     "col": 0,
-    "text": "  classical",
+    "text": "  classical ext (_ | _) <;> simp [single_apply]",
     "removed": false
    },
    {
-    "kind": "line",
-    "line": 173,
+    "kind": "block",
+    "line": 1061,
     "col": 0,
-    "text": "  classical",
+    "text": "  classical ext (_ | _) <;> simp [single_apply]",
     "removed": false
    },
    {
-    "kind": "line",
-    "line": 374,
+    "kind": "block",
+    "line": 1065,
     "col": 0,
-    "text": "  classical",
+    "text": "  classical ext (_ | _) <;> simp [single_apply]",
     "removed": false
    },
    {
-    "kind": "line",
-    "line": 479,
+    "kind": "block",
+    "line": 1273,
     "col": 0,
-    "text": "  classical",
+    "text": "  classical simp",
     "removed": false
    },
    {
-    "kind": "line",
-    "line": 530,
+    "kind": "block",
+    "line": 1338,
     "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 1430,
-    "col": 0,
-    "text": "  classical",
+    "text": "  classical rw [splitSupport, mem_image, Ne, \u2190 support_eq_empty, \u2190 Ne,",
     "removed": false
    }
   ],
   "notes": [],
-  "baseline_seconds": 13.8,
+  "baseline_seconds": 10.5,
   "status": "done"
  },
  "Mathlib/Data/Finsupp/WellFounded.lean": {
@@ -12377,51 +11425,37 @@
   "sha256": "2307820b0dee2080bd8245e268974bd02678d76067a6efc8878d004f7b8ed774",
   "occurrences": [
    {
-    "kind": "line",
-    "line": 409,
+    "kind": "block",
+    "line": 158,
     "col": 0,
-    "text": "  classical",
+    "text": "  classical rw [\u2190 Set.toFinset_card, \u2190 Set.toFinset_card, \u2190 Finset.card_compl, Set.toFinset_compl]",
     "removed": false
    },
    {
-    "kind": "line",
-    "line": 443,
+    "kind": "block",
+    "line": 234,
     "col": 0,
-    "text": "  classical",
+    "text": "  classical exact List.toFinset_card_of_nodup h \u25b8 l.toFinset.card_le_univ",
     "removed": false
    }
   ],
   "notes": [],
-  "baseline_seconds": 3.9,
+  "baseline_seconds": 2.8,
   "status": "done"
  },
  "Mathlib/Data/Fintype/EquivFin.lean": {
   "sha256": "5a70d92ff1637a57053c8ccddd92752adb7f0938e9fd585b3cd77badee2e248b",
   "occurrences": [
    {
-    "kind": "inline",
-    "line": 368,
-    "col": 24,
-    "text": "    Nonempty (\u03b1 \u21aa \u03b2) := by classical exact (truncOfCardLE h).nonempty",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 437,
+    "kind": "block",
+    "line": 184,
     "col": 0,
-    "text": "    classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 519,
-    "col": 0,
-    "text": "  classical",
+    "text": "  classical exact .of_equiv (Set.range (e \u2218 f)) (Equiv.ofInjective _ (e.injective.comp H)).symm",
     "removed": false
    }
   ],
   "notes": [],
-  "baseline_seconds": 3.7,
+  "baseline_seconds": 3.2,
   "status": "done"
  },
  "Mathlib/Data/Fintype/Order.lean": {
@@ -12458,191 +11492,100 @@
   "sha256": "b9ffe4eaff9582684043381d19183834e07ab69a9203a9042ce5a07b36bd5293",
   "occurrences": [
    {
-    "kind": "line",
-    "line": 203,
+    "kind": "block",
+    "line": 152,
     "col": 0,
-    "text": "  classical",
+    "text": "  classical exact Fintype.ofEquiv _ (Equiv.subtypeInjectiveEquivEmbedding \u03b1 \u03b2)",
     "removed": false
    }
   ],
   "notes": [],
-  "baseline_seconds": 4.0,
+  "baseline_seconds": 3.1,
   "status": "done"
  },
  "Mathlib/Data/Finsupp/Single.lean": {
-  "sha256": "d443327ed13364d7ddf9fead8d5648f7d172d0e58d335a9eb2101a11d28b4478",
+  "sha256": "fcf87ca6fdff21d833b9d90e250d9ac1ea72b7cbbaddd5e80077ce1a20e5bb8d",
   "occurrences": [
    {
-    "kind": "line",
-    "line": 58,
+    "kind": "block",
+    "line": 69,
     "col": 0,
-    "text": "  classical",
+    "text": "  classical rw [Set.indicator_singleton, single_eq_pi_single]",
     "removed": false
    },
    {
-    "kind": "inline",
-    "line": 62,
-    "col": 43,
-    "text": "    single (f x) y (f z) = single x y z := by classical simp only [single_apply, hf.eq_iff]",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 98,
+    "kind": "block",
+    "line": 77,
     "col": 0,
-    "text": "  classical",
+    "text": "  classical exact Pi.single_eq_same (M := fun _ \u21a6 M) a b",
     "removed": false
    },
    {
-    "kind": "line",
-    "line": 107,
+    "kind": "block",
+    "line": 81,
     "col": 0,
-    "text": "  classical",
+    "text": "  classical exact Pi.single_eq_of_ne h _",
     "removed": false
    },
    {
-    "kind": "line",
-    "line": 111,
+    "kind": "block",
+    "line": 85,
     "col": 0,
-    "text": "  classical",
+    "text": "  classical exact Pi.single_eq_of_ne' h _",
     "removed": false
    },
    {
-    "kind": "line",
-    "line": 141,
+    "kind": "block",
+    "line": 94,
     "col": 0,
-    "text": "  classical",
+    "text": "    classical simpa only [single_eq_update, coe_zero] using! Function.update_eq_self a (0 : \u03b1 \u2192 M)",
     "removed": false
    },
    {
-    "kind": "line",
-    "line": 203,
+    "kind": "block",
+    "line": 124,
     "col": 0,
-    "text": "  classical",
+    "text": "  classical simp [single_apply, eq_comm]",
     "removed": false
    },
    {
-    "kind": "line",
-    "line": 295,
+    "kind": "block",
+    "line": 173,
     "col": 0,
-    "text": "    classical",
+    "text": "  classical simp [DFunLike.ext_iff, single_apply]",
     "removed": false
    },
    {
-    "kind": "line",
-    "line": 309,
+    "kind": "block",
+    "line": 179,
     "col": 0,
-    "text": "  classical",
+    "text": "  classical simp only [single_apply, eq_comm]",
     "removed": false
    },
    {
-    "kind": "line",
-    "line": 335,
+    "kind": "block",
+    "line": 387,
     "col": 0,
-    "text": "  classical",
+    "text": "  classical grind",
     "removed": false
    },
    {
-    "kind": "line",
-    "line": 340,
+    "kind": "block",
+    "line": 391,
     "col": 0,
-    "text": "  classical",
+    "text": "  classical grind",
     "removed": false
    },
    {
-    "kind": "line",
-    "line": 364,
+    "kind": "block",
+    "line": 423,
     "col": 0,
-    "text": "    classical",
-    "removed": true
-   },
-   {
-    "kind": "line",
-    "line": 376,
-    "col": 0,
-    "text": "  classical",
-    "removed": true
-   },
-   {
-    "kind": "inline",
-    "line": 380,
-    "col": 63,
-    "text": "theorem erase_same {a : \u03b1} {f : \u03b1 \u2192\u2080 M} : (f.erase a) a = 0 := by classical grind",
-    "removed": false
-   },
-   {
-    "kind": "inline",
-    "line": 383,
-    "col": 81,
-    "text": "theorem erase_ne {a a' : \u03b1} {f : \u03b1 \u2192\u2080 M} (h : a' \u2260 a) : (f.erase a) a' = f a' := by classical grind",
-    "removed": false
-   },
-   {
-    "kind": "inline",
-    "line": 386,
-    "col": 67,
-    "text": "theorem erase_single {a : \u03b1} {b : M} : erase a (single a b) = 0 := by classical grind",
-    "removed": false
-   },
-   {
-    "kind": "inline",
-    "line": 398,
-    "col": 80,
-    "text": "theorem erase_eq_update_zero (f : \u03b1 \u2192\u2080 M) (a : \u03b1) : f.erase a = update f a 0 := by classical grind",
-    "removed": false
-   },
-   {
-    "kind": "inline",
-    "line": 402,
-    "col": 57,
-    "text": "    erase a (update f a' b) = update (erase a f) a' b := by classical grind",
-    "removed": false
-   },
-   {
-    "kind": "inline",
-    "line": 406,
-    "col": 39,
-    "text": "    erase a (erase a f) = erase a f := by classical grind",
-    "removed": false
-   },
-   {
-    "kind": "inline",
-    "line": 409,
-    "col": 45,
-    "text": "    update (erase a f) a b = update f a b := by classical grind",
-    "removed": false
-   },
-   {
-    "kind": "inline",
-    "line": 412,
-    "col": 42,
-    "text": "    erase a (update f a b) = erase a f := by classical grind",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 438,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 453,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 469,
-    "col": 0,
-    "text": "  classical",
+    "text": "  classical grind",
     "removed": false
    }
   ],
   "notes": [],
-  "baseline_seconds": 4.1,
+  "baseline_seconds": 2.9,
   "status": "done"
  },
  "Mathlib/Data/Fintype/Powerset.lean": {
@@ -12730,36 +11673,15 @@
   "sha256": "de9ae1d8153bf834332f46a4ddabbd425e7a95f9cc08274cb261ccd791e93f71",
   "occurrences": [
    {
-    "kind": "line",
-    "line": 95,
+    "kind": "block",
+    "line": 71,
     "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 122,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 134,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 141,
-    "col": 0,
-    "text": "  classical",
+    "text": "    classical exact (Equiv.sumCompl (\u00b7 = a)).bijective",
     "removed": false
    }
   ],
   "notes": [],
-  "baseline_seconds": 2.9,
+  "baseline_seconds": 2.4,
   "status": "done"
  },
  "Mathlib/Data/List/Lex.lean": {
@@ -12841,15 +11763,22 @@
   "sha256": "4db308932c91ebc9ece68ac8ad4364d4963debc92bed3cb2cc3d7e058acd7932",
   "occurrences": [
    {
-    "kind": "line",
-    "line": 114,
+    "kind": "block",
+    "line": 123,
     "col": 0,
-    "text": "  classical",
+    "text": "  classical rw [toFinsupp_append, toFinsupp_singleton, Finsupp.embDomain_single,",
+    "removed": false
+   },
+   {
+    "kind": "block",
+    "line": 136,
+    "col": 0,
+    "text": "    classical simp [toFinsupp_concat_eq_toFinsupp_add_single, sum_append, ih]",
     "removed": false
    }
   ],
   "notes": [],
-  "baseline_seconds": 3.8,
+  "baseline_seconds": 2.2,
   "status": "done"
  },
  "Mathlib/Data/List/Sort.lean": {
@@ -13167,15 +12096,15 @@
   "sha256": "da21957fcb7f0bc4caa0d968cf967470c5ae679bd15cdea8e5b841a0fc8bbec4",
   "occurrences": [
    {
-    "kind": "line",
-    "line": 395,
+    "kind": "block",
+    "line": 95,
     "col": 0,
-    "text": "  classical",
+    "text": "  classical apply (fintypeiUnion _).finite",
     "removed": false
    }
   ],
   "notes": [],
-  "baseline_seconds": 5.3,
+  "baseline_seconds": 4.2,
   "status": "done"
  },
  "Mathlib/Data/Set/Finite/Range.lean": {
@@ -13197,43 +12126,15 @@
   "sha256": "1e6131b91da0fbf4d654188d70950bd5cd394fa0d0a4d125cee02ff83921df1c",
   "occurrences": [
    {
-    "kind": "line",
-    "line": 442,
+    "kind": "block",
+    "line": 391,
     "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 447,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 468,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 658,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 930,
-    "col": 0,
-    "text": "    classical",
+    "text": "  classical simpa only [\u2190 Multiset.mem_toFinset] using! s.toFinset.finite_toSet",
     "removed": false
    }
   ],
   "notes": [],
-  "baseline_seconds": 5.4,
+  "baseline_seconds": 3.9,
   "status": "done"
  },
  "Mathlib/Data/Set/Lattice/Image.lean": {
@@ -13813,47 +12714,33 @@
   "status": "done"
  },
  "Mathlib/FieldTheory/Galois/Basic.lean": {
-  "sha256": "5a5f2905a0d767074eb127cb100f64aa91d32250d6cf29909d343c654f509d6e",
+  "sha256": "cdf1aba6fd67ce41261b70f53f96cb6720fefbdd8effd6bc78018933bd2cb1f9",
   "occurrences": [
    {
-    "kind": "line",
-    "line": 276,
+    "kind": "block",
+    "line": 486,
     "col": 0,
-    "text": "  classical",
-    "removed": true
-   },
-   {
-    "kind": "line",
-    "line": 323,
-    "col": 0,
-    "text": "  classical",
-    "removed": true
-   },
-   {
-    "kind": "line",
-    "line": 497,
-    "col": 0,
-    "text": "  classical",
+    "text": "  classical exact IsGalois.of_fixed_field E (\u22a4 : Subgroup Gal(E/F))",
     "removed": true
    }
   ],
   "notes": [],
-  "baseline_seconds": 13.8,
+  "baseline_seconds": 10.8,
   "status": "done"
  },
  "Mathlib/FieldTheory/IntermediateField/Adjoin/Defs.lean": {
   "sha256": "d924cf1e2951c0e4b721afe0a519fd0225d9496a07ebb2dc2a4019eec23c474d",
   "occurrences": [
    {
-    "kind": "line",
-    "line": 686,
+    "kind": "block",
+    "line": 667,
     "col": 0,
-    "text": "  classical",
+    "text": "  classical rw [\u2190 adjoin_union, \u2190 Finset.coe_union]",
     "removed": false
    }
   ],
   "notes": [],
-  "baseline_seconds": 15.9,
+  "baseline_seconds": 10.8,
   "status": "done"
  },
  "Mathlib/FieldTheory/JacobsonNoether.lean": {
@@ -14496,53 +13383,18 @@
   "status": "done"
  },
  "Mathlib/Geometry/Convex/ConvexSpace/Defs.lean": {
-  "sha256": "b5f36b03da47c508dd613fe33894cfdda6a4f67b1b9d59c6f9babf298d6b8eb1",
+  "sha256": "b31c82a4e4b7cac5aa6613b930b66e047afd73cdcf7bc3182a6778364e40244d",
   "occurrences": [
    {
-    "kind": "line",
-    "line": 97,
+    "kind": "block",
+    "line": 287,
     "col": 0,
-    "text": "    classical",
-    "removed": true
-   },
-   {
-    "kind": "inline",
-    "line": 111,
-    "col": 11,
-    "text": "  total := by classical simpa [sum_add_index]",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 191,
-    "col": 0,
-    "text": "    classical",
-    "removed": false
-   },
-   {
-    "kind": "inline",
-    "line": 193,
-    "col": 11,
-    "text": "  total := by classical simp [sum_smul_index, \u2190 mul_sum, restrict_ne_zero_aux hs]",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 213,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 543,
-    "col": 0,
-    "text": "  classical",
+    "text": "  classical simp [convexCombPair, sum_add_index, add_smul]",
     "removed": false
    }
   ],
   "notes": [],
-  "baseline_seconds": 7.7,
+  "baseline_seconds": 6.4,
   "status": "done"
  },
  "Mathlib/Geometry/Euclidean/Altitude.lean": {
@@ -14867,25 +13719,18 @@
   "status": "done"
  },
  "Mathlib/Geometry/Manifold/MFDeriv/SpecificFunctions.lean": {
-  "sha256": "1dff39da2d84074d6190baf0633801aea10994b5cd21dcdbc49d55062a8f2e39",
+  "sha256": "a0ef782a5708749832d98db217672d0092d281c9f987ce027f3fc7d828baae8c",
   "occurrences": [
    {
-    "kind": "line",
-    "line": 807,
+    "kind": "block",
+    "line": 1025,
     "col": 0,
-    "text": "  classical",
+    "text": "  classical exact (HasMFDerivWithinAt.prod",
     "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 1004,
-    "col": 0,
-    "text": "  classical",
-    "removed": true
    }
   ],
   "notes": [],
-  "baseline_seconds": 35.0,
+  "baseline_seconds": 29.1,
   "status": "done"
  },
  "Mathlib/Geometry/Manifold/VectorBundle/LocalFrame.lean": {
@@ -15058,25 +13903,18 @@
   "status": "done"
  },
  "Mathlib/GroupTheory/CoprodI.lean": {
-  "sha256": "8b328a00e93b328b3b3f09ca556907a96cb53ee3817638f807676e7c18454410",
+  "sha256": "bb41061972ad0f2ca4c0cdd30548d2bb4c5a8610a89f70cbecc49bb9141307bf",
   "occurrences": [
    {
-    "kind": "line",
-    "line": 859,
+    "kind": "block",
+    "line": 179,
     "col": 0,
-    "text": "  classical",
-    "removed": true
-   },
-   {
-    "kind": "line",
-    "line": 904,
-    "col": 0,
-    "text": "  classical",
+    "text": "  classical exact (of_leftInverse i).injective",
     "removed": false
    }
   ],
   "notes": [],
-  "baseline_seconds": 9.3,
+  "baseline_seconds": 9.2,
   "status": "done"
  },
  "Mathlib/GroupTheory/Coxeter/Length.lean": {
@@ -15418,25 +14256,18 @@
   "status": "done"
  },
  "Mathlib/GroupTheory/PGroup.lean": {
-  "sha256": "df335bc9227ee06f1d77185b9b5b1ed045353751120bfac813027d7a87f4ba77",
+  "sha256": "2b8d4dfddd883f6e208fadafe6b5fe245a3a7964466857ae3d3d48679e04259b",
   "occurrences": [
    {
-    "kind": "line",
-    "line": 168,
+    "kind": "block",
+    "line": 233,
     "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 223,
-    "col": 0,
-    "text": "  classical",
+    "text": "  classical exact",
     "removed": true
    }
   ],
   "notes": [],
-  "baseline_seconds": 3.4,
+  "baseline_seconds": 2.8,
   "status": "done"
  },
  "Mathlib/GroupTheory/Perm/Centralizer.lean": {
@@ -15484,60 +14315,32 @@
   "status": "done"
  },
  "Mathlib/GroupTheory/Nilpotent.lean": {
-  "sha256": "fc6e3be0b9f9cd7999d8a8c2232ce111055d6fe8be6e8dce335fe4581079ca87",
+  "sha256": "06140fb96492090c6ca975dc8e0da9998f2c350848d83cd21c8a6b8ac57eb17f",
   "occurrences": [
    {
-    "kind": "line",
-    "line": 545,
+    "kind": "block",
+    "line": 696,
     "col": 0,
-    "text": "  classical",
+    "text": "  classical apply Nat.find_mono",
     "removed": false
    },
    {
-    "kind": "line",
-    "line": 551,
+    "kind": "block",
+    "line": 760,
     "col": 0,
-    "text": "  classical",
+    "text": "  classical apply Nat.find_min'",
     "removed": false
    },
    {
-    "kind": "line",
-    "line": 614,
+    "kind": "block",
+    "line": 790,
     "col": 0,
-    "text": "  classical",
+    "text": "  classical apply Nat.find_mono",
     "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 621,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 856,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 1211,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 1234,
-    "col": 0,
-    "text": "  classical",
-    "removed": true
    }
   ],
   "notes": [],
-  "baseline_seconds": 7.5,
+  "baseline_seconds": 8.6,
   "status": "done"
  },
  "Mathlib/GroupTheory/Perm/Cycle/Factors.lean": {
@@ -15577,67 +14380,18 @@
   "status": "done"
  },
  "Mathlib/GroupTheory/Perm/Cycle/Basic.lean": {
-  "sha256": "e11c0023cb8b9cc3afb886b02d4d8a21bea6b0273d4a1351d300d8b8acc9816b",
+  "sha256": "a9df6eaf1fe97b50ef568ed121baf104b39f5651731e5440b568504a3e8dc051",
   "occurrences": [
    {
-    "kind": "line",
-    "line": 536,
+    "kind": "block",
+    "line": 292,
     "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 560,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 589,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 612,
-    "col": 0,
-    "text": "  classical",
+    "text": "  classical exact",
     "removed": true
-   },
-   {
-    "kind": "line",
-    "line": 749,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 782,
-    "col": 0,
-    "text": "  classical",
-    "removed": true
-   },
-   {
-    "kind": "line",
-    "line": 869,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 908,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
    }
   ],
   "notes": [],
-  "baseline_seconds": 4.3,
+  "baseline_seconds": 4.5,
   "status": "done"
  },
  "Mathlib/GroupTheory/Perm/DomMulAct.lean": {
@@ -15685,39 +14439,18 @@
   "status": "done"
  },
  "Mathlib/GroupTheory/OrderOfElement.lean": {
-  "sha256": "f5f551cc84fa8cc46ecd5b431703dbdc98d73c24d5d312dc9c35600659245169",
+  "sha256": "d8bd750e2ed89c03a4e664e4563c8e332fd7aab36d12c50c0f58f6f2f84f1dd8",
   "occurrences": [
    {
-    "kind": "line",
-    "line": 445,
+    "kind": "block",
+    "line": 451,
     "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 658,
-    "col": 0,
-    "text": "  classical",
-    "removed": true
-   },
-   {
-    "kind": "line",
-    "line": 745,
-    "col": 0,
-    "text": "  classical",
-    "removed": true
-   },
-   {
-    "kind": "line",
-    "line": 1318,
-    "col": 0,
-    "text": "    classical",
+    "text": "  classical rw [ha.powers_eq_image_range_orderOf]; exact Finset.finite_toSet _",
     "removed": false
    }
   ],
   "notes": [],
-  "baseline_seconds": 18.0,
+  "baseline_seconds": 16.5,
   "status": "done"
  },
  "Mathlib/GroupTheory/Perm/Support.lean": {
@@ -15775,29 +14508,15 @@
   "sha256": "5d03f61492eddda1b311cbcfbfab7cfe44547d02613bba237fd36606ed81fa58",
   "occurrences": [
    {
-    "kind": "line",
-    "line": 247,
+    "kind": "block",
+    "line": 409,
     "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 391,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 399,
-    "col": 0,
-    "text": "  classical",
+    "text": "  classical exact isCycle_of_prime_order h1 (lt_of_le_of_lt \u03c3.support.card_le_univ h2)",
     "removed": false
    }
   ],
   "notes": [],
-  "baseline_seconds": 12.7,
+  "baseline_seconds": 10.8,
   "status": "done"
  },
  "Mathlib/GroupTheory/Perm/MaximalSubgroups.lean": {
@@ -15874,18 +14593,18 @@
   "status": "done"
  },
  "Mathlib/GroupTheory/PushoutI.lean": {
-  "sha256": "902730d859b0127e573e49a4a2c31f00eb4b458cd995c2a2ae46acb1c6aa6ecc",
+  "sha256": "7a2a8704884271223e1a7bb7c4225bcc93c8d62ca7e236b2269a08b6e29e17f5",
   "occurrences": [
    {
-    "kind": "line",
-    "line": 617,
+    "kind": "block",
+    "line": 566,
     "col": 0,
-    "text": "  classical",
+    "text": "  classical exact equiv.symm.injective",
     "removed": true
    }
   ],
   "notes": [],
-  "baseline_seconds": 9.9,
+  "baseline_seconds": 9.2,
   "status": "done"
  },
  "Mathlib/GroupTheory/Schreier.lean": {
@@ -16062,15 +14781,29 @@
   "sha256": "76d331cc17086642792e3bad97e3ac4613a5a581879aa82897cb37668f65365e",
   "occurrences": [
    {
-    "kind": "line",
-    "line": 265,
+    "kind": "block",
+    "line": 187,
     "col": 0,
-    "text": "  classical",
+    "text": "  classical simp [AffineBasis.coord]",
+    "removed": true
+   },
+   {
+    "kind": "block",
+    "line": 205,
+    "col": 0,
+    "text": "  classical simp only [coord_apply, hi, Finset.affineCombination_eq_linear_combination, if_true,",
+    "removed": false
+   },
+   {
+    "kind": "block",
+    "line": 212,
+    "col": 0,
+    "text": "  classical simp only [coord_apply, hi, Finset.affineCombination_eq_linear_combination, if_false,",
     "removed": false
    }
   ],
   "notes": [],
-  "baseline_seconds": 6.0,
+  "baseline_seconds": 5.2,
   "status": "done"
  },
  "Mathlib/LinearAlgebra/AffineSpace/Ceva.lean": {
@@ -16193,78 +14926,15 @@
   "sha256": "4c8688106ff7989c3f327dfdc478af62f44d42fec9fcdaefc8592388dffb5521",
   "occurrences": [
    {
-    "kind": "line",
-    "line": 489,
+    "kind": "block",
+    "line": 410,
     "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 526,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 740,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 762,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 798,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 840,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 871,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 884,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 895,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 935,
-    "col": 0,
-    "text": "    classical",
+    "text": "  classical rw [attach_affineCombination_of_injective s w ((\u2191) : s \u2192 P) Subtype.coe_injective,",
     "removed": false
    }
   ],
   "notes": [],
-  "baseline_seconds": 8.4,
+  "baseline_seconds": 6.2,
   "status": "done"
  },
  "Mathlib/LinearAlgebra/Basis/VectorSpace.lean": {
@@ -16409,43 +15079,15 @@
   "sha256": "d9a02cc12bb23e39111bf7233788e9f1aff64759f84931de58cef40ffcdf87e7",
   "occurrences": [
    {
-    "kind": "line",
-    "line": 222,
+    "kind": "block",
+    "line": 263,
     "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 426,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 436,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 581,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 645,
-    "col": 0,
-    "text": "  classical",
+    "text": "  classical simpa [DFinsupp.sumAddHom_apply] using! sum_mapRange_index fun i => by simp",
     "removed": false
    }
   ],
   "notes": [],
-  "baseline_seconds": 9.4,
+  "baseline_seconds": 9.2,
   "status": "done"
  },
  "Mathlib/LinearAlgebra/Determinant.lean": {
@@ -16785,58 +15427,30 @@
   "sha256": "3c1355bf387c2321b0159f6683a991aa5be26db07eff2f01cf0785b3ee3ab1c3",
   "occurrences": [
    {
-    "kind": "line",
-    "line": 47,
+    "kind": "block",
+    "line": 211,
     "col": 0,
-    "text": "    classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 219,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 227,
-    "col": 0,
-    "text": "  classical",
+    "text": "  classical simp",
     "removed": false
    }
   ],
   "notes": [],
-  "baseline_seconds": 3.7,
+  "baseline_seconds": 4.0,
   "status": "done"
  },
  "Mathlib/LinearAlgebra/Finsupp/LinearCombination.lean": {
   "sha256": "9656156ead098abaf3bd12b6af53370ad9bfd14c815ec175aad7c7b3fd143225",
   "occurrences": [
    {
-    "kind": "line",
-    "line": 216,
+    "kind": "block",
+    "line": 256,
     "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 271,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 414,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
+    "text": "  classical ext; simp [linearCombinationOn]",
+    "removed": true
    }
   ],
   "notes": [],
-  "baseline_seconds": 8.0,
+  "baseline_seconds": 6.3,
   "status": "done"
  },
  "Mathlib/LinearAlgebra/Finsupp/VectorSpace.lean": {
@@ -17304,29 +15918,15 @@
   "sha256": "1dfca33f432dd2275af43f9efa10fdfd8aefb3216fa76ca05ee9dcce00107406",
   "occurrences": [
    {
-    "kind": "line",
-    "line": 262,
+    "kind": "block",
+    "line": 285,
     "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 462,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 468,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
+    "text": "  classical simpa [trace] using hA.2 (x := Finsupp.single i 1)",
+    "removed": true
    }
   ],
   "notes": [],
-  "baseline_seconds": 7.6,
+  "baseline_seconds": 6.2,
   "status": "done"
  },
  "Mathlib/LinearAlgebra/Matrix/SpecialLinearGroup.lean": {
@@ -17744,78 +16344,15 @@
   "sha256": "bea819df2ca5b1c8e05ba17e108a21f029cb4c4e2545760e63dabdffbb1a7e06",
   "occurrences": [
    {
-    "kind": "line",
-    "line": 171,
+    "kind": "block",
+    "line": 1162,
     "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 422,
-    "col": 0,
-    "text": "    classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 426,
-    "col": 0,
-    "text": "    classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 632,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 758,
-    "col": 0,
-    "text": "    classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 762,
-    "col": 0,
-    "text": "    classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 1027,
-    "col": 0,
-    "text": "    classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 1032,
-    "col": 0,
-    "text": "    classical",
-    "removed": false
-   },
-   {
-    "kind": "inline",
-    "line": 1058,
-    "col": 25,
-    "text": "      map_update_add' := by classical simp [iteratedFDeriv_aux]",
-    "removed": false
-   },
-   {
-    "kind": "inline",
-    "line": 1059,
-    "col": 26,
-    "text": "      map_update_smul' := by classical simp [iteratedFDeriv_aux] }",
+    "text": "  classical simpa using map_piecewise_smul f c m Finset.univ",
     "removed": false
    }
   ],
   "notes": [],
-  "baseline_seconds": 15.7,
+  "baseline_seconds": 13.9,
   "status": "done"
  },
  "Mathlib/LinearAlgebra/QuadraticForm/Signature.lean": {
@@ -18333,36 +16870,15 @@
   "sha256": "edceb49f6bbaf313b6803a49b31d9d51aef09a85057b26d6ee3f147d281217fe",
   "occurrences": [
    {
-    "kind": "line",
-    "line": 803,
+    "kind": "block",
+    "line": 314,
     "col": 0,
-    "text": "    classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 846,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 858,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 920,
-    "col": 0,
-    "text": "  classical",
+    "text": "  classical have := inj (a\u2081 := fun _ \u21a6 c) (a\u2082 := (if \u00b7 = b\u2080 then c' else c)) ?_",
     "removed": false
    }
   ],
   "notes": [],
-  "baseline_seconds": 3.8,
+  "baseline_seconds": 3.2,
   "status": "done"
  },
  "Mathlib/Logic/Nontrivial/Basic.lean": {
@@ -19758,39 +18274,12 @@
  },
  "Mathlib/NumberTheory/NumberField/Units/DirichletTheorem.lean": {
   "sha256": "c1481254d053c9b947dbbd57b2eafa443996d6ea1fd888bcedde6ceeec23a2dd",
-  "occurrences": [
-   {
-    "kind": "line",
-    "line": 318,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 360,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 378,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 385,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   }
+  "occurrences": [],
+  "notes": [
+   "to infer what these values should be\nMathlib/NumberTheory/NumberField/Units/DirichletTheorem.lean:478:20: error: don't know how to synthesize implicit argument `s`\n  @QuotientGroup.mk (\ud835\udcde K)\u02e3 Units.instGroup (?m.14 i) (fundSystem K i)\ncontext:\nK : Type u_1\ninst\u271d\u00b9 : Field K\ninst\u271d : NumberField K\ni : Fin (rank K)\n\u22a2 Subgroup (\ud835\udcde K)\u02e3\n\nNote: All parameter types and holes (e.g., `_`) in the header of a theorem are resolved before the proof is processed; information from the proof cannot be used to infer what these values should be\nMathlib/NumberTheory/NumberField/Units/DirichletTheorem.lean:479:11: warning: declaration uses `sorry`\nMathlib/NumberTheory/NumberField/Units/DirichletTheorem.lean:483:6: warning: declaration uses `sorry`\nMathlib/NumberTheory/NumberField/Units/DirichletTheorem.lean:481:8: warning: declaration uses `sorry`\nMathlib/NumberTheory/NumberField/Units/DirichletTheorem.lean:496:17: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern\n  \u2191(?a * ?b)\nin the target expression\n  Additive.ofMul (\u03b6 * \u220f i, fundSystem K i ^ f i) = \u2211 i, f i \u2022 Additive.ofMul (fundSystem K i)\n\nK : Type u_1\ninst\u271d\u00b9 : Field K\ninst\u271d : NumberField K\nx \u03b6 : (\ud835\udcde K)\u02e3\nf : Fin (rank K) \u2192 \u2124\nh\u03b6 : \u03b6 \u2208 torsion K\nh : x = \u03b6 * \u220f i, fundSystem K i ^ f i\n\u22a2 Additive.ofMul (\u03b6 * \u220f i, fundSystem K i ^ f i) = \u2211 i, f i \u2022 Additive.ofMul (fundSystem K i)\nMathlib/NumberTheory/NumberField/Units/DirichletTheorem.lean:513:2: error: unsolved goals\ncase refine_1\nK : Type u_1\ninst\u271d\u00b9 : Field K\ninst\u271d : NumberField K\nx : (\ud835\udcde K)\u02e3\n\u03b6 : (\ud835\udcde K)\u02e3 := x * (\u220f i, fundSystem K i ^ sorry)\u207b\u00b9\nh_tors : \u03b6 \u2208 torsion K\n\u22a2 x = x * (\u220f i, fundSystem K i ^ sorry)\u207b\u00b9 * \u220f x, fundSystem K x ^ sorry x\nMathlib/NumberTheory/NumberField/Units/DirichletTheorem.lean:513:18: warning: This simp argument is unused:\n  _root_.inv_mul_cancel_right\n\nHint: Omit it from the simp argument list.\n  simp only [\u03b6,\u0335 \u0335_\u0335r\u0335o\u0335o\u0335t\u0335_\u0335.\u0335i\u0335n\u0335v\u0335_\u0335m\u0335u\u0335l\u0335_\u0335c\u0335a\u0335n\u0335c\u0335e\u0335l\u0335_\u0335r\u0335i\u0335g\u0335h\u0335t\u0335]\n\nNote: This linter can be disabled with `set_option linter.unusedSimpArgs false`\n"
   ],
-  "notes": [],
-  "baseline_seconds": 243.2,
-  "status": "done"
+  "baseline_seconds": 10.9,
+  "status": "baseline_failed"
  },
  "Mathlib/NumberTheory/NumberField/Units/Basic.lean": {
   "sha256": "f99c2a6eb952abe1e55cbb899f0afcfa40540410f952a1c2893b61ff38d53ef3",
@@ -19920,57 +18409,15 @@
   "sha256": "7f34a88dd2d62893a2fe3cd51e0542084e1817bf17d7a9b2cd282ee105ec87d4",
   "occurrences": [
    {
-    "kind": "line",
-    "line": 362,
+    "kind": "block",
+    "line": 258,
     "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 430,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 446,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 472,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 502,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 684,
-    "col": 0,
-    "text": "      classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 886,
-    "col": 0,
-    "text": "  classical",
+    "text": "  classical exact if hf : f \u2248 0 then by simp [hf, norm] else by simp [norm, hf, padicNorm.nonneg]",
     "removed": false
    }
   ],
   "notes": [],
-  "baseline_seconds": 8.6,
+  "baseline_seconds": 10.6,
   "status": "done"
  },
  "Mathlib/NumberTheory/RamificationInertia/Basic.lean": {
@@ -20763,25 +19210,53 @@
   "status": "done"
  },
  "Mathlib/Order/Interval/Finset/Basic.lean": {
-  "sha256": "d8947666ee12e1aac0a4fe6749953d001e842ed00e68c48a80adf7c69492dc95",
+  "sha256": "14491f904fa50b099576d903000b92443135956f50463a8d5116fa047aaf7fb2",
   "occurrences": [
    {
-    "kind": "line",
-    "line": 651,
+    "kind": "block",
+    "line": 632,
     "col": 0,
-    "text": "  classical",
-    "removed": true
+    "text": "  classical rw [cons_eq_insert, Ico_insert_right h]",
+    "removed": false
    },
    {
-    "kind": "line",
-    "line": 661,
+    "kind": "block",
+    "line": 636,
     "col": 0,
-    "text": "  classical",
-    "removed": true
+    "text": "  classical rw [cons_eq_insert, Ioc_insert_left h]",
+    "removed": false
+   },
+   {
+    "kind": "block",
+    "line": 640,
+    "col": 0,
+    "text": "  classical rw [cons_eq_insert, Ioo_insert_right h]",
+    "removed": false
+   },
+   {
+    "kind": "block",
+    "line": 644,
+    "col": 0,
+    "text": "  classical rw [cons_eq_insert, Ioo_insert_left h]",
+    "removed": false
+   },
+   {
+    "kind": "block",
+    "line": 751,
+    "col": 0,
+    "text": "  classical rw [cons_eq_insert, Ioi_insert]",
+    "removed": false
+   },
+   {
+    "kind": "block",
+    "line": 777,
+    "col": 0,
+    "text": "  classical rw [cons_eq_insert, Iio_insert]",
+    "removed": false
    }
   ],
   "notes": [],
-  "baseline_seconds": 7.7,
+  "baseline_seconds": 6.4,
   "status": "done"
  },
  "Mathlib/Order/Irreducible.lean": {
@@ -22480,15 +20955,22 @@
   "sha256": "9c7ff9f52f9d9c2e5628ac4ec3880126d30f74e7f53c18c9a8cabd4635666e34",
   "occurrences": [
    {
-    "kind": "line",
-    "line": 137,
+    "kind": "block",
+    "line": 119,
     "col": 0,
-    "text": "  classical",
+    "text": "  classical simp_rw [\u2190 algebraicIndependent_equiv (subtypeInsertEquivOption h).symm,",
+    "removed": false
+   },
+   {
+    "kind": "block",
+    "line": 188,
+    "col": 0,
+    "text": "  classical apply algebraicIndependent_equiv' ((Equiv.sumComm ..).trans (Equiv.Set.sumCompl ..))",
     "removed": false
    }
   ],
   "notes": [],
-  "baseline_seconds": 4.3,
+  "baseline_seconds": 4.8,
   "status": "done"
  },
  "Mathlib/RingTheory/Bezout.lean": {
@@ -22517,15 +20999,15 @@
   "sha256": "e36c118b5eb97e9ff97602cee38885788c260284541279066e956f4b87a87f36",
   "occurrences": [
    {
-    "kind": "line",
-    "line": 258,
+    "kind": "block",
+    "line": 168,
     "col": 0,
-    "text": "  classical",
+    "text": "  classical rw [\u2190 Finset.prod_erase_mul _ _ h, mul_smul]",
     "removed": false
    }
   ],
   "notes": [],
-  "baseline_seconds": 12.6,
+  "baseline_seconds": 10.4,
   "status": "done"
  },
  "Mathlib/RingTheory/Coalgebra/GroupLike.lean": {
@@ -22710,95 +21192,25 @@
   "status": "done"
  },
  "Mathlib/RingTheory/DedekindDomain/Factorization.lean": {
-  "sha256": "31d734be51fe2d27048e5701662ec0d80a07d8dae77d56710f2c911fdc5b0724",
+  "sha256": "04eb9d6687636b12d53ac0fc90a20a51ad910c9858e51fb9c1ba14b7ceca1b85",
   "occurrences": [
    {
-    "kind": "line",
-    "line": 79,
+    "kind": "block",
+    "line": 419,
     "col": 0,
-    "text": "  classical",
-    "removed": true
-   },
-   {
-    "kind": "line",
-    "line": 154,
-    "col": 0,
-    "text": "  classical",
+    "text": "    classical rw [pow_succ, count_mul']",
     "removed": false
    },
    {
-    "kind": "line",
-    "line": 171,
+    "kind": "block",
+    "line": 434,
     "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 200,
-    "col": 0,
-    "text": "  classical",
-    "removed": true
-   },
-   {
-    "kind": "line",
-    "line": 215,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 366,
-    "col": 0,
-    "text": "  classical",
-    "removed": true
-   },
-   {
-    "kind": "line",
-    "line": 407,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 485,
-    "col": 0,
-    "text": "  classical",
-    "removed": true
-   },
-   {
-    "kind": "line",
-    "line": 508,
-    "col": 0,
-    "text": "    classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 613,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 812,
-    "col": 0,
-    "text": "  classical",
-    "removed": true
-   },
-   {
-    "kind": "line",
-    "line": 865,
-    "col": 0,
-    "text": "  classical",
+    "text": "  classical rw [count_well_defined K v hv h_self, Associates.count_self hv_irred,",
     "removed": true
    }
   ],
   "notes": [],
-  "baseline_seconds": 16.0,
+  "baseline_seconds": 15.0,
   "status": "done"
  },
  "Mathlib/RingTheory/DedekindDomain/Ideal/Lemmas.lean": {
@@ -22970,25 +21382,18 @@
   "status": "done"
  },
  "Mathlib/RingTheory/Discriminant.lean": {
-  "sha256": "36ddd826bf8c3af0abf9eac1053f09c1b851380f7adc6685cd7fd1239740c42e",
+  "sha256": "3b7bf70c99c72c3c9f50886627e081c4ab430e2df52be750e89e478d23a47127",
   "occurrences": [
    {
-    "kind": "line",
-    "line": 91,
+    "kind": "block",
+    "line": 86,
     "col": 0,
-    "text": "  classical",
-    "removed": true
-   },
-   {
-    "kind": "line",
-    "line": 249,
-    "col": 0,
-    "text": "  classical",
+    "text": "  classical rw [\u2190 Basis.coe_reindex, discr_def, traceMatrix_reindex, det_reindex_self, \u2190 discr_def]",
     "removed": true
    }
   ],
   "notes": [],
-  "baseline_seconds": 6.4,
+  "baseline_seconds": 4.9,
   "status": "done"
  },
  "Mathlib/RingTheory/DividedPowerAlgebra/Init.lean": {
@@ -23449,15 +21854,15 @@
   "sha256": "ec5b9c040673a2c273247b344a05a06968678933a43663cab89dba290e935305",
   "occurrences": [
    {
-    "kind": "line",
-    "line": 29,
+    "kind": "block",
+    "line": 100,
     "col": 0,
-    "text": "  classical",
+    "text": "  classical rw [Submodule.span_smul_span, \u2190 s.coe_smul]",
     "removed": false
    }
   ],
   "notes": [],
-  "baseline_seconds": 2.5,
+  "baseline_seconds": 2.8,
   "status": "done"
  },
  "Mathlib/RingTheory/Finiteness/Small.lean": {
@@ -23523,15 +21928,22 @@
   "sha256": "c1159f37c218567e0696a8ddbdfb0923c8345a21dff52db6edc16ec83b5722bc",
   "occurrences": [
    {
-    "kind": "line",
-    "line": 208,
+    "kind": "block",
+    "line": 225,
     "col": 0,
-    "text": "  classical",
+    "text": "  classical exact of_linearEquiv (finsuppLEquivDirectSum R R \u03b9)",
+    "removed": false
+   },
+   {
+    "kind": "block",
+    "line": 251,
+    "col": 0,
+    "text": "  classical rw [LinearIndependent, \u2190 LinearMap.coe_restrictScalars R,",
     "removed": false
    }
   ],
   "notes": [],
-  "baseline_seconds": 6.4,
+  "baseline_seconds": 7.1,
   "status": "done"
  },
  "Mathlib/RingTheory/Flat/EquationalCriterion.lean": {
@@ -23553,15 +21965,15 @@
   "sha256": "5bb9b4c924849c3cd7f0dbd74bfb4f9a73bd7138af06e0e7de76b2da12ac05c4",
   "occurrences": [
    {
-    "kind": "line",
-    "line": 193,
+    "kind": "block",
+    "line": 204,
     "col": 0,
-    "text": "  classical",
+    "text": "  classical exact of_linearEquiv _ _ (finsuppLEquivDirectSum R R \u03b9)",
     "removed": false
    }
   ],
   "notes": [],
-  "baseline_seconds": 9.0,
+  "baseline_seconds": 7.6,
   "status": "done"
  },
  "Mathlib/RingTheory/FreeCommRing.lean": {
@@ -23650,29 +22062,15 @@
   "sha256": "b1eba809eafe3c75671ebfc739f9e05e910860b4405b4bf1704842a6ec1f5803",
   "occurrences": [
    {
-    "kind": "line",
-    "line": 144,
+    "kind": "block",
+    "line": 601,
     "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 197,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 487,
-    "col": 0,
-    "text": "  classical",
+    "text": "  classical rw [\u2190 DirectSum.sum_support_decompose \ud835\udc9c x]",
     "removed": false
    }
   ],
   "notes": [],
-  "baseline_seconds": 6.3,
+  "baseline_seconds": 6.4,
   "status": "done"
  },
  "Mathlib/RingTheory/GradedAlgebra/RingHom.lean": {
@@ -23706,39 +22104,18 @@
   "status": "done"
  },
  "Mathlib/RingTheory/HahnSeries/Addition.lean": {
-  "sha256": "ee37070f787b9daeddf732cfb42844a8755d79486bcd1a73f4793d3fe899819f",
+  "sha256": "2cef01bfc28f9f0fc60e225e9cb83f35defc91f24012a298d266fac42851b574",
   "occurrences": [
    {
-    "kind": "line",
-    "line": 119,
+    "kind": "block",
+    "line": 390,
     "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 164,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 179,
-    "col": 0,
-    "text": "  classical",
-    "removed": true
-   },
-   {
-    "kind": "line",
-    "line": 395,
-    "col": 0,
-    "text": "  classical",
+    "text": "  classical simp only [orderTop, support_neg, neg_eq_zero]",
     "removed": false
    }
   ],
   "notes": [],
-  "baseline_seconds": 5.5,
+  "baseline_seconds": 5.1,
   "status": "done"
  },
  "Mathlib/RingTheory/HahnSeries/PowerSeries.lean": {
@@ -23863,15 +22240,36 @@
   "sha256": "904b84f38e1b9beac1a3d41a42110fde69244dbb748ebdf1d008bdb36ece93a0",
   "occurrences": [
    {
-    "kind": "line",
-    "line": 381,
+    "kind": "block",
+    "line": 417,
     "col": 0,
-    "text": "  classical",
+    "text": "  classical refine \u27e8?_, fun hr \u21a6 \u27e8_, single_mem_pi hr, by simp\u27e9\u27e9",
+    "removed": false
+   },
+   {
+    "kind": "block",
+    "line": 437,
+    "col": 0,
+    "text": "      classical rw [show r = \u2211 i, Pi.single i 1 * r' i from funext fun i \u21a6 by",
+    "removed": false
+   },
+   {
+    "kind": "block",
+    "line": 922,
+    "col": 0,
+    "text": "    classical simpa using DFunLike.congr_fun (h (DFinsupp.single i m)) i",
+    "removed": false
+   },
+   {
+    "kind": "block",
+    "line": 929,
+    "col": 0,
+    "text": "    classical simpa using congr_fun (h (Pi.single i m)) i",
     "removed": false
    }
   ],
   "notes": [],
-  "baseline_seconds": 9.1,
+  "baseline_seconds": 8.2,
   "status": "done"
  },
  "Mathlib/RingTheory/Ideal/KrullsHeightTheorem.lean": {
@@ -24762,109 +23160,18 @@
   "status": "done"
  },
  "Mathlib/RingTheory/MvPolynomial/WeightedHomogeneous.lean": {
-  "sha256": "9fa09f4ed3906b58fdbf40d804ebb74844a5876d861786ce7287002d6cf0a14c",
+  "sha256": "b6ab72b71049b98b4b2a4d2d52c02a91044b5d6f5b4ae4425d6bfbeebad9b45a",
   "occurrences": [
    {
-    "kind": "line",
-    "line": 179,
+    "kind": "block",
+    "line": 493,
     "col": 0,
-    "text": "  classical",
+    "text": "  classical simp [weightedHomogeneousComponent_of_mem hp]",
     "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 193,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 290,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 382,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 400,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 407,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 429,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 453,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 465,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 520,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 528,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 552,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 656,
-    "col": 0,
-    "text": "    classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 668,
-    "col": 0,
-    "text": "    classical",
-    "removed": true
    }
   ],
   "notes": [],
-  "baseline_seconds": 5.2,
+  "baseline_seconds": 4.4,
   "status": "done"
  },
  "Mathlib/RingTheory/MvPowerSeries/Equiv.lean": {
@@ -25000,144 +23307,18 @@
   "status": "done"
  },
  "Mathlib/RingTheory/MvPolynomial/MonomialOrder.lean": {
-  "sha256": "78b15614ba9660997c1be38b52075bc4c9a8198953d69677c278fe334dd3aced",
+  "sha256": "6b38485de36cfdba207776038b980f058b0e967c9db42817efd7bf2b54ecf14d",
   "occurrences": [
    {
-    "kind": "line",
-    "line": 186,
+    "kind": "block",
+    "line": 192,
     "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 198,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 312,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 385,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 408,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 619,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 631,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 736,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 748,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 758,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 766,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 795,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 800,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 927,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 963,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 1009,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 1033,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 1052,
-    "col": 0,
-    "text": "  classical",
-    "removed": true
-   },
-   {
-    "kind": "line",
-    "line": 1064,
-    "col": 0,
-    "text": "  classical",
+    "text": "  classical rw [MvPolynomial.one_def, degree_monomial]",
     "removed": false
    }
   ],
   "notes": [],
-  "baseline_seconds": 8.6,
+  "baseline_seconds": 9.1,
   "status": "done"
  },
  "Mathlib/RingTheory/MvPowerSeries/LinearTopology.lean": {
@@ -25238,148 +23419,29 @@
   "sha256": "311c9922a882382408ad4b8b7358304b14cb34b39809b060083891160d6fa575",
   "occurrences": [
    {
-    "kind": "line",
-    "line": 167,
+    "kind": "block",
+    "line": 280,
     "col": 0,
-    "text": "  classical",
+    "text": "    classical simp only [coeff_mul, mul_add, Finset.sum_add_distrib, map_add]",
     "removed": false
    },
    {
-    "kind": "line",
-    "line": 172,
+    "kind": "block",
+    "line": 284,
     "col": 0,
-    "text": "  classical",
+    "text": "    classical simp only [coeff_mul, add_mul, Finset.sum_add_distrib, map_add]",
     "removed": false
    },
    {
-    "kind": "inline",
-    "line": 225,
-    "col": 15,
-    "text": "  ext fun n => by classical simp [coeff_mul]",
-    "removed": false
-   },
-   {
-    "kind": "inline",
-    "line": 228,
-    "col": 15,
-    "text": "  ext fun n => by classical simp [coeff_mul]",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 232,
+    "kind": "block",
+    "line": 355,
     "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 243,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 288,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 307,
-    "col": 0,
-    "text": "      classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 321,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 390,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "inline",
-    "line": 439,
-    "col": 27,
-    "text": "    map_mul' := fun \u03c6 \u03c8 => by classical simp [coeff_mul]",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 491,
-    "col": 0,
-    "text": "    classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 518,
-    "col": 0,
-    "text": "        classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 528,
-    "col": 0,
-    "text": "        classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 551,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 604,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 734,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 804,
-    "col": 0,
-    "text": "      classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 845,
-    "col": 0,
-    "text": "    classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 864,
-    "col": 0,
-    "text": "    classical",
+    "text": "  classical rw [coeff_C, if_neg h]",
     "removed": false
    }
   ],
   "notes": [],
-  "baseline_seconds": 10.2,
+  "baseline_seconds": 8.4,
   "status": "done"
  },
  "Mathlib/RingTheory/MvPowerSeries/Restricted.lean": {
@@ -26225,29 +24287,22 @@
   "sha256": "f6399d94a4e74c8f943a776a4d4641489e58bd5d8d583c7e23f1f82d24d50cef",
   "occurrences": [
    {
-    "kind": "inline",
-    "line": 235,
-    "col": 49,
-    "text": "    \u2203 g : \u03b1 \u2192 R, s.gcd f = \u2211 a \u2208 s, f a * g a := by classical",
-    "removed": false
-   },
-   {
-    "kind": "inline",
-    "line": 288,
-    "col": 17,
-    "text": "  principal S := by classical exact",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 484,
+    "kind": "block",
+    "line": 175,
     "col": 0,
-    "text": "  classical",
+    "text": "  classical exact isPrincipal_of_FG (Ideal.span {x, y}) \u27e8{x, y}, by simp\u27e9",
+    "removed": false
+   },
+   {
+    "kind": "block",
+    "line": 225,
+    "col": 0,
+    "text": "  classical exact \u27e8toGCDDomain R\u27e9",
     "removed": false
    }
   ],
   "notes": [],
-  "baseline_seconds": 4.7,
+  "baseline_seconds": 3.7,
   "status": "done"
  },
  "Mathlib/RingTheory/PowerSeries/Substitution.lean": {
@@ -26986,32 +25041,25 @@
   "status": "done"
  },
  "Mathlib/RingTheory/UniqueFactorizationDomain/FactorSet.lean": {
-  "sha256": "6af9ff024e6a245fcea133eb71f3b52b74803b3a5e35d45361ac14dff88b99b1",
+  "sha256": "c0dbe779644accd5d2c0b0d43b15805cf2eaf3597925044c213135fcef839f24",
   "occurrences": [
    {
-    "kind": "line",
-    "line": 229,
+    "kind": "block",
+    "line": 214,
     "col": 0,
-    "text": "  classical",
-    "removed": true
-   },
-   {
-    "kind": "line",
-    "line": 392,
-    "col": 0,
-    "text": "  classical",
+    "text": "  classical refine if h : a = 0 then \u22a4 else Quotient.hrecOn a (fun x _ => factors' x) ?_ h",
     "removed": false
    },
    {
-    "kind": "line",
-    "line": 612,
+    "kind": "block",
+    "line": 629,
     "col": 0,
-    "text": "  classical",
+    "text": "  classical rw [count_factors_eq_find_of_dvd_pow hp, \u2190 eq_pow_count_factors_of_dvd_pow hp h]",
     "removed": false
    }
   ],
   "notes": [],
-  "baseline_seconds": 4.5,
+  "baseline_seconds": 3.7,
   "status": "done"
  },
  "Mathlib/RingTheory/Unramified/Field.lean": {
@@ -27669,22 +25717,15 @@
   "sha256": "6e2b0ff48603a42d53189498341a1f260859e469f263b10a64013f27b8709eeb",
   "occurrences": [
    {
-    "kind": "line",
-    "line": 303,
+    "kind": "block",
+    "line": 328,
     "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 309,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
+    "text": "  classical exact tendsto_nhds_unique",
+    "removed": true
    }
   ],
   "notes": [],
-  "baseline_seconds": 5.3,
+  "baseline_seconds": 4.1,
   "status": "done"
  },
  "Mathlib/Topology/Algebra/InfiniteSum/Basic.lean": {
@@ -27947,60 +25988,18 @@
   "status": "done"
  },
  "Mathlib/Topology/Algebra/InfiniteSum/Group.lean": {
-  "sha256": "e43b0ac68f65d20f909eb20e034d4a563bd0a30b6cd76950cd38b98711fb4586",
+  "sha256": "7880b74d6ff830c9dc1decf94a21efe9af3a2e2ca00e21d6bf22b4da576974a6",
   "occurrences": [
    {
-    "kind": "line",
-    "line": 213,
+    "kind": "block",
+    "line": 205,
     "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 272,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 331,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 339,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 352,
-    "col": 0,
-    "text": "  classical",
-    "removed": true
-   },
-   {
-    "kind": "line",
-    "line": 432,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   },
-   {
-    "kind": "line",
-    "line": 458,
-    "col": 0,
-    "text": "  classical",
+    "text": "  classical exact cauchy_map_iff_exists_tendsto.symm",
     "removed": true
    }
   ],
   "notes": [],
-  "baseline_seconds": 5.9,
+  "baseline_seconds": 4.3,
   "status": "done"
  },
  "Mathlib/Topology/Algebra/Valued/LocallyCompact.lean": {
@@ -28539,18 +26538,12 @@
  },
  "Mathlib/Topology/Covering/Basic.lean": {
   "sha256": "a1d1c253da823d72109d972da3fce3d9a2e90fbb58e8dd961122066c07578756",
-  "occurrences": [
-   {
-    "kind": "line",
-    "line": 448,
-    "col": 0,
-    "text": "  classical",
-    "removed": false
-   }
+  "occurrences": [],
+  "notes": [
+   "Mathlib/Topology/Covering/Basic.lean:6:0: error: object file '/home/batixx/Documents/mathlib4/.lake/build/lib/lean/Mathlib/Topology/FiberBundle/Basic.olean' of module Mathlib.Topology.FiberBundle.Basic does not exist\n"
   ],
-  "notes": [],
-  "baseline_seconds": 7.1,
-  "status": "done"
+  "baseline_seconds": 1.0,
+  "status": "baseline_failed"
  },
  "Mathlib/Topology/ContinuousMap/CompactlySupported.lean": {
   "sha256": "9a5d542821bfd30df0f8879fc0363b583e26f3d95e1690f4485617d44c704727",
@@ -28724,25 +26717,39 @@
   "status": "done"
  },
  "Mathlib/Topology/MetricSpace/Infsep.lean": {
-  "sha256": "632290674516c845fe56f6969e084d3f7db1b087f9fa12ffb9d9209bf844958e",
+  "sha256": "e79b1a16da1c652d05cb10f67de46ce38e53f684db4bd94d092910f39ed9e733",
   "occurrences": [
    {
-    "kind": "line",
-    "line": 161,
+    "kind": "block",
+    "line": 157,
     "col": 0,
-    "text": "  classical",
+    "text": "  classical simp_rw [einfsep_of_fintype, \u2190 Finset.coe_offDiag, Finset.toFinset_coe]",
     "removed": true
    },
    {
-    "kind": "line",
-    "line": 435,
+    "kind": "block",
+    "line": 386,
     "col": 0,
-    "text": "  classical",
-    "removed": true
+    "text": "  classical rw [Set.infsep_eq_iInf, if_pos hs]",
+    "removed": false
+   },
+   {
+    "kind": "block",
+    "line": 399,
+    "col": 0,
+    "text": "  classical rw [Set.infsep_of_fintype, dif_pos hs]",
+    "removed": false
+   },
+   {
+    "kind": "block",
+    "line": 413,
+    "col": 0,
+    "text": "  classical simp_rw [hsf.infsep, dif_pos hs]",
+    "removed": false
    }
   ],
   "notes": [],
-  "baseline_seconds": 3.6,
+  "baseline_seconds": 2.6,
   "status": "done"
  },
  "Mathlib/Topology/MetricSpace/Polish.lean": {
@@ -29254,6 +27261,1377 @@
   ],
   "notes": [],
   "baseline_seconds": 11.1,
+  "status": "done"
+ },
+ "Archive/Examples/Kuratowski.lean": {
+  "sha256": "ea0a323528629108edf2c4592fc85ccb2a6bd27dba758b40b96939a45f1c29f1",
+  "occurrences": [
+   {
+    "kind": "block",
+    "line": 256,
+    "col": 0,
+    "text": "  classical rw [\u2190 card_theFourteen fourteenSet, \u2190 Multiset.toFinset_card_of_nodup",
+    "removed": true
+   }
+  ],
+  "notes": [
+   "line 256: output changed after removal:\n\u2714 [1876/1876] Built Archive.Examples.Kuratowski (4.6s)\nBuild completed successfully (1876 jobs).\n"
+  ],
+  "baseline_seconds": 13.8,
+  "status": "done"
+ },
+ "Mathlib/Algebra/BigOperators/Group/List/Basic.lean": {
+  "sha256": "5a4c739edd5bf07c5c119f850392cec75ff9aa8ab8486055d41325407a21fd92",
+  "occurrences": [
+   {
+    "kind": "block",
+    "line": 222,
+    "col": 0,
+    "text": "  classical induction l <;> grind",
+    "removed": false
+   }
+  ],
+  "notes": [],
+  "baseline_seconds": 6.3,
+  "status": "done"
+ },
+ "Mathlib/Algebra/BigOperators/Option.lean": {
+  "sha256": "45505e58fdc2d50f0ca88843066ef5c6dff5fb987a3807416d08061fa876556d",
+  "occurrences": [
+   {
+    "kind": "block",
+    "line": 38,
+    "col": 0,
+    "text": "  classical calc",
+    "removed": false
+   }
+  ],
+  "notes": [],
+  "baseline_seconds": 2.8,
+  "status": "done"
+ },
+ "Mathlib/Algebra/BigOperators/WithTop.lean": {
+  "sha256": "92535321cfd33289bef31b69332acad63f0790ab2743b95cc70d809395a6c021",
+  "occurrences": [
+   {
+    "kind": "block",
+    "line": 59,
+    "col": 0,
+    "text": "  classical rw [\u2190 prod_erase_mul _ _ hi]",
+    "removed": false
+   }
+  ],
+  "notes": [],
+  "baseline_seconds": 3.4,
+  "status": "done"
+ },
+ "Mathlib/Algebra/FreeAlgebra.lean": {
+  "sha256": "7a604565b155fb48d9a985eaee47d90a13162779f754adcfb0b36556356fb884",
+  "occurrences": [
+   {
+    "kind": "block",
+    "line": 501,
+    "col": 0,
+    "text": "    classical exact fun hxy : x \u2260 y \u21a6",
+    "removed": false
+   }
+  ],
+  "notes": [],
+  "baseline_seconds": 7.4,
+  "status": "done"
+ },
+ "Mathlib/Algebra/DirectSum/Module.lean": {
+  "sha256": "93c4644d753c6f2d9648333925af247982a9dd949f3a942285192ad487c06a6f",
+  "occurrences": [
+   {
+    "kind": "block",
+    "line": 271,
+    "col": 0,
+    "text": "  classical exact DFinsupp.mapRange_injective (hf := fun _ \u21a6 map_zero _)",
+    "removed": true
+   },
+   {
+    "kind": "block",
+    "line": 274,
+    "col": 0,
+    "text": "  classical exact DFinsupp.mapRange_surjective (hf := fun _ \u21a6 map_zero _)",
+    "removed": true
+   }
+  ],
+  "notes": [],
+  "baseline_seconds": 9.1,
+  "status": "done"
+ },
+ "Mathlib/Algebra/GroupWithZero/Indicator.lean": {
+  "sha256": "537f1b28a5df35d3703717ed45ec02cbbbce1449e0036f6907544f079c1547ea",
+  "occurrences": [
+   {
+    "kind": "block",
+    "line": 79,
+    "col": 0,
+    "text": "  classical simp [indicator_apply, imp_false]",
+    "removed": true
+   },
+   {
+    "kind": "block",
+    "line": 82,
+    "col": 0,
+    "text": "  classical simp [indicator_apply, imp_false]",
+    "removed": false
+   }
+  ],
+  "notes": [
+   "line 79: output changed after removal:\nMathlib/Algebra/GroupWithZero/Indicator.lean:79:8: warning: This simp argument is unused:\n  indicator_apply\n\nHint: Omit it from the simp argument list.\n  simp [in\u0335d\u0335i\u0335c\u0335a\u0335t\u0335o\u0335r\u0335_\u0335a\u0335p\u0335p\u0335l\u0335y\u0335,\u0335 \u0335i\u0335mp_false]\n\nNote: This linter can be disabled with `set_option linter.unusedSimpArgs false`\n"
+  ],
+  "baseline_seconds": 2.7,
+  "status": "done"
+ },
+ "Mathlib/Algebra/Module/Submodule/Map.lean": {
+  "sha256": "0254d499eacd29c6badef8518412f5f749e65b99da7e3fe30469f88b75781f7c",
+  "occurrences": [
+   {
+    "kind": "block",
+    "line": 521,
+    "col": 0,
+    "text": "  classical by_cases h : a = 0 <;> simp [h, comap_smul]",
+    "removed": true
+   },
+   {
+    "kind": "block",
+    "line": 525,
+    "col": 0,
+    "text": "  classical by_cases h : a = 0 <;> simp [h, Submodule.map_smul]",
+    "removed": true
+   }
+  ],
+  "notes": [],
+  "baseline_seconds": 8.8,
+  "status": "done"
+ },
+ "Mathlib/Algebra/Group/Pointwise/Finset/Basic.lean": {
+  "sha256": "19323a9ce47f9903a15005d628cc77b3c07ef4b92235851b6cebac6ac7386fe0",
+  "occurrences": [
+   {
+    "kind": "block",
+    "line": 1099,
+    "col": 0,
+    "text": "  classical rw [\u2190 image_mul_left', image_singleton]",
+    "removed": false
+   },
+   {
+    "kind": "block",
+    "line": 1104,
+    "col": 0,
+    "text": "  classical rw [\u2190 image_mul_right', image_singleton]",
+    "removed": false
+   },
+   {
+    "kind": "block",
+    "line": 1108,
+    "col": 0,
+    "text": "  classical rw [\u2190 image_mul_left', image_one, mul_one]",
+    "removed": false
+   },
+   {
+    "kind": "block",
+    "line": 1112,
+    "col": 0,
+    "text": "  classical rw [\u2190 image_mul_right', image_one, one_mul]",
+    "removed": false
+   }
+  ],
+  "notes": [],
+  "baseline_seconds": 13.7,
+  "status": "done"
+ },
+ "Mathlib/Algebra/MonoidAlgebra/Division.lean": {
+  "sha256": "d010530faa4e249e76dccd7bbeaa46e00055c64fed88a75c10c5b60c293f5e3c",
+  "occurrences": [
+   {
+    "kind": "block",
+    "line": 119,
+    "col": 0,
+    "text": "  classical exact Finsupp.filter_apply_pos _ _ h",
+    "removed": false
+   },
+   {
+    "kind": "block",
+    "line": 127,
+    "col": 0,
+    "text": "  classical exact Finsupp.filter_apply_neg _ _ <| by rwa [Classical.not_not]",
+    "removed": false
+   }
+  ],
+  "notes": [],
+  "baseline_seconds": 4.2,
+  "status": "done"
+ },
+ "Mathlib/Algebra/MonoidAlgebra/Support.lean": {
+  "sha256": "8455f2fcb1c6d7e07e9fe229b5873513cbbd2c79cde88640657f56312c37df26",
+  "occurrences": [
+   {
+    "kind": "block",
+    "line": 82,
+    "col": 0,
+    "text": "  classical ext; simp [support_coeff_mul_single_eq_image f hr (.all x)]",
+    "removed": false
+   },
+   {
+    "kind": "block",
+    "line": 91,
+    "col": 0,
+    "text": "  classical ext; simp [support_coeff_single_mul_eq_image f hr (.all x)]",
+    "removed": false
+   }
+  ],
+  "notes": [],
+  "baseline_seconds": 5.6,
+  "status": "done"
+ },
+ "Mathlib/Algebra/MonoidAlgebra/Module.lean": {
+  "sha256": "a6c9d27ff624132cd4e2a1b00c4cbcf53fa7f29fbbb79f82ce8cb6ce3b4006d3",
+  "occurrences": [
+   {
+    "kind": "block",
+    "line": 288,
+    "col": 0,
+    "text": "    classical ext; simp [coeff_mul, sum_smul_index', Finsupp.smul_sum, smul_mul_assoc]",
+    "removed": false
+   },
+   {
+    "kind": "block",
+    "line": 296,
+    "col": 0,
+    "text": "    classical ext; simp [coeff_mul, sum_smul_index', Finsupp.smul_sum, mul_smul_comm]",
+    "removed": false
+   }
+  ],
+  "notes": [],
+  "baseline_seconds": 8.1,
+  "status": "done"
+ },
+ "Mathlib/Algebra/MonoidAlgebra/ToDirectSum.lean": {
+  "sha256": "881afc4a5020b125fbae5458aa7e68bf127c67888e5542a5a8a0def5d9b57ab6",
+  "occurrences": [
+   {
+    "kind": "block",
+    "line": 264,
+    "col": 0,
+    "text": "  classical exact map_pow addMonoidAlgebraRingEquivDirectSum f n",
+    "removed": false
+   },
+   {
+    "kind": "block",
+    "line": 270,
+    "col": 0,
+    "text": "  classical exact map_pow addMonoidAlgebraRingEquivDirectSum.symm f n",
+    "removed": true
+   }
+  ],
+  "notes": [],
+  "baseline_seconds": 4.9,
+  "status": "done"
+ },
+ "Mathlib/Algebra/Order/Antidiag/Pi.lean": {
+  "sha256": "1f0cf2eab304d503793458a092b1b768161fb5edc8627ec1676e348368706806",
+  "occurrences": [
+   {
+    "kind": "block",
+    "line": 235,
+    "col": 0,
+    "text": "  classical rw [map_eq_image]; exact nsmul_piAntidiag _ _ hn",
+    "removed": false
+   }
+  ],
+  "notes": [],
+  "baseline_seconds": 7.1,
+  "status": "done"
+ },
+ "Mathlib/Algebra/Order/Group/Finset.lean": {
+  "sha256": "17168a13871961480fcb9ae6fb43c2779d0de8bb27ddb4d1b19d63c57a951813",
+  "occurrences": [
+   {
+    "kind": "block",
+    "line": 61,
+    "col": 0,
+    "text": "  classical induction s using Finset.induction_on <;> simp [*, max_add_add_right]",
+    "removed": false
+   }
+  ],
+  "notes": [],
+  "baseline_seconds": 4.1,
+  "status": "done"
+ },
+ "Mathlib/Algebra/Order/Interval/Multiset.lean": {
+  "sha256": "44282f89bcc05b957eabfe7ca2a366505d42e75793d356d7416c4d031a4dc316",
+  "occurrences": [
+   {
+    "kind": "block",
+    "line": 26,
+    "col": 0,
+    "text": "  classical rw [Icc, Icc, \u2190 Finset.image_add_left_Icc, Finset.image_val,",
+    "removed": false
+   },
+   {
+    "kind": "block",
+    "line": 30,
+    "col": 0,
+    "text": "  classical rw [Ico, Ico, \u2190 Finset.image_add_left_Ico, Finset.image_val,",
+    "removed": false
+   },
+   {
+    "kind": "block",
+    "line": 34,
+    "col": 0,
+    "text": "  classical rw [Ioc, Ioc, \u2190 Finset.image_add_left_Ioc, Finset.image_val,",
+    "removed": false
+   },
+   {
+    "kind": "block",
+    "line": 38,
+    "col": 0,
+    "text": "  classical rw [Ioo, Ioo, \u2190 Finset.image_add_left_Ioo, Finset.image_val,",
+    "removed": false
+   }
+  ],
+  "notes": [],
+  "baseline_seconds": 2.8,
+  "status": "done"
+ },
+ "Mathlib/Analysis/Normed/Group/Tannery.lean": {
+  "sha256": "2f8e9622538eb28e286517ff9ae48013a06bb1763624f29baa7653c870679a8c",
+  "occurrences": [
+   {
+    "kind": "block",
+    "line": 66,
+    "col": 0,
+    "text": "    classical exact Eventually.exists <| hS _ (by positivity)",
+    "removed": true
+   }
+  ],
+  "notes": [],
+  "baseline_seconds": 4.4,
+  "status": "done"
+ },
+ "Mathlib/CategoryTheory/Generator/Basic.lean": {
+  "sha256": "5624a8ccbcbd354381502768d7ca2c63ef74b3ee25a5d034babbb7f2af010649",
+  "occurrences": [
+   {
+    "kind": "block",
+    "line": 691,
+    "col": 0,
+    "text": "  classical simpa using c.inj b \u226b= huv (hc.desc (Cofan.mk _ (Pi.single b g)))",
+    "removed": false
+   },
+   {
+    "kind": "block",
+    "line": 738,
+    "col": 0,
+    "text": "  classical simpa using huv (hc.lift (Fan.mk _ (Pi.single b g))) =\u226b c.proj b",
+    "removed": false
+   }
+  ],
+  "notes": [],
+  "baseline_seconds": 4.2,
+  "status": "done"
+ },
+ "Mathlib/CategoryTheory/Limits/Bicones.lean": {
+  "sha256": "c59b4a3ef60cbb02fd3cfec5483e586ffa851e4a9a9d484a591cf11b5aeb4e08",
+  "occurrences": [
+   {
+    "kind": "block",
+    "line": 71,
+    "col": 0,
+    "text": "  classical cases f <;> cases g <;> simp only [diagram.injEq] <;> infer_instance",
+    "removed": false
+   }
+  ],
+  "notes": [],
+  "baseline_seconds": 4.0,
+  "status": "done"
+ },
+ "Mathlib/CategoryTheory/Limits/Constructions/Filtered.lean": {
+  "sha256": "92084895cce55b8df46a2bbd0a28875c1926dcad760afa71b181c1c0817592ac",
+  "occurrences": [
+   {
+    "kind": "block",
+    "line": 125,
+    "col": 0,
+    "text": "  classical exact \u27e8fun F => HasColimit.mk (liftToFinsetColimitCocone F)\u27e9",
+    "removed": true
+   }
+  ],
+  "notes": [],
+  "baseline_seconds": 7.3,
+  "status": "done"
+ },
+ "Mathlib/Analysis/Calculus/FDeriv/Mul.lean": {
+  "sha256": "ce04faf0b6d5b6decea22b6943387a013c041ffc0a95752d42661d1be1c5f86f",
+  "occurrences": [
+   {
+    "kind": "block",
+    "line": 421,
+    "col": 0,
+    "text": "  classical exact hasStrictFDerivAt_list_prod'.congr_fderiv <| Eq.symm <|",
+    "removed": false
+   },
+   {
+    "kind": "block",
+    "line": 445,
+    "col": 0,
+    "text": "  classical exact hasStrictFDerivAt_list_prod_attach'.hasFDerivAt",
+    "removed": true
+   }
+  ],
+  "notes": [],
+  "baseline_seconds": 59.9,
+  "status": "done"
+ },
+ "Mathlib/CategoryTheory/Limits/Shapes/PiProd.lean": {
+  "sha256": "aa07534bb4fde4f610fda8ef33f9f6e1086f16ee922f70a07efdcc01a9e6d156",
+  "occurrences": [
+   {
+    "kind": "block",
+    "line": 61,
+    "col": 0,
+    "text": "  classical exact \u27e8Pi.binaryFanOfProp X P, Pi.binaryFanOfPropIsLimit X P\u27e9",
+    "removed": false
+   }
+  ],
+  "notes": [],
+  "baseline_seconds": 2.7,
+  "status": "done"
+ },
+ "Mathlib/CategoryTheory/Preadditive/Schur.lean": {
+  "sha256": "844e90a3725de16972b74446a378585cdfdf7f9999e588165a692b65e3d1c68b",
+  "occurrences": [
+   {
+    "kind": "block",
+    "line": 142,
+    "col": 0,
+    "text": "  classical exact",
+    "removed": true
+   }
+  ],
+  "notes": [],
+  "baseline_seconds": 3.7,
+  "status": "done"
+ },
+ "Mathlib/Analysis/SpecialFunctions/Elliptic/Weierstrass.lean": {
+  "sha256": "c48d1733a941f24cccfbe17840cb397ab6ddb9321dcdb89b536fbf64ccd961d5",
+  "occurrences": [
+   {
+    "kind": "block",
+    "line": 997,
+    "col": 0,
+    "text": "  classical simp [relation]",
+    "removed": false
+   }
+  ],
+  "notes": [],
+  "baseline_seconds": 60.3,
+  "status": "done"
+ },
+ "Mathlib/CategoryTheory/Limits/Shapes/ZeroMorphisms.lean": {
+  "sha256": "b1598fe0ce556e59ee746e34d8cc7fff4d297e67bb7c892e8ef5cddd85b36309",
+  "occurrences": [
+   {
+    "kind": "block",
+    "line": 572,
+    "col": 0,
+    "text": "  classical exact IsSplitMono.mk' { retraction := Sigma.desc <| Pi.single b (\ud835\udfd9 _) }",
+    "removed": false
+   },
+   {
+    "kind": "block",
+    "line": 578,
+    "col": 0,
+    "text": "  classical exact IsSplitEpi.mk' { section_ := Pi.lift <| Pi.single b (\ud835\udfd9 _) }",
+    "removed": false
+   }
+  ],
+  "notes": [],
+  "baseline_seconds": 4.8,
+  "status": "done"
+ },
+ "Mathlib/Computability/Halting.lean": {
+  "sha256": "814b3cf5324b69021757ee0fb4de9e3904f74f4ed6c41d7dde6a554f72fe28b7",
+  "occurrences": [
+   {
+    "kind": "block",
+    "line": 45,
+    "col": 0,
+    "text": "  classical exact",
+    "removed": true
+   }
+  ],
+  "notes": [],
+  "baseline_seconds": 1.9,
+  "status": "done"
+ },
+ "Mathlib/Computability/RE.lean": {
+  "sha256": "cc48552fd983736c871bbaff8e8b09090c080c9d6073d135463b6637bbb51f7b",
+  "occurrences": [
+   {
+    "kind": "block",
+    "line": 243,
+    "col": 0,
+    "text": "  classical exact computable_iff_re_compl_re",
+    "removed": false
+   }
+  ],
+  "notes": [],
+  "baseline_seconds": 2.5,
+  "status": "done"
+ },
+ "Mathlib/Data/DFinsupp/Order.lean": {
+  "sha256": "96aa72574d43835c0fce5c62dc289cbb6db9e1f9b6a1dc76735bbd1137fa9581",
+  "occurrences": [
+   {
+    "kind": "block",
+    "line": 242,
+    "col": 0,
+    "text": "  classical exact (le_iff' support_single_subset).trans <| by simp",
+    "removed": false
+   }
+  ],
+  "notes": [],
+  "baseline_seconds": 4.6,
+  "status": "done"
+ },
+ "Mathlib/Data/Finset/BooleanAlgebra.lean": {
+  "sha256": "7c197ec3da98f22d6537d6e7772aacd37d3693c74ffb7694e85becc16487dab7",
+  "occurrences": [
+   {
+    "kind": "block",
+    "line": 99,
+    "col": 0,
+    "text": "  classical simp [codisjoint_iff, eq_univ_iff_forall, or_iff_not_imp_left]",
+    "removed": false
+   }
+  ],
+  "notes": [],
+  "baseline_seconds": 2.2,
+  "status": "done"
+ },
+ "Mathlib/Data/Finset/Grade.lean": {
+  "sha256": "464ec6d4a9ead5b1caea0ef243484a2b0c904c1a91e7dadccb01deeced742e0e",
+  "occurrences": [
+   {
+    "kind": "block",
+    "line": 111,
+    "col": 0,
+    "text": "  classical exact insert_empty_eq (\u03b2 := Finset \u03b1) a \u25b8 covBy_insert <| notMem_empty a",
+    "removed": false
+   }
+  ],
+  "notes": [],
+  "baseline_seconds": 2.7,
+  "status": "done"
+ },
+ "Mathlib/Data/Finset/Interval.lean": {
+  "sha256": "727441ff1f0d303cb0601b47bb094229751d06f9b0731dae44aa307fabaa95a3",
+  "occurrences": [
+   {
+    "kind": "block",
+    "line": 121,
+    "col": 0,
+    "text": "  classical simp [monotone_iff_forall_covBy, covBy_iff_exists_cons]",
+    "removed": false
+   },
+   {
+    "kind": "block",
+    "line": 131,
+    "col": 0,
+    "text": "  classical simp [strictMono_iff_forall_covBy, covBy_iff_exists_cons]",
+    "removed": false
+   }
+  ],
+  "notes": [],
+  "baseline_seconds": 2.3,
+  "status": "done"
+ },
+ "Mathlib/Data/Finset/Piecewise.lean": {
+  "sha256": "a881de929481583e8acf519017d762f3322482f62db9aa073cbd25b65954be48",
+  "occurrences": [
+   {
+    "kind": "block",
+    "line": 68,
+    "col": 0,
+    "text": "  classical simp only [\u2190 piecewise_coe, \u2190 Set.piecewise_insert]",
+    "removed": true
+   },
+   {
+    "kind": "block",
+    "line": 151,
+    "col": 0,
+    "text": "  classical rw [\u2190 piecewise_coe]; exact Set.piecewise_mem_pi (\u2191s) hf hg",
+    "removed": true
+   }
+  ],
+  "notes": [],
+  "baseline_seconds": 2.5,
+  "status": "done"
+ },
+ "Mathlib/Data/Finsupp/Encodable.lean": {
+  "sha256": "f6bb63f393196e4d95b38244fcf036520d16765e3352b5dca247b465edbaa7ff",
+  "occurrences": [
+   {
+    "kind": "block",
+    "line": 24,
+    "col": 0,
+    "text": "  classical exact .of_equiv _ finsuppEquivDFinsupp.symm",
+    "removed": false
+   }
+  ],
+  "notes": [],
+  "baseline_seconds": 2.1,
+  "status": "done"
+ },
+ "Mathlib/Data/Finsupp/Interval.lean": {
+  "sha256": "8499eee9cee87d32020ae19fbbbfa68a521bd2fbe13f5f92f4870aaf02e277ee",
+  "occurrences": [
+   {
+    "kind": "block",
+    "line": 129,
+    "col": 0,
+    "text": "  classical simp [Iic_eq_Icc, card_Icc, bot_eq_zero]",
+    "removed": true
+   }
+  ],
+  "notes": [],
+  "baseline_seconds": 2.5,
+  "status": "done"
+ },
+ "Mathlib/Data/Finsupp/ToDFinsupp.lean": {
+  "sha256": "1e84c8accdd8942633a89d7662bb8bc0e38728efa9f7b688499c82c31e3a979e",
+  "occurrences": [
+   {
+    "kind": "block",
+    "line": 299,
+    "col": 0,
+    "text": "    classical simp [split_apply, Finsupp.single_apply]",
+    "removed": false
+   },
+   {
+    "kind": "block",
+    "line": 302,
+    "col": 0,
+    "text": "  classical rw [Finsupp.single_apply, if_neg H]",
+    "removed": false
+   }
+  ],
+  "notes": [],
+  "baseline_seconds": 3.1,
+  "status": "done"
+ },
+ "Mathlib/Data/List/OffDiag.lean": {
+  "sha256": "40aed918939d04ff8451f9d319d32a81e5e63a30e7483a89272a69188e66128c",
+  "occurrences": [
+   {
+    "kind": "block",
+    "line": 84,
+    "col": 0,
+    "text": "  classical simp_all [perm_iff_count, count_offDiag_eq_mul_sub_ite]",
+    "removed": false
+   }
+  ],
+  "notes": [],
+  "baseline_seconds": 2.8,
+  "status": "done"
+ },
+ "Mathlib/Data/Nat/Nth.lean": {
+  "sha256": "1d580bd0cfe8ec290c56e293d2f302af7ed13f202347463d2c5c9763ada379c7",
+  "occurrences": [
+   {
+    "kind": "block",
+    "line": 61,
+    "col": 0,
+    "text": "  classical exact",
+    "removed": false
+   },
+   {
+    "kind": "block",
+    "line": 161,
+    "col": 0,
+    "text": "  classical exact Nat.Subtype.coe_comp_ofNat_range",
+    "removed": false
+   },
+   {
+    "kind": "block",
+    "line": 493,
+    "col": 0,
+    "text": "  classical nth_rw 1 [\u2190 count_of_forall (hp \u00b7 \u00b7.le), nth_count (hp n le_rfl)]",
+    "removed": false
+   }
+  ],
+  "notes": [],
+  "baseline_seconds": 2.8,
+  "status": "done"
+ },
+ "Mathlib/Data/Setoid/Partition.lean": {
+  "sha256": "2caebdba9a372b36e0992dc7ff748dadae125d41f15df18b84e5765dffb85a35",
+  "occurrences": [
+   {
+    "kind": "block",
+    "line": 77,
+    "col": 0,
+    "text": "  classical exact",
+    "removed": true
+   }
+  ],
+  "notes": [],
+  "baseline_seconds": 2.9,
+  "status": "done"
+ },
+ "Mathlib/Data/Sym/Basic.lean": {
+  "sha256": "34d6582544622ee97a4f4c5506c6eaa6635a4f10d196d1239cfdc1d747d8db6e",
+  "occurrences": [
+   {
+    "kind": "block",
+    "line": 298,
+    "col": 0,
+    "text": "  classical exact \u27e8a, s.erase a ha, (cons_erase ha).symm\u27e9",
+    "removed": false
+   }
+  ],
+  "notes": [],
+  "baseline_seconds": 3.6,
+  "status": "done"
+ },
+ "Mathlib/Data/Sign/Basic.lean": {
+  "sha256": "3ebef0ce1ff4e8804552a350539c21f4e3856ca570ca14d4062fa9367e8ccafd",
+  "occurrences": [
+   {
+    "kind": "block",
+    "line": 67,
+    "col": 0,
+    "text": "  classical rw [\u2190 Fintype.coe_image_univ, univ_eq]",
+    "removed": false
+   },
+   {
+    "kind": "block",
+    "line": 68,
+    "col": 0,
+    "text": "  classical simp [Finset.coe_insert]",
+    "removed": true
+   }
+  ],
+  "notes": [],
+  "baseline_seconds": 3.3,
+  "status": "done"
+ },
+ "Mathlib/FieldTheory/IsAlgClosed/Basic.lean": {
+  "sha256": "98d1e1f5c6792eeb290eb81f2ba5c43789ca83b746fde078ddc7b89d054e8c05",
+  "occurrences": [
+   {
+    "kind": "block",
+    "line": 564,
+    "col": 0,
+    "text": "  classical rw [IsAlgClosed.dvd_iff_roots_le_roots hf0 hdg, Multiset.le_iff_count]",
+    "removed": false
+   }
+  ],
+  "notes": [],
+  "baseline_seconds": 7.6,
+  "status": "done"
+ },
+ "Mathlib/GroupTheory/Archimedean.lean": {
+  "sha256": "a90508d8942e1a035d1cb66c53c670a14b122f4ff05ebe7e67b7e14e58c8ca6b",
+  "occurrences": [
+   {
+    "kind": "block",
+    "line": 86,
+    "col": 0,
+    "text": "  classical rcases Nat.findX this with \u27e8n, \u27e8x, hxH, hnx, hxn\u27e9, hmin\u27e9",
+    "removed": false
+   }
+  ],
+  "notes": [],
+  "baseline_seconds": 3.5,
+  "status": "done"
+ },
+ "Mathlib/Geometry/Convex/ConvexSpace/Module.lean": {
+  "sha256": "afa3939c9256cebed290ad0642c59f89ca461a88f8b08a32dd944299b77400d6",
+  "occurrences": [
+   {
+    "kind": "block",
+    "line": 83,
+    "col": 0,
+    "text": "  classical simp [convexCombPair, sConvexComb_eq_sum, Finsupp.sum_add_index, add_smul]",
+    "removed": false
+   }
+  ],
+  "notes": [],
+  "baseline_seconds": 13.6,
+  "status": "done"
+ },
+ "Mathlib/GroupTheory/Coset/Card.lean": {
+  "sha256": "586377b5167eecc243d7b879009165834566ed22063836fb061931738feab6a2",
+  "occurrences": [
+   {
+    "kind": "block",
+    "line": 70,
+    "col": 0,
+    "text": "  classical simp [card_eq_card_quotient_mul_card_subgroup s, @dvd_mul_left \u2115]",
+    "removed": true
+   },
+   {
+    "kind": "block",
+    "line": 81,
+    "col": 0,
+    "text": "  classical calc",
+    "removed": true
+   }
+  ],
+  "notes": [],
+  "baseline_seconds": 4.1,
+  "status": "done"
+ },
+ "Mathlib/LinearAlgebra/AffineSpace/Centroid.lean": {
+  "sha256": "ed7224098b0c86333185f024ec22222b7b5201491c21d268617134f6d1933f8a",
+  "occurrences": [
+   {
+    "kind": "block",
+    "line": 208,
+    "col": 0,
+    "text": "  classical rw [s.centroid_eq_centroid_image_of_inj_on k hi rfl,",
+    "removed": false
+   }
+  ],
+  "notes": [],
+  "baseline_seconds": 2.6,
+  "status": "done"
+ },
+ "Mathlib/GroupTheory/SpecificGroups/Cyclic.lean": {
+  "sha256": "306f70571279bc5c67a07b69a988dd765f23a2b492b0f1145fca5325d65bc5d2",
+  "occurrences": [
+   {
+    "kind": "block",
+    "line": 156,
+    "col": 0,
+    "text": "  classical apply card_orderOf_eq_totient_aux\u2082 (fun n => IsCyclic.card_pow_eq_one_le) hd",
+    "removed": false
+   }
+  ],
+  "notes": [],
+  "baseline_seconds": 8.9,
+  "status": "done"
+ },
+ "Mathlib/LinearAlgebra/Basis/Cardinality.lean": {
+  "sha256": "6c38b6ebbe5861a939ca917673cf0f15269d6b9aefc6c58b7c1227b4c8cca7e5",
+  "occurrences": [
+   {
+    "kind": "block",
+    "line": 106,
+    "col": 0,
+    "text": "      classical simpa [single_apply, ne] using congr(b.repr $z j)",
+    "removed": true
+   }
+  ],
+  "notes": [],
+  "baseline_seconds": 3.4,
+  "status": "done"
+ },
+ "Mathlib/LinearAlgebra/LinearDisjoint.lean": {
+  "sha256": "dce9e2b979d97ba536dde0c61df770fe2f56f5c1282e3aded94c693675f4b1d9",
+  "occurrences": [
+   {
+    "kind": "block",
+    "line": 217,
+    "col": 0,
+    "text": "  classical simp_rw [mulLeftMap_eq_mulMap_comp, \u2190 Basis.coe_repr_symm,",
+    "removed": false
+   },
+   {
+    "kind": "block",
+    "line": 227,
+    "col": 0,
+    "text": "  classical simp_rw [mulRightMap_eq_mulMap_comp, \u2190 Basis.coe_repr_symm,",
+    "removed": false
+   },
+   {
+    "kind": "block",
+    "line": 336,
+    "col": 0,
+    "text": "  classical simp_rw [mulLeftMap_eq_mulMap_comp, LinearMap.coe_comp, LinearEquiv.coe_coe,",
+    "removed": false
+   },
+   {
+    "kind": "block",
+    "line": 355,
+    "col": 0,
+    "text": "  classical simp_rw [mulRightMap_eq_mulMap_comp, LinearMap.coe_comp, LinearEquiv.coe_coe,",
+    "removed": false
+   }
+  ],
+  "notes": [],
+  "baseline_seconds": 1.8,
+  "status": "done"
+ },
+ "Mathlib/LinearAlgebra/Dual/Lemmas.lean": {
+  "sha256": "78fda44a61c1254bb353078a66f4a03cbb6526783ace469d74a9091ec445c52e",
+  "occurrences": [
+   {
+    "kind": "block",
+    "line": 134,
+    "col": 0,
+    "text": "  classical rw [\u2190 lift_umax.{uM, uR}, b.toDualEquiv.lift_rank_eq, lift_id'.{uM, uR}]",
+    "removed": false
+   }
+  ],
+  "notes": [],
+  "baseline_seconds": 1.9,
+  "status": "done"
+ },
+ "Mathlib/LinearAlgebra/Matrix/DotProduct.lean": {
+  "sha256": "abe08c1c8f3a22451e5242ceb70b7db37c5b62c641d4f0ee0829a45a12744612",
+  "occurrences": [
+   {
+    "kind": "block",
+    "line": 42,
+    "col": 0,
+    "text": "  classical rw [\u2190 dotProduct_single_one v x, \u2190 dotProduct_single_one w x, h]",
+    "removed": false
+   }
+  ],
+  "notes": [],
+  "baseline_seconds": 2.6,
+  "status": "done"
+ },
+ "Mathlib/LinearAlgebra/TensorProduct/Basis.lean": {
+  "sha256": "ce068c65f80addfbf4d9d9e2849249f0811ccf5d04119beca1b111455401edc5",
+  "occurrences": [
+   {
+    "kind": "block",
+    "line": 172,
+    "col": 0,
+    "text": "  classical simpa using (TensorProduct.equivFinsuppOfBasisRight \ud835\udc9e).symm.surjective x",
+    "removed": false
+   },
+   {
+    "kind": "block",
+    "line": 179,
+    "col": 0,
+    "text": "  classical obtain \u27e8c, rfl\u27e9 := (TensorProduct.equivFinsuppOfBasisLeft \u212c).symm.surjective x",
+    "removed": false
+   }
+  ],
+  "notes": [],
+  "baseline_seconds": 4.5,
+  "status": "done"
+ },
+ "Mathlib/Logic/Equiv/List.lean": {
+  "sha256": "ee02ca0a1b8f1789b377daae65984b5a933c28a13f7250bf6d50d5ff44141d67",
+  "occurrences": [
+   {
+    "kind": "block",
+    "line": 124,
+    "col": 0,
+    "text": "  classical exact (Fintype.truncEncodable \u03b1).out",
+    "removed": false
+   }
+  ],
+  "notes": [],
+  "baseline_seconds": 2.3,
+  "status": "done"
+ },
+ "Mathlib/LinearAlgebra/Matrix/ToLin.lean": {
+  "sha256": "3f6fcd9274c56b54b6667805164841203f828ddc50a0e25ac372e0ccd5bcd356",
+  "occurrences": [
+   {
+    "kind": "block",
+    "line": 1204,
+    "col": 0,
+    "text": "  classical rw [\u2190 MulOpposite.isStablyFiniteRing_iff,",
+    "removed": false
+   }
+  ],
+  "notes": [],
+  "baseline_seconds": 18.1,
+  "status": "done"
+ },
+ "Mathlib/MeasureTheory/Function/ConditionalExpectation/Indicator.lean": {
+  "sha256": "7cffb89a538a3af3bfdbb6ff92d8ff6c50d2c2f14efe6c56da3b5a216d211d0b",
+  "occurrences": [
+   {
+    "kind": "block",
+    "line": 92,
+    "col": 0,
+    "text": "      classical rw [Set.indicator_apply, Set.indicator_apply, hx]",
+    "removed": false
+   }
+  ],
+  "notes": [],
+  "baseline_seconds": 3.9,
+  "status": "done"
+ },
+ "Mathlib/Order/Filter/EventuallyConst.lean": {
+  "sha256": "f0cd1a6a1da6fa50c1e25f1e866298f1499adee32171c3f325629210531bc140",
+  "occurrences": [
+   {
+    "kind": "block",
+    "line": 146,
+    "col": 0,
+    "text": "  classical exact h.comp (if \u00b7 then c else 1)",
+    "removed": false
+   }
+  ],
+  "notes": [],
+  "baseline_seconds": 2.6,
+  "status": "done"
+ },
+ "Mathlib/Order/Filter/IndicatorFunction.lean": {
+  "sha256": "8ab06102b66c31c4fe7eaa01e82889f3ce856d0919b5472fe805e697c594d1b6",
+  "occurrences": [
+   {
+    "kind": "block",
+    "line": 69,
+    "col": 0,
+    "text": "  classical exact hs.piecewise_eventually_eq_iUnion f 1 a",
+    "removed": false
+   },
+   {
+    "kind": "block",
+    "line": 81,
+    "col": 0,
+    "text": "  classical exact hs.piecewise_eventually_eq_iInter f 1 a",
+    "removed": false
+   }
+  ],
+  "notes": [],
+  "baseline_seconds": 2.9,
+  "status": "done"
+ },
+ "Mathlib/RepresentationTheory/AlgebraRepresentation/Basic.lean": {
+  "sha256": "cc2967dc8d7641f0817b378e7e53dcbd89d3d9b349ad605c7f1a8d10ea3bf1f7",
+  "occurrences": [
+   {
+    "kind": "block",
+    "line": 32,
+    "col": 0,
+    "text": "  classical exact IsAlgClosed.algebraMap_bijective_of_isIntegral (k := k)",
+    "removed": false
+   }
+  ],
+  "notes": [],
+  "baseline_seconds": 3.7,
+  "status": "done"
+ },
+ "Mathlib/Order/UpperLower/CompleteLattice.lean": {
+  "sha256": "0b7dd27a9c94c859bf05bf9cb78f92daa3676766688bef4c939a4cd01f6bd201",
+  "occurrences": [
+   {
+    "kind": "block",
+    "line": 303,
+    "col": 0,
+    "text": "  classical exact Lattice.toLinearOrder _",
+    "removed": false
+   },
+   {
+    "kind": "block",
+    "line": 314,
+    "col": 0,
+    "text": "  classical exact Lattice.toLinearOrder _",
+    "removed": false
+   }
+  ],
+  "notes": [],
+  "baseline_seconds": 4.0,
+  "status": "done"
+ },
+ "Mathlib/RepresentationTheory/Intertwining.lean": {
+  "sha256": "71e9844f1b6e2455a7744a328f708dedeb45a233d8b73bce310d91f35d9a7b58",
+  "occurrences": [
+   {
+    "kind": "block",
+    "line": 146,
+    "col": 0,
+    "text": "  classical induction s using Finset.induction with",
+    "removed": false
+   }
+  ],
+  "notes": [],
+  "baseline_seconds": 14.8,
+  "status": "done"
+ },
+ "Mathlib/RepresentationTheory/Homological/Resolution.lean": {
+  "sha256": "3fe43d8e12920d54ea7a3983e9a7b6730e2be2ebadd9c2e1204b8b9213451666",
+  "occurrences": [
+   {
+    "kind": "block",
+    "line": 208,
+    "col": 0,
+    "text": "  classical exact inferInstanceAs <| Projective (Rep.diagonal k G (n + 1))",
+    "removed": true
+   }
+  ],
+  "notes": [],
+  "baseline_seconds": 21.1,
+  "status": "done"
+ },
+ "Mathlib/RingTheory/GradedAlgebra/Homogeneous/Maps.lean": {
+  "sha256": "fe6f78e60ae83f5b6cc4fe056a4280594015e555feafeac8a4ec205bff00b8f8",
+  "occurrences": [
+   {
+    "kind": "block",
+    "line": 46,
+    "col": 0,
+    "text": "      classical rw [smul_eq_mul, DirectSum.decompose_mul, DirectSum.coe_mul_apply]",
+    "removed": false
+   }
+  ],
+  "notes": [],
+  "baseline_seconds": 3.3,
+  "status": "done"
+ },
+ "Mathlib/RingTheory/HahnSeries/Basic.lean": {
+  "sha256": "501805587a79a81dedd099ea4da1a52accd9f921a8e1808e8f5823c94f523210",
+  "occurrences": [
+   {
+    "kind": "block",
+    "line": 203,
+    "col": 0,
+    "text": "  classical exact Pi.single_eq_same (M := fun _ => R) a r",
+    "removed": false
+   },
+   {
+    "kind": "block",
+    "line": 207,
+    "col": 0,
+    "text": "  classical exact Pi.single_eq_of_ne (M := fun _ => R) h r",
+    "removed": false
+   },
+   {
+    "kind": "block",
+    "line": 215,
+    "col": 0,
+    "text": "  classical exact Pi.support_single_of_ne h",
+    "removed": false
+   },
+   {
+    "kind": "block",
+    "line": 218,
+    "col": 0,
+    "text": "  classical exact Pi.support_single_subset",
+    "removed": false
+   }
+  ],
+  "notes": [],
+  "baseline_seconds": 3.1,
+  "status": "done"
+ },
+ "Mathlib/RingTheory/Ideal/Quotient/ChineseRemainder.lean": {
+  "sha256": "eb9ca410fbe59aa90cec4b2ded68917a721c3218c1b46832812daf5436dbac18",
+  "occurrences": [
+   {
+    "kind": "block",
+    "line": 42,
+    "col": 0,
+    "text": "  classical rw [pi_mkQ_rTensor] at this",
+    "removed": false
+   }
+  ],
+  "notes": [],
+  "baseline_seconds": 5.0,
+  "status": "done"
+ },
+ "Mathlib/RingTheory/LocalRing/Basic.lean": {
+  "sha256": "c48d585d22788683dbcc8ee8c25758ae9938a430160d8e35ea71552758ca3f83",
+  "occurrences": [
+   {
+    "kind": "block",
+    "line": 123,
+    "col": 0,
+    "text": "  classical exact IsLocalRing.of_isUnit_or_isUnit_one_sub_self fun a =>",
+    "removed": false
+   }
+  ],
+  "notes": [],
+  "baseline_seconds": 2.9,
+  "status": "done"
+ },
+ "Mathlib/RepresentationTheory/Rep/Basic.lean": {
+  "sha256": "b44355cd1788bf986693789e75215d13d4dd81ab13d691c02dd23b0a99e46a37",
+  "occurrences": [
+   {
+    "kind": "block",
+    "line": 280,
+    "col": 0,
+    "text": "  classical induction s using Finset.induction with",
+    "removed": false
+   },
+   {
+    "kind": "block",
+    "line": 288,
+    "col": 0,
+    "text": "  classical induction s using Finset.induction with",
+    "removed": false
+   },
+   {
+    "kind": "block",
+    "line": 928,
+    "col": 0,
+    "text": "  classical exact (freeLiftLEquiv k G \u03b1 A).injective (funext_iff.2 h)",
+    "removed": true
+   }
+  ],
+  "notes": [],
+  "baseline_seconds": 36.0,
+  "status": "done"
+ },
+ "Mathlib/RingTheory/SimpleModule/Isotypic.lean": {
+  "sha256": "4db4589a7bb689aa81f15ab5917180e8e0f6827da5907dc16850d246797a6735",
+  "occurrences": [
+   {
+    "kind": "block",
+    "line": 139,
+    "col": 0,
+    "text": "  classical exact \u27e8s, \u27e8e.trans (DFinsupp.mapRange.linearEquiv fun m : s \u21a6 (h m.1).some)",
+    "removed": false
+   },
+   {
+    "kind": "block",
+    "line": 154,
+    "col": 0,
+    "text": "  classical exact \u27e8n, \u27e8e.trans (DFinsupp.mapRange.linearEquiv fun i \u21a6 (h (S i)).some)",
+    "removed": false
+   }
+  ],
+  "notes": [],
+  "baseline_seconds": 7.0,
+  "status": "done"
+ },
+ "Mathlib/SetTheory/Cardinal/EventuallyConst.lean": {
+  "sha256": "ed6ca4c383941a5129a2aeaee000cafd60facab51425991b823826847fa07d65",
+  "occurrences": [
+   {
+    "kind": "block",
+    "line": 42,
+    "col": 0,
+    "text": "  classical let := hf.isChain_range.linearOrder",
+    "removed": false
+   }
+  ],
+  "notes": [],
+  "baseline_seconds": 2.3,
+  "status": "done"
+ },
+ "Mathlib/Tactic/Tauto.lean": {
+  "sha256": "7251597429f1817631b0f5ce8823e57cc377a1db408bdf2033fc1f1291e179ef",
+  "occurrences": [
+   {
+    "kind": "block",
+    "line": 206,
+    "col": 0,
+    "text": "  classical do",
+    "removed": true
+   }
+  ],
+  "notes": [],
+  "baseline_seconds": 3.0,
+  "status": "done"
+ },
+ "Mathlib/Topology/Algebra/Indicator.lean": {
+  "sha256": "ea093bfbcaf5876f15935057214ef966d86293bd44542573e87b5ce1a814f0db",
+  "occurrences": [
+   {
+    "kind": "block",
+    "line": 26,
+    "col": 0,
+    "text": "  classical exact continuous_piecewise hs hf continuousOn_const",
+    "removed": false
+   },
+   {
+    "kind": "block",
+    "line": 31,
+    "col": 0,
+    "text": "  classical exact hf.piecewise hs continuous_const",
+    "removed": false
+   }
+  ],
+  "notes": [],
+  "baseline_seconds": 2.3,
+  "status": "done"
+ },
+ "Mathlib/RingTheory/Valuation/ValuativeRel/Basic.lean": {
+  "sha256": "16fd5d6057f3c412a4d355db022b2ec63e9a219696555f7b3c53f0d1972e3500",
+  "occurrences": [
+   {
+    "kind": "block",
+    "line": 677,
+    "col": 0,
+    "text": "    classical exact if h : x \u2264\u1d65 0 then 0 else .mk s \u27e8x, h\u27e9) <| by",
+    "removed": false
+   }
+  ],
+  "notes": [],
+  "baseline_seconds": 16.7,
+  "status": "done"
+ },
+ "Mathlib/Topology/Sheaves/Skyscraper.lean": {
+  "sha256": "2de51eef0cf3c7512b79093fa71bd7fdcee1741d568067b10af4ee4065c6ec18",
+  "occurrences": [
+   {
+    "kind": "block",
+    "line": 234,
+    "col": 0,
+    "text": "  classical exact",
+    "removed": false
+   }
+  ],
+  "notes": [],
+  "baseline_seconds": 6.1,
+  "status": "done"
+ },
+ "Mathlib/RingTheory/SimpleModule/WedderburnArtin.lean": {
+  "sha256": "394c3d8954491754c0a03071ce7aa65ddc93c4783581cf0b4d6869361547187f",
+  "occurrences": [
+   {
+    "kind": "block",
+    "line": 100,
+    "col": 0,
+    "text": "  classical exact \u27e8n, hn, _, _, \u27e8e\u27e9\u27e9",
+    "removed": false
+   },
+   {
+    "kind": "block",
+    "line": 117,
+    "col": 0,
+    "text": "  classical exact \u27e8n, hn, _, _, _, \u27e8e\u27e9\u27e9",
+    "removed": false
+   },
+   {
+    "kind": "block",
+    "line": 126,
+    "col": 0,
+    "text": "  classical exact \u27e8n, hn, _, _, _, .of_surjective",
+    "removed": false
+   },
+   {
+    "kind": "block",
+    "line": 145,
+    "col": 0,
+    "text": "  classical exact \u27e8_, _, _, fun _ \u21a6 simple _, fun _ \u21a6 pos _, \u27e8.trans (endAlgEquiv R\u2080 R M) <| .trans",
+    "removed": true
+   },
+   {
+    "kind": "block",
+    "line": 165,
+    "col": 0,
+    "text": "  classical exact \u27e8n, _, d, inferInstance, inferInstance, hd, \u27e8e\u27e9\u27e9",
+    "removed": false
+   },
+   {
+    "kind": "block",
+    "line": 200,
+    "col": 0,
+    "text": "  classical exact \u27e8n, _, d, inferInstance, inferInstance, hd, \u27e8e\u27e9\u27e9",
+    "removed": false
+   }
+  ],
+  "notes": [],
+  "baseline_seconds": 5.7,
   "status": "done"
  }
 }

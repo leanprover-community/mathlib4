@@ -42,13 +42,14 @@ JOURNAL_PATH = REPO_ROOT / "classical_removal_journal.json"
 
 STANDALONE_RE = re.compile(r"^\s*classical\s*$")
 INLINE_RE = re.compile(r"\bby classical(?=\s|$)")
+BLOCK_RE = re.compile(r"^(\s*)classical\s+\S")
 
 
 @dataclass
 class Occurrence:
-    kind: str  # "line" (form A) or "inline" (form B)
+    kind: str  # "line" (form A), "inline" (form B), or "block" (form C: `classical <tac>`)
     line: int  # 1-indexed
-    col: int  # 0-indexed start of `by classical` for inline; 0 for line
+    col: int  # 0-indexed start of `by classical` for inline; 0 for line/block
     text: str  # original line content (without newline), for journal readability
 
     def key(self) -> tuple[int, int]:
@@ -120,6 +121,11 @@ def find_occurrences(lines: list[str]) -> list[Occurrence]:
         if STANDALONE_RE.match(line):
             occs.append(Occurrence(kind="line", line=lineno, col=0, text=line))
             continue
+        # Form C is matched on `code` so `classical -- comment` (blanked rest) is skipped,
+        # while `classical exact foo -- comment` still matches.
+        if BLOCK_RE.match(code):
+            occs.append(Occurrence(kind="block", line=lineno, col=0, text=line))
+            continue
         for m in INLINE_RE.finditer(code):
             occs.append(Occurrence(kind="inline", line=lineno, col=m.start(), text=line))
     return occs
@@ -142,7 +148,11 @@ def build_content(lines: list[str], occs: list[Occurrence], remove: set[tuple[in
             continue
         if lineno in by_line:
             for occ in sorted(by_line[lineno], key=lambda o: -o.col):
-                raw = raw[: occ.col] + "by" + raw[occ.col + len("by classical") :]
+                if occ.kind == "block":
+                    m = re.match(r"^(\s*)classical\s+", raw)
+                    raw = m.group(1) + raw[m.end():]
+                else:
+                    raw = raw[: occ.col] + "by" + raw[occ.col + len("by classical") :]
         out.append(raw)
     return "".join(out)
 
@@ -166,7 +176,7 @@ def lake_env_lean(rel_path: str, timeout: float | None = None, lake_build: bool 
     return result.returncode == 0, result.stdout + result.stderr
 
 
-def process_file(rel_path: str, lake_build: bool = False) -> dict:
+def process_file(rel_path: str, lake_build: bool = False, kinds: frozenset[str] | None = None) -> dict:
     """Trial-remove every occurrence in one file. Restores the file afterwards.
 
     Returns a journal entry dict.
@@ -175,6 +185,8 @@ def process_file(rel_path: str, lake_build: bool = False) -> dict:
     original = path.read_text()
     lines = original.splitlines(keepends=True)
     occs = find_occurrences(lines)
+    if kinds is not None:
+        occs = [o for o in occs if o.kind in kinds]
     entry: dict = {
         "sha256": hashlib.sha256(original.encode()).hexdigest(),
         "occurrences": [],
@@ -319,6 +331,12 @@ theorem kept : True := by
   classical -- deliberate, do not remove
   trivial
 
+theorem real₅ : True := by
+  classical exact trivial
+
+theorem real₆ : True := by
+  classical simp -- with comment
+
 def strfun : String := "by classical
   classical"
 
@@ -338,18 +356,22 @@ def self_test() -> int:
         ("line", "classical"),
         ("inline", "theorem real₂ : True := by classical trivial"),
         ("inline", "theorem real₃ : True := by classical"),
+        ("block", "classical exact trivial"),
+        ("block", "classical simp -- with comment"),
     }
     assert got == expected_texts, f"unexpected occurrence set: {got}"
     line_occs = [o for o in occs if o.kind == "line"]
     assert len(line_occs) == 2, f"expected 2 standalone occurrences, got {line_occs}"
-    assert len(occs) == 4, f"expected 4 occurrences total, got {len(occs)}"
+    assert len(occs) == 6, f"expected 6 occurrences total, got {len(occs)}"
 
     # Removing everything must only delete/rewrite those exact sites.
     content = build_content(lines, occs, {o.key() for o in occs})
     assert "theorem real₂ : True := by trivial" in content
     assert "theorem real₃ : True := by\n  trivial" in content
     assert "classical -- deliberate, do not remove" in content
-    assert content.count("classical") == SELF_TEST_SNIPPET.count("classical") - 4
+    assert "theorem real₅ : True := by\n  exact trivial" in content
+    assert "theorem real₆ : True := by\n  simp -- with comment" in content
+    assert content.count("classical") == SELF_TEST_SNIPPET.count("classical") - 6
     # Docstring/comment/string content untouched.
     for chunk in ["```\ntheorem foo", "/- block comment", 'def strfun : String := "by classical']:
         assert chunk in content
@@ -368,7 +390,13 @@ def self_test() -> int:
     return 0
 
 
-def run(paths: list[str], jobs: int, resume: bool, lake_build: bool = False) -> int:
+def run(
+    paths: list[str],
+    jobs: int,
+    resume: bool,
+    lake_build: bool = False,
+    kinds: frozenset[str] | None = None,
+) -> int:
     journal = load_journal()
     todo = []
     for rel_path in paths:
@@ -378,9 +406,11 @@ def run(paths: list[str], jobs: int, resume: bool, lake_build: bool = False) -> 
         ):
             continue
         lines = (REPO_ROOT / rel_path).read_text().splitlines(keepends=True)
-        n = len(find_occurrences(lines))
-        if n:
-            todo.append((rel_path, n))
+        occs = find_occurrences(lines)
+        if kinds is not None:
+            occs = [o for o in occs if o.kind in kinds]
+        if occs:
+            todo.append((rel_path, len(occs)))
 
     total_occs = sum(n for _, n in todo)
     print(f"{len(todo)} file(s) to process, {total_occs} occurrence(s), jobs={jobs}")
@@ -389,7 +419,7 @@ def run(paths: list[str], jobs: int, resume: bool, lake_build: bool = False) -> 
     done_occs = 0
     removed_total = 0
     with concurrent.futures.ProcessPoolExecutor(max_workers=jobs) as pool:
-        futures = {pool.submit(process_file, rel, lake_build): (rel, n) for rel, n in todo}
+        futures = {pool.submit(process_file, rel, lake_build, kinds): (rel, n) for rel, n in todo}
         for fut in concurrent.futures.as_completed(futures):
             rel_path, n = futures[fut]
             try:
@@ -432,6 +462,10 @@ def main() -> int:
         help="verify with `lake build <module>` instead of `lake env lean` (for files that "
         "fail standalone elaboration; requires a fully cached build, use --jobs 1)",
     )
+    parser.add_argument(
+        "--kinds",
+        help="comma-separated occurrence kinds to target (line,inline,block); default all",
+    )
     parser.add_argument("--self-test", action="store_true")
     args = parser.parse_args()
 
@@ -444,7 +478,8 @@ def main() -> int:
     paths = discover_files(args.paths)
     if args.scan_only:
         return scan_only(paths)
-    return run(paths, jobs=args.jobs, resume=args.resume, lake_build=args.lake_build)
+    kinds = frozenset(args.kinds.split(",")) if args.kinds else None
+    return run(paths, jobs=args.jobs, resume=args.resume, lake_build=args.lake_build, kinds=kinds)
 
 
 if __name__ == "__main__":

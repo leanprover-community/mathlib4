@@ -202,7 +202,7 @@ variable [UniformSpace α]
 **Cauchy convergence test** -/]
 theorem multipliable_iff_cauchySeq_finset [CommMonoid α] [CompleteSpace α] {f : β → α} :
     Multipliable f ↔ CauchySeq fun s : Finset β ↦ ∏ b ∈ s, f b := by
-  classical exact cauchy_map_iff_exists_tendsto.symm
+  exact cauchy_map_iff_exists_tendsto.symm
 
 variable [CommGroup α] [IsUniformGroup α] {f g : β → α}
 
