@@ -232,7 +232,7 @@ def toBooleanAlgebra : BooleanAlgebra α :=
       change
         1 + (a + (1 + a) + a * (1 + a)) + 1 * (a + (1 + a) + a * (1 + a)) =
           a + (1 + a) + a * (1 + a)
-      simp [mul_add, mul_self, add_self, ← add_assoc, add_comm] }
+      simp [mul_add, ← add_assoc, add_comm] }
 
 scoped[BooleanAlgebraOfBooleanRing] attribute [instance 100] BooleanRing.toBooleanAlgebra
 
