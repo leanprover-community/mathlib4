@@ -43,12 +43,12 @@ theorem hasFDerivWithinAt_congr_set_nhdsNE (h : s =ᶠ[𝓝[≠] x] t) :
     HasFDerivWithinAt f f' s x ↔ HasFDerivWithinAt f f' t x :=
   calc
     HasFDerivWithinAt f f' s x ↔ HasFDerivWithinAt f f' (s \ {x}) x :=
-      hasFDerivWithinAt_diff_singleton_self.symm
+      hasFDerivWithinAt_sdiff_singleton_self.symm
     _ ↔ HasFDerivWithinAt f f' (t \ {x}) x := by
       suffices 𝓝[s \ {x}] x = 𝓝[t \ {x}] x by simp only [HasFDerivWithinAt, this]
-      simpa only [set_eventuallyEq_iff_inf_principal, ← nhdsWithin_inter', diff_eq, inter_comm]
+      simpa only [set_eventuallyEq_iff_inf_principal, ← nhdsWithin_inter', sdiff_eq, inter_comm]
         using h
-    _ ↔ HasFDerivWithinAt f f' t x := hasFDerivWithinAt_diff_singleton_self
+    _ ↔ HasFDerivWithinAt f f' t x := hasFDerivWithinAt_sdiff_singleton_self
 
 theorem hasFDerivWithinAt_congr_set (h : s =ᶠ[𝓝 x] t) :
     HasFDerivWithinAt f f' s x ↔ HasFDerivWithinAt f f' t x :=

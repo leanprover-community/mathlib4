@@ -154,7 +154,7 @@ theorem exists_mem_stabilizer_smul_eq (hα : 4 ≤ Nat.card α) {t : Set α} :
     simpa
   by_cases ht : 2 < t.ncard
   · rw [← Set.ncard_pair hab] at ht
-    replace ht := Set.diff_nonempty_of_ncard_lt_ncard ht
+    replace ht := Set.sdiff_nonempty_of_ncard_lt_ncard ht
     obtain ⟨c, hct, hc⟩ := ht
     simp only [mem_insert_iff, not_or] at hc
     refine ⟨⟨swap c a * swap a b, by simp [hab, hc.1]⟩, ?_, ?_⟩
@@ -260,7 +260,7 @@ theorem isCoatom_stabilizer_of_ncard_lt_ncard_compl {s : Set α}
     IsBlock.subsingleton_of_ssubset_compl_of_stabilizer_alternatingGroup_le h0
       (hBsc.ssubset_of_ne (by aesop)) -- uses Step 1
       hG.le hB
- -- Step 3 : A block contained in `s` is a subsingleton
+  -- Step 3 : A block contained in `s` is a subsingleton
   have hB_not_le_s (B : Set α) (hB : IsBlock G B) (hBs : B ⊆ s) :
       B.Subsingleton :=
     have : IsPreprimitive (stabilizer G s) s :=
