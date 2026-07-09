@@ -185,3 +185,24 @@ noncomputable abbrev ofAlgHom [CommSemiring R] [CommSemiring A] [Bialgebra R A]
         using! congr(($mul_antipode_lTensor_comul).toLinearMap))
 
 end HopfAlgebra
+
+
+namespace HopfAlgebra
+
+variable {R A : Type*} [CommSemiring R] [Semiring A] [Bialgebra R A]
+
+def foo {X : Set A} (S : A →ₗ[R] A) (hX : Algebra.adjoin R X = ⊤)
+    (hxr : ∀ x ∈ X, LinearMap.mul' R A (S.rTensor A (Coalgebra.comul x)) =
+      algebraMap R A (Coalgebra.counit x))
+    (hxl : ∀ x ∈ X, LinearMap.mul' R A (S.lTensor A (Coalgebra.comul x)) =
+      algebraMap R A (Coalgebra.counit x)) : HopfAlgebra R A where
+  antipode := S
+  mul_antipode_rTensor_comul := by
+    /- If we are showing this pointwise, then take an a ∈ A.
+
+    -/
+    sorry
+  mul_antipode_lTensor_comul := by sorry
+
+
+end HopfAlgebra
