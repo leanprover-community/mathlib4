@@ -143,8 +143,8 @@ theorem le_orthogonalBilin_iff_le_orthogonalBilin {T : Submodule R₂ M₂} :
     le_orthogonalBilin_orthogonalBilin
 
 @[simp] theorem orthogonalBilin_flip_orthogonalBilin_orthogonalBilin_flip (S : Submodule R₂ M₂) :
-    orthogonalBilin B.flip (orthogonalBilin B (orthogonalBilin B.flip S))
-      = orthogonalBilin B.flip S :=
+    orthogonalBilin B.flip (orthogonalBilin B (orthogonalBilin B.flip S)) =
+      orthogonalBilin B.flip S :=
   orthogonalBilin_orthogonalBilin_flip_orthogonalBilin S
 
 theorem orthogonalBilin_sup_orthogonalBilin_le_orthogonalBilin_inf (S T) :
