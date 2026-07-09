@@ -1195,7 +1195,7 @@ lemma norm_iteratedFDerivComponent_le {α : Type*} [Fintype α]
   _ = ‖f‖ * ‖x‖ ^ (Fintype.card {a : ι // a ∉ s}) := by rw [prod_const, card_univ]
   _ = ‖f‖ * ‖x‖ ^ (Fintype.card ι - Fintype.card α) := by simp [Fintype.card_congr e]
 
-open Classical in
+open scoped Classical in
 /-- The `k`-th iterated derivative of a continuous multilinear map `f` at the point `x`. It is a
 continuous multilinear map of `k` vectors `v₁, ..., vₖ` (with the same type as `x`), mapping them
 to `∑ f (x₁, (v_{i₁})₂, x₃, ...)`, where at each index `j` one uses either `xⱼ` or one
