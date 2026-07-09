@@ -371,7 +371,7 @@ theorem const_pow [Pow G M] (a : G) (n : M) : (↑(a ^ n) : Germ l G) = (↑a : 
 instance instSemigroup [Semigroup M] : Semigroup (Germ l M) :=
   { ppow n hn f := f ^ (PNat.mk n hn),
     ppow_one := Quotient.ind' fun _ ↦ congrArg ofFun <| ppow_one _,
-    ppow_succ n := Quotient.ind' fun _ ↦ congrArg ofFun <| ppow_mk_add_one _,
+    ppow_succ n := Quotient.ind' fun _ ↦ congrArg ofFun <| ppow_succ _,
     mul_assoc := fun a b c => Quotient.inductionOn₃' a b c
       fun _ _ _ => congrArg ofFun <| mul_assoc .. }
 

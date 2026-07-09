@@ -246,19 +246,19 @@ instance : CommMonoid (NumDenSameDeg 𝒜 x) where
 theorem deg_ppow (c : NumDenSameDeg 𝒜 x) (n : ℕ+) : (c ^ n).deg = n • c.deg := by
   induction n using Semigroup.ppow_induction c with
   | h1 => simp
-  | hsucc n IH => simp [IH, psmul_mk_add_one]
+  | hsucc n IH => simp [IH, succ_psmul]
 
 @[simp]
 theorem num_ppow (c : NumDenSameDeg 𝒜 x) (n : ℕ+) : ((c ^ n).num : A) = (c.num : A) ^ n := by
   induction n using Semigroup.ppow_induction c with
   | h1 => simp
-  | hsucc n IH => simp [IH, ppow_mk_add_one]
+  | hsucc n IH => simp [IH, ppow_succ]
 
 @[simp]
 theorem den_ppow (c : NumDenSameDeg 𝒜 x) (n : ℕ+) : ((c ^ n).den : A) = (c.den : A) ^ n := by
   induction n using Semigroup.ppow_induction c with
   | h1 => simp
-  | hsucc n IH => simp [IH, ppow_mk_add_one]
+  | hsucc n IH => simp [IH, ppow_succ]
 
 instance : Pow (NumDenSameDeg 𝒜 x) ℕ where
   pow c n :=

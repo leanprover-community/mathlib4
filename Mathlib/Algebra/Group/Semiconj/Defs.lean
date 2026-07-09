@@ -85,7 +85,7 @@ theorem ppow_right {a x y : S} (h : SemiconjBy a x y) (n : ℕ+) : SemiconjBy a 
   induction n using Semigroup.ppow_induction x with
   | h1 => simp [h]
   | hsucc n IH =>
-    rw [ppow_mk_add_one y]
+    rw [ppow_succ y]
     exact IH.mul_right h
 
 end Semigroup

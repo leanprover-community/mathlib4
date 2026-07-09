@@ -182,7 +182,7 @@ theorem ppow_le_ppow_left' {M : Type*} [Semigroup M] [Preorder M] [MulLeftMono M
   induction i using Semigroup.ppow_induction a generalizing b with
   | h1 => simp [hab]
   | hsucc i IH =>
-    rw [ppow_mk_add_one b]
+    rw [ppow_succ b]
     exact mul_le_mul' (IH hab) hab
 
 @[to_additive (attr := mono, gcongr) nsmul_le_nsmul_right]

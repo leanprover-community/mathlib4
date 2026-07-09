@@ -184,7 +184,7 @@ protected theorem Specializes.ppow {M : Type*} [Semigroup M] [TopologicalSpace M
   induction n using Semigroup.ppow_induction a generalizing b with
   | h1 => simp [h]
   | hsucc n IH =>
-    rw [ppow_mk_add_one b]
+    rw [ppow_succ b]
     exact (IH h).mul h
 
 @[to_additive]
@@ -809,7 +809,7 @@ theorem continuous_ppow {M : Type*} [TopologicalSpace M] [Semigroup M] [Continuo
   induction n with
   | zero => simpa using continuous_id'
   | succ n IH =>
-    simp_rw [ppow_mk_add_one (n := n + 1)]
+    simp_rw [ppow_succ (n := n + 1)]
     exact (IH Nat.succ_pos').mul continuous_id
 
 @[to_additive (attr := continuity)]

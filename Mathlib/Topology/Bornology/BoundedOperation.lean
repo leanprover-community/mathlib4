@@ -112,7 +112,7 @@ lemma isBounded_ppow {R : Type*} [Bornology R] [Semigroup R] [BoundedMul R] {s :
       intro x hx
       simp only [mem_image] at hx
       obtain ⟨y, y_in_s, ypow_eq_x⟩ := hx
-      rw [← ypow_eq_x, ppow_mk_add_one y]
+      rw [← ypow_eq_x, ppow_succ y]
       apply Set.mul_mem_mul _ y_in_s
       use y
     exact (isBounded_mul IH s_bdd).subset obs

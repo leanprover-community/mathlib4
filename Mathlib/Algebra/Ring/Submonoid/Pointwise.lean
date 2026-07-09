@@ -265,7 +265,7 @@ scoped[Pointwise] attribute [instance] AddSubmonoid.semigroup
 lemma closure_ppow (s : Set R) (n : ℕ+) : closure s ^ n = closure (s ^ n) := by
   induction n using Semigroup.ppow_induction s with
   | h1 => rw [ppow_one]
-  | hsucc n IH => rw [ppow_mk_add_one, IH, closure_mul_closure]
+  | hsucc n IH => rw [ppow_succ, IH, closure_mul_closure]
 
 lemma ppow_eq_closure_ppow_set (s : AddSubmonoid R) (n : ℕ+) :
     s ^ n = closure ((s : Set R) ^ n) := by

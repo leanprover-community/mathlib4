@@ -585,7 +585,7 @@ instance AddSemigroup.measurableSMul_pnat₂ (M : Type*) [AddSemigroup M] [Measu
       rfl
     | succ n IH =>
       simp only [ne_eq, Nat.add_eq_zero_iff, one_ne_zero, and_false, not_false_eq_true,
-        psmul_mk_add_one]
+        succ_psmul]
       exact (IH Nat.succ_pos').add measurable_id⟩
 
 /-- `AddMonoid.SMul` is measurable. -/

@@ -416,7 +416,7 @@ variable [∀ i, AddCommMonoid (A i)] [AddMonoid ι] [GSemiring A]
 @[simp]
 theorem of_zero_ppow (a : A 0) (n : ℕ+) :
     of A 0 (a ^ n) = of A 0 a ^ n := by
-  induction n using Semigroup.ppow_induction a <;> simp [*, ppow_mk_add_one]
+  induction n using Semigroup.ppow_induction a <;> simp [*, ppow_succ]
 
 theorem of_zero_pow (a : A 0) : ∀ n : ℕ, of A 0 (a ^ n) = of A 0 a ^ n
   | 0 => by rw [pow_zero, pow_zero, DirectSum.of_zero_one]

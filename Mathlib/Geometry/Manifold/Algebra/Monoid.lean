@@ -167,7 +167,7 @@ theorem contMDiff_ppow {G : Type*} [Semigroup G] [TopologicalSpace G] [ChartedSp
     exact contMDiffAt_id
   | hsucc i IH =>
     simp only [ne_eq, Nat.add_eq_zero_iff, one_ne_zero, and_false, not_false_eq_true,
-      ppow_mk_add_one]
+      ppow_succ]
     exact ((IH.contMDiffAt Filter.univ_mem).mul contMDiffAt_id).contMDiffAt Filter.univ_mem
 
 

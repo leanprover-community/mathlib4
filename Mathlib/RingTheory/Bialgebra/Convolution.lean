@@ -86,7 +86,7 @@ lemma toLinearMap_convPPow (f : WithConv <| C →ₐ[R] A) (n : ℕ+) :
   induction n with
   | zero => rfl
   | succ n IH =>
-    rw [convPPow_succ_mk f _ Nat.succ_pos', toLinearMap_convMul, ppow_mk_add_one (n := n + 1),
+    rw [convPPow_succ_mk f _ Nat.succ_pos', toLinearMap_convMul, ppow_succ (n := n + 1),
         IH Nat.succ_pos']
 
 @[simp]
@@ -177,7 +177,7 @@ lemma toLinearMap_convPPow (f : WithConv <| C →ₐc[R] A) (n : ℕ+) :
   induction n with
   | zero => rfl
   | succ n IH =>
-    rw [convPPow_succ_mk f _ Nat.succ_pos', toLinearMap_convMul, ppow_mk_add_one (n := n + 1),
+    rw [convPPow_succ_mk f _ Nat.succ_pos', toLinearMap_convMul, ppow_succ (n := n + 1),
         IH Nat.succ_pos']
 
 -- TODO: Make simp once `SemilinearMapClass.semilinearMap` is not simp nf anymore.
@@ -196,7 +196,7 @@ lemma toAlgHom_convPPow (f : WithConv <| C →ₐc[R] A) (n : ℕ+) :
   induction n with
   | zero => rfl
   | succ n IH =>
-    rw [convPPow_succ_mk f _ Nat.succ_pos', toAlgHom_convMul, ppow_mk_add_one (n := n + 1),
+    rw [convPPow_succ_mk f _ Nat.succ_pos', toAlgHom_convMul, ppow_succ (n := n + 1),
         IH Nat.succ_pos']
 
 @[simp]

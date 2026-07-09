@@ -140,7 +140,7 @@ theorem ppow_ppow_self (a : S) (m n : ℕ+) : Commute (a ^ m) (a ^ n) :=
   induction n using Semigroup.ppow_induction a generalizing b with
   | h1 => simp
   | hsucc n IH =>
-    rw [ppow_mk_add_one, IH h, eq_comm, ppow_mk_add_one b, mul_assoc _ (b ^ _), ← mul_assoc (b ^ _),
+    rw [ppow_succ, IH h, eq_comm, ppow_succ b, mul_assoc _ (b ^ _), ← mul_assoc (b ^ _),
       mul_assoc _ a, h.right_comm, (ppow_self b _).eq, h.mul_right (h.ppow_right _),
       (self_ppow b _).eq]
 
