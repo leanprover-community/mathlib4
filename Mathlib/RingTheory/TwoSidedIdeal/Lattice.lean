@@ -133,17 +133,12 @@ instance : CompleteLattice (TwoSidedIdeal R) where
 @[simp]
 lemma coe_bot : ((⊥ : TwoSidedIdeal R) : Set R) = {0} := rfl
 
+protected lemma eq_bot_iff (I : TwoSidedIdeal R) : I = ⊥ ↔ ∀ x ∈ I, x = 0 := by 
+  simp [← SetLike.coe_injective.eq_iff, coe_bot, Set.ext_iff]
+  grind [zero_mem]
+
 protected theorem ne_bot_iff (I : TwoSidedIdeal R) : I ≠ ⊥ ↔ ∃ x ∈ I, x ≠ 0 := by
-  refine ⟨fun h ↦ ?_, ?_⟩
-  · by_contra h'
-    apply h
-    push Not at h'
-    ext x
-    simp only [mem_bot]
-    exact ⟨h' x, fun hx => hx ▸ I.zero_mem⟩
-  · rintro ⟨x, hx, hne⟩ heq
-    simp only [heq, mem_bot] at hx
-    exact hne hx
+  simp [TwoSidedIdeal.eq_bot_iff R I]
 
 theorem exists_mem_ne_zero_of_ne_bot {I : TwoSidedIdeal R} (h : I ≠ ⊥) : ∃ b ∈ I, b ≠ 0 :=
   I.ne_bot_iff.mp h
