@@ -18,7 +18,7 @@ public import Mathlib.Tactic.FinCases
 This file defines ideal quotients as a special case of submodule quotients and proves some basic
 results about these quotients.
 
-See `Algebra.RingQuot` for quotients of semirings.
+See `RingCon.Quotient` for quotients of (possibly non-commutative) semirings.
 
 ## Main definitions
 
@@ -111,7 +111,7 @@ theorem exists_inv [hI : I.IsMaximal] :
   rw [← eq_sub_iff_add_eq'] at abc
   rwa [abc, ← neg_mem_iff (G := R) (H := I), neg_sub] at hc
 
-open Classical in
+open scoped Classical in
 /-- The quotient by a maximal ideal is a group with zero. This is a `def` rather than `instance`,
 since users will have computable inverses in some applications.
 

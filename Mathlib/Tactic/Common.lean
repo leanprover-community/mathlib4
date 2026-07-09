@@ -42,6 +42,7 @@ public import Mathlib.Tactic.Choose
 public import Mathlib.Tactic.ClearExclamation
 public import Mathlib.Tactic.ClearExcept
 public import Mathlib.Tactic.Clear_
+public import Mathlib.Tactic.ClickSuggestions
 public import Mathlib.Tactic.Coe
 public import Mathlib.Tactic.CongrExclamation
 public import Mathlib.Tactic.CongrM
@@ -63,6 +64,7 @@ public import Mathlib.Tactic.Find
 public import Mathlib.Tactic.FunProp
 public import Mathlib.Tactic.GCongr
 public import Mathlib.Tactic.GRewrite
+public import Mathlib.Tactic.GrindAttrs
 public import Mathlib.Tactic.GuardGoalNums
 public import Mathlib.Tactic.GuardHypNums
 public import Mathlib.Tactic.HigherOrder
