@@ -380,10 +380,10 @@ lemma IsPath.tail {p : G.Walk u v} (hp : p.IsPath) : p.tail.IsPath := by
     simp_all [Walk.isPath_def]
 
 theorem isPath_dropLast_iff_isPath_tail {p : G.Walk u u} : p.dropLast.IsPath ↔ p.tail.IsPath := by
-  rw [isPath_def, isPath_def, p.support_tail_perm_support_dropLast.nodup_iff]
+  simp_rw [isPath_def, p.support_tail_perm_support_dropLast.nodup_iff]
 
 theorem IsCycle.isPath_dropLast {p : G.Walk u u} (h : p.IsCycle) : p.dropLast.IsPath :=
-  .mk' <| p.support_dropLast h.not_nil ▸ h.nodup_dropLast_support
+  isPath_dropLast_iff.mpr h.isPath_tail
 
 theorem IsPath.dropLast (hp : p.IsPath) : p.dropLast.IsPath :=
   hp.take _
