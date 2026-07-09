@@ -92,6 +92,8 @@ variable [P.IsMultiplicative] [P.RespectsIso]
 
 variable (P Q S)
 
+/-- The pretopology on `Over S` induced by `P` where coverings are given by `P`-covers
+of `S`-schemes. -/
 abbrev overPretopology : Pretopology (Over S) :=
   ((Scheme.precoverage P).over S).toPretopology
 
