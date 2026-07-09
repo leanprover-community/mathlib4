@@ -88,7 +88,7 @@ lemma Cover.toPresieveOver_le_arrows_iff {X : Over S} (R : Sieve X)
   simp_rw [← Sieve.giGenerate.gc.le_iff_le, ← (Sieve.overEquiv X).map_rel_iff]
   rw [overEquiv_generate_toPresieveOver_eq_ofArrows]
 
-variable [P.IsMultiplicative] [P.RespectsIso]
+variable [P.IsMultiplicative]
 
 variable (P Q S)
 
@@ -110,7 +110,6 @@ lemma overGrothendieckTopology_eq_toGrothendieck_overPretopology :
 
 variable {S}
 
-omit [P.RespectsIso] in
 lemma mem_overGrothendieckTopology (X : Over S) (R : Sieve X) :
     R ∈ S.overGrothendieckTopology P X ↔
       ∃ (𝒰 : Cover.{u} (precoverage P) X.left) (_ : 𝒰.Over S), 𝒰.toPresieveOver ≤ R.arrows := by
