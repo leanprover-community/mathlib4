@@ -133,7 +133,7 @@ instance : CompleteLattice (TwoSidedIdeal R) where
 @[simp]
 lemma coe_bot : ((⊥ : TwoSidedIdeal R) : Set R) = {0} := rfl
 
-protected lemma eq_bot_iff (I : TwoSidedIdeal R) : I = ⊥ ↔ ∀ x ∈ I, x = 0 := by 
+protected lemma eq_bot_iff (I : TwoSidedIdeal R) : I = ⊥ ↔ ∀ x ∈ I, x = 0 := by
   simp [← SetLike.coe_injective.eq_iff, coe_bot, Set.ext_iff]
   grind [zero_mem]
 
