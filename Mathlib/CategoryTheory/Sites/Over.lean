@@ -227,6 +227,9 @@ lemma overEquiv_functorPushforward_post {D : Type*} [Category* D] (F : C ⥤ D) 
 
 end Sieve
 
+abbrev Precoverage.over (X : C) (J : Precoverage C) : Precoverage (Over X) :=
+  J.comap (Over.forget X)
+
 variable (J : GrothendieckTopology C)
 
 namespace GrothendieckTopology
