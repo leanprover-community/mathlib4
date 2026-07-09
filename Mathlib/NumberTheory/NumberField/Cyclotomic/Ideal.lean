@@ -72,6 +72,14 @@ theorem associated_norm_zeta_sub_one : Associated (Algebra.norm ℤ (hζ.toInteg
       rw [hζ.norm_toInteger_sub_one_of_eq_two_pow, h, Int.ofNat_two]
   · rw [hζ.norm_toInteger_sub_one_of_prime_ne_two h]
 
+/-- An integer `n` is divisible by `ζ - 1` in `𝓞 K` if and only if it is divisible by `p`,
+where `ζ` is a primitive `p ^ (k + 1)`-th root of unity. -/
+theorem zeta_sub_one_dvd_intCast_iff {n : ℤ} :
+    hζ.toInteger - 1 ∣ (n : 𝓞 K) ↔ (p : ℤ) ∣ n := by
+  have h := associated_norm_zeta_sub_one p k hζ
+  rw [← Ideal.norm_dvd_iff (h.symm.prime (Nat.prime_iff_prime_int.mp hp.out))]
+  exact h.dvd_iff_dvd_left
+
 theorem absNorm_span_zeta_sub_one : absNorm (span {hζ.toInteger - 1}) = p := by
   simpa using congr_arg absNorm <|
     span_singleton_eq_span_singleton.mpr <| associated_norm_zeta_sub_one p k hζ
@@ -89,10 +97,9 @@ instance liesOver_span_zeta_sub_one : (span {hζ.toInteger - 1}).LiesOver 𝒑 :
   rw [span_singleton_le_iff_mem, mem_comap, algebraMap_int_eq, map_natCast]
   exact p_mem_span_zeta_sub_one p k hζ
 
-theorem inertiaDeg_span_zeta_sub_one : inertiaDeg' (span {hζ.toInteger - 1}) ℤ = 1 := by
+theorem inertiaDeg_span_zeta_sub_one : inertiaDeg (span {hζ.toInteger - 1}) ℤ = 1 := by
   have : IsMaximal (span {hζ.toInteger - 1}) := .of_liesOver_isMaximal _ 𝒑
-  rw [← inertiaDeg_eq_inertiaDeg' 𝒑]
-  rw [← Nat.pow_right_inj hp.out.one_lt, pow_one, ← absNorm_eq_pow_inertiaDeg' _ hp.out,
+  rw [← Nat.pow_right_inj hp.out.one_lt, pow_one, pow_inertiaDeg,
     absNorm_span_zeta_sub_one]
 
 attribute [local instance] FractionRing.liftAlgebra in
@@ -115,12 +122,11 @@ theorem map_eq_span_zeta_sub_one_pow :
     ← Nat.card_eq_fintype_card, IsGalois.card_aut_eq_finrank]
 
 theorem ramificationIdx_span_zeta_sub_one :
-    ramificationIdx' (span {hζ.toInteger - 1}) ℤ = p ^ k * (p - 1) := by
+    ramificationIdx (span {hζ.toInteger - 1}) ℤ = p ^ k * (p - 1) := by
   have h := isPrime_span_zeta_sub_one p k hζ
   have hp0 : 𝒑 ≠ ⊥ := by simpa using hp.out.ne_zero
-  rw [← ramificationIdx_eq_ramificationIdx' 𝒑 _ hp0,
-    ← Nat.totient_prime_pow_succ hp.out, ← finrank _ K,
-    IsDedekindDomain.ramificationIdx_eq_multiplicity _ h, map_eq_span_zeta_sub_one_pow p k hζ,
+  rw [← Nat.totient_prime_pow_succ hp.out, ← finrank _ K,
+    IsDedekindDomain.ramificationIdx_eq_multiplicity 𝒑, map_eq_span_zeta_sub_one_pow p k hζ,
     multiplicity_pow_self (span_zeta_sub_one_ne_bot p k hζ) (isUnit_iff.not.mpr h.ne_top)]
   exact map_ne_bot_of_ne_bot hp0
 
@@ -150,12 +156,12 @@ theorem eq_span_zeta_sub_one_of_liesOver (P : Ideal (𝓞 K)) [hP₁ : P.IsPrime
 
 include hK in
 theorem inertiaDeg_eq_of_prime_pow (P : Ideal (𝓞 K)) [hP₁ : P.IsPrime] [hP₂ : P.LiesOver 𝒑] :
-    inertiaDeg' P ℤ = 1 := by
+    inertiaDeg P ℤ = 1 := by
   rw [eq_span_zeta_sub_one_of_liesOver p k K hK.zeta_spec P, inertiaDeg_span_zeta_sub_one]
 
 include hK in
 theorem ramificationIdx_eq_of_prime_pow (P : Ideal (𝓞 K)) [hP₁ : P.IsPrime] [hP₂ : P.LiesOver 𝒑] :
-    ramificationIdx' P ℤ = p ^ k * (p - 1) := by
+    ramificationIdx P ℤ = p ^ k * (p - 1) := by
   rw [eq_span_zeta_sub_one_of_liesOver p k K hK.zeta_spec P, ramificationIdx_span_zeta_sub_one]
 
 include hK in
@@ -222,14 +228,21 @@ theorem isCoprime_of_not_zeta_sub_one_dvd {x : 𝓞 K} (hx : ¬ hζ.toInteger - 
     (prime_span_singleton_iff.mpr
     hζ.zeta_sub_one_prime').irreducible.gcd_eq_one_iff, dvd_span_singleton, mem_span_singleton]
 
-theorem inertiaDeg_span_zeta_sub_one' : inertiaDeg' (span {hζ.toInteger - 1}) ℤ = 1 := by
+theorem inertiaDeg_span_zeta_sub_one' : inertiaDeg (span {hζ.toInteger - 1}) ℤ = 1 := by
   rw [← pow_one p] at hK hζ
   exact inertiaDeg_span_zeta_sub_one p 0 hζ
 
 theorem ramificationIdx_span_zeta_sub_one' :
-    ramificationIdx' (span {hζ.toInteger - 1}) ℤ = p - 1 := by
+    ramificationIdx (span {hζ.toInteger - 1}) ℤ = p - 1 := by
   rw [← pow_one p] at hK hζ
   rw [ramificationIdx_span_zeta_sub_one p 0 hζ, pow_zero, one_mul]
+
+/-- An integer `n` is divisible by `ζ - 1` in `𝓞 K` if and only if it is divisible by `p`,
+where `ζ` is a primitive `p`-th root of unity. -/
+theorem zeta_sub_one_dvd_intCast_iff' {n : ℤ} :
+    hζ.toInteger - 1 ∣ (n : 𝓞 K) ↔ (p : ℤ) ∣ n := by
+  rw [← pow_one p] at hK hζ
+  exact zeta_sub_one_dvd_intCast_iff p 0 hζ
 
 variable (K)
 
@@ -246,12 +259,12 @@ theorem eq_span_zeta_sub_one_of_liesOver' (P : Ideal (𝓞 K)) [hP₁ : P.IsPrim
 
 include hK in
 theorem inertiaDeg_eq_of_prime (P : Ideal (𝓞 K)) [hP₁ : P.IsPrime] [hP₂ : P.LiesOver 𝒑] :
-    inertiaDeg' P ℤ = 1 := by
+    inertiaDeg P ℤ = 1 := by
   rw [eq_span_zeta_sub_one_of_liesOver' p K hK.zeta_spec P, inertiaDeg_span_zeta_sub_one']
 
 include hK in
 theorem ramificationIdx_eq_of_prime (P : Ideal (𝓞 K)) [hP₁ : P.IsPrime] [hP₂ : P.LiesOver 𝒑] :
-    ramificationIdx' P ℤ = p - 1 := by
+    ramificationIdx P ℤ = p - 1 := by
   rw [eq_span_zeta_sub_one_of_liesOver' p K hK.zeta_spec P, ramificationIdx_span_zeta_sub_one']
 
 include hK in
@@ -278,7 +291,7 @@ open NumberField.Ideal Polynomial
 variable {m} [NeZero m] [hK : IsCyclotomicExtension {m} ℚ K]
 
 theorem inertiaDeg_eq_of_not_dvd (hm : ¬ p ∣ m) :
-    inertiaDeg' P ℤ = orderOf (p : ZMod m) := by
+    inertiaDeg P ℤ = orderOf (p : ZMod m) := by
   replace hm : p.Coprime m := hp.out.coprime_iff_not_dvd.mpr hm
   let ζ := (zeta_spec m ℚ K).toInteger
   have h₁ : ¬ p ∣ exponent ζ := by
@@ -290,7 +303,6 @@ theorem inertiaDeg_eq_of_not_dvd (hm : ¬ p ∣ m) :
   rw [Multiset.mem_toFinset, Polynomial.mem_normalizedFactors_iff
     (map_monic_ne_zero (minpoly.monic ζ.isIntegral))] at h₂
   have : P.IsMaximal := .of_liesOver_isMaximal P 𝒑
-  rw [← inertiaDeg_eq_inertiaDeg' 𝒑]
   rw [h₃, natDegree_of_dvd_cyclotomic_of_irreducible (by simp) hm (f := 1) _ h₂.1]
   · simpa using (orderOf_injective _ Units.coeHom_injective (ZMod.unitOfCoprime p hm)).symm
   · refine dvd_trans h₂.2.2 ?_
@@ -302,7 +314,7 @@ theorem inertiaDeg_eq_of_not_dvd (hm : ¬ p ∣ m) :
 alias inertiaDeg_of_not_dvd := inertiaDeg_eq_of_not_dvd
 
 theorem ramificationIdx_eq_of_not_dvd (hm : ¬ p ∣ m) :
-    ramificationIdx' P ℤ = 1 := by
+    ramificationIdx P ℤ = 1 := by
   let ζ := (zeta_spec m ℚ K).toInteger
   have h₁ : ¬ p ∣ exponent ζ := by
     rw [exponent_eq_one_iff.mpr <| adjoin_singleton_eq_top (zeta_spec m ℚ K)]
@@ -312,7 +324,7 @@ theorem ramificationIdx_eq_of_not_dvd (hm : ¬ p ∣ m) :
   simp only [Subtype.coe_eta, Equiv.symm_apply_apply] at h₃
   rw [Multiset.mem_toFinset, Polynomial.mem_normalizedFactors_iff
     (map_monic_ne_zero (minpoly.monic ζ.isIntegral))] at h₂
-  rw [← ramificationIdx_eq_ramificationIdx' 𝒑 P (by simpa using hp.out.ne_zero), h₃]
+  rw [h₃]
   refine multiplicity_eq_of_emultiplicity_eq_some (le_antisymm ?_ ?_)
   · apply emultiplicity_le_one_of_separable
     · exact isUnit_iff_degree_eq_zero.not.mpr (Irreducible.degree_pos h₂.1).ne'
@@ -387,7 +399,7 @@ private theorem inertiaDegIn_ramificationIdxIn_aux (hn : n = p ^ (k + 1) * m) (h
     ← ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn 𝒑 (𝓞 Fₘ) Gal(Fₘ/ℚ),
     ← ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn 𝒑 (𝓞 Fₚ) Gal(Fₚ/ℚ),
     ← ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn 𝒑 (𝓞 K) Gal(K/ℚ),
-    ← ncard_primesOver_mul_ncard_primesOver Pₘ Gal(Fₘ/ℚ) (𝓞 K) Gal(K/ℚ) Gal(K/Fₘ),
+    ← ncard_primesOver_mul_ncard_primesOver Pₘ Gal(Fₘ/ℚ) (𝓞 K) Gal(K/ℚ),
     ramificationIdxIn_eq_of_not_dvd p Fₘ hm, inertiaDegIn_eq_of_prime_pow p k Fₚ,
     ncard_primesOver_of_prime_pow p k Fₚ, one_mul, one_mul, mul_one, mul_assoc, mul_assoc,
     mul_right_inj' (IsDedekindDomain.primesOver_ncard_ne_zero 𝒑 _), ← mul_assoc,
@@ -415,12 +427,12 @@ theorem ramificationIdxIn_eq (hn : n = p ^ (k + 1) * m) (hm : ¬ p ∣ m) :
   (inertiaDegIn_ramificationIdxIn_aux n K hn hm).2
 
 theorem inertiaDeg_eq (hn : n = p ^ (k + 1) * m) (hm : ¬ p ∣ m) :
-    inertiaDeg' P ℤ = orderOf (p : ZMod m) := by
+    inertiaDeg P ℤ = orderOf (p : ZMod m) := by
   have : IsGalois ℚ K := isGalois {n} ℚ K
   rw [← inertiaDegIn_eq_inertiaDeg 𝒑 P Gal(K/ℚ), inertiaDegIn_eq n K hn hm]
 
 theorem ramificationIdx_eq (hn : n = p ^ (k + 1) * m) (hm : ¬ p ∣ m) :
-    ramificationIdx' P ℤ = p ^ k * (p - 1) := by
+    ramificationIdx P ℤ = p ^ k * (p - 1) := by
   have : IsGalois ℚ K := isGalois {n} ℚ K
   rw [← ramificationIdxIn_eq_ramificationIdx 𝒑 P Gal(K/ℚ), ramificationIdxIn_eq n K hn hm]
 

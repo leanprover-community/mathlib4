@@ -88,9 +88,7 @@ noncomputable def overFunctorMap {X Y : D} (f : X ⟶ Y) :
 
 /-- The pushforward of `R.over Y` along `Over.map f` is isomorphic to `R.over X`. -/
 @[simps! +dsimpLhs]
-noncomputable def overMapUnitIso {X Y : D}
-    [(K.over X).HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
-    [(K.over Y).HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})] (f : X ⟶ Y) :
+noncomputable def overMapUnitIso {X Y : D} (f : X ⟶ Y) :
     (overMap.{u} R f).obj (.unit (R.over Y)) ≅ .unit (R.over X) :=
   Iso.refl _
 
