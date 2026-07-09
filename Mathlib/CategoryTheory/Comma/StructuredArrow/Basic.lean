@@ -37,13 +37,13 @@ to_dual_name_hint StructuredArrow CostructuredArrow, Left Right, Precomp Postcom
 has as its objects `D`-morphisms of the form `S ⟶ T Y`, for some `Y : C`,
 and morphisms `C`-morphisms `Y ⟶ Y'` making the obvious triangle commute.
 -/
--- We explicitly come from `PUnit.{1}` here to obtain the correct universe for morphisms of
--- structured arrows.
 @[to_dual (reorder := S T)
 /-- The category of `S`-costructured arrows with target `T : D` (here `S : C ⥤ D`),
 has as its objects `D`-morphisms of the form `S Y ⟶ T`, for some `Y : C`,
 and morphisms `C`-morphisms `Y ⟶ Y'` making the obvious triangle commute.
 -/]
+-- We explicitly come from `PUnit.{1}` here to obtain the correct universe for morphisms of
+-- structured arrows.
 def StructuredArrow (S : D) (T : C ⥤ D) :=
   Comma (Functor.fromPUnit.{0} S) T
 
@@ -81,18 +81,21 @@ abbrev Hom.right : X.right ⟶ Y.right := CommaMorphism.right f
 set_option backward.defeqAttrib.useBackward true in
 @[to_dual (attr := reassoc (attr := simp))]
 theorem w : X.hom ≫ T.map f.right = Y.hom := by
-  simpa using CommaMorphism.w' f
+  simpa using (CommaMorphism.w f).symm
 
 @[to_dual (attr := reassoc)]
 lemma Hom.w : X.hom ≫ T.map f.right = Y.hom := StructuredArrow.w f
 
 end
 
+set_option linter.translate.warnInvalid false in
 /-- The obvious projection functor from structured arrows. -/
 @[to_dual (reorder := S T) (attr := simps!)
 /-- The obvious projection functor from costructured arrows. -/]
 def proj (S : D) (T : C ⥤ D) : StructuredArrow S T ⥤ C :=
   Comma.snd _ _
+
+attribute [to_dual existing] proj_map
 
 variable {S S' S'' : D} {Y Y' Y'' : C} {T T' : C ⥤ D}
 
@@ -162,6 +165,7 @@ theorem homMk_surjective {f f' : StructuredArrow S T} (φ : f ⟶ f') :
       φ = StructuredArrow.homMk ψ hψ :=
   ⟨φ.right, StructuredArrow.w φ, rfl⟩
 
+set_option linter.translate.warnInvalid false in
 /-- Given a structured arrow `X ⟶ T(Y)`, and an arrow `Y ⟶ Y'`, we can construct a morphism of
 structured arrows given by `(X ⟶ T(Y)) ⟶ (X ⟶ T(Y) ⟶ T(Y'))`. -/
 @[to_dual (attr := simps)
@@ -171,6 +175,9 @@ def homMk' (f : StructuredArrow S T) (g : f.right ⟶ Y') : f ⟶ mk (f.hom ≫ 
   left := 𝟙 _
   right := g
 
+attribute [to_dual existing] homMk'_left homMk'_right
+
+set_option linter.translate.warnInvalid false in
 /-- Variant of `homMk'` where both objects are applications of `mk`. -/
 @[to_dual (attr := simps) /-- Variant of `homMk'` where both objects are applications of `mk`. -/]
 def mkPostcomp (f : S ⟶ T.obj Y) (g : Y ⟶ Y') : mk f ⟶ mk (f ≫ T.map g) where
@@ -182,6 +189,7 @@ lemma mkPostcomp_comp (f : S ⟶ T.obj Y) (g : Y ⟶ Y') (g' : Y' ⟶ Y'') :
     mkPostcomp f (g ≫ g') = mkPostcomp f g ≫ mkPostcomp (f ≫ T.map g) g' ≫ eqToHom (by simp) := by
   simp
 
+attribute [to_dual existing] mkPostcomp_left mkPostcomp_right
 
 set_option backward.defeqAttrib.useBackward true in
 /-- To construct an isomorphism of structured arrows,
