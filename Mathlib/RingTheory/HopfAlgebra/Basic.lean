@@ -191,18 +191,51 @@ namespace HopfAlgebra
 
 variable {R A : Type*} [CommSemiring R] [Semiring A] [Bialgebra R A]
 
-def foo {X : Set A} (S : A →ₗ[R] A) (hX : Algebra.adjoin R X = ⊤)
-    (hxr : ∀ x ∈ X, LinearMap.mul' R A (S.rTensor A (Coalgebra.comul x)) =
-      algebraMap R A (Coalgebra.counit x))
-    (hxl : ∀ x ∈ X, LinearMap.mul' R A (S.lTensor A (Coalgebra.comul x)) =
-      algebraMap R A (Coalgebra.counit x)) : HopfAlgebra R A where
-  antipode := S
+#check Algebra.adjoin_induction
+/--
+If `A` is generated as an `R`-algebra by `X`, and `S : A →ₐ[R] Aᵐᵒᵖ` satisfies the two
+antipode identities on `X`, then the underlying linear map gives a Hopf algebra structure on `A`.
+-/
+noncomputable abbrev ofAntipodeOfAdjoin
+    {R A : Type*} [CommSemiring R] [Semiring A] [Bialgebra R A]
+    {X : Set A} (S : A →ₐ[R] Aᵐᵒᵖ)
+    (hX : Algebra.adjoin R X = ⊤)
+    (hxr : ∀ x ∈ X,
+      LinearMap.mul' R A
+        (((MulOpposite.opLinearEquiv R).symm.toLinearMap ∘ₗ S.toLinearMap).rTensor A
+          (Coalgebra.comul x)) =
+        algebraMap R A (Coalgebra.counit x))
+    (hxl : ∀ x ∈ X,
+      LinearMap.mul' R A
+        (((MulOpposite.opLinearEquiv R).symm.toLinearMap ∘ₗ S.toLinearMap).lTensor A
+          (Coalgebra.comul x)) =
+        algebraMap R A (Coalgebra.counit x)) :
+    HopfAlgebra R A where
+  antipode := (MulOpposite.opLinearEquiv R).symm.toLinearMap ∘ₗ S.toLinearMap
   mul_antipode_rTensor_comul := by
-    /- If we are showing this pointwise, then take an a ∈ A.
+    ext t
+    let P : A → Prop := fun y ↦ (LinearMap.mul' R A ∘ₗ
+      LinearMap.rTensor A ((MulOpposite.opLinearEquiv (M := A) R).symm ∘ₗ S.toLinearMap) ∘ₗ CoalgebraStruct.comul) y = (Algebra.linearMap R A ∘ₗ CoalgebraStruct.counit) y
+    have hgood : ∀ y ∈ Algebra.adjoin R X, P y := by
+      intro y hy
+      apply Algebra.adjoin_induction (R := R) (s := X) (p := fun y _ => P y)
+      · exact hxr
+      · intro r
+        simp_all only [Algebra.mem_top, LinearMap.coe_comp, Function.comp_apply, Algebra.linearMap_apply,
+          comul_algebraMap, Algebra.TensorProduct.algebraMap_apply, LinearMap.rTensor_tmul, LinearEquiv.coe_coe,
+          MulOpposite.coe_opLinearEquiv_symm, AlgHom.coe_toLinearMap, AlgHom.commutes, MulOpposite.algebraMap_apply,
+          MulOpposite.unop_op, LinearMap.mul'_apply, mul_one, counit_algebraMap, P]
+      · intro x y_1 hx hy_1 a a_1
+        simp_all only [Algebra.mem_top, LinearMap.coe_comp, Function.comp_apply, Algebra.linearMap_apply, map_add, P]
+      · -- this is the harder one, likely reducing to a calc
+        intro x y hx hy hxP hyP
 
-    -/
-    sorry
+        sorry
+      · exact hy
+    specialize hgood t (by rw [hX]; exact Algebra.mem_top)
+    exact hgood
   mul_antipode_lTensor_comul := by sorry
+
 
 
 end HopfAlgebra
