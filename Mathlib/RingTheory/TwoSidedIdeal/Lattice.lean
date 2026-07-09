@@ -140,8 +140,7 @@ protected lemma eq_bot_iff (I : TwoSidedIdeal R) : I = ⊥ ↔ ∀ x ∈ I, x = 
 protected theorem ne_bot_iff (I : TwoSidedIdeal R) : I ≠ ⊥ ↔ ∃ x ∈ I, x ≠ 0 := by
   simp [TwoSidedIdeal.eq_bot_iff R I]
 
-theorem exists_mem_ne_zero_of_ne_bot {I : TwoSidedIdeal R} (h : I ≠ ⊥) : ∃ b ∈ I, b ≠ 0 :=
-  I.ne_bot_iff.mp h
+alias ⟨exists_mem_ne_zero_of_ne_bot, _⟩ := TwoSidedIdeal.ne_bot_iff
 
 @[simp]
 lemma coe_top : ((⊤ : TwoSidedIdeal R) : Set R) = Set.univ := rfl
