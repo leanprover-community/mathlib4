@@ -299,8 +299,8 @@ lemma not_isHamiltonian_bot_of_card_ne_one (h : Fintype.card α ≠ 1) :
 lemma IsHamiltonian.of_unique [Unique α] : G.IsHamiltonian :=
   of_card_eq_one <| Fintype.card_unique
 
-theorem Walk.IsHamiltonian.isHamiltonian_of_nil {p : G.Walk a b} (hp : p.IsHamiltonian)
-    (hnil : p.Nil) : G.IsHamiltonian := by
+theorem Walk.IsHamiltonian.isHamiltonian_of_nil (hp : p.IsHamiltonian) (hnil : p.Nil) :
+    G.IsHamiltonian := by
   grind [IsHamiltonian.of_card_eq_one, hp.length_support, hnil.length_eq_zero]
 
 /-- A finite simple graph with a bridge is not hamiltonian. -/
