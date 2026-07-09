@@ -3,13 +3,13 @@ Copyright (c) 2026 Stefan Kebekus. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stefan Kebekus using Claude Code
 -/
-import Mathlib.Analysis.SpecificLimits.Basic
-import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
+module
+
+public import Mathlib.Analysis.SpecificLimits.Basic
+public import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
 
 /-!
 # The Borel Growth Lemma
-
-Mathlib target: new file, suggested `Mathlib/MeasureTheory/Function/BorelGrowth.lean`
 
 This file proves Émile Borel's **Growth Lemma**: if `S : ℝ → ℝ` is monotone on `Set.Ici a` and
 satisfies `1 ≤ S` there, then
@@ -34,19 +34,18 @@ most `2⁻ⁿ`, so that `volume E` is bounded by `∑ 2⁻ⁿ = 2 < ∞`.
 
 ## References
 
+- Lemma 2.4 in [Hayman, *Meromorphic functions*][MR164038].
 
-
-In Nevanlinna theory, this is the standard device for eliminating the auxiliary second radius from
-the two-radius estimate of the Lemma on the Logarithmic Derivative; see Lemma 2.4 in [Hayman,
-*Meromorphic functions*][MR164038].
-
+- Lemma 3.7 in Section VI.3 of [Lang, *Introduction to Complex Hyperbolic Spaces*][MR886677]
 -/
+
+@[expose] public section
 
 open Filter MeasureTheory Set
 
 /--
 **Borel's Growth Lemma**: if `S : ℝ → ℝ` is monotone on `Set.Ici a` and satisfies `1 ≤ S` there,
-then the inequality `S (r + (S r)⁻¹) ≤ 2 * S r` hold for all sufficiently large `r` outside a set of
+then the inequality `S (r + (S r)⁻¹) ≤ 2 * S r` holds for all sufficiently large `r` outside a set of
 finite Lebesgue measure.
 -/
 theorem MonotoneOn.eventually_le_two_mul {S : ℝ → ℝ} {a : ℝ}
