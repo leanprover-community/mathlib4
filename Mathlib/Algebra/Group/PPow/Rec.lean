@@ -37,7 +37,7 @@ attribute [to_additive existing] ppowRec
 
 variable [Mul M]
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp) psmulRec_one]
 lemma ppowRec_one (x : M) : ppowRec 1 x = x := PNat.recOn_one _ _
 
 @[to_additive]
