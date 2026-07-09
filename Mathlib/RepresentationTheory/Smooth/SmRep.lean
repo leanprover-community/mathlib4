@@ -67,6 +67,7 @@ namespace SmRep
 
 variable {V : Type w} [AddCommGroup V] [Module k V]
 
+/-- The object in `SmRep k G` associated to a smooth representation. -/ 
 abbrev of (ρ : Representation k G V) [h : IsSmooth ρ] : SmRep.{w} k G := ⟨Rep.of.{w} ρ, h⟩
 
 /-- The zero representation is smooth. -/
