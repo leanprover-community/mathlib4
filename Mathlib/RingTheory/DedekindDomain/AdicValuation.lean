@@ -650,14 +650,12 @@ lemma adicCompletion_valueGroup_eq : MonoidWithZeroHom.valueGroup (.ofClass (Val
     MonoidWithZeroHom.valueGroup (.ofClass (valuation K v)) := by
   ext n
   simp only [MonoidWithZeroHom.mem_valueGroup_iff_of_comm, ne_eq, map_eq_zero]
-  constructor
-  · rintro ⟨a, ha0, x, hx⟩
-    obtain ⟨b, hb⟩ := valuation_surjective K v (Valued.v a)
+  refine ⟨fun ⟨a, h0, x, hx⟩ ↦ ?_, fun ⟨a, ha0, x, hx⟩ ↦ ?_⟩
+  · obtain ⟨b, hb⟩ := valuation_surjective K v (Valued.v a)
     obtain ⟨y, hy⟩ := valuation_surjective K v (Valued.v x)
     refine ⟨b, ?_, y, by simpa [hb, hy] using hx⟩
     rwa [← ne_eq, ← (valuation K v).ne_zero_iff, hb, Valuation.ne_zero_iff]
-  · rintro ⟨a, ha0, x, hx⟩
-    refine ⟨a, ?_, x, ?_⟩
+  · refine ⟨a, ?_, x, ?_⟩
     · simpa [WithVal.equiv_apply, ← map_eq_zero (f := Valued.v (R := adicCompletion K v))] using ha0
     · simpa [WithVal.equiv_apply] using hx
 
