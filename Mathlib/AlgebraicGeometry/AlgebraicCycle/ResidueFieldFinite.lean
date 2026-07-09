@@ -13,24 +13,11 @@ import Mathlib.RingTheory.Jacobson.Ring
 /-!
 # Residue fields at closed points are finite over the base field
 
-For a scheme `X` locally of finite type over a field `k`, the residue field at a closed point
-is a finite extension of `k`. This is the geometric form of **Zariski's lemma**: at a closed
-point `q` lying in an affine chart `U`, the prime `hU.primeIdealOf q` is maximal, so the
-evaluation map `Γ(X, U) → κ(q)` is surjective; hence `κ(q)` is a finite type `k`-algebra which
-is a field, and Zariski's lemma (via Jacobson rings,
-`finite_of_finite_type_of_isJacobsonRing`) makes it a finite extension. Together with the fact
-that codimension-one points of a curve are closed, this discharges the residue-field
-hypothesis of `riemann_roch_of_structureSheaf`.
-
-Main statements:
-
-* `evaluation_surjective_of_isClosed`: at a closed point of an affine chart, evaluation of
-  sections is surjective onto the residue field;
-* `finite_residueField_of_isClosed`: the residue field at a closed point of a scheme locally
-  of finite type over `k` is module-finite over `k` (with respect to the `k`-structure of
-  `Mathlib.AlgebraicGeometry.AlgebraicCycle.ResidueFieldModule`);
-* `isClosed_singleton_of_coheight_eq_one`: on a scheme of Krull dimension at most one,
-  codimension-one points are closed.
+In this file we show the following form of Zariski's lemma: For a scheme `X` locally of finite type
+over a field `k`, the residue field at a closed point is a finite extension of `k`. This is used
+to provide one of the simplified versions of Riemann-Roch in RiemannRoch.lean, though note that the
+work in this is quite drafty, i.e. this result is too close to what we have in mathlib for this
+file to be this long.
 -/
 
 namespace AlgebraicGeometry.AlgebraicCycle.SheafViaSubmodule

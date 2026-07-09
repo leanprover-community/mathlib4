@@ -9,29 +9,9 @@ import Mathlib.AlgebraicGeometry.AlgebraicCycle.LocallyFinsupp
 /-!
 # Reduction of cohomological finiteness and vanishing to the structure sheaf
 
-The conditional Riemann-Roch theorem `riemann_roch` assumes finiteness and eventual vanishing
-of the cohomology of `𝒪ₓ(D)` for *every* Weil divisor `D`. In this file we reduce those
-hypotheses to the single sheaf `𝒪ₓ(0)`.
-
-The argument is an induction on divisors similar to the one in Riemann-Roch itself. Using the
-exact sequence `0 → 𝒪ₓ(D) → 𝒪ₓ(D + P) → k(P) → 0`, the long exact sequence traps each
-cohomology module of `𝒪ₓ(D + P)` between one of `𝒪ₓ(D)` and one of the skyscraper `k(P)`, so
-by induction `h^n(𝒪ₓ(D + P))` is finite (and the proof works the same for the other cases of
-the induction). Note that for the `H^0` case, we get
-`0 → H^0(𝒪ₓ(D)) → H^0(𝒪ₓ(D + P)) → κ(P)`, for which we need finiteness of `κ(P)` over `k`,
-meaning `X` needs to be finite type over `k`.
-
-Main results:
-
-* `finite_H_middle`, `finite_H_first_succ` (and their `Subsingleton` versions): the windows of
-  the long exact sequence used to trap cohomology modules between their neighbours;
-* `finite_H_zero_of_le`: `H⁰` is left exact, handling the one degree the long exact sequence
-  windows do not reach;
-* `finite_H_sheaf_of_structureSheaf`: if every `Hⁿ(X, 𝒪ₓ(0))` is finite dimensional and
-  residue fields at codimension-one points are finite over `k`, then every `Hⁿ(X, 𝒪ₓ(D))` is
-  finite dimensional (for `D` supported in codimension one);
-* `subsingleton_H_sheaf_of_structureSheaf`: if `Hⁿ(X, 𝒪ₓ(0))` vanishes for `n > N`, then
-  `Hⁿ(X, 𝒪ₓ(D))` vanishes for `n > max N 1`.
+In RiemannRoch.lean, the conditional Riemann-Roch theorem `riemann_roch` assumes finiteness and
+eventual vanishing of the cohomology of `𝒪ₓ(D)` for *every* Weil divisor `D`.
+In this file we reduce those hypotheses to the single sheaf `𝒪ₓ(0)`.
 -/
 
 namespace AlgebraicGeometry.AlgebraicCycle.SheafViaSubmodule

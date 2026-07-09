@@ -18,10 +18,10 @@ In this file we show a conditional form of the algebraic Riemann-Roch theorem fo
 particular, we show the usual Euler characteristic form of Riemann-Roch
 (`χ(𝒪ₓ(D)) = deg(D) + χ(𝒪ₓ)`), but we show this for locally Noetherian, integral schemes `X`
 which are regular in codimension one and of finite type over a field `k`,
- have krull dimension at most one and satisfy that the cohomology modules of `𝒪ₓ` are finite over
- `k` (and that `𝒪ₓ` satisfies Grothendieck vanishing). These last two cohomological assumptions
- are equivalent to saying that `X` is proper over `k`, but we do not yet show this equivalence (
- hence the "conditional" in the title).
+ have krull dimension at most one and satisfy that `𝒪ₓ` has a well-defined Euler characteristic
+ (`Scheme.Modules.HasEulerCharacteristic`: finite-dimensional cohomology which vanishes in all
+ sufficiently large degrees). This cohomological assumption follows from `X` being proper over
+ `k`, but we do not yet show this implication (hence the "conditional" in the title).
 
 Notes: The work here is reliant on WIP work by Brian Nugent (on the long exact sequence for sheaf
 cohomology) and by Jesse Alama (on the Euler-Poincare formula). Notably, we needed a slightly
@@ -41,46 +41,58 @@ variable {X : Scheme.{u}} (k : Type u) [Field k] [X.Over (Spec (CommRingCat.of k
     [IsIntegral X] [IsNoetherian X] [IsRegularInCodimensionOne X]
     (D : AlgebraicCycle X ℤ)
 
+/-- The canonical cokernel `Q_p(E)` has a well-defined Euler characteristic as soon as its
+cohomology is finite dimensional: its positive-degree cohomology vanishes by flasqueness. -/
+lemma hasEulerCharacteristic_residueLineSheaf {p : X} (hp : coheight p = 1)
+    (E : AlgebraicCycle X ℤ)
+    (hf : ∀ n, Module.Finite k ((residueLineSheaf hp E).H n)) :
+    (residueLineSheaf hp E).HasEulerCharacteristic k :=
+  ⟨hf, 0, fun _ hn => subsingleton_H_residueLineSheaf_of_pos hp E hn⟩
+
 /-- Additivity of `χ` on a short exact sequence whose third term is the canonical cokernel
-`Q_p(E)`: the middle Euler characteristic exceeds the first by `dim_k κ(p)`. -/
-lemma eulerChar_step {N : ℕ}
-    {p : X} (hp : coheight p = 1)
+`Q_p(E)`: if the terms have well-defined Euler characteristics, the middle one exceeds the
+first by `dim_k κ(p)`. -/
+lemma eulerChar_step {p : X} (hp : coheight p = 1)
     (E : AlgebraicCycle X ℤ) (o : ShortComplex X.Modules) (ho : o.ShortExact)
-    (hf : ∀ n, Module.Finite k (o.X₁.H n)) (hf' : ∀ n, Module.Finite k (o.X₂.H n))
-    (hf₃ : ∀ n, Module.Finite k ((residueLineSheaf hp E).H n))
-    (hb : ∀ n, N < n → Subsingleton (o.X₁.H n)) (hb' : ∀ n, N < n → Subsingleton (o.X₂.H n))
+    (hχ₁ : o.X₁.HasEulerCharacteristic k) (hχ₂ : o.X₂.HasEulerCharacteristic k)
+    (hχ₃ : (residueLineSheaf hp E).HasEulerCharacteristic k)
     (hC : o.X₃ = residueLineSheaf hp E) :
     o.X₂.eulerChar k = o.X₁.eulerChar k + Module.finrank k (X.residueField p) := by
-  have hf₃' : ∀ n, Module.Finite k (o.X₃.H n) := fun n => hC ▸ hf₃ n
-  have hb₃ : ∀ n, N < n → Subsingleton (o.X₃.H n) :=
+  obtain ⟨N₁, hb₁⟩ := hχ₁.vanishing
+  obtain ⟨N₂, hb₂⟩ := hχ₂.vanishing
+  have hb : ∀ n, max N₁ N₂ < n → Subsingleton (o.X₁.H n) :=
+    fun n hn => hb₁ n (lt_of_le_of_lt (le_max_left N₁ N₂) hn)
+  have hb' : ∀ n, max N₁ N₂ < n → Subsingleton (o.X₂.H n) :=
+    fun n hn => hb₂ n (lt_of_le_of_lt (le_max_right N₁ N₂) hn)
+  have hf₃' : ∀ n, Module.Finite k (o.X₃.H n) := fun n => hC ▸ hχ₃.finite n
+  have hb₃ : ∀ n, max N₁ N₂ < n → Subsingleton (o.X₃.H n) :=
     fun n hn => hC ▸ subsingleton_H_residueLineSheaf_of_pos hp E (by omega)
-  rw [eulerChar_additive k o ho hf hf' hf₃' hb hb' hb₃, hC, eulerChar_residueLineSheaf k hp E]
+  rw [eulerChar_additive k o ho hχ₁.finite hχ₂.finite hf₃' hb hb' hb₃, hC,
+    eulerChar_residueLineSheaf k hp E]
 
 open Classical in
 /-- Adding a codimension-one point `p` to `E` raises `χ(𝒪ₓ(E))` by `finrank k κ(p)`. -/
-lemma eulerChar_add_step {N : ℕ}
-    (hf₁ : ∀ E : AlgebraicCycle X ℤ, (sheaf E).HasFiniteCohomology k)
+lemma eulerChar_add_step
+    (hχ : ∀ E : AlgebraicCycle X ℤ, (sheaf E).HasEulerCharacteristic k)
     (hX : ∀ x : X, coheight x = 1 → ∀ y, y ≤ x → y = x)
-    (E : AlgebraicCycle X ℤ) (hE : IsWeilDivisor E) {p : X} (hp : coheight p = 1)
-    (hb : ∀ n, N < n → Subsingleton ((sheaf E).H n))
-    (hb' : ∀ n, N < n → Subsingleton ((sheaf (E + single p 1)).H n)) :
+    (E : AlgebraicCycle X ℤ) (hE : IsWeilDivisor E) {p : X} (hp : coheight p = 1) :
     (sheaf (E + single p 1)).eulerChar k =
       (sheaf E).eulerChar k + Module.finrank k (X.residueField p) :=
   eulerChar_step k hp (E + single p 1)
     (twistedClosedSubschemeComplex₂ (D := E) (D' := E + single p 1) hp (by simp))
     (twistedClosedSubschemeComplex₂_shortExact hE hp (by simp) (hX p hp))
-    (hf₁ E) (hf₁ (E + single p 1))
-    (fun n => finite_H_residueLineSheaf k hp (E + single p 1) hf₁ (hX p hp) n)
-    hb hb' rfl
+    (hχ E) (hχ (E + single p 1))
+    (hasEulerCharacteristic_residueLineSheaf k hp (E + single p 1)
+      (fun n => finite_H_residueLineSheaf k hp (E + single p 1)
+        (fun F => (hχ F).finite) (hX p hp) n))
+    rfl
 
 open Classical in
 /-- Subtracting a codimension-one point `p` from `E` lowers `χ(𝒪ₓ(E))` by `finrank k κ(p)`. -/
-lemma eulerChar_sub_step {N : ℕ}
-    (hf₁ : ∀ E : AlgebraicCycle X ℤ, (sheaf E).HasFiniteCohomology k)
+lemma eulerChar_sub_step
+    (hχ : ∀ E : AlgebraicCycle X ℤ, (sheaf E).HasEulerCharacteristic k)
     (hX : ∀ x : X, coheight x = 1 → ∀ y, y ≤ x → y = x)
-    (E : AlgebraicCycle X ℤ) (hE : IsWeilDivisor E) {p : X} (hp : coheight p = 1)
-    (hb : ∀ n, N < n → Subsingleton ((sheaf E).H n))
-    (hb' : ∀ n, N < n → Subsingleton ((sheaf (E - single p 1)).H n)) :
+    (E : AlgebraicCycle X ℤ) (hE : IsWeilDivisor E) {p : X} (hp : coheight p = 1) :
     (sheaf (E - single p 1)).eulerChar k =
       (sheaf E).eulerChar k - Module.finrank k (X.residueField p) := by
   have hkey : (sheaf E).eulerChar k =
@@ -88,9 +100,10 @@ lemma eulerChar_sub_step {N : ℕ}
     eulerChar_step k hp E
       (twistedClosedSubschemeComplex₁ (D := E) (D' := E - single p 1) hp (by simp))
       (twistedClosedSubschemeComplex₁_shortExact hE hp (by simp) (hX p hp))
-      (hf₁ (E - single p 1)) (hf₁ E)
-      (fun n => finite_H_residueLineSheaf k hp E hf₁ (hX p hp) n)
-      hb' hb rfl
+      (hχ (E - single p 1)) (hχ E)
+      (hasEulerCharacteristic_residueLineSheaf k hp E
+        (fun n => finite_H_residueLineSheaf k hp E (fun F => (hχ F).finite) (hX p hp) n))
+      rfl
   lia
 
 /--
@@ -112,19 +125,11 @@ theorem riemann_roch
   induction D, hD using Function.locallyFinsupp.inductionOn with
   | zero => simp [degree]
   | add E hE ih p hp =>
-    obtain ⟨N₁, hb⟩ := (hχ E).vanishing
-    obtain ⟨N₂, hb'⟩ := (hχ (E + single p 1)).vanishing
-    have step := eulerChar_add_step (N := max N₁ N₂) k (fun E => (hχ E).finite) hX E hE hp
-      (fun n hn => hb n (lt_of_le_of_lt (le_max_left N₁ N₂) hn))
-      (fun n hn => hb' n (lt_of_le_of_lt (le_max_right N₁ N₂) hn))
+    have step := eulerChar_add_step k hχ hX E hE hp
     simp [step, ih]
     ring
   | minus E hE ih p hp =>
-    obtain ⟨N₁, hb⟩ := (hχ E).vanishing
-    obtain ⟨N₂, hb'⟩ := (hχ (E - single p 1)).vanishing
-    have step := eulerChar_sub_step (N := max N₁ N₂) k (fun E => (hχ E).finite) hX E hE hp
-      (fun n hn => hb n (lt_of_le_of_lt (le_max_left N₁ N₂) hn))
-      (fun n hn => hb' n (lt_of_le_of_lt (le_max_right N₁ N₂) hn))
+    have step := eulerChar_sub_step k hχ hX E hE hp
     simp [step, ih]
     ring
 
@@ -152,10 +157,6 @@ vanishing from `𝒪ₓ(0)` to every `𝒪ₓ(D)`),
 `𝒪ₓ(0) ≅ 𝒪ₓ`) and `Mathlib.AlgebraicGeometry.AlgebraicCycle.ResidueFieldFinite` (finiteness
 of residue fields at closed points, by Zariski's lemma); here we only assemble them into the
 improved statements.
--/
-
-/-!
-### Riemann–Roch from the structure sheaf
 -/
 
 open Classical in
@@ -195,40 +196,41 @@ theorem riemann_roch_of_structureSheaf [Order.KrullDimLE 1 X]
     have hmin : IsMin x :=
       Order.KrullDimLE.isMin_of_le_coheight (n := 1) (by simpa using hx.ge)
     ((Scheme.le_iff_specializes.mp (hmin hy)).antisymm (Scheme.le_iff_specializes.mp hy)).eq
-  have hf : ∀ E : AlgebraicCycle X ℤ, IsWeilDivisor E → (sheaf E).HasFiniteCohomology k :=
-    fun E hE => finite_H_sheaf_of_structureSheaf k hκ hf₀' hX hE
-  have hb : ∀ E : AlgebraicCycle X ℤ, IsWeilDivisor E →
-      ∀ n, max N 1 < n → Subsingleton ((sheaf E).H n) :=
-    fun E hE => subsingleton_H_sheaf_of_structureSheaf k hb₀' hX hE
+  have hχ : ∀ E : AlgebraicCycle X ℤ, IsWeilDivisor E → (sheaf E).HasEulerCharacteristic k :=
+    fun E hE => ⟨finite_H_sheaf_of_structureSheaf k hκ hf₀' hX hE, max N 1,
+      subsingleton_H_sheaf_of_structureSheaf k hb₀' hX hE⟩
   induction D, hD using Function.locallyFinsupp.inductionOn with
   | zero => simp [degree]
   | add E hE ih p hp =>
     have hE' := Function.locallyFinsupp.support_add_single_subset hE hp
     have step : (sheaf (E + single p 1)).eulerChar k =
         (sheaf E).eulerChar k + Module.finrank k (X.residueField p) :=
-      eulerChar_step (N := max N 1) k hp (E + single p 1)
+      eulerChar_step k hp (E + single p 1)
       (twistedClosedSubschemeComplex₂ (D := E) (D' := E + single p 1) hp (by simp))
       (twistedClosedSubschemeComplex₂_shortExact hE hp (by simp) (hX p hp))
-      (hf E hE) (hf (E + single p 1) hE')
-      (fun n => finite_H_residueLineSheaf_of_finite_residueField k hp (E + single p 1)
-        (hκ p hp) n)
-      (hb E hE) (hb (E + single p 1) hE') rfl
+      (hχ E hE) (hχ (E + single p 1) hE')
+      (hasEulerCharacteristic_residueLineSheaf k hp (E + single p 1)
+        (fun n => finite_H_residueLineSheaf_of_finite_residueField k hp (E + single p 1)
+          (hκ p hp) n))
+      rfl
     simp [step, ih]
     ring
   | minus E hE ih p hp =>
     have hE' := Function.locallyFinsupp.support_sub_single_subset hE hp
     have hkey : (sheaf E).eulerChar k =
         (sheaf (E - single p 1)).eulerChar k + Module.finrank k (X.residueField p) :=
-      eulerChar_step (N := max N 1) k hp E
+      eulerChar_step k hp E
       (twistedClosedSubschemeComplex₁ (D := E) (D' := E - single p 1) hp (by simp))
       (twistedClosedSubschemeComplex₁_shortExact hE hp (by simp) (hX p hp))
-      (hf (E - single p 1) hE') (hf E hE)
-      (fun n => finite_H_residueLineSheaf_of_finite_residueField k hp E (hκ p hp) n)
-      (hb (E - single p 1) hE') (hb E hE) rfl
+      (hχ (E - single p 1) hE') (hχ E hE)
+      (hasEulerCharacteristic_residueLineSheaf k hp E
+        (fun n => finite_H_residueLineSheaf_of_finite_residueField k hp E (hκ p hp) n))
+      rfl
     have step : (sheaf (E - single p 1)).eulerChar k =
         (sheaf E).eulerChar k - Module.finrank k (X.residueField p) := by lia
     simp [step, ih]
     ring
+
 
 theorem riemann_roch_of_structureSheaf_of_locallyOfFiniteType
     [Order.KrullDimLE 1 X] [LocallyOfFiniteType (X ↘ Spec (CommRingCat.of k))]
