@@ -7,8 +7,6 @@ module
 
 public import Mathlib.RepresentationTheory.Intertwining
 
-import Mathlib.Tactic.Group
-
 /-!
 # Stabilizers in representations
 
