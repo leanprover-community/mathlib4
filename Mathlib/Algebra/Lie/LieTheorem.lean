@@ -126,7 +126,7 @@ private lemma weightSpaceOfIsLieTower_aux (z : L) (v : V) (hv : v ∈ weightSpac
     apply iSup_le
     intro i x hx
     simp only [Module.End.mem_maxGenEigenspace, zero_smul, sub_zero]
-    induction i using Nat.strong_induction_on generalizing x | ind i ih
+    induction i using Nat.strong_induction_on generalizing x with | ind i ih
     obtain rfl | hi := eq_or_ne i 0
     · simp_all [U']
     obtain ⟨j, hj, hj'⟩ := key i hi
