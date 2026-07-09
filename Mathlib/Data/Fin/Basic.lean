@@ -466,7 +466,7 @@ lemma strong_induction_on {n : ℕ} {motive : Fin n → Prop}
     motive i := by
   obtain ⟨i, hi⟩ := i
   induction i using Nat.strong_induction_on with
-  | ind j hj => exact h _ (fun ⟨k, hk₁⟩ hk₂ ↦ hj _ hk₂ hk₁)
+  | ind j hj => exact ind _ (fun ⟨k, hk₁⟩ hk₂ ↦ hj _ hk₂ hk₁)
 
 end Rec
 
