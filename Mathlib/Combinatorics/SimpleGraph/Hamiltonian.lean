@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.GroupWithZero.Nat
 public import Mathlib.Algebra.Order.Group.Nat
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
+public import Mathlib.SetTheory.Cardinal.Finite
 
 import Mathlib.Combinatorics.SimpleGraph.Connectivity.EdgeConnectivity
 
@@ -232,16 +233,25 @@ lemma isHamiltonianCycle_iff_isCycle_and_length_eq [Fintype α] :
   refine isHamiltonian_iff_isPath_and_length_eq.mpr ⟨h₁.isPath_tail, ?_⟩
   grind [length_tail_add_one, IsCycle.not_nil]
 
-@[simp]
-lemma isHamiltonianCycle_rotate (hv : v ∈ p.support) :
-    (p.rotate v hv).IsHamiltonianCycle ↔ p.IsHamiltonianCycle := by
+theorem isHamiltonianCycle_iff_isCycle_and_length_eq_natCard :
+    p.IsHamiltonianCycle ↔ p.IsCycle ∧ p.length = Nat.card α := by
   cases (finite_or_infinite α).symm
-  · simp
+  · simpa using IsCycle.not_nil
   cases nonempty_fintype α
   simp [isHamiltonianCycle_iff_isCycle_and_length_eq]
 
+@[simp]
+lemma isHamiltonianCycle_rotate (hv : v ∈ p.support) :
+    (p.rotate v hv).IsHamiltonianCycle ↔ p.IsHamiltonianCycle := by
+  simp [isHamiltonianCycle_iff_isCycle_and_length_eq_natCard]
+
 protected alias ⟨IsHamiltonianCycle.of_rotate, IsHamiltonianCycle.rotate⟩ :=
   isHamiltonianCycle_rotate
+
+theorem isHamiltonianCycle_reverse : p.reverse.IsHamiltonianCycle ↔ p.IsHamiltonianCycle := by
+  simp [isHamiltonianCycle_iff_isCycle_and_length_eq_natCard]
+
+protected alias ⟨_, IsHamiltonianCycle.reverse⟩ := isHamiltonianCycle_reverse
 
 end Walk
 
