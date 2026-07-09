@@ -120,16 +120,16 @@ theorem ortho_smul_right {B : V₁ →ₛₗ[I₁] V₂ →ₛₗ[I₂] V} {x y}
   independent if for all `i`, `B (v i) (v i) ≠ 0`. -/
 theorem linearIndependent_of_isOrthoᵢ {B : V₁ →ₛₗ[I₁] V₁ →ₛₗ[I₁'] V} {v : n → V₁}
     (hv₁ : B.IsOrthoᵢ v) (hv₂ : ∀ i, B (v i) (v i) ≠ 0) : LinearIndependent K₁ v := by
-    rw [linearIndependent_iff']
-    intro s w hs i hi
-    have : B (s.sum fun i : n ↦ w i • v i) (v i) = 0 := by rw [hs, map_zero, zero_apply]
-    have hsum : (s.sum fun j : n ↦ I₁ (w j) • B (v j) (v i)) = I₁ (w i) • B (v i) (v i) := by
-      apply Finset.sum_eq_single_of_mem i hi
-      intro j _hj hij
-      rw [isOrthoᵢ_def.1 hv₁ _ _ hij, smul_zero]
-    simp_rw [B.map_sum₂, map_smulₛₗ₂, hsum] at this
-    apply (map_eq_zero I₁).mp
-    exact (smul_eq_zero.mp this).elim _root_.id (hv₂ i · |>.elim)
+  rw [linearIndependent_iff']
+  intro s w hs i hi
+  have : B (s.sum fun i : n ↦ w i • v i) (v i) = 0 := by rw [hs, map_zero, zero_apply]
+  have hsum : (s.sum fun j : n ↦ I₁ (w j) • B (v j) (v i)) = I₁ (w i) • B (v i) (v i) := by
+    apply Finset.sum_eq_single_of_mem i hi
+    intro j _hj hij
+    rw [isOrthoᵢ_def.1 hv₁ _ _ hij, smul_zero]
+  simp_rw [B.map_sum₂, map_smulₛₗ₂, hsum] at this
+  apply (map_eq_zero I₁).mp
+  exact (smul_eq_zero.mp this).elim _root_.id (hv₂ i · |>.elim)
 
 end Field
 

@@ -231,15 +231,15 @@ theorem injective_noncommPiCoprod_of_iSupIndep [Fintype ι]
     {hcomm : Pairwise fun i j : ι => ∀ (x : H i) (y : H j), Commute (ϕ i x) (ϕ j y)}
     (hind : iSupIndep fun i => (ϕ i).range)
     (hinj : ∀ i, Function.Injective (ϕ i)) : Function.Injective (noncommPiCoprod ϕ hcomm) := by
-    apply (MonoidHom.ker_eq_bot_iff _).mp
-    rw [eq_bot_iff]
-    intro f heq1
-    have : ∀ i, i ∈ Finset.univ → ϕ i (f i) = 1 :=
-      Subgroup.eq_one_of_noncommProd_eq_one_of_iSupIndep _ _ (fun _ _ _ _ h => hcomm h _ _)
-        _ hind (by simp) heq1
-    ext i
-    apply hinj
-    simp [this i (Finset.mem_univ i)]
+  apply (MonoidHom.ker_eq_bot_iff _).mp
+  rw [eq_bot_iff]
+  intro f heq1
+  have : ∀ i, i ∈ Finset.univ → ϕ i (f i) = 1 :=
+    Subgroup.eq_one_of_noncommProd_eq_one_of_iSupIndep _ _ (fun _ _ _ _ h => hcomm h _ _)
+      _ hind (by simp) heq1
+  ext i
+  apply hinj
+  simp [this i (Finset.mem_univ i)]
 
 @[to_additive]
 theorem independent_range_of_coprime_order

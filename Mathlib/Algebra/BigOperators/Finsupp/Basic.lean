@@ -169,9 +169,9 @@ then its product over `f : α →₀ M` is the same as multiplying the value on 
       `y : α` to the sum over `erase y f`. -/]
 theorem mul_prod_erase' (f : α →₀ M) (y : α) (g : α → M → N) (hg : ∀ i : α, g i 0 = 1) :
     g y (f y) * (erase y f).prod g = f.prod g := by
-    by_cases hyf : y ∈ f.support
-    · exact Finsupp.mul_prod_erase f y g hyf
-    · rw [notMem_support_iff.mp hyf, hg y, erase_of_notMem_support hyf, one_mul]
+  by_cases hyf : y ∈ f.support
+  · exact Finsupp.mul_prod_erase f y g hyf
+  · rw [notMem_support_iff.mp hyf, hg y, erase_of_notMem_support hyf, one_mul]
 
 @[to_additive]
 theorem _root_.SubmonoidClass.finsuppProd_mem {S : Type*} [SetLike S N] [SubmonoidClass S N]

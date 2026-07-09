@@ -170,10 +170,10 @@ theorem next (α : Type*) [AddGroup α] [One α] (i : α) : (ComplexShape.down �
 
 @[simp]
 theorem next_nat_zero : (ComplexShape.down ℕ).next 0 = 0 := by
-    refine dif_neg ?_
-    push Not
-    intro
-    apply Nat.noConfusion
+  refine dif_neg ?_
+  push Not
+  intro
+  apply Nat.noConfusion
 
 @[simp]
 theorem next_nat_succ (i : ℕ) : (ComplexShape.down ℕ).next (i + 1) = i :=
@@ -194,10 +194,10 @@ theorem next (α : Type*) [AddRightCancelSemigroup α] [One α] (i : α) :
 
 @[simp]
 theorem prev_nat_zero : (ComplexShape.up ℕ).prev 0 = 0 := by
-    refine dif_neg ?_
-    push Not
-    intro
-    apply Nat.noConfusion
+  refine dif_neg ?_
+  push Not
+  intro
+  apply Nat.noConfusion
 
 @[simp]
 theorem prev_nat_succ (i : ℕ) : (ComplexShape.up ℕ).prev (i + 1) = i :=

@@ -315,26 +315,26 @@ theorem IsPGroup.sylow_mem_fixedPoints_iff {P : Subgroup G} (hP : IsPGroup p P) 
 instance Sylow.isPretransitive_of_finite [hp : Fact p.Prime] [Finite (Sylow p G)] :
     IsPretransitive G (Sylow p G) :=
   ⟨fun P Q => by
-      have H := fun {R : Sylow p G} {S : orbit G P} =>
-        calc
-          S ∈ fixedPoints R (orbit G P) ↔ S.1 ∈ fixedPoints R (Sylow p G) :=
-            forall_congr' fun a => Subtype.ext_iff
-          _ ↔ R.1 ≤ S := R.2.sylow_mem_fixedPoints_iff
-          _ ↔ S.1.1 = R := ⟨fun h => R.3 S.1.2 h, ge_of_eq⟩
-      suffices Set.Nonempty (fixedPoints Q (orbit G P)) by
-        exact Exists.elim this fun R hR => by
-          rw [← Sylow.ext (H.mp hR)]
-          exact R.2
-      apply Q.2.nonempty_fixed_point_of_prime_not_dvd_card
-      refine fun h => hp.out.not_dvd_one (Nat.modEq_zero_iff_dvd.mp ?_)
+    have H := fun {R : Sylow p G} {S : orbit G P} =>
       calc
-        1 = Nat.card (fixedPoints P (orbit G P)) := ?_
-        _ ≡ Nat.card (orbit G P) [MOD p] := (P.2.card_modEq_card_fixedPoints (orbit G P)).symm
-        _ ≡ 0 [MOD p] := Nat.modEq_zero_iff_dvd.mpr h
-      rw [← Nat.card_unique (α := ({⟨P, mem_orbit_self P⟩} : Set (orbit G P))), eq_comm]
-      congr
-      rw [Set.eq_singleton_iff_unique_mem]
-      exact ⟨H.mpr rfl, fun R h => Subtype.ext (Sylow.ext (H.mp h))⟩⟩
+        S ∈ fixedPoints R (orbit G P) ↔ S.1 ∈ fixedPoints R (Sylow p G) :=
+          forall_congr' fun a => Subtype.ext_iff
+        _ ↔ R.1 ≤ S := R.2.sylow_mem_fixedPoints_iff
+        _ ↔ S.1.1 = R := ⟨fun h => R.3 S.1.2 h, ge_of_eq⟩
+    suffices Set.Nonempty (fixedPoints Q (orbit G P)) by
+      exact Exists.elim this fun R hR => by
+        rw [← Sylow.ext (H.mp hR)]
+        exact R.2
+    apply Q.2.nonempty_fixed_point_of_prime_not_dvd_card
+    refine fun h => hp.out.not_dvd_one (Nat.modEq_zero_iff_dvd.mp ?_)
+    calc
+      1 = Nat.card (fixedPoints P (orbit G P)) := ?_
+      _ ≡ Nat.card (orbit G P) [MOD p] := (P.2.card_modEq_card_fixedPoints (orbit G P)).symm
+      _ ≡ 0 [MOD p] := Nat.modEq_zero_iff_dvd.mpr h
+    rw [← Nat.card_unique (α := ({⟨P, mem_orbit_self P⟩} : Set (orbit G P))), eq_comm]
+    congr
+    rw [Set.eq_singleton_iff_unique_mem]
+    exact ⟨H.mpr rfl, fun R h => Subtype.ext (Sylow.ext (H.mp h))⟩⟩
 
 variable (p) (G)
 

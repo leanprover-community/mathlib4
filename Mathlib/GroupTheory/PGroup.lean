@@ -220,13 +220,13 @@ theorem exists_fixed_point_of_prime_dvd_card_of_fixed_point (hpα : p ∣ Nat.ca
     ⟨b, hb, fun hab => hba (by simp_rw [hab])⟩
 
 theorem center_nontrivial [Nontrivial G] [Finite G] : Nontrivial (Subgroup.center G) := by
-    have := (hG.of_equiv ConjAct.toConjAct).exists_fixed_point_of_prime_dvd_card_of_fixed_point G
-    rw [ConjAct.fixedPoints_eq_center] at this
-    have dvd : p ∣ Nat.card G := by
-      obtain ⟨n, hn0, hn⟩ := hG.nontrivial_iff_card.mp inferInstance
-      exact hn.symm ▸ dvd_pow_self _ (ne_of_gt hn0)
-    obtain ⟨g, hg⟩ := this dvd (Subgroup.center G).one_mem
-    exact ⟨⟨1, ⟨g, hg.1⟩, mt Subtype.ext_iff.mp hg.2⟩⟩
+  have := (hG.of_equiv ConjAct.toConjAct).exists_fixed_point_of_prime_dvd_card_of_fixed_point G
+  rw [ConjAct.fixedPoints_eq_center] at this
+  have dvd : p ∣ Nat.card G := by
+    obtain ⟨n, hn0, hn⟩ := hG.nontrivial_iff_card.mp inferInstance
+    exact hn.symm ▸ dvd_pow_self _ (ne_of_gt hn0)
+  obtain ⟨g, hg⟩ := this dvd (Subgroup.center G).one_mem
+  exact ⟨⟨1, ⟨g, hg.1⟩, mt Subtype.ext_iff.mp hg.2⟩⟩
 
 theorem bot_lt_center [Nontrivial G] [Finite G] : ⊥ < Subgroup.center G := by
   haveI := center_nontrivial hG
