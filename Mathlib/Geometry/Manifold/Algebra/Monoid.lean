@@ -11,6 +11,7 @@ public import Mathlib.Geometry.Manifold.MFDeriv.Basic
 
 /-!
 # `C^n` monoid
+
 A `C^n` monoid is a monoid that is also a `C^n` manifold, in which multiplication is a `C^n` map
 of the product manifold `G` × `G` into `G`.
 

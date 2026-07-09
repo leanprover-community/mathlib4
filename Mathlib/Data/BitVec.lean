@@ -78,13 +78,14 @@ lemma toFin_zsmul (z : ℤ) (x : BitVec w) : toFin (z • x) = z • x.toFin :=
     open scoped Fin.CommRing in
     simp only [zsmul_eq_mul, toFin_intCast]
 
-instance : Pow (BitVec w) ℕ+ where
-  pow x n := x ^ n.val
-
+set_option backward.isDefEq.respectTransparency false in
 lemma toFin_pow (x : BitVec w) (n : ℕ) : toFin (x ^ n) = x.toFin ^ n := by
   induction n with
   | zero => simp
   | succ n ih => simp [ih, BitVec.pow_succ]
+
+instance : Pow (BitVec w) ℕ+ where
+  pow x n := x ^ n.val
 
 lemma toFin_ppow (x : BitVec w) (n : ℕ+) : toFin (x ^ n) = x.toFin ^ n := by
   rw [← npow_val_eq_ppow]
@@ -95,7 +96,7 @@ lemma toFin_ppow (x : BitVec w) (n : ℕ+) : toFin (x ^ n) = x.toFin ^ n := by
 -/
 
 -- Verify that the `HPow` instance from Lean agrees definitionally with the instance via `Monoid`.
-example : @instHPow (Fin (2 ^ w)) ℕ Monoid.toPow = Lean.Grind.Fin.instHPowFinNatOfNeZero := rfl
+example : @instHPow (Fin (2 ^ w)) ℕ NPow.toPow = Lean.Grind.Fin.instHPowFinNatOfNeZero := rfl
 
 instance : CommSemiring (BitVec w) :=
   open Fin.CommRing in

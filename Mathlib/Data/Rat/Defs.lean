@@ -167,8 +167,10 @@ instance addCommGroup : AddCommGroup ℚ where
     rw [Rat.intCast_add, Rat.add_mul, Rat.intCast_one, Rat.one_mul]
     rfl
   zsmul_zero' := Rat.zero_mul
-  zsmul_succ' _ _ := by simp [Rat.add_mul]
-  zsmul_neg' _ _ := by rw [Int.negSucc_eq, Rat.intCast_neg, Rat.neg_mul]; rfl
+  zsmul_succ' _ _ := by simp_rw [HSMul.hSMul, SMul.smul]; simp [Rat.add_mul]
+  zsmul_neg' _ _ := by
+    simp_rw [HSMul.hSMul, SMul.smul]
+    rw [Int.negSucc_eq, Rat.intCast_neg, Rat.neg_mul]; rfl
 
 instance addGroup : AddGroup ℚ := by infer_instance
 

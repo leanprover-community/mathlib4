@@ -6,7 +6,6 @@ Authors: Kexing Ying
 module
 
 public import Mathlib.MeasureTheory.Measure.Real
-public import Mathlib.MeasureTheory.Measure.Typeclasses.Finite
 public import Mathlib.Topology.Algebra.InfiniteSum.Module
 
 /-!
@@ -591,7 +590,7 @@ variable {mα : MeasurableSpace α} [MeasurableSpace β]
 variable {M : Type*} [AddCommMonoid M] [TopologicalSpace M]
 variable (v : VectorMeasure α M)
 
-open Classical in
+open scoped Classical in
 /-- The pushforward of a vector measure along a function. -/
 def map (v : VectorMeasure α M) (f : α → β) : VectorMeasure β M :=
   if hf : Measurable f then
@@ -696,7 +695,7 @@ end Module
 
 end
 
-open Classical in
+open scoped Classical in
 /-- The restriction of a vector measure on some set. -/
 @[no_expose] def restrict (v : VectorMeasure α M) (i : Set α) : VectorMeasure α M :=
   if hi : MeasurableSet i then
@@ -1302,7 +1301,7 @@ end MutuallySingular
 
 section Trim
 
-open Classical in
+open scoped Classical in
 /-- Restriction of a vector measure onto a sub-σ-algebra. -/
 @[simps]
 def trim {m n : MeasurableSpace α} (v : VectorMeasure α M) (hle : m ≤ n) :
