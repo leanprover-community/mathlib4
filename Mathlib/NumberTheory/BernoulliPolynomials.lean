@@ -182,7 +182,7 @@ theorem bernoulli_succ_eval (n p : ℕ) : (bernoulli p.succ).eval (n : ℚ) =
 set_option backward.isDefEq.respectTransparency false in
 theorem bernoulli_comp_one_add_X (n : ℕ) :
     (bernoulli n).comp (1 + X) = bernoulli n + n • X ^ (n - 1) := by
-  refine Nat.strong_induction_on n fun d hd => ?_
+  induction n using Nat.strong_induction_on with | ind d hd
   cases d with
   | zero => simp
   | succ d =>

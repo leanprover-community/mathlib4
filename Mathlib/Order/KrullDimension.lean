@@ -1105,7 +1105,7 @@ lemma height_le_of_krullDim_preimage_le (x : α) :
     Order.height x ≤ (m + 1) * Order.height (f x) + m := by
   generalize h' : Order.height (f x) = n
   cases n with | top => simp | coe n =>
-    induction n using Nat.strong_induction_on generalizing x with | h n ih =>
+    induction n using Nat.strong_induction_on generalizing x with | ind n ih
     refine height_le_iff.mpr fun p hp ↦ le_of_not_gt fun h_len ↦ ?_
     let i : Fin (p.length + 1) := ⟨p.length - (m + 1), Nat.sub_lt_succ p.length _⟩
     suffices h'' : f (p i) < f x by

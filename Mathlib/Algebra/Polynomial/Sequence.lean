@@ -99,7 +99,7 @@ lemma span_degreeLT {m : ℕ} (hCoeff : ∀ i < m, IsUnit (S i).leadingCoeff) :
   nontriviality R using Subsingleton.eq_zero P
   generalize hp : P.natDegree = n
   induction n using Nat.strong_induction_on generalizing P with
-  | h n ih =>
+  | ind n ih =>
     by_cases! p_ne_zero : P = 0
     · simp [p_ne_zero]
     have hn : n < m := by

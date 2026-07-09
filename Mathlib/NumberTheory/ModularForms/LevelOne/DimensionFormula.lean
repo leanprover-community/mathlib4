@@ -248,7 +248,7 @@ theorem levelOne_weight_two_rank_zero : Module.rank ℂ (ModularForm 𝒮ℒ 2) 
 theorem dimension_level_one (k : ℕ) (hk2 : Even k) :
     Module.rank ℂ (ModularForm 𝒮ℒ k) =
       if k ≡ 2 [MOD 12] then k / 12 else k / 12 + 1 := by
-  induction k using Nat.strong_induction_on with | h k ihn =>
+  induction k using Nat.strong_induction_on with | ind k ihn
   have : k < 3 ∨ (3 ≤ k ∧ k < 12) ∨ 12 ≤ k := by grind
   rcases this with hk | hk | hk
   · -- `k < 3`: direct case-by-case check
@@ -285,7 +285,7 @@ instance (k : ℤ) : FiniteDimensional ℂ (ModularForm 𝒮ℒ k) := by
 `k : ℕ` has q-expansion of order strictly greater than `k / 12`, then `f` is identically zero. -/
 theorem sturm_bound_levelOne_nat {k : ℕ} {f : ModularForm 𝒮ℒ (k : ℤ)}
     (h : (↑(k / 12) : ℕ∞) < (qExpansion 1 f).order) : f = 0 := by
-  induction k using Nat.strong_induction_on with | _ k ih =>
+  induction k using Nat.strong_induction_on with | ind k ih
   have h0 : (qExpansion 1 f).coeff 0 = 0 :=
     PowerSeries.coeff_of_lt_order _ ((Nat.cast_nonneg _).trans_lt h)
   suffices CuspForm.discriminantEquiv (toCuspForm f h0) = 0 by

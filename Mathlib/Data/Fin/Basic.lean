@@ -462,11 +462,11 @@ section Rec
 
 @[elab_as_elim]
 lemma strong_induction_on {n : ℕ} {motive : Fin n → Prop}
-    (h : ∀ (j : Fin n) (_ : ∀ (k : Fin n), k < j → motive k), motive j) (i : Fin n) :
+    (ind : ∀ (j : Fin n) (ih : ∀ (k : Fin n), k < j → motive k), motive j) (i : Fin n) :
     motive i := by
   obtain ⟨i, hi⟩ := i
   induction i using Nat.strong_induction_on with
-  | h j hj => exact h _ (fun ⟨k, hk₁⟩ hk₂ ↦ hj _ hk₂ hk₁)
+  | ind j hj => exact h _ (fun ⟨k, hk₁⟩ hk₂ ↦ hj _ hk₂ hk₁)
 
 end Rec
 

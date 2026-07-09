@@ -143,7 +143,7 @@ end InductionHyp
 private theorem center_eq_top [Finite D] : Subring.center D = ⊤ := by
   classical
   cases nonempty_fintype D
-  induction hn : Fintype.card D using Nat.strong_induction_on generalizing D with | _ n IH
+  induction hn : Fintype.card D using Nat.strong_induction_on generalizing D with | ind n IH
   apply InductionHyp.center_eq_top
   intro R hR x y hx hy
   suffices (⟨y, hy⟩ : R) ∈ Subring.center R by

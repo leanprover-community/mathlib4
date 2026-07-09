@@ -303,7 +303,7 @@ theorem self_eq_mul_add_iff {l m n : Language α} (hm : [] ∉ m) : l = m * l + 
   mp h := by
     apply le_antisymm
     · intro x hx
-      induction hlen : x.length using Nat.strong_induction_on generalizing x with | _ _ ih
+      induction hlen : x.length using Nat.strong_induction_on generalizing x with | ind _ ih
       subst hlen
       rw [h] at hx
       obtain hx | hx := hx

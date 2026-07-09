@@ -257,9 +257,9 @@ def stepInduction {motive : ℕ → Sort*} (k : ℕ) (base : ∀ i < k, motive i
   (show a - k + k = a by lia) ▸ step (a - k) fun _ _ ↦ stepInduction k base step _
 
 @[elab_as_elim]
-protected theorem strong_induction_on {p : ℕ → Prop} (n : ℕ)
-    (h : ∀ n, (∀ m < n, p m) → p n) : p n :=
-  Nat.strongRecOn n h
+protected theorem strong_induction_on {motive : ℕ → Prop} (n : ℕ)
+    (ind : ∀ n, (∀ m < n, motive m) → motive n) : motive n :=
+  Nat.strongRecOn n ind
 
 protected theorem case_strong_induction_on {p : ℕ → Prop} (a : ℕ) (hz : p 0)
     (hi : ∀ n, (∀ m ≤ n, p m) → p (n + 1)) : p a :=

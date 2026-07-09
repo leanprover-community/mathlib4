@@ -360,7 +360,7 @@ theorem separable_or {f : F[X]} (hf : Irreducible f) :
 theorem exists_separable_of_irreducible {f : F[X]} (hf : Irreducible f) (hp : p ≠ 0) :
     ∃ (n : ℕ) (g : F[X]), g.Separable ∧ expand F (p ^ n) g = f := by
   replace hp : p.Prime := (CharP.char_is_prime_or_zero F p).resolve_right hp
-  induction hn : f.natDegree using Nat.strong_induction_on generalizing f with | _ N ih
+  induction hn : f.natDegree using Nat.strong_induction_on generalizing f with | ind N ih
   rcases separable_or p hf with (h | ⟨h1, g, hg, hgf⟩)
   · refine ⟨0, f, h, ?_⟩
     rw [pow_zero, expand_one]
