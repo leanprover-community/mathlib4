@@ -444,9 +444,9 @@ theorem pair (f : α → E) (a b : α) : eVariationOn f {a, b} = edist (f a) (f 
     · simp
     · have : u 0 < u 1 := hmono (by simp) (by simp) zero_lt_one
       simp [(by grind : u 0 = a), (by grind : u 1 = b), edist_comm]
-    have : u 0 < u 1 := hmono (by simp) (by grind) zero_lt_one
-    have : u 1 < u 2 := hmono (by grind) (by grind) one_lt_two
-    grind
+    · have : u 0 < u 1 := hmono (by simp) (by grind) zero_lt_one
+      have : u 1 < u 2 := hmono (by grind) (by grind) one_lt_two
+      grind
 
 /-- A generalization of `eVariationOn.union` in which the greatest element of `s` is allowed to lie
 to the left of the least element of `t`. -/
