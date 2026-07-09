@@ -130,15 +130,22 @@ theorem isEulerian_rotate {u v : V} {p : G.Walk u u} (hv : v ∈ p.support) :
 
 alias ⟨_, IsEulerian.rotate⟩ := isEulerian_rotate
 
-/-- In a preconnected graph, there exists an Eulerian circuit iff there exists an Eulerian circuit
-from a specific vertex. -/
-theorem _root_.SimpleGraph.Preconnected.exists_isEulerian_iff (h : G.Preconnected) (v : V) :
-    (∃ (v' : V) (p : G.Walk v' v'), p.IsEulerian) ↔ (∃ p : G.Walk v v, p.IsEulerian) := by
-  refine ⟨fun ⟨v', p, hp⟩ ↦ ?_, fun ⟨p, hp⟩ ↦ ⟨v, p, hp⟩⟩
+/-- In an Eulerian graph there exists an Eulerian circuit from any vertex in the support. -/
+theorem _root_.SimpleGraph.exists_isEulerian_of_mem_support
+    (hp : ∃ (v' : V) (p : G.Walk v' v'), p.IsEulerian) {v : V} (hv : v ∈ G.support) :
+    ∃ p : G.Walk v v, p.IsEulerian := by
+  have ⟨v', p, hp⟩ := hp
+  have ⟨u, hadj⟩ := G.mem_support.mp hv
+  exact ⟨_, hp.rotate <| p.fst_mem_support_of_mem_edges <| hp.mem_edges_iff.mpr hadj⟩
+
+/-- In a preconnected Eulerian graph there exists an Eulerian circuit from any vertex. -/
+theorem _root_.SimpleGraph.Preconnected.exists_isEulerian_iff (h : G.Preconnected)
+    (hp : ∃ (v' : V) (p : G.Walk v' v'), p.IsEulerian) (v : V) :
+    ∃ p : G.Walk v v, p.IsEulerian := by
   cases subsingleton_or_nontrivial V
   · exact ⟨nil, Sym2.ind fun a b hadj ↦ absurd (Subsingleton.elim a b) hadj.ne⟩
-  have ⟨u, hadj⟩ := h.exists_adj_of_nontrivial v
-  exact ⟨p.rotate v <| p.fst_mem_support_of_mem_edges <| hp.mem_edges_iff.mpr hadj, hp.rotate _⟩
+  apply G.exists_isEulerian_of_mem_support hp
+  simp [h.support_eq_univ]
 
 theorem IsEulerian.even_degree_iff {x u v : V} {p : G.Walk u v} (ht : p.IsEulerian) [Fintype V]
     [DecidableRel G.Adj] : Even (G.degree x) ↔ u ≠ v → x ≠ u ∧ x ≠ v := by
