@@ -243,7 +243,7 @@ instance {X : Scheme.{u}} (x : X) : IsPreimmersion (X.fromSpecResidueField x) :=
   rw [IsPreimmersion.comp_iff]
   infer_instance
 
-@[simps] 
+@[simps]
 instance (x : X) : (Spec (X.residueField x)).Over X := ⟨X.fromSpecResidueField x⟩
 
 instance (x : X) : (Spec (X.residueField x)).CanonicallyOver X where

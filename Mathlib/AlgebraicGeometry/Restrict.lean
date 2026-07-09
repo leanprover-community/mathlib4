@@ -233,7 +233,7 @@ lemma Scheme.Opens.mem_basicOpen_toScheme {U : X.Opens} {V : Scheme.Opens U} {r 
   exact congr(x ∈ $(U.ι.preimage_basicOpen r)).to_iff.symm
 
 /-- If `U ≤ V`, then `U` is also a subscheme of `V`. -/
-protected 
+protected
 def Scheme.homOfLE (X : Scheme.{u}) {U V : X.Opens} (e : U ≤ V) : (U : Scheme.{u}) ⟶ V :=
   IsOpenImmersion.lift V.ι U.ι (by simpa using e)
 

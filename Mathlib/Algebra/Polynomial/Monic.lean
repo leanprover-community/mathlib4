@@ -259,7 +259,7 @@ def MonicDegreeEq.mk (p : R[X]) (hp : p.Monic) (hp' : p.natDegree = n) :
   ⟨p, by rw [← hp', ← leadingCoeff, hp], fun i hi ↦ coeff_eq_zero_of_natDegree_lt (hp'.trans_lt hi)⟩
 
 /-- The image of a monic polynomial of degree `n` under a ring homomorphism. -/
-@[simps] 
+@[simps]
 def MonicDegreeEq.map (p : MonicDegreeEq R n) (f : R →+* S) :
     MonicDegreeEq S n :=
   ⟨p.1.map f, by simp +contextual [coeff_map, p.2]⟩
