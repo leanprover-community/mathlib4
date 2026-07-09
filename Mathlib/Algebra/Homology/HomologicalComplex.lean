@@ -345,12 +345,14 @@ instance : (forget V c).Faithful where
     ext i
     exact congr_fun h i
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Forgetting the differentials than picking out the `i`-th object is the same as
 just picking out the `i`-th object. -/
 @[simps!]
 def forgetEval (i : ι) : forget V c ⋙ GradedObject.eval i ≅ eval V c i :=
   NatIso.ofComponents fun _ => Iso.refl _
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The differential as a natural transformation between `eval`. -/
 @[simps] def dNatTrans (i j : ι) :
     HomologicalComplex.eval V c i ⟶ HomologicalComplex.eval V c j where
@@ -614,8 +616,7 @@ instance (f : C₁ ⟶ C₂) [IsSplitMono f] (j : ι) : IsSplitMono (f.f j) :=
   inferInstanceAs (IsSplitMono ((eval _ _ j).map f))
 
 @[push ←, simp]
-lemma inv_f_apply (f : C₁ ⟶ C₂) [IsIso f] (j : ι) :
-   (inv f).f j = inv (f.f j) := by
+lemma inv_f_apply (f : C₁ ⟶ C₂) [IsIso f] (j : ι) : (inv f).f j = inv (f.f j) := by
   apply IsIso.eq_inv_of_inv_hom_id
   simp [← comp_f]
 
@@ -631,32 +632,35 @@ section Of
 
 variable {V} {α : Type*} [AddRightCancelSemigroup α] [One α] [DecidableEq α]
 
+/-- Auxiliary definition for differentials for `ChainComplex.of`. -/
+def of.d (X : α → V) (d : ∀ n, X (n + 1) ⟶ X n) (i : α) (j : α) : X i ⟶ X j :=
+  if h : i = j + 1 then eqToHom (by rw [h]) ≫ d j else 0
+
+set_option backward.defeqAttrib.useBackward true in
 /-- Construct an `α`-indexed chain complex from a dependently-typed differential.
 -/
-def of (X : α → V) (d : ∀ n, X (n + 1) ⟶ X n) (sq : ∀ n, d (n + 1) ≫ d n = 0) : ChainComplex V α :=
+abbrev of (X : α → V) (d : ∀ n, X (n + 1) ⟶ X n) (sq : ∀ n, d (n + 1) ≫ d n = 0) :
+    ChainComplex V α :=
   { X := X
-    d := fun i j => if h : i = j + 1 then eqToHom (by rw [h]) ≫ d j else 0
-    shape := fun i j w => by
-      rw [dif_neg (Ne.symm w)]
+    d := of.d X d
+    shape := fun i j w => by simp [of.d, (Ne.symm w)]
     d_comp_d' := fun i j k hij hjk => by
-      dsimp at hij hjk
-      substs hij hjk
+      dsimp [of.d] at hij hjk ⊢
+      subst hij hjk
       simp only [eqToHom_refl, id_comp, dite_eq_ite, ite_true, sq] }
 
 variable (X : α → V) (d : ∀ n, X (n + 1) ⟶ X n) (sq : ∀ n, d (n + 1) ≫ d n = 0)
 
-@[simp]
 theorem of_X : (of X d sq).X = X :=
   rfl
 
 @[simp]
-theorem of_d (j : α) : (of X d sq).d (j + 1) j = d j := by
-  dsimp [of]
+theorem of_d (j : α) : of.d X d (j + 1) j = d j := by
+  dsimp [of.d]
   rw [if_pos rfl, Category.id_comp]
 
-theorem of_d_ne {i j : α} (h : i ≠ j + 1) : (of X d sq).d i j = 0 := by
-  rw [of]
-  simp [dif_neg h]
+theorem of_d_ne {i j : α} (h : i ≠ j + 1) : of.d X d i j = 0 := by
+  simp [of.d, dif_neg h]
 
 end Of
 
@@ -669,14 +673,14 @@ variable (X : α → V) (d_X : ∀ n, X (n + 1) ⟶ X n) (sq_X : ∀ n, d_X (n +
 /-- A constructor for chain maps between `α`-indexed chain complexes built using `ChainComplex.of`,
 from a dependently typed collection of morphisms.
 -/
-@[simps]
-def ofHom (f : ∀ i : α, X i ⟶ Y i) (comm : ∀ i : α, f (i + 1) ≫ d_Y i = d_X i ≫ f i) :
-    of X d_X sq_X ⟶ of Y d_Y sq_Y :=
-  { f
-    comm' := fun n m => by
-      simp only [ComplexShape.down_Rel]
-      rintro rfl
-      simpa using comm m }
+abbrev ofHom {X Y : ChainComplex V α} (f : ∀ i : α, X.X i ⟶ Y.X i)
+    (comm : ∀ i : α, f (i + 1) ≫ Y.d (i + 1) i = X.d (i + 1) i ≫ f i) :
+    X ⟶ Y where
+  f := f
+  comm' n m := by
+    simp only [ComplexShape.down_Rel]
+    rintro rfl
+    simpa using comm m
 
 end OfHom
 
@@ -739,7 +743,7 @@ lemma mkAux_eq_shortComplex_mk_d_comp_d (n : ℕ) :
     mkAux X₀ X₁ X₂ d₀ d₁ s succ n =
       ShortComplex.mk _ _ ((mk X₀ X₁ X₂ d₀ d₁ s succ).d_comp_d (n + 2) (n + 1) n) := by
   rw [show n + 2 = n + 1 + 1 from rfl]
-  simp only [mk, of_X, of_d, mkAux]
+  simp [mk, mkAux]
 
 /-- The isomorphism from `(mk X₀ X₁ X₂ d₀ d₁ s succ).X (n + 3)` that is given by
 the inductive construction. -/
@@ -760,7 +764,7 @@ lemma mk_d (n : ℕ) :
   set_option backward.isDefEq.respectTransparency false in
     rw [eqToHom_refl, comp_id] at eq
   refine Eq.trans ?_ eq
-  dsimp only [mk, of]
+  dsimp only [mk, of, of.d]
   rw [dif_pos (by rfl), eqToHom_refl, id_comp]
   rfl
 
@@ -797,7 +801,7 @@ def mk'XIso (n : ℕ) :
     (mk' X₀ X₁ d₀ succ').X (n + 2) ≅ (succ' ((mk' X₀ X₁ d₀ succ').d (n + 1) n)).1 := by
   obtain _ | n := n
   · apply eqToIso
-    dsimp [mk', mk, of, mkAux]
+    dsimp [mk', mk, of, mkAux, of.d]
     rw [id_comp]
   · exact mkXIso _ _ _ _ _ (succ' d₀).2.2 (fun S => succ' S.f) n
 
@@ -886,36 +890,37 @@ section Of
 
 variable {V} {α : Type*} [AddRightCancelSemigroup α] [One α] [DecidableEq α]
 
+/-- Auxiliary definition for differentials for `CochainComplex.of`. -/
+def of.d (X : α → V) (d : ∀ n, X n ⟶ X (n + 1)) (i : α) (j : α) : X i ⟶ X j :=
+  if h : i + 1 = j then d _ ≫ eqToHom (by rw [h]) else 0
+
+set_option backward.defeqAttrib.useBackward true in
 /-- Construct an `α`-indexed cochain complex from a dependently-typed differential.
 -/
-def of (X : α → V) (d : ∀ n, X n ⟶ X (n + 1)) (sq : ∀ n, d n ≫ d (n + 1) = 0) :
+abbrev of (X : α → V) (d : ∀ n, X n ⟶ X (n + 1)) (sq : ∀ n, d n ≫ d (n + 1) = 0) :
     CochainComplex V α :=
   { X := X
-    d := fun i j => if h : i + 1 = j then d _ ≫ eqToHom (by rw [h]) else 0
-    shape := fun i j w => by
-      rw [dif_neg]
-      exact w
+    d := of.d X d
+    shape := fun i j w => dif_neg (c := i + 1 = j) w
     d_comp_d' := fun i j k => by
-      dsimp
+      dsimp [of.d]
       split_ifs with h h' h'
-      · substs h h'
+      · subst h h'
         simp [sq]
       all_goals simp }
 
 variable (X : α → V) (d : ∀ n, X n ⟶ X (n + 1)) (sq : ∀ n, d n ≫ d (n + 1) = 0)
 
-@[simp]
 theorem of_X : (of X d sq).X = X :=
   rfl
 
 @[simp]
-theorem of_d (j : α) : (of X d sq).d j (j + 1) = d j := by
-  dsimp [of]
+theorem of_d (j : α) : of.d X d j (j + 1) = d j := by
+  dsimp [of.d]
   rw [if_pos rfl, Category.comp_id]
 
-theorem of_d_ne {i j : α} (h : i + 1 ≠ j) : (of X d sq).d i j = 0 := by
-  rw [of]
-  simp [dif_neg h]
+theorem of_d_ne {i j : α} (h : i + 1 ≠ j) : of.d X d i j = 0 := by
+  simp [of.d, dif_neg h]
 
 end Of
 
@@ -929,14 +934,14 @@ variable (X : α → V) (d_X : ∀ n, X n ⟶ X (n + 1)) (sq_X : ∀ n, d_X n �
 A constructor for chain maps between `α`-indexed cochain complexes built using `CochainComplex.of`,
 from a dependently typed collection of morphisms.
 -/
-@[simps]
-def ofHom (f : ∀ i : α, X i ⟶ Y i) (comm : ∀ i : α, f i ≫ d_Y i = d_X i ≫ f (i + 1)) :
-    of X d_X sq_X ⟶ of Y d_Y sq_Y :=
-  { f
-    comm' := fun n m => by
-      simp only [ComplexShape.up_Rel]
-      rintro rfl
-      simpa using comm n }
+abbrev ofHom {X Y : CochainComplex V α} (f : ∀ i : α, X.X i ⟶ Y.X i)
+    (comm : ∀ i : α, f i ≫ Y.d i (i + 1) = X.d i (i + 1) ≫ f (i + 1)) :
+    X ⟶ Y where
+  f := f
+  comm' n m := by
+    simp only [ComplexShape.up_Rel]
+    rintro rfl
+    simpa using comm n
 
 end OfHom
 

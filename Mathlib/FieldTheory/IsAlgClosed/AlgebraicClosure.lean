@@ -73,7 +73,7 @@ lemma Monics.splits_finsetProd {s : Finset (Monics k)} {f : Monics k} (hf : f �
   (splits_prod_iff fun j _ ↦ map_ne_zero j.2.ne_zero).mp
     (by simpa [Polynomial.map_prod] using SplittingField.splits (∏ f ∈ s, f.1)) f hf
 
-open Classical in
+open scoped Classical in
 /-- Given a finite set of monic polynomials, construct an algebra homomorphism
 to the splitting field of the product of the polynomials
 sending indeterminates $X_{f_i}$ to the distinct roots of `f`. -/
@@ -129,10 +129,15 @@ def AlgebraicClosure : Type u :=
 
 namespace AlgebraicClosure
 
-deriving instance CommRing, Inhabited for AlgebraicClosure
+deriving instance Inhabited for AlgebraicClosure
 
 instance {S : Type*} [DistribSMul S k] [IsScalarTower S k k] : SMul S (AlgebraicClosure k) :=
   inferInstanceAs <| SMul S (_ ⧸ _)
+
+instance : CommRing (AlgebraicClosure k) where
+  nsmul := letI := AlgebraicClosure.instSMulOfIsScalarTower k (S := ℕ); (· • · )
+  zsmul := letI := AlgebraicClosure.instSMulOfIsScalarTower k (S := ℤ); (· • · )
+  __ : CommRing (AlgebraicClosure k) := inferInstanceAs <| CommRing (_ ⧸ _)
 
 instance instAlgebra {R : Type*} [CommSemiring R] [Algebra R k] : Algebra R (AlgebraicClosure k) :=
   inferInstanceAs <| Algebra R (_ ⧸ _)

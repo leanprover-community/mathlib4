@@ -119,7 +119,7 @@ instance t2Space_quotient_mulAction_of_properSMul [ProperSMul G X] :
   have : IsOpenQuotientMap (Prod.map π π) :=
     MulAction.isOpenQuotientMap_quotientMk.prodMap MulAction.isOpenQuotientMap_quotientMk
   rw [← this.isQuotientMap.isClosed_preimage]
-  convert ProperSMul.isProperMap_smul_pair.isClosedMap.isClosed_range
+  convert! ProperSMul.isProperMap_smul_pair.isClosedMap.isClosed_range
   · ext ⟨x₁, x₂⟩
     simp only [mem_preimage, map_apply, mem_diagonal_iff, mem_range, Prod.mk.injEq, Prod.exists,
       exists_eq_right]
@@ -271,8 +271,9 @@ lemma ProperSMul.isCompact_setOf_inter_nonempty
     {G : Type*} [Group G] [MulAction G X] [TopologicalSpace G] [ProperSMul G X]
     {U V : Set X} (hU : IsCompact U) (hV : IsCompact V) :
     IsCompact {g : G | (g • U ∩ V).Nonempty} := by
-  convert ((ProperSMul.isProperMap_smul_pair (G := G)).isCompact_preimage
-    (hV.prod hU)).image continuous_fst
+  convert!
+    ((ProperSMul.isProperMap_smul_pair (G := G)).isCompact_preimage (hV.prod hU)).image
+      continuous_fst
   ext g
   suffices (∃ v, v ∈ g • U ∧ v ∈ V) ↔ ∃ u, g • u ∈ V ∧ u ∈ U by simpa
   rw [← (MulAction.toPerm g).exists_congr_right]
@@ -289,6 +290,6 @@ lemma MulAction.properSMul_of_proper_orbitMap
   have hfsurj : f.Surjective := Function.surjective_id.prodMap (surjective_smul G x)
   refine isProperMap_of_comp_of_surj (by fun_prop) (by fun_prop) ?_ hfsurj
   simpa [Function.comp_def, Prod.map_apply, mul_smul]
-    using (hx.prodMap hx).comp (ProperSMul.isProperMap_smul_pair (G := G))
+    using! (hx.prodMap hx).comp (ProperSMul.isProperMap_smul_pair (G := G))
 
 end

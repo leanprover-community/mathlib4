@@ -50,7 +50,6 @@ open Unitization NNReal CStarAlgebra
 
 variable [PartialOrder A] [StarOrderedRing A]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma CFC.monotoneOn_one_sub_one_add_inv :
     MonotoneOn (cfcₙ (fun x : ℝ≥0 ↦ 1 - (1 + x)⁻¹)) (Set.Ici (0 : A)) := by
   intro a ha b hb hab
@@ -128,7 +127,7 @@ lemma CStarAlgebra.directedOn_nonneg_ball :
       · have (x) (hx : x ∈ σₙ ℝ≥0 a) : 1 - x ≠ 0 := by
           refine tsub_pos_of_lt ?_ |>.ne'
           exact lt_of_le_of_lt (le_nnnorm_of_mem_quasispectrum hx) ha₂
-        fun_prop (disch := assumption)
+        fun_prop
     _ ≤ cfcₙ f (cfcₙ g a + cfcₙ g b) := by
       have hab' : cfcₙ g a ≤ cfcₙ g a + cfcₙ g b := le_add_of_nonneg_right cfcₙ_nonneg_of_predicate
       exact CFC.monotoneOn_one_sub_one_add_inv cfcₙ_nonneg_of_predicate
@@ -159,6 +158,17 @@ lemma eventually_star_eq {l : Filter A} (hl : l.IsIncreasingApproximateUnit) :
     ∀ᶠ x in l, star x = x :=
   hl.eventually_isSelfAdjoint.mp <| .of_forall fun _ ↦ IsSelfAdjoint.star_eq
 
+omit [StarOrderedRing A] in
+lemma closedBall_mem {l : Filter A} (hl : l.IsIncreasingApproximateUnit) :
+    Metric.closedBall 0 1 ∈ l := by
+  simpa [Metric.closedBall] using! hl.eventually_norm
+
+lemma pure_one (A : Type*) [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A] :
+    (pure 1 : Filter A).IsIncreasingApproximateUnit where
+  toIsApproximateUnit := .pure_one A
+  eventually_nonneg := by simp
+  eventually_norm := by nontriviality A; simp
+
 end Filter.IsIncreasingApproximateUnit
 
 namespace CStarAlgebra
@@ -169,9 +179,8 @@ open Submodule in
 lemma tendsto_mul_right_of_forall_nonneg_tendsto {l : Filter A}
     (h : ∀ m, 0 ≤ m → ‖m‖ < 1 → Tendsto (· * m) l (𝓝 m)) (m : A) :
     Tendsto (· * m) l (𝓝 m) := by
-  obtain ⟨n, c, x, rfl⟩ := mem_span_set'.mp <| by
-    change m ∈ span ℂ ({x | 0 ≤ x} ∩ ball 0 1)
-    simp [span_nonneg_inter_unitBall]
+  have : m ∈ span ℂ ({x | 0 ≤ x} ∩ ball 0 1) := by simp [span_nonneg_inter_unitBall]
+  obtain ⟨n, c, x, rfl⟩ := mem_span_set'.mp this
   simp_rw [Finset.mul_sum]
   refine tendsto_finsetSum _ fun i _ ↦ ?_
   simp_rw [mul_smul_comm]
@@ -251,7 +260,6 @@ lemma norm_sub_mul_self_le_of_inr {x y : A} (z : A) (hx₀ : 0 ≤ x) (hxy : x �
       ← norm_le_one_iff_of_nonneg _, norm_inr]
     exact ⟨hxy, hy₁⟩
 
-set_option backward.isDefEq.respectTransparency false in
 variable {A} in
 /-- This shows `CStarAlgebra.approximateUnit` is a one-sided approximate unit, but this is marked
 `private` because it is only used to prove `CStarAlgebra.increasingApproximateUnit`. -/
@@ -322,6 +330,8 @@ lemma increasingApproximateUnit :
   eventually_norm := .filter_mono inf_le_right <| by simp
   neBot := hasBasis_approximateUnit A |>.neBot_iff.mpr
     fun hx ↦ ⟨_, ⟨le_rfl, by simpa using hx.2.le⟩⟩
+
+instance : (approximateUnit A).NeBot := (increasingApproximateUnit A).neBot
 
 end CStarAlgebra
 

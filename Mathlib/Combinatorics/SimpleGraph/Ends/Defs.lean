@@ -52,7 +52,7 @@ theorem ComponentCompl.supp_inj {C D : G.ComponentCompl K} : C.supp = D.supp ↔
 
 instance ComponentCompl.setLike : SetLike (G.ComponentCompl K) V where
   coe := ComponentCompl.supp
-  coe_injective' _ _ := ComponentCompl.supp_inj.mp
+  coe_injective _ _ := ComponentCompl.supp_inj.mp
 
 instance : PartialOrder (G.ComponentCompl K) := .ofSetLike (G.ComponentCompl K) V
 
@@ -204,7 +204,7 @@ theorem infinite_iff_in_all_ranges {K : Finset V} (C : G.ComponentCompl K) :
   classical
     constructor
     · rintro Cinf L h
-      obtain ⟨v, ⟨vK, rfl⟩, vL⟩ := Set.Infinite.nonempty (Set.Infinite.diff Cinf L.finite_toSet)
+      obtain ⟨v, ⟨vK, rfl⟩, vL⟩ := Set.Infinite.nonempty (Set.Infinite.sdiff Cinf L.finite_toSet)
       exact ⟨componentComplMk _ vL, rfl⟩
     · rintro h Cfin
       obtain ⟨D, e⟩ := h (K ∪ Cfin.toFinset) Finset.subset_union_left
@@ -263,7 +263,7 @@ def componentComplFunctor : (Finset V)ᵒᵖ ⥤ Type u where
     simp [ComponentCompl.hom_refl]
   map_comp {_ Y Z} h h' := by
     ext C
-    simp [C.hom_trans (le_of_op_hom h) (le_of_op_hom h')]
+    simp
 
 /-- The end of a graph, defined as the sections of the functor `component_compl_functor` . -/
 protected def «end» :=
@@ -271,9 +271,9 @@ protected def «end» :=
 
 theorem end_hom_mk_of_mk {s} (sec : s ∈ G.end) {K L : (Finset V)ᵒᵖ} (h : L ⟶ K) {v : V}
     (vnL : v ∉ L.unop) (hs : s L = G.componentComplMk vnL) :
-    s K = G.componentComplMk (Set.notMem_subset (le_of_op_hom h : _ ⊆ _) vnL) := by
+    s K = G.componentComplMk (Set.notMem_subset (le_of_op_hom h) vnL) := by
   rw [← sec h, hs]
-  apply ComponentCompl.hom_mk _ (le_of_op_hom h : _ ⊆ _)
+  apply ComponentCompl.hom_mk _ (le_of_op_hom h)
 
 theorem infinite_iff_in_eventualRange {K : (Finset V)ᵒᵖ} (C : G.componentComplFunctor.obj K) :
     C.supp.Infinite ↔ C ∈ G.componentComplFunctor.eventualRange K := by

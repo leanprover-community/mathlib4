@@ -49,10 +49,10 @@ def liftLinear [MeasurableSpace β] (f : OuterMeasure α →ₗ[ℝ≥0∞] Oute
   toFun μ := (f μ.toOuterMeasure).toMeasure (hf μ)
   map_add' μ₁ μ₂ := ext fun s hs => by
     simp only [map_add, coe_add, Pi.add_apply, toMeasure_apply, add_toOuterMeasure,
-      OuterMeasure.coe_add, hs]
+      FunLike.coe_add, hs]
   map_smul' c μ := ext fun s hs => by
     simp only [map_smulₛₗ, Pi.smul_apply, toMeasure_apply, smul_toOuterMeasure (R := ℝ≥0∞),
-      OuterMeasure.coe_smul (R := ℝ≥0∞), smul_apply, hs]
+      FunLike.coe_smul, smul_apply, hs]
 
 lemma liftLinear_apply₀ {f : OuterMeasure α →ₗ[ℝ≥0∞] OuterMeasure β} (hf) {s : Set β}
     (hs : NullMeasurableSet s (liftLinear f hf μ)) : liftLinear f hf μ s = f μ.toOuterMeasure s :=
@@ -67,7 +67,7 @@ theorem le_liftLinear_apply {f : OuterMeasure α →ₗ[ℝ≥0∞] OuterMeasure
     f μ.toOuterMeasure s ≤ liftLinear f hf μ s :=
   le_toMeasure_apply _ (hf μ) s
 
-open Classical in
+open scoped Classical in
 /-- The pushforward of a measure as a linear map. It is defined to be `0` if `f` is not
 a measurable function. -/
 noncomputable
@@ -81,9 +81,9 @@ theorem mapₗ_congr {f g : α → β} (hf : Measurable f) (hg : Measurable g) (
     mapₗ f μ = mapₗ g μ := by
   ext1 s hs
   simpa only [mapₗ, hf, hg, hs, dif_pos, liftLinear_apply, OuterMeasure.map_apply]
-    using measure_congr (h.preimage s)
+    using! measure_congr (h.preimage s)
 
-open Classical in
+open scoped Classical in
 /-- The pushforward of a measure. It is defined to be `0` if `f` is not an almost everywhere
 measurable function. -/
 noncomputable
@@ -203,7 +203,7 @@ theorem map_map {g : β → γ} {f : α → β} (hg : Measurable g) (hf : Measur
     (μ.map f).map g = μ.map (g ∘ f) :=
   ext fun s hs => by simp [hf, hg, hs, hg hs, hg.comp hf, ← preimage_comp]
 
-@[mono]
+@[gcongr, mono]
 theorem map_mono {f : α → β} (h : μ ≤ ν) (hf : Measurable f) : μ.map f ≤ ν.map f :=
   le_iff.2 fun s hs ↦ by simp [hf.aemeasurable, hs, h _]
 

@@ -29,7 +29,7 @@ element. -/
 theorem closure_Ioi' {a : α} (h : (Ioi a).Nonempty) : closure (Ioi a) = Ici a := by
   apply Subset.antisymm
   · exact closure_minimal Ioi_subset_Ici_self isClosed_Ici
-  · rw [← diff_subset_closure_iff, Ici_diff_Ioi_same, singleton_subset_iff]
+  · rw [← sdiff_subset_closure_iff, Ici_sdiff_Ioi_same, singleton_subset_iff]
     exact isGLB_Ioi.mem_closure h
 
 /-- The closure of the interval `(a, +∞)` is the closed interval `[a, +∞)`. -/
@@ -73,7 +73,7 @@ theorem closure_Ioo {a b : α} (hab : a ≠ b) : closure (Ioo a b) = Icc a b := 
   apply Subset.antisymm
   · exact closure_minimal Ioo_subset_Icc_self isClosed_Icc
   · rcases hab.lt_or_gt with hab | hab
-    · rw [← diff_subset_closure_iff, Icc_diff_Ioo_same hab.le]
+    · rw [← sdiff_subset_closure_iff, Icc_sdiff_Ioo_same hab.le]
       have hab' : (Ioo a b).Nonempty := nonempty_Ioo.2 hab
       simp only [insert_subset_iff, singleton_subset_iff]
       exact ⟨(isGLB_Ioo hab).mem_closure hab', (isLUB_Ioo hab).mem_closure hab'⟩
@@ -160,7 +160,7 @@ theorem Ioc_subset_closure_interior (a b : α) : Ioc a b ⊆ closure (interior (
         closure_mono (interior_maximal Ioo_subset_Ioc_self isOpen_Ioo)
 
 theorem Ico_subset_closure_interior (a b : α) : Ico a b ⊆ closure (interior (Ico a b)) := by
-  simpa only [Ioc_toDual] using
+  simpa only [Ioc_toDual] using!
     Ioc_subset_closure_interior (OrderDual.toDual b) (OrderDual.toDual a)
 
 @[simp]
@@ -193,19 +193,19 @@ theorem frontier_Iio [NoMinOrder α] {a : α} : frontier (Iio a) = {a} :=
 
 @[simp]
 theorem frontier_Icc [NoMinOrder α] [NoMaxOrder α] {a b : α} (h : a ≤ b) :
-    frontier (Icc a b) = {a, b} := by simp [frontier, h, Icc_diff_Ioo_same]
+    frontier (Icc a b) = {a, b} := by simp [frontier, h, Icc_sdiff_Ioo_same]
 
 @[simp]
 theorem frontier_Ioo {a b : α} (h : a < b) : frontier (Ioo a b) = {a, b} := by
-  rw [frontier, closure_Ioo h.ne, interior_Ioo, Icc_diff_Ioo_same h.le]
+  rw [frontier, closure_Ioo h.ne, interior_Ioo, Icc_sdiff_Ioo_same h.le]
 
 @[simp]
 theorem frontier_Ico [NoMinOrder α] {a b : α} (h : a < b) : frontier (Ico a b) = {a, b} := by
-  rw [frontier, closure_Ico h.ne, interior_Ico, Icc_diff_Ioo_same h.le]
+  rw [frontier, closure_Ico h.ne, interior_Ico, Icc_sdiff_Ioo_same h.le]
 
 @[simp]
 theorem frontier_Ioc [NoMaxOrder α] {a b : α} (h : a < b) : frontier (Ioc a b) = {a, b} := by
-  rw [frontier, closure_Ioc h.ne, interior_Ioc, Icc_diff_Ioo_same h.le]
+  rw [frontier, closure_Ioc h.ne, interior_Ioc, Icc_sdiff_Ioo_same h.le]
 
 theorem nhdsWithin_Ioi_neBot' {a b : α} (H₁ : (Ioi a).Nonempty) (H₂ : a ≤ b) :
     NeBot (𝓝[Ioi a] b) :=
@@ -263,9 +263,8 @@ lemma DenselyOrdered.subsingleton_of_discreteTopology [DiscreteTopology α] : Su
   suffices ∀ a b : α, b ≤ a from ⟨fun a b ↦ le_antisymm (this b a) (this a b)⟩
   intro a b
   by_contra! contra
-  suffices b ∈ Ioo a b by grind
-  rw [← (isClosed_discrete (Ioo a b)).closure_eq, closure_Ioo contra.ne]
-  grind
+  have : Ioo a b = Icc a b := by rw [← closure_discrete (Ioo a b), closure_Ioo contra.ne]
+  grind => have : b ∈ Ioo a b; finish
 
 /-- Let `s` be a dense set in a nontrivial dense linear order `α`. If `s` is a
 separable space (e.g., if `α` has a second countable topology), then there exists a countable
@@ -275,9 +274,9 @@ theorem Dense.exists_countable_dense_subset_no_bot_top [Nontrivial α] {s : Set 
     ∃ t, t ⊆ s ∧ t.Countable ∧ Dense t ∧ (∀ x, IsBot x → x ∉ t) ∧ ∀ x, IsTop x → x ∉ t := by
   rcases hs.exists_countable_dense_subset with ⟨t, hts, htc, htd⟩
   refine ⟨t \ ({ x | IsBot x } ∪ { x | IsTop x }), ?_, ?_, ?_, fun x hx => ?_, fun x hx => ?_⟩
-  · exact diff_subset.trans hts
-  · exact htc.mono diff_subset
-  · exact htd.diff_finite ((subsingleton_isBot α).finite.union (subsingleton_isTop α).finite)
+  · exact sdiff_subset.trans hts
+  · exact htc.mono sdiff_subset
+  · exact htd.sdiff_finite ((subsingleton_isBot α).finite.union (subsingleton_isTop α).finite)
   · simp [hx]
   · simp [hx]
 
