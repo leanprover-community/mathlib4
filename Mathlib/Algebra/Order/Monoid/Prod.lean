@@ -71,7 +71,7 @@ strictly monotone on the first factor and monotone on the second. This does not 
 commutativity, unlike `Prod.Lex.isOrderedMonoid`. -/
 @[to_additive /-- For the lexicographic order on a product, left addition is monotone as soon as it
 is strictly monotone on the first summand and monotone on the second. -/]
-instance mulLeftMono [Mul α] [Preorder α] [MulLeftStrictMono α]
+instance [Mul α] [Preorder α] [MulLeftStrictMono α]
     [Mul β] [Preorder β] [MulLeftMono β] : MulLeftMono (α ×ₗ β) :=
   ⟨fun _ _ _ hxy ↦ (le_iff.1 hxy).elim
     (fun hxy ↦ left _ _ <| mul_lt_mul_right hxy _)

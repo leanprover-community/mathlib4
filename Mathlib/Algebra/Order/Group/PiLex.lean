@@ -38,7 +38,7 @@ is strictly monotone on every factor. This does not require commutativity, unlik
 `Pi.Lex.isOrderedCancelMonoid`. -/
 @[to_additive /-- For the lexicographic order on a pi type, left addition is strictly monotone as
 soon as it is strictly monotone on every summand. -/]
-instance mulLeftStrictMono [∀ i, Mul (α i)] [∀ i, Preorder (α i)] [∀ i, MulLeftStrictMono (α i)] :
+instance [∀ i, Mul (α i)] [∀ i, Preorder (α i)] [∀ i, MulLeftStrictMono (α i)] :
     MulLeftStrictMono (Lex (∀ i, α i)) :=
   ⟨fun z _ _ ⟨i, hi₁, hi₂⟩ =>
     ⟨i, fun j hj => congr_arg (z j * ·) (hi₁ j hj), mul_lt_mul_right hi₂ (z i)⟩⟩
@@ -48,7 +48,7 @@ strictly monotone on every factor. This does not require commutativity, unlike
 `Pi.Lex.isOrderedCancelMonoid`. -/
 @[to_additive /-- For the lexicographic order on a pi type, left addition is monotone as soon as it
 is strictly monotone on every summand. -/]
-instance mulLeftMono [∀ i, Mul (α i)] [∀ i, PartialOrder (α i)] [∀ i, MulLeftStrictMono (α i)] :
+instance [∀ i, Mul (α i)] [∀ i, PartialOrder (α i)] [∀ i, MulLeftStrictMono (α i)] :
     MulLeftMono (Lex (∀ i, α i)) :=
   mulLeftMono_of_mulLeftStrictMono _
 
