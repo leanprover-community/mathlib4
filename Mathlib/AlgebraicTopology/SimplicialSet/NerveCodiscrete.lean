@@ -10,6 +10,7 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.Nerve
 
 /-!
 # The Nerve of a Codiscrete Category
+
 In the codiscrete category on a type `X`, every hom-type is given by `Unit`.
 When we take the nerve of such a category, the `n`-simplices become equivalent to
 `X`-vectors of length `n + 1`.
