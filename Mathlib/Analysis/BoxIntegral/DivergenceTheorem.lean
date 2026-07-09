@@ -50,8 +50,6 @@ open Filter Set Finset Metric
 
 open BoxIntegral.IntegrationParams (GP gp_le)
 
-section
-
 universe u
 
 variable {E : Type u} [NormedAddCommGroup E] [NormedSpace ℝ E] {n : ℕ}

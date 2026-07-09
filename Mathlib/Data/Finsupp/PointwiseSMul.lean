@@ -16,8 +16,6 @@ public import Mathlib.Algebra.MonoidAlgebra.PointwiseSMul
 
 open Finset Function
 
-section
-
 variable {G P F R S U V : Type*}
 
 namespace Finsupp

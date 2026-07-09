@@ -20,8 +20,6 @@ public import Mathlib.Algebra.Prime.Defs
 
 public section
 
-section
-
 open Finset AddMonoidAlgebra
 
 open Polynomial

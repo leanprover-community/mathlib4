@@ -14,8 +14,6 @@ public import Mathlib.SetTheory.Ordinal.Univ
 
 public section
 
-section
-
 universe u v
 
 open Cardinal

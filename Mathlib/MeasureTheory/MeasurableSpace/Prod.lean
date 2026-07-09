@@ -18,8 +18,6 @@ public section
 
 assert_not_exists MeasureTheory.Measure
 
-section
-
 open Set MeasurableSpace
 
 variable {α β : Type*} [MeasurableSpace α] [MeasurableSpace β]

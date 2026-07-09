@@ -47,8 +47,6 @@ public section
 
 open Polynomial IntermediateField Field
 
-section
-
 universe u v w
 
 section TowerLaw

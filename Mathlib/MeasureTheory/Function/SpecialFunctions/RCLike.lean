@@ -16,8 +16,6 @@ public import Mathlib.MeasureTheory.Constructions.BorelSpace.Complex
 public section
 
 
-section
-
 open NNReal ENNReal
 
 namespace RCLike

@@ -47,8 +47,6 @@ public section
 assert_not_exists InnerProductSpace
 assert_not_exists MeasureTheory.VectorMeasure
 
-section
-
 open scoped MeasureTheory NNReal ENNReal
 
 variable {α β : Type*} {m : MeasurableSpace α}

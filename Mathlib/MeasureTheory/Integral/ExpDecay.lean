@@ -21,8 +21,6 @@ for integrability:
 public section
 
 
-section
-
 open Real intervalIntegral MeasureTheory Set Filter
 
 open scoped Topology

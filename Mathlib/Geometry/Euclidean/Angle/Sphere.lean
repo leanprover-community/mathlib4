@@ -19,8 +19,6 @@ This file proves results about angles in circles and spheres.
 public section
 
 
-section
-
 open Module Complex
 
 open scoped EuclideanGeometry Real RealInnerProductSpace ComplexConjugate

@@ -21,8 +21,6 @@ public section
 
 universe w w' v₁ v₂ u₁ u₂
 
-section
-
 open CategoryTheory
 
 namespace CategoryTheory.Limits

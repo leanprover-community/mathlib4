@@ -21,8 +21,6 @@ public import Mathlib.SetTheory.Cardinal.Subfield
 
 public section
 
-section
-
 universe u v
 
 variable {K : Type u}

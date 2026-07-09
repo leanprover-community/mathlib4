@@ -14,8 +14,6 @@ public import Mathlib.Analysis.Calculus.MeanValue
 
 public section
 
-section
-
 open Set Fin Filter Function
 
 open scoped NNReal Topology

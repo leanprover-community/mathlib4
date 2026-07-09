@@ -22,8 +22,6 @@ functions, or require additional imports which are not available in that file.
 public section
 
 
-section
-
 namespace Complex
 
 open Set Filter

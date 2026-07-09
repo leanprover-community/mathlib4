@@ -17,8 +17,6 @@ Basic facts and derivatives for the complex trigonometric functions.
 public section
 
 
-section
-
 namespace Complex
 
 open Set Filter

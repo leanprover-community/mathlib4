@@ -18,8 +18,6 @@ function with finite support, module, linear algebra
 
 public section
 
-section
-
 open Set LinearMap Submodule
 
 namespace Finsupp

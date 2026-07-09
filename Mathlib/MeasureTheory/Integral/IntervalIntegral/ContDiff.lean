@@ -16,8 +16,6 @@ that the function is `C^1` on the interval. This is restrictive, but satisfied i
 
 public section
 
-section
-
 open MeasureTheory Set Filter Function Asymptotics
 
 open scoped Topology ENNReal Interval NNReal

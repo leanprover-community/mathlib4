@@ -21,8 +21,6 @@ generate the σ-algebra on the indexed product of `α i`s.
 
 public section
 
-section
-
 open Function Set MeasurableSpace Encodable
 
 variable {ι : Type*} {α : ι → Type*}

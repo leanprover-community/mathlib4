@@ -112,8 +112,6 @@ public section
 open Filter Asymptotics ContinuousLinearMap Set Metric Topology NNReal ENNReal
 
 section
-
-section
 section DerivativeUniqueness
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 variable {E : Type*} [AddCommGroup E] [Module 𝕜 E]

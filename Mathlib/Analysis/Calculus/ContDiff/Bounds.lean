@@ -20,8 +20,6 @@ public import Mathlib.Data.Nat.Choose.Multinomial
 
 public section
 
-section
-
 open scoped NNReal Nat ContDiff
 
 universe u uD uE uF uG

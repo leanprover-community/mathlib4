@@ -45,8 +45,6 @@ equivalence to an inner-product space.
 
 public section
 
-section
-
 open MeasureTheory Filter Complex Set Module
 
 open scoped Filter Topology Real ENNReal FourierTransform RealInnerProductSpace NNReal

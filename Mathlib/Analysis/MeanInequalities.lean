@@ -114,8 +114,6 @@ universe u v
 open Finset NNReal ENNReal
 open scoped BigOperators
 
-section
-
 variable {ι : Type u} (s : Finset ι)
 
 section GeomMeanLEArithMean

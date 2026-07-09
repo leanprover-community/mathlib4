@@ -39,8 +39,6 @@ unnecessarily.
 
 public section
 
-section
-
 open scoped CharZero Real RealInnerProductSpace
 
 namespace InnerProductGeometry

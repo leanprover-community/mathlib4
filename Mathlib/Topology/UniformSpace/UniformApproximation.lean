@@ -30,8 +30,6 @@ Uniform limit, uniform convergence, tends uniformly to
 public section
 
 
-section
-
 open Topology Uniformity Filter SetRel Set Uniform
 
 variable {α β ι : Type*} [TopologicalSpace α] [UniformSpace β]

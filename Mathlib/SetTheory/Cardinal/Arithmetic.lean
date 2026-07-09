@@ -29,8 +29,6 @@ public section
 
 assert_not_exists Module Finsupp Ordinal.log
 
-section
-
 open Function Set Cardinal Equiv Order Ordinal
 
 universe u v w

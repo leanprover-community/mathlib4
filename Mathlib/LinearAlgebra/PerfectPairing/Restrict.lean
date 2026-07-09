@@ -28,8 +28,6 @@ public section
 open Function Module Set
 open Submodule (span subset_span)
 
-section
-
 namespace LinearMap
 
 section CommRing

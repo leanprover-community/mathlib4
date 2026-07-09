@@ -27,8 +27,6 @@ satisfying relations associated to the Cartan matrix of the input root system.
 
 public section
 
-section
-
 namespace RootPairing.GeckConstruction
 
 open Function Module.End

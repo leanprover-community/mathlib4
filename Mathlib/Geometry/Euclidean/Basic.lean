@@ -39,8 +39,6 @@ theorems that need it.
 
 public section
 
-section
-
 open RealInnerProductSpace
 
 namespace EuclideanGeometry

@@ -19,8 +19,6 @@ Some of the main results include
 public section
 
 
-section
-
 open Polynomial
 
 open Finsupp Finset

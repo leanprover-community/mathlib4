@@ -37,8 +37,6 @@ public section
 
 open Set Topology
 
-section
-
 namespace Complex
 
 /-- `Complex.re` turns `ℂ` into a trivial topological fiber bundle over `ℝ`. -/

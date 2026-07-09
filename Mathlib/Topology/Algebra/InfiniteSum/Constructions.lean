@@ -19,8 +19,6 @@ types, `MulOpposite`, etc.
 
 public section
 
-section
-
 open Filter Finset Function
 
 open scoped Topology

@@ -45,8 +45,6 @@ public section
 
 assert_not_exists Cardinal
 
-section
-
 open Function Set Submodule
 
 universe u' u

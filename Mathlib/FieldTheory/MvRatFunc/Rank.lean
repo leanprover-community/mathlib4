@@ -17,8 +17,6 @@ public import Mathlib.RingTheory.MvPolynomial
 
 public section
 
-section
-
 universe u v
 
 open Cardinal in

@@ -35,8 +35,6 @@ product measure, Fubini's theorem, Fubini-Tonelli theorem
 
 public section
 
-section
-
 open scoped Topology ENNReal MeasureTheory
 
 open Set Function Real ENNReal

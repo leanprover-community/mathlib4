@@ -32,8 +32,6 @@ polynomial factor occurring in the `n`th derivative of a Gaussian.
 public section
 
 
-section
-
 open Polynomial
 
 namespace Polynomial

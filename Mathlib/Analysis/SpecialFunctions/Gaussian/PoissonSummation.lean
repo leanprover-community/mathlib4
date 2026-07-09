@@ -29,8 +29,6 @@ open scoped Real Topology FourierTransform RealInnerProductSpace
 
 open Complex hiding exp continuous_exp
 
-section
-
 section GaussianPoisson
 
 /-! First we show that Gaussian-type functions have rapid decay along `cocompact ℝ`. -/

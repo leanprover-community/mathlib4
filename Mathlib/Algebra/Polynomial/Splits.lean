@@ -696,8 +696,6 @@ theorem splits_iff_splits {f : R[X]} :
 
 end Field
 
-section
-
 open Polynomial
 
 universe u v w
@@ -953,7 +951,5 @@ alias nextCoeff_eq_neg_sum_roots_mul_leadingCoeff_of_splits :=
 alias nextCoeff_eq_neg_sum_roots_of_monic_of_splits := Splits.nextCoeff_eq_neg_sum_roots_of_monic
 
 end Splits
-
-end
 
 end Polynomial

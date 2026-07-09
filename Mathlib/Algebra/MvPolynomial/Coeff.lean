@@ -19,8 +19,6 @@ public import Mathlib.Data.Nat.Choose.Multinomial
 
 public section
 
-section
-
 namespace MvPolynomial
 
 open Finsupp

@@ -50,8 +50,6 @@ open Topology
 
 public section
 
-section
-
 namespace Manifold
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]

@@ -17,8 +17,6 @@ Collection of useful identities of modular forms.
 
 public section
 
-section
-
 open ModularForm UpperHalfPlane Matrix CongruenceSubgroup Matrix.SpecialLinearGroup MatrixGroups
 
 namespace SlashInvariantForm

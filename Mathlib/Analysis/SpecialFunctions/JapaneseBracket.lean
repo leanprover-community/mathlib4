@@ -30,8 +30,6 @@ than the dimension.
 public section
 
 
-section
-
 open scoped NNReal Filter Topology ENNReal
 
 open Asymptotics Filter Set Real MeasureTheory Module

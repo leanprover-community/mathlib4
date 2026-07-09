@@ -28,8 +28,6 @@ open Filter Asymptotics ContinuousLinearMap Set Metric Topology NNReal ENNReal
 
 section
 
-section
-
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]

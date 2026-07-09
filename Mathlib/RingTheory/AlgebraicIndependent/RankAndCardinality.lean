@@ -28,8 +28,6 @@ transcendence basis, transcendence degree, transcendence
 
 public section
 
-section
-
 open Function Set Subalgebra MvPolynomial Algebra
 
 universe u v w

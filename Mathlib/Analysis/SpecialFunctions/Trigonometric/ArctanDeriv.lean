@@ -17,8 +17,6 @@ Continuity and derivatives of the tangent and arctangent functions.
 public section
 
 
-section
-
 namespace Real
 
 open Set Filter

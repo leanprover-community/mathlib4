@@ -19,8 +19,6 @@ public import Mathlib.Algebra.Polynomial.Degree.Operations
 
 public section
 
-section
-
 open Finsupp Finset
 
 open Polynomial

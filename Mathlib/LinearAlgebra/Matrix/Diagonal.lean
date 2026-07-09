@@ -22,8 +22,6 @@ matrix, diagonal, linear map
 public section
 
 
-section
-
 open LinearMap Matrix Set Submodule Matrix
 
 universe u v w
