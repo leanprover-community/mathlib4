@@ -708,8 +708,6 @@ theorem inv_apply_self (e : MulAut M) (m : M) : e⁻¹ (e m) = m :=
   MulEquiv.apply_symm_apply _ _
 
 /-- Monoid hom from the group of multiplicative automorphisms to the group of permutations. -/
-@[to_additive /--
-Monoid hom from the group of multiplicative automorphisms to the group of permutations. -/]
 def toPerm : MulAut M →* Equiv.Perm M where
   toFun := MulEquiv.toEquiv
   map_one' := rfl
