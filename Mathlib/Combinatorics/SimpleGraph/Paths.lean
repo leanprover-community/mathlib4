@@ -385,7 +385,7 @@ theorem _root_.SimpleGraph.exists_isTrail_forall_length_le_of_pred [Finite G.edg
 
 /-- There exists a trail of maximal length in a non-empty graph on finite edges. -/
 lemma _root_.SimpleGraph.exists_isTrail_forall_isTrail_length_le_length (G : SimpleGraph V)
-    [N : Nonempty V] [Finite G.edgeSet] :
+    [Nonempty V] [Finite G.edgeSet] :
     ∃ (u v : V) (p : G.Walk u v) (_ : p.IsTrail),
       ∀ (u' v' : V) (p' : G.Walk u' v') (_ : p'.IsTrail), p'.length ≤ p.length := by
   have v₀ := Classical.arbitrary V
@@ -398,7 +398,7 @@ alias exists_isTrail_forall_isTrail_length_le_length :=
 
 /-- There exists a path of maximal length in a non-empty graph on finite edges. -/
 lemma _root_.SimpleGraph.exists_isPath_forall_isPath_length_le_length (G : SimpleGraph V)
-    [N : Nonempty V] [Finite G.edgeSet] :
+    [Nonempty V] [Finite G.edgeSet] :
     ∃ (u v : V) (p : G.Walk u v) (_ : p.IsPath),
       ∀ (u' v' : V) (p' : G.Walk u' v') (_ : p'.IsPath), p'.length ≤ p.length := by
   have v₀ := Classical.arbitrary V
