@@ -185,6 +185,7 @@ lemma RowEquivalent.trans {A B C : Matrix m n R}
 
 namespace RowEquivalent
 
+/-- The row-equivalence relation as a scoped setoid instance. -/
 scoped instance setoid : Setoid (Matrix m n R) where
   r := Matrix.RowEquivalent
   iseqv := ⟨Matrix.RowEquivalent.refl, Matrix.RowEquivalent.symm, Matrix.RowEquivalent.trans⟩
