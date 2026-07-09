@@ -3,8 +3,10 @@ Copyright (c) 2021 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.LinearAlgebra.Ray
-import Mathlib.LinearAlgebra.Determinant
+module
+
+public import Mathlib.LinearAlgebra.Ray
+public import Mathlib.LinearAlgebra.Determinant
 
 /-!
 # Orientations of modules
@@ -30,6 +32,8 @@ that index type is a `Fintype` and there exists a basis of the same cardinality.
 * https://en.wikipedia.org/wiki/Orientation_(vector_space)
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -209,7 +213,7 @@ theorem eq_or_eq_neg_of_isEmpty [IsEmpty ι] (o : Orientation R M ι) :
   intro h
   set f : (M [⋀^ι]→ₗ[R] R) ≃ₗ[R] R := AlternatingMap.constLinearEquivOfIsEmpty.symm
   have H : LinearIndependent R ![f x, 1] := by
-    convert h.map' f.toLinearMap f.ker
+    convert! h.map' f.toLinearMap f.ker
     ext i
     fin_cases i <;> simp [f]
   rw [linearIndependent_iff'] at H

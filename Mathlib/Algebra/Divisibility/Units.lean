@@ -4,8 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Amelia Livingston, Yury Kudryashov,
 Neil Strickland, Aaron Anderson
 -/
-import Mathlib.Algebra.Divisibility.Basic
-import Mathlib.Algebra.Group.Units.Basic
+module
+
+public import Mathlib.Algebra.Divisibility.Basic
+public import Mathlib.Algebra.Group.Units.Basic
 
 /-!
 # Divisibility and units
@@ -16,6 +18,8 @@ import Mathlib.Algebra.Group.Units.Basic
   divisors of `x` and `y` are the units.
 
 -/
+
+@[expose] public section
 
 variable {α : Type*}
 
@@ -131,6 +135,13 @@ theorem isUnit_of_dvd_one {a : α} (h : a ∣ 1) : IsUnit (a : α) :=
 theorem not_isUnit_of_not_isUnit_dvd {a b : α} (ha : ¬IsUnit a) (hb : a ∣ b) : ¬IsUnit b :=
   mt (isUnit_of_dvd_unit hb) ha
 
+@[simp]
+lemma dvd_pow_self_iff {x : α} {n : ℕ} :
+    x ∣ x ^ n ↔ n ≠ 0 ∨ IsUnit x := by
+  rcases eq_or_ne n 0 with rfl | hn
+  · simp [isUnit_iff_dvd_one]
+  · simp [hn, dvd_pow_self]
+
 end CommMonoid
 
 section RelPrime
@@ -141,7 +152,11 @@ def IsRelPrime [Monoid α] (x y : α) : Prop := ∀ ⦃d⦄, d ∣ x → d ∣ y
 variable [CommMonoid α] {x y z : α}
 
 @[symm] theorem IsRelPrime.symm (H : IsRelPrime x y) : IsRelPrime y x := fun _ hx hy ↦ H hy hx
-theorem symmetric_isRelPrime : Symmetric (IsRelPrime : α → α → Prop) := fun _ _ ↦ .symm
+
+instance symm_isRelPrime : Std.Symm (IsRelPrime : α → α → Prop) where
+  symm _ _ := .symm
+
+@[deprecated (since := "2026-06-10")] alias symmetric_isRelPrime := symm_isRelPrime
 
 theorem isRelPrime_comm : IsRelPrime x y ↔ IsRelPrime y x :=
   ⟨IsRelPrime.symm, IsRelPrime.symm⟩

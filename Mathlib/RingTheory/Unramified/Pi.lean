@@ -3,7 +3,9 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.Unramified.Basic
+module
+
+public import Mathlib.RingTheory.Unramified.Basic
 
 /-!
 
@@ -16,11 +18,11 @@ import Mathlib.RingTheory.Unramified.Basic
 
 -/
 
+public section
+
 namespace Algebra.FormallyUnramified
 
-universe u v
-
-variable {R : Type max u v} {I : Type v} [Finite I] (f : I → Type max u v)
+variable {R : Type*} {I : Type*} [Finite I] (f : I → Type*)
 variable [CommRing R] [∀ i, CommRing (f i)] [∀ i, Algebra R (f i)]
 
 theorem pi_iff :
@@ -46,12 +48,12 @@ theorem pi_iff :
     have h₁ : (f₁ e) * (1 - f₂ e) = 0 := by
       rw [← Ideal.mem_bot, ← hJ, ← ((he.map f₁).mul (he.map f₂).one_sub).eq, ← pow_two]
       apply Ideal.pow_mem_pow
-      convert Ideal.mul_mem_left _ (f₁ e) (hf e) using 1
+      convert! Ideal.mul_mem_left _ (f₁ e) (hf e) using 1
       rw [mul_sub, mul_sub, mul_one, (he.map f₁).eq]
     have h₂ : (f₂ e) * (1 - f₁ e) = 0 := by
       rw [← Ideal.mem_bot, ← hJ, ← ((he.map f₂).mul (he.map f₁).one_sub).eq, ← pow_two]
       apply Ideal.pow_mem_pow
-      convert Ideal.mul_mem_left _ (-f₂ e) (hf e) using 1
+      convert! Ideal.mul_mem_left _ (-f₂ e) (hf e) using 1
       rw [neg_mul, mul_sub, mul_sub, mul_one, neg_sub, (he.map f₂).eq]
     have H : f₁ e = f₂ e := by
       trans f₁ e * f₂ e

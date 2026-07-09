@@ -3,13 +3,15 @@ Copyright (c) 2024 Michail Karatarakis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michail Karatarakis
 -/
-import Mathlib.NumberTheory.SiegelsLemma
-import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.Basic
-import Mathlib.NumberTheory.NumberField.EquivReindex
+module
+
+public import Mathlib.NumberTheory.SiegelsLemma
+public import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.Basic
+public import Mathlib.NumberTheory.NumberField.EquivReindex
 
 /-!
-
 # House of an algebraic number
+
 This file defines the house of an algebraic number `α`, which is
 the largest of the modulus of its conjugates.
 
@@ -20,6 +22,8 @@ the largest of the modulus of its conjugates.
 ## Tags
 number field, algebraic number, house
 -/
+
+@[expose] public section
 
 variable {K : Type*} [Field K] [NumberField K]
 
@@ -48,8 +52,59 @@ theorem house_nonneg (α : K) : 0 ≤ house α := norm_nonneg _
 theorem house_mul_le (α β : K) : house (α * β) ≤ house α * house β := by
   simp only [house, map_mul]; apply norm_mul_le
 
+lemma house_prod_le (s : Finset K) : house (∏ x ∈ s, x) ≤ ∏ x ∈ s, house x := by
+  simpa [house, map_prod] using Finset.norm_prod_le _ _
+
+theorem house_add_le (α β : K) : house (α + β) ≤ house α + house β := by
+  simp only [house, map_add]; apply norm_add_le
+
+theorem house_pow_le (α : K) (i : ℕ) : house (α ^ i) ≤ house α ^ i := by
+  simpa only [house, map_pow] using norm_pow_le ((canonicalEmbedding K) α) i
+
+theorem house_nat_mul (α : K) (c : ℕ) : house (c * α) = c * house α := by
+  rw [house_eq_sup', house_eq_sup', Finset.sup'_eq_sup, Finset.sup'_eq_sup]
+  norm_cast
+  simp [NNReal.mul_finset_sup]
+
 @[simp] theorem house_intCast (x : ℤ) : house (x : K) = |x| := by
   simp only [house, map_intCast, Pi.intCast_def, pi_norm_const, Complex.norm_intCast, Int.cast_abs]
+
+/-- Let `α` be a non-zero algebraic integer. Then `α` has a conjugate `σ α` with `‖σ α‖ ≥ 1`. -/
+lemma exists_conjugate_one_le_norm {α : 𝓞 K} (hα0 : α ≠ 0) :
+    ∃ σ : K →+* ℂ, 1 ≤ ‖σ α‖ := by
+  obtain ⟨w, hw⟩ : ∃ w : InfinitePlace K, 1 ≤ w α := by
+    by_contra! h_neg
+    let w₀ := Classical.arbitrary (InfinitePlace K)
+    have h_ge_one : 1 ≤ w₀ α := InfinitePlace.one_le_of_lt_one hα0 (fun z _ ↦ h_neg z)
+    exact (h_neg w₀).not_ge h_ge_one
+  use w.embedding
+  rwa [InfinitePlace.norm_embedding_eq]
+
+lemma norm_embedding_le_house (α : K) (σ : K →+* ℂ) : ‖σ α‖ ≤ house α := by
+  rw [house_eq_sup']
+  exact Finset.le_sup' (f := (‖· α‖₊)) (Finset.mem_univ σ)
+
+lemma one_le_house_of_isIntegral {α : K} (hα : IsIntegral ℤ α) (hα0 : α ≠ 0) :
+    1 ≤ house α := by
+  have ⟨σ, hσ⟩ : ∃ σ : K →+* ℂ, 1 ≤ ‖σ α‖ := by
+    apply exists_conjugate_one_le_norm (K := K) (α := ⟨α, hα⟩)
+    simpa [RingOfIntegers.ext_iff]
+  apply hσ.trans (norm_embedding_le_house α σ)
+
+lemma norm_norm_le_norm_mul_house_pow (α : K) (σ : K →+* ℂ) :
+    ‖Algebra.norm ℚ α‖ ≤ ‖σ α‖ * house α ^ (Module.finrank ℚ K - 1) := by
+  classical
+  set σ' := σ.toRatAlgHom
+  calc _ = ‖∏ τ : K →ₐ[ℚ] ℂ, τ α‖ := ?_
+       _ = ‖(σ' α) * ∏ τ ∈ univ.erase σ', τ α‖ := by rw [mul_prod_erase univ (· α) (mem_univ σ')]
+       _ ≤ ‖σ' α‖ * ∏ τ ∈ univ.erase σ', ‖τ α‖ := ?_
+       _ ≤ ‖σ' α‖ * ∏ τ ∈ univ.erase σ', house α := by gcongr; apply norm_embedding_le_house
+       _ = ‖σ' α‖ * house α ^ (Module.finrank ℚ K - 1) := by simp
+  · rw [← Algebra.norm_eq_prod_embeddings, ← Rat.norm_cast_real,
+      Real.norm_eq_abs, eq_ratCast, Complex.norm_ratCast]
+  · rw [Complex.norm_mul]
+    gcongr
+    exact norm_prod_le (univ.erase σ') (· α)
 
 end
 
@@ -69,6 +124,7 @@ section DecidableEq
 
 variable [DecidableEq (K →+* ℂ)]
 
+set_option backward.privateInPublic true in
 /-- `c` is defined as the product of the maximum absolute
   value of the entries of the inverse of the matrix `basisMatrix` and  `finrank ℚ K`. -/
 private def c := (finrank ℚ K) * ‖((basisMatrix K).transpose)⁻¹‖
@@ -77,6 +133,9 @@ private theorem c_nonneg : 0 ≤ c K := by
   rw [c]
   positivity
 
+set_option backward.isDefEq.respectTransparency false in
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 theorem basis_repr_norm_le_const_mul_house (α : 𝓞 K) (i : K →+* ℂ) :
     ‖(((integralBasis K).reindex (equivReindex K).symm).repr α i : ℂ)‖ ≤
       (c K) * house (algebraMap (𝓞 K) K α) := by
@@ -94,9 +153,6 @@ theorem basis_repr_norm_le_const_mul_house (α : 𝓞 K) (i : K →+* ℂ) :
       exact norm_le_pi_norm (σ ((algebraMap (𝓞 K) K) α)) j
     _ = ↑(finrank ℚ K) * ‖((basisMatrix K).transpose)⁻¹‖ * house (algebraMap (𝓞 K) K α) := by
       simp [Embeddings.card, mul_assoc]
-
-@[deprecated (since := "2025-02-17")] alias basis_repr_abs_le_const_mul_house :=
-  basis_repr_norm_le_const_mul_house
 
 /-- `newBasis K` defines a reindexed basis of the ring of integers of `K`,
   adjusted by the inverse of the equivalence `equivReindex`. -/
@@ -120,12 +176,14 @@ variable {α : Type*} {β : Type*} (a : Matrix α β (𝓞 K))
 private def a' : α → β → (K →+* ℂ) → (K →+* ℂ) → ℤ := fun k l r =>
   (newBasis K).repr (a k l * (newBasis K) r)
 
+set_option backward.privateInPublic true in
 /-- `asiegel K a` is the integer matrix of the coefficients of the
 product of matrix elements and basis vectors. -/
 private def asiegel : Matrix (α × (K →+* ℂ)) (β × (K →+* ℂ)) ℤ := fun k l => a' K a k.1 l.1 l.2 k.2
 
 variable (ha : a ≠ 0)
 
+set_option backward.isDefEq.respectTransparency false in
 include ha in
 private theorem asiegel_ne_0 : asiegel K a ≠ 0 := by
   simp +unfoldPartialApp only [asiegel, a']
@@ -150,6 +208,7 @@ variable {p q : ℕ} (h0p : 0 < p) (hpq : p < q) (x : β × (K →+* ℂ) → �
 /-- `ξ` is the product of `x (l, r)` and the `r`-th basis element of the newBasis of `K`. -/
 private def ξ : β → 𝓞 K := fun l => ∑ r : K →+* ℂ, x (l, r) * (newBasis K r)
 
+set_option backward.privateInPublic true in
 include hxl in
 private theorem ξ_ne_0 : ξ K x ≠ 0 := by
   intro H
@@ -164,6 +223,8 @@ private theorem lin_1 (l k r) : a k l * (newBasis K) r =
     ∑ u, (a' K a k l r u) * (newBasis K) u := by
   simp only [Basis.sum_repr (newBasis K) (a k l * (newBasis K) r), a', ← zsmul_eq_mul]
 
+-- Variable declarations can only reference public items.
+set_option backward.privateInPublic true
 variable [Fintype β] (cardβ : Fintype.card β = q) (hmulvec0 : asiegel K a *ᵥ x = 0)
 
 include hxl hmulvec0 in
@@ -259,7 +320,7 @@ private theorem house_le_bound : ∀ l, house (ξ K x l).1 ≤ (c₁ K) *
        _ ≤ h * (c₂ K) * ((q * c₁ K * A) ^ ((p : ℝ) / (q - p))) := ?_
        _ ≤ c₁ K * ((c₁ K * ↑q * A) ^ ((p : ℝ) / (q - p))) := ?_
   · simp_rw [← map_mul, map_sum]; apply house_sum_le_sum_house
-  · gcongr with r _; convert house_mul_le ..
+  · gcongr with r _; convert! house_mul_le ..
     simp only [map_intCast, house_intCast, Int.cast_abs, Int.norm_eq_abs]
   · unfold supOfBasis
     gcongr with r _
@@ -274,6 +335,8 @@ private theorem house_le_bound : ∀ l, house (ξ K x l).1 ≤ (c₁ K) *
     · exact asiegel_remark K a habs Apos
   · rw [mul_comm (q : ℝ) (c₁ K)]; rfl
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 include hpq h0p cardα cardβ ha habs in
 /-- There exists a "small" non-zero algebraic integral solution of an
 non-trivial underdetermined system of linear equations with algebraic integer coefficients. -/
@@ -282,7 +345,7 @@ theorem exists_ne_zero_int_vec_house_le :
     ∀ l, house (ξ l).1 ≤ c₁ K * ((c₁ K * q * A) ^ ((p : ℝ) / (q - p))) := by
   classical
   let h := finrank ℚ K
-  have hphqh : p * h < q * h := mul_lt_mul_of_pos_right hpq finrank_pos
+  have hphqh : p * h < q * h := by gcongr; exact finrank_pos
   have h0ph : 0 < p * h := by rw [mul_pos_iff]; constructor; exact ⟨h0p, finrank_pos⟩
   have hfinp : Fintype.card (α × (K →+* ℂ)) = p * h := by
     rw [Fintype.card_prod, cardα, Embeddings.card]

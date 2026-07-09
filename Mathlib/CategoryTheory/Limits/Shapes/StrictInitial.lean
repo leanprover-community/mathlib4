@@ -3,8 +3,9 @@ Copyright (c) 2021 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Terminal
-import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 
 /-!
 # Strict initial objects
@@ -30,11 +31,13 @@ The dual notion (strict terminal objects) occurs much less frequently in practic
 
 * Construct examples of this: `Type*`, `TopCat`, `Groupoid`, simplicial types, posets.
 * Construct the bottom element of the subobject lattice given strict initials.
-* Show cartesian closed categories have strict initials
+* Show Cartesian closed categories have strict initials
 
 ## References
 * https://ncatlab.org/nlab/show/strict+initial+object
 -/
+
+@[expose] public section
 
 
 universe v u
@@ -153,6 +156,11 @@ theorem hasStrictInitialObjects_of_initial_is_strict [HasInitial C]
       haveI := h A (f ≫ hI.to _)
       ⟨⟨hI.to _ ≫ inv (f ≫ hI.to (⊥_ C)), by rw [← assoc, IsIso.hom_inv_id], hI.hom_ext _ _⟩⟩ }
 
+instance [Quiver.IsThin C] : HasStrictInitialObjects C where
+  out {I A} f hI := by
+    rw [isIso_iff_of_thin]
+    exact ⟨hI.to _⟩
+
 end StrictInitial
 
 section StrictTerminal
@@ -180,7 +188,7 @@ theorem IsTerminal.strict_hom_ext (hI : IsTerminal I) {A : C} (f g : I ⟶ A) : 
   haveI := hI.isIso_from g
   exact eq_of_inv_eq_inv (hI.hom_ext (inv f) (inv g))
 
-/-- If `X ⟶ Y` with `Y` being a strict terminal object, then `X` is also an terminal object. -/
+/-- If `X ⟶ Y` with `Y` being a strict terminal object, then `X` is also a terminal object. -/
 noncomputable
 def IsTerminal.ofStrict {X Y : C} (f : X ⟶ Y)
     (hY : IsTerminal X) : IsTerminal Y :=
@@ -192,6 +200,8 @@ theorem IsTerminal.subsingleton_to (hI : IsTerminal I) {A : C} : Subsingleton (I
 
 variable {J : Type v} [SmallCategory J]
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- If all but one object in a diagram is strict terminal, then the limit is isomorphic to the
 said object via `limit.π`. -/
 theorem limit_π_isIso_of_is_strict_terminal (F : J ⥤ C) [HasLimit F] (i : J)
@@ -209,7 +219,6 @@ theorem limit_π_isIso_of_is_strict_terminal (F : J ⥤ C) [HasLimit F] (i : J)
         obtain rfl : f = 𝟙 _ := Subsingleton.elim _ _
         simp
       · cases h
-        erw [Category.comp_id]
         haveI : IsIso (F.map f) := (H _ h_1).isIso_from _
         rw [← IsIso.comp_inv_eq]
         apply (H _ h_1).hom_ext
@@ -247,6 +256,11 @@ theorem hasStrictTerminalObjects_of_terminal_is_strict (I : C) (h : ∀ (A) (f :
   { out := fun {I' A} f hI' =>
       haveI := h A (hI'.from _ ≫ f)
       ⟨⟨inv (hI'.from I ≫ f) ≫ hI'.from I, hI'.hom_ext _ _, by rw [assoc, IsIso.inv_hom_id]⟩⟩ }
+
+instance [Quiver.IsThin C] : HasStrictTerminalObjects C where
+  out {I A} f hI := by
+    rw [CategoryTheory.isIso_iff_of_thin]
+    exact ⟨hI.from _⟩
 
 end StrictTerminal
 

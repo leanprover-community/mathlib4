@@ -3,9 +3,11 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.GroupWithZero.Subgroup
-import Mathlib.Algebra.Ring.Subring.Basic
-import Mathlib.Algebra.Ring.Subsemiring.Pointwise
+module
+
+public import Mathlib.Algebra.GroupWithZero.Subgroup
+public import Mathlib.Algebra.Ring.Subring.Basic
+public import Mathlib.Algebra.Ring.Subsemiring.Pointwise
 
 /-! # Pointwise instances on `Subring`s
 
@@ -21,6 +23,8 @@ possible, try to keep them in sync.
 
 -/
 
+@[expose] public section
+
 
 open Set
 
@@ -35,6 +39,7 @@ variable [Monoid M] [Ring R] [MulSemiringAction M R]
 /-- The action on a subring corresponding to applying the action to every element.
 
 This is available as an instance in the `Pointwise` locale. -/
+@[instance_reducible]
 protected def pointwiseMulAction : MulAction M (Subring R) where
   smul a S := S.map (MulSemiringAction.toRingHom _ _ a)
   one_smul S := (congr_arg (fun f => S.map f) (RingHom.ext <| one_smul M)).trans S.map_id
@@ -43,13 +48,13 @@ protected def pointwiseMulAction : MulAction M (Subring R) where
 
 scoped[Pointwise] attribute [instance] Subring.pointwiseMulAction
 
-open Pointwise
+open scoped Pointwise
 
 theorem pointwise_smul_def {a : M} (S : Subring R) :
     a • S = S.map (MulSemiringAction.toRingHom _ _ a) :=
   rfl
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_pointwise_smul (m : M) (S : Subring R) : ↑(m • S) = m • (S : Set R) :=
   rfl
 
@@ -93,7 +98,7 @@ section Group
 
 variable [Group M] [Ring R] [MulSemiringAction M R]
 
-open Pointwise
+open scoped Pointwise
 
 @[simp]
 theorem smul_mem_pointwise_smul_iff {a : M} {S : Subring R} {x : R} : a • x ∈ a • S ↔ x ∈ S :=
@@ -125,7 +130,7 @@ section GroupWithZero
 
 variable [GroupWithZero M] [Ring R] [MulSemiringAction M R]
 
-open Pointwise
+open scoped Pointwise
 
 @[simp]
 theorem smul_mem_pointwise_smul_iff₀ {a : M} (ha : a ≠ 0) (S : Subring R) (x : R) :

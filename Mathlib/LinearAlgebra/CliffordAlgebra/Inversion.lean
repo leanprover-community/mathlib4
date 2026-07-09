@@ -3,13 +3,17 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.LinearAlgebra.CliffordAlgebra.Contraction
+module
+
+public import Mathlib.LinearAlgebra.CliffordAlgebra.Contraction
 
 /-! # Results about inverses in Clifford algebras
 
 This contains some basic results about the inversion of vectors, related to the fact that
 $ι(m)^{-1} = \frac{ι(m)}{Q(m)}$.
 -/
+
+@[expose] public section
 
 variable {R M : Type*}
 variable [CommRing R] [AddCommGroup M] [Module R M] {Q : QuadraticForm R M}
@@ -19,6 +23,7 @@ namespace CliffordAlgebra
 variable (Q)
 
 /-- If the quadratic form of a vector is invertible, then so is that vector. -/
+@[implicit_reducible]
 def invertibleιOfInvertible (m : M) [Invertible (Q m)] : Invertible (ι Q m) where
   invOf := ι Q (⅟(Q m) • m)
   invOf_mul_self := by
@@ -30,7 +35,7 @@ def invertibleιOfInvertible (m : M) [Invertible (Q m)] : Invertible (ι Q m) wh
 theorem invOf_ι (m : M) [Invertible (Q m)] [Invertible (ι Q m)] :
     ⅟(ι Q m) = ι Q (⅟(Q m) • m) := by
   letI := invertibleιOfInvertible Q m
-  convert (rfl : ⅟(ι Q m) = _)
+  convert! (rfl : ⅟(ι Q m) = _)
 
 theorem isUnit_ι_of_isUnit {m : M} (h : IsUnit (Q m)) : IsUnit (ι Q m) := by
   cases h.nonempty_invertible
@@ -53,6 +58,7 @@ section
 variable [Invertible (2 : R)]
 
 /-- Over a ring where `2` is invertible, `Q m` is invertible whenever `ι Q m`. -/
+@[implicit_reducible]
 def invertibleOfInvertibleι (m : M) [Invertible (ι Q m)] : Invertible (Q m) :=
   ExteriorAlgebra.invertibleAlgebraMapEquiv M (Q m) <|
     .algebraMapOfInvertibleAlgebraMap (equivExterior Q).toLinearMap (by simp) <|

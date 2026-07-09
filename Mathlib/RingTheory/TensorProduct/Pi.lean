@@ -3,10 +3,12 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.Algebra.Algebra.Pi
-import Mathlib.LinearAlgebra.TensorProduct.Pi
-import Mathlib.LinearAlgebra.TensorProduct.Prod
-import Mathlib.RingTheory.TensorProduct.Basic
+module
+
+public import Mathlib.Algebra.Algebra.Pi
+public import Mathlib.LinearAlgebra.TensorProduct.Pi
+public import Mathlib.LinearAlgebra.TensorProduct.Prod
+public import Mathlib.RingTheory.TensorProduct.Maps
 
 /-!
 # Tensor product and products of algebras
@@ -15,6 +17,8 @@ In this file we examine the behaviour of the tensor product with (finite) produc
 is a direct application of `Mathlib/LinearAlgebra/TensorProduct/Pi.lean` to the algebra case.
 
 -/
+
+@[expose] public section
 
 open TensorProduct
 
@@ -100,3 +104,12 @@ lemma prodRight_symm_tmul (a : A) (b : B) (c : C) :
 end
 
 end Algebra.TensorProduct
+
+theorem TensorProduct.piScalarRight_symm_algebraMap
+    (R : Type*) [CommSemiring R] (S : Type*) [CommSemiring S] [Algebra R S]
+    (ι : Type*) [Fintype ι] [DecidableEq ι]
+    {N : Type*} [Semiring N] [Algebra R N] [Module S N] [IsScalarTower R S N]
+    (x : ι → R) :
+    (TensorProduct.piScalarRight R S N ι).symm (algebraMap _ _ x) = 1 ⊗ₜ[R] x := by
+  simp [Algebra.algebraMap_eq_smul_one, Pi.smul_def', LinearEquiv.symm_apply_eq,
+    piScalarRight_apply, piScalarRightHom_tmul]

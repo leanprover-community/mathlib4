@@ -3,8 +3,11 @@ Copyright (c) 2021 Stuart Presnell. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stuart Presnell, Daniel Weber
 -/
-import Mathlib.Algebra.BigOperators.Group.List.Defs
-import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
+module
+
+public import Mathlib.Algebra.BigOperators.Group.List.Defs
+public import Mathlib.Algebra.Order.GroupWithZero.Basic
+public import Mathlib.Data.FunLike.Basic
 
 /-!
 # Big operators on a list in ordered groups with zeros
@@ -12,6 +15,8 @@ import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
 This file contains the results concerning the interaction of list big operators with ordered
 groups with zeros.
 -/
+
+public section
 
 namespace List
 variable {R : Type*} [CommMonoidWithZero R] [PartialOrder R] [ZeroLEOneClass R] [PosMulMono R]
@@ -51,7 +56,7 @@ theorem prod_map_le_prod_map₀ {ι : Type*} {s : List ι} (f : ι → R) (g : �
 theorem prod_map_le_pow_length₀ {F L : Type*} [FunLike F L R] {f : F} {r : R} {t : List L}
     (hf0 : ∀ x ∈ t, 0 ≤ f x) (hf : ∀ x ∈ t, f x ≤ r) :
     (map f t).prod ≤ r ^ length t := by
-  convert prod_map_le_prod_map₀ f (Function.const L r) hf0 hf
+  convert! prod_map_le_prod_map₀ f (Function.const L r) hf0 hf
   simp [map_const, prod_replicate]
 
 omit [PosMulMono R]

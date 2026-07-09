@@ -3,8 +3,13 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Option.NAry
-import Mathlib.Data.Seq.Computation
+module
+
+public import Mathlib.Data.Option.NAry
+public import Mathlib.Data.Seq.Computation
+public import Mathlib.Data.ENat.Defs
+public import Batteries.Data.MLList.Basic
+public import Mathlib.Data.Subtype
 
 /-!
 # Possibly infinite lists
@@ -26,15 +31,18 @@ sequences). It is encoded as an infinite stream of options such that if `f n = n
 One can convert between sequences and other types: `List`, `Stream'`, `MLList` using corresponding
 functions defined in this file.
 
-There are also a number of operations on sequences mirroring those on lists: `Seq.map`, `Seq.zip`,
-`Seq.zipWith`, `Seq.unzip`, `Seq.fold`, `Seq.update`, `Seq.drop`, `Seq.splitAt`, `Seq.append`,
-`Seq.join`, `Seq.enum`, as well as a cases principle `Seq.recOn` which allows one to reason about
+There are also a number of operations and predicates on sequences mirroring those on lists:
+`Seq.map`, `Seq.zip`, `Seq.zipWith`, `Seq.unzip`, `Seq.fold`, `Seq.update`, `Seq.drop`,
+`Seq.splitAt`, `Seq.append`, `Seq.join`, `Seq.enum`, `Seq.Pairwise`,
+as well as a cases principle `Seq.recOn` which allows one to reason about
 sequences by cases (`nil` and `cons`).
 
 ## Main statements
 
 * `eq_of_bisim`: Bisimulation principle for sequences.
 -/
+
+@[expose] public section
 
 namespace Stream'
 
@@ -78,8 +86,7 @@ theorem get?_mk (f hf) : @get? α ⟨f, hf⟩ = f :=
 
 theorem le_stable (s : Seq α) {m n} (h : m ≤ n) : s.get? m = none → s.get? n = none := by
   obtain ⟨f, al⟩ := s
-  induction' h with n _ IH
-  exacts [id, fun h2 => al (IH h2)]
+  induction h with | refl => exact id | step _ IH => exact fun h2 ↦ al (IH h2)
 
 /-- If `s.get? n = some aₙ` for some value `aₙ`, then there is also some value `aₘ` such
 that `s.get? = some aₘ` for `m ≤ n`.
@@ -92,7 +99,7 @@ theorem ge_stable (s : Seq α) {aₙ : α} {n m : ℕ} (m_le_n : m ≤ n)
 
 @[ext]
 protected theorem ext {s t : Seq α} (h : ∀ n : ℕ, s.get? n = t.get? n) : s = t :=
-  Subtype.eq <| funext h
+  Subtype.ext <| funext h
 
 /-!
 ### Constructors
@@ -152,6 +159,7 @@ theorem cons_left_injective (s : Seq α) : Function.Injective fun x => cons x s 
 theorem cons_right_injective (x : α) : Function.Injective (cons x) :=
   cons_injective2.right _
 
+@[simp]
 theorem cons_eq_cons {x x' : α} {s s' : Seq α} :
     (cons x s = cons x' s') ↔ (x = x' ∧ s = s') := by
   constructor
@@ -195,25 +203,22 @@ theorem destruct_cons (a : α) : ∀ s, destruct (cons a s) = some (a, s)
   | ⟨f, al⟩ => by
     unfold cons destruct Functor.map
     apply congr_arg fun s => some (a, s)
-    apply Subtype.eq; dsimp [tail]
+    apply Subtype.ext; dsimp [tail]
 
 theorem destruct_eq_none {s : Seq α} : destruct s = none → s = nil := by
   dsimp [destruct]
-  induction' f0 : get? s 0 <;> intro h
-  · apply Subtype.eq
-    funext n
-    induction' n with n IH
-    exacts [f0, s.2 IH]
+  rcases f0 : get? s 0 <;> intro h
+  · exact get?_zero_eq_none.mp f0
   · contradiction
 
 theorem destruct_eq_cons {s : Seq α} {a s'} : destruct s = some (a, s') → s = cons a s' := by
   dsimp [destruct]
-  induction' f0 : get? s 0 with a' <;> intro h
+  rcases f0 : get? s 0 with - | a' <;> intro h
   · contradiction
   · obtain ⟨f, al⟩ := s
     injections _ h1 h2
     rw [← h2]
-    apply Subtype.eq
+    apply Subtype.ext
     dsimp [tail, cons]
     rw [h1] at f0
     rw [← f0]
@@ -232,10 +237,7 @@ theorem tail_nil : tail (nil : Seq α) = nil :=
   rfl
 
 @[simp]
-theorem tail_cons (a : α) (s) : tail (cons a s) = s := by
-  obtain ⟨f, al⟩ := s
-  apply Subtype.eq
-  dsimp [tail, cons]
+theorem tail_cons (a : α) (s) : tail (cons a s) = s := rfl
 
 theorem head_eq_some {s : Seq α} {x : α} (h : s.head = some x) :
     s = cons x s.tail := by
@@ -289,9 +291,10 @@ def corec (f : β → Option (α × β)) (b : β) : Seq α := by
   refine ⟨Stream'.corec' (Corec.f f) (some b), fun {n} h => ?_⟩
   rw [Stream'.corec'_eq]
   change Stream'.corec' (Corec.f f) (Corec.f f (some b)).2 n = none
-  revert h; generalize some b = o; revert o
-  induction' n with n IH <;> intro o
-  · change (Corec.f f o).1 = none → (Corec.f f (Corec.f f o).2).1 = none
+  revert h; generalize some b = o
+  induction n generalizing o with
+  | zero =>
+    change (Corec.f f o).1 = none → (Corec.f f (Corec.f f o).2).1 = none
     rcases o with - | b <;> intro h
     · rfl
     dsimp [Corec.f] at h
@@ -300,7 +303,8 @@ def corec (f : β → Option (α × β)) (b : β) : Seq α := by
     · rfl
     · obtain ⟨a, b'⟩ := s
       contradiction
-  · rw [Stream'.corec'_eq (Corec.f f) (Corec.f f o).2, Stream'.corec'_eq (Corec.f f) o]
+  | succ n IH =>
+    rw [Stream'.corec'_eq (Corec.f f) (Corec.f f o).2, Stream'.corec'_eq (Corec.f f) o]
     exact IH (Corec.f f o).2
 
 @[simp]
@@ -309,14 +313,15 @@ theorem corec_eq (f : β → Option (α × β)) (b : β) :
   dsimp [corec, destruct, get]
   rw [show Stream'.corec' (Corec.f f) (some b) 0 = (Corec.f f (some b)).1 from rfl]
   dsimp [Corec.f]
-  induction' h : f b with s; · rfl
+  rcases h : f b with - | s; · rfl
   obtain ⟨a, b'⟩ := s; dsimp [Corec.f]
   apply congr_arg fun b' => some (a, b')
-  apply Subtype.eq
+  apply Subtype.ext
   dsimp [corec, tail]
   rw [Stream'.corec'_eq, Stream'.tail_cons]
   dsimp [Corec.f]; rw [h]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem corec_nil (f : β → Option (α × β)) (b : β)
     (h : f b = .none) : corec f b = nil := by
   apply destruct_eq_none
@@ -350,9 +355,11 @@ attribute [nolint simpNF] BisimO.eq_3
 def IsBisimulation :=
   ∀ ⦃s₁ s₂⦄, s₁ ~ s₂ → BisimO R (destruct s₁) (destruct s₂)
 
--- If two streams are bisimilar, then they are equal
+/-- If two streams are bisimilar, then they are equal. There are also versions
+`eq_of_bisim'` and `eq_of_bisim_strong` that does not mention `IsBisimulation` and look
+more like an induction principles. -/
 theorem eq_of_bisim (bisim : IsBisimulation R) {s₁ s₂} (r : s₁ ~ s₂) : s₁ = s₂ := by
-  apply Subtype.eq
+  apply Subtype.ext
   apply Stream'.eq_of_bisim fun x y => ∃ s s' : Seq α, s.1 = x ∧ s'.1 = y ∧ R s s'
   · dsimp [Stream'.IsBisimulation]
     intro t₁ t₂ e
@@ -377,6 +384,40 @@ theorem eq_of_bisim (bisim : IsBisimulation R) {s₁ s₂} (r : s₁ ~ s₂) : s
       · simp
   · exact ⟨s₁, s₂, rfl, rfl, r⟩
 
+/-- Coinductive principle for equality on sequences.
+This is a version of `eq_of_bisim` that looks more like an induction principle. -/
+theorem eq_of_bisim' {s₁ s₂ : Seq α}
+    (motive : Seq α → Seq α → Prop)
+    (base : motive s₁ s₂)
+    (step : ∀ s₁ s₂, motive s₁ s₂ →
+      (s₁ = nil ∧ s₂ = nil) ∨
+      (∃ x s₁' s₂', s₁ = cons x s₁' ∧ s₂ = cons x s₂' ∧ motive s₁' s₂')) :
+    s₁ = s₂ := by
+  apply eq_of_bisim motive _ base
+  intro s₁ s₂ h
+  rcases step s₁ s₂ h with ⟨h_nil₁, h_nil₂⟩ | ⟨_, _, _, h₁, h₂, _⟩
+  · simp [h_nil₁, h_nil₂]
+  · simpa [h₁, h₂]
+
+/-- Coinductive principle for equality on sequences.
+This is a version of `eq_of_bisim'` that requires proving only `s₁ = s₂`
+instead of `s₁ = nil ∧ s₂ = nil` in `step`. -/
+theorem eq_of_bisim_strong {s₁ s₂ : Seq α}
+    (motive : Seq α → Seq α → Prop)
+    (base : motive s₁ s₂)
+    (step : ∀ s₁ s₂, motive s₁ s₂ →
+      (s₁ = s₂) ∨
+      (∃ x s₁' s₂', s₁ = cons x s₁' ∧ s₂ = cons x s₂' ∧ (motive s₁' s₂'))) : s₁ = s₂ := by
+  let motive' : Seq α → Seq α → Prop := fun s₁ s₂ => s₁ = s₂ ∨ motive s₁ s₂
+  apply eq_of_bisim' motive' (by grind)
+  intro s₁ s₂ ih
+  simp only [motive'] at ih ⊢
+  rcases ih with (rfl | ih)
+  · cases s₁ <;> grind
+  rcases step s₁ s₂ ih with (rfl | ⟨hd, s₁', s₂', _⟩)
+  · cases s₁ <;> grind
+  · grind
+
 end Bisim
 
 theorem coinduction :
@@ -384,7 +425,7 @@ theorem coinduction :
       head s₁ = head s₂ →
         (∀ (β : Type u) (fr : Seq α → β), fr s₁ = fr s₂ → fr (tail s₁) = fr (tail s₂)) → s₁ = s₂
   | _, _, hh, ht =>
-    Subtype.eq (Stream'.coinduction hh fun β fr => ht β fun s => fr s.1)
+    Subtype.ext (Stream'.coinduction hh fun β fr => ht β fun s => fr s.1)
 
 theorem coinduction2 (s) (f g : Seq α → Seq β)
     (H :
@@ -416,6 +457,11 @@ def Terminates (s : Seq α) : Prop :=
 def length (s : Seq α) (h : s.Terminates) : ℕ :=
   Nat.find h
 
+open scoped Classical in
+/-- The `ENat`-valued length of a sequence. For non-terminating sequences, it is `⊤`. -/
+noncomputable def length' (s : Seq α) : ℕ∞ :=
+  if h : s.Terminates then s.length h else ⊤
+
 /-- If a sequence terminated at position `n`, it also terminated at `m ≥ n`. -/
 theorem terminated_stable : ∀ (s : Seq α) {m n : ℕ}, m ≤ n → s.TerminatedAt m → s.TerminatedAt n :=
   le_stable
@@ -445,13 +491,6 @@ theorem terminates_cons_iff {x : α} {s : Seq α} :
   · exact ⟨n, cons_terminatedAt_succ_iff.mp (terminated_stable _ (Nat.le_succ _) h)⟩
   · exact ⟨n + 1, cons_terminatedAt_succ_iff.mpr h⟩
 
-@[simp]
-theorem length_nil : length (nil : Seq α) terminates_nil = 0 := rfl
-
-@[simp] theorem length_eq_zero {s : Seq α} {h : s.Terminates} :
-    s.length h = 0 ↔ s = nil := by
-  simp [length, TerminatedAt]
-
 theorem terminatedAt_zero_iff {s : Seq α} : s.TerminatedAt 0 ↔ s = nil := by
   refine ⟨?_, ?_⟩
   · intro h
@@ -460,41 +499,6 @@ theorem terminatedAt_zero_iff {s : Seq α} : s.TerminatedAt 0 ↔ s = nil := by
     simp
   · rintro rfl
     simp [TerminatedAt]
-
-/-- The statement of `length_le_iff'` does not assume that the sequence terminates. For a
-simpler statement of the theorem where the sequence is known to terminate see `length_le_iff` -/
-theorem length_le_iff' {s : Seq α} {n : ℕ} :
-    (∃ h, s.length h ≤ n) ↔ s.TerminatedAt n := by
-  simp only [length, Nat.find_le_iff, TerminatedAt, Terminates, exists_prop]
-  refine ⟨?_, ?_⟩
-  · rintro ⟨_, k, hkn, hk⟩
-    exact le_stable s hkn hk
-  · intro hn
-    exact ⟨⟨n, hn⟩, ⟨n, le_rfl, hn⟩⟩
-
-/-- The statement of `length_le_iff` assumes that the sequence terminates. For a
-statement of the where the sequence is not known to terminate see `length_le_iff'` -/
-theorem length_le_iff {s : Seq α} {n : ℕ} {h : s.Terminates} :
-    s.length h ≤ n ↔ s.TerminatedAt n := by
-  rw [← length_le_iff']; simp [h]
-
-/-- The statement of `lt_length_iff'` does not assume that the sequence terminates. For a
-simpler statement of the theorem where the sequence is known to terminate see `lt_length_iff` -/
-theorem lt_length_iff' {s : Seq α} {n : ℕ} :
-    (∀ h : s.Terminates, n < s.length h) ↔ ∃ a, a ∈ s.get? n := by
-  simp only [Terminates, TerminatedAt, length, Nat.lt_find_iff, forall_exists_index, Option.mem_def,
-    ← Option.ne_none_iff_exists', ne_eq]
-  refine ⟨?_, ?_⟩
-  · intro h hn
-    exact h n hn n le_rfl hn
-  · intro hn _ _ k hkn hk
-    exact hn <| le_stable s hkn hk
-
-/-- The statement of `length_le_iff` assumes that the sequence terminates. For a
-statement of the where the sequence is not known to terminate see `length_le_iff'` -/
-theorem lt_length_iff {s : Seq α} {n : ℕ} {h : s.Terminates} :
-    n < s.length h ↔ ∃ a, a ∈ s.get? n := by
-  rw [← lt_length_iff']; simp [h]
 
 /-!
 ### Membership
@@ -510,9 +514,14 @@ instance : Membership α (Seq α) :=
 -- Cannot be @[simp] because `n` can not be inferred by `simp`.
 theorem get?_mem {s : Seq α} {n : ℕ} {x : α} (h : s.get? n = .some x) : x ∈ s := ⟨n, h.symm⟩
 
-theorem notMem_nil (a : α) : a ∉ @nil α := fun ⟨_, (h : some a = none)⟩ => by injection h
+theorem mem_iff_exists_get? {s : Seq α} {x : α} : x ∈ s ↔ ∃ i, some x = s.get? i where
+  mp h := by
+    change (some x ∈ s.1) at h
+    rwa [Stream'.mem_iff_exists_get_eq] at h
+  mpr h := get?_mem h.choose_spec.symm
 
-@[deprecated (since := "2025-05-23")] alias not_mem_nil := notMem_nil
+@[simp]
+theorem notMem_nil (a : α) : a ∉ @nil α := fun ⟨_, (h : some a = none)⟩ => by injection h
 
 theorem mem_cons (a : α) : ∀ s : Seq α, a ∈ cons a s
   | ⟨_, _⟩ => Stream'.mem_cons (some a) _
@@ -530,20 +539,22 @@ theorem mem_cons_iff {a b : α} {s : Seq α} : a ∈ cons b s ↔ a = b ∨ a �
 theorem mem_rec_on {C : Seq α → Prop} {a s} (M : a ∈ s)
     (h1 : ∀ b s', a = b ∨ C s' → C (cons b s')) : C s := by
   obtain ⟨k, e⟩ := M; unfold Stream'.get at e
-  induction' k with k IH generalizing s
-  · have TH : s = cons a (tail s) := by
+  induction k generalizing s with
+  | zero =>
+    have TH : s = cons a (tail s) := by
       apply destruct_eq_cons
       unfold destruct get? Functor.map
       rw [← e]
       rfl
     rw [TH]
     apply h1 _ _ (Or.inl rfl)
-  cases s with
-  | nil => injection e
-  | cons b s' =>
-    have h_eq : (cons b s').val (Nat.succ k) = s'.val k := by cases s' using Subtype.recOn; rfl
-    rw [h_eq] at e
-    apply h1 _ _ (Or.inr (IH e))
+  | succ k IH =>
+    cases s with
+    | nil => injection e
+    | cons b s' =>
+      have h_eq : (cons b s').val (Nat.succ k) = s'.val k := by cases s' using Subtype.recOn; rfl
+      rw [h_eq] at e
+      apply h1 _ _ (Or.inr (IH e))
 
 /-!
 ### Converting from/to other types
@@ -566,9 +577,6 @@ theorem ofList_nil : ofList [] = (nil : Seq α) :=
 @[simp]
 theorem ofList_get? (l : List α) (n : ℕ) : (ofList l).get? n = l[n]? :=
   rfl
-
-@[deprecated (since := "2025-02-21")]
-alias ofList_get := ofList_get?
 
 @[simp]
 theorem ofList_cons (a : α) (l : List α) : ofList (a::l) = cons a (ofList l) := by
@@ -665,7 +673,7 @@ def map (f : α → β) : Seq α → Seq β
   | ⟨s, al⟩ =>
     ⟨s.map (Option.map f), fun {n} => by
       dsimp [Stream'.map, Stream'.get]
-      induction' e : s n with e <;> intro
+      rcases e : s n with - | e <;> intro
       · rw [al e]
         assumption
       · contradiction⟩
@@ -745,6 +753,18 @@ def update (s : Seq α) (n : ℕ) (f : α → α) : Seq α where
 (`s` terminates earlier), the sequence is left unchanged. -/
 def set (s : Seq α) (n : ℕ) (a : α) : Seq α :=
   update s n fun _ ↦ a
+
+/--
+`Pairwise R s` means that all the elements with earlier indices are
+`R`-related to all the elements with later indices.
+```
+Pairwise R [1, 2, 3] ↔ R 1 2 ∧ R 1 3 ∧ R 2 3
+```
+For example if `R = (· ≠ ·)` then it asserts `s` has no duplicates,
+and if `R = (· < ·)` then it asserts that `s` is (strictly) sorted.
+-/
+def Pairwise (R : α → α → Prop) (s : Seq α) : Prop :=
+  ∀ i j, i < j → ∀ x ∈ s.get? i, ∀ y ∈ s.get? j, R x y
 
 end Seq
 

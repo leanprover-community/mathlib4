@@ -3,14 +3,16 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Group.Action.Pi
-import Mathlib.Algebra.Order.AbsoluteValue.Basic
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Group.MinMax
-import Mathlib.Algebra.Ring.Pi
-import Mathlib.Data.Setoid.Basic
-import Mathlib.GroupTheory.GroupAction.Ring
-import Mathlib.Tactic.GCongr
+module
+
+public import Mathlib.Algebra.Group.Action.Pi
+public import Mathlib.Algebra.Order.AbsoluteValue.Basic
+public import Mathlib.Algebra.Order.Field.Basic
+public import Mathlib.Algebra.Order.Group.MinMax
+public import Mathlib.Algebra.Ring.Pi
+public import Mathlib.Data.Setoid.Basic
+public import Mathlib.GroupTheory.GroupAction.Ring
+public import Mathlib.Tactic.GCongr
 
 /-!
 # Cauchy sequences
@@ -31,6 +33,8 @@ This is a concrete implementation that is useful for simplicity and computabilit
 sequence, cauchy, abs val, absolute value
 -/
 
+@[expose] public section
+
 assert_not_exists Finset Module Submonoid FloorRing
 
 variable {α β : Type*}
@@ -46,8 +50,7 @@ theorem rat_add_continuous_lemma {ε : α} (ε0 : 0 < ε) :
     ∃ δ > 0, ∀ {a₁ a₂ b₁ b₂ : β}, abv (a₁ - b₁) < δ → abv (a₂ - b₂) < δ →
       abv (a₁ + a₂ - (b₁ + b₂)) < ε :=
   ⟨ε / 2, half_pos ε0, fun {a₁ a₂ b₁ b₂} h₁ h₂ => by
-    simpa [add_halves, sub_eq_add_neg, add_comm, add_left_comm, add_assoc] using
-      lt_of_le_of_lt (abv_add abv _ _) (add_lt_add h₁ h₂)⟩
+    grw [add_sub_add_comm, abv_add abv, h₁, h₂, add_halves]⟩
 
 theorem rat_mul_continuous_lemma {ε K₁ K₂ : α} (ε0 : 0 < ε) :
     ∃ δ > 0, ∀ {a₁ a₂ b₁ b₂ : β}, abv a₁ < K₁ → abv b₂ < K₂ → abv (a₁ - b₁) < δ →
@@ -58,11 +61,10 @@ theorem rat_mul_continuous_lemma {ε K₁ K₂ : α} (ε0 : 0 < ε) :
   replace ha₁ := lt_of_lt_of_le ha₁ (le_trans (le_max_left _ K₂) (le_max_right 1 _))
   replace hb₂ := lt_of_lt_of_le hb₂ (le_trans (le_max_right K₁ _) (le_max_right 1 _))
   set M := max 1 (max K₁ K₂)
-  have : abv (a₁ - b₁) * abv b₂ + abv (a₂ - b₂) * abv a₁ < ε / 2 / M * M + ε / 2 / M * M := by
-    gcongr
-  rw [← abv_mul abv, mul_comm, div_mul_cancel₀ _ (ne_of_gt K0), ← abv_mul abv, add_halves] at this
-  simpa [sub_eq_add_neg, mul_add, add_mul, add_left_comm] using
-    lt_of_le_of_lt (abv_add abv _ _) this
+  suffices abv ((a₁ - b₁) * b₂ + a₁ * (a₂ - b₂)) < ε by
+    simpa [sub_eq_add_neg, mul_add, add_mul, add_left_comm] using this
+  grw [abv_add abv, abv_mul abv, abv_mul abv, h₁.le, h₂.le, ha₁, hb₂, mul_comm M,
+    div_mul_cancel₀ _ (ne_of_gt K0), add_halves]
 
 theorem rat_inv_continuous_lemma {β : Type*} [DivisionRing β] (abv : β → α) [IsAbsoluteValue abv]
     {ε K : α} (ε0 : 0 < ε) (K0 : 0 < K) :
@@ -72,11 +74,8 @@ theorem rat_inv_continuous_lemma {β : Type*} [DivisionRing β] (abv : β → α
   have b0 := K0.trans_le hb
   rw [inv_sub_inv' ((abv_pos abv).1 a0) ((abv_pos abv).1 b0), abv_mul abv, abv_mul abv, abv_inv abv,
     abv_inv abv, abv_sub abv]
-  refine lt_of_mul_lt_mul_left (lt_of_mul_lt_mul_right ?_ b0.le) a0.le
-  rw [mul_assoc, inv_mul_cancel_right₀ b0.ne', ← mul_assoc, mul_inv_cancel₀ a0.ne', one_mul]
-  refine h.trans_le ?_
-  gcongr
-  exact mul_nonneg a0.le ε0.le
+  grw [← ha, mul_assoc, ← hb, h]
+  simp [K0.ne']
 
 end
 
@@ -92,7 +91,6 @@ namespace IsCauSeq
 variable [Field α] [LinearOrder α] [IsStrictOrderedRing α] [Ring β]
   {abv : β → α} [IsAbsoluteValue abv] {f g : ℕ → β}
 
--- see Note [nolint_ge]
 theorem cauchy₂ (hf : IsCauSeq abv f) {ε : α} (ε0 : 0 < ε) :
     ∃ i, ∀ j ≥ i, ∀ k ≥ i, abv (f j - f k) < ε := by
   refine (hf _ (half_pos ε0)).imp fun i hi j ij k ik => ?_
@@ -167,7 +165,7 @@ instance : CoeFun (CauSeq β abv) fun _ => ℕ → β :=
   ⟨Subtype.val⟩
 
 @[ext]
-theorem ext {f g : CauSeq β abv} (h : ∀ i, f i = g i) : f = g := Subtype.eq (funext h)
+theorem ext {f g : CauSeq β abv} (h : ∀ i, f i = g i) : f = g := Subtype.ext (funext h)
 
 theorem isCauSeq (f : CauSeq β abv) : IsCauSeq abv f :=
   f.2
@@ -181,7 +179,6 @@ def ofEq (f : CauSeq β abv) (g : ℕ → β) (e : ∀ i, f i = g i) : CauSeq β
 
 variable [IsAbsoluteValue abv]
 
--- see Note [nolint_ge]
 theorem cauchy₂ (f : CauSeq β abv) {ε} :
     0 < ε → ∃ i, ∀ j ≥ i, ∀ k ≥ i, abv (f j - f k) < ε :=
   f.2.cauchy₂
@@ -412,10 +409,10 @@ instance equiv : Setoid (CauSeq β abv) :=
     fun fg gh => by simpa using add_limZero fg gh⟩⟩
 
 theorem add_equiv_add {f1 f2 g1 g2 : CauSeq β abv} (hf : f1 ≈ f2) (hg : g1 ≈ g2) :
-    f1 + g1 ≈ f2 + g2 := by simpa only [← add_sub_add_comm] using add_limZero hf hg
+    f1 + g1 ≈ f2 + g2 := by simpa only [← add_sub_add_comm] using! add_limZero hf hg
 
 theorem neg_equiv_neg {f g : CauSeq β abv} (hf : f ≈ g) : -f ≈ -g := by
-  simpa only [neg_sub'] using neg_limZero hf
+  simpa only [neg_sub'] using! neg_limZero hf
 
 theorem sub_equiv_sub {f1 f2 g1 g2 : CauSeq β abv} (hf : f1 ≈ f2) (hg : g1 ≈ g2) :
     f1 - g1 ≈ f2 - g2 := by simpa only [sub_eq_add_neg] using add_equiv_add hf (neg_equiv_neg hg)
@@ -432,7 +429,6 @@ theorem limZero_congr {f g : CauSeq β abv} (h : f ≈ g) : LimZero f ↔ LimZer
 
 theorem abv_pos_of_not_limZero {f : CauSeq β abv} (hf : ¬LimZero f) :
     ∃ K > 0, ∃ i, ∀ j ≥ i, K ≤ abv (f j) := by
-  haveI := Classical.propDecidable
   by_contra nk
   refine hf fun ε ε0 => ?_
   simp only [not_exists, not_and, not_forall, not_le] at nk
@@ -491,7 +487,7 @@ theorem const_equiv {x y : β} : const x ≈ const y ↔ x = y :=
 theorem mul_equiv_mul {f1 f2 g1 g2 : CauSeq β abv} (hf : f1 ≈ f2) (hg : g1 ≈ g2) :
     f1 * g1 ≈ f2 * g2 := by
   simpa only [mul_sub, sub_mul, sub_add_sub_cancel]
-    using add_limZero (mul_limZero_left g1 hf) (mul_limZero_right f2 hg)
+    using! add_limZero (mul_limZero_left g1 hf) (mul_limZero_right f2 hg)
 
 theorem smul_equiv_smul {G : Type*} [SMul G β] [IsScalarTower G β β] {f1 f2 : CauSeq β abv} (c : G)
     (hf : f1 ≈ f2) : c • f1 ≈ c • f2 := by
@@ -630,7 +626,7 @@ instance : LE (CauSeq α abs) :=
 
 theorem lt_of_lt_of_eq {f g h : CauSeq α abs} (fg : f < g) (gh : g ≈ h) : f < h :=
   show Pos (h - f) by
-    convert pos_add_limZero fg (neg_limZero gh) using 1
+    convert pos_add_limZero fg (neg_limZero gh)
     simp
 
 theorem lt_of_eq_of_lt {f g h : CauSeq α abs} (fg : f ≈ g) (gh : g < h) : f < h := by
@@ -639,7 +635,7 @@ theorem lt_of_eq_of_lt {f g h : CauSeq α abs} (fg : f ≈ g) (gh : g < h) : f <
 
 theorem lt_trans {f g h : CauSeq α abs} (fg : f < g) (gh : g < h) : f < h :=
   show Pos (h - f) by
-    convert add_pos fg gh using 1
+    convert add_pos fg gh
     simp
 
 theorem lt_irrefl {f : CauSeq α abs} : ¬f < f

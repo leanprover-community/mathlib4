@@ -3,13 +3,17 @@ Copyright (c) 2022 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson, Leonardo de Moura
 -/
-import Mathlib.Order.BooleanAlgebra.Set
+module
+
+public import Mathlib.Order.BooleanAlgebra.Set
 
 /-!
 # Indicator function valued in bool
 
 See also `Set.indicator` and `Set.piecewise`.
 -/
+
+@[expose] public section
 
 assert_not_exists RelIso
 
@@ -30,8 +34,6 @@ theorem mem_iff_boolIndicator (x : α) : x ∈ s ↔ s.boolIndicator x = true :=
 theorem notMem_iff_boolIndicator (x : α) : x ∉ s ↔ s.boolIndicator x = false := by
   unfold boolIndicator
   split_ifs with h <;> simp [h]
-
-@[deprecated (since := "2025-05-23")] alias not_mem_iff_boolIndicator := notMem_iff_boolIndicator
 
 theorem preimage_boolIndicator_true : s.boolIndicator ⁻¹' {true} = s :=
   ext fun x ↦ (s.mem_iff_boolIndicator x).symm

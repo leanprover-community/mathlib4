@@ -3,9 +3,10 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Monad.Basic
-import Mathlib.CategoryTheory.Adjunction.Basic
-import Mathlib.CategoryTheory.Functor.EpiMono
+module
+
+public import Mathlib.CategoryTheory.Monad.Basic
+public import Mathlib.CategoryTheory.Functor.EpiMono
 
 /-!
 # Eilenberg-Moore (co)algebras for a (co)monad
@@ -20,6 +21,10 @@ cofree functors, respectively from and to the original category.
 ## References
 * [Riehl, *Category theory in context*, Section 5.2.4][riehl2017]
 -/
+
+set_option backward.defeqAttrib.useBackward true
+
+@[expose] public section
 
 
 namespace CategoryTheory
@@ -59,9 +64,6 @@ structure Hom (A B : Algebra T) where
   /-- Compatibility with the structure morphism, for a morphism of algebras. -/
   h : (T : C ⥤ C).map f ≫ B.a = A.a ≫ f := by cat_disch
 
--- Porting note: no need to restate axioms in lean4.
---restate_axiom hom.h
-
 attribute [reassoc (attr := simp)] Hom.h
 
 namespace Hom
@@ -82,7 +84,6 @@ instance : CategoryStruct (Algebra T) where
   id := Hom.id
   comp := @Hom.comp _ _ _
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): Adding this `ext` lemma to help automation below.
 @[ext]
 lemma Hom.ext' (X Y : Algebra T) (f g : X ⟶ Y) (h : f.f = g.f) : f = g := Hom.ext h
 
@@ -131,6 +132,7 @@ def forget : Algebra T ⥤ C where
   obj A := A.A
   map f := f.f
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The free functor from the Eilenberg-Moore category, constructing an algebra for any object. -/
 @[simps]
 def free : C ⥤ Algebra T where
@@ -145,6 +147,8 @@ def free : C ⥤ Algebra T where
 instance [Inhabited C] : Inhabited (Algebra T) :=
   ⟨(free T).obj default⟩
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 -- The other two `simps` projection lemmas can be derived from these two, so `simp_nf` complains if
 -- those are added too
 /-- The adjunction between the free and forgetful constructions for Eilenberg-Moore algebras for
@@ -168,14 +172,10 @@ def adj : T.free ⊣ T.forget :=
 /-- Given an algebra morphism whose carrier part is an isomorphism, we get an algebra isomorphism.
 -/
 theorem algebra_iso_of_iso {A B : Algebra T} (f : A ⟶ B) [IsIso f.f] : IsIso f :=
-  ⟨⟨{   f := inv f.f
-        h := by
-          simp },
-      by cat_disch⟩⟩
+  ⟨⟨{ f := inv f.f, h := by simp }, by cat_disch⟩⟩
 
 instance forget_reflects_iso : T.forget.ReflectsIsomorphisms where
-  -- Porting note: Is this the right approach to introduce instances?
-  reflects {_ _} f := fun [IsIso f.f] => algebra_iso_of_iso T f
+  reflects {_ _} f [IsIso f.f] := algebra_iso_of_iso T f
 
 instance forget_faithful : T.forget.Faithful where
 
@@ -189,9 +189,10 @@ theorem algebra_epi_of_epi {X Y : Algebra T} (f : X ⟶ Y) [h : Epi f.f] : Epi f
 theorem algebra_mono_of_mono {X Y : Algebra T} (f : X ⟶ Y) [h : Mono f.f] : Mono f :=
   (forget T).mono_of_mono_map h
 
-instance : T.forget.IsRightAdjoint  :=
+instance : T.forget.IsRightAdjoint :=
   ⟨T.free, ⟨T.adj⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Given a monad morphism from `T₂` to `T₁`, we get a functor from the algebras of `T₁` to algebras of
 `T₂`.
@@ -205,6 +206,7 @@ def algebraFunctorOfMonadHom {T₁ T₂ : Monad C} (h : T₂ ⟶ T₁) : Algebra
       assoc := by simp [A.assoc] }
   map f := { f := f.f }
 
+set_option backward.defeqAttrib.useBackward true in
 /--
 The identity monad morphism induces the identity functor from the category of algebras to itself.
 -/
@@ -212,6 +214,7 @@ The identity monad morphism induces the identity functor from the category of al
 def algebraFunctorOfMonadHomId {T₁ : Monad C} : algebraFunctorOfMonadHom (𝟙 T₁) ≅ 𝟭 _ :=
   NatIso.ofComponents fun X => Algebra.isoMk (Iso.refl _)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A composition of monad morphisms gives the composition of corresponding functors.
 -/
 @[simps (rhsMd := .default)]
@@ -229,6 +232,7 @@ def algebraFunctorOfMonadHomEq {T₁ T₂ : Monad C} {f g : T₁ ⟶ T₂} (h : 
     algebraFunctorOfMonadHom f ≅ algebraFunctorOfMonadHom g :=
   NatIso.ofComponents fun X => Algebra.isoMk (Iso.refl _)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Isomorphic monads give equivalent categories of algebras. Furthermore, they are equivalent as
 categories over `C`, that is, we have `algebraEquivOfIsoMonads h ⋙ forget = forget`.
 -/
@@ -264,12 +268,6 @@ structure Coalgebra (G : Comonad C) : Type max u₁ v₁ where
   coassoc : a ≫ G.δ.app A = a ≫ G.map a := by cat_disch
 
 
--- Porting note: no need to restate axioms in lean4.
-
---restate_axiom coalgebra.counit'
-
---restate_axiom coalgebra.coassoc'
-
 attribute [reassoc] Coalgebra.counit Coalgebra.coassoc
 
 namespace Coalgebra
@@ -283,9 +281,6 @@ structure Hom (A B : Coalgebra G) where
   f : A.A ⟶ B.A
   /-- Compatibility with the structure morphism, for a morphism of coalgebras. -/
   h : A.a ≫ (G : C ⥤ C).map f = f ≫ B.a := by cat_disch
-
--- Porting note: no need to restate axioms in lean4.
---restate_axiom hom.h
 
 attribute [reassoc (attr := simp)] Hom.h
 
@@ -305,7 +300,6 @@ instance : CategoryStruct (Coalgebra G) where
   id := Hom.id
   comp := @Hom.comp _ _ _
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): Adding `ext` lemma to help automation below.
 @[ext]
 lemma Hom.ext' (X Y : Coalgebra G) (f g : X ⟶ Y) (h : f.f = g.f) : f = g := Hom.ext h
 
@@ -354,6 +348,7 @@ def forget : Coalgebra G ⥤ C where
   obj A := A.A
   map f := f.f
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The cofree functor from the Eilenberg-Moore category, constructing a coalgebra for any
 object. -/
 @[simps]
@@ -366,6 +361,7 @@ def cofree : C ⥤ Coalgebra G where
     { f := G.map f
       h := (G.δ.naturality _).symm }
 
+set_option backward.isDefEq.respectTransparency false in
 -- The other two `simps` projection lemmas can be derived from these two, so `simp_nf` complains if
 -- those are added too
 /-- The adjunction between the cofree and forgetful constructions for Eilenberg-Moore coalgebras
@@ -397,8 +393,7 @@ theorem coalgebra_iso_of_iso {A B : Coalgebra G} (f : A ⟶ B) [IsIso f.f] : IsI
       by cat_disch⟩⟩
 
 instance forget_reflects_iso : G.forget.ReflectsIsomorphisms where
-  -- Porting note: Is this the right approach to introduce instances?
-  reflects {_ _} f := fun [IsIso f.f] => coalgebra_iso_of_iso G f
+  reflects {_ _} f [IsIso f.f] := coalgebra_iso_of_iso G f
 
 instance forget_faithful : (forget G).Faithful where
 
@@ -412,7 +407,7 @@ theorem algebra_epi_of_epi {X Y : Coalgebra G} (f : X ⟶ Y) [h : Epi f.f] : Epi
 theorem algebra_mono_of_mono {X Y : Coalgebra G} (f : X ⟶ Y) [h : Mono f.f] : Mono f :=
   (forget G).mono_of_mono_map h
 
-instance : G.forget.IsLeftAdjoint  :=
+instance : G.forget.IsLeftAdjoint :=
   ⟨_, ⟨G.adj⟩⟩
 
 end Comonad

@@ -3,10 +3,13 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Alexander Bentkamp
 -/
-import Mathlib.LinearAlgebra.FreeModule.Basic
-import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
-import Mathlib.LinearAlgebra.LinearPMap
-import Mathlib.LinearAlgebra.Projection
+module
+
+public import Mathlib.LinearAlgebra.FreeModule.Basic
+public import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
+public import Mathlib.LinearAlgebra.LinearPMap
+public import Mathlib.LinearAlgebra.Projection
+public import Mathlib.Tactic.Field
 
 /-!
 # Bases in a vector space
@@ -27,6 +30,8 @@ import cycle.
 basis, bases
 
 -/
+
+@[expose] public section
 
 open Function Module Set Submodule
 
@@ -159,7 +164,7 @@ theorem coe_ofVectorSpace : ⇑(ofVectorSpace K V) = ((↑) : _ → _) :=
 
 theorem ofVectorSpaceIndex.linearIndependent :
     LinearIndependent K ((↑) : ofVectorSpaceIndex K V → V) := by
-  convert (ofVectorSpace K V).linearIndependent
+  convert! (ofVectorSpace K V).linearIndependent
   ext x
   rw [ofVectorSpace_apply_self]
 
@@ -252,9 +257,27 @@ theorem LinearMap.exists_leftInverse_of_injective (f : V →ₗ[K] V') (hf_inj :
   rw [Basis.ofVectorSpace_apply_self, fb_eq, hC.constr_basis]
   exact leftInverse_invFun (LinearMap.ker_eq_bot.1 hf_inj) _
 
+/-- The left inverse of `f : E →ₗ[𝕜] F`.
+
+If `f` is not injective, then we use the junk value `0`. -/
+noncomputable
+def LinearMap.leftInverse (f : V →ₗ[K] V') : V' →ₗ[K] V :=
+  if h_inj : LinearMap.ker f = ⊥ then
+  (f.exists_leftInverse_of_injective h_inj).choose
+  else 0
+
+theorem LinearMap.leftInverse_comp_of_inj {f : V →ₗ[K] V'} (h_inj : LinearMap.ker f = ⊥) :
+    f.leftInverse ∘ₗ f = LinearMap.id := by
+  simpa [leftInverse, h_inj] using (f.exists_leftInverse_of_injective h_inj).choose_spec
+
+/-- If `f` is injective, then the left inverse composed with `f` is the identity. -/
+theorem LinearMap.leftInverse_apply_of_inj {f : V →ₗ[K] V'} (h_inj : LinearMap.ker f = ⊥) (x : V) :
+    f.leftInverse (f x) = x :=
+  LinearMap.ext_iff.mp (f.leftInverse_comp_of_inj h_inj) x
+
 theorem Submodule.exists_isCompl (p : Submodule K V) : ∃ q : Submodule K V, IsCompl p q :=
-  let ⟨f, hf⟩ := p.subtype.exists_leftInverse_of_injective p.ker_subtype
-  ⟨LinearMap.ker f, LinearMap.isCompl_of_proj <| LinearMap.ext_iff.1 hf⟩
+  ⟨LinearMap.ker p.subtype.leftInverse,
+    LinearMap.isCompl_of_proj <| LinearMap.leftInverse_apply_of_inj p.ker_subtype⟩
 
 instance Submodule.complementedLattice : ComplementedLattice (Submodule K V) :=
   ⟨Submodule.exists_isCompl⟩
@@ -272,12 +295,9 @@ theorem LinearMap.exists_extend_of_notMem {p : Submodule K V} {v : V} (f : p →
   refine ⟨g, ?_, ?_⟩
   · ext x
     have := LinearPMap.supSpanSingleton_apply_mk_of_mem ⟨p, f⟩ y hv x.2
-    simpa using congr($hg _).trans this
+    simpa using! congr($hg _).trans this
   · have := LinearPMap.supSpanSingleton_apply_self ⟨p, f⟩ y hv
-    simpa using congr($hg _).trans this
-
-@[deprecated (since := "2025-05-23")]
-alias LinearMap.exists_extend_of_not_mem := LinearMap.exists_extend_of_notMem
+    simpa using! congr($hg _).trans this
 
 open Submodule LinearMap
 
@@ -287,8 +307,14 @@ theorem Submodule.exists_le_ker_of_notMem {p : Submodule K V} {v : V} (hv : v �
   refine ⟨f, by simp [hfv], fun x hx ↦ ?_⟩
   simpa using congr($hpf ⟨x, hx⟩)
 
-@[deprecated (since := "2025-05-23")]
-alias Submodule.exists_le_ker_of_not_mem := Submodule.exists_le_ker_of_notMem
+/-- If `V` and `V'` are nontrivial vector spaces over a field `K`, the space of `K`-linear maps
+between them is nontrivial. -/
+instance [Nontrivial V] [Nontrivial V'] : Nontrivial (V →ₗ[K] V') := by
+  obtain ⟨v, hv⟩ := exists_ne (0 : V)
+  obtain ⟨w, hw⟩ := exists_ne (0 : V')
+  have : v ∉ (⊥ : Submodule K V) := by simp only [mem_bot, hv, not_false_eq_true]
+  obtain ⟨g, _, hg⟩ := LinearMap.exists_extend_of_notMem (K := K) 0 this w
+  exact ⟨g, 0, DFunLike.ne_iff.mpr ⟨v, by simp_all⟩⟩
 
 /-- If `p < ⊤` is a subspace of a vector space `V`, then there exists a nonzero linear map
 `f : V →ₗ[K] K` such that `p ≤ ker f`. -/
@@ -305,3 +331,104 @@ theorem quotient_prod_linearEquiv (p : Submodule K V) : Nonempty (((V ⧸ p) × 
       (prodEquivOfIsCompl q p hq.symm)
 
 end DivisionRing
+
+section Field
+
+open Submodule LinearMap Module
+
+variable {K : Type*} {V : Type*} [Field K] [AddCommGroup V] [Module K V]
+
+variable {f : V →ₗ[K] K} {v : V}
+
+/-- In a vector space, given a nonzero linear form `f`,
+a nonzero vector `v` such that `f v ≠ 0`,
+there exists a basis `b` with an index `i`
+such that `v = b i` and `f = (f v) • b.coord i`. -/
+theorem exists_basis_of_pairing_ne_zero
+    (hfv : f v ≠ 0) :
+    ∃ (n : Set V) (b : Module.Basis n K V) (i : n),
+      v = b i ∧ f = (f v) • b.coord i := by
+  set b₁ := Basis.ofVectorSpace K (ker f)
+  set s : Set V := (ker f).subtype '' Set.range b₁
+  have hs : span K s = ker f := by
+    simp only [s, span_image]
+    simp
+  set n := insert v s
+  have H₁ : LinearIndepOn K _root_.id n := by
+    apply LinearIndepOn.id_insert
+    · apply LinearIndepOn.image
+      · exact b₁.linearIndependent.linearIndepOn_id
+      · simp
+    · simp [hs, hfv]
+  have H₂ : ⊤ ≤ span K n := by
+    rintro x -
+    simp only [n, mem_span_insert']
+    use -f x / f v
+    simp only [hs, mem_ker, map_add, map_smul, smul_eq_mul]
+    field
+  set b := Basis.mk H₁ (by simpa using H₂)
+  set i : n := ⟨v, s.mem_insert v⟩
+  have hi : b i = v := by simp [b, i]
+  refine ⟨n, b, i, by simp [b, i], ?_⟩
+  rw [← hi]
+  apply b.ext
+  intro j
+  by_cases h : i = j
+  · simp [h]
+  · suffices f (b j) = 0 by
+      simp [Finsupp.single_eq_of_ne h, this]
+    rw [← mem_ker, ← hs, Basis.coe_mk]
+    apply subset_span
+    apply Or.resolve_left (Set.mem_insert_iff.mpr j.prop)
+    simp [← hi, b, Subtype.coe_inj, Ne.symm h]
+
+/-- In a vector space, given a nonzero linear form `f`,
+a nonzero vector `v` such that `f v = 0`,
+there exists a basis `b` with two distinct indices `i`, `j`
+such that `v = b i` and `f = b.coord j`. -/
+theorem exists_basis_of_pairing_eq_zero
+    (hfv : f v = 0) (hf : f ≠ 0) (hv : v ≠ 0) :
+    ∃ (n : Set V) (b : Basis n K V) (i j : n),
+      i ≠ j ∧ v = b i ∧ f = b.coord j := by
+  lift v to ker f using hfv
+  have : LinearIndepOn K _root_.id {v} := by simpa using hv
+  set b₁ : Basis _ K (ker f) := .extend this
+  obtain ⟨w, hw⟩ : ∃ w, f w = 1 := by
+    simp only [ne_eq, DFunLike.ext_iff, not_forall] at hf
+    rcases hf with ⟨w, hw⟩
+    use (f w)⁻¹ • w
+    simp_all
+  set s : Set V := (ker f).subtype '' Set.range b₁
+  have hs : span K s = ker f := by
+    simp only [s, span_image]
+    simp
+  have hvs : ↑v ∈ s := by
+    refine ⟨v, ?_, by simp⟩
+    simp [b₁, this.subset_extend _ _]
+  set n := insert w s
+  have H₁ : LinearIndepOn K _root_.id n := by
+    apply LinearIndepOn.id_insert
+    · apply LinearIndepOn.image
+      · exact b₁.linearIndependent.linearIndepOn_id
+      · simp
+    · simp [hs, hw]
+  have H₂ : ⊤ ≤ span K n := by
+    rintro x -
+    simp only [n, mem_span_insert']
+    use -f x
+    simp [hs, hw]
+  set b := Basis.mk H₁ (by simpa using H₂)
+  refine ⟨n, b, ⟨v, by simp [n, hvs]⟩, ⟨w, by simp [n]⟩, ?_, by simp [b], ?_⟩
+  · apply_fun (f ∘ (↑))
+    simp [hw]
+  · apply b.ext
+    intro i
+    rw [Basis.coord_apply, Basis.repr_self]
+    simp only [b, Basis.mk_apply]
+    rcases i with ⟨x, rfl | ⟨x, hx, rfl⟩⟩
+    · simp [hw]
+    · suffices x ≠ w by simp [this]
+      apply_fun f
+      simp [hw]
+
+end Field

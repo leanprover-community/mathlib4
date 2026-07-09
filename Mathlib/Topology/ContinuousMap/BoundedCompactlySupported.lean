@@ -3,7 +3,9 @@ Copyright (c) 2024 Yoh Tanimoto. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yoh Tanimoto
 -/
-import Mathlib.Topology.ContinuousMap.Bounded.Normed
+module
+
+public import Mathlib.Topology.ContinuousMap.Bounded.Normed
 
 /-!
 # Compactly supported bounded continuous functions
@@ -12,12 +14,14 @@ The two-sided ideal of compactly supported bounded continuous functions taking v
 space, with the uniform distance.
 -/
 
+@[expose] public section
+
 open Set BoundedContinuousFunction
 
 section CompactlySupported
 
 /-- The two-sided ideal of compactly supported functions. -/
-def compactlySupported (α γ : Type*) [TopologicalSpace α] [NonUnitalNormedRing γ] :
+noncomputable def compactlySupported (α γ : Type*) [TopologicalSpace α] [NonUnitalNormedRing γ] :
     TwoSidedIdeal (α →ᵇ γ) :=
   .mk' {z | HasCompactSupport z} .zero .add .neg .mul_left .mul_right
 

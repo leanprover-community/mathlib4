@@ -3,11 +3,13 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel, Kim Morrison
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
-import Mathlib.CategoryTheory.Limits.Shapes.Kernels
-import Mathlib.CategoryTheory.Abelian.Basic
-import Mathlib.CategoryTheory.Subobject.Lattice
-import Mathlib.Order.Atoms
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
+public import Mathlib.CategoryTheory.Limits.Shapes.Kernels
+public import Mathlib.CategoryTheory.Abelian.Basic
+public import Mathlib.CategoryTheory.Subobject.Lattice
+public import Mathlib.Order.Atoms
 
 /-!
 # Simple objects
@@ -16,7 +18,7 @@ We define simple objects in any category with zero morphisms.
 A simple object is an object `Y` such that any monomorphism `f : X ⟶ Y`
 is either an isomorphism or zero (but not both).
 
-This is formalized as a `Prop` valued typeclass `Simple X`.
+This is formalized as a `Prop`-valued typeclass `Simple X`.
 
 In some contexts, especially representation theory, simple objects are called "irreducibles".
 
@@ -30,6 +32,8 @@ and any nonzero morphism into a simple object has trivial cokernel.
 
 We show that any simple object is indecomposable.
 -/
+
+public section
 
 
 noncomputable section
@@ -54,6 +58,13 @@ class Simple (X : C) : Prop where
 theorem isIso_of_mono_of_nonzero {X Y : C} [Simple Y] {f : X ⟶ Y} [Mono f] (w : f ≠ 0) : IsIso f :=
   (Simple.mono_isIso_iff_nonzero f).mpr w
 
+theorem Functor.simple_of_simple_obj {D : Type*} [Category* D] [HasZeroMorphisms D] (F : C ⥤ D)
+    [F.PreservesMonomorphisms] [F.PreservesZeroMorphisms] [F.ReflectsIsomorphisms] [F.Faithful]
+    (X : C) [Simple (F.obj X)] : Simple X :=
+  .mk fun {Y} g _ ↦ by
+    rw [← isIso_iff_of_reflects_iso g F, Simple.mono_isIso_iff_nonzero (F.map g),
+      ne_eq, ne_eq, not_iff_not, F.map_eq_zero_iff]
+
 theorem Simple.of_iso {X Y : C} [Simple Y] (i : X ≅ Y) : Simple X :=
   { mono_isIso_iff_nonzero := fun f m => by
       constructor
@@ -73,6 +84,19 @@ theorem Simple.of_iso {X Y : C} [Simple Y] (i : X ≅ Y) : Simple X :=
 
 theorem Simple.iff_of_iso {X Y : C} (i : X ≅ Y) : Simple X ↔ Simple Y :=
   ⟨fun _ => Simple.of_iso i.symm, fun _ => Simple.of_iso i⟩
+
+theorem simple_obj {D : Type*} [Category* D] [HasZeroMorphisms D] (F : C ⥤ D)
+    [F.IsEquivalence] (X : C) [Simple X] : Simple (F.obj X) := by
+  rw [← F.asEquivalence_functor]
+  have := F.asEquivalence.counitIso.app (F.asEquivalence.functor.obj X)
+  rw [Functor.comp_obj, Functor.id_obj] at this
+  have := Simple.of_iso <| Functor.preimageIso _ this
+  exact Functor.simple_of_simple_obj F.asEquivalence.inverse _
+
+theorem simple_obj_iff {D : Type*} [Category* D] [HasZeroMorphisms D] (F : C ⥤ D)
+    [F.IsEquivalence] (X : C) :
+    Simple (F.obj X) ↔ Simple X :=
+  ⟨fun _ ↦ Functor.simple_of_simple_obj F X, fun _ ↦ simple_obj F X⟩
 
 theorem kernel_zero_of_nonzero_from_simple {X Y : C} [Simple X] {f : X ⟶ Y} [HasKernel f]
     (w : f ≠ 0) : kernel.ι f = 0 := by
@@ -138,7 +162,7 @@ theorem simple_of_cosimple (X : C) (h : ∀ {Z : C} (f : X ⟶ Z) [Epi f], IsIso
         have hx := cokernel.π_of_epi f
         by_contra h
         subst h
-        exact (h _).mp (cokernel.π_of_zero _ _) hx
+        exact (h _).mp inferInstance hx
       · intro hf
         suffices Epi f by exact isIso_of_mono_of_epi _
         apply Preadditive.epi_of_cokernel_zero
@@ -207,12 +231,11 @@ instance {X : C} [Simple X] : Nontrivial (Subobject X) :=
   nontrivial_of_not_isZero (Simple.not_isZero X)
 
 instance {X : C} [Simple X] : IsSimpleOrder (Subobject X) where
-  eq_bot_or_eq_top := by
-    rintro ⟨⟨⟨Y : C, ⟨⟨⟩⟩, f : Y ⟶ X⟩, m : Mono f⟩⟩
-    change mk f = ⊥ ∨ mk f = ⊤
-    by_cases h : f = 0
+  eq_bot_or_eq_top a := by
+    obtain ⟨Y, i, _, rfl⟩ := Subobject.mk_surjective a
+    by_cases h : i = 0
     · exact Or.inl (mk_eq_bot_iff_zero.mpr h)
-    · refine Or.inr ((isIso_iff_mk_eq_top _).mp ((Simple.mono_isIso_iff_nonzero f).mpr h))
+    · exact Or.inr ((isIso_iff_mk_eq_top _).mp ((Simple.mono_isIso_iff_nonzero i).mpr h))
 
 /-- If `X` has subobject lattice `{⊥, ⊤}`, then `X` is simple. -/
 theorem simple_of_isSimpleOrder_subobject (X : C) [IsSimpleOrder (Subobject X)] : Simple X := by

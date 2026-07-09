@@ -3,15 +3,19 @@ Copyright (c) 2022 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
-import Mathlib.Dynamics.FixedPoints.Basic
+module
+
+public import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
+public import Mathlib.Dynamics.FixedPoints.Basic
 
 /-!
 # Results about pointwise operations on sets with iteration.
 -/
 
+public section
 
-open Pointwise
+
+open scoped Pointwise
 
 open Set Function
 
@@ -31,7 +35,7 @@ theorem smul_eq_self_of_preimage_zpow_eq_self {G : Type*} [CommGroup G] {n : ℤ
     refine le_antisymm (this hg) ?_
     conv_lhs => rw [← smul_inv_smul g s]
     replace hg : g⁻¹ ^ n ^ j = 1 := by rw [inv_zpow, hg, inv_one]
-    simpa only [le_eq_subset, smul_set_subset_smul_set_iff] using this hg
+    simp only [smul_set_subset_smul_set_iff, this hg]
   rw [(IsFixedPt.preimage_iterate hs j : (zpowGroupHom n)^[j] ⁻¹' s = s).symm]
   rintro g' hg' - ⟨y, hy, rfl⟩
   change (zpowGroupHom n)^[j] (g' * y) ∈ s

@@ -3,7 +3,9 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Reid Barton
 -/
-import Mathlib.Topology.Separation.Regular
+module
+
+public import Mathlib.Topology.Separation.Regular
 
 /-!
 # The shrinking lemma
@@ -25,6 +27,8 @@ We prove two versions of the lemma:
 
 normal space, shrinking lemma
 -/
+
+@[expose] public section
 
 open Set Function
 
@@ -72,7 +76,7 @@ protected theorem subset (v : PartialRefinement u s p) (i : ι) : v i ⊆ u i :=
   classical
   exact if h : i ∈ v.carrier then subset_closure.trans (v.closure_subset h) else (v.apply_eq h).le
 
-open Classical in
+open scoped Classical in
 instance : PartialOrder (PartialRefinement u s p) where
   le v₁ v₂ := v₁.carrier ⊆ v₂.carrier ∧ ∀ i ∈ v₁.carrier, v₁ i = v₂ i
   le_refl _ := ⟨Subset.refl _, fun _ _ => rfl⟩
@@ -98,7 +102,7 @@ their carriers. -/
 def chainSupCarrier (c : Set (PartialRefinement u s p)) : Set ι :=
   ⋃ v ∈ c, carrier v
 
-open Classical in
+open scoped Classical in
 /-- Choice of an element of a nonempty chain of partial refinements. If `i` belongs to one of
 `carrier v`, `v ∈ c`, then `find c ne i` is one of these partial refinements. -/
 def find (c : Set (PartialRefinement u s p)) (ne : c.Nonempty) (i : ι) : PartialRefinement u s p :=
@@ -116,7 +120,7 @@ theorem mem_find_carrier_iff {c : Set (PartialRefinement u s p)} {i : ι} (ne : 
   split_ifs with h
   · have := h.choose_spec
     exact iff_of_true this.2 (mem_iUnion₂.2 ⟨_, this.1, this.2⟩)
-  · push_neg at h
+  · push Not at h
     refine iff_of_false (h _ ne.some_mem) ?_
     simpa only [chainSupCarrier, mem_iUnion₂, not_exists]
 
@@ -177,11 +181,11 @@ theorem exists_gt [NormalSpace X] (v : PartialRefinement u s ⊤) (hs : IsClosed
   · intro j
     rcases eq_or_ne j i with (rfl | hne) <;> simp [*, v.isOpen]
   · refine fun x hx => mem_iUnion.2 ?_
-    rcases em (∃ j ≠ i, x ∈ v j) with (⟨j, hji, hj⟩ | h)
-    · use j
+    by_cases! h : ∃ j ≠ i, x ∈ v j
+    · rcases h with ⟨j, hji, hj⟩
+      use j
       rwa [update_of_ne hji]
-    · push_neg at h
-      use i
+    · use i
       rw [update_self]
       exact hvi ⟨hx, mem_biInter h⟩
   · rintro j (rfl | hj)
@@ -220,7 +224,7 @@ theorem exists_subset_iUnion_closure_subset (hs : IsClosed s) (uo : ∀ i, IsOpe
   rcases zorn_le_nonempty this with ⟨v, hv⟩
   suffices ∀ i, i ∈ v.carrier from
     ⟨v, v.subset_iUnion, fun i => v.isOpen _, fun i => v.closure_subset (this i)⟩
-  refine fun i ↦ by_contra fun hi ↦ ?_
+  intro i; by_contra hi
   rcases v.exists_gt hs i hi with ⟨v', hlt⟩
   exact hv.not_lt hlt
 
@@ -298,11 +302,11 @@ theorem exists_gt_t2space (v : PartialRefinement u s (fun w => IsCompact (closur
   · intro j
     rcases eq_or_ne j i with (rfl | hne) <;> simp [*, v.isOpen]
   · refine fun x hx => mem_iUnion.2 ?_
-    rcases em (∃ j ≠ i, x ∈ v j) with (⟨j, hji, hj⟩ | h)
-    · use j
+    by_cases! h : ∃ j ≠ i, x ∈ v j
+    · rcases h with ⟨j, hji, hj⟩
+      use j
       rwa [update_of_ne hji]
-    · push_neg at h
-      use i
+    · use i
       rw [update_self]
       apply hvi.2.1
       rw [hsi]

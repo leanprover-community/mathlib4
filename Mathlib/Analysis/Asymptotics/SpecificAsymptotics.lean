@@ -3,20 +3,22 @@ Copyright (c) 2021 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
-import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
-import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
+module
+
+public import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
+public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 
 /-!
 # A collection of specific asymptotic results
 
 This file contains specific lemmas about asymptotics which don't have their place in the general
-theory developed in `Mathlib/Analysis/Asymptotics/Asymptotics.lean`.
+theory developed in `Mathlib/Analysis/Asymptotics/Defs.lean` and
+`Mathlib/Analysis/Asymptotics/Lemmas.lean`.
 -/
 
+public section
 
-open Filter Asymptotics
-
-open Topology
+open Bornology Filter Asymptotics Set Topology
 
 section NormedField
 
@@ -30,6 +32,26 @@ theorem Filter.IsBoundedUnder.isLittleO_sub_self_inv {𝕜 E : Type*} [NormedFie
   exact (tendsto_norm_sub_self_nhdsNE a).inv_tendsto_nhdsGT_zero
 
 end NormedField
+
+section NormedRing
+
+variable {R : Type*} [NormedRing R] [NormMulClass R] {p q : ℕ}
+
+open Bornology
+
+theorem Asymptotics.isLittleO_pow_pow_cobounded_of_lt (hpq : p < q) :
+    (· ^ p) =o[cobounded R] (· ^ q) := by
+  rw [← Nat.add_sub_of_le hpq.le]
+  simpa [pow_add] using (isBigO_refl (· ^ p) (cobounded R)).mul_isLittleO
+    ((isLittleO_const_id_cobounded 1).pow (Nat.sub_pos_of_lt hpq))
+
+theorem Asymptotics.isBigO_pow_pow_cobounded_of_le (hpq : p ≤ q) :
+    (· ^ p) =O[cobounded R] (· ^ q) := by
+  rcases hpq.eq_or_lt with rfl | h
+  · exact isBigO_refl ..
+  · exact (isLittleO_pow_pow_cobounded_of_lt h).isBigO
+
+end NormedRing
 
 section LinearOrderedField
 
@@ -51,13 +73,13 @@ theorem tendsto_pow_div_pow_atTop_atTop {p q : ℕ} (hpq : q < p) :
     Tendsto (fun x : 𝕜 => x ^ p / x ^ q) atTop atTop := by
   rw [tendsto_congr' pow_div_pow_eventuallyEq_atTop]
   apply tendsto_zpow_atTop_atTop
-  omega
+  lia
 
 theorem tendsto_pow_div_pow_atTop_zero [TopologicalSpace 𝕜] [OrderTopology 𝕜] {p q : ℕ}
     (hpq : p < q) : Tendsto (fun x : 𝕜 => x ^ p / x ^ q) atTop (𝓝 0) := by
   rw [tendsto_congr' pow_div_pow_eventuallyEq_atTop]
   apply tendsto_zpow_atTop_zero
-  omega
+  lia
 
 end LinearOrderedField
 
@@ -76,7 +98,7 @@ theorem Asymptotics.IsBigO.trans_tendsto_norm_atTop {α : Type*} {u v : α → �
     Tendsto (fun x => ‖v x‖) l atTop := by
   rcases huv.exists_pos with ⟨c, hc, hcuv⟩
   rw [IsBigOWith] at hcuv
-  convert Tendsto.atTop_div_const hc (tendsto_atTop_mono' l hcuv hu)
+  convert! Tendsto.atTop_div_const hc (tendsto_atTop_mono' l hcuv hu)
   rw [mul_div_cancel_left₀ _ hc.ne.symm]
 
 end NormedLinearOrderedField
@@ -95,6 +117,19 @@ theorem Asymptotics.IsEquivalent.rpow {α : Type*} {u v : α → ℝ} {l : Filte
   conv => enter [3]; change fun x ↦ φ x ^ r * v x ^ r
   filter_upwards [Tendsto.eventually_const_lt (zero_lt_one) hφ, huφv] with x hφ_pos huv'
   simp [← Real.mul_rpow (le_of_lt hφ_pos) (hv x), huv']
+
+theorem Asymptotics.IsEquivalent.log {α : Type*} {l : Filter α} {f g : α → ℝ} (hfg : f ~[l] g)
+    (g_tendsto : Tendsto g l atTop) :
+    (fun n ↦ Real.log (f n)) ~[l] (fun n ↦ Real.log (g n)) := by
+  have hg := g_tendsto.eventually_ne_atTop 0
+  have hf := hfg.symm.tendsto_atTop g_tendsto |>.eventually_ne_atTop 0
+  rw [isEquivalent_iff_tendsto_one hg] at hfg
+  have := hfg.log (by norm_num) |>.congr' <| by
+    filter_upwards [hf, hg] with n hf hg using Real.log_div hf hg
+  exact IsLittleO.isEquivalent <| calc
+    (fun n ↦ Real.log (f n) - Real.log (g n)) =o[l] fun _ ↦ (1 : ℝ) := by simpa
+    _ =o[l] fun n ↦ Real.log (g n) := isLittleO_one_left_iff ℝ |>.mpr <|
+      tendsto_norm_atTop_atTop.comp <| Real.tendsto_log_atTop.comp g_tendsto
 
 open Finset
 
@@ -122,7 +157,7 @@ theorem Asymptotics.IsLittleO.sum_range {α : Type*} [NormedAddCommGroup α] {f 
       gcongr
       · exact fun i _ _ ↦ mul_nonneg (half_pos εpos).le (hg i)
       · rw [range_eq_Ico]
-        exact Ico_subset_Ico (zero_le _) le_rfl
+        exact Ico_subset_Ico zero_le le_rfl
     _ ≤ ε / 2 * ‖∑ i ∈ range n, g i‖ + ε / 2 * ∑ i ∈ range n, g i := by rw [← mul_sum]; gcongr
     _ = ε * ‖∑ i ∈ range n, g i‖ := by
       simp only [B]
@@ -148,7 +183,7 @@ theorem Filter.Tendsto.cesaro_smul {E : Type*} [NormedAddCommGroup E] [NormedSpa
     rw [← Nat.cast_smul_eq_nsmul ℝ, smul_smul, inv_mul_cancel₀ nposℝ.ne', one_smul]
   · filter_upwards [Ici_mem_atTop 1] with n npos
     have nposℝ : (0 : ℝ) < n := Nat.cast_pos.2 npos
-    rw [Algebra.id.smul_eq_mul, inv_mul_cancel₀ nposℝ.ne']
+    rw [smul_eq_mul, inv_mul_cancel₀ nposℝ.ne']
 
 /-- The Cesaro average of a converging sequence converges to the same limit. -/
 theorem Filter.Tendsto.cesaro {u : ℕ → ℝ} {l : ℝ} (h : Tendsto u atTop (𝓝 l)) :
@@ -163,13 +198,74 @@ variable {R : Type*} [NormedField R] [LinearOrder R] [IsStrictOrderedRing R]
   [OrderTopology R] [FloorRing R]
 
 theorem Asymptotics.isEquivalent_nat_floor :
-    (fun (x : R) ↦ ↑⌊x⌋₊) ~[atTop] (fun x ↦ x) := by
-  refine isEquivalent_of_tendsto_one ?_ tendsto_nat_floor_div_atTop
-  filter_upwards with x hx using by rw [hx, Nat.floor_zero, Nat.cast_eq_zero]
+    (fun (x : R) ↦ ↑⌊x⌋₊) ~[atTop] (fun x ↦ x) :=
+  isEquivalent_of_tendsto_one tendsto_nat_floor_div_atTop
 
 theorem Asymptotics.isEquivalent_nat_ceil :
-    (fun (x : R) ↦ ↑⌈x⌉₊) ~[atTop] (fun x ↦ x) := by
-  refine isEquivalent_of_tendsto_one ?_ tendsto_nat_ceil_div_atTop
-  filter_upwards with x hx using by rw [hx, Nat.ceil_zero, Nat.cast_eq_zero]
+    (fun (x : R) ↦ ↑⌈x⌉₊) ~[atTop] (fun x ↦ x) :=
+  isEquivalent_of_tendsto_one tendsto_nat_ceil_div_atTop
 
 end NormedLinearOrderedField
+
+section boundedRange
+
+/-!
+## Bounded Range versus `IsBigO` Asymptotics
+
+For a continuous function `f` into a seminormed space, defined on an unbounded linear order whose
+order topology has compact intervals, having bounded range is equivalent to being `O(1)` along both
+`atTop` and `atBot` (`Continuous.isBounded_range_iff_isBigO_atTop_atBot`). For an even function a
+single `O(1)` bound along `atTop` already suffices
+(`Continuous.isBounded_range_iff_isBigO_atTop_of_even`), since `Function.Even` transports an `atTop`
+bound to an `atBot` bound (`Function.Even.isBigO_atTop_iff_isBigO_atBot`).
+-/
+
+variable
+  {E : Type*} [SeminormedAddCommGroup E]
+  {D : Type*} [TopologicalSpace D]
+  {β : Type*} [TopologicalSpace β] [LinearOrder β] [OrderClosedTopology β] [CompactIccSpace β]
+    [NoMaxOrder β] [NoMinOrder β]
+
+/--
+A continuous function `f` has bounded range if and only if it is `O(1)` with respect to the
+cocompact filter.
+-/
+theorem Continuous.isBounded_range_iff_isBigO {f : D → E} (hf : Continuous f) :
+    IsBounded (range f) ↔ f =O[cocompact D] (1 : D → ℝ) := by
+  constructor <;> intro h
+  · rw [isBounded_iff_forall_norm_le] at h
+    obtain ⟨c, hc⟩ := h
+    simp only [Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff] at hc
+    rw [isBigO_iff]
+    use c
+    apply Eventually.of_forall
+    simpa using hc
+  · simp_rw [isBigO_iff, Filter.Eventually, Filter.mem_cocompact] at h
+    simp only [Pi.one_apply, norm_one, mul_one] at h
+    obtain ⟨c, t, hcompact, h⟩ := h
+    rw [← Set.image_union_image_compl_eq_range (s := t)]
+    apply IsBounded.union
+    · apply (IsCompact.image hcompact hf).isBounded
+    · rw [isBounded_iff_forall_norm_le]
+      refine ⟨c, fun x hx ↦ ?_⟩
+      rw [Set.mem_image] at hx
+      obtain ⟨y, hy, rfl⟩ := hx
+      simpa using mem_of_mem_of_subset hy h
+
+/--
+A continuous function `f` on an unbounded linear order with compact intervals has bounded range if
+and only if it is `O(1)` at both `atTop` and `atBot`.
+-/
+theorem Continuous.isBounded_range_iff_isBigO_atTop_atBot {f : β → E} (hf : Continuous f) :
+    IsBounded (range f) ↔ f =O[atTop] (1 : β → ℝ) ∧ f =O[atBot] (1 : β → ℝ) := by
+  rw [hf.isBounded_range_iff_isBigO, cocompact_eq_atBot_atTop, isBigO_sup, and_comm]
+
+/-- A continuous even function has bounded range if and only if `f =O[atTop] 1`. -/
+theorem Continuous.isBounded_range_iff_isBigO_atTop_of_even [AddCommGroup β] [IsOrderedAddMonoid β]
+    {f : β → E} (hf : Continuous f) (heven : Function.Even f) :
+    IsBounded (range f) ↔ f =O[atTop] (1 : β → ℝ) :=
+  ⟨fun h ↦ (hf.isBounded_range_iff_isBigO_atTop_atBot.mp h).1,
+   fun h ↦ hf.isBounded_range_iff_isBigO_atTop_atBot.mpr
+     ⟨h, by simpa only [← neg_atTop, ← Filter.map_neg, isBigO_map, Function.comp_def, heven.eq]⟩⟩
+
+end boundedRange

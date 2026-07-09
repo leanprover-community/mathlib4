@@ -3,9 +3,12 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Robert Y. Lewis
 -/
-import Mathlib.Algebra.MvPolynomial.Funext
-import Mathlib.Algebra.Ring.ULift
-import Mathlib.RingTheory.WittVector.Basic
+module
+
+public import Mathlib.Algebra.MvPolynomial.Funext
+public import Mathlib.Algebra.Ring.ULift
+public import Mathlib.RingTheory.WittVector.Basic
+public meta import Mathlib.Lean.Elab.Tactic.Basic
 /-!
 # The `IsPoly` predicate
 
@@ -87,6 +90,8 @@ Proofs of identities between polynomial functions will often follow the pattern
 
 * [Commelin and Lewis, *Formalizing the Ring of Witt Vectors*][CL21]
 -/
+
+@[expose] public section
 
 namespace WittVector
 
@@ -179,7 +184,7 @@ theorem ext [Fact p.Prime] {f g} (hf : IsPoly p f) (hg : IsPoly p g)
   simp only [ghostComponent_apply, aeval_eq_eval₂Hom] at h
   apply (ULift.ringEquiv.symm : ℤ ≃+* _).injective
   simp only [← RingEquiv.coe_toRingHom, map_eval₂Hom]
-  convert h using 1
+  convert! h using 1
   all_goals
     simp only [hf, hg, MvPolynomial.eval, map_eval₂Hom]
     apply eval₂Hom_congr (RingHom.ext_int _ _) _ rfl
@@ -271,7 +276,7 @@ instance zeroIsPoly [Fact p.Prime] : IsPoly p fun _ _ _ => 0 :=
 @[simp]
 theorem bind₁_zero_wittPolynomial [Fact p.Prime] (n : ℕ) :
     bind₁ (0 : ℕ → MvPolynomial ℕ R) (wittPolynomial p R n) = 0 := by
-  rw [← aeval_eq_bind₁, aeval_zero, constantCoeff_wittPolynomial, RingHom.map_zero]
+  rw [← aeval_eq_bind₁, aeval_zero, constantCoeff_wittPolynomial, map_zero]
 
 /-- The coefficients of `1 : 𝕎 R` as polynomials. -/
 def onePoly (n : ℕ) : MvPolynomial ℕ ℤ :=
@@ -319,7 +324,6 @@ theorem IsPoly.map [Fact p.Prime] {f} (hf : IsPoly p f) (g : R →+* S) (x : �
 
 namespace IsPoly₂
 
--- porting note: the argument `(fun _ _ => (· + ·))` to `IsPoly₂` was just `_`.
 instance [Fact p.Prime] : Inhabited (IsPoly₂ p (fun _ _ => (· + ·))) :=
   ⟨addIsPoly₂⟩
 
@@ -340,7 +344,7 @@ theorem ext [Fact p.Prime] {f g} (hf : IsPoly₂ p f) (hg : IsPoly₂ p g)
   simp only [ghostComponent_apply, aeval_eq_eval₂Hom] at h
   apply (ULift.ringEquiv.symm : ℤ ≃+* _).injective
   simp only [← RingEquiv.coe_toRingHom, map_eval₂Hom]
-  convert h using 1
+  convert! h using 1
   all_goals
     simp only [hf, hg, MvPolynomial.eval, map_eval₂Hom]
     apply eval₂Hom_congr (RingHom.ext_int _ _) _ rfl
@@ -409,7 +413,7 @@ so it is easier (and prettier) to put it in a tactic script.
 -/
 syntax (name := ghostCalc) "ghost_calc" (ppSpace colGt term:max)* : tactic
 
-private def runIntro (ref : Syntax) (n : Name) : TacticM FVarId := do
+private meta def runIntro (ref : Syntax) (n : Name) : TacticM FVarId := do
   let fvarId ← liftMetaTacticAux fun g => do
     let (fv, g') ← g.intro n
     return (fv, [g'])
@@ -417,7 +421,7 @@ private def runIntro (ref : Syntax) (n : Name) : TacticM FVarId := do
     Elab.Term.addLocalVarInfo ref (mkFVar fvarId)
   return fvarId
 
-private def getLocalOrIntro (t : Term) : TacticM FVarId := do
+private meta def getLocalOrIntro (t : Term) : TacticM FVarId := do
   match t with
     | `(_) => runIntro t `_
     | `($id:ident) => getFVarId id <|> runIntro id id.getId

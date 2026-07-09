@@ -3,8 +3,10 @@ Copyright (c) 2020 Johan Commelin, Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Robert Y. Lewis
 -/
-import Mathlib.Algebra.MvPolynomial.Rename
-import Mathlib.Algebra.MvPolynomial.Variables
+module
+
+public import Mathlib.Algebra.MvPolynomial.Rename
+public import Mathlib.Algebra.MvPolynomial.Variables
 
 /-!
 
@@ -43,6 +45,8 @@ The second pair cannot be instantiated as a `Monad`,
 since it is not a monad in `Type` but in `CommRingCat` (or rather `CommSemiRingCat`).
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -277,7 +281,7 @@ theorem bind₁_monomial (f : σ → MvPolynomial τ R) (d : σ →₀ ℕ) (r :
 
 theorem bind₂_monomial (f : R →+* MvPolynomial σ S) (d : σ →₀ ℕ) (r : R) :
     bind₂ f (monomial d r) = f r * monomial d 1 := by
-  simp only [monomial_eq, RingHom.map_mul, bind₂_C_right, Finsupp.prod, map_prod,
+  simp only [monomial_eq, map_mul, bind₂_C_right, Finsupp.prod, map_prod,
     map_pow, bind₂_X_right, C_1, one_mul]
 
 @[simp]
@@ -306,7 +310,7 @@ theorem vars_bind₁ [DecidableEq τ] (f : σ → MvPolynomial τ R) (φ : MvPol
           (C (coeff d φ)).vars ∪ (∏ i ∈ d.support, f i ^ d i).vars :=
         vars_mul _ _
       _ ≤ (∏ i ∈ d.support, f i ^ d i).vars := by
-        simp only [Finset.empty_union, vars_C, Finset.le_iff_subset, Finset.Subset.refl]
+        simp only [Finset.empty_union, vars_C, Finset.Subset.refl]
       _ ≤ d.support.biUnion fun i : σ => vars (f i ^ d i) := vars_prod _
       _ ≤ d.support.biUnion fun i : σ => (f i).vars := ?_
     apply Finset.biUnion_mono
@@ -315,7 +319,7 @@ theorem vars_bind₁ [DecidableEq τ] (f : σ → MvPolynomial τ R) (φ : MvPol
   · intro j
     simp_rw [Finset.mem_biUnion]
     rintro ⟨d, hd, ⟨i, hi, hj⟩⟩
-    exact ⟨i, (mem_vars _).mpr ⟨d, hd, hi⟩, hj⟩
+    exact ⟨i, (mem_vars_iff_mem_support _).mpr ⟨d, hd, hi⟩, hj⟩
 
 end
 
@@ -337,14 +341,16 @@ instance lawfulFunctor : LawfulFunctor fun σ => MvPolynomial σ R where
 instance lawfulMonad : LawfulMonad fun σ => MvPolynomial σ R where
   pure_bind := by intros; simp [pure, bind]
   bind_assoc := by intros; simp [bind, ← bind₁_comp_bind₁]
-  seqLeft_eq := by intros; simp [SeqLeft.seqLeft, Seq.seq, (· <$> ·), bind₁_rename]; rfl
+  seqLeft_eq _ _ := by
+    simp [SeqLeft.seqLeft, Seq.seq, (· <$> ·), bind₁_rename]; simp [rename_eq_aeval]; rfl
   seqRight_eq := by intros; simp [SeqRight.seqRight, Seq.seq, (· <$> ·), bind₁_rename]; rfl
   pure_seq := by intros; simp [(· <$> ·), pure, Seq.seq]
-  bind_pure_comp := by aesop
+  bind_pure_comp _ _ := congr(⇑$((rename_eq_aeval ..).symm) _)
   bind_map := by aesop
 
 /-
 Possible TODO for the future:
+
 Enable the following definitions, and write a lot of supporting lemmas.
 
 def bind (f : R →+* mv_polynomial τ S) (g : σ → mv_polynomial τ S) :

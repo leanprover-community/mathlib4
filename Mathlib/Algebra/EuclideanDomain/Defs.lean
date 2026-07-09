@@ -3,8 +3,10 @@ Copyright (c) 2018 Louis Carlin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Louis Carlin, Mario Carneiro
 -/
-import Mathlib.Algebra.Ring.Defs
-import Mathlib.Order.RelClasses
+module
+
+public import Mathlib.Algebra.Ring.Defs
+public import Mathlib.Order.RelClasses
 
 /-!
 # Euclidean domains
@@ -35,7 +37,7 @@ as is any field.
 
 ## Notation
 
-`≺` denotes the well founded relation on the Euclidean domain, e.g. in the example of the polynomial
+`≺` denotes the well-founded relation on the Euclidean domain, e.g. in the example of the polynomial
 ring over a field, `p ≺ q` for polynomials `p` and `q` if and only if the degree of `p` is less than
 the degree of `q`.
 
@@ -59,13 +61,16 @@ value of `j`.
 Euclidean domain, transfinite Euclidean domain, Bézout's lemma
 -/
 
+@[expose] public section
+
 universe u
 
 /-- A `EuclideanDomain` is a non-trivial commutative ring with a division and a remainder,
   satisfying `b * (a / b) + a % b = a`.
   The definition of a Euclidean domain usually includes a valuation function `R → ℕ`.
-  This definition is slightly generalised to include a well founded relation
+  This definition is slightly generalised to include a well-founded relation
   `r` with the property that `r (a % b) b`, instead of a valuation. -/
+@[wikidata Q867345]
 class EuclideanDomain (R : Type u) extends CommRing R, Nontrivial R where
   /-- A division function (denoted `/`) on `R`.
     This satisfies the property `b * (a / b) + a % b = a`, where `%` denotes `remainder`. -/
@@ -88,6 +93,17 @@ class EuclideanDomain (R : Type u) extends CommRing R, Nontrivial R where
   protected remainder_lt : ∀ (a) {b}, b ≠ 0 → r (remainder a b) b
   /-- An additional constraint on `r`. -/
   mul_left_not_lt : ∀ (a) {b}, b ≠ 0 → ¬r (a * b) a
+
+/-
+Lean has far more theorems about fields than about Euclidean domains. We thus
+lower the priority of `Euclideandomain.toCommRing`, encouraging typeclass inference
+to try `Field.toCommRing` first. Without this priority-lowering, typeclass inference
+finds the more inefficient path `Field.toEuclideanDomain.toCommRing` by default. This
+priority change saves over 500G instructions across mathlib. See
+https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/We.20need.20to.20talk.20about.20Euclidean.20Domains/near/594655420
+-/
+-- see Note [lower instance priority]
+attribute [instance 100] EuclideanDomain.toCommRing
 
 namespace EuclideanDomain
 

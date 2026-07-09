@@ -3,11 +3,13 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Fintype.BigOperators
-import Mathlib.Data.DFinsupp.BigOperators
-import Mathlib.Data.DFinsupp.Order
-import Mathlib.Order.Interval.Finset.Basic
-import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+module
+
+public import Mathlib.Data.Fintype.BigOperators
+public import Mathlib.Data.DFinsupp.BigOperators
+public import Mathlib.Data.DFinsupp.Order
+public import Mathlib.Order.Interval.Finset.Basic
+public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 
 /-!
 # Finite intervals of finitely supported functions
@@ -16,10 +18,12 @@ This file provides the `LocallyFiniteOrder` instance for `Π₀ i, α i` when `�
 finite and calculates the cardinality of its finite intervals.
 -/
 
+@[expose] public section
+
 
 open DFinsupp Finset
 
-open Pointwise
+open scoped Pointwise
 
 variable {ι : Type*} {α : ι → Type*}
 
@@ -33,7 +37,7 @@ def dfinsupp (s : Finset ι) (t : ∀ i, Finset (α i)) : Finset (Π₀ i, α i)
     ⟨fun f => DFinsupp.mk s fun i => f i i.2, by
       refine (mk_injective _).comp fun f g h => ?_
       ext i hi
-      convert congr_fun h ⟨i, hi⟩⟩
+      convert! congr_fun h ⟨i, hi⟩⟩
 
 @[simp]
 theorem card_dfinsupp (s : Finset ι) (t : ∀ i, Finset (α i)) : #(s.dfinsupp t) = ∏ i ∈ s, #(t i) :=
@@ -46,7 +50,7 @@ theorem mem_dfinsupp_iff : f ∈ s.dfinsupp t ↔ f.support ⊆ s ∧ ∀ i ∈ 
   · rintro ⟨f, hf, rfl⟩
     rw [Function.Embedding.coeFn_mk]
     refine ⟨support_mk_subset, fun i hi => ?_⟩
-    convert mem_pi.1 hf i hi
+    convert! mem_pi.1 hf i hi
     exact mk_of_mem hi
   · refine fun h => ⟨fun i _ => f i, mem_pi.2 h.2, ?_⟩
     ext i
@@ -110,7 +114,7 @@ theorem mem_rangeIcc_apply_iff : a ∈ f.rangeIcc g i ↔ f i ≤ a ∧ a ≤ g 
 
 theorem support_rangeIcc_subset [DecidableEq ι] [∀ i, DecidableEq (α i)] :
     (f.rangeIcc g).support ⊆ f.support ∪ g.support := by
-  refine fun x hx => ?_
+  intro x hx
   by_contra h
   refine notMem_support_iff.2 ?_ hx
   rw [rangeIcc_apply, notMem_support_iff.1 (notMem_mono subset_union_left h),
@@ -178,20 +182,19 @@ lemma card_uIcc : #(uIcc f g) = ∏ i ∈ f.support ∪ g.support, #(uIcc (f i) 
 
 end Lattice
 
-section CanonicallyOrdered
+section IsBotZeroClass
 
 variable [DecidableEq ι] [∀ i, DecidableEq (α i)]
-variable [∀ i, AddCommMonoid (α i)] [∀ i, PartialOrder (α i)] [∀ i, CanonicallyOrderedAdd (α i)]
+variable [∀ i, AddCommMonoid (α i)] [∀ i, PartialOrder (α i)] [∀ i, IsBotZeroClass (α i)]
   [∀ i, OrderBot (α i)] [∀ i, LocallyFiniteOrder (α i)]
 variable (f : Π₀ i, α i)
 
 lemma card_Iic : #(Iic f) = ∏ i ∈ f.support, #(Iic (f i)) := by
-  simp_rw [Iic_eq_Icc, card_Icc, DFinsupp.bot_eq_zero, support_zero, empty_union, zero_apply,
-    bot_eq_zero]
+  simp [Iic_eq_Icc, card_Icc, bot_eq_zero]
 
 lemma card_Iio : #(Iio f) = (∏ i ∈ f.support, #(Iic (f i))) - 1 := by
   rw [card_Iio_eq_card_Iic_sub_one, card_Iic]
 
-end CanonicallyOrdered
+end IsBotZeroClass
 
 end DFinsupp

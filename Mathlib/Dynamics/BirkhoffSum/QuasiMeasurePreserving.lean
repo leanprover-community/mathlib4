@@ -3,11 +3,13 @@ Copyright (c) 2025 Oliver Butterley. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Butterley, Lua Viana Reis
 -/
-import Mathlib.Dynamics.BirkhoffSum.Average
-import Mathlib.MeasureTheory.Measure.QuasiMeasurePreserving
+module
+
+public import Mathlib.Dynamics.BirkhoffSum.Average
+public import Mathlib.MeasureTheory.Measure.QuasiMeasurePreserving
 
 /-!
-# Birkhoff sum and average for quasi measure preserving maps
+# Birkhoff sum and average for quasi-measure-preserving maps
 
 Given a map `f` and measure `μ`, under the assumption of `QuasiMeasurePreserving f μ μ` we prove:
 
@@ -18,6 +20,8 @@ Given a map `f` and measure `μ`, under the assumption of `QuasiMeasurePreservin
   corresponding `birkhoffAverage R f` are `μ`-a.e. equal.
 
 -/
+
+public section
 
 namespace MeasureTheory.Measure.QuasiMeasurePreserving
 
@@ -35,7 +39,7 @@ theorem birkhoffSum_ae_eq_of_ae_eq (hf : QuasiMeasurePreserving f μ μ) (hφ : 
   exact (hf.iterate i).ae (hφ.mono (fun _ h _ => h))
 
 /-- If observables `φ` and `ψ` are `μ`-a.e. equal then the corresponding `birkhoffAverage` are
- `μ`-a.e. equal. -/
+`μ`-a.e. equal. -/
 theorem birkhoffAverage_ae_eq_of_ae_eq (R : Type*) [DivisionSemiring R] [Module R M]
     (hf : QuasiMeasurePreserving f μ μ) (hφ : φ =ᵐ[μ] ψ) n :
     birkhoffAverage R f φ n =ᵐ[μ] birkhoffAverage R f ψ n :=

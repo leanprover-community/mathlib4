@@ -3,13 +3,15 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
-import Mathlib.Algebra.Group.Pointwise.Set.Basic
-import Mathlib.Algebra.Group.Units.Equiv
-import Mathlib.Algebra.Notation.Indicator
-import Mathlib.Data.Finset.Powerset
-import Mathlib.Data.Fintype.Pi
-import Mathlib.Order.Preorder.Finite
+module
+
+public import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
+public import Mathlib.Algebra.Group.Pointwise.Set.Basic
+public import Mathlib.Algebra.Group.Units.Equiv
+public import Mathlib.Algebra.Notation.Indicator
+public import Mathlib.Data.Finset.Powerset
+public import Mathlib.Data.Fintype.Pi
+public import Mathlib.Order.Preorder.Finite
 
 /-!
 # Dissociation and span
@@ -23,6 +25,8 @@ independence and linear span of sets in a vector space but where the scalars are
 * `MulDissociated`/`AddDissociated`: Predicate for a set to be dissociated.
 * `Finset.mulSpan`/`Finset.addSpan`: Span of a finset.
 -/
+
+@[expose] public section
 
 variable {α β : Type*} [CommGroup α] [CommGroup β]
 
@@ -60,7 +64,7 @@ lemma mulDissociated_singleton : MulDissociated ({a} : Set α) ↔ a ≠ 1 := by
 lemma not_mulDissociated :
     ¬ MulDissociated s ↔
       ∃ t : Finset α, ↑t ⊆ s ∧ ∃ u : Finset α, ↑u ⊆ s ∧ t ≠ u ∧ ∏ x ∈ t, x = ∏ x ∈ u, x := by
-  simp [MulDissociated, InjOn]; aesop
+  grind [MulDissociated, InjOn]
 
 @[to_additive]
 lemma not_mulDissociated_iff_exists_disjoint :
@@ -71,7 +75,7 @@ lemma not_mulDissociated_iff_exists_disjoint :
     ⟨?_, fun ⟨t, u, ht, hu, _, htune, htusum⟩ ↦ ⟨t, ht, u, hu, htune, htusum⟩⟩
   rintro ⟨t, ht, u, hu, htu, h⟩
   refine ⟨t \ u, u \ t, ?_, ?_, disjoint_sdiff_sdiff, sdiff_ne_sdiff_iff.2 htu,
-    Finset.prod_sdiff_eq_prod_sdiff_iff.2 h⟩ <;> push_cast <;> exact diff_subset.trans ‹_›
+    Finset.prod_sdiff_eq_prod_sdiff_iff.2 h⟩ <;> push_cast <;> exact sdiff_subset.trans ‹_›
 
 @[to_additive (attr := simp)] lemma MulEquiv.mulDissociated_preimage (e : β ≃* α) :
     MulDissociated (e ⁻¹' s) ↔ MulDissociated s := by

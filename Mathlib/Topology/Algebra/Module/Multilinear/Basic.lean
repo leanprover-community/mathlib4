@@ -3,9 +3,11 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Topology.Algebra.Module.LinearMapPiProd
-import Mathlib.LinearAlgebra.Multilinear.Basic
-import Mathlib.Algebra.BigOperators.Fin
+module
+
+public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.PiProd
+public import Mathlib.LinearAlgebra.Multilinear.Basic
+public import Mathlib.Algebra.BigOperators.Fin
 
 /-!
 # Continuous multilinear maps
@@ -32,6 +34,8 @@ types as the arguments of our continuous multilinear maps), but arguably the mos
 especially when defining iterated derivatives.
 -/
 
+@[expose] public section
+
 
 open Function Fin Set
 
@@ -51,8 +55,8 @@ structure ContinuousMultilinearMap (R : Type u) {ι : Type v} (M₁ : ι → Typ
 
 attribute [inherit_doc ContinuousMultilinearMap] ContinuousMultilinearMap.cont
 
-@[inherit_doc]
-notation:25 M " [×" n "]→L[" R "] " M' => ContinuousMultilinearMap R (fun i : Fin n => M) M'
+@[inherit_doc ContinuousMultilinearMap]
+notation3:25 M " [×" n "]→L[" R "] " M' => ContinuousMultilinearMap R (fun _i : Fin n => M) M'
 
 namespace ContinuousMultilinearMap
 
@@ -73,7 +77,7 @@ theorem toMultilinearMap_injective :
 
 instance funLike : FunLike (ContinuousMultilinearMap R M₁ M₂) (∀ i, M₁ i) M₂ where
   coe f := f.toFun
-  coe_injective' _ _ h := toMultilinearMap_injective <| MultilinearMap.coe_injective h
+  coe_injective _ _ h := toMultilinearMap_injective <| MultilinearMap.coe_injective h
 
 instance continuousMapClass :
     ContinuousMapClass (ContinuousMultilinearMap R M₁ M₂) (∀ i, M₁ i) M₂ where
@@ -122,9 +126,10 @@ instance : Zero (ContinuousMultilinearMap R M₁ M₂) :=
 instance : Inhabited (ContinuousMultilinearMap R M₁ M₂) :=
   ⟨0⟩
 
-@[simp]
-theorem zero_apply (m : ∀ i, M₁ i) : (0 : ContinuousMultilinearMap R M₁ M₂) m = 0 :=
-  rfl
+instance : IsZeroApply (ContinuousMultilinearMap R M₁ M₂) (∀ i, M₁ i) M₂ where
+  zero_apply _ := rfl
+
+@[deprecated (since := "2026-06-10")] protected alias zero_apply := zero_apply
 
 @[simp]
 theorem toMultilinearMap_zero : (0 : ContinuousMultilinearMap R M₁ M₂).toMultilinearMap = 0 :=
@@ -132,17 +137,17 @@ theorem toMultilinearMap_zero : (0 : ContinuousMultilinearMap R M₁ M₂).toMul
 
 section SMul
 
-variable {R' R'' A : Type*} [Monoid R'] [Monoid R''] [Semiring A] [∀ i, Module A (M₁ i)]
-  [Module A M₂] [DistribMulAction R' M₂] [ContinuousConstSMul R' M₂] [SMulCommClass A R' M₂]
-  [DistribMulAction R'' M₂] [ContinuousConstSMul R'' M₂] [SMulCommClass A R'' M₂]
+variable {R' R'' A : Type*} [Semiring A] [∀ i, Module A (M₁ i)]
+  [Module A M₂] [DistribSMul R' M₂] [ContinuousConstSMul R' M₂] [SMulCommClass A R' M₂]
+  [DistribSMul R'' M₂] [ContinuousConstSMul R'' M₂] [SMulCommClass A R'' M₂]
 
 instance : SMul R' (ContinuousMultilinearMap A M₁ M₂) :=
   ⟨fun c f => { c • f.toMultilinearMap with cont := f.cont.const_smul c }⟩
 
-@[simp]
-theorem smul_apply (f : ContinuousMultilinearMap A M₁ M₂) (c : R') (m : ∀ i, M₁ i) :
-    (c • f) m = c • f m :=
-  rfl
+instance : IsSMulApply R' (ContinuousMultilinearMap A M₁ M₂) (∀ i, M₁ i) M₂ where
+  smul_apply _ _ _ := rfl
+
+@[deprecated (since := "2026-06-10")] protected alias smul_apply := smul_apply
 
 @[simp]
 theorem toMultilinearMap_smul (c : R') (f : ContinuousMultilinearMap A M₁ M₂) :
@@ -150,20 +155,25 @@ theorem toMultilinearMap_smul (c : R') (f : ContinuousMultilinearMap A M₁ M₂
   rfl
 
 instance [SMulCommClass R' R'' M₂] : SMulCommClass R' R'' (ContinuousMultilinearMap A M₁ M₂) :=
-  ⟨fun _ _ _ => ext fun _ => smul_comm _ _ _⟩
+  FunLike.smulCommClass
 
 instance [SMul R' R''] [IsScalarTower R' R'' M₂] :
-    IsScalarTower R' R'' (ContinuousMultilinearMap A M₁ M₂) :=
-  ⟨fun _ _ _ => ext fun _ => smul_assoc _ _ _⟩
+    IsScalarTower R' R'' (ContinuousMultilinearMap A M₁ M₂) := FunLike.isScalarTower
 
-instance [DistribMulAction R'ᵐᵒᵖ M₂] [IsCentralScalar R' M₂] :
-    IsCentralScalar R' (ContinuousMultilinearMap A M₁ M₂) :=
-  ⟨fun _ _ => ext fun _ => op_smul_eq_smul _ _⟩
-
-instance : MulAction R' (ContinuousMultilinearMap A M₁ M₂) :=
-  Function.Injective.mulAction toMultilinearMap toMultilinearMap_injective fun _ _ => rfl
+instance [DistribSMul R'ᵐᵒᵖ M₂] [IsCentralScalar R' M₂] :
+    IsCentralScalar R' (ContinuousMultilinearMap A M₁ M₂) := FunLike.isCentralScalar
 
 end SMul
+
+section SMulMonoid
+
+variable {R' A : Type*} [Monoid R'] [Semiring A] [∀ i, Module A (M₁ i)]
+  [Module A M₂] [DistribMulAction R' M₂] [ContinuousConstSMul R' M₂] [SMulCommClass A R' M₂]
+
+instance : MulAction R' (ContinuousMultilinearMap A M₁ M₂) := fast_instance%
+  Function.Injective.mulAction toMultilinearMap toMultilinearMap_injective fun _ _ => rfl
+
+end SMulMonoid
 
 section ContinuousAdd
 
@@ -172,16 +182,21 @@ variable [ContinuousAdd M₂]
 instance : Add (ContinuousMultilinearMap R M₁ M₂) :=
   ⟨fun f f' => ⟨f.toMultilinearMap + f'.toMultilinearMap, f.cont.add f'.cont⟩⟩
 
-@[simp]
-theorem add_apply (m : ∀ i, M₁ i) : (f + f') m = f m + f' m :=
-  rfl
+instance : IsAddApply (ContinuousMultilinearMap R M₁ M₂) (∀ i, M₁ i) M₂ where
+  add_apply _ _ _ := rfl
+
+@[deprecated (since := "2026-06-10")] protected alias add_apply := add_apply
 
 @[simp]
 theorem toMultilinearMap_add (f g : ContinuousMultilinearMap R M₁ M₂) :
     (f + g).toMultilinearMap = f.toMultilinearMap + g.toMultilinearMap :=
   rfl
 
-instance addCommMonoid : AddCommMonoid (ContinuousMultilinearMap R M₁ M₂) :=
+-- The `AddMonoid` instance exists to help speedup unification
+instance : AddMonoid (ContinuousMultilinearMap R M₁ M₂) := fast_instance%
+  toMultilinearMap_injective.addMonoid _ rfl (fun _ _ => rfl) fun _ _ => rfl
+
+instance addCommMonoid : AddCommMonoid (ContinuousMultilinearMap R M₁ M₂) := fast_instance%
   toMultilinearMap_injective.addCommMonoid _ rfl (fun _ _ => rfl) fun _ _ => rfl
 
 /-- Evaluation of a `ContinuousMultilinearMap` at a vector as an `AddMonoidHom`. -/
@@ -190,21 +205,18 @@ def applyAddHom (m : ∀ i, M₁ i) : ContinuousMultilinearMap R M₁ M₂ →+ 
   map_zero' := rfl
   map_add' _ _ := rfl
 
-@[simp]
-theorem sum_apply {α : Type*} (f : α → ContinuousMultilinearMap R M₁ M₂) (m : ∀ i, M₁ i)
-    {s : Finset α} : (∑ a ∈ s, f a) m = ∑ a ∈ s, f a m :=
-  map_sum (applyAddHom m) f s
+@[deprecated (since := "2026-06-10")] protected alias sum_apply := sum_apply
 
 end ContinuousAdd
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `f` is a continuous multilinear map, then `f.toContinuousLinearMap m i` is the continuous
 linear map obtained by fixing all coordinates but `i` equal to those of `m`, and varying the
 `i`-th coordinate. -/
 @[simps!] def toContinuousLinearMap [DecidableEq ι] (m : ∀ i, M₁ i) (i : ι) : M₁ i →L[R] M₂ :=
-  { f.toMultilinearMap.toLinearMap m i with
-    cont := f.cont.comp (continuous_const.update i continuous_id) }
+  { f.toMultilinearMap.toLinearMap m i with }
 
-/-- The cartesian product of two continuous multilinear maps, as a continuous multilinear map. -/
+/-- The Cartesian product of two continuous multilinear maps, as a continuous multilinear map. -/
 def prod (f : ContinuousMultilinearMap R M₁ M₂) (g : ContinuousMultilinearMap R M₁ M₃) :
     ContinuousMultilinearMap R M₁ (M₂ × M₃) :=
   { f.toMultilinearMap.prod g.toMultilinearMap with cont := f.cont.prodMk g.cont }
@@ -379,10 +391,7 @@ def linearDeriv : (∀ i, M₁ i) →L[R] M₂ := ∑ i : ι, (f.toContinuousLin
 
 @[simp]
 lemma linearDeriv_apply : f.linearDeriv x y = ∑ i, f (Function.update x i (y i)) := by
-  unfold linearDeriv toContinuousLinearMap
-  simp only [ContinuousLinearMap.coe_sum', ContinuousLinearMap.coe_comp',
-    ContinuousLinearMap.coe_mk', Finset.sum_apply]
-  rfl
+  simp [linearDeriv, toContinuousLinearMap]
 
 end linearDeriv
 
@@ -470,18 +479,20 @@ variable [IsTopologicalAddGroup M₂]
 instance : Neg (ContinuousMultilinearMap R M₁ M₂) :=
   ⟨fun f => { -f.toMultilinearMap with cont := f.cont.neg }⟩
 
-@[simp]
-theorem neg_apply (m : ∀ i, M₁ i) : (-f) m = -f m :=
-  rfl
+instance : IsNegApply (ContinuousMultilinearMap R M₁ M₂) (∀ i, M₁ i) M₂ where
+  neg_apply _ _ := rfl
+
+@[deprecated (since := "2026-06-10")] protected alias neg_apply := neg_apply
 
 instance : Sub (ContinuousMultilinearMap R M₁ M₂) :=
   ⟨fun f g => { f.toMultilinearMap - g.toMultilinearMap with cont := f.cont.sub g.cont }⟩
 
-@[simp]
-theorem sub_apply (m : ∀ i, M₁ i) : (f - f') m = f m - f' m :=
-  rfl
+instance : IsSubApply (ContinuousMultilinearMap R M₁ M₂) (∀ i, M₁ i) M₂ where
+  sub_apply _ _ _ := rfl
 
-instance : AddCommGroup (ContinuousMultilinearMap R M₁ M₂) :=
+@[deprecated (since := "2026-06-10")] protected alias sub_apply := sub_apply
+
+instance : AddCommGroup (ContinuousMultilinearMap R M₁ M₂) := fast_instance%
   toMultilinearMap_injective.addCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ _ => rfl
 
@@ -535,6 +546,7 @@ variable {R' R'' A : Type*} [Monoid R'] [Monoid R''] [Semiring A] [∀ i, AddCom
   [DistribMulAction R'' M₂] [ContinuousConstSMul R'' M₂] [SMulCommClass A R'' M₂]
 
 instance [ContinuousAdd M₂] : DistribMulAction R' (ContinuousMultilinearMap A M₁ M₂) :=
+  fast_instance%
   Function.Injective.distribMulAction
     { toFun := toMultilinearMap,
       map_zero' := toMultilinearMap_zero,
@@ -552,7 +564,7 @@ variable {R' A : Type*} [Semiring R'] [Semiring A] [∀ i, AddCommMonoid (M₁ i
 
 /-- The space of continuous multilinear maps over an algebra over `R` is a module over `R`, for the
 pointwise addition and scalar multiplication. -/
-instance : Module R' (ContinuousMultilinearMap A M₁ M₂) :=
+instance : Module R' (ContinuousMultilinearMap A M₁ M₂) := fast_instance%
   Function.Injective.module _
     { toFun := toMultilinearMap,
       map_zero' := toMultilinearMap_zero,
@@ -589,7 +601,7 @@ variable (R n) (A : Type*) [CommSemiring R] [Semiring A] [Algebra R A] [Topologi
 `m` the product of all the `m i`.
 
 See also: `ContinuousMultilinearMap.mkPiAlgebra`. -/
-protected def mkPiAlgebraFin : A[×n]→L[R] A where
+protected def mkPiAlgebraFin : A [×n]→L[R] A where
   cont := by
     change Continuous fun m => (List.ofFn m).prod
     simp_rw [List.ofFn_eq_map]
@@ -615,7 +627,7 @@ over `𝕜`, associating to `m` the product of all the `m i`.
 
 See also `ContinuousMultilinearMap.mkPiAlgebraFin`. -/
 protected def mkPiAlgebra : ContinuousMultilinearMap R (fun _ : ι => A) A where
-  cont := continuous_finset_prod _ fun _ _ => continuous_apply _
+  cont := continuous_finsetProd _ fun _ _ => continuous_apply _
   toMultilinearMap := MultilinearMap.mkPiAlgebra R ι A
 
 @[simp]
@@ -673,7 +685,7 @@ theorem mkPiRing_eq_iff {z₁ z₂ : M} :
   exact MultilinearMap.mkPiRing_eq_iff
 
 theorem mkPiRing_zero : ContinuousMultilinearMap.mkPiRing R ι (0 : M) = 0 := by
-  ext; rw [mkPiRing_apply, smul_zero, ContinuousMultilinearMap.zero_apply]
+  ext; rw [mkPiRing_apply, smul_zero, zero_apply]
 
 theorem mkPiRing_eq_zero_iff (z : M) : ContinuousMultilinearMap.mkPiRing R ι z = 0 ↔ z = 0 := by
   rw [← mkPiRing_zero, mkPiRing_eq_iff]

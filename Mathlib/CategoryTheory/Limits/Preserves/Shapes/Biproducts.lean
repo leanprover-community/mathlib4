@@ -3,8 +3,10 @@ Copyright (c) 2022 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.BinaryBiproducts
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.BinaryBiproducts
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
 
 /-!
 # Preservation of biproducts
@@ -19,6 +21,8 @@ classes `PreservesBiproduct` and `PreservesBinaryBiproduct`. We then
   in case that the biproduct is preserved.
 
 -/
+
+@[expose] public section
 
 
 universe w₁ w₂ v₁ v₂ u₁ u₂
@@ -47,6 +51,7 @@ section Bicone
 
 variable {J : Type w₁}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The image of a bicone under a functor. -/
 @[simps]
 def mapBicone {f : J → C} (b : Bicone f) : Bicone (F.obj ∘ f) where
@@ -162,6 +167,7 @@ class PreservesBinaryBiproducts (F : C ⥤ D) [PreservesZeroMorphisms F] : Prop 
 
 attribute [inherit_doc PreservesBinaryBiproducts] PreservesBinaryBiproducts.preserves
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A functor that preserves biproducts of a pair preserves binary biproducts. -/
 lemma preservesBinaryBiproduct_of_preservesBiproduct (F : C ⥤ D)
     [PreservesZeroMorphisms F] (X Y : C) [PreservesBiproduct (pairFunction X Y) F] :
@@ -171,13 +177,13 @@ lemma preservesBinaryBiproduct_of_preservesBiproduct (F : C ⥤ D)
         IsLimit.ofIsoLimit
             ((IsLimit.postcomposeHomEquiv (diagramIsoPair _) _).symm
               (isBilimitOfPreserves F (b.toBiconeIsBilimit.symm hb)).isLimit) <|
-          Cones.ext (Iso.refl _) fun j => by
+          Cone.ext (Iso.refl _) fun j => by
             rcases j with ⟨⟨⟩⟩ <;> simp
       isColimit :=
         IsColimit.ofIsoColimit
             ((IsColimit.precomposeInvEquiv (diagramIsoPair _) _).symm
               (isBilimitOfPreserves F (b.toBiconeIsBilimit.symm hb)).isColimit) <|
-          Cocones.ext (Iso.refl _) fun j => by
+          Cocone.ext (Iso.refl _) fun j => by
             rcases j with ⟨⟨⟩⟩ <;> simp }⟩
 
 /-- A functor that preserves biproducts of a pair preserves binary biproducts. -/
@@ -223,6 +229,7 @@ theorem ι_biproductComparison' (j : J) :
 
 variable [PreservesZeroMorphisms F]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The composition in the opposite direction is equal to the identity if and only if `F` preserves
 the biproduct, see `preservesBiproduct_of_monoBiproductComparison`. -/
 @[reassoc (attr := simp)]
@@ -259,17 +266,22 @@ instance hasBiproduct_of_preserves : HasBiproduct (F.obj ∘ f) :=
     { bicone := F.mapBicone (biproduct.bicone f)
       isBilimit := isBilimitOfPreserves _ (biproduct.isBilimit _) }
 
+/-- This instance applies more often than `hasBiproduct_of_preserves`, but the discrimination
+tree key matches a lot more (since it does not look through lambdas). -/
+instance (priority := low) hasBiproduct_of_preserves' : HasBiproduct fun i => F.obj (f i) :=
+  HasBiproduct.mk
+    { bicone := F.mapBicone (biproduct.bicone f)
+      isBilimit := isBilimitOfPreserves _ (biproduct.isBilimit _) }
+
 /-- If `F` preserves a biproduct, we get a definitionally nice isomorphism
 `F.obj (⨁ f) ≅ ⨁ (F.obj ∘ f)`. -/
 abbrev mapBiproduct : F.obj (⨁ f) ≅ ⨁ F.obj ∘ f :=
   biproduct.uniqueUpToIso _ (isBilimitOfPreserves _ (biproduct.isBilimit _))
 
 theorem mapBiproduct_hom :
-    haveI : HasBiproduct fun j => F.obj (f j) := hasBiproduct_of_preserves F f
     (mapBiproduct F f).hom = biproduct.lift fun j => F.map (biproduct.π f j) := rfl
 
 theorem mapBiproduct_inv :
-    haveI : HasBiproduct fun j => F.obj (f j) := hasBiproduct_of_preserves F f
     (mapBiproduct F f).inv = biproduct.desc fun j => F.map (biproduct.ι f j) := rfl
 
 end Bicone
@@ -364,21 +376,18 @@ section Bicone
 variable {J : Type w₁} (f : J → C) [HasBiproduct f] [PreservesBiproduct f F] {W : C}
 
 theorem biproduct.map_lift_mapBiprod (g : ∀ j, W ⟶ f j) :
-    -- Porting note: we need haveI to tell Lean about hasBiproduct_of_preserves F f
-    haveI : HasBiproduct fun j => F.obj (f j) := hasBiproduct_of_preserves F f
     F.map (biproduct.lift g) ≫ (F.mapBiproduct f).hom = biproduct.lift fun j => F.map (g j) := by
   ext j
   dsimp only [Function.comp_def]
   simp only [mapBiproduct_hom, Category.assoc, biproduct.lift_π, ← F.map_comp]
 
 theorem biproduct.mapBiproduct_inv_map_desc (g : ∀ j, f j ⟶ W) :
-    -- Porting note: we need haveI to tell Lean about hasBiproduct_of_preserves F f
-    haveI : HasBiproduct fun j => F.obj (f j) := hasBiproduct_of_preserves F f
     (F.mapBiproduct f).inv ≫ F.map (biproduct.desc g) = biproduct.desc fun j => F.map (g j) := by
   ext j
   dsimp only [Function.comp_def]
   simp only [mapBiproduct_inv, ← Category.assoc, biproduct.ι_desc, ← F.map_comp]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem biproduct.mapBiproduct_hom_desc (g : ∀ j, f j ⟶ W) :
     ((F.mapBiproduct f).hom ≫ biproduct.desc fun j => F.map (g j)) = F.map (biproduct.desc g) := by
   rw [← biproduct.mapBiproduct_inv_map_desc, Iso.hom_inv_id_assoc]
@@ -389,6 +398,7 @@ section BinaryBicone
 
 variable (X Y : C) [HasBinaryBiproduct X Y] [PreservesBinaryBiproduct X Y F] {W : C}
 
+set_option backward.defeqAttrib.useBackward true in
 theorem biprod.map_lift_mapBiprod (f : W ⟶ X) (g : W ⟶ Y) :
     F.map (biprod.lift f g) ≫ (F.mapBiprod X Y).hom = biprod.lift (F.map f) (F.map g) := by
   ext <;> simp [mapBiprod, ← F.map_comp]
@@ -397,6 +407,7 @@ theorem biprod.lift_mapBiprod (f : W ⟶ X) (g : W ⟶ Y) :
     biprod.lift (F.map f) (F.map g) ≫ (F.mapBiprod X Y).inv = F.map (biprod.lift f g) := by
   rw [← biprod.map_lift_mapBiprod, Category.assoc, Iso.hom_inv_id, Category.comp_id]
 
+set_option backward.defeqAttrib.useBackward true in
 theorem biprod.mapBiprod_inv_map_desc (f : X ⟶ W) (g : Y ⟶ W) :
     (F.mapBiprod X Y).inv ≫ F.map (biprod.desc f g) = biprod.desc (F.map f) (F.map g) := by
   ext <;> simp [mapBiprod, ← F.map_comp]

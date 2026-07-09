@@ -3,9 +3,12 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Combinatorics.Additive.AP.Three.Behrend
-import Mathlib.Combinatorics.SimpleGraph.Triangle.Tripartite
-import Mathlib.Tactic.Rify
+module
+
+public import Mathlib.Combinatorics.Additive.AP.Three.Behrend
+public import Mathlib.Combinatorics.SimpleGraph.Triangle.Tripartite
+public import Mathlib.Tactic.Rify
+public import Mathlib.Tactic.Qify
 
 /-!
 # The Ruzsa-Szemerédi problem
@@ -24,6 +27,8 @@ original set.
 * `ruzsaSzemerediNumberNat_asymptotic_lower_bound`: There exists a graph with `n` vertices and
   `Ω((n ^ 2 * exp (-4 * √(log n))))` edges such that each edge belongs to exactly one triangle.
 -/
+
+@[expose] public section
 
 open Finset Nat Real SimpleGraph Sum3 SimpleGraph.TripartiteFromTriangles
 open Fintype (card)
@@ -47,8 +52,9 @@ noncomputable def ruzsaSzemerediNumber : ℕ := by
   exact Nat.findGreatest (fun m ↦ ∃ (G : SimpleGraph α) (_ : DecidableRel G.Adj),
     #(G.cliqueFinset 3) = m ∧ G.LocallyLinear) ((card α).choose 3)
 
-open scoped Classical in
-lemma ruzsaSzemerediNumber_le : ruzsaSzemerediNumber α ≤ (card α).choose 3 := Nat.findGreatest_le _
+lemma ruzsaSzemerediNumber_le : ruzsaSzemerediNumber α ≤ (card α).choose 3 := by
+  classical
+  exact Nat.findGreatest_le _
 
 lemma ruzsaSzemerediNumber_spec :
     ∃ (G : SimpleGraph α) (_ : DecidableRel G.Adj),
@@ -59,7 +65,7 @@ lemma ruzsaSzemerediNumber_spec :
       #(G.cliqueFinset 3) = m ∧ G.LocallyLinear) _ _ (Nat.zero_le _)
     ⟨⊥, inferInstance, by simp, locallyLinear_bot⟩
 
-variable {n : ℕ}
+variable {m n : ℕ}
 
 lemma SimpleGraph.LocallyLinear.le_ruzsaSzemerediNumber [DecidableRel G.Adj]
     (hG : G.LocallyLinear) : #(G.cliqueFinset 3) ≤ ruzsaSzemerediNumber α := by
@@ -88,6 +94,7 @@ noncomputable def ruzsaSzemerediNumberNat (n : ℕ) : ℕ := ruzsaSzemerediNumbe
 lemma ruzsaSzemerediNumberNat_card : ruzsaSzemerediNumberNat (card α) = ruzsaSzemerediNumber α :=
   ruzsaSzemerediNumber_congr (Fintype.equivFin _).symm
 
+@[gcongr]
 lemma ruzsaSzemerediNumberNat_mono : Monotone ruzsaSzemerediNumberNat := fun _m _n h =>
   ruzsaSzemerediNumber_mono (Fin.castLEEmb h)
 
@@ -177,12 +184,13 @@ lemma rothNumberNat_le_ruzsaSzemerediNumberNat (n : ℕ) :
     (2 * n + 1) * rothNumberNat n ≤ ruzsaSzemerediNumberNat (6 * n + 3) := by
   let α := Fin (2 * n + 1)
   have : Nat.Coprime 2 (2 * n + 1) := by simp
-  haveI : Fact (IsUnit (2 : Fin (2 * n + 1))) := ⟨by simpa using (ZMod.unitOfCoprime 2 this).isUnit⟩
+  haveI : Fact (IsUnit (2 : Fin (2 * n + 1))) := ⟨by simpa
+    using! (ZMod.unitOfCoprime 2 this).isUnit⟩
   open scoped Fin.CommRing in
   calc
     (2 * n + 1) * rothNumberNat n
-    _ = Fintype.card α * addRothNumber (Iio (n : α)) := by
-      rw [Fin.addRothNumber_eq_rothNumberNat le_rfl, Fintype.card_fin]
+    _ = Fintype.card α * addRothNumber (Iio (⟨n, by lia⟩ : α)) := by
+      rw [Fin.addRothNumber_eq_rothNumberNat (by simp), Fintype.card_fin]
     _ ≤ Fintype.card α * addRothNumber (univ : Finset α) := by
       gcongr; exact subset_univ _
     _ ≤ ruzsaSzemerediNumber (Sum α (Sum α α)) := addRothNumber_le_ruzsaSzemerediNumber _
@@ -205,12 +213,10 @@ theorem rothNumberNat_le_ruzsaSzemerediNumberNat' :
       _ ≤ (↑(2 * (n / 6) + 1) : ℝ) * rothNumberNat (n / 6) :=
         mul_le_mul_of_nonneg_right ?_ (Nat.cast_nonneg _)
       _ ≤ (ruzsaSzemerediNumberNat (6 * (n / 6) + 3) : ℝ) := ?_
-      _ ≤ _ :=
-        Nat.cast_le.2 (ruzsaSzemerediNumberNat_mono <| add_le_add_right (Nat.mul_div_le _ _) _)
-    · norm_num
+      _ ≤ _ := by grw [Nat.mul_div_le]
+    · simp only [cast_add, cast_ofNat, cast_mul, cast_one, tsub_le_iff_right]
       rw [← div_add_one (three_ne_zero' ℝ), ← le_sub_iff_add_le, div_le_iff₀ (zero_lt_three' ℝ),
-        add_assoc, add_sub_assoc, add_mul, mul_right_comm]
-      norm_num
+        add_assoc, add_sub_assoc, add_mul, mul_right_comm, add_sub_cancel_left]
       norm_cast
       rw [← mul_add_one]
       exact (Nat.lt_mul_div_succ _ <| by simp).le
@@ -253,16 +259,16 @@ theorem ruzsaSzemerediNumberNat_asymptotic_lower_bound :
     · rw [IsBigO_def]
       refine ⟨12, ?_⟩
       simp only [IsBigOWith, norm_natCast, eventually_atTop]
-      exact ⟨15, fun x hx ↦ by norm_cast; omega⟩
+      exact ⟨15, fun x hx ↦ by norm_cast; lia⟩
     · rw [isBigO_exp_comp_exp_comp]
       refine ⟨0, ?_⟩
       simp only [neg_mul, eventually_map, Pi.sub_apply, sub_neg_eq_add, neg_add_le_iff_le_add,
-        add_zero, ofNat_pos, mul_le_mul_iff_right₀, eventually_atTop]
+        add_zero, eventually_atTop]
       refine ⟨9, fun x hx ↦ ?_⟩
       gcongr
       · simp
-        omega
-      · omega
+        lia
+      · lia
   · refine .of_norm_eventuallyLE ?_
     filter_upwards [eventually_ge_atTop 6] with n hn
     have : (0 : ℝ) ≤ n / 3 - 2 := by rify at hn; linarith

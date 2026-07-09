@@ -3,10 +3,14 @@ Copyright (c) 2024 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.DirectSum.LinearMap
-import Mathlib.Algebra.Lie.Weights.Cartan
-import Mathlib.RingTheory.Finiteness.Nilpotent
-import Mathlib.Data.Int.Interval
+module
+
+public import Mathlib.Algebra.DirectSum.LinearMap
+public import Mathlib.Algebra.Lie.Weights.Cartan
+public import Mathlib.Algebra.Order.Group.Pointwise.Interval
+public import Mathlib.RingTheory.Finiteness.Nilpotent
+public import Mathlib.Data.Int.Interval
+public import Mathlib.Order.Filter.Cofinite
 
 /-!
 # Chains of roots and weights
@@ -51,6 +55,8 @@ It should be possible to unify some of the definitions here such as `LieModule.c
 
 -/
 
+@[expose] public section
+
 open Module Function Set
 
 variable {R L : Type*} [CommRing R] [LieRing L] [LieAlgebra R L]
@@ -64,7 +70,7 @@ variable [LieRing.IsNilpotent L] (χ₁ χ₂ : L → R) (p q : ℤ)
 
 section
 
-variable [NoZeroSMulDivisors ℤ R] [NoZeroSMulDivisors R M] [IsNoetherian R M] (hχ₁ : χ₁ ≠ 0)
+variable [IsAddTorsionFree R] [IsDomain R] [IsTorsionFree R M] [IsNoetherian R M] (hχ₁ : χ₁ ≠ 0)
 include hχ₁
 
 lemma eventually_genWeightSpace_smul_add_eq_bot :
@@ -142,9 +148,9 @@ lemma lie_mem_genWeightSpaceChain_of_genWeightSpace_eq_bot_right [LieRing.IsNilp
     obtain ⟨k, hk⟩ := k
     suffices genWeightSpace M ((k + 1) • α + χ) ≤ genWeightSpaceChain M α χ p q by
       apply this
-      -- was `simpa using [...]` and very slow
+      -- was `simpa using! [...]` and very slow
       -- (https://github.com/leanprover-community/mathlib4/issues/19751)
-      simpa only [zsmul_eq_mul, Int.cast_add, Pi.intCast_def, Int.cast_one] using
+      simpa only [zsmul_eq_mul, Int.cast_add, Pi.intCast_def, Int.cast_one] using!
         (rootSpaceWeightSpaceProduct R L H M α (k • α + χ) ((k + 1) • α + χ)
             (by rw [add_smul]; abel) (⟨x, hx⟩ ⊗ₜ ⟨z, hz⟩)).property
     rw [genWeightSpaceChain]
@@ -166,6 +172,7 @@ lemma lie_mem_genWeightSpaceChain_of_genWeightSpace_eq_bot_left [LieRing.IsNilpo
 section IsCartanSubalgebra
 
 variable [H.IsCartanSubalgebra] [IsNoetherian R L]
+attribute [local instance 100] LieRing.ofAssociativeRing
 
 lemma trace_toEnd_genWeightSpaceChain_eq_zero
     (hp : genWeightSpace M (p • α + χ) = ⊥)
@@ -204,7 +211,7 @@ This is Proposition 4.4 from [carter2005] and is a key step in the proof that th
 semisimple Lie algebra form a root system. It shows that the restriction of `α` to `I` vanishes iff
 the restriction of every root to `I` vanishes (which cannot happen in a semisimple Lie algebra). -/
 lemma exists_forall_mem_corootSpace_smul_add_eq_zero
-    [IsDomain R] [IsPrincipalIdealRing R] [CharZero R] [NoZeroSMulDivisors R M] [IsNoetherian R M]
+    [IsDomain R] [IsPrincipalIdealRing R] [CharZero R] [Module.IsTorsionFree R M] [IsNoetherian R M]
     (hα : α ≠ 0) (hχ : genWeightSpace M χ ≠ ⊥) :
     ∃ a b : ℤ, 0 < b ∧ ∀ x ∈ corootSpace α, (a • α + b • χ) x = 0 := by
   obtain ⟨p, hp₀, q, hq₀, hp, hq⟩ := exists₂_genWeightSpace_smul_add_eq_bot M α χ hα
@@ -212,7 +219,7 @@ lemma exists_forall_mem_corootSpace_smul_add_eq_zero
   let b := ∑ i ∈ Finset.Ioo p q, finrank R (genWeightSpace M (i • α + χ))
   have hb : 0 < b := by
     replace hχ : Nontrivial (genWeightSpace M χ) := by rwa [LieSubmodule.nontrivial_iff_ne_bot]
-    refine Finset.sum_pos' (fun _ _ ↦ zero_le _) ⟨0, Finset.mem_Ioo.mpr ⟨hp₀, hq₀⟩, ?_⟩
+    refine Finset.sum_pos' (fun _ _ ↦ zero_le) ⟨0, Finset.mem_Ioo.mpr ⟨hp₀, hq₀⟩, ?_⟩
     rw [zero_smul, zero_add]
     exact finrank_pos
   refine ⟨a, b, Int.natCast_pos.mpr hb, fun x hx ↦ ?_⟩
@@ -228,12 +235,12 @@ lemma exists_forall_mem_corootSpace_smul_add_eq_zero
     ← LieSubmodule.toEnd_restrict_eq_toEnd]
   -- The lines below illustrate the cost of treating `LieSubmodule` as both a
   -- `Submodule` and a `LieSubmodule` simultaneously.
-  #adaptation_note /-- 2025-06-18 (lean4#8804).
+  #adaptation_note /-- 2025-06-18 (https://github.com/leanprover/lean4/issues/8804).
     The `erw` causes a kernel timeout if there is no `subst`. -/
   subst a b N
   erw [LinearMap.trace_eq_sum_trace_restrict_of_eq_biSup _ h₁ h₂ (genWeightSpaceChain M α χ p q) h₃]
   simp_rw [LieSubmodule.toEnd_restrict_eq_toEnd]
-  convert_to _ =
+  convert_to! _ =
     ∑ k ∈ Finset.Ioo p q, (LinearMap.trace R { x // x ∈ (genWeightSpace M (k • α + χ)) })
       ((toEnd R { x // x ∈ H } { x // x ∈ genWeightSpace M (k • α + χ) }) x)
   simp_rw [trace_toEnd_genWeightSpace, Pi.add_apply, Pi.smul_apply, smul_add,
@@ -247,7 +254,7 @@ section
 
 variable {M}
 variable [LieRing.IsNilpotent L]
-variable [NoZeroSMulDivisors ℤ R] [NoZeroSMulDivisors R M] [IsNoetherian R M]
+variable [IsAddTorsionFree R] [IsDomain R] [IsTorsionFree R M] [IsNoetherian R M]
 variable (α : L → R) (β : Weight R L M)
 
 /-- This is the largest `n : ℕ` such that `i • α + β` is a weight for all `0 ≤ i ≤ n`. -/
@@ -310,14 +317,14 @@ lemma genWeightSpace_nsmul_add_ne_bot_of_le {n} (hn : n ≤ chainTopCoeff α β)
   by_cases hα : α = 0
   · rw [hα, smul_zero, zero_add]; exact β.genWeightSpace_ne_bot
   classical
-  rw [← Nat.lt_succ, Nat.succ_eq_add_one, chainTopCoeff_add_one _ _ hα] at hn
+  rw [← Nat.lt_succ_iff, Nat.succ_eq_add_one, chainTopCoeff_add_one _ _ hα] at hn
   exact Nat.find_min (eventually_genWeightSpace_smul_add_eq_bot M α β hα).exists hn
 
 lemma genWeightSpace_zsmul_add_ne_bot {n : ℤ}
     (hn : -chainBotCoeff α β ≤ n) (hn' : n ≤ chainTopCoeff α β) :
       genWeightSpace M (n • α + β : L → R) ≠ ⊥ := by
   rcases n with (n | n)
-  · simp only [Int.ofNat_eq_coe, Nat.cast_le, Nat.cast_smul_eq_nsmul] at hn' ⊢
+  · simp only [Int.ofNat_eq_natCast, Nat.cast_le, Nat.cast_smul_eq_nsmul] at hn' ⊢
     exact genWeightSpace_nsmul_add_ne_bot_of_le α β hn'
   · simp only [Int.negSucc_eq, ← Nat.cast_succ, neg_le_neg_iff, Nat.cast_le] at hn ⊢
     rw [neg_smul, ← smul_neg, Nat.cast_smul_eq_nsmul]
@@ -325,7 +332,7 @@ lemma genWeightSpace_zsmul_add_ne_bot {n : ℤ}
 
 lemma genWeightSpace_neg_zsmul_add_ne_bot {n : ℕ} (hn : n ≤ chainBotCoeff α β) :
     genWeightSpace M ((-n : ℤ) • α + β : L → R) ≠ ⊥ := by
-  apply genWeightSpace_zsmul_add_ne_bot α β <;> omega
+  apply genWeightSpace_zsmul_add_ne_bot α β <;> lia
 
 /-- The last weight in an `α`-chain through `β`. -/
 noncomputable

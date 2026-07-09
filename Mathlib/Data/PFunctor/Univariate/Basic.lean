@@ -3,7 +3,9 @@ Copyright (c) 2018 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
-import Mathlib.Data.W.Basic
+module
+
+public import Mathlib.Data.W.Basic
 
 /-!
 # Polynomial Functors
@@ -12,8 +14,13 @@ This file defines polynomial functors and the W-type construction as a polynomia
 (For the M-type construction, see `Mathlib/Data/PFunctor/Univariate/M.lean`.)
 -/
 
+@[expose] public section
+
 universe u v uA uB uA₁ uB₁ uA₂ uB₂ v₁ v₂ v₃
 
+-- Note: `set_option linter.checkUnivs` should not apply here,
+-- we really do want two separate universe levels
+set_option linter.checkUnivs false in
 /-- A polynomial functor `P` is given by a type `A` and a family `B` of types over `A`. `P` maps
 any type `α` to a new type `P α`, which is defined as the sigma type `Σ x, P.B x → α`.
 
@@ -21,8 +28,7 @@ An element of `P α` is a pair `⟨a, f⟩`, where `a` is an element of a type `
 `f : B a → α`. Think of `a` as the shape of the object and `f` as an index to the relevant
 elements of `α`.
 -/
--- Note: `nolint checkUnivs` should not apply here, we really do want two separate universe levels
-@[pp_with_univ, nolint checkUnivs]
+@[pp_with_univ]
 structure PFunctor where
   /-- The head type -/
   A : Type uA
@@ -184,7 +190,7 @@ theorem liftp_iff' {α : Type u} (p : α → Prop) (a : P.A) (f : P.B a → α) 
   · rcases h with ⟨a', f', heq, h'⟩
     cases heq
     assumption
-  repeat' first |constructor|assumption
+  repeat' first | constructor | assumption
 
 theorem liftr_iff {α : Type u} (r : α → α → Prop) (x y : P α) :
     Liftr r x y ↔ ∃ a f₀ f₁, x = ⟨a, f₀⟩ ∧ y = ⟨a, f₁⟩ ∧ ∀ i, r (f₀ i) (f₁ i) := by

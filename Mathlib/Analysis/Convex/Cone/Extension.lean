@@ -3,9 +3,11 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Frédéric Dupuis
 -/
-import Mathlib.Data.Real.Archimedean
-import Mathlib.Geometry.Convex.Cone.Basic
-import Mathlib.LinearAlgebra.LinearPMap
+module
+
+public import Mathlib.Algebra.Order.Archimedean.Real.Basic
+public import Mathlib.Geometry.Convex.Cone.Pointed
+public import Mathlib.LinearAlgebra.LinearPMap
 
 /-!
 # Extension theorems
@@ -24,6 +26,8 @@ We prove two extension theorems:
   for all `x`
 
 -/
+
+public section
 
 open Set LinearMap
 
@@ -52,7 +56,7 @@ namespace RieszExtension
 
 open Submodule
 
-variable (s : ConvexCone ℝ E) (f : E →ₗ.[ℝ] ℝ)
+variable (s : PointedCone ℝ E) (f : E →ₗ.[ℝ] ℝ)
 
 /-- Induction step in M. Riesz extension theorem. Given a convex cone `s` in a vector space `E`,
 a partially defined linear map `f : f.domain → ℝ`, assume that `f` is nonnegative on `f.domain ∩ p`
@@ -68,7 +72,7 @@ theorem step (nonneg : ∀ x : f.domain, (x : E) ∈ s → 0 ≤ f x)
     set Sp := f '' { x : f.domain | (x : E) + y ∈ s }
     set Sn := f '' { x : f.domain | -(x : E) - y ∈ s }
     suffices (upperBounds Sn ∩ lowerBounds Sp).Nonempty by
-      simpa only [Sp, Sn, Set.Nonempty, upperBounds, lowerBounds, forall_mem_image] using this
+      simpa only [Sp, Sn, Set.Nonempty, upperBounds, lowerBounds, forall_mem_image] using! this
     refine exists_between_of_forall_le (Nonempty.image f ?_) (Nonempty.image f (dense y)) ?_
     · rcases dense (-y) with ⟨x, hx⟩
       rw [← neg_neg x, NegMemClass.coe_neg, ← sub_eq_add_neg] at hx
@@ -97,6 +101,7 @@ theorem step (nonneg : ∀ x : f.domain, (x : E) ∈ s → 0 ≤ f x)
         smul_eq_mul, ← mul_assoc, mul_inv_cancel₀ hr.ne, one_mul] at this
     · subst r
       simp only [zero_smul, add_zero] at hzs ⊢
+      rw [RingHom.id_apply, zero_smul]
       apply nonneg
       exact hzs
     · have : r⁻¹ • x + y ∈ s := by
@@ -120,7 +125,7 @@ theorem exists_top (p : E →ₗ.[ℝ] ℝ) (hp_nonneg : ∀ x : p.domain, (x : 
       directedOn_image.2 (hcd.mono LinearPMap.domain_mono.monotone)
     rcases (mem_sSup_of_directed (cne.image _) hdir).1 hx with ⟨_, ⟨f, hfc, rfl⟩, hfx⟩
     have : f ≤ LinearPMap.sSup c hcd := LinearPMap.le_sSup _ hfc
-    convert ← hcs hfc ⟨x, hfx⟩ hxs using 1
+    convert! ← hcs hfc ⟨x, hfx⟩ hxs using 1
     exact this.2 rfl
   obtain ⟨q, hpq, hqs, hq⟩ := zorn_le_nonempty₀ S hSc p hp_nonneg
   refine ⟨q, hpq, ?_, hqs⟩
@@ -137,7 +142,7 @@ end RieszExtension
 and a linear `f : p → ℝ`, assume that `f` is nonnegative on `p ∩ s` and `p + s = E`. Then
 there exists a globally defined linear function `g : E → ℝ` that agrees with `f` on `p`,
 and is nonnegative on `s`. -/
-theorem riesz_extension (s : ConvexCone ℝ E) (f : E →ₗ.[ℝ] ℝ)
+theorem riesz_extension (s : PointedCone ℝ E) (f : E →ₗ.[ℝ] ℝ)
     (nonneg : ∀ x : f.domain, (x : E) ∈ s → 0 ≤ f x)
     (dense : ∀ y, ∃ x : f.domain, (x : E) + y ∈ s) :
     ∃ g : E →ₗ[ℝ] ℝ, (∀ x : f.domain, g x = f x) ∧ ∀ x ∈ s, 0 ≤ g x := by
@@ -155,21 +160,18 @@ theorem exists_extension_of_le_sublinear (f : E →ₗ.[ℝ] ℝ) (N : E → ℝ
     (N_hom : ∀ c : ℝ, 0 < c → ∀ x, N (c • x) = c * N x) (N_add : ∀ x y, N (x + y) ≤ N x + N y)
     (hf : ∀ x : f.domain, f x ≤ N x) :
     ∃ g : E →ₗ[ℝ] ℝ, (∀ x : f.domain, g x = f x) ∧ ∀ x, g x ≤ N x := by
-  let s : ConvexCone ℝ (E × ℝ) :=
+  have N_0 : N 0 = 0 := by grind [N_hom 2 (by norm_num) 0, smul_zero]
+  let s : PointedCone ℝ (E × ℝ) :=
     { carrier := { p : E × ℝ | N p.1 ≤ p.2 }
-      smul_mem' := fun c hc p hp =>
-        calc
-          N (c • p.1) = c * N p.1 := N_hom c hc p.1
-          _ ≤ c * p.2 := mul_le_mul_of_nonneg_left hp hc.le
-      add_mem' := fun x hx y hy => (N_add _ _).trans (add_le_add hx hy) }
+      zero_mem' := by simp [N_0]
+      smul_mem' := fun ⟨_, hc⟩ _ _ => by rcases eq_or_lt_of_le' hc <;> simp_all
+      add_mem' := fun hx hy => (N_add _ _).trans (add_le_add hx hy) }
   set f' := (-f).coprod (LinearMap.id.toPMap ⊤)
   have hf'_nonneg : ∀ x : f'.domain, x.1 ∈ s → 0 ≤ f' x := fun x (hx : N x.1.1 ≤ x.1.2) ↦ by
     simpa [f'] using le_trans (hf ⟨x.1.1, x.2.1⟩) hx
   have hf'_dense : ∀ y : E × ℝ, ∃ x : f'.domain, ↑x + y ∈ s := by
     rintro ⟨x, y⟩
-    refine ⟨⟨(0, N x - y), ⟨f.domain.zero_mem, trivial⟩⟩, ?_⟩
-    simp only [s, ConvexCone.mem_mk, mem_setOf_eq, Prod.fst_add, Prod.snd_add, zero_add,
-      sub_add_cancel, le_rfl]
+    exact ⟨⟨(0, N x - y), ⟨f.domain.zero_mem, trivial⟩⟩, by simp [s]⟩
   obtain ⟨g, g_eq, g_nonneg⟩ := riesz_extension s f' hf'_nonneg hf'_dense
   replace g_eq : ∀ (x : f.domain) (y : ℝ), g (x, y) = y - f x := fun x y ↦
     (g_eq ⟨(x, y), ⟨x.2, trivial⟩⟩).trans (sub_eq_neg_add _ _).symm

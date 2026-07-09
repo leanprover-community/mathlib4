@@ -3,8 +3,9 @@ Copyright (c) 2025 Stefan Kebekus. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stefan Kebekus
 -/
+module
 
-import Mathlib.Analysis.InnerProductSpace.PiL2
+public import Mathlib.Analysis.InnerProductSpace.PiL2
 
 /-!
 # Canonical tensors in real inner product spaces
@@ -23,13 +24,15 @@ The theorem `canonicalCovariantTensor_eq_sum` shows that
 `∑ i, (v i) ⊗ₜ[ℝ] (v i)`.
 -/
 
+@[expose] public section
+
 open InnerProductSpace TensorProduct
 
 variable (E : Type*) [NormedAddCommGroup E] [InnerProductSpace ℝ E]
 
 /-- The canonical contravariant tensor corresponding to the inner product -/
 noncomputable def InnerProductSpace.canonicalContravariantTensor :
-    E ⊗[ℝ] E →ₗ[ℝ] ℝ := lift bilinFormOfRealInner
+    E ⊗[ℝ] E →ₗ[ℝ] ℝ := lift (innerₗ E)
 
 /--
 The canonical covariant tensor corresponding to `InnerProductSpace.canonicalContravariantTensor`

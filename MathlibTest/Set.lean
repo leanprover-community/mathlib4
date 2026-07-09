@@ -49,3 +49,10 @@ set_option maxHeartbeats 3000 in
 example {_a _b _c _d _e _f _g _h : Nat} : 1 = 1 := by
   set a : Nat := test with _h
   trivial
+
+example : 1 + 2 = 3 := by
+  set _ := 1 + 2
+  guard_target =ₛ ‹Nat› = 3
+  set u := 3 with ← _
+  guard_hyp ‹3 = u› :ₛ 3 = u
+  conv => rhs; guard_target =ₛ u

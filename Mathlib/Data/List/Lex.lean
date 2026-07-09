@@ -3,8 +3,11 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Order.RelClasses
-import Mathlib.Data.List.Basic
+module
+
+public import Mathlib.Data.List.Basic
+public import Mathlib.Data.Nat.Basic
+public import Mathlib.Order.RelClasses
 
 /-!
 # Lexicographic ordering of lists.
@@ -17,12 +20,14 @@ The lexicographic order on `List α` is defined by `L < M` iff
 ## See also
 
 Related files are:
-* `Mathlib/Data/Finset/Colex.lean`: Colexicographic order on finite sets.
+* `Mathlib/Combinatorics/Colex.lean`: Colexicographic order on finite sets.
 * `Mathlib/Data/PSigma/Order.lean`: Lexicographic order on `Σ' i, α i`.
-* `Mathlib/Data/Pi/Lex.lean`: Lexicographic order on `Πₗ i, α i`.
+* `Mathlib/Order/PiLex.lean`: Lexicographic order on `Πₗ i, α i`.
 * `Mathlib/Data/Sigma/Order.lean`: Lexicographic order on `Σ i, α i`.
 * `Mathlib/Data/Prod/Lex.lean`: Lexicographic order on `α × β`.
 -/
+
+public section
 
 
 namespace List
@@ -35,7 +40,7 @@ variable {α : Type u}
 
 /-! ### lexicographic ordering -/
 
-theorem lex_cons_iff {r : α → α → Prop} [IsIrrefl α r] {a l₁ l₂} :
+theorem lex_cons_iff {r : α → α → Prop} [Std.Irrefl r] {a l₁ l₂} :
     Lex r (a :: l₁) (a :: l₂) ↔ Lex r l₁ l₂ :=
   ⟨fun h => by obtain - | h | h := h; exacts [(irrefl_of r a h).elim, h], Lex.cons⟩
 
@@ -44,17 +49,13 @@ theorem lex_nil_or_eq_nil {r : α → α → Prop} (l : List α) : List.Lex r []
   | [] => Or.inr rfl
   | _ :: _ => .inl .nil
 
-@[deprecated (since := "2025-03-14")] alias Lex.nil_left_or_eq_nil := lex_nil_or_eq_nil
-
 @[simp]
 theorem lex_singleton_iff {r : α → α → Prop} (a b : α) : List.Lex r [a] [b] ↔ r a b :=
   ⟨fun | .rel h => h, .rel⟩
 
-@[deprecated (since := "2025-03-14")] alias Lex.singleton_iff := lex_singleton_iff
-
 namespace Lex
 
-instance isOrderConnected (r : α → α → Prop) [IsOrderConnected α r] [IsTrichotomous α r] :
+instance isOrderConnected (r : α → α → Prop) [IsOrderConnected α r] [Std.Trichotomous r] :
     IsOrderConnected (List α) (Lex r) where
   conn := aux where
     aux
@@ -69,25 +70,22 @@ instance isOrderConnected (r : α → α → Prop) [IsOrderConnected α r] [IsTr
       · exact (aux _ l₂ _ h).imp cons cons
       · exact Or.inr (rel ab)
 
-instance isTrichotomous (r : α → α → Prop) [IsTrichotomous α r] :
-    IsTrichotomous (List α) (Lex r) where
+instance trichotomous (r : α → α → Prop) [Std.Trichotomous r] : Std.Trichotomous (Lex r) where
   trichotomous := aux where
     aux
-    | [], [] => Or.inr (Or.inl rfl)
-    | [], _ :: _ => Or.inl nil
-    | _ :: _, [] => Or.inr (Or.inr nil)
-    | a :: l₁, b :: l₂ => by
-      rcases trichotomous_of r a b with (ab | rfl | ab)
-      · exact Or.inl (rel ab)
-      · exact (aux l₁ l₂).imp cons (Or.imp (congr_arg _) cons)
-      · exact Or.inr (Or.inr (rel ab))
+    | [], [], _, _ => rfl
+    | [], _ :: _, hab, _ => hab nil |>.elim
+    | _ :: _, [], _, hba => hba nil |>.elim
+    | a :: l₁, b :: l₂, hab, hba => by
+      obtain rfl := Std.Trichotomous.trichotomous a b (mt rel hab) (mt rel hba)
+      rw [aux l₁ l₂ (mt cons hab) (mt cons hba)]
 
-instance isAsymm (r : α → α → Prop) [IsAsymm α r] : IsAsymm (List α) (Lex r) where
+instance asymm (r : α → α → Prop) [Std.Asymm r] : Std.Asymm (Lex r) where
   asymm := aux where
     aux
-    | _, _, Lex.rel h₁, Lex.rel h₂ => asymm h₁ h₂
-    | _, _, Lex.rel h₁, Lex.cons _ => asymm h₁ h₁
-    | _, _, Lex.cons _, Lex.rel h₂ => asymm h₂ h₂
+    | _, _, Lex.rel h₁, Lex.rel h₂ => _root_.asymm h₁ h₂
+    | _, _, Lex.rel h₁, Lex.cons _ => _root_.asymm h₁ h₁
+    | _, _, Lex.cons _, Lex.rel h₂ => _root_.asymm h₂ h₂
     | _, _, Lex.cons h₁, Lex.cons h₂ => aux _ _ h₁ h₂
 
 instance decidableRel [DecidableEq α] (r : α → α → Prop) [DecidableRel r] : DecidableRel (Lex r)
@@ -124,11 +122,12 @@ theorem to_ne : ∀ {l₁ l₂ : List α}, Lex (· ≠ ·) l₁ l₂ → l₁ �
 theorem _root_.Decidable.List.Lex.ne_iff [DecidableEq α] {l₁ l₂ : List α}
     (H : length l₁ ≤ length l₂) : Lex (· ≠ ·) l₁ l₂ ↔ l₁ ≠ l₂ :=
   ⟨to_ne, fun h => by
-    induction' l₁ with a l₁ IH generalizing l₂ <;> rcases l₂ with - | ⟨b, l₂⟩
+    induction l₁ generalizing l₂ <;> rcases l₂ with - | ⟨b, l₂⟩
     · contradiction
     · apply nil
     · exact (not_lt_of_ge H).elim (succ_pos _)
-    · by_cases ab : a = b
+    case cons.cons a l₁ IH =>
+      by_cases ab : a = b
       · subst b
         exact .cons <| IH (le_of_succ_le_succ H) (mt (congr_arg _) h)
       · exact .rel ab ⟩

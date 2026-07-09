@@ -3,10 +3,12 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johan Commelin
 -/
-import Mathlib.Algebra.Group.Defs
-import Mathlib.Data.Option.Basic
-import Mathlib.Logic.Nontrivial.Basic
-import Mathlib.Tactic.Common
+module
+
+public import Mathlib.Algebra.Group.Defs
+public import Mathlib.Data.Option.Basic
+public import Mathlib.Logic.Nontrivial.Basic
+public import Mathlib.Tactic.Common
 
 /-!
 # Adjoining a zero/one to semigroups and related algebraic structures
@@ -24,6 +26,8 @@ information about these structures (which are not that standard in informal math
 
 `WithOne.coe_mul` and `WithZero.coe_mul` have inconsistent use of implicit parameters
 -/
+
+@[expose] public section
 
 -- Check that we haven't needed to import all the basic lemmas about groups,
 -- by asserting a random sample don't exist here:
@@ -55,7 +59,7 @@ instance [Repr α] : Repr (WithOne α) :=
 
 @[to_additive]
 instance instMonad : Monad WithOne :=
-  instMonadOption
+  inferInstanceAs <| Monad Option
 
 @[to_additive]
 instance instOne : One (WithOne α) :=
@@ -91,10 +95,10 @@ instance instCoeTC : CoeTC α (WithOne α) :=
   ⟨coe⟩
 
 @[to_additive]
-lemma «forall» {p : WithZero α → Prop} : (∀ x, p x) ↔ p 0 ∧ ∀ a : α, p a := Option.forall
+lemma «forall» {p : WithOne α → Prop} : (∀ x, p x) ↔ p 1 ∧ ∀ a : α, p a := Option.forall
 
 @[to_additive]
-lemma «exists» {p : WithZero α → Prop} : (∃ x, p x) ↔ p 0 ∨ ∃ a : α, p a := Option.exists
+lemma «exists» {p : WithOne α → Prop} : (∃ x, p x) ↔ p 1 ∨ ∃ a : α, p a := Option.exists
 
 /-- Recursor for `WithZero` using the preferred forms `0` and `↑a`. -/
 @[elab_as_elim, induction_eliminator, cases_eliminator]
@@ -121,15 +125,15 @@ lemma recOneCoe_coe {motive : WithOne α → Sort*} (h₁ h₂) (a : α) :
   rfl
 
 /-- Deconstruct an `x : WithOne α` to the underlying value in `α`, given a proof that `x ≠ 1`. -/
-@[to_additive unzero
+@[to_additive
 /-- Deconstruct an `x : WithZero α` to the underlying value in `α`, given a proof that `x ≠ 0`. -/]
 def unone : ∀ {x : WithOne α}, x ≠ 1 → α | (x : α), _ => x
 
-@[to_additive (attr := simp) unzero_coe]
+@[to_additive (attr := simp)]
 theorem unone_coe {x : α} (hx : (x : WithOne α) ≠ 1) : unone hx = x :=
   rfl
 
-@[to_additive (attr := simp) coe_unzero]
+@[to_additive (attr := simp)]
 lemma coe_unone : ∀ {x : WithOne α} (hx : x ≠ 1), unone hx = x
   | (x : α), _ => rfl
 
@@ -163,8 +167,6 @@ protected theorem cases_on {P : WithOne α → Prop} : ∀ x : WithOne α, P 1 �
 
 @[to_additive]
 instance instMulOneClass [Mul α] : MulOneClass (WithOne α) where
-  mul := (· * ·)
-  one := 1
   one_mul := (Option.lawfulIdentity_merge _).left_id
   mul_one := (Option.lawfulIdentity_merge _).right_id
 
@@ -191,5 +193,37 @@ instance instCommMonoid [CommSemigroup α] : CommMonoid (WithOne α) where
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_inv [Inv α] (a : α) : ((a⁻¹ : α) : WithOne α) = (a : WithOne α)⁻¹ :=
   rfl
+
+/--
+Specialization of `Option.getD` to values in `WithOne α` that respects API boundaries.
+-/
+@[to_additive
+  /-- Specialization of `Option.getD` to values in `WithZero α` that respects API boundaries. -/]
+def unoneD (d : α) (x : WithOne α) : α := recOneCoe d id x
+
+@[to_additive (attr := simp)]
+theorem unoneD_one (d : α) : unoneD d 1 = d :=
+  rfl
+
+@[to_additive (attr := simp)]
+theorem unoneD_coe (d x : α) : unoneD d x = x :=
+  rfl
+
+@[to_additive]
+theorem unoneD_eq_iff {d y : α} {x : WithOne α} : unoneD d x = y ↔ x = y ∨ x = 1 ∧ y = d := by
+  induction x <;> simp [@eq_comm _ d]
+
+@[to_additive (attr := simp)]
+theorem unoneD_eq_self_iff {d : α} {x : WithOne α} : unoneD d x = d ↔ x = d ∨ x = 1 := by
+  simp [unoneD_eq_iff]
+
+@[to_additive]
+theorem unoneD_eq_unoneD_iff {d : α} {x y : WithOne α} :
+    unoneD d x = unoneD d y ↔ x = y ∨ x = d ∧ y = 1 ∨ x = 1 ∧ y = d := by
+  induction y <;> simp [unoneD_eq_iff, or_comm]
+
+@[to_additive]
+lemma unoneD_eq_unone {d : α} {x : WithOne α} (hx : x ≠ 1) : unoneD d x = unone hx := by
+  simp [unoneD_eq_iff]
 
 end WithOne

@@ -3,15 +3,19 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.MvPolynomial.Expand
-import Mathlib.FieldTheory.Finite.Basic
-import Mathlib.LinearAlgebra.Dual.Lemmas
-import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
-import Mathlib.RingTheory.MvPolynomial.Basic
+module
+
+public import Mathlib.Algebra.MvPolynomial.Expand
+public import Mathlib.FieldTheory.Finite.Basic
+public import Mathlib.LinearAlgebra.Dual.Lemmas
+public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
+public import Mathlib.RingTheory.MvPolynomial.Basic
 
 /-!
 ## Polynomials over finite fields
 -/
+
+@[expose] public section
 
 
 namespace MvPolynomial
@@ -86,11 +90,11 @@ theorem indicator_mem_restrictDegree (c : σ → K) :
   intro n
   refine le_trans (Multiset.count_le_of_le _ <| degrees_indicator _) (le_of_eq ?_)
   simp_rw [← Multiset.coe_countAddMonoidHom, map_sum,
-    AddMonoidHom.map_nsmul, Multiset.coe_countAddMonoidHom, nsmul_eq_mul, Nat.cast_id]
+    map_nsmul, Multiset.coe_countAddMonoidHom, nsmul_eq_mul, Nat.cast_id]
   trans
   · refine Finset.sum_eq_single n ?_ ?_
     · intro b _ ne
-      simp [Multiset.count_singleton, ne, if_neg (Ne.symm _)]
+      simp [ne, eqComm]
     · intro h; exact (h <| Finset.mem_univ _).elim
   · rw [Multiset.count_singleton_self, mul_one]
 
@@ -112,6 +116,7 @@ section
 
 variable (K σ)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `MvPolynomial.eval` as a `K`-linear map. -/
 @[simps]
 def evalₗ [CommSemiring K] : MvPolynomial σ K →ₗ[K] (σ → K) → K where
@@ -167,20 +172,20 @@ noncomputable def evalᵢ [CommRing K] : R σ K →ₗ[K] (σ → K) → K :=
   (evalₗ K σ).comp (restrictDegree σ K (Fintype.card K - 1)).subtype
 
 -- TODO: would be nice to replace this by suitable decidability assumptions
-open Classical in
+open scoped Classical in
 noncomputable instance decidableRestrictDegree (m : ℕ) :
     DecidablePred (· ∈ { n : σ →₀ ℕ | ∀ i, n i ≤ m }) := by
   simp only [Set.mem_setOf_eq]; infer_instance
 
 variable [Field K]
 
-open Classical in
+open scoped Classical in
 theorem rank_R [Fintype σ] : Module.rank K (R σ K) = Fintype.card (σ → K) :=
   calc
     Module.rank K (R σ K) =
         Module.rank K (↥{ s : σ →₀ ℕ | ∀ n : σ, s n ≤ Fintype.card K - 1 } →₀ K) :=
       LinearEquiv.rank_eq
-        (Finsupp.supportedEquivFinsupp { s : σ →₀ ℕ | ∀ n : σ, s n ≤ Fintype.card K - 1 })
+        (AddMonoidAlgebra.supportedEquivFinsupp { s : σ →₀ ℕ | ∀ n : σ, s n ≤ Fintype.card K - 1 })
     _ = #{ s : σ →₀ ℕ | ∀ n : σ, s n ≤ Fintype.card K - 1 } := by rw [rank_finsupp_self']
     _ = #{ s : σ → ℕ | ∀ n : σ, s n < Fintype.card K } := by
       refine Quotient.sound ⟨Equiv.subtypeEquiv Finsupp.equivFunOnFinite fun f => ?_⟩
@@ -195,16 +200,14 @@ theorem rank_R [Fintype σ] : Module.rank K (R σ K) = Fintype.card (σ → K) :
 
 instance [Finite σ] : FiniteDimensional K (R σ K) := by
   cases nonempty_fintype σ
-  classical
-  exact
-    IsNoetherian.iff_fg.1
-      (IsNoetherian.iff_rank_lt_aleph0.mpr <| by
-        simpa only [rank_R] using Cardinal.nat_lt_aleph0 (Fintype.card (σ → K)))
+  rw [FiniteDimensional, ← IsNoetherian.iff_fg, IsNoetherian.iff_rank_lt_aleph0]
+  simpa only [rank_R] using Cardinal.natCast_lt_aleph0
 
-open Classical in
+open scoped Classical in
 theorem finrank_R [Fintype σ] : Module.finrank K (R σ K) = Fintype.card (σ → K) :=
   Module.finrank_eq_of_rank_eq (rank_R σ K)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem range_evalᵢ [Finite σ] : range (evalᵢ σ K) = ⊤ := by
   rw [evalᵢ, LinearMap.range_comp, range_subtype]
   exact map_restrict_dom_evalₗ K σ

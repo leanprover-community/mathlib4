@@ -3,7 +3,9 @@ Copyright (c) 2023 Anne Baanen, Sam van Gool, Leo Mayer, Brendan Murphy. All rig
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Sam van Gool, Leo Mayer, Brendan Murphy
 -/
-import Mathlib.Topology.Category.Locale
+module
+
+public import Mathlib.Topology.Category.Locale
 
 /-!
 # Adjunction between Locales and Topological Spaces
@@ -36,6 +38,8 @@ This adjunction provides a framework in which several Stone-type dualities fit.
 
 topological space, frame, locale, Stone duality, adjunction, points
 -/
+
+@[expose] public section
 
 open CategoryTheory Order Set Topology TopologicalSpace
 
@@ -110,7 +114,7 @@ def counitAppCont : FrameHom L (Opens <| PT L) where
 /-- The forgetful functor `topToLocale` is left adjoint to the functor `pt`. -/
 def adjunctionTopToLocalePT : topToLocale ⊣ pt where
   unit := { app := fun X ↦ TopCat.ofHom ⟨localePointOfSpacePoint X, continuous_def.2 <|
-        by rintro _ ⟨u, rfl⟩; simpa using u.2⟩ }
+        by rintro _ ⟨u, rfl⟩; simpa using! u.2⟩ }
   counit := { app := fun L ↦ ⟨Frm.ofHom (counitAppCont L)⟩ }
 
 end locale_top_adjunction

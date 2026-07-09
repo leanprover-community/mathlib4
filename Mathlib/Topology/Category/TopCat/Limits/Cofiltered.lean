@@ -3,8 +3,10 @@ Copyright (c) 2017 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Kim Morrison, Mario Carneiro, Andrew Yang
 -/
-import Mathlib.Topology.Category.TopCat.Limits.Basic
-import Mathlib.CategoryTheory.Filtered.Basic
+module
+
+public import Mathlib.Topology.Category.TopCat.Limits.Basic
+public import Mathlib.CategoryTheory.Filtered.Basic
 
 /-!
 # Cofiltered limits in the category of topological spaces
@@ -13,6 +15,8 @@ Given a *compatible* collection of topological bases for the factors in a cofilt
 which contain `Set.univ` and are closed under intersections, the induced *naive* collection
 of sets in the limit is, in fact, a topological basis.
 -/
+
+public section
 
 
 open TopologicalSpace Topology
@@ -31,6 +35,8 @@ section CofilteredLimit
 
 variable {J : Type v} [Category.{w} J] [IsCofiltered J] (F : J ⥤ TopCat.{max v u}) (C : Cone F)
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a *compatible* collection of topological bases for the factors in a cofiltered limit
 which contain `Set.univ` and are closed under intersections, the induced *naive* collection
 of sets in the limit is, in fact, a topological basis.
@@ -42,7 +48,7 @@ theorem isTopologicalBasis_cofiltered_limit (hC : IsLimit C) (T : ∀ j, Set (Se
     IsTopologicalBasis
       {U : Set C.pt | ∃ (j : _) (V : Set (F.obj j)), V ∈ T j ∧ U = C.π.app j ⁻¹' V} := by
   classical
-  convert IsTopologicalBasis.iInf_induced hT fun j (x : C.pt) => C.π.app j x using 1
+  convert! IsTopologicalBasis.iInf_induced hT fun j (x : C.pt) => C.π.app j x using 1
   · exact induced_of_isLimit C hC
   ext U0
   constructor
@@ -83,17 +89,14 @@ theorem isTopologicalBasis_cofiltered_limit (hC : IsLimit C) (T : ∀ j, Set (Se
       exact compat j e (g e he) (U e) (h1 e he)
     · -- conclude...
       rw [h2]
-      change _ = (C.π.app j)⁻¹' ⋂ (e : J) (_ : e ∈ G), Vs e
+      change _ = (C.π.app j) ⁻¹' ⋂ (e : J) (_ : e ∈ G), Vs e
       rw [Set.preimage_iInter]
       apply congrArg
       ext1 e
       rw [Set.preimage_iInter]
       apply congrArg
       ext1 he
-      -- Porting note: needed more hand holding here
-      change (C.π.app e)⁻¹' U e =
-        (C.π.app j) ⁻¹' if h : e ∈ G then F.map (g e h) ⁻¹' U e else Set.univ
-      simp [he, ← Set.preimage_comp, ← coe_comp]
+      simp [Vs, dif_pos he, ← Set.preimage_comp, ← coe_comp]
 
 end CofilteredLimit
 

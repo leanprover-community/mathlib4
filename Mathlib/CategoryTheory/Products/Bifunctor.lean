@@ -3,11 +3,15 @@ Copyright (c) 2017 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stephen Morgan, Kim Morrison
 -/
-import Mathlib.CategoryTheory.Products.Basic
+module
+
+public import Mathlib.CategoryTheory.Products.Basic
 
 /-!
 # Lemmas about functors out of product categories.
 -/
+
+public section
 
 
 open CategoryTheory

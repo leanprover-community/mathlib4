@@ -3,8 +3,10 @@ Copyright (c) 2019 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Anatole Dedecker
 -/
-import Mathlib.Analysis.Calculus.LocalExtr.Basic
-import Mathlib.Topology.Order.Rolle
+module
+
+public import Mathlib.Analysis.Calculus.LocalExtr.Basic
+public import Mathlib.Topology.Order.Rolle
 
 /-!
 # Rolle's Theorem
@@ -29,7 +31,7 @@ We prove four versions of this theorem.
   continuity on the closed interval $[a, b]$ it assumes that $f$ tends to the same limit as $x$
   tends to $a$ from the right and as $x$ tends to $b$ from the left.
 * `exists_deriv_eq_zero'` relates to `exists_deriv_eq_zero` as `exists_hasDerivAt_eq_zero'`
-  relates to ``exists_hasDerivAt_eq_zero`.
+  relates to `exists_hasDerivAt_eq_zero`.
 
 ## References
 
@@ -39,6 +41,8 @@ We prove four versions of this theorem.
 
 local extremum, Rolle's Theorem
 -/
+
+public section
 
 open Set Filter Topology
 
@@ -51,6 +55,7 @@ theorem exists_hasDerivAt_eq_zero (hab : a < b) (hfc : ContinuousOn f (Icc a b))
   ⟨c, cmem, hc.hasDerivAt_eq_zero <| hff' c cmem⟩
 
 /-- **Rolle's Theorem** `deriv` version -/
+@[wikidata Q193286]
 theorem exists_deriv_eq_zero (hab : a < b) (hfc : ContinuousOn f (Icc a b)) (hfI : f a = f b) :
     ∃ c ∈ Ioo a b, deriv f c = 0 :=
   let ⟨c, cmem, hc⟩ := exists_isLocalExtr_Ioo hab hfc hfI
@@ -72,8 +77,7 @@ does not require differentiability of `f` because we define `deriv f c = 0` when
 differentiable at `c`. -/
 theorem exists_deriv_eq_zero' (hab : a < b) (hfa : Tendsto f (𝓝[>] a) (𝓝 l))
     (hfb : Tendsto f (𝓝[<] b) (𝓝 l)) : ∃ c ∈ Ioo a b, deriv f c = 0 := by
-  by_cases h : ∀ x ∈ Ioo a b, DifferentiableAt ℝ f x
+  by_cases! h : ∀ x ∈ Ioo a b, DifferentiableAt ℝ f x
   · exact exists_hasDerivAt_eq_zero' hab hfa hfb fun x hx => (h x hx).hasDerivAt
-  · obtain ⟨c, hc, hcdiff⟩ : ∃ x ∈ Ioo a b, ¬DifferentiableAt ℝ f x := by
-      push_neg at h; exact h
+  · obtain ⟨c, hc, hcdiff⟩ : ∃ x ∈ Ioo a b, ¬DifferentiableAt ℝ f x := h
     exact ⟨c, hc, deriv_zero_of_not_differentiableAt hcdiff⟩

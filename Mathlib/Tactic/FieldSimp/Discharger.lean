@@ -3,9 +3,11 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, David Renshaw
 -/
+module
 
-import Mathlib.Tactic.Positivity.Core
-import Mathlib.Util.DischargerAsTactic
+import all Lean.Meta.Tactic.Simp.Rewrite
+public import Mathlib.Tactic.Positivity.Core
+public import Mathlib.Util.DischargerAsTactic
 
 /-!
 # Discharger for `field_simp` tactic
@@ -35,6 +37,8 @@ fundamentally difficult.
 
 -/
 
+public meta section
+
 namespace Mathlib.Tactic.FieldSimp
 
 open Lean Elab.Tactic Parser.Tactic Lean.Meta
@@ -43,12 +47,22 @@ open Qq
 /-- Constructs a trace message for the `discharge` function. -/
 private def dischargerTraceMessage {ε : Type*} (prop : Expr) :
     Except ε (Option Expr) → SimpM MessageData
-| .error _ | .ok none => return m!"{crossEmoji} discharge {prop}"
-| .ok (some _) => return m!"{checkEmoji} discharge {prop}"
+| _ => return m!"discharge {prop}"
 
-open private Simp.dischargeUsingAssumption? from Lean.Meta.Tactic.Simp.Rewrite
+/-- Default discharge strategy for `field` and `field_simp`: try to solve the (in)equality `prop`,
+of the form `t = 0` or `t > 0`, by one of the following strategies:
 
-/-- Discharge strategy for the `field_simp` tactic. -/
+* Use an assumption from the context.
+* Use the `norm_num` tactic.
+* Use the `positivity` tactic.
+* Use the `simp` tactic with `discharge` as discharger and lemmas stating:
+  * `2 ≠ 0`, `3 ≠ 0`, `4 ≠ 0`
+  * `x ≠ 0 → y ≠ 0 → x * y ≠ 0`
+  * `a ≠ 0 → a ^ n ≠ 0` (for `n : ℕ` and `n : ℤ`)
+  * `↑n + 1 ≠ 0`, if `n : ℕ` and the field has characteristic 0.
+
+If none of the strategies finds a proof for `prop`, the result is `none`.
+-/
 partial def discharge (prop : Expr) : SimpM (Option Expr) :=
   withTraceNode `Tactic.field_simp (dischargerTraceMessage prop) do
     -- Discharge strategy 1: Use assumptions

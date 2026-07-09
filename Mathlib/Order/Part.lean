@@ -3,13 +3,17 @@ Copyright (c) 2024 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Part
-import Mathlib.Order.Hom.Basic
-import Mathlib.Tactic.Common
+module
+
+public import Mathlib.Data.Part
+public import Mathlib.Order.Hom.Basic
+public import Mathlib.Tactic.Common
 
 /-!
 # Monotonicity of monadic operations on `Part`
 -/
+
+@[expose] public section
 
 open Part
 
@@ -47,10 +51,10 @@ section seq
 variable {β γ : Type _} {f : α → Part (β → γ)} {g : α → Part β}
 
 lemma Monotone.partSeq (hf : Monotone f) (hg : Monotone g) : Monotone fun x ↦ f x <*> g x := by
-  simpa only [seq_eq_bind_map] using hf.partBind <| Monotone.of_apply₂ fun _ ↦ hg.partMap
+  simpa only [seq_eq_bind_map] using! hf.partBind <| Monotone.of_apply₂ fun _ ↦ hg.partMap
 
 lemma Antitone.partSeq (hf : Antitone f) (hg : Antitone g) : Antitone fun x ↦ f x <*> g x := by
-  simpa only [seq_eq_bind_map] using hf.partBind <| Antitone.of_apply₂ fun _ ↦ hg.partMap
+  simpa only [seq_eq_bind_map] using! hf.partBind <| Antitone.of_apply₂ fun _ ↦ hg.partMap
 
 end seq
 

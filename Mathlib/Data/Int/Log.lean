@@ -3,9 +3,11 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Field.Defs
-import Mathlib.Algebra.Order.Floor.Semiring
-import Mathlib.Data.Nat.Log
+module
+
+public import Mathlib.Algebra.Field.Defs
+public import Mathlib.Algebra.Order.Floor.Semiring
+public import Mathlib.Data.Nat.Log
 
 /-!
 # Integer logarithms in a field with respect to a natural base
@@ -39,13 +41,15 @@ def digits (b : ℕ) (q : ℚ) (n : ℕ) : ℕ :=
 * For `Int.log`:
   * `Int.zpow_log_le_self`, `Int.lt_zpow_succ_log_self`: the bounds formed by `Int.log`,
     `(b : R) ^ log b r ≤ r < (b : R) ^ (log b r + 1)`.
-  * `Int.zpow_log_gi`: the galois coinsertion between `zpow` and `Int.log`.
+  * `Int.zpow_log_gi`: the Galois coinsertion between `zpow` and `Int.log`.
 * For `Int.clog`:
   * `Int.zpow_pred_clog_lt_self`, `Int.self_le_zpow_clog`: the bounds formed by `Int.clog`,
     `(b : R) ^ (clog b r - 1) < r ≤ (b : R) ^ clog b r`.
-  * `Int.clog_zpow_gi`:  the galois insertion between `Int.clog` and `zpow`.
+  * `Int.clog_zpow_gi`:  the Galois insertion between `Int.clog` and `zpow`.
 * `Int.neg_log_inv_eq_clog`, `Int.neg_clog_inv_eq_log`: the link between the two definitions.
 -/
+
+@[expose] public section
 
 assert_not_exists Finset
 
@@ -94,18 +98,16 @@ theorem zpow_log_le_self {b : ℕ} {r : R} (hb : 1 < b) (hr : 0 < r) : (b : R) ^
   · rw [log_of_one_le_right _ hr1]
     rw [zpow_natCast, ← Nat.cast_pow, ← Nat.le_floor_iff hr.le]
     exact Nat.pow_log_le_self b (Nat.floor_pos.mpr hr1).ne'
-  · rw [log_of_right_le_one _ hr1, zpow_neg, zpow_natCast, ← Nat.cast_pow]
-    exact inv_le_of_inv_le₀ hr (Nat.ceil_le.1 <| Nat.le_pow_clog hb _)
+  · rw [log_of_right_le_one _ hr1, zpow_neg]
+    exact_mod_cast inv_le_of_inv_le₀ hr (Nat.ceil_le.1 <| Nat.le_pow_clog hb _)
 
 theorem lt_zpow_succ_log_self {b : ℕ} (hb : 1 < b) (r : R) : r < (b : R) ^ (log b r + 1) := by
   rcases le_or_gt r 0 with hr | hr
   · rw [log_of_right_le_zero _ hr, zero_add, zpow_one]
     exact hr.trans_lt (zero_lt_one.trans_le <| mod_cast hb.le)
   rcases le_or_gt 1 r with hr1 | hr1
-  · rw [log_of_one_le_right _ hr1]
-    rw [Int.ofNat_add_one_out, zpow_natCast, ← Nat.cast_pow]
-    apply Nat.lt_of_floor_lt
-    exact Nat.lt_pow_succ_log_self hb _
+  · rw [log_of_one_le_right _ hr1, Int.ofNat_add_one_out]
+    exact_mod_cast Nat.lt_of_floor_lt <| Nat.lt_pow_succ_log_self hb _
   · rw [log_of_right_le_one _ hr1.le]
     have hcri : 1 < r⁻¹ := (one_lt_inv₀ hr).2 hr1
     have : 1 ≤ Nat.clog b ⌈r⁻¹⌉₊ :=
@@ -157,7 +159,7 @@ theorem log_mono_right {b : ℕ} {r₁ r₂ : R} (h₀ : 0 < r₁) (h : r₁ ≤
     exact Nat.log_mono_right (Nat.floor_mono h)
 
 variable (R) in
-/-- Over suitable subtypes, `zpow` and `Int.log` form a galois coinsertion -/
+/-- Over suitable subtypes, `zpow` and `Int.log` form a Galois coinsertion -/
 def zpowLogGi {b : ℕ} (hb : 1 < b) :
     GaloisCoinsertion
       (fun z : ℤ =>
@@ -267,7 +269,7 @@ theorem clog_one_left (r : R) : clog 1 r = 0 := by
 theorem clog_zpow {b : ℕ} (hb : 1 < b) (z : ℤ) : clog b (b ^ z : R) = z := by
   rw [← neg_log_inv_eq_clog, ← zpow_neg, log_zpow hb, neg_neg]
 
-@[mono]
+@[gcongr, mono]
 theorem clog_mono_right {b : ℕ} {r₁ r₂ : R} (h₀ : 0 < r₁) (h : r₁ ≤ r₂) :
     clog b r₁ ≤ clog b r₂ := by
   have h₀' : 0 < r₂ := lt_of_lt_of_le h₀ h
@@ -275,7 +277,7 @@ theorem clog_mono_right {b : ℕ} {r₁ r₂ : R} (h₀ : 0 < r₁) (h : r₁ �
   exact log_mono_right (inv_pos_of_pos h₀') <| (inv_le_inv₀ h₀' h₀).2 h
 
 variable (R) in
-/-- Over suitable subtypes, `Int.clog` and `zpow` form a galois insertion -/
+/-- Over suitable subtypes, `Int.clog` and `zpow` form a Galois insertion -/
 def clogZPowGi {b : ℕ} (hb : 1 < b) :
     GaloisInsertion (fun r : Set.Ioi (0 : R) => Int.clog b (r : R)) fun z : ℤ =>
       ⟨(b : R) ^ z, zpow_pos (mod_cast zero_lt_one.trans hb) z⟩ :=

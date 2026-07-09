@@ -3,8 +3,10 @@ Copyright (c) 2022 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
-import Mathlib.RingTheory.Localization.Defs
-import Mathlib.RingTheory.Valuation.Basic
+module
+
+public import Mathlib.RingTheory.Localization.Defs
+public import Mathlib.RingTheory.Valuation.Basic
 
 /-!
 
@@ -15,6 +17,8 @@ with zero `Γ`, and a submonoid `S` of `v.supp.primeCompl`, the valuation `v` ca
 extended to the localization `S⁻¹A`.
 
 -/
+
+@[expose] public section
 
 
 variable {A : Type*} [CommRing A] {Γ : Type*} [LinearOrderedCommGroupWithZero Γ]
@@ -27,7 +31,7 @@ noncomputable def Valuation.extendToLocalization : Valuation B Γ :=
   let f := IsLocalization.toLocalizationMap S B
   let h : ∀ s : S, IsUnit (v.1.toMonoidHom s) := fun s => isUnit_iff_ne_zero.2 (hS s.2)
   { f.lift h with
-    map_zero' := by convert f.lift_eq (P := Γ) _ 0 <;> simp [f]
+    map_zero' := by convert! f.lift_eq (P := Γ) _ 0 <;> simp [f]
     map_add_le_max' := fun x y => by
       obtain ⟨a, b, s, rfl, rfl⟩ : ∃ (a b : A) (s : S), f.mk' a s = x ∧ f.mk' b s = y := by
         obtain ⟨a, s, rfl⟩ := f.mk'_surjective x
@@ -36,15 +40,15 @@ noncomputable def Valuation.extendToLocalization : Valuation B Γ :=
         constructor <;>
           · rw [f.mk'_eq_iff_eq, Submonoid.coe_mul]
             ring_nf
-      convert_to f.lift h (f.mk' (a + b) s) ≤ max (f.lift h _) (f.lift h _)
+      convert_to! f.lift h (f.mk' (a + b) s) ≤ max (f.lift h _) (f.lift h _)
       · refine congr_arg (f.lift h) (IsLocalization.eq_mk'_iff_mul_eq.2 ?_)
         rw [add_mul, map_add]
         rw [← IsLocalization.toLocalizationMap_apply S B, f.mk'_spec, f.mk'_spec,
           IsLocalization.toLocalizationMap_apply,
           IsLocalization.toLocalizationMap_apply]
       iterate 3 rw [f.lift_mk']
-      rw [max_mul_mul_right]
-      apply mul_le_mul_right' (v.map_add a b) }
+      dsimp
+      grw [max_mul_mul_right, v.map_add a b] }
 
 @[simp]
 theorem Valuation.extendToLocalization_mk' (x : A) (y : S) :

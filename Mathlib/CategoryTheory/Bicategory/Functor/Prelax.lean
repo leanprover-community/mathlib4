@@ -3,8 +3,10 @@ Copyright (c) 2024 Calle Sönne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno, Calle Sönne
 -/
+module
 
-import Mathlib.CategoryTheory.Bicategory.Basic
+public import Mathlib.CategoryTheory.Bicategory.Basic
+public import Mathlib.CategoryTheory.EqToHom
 
 /-!
 
@@ -20,7 +22,7 @@ oplax functors.
 
 A PrelaxFunctorStruct `F` between quivers `B` and `C`, such that both have been equipped with quiver
 structures on the hom-types, consists of
-* a function between objects `F.obj : B ⟶ C`,
+* a function between objects `F.obj : B → C`,
 * a family of functions between 1-morphisms `F.map : (a ⟶ b) → (F.obj a ⟶ F.obj b)`,
 * a family of functions between 2-morphisms `F.map₂ : (f ⟶ g) → (F.map f ⟶ F.map g)`,
 
@@ -37,6 +39,8 @@ corresponding hom types.
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 open Category Bicategory
@@ -45,9 +49,9 @@ universe w₁ w₂ w₃ v₁ v₂ v₃ u₁ u₂ u₃
 
 section
 
-variable (B : Type u₁) [Quiver.{v₁ + 1} B] [∀ a b : B, Quiver.{w₁ + 1} (a ⟶ b)]
-variable (C : Type u₂) [Quiver.{v₂ + 1} C] [∀ a b : C, Quiver.{w₂ + 1} (a ⟶ b)]
-variable {D : Type u₃} [Quiver.{v₃ + 1} D] [∀ a b : D, Quiver.{w₃ + 1} (a ⟶ b)]
+variable (B : Type u₁) [Quiver.{v₁} B] [∀ a b : B, Quiver.{w₁} (a ⟶ b)]
+variable (C : Type u₂) [Quiver.{v₂} C] [∀ a b : C, Quiver.{w₂} (a ⟶ b)]
+variable {D : Type u₃} [Quiver.{v₃} D] [∀ a b : D, Quiver.{w₃} (a ⟶ b)]
 
 /-- A `PrelaxFunctorStruct` between bicategories consists of functions between objects,
 1-morphisms, and 2-morphisms. This structure will be extended to define `PrelaxFunctor`.
@@ -76,7 +80,7 @@ def mkOfHomPrefunctors (F : B → C) (F' : (a : B) → (b : B) → Prefunctor (a
 
 /-- The identity lax prefunctor. -/
 @[simps]
-def id (B : Type u₁) [Quiver.{v₁ + 1} B] [∀ a b : B, Quiver.{w₁ + 1} (a ⟶ b)] :
+def id (B : Type u₁) [Quiver.{v₁} B] [∀ a b : B, Quiver.{w₁} (a ⟶ b)] :
     PrelaxFunctorStruct B B :=
   { Prefunctor.id B with map₂ := fun η => η }
 
@@ -98,9 +102,9 @@ This structure will be extended to define `LaxFunctor` and `OplaxFunctor`.
 -/
 structure PrelaxFunctor (B : Type u₁) [Bicategory.{w₁, v₁} B] (C : Type u₂) [Bicategory.{w₂, v₂} C]
     extends PrelaxFunctorStruct B C where
-  /-- Prelax functors preserves identity 2-morphisms. -/
+  /-- Prelax functors preserve identity 2-morphisms. -/
   map₂_id : ∀ {a b : B} (f : a ⟶ b), map₂ (𝟙 f) = 𝟙 (map f) := by aesop -- TODO: why not cat_disch?
-  /-- Prelax functors preserves compositions of 2-morphisms. -/
+  /-- Prelax functors preserve compositions of 2-morphisms. -/
   map₂_comp : ∀ {a b : B} {f g h : a ⟶ b} (η : f ⟶ g) (θ : g ⟶ h),
       map₂ (η ≫ θ) = map₂ η ≫ map₂ θ := by cat_disch
 
@@ -132,8 +136,8 @@ def mkOfHomFunctors (F : B → C) (F' : (a : B) → (b : B) → (a ⟶ b) ⥤ (F
 def id (B : Type u₁) [Bicategory.{w₁, v₁} B] : PrelaxFunctor B B where
   toPrelaxFunctorStruct := PrelaxFunctorStruct.id B
 
-instance : Inhabited (PrelaxFunctorStruct B B) :=
-  ⟨PrelaxFunctorStruct.id B⟩
+instance : Inhabited (PrelaxFunctor B B) :=
+  ⟨PrelaxFunctor.id B⟩
 
 variable (F : PrelaxFunctor B C)
 
@@ -157,8 +161,9 @@ section
 
 variable {a b : B}
 
-/-- A prelaxfunctor `F` sends 2-isomorphisms `η : f ≅ f` to 2-isomorphisms `F.map f ≅ F.map g`. -/
-@[simps!]
+/-- A prelax functor `F` sends 2-isomorphisms `η : f ≅ g` to 2-isomorphisms
+`F.map f ≅ F.map g`. -/
+@[simps! -isSimp]
 abbrev map₂Iso {f g : a ⟶ b} (η : f ≅ g) : F.map f ≅ F.map g :=
   (F.mapFunctor a b).mapIso η
 
@@ -169,6 +174,10 @@ instance map₂_isIso {f g : a ⟶ b} (η : f ⟶ g) [IsIso η] : IsIso (F.map�
 lemma map₂_inv {f g : a ⟶ b} (η : f ⟶ g) [IsIso η] : F.map₂ (inv η) = inv (F.map₂ η) := by
   apply IsIso.eq_inv_of_hom_inv_id
   simp [← F.map₂_comp η (inv η)]
+
+lemma map₂_iso_inv {f g : a ⟶ b} (η : f ≅ g) :
+    F.map₂ η.inv = inv (F.map₂ η.hom) := by
+  rw [← F.map₂_inv, IsIso.Iso.inv_hom]
 
 @[reassoc, simp]
 lemma map₂_hom_inv {f g : a ⟶ b} (η : f ≅ g) :
@@ -191,6 +200,17 @@ lemma map₂_inv_hom_isIso {f g : a ⟶ b} (η : f ⟶ g) [IsIso η] :
   simp
 
 end
+
+lemma map₂_eqToHom {x y : B} (f g : x ⟶ y) (hfg : f = g) :
+    F.map₂ (eqToHom hfg) = eqToHom (by rw [← hfg]) := by
+  subst hfg
+  simp
+
+set_option backward.defeqAttrib.useBackward true in
+lemma map₂Iso_eqToIso {x y : B} (f g : x ⟶ y) (hfg : f = g) :
+    F.map₂Iso (eqToIso hfg) = eqToIso (by rw [← hfg]) := by
+  subst hfg
+  simp
 
 end PrelaxFunctor
 

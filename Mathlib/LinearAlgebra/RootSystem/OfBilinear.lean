@@ -3,10 +3,13 @@ Copyright (c) 2024 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
-import Mathlib.LinearAlgebra.RootSystem.Defs
+module
+
+public import Mathlib.LinearAlgebra.RootSystem.Defs
 
 /-!
 # Root pairings made from bilinear forms
+
 A common construction of root systems is given by taking the set of all vectors in an integral
 lattice for which reflection yields an automorphism of the lattice.  In this file, we generalize
 this construction, replacing the ring of integers with an arbitrary commutative ring and the
@@ -20,6 +23,8 @@ integral lattice with an arbitrary reflexive module equipped with a bilinear for
 ## TODO
 * properties
 -/
+
+@[expose] public section
 
 open Set Function Module
 
@@ -43,7 +48,7 @@ namespace IsReflective
 
 lemma of_dvd_two [IsCancelMulZero R] [NeZero (2 : R)] (hx : B x x ∣ 2) :
     IsReflective B x where
-  regular := isRegular_of_ne_zero <| fun contra ↦ by simp [contra, two_ne_zero (α := R)] at hx
+  regular := .of_ne_zero <| fun contra ↦ by simp [contra, two_ne_zero (α := R)] at hx
   dvd_two_mul y := hx.mul_right (B x y)
 
 variable (hx : IsReflective B x)
@@ -78,7 +83,7 @@ lemma coroot_apply_self : coroot B hx x = 2 :=
 lemma isOrthogonal_reflection (hSB : LinearMap.IsSymm B) :
     B.IsOrthogonal (Module.reflection (coroot_apply_self B hx)) := by
   intro y z
-  simp only [reflection_apply, LinearMap.map_sub, map_smul, sub_apply,
+  simp only [reflection_apply, map_sub, map_smul, sub_apply,
     smul_apply, smul_eq_mul]
   refine hx.1.1 ?_
   simp only [mul_sub, ← mul_assoc, apply_self_mul_coroot_apply]
@@ -108,6 +113,7 @@ namespace RootPairing
 
 open LinearMap IsReflective
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The root pairing given by all reflective vectors for a bilinear form. -/
 def ofBilinear [IsReflexive R M] (B : M →ₗ[R] M →ₗ[R] R) (hNB : LinearMap.Nondegenerate B)
     (hSB : LinearMap.IsSymm B) (h2 : IsRegular (2 : R)) :
@@ -137,7 +143,7 @@ def ofBilinear [IsReflexive R M] (B : M →ₗ[R] M →ₗ[R] R) (hNB : LinearMa
           specialize h2y x
           rw [coroot_apply_self] at h2y
           rw [mul_comm, ← h2x, ← hSB.eq, RingHom.id_apply, ← h2y, mul_comm]
-        rw [Subtype.ext_iff_val, ← sub_eq_zero]
+        rw [Subtype.ext_iff, ← sub_eq_zero]
         refine hNB.1 _ (fun z => ?_)
         rw [map_sub, LinearMap.sub_apply, sub_eq_zero]
         refine h2.1 ?_
@@ -155,8 +161,8 @@ def ofBilinear [IsReflexive R M] (B : M →ₗ[R] M →ₗ[R] R) (hNB : LinearMa
       right_inv := by
         intro y
         simp [involutive_reflection (coroot_apply_self B x.2) y] }
-  reflectionPerm_root x y := by
-    simp [Module.reflection_apply]
+  reflectionPerm_root := by
+    simp [coe_setOf, Module.reflection_apply]
   reflectionPerm_coroot x y := by
     simp only [coe_setOf, mem_setOf_eq, Embedding.coeFn_mk, Embedding.subtype_apply,
       Dual.eval_apply, Equiv.coe_fn_mk]

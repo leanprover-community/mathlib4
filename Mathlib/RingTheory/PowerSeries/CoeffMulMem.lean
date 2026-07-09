@@ -3,9 +3,11 @@ Copyright (c) 2025 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
-import Mathlib.RingTheory.Ideal.Operations
-import Mathlib.RingTheory.Ideal.BigOperators
-import Mathlib.RingTheory.PowerSeries.Basic
+module
+
+public import Mathlib.RingTheory.Ideal.Operations
+public import Mathlib.RingTheory.Ideal.BigOperators
+public import Mathlib.RingTheory.PowerSeries.Basic
 
 /-!
 
@@ -33,6 +35,8 @@ import Mathlib.RingTheory.PowerSeries.Basic
 
 -/
 
+public section
+
 namespace PowerSeries
 
 variable {A : Type*} [Semiring A] {I J : Ideal A} {f g : A⟦X⟧} (n : ℕ)
@@ -41,8 +45,8 @@ theorem coeff_mul_mem_ideal_mul_ideal_of_coeff_mem_ideal (hf : ∀ i ≤ n, coef
     (hg : ∀ i ≤ n, coeff i g ∈ J) : ∀ i ≤ n, coeff i (f * g) ∈ I * J := fun i hi ↦ by
   rw [coeff_mul]
   exact Ideal.sum_mem _ fun p hp ↦ Ideal.mul_mem_mul
-    (hf _ ((Finset.antidiagonal.fst_le hp).trans hi))
-    (hg _ ((Finset.antidiagonal.snd_le hp).trans hi))
+    (hf _ ((Finset.HasAntidiagonal.antidiagonal.fst_le hp).trans hi))
+    (hg _ ((Finset.HasAntidiagonal.antidiagonal.snd_le hp).trans hi))
 
 theorem coeff_mul_mem_ideal_mul_ideal_of_coeff_mem_ideal' (hf : ∀ i, coeff i f ∈ I)
     (hg : ∀ i, coeff i g ∈ J) : ∀ i, coeff i (f * g) ∈ I * J :=

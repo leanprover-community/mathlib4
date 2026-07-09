@@ -3,7 +3,9 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Action.Faithful
+module
+
+public import Mathlib.Algebra.Group.Action.Faithful
 
 /-!
 # Option instances for additive and multiplicative actions
@@ -17,6 +19,8 @@ multiplication is defined by `a • some b = some (a • b)` and `a • none = n
 * `Mathlib/Algebra/Group/Action/Sigma.lean`
 * `Mathlib/Algebra/Group/Action/Sum.lean`
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero
 
@@ -68,7 +72,6 @@ end SMul
 
 instance [Monoid M] [MulAction M α] :
     MulAction M (Option α) where
-  smul := (· • ·)
   one_smul b := by
     cases b
     exacts [rfl, congr_arg some (one_smul _ _)]

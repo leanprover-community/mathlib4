@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Alexander Bentkamp
 -/
-import Mathlib.Algebra.Algebra.Defs
-import Mathlib.LinearAlgebra.Basis.Basic
+module
+
+public import Mathlib.Algebra.Algebra.Defs
+public import Mathlib.LinearAlgebra.Basis.Basic
 
 /-!
 # Bases and scalar multiplication
@@ -12,6 +14,8 @@ import Mathlib.LinearAlgebra.Basis.Basic
 This file defines the scalar multiplication of bases by multiplying each basis vector.
 
 -/
+
+@[expose] public section
 
 assert_not_exists Ordinal
 

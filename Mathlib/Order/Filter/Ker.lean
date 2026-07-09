@@ -3,7 +3,9 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.Filter.Map
+module
+
+public import Mathlib.Order.Filter.Map
 
 /-!
 # Kernel of a filter
@@ -14,6 +16,8 @@ to be the intersection of all its sets.
 We also prove that `Filter.principal` and `Filter.ker` form a Galois coinsertion
 and prove other basic theorems about `Filter.ker`.
 -/
+
+@[expose] public section
 
 open Function Set
 
@@ -29,7 +33,7 @@ lemma ker_def (f : Filter α) : f.ker = ⋂ s ∈ f, s := sInter_eq_biInter
 /-- `Filter.principal` forms a Galois coinsertion with `Filter.ker`. -/
 def gi_principal_ker : GaloisCoinsertion (𝓟 : Set α → Filter α) ker :=
   GaloisConnection.toGaloisCoinsertion (fun s f ↦ by simp [principal_le_iff]) <| by
-    simp only [le_iff_subset, subset_def, mem_ker, mem_principal]; aesop
+    simp only [subset_def, mem_ker, mem_principal]; aesop
 
 lemma ker_mono : Monotone (ker : Filter α → Set α) := gi_principal_ker.gc.monotone_u
 lemma ker_surjective : Surjective (ker : Filter α → Set α) := gi_principal_ker.u_surjective
@@ -48,7 +52,7 @@ lemma ker_surjective : Surjective (ker : Filter α → Set α) := gi_principal_k
 
 @[simp] lemma ker_comap (m : α → β) (f : Filter β) : ker (comap m f) = m ⁻¹' ker f := by
   ext a
-  simp only [mem_ker, mem_comap, forall_exists_index, and_imp, @forall_swap (Set α), mem_preimage]
+  simp only [mem_ker, mem_comap, forall_exists_index, and_imp, @forall_comm (Set α), mem_preimage]
   exact forall₂_congr fun s _ ↦ ⟨fun h ↦ h _ Subset.rfl, fun ha t ht ↦ ht ha⟩
 
 @[simp]

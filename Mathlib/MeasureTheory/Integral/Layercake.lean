@@ -3,7 +3,9 @@ Copyright (c) 2022 Kalle Kytölä. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä
 -/
-import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
+module
+
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 
 /-!
 # The layer cake formula / Cavalieri's principle / tail probability formula
@@ -25,26 +27,26 @@ The essence of the (mathematical) proof is Fubini's theorem.
 
 We also give the most common application of the layer cake formula -
 a representation of the integral of a nonnegative function f:
-∫ f(ω) ∂μ(ω) = ∫ μ {ω | f(ω) ≥ t} dt
+$$∫ f(ω) \,∂μ(ω) = ∫ μ \{ω \mid f(ω) ≥ t\} \,dt$$
 
-Variants of the formulas with measures of sets of the form {ω | f(ω) > t} instead of {ω | f(ω) ≥ t}
-are also included.
+Variants of the formulas with measures of sets of the form `{ω | f(ω) > t}` instead of
+`{ω | f(ω) ≥ t}` are also included.
 
 ## Main results
 
 * `MeasureTheory.lintegral_comp_eq_lintegral_meas_le_mul`
   and `MeasureTheory.lintegral_comp_eq_lintegral_meas_lt_mul`:
   The general layer cake formulas with Lebesgue integrals, written in terms of measures of
-  sets of the forms {ω | t ≤ f(ω)} and {ω | t < f(ω)}, respectively.
+  sets of the forms `{ω | t ≤ f(ω)}` and `{ω | t < f(ω)}`, respectively.
 * `MeasureTheory.lintegral_eq_lintegral_meas_le` and
   `MeasureTheory.lintegral_eq_lintegral_meas_lt`:
   The most common special cases of the layer cake formulas, stating that for a nonnegative
-  function f we have ∫ f(ω) ∂μ(ω) = ∫ μ {ω | f(ω) ≥ t} dt and
-  ∫ f(ω) ∂μ(ω) = ∫ μ {ω | f(ω) > t} dt, respectively.
+  function f we have $∫ f(ω) \,∂μ(ω) = ∫ μ \{ω \mid f(ω) ≥ t\} \,dt$ and
+  $∫ f(ω) \,∂μ(ω) = ∫ μ \{ω \mid f(ω) > t\} \,dt$, respectively.
 * `Integrable.integral_eq_integral_meas_lt`:
   A Bochner integral version of the most common special case of the layer cake formulas, stating
   that for an integrable and a.e.-nonnegative function f we have
-  ∫ f(ω) ∂μ(ω) = ∫ μ {ω | f(ω) > t} dt.
+  $∫ f(ω) \,∂μ(ω) = ∫ μ \{ω \mid f(ω) > t\} \,dt$.
 
 ## See also
 
@@ -55,6 +57,8 @@ function, is given in `Mathlib/Analysis/SpecialFunctions/Pow/Integral.lean`.
 
 layer cake representation, Cavalieri's principle, tail probability formula
 -/
+
+public section
 
 noncomputable section
 
@@ -80,7 +84,7 @@ theorem countable_meas_le_ne_meas_lt (g : α → R) :
   exact ⟨μ {a | t < g a}, this, fun s hs ↦ measure_mono (fun a ha ↦ hs.trans_le ha)⟩
 
 theorem meas_le_ae_eq_meas_lt {R : Type*} [LinearOrder R] [MeasurableSpace R]
-    (ν : Measure R) [NoAtoms ν] (g : α → R) :
+    (ν : Measure R) [NullSingletonClass ν] (g : α → R) :
     (fun t => μ {a : α | t ≤ g a}) =ᵐ[ν] fun t => μ {a : α | t < g a} :=
   Set.Countable.measure_zero (countable_meas_le_ne_meas_lt μ g) _
 
@@ -214,7 +218,7 @@ theorem lintegral_comp_eq_lintegral_meas_le_mul_of_measurable (μ : Measure α)
     rw [A, B]
   -- easy case where both sides are obviously infinite: for some `s`, one has
   -- `μ {a : α | s < f a} = ∞` and moreover `g` is not ae zero on `[0, s]`.
-  by_cases H2 : ∃ s > 0, 0 < ∫ t in 0..s, g t ∧ μ {a : α | s < f a} = ∞
+  by_cases! H2 : ∃ s > 0, 0 < ∫ t in 0..s, g t ∧ μ {a : α | s < f a} = ∞
   · rcases H2 with ⟨s, s_pos, hs, h's⟩
     rw [intervalIntegral.integral_of_le s_pos.le] at hs
     /- The first integral is infinite, as for `t ∈ [0, s]` one has `μ {a : α | t ≤ f a} = ∞`,
@@ -263,9 +267,8 @@ theorem lintegral_comp_eq_lintegral_meas_le_mul_of_measurable (μ : Measure α)
   one can write (a full measure subset of) the space as the countable union of the finite measure
   sets `{ω | f ω > uₙ}` for `uₙ` a sequence decreasing to `M`. Therefore,
   this case follows from the case where the measure is sigma-finite, applied to `ν`. -/
-  push_neg at H2
   have M_bdd : BddAbove {s : ℝ | g =ᵐ[volume.restrict (Ioc (0 : ℝ) s)] 0} := by
-    contrapose! H1
+    contrapose H1
     have : ∀ (n : ℕ), g =ᵐ[volume.restrict (Ioc (0 : ℝ) n)] 0 := by
       intro n
       rcases not_bddAbove_iff.1 H1 n with ⟨s, hs, ns⟩
@@ -277,7 +280,7 @@ theorem lintegral_comp_eq_lintegral_meas_le_mul_of_measurable (μ : Measure α)
     rwa [this] at Hg
   -- let `M` be the largest number such that `g` vanishes ae on `(0, M]`.
   let M : ℝ := sSup {s : ℝ | g =ᵐ[volume.restrict (Ioc (0 : ℝ) s)] 0}
-  have zero_mem : 0 ∈ {s : ℝ | g =ᵐ[volume.restrict (Ioc (0 : ℝ) s)] 0} := by simpa using trivial
+  have zero_mem : 0 ∈ {s : ℝ | g =ᵐ[volume.restrict (Ioc (0 : ℝ) s)] 0} := by simpa using! trivial
   have M_nonneg : 0 ≤ M := le_csSup M_bdd zero_mem
   -- Then the function `g` indeed vanishes ae on `(0, M]`.
   have hgM : g =ᵐ[volume.restrict (Ioc (0 : ℝ) M)] 0 := by
@@ -307,7 +310,7 @@ theorem lintegral_comp_eq_lintegral_meas_le_mul_of_measurable (μ : Measure α)
         intro n
         have I : ν {a | f a ≤ M} = 0 := by
           rw [Measure.restrict_apply (measurableSet_le f_mble measurable_const)]
-          convert measure_empty (μ := μ)
+          convert! measure_empty (μ := μ)
           rw [← disjoint_iff_inter_eq_empty]
           exact disjoint_left.mpr (fun a ha ↦ by simpa using ha)
         have J : μ {a | u n < f a} < ∞ := by
@@ -330,7 +333,7 @@ theorem lintegral_comp_eq_lintegral_meas_le_mul_of_measurable (μ : Measure α)
         exact restrict_le_self _
       spanning := by
         apply eq_univ_iff_forall.2 (fun a ↦ ?_)
-        rcases le_or_gt (f a) M with ha|ha
+        rcases le_or_gt (f a) M with ha | ha
         · exact mem_iUnion.2 ⟨0, Or.inl ha⟩
         · obtain ⟨n, hn⟩ : ∃ n, u n < f a := ((tendsto_order.1 ulim).2 _ ha).exists
           exact mem_iUnion.2 ⟨n, Or.inr hn⟩ }
@@ -340,7 +343,7 @@ theorem lintegral_comp_eq_lintegral_meas_le_mul_of_measurable (μ : Measure α)
   have A : ∫⁻ ω, ENNReal.ofReal (∫ t in 0..f ω, g t) ∂μ
          = ∫⁻ ω, ENNReal.ofReal (∫ t in 0..f ω, g t) ∂ν := by
     have meas : MeasurableSet {a | M < f a} := measurableSet_lt measurable_const f_mble
-    have I : ∫⁻ ω in {a | M < f a}ᶜ, ENNReal.ofReal (∫ t in 0.. f ω, g t) ∂μ
+    have I : ∫⁻ ω in {a | M < f a}ᶜ, ENNReal.ofReal (∫ t in 0..f ω, g t) ∂μ
              = ∫⁻ _ in {a | M < f a}ᶜ, 0 ∂μ := by
       apply setLIntegral_congr_fun meas.compl (fun s hs ↦ ?_)
       have : ∫ (t : ℝ) in 0..f s, g t = ∫ (t : ℝ) in 0..f s, 0 := by
@@ -451,7 +454,7 @@ theorem lintegral_eq_lintegral_meas_le (μ : Measure α) (f_nn : 0 ≤ᵐ[μ] f)
   simp_rw [cst, ENNReal.ofReal_one, mul_one] at key
   rw [← key]
   congr with ω
-  simp only [intervalIntegral.integral_const, sub_zero, Algebra.id.smul_eq_mul, mul_one]
+  simp only [intervalIntegral.integral_const, sub_zero, smul_eq_mul, mul_one]
 
 end Layercake
 
@@ -520,7 +523,7 @@ theorem Integrable.integral_eq_integral_meas_lt
   have rhs_finite : ∫⁻ (t : ℝ) in Set.Ioi 0, μ {a | t < f a} < ∞ := by simp only [← key, lhs_finite]
   have rhs_integrand_finite : ∀ (t : ℝ), t > 0 → μ {a | t < f a} < ∞ :=
     fun t ht ↦ measure_gt_lt_top f_intble ht
-  convert (ENNReal.toReal_eq_toReal lhs_finite.ne rhs_finite.ne).mpr key
+  convert! (ENNReal.toReal_eq_toReal_iff' lhs_finite.ne rhs_finite.ne).mpr key
   · exact integral_eq_lintegral_of_nonneg_ae f_nn f_intble.aestronglyMeasurable
   · have aux := @integral_eq_lintegral_of_nonneg_ae _ _ ((volume : Measure ℝ).restrict (Set.Ioi 0))
       (fun t ↦ μ.real {a : α | t < f a}) ?_ ?_
@@ -545,10 +548,10 @@ lemma Integrable.integral_eq_integral_Ioc_meas_le {f : α → ℝ} {M : ℝ}
     (f_intble : Integrable f μ) (f_nn : 0 ≤ᵐ[μ] f) (f_bdd : f ≤ᵐ[μ] (fun _ ↦ M)) :
     ∫ ω, f ω ∂μ = ∫ t in Ioc 0 M, μ.real {a : α | t ≤ f a} := by
   rw [f_intble.integral_eq_integral_meas_le f_nn]
-  rw [setIntegral_eq_of_subset_of_ae_diff_eq_zero
+  rw [setIntegral_eq_of_subset_of_ae_sdiff_eq_zero
       nullMeasurableSet_Ioi Ioc_subset_Ioi_self ?_]
   apply Eventually.of_forall (fun t ht ↦ ?_)
-  have htM : M < t := by simp_all only [mem_diff, mem_Ioi, mem_Ioc, not_and, not_le]
+  have htM : M < t := by simp_all only [Set.mem_sdiff, mem_Ioi, mem_Ioc, not_and, not_le]
   have obs : μ {a | M < f a} = 0 := by
     rw [measure_eq_zero_iff_ae_notMem]
     filter_upwards [f_bdd] with a ha using not_lt.mpr ha

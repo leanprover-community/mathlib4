@@ -3,7 +3,9 @@ Copyright (c) 2022 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
 -/
-import Mathlib.Analysis.LocallyConvex.Basic
+module
+
+public import Mathlib.Analysis.LocallyConvex.Basic
 
 /-!
 # Balanced Core and Balanced Hull
@@ -35,6 +37,8 @@ this is `balancedCore_eq_iInter`.
 
 balanced
 -/
+
+@[expose] public section
 
 
 open Set Pointwise Topology Filter
@@ -91,7 +95,7 @@ theorem Balanced.subset_balancedCore_of_subset (hs : Balanced 𝕜 s) (h : s ⊆
   subset_sUnion_of_mem ⟨hs, h⟩
 
 lemma Balanced.balancedCore_eq (h : Balanced 𝕜 s) : balancedCore 𝕜 s = s :=
-  le_antisymm (balancedCore_subset _) (h.subset_balancedCore_of_subset (subset_refl _))
+  le_antisymm (balancedCore_subset _) (h.subset_balancedCore_of_subset subset_rfl)
 
 theorem mem_balancedCoreAux_iff : x ∈ balancedCoreAux 𝕜 s ↔ ∀ r : 𝕜, 1 ≤ ‖r‖ → x ∈ r • s :=
   mem_iInter₂
@@ -231,6 +235,17 @@ protected theorem IsClosed.balancedCore (hU : IsClosed U) : IsClosed (balancedCo
     rw [this]
     exact isClosed_empty
 
+omit [ContinuousSMul 𝕜 E] in
+protected theorem IsOpen.balancedHull [ContinuousConstSMul 𝕜 E] {s : Set E} (hs : IsOpen s)
+    (hzero : 0 ∈ s) : IsOpen (balancedHull 𝕜 s) := by
+  have : (⋃ r : 𝕜, ⋃ (_ : ‖r‖ ≤ 1), r • s) = (⋃ r : 𝕜, ⋃ (_ : ‖r‖ ≤ 1 ∧ r ≠ 0), r • s) := by
+    refine subset_antisymm (Set.iUnion₂_mono' fun r hr ↦ ?_) (Set.iUnion₂_mono' (by grind))
+    obtain rfl | hr_ne := eq_or_ne r 0
+    · exact ⟨1, by simp, by simpa [Set.zero_smul_set ⟨0, hzero⟩]⟩
+    · use r
+  rw [balancedHull, this]
+  exact isOpen_biUnion (fun r hr ↦ hs.smul₀ hr.2)
+
 -- We don't have a `NontriviallyNormedDivisionRing`, so we use a `NeBot` assumption instead
 variable [NeBot (𝓝[≠] (0 : 𝕜))]
 
@@ -240,11 +255,11 @@ theorem balancedCore_mem_nhds_zero (hU : U ∈ 𝓝 (0 : E)) : balancedCore 𝕜
       0 < r ∧ V ∈ 𝓝 (0 : E) ∧ ∀ (c : 𝕜) (y : E), ‖c‖ < r → y ∈ V → c • y ∈ U := by
     have h : Filter.Tendsto (fun x : 𝕜 × E => x.fst • x.snd) (𝓝 (0, 0)) (𝓝 0) :=
       continuous_smul.tendsto' (0, 0) _ (smul_zero _)
-    simpa only [← Prod.exists', ← Prod.forall', ← and_imp, ← and_assoc, exists_prop] using
-      h.basis_left (NormedAddCommGroup.nhds_zero_basis_norm_lt.prod_nhds (𝓝 _).basis_sets) U hU
+    simpa only [← Prod.exists', ← Prod.forall', ← and_imp, ← and_assoc, exists_prop] using!
+      h.basis_left (NormedAddGroup.nhds_zero_basis_norm_lt.prod_nhds (𝓝 _).basis_sets) U hU
   obtain ⟨y, hyr, hy₀⟩ : ∃ y : 𝕜, ‖y‖ < r ∧ y ≠ 0 :=
     Filter.nonempty_of_mem <|
-      (nhdsWithin_hasBasis NormedAddCommGroup.nhds_zero_basis_norm_lt {0}ᶜ).mem_of_mem hr
+      (nhdsWithin_hasBasis NormedAddGroup.nhds_zero_basis_norm_lt {0}ᶜ).mem_of_mem hr
   have : y • V ∈ 𝓝 (0 : E) := (set_smul_mem_nhds_zero_iff hy₀).mpr hV
   -- It remains to show that `y • V ⊆ balancedCore 𝕜 U`
   refine Filter.mem_of_superset this (subset_balancedCore (mem_of_mem_nhds hU) fun a ha => ?_)

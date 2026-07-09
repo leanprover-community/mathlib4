@@ -3,8 +3,9 @@ Copyright (c) 2024 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
+module
 
-import Mathlib.Init
+public import Mathlib.Init
 
 /-! # The `#trans_imports` command
 
@@ -12,6 +13,8 @@ import Mathlib.Init
 The command takes an optional string input: `#trans_imports str` also shows the transitively
 imported modules whose name begins with `str`.
 -/
+
+public meta section
 
 /--
 `#trans_imports` reports how many transitive imports the current module has.

@@ -3,8 +3,11 @@ Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.Data.Finset.Fold
-import Mathlib.Algebra.GCDMonoid.Multiset
+module
+
+public import Mathlib.Data.Finset.Fold
+public import Mathlib.Algebra.GCDMonoid.Multiset
+public import Mathlib.Algebra.GCDMonoid.Nat
 
 /-!
 # GCD and LCM operations on finsets
@@ -26,13 +29,15 @@ TODO: simplify with a tactic and `Data.Finset.Lattice`
 finset, gcd
 -/
 
+@[expose] public section
+
 variable {ι α β γ : Type*}
 
 namespace Finset
 
 open Multiset
 
-variable [CancelCommMonoidWithZero α] [NormalizedGCDMonoid α]
+variable [CommMonoidWithZero α] [NormalizedGCDMonoid α]
 
 /-! ### lcm -/
 
@@ -101,9 +106,12 @@ theorem lcm_image [DecidableEq β] {g : γ → β} (s : Finset γ) :
 theorem lcm_eq_lcm_image [DecidableEq α] : s.lcm f = (s.image f).lcm id :=
   Eq.symm <| lcm_image _
 
-theorem lcm_eq_zero_iff [Nontrivial α] : s.lcm f = 0 ↔ 0 ∈ f '' s := by
-  simp only [Multiset.mem_map, lcm_def, Multiset.lcm_eq_zero_iff, Set.mem_image, mem_coe, ←
-    Finset.mem_def]
+@[simp]
+theorem lcm_eq_zero_iff [Nontrivial α] : s.lcm f = 0 ↔ ∃ x ∈ s, f x = 0 := by
+  simp only [lcm_def, Multiset.lcm_eq_zero_iff, Multiset.mem_map, mem_val]
+
+theorem lcm_ne_zero_iff [Nontrivial α] : s.lcm f ≠ 0 ↔ ∀ x ∈ s, f x ≠ 0 := by
+  simp [lcm_eq_zero_iff]
 
 end lcm
 
@@ -135,6 +143,10 @@ theorem gcd_dvd {b : β} (hb : b ∈ s) : s.gcd f ∣ f b :=
 
 theorem dvd_gcd {a : α} : (∀ b ∈ s, a ∣ f b) → a ∣ s.gcd f :=
   dvd_gcd_iff.2
+
+theorem gcd_cons {b : β} (h : b ∉ s) :
+    (cons b s h : Finset β).gcd f = GCDMonoid.gcd (f b) (s.gcd f) :=
+  fold_cons h
 
 @[simp]
 theorem gcd_insert [DecidableEq β] {b : β} :
@@ -174,17 +186,9 @@ theorem gcd_eq_gcd_image [DecidableEq α] : s.gcd f = (s.image f).gcd id :=
   Eq.symm <| gcd_image _
 
 theorem gcd_eq_zero_iff : s.gcd f = 0 ↔ ∀ x ∈ s, f x = 0 := by
-  rw [gcd_def, Multiset.gcd_eq_zero_iff]
-  constructor <;> intro h
-  · intro b bs
-    apply h (f b)
-    simp only [Multiset.mem_map]
-    use b
-    simp only [mem_def.1 bs, and_self]
-  · intro a as
-    rw [Multiset.mem_map] at as
-    rcases as with ⟨b, ⟨bs, rfl⟩⟩
-    apply h b (mem_def.1 bs)
+  induction s using Finset.cons_induction_on with
+  | empty => simp
+  | cons a s h ih => grind [gcd_cons, _root_.gcd_eq_zero_iff]
 
 theorem gcd_ne_zero_iff : s.gcd f ≠ 0 ↔ ∃ x ∈ s, f x ≠ 0 := by
   simp [gcd_eq_zero_iff]
@@ -193,7 +197,7 @@ theorem gcd_eq_gcd_filter_ne_zero [DecidablePred fun x : β ↦ f x = 0] :
     s.gcd f = {x ∈ s | f x ≠ 0}.gcd f := by
   classical
     trans ({x ∈ s | f x = 0} ∪ {x ∈ s | f x ≠ 0}).gcd f
-    · rw [filter_union_filter_neg_eq]
+    · rw [filter_union_filter_not_eq]
     rw [gcd_union]
     refine Eq.trans (?_ : _ = GCDMonoid.gcd (0 : α) ?_) (?_ : GCDMonoid.gcd (0 : α) _ = _)
     · exact gcd {x ∈ s | f x ≠ 0} f
@@ -204,7 +208,9 @@ theorem gcd_eq_gcd_filter_ne_zero [DecidablePred fun x : β ↦ f x = 0] :
         split_ifs with h1 <;> simp [h, h1]
     simp only [gcd_zero_left, normalize_gcd]
 
-nonrec theorem gcd_mul_left {a : α} : (s.gcd fun x ↦ a * f x) = normalize a * s.gcd f := by
+nonrec theorem gcd_mul_left {α} [CommMonoidWithZero α] [StrongNormalizedGCDMonoid α]
+    {s : Finset β} {f : β → α} {a : α} :
+    (s.gcd fun x ↦ a * f x) = normalize a * s.gcd f := by
   classical
     refine s.induction_on ?_ ?_
     · simp
@@ -212,29 +218,35 @@ nonrec theorem gcd_mul_left {a : α} : (s.gcd fun x ↦ a * f x) = normalize a *
       rw [gcd_insert, gcd_insert, h, ← gcd_mul_left]
       apply ((normalize_associated a).mul_right _).gcd_eq_right
 
-nonrec theorem gcd_mul_right {a : α} : (s.gcd fun x ↦ f x * a) = s.gcd f * normalize a := by
-  classical
-    refine s.induction_on ?_ ?_
-    · simp
-    · intro b t _ h
-      rw [gcd_insert, gcd_insert, h, ← gcd_mul_right]
-      apply ((normalize_associated a).mul_left _).gcd_eq_right
+nonrec theorem gcd_mul_right {α} [CommMonoidWithZero α] [StrongNormalizedGCDMonoid α]
+    {s : Finset β} {f : β → α} {a : α} :
+    (s.gcd fun x ↦ f x * a) = s.gcd f * normalize a := by
+  simp_rw [mul_comm]; exact gcd_mul_left
+
+variable (s f) in
+nonrec theorem gcd_mul_left' (a : α) : Associated (s.gcd fun x ↦ a * f x) (a * s.gcd f) := by
+  classical exact s.induction_on (by simp) fun b s hbs h ↦ by
+             simpa using .trans (.gcd .rfl h) (gcd_mul_left' ..)
+
+variable (s f) in
+nonrec theorem gcd_mul_right' (a : α) : Associated (s.gcd fun x ↦ f x * a) (s.gcd f * a) := by
+  simp_rw [mul_comm]; apply gcd_mul_left'
 
 theorem extract_gcd' (f g : β → α) (hs : ∃ x, x ∈ s ∧ f x ≠ 0)
-    (hg : ∀ b ∈ s, f b = s.gcd f * g b) : s.gcd g = 1 :=
-  ((@mul_right_eq_self₀ _ _ (s.gcd f) _).1 <| by
-        conv_lhs => rw [← normalize_gcd, ← gcd_mul_left, ← gcd_congr rfl hg]).resolve_right <| by
-    contrapose! hs
-    exact gcd_eq_zero_iff.1 hs
+    (hg : ∀ b ∈ s, f b = s.gcd f * g b) : s.gcd g = 1 := by
+  rw [← normalize_gcd, normalize_eq_one, ← associated_one_iff_isUnit]
+  refine .of_mul_left (.symm <| .trans ?_ (gcd_mul_left' ..)) .rfl (a := s.gcd f) ?_
+  · simp [← gcd_congr rfl hg]
+  contrapose! hs
+  exact s.gcd_eq_zero_iff.1 hs
 
 theorem extract_gcd (f : β → α) (hs : s.Nonempty) :
     ∃ g : β → α, (∀ b ∈ s, f b = s.gcd f * g b) ∧ s.gcd g = 1 := by
   classical
-    by_cases h : ∀ x ∈ s, f x = (0 : α)
+    by_cases! h : ∀ x ∈ s, f x = (0 : α)
     · refine ⟨fun _ ↦ 1, fun b hb ↦ by rw [h b hb, gcd_eq_zero_iff.2 h, mul_one], ?_⟩
       rw [gcd_eq_gcd_image, image_const hs, gcd_singleton, id, normalize_one]
     · choose g' hg using @gcd_dvd _ _ _ _ s f
-      push_neg at h
       refine ⟨fun b ↦ if hb : b ∈ s then g' hb else 0, fun b hb ↦ ?_,
           extract_gcd' f _ h fun b hb ↦ ?_⟩
       · simp only [hb, hg, dite_true]
@@ -261,7 +273,7 @@ namespace Finset
 
 section IsDomain
 
-variable [CommRing α] [IsDomain α] [NormalizedGCDMonoid α]
+variable [CommRing α] [NormalizedGCDMonoid α]
 
 theorem gcd_eq_of_dvd_sub {s : Finset β} {f g : β → α} {a : α}
     (h : ∀ x : β, x ∈ s → a ∣ f x - g x) :
@@ -277,5 +289,16 @@ theorem gcd_eq_of_dvd_sub {s : Finset β} {f g : β → α} {a : α}
     exact congr_arg _ (gcd_eq_of_dvd_sub_right (h _ (mem_insert_self _ _)))
 
 end IsDomain
+
+variable {s : Finset ι}
+
+/-- The gcd of a finset of integers is nonnegative. -/
+@[grind .]
+theorem Int.finsetGcd_nonneg {f : ι → ℤ} : 0 ≤ s.gcd f := by
+  induction s using Finset.cons_induction_on with
+  | empty => simp
+  | cons a s has ih =>
+    rw [gcd_cons, ← Int.coe_gcd]
+    grind
 
 end Finset
