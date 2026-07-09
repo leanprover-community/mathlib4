@@ -271,10 +271,9 @@ theorem IsHamiltonian.nonempty (hG : G.IsHamiltonian) : Nonempty α :=
   not_isEmpty_iff.mp fun _ ↦ not_isHamiltonian_of_isEmpty hG
 
 lemma IsHamiltonian.connected (hG : G.IsHamiltonian) : G.Connected := by
-  rcases eq_or_ne (Fintype.card α) 1 with h | h
+  rcases or_iff_not_imp_left.mpr hG with h | ⟨a, p, hp⟩
   · have ⟨_⟩ := Fintype.card_eq_one_iff_nonempty_unique.mp h
     exact .of_subsingleton
-  have ⟨a, p, hp⟩ := hG h
   exact hp.connected
 
 theorem Walk.IsHamiltonianCycle.isHamiltonian {p : G.Walk v v} (hp : p.IsHamiltonianCycle) :
