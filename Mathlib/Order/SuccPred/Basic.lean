@@ -69,8 +69,6 @@ class PredOrder (α : Type*) [Preorder α] where
   /-- Proof that `pred b` is the greatest element less than `b` -/
   le_pred_of_lt {a b} : a < b → a ≤ pred b
 
-attribute [to_dual existing] PredOrder.mk PredOrder.le_pred_of_lt
-
 @[to_dual]
 instance [Preorder α] [SuccOrder α] : PredOrder αᵒᵈ where
   pred := toDual ∘ SuccOrder.succ ∘ ofDual
@@ -110,7 +108,7 @@ def SuccOrder.ofCore (succ : α → α) (hn : ∀ {a}, ¬IsMax a → ∀ b, a < 
 
 variable (α)
 
-open Classical in
+open scoped Classical in
 /-- A well-order is a `SuccOrder`. -/
 @[to_dual (attr := implicit_reducible)
 /-- A linear order with well-founded greater-than relation is a `PredOrder`. -/]
