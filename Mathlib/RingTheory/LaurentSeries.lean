@@ -968,16 +968,6 @@ instance : Field (ratfuncAdicComplPkg (K := K).space) :=
 instance : Valued (ratfuncAdicComplPkg (K := K).space) (WithZero (Multiplicative ℤ)) :=
   inferInstanceAs (Valued ((polynomialValuationX K).Completion) (WithZero (Multiplicative ℤ)))
 
-instance : UniformSpace (ratfuncAdicComplPkg (K := K).space) :=
-  inferInstanceAs (UniformSpace ((polynomialValuationX K).Completion))
-
-variable (K) in
-/-- The ring isomorphism between the structure `RatFuncAdicCompl K` and the underlying
-uniform-space completion. -/
-abbrev ratfuncAdicComplEquiv :
-    RatFuncAdicCompl K ≃+* ratfuncAdicComplPkg (K := K).space :=
-  adicCompletion.equiv K⟮X⟯ (idealX K)
-
 variable (K)
 /-- Having established that the `K⸨X⸩` is complete and contains `K⟮X⟯` as a dense
 subspace, it gives rise to an abstract completion of `K⟮X⟯`. -/
@@ -1015,25 +1005,24 @@ instance : UniformSpace (RatFuncAdicCompl K) := inferInstance
 instance : UniformSpace K⸨X⸩ := inferInstance
 
 /-- The uniform space isomorphism between two abstract completions of `ratfunc K` -/
-abbrev comparePkg : ratfuncAdicComplPkg (K := K).space ≃ᵤ K⸨X⸩ :=
-  compareEquiv ratfuncAdicComplPkg (LaurentSeriesPkg K)
+abbrev comparePkg : RatFuncAdicCompl K ≃ᵤ K⸨X⸩ :=
+  (adicCompletion.uniformEquiv _ _).trans <| compareEquiv ratfuncAdicComplPkg (LaurentSeriesPkg K)
 
-lemma comparePkg_eq_extension (x : ratfuncAdicComplPkg (K := K).space) :
-    (comparePkg K) x = (extensionAsRingHom K (continuous_coe' _)) x := rfl
-
-/-- The ring equivalence between the underlying uniform-space completion and `K⸨X⸩`. -/
-abbrev rawRatfuncAdicComplRingEquiv : ratfuncAdicComplPkg (K := K).space ≃+* K⸨X⸩ :=
-  { comparePkg K with
-    map_mul' x y :=
-      (comparePkg_eq_extension K (x * y)).trans <| (map_mul _ x y).trans <|
-        (congrArg₂ (· * ·) (comparePkg_eq_extension K x) (comparePkg_eq_extension K y)).symm
-    map_add' x y :=
-      (comparePkg_eq_extension K (x + y)).trans <| (map_add _ x y).trans <|
-        (congrArg₂ (· + ·) (comparePkg_eq_extension K x) (comparePkg_eq_extension K y)).symm }
+lemma comparePkg_eq_extension (x : RatFuncAdicCompl K) :
+    (comparePkg K) x =
+      (extensionAsRingHom K (continuous_coe' _)) (adicCompletion.toCompletion x) := rfl
 
 /-- The ring equivalence between `RatFuncAdicCompl K` and `K⸨X⸩`. -/
 abbrev ratfuncAdicComplRingEquiv : RatFuncAdicCompl K ≃+* K⸨X⸩ :=
-  (ratfuncAdicComplEquiv K).trans (rawRatfuncAdicComplRingEquiv K)
+  { comparePkg K with
+    map_mul' x y :=
+      (comparePkg_eq_extension K (x * y)).trans <|
+        (map_mul _ x.toCompletion y.toCompletion).trans <|
+        (congrArg₂ (· * ·) (comparePkg_eq_extension K x) (comparePkg_eq_extension K y)).symm
+    map_add' x y :=
+      (comparePkg_eq_extension K (x + y)).trans <|
+        (map_add _ x.toCompletion y.toCompletion).trans <|
+        (congrArg₂ (· + ·) (comparePkg_eq_extension K x) (comparePkg_eq_extension K y)).symm }
 
 /-- The uniform space equivalence between two abstract completions of `ratfunc K` as a ring
 equivalence: it goes from `K⸨X⸩` to `RatFuncAdicCompl K` -/
