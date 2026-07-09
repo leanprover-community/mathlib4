@@ -311,6 +311,7 @@ lemma ConeMorphism.map_w {c c' : Cone F} (f : c ⟶ c') (G : C ⥤ D) (j : J) :
 
 namespace Cone
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option linter.translate.warnInvalid false in
 /-- To give an isomorphism between cones, it suffices to give an
 isomorphism between their vertices which commutes with the cone maps. -/
@@ -327,6 +328,7 @@ def ext {c c' : Cone F} (φ : c.pt ≅ c'.pt)
 attribute [to_dual existing extInv_inv_hom] ext_hom_hom
 attribute [to_dual existing extInv_hom_hom] ext_inv_hom
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option linter.translate.warnInvalid false in
 /-- To give an isomorphism between cones, it suffices to give an
 isomorphism between their vertices which commutes with the cone maps. -/
@@ -342,6 +344,7 @@ attribute [to_dual existing ext_inv_hom] extInv_hom_hom
 
 attribute [aesop apply safe (rule_sets := [CategoryTheory])] Limits.Cone.ext Limits.Cocone.ext
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option linter.translate.warnInvalid false in
 /-- Eta rule for cones. -/
 @[to_dual (attr := simps!) /-- Eta rule for cocones. -/]
@@ -368,6 +371,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 def extendHom (s : Cone F) {X : C} (f : X ⟶ s.pt) : s.extend f ⟶ s where
   hom := f
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option linter.translate.warnInvalid false in
 /-- Extending a cone by the identity does nothing. -/
 @[to_dual (attr := simps!) /-- Extending a cocone by the identity does nothing. -/]
@@ -377,6 +381,7 @@ def extendId (s : Cone F) : s.extend (𝟙 s.pt) ≅ s :=
 attribute [to_dual existing extendId_inv_hom] extendId_hom_hom
 attribute [to_dual existing extendId_hom_hom] extendId_inv_hom
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option linter.translate.warnInvalid false in
 /-- Extending a cone by a composition is the same as extending the cone twice. -/
 @[to_dual (attr := simps!) (reorder := f g)
@@ -388,6 +393,7 @@ def extendComp (s : Cone F) {X Y : C} (f : X ⟶ Y) (g : Y ⟶ s.pt) :
 attribute [to_dual existing extendComp_inv_hom] extendComp_hom_hom
 attribute [to_dual existing extendComp_hom_hom] extendComp_inv_hom
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option linter.translate.warnInvalid false in
 /-- A cone extended by an isomorphism is isomorphic to the original cone. -/
 @[to_dual (attr := simps)
@@ -416,6 +422,7 @@ def postcompose {G : J ⥤ C} (α : F ⟶ G) : Cone F ⥤ Cone G where
       π := c.π ≫ α }
   map f := { hom := f.hom }
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option linter.translate.warnInvalid false in
 /-- Postcomposing a cone by the composite natural transformation `α ≫ β` is the same as
 postcomposing by `α` and then by `β`. -/
@@ -429,6 +436,7 @@ def postcomposeComp {G H : J ⥤ C} (α : F ⟶ G) (β : G ⟶ H) :
 attribute [to_dual existing precomposeComp_inv_app_hom] postcomposeComp_hom_app_hom
 attribute [to_dual existing precomposeComp_hom_app_hom] postcomposeComp_inv_app_hom
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option linter.translate.warnInvalid false in
 /-- Postcomposing by the identity does not change the cone up to isomorphism. -/
 @[to_dual (attr := simps!)
@@ -439,6 +447,7 @@ def postcomposeId : postcompose (𝟙 F) ≅ 𝟭 (Cone F) :=
 attribute [to_dual existing precomposeId_inv_app_hom] postcomposeId_hom_app_hom
 attribute [to_dual existing precomposeId_hom_app_hom] postcomposeId_inv_app_hom
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- If `F` and `G` are naturally isomorphic functors, then they have equivalent categories of
 cones.
 -/
@@ -645,6 +654,7 @@ open CategoryTheory.Limits
 def mapCone (c : Cone F) : Cone (F ⋙ H) :=
   (Cone.functoriality F H).obj c
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option linter.translate.warnInvalid false in
 /-- The construction `mapCone` respects functor composition. -/
 @[to_dual (attr := simps!)
@@ -683,6 +693,7 @@ noncomputable def mapConeInvMapCone {F : J ⥤ D} (H : D ⥤ C) [IsEquivalence H
     mapConeInv H (mapCone H c) ≅ c :=
   (Limits.Cone.functorialityEquivalence F (asEquivalence H)).unitIso.symm.app c
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option linter.translate.warnInvalid false in
 /-- `functoriality F _ ⋙ postcompose (whisker_left F _)` simplifies to `functoriality F _`. -/
 @[to_dual (attr := simps!)
@@ -696,6 +707,7 @@ attribute [to_dual existing functorialityCompPrecompose_inv_app_hom]
 attribute [to_dual existing functorialityCompPrecompose_hom_app_hom]
   functorialityCompPostcompose_inv_app_hom
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option linter.translate.warnInvalid false in
 /-- For `F : J ⥤ C`, given a cone `c : Cone F`, and a natural isomorphism `α : H ≅ H'` for functors
 `H H' : C ⥤ D`, the postcomposition of the cone `H.mapCone` using the isomorphism `α` is
@@ -716,6 +728,7 @@ attribute [to_dual existing precomposeWhiskerLeftMapCocone_inv_hom]
 attribute [to_dual existing precomposeWhiskerLeftMapCocone_hom_hom]
   postcomposeWhiskerLeftMapCone_inv_hom
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option linter.translate.warnInvalid false in
 /--
 `mapCone` commutes with `postcompose`. In particular, for `F : J ⥤ C`, given a cone `c : Cone F`, a
@@ -735,6 +748,7 @@ def mapConePostcompose {α : F ⟶ G} {c} :
 attribute [to_dual existing mapCoconePrecompose_inv_hom] mapConePostcompose_hom_hom
 attribute [to_dual existing mapCoconePrecompose_hom_hom] mapConePostcompose_inv_hom
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option linter.translate.warnInvalid false in
 /-- `mapCone` commutes with `postcomposeEquivalence` -/
 @[to_dual (attr := simps!) /-- `mapCocone` commutes with `precomposeEquivalence` -/]
@@ -748,6 +762,7 @@ attribute [to_dual existing mapCoconePrecomposeEquivalenceFunctor_inv_hom]
 attribute [to_dual existing mapCoconePrecomposeEquivalenceFunctor_hom_hom]
   mapConePostcomposeEquivalenceFunctor_inv_hom
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option linter.translate.warnInvalid false in
 /-- `mapCone` commutes with `whisker` -/
 @[to_dual (attr := simps!) /-- `mapCocone` commutes with `whisker` -/]
@@ -926,6 +941,7 @@ open CategoryTheory.Limits
 
 variable {F : J ⥤ C} (G : C ⥤ D)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option linter.translate.warnInvalid false in
 /-- The opposite cocone of the image of a cone is the image of the opposite cocone. -/
 @[to_dual (attr := simps!)
