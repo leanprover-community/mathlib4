@@ -355,6 +355,11 @@ theorem exists_self_dvd_radical_pow (ha : a ≠ 0) : ∃ n, a ∣ radical a ^ n 
       · rw [pow_succ]
         exact dvd_mul_of_dvd_left hc _
 
+section StrongNormalizationMonoid
+
+variable {N : Type*} [CommMonoidWithZero N] [StrongNormalizationMonoid N]
+  [UniqueFactorizationMonoid N] {a b : N}
+
 theorem normalize_radical : normalize (radical a) = radical a := by
   induction a using induction_on_prime with
   | h₁ => simp
@@ -362,7 +367,7 @@ theorem normalize_radical : normalize (radical a) = radical a := by
   | h₃ b p ne prime ih =>
     rcases prime.irreducible.dvd_or_isRelPrime (n := b) with dvd | coprime
     · rwa [radical_mul_of_dvd dvd]
-    · rw [radical_mul coprime, map_mul, ih, radical_of_prime prime, normalize_idem]
+    · rw [radical_mul coprime, normalize_mul, ih, radical_of_prime prime, normalize_idem]
 
 theorem radical_normalize : radical (normalize a) = radical a := by
   induction a using induction_on_prime with
@@ -370,8 +375,9 @@ theorem radical_normalize : radical (normalize a) = radical a := by
   | h₂ x h => simp [radical_of_isUnit h, radical_of_isUnit ((associated_normalize x).isUnit h)]
   | h₃ b p ne prime ih =>
     rcases prime.irreducible.dvd_or_isRelPrime (n := b) with dvd | coprime
-    · rwa [radical_mul_of_dvd dvd, map_mul, radical_mul_of_dvd (map_dvd normalize dvd)]
-    · rw [radical_mul coprime, map_mul, radical_of_prime prime, ← ih,
+    · simpa [radical_mul_of_dvd dvd, normalize_mul, ← coe_normalizeHom,
+        radical_mul_of_dvd (map_dvd normalizeHom dvd)]
+    · rw [radical_mul coprime, normalize_mul, radical_of_prime prime, ← ih,
         radical_mul (by rwa [(normalize_associated p).isRelPrime_iff_left,
           (normalize_associated b).isRelPrime_iff_right]),
         radical_of_prime ((associated_normalize p).prime prime), normalize_idem]
@@ -387,10 +393,12 @@ theorem prime_radical_iff_isPrimePow_normalize (ha : a ≠ 0) :
       simp [radical_of_isUnit hn] at h
     refine ⟨radical a, n, h, n_pos, Associated.eq_of_normalized ?_ ?_ (normalize_idem a)⟩
     · exact hn.symm.trans (associated_normalize a)
-    · rw [map_pow, normalize_radical]
+    · rw [← coe_normalizeHom, map_pow, coe_normalizeHom, normalize_radical]
   · rcases h with ⟨p, n, prime, ne, h⟩
     rwa [← radical_normalize, ← h, radical_pow _ (by lia), radical_of_prime prime,
       (normalize_associated p).prime_iff]
+
+end StrongNormalizationMonoid
 
 end UniqueFactorizationMonoid
 
