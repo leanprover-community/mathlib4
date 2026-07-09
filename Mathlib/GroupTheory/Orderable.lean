@@ -78,12 +78,6 @@ theorem IsLeftOrderable.of_mulEquiv [IsLeftOrderable G] (e : G ≃* H) : IsLeftO
 theorem MulEquiv.isLeftOrderable_congr (e : G ≃* H) : IsLeftOrderable G ↔ IsLeftOrderable H :=
   ⟨fun _ ↦ .of_mulEquiv e, fun _ ↦ .of_mulEquiv e.symm⟩
 
--- set_option trace.profiler true in
--- set_option trace.profiler.useHeartbeats true in
-set_option trace.Meta.synthInstance true in
-variable [LinearOrder G] [LinearOrder H] [MulLeftStrictMono G] [MulLeftMono H] in
-#synth IsLeftOrderable (Lex (G × H))
-
 /-- The direct product of two left-orderable groups is left-orderable. -/
 instance Prod.instIsLeftOrderable [IsLeftOrderable G] [IsLeftOrderable H] : IsLeftOrderable (G × H)
     := by
