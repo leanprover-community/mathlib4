@@ -199,7 +199,7 @@ lemma exactAt_op {K : CochainComplex C ℤ} {n : ℤ} (hK : K.ExactAt n)
     (by grind [next])] at hK
 
 lemma acyclic_op {K : CochainComplex C ℤ} (hK : K.Acyclic) :
-   ((opEquivalence C).functor.obj (op K)).Acyclic :=
+    ((opEquivalence C).functor.obj (op K)).Acyclic :=
   fun n ↦ exactAt_op (hK (-n)) n
 
 end CochainComplex

@@ -58,7 +58,8 @@ noncomputable def coinvariantsTensorResolutionIso (hg : ∀ x, x ∈ Subgroup.zp
       moduleCatChainComplex A g :=
   HomologicalComplex.Hom.isoOfComponents
     (fun _ => (coinvariantsTprodLeftRegularLEquiv A.ρ).toModuleIso) fun i j h =>
-    coinvariantsTensor_hom_ext (LinearMap.ext fun a => lhom_ext' fun g => LinearMap.ext_ring (by
+    coinvariantsTensor_hom_ext (LinearMap.ext fun a =>
+      MonoidAlgebra.lhom_ext' fun g => LinearMap.ext_ring (by
     subst h
     by_cases hj : Even (j + 1)
     · simpa [hj, coinvariantsTensorMk, ofCoinvariantsTprodLeftRegular, Rep.norm,
