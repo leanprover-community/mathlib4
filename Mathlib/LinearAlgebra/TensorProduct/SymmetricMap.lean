@@ -257,23 +257,23 @@ variable {R M N P ι}
 /-- If `g` is a symmetric multilinear map from `ι → M` to `N`, and `f` is a linear map
 `N → P`, then `f ∘ g` is again a symmetric multilinear map. -/
 def compSymmetricMap
-    (f : N →ₗ[R] P) (g : SymmetricMap R M N ι) : SymmetricMap R M P ι :=
+    (f : N →ₗ[R] P) (g : M [Σ^ι]→ₗ[R] N) : M [Σ^ι]→ₗ[R] P :=
   ⟨f.compMultilinearMap g, fun x e ↦ f.congr_arg <| g.map_perm e x⟩
 
 @[simp] lemma compSymmetricMap_coe
-    (f : N →ₗ[R] P) (g : SymmetricMap R M N ι) :
+    (f : N →ₗ[R] P) (g : M [Σ^ι]→ₗ[R] N) :
     ⇑(f.compSymmetricMap g) = ⇑f ∘ ⇑g :=
   rfl
 
 lemma compSymmetricMap_apply
-    (f : N →ₗ[R] P) (g : SymmetricMap R M N ι) (x : ι → M) :
+    (f : N →ₗ[R] P) (g : M [Σ^ι]→ₗ[R] N) (x : ι → M) :
     f.compSymmetricMap g x = f (g x) :=
   rfl
 
 variable (M ι) in
 /-- `compSymmetricMap` as an additive monoid homomorphism, for fixed `f : N →ₗ[R] P`. -/
 def compSymmetricMapAddHom (f : N →ₗ[R] P) :
-    SymmetricMap R M N ι →+ SymmetricMap R M P ι :=
+    (M [Σ^ι]→ₗ[R] N) →+ (M [Σ^ι]→ₗ[R] P) :=
   { toFun := compSymmetricMap f
     map_zero' := SymmetricMap.ext fun _ ↦ f.map_zero
     map_add' _ _ := SymmetricMap.ext fun _ ↦ f.map_add _ _ }
@@ -286,7 +286,7 @@ variable (S : Type*) [Semiring S] [Module S N] [SMulCommClass R S N]
   [Module S P] [SMulCommClass R S P] [CompatibleSMul N P S R]
 
 /-- `compSymmetricMap` as an `S`-linear map, for fixed `f : N →ₗ[R] P`. -/
-def compSymmetricMapₗ (f : N →ₗ[R] P) : SymmetricMap R M N ι →ₗ[S] SymmetricMap R M P ι :=
+def compSymmetricMapₗ (f : N →ₗ[R] P) : (M [Σ^ι]→ₗ[R] N) →ₗ[S] (M [Σ^ι]→ₗ[R] P) :=
   { __ := compSymmetricMapAddHom M ι f
     map_smul' c g := SymmetricMap.ext fun x ↦ map_smul_of_tower f c (g x) }
 
