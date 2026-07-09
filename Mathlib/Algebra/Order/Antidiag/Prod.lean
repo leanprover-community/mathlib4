@@ -231,7 +231,7 @@ namespace HasMulAntidiagonal
 @[to_additive (attr := simps) sigmaAntidiagonalEquivProd
 /-- The disjoint union of antidiagonals `Σ (n : A), antidiagonal n` is equivalent to the
   product `A × A`. This is such an equivalence, obtained by mapping `(n, (k, l))` to `(k, l)`. -/]
-def sigmaMulAntidiagonalEquivProd [Monoid A] [HasMulAntidiagonal A] :
+def sigmaMulAntidiagonalEquivProd [Mul A] [HasMulAntidiagonal A] :
     (Σ n : A, mulAntidiagonal n) ≃ A × A where
   toFun x := x.2
   invFun x := ⟨x.1 * x.2, x, mem_mulAntidiagonal.mpr rfl⟩
@@ -243,15 +243,15 @@ def sigmaMulAntidiagonalEquivProd [Monoid A] [HasMulAntidiagonal A] :
 section
 
 variable {A : Type*}
-  [CommMonoid A] [PartialOrder A] [CanonicallyOrderedMul A]
+  [CommMagma A] [PartialOrder A] [CanonicallyOrderedMul A]
   [LocallyFiniteOrderBot A] [DecidableEq A]
 
-/-- In a canonically ordered multiplicative monoid, the mulAntidiagonal can be constructed by
+/-- In a canonically ordered multiplicative magma, the mulAntidiagonal can be constructed by
 filtering.
 
 Note that this is not an instance, as for sometimes a more efficient algorithm is available. -/
 @[to_additive
-/-- In a canonically ordered additive monoid, the antidiagonal can be construct by filtering.
+/-- In a canonically ordered additive magma, the antidiagonal can be construct by filtering.
 
 Note that this is not an instance, as for some times a more efficient algorithm is available. -/]
 abbrev mulAntidiagonalOfLocallyFinite : HasMulAntidiagonal A where
