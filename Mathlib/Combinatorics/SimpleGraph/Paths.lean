@@ -491,10 +491,8 @@ theorem IsPath.injOn_support_of_isPath_map (h : (p.map f).IsPath) :
 lemma IsCycle.getVert_injOn {p : G.Walk u u} (hpc : p.IsCycle) :
     Set.InjOn p.getVert (.Icc 1 p.length) := by
   intro n hn m hm hnm
-  suffices n - 1 = m - 1 by grind
-  rw [← p.cons_tail_eq hpc.not_nil] at hpc
-  rw [← length_tail_add_one <| p.not_nil_of_tail_not_nil <| not_nil_of_isCycle_cons hpc] at hn hm
-  exact cons_isCycle_iff _ _ |>.mp hpc |>.left.getVert_injOn (by grind) (by grind) (by simp_all)
+  have := hpc.isPath_tail.getVert_injOn (x₁ := n - 1) (x₂ := m - 1)
+  grind [getVert_tail, length_tail_add_one hpc.not_nil]
 
 lemma IsCycle.getVert_injOn' {p : G.Walk u u} (hpc : p.IsCycle) :
     Set.InjOn p.getVert (.Iio p.length) := by
