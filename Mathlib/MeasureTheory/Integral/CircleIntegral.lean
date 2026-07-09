@@ -327,7 +327,7 @@ theorem circleIntegrable_iff [NormedSpace ℂ E] {f : ℂ → E} {c : ℂ} (R : 
   · have H : ∀ {θ}, circleMap 0 R θ * I ≠ 0 := fun {θ} => by simp [h₀, I_ne_zero]
     simpa only [inv_smul_smul₀ H]
       using ((continuous_circleMap 0 R).aestronglyMeasurable.mul_const
-        I).aemeasurable.inv.aestronglyMeasurable.smul h.aestronglyMeasurable
+        I).aemeasurable.fun_inv.aestronglyMeasurable.fun_smul h.aestronglyMeasurable
   · simp [norm_smul, h₀]
 
 theorem ContinuousOn.circleIntegrable' {f : ℂ → E} {c : ℂ} {R : ℝ}
@@ -413,8 +413,7 @@ theorem _root_.TendstoUniformlyOn.tendsto_circleIntegral_of_continuousOn
     intro ε hε
     rcases exists_pos_mul_lt hε R with ⟨δ, hδ₀, hRδ⟩
     refine (h δ hδ₀).mono fun i hi x hx ↦ ?_
-    grw [hi (circleMap c R x) (by simp [hR])]
-    exact hRδ
+    grw [← hRδ, hi (circleMap c R x) (by simp [hR])]
 
 namespace circleIntegral
 
