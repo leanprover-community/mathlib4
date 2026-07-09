@@ -79,8 +79,8 @@ theorem MulEquiv.isLeftOrderable_congr (e : G ≃* H) : IsLeftOrderable G ↔ Is
   ⟨fun _ ↦ .of_mulEquiv e, fun _ ↦ .of_mulEquiv e.symm⟩
 
 /-- The direct product of two left-orderable groups is left-orderable. -/
-instance Prod.instIsLeftOrderable [IsLeftOrderable G] [IsLeftOrderable H] : IsLeftOrderable (G × H)
-    := by
+instance Prod.instIsLeftOrderable [IsLeftOrderable G] [IsLeftOrderable H] :
+    IsLeftOrderable (G × H) := by
   obtain ⟨_, _⟩ := exists_linearOrder_mulLeftStrictMono G
   obtain ⟨_, _⟩ := exists_linearOrder_mulLeftMono H
   exact .of_mulEquiv (ofLexMulEquiv (G × H))
