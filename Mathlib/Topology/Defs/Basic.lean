@@ -199,7 +199,7 @@ scoped notation (name := IsOpen_of) "IsOpen[" t "]" => @IsOpen _ t
 scoped notation (name := IsClosed_of) "IsClosed[" t "]" => @IsClosed _ t
 
 /-- Notation for `IsClopen` with respect to a non-standard topology. -/
-scoped[Topology] notation (name := IsClopen_of) "IsClopen[" t "]" => @IsClopen _ t
+scoped notation (name := IsClopen_of) "IsClopen[" t "]" => @IsClopen _ t
 
 /-- Notation for `closure` with respect to a non-standard topology. -/
 scoped notation (name := closure_of) "closure[" t "]" => @closure _ t
@@ -216,6 +216,10 @@ open Topology Lean.PrettyPrinter.Delaborator Delab.Noncanonical
 /-- Delaborator for `IsClosed[_]`. -/
 @[scoped app_delab IsClosed]
 meta def delabIsClosed : Delab := delabUnary 2 1 fun x ↦ `(IsClosed[$x])
+
+/-- Delaborator for `IsClopen[_]`. -/
+@[scoped app_delab IsClopen]
+meta def delabIsClopen : Delab := delabUnary 2 1 fun x ↦ `(IsClopen[$x])
 
 /-- Delaborator for `closure[_]`. -/
 @[scoped app_delab closure] meta def delabClosure : Delab := delabUnary 2 1 fun x ↦ `(closure[$x])
