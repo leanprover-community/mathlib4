@@ -93,7 +93,7 @@ instance (priority := 900) _root_.NormedAlgebra.complexToReal {A : Type*} [Semin
 
 @[continuity, fun_prop]
 theorem continuous_normSq : Continuous normSq := by
-  simpa [← Complex.normSq_eq_norm_sq] using continuous_norm (E := ℂ).pow 2
+  simpa [← Complex.normSq_eq_norm_sq] using continuous_norm (E := ℂ).fun_pow 2
 
 theorem nnnorm_eq_one_of_pow_eq_one {ζ : ℂ} {n : ℕ} (h : ζ ^ n = 1) (hn : n ≠ 0) : ‖ζ‖₊ = 1 :=
   (pow_left_inj₀ zero_le zero_le hn).1 <| by rw [← nnnorm_pow, h, nnnorm_one, one_pow]
@@ -118,6 +118,7 @@ theorem antilipschitz_equivRealProd : AntilipschitzWith (NNReal.sqrt 2) equivRea
   AddMonoidHomClass.antilipschitz_of_bound equivRealProdLm fun z ↦ by
     simpa only [Real.coe_sqrt, NNReal.coe_ofNat] using! norm_le_sqrt_two_mul_max z
 
+@[fun_prop]
 theorem isUniformEmbedding_equivRealProd : IsUniformEmbedding equivRealProd :=
   antilipschitz_equivRealProd.isUniformEmbedding lipschitz_equivRealProd.uniformContinuous
 
@@ -153,6 +154,7 @@ def reCLM : ℂ →L[ℝ] ℝ :=
 theorem continuous_re : Continuous re :=
   reCLM.continuous
 
+@[fun_prop]
 lemma uniformContinuous_re : UniformContinuous re :=
   reCLM.uniformContinuous
 
@@ -175,6 +177,7 @@ def imCLM : ℂ →L[ℝ] ℝ :=
 theorem continuous_im : Continuous im :=
   imCLM.continuous
 
+@[fun_prop]
 lemma uniformContinuous_im : UniformContinuous im :=
   imCLM.uniformContinuous
 

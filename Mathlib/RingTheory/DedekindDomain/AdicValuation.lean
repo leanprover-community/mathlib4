@@ -15,6 +15,7 @@ public import Mathlib.RingTheory.Valuation.Discrete.Basic
 
 /-!
 # Adic valuations on Dedekind domains
+
 Given a Dedekind domain `R` of Krull dimension 1 and a maximal ideal `v` of `R`, we define the
 `v`-adic valuation on `R` and its extension to the field of fractions `K` of `R`.
 We prove several properties of this valuation, including the existence of uniformizers.
@@ -90,7 +91,6 @@ theorem intValuationDef_if_pos {r : R} (hr : r = 0) : v.intValuationDef r = 0 :=
 theorem intValuationDef_zero : v.intValuationDef 0 = 0 :=
   if_pos rfl
 
-open scoped Classical in
 theorem intValuationDef_if_neg {r : R} (hr : r ≠ 0) :
     v.intValuationDef r = exp
         (-(Associates.mk v.asIdeal).count (Associates.mk (Ideal.span {r} : Ideal R)).factors : ℤ) :=
