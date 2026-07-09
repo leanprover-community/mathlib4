@@ -149,6 +149,7 @@ lemma projectiveFamilyContent_iUnion_le (hP : IsProjectiveMeasureFamily P)
 lemma projectiveFamilyContent_ne_top [∀ J, IsFiniteMeasure (P J)]
     (hP : IsProjectiveMeasureFamily P) :
     projectiveFamilyContent hP s ≠ ∞ := by
+  classical
   rw [projectiveFamilyContent_eq hP, projectiveFamilyFun]
   finiteness
 
