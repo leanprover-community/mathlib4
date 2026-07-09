@@ -61,7 +61,7 @@ open Function
 namespace Finset
 
 /-- The class of additive monoids with an antidiagonal. -/
-class HasAntidiagonal (A : Type*) [AddMonoid A] where
+class HasAntidiagonal (A : Type*) [Add A] where
   /-- The antidiagonal of an element `n` is the finset of pairs `(i, j)` such that
   `i + j = n`. -/
   antidiagonal : A → Finset (A × A)
@@ -73,7 +73,7 @@ export HasAntidiagonal (antidiagonal mem_antidiagonal)
 attribute [simp] mem_antidiagonal
 
 /-- The class of (multiplicative) monoids with a mulAntidiagonal. -/
-class HasMulAntidiagonal (A : Type*) [Monoid A] where
+class HasMulAntidiagonal (A : Type*) [Mul A] where
   /-- The mulAntidiagonal of an element `n` is the finset of pairs `(i, j)` such that
   `i * j = n`. -/
   mulAntidiagonal : A → Finset (A × A)
