@@ -742,9 +742,9 @@ theorem domRestrict_mrange (f : M →* N) : mrange (f.domRestrict S) = S.map f :
 @[deprecated (since := "2026-02-10")]
 alias _root_.AddMonoidHom.restrict_mrange := _root_.AddMonoidHom.domRestrict_mrange
 
-/-- A version of `MonoidHom.domRestrict` as an homomorphism. -/
+/-- A version of `MonoidHom.domRestrict` as a homomorphism. -/
 @[to_additive (attr := simps apply)
-  /-- A version of `AddMonoidHom.domRestrict` as an homomorphism. -/]
+  /-- A version of `AddMonoidHom.domRestrict` as a homomorphism. -/]
 def domRestrictHom {S : Type*} [SetLike S M] [SubmonoidClass S M] (M' : S) (A : Type*)
     [CommMonoid A] : (M →* A) →* (M' →* A) where
   toFun f := f.domRestrict M'
