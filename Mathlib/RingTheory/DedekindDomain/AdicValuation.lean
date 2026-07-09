@@ -758,9 +758,9 @@ theorem valuedAdicCompletion_def {x : adicCompletion K v} :
 @[simp] theorem valued_ofCompletion (y : (v.valuation K).Completion) :
     Valued.v (ofCompletion y : adicCompletion K v) = Valued.v y := rfl
 
-@[simp] theorem valued_coe (k : K) :
+theorem valued_coe (k : K) :
     Valued.v (↑k : adicCompletion K v) = v.valuation K k := by
-  rw [← valued_toCompletion, coe_toCompletion]; exact Valued.valuedCompletion_apply _
+  simp
 
 @[ext] theorem ext {x y : adicCompletion K v} (h : x.toCompletion = y.toCompletion) : x = y := by
   cases x; cases y; exact congrArg ofCompletion h
@@ -772,14 +772,14 @@ theorem valuedAdicCompletion_def {x : adicCompletion K v} :
 @[simp] lemma toCompletion_mul (x y : adicCompletion K v) :
     (x * y).toCompletion = x.toCompletion * y.toCompletion := rfl
 
-@[simp, norm_cast] lemma coe_zero : ((0 : K) : adicCompletion K v) = 0 := by
+@[norm_cast] lemma coe_zero : ((0 : K) : adicCompletion K v) = 0 := by
   apply adicCompletion.ext; simp
-@[simp, norm_cast] lemma coe_one : ((1 : K) : adicCompletion K v) = 1 := by
+@[norm_cast] lemma coe_one : ((1 : K) : adicCompletion K v) = 1 := by
   apply adicCompletion.ext; simp
-@[simp, norm_cast] lemma coe_add (x y : K) :
+@[norm_cast] lemma coe_add (x y : K) :
     ((x + y : K) : adicCompletion K v) = ↑x + ↑y := by
   apply adicCompletion.ext; simp [UniformSpace.Completion.coe_add]
-@[simp, norm_cast] lemma coe_mul (x y : K) :
+@[norm_cast] lemma coe_mul (x y : K) :
     ((x * y : K) : adicCompletion K v) = ↑x * ↑y := by
   apply adicCompletion.ext; simp [UniformSpace.Completion.coe_mul]
 
