@@ -1409,8 +1409,7 @@ theorem exists_orthogonal_basis [hK : Invertible (2 : K)] {B : LinearMap.BilinFo
   let B' := B.domRestrict₁₂ ((K ∙ x).orthogonalBilin B) ((K ∙ x).orthogonalBilin B)
   obtain ⟨v', hv₁⟩ := ih (hB₂.domRestrict _ : B'.IsSymm) (Nat.succ.inj hd)
   -- concatenate `x` with the basis obtained by induction
-  let b :=
-    Basis.mkFinCons x v'
+  let b := Basis.mkFinCons x v'
       (by
         rintro c y hy hc
         rw [add_eq_zero_iff_neg_eq] at hc
