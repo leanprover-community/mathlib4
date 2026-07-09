@@ -113,36 +113,35 @@ lemma netMaxcard_antitone (T : X → X) (F : Set X) (n : ℕ) :
     Antitone fun U : SetRel X X ↦ netMaxcard T F U n :=
   fun _ _ U_V ↦ biSup_mono fun _ h ↦ h.of_entourage_subset U_V
 
-set_option backward.isDefEq.respectTransparency false in
 lemma netMaxcard_finite_iff (T : X → X) (F : Set X) (U : SetRel X X) (n : ℕ) :
     netMaxcard T F U n < ⊤ ↔
     ∃ s : Finset X, IsDynNetIn T F U n s ∧ (s.card : ℕ∞) = netMaxcard T F U n := by
   apply Iff.intro <;> intro h
-  · obtain ⟨k, k_max⟩ := WithTop.ne_top_iff_exists.1 h.ne
+  · obtain ⟨k, k_max⟩ := ENat.ne_top_iff_exists.mp h.ne
     rw [← k_max]
-    simp only [ENat.some_eq_coe, Nat.cast_inj]
+    simp only [Nat.cast_inj]
     -- The criterion we want to use is `Nat.sSup_mem`. We rewrite `netMaxcard` with an `sSup`,
     -- then check its `BddAbove` and `Nonempty` hypotheses.
     have : netMaxcard T F U n
       = sSup (WithTop.some '' Finset.card '' {s : Finset X | IsDynNetIn T F U n s}) := by
       rw [netMaxcard, ← image_comp, sSup_image]
       simp only [mem_setOf_eq, ENat.some_eq_coe, Function.comp_apply]
+      exact biSup_congr (fun _ _ ↦ rfl)
     rw [this] at k_max
     have h_bdda : BddAbove (Finset.card '' {s : Finset X | IsDynNetIn T F U n s}) := by
       refine ⟨k, mem_upperBounds.2 ?_⟩
       simp only [mem_image, mem_setOf_eq, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
       intro s h
-      rw [← WithTop.coe_le_coe, k_max]
+      rw [← ENat.coe_le_coe, k_max]
       apply le_sSup
-      simp only [ENat.some_eq_coe, mem_image, mem_setOf_eq, Nat.cast_inj, exists_eq_right]
-      exact Filter.frequently_principal.mp fun a ↦ a h rfl
+      exact Filter.frequently_principal.mp fun a ↦ a (by simpa using ⟨_, h, rfl⟩) rfl
     have h_nemp : (Finset.card '' {s : Finset X | IsDynNetIn T F U n s}).Nonempty := by
       refine ⟨0, ?_⟩
       simp only [mem_image, mem_setOf_eq, Finset.card_eq_zero, exists_eq_right, Finset.coe_empty]
       exact isDynNetIn_empty
-    rw [← WithTop.coe_sSup' h_bdda, ENat.some_eq_coe, Nat.cast_inj] at k_max
+    rw [← WithTop.coe_sSup' h_bdda] at k_max
     have key := Nat.sSup_mem h_nemp h_bdda
-    rw [← k_max, mem_image] at key
+    rw [← Nat.cast_inj.mp k_max, mem_image] at key
     simp only [mem_setOf_eq] at key
     exact key
   · obtain ⟨s, _, s_card⟩ := h
