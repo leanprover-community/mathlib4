@@ -505,7 +505,6 @@ theorem _root_.BoundedVariationOn.of_finite {E} [PseudoMetricSpace E] (f : α �
   simpa using BoundedVariationOn.of_finset f s.toFinite.toFinset
 
 /-! ### Composition of bounded variation functions with monotone functions -/
-
 section Monotone
 
 variable {β : Type*} [LinearOrder β]
