@@ -167,6 +167,15 @@ definition also applies to rectangular matrices, where `Associated` is not avail
 def RowEquivalent (A B : Matrix m n R) : Prop :=
   ∃ g : GL m R, B = (g : Matrix m m R) * A
 
+lemma rowEquivalent_iff_associated_op_op {A B : Matrix m m R} :
+    RowEquivalent A B ↔ Associated (MulOpposite.op A) (MulOpposite.op B) := by
+  constructor
+  · rintro ⟨g, rfl⟩
+    exact ⟨Units.opEquiv.symm (MulOpposite.op g), rfl⟩
+  · rintro ⟨u, h⟩
+    refine ⟨(Units.opEquiv u).unop, ?_⟩
+    simpa using (congrArg MulOpposite.unop h).symm
+
 lemma RowEquivalent.refl (A : Matrix m n R) : RowEquivalent A A := by
   refine ⟨1, ?_⟩
   simp
