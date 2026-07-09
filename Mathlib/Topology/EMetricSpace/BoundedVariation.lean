@@ -477,8 +477,7 @@ theorem image_range_of_monotone (f : α → E) {u : ℕ → α} (hu : Monotone u
         forall_apply_eq_imp_iff₂]
         refine ⟨⟨n, by simp⟩, fun a ha ↦ hu ha⟩
       · simp [IsLeast, hu n.le_succ]
-    _ = _ := by
-      simp [Finset.sum_range_succ, ih]
+    _ = _ := by simp [Finset.sum_range_succ, ih]
 
 /-- A function valued in a metric space has bounded variation on any `Finset` (the finiteness of
 the space's distances makes the total variation finite). -/
