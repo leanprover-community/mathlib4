@@ -608,7 +608,7 @@ end Nat
 
 namespace Nat.Primrec'
 
-open List.Vector Primrec
+open List.Vector
 
 theorem to_prim {n f} (pf : @Nat.Primrec' n f) : Primrec f := by
   induction pf with

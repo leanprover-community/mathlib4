@@ -21,7 +21,7 @@ We define the pointwise category structure on indexed families of objects in a c
 
 namespace CategoryTheory
 
-open Functor
+open CategoryTheory.Functor
 
 universe w₀ w₁ w₂ v₁ v₂ v₃ u₁ u₂ u₃
 

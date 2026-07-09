@@ -19,7 +19,7 @@ This equivalence is characterized in both directions.
 @[expose] public section
 
 namespace CategoryTheory.Join
-open Opposite Functor
+open Opposite CategoryTheory.Functor
 
 universe v₁ v₂ u₁ u₂
 
