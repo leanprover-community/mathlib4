@@ -357,6 +357,10 @@ lemma extension_eq_zero_iff {x : Completion K} : v.extension x = 0 ↔ x = 0 := 
     simpa only [extensionValuation_toFun, map_eq_zero]
   rw [Valuation.zero_iff]
 
+lemma extensionValuation_le_iff_extension_le {x y : Completion K} :
+    v.extensionValuation x ≤ v.extensionValuation y ↔ v.extension x ≤ v.extension y :=
+  embedding_strictMono (f := ofClass v).le_iff_le
+
 lemma exists_coe_eq_v (x : Completion K) : ∃ r : K, v.extensionValuation x = v r := by
   rcases eq_or_ne x 0 with (rfl | h)
   · exact ⟨0, v.extensionValuation_apply_coe 0⟩
@@ -373,15 +377,8 @@ lemma exists_coe_eq_v (x : Completion K) : ∃ r : K, v.extensionValuation x = v
       simp_rw [eq_comm (a := v.extension _)]
       grind
 
-lemma exist_foo (x : Completion K) : ∀ U ∈ 𝓝 x, ∃ r : K, (r : Completion K) ∈ U ∧
-  v.extensionValuation x = v r := by
-  sorry
-
-lemma exist_foo₂ (x y : Completion K) : ∀ U ∈ 𝓝 (x, y),
-  ∃ r s : K, ((r : Completion K), (s : Completion K)) ∈ U ∧ v.extensionValuation x = v r ∧ v.extensionValuation y = v s := by
-  sorry
-
-lemma exists_nhds (x : Completion K) (h : x ≠ 0) : v.extensionValuation ⁻¹' {v.extensionValuation x} ∈ 𝓝 x := by
+lemma exists_nhds {x : Completion K} (h : x ≠ 0) :
+    v.extensionValuation ⁻¹' {v.extensionValuation x} ∈ 𝓝 x := by
   have : v.extensionValuation ⁻¹' {v.extensionValuation x} = v.extension ⁻¹' {v.extension x} := by
     simp only [extensionValuation, coe_mk, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk,
       Function.comp_apply, preimage_comp]
@@ -393,13 +390,42 @@ lemma exists_nhds (x : Completion K) (h : x ≠ 0) : v.extensionValuation ⁻¹'
   exact (continuous_extension v).continuousAt.preimage_mem_nhds
     (WithZeroTopology.singleton_mem_nhds_of_ne_zero h')
 
+lemma exist_foo {x : Completion K} {U : Set (Completion K)} (hU : U ∈ 𝓝 x) :
+    ∃ r : K, (r : Completion K) ∈ U ∧ v.extensionValuation x = v r := by
+  by_cases h : x = 0
+  · use 0
+    simp only [h, Completion.coe_zero, map_zero, and_true] at ⊢ hU
+    exact mem_of_mem_nhds hU
+  · have hV := Filter.inter_mem hU (v.exists_nhds h)
+    obtain ⟨r, hr1, hr2⟩ := DenseRange.mem_nhds UniformSpace.Completion.denseRange_coe hV
+    use r, hr1
+    simpa using hr2.symm
+
+lemma exist_foo₂ {x y : Completion K} {U : Set (Completion K × Completion K)} (hU : U ∈ 𝓝 (x, y)) :
+    ∃ r s : K, ((r : Completion K), (s : Completion K)) ∈ U ∧
+    v.extensionValuation x = v r ∧ v.extensionValuation y = v s := by
+  rw [mem_nhds_prod_iff] at hU
+  obtain ⟨_, h₁, _, h₂, h⟩ := hU
+  obtain ⟨r, hr, hvr⟩ := v.exist_foo h₁
+  obtain ⟨s, hs, hvs⟩ := v.exist_foo h₂
+  refine ⟨r, s, ?_, hvr, hvs⟩
+  rw [prod_subset_iff] at h
+  exact h _ hr _ hs
+
 lemma closure_image_coe_le : closure ((Prod.map (↑) (↑)) '' {(x, y) : K × K | v x ≤ v y}) =
-    {(x, y) : (Completion K) × (Completion K) | v.extensionValuation x ≤ v.extensionValuation y} := by
-  ext ⟨x, y⟩
-  rw [mem_closure_iff_nhds']
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · sorry
-  · sorry
+    {(x, y) | v.extensionValuation x ≤ v.extensionValuation y} := by
+  apply subset_antisymm
+  · rw [IsClosed.closure_subset_iff]
+    · simp
+    · simpa [extensionValuation_le_iff_extension_le] using OrderClosedTopology.isClosed_le'.preimage
+        (v.continuous_extension.prodMap v.continuous_extension)
+  · intro ⟨x, y⟩ h
+    rw [mem_closure_iff]
+    intro U hU hxy
+    simp only [mem_setOf_eq] at h
+    obtain ⟨x0, y0, hU0, ⟨hvx, hvy⟩⟩ := v.exist_foo₂ (hU.mem_nhds hxy)
+    use ⟨x0, y0⟩, hU0
+    simpa [hvx, hvy] using h
 
 -- Bourbaki CA VI §5 no.3 Proposition 5 (d)
 theorem closure_coe_completion_v_lt {γ : Γ₀ˣ} :
@@ -582,30 +608,8 @@ lemma foo_symm_star [Ring R] [temp : ValuativeRel R] [top : TopologicalSpace R]
     (v : Valuation R Γ₀) [v.Compatible] (x : R) (γ : (ValueGroup₀ (.ofClass v))ˣ) :
     v.restrict x < γ ↔ (valuation R) (x) < (orderMonoidIso v).symm γ := by rw [foo_symm]
 
-example (a b c : ℝ) : a = b → (c < a ↔ c < b) := by
- intro h
- rw [h]
-
-open ValueGroupWithZero in
-theorem IsValuativeTopology.mk_valuation [Ring R] [ValuativeRel R]
-    [TopologicalSpace R] (v : Valuation R Γ₀) [v.Compatible]
-    (H : ∀ {s : Set R} {x : R}, s ∈ 𝓝 x ↔ ∃ (γ : (ValueGroup₀ (.ofClass v))ˣ),
-    (fun (x₁ : R) ↦ x + x₁) '' {z : R | v.restrict z < γ} ⊆ s) :
-    IsValuativeTopology R := by
-  constructor
-  refine fun {s x} ↦ ⟨fun h_mem ↦ ?_, fun ⟨γ, hγ⟩ ↦
-    H.mpr ⟨Units.mk0 ((orderMonoidIso v) γ) (by simp), subset_trans (by simp) hγ⟩⟩
-  obtain ⟨γ, hγ⟩ := H.mp h_mem
-  exact ⟨Units.mk0 ((orderMonoidIso v).symm γ) (by simp), subset_trans (by simp) hγ⟩
-
-theorem IsValuativeTopology.mk₀_valuation [Ring R] [ValuativeRel R] [TopologicalSpace R]
-    (v : Valuation R Γ₀) [v.Compatible]
-    (H : ∀ {s : Set R} {x : R}, s ∈ 𝓝 x ↔ ∃ (γ : (ValueGroup₀ (.ofClass v))ˣ),
-    (fun (x₁ : R) ↦ x + x₁) '' {z : R | v.restrict z < γ} ⊆ s) :
-    IsValuativeTopology R := IsValuativeTopology.mk_valuation v (fun {s x} ↦ by rw [H])
-
-
-theorem foo (x : Completion K) (γ : (ValueGroup₀ (.ofClass v))ˣ) : v.extensionValuation.restrict x <
+theorem foo' (x : Completion K) (γ : (ValueGroup₀ (.ofClass v))ˣ) :
+    v.extensionValuation.restrict x <
     ((Units.map v.valueGroup₀_equiv_extensionValuation.toMonoidHom) γ).1 ↔
     embedding (v.extension x) < embedding γ.1 := by
   simp only [MulEquiv.toMonoidHom_eq_coe, Units.coe_map, MonoidHom.coe_coe]
@@ -633,20 +637,11 @@ theorem foo (x : Completion K) (γ : (ValueGroup₀ (.ofClass v))ˣ) : v.extensi
         Valuation.embedding_restrict, WithZero.coe_lt_coe, Subtype.mk_lt_mk,
         ← Units.val_lt_val, Units.val_mk0]
         convert embedding_strictMono (f := (.ofClass v)).lt_iff_lt
-      · simp only [MonoidWithZeroHom.coe_ofClass, extensionValuation_apply_coe, map_eq_zero, ← ne_eq]
+      · simp only [MonoidWithZeroHom.coe_ofClass, extensionValuation_apply_coe, map_eq_zero,
+          ← ne_eq]
         apply_fun v
         simp [hy]
 
-
--- 2. IsValuativeTopology
-
--- 3. IsEquiv for extensions of IsEquiv
-
-
--- need a intro method of IsValuativeTopology only talk about nbhd of zero (with uniform add group)
--- refactor file Mathlib.Topology.Algebra.Valued.ValuativeRel
--- theorem IsValuativeTopology.mk₀ : IsValuativeTopology := sorry
--- given any valuation compatible, can be checked using this valuation
 instance UniformSpace.Completion.isValuativeTopology : IsValuativeTopology (Completion K) := by
   apply IsValuativeTopology.of_zero
   intro s
@@ -684,7 +679,8 @@ instance UniformSpace.Completion.isValuativeTopology : IsValuativeTopology (Comp
             Valuation.embedding_restrict, WithZero.coe_lt_coe, Subtype.mk_lt_mk,
             ← Units.val_lt_val, Units.val_mk0]
             convert embedding_strictMono (f := (.ofClass v)).lt_iff_lt
-          · simp only [MonoidWithZeroHom.coe_ofClass, extensionValuation_apply_coe, map_eq_zero, ← ne_eq]
+          · simp only [MonoidWithZeroHom.coe_ofClass, extensionValuation_apply_coe, map_eq_zero,
+              ← ne_eq]
             apply_fun v
             simp [hy]
     refine ⟨fun ⟨γ, h⟩ ↦ ?_, fun ⟨γ, h⟩ ↦ ?_⟩
@@ -706,30 +702,23 @@ instance UniformSpace.Completion.isValuativeTopology : IsValuativeTopology (Comp
   convert! v.hasBasis_nhds_zero.hasBasis_of_isDenseInducing Completion.isDenseInducing_coe
   simp [Valuation.restrict_lt_iff_lt_embedding]
 
--- 1. v.extensionValuation compatible with ValuativeRel for any v
-
-
 @[simp]
 theorem Valuation.extensionValuation.isEquiv_iff :
     v.extensionValuation.IsEquiv v'.extensionValuation := by
-  have := isEquiv v v'
   intro x y
-  apply UniformSpace.Completion.induction_on₂ (p := fun x y ↦ v.extensionValuation x ≤
-    v.extensionValuation y ↔ v'.extensionValuation x ≤ v'.extensionValuation y)
-  · sorry -- union of closed
-  · simpa
+  calc
+    _ ↔ (x, y) ∈ closure ((Prod.map (↑) (↑)) '' {(x, y) : K × K | v x ≤ v y}) := by
+      simp [closure_image_coe_le]
+    _ ↔ (x, y) ∈ closure ((Prod.map (↑) (↑)) '' {(x, y) : K × K | v' x ≤ v' y}) := by
+      rw [iff_iff_eq]
+      congr
+      ext
+      simpa using isEquiv v v' _ _
+    _ ↔ _ := by simp [closure_image_coe_le]
 
-instance Valuation.extensionValuation.compatible : v.extensionValuation.Compatible := by sorry
-
-  -- constructor
-  -- intro x y
-  -- obtain ⟨x', hx'⟩ := v.exists_apply_eq_extensionValuation_apply x
-  -- obtain ⟨y', hy'⟩ := v.exists_apply_eq_extensionValuation_apply y
-  -- calc
-  -- _ ↔ (x' : Completion K) ≤ᵥ y' := by sorry
-  -- _ ↔ x' ≤ᵥ y' := by sorry
-  -- _ ↔ v x' ≤ v y' := vle_iff_le v
-  -- _ ↔ _ := by rw [hx', hy']
+instance Valuation.extensionValuation.compatible : v.extensionValuation.Compatible := by
+  apply IsEquiv.compatible (v₁ := (valuation K).extensionValuation)
+  simp
 
 lemma extensionValuation_surjective_iff :
     Function.Surjective (v.extensionValuation : Completion K → Γ₀) ↔

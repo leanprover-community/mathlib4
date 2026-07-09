@@ -164,8 +164,8 @@ end IsValuativeTopology
 open IsValuativeTopology
 
 variable [IsValuativeTopology R]
-namespace Valuation
 
+namespace Valuation
 
 lemma mem_nhds_iff {s : Set R} {x : R} : s ∈ 𝓝 x ↔
     ∃ γ : (ValueGroup₀ (.ofClass v))ˣ, { z | v.restrict (z - x) < γ.val } ⊆ s := by
