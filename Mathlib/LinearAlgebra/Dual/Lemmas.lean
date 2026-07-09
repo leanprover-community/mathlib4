@@ -1072,10 +1072,14 @@ variable (R A : Type*) (M : Type*) (N : Type*)
 variable {ι κ : Type*}
 variable [DecidableEq ι] [DecidableEq κ]
 variable [Fintype ι] [Fintype κ]
-
+open TensorProduct
 open TensorProduct LinearMap
 
 attribute [local ext] TensorProduct.ext
+
+open TensorProduct
+
+open LinearMap
 
 section
 
@@ -1120,4 +1124,6 @@ theorem dualDistrib_apply (f : Dual A M) (g : Dual R N) (m : M) (n : N) :
     dualDistrib R A M N (f ⊗ₜ g) (m ⊗ₜ n) = g n • f m :=
   rfl
 
-end TensorProduct.AlgebraTensorModule
+end AlgebraTensorModule
+
+end TensorProduct
