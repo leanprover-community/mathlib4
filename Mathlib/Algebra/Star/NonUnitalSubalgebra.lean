@@ -1134,42 +1134,85 @@ end iSupLift
 
 section Center
 
-variable (R A)
-variable [IsScalarTower R A A] [SMulCommClass R A A]
+section NonUnitalNonAssocSemiring
+
+variable {R₀ A₀ : Type*}
+variable [CommSemiring R₀] [NonUnitalNonAssocSemiring A₀] [StarRing A₀] [Module R₀ A₀]
+variable (R₀ A₀)
+variable [IsScalarTower R₀ A₀ A₀] [SMulCommClass R₀ A₀ A₀]
 
 /-- The center of a non-unital star algebra is the set of elements which commute with every element.
 They form a non-unital star subalgebra. -/
-def center : NonUnitalStarSubalgebra R A where
-  toNonUnitalSubalgebra := NonUnitalSubalgebra.center R A
+def center : NonUnitalStarSubalgebra R₀ A₀ where
+  toNonUnitalSubalgebra := NonUnitalSubalgebra.center R₀ A₀
   star_mem' := Set.star_mem_center
 
 @[norm_cast]
-theorem coe_center : (center R A : Set A) = Set.center A :=
+theorem coe_center : (center R₀ A₀ : Set A₀) = Set.center A₀ :=
   rfl
 
 @[simp]
 theorem center_toNonUnitalSubalgebra :
-    (center R A).toNonUnitalSubalgebra = NonUnitalSubalgebra.center R A :=
+    (center R₀ A₀).toNonUnitalSubalgebra = NonUnitalSubalgebra.center R₀ A₀ :=
   rfl
 
-@[simp]
-theorem center_eq_top (A : Type*) [StarRing R] [NonUnitalCommSemiring A] [StarRing A] [Module R A]
-    [IsScalarTower R A A] [SMulCommClass R A A] [StarModule R A] : center R A = ⊤ :=
-  SetLike.coe_injective (Set.center_eq_univ A)
+variable {R₀ A₀}
 
-variable {R A}
+instance (priority := 75) instNonUnitalCommSemiring : NonUnitalCommSemiring (center R₀ A₀) where
+  __ := NonUnitalSubsemiringClass.toNonUnitalNonAssocSemiring (center R₀ A₀)
+  __ := Subsemigroup.center.commSemigroup.toCommMagma
+  mul_assoc := Subsemigroup.center.commSemigroup.mul_assoc
 
-instance instNonUnitalCommSemiring : NonUnitalCommSemiring (center R A) where
+end NonUnitalNonAssocSemiring
+
+section NonUnitalSemiring
+
+variable {R₀ A₀ : Type*}
+variable [CommSemiring R₀] [NonUnitalSemiring A₀] [StarRing A₀] [Module R₀ A₀]
+variable [IsScalarTower R₀ A₀ A₀] [SMulCommClass R₀ A₀ A₀]
+
+instance instNonUnitalCommSemiringOfNonUnitalSemiring : NonUnitalCommSemiring (center R₀ A₀) where
+  __ := NonUnitalSubsemiringClass.toNonUnitalSemiring (center R₀ A₀)
   mul_comm := Subsemigroup.center.commSemigroup.mul_comm
 
-instance instNonUnitalCommRing {A : Type*} [NonUnitalRing A] [StarRing A] [Module R A]
-    [IsScalarTower R A A] [SMulCommClass R A A] : NonUnitalCommRing (center R A) :=
-  fast_instance% NonUnitalSubalgebra.center.instNonUnitalCommRing
+-- no instance diamond
+example :
+    ((inferInstance : NonUnitalCommSemiring (center R₀ A₀)).toNonUnitalSemiring).toSemigroup.ppow =
+      (NonUnitalSubsemiringClass.toNonUnitalSemiring (center R₀ A₀)).toSemigroup.ppow := by
+  with_reducible_and_instances rfl
 
-theorem mem_center_iff {a : A} : a ∈ center R A ↔ ∀ b : A, b * a = a * b :=
+@[simp]
+theorem center_eq_top (A₀ : Type*) [StarRing R₀] [NonUnitalCommSemiring A₀] [StarRing A₀]
+    [Module R₀ A₀] [IsScalarTower R₀ A₀ A₀] [SMulCommClass R₀ A₀ A₀]
+    [StarModule R₀ A₀] : center R₀ A₀ = ⊤ :=
+  SetLike.coe_injective (Set.center_eq_univ A₀)
+
+theorem mem_center_iff {a : A₀} : a ∈ center R₀ A₀ ↔ ∀ b : A₀, b * a = a * b :=
   Subsemigroup.mem_center_iff
 
-protected theorem center_prod [IsScalarTower R B B] [SMulCommClass R B B] :
+end NonUnitalSemiring
+
+section NonUnitalRing
+
+variable {R₀ A₀ : Type*}
+variable [CommSemiring R₀] [NonUnitalRing A₀] [StarRing A₀] [Module R₀ A₀]
+variable [IsScalarTower R₀ A₀ A₀] [SMulCommClass R₀ A₀ A₀]
+
+instance instNonUnitalCommRing : NonUnitalCommRing (center R₀ A₀) where
+  __ := NonUnitalSubsemiringClass.toNonUnitalSemiring (center R₀ A₀)
+  __ := NonUnitalSubalgebra.center.instNonUnitalCommRing.toNonUnitalRing
+  mul_comm := Subsemigroup.center.commSemigroup.mul_comm
+
+-- no instance diamond
+example :
+    ((inferInstance : NonUnitalCommRing (center R₀ A₀)).toNonUnitalSemiring) =
+      (NonUnitalSubsemiringClass.toNonUnitalSemiring (center R₀ A₀)) := by
+  with_reducible_and_instances rfl
+
+end NonUnitalRing
+
+protected theorem center_prod [IsScalarTower R A A] [SMulCommClass R A A]
+  [IsScalarTower R B B] [SMulCommClass R B B] :
     center R (A × B) = prod (center R A) (center R B) :=
   SetLike.coe_injective Set.center_prod
 
