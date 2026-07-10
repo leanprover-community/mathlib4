@@ -397,12 +397,36 @@ theorem IsFredholm.congr {u u' : E →L[𝕜] F} (hu : IsFredholm u)
     IsFredholm u' := by
   rwa [← isFredholm_congr h]
 
-theorem IsFredholm.comp {f : E →L[𝕜] F} {f' : F →L[𝕜] G} (hf : IsFredholm f)
-    (hf' : IsFredholm f') : IsFredholm (f' ∘L f) := by
+theorem IsFredholm.comp {f' : F →L[𝕜] G} {f : E →L[𝕜] F} (hf' : IsFredholm f')
+    (hf : IsFredholm f) : IsFredholm (f' ∘L f) := by
   rw [isFredholm_iff_exists_isQuasiInverse] at *
   rcases hf with ⟨g, hg⟩
   rcases hf' with ⟨g', hg'⟩
   exact ⟨g ∘L g', hg'.comp hg⟩
+
+theorem IsFredholm.comp_iff_left {f : E →L[𝕜] F} {f' : F →L[𝕜] G} (hf : IsFredholm f) :
+    IsFredholm (f' ∘L f) ↔ IsFredholm f' := by
+  refine ⟨fun hcomp ↦ ?_, fun hf' ↦ hf'.comp hf⟩
+  rw [isFredholm_iff_exists_isQuasiInverse, toLinearMap_comp] at *
+  rcases hf with ⟨g, hg⟩
+  rcases hcomp with ⟨w, hw⟩
+  exact ⟨f ∘L w, .symm <| hg.symm.of_comp_left hw.symm⟩
+
+theorem IsFredholm.comp_iff_right {f : E →L[𝕜] F} {f' : F →L[𝕜] G} (hf' : IsFredholm f') :
+    IsFredholm (f' ∘L f) ↔ IsFredholm f := by
+  refine ⟨fun hcomp ↦ ?_, fun hf ↦ hf'.comp hf⟩
+  rw [isFredholm_iff_exists_isQuasiInverse, toLinearMap_comp] at *
+  rcases hf' with ⟨g', hg'⟩
+  rcases hcomp with ⟨w, hw⟩
+  exact ⟨w ∘L f', .symm <| hg'.symm.of_comp_right hw.symm⟩
+
+theorem _root_.ContinuousLinearEquiv.isFredholm (e : E ≃L[𝕜] F) :
+    IsFredholm (e : E →L[𝕜] F) :=
+  isFredholm_iff_exists_isQuasiInverse.mpr
+    ⟨e.symm, by simp [IsQuasiInverse, IsLeftQuasiInverse, IsRightQuasiInverse]⟩
+
+theorem IsFredholm.id : IsFredholm (.id 𝕜 E) :=
+    ContinuousLinearEquiv.refl 𝕜 E |>.isFredholm
 
 end Constructions
 
