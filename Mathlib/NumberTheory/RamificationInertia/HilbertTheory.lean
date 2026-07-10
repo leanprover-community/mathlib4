@@ -342,6 +342,13 @@ section basic
 
 variable (D : Type*) [Field D] [Algebra D L]
 
+/--
+Let `L/K` be a Galois extension of fields and let `P` be a prime ideal of `B`. The predicate that
+says that `D` is the decomposition field of `P` in `L/K`, that is the subfield fixed by the
+decomposition subgroup of `P`, that is the stabilizer of `P` in `Gal(L/K)`.
+
+Superseded by the ring-level `Ideal.IsDecompositionRing`.
+-/
 @[mk_iff, deprecated "Replaced by the ring-level predicate `Ideal.IsDecompositionRing`. \
 A decomposition field is recovered as the fraction field of a decomposition ring."
 (since := "2026-07-10")]
@@ -355,6 +362,13 @@ instance [MulSemiringAction Gal(L/K) B] [h : IsGaloisGroup (stabilizer Gal(L/K) 
 
 variable (E : Type*) [Field E] [Algebra E L]
 
+/--
+Let `L/K` be a Galois extension of fields and let `P` be a prime ideal of `B`. The predicate that
+says that `E` is the inertia field of `P` in `L/K`, that is the subfield fixed by the inertia
+subgroup of `P` in `Gal(L/K)`.
+
+Superseded by the ring-level `Ideal.IsInertiaRing`.
+-/
 @[mk_iff, deprecated "Replaced by the ring-level predicate `Ideal.IsInertiaRing`. \
 An inertia field is recovered as the fraction field of an inertia ring." (since := "2026-07-10")]
 class IsInertiaField [MulSemiringAction Gal(L/K) B] extends
@@ -414,6 +428,8 @@ end of_isGaloisGroup
 
 variable (D' : Type*) [Field D'] [Algebra D' L] (E' : Type*) [Field E'] [Algebra E' L]
 
+/-- Two decomposition fields are isomorphic. Superseded by
+`Ideal.IsDecompositionRing.ringEquiv`. -/
 @[deprecated Ideal.IsDecompositionRing.ringEquiv (since := "2026-07-10")]
 noncomputable def IsDecompositionField.ringEquiv [IsDecompositionField K L P D]
     [IsDecompositionField K L P D'] :
@@ -432,6 +448,7 @@ theorem IsDecompositionField.algebraMap_ringEquiv_symm_apply [IsDecompositionFie
     algebraMap D L ((IsDecompositionField.ringEquiv K L P D D').symm x) = algebraMap D' L x := by
   simp [IsDecompositionField.ringEquiv, IsGaloisGroup.ringEquiv]
 
+/-- Two inertia fields are isomorphic. Superseded by `Ideal.IsInertiaRing.ringEquiv`. -/
 @[deprecated Ideal.IsInertiaRing.ringEquiv (since := "2026-07-10")]
 noncomputable def IsInertiaField.ringEquiv [IsInertiaField K L P E] [IsInertiaField K L P E'] :
     E ≃+* E' :=
