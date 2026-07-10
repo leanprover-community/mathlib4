@@ -95,6 +95,9 @@ the Jordan Hölder theorem. For any specific `JordanHolderLattice`, use `Iso.rel
 def Iso : X × X → X × X → Prop :=
   Relation.EqvGen fun (x, xsy) (xiy, y) ↦ IsMaximal x xsy ∧ xsy = x ⊔ y ∧ xiy = x ⊓ y
 
+theorem iso_refl {x : X × X} : Iso x x :=
+  Relation.EqvGen.refl x
+
 theorem iso_symm {x y : X × X} (h : Iso x y) : Iso y x :=
   Relation.EqvGen.symm x y h
 
@@ -132,9 +135,7 @@ theorem isMaximal_of_eq_inf (x b : X) {a y : X} (ha : x ⊓ y = a) (hxy : x ≠ 
 theorem second_iso_of_eq {x y a b : X} (hm : IsMaximal x a) (ha : x ⊔ y = a) (hb : x ⊓ y = b) :
     Iso (x, a) (b, y) := by subst a b; exact second_iso hm
 
-theorem IsMaximal.iso_refl {x y : X} (h : IsMaximal x y) : Iso (x, y) (x, y) :=
-  second_iso_of_eq h (sup_eq_right.2 (le_of_lt (lt_of_isMaximal h)))
-    (inf_eq_left.2 (le_of_lt (lt_of_isMaximal h)))
+@[deprecated (since := "2026-07-11")] alias IsMaximal.iso_refl := iso_refl
 
 end JordanHolderLattice
 
@@ -270,7 +271,7 @@ namespace Equivalent
 
 @[refl]
 theorem refl (s : CompositionSeries X) : Equivalent s s :=
-  ⟨Equiv.refl _, fun _ => (s.step _).iso_refl⟩
+  ⟨Equiv.refl _, fun _ => iso_refl⟩
 
 @[symm]
 theorem symm {s₁ s₂ : CompositionSeries X} (h : Equivalent s₁ s₂) : Equivalent s₂ s₁ :=
@@ -377,7 +378,7 @@ theorem snoc_snoc_swap {s : CompositionSeries X} {x₁ x₂ y₁ y₂ : X} {hsat
       · erw [Equiv.swap_apply_of_ne_of_ne h2 h1, snoc_castSucc, snoc_castSucc,
           snoc_castSucc, snoc_castSucc, Fin.succ_castSucc, snoc_castSucc,
           Fin.succ_castSucc, snoc_castSucc, snoc_castSucc, snoc_castSucc]
-        exact (s.step i).iso_refl⟩
+        exact iso_refl⟩
 
 end Equivalent
 
@@ -440,7 +441,7 @@ theorem exists_last_eq_snoc_equivalent (s : CompositionSeries X) (x : X) (hm : I
         htt.symm ▸ imxs).snoc s.last
           (by simpa using isMaximal_eraseLast_last h0s)) := by
         conv_lhs => rw [eq_snoc_eraseLast h0s]
-        exact Equivalent.snoc hteqv (by simpa using (isMaximal_eraseLast_last h0s).iso_refl)
+        exact Equivalent.snoc hteqv (by simpa using iso_refl)
       refine this.trans <| Equivalent.snoc_snoc_swap
         (iso_symm
             (second_iso_of_eq hm
@@ -466,6 +467,6 @@ theorem jordan_holder (s₁ s₂ : CompositionSeries X)
     refine hteq.trans ?_
     conv_rhs => rw [eq_snoc_eraseLast h0s₂]
     simp only [ht]
-    exact Equivalent.snoc this (by simpa [htt] using (isMaximal_eraseLast_last h0s₂).iso_refl)
+    exact Equivalent.snoc this (by simpa [htt] using iso_refl)
 
 end CompositionSeries
