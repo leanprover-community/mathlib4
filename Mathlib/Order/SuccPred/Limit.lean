@@ -106,8 +106,7 @@ structure IsPredLimit (a : α) : Prop where
   /-- Predecessor limits aren't covered by any other elements. -/
   protected isPredPrelimit : IsPredPrelimit a
 
-attribute [to_dual existing]
-  IsSuccLimit.mk IsSuccLimit.not_isMin IsSuccLimit.isSuccPrelimit isSuccLimit_iff
+attribute [to_dual existing] isSuccLimit_iff
 attribute [simp] IsSuccLimit.isSuccPrelimit IsPredLimit.isPredPrelimit
 
 @[to_dual (attr := simp)]
