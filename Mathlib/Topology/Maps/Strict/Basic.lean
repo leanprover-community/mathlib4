@@ -43,14 +43,13 @@ open Function Set Topology Setoid
 namespace Topology
 
 variable {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
-  (f : X → Y) {g : Y → Z}
+  {f : X → Y} {g : Y → Z}
 
+variable (f) in
 /-- A map is a strict map in the sense of Bourbaki if the natural map to its image
 is a quotient map. -/
 def IsStrictMap : Prop :=
   IsQuotientMap (Set.rangeFactorization f)
-
-variable {f}
 
 lemma isStrictMap_iff_isQuotientMap_rangeFactorization :
     IsStrictMap f ↔ IsQuotientMap (Set.rangeFactorization f) :=
@@ -70,6 +69,9 @@ This is the homeomorphism obtained from the first isomorphism theorem. -/
 noncomputable def _root_.Homeomorph.quotientKerEquivRange (hf : IsStrictMap f) :
     Quotient (Setoid.ker f) ≃ₜ Set.range f :=
   (isStrictMap_iff_isHomeomorph_quotientKerEquivRange.mp hf).homeomorph
+
+@[deprecated (since := "2026-07-10")] protected alias Homeomorph.quotientKerEquivRange :=
+  Homeomorph.quotientKerEquivRange
 
 /-- A map is a strict map if and only if the canonical injection `Quotient (Setoid.ker f) → Y`
 (`Setoid.kerLift f`) is an embedding. -/
@@ -91,6 +93,9 @@ lemma _root_.IsOpenMap.isStrictMap (ho : IsOpenMap f) (h_cont : Continuous f) :
   exact (ho.subtype_mk fun x => ⟨x, rfl⟩).isQuotientMap
     h_cont.rangeFactorization Set.rangeFactorization_surjective
 
+@[deprecated (since := "2026-07-10")] protected alias IsOpenMap.isStrictMap :=
+  IsOpenMap.isStrictMap
+
 /-- A closed continuous map is a strict map. -/
 lemma _root_.IsClosedMap.isStrictMap (hc : IsClosedMap f) (h_cont : Continuous f) :
     IsStrictMap f := by
@@ -98,10 +103,16 @@ lemma _root_.IsClosedMap.isStrictMap (hc : IsClosedMap f) (h_cont : Continuous f
   exact (hc.subtype_mk fun x => ⟨x, rfl⟩).isQuotientMap
     h_cont.rangeFactorization Set.rangeFactorization_surjective
 
+@[deprecated (since := "2026-07-10")] protected alias IsClosedMap.isStrictMap :=
+  IsClosedMap.isStrictMap
+
 /-- A homeomorphism is a strict map. -/
 lemma _root_.IsHomeomorph.isStrictMap (f_homeo : IsHomeomorph f) :
     IsStrictMap f :=
   f_homeo.isOpenMap.isStrictMap f_homeo.continuous
+
+@[deprecated (since := "2026-07-10")] protected alias IsHomeomorph.isStrictMap :=
+  IsHomeomorph.isStrictMap
 
 /-- The identity is a strict map. -/
 lemma IsStrictMap.id : IsStrictMap (id : X → X) := IsHomeomorph.id.isStrictMap
@@ -165,9 +176,15 @@ lemma _root_.Homeomorph.isStrictMap_comp_iff (e : X ≃ₜ Y) {f : Y → Z} :
     IsStrictMap (f ∘ e) ↔ IsStrictMap f :=
   e.isQuotientMap.isStrictMap_iff.symm
 
+@[deprecated (since := "2026-07-10")] protected alias Homeomorph.isStrictMap_comp_iff :=
+  Homeomorph.isStrictMap_comp_iff
+
 /-- Strict maps are preserved when postcomposing with a homeomorphism. -/
 lemma _root_.Homeomorph.comp_isStrictMap_iff (e : Y ≃ₜ Z) {f : X → Y} :
     IsStrictMap (e ∘ f) ↔ IsStrictMap f :=
   e.isEmbedding.isStrictMap_iff.symm
+
+@[deprecated (since := "2026-07-10")] protected alias Homeomorph.comp_isStrictMap_iff :=
+  Homeomorph.comp_isStrictMap_iff
 
 end Topology
