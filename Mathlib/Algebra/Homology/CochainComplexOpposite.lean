@@ -20,8 +20,6 @@ homotopic as morphisms in `CochainComplex Cᵒᵖ ℤ`.
 
 @[expose] public section
 
-noncomputable section
-
 open Opposite CategoryTheory Limits
 
 variable (C : Type*) [Category* C]

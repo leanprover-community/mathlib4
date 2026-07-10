@@ -90,8 +90,6 @@ separable degree, degree, separable closure, purely inseparable
 
 open Module Polynomial IntermediateField Field
 
-noncomputable section
-
 universe u v w
 
 section General
@@ -414,7 +412,7 @@ instance instUniqueAlgHomOfIsPurelyInseparable [IsPurelyInseparable F E] (L : Ty
     Unique (E →ₐ[F] L) := uniqueOfSubsingleton (IsScalarTower.toAlgHom F E L)
 
 /-- If `E / F` is purely inseparable, then `Field.Emb F E` has exactly one element. -/
-instance instUniqueEmbOfIsPurelyInseparable [IsPurelyInseparable F E] :
+noncomputable instance instUniqueEmbOfIsPurelyInseparable [IsPurelyInseparable F E] :
     Unique (Emb F E) := instUniqueAlgHomOfIsPurelyInseparable F E _
 
 /-- A purely inseparable extension has finite separable degree one. -/

@@ -40,8 +40,6 @@ public import Mathlib.RingTheory.Ideal.Maps
 
 assert_not_exists ModuleCat
 
-noncomputable section
-
 universe u v v'
 
 variable (R : Type u) [Ring R] (Q : Type v) [AddCommGroup Q] [Module R Q]
@@ -157,7 +155,7 @@ theorem chain_linearPMap_of_chain_extensionOf {c : Set (ExtensionOf i f)}
   exact hchain a_mem b_mem (ne_of_apply_ne _ ne)
 
 /-- The maximal element of every nonempty chain of `extension_of i f`. -/
-def ExtensionOf.max {c : Set (ExtensionOf i f)} (hchain : IsChain (· ≤ ·) c)
+noncomputable def ExtensionOf.max {c : Set (ExtensionOf i f)} (hchain : IsChain (· ≤ ·) c)
     (hnonempty : c.Nonempty) : ExtensionOf i f :=
   { LinearPMap.sSup _
       (IsChain.directedOn <| chain_linearPMap_of_chain_extensionOf hchain) with
@@ -181,7 +179,7 @@ theorem ExtensionOf.le_max {c : Set (ExtensionOf i f)} (hchain : IsChain (· ≤
 
 variable (i f) [Fact <| Function.Injective i]
 
-instance ExtensionOf.inhabited : Inhabited (ExtensionOf i f) where
+noncomputable instance ExtensionOf.inhabited : Inhabited (ExtensionOf i f) where
   default :=
     { domain := LinearMap.range i
       toFun :=
@@ -206,7 +204,7 @@ instance ExtensionOf.inhabited : Inhabited (ExtensionOf i f) where
 
 /-- Since every nonempty chain has a maximal element, by Zorn's lemma, there is a maximal
 `extension_of i f`. -/
-def extensionOfMax : ExtensionOf i f :=
+noncomputable def extensionOfMax : ExtensionOf i f :=
   (@zorn_le_nonempty (ExtensionOf i f) _ ⟨Inhabited.default⟩ fun _ hchain hnonempty =>
       ⟨ExtensionOf.max hchain hnonempty, ExtensionOf.le_max hchain hnonempty⟩).choose
 
@@ -217,7 +215,7 @@ theorem extensionOfMax_is_max :
 
 -- Auxiliary definition: Lean looks for an instance of `Max (Type u)` if we would write
 -- `(x : (extensionOfMax i f).domain ⊔ (Submodule.span R {y}))`, so we encapsulate the cast instead.
-abbrev supExtensionOfMaxSingleton (y : N) : Submodule R N :=
+noncomputable abbrev supExtensionOfMaxSingleton (y : N) : Submodule R N :=
   (extensionOfMax i f).domain ⊔ (Submodule.span R {y})
 
 variable {f}
@@ -235,14 +233,14 @@ private theorem extensionOfMax_adjoin.aux1 {y : N} (x : supExtensionOfMaxSinglet
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- If `x ∈ M ⊔ ⟨y⟩`, then `x = m + r • y`, `fst` pick an arbitrary such `m`. -/
-def ExtensionOfMaxAdjoin.fst {y : N} (x : supExtensionOfMaxSingleton i f y) :
+noncomputable def ExtensionOfMaxAdjoin.fst {y : N} (x : supExtensionOfMaxSingleton i f y) :
     (extensionOfMax i f).domain :=
   (extensionOfMax_adjoin.aux1 i x).choose
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- If `x ∈ M ⊔ ⟨y⟩`, then `x = m + r • y`, `snd` pick an arbitrary such `r`. -/
-def ExtensionOfMaxAdjoin.snd {y : N} (x : supExtensionOfMaxSingleton i f y) : R :=
+noncomputable def ExtensionOfMaxAdjoin.snd {y : N} (x : supExtensionOfMaxSingleton i f y) : R :=
   (extensionOfMax_adjoin.aux1 i x).choose_spec.choose
 
 theorem ExtensionOfMaxAdjoin.eqn {y : N} (x : supExtensionOfMaxSingleton i f y) :
@@ -253,10 +251,11 @@ variable (f)
 
 -- TODO: refactor to use colon ideals?
 /-- The ideal `I = {r | r • y ∈ N}` -/
-def ExtensionOfMaxAdjoin.ideal (y : N) : Ideal R :=
+noncomputable def ExtensionOfMaxAdjoin.ideal (y : N) : Ideal R :=
   (extensionOfMax i f).domain.comap ((LinearMap.id : R →ₗ[R] R).smulRight y)
 
 /-- A linear map `I ⟶ Q` by `x ↦ f' (x • y)` where `f'` is the maximal extension -/
+noncomputable
 def ExtensionOfMaxAdjoin.idealTo (y : N) : ExtensionOfMaxAdjoin.ideal i f y →ₗ[R] Q where
   toFun (z : { x // x ∈ ideal i f y }) := (extensionOfMax i f).toLinearPMap ⟨(↑z : R) • y, z.prop⟩
   map_add' (z1 z2 : { x // x ∈ ideal i f y }) := by
@@ -270,7 +269,7 @@ def ExtensionOfMaxAdjoin.idealTo (y : N) : ExtensionOfMaxAdjoin.ideal i f y →�
 
 /-- Since we assumed `Q` being Baer, the linear map `x ↦ f' (x • y) : I ⟶ Q` extends to `R ⟶ Q`,
 call this extended map `φ` -/
-def ExtensionOfMaxAdjoin.extendIdealTo (h : Module.Baer R Q) (y : N) : R →ₗ[R] Q :=
+noncomputable def ExtensionOfMaxAdjoin.extendIdealTo (h : Module.Baer R Q) (y : N) : R →ₗ[R] Q :=
   (h (ExtensionOfMaxAdjoin.ideal i f y) (ExtensionOfMaxAdjoin.idealTo i f y)).choose
 
 theorem ExtensionOfMaxAdjoin.extendIdealTo_is_extension (h : Module.Baer R Q) (y : N) :
@@ -303,7 +302,7 @@ theorem ExtensionOfMaxAdjoin.extendIdealTo_eq (h : Module.Baer R Q) {y : N} (r :
 
 /-- We can finally define a linear map `M ⊔ ⟨y⟩ ⟶ Q` by `x + r • y ↦ f x + φ r`
 -/
-def ExtensionOfMaxAdjoin.extensionToFun (h : Module.Baer R Q) {y : N} :
+noncomputable def ExtensionOfMaxAdjoin.extensionToFun (h : Module.Baer R Q) {y : N} :
     supExtensionOfMaxSingleton i f y → Q := fun x =>
   (extensionOfMax i f).toLinearPMap (ExtensionOfMaxAdjoin.fst i x) +
     ExtensionOfMaxAdjoin.extendIdealTo i f h y (ExtensionOfMaxAdjoin.snd i x)
@@ -332,7 +331,7 @@ theorem ExtensionOfMaxAdjoin.extensionToFun_wd (h : Module.Baer R Q) {y : N}
   exact eq_sub_of_add_eq (ExtensionOfMaxAdjoin.eqn i x).symm
 
 /-- The linear map `M ⊔ ⟨y⟩ ⟶ Q` by `x + r • y ↦ f x + φ r` is an extension of `f` -/
-def extensionOfMaxAdjoin (h : Module.Baer R Q) (y : N) : ExtensionOf i f where
+noncomputable def extensionOfMaxAdjoin (h : Module.Baer R Q) (y : N) : ExtensionOf i f where
   domain := supExtensionOfMaxSingleton i f y -- (extensionOfMax i f).domain ⊔ Submodule.span R {y}
   le := le_trans (extensionOfMax i f).le le_sup_left
   toFun :=

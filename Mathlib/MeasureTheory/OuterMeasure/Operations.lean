@@ -28,8 +28,6 @@ outer measure
 
 @[expose] public section
 
-noncomputable section
-
 open Set Function Filter
 open scoped NNReal Topology ENNReal
 
@@ -147,7 +145,7 @@ theorem univ_eq_zero_iff (m : OuterMeasure α) : m univ = 0 ↔ m = 0 :=
 
 section Supremum
 
-instance instSupSet : SupSet (OuterMeasure α) :=
+noncomputable instance instSupSet : SupSet (OuterMeasure α) :=
   ⟨fun ms =>
     { measureOf := fun s => ⨆ m ∈ ms, (m : OuterMeasure α) s
       empty := nonpos_iff_eq_zero.1 <| iSup₂_le fun m _ => le_of_eq m.empty
@@ -160,7 +158,7 @@ instance instSupSet : SupSet (OuterMeasure α) :=
                ENNReal.tsum_le_tsum fun i => by apply le_iSup₂ m hm
              }⟩
 
-instance instCompleteLattice : CompleteLattice (OuterMeasure α) :=
+noncomputable instance instCompleteLattice : CompleteLattice (OuterMeasure α) :=
   { OuterMeasure.orderBot,
     completeLatticeOfSup (OuterMeasure α) fun ms =>
       ⟨fun m hm s => by apply le_iSup₂ m hm, fun _ hm s => iSup₂_le fun _ hm' => hm hm' s⟩ with }
@@ -228,12 +226,12 @@ theorem map_sup {β} (f : α → β) (m m' : OuterMeasure α) : map f (m ⊔ m')
 theorem map_iSup {β ι} (f : α → β) (m : ι → OuterMeasure α) : map f (⨆ i, m i) = ⨆ i, map f (m i) :=
   ext fun s => by simp only [map_apply, iSup_apply]
 
-instance instFunctor : Functor OuterMeasure where map {_ _} f := map f
+noncomputable instance instFunctor : Functor OuterMeasure where map {_ _} f := map f
 
 instance instLawfulFunctor : LawfulFunctor OuterMeasure := by constructor <;> intros <;> rfl
 
 /-- The dirac outer measure. -/
-def dirac (a : α) : OuterMeasure α where
+noncomputable def dirac (a : α) : OuterMeasure α where
   measureOf s := indicator s (fun _ => 1) a
   empty := by simp
   mono {_ _} h := by grw [h]
@@ -247,7 +245,7 @@ theorem dirac_apply (a : α) (s : Set α) : dirac a s = indicator s (fun _ => 1)
   rfl
 
 /-- The sum of an (arbitrary) collection of outer measures. -/
-def sum {ι} (f : ι → OuterMeasure α) : OuterMeasure α where
+noncomputable def sum {ι} (f : ι → OuterMeasure α) : OuterMeasure α where
   measureOf s := ∑' i, f i s
   empty := by simp
   mono {_ _} h := ENNReal.tsum_le_tsum fun _ => measure_mono h
@@ -285,7 +283,7 @@ theorem comap_iSup {β ι} (f : α → β) (m : ι → OuterMeasure β) :
   ext fun s => by simp only [comap_apply, iSup_apply]
 
 /-- Restrict an `OuterMeasure` to a set. -/
-def restrict (s : Set α) : OuterMeasure α →ₗ[ℝ≥0∞] OuterMeasure α :=
+noncomputable def restrict (s : Set α) : OuterMeasure α →ₗ[ℝ≥0∞] OuterMeasure α :=
   (map (↑)).comp (comap ((↑) : s → α))
 
 -- TODO (kmill): change `m (t ∩ s)` to `m (s ∩ t)`

@@ -23,8 +23,6 @@ tactic for monoidal categories.
 
 public section
 
-noncomputable section
-
 universe w v u
 
 open CategoryTheory CategoryTheory.FreeBicategory

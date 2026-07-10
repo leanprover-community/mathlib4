@@ -27,8 +27,6 @@ Note that we don't require quasi-compact, since this is implied by universally c
 public section
 
 
-noncomputable section
-
 open CategoryTheory
 
 universe u

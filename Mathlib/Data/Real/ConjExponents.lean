@@ -37,8 +37,6 @@ to take the values `0` and `∞`.
 
 @[expose] public section
 
-noncomputable section
-
 open scoped ENNReal NNReal
 
 namespace Real
@@ -59,7 +57,7 @@ It is equivalent that `1 < p` and `p⁻¹ + q⁻¹ = 1`. See `Real.holderConjuga
 abbrev HolderConjugate (p q : ℝ) := HolderTriple p q 1
 
 /-- The conjugate exponent of `p` is `q = p / (p-1)`, so that `p⁻¹ + q⁻¹ = 1`. -/
-def conjExponent (p : ℝ) : ℝ := p / (p - 1)
+noncomputable def conjExponent (p : ℝ) : ℝ := p / (p - 1)
 
 variable {a b p q r : ℝ}
 
@@ -229,7 +227,7 @@ It is equivalent that `1 < p` and `p⁻¹ + q⁻¹ = 1`. See `NNReal.holderConju
 abbrev HolderConjugate (p q : ℝ≥0) := HolderTriple p q 1
 
 /-- The conjugate exponent of `p` is `q = p/(p-1)`, so that `p⁻¹ + q⁻¹ = 1`. -/
-def conjExponent (p : ℝ≥0) : ℝ≥0 := p / (p - 1)
+noncomputable def conjExponent (p : ℝ≥0) : ℝ≥0 := p / (p - 1)
 
 @[simp, norm_cast]
 lemma holderTriple_coe_iff {p q r : ℝ≥0} :

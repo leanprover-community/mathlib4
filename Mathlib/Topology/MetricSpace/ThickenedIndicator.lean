@@ -39,7 +39,7 @@ members of the approximating sequence are nonnegative bounded continuous functio
 
 open NNReal ENNReal Topology BoundedContinuousFunction Set Metric Filter
 
-noncomputable section thickenedIndicator
+section thickenedIndicator
 
 variable {α : Type*} [PseudoEMetricSpace α]
 
@@ -49,7 +49,7 @@ these values using `infEDist _ E`.
 
 `thickenedIndicatorAux` is the unbundled `ℝ≥0∞`-valued function. See `thickenedIndicator`
 for the (bundled) bounded continuous function with `ℝ≥0`-values. -/
-def thickenedIndicatorAux (δ : ℝ) (E : Set α) : α → ℝ≥0∞ :=
+noncomputable def thickenedIndicatorAux (δ : ℝ) (E : Set α) : α → ℝ≥0∞ :=
   fun x : α => (1 : ℝ≥0∞) - infEDist x E / ENNReal.ofReal δ
 
 theorem continuous_thickenedIndicatorAux {δ : ℝ} (δ_pos : 0 < δ) (E : Set α) :
@@ -160,7 +160,7 @@ these values using `infEDist _ E`.
 `thickenedIndicator` is the (bundled) bounded continuous function with `ℝ≥0`-values.
 See `thickenedIndicatorAux` for the unbundled `ℝ≥0∞`-valued function. -/
 @[simps]
-def thickenedIndicator {δ : ℝ} (δ_pos : 0 < δ) (E : Set α) : α →ᵇ ℝ≥0 where
+noncomputable def thickenedIndicator {δ : ℝ} (δ_pos : 0 < δ) (E : Set α) : α →ᵇ ℝ≥0 where
   toFun := fun x : α => (thickenedIndicatorAux δ E x).toNNReal
   continuous_toFun := by
     apply ContinuousOn.comp_continuous continuousOn_toNNReal

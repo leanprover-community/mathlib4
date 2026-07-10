@@ -68,7 +68,7 @@ variable [NormedAddTorsor V Pt]
 
 namespace Imo2019Q2
 
-noncomputable section
+section
 
 /-- A configuration satisfying the conditions of the problem. We define this structure to avoid
 passing many hypotheses around as we build up information about the configuration; the final
@@ -95,7 +95,7 @@ structure Imo2019q2Cfg where
 
 /-- A default choice of orientation, for lemmas that need to pick one. -/
 @[implicit_reducible]
-def someOrientation [hd2 : Fact (finrank ℝ V = 2)] : Module.Oriented ℝ V (Fin 2) :=
+noncomputable def someOrientation [hd2 : Fact (finrank ℝ V = 2)] : Module.Oriented ℝ V (Fin 2) :=
   ⟨Basis.orientation (finBasisOfFinrankEq _ _ hd2.out)⟩
 
 variable {V Pt}
@@ -169,11 +169,11 @@ theorem symm_triangleABC_circumsphere :
   rw [symm_triangleABC, Affine.Simplex.circumsphere_reindex]
 
 /-- `A₂` is the second point of intersection of the ray `AA₁` with the circumcircle of `ABC`. -/
-def A₂ : Pt :=
+noncomputable def A₂ : Pt :=
   cfg.triangleABC.circumsphere.secondInter cfg.A (cfg.A₁ -ᵥ cfg.A)
 
 /-- `B₂` is the second point of intersection of the ray `BB₁` with the circumcircle of `ABC`. -/
-def B₂ : Pt :=
+noncomputable def B₂ : Pt :=
   cfg.triangleABC.circumsphere.secondInter cfg.B (cfg.B₁ -ᵥ cfg.B)
 
 theorem A₂_mem_circumsphere : cfg.A₂ ∈ cfg.triangleABC.circumsphere :=
@@ -418,11 +418,11 @@ theorem affineIndependent_PQB₂ : AffineIndependent ℝ ![cfg.P, cfg.Q, cfg.B�
   rw [← symm_A₂]; exact cfg.symm.affineIndependent_QPA₂
 
 /-- `QPA₂` as a `Triangle`. -/
-def triangleQPA₂ : Triangle ℝ Pt :=
+noncomputable def triangleQPA₂ : Triangle ℝ Pt :=
   ⟨_, cfg.affineIndependent_QPA₂⟩
 
 /-- `PQB₂` as a `Triangle`. -/
-def trianglePQB₂ : Triangle ℝ Pt :=
+noncomputable def trianglePQB₂ : Triangle ℝ Pt :=
   ⟨_, cfg.affineIndependent_PQB₂⟩
 
 theorem symm_triangleQPA₂ : cfg.symm.triangleQPA₂ = cfg.trianglePQB₂ := by
@@ -430,7 +430,7 @@ theorem symm_triangleQPA₂ : cfg.symm.triangleQPA₂ = cfg.trianglePQB₂ := by
 
 /-- `ω` is the circle containing `Q`, `P` and `A₂`, which will be shown also to contain `B₂`,
 `P₁` and `Q₁`. -/
-def ω : Sphere Pt :=
+noncomputable def ω : Sphere Pt :=
   cfg.triangleQPA₂.circumsphere
 
 theorem P_mem_ω : cfg.P ∈ cfg.ω :=

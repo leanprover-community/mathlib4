@@ -101,8 +101,6 @@ derivative, manifold
 
 @[expose] public section
 
-noncomputable section
-
 open scoped Topology ContDiff
 open Set ChartedSpace
 
@@ -319,6 +317,7 @@ variable (I I') in
 /-- `mfderivWithin I I' f s x`, given a function `f` between two manifolds,
 is the derivative of `f` at `x` within `s`,
 as a continuous linear map from the tangent space at `x` to the tangent space at `f x`. -/
+noncomputable
 def mfderivWithin (f : M → M') (s : Set M) (x : M) : TangentSpace I x →L[𝕜] TangentSpace I' (f x) :=
   if MDifferentiableWithinAt I I' f s x then
     (fderivWithin 𝕜 (writtenInExtChartAt I I' x f) ((extChartAt I x).symm ⁻¹' s ∩ range I)
@@ -330,7 +329,7 @@ open scoped Classical in
 variable (I I') in
 /-- `mfderiv I I' f x`, given a function `f` between two manifolds, is the derivative of `f` at `x`,
 as a continuous linear map from the tangent space at `x` to the tangent space at `f x`. -/
-def mfderiv (f : M → M') (x : M) : TangentSpace I x →L[𝕜] TangentSpace I' (f x) :=
+noncomputable def mfderiv (f : M → M') (x : M) : TangentSpace I x →L[𝕜] TangentSpace I' (f x) :=
   if MDifferentiableAt I I' f x then
     (fderivWithin 𝕜 (writtenInExtChartAt I I' x f : E → E') (range I) ((extChartAt I x) x) :)
   else 0
@@ -338,13 +337,14 @@ def mfderiv (f : M → M') (x : M) : TangentSpace I x →L[𝕜] TangentSpace I'
 variable (I I') in
 /-- `tangentMapWithin I I' f s` is the derivative of `f : M → M'` within a set `s`,
 as a map between the tangent bundles `TM` and `TM'`. -/
+noncomputable
 def tangentMapWithin (f : M → M') (s : Set M) : TangentBundle I M → TangentBundle I' M' := fun p =>
   ⟨f p.1, (mfderivWithin I I' f s p.1 : TangentSpace I p.1 → TangentSpace I' (f p.1)) p.2⟩
 
 variable (I I') in
 /-- `tangentMap I I' f` is the derivative of `f : M → M'` as a map between the tangent bundles
 `TM` and `TM'`. -/
-def tangentMap (f : M → M') : TangentBundle I M → TangentBundle I' M' := fun p =>
+noncomputable def tangentMap (f : M → M') : TangentBundle I M → TangentBundle I' M' := fun p =>
   ⟨f p.1, (mfderiv I I' f p.1 : TangentSpace I p.1 → TangentSpace I' (f p.1)) p.2⟩
 
 end DerivativesDefinitions

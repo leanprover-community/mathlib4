@@ -21,8 +21,6 @@ There are no non-zero integers `a`, `b` and `c` such that `a ^ 4 + b ^ 4 = c ^ 4
 
 assert_not_exists TwoSidedIdeal
 
-noncomputable section
-
 /-- Shorthand for three non-zero integers `a`, `b`, and `c` satisfying `a ^ 4 + b ^ 4 = c ^ 2`.
 We will show that no integers satisfy this equation. Clearly Fermat's Last theorem for n = 4
 follows. -/

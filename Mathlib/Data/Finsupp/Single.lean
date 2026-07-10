@@ -29,8 +29,6 @@ This file is a `noncomputable theory` and uses classical logic throughout.
 
 assert_not_exists CompleteLattice
 
-noncomputable section
-
 open Finset Function
 
 variable {α β γ ι M M' N P G H R S : Type*}
@@ -44,7 +42,7 @@ section Single
 variable [Zero M] {a a' : α} {b : M}
 
 /-- `single a b` is the finitely supported function with value `b` at `a` and zero otherwise. -/
-def single (a : α) (b : M) : α →₀ M where
+noncomputable def single (a : α) (b : M) : α →₀ M where
   support :=
     haveI := Classical.decEq M
     if b = 0 then ∅ else {a}
@@ -284,7 +282,7 @@ If `b = 0`, this amounts to removing `a` from the `Finsupp.support`.
 Otherwise, if `a` was not in the `Finsupp.support`, it is added to it.
 
 This is the finitely-supported version of `Function.update`. -/
-def update (f : α →₀ M) (a : α) (b : M) : α →₀ M where
+noncomputable def update (f : α →₀ M) (a : α) (b : M) : α →₀ M where
   support := by
     haveI := Classical.decEq α; haveI := Classical.decEq M
     exact if b = 0 then f.support.erase a else insert a f.support
@@ -353,7 +351,7 @@ variable [Zero M]
 `erase a f` is the finitely supported function equal to `f` except at `a` where it is equal to `0`.
 If `a` is not in the support of `f` then `erase a f = f`.
 -/
-def erase (a : α) (f : α →₀ M) : α →₀ M where
+noncomputable def erase (a : α) (f : α →₀ M) : α →₀ M where
   support :=
     haveI := Classical.decEq α
     f.support.erase a

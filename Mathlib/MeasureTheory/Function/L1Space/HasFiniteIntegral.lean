@@ -30,8 +30,6 @@ finite integral
 
 @[expose] public section
 
-noncomputable section
-
 open Topology ENNReal MeasureTheory NNReal
 
 open Set Filter TopologicalSpace ENNReal EMetric MeasureTheory

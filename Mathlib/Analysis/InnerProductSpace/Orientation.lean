@@ -38,8 +38,6 @@ This file provides definitions and proves lemmas about orientations of real inne
 @[expose] public section
 
 
-noncomputable section
-
 variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
 
 open Module InnerProductSpace
@@ -105,7 +103,7 @@ theorem orthonormal_adjustToOrientation : Orthonormal ℝ (e.toBasis.adjustToOri
 /-- Given an orthonormal basis and an orientation, return an orthonormal basis giving that
 orientation: either the original basis, or one constructed by negating a single (arbitrary) basis
 vector. -/
-def adjustToOrientation : OrthonormalBasis ι ℝ E :=
+noncomputable def adjustToOrientation : OrthonormalBasis ι ℝ E :=
   (e.toBasis.adjustToOrientation x).toOrthonormalBasis (e.orthonormal_adjustToOrientation x)
 
 theorem toBasis_adjustToOrientation :
@@ -145,7 +143,8 @@ variable {n : ℕ}
 open OrthonormalBasis
 
 /-- An orthonormal basis, indexed by `Fin n`, with the given orientation. -/
-protected def finOrthonormalBasis (hn : 0 < n) (h : finrank ℝ E = n) (x : Orientation ℝ E (Fin n)) :
+protected noncomputable
+def finOrthonormalBasis (hn : 0 < n) (h : finrank ℝ E = n) (x : Orientation ℝ E (Fin n)) :
     OrthonormalBasis (Fin n) ℝ E := by
   haveI := Fin.pos_iff_nonempty.1 hn
   haveI : FiniteDimensional ℝ E := .of_finrank_pos <| h.symm ▸ hn
@@ -167,7 +166,7 @@ variable [_i : Fact (finrank ℝ E = n)] (o : Orientation ℝ E (Fin n))
 /-- The volume form on an oriented real inner product space, a nonvanishing top-dimensional
 alternating form uniquely defined by compatibility with the orientation and inner product structure.
 -/
-irreducible_def volumeForm : E [⋀^Fin n]→ₗ[ℝ] ℝ := by
+noncomputable irreducible_def volumeForm : E [⋀^Fin n]→ₗ[ℝ] ℝ := by
   classical
     cases n with
     | zero =>

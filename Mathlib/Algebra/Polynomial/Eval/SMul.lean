@@ -19,8 +19,6 @@ public import Mathlib.Algebra.Polynomial.Eval.Defs
 
 @[expose] public section
 
-noncomputable section
-
 open Finset AddMonoidAlgebra
 
 open Polynomial

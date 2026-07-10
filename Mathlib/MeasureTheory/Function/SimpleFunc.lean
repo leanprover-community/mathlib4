@@ -25,8 +25,6 @@ functions.
 @[expose] public section
 
 
-noncomputable section
-
 open Set hiding restrict restrict_apply
 
 open Filter ENNReal
@@ -87,7 +85,7 @@ def ofFinite [Finite α] [MeasurableSingletonClass α] (f : α → β) : α →�
 def ofIsEmpty [IsEmpty α] : α →ₛ β := ofFinite isEmptyElim
 
 /-- Range of a simple function `α →ₛ β` as a `Finset β`. -/
-protected def range (f : α →ₛ β) : Finset β :=
+protected noncomputable def range (f : α →ₛ β) : Finset β :=
   f.finite_range.toFinset
 
 @[simp]
@@ -184,7 +182,7 @@ theorem sum_range_measure_preimage_singleton (f : α →ₛ β) (μ : Measure α
 
 open scoped Classical in
 /-- If-then-else as a `SimpleFunc`. -/
-def piecewise (s : Set α) (hs : MeasurableSet s) (f g : α →ₛ β) : α →ₛ β :=
+noncomputable def piecewise (s : Set α) (hs : MeasurableSet s) (f g : α →ₛ β) : α →ₛ β :=
   ⟨s.piecewise f g, fun _ =>
     letI : MeasurableSpace β := ⊤
     f.measurable.piecewise hs g.measurable trivial,
@@ -223,6 +221,7 @@ theorem piecewise_same (f : α →ₛ β) {s : Set α} (hs : MeasurableSet s) :
 
 /-- Dependent If-then-else as a `SimpleFunc`. -/
 @[simps]
+noncomputable
 def dite (s : Set α) (hs : MeasurableSet s) (f : s →ₛ β) (g : (sᶜ : Set α) →ₛ β) : α →ₛ β where
   toFun x := open scoped Classical in if hx : x ∈ s then f ⟨x, hx⟩ else g ⟨x, hx⟩
   measurableSet_fiber' x := by
@@ -311,7 +310,7 @@ theorem range_comp_subset_range [MeasurableSpace β] (f : β →ₛ γ) {g : α 
 
 /-- Extend a `SimpleFunc` along a measurable embedding: `f₁.extend g hg f₂` is the function
 `F : β →ₛ γ` such that `F ∘ g = f₁` and `F y = f₂ y` whenever `y ∉ range g`. -/
-def extend [MeasurableSpace β] (f₁ : α →ₛ γ) (g : α → β) (hg : MeasurableEmbedding g)
+noncomputable def extend [MeasurableSpace β] (f₁ : α →ₛ γ) (g : α → β) (hg : MeasurableEmbedding g)
     (f₂ : β →ₛ γ) : β →ₛ γ where
   toFun := Function.extend g f₁ f₂
   finite_range' :=
@@ -743,7 +742,7 @@ variable [Zero β]
 open scoped Classical in
 /-- Restrict a simple function `f : α →ₛ β` to a set `s`. If `s` is measurable,
 then `f.restrict s a = if a ∈ s then f a else 0`, otherwise `f.restrict s = const α 0`. -/
-def restrict (f : α →ₛ β) (s : Set α) : α →ₛ β :=
+noncomputable def restrict (f : α →ₛ β) (s : Set α) : α →ₛ β :=
   if hs : MeasurableSet s then piecewise s hs f 0 else 0
 
 theorem restrict_of_not_measurable {f : α →ₛ β} {s : Set α} (hs : ¬MeasurableSet s) :
@@ -819,7 +818,7 @@ variable [SemilatticeSup β] [OrderBot β] [Zero β]
 /-- Fix a sequence `i : ℕ → β`. Given a function `α → β`, its `n`-th approximation
 by simple functions is defined so that in case `β = ℝ≥0∞` it sends each `a` to the supremum
 of the set `{i k | k ≤ n ∧ i k ≤ f a}`, see `approx_apply` and `iSup_approx_apply` for details. -/
-def approx (i : ℕ → β) (f : α → β) (n : ℕ) : α →ₛ β :=
+noncomputable def approx (i : ℕ → β) (f : α → β) (n : ℕ) : α →ₛ β :=
   (Finset.range n).sup fun k => restrict (const α (i k)) { a : α | i k ≤ f a }
 
 open scoped Classical in
@@ -874,7 +873,7 @@ theorem ennrealRatEmbed_encode (q : ℚ) :
   rw [ennrealRatEmbed, Encodable.encodek]; rfl
 
 /-- Approximate a function `α → ℝ≥0∞` by a sequence of simple functions. -/
-def eapprox : (α → ℝ≥0∞) → ℕ → α →ₛ ℝ≥0∞ :=
+noncomputable def eapprox : (α → ℝ≥0∞) → ℕ → α →ₛ ℝ≥0∞ :=
   approx ennrealRatEmbed
 
 theorem eapprox_lt_top (f : α → ℝ≥0∞) (n : ℕ) (a : α) : eapprox f n a < ∞ := by
@@ -921,7 +920,7 @@ lemma tendsto_eapprox {f : α → ℝ≥0∞} (hf_meas : Measurable f) (a : α) 
 
 /-- Approximate a function `α → ℝ≥0∞` by a series of simple functions taking their values
 in `ℝ≥0`. -/
-def eapproxDiff (f : α → ℝ≥0∞) : ℕ → α →ₛ ℝ≥0
+noncomputable def eapproxDiff (f : α → ℝ≥0∞) : ℕ → α →ₛ ℝ≥0
   | 0 => (eapprox f 0).map ENNReal.toNNReal
   | n + 1 => (eapprox f (n + 1) - eapprox f n).map ENNReal.toNNReal
 
@@ -952,7 +951,7 @@ section Measure
 variable {m : MeasurableSpace α} {μ ν : Measure α}
 
 /-- Integral of a simple function whose codomain is `ℝ≥0∞`. -/
-def lintegral {_m : MeasurableSpace α} (f : α →ₛ ℝ≥0∞) (μ : Measure α) : ℝ≥0∞ :=
+noncomputable def lintegral {_m : MeasurableSpace α} (f : α →ₛ ℝ≥0∞) (μ : Measure α) : ℝ≥0∞ :=
   ∑ x ∈ f.range, x * μ (f ⁻¹' {x})
 
 theorem lintegral_eq_of_subset (f : α →ₛ ℝ≥0∞) {s : Finset ℝ≥0∞}
@@ -1004,6 +1003,7 @@ theorem const_mul_lintegral (f : α →ₛ ℝ≥0∞) (x : ℝ≥0∞) :
     _ = x * ∑ r ∈ f.range, r * μ (f ⁻¹' {r}) := by simp_rw [Finset.mul_sum, mul_assoc]
 
 /-- Integral of a simple function `α →ₛ ℝ≥0∞` as a bilinear map. -/
+noncomputable
 def lintegralₗ {m : MeasurableSpace α} : (α →ₛ ℝ≥0∞) →ₗ[ℝ≥0∞] Measure α →ₗ[ℝ≥0∞] ℝ≥0∞ where
   toFun f :=
     { toFun := lintegral f

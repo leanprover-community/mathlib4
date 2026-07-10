@@ -27,8 +27,6 @@ and reflection of a point in an affine subspace.
 
 @[expose] public section
 
-noncomputable section
-
 namespace EuclideanGeometry
 
 variable {𝕜 : Type*} {V : Type*} {P : Type*} [RCLike 𝕜]
@@ -40,7 +38,7 @@ open AffineSubspace
 variable [MetricSpace P] [NormedAddTorsor V P]
 
 /-- The orthogonal projection of a point onto a nonempty affine subspace. -/
-def orthogonalProjection (s : AffineSubspace 𝕜 P) [Nonempty s]
+noncomputable def orthogonalProjection (s : AffineSubspace 𝕜 P) [Nonempty s]
     [s.direction.HasOrthogonalProjection] : P →ᴬ[𝕜] s :=
   letI x := Classical.arbitrary s
   AffineIsometryEquiv.vaddConst 𝕜 x
@@ -403,6 +401,7 @@ specifically reflection in a codimension-one subspace, and sometimes
 more generally to cover operations such as reflection in a point. The
 definition here, of reflection in an affine subspace, is a more
 general sense of the word that includes both those common cases. -/
+noncomputable
 def reflection (s : AffineSubspace 𝕜 P) [Nonempty s] [s.direction.HasOrthogonalProjection] :
     P ≃ᵃⁱ[𝕜] P :=
   letI x : P := Classical.arbitrary s
@@ -580,7 +579,7 @@ variable {V₂ P₂ : Type*} [NormedAddCommGroup V₂] [InnerProductSpace 𝕜 V
 variable [MetricSpace P] [NormedAddTorsor V P]
 
 /-- The orthogonal projection of a point `p` onto the hyperplane spanned by the simplex's points. -/
-def orthogonalProjectionSpan {n : ℕ} (s : Simplex 𝕜 P n) :
+noncomputable def orthogonalProjectionSpan {n : ℕ} (s : Simplex 𝕜 P n) :
     P →ᴬ[𝕜] affineSpan 𝕜 (Set.range s.points) :=
   orthogonalProjection (affineSpan 𝕜 (Set.range s.points))
 

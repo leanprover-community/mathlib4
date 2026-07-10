@@ -19,8 +19,6 @@ algebra `R[G]` on the set of functions `P → V`.
 
 @[expose] public section
 
-noncomputable section
-
 variable {G P R V : Type*}
 
 namespace MonoidAlgebra
@@ -38,7 +36,7 @@ theorem mem_smulAntidiagonal_of_group [Group G] [MulAction G P] [Semiring R] [Ze
 functions. -/
 @[to_additive (dont_translate := R) /-- A convolution-type scalar multiplication of the additive
 monoid algebra on the set of formal functions. -/]
-scoped instance [SMul G P] [IsLeftCancelSMul G P] [Semiring R] [AddCommMonoid V]
+noncomputable scoped instance [SMul G P] [IsLeftCancelSMul G P] [Semiring R] [AddCommMonoid V]
     [SMulWithZero R V] :
     SMul (R[G]) (P → V) where
   smul f x p := ∑ gh ∈ Finset.SMulAntidiagonal p

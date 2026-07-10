@@ -41,8 +41,6 @@ assert_not_exists Field
 open List (Vector)
 open Function Order Set
 
-noncomputable section
-
 universe u v w v' w'
 
 variable {α β : Type u}
@@ -1020,7 +1018,7 @@ theorem exists_ne_ne_of_three_le {α : Type*} (h : 3 ≤ #α) (x y : α) : ∃ z
 /-! ### `powerlt` operation -/
 
 /-- The function `a ^< b`, defined as the supremum of `a ^ c` for `c < b`. -/
-def powerlt (a b : Cardinal.{u}) : Cardinal.{u} :=
+noncomputable def powerlt (a b : Cardinal.{u}) : Cardinal.{u} :=
   ⨆ c : Iio b, a ^ (c : Cardinal)
 
 @[inherit_doc]

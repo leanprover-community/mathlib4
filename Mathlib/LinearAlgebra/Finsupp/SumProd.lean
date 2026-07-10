@@ -22,8 +22,6 @@ function with finite support, module, linear algebra
 
 @[expose] public section
 
-noncomputable section
-
 open Set LinearMap
 
 namespace Finsupp
@@ -41,6 +39,7 @@ variable (R)
 
 This is the `LinearEquiv` version of `Finsupp.sumFinsuppEquivProdFinsupp`. -/
 @[simps apply symm_apply]
+noncomputable
 def sumFinsuppLEquivProdFinsupp {α β : Type*} : (α ⊕ β →₀ M) ≃ₗ[R] (α →₀ M) × (β →₀ M) :=
   { sumFinsuppAddEquivProdFinsupp with
     map_smul' := by

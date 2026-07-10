@@ -27,8 +27,6 @@ A morphism of schemes is separated if its diagonal morphism is a closed immersio
 public section
 
 
-noncomputable section
-
 open CategoryTheory CategoryTheory.Limits Opposite TopologicalSpace
 
 universe u

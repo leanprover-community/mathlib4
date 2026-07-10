@@ -20,8 +20,6 @@ TODO: Weak cokernels.
 
 @[expose] public section
 
-noncomputable section
-
 namespace CategoryTheory.Pretriangulated
 
 open Limits Category Preadditive Pretriangulated
@@ -35,7 +33,7 @@ def kernelForkOfDistTriangle (T : Triangle C) (dT : T ∈ distTriang C) :
 
 /-- If `T` is a distinguished triangle, then the kernel fork for `T.mor₂` defined in
 `kernelForkOfDistTriangle` is a weak kernel fork. -/
-def isWeakLimitKernelForkOfDistTriangle (T : Triangle C) (dT : T ∈ distTriang C) :
+noncomputable def isWeakLimitKernelForkOfDistTriangle (T : Triangle C) (dT : T ∈ distTriang C) :
     IsWeakLimit (kernelForkOfDistTriangle _ dT) :=
   Fork.IsWeakLimit.mk' _
     (fun s ↦ ⟨_, (T.coyoneda_exact₂ dT _ (KernelFork.condition s)).choose_spec.symm⟩)

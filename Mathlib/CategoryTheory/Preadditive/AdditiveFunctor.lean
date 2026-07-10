@@ -190,7 +190,7 @@ instance {C D : Type*} [Category* C] [Category* D] [Preadditive C] [Preadditive 
 section
 
 -- To talk about preservation of biproducts we need to specify universes explicitly.
-noncomputable section
+section
 
 variable {C : Type u₁} {D : Type u₂} [Category.{v₁} C] [Category.{v₂} D] [Preadditive C]
   [Preadditive D] (F : C ⥤ D)

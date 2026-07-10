@@ -45,7 +45,7 @@ so `d : X i ⟶ X j` is nonzero only when `i = j + 1`.
 
 @[expose] public section
 
-noncomputable section
+section
 
 /-- A `c : ComplexShape ι` describes the shape of a chain complex,
 with chain groups indexed by `ι`.
@@ -141,7 +141,7 @@ Returns `i` otherwise.
 /-- An arbitrary choice of index `i` such that `Rel i j`, if such exists.
 Returns `j` otherwise.
 -/]
-def next (c : ComplexShape ι) (i : ι) : ι :=
+noncomputable def next (c : ComplexShape ι) (i : ι) : ι :=
   if h : ∃ j, c.Rel i j then h.choose else i
 
 @[to_dual]

@@ -32,7 +32,7 @@ The following notation is available with `open Quaternion` or `open scoped Quate
 quaternion, normed ring, normed space, normed algebra
 -/
 
-@[expose] public noncomputable section
+@[expose] public section
 
 
 @[inherit_doc] scoped[Quaternion] notation "ℍ" => Quaternion ℝ
@@ -41,7 +41,7 @@ open scoped RealInnerProductSpace
 
 namespace Quaternion
 
-instance : Inner ℝ ℍ :=
+noncomputable instance : Inner ℝ ℍ :=
   ⟨fun a b => (a * star b).re⟩
 
 theorem inner_self (a : ℍ) : ⟪a, a⟫ = normSq a :=
@@ -50,7 +50,7 @@ theorem inner_self (a : ℍ) : ⟪a, a⟫ = normSq a :=
 theorem inner_def (a b : ℍ) : ⟪a, b⟫ = (a * star b).re :=
   rfl
 
-instance : NormedAddCommGroup ℍ :=
+noncomputable instance : NormedAddCommGroup ℍ :=
   @InnerProductSpace.Core.toNormedAddCommGroup ℝ ℍ _ _ _
     { toInner := inferInstance
       conj_inner_symm := fun x y => by simp [inner_def, mul_comm]
@@ -59,7 +59,7 @@ instance : NormedAddCommGroup ℍ :=
       add_left := fun x y z => by simp only [inner_def, add_mul, re_add]
       smul_left := fun x y r => by simp [inner_def] }
 
-instance : InnerProductSpace ℝ ℍ :=
+noncomputable instance : InnerProductSpace ℝ ℍ :=
   InnerProductSpace.ofCore _
 
 theorem normSq_eq_norm_mul_self (a : ℍ) : normSq a = ‖a‖ * ‖a‖ := by
@@ -84,11 +84,11 @@ theorem norm_star (a : ℍ) : ‖star a‖ = ‖a‖ := by
 theorem nnnorm_star (a : ℍ) : ‖star a‖₊ = ‖a‖₊ :=
   Subtype.ext <| norm_star a
 
-instance : NormedDivisionRing ℍ where
+noncomputable instance : NormedDivisionRing ℍ where
   dist_eq _ _ := rfl
   norm_mul _ _ := by simp_rw [norm_eq_sqrt_real_inner, inner_self]; simp
 
-instance : NormedAlgebra ℝ ℍ where
+noncomputable instance : NormedAlgebra ℝ ℍ where
   norm_smul_le := norm_smul_le
   toAlgebra := Quaternion.algebra
 

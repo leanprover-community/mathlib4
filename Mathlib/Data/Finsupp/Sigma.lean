@@ -25,8 +25,6 @@ This is a special case of `Finsupp.embDomain` using `Function.Embedding.sigmaMk`
 
 @[expose] public section
 
-noncomputable section
-
 open Function
 
 variable {κ : Type*} {ι : κ → Type*} {M : Type*}
@@ -41,7 +39,7 @@ variable [Zero M]
 of the sigma type `(Σ k, ι k) →₀ M`.
 
 This is `Finsupp.embDomain` specialized to `Function.Embedding.sigmaMk k`. -/
-def embSigma {k : κ} (f : ι k →₀ M) : (Σ k, ι k) →₀ M :=
+noncomputable def embSigma {k : κ} (f : ι k →₀ M) : (Σ k, ι k) →₀ M :=
   embDomain (Embedding.sigmaMk k) f
 
 @[grind =]

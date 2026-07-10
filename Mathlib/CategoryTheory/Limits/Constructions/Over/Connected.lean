@@ -25,7 +25,7 @@ From this we deduce the corresponding results for the over category.
 universe v' u' v u
 
 -- morphism levels before object levels. See note [category theory universes].
-noncomputable section
+section
 
 open CategoryTheory CategoryTheory.Limits
 
@@ -51,7 +51,7 @@ set_option backward.defeqAttrib.useBackward true in
 `CostructuredArrow K B`. Note this is where the connected assumption is used.
 -/
 @[simps]
-def raiseCone [IsConnected J] {B : D} {F : J ⥤ CostructuredArrow K B}
+noncomputable def raiseCone [IsConnected J] {B : D} {F : J ⥤ CostructuredArrow K B}
     (c : Cone (F ⋙ CostructuredArrow.proj K B)) :
     Cone F where
   pt := CostructuredArrow.mk
@@ -73,7 +73,7 @@ theorem mapCone_raiseCone [IsConnected J] {B : D} {F : J ⥤ CostructuredArrow K
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- (Implementation) Show that the raised cone is a limit. -/
-def isLimitRaiseCone [IsConnected J] {B : D} {F : J ⥤ CostructuredArrow K B}
+noncomputable def isLimitRaiseCone [IsConnected J] {B : D} {F : J ⥤ CostructuredArrow K B}
     {c : Cone (F ⋙ CostructuredArrow.proj K B)}
     (t : IsLimit c) : IsLimit (raiseCone c) where
   lift s :=
@@ -88,6 +88,7 @@ def isLimitRaiseCone [IsConnected J] {B : D} {F : J ⥤ CostructuredArrow K B}
 end CreatesConnected
 
 /-- The projection from `CostructuredArrow K B` to `C` creates any connected limit. -/
+noncomputable
 instance [IsConnected J] {B : D} : CreatesLimitsOfShape J (CostructuredArrow.proj K B) where
   CreatesLimit :=
     createsLimitOfReflectsIso fun c t =>
@@ -121,6 +122,7 @@ end CostructuredArrow
 namespace StructuredArrow
 
 /-- The projection from `StructuredArrow K B` to `C` creates any connected colimit. -/
+noncomputable
 instance [IsConnected J] {B : D} : CreatesColimitsOfShape J (StructuredArrow.proj B K) :=
   letI : CreatesLimitsOfShape Jᵒᵖ (proj B K).op :=
     inferInstanceAs <| CreatesLimitsOfShape Jᵒᵖ <|
@@ -143,7 +145,7 @@ end StructuredArrow
 namespace Over
 
 /-- The forgetful functor from the over category creates any connected limit. -/
-instance createsLimitsOfShapeForgetOfIsConnected [IsConnected J] {B : C} :
+noncomputable instance createsLimitsOfShapeForgetOfIsConnected [IsConnected J] {B : C} :
     CreatesLimitsOfShape J (forget B) :=
   inferInstanceAs <| CreatesLimitsOfShape J (CostructuredArrow.proj _ _)
 
@@ -192,7 +194,7 @@ instance {B : D} [IsConnected J] [HasLimitsOfShape J C] [PreservesLimitsOfShape 
 namespace Under
 
 /-- The forgetful functor from the under category creates any connected limit. -/
-instance createsColimitsOfShapeForgetOfIsConnected [IsConnected J] {B : C} :
+noncomputable instance createsColimitsOfShapeForgetOfIsConnected [IsConnected J] {B : C} :
     CreatesColimitsOfShape J (forget B) :=
   inferInstanceAs <| CreatesColimitsOfShape J (StructuredArrow.proj _ _)
 

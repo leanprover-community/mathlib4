@@ -28,8 +28,6 @@ Possibly it's best to axiomatize delta functors, and obtain a unique characteris
 
 assert_not_exists ModuleCat.abelian
 
-noncomputable section
-
 open CategoryTheory.Limits
 
 open CategoryTheory.MonoidalCategory
@@ -41,13 +39,13 @@ variable (C : Type*) [Category* C] [MonoidalCategory C]
 
 /-- We define `Tor C n : C ⥤ C ⥤ C` by left-deriving in the second factor of `(X, Y) ↦ X ⊗ Y`. -/
 @[simps]
-def Tor (n : ℕ) : C ⥤ C ⥤ C where
+noncomputable def Tor (n : ℕ) : C ⥤ C ⥤ C where
   obj X := Functor.leftDerived ((tensoringLeft C).obj X) n
   map f := NatTrans.leftDerived ((tensoringLeft C).map f) n
 
 /-- An alternative definition of `Tor`, where we left-derive in the first factor instead. -/
 @[simps! obj_obj map_app obj_map]
-def Tor' (n : ℕ) : C ⥤ C ⥤ C :=
+noncomputable def Tor' (n : ℕ) : C ⥤ C ⥤ C :=
   Functor.flip
     { obj := fun X => Functor.leftDerived ((tensoringRight C).obj X) n
       map := fun f => NatTrans.leftDerived ((tensoringRight C).map f) n }

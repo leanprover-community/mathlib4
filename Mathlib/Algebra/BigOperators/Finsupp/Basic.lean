@@ -22,8 +22,6 @@ This file contains theorems relevant to big operators in finitely supported func
 
 assert_not_exists Field
 
-noncomputable section
-
 open Finset Function
 
 variable {α ι γ A B C : Type*} [AddCommMonoid A] [AddCommMonoid B] [AddCommMonoid C]
@@ -386,6 +384,7 @@ theorem prod_hom_add_index [AddZeroClass M] [CommMonoid N] {f g : α →₀ M}
 
 /-- The canonical isomorphism between families of additive monoid homomorphisms `α → (M →+ N)`
 and monoid homomorphisms `(α →₀ M) →+ N`. -/
+noncomputable
 def liftAddHom [AddZeroClass M] [AddCommMonoid N] : (α → M →+ N) ≃+ ((α →₀ M) →+ N) where
   toFun F :=
     { toFun f := f.sum (F ·)

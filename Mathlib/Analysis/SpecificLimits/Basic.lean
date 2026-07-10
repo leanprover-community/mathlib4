@@ -26,8 +26,6 @@ instances of these such as `ℝ`, `ℝ≥0` and `ℝ≥0∞`.
 
 assert_not_exists Module.Basis NormedSpace
 
-noncomputable section
-
 open Set Function Filter Finset Metric Topology Nat uniformity NNReal ENNReal
 
 variable {α : Type*} {β : Type*} {ι : Type*}
@@ -588,7 +586,7 @@ theorem summable_one_div_pow_of_le {m : ℝ} {f : ℕ → ℕ} (hm : 1 < m) (fi 
 
 
 /-- For any positive `ε`, define on an encodable type a positive sequence with sum less than `ε` -/
-def posSumOfEncodable {ε : ℝ} (hε : 0 < ε) (ι) [Encodable ι] :
+noncomputable def posSumOfEncodable {ε : ℝ} (hε : 0 < ε) (ι) [Encodable ι] :
     { ε' : ι → ℝ // (∀ i, 0 < ε' i) ∧ ∃ c, HasSum ε' c ∧ c ≤ ε } := by
   let f n := ε / 2 / 2 ^ n
   have hf : HasSum f ε := hasSum_geometric_two' _

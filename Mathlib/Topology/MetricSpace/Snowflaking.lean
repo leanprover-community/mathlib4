@@ -53,8 +53,6 @@ then these sets become balls, and we can apply Vitali theorem.
 open scoped ENNReal NNReal Filter Uniformity Topology
 open Function
 
-noncomputable section
-
 namespace Metric
 
 /-- A copy of a type with metric given by `dist x y = (dist x.val y.val) ^ α`.
@@ -271,7 +269,7 @@ section EDist
 
 variable [EDist X]
 
-instance : EDist (Snowflaking X α hα₀ hα₁) where
+noncomputable instance : EDist (Snowflaking X α hα₀ hα₁) where
   edist x y := edist x.ofSnowflaking y.ofSnowflaking ^ α
 
 theorem edist_def (x y : Snowflaking X α hα₀ hα₁) :
@@ -294,7 +292,7 @@ section PseudoEMetricSpace
 
 variable [PseudoEMetricSpace X]
 
-instance : PseudoEMetricSpace (Snowflaking X α hα₀ hα₁) where
+noncomputable instance : PseudoEMetricSpace (Snowflaking X α hα₀ hα₁) where
   edist_self x := by simp [edist_def, hα₀]
   edist_comm x y := by rw [edist_def, edist_def, edist_comm]
   edist_triangle x y z := by
@@ -407,7 +405,7 @@ theorem ediam_image_toSnowflaking (s : Set X) :
 
 end PseudoEMetricSpace
 
-instance [EMetricSpace X] : EMetricSpace (Snowflaking X α hα₀ hα₁) :=
+noncomputable instance [EMetricSpace X] : EMetricSpace (Snowflaking X α hα₀ hα₁) :=
   .ofT0PseudoEMetricSpace _
 
 /-!
@@ -419,7 +417,7 @@ is given by `dist x y = (dist x.ofSnowflaking y.ofSnowflaking) ^ α`.
 If the original space is a (pseudo) metric space, then so is `Snowflaking X α hα₀ hα₁`.
 -/
 
-instance [Dist X] : Dist (Snowflaking X α hα₀ hα₁) where
+noncomputable instance [Dist X] : Dist (Snowflaking X α hα₀ hα₁) where
   dist x y := dist x.ofSnowflaking y.ofSnowflaking ^ α
 
 @[simp]
@@ -431,7 +429,7 @@ section PseudoMetricSpace
 
 variable [PseudoMetricSpace X]
 
-instance : PseudoMetricSpace (Snowflaking X α hα₀ hα₁) :=
+noncomputable instance : PseudoMetricSpace (Snowflaking X α hα₀ hα₁) :=
   letI aux : PseudoMetricSpace (Snowflaking X α hα₀ hα₁) :=
     PseudoEMetricSpace.toPseudoMetricSpaceOfDist dist
       (by intro x y; cases x; cases y; rw [dist_toSnowflaking_toSnowflaking]; positivity)
@@ -507,7 +505,7 @@ theorem image_ofSnowflaking_closedBall (x : Snowflaking X α hα₀ hα₁) {r :
 
 end PseudoMetricSpace
 
-instance [MetricSpace X] : MetricSpace (Snowflaking X α hα₀ hα₁) :=
+noncomputable instance [MetricSpace X] : MetricSpace (Snowflaking X α hα₀ hα₁) :=
   .ofT0PseudoMetricSpace _
 
 end Snowflaking

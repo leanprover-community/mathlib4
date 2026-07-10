@@ -18,7 +18,7 @@ public import Mathlib.Algebra.Ring.Defs
   `R[b]` then `b` is algebraic over `R[a]`.
 -/
 
-@[expose] public noncomputable section
+@[expose] public section
 
 namespace Polynomial.Bivariate
 
@@ -31,7 +31,7 @@ section Ring
 variable [Ring A] [Algebra R A] {x : A}
 
 /-- The `AlgEquiv` between `R[X][Y]` and `R[a][Y]` for some transcendental `a`. -/
-def Transcendental.algEquivAdjoin (hx : Transcendental R x) :
+noncomputable def Transcendental.algEquivAdjoin (hx : Transcendental R x) :
     R[X][Y] ≃ₐ[R] (Algebra.adjoin R {x})[X] :=
   mapAlgEquiv (algEquivOfTranscendental _ x hx)
 

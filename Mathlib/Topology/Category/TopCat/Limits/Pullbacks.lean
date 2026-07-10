@@ -21,8 +21,6 @@ open CategoryTheory.Limits
 
 universe v u w
 
-noncomputable section
-
 namespace TopCat
 
 variable {J : Type v} [Category.{w} J]
@@ -78,7 +76,7 @@ def pullbackConeIsLimit (f : X ⟶ Z) (g : Y ⟶ Z) : IsLimit (pullbackCone f g)
         · simpa using! ConcreteCategory.congr_hom h₂ x)
 
 /-- The pullback of two maps can be identified as a subspace of `X × Y`. -/
-def pullbackIsoProdSubtype (f : X ⟶ Z) (g : Y ⟶ Z) :
+noncomputable def pullbackIsoProdSubtype (f : X ⟶ Z) (g : Y ⟶ Z) :
     pullback f g ≅ TopCat.of { p : X × Y // f p.1 = g p.2 } :=
   (limit.isLimit _).conePointUniqueUpToIso (pullbackConeIsLimit f g)
 

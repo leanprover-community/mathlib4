@@ -43,8 +43,6 @@ In the definitions below, we use the following notation:
 
 @[expose] public section
 
-noncomputable section
-
 open Set Function Finsupp AddMonoidAlgebra
 open scoped Pointwise
 
@@ -327,7 +325,7 @@ section Map
 variable (f : R →+* S₁)
 
 /-- `map f p` maps a polynomial `p` across a ring hom `f` -/
-def map : MvPolynomial σ R →+* MvPolynomial σ S₁ := AddMonoidAlgebra.mapRingHom _ f
+noncomputable def map : MvPolynomial σ R →+* MvPolynomial σ S₁ := AddMonoidAlgebra.mapRingHom _ f
 
 @[simp]
 theorem map_monomial (s : σ →₀ ℕ) (a : R) : map f (monomial s a) = monomial s (f a) :=
@@ -551,7 +549,7 @@ theorem eval₂AlgHom_X (i : σ) :
 end Algebra
 
 /-- If `f : S₁ →ₐ[R] S₂` is a morphism of `R`-algebras, then so is `MvPolynomial.map f`. -/
-def mapAlgHom [CommSemiring S₂] [Algebra R S₁] [Algebra R S₂] (f : S₁ →ₐ[R] S₂) :
+noncomputable def mapAlgHom [CommSemiring S₂] [Algebra R S₁] [Algebra R S₂] (f : S₁ →ₐ[R] S₂) :
     MvPolynomial σ S₁ →ₐ[R] MvPolynomial σ S₂ := AddMonoidAlgebra.mapAlgHom _ f
 
 @[simp]

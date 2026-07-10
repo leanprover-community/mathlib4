@@ -22,8 +22,6 @@ is strictly less than `1`. The corresponding additive definitions are also provi
 
 @[expose] public section
 
-noncomputable section
-
 namespace LinearOrderedCommGroup
 
 open LinearOrderedCommGroup

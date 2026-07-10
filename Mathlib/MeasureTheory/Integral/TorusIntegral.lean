@@ -61,8 +61,6 @@ integral, torus
 variable {n : ℕ}
 variable {E : Type*} [NormedAddCommGroup E]
 
-noncomputable section
-
 open Complex Set MeasureTheory Function Filter TopologicalSpace
 open Mathlib.Tactic (superscriptTerm)
 
@@ -78,7 +76,7 @@ local macro_rules | `($t:term$n:superscript) => `(Fin $n → $t)
 /-- The n-dimensional exponential map $θ_i ↦ c + R e^{θ_i*I}, θ ∈ ℝⁿ$ representing
 a torus in `ℂⁿ` with center `c ∈ ℂⁿ` and generalized radius `R ∈ ℝⁿ`, so we can adjust
 it to every n axis. -/
-def torusMap (c : ℂⁿ) (R : ℝⁿ) : ℝⁿ → ℂⁿ := fun θ i => c i + R i * exp (θ i * I)
+noncomputable def torusMap (c : ℂⁿ) (R : ℝⁿ) : ℝⁿ → ℂⁿ := fun θ i => c i + R i * exp (θ i * I)
 
 theorem torusMap_sub_center (c : ℂⁿ) (R : ℝⁿ) (θ : ℝⁿ) : torusMap c R θ - c = torusMap 0 R θ := by
   ext1 i; simp [torusMap]
@@ -138,7 +136,7 @@ variable [NormedSpace ℂ E] {f g : ℂⁿ → E} {c : ℂⁿ} {R : ℝⁿ}
 
 /-- The integral over a generalized torus with center `c ∈ ℂⁿ` and radius `R ∈ ℝⁿ`, defined
 as the `•`-product of the derivative of `torusMap` and `f (torusMap c R θ)` -/
-def torusIntegral (f : ℂⁿ → E) (c : ℂⁿ) (R : ℝⁿ) :=
+noncomputable def torusIntegral (f : ℂⁿ → E) (c : ℂⁿ) (R : ℝⁿ) :=
   ∫ θ : ℝⁿ in Icc (0 : ℝⁿ) fun _ => 2 * π, (∏ i, R i * exp (θ i * I) * I : ℂ) • f (torusMap c R θ)
 
 @[inherit_doc torusIntegral]

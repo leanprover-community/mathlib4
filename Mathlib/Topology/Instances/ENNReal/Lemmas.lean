@@ -20,8 +20,6 @@ public import Mathlib.Topology.Metrizable.Uniformity
 
 @[expose] public section
 
-noncomputable section
-
 open Filter Function Metric Set Topology
 open scoped Finset ENNReal NNReal
 

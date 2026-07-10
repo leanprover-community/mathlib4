@@ -37,8 +37,6 @@ variable {E PE F PF : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MetricS
 
 open Set AffineMap AffineIsometryEquiv
 
-noncomputable section
-
 namespace IsometryEquiv
 
 /-- If an isometric self-homeomorphism of a normed vector space over `ℝ` fixes `x` and `y`,
@@ -104,7 +102,7 @@ We define a conversion to a `ContinuousLinearEquiv` first, then a conversion to 
 
 /-- **Mazur-Ulam Theorem**: if `f` is an isometric bijection between two normed vector spaces
 over `ℝ` and `f 0 = 0`, then `f` is a linear isometry equivalence. -/
-def toRealLinearIsometryEquivOfMapZero (f : E ≃ᵢ F) (h0 : f 0 = 0) : E ≃ₗᵢ[ℝ] F :=
+noncomputable def toRealLinearIsometryEquivOfMapZero (f : E ≃ᵢ F) (h0 : f 0 = 0) : E ≃ₗᵢ[ℝ] F :=
   { (AddMonoidHom.ofMapMidpoint ℝ ℝ f h0 f.map_midpoint).toRealLinearMap f.continuous, f with
     norm_map' := fun x => show ‖f x‖ = ‖x‖ by simp only [← dist_zero_right, ← h0, f.dist_eq] }
 
@@ -120,7 +118,7 @@ theorem coe_toRealLinearIsometryEquivOfMapZero_symm (f : E ≃ᵢ F) (h0 : f 0 =
 
 /-- **Mazur-Ulam Theorem**: if `f` is an isometric bijection between two normed vector spaces
 over `ℝ`, then `x ↦ f x - f 0` is a linear isometry equivalence. -/
-def toRealLinearIsometryEquiv (f : E ≃ᵢ F) : E ≃ₗᵢ[ℝ] F :=
+noncomputable def toRealLinearIsometryEquiv (f : E ≃ᵢ F) : E ≃ₗᵢ[ℝ] F :=
   (f.trans (IsometryEquiv.addRight (f 0)).symm).toRealLinearIsometryEquivOfMapZero
     (by simpa only [sub_eq_add_neg] using! sub_self (f 0))
 
@@ -136,7 +134,7 @@ theorem toRealLinearIsometryEquiv_symm_apply (f : E ≃ᵢ F) (y : F) :
 
 /-- **Mazur-Ulam Theorem**: if `f` is an isometric bijection between two normed add-torsors over
 normed vector spaces over `ℝ`, then `f` is an affine isometry equivalence. -/
-def toRealAffineIsometryEquiv (f : PE ≃ᵢ PF) : PE ≃ᵃⁱ[ℝ] PF :=
+noncomputable def toRealAffineIsometryEquiv (f : PE ≃ᵢ PF) : PE ≃ᵃⁱ[ℝ] PF :=
   AffineIsometryEquiv.mk' f
     ((vaddConst (Classical.arbitrary PE)).trans <|
         f.trans (vaddConst (f <| Classical.arbitrary PE)).symm).toRealLinearIsometryEquiv

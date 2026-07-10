@@ -24,8 +24,6 @@ of `x` i.e. the group with elements being loops based at `x` (quotiented by homo
 variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
 variable {x₀ x₁ : X}
 
-noncomputable section
-
 open CategoryTheory
 
 variable (X)
@@ -46,14 +44,14 @@ theorem mul_def : p * q = q.trans p := rfl
 theorem inv_def : p⁻¹ = p.symm := rfl
 
 /-- Get an isomorphism between the fundamental groups at two points given a path -/
-def fundamentalGroupMulEquivOfPath (p : Path x₀ x₁) :
+noncomputable def fundamentalGroupMulEquivOfPath (p : Path x₀ x₁) :
     FundamentalGroup X x₀ ≃* FundamentalGroup X x₁ :=
   ((Groupoid.isoEquivHom ..).symm ⟦p⟧).conj
 
 variable (x₀ x₁)
 
 /-- The fundamental group of a path connected space is independent of the choice of basepoint. -/
-def fundamentalGroupMulEquivOfPathConnected [PathConnectedSpace X] :
+noncomputable def fundamentalGroupMulEquivOfPathConnected [PathConnectedSpace X] :
     FundamentalGroup X x₀ ≃* FundamentalGroup X x₁ :=
   fundamentalGroupMulEquivOfPath (PathConnectedSpace.somePath x₀ x₁)
 
@@ -77,13 +75,14 @@ abbrev fromPath {x : X} (p : Path.Homotopic.Quotient x x) : FundamentalGroup X x
   fromArrow p
 
 /-- The homomorphism between fundamental groups induced by a continuous map. -/
-@[simps!] def map (f : C(X, Y)) (x : X) : FundamentalGroup X x →* FundamentalGroup Y (f x) :=
+@[simps!] noncomputable
+def map (f : C(X, Y)) (x : X) : FundamentalGroup X x →* FundamentalGroup Y (f x) :=
   (FundamentalGroupoid.map f).mapEnd _
 
 variable (f : C(X, Y)) {x : X} {y : Y} (h : f x = y)
 
 /-- The homomorphism from π₁(X, x) to π₁(Y, y) induced by a continuous map `f` with `f x = y`. -/
-def mapOfEq : FundamentalGroup X x →* FundamentalGroup Y y :=
+noncomputable def mapOfEq : FundamentalGroup X x →* FundamentalGroup Y y :=
   (eqToIso <| congr_arg FundamentalGroupoid.mk h).conj.toMonoidHom.comp (map f x)
 
 theorem mapOfEq_apply (p : FundamentalGroup X x) :

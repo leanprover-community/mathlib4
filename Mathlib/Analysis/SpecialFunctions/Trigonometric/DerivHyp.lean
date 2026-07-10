@@ -26,8 +26,6 @@ sinh, cosh, tanh
 
 public section
 
-noncomputable section
-
 open scoped Asymptotics Topology Filter
 open Set
 

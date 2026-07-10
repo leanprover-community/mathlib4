@@ -22,8 +22,6 @@ The theorems include formulas for computing coefficients, such as
 @[expose] public section
 
 
-noncomputable section
-
 open Finsupp Finset AddMonoidAlgebra
 
 open Polynomial

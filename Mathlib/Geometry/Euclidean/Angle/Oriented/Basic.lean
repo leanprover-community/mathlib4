@@ -33,8 +33,6 @@ modulo `2 * π` as equalities of `(2 : ℤ) • θ`.
 @[expose] public section
 
 
-noncomputable section
-
 open Module Complex
 
 open scoped Real RealInnerProductSpace ComplexConjugate
@@ -52,7 +50,7 @@ local notation "ω" => o.areaForm
 
 /-- The oriented angle from `x` to `y`, modulo `2 * π`. If either vector is 0, this is 0.
 See `InnerProductGeometry.angle` for the corresponding unoriented angle definition. -/
-def oangle (x y : V) : Real.Angle :=
+noncomputable def oangle (x y : V) : Real.Angle :=
   Complex.arg (o.kahler x y)
 
 /-- Oriented angles are continuous when the vectors involved are nonzero. -/

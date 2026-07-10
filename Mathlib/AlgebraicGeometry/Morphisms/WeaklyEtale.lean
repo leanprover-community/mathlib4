@@ -29,8 +29,6 @@ morphism of finite presentation is étale.
 
 public section
 
-noncomputable section
-
 open CategoryTheory Limits Opposite TopologicalSpace
 
 universe u

@@ -32,8 +32,6 @@ See [miraglia2006introduction] Chapter 21 for a proof that `CompHaus` has enough
 @[expose] public section
 
 
-noncomputable section
-
 open CategoryTheory Function
 
 namespace CompHaus
@@ -59,7 +57,7 @@ instance projective_ultrafilter (X : Type*) : Projective (of <| Ultrafilter X) w
 
 /-- For any compact Hausdorff space `X`,
   the natural map `Ultrafilter X → X` is a projective presentation. -/
-def projectivePresentation (X : CompHaus) : ProjectivePresentation X where
+noncomputable def projectivePresentation (X : CompHaus) : ProjectivePresentation X where
   p := of <| Ultrafilter X
   f := CompHausLike.ofHom _ ⟨_, continuous_ultrafilter_extend id⟩
   projective := CompHaus.projective_ultrafilter X

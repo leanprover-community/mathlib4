@@ -23,8 +23,6 @@ We also prove differentiability and provide derivatives for the power functions 
 public section
 
 
-noncomputable section
-
 open scoped Real Topology NNReal ENNReal
 open Filter
 

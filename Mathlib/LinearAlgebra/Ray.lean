@@ -28,7 +28,7 @@ This file defines rays in modules.
   common positive multiple.
 -/
 
-@[expose] public noncomputable section
+@[expose] public section
 
 open Module
 
@@ -324,7 +324,7 @@ theorem units_smul_of_pos (u : Rˣ) (hu : 0 < (u : R)) (v : Module.Ray R M) : u 
   exact SameRay.sameRay_pos_smul_left _ hu
 
 /-- An arbitrary `RayVector` giving a ray. -/
-def someRayVector (x : Module.Ray R M) : RayVector R M :=
+noncomputable def someRayVector (x : Module.Ray R M) : RayVector R M :=
   Quotient.out x
 
 /-- The ray of `someRayVector`. -/
@@ -333,7 +333,7 @@ theorem someRayVector_ray (x : Module.Ray R M) : (⟦x.someRayVector⟧ : Module
   Quotient.out_eq _
 
 /-- An arbitrary nonzero vector giving a ray. -/
-def someVector (x : Module.Ray R M) : M :=
+noncomputable def someVector (x : Module.Ray R M) : M :=
   x.someRayVector
 
 /-- `someVector` is nonzero. -/

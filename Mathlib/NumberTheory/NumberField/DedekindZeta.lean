@@ -32,8 +32,6 @@ Generalize the construction of the Dedekind zeta function.
 
 variable (K : Type*) [Field K] [NumberField K]
 
-noncomputable section
-
 open Filter Ideal NumberField.InfinitePlace NumberField.Units Topology nonZeroDivisors
 
 namespace NumberField
@@ -44,14 +42,14 @@ open scoped Real
 The Dedekind zeta function of a number field. It is defined as the `L`-series with coefficients
 the number of integral ideals of norm `n`.
 -/
-def dedekindZeta (s : ℂ) :=
+noncomputable def dedekindZeta (s : ℂ) :=
   LSeries (fun n ↦ Nat.card {I : Ideal (𝓞 K) // absNorm I = n}) s
 
 /--
 The value of the residue at `s = 1` of the Dedekind zeta function, see
 `NumberField.tendsto_sub_one_mul_dedekindZeta_nhdsGT`.
 -/
-def dedekindZeta_residue : ℝ :=
+noncomputable def dedekindZeta_residue : ℝ :=
   (2 ^ nrRealPlaces K * (2 * π) ^ nrComplexPlaces K * regulator K * classNumber K) /
     (torsionOrder K * Real.sqrt |discr K|)
 

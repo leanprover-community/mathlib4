@@ -34,10 +34,10 @@ universe u
 
 namespace SemiNormedGrp₁
 
-noncomputable section
+section
 
 /-- Auxiliary definition for `HasCokernels SemiNormedGrp₁`. -/
-def cokernelCocone {X Y : SemiNormedGrp₁.{u}} (f : X ⟶ Y) : Cofork f 0 :=
+noncomputable def cokernelCocone {X Y : SemiNormedGrp₁.{u}} (f : X ⟶ Y) : Cofork f 0 :=
   Cofork.ofπ
     (@SemiNormedGrp₁.mkHom _ (Y ⧸ NormedAddGroupHom.range f.1) _ _
       f.hom.1.range.normedMk (NormedAddGroupHom.isQuotientQuotient _).norm_le)
@@ -49,7 +49,7 @@ def cokernelCocone {X Y : SemiNormedGrp₁.{u}} (f : X ⟶ Y) : Cofork f 0 :=
       use x)
 
 /-- Auxiliary definition for `HasCokernels SemiNormedGrp₁`. -/
-def cokernelLift {X Y : SemiNormedGrp₁.{u}} (f : X ⟶ Y) (s : CokernelCofork f) :
+noncomputable def cokernelLift {X Y : SemiNormedGrp₁.{u}} (f : X ⟶ Y) (s : CokernelCofork f) :
     (cokernelCocone f).pt ⟶ s.pt := by
   fconstructor
   -- The lift itself:

@@ -71,8 +71,6 @@ Relate the stereographic projection to the inversion of the space.
 
 variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
 
-noncomputable section
-
 open Metric Module Function
 
 open scoped Manifold ContDiff RealInnerProductSpace
@@ -88,7 +86,7 @@ variable (v : E)
 the orthogonal complement of an element `v` of `E`. It is smooth away from the affine hyperplane
 through `v` parallel to the orthogonal complement.  It restricts on the sphere to the stereographic
 projection. -/
-def stereoToFun (x : E) : (ℝ ∙ v)ᗮ :=
+noncomputable def stereoToFun (x : E) : (ℝ ∙ v)ᗮ :=
   (2 / ((1 : ℝ) - innerSL ℝ v x)) • (ℝ ∙ v)ᗮ.orthogonalProjectionOnto x
 
 variable {v}
@@ -116,7 +114,7 @@ projection.  This is a map from the orthogonal complement of a unit vector `v` i
 space `E` to `E`; we will later prove that it takes values in the unit sphere.
 
 For most purposes, use `stereoInvFun`, not `stereoInvFunAux`. -/
-def stereoInvFunAux (w : E) : E :=
+noncomputable def stereoInvFunAux (w : E) : E :=
   (‖w‖ ^ 2 + 4)⁻¹ • ((4 : ℝ) • w + (‖w‖ ^ 2 - 4) • v)
 
 @[simp]
@@ -174,7 +172,7 @@ theorem contDiff_stereoInvFunAux {m : ℕ∞ω} : ContDiff ℝ m (stereoInvFunAu
 
 /-- Stereographic projection, reverse direction.  This is a map from the orthogonal complement of a
 unit vector `v` in an inner product space `E` to the unit sphere in `E`. -/
-def stereoInvFun (hv : ‖v‖ = 1) (w : (ℝ ∙ v)ᗮ) : sphere (0 : E) 1 :=
+noncomputable def stereoInvFun (hv : ‖v‖ = 1) (w : (ℝ ∙ v)ᗮ) : sphere (0 : E) 1 :=
   ⟨stereoInvFunAux v (w : E), stereoInvFunAux_mem hv w.2⟩
 
 @[simp]
@@ -246,6 +244,7 @@ theorem stereo_right_inv (hv : ‖v‖ = 1) (w : (ℝ ∙ v)ᗮ) : stereoToFun v
 
 /-- Stereographic projection from the unit sphere in `E`, centred at a unit vector `v` in `E`;
 this is the version as an open partial homeomorphism. -/
+noncomputable
 def stereographic (hv : ‖v‖ = 1) : OpenPartialHomeomorph (sphere (0 : E) 1) (ℝ ∙ v)ᗮ where
   toFun := stereoToFun v ∘ (↑)
   invFun := stereoInvFun hv
@@ -334,7 +333,7 @@ orthogonalization, but in the finite-dimensional case it follows more easily by 
 space `E`.  This version has codomain the Euclidean space of dimension `n`, and is obtained by
 composing the original stereographic projection (`stereographic`) with an arbitrary linear isometry
 from `(ℝ ∙ v)ᗮ` to the Euclidean space. -/
-def stereographic' (n : ℕ) [Fact (finrank ℝ E = n + 1)] (v : sphere (0 : E) 1) :
+noncomputable def stereographic' (n : ℕ) [Fact (finrank ℝ E = n + 1)] (v : sphere (0 : E) 1) :
     OpenPartialHomeomorph (sphere (0 : E) 1) (EuclideanSpace ℝ (Fin n)) :=
   stereographic (norm_eq_of_mem_sphere v) ≫ₕ
     (OrthonormalBasis.fromOrthogonalSpanSingleton n
@@ -350,14 +349,14 @@ theorem stereographic'_target {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : sphe
 
 /-- The unit sphere in an `n + 1`-dimensional inner product space `E` is a charted space
 modelled on the Euclidean space of dimension `n`. -/
-instance EuclideanSpace.instChartedSpaceSphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] :
+noncomputable instance EuclideanSpace.instChartedSpaceSphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] :
     ChartedSpace (EuclideanSpace ℝ (Fin n)) (sphere (0 : E) 1) where
   atlas := {f | ∃ v : sphere (0 : E) 1, f = stereographic' n v}
   chartAt v := stereographic' n (-v)
   mem_chart_source v := by simpa using ne_neg_of_mem_unit_sphere ℝ v
   chart_mem_atlas v := ⟨-v, rfl⟩
 
-instance (n : ℕ) :
+noncomputable instance (n : ℕ) :
     ChartedSpace (EuclideanSpace ℝ (Fin n)) (sphere (0 : EuclideanSpace ℝ (Fin (n + 1))) 1) :=
   have := Fact.mk (@finrank_euclideanSpace_fin ℝ _ (n + 1))
   EuclideanSpace.instChartedSpaceSphere
@@ -555,7 +554,7 @@ attribute [local instance] finrank_real_complex_fact'
 
 /-- The unit circle in `ℂ` is a charted space modelled on `EuclideanSpace ℝ (Fin 1)`.  This
 follows by definition from the corresponding result for `Metric.Sphere`. -/
-instance : ChartedSpace (EuclideanSpace ℝ (Fin 1)) Circle :=
+noncomputable instance : ChartedSpace (EuclideanSpace ℝ (Fin 1)) Circle :=
   inferInstanceAs <| ChartedSpace _ (sphere _ _)
 
 instance : IsManifold (𝓡 1) ω Circle :=

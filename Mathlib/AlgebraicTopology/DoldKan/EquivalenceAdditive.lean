@@ -19,8 +19,6 @@ of categories `Karoubi (SimplicialObject C) ≌ Karoubi (ChainComplex C ℕ)`.
 @[expose] public section
 
 
-noncomputable section
-
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits
   CategoryTheory.Idempotents AlgebraicTopology.DoldKan
 
@@ -35,7 +33,7 @@ namespace DoldKan
 /-- The functor `Karoubi (SimplicialObject C) ⥤ Karoubi (ChainComplex C ℕ)` of
 the Dold-Kan equivalence for additive categories. -/
 @[simp]
-def N : Karoubi (SimplicialObject C) ⥤ Karoubi (ChainComplex C ℕ) :=
+noncomputable def N : Karoubi (SimplicialObject C) ⥤ Karoubi (ChainComplex C ℕ) :=
   N₂
 
 variable [HasFiniteCoproducts C]
@@ -43,14 +41,14 @@ variable [HasFiniteCoproducts C]
 /-- The inverse functor `Karoubi (ChainComplex C ℕ) ⥤ Karoubi (SimplicialObject C)` of
 the Dold-Kan equivalence for additive categories. -/
 @[simp]
-def Γ : Karoubi (ChainComplex C ℕ) ⥤ Karoubi (SimplicialObject C) :=
+noncomputable def Γ : Karoubi (ChainComplex C ℕ) ⥤ Karoubi (SimplicialObject C) :=
   Γ₂
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The Dold-Kan equivalence `Karoubi (SimplicialObject C) ≌ Karoubi (ChainComplex C ℕ)`
 for additive categories. -/
 @[simps]
-def equivalence : Karoubi (SimplicialObject C) ≌ Karoubi (ChainComplex C ℕ) where
+noncomputable def equivalence : Karoubi (SimplicialObject C) ≌ Karoubi (ChainComplex C ℕ) where
   functor := N
   inverse := Γ
   unitIso := Γ₂N₂

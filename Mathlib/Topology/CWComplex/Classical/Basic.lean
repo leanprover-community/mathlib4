@@ -86,8 +86,6 @@ together.
 
 @[expose] public section
 
-noncomputable section
-
 open Metric Set Function
 
 namespace Topology

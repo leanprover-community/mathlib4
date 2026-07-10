@@ -32,8 +32,6 @@ because mathlib does not have the notion of distributive actions of additive gro
 
 assert_not_exists NonUnitalAlgHom AlgEquiv
 
-noncomputable section
-
 open Finsupp hiding single
 open Module
 
@@ -49,6 +47,7 @@ section DistribMulAction
 variable [Monoid S] [Semiring R] [DistribMulAction S R]
 
 @[to_additive (dont_translate := S) distribMulAction]
+noncomputable
 instance distribMulAction : DistribMulAction S R[M] := fast_instance% coeffEquiv.distribMulAction _
 
 @[to_additive (dont_translate := S) (attr := simp)]
@@ -61,7 +60,7 @@ section Module
 variable [Semiring R] [Semiring S] [Module R S] {s t : Set M} {x : S[M]}
 
 @[to_additive (dont_translate := R)]
-instance : Module R S[M] := fast_instance% coeffEquiv.module _
+noncomputable instance : Module R S[M] := fast_instance% coeffEquiv.module _
 
 @[to_additive]
 instance instIsTorsionFree [IsTorsionFree R S] : IsTorsionFree R S[M] :=
@@ -71,12 +70,12 @@ variable (R) in
 /-- `MonoidAlgebra.coeff` as a linear equiv. -/
 @[to_additive (attr := simps! apply symm_apply)
 /-- `MonoidAlgebra.coeff` as a linear equiv. -/]
-def coeffLinearEquiv : S[M] ≃ₗ[R] M →₀ S := coeffEquiv.linearEquiv _
+noncomputable def coeffLinearEquiv : S[M] ≃ₗ[R] M →₀ S := coeffEquiv.linearEquiv _
 
 variable (R S) in
 /-- `MonoidAlgebra.mapDomain` as a linear map. -/
 @[to_additive /-- `AddMonoidAlgebra.mapDomain` as a linear map. -/]
-def mapDomainLinearMap (f : M → N) : S[M] →ₗ[R] S[N] :=
+noncomputable def mapDomainLinearMap (f : M → N) : S[M] →ₗ[R] S[N] :=
   (coeffLinearEquiv _).symm.toLinearMap ∘ₗ Finsupp.lmapDomain _ _ f ∘ₗ
     (coeffLinearEquiv _).toLinearMap
 
@@ -96,7 +95,7 @@ lemma mapDomainLinearMap_comp (f : M → N) (g : N → O) :
 variable (R S) in
 /-- `MonoidAlgebra.mapDomain` as a linear equiv. -/
 @[to_additive /-- `AddMonoidAlgebra.mapDomain` as a linear equiv. -/]
-def mapDomainLinearEquiv (e : M ≃ N) : S[M] ≃ₗ[R] S[N] :=
+noncomputable def mapDomainLinearEquiv (e : M ≃ N) : S[M] ≃ₗ[R] S[N] :=
   (coeffLinearEquiv _).trans <| (Finsupp.domLCongr e).trans <| (coeffLinearEquiv _).symm
 
 @[to_additive (attr := simp)]
@@ -120,7 +119,7 @@ variable (R M) in
 /-- The trivial monoid algebra is the base ring. -/
 @[to_additive (dont_translate := R)
 /-- The trivial monoid algebra is the base ring. -/]
-def uniqueLinearEquiv [One M] [Subsingleton M] : S[M] ≃ₗ[R] S where
+noncomputable def uniqueLinearEquiv [One M] [Subsingleton M] : S[M] ≃ₗ[R] S where
   toAddEquiv := coeffAddEquiv.trans <| Finsupp.uniqueAddEquiv 1
   map_smul' r x := by simp
 
@@ -138,6 +137,7 @@ variable (R S s) in
 /-- The `R`-submodule of all elements of `S[M]` supported on a subset `s` of `M`. -/
 @[to_additive
 /-- The `R`-submodule of all elements of `S[M]` supported on a subset `s` of `M`. -/]
+noncomputable
 def supported : Submodule R S[M] := (Finsupp.supported S R s).comap (coeffLinearEquiv R).toLinearMap
 
 @[to_additive] lemma mem_supported : x ∈ supported R S s ↔ ↑x.coeff.support ⊆ s := .rfl
@@ -166,7 +166,7 @@ lemma supported_mono (hst : s ⊆ t) : supported R S s ≤ supported R S t := fu
 @[to_additive (dont_translate := R) (attr := simps!)
 /-- Interpret `Finsupp.restrictSupportEquiv` as a linear equivalence between
 `supported M R s` and `s →₀ M`. -/]
-def supportedEquivFinsupp (s : Set M) : supported R S s ≃ₗ[R] s →₀ S :=
+noncomputable def supportedEquivFinsupp (s : Set M) : supported R S s ≃ₗ[R] s →₀ S :=
   { toFun x := ⟨x.1.coeff, x.2⟩
     invFun x := ⟨.ofCoeff x.1, x.2⟩
     left_inv _ := rfl
@@ -183,7 +183,7 @@ instance faithfulSMul [Semiring S] [SMulZeroClass R S] [FaithfulSMul R S] [Nonem
 
 /-- The standard basis for a monoid algebra. -/
 @[to_additive /-- The standard basis for an additive monoid algebra. -/]
-def basis (R k) [Semiring k] : Module.Basis R k (MonoidAlgebra k R) where
+noncomputable def basis (R k) [Semiring k] : Module.Basis R k (MonoidAlgebra k R) where
   repr := coeffLinearEquiv _
 
 @[to_additive (dont_translate := k) (attr := simp)]
@@ -197,7 +197,7 @@ TODO: Change the type to `DistribMulAction Gᵈᵐᵃ S[M]` and then it can be a
 TODO: Generalise to a group acting on another, instead of just the left multiplication action.
 -/
 @[implicit_reducible]
-def comapDistribMulActionSelf [Group G] [Semiring S] : DistribMulAction G S[G] :=
+noncomputable def comapDistribMulActionSelf [Group G] [Semiring S] : DistribMulAction G S[G] :=
   have := Finsupp.comapDistribMulAction (G := G) (α := G) (M := S)
   fast_instance% coeffEquiv.distribMulAction _
 
@@ -218,6 +218,7 @@ variable [Semiring S]
 /-- `MonoidAlgebra.single` as a `DistribMulActionHom`. -/
 @[to_additive (dont_translate := R) singleDistribMulActionHom
 /-- `AddMonoidAlgebra.single` as a `DistribMulActionHom`. -/]
+noncomputable
 def singleDistribMulActionHom [Monoid R] [DistribMulAction R S] (a : M) : S →+[R] S[M] where
   __ := singleAddHom a
   map_smul' S m := by simp
@@ -233,7 +234,7 @@ theorem distribMulActionHom_ext' {N : Type*} [Monoid R] [AddMonoid N] [DistribMu
 
 /-- A copy of `Finsupp.lsingle` for `MonoidAlgebra`. -/
 @[to_additive (dont_translate := R) /-- A copy of `Finsupp.lsingle` for `AddMonoidAlgebra`. -/]
-def lsingle [Semiring R] [Module R S] (a : M) : S →ₗ[R] S[M] :=
+noncomputable def lsingle [Semiring R] [Module R S] (a : M) : S →ₗ[R] S[M] :=
   (coeffLinearEquiv _).symm.toLinearMap.comp <| Finsupp.lsingle a
 
 @[to_additive (attr := simp)]

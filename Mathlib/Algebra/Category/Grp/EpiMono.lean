@@ -21,8 +21,6 @@ epimorphisms are surjective homomorphisms.
 @[expose] public section
 
 
-noncomputable section
-
 open scoped Pointwise
 
 universe u v
@@ -143,7 +141,7 @@ theorem fromCoset_ne_of_nin_range {b : B} (hb : b ∉ f.hom.range) :
   rw [leftCoset_eq_iff, mul_one] at r
   exact hb (inv_inv b ▸ Subgroup.inv_mem _ r)
 
-instance : DecidableEq X' :=
+noncomputable instance : DecidableEq X' :=
   Classical.decEq _
 
 /-- Let `τ` be the permutation on `X'` exchanging `f.hom.range` and the point at infinity.
@@ -195,7 +193,7 @@ local notation "g" => g f
 
 /-- Define `h : B ⟶ S(X')` to be `τ g τ⁻¹`
 -/
-def h : B →* SX' where
+noncomputable def h : B →* SX' where
   toFun β := ((τ).symm.trans (g β)).trans τ
   map_one' := by
     ext

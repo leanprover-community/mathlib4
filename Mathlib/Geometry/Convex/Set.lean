@@ -24,7 +24,7 @@ Since its body is an implementation detail, the predicate `IsConvexSet` is unexp
 
 open Finsupp Set
 
-public noncomputable section
+public section
 
 namespace Convexity
 variable {ι I R K X Y : Type*}
@@ -132,7 +132,7 @@ protected lemma IsConvexSet.image (hf : IsAffineMap R f) (hs : IsConvexSet R s) 
 
 /-- A convex subset of a convex space is a convex space. -/
 @[expose, implicit_reducible]
-def ConvexSpace.subtype (s : Set X) (hs : IsConvexSet R s) : ConvexSpace R s := .mk
+noncomputable def ConvexSpace.subtype (s : Set X) (hs : IsConvexSet R s) : ConvexSpace R s := .mk
   (fun w ↦ ⟨w.iConvexComb (↑), hs.iConvexComb_mem <| by simp⟩)
   (fun x ↦ by simp)
   (fun w ↦ by ext; simp [iConvexComb_assoc])

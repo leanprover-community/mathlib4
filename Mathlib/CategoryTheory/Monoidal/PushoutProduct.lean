@@ -205,13 +205,13 @@ section CartesianMonoidalClosed
 
 variable [CartesianMonoidalCategory C] [MonoidalClosed C]
 
-noncomputable section
+section
 
 set_option backward.defeqAttrib.useBackward true in
 /-- The arrow isomorphism `X □ (∅ ⟶ W) ≅ X ▷ W` in a CCC with pushouts and an
 initial object. -/
 @[simps!]
-def isInitialIso (X : Arrow C) {I : C} (i : IsInitial I) {W : C} :
+noncomputable def isInitialIso (X : Arrow C) {I : C} (i : IsInitial I) {W : C} :
     (X □ i.to W) ≅ X.hom ▷ W :=
   haveI : IsIso (X.hom ▷ I) :=
     isIso_of_isInitial (i.ofIso (zeroMul i).symm) (i.ofIso (zeroMul i).symm) _
@@ -224,6 +224,7 @@ set_option backward.defeqAttrib.useBackward true in
 /-- The arrow isomorphism `(∅ ⟶ W) □ X ≅ W ◁ X` in a braided CCC with pushouts and
 an initial object. -/
 @[simps!]
+noncomputable
 def isInitialIso' [BraidedCategory C] (X : Arrow C) {I : C} (i : IsInitial I) {W : C} :
     (i.to W □ X) ≅ Arrow.mk (W ◁ X.hom) :=
   haveI : IsIso (I ◁ X.hom) :=
@@ -236,6 +237,7 @@ def isInitialIso' [BraidedCategory C] (X : Arrow C) {I : C} (i : IsInitial I) {W
 /-- The arrow isomorphism `X □ (∅ ⟶ ⋆) ≅ X` in a CCC with pushouts, an initial object, and a
 terminal object. -/
 @[simps!]
+noncomputable
 def isInitialIsTerminalIso (X : Arrow C) {I : C} (i : IsInitial I) {T : C} (t : IsTerminal T) :
     (X □ i.to T) ≅ X :=
   (isInitialIso X i) ≪≫ Arrow.isoMk' _ _
@@ -248,6 +250,7 @@ def isInitialIsTerminalIso (X : Arrow C) {I : C} (i : IsInitial I) {T : C} (t : 
 /-- The arrow isomorphism `X □ (∅ ⟶ ⋆) ≅ X` in a CCC with pushouts, an initial object, and a
 terminal object. -/
 @[simps!]
+noncomputable
 def isInitialIsTerminalIso' (X : Arrow C) {I : C} (i : IsInitial I) {T : C} (t : IsTerminal T) :
     (X □ t.from I) ≅ X :=
   (mapIso _ (Arrow.isoMk' _ _ (Iso.refl _) (Iso.refl _) (i.hom_ext _ _))) ≪≫
@@ -292,14 +295,14 @@ namespace PullbackHom
 
 variable [HasPullbacks C]
 
-noncomputable section
+section
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The arrow isomorphism `(f : A ⟶ B) ⋔ (W ⟶ ⋆) ≅ (B ⟹ W ⟶ A ⟹ W)` in a monoidal closed
 category with pullbacks and a terminal object. -/
 @[simps!]
-def isTerminalIso [MonoidalCategory C] [MonoidalClosed C]
+noncomputable def isTerminalIso [MonoidalCategory C] [MonoidalClosed C]
     (X : Arrow C) {T : C} (t : IsTerminal T) {W : C} :
     ((Opposite.op X) ⋔ Arrow.mk (t.from W)) ≅ Arrow.mk ((MonoidalClosed.pre X.hom).app W) :=
   haveI : IsIso ((MonoidalClosed.pre X.hom).app T) :=
@@ -317,7 +320,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- The arrow isomorphism `(∅ ⟶ W) ⋔ (f : A ⟶ B) ≅ (W ⟹ A ⟶ W ⟹ B)` in a braided CCC with
 pullbacks and an initial object. -/
 @[simps!]
-def isInitialIso [CartesianMonoidalCategory C] [MonoidalClosed C] [BraidedCategory C]
+noncomputable def isInitialIso [CartesianMonoidalCategory C] [MonoidalClosed C] [BraidedCategory C]
     (X : Arrow C) {I : C} (i : IsInitial I) {W : C} :
     (Opposite.op (Arrow.mk (i.to W)) ⋔ X) ≅ Arrow.mk ((ihom W).map X.hom) :=
   haveI : IsIso ((ihom I).map X.hom) :=

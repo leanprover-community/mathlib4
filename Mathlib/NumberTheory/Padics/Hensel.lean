@@ -36,8 +36,6 @@ p-adic, p adic, padic, p-adic integer
 public section
 
 
-noncomputable section
-
 open Topology
 
 -- We begin with some general lemmas that are used below in the computation.
@@ -129,7 +127,7 @@ variable (p : ℕ) [Fact p.Prime] {R : Type*} [CommSemiring R] [Algebra R ℤ_[p
   (F : Polynomial R) (a : ℤ_[p])
 
 /-- `T` is an auxiliary value that is used to control the behavior of the polynomial `F`. -/
-private def T_gen : ℝ := ‖F.aeval a / ((F.derivative.aeval a ^ 2 : ℤ_[p]) : ℚ_[p])‖
+private noncomputable def T_gen : ℝ := ‖F.aeval a / ((F.derivative.aeval a ^ 2 : ℤ_[p]) : ℚ_[p])‖
 
 local notation "T" => @T_gen p _ _ _ _ F a
 
@@ -208,7 +206,7 @@ private theorem calc_deriv_dist {z z' z1 : ℤ_[p]} (hz' : z' = z - z1)
       (T_pow' hnorm _)
 
 
-private def calc_eval_z' {z z' z1 : ℤ_[p]} (hz' : z' = z - z1) {n} (hz : ih n z)
+private noncomputable def calc_eval_z' {z z' z1 : ℤ_[p]} (hz' : z' = z - z1) {n} (hz : ih n z)
     (h1 : ‖(↑(F.aeval z) : ℚ_[p]) / ↑(F.derivative.aeval z)‖ ≤ 1) (hzeq : z1 = ⟨_, h1⟩) :
     { q : ℤ_[p] // F.aeval z' = q * z1 ^ 2 } := by
   have hdzne : F.derivative.aeval z ≠ 0 :=
@@ -247,7 +245,8 @@ private def calc_eval_z'_norm {z z' z1 : ℤ_[p]} {n} (hz : ih n z) {q}
 
 /-- Given `z : ℤ_[p]` satisfying `ih n z`, construct `z' : ℤ_[p]` satisfying `ih (n+1) z'`. We need
 the hypothesis `ih n z`, since otherwise `z'` is not necessarily an integer. -/
-private def ih_n {n : ℕ} {z : ℤ_[p]} (hz : ih n z) : { z' : ℤ_[p] // ih (n + 1) z' } :=
+private noncomputable
+def ih_n {n : ℕ} {z : ℤ_[p]} (hz : ih n z) : { z' : ℤ_[p] // ih (n + 1) z' } :=
   have h1 : ‖(↑(F.aeval z) : ℚ_[p]) / ↑(F.derivative.aeval z)‖ ≤ 1 := calc_norm_le_one hnorm hz
   let z1 : ℤ_[p] := ⟨_, h1⟩
   let z' : ℤ_[p] := z - z1
@@ -263,11 +262,11 @@ private def ih_n {n : ℕ} {z : ℤ_[p]} (hz : ih n z) : { z' : ℤ_[p] // ih (n
       calc_eval_z'_norm hz heq h1 rfl
     ⟨hfeq, hnle⟩⟩
 
-private def newton_seq_aux : ∀ n : ℕ, { z : ℤ_[p] // ih n z }
+private noncomputable def newton_seq_aux : ∀ n : ℕ, { z : ℤ_[p] // ih n z }
   | 0 => ⟨a, ih_0 hnorm⟩
   | k + 1 => ih_n hnorm (newton_seq_aux k).2
 
-private def newton_seq_gen (n : ℕ) : ℤ_[p] :=
+private noncomputable def newton_seq_gen (n : ℕ) : ℤ_[p] :=
   (newton_seq_aux hnorm n).1
 
 local notation "newton_seq" => newton_seq_gen hnorm
@@ -349,9 +348,9 @@ private theorem bound'_sq :
 private theorem newton_seq_is_cauchy : IsCauSeq norm newton_seq := fun _ε hε ↦
   (bound hnorm hε).imp fun _N hN _j hj ↦ (newton_seq_dist hnorm hj).trans_lt <| hN le_rfl
 
-private def newton_cau_seq : CauSeq ℤ_[p] norm := ⟨_, newton_seq_is_cauchy hnorm⟩
+private noncomputable def newton_cau_seq : CauSeq ℤ_[p] norm := ⟨_, newton_seq_is_cauchy hnorm⟩
 
-private def soln_gen : ℤ_[p] := (newton_cau_seq hnorm).lim
+private noncomputable def soln_gen : ℤ_[p] := (newton_cau_seq hnorm).lim
 
 local notation "soln" => soln_gen hnorm
 

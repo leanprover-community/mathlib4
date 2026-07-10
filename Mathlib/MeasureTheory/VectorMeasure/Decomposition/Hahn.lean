@@ -38,8 +38,6 @@ Hahn decomposition theorem
 @[expose] public section
 
 
-noncomputable section
-
 open scoped NNReal ENNReal MeasureTheory
 
 variable {α β : Type*} [MeasurableSpace α]
@@ -104,7 +102,7 @@ private theorem existsNatOneDivLTMeasure_of_not_negative (hi : ¬s ≤[i] 0) :
 open scoped Classical in
 /-- Given the set `i`, if `i` is not negative, `findExistsOneDivLT s i` is the
 least natural number `n` such that `ExistsOneDivLT s i n`, otherwise, it returns 0. -/
-private def findExistsOneDivLT (s : SignedMeasure α) (i : Set α) : ℕ :=
+private noncomputable def findExistsOneDivLT (s : SignedMeasure α) (i : Set α) : ℕ :=
   if hi : ¬s ≤[i] 0 then Nat.find (existsNatOneDivLTMeasure_of_not_negative hi) else 0
 
 private theorem findExistsOneDivLT_spec (hi : ¬s ≤[i] 0) :

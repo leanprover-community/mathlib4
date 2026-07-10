@@ -14,16 +14,15 @@ public import Mathlib.Logic.Small.Defs
 
 public section
 
-noncomputable section
-
 universe v
 variable {α : Type*} [Small.{v} α]
 
 namespace Shrink
 
-instance [NNRatCast α] : NNRatCast (Shrink.{v} α) := (equivShrink α).symm.nnratCast
-instance [RatCast α] : RatCast (Shrink.{v} α) := (equivShrink α).symm.ratCast
+noncomputable instance [NNRatCast α] : NNRatCast (Shrink.{v} α) := (equivShrink α).symm.nnratCast
+noncomputable instance [RatCast α] : RatCast (Shrink.{v} α) := (equivShrink α).symm.ratCast
+noncomputable
 instance [DivisionRing α] : DivisionRing (Shrink.{v} α) := (equivShrink _).symm.divisionRing
-instance [Field α] : Field (Shrink.{v} α) := (equivShrink _).symm.field
+noncomputable instance [Field α] : Field (Shrink.{v} α) := (equivShrink _).symm.field
 
 end Shrink

@@ -40,8 +40,6 @@ We verify that when `V = Type v`, all these notions reduce to the usual ones.
 
 universe w w' v v' u₁ u₂ u₃
 
-noncomputable section
-
 namespace CategoryTheory
 
 open Opposite

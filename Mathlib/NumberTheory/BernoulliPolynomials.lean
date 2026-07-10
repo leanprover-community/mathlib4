@@ -39,8 +39,6 @@ Bernoulli polynomials are defined using `bernoulli`, the Bernoulli numbers.
 @[expose] public section
 
 
-noncomputable section
-
 open Nat Polynomial
 
 open Nat Finset
@@ -48,7 +46,7 @@ open Nat Finset
 namespace Polynomial
 
 /-- The Bernoulli polynomials are defined in terms of the negative Bernoulli numbers. -/
-def bernoulli (n : ℕ) : ℚ[X] :=
+noncomputable def bernoulli (n : ℕ) : ℚ[X] :=
   ∑ i ∈ range (n + 1), Polynomial.monomial (n - i) (_root_.bernoulli i * choose n i)
 
 theorem bernoulli_def (n : ℕ) : bernoulli n =

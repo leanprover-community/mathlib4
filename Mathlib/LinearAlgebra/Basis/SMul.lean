@@ -19,8 +19,6 @@ This file defines the scalar multiplication of bases by multiplying each basis v
 
 assert_not_exists Ordinal
 
-noncomputable section
-
 universe u
 
 open Function Set Submodule Finsupp
@@ -40,7 +38,7 @@ variable [SMulCommClass G R M] [SMulCommClass G' R M]
 
 See also `Basis.unitsSMul` and `Basis.groupSMul`, for the cases when a different action is applied
 to each basis element. -/
-instance : SMul G (Basis ι R M) where
+noncomputable instance : SMul G (Basis ι R M) where
   smul g b := b.map <| DistribMulAction.toLinearEquiv _ _ g
 
 @[simp]
@@ -55,7 +53,7 @@ theorem smul_eq_map (g : M ≃ₗ[R] M) (b : Basis ι R M) : g • b = b.map g :
 @[simp] theorem repr_smul (g : G) (b : Basis ι R M) :
     (g • b).repr = (DistribMulAction.toLinearEquiv _ _ g).symm.trans b.repr := rfl
 
-instance : MulAction G (Basis ι R M) :=
+noncomputable instance : MulAction G (Basis ι R M) :=
   Function.Injective.mulAction _ DFunLike.coe_injective coe_smul
 
 instance [SMulCommClass G G' M] : SMulCommClass G G' (Basis ι R M) where
@@ -84,7 +82,7 @@ theorem groupSMul_span_eq_top {G : Type*} [Group G] [SMul G R] [MulAction G M]
 
 /-- Given a basis `v` and a map `w` such that for all `i`, `w i` are elements of a group,
 `groupSMul` provides the basis corresponding to `w • v`. -/
-def groupSMul {G : Type*} [Group G] [DistribMulAction G R] [DistribMulAction G M]
+noncomputable def groupSMul {G : Type*} [Group G] [DistribMulAction G R] [DistribMulAction G M]
     [IsScalarTower G R M] [SMulCommClass G R M] (v : Basis ι R M) (w : ι → G) : Basis ι R M :=
   Basis.mk (LinearIndependent.group_smul v.linearIndependent w) (groupSMul_span_eq_top v.span_eq).ge
 
@@ -100,7 +98,7 @@ theorem units_smul_span_eq_top {v : ι → M} (hv : Submodule.span R (Set.range 
 
 /-- Given a basis `v` and a map `w` such that for all `i`, `w i` is a unit, `unitsSMul`
 provides the basis corresponding to `w • v`. -/
-def unitsSMul (v : Basis ι R M) (w : ι → Rˣ) : Basis ι R M :=
+noncomputable def unitsSMul (v : Basis ι R M) (w : ι → Rˣ) : Basis ι R M :=
   Basis.mk (LinearIndependent.units_smul v.linearIndependent w)
     (units_smul_span_eq_top v.span_eq).ge
 
@@ -128,7 +126,7 @@ theorem repr_unitsSMul (e : Basis ι R₂ M) (w : ι → R₂ˣ) (v : M) (i : ι
   congr_arg (fun f : M →ₗ[R₂] R₂ => f v) (e.coord_unitsSMul w i)
 
 /-- A version of `unitsSMul` that uses `IsUnit`. -/
-def isUnitSMul (v : Basis ι R M) {w : ι → R} (hw : ∀ i, IsUnit (w i)) : Basis ι R M :=
+noncomputable def isUnitSMul (v : Basis ι R M) {w : ι → R} (hw : ∀ i, IsUnit (w i)) : Basis ι R M :=
   unitsSMul v fun i => (hw i).unit
 
 theorem isUnitSMul_apply {v : Basis ι R M} {w : ι → R} (hw : ∀ i, IsUnit (w i)) (i : ι) :

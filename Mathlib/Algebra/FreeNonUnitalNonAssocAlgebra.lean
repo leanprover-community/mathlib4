@@ -37,7 +37,7 @@ free algebra, non-unital, non-associative, free magma, magma algebra, universal 
 forgetful functor, adjoint functor
 -/
 
-@[expose] public noncomputable section
+@[expose] public section
 
 open scoped MonoidAlgebra
 
@@ -66,7 +66,7 @@ namespace FreeNonUnitalNonAssocAlgebra
 variable {X A}
 
 /-- The embedding of `X` into the free algebra with coefficients in `R`. -/
-def of : X → FreeNonUnitalNonAssocAlgebra R X :=
+noncomputable def of : X → FreeNonUnitalNonAssocAlgebra R X :=
   MonoidAlgebra.ofMagma R _ ∘ FreeMagma.of
 
 variable [NonUnitalNonAssocSemiring A] [Module R A] [IsScalarTower R A A] [SMulCommClass R A A]
@@ -74,7 +74,7 @@ variable [NonUnitalNonAssocSemiring A] [Module R A] [IsScalarTower R A A] [SMulC
 /-- The functor `X ↦ FreeNonUnitalNonAssocAlgebra R X` from the category of types to the
 category of non-unital, non-associative algebras over `R` is adjoint to the forgetful functor in the
 other direction. -/
-def lift : (X → A) ≃ (FreeNonUnitalNonAssocAlgebra R X →ₙₐ[R] A) :=
+noncomputable def lift : (X → A) ≃ (FreeNonUnitalNonAssocAlgebra R X →ₙₐ[R] A) :=
   FreeMagma.lift.trans (MonoidAlgebra.liftMagma R)
 
 @[simp]

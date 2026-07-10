@@ -38,8 +38,6 @@ to `f`.
 @[expose] public section
 
 
-noncomputable section
-
 open Nat (choose)
 
 open Polynomial (X)
@@ -52,7 +50,7 @@ variable (R : Type*) [CommRing R]
 
 Although the coefficients are integers, it is convenient to work over an arbitrary commutative ring.
 -/
-def bernsteinPolynomial (n ν : ℕ) : R[X] :=
+noncomputable def bernsteinPolynomial (n ν : ℕ) : R[X] :=
   (choose n ν : R[X]) * X ^ ν * (1 - X) ^ (n - ν)
 
 example : bernsteinPolynomial ℤ 3 2 = 3 * X ^ 2 - 3 * X ^ 3 := by

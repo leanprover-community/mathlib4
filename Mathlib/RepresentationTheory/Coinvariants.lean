@@ -301,31 +301,32 @@ open CategoryTheory Representation
 
 variable {k : Type u} {G : Type v} [CommRing k]
 
-noncomputable section
+section
 
 variable [Group G] (A : Rep.{w} k G) (S : Subgroup G) [S.Normal]
 
 /-- Given a normal subgroup `S ≤ G`, a `G`-representation `A` restricts to a `G`-representation on
 the kernel of the quotient map to the `S`-coinvariants `A_S`. -/
-abbrev toCoinvariantsKer : Rep k G := Rep.of (A.ρ.toCoinvariantsKer S)
+noncomputable abbrev toCoinvariantsKer : Rep k G := Rep.of (A.ρ.toCoinvariantsKer S)
 
 /-- Given a normal subgroup `S ≤ G`, a `G`-representation `A` induces a `G`-representation on
 the `S`-coinvariants `A_S`. -/
-abbrev toCoinvariants : Rep k G := Rep.of (A.ρ.toCoinvariants S)
+noncomputable abbrev toCoinvariants : Rep k G := Rep.of (A.ρ.toCoinvariants S)
 
 /-- The quotient map `A → A_S` as a representation morphism. -/
-abbrev toCoinvariantsMkQ : A ⟶ toCoinvariants A S :=
+noncomputable abbrev toCoinvariantsMkQ : A ⟶ toCoinvariants A S :=
   Rep.ofHom (Representation.toCoinvariantsMkQ _ _)
 
 /-- Given a normal subgroup `S ≤ G`, a `G`-representation `ρ` induces a `G ⧸ S`-representation on
 the coinvariants of `ρ|_S`. -/
+noncomputable
 abbrev quotientToCoinvariants : Rep k (G ⧸ S) := Rep.ofQuotient (Rep.toCoinvariants A S) S
 
 /-- Given a normal subgroup `S ≤ G`, a `G`-representation `A` induces a short exact sequence of
 `G`-representations `0 ⟶ Ker(mk) ⟶ A ⟶ A_S ⟶ 0` where `mk` is the quotient map to the
 `S`-coinvariants `A_S`. -/
 @[simps X₁ X₂ X₃ f g]
-def coinvariantsShortComplex : ShortComplex (Rep.{w} k G) where
+noncomputable def coinvariantsShortComplex : ShortComplex (Rep.{w} k G) where
   X₁ := toCoinvariantsKer A S
   X₂ := A
   X₃ := toCoinvariants A S

@@ -85,8 +85,6 @@ multiplication is determined by  $Xa = \varphi (a)X + δ (a)$, where `φ` is as 
 
 @[expose] public section
 
-noncomputable section
-
 open Function Multiplicative SkewMonoidAlgebra
 
 /-- The skew polynomials over `R` is the type of univariate polynomials over `R`
@@ -169,7 +167,7 @@ section Monomial
 variable (n)
 
 /-- `monomial s a` is the monomial `a * X ^ s`. -/
-def monomial : R →ₗ[R] SkewPolynomial R := lsingle R (ofAdd n)
+noncomputable def monomial : R →ₗ[R] SkewPolynomial R := lsingle R (ofAdd n)
 
 lemma monomial_zero_right : monomial n (0 : R) = 0 := single_zero _
 
@@ -246,7 +244,7 @@ lemma mul_def {f g : SkewPolynomial R} [MulSemiringAction (Multiplicative ℕ) R
 section Constant
 
 /-- `C a` is the constant SkewPolynomial `a`. `C` is provided as an additive homomorphism. -/
-def C : R →+ SkewPolynomial R := SkewMonoidAlgebra.singleAddHom 1
+noncomputable def C : R →+ SkewPolynomial R := SkewMonoidAlgebra.singleAddHom 1
 
 variable {a b : R}
 
@@ -268,7 +266,7 @@ variable [MulSemiringAction (Multiplicative ℕ) R]
 
 /-- `CRingHom a` is the constant SkewPolynomial `a`, as a ring homomorphism. This requires
 `[MulSemiringAction (Multiplicative ℕ) R]`. -/
-def CRingHom : R →+* SkewPolynomial R := SkewMonoidAlgebra.singleOneRingHom
+noncomputable def CRingHom : R →+* SkewPolynomial R := SkewMonoidAlgebra.singleOneRingHom
 
 lemma CRingHom_eq_C : CRingHom a = C a := rfl
 
@@ -293,7 +291,7 @@ end Constant
 section Variable
 
 /-- `X` is the SkewPolynomial variable (aka indeterminate). -/
-def X : SkewPolynomial R := monomial 1 1
+noncomputable def X : SkewPolynomial R := monomial 1 1
 
 lemma monomial_one_one_eq_X : monomial 1 (1 : R) = X := rfl
 
@@ -603,6 +601,7 @@ variable [Ring R] {a b : R}
     (p.sum fun n x ↦ f n x - g n x) = p.sum f - p.sum g := by
   simp only [sub_eq_add_neg, sum_add, sum_neg]
 
+noncomputable
 instance instRing [MulSemiringAction (Multiplicative ℕ) R] : Ring (SkewPolynomial R) :=
   SkewMonoidAlgebra.instRing
 
@@ -649,7 +648,7 @@ section erase
 variable [Semiring R]
 
 /-- `erase p n` is the polynomial `p` in which the `X ^ n` term has been erased. -/
-def erase (n : ℕ) (p : SkewPolynomial R) : SkewPolynomial R :=
+noncomputable def erase (n : ℕ) (p : SkewPolynomial R) : SkewPolynomial R :=
   SkewMonoidAlgebra.erase (ofAdd n) p
 
 @[simp]
@@ -692,7 +691,7 @@ variable [Semiring R]
 /-- Replace the coefficient of a `p : SkewPolynomial R` at a given degree `n : ℕ`
 by a given value `a : R`. If `a = 0`, this is equal to `p.erase n`
 If `p.natDegree < n` and `a ≠ 0`, this increases the degree to `n`. -/
-def update (p : SkewPolynomial R) (n : ℕ) (a : R) : SkewPolynomial R :=
+noncomputable def update (p : SkewPolynomial R) (n : ℕ) (a : R) : SkewPolynomial R :=
   SkewMonoidAlgebra.update p (ofAdd n) a
 
 lemma update_def (p : SkewPolynomial R) (n : ℕ) (a : R) :

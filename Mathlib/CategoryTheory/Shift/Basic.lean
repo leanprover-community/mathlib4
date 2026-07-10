@@ -45,7 +45,7 @@ namespace CategoryTheory
 
 open Functor
 
-noncomputable section
+section
 
 universe v u
 

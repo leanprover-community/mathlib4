@@ -56,8 +56,6 @@ consistent with the `ZSpan` construction of `ℤ`-lattices.
 @[expose] public section
 
 
-noncomputable section
-
 namespace ZSpan
 
 open MeasureTheory MeasurableSet Module Submodule Bornology
@@ -122,11 +120,11 @@ variable [Fintype ι]
 
 /-- The map that sends a vector of `E` to the element of the ℤ-lattice spanned by `b` obtained
 by rounding down its coordinates on the basis `b`. -/
-def floor (m : E) : span ℤ (Set.range b) := ∑ i, ⌊b.repr m i⌋ • b.restrictScalars ℤ i
+noncomputable def floor (m : E) : span ℤ (Set.range b) := ∑ i, ⌊b.repr m i⌋ • b.restrictScalars ℤ i
 
 /-- The map that sends a vector of `E` to the element of the ℤ-lattice spanned by `b` obtained
 by rounding up its coordinates on the basis `b`. -/
-def ceil (m : E) : span ℤ (Set.range b) := ∑ i, ⌈b.repr m i⌉ • b.restrictScalars ℤ i
+noncomputable def ceil (m : E) : span ℤ (Set.range b) := ∑ i, ⌈b.repr m i⌉ • b.restrictScalars ℤ i
 
 @[simp]
 theorem repr_floor_apply (m : E) (i : ι) : b.repr (floor b m) i = ⌊b.repr m i⌋ := by
@@ -161,7 +159,7 @@ theorem ceil_eq_self_of_mem (m : E) (h : m ∈ span ℤ (Set.range b)) : (ceil b
 /-- The map that sends a vector `E` to the `fundamentalDomain` of the lattice,
 see `ZSpan.fract_mem_fundamentalDomain`, and `fractRestrict` for the map with the codomain
 restricted to `fundamentalDomain`. -/
-def fract (m : E) : E := m - floor b m
+noncomputable def fract (m : E) : E := m - floor b m
 
 theorem fract_apply (m : E) : fract b m = m - floor b m := rfl
 
@@ -196,6 +194,7 @@ theorem fract_mem_fundamentalDomain (x : E) : fract b x ∈ fundamentalDomain b 
   fract_eq_self.mp (fract_fract b _)
 
 /-- The map `fract` with codomain restricted to `fundamentalDomain`. -/
+noncomputable
 def fractRestrict (x : E) : fundamentalDomain b := ⟨fract b x, fract_mem_fundamentalDomain b x⟩
 
 theorem fractRestrict_surjective : Function.Surjective (fractRestrict b) :=
@@ -268,7 +267,7 @@ theorem exist_unique_vadd_mem_fundamentalDomain [Finite ι] (x : E) :
 set_option backward.isDefEq.respectTransparency false in
 /-- The map `ZSpan.fractRestrict` defines an equiv map between `E ⧸ span ℤ (Set.range b)`
 and `ZSpan.fundamentalDomain b`. -/
-def quotientEquiv [Fintype ι] :
+noncomputable def quotientEquiv [Fintype ι] :
     E ⧸ span ℤ (Set.range b) ≃ (fundamentalDomain b) := by
   refine Equiv.ofBijective ?_ ⟨fun x y => ?_, fun x => ?_⟩
   · refine fun q => Quotient.liftOn q (fractRestrict b) (fun _ _ h => ?_)
@@ -609,7 +608,7 @@ variable {ι : Type*} [hs : IsZLattice K L] (b : Basis ι ℤ L)
 namespace Module.Basis
 
 /-- Any `ℤ`-basis of `L` is also a `K`-basis of `E`. -/
-def ofZLatticeBasis : Basis ι K E := by
+noncomputable def ofZLatticeBasis : Basis ι K E := by
   have : Module.Finite ℤ L := ZLattice.module_finite K L
   have : Free ℤ L := ZLattice.module_free K L
   let e := (Free.chooseBasis ℤ L).indexEquiv b
@@ -683,7 +682,7 @@ variable {ι : Type*} [Fintype ι] (L : Submodule ℤ (ι → ℝ)) [DiscreteTop
 /--
 Return an arbitrary `ℤ`-basis of a lattice `L` of `ι → ℝ` indexed by `ι`.
 -/
-def IsZLattice.basis : Basis ι ℤ L :=
+noncomputable def IsZLattice.basis : Basis ι ℤ L :=
   (Free.chooseBasis ℤ L).reindex (Fintype.equivOfCardEq
     (by rw [← finrank_eq_card_chooseBasisIndex, ZLattice.rank ℝ, finrank_fintype_fun_eq_card]))
 
@@ -738,7 +737,7 @@ theorem ZLattice.comap_comp {G : Type*} [NormedAddCommGroup G] [NormedSpace K G]
 
 /-- If `e` is a linear equivalence, it induces a `ℤ`-linear equivalence between
 `L` and `ZLattice.comap K L e`. -/
-def ZLattice.comap_equiv (e : F ≃ₗ[K] E) :
+noncomputable def ZLattice.comap_equiv (e : F ≃ₗ[K] E) :
     L ≃ₗ[ℤ] (ZLattice.comap K L e.toLinearMap) :=
   LinearEquiv.ofBijective
     ((e.symm.toLinearMap.restrictScalars ℤ).restrict
@@ -754,7 +753,7 @@ theorem ZLattice.comap_equiv_apply (e : F ≃ₗ[K] E) (x : L) :
 namespace Module.Basis
 
 /-- The basis of `ZLattice.comap K L e` given by the image of a basis `b` of `L` by `e.symm`. -/
-def ofZLatticeComap (e : F ≃ₗ[K] E) {ι : Type*} (b : Basis ι ℤ L) :
+noncomputable def ofZLatticeComap (e : F ≃ₗ[K] E) {ι : Type*} (b : Basis ι ℤ L) :
     Basis ι ℤ (ZLattice.comap K L e.toLinearMap) := b.map (ZLattice.comap_equiv K L e)
 
 @[simp]

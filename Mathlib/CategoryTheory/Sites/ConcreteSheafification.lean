@@ -138,9 +138,10 @@ variable [∀ {X : C} (S : J.Cover X),
 variable [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ D]
 variable [∀ (P : Cᵒᵖ ⥤ D) (X : C) (S : J.Cover X), HasMultiequalizer (S.index P)]
 
-noncomputable section
+section
 
 /-- Make a term of `(J.plusObj P).obj (op X)` from `x : Meq P S`. -/
+noncomputable
 def mk {X : C} {P : Cᵒᵖ ⥤ D} {S : J.Cover X} (x : Meq P S) : ToType ((J.plusObj P).obj (op X)) :=
   colimit.ι (J.diagram P X) (op S) ((Meq.equiv P S).symm x)
 
@@ -305,7 +306,7 @@ set_option backward.isDefEq.respectTransparency false in
   construct a compatible family of local sections of `P` over the combination of the covers
   associated to the representatives.
   The separatedness condition is used to prove compatibility among these local sections of `P`. -/
-def meqOfSep (P : Cᵒᵖ ⥤ D)
+noncomputable def meqOfSep (P : Cᵒᵖ ⥤ D)
     (hsep :
       ∀ (X : C) (S : J.Cover X) (x y : ToType (P.obj (op X))),
         (∀ I : S.Arrow, P.map I.f.op x = P.map I.f.op y) → x = y)

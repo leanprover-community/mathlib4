@@ -25,7 +25,7 @@ public section
 open Asymptotics Function Filter Set Metric
 open scoped Topology NNReal ENNReal
 
-noncomputable section
+section
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 variable {E : Type*} [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]

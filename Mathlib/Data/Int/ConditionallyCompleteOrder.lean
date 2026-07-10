@@ -20,12 +20,12 @@ public section
 open Int
 
 
-noncomputable section
+section
 
 namespace Int
 
 open scoped Classical in
-instance : ConditionallyCompleteLinearOrder ℤ where
+noncomputable instance : ConditionallyCompleteLinearOrder ℤ where
   __ := instLinearOrder
   __ := LinearOrder.toLattice
   sSup s :=

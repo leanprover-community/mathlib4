@@ -24,8 +24,6 @@ The definition of subcomplexes is in the file `Mathlib/Topology/CWComplex/Classi
 
 @[expose] public section
 
-noncomputable section
-
 open Metric Set
 
 namespace Topology

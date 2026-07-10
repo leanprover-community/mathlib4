@@ -48,7 +48,7 @@ namespace WittVector
 
 open MvPolynomial
 
-noncomputable section
+section
 
 section
 
@@ -56,7 +56,7 @@ open scoped Classical in
 /-- `WittVector.select P x`, for a predicate `P : ℕ → Prop` is the Witt vector
 whose `n`-th coefficient is `x.coeff n` if `P n` is true, and `0` otherwise.
 -/
-def select (P : ℕ → Prop) (x : 𝕎 R) : 𝕎 R :=
+noncomputable def select (P : ℕ → Prop) (x : 𝕎 R) : 𝕎 R :=
   mk p fun n => if P n then x.coeff n else 0
 
 section Select
@@ -66,7 +66,7 @@ variable (P : ℕ → Prop)
 open scoped Classical in
 /-- The polynomial that witnesses that `WittVector.select` is a polynomial function.
 `selectPoly n` is `X n` if `P n` holds, and `0` otherwise. -/
-def selectPoly (n : ℕ) : MvPolynomial ℕ ℤ :=
+noncomputable def selectPoly (n : ℕ) : MvPolynomial ℕ ℤ :=
   if P n then X n else 0
 
 theorem coeff_select (x : 𝕎 R) (n : ℕ) :
@@ -136,13 +136,13 @@ variable [Fact p.Prime]
 and all other coefficients are `0`.
 See `WittVector.tail` for the complementary part.
 -/
-def init (n : ℕ) : 𝕎 R → 𝕎 R :=
+noncomputable def init (n : ℕ) : 𝕎 R → 𝕎 R :=
   select fun i => i < n
 
 /-- `WittVector.tail n x` is the Witt vector of which the first `n` coefficients are `0`
 and all other coefficients are those from `x`.
 See `WittVector.init` for the complementary part. -/
-def tail (n : ℕ) : 𝕎 R → 𝕎 R :=
+noncomputable def tail (n : ℕ) : 𝕎 R → 𝕎 R :=
   select fun i => n ≤ i
 
 @[simp]

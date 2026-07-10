@@ -40,8 +40,6 @@ open scoped Topology ENNReal
 
 variable {α β : Type*}
 
-noncomputable section
-
 namespace MeasureTheory
 
 local infixr:25 " →ₛ " => SimpleFunc

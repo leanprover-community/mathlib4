@@ -25,8 +25,6 @@ corresponding structure on its coefficients, defined in `Mathlib/RingTheory/Coal
 
 public section
 
-noncomputable section
-
 open Coalgebra
 
 namespace MonoidAlgebra
@@ -36,7 +34,7 @@ variable {R : Type*} [CommSemiring R] {A : Type*} [Semiring A]
 
 variable (R A X) in
 @[to_additive]
-instance instCoalgebra : Coalgebra R A[X] := coeffEquiv.coalgebra _
+noncomputable instance instCoalgebra : Coalgebra R A[X] := coeffEquiv.coalgebra _
 
 @[to_additive]
 instance instIsCocomm [IsCocomm R A] : IsCocomm R A[X] := coeffEquiv.coalgebraIsCocomm _
@@ -66,7 +64,7 @@ open AddMonoidAlgebra
 
 variable (R A : Type*) [CommSemiring R] [Semiring A] [Module R A] [Coalgebra R A]
 
-instance instCoalgebra : Coalgebra R A[T;T⁻¹] := inferInstanceAs <| Coalgebra R A[ℤ]
+noncomputable instance instCoalgebra : Coalgebra R A[T;T⁻¹] := inferInstanceAs <| Coalgebra R A[ℤ]
 
 instance instIsCocomm [IsCocomm R A] : IsCocomm R A[T;T⁻¹] := inferInstanceAs <| IsCocomm R A[ℤ]
 

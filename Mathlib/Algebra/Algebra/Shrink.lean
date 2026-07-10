@@ -14,19 +14,18 @@ public import Mathlib.Algebra.Ring.Shrink
 
 @[expose] public section
 
-noncomputable section
-
 universe v
 variable {R α : Type*} [Small.{v} α] [CommSemiring R]
 
 namespace Shrink
 
+noncomputable
 instance [Semiring α] [Algebra R α] : Algebra R (Shrink.{v} α) := (equivShrink α).symm.algebra _
 
 variable (R α) in
 /-- Shrinking `α` to a smaller universe preserves algebra structure. -/
 @[simps!]
-def algEquiv [Semiring α] [Algebra R α] : Shrink.{v} α ≃ₐ[R] α :=
+noncomputable def algEquiv [Semiring α] [Algebra R α] : Shrink.{v} α ≃ₐ[R] α :=
   (equivShrink α).symm.algEquiv _
 
 end Shrink

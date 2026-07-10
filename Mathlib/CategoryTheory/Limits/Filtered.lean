@@ -23,8 +23,6 @@ public section
 
 universe w' w w₂' w₂ v u
 
-noncomputable section
-
 open CategoryTheory
 
 variable {C : Type u} [Category.{v} C]

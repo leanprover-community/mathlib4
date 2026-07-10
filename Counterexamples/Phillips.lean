@@ -85,7 +85,7 @@ open Cardinal (aleph)
 
 open scoped Cardinal BoundedContinuousFunction
 
-noncomputable section
+section
 
 /-- A copy of a type, endowed with the discrete topology -/
 def DiscreteCopy (α : Type u) : Type u :=
@@ -122,6 +122,7 @@ def boundedIntegrableFunctions [MeasurableSpace α] (μ : Measure α) :
 /-- The integral, as a continuous linear map on the subspace of integrable functions in the space
 of all bounded functions on a type. This is a technical device, that we will extend through
 Hahn-Banach. -/
+noncomputable
 def boundedIntegrableFunctionsIntegralCLM [MeasurableSpace α] (μ : Measure α) [IsFiniteMeasure μ] :
     boundedIntegrableFunctions μ →L[ℝ] ℝ :=
   LinearMap.mkContinuous (E := ↥(boundedIntegrableFunctions μ))
@@ -147,6 +148,7 @@ theorem exists_linear_extension_to_boundedFunctions [MeasurableSpace α] (μ : M
 
 /-- An arbitrary extension of the integral to all bounded functions, as a continuous linear map.
 It is not at all canonical, and constructed using Hahn-Banach. -/
+noncomputable
 def _root_.MeasureTheory.Measure.extensionToBoundedFunctions [MeasurableSpace α] (μ : Measure α)
     [IsFiniteMeasure μ] : (DiscreteCopy α →ᵇ ℝ) →L[ℝ] ℝ :=
   (exists_linear_extension_to_boundedFunctions μ).choose
@@ -183,7 +185,7 @@ instance : CoeFun (BoundedAdditiveMeasure α) fun _ => Set α → ℝ :=
 namespace BoundedAdditiveMeasure
 
 /-- A constant bounding the mass of any set for `f`. -/
-def C (f : BoundedAdditiveMeasure α) :=
+noncomputable def C (f : BoundedAdditiveMeasure α) :=
   f.exists_bound.choose
 
 theorem additive (f : BoundedAdditiveMeasure α) (s t : Set α) (h : Disjoint s t) :
@@ -387,6 +389,7 @@ theorem norm_indicator_le_one (s : Set α) (x : α) : ‖(indicator s (1 : α �
 
 /-- A functional in the dual space of bounded functions gives rise to a bounded additive measure,
 by applying the functional to the indicator functions. -/
+noncomputable
 def _root_.ContinuousLinearMap.toBoundedAdditiveMeasure [TopologicalSpace α] [DiscreteTopology α]
     (f : (α →ᵇ ℝ) →L[ℝ] ℝ) : BoundedAdditiveMeasure α where
   toFun s := f (ofNormedAddCommGroupDiscrete (indicator s 1) 1 (norm_indicator_le_one s))
@@ -492,7 +495,7 @@ which is large (it has countable complement), as in the Sierpinski pathological 
 /-- A family of bounded functions `f_x` from `ℝ` (seen with the discrete topology) to `ℝ` (in fact
 taking values in `{0, 1}`), indexed by a real parameter `x`, corresponding to the characteristic
 functions of the different fibers of the Sierpinski pathological family -/
-def f (Hcont : #ℝ = ℵ₁) (x : ℝ) : DiscreteCopy ℝ →ᵇ ℝ :=
+noncomputable def f (Hcont : #ℝ = ℵ₁) (x : ℝ) : DiscreteCopy ℝ →ᵇ ℝ :=
   ofNormedAddCommGroupDiscrete (indicator (spf Hcont x) 1) 1 (norm_indicator_le_one _)
 
 set_option backward.isDefEq.respectTransparency false in

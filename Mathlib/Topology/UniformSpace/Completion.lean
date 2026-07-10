@@ -44,8 +44,6 @@ From a slightly different perspective in order to reuse material in `Topology.Un
 
 @[expose] public section
 
-noncomputable section
-
 open Filter Set
 open scoped SetRel Uniformity Topology
 
@@ -221,7 +219,7 @@ section Extend
 open scoped Classical in
 /-- Extend a uniformly continuous function `α → β` to a function `CauchyFilter α → β`.
 Outputs junk when `f` is not uniformly continuous. -/
-def extend (f : α → β) : CauchyFilter α → β :=
+noncomputable def extend (f : α → β) : CauchyFilter α → β :=
   if UniformContinuous f then isDenseInducing_pureCauchy.extend f
   else fun x => f (nonempty_cauchyFilter_iff.1 ⟨x⟩).some
 
@@ -369,6 +367,7 @@ theorem isDenseInducing_coe : IsDenseInducing ((↑) : α → Completion α) :=
   { (isUniformInducing_coe α).isInducing with dense := denseRange_coe }
 
 /-- The uniform bijection between a complete space and its uniform completion. -/
+noncomputable
 def UniformCompletion.completeEquivSelf [CompleteSpace α] [T0Space α] : Completion α ≃ᵤ α :=
   AbstractCompletion.compareEquiv Completion.cPkg AbstractCompletion.ofComplete
 
@@ -426,7 +425,7 @@ variable {f : α → β}
 
 /-- "Extension" to the completion. It is defined for any map `f` but
 returns an arbitrary constant value if `f` is not uniformly continuous -/
-protected def extension (f : α → β) : Completion α → β :=
+protected noncomputable def extension (f : α → β) : Completion α → β :=
   cPkg.extend f
 
 section CompleteSpace
@@ -474,7 +473,7 @@ section Map
 variable {f : α → β}
 
 /-- Completion functor acting on morphisms -/
-protected def map (f : α → β) : Completion α → Completion β :=
+protected noncomputable def map (f : α → β) : Completion α → Completion β :=
   cPkg.map cPkg f
 
 @[fun_prop]
@@ -508,7 +507,7 @@ theorem map_comp {g : β → γ} {f : α → β} (hg : UniformContinuous g) (hf 
   extension_map ((uniformContinuous_coe _).comp hg) hf
 
 /-- The uniform isomorphism between two completions of isomorphic uniform spaces. -/
-def mapEquiv (e : α ≃ᵤ β) : Completion α ≃ᵤ Completion β := cPkg.mapEquiv cPkg e
+noncomputable def mapEquiv (e : α ≃ᵤ β) : Completion α ≃ᵤ Completion β := cPkg.mapEquiv cPkg e
 
 @[simp]
 theorem mapEquiv_symm (e : α ≃ᵤ β) : (mapEquiv e).symm = mapEquiv e.symm :=
@@ -526,7 +525,7 @@ section SeparationQuotientCompletion
 open SeparationQuotient in
 /-- The isomorphism between the completion of a uniform space and the completion of its separation
 quotient. -/
-def completionSeparationQuotientEquiv (α : Type u) [UniformSpace α] :
+noncomputable def completionSeparationQuotientEquiv (α : Type u) [UniformSpace α] :
     Completion (SeparationQuotient α) ≃ Completion α := by
   refine ⟨Completion.extension (lift' ((↑) : α → Completion α)),
     Completion.map SeparationQuotient.mk, fun a ↦ ?_, fun a ↦ ?_⟩
@@ -558,7 +557,7 @@ variable (f : α → β → γ)
 open Function
 
 /-- Extend a two variable map to the Hausdorff completions. -/
-protected def extension₂ (f : α → β → γ) : Completion α → Completion β → γ :=
+protected noncomputable def extension₂ (f : α → β → γ) : Completion α → Completion β → γ :=
   cPkg.extend₂ cPkg f
 
 section T0Space
@@ -584,7 +583,7 @@ section Map₂
 open Function
 
 /-- Lift a two variable map to the Hausdorff completions. -/
-protected def map₂ (f : α → β → γ) : Completion α → Completion β → Completion γ :=
+protected noncomputable def map₂ (f : α → β → γ) : Completion α → Completion β → Completion γ :=
   cPkg.map₂ cPkg cPkg f
 
 @[fun_prop]

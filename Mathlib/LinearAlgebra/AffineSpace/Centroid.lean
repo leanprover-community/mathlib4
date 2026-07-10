@@ -27,8 +27,6 @@ ring.
 
 assert_not_exists Affine.Simplex
 
-noncomputable section
-
 open Affine
 
 namespace Finset
@@ -76,7 +74,7 @@ theorem sum_centroidWeights_eq_one_of_card_eq_add_one [CharZero k] {n : ℕ} (h 
 /-- The centroid of some points.  Although defined for any `s`, this
 is intended to be used in the case where the number of points,
 converted to `k`, is not zero. -/
-def centroid (p : ι → P) : P :=
+noncomputable def centroid (p : ι → P) : P :=
   s.affineCombination k p (s.centroidWeights k)
 
 /-- The definition of the centroid. -/
@@ -127,7 +125,7 @@ whose centroid is being taken.  This function gives the weights in a
 form suitable for summing over a larger set of points, as an indicator
 function that is zero outside the set whose centroid is being taken.
 In the case of a `Fintype`, the sum may be over `univ`. -/
-def centroidWeightsIndicator : ι → k :=
+noncomputable def centroidWeightsIndicator : ι → k :=
   Set.indicator (↑s) (s.centroidWeights k)
 
 /-- The definition of `centroidWeightsIndicator`. -/

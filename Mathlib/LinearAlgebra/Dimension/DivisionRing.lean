@@ -31,8 +31,6 @@ See also `Mathlib/LinearAlgebra/Dimension/ErdosKaplansky.lean` for the Erdős-Ka
 public section
 
 
-noncomputable section
-
 universe u₀ u v v' v'' u₁' w w'
 
 variable {K : Type u} {V V₁ V₂ V₃ : Type v}

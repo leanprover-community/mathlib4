@@ -26,8 +26,6 @@ always finite in this context.
 
 public section
 
-noncomputable section
-
 open Set Function TopologicalSpace Filter Topology ENNReal
 
 namespace Metric
@@ -60,7 +58,8 @@ theorem hausdorffEDist_le_of_mem_hausdorffEntourage {s t : Set α} {δ : ℝ≥0
 
 /-- The Hausdorff pseudo emetric on the powerset of a pseudo emetric space.
 See note [reducible non-instances]. -/
-protected abbrev _root_.PseudoEMetricSpace.hausdorff : PseudoEMetricSpace (Set α) where
+protected noncomputable
+abbrev _root_.PseudoEMetricSpace.hausdorff : PseudoEMetricSpace (Set α) where
   edist s t := hausdorffEDist s t
   edist_self _ := hausdorffEDist_self
   edist_comm _ _ := hausdorffEDist_comm
@@ -88,7 +87,7 @@ namespace Closeds
 
 /-- In emetric spaces, the Hausdorff edistance defines an emetric space structure
 on the type of closed subsets -/
-instance instEMetricSpace : EMetricSpace (Closeds α) where
+noncomputable instance instEMetricSpace : EMetricSpace (Closeds α) where
   __ := PseudoEMetricSpace.hausdorff.induced SetLike.coe
   eq_of_edist_eq_zero {s t} h := Closeds.ext <| (s.isClosed.hausdorffEDist_zero_iff t.isClosed).1 h
 
@@ -221,7 +220,7 @@ namespace Compacts
 
 /-- In an emetric space, the type of compact subsets is an emetric space,
 where the edistance is the Hausdorff edistance -/
-instance instEMetricSpace : EMetricSpace (Compacts α) where
+noncomputable instance instEMetricSpace : EMetricSpace (Compacts α) where
   /- Since the topology on `Compacts` is not defeq to the one induced by
   `UniformSpace.hausdorff`, we replace the uniformity by `Compacts.uniformSpace`, which has
   the right topology. -/
@@ -253,7 +252,7 @@ namespace NonemptyCompacts
 
 /-- In an emetric space, the type of non-empty compact subsets is an emetric space,
 where the edistance is the Hausdorff edistance -/
-instance instEMetricSpace : EMetricSpace (NonemptyCompacts α) where
+noncomputable instance instEMetricSpace : EMetricSpace (NonemptyCompacts α) where
   /- Since the topology on `NonemptyCompacts` is not defeq to the one induced by
   `UniformSpace.hausdorff`, we replace the uniformity by `NonemptyCompacts.uniformSpace`, which has
   the right topology. -/
@@ -362,7 +361,7 @@ variable {α : Type*} [MetricSpace α]
 
 /-- `NonemptyCompacts α` inherits a metric space structure, as the Hausdorff
 edistance between two such sets is finite. -/
-instance NonemptyCompacts.instMetricSpace : MetricSpace (NonemptyCompacts α) :=
+noncomputable instance NonemptyCompacts.instMetricSpace : MetricSpace (NonemptyCompacts α) :=
   EMetricSpace.toMetricSpace fun x y =>
     hausdorffEDist_ne_top_of_nonempty_of_bounded x.nonempty y.nonempty x.isCompact.isBounded
       y.isCompact.isBounded

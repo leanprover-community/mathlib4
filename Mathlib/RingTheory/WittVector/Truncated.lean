@@ -41,8 +41,6 @@ The ring of Witt vectors is the projective limit of all the rings of truncated W
 
 open Function (Injective Surjective)
 
-noncomputable section
-
 variable {p : ℕ} (n : ℕ) (R : Type*)
 
 local notation "𝕎" => WittVector p -- type as `\bbW`
@@ -154,37 +152,37 @@ open WittVector
 variable (p n R)
 variable [Fact p.Prime]
 
-instance : Zero (TruncatedWittVector p n R) :=
+noncomputable instance : Zero (TruncatedWittVector p n R) :=
   ⟨truncateFun n 0⟩
 
-instance : One (TruncatedWittVector p n R) :=
+noncomputable instance : One (TruncatedWittVector p n R) :=
   ⟨truncateFun n 1⟩
 
-instance : NatCast (TruncatedWittVector p n R) :=
+noncomputable instance : NatCast (TruncatedWittVector p n R) :=
   ⟨fun i => truncateFun n i⟩
 
-instance : IntCast (TruncatedWittVector p n R) :=
+noncomputable instance : IntCast (TruncatedWittVector p n R) :=
   ⟨fun i => truncateFun n i⟩
 
-instance : Add (TruncatedWittVector p n R) :=
+noncomputable instance : Add (TruncatedWittVector p n R) :=
   ⟨fun x y => truncateFun n (x.out + y.out)⟩
 
-instance : Mul (TruncatedWittVector p n R) :=
+noncomputable instance : Mul (TruncatedWittVector p n R) :=
   ⟨fun x y => truncateFun n (x.out * y.out)⟩
 
-instance : Neg (TruncatedWittVector p n R) :=
+noncomputable instance : Neg (TruncatedWittVector p n R) :=
   ⟨fun x => truncateFun n (-x.out)⟩
 
-instance : Sub (TruncatedWittVector p n R) :=
+noncomputable instance : Sub (TruncatedWittVector p n R) :=
   ⟨fun x y => truncateFun n (x.out - y.out)⟩
 
-instance hasNatScalar : SMul ℕ (TruncatedWittVector p n R) :=
+noncomputable instance hasNatScalar : SMul ℕ (TruncatedWittVector p n R) :=
   ⟨fun m x => truncateFun n (m • x.out)⟩
 
-instance hasIntScalar : SMul ℤ (TruncatedWittVector p n R) :=
+noncomputable instance hasIntScalar : SMul ℤ (TruncatedWittVector p n R) :=
   ⟨fun m x => truncateFun n (m • x.out)⟩
 
-instance hasNatPow : Pow (TruncatedWittVector p n R) ℕ :=
+noncomputable instance hasNatPow : Pow (TruncatedWittVector p n R) ℕ :=
   ⟨fun x m => truncateFun n (x.out ^ m)⟩
 
 @[simp]
@@ -267,7 +265,7 @@ variable (p n R)
 variable [CommRing R]
 variable [Fact p.Prime]
 
-instance instCommRing : CommRing (TruncatedWittVector p n R) :=
+noncomputable instance instCommRing : CommRing (TruncatedWittVector p n R) :=
   (truncateFun_surjective p n R).commRing _ (truncateFun_zero p n R) (truncateFun_one p n R)
     (truncateFun_add n) (truncateFun_mul n) (truncateFun_neg n) (truncateFun_sub n)
     (truncateFun_nsmul n) (truncateFun_zsmul n) (truncateFun_pow n) (truncateFun_natCast n)
@@ -331,6 +329,7 @@ variable [Fact p.Prime]
 /-- A ring homomorphism that truncates a truncated Witt vector of length `m` to
 a truncated Witt vector of length `n`, for `n ≤ m`.
 -/
+noncomputable
 def truncate {m : ℕ} (hm : n ≤ m) : TruncatedWittVector p m R →+* TruncatedWittVector p n R :=
   RingHom.liftOfRightInverse (WittVector.truncate m) out truncateFun_out
     ⟨WittVector.truncate n, by
@@ -416,7 +415,7 @@ variable (n)
 /-- Given a family `fₖ : S → TruncatedWittVector p k R` and `s : S`, we produce a Witt vector by
 defining the `k`th entry to be the final entry of `fₖ s`.
 -/
-def liftFun (s : S) : 𝕎 R :=
+noncomputable def liftFun (s : S) : 𝕎 R :=
   @WittVector.mk' p _ fun k => TruncatedWittVector.coeff (Fin.last k) (f (k + 1) s)
 
 variable {f} in
@@ -434,7 +433,7 @@ to a ring hom `S → 𝕎 R`.
 
 `lift` defines the universal property of `𝕎 R` as the inverse limit of `TruncatedWittVector n`.
 -/
-def lift : S →+* 𝕎 R := by
+noncomputable def lift : S →+* 𝕎 R := by
   refine { toFun := liftFun f
            map_zero' := ?_
            map_one' := ?_
@@ -464,6 +463,7 @@ theorem lift_unique (g : S →+* 𝕎 R) (g_compat : ∀ k, (WittVector.truncate
 
 /-- The universal property of `𝕎 R` as projective limit of truncated Witt vector rings. -/
 @[simps]
+noncomputable
 def liftEquiv : { f : ∀ k, S →+* TruncatedWittVector p k R // ∀ (k₁ k₂) (hk : k₁ ≤ k₂),
     (TruncatedWittVector.truncate hk).comp (f k₂) = f k₁ } ≃ (S →+* 𝕎 R) where
   toFun f := lift f.1 f.2

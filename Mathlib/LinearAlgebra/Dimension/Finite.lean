@@ -20,8 +20,6 @@ Also contains characterization for when rank equals zero or rank equals one.
 
 @[expose] public section
 
-noncomputable section
-
 universe u v v' w
 
 variable {R : Type u} {M : Type v} {ι : Type w}

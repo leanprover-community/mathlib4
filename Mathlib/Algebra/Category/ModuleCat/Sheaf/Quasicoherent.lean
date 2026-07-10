@@ -61,7 +61,7 @@ lemma Presentation.IsFinite.finite_relations {M : SheafOfModules.{u} R} (p : M.P
 
 end
 
-noncomputable section
+section
 
 variable {C : Type u₁} [Category.{v₁} C] {J : GrothendieckTopology C} {R : Sheaf J RingCat.{u}}
   [HasSheafify J AddCommGrpCat] [J.WEqualsLocallyBijective AddCommGrpCat]
@@ -71,7 +71,7 @@ variable {C : Type u₁} [Category.{v₁} C] {J : GrothendieckTopology C} {R : S
 satisfying `H : f ≫ g = 0` and `IsColimit (CokernelCofork.ofπ g H)`, we obtain
 generators of `Presentation M`. -/
 @[simps! I s]
-def generatorsOfIsCokernelFree {M : SheafOfModules.{u} R}
+noncomputable def generatorsOfIsCokernelFree {M : SheafOfModules.{u} R}
     (f : free ι ⟶ free σ) (g : free σ ⟶ M) (H : f ≫ g = 0)
     (H' : IsColimit (CokernelCofork.ofπ g H)) : M.GeneratingSections where
   I := σ
@@ -89,7 +89,7 @@ set_option backward.isDefEq.respectTransparency false in
 satisfying `H : f ≫ g = 0` and `IsColimit (CokernelCofork.ofπ g H)`, we obtain
 relations of `Presentation M`. -/
 @[simps! I s]
-def relationsOfIsCokernelFree {M : SheafOfModules.{u} R}
+noncomputable def relationsOfIsCokernelFree {M : SheafOfModules.{u} R}
     (f : free ι ⟶ free σ) (g : free σ ⟶ M) (H : f ≫ g = 0)
     (H' : IsColimit (CokernelCofork.ofπ g H)) :
     (kernel (generatorsOfIsCokernelFree f g H H').π).GeneratingSections where
@@ -111,7 +111,7 @@ def relationsOfIsCokernelFree {M : SheafOfModules.{u} R}
 satisfying `H : f ≫ g = 0` and `IsColimit (CokernelCofork.ofπ g H)`, we obtain a
 `Presentation M`. -/
 @[simps]
-def presentationOfIsCokernelFree {M : SheafOfModules.{u} R}
+noncomputable def presentationOfIsCokernelFree {M : SheafOfModules.{u} R}
     (f : free ι ⟶ free σ) (g : free σ ⟶ M) (H : f ≫ g = 0)
     (H' : IsColimit (CokernelCofork.ofπ g H)) : Presentation M where
   generators := generatorsOfIsCokernelFree f g H H'
@@ -120,7 +120,7 @@ def presentationOfIsCokernelFree {M : SheafOfModules.{u} R}
 /-- Given a sheaf of `R`-modules `M` and a `Presentation M`, there is two morphism of
 sheaves of `R`-modules `f : free ι ⟶ free σ` and `g : free σ ⟶ M` satisfying `H : f ≫ g = 0`
 and `IsColimit (CokernelCofork.ofπ g H)`. -/
-def Presentation.isColimit {M : SheafOfModules.{u} R} (P : Presentation M) :
+noncomputable def Presentation.isColimit {M : SheafOfModules.{u} R} (P : Presentation M) :
     IsColimit (CokernelCofork.ofπ (f := (freeHomEquiv _).symm P.relations.s ≫ (kernel.ι _))
       P.generators.π (by simp)) :=
   isCokernelEpiComp (c := CokernelCofork.ofπ _ (kernel.condition P.generators.π))
@@ -155,13 +155,14 @@ local instance : PreservesColimitsOfSize.{0, 0} F := preservesColimitsOfSize_shr
 /-- Let `F` be a functor from sheaf of `R`-module to sheaf of `S`-module, if `F` preserves
 colimits and `F.obj (unit R) ≅ unit S`, given a `P : Presentation M`, then we will obtain
 relations of `Presentation (F.obj M)`. -/
-def Presentation.mapRelations : free P.relations.I (R := S) ⟶ free P.generators.I :=
+noncomputable def Presentation.mapRelations : free P.relations.I (R := S) ⟶ free P.generators.I :=
   (mapFreeIso F P.relations.I η).hom ≫ F.map ((freeHomEquiv _).symm P.relations.s) ≫
     F.map (kernel.ι _) ≫ (mapFreeIso F P.generators.I η).inv
 
 /-- Let `F` be a functor from sheaf of `R`-module to sheaf of `S`-module, if `F` preserves
 colimits and `F.obj (unit R) ≅ unit S`, given a `P : Presentation M`, then we will obtain
 generators of `Presentation (F.obj M)`. -/
+noncomputable
 abbrev Presentation.mapGenerators : free P.generators.I ⟶ F.obj M := P.generators.mapFreeHom F η
 
 @[reassoc (attr := simp)]
@@ -175,7 +176,7 @@ set_option backward.defeqAttrib.useBackward true in
 colimits and `F.obj (unit R) ≅ unit S`, given a `P : Presentation M`, then we will get a
 `Presentation (F.obj M)`. -/
 @[simps! generators_I relations_I]
-def Presentation.map : Presentation (F.obj M) :=
+noncomputable def Presentation.map : Presentation (F.obj M) :=
   presentationOfIsCokernelFree (P.mapRelations F η) (P.mapGenerators F η)
     (P.mapRelations_mapGenerators F η) <| by
     refine IsColimit.equivOfNatIsoOfIso
@@ -356,7 +357,7 @@ end map
 
 end
 
-noncomputable section
+section
 
 open CategoryTheory Limits
 
@@ -369,7 +370,7 @@ variable [∀ X, HasSheafify (J.over X) AddCommGrpCat]
 /-- Given a sheaf of `R`-modules `M` and a `Presentation M`, we may construct the quasi-coherent
 data on the trivial cover. -/
 @[simps]
-def Presentation.quasicoherentData {M : SheafOfModules.{u} R} (P : Presentation M) :
+noncomputable def Presentation.quasicoherentData {M : SheafOfModules.{u} R} (P : Presentation M) :
     QuasicoherentData M where
   I := C
   X := id

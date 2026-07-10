@@ -17,7 +17,7 @@ is the left adjoint of
 the forgetful functor from `R`-modules to types.
 -/
 
-@[expose] public noncomputable section
+@[expose] public section
 
 assert_not_exists Cardinal
 
@@ -37,7 +37,7 @@ variable [Ring R]
 /-- The free functor `Type u ⥤ ModuleCat R` sending a type `X` to the
 free `R`-module with generators `x : X`, implemented as the type `X →₀ R`.
 -/
-def free : Type u ⥤ ModuleCat R where
+noncomputable def free : Type u ⥤ ModuleCat R where
   obj X := ModuleCat.of R (X →₀ R)
   map {_ _} f := ofHom <| Finsupp.lmapDomain _ _ (f : _ → _)
 
@@ -45,7 +45,7 @@ def free : Type u ⥤ ModuleCat R where
 free `R`-module with generators `x : X`, implemented as the monoid algebra `R[X]`.
 -/
 @[simps]
-def monoidAlgebraFree : Type u ⥤ ModuleCat.{u} R where
+noncomputable def monoidAlgebraFree : Type u ⥤ ModuleCat.{u} R where
   obj X := .of R R[X]
   map f := ofHom (MonoidAlgebra.mapDomainLinearMap R R f)
 
@@ -80,7 +80,7 @@ lemma free_map_apply {X Y : Type u} (f : X ⟶ Y) (x : X) :
 
 /-- The bijection `((free R).obj X ⟶ M) ≃ (X → M)` when `X` is a type and `M` a module. -/
 @[simps]
-def freeHomEquiv {X : Type u} {M : ModuleCat.{u} R} :
+noncomputable def freeHomEquiv {X : Type u} {M : ModuleCat.{u} R} :
     ((free R).obj X ⟶ M) ≃ (X ⟶ M) where
   toFun φ := ↾fun x ↦ φ (freeMk x)
   invFun ψ := freeDesc (↾ψ)
@@ -91,7 +91,7 @@ variable (R)
 
 /-- The free-forgetful adjunction for R-modules.
 -/
-def adj : free R ⊣ forget (ModuleCat.{u} R) :=
+noncomputable def adj : free R ⊣ forget (ModuleCat.{u} R) :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun _ _ => freeHomEquiv
       homEquiv_naturality_left_symm := fun {X Y M} f g ↦ by ext; simp [freeHomEquiv] }
@@ -117,7 +117,7 @@ namespace FreeMonoidal
 /-- The canonical isomorphism `𝟙_ (ModuleCat R) ≅ (free R).obj (𝟙_ (Type u))`.
 (This should not be used directly: it is part of the implementation of the
 monoidal structure on the functor `free R`.) -/
-def εIso : 𝟙_ (ModuleCat R) ≅ (free R).obj (𝟙_ (Type u)) where
+noncomputable def εIso : 𝟙_ (ModuleCat R) ≅ (free R).obj (𝟙_ (Type u)) where
   hom := ofHom <| Finsupp.lsingle PUnit.unit
   inv := ofHom <| Finsupp.lapply PUnit.unit
   hom_inv_id := by
@@ -142,7 +142,7 @@ lemma εIso_inv_freeMk (x : PUnit) : (εIso R).inv (freeMk x) = 1 := by
 for two types `X` and `Y`.
 (This should not be used directly: it is part of the implementation of the
 monoidal structure on the functor `free R`.) -/
-def μIso (X Y : Type u) :
+noncomputable def μIso (X Y : Type u) :
     (free R).obj X ⊗ (free R).obj Y ≅ (free R).obj (X ⊗ Y) :=
   (finsuppTensorFinsupp' R _ _).toModuleIso
 
@@ -163,7 +163,7 @@ lemma μIso_inv_freeMk {X Y : Type u} (z : X ⊗ Y) :
 end FreeMonoidal
 open FreeMonoidal in
 /-- The free functor `Type u ⥤ ModuleCat R` is a monoidal functor. -/
-instance : (free R).Monoidal :=
+noncomputable instance : (free R).Monoidal :=
   Functor.CoreMonoidal.toMonoidal
     { εIso := εIso R
       μIso := μIso R
@@ -240,7 +240,7 @@ open Finsupp
 -- Conceptually, it would be nice to construct this via "transport of enrichment",
 -- using the fact that `ModuleCat.Free R : Type ⥤ ModuleCat R` and `ModuleCat.forget` are both lax
 -- monoidal. This still seems difficult, so we just do it by hand.
-instance categoryFree : Category (Free R C) where
+noncomputable instance categoryFree : Category (Free R C) where
   Hom := fun X Y : C => (X ⟶ Y) →₀ R
   id := fun X : C => Finsupp.single (𝟙 X) 1
   comp {X _ Z : C} f g :=
@@ -253,7 +253,7 @@ namespace Free
 
 section
 
-instance : Preadditive (Free R C) where
+noncomputable instance : Preadditive (Free R C) where
   homGroup _ _ := Finsupp.instAddCommGroup
   add_comp X Y Z f f' g := by
     dsimp +instances [CategoryTheory.categoryFree]
@@ -264,7 +264,7 @@ instance : Preadditive (Free R C) where
     congr; ext r h
     rw [Finsupp.sum_add_index'] <;> · simp [mul_add]
 
-instance : Linear R (Free R C) where
+noncomputable instance : Linear R (Free R C) where
   homModule _ _ := Finsupp.module _ R
   smul_comp X Y Z r f g := by
     dsimp +instances [CategoryTheory.categoryFree]
@@ -289,7 +289,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- A category embeds into its `R`-linear completion.
 -/
 @[simps]
-def embedding : C ⥤ Free R C where
+noncomputable def embedding : C ⥤ Free R C where
   obj X := X
   map {_ _} f := Finsupp.single f 1
   map_id _ := rfl
@@ -358,14 +358,14 @@ set_option backward.defeqAttrib.useBackward true in
 /-- The embedding into the `R`-linear completion, followed by the lift,
 is isomorphic to the original functor.
 -/
-def embeddingLiftIso (F : C ⥤ D) : embedding R C ⋙ lift R F ≅ F :=
+noncomputable def embeddingLiftIso (F : C ⥤ D) : embedding R C ⋙ lift R F ≅ F :=
   NatIso.ofComponents fun _ => Iso.refl _
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Two `R`-linear functors out of the `R`-linear completion are isomorphic iff their
 compositions with the embedding functor are isomorphic.
 -/
-def ext {F G : Free R C ⥤ D} [F.Additive] [F.Linear R] [G.Additive] [G.Linear R]
+noncomputable def ext {F G : Free R C ⥤ D} [F.Additive] [F.Linear R] [G.Additive] [G.Linear R]
     (α : embedding R C ⋙ F ≅ embedding R C ⋙ G) : F ≅ G :=
   NatIso.ofComponents (fun X => α.app X)
     (by
@@ -383,7 +383,7 @@ def ext {F G : Free R C ⥤ D} [F.Additive] [F.Linear R] [G.Additive] [G.Linear 
 /-- `Free.lift` is unique amongst `R`-linear functors `Free R C ⥤ D`
 which compose with `embedding ℤ C` to give the original functor.
 -/
-def liftUnique (F : C ⥤ D) (L : Free R C ⥤ D) [L.Additive] [L.Linear R]
+noncomputable def liftUnique (F : C ⥤ D) (L : Free R C ⥤ D) [L.Additive] [L.Linear R]
     (α : embedding R C ⋙ L ≅ F) : L ≅ lift R F :=
   ext R (α.trans (embeddingLiftIso R F).symm)
 

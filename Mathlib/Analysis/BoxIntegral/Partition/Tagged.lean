@@ -27,8 +27,6 @@ rectangular box, box partition
 @[expose] public section
 
 
-noncomputable section
-
 open Finset Function ENNReal NNReal Set
 
 namespace BoxIntegral
@@ -90,7 +88,7 @@ theorem isPartition_iff_iUnion_eq : IsPartition π ↔ π.iUnion = I :=
 
 /-- The tagged partition made of boxes of `π` that satisfy predicate `p`. -/
 @[simps! -fullyApplied]
-def filter (p : Box ι → Prop) : TaggedPrepartition I :=
+noncomputable def filter (p : Box ι → Prop) : TaggedPrepartition I :=
   ⟨π.1.filter p, π.2, π.3⟩
 
 @[simp]
@@ -111,7 +109,7 @@ variable {I J : Box ι}
 /-- Given a partition `π` of `I : BoxIntegral.Box ι` and a collection of tagged partitions
 `πi J` of all boxes `J ∈ π`, returns the tagged partition of `I` into all the boxes of `πi J`
 with tags coming from `(πi J).tag`. -/
-def biUnionTagged (π : Prepartition I) (πi : ∀ J : Box ι, TaggedPrepartition J) :
+noncomputable def biUnionTagged (π : Prepartition I) (πi : ∀ J : Box ι, TaggedPrepartition J) :
     TaggedPrepartition I where
   toPrepartition := π.biUnion fun J => (πi J).toPrepartition
   tag J := (πi (π.biUnionIndex (fun J => (πi J).toPrepartition) J)).tag J
@@ -160,6 +158,7 @@ is defined to be the `π.tag` of the box of the partition `π` that includes `J`
 
 Note that usually the result is not a Henstock partition. -/
 @[simps -fullyApplied tag]
+noncomputable
 def biUnionPrepartition (π : TaggedPrepartition I) (πi : ∀ J : Box ι, Prepartition J) :
     TaggedPrepartition I where
   toPrepartition := π.toPrepartition.biUnion πi
@@ -175,6 +174,7 @@ theorem IsPartition.biUnionPrepartition {π : TaggedPrepartition I} (h : IsParti
 partition with `toPrepartition = π₁.toPrepartition ⊓ π₂` and tags coming from `π₁`.
 
 Note that usually the result is not a Henstock partition. -/
+noncomputable
 def infPrepartition (π : TaggedPrepartition I) (π' : Prepartition I) : TaggedPrepartition I :=
   π.biUnionPrepartition fun J => π'.restrict J
 
@@ -291,7 +291,7 @@ theorem iUnion_single (hJ : J ≤ I) (h : x ∈ Box.Icc I) : (single I J hJ x h)
 
 open scoped Classical in
 /-- Union of two tagged prepartitions with disjoint unions of boxes. -/
-def disjUnion (π₁ π₂ : TaggedPrepartition I) (h : Disjoint π₁.iUnion π₂.iUnion) :
+noncomputable def disjUnion (π₁ π₂ : TaggedPrepartition I) (h : Disjoint π₁.iUnion π₂.iUnion) :
     TaggedPrepartition I where
   toPrepartition := π₁.toPrepartition.disjUnion π₂.toPrepartition h
   tag := π₁.boxes.piecewise π₁.tag π₂.tag
@@ -358,7 +358,7 @@ variable [Fintype ι] (π)
 open Finset
 
 /-- The distortion of a tagged prepartition is the maximum of distortions of its boxes. -/
-def distortion : ℝ≥0 :=
+noncomputable def distortion : ℝ≥0 :=
   π.toPrepartition.distortion
 
 theorem distortion_le_of_mem (h : J ∈ π) : J.distortion ≤ π.distortion :=

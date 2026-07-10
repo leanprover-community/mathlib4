@@ -21,8 +21,6 @@ builds a derivation from its value on `X`, and a linear equivalence
 
 @[expose] public section
 
-noncomputable section
-
 namespace Polynomial
 
 section CommSemiring
@@ -31,7 +29,7 @@ variable {R A : Type*} [CommSemiring R]
 
 /-- `Polynomial.derivative` as a derivation. -/
 @[simps]
-def derivative' : Derivation R R[X] R[X] where
+noncomputable def derivative' : Derivation R R[X] R[X] where
   toFun := derivative
   map_add' _ _ := derivative_add
   map_smul' := derivative_smul
@@ -59,7 +57,7 @@ variable [IsScalarTower R (Polynomial R) A]
 variable (R)
 
 /-- The derivation on `R[X]` that takes the value `a` on `X`. -/
-def mkDerivation : A →ₗ[R] Derivation R R[X] A where
+noncomputable def mkDerivation : A →ₗ[R] Derivation R R[X] A where
   toFun := fun a ↦ (LinearMap.toSpanSingleton R[X] A a).compDer derivative'
   map_add' := fun a b ↦ by ext; simp
   map_smul' := fun t a ↦ by ext; simp
@@ -80,7 +78,7 @@ lemma mkDerivation_one_eq_derivative (f : R[X]) : mkDerivation R (1 : R[X]) f = 
   rfl
 
 /-- `Polynomial.mkDerivation` as a linear equivalence. -/
-def mkDerivationEquiv : A ≃ₗ[R] Derivation R R[X] A :=
+noncomputable def mkDerivationEquiv : A ≃ₗ[R] Derivation R R[X] A :=
   LinearEquiv.symm <|
     { invFun := mkDerivation R
       toFun := fun D => D X
@@ -120,7 +118,7 @@ This because `A` is not an `R[X]` algebra and it would be messy to create an alg
 within the definition.
 -/
 @[simps]
-def compAEval : Derivation R R[X] <| AEval R M a where
+noncomputable def compAEval : Derivation R R[X] <| AEval R M a where
   toFun f          := AEval.of R M a (d (aeval a f))
   map_add'         := by simp
   map_smul'        := by simp

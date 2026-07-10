@@ -54,19 +54,17 @@ The following may be useful for composing vertex operators, but they seem to tak
 
 open Finset Function HahnSeries Pointwise
 
-noncomputable section
-
 variable {Γ Γ' R S V : Type*}
 
 namespace HahnSeries
 
 variable [Zero Γ] [PartialOrder Γ]
 
-instance [Zero R] [One R] : One R⟦Γ⟧ where one := single 0 1
-instance [Zero R] [NatCast R] : NatCast R⟦Γ⟧ where natCast n := single 0 n
-instance [Zero R] [IntCast R] : IntCast R⟦Γ⟧ where intCast z := single 0 z
-instance [Zero R] [NNRatCast R] : NNRatCast R⟦Γ⟧ where nnratCast q := single 0 q
-instance [Zero R] [RatCast R] : RatCast R⟦Γ⟧ where ratCast q := single 0 q
+noncomputable instance [Zero R] [One R] : One R⟦Γ⟧ where one := single 0 1
+noncomputable instance [Zero R] [NatCast R] : NatCast R⟦Γ⟧ where natCast n := single 0 n
+noncomputable instance [Zero R] [IntCast R] : IntCast R⟦Γ⟧ where intCast z := single 0 z
+noncomputable instance [Zero R] [NNRatCast R] : NNRatCast R⟦Γ⟧ where nnratCast q := single 0 q
+noncomputable instance [Zero R] [RatCast R] : RatCast R⟦Γ⟧ where ratCast q := single 0 q
 
 open scoped Classical in
 @[simp]
@@ -105,11 +103,11 @@ protected lemma map_one [MonoidWithZero R] [MonoidWithZero S] (f : R →*₀ S) 
     (1 : R⟦Γ⟧).map f = (1 : S⟦Γ⟧) :=
   HahnSeries.map_single (a := (0 : Γ)) f.toZeroHom |>.trans <| congrArg _ <| f.map_one
 
-instance [AddCommMonoidWithOne R] : AddCommMonoidWithOne R⟦Γ⟧ where
+noncomputable instance [AddCommMonoidWithOne R] : AddCommMonoidWithOne R⟦Γ⟧ where
   natCast_zero := by simp [← single_zero_natCast]
   natCast_succ n := by simp [← single_zero_natCast]
 
-instance [AddCommGroupWithOne R] : AddCommGroupWithOne R⟦Γ⟧ where
+noncomputable instance [AddCommGroupWithOne R] : AddCommGroupWithOne R⟦Γ⟧ where
   intCast_ofNat n := by simp [← single_zero_natCast, ← single_zero_intCast]
   intCast_negSucc n := by simp [← single_zero_natCast, ← single_zero_intCast]
 
@@ -173,7 +171,7 @@ instance instBaseSMul {V} [Monoid R] [AddMonoid V] [DistribMulAction R V] :
 
 variable [PartialOrder Γ'] [VAdd Γ Γ'] [IsOrderedCancelVAdd Γ Γ'] [Zero R] [AddCommMonoid V]
 
-instance instSMul : SMul R⟦Γ⟧ (HahnModule Γ' R V) where
+noncomputable instance instSMul : SMul R⟦Γ⟧ (HahnModule Γ' R V) where
   smul x y := (of R) {
     coeff := fun a =>
       ∑ ij ∈ VAddAntidiagonal a
@@ -216,7 +214,7 @@ instance instBaseSMulZeroClass [SMulZeroClass R V] :
 
 variable [Zero R]
 
-instance instSMulZeroClass [SMulZeroClass R V] :
+noncomputable instance instSMulZeroClass [SMulZeroClass R V] :
     SMulZeroClass R⟦Γ⟧ (HahnModule Γ' R V) where
   smul_zero x := by
     ext
@@ -270,7 +268,7 @@ theorem smul_add [Zero R] [DistribSMul R V] (x : R⟦Γ⟧) (y z : HahnModule Γ
     intro h
     rw [h.1, h.2, add_zero]
 
-instance instDistribSMul [MonoidWithZero R] [DistribSMul R V] : DistribSMul R⟦Γ⟧
+noncomputable instance instDistribSMul [MonoidWithZero R] [DistribSMul R V] : DistribSMul R⟦Γ⟧
     (HahnModule Γ' R V) where
   smul_add := smul_add
 
@@ -393,7 +391,7 @@ section mul
 
 variable [AddCommMonoid Γ] [PartialOrder Γ] [IsOrderedCancelAddMonoid Γ]
 
-instance [NonUnitalNonAssocSemiring R] : Mul R⟦Γ⟧ where
+noncomputable instance [NonUnitalNonAssocSemiring R] : Mul R⟦Γ⟧ where
   mul x y := (HahnModule.of R).symm (x • HahnModule.of R y)
 
 theorem of_symm_smul_of_eq_mul [NonUnitalNonAssocSemiring R] {x y : R⟦Γ⟧} :
@@ -429,7 +427,7 @@ theorem coeff_mul_right' [NonUnitalNonAssocSemiring R] {x y : R⟦Γ⟧} {a : Γ
       ∑ ij ∈ antidiagonal x.isPWO_support hs a, x.coeff ij.fst * y.coeff ij.snd :=
   HahnModule.coeff_smul_right hs hys
 
-instance [NonUnitalNonAssocSemiring R] : Distrib R⟦Γ⟧ where
+noncomputable instance [NonUnitalNonAssocSemiring R] : Distrib R⟦Γ⟧ where
   left_distrib x y z := by
     simp only [← of_symm_smul_of_eq_mul]
     exact HahnModule.smul_add x y z
@@ -500,7 +498,7 @@ theorem support_mul_subset [NonUnitalNonAssocSemiring R] {x y : R⟦Γ⟧} :
 @[deprecated (since := "2025-12-09")]
 alias support_mul_subset_add_support := support_mul_subset
 
-instance [NonUnitalNonAssocSemiring R] : NonUnitalNonAssocSemiring R⟦Γ⟧ where
+noncomputable instance [NonUnitalNonAssocSemiring R] : NonUnitalNonAssocSemiring R⟦Γ⟧ where
   zero_mul _ := by
     ext
     simp [coeff_mul]
@@ -604,10 +602,10 @@ private theorem mul_assoc' [NonUnitalSemiring R] (x y z : R⟦Γ⟧) : x * y * z
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
-instance [NonUnitalSemiring R] : NonUnitalSemiring R⟦Γ⟧ where
+noncomputable instance [NonUnitalSemiring R] : NonUnitalSemiring R⟦Γ⟧ where
   mul_assoc := mul_assoc'
 
-instance [NonAssocSemiring R] : NonAssocSemiring R⟦Γ⟧ where
+noncomputable instance [NonAssocSemiring R] : NonAssocSemiring R⟦Γ⟧ where
   one_mul x := by
     ext
     exact coeff_single_zero_mul.trans (one_mul _)
@@ -615,22 +613,22 @@ instance [NonAssocSemiring R] : NonAssocSemiring R⟦Γ⟧ where
     ext
     exact coeff_mul_single_zero.trans (mul_one _)
 
-instance [Semiring R] : Semiring R⟦Γ⟧ where
+noncomputable instance [Semiring R] : Semiring R⟦Γ⟧ where
 
-instance [NonUnitalCommSemiring R] : NonUnitalCommSemiring R⟦Γ⟧ where
+noncomputable instance [NonUnitalCommSemiring R] : NonUnitalCommSemiring R⟦Γ⟧ where
   __ : NonUnitalSemiring R⟦Γ⟧ := inferInstance
   mul_comm x y := by
     ext
     simp_rw [coeff_mul, mul_comm]
     exact Finset.sum_equiv (Equiv.prodComm _ _) (fun _ ↦ swap_mem_antidiagonal.symm) <| by simp
 
-instance [CommSemiring R] : CommSemiring R⟦Γ⟧ where
-instance [NonUnitalNonAssocRing R] : NonUnitalNonAssocRing R⟦Γ⟧ where
-instance [NonUnitalRing R] : NonUnitalRing R⟦Γ⟧ where
-instance [NonAssocRing R] : NonAssocRing R⟦Γ⟧ where
-instance [Ring R] : Ring R⟦Γ⟧ where
-instance [NonUnitalCommRing R] : NonUnitalCommRing R⟦Γ⟧ where
-instance [CommRing R] : CommRing R⟦Γ⟧ where
+noncomputable instance [CommSemiring R] : CommSemiring R⟦Γ⟧ where
+noncomputable instance [NonUnitalNonAssocRing R] : NonUnitalNonAssocRing R⟦Γ⟧ where
+noncomputable instance [NonUnitalRing R] : NonUnitalRing R⟦Γ⟧ where
+noncomputable instance [NonAssocRing R] : NonAssocRing R⟦Γ⟧ where
+noncomputable instance [Ring R] : Ring R⟦Γ⟧ where
+noncomputable instance [NonUnitalCommRing R] : NonUnitalCommRing R⟦Γ⟧ where
+noncomputable instance [CommRing R] : CommRing R⟦Γ⟧ where
 
 end Ring
 
@@ -729,7 +727,7 @@ instance instBaseModule [Semiring R] [Module R V] : Module R (HahnModule Γ' R V
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
-instance instModule [Semiring R] [Module R V] : Module R⟦Γ⟧
+noncomputable instance instModule [Semiring R] [Module R V] : Module R⟦Γ⟧
     (HahnModule Γ' R V) := {
   (inferInstance : DistribSMul R⟦Γ⟧ (HahnModule Γ' R V)) with
   mul_smul := mul_smul'
@@ -806,7 +804,7 @@ variable [NonAssocSemiring R]
 
 /-- `C a` is the constant Hahn Series `a`. `C` is provided as a ring homomorphism. -/
 @[simps]
-def C : R →+* R⟦Γ⟧ where
+noncomputable def C : R →+* R⟦Γ⟧ where
   toFun := single 0
   map_zero' := single_eq_zero
   map_one' := rfl
@@ -897,7 +895,7 @@ theorem embDomain_one [NonAssocSemiring R] (f : Γ ↪o Γ') (hf : f 0 = 0) :
 
 /-- Extending the domain of Hahn series is a ring homomorphism. -/
 @[simps]
-def embDomainRingHom [NonAssocSemiring R] (f : Γ →+ Γ') (hfi : Function.Injective f)
+noncomputable def embDomainRingHom [NonAssocSemiring R] (f : Γ →+ Γ') (hfi : Function.Injective f)
     (hf : ∀ g g' : Γ, f g ≤ f g' ↔ g ≤ g') : R⟦Γ⟧ →+* R⟦Γ'⟧ where
   toFun := embDomain ⟨⟨f, hfi⟩, hf _ _⟩
   map_one' := embDomain_one _ f.map_zero
@@ -915,7 +913,7 @@ section Algebra
 
 variable [CommSemiring R] {A : Type*} [Semiring A] [Algebra R A]
 
-instance : Algebra R A⟦Γ⟧ where
+noncomputable instance : Algebra R A⟦Γ⟧ where
   algebraMap := C.comp (algebraMap R A)
   smul_def' r x := by
     ext
@@ -950,7 +948,7 @@ variable {Γ' : Type*} [AddCommMonoid Γ'] [PartialOrder Γ'] [IsOrderedCancelAd
 
 /-- Extending the domain of Hahn series is an algebra homomorphism. -/
 @[simps!]
-def embDomainAlgHom (f : Γ →+ Γ') (hfi : Function.Injective f)
+noncomputable def embDomainAlgHom (f : Γ →+ Γ') (hfi : Function.Injective f)
     (hf : ∀ g g' : Γ, f g ≤ f g' ↔ g ≤ g') : A⟦Γ⟧ →ₐ[R] A⟦Γ'⟧ :=
   { embDomainRingHom f hfi hf with commutes' := fun _ => embDomainRingHom_C (hf := hf) }
 

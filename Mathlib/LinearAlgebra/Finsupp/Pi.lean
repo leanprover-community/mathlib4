@@ -25,8 +25,6 @@ function with finite support, module, linear algebra
 
 @[expose] public section
 
-noncomputable section
-
 open Set LinearMap Submodule
 
 namespace Finsupp
@@ -112,7 +110,7 @@ variable (f : P × M →ₗ[R] M)
 /-- A linear map from a product module `P × M` to `M` induces a linear map from `P^(ℕ)` to `M`,
 where the `n`th component is given by `P —ι₁→ P × M` composed with `P × M —f→ M —ι₂→ P × M`
 `n` times. -/
-def prodOfFinsuppNat : (ℕ →₀ P) →ₗ[R] P × M :=
+noncomputable def prodOfFinsuppNat : (ℕ →₀ P) →ₗ[R] P × M :=
   Finsupp.lsum ℕ fun n ↦ ((.inr .. ∘ₗ f) ^ n) ∘ₗ .inl ..
 
 theorem fst_prodOfFinsuppNat (x : ℕ →₀ P) : (prodOfFinsuppNat f x).1 = x 0 := by
@@ -167,6 +165,7 @@ open Finsupp Function
 
 -- See also `LinearMap.splittingOfFinsuppSurjective`
 /-- A surjective linear map to functions on a finite type has a splitting. -/
+noncomputable
 def splittingOfFunOnFintypeSurjective [Finite α] (f : M →ₗ[R] α → R) (s : Surjective f) :
     (α → R) →ₗ[R] M :=
   (Finsupp.lift _ _ _ fun x : α => (s (Finsupp.single x 1)).choose).comp

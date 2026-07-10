@@ -42,8 +42,6 @@ refined properties of the Gamma function using these relations.
 @[expose] public section
 
 
-noncomputable section
-
 
 open Filter intervalIntegral Set Real MeasureTheory
 

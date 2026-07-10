@@ -42,7 +42,7 @@ and bounded at infinity.
   namespace.
 -/
 
-@[expose] public noncomputable section
+@[expose] public section
 
 open ModularForm Complex Filter Function Matrix.SpecialLinearGroup Metric Set
 open UpperHalfPlane hiding I
@@ -58,7 +58,7 @@ namespace UpperHalfPlane
 
 /-- The value of `f` at the cusp `∞` (or an arbitrary choice of value if this limit is not
 well-defined). -/
-def valueAtInfty (f : ℍ → ℂ) : ℂ := limUnder atImInfty f
+noncomputable def valueAtInfty (f : ℍ → ℂ) : ℂ := limUnder atImInfty f
 
 lemma IsZeroAtImInfty.valueAtInfty_eq_zero {f : ℍ → ℂ} (hf : IsZeroAtImInfty f) :
     valueAtInfty f = 0 :=
@@ -73,7 +73,7 @@ variable (h) in
 The analytic function `F` such that `f τ = F (exp (2 * π * I * τ / h))`, extended by a choice of
 limit at `0`.
 -/
-def cuspFunction (f : ℍ → ℂ) : ℂ → ℂ :=
+noncomputable def cuspFunction (f : ℍ → ℂ) : ℂ → ℂ :=
   Function.Periodic.cuspFunction h (f ∘ ofComplex)
 
 theorem eq_cuspFunction {f : ℍ → ℂ} (τ : ℍ) (hh : h ≠ 0)
@@ -163,7 +163,7 @@ variable (h) in
 /-- The `q`-expansion of a function on the upper half plane with strict period `h`, bundled as a
 `PowerSeries`. The `m`-th coefficient is the Taylor coefficient of the `cuspFunction` at `q = 0`,
 where `q = exp(2πiτ/h)` is the local parameter at the cusp. -/
-def qExpansion (f : ℍ → ℂ) : PowerSeries ℂ :=
+noncomputable def qExpansion (f : ℍ → ℂ) : PowerSeries ℂ :=
   .mk fun m ↦ (↑m.factorial)⁻¹ * iteratedDeriv m (cuspFunction h f) 0
 
 lemma qExpansion_coeff (f : ℍ → ℂ) (m : ℕ) :
@@ -200,7 +200,7 @@ The `q`-expansion of a function on the upper half plane, bundled as a `FormalMul
 TODO: Maybe get rid of this and instead define a general API for converting `PowerSeries` to
 `FormalMultilinearSeries`.
 -/
-def qExpansionFormalMultilinearSeries : FormalMultilinearSeries ℂ ℂ ℂ :=
+noncomputable def qExpansionFormalMultilinearSeries : FormalMultilinearSeries ℂ ℂ ℂ :=
   .ofScalars ℂ fun m ↦ (qExpansion h f).coeff m
 
 @[simp]
@@ -629,7 +629,7 @@ protected lemma qExpansion_pow [Γ.HasDetPlusMinusOne] (hh : 0 < h)
       pow_succ]
 
 /-- The qExpansion map as an additive group hom. to power series over `ℂ`. -/
-def qExpansionAddHom (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) (k : ℤ) :
+noncomputable def qExpansionAddHom (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) (k : ℤ) :
     ModularForm Γ k →+ PowerSeries ℂ where
   toFun f := qExpansion h f
   map_zero' := qExpansion_zero h
@@ -637,7 +637,7 @@ def qExpansionAddHom (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) (k : ℤ) :
 
 open scoped DirectSum in
 /-- The qExpansion map as a map from the graded ring of modular forms to power series over `ℂ`. -/
-def qExpansionRingHom (h) [Γ.HasDetPlusMinusOne] (hh : 0 < h)
+noncomputable def qExpansionRingHom (h) [Γ.HasDetPlusMinusOne] (hh : 0 < h)
     (hΓ : h ∈ Γ.strictPeriods) : (⨁ k, ModularForm Γ k) →+* PowerSeries ℂ :=
   DirectSum.toSemiring (qExpansionAddHom hh hΓ) ModularForm.qExpansion_one
     (ModularForm.qExpansion_mul hh hΓ)

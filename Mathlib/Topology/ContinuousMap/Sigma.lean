@@ -36,8 +36,6 @@ continuous map, sigma type, disjoint union
 
 @[expose] public section
 
-noncomputable section
-
 open Filter Topology
 
 variable {X ι : Type*} {Y : ι → Type*} [TopologicalSpace X] [∀ i, TopologicalSpace (Y i)]
@@ -77,7 +75,7 @@ continuous maps `C(X, Y i)`.
 
 The inverse map sends `⟨i, g⟩` to `ContinuousMap.comp (ContinuousMap.sigmaMk i) g`. -/
 @[simps! symm_apply]
-def sigmaCodHomeomorph : C(X, Σ i, Y i) ≃ₜ Σ i, C(X, Y i) :=
+noncomputable def sigmaCodHomeomorph : C(X, Σ i, Y i) ≃ₜ Σ i, C(X, Y i) :=
   .symm <| Equiv.toHomeomorphOfIsInducing
     (.ofBijective _ ⟨isEmbedding_sigmaMk_comp.injective, fun f ↦
       let ⟨i, g, hg⟩ := f.exists_lift_sigma; ⟨⟨i, g⟩, hg.symm⟩⟩)

@@ -93,8 +93,6 @@ universe u
 open scoped PowerSeries
 open HahnSeries Polynomial
 
-noncomputable section
-
 /-- `LaurentSeries R` is the type of formal Laurent series with coefficients in `R`, denoted `R⸨X⸩`.
 
   It is implemented as a `HahnSeries` with value group `ℤ`.
@@ -197,7 +195,7 @@ section Semiring
 
 variable [Semiring R]
 
-instance : Coe R⟦X⟧ R⸨X⸩ :=
+noncomputable instance : Coe R⟦X⟧ R⸨X⸩ :=
   ⟨HahnSeries.ofPowerSeries ℤ R⟩
 
 @[simp]
@@ -208,7 +206,7 @@ theorem coeff_coe_powerSeries (x : R⟦X⟧) (n : ℕ) :
 /-- This is a power series that can be multiplied by an integer power of `X` to give our
   Laurent series. If the Laurent series is nonzero, `powerSeriesPart` has a nonzero
   constant term. -/
-def powerSeriesPart (x : R⸨X⸩) : R⟦X⟧ :=
+noncomputable def powerSeriesPart (x : R⸨X⸩) : R⟦X⟧ :=
   PowerSeries.mk fun n => x.coeff (x.order + n)
 
 @[simp]
@@ -261,6 +259,7 @@ theorem X_order_mul_powerSeriesPart {n : ℕ} {f : R⸨X⸩} (hn : n = f.order) 
 
 end Semiring
 
+noncomputable
 instance [CommSemiring R] : Algebra R⟦X⟧ R⸨X⸩ := (HahnSeries.ofPowerSeries ℤ R).toAlgebra
 
 @[simp]
@@ -369,7 +368,7 @@ instance : FaithfulSMul F[X] F⸨X⸩ := by
   refine (faithfulSMul_iff_algebraMap_injective F[X] F⸨X⸩).mpr ?_
   exact algebraMap_hahnSeries_injective ℤ
 
-instance coeToLaurentSeries : Coe (RatFunc F) F⸨X⸩ :=
+noncomputable instance coeToLaurentSeries : Coe (RatFunc F) F⸨X⸩ :=
   ⟨algebraMap (RatFunc F) F⸨X⸩⟩
 
 theorem coe_coe (P : Polynomial F) : ((P : F⟦X⟧) : F⸨X⸩) = (P : RatFunc F) := by
@@ -410,7 +409,7 @@ namespace PowerSeries
 
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The prime ideal `(X)` of `K⟦X⟧`, when `K` is a field, as a term of the `HeightOneSpectrum`. -/
-def idealX : IsDedekindDomain.HeightOneSpectrum K⟦X⟧ where
+noncomputable def idealX : IsDedekindDomain.HeightOneSpectrum K⟦X⟧ where
   asIdeal := Ideal.span {X}
   isPrime := PowerSeries.span_X_isPrime
   ne_bot  := by rw [ne_eq, Ideal.span_singleton_eq_bot]; exact X_ne_zero
@@ -459,7 +458,7 @@ open scoped LaurentSeries
 
 /-- `polynomialValuationX` is an abbreviation for the `X`-adic valuation given by
 `(Polynomial.idealX K).valuation K⟮X⟯`. -/
-abbrev polynomialValuationX : Valuation K⟮X⟯ ℤᵐ⁰ :=
+noncomputable abbrev polynomialValuationX : Valuation K⟮X⟯ ℤᵐ⁰ :=
   (Polynomial.idealX K).valuation _
 
 theorem valuation_eq_LaurentSeries_valuation (P : K⟮X⟯) :
@@ -480,7 +479,7 @@ namespace LaurentSeries
 
 open IsDedekindDomain.HeightOneSpectrum PowerSeries RatFunc WithZero
 
-instance valued : Valued K⸨X⸩ ℤᵐ⁰ := Valued.mk' ((PowerSeries.idealX K).valuation _)
+noncomputable instance valued : Valued K⸨X⸩ ℤᵐ⁰ := Valued.mk' ((PowerSeries.idealX K).valuation _)
 
 lemma valuation_def : (Valued.v : Valuation K⸨X⸩ ℤᵐ⁰) = (PowerSeries.idealX K).valuation _ := rfl
 
@@ -663,7 +662,7 @@ theorem uniformContinuous_coeff {uK : UniformSpace K} (d : ℤ) :
 /-- Since extracting coefficients is uniformly continuous, every Cauchy filter in
 `K⸨X⸩` gives rise to a Cauchy filter in `K` for every `d : ℤ`, and such Cauchy filter
 in `K` converges to a principal filter -/
-def Cauchy.coeff {ℱ : Filter K⸨X⸩} (hℱ : Cauchy ℱ) : ℤ → K :=
+noncomputable def Cauchy.coeff {ℱ : Filter K⸨X⸩} (hℱ : Cauchy ℱ) : ℤ → K :=
   let _ : UniformSpace K := ⊥
   fun d ↦ DiscreteUniformity.cauchyConst <| hℱ.map (uniformContinuous_coeff d)
 
@@ -730,7 +729,7 @@ theorem Cauchy.coeff_support_bddBelow {ℱ : Filter K⸨X⸩} (hℱ : Cauchy ℱ
 of the filter. Its `d`-th coefficient is defined as the limit of `Cauchy.coeff hℱ d`, which is
 again Cauchy but valued in the discrete space `K`. That sufficiently negative coefficients vanish
 follows from `Cauchy.coeff_support_bddBelow` -/
-def Cauchy.limit {ℱ : Filter K⸨X⸩} (hℱ : Cauchy ℱ) : K⸨X⸩ :=
+noncomputable def Cauchy.limit {ℱ : Filter K⸨X⸩} (hℱ : Cauchy ℱ) : K⸨X⸩ :=
   HahnSeries.mk (coeff hℱ) <| Set.IsWF.isPWO (coeff_support_bddBelow _).wellFoundedOn_lt
 
 /-- The following lemma shows that for every `d` smaller than the minimum between the integers
@@ -959,12 +958,13 @@ variable (K) in
 abbrev RatFuncAdicCompl := adicCompletion K⟮X⟯ (idealX K)
 
 /-- The `X`-adic completion as an abstract completion of `K⟮X⟯` -/
-abbrev ratfuncAdicComplPkg : AbstractCompletion (WithVal (polynomialValuationX K)) :=
+noncomputable abbrev ratfuncAdicComplPkg : AbstractCompletion (WithVal (polynomialValuationX K)) :=
   UniformSpace.Completion.cPkg
 
-instance : Field (ratfuncAdicComplPkg (K := K).space) :=
+noncomputable instance : Field (ratfuncAdicComplPkg (K := K).space) :=
   inferInstanceAs (Field ((polynomialValuationX K).Completion))
 
+noncomputable
 instance : Valued (ratfuncAdicComplPkg (K := K).space) (WithZero (Multiplicative ℤ)) :=
   inferInstanceAs (Valued ((polynomialValuationX K).Completion) (WithZero (Multiplicative ℤ)))
 
@@ -986,7 +986,7 @@ theorem continuous_coe' :
     Continuous (((↑) : K⟮X⟯ → K⸨X⸩) ∘ WithVal.equiv (polynomialValuationX K)) :=
   continuous_coe.comp uniformContinuous_withVal_equiv.continuous
 
-instance : TopologicalSpace (LaurentSeriesPkg K).space :=
+noncomputable instance : TopologicalSpace (LaurentSeriesPkg K).space :=
   (LaurentSeriesPkg K).uniformStruct.toTopologicalSpace
 
 @[simp]
@@ -996,16 +996,16 @@ theorem LaurentSeries_coe (x : K⟮X⟯) :
 
 /-- Reinterpret the extension of `coe : WithVal ((idealX K).valuation _) → K⸨X⸩` as a ring
 homomorphism -/
-abbrev extensionAsRingHom :=
+noncomputable abbrev extensionAsRingHom :=
   UniformSpace.Completion.extensionHom <|
     (algebraMap K⟮X⟯ K⸨X⸩).comp (WithVal.equiv (polynomialValuationX K)).toRingHom
 
 /-! The two instances below make `comparePkg` and `comparePkg_eq_extension` slightly faster. -/
-instance : UniformSpace (RatFuncAdicCompl K) := inferInstance
-instance : UniformSpace K⸨X⸩ := inferInstance
+noncomputable instance : UniformSpace (RatFuncAdicCompl K) := inferInstance
+noncomputable instance : UniformSpace K⸨X⸩ := inferInstance
 
 /-- The uniform space isomorphism between two abstract completions of `ratfunc K` -/
-abbrev comparePkg : RatFuncAdicCompl K ≃ᵤ K⸨X⸩ :=
+noncomputable abbrev comparePkg : RatFuncAdicCompl K ≃ᵤ K⸨X⸩ :=
   (adicCompletion.uniformEquiv _ _).trans <| compareEquiv ratfuncAdicComplPkg (LaurentSeriesPkg K)
 
 lemma comparePkg_eq_extension (x : RatFuncAdicCompl K) :
@@ -1013,7 +1013,7 @@ lemma comparePkg_eq_extension (x : RatFuncAdicCompl K) :
       (extensionAsRingHom K (continuous_coe' _)) (adicCompletion.toCompletion x) := rfl
 
 /-- The ring equivalence between `RatFuncAdicCompl K` and `K⸨X⸩`. -/
-abbrev ratfuncAdicComplRingEquiv : RatFuncAdicCompl K ≃+* K⸨X⸩ :=
+noncomputable abbrev ratfuncAdicComplRingEquiv : RatFuncAdicCompl K ≃+* K⸨X⸩ :=
   { comparePkg K with
     map_mul' x y :=
       (comparePkg_eq_extension K (x * y)).trans <|
@@ -1026,7 +1026,7 @@ abbrev ratfuncAdicComplRingEquiv : RatFuncAdicCompl K ≃+* K⸨X⸩ :=
 
 /-- The uniform space equivalence between two abstract completions of `ratfunc K` as a ring
 equivalence: it goes from `K⸨X⸩` to `RatFuncAdicCompl K` -/
-abbrev LaurentSeriesRingEquiv : K⸨X⸩ ≃+* RatFuncAdicCompl K :=
+noncomputable abbrev LaurentSeriesRingEquiv : K⸨X⸩ ≃+* RatFuncAdicCompl K :=
   (ratfuncAdicComplRingEquiv K).symm
 
 lemma LaurentSeriesRingEquiv_def (f : K⟦X⟧) :
@@ -1049,11 +1049,11 @@ theorem coe_X_compare :
 theorem algebraMap_apply (a : K) : algebraMap K K⸨X⸩ a = HahnSeries.C a := by
   simp [RingHom.algebraMap_toAlgebra]
 
-instance : Algebra K (RatFuncAdicCompl K) :=
+noncomputable instance : Algebra K (RatFuncAdicCompl K) :=
   RingHom.toAlgebra ((LaurentSeriesRingEquiv K).toRingHom.comp HahnSeries.C)
 
 /-- The algebra equivalence between `K⸨X⸩` and the `X`-adic completion of `RatFunc X` -/
-def LaurentSeriesAlgEquiv : K⸨X⸩ ≃ₐ[K] RatFuncAdicCompl K :=
+noncomputable def LaurentSeriesAlgEquiv : K⸨X⸩ ≃ₐ[K] RatFuncAdicCompl K :=
   AlgEquiv.ofRingEquiv (f := LaurentSeriesRingEquiv K)
     (fun a ↦ by simp [RingHom.algebraMap_toAlgebra])
 
@@ -1126,11 +1126,11 @@ section PowerSeries
 
 /-- In order to compare `K⟦X⟧` with the valuation subring in the `X`-adic completion of
 `K⟮X⟯` we consider its alias as a subring of `K⸨X⸩`. -/
-abbrev powerSeries_as_subring : Subring K⸨X⸩ :=
+noncomputable abbrev powerSeries_as_subring : Subring K⸨X⸩ :=
   Subring.map (HahnSeries.ofPowerSeries ℤ K) ⊤
 
 /-- The ring `K⟦X⟧` is isomorphic to the subring `powerSeries_as_subring K` -/
-abbrev powerSeriesEquivSubring : K⟦X⟧ ≃+* powerSeries_as_subring K :=
+noncomputable abbrev powerSeriesEquivSubring : K⟦X⟧ ≃+* powerSeries_as_subring K :=
   ((Subring.topEquiv).symm).trans (Subring.equivMapOfInjective ⊤ (ofPowerSeries ℤ K)
     ofPowerSeries_injective)
 
@@ -1176,7 +1176,7 @@ theorem powerSeries_ext_subring :
 
 /-- The ring isomorphism between `K⟦X⟧` and the unit ball inside the `X`-adic completion of
 `K⟮X⟯`. -/
-abbrev powerSeriesRingEquiv : K⟦X⟧ ≃+* (idealX K).adicCompletionIntegers K⟮X⟯ :=
+noncomputable abbrev powerSeriesRingEquiv : K⟦X⟧ ≃+* (idealX K).adicCompletionIntegers K⟮X⟯ :=
   ((powerSeriesEquivSubring K).trans (LaurentSeriesRingEquiv K).subringMap).trans
     <| RingEquiv.subringCongr (powerSeries_ext_subring K)
 
@@ -1198,14 +1198,14 @@ lemma algebraMap_C_mem_adicCompletionIntegers (x : K) :
   simp only [RingHom.comp_apply, RingEquiv.toRingHom_eq_coe, RingHom.coe_coe, this]
   apply LaurentSeriesRingEquiv_mem_valuationSubring
 
-instance : Algebra K ((idealX K).adicCompletionIntegers K⟮X⟯) :=
+noncomputable instance : Algebra K ((idealX K).adicCompletionIntegers K⟮X⟯) :=
   RingHom.toAlgebra <|
     ((LaurentSeriesRingEquiv K).toRingHom.comp HahnSeries.C).codRestrict _
       (algebraMap_C_mem_adicCompletionIntegers K)
 
 /-- The algebra isomorphism between `K⟦X⟧` and the unit ball inside the `X`-adic completion of
 `K⟮X⟯`. -/
-def powerSeriesAlgEquiv : K⟦X⟧ ≃ₐ[K] (idealX K).adicCompletionIntegers K⟮X⟯ := by
+noncomputable def powerSeriesAlgEquiv : K⟦X⟧ ≃ₐ[K] (idealX K).adicCompletionIntegers K⟮X⟯ := by
   apply AlgEquiv.ofRingEquiv (f := powerSeriesRingEquiv K)
   intro a
   rw [PowerSeries.algebraMap_eq, RingHom.algebraMap_toAlgebra, ← Subtype.coe_inj,

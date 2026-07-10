@@ -114,8 +114,6 @@ composition of partial equivs with `≫`.
 
 @[expose] public section
 
-noncomputable section
-
 open TopologicalSpace Topology
 
 universe u
@@ -496,7 +494,7 @@ variable [TopologicalSpace H] [TopologicalSpace M] [TopologicalSpace M']
 /-- The disjoint union of two charted spaces modelled on a non-empty space `H`
 is a charted space over `H`. -/
 @[implicit_reducible]
-def ChartedSpace.sum_of_nonempty [Nonempty H] : ChartedSpace H (M ⊕ M') where
+noncomputable def ChartedSpace.sum_of_nonempty [Nonempty H] : ChartedSpace H (M ⊕ M') where
   atlas := ((fun e ↦ e.lift_openEmbedding IsOpenEmbedding.inl) '' cm.atlas) ∪
     ((fun e ↦ e.lift_openEmbedding IsOpenEmbedding.inr) '' cm'.atlas)
   -- At `x : M`, the chart is the chart in `M`; at `x' ∈ M'`, it is the chart in `M'`.
@@ -523,7 +521,7 @@ def ChartedSpace.sum_of_nonempty [Nonempty H] : ChartedSpace H (M ⊕ M') where
       right
       use ChartedSpace.chartAt x, cm'.chart_mem_atlas x
 
-instance ChartedSpace.sum : ChartedSpace H (M ⊕ M') := by
+noncomputable instance ChartedSpace.sum : ChartedSpace H (M ⊕ M') := by
   by_cases! h : Nonempty H
   · exact ChartedSpace.sum_of_nonempty
   have : IsEmpty M := isEmpty_of_chartedSpace H
@@ -576,7 +574,7 @@ variable [TopologicalSpace M] [TopologicalSpace M'] [TopologicalSpace H] [Charte
 /-- Given a right inverse for a local homeomorphism `f : M → M'`, endow `M'` with a `ChartedSpace`
 structure by pushing forward the `ChartedSpace` structure from `M`. -/
 @[implicit_reducible]
-def IsLocalHomeomorph.chartedSpaceOfRightInverse
+noncomputable def IsLocalHomeomorph.chartedSpaceOfRightInverse
     {f : M → M'} (hf : IsLocalHomeomorph f) {g : M' → M} (hg : Function.RightInverse g f) :
     ChartedSpace H M' where
   atlas := {(hf.localInverseAt (g q)).trans (chartAt H (g q)) | q : M'}
@@ -589,7 +587,7 @@ def IsLocalHomeomorph.chartedSpaceOfRightInverse
 /-- Given a surjective local homeomorphism `f : M → M'`, endow `M'` with a `ChartedSpace` structure
 by pushing forward the `ChartedSpace` structure from `M`. -/
 @[implicit_reducible]
-def IsLocalHomeomorph.chartedSpace
+noncomputable def IsLocalHomeomorph.chartedSpace
     {f : M → M'} (hf : IsLocalHomeomorph f) (hf' : Function.Surjective f) :
     ChartedSpace H M' :=
   hf.chartedSpaceOfRightInverse hf'.hasRightInverse.choose_spec
@@ -597,7 +595,7 @@ def IsLocalHomeomorph.chartedSpace
 /-- Given a homeomorphism `f : M ≃ₜ M'`, endow `M'` with a `ChartedSpace` structure by pushing
 forward the `ChartedSpace` structure from `M`. -/
 @[implicit_reducible]
-def Homeomorph.chartedSpace (f : M ≃ₜ M') : ChartedSpace H M' :=
+noncomputable def Homeomorph.chartedSpace (f : M ≃ₜ M') : ChartedSpace H M' :=
   f.isLocalHomeomorph.chartedSpace f.surjective
 
 end IsLocalHomeomorph

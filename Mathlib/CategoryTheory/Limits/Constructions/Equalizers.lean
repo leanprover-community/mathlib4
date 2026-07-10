@@ -21,8 +21,6 @@ TODO: generalize universe
 @[expose] public section
 
 
-noncomputable section
-
 universe v v' u u'
 
 open CategoryTheory CategoryTheory.Category
@@ -38,12 +36,12 @@ namespace HasEqualizersOfHasPullbacksAndBinaryProducts
 variable [HasBinaryProducts C] [HasPullbacks C]
 
 /-- Define the equalizing object -/
-abbrev constructEqualizer (F : WalkingParallelPair ⥤ C) : C :=
+noncomputable abbrev constructEqualizer (F : WalkingParallelPair ⥤ C) : C :=
   pullback (prod.lift (𝟙 _) (F.map WalkingParallelPairHom.left))
     (prod.lift (𝟙 _) (F.map WalkingParallelPairHom.right))
 
 /-- Define the equalizing morphism -/
-abbrev pullbackFst (F : WalkingParallelPair ⥤ C) :
+noncomputable abbrev pullbackFst (F : WalkingParallelPair ⥤ C) :
     constructEqualizer F ⟶ F.obj WalkingParallelPair.zero :=
   pullback.fst _ _
 
@@ -56,7 +54,7 @@ theorem pullbackFst_eq_pullback_snd (F : WalkingParallelPair ⥤ C) :
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Define the equalizing cone -/
-abbrev equalizerCone (F : WalkingParallelPair ⥤ C) : Cone F :=
+noncomputable abbrev equalizerCone (F : WalkingParallelPair ⥤ C) : Cone F :=
   Cone.ofFork
     (Fork.ofι (pullbackFst F)
       (by
@@ -68,6 +66,7 @@ abbrev equalizerCone (F : WalkingParallelPair ⥤ C) : Cone F :=
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Show the equalizing cone is a limit -/
+noncomputable
 def equalizerConeIsLimit (F : WalkingParallelPair ⥤ C) : IsLimit (equalizerCone F) where
   lift c := pullback.lift (c.π.app _) (c.π.app _)
   fac := by rintro c (_ | _) <;> simp
@@ -136,12 +135,12 @@ namespace HasCoequalizersOfHasPushoutsAndBinaryCoproducts
 variable [HasBinaryCoproducts C] [HasPushouts C]
 
 /-- Define the equalizing object -/
-abbrev constructCoequalizer (F : WalkingParallelPair ⥤ C) : C :=
+noncomputable abbrev constructCoequalizer (F : WalkingParallelPair ⥤ C) : C :=
   pushout (coprod.desc (𝟙 _) (F.map WalkingParallelPairHom.left))
     (coprod.desc (𝟙 _) (F.map WalkingParallelPairHom.right))
 
 /-- Define the equalizing morphism -/
-abbrev pushoutInl (F : WalkingParallelPair ⥤ C) :
+noncomputable abbrev pushoutInl (F : WalkingParallelPair ⥤ C) :
     F.obj WalkingParallelPair.one ⟶ constructCoequalizer F :=
   pushout.inl _ _
 
@@ -154,7 +153,7 @@ theorem pushoutInl_eq_pushout_inr (F : WalkingParallelPair ⥤ C) :
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Define the equalizing cocone -/
-abbrev coequalizerCocone (F : WalkingParallelPair ⥤ C) : Cocone F :=
+noncomputable abbrev coequalizerCocone (F : WalkingParallelPair ⥤ C) : Cocone F :=
   Cocone.ofCofork
     (Cofork.ofπ (pushoutInl F) (by
         conv_rhs => rw [pushoutInl_eq_pushout_inr]
@@ -166,6 +165,7 @@ abbrev coequalizerCocone (F : WalkingParallelPair ⥤ C) : Cocone F :=
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Show the equalizing cocone is a colimit -/
+noncomputable
 def coequalizerCoconeIsColimit (F : WalkingParallelPair ⥤ C) : IsColimit (coequalizerCocone F) where
   desc c := pushout.desc (c.ι.app _) (c.ι.app _)
   fac := by rintro c (_ | _) <;> simp

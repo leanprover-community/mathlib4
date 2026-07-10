@@ -15,8 +15,6 @@ public import Mathlib.MeasureTheory.Integral.Bochner.Set
 
 public section
 
-noncomputable section
-
 open Function Filter Inv MeasureTheory.Measure Module Set TopologicalSpace
 open scoped NNReal ENNReal Pointwise Topology
 

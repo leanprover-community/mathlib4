@@ -31,8 +31,6 @@ a cokernel cofork.
 
 @[expose] public section
 
-noncomputable section
-
 open CategoryTheory Category Limits Arrow
 
 variable (V : Type*) [Category* V] [Preadditive V]
@@ -75,7 +73,7 @@ theorem eq_of_rightHomotopy {u v : Arrow V} (f g : u ⟶ v) (h : RightHomotopy f
 
 /-- If two morphisms of `Arrow V` become equal in the right Freyd category,
 then they are right homotopic. -/
-def homotopyOfEq {u v : Arrow V} (f g : u ⟶ v)
+noncomputable def homotopyOfEq {u v : Arrow V} (f g : u ⟶ v)
     (w : (quotient V).map f = (quotient V).map g) : RightHomotopy f g :=
   ((Quotient.functor_map_eq_iff _ _ _).mp w).some
 
@@ -114,7 +112,7 @@ set_option backward.defeqAttrib.useBackward true in
 /-- If `V` has a zero object, this is the functor from `V` to `Arrow V`
 that sends an object `X` to the arrow `0 ⟶ X`. -/
 @[simps]
-def rightFunctor : V ⥤ Arrow V where
+noncomputable def rightFunctor : V ⥤ Arrow V where
   obj X := Arrow.mk (0 : 0 ⟶ X)
   map f := Arrow.homMk 0 f
 
@@ -124,7 +122,7 @@ instance : (rightFunctor V).Additive where
 
 /-- The fully faithful additive functor from  `V` to `RightFreyd V` sending an object `X` of `V`
 to the class of the arrow `0 ⟶ X`. -/
-abbrev functor : V ⥤ RightFreyd V := rightFunctor V ⋙ quotient V
+noncomputable abbrev functor : V ⥤ RightFreyd V := rightFunctor V ⋙ quotient V
 
 instance : (functor V).Additive := by dsimp [functor]; infer_instance
 
@@ -151,17 +149,17 @@ namespace Candidate
 
 /-- If `f` is a morphism of `Arrow V`, this is a "candidate cokernel" of `f`, i.e. an object
 in `Arrow V` whose image in `RightFreyd V` will be a cokernel of the image of `f`. -/
-abbrev cokernel := Arrow.mk (biprod.desc v.hom f.right)
+noncomputable abbrev cokernel := Arrow.mk (biprod.desc v.hom f.right)
 
 set_option backward.isDefEq.respectTransparency false in
 /-- For `f : u ⟶ v` a morphism in `Arrow V`, this is the morphism `v ⟶ cokernel f` from `v` to
 the "candidate cokernel" of `f`, whose image in `RightFreyd V` will be the projection to
 the cokernel of the image of `f`. -/
-def π : v ⟶ cokernel f := Arrow.homMk biprod.inl (𝟙 v.right)
+noncomputable def π : v ⟶ cokernel f := Arrow.homMk biprod.inl (𝟙 v.right)
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The right homotopy expressing that `f ≫ π f` is sent to `0` in `RightFreyd V`. -/
-def condition : RightHomotopy (f ≫ π f) 0 where
+noncomputable def condition : RightHomotopy (f ≫ π f) 0 where
   hom := biprod.inr
   comm := by simp [π]
 
@@ -176,7 +174,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- If `f : u ⟶ v` and `g : v ⟶ w` are morphisms in `Arrow V` such that `f ≫ g` is right
 homotopic to `0`, this is the morphism from the "candidate cokernel" of `f` to `w` defined
 from the right homotopy. -/
-def desc : cokernel f ⟶ w :=
+noncomputable def desc : cokernel f ⟶ w :=
   Arrow.homMk (biprod.desc g.left h.hom) g.right (biprod.hom_ext' _ _ (by simp)
     (by simp [← h.comm]))
 
@@ -185,14 +183,14 @@ set_option backward.isDefEq.respectTransparency false in
 lemma π_desc : π f ≫ desc f g h = g := by ext <;> simp [π, desc]
 
 /-- For `f` a morphism in `Arrow V`, this is a cokernel cofork of `(quotient V).map f`. -/
-def cokernelCofork : CokernelCofork ((quotient V).map f) :=
+noncomputable def cokernelCofork : CokernelCofork ((quotient V).map f) :=
   CokernelCofork.ofπ ((quotient V).map (Candidate.π f))
     (eq_of_rightHomotopy _ _ (Candidate.condition f))
 
 set_option backward.isDefEq.respectTransparency false in
 /-- For `f` a morphism in `Arrow V`, the cokernel cofork of `(quotient V).map f` constructed
 in `cokernelCofork` is a colimit cofork. -/
-def isColimitCokernelCofork : IsColimit (cokernelCofork f) :=
+noncomputable def isColimitCokernelCofork : IsColimit (cokernelCofork f) :=
   CokernelCofork.IsColimit.ofπ' _
     (eq_of_rightHomotopy _ _ (Candidate.condition f))
     (fun g hg ↦ Nonempty.some (by

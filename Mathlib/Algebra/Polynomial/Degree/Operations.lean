@@ -20,8 +20,6 @@ public import Mathlib.Algebra.Polynomial.Degree.Defs
 
 @[expose] public section
 
-noncomputable section
-
 open Finsupp Finset
 
 open Polynomial

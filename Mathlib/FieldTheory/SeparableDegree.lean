@@ -125,8 +125,6 @@ separable degree, degree, polynomial
 
 open Module Polynomial IntermediateField Field
 
-noncomputable section
-
 universe u v w
 
 variable (F : Type u) (E : Type v) [Field F] [Field E] [Algebra F E]
@@ -142,16 +140,16 @@ abbrev Emb := E →ₐ[F] AlgebraicClosure E
 is the number of `F`-algebra homomorphisms from `E` to the algebraic closure of `E`,
 as a natural number. It is defined to be zero if there are infinitely many of them.
 Note that if `E / F` is not algebraic, then this definition makes no mathematical sense. -/
-def finSepDegree : ℕ := Nat.card (Emb F E)
+noncomputable def finSepDegree : ℕ := Nat.card (Emb F E)
 
-instance instInhabitedEmb : Inhabited (Emb F E) := ⟨IsScalarTower.toAlgHom F E _⟩
+noncomputable instance instInhabitedEmb : Inhabited (Emb F E) := ⟨IsScalarTower.toAlgHom F E _⟩
 
 instance instNeZeroFinSepDegree [FiniteDimensional F E] : NeZero (finSepDegree F E) :=
   ⟨Nat.card_ne_zero.2 ⟨inferInstance, Fintype.finite <| minpoly.AlgHom.fintype _ _ _⟩⟩
 
 /-- A random bijection between `Field.Emb F E` and `Field.Emb F K` when `E` and `K` are isomorphic
 as `F`-algebras. -/
-def embEquivOfEquiv (i : E ≃ₐ[F] K) :
+noncomputable def embEquivOfEquiv (i : E ≃ₐ[F] K) :
     Emb F E ≃ Emb F K := AlgEquiv.arrowCongr i <| AlgEquiv.symm <| by
   let _ : Algebra E K := i.toAlgHom.toRingHom.toAlgebra
   have : Algebra.IsAlgebraic E K := by
@@ -211,7 +209,7 @@ namespace Field
 element `s` of `S` is integral (= algebraic) over `F` and whose minimal polynomial splits in `K`.
 Combined with `Field.instInhabitedEmb`, it can be viewed as a stronger version of
 `IntermediateField.nonempty_algHom_of_adjoin_splits`. -/
-def embEquivOfAdjoinSplits {S : Set E} (hS : adjoin F S = ⊤)
+noncomputable def embEquivOfAdjoinSplits {S : Set E} (hS : adjoin F S = ⊤)
     (hK : ∀ s ∈ S, IsIntegral F s ∧ Splits ((minpoly F s).map (algebraMap F K))) :
     Emb F E ≃ (E →ₐ[F] K) :=
   have : Algebra.IsAlgebraic F (⊤ : IntermediateField F E) :=
@@ -230,7 +228,7 @@ theorem finSepDegree_eq_of_adjoin_splits {S : Set E} (hS : adjoin F S = ⊤)
 
 /-- A random bijection between `Field.Emb F E` and `E →ₐ[F] K` when `E / F` is algebraic
 and `K / F` is algebraically closed. -/
-def embEquivOfIsAlgClosed [Algebra.IsAlgebraic F E] [IsAlgClosed K] :
+noncomputable def embEquivOfIsAlgClosed [Algebra.IsAlgebraic F E] [IsAlgClosed K] :
     Emb F E ≃ (E →ₐ[F] K) :=
   embEquivOfAdjoinSplits F E K (adjoin_univ F E) fun s _ ↦
     ⟨Algebra.IsIntegral.isIntegral s, IsAlgClosed.splits _⟩
@@ -244,6 +242,7 @@ theorem finSepDegree_eq_of_isAlgClosed [Algebra.IsAlgebraic F E] [IsAlgClosed K]
 /-- If `K / E / F` is a field extension tower, such that `K / E` is algebraic,
 then there is a non-canonical bijection
 `Field.Emb F E × Field.Emb E K ≃ Field.Emb F K`. A corollary of `algHomEquivSigma`. -/
+noncomputable
 def embProdEmbOfIsAlgebraic [Algebra E K] [IsScalarTower F E K] [Algebra.IsAlgebraic E K] :
     Emb F E × Emb E K ≃ Emb F K :=
   let e : ∀ f : E →ₐ[F] AlgebraicClosure K,
@@ -304,7 +303,7 @@ open scoped Classical in
 defined to be the number of distinct roots of it over its splitting field.
 This is similar to `Polynomial.natDegree` but not to `Polynomial.degree`, namely, the separable
 degree of `0` is `0`, not negative infinity. -/
-def natSepDegree : ℕ := (f.aroots f.SplittingField).toFinset.card
+noncomputable def natSepDegree : ℕ := (f.aroots f.SplittingField).toFinset.card
 
 /-- The separable degree of a polynomial is smaller than its degree. -/
 theorem natSepDegree_le_natDegree : f.natSepDegree ≤ f.natDegree := by

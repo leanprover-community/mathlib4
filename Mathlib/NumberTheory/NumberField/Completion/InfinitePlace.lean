@@ -56,7 +56,6 @@ number field, embeddings, infinite places, completion, absolute value
 -/
 
 @[expose] public section
-noncomputable section
 
 namespace NumberField.InfinitePlace
 
@@ -86,8 +85,8 @@ lemma norm_coe (x : WithAbs v.1) :
 instance : CompletableTopField (WithAbs v.1) :=
   v.isometry_embedding.isUniformInducing.completableTopField
 
-example : NormedField v.Completion := inferInstance
-example : Algebra K v.Completion := inferInstance
+noncomputable example : NormedField v.Completion := inferInstance
+noncomputable example : Algebra K v.Completion := inferInstance
 example : IsTopologicalRing v.Completion := inferInstance
 
 /-- The coercion from the rationals to its completion along an infinite place is `Rat.cast`. -/
@@ -107,9 +106,10 @@ instance locallyCompactSpace : LocallyCompactSpace (v.Completion) :=
   AbsoluteValue.Completion.locallyCompactSpace v.isometry_embedding
 
 /-- The embedding associated to an infinite place extended to an embedding `v.Completion →+* ℂ`. -/
-def extensionEmbedding : v.Completion →+* ℂ := v.isometry_embedding.extensionHom
+noncomputable def extensionEmbedding : v.Completion →+* ℂ := v.isometry_embedding.extensionHom
 
 /-- The embedding `K →+* ℝ` associated to a real infinite place extended to `v.Completion →+* ℝ`. -/
+noncomputable
 def extensionEmbeddingOfIsReal {v : InfinitePlace K} (hv : IsReal v) : v.Completion →+* ℝ :=
   (v.isometry_embedding_of_isReal hv).extensionHom
 
@@ -172,14 +172,14 @@ theorem bijective_extensionEmbedding_of_isComplex {v : InfinitePlace K} (hv : Is
 
 /-- The ring isomorphism `v.Completion ≃+* ℂ`, when `v` is complex, given by the bijection
 `v.Completion →+* ℂ`. -/
-def ringEquivComplexOfIsComplex {v : InfinitePlace K} (hv : IsComplex v) :
+noncomputable def ringEquivComplexOfIsComplex {v : InfinitePlace K} (hv : IsComplex v) :
     v.Completion ≃+* ℂ := RingEquiv.ofBijective _ (bijective_extensionEmbedding_of_isComplex hv)
 
 @[simp] theorem ringEquivComplexOfIsComplex_apply {v : InfinitePlace K} (hv : IsComplex v)
     (x : v.Completion) : ringEquivComplexOfIsComplex hv x = extensionEmbedding v x := rfl
 
 /-- If the infinite place `v` is complex, then `v.Completion` is isometric to `ℂ`. -/
-def isometryEquivComplexOfIsComplex {v : InfinitePlace K} (hv : IsComplex v) :
+noncomputable def isometryEquivComplexOfIsComplex {v : InfinitePlace K} (hv : IsComplex v) :
     v.Completion ≃ᵢ ℂ where
   toEquiv := ringEquivComplexOfIsComplex hv
   isometry_toFun := isometry_extensionEmbedding v
@@ -197,6 +197,7 @@ theorem bijective_extensionEmbeddingOfIsReal {v : InfinitePlace K} (hv : IsReal 
 
 /-- The ring isomorphism `v.Completion ≃+* ℝ`, when `v` is real, given by the bijection
 `v.Completion →+* ℝ`. -/
+noncomputable
 def ringEquivRealOfIsReal {v : InfinitePlace K} (hv : IsReal v) : v.Completion ≃+* ℝ :=
   RingEquiv.ofBijective _ (bijective_extensionEmbeddingOfIsReal hv)
 
@@ -204,6 +205,7 @@ def ringEquivRealOfIsReal {v : InfinitePlace K} (hv : IsReal v) : v.Completion �
     (x : v.Completion) : ringEquivRealOfIsReal hv x = extensionEmbeddingOfIsReal hv x := rfl
 
 /-- If the infinite place `v` is real, then `v.Completion` is isometric to `ℝ`. -/
+noncomputable
 def isometryEquivRealOfIsReal {v : InfinitePlace K} (hv : IsReal v) : v.Completion ≃ᵢ ℝ where
   toEquiv := ringEquivRealOfIsReal hv
   isometry_toFun := isometry_extensionEmbeddingOfIsReal hv

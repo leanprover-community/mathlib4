@@ -29,8 +29,6 @@ public import Mathlib.NumberTheory.ModularForms.CongruenceSubgroups
 
 @[expose] public section
 
-noncomputable section
-
 open ModularForm UpperHalfPlane Complex Matrix CongruenceSubgroup Set
 
 open scoped MatrixGroups
@@ -121,7 +119,7 @@ lemma gammaSet_eq_gcd_mul_divIntMap {r : ℕ} {v : Fin 2 → ℤ} (hv : v ∈ ga
     simp_all [Pi.smul_apply, divIntMap, ← Int.mul_ediv_assoc _ (gammaSet_div_gcd hv i)]
 
 /-- The equivalence between `gammaSet 1 r 0` and `gammaSet 1 1 0` for non-zero `r`. -/
-def gammaSetDivGcdEquiv (r : ℕ) [NeZero r] : gammaSet 1 r 0 ≃ gammaSet 1 1 0 :=
+noncomputable def gammaSetDivGcdEquiv (r : ℕ) [NeZero r] : gammaSet 1 r 0 ≃ gammaSet 1 1 0 :=
     Set.BijOn.equiv _ (gammaSet_div_gcd_to_gammaSet10_bijection r)
 
 @[simp]
@@ -183,7 +181,7 @@ end gamma_action
 section eisSummand
 
 /-- The function on `(Fin 2 → ℤ)` whose sum defines an Eisenstein series. -/
-def eisSummand (k : ℤ) (v : Fin 2 → ℤ) (z : ℍ) : ℂ := (v 0 * z + v 1) ^ (-k)
+noncomputable def eisSummand (k : ℤ) (v : Fin 2 → ℤ) (z : ℍ) : ℂ := (v 0 * z + v 1) ^ (-k)
 
 /-- How the `eisSummand` function changes under the Moebius action. -/
 theorem eisSummand_SL2_apply (k : ℤ) (i : (Fin 2 → ℤ)) (A : SL(2, ℤ)) (z : ℍ) :
@@ -202,6 +200,7 @@ end eisSummand
 variable (a)
 
 /-- An Eisenstein series of weight `k` and level `Γ(N)`, with congruence condition `a`. -/
+noncomputable
 def _root_.eisensteinSeries (k : ℤ) (z : ℍ) : ℂ := ∑' x : gammaSet N 1 a, eisSummand k x z
 
 lemma eisensteinSeries_slash_apply (k : ℤ) (γ : SL(2, ℤ)) :
@@ -215,7 +214,7 @@ lemma eisensteinSeries_slash_apply (k : ℤ) (γ : SL(2, ℤ)) :
 
 /-- The `SlashInvariantForm` defined by an Eisenstein series of weight `k : ℤ`, level `Γ(N)`,
 and congruence condition given by `a : Fin 2 → ZMod N`. -/
-def eisensteinSeriesSIF (k : ℤ) : SlashInvariantForm (Gamma N) k where
+noncomputable def eisensteinSeriesSIF (k : ℤ) : SlashInvariantForm (Gamma N) k where
   toFun := eisensteinSeries a k
   slash_action_eq' A hA := by
     obtain ⟨A, (hA : A ∈ Γ(N)), rfl⟩ := hA

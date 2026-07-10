@@ -17,8 +17,6 @@ In this file we specialize the inverse function theorem to `C^r`-smooth function
 
 @[expose] public section
 
-noncomputable section
-
 namespace ContDiffAt
 
 variable {𝕂 : Type*} [RCLike 𝕂]
@@ -28,6 +26,7 @@ variable [CompleteSpace E] (f : E → F) {f' : E ≃L[𝕂] F} {a : E} {n : With
 
 /-- Given a `ContDiff` function over `𝕂` (which is `ℝ` or `ℂ`) with an invertible
 derivative at `a`, returns an `OpenPartialHomeomorph` with `to_fun = f` and `a ∈ source`. -/
+noncomputable
 def toOpenPartialHomeomorph (hf : ContDiffAt 𝕂 n f a) (hf' : HasFDerivAt f (f' : E →L[𝕂] F) a)
     (hn : n ≠ 0) : OpenPartialHomeomorph E F :=
   (hf.hasStrictFDerivAt' hf' hn).toOpenPartialHomeomorph f
@@ -52,7 +51,7 @@ theorem image_mem_toOpenPartialHomeomorph_target (hf : ContDiffAt 𝕂 n f a)
 
 /-- Given a `ContDiff` function over `𝕂` (which is `ℝ` or `ℂ`) with an invertible derivative
 at `a`, returns a function that is locally inverse to `f`. -/
-def localInverse (hf : ContDiffAt 𝕂 n f a) (hf' : HasFDerivAt f (f' : E →L[𝕂] F) a)
+noncomputable def localInverse (hf : ContDiffAt 𝕂 n f a) (hf' : HasFDerivAt f (f' : E →L[𝕂] F) a)
     (hn : n ≠ 0) : F → E :=
   (hf.hasStrictFDerivAt' hf' hn).localInverse f f' a
 

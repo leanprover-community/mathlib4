@@ -39,8 +39,6 @@ dual, Fréchet-Riesz
 
 @[expose] public section
 
-noncomputable section
-
 open ComplexConjugate Module
 
 namespace InnerProductSpace
@@ -63,7 +61,7 @@ embedding of `E` into `StrongDual 𝕜 E`.
 If `E` is complete, this operation is surjective, hence a conjugate-linear isometric equivalence;
 see `toDual`.
 -/
-def toDualMap : E →ₗᵢ⋆[𝕜] StrongDual 𝕜 E :=
+noncomputable def toDualMap : E →ₗᵢ⋆[𝕜] StrongDual 𝕜 E :=
   { innerSL 𝕜 with norm_map' := innerSL_apply_norm _ }
 
 variable {E}
@@ -132,7 +130,7 @@ variable [CompleteSpace E]
 /-- **Fréchet-Riesz representation**: any `ℓ` in the dual of a Hilbert space `E` is of the form
 `fun u => ⟪y, u⟫` for some `y : E`, i.e. `toDualMap` is surjective.
 -/
-def toDual : E ≃ₗᵢ⋆[𝕜] StrongDual 𝕜 E :=
+noncomputable def toDual : E ≃ₗᵢ⋆[𝕜] StrongDual 𝕜 E :=
   LinearIsometryEquiv.ofSurjective (toDualMap 𝕜 E)
     (by
       intro ℓ
@@ -189,7 +187,7 @@ lemma toDual_apply_eq_toDualMap_apply (x : E) :
 given by interpreting the form as a map `B : E →L⋆[𝕜] StrongDual 𝕜 E`
 and dualizing the result using `toDual`.
 -/
-def continuousLinearMapOfBilin (B : E →L⋆[𝕜] E →L[𝕜] 𝕜) : E →L[𝕜] E :=
+noncomputable def continuousLinearMapOfBilin (B : E →L⋆[𝕜] E →L[𝕜] 𝕜) : E →L[𝕜] E :=
   (toDual 𝕜 E).symm.toContinuousLinearEquiv.toContinuousLinearMap.comp B
 
 local postfix:1024 "♯" => continuousLinearMapOfBilin

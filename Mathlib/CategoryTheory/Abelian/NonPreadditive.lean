@@ -52,8 +52,6 @@ reconstruct any natural preadditive structure the category may have.
 @[expose] public section
 
 
-noncomputable section
-
 open CategoryTheory
 
 open CategoryTheory.Limits
@@ -190,7 +188,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- In a `NonPreadditiveAbelian` category, an epi is the cokernel of its kernel. More precisely:
 If `f` is an epimorphism and `s` is some limit kernel cone on `f`, then `f` is a cokernel
 of `Fork.ι s`. -/
-def epiIsCokernelOfKernel [Epi f] (s : Fork f 0) (h : IsLimit s) :
+noncomputable def epiIsCokernelOfKernel [Epi f] (s : Fork f 0) (h : IsLimit s) :
     IsColimit (CokernelCofork.ofπ f (KernelFork.condition s)) :=
   IsCokernel.cokernelIso _ _
     (cokernel.ofIsoComp _ _ (Limits.IsLimit.conePointUniqueUpToIso (limit.isLimit _) h)
@@ -201,7 +199,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- In a `NonPreadditiveAbelian` category, a mono is the kernel of its cokernel. More precisely:
 If `f` is a monomorphism and `s` is some colimit cokernel cocone on `f`, then `f` is a kernel
 of `Cofork.π s`. -/
-def monoIsKernelOfCokernel [Mono f] (s : Cofork f 0) (h : IsColimit s) :
+noncomputable def monoIsKernelOfCokernel [Mono f] (s : Cofork f 0) (h : IsColimit s) :
     IsLimit (KernelFork.ofι f (CokernelCofork.condition s)) :=
   IsKernel.isoKernel _ _
     (kernel.ofCompIso _ _ (Limits.IsColimit.coconePointUniqueUpToIso h (colimit.isColimit _))
@@ -214,7 +212,7 @@ section
 
 /-- The composite `A ⟶ A ⨯ A ⟶ cokernel (Δ A)`, where the first map is `(𝟙 A, 0)` and the second map
 is the canonical projection into the cokernel. -/
-abbrev r (A : C) : A ⟶ cokernel (diag A) :=
+noncomputable abbrev r (A : C) : A ⟶ cokernel (diag A) :=
   prod.lift (𝟙 A) 0 ≫ cokernel.π (diag A)
 
 instance mono_Δ {A : C} : Mono (diag A) :=
@@ -270,7 +268,7 @@ instance isIso_r {A : C} : IsIso (r A) :=
 /-- The composite `A ⨯ A ⟶ cokernel (diag A) ⟶ A` given by the natural projection into the cokernel
 followed by the inverse of `r`. In the category of modules, using the normal kernels and
 cokernels, this map is equal to the map `(a, b) ↦ a - b`, hence the name `σ` for "subtraction". -/
-abbrev σ {A : C} : A ⨯ A ⟶ A :=
+noncomputable abbrev σ {A : C} : A ⨯ A ⟶ A :=
   cokernel.π (diag A) ≫ inv (r A)
 
 end
@@ -286,7 +284,7 @@ theorem lift_map {X Y : C} (f : X ⟶ Y) :
     prod.lift (𝟙 X) 0 ≫ Limits.prod.map f f = f ≫ prod.lift (𝟙 Y) 0 := by simp
 
 /-- σ is a cokernel of Δ X. -/
-def isColimitσ {X : C} : IsColimit (CokernelCofork.ofπ (σ : X ⨯ X ⟶ X) diag_σ) :=
+noncomputable def isColimitσ {X : C} : IsColimit (CokernelCofork.ofπ (σ : X ⨯ X ⟶ X) diag_σ) :=
   cokernel.cokernelIso _ σ (asIso (r X)).symm (by rw [Iso.symm_hom, asIso_inv])
 
 set_option backward.isDefEq.respectTransparency false in
@@ -307,7 +305,7 @@ section
 -- We write `f - g` for `prod.lift f g ≫ σ`.
 /-- Subtraction of morphisms in a `NonPreadditiveAbelian` category. -/
 @[instance_reducible]
-def hasSub {X Y : C} : Sub (X ⟶ Y) :=
+noncomputable def hasSub {X Y : C} : Sub (X ⟶ Y) :=
   ⟨fun f g => prod.lift f g ≫ σ⟩
 
 attribute [local instance] hasSub
@@ -315,7 +313,7 @@ attribute [local instance] hasSub
 -- We write `-f` for `0 - f`.
 /-- Negation of morphisms in a `NonPreadditiveAbelian` category. -/
 @[instance_reducible]
-def hasNeg {X Y : C} : Neg (X ⟶ Y) where
+noncomputable def hasNeg {X Y : C} : Neg (X ⟶ Y) where
   neg := fun f => 0 - f
 
 attribute [local instance] hasNeg
@@ -323,7 +321,7 @@ attribute [local instance] hasNeg
 -- We write `f + g` for `f - (-g)`.
 /-- Addition of morphisms in a `NonPreadditiveAbelian` category. -/
 @[instance_reducible]
-def hasAdd {X Y : C} : Add (X ⟶ Y) :=
+noncomputable def hasAdd {X Y : C} : Add (X ⟶ Y) :=
   ⟨fun f g => f - -g⟩
 
 attribute [local instance] hasAdd
@@ -410,7 +408,7 @@ theorem add_comp (X Y Z : C) (f g : X ⟶ Y) (h : Y ⟶ Z) : (f + g) ≫ h = f �
 
 /-- Every `NonPreadditiveAbelian` category is preadditive. -/
 @[implicit_reducible]
-def preadditive : Preadditive C where
+noncomputable def preadditive : Preadditive C where
   homGroup X Y :=
     { add_assoc := add_assoc
       zero_add := neg_neg

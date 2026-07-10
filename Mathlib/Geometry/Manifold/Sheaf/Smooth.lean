@@ -68,7 +68,6 @@ https://github.com/leanprover-community/mathlib4/pull/5726.
 @[expose] public section
 
 
-noncomputable section
 open TopologicalSpace Opposite
 open scoped ContDiff
 
@@ -109,12 +108,12 @@ lemma smoothSheaf.obj_eq (U : (Opens (TopCat.of M))ᵒᵖ) :
 
 /-- Canonical map from the stalk of `smoothSheaf IM I M N` at `x` to `N`, given by evaluating
 sections at `x`. -/
-def smoothSheaf.eval (x : M) : (smoothSheaf IM I M N).presheaf.stalk x → N :=
+noncomputable def smoothSheaf.eval (x : M) : (smoothSheaf IM I M N).presheaf.stalk x → N :=
   TopCat.stalkToFiber (StructureGroupoid.LocalInvariantProp.localPredicate M N _) x
 
 /-- Canonical map from the stalk of `smoothSheaf IM I M N` at `x` to `N`, given by evaluating
 sections at `x`, considered as a morphism in the category of types. -/
-def smoothSheaf.evalHom (x : TopCat.of M) :
+noncomputable def smoothSheaf.evalHom (x : TopCat.of M) :
     (smoothSheaf IM I M N).presheaf.stalk x ⟶ N :=
   TopCat.stalkToFiber (StructureGroupoid.LocalInvariantProp.localPredicate M N _) x
 
@@ -250,12 +249,13 @@ section ContMDiffRing
 variable [Ring R] [ContMDiffRing I ∞ R]
 
 open Manifold in
+noncomputable
 instance (U : (Opens (TopCat.of M))ᵒᵖ) : Ring ((smoothSheaf IM I M R).presheaf.obj U) :=
   inferInstanceAs <| Ring C^∞⟮IM, (unop U : Opens M); I, R⟯
 
 /-- The presheaf of smooth functions from `M` to `R`, for `R` a smooth ring, as a presheaf
 of rings. -/
-def smoothPresheafRing : TopCat.Presheaf RingCat.{u} (TopCat.of M) :=
+noncomputable def smoothPresheafRing : TopCat.Presheaf RingCat.{u} (TopCat.of M) :=
   { obj := fun U ↦ RingCat.of ((smoothSheaf IM I M R).presheaf.obj U)
     map := fun h ↦ RingCat.ofHom <|
       ContMDiffMap.restrictRingHom IM I R <| CategoryTheory.leOfHom h.unop
@@ -264,7 +264,7 @@ def smoothPresheafRing : TopCat.Presheaf RingCat.{u} (TopCat.of M) :=
 
 /-- The sheaf of smooth functions from `M` to `R`, for `R` a smooth ring, as a sheaf of
 rings. -/
-def smoothSheafRing : TopCat.Sheaf RingCat.{u} (TopCat.of M) where
+noncomputable def smoothSheafRing : TopCat.Sheaf RingCat.{u} (TopCat.of M) where
   obj := smoothPresheafRing IM I M R
   property := by
     rw [CategoryTheory.Presheaf.isSheaf_iff_isSheaf_forget _ _ (CategoryTheory.forget RingCat)]
@@ -276,12 +276,13 @@ section SmoothCommRing
 variable [CommRing R] [ContMDiffRing I ∞ R]
 
 open Manifold in
+noncomputable
 instance (U : (Opens (TopCat.of M))ᵒᵖ) : CommRing ((smoothSheaf IM I M R).presheaf.obj U) :=
   inferInstanceAs <| CommRing C^∞⟮IM, (unop U : Opens M); I, R⟯
 
 /-- The presheaf of smooth functions from `M` to `R`, for `R` a smooth commutative ring, as a
 presheaf of commutative rings. -/
-def smoothPresheafCommRing : TopCat.Presheaf CommRingCat.{u} (TopCat.of M) :=
+noncomputable def smoothPresheafCommRing : TopCat.Presheaf CommRingCat.{u} (TopCat.of M) :=
   { obj := fun U ↦ CommRingCat.of ((smoothSheaf IM I M R).presheaf.obj U)
     map := fun h ↦ CommRingCat.ofHom <|
       ContMDiffMap.restrictRingHom IM I R <| CategoryTheory.leOfHom h.unop
@@ -290,7 +291,7 @@ def smoothPresheafCommRing : TopCat.Presheaf CommRingCat.{u} (TopCat.of M) :=
 
 /-- The sheaf of smooth functions from `M` to `R`, for `R` a smooth commutative ring, as a sheaf of
 commutative rings. -/
-def smoothSheafCommRing : TopCat.Sheaf CommRingCat.{u} (TopCat.of M) where
+noncomputable def smoothSheafCommRing : TopCat.Sheaf CommRingCat.{u} (TopCat.of M) where
   obj := smoothPresheafCommRing IM I M R
   property := by
     rw [CategoryTheory.Presheaf.isSheaf_iff_isSheaf_forget _ _
@@ -310,7 +311,7 @@ open CategoryTheory Limits
 
 /-- Identify the stalk at a point of the sheaf-of-commutative-rings of functions from `M` to `R`
 (for `R` a smooth ring) with the stalk at that point of the corresponding sheaf of types. -/
-def smoothSheafCommRing.forgetStalk (x : TopCat.of M) :
+noncomputable def smoothSheafCommRing.forgetStalk (x : TopCat.of M) :
     ((smoothSheafCommRing IM I M R).presheaf.stalk x).carrier ≅
     (smoothSheaf IM I M R).presheaf.stalk x :=
   preservesColimitIso (forget CommRingCat) _
@@ -332,14 +333,14 @@ def smoothSheafCommRing.forgetStalk (x : TopCat.of M) :
 
 /-- Given a smooth commutative ring `R` and a manifold `M`, and an open neighbourhood `U` of a point
 `x : M`, the evaluation-at-`x` map to `R` from smooth functions from  `U` to `R`. -/
-def smoothSheafCommRing.evalAt (x : TopCat.of M) (U : OpenNhds x) :
+noncomputable def smoothSheafCommRing.evalAt (x : TopCat.of M) (U : OpenNhds x) :
     (smoothSheafCommRing IM I M R).presheaf.obj (Opposite.op U.1) ⟶ CommRingCat.of R :=
   CommRingCat.ofHom (ContMDiffMap.evalRingHom ⟨x, U.2⟩)
 
 /-- Canonical ring homomorphism from the stalk of `smoothSheafCommRing IM I M R` at `x` to `R`,
 given by evaluating sections at `x`, considered as a morphism in the category of commutative rings.
 -/
-def smoothSheafCommRing.evalHom (x : TopCat.of M) :
+noncomputable def smoothSheafCommRing.evalHom (x : TopCat.of M) :
     (smoothSheafCommRing IM I M R).presheaf.stalk x ⟶ CommRingCat.of R := by
   refine CategoryTheory.Limits.colimit.desc _ ⟨_, ⟨fun U ↦ ?_, ?_⟩⟩
   · apply smoothSheafCommRing.evalAt
@@ -347,6 +348,7 @@ def smoothSheafCommRing.evalHom (x : TopCat.of M) :
 
 /-- Canonical ring homomorphism from the stalk of `smoothSheafCommRing IM I M R` at `x` to `R`,
 given by evaluating sections at `x`. -/
+noncomputable
 def smoothSheafCommRing.eval (x : M) : (smoothSheafCommRing IM I M R).presheaf.stalk x →+* R :=
   (smoothSheafCommRing.evalHom IM I M R x).hom
 
@@ -403,7 +405,7 @@ variable {IM I M R}
 /-- A smooth function `f : M → N` induces a morphism of sheaves (of rings) `𝒪_N ⟶ f_* 𝒪_M`,
 by pre-composing with `f`. -/
 @[simps! -isSimp hom_app_hom_apply]
-def ContMDiff.smoothSheafCommRingHom (f : M → P) (hf : ContMDiff IM IP ∞ f) :
+noncomputable def ContMDiff.smoothSheafCommRingHom (f : M → P) (hf : ContMDiff IM IP ∞ f) :
     smoothSheafCommRing IP I P R ⟶
       (TopCat.Sheaf.pushforward _ (TopCat.ofHom ⟨f, hf.continuous⟩)).obj
         (smoothSheafCommRing IM I M R) where

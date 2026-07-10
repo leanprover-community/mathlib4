@@ -15,8 +15,6 @@ one point of the domain.
 
 @[expose] public section
 
-noncomputable section
-
 namespace SkewMonoidAlgebra
 
 variable {k G H : Type*}
@@ -29,7 +27,7 @@ variable {M α : Type*} [AddCommMonoid M] (a a' : α) (b : M) (f : SkewMonoidAlg
 Given an element `f` of a skew monoid algebra, `erase a f` is an element with the same coefficients
 as `f` except at `a` where the coefficient is `0`.
 If `a` is not in the support of `f` then `erase a f = f`. -/
-@[simps] def erase : SkewMonoidAlgebra M α →+ SkewMonoidAlgebra M α where
+@[simps] noncomputable def erase : SkewMonoidAlgebra M α →+ SkewMonoidAlgebra M α where
   toFun f := ⟨f.coeff.erase a⟩
   map_zero' := by simp
   map_add' := by simp
@@ -83,7 +81,7 @@ variable {M α : Type*} [AddCommMonoid M] (f : SkewMonoidAlgebra M α) (a a' : �
 a given value `b : M`.
 If `b = 0`, this amounts to removing `a` from the support of `f`.
 Otherwise, if `a` was not in the `support` of `f`, it is added to it. -/
-@[simps coeff] def update : SkewMonoidAlgebra M α :=
+@[simps coeff] noncomputable def update : SkewMonoidAlgebra M α :=
   ⟨f.coeff.update a b⟩
 
 @[deprecated (since := "2026-07-04")] alias update_toFinsupp := coeff_update

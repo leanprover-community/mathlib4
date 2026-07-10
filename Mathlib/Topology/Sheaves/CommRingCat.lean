@@ -32,8 +32,6 @@ As more results accumulate, please consider splitting this file.
 
 universe u v w v₁ v₂ u₁ u₂
 
-noncomputable section
-
 open CategoryTheory Limits TopologicalSpace Opposite
 
 namespace TopCat.Presheaf
@@ -272,7 +270,7 @@ namespace TopCat.Presheaf
 
 variable {X Y Z : TopCat.{v}}
 
-instance algebra_section_stalk (F : X.Presheaf CommRingCat) {U : Opens X} (x : U) :
+noncomputable instance algebra_section_stalk (F : X.Presheaf CommRingCat) {U : Opens X} (x : U) :
     Algebra (F.obj <| op U) (F.stalk x) :=
   (F.germ U x.1 x.2).hom.toAlgebra
 
@@ -285,7 +283,7 @@ end TopCat.Presheaf
 
 end Stalks
 
-noncomputable section Gluing
+section Gluing
 
 namespace TopCat.Sheaf
 
@@ -298,7 +296,7 @@ variable (F : X.Sheaf C) (U V : Opens X)
 open CategoryTheory.Limits
 
 /-- `F(U ⊔ V)` is isomorphic to the `eq_locus` of the two maps `F(U) × F(V) ⟶ F(U ⊓ V)`. -/
-def objSupIsoProdEqLocus {X : TopCat.{w}} (F : X.Sheaf CommRingCat) (U V : Opens X) :
+noncomputable def objSupIsoProdEqLocus {X : TopCat.{w}} (F : X.Sheaf CommRingCat) (U V : Opens X) :
     F.1.obj (op <| U ⊔ V) ≅ CommRingCat.of <|
     -- Porting note: Lean 3 is able to figure out the ring homomorphism automatically
     RingHom.eqLocus

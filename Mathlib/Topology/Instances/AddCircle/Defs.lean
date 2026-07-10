@@ -54,8 +54,6 @@ the rational circle `AddCircle (1 : ℚ)`, and so we set things up more generall
 @[expose] public section
 
 
-noncomputable section
-
 open AddCommGroup Set Function AddSubgroup TopologicalSpace
 
 open Topology
@@ -303,22 +301,22 @@ variable [hp : Fact (0 < p)] (a : 𝕜) [Archimedean 𝕜]
 
 /-- The equivalence between `AddCircle p` and the half-open interval `[a, a + p)`, whose inverse
 is the natural quotient map. -/
-def equivIco : AddCircle p ≃ Ico a (a + p) :=
+noncomputable def equivIco : AddCircle p ≃ Ico a (a + p) :=
   QuotientAddGroup.equivIcoMod hp.out a
 
 /-- The equivalence between `AddCircle p` and the half-open interval `(a, a + p]`, whose inverse
 is the natural quotient map. -/
-def equivIoc : AddCircle p ≃ Ioc a (a + p) :=
+noncomputable def equivIoc : AddCircle p ≃ Ioc a (a + p) :=
   QuotientAddGroup.equivIocMod hp.out a
 
 /-- Given a function on `𝕜`, return the unique function on `AddCircle p` agreeing with `f` on
 `[a, a + p)`. -/
-def liftIco (f : 𝕜 → B) : AddCircle p → B :=
+noncomputable def liftIco (f : 𝕜 → B) : AddCircle p → B :=
   restrict _ f ∘ AddCircle.equivIco p a
 
 /-- Given a function on `𝕜`, return the unique function on `AddCircle p` agreeing with `f` on
 `(a, a + p]`. -/
-def liftIoc (f : 𝕜 → B) : AddCircle p → B :=
+noncomputable def liftIoc (f : 𝕜 → B) : AddCircle p → B :=
   restrict _ f ∘ AddCircle.equivIoc p a
 
 variable {p a}
@@ -430,7 +428,7 @@ theorem continuousAt_equivIoc (hx : x ≠ a) : ContinuousAt (equivIoc p a) x := 
   exact (continuousAt_toIocMod hp.out a <| not_modEq_iff_ne_mod_zmultiples.mpr hx).codRestrict _
 
 /-- The quotient map `𝕜 → AddCircle p` as an open partial homeomorphism. -/
-@[simps] def openPartialHomeomorphCoe [DiscreteTopology (zmultiples p)] :
+@[simps] noncomputable def openPartialHomeomorphCoe [DiscreteTopology (zmultiples p)] :
     OpenPartialHomeomorph 𝕜 (AddCircle p) where
   toFun := (↑)
   invFun := fun x ↦ equivIco p a x
@@ -551,7 +549,7 @@ theorem coe_equivIco_mk_apply (x : 𝕜) :
     (equivIco p 0 <| QuotientAddGroup.mk x : 𝕜) = Int.fract (x / p) * p :=
   toIcoMod_eq_fract_mul _ x
 
-instance : DivisibleBy (AddCircle p) ℤ where
+noncomputable instance : DivisibleBy (AddCircle p) ℤ where
   div x n := (↑((n : 𝕜)⁻¹ * (equivIco p 0 x : 𝕜)) : AddCircle p)
   div_zero x := by simp
   div_cancel {n} x hn := by
@@ -661,7 +659,7 @@ variable (p)
 /-- The natural bijection between points of order `n` and natural numbers less than and coprime to
 `n`. The inverse of the map sends `m ↦ (m/n * p : AddCircle p)` where `m` is coprime to `n` and
 satisfies `0 ≤ m < n`. -/
-def setAddOrderOfEquiv {n : ℕ} (hn : 0 < n) :
+noncomputable def setAddOrderOfEquiv {n : ℕ} (hn : 0 < n) :
     { u : AddCircle p | addOrderOf u = n } ≃ { m | m < n ∧ m.gcd n = 1 } :=
   Equiv.symm <|
     Equiv.ofBijective (fun m => ⟨↑((m : 𝕜) / n * p), addOrderOf_div_of_gcd_eq_one hn m.prop.2⟩)
@@ -718,7 +716,7 @@ variable [Archimedean 𝕜]
 
 /-- The equivalence between `AddCircle p` and the quotient of `[a, a + p]` by the relation
 identifying the endpoints. -/
-def equivIccQuot : 𝕋 ≃ Quot (EndpointIdent p a) where
+noncomputable def equivIccQuot : 𝕋 ≃ Quot (EndpointIdent p a) where
   toFun x := Quot.mk _ <| inclusion Ico_subset_Icc_self (equivIco _ _ x)
   invFun x :=
     Quot.liftOn x (↑) <| by
@@ -759,6 +757,7 @@ theorem equivIccQuot_comp_mk_eq_toIocMod :
 
 /-- The natural map from `[a, a + p] ⊂ 𝕜` with endpoints identified to `𝕜 / ℤ • p`, as a
 homeomorphism of topological spaces. -/
+noncomputable
 def homeoIccQuot [TopologicalSpace 𝕜] [OrderTopology 𝕜] : 𝕋 ≃ₜ Quot (EndpointIdent p a) where
   toEquiv := equivIccQuot p a
   continuous_toFun := by

@@ -67,8 +67,6 @@ If the space is also an ordered additive group with an order closed topology and
 @[expose] public section
 
 
-noncomputable section
-
 open scoped Topology NNReal
 
 open Set Filter TopologicalSpace ENNReal
@@ -109,7 +107,7 @@ attribute [local instance] Lp.simpleFunc.module
 attribute [local instance] Lp.simpleFunc.normedSpace
 
 /-- Extend `Set α → (E →L[ℝ] F')` to `(α →₁ₛ[μ] E) → F'`. -/
-def setToL1S (T : Set α → E →L[ℝ] F) (f : α →₁ₛ[μ] E) : F :=
+noncomputable def setToL1S (T : Set α → E →L[ℝ] F) (f : α →₁ₛ[μ] E) : F :=
   (toSimpleFunc f).setToSimpleFunc T
 
 theorem setToL1S_eq_setToSimpleFunc (T : Set α → E →L[ℝ] F) (f : α →₁ₛ[μ] E) :
@@ -271,7 +269,7 @@ variable [Module 𝕜 F] [IsBoundedSMul 𝕜 F]
 variable (α E μ 𝕜)
 
 /-- Extend `Set α → E →L[ℝ] F` to `(α →₁ₛ[μ] E) →L[𝕜] F`. -/
-def setToL1SCLM' {T : Set α → E →L[ℝ] F} {C : ℝ} (hT : DominatedFinMeasAdditive μ T C)
+noncomputable def setToL1SCLM' {T : Set α → E →L[ℝ] F} {C : ℝ} (hT : DominatedFinMeasAdditive μ T C)
     (h_smul : ∀ c : 𝕜, ∀ s x, T s (c • x) = c • T s x) : (α →₁ₛ[μ] E) →L[𝕜] F :=
   LinearMap.mkContinuous
     ⟨⟨setToL1S T, setToL1S_add T (fun _ => hT.eq_zero_of_measure_zero) hT.1⟩,
@@ -279,6 +277,7 @@ def setToL1SCLM' {T : Set α → E →L[ℝ] F} {C : ℝ} (hT : DominatedFinMeas
     C fun f => norm_setToL1S_le T hT.2 f
 
 /-- Extend `Set α → E →L[ℝ] F` to `(α →₁ₛ[μ] E) →L[ℝ] F`. -/
+noncomputable
 def setToL1SCLM {T : Set α → E →L[ℝ] F} {C : ℝ} (hT : DominatedFinMeasAdditive μ T C) :
     (α →₁ₛ[μ] E) →L[ℝ] F :=
   LinearMap.mkContinuous
@@ -396,7 +395,7 @@ variable (𝕜) [NormedRing 𝕜] [Module 𝕜 E] [Module 𝕜 F] [IsBoundedSMul
   [CompleteSpace F] {T T' T'' : Set α → E →L[ℝ] F} {C C' C'' : ℝ}
 
 /-- Extend `Set α → (E →L[ℝ] F)` to `(α →₁[μ] E) →L[𝕜] F`. -/
-def setToL1' (hT : DominatedFinMeasAdditive μ T C)
+noncomputable def setToL1' (hT : DominatedFinMeasAdditive μ T C)
     (h_smul : ∀ c : 𝕜, ∀ s x, T s (c • x) = c • T s x) : (α →₁[μ] E) →L[𝕜] F :=
   (setToL1SCLM' α E 𝕜 μ hT h_smul).extend (coeToLp α E 𝕜)
 
@@ -415,7 +414,7 @@ theorem setToL1'_apply_coeToLp (hT : DominatedFinMeasAdditive μ T C)
 variable {𝕜}
 
 /-- Extend `Set α → E →L[ℝ] F` to `(α →₁[μ] E) →L[ℝ] F`. -/
-def setToL1 (hT : DominatedFinMeasAdditive μ T C) : (α →₁[μ] E) →L[ℝ] F :=
+noncomputable def setToL1 (hT : DominatedFinMeasAdditive μ T C) : (α →₁[μ] E) →L[ℝ] F :=
   (setToL1SCLM α E μ hT).extend (coeToLp α E ℝ)
 
 theorem setToL1_eq_setToL1SCLM (hT : DominatedFinMeasAdditive μ T C) (f : α →₁ₛ[μ] E) :
@@ -627,7 +626,7 @@ variable (μ T)
 open scoped Classical in
 /-- Extend `T : Set α → E →L[ℝ] F` to `(α → E) → F` (for integrable functions `α → E`). We set it to
 0 if the function is not integrable or if the target space is not complete. -/
-def setToFun (hT : DominatedFinMeasAdditive μ T C) (f : α → E) : F :=
+noncomputable def setToFun (hT : DominatedFinMeasAdditive μ T C) (f : α → E) : F :=
   if _hF : CompleteSpace F then
     if hf : Integrable f μ then L1.setToL1 hT (hf.toL1 f) else 0
   else 0

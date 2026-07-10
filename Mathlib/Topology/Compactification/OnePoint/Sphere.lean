@@ -18,11 +18,9 @@ public import Mathlib.Geometry.Manifold.Instances.Sphere
 
 open Function Metric Module Set Submodule
 
-noncomputable section
-
 /-- A homeomorphism from the one-point compactification of a hyperplane in Euclidean space to the
 sphere. -/
-def onePointHyperplaneHomeoUnitSphere
+noncomputable def onePointHyperplaneHomeoUnitSphere
     {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
     {v : E} (hv : ‖v‖ = 1) :
     OnePoint (ℝ ∙ v)ᗮ ≃ₜ sphere (0 : E) 1 :=
@@ -31,7 +29,7 @@ def onePointHyperplaneHomeoUnitSphere
 
 /-- A homeomorphism from the one-point compactification of a finite-dimensional real vector space to
 the sphere. -/
-def onePointEquivSphereOfFinrankEq {ι V : Type*} [Fintype ι]
+noncomputable def onePointEquivSphereOfFinrankEq {ι V : Type*} [Fintype ι]
     [AddCommGroup V] [Module ℝ V] [FiniteDimensional ℝ V]
     [TopologicalSpace V] [IsTopologicalAddGroup V] [ContinuousSMul ℝ V] [T2Space V]
     (h : finrank ℝ V + 1 = Fintype.card ι) :

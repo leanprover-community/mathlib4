@@ -24,7 +24,7 @@ This file shows that every module over ordered coefficients is a convex space.
 
 open scoped Pointwise
 
-public noncomputable section
+public section
 
 namespace Convexity
 variable {F R M N I : Type*} [Semiring R] [PartialOrder R] [IsStrictOrderedRing R]
@@ -95,7 +95,7 @@ lemma IsAffineMap.map_smul_add_smul (hf : IsAffineMap R f) (ha : 0 ≤ a) (hb : 
   rw [sConvexComb_eq_sum]
   exact AddSubmonoidClass.finsuppSum_mem _ _ _ fun m hm ↦ SMulMemClass.smul_mem _ <| hw <| by simpa
 
-instance (S : F) : ConvexSpace R S := .subtype _ <| isConvexSet_coe _
+noncomputable instance (S : F) : ConvexSpace R S := .subtype _ <| isConvexSet_coe _
 
 @[simp]
 lemma subtypeVal_submodule_sConvexComb (S : F) (w : StdSimplex R S) :

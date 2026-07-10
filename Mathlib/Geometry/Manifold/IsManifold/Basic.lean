@@ -133,8 +133,6 @@ real and complex manifolds).
 
 open Topology
 
-noncomputable section
-
 universe u v w u' v' w'
 
 namespace PartialEquiv

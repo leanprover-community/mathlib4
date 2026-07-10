@@ -37,8 +37,6 @@ theorem Int.sq_ne_two_mod_four (z : ℤ) : z * z % 4 ≠ 2 := by
   rw [← ZMod.intCast_eq_intCast_iff']
   simpa using sq_ne_two_fin_zmod_four _
 
-noncomputable section
-
 /-- Three integers `x`, `y`, and `z` form a Pythagorean triple if `x * x + y * y = z * z`. -/
 def PythagoreanTriple (x y z : ℤ) : Prop :=
   x * x + y * y = z * z

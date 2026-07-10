@@ -190,7 +190,7 @@ noncomputable def ofIsInitialRight : F.PushoutObjObj f₁ f₂ where
 
 end
 
-noncomputable section Arrow
+section Arrow
 
 variable {f₁ f₁' : Arrow C₁} {f₂ : Arrow C₂}
   (sq₁₂ : F.PushoutObjObj f₁.hom f₂.hom)
@@ -201,7 +201,7 @@ set_option backward.defeqAttrib.useBackward true in
   `f₂ : Arrow C₂`, and a morphism `f₁ ⟶ f₁'`, this defines a morphism between the induced
   pushout maps. -/
 @[simps]
-def mapArrowLeft (sq : f₁ ⟶ f₁') :
+noncomputable def mapArrowLeft (sq : f₁ ⟶ f₁') :
     Arrow.mk sq₁₂.ι ⟶ Arrow.mk sq₁₂'.ι where
   left := sq₁₂.isPushout.desc
     ((F.map sq.right).app f₂.left ≫ sq₁₂'.inl)
@@ -234,7 +234,7 @@ lemma mapArrowLeft_comp {f₁'' : Arrow C₁} (sq₁₂'' : F.PushoutObjObj f₁
   `f₂ : Arrow C₂`, and an isomorphism `f₁ ≅ f₁'`, this defines an isomorphism of the induced
   pushout maps. -/
 @[simps]
-def ι_iso_of_iso_left (iso : f₁ ≅ f₁') :
+noncomputable def ι_iso_of_iso_left (iso : f₁ ≅ f₁') :
     Arrow.mk sq₁₂.ι ≅ Arrow.mk sq₁₂'.ι where
   hom := mapArrowLeft sq₁₂ sq₁₂' iso.hom
   inv := mapArrowLeft sq₁₂' sq₁₂ iso.inv
@@ -248,7 +248,7 @@ set_option backward.defeqAttrib.useBackward true in
   `f₂' : Arrow C₂`, and a morphism `f₂ ⟶ f₂'`, this defines a morphism between the induced
   pushout maps. -/
 @[simps]
-def mapArrowRight (sq : f₂ ⟶ f₂') :
+noncomputable def mapArrowRight (sq : f₂ ⟶ f₂') :
     Arrow.mk sq₁₂.ι ⟶ Arrow.mk sq₁₂'.ι where
   left := sq₁₂.isPushout.desc
     (((F.obj f₁.right).map sq.left) ≫ sq₁₂'.inl)
@@ -282,7 +282,7 @@ lemma mapArrowRight_comp {f₂'' : Arrow C₂} (sq₁₂'' : F.PushoutObjObj f�
   `f₂' : Arrow C₂`, and an isomorphism `f₂ ≅ f₂'`, this defines an isomorphism of the induced
   pushout maps. -/
 @[simps]
-def ι_iso_of_iso_right (iso : f₂ ≅ f₂') :
+noncomputable def ι_iso_of_iso_right (iso : f₂ ≅ f₂') :
     Arrow.mk sq₁₂.ι ≅ Arrow.mk sq₁₂'.ι where
   hom := mapArrowRight sq₁₂ sq₁₂' iso.hom
   inv := mapArrowRight sq₁₂' sq₁₂ iso.inv
@@ -418,7 +418,7 @@ noncomputable def ofIsTerminal : G.PullbackObjObj f₁ f₃ where
 
 end
 
-noncomputable section Arrow
+section Arrow
 
 variable {f₁ f₁' : Arrow C₁} {f₃ : Arrow C₃}
   (sq₁₃ : G.PullbackObjObj f₁.hom f₃.hom)
@@ -429,7 +429,7 @@ set_option backward.defeqAttrib.useBackward true in
   `f₃ : Arrow C₃`, and a morphism `f₁' ⟶ f₁`, this defines a morphism between the induced
   pullback maps. -/
 @[simps]
-def mapArrowLeft (sq : f₁' ⟶ f₁) :
+noncomputable def mapArrowLeft (sq : f₁' ⟶ f₁) :
     Arrow.mk sq₁₃.π ⟶ Arrow.mk sq₁₃'.π where
   left := (G.map sq.right.op).app f₃.left
   right := sq₁₃'.isPullback.lift
@@ -463,7 +463,7 @@ lemma mapArrowLeft_comp {f₁'' : Arrow C₁} (sq₁₃'' : G.PullbackObjObj f�
   `f₃ : Arrow C₃`, and an isomorphism `f₁ ≅ f₁'`, this defines an isomorphism of the induced
   pullback maps. -/
 @[simps]
-def π_iso_of_iso_left (iso : f₁ ≅ f₁') :
+noncomputable def π_iso_of_iso_left (iso : f₁ ≅ f₁') :
     Arrow.mk sq₁₃.π ≅ Arrow.mk sq₁₃'.π where
   hom := mapArrowLeft sq₁₃ sq₁₃' iso.inv
   inv := mapArrowLeft sq₁₃' sq₁₃ iso.hom
@@ -477,7 +477,7 @@ set_option backward.defeqAttrib.useBackward true in
   `f₃' : Arrow C₃`, and a morphism `f₃ ⟶ f₃'`, this defines a morphism between the induced
   pullback maps. -/
 @[simps]
-def mapArrowRight (sq : f₃ ⟶ f₃') :
+noncomputable def mapArrowRight (sq : f₃ ⟶ f₃') :
     Arrow.mk sq₁₃.π ⟶ Arrow.mk sq₁₃'.π where
   left := (G.obj (.op f₁.right)).map sq.left
   right := sq₁₃'.isPullback.lift
@@ -510,7 +510,7 @@ lemma mapArrowRight_comp {f₃'' : Arrow C₃} (sq₁₃'' : G.PullbackObjObj f�
   `f₃' : Arrow C₃`, and an isomorphism `f₃ ≅ f₃'`, this defines an isomorphism of the induced
   pullback maps. -/
 @[simps]
-def π_iso_of_iso_right (iso : f₃ ≅ f₃') :
+noncomputable def π_iso_of_iso_right (iso : f₃ ≅ f₃') :
     Arrow.mk sq₁₃.π ≅ Arrow.mk sq₁₃'.π where
   hom := mapArrowRight sq₁₃ sq₁₃' iso.hom
   inv := mapArrowRight sq₁₃' sq₁₃ iso.inv
@@ -549,7 +549,7 @@ def leibnizPullback [HasPullbacks C₂] : (Arrow C₁)ᵒᵖ ⥤ Arrow C₃ ⥤ 
           (PullbackObjObj.ofHasPullback G ..)
           (PullbackObjObj.ofHasPullback G ..) sq.unop }
 
-noncomputable section
+section
 
 open PushoutObjObj PullbackObjObj ParametrizedAdjunction
 
@@ -563,7 +563,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- Given a parametrized adjunction `F ⊣₂ G` and an arrow `X₁ : Arrow C₁`, this is the induced
   adjunction `F.leibnizPushout.obj X₁ ⊣ G.leibnizPullback.obj (op X₁)`. -/
 @[simps!]
-def adj (adj₂ : F ⊣₂ G) (X₁ : Arrow C₁) [HasPullbacks C₂] [HasPushouts C₃] :
+noncomputable def adj (adj₂ : F ⊣₂ G) (X₁ : Arrow C₁) [HasPullbacks C₂] [HasPushouts C₃] :
     F.leibnizPushout.obj X₁ ⊣ G.leibnizPullback.obj (op X₁) where
   unit.app X₂ := Arrow.homMk (adj₂.homEquiv (pushout.inl ..))
     (pullback.lift (adj₂.homEquiv (pushout.inr ..)) (adj₂.homEquiv (𝟙 _))
@@ -604,7 +604,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- The Leibniz (parametrized) adjunction `F.leibnizPushout ⊣₂ G.leibnizPullback` induced by a
   parameterized adjunction `F ⊣₂ G`. -/
 @[simps]
-def leibnizAdjunction (adj₂ : F ⊣₂ G) [HasPullbacks C₂] [HasPushouts C₃] :
+noncomputable def leibnizAdjunction (adj₂ : F ⊣₂ G) [HasPullbacks C₂] [HasPushouts C₃] :
     F.leibnizPushout ⊣₂ G.leibnizPullback where
   adj X₁ := LeibnizAdjunction.adj F G adj₂ X₁
   unit_whiskerRight_map _ := by

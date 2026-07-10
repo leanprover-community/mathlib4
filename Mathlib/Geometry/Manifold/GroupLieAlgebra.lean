@@ -36,8 +36,6 @@ it is `C^3` over `ℝ` or `ℂ`, and analytic otherwise.
 
 @[expose] public section
 
-noncomputable section
-
 section LieGroup
 
 open Bundle Filter Function Set

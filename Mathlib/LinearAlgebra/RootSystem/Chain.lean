@@ -29,8 +29,6 @@ length, `p + q` is at most 3.
 
 @[expose] public section
 
-noncomputable section
-
 open FaithfulSMul Function Set Submodule
 
 variable {ι R M N : Type*} [Finite ι] [CommRing R] [CharZero R] [IsDomain R]
@@ -103,7 +101,7 @@ open scoped Classical in
 `β - q • α, ..., β - α, β, β + α, ..., β + p • α` is the `α`-chain through `β`.
 
 In the absence of linear independence, it takes a junk value. -/
-def chainTopCoeff : ℕ :=
+noncomputable def chainTopCoeff : ℕ :=
   if h : LinearIndependent R ![P.root i, P.root j]
     then (P.setOf_root_add_zsmul_eq_Icc_of_linearIndependent h).choose_spec.2.choose.toNat
     else 0
@@ -113,7 +111,7 @@ open scoped Classical in
 `β - q • α, ..., β - α, β, β + α, ..., β + p • α` is the `α`-chain through `β`.
 
 In the absence of linear independence, it takes a junk value. -/
-def chainBotCoeff : ℕ :=
+noncomputable def chainBotCoeff : ℕ :=
   if h : LinearIndependent R ![P.root i, P.root j]
     then (-(P.setOf_root_add_zsmul_eq_Icc_of_linearIndependent h).choose).toNat
     else 0
@@ -353,7 +351,7 @@ open scoped Classical in
 `β + p • α` where `β - q • α, ..., β - α, β, β + α, ..., β + p • α` is the `α`-chain through `β`.
 
 In the absence of linear independence, it takes a junk value. -/
-def chainTopIdx : ι :=
+noncomputable def chainTopIdx : ι :=
   if h : LinearIndependent R ![P.root i, P.root j]
     then (P.root_add_nsmul_mem_range_iff_le_chainTopCoeff h).mpr
       (le_refl <| P.chainTopCoeff i j) |>.choose
@@ -364,7 +362,7 @@ open scoped Classical in
 `β - q • α` where `β - q • α, ..., β - α, β, β + α, ..., β + p • α` is the `α`-chain through `β`.
 
 In the absence of linear independence, it takes a junk value. -/
-def chainBotIdx : ι :=
+noncomputable def chainBotIdx : ι :=
   if h : LinearIndependent R ![P.root i, P.root j]
     then (P.root_sub_nsmul_mem_range_iff_le_chainBotCoeff h).mpr
       (le_refl <| P.chainBotCoeff i j) |>.choose

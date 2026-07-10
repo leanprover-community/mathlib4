@@ -52,8 +52,6 @@ a base: https://mathoverflow.net/questions/495434/
 
 @[expose] public section
 
-noncomputable section
-
 open Function Set Submodule
 open scoped Matrix
 
@@ -66,7 +64,7 @@ variable {ι R M N : Type*} [CommRing R]
   {P : RootPairing ι R M N} [P.IsCrystallographic] {b : P.Base}
 
 /-- Part of an `sl₂` triple used in Geck's construction of a Lie algebra from a root system. -/
-def h (i : b.support) :
+noncomputable def h (i : b.support) :
     Matrix (b.support ⊕ ι) (b.support ⊕ ι) R :=
   open scoped Classical in
   .fromBlocks 0 0 0 (.diagonal (P.pairingIn ℤ · i))
@@ -136,7 +134,7 @@ lemma lie_h_h [Fintype ι] (i j : b.support) :
 variable [Finite ι] [IsDomain R] [CharZero R]
 
 /-- Part of an `sl₂` triple used in Geck's construction of a Lie algebra from a root system. -/
-def e (i : b.support) :
+noncomputable def e (i : b.support) :
     Matrix (b.support ⊕ ι) (b.support ⊕ ι) R :=
   open scoped Classical in
   letI := P.indexNeg
@@ -146,7 +144,7 @@ def e (i : b.support) :
     (.of fun i' j ↦ if P.root i' = P.root i + P.root j then P.chainBotCoeff i j + 1 else 0)
 
 /-- Part of an `sl₂` triple used in Geck's construction of a Lie algebra from a root system. -/
-def f (i : b.support) :
+noncomputable def f (i : b.support) :
     Matrix (b.support ⊕ ι) (b.support ⊕ ι) R :=
   open scoped Classical in
   letI := P.indexNeg
@@ -159,7 +157,7 @@ variable (b)
 
 /-- An involutive matrix which can transfer results between `RootPairing.GeckConstruction.e` and
 `RootPairing.GeckConstruction.f`. -/
-def ω :
+noncomputable def ω :
     Matrix (b.support ⊕ ι) (b.support ⊕ ι) R :=
   open scoped Classical in
   letI := P.indexNeg
@@ -225,7 +223,7 @@ lemma f_mem_lieAlgebra [Fintype ι] [DecidableEq ι] (i : b.support) :
   LieSubalgebra.subset_lieSpan <| by simp
 
 /-- The element `h i`, as a term of the Cartan subalgebra `cartanSubalgebra' b`. -/
-def h' [Fintype ι] [DecidableEq ι] (i : b.support) : cartanSubalgebra' b :=
+noncomputable def h' [Fintype ι] [DecidableEq ι] (i : b.support) : cartanSubalgebra' b :=
   ⟨⟨h i, h_mem_lieAlgebra i⟩, h_mem_cartanSubalgebra' i (h_mem_lieAlgebra i)⟩
 
 variable (b) in
@@ -374,7 +372,7 @@ section ωConj
 
 variable (b) in
 /-- The conjugation `x ↦ ωxω` as an equivalence of Lie algebras. -/
-@[simps] def ωConj :
+@[simps] noncomputable def ωConj :
     Matrix (b.support ⊕ ι) (b.support ⊕ ι) R ≃ₗ⁅R⁆ Matrix (b.support ⊕ ι) (b.support ⊕ ι) R where
   toFun x := ω b * x * ω b
   invFun x := ω b * x * ω b
@@ -414,7 +412,7 @@ lemma ωConj_mem_of_mem
 variable (N : LieSubmodule R (lieAlgebra b) (b.support ⊕ ι → R))
 
 /-- The equivalence `x ↦ ωxω` as an operation on Lie submodules of the Geck construction. -/
-def ωConjLieSubmodule :
+noncomputable def ωConjLieSubmodule :
     LieSubmodule R (lieAlgebra b) (b.support ⊕ ι → R) where
   __ := N.toSubmodule.comap (ω b).toLin'
   lie_mem A {x} hx := by

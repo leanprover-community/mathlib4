@@ -47,8 +47,6 @@ open Set Function
 open Module hiding reflection
 open Submodule (span)
 
-noncomputable section
-
 variable {ι R M N : Type*}
 
 namespace RootPairing
@@ -183,7 +181,7 @@ variable (S : Type*) [CommRing S] [Algebra S R] [FaithfulSMul S R] [Module S M]
   [IsScalarTower S R M] [Module S N] [IsScalarTower S R N] [P.IsValuedIn S] [Fintype ι] {i j : ι}
 
 /-- Polarization restricted to `S`-span of roots. -/
-def PolarizationIn : P.rootSpan S →ₗ[S] N :=
+noncomputable def PolarizationIn : P.rootSpan S →ₗ[S] N :=
   ∑ i : ι, LinearMap.toSpanSingleton S N (P.coroot i) ∘ₗ P.coroot'In S i
 
 omit [IsScalarTower S R N] in
@@ -204,7 +202,7 @@ lemma range_polarizationIn :
   simp [PolarizationIn_eq]
 
 /-- Polarization restricted to `S`-span of roots. -/
-def CoPolarizationIn : P.corootSpan S →ₗ[S] M :=
+noncomputable def CoPolarizationIn : P.corootSpan S →ₗ[S] M :=
   P.flip.PolarizationIn S
 
 omit [IsScalarTower S R M] in
@@ -218,7 +216,7 @@ lemma CoPolarizationIn_eq (x : P.corootSpan S) :
 
 /-- A canonical bilinear form on the span of roots in a finite root pairing, taking values in a
 commutative ring, where the root-coroot pairing takes values in that ring. -/
-def RootFormIn : LinearMap.BilinForm S (P.rootSpan S) :=
+noncomputable def RootFormIn : LinearMap.BilinForm S (P.rootSpan S) :=
   ∑ i, (P.coroot'In S i).smulRight (P.coroot'In S i)
 
 omit [Module S N] [IsScalarTower S R N] in

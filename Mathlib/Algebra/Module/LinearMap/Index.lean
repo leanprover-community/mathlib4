@@ -22,8 +22,6 @@ In this file we define the index of a linear map and provide some basic API.
 
 -/
 
-noncomputable section
-
 namespace LinearMap
 
 open Function Module
@@ -37,7 +35,7 @@ variable {R : Type*} [Ring R] [Module R M] [Module R N] (f : M →ₗ[R] N)
 /-- The index of a linear map with sign convention `index = dim ker - dim coker`.
 
 In the case that either the kernel or cokernel has infinite rank, the value is junk. -/
-public def index : ℤ := finrank R f.ker - finrank R (N ⧸ f.range)
+public noncomputable def index : ℤ := finrank R f.ker - finrank R (N ⧸ f.range)
 
 variable {f}
 

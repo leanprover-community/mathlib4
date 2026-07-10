@@ -66,8 +66,6 @@ For consequences in infinite dimension (Hilbert bases, etc.), see the file
 open Module Real Set Filter RCLike Submodule Function Uniformity Topology NNReal ENNReal
   ComplexConjugate DirectSum WithLp
 
-noncomputable section
-
 variable {ι ι' 𝕜 : Type*} [RCLike 𝕜]
 variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 variable {F : Type*} [NormedAddCommGroup F] [InnerProductSpace ℝ F]
@@ -240,6 +238,7 @@ end EuclideanSpace
 
 /-- A finite, mutually orthogonal family of subspaces of `E`, which span `E`, induce an isometry
 from `E` to `PiLp 2` of the subspaces equipped with the `L2` inner product. -/
+noncomputable
 def DirectSum.IsInternal.isometryL2OfOrthogonalFamily [DecidableEq ι] {V : ι → Submodule 𝕜 E}
     (hV : DirectSum.IsInternal V)
     (hV' : OrthogonalFamily 𝕜 (fun i => V i) fun i => (V i).subtypeₗᵢ) :
@@ -370,6 +369,7 @@ section finAddEquivProd
 
 See `PiLp.sumPiLpEquivProdLpPiLp` for the isometry version,
 where the RHS is equipped with the Euclidean norm rather than the supremum norm. -/
+noncomputable
 abbrev EuclideanSpace.sumEquivProd {𝕜 : Type*} [RCLike 𝕜] {ι κ : Type*} [Fintype ι] [Fintype κ] :
     EuclideanSpace 𝕜 (ι ⊕ κ) ≃L[𝕜] EuclideanSpace 𝕜 ι × EuclideanSpace 𝕜 κ :=
   (PiLp.sumPiLpEquivProdLpPiLp 2 _).toContinuousLinearEquiv.trans <|
@@ -377,7 +377,7 @@ abbrev EuclideanSpace.sumEquivProd {𝕜 : Type*} [RCLike 𝕜] {ι κ : Type*} 
 
 /-- The canonical linear homeomorphism between `EuclideanSpace 𝕜 (Fin (n + m))` and
 `EuclideanSpace 𝕜 (Fin n) × EuclideanSpace 𝕜 (Fin m)`. -/
-abbrev EuclideanSpace.finAddEquivProd {𝕜 : Type*} [RCLike 𝕜] {n m : ℕ} :
+noncomputable abbrev EuclideanSpace.finAddEquivProd {𝕜 : Type*} [RCLike 𝕜] {n m : ℕ} :
     EuclideanSpace 𝕜 (Fin (n + m)) ≃L[𝕜] EuclideanSpace 𝕜 (Fin n) × EuclideanSpace 𝕜 (Fin m) :=
   (LinearIsometryEquiv.piLpCongrLeft 2 𝕜 𝕜 finSumFinEquiv.symm).toContinuousLinearEquiv.trans
     sumEquivProd
@@ -404,7 +404,7 @@ theorem repr_injective :
   congr
 
 /-- `b i` is the `i`th basis vector. -/
-instance instFunLike : FunLike (OrthonormalBasis ι 𝕜 E) ι E where
+noncomputable instance instFunLike : FunLike (OrthonormalBasis ι 𝕜 E) ι E where
   coe b i := by classical exact b.repr.symm (EuclideanSpace.single i (1 : 𝕜))
   coe_injective b b' h := repr_injective <| LinearIsometryEquiv.toLinearEquiv_injective <|
     LinearEquiv.symm_bijective.injective <| LinearEquiv.toLinearMap_injective <| by
@@ -476,7 +476,7 @@ lemma inner_eq_ite [DecidableEq ι] (b : OrthonormalBasis ι 𝕜 E) (i j : ι) 
   by_cases h : i = j <;> simp [h]
 
 /-- The `Basis ι 𝕜 E` underlying the `OrthonormalBasis` -/
-protected def toBasis (b : OrthonormalBasis ι 𝕜 E) : Basis ι 𝕜 E :=
+protected noncomputable def toBasis (b : OrthonormalBasis ι 𝕜 E) : Basis ι 𝕜 E :=
   Basis.ofEquivFun (b.repr.toLinearEquiv.trans (WithLp.linearEquiv 2 𝕜 (ι → 𝕜)))
 
 @[simp]
@@ -582,7 +582,7 @@ lemma sum_rankOne_eq_id (b : OrthonormalBasis ι 𝕜 E) :
     ∑ i, InnerProductSpace.rankOne 𝕜 (b i) (b i) = .id 𝕜 E := by ext; simp [b.sum_repr']
 
 /-- Mapping an orthonormal basis along a `LinearIsometryEquiv`. -/
-protected def map {G : Type*} [NormedAddCommGroup G] [InnerProductSpace 𝕜 G]
+protected noncomputable def map {G : Type*} [NormedAddCommGroup G] [InnerProductSpace 𝕜 G]
     (b : OrthonormalBasis ι 𝕜 E) (L : E ≃ₗᵢ[𝕜] G) : OrthonormalBasis ι 𝕜 G where
   repr := L.symm.trans b.repr
 
@@ -601,7 +601,7 @@ protected theorem toBasis_map {G : Type*} [NormedAddCommGroup G] [InnerProductSp
   rfl
 
 /-- A basis that is orthonormal is an orthonormal basis. -/
-def _root_.Module.Basis.toOrthonormalBasis (v : Basis ι 𝕜 E) (hv : Orthonormal 𝕜 v) :
+noncomputable def _root_.Module.Basis.toOrthonormalBasis (v : Basis ι 𝕜 E) (hv : Orthonormal 𝕜 v) :
     OrthonormalBasis ι 𝕜 E :=
   OrthonormalBasis.ofRepr <|
     LinearEquiv.isometryOfInner (v.equivFun.trans (WithLp.linearEquiv 2 𝕜 (ι → 𝕜)).symm)
@@ -671,7 +671,7 @@ end Singleton
 
 /-- `Pi.orthonormalBasis (B : ∀ i, OrthonormalBasis (ι i) 𝕜 (E i))` is the
 `Σ i, ι i`-indexed orthonormal basis on `Π i, E i` given by `B i` on each component. -/
-protected def _root_.Pi.orthonormalBasis {η : Type*} [Fintype η] {ι : η → Type*}
+protected noncomputable def _root_.Pi.orthonormalBasis {η : Type*} [Fintype η] {ι : η → Type*}
     [∀ i, Fintype (ι i)] {𝕜 : Type*} [RCLike 𝕜] {E : η → Type*} [∀ i, NormedAddCommGroup (E i)]
     [∀ i, InnerProductSpace 𝕜 (E i)] (B : ∀ i, OrthonormalBasis (ι i) 𝕜 (E i)) :
     OrthonormalBasis ((i : η) × ι i) 𝕜 (PiLp 2 E) where
@@ -713,7 +713,7 @@ theorem _root_.Pi.orthonormalBasis_repr {η : Type*} [Fintype η] {ι : η → T
 variable {v : ι → E}
 
 /-- A finite orthonormal set that spans is an orthonormal basis -/
-protected def mk (hon : Orthonormal 𝕜 v) (hsp : ⊤ ≤ Submodule.span 𝕜 (Set.range v)) :
+protected noncomputable def mk (hon : Orthonormal 𝕜 v) (hsp : ⊤ ≤ Submodule.span 𝕜 (Set.range v)) :
     OrthonormalBasis ι 𝕜 E :=
   (Basis.mk (Orthonormal.linearIndependent hon) hsp).toOrthonormalBasis (by rwa [Basis.coe_mk])
 
@@ -723,7 +723,8 @@ protected theorem coe_mk (hon : Orthonormal 𝕜 v) (hsp : ⊤ ≤ Submodule.spa
   classical rw [OrthonormalBasis.mk, _root_.Module.Basis.coe_toOrthonormalBasis, Basis.coe_mk]
 
 /-- Any finite subset of an orthonormal family is an `OrthonormalBasis` for its span. -/
-protected def span [DecidableEq E] {v' : ι' → E} (h : Orthonormal 𝕜 v') (s : Finset ι') :
+protected noncomputable
+def span [DecidableEq E] {v' : ι' → E} (h : Orthonormal 𝕜 v') (s : Finset ι') :
     OrthonormalBasis s 𝕜 (span 𝕜 (s.image v' : Set E)) :=
   let e₀' : Basis s 𝕜 _ :=
     Basis.span (h.linearIndependent.comp ((↑) : s → ι') Subtype.val_injective)
@@ -751,7 +752,8 @@ open Submodule
 
 /-- A finite orthonormal family of vectors whose span has trivial orthogonal complement is an
 orthonormal basis. -/
-protected def mkOfOrthogonalEqBot (hon : Orthonormal 𝕜 v) (hsp : (span 𝕜 (Set.range v))ᗮ = ⊥) :
+protected noncomputable
+def mkOfOrthogonalEqBot (hon : Orthonormal 𝕜 v) (hsp : (span 𝕜 (Set.range v))ᗮ = ⊥) :
     OrthonormalBasis ι 𝕜 E :=
   OrthonormalBasis.mk hon
     (by
@@ -769,7 +771,7 @@ protected theorem coe_of_orthogonal_eq_bot_mk (hon : Orthonormal 𝕜 v)
 variable [Fintype ι']
 
 /-- `b.reindex (e : ι ≃ ι')` is an `OrthonormalBasis` indexed by `ι'` -/
-def reindex (b : OrthonormalBasis ι 𝕜 E) (e : ι ≃ ι') : OrthonormalBasis ι' 𝕜 E :=
+noncomputable def reindex (b : OrthonormalBasis ι 𝕜 E) (e : ι ≃ ι') : OrthonormalBasis ι' 𝕜 E :=
   OrthonormalBasis.ofRepr (b.repr.trans (LinearIsometryEquiv.piLpCongrLeft 2 𝕜 𝕜 e))
 
 protected theorem reindex_apply (b : OrthonormalBasis ι 𝕜 E) (e : ι ≃ ι') (i' : ι') :
@@ -827,6 +829,7 @@ theorem basisFun_toBasis : (basisFun ι 𝕜).toBasis = PiLp.basisFun _ 𝕜 ι 
 
 end EuclideanSpace
 
+noncomputable
 instance OrthonormalBasis.instInhabited : Inhabited (OrthonormalBasis ι 𝕜 (EuclideanSpace 𝕜 ι)) :=
   ⟨EuclideanSpace.basisFun ι 𝕜⟩
 
@@ -837,7 +840,7 @@ variable {E' : Type*} [Fintype ι'] [NormedAddCommGroup E'] [InnerProductSpace �
 
 /-- The `LinearIsometryEquiv` which maps an orthonormal basis to another. This is a convenience
 wrapper around `Orthonormal.equiv`. -/
-protected def equiv : E ≃ₗᵢ[𝕜] E' :=
+protected noncomputable def equiv : E ≃ₗᵢ[𝕜] E' :=
   b.repr.trans <| .trans (.piLpCongrLeft _ _ _ e) b'.repr.symm
 
 @[simp]
@@ -875,7 +878,7 @@ end OrthonormalBasis
 section Complex
 
 /-- `![1, I]` is an orthonormal basis for `ℂ` considered as a real inner product space. -/
-def Complex.orthonormalBasisOneI : OrthonormalBasis (Fin 2) ℝ ℂ :=
+noncomputable def Complex.orthonormalBasisOneI : OrthonormalBasis (Fin 2) ℝ ℂ :=
   Complex.basisOneI.toOrthonormalBasis
     (by
       rw [orthonormal_iff_ite]
@@ -902,7 +905,7 @@ theorem Complex.coe_orthonormalBasisOneI :
   simp [Complex.orthonormalBasisOneI]
 
 /-- The isometry between `ℂ` and a two-dimensional real inner product space given by a basis. -/
-def Complex.isometryOfOrthonormal (v : OrthonormalBasis (Fin 2) ℝ F) : ℂ ≃ₗᵢ[ℝ] F :=
+noncomputable def Complex.isometryOfOrthonormal (v : OrthonormalBasis (Fin 2) ℝ F) : ℂ ≃ₗᵢ[ℝ] F :=
   Complex.orthonormalBasisOneI.repr.trans v.repr.symm
 
 @[simp]
@@ -1074,7 +1077,7 @@ theorem _root_.exists_orthonormalBasis :
   ⟨w, hw, hw''⟩
 
 /-- A finite-dimensional `InnerProductSpace` has an orthonormal basis. -/
-irreducible_def stdOrthonormalBasis : OrthonormalBasis (Fin (finrank 𝕜 E)) 𝕜 E := by
+noncomputable irreducible_def stdOrthonormalBasis : OrthonormalBasis (Fin (finrank 𝕜 E)) 𝕜 E := by
   let b := Classical.choose (Classical.choose_spec <| exists_orthonormalBasis 𝕜 E)
   rw [finrank_eq_card_basis b.toBasis]
   exact b.reindex (Fintype.equivFinOfCardEq rfl)
@@ -1099,7 +1102,7 @@ variable {n : ℕ} (hn : finrank 𝕜 E = n) [DecidableEq ι] {V : ι → Submod
 
 /-- Exhibit a bijection between `Fin n` and the index set of a certain basis of an `n`-dimensional
 inner product space `E`.  This should not be accessed directly, but only via the subsequent API. -/
-irreducible_def DirectSum.IsInternal.sigmaOrthonormalBasisIndexEquiv
+noncomputable irreducible_def DirectSum.IsInternal.sigmaOrthonormalBasisIndexEquiv
     (hV' : OrthogonalFamily 𝕜 (fun i => V i) fun i => (V i).subtypeₗᵢ) :
     (Σ i, Fin (finrank 𝕜 (V i))) ≃ Fin n :=
   let b := hV.collectedOrthonormalBasis hV' fun i => stdOrthonormalBasis 𝕜 (V i)
@@ -1107,7 +1110,7 @@ irreducible_def DirectSum.IsInternal.sigmaOrthonormalBasisIndexEquiv
 
 /-- An `n`-dimensional `InnerProductSpace` equipped with a decomposition as an internal direct
 sum has an orthonormal basis indexed by `Fin n` and subordinate to that direct sum. -/
-irreducible_def DirectSum.IsInternal.subordinateOrthonormalBasis
+noncomputable irreducible_def DirectSum.IsInternal.subordinateOrthonormalBasis
     (hV' : OrthogonalFamily 𝕜 (fun i => V i) fun i => (V i).subtypeₗᵢ) :
     OrthonormalBasis (Fin n) 𝕜 E :=
   (hV.collectedOrthonormalBasis hV' fun i => stdOrthonormalBasis 𝕜 (V i)).reindex
@@ -1116,7 +1119,7 @@ irreducible_def DirectSum.IsInternal.subordinateOrthonormalBasis
 /-- An `n`-dimensional `InnerProductSpace` equipped with a decomposition as an internal direct
 sum has an orthonormal basis indexed by `Fin n` and subordinate to that direct sum. This function
 provides the mapping by which it is subordinate. -/
-irreducible_def DirectSum.IsInternal.subordinateOrthonormalBasisIndex (a : Fin n)
+noncomputable irreducible_def DirectSum.IsInternal.subordinateOrthonormalBasisIndex (a : Fin n)
     (hV' : OrthogonalFamily 𝕜 (fun i => V i) fun i => (V i).subtypeₗᵢ) : ι :=
   ((hV.sigmaOrthonormalBasisIndexEquiv hn hV').symm a).1
 
@@ -1136,7 +1139,7 @@ theorem DirectSum.IsInternal.exists_subordinateOrthonormalBasisIndex_eq
   use hV.sigmaOrthonormalBasisIndexEquiv hn hV' ⟨i, ⟨0, by grind [finrank_eq_zero (S := V i)]⟩⟩
   simp [subordinateOrthonormalBasisIndex_def]
 
-private def DirectSum.IsInternal.subordinateOrthonormalBasisIndexFiberEquiv
+private noncomputable def DirectSum.IsInternal.subordinateOrthonormalBasisIndexFiberEquiv
     (hV' : OrthogonalFamily 𝕜 (fun i => V i) fun i => (V i).subtypeₗᵢ) (i : ι) :
     {a : Fin n // hV.subordinateOrthonormalBasisIndex hn a hV' = i} ≃ Fin (finrank 𝕜 (V i)) where
   toFun a := Fin.cast (by rw [← subordinateOrthonormalBasisIndex_def, a.property])
@@ -1159,6 +1162,7 @@ end FiniteDimensional
 /-- Given a natural number `n` one less than the `finrank` of a finite-dimensional inner product
 space, there exists an isometry from the orthogonal complement of a nonzero singleton to
 `EuclideanSpace 𝕜 (Fin n)`. -/
+noncomputable
 def OrthonormalBasis.fromOrthogonalSpanSingleton (n : ℕ) [Fact (finrank 𝕜 E = n + 1)] {v : E}
     (hv : v ≠ 0) : OrthonormalBasis (Fin n) 𝕜 (𝕜 ∙ v)ᗮ :=
   have : FiniteDimensional 𝕜 E := .of_fact_finrank_eq_succ (K := 𝕜) (V := E) n
@@ -1330,7 +1334,7 @@ variable [Unique ι] (h : Module.finrank 𝕜 E = 1) {v : E} (hv : ‖v‖ = 1)
 variable (ι 𝕜 v) in
 /-- In an inner product space with dimension 1, a set `{v}` is an orthonormal basis for
 `‖v‖ = 1`. -/
-def orthonormalBasisSingleton : OrthonormalBasis ι 𝕜 E :=
+noncomputable def orthonormalBasisSingleton : OrthonormalBasis ι 𝕜 E :=
   (basisSingleton ι h v (by aesop)).toOrthonormalBasis (by simpa)
 
 @[simp]

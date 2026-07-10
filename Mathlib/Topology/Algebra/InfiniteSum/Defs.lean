@@ -59,8 +59,6 @@ six key lemmas relating them together, namely `Summable.hasSum`, `Multipliable.h
 Do not add further lemmas here -- add them to `InfiniteSum.Basic` or (preferably) another, more
 specific file. -/
 
-noncomputable section
-
 open Filter Function SummationFilter
 
 open scoped Topology

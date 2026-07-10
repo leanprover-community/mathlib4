@@ -37,8 +37,6 @@ open CategoryTheory CategoryTheory.Category CategoryTheory.Limits CategoryTheory
 
 open Simplicial DoldKan
 
-noncomputable section
-
 namespace AlgebraicTopology
 
 namespace DoldKan
@@ -64,7 +62,7 @@ theorem P_f_0_eq (q : ℕ) : ((P q).f 0 : X _⦋0⦌ ⟶ X _⦋0⦌) = 𝟙 _ :=
       HomologicalComplex.id_f, id_comp, hq, Hσ_eq_zero, add_zero]
 
 /-- `Q q` is the complement projection associated to `P q` -/
-def Q (q : ℕ) : K[X] ⟶ K[X] :=
+noncomputable def Q (q : ℕ) : K[X] ⟶ K[X] :=
   𝟙 _ - P q
 
 theorem P_add_Q (q : ℕ) : P q + Q q = 𝟙 K[X] := by
@@ -153,6 +151,7 @@ theorem Q_idem (q : ℕ) : (Q q : K[X] ⟶ K[X]) ≫ Q q = Q q := by
 set_option backward.isDefEq.respectTransparency false in
 /-- For each `q`, `P q` is a natural transformation. -/
 @[simps]
+noncomputable
 def natTransP (q : ℕ) : alternatingFaceMapComplex C ⟶ alternatingFaceMapComplex C where
   app _ := P q
   naturality _ _ f := by
@@ -184,6 +183,7 @@ theorem Q_f_naturality (q n : ℕ) {X Y : SimplicialObject C} (f : X ⟶ Y) :
 set_option backward.isDefEq.respectTransparency false in
 /-- For each `q`, `Q q` is a natural transformation. -/
 @[simps]
+noncomputable
 def natTransQ (q : ℕ) : alternatingFaceMapComplex C ⟶ alternatingFaceMapComplex C where
   app _ := Q q
 

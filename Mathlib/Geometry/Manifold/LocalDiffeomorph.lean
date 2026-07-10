@@ -57,7 +57,7 @@ local diffeomorphism, manifold
 
 -/
 
-public noncomputable section
+public section
 
 open Manifold Set TopologicalSpace
 
@@ -167,7 +167,7 @@ variable {f : M → N} {x : M}
 variable {I I' J n}
 
 /-- An arbitrary choice of local inverse of `f` near `x`. -/
-def localInverse (hf : IsLocalDiffeomorphAt I J n f x) :
+noncomputable def localInverse (hf : IsLocalDiffeomorphAt I J n f x) :
     PartialDiffeomorph J I N M n := (Classical.choose hf).symm
 
 lemma localInverse_open_source (hf : IsLocalDiffeomorphAt I J n f x) :
@@ -352,7 +352,7 @@ lemma IsLocalDiffeomorph.image_coe (hf : IsLocalDiffeomorph I J n f) : hf.image.
 -- This argument implies a `LocalDiffeomorphOn f s` for `s` open is a `PartialDiffeomorph`
 
 /-- A bijective local diffeomorphism is a diffeomorphism. -/
-def IsLocalDiffeomorph.diffeomorphOfBijective
+noncomputable def IsLocalDiffeomorph.diffeomorphOfBijective
     (hf : IsLocalDiffeomorph I J n f) (hf' : Function.Bijective f) : Diffeomorph I J M N n := by
   -- Choose a right inverse `g` of `f`.
   choose g hgInverse using (Function.bijective_iff_has_inverse).mp hf'
@@ -394,7 +394,7 @@ variable {I I' J n}
 set_option backward.isDefEq.respectTransparency false in
 /-- If `f` is a `C^n` local diffeomorphism at `x`, for `n ≠ 0`, the differential `df_x`
 is a linear equivalence. -/
-@[expose] def IsLocalDiffeomorphAt.mfderivToContinuousLinearEquiv
+@[expose] noncomputable def IsLocalDiffeomorphAt.mfderivToContinuousLinearEquiv
     (hf : IsLocalDiffeomorphAt I J n f x) (hn : n ≠ 0) :
     TangentSpace I x ≃L[𝕜] TangentSpace J (f x) where
   toFun := mfderiv% f x
@@ -425,7 +425,7 @@ lemma IsLocalDiffeomorphAt.mfderivToContinuousLinearEquiv_coe
 
 /-- Each differential of a `C^n` diffeomorphism of Banach manifolds (`n ≠ 0`)
 is a linear equivalence. -/
-def Diffeomorph.mfderivToContinuousLinearEquiv
+noncomputable def Diffeomorph.mfderivToContinuousLinearEquiv
     (Φ : M ≃ₘ^n⟮I, J⟯ N) (hn : n ≠ 0) (x : M) :
     TangentSpace I x ≃L[𝕜] TangentSpace J (Φ x) :=
   (Φ.isLocalDiffeomorph x).mfderivToContinuousLinearEquiv hn
@@ -435,7 +435,7 @@ lemma Diffeomorph.mfderivToContinuousLinearEquiv_coe (Φ : M ≃ₘ^n⟮I, J⟯ 
 
 /-- If `f` is a `C^n` local diffeomorphism of Banach manifolds (`n ≠ 0`),
 each differential is a linear equivalence. -/
-def IsLocalDiffeomorph.mfderivToContinuousLinearEquiv
+noncomputable def IsLocalDiffeomorph.mfderivToContinuousLinearEquiv
     (hf : IsLocalDiffeomorph I J n f) (hn : n ≠ 0) (x : M) :
     TangentSpace I x ≃L[𝕜] TangentSpace J (f x) :=
   (hf x).mfderivToContinuousLinearEquiv hn

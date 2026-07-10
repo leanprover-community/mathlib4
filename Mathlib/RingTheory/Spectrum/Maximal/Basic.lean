@@ -17,8 +17,6 @@ Basic properties the maximal spectrum of a ring.
 
 @[expose] public section
 
-noncomputable section
-
 variable (R S P : Type*) [CommSemiring R] [CommSemiring S] [CommSemiring P]
 
 namespace MaximalSpectrum

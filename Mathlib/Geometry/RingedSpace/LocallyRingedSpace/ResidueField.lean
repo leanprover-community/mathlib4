@@ -34,7 +34,7 @@ universe u
 
 open CategoryTheory TopologicalSpace Opposite
 
-noncomputable section
+section
 
 namespace AlgebraicGeometry.LocallyRingedSpace
 
@@ -42,13 +42,14 @@ variable (X : LocallyRingedSpace.{u}) {U : Opens X}
 
 /-- The residue field of `X` at a point `x` is the residue field of the stalk of `X`
 at `x`. -/
-def residueField (x : X) : CommRingCat :=
+noncomputable def residueField (x : X) : CommRingCat :=
   CommRingCat.of <| IsLocalRing.ResidueField (X.presheaf.stalk x)
 
-instance (x : X) : Field (X.residueField x) :=
+noncomputable instance (x : X) : Field (X.residueField x) :=
   inferInstanceAs <| Field (IsLocalRing.ResidueField (X.presheaf.stalk x))
 
 /-- The residue map from the stalk to the residue field. -/
+noncomputable
 def residue (X : LocallyRingedSpace.{u}) (x : X) : X.presheaf.stalk x ⟶ X.residueField x :=
   CommRingCat.ofHom (IsLocalRing.residue (X.presheaf.stalk x))
 
@@ -65,11 +66,11 @@ over `U` to the residue field of `x`.
 If we interpret sections over `U` as functions of `X` defined on `U`, then this ring map
 corresponds to evaluation at `x`.
 -/
-def evaluation (x : U) : X.presheaf.obj (op U) ⟶ X.residueField x :=
+noncomputable def evaluation (x : U) : X.presheaf.obj (op U) ⟶ X.residueField x :=
   X.presheaf.germ U x.1 x.2 ≫ X.residue _
 
 /-- The global evaluation map from `Γ(X, ⊤)` to the residue field at `x`. -/
-def Γevaluation (x : X) : X.presheaf.obj (op ⊤) ⟶ X.residueField x :=
+noncomputable def Γevaluation (x : X) : X.presheaf.obj (op ⊤) ⟶ X.residueField x :=
   X.evaluation ⟨x, show x ∈ ⊤ from trivial⟩
 
 set_option backward.isDefEq.respectTransparency false in
@@ -102,7 +103,7 @@ variable {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) (x : X)
 
 /-- If `X ⟶ Y` is a morphism of locally ringed spaces and `x` a point of `X`, we obtain
 a morphism of residue fields in the other direction. -/
-def residueFieldMap (x : X) : Y.residueField (f.base x) ⟶ X.residueField x :=
+noncomputable def residueFieldMap (x : X) : Y.residueField (f.base x) ⟶ X.residueField x :=
   CommRingCat.ofHom (IsLocalRing.ResidueField.map (f.stalkMap x).hom)
 
 @[reassoc]

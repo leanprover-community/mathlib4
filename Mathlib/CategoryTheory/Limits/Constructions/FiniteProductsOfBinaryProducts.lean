@@ -26,8 +26,6 @@ Show the analogous results for functors which reflect or create (co)limits.
 
 universe v v' u u'
 
-noncomputable section
-
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits
 
 namespace CategoryTheory

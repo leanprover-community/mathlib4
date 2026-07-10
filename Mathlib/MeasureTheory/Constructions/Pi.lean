@@ -54,8 +54,6 @@ finitary product measure
 
 @[expose] public section
 
-noncomputable section
-
 open Function Set MeasureTheory.OuterMeasure Filter MeasurableSpace Encodable
 
 open scoped Topology ENNReal
@@ -72,7 +70,7 @@ variable [Fintype ι] {m : ∀ i, OuterMeasure (α i)}
   It is defined by taking the image of the set under all projections, and taking the product
   of the measures of these images.
   For measurable boxes it is equal to the correct measure. -/
-def piPremeasure (m : ∀ i, OuterMeasure (α i)) (s : Set (∀ i, α i)) : ℝ≥0∞ :=
+noncomputable def piPremeasure (m : ∀ i, OuterMeasure (α i)) (s : Set (∀ i, α i)) : ℝ≥0∞ :=
   ∏ i, m i (eval i '' s)
 
 theorem piPremeasure_pi {s : ∀ i, Set (α i)} (hs : (pi univ s).Nonempty) :
@@ -102,7 +100,7 @@ namespace OuterMeasure
   It is defined to be the maximal outer measure `n` with the property that
   `n (pi univ s) ≤ ∏ i, m i (s i)`, where `pi univ s` is the product of the sets
   `{s i | i : ι}`. -/
-protected def pi (m : ∀ i, OuterMeasure (α i)) : OuterMeasure (∀ i, α i) :=
+protected noncomputable def pi (m : ∀ i, OuterMeasure (α i)) : OuterMeasure (∀ i, α i) :=
   boundedBy (piPremeasure m)
 
 theorem pi_pi_le (m : ∀ i, OuterMeasure (α i)) (s : ∀ i, Set (α i)) :
@@ -133,7 +131,7 @@ variable {δ : Type*} {X : δ → Type*} [∀ i, MeasurableSpace (X i)]
 
 -- for some reason the equation compiler doesn't like this definition
 /-- A product of measures in `tprod α l`. -/
-protected def tprod (l : List δ) (μ : ∀ i, Measure (X i)) : Measure (TProd X l) := by
+protected noncomputable def tprod (l : List δ) (μ : ∀ i, Measure (X i)) : Measure (TProd X l) := by
   induction l with
   | nil => exact dirac PUnit.unit
   | cons i l ih => exact (μ i).prod (α := X i) ih
@@ -177,7 +175,7 @@ open scoped Classical in
 /-- The product measure on an encodable finite type, defined by mapping `Measure.tprod` along the
   equivalence `MeasurableEquiv.piMeasurableEquivTProd`.
   The definition `MeasureTheory.Measure.pi` should be used instead of this one. -/
-def pi' : Measure (∀ i, α i) :=
+noncomputable def pi' : Measure (∀ i, α i) :=
   Measure.map (TProd.elim' mem_sortedUniv) (Measure.tprod (sortedUniv ι) μ)
 
 theorem pi'_pi [∀ i, SigmaFinite (μ i)] (s : ∀ i, Set (α i)) :
@@ -207,9 +205,10 @@ theorem pi_caratheodory :
 
 /-- `Measure.pi μ` is the finite product of the measures `{μ i | i : ι}`.
   It is defined to be measure corresponding to `MeasureTheory.OuterMeasure.pi`. -/
-protected irreducible_def pi : Measure (∀ i, α i) :=
+protected noncomputable irreducible_def pi : Measure (∀ i, α i) :=
   toMeasure (OuterMeasure.pi fun i => (μ i).toOuterMeasure) (pi_caratheodory μ)
 
+noncomputable
 instance _root_.MeasureTheory.MeasureSpace.pi {α : ι → Type*} [∀ i, MeasureSpace (α i)] :
     MeasureSpace (∀ i, α i) :=
   ⟨Measure.pi fun _ => volume⟩

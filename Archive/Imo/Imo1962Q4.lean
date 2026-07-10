@@ -18,7 +18,7 @@ open Real
 
 namespace Imo1962Q4
 
-noncomputable section
+section
 
 def ProblemEquation (x : ℝ) : Prop :=
   cos x ^ 2 + cos (2 * x) ^ 2 + cos (3 * x) ^ 2 = 1
@@ -30,7 +30,7 @@ def solutionSet : Set ℝ :=
 The key to solving this problem simply is that we can rewrite the equation as
 a product of terms, shown in `alt_formula`, being equal to zero.
 -/
-def altFormula (x : ℝ) : ℝ :=
+noncomputable def altFormula (x : ℝ) : ℝ :=
   cos x * (cos x ^ 2 - 1 / 2) * cos (3 * x)
 
 theorem cos_sum_equiv {x : ℝ} :

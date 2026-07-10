@@ -52,14 +52,12 @@ although we defer an abstract statement of this until later.
 
 @[expose] public section
 
-noncomputable section
-
 open Filter
 open scoped unitInterval Topology Uniformity
 
 /-- The Bernstein polynomials, as continuous functions on `[0,1]`.
 -/
-def bernstein (n ν : ℕ) : C(I, ℝ) :=
+noncomputable def bernstein (n ν : ℕ) : C(I, ℝ) :=
   (bernsteinPolynomial ℝ n ν).toContinuousMapOn I
 
 theorem bernstein_apply (n ν : ℕ) (x : I) :
@@ -97,7 +95,7 @@ namespace bernstein
 
 /-- Send `k : Fin (n+1)` to the equally spaced points `k/n` in the unit interval.
 -/
-def z {n : ℕ} (k : Fin (n + 1)) : I :=
+noncomputable def z {n : ℕ} (k : Fin (n + 1)) : I :=
   ⟨(k : ℝ) / n, by simp [div_nonneg, div_le_one_of_le₀, k.is_le]⟩
 
 local postfix:90 "/ₙ" => z
@@ -135,7 +133,7 @@ variable {E : Type*} [AddCommGroup E] [TopologicalSpace E] [IsTopologicalAddGrou
 /-- The `n`-th approximation of a continuous function on `[0,1]` by Bernstein polynomials,
 given by `∑ k, bernstein n k x • f (k/n)`.
 -/
-def bernsteinApproximation (n : ℕ) (f : C(I, E)) : C(I, E) :=
+noncomputable def bernsteinApproximation (n : ℕ) (f : C(I, E)) : C(I, E) :=
   ∑ k : Fin (n + 1), bernstein n k • .const _ (f k/ₙ)
 
 /-!

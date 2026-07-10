@@ -54,8 +54,6 @@ metric space, Hausdorff distance
 @[expose] public section
 
 
-noncomputable section
-
 open NNReal ENNReal Topology Set Filter Pointwise Bornology
 
 universe u v w
@@ -71,7 +69,7 @@ variable [PseudoEMetricSpace α] [PseudoEMetricSpace β] {x y : α} {s t : Set �
 /-! ### Distance of a point to a set as a function into `ℝ≥0∞`. -/
 
 /-- The minimal edistance of a point to a set -/
-def infEDist (x : α) (s : Set α) : ℝ≥0∞ :=
+noncomputable def infEDist (x : α) (s : Set α) : ℝ≥0∞ :=
   ⨅ y ∈ s, edist x y
 
 @[simp]
@@ -255,6 +253,7 @@ end InfEDist
 
 /-- The Hausdorff edistance between two sets is the smallest `r` such that each set
 is contained in the `r`-neighborhood of the other one -/
+noncomputable
 irreducible_def hausdorffEDist {α : Type u} [PseudoEMetricSpace α] (s t : Set α) : ℝ≥0∞ :=
   (⨆ x ∈ s, infEDist x t) ⊔ ⨆ y ∈ t, infEDist y s
 
@@ -570,7 +569,7 @@ variable [PseudoMetricSpace α] [PseudoMetricSpace β] {s t u : Set α} {x y : �
 /-! ### Distance of a point to a set as a function into `ℝ`. -/
 
 /-- The minimal distance of a point to a set -/
-def infDist (x : α) (s : Set α) : ℝ :=
+noncomputable def infDist (x : α) (s : Set α) : ℝ :=
   ENNReal.toReal (infEDist x s)
 
 theorem infDist_eq_iInf : infDist x s = ⨅ y : s, dist x y := by
@@ -746,7 +745,7 @@ theorem exists_mem_closure_infDist_eq_dist [ProperSpace α] (hne : s.Nonempty) (
 /-! ### Distance of a point to a set as a function into `ℝ≥0`. -/
 
 /-- The minimal distance of a point to a set as a `ℝ≥0` -/
-def infNndist (x : α) (s : Set α) : ℝ≥0 :=
+noncomputable def infNndist (x : α) (s : Set α) : ℝ≥0 :=
   ENNReal.toNNReal (infEDist x s)
 
 @[simp]
@@ -771,7 +770,7 @@ theorem continuous_infNndist_pt (s : Set α) : Continuous fun x => infNndist x s
 /-- The Hausdorff distance between two sets is the smallest nonnegative `r` such that each set is
 included in the `r`-neighborhood of the other. If there is no such `r`, it is defined to
 be `0`, arbitrarily. -/
-def hausdorffDist (s t : Set α) : ℝ :=
+noncomputable def hausdorffDist (s t : Set α) : ℝ :=
   ENNReal.toReal (hausdorffEDist s t)
 
 /-- The Hausdorff distance is nonnegative. -/

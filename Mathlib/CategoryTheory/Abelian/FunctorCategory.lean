@@ -18,8 +18,6 @@ public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
 @[expose] public section
 
 
-noncomputable section
-
 namespace CategoryTheory
 
 open CategoryTheory.Limits
@@ -40,7 +38,7 @@ variable {F G : C ⥤ D} (α : F ⟶ G) (X : C)
 set_option backward.defeqAttrib.useBackward true in
 /-- The abelian coimage in a functor category can be calculated componentwise. -/
 @[simps!]
-def coimageObjIso : (Abelian.coimage α).obj X ≅ Abelian.coimage (α.app X) :=
+noncomputable def coimageObjIso : (Abelian.coimage α).obj X ≅ Abelian.coimage (α.app X) :=
   PreservesCokernel.iso ((evaluation C D).obj X) _ ≪≫
     cokernel.mapIso _ _ (PreservesKernel.iso ((evaluation C D).obj X) _) (Iso.refl _)
       (by
@@ -52,7 +50,7 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The abelian image in a functor category can be calculated componentwise. -/
 @[simps!]
-def imageObjIso : (Abelian.image α).obj X ≅ Abelian.image (α.app X) :=
+noncomputable def imageObjIso : (Abelian.image α).obj X ≅ Abelian.image (α.app X) :=
   PreservesKernel.iso ((evaluation C D).obj X) _ ≪≫
     kernel.mapIso _ _ (Iso.refl _) (PreservesCokernel.iso ((evaluation C D).obj X) _)
       (by

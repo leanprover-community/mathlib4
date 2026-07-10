@@ -33,7 +33,7 @@ universe v₁ v₂ v₃ u₁ u₂ u₃
 namespace CategoryTheory.MonoidalCategory
 open scoped ExternalProduct
 
-noncomputable section
+section
 
 /-- `DayFunctor C V` is a type synonym for `C ⥤ V`, implemented as a one-field
 structure. -/
@@ -111,7 +111,7 @@ variable
       Limits.PreservesColimitsOfShape
         (CostructuredArrow ((tensor C).prod (𝟭 C)) d) (tensorRight v)]
 
-instance : MonoidalCategory (C ⊛⥤ V) :=
+noncomputable instance : MonoidalCategory (C ⊛⥤ V) :=
   monoidalOfHasDayConvolutions
     (equiv C V).functor
     (equiv C V).fullyFaithfulFunctor
@@ -119,7 +119,7 @@ instance : MonoidalCategory (C ⊛⥤ V) :=
     ⟨_, ⟨equiv C V|>.counitIso.app _⟩⟩
 
 @[simps! ι_obj ι_map]
-instance : LawfulDayConvolutionMonoidalCategoryStruct C V (C ⊛⥤ V) :=
+noncomputable instance : LawfulDayConvolutionMonoidalCategoryStruct C V (C ⊛⥤ V) :=
   lawfulDayConvolutionMonoidalCategoryStructOfHasDayConvolutions
     (equiv C V).functor
     (equiv C V).fullyFaithfulFunctor
@@ -128,7 +128,7 @@ instance : LawfulDayConvolutionMonoidalCategoryStruct C V (C ⊛⥤ V) :=
 
 /-- The unit transformation exhibiting `(F ⊗ G).functor` as a left Kan extension of
 `F.functor ⊠ G.functor` along `tensor C`. -/
-def η (F G : C ⊛⥤ V) :
+noncomputable def η (F G : C ⊛⥤ V) :
     F.functor ⊠ G.functor ⟶ tensor C ⋙ (F ⊗ G).functor :=
   LawfulDayConvolutionMonoidalCategoryStruct.convolutionExtensionUnit
     C V F G
@@ -151,7 +151,7 @@ theorem tensor_hom_ext {F G H : C ⊛⥤ V} {α β : F ⊗ G ⟶ H}
 
 /-- A natural transformation `F.functor ⊠ G.functor ⟶ tensor C ⋙ H.functor`
 defines a morphism `F ⨂ G ⟶ H`. -/
-def tensorDesc {F G H : C ⊛⥤ V}
+noncomputable def tensorDesc {F G H : C ⊛⥤ V}
     (α : F.functor ⊠ G.functor ⟶ tensor C ⋙ H.functor) :
     F ⊗ G ⟶ H :=
   .mk <| (F ⊗ G).functor.descOfIsLeftKanExtension (η F G) H.functor α
@@ -170,7 +170,7 @@ lemma η_comp_tensorDesc_app {F G H : C ⊛⥤ V}
 open LawfulDayConvolutionMonoidalCategoryStruct
 /-- An abstract isomorphism between `(F ⊗ G).functor` and the generic pointwise
 left Kan extension of `F.functor ⊠ G.functor` along the -/
-def isoPointwiseLeftKanExtension (F G : C ⊛⥤ V) :
+noncomputable def isoPointwiseLeftKanExtension (F G : C ⊛⥤ V) :
     (F ⊗ G).functor ≅
     (tensor C).pointwiseLeftKanExtension (F.functor ⊠ G.functor) :=
   Functor.leftKanExtensionUnique
@@ -202,14 +202,14 @@ lemma ι_comp_isoPointwiseLeftKanExtension_inv (F G : C ⊛⥤ V) (x y : C) :
 variable (C V) in
 /-- The canonical map `𝟙_ V ⟶ (𝟙_ (C ⊛⥤ V)).functor.obj (𝟙_ C)`
 that exhibits `(𝟙_ (C ⊛⥤ V)).functor` as a Day convolution unit. -/
-def ν : 𝟙_ V ⟶ (𝟙_ (C ⊛⥤ V)).functor.obj (𝟙_ C) :=
+noncomputable def ν : 𝟙_ V ⟶ (𝟙_ (C ⊛⥤ V)).functor.obj (𝟙_ C) :=
   LawfulDayConvolutionMonoidalCategoryStruct.unitUnit C V (C ⊛⥤ V)
 
 set_option backward.defeqAttrib.useBackward true in
 variable (C V) in
 /-- The reinterpretation of `ν` as a natural transformation. -/
 @[simps]
-def νNatTrans :
+noncomputable def νNatTrans :
     Functor.fromPUnit.{0} (𝟙_ V) ⟶
       Functor.fromPUnit.{0} (𝟙_ C) ⋙ (𝟙_ (C ⊛⥤ V)).functor where
   app _ := ν C V
@@ -230,7 +230,7 @@ lemma unit_hom_ext {F : C ⊛⥤ V} {α β : 𝟙_ (C ⊛⥤ V) ⟶ F}
 set_option backward.defeqAttrib.useBackward true in
 /-- Given `F : C ⊛⥤ V`, a morphism `𝟙_ V ⟶ F.functor.obj (𝟙_ C)` induces a
 (unique) morphism `𝟙_ (C ⊛⥤ V) ⟶ F`. -/
-def unitDesc {F : C ⊛⥤ V} (φ : 𝟙_ V ⟶ F.functor.obj (𝟙_ C)) :
+noncomputable def unitDesc {F : C ⊛⥤ V} (φ : 𝟙_ V ⟶ F.functor.obj (𝟙_ C)) :
     𝟙_ (C ⊛⥤ V) ⟶ F :=
   .mk <| Functor.descOfIsLeftKanExtension (𝟙_ (C ⊛⥤ V)).functor (νNatTrans C V)
     F.functor { app _ := φ }

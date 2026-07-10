@@ -31,13 +31,11 @@ open Set
 variable {E : Type*} [AddCommGroup E] [TopologicalSpace E] [IsTopologicalAddGroup E] [T2Space E]
   [Module ℝ E] [ContinuousSMul ℝ E] [FiniteDimensional ℝ E]
 
-noncomputable section
-
 open Module
 
 /-- If `E` is a finite-dimensional space over `ℝ`, then `toEuclidean` is a continuous `ℝ`-linear
 equivalence between `E` and the Euclidean space of the same dimension. -/
-def toEuclidean : E ≃L[ℝ] EuclideanSpace ℝ (Fin <| finrank ℝ E) :=
+noncomputable def toEuclidean : E ≃L[ℝ] EuclideanSpace ℝ (Fin <| finrank ℝ E) :=
   ContinuousLinearEquiv.ofFinrankEq finrank_euclideanSpace_fin.symm
 
 namespace Euclidean
@@ -45,7 +43,7 @@ namespace Euclidean
 /-- If `x` and `y` are two points in a finite-dimensional space over `ℝ`, then `Euclidean.dist x y`
 is the distance between these points in the metric defined by some inner product space structure on
 `E`. -/
-nonrec def dist (x y : E) : ℝ :=
+noncomputable nonrec def dist (x y : E) : ℝ :=
   dist (toEuclidean x) (toEuclidean y)
 
 /-- Closed ball w.r.t. the Euclidean distance. -/

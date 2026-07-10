@@ -50,8 +50,6 @@ The dual space of an $R$-module $M$ is the $R$-module of $R$-linear maps $M \to 
 
 open Module Submodule
 
-noncomputable section
-
 namespace Module
 
 variable (R A M : Type*)
@@ -226,7 +224,7 @@ theorem erange_coe : LinearMap.range (eval R M) = ⊤ :=
   range_eq_top.mpr (bijective_dual_eval _ _).2
 
 /-- The bijection between a reflexive module and its double dual, bundled as a `LinearEquiv`. -/
-def evalEquiv : M ≃ₗ[R] Dual R (Dual R M) :=
+noncomputable def evalEquiv : M ≃ₗ[R] Dual R (Dual R M) :=
   LinearEquiv.ofBijective _ (bijective_dual_eval R M)
 
 @[simp] lemma evalEquiv_toLinearMap : evalEquiv R M = Dual.eval R M := rfl
@@ -278,7 +276,7 @@ lemma IsReflexive.of_split (i : N →ₗ[R] M) (s : M →ₗ[R] N) (H : s ∘ₗ
       congr_arg (dualMap ∘ dualMap) H).comp (bijective_dual_eval R M).2⟩
 
 /-- The isomorphism `Module.evalEquiv` induces an order isomorphism on subspaces. -/
-def mapEvalEquiv : Submodule R M ≃o Submodule R (Dual R (Dual R M)) :=
+noncomputable def mapEvalEquiv : Submodule R M ≃o Submodule R (Dual R (Dual R M)) :=
   Submodule.orderIsoMapComap (evalEquiv R M)
 
 @[simp]

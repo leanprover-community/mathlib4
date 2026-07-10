@@ -34,8 +34,6 @@ We have `finrank` variants for most lemmas as well.
 @[expose] public section
 
 
-noncomputable section
-
 universe u u' v v' u₁' w w'
 
 variable {R : Type u} {S : Type u'} {M : Type v} {M' : Type v'} {M₁ : Type v}
@@ -331,6 +329,7 @@ variable {R}
 
 -- TODO: merge with the `Finrank` content
 /-- An `n`-dimensional `R`-vector space is equivalent to `Fin n → R`. -/
+noncomputable
 def finDimVectorspaceEquiv (n : ℕ) (hn : Module.rank R M = n) : M ≃ₗ[R] Fin n → R := by
   haveI := nontrivial_of_invariantBasisNumber R
   have : Cardinal.lift.{u} (n : Cardinal.{v}) = Cardinal.lift.{v} (n : Cardinal.{u}) := by simp

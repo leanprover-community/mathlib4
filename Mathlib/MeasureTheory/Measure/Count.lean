@@ -24,12 +24,12 @@ open scoped ENNReal Finset
 
 variable {α β : Type*} [MeasurableSpace α] [MeasurableSpace β] {s : Set α}
 
-noncomputable section
+section
 
 namespace MeasureTheory.Measure
 
 /-- Counting measure on any measurable space. -/
-def count : Measure α :=
+noncomputable def count : Measure α :=
   sum dirac
 
 @[simp] lemma count_ne_zero'' [Nonempty α] : (count : Measure α) ≠ 0 := by simp [count]

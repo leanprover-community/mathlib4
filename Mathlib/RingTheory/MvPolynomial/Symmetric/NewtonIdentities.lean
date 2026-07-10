@@ -47,8 +47,6 @@ open Equiv (Perm)
 
 open MvPolynomial
 
-noncomputable section
-
 namespace MvPolynomial
 
 open Finset Nat
@@ -97,7 +95,7 @@ private lemma mem_pairs (k : ℕ) (t : Finset σ × σ) :
     t ∈ pairs σ k ↔ #t.1 ≤ k ∧ (#t.1 = k → t.snd ∈ t.fst) := by
   simp [pairs]
 
-private def weight (k : ℕ) (t : Finset σ × σ) : MvPolynomial σ R :=
+private noncomputable def weight (k : ℕ) (t : Finset σ × σ) : MvPolynomial σ R :=
   (-1) ^ #t.1 * ((∏ a ∈ t.fst, X a) * X t.snd ^ (k - #t.1))
 
 private theorem pairMap_mem_pairs {k : ℕ} (t : Finset σ × σ) (h : t ∈ pairs σ k) :

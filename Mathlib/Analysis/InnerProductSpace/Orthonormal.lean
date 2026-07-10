@@ -28,8 +28,6 @@ For the existence of orthonormal bases, Hilbert bases, etc., see the file
 
 @[expose] public section
 
-noncomputable section
-
 open RCLike Real Filter Module Topology ComplexConjugate Finsupp
 
 open LinearMap (BilinForm)
@@ -273,6 +271,7 @@ theorem exists_maximal_orthonormal {s : Set E} (hs : Orthonormal 𝕜 (Subtype.v
 open Module
 
 /-- A family of orthonormal vectors with the correct cardinality forms a basis. -/
+noncomputable
 def basisOfOrthonormalOfCardEqFinrank [Fintype ι] [Nonempty ι] {v : ι → E} (hv : Orthonormal 𝕜 v)
     (card_eq : Fintype.card ι = finrank 𝕜 E) : Basis ι 𝕜 E :=
   basisOfLinearIndependentOfCardEqFinrank hv.linearIndependent card_eq
@@ -366,7 +365,7 @@ theorem LinearEquiv.isometryOfOrthonormal_toLinearEquiv (f : E ≃ₗ[𝕜] E') 
   rfl
 
 /-- A linear isometric equivalence that sends an orthonormal basis to a given orthonormal basis. -/
-def Orthonormal.equiv {v : Basis ι 𝕜 E} (hv : Orthonormal 𝕜 v) {v' : Basis ι' 𝕜 E'}
+noncomputable def Orthonormal.equiv {v : Basis ι 𝕜 E} (hv : Orthonormal 𝕜 v) {v' : Basis ι' 𝕜 E'}
     (hv' : Orthonormal 𝕜 v') (e : ι ≃ ι') : E ≃ₗᵢ[𝕜] E' :=
   (v.equiv v' e).isometryOfOrthonormal hv
     (by

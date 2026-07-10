@@ -1046,10 +1046,10 @@ end MultispanIndex
 abbrev HasMultiequalizer {J : MulticospanShape.{w, w'}} (I : MulticospanIndex J C) :=
   HasLimit I.multicospan
 
-noncomputable section
+section
 
 /-- The multiequalizer of `I : MulticospanIndex J C`. -/
-abbrev multiequalizer {J : MulticospanShape.{w, w'}} (I : MulticospanIndex J C)
+noncomputable abbrev multiequalizer {J : MulticospanShape.{w, w'}} (I : MulticospanIndex J C)
     [HasMultiequalizer I] : C :=
   limit I.multicospan
 
@@ -1059,7 +1059,7 @@ abbrev HasMulticoequalizer {J : MultispanShape.{w, w'}} (I : MultispanIndex J C)
   HasColimit I.multispan
 
 /-- The multicoequalizer of `I : MultispanIndex J C`. -/
-abbrev multicoequalizer {J : MultispanShape.{w, w'}} (I : MultispanIndex J C)
+noncomputable abbrev multicoequalizer {J : MultispanShape.{w, w'}} (I : MultispanIndex J C)
     [HasMulticoequalizer I] : C :=
   colimit I.multispan
 
@@ -1068,11 +1068,11 @@ namespace Multiequalizer
 variable {J : MulticospanShape.{w, w'}} (I : MulticospanIndex J C) [HasMultiequalizer I]
 
 /-- The canonical map from the multiequalizer to the objects on the left. -/
-abbrev ι (a : J.L) : multiequalizer I ⟶ I.left a :=
+noncomputable abbrev ι (a : J.L) : multiequalizer I ⟶ I.left a :=
   limit.π _ (WalkingMulticospan.left a)
 
 /-- The multifork associated to the multiequalizer. -/
-abbrev multifork : Multifork I :=
+noncomputable abbrev multifork : Multifork I :=
   limit.cone _
 
 @[simp]
@@ -1090,7 +1090,7 @@ theorem condition (b) :
   Multifork.condition _ _
 
 /-- Construct a morphism to the multiequalizer from its universal property. -/
-abbrev lift (W : C) (k : ∀ a, W ⟶ I.left a)
+noncomputable abbrev lift (W : C) (k : ∀ a, W ⟶ I.left a)
     (h : ∀ b, k (J.fst b) ≫ I.fst b = k (J.snd b) ≫ I.snd b) : W ⟶ multiequalizer I :=
   limit.lift _ (Multifork.ofι I _ k h)
 
@@ -1111,12 +1111,12 @@ instance : HasEqualizer I.fstPiMap I.sndPiMap :=
   ⟨⟨⟨_, IsLimit.ofPreservesConeTerminal I.multiforkEquivPiFork.functor (limit.isLimit _)⟩⟩⟩
 
 /-- The multiequalizer is isomorphic to the equalizer of `∏ᶜ I.left ⇉ ∏ᶜ I.right`. -/
-def isoEqualizer : multiequalizer I ≅ equalizer I.fstPiMap I.sndPiMap :=
+noncomputable def isoEqualizer : multiequalizer I ≅ equalizer I.fstPiMap I.sndPiMap :=
   limit.isoLimitCone
     ⟨_, IsLimit.ofPreservesConeTerminal I.multiforkEquivPiFork.inverse (limit.isLimit _)⟩
 
 /-- The canonical injection `multiequalizer I ⟶ ∏ᶜ I.left`. -/
-def ιPi : multiequalizer I ⟶ ∏ᶜ I.left :=
+noncomputable def ιPi : multiequalizer I ⟶ ∏ᶜ I.left :=
   (isoEqualizer I).hom ≫ equalizer.ι I.fstPiMap I.sndPiMap
 
 set_option backward.isDefEq.respectTransparency false in
@@ -1136,11 +1136,11 @@ namespace Multicoequalizer
 variable {J : MultispanShape.{w, w'}} (I : MultispanIndex J C) [HasMulticoequalizer I]
 
 /-- The canonical map from the multiequalizer to the objects on the left. -/
-abbrev π (b : J.R) : I.right b ⟶ multicoequalizer I :=
+noncomputable abbrev π (b : J.R) : I.right b ⟶ multicoequalizer I :=
   colimit.ι I.multispan (WalkingMultispan.right _)
 
 /-- The multicofork associated to the multicoequalizer. -/
-abbrev multicofork : Multicofork I :=
+noncomputable abbrev multicofork : Multicofork I :=
   colimit.cocone _
 
 @[simp]
@@ -1163,7 +1163,7 @@ theorem condition (a) :
   Multicofork.condition _ _
 
 /-- Construct a morphism from the multicoequalizer from its universal property. -/
-abbrev desc (W : C) (k : ∀ b, I.right b ⟶ W)
+noncomputable abbrev desc (W : C) (k : ∀ b, I.right b ⟶ W)
     (h : ∀ a, I.fst a ≫ k (J.fst a) = I.snd a ≫ k (J.snd a)) : multicoequalizer I ⟶ W :=
   colimit.desc _ (Multicofork.ofπ I _ k h)
 
@@ -1191,14 +1191,14 @@ instance : HasCoequalizer I.fstSigmaMap I.sndSigmaMap :=
         I.multicoforkEquivSigmaCofork.functor (colimit.isColimit _)⟩⟩⟩
 
 /-- The multicoequalizer is isomorphic to the coequalizer of `∐ I.left ⇉ ∐ I.right`. -/
-def isoCoequalizer : multicoequalizer I ≅ coequalizer I.fstSigmaMap I.sndSigmaMap :=
+noncomputable def isoCoequalizer : multicoequalizer I ≅ coequalizer I.fstSigmaMap I.sndSigmaMap :=
   colimit.isoColimitCocone
     ⟨_,
       IsColimit.ofPreservesCoconeInitial I.multicoforkEquivSigmaCofork.inverse
         (colimit.isColimit _)⟩
 
 /-- The canonical projection `∐ I.right ⟶ multicoequalizer I`. -/
-def sigmaπ : ∐ I.right ⟶ multicoequalizer I :=
+noncomputable def sigmaπ : ∐ I.right ⟶ multicoequalizer I :=
   coequalizer.π I.fstSigmaMap I.sndSigmaMap ≫ (isoCoequalizer I).inv
 
 set_option backward.isDefEq.respectTransparency false in

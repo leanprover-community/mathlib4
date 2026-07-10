@@ -38,12 +38,10 @@ homeomorphism, ball
 open Set Metric Pointwise
 variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace ℝ E]
 
-noncomputable section
-
 /-- Local homeomorphism between a real (semi)normed space and the unit ball.
 See also `Homeomorph.unitBall`. -/
 @[simps -isSimp]
-def OpenPartialHomeomorph.univUnitBall : OpenPartialHomeomorph E E where
+noncomputable def OpenPartialHomeomorph.univUnitBall : OpenPartialHomeomorph E E where
   toFun x := (√(1 + ‖x‖ ^ 2))⁻¹ • x
   invFun y := (√(1 - ‖(y : E)‖ ^ 2))⁻¹ • (y : E)
   source := univ
@@ -95,7 +93,7 @@ In many cases the actual implementation is not important, so we don't mark the p
 See also `Homeomorph.contDiff_unitBall` and `OpenPartialHomeomorph.contDiffOn_unitBall_symm`
 for smoothness properties that hold when `E` is an inner-product space. -/
 @[simps! -isSimp]
-def Homeomorph.unitBall : E ≃ₜ ball (0 : E) 1 :=
+noncomputable def Homeomorph.unitBall : E ≃ₜ ball (0 : E) 1 :=
   (Homeomorph.Set.univ _).symm.trans OpenPartialHomeomorph.univUnitBall.toHomeomorphSourceTarget
 
 @[simp]
@@ -110,7 +108,7 @@ namespace OpenPartialHomeomorph
 /-- Affine homeomorphism `(r • · +ᵥ c)` between a normed space and an add torsor over this space,
 interpreted as an `OpenPartialHomeomorph` between `Metric.ball 0 1` and `Metric.ball c r`. -/
 @[simps!]
-def unitBallBall (c : P) (r : ℝ) (hr : 0 < r) : OpenPartialHomeomorph E P :=
+noncomputable def unitBallBall (c : P) (r : ℝ) (hr : 0 < r) : OpenPartialHomeomorph E P :=
   ((Homeomorph.smulOfNeZero r hr.ne').trans
       (IsometryEquiv.vaddConst c).toHomeomorph).toOpenPartialHomeomorphOfImageEq
       (ball 0 1) isOpen_ball (ball c r) <| by
@@ -122,7 +120,7 @@ def unitBallBall (c : P) (r : ℝ) (hr : 0 < r) : OpenPartialHomeomorph E P :=
 with `source = Set.univ` and `target = Metric.ball c r`.
 Otherwise, it is the translation by `c`.
 Thus in all cases, it sends `0` to `c`, see `OpenPartialHomeomorph.univBall_apply_zero`. -/
-def univBall (c : P) (r : ℝ) : OpenPartialHomeomorph E P :=
+noncomputable def univBall (c : P) (r : ℝ) : OpenPartialHomeomorph E P :=
   if h : 0 < r then univUnitBall.trans' (unitBallBall c r h) rfl
   else (IsometryEquiv.vaddConst c).toHomeomorph.toOpenPartialHomeomorph
 

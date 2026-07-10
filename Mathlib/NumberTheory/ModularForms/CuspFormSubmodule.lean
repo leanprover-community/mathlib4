@@ -33,7 +33,7 @@ q-expansion coefficient (for `𝒮ℒ`).
   q-expansion having vanishing constant term.
 -/
 
-@[expose] public noncomputable section
+@[expose] public section
 
 open UpperHalfPlane ModularForm Complex SlashInvariantForm SlashInvariantFormClass
   ModularFormClass MatrixGroups OnePoint Filter Topology
@@ -78,6 +78,7 @@ lemma mem_cuspFormSubmodule_iff [Γ.HasDetOne] {f : ModularForm Γ k} :
     f ∈ cuspFormSubmodule Γ k ↔ IsCuspForm f := Iff.rfl
 
 /-- The cusp form submodule is linearly equivalent to the type of cusp forms. -/
+noncomputable
 def CuspForm.equivCuspFormSubmodule (Γ : Subgroup (GL (Fin 2) ℝ)) (k : ℤ) [Γ.HasDetOne] :
     CuspForm Γ k ≃ₗ[ℂ] cuspFormSubmodule Γ k :=
   LinearEquiv.ofInjective CuspForm.toModularFormₗ CuspForm.toModularFormₗ_injective

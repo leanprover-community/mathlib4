@@ -63,8 +63,6 @@ in general not be used once the basic API for polynomials is constructed.
 
 @[expose] public section
 
-noncomputable section
-
 /-- `Polynomial R` is the type of univariate polynomials over `R`,
 denoted as `R[X]` within the `Polynomial` namespace.
 
@@ -112,33 +110,33 @@ they unfold around `Polynomial.ofFinsupp` and `Polynomial.toFinsupp`.
 
 section AddMonoidAlgebra
 
-instance : Zero R[X] :=
+noncomputable instance : Zero R[X] :=
   ⟨⟨0⟩⟩
 
-instance : One R[X] :=
+noncomputable instance : One R[X] :=
   ⟨⟨1⟩⟩
 
-@[no_expose] instance : Add R[X] :=
+@[no_expose] noncomputable instance : Add R[X] :=
   ⟨fun ⟨a⟩ ⟨b⟩ ↦ ⟨a + b⟩⟩
 
-@[no_expose] instance {R : Type u} [Ring R] : Neg R[X] :=
+@[no_expose] noncomputable instance {R : Type u} [Ring R] : Neg R[X] :=
   ⟨fun ⟨a⟩ ↦ ⟨-a⟩⟩
 
-instance {R : Type u} [Ring R] : Sub R[X] :=
+noncomputable instance {R : Type u} [Ring R] : Sub R[X] :=
   ⟨fun a b ↦ a + -b⟩
 
-@[no_expose] instance : Mul R[X] :=
+@[no_expose] noncomputable instance : Mul R[X] :=
   ⟨fun ⟨a⟩ ⟨b⟩ ↦ ⟨a * b⟩⟩
 
-instance instNSMul : SMul ℕ R[X] where
+noncomputable instance instNSMul : SMul ℕ R[X] where
   smul r p := ⟨r • p.toFinsupp⟩
 
-instance smulZeroClass {S : Type*} [SMulZeroClass S R] : SMulZeroClass S R[X] where
+noncomputable instance smulZeroClass {S : Type*} [SMulZeroClass S R] : SMulZeroClass S R[X] where
   smul r p := ⟨r • p.toFinsupp⟩
   smul_zero a := congr_arg ofFinsupp (smul_zero a)
 
 -- to avoid a bug in the `ring` tactic
-instance (priority := 1) pow : Pow R[X] ℕ where pow p n := npowRec n p
+noncomputable instance (priority := 1) pow : Pow R[X] ℕ where pow p n := npowRec n p
 
 @[simp]
 theorem ofFinsupp_zero : (⟨0⟩ : R[X]) = 0 :=
@@ -251,10 +249,10 @@ theorem ofFinsupp_eq_zero {a} : (⟨a⟩ : R[X]) = 0 ↔ a = 0 := by
 @[simp]
 theorem ofFinsupp_eq_one {a} : (⟨a⟩ : R[X]) = 1 ↔ a = 1 := by rw [← ofFinsupp_one, ofFinsupp_inj]
 
-instance inhabited : Inhabited R[X] :=
+noncomputable instance inhabited : Inhabited R[X] :=
   ⟨0⟩
 
-instance instNatCast : NatCast R[X] where natCast n := ofFinsupp n
+noncomputable instance instNatCast : NatCast R[X] where natCast n := ofFinsupp n
 
 @[simp]
 theorem ofFinsupp_natCast (n : ℕ) : (⟨n⟩ : R[X]) = n := rfl
@@ -268,15 +266,16 @@ theorem ofFinsupp_ofNat (n : ℕ) [n.AtLeastTwo] : (⟨ofNat(n)⟩ : R[X]) = ofN
 @[simp]
 theorem toFinsupp_ofNat (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : R[X]).toFinsupp = ofNat(n) := rfl
 
-instance semiring : Semiring R[X] :=
+noncomputable instance semiring : Semiring R[X] :=
   fast_instance% Function.Injective.semiring toFinsupp toFinsupp_injective toFinsupp_zero
     toFinsupp_one toFinsupp_add toFinsupp_mul (fun _ _ ↦ toFinsupp_nsmul _ _) toFinsupp_pow
     fun _ ↦ rfl
 
-instance distribSMul {S} [DistribSMul S R] : DistribSMul S R[X] :=
+noncomputable instance distribSMul {S} [DistribSMul S R] : DistribSMul S R[X] :=
   fast_instance% Function.Injective.distribSMul ⟨⟨toFinsupp, toFinsupp_zero⟩, toFinsupp_add⟩
     toFinsupp_injective toFinsupp_smul
 
+noncomputable
 instance distribMulAction {S} [Monoid S] [DistribMulAction S R] : DistribMulAction S R[X] :=
   fast_instance% Function.Injective.distribMulAction
     ⟨⟨toFinsupp, toFinsupp_zero (R := R)⟩, toFinsupp_add⟩ toFinsupp_injective toFinsupp_smul
@@ -284,7 +283,7 @@ instance distribMulAction {S} [Monoid S] [DistribMulAction S R] : DistribMulActi
 instance faithfulSMul {S} [SMulZeroClass S R] [FaithfulSMul S R] : FaithfulSMul S R[X] where
   eq_of_smul_eq_smul {_s₁ _s₂} h := eq_of_smul_eq_smul fun a : R[ℕ] ↦ congr(($(h ⟨a⟩)).toFinsupp)
 
-instance module {S} [Semiring S] [Module S R] : Module S R[X] :=
+noncomputable instance module {S} [Semiring S] [Module S R] : Module S R[X] :=
   fast_instance% Function.Injective.module _ ⟨⟨toFinsupp, toFinsupp_zero⟩, toFinsupp_add⟩
     toFinsupp_injective toFinsupp_smul
 
@@ -316,7 +315,7 @@ instance {S : Type*} [Semiring S] [Module S R] [IsTorsionFree S R] : IsTorsionFr
   isSMulRegular s hs := by
     rintro ⟨f⟩ ⟨g⟩ hfg; congr; apply hs.isSMulRegular; simpa using congr(($hfg).toFinsupp)
 
-instance unique [Subsingleton R] : Unique R[X] :=
+noncomputable instance unique [Subsingleton R] : Unique R[X] :=
   { Polynomial.inhabited with
     uniq := by
       rintro ⟨x⟩
@@ -377,7 +376,7 @@ theorem support_eq_empty : p.support = ∅ ↔ p = 0 := by
 theorem card_support_eq_zero : #p.support = 0 ↔ p = 0 := by simp
 
 /-- `monomial s a` is the monomial `a * X^s` -/
-def monomial (n : ℕ) : R →ₗ[R] R[X] where
+noncomputable def monomial (n : ℕ) : R →ₗ[R] R[X] where
   toFun t := ⟨.single n t⟩
   map_add' x y := by simp [← ofFinsupp_add]
   map_smul' r x := by simp [← ofFinsupp_smul]
@@ -430,7 +429,7 @@ theorem support_add : (p + q).support ⊆ p.support ∪ q.support := by
 /-- `C a` is the constant polynomial `a`.
 `C` is provided as a ring homomorphism.
 -/
-def C : R →+* R[X] :=
+noncomputable def C : R →+* R[X] :=
   { monomial 0 with
     map_one' := by simp [monomial_zero_one]
     map_mul' := by simp [monomial_mul_monomial]
@@ -477,7 +476,7 @@ theorem monomial_mul_C : monomial n a * C b = monomial n (a * b) := by
   simp only [← monomial_zero_left, monomial_mul_monomial, add_zero]
 
 /-- `X` is the polynomial variable (aka indeterminate). -/
-def X : R[X] :=
+noncomputable def X : R[X] :=
   monomial 1 1
 
 theorem monomial_one_one_eq_X : monomial 1 (1 : R) = X :=
@@ -950,7 +949,7 @@ protected theorem induction_on' {motive : R[X] → Prop} (p : R[X])
     by rw [C_mul_X_pow_eq_monomial]; exact monomial _ _
 
 /-- `erase p n` is the polynomial `p` in which the `X^n` term has been erased. -/
-irreducible_def erase (n : ℕ) : R[X] → R[X]
+noncomputable irreducible_def erase (n : ℕ) : R[X] → R[X]
   | ⟨p⟩ => ⟨p.erase n⟩
 
 @[simp]
@@ -997,7 +996,7 @@ section Update
 /-- Replace the coefficient of a `p : R[X]` at a given degree `n : ℕ`
 by a given value `a : R`. If `a = 0`, this is equal to `p.erase n`
 If `p.natDegree < n` and `a ≠ 0`, this increases the degree to `n`. -/
-def update (p : R[X]) (n : ℕ) (a : R) : R[X] :=
+noncomputable def update (p : R[X]) (n : ℕ) (a : R) : R[X] :=
   Polynomial.ofFinsupp (p.toFinsupp.update n a)
 
 theorem coeff_update (p : R[X]) (n : ℕ) (a : R) :
@@ -1032,7 +1031,7 @@ theorem support_update_ne_zero (p : R[X]) (n : ℕ) {a : R} (ha : a ≠ 0) :
 end Update
 
 /-- The finset of nonzero coefficients of a polynomial. -/
-def coeffs (p : R[X]) : Finset R :=
+noncomputable def coeffs (p : R[X]) : Finset R :=
   letI := Classical.decEq R
   Finset.image (fun n ↦ p.coeff n) p.support
 
@@ -1077,7 +1076,7 @@ section CommSemiring
 
 variable [CommSemiring R]
 
-instance commSemiring : CommSemiring R[X] :=
+noncomputable instance commSemiring : CommSemiring R[X] :=
   fast_instance% { Function.Injective.commSemigroup toFinsupp toFinsupp_injective toFinsupp_mul with
     toSemiring := Polynomial.semiring }
 
@@ -1087,7 +1086,7 @@ section Ring
 
 variable [Ring R]
 
-instance instZSMul : SMul ℤ R[X] where
+noncomputable instance instZSMul : SMul ℤ R[X] where
   smul r p := ⟨r • p.toFinsupp⟩
 
 @[simp]
@@ -1100,7 +1099,7 @@ theorem toFinsupp_zsmul (a : ℤ) (b : R[X]) :
     (a • b).toFinsupp = a • b.toFinsupp :=
   rfl
 
-instance instIntCast : IntCast R[X] where intCast n := ofFinsupp n
+noncomputable instance instIntCast : IntCast R[X] where intCast n := ofFinsupp n
 
 @[simp]
 theorem ofFinsupp_intCast (z : ℤ) : (⟨z⟩ : R[X]) = z := rfl
@@ -1108,7 +1107,7 @@ theorem ofFinsupp_intCast (z : ℤ) : (⟨z⟩ : R[X]) = z := rfl
 @[simp]
 theorem toFinsupp_intCast (z : ℤ) : (z : R[X]).toFinsupp = z := rfl
 
-instance ring : Ring R[X] :=
+noncomputable instance ring : Ring R[X] :=
   fast_instance% Function.Injective.ring toFinsupp toFinsupp_injective (toFinsupp_zero (R := R))
       toFinsupp_one toFinsupp_add
       toFinsupp_mul toFinsupp_neg toFinsupp_sub (fun _ _ ↦ toFinsupp_nsmul _ _)
@@ -1141,7 +1140,7 @@ theorem C_sub : C (a - b) = C a - C b :=
 
 end Ring
 
-instance commRing [CommRing R] : CommRing R[X] :=
+noncomputable instance commRing [CommRing R] : CommRing R[X] :=
   --TODO: add reference to library note in PR https://github.com/leanprover-community/mathlib4/pull/7432
   { toRing := Polynomial.ring
     mul_comm := mul_comm }
@@ -1207,7 +1206,7 @@ theorem nontrivial_iff [Semiring R] : Nontrivial R[X] ↔ Nontrivial R :=
     fun h ↦ @Polynomial.nontrivial _ _ h⟩
 
 /-- The map sending a collection of roots into a polynomial, as a morphism. -/
-@[simps] def ofMultiset [CommRing R] : AddChar (Multiset R) R[X] where
+@[simps] noncomputable def ofMultiset [CommRing R] : AddChar (Multiset R) R[X] where
   toFun s := (s.map (fun a ↦ X - C a)).prod
   map_zero_eq_one' := by simp
   map_add_eq_mul' := by simp

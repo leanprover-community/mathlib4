@@ -26,8 +26,6 @@ results about the `R`-Hopf algebra instance on `A[G]`, building upon results in
 
 public section
 
-noncomputable section
-
 open HopfAlgebra
 
 namespace MonoidAlgebra
@@ -38,7 +36,7 @@ variable {G : Type*} [Group G]
 variable (R A G) in
 set_option backward.isDefEq.respectTransparency false in
 @[to_additive (dont_translate := R)]
-instance instHopfAlgebraStruct : HopfAlgebraStruct R A[G] where
+noncomputable instance instHopfAlgebraStruct : HopfAlgebraStruct R A[G] where
   antipode := Finsupp.lsum R (fun g ↦ lsingle g⁻¹ ∘ₗ antipode R) ∘ₗ (coeffLinearEquiv _).toLinearMap
 
 set_option backward.isDefEq.respectTransparency false in
@@ -48,7 +46,7 @@ lemma antipode_single (g : G) (a : A) : antipode R (single g a) = single g⁻¹ 
 
 open Coalgebra in
 @[to_additive (dont_translate := R A)]
-instance instHopfAlgebra : HopfAlgebra R A[G] where
+noncomputable instance instHopfAlgebra : HopfAlgebra R A[G] where
   mul_antipode_rTensor_comul := by
     ext a b : 2
     simpa [← (ℛ R b).eq] using congr(lsingle (R := R) (1 : G)
@@ -66,7 +64,7 @@ open Finsupp
 
 variable (R A : Type*) [CommSemiring R] [Semiring A] [HopfAlgebra R A]
 
-instance instHopfAlgebra : HopfAlgebra R A[T;T⁻¹] :=
+noncomputable instance instHopfAlgebra : HopfAlgebra R A[T;T⁻¹] :=
   inferInstanceAs (HopfAlgebra R <| AddMonoidAlgebra A ℤ)
 
 variable {R A}

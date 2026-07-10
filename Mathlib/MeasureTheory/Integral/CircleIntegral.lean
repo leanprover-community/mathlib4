@@ -69,8 +69,6 @@ integral, circle, Cauchy integral
 
 variable {E : Type*} [NormedAddCommGroup E]
 
-noncomputable section
-
 open scoped Real NNReal Interval Pointwise Topology
 
 open Complex MeasureTheory TopologicalSpace Metric Function Set Filter Asymptotics
@@ -382,7 +380,7 @@ theorem circleIntegrable_sub_inv_iff {c w : ℂ} {R : ℝ} :
 variable [NormedSpace ℂ E]
 
 /-- Definition for $\oint_{|z-c|=R} f(z)\,dz$ -/
-def circleIntegral (f : ℂ → E) (c : ℂ) (R : ℝ) : E :=
+noncomputable def circleIntegral (f : ℂ → E) (c : ℂ) (R : ℝ) : E :=
   ∫ θ : ℝ in 0..2 * π, deriv (circleMap c R) θ • f (circleMap c R θ)
 
 /-- `∮ z in C(c, R), f z` is the circle integral $\oint_{|z-c|=R} f(z)\,dz$. -/
@@ -589,6 +587,7 @@ $\frac{1}{2πi}\sum_{n=0}^{\infty}
 series converges to `f w` if `f` is differentiable on the closed ball `Metric.closedBall c R` and
 `w` belongs to the corresponding open ball. For any circle integrable function `f`, this power
 series converges to the Cauchy integral for `f`. -/
+noncomputable
 def cauchyPowerSeries (f : ℂ → E) (c : ℂ) (R : ℝ) : FormalMultilinearSeries ℂ ℂ E := fun n =>
   ContinuousMultilinearMap.mkPiRing ℂ _ <|
     (2 * π * I : ℂ)⁻¹ • ∮ z in C(c, R), (z - c)⁻¹ ^ n • (z - c)⁻¹ • f z

@@ -17,8 +17,6 @@ We show that the category `Dial` has a symmetric monoidal category structure.
 
 @[expose] public section
 
-noncomputable section
-
 namespace CategoryTheory
 
 open MonoidalCategory Limits
@@ -33,7 +31,7 @@ local notation "π₂" => prod.snd
 local notation "π(" a ", " b ")" => prod.lift a b
 
 /-- The object `X ⊗ Y` in the `Dial C` category just tuples the left and right components. -/
-@[simps] def tensorObjImpl (X Y : Dial C) : Dial C where
+@[simps] noncomputable def tensorObjImpl (X Y : Dial C) : Dial C where
   src := X.src ⨯ Y.src
   tgt := X.tgt ⨯ Y.tgt
   rel :=
@@ -42,7 +40,7 @@ local notation "π(" a ", " b ")" => prod.lift a b
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The functorial action of `X ⊗ Y` in `Dial C`. -/
-@[simps] def tensorHomImpl {X₁ X₂ Y₁ Y₂ : Dial C} (f : X₁ ⟶ X₂) (g : Y₁ ⟶ Y₂) :
+@[simps] noncomputable def tensorHomImpl {X₁ X₂ Y₁ Y₂ : Dial C} (f : X₁ ⟶ X₂) (g : Y₁ ⟶ Y₂) :
     tensorObjImpl X₁ Y₁ ⟶ tensorObjImpl X₂ Y₂ where
   f := prod.map f.f g.f
   F := π(prod.map π₁ π₁ ≫ f.F, prod.map π₂ π₂ ≫ g.F)
@@ -59,31 +57,31 @@ set_option backward.isDefEq.respectTransparency false in
       convert! this using 3 <;> simp
 
 /-- The unit for the tensor `X ⊗ Y` in `Dial C`. -/
-@[simps] def tensorUnitImpl : Dial C := { src := ⊤_ _, tgt := ⊤_ _, rel := ⊤ }
+@[simps] noncomputable def tensorUnitImpl : Dial C := { src := ⊤_ _, tgt := ⊤_ _, rel := ⊤ }
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Left unit cancellation `1 ⊗ X ≅ X` in `Dial C`. -/
-@[simps!] def leftUnitorImpl (X : Dial C) : tensorObjImpl tensorUnitImpl X ≅ X :=
+@[simps!] noncomputable def leftUnitorImpl (X : Dial C) : tensorObjImpl tensorUnitImpl X ≅ X :=
   isoMk (Limits.prod.leftUnitor _) (Limits.prod.leftUnitor _) <| by simp [Subobject.pullback_top]
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Right unit cancellation `X ⊗ 1 ≅ X` in `Dial C`. -/
-@[simps!] def rightUnitorImpl (X : Dial C) : tensorObjImpl X tensorUnitImpl ≅ X :=
+@[simps!] noncomputable def rightUnitorImpl (X : Dial C) : tensorObjImpl X tensorUnitImpl ≅ X :=
   isoMk (Limits.prod.rightUnitor _) (Limits.prod.rightUnitor _) <| by simp [Subobject.pullback_top]
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The associator for tensor, `(X ⊗ Y) ⊗ Z ≅ X ⊗ (Y ⊗ Z)` in `Dial C`. -/
 @[simps!]
-def associatorImpl (X Y Z : Dial C) :
+noncomputable def associatorImpl (X Y Z : Dial C) :
     tensorObjImpl (tensorObjImpl X Y) Z ≅ tensorObjImpl X (tensorObjImpl Y Z) :=
   isoMk (prod.associator ..) (prod.associator ..) <| by
     simp [Subobject.inf_pullback, ← Subobject.pullback_comp, inf_assoc]
 
 @[simps!]
-instance : MonoidalCategoryStruct (Dial C) where
+noncomputable instance : MonoidalCategoryStruct (Dial C) where
   tensorUnit := tensorUnitImpl
   tensorObj := tensorObjImpl
   whiskerLeft X _ _ f := tensorHomImpl (𝟙 X) f
@@ -144,7 +142,7 @@ theorem triangle (X Y : Dial C) :
     (associator X (𝟙_ (Dial C)) Y).hom ≫ tensorHom (𝟙 X) (leftUnitor Y).hom =
     tensorHom (rightUnitor X).hom (𝟙 Y) := by cat_disch
 
-instance : MonoidalCategory (Dial C) :=
+noncomputable instance : MonoidalCategory (Dial C) :=
   .ofTensorHom
     (id_tensorHom_id := id_tensorHom_id)
     (tensorHom_comp_tensorHom := tensorHom_comp_tensorHom)
@@ -156,7 +154,7 @@ instance : MonoidalCategory (Dial C) :=
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The braiding isomorphism `X ⊗ Y ≅ Y ⊗ X` in `Dial C`. -/
-@[simps!] def braiding (X Y : Dial C) : tensorObj X Y ≅ tensorObj Y X :=
+@[simps!] noncomputable def braiding (X Y : Dial C) : tensorObj X Y ≅ tensorObj Y X :=
   isoMk (prod.braiding ..) (prod.braiding ..) <| by
     simp [Subobject.inf_pullback, ← Subobject.pullback_comp, inf_comm]
 
@@ -189,7 +187,7 @@ theorem hexagon_reverse (X Y Z : Dial C) :
       tensorHom (𝟙 X) (braiding Y Z).hom ≫ (associator X Z Y).inv ≫
       tensorHom (braiding X Z).hom (𝟙 Y) := by cat_disch
 
-instance : SymmetricCategory (Dial C) where
+noncomputable instance : SymmetricCategory (Dial C) where
   braiding := braiding
   braiding_naturality_right := braiding_naturality_right
   braiding_naturality_left := braiding_naturality_left

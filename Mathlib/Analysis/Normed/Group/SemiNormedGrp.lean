@@ -20,8 +20,6 @@ them, as well as `SemiNormedGrp₁`, the subcategory of norm non-increasing morp
 @[expose] public section
 
 
-noncomputable section
-
 universe u
 
 open CategoryTheory
@@ -47,7 +45,7 @@ structure Hom (M N : SemiNormedGrp.{u}) where
   /-- The underlying `NormedAddGroupHom`. -/
   hom' : NormedAddGroupHom M N
 
-instance : LargeCategory.{u} SemiNormedGrp where
+noncomputable instance : LargeCategory.{u} SemiNormedGrp where
   Hom X Y := Hom X Y
   id X := ⟨NormedAddGroupHom.id X⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
@@ -166,14 +164,14 @@ theorem iso_isometry_of_normNoninc {V W : SemiNormedGrp} (i : V ≅ W) (h1 : i.h
     ‖v‖ = ‖i.inv (i.hom v)‖ := by rw [← comp_apply, Iso.hom_inv_id, id_apply]
     _ ≤ ‖i.hom v‖ := h2 _
 
-instance Hom.add {M N : SemiNormedGrp} : Add (M ⟶ N) where
+noncomputable instance Hom.add {M N : SemiNormedGrp} : Add (M ⟶ N) where
   add f g := ofHom (f.hom + g.hom)
 
 @[simp]
 theorem hom_add {V W : SemiNormedGrp} (f g : V ⟶ W) : (f + g).hom = f.hom + g.hom :=
   rfl
 
-instance Hom.neg {M N : SemiNormedGrp} : Neg (M ⟶ N) where
+noncomputable instance Hom.neg {M N : SemiNormedGrp} : Neg (M ⟶ N) where
   neg f := ofHom (- f.hom)
 
 @[simp]
@@ -201,7 +199,7 @@ instance Hom.zsmul {M N : SemiNormedGrp} : SMul ℤ (M ⟶ N) where
 theorem hom_zsum {V W : SemiNormedGrp} (n : ℤ) (f : V ⟶ W) : (n • f).hom = n • f.hom :=
   rfl
 
-instance Hom.addCommGroup {V W : SemiNormedGrp} : AddCommGroup (V ⟶ W) :=
+noncomputable instance Hom.addCommGroup {V W : SemiNormedGrp} : AddCommGroup (V ⟶ W) :=
   Function.Injective.addCommGroup _ ConcreteCategory.hom_injective rfl (fun _ _ => rfl)
     (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
 
@@ -231,7 +229,7 @@ structure Hom (M N : SemiNormedGrp₁.{u}) where
   hom' : NormedAddGroupHom M N
   normNoninc : hom'.NormNoninc
 
-instance : LargeCategory.{u} SemiNormedGrp₁ where
+noncomputable instance : LargeCategory.{u} SemiNormedGrp₁ where
   Hom := Hom
   id X := ⟨NormedAddGroupHom.id X, NormedAddGroupHom.NormNoninc.id⟩
   comp {_ _ _} f g := ⟨g.1.comp f.1, g.2.comp f.2⟩

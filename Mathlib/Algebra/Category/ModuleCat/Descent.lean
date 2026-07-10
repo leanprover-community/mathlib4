@@ -27,8 +27,6 @@ This contribution was created as part of the AIM workshop
 
 universe u
 
-noncomputable section
-
 open CategoryTheory Comonad ModuleCat Limits MonoidalCategory
 
 variable {A B : Type u} [CommRing A] [CommRing B] {f : A →+* B}
@@ -56,7 +54,7 @@ lemma ModuleCat.reflectsIsomorphisms_extendScalars_of_faithfullyFlat
 
 /-- Extension of scalars by a faithfully flat ring map is comonadic. -/
 @[implicit_reducible]
-def comonadicExtendScalars (hf : f.FaithfullyFlat) :
+noncomputable def comonadicExtendScalars (hf : f.FaithfullyFlat) :
     ComonadicLeftAdjoint (extendScalars f) := by
   have := preservesFiniteLimits_extendScalars_of_flat hf.flat
   have := reflectsIsomorphisms_extendScalars_of_faithfullyFlat hf

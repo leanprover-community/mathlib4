@@ -34,8 +34,6 @@ general limits can be used.
 
 @[expose] public section
 
-noncomputable section
-
 universe w w' w₂ w₃ v v₂ u u₂
 
 open CategoryTheory
@@ -191,13 +189,13 @@ end
 /-- `piObj f` computes the product of a family of elements `f`.
 (It is defined as an abbreviation for `limit (Discrete.functor f)`,
 so for most facts about `piObj f`, you will just use general facts about limits.) -/
-abbrev piObj (f : β → C) [HasProduct f] :=
+noncomputable abbrev piObj (f : β → C) [HasProduct f] :=
   limit (Discrete.functor f)
 
 /-- `sigmaObj f` computes the coproduct of a family of elements `f`.
 (It is defined as an abbreviation for `colimit (Discrete.functor f)`,
 so for most facts about `sigmaObj f`, you will just use general facts about colimits.) -/
-abbrev sigmaObj (f : β → C) [HasCoproduct f] :=
+noncomputable abbrev sigmaObj (f : β → C) [HasCoproduct f] :=
   colimit (Discrete.functor f)
 
 /-- notation for categorical products. We need `ᶜ` to avoid conflict with `Finset.prod`. -/
@@ -207,11 +205,11 @@ notation "∏ᶜ " f:60 => piObj f
 notation "∐ " f:60 => sigmaObj f
 
 /-- The `b`-th projection from the pi object over `f` has the form `∏ᶜ f ⟶ f b`. -/
-abbrev Pi.π (f : β → C) [HasProduct f] (b : β) : ∏ᶜ f ⟶ f b :=
+noncomputable abbrev Pi.π (f : β → C) [HasProduct f] (b : β) : ∏ᶜ f ⟶ f b :=
   limit.π (Discrete.functor f) (Discrete.mk b)
 
 /-- The `b`-th inclusion into the sigma object over `f` has the form `f b ⟶ ∐ f`. -/
-abbrev Sigma.ι (f : β → C) [HasCoproduct f] (b : β) : f b ⟶ ∐ f :=
+noncomputable abbrev Sigma.ι (f : β → C) [HasCoproduct f] (b : β) : f b ⟶ ∐ f :=
   colimit.ι (Discrete.functor f) (Discrete.mk b)
 
 /-- Without this lemma, `limit.hom_ext` would be applied, but the goal would involve terms
@@ -230,11 +228,12 @@ lemma Sigma.hom_ext {f : β → C} [HasCoproduct f] {X : C} (g₁ g₂ : ∐ f �
 
 set_option backward.defeqAttrib.useBackward true in
 /-- The fan constructed of the projections from the product is limiting. -/
-def productIsProduct (f : β → C) [HasProduct f] : IsLimit (Fan.mk _ (Pi.π f)) :=
+noncomputable def productIsProduct (f : β → C) [HasProduct f] : IsLimit (Fan.mk _ (Pi.π f)) :=
   IsLimit.ofIsoLimit (limit.isLimit (Discrete.functor f)) (Cone.ext (Iso.refl _))
 
 set_option backward.defeqAttrib.useBackward true in
 /-- The cofan constructed of the inclusions from the coproduct is colimiting. -/
+noncomputable
 def coproductIsCoproduct (f : β → C) [HasCoproduct f] : IsColimit (Cofan.mk _ (Sigma.ι f)) :=
   IsColimit.ofIsoColimit (colimit.isColimit (Discrete.functor f)) (Cocone.ext (Iso.refl _))
 
@@ -252,7 +251,7 @@ theorem Sigma.eqToHom_comp_ι {J : Type*} (f : J → C) [HasCoproduct f] {j j' :
   simp
 
 /-- A collection of morphisms `P ⟶ f b` induces a morphism `P ⟶ ∏ᶜ f`. -/
-abbrev Pi.lift {f : β → C} [HasProduct f] {P : C} (p : ∀ b, P ⟶ f b) : P ⟶ ∏ᶜ f :=
+noncomputable abbrev Pi.lift {f : β → C} [HasProduct f] {P : C} (p : ∀ b, P ⟶ f b) : P ⟶ ∏ᶜ f :=
   limit.lift _ (Fan.mk P p)
 
 set_option backward.isDefEq.respectTransparency false in
@@ -268,7 +267,7 @@ def Fan.ext {f : β → C} {c₁ c₂ : Fan f} (e : c₁.pt ≅ c₂.pt)
   Cone.ext e (fun ⟨j⟩ => w j)
 
 /-- A fan `c` on `f` such that the induced map `c.pt ⟶ ∏ f` is an iso, is a product. -/
-def Fan.isLimitOfIsIsoPiLift {f : β → C} [HasProduct f] (c : Fan f)
+noncomputable def Fan.isLimitOfIsIsoPiLift {f : β → C} [HasProduct f] (c : Fan f)
     [hc : IsIso (Pi.lift c.proj)] : IsLimit c :=
   IsLimit.ofIsoLimit (limit.isLimit (Discrete.functor f))
     (Fan.ext (@asIso _ _ _ _ _ hc) (fun _ => (limit.lift_π _ _).symm)).symm
@@ -278,7 +277,7 @@ lemma Fan.nonempty_isLimit_iff_isIso_piLift {f : β → C} [HasProduct f] (c : F
   (limit.isLimit (Discrete.functor f)).nonempty_isLimit_iff_isIso_lift
 
 /-- A collection of morphisms `f b ⟶ P` induces a morphism `∐ f ⟶ P`. -/
-abbrev Sigma.desc {f : β → C} [HasCoproduct f] {P : C} (p : ∀ b, f b ⟶ P) : ∐ f ⟶ P :=
+noncomputable abbrev Sigma.desc {f : β → C} [HasCoproduct f] {P : C} (p : ∀ b, f b ⟶ P) : ∐ f ⟶ P :=
   colimit.desc _ (Cofan.mk P p)
 
 set_option backward.isDefEq.respectTransparency false in
@@ -300,7 +299,7 @@ def Cofan.ext {f : β → C} {c₁ c₂ : Cofan f} (e : c₁.pt ≅ c₂.pt)
   Cocone.ext e (fun ⟨j⟩ => w j)
 
 /-- A cofan `c` on `f` such that the induced map `∐ f ⟶ c.pt` is an iso, is a coproduct. -/
-def Cofan.isColimitOfIsIsoSigmaDesc {f : β → C} [HasCoproduct f] (c : Cofan f)
+noncomputable def Cofan.isColimitOfIsIsoSigmaDesc {f : β → C} [HasCoproduct f] (c : Cofan f)
     [hc : IsIso (Sigma.desc c.inj)] : IsColimit c :=
   IsColimit.ofIsoColimit (colimit.isColimit (Discrete.functor f))
     (Cofan.ext (@asIso _ _ _ _ _ hc) (fun _ => colimit.ι_desc _ _))
@@ -333,6 +332,7 @@ def Cofan.isColimitTrans {X : α → C} (c : Cofan X) (hc : IsColimit c)
 /-- Construct a morphism between categorical products (indexed by the same type)
 from a family of morphisms between the factors.
 -/
+noncomputable
 def Pi.map {f g : β → C} [HasProduct f] [HasProduct g] (p : ∀ b, f b ⟶ g b) : ∏ᶜ f ⟶ ∏ᶜ g :=
   limMap (Discrete.natTrans fun X => p X.as)
 
@@ -358,7 +358,7 @@ instance Pi.map_mono {f g : β → C} [HasProduct f] [HasProduct g] (p : ∀ b, 
 
 /-- Construct a morphism between categorical products from a family of morphisms between the
 factors. -/
-def Pi.map' {f : α → C} {g : β → C} [HasProduct f] [HasProduct g] (p : β → α)
+noncomputable def Pi.map' {f : α → C} {g : β → C} [HasProduct f] [HasProduct g] (p : β → α)
     (q : ∀ (b : β), f (p b) ⟶ g b) : ∏ᶜ f ⟶ ∏ᶜ g :=
   Pi.lift (fun a => Pi.π _ _ ≫ q a)
 
@@ -399,6 +399,7 @@ lemma Pi.map'_eq {f : α → C} {g : β → C} [HasProduct f] [HasProduct g] {p 
 /-- Construct an isomorphism between categorical products (indexed by the same type)
 from a family of isomorphisms between the factors.
 -/
+noncomputable
 def Pi.mapIso {f g : β → C} [HasProductsOfShape β C] (p : ∀ b, f b ≅ g b) : ∏ᶜ f ≅ ∏ᶜ g :=
   lim.mapIso (Discrete.natIso fun X => p X.as)
 
@@ -426,14 +427,14 @@ variable (X : Discrete α ⥤ C) [HasProduct (fun j => X.obj (Discrete.mk j))]
 /-- A limit cone for `X : Discrete α ⥤ C` that is given
 by `∏ᶜ (fun j => X.obj (Discrete.mk j))`. -/
 @[simps]
-def Pi.cone : Cone X where
+noncomputable def Pi.cone : Cone X where
   pt := ∏ᶜ (fun j => X.obj (Discrete.mk j))
   π := Discrete.natTrans (fun _ => Pi.π _ _)
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The cone `Pi.cone X` is a limit cone. -/
-def productIsProduct' :
+noncomputable def productIsProduct' :
     IsLimit (Pi.cone X) where
   lift s := Pi.lift (fun j => s.π.app ⟨j⟩)
   fac s := by simp
@@ -446,7 +447,7 @@ def productIsProduct' :
 variable [HasLimit X]
 
 /-- The isomorphism `∏ᶜ (fun j => X.obj (Discrete.mk j)) ≅ limit X`. -/
-def Pi.isoLimit :
+noncomputable def Pi.isoLimit :
     ∏ᶜ (fun j => X.obj (Discrete.mk j)) ≅ limit X :=
   IsLimit.conePointUniqueUpToIso (productIsProduct' X) (limit.isLimit X)
 
@@ -465,7 +466,7 @@ end
 /-- Construct a morphism between categorical coproducts (indexed by the same type)
 from a family of morphisms between the factors.
 -/
-def Sigma.map {f g : β → C} [HasCoproduct f] [HasCoproduct g] (p : ∀ b, f b ⟶ g b) :
+noncomputable def Sigma.map {f g : β → C} [HasCoproduct f] [HasCoproduct g] (p : ∀ b, f b ⟶ g b) :
     ∐ f ⟶ ∐ g :=
   colimMap (Discrete.natTrans fun X => p X.as)
 
@@ -491,7 +492,7 @@ instance Sigma.map_epi {f g : β → C} [HasCoproduct f] [HasCoproduct g] (p : �
 
 /-- Construct a morphism between categorical coproducts from a family of morphisms between the
 factors. -/
-def Sigma.map' {f : α → C} {g : β → C} [HasCoproduct f] [HasCoproduct g] (p : α → β)
+noncomputable def Sigma.map' {f : α → C} {g : β → C} [HasCoproduct f] [HasCoproduct g] (p : α → β)
     (q : ∀ (a : α), f a ⟶ g (p a)) : ∐ f ⟶ ∐ g :=
   Sigma.desc (fun a => q a ≫ Sigma.ι _ _)
 
@@ -535,6 +536,7 @@ lemma Sigma.map'_eq {f : α → C} {g : β → C} [HasCoproduct f] [HasCoproduct
 /-- Construct an isomorphism between categorical coproducts (indexed by the same type)
 from a family of isomorphisms between the factors.
 -/
+noncomputable
 def Sigma.mapIso {f g : β → C} [HasCoproductsOfShape β C] (p : ∀ b, f b ≅ g b) : ∐ f ≅ ∐ g :=
   colim.mapIso (Discrete.natIso fun X => p X.as)
 
@@ -562,14 +564,14 @@ variable (X : Discrete α ⥤ C) [HasCoproduct (fun j => X.obj (Discrete.mk j))]
 /-- A colimit cocone for `X : Discrete α ⥤ C` that is given
 by `∐ (fun j => X.obj (Discrete.mk j))`. -/
 @[simps]
-def Sigma.cocone : Cocone X where
+noncomputable def Sigma.cocone : Cocone X where
   pt := ∐ (fun j => X.obj (Discrete.mk j))
   ι := Discrete.natTrans (fun _ => Sigma.ι (fun j ↦ X.obj ⟨j⟩) _)
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The cocone `Sigma.cocone X` is a colimit cocone. -/
-def coproductIsCoproduct' :
+noncomputable def coproductIsCoproduct' :
     IsColimit (Sigma.cocone X) where
   desc s := Sigma.desc (fun j => s.ι.app ⟨j⟩)
   fac s := by simp
@@ -582,7 +584,7 @@ def coproductIsCoproduct' :
 variable [HasColimit X]
 
 /-- The isomorphism `∐ (fun j => X.obj (Discrete.mk j)) ≅ colimit X`. -/
-def Sigma.isoColimit :
+noncomputable def Sigma.isoColimit :
     ∐ (fun j => X.obj (Discrete.mk j)) ≅ colimit X :=
   IsColimit.coconePointUniqueUpToIso (coproductIsCoproduct' X) (colimit.isColimit X)
 
@@ -602,6 +604,7 @@ end
 and up to isomorphism in the factors, are isomorphic.
 -/
 @[simps]
+noncomputable
 def Pi.whiskerEquiv {J K : Type*} {f : J → C} {g : K → C} (e : J ≃ K) (w : ∀ j, g (e j) ≅ f j)
     [HasProduct f] [HasProduct g] : ∏ᶜ f ≅ ∏ᶜ g where
   hom := Pi.map' e.symm fun k => (w (e.symm k)).inv ≫ eqToHom (by simp)
@@ -611,6 +614,7 @@ def Pi.whiskerEquiv {J K : Type*} {f : J → C} {g : K → C} (e : J ≃ K) (w :
 and up to isomorphism in the factors, are isomorphic.
 -/
 @[simps]
+noncomputable
 def Sigma.whiskerEquiv {J K : Type*} {f : J → C} {g : K → C} (e : J ≃ K) (w : ∀ j, g (e j) ≅ f j)
     [HasCoproduct f] [HasCoproduct g] : ∐ f ≅ ∐ g where
   hom := Sigma.map' e fun j => (w j).inv
@@ -630,7 +634,7 @@ instance {ι : Type*} (f : ι → Type*) (g : (i : ι) → (f i) → C)
 set_option backward.isDefEq.respectTransparency false in
 /-- An iterated product is a product over a sigma type. -/
 @[simps]
-def piPiIso {ι : Type*} (f : ι → Type*) (g : (i : ι) → (f i) → C)
+noncomputable def piPiIso {ι : Type*} (f : ι → Type*) (g : (i : ι) → (f i) → C)
     [∀ i, HasProduct (g i)] [HasProduct fun i => ∏ᶜ g i] :
     (∏ᶜ fun i => ∏ᶜ g i) ≅ (∏ᶜ fun p : Σ i, f i => g p.1 p.2) where
   hom := Pi.lift fun ⟨i, x⟩ => Pi.π _ i ≫ Pi.π _ x
@@ -652,7 +656,7 @@ instance {ι : Type*} (f : ι → Type*) (g : (i : ι) → (f i) → C)
 set_option backward.isDefEq.respectTransparency false in
 /-- An iterated coproduct is a coproduct over a sigma type. -/
 @[simps]
-def sigmaSigmaIso {ι : Type*} (f : ι → Type*) (g : (i : ι) → (f i) → C)
+noncomputable def sigmaSigmaIso {ι : Type*} (f : ι → Type*) (g : (i : ι) → (f i) → C)
     [∀ i, HasCoproduct (g i)] [HasCoproduct fun i => ∐ g i] :
     (∐ fun i => ∐ g i) ≅ (∐ fun p : Σ i, f i => g p.1 p.2) where
   hom := Sigma.desc fun i => Sigma.desc fun x => Sigma.ι (fun p : Σ i, f i => g p.1 p.2) ⟨i, x⟩
@@ -665,7 +669,7 @@ variable (f : β → C)
 
 /-- The comparison morphism for the product of `f`. This is an iso iff `G` preserves the product
 of `f`, see `PreservesProduct.ofIsoComparison`. -/
-def piComparison [HasProduct f] [HasProduct fun b => G.obj (f b)] :
+noncomputable def piComparison [HasProduct f] [HasProduct fun b => G.obj (f b)] :
     G.obj (∏ᶜ f) ⟶ ∏ᶜ fun b => G.obj (f b) :=
   Pi.lift fun b => G.map (Pi.π f b)
 
@@ -684,7 +688,7 @@ theorem map_lift_piComparison [HasProduct f] [HasProduct fun b => G.obj (f b)] (
 
 /-- The comparison morphism for the coproduct of `f`. This is an iso iff `G` preserves the coproduct
 of `f`, see `PreservesCoproduct.ofIsoComparison`. -/
-def sigmaComparison [HasCoproduct f] [HasCoproduct fun b => G.obj (f b)] :
+noncomputable def sigmaComparison [HasCoproduct f] [HasCoproduct fun b => G.obj (f b)] :
     ∐ (fun b => G.obj (f b)) ⟶ G.obj (∐ f) :=
   Sigma.desc fun b => G.map (Sigma.ι f b)
 
@@ -766,14 +770,14 @@ instance (priority := 100) hasCoproductsOfShape_of_hasCoproducts [HasCoproducts.
 open Opposite in
 /-- The functor sending `(X, n)` to the product of copies of `X` indexed by `n`. -/
 @[simps]
-def piConst [Limits.HasProducts.{w} C] : C ⥤ Type wᵒᵖ ⥤ C where
+noncomputable def piConst [Limits.HasProducts.{w} C] : C ⥤ Type wᵒᵖ ⥤ C where
   obj X := { obj n := ∏ᶜ fun _ : (unop n :) ↦ X, map f := Limits.Pi.map' f.unop fun _ ↦ 𝟙 _ }
   map f := { app n := Limits.Pi.map fun _ ↦ f }
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- `n ↦ ∏ₙ X` is left adjoint to `Hom(-, X)`. -/
-def piConstAdj [Limits.HasProducts.{v} C] (X : C) :
+noncomputable def piConstAdj [Limits.HasProducts.{v} C] (X : C) :
     (piConst.obj X).rightOp ⊣ yoneda.obj X where
   unit := { app n := ↾fun i ↦ Limits.Pi.π (fun _ : n ↦ X) i }
   counit :=
@@ -783,14 +787,14 @@ def piConstAdj [Limits.HasProducts.{v} C] (X : C) :
 
 /-- The functor sending `(X, n)` to the coproduct of copies of `X` indexed by `n`. -/
 @[simps]
-def sigmaConst [Limits.HasCoproducts.{w} C] : C ⥤ Type w ⥤ C where
+noncomputable def sigmaConst [Limits.HasCoproducts.{w} C] : C ⥤ Type w ⥤ C where
   obj X := { obj n := ∐ fun _ : n ↦ X, map f := Limits.Sigma.map' f fun _ ↦ 𝟙 _ }
   map f := { app n := Limits.Sigma.map fun _ ↦ f }
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- `n ↦ ∐ₙ X` is left adjoint to `Hom(X, -)`. -/
-def sigmaConstAdj [Limits.HasCoproducts.{v} C] (X : C) :
+noncomputable def sigmaConstAdj [Limits.HasCoproducts.{v} C] (X : C) :
     sigmaConst.obj X ⊣ coyoneda.obj (Opposite.op X) where
   unit := { app n := ↾fun i ↦ Limits.Sigma.ι (fun _ : n ↦ X) i }
   counit := { app Y := Limits.Sigma.desc id }
@@ -826,7 +830,7 @@ instance (priority := 100) hasProduct_unique [Nonempty β] [Subsingleton β] (f 
   let ⟨_⟩ := nonempty_unique β; HasLimit.mk (limitConeOfUnique f)
 
 /-- A product over an index type with exactly one term is just the object over that term. -/
-def productUniqueIso [Unique β] (f : β → C) : ∏ᶜ f ≅ f default :=
+noncomputable def productUniqueIso [Unique β] (f : β → C) : ∏ᶜ f ≅ f default :=
   IsLimit.conePointUniqueUpToIso (limit.isLimit _) (limitConeOfUnique f).isLimit
 
 @[simp]
@@ -874,7 +878,7 @@ instance (priority := 100) hasCoproduct_unique [Nonempty β] [Subsingleton β] (
   let ⟨_⟩ := nonempty_unique β; HasColimit.mk (colimitCoconeOfUnique f)
 
 /-- A coproduct over an index type with exactly one term is just the object over that term. -/
-def coproductUniqueIso [Unique β] (f : β → C) : ∐ f ≅ f default :=
+noncomputable def coproductUniqueIso [Unique β] (f : β → C) : ∐ f ≅ f default :=
   IsColimit.coconePointUniqueUpToIso (colimit.isColimit _) (colimitCoconeOfUnique f).isColimit
 
 @[simp]
@@ -911,7 +915,7 @@ section
 variable [HasProduct f] [HasProduct (f ∘ ε)]
 
 /-- Reindex a categorical product via an equivalence of the index types. -/
-def Pi.reindex : piObj (f ∘ ε) ≅ piObj f :=
+noncomputable def Pi.reindex : piObj (f ∘ ε) ≅ piObj f :=
   HasLimit.isoOfEquivalence (Discrete.equivalence ε) (Discrete.natIso fun _ => Iso.refl _)
 
 set_option backward.defeqAttrib.useBackward true in
@@ -941,7 +945,7 @@ section
 variable [HasCoproduct f] [HasCoproduct (f ∘ ε)]
 
 /-- Reindex a categorical coproduct via an equivalence of the index types. -/
-def Sigma.reindex : sigmaObj (f ∘ ε) ≅ sigmaObj f :=
+noncomputable def Sigma.reindex : sigmaObj (f ∘ ε) ≅ sigmaObj f :=
   HasColimit.isoOfEquivalence (Discrete.equivalence ε) (Discrete.natIso fun _ => Iso.refl _)
 
 set_option backward.defeqAttrib.useBackward true in
@@ -1050,7 +1054,7 @@ noncomputable def Pi.functor [HasProductsOfShape α C] : (α → C) ⥤ C where
 set_option backward.defeqAttrib.useBackward true in
 /-- The natural transformation induced by `Pi.π`. -/
 @[simps]
-def Pi.functorπ [HasProductsOfShape α C] (a : α) :
+noncomputable def Pi.functorπ [HasProductsOfShape α C] (a : α) :
     Pi.functor α ⟶ Pi.eval (fun _ ↦ C) a where
   app f := Pi.π f a
 
@@ -1058,7 +1062,7 @@ set_option backward.defeqAttrib.useBackward true in
 variable (α) in
 /-- Up to pre-composing with an equivalence of categories, `Pi.functor` is isomorphic to `lim`. -/
 @[simps!]
-def piEquivalenceFunctorDiscreteCompLim [HasProductsOfShape α C] :
+noncomputable def piEquivalenceFunctorDiscreteCompLim [HasProductsOfShape α C] :
     (piEquivalenceFunctorDiscrete α C).functor ⋙ lim ≅ Pi.functor _ :=
   NatIso.ofComponents fun _ ↦ Iso.refl _
 
@@ -1091,7 +1095,7 @@ noncomputable def Sigma.functor [HasCoproductsOfShape α C] : (α → C) ⥤ C w
 set_option backward.defeqAttrib.useBackward true in
 /-- The natural transformation induced by `Sigma.ι`. -/
 @[simps]
-def Sigma.functorι [HasCoproductsOfShape α C] (a : α) :
+noncomputable def Sigma.functorι [HasCoproductsOfShape α C] (a : α) :
     Pi.eval (fun _ ↦ C) a ⟶ Sigma.functor α where
   app f := Sigma.ι f a
 
@@ -1100,7 +1104,7 @@ variable (α) in
 /-- Up to pre-composing with an equivalence of categories, `Sigma.functor` is isomorphic
 to `colim`. -/
 @[simps!]
-def piEquivalenceFunctorDiscreteCompColim [HasCoproductsOfShape α C] :
+noncomputable def piEquivalenceFunctorDiscreteCompColim [HasCoproductsOfShape α C] :
     (piEquivalenceFunctorDiscrete α C).functor ⋙ colim ≅ Sigma.functor _ :=
   NatIso.ofComponents fun _ ↦ Iso.refl _
 
@@ -1129,7 +1133,7 @@ noncomputable def Sigma.constCompSigmaIsoConst [HasCoproductsOfShape α C] {I : 
 /-- The functor `C ⥤ (Type w)ᵒᵖ ⥤ C` which sends `X : C` and `α : Type w` to
 the product of copies of `X` indexed by `α`. -/
 @[simps]
-def piFunctor [HasProducts.{w} C] :
+noncomputable def piFunctor [HasProducts.{w} C] :
     C ⥤ Type wᵒᵖ ⥤ C where
   obj X :=
     { obj α := ∏ᶜ (fun (t : α.unop) ↦ X)
@@ -1139,7 +1143,7 @@ def piFunctor [HasProducts.{w} C] :
 /-- The functor `C ⥤ Type w ⥤ C` which sends `X : C` and `α : Type w` to
 the coproduct of copies of `X` indexed by `α`. -/
 @[simps]
-def sigmaFunctor [HasCoproducts.{w} C] :
+noncomputable def sigmaFunctor [HasCoproducts.{w} C] :
     C ⥤ Type w ⥤ C where
   obj X :=
     { obj α := ∐ (fun (t : α) ↦ X)

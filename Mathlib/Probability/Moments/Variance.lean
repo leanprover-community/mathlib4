@@ -43,8 +43,6 @@ We define the variance of a real-valued random variable as `Var[X] = 𝔼[(X - �
 
 open MeasureTheory Filter Finset
 
-noncomputable section
-
 open scoped MeasureTheory ProbabilityTheory ENNReal NNReal
 
 namespace ProbabilityTheory
@@ -55,13 +53,13 @@ variable (X μ) in
 -- consider `eVariationOn` in `Mathlib.Analysis.BoundedVariation`.
 /-- The `ℝ≥0∞`-valued variance of a real-valued random variable defined as the Lebesgue integral of
 `‖X - 𝔼[X]‖^2`. -/
-def evariance : ℝ≥0∞ := ∫⁻ ω, ‖X ω - μ[X]‖ₑ ^ 2 ∂μ
+noncomputable def evariance : ℝ≥0∞ := ∫⁻ ω, ‖X ω - μ[X]‖ₑ ^ 2 ∂μ
 
 variable (X μ) in
 /-- The `ℝ`-valued variance of a real-valued random variable defined by applying `ENNReal.toReal`
 to `evariance`. -/
 @[wikidata Q175199]
-def variance : ℝ := (evariance X μ).toReal
+noncomputable def variance : ℝ := (evariance X μ).toReal
 
 /-- The `ℝ≥0∞`-valued variance of the real-valued random variable `X` according to the measure `μ`.
 

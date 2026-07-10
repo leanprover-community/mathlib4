@@ -192,14 +192,14 @@ end Topology
 ### The $ℓ^1$ norm on the trivial square zero extension
 -/
 
-noncomputable section Seminormed
+section Seminormed
 
 section Ring
 variable [SeminormedCommRing S] [SeminormedRing R] [SeminormedAddCommGroup M]
 variable [Algebra S R] [Module S M]
 variable [IsBoundedSMul S R] [IsBoundedSMul S M]
 
-instance instL1SeminormedAddCommGroup : SeminormedAddCommGroup (tsze R M) :=
+noncomputable instance instL1SeminormedAddCommGroup : SeminormedAddCommGroup (tsze R M) :=
   fast_instance% {
     WithLp.seminormedAddCommGroupToProd 1 R M with
     toUniformSpace := inferInstance }
@@ -227,7 +227,7 @@ theorem nnnorm_def (x : tsze R M) : ‖x‖₊ = ‖fst x‖₊ + ‖snd x‖₊
 variable [Module R M] [IsBoundedSMul R M] [Module Rᵐᵒᵖ M] [IsBoundedSMul Rᵐᵒᵖ M]
   [SMulCommClass R Rᵐᵒᵖ M]
 
-instance instL1SeminormedRing : SeminormedRing (tsze R M) where
+noncomputable instance instL1SeminormedRing : SeminormedRing (tsze R M) where
   norm_mul_le
   | ⟨r₁, m₁⟩, ⟨r₂, m₂⟩ => by
     simp_rw [norm_def]
@@ -258,7 +258,7 @@ variable [SeminormedCommRing R] [SeminormedAddCommGroup M]
 variable [Module R M] [Module Rᵐᵒᵖ M] [IsCentralScalar R M]
 variable [IsBoundedSMul R M]
 
-instance instL1SeminormedCommRing : SeminormedCommRing (tsze R M) where
+noncomputable instance instL1SeminormedCommRing : SeminormedCommRing (tsze R M) where
   __ : SeminormedRing (tsze R M) := inferInstance
   __ : CommRing (tsze R M) := inferInstance
 
@@ -266,17 +266,17 @@ end CommRing
 
 end Seminormed
 
-noncomputable section Normed
+section Normed
 
 section Ring
 
 variable [NormedRing R] [NormedAddCommGroup M] [Module R M] [Module Rᵐᵒᵖ M]
 variable [IsBoundedSMul R M] [IsBoundedSMul Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒᵖ M]
 
-instance instL1NormedAddCommGroup : NormedAddCommGroup (tsze R M) :=
+noncomputable instance instL1NormedAddCommGroup : NormedAddCommGroup (tsze R M) :=
   fast_instance% WithLp.normedAddCommGroupToProd 1 R M
 
-instance instL1NormedRing : NormedRing (tsze R M) where
+noncomputable instance instL1NormedRing : NormedRing (tsze R M) where
   __ : SeminormedRing (tsze R M) := inferInstance
   __ : NormedAddCommGroup (tsze R M) := inferInstance
 
@@ -288,7 +288,7 @@ variable [NormedCommRing R] [NormedAddCommGroup M]
 variable [Module R M] [Module Rᵐᵒᵖ M] [IsCentralScalar R M]
 variable [IsBoundedSMul R M]
 
-instance instL1NormedCommRing : NormedCommRing (tsze R M) where
+noncomputable instance instL1NormedCommRing : NormedCommRing (tsze R M) where
   __ : NormedRing (tsze R M) := inferInstance
   __ : CommRing (tsze R M) := inferInstance
 

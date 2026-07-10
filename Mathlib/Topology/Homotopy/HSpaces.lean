@@ -53,8 +53,6 @@ Some notable properties of `H-spaces` are
 
 universe u v
 
-noncomputable section
-
 open scoped unitInterval
 
 open Path ContinuousMap Set.Icc TopologicalSpace
@@ -148,7 +146,7 @@ namespace unitInterval
 
 /-- `qRight` is analogous to the function `Q` defined on p. 475 of [serre1951] that helps proving
 continuity of `delayReflRight`. -/
-def qRight (p : I × I) : I :=
+noncomputable def qRight (p : I × I) : I :=
   Set.projIcc 0 1 zero_le_one (2 * p.1 / (1 + p.2))
 
 @[fun_prop]
@@ -191,7 +189,7 @@ variable {X : Type u} [TopologicalSpace X] {x y : X}
 
 /-- This is the function analogous to the one on p. 475 of [serre1951], defining a homotopy from
 the product path `γ ∧ e` to `γ`. -/
-def delayReflRight (θ : I) (γ : Path x y) : Path x y where
+noncomputable def delayReflRight (θ : I) (γ : Path x y) : Path x y where
   toFun t := γ (qRight (t, θ))
   continuous_toFun := by fun_prop
   source' := by
@@ -219,7 +217,7 @@ theorem delayReflRight_one (γ : Path x y) : delayReflRight 1 γ = γ := by
 
 /-- This is the function on p. 475 of [serre1951], defining a homotopy from a path `γ` to the
 product path `e ∧ γ`. -/
-def delayReflLeft (θ : I) (γ : Path x y) : Path x y :=
+noncomputable def delayReflLeft (θ : I) (γ : Path x y) : Path x y :=
   (delayReflRight θ γ.symm).symm
 
 theorem continuous_delayReflLeft : Continuous fun p : I × Path x y => delayReflLeft p.1 p.2 :=
@@ -237,7 +235,7 @@ theorem delayReflLeft_one (γ : Path x y) : delayReflLeft 1 γ = γ := by
 (resp. `hmulE`) neither implies nor is implied by `Path.Homotopy.reflTrans`
 (resp. `Path.Homotopy.transRefl`).
 -/
-instance (x : X) : HSpace (Path x x) where
+noncomputable instance (x : X) : HSpace (Path x x) where
   hmul := ⟨fun ρ => ρ.1.trans ρ.2, continuous_trans⟩
   e := refl x
   hmul_e_e := refl_trans_refl

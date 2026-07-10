@@ -37,8 +37,6 @@ that the set of points at which a given function is analytic is open, see `isOpe
 
 @[expose] public section
 
-noncomputable section
-
 open scoped NNReal ENNReal Topology
 open Filter Set
 
@@ -61,7 +59,7 @@ is itself an analytic function of `x` given by the series `p.changeOriginSeries`
 The definition is such that `p.changeOriginSeriesTerm k l s hs (fun _ ↦ x) (fun _ ↦ y) =
 p (k + l) (s.piecewise (fun _ ↦ x) (fun _ ↦ y))`
 -/
-def changeOriginSeriesTerm (k l : ℕ) (s : Finset (Fin (k + l))) (hs : s.card = l) :
+noncomputable def changeOriginSeriesTerm (k l : ℕ) (s : Finset (Fin (k + l))) (hs : s.card = l) :
     E [×l]→L[𝕜] E [×k]→L[𝕜] F :=
   let a := ContinuousMultilinearMap.curryFinFinset 𝕜 E F hs
     (by rw [Finset.card_compl, Fintype.card_fin, hs, add_tsub_cancel_right])
@@ -97,6 +95,7 @@ Given a formal multilinear series `p` and a point `x` in its ball of convergence
 `p.changeOrigin x` is a formal multilinear series such that
 `p.sum (x+y) = (p.changeOrigin x).sum y` when this makes sense. Its `k`-th term is the sum of
 the series `p.changeOriginSeries k`. -/
+noncomputable
 def changeOriginSeries (k : ℕ) : FormalMultilinearSeries 𝕜 E (E [×k]→L[𝕜] F) := fun l =>
   ∑ s : { s : Finset (Fin (k + l)) // Finset.card s = l }, p.changeOriginSeriesTerm k l s s.2
 
@@ -115,7 +114,7 @@ theorem nnnorm_changeOriginSeries_apply_le_tsum (k l : ℕ) (x : E) :
 /-- Changing the origin of a formal multilinear series `p`, so that
 `p.sum (x+y) = (p.changeOrigin x).sum y` when this makes sense.
 -/
-def changeOrigin (x : E) : FormalMultilinearSeries 𝕜 E F :=
+noncomputable def changeOrigin (x : E) : FormalMultilinearSeries 𝕜 E F :=
   fun k => (p.changeOriginSeries k).sum x
 
 /-- An auxiliary equivalence useful in the proofs about
@@ -227,7 +226,7 @@ theorem changeOrigin_radius : p.radius - ‖x‖₊ ≤ (p.changeOrigin x).radiu
 
 /-- `derivSeries p` is a power series for `fderiv 𝕜 f` if `p` is a power series for `f`,
 see `HasFPowerSeriesOnBall.fderiv`. -/
-def derivSeries : FormalMultilinearSeries 𝕜 E (E →L[𝕜] F) :=
+noncomputable def derivSeries : FormalMultilinearSeries 𝕜 E (E →L[𝕜] F) :=
   (continuousMultilinearCurryFin1 𝕜 E F : (E [×1]→L[𝕜] F) →L[𝕜] E →L[𝕜] F)
     |>.compFormalMultilinearSeries (p.changeOriginSeries 1)
 

@@ -21,8 +21,6 @@ the limit of `f`.
 @[expose] public section
 
 
-noncomputable section
-
 universe w v₁ v₂ u₁ u₂
 
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits
@@ -47,12 +45,14 @@ def isLimitMapConeFanMkEquiv {P : C} (g : ∀ j, P ⟶ f j) :
   exact Cone.ext (Iso.refl _) fun j ↦ by dsimp; cases j; simp
 
 /-- The property of preserving products expressed in terms of fans. -/
+noncomputable
 def isLimitFanMkObjOfIsLimit [PreservesLimit (Discrete.functor f) G] {P : C} (g : ∀ j, P ⟶ f j)
     (t : IsLimit (Fan.mk _ g)) :
     IsLimit (Fan.mk (G.obj P) fun j => G.map (g j) : Fan fun j => G.obj (f j)) :=
   isLimitMapConeFanMkEquiv _ _ _ (isLimitOfPreserves G t)
 
 /-- The property of reflecting products expressed in terms of fans. -/
+noncomputable
 def isLimitOfIsLimitFanMkObj [ReflectsLimit (Discrete.functor f) G] {P : C} (g : ∀ j, P ⟶ f j)
     (t : IsLimit (Fan.mk _ fun j => G.map (g j) : Fan fun j => G.obj (f j))) :
     IsLimit (Fan.mk P g) :=
@@ -66,7 +66,7 @@ variable [HasProduct f]
 If `G` preserves products and `C` has them, then the fan constructed of the mapped projection of a
 product is a limit.
 -/
-def isLimitOfHasProductOfPreservesLimit [PreservesLimit (Discrete.functor f) G] :
+noncomputable def isLimitOfHasProductOfPreservesLimit [PreservesLimit (Discrete.functor f) G] :
     IsLimit (Fan.mk _ fun j : J => G.map (Pi.π f j) : Fan fun j => G.obj (f j)) :=
   isLimitFanMkObjOfIsLimit G f _ (productIsProduct _)
 
@@ -92,7 +92,7 @@ variable [PreservesLimit (Discrete.functor f) G]
 If `G` preserves limits, we have an isomorphism from the image of a product to the product of the
 images.
 -/
-def PreservesProduct.iso : G.obj (∏ᶜ f) ≅ ∏ᶜ fun j => G.obj (f j) :=
+noncomputable def PreservesProduct.iso : G.obj (∏ᶜ f) ≅ ∏ᶜ fun j => G.obj (f j) :=
   IsLimit.conePointUniqueUpToIso (isLimitOfHasProductOfPreservesLimit G f) (limit.isLimit _)
 
 @[simp]
@@ -122,13 +122,13 @@ def isColimitMapCoconeCofanMkEquiv {P : C} (g : ∀ j, f j ⟶ P) :
   refine Cocone.ext (Iso.refl _) fun j => by dsimp; cases j; simp
 
 /-- The property of preserving coproducts expressed in terms of cofans. -/
-def isColimitCofanMkObjOfIsColimit [PreservesColimit (Discrete.functor f) G] {P : C}
+noncomputable def isColimitCofanMkObjOfIsColimit [PreservesColimit (Discrete.functor f) G] {P : C}
     (g : ∀ j, f j ⟶ P) (t : IsColimit (Cofan.mk _ g)) :
     IsColimit (Cofan.mk (G.obj P) fun j => G.map (g j) : Cofan fun j => G.obj (f j)) :=
   isColimitMapCoconeCofanMkEquiv _ _ _ (isColimitOfPreserves G t)
 
 /-- The property of reflecting coproducts expressed in terms of cofans. -/
-def isColimitOfIsColimitCofanMkObj [ReflectsColimit (Discrete.functor f) G] {P : C}
+noncomputable def isColimitOfIsColimitCofanMkObj [ReflectsColimit (Discrete.functor f) G] {P : C}
     (g : ∀ j, f j ⟶ P)
     (t : IsColimit (Cofan.mk _ fun j => G.map (g j) : Cofan fun j => G.obj (f j))) :
     IsColimit (Cofan.mk P g) :=
@@ -141,6 +141,7 @@ variable [HasCoproduct f]
 /-- If `G` preserves coproducts and `C` has them,
 then the cofan constructed of the mapped inclusion of a coproduct is a colimit.
 -/
+noncomputable
 def isColimitOfHasCoproductOfPreservesColimit [PreservesColimit (Discrete.functor f) G] :
     IsColimit (Cofan.mk _ fun j : J => G.map (Sigma.ι f j) : Cofan fun j => G.obj (f j)) :=
   isColimitCofanMkObjOfIsColimit G f _ (coproductIsCoproduct _)
@@ -166,7 +167,7 @@ variable [PreservesColimit (Discrete.functor f) G]
 /-- If `G` preserves colimits,
 we have an isomorphism from the image of a coproduct to the coproduct of the images.
 -/
-def PreservesCoproduct.iso : G.obj (∐ f) ≅ ∐ fun j => G.obj (f j) :=
+noncomputable def PreservesCoproduct.iso : G.obj (∐ f) ≅ ∐ fun j => G.obj (f j) :=
   IsColimit.coconePointUniqueUpToIso (isColimitOfHasCoproductOfPreservesColimit G f)
     (colimit.isColimit _)
 

@@ -38,14 +38,12 @@ embeddings. Once this is done,
 open Set WithLp
 open scoped Manifold Topology
 
-noncomputable section
-
 variable
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
   {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℝ E H} {n : WithTop ℕ∞}
   {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
 
-instance (x : ℝ) : One (TangentSpace 𝓘(ℝ) x) where
+noncomputable instance (x : ℝ) : One (TangentSpace 𝓘(ℝ) x) where
   one := (1 : ℝ)
 
 /-- Unit vector in the tangent space to a segment, as the image of the unit vector in the real line
@@ -55,10 +53,11 @@ the canonical injection, see `mfderiv_subtype_coe_Icc_one`.
 Note that one cannot abuse defeqs for this definition: this is *not* the same as the vector
 `fun _ ↦ 1` in `EuclideanSpace ℝ (Fin 1)` through defeqs, as one of the charts of `Icc x y` is
 orientation-reversing. -/
-irreducible_def oneTangentSpaceIcc {x y : ℝ} [h : Fact (x < y)] (z : Icc x y) :
+noncomputable irreducible_def oneTangentSpaceIcc {x y : ℝ} [h : Fact (x < y)] (z : Icc x y) :
     TangentSpace (𝓡∂ 1) z :=
   mfderiv[Icc x y] (Set.projIcc x y h.out.le) z 1
 
+noncomputable
 instance {x y : ℝ} [h : Fact (x < y)] (z : Icc x y) : One (TangentSpace (𝓡∂ 1) z) where
   one := oneTangentSpaceIcc z
 

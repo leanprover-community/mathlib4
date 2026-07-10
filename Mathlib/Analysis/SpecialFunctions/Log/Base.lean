@@ -31,8 +31,6 @@ open Set Filter Function
 
 open Topology
 
-noncomputable section
-
 namespace Real
 
 variable {b x y : ℝ}

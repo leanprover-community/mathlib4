@@ -54,8 +54,6 @@ provided.
 
 @[expose] public section
 
-noncomputable section
-
 open CategoryTheory TopologicalSpace Topology
 
 universe v u
@@ -307,7 +305,7 @@ instance (h : MkCore.{u}) (i j : h.J) : IsIso (h.t i j) := by
   use h.t j i; constructor <;> ext1; exacts [h.t_inv _ _ _, h.t_inv _ _ _]
 
 /-- (Implementation) the restricted transition map to be fed into `TopCat.GlueData`. -/
-def MkCore.t' (h : MkCore.{u}) (i j k : h.J) :
+noncomputable def MkCore.t' (h : MkCore.{u}) (i j k : h.J) :
     pullback (h.V i j).inclusion' (h.V i k).inclusion' ⟶
       pullback (h.V j k).inclusion' (h.V j i).inclusion' := by
   refine (pullbackIsoProdSubtype _ _).hom ≫ ofHom ⟨?_, ?_⟩ ≫ (pullbackIsoProdSubtype _ _).inv
@@ -321,7 +319,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- This is a constructor of `TopCat.GlueData` whose arguments are in terms of elements and
 intersections rather than subobjects and pullbacks. Please refer to `TopCat.GlueData.MkCore` for
 details. -/
-def mk' (h : MkCore.{u}) : TopCat.GlueData where
+noncomputable def mk' (h : MkCore.{u}) : TopCat.GlueData where
   J := h.J
   U := h.U
   V i := (Opens.toTopCat _).obj (h.V i.1 i.2)
@@ -356,7 +354,7 @@ variable {α : Type u} [TopologicalSpace α] {J : Type u} (U : J → Opens α)
 
 /-- We may construct a glue data from a family of open sets. -/
 @[simps! toGlueData_J toGlueData_U toGlueData_V toGlueData_t toGlueData_f]
-def ofOpenSubsets : TopCat.GlueData.{u} :=
+noncomputable def ofOpenSubsets : TopCat.GlueData.{u} :=
   mk'.{u}
     { J
       U := fun i => (Opens.toTopCat <| TopCat.of α).obj (U i)
@@ -371,7 +369,7 @@ def ofOpenSubsets : TopCat.GlueData.{u} :=
 This map is an open embedding (`fromOpenSubsetsGlue_isOpenEmbedding`),
 and its range is `⋃ i, (U i : Set α)` (`range_fromOpenSubsetsGlue`).
 -/
-def fromOpenSubsetsGlue : (ofOpenSubsets U).toGlueData.glued ⟶ TopCat.of α :=
+noncomputable def fromOpenSubsetsGlue : (ofOpenSubsets U).toGlueData.glued ⟶ TopCat.of α :=
   Multicoequalizer.desc _ _ (fun _ => Opens.inclusion' _) (by rintro ⟨i, j⟩; ext x; rfl)
 
 @[simp, elementwise nosimp]
@@ -424,7 +422,7 @@ theorem range_fromOpenSubsetsGlue : Set.range (fromOpenSubsetsGlue U) = ⋃ i, (
     exact ⟨(ofOpenSubsets U).toGlueData.ι i ⟨x, hx⟩, ι_fromOpenSubsetsGlue_apply _ _ _⟩
 
 /-- The gluing of an open cover is homeomorphic to the original space. -/
-def openCoverGlueHomeo (h : ⋃ i, (U i : Set α) = Set.univ) :
+noncomputable def openCoverGlueHomeo (h : ⋃ i, (U i : Set α) = Set.univ) :
     (ofOpenSubsets U).toGlueData.glued ≃ₜ α :=
   Equiv.toHomeomorphOfContinuousOpen
     (Equiv.ofBijective (fromOpenSubsetsGlue U)

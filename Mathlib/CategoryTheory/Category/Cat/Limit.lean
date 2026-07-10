@@ -24,8 +24,6 @@ Can the indexing category live in a lower universe?
 @[expose] public section
 
 
-noncomputable section
-
 universe v u
 
 open CategoryTheory Limits ConcreteCategory
@@ -46,7 +44,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition:
 the diagram whose limit gives the morphism space between two objects of the limit category. -/
 @[simps]
-def homDiagram {F : J ⥤ Cat.{v, v}} (X Y : limit (F ⋙ Cat.objects.{v, v})) :
+noncomputable def homDiagram {F : J ⥤ Cat.{v, v}} (X Y : limit (F ⋙ Cat.objects.{v, v})) :
     J ⥤ Type v where
   obj j := limit.π (F ⋙ Cat.objects) j X ⟶ limit.π (F ⋙ Cat.objects) j Y
   map f := ↾fun g ↦ by
@@ -64,7 +62,7 @@ def homDiagram {F : J ⥤ Cat.{v, v}} (X Y : limit (F ⋙ Cat.objects.{v, v})) :
 
 set_option backward.isDefEq.respectTransparency false in
 @[simps]
-instance (F : J ⥤ Cat.{v, v}) : Category (limit (F ⋙ Cat.objects) :) where
+noncomputable instance (F : J ⥤ Cat.{v, v}) : Category (limit (F ⋙ Cat.objects) :) where
   Hom X Y := limit (homDiagram X Y)
   id X := Types.Limit.mk.{v, v} (homDiagram X X) (fun _ => 𝟙 _) fun j j' f => by simp
   comp {X Y Z} f g := Types.Limit.mk.{v, v} (homDiagram X Z)
@@ -83,12 +81,12 @@ instance (F : J ⥤ Cat.{v, v}) : Category (limit (F ⋙ Cat.objects) :) where
 
 /-- Auxiliary definition: the limit category. -/
 @[simps]
-def limitConeX (F : J ⥤ Cat.{v, v}) : Cat.{v, v} where α := limit (F ⋙ Cat.objects)
+noncomputable def limitConeX (F : J ⥤ Cat.{v, v}) : Cat.{v, v} where α := limit (F ⋙ Cat.objects)
 
 attribute [-simp] homDiagram_obj in
 /-- Auxiliary definition: the cone over the limit category. -/
 @[simps]
-def limitCone (F : J ⥤ Cat.{v, v}) : Cone F where
+noncomputable def limitCone (F : J ⥤ Cat.{v, v}) : Cone F where
   pt := limitConeX F
   π :=
     { app := fun j => Functor.toCatHom
@@ -103,7 +101,7 @@ attribute [-simp] homDiagram_obj Functor.comp_obj in
 set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition: the universal morphism to the proposed limit cone. -/
 @[simps! toFunctor]
-def limitConeLift (F : J ⥤ Cat.{v, v}) (s : Cone F) : s.pt ⟶ limitConeX F :=
+noncomputable def limitConeLift (F : J ⥤ Cat.{v, v}) (s : Cone F) : s.pt ⟶ limitConeX F :=
   Functor.toCatHom <| {
     obj :=
       limit.lift (F ⋙ Cat.objects)
@@ -135,7 +133,7 @@ theorem limit_π_homDiagram_eqToHom {F : J ⥤ Cat.{v, v}} (X Y : limit (F ⋙ C
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition: the proposed cone is a limit cone. -/
-def limitConeIsLimit (F : J ⥤ Cat.{v, v}) : IsLimit (limitCone F) where
+noncomputable def limitConeIsLimit (F : J ⥤ Cat.{v, v}) : IsLimit (limitCone F) where
   lift := limitConeLift F
   fac s j := Cat.Hom.ext <| CategoryTheory.Functor.ext (by intro; simp [← comp_apply])
     fun X Y f => by

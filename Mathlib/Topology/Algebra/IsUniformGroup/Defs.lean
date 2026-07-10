@@ -48,8 +48,6 @@ under either `IsRightUniformGroup G` or `IsLeftUniformGroup G`.
 
 assert_not_exists Cauchy
 
-noncomputable section
-
 open Uniformity Topology Filter Pointwise
 
 section LeftRight

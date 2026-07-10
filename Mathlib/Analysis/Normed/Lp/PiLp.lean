@@ -76,8 +76,6 @@ the only remaining results are about `Lipschitz` and `Antilipschitz`.
 
 open Module Real Set Filter RCLike Bornology Uniformity Topology NNReal ENNReal WithLp
 
-noncomputable section
-
 /-- A copy of a Pi type, on which we will put the `L^p` distance. Since the Pi type itself is
 already endowed with the `L^∞` distance, we need the type synonym to avoid confusing typeclass
 resolution. Also, we let it depend on `p`, to get a whole family of type on which we can put
@@ -254,7 +252,7 @@ separate from `pi_Lp.pseudo_emetric` since the latter requires the type class hy
 Registering this separately allows for a future emetric-like structure on `PiLp p β` for `p < 1`
 satisfying a relaxed triangle inequality. The terminology for this varies throughout the
 literature, but it is sometimes called a *quasi-metric* or *semi-metric*. -/
-instance : EDist (PiLp p β) where
+noncomputable instance : EDist (PiLp p β) where
   edist f g :=
     if p = 0 then {i | edist (f i) (g i) ≠ 0}.toFinite.toFinset.card
     else
@@ -309,7 +307,7 @@ separate from `pi_Lp.pseudo_metric` since the latter requires the type class hyp
 Registering this separately allows for a future metric-like structure on `PiLp p β` for `p < 1`
 satisfying a relaxed triangle inequality. The terminology for this varies throughout the
 literature, but it is sometimes called a *quasi-metric* or *semi-metric*. -/
-instance : Dist (PiLp p α) where
+noncomputable instance : Dist (PiLp p α) where
   dist f g :=
     if p = 0 then {i | dist (f i) (g i) ≠ 0}.toFinite.toFinset.card
     else
@@ -340,7 +338,7 @@ separate from `PiLp.seminormedAddCommGroup` since the latter requires the type c
 
 Registering this separately allows for a future norm-like structure on `PiLp p β` for `p < 1`
 satisfying a relaxed triangle inequality. These are called *quasi-norms*. -/
-instance instNorm : Norm (PiLp p β) where
+noncomputable instance instNorm : Norm (PiLp p β) where
   norm f :=
     if p = 0 then {i | ‖f i‖ ≠ 0}.toFinite.toFinset.card
     else if p = ∞ then ⨆ i, ‖f i‖ else (∑ i, ‖f i‖ ^ p.toReal) ^ (1 / p.toReal)
@@ -392,7 +390,7 @@ pseudoemetric space instance, we will show that the uniform structure is equal (
 the product one, and then register an instance in which we replace the uniform structure by the
 product one using this pseudoemetric space and `PseudoEMetricSpace.replaceUniformity`. -/
 @[instance_reducible]
-def pseudoEmetricAux : PseudoEMetricSpace (PiLp p β) where
+noncomputable def pseudoEmetricAux : PseudoEMetricSpace (PiLp p β) where
   edist_self := PiLp.edist_self p
   edist_comm := PiLp.edist_comm p
   edist_triangle f g h := by
@@ -436,7 +434,7 @@ structure and the bornology by the product ones using this pseudometric space,
 `PseudoMetricSpace.replaceUniformity`, and `PseudoMetricSpace.replaceBornology`.
 
 See note [reducible non-instances] -/
-abbrev pseudoMetricAux : PseudoMetricSpace (PiLp p α) :=
+noncomputable abbrev pseudoMetricAux : PseudoMetricSpace (PiLp p α) :=
   PseudoEMetricSpace.toPseudoMetricSpaceOfDist dist
     (fun f g => by
       rcases p.dichotomy with (rfl | h)
@@ -602,25 +600,25 @@ set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- pseudoemetric space instance on the product of finitely many pseudoemetric spaces, using the
 `L^p` pseudoedistance, and having as uniformity the product uniformity. -/
-instance [∀ i, PseudoEMetricSpace (β i)] : PseudoEMetricSpace (PiLp p β) :=
+noncomputable instance [∀ i, PseudoEMetricSpace (β i)] : PseudoEMetricSpace (PiLp p β) :=
   (pseudoEmetricAux p β).replaceUniformity (uniformity_aux p β).symm
 
 /-- emetric space instance on the product of finitely many emetric spaces, using the `L^p`
 edistance, and having as uniformity the product uniformity. -/
-instance [∀ i, EMetricSpace (α i)] : EMetricSpace (PiLp p α) :=
+noncomputable instance [∀ i, EMetricSpace (α i)] : EMetricSpace (PiLp p α) :=
   EMetricSpace.ofT0PseudoEMetricSpace (PiLp p α)
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- pseudometric space instance on the product of finitely many pseudometric spaces, using the
 `L^p` distance, and having as uniformity the product uniformity. -/
-instance [∀ i, PseudoMetricSpace (β i)] : PseudoMetricSpace (PiLp p β) :=
+noncomputable instance [∀ i, PseudoMetricSpace (β i)] : PseudoMetricSpace (PiLp p β) :=
   ((pseudoMetricAux p β).replaceUniformity (uniformity_aux p β).symm).replaceBornology fun s =>
     Filter.ext_iff.1 (cobounded_aux p β).symm sᶜ
 
 /-- metric space instance on the product of finitely many metric spaces, using the `L^p` distance,
 and having as uniformity the product uniformity. -/
-instance [∀ i, MetricSpace (α i)] : MetricSpace (PiLp p α) :=
+noncomputable instance [∀ i, MetricSpace (α i)] : MetricSpace (PiLp p α) :=
   MetricSpace.ofT0PseudoMetricSpace _
 
 theorem nndist_eq_sum {p : ℝ≥0∞} [Fact (1 ≤ p)] {β : ι → Type*} [∀ i, PseudoMetricSpace (β i)]
@@ -678,7 +676,7 @@ lemma isometry_ofLp_infty [∀ i, PseudoEMetricSpace (β i)] :
 
 /-- seminormed group instance on the product of finitely many normed groups, using the `L^p`
 norm. -/
-instance seminormedAddCommGroup [∀ i, SeminormedAddCommGroup (β i)] :
+noncomputable instance seminormedAddCommGroup [∀ i, SeminormedAddCommGroup (β i)] :
     SeminormedAddCommGroup (PiLp p β) where
   dist_eq := fun x y => by
     rcases p.dichotomy with (rfl | h)
@@ -715,6 +713,7 @@ theorem norm_apply_le [∀ i, SeminormedAddCommGroup (β i)] (x : PiLp p β) (i 
 end
 
 /-- normed group instance on the product of finitely many normed groups, using the `L^p` norm. -/
+noncomputable
 instance normedAddCommGroup [∀ i, NormedAddCommGroup (α i)] : NormedAddCommGroup (PiLp p α) :=
   { PiLp.seminormedAddCommGroup p α with
     eq_of_dist_eq_zero := eq_of_dist_eq_zero }
@@ -862,7 +861,7 @@ variable (E : Type*) [SeminormedAddCommGroup E] [Module 𝕜 E]
 
 /-- An equivalence of finite domains induces a linearly isometric equivalence of finitely supported
 functions. -/
-def _root_.LinearIsometryEquiv.piLpCongrLeft (e : ι ≃ ι') :
+noncomputable def _root_.LinearIsometryEquiv.piLpCongrLeft (e : ι ≃ ι') :
     (PiLp p fun _ : ι => E) ≃ₗᵢ[𝕜] PiLp p fun _ : ι' => E where
   toLinearEquiv := (WithLp.linearEquiv p 𝕜 (ι → E)).trans
     ((LinearEquiv.piCongrLeft' 𝕜 (fun _ : ι => E) e).trans (WithLp.linearEquiv p 𝕜 (ι' → E)).symm)
@@ -906,7 +905,7 @@ variable (p) in
 between Pi types with the Lp norm.
 
 This is the isometry version of `LinearEquiv.piCongrRight`. -/
-protected def _root_.LinearIsometryEquiv.piLpCongrRight (e : ∀ i, α i ≃ₗᵢ[𝕜] β i) :
+protected noncomputable def _root_.LinearIsometryEquiv.piLpCongrRight (e : ∀ i, α i ≃ₗᵢ[𝕜] β i) :
     PiLp p α ≃ₗᵢ[𝕜] PiLp p β where
   toLinearEquiv :=
     WithLp.linearEquiv _ _ _
@@ -952,7 +951,7 @@ variable {ι : Type*} {κ : ι → Type*} (p : ℝ≥0∞) [Fact (1 ≤ p)]
 
 variable (𝕜) in
 /-- `LinearEquiv.piCurry` for `PiLp`, as an isometry. -/
-def _root_.LinearIsometryEquiv.piLpCurry :
+noncomputable def _root_.LinearIsometryEquiv.piLpCurry :
     PiLp p (fun i : Sigma _ => α i.1 i.2) ≃ₗᵢ[𝕜] PiLp p (fun i => PiLp p (α i)) where
   toLinearEquiv :=
     WithLp.linearEquiv _ _ _
@@ -987,7 +986,7 @@ variable [∀ i, SeminormedAddCommGroup (α i)] [∀ i, Module 𝕜 (α i)]
 
 /-- `LinearEquiv.sumPiEquivProdPi` for `PiLp`, as an isometry. -/
 @[simps! +simpRhs]
-def sumPiLpEquivProdLpPiLp :
+noncomputable def sumPiLpEquivProdLpPiLp :
     WithLp p (Π i, α i) ≃ₗᵢ[𝕜]
       WithLp p (WithLp p (Π i, α (.inl i)) × WithLp p (Π i, α (.inr i))) where
   toLinearEquiv :=
@@ -1173,7 +1172,7 @@ variable [Finite ι] [Ring 𝕜]
 variable (ι)
 
 /-- A version of `Pi.basisFun` for `PiLp`. -/
-def basisFun : Basis ι 𝕜 (PiLp p fun _ : ι => 𝕜) :=
+noncomputable def basisFun : Basis ι 𝕜 (PiLp p fun _ : ι => 𝕜) :=
   Basis.ofEquivFun (WithLp.linearEquiv p 𝕜 (ι → 𝕜))
 
 @[simp]
@@ -1230,7 +1229,7 @@ variable [Fact (1 ≤ p)] [Fintype ι]
 /-- This definition allows to endow `Π i, α i` with the Lp distance with the uniformity and
 bornology being defeq to the product ones. It is useful to endow a type synonym of `Π i, α i` with
 the Lp distance. -/
-abbrev pseudoMetricSpaceToPi [∀ i, PseudoMetricSpace (α i)] :
+noncomputable abbrev pseudoMetricSpaceToPi [∀ i, PseudoMetricSpace (α i)] :
     PseudoMetricSpace (Π i, α i) :=
   (isUniformInducing_toLp p α).comapPseudoMetricSpace.replaceBornology
     fun s => Filter.ext_iff.1
@@ -1243,7 +1242,7 @@ lemma dist_pseudoMetricSpaceToPi [∀ i, PseudoMetricSpace (α i)] (x y : Π i, 
 /-- This definition allows to endow `Π i, α i` with the Lp norm with the uniformity and bornology
 being defeq to the product ones. It is useful to endow a type synonym of `Π i, α i` with the
 Lp norm. -/
-abbrev seminormedAddCommGroupToPi [∀ i, SeminormedAddCommGroup (α i)] :
+noncomputable abbrev seminormedAddCommGroupToPi [∀ i, SeminormedAddCommGroup (α i)] :
     SeminormedAddCommGroup (Π i, α i) where
   norm x := ‖toLp p x‖
   toPseudoMetricSpace := pseudoMetricSpaceToPi p α
@@ -1290,7 +1289,7 @@ abbrev normedSpaceSeminormedAddCommGroupToPi
 /-- This definition allows to endow `Π i, α i` with the Lp norm with the uniformity and bornology
 being defeq to the product ones. It is useful to endow a type synonym of `Π i, α i` with the
 Lp norm. -/
-abbrev normedAddCommGroupToPi [∀ i, NormedAddCommGroup (α i)] :
+noncomputable abbrev normedAddCommGroupToPi [∀ i, NormedAddCommGroup (α i)] :
     NormedAddCommGroup (Π i, α i) where
   norm x := ‖toLp p x‖
   toPseudoMetricSpace := pseudoMetricSpaceToPi p α

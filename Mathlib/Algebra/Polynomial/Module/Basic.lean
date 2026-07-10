@@ -16,7 +16,7 @@ This is defined as a type alias `PolynomialModule R M := ℕ →₀ M`, since th
 module structures on `ℕ →₀ M` of interest. See the docstring of `PolynomialModule` for details.
 -/
 
-@[expose] public noncomputable section
+@[expose] public section
 universe u v
 open Polynomial
 
@@ -93,12 +93,12 @@ instance instUnique [Subsingleton M] : Unique (PolynomialModule R M) := fast_ins
 instance instDecidableEq [DecidableEq M] : DecidableEq (PolynomialModule R M) :=
   (coeffEquiv R).decidableEq
 
-instance instAddCommGroup : AddCommGroup (PolynomialModule R M) := fast_instance%
+noncomputable instance instAddCommGroup : AddCommGroup (PolynomialModule R M) := fast_instance%
   (coeffEquiv R).addCommGroup
 
 /-- `PolynomialModule.coeff` as an `AddEquiv`. -/
 @[simps! apply symm_apply]
-def coeffAddEquiv : PolynomialModule R M ≃+ (ℕ →₀ M) := (coeffEquiv R).addEquiv
+noncomputable def coeffAddEquiv : PolynomialModule R M ≃+ (ℕ →₀ M) := (coeffEquiv R).addEquiv
 
 @[simp] lemma coeff_zero : coeff (0 : PolynomialModule R M) = 0 := rfl
 @[simp] lemma ofCoeff_zero : (ofCoeff R 0 : PolynomialModule R M) = 0 := rfl
@@ -128,7 +128,7 @@ lemma ofCoeff_finsuppSum [AddCommMonoid N] (f : ι →₀ N) (g : ι → N → �
 
 variable (R) in
 /-- `MonoidAlgebra.single n m` for `m : M`, `r : R` is the element `rm : PolynomialModule R M`. -/
-def single (n : ℕ) (m : M) : PolynomialModule R M := .ofCoeff R <| .single n m
+noncomputable def single (n : ℕ) (m : M) : PolynomialModule R M := .ofCoeff R <| .single n m
 
 @[simp] lemma coeff_single (n : ℕ) (m : M) : (single R n m).coeff = .single n m := rfl
 @[simp] lemma ofCoeff_single (n : ℕ) (m : M) : ofCoeff R (.single n m) = single R n m := rfl
@@ -142,7 +142,7 @@ lemma single_add (n : ℕ) (m₁ m₂ : M) :
     single R n (m₁ + m₂) = single R n m₁ + single R n m₂ := by ext; simp
 
 /-- This is required to have the `IsScalarTower S R M` instance to avoid diamonds. -/
-instance : Module S (PolynomialModule R M) := (coeffEquiv R).module _
+noncomputable instance : Module S (PolynomialModule R M) := (coeffEquiv R).module _
 
 instance (M : Type u) [AddCommGroup M] [Module R M] [Module S M] [IsScalarTower S R M] :
     IsScalarTower S R (PolynomialModule R M) := (coeffEquiv R).isScalarTower _ _
@@ -150,11 +150,12 @@ instance (M : Type u) [AddCommGroup M] [Module R M] [Module S M] [IsScalarTower 
 variable (R S) in
 /-- `PolynomialModule.coeff` as a linear equiv. -/
 @[simps! apply symm_apply]
+noncomputable
 def coeffLinearEquiv : PolynomialModule R M ≃ₗ[S] ℕ →₀ M := (coeffEquiv _).linearEquiv _
 
 variable (R) in
 /-- `PolynomialModule.single` as a linear map. -/
-def lsingle (i : ℕ) : M →ₗ[R] PolynomialModule R M :=
+noncomputable def lsingle (i : ℕ) : M →ₗ[R] PolynomialModule R M :=
   (coeffLinearEquiv R R).symm.comp <| Finsupp.lsingle i
 
 theorem lsingle_apply (i : ℕ) (m : M) (n : ℕ) : (lsingle R i m).coeff n = ite (i = n) m 0 :=
@@ -170,7 +171,7 @@ lemma induction_linear {p : PolynomialModule R M → Prop} (x : PolynomialModule
   Finsupp.induction_linear (motive := (p <| ofCoeff R ·)) x.coeff zero (fun _ _ ↦ add _ _)
     (fun _ _ ↦ single _ _)
 
-instance polynomialModule : Module R[X] (PolynomialModule R M) :=
+noncomputable instance polynomialModule : Module R[X] (PolynomialModule R M) :=
   inferInstanceAs <| Module R[X] <| Module.AEval' <| (coeffLinearEquiv R R).symm.comp <|
     (Finsupp.lmapDomain M R Nat.succ).comp (coeffLinearEquiv R R).toLinearMap
 
@@ -236,7 +237,7 @@ theorem smul_apply (f : R[X]) (g : PolynomialModule R M) (n : ℕ) :
 
 set_option backward.isDefEq.respectTransparency false in
 /-- `PolynomialModule R R` is isomorphic to `R[X]` as an `R[X]` module. -/
-def equivPolynomialSelf : PolynomialModule R R ≃ₗ[R[X]] R[X] where
+noncomputable def equivPolynomialSelf : PolynomialModule R R ≃ₗ[R[X]] R[X] where
   toAddEquiv := coeffAddEquiv.trans <| AddMonoidAlgebra.coeffAddEquiv.symm.trans
     (toFinsuppIso R).symm.toAddEquiv
   map_smul' r x := by
@@ -257,6 +258,7 @@ def equivPolynomialSelf : PolynomialModule R R ≃ₗ[R[X]] R[X] where
       lia
 
 /-- `PolynomialModule R S` is isomorphic to `S[X]` as an `R` module. -/
+noncomputable
 def equivPolynomial {S : Type*} [CommRing S] [Algebra R S] : PolynomialModule R S ≃ₗ[R] S[X] where
   toAddEquiv := coeffAddEquiv.trans <| AddMonoidAlgebra.coeffAddEquiv.symm.trans
     (toFinsuppIso _).symm.toAddEquiv
@@ -291,7 +293,7 @@ theorem hom_ext {f g : PolynomialModule R M →ₗ[R] M'}
     (ψ := g.comp (coeffLinearEquiv R R (M := M)).symm.toLinearMap) h
 
 /-- The image of a polynomial under a linear map. -/
-def map (f : M →ₗ[R] M') : PolynomialModule R M →ₗ[R] PolynomialModule R' M' :=
+noncomputable def map (f : M →ₗ[R] M') : PolynomialModule R M →ₗ[R] PolynomialModule R' M' :=
   (coeffLinearEquiv ..).symm.toLinearMap.comp <| (Finsupp.mapRange.linearMap f).comp <|
     (coeffLinearEquiv ..).toLinearMap
 
@@ -374,7 +376,7 @@ lemma aeval_equivPolynomial {S : Type*} [CommRing S] [Algebra S R]
 
 /-- `comp p q` is the composition of `p : R[X]` and `q : M[X]` as `q(p(x))`. -/
 @[simps!]
-def comp (p : R[X]) : PolynomialModule R M →ₗ[R] PolynomialModule R M :=
+noncomputable def comp (p : R[X]) : PolynomialModule R M →ₗ[R] PolynomialModule R M :=
   LinearMap.comp ((eval p).restrictScalars R) (map R[X] (lsingle R 0))
 
 theorem comp_single (p : R[X]) (i : ℕ) (m : M) : comp p (single R i m) = p ^ i • single R 0 m := by

@@ -535,16 +535,16 @@ theorem mul_floor_map_zero_le_floor_iterate_zero (n : ℕ) : ↑n * ⌊f 0⌋ �
 ### Definition of translation number
 -/
 
-noncomputable section
+section
 
 /-- An auxiliary sequence used to define the translation number. -/
-def transnumAuxSeq (n : ℕ) : ℝ :=
+noncomputable def transnumAuxSeq (n : ℕ) : ℝ :=
   (f ^ (2 ^ n : ℕ)) 0 / 2 ^ n
 
 /-- The translation number of a `CircleDeg1Lift`, $τ(f)=\lim_{n→∞}\frac{f^n(x)-x}{n}$. We use
 an auxiliary sequence `\frac{f^{2^n}(0)}{2^n}` to define `τ(f)` because some proofs are simpler
 this way. -/
-def translationNumber : ℝ :=
+noncomputable def translationNumber : ℝ :=
   limUnder atTop f.transnumAuxSeq
 
 end

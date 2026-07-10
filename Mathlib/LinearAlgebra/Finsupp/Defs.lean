@@ -34,8 +34,6 @@ function with finite support, module, linear algebra
 
 assert_not_exists Submodule
 
-noncomputable section
-
 open Set LinearMap
 
 namespace Finsupp
@@ -85,7 +83,7 @@ theorem linearEquivFunOnFinite_symm_apply (f : α → M) : (linearEquivFunOnFini
 end LinearEquivFunOnFinite
 
 /-- Interpret `Finsupp.single a` as a linear map. -/
-def lsingle (a : α) : M →ₗ[R] α →₀ M :=
+noncomputable def lsingle (a : α) : M →ₗ[R] α →₀ M :=
   { Finsupp.singleAddHom a with map_smul' := fun _ _ => (smul_single _ _ _).symm }
 
 /-- Two `R`-linear maps from `Finsupp X M` which agree on each `single x y` agree everywhere. -/
@@ -115,7 +113,7 @@ section LSubtypeDomain
 variable (s : Set α)
 
 /-- Interpret `Finsupp.subtypeDomain s` as a linear map. -/
-def lsubtypeDomain : (α →₀ M) →ₗ[R] s →₀ M where
+noncomputable def lsubtypeDomain : (α →₀ M) →ₗ[R] s →₀ M where
   toFun := subtypeDomain fun x => x ∈ s
   map_add' _ _ := subtypeDomain_add
   map_smul' _ _ := ext fun _ => rfl
@@ -146,7 +144,7 @@ section LMapDomain
 variable {α' : Type*} {α'' : Type*} (M R)
 
 /-- Interpret `Finsupp.mapDomain` as a linear map. -/
-def lmapDomain (f : α → α') : (α →₀ M) →ₗ[R] α' →₀ M where
+noncomputable def lmapDomain (f : α → α') : (α →₀ M) →ₗ[R] α' →₀ M where
   toFun := mapDomain f
   map_add' _ _ := mapDomain_add
   map_smul' := mapDomain_smul
@@ -168,7 +166,7 @@ theorem lmapDomain_comp (f : α → α') (g : α' → α'') :
   LinearMap.ext fun _ => mapDomain_comp
 
 /-- `Finsupp.mapDomain` as a `LinearEquiv`. -/
-def mapDomain.linearEquiv (f : α ≃ α') : (α →₀ M) ≃ₗ[R] (α' →₀ M) where
+noncomputable def mapDomain.linearEquiv (f : α ≃ α') : (α →₀ M) ≃ₗ[R] (α' →₀ M) where
   __ := lmapDomain M R f.toFun
   invFun := mapDomain f.symm
   left_inv _ := by
@@ -197,7 +195,7 @@ sending `l : β →₀ M` to the finitely supported function from `α` to `M` gi
 
 This is the linear version of `Finsupp.comapDomain`. -/
 @[simps]
-def lcomapDomain (f : α → β) (hf : Function.Injective f) : (β →₀ M) →ₗ[R] α →₀ M where
+noncomputable def lcomapDomain (f : α → β) (hf : Function.Injective f) : (β →₀ M) →ₗ[R] α →₀ M where
   toFun l := Finsupp.comapDomain f l hf.injOn
   map_add' x y := by ext; simp
   map_smul' c x := by ext; simp
@@ -210,7 +208,7 @@ end LComapDomain
 
 /-- `Finsupp.mapRange` as a `LinearMap`. -/
 @[simps apply]
-def mapRange.linearMap (f : M →ₛₗ[σ₁₂] N) : (α →₀ M) →ₛₗ[σ₁₂] α →₀ N :=
+noncomputable def mapRange.linearMap (f : M →ₛₗ[σ₁₂] N) : (α →₀ M) →ₛₗ[σ₁₂] α →₀ N :=
   { mapRange.addMonoidHom f.toAddMonoidHom with
     toFun := (mapRange f f.map_zero : (α →₀ M) → α →₀ N)
     map_smul' := fun c v => mapRange_smul' c (σ₁₂ c) v (f.map_smulₛₗ c) }
@@ -239,7 +237,7 @@ variable [RingHomInvPair σ₁₃ σ₃₁] [RingHomInvPair σ₃₁ σ₁₃]
 
 /-- `Finsupp.mapRange` as a `LinearEquiv`. -/
 @[simps apply]
-def mapRange.linearEquiv (e : M ≃ₛₗ[σ₁₂] N) : (α →₀ M) ≃ₛₗ[σ₁₂] α →₀ N :=
+noncomputable def mapRange.linearEquiv (e : M ≃ₛₗ[σ₁₂] N) : (α →₀ M) ≃ₛₗ[σ₁₂] α →₀ N :=
   { mapRange.linearMap e.toLinearMap,
     mapRange.addEquiv e.toAddEquiv with
     toFun := mapRange e e.map_zero

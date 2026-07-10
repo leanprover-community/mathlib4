@@ -16,8 +16,6 @@ This file shows that pullbacks (and pushouts) are associative up to natural isom
 
 @[expose] public section
 
-noncomputable section
-
 open CategoryTheory
 
 universe w v₁ v₂ v u u₂
@@ -105,13 +103,14 @@ local notation "l₂'" => (pullback.snd f₁ (g₃ ≫ f₂))
 
 set_option backward.isDefEq.respectTransparency false in
 /-- `(X₁ ×[Y₁] X₂) ×[Y₂] X₃` is the pullback `(X₁ ×[Y₁] X₂) ×[X₂] (X₂ ×[Y₂] X₃)`. -/
+noncomputable
 def pullbackPullbackLeftIsPullback [HasPullback (g₂ ≫ f₃) f₄] : IsLimit (PullbackCone.mk l₁ l₂
     (show l₁ ≫ g₂ = l₂ ≫ g₃ from (pullback.lift_fst _ _ _).symm)) := by
   apply leftSquareIsPullback _ rfl (pullbackIsPullback f₃ f₄)
   simpa [PullbackCone.pasteHoriz] using PullbackCone.mkSelfIsLimit (pullbackIsPullback _ f₄)
 
 /-- `(X₁ ×[Y₁] X₂) ×[Y₂] X₃` is the pullback `X₁ ×[Y₁] (X₂ ×[Y₂] X₃)`. -/
-def pullbackAssocIsPullback [HasPullback (g₂ ≫ f₃) f₄] :
+noncomputable def pullbackAssocIsPullback [HasPullback (g₂ ≫ f₃) f₄] :
     IsLimit
       (PullbackCone.mk (l₁ ≫ g₁) l₂
         (show (l₁ ≫ g₁) ≫ f₁ = l₂ ≫ g₃ ≫ f₂ by
@@ -124,13 +123,13 @@ theorem hasPullback_assoc [HasPullback (g₂ ≫ f₃) f₄] : HasPullback f₁ 
 
 set_option backward.isDefEq.respectTransparency false in
 /-- `X₁ ×[Y₁] (X₂ ×[Y₂] X₃)` is the pullback `(X₁ ×[Y₁] X₂) ×[X₂] (X₂ ×[Y₂] X₃)`. -/
-def pullbackPullbackRightIsPullback [HasPullback f₁ (g₃ ≫ f₂)] :
+noncomputable def pullbackPullbackRightIsPullback [HasPullback f₁ (g₃ ≫ f₂)] :
     IsLimit (PullbackCone.mk l₁' l₂' (show l₁' ≫ g₂ = l₂' ≫ g₃ from pullback.lift_snd _ _ _)) := by
   apply topSquareIsPullback _ rfl (pullbackIsPullback f₁ f₂)
   simpa [PullbackCone.pasteVert] using PullbackCone.mkSelfIsLimit (pullbackIsPullback _ _)
 
 /-- `X₁ ×[Y₁] (X₂ ×[Y₂] X₃)` is the pullback `(X₁ ×[Y₁] X₂) ×[Y₂] X₃`. -/
-def pullbackAssocSymmIsPullback [HasPullback f₁ (g₃ ≫ f₂)] :
+noncomputable def pullbackAssocSymmIsPullback [HasPullback f₁ (g₃ ≫ f₂)] :
     IsLimit
       (PullbackCone.mk l₁' (l₂' ≫ g₄)
         (show l₁' ≫ g₂ ≫ f₃ = (l₂' ≫ g₄) ≫ f₄ by
@@ -276,7 +275,7 @@ local notation "l₂'" =>
 
 set_option backward.isDefEq.respectTransparency false in
 /-- `(X₁ ⨿[Z₁] X₂) ⨿[Z₂] X₃` is the pushout `(X₁ ⨿[Z₁] X₂) ×[X₂] (X₂ ⨿[Z₂] X₃)`. -/
-def pushoutPushoutLeftIsPushout [HasPushout (g₃ ≫ f₂) g₄] :
+noncomputable def pushoutPushoutLeftIsPushout [HasPushout (g₃ ≫ f₂) g₄] :
     IsColimit
       (PushoutCocone.mk l₁' l₂' (show f₂ ≫ l₁' = f₃ ≫ l₂' from (pushout.inl_desc _ _ _).symm)) := by
   apply botSquareIsPushout _ rfl (pushoutIsPushout _ g₄)
@@ -284,7 +283,7 @@ def pushoutPushoutLeftIsPushout [HasPushout (g₃ ≫ f₂) g₄] :
     PushoutCocone.mkSelfIsColimit (pushoutIsPushout (g₃ ≫ f₂) g₄)
 
 /-- `(X₁ ⨿[Z₁] X₂) ⨿[Z₂] X₃` is the pushout `X₁ ⨿[Z₁] (X₂ ⨿[Z₂] X₃)`. -/
-def pushoutAssocIsPushout [HasPushout (g₃ ≫ f₂) g₄] :
+noncomputable def pushoutAssocIsPushout [HasPushout (g₃ ≫ f₂) g₄] :
     IsColimit
       (PushoutCocone.mk (f₁ ≫ l₁') l₂'
         (show g₁ ≫ f₁ ≫ l₁' = (g₂ ≫ f₃) ≫ l₂' by
@@ -297,13 +296,13 @@ theorem hasPushout_assoc [HasPushout (g₃ ≫ f₂) g₄] : HasPushout g₁ (g�
 
 set_option backward.isDefEq.respectTransparency false in
 /-- `X₁ ⨿[Z₁] (X₂ ⨿[Z₂] X₃)` is the pushout `(X₁ ⨿[Z₁] X₂) ×[X₂] (X₂ ⨿[Z₂] X₃)`. -/
-def pushoutPushoutRightIsPushout [HasPushout g₁ (g₂ ≫ f₃)] :
+noncomputable def pushoutPushoutRightIsPushout [HasPushout g₁ (g₂ ≫ f₃)] :
     IsColimit (PushoutCocone.mk l₁ l₂ (show f₂ ≫ l₁ = f₃ ≫ l₂ from pushout.inr_desc _ _ _)) := by
   apply rightSquareIsPushout _ rfl (pushoutIsPushout _ _)
   simpa [PushoutCocone.pasteHoriz] using PushoutCocone.mkSelfIsColimit (pushoutIsPushout _ _)
 
 /-- `X₁ ⨿[Z₁] (X₂ ⨿[Z₂] X₃)` is the pushout `(X₁ ⨿[Z₁] X₂) ⨿[Z₂] X₃`. -/
-def pushoutAssocSymmIsPushout [HasPushout g₁ (g₂ ≫ f₃)] :
+noncomputable def pushoutAssocSymmIsPushout [HasPushout g₁ (g₂ ≫ f₃)] :
     IsColimit
       (PushoutCocone.mk l₁ (f₄ ≫ l₂)
         (show (g₃ ≫ f₂) ≫ l₁ = g₄ ≫ f₄ ≫ l₂ by

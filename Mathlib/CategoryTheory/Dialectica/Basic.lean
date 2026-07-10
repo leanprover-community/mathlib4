@@ -39,8 +39,6 @@ in Set Theory, state in imperative programming, and others, see [Dialectica Cate
 
 @[expose] public section
 
-noncomputable section
-
 namespace CategoryTheory
 
 open Limits
@@ -90,7 +88,7 @@ theorem comp_le_lemma {X Y Z : Dial C} (F : Dial.Hom X Y) (G : Dial.Hom Y Z) :
 
 set_option backward.isDefEq.respectTransparency false in
 @[simps]
-instance : Category (Dial C) where
+noncomputable instance : Category (Dial C) where
   Hom := Dial.Hom
   id X := {
     f := 𝟙 _
@@ -115,7 +113,7 @@ set_option backward.isDefEq.respectTransparency false in
 An isomorphism in `Dial C` can be induced by isomorphisms on the source and target,
 which respect the respective relations on `X` and `Y`.
 -/
-@[simps] def isoMk {X Y : Dial C} (e₁ : X.src ≅ Y.src) (e₂ : X.tgt ≅ Y.tgt)
+@[simps] noncomputable def isoMk {X Y : Dial C} (e₁ : X.src ≅ Y.src) (e₂ : X.tgt ≅ Y.tgt)
     (eq : X.rel = (Subobject.pullback (prod.map e₁.hom e₂.hom)).obj Y.rel) : X ≅ Y where
   hom := {
     f := e₁.hom

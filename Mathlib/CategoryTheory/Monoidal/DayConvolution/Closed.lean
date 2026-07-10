@@ -32,7 +32,7 @@ namespace CategoryTheory.MonoidalCategory
 open scoped ExternalProduct
 open Opposite Limits
 
-noncomputable section
+section
 
 variable {C : Type u₁} [Category.{v₁} C] {V : Type u₂} [Category.{v₂} V]
   [MonoidalCategory C] [MonoidalCategory V] [MonoidalClosed V]
@@ -153,7 +153,7 @@ set_option backward.isDefEq.respectTransparency false in
 as the internal hom `[F, G]`, then this is the transformation
 corresponding to the component at `G` of the "evaluation" natural morphism
 `F ⊛ [F, _] ⟶ 𝟭`. -/
-def ev_app : F ⊛ H ⟶ G :=
+noncomputable def ev_app : F ⊛ H ⟶ G :=
   DayConvolution.corepresentableBy F H |>.homEquiv.symm <|
     { app x := MonoidalClosed.uncurry <| ℌ.π x.2 x.1
       naturality {x y} f := by

@@ -72,8 +72,6 @@ local notation "J" => o.rightAngleRotation
 @[expose] public section
 
 
-noncomputable section
-
 open scoped RealInnerProductSpace ComplexConjugate
 
 open Module
@@ -88,7 +86,7 @@ namespace Orientation
 /-- An antisymmetric bilinear form on an oriented real inner product space of dimension 2 (usual
 notation `ω`). When evaluated on two vectors, it gives the oriented area of the parallelogram they
 span. -/
-irreducible_def areaForm : E →ₗ[ℝ] E →ₗ[ℝ] ℝ := by
+noncomputable irreducible_def areaForm : E →ₗ[ℝ] E →ₗ[ℝ] ℝ := by
   let z : E [⋀^Fin 0]→ₗ[ℝ] ℝ ≃ₗ[ℝ] ℝ :=
     AlternatingMap.constLinearEquivOfIsEmpty.symm
   let y : E [⋀^Fin 1]→ₗ[ℝ] ℝ →ₗ[ℝ] E →ₗ[ℝ] ℝ :=
@@ -119,7 +117,7 @@ theorem areaForm_neg_orientation : (-o).areaForm = -o.areaForm := by
   simp [areaForm_to_volumeForm]
 
 /-- Continuous linear map version of `Orientation.areaForm`, useful for calculus. -/
-def areaForm' : E →L[ℝ] E →L[ℝ] ℝ :=
+noncomputable def areaForm' : E →L[ℝ] E →L[ℝ] ℝ :=
   LinearMap.toContinuousLinearMap
     (↑(LinearMap.toContinuousLinearMap : (E →ₗ[ℝ] ℝ) ≃ₗ[ℝ] E →L[ℝ] ℝ) ∘ₗ o.areaForm)
 
@@ -166,7 +164,7 @@ theorem areaForm_comp_linearIsometryEquiv (φ : E ≃ₗᵢ[ℝ] E)
 
 /-- Auxiliary construction for `Orientation.rightAngleRotation`, rotation by 90 degrees in an
 oriented real inner product space of dimension 2. -/
-irreducible_def rightAngleRotationAux₁ : E →ₗ[ℝ] E :=
+noncomputable irreducible_def rightAngleRotationAux₁ : E →ₗ[ℝ] E :=
   let to_dual : E ≃ₗ[ℝ] E →ₗ[ℝ] ℝ :=
     (InnerProductSpace.toDual ℝ E).toLinearEquiv ≪≫ₗ LinearMap.toContinuousLinearMap.symm
   ↑to_dual.symm ∘ₗ ω
@@ -188,7 +186,7 @@ theorem inner_rightAngleRotationAux₁_right (x y : E) :
 
 /-- Auxiliary construction for `Orientation.rightAngleRotation`, rotation by 90 degrees in an
 oriented real inner product space of dimension 2. -/
-def rightAngleRotationAux₂ : E →ₗᵢ[ℝ] E :=
+noncomputable def rightAngleRotationAux₂ : E →ₗᵢ[ℝ] E :=
   { o.rightAngleRotationAux₁ with
     norm_map' := fun x => by
       refine le_antisymm ?_ ?_
@@ -229,7 +227,7 @@ theorem rightAngleRotationAux₁_rightAngleRotationAux₁ (x : E) :
 /-- An isometric automorphism of an oriented real inner product space of dimension 2 (usual notation
 `J`). This automorphism squares to -1. We will define rotations in such a way that this
 automorphism is equal to rotation by 90 degrees. -/
-irreducible_def rightAngleRotation : E ≃ₗᵢ[ℝ] E :=
+noncomputable irreducible_def rightAngleRotation : E ≃ₗᵢ[ℝ] E :=
   LinearIsometryEquiv.ofLinearIsometry o.rightAngleRotationAux₂ (-o.rightAngleRotationAux₁)
     (by ext; simp [rightAngleRotationAux₂]) (by ext; simp [rightAngleRotationAux₂])
 
@@ -328,7 +326,7 @@ theorem linearIsometryEquiv_comp_rightAngleRotation' (φ : E ≃ₗᵢ[ℝ] E)
 
 /-- For a nonzero vector `x` in an oriented two-dimensional real inner product space `E`,
 `![x, J x]` forms an (orthogonal) basis for `E`. -/
-def basisRightAngleRotation (x : E) (hx : x ≠ 0) : Basis (Fin 2) ℝ E :=
+noncomputable def basisRightAngleRotation (x : E) (hx : x ≠ 0) : Basis (Fin 2) ℝ E :=
   @basisOfLinearIndependentOfCardEqFinrank ℝ _ _ _ _ _ _ _ ![x, J x]
     (linearIndependent_of_ne_zero_of_inner_eq_zero (fun i => by fin_cases i <;> simp [hx])
       (by
@@ -403,7 +401,7 @@ theorem nonneg_inner_and_areaForm_eq_zero_iff_sameRay (x y : E) :
 real part is the inner product and its imaginary part is `Orientation.areaForm`.
 
 On `ℂ` with the standard orientation, `kahler w z = conj w * z`; see `Complex.kahler`. -/
-def kahler : E →ₗ[ℝ] E →ₗ[ℝ] ℂ :=
+noncomputable def kahler : E →ₗ[ℝ] E →ₗ[ℝ] ℂ :=
   LinearMap.llcomp ℝ E ℝ ℂ Complex.ofRealCLM ∘ₗ innerₛₗ ℝ +
     LinearMap.llcomp ℝ E ℝ ℂ ((LinearMap.lsmul ℝ ℂ).flip Complex.I) ∘ₗ ω
 

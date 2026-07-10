@@ -23,8 +23,6 @@ open Complex Filter
 
 open scoped Topology UpperHalfPlane
 
-noncomputable section
-
 namespace UpperHalfPlane
 
 /-- Filter for approaching `i∞`. -/

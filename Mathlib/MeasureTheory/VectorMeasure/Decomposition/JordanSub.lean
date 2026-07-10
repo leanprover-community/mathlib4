@@ -36,7 +36,7 @@ open scoped ENNReal NNReal
 
 namespace MeasureTheory.Measure
 
-noncomputable section
+section
 
 variable {X : Type*} {mX : MeasurableSpace X}
 variable {s : Set X}
@@ -93,7 +93,7 @@ theorem sub_toSignedMeasure_eq_toSignedMeasure_sub :
 
 /-- The Jordan decomposition associated to the pair of mutually singular measures `μ - ν`
 and `ν - μ`. -/
-def jordanDecompositionOfToSignedMeasureSub
+noncomputable def jordanDecompositionOfToSignedMeasureSub
     (μ ν : Measure X) [IsFiniteMeasure μ] [IsFiniteMeasure ν] : JordanDecomposition X where
   posPart := μ - ν
   negPart := ν - μ

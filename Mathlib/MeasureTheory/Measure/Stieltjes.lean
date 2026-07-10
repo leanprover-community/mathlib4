@@ -44,8 +44,6 @@ is not representable as a Stieltjes measure.
 
 @[expose] public section
 
-noncomputable section
-
 open Set Filter Function ENNReal NNReal Topology MeasureTheory
 
 open ENNReal (ofReal)
@@ -262,7 +260,7 @@ theorem countable_leftLim_ne [OrderTopology R] (f : StieltjesFunction R) :
 open scoped Classical in
 /-- Length of an interval. This is the largest monotone function which correctly measures all
 intervals. -/
-def length (s : Set R) : ℝ≥0∞ :=
+noncomputable def length (s : Set R) : ℝ≥0∞ :=
   -- we treat separately the empty case, where the formula below would give `∞`.
   if IsEmpty R then 0
   -- if there is a bot element `x`, it does not belong to any interval `Ioc a b`. So we remove it
@@ -314,7 +312,7 @@ theorem length_sdiff_botSet {s : Set R} : f.length (s \ botSet) = f.length s := 
 open MeasureTheory
 
 /-- The Stieltjes outer measure associated to a Stieltjes function. -/
-protected def outer : OuterMeasure R :=
+protected noncomputable def outer : OuterMeasure R :=
   OuterMeasure.ofFunction f.length f.length_empty
 
 theorem outer_le_length (s : Set R) : f.outer s ≤ f.length s :=
@@ -516,7 +514,7 @@ variable [MeasurableSpace R] [BorelSpace R] [SecondCountableTopology R] [Densely
 
 /-- The measure associated to a Stieltjes function, giving mass `f b - f a` to the
 interval `(a, b]`. If there is a bot element, it gives zero mass to it. -/
-protected irreducible_def measure : Measure R where
+protected noncomputable irreducible_def measure : Measure R where
   toOuterMeasure := f.outer
   m_iUnion _s hs := f.outer.iUnion_eq_of_caratheodory fun i => f.borel_le_measurable _ <| by
     borelize R

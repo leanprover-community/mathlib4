@@ -52,8 +52,6 @@ the only remaining results are about `Lipschitz` and `Antilipschitz`.
 
 open Real Set Filter RCLike Bornology Uniformity Topology NNReal ENNReal
 
-noncomputable section
-
 variable (p : ℝ≥0∞) (𝕜 α β : Type*)
 
 namespace WithLp
@@ -169,7 +167,7 @@ separate from `WithLp.instProdPseudoEMetric` since the latter requires the type 
 Registering this separately allows for a future emetric-like structure on `WithLp p (α × β)` for
 `p < 1` satisfying a relaxed triangle inequality. The terminology for this varies throughout the
 literature, but it is sometimes called a *quasi-metric* or *semi-metric*. -/
-instance instProdEDist : EDist (WithLp p (α × β)) where
+noncomputable instance instProdEDist : EDist (WithLp p (α × β)) where
   edist f g :=
     if _hp : p = 0 then
       (if edist f.fst g.fst = 0 then 0 else 1) + (if edist f.snd g.snd = 0 then 0 else 1)
@@ -237,7 +235,7 @@ separate from `WithLp.instProdPseudoMetricSpace` since the latter requires the t
 Registering this separately allows for a future metric-like structure on `WithLp p (α × β)` for
 `p < 1` satisfying a relaxed triangle inequality. The terminology for this varies throughout the
 literature, but it is sometimes called a *quasi-metric* or *semi-metric*. -/
-instance instProdDist : Dist (WithLp p (α × β)) where
+noncomputable instance instProdDist : Dist (WithLp p (α × β)) where
   dist f g :=
     if _hp : p = 0 then
       (if dist f.fst g.fst = 0 then 0 else 1) + (if dist f.snd g.snd = 0 then 0 else 1)
@@ -272,7 +270,7 @@ hypothesis `[Fact (1 ≤ p)]` in order to prove the triangle inequality.
 
 Registering this separately allows for a future norm-like structure on `WithLp p (α × β)` for
 `p < 1` satisfying a relaxed triangle inequality. These are called *quasi-norms*. -/
-instance instProdNorm : Norm (WithLp p (α × β)) where
+noncomputable instance instProdNorm : Norm (WithLp p (α × β)) where
   norm f :=
     if _hp : p = 0 then
       (if ‖f.fst‖ = 0 then 0 else 1) + (if ‖f.snd‖ = 0 then 0 else 1)
@@ -329,7 +327,7 @@ temporary pseudoemetric space instance, we will show that the uniform structure 
 defeq) to the product one, and then register an instance in which we replace the uniform structure
 by the product one using this pseudoemetric space and `PseudoEMetricSpace.replaceUniformity`. -/
 @[instance_reducible]
-def prodPseudoEMetricAux [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
+noncomputable def prodPseudoEMetricAux [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
     PseudoEMetricSpace (WithLp p (α × β)) where
   edist_self := prod_edist_self p
   edist_comm := prod_edist_comm p
@@ -376,7 +374,7 @@ structure and the bornology by the product ones using this pseudometric space,
 `PseudoMetricSpace.replaceUniformity`, and `PseudoMetricSpace.replaceBornology`.
 
 See note [reducible non-instances] -/
-abbrev prodPseudoMetricAux [PseudoMetricSpace α] [PseudoMetricSpace β] :
+noncomputable abbrev prodPseudoMetricAux [PseudoMetricSpace α] [PseudoMetricSpace β] :
     PseudoMetricSpace (WithLp p (α × β)) :=
   PseudoEMetricSpace.toPseudoMetricSpaceOfDist dist
     (fun f g => by
@@ -580,12 +578,13 @@ set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- `PseudoEMetricSpace` instance on the product of two pseudoemetric spaces, using the
 `L^p` pseudoedistance, and having as uniformity the product uniformity. -/
-instance instProdPseudoEMetricSpace [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
+noncomputable instance instProdPseudoEMetricSpace [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
     PseudoEMetricSpace (WithLp p (α × β)) :=
   (prodPseudoEMetricAux p α β).replaceUniformity (prod_uniformity_aux p α β).symm
 
 /-- `EMetricSpace` instance on the product of two emetric spaces, using the `L^p`
 edistance, and having as uniformity the product uniformity. -/
+noncomputable
 instance instProdEMetricSpace [EMetricSpace α] [EMetricSpace β] : EMetricSpace (WithLp p (α × β)) :=
   EMetricSpace.ofT0PseudoEMetricSpace (WithLp p (α × β))
 
@@ -593,7 +592,7 @@ set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- `PseudoMetricSpace` instance on the product of two pseudometric spaces, using the
 `L^p` distance, and having as uniformity the product uniformity. -/
-instance instProdPseudoMetricSpace [PseudoMetricSpace α] [PseudoMetricSpace β] :
+noncomputable instance instProdPseudoMetricSpace [PseudoMetricSpace α] [PseudoMetricSpace β] :
     PseudoMetricSpace (WithLp p (α × β)) :=
   ((prodPseudoMetricAux p α β).replaceUniformity
     (prod_uniformity_aux p α β).symm).replaceBornology
@@ -601,6 +600,7 @@ instance instProdPseudoMetricSpace [PseudoMetricSpace α] [PseudoMetricSpace β]
 
 /-- `MetricSpace` instance on the product of two metric spaces, using the `L^p` distance,
 and having as uniformity the product uniformity. -/
+noncomputable
 instance instProdMetricSpace [MetricSpace α] [MetricSpace β] : MetricSpace (WithLp p (α × β)) :=
   MetricSpace.ofT0PseudoMetricSpace _
 
@@ -671,6 +671,7 @@ lemma prod_isometry_ofLp_infty [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
 
 /-- Seminormed group instance on the product of two normed groups, using the `L^p`
 norm. -/
+noncomputable
 instance instProdSeminormedAddCommGroup [SeminormedAddCommGroup α] [SeminormedAddCommGroup β] :
     SeminormedAddCommGroup (WithLp p (α × β)) where
   dist_eq x y := by
@@ -717,7 +718,7 @@ theorem norm_snd_le [SeminormedAddCommGroup α] [SeminormedAddCommGroup β] (x :
 end
 
 /-- normed group instance on the product of two normed groups, using the `L^p` norm. -/
-instance instProdNormedAddCommGroup [NormedAddCommGroup α] [NormedAddCommGroup β] :
+noncomputable instance instProdNormedAddCommGroup [NormedAddCommGroup α] [NormedAddCommGroup β] :
     NormedAddCommGroup (WithLp p (α × β)) :=
   { instProdSeminormedAddCommGroup p α β with
     eq_of_dist_eq_zero := eq_of_dist_eq_zero }
@@ -1013,7 +1014,7 @@ attribute [-instance] Prod.toNorm
 /-- This definition allows to endow `α × β` with the Lp distance with the uniformity and bornology
 being defeq to the product ones. It is useful to endow a type synonym of `a × β` with the
 Lp distance. -/
-abbrev pseudoMetricSpaceToProd [PseudoMetricSpace α] [PseudoMetricSpace β] :
+noncomputable abbrev pseudoMetricSpaceToProd [PseudoMetricSpace α] [PseudoMetricSpace β] :
     PseudoMetricSpace (α × β) :=
   (isUniformInducing_toLp p α β).comapPseudoMetricSpace.replaceBornology
     fun s => Filter.ext_iff.1
@@ -1026,6 +1027,7 @@ lemma dist_pseudoMetricSpaceToProd [PseudoMetricSpace α] [PseudoMetricSpace β]
 /-- This definition allows to endow `α × β` with the Lp norm with the uniformity and bornology
 being defeq to the product ones. It is useful to endow a type synonym of `a × β` with the
 Lp norm. -/
+noncomputable
 abbrev seminormedAddCommGroupToProd [SeminormedAddCommGroup α] [SeminormedAddCommGroup β] :
     SeminormedAddCommGroup (α × β) where
   norm x := ‖toLp p x‖
@@ -1073,7 +1075,7 @@ abbrev normedSpaceSeminormedAddCommGroupToProd
 /-- This definition allows to endow `α × β` with the Lp norm with the uniformity and bornology
 being defeq to the product ones. It is useful to endow a type synonym of `α × β` with the
 Lp norm. -/
-abbrev normedAddCommGroupToProd [NormedAddCommGroup α] [NormedAddCommGroup β] :
+noncomputable abbrev normedAddCommGroupToProd [NormedAddCommGroup α] [NormedAddCommGroup β] :
     NormedAddCommGroup (α × β) where
   norm x := ‖toLp p x‖
   toPseudoMetricSpace := pseudoMetricSpaceToProd p α β
@@ -1158,7 +1160,7 @@ theorem coe_withLpProdUnique [Unique β] : ⇑(withLpProdUnique p α β) = WithL
 
 /-- Left identity of the `L^p` product as an isometric equivalence. -/
 @[simps! apply symm_apply]
-def withLpUniqueProd [Unique α] : WithLp p (α × β) ≃ᵢ β :=
+noncomputable def withLpUniqueProd [Unique α] : WithLp p (α × β) ≃ᵢ β :=
   (withLpProdComm p α β).trans (withLpProdUnique p β α)
 
 theorem coe_withLpUniqueProd [Unique α] : ⇑(withLpUniqueProd p α β) = WithLp.snd :=
@@ -1231,7 +1233,7 @@ theorem coe_withLpProdUnique [Unique β] : ⇑(withLpProdUnique p 𝕜 α β) = 
 
 /-- Left identity of the `L^p` product as a linear isometric equivalence. -/
 @[simps! apply symm_apply]
-def withLpUniqueProd [Unique α] : WithLp p (α × β) ≃ₗᵢ[𝕜] β :=
+noncomputable def withLpUniqueProd [Unique α] : WithLp p (α × β) ≃ₗᵢ[𝕜] β :=
   (withLpProdComm p 𝕜 α β).trans (withLpProdUnique p 𝕜 β α)
 
 theorem coe_withLpUniqueProd [Unique α] : ⇑(withLpUniqueProd p 𝕜 α β) = WithLp.snd :=

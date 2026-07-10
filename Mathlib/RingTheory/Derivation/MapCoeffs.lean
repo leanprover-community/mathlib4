@@ -21,8 +21,6 @@ are generalizations of that for algebras. We also have a special case for `Diffe
 
 @[expose] public section
 
-noncomputable section
-
 open Polynomial Module
 
 namespace Derivation
@@ -36,7 +34,7 @@ set_option backward.isDefEq.respectTransparency false in
 The `R`-derivation from `A[X]` to `M[X]` which applies the derivative to each
 of the coefficients.
 -/
-def mapCoeffs : Derivation R A[X] (PolynomialModule A M) where
+noncomputable def mapCoeffs : Derivation R A[X] (PolynomialModule A M) where
   __ := (PolynomialModule.map A d.toLinearMap).comp
     PolynomialModule.equivPolynomial.symm.toLinearMap
   map_one_eq_zero' := by simp
@@ -102,7 +100,7 @@ set_option backward.isDefEq.respectTransparency false in
 /--
 A specialization of `Derivation.mapCoeffs` for the case of a differential ring.
 -/
-def mapCoeffs : Derivation ℤ A[X] A[X] :=
+noncomputable def mapCoeffs : Derivation ℤ A[X] A[X] :=
   PolynomialModule.equivPolynomialSelf.compDer Differential.deriv.mapCoeffs
 
 @[simp]
@@ -134,7 +132,7 @@ theorem deriv_aeval_eq (x : R) (p : A[X]) :
 The unique derivation which can be made to a `DifferentialAlgebra` on `A[X]` with
 `X′ = v`.
 -/
-def implicitDeriv (v : A[X]) :
+noncomputable def implicitDeriv (v : A[X]) :
     Derivation ℤ A[X] A[X] :=
   mapCoeffs + v • derivative'.restrictScalars ℤ
 

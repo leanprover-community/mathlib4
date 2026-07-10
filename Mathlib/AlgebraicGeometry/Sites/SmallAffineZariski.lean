@@ -35,8 +35,6 @@ universe u
 
 open CategoryTheory Limits
 
-noncomputable section
-
 namespace AlgebraicGeometry
 
 variable {X : Scheme.{u}}
@@ -89,7 +87,7 @@ instance : (toOpensFunctor X).Faithful where
 variable (X) in
 /-- The forgetful functor from `X.AffineZariskiSite` to `Scheme` is isomorphic to `Spec Γ(X, -)`. -/
 @[simps! hom_app inv_app]
-def restrictIsoSpec : toOpensFunctor X ⋙ X.restrictFunctor ⋙ Over.forget _ ≅
+noncomputable def restrictIsoSpec : toOpensFunctor X ⋙ X.restrictFunctor ⋙ Over.forget _ ≅
     toOpensFunctor X ⋙ X.presheaf.rightOp ⋙ Scheme.Spec :=
   NatIso.ofComponents (fun U ↦ U.2.isoSpec)
     fun _ ↦ (Scheme.Opens.toSpecΓ_SpecMap_presheaf_map ..).symm
@@ -201,7 +199,7 @@ variable [∀ (U : X.Opensᵒᵖ), Limits.HasLimitsOfShape (StructuredArrow U (t
 
 /-- The category of sheaves on `X.AffineZariskiSite` is equivalent to the categories of sheaves
 over `X`. -/
-abbrev sheafEquiv : Sheaf (grothendieckTopology X) A ≌ TopCat.Sheaf A X :=
+noncomputable abbrev sheafEquiv : Sheaf (grothendieckTopology X) A ≌ TopCat.Sheaf A X :=
     (toOpensFunctor X).sheafInducedTopologyEquivOfIsCoverDense _ _
 
 end GrothendieckTopology
@@ -293,7 +291,7 @@ lemma coequifibered_iff_forall_isLocalizationAway {F : X.AffineZariskiSiteᵒᵖ
 @[deprecated (since := "2026-02-01")] alias PreservesLocalization := NatTrans.Coequifibered
 
 /-- The relative gluing data associated to a quasi-coherent `𝒪ₓ` algebra. -/
-def relativeGluingData {F : X.AffineZariskiSiteᵒᵖ ⥤ CommRingCat}
+noncomputable def relativeGluingData {F : X.AffineZariskiSiteᵒᵖ ⥤ CommRingCat}
     {α : (AffineZariskiSite.toOpensFunctor X).op ⋙ X.presheaf ⟶ F}
     (H : α.Coequifibered) :
     (AffineZariskiSite.directedCover X).RelativeGluingData where

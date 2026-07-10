@@ -33,8 +33,6 @@ These notations are inspired by
 
 @[expose] public section
 
-noncomputable section
-
 namespace CategoryTheory
 
 namespace Bicategory
@@ -63,11 +61,12 @@ instance [HasLeftKanExtension f g] : HasInitial <| LeftExtension f g :=
   HasLeftKanExtension.hasInitial
 
 /-- The left Kan extension of `g` along `f` at the level of structured arrows. -/
+noncomputable
 def lanLeftExtension (f : a ⟶ b) (g : a ⟶ c) [HasLeftKanExtension f g] : LeftExtension f g :=
   ⊥_ (LeftExtension f g)
 
 /-- The left Kan extension of `g` along `f`. -/
-def lan (f : a ⟶ b) (g : a ⟶ c) [HasLeftKanExtension f g] : b ⟶ c :=
+noncomputable def lan (f : a ⟶ b) (g : a ⟶ c) [HasLeftKanExtension f g] : b ⟶ c :=
   (lanLeftExtension f g).extension
 
 /-- `f⁺ g` is the left Kan extension of `g` along `f`.
@@ -88,7 +87,7 @@ theorem lanLeftExtension_extension (f : a ⟶ b) (g : a ⟶ c) [HasLeftKanExtens
     (lanLeftExtension f g).extension = f⁺ g := rfl
 
 /-- The unit for the left Kan extension `f⁺ g`. -/
-def lanUnit (f : a ⟶ b) (g : a ⟶ c) [HasLeftKanExtension f g] : g ⟶ f ≫ f⁺ g :=
+noncomputable def lanUnit (f : a ⟶ b) (g : a ⟶ c) [HasLeftKanExtension f g] : g ⟶ f ≫ f⁺ g :=
   (lanLeftExtension f g).unit
 
 @[simp]
@@ -96,13 +95,14 @@ theorem lanLeftExtension_unit (f : a ⟶ b) (g : a ⟶ c) [HasLeftKanExtension f
     (lanLeftExtension f g).unit = lanUnit f g := rfl
 
 /-- Evidence that `lanLeftExtension f g` is a Kan extension. -/
+noncomputable
 def lanIsKan (f : a ⟶ b) (g : a ⟶ c) [HasLeftKanExtension f g] : (lanLeftExtension f g).IsKan :=
   initialIsInitial
 
 variable {f : a ⟶ b} {g : a ⟶ c}
 
 /-- The family of 2-morphisms out of the left Kan extension `f⁺ g`. -/
-def lanDesc [HasLeftKanExtension f g] (s : LeftExtension f g) :
+noncomputable def lanDesc [HasLeftKanExtension f g] (s : LeftExtension f g) :
     f⁺ g ⟶ s.extension :=
   (lanIsKan f g).desc s
 
@@ -144,19 +144,21 @@ variable (f : a ⟶ b) (g : a ⟶ c) [HasLeftKanExtension f g]
 variable {x : B} (h : c ⟶ x) [Lan.CommuteWith f g h]
 
 /-- Evidence that `h` commutes with the left Kan extension `f⁺ g`. -/
+noncomputable
 def isKan : IsKan <| (lanLeftExtension f g).whisker h := Classical.choice Lan.CommuteWith.commute
 
 instance : HasLeftKanExtension f (g ≫ h) := (Lan.CommuteWith.isKan f g h).hasLeftKanExtension
 
 /-- If `h` commutes with `f⁺ g` and `t` is another left Kan extension of `g` along `f`, then
 `t.whisker h` is a left Kan extension of `g ≫ h` along `f`. -/
-def isKanWhisker
+noncomputable def isKanWhisker
     (t : LeftExtension f g) (H : IsKan t) {x : B} (h : c ⟶ x) [Lan.CommuteWith f g h] :
     IsKan (t.whisker h) :=
   IsKan.whiskerOfCommute (lanLeftExtension f g) t (IsKan.uniqueUpToIso (lanIsKan f g) H) h
     (isKan f g h)
 
 /-- The isomorphism `f⁺ (g ≫ h) ≅ f⁺ g ≫ h` at the level of structured arrows. -/
+noncomputable
 def lanCompIsoWhisker : lanLeftExtension f (g ≫ h) ≅ (lanLeftExtension f g).whisker h :=
   IsKan.uniqueUpToIso (lanIsKan f (g ≫ h)) (Lan.CommuteWith.isKan f g h)
 
@@ -172,7 +174,7 @@ theorem lanCompIsoWhisker_inv_right :
 
 /-- The 1-morphism `h` commutes with the left Kan extension `f⁺ g`. -/
 @[simps!]
-def lanCompIso : f⁺ (g ≫ h) ≅ f⁺ g ≫ h := Comma.rightIso <| lanCompIsoWhisker f g h
+noncomputable def lanCompIso : f⁺ (g ≫ h) ≅ f⁺ g ≫ h := Comma.rightIso <| lanCompIsoWhisker f g h
 
 end Lan.CommuteWith
 
@@ -207,11 +209,11 @@ theorem LeftLift.IsKan.hasLeftKanLift {t : LeftLift f g} (H : IsKan t) : HasLeft
 instance [HasLeftKanLift f g] : HasInitial <| LeftLift f g := HasLeftKanLift.hasInitial
 
 /-- The left Kan lift of `g` along `f` at the level of structured arrows. -/
-def lanLiftLeftLift (f : b ⟶ a) (g : c ⟶ a) [HasLeftKanLift f g] : LeftLift f g :=
+noncomputable def lanLiftLeftLift (f : b ⟶ a) (g : c ⟶ a) [HasLeftKanLift f g] : LeftLift f g :=
   ⊥_ (LeftLift f g)
 
 /-- The left Kan lift of `g` along `f`. -/
-def lanLift (f : b ⟶ a) (g : c ⟶ a) [HasLeftKanLift f g] : c ⟶ b :=
+noncomputable def lanLift (f : b ⟶ a) (g : c ⟶ a) [HasLeftKanLift f g] : c ⟶ b :=
   (lanLiftLeftLift f g).lift
 
 /-- `f₊ g` is the left Kan lift of `g` along `f`.
@@ -232,7 +234,7 @@ theorem lanLiftLeftLift_lift (f : b ⟶ a) (g : c ⟶ a) [HasLeftKanLift f g] :
     (lanLiftLeftLift f g).lift = f₊ g := rfl
 
 /-- The unit for the left Kan lift `f₊ g`. -/
-def lanLiftUnit (f : b ⟶ a) (g : c ⟶ a) [HasLeftKanLift f g] : g ⟶ f₊ g ≫ f :=
+noncomputable def lanLiftUnit (f : b ⟶ a) (g : c ⟶ a) [HasLeftKanLift f g] : g ⟶ f₊ g ≫ f :=
   (lanLiftLeftLift f g).unit
 
 @[simp]
@@ -240,13 +242,14 @@ theorem lanLiftLeftLift_unit (f : b ⟶ a) (g : c ⟶ a) [HasLeftKanLift f g] :
     (lanLiftLeftLift f g).unit = lanLiftUnit f g := rfl
 
 /-- Evidence that `lanLiftLeftLift f g` is a Kan lift. -/
+noncomputable
 def lanLiftIsKan (f : b ⟶ a) (g : c ⟶ a) [HasLeftKanLift f g] : (lanLiftLeftLift f g).IsKan :=
   initialIsInitial
 
 variable {f : b ⟶ a} {g : c ⟶ a}
 
 /-- The family of 2-morphisms out of the left Kan lift `f₊ g`. -/
-def lanLiftDesc [HasLeftKanLift f g] (s : LeftLift f g) :
+noncomputable def lanLiftDesc [HasLeftKanLift f g] (s : LeftLift f g) :
     f₊ g ⟶ s.lift :=
   (lanLiftIsKan f g).desc s
 
@@ -288,21 +291,21 @@ variable (f : b ⟶ a) (g : c ⟶ a) [HasLeftKanLift f g]
 variable {x : B} (h : x ⟶ c) [LanLift.CommuteWith f g h]
 
 /-- Evidence that `h` commutes with the left Kan lift `f₊ g`. -/
-def isKan : IsKan <| (lanLiftLeftLift f g).whisker h :=
+noncomputable def isKan : IsKan <| (lanLiftLeftLift f g).whisker h :=
     Classical.choice LanLift.CommuteWith.commute
 
 instance : HasLeftKanLift f (h ≫ g) := (LanLift.CommuteWith.isKan f g h).hasLeftKanLift
 
 /-- If `h` commutes with `f₊ g` and `t` is another left Kan lift of `g` along `f`, then
 `t.whisker h` is a left Kan lift of `h ≫ g` along `f`. -/
-def isKanWhisker
+noncomputable def isKanWhisker
     (t : LeftLift f g) (H : IsKan t) {x : B} (h : x ⟶ c) [LanLift.CommuteWith f g h] :
     IsKan (t.whisker h) :=
   IsKan.whiskerOfCommute (lanLiftLeftLift f g) t (IsKan.uniqueUpToIso (lanLiftIsKan f g) H) h
     (isKan f g h)
 
 /-- The isomorphism `f₊ (h ≫ g) ≅ h ≫ f₊ g` at the level of structured arrows. -/
-def lanLiftCompIsoWhisker :
+noncomputable def lanLiftCompIsoWhisker :
     lanLiftLeftLift f (h ≫ g) ≅ (lanLiftLeftLift f g).whisker h :=
   IsKan.uniqueUpToIso (lanLiftIsKan f (h ≫ g)) (LanLift.CommuteWith.isKan f g h)
 
@@ -318,6 +321,7 @@ theorem lanLiftCompIsoWhisker_inv_right :
 
 /-- The 1-morphism `h` commutes with the left Kan lift `f₊ g`. -/
 @[simps!]
+noncomputable
 def lanLiftCompIso : f₊ (h ≫ g) ≅ h ≫ f₊ g := Comma.rightIso <| lanLiftCompIsoWhisker f g h
 
 end LanLift.CommuteWith

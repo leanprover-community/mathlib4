@@ -69,8 +69,6 @@ in more details below in the paragraph on associativity.
 @[expose] public section
 
 
-noncomputable section
-
 variable {𝕜 : Type*} {E F G H : Type*}
 
 open Filter List
@@ -340,7 +338,7 @@ variable (𝕜 E)
 /-- The identity formal multilinear series, with all coefficients equal to `0` except for `n = 1`
 where it is (the continuous multilinear version of) the identity. We allow an arbitrary
 constant coefficient `x`. -/
-def id (x : E) : FormalMultilinearSeries 𝕜 E E
+noncomputable def id (x : E) : FormalMultilinearSeries 𝕜 E E
   | 0 => ContinuousMultilinearMap.uncurry0 𝕜 _ x
   | 1 => (continuousMultilinearCurryFin1 𝕜 E E).symm (ContinuousLinearMap.id 𝕜 E)
   | _ => 0
@@ -593,7 +591,7 @@ theorem compPartialSumTargetSet_image_compPartialSumSource (m M N : ℕ)
 /-- Target set in the change of variables to compute the composition of partial sums of formal
 power series, here given a a finset.
 See also `comp_partialSum`. -/
-def compPartialSumTarget (m M N : ℕ) : Finset (Σ n, Composition n) :=
+noncomputable def compPartialSumTarget (m M N : ℕ) : Finset (Σ n, Composition n) :=
   Set.Finite.toFinset <|
     ((Finset.finite_toSet _).dependent_image _).subset <|
       compPartialSumTargetSet_image_compPartialSumSource m M N

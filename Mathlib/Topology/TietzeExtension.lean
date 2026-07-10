@@ -163,8 +163,6 @@ open Metric Set Filter
 
 open BoundedContinuousFunction Topology
 
-noncomputable section
-
 namespace BoundedContinuousFunction
 
 /-- One step in the proof of the Tietze extension theorem. If `e : C(X, Y)` is a closed embedding

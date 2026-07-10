@@ -26,8 +26,6 @@ cannot have:
 
 @[expose] public section
 
-noncomputable section
-
 open scoped Topology
 open Polynomial Real Filter Set Function
 
@@ -36,7 +34,7 @@ for `x ≤ 0`. It is a basic building block to construct smooth partitions of un
 is that it vanishes for `x ≤ 0`, it is positive for `x > 0`, and the junction between the two
 behaviors is flat enough to retain smoothness. The fact that this function is `C^∞` is proved in
 `expNegInvGlue.contDiff`. -/
-def expNegInvGlue (x : ℝ) : ℝ :=
+noncomputable def expNegInvGlue (x : ℝ) : ℝ :=
   if x ≤ 0 then 0 else exp (-x⁻¹)
 
 namespace expNegInvGlue
@@ -143,7 +141,7 @@ end expNegInvGlue
 
 /-- An infinitely smooth function `f : ℝ → ℝ` such that `f x = 0` for `x ≤ 0`,
 `f x = 1` for `1 ≤ x`, and `0 < f x < 1` for `0 < x < 1`. -/
-def Real.smoothTransition (x : ℝ) : ℝ :=
+noncomputable def Real.smoothTransition (x : ℝ) : ℝ :=
   expNegInvGlue x / (expNegInvGlue x + expNegInvGlue (1 - x))
 
 namespace Real

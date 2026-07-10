@@ -33,8 +33,6 @@ There are a handful of definitions in this file, given `X : Profinite`:
 @[expose] public section
 
 
-noncomputable section
-
 open CategoryTheory
 
 namespace Profinite
@@ -80,21 +78,21 @@ set_option backward.isDefEq.respectTransparency false in
 /-- The isomorphism between `X` and the explicit limit of `X.diagram`,
 induced by lifting `X.asLimitCone`.
 -/
-def isoAsLimitConeLift : X ≅ (limitCone.{u, u} X.diagram).pt :=
+noncomputable def isoAsLimitConeLift : X ≅ (limitCone.{u, u} X.diagram).pt :=
   asIso <| (limitConeIsLimit.{u, u} _).lift X.asLimitCone
 
 /-- The isomorphism of cones `X.asLimitCone` and `Profinite.limitCone X.diagram`.
 The underlying isomorphism is defeq to `X.isoAsLimitConeLift`.
 -/
-def asLimitConeIso : X.asLimitCone ≅ limitCone.{u, u} _ :=
+noncomputable def asLimitConeIso : X.asLimitCone ≅ limitCone.{u, u} _ :=
   Limits.Cone.ext (isoAsLimitConeLift _) fun _ => rfl
 
 /-- `X.asLimitCone` is indeed a limit cone. -/
-def asLimit : CategoryTheory.Limits.IsLimit X.asLimitCone :=
+noncomputable def asLimit : CategoryTheory.Limits.IsLimit X.asLimitCone :=
   Limits.IsLimit.ofIsoLimit (limitConeIsLimit _) X.asLimitConeIso.symm
 
 /-- A bundled version of `X.asLimitCone` and `X.asLimit`. -/
-def lim : Limits.LimitCone X.diagram :=
+noncomputable def lim : Limits.LimitCone X.diagram :=
   ⟨X.asLimitCone, X.asLimit⟩
 
 end Profinite

@@ -39,8 +39,6 @@ with the above definition of "preserves limits".
 
 open CategoryTheory
 
-noncomputable section
-
 namespace CategoryTheory.Limits
 
 -- morphism levels before object levels. See note [category theory universes].
@@ -113,7 +111,7 @@ attribute [instance 100]
 /-- A convenience function for `PreservesLimit`, which takes the functor as an explicit argument to
 guide typeclass resolution.
 -/
-def isLimitOfPreserves (F : C ⥤ D) {c : Cone K} (t : IsLimit c) [PreservesLimit K F] :
+noncomputable def isLimitOfPreserves (F : C ⥤ D) {c : Cone K} (t : IsLimit c) [PreservesLimit K F] :
     IsLimit (F.mapCone c) :=
   (PreservesLimit.preserves t).some
 
@@ -121,6 +119,7 @@ def isLimitOfPreserves (F : C ⥤ D) {c : Cone K} (t : IsLimit c) [PreservesLimi
 A convenience function for `PreservesColimit`, which takes the functor as an explicit argument to
 guide typeclass resolution.
 -/
+noncomputable
 def isColimitOfPreserves (F : C ⥤ D) {c : Cocone K} (t : IsColimit c) [PreservesColimit K F] :
     IsColimit (F.mapCocone c) :=
   (PreservesColimit.preserves t).some
@@ -450,7 +449,7 @@ abbrev ReflectsColimits (F : C ⥤ D) :=
 /-- A convenience function for `ReflectsLimit`, which takes the functor as an explicit argument to
 guide typeclass resolution.
 -/
-def isLimitOfReflects (F : C ⥤ D) {c : Cone K} (t : IsLimit (F.mapCone c))
+noncomputable def isLimitOfReflects (F : C ⥤ D) {c : Cone K} (t : IsLimit (F.mapCone c))
     [ReflectsLimit K F] : IsLimit c :=
   (ReflectsLimit.reflects t).some
 
@@ -458,7 +457,7 @@ def isLimitOfReflects (F : C ⥤ D) {c : Cone K} (t : IsLimit (F.mapCone c))
 A convenience function for `ReflectsColimit`, which takes the functor as an explicit argument to
 guide typeclass resolution.
 -/
-def isColimitOfReflects (F : C ⥤ D) {c : Cocone K} (t : IsColimit (F.mapCocone c))
+noncomputable def isColimitOfReflects (F : C ⥤ D) {c : Cocone K} (t : IsColimit (F.mapCocone c))
     [ReflectsColimit K F] : IsColimit c :=
   (ReflectsColimit.reflects t).some
 

@@ -17,8 +17,6 @@ This file lifts order structures on `M` to `ι →₀ M`.
 
 assert_not_exists CompleteLattice
 
-noncomputable section
-
 open Finset
 
 namespace Finsupp
@@ -41,7 +39,7 @@ def orderEmbeddingToFun : (ι →₀ M) ↪o (ι → M) where
   map_rel_iff' := coe_le_coe
 
 /-- `equivFunOnFinite` as an order isomorphism. -/
-def orderIsoFunOnFinite [Finite ι] : (ι →₀ M) ≃o (ι → M) where
+noncomputable def orderIsoFunOnFinite [Finite ι] : (ι →₀ M) ≃o (ι → M) where
   toEquiv := equivFunOnFinite
   map_rel_iff' := Iff.rfl
 
@@ -69,7 +67,7 @@ instance partialorder [PartialOrder M] : PartialOrder (ι →₀ M) where
 section SemilatticeInf
 variable [SemilatticeInf M]
 
-instance semilatticeInf : SemilatticeInf (ι →₀ M) where
+noncomputable instance semilatticeInf : SemilatticeInf (ι →₀ M) where
   inf := zipWith (· ⊓ ·) (inf_idem _)
   inf_le_left _f _g _i := inf_le_left
   inf_le_right _f _g _i := inf_le_right
@@ -82,7 +80,7 @@ end SemilatticeInf
 section SemilatticeSup
 variable [SemilatticeSup M]
 
-instance semilatticeSup : SemilatticeSup (ι →₀ M) where
+noncomputable instance semilatticeSup : SemilatticeSup (ι →₀ M) where
   sup := zipWith (· ⊔ ·) (sup_idem _)
   le_sup_left _f _g _i := le_sup_left
   le_sup_right _f _g _i := le_sup_right
@@ -96,7 +94,7 @@ end SemilatticeSup
 section Lattice
 variable [Lattice M] (f g : ι →₀ M)
 
-instance lattice : Lattice (ι →₀ M) where
+noncomputable instance lattice : Lattice (ι →₀ M) where
   __ := Finsupp.semilatticeInf
   __ := Finsupp.semilatticeSup
 

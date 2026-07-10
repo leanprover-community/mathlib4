@@ -56,8 +56,6 @@ Potentially also useful:
 open scoped ENNReal NNReal
 open Set Function Finset MeasureTheory Measure Filter
 
-noncomputable section
-
 variable {ι : Type*}
 
 local prefix:max "#" => Fintype.card
@@ -90,7 +88,7 @@ We are most interested in this operation when the set `s` is the universe in `ι
 operation on a function `f` which is constant along the co-ordinates in `sᶜ` is morally (that is, up
 to type-theoretic nonsense) the same thing as the universe-grid-lines operation on the associated
 function on the "lower-dimensional" space `Π i : s, A i`. -/
-def T (p : ℝ) (f : (∀ i, A i) → ℝ≥0∞) (s : Finset ι) : (∀ i, A i) → ℝ≥0∞ :=
+noncomputable def T (p : ℝ) (f : (∀ i, A i) → ℝ≥0∞) (s : Finset ι) : (∀ i, A i) → ℝ≥0∞ :=
   ∫⋯∫⁻_s, f ^ (1 - (s.card - 1 : ℝ) * p) * ∏ i ∈ s, (∫⋯∫⁻_{i}, f ∂μ) ^ p ∂μ
 
 variable {p : ℝ}
@@ -358,7 +356,7 @@ open Module
 It only depends on `E`, `μ` and `p`.
 It is determined by the ratio of the measures on `E` and `ℝⁿ` and
 the operator norm of a chosen equivalence `E ≃ ℝⁿ` (raised to suitable powers involving `p`). -/
-irreducible_def lintegralPowLePowLIntegralFDerivConst (p : ℝ) : ℝ≥0 := by
+noncomputable irreducible_def lintegralPowLePowLIntegralFDerivConst (p : ℝ) : ℝ≥0 := by
   let ι := Fin (finrank ℝ E)
   have : finrank ℝ E = finrank ℝ (ι → ℝ) := by
     rw [finrank_fintype_fun_eq_card, Fintype.card_fin (finrank ℝ E)]
@@ -432,7 +430,7 @@ theorem lintegral_pow_le_pow_lintegral_fderiv {u : E → F}
 
 /-- The constant factor occurring in the conclusion of `eLpNorm_le_eLpNorm_fderiv_one`.
 It only depends on `E`, `μ` and `p`. -/
-irreducible_def eLpNormLESNormFDerivOneConst (p : ℝ) : ℝ≥0 :=
+noncomputable irreducible_def eLpNormLESNormFDerivOneConst (p : ℝ) : ℝ≥0 :=
   lintegralPowLePowLIntegralFDerivConst μ p ^ p⁻¹
 
 /-- The **Gagliardo-Nirenberg-Sobolev inequality**.  Let `u` be a continuously differentiable
@@ -452,7 +450,7 @@ theorem eLpNorm_le_eLpNorm_fderiv_one {u : E → F} (hu : ContDiff ℝ 1 u) (h2u
 
 /-- The constant factor occurring in the conclusion of `eLpNorm_le_eLpNorm_fderiv_of_eq_inner`.
 It only depends on `E`, `μ` and `p`. -/
-def eLpNormLESNormFDerivOfEqInnerConst (p : ℝ) : ℝ≥0 :=
+noncomputable def eLpNormLESNormFDerivOfEqInnerConst (p : ℝ) : ℝ≥0 :=
   let n := finrank ℝ E
   eLpNormLESNormFDerivOneConst μ (NNReal.conjExponent n) * (p * (n - 1) / (n - p)).toNNReal
 
@@ -584,7 +582,7 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_eq_inner {u : E → F'}
 variable (F) in
 /-- The constant factor occurring in the conclusion of `eLpNorm_le_eLpNorm_fderiv_of_eq`.
 It only depends on `E`, `F`, `μ` and `p`. -/
-irreducible_def SNormLESNormFDerivOfEqConst [FiniteDimensional ℝ F] (p : ℝ) : ℝ≥0 :=
+noncomputable irreducible_def SNormLESNormFDerivOfEqConst [FiniteDimensional ℝ F] (p : ℝ) : ℝ≥0 :=
   let F' := EuclideanSpace ℝ <| Fin <| finrank ℝ F
   let e : F ≃L[ℝ] F' := toEuclidean
   ‖(e.symm : F' →L[ℝ] F)‖₊ * eLpNormLESNormFDerivOfEqInnerConst μ p * ‖(e : F →L[ℝ] F')‖₊
@@ -639,6 +637,7 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_eq [FiniteDimensional ℝ F]
 variable (F) in
 /-- The constant factor occurring in the conclusion of `eLpNorm_le_eLpNorm_fderiv_of_le`.
 It only depends on `F`, `μ`, `s`, `p` and `q`. -/
+noncomputable
 irreducible_def eLpNormLESNormFDerivOfLeConst [FiniteDimensional ℝ F] (s : Set E) (p q : ℝ≥0) :
     ℝ≥0 :=
   let p' : ℝ≥0 := (p⁻¹ - (finrank ℝ E : ℝ≥0)⁻¹)⁻¹

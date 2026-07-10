@@ -121,7 +121,7 @@ TODO: Define a coercion to MvPolynomial.
 
 namespace MvPowerSeries
 
-noncomputable section
+section
 
 open ENat WithTop Finsupp
 
@@ -136,7 +136,7 @@ theorem ne_zero_iff_exists_coeff_ne_zero_and_weight :
   simpa using ne_zero_iff_exists_coeff_ne_zero f
 
 /-- The weighted order of a mv_power_series -/
-def weightedOrder (f : MvPowerSeries σ R) : ℕ∞ := by
+noncomputable def weightedOrder (f : MvPowerSeries σ R) : ℕ∞ := by
   classical
   exact dite (f = 0) (fun _ => ⊤) fun h =>
     Nat.find ((ne_zero_iff_exists_coeff_ne_zero_and_weight w).mp h)
@@ -385,7 +385,7 @@ theorem ne_zero_iff_exists_coeff_ne_zero_and_degree :
   exact ne_zero_iff_exists_coeff_ne_zero_and_weight (fun _ => 1)
 
 /-- The order of an `MvPowerSeries`. -/
-def order (f : MvPowerSeries σ R) : ℕ∞ := weightedOrder (fun _ => 1) f
+noncomputable def order (f : MvPowerSeries σ R) : ℕ∞ := weightedOrder (fun _ => 1) f
 
 @[simp]
 theorem order_zero : (0 : MvPowerSeries σ R).order = ⊤ :=
@@ -586,6 +586,7 @@ protected theorem IsWeightedHomogeneous.mul {f g : MvPowerSeries σ R} {p q : �
   rw [← hx, map_add, hp, hq]
 
 /-- The weighted homogeneous components of an `MvPowerSeries f`. -/
+noncomputable
 def weightedHomogeneousComponent (p : ℕ) : MvPowerSeries σ R →ₗ[R] MvPowerSeries σ R where
   toFun f d := if weight w d = p then coeff d f else 0
   map_add' f g := by
@@ -700,7 +701,7 @@ protected theorem IsHomogeneous.mul {f g : MvPowerSeries σ R} {p q : ℕ}
   IsWeightedHomogeneous.mul hf hg
 
 /-- The homogeneous components of an `MvPowerSeries` -/
-def homogeneousComponent (p : ℕ) : MvPowerSeries σ R →ₗ[R] MvPowerSeries σ R :=
+noncomputable def homogeneousComponent (p : ℕ) : MvPowerSeries σ R →ₗ[R] MvPowerSeries σ R :=
   weightedHomogeneousComponent 1 p
 
 theorem coeff_homogeneousComponent (p : ℕ) (d : σ →₀ ℕ) (f : MvPowerSeries σ R) :

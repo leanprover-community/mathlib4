@@ -72,8 +72,6 @@ open Matrix hiding mul_smul
 
 open Matrix.SpecialLinearGroup UpperHalfPlane ModularGroup Topology
 
-noncomputable section
-
 open scoped ComplexConjugate MatrixGroups
 
 namespace ModularGroup
@@ -173,7 +171,7 @@ theorem lcRow0_apply (p : Fin 2 → ℤ) (g : Matrix (Fin 2) (Fin 2) ℝ) :
 /-- Linear map sending the matrix [a, b; c, d] to the matrix [ac₀ + bd₀, - ad₀ + bc₀; c, d], for
 some fixed `(c₀, d₀)`. -/
 @[simps!]
-def lcRow0Extend {cd : Fin 2 → ℤ} (hcd : IsCoprime (cd 0) (cd 1)) :
+noncomputable def lcRow0Extend {cd : Fin 2 → ℤ} (hcd : IsCoprime (cd 0) (cd 1)) :
     Matrix (Fin 2) (Fin 2) ℝ ≃ₗ[ℝ] Matrix (Fin 2) (Fin 2) ℝ :=
   LinearEquiv.piCongrRight
     ![by

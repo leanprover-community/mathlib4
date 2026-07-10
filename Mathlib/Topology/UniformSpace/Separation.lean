@@ -100,8 +100,6 @@ uniform space, separated space, Hausdorff space, separation quotient
 
 open Filter Set Function Topology Uniformity UniformSpace
 
-noncomputable section
-
 universe u v w
 
 variable {α : Type u} {β : Type v} {γ : Type w}
@@ -293,7 +291,7 @@ open scoped Classical in
 /-- Factoring functions to a separated space through the separation quotient.
 
 TODO: unify with `SeparationQuotient.lift`. -/
-def lift' [T0Space β] (f : α → β) : SeparationQuotient α → β :=
+noncomputable def lift' [T0Space β] (f : α → β) : SeparationQuotient α → β :=
   if hc : UniformContinuous f then lift f fun _ _ h => (h.map hc.continuous).eq
   else fun x => f (Nonempty.some ⟨x.out⟩)
 
@@ -308,7 +306,7 @@ theorem uniformContinuous_lift' [T0Space β] (f : α → β) : UniformContinuous
     exact uniformContinuous_of_const fun a _ => rfl
 
 /-- The separation quotient functor acting on functions. -/
-def map (f : α → β) : SeparationQuotient α → SeparationQuotient β := lift' (mk ∘ f)
+noncomputable def map (f : α → β) : SeparationQuotient α → SeparationQuotient β := lift' (mk ∘ f)
 
 theorem map_mk {f : α → β} (h : UniformContinuous f) (a : α) : map f (mk a) = mk (f a) := by
   rw [map, lift'_mk (uniformContinuous_mk.comp h)]; rfl

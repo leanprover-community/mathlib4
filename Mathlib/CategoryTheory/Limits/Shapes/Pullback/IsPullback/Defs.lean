@@ -34,8 +34,6 @@ for the usual `pullback f g` provided by the `HasLimit` API.
 
 @[expose] public section
 
-noncomputable section
-
 open CategoryTheory
 
 open CategoryTheory.Limits

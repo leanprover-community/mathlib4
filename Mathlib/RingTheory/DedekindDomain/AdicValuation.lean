@@ -64,8 +64,6 @@ dedekind domain, dedekind ring, adic valuation
 
 @[expose] public section
 
-noncomputable section
-
 open WithZero Multiplicative IsDedekindDomain
 
 variable {R : Type*} [CommRing R] [IsDedekindDomain R] {K S : Type*} [Field K] [CommSemiring S]
@@ -79,7 +77,7 @@ open scoped Classical in
 /-- The additive `v`-adic valuation of `r : R` is the exponent of `v` in the factorization of the
 ideal `(r)`, if `r` is nonzero, or infinity, if `r = 0`. `intValuationDef` is the corresponding
 multiplicative valuation. -/
-def intValuationDef (r : R) : ℤᵐ⁰ :=
+noncomputable def intValuationDef (r : R) : ℤᵐ⁰ :=
   if r = 0 then 0
   else
     exp (-(Associates.mk v.asIdeal).count (Associates.mk (Ideal.span {r} : Ideal R)).factors : ℤ)
@@ -166,7 +164,7 @@ theorem intValuation.map_add_le_max' (x y : R) :
         exact v.associates_irreducible
 
 /-- The `v`-adic valuation on `R`. -/
-def intValuation : Valuation R ℤᵐ⁰ where
+noncomputable def intValuation : Valuation R ℤᵐ⁰ where
   toFun := v.intValuationDef
   map_zero' := intValuation.map_zero' v
   map_one' := intValuation.map_one' v
@@ -325,7 +323,7 @@ variable (K) in
 /-- The `v`-adic valuation of `x : K` is the valuation of `r` divided by the valuation of `s`,
 where `r` and `s` are chosen so that `x = r/s`. -/
 @[no_expose]
-def valuation (v : HeightOneSpectrum R) : Valuation K ℤᵐ⁰ :=
+noncomputable def valuation (v : HeightOneSpectrum R) : Valuation K ℤᵐ⁰ :=
   v.intValuation.extendToLocalization
     (fun r hr => Set.mem_compl <| v.intValuation_ne_zero' ⟨r, hr⟩) K
 
@@ -469,7 +467,7 @@ local instance : IsLocalRing (subalgebra.ofField K _ v.asIdeal.primeCompl_le_non
 variable (K) in
 /-- Given a Dedekind domain `R` in `K`, its field of fractions, the localization of `R` at
 a nonzero prime is a valuation subring of `K`. -/
-def valuationSubringAtPrime : ValuationSubring K :=
+noncomputable def valuationSubringAtPrime : ValuationSubring K :=
   .ofSubring (subalgebra.ofField K _ v.asIdeal.primeCompl_le_nonZeroDivisors).toSubring fun x ↦
     by simpa [IsLocalization.IsInteger] using ValuationRing.isInteger_or_isInteger
         (subalgebra.ofField K _ v.asIdeal.primeCompl_le_nonZeroDivisors) x
@@ -486,7 +484,7 @@ theorem valuationSubringAtPrime_le_valuation :
   suffices (valuation K v) (a / (s : K)) ≤ 1 by rwa [division_def (a : K) s] at this
   rwa [valuation_div_le_one_iff (K := K) v a (by aesop) (fun _ ↦ by contradiction)]
 
-instance : Algebra R (valuationSubringAtPrime K v) :=
+noncomputable instance : Algebra R (valuationSubringAtPrime K v) :=
   (subalgebra.ofField K _ v.asIdeal.primeCompl_le_nonZeroDivisors).algebra'
 
 instance : IsScalarTower R (valuationSubringAtPrime K v) K :=
@@ -587,7 +585,7 @@ ring of integers, denoted `v.adicCompletionIntegers`. -/
 
 /-- `K` as a valued field with the `v`-adic valuation. -/
 @[implicit_reducible]
-def adicValued : Valued K ℤᵐ⁰ :=
+noncomputable def adicValued : Valued K ℤᵐ⁰ :=
   Valued.mk' (v.valuation K)
 
 theorem adicValued_apply {x : K} : v.adicValued.v x = v.valuation K x :=
@@ -733,11 +731,11 @@ noncomputable instance : CompleteSpace (adicCompletion K v) :=
     inferInstance
 
 /-- Coercion of an element of `WithVal (v.valuation K)` into the adic completion. -/
-instance : Coe (WithVal (v.valuation K)) (adicCompletion K v) where
+noncomputable instance : Coe (WithVal (v.valuation K)) (adicCompletion K v) where
   coe x := ofCompletion (x : (v.valuation K).Completion)
 
 /-- Coercion of an element of `K` into the adic completion. -/
-instance (priority := 99) : Coe K (adicCompletion K v) where
+noncomputable instance (priority := 99) : Coe K (adicCompletion K v) where
   coe k := ofCompletion (k : (v.valuation K).Completion)
 
 @[simp] lemma coe_toCompletion (k : K) :
@@ -806,10 +804,10 @@ lemma adicCompletion_valueGroup_eq : MonoidWithZeroHom.valueGroup (.ofClass (Val
   exact ⟨b, by rw [hb]; exact ha0, y, by rw [hb, hy]; exact hx⟩
 
 /-- The ring of integers of `adicCompletion`. -/
-def adicCompletionIntegers : ValuationSubring (v.adicCompletion K) :=
+noncomputable def adicCompletionIntegers : ValuationSubring (v.adicCompletion K) :=
   Valued.v.valuationSubring
 
-instance : Inhabited (adicCompletionIntegers K v) :=
+noncomputable instance : Inhabited (adicCompletionIntegers K v) :=
   ⟨0⟩
 
 variable (R)
@@ -900,7 +898,7 @@ theorem coe_algebraMap_mem (r : R) : ↑((algebraMap R K) r) ∈ adicCompletionI
   rw [Valued.valuedCompletion_apply]
   simpa using v.valuation_le_one _
 
-instance : Algebra R (v.adicCompletionIntegers K) where
+noncomputable instance : Algebra R (v.adicCompletionIntegers K) where
   smul r x :=
     ⟨r • (x : v.adicCompletion K), by
       rw [Algebra.smul_def]
@@ -1023,7 +1021,7 @@ variable (v) {b : ℝ≥0} (hb : 1 < b) (r : R) (x : K)
 
 /-- The `v`-adic absolute value function on `R` defined as `b` raised to negative `v`-adic
 valuation, for some `b` in `ℝ≥0` -/
-def intAdicAbvDef (r : R) : ℝ≥0 := toNNReal (ne_zero_of_lt hb) (v.intValuation r)
+noncomputable def intAdicAbvDef (r : R) : ℝ≥0 := toNNReal (ne_zero_of_lt hb) (v.intValuation r)
 
 lemma isNonarchimedean_intAdicAbvDef : IsNonarchimedean (v.intAdicAbvDef hb) := by
   intro x y
@@ -1034,7 +1032,7 @@ lemma isNonarchimedean_intAdicAbvDef : IsNonarchimedean (v.intAdicAbvDef hb) := 
 
 /-- The `v`-adic absolute value on `R` defined as `b` raised to negative `v`-adic
 valuation, for some `b` in `ℝ≥0` -/
-def intAdicAbv : AbsoluteValue R ℝ where
+noncomputable def intAdicAbv : AbsoluteValue R ℝ where
   toFun r := v.intAdicAbvDef hb r
   map_mul' _ _ := by simp [intAdicAbvDef]
   nonneg' _ := zero_le_coe
@@ -1058,7 +1056,7 @@ theorem intAdicAbv_eq_one_iff : v.intAdicAbv hb r = 1 ↔ r ∉ v.asIdeal := by
 
 /-- The `v`-adic absolute value function on `K` defined as `b` raised to negative `v`-adic
 valuation, for some `b` in `ℝ≥0` -/
-def adicAbvDef (x : K) : ℝ≥0 := toNNReal (ne_zero_of_lt hb) (v.valuation K x)
+noncomputable def adicAbvDef (x : K) : ℝ≥0 := toNNReal (ne_zero_of_lt hb) (v.valuation K x)
 
 lemma isNonarchimedean_adicAbvDef : IsNonarchimedean (α := K) (v.adicAbvDef hb) := by
   intro x y
@@ -1069,7 +1067,7 @@ lemma isNonarchimedean_adicAbvDef : IsNonarchimedean (α := K) (v.adicAbvDef hb)
 
 /-- The `v`-adic absolute value on `K` defined as `b` raised to negative `v`-adic
 valuation, for some `b` in `ℝ≥0` -/
-def adicAbv : AbsoluteValue K ℝ where
+noncomputable def adicAbv : AbsoluteValue K ℝ where
   toFun x := v.adicAbvDef hb x
   map_mul' _ _ := by simp [adicAbvDef]
   nonneg' _ := zero_le_coe

@@ -20,8 +20,6 @@ Along the way, we add a shortcut instance for the natural topology on `ℝ≥0`
 
 assert_not_exists IsTopologicalRing UniformContinuousConstSMul UniformOnFun
 
-noncomputable section
-
 open Filter Metric Set
 
 instance Real.instCompleteSpace : CompleteSpace ℝ := by

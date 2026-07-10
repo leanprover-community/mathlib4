@@ -145,8 +145,6 @@ diffeology, diffeological space, smoothness, smooth function
 
 @[expose] public section
 
-noncomputable section
-
 assert_not_exists ChartedSpace
 
 local macro:max "𝔼" noWs n:superscript(term) : term => `(EuclideanSpace ℝ (Fin $(⟨n.raw[0]⟩)))
@@ -407,9 +405,9 @@ instance {X : Type*} [NormedAddCommGroup X] [NormedSpace ℝ X] [FiniteDimension
     IsDTopologyCompatible X :=
   ⟨rfl⟩
 
-instance : DiffeologicalSpace ℝ := NormedSpace.toDiffeology _
+noncomputable instance : DiffeologicalSpace ℝ := NormedSpace.toDiffeology _
 
-instance {ι : Type*} [Fintype ι] : DiffeologicalSpace (EuclideanSpace ℝ ι) :=
+noncomputable instance {ι : Type*} [Fintype ι] : DiffeologicalSpace (EuclideanSpace ℝ ι) :=
   NormedSpace.toDiffeology _
 
 variable {X : Type*} [DiffeologicalSpace X] {n : ℕ}

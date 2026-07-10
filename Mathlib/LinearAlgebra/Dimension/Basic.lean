@@ -35,8 +35,6 @@ and `M₁`, `M₂`, ... all live in the same universe.
 @[expose] public section
 
 
-noncomputable section
-
 universe w w' u u' v v'
 
 variable {R : Type u} {R' : Type u'} {M M₁ : Type v} {M' : Type v'}
@@ -65,7 +63,7 @@ See also `Module.finrank` for a `ℕ`-valued function which returns the correct 
 for a finite-dimensional vector space (but 0 for an infinite-dimensional vector space).
 -/
 @[stacks 09G3 "first part"]
-protected irreducible_def Module.rank : Cardinal :=
+protected noncomputable irreducible_def Module.rank : Cardinal :=
   ⨆ ι : { s : Set M // LinearIndepOn R id s }, (#ι.1)
 
 theorem rank_le_card : Module.rank R M ≤ #M :=

@@ -23,8 +23,6 @@ Then it defines the inverse of an `EReal` as `⊤⁻¹ = ⊥⁻¹ = 0`, which le
 
 open ENNReal Set SignType
 
-noncomputable section
-
 namespace EReal
 
 /-! ### Absolute value -/
@@ -143,7 +141,7 @@ theorem le_iff_sign {x y : EReal} :
     · exact (sign.monotone.reflect_lt h).le
     all_goals rw [← x.sign_mul_abs, ← y.sign_mul_abs]; simp [h]
 
-instance : CommMonoidWithZero EReal :=
+noncomputable instance : CommMonoidWithZero EReal :=
   { (inferInstance : MulZeroOneClass EReal) with
     mul_assoc := fun x y z => by
       rw [← sign_eq_and_abs_eq_iff_eq]
@@ -197,12 +195,12 @@ lemma max_neg_neg (x y : EReal) : max (-x) (-y) = -min x y := by
 
 /-- Multiplicative inverse of an `EReal`. We choose `0⁻¹ = 0` to guarantee several good properties,
 for instance `(a * b)⁻¹ = a⁻¹ * b⁻¹`. -/
-protected def inv : EReal → EReal
+protected noncomputable def inv : EReal → EReal
   | ⊥ => 0
   | ⊤ => 0
   | (x : ℝ) => (x⁻¹ : ℝ)
 
-instance : Inv (EReal) := ⟨EReal.inv⟩
+noncomputable instance : Inv (EReal) := ⟨EReal.inv⟩
 
 noncomputable instance : DivInvMonoid EReal where inv := EReal.inv
 

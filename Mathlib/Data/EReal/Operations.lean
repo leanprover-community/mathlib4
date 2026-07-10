@@ -37,8 +37,6 @@ see `EReal.left_distrib_of_nonneg_of_ne_top`, or `0 ≤ y, z`. See `EReal.left_d
 
 open ENNReal NNReal
 
-noncomputable section
-
 namespace EReal
 
 /-! ### Addition -/
@@ -193,14 +191,14 @@ lemma add_ne_top_iff_of_ne_bot_of_ne_top {x y : EReal} (hy : y ≠ ⊥) (hy' : y
 /-! ### Negation -/
 
 /-- negation on `EReal` -/
-protected def neg : EReal → EReal
+protected noncomputable def neg : EReal → EReal
   | ⊥ => ⊤
   | ⊤ => ⊥
   | (x : ℝ) => (-x : ℝ)
 
-instance : Neg EReal := ⟨EReal.neg⟩
+noncomputable instance : Neg EReal := ⟨EReal.neg⟩
 
-instance : SubNegZeroMonoid EReal where
+noncomputable instance : SubNegZeroMonoid EReal where
   neg_zero := congr_arg Real.toEReal neg_zero
   zsmul := zsmulRec
 
@@ -220,7 +218,7 @@ theorem neg_bot : -(⊥ : EReal) = ⊤ :=
 theorem coe_zsmul (n : ℤ) (x : ℝ) : (↑(n • x) : EReal) = n • (x : EReal) :=
   map_zsmul' (⟨⟨(↑), coe_zero⟩, coe_add⟩ : ℝ →+ EReal) coe_neg _ _
 
-instance : InvolutiveNeg EReal where
+noncomputable instance : InvolutiveNeg EReal where
   neg_neg a :=
     match a with
     | ⊥ => rfl
@@ -287,7 +285,7 @@ theorem lt_neg_comm {a b : EReal} : a < -b ↔ b < -a := by
 protected theorem lt_neg_of_lt_neg {a b : EReal} (h : a < -b) : b < -a := lt_neg_comm.mp h
 
 /-- Negation as an order reversing isomorphism on `EReal`. -/
-def negOrderIso : EReal ≃o ERealᵒᵈ :=
+noncomputable def negOrderIso : EReal ≃o ERealᵒᵈ :=
   { Equiv.neg EReal with
     toFun := fun x => OrderDual.toDual (-x)
     invFun := fun x => -OrderDual.ofDual x
@@ -305,7 +303,7 @@ lemma neg_sub {x y : EReal} (h1 : x ≠ ⊥ ∨ y ≠ ⊥) (h2 : x ≠ ⊤ ∨ y
 /-- Induction principle for `EReal`s splitting into cases `↑(x : ℝ≥0∞)` and `-↑(x : ℝ≥0∞)`.
 In the latter case, we additionally assume `0 < x`. -/
 @[elab_as_elim]
-def recENNReal {motive : EReal → Sort*} (coe : ∀ x : ℝ≥0∞, motive x)
+noncomputable def recENNReal {motive : EReal → Sort*} (coe : ∀ x : ℝ≥0∞, motive x)
     (neg_coe : ∀ x : ℝ≥0∞, 0 < x → motive (-x)) (x : EReal) : motive x :=
   if hx : 0 ≤ x then coe_toENNReal hx ▸ coe _
   else
@@ -728,7 +726,7 @@ protected lemma neg_mul (x y : EReal) : -x * y = -(x * y) := by
   | pos_bot _ h => rw [coe_mul_bot_of_pos h, neg_bot, ← coe_neg,
     coe_mul_bot_of_neg (neg_neg_of_pos h)]
 
-instance : HasDistribNeg EReal where
+noncomputable instance : HasDistribNeg EReal where
   neg_mul := EReal.neg_mul
   mul_neg := fun x y => by
     rw [x.mul_comm, x.mul_comm]

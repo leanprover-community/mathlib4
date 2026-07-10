@@ -138,7 +138,7 @@ lemma shortExact_res {k : Type u} [CommRing k] (φ : H →* G) {S : ShortComplex
 
 end ShortComplex
 
-noncomputable section
+section
 
 variable {G : Type v} [Group G] (A : Rep k G) (S : Subgroup G)
   [S.Normal] [Representation.IsTrivial (A.ρ.comp S.subtype)]

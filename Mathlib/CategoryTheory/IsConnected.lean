@@ -47,8 +47,6 @@ category is preserved by the functor `(X × -)`. This appears in `CategoryTheory
 
 universe w₁ w₂ v₁ v₂ u₁ u₂
 
-noncomputable section
-
 open CategoryTheory.Category CategoryTheory.Functor
 
 open Opposite
@@ -84,7 +82,7 @@ namespace IsPreconnected.IsoConstantAux
 
 set_option backward.privateInPublic true in
 /-- Implementation detail of `isoConstant`. -/
-private def liftToDiscrete {α : Type u₂} (F : J ⥤ Discrete α) : J ⥤ Discrete J where
+private noncomputable def liftToDiscrete {α : Type u₂} (F : J ⥤ Discrete α) : J ⥤ Discrete J where
   obj j := have := Nonempty.intro j
     Discrete.mk (Function.invFun F.obj (F.obj j))
   map {j _} f := have := Nonempty.intro j
@@ -92,7 +90,7 @@ private def liftToDiscrete {α : Type u₂} (F : J ⥤ Discrete α) : J ⥤ Disc
 
 set_option backward.privateInPublic true in
 /-- Implementation detail of `isoConstant`. -/
-private def factorThroughDiscrete {α : Type u₂} (F : J ⥤ Discrete α) :
+private noncomputable def factorThroughDiscrete {α : Type u₂} (F : J ⥤ Discrete α) :
     liftToDiscrete F ⋙ Discrete.functor F.obj ≅ F :=
   NatIso.ofComponents (fun _ => eqToIso Function.apply_invFun_apply) (by cat_disch)
 
@@ -104,7 +102,7 @@ set_option backward.privateInPublic.warn false in
 /-- If `J` is connected, any functor `F : J ⥤ Discrete α` is isomorphic to
 the constant functor with value `F.obj j` (for any choice of `j`).
 -/
-def isoConstant [IsPreconnected J] {α : Type u₂} (F : J ⥤ Discrete α) (j : J) :
+noncomputable def isoConstant [IsPreconnected J] {α : Type u₂} (F : J ⥤ Discrete α) (j : J) :
     F ≅ (Functor.const J).obj (F.obj j) :=
   (IsPreconnected.IsoConstantAux.factorThroughDiscrete F).symm
     ≪≫ isoWhiskerRight (IsPreconnected.iso_constant _ j).some _
@@ -464,6 +462,7 @@ theorem isConnected_of_zigzag [Nonempty J] (h : ∀ j₁ j₂ : J, ∃ l,
   { isPreconnected_of_zigzag h with }
 
 /-- If `Discrete α` is connected, then `α` is (type-)equivalent to `PUnit`. -/
+noncomputable
 def discreteIsConnectedEquivPUnit {α : Type u₁} [IsConnected (Discrete α)] : α ≃ PUnit :=
   Discrete.equivOfEquivalence.{u₁, u₁}
     { functor := Functor.star (Discrete α)

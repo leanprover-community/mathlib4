@@ -66,8 +66,6 @@ perfect ring, perfect closure, purely inseparable
 
 open Module Polynomial IntermediateField Field
 
-noncomputable section
-
 /-- Given a natural number `p`, the `p`-nilradical of a ring is defined to be the
 nilradical if `p > 1` (`pNilradical_eq_nilradical`), and defined to be the zero ideal if `p ≤ 1`
 (`pNilradical_eq_bot'`). Equivalently, it is the ideal consisting of elements `x` such that
@@ -220,6 +218,7 @@ theorem lift_aux (x : L) : ∃ y : ℕ × K, i y.2 = x ^ p ^ y.1 := by
 `i` is `p`-radical (in fact only the `IsPRadical.pow_mem` is required) and `M` is a perfect ring,
 then one can define a map `L → M` which maps an element `x` of `L` to `y ^ (p ^ -n)` if
 `x ^ (p ^ n)` is equal to some element `y` of `K`. -/
+noncomputable
 def liftAux (x : L) : M := (iterateFrobeniusEquiv M p (Classical.choose (lift_aux i p x)).1).symm
   (j (Classical.choose (lift_aux i p x)).2)
 
@@ -311,7 +310,7 @@ variable [ExpChar L p]
 /-- If `i : K →+* L` and `j : K →+* M` are ring homomorphisms of characteristic `p` rings, such that
 `i` is `p`-radical, and `M` is a perfect ring, then `PerfectRing.liftAux`
 is a ring homomorphism. This is similar to `IsAlgClosed.lift` and `IsSepClosed.lift`. -/
-def lift : L →+* M where
+noncomputable def lift : L →+* M where
   toFun := liftAux i j p
   map_one' := by simp [liftAux_apply i j p 1 0 1 (by rw [one_pow, map_one])]
   map_mul' x1 x2 := by
@@ -371,7 +370,7 @@ variable (M) in
 `i` is `p`-radical, and `M` is a perfect ring of characteristic `p`,
 then `K →+* M` is in one-to-one correspondence with
 `L →+* M`, given by `PerfectRing.lift`. This generalizes `PerfectClosure.lift`. -/
-def liftEquiv : (K →+* M) ≃ (L →+* M) where
+noncomputable def liftEquiv : (K →+* M) ≃ (L →+* M) where
   toFun j := lift i j p
   invFun f := f.comp i
   left_inv f := lift_comp i f p
@@ -442,7 +441,7 @@ variable [ExpChar K p] [ExpChar L p] [PerfectRing L p] [IsPerfectClosure i p] [P
 
 /-- If `L` and `M` are both perfect closures of `K`, then there is a ring isomorphism `L ≃+* M`.
 This is similar to `IsAlgClosure.equiv` and `IsSepClosure.equiv`. -/
-def equiv : L ≃+* M where
+noncomputable def equiv : L ≃+* M where
   __ := PerfectRing.lift i j p
   invFun := PerfectRing.liftAux j i p
   left_inv := PerfectRing.lift_comp_lift_apply_eq_self i j p

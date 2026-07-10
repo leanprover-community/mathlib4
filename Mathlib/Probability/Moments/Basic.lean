@@ -43,8 +43,6 @@ import Mathlib.Probability.Independence.Integration
 
 open MeasureTheory Filter Finset Real
 
-noncomputable section
-
 open scoped MeasureTheory ProbabilityTheory ENNReal NNReal
 
 namespace ProbabilityTheory
@@ -52,14 +50,14 @@ namespace ProbabilityTheory
 variable {Ω ι : Type*} {m : MeasurableSpace Ω} {X : Ω → ℝ} {p : ℕ} {μ : Measure Ω}
 
 /-- Moment of a real random variable, `μ[X ^ p]`. -/
-def moment (X : Ω → ℝ) (p : ℕ) (μ : Measure Ω) : ℝ :=
+noncomputable def moment (X : Ω → ℝ) (p : ℕ) (μ : Measure Ω) : ℝ :=
   μ[X ^ p]
 
 lemma moment_def (X : Ω → ℝ) (p : ℕ) (μ : Measure Ω) :
     moment X p μ = μ[X ^ p] := rfl
 
 /-- Central moment of a real random variable, `μ[(X - μ[X]) ^ p]`. -/
-def centralMoment (X : Ω → ℝ) (p : ℕ) (μ : Measure Ω) : ℝ :=
+noncomputable def centralMoment (X : Ω → ℝ) (p : ℕ) (μ : Measure Ω) : ℝ :=
   μ[(X - fun (_ : Ω) => μ[X]) ^ p]
 
 @[simp]
@@ -118,11 +116,11 @@ section MomentGeneratingFunction
 variable {t : ℝ}
 
 /-- Moment-generating function of a real random variable `X`: `fun t => μ[exp(t*X)]`. -/
-def mgf (X : Ω → ℝ) (μ : Measure Ω) (t : ℝ) : ℝ :=
+noncomputable def mgf (X : Ω → ℝ) (μ : Measure Ω) (t : ℝ) : ℝ :=
   μ[fun ω => exp (t * X ω)]
 
 /-- Cumulant-generating function of a real random variable `X`: `fun t => log μ[exp(t*X)]`. -/
-def cgf (X : Ω → ℝ) (μ : Measure Ω) (t : ℝ) : ℝ :=
+noncomputable def cgf (X : Ω → ℝ) (μ : Measure Ω) (t : ℝ) : ℝ :=
   log (mgf X μ t)
 
 @[simp]

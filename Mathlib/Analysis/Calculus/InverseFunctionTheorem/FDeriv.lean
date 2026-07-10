@@ -47,8 +47,6 @@ open Function Set Filter Metric
 
 open scoped Topology NNReal
 
-noncomputable section
-
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
@@ -112,7 +110,7 @@ variable [CompleteSpace E]
 with `to_fun = f` and `a ∈ source`. This is a part of the inverse function theorem.
 The other part `HasStrictFDerivAt.to_localInverse` states that the inverse function
 of this `OpenPartialHomeomorph` has derivative `f'.symm`. -/
-def toOpenPartialHomeomorph (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) a) :
+noncomputable def toOpenPartialHomeomorph (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) a) :
   OpenPartialHomeomorph E F :=
     ApproximatesLinearOn.toOpenPartialHomeomorph f
     (Classical.choose hf.approximates_deriv_on_open_nhds)
@@ -144,7 +142,7 @@ variable (f f' a)
 
 /-- Given a function `f` with an invertible derivative, returns a function that is locally inverse
 to `f`. -/
-def localInverse (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) a) : F → E :=
+noncomputable def localInverse (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) a) : F → E :=
   (hf.toOpenPartialHomeomorph f).symm
 
 variable {f f' a}

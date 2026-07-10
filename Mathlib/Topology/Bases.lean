@@ -59,8 +59,6 @@ More fine grained instances for `FirstCountableTopology`,
 
 open Set Filter Function Topology
 
-noncomputable section
-
 namespace TopologicalSpace
 
 universe u
@@ -352,7 +350,7 @@ theorem exists_dense_seq [SeparableSpace α] [Nonempty α] : ∃ u : ℕ → α,
 
 If `α` might be empty, then `TopologicalSpace.exists_countable_dense` is the main way to use
 separability of `α`. -/
-def denseSeq [SeparableSpace α] [Nonempty α] : ℕ → α :=
+noncomputable def denseSeq [SeparableSpace α] [Nonempty α] : ℕ → α :=
   Classical.choose (exists_dense_seq α)
 
 /-- The sequence `TopologicalSpace.denseSeq α` has dense range. -/
@@ -810,6 +808,7 @@ def countableBasis [SecondCountableTopology α] : Set (Set α) :=
 theorem countable_countableBasis [SecondCountableTopology α] : (countableBasis α).Countable :=
   (exists_countable_basis α).choose_spec.1
 
+noncomputable
 instance encodableCountableBasis [SecondCountableTopology α] : Encodable (countableBasis α) :=
   (countable_countableBasis α).toEncodable
 

@@ -36,8 +36,6 @@ coverage, pretopology, site
 
 universe v u
 
-noncomputable section
-
 namespace CategoryTheory
 
 open Category Limits Presieve

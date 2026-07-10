@@ -35,8 +35,6 @@ and natural isomorphisms between functors.
 @[expose] public section
 
 
-noncomputable section
-
 namespace CategoryTheory
 
 open Category Functor
@@ -85,13 +83,14 @@ structure StrictUniversalPropertyFixedTarget where
 /-- The localized category `W.Localization` that was constructed satisfies
 the universal property of the localization. -/
 @[simps]
+noncomputable
 def strictUniversalPropertyFixedTargetQ : StrictUniversalPropertyFixedTarget W.Q W E where
   inverts := W.Q_inverts
   lift := Construction.lift
   fac := Construction.fac
   uniq := Construction.uniq
 
-instance : Inhabited (StrictUniversalPropertyFixedTarget W.Q W E) :=
+noncomputable instance : Inhabited (StrictUniversalPropertyFixedTarget W.Q W E) :=
   ⟨strictUniversalPropertyFixedTargetQ _ _⟩
 
 /-- When `W` consists of isomorphisms, the identity satisfies the universal property
@@ -142,7 +141,7 @@ theorem inverts : W.IsInvertedBy L :=
 /-- The isomorphism `L.obj X ≅ L.obj Y` that is deduced from a morphism `f : X ⟶ Y` which
 belongs to `W`, when `L.IsLocalization W`. -/
 @[simps! hom]
-def isoOfHom {X Y : C} (f : X ⟶ Y) (hf : W f) : L.obj X ≅ L.obj Y :=
+noncomputable def isoOfHom {X Y : C} (f : X ⟶ Y) (hf : W f) : L.obj X ≅ L.obj Y :=
   haveI : IsIso (L.map f) := inverts L W f hf
   asIso (L.map f)
 
@@ -179,16 +178,18 @@ variable (W)
 /-- A chosen equivalence of categories `W.Localization ≅ D` for a functor
 `L : C ⥤ D` which satisfies `L.IsLocalization W`. This shall be used in
 order to deduce properties of `L` from properties of `W.Q`. -/
-def equivalenceFromModel : W.Localization ≌ D :=
+noncomputable def equivalenceFromModel : W.Localization ≌ D :=
   (Localization.Construction.lift L (inverts L W)).asEquivalence
 
 /-- Via the equivalence of categories `equivalenceFromModel L W : W.Localization ≌ D`,
 one may identify the functors `W.Q` and `L`. -/
+noncomputable
 def qCompEquivalenceFromModelFunctorIso : W.Q ⋙ (equivalenceFromModel L W).functor ≅ L :=
   eqToIso (Construction.fac _ _)
 
 /-- Via the equivalence of categories `equivalenceFromModel L W : W.Localization ≌ D`,
 one may identify the functors `L` and `W.Q`. -/
+noncomputable
 def compEquivalenceFromModelInverseIso : L ⋙ (equivalenceFromModel L W).inverse ≅ W.Q :=
   calc
     L ⋙ (equivalenceFromModel L W).inverse ≅ _ :=
@@ -233,7 +234,7 @@ instance : (whiskeringLeftFunctor L W E).IsEquivalence := by
 /-- The equivalence of categories `(D ⥤ E) ≌ (W.FunctorsInverting E)` induced by
 the composition with a localization functor `L : C ⥤ D` with respect to
 `W : MorphismProperty C`. -/
-def functorEquivalence : D ⥤ E ≌ W.FunctorsInverting E :=
+noncomputable def functorEquivalence : D ⥤ E ≌ W.FunctorsInverting E :=
   (whiskeringLeftFunctor L W E).asEquivalence
 
 set_option linter.overlappingInstances false in
@@ -275,6 +276,7 @@ lemma faithful_whiskeringLeft (L : C ⥤ D) (W) [L.IsLocalization W] (E : Type*)
 
 /-- The precomposition with a localization functor gives fully faithful functors
 between functor categories. -/
+noncomputable
 def fullyFaithfulWhiskeringLeft (L : C ⥤ D) (W) [L.IsLocalization W] (E : Type*) [Category* E] :
     ((whiskeringLeft C D E).obj L).FullyFaithful := by
   have := full_whiskeringLeft L W E
@@ -301,20 +303,22 @@ variable {W}
 /-- Given a localization functor `L : C ⥤ D` for `W : MorphismProperty C` and
 a functor `F : C ⥤ E` which inverts `W`, this is a choice of functor
 `D ⥤ E` which lifts `F`. -/
+noncomputable
 def lift (F : C ⥤ E) (hF : W.IsInvertedBy F) (L : C ⥤ D) [L.IsLocalization W] : D ⥤ E :=
   (functorEquivalence L W E).inverse.obj ⟨F, hF⟩
 
+noncomputable
 instance liftingLift (F : C ⥤ E) (hF : W.IsInvertedBy F) (L : C ⥤ D) [L.IsLocalization W] :
     Lifting L W F (lift F hF L) :=
   ⟨(inducedFunctor _).mapIso ((functorEquivalence L W E).counitIso.app ⟨F, hF⟩)⟩
 
 /-- The canonical isomorphism `L ⋙ lift F hF L ≅ F` for any functor `F : C ⥤ E`
 which inverts `W`, when `L : C ⥤ D` is a localization functor for `W`. -/
-def fac (F : C ⥤ E) (hF : W.IsInvertedBy F) (L : C ⥤ D) [L.IsLocalization W] :
+noncomputable def fac (F : C ⥤ E) (hF : W.IsInvertedBy F) (L : C ⥤ D) [L.IsLocalization W] :
     L ⋙ lift F hF L ≅ F :=
   Lifting.iso L W F _
 
-instance liftingConstructionLift (F : C ⥤ D) (hF : W.IsInvertedBy F) :
+noncomputable instance liftingConstructionLift (F : C ⥤ D) (hF : W.IsInvertedBy F) :
     Lifting W.Q W F (Construction.lift F hF) :=
   ⟨eqToIso (Construction.fac F hF)⟩
 
@@ -323,6 +327,7 @@ variable (W)
 /-- Given a localization functor `L : C ⥤ D` for `W : MorphismProperty C`,
 if `(F₁' F₂' : D ⥤ E)` are functors which lift functors `(F₁ F₂ : C ⥤ E)`,
 a natural transformation `τ : F₁ ⟶ F₂` uniquely lifts to a natural transformation `F₁' ⟶ F₂'`. -/
+noncomputable
 def liftNatTrans (F₁ F₂ : C ⥤ E) (F₁' F₂' : D ⥤ E) [Lifting L W F₁ F₁'] [Lifting L W F₂ F₂']
     (τ : F₁ ⟶ F₂) : F₁' ⟶ F₂' :=
   (whiskeringLeftFunctor' L W E).preimage
@@ -355,6 +360,7 @@ theorem liftNatTrans_id (F : C ⥤ E) (F' : D ⥤ E) [h : Lifting L W F F'] :
 if `(F₁' F₂' : D ⥤ E)` are functors which lift functors `(F₁ F₂ : C ⥤ E)`,
 a natural isomorphism `τ : F₁ ⟶ F₂` lifts to a natural isomorphism `F₁' ⟶ F₂'`. -/
 @[simps]
+noncomputable
 def liftNatIso (F₁ F₂ : C ⥤ E) (F₁' F₂' : D ⥤ E) [h₁ : Lifting L W F₁ F₁'] [h₂ : Lifting L W F₂ F₂']
     (e : F₁ ≅ F₂) : F₁' ≅ F₂' where
   hom := liftNatTrans L W F₁ F₂ F₁' F₂' e.hom
@@ -436,7 +442,7 @@ variable {D₁ D₂ : Type _} [Category* D₁] [Category* D₂] (L₁ : C ⥤ D�
 
 /-- If `L₁ : C ⥤ D₁` and `L₂ : C ⥤ D₂` are two localization functors for the
 same `MorphismProperty C`, this is an equivalence of categories `D₁ ≌ D₂`. -/
-def uniq : D₁ ≌ D₂ :=
+noncomputable def uniq : D₁ ≌ D₂ :=
   (equivalenceFromModel L₁ W').symm.trans (equivalenceFromModel L₂ W')
 
 lemma uniq_symm : (uniq L₁ L₂ W').symm = uniq L₂ L₁ W' := by
@@ -445,7 +451,7 @@ lemma uniq_symm : (uniq L₁ L₂ W').symm = uniq L₂ L₁ W' := by
 
 /-- The functor of equivalence of localized categories given by `Localization.uniq` is
 compatible with the localization functors. -/
-def compUniqFunctor : L₁ ⋙ (uniq L₁ L₂ W').functor ≅ L₂ :=
+noncomputable def compUniqFunctor : L₁ ⋙ (uniq L₁ L₂ W').functor ≅ L₂ :=
   calc
     L₁ ⋙ (uniq L₁ L₂ W').functor ≅ (L₁ ⋙ (equivalenceFromModel L₁ W').inverse) ⋙
       (equivalenceFromModel L₂ W').functor := (associator _ _ _).symm
@@ -455,15 +461,15 @@ def compUniqFunctor : L₁ ⋙ (uniq L₁ L₂ W').functor ≅ L₂ :=
 
 /-- The inverse functor of equivalence of localized categories given by `Localization.uniq` is
 compatible with the localization functors. -/
-def compUniqInverse : L₂ ⋙ (uniq L₁ L₂ W').inverse ≅ L₁ := compUniqFunctor L₂ L₁ W'
+noncomputable def compUniqInverse : L₂ ⋙ (uniq L₁ L₂ W').inverse ≅ L₁ := compUniqFunctor L₂ L₁ W'
 
-instance : Lifting L₁ W' L₂ (uniq L₁ L₂ W').functor := ⟨compUniqFunctor L₁ L₂ W'⟩
-instance : Lifting L₂ W' L₁ (uniq L₁ L₂ W').inverse := ⟨compUniqInverse L₁ L₂ W'⟩
+noncomputable instance : Lifting L₁ W' L₂ (uniq L₁ L₂ W').functor := ⟨compUniqFunctor L₁ L₂ W'⟩
+noncomputable instance : Lifting L₂ W' L₁ (uniq L₁ L₂ W').inverse := ⟨compUniqInverse L₁ L₂ W'⟩
 
 /-- If `L₁ : C ⥤ D₁` and `L₂ : C ⥤ D₂` are two localization functors for the
 same `MorphismProperty C`, any functor `F : D₁ ⥤ D₂` equipped with an isomorphism
 `L₁ ⋙ F ≅ L₂` is isomorphic to the functor of the equivalence given by `uniq`. -/
-def isoUniqFunctor (F : D₁ ⥤ D₂) (e : L₁ ⋙ F ≅ L₂) :
+noncomputable def isoUniqFunctor (F : D₁ ⥤ D₂) (e : L₁ ⋙ F ≅ L₂) :
     F ≅ (uniq L₁ L₂ W').functor :=
   letI : Lifting L₁ W' L₂ F := ⟨e⟩
   liftNatIso L₁ W' L₂ L₂ F (uniq L₁ L₂ W').functor (Iso.refl L₂)
@@ -501,7 +507,7 @@ instance : IsGroupoid (⊤ : MorphismProperty C).Localization :=
 
 /-- Localization of a category with respect to all morphisms results in a groupoid. -/
 @[instance_reducible]
-def groupoid : Groupoid (⊤ : MorphismProperty C).Localization :=
+noncomputable def groupoid : Groupoid (⊤ : MorphismProperty C).Localization :=
   Groupoid.ofIsGroupoid
 
 end Localization

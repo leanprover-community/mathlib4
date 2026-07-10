@@ -15,7 +15,7 @@ This file proves basic results about the suprema of families of ordinals.
 Various other basic arithmetic results are given in `Principal.lean` instead.
 -/
 
-@[expose] public noncomputable section
+@[expose] public section
 
 assert_not_exists Field Module
 
@@ -30,13 +30,13 @@ variable {α β : Type*}
 /-- Converts a family indexed by a `Type u` to one indexed by an `Ordinal.{u}` using a specified
 well-ordering. -/
 @[deprecated enum (since := "2026-04-06")]
-def bfamilyOfFamily' {ι : Type u} (r : ι → ι → Prop) [IsWellOrder ι r] (f : ι → α) :
+noncomputable def bfamilyOfFamily' {ι : Type u} (r : ι → ι → Prop) [IsWellOrder ι r] (f : ι → α) :
     ∀ a < type r, α := fun a ha => f (enum r ⟨a, ha⟩)
 
 /-- Converts a family indexed by a `Type u` to one indexed by an `Ordinal.{u}` using a well-ordering
 given by the axiom of choice. -/
 @[deprecated enum (since := "2026-04-06")]
-def bfamilyOfFamily {ι : Type u} : (ι → α) → ∀ a < type (@WellOrderingRel ι), α :=
+noncomputable def bfamilyOfFamily {ι : Type u} : (ι → α) → ∀ a < type (@WellOrderingRel ι), α :=
   bfamilyOfFamily' WellOrderingRel
 
 /-- Converts a family indexed by an `Ordinal.{u}` to one indexed by a `Type u` using a specified
@@ -360,7 +360,7 @@ theorem iSup_eq_iSup {ι ι' : Type u} (r : ι → ι → Prop) (r' : ι' → ι
 `o : Ordinal.{u}`. This is a special case of `iSup` over the family provided by
 `familyOfBFamily`. -/
 @[deprecated "write `⨆ i : Iio a, f i` instead." (since := "2026-04-05")]
-def bsup (o : Ordinal.{u}) (f : ∀ a < o, Ordinal.{max u v}) : Ordinal.{max u v} :=
+noncomputable def bsup (o : Ordinal.{u}) (f : ∀ a < o, Ordinal.{max u v}) : Ordinal.{max u v} :=
   iSup (familyOfBFamily o f)
 
 @[deprecated "bsup is deprecated" (since := "2026-04-05")]
@@ -495,7 +495,7 @@ section lsub
 
 /-- The least strict upper bound of a family of ordinals. -/
 @[deprecated "write `⨆ i, f i + 1` instead." (since := "2026-03-27")]
-def lsub {ι : Type u} (f : ι → Ordinal.{max u v}) : Ordinal :=
+noncomputable def lsub {ι : Type u} (f : ι → Ordinal.{max u v}) : Ordinal :=
   iSup (succ ∘ f)
 
 @[deprecated "lsub is deprecated" (since := "2026-03-27")]
@@ -651,7 +651,7 @@ section blsub
 /-- The least strict upper bound of a family of ordinals indexed by the set of ordinals less than
 some `o : Ordinal.{u}`. -/
 @[deprecated "write `⨆ i : Iio o, f i + 1` instead." (since := "2026-03-23")]
-def blsub (o : Ordinal.{u}) (f : ∀ a < o, Ordinal.{max u v}) : Ordinal.{max u v} :=
+noncomputable def blsub (o : Ordinal.{u}) (f : ∀ a < o, Ordinal.{max u v}) : Ordinal.{max u v} :=
   bsup.{_, v} o fun a ha => succ (f a ha)
 
 @[deprecated "blsub is deprecated" (since := "2026-03-23")]

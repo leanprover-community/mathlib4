@@ -22,8 +22,6 @@ Hence, `presheafToSheaf` is an additive functor (`presheafToSheaf_additive`).
 public section
 
 
-noncomputable section
-
 namespace CategoryTheory
 
 open CategoryTheory.Limits
@@ -37,7 +35,7 @@ variable {D : Type w} [Category.{w'} D] [Abelian D]
 variable {J : GrothendieckTopology C}
 variable [HasSheafify J D]
 
-instance sheafIsAbelian : Abelian (Sheaf J D) :=
+noncomputable instance sheafIsAbelian : Abelian (Sheaf J D) :=
   let adj := sheafificationAdjunction J D
   abelianOfAdjunction _ _ (asIso adj.counit) adj
 

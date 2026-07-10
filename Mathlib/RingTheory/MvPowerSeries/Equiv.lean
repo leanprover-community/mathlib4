@@ -25,8 +25,6 @@ This file establishes a number of equivalences related to power series rings.
 
 @[expose] public section
 
-noncomputable section
-
 namespace MvPowerSeries
 
 section toAdicCompletion
@@ -53,7 +51,7 @@ lemma truncTotal_mul_sub_mul_truncTotal_mem_pow_idealOfVars (p q : MvPowerSeries
 the quotient ring of multivariate polynomials by the `n`-th power of
 the ideal spanned by all variables. -/
 @[simps]
-def truncTotalAlgHom (σ R : Type*) [Finite σ] [CommRing R] (n : ℕ) :
+noncomputable def truncTotalAlgHom (σ R : Type*) [Finite σ] [CommRing R] (n : ℕ) :
     MvPowerSeries σ R →ₐ[MvPolynomial σ R]
       MvPolynomial σ R ⧸ (MvPolynomial.idealOfVars σ R) ^ n where
   toFun p := truncTotal n p
@@ -78,7 +76,7 @@ def truncTotalAlgHom (σ R : Type*) [Finite σ] [CommRing R] (n : ℕ) :
 /-- The canonical map from multivariate power series to the adic completion of
 multivariate polynomials with respect to the ideal spanned by all variables
 when the index is finite. -/
-def toAdicCompletion (σ R : Type*) [Finite σ] [CommRing R] :
+noncomputable def toAdicCompletion (σ R : Type*) [Finite σ] [CommRing R] :
     MvPowerSeries σ R →ₐ[MvPolynomial σ R]
       AdicCompletion (MvPolynomial.idealOfVars σ R) (MvPolynomial σ R) :=
   AdicCompletion.liftAlgHom (MvPolynomial.idealOfVars σ R) (truncTotalAlgHom σ R)
@@ -108,7 +106,7 @@ theorem toAdicCompletion_coe (p : MvPolynomial σ R) :
   exact (MvPolynomial.mem_pow_idealOfVars_iff' ..).mpr fun x hx ↦ by simp [coeff_truncTotal _ hx]
 
 /-- An inverse function of `toAdicCompletion`. -/
-def toAdicCompletionInv (σ R : Type*) [CommRing R]
+noncomputable def toAdicCompletionInv (σ R : Type*) [CommRing R]
     (f : AdicCompletion (MvPolynomial.idealOfVars σ R) (MvPolynomial σ R)) :
       MvPowerSeries σ R := fun x ↦ (f.val (degree x + 1)).out.coeff x
 
@@ -137,7 +135,7 @@ theorem mk_truncTotal_toAdicCompletionInv {n : ℕ}
 /-- The isomorphism from multivariate power series to the adic completion of
 multivariate polynomials with respect to the ideal spanned by all variables
 when the index is finite. -/
-def toAdicCompletionAlgEquiv (σ R : Type*) [Finite σ] [CommRing R] :
+noncomputable def toAdicCompletionAlgEquiv (σ R : Type*) [Finite σ] [CommRing R] :
     MvPowerSeries σ R ≃ₐ[MvPolynomial σ R]
       AdicCompletion (MvPolynomial.idealOfVars σ R) (MvPolynomial σ R) where
   __ := toAdicCompletion σ R

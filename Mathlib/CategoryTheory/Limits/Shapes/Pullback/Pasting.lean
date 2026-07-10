@@ -33,8 +33,6 @@ pullback.
 
 @[expose] public section
 
-noncomputable section
-
 open CategoryTheory
 
 universe w v₁ v₂ v u u₂
@@ -522,7 +520,7 @@ instance hasPullbackVertPaste : HasPullback f (g' ≫ g) :=
   }
 
 /-- The canonical isomorphism `(X ×[Z] Y) ×[Y] W ≅ X ×[Z] W` -/
-def pullbackLeftPullbackSndIso :
+noncomputable def pullbackLeftPullbackSndIso :
     pullback (pullback.snd f g) g' ≅ pullback f (g' ≫ g) :=
   IsLimit.conePointUniqueUpToIso
       (pasteVertIsPullback rfl (pullback.isLimit f g) (pullback.isLimit (pullback.snd f g) g'))

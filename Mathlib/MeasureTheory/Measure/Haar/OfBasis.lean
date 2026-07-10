@@ -34,8 +34,6 @@ open Set TopologicalSpace MeasureTheory MeasureTheory.Measure Module
 
 open scoped Pointwise
 
-noncomputable section
-
 variable {ι ι' E F : Type*}
 
 section Fintype
@@ -251,7 +249,7 @@ variable [MeasurableSpace E] [BorelSpace E]
 
 /-- The Lebesgue measure associated to a basis, giving measure `1` to the parallelepiped spanned
 by the basis. -/
-irreducible_def addHaar (b : Basis ι ℝ E) : Measure E :=
+noncomputable irreducible_def addHaar (b : Basis ι ℝ E) : Measure E :=
   Measure.addHaarMeasure b.parallelepiped
 
 instance _root_.isAddHaarMeasure_basis_addHaar (b : Basis ι ℝ E) : IsAddHaarMeasure b.addHaar := by
@@ -306,7 +304,7 @@ This instance creates:
 However, we've decided not to refactor until one of these diamonds starts creating issues, see
 https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Hausdorff.20measure.20normalisation
 -/
-instance (priority := 100) measureSpaceOfInnerProductSpace [NormedAddCommGroup E]
+noncomputable instance (priority := 100) measureSpaceOfInnerProductSpace [NormedAddCommGroup E]
     [InnerProductSpace ℝ E] [FiniteDimensional ℝ E] [MeasurableSpace E] [BorelSpace E] :
     MeasureSpace E where volume := (stdOrthonormalBasis ℝ E).toBasis.addHaar
 
@@ -316,4 +314,4 @@ instance [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ
 
 /- This instance should not be necessary, but Lean has difficulties to find it in product
 situations if we do not declare it explicitly. -/
-instance Real.measureSpace : MeasureSpace ℝ := by infer_instance
+noncomputable instance Real.measureSpace : MeasureSpace ℝ := by infer_instance

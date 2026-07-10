@@ -34,8 +34,6 @@ We also provide the dual results. As usual, we use `Subobject (op A)` for the qu
 
 @[expose] public section
 
-noncomputable section
-
 open CategoryTheory.Limits Opposite
 
 universe w v₁ v₂ u₁ u₂
@@ -75,7 +73,7 @@ set_option backward.isDefEq.respectTransparency false in
     the structured arrow, provided that there is a morphism making the subobject into a structured
     arrow. -/
 @[simp]
-def liftSubobject {A : StructuredArrow S T} (P : Subobject A.right) {q}
+noncomputable def liftSubobject {A : StructuredArrow S T} (P : Subobject A.right) {q}
     (hq : q ≫ T.map P.arrow = A.hom) : Subobject A :=
   Subobject.mk (homMk P.arrow hq : mk q ⟶ A)
 
@@ -99,6 +97,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- If `A : S → T.obj B` is a structured arrow for `S : D` and `T : C ⥤ D`, then we can explicitly
     describe the subobjects of `A` as the subobjects `P` of `B` in `C` for which `A.hom` factors
     through the image of `P` under `T`. -/
+noncomputable
 def subobjectEquiv [HasFiniteLimits C] [PreservesFiniteLimits T] (A : StructuredArrow S T) :
     Subobject A ≃o { P : Subobject A.right // ∃ q, q ≫ T.map P.arrow = A.hom } where
   toFun P := ⟨projectSubobject P, projectSubobject_factors P⟩
@@ -161,7 +160,7 @@ set_option backward.isDefEq.respectTransparency false in
     the costructured arrow, provided that there is a morphism making the quotient into a
     costructured arrow. -/
 @[simp]
-def liftQuotient {A : CostructuredArrow S T} (P : Subobject (op A.left)) {q}
+noncomputable def liftQuotient {A : CostructuredArrow S T} (P : Subobject (op A.left)) {q}
     (hq : S.map P.arrow.unop ≫ q = A.hom) : Subobject (op A) :=
   Subobject.mk (homMk P.arrow.unop hq : A ⟶ mk q).op
 
@@ -209,6 +208,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- If `A : S.obj B ⟶ T` is a costructured arrow for `S : C ⥤ D` and `T : D`, then we can
     explicitly describe the quotients of `A` as the quotients `P` of `B` in `C` for which `A.hom`
     factors through the image of `P` under `S`. -/
+noncomputable
 def quotientEquiv [HasFiniteColimits C] [PreservesFiniteColimits S] (A : CostructuredArrow S T) :
     Subobject (op A) ≃o { P : Subobject (op A.left) // ∃ q, S.map P.arrow.unop ≫ q = A.hom } where
   toFun P := ⟨projectQuotient P, projectQuotient_factors P⟩

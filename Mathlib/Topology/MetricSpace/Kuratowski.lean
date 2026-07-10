@@ -18,8 +18,6 @@ Any partially defined Lipschitz map into `ℓ^∞` can be extended to the whole 
 
 @[expose] public section
 
-noncomputable section
-
 
 open Set Metric TopologicalSpace NNReal ENNReal lp Function
 
@@ -101,6 +99,7 @@ open KuratowskiEmbedding
 
 /-- The Kuratowski embedding is an isometric embedding of a separable metric space in `ℓ^∞(ℕ, ℝ)`.
 -/
+noncomputable
 def kuratowskiEmbedding (α : Type u) [MetricSpace α] [SeparableSpace α] : α → ℓ^∞(ℕ, ℝ) :=
   Classical.choose (KuratowskiEmbedding.exists_isometric_embedding α)
 

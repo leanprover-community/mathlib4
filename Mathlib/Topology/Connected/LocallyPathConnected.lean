@@ -42,8 +42,6 @@ a theorem in `isOpen_isPathConnected_basis`.
 
 @[expose] public section
 
-noncomputable section
-
 open Topology Filter unitInterval Set Function
 
 variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {x y z : X} {ι : Type*} {F : Set X}

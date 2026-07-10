@@ -26,7 +26,7 @@ universe v₁ v₂ v₃ u₁ u₂ u₃
 
 variable {C : Type u₁} [Category.{v₁} C] (D : Type u₂) [Category.{v₂} D]
 
-noncomputable section
+section
 
 section
 
@@ -35,7 +35,7 @@ variable [∀ a b : C, HasCoproductsOfShape (a ⟶ b) D]
 set_option backward.isDefEq.respectTransparency false in
 /-- The left adjoint of evaluation. -/
 @[simps]
-def evaluationLeftAdjoint (c : C) : D ⥤ C ⥤ D where
+noncomputable def evaluationLeftAdjoint (c : C) : D ⥤ C ⥤ D where
   obj d :=
     { obj := fun t => ∐ fun _ : c ⟶ t => d
       map := fun f => Sigma.desc fun g => (Sigma.ι fun _ => d) <| g ≫ f }
@@ -51,6 +51,7 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The adjunction showing that evaluation is a right adjoint. -/
 @[simps! unit_app counit_app_app]
+noncomputable
 def evaluationAdjunctionRight (c : C) : evaluationLeftAdjoint D c ⊣ (evaluation _ _).obj c :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun d F =>
@@ -87,7 +88,7 @@ variable [∀ a b : C, HasProductsOfShape (a ⟶ b) D]
 set_option backward.isDefEq.respectTransparency false in
 /-- The right adjoint of evaluation. -/
 @[simps]
-def evaluationRightAdjoint (c : C) : D ⥤ C ⥤ D where
+noncomputable def evaluationRightAdjoint (c : C) : D ⥤ C ⥤ D where
   obj d :=
     { obj := fun t => ∏ᶜ fun _ : t ⟶ c => d
       map := fun f => Pi.lift fun g => Pi.π _ <| f ≫ g }
@@ -97,6 +98,7 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The adjunction showing that evaluation is a left adjoint. -/
 @[simps! unit_app_app counit_app]
+noncomputable
 def evaluationAdjunctionLeft (c : C) : (evaluation _ _).obj c ⊣ evaluationRightAdjoint D c :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun F d =>

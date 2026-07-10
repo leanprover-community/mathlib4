@@ -1044,7 +1044,7 @@ theorem gcd_eq_of_dvd_sub_left {a b c : α} (h : a ∣ b - c) : gcd b a = gcd c 
 
 end IsDomain
 
-noncomputable section Constructors
+section Constructors
 
 open Associates
 
@@ -1059,6 +1059,7 @@ variable [IsCancelMulZero α]
 
 /-- Define `NormalizationMonoid` on a structure from a `MonoidHom` inverse to `Associates.mk`. -/
 @[implicit_reducible]
+noncomputable
 def strongNormalizationMonoidOfMonoidHomRightInverse [DecidableEq α] (f : Associates α →* α)
     (hinv : Function.RightInverse f Associates.mk) :
     StrongNormalizationMonoid α where
@@ -1289,6 +1290,7 @@ noncomputable def normalizedGCDMonoidOfExistsGCD [NormalizationMonoid α] [Decid
 
 /-- Define a `StrongNormalizedGCDMonoid` structure on a monoid just from
 the existence of a `gcd`. -/
+noncomputable
 abbrev strongNormalizedGCDMonoidOfExistsGCD [StrongNormalizationMonoid α] [DecidableEq α]
     (h : ∀ a b : α, ∃ c : α, ∀ d : α, d ∣ a ∧ d ∣ b ↔ d ∣ c) : StrongNormalizedGCDMonoid α where
   __ := normalizedGCDMonoidOfExistsGCD h
@@ -1333,6 +1335,7 @@ noncomputable def normalizedGCDMonoidOfExistsLCM [NormalizationMonoid α] [Decid
 
 /-- Define a `StrongNormalizedGCDMonoid` structure on a monoid just from
 the existence of a `lcm`. -/
+noncomputable
 abbrev strongNormalizedGCDMonoidOfExistsLCM [StrongNormalizationMonoid α] [DecidableEq α]
     (h : ∀ a b : α, ∃ c : α, ∀ d : α, a ∣ d ∧ b ∣ d ↔ c ∣ d) : StrongNormalizedGCDMonoid α where
   __ := normalizedGCDMonoidOfExistsLCM h

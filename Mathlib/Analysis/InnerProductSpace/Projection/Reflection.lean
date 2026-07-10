@@ -16,7 +16,7 @@ for each `u : E`, `K.reflection u = 2 • K.starProjection u - u`.
 
 @[expose] public section
 
-noncomputable section
+section
 
 namespace Submodule
 
@@ -34,7 +34,7 @@ variable (K : Submodule 𝕜 E)
 variable [K.HasOrthogonalProjection]
 
 /-- Auxiliary definition for `reflection`: the reflection as a linear equivalence. -/
-def reflectionLinearEquiv : E ≃ₗ[𝕜] E :=
+noncomputable def reflectionLinearEquiv : E ≃ₗ[𝕜] E :=
   LinearEquiv.ofInvolutive
     (2 • (K.starProjection.toLinearMap) - LinearMap.id) fun x => by
     simp [two_smul, starProjection_eq_self_iff.mpr]
@@ -44,7 +44,7 @@ sometimes understood to mean specifically reflection in a codimension-one subspa
 more generally to cover operations such as reflection in a point.  The definition here, of
 reflection in a subspace, is a more general sense of the word that includes both those common
 cases. -/
-def reflection : E ≃ₗᵢ[𝕜] E :=
+noncomputable def reflection : E ≃ₗᵢ[𝕜] E :=
   { K.reflectionLinearEquiv with
     norm_map' := by
       intro x

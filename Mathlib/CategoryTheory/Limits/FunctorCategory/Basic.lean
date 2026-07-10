@@ -178,7 +178,7 @@ noncomputable def pointwiseIsColimit [HasColimitsOfShape J C] (F : J ⥤ K ⥤ C
     (fun k ↦ ⟨colimit.cocone _, colimit.isColimit _⟩))
   exact Cocone.ext (Iso.refl _)
 
-noncomputable section
+section
 
 instance functorCategoryHasLimit (F : J ⥤ K ⥤ C) [∀ k, HasLimit (F.flip.obj k)] : HasLimit F :=
   HasLimit.mk
@@ -224,7 +224,7 @@ instance evaluation_preservesLimitsOfShape [HasLimitsOfShape J C] (k : K) :
 /-- If `F : J ⥤ K ⥤ C` is a functor into a functor category which has a limit,
 then the evaluation of that limit at `k` is the limit of the evaluations of `F.obj j` at `k`.
 -/
-def limitObjIsoLimitCompEvaluation [HasLimitsOfShape J C] (F : J ⥤ K ⥤ C) (k : K) :
+noncomputable def limitObjIsoLimitCompEvaluation [HasLimitsOfShape J C] (F : J ⥤ K ⥤ C) (k : K) :
     (limit F).obj k ≅ limit (F ⋙ (evaluation K C).obj k) :=
   preservesLimitIso ((evaluation K C).obj k) F
 
@@ -274,6 +274,7 @@ theorem limit_obj_ext {H : J ⥤ K ⥤ C} [HasLimitsOfShape J C] {k : K} {W : C}
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Taking a limit after whiskering by `G` is the same as using `G` and then taking a limit. -/
+noncomputable
 def limitCompWhiskeringLeftIsoCompLimit (F : J ⥤ K ⥤ C) (G : D ⥤ K) [HasLimitsOfShape J C] :
     limit (F ⋙ (whiskeringLeft _ _ _).obj G) ≅ G ⋙ limit F :=
   NatIso.ofComponents (fun j =>
@@ -317,6 +318,7 @@ instance evaluation_preservesColimitsOfShape [HasColimitsOfShape J C] (k : K) :
 /-- If `F : J ⥤ K ⥤ C` is a functor into a functor category which has a colimit,
 then the evaluation of that colimit at `k` is the colimit of the evaluations of `F.obj j` at `k`.
 -/
+noncomputable
 def colimitObjIsoColimitCompEvaluation [HasColimitsOfShape J C] (F : J ⥤ K ⥤ C) (k : K) :
     (colimit F).obj k ≅ colimit (F ⋙ (evaluation K C).obj k) :=
   preservesColimitIso ((evaluation K C).obj k) F
@@ -371,6 +373,7 @@ theorem colimit_obj_ext {H : J ⥤ K ⥤ C} [HasColimitsOfShape J C] {k : K} {W 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Taking a colimit after whiskering by `G` is the same as using `G` and then taking a colimit. -/
+noncomputable
 def colimitCompWhiskeringLeftIsoCompColimit (F : J ⥤ K ⥤ C) (G : D ⥤ K) [HasColimitsOfShape J C] :
     colimit (F ⋙ (whiskeringLeft _ _ _).obj G) ≅ G ⋙ colimit F :=
   NatIso.ofComponents (fun j =>
@@ -467,6 +470,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- The limit of a diagram `F : J ⥤ K ⥤ C` is isomorphic to the functor given by
 the individual limits on objects. -/
 @[simps!]
+noncomputable
 def limitIsoFlipCompLim [HasLimitsOfShape J C] (F : J ⥤ K ⥤ C) : limit F ≅ F.flip ⋙ lim :=
   NatIso.ofComponents (limitObjIsoLimitCompEvaluation F)
 
@@ -474,7 +478,7 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- `limitIsoFlipCompLim` is natural with respect to diagrams. -/
 @[simps!]
-def limIsoFlipCompWhiskerLim [HasLimitsOfShape J C] :
+noncomputable def limIsoFlipCompWhiskerLim [HasLimitsOfShape J C] :
     lim ≅ flipFunctor J K C ⋙ (whiskeringRight _ _ _).obj lim :=
   (NatIso.ofComponents (limitIsoFlipCompLim · |>.symm) fun {F G} η ↦ by
     ext k
@@ -486,6 +490,7 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- A variant of `limitIsoFlipCompLim` where the arguments of `F` are flipped. -/
 @[simps!]
+noncomputable
 def limitFlipIsoCompLim [HasLimitsOfShape J C] (F : K ⥤ J ⥤ C) : limit F.flip ≅ F ⋙ lim :=
   let f := fun k =>
     limitObjIsoLimitCompEvaluation F.flip k ≪≫ HasLimit.isoOfNatIso (flipCompEvaluation _ _)
@@ -495,7 +500,7 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- `limitFlipIsoCompLim` is natural with respect to diagrams. -/
 @[simps!]
-def limCompFlipIsoWhiskerLim [HasLimitsOfShape J C] :
+noncomputable def limCompFlipIsoWhiskerLim [HasLimitsOfShape J C] :
     flipFunctor K J C ⋙ lim ≅ (whiskeringRight _ _ _).obj lim :=
   (NatIso.ofComponents (limitFlipIsoCompLim · |>.symm) fun {F G} η ↦ by
     ext k
@@ -507,7 +512,7 @@ def limCompFlipIsoWhiskerLim [HasLimitsOfShape J C] :
 Note that this does not require `K` to be small.
 -/
 @[simps!]
-def limitIsoSwapCompLim [HasLimitsOfShape J C] (G : J ⥤ K ⥤ C) :
+noncomputable def limitIsoSwapCompLim [HasLimitsOfShape J C] (G : J ⥤ K ⥤ C) :
     limit G ≅ curry.obj (Prod.swap K J ⋙ uncurry.obj G) ⋙ lim :=
   limitIsoFlipCompLim G ≪≫ isoWhiskerRight (flipIsoCurrySwapUncurry _) _
 
@@ -515,6 +520,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- The colimit of a diagram `F : J ⥤ K ⥤ C` is isomorphic to the functor given by
 the individual colimits on objects. -/
 @[simps!]
+noncomputable
 def colimitIsoFlipCompColim [HasColimitsOfShape J C] (F : J ⥤ K ⥤ C) : colimit F ≅ F.flip ⋙ colim :=
   NatIso.ofComponents (colimitObjIsoColimitCompEvaluation F)
 
@@ -522,7 +528,7 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- `colimitIsoFlipCompColim` is natural with respect to diagrams. -/
 @[simps!]
-def colimIsoFlipCompWhiskerColim [HasColimitsOfShape J C] :
+noncomputable def colimIsoFlipCompWhiskerColim [HasColimitsOfShape J C] :
     colim ≅ flipFunctor J K C ⋙ (whiskeringRight _ _ _).obj colim :=
   NatIso.ofComponents colimitIsoFlipCompColim fun {F G} η ↦ by
     ext k
@@ -534,6 +540,7 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- A variant of `colimitIsoFlipCompColim` where the arguments of `F` are flipped. -/
 @[simps!]
+noncomputable
 def colimitFlipIsoCompColim [HasColimitsOfShape J C] (F : K ⥤ J ⥤ C) : colimit F.flip ≅ F ⋙ colim :=
   let f := fun _ =>
       colimitObjIsoColimitCompEvaluation _ _ ≪≫ HasColimit.isoOfNatIso (flipCompEvaluation _ _)
@@ -543,7 +550,7 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- `colimitFlipIsoCompColim` is natural with respect to diagrams. -/
 @[simps!]
-def colimCompFlipIsoWhiskerColim [HasColimitsOfShape J C] :
+noncomputable def colimCompFlipIsoWhiskerColim [HasColimitsOfShape J C] :
     flipFunctor K J C ⋙ colim ≅ (whiskeringRight _ _ _).obj colim :=
   NatIso.ofComponents colimitFlipIsoCompColim fun {F G} η ↦ by
     ext k
@@ -555,7 +562,7 @@ def colimCompFlipIsoWhiskerColim [HasColimitsOfShape J C] :
 Note that this does not require `K` to be small.
 -/
 @[simps!]
-def colimitIsoSwapCompColim [HasColimitsOfShape J C] (G : J ⥤ K ⥤ C) :
+noncomputable def colimitIsoSwapCompColim [HasColimitsOfShape J C] (G : J ⥤ K ⥤ C) :
     colimit G ≅ curry.obj (Prod.swap K J ⋙ uncurry.obj G) ⋙ colim :=
   colimitIsoFlipCompColim G ≪≫ isoWhiskerRight (flipIsoCurrySwapUncurry _) _
 

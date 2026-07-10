@@ -41,7 +41,7 @@ number field, units, Dirichlet unit theorem
 
 @[expose] public section
 
-noncomputable section
+section
 
 open Module NumberField NumberField.InfinitePlace NumberField.Units
 
@@ -72,7 +72,7 @@ section NumberField
 variable [NumberField K]
 
 /-- The distinguished infinite place. -/
-def w₀ : InfinitePlace K := (inferInstance : Nonempty (InfinitePlace K)).some
+noncomputable def w₀ : InfinitePlace K := (inferInstance : Nonempty (InfinitePlace K)).some
 
 variable (K) in
 /-- The `logSpace` is defined as `{w : InfinitePlace K // w ≠ w₀} → ℝ` where `w₀` is the
@@ -81,7 +81,7 @@ abbrev logSpace := {w : InfinitePlace K // w ≠ w₀} → ℝ
 
 variable (K) in
 /-- The logarithmic embedding of the units (seen as an `Additive` group). -/
-def _root_.NumberField.Units.logEmbedding :
+noncomputable def _root_.NumberField.Units.logEmbedding :
     Additive ((𝓞 K)ˣ) →+ logSpace K :=
 { toFun := fun x w ↦ mult w.val * Real.log (w.val ↑x.toMul)
   map_zero' := by simp; rfl
@@ -248,7 +248,7 @@ theorem seq_next {x : 𝓞 K} (hx : x ≠ 0) :
 • `seq n` is nonzero;
 • for `w : InfinitePlace K`, `w ≠ w₁ → w (seq n + 1) < w (seq n)`;
 • `∣norm (seq n)∣ ≤ B`. -/
-def seq : ℕ → { x : 𝓞 K // x ≠ 0 }
+noncomputable def seq : ℕ → { x : 𝓞 K // x ≠ 0 }
   | 0 => ⟨1, by simp⟩
   | n + 1 =>
     ⟨(seq_next K w₁ hB (seq n).prop).choose, (seq_next K w₁ hB (seq n).prop).choose_spec.1⟩
@@ -354,7 +354,7 @@ variable [NumberField K]
 open dirichletUnitTheorem Module
 
 /-- The unit rank of the number field `K`, it is equal to `card (InfinitePlace K) - 1`. -/
-def rank : ℕ := Fintype.card (InfinitePlace K) - 1
+noncomputable def rank : ℕ := Fintype.card (InfinitePlace K) - 1
 
 instance instDiscrete_unitLattice : DiscreteTopology (unitLattice K) := by
   classical
@@ -386,7 +386,7 @@ theorem unitLattice_rank :
   rw [← Units.finrank_eq_rank, ZLattice.rank ℝ]
 
 /-- The map obtained by quotienting by the kernel of `logEmbedding`. -/
-def logEmbeddingQuot :
+noncomputable def logEmbeddingQuot :
     Additive ((𝓞 K)ˣ ⧸ (torsion K)) →+ logSpace K :=
   MonoidHom.toAdditiveLeft <|
     (QuotientGroup.kerLift (AddMonoidHom.toMultiplicativeRight (logEmbedding K))).comp
@@ -410,7 +410,7 @@ theorem logEmbeddingQuot_injective :
 
 /-- The linear equivalence between `(𝓞 K)ˣ ⧸ (torsion K)` as an additive `ℤ`-module and
 `unitLattice` . -/
-def logEmbeddingEquiv :
+noncomputable def logEmbeddingEquiv :
     Additive ((𝓞 K)ˣ ⧸ (torsion K)) ≃ₗ[ℤ] (unitLattice K) :=
   LinearEquiv.ofBijective ((logEmbeddingQuot K).codRestrict (unitLattice K)
     (Quotient.ind fun _ ↦ logEmbeddingQuot_apply K _ ▸
@@ -460,17 +460,17 @@ theorem finrank_eq : finrank ℤ (Additive (𝓞 K)ˣ) = rank K := by
   simpa [← finrank_modTorsion] using! finrank_quotient_torsion_eq.symm
 
 /-- A basis of the quotient `(𝓞 K)ˣ ⧸ (torsion K)` seen as an additive ℤ-module. -/
-def basisModTorsion : Basis (Fin (rank K)) ℤ (Additive ((𝓞 K)ˣ ⧸ (torsion K))) :=
+noncomputable def basisModTorsion : Basis (Fin (rank K)) ℤ (Additive ((𝓞 K)ˣ ⧸ (torsion K))) :=
   Basis.reindex (Module.Free.chooseBasis ℤ _) (Fintype.equivOfCardEq <| by
     rw [← Module.finrank_eq_card_chooseBasisIndex, finrank_modTorsion, Fintype.card_fin])
 
 /-- The basis of the `unitLattice` obtained by mapping `basisModTorsion` via `logEmbedding`. -/
-def basisUnitLattice : Basis (Fin (rank K)) ℤ (unitLattice K) :=
+noncomputable def basisUnitLattice : Basis (Fin (rank K)) ℤ (unitLattice K) :=
   (basisModTorsion K).map (logEmbeddingEquiv K)
 
 /-- A fundamental system of units of `K`. The units of `fundSystem` are arbitrary lifts of the
 units in `basisModTorsion`. -/
-def fundSystem : Fin (rank K) → (𝓞 K)ˣ :=
+noncomputable def fundSystem : Fin (rank K) → (𝓞 K)ˣ :=
   -- `:)` prevents the `⧸` decaying to a quotient by `leftRel` when we unfold this later
   fun i ↦ Quotient.out ((basisModTorsion K i).toMul :)
 

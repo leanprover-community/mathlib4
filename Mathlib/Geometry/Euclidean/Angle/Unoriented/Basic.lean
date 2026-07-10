@@ -24,8 +24,6 @@ This file defines unoriented angles in real inner product spaces.
 
 assert_not_exists HasFDerivAt ConformalAt
 
-noncomputable section
-
 open Real Set
 
 open RealInnerProductSpace
@@ -38,7 +36,7 @@ variable {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] {x y : V}
 this is π/2. See `Orientation.oangle` for the corresponding oriented angle
 definition. -/
 @[wikidata Q11352]
-def angle (x y : V) : ℝ :=
+noncomputable def angle (x y : V) : ℝ :=
   Real.arccos (⟪x, y⟫ / (‖x‖ * ‖y‖))
 
 theorem continuousAt_angle {x : V × V} (hx1 : x.1 ≠ 0) (hx2 : x.2 ≠ 0) :

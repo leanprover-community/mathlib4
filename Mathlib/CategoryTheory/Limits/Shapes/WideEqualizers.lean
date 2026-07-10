@@ -46,8 +46,6 @@ general limits can be used.
 @[expose] public section
 
 
-noncomputable section
-
 namespace CategoryTheory.Limits
 
 open CategoryTheory
@@ -217,7 +215,7 @@ set_option backward.defeqAttrib.useBackward true in
 `∀ j₁ j₂, ι ≫ f j₁ = ι ≫ f j₂`.
 -/
 @[simps]
-def Trident.ofι [Nonempty J] {P : C} (ι : P ⟶ X) (w : ∀ j₁ j₂, ι ≫ f j₁ = ι ≫ f j₂) :
+noncomputable def Trident.ofι [Nonempty J] {P : C} (ι : P ⟶ X) (w : ∀ j₁ j₂, ι ≫ f j₁ = ι ≫ f j₂) :
     Trident f where
   pt := P
   π :=
@@ -232,6 +230,7 @@ set_option backward.defeqAttrib.useBackward true in
 `∀ j₁ j₂, f j₁ ≫ π = f j₂ ≫ π`.
 -/
 @[simps]
+noncomputable
 def Cotrident.ofπ [Nonempty J] {P : C} (π : Y ⟶ P) (w : ∀ j₁ j₂, f j₁ ≫ π = f j₂ ≫ π) :
     Cotrident f where
   pt := P
@@ -285,6 +284,7 @@ theorem Cotrident.IsColimit.hom_ext [Nonempty J] {s : Cotrident f} (hs : IsColim
 /-- If `s` is a limit trident over `f`, then a morphism `k : W ⟶ X` satisfying
     `∀ j₁ j₂, k ≫ f j₁ = k ≫ f j₂` induces a morphism `l : W ⟶ s.X` such that
     `l ≫ Trident.ι s = k`. -/
+noncomputable
 def Trident.IsLimit.lift' [Nonempty J] {s : Trident f} (hs : IsLimit s) {W : C} (k : W ⟶ X)
     (h : ∀ j₁ j₂, k ≫ f j₁ = k ≫ f j₂) : { l : W ⟶ s.pt // l ≫ Trident.ι s = k } :=
   ⟨hs.lift <| Trident.ofι _ h, hs.fac _ _⟩
@@ -292,6 +292,7 @@ def Trident.IsLimit.lift' [Nonempty J] {s : Trident f} (hs : IsLimit s) {W : C} 
 /-- If `s` is a colimit cotrident over `f`, then a morphism `k : Y ⟶ W` satisfying
     `∀ j₁ j₂, f j₁ ≫ k = f j₂ ≫ k` induces a morphism `l : s.X ⟶ W` such that
     `Cotrident.π s ≫ l = k`. -/
+noncomputable
 def Cotrident.IsColimit.desc' [Nonempty J] {s : Cotrident f} (hs : IsColimit s) {W : C} (k : Y ⟶ W)
     (h : ∀ j₁ j₂, f j₁ ≫ k = f j₂ ≫ k) : { l : s.pt ⟶ W // Cotrident.π s ≫ l = k } :=
   ⟨hs.desc <| Cotrident.ofπ _ h, hs.fac _ _⟩
@@ -351,7 +352,7 @@ are in bijection with morphisms `h : Z ⟶ X` such that `∀ j₁ j₂, h ≫ f 
 Further, this bijection is natural in `Z`: see `Trident.Limits.homIso_natural`.
 -/
 @[simps]
-def Trident.IsLimit.homIso [Nonempty J] {t : Trident f} (ht : IsLimit t) (Z : C) :
+noncomputable def Trident.IsLimit.homIso [Nonempty J] {t : Trident f} (ht : IsLimit t) (Z : C) :
     (Z ⟶ t.pt) ≃ { h : Z ⟶ X // ∀ j₁ j₂, h ≫ f j₁ = h ≫ f j₂ } where
   toFun k := ⟨k ≫ t.ι, by simp⟩
   invFun h := (Trident.IsLimit.lift' ht _ h.prop).1
@@ -371,6 +372,7 @@ point to `Z` are in bijection with morphisms `h : Z ⟶ X` such that
 `Cotrident.IsColimit.homIso_natural`.
 -/
 @[simps]
+noncomputable
 def Cotrident.IsColimit.homIso [Nonempty J] {t : Cotrident f} (ht : IsColimit t) (Z : C) :
     (t.pt ⟶ Z) ≃ { h : Y ⟶ Z // ∀ j₁ j₂, f j₁ ≫ h = f j₂ ≫ h } where
   toFun k := ⟨t.π ≫ k, by simp⟩
@@ -519,17 +521,17 @@ variable [HasWideEqualizer f]
 
 /-- If a wide equalizer of `f` exists, we can access an arbitrary choice of such by
     saying `wideEqualizer f`. -/
-abbrev wideEqualizer : C :=
+noncomputable abbrev wideEqualizer : C :=
   limit (parallelFamily f)
 
 /-- If a wide equalizer of `f` exists, we can access the inclusion `wideEqualizer f ⟶ X` by
     saying `wideEqualizer.ι f`. -/
-abbrev wideEqualizer.ι : wideEqualizer f ⟶ X :=
+noncomputable abbrev wideEqualizer.ι : wideEqualizer f ⟶ X :=
   limit.π (parallelFamily f) zero
 
 /-- A wide equalizer cone for a parallel family `f`.
 -/
-abbrev wideEqualizer.trident : Trident f :=
+noncomputable abbrev wideEqualizer.trident : Trident f :=
   limit.cone (parallelFamily f)
 
 theorem wideEqualizer.trident_ι : (wideEqualizer.trident f).ι = wideEqualizer.ι f :=
@@ -545,7 +547,7 @@ theorem wideEqualizer.condition (j₁ j₂ : J) : wideEqualizer.ι f ≫ f j₁ 
 
 set_option backward.defeqAttrib.useBackward true in
 /-- The wideEqualizer built from `wideEqualizer.ι f` is limiting. -/
-def wideEqualizerIsWideEqualizer [Nonempty J] :
+noncomputable def wideEqualizerIsWideEqualizer [Nonempty J] :
     IsLimit (Trident.ofι (wideEqualizer.ι f) (wideEqualizer.condition f)) :=
   IsLimit.ofIsoLimit (limit.isLimit _) (Trident.ext (Iso.refl _))
 
@@ -553,6 +555,7 @@ variable {f}
 
 /-- A morphism `k : W ⟶ X` satisfying `∀ j₁ j₂, k ≫ f j₁ = k ≫ f j₂` factors through the
     wide equalizer of `f` via `wideEqualizer.lift : W ⟶ wideEqualizer f`. -/
+noncomputable
 abbrev wideEqualizer.lift [Nonempty J] {W : C} (k : W ⟶ X) (h : ∀ j₁ j₂, k ≫ f j₁ = k ≫ f j₂) :
     W ⟶ wideEqualizer f :=
   limit.lift (parallelFamily f) (Trident.ofι k h)
@@ -566,6 +569,7 @@ theorem wideEqualizer.lift_ι [Nonempty J] {W : C} (k : W ⟶ X)
 
 /-- A morphism `k : W ⟶ X` satisfying `∀ j₁ j₂, k ≫ f j₁ = k ≫ f j₂` induces a morphism
     `l : W ⟶ wideEqualizer f` satisfying `l ≫ wideEqualizer.ι f = k`. -/
+noncomputable
 def wideEqualizer.lift' [Nonempty J] {W : C} (k : W ⟶ X) (h : ∀ j₁ j₂, k ≫ f j₁ = k ≫ f j₂) :
     { l : W ⟶ wideEqualizer f // l ≫ wideEqualizer.ι f = k } :=
   ⟨wideEqualizer.lift k h, wideEqualizer.lift_ι _ _⟩
@@ -605,17 +609,17 @@ variable [HasWideCoequalizer f]
 
 /-- If a wide coequalizer of `f` exists, we can access an arbitrary choice of such by
     saying `wideCoequalizer f`. -/
-abbrev wideCoequalizer : C :=
+noncomputable abbrev wideCoequalizer : C :=
   colimit (parallelFamily f)
 
 /-- If a wideCoequalizer of `f` exists, we can access the corresponding projection by
     saying `wideCoequalizer.π f`. -/
-abbrev wideCoequalizer.π : Y ⟶ wideCoequalizer f :=
+noncomputable abbrev wideCoequalizer.π : Y ⟶ wideCoequalizer f :=
   colimit.ι (parallelFamily f) one
 
 /-- An arbitrary choice of coequalizer cocone for a parallel family `f`.
 -/
-abbrev wideCoequalizer.cotrident : Cotrident f :=
+noncomputable abbrev wideCoequalizer.cotrident : Cotrident f :=
   colimit.cocone (parallelFamily f)
 
 theorem wideCoequalizer.cotrident_π : (wideCoequalizer.cotrident f).π = wideCoequalizer.π f :=
@@ -632,7 +636,7 @@ theorem wideCoequalizer.condition (j₁ j₂ : J) :
 
 set_option backward.defeqAttrib.useBackward true in
 /-- The cotrident built from `wideCoequalizer.π f` is colimiting. -/
-def wideCoequalizerIsWideCoequalizer [Nonempty J] :
+noncomputable def wideCoequalizerIsWideCoequalizer [Nonempty J] :
     IsColimit (Cotrident.ofπ (wideCoequalizer.π f) (wideCoequalizer.condition f)) :=
   IsColimit.ofIsoColimit (colimit.isColimit _) (Cotrident.ext (Iso.refl _))
 
@@ -640,6 +644,7 @@ variable {f}
 
 /-- Any morphism `k : Y ⟶ W` satisfying `∀ j₁ j₂, f j₁ ≫ k = f j₂ ≫ k` factors through the
     wide coequalizer of `f` via `wideCoequalizer.desc : wideCoequalizer f ⟶ W`. -/
+noncomputable
 abbrev wideCoequalizer.desc [Nonempty J] {W : C} (k : Y ⟶ W) (h : ∀ j₁ j₂, f j₁ ≫ k = f j₂ ≫ k) :
     wideCoequalizer f ⟶ W :=
   colimit.desc (parallelFamily f) (Cotrident.ofπ k h)
@@ -653,6 +658,7 @@ theorem wideCoequalizer.π_desc [Nonempty J] {W : C} (k : Y ⟶ W)
 
 /-- Any morphism `k : Y ⟶ W` satisfying `∀ j₁ j₂, f j₁ ≫ k = f j₂ ≫ k` induces a morphism
     `l : wideCoequalizer f ⟶ W` satisfying `wideCoequalizer.π ≫ g = l`. -/
+noncomputable
 def wideCoequalizer.desc' [Nonempty J] {W : C} (k : Y ⟶ W) (h : ∀ j₁ j₂, f j₁ ≫ k = f j₂ ≫ k) :
     { l : wideCoequalizer f ⟶ W // wideCoequalizer.π f ≫ l = k } :=
   ⟨wideCoequalizer.desc k h, wideCoequalizer.π_desc _ _⟩

@@ -23,7 +23,7 @@ It satisfies the following change of variables formula (see `integral_comp_polar
 
 @[expose] public section
 
-noncomputable section Real
+section Real
 
 open Real Set MeasureTheory
 
@@ -32,7 +32,7 @@ open scoped ENNReal Real Topology
 /-- The polar coordinates are an open partial homeomorphism in `ℝ^2`, mapping `(r cos θ, r sin θ)`
 to `(r, θ)`. It is a homeomorphism between `ℝ^2 - (-∞, 0]` and `(0, +∞) × (-π, π)`. -/
 @[simps]
-def polarCoord : OpenPartialHomeomorph (ℝ × ℝ) (ℝ × ℝ) where
+noncomputable def polarCoord : OpenPartialHomeomorph (ℝ × ℝ) (ℝ × ℝ) where
   toFun q := (√(q.1 ^ 2 + q.2 ^ 2), Complex.arg (Complex.equivRealProd.symm q))
   invFun p := (p.1 * cos p.2, p.1 * sin p.2)
   source := {q | 0 < q.1} ∪ {q | q.2 ≠ 0}
@@ -93,7 +93,7 @@ theorem continuous_polarCoord_symm :
   .prodMk (by fun_prop) (by fun_prop)
 
 /-- The derivative of `polarCoord.symm`, see `hasFDerivAt_polarCoord_symm`. -/
-def fderivPolarCoordSymm (p : ℝ × ℝ) : ℝ × ℝ →L[ℝ] ℝ × ℝ :=
+noncomputable def fderivPolarCoordSymm (p : ℝ × ℝ) : ℝ × ℝ →L[ℝ] ℝ × ℝ :=
   (Matrix.toLin (.finTwoProd ℝ) (.finTwoProd ℝ)
     !![cos p.2, -p.1 * sin p.2; sin p.2, p.1 * cos p.2]).toContinuousLinearMap
 
@@ -171,8 +171,6 @@ theorem lintegral_comp_polarCoord_symm (f : ℝ × ℝ → ℝ≥0∞) :
       rw [abs_of_pos hx.1]
 
 end Real
-
-noncomputable section Complex
 
 namespace Complex
 

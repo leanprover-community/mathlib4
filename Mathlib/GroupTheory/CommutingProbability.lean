@@ -27,14 +27,12 @@ This file introduces the commuting probability of finite groups.
 
 assert_not_exists Ideal TwoSidedIdeal
 
-noncomputable section
-
 open Fintype
 
 variable (M : Type*) [Mul M]
 
 /-- The commuting probability of a finite type with a multiplication operation. -/
-def commProb : ℚ :=
+noncomputable def commProb : ℚ :=
   Nat.card { p : M × M // Commute p.1 p.2 } / (Nat.card M : ℚ) ^ 2
 
 theorem commProb_def :

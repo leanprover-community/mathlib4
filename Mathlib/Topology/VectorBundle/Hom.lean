@@ -32,8 +32,6 @@ using a norm on the fiber model if this helps.
 @[expose] public section
 
 
-noncomputable section
-
 open Bundle Set ContinuousLinearMap Topology
 open scoped Bundle
 
@@ -58,7 +56,7 @@ namespace Bundle.Pretrivialization
 coordinate change function between the two induced (pre)trivializations
 `Pretrivialization.continuousLinearMap σ e₁ e₂` and
 `Pretrivialization.continuousLinearMap σ e₁' e₂'` of the bundle of continuous linear maps. -/
-def continuousLinearMapCoordChange [e₁.IsLinear 𝕜₁] [e₁'.IsLinear 𝕜₁] [e₂.IsLinear 𝕜₂]
+noncomputable def continuousLinearMapCoordChange [e₁.IsLinear 𝕜₁] [e₁'.IsLinear 𝕜₁] [e₂.IsLinear 𝕜₂]
     [e₂'.IsLinear 𝕜₂] (b : B) : (F₁ →SL[σ] F₂) →L[𝕜₂] F₁ →SL[σ] F₂ :=
   ((e₁'.coordChangeL 𝕜₁ e₁ b).symm.arrowCongrSL (e₂.coordChangeL 𝕜₂ e₂' b) :
     (F₁ →SL[σ] F₂) ≃L[𝕜₂] F₁ →SL[σ] F₂)
@@ -93,7 +91,7 @@ variable [e₁.IsLinear 𝕜₁] [e₁'.IsLinear 𝕜₁] [e₂.IsLinear 𝕜₂
 continuous `σ`-semilinear maps from `E₁` to `E₂`. That is, the map which will later become a
 trivialization, after the bundle of continuous semilinear maps is equipped with the right
 topological vector bundle structure. -/
-def continuousLinearMap :
+noncomputable def continuousLinearMap :
     Pretrivialization (F₁ →SL[σ] F₂) (π (F₁ →SL[σ] F₂) (fun x ↦ E₁ x →SL[σ] E₂ x)) where
   toFun p := ⟨p.1, .comp (e₂.continuousLinearMapAt 𝕜₂ p.1) (p.2.comp (e₁.symmL 𝕜₁ p.1))⟩
   invFun p := ⟨p.1, .comp (e₂.symmL 𝕜₂ p.1) (p.2.comp (e₁.continuousLinearMapAt 𝕜₁ p.1))⟩
@@ -174,7 +172,7 @@ set_option backward.defeqAttrib.useBackward true in
 `VectorPrebundle` (this is an auxiliary construction for the
 `VectorBundle` instance, in which the pretrivializations are collated but no topology
 on the total space is yet provided). -/
-def Bundle.ContinuousLinearMap.vectorPrebundle :
+noncomputable def Bundle.ContinuousLinearMap.vectorPrebundle :
     VectorPrebundle 𝕜₂ (F₁ →SL[σ] F₂) (fun x ↦ E₁ x →SL[σ] E₂ x) where
   pretrivializationAtlas :=
     {e | ∃ (e₁ : Trivialization F₁ (π F₁ E₁)) (e₂ : Trivialization F₂ (π F₂ E₂))
@@ -213,12 +211,12 @@ def Bundle.ContinuousLinearMap.vectorPrebundle :
 
 /-- Topology on the total space of the continuous `σ`-semilinear maps between two "normable" vector
 bundles over the same base. -/
-instance Bundle.ContinuousLinearMap.topologicalSpaceTotalSpace :
+noncomputable instance Bundle.ContinuousLinearMap.topologicalSpaceTotalSpace :
     TopologicalSpace (TotalSpace (F₁ →SL[σ] F₂) (fun x ↦ E₁ x →SL[σ] E₂ x)) :=
   (Bundle.ContinuousLinearMap.vectorPrebundle σ F₁ E₁ F₂ E₂).totalSpaceTopology
 
 /-- The continuous `σ`-semilinear maps between two vector bundles form a fiber bundle. -/
-instance Bundle.ContinuousLinearMap.fiberBundle :
+noncomputable instance Bundle.ContinuousLinearMap.fiberBundle :
     FiberBundle (F₁ →SL[σ] F₂) fun x ↦ E₁ x →SL[σ] E₂ x :=
   (Bundle.ContinuousLinearMap.vectorPrebundle σ F₁ E₁ F₂ E₂).toFiberBundle
 
@@ -232,7 +230,7 @@ variable [he₁ : MemTrivializationAtlas e₁] [he₂ : MemTrivializationAtlas e
 /-- Given trivializations `e₁`, `e₂` in the atlas for vector bundles `E₁`, `E₂` over a base `B`,
 the induced trivialization for the continuous `σ`-semilinear maps from `E₁` to `E₂`,
 whose base set is `e₁.baseSet ∩ e₂.baseSet`. -/
-def Bundle.Trivialization.continuousLinearMap :
+noncomputable def Bundle.Trivialization.continuousLinearMap :
     Trivialization (F₁ →SL[σ] F₂) (π (F₁ →SL[σ] F₂) (fun x ↦ E₁ x →SL[σ] E₂ x)) :=
   VectorPrebundle.trivializationOfMemPretrivializationAtlas _ ⟨e₁, e₂, he₁, he₂, rfl⟩
 

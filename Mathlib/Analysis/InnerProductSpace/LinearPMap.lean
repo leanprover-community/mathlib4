@@ -55,8 +55,6 @@ Unbounded operators, closed operators
 @[expose] public section
 
 
-noncomputable section
-
 open RCLike LinearPMap WithLp
 
 open scoped ComplexConjugate
@@ -107,7 +105,7 @@ theorem adjointDomainMkCLM_apply (y : T.adjointDomain) (x : T.domain) :
   rfl
 
 /-- The unique continuous extension of the operator `adjointDomainMkCLM` to `E`. -/
-def adjointDomainMkCLMExtend (y : T.adjointDomain) : StrongDual 𝕜 E :=
+noncomputable def adjointDomainMkCLMExtend (y : T.adjointDomain) : StrongDual 𝕜 E :=
   (T.adjointDomainMkCLM y).extend (Submodule.subtypeL T.domain)
 
 variable {T}
@@ -126,7 +124,7 @@ variable (hT : Dense (T.domain : Set E))
 
 This is an auxiliary definition needed to define the adjoint operator as a `LinearPMap` without
 the assumption that `T.domain` is dense. -/
-def adjointAux : T.adjointDomain →ₗ[𝕜] E where
+noncomputable def adjointAux : T.adjointDomain →ₗ[𝕜] E where
   toFun y := (InnerProductSpace.toDual 𝕜 E).symm (adjointDomainMkCLMExtend T y)
   map_add' x y :=
     hT.eq_of_inner_left 𝕜 fun z zin => by
@@ -149,7 +147,7 @@ variable (T)
 
 open scoped Classical in
 /-- The adjoint operator as a partially defined linear operator, denoted as `T†`. -/
-def adjoint : F →ₗ.[𝕜] E where
+noncomputable def adjoint : F →ₗ.[𝕜] E where
   domain := T.adjointDomain
   toFun := if hT : Dense (T.domain : Set E) then adjointAux hT else 0
 
@@ -225,7 +223,7 @@ namespace LinearPMap
 
 variable [CompleteSpace E]
 
-instance instStar : Star (E →ₗ.[𝕜] E) where
+noncomputable instance instStar : Star (E →ₗ.[𝕜] E) where
   star := fun A ↦ A.adjoint
 
 variable {A : E →ₗ.[𝕜] E}

@@ -56,8 +56,6 @@ and for `ContinuousMap.homotopic` and `ContinuousMap.homotopic_rel`, we also def
 
 @[expose] public section
 
-noncomputable section
-
 universe u v w x
 
 variable {F : Type*} {X : Type u} {Y : Type v} {Z : Type w} {Z' : Type x} {ι : Type*}
@@ -155,7 +153,7 @@ theorem curry_apply (F : Homotopy f₀ f₁) (t : I) (x : X) : F.curry t x = F (
 
 /-- Continuously extending a curried homotopy to a function from `ℝ` to `C(X, Y)`.
 -/
-def extend (F : Homotopy f₀ f₁) : C(ℝ, C(X, Y)) :=
+noncomputable def extend (F : Homotopy f₀ f₁) : C(ℝ, C(X, Y)) :=
   F.curry.IccExtend zero_le_one
 
 theorem extend_apply_of_le_zero (F : Homotopy f₀ f₁) {t : ℝ} (ht : t ≤ 0) (x : X) :
@@ -226,6 +224,7 @@ Given `ContinuousMap.Homotopy f₀ f₁` and `ContinuousMap.Homotopy f₁ f₂`,
 `ContinuousMap.Homotopy f₀ f₂` by putting the first homotopy on `[0, 1/2]` and the second
 on `[1/2, 1]`.
 -/
+noncomputable
 def trans {f₀ f₁ f₂ : C(X, Y)} (F : Homotopy f₀ f₁) (G : Homotopy f₁ f₂) : Homotopy f₀ f₂ where
   toFun x := if (x.1 : ℝ) ≤ 1 / 2 then F.extend (2 * x.1) x.2 else G.extend (2 * x.1 - 1) x.2
   continuous_toFun :=
@@ -472,7 +471,7 @@ theorem symm_bijective {f₀ f₁ : C(X, Y)} :
 Given `HomotopyWith f₀ f₁ P` and `HomotopyWith f₁ f₂ P`, we can define a `HomotopyWith f₀ f₂ P`
 by putting the first homotopy on `[0, 1/2]` and the second on `[1/2, 1]`.
 -/
-def trans {f₀ f₁ f₂ : C(X, Y)} (F : HomotopyWith f₀ f₁ P) (G : HomotopyWith f₁ f₂ P) :
+noncomputable def trans {f₀ f₁ f₂ : C(X, Y)} (F : HomotopyWith f₀ f₁ P) (G : HomotopyWith f₁ f₂ P) :
     HomotopyWith f₀ f₂ P :=
   { F.toHomotopy.trans G.toHomotopy with
     prop' := fun t => by
@@ -585,6 +584,7 @@ theorem symm_bijective :
 /-- Given `HomotopyRel f₀ f₁ S` and `HomotopyRel f₁ f₂ S`, we can define a `HomotopyRel f₀ f₂ S`
 by putting the first homotopy on `[0, 1/2]` and the second on `[1/2, 1]`.
 -/
+noncomputable
 def trans (F : HomotopyRel f₀ f₁ S) (G : HomotopyRel f₁ f₂ S) : HomotopyRel f₀ f₂ S where
   toHomotopy := F.toHomotopy.trans G.toHomotopy
   prop' t x hx := by

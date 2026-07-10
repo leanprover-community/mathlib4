@@ -52,8 +52,6 @@ so the definition does not apply. Hence the definition should be more general, a
 
 public section
 
-noncomputable section
-
 open scoped Manifold ContDiff
 
 -- See note [Design choices about smooth algebraic structures]

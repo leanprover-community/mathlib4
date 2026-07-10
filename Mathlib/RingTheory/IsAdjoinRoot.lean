@@ -61,8 +61,6 @@ Using `IsAdjoinRoot` to map out of `S`:
 
 open Module Polynomial
 
-noncomputable section
-
 universe u v
 
 -- This class doesn't really make sense on a predicate
@@ -105,7 +103,7 @@ namespace IsAdjoinRoot
 variable (h : IsAdjoinRoot S f)
 
 /-- `(h : IsAdjoinRoot S f).root` is the root of `f` that can be adjoined to generate `S`. -/
-def root : S := h.map X
+noncomputable def root : S := h.map X
 
 theorem algebraMap_apply (x : R) :
     algebraMap R S x = h.map (Polynomial.C x) := AlgHom.algebraMap_eq_apply h.map rfl
@@ -147,7 +145,7 @@ theorem ext (h' : IsAdjoinRoot S f) (eq : h.root = h'.root) : h = h' :=
 
 If `f` is monic, use `IsAdjoinRootMonic.modByMonicHom` for a unique choice of representative.
 -/
-def repr (x : S) : R[X] := (h.map_surjective x).choose
+noncomputable def repr (x : S) : R[X] := (h.map_surjective x).choose
 
 @[simp]
 theorem map_repr (x : S) : h.map (h.repr x) = x := (h.map_surjective x).choose_spec
@@ -164,7 +162,7 @@ section Equiv
 variable {T : Type*} [Ring T] [Algebra R T]
 
 /-- Algebra isomorphism with `R[X]/(f)`. -/
-def adjoinRootAlgEquiv : AdjoinRoot f ≃ₐ[R] S :=
+noncomputable def adjoinRootAlgEquiv : AdjoinRoot f ≃ₐ[R] S :=
   (Ideal.quotientEquivAlgOfEq R h.ker_map.symm).trans <|
     Ideal.quotientKerAlgEquivOfSurjective h.map_surjective
 
@@ -194,7 +192,7 @@ variable (h' : IsAdjoinRoot T f)
 This is the converse of `IsAdjoinRoot.ofAlgEquiv`: this turns an `IsAdjoinRoot` into an
 `AlgEquiv`, and `IsAdjoinRoot.ofAlgEquiv` turns an `AlgEquiv` into an `IsAdjoinRoot`.
 -/
-def algEquiv : S ≃ₐ[R] T := h.adjoinRootAlgEquiv.symm.trans h'.adjoinRootAlgEquiv
+noncomputable def algEquiv : S ≃ₐ[R] T := h.adjoinRootAlgEquiv.symm.trans h'.adjoinRootAlgEquiv
 
 theorem algEquiv_def : h.algEquiv h' = h.adjoinRootAlgEquiv.symm.trans h'.adjoinRootAlgEquiv := rfl
 
@@ -227,7 +225,7 @@ This is the converse of `IsAdjoinRoot.algEquiv`: this turns an `AlgEquiv` into a
 and `IsAdjoinRoot.algEquiv` turns an `IsAdjoinRoot` into an `AlgEquiv`.
 -/
 @[simps! map_apply]
-def ofAlgEquiv (e : S ≃ₐ[R] T) : IsAdjoinRoot T f where
+noncomputable def ofAlgEquiv (e : S ≃ₐ[R] T) : IsAdjoinRoot T f where
   map := (e : S →ₐ[R] T).comp h.map
   map_surjective := e.surjective.comp h.map_surjective
   ker_map := by ext; simp [Ideal.mem_span_singleton]
@@ -270,7 +268,7 @@ variable (i x)
 -- To match `AdjoinRoot.lift`
 /-- Lift a ring homomorphism `R →+* T` to `S →+* T` by specifying a root `x` of `f` in `T`,
 where `S` is given by adjoining a root of `f` to `R`. -/
-def lift (hx : f.eval₂ i x = 0) : S →+* T where
+noncomputable def lift (hx : f.eval₂ i x = 0) : S →+* T where
   toFun z := (h.repr z).eval₂ i x
   map_zero' := by simp [h.eval₂_repr_eq_eval₂_of_map_eq hx _ _ (map_zero _)]
   map_add' z w := by simp [h.eval₂_repr_eq_eval₂_of_map_eq hx _ (h.repr z + h.repr w)]
@@ -309,7 +307,7 @@ variable (x) in
 -- To match `AdjoinRoot.liftHom`
 /-- Lift the algebra map `R → T` to `S →ₐ[R] T` by specifying a root `x` of `f` in `T`,
 where `S` is given by adjoining a root of `f` to `R`. -/
-def liftHom : S →ₐ[R] T :=
+noncomputable def liftHom : S →ₐ[R] T :=
   { h.lift (algebraMap R T) x hx' with commutes' a := h.lift_algebraMap hx' a }
 
 @[simp]
@@ -339,14 +337,15 @@ namespace AdjoinRoot
 variable (f)
 
 /-- `AdjoinRoot f` is indeed given by adjoining a root of `f`. -/
-protected def isAdjoinRoot : IsAdjoinRoot (AdjoinRoot f) f where
+protected noncomputable def isAdjoinRoot : IsAdjoinRoot (AdjoinRoot f) f where
   map := AdjoinRoot.mkₐ f
   map_surjective := Ideal.Quotient.mkₐ_surjective _ _
   ker_map := by ext; simp [Ideal.mem_span_singleton]
 
 /-- `AdjoinRoot f` is indeed given by adjoining a root of `f`. If `f` is monic this is more
 powerful than `AdjoinRoot.isAdjoinRoot`. -/
-protected def isAdjoinRootMonic (hf : Monic f) : IsAdjoinRootMonic (AdjoinRoot f) f where
+protected noncomputable
+def isAdjoinRootMonic (hf : Monic f) : IsAdjoinRootMonic (AdjoinRoot f) f where
   __ := AdjoinRoot.isAdjoinRoot f
   monic := hf
 
@@ -363,7 +362,7 @@ theorem isAdjoinRoot_root_eq_root : (AdjoinRoot.isAdjoinRoot f).root = AdjoinRoo
 end AdjoinRoot
 
 /-- If `S` is `R`-isomorphic to `R[X]/(f)`, then `S` is given by adjoining a root of `f`. -/
-abbrev IsAdjoinRoot.ofAdjoinRootEquiv (e : AdjoinRoot f ≃ₐ[R] S) : IsAdjoinRoot S f :=
+noncomputable abbrev IsAdjoinRoot.ofAdjoinRootEquiv (e : AdjoinRoot f ≃ₐ[R] S) : IsAdjoinRoot S f :=
   ofAlgEquiv (AdjoinRoot.isAdjoinRoot f) e
 
 namespace IsAdjoinRootMonic
@@ -381,7 +380,7 @@ theorem modByMonic_repr_map (g : R[X]) : h.repr (h.map g) %ₘ f = g %ₘ f :=
   modByMonic_eq_of_dvd_sub h.monic <| by rw [← h.mem_ker_map, RingHom.sub_mem_ker_iff, map_repr]
 
 /-- `IsAdjoinRoot.modByMonicHom` sends the equivalence class of `f` mod `g` to `f %ₘ g`. -/
-def modByMonicHom : S →ₗ[R] R[X] where
+noncomputable def modByMonicHom : S →ₗ[R] R[X] where
   toFun x := h.repr x %ₘ f
   map_add' x y := by
     conv_lhs =>
@@ -413,7 +412,7 @@ theorem modByMonicHom_root (hdeg : 1 < natDegree f) : h.modByMonicHom h.root = X
 /-- The basis on `S` generated by powers of `h.root`.
 
 Auxiliary definition for `IsAdjoinRootMonic.powerBasis`. -/
-def basis : Basis (Fin (natDegree f)) R S where
+noncomputable def basis : Basis (Fin (natDegree f)) R S where
   repr.toFun x := (h.modByMonicHom x).toFinsupp.coeff.comapDomain _ Fin.val_injective.injOn
   repr.invFun g := h.map <| ofFinsupp <| .ofCoeff <| g.mapDomain Fin.val
   repr.left_inv x := by
@@ -459,7 +458,7 @@ theorem deg_ne_zero [Nontrivial S] : natDegree f ≠ 0 := h.deg_pos.ne'
 
 /-- If `f` is monic, the powers of `h.root` form a basis. -/
 @[simps! gen dim basis]
-def powerBasis : PowerBasis R S where
+noncomputable def powerBasis : PowerBasis R S where
   gen := h.root
   dim := natDegree f
   basis := h.basis
@@ -489,12 +488,13 @@ theorem _root_.finrank_quotient_span_eq_natDegree' [StrongRankCondition R] (hf :
 
 /-- `IsAdjoinRootMonic.liftPolyₗ` lifts a linear map on polynomials to a linear map on `S`. -/
 @[simps!]
+noncomputable
 def liftPolyₗ {T : Type*} [AddCommGroup T] [Module R T] (g : R[X] →ₗ[R] T) : S →ₗ[R] T :=
   g.comp h.modByMonicHom
 
 /-- `IsAdjoinRootMonic.coeff h x i` is the `i`th coefficient of the representative of `x : S`.
 -/
-def coeff : S →ₗ[R] ℕ → R :=
+noncomputable def coeff : S →ₗ[R] ℕ → R :=
   h.liftPolyₗ
     { toFun := Polynomial.coeff
       map_add' p q := funext (Polynomial.coeff_add p q)
@@ -592,7 +592,7 @@ variable [IsDomain R] [IsDomain S] [IsTorsionFree R S] [IsIntegrallyClosed R]
 
 /-- If `α` generates `S` as an algebra, then `S` is given by adjoining a root of `minpoly R α`. -/
 @[simps]
-def mkOfAdjoinEqTop : IsAdjoinRoot S (minpoly R α) where
+noncomputable def mkOfAdjoinEqTop : IsAdjoinRoot S (minpoly R α) where
   map := aeval α
   map_surjective := by
     rw [← Set.range_eq_univ, ← AlgHom.coe_range, ← Algebra.adjoin_singleton_eq_range_aeval,
@@ -602,6 +602,7 @@ def mkOfAdjoinEqTop : IsAdjoinRoot S (minpoly R α) where
     simpa [Ideal.mem_span_singleton] using minpoly.isIntegrallyClosed_dvd_iff hα _
 
 /-- If `α` generates `S` as an algebra, then `S` is given by adjoining a root of `minpoly R α`. -/
+noncomputable
 abbrev _root_.IsAdjoinRootMonic.mkOfAdjoinEqTop : IsAdjoinRootMonic S (minpoly R α) where
   __ := IsAdjoinRoot.mkOfAdjoinEqTop hα hα₂
   monic := minpoly.monic hα
@@ -647,6 +648,7 @@ theorem minpoly_eq [IsDomain R] [IsDomain S] [IsTorsionFree R S] [IsIntegrallyCl
 then `S` is given by adjoining a root of `minpoly R α`.
 Does not require that `R` is an integral domain, unlike `mkOfAdjoinEqTop`. -/
 @[simps]
+noncomputable
 def mkOfAdjoinEqTop' [Module.Finite R S] [Module.Free R S] {α : S} (hα : Algebra.adjoin R {α} = ⊤) :
     IsAdjoinRootMonic S (minpoly R α) where
   __ : IsAdjoinRoot S (minpoly R α) :=
@@ -705,12 +707,12 @@ theorem primitive_element_root (h : IsAdjoinRoot E f) : F⟮h.root⟯ = ⊤ :=
   IntermediateField.adjoin_eq_top_of_algebra F {h.root} (adjoin_root_eq_top h)
 
 /-- If `α` is primitive in `E/f`, then `E` is given by adjoining a root of `minpoly F α`. -/
-abbrev mkOfPrimitiveElement {α : E} (hα : IsIntegral F α) (hα₂ : F⟮α⟯ = ⊤) :
+noncomputable abbrev mkOfPrimitiveElement {α : E} (hα : IsIntegral F α) (hα₂ : F⟮α⟯ = ⊤) :
     IsAdjoinRoot E (minpoly F α) :=
   mkOfAdjoinEqTop hα (Algebra.adjoin_eq_top_of_primitive_element hα.isAlgebraic hα₂)
 
 /-- If `α` is primitive in `E/f`, then `E` is given by adjoining a root of `minpoly F α`. -/
-abbrev _root_.IsAdjoinRootMonic.mkOfPrimitiveElement
+noncomputable abbrev _root_.IsAdjoinRootMonic.mkOfPrimitiveElement
     {α : E} (hα : IsIntegral F α) (hα₂ : F⟮α⟯ = ⊤) : IsAdjoinRootMonic E (minpoly F α) where
   __ := IsAdjoinRoot.mkOfPrimitiveElement hα hα₂
   monic := minpoly.monic hα

@@ -47,7 +47,6 @@ topology are defined elsewhere; see `Analysis.Normed.Affine.AddTorsor` and
 -/
 
 @[expose] public section
-noncomputable section
 
 open Affine
 

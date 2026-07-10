@@ -16,7 +16,7 @@ has binary biproducts
 (`CategoryTheory.Limits.BinaryBiproduct.functorCategoryHasBinaryBiproducts`).
 -/
 
-@[expose] public noncomputable section
+@[expose] public section
 
 namespace CategoryTheory.Limits
 
@@ -28,7 +28,7 @@ variable (F G : D ⥤ C)
 
 /-- The binary bicone associated to the biproduct of functors `F` and `G` -/
 @[simps]
-def pointwiseBinaryBicone : BinaryBicone F G where
+noncomputable def pointwiseBinaryBicone : BinaryBicone F G where
   pt :=
     { obj P := F.obj P ⊞ G.obj P
       map f := biprod.map (F.map f) (G.map f) }
@@ -40,7 +40,7 @@ def pointwiseBinaryBicone : BinaryBicone F G where
 set_option backward.defeqAttrib.useBackward true in
 /-- The bicone associated with `F` and `G` is a bilimit bicone. -/
 @[simps]
-def pointwiseBinaryBicone.isBilimit : (pointwiseBinaryBicone F G).IsBilimit where
+noncomputable def pointwiseBinaryBicone.isBilimit : (pointwiseBinaryBicone F G).IsBilimit where
   isLimit := evaluationJointlyReflectsLimits _ fun d => by
     refine IsLimit.equivOfNatIsoOfIso ?_ _ _ ?_ (BinaryBiproduct.isLimit (F.obj d) (G.obj d))
     · exact (pairComp F G ((evaluation D C).obj d)).symm
@@ -52,7 +52,7 @@ def pointwiseBinaryBicone.isBilimit : (pointwiseBinaryBicone F G).IsBilimit wher
 
 /-- Construction of the binary biproduct data for functors `F` and `G` -/
 @[simps]
-def pointwiseBinaryBiproductData : BinaryBiproductData F G where
+noncomputable def pointwiseBinaryBiproductData : BinaryBiproductData F G where
   bicone := pointwiseBinaryBicone F G
   isBilimit := pointwiseBinaryBicone.isBilimit F G
 

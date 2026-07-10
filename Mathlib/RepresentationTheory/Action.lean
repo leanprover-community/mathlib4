@@ -28,7 +28,7 @@ namespace Representation
 open Representation.IntertwiningMap Representation.TensorProduct
 open scoped MonoidAlgebra
 
-noncomputable section
+section
 
 variable {k : Type u} {G : Type v} {V : Type u'} {W : Type v'} [Monoid G] [Semiring k]
   [AddCommGroup V] [Module k V] [AddCommGroup W] [Module k W]
@@ -40,7 +40,7 @@ variable (k G X) in
 /-- Every Set `X` that has a `G`-action on it can be made into a `G`-rep by using `X →₀ k` as
   the base module and `G`-action on it is induced by the `G`-action on `X`. -/
 @[simps]
-def linearize : Representation k G k[X.V] where
+noncomputable def linearize : Representation k G k[X.V] where
   toFun g := MonoidAlgebra.mapDomainLinearMap k k (X.ρ g)
   map_one' := by ext; simp
   map_mul' _ _ := by ext; simp
@@ -52,6 +52,7 @@ lemma linearize_single (g : G) (x : X.V) :
 /-- Every morphism between `G`-sets could be made into an intertwining map between
   `Representation`s by the linear map induced on the indexing sets. -/
 @[simps toLinearMap]
+noncomputable
 def linearizeMap (f : X ⟶ Y) : IntertwiningMap (A := k) (linearize k G X) (linearize k G Y) where
   toLinearMap := MonoidAlgebra.mapDomainLinearMap k k f.hom
   isIntertwining' g := by ext x y; simp [(congr($(f.comm g) x) : f.hom (X.ρ g x) = Y.ρ g (f.hom x))]
@@ -79,6 +80,7 @@ variable (k G) in
 -- I could use `Action.trivial G (PUnit)` but that's not reducibly equal to the tensor unit
 /-- The counit of the linearize functor. -/
 @[simps toLinearMap]
+noncomputable
 def ε : (trivial k G k).IntertwiningMap (linearize k G (MonoidalCategoryStruct.tensorUnit
     (Action (Type w) G))) where
   __ := MonoidAlgebra.uniqueLinearEquiv k PUnit |>.symm.toLinearMap
@@ -92,7 +94,7 @@ open scoped MonoidalCategory
 variable (k G) in
 /-- The unit of the linearize functor. -/
 @[simps toLinearMap]
-def η : (linearize k G (𝟙_ (Action (Type u) G))).IntertwiningMap (trivial k G k) where
+noncomputable def η : (linearize k G (𝟙_ (Action (Type u) G))).IntertwiningMap (trivial k G k) where
   toLinearMap := (MonoidAlgebra.uniqueLinearEquiv k PUnit).toLinearMap
   isIntertwining' g := by ext; simp [linearize_single _]
 
@@ -115,6 +117,7 @@ variable {k : Type u} [CommSemiring k] [Module k V] [Module k W] {σ : Represent
 variable (X Y) in
 /-- The tensor (multiplication) of the linearize functor. -/
 @[simps toLinearMap]
+noncomputable
 def μ : ((linearize k G X).tprod (linearize k G Y)).IntertwiningMap (linearize k G (X ⊗ Y)) where
   toLinearMap := (MonoidAlgebra.tensorEquiv k).toLinearMap
   isIntertwining' g := by ext; simp [linearize_single _]; rfl
@@ -170,7 +173,7 @@ lemma μ_rightUnitor : (rid k (linearize k G X)).toIntertwiningMap =
 
 variable (X Y) in
 /-- The comultiplication of the linearize functor. -/
-def δ : (linearize k G (X ⊗ Y)).IntertwiningMap
+noncomputable def δ : (linearize k G (X ⊗ Y)).IntertwiningMap
     ((linearize k G X).tprod (linearize k G Y)) where
   toLinearMap := (MonoidAlgebra.tensorEquiv k).symm.toLinearMap
   isIntertwining' g := by
@@ -236,6 +239,7 @@ lemma linearizeTrivial_def (X : Type w) (g : G) :
 variable (k G) in
 /-- This a type-changing equivalence (which requires a non-trivial proof that
   `LinearEquiv.refl _ _` is `G`-equivariant) to avoid abusing defeq. -/
+noncomputable
 def linearizeTrivialIso (X : Type w) : (linearize k G (.trivial _ X)).Equiv (trivial k G k[X]) :=
   .mk (.refl ..) fun g ↦ by erw [linearizeTrivial_def, LinearMap.comp_id]
 
@@ -248,13 +252,13 @@ lemma linearizeTrivialIso_symm_apply {X : Type w} (f : k[X]) :
 
 variable (k G) in
 /-- This a type-changing equivalence to avoid abusing defeq. -/
-def linearizeOfMulActionIso (H : Type w) [MulAction G H] :
+noncomputable def linearizeOfMulActionIso (H : Type w) [MulAction G H] :
     (linearize k G (Action.ofMulAction G H)).Equiv (ofMulAction k G H) :=
   .mk (.refl ..) fun _ ↦ rfl
 
 variable (k G) in
 /-- This a type-changing equivalence to avoid abusing defeq. -/
-abbrev linearizeDiagonalEquiv (n : ℕ) : (linearize k G (Action.diagonal G n)).Equiv
+noncomputable abbrev linearizeDiagonalEquiv (n : ℕ) : (linearize k G (Action.diagonal G n)).Equiv
     (diagonal k G n) := linearizeOfMulActionIso k G (Fin n → G)
 
 end

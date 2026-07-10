@@ -31,7 +31,7 @@ namespace Algebra.Generators
 
 variable {R : Type*} {S : Type*} [CommRing R] [CommRing S] [Algebra R S] {σ : Type*}
 
-noncomputable section
+section
 
 namespace PresentationOfFreeCotangent
 
@@ -62,13 +62,13 @@ abbrev T :=
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The map `R[X₁, ..., Xₙ] → S` factors via `T`, because the `bᵢ` are in `I`. -/
-def hom : D.T →ₐ[R] S := Ideal.Quotient.liftₐ _ (aeval P.val) <| by
+noncomputable def hom : D.T →ₐ[R] S := Ideal.Quotient.liftₐ _ (aeval P.val) <| by
   simp_rw [← RingHom.mem_ker, ← SetLike.le_def, Ideal.span_le, Set.range_subset_iff]
   intro i
   simpa only [Generators.toExtension_Ring, Generators.toExtension_commRing, Function.comp_apply,
     SetLike.mem_coe, RingHom.mem_ker, ← P.algebraMap_apply] using (D.f _).property
 
-instance : Algebra D.T S := D.hom.toAlgebra
+noncomputable instance : Algebra D.T S := D.hom.toAlgebra
 
 instance [Nontrivial S] : Nontrivial D.T := RingHom.domain_nontrivial (algebraMap D.T S)
 
@@ -82,7 +82,7 @@ instance : IsScalarTower P.Ring D.T S := by
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The image of `g : R[X₁, ..., Xₙ]` in `T`. -/
-abbrev gbar : D.T := D.g
+noncomputable abbrev gbar : D.T := D.g
 
 set_option backward.isDefEq.respectTransparency false in
 /-- `S` is the localization of `T` away from `S`. -/
@@ -100,7 +100,7 @@ instance : IsLocalization.Away D.gbar S := by
 open scoped Classical in
 /-- The "naive" presentation of `T = R[X₁, ..., Xₙ] / (b₁, ..., bᵣ)` over `R`.
 We make sure the section `T → R[X₁, ..., Xₙ]` maps `-1` to `-1` and `0` to `0`. -/
-def presLeft : Presentation R D.T ι σ :=
+noncomputable def presLeft : Presentation R D.T ι σ :=
   .naive (fun x ↦ if x = 0 then 0 else if x = -1 then -1 else
       Function.surjInv Ideal.Quotient.mk_surjective x) fun x ↦ by
     split_ifs
@@ -109,13 +109,13 @@ def presLeft : Presentation R D.T ι σ :=
     · simp [Function.surjInv_eq]
 
 /-- The `i`-th generator of the kernel `(b₁, ..., bᵣ)` of the naive presentation of `T`. -/
-def kerGen (i : σ) : D.presLeft.toExtension.ker :=
+noncomputable def kerGen (i : σ) : D.presLeft.toExtension.ker :=
   ⟨(D.f (b i)).val, Presentation.mem_ker_naive _ _ i⟩
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The identity on `R[X₁, ..., Xₙ]` as a map of presentations of `T` to `S`. -/
-def fhom : D.presLeft.Hom P where
+noncomputable def fhom : D.presLeft.Hom P where
   val i := X i
   aeval_val i := by simp [RingHom.algebraMap_toAlgebra, presLeft, hom, T]
 
@@ -133,6 +133,7 @@ lemma ker_presLeft_le : D.presLeft.ker ≤ P.ker := by
     map_zero] using! (algebraMap D.T S).congr_arg hx
 
 /-- The forward direction of the isomorphism `S ⊗[T] J/J² ≃ₗ[S] I/I²`. -/
+noncomputable
 def tensorCotangentHom : S ⊗[D.T] D.presLeft.toExtension.Cotangent →ₗ[S] P.toExtension.Cotangent :=
   LinearMap.liftBaseChange _ (Extension.Cotangent.map D.fhom.toExtensionHom)
 
@@ -147,6 +148,7 @@ lemma tensorCotangentHom_tmul (x : D.presLeft.toExtension.ker) :
     toExtension_commRing, toExtension_algebra₂, Presentation.naive_toGenerators, RingHom.id_apply]
 
 /-- The backwards direction of the isomorphism `S ⊗[T] J/J² ≃ₗ[S] I/I²`. -/
+noncomputable
 def tensorCotangentInv : P.toExtension.Cotangent →ₗ[S] S ⊗[D.T] D.presLeft.toExtension.Cotangent :=
   b.constr S fun i : σ ↦ 1 ⊗ₜ Extension.Cotangent.mk (D.kerGen i)
 
@@ -164,7 +166,7 @@ lemma span_range_mk_kerGen : Submodule.span D.T
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The linear isomorphism `S ⊗[T] J/J² ≃ₗ[S] I/I²`. -/
-def tensorCotangentEquiv :
+noncomputable def tensorCotangentEquiv :
     S ⊗[D.T] D.presLeft.toExtension.Cotangent ≃ₗ[S] P.toExtension.Cotangent := by
   refine LinearEquiv.ofLinear D.tensorCotangentHom D.tensorCotangentInv ?_ ?_
   · refine b.ext fun i ↦ ?_
@@ -182,13 +184,13 @@ lemma tensorCotangentEquiv_symm_apply (i : σ) :
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The canonical presentation of `S` as the localization of `T` away from `g`. -/
-def presRight : Presentation D.T S Unit Unit :=
+noncomputable def presRight : Presentation D.T S Unit Unit :=
   Presentation.localizationAway S D.gbar
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The presentation of `S` over `R` obtained from composing the naive presentation of
 `T = R[X₁, ..., Xₙ]/(b₁, ..., bᵣ)` with the presentation of the localization away from `g`. -/
-def pres : Presentation R S (Unit ⊕ ι) (Unit ⊕ σ) :=
+noncomputable def pres : Presentation R S (Unit ⊕ ι) (Unit ⊕ σ) :=
   D.presRight.comp D.presLeft
 
 set_option backward.defeqAttrib.useBackward true in
@@ -212,7 +214,7 @@ lemma map_ofComp_mk [Nontrivial S] :
 set_option backward.isDefEq.respectTransparency false in
 /-- The cotangent space of the constructed presentation is isomorphic
 to `(g X - 1)/(g X - 1)² × S ⊗[T] J/J²`. -/
-def cotangentEquivProd [Nontrivial S] : D.pres.toExtension.Cotangent ≃ₗ[S]
+noncomputable def cotangentEquivProd [Nontrivial S] : D.pres.toExtension.Cotangent ≃ₗ[S]
     D.presRight.toExtension.Cotangent × S ⊗[D.T] D.presLeft.toExtension.Cotangent :=
   (D.presLeft.cotangentCompLocalizationAwayEquiv (T := S) D.gbar D.map_ofComp_mk) ≪≫ₗ
     LinearEquiv.prodComm _ _ _
@@ -226,16 +228,16 @@ lemma cotangentEquivProd_symm_apply [Nontrivial S] (x : D.presRight.toExtension.
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The basis of `S ⊗[T] J/J²` induced from the basis on `I/I²`. -/
-def basisLeft : Module.Basis σ S (S ⊗[D.T] D.presLeft.toExtension.Cotangent) :=
+noncomputable def basisLeft : Module.Basis σ S (S ⊗[D.T] D.presLeft.toExtension.Cotangent) :=
   b.map D.tensorCotangentEquiv.symm
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The canonical basis on `(g X - 1)/(g X - 1)²`. -/
-def basisRight : Module.Basis Unit S D.presRight.toExtension.Cotangent :=
+noncomputable def basisRight : Module.Basis Unit S D.presRight.toExtension.Cotangent :=
   Generators.basisCotangentAway S D.gbar
 
 /-- The basis on the cotangent space of the constructed presentation. -/
-def basis [Nontrivial S] : Module.Basis (Unit ⊕ σ) S D.pres.toExtension.Cotangent :=
+noncomputable def basis [Nontrivial S] : Module.Basis (Unit ⊕ σ) S D.pres.toExtension.Cotangent :=
   (Module.Basis.prod D.basisRight D.basisLeft).map D.cotangentEquivProd.symm
 
 set_option backward.isDefEq.respectTransparency false in

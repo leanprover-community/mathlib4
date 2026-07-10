@@ -84,8 +84,6 @@ open Polynomial
 open scoped Polynomial
 
 
-noncomputable section
-
 variable {R : Type*}
 
 section spectralValue
@@ -98,7 +96,7 @@ variable [SeminormedRing R]
 
 /-- The function `ℕ → ℝ` sending `n` to `‖ p.coeff n ‖^(1/(p.natDegree - n : ℝ))`, if
   `n < p.natDegree`, or to `0` otherwise. -/
-def spectralValueTerms (p : R[X]) : ℕ → ℝ := fun n : ℕ ↦
+noncomputable def spectralValueTerms (p : R[X]) : ℕ → ℝ := fun n : ℕ ↦
   if n < p.natDegree then ‖p.coeff n‖ ^ (1 / (p.natDegree - n : ℝ)) else 0
 
 theorem spectralValueTerms_of_lt_natDegree (p : R[X]) {n : ℕ} (hn : n < p.natDegree) :
@@ -112,7 +110,7 @@ theorem spectralValueTerms_of_natDegree_le (p : R[X]) {n : ℕ} (hn : p.natDegre
   for the spectral value: if the norm on `R` is nonarchimedean, and if a monic polynomial
   splits into linear factors, then its spectral value is the norm of its largest root.
   See `max_norm_root_eq_spectralValue`. -/
-def spectralValue (p : R[X]) : ℝ := iSup (spectralValueTerms p)
+noncomputable def spectralValue (p : R[X]) : ℝ := iSup (spectralValueTerms p)
 
 /-- The range of `spectralValue_terms p` is a finite set. -/
 theorem spectralValueTerms_finite_range (p : R[X]) : (Set.range (spectralValueTerms p)).Finite :=
@@ -377,7 +375,7 @@ variable (K : Type*) [NormedField K] (L : Type*) [Field L] [Algebra K L]
 /-- If `L` is an algebraic extension of a normed field `K` and `y : L` then the spectral norm
   `spectralNorm K y : ℝ` of `y` (written `|y|_sp` in the textbooks) is the spectral value of the
   minimal polynomial of `y` over `K`. -/
-def spectralNorm (y : L) : ℝ := spectralValue (minpoly K y)
+noncomputable def spectralNorm (y : L) : ℝ := spectralValue (minpoly K y)
 
 variable {K L}
 
@@ -518,6 +516,7 @@ theorem isPowMul_spectralNorm_of_finiteDimensional_normal [IsUltrametricDist K] 
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The spectral norm is a `K`-algebra norm on `L` when `L/K` is finite and normal.
   See also `spectralAlgNorm` for a more general construction. -/
+noncomputable
 def spectralAlgNorm_of_finiteDimensional_normal [IsUltrametricDist K] : AlgebraNorm K L where
   toFun     := spectralNorm K L
   map_zero' := by rw [spectralNorm_eq_invariantExtension K L, map_zero]
@@ -659,7 +658,7 @@ theorem isNonarchimedean_spectralNorm : IsNonarchimedean (spectralNorm K L) := b
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 variable (K L) in
 /-- The spectral norm is a `K`-algebra norm on `L`. -/
-def spectralAlgNorm : AlgebraNorm K L where
+noncomputable def spectralAlgNorm : AlgebraNorm K L where
   toFun       := spectralNorm K L
   map_zero'   := spectralNorm_zero
   add_le' _ _ := IsNonarchimedean.add_le spectralNorm_nonneg isNonarchimedean_spectralNorm
@@ -793,6 +792,7 @@ theorem NormedAlgebra.norm_eq_spectralNorm {L : Type*} [NormedField L] [NormedAl
 /-- Given a nonzero `x : L`, and assuming that `(spectralAlgNorm h_alg hna) 1 ≤ 1`, this is
   the real-valued function sending `y ∈ L` to the limit of  `(f (y * x^n))/((f x)^n)`,
   regarded as an algebra norm. -/
+noncomputable
 def algNormFromConst (h1 : (spectralAlgNorm K L).toRingSeminorm 1 ≤ 1) {x : L} (hx : x ≠ 0) :
     AlgebraNorm K L :=
   have hx' : spectralAlgNorm K L x ≠ 0 :=
@@ -835,7 +835,7 @@ theorem spectralAlgNorm_mul (x y : L) :
 
 variable (K L) in
 /-- The spectral norm is a multiplicative `K`-algebra norm on `L`. -/
-def spectralMulAlgNorm : MulAlgebraNorm K L :=
+noncomputable def spectralMulAlgNorm : MulAlgebraNorm K L :=
   { spectralAlgNorm K L with
     map_one' := spectralAlgNorm_one
     map_mul' := spectralAlgNorm_mul }
@@ -848,7 +848,7 @@ variable (K L)
 
 /-- `L` with the spectral norm is a `NormedField`. -/
 @[implicit_reducible]
-def normedField : NormedField L :=
+noncomputable def normedField : NormedField L :=
   { (inferInstance : Field L) with
     norm x := (spectralNorm K L x : ℝ)
     dist x y := (spectralNorm K L (x - y) : ℝ)
@@ -867,7 +867,7 @@ def normedField : NormedField L :=
 
 /-- `L` with the spectral norm is a `NontriviallyNormedField`. -/
 @[implicit_reducible]
-def nontriviallyNormedField : NontriviallyNormedField L where
+noncomputable def nontriviallyNormedField : NontriviallyNormedField L where
   __ := spectralNorm.normedField K L
   non_trivial :=
     let ⟨x, hx⟩ := NontriviallyNormedField.non_trivial (α := K)
@@ -875,19 +875,19 @@ def nontriviallyNormedField : NontriviallyNormedField L where
 
 /-- `L` with the spectral norm is a `SeminormedRing`. -/
 @[implicit_reducible]
-def seminormedRing : SeminormedRing L := by
+noncomputable def seminormedRing : SeminormedRing L := by
   letI : NormedField L := normedField K L
   infer_instance
 
 /-- `L` with the spectral norm is a `NormedAddCommGroup`. -/
 @[implicit_reducible]
-def normedAddCommGroup : NormedAddCommGroup L := by
+noncomputable def normedAddCommGroup : NormedAddCommGroup L := by
   haveI : NormedField L := normedField K L
   infer_instance
 
 /-- `L` with the spectral norm is a `SeminormedAddCommGroup`. -/
 @[implicit_reducible]
-def seminormedAddCommGroup : SeminormedAddCommGroup L := by
+noncomputable def seminormedAddCommGroup : SeminormedAddCommGroup L := by
   have : NormedField L := normedField K L
   infer_instance
 
@@ -925,11 +925,11 @@ def normedAlgebra' (E L : Type*) [Field L] [Algebra K L] [Algebra.IsAlgebraic K 
 
 /-- The metric space structure on `L` induced by the spectral norm. -/
 @[implicit_reducible]
-def metricSpace : MetricSpace L := (normedField K L).toMetricSpace
+noncomputable def metricSpace : MetricSpace L := (normedField K L).toMetricSpace
 
 /-- The uniform space structure on `L` induced by the spectral norm. -/
 @[implicit_reducible]
-def uniformSpace : UniformSpace L := (metricSpace K L).toUniformSpace
+noncomputable def uniformSpace : UniformSpace L := (metricSpace K L).toUniformSpace
 
 /-- If `L/K` is finite dimensional, then `L` is a complete space with respect to topology induced
   by the spectral norm. -/

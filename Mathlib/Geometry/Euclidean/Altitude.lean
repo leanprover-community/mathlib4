@@ -31,8 +31,6 @@ This file defines the altitudes of a simplex and their feet.
 
 @[expose] public section
 
-noncomputable section
-
 namespace Affine
 
 namespace Simplex
@@ -46,7 +44,7 @@ variable [NormedAddTorsor V₂ P₂]
 
 /-- An altitude of a simplex is the line that passes through a vertex
 and is orthogonal to the opposite face. -/
-def altitude {n : ℕ} (s : Simplex ℝ P n) (i : Fin (n + 1)) : AffineSubspace ℝ P :=
+noncomputable def altitude {n : ℕ} (s : Simplex ℝ P n) (i : Fin (n + 1)) : AffineSubspace ℝ P :=
   mk' (s.points i) (affineSpan ℝ (s.points '' {i}ᶜ)).directionᗮ ⊓
     affineSpan ℝ (Set.range s.points)
 
@@ -171,7 +169,7 @@ theorem affineSpan_pair_eq_altitude_iff {n : ℕ} [NeZero n] (s : Simplex ℝ P 
 
 /-- The foot of an altitude is the orthogonal projection of a vertex of a simplex onto the
 opposite face. -/
-def altitudeFoot {n : ℕ} [NeZero n] (s : Simplex ℝ P n) (i : Fin (n + 1)) : P :=
+noncomputable def altitudeFoot {n : ℕ} [NeZero n] (s : Simplex ℝ P n) (i : Fin (n + 1)) : P :=
   (s.faceOpposite i).orthogonalProjectionSpan (s.points i)
 
 @[simp] lemma altitudeFoot_reindex {m n : ℕ} [NeZero m] [NeZero n] (s : Simplex ℝ P n)
@@ -233,7 +231,7 @@ lemma altitudeFoot_mem_altitude {n : ℕ} [NeZero n] (s : Simplex ℝ P n) (i : 
 
 /-- The height of a vertex of a simplex is the distance between it and the foot of the altitude
 from that vertex. -/
-def height {n : ℕ} [NeZero n] (s : Simplex ℝ P n) (i : Fin (n + 1)) : ℝ :=
+noncomputable def height {n : ℕ} [NeZero n] (s : Simplex ℝ P n) (i : Fin (n + 1)) : ℝ :=
   dist (s.points i) (s.altitudeFoot i)
 
 @[simp] lemma height_reindex {m n : ℕ} [NeZero m] [NeZero n] (s : Simplex ℝ P n)

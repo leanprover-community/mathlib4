@@ -20,8 +20,6 @@ Basic inequalities on trigonometric functions.
 @[expose] public section
 
 
-noncomputable section
-
 open Topology Filter Set Filter Real
 
 namespace Real
@@ -396,7 +394,7 @@ theorem arcsin_eq_arccos {x : ℝ} (h : 0 ≤ x) : arcsin x = arccos (√(1 - x 
 
 /-- `Real.sin` as an `OpenPartialHomeomorph` between `(-π / 2, π / 2)` and `(-1, 1)`. -/
 @[simp]
-def sinPartialHomeomorph : OpenPartialHomeomorph ℝ ℝ where
+noncomputable def sinPartialHomeomorph : OpenPartialHomeomorph ℝ ℝ where
   toFun := sin
   invFun := arcsin
   source := Ioo (-(π / 2)) (π / 2)
@@ -413,7 +411,7 @@ def sinPartialHomeomorph : OpenPartialHomeomorph ℝ ℝ where
 /-- `Real.sin` and `Real.arcsin` as a (partial) equivalence from `[-(π / 2), (π / 2)]` to
 `[-1, 1]` -/
 @[simp]
-def sinPartialEquiv : PartialEquiv ℝ ℝ where
+noncomputable def sinPartialEquiv : PartialEquiv ℝ ℝ where
   toFun := sin
   invFun := arcsin
   source := Icc (-(π / 2)) (π / 2)
@@ -432,7 +430,7 @@ lemma arcsin_image_Icc : arcsin '' Set.Icc (-1) 1 = Set.Icc (-(π / 2)) (π / 2)
 
 /-- `Real.cos` as an `OpenPartialHomeomorph` between `(0, π)` and `(-1, 1)`. -/
 @[simp]
-def cosPartialHomeomorph : OpenPartialHomeomorph ℝ ℝ where
+noncomputable def cosPartialHomeomorph : OpenPartialHomeomorph ℝ ℝ where
   toFun := cos
   invFun := arccos
   source := Ioo 0 π

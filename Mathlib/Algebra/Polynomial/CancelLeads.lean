@@ -26,7 +26,7 @@ Thus it is useful for induction or minimal-degree arguments.
 
 namespace Polynomial
 
-noncomputable section
+section
 
 open Polynomial
 
@@ -38,7 +38,7 @@ variable [Ring R] (p q : R[X])
 
 /-- `cancelLeads p q` is formed by multiplying `p` and `q` by monomials so that they
   have the same leading term, and then subtracting. -/
-def cancelLeads : R[X] :=
+noncomputable def cancelLeads : R[X] :=
   C p.leadingCoeff * X ^ (p.natDegree - q.natDegree) * q -
     C q.leadingCoeff * X ^ (q.natDegree - p.natDegree) * p
 

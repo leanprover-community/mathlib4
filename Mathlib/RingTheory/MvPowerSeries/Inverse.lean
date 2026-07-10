@@ -40,7 +40,7 @@ Instances are defined:
 @[expose] public section
 
 
-noncomputable section
+section
 
 open Finset (antidiagonal mem_antidiagonal)
 
@@ -83,7 +83,7 @@ theorem coeff_inv_aux [DecidableEq σ] (n : σ →₀ ℕ) (a : R) (φ : MvPower
     rfl
 
 /-- A multivariate formal power series is invertible if the constant coefficient is invertible. -/
-def invOfUnit (φ : MvPowerSeries σ R) (u : Rˣ) : MvPowerSeries σ R :=
+noncomputable def invOfUnit (φ : MvPowerSeries σ R) (u : Rˣ) : MvPowerSeries σ R :=
   inv.aux (↑u⁻¹) φ
 
 theorem coeff_invOfUnit [DecidableEq σ] (n : σ →₀ ℕ) (φ : MvPowerSeries σ R) (u : Rˣ) :
@@ -188,10 +188,10 @@ open MvPowerSeries
 variable {k : Type*} [Field k]
 
 /-- The inverse `1/f` of a multivariable power series `f` over a field -/
-protected def inv (φ : MvPowerSeries σ k) : MvPowerSeries σ k :=
+protected noncomputable def inv (φ : MvPowerSeries σ k) : MvPowerSeries σ k :=
   inv.aux (constantCoeff φ)⁻¹ φ
 
-instance : Inv (MvPowerSeries σ k) :=
+noncomputable instance : Inv (MvPowerSeries σ k) :=
   ⟨MvPowerSeries.inv⟩
 
 theorem coeff_inv [DecidableEq σ] (n : σ →₀ ℕ) (φ : MvPowerSeries σ k) :
@@ -265,7 +265,7 @@ protected theorem mul_inv_rev (φ ψ : MvPowerSeries σ k) :
     rw [← mul_assoc, mul_assoc _⁻¹, MvPowerSeries.inv_mul_cancel _ h.left, mul_one,
       MvPowerSeries.inv_mul_cancel _ h.right]
 
-instance : InvOneClass (MvPowerSeries σ k) :=
+noncomputable instance : InvOneClass (MvPowerSeries σ k) :=
   { (inferInstance : One (MvPowerSeries σ k)),
     (inferInstance : Inv (MvPowerSeries σ k)) with
     inv_one := by

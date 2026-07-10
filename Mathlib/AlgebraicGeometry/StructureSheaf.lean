@@ -50,8 +50,6 @@ boundaries.
 
 universe u
 
-noncomputable section
-
 variable {R M A : Type u} [CommRing R] [AddCommGroup M] [Module R M] [CommRing A] [Algebra R A]
 
 open TopCat
@@ -179,11 +177,11 @@ instance (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) :
     Module R ((structureSheafInType R M).obj.obj U) :=
   (sectionsSubmodule M U.unop).module
 
-instance (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) :
+noncomputable instance (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) :
     CommRing ((structureSheafInType R A).obj.obj U) :=
   (sectionsSubalgebra A U.unop).toCommRing
 
-instance (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) :
+noncomputable instance (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) :
     Algebra R ((structureSheafInType R A).obj.obj U) :=
   (sectionsSubalgebra A U.unop).algebra
 
@@ -218,7 +216,7 @@ variable (R) in
 /-- The structure presheaf, valued in `CommRingCat`, constructed by dressing up the `Type`-valued
 structure presheaf. -/
 @[simps obj_carrier]
-def structurePresheafInCommRingCat : Presheaf CommRingCat (PrimeSpectrum.Top R) where
+noncomputable def structurePresheafInCommRingCat : Presheaf CommRingCat (PrimeSpectrum.Top R) where
   obj U := .of ((structureSheafInType R R).1.obj U)
   map i := CommRingCat.ofHom
     { toFun := (structureSheafInType R R).1.map i
@@ -227,7 +225,7 @@ def structurePresheafInCommRingCat : Presheaf CommRingCat (PrimeSpectrum.Top R) 
       map_one' := rfl
       map_zero' := rfl }
 
-instance (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) :
+noncomputable instance (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) :
     Module ((structureSheafInType R R).obj.obj U) ((structureSheafInType R M).obj.obj U) :=
   inferInstanceAs (Module (sectionsSubalgebra R _) (sectionsSubalgebraSubmodule M _))
 
@@ -241,6 +239,7 @@ set_option backward.isDefEq.respectTransparency false in
 variable (R M) in
 /-- The structure sheaf of a module as a presheaf of modules on `Spec R`.
 We will later package this into a `Scheme.Modules` in `Tilde.lean`. -/
+noncomputable
 def moduleStructurePresheaf : PresheafOfModules (structurePresheafInCommRingCat R ⋙ forget₂ _ _) :=
   letI (X : (Opens ↑(PrimeSpectrum.Top R))ᵒᵖ) :
     Module ↑((structurePresheafInCommRingCat R ⋙ forget₂ CommRingCat RingCat).obj X)
@@ -251,7 +250,7 @@ def moduleStructurePresheaf : PresheafOfModules (structurePresheafInCommRingCat 
 variable (R) in
 /-- Some glue, verifying that the structure presheaf valued in `CommRingCat` agrees
 with the `Type`-valued structure presheaf. -/
-def structurePresheafCompForget :
+noncomputable def structurePresheafCompForget :
     structurePresheafInCommRingCat R ⋙ forget CommRingCat ≅ (structureSheafInType R R).1 :=
   NatIso.ofComponents fun _ => Iso.refl _
 
@@ -402,7 +401,7 @@ lemma isUnit_basicOpen_end (f : R) :
 variable (R M) in
 /-- The canonical linear map interpreting `s ∈ M_f` as a section of the structure sheaf
 on the basic open defined by `f ∈ R`. -/
-def toBasicOpenₗ (f : R) :
+noncomputable def toBasicOpenₗ (f : R) :
     LocalizedModule.Away f M →ₗ[R] Γ(M, PrimeSpectrum.basicOpen f) :=
   IsLocalizedModule.lift (.powers f) (LocalizedModule.mkLinearMap ..) (toOpenₗ R M _) <| by
     simp only [Subtype.forall]
@@ -547,7 +546,7 @@ section Stalk
 variable (R) in
 /-- The canonical ring homomorphism interpreting an element of `R` as an element of
 the stalk of `structureSheaf R` at `x`. -/
-@[expose] public def toStalk (x : PrimeSpectrum.Top R) :
+@[expose] public noncomputable def toStalk (x : PrimeSpectrum.Top R) :
     CommRingCat.of R ⟶ (structurePresheafInCommRingCat R).stalk x :=
   CommRingCat.ofHom (algebraMap _ _) ≫ (structurePresheafInCommRingCat R).germ ⊤ x trivial
 
@@ -563,16 +562,17 @@ public lemma algebraMap_germ
 @[deprecated (since := "2026-02-10")] public alias toOpen_germ := algebraMap_germ
 
 public
+noncomputable
 instance (x : PrimeSpectrum.Top R) : Algebra R ((structurePresheafInCommRingCat R).stalk x) :=
   (toStalk R x).hom.toAlgebra
 
 public
-instance (x : PrimeSpectrum.Top R) :
+noncomputable instance (x : PrimeSpectrum.Top R) :
     Module R ↑(TopCat.Presheaf.stalk (moduleStructurePresheaf R M).presheaf x) :=
   .compHom _ (toStalk R x).hom
 
 variable (M) in
-def germₗ (U : Opens (PrimeSpectrum.Top R)) (x : PrimeSpectrum.Top R) (hxU : x ∈ U) :
+noncomputable def germₗ (U : Opens (PrimeSpectrum.Top R)) (x : PrimeSpectrum.Top R) (hxU : x ∈ U) :
     Γ(M, U) →ₗ[R] ↑(TopCat.Presheaf.stalk (moduleStructurePresheaf R M).presheaf x) where
   __ := (TopCat.Presheaf.germ (moduleStructurePresheaf R M).presheaf U x hxU).hom
   map_smul' r m := by
@@ -589,7 +589,7 @@ instance (x : PrimeSpectrum.Top R) :
   .of_algebraMap_smul fun _ _ ↦ rfl
 
 variable (R M) in
-def modulePresheafStalkIso (x : PrimeSpectrum.Top R) :
+noncomputable def modulePresheafStalkIso (x : PrimeSpectrum.Top R) :
     ↑(TopCat.Presheaf.stalk (moduleStructurePresheaf R M).presheaf x) ≃ₗ[R]
       (structurePresheafInModuleCat R M).stalk x where
   __ := (Limits.colimit.isoColimitCocone ⟨_, Limits.isColimitOfPreserves (forget₂ (ModuleCat R) Ab)
@@ -615,7 +615,7 @@ def modulePresheafStalkIso (x : PrimeSpectrum.Top R) :
     erw [this]
     exact ((structurePresheafInModuleCat R M).germ U x hxU).hom.map_smul _ _
 
-instance (x : PrimeSpectrum.Top R) :
+noncomputable instance (x : PrimeSpectrum.Top R) :
     Module ((structurePresheafInCommRingCat R).stalk x)
       ((structurePresheafInModuleCat R M).stalk x) :=
   (modulePresheafStalkIso R M x).toAddEquiv.symm.module _
@@ -630,7 +630,7 @@ lemma toStalk_smul (x : PrimeSpectrum.Top R) (r : R)
 variable (R M) in
 /-- The canonical ring homomorphism interpreting an element of `R` as an element of
 the stalk of `structureSheaf R` at `x`. -/
-def toStalkₗ' (x : PrimeSpectrum.Top R) :
+noncomputable def toStalkₗ' (x : PrimeSpectrum.Top R) :
     ModuleCat.of R M ⟶ (structurePresheafInModuleCat R M).stalk x :=
   ModuleCat.ofHom (toOpenₗ R M ⊤) ≫ (structurePresheafInModuleCat R M).germ _ x trivial
 
@@ -662,7 +662,7 @@ theorem isUnit_toStalkₗ' (x : PrimeSpectrum.Top R) (f : R) (hf : x ∈ basicOp
 variable (R M) in
 /-- The canonical ring homomorphism from the localization of `R` at `p` to the stalk
 of the structure sheaf at the point `p`. -/
-def localizationtoStalkₗ (x : PrimeSpectrum.Top R) :
+noncomputable def localizationtoStalkₗ (x : PrimeSpectrum.Top R) :
     ModuleCat.of R (LocalizedModule x.asIdeal.primeCompl M) ⟶
       (structurePresheafInModuleCat R M).stalk x :=
   ModuleCat.ofHom (IsLocalizedModule.lift x.asIdeal.primeCompl
@@ -699,7 +699,7 @@ variable (R M) in
 /-- The ring homomorphism from the stalk of the structure sheaf of `R` at a point corresponding to
 a prime ideal `p` to the localization of `R` at `p`,
 formed by gluing the `openToLocalization` maps. -/
-def stalkToLocalizationₗ (x : PrimeSpectrum.Top R) :
+noncomputable def stalkToLocalizationₗ (x : PrimeSpectrum.Top R) :
     (structurePresheafInModuleCat R M).stalk x ⟶ .of R (LocalizedModule x.asIdeal.primeCompl M) :=
   Limits.colimit.desc ((OpenNhds.inclusion x).op ⋙ structurePresheafInModuleCat R M)
     { pt := _
@@ -727,7 +727,7 @@ variable (R M) in
 /-- The ring isomorphism between the stalk of the structure sheaf of `R` at a point `p`
 corresponding to a prime ideal in `R` and the localization of `R` at `p`. -/
 @[simps]
-def stalkIsoₗ (x : PrimeSpectrum.Top R) :
+noncomputable def stalkIsoₗ (x : PrimeSpectrum.Top R) :
     (structurePresheafInModuleCat R M).stalk x ≅
       .of R (LocalizedModule x.asIdeal.primeCompl M) where
   hom := stalkToLocalizationₗ R M x
@@ -784,7 +784,7 @@ variable (R M) in
 /-- The canonical ring homomorphism interpreting an element of `R` as an element of
 the stalk of `structureSheaf R` at `x`. -/
 @[expose] public
-def toStalkₗ (x : PrimeSpectrum.Top R) :
+noncomputable def toStalkₗ (x : PrimeSpectrum.Top R) :
     M →ₗ[R] ↑(TopCat.Presheaf.stalk (moduleStructurePresheaf R M).presheaf x) where
   toFun m :=
     TopCat.Presheaf.germ (moduleStructurePresheaf R M).presheaf ⊤ x (by simp) (toOpenₗ R M ⊤ m)
@@ -817,7 +817,7 @@ instance (x : PrimeSpectrum.Top R) : IsLocalizedModule x.asIdeal.primeCompl (toS
 variable (R) in
 /-- The stalk of `Spec R` at `x` is isomorphic to the stalk of `R^~` at `x`. -/
 @[expose] public
-def commRingCatStalkEquivModuleStalk (x : PrimeSpectrum.Top R) :
+noncomputable def commRingCatStalkEquivModuleStalk (x : PrimeSpectrum.Top R) :
     ↑(TopCat.Presheaf.stalk (moduleStructurePresheaf R R).presheaf x) ≃ₗ[R]
       (structurePresheafInCommRingCat R).stalk x where
   __ := (Limits.colimit.isoColimitCocone ⟨_, Limits.isColimitOfPreserves
@@ -874,7 +874,7 @@ public instance (x : PrimeSpectrum.Top R) :
 variable (R) in
 /-- The stalk of `Spec R` at `x` is isomorphic to `Rₚ`,
 where `p` is the prime corresponding to `x`. -/
-public abbrev stalkIso (x : PrimeSpectrum R) :
+public noncomputable abbrev stalkIso (x : PrimeSpectrum R) :
     Localization.AtPrime x.asIdeal ≃ₐ[R] (structurePresheafInCommRingCat R).stalk x :=
   IsLocalization.algEquiv x.asIdeal.primeCompl _ _
 
@@ -887,6 +887,7 @@ variable (R)
 /-- The structure sheaf on $Spec R$, valued in `CommRingCat`.
 
 This is provided as a bundled `SheafedSpace` as `Spec.SheafedSpace R` later. -/
+noncomputable
 def _root_.AlgebraicGeometry.Spec.structureSheaf : Sheaf CommRingCat (PrimeSpectrum.Top R) :=
   ⟨structurePresheafInCommRingCat R,
     (TopCat.Presheaf.isSheaf_iff_isSheaf_comp _ _).mpr (TopCat.Presheaf.isSheaf_of_iso
@@ -897,7 +898,7 @@ open Spec (structureSheaf)
 /-- The canonical ring homomorphism interpreting an element of `R` as
 a section of the structure sheaf. -/
 @[deprecated "algebraMap" (since := "2026-02-10")]
-def toOpen (U : Opens (PrimeSpectrum.Top R)) :
+noncomputable def toOpen (U : Opens (PrimeSpectrum.Top R)) :
     CommRingCat.of R ⟶ (structureSheaf R).1.obj (op U) := CommRingCat.ofHom (algebraMap _ _)
 
 @[simp]
@@ -908,6 +909,7 @@ theorem algebraMap_self_map (U V : (Opens (PrimeSpectrum.Top R))ᵒᵖ) (i : V �
 
 @[deprecated (since := "2026-02-10")] alias toOpen_res := algebraMap_self_map
 
+noncomputable
 instance stalkAlgebra (p : PrimeSpectrum R) : Algebra R ((structureSheaf R).presheaf.stalk p) :=
   (toStalk R p).hom.toAlgebra
 
@@ -921,6 +923,7 @@ instance IsLocalization.to_stalk (p : PrimeSpectrum R) :
     IsLocalization.AtPrime ((structureSheaf R).presheaf.stalk p) p.asIdeal :=
   inferInstanceAs (IsLocalization.AtPrime ((structurePresheafInCommRingCat R).stalk p) p.asIdeal)
 
+noncomputable
 instance openAlgebra (U : (Opens (PrimeSpectrum R))ᵒᵖ) : Algebra R ((structureSheaf R).obj.obj U) :=
   inferInstanceAs (Algebra R ((structureSheafInType R R).presheaf.obj _))
 
@@ -937,7 +940,7 @@ instance to_basicOpen_epi (r : R) :
 
 /-- The ring isomorphism between the ring `R` and the global sections `Γ(X, 𝒪ₓ)`. -/
 @[simps! inv]
-def globalSectionsIso : CommRingCat.of R ≅ (structureSheaf R).1.obj (op ⊤) :=
+noncomputable def globalSectionsIso : CommRingCat.of R ≅ (structureSheaf R).1.obj (op ⊤) :=
   RingEquiv.toCommRingCatIso (.ofBijective _ algebraMap_obj_top_bijective)
 
 theorem globalSectionsIso_hom (R : CommRingCat) :
@@ -960,7 +963,7 @@ variable {S : Type u} [CommRing S] {N : Type u} [AddCommGroup N] [Module S N]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The map `M_{f y} ⟶ N_{y}` used to build maps between structure sheaves. -/
-def Localizations.comapFun (y : PrimeSpectrum.Top S) :
+noncomputable def Localizations.comapFun (y : PrimeSpectrum.Top S) :
     Localizations M (y.comap σ) →ₛₗ[σ] Localizations N y :=
   letI := Module.compHom N σ
   letI := σ.toAlgebra
@@ -1010,7 +1013,7 @@ At the moment, we work with arbitrary dependent functions `s : Π x : U, Localiz
 we prove the predicate `isLocallyFraction` is preserved by this map, hence it can be extended to
 a morphism between the structure sheaves of `R` and `S`.
 -/
-def comapFun (U : Opens (PrimeSpectrum.Top R)) (V : Opens (PrimeSpectrum.Top S))
+noncomputable def comapFun (U : Opens (PrimeSpectrum.Top R)) (V : Opens (PrimeSpectrum.Top S))
     (hUV : V.1 ⊆ PrimeSpectrum.comap σ ⁻¹' U.1) (s : ∀ x : U, Localizations M x.1) (y : V) :
     Localizations N y.1 :=
   Localizations.comapFun f _ (s ⟨y.1.comap σ, hUV y.2⟩)
@@ -1041,7 +1044,7 @@ at `U` to the structure sheaf of `S` at `V`.
 Explicitly, this map is given as follows: For a point `p : V`, if the section `s` evaluates on `p`
 to the fraction `a / b`, its image on `V` evaluates on `p` to the fraction `f(a) / f(b)`.
 -/
-def comapₗ (U : Opens (PrimeSpectrum.Top R)) (V : Opens (PrimeSpectrum.Top S))
+noncomputable def comapₗ (U : Opens (PrimeSpectrum.Top R)) (V : Opens (PrimeSpectrum.Top S))
     (hUV : V.1 ⊆ PrimeSpectrum.comap σ ⁻¹' U.1) :
     Γ(M, U) →ₛₗ[σ] Γ(N, V) where
   toFun s := ⟨comapFun f U V hUV s.1, isLocallyFraction_comapFun f U V hUV s.1 s.2⟩
@@ -1088,6 +1091,7 @@ at `U` to the structure sheaf of `S` at `V`.
 Explicitly, this map is given as follows: For a point `p : V`, if the section `s` evaluates on `p`
 to the fraction `a / b`, its image on `V` evaluates on `p` to the fraction `f(a) / f(b)`.
 -/
+noncomputable
 def comap (f : R →+* S) (U : Opens (PrimeSpectrum.Top R)) (V : Opens (PrimeSpectrum.Top S))
     (hUV : V.1 ⊆ PrimeSpectrum.comap f ⁻¹' U.1) :
     (structureSheaf R).1.obj (op U) →+* (structureSheaf S).1.obj (op V) where

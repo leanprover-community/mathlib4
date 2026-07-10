@@ -23,8 +23,6 @@ Indeed, semilinear maps are typically not smooth. For instance, complex conjugat
 
 public section
 
-noncomputable section
-
 open Bundle Set OpenPartialHomeomorph ContinuousLinearMap Pretrivialization
 
 open scoped Manifold Bundle Topology

@@ -31,8 +31,6 @@ TODO: Extend to holomorphic functions on simply connected domains.
 
 @[expose] public section
 
-noncomputable section
-
 open Complex MeasureTheory Metric Set Topology
 open scoped Interval
 
@@ -91,7 +89,7 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
 
 /-- The `(z, w)`-wedge-integral of `f`, is the integral of `f` over two sides of the rectangle
   determined by `z` and `w`. -/
-def wedgeIntegral (z w : ℂ) (f : ℂ → E) : E :=
+noncomputable def wedgeIntegral (z w : ℂ) (f : ℂ → E) : E :=
   (∫ x : ℝ in z.re..w.re, f (x + z.im * I)) + I • (∫ y : ℝ in z.im..w.im, f (w.re + y * I))
 
 lemma wedgeIntegral_add_wedgeIntegral_eq (z w : ℂ) (f : ℂ → E) :

@@ -46,8 +46,6 @@ sin, cos, tan, angle
 @[expose] public section
 
 
-noncomputable section
-
 open Topology Filter Set
 
 namespace Complex
@@ -861,7 +859,7 @@ theorem cos_pi_div_five : cos (π / 5) = (1 + √5) / 4 := by
 end CosDivSq
 
 /-- `Real.sin` as an `OrderIso` between `[-(π / 2), π / 2]` and `[-1, 1]`. -/
-def sinOrderIso : Icc (-(π / 2)) (π / 2) ≃o Icc (-1 : ℝ) 1 :=
+noncomputable def sinOrderIso : Icc (-(π / 2)) (π / 2) ≃o Icc (-1 : ℝ) 1 :=
   (strictMonoOn_sin.orderIso _ _).trans <| OrderIso.setCongr _ _ bijOn_sin.image_eq
 
 @[simp]

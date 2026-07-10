@@ -482,7 +482,7 @@ theorem restrictHom_smul_under [Finite G] [Finite G'] [MulSemiringAction G C]
 
 end Domain
 
-noncomputable section IntermediateField
+section IntermediateField
 
 variable (N : Subgroup G) [N.Normal] [IsGaloisGroup N F L]
 

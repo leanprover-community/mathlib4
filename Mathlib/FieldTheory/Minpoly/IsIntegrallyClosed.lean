@@ -198,7 +198,7 @@ lemma _root_.IsIntegrallyClosed.minpoly_smul {r : R} (hr : r ≠ 0) {s : S} (hs 
       (a := algebraMap K L (algebraMap R K r)) (by simpa), ← map_inv₀]
     exact scaleRoots_aeval_eq_zero (minpoly.aeval _ _)
 
-noncomputable section AdjoinRoot
+section AdjoinRoot
 
 open Algebra Polynomial AdjoinRoot
 
@@ -210,6 +210,7 @@ theorem ToAdjoin.injective (hx : IsIntegral R x) : Function.Injective (Minpoly.t
   simpa [← Subalgebra.coe_eq_zero, isIntegrallyClosed_dvd_iff hx, ← aeval_def] using hP₁
 
 /-- The algebra isomorphism `AdjoinRoot (minpoly R x) ≃ₐ[R] adjoin R x` -/
+noncomputable
 def equivAdjoin (hx : IsIntegral R x) : AdjoinRoot (minpoly R x) ≃ₐ[R] adjoin R ({x} : Set S) :=
   AlgEquiv.ofBijective (Minpoly.toAdjoin R x)
     ⟨minpoly.ToAdjoin.injective hx, Minpoly.toAdjoin.surjective R x⟩
@@ -222,7 +223,7 @@ theorem coe_equivAdjoin (hx : IsIntegral R x) : ⇑(equivAdjoin hx) = Minpoly.to
 
 /-- The `PowerBasis` of `adjoin R {x}` given by `x`. See `Algebra.adjoin.powerBasis` for a version
 over a field. -/
-def _root_.Algebra.adjoin.powerBasis' (hx : IsIntegral R x) :
+noncomputable def _root_.Algebra.adjoin.powerBasis' (hx : IsIntegral R x) :
     PowerBasis R (Algebra.adjoin R ({x} : Set S)) :=
   PowerBasis.map (AdjoinRoot.powerBasis' (minpoly.monic hx)) (minpoly.equivAdjoin hx)
 
@@ -246,7 +247,7 @@ noncomputable def _root_.PowerBasis.ofAdjoinEqTop' {x : S} (hx : IsIntegral R x)
   (adjoin.powerBasis' hx).map ((Subalgebra.equivOfEq _ _ hx').trans Subalgebra.topEquiv)
 
 open Algebra in
-example {x : S} (B : PowerBasis R S)
+noncomputable example {x : S} (B : PowerBasis R S)
     (hint : IsIntegral R x) (hx : B.gen ∈ R[x]) :
     PowerBasis R S := by
   apply PowerBasis.ofAdjoinEqTop' hint

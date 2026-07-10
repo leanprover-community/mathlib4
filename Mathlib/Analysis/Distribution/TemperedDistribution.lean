@@ -34,7 +34,7 @@ public import Mathlib.Topology.Algebra.Module.Spaces.PointwiseConvergenceCLM
   `SchwartzMap`
 -/
 
-@[expose] public noncomputable section
+@[expose] public section
 
 open SchwartzMap ContinuousLinearMap MeasureTheory MeasureTheory.Measure
 
@@ -76,7 +76,7 @@ variable [MeasurableSpace E] [BorelSpace E] [SecondCountableTopology E]
 
 set_option backward.privateInPublic true in
 /-- Every temperate growth measure defines a tempered distribution. -/
-def toTemperedDistribution : 𝓢'(E, ℂ) :=
+noncomputable def toTemperedDistribution : 𝓢'(E, ℂ) :=
   toPointwiseConvergenceCLM _ _ _ _ (integralCLM ℂ μ)
 
 set_option backward.privateInPublic true in
@@ -95,7 +95,7 @@ variable [MeasurableSpace E] [BorelSpace E] [SecondCountableTopology E]
 set_option backward.privateInPublic true in
 /-- A function of temperate growth `f` defines a tempered distribution via integration, namely
 `g ↦ ∫ (x : E), g x • f x ∂μ`. -/
-def toTemperedDistribution {f : E → F} (hf : f.HasTemperateGrowth) : 𝓢'(E, F) :=
+noncomputable def toTemperedDistribution {f : E → F} (hf : f.HasTemperateGrowth) : 𝓢'(E, F) :=
   toPointwiseConvergenceCLM _ _ _ _ ((integralCLM ℂ μ) ∘L (bilinLeftCLM (lsmul ℂ ℂ) hf))
 
 set_option backward.privateInPublic true in
@@ -114,6 +114,7 @@ variable [MeasurableSpace E] [BorelSpace E] [SecondCountableTopology E]
 set_option backward.isDefEq.respectTransparency false in
 variable (E F) in
 /-- The canonical embedding of `𝓢(E, F)` into `𝓢'(E, F)` as a continuous linear map. -/
+noncomputable
 def toTemperedDistributionCLM (μ : Measure E := by volume_tac) [hμ : μ.HasTemperateGrowth] :
     𝓢(E, F) →L[ℂ] 𝓢'(E, F) where
   toFun f := toPointwiseConvergenceCLM _ _ _ _ <| integralCLM ℂ μ ∘L pairing (lsmul ℂ ℂ).flip f
@@ -136,7 +137,7 @@ section MeasureSpace
 variable [MeasureSpace E] [BorelSpace E] [SecondCountableTopology E]
   [(volume (α := E)).HasTemperateGrowth]
 
-instance instCoeToTemperedDistribution :
+noncomputable instance instCoeToTemperedDistribution :
     Coe 𝓢(E, F) 𝓢'(E, F) where
   coe := toTemperedDistributionCLM E F volume
 
@@ -157,7 +158,7 @@ variable [CompleteSpace F]
 variable [MeasurableSpace E] [BorelSpace E] {μ : Measure E} [hμ : μ.HasTemperateGrowth]
 
 /-- Define a tempered distribution from a L^p function. -/
-def toTemperedDistribution {p : ℝ≥0∞}
+noncomputable def toTemperedDistribution {p : ℝ≥0∞}
     [hp : Fact (1 ≤ p)] (f : Lp F p μ) : 𝓢'(E, F) :=
   haveI := ENNReal.HolderConjugate.inv_one_sub_inv' hp.out
   haveI : Fact (1 ≤ (1 - p⁻¹)⁻¹) := by simp [fact_iff]
@@ -176,7 +177,7 @@ theorem toTemperedDistribution_apply {p : ℝ≥0∞} [hp : Fact (1 ≤ p)] (f :
   rw [hg]
 
 /-- This coercion has to be a `CoeHead`, because `𝓢'(E, F)` can't infer the value of `p` or `μ`. -/
-instance instCoeToTemperedDistribution {p : ℝ≥0∞} [hp : Fact (1 ≤ p)] :
+noncomputable instance instCoeToTemperedDistribution {p : ℝ≥0∞} [hp : Fact (1 ≤ p)] :
     CoeHead (Lp F p μ) 𝓢'(E, F) where
   coe := toTemperedDistribution
 
@@ -192,7 +193,7 @@ theorem toTemperedDistribution_toLp_eq [SecondCountableTopology E] {p : ℝ≥0�
 set_option backward.isDefEq.respectTransparency false in
 variable (F) in
 /-- The natural embedding of L^p into tempered distributions. -/
-def toTemperedDistributionCLM (μ : Measure E := by volume_tac) [μ.HasTemperateGrowth]
+noncomputable def toTemperedDistributionCLM (μ : Measure E := by volume_tac) [μ.HasTemperateGrowth]
     (p : ℝ≥0∞) [hp : Fact (1 ≤ p)] :
     Lp F p μ →L[ℂ] 𝓢'(E, F) where
   toFun := toTemperedDistribution
@@ -245,7 +246,7 @@ variable [AddCommGroup F] [Module ℂ F] [TopologicalSpace F] [IsTopologicalAddG
 
 variable (F) in
 /-- Multiplication with a temperate growth function as a continuous linear map on `𝓢'(E, F)`. -/
-def smulLeftCLM (g : E → ℂ) : 𝓢'(E, F) →L[ℂ] 𝓢'(E, F) :=
+noncomputable def smulLeftCLM (g : E → ℂ) : 𝓢'(E, F) →L[ℂ] 𝓢'(E, F) :=
   PointwiseConvergenceCLM.precomp _ (SchwartzMap.smulLeftCLM ℂ g)
 
 @[simp]
@@ -328,7 +329,7 @@ variable [AddCommGroup F] [Module ℂ F] [TopologicalSpace F] [IsTopologicalAddG
 
 variable (F) in
 /-- The 1-dimensional derivative on tempered distribution as a continuous `ℂ`-linear map. -/
-def derivCLM : 𝓢'(ℝ, F) →L[ℂ] 𝓢'(ℝ, F) :=
+noncomputable def derivCLM : 𝓢'(ℝ, F) →L[ℂ] 𝓢'(ℝ, F) :=
   PointwiseConvergenceCLM.precomp F (-SchwartzMap.derivCLM ℂ ℂ)
 
 @[simp]
@@ -360,7 +361,7 @@ variable [AddCommGroup F] [Module ℂ F] [TopologicalSpace F] [IsTopologicalAddG
 
 /-- The partial derivative (or directional derivative) in the direction `m : E` as a
 continuous linear map on tempered distributions. -/
-instance instLineDeriv : LineDeriv E 𝓢'(E, F) 𝓢'(E, F) where
+noncomputable instance instLineDeriv : LineDeriv E 𝓢'(E, F) 𝓢'(E, F) where
   lineDerivOp m := PointwiseConvergenceCLM.precomp F (-lineDerivOpCLM ℂ 𝓢(E, ℂ) m)
 
 @[simp]
@@ -422,7 +423,7 @@ section TVS
 variable [AddCommGroup F] [Module ℂ F] [TopologicalSpace F] [IsTopologicalAddGroup F]
   [ContinuousConstSMul ℂ F]
 
-instance : Laplacian 𝓢'(E, F) 𝓢'(E, F) where
+noncomputable instance : Laplacian 𝓢'(E, F) 𝓢'(E, F) where
   laplacian := LineDeriv.laplacianCLM ℝ E 𝓢'(E, F)
 
 @[simp]
@@ -466,7 +467,7 @@ section TVS
 variable [AddCommGroup F] [Module ℂ F] [TopologicalSpace F] [IsTopologicalAddGroup F]
   [ContinuousConstSMul ℂ F]
 
-instance instFourierTransform : FourierTransform 𝓢'(E, F) 𝓢'(E, F) where
+noncomputable instance instFourierTransform : FourierTransform 𝓢'(E, F) 𝓢'(E, F) where
   fourier := PointwiseConvergenceCLM.precomp F (fourierCLM ℂ 𝓢(E, ℂ))
 
 instance instFourierAdd : FourierAdd 𝓢'(E, F) 𝓢'(E, F) where
@@ -490,7 +491,7 @@ alias fourierTransformCLM_apply := FourierTransform.fourierCLM_apply
 @[deprecated (since := "2026-01-06")]
 alias fourierTransform_apply := fourier_apply
 
-instance instFourierTransformInv : FourierTransformInv 𝓢'(E, F) 𝓢'(E, F) where
+noncomputable instance instFourierTransformInv : FourierTransformInv 𝓢'(E, F) 𝓢'(E, F) where
   fourierInv := PointwiseConvergenceCLM.precomp F (fourierInvCLM ℂ 𝓢(E, ℂ))
 
 instance instFourierInvAdd : FourierInvAdd 𝓢'(E, F) 𝓢'(E, F) where
@@ -598,7 +599,7 @@ section definition
 variable [NormedSpace ℝ E]
 
 /-- The Dirac delta distribution -/
-def delta (x : E) : 𝓢'(E, ℂ) :=
+noncomputable def delta (x : E) : 𝓢'(E, ℂ) :=
   toPointwiseConvergenceCLM _ _ _ _ <|
     (BoundedContinuousFunction.evalCLM ℂ x).comp (toBoundedContinuousFunctionCLM ℂ E ℂ)
 

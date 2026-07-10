@@ -37,8 +37,6 @@ separable degree, degree, polynomial
 
 @[expose] public section
 
-noncomputable section
-
 namespace Polynomial
 
 open Polynomial
@@ -59,11 +57,11 @@ def HasSeparableContraction (f : F[X]) : Prop :=
 variable {q} {f : F[X]} (hf : HasSeparableContraction q f)
 
 /-- A choice of a separable contraction. -/
-def HasSeparableContraction.contraction : F[X] :=
+noncomputable def HasSeparableContraction.contraction : F[X] :=
   Classical.choose hf
 
 /-- The separable degree of a polynomial is the degree of a given separable contraction. -/
-def HasSeparableContraction.degree : ℕ :=
+noncomputable def HasSeparableContraction.degree : ℕ :=
   hf.contraction.natDegree
 
 /-- The `HasSeparableContraction.contraction` is indeed a separable contraction. -/

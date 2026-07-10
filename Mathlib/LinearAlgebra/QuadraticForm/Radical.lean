@@ -19,7 +19,7 @@ Chapter II, §7 of [elman-karpenko-merkurjev-2008].
 
 open Finset QuadraticMap
 
-@[expose] public noncomputable section
+@[expose] public section
 
 namespace QuadraticMap
 

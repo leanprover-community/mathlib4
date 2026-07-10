@@ -48,8 +48,6 @@ The following notations are scoped to the `Cardinal` namespace.
 
 assert_not_exists Field Finsupp Module Cardinal.mul_eq_self
 
-noncomputable section
-
 open Function Set Cardinal Equiv Order Ordinal
 
 universe u v w
@@ -106,7 +104,7 @@ theorem not_bddAbove_isInitial : ¬ BddAbove {x | IsInitial x} := by
 
 /-- Initial ordinals are order-isomorphic to the cardinals. -/
 @[simps!]
-def isInitialIso : {x // IsInitial x} ≃o Cardinal where
+noncomputable def isInitialIso : {x // IsInitial x} ≃o Cardinal where
   toFun x := x.1.card
   invFun x := ⟨x.ord, isInitial_ord _⟩
   left_inv x := Subtype.ext x.2.ord_card
@@ -117,7 +115,7 @@ def isInitialIso : {x // IsInitial x} ≃o Cardinal where
 `preOmega n = n`, `preOmega ω = ω`, `preOmega (ω + 1) = ω₁`, etc.
 
 For the more common omega function skipping over finite ordinals, see `Ordinal.omega`. -/
-def preOmega : Ordinal.{u} ↪o Ordinal.{u} where
+noncomputable def preOmega : Ordinal.{u} ↪o Ordinal.{u} where
   toFun := enumOrd {x | IsInitial x}
   inj' _ _ h := enumOrd_injective not_bddAbove_isInitial h
   map_rel_iff' := enumOrd_le_enumOrd not_bddAbove_isInitial
@@ -202,7 +200,7 @@ theorem omega0_lt_preOmega_iff {x : Ordinal} : ω < preOmega x ↔ ω < x := by
 This is not to be confused with the first infinite ordinal `Ordinal.omega0`.
 
 For a version including finite ordinals, see `Ordinal.preOmega`. -/
-def omega : Ordinal ↪o Ordinal :=
+noncomputable def omega : Ordinal ↪o Ordinal :=
   (OrderEmbedding.addLeft ω).trans preOmega
 
 @[inherit_doc] scoped notation "ω_ " => omega
@@ -290,7 +288,7 @@ namespace Cardinal
 `preAleph ω = ℵ₀`, `preAleph (ω + 1) = succ ℵ₀`, etc.
 
 For the more common aleph function skipping over finite cardinals, see `Cardinal.aleph`. -/
-def preAleph : Ordinal.{u} ≃o Cardinal.{u} :=
+noncomputable def preAleph : Ordinal.{u} ≃o Cardinal.{u} :=
   (enumOrdOrderIso _ not_bddAbove_isInitial).trans isInitialIso
 
 @[simp]
@@ -414,7 +412,7 @@ theorem preAleph_le_of_strictMono {f : Ordinal → Cardinal} (hf : StrictMono f)
 `aleph 1 = succ ℵ₀` is the first uncountable cardinal, and so on.
 
 For a version including finite cardinals, see `Cardinal.preAleph`. -/
-def aleph : Ordinal ↪o Cardinal :=
+noncomputable def aleph : Ordinal ↪o Cardinal :=
   (OrderEmbedding.addLeft ω).trans preAleph
 
 @[inherit_doc] scoped notation "ℵ_ " => aleph
@@ -569,7 +567,7 @@ namespace Cardinal
 `beth o` is the supremum of `beth a` for `a < o`.
 
 For the usual function starting at `ℵ₀`, see `Cardinal.beth`. -/
-def preBeth (o : Ordinal.{u}) : Cardinal.{u} :=
+noncomputable def preBeth (o : Ordinal.{u}) : Cardinal.{u} :=
   ⨆ a : Iio o, 2 ^ preBeth a
 termination_by o
 decreasing_by exact a.2
@@ -699,7 +697,7 @@ Assuming the generalized continuum hypothesis, which is undecidable in ZFC, we h
 for all ordinals.
 
 For a version which starts at zero, see `Cardinal.preBeth`. -/
-def beth (o : Ordinal.{u}) : Cardinal.{u} :=
+noncomputable def beth (o : Ordinal.{u}) : Cardinal.{u} :=
   preBeth (ω + o)
 
 @[inherit_doc] scoped notation "ℶ_ " => beth

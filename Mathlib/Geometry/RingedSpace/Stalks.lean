@@ -20,8 +20,6 @@ presheafed spaces does not change the stalks.
 @[expose] public section
 
 
-noncomputable section
-
 universe v u v' u'
 
 open Opposite CategoryTheory CategoryTheory.Category CategoryTheory.Functor CategoryTheory.Limits
@@ -37,7 +35,7 @@ namespace AlgebraicGeometry.PresheafedSpace
 
 /-- A morphism of presheafed spaces induces a morphism of stalks.
 -/
-def Hom.stalkMap {X Y : PresheafedSpace.{_, _, v} C} (α : Hom X Y) (x : X) :
+noncomputable def Hom.stalkMap {X Y : PresheafedSpace.{_, _, v} C} (α : Hom X Y) (x : X) :
     Y.presheaf.stalk (α.base x) ⟶ X.presheaf.stalk x :=
   (stalkFunctor C (α.base x)).map α.c ≫ X.presheaf.stalkPushforward C α.base x
 
@@ -54,6 +52,7 @@ section Restrict
 /-- For an open embedding `f : U ⟶ X` and a point `x : U`, we get an isomorphism between the stalk
 of `X` at `f x` and the stalk of the restriction of `X` along `f` at `x`.
 -/
+noncomputable
 def restrictStalkIso {U : TopCat.{v}} (X : PresheafedSpace.{_, _, v} C) {f : U ⟶ (X : TopCat.{v})}
     (h : IsOpenEmbedding f) (x : U) : (X.restrict h).presheaf.stalk x ≅ X.presheaf.stalk (f x) :=
   haveI := initial_of_adjunction (h.adjunctionNhds x)
@@ -180,7 +179,7 @@ instance isIso {X Y : PresheafedSpace.{_, _, v} C} (α : X ⟶ Y) [IsIso α] (x 
 
 /-- An isomorphism between presheafed spaces induces an isomorphism of stalks.
 -/
-def stalkIso {X Y : PresheafedSpace.{_, _, v} C} (α : X ≅ Y) (x : X) :
+noncomputable def stalkIso {X Y : PresheafedSpace.{_, _, v} C} (α : X ≅ Y) (x : X) :
     Y.presheaf.stalk (α.hom.base x) ≅ X.presheaf.stalk x :=
   asIso (α.hom.stalkMap x)
 

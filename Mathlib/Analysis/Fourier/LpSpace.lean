@@ -30,8 +30,6 @@ In this file we define the Fourier transform on $L^2$ as a linear isometry equiv
 
 @[expose] public section
 
-noncomputable section
-
 section FourierTransform
 
 variable {E F : Type*}
@@ -47,13 +45,14 @@ namespace MeasureTheory.Lp
 variable (E F) in
 /-- The Fourier transform on `L2` as a linear isometry equivalence. -/
 @[wikidata Q6520159]
-def fourierTransformₗᵢ : (Lp (α := E) F 2) ≃ₗᵢ[ℂ] (Lp (α := E) F 2) :=
+noncomputable def fourierTransformₗᵢ : (Lp (α := E) F 2) ≃ₗᵢ[ℂ] (Lp (α := E) F 2) :=
   (fourierEquiv ℂ 𝓢(E, F)).extendOfIsometry
     (toLpCLM ℂ (E := E) F 2 volume) (toLpCLM ℂ (E := E) F 2 volume)
     -- Not explicitly stating the measure as being the volume causes time-outs in the proofs below
     (denseRange_toLpCLM ENNReal.ofNat_ne_top) (denseRange_toLpCLM ENNReal.ofNat_ne_top)
     norm_fourier_toL2_eq
 
+noncomputable
 instance instFourierTransform : FourierTransform (Lp (α := E) F 2) (Lp (α := E) F 2) where
   fourier := fourierTransformₗᵢ E F
 
@@ -66,6 +65,7 @@ instance instFourierSMul : FourierSMul ℂ (Lp (α := E) F 2) (Lp (α := E) F 2)
 instance instContinuousFourier : ContinuousFourier (Lp (α := E) F 2) (Lp (α := E) F 2) where
   continuous_fourier := (fourierTransformₗᵢ E F).continuous
 
+noncomputable
 instance instFourierTransformInv : FourierTransformInv (Lp (α := E) F 2) (Lp (α := E) F 2) where
   fourierInv := (fourierTransformₗᵢ E F).symm
 

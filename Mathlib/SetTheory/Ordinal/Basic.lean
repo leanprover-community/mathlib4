@@ -61,8 +61,6 @@ for the empty set by convention.
 
 assert_not_exists Module Field
 
-noncomputable section
-
 open Function Cardinal Set Equiv Order
 open scoped Cardinal InitialSeg
 
@@ -124,13 +122,13 @@ def Ordinal.ToType (o : Ordinal.{u}) : Type u :=
 alias Ordinal.toType := Ordinal.ToType
 
 @[no_expose]
-instance linearOrder_toType (o : Ordinal) : LinearOrder o.ToType :=
+noncomputable instance linearOrder_toType (o : Ordinal) : LinearOrder o.ToType :=
   @IsWellOrder.linearOrder _ o.out.r o.out.wo
 
 instance wellFoundedLT_toType (o : Ordinal) : WellFoundedLT o.ToType :=
   o.out.wo.toIsWellFounded
 
-instance hasWellFounded_toType (o : Ordinal) : WellFoundedRelation o.ToType :=
+noncomputable instance hasWellFounded_toType (o : Ordinal) : WellFoundedRelation o.ToType :=
   WellFoundedLT.toWellFoundedRelation
 
 namespace Ordinal
@@ -278,6 +276,7 @@ open scoped Classical in
 
 Since `LinearOrder` is data-carrying, `liftOnWellOrder_type` is not a definitional equality, unlike
 `Quotient.liftOn_mk` which is always def-eq. -/
+noncomputable
 def liftOnWellOrder {δ : Sort v} (o : Ordinal) (f : ∀ (α) [LinearOrder α] [WellFoundedLT α], δ)
     (c : ∀ (α) [LinearOrder α] [WellFoundedLT α] (β) [LinearOrder β] [WellFoundedLT β],
       typeLT α = typeLT β → f α = f β) : δ :=
@@ -332,7 +331,7 @@ instance partialOrder : PartialOrder Ordinal where
     Quotient.inductionOn₂ a b fun _ _ ⟨h₁⟩ ⟨h₂⟩ =>
       Quot.sound ⟨InitialSeg.antisymm h₁ h₂⟩
 
-instance : LinearOrder Ordinal :=
+noncomputable instance : LinearOrder Ordinal :=
   { (inferInstance : PartialOrder Ordinal) with
     le_total := fun a b => Quotient.inductionOn₂ a b fun ⟨_, r, _⟩ ⟨_, s, _⟩ =>
       (InitialSeg.total r s).recOn (fun f => Or.inl ⟨f⟩) fun f => Or.inr ⟨f⟩
@@ -395,14 +394,14 @@ theorem type_mono [LinearOrder α] [WellFoundedLT α] {s t : Set α} (h : s ⊆ 
 /-- Given two ordinals `α ≤ β`, then `initialSegToType α β` is the initial segment embedding of
 `α.ToType` into `β.ToType`. -/
 @[deprecated type_le_iff (since := "2026-04-12")]
-def initialSegToType {α β : Ordinal} (h : α ≤ β) : α.ToType ≤i β.ToType := by
+noncomputable def initialSegToType {α β : Ordinal} (h : α ≤ β) : α.ToType ≤i β.ToType := by
   apply Classical.choice (type_le_iff.mp _)
   rwa [type_toType, type_toType]
 
 /-- Given two ordinals `α < β`, then `principalSegToType α β` is the principal segment embedding
 of `α.ToType` into `β.ToType`. -/
 @[deprecated type_lt_iff (since := "2026-04-12")]
-def principalSegToType {α β : Ordinal} (h : α < β) : α.ToType <i β.ToType := by
+noncomputable def principalSegToType {α β : Ordinal} (h : α < β) : α.ToType <i β.ToType := by
   apply Classical.choice (type_lt_iff.mp _)
   rwa [type_toType, type_toType]
 
@@ -483,6 +482,7 @@ theorem type_Iio_lt [LinearOrder α] [WellFoundedLT α] (x : α) :
 That is, `enum` maps an initial segment of the ordinals, those less than the order type of `r`, to
 the elements of `α`. -/
 @[simps! symm_apply_coe]
+noncomputable
 def enum (r : α → α → Prop) [IsWellOrder α r] : (· < · : Iio (type r) → Iio (type r) → Prop) ≃r r :=
   (typein r).subrelIso
 
@@ -541,7 +541,7 @@ theorem relIso_enum {α β : Type u} {r : α → α → Prop} {s : β → β →
 
 /-- The order isomorphism between ordinals less than `o` and `o.ToType`. -/
 @[simps! -isSimp]
-def ToType.mk {o : Ordinal} : Set.Iio o ≃o o.ToType where
+noncomputable def ToType.mk {o : Ordinal} : Set.Iio o ≃o o.ToType where
   toFun x := enum (α := o.ToType) (· < ·) ⟨x.1, type_toType _ ▸ x.2⟩
   invFun x := ⟨typein (α := o.ToType) (· < ·) x, typein_lt_self x⟩
   left_inv _ := Subtype.ext (typein_enum _ _)
@@ -551,11 +551,11 @@ def ToType.mk {o : Ordinal} : Set.Iio o ≃o o.ToType where
 @[deprecated (since := "2025-12-04")] noncomputable alias enumIsoToType := ToType.mk
 
 /-- Convert an element of `α.toType` to the corresponding `Ordinal` -/
-abbrev ToType.toOrd {o : Ordinal} (α : o.ToType) : Set.Iio o := ToType.mk.symm α
+noncomputable abbrev ToType.toOrd {o : Ordinal} (α : o.ToType) : Set.Iio o := ToType.mk.symm α
 
-instance (o : Ordinal) : Coe o.ToType (Set.Iio o) where
+noncomputable instance (o : Ordinal) : Coe o.ToType (Set.Iio o) where
   coe := ToType.toOrd
-instance (o : Ordinal) : CoeOut o.ToType Ordinal where
+noncomputable instance (o : Ordinal) : CoeOut o.ToType Ordinal where
   coe x := x.toOrd
 
 instance small_Iio (o : Ordinal.{u}) : Small.{u} (Iio o) :=
@@ -572,7 +572,7 @@ instance small_Ioc (a b : Ordinal.{u}) : Small.{u} (Ioc a b) := small_subset Ioc
 
 /-- `o.ToType` is an `OrderBot` whenever `o ≠ 0`. -/
 @[implicit_reducible, deprecated WellFoundedLT.toOrderBot (since := "2026-04-12")]
-def toTypeOrderBot {o : Ordinal} (ho : o ≠ 0) : OrderBot o.ToType where
+noncomputable def toTypeOrderBot {o : Ordinal} (ho : o ≠ 0) : OrderBot o.ToType where
   bot := (enum (· < ·)) ⟨0, _⟩
   bot_le := enum_zero_le' (bot_lt_iff_ne_bot.2 ho)
 
@@ -594,7 +594,7 @@ instance wellFoundedRelation : WellFoundedRelation Ordinal :=
 instance wellFoundedLT : WellFoundedLT Ordinal :=
   ⟨lt_wf⟩
 
-instance : ConditionallyCompleteLinearOrderBot Ordinal :=
+noncomputable instance : ConditionallyCompleteLinearOrderBot Ordinal :=
   WellFoundedLT.conditionallyCompleteLinearOrderBot _
 
 @[deprecated WellFoundedLT.induction (since := "2026-02-27")]
@@ -986,7 +986,7 @@ instance uniqueIioOne : Unique (Iio (1 : Ordinal)) where
 theorem Iio_one_default_eq : (default : Iio (1 : Ordinal)) = ⟨0, zero_lt_one' Ordinal⟩ :=
   rfl
 
-instance uniqueToTypeOne : Unique (ToType 1) where
+noncomputable instance uniqueToTypeOne : Unique (ToType 1) where
   default := enum (α := ToType 1) (· < ·) ⟨0, by simp⟩
   uniq a := by
     rw [← enum_typein (α := ToType 1) (· < ·) a]
@@ -1054,7 +1054,7 @@ open Ordinal
 
 /-- The ordinal corresponding to a cardinal `c` is the least ordinal whose cardinal is `c`. -/
 @[no_expose]
-def ord (c : Cardinal) : Ordinal :=
+noncomputable def ord (c : Cardinal) : Ordinal :=
   Quot.liftOn c (fun α : Type u => ⨅ r : { r // IsWellOrder α r }, @type α r.1 r.2) <| by
   rintro α β ⟨f⟩
   refine congr_arg sInf <| ext fun o ↦ ⟨?_, ?_⟩ <;>
@@ -1102,7 +1102,7 @@ theorem gc_ord_card : GaloisConnection ord card := by
     exact (ord_le_type _).trans g.ordinal_type_le
 
 /-- Galois coinsertion between `Cardinal.ord` and `Ordinal.card`. -/
-def gciOrdCard : GaloisCoinsertion ord card :=
+noncomputable def gciOrdCard : GaloisCoinsertion ord card :=
   gc_ord_card.toGaloisCoinsertion fun c ↦ c.card_ord.le
 
 theorem ord_le {c o} : ord c ≤ o ↔ c ≤ o.card :=
@@ -1262,7 +1262,7 @@ theorem ord_eq_omega0 {a : Cardinal} : a.ord = ω ↔ a = ℵ₀ :=
   whose cardinal is `c`. This is the order-embedding version. For the regular function, see `ord`.
 -/
 @[deprecated ord (since := "2026-02-27")]
-def ord.orderEmbedding : Cardinal ↪o Ordinal :=
+noncomputable def ord.orderEmbedding : Cardinal ↪o Ordinal :=
   OrderEmbedding.ofStrictMono _ fun _ _ ↦ Cardinal.ord_lt_ord.2
 
 @[deprecated ord (since := "2026-02-27")]

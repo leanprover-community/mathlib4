@@ -33,26 +33,24 @@ variable (R : Type (u + 1)) [Ring R]
 
 open CategoryTheory Limits Profinite Condensed
 
-noncomputable section
-
 namespace Condensed
 
 /-- The free condensed `R`-module on a finite set. -/
-abbrev finFree : FintypeCat.{u} ⥤ CondensedMod.{u} R :=
+noncomputable abbrev finFree : FintypeCat.{u} ⥤ CondensedMod.{u} R :=
   FintypeCat.toProfinite ⋙ profiniteToCondensed ⋙ free R
 
 /-- The free condensed `R`-module on a profinite space. -/
-abbrev profiniteFree : Profinite.{u} ⥤ CondensedMod.{u} R :=
+noncomputable abbrev profiniteFree : Profinite.{u} ⥤ CondensedMod.{u} R :=
   profiniteToCondensed ⋙ free R
 
 /-- The functor sending a profinite space `S` to the condensed `R`-module `R[S]^\solid`. -/
-def profiniteSolid : Profinite.{u} ⥤ CondensedMod.{u} R :=
+noncomputable def profiniteSolid : Profinite.{u} ⥤ CondensedMod.{u} R :=
   Functor.rightKanExtension FintypeCat.toProfinite (finFree R)
 
 /-- The natural transformation `FintypeCat.toProfinite ⋙ profiniteSolid R ⟶ finFree R`
 which is part of the assertion that `profiniteSolid R` is the (pointwise) right
 Kan extension of `finFree R` along `FintypeCat.toProfinite`. -/
-def profiniteSolidCounit : FintypeCat.toProfinite ⋙ profiniteSolid R ⟶ finFree R :=
+noncomputable def profiniteSolidCounit : FintypeCat.toProfinite ⋙ profiniteSolid R ⟶ finFree R :=
   Functor.rightKanExtensionCounit FintypeCat.toProfinite (finFree R)
 
 instance : (profiniteSolid R).IsRightKanExtension (profiniteSolidCounit R) := by
@@ -62,12 +60,12 @@ instance : (profiniteSolid R).IsRightKanExtension (profiniteSolidCounit R) := by
 /-- The functor `Profinite.{u} ⥤ CondensedMod.{u} R` is a pointwise
 right Kan extension of `finFree R : FintypeCat.{u} ⥤ CondensedMod.{u} R`
 along `FintypeCat.toProfinite`. -/
-def profiniteSolidIsPointwiseRightKanExtension :
+noncomputable def profiniteSolidIsPointwiseRightKanExtension :
     (Functor.RightExtension.mk _ (profiniteSolidCounit R)).IsPointwiseRightKanExtension :=
   Functor.isPointwiseRightKanExtensionOfIsRightKanExtension _ _
 
 /-- The natural transformation `R[S] ⟶ R[S]^\solid`. -/
-def profiniteSolidification : profiniteFree R ⟶ profiniteSolid.{u} R :=
+noncomputable def profiniteSolidification : profiniteFree R ⟶ profiniteSolid.{u} R :=
   (profiniteSolid R).liftOfIsRightKanExtension (profiniteSolidCounit R) _ (𝟙 _)
 
 end Condensed

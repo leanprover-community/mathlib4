@@ -44,7 +44,7 @@ exist on other files:
 Various other basic arithmetic results are given in `Principal.lean` instead.
 -/
 
-@[expose] public noncomputable section
+@[expose] public section
 
 assert_not_exists Field Module
 
@@ -155,7 +155,7 @@ at limit ordinals, then it holds for all ordinals.
 Note that this is just a special (though sometimes convenient) case of the more general
 well-founded recursion `WellFoundedLT.fix`. -/
 @[elab_as_elim]
-def limitRecOn {motive : Ordinal → Sort*} (o : Ordinal)
+noncomputable def limitRecOn {motive : Ordinal → Sort*} (o : Ordinal)
     (zero : motive 0) (add_one : ∀ o, motive o → motive (o + 1))
     (limit : ∀ o, IsSuccLimit o → (∀ o' < o, motive o') → motive o) : motive o :=
   SuccOrder.limitRecOn o (fun _a ha ↦ ha.eq_bot ▸ zero) (fun a _ ↦ add_one a) limit
@@ -182,6 +182,7 @@ theorem limitRecOn_limit {motive} (o H₁ H₂ H₃ h) :
 /-- Bounded recursion on ordinals. Similar to `limitRecOn`, with the assumption `o < l`
   added to all cases. The final term's domain is the ordinals below `l`. -/
 @[deprecated limitRecOn (since := "2025-12-26"), elab_as_elim]
+noncomputable
 def boundedLimitRecOn {l : Ordinal} (lLim : IsSuccLimit l) {motive : Iio l → Sort*} (o : Iio l)
     (zero : motive ⟨0, lLim.bot_lt⟩)
     (succ : (o : Iio l) → motive o → motive ⟨succ o, lLim.succ_lt o.2⟩)
@@ -219,7 +220,7 @@ theorem boundedLimitRec_limit {l} (lLim : IsSuccLimit l) {motive} (o H₁ H₂ H
   rw [limitRecOn_limit]
   rfl
 
-instance orderTopToTypeSucc (o : Ordinal) : OrderTop (succ o).ToType :=
+noncomputable instance orderTopToTypeSucc (o : Ordinal) : OrderTop (succ o).ToType :=
   @OrderTop.mk _ _ (Top.mk _) le_enum_succ
 
 theorem enum_succ_eq_top {o : Ordinal} :
@@ -250,7 +251,7 @@ theorem bounded_singleton {r : α → α → Prop} [IsWellOrder α r] (hr : IsSu
 /-! ### The predecessor of an ordinal -/
 
 /-- The ordinal predecessor of `a` is `b` if `a = succ b`, and `a` otherwise. -/
-def pred (o : Ordinal) : Ordinal :=
+noncomputable def pred (o : Ordinal) : Ordinal :=
   isSuccPrelimitRecOn o (fun a _ ↦ a) (fun a _ ↦ a)
 
 @[simp]
@@ -287,7 +288,7 @@ theorem pred_le_self (o) : pred o ≤ o := by
   simp
 
 /-- `Ordinal.pred` and `Order.succ` form a Galois insertion. -/
-def pred_succ_gi : GaloisInsertion pred succ :=
+noncomputable def pred_succ_gi : GaloisInsertion pred succ :=
   GaloisConnection.toGaloisInsertion @pred_le_iff_le_succ (by simp)
 
 theorem pred_surjective : Function.Surjective pred :=
@@ -398,7 +399,7 @@ theorem IsNormal.isSuccLimit {f} (H : Ordinal.IsNormal f) {o} (ho : IsSuccLimit 
 /-! ### Subtraction on ordinals -/
 
 /-- `a - b` is the unique ordinal satisfying `b + (a - b) = a` when `b ≤ a`. -/
-instance sub : Sub Ordinal where
+noncomputable instance sub : Sub Ordinal where
   sub a b := if h : b ≤ a then Classical.choose (exists_add_of_le h) else 0
 
 private theorem sub_eq_zero_of_lt {a b : Ordinal} (h : a < b) : a - b = 0 :=
@@ -685,7 +686,7 @@ protected theorem mul_two (o : Ordinal) : o * 2 = o + o := by
 
 /-- `a / b` is the unique ordinal `q` satisfying `a = b * q + r` with `r < b`. -/
 @[no_expose]
-instance div : Div Ordinal where
+noncomputable instance div : Div Ordinal where
   div a b := sSup ((b * ·) ⁻¹' Iic a)
 
 @[simp]
@@ -852,7 +853,7 @@ instance : IsPartialOrder Ordinal (· ∣ ·) where
   antisymm := @dvd_antisymm
 
 /-- `a % b` is the unique ordinal `r` satisfying `a = b * q + r` with `r < b`. -/
-instance mod : Mod Ordinal where
+noncomputable instance mod : Mod Ordinal where
   mod a b := a - b * (a / b)
 
 theorem mod_def (a b : Ordinal) : a % b = a - b * (a / b) :=
@@ -1146,7 +1147,7 @@ instance : Nonempty (ℵ₀ : Cardinal.{u}).ord.ToType := by simp
 
 /-- This can be made a local instance in order to get `⊥`
 in `Cardinal.aleph0.ord.ToType`. -/
-abbrev orderBotAleph0OrdToType : OrderBot Cardinal.aleph0.{u}.ord.ToType :=
+noncomputable abbrev orderBotAleph0OrdToType : OrderBot Cardinal.aleph0.{u}.ord.ToType :=
   WellFoundedLT.toOrderBot _
 
 end Cardinal

@@ -49,8 +49,6 @@ path-connected.)
 
 @[expose] public section
 
-noncomputable section
-
 open Topology Filter unitInterval Set Function Pointwise Fin
 
 variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {x y z : X} {ι : Type*}
@@ -67,7 +65,7 @@ theorem Joined.refl (x : X) : Joined x x :=
   ⟨Path.refl x⟩
 
 /-- When two points are joined, choose some path from `x` to `y`. -/
-def Joined.somePath (h : Joined x y) : Path x y :=
+noncomputable def Joined.somePath (h : Joined x y) : Path x y :=
   Nonempty.some h
 
 @[symm]
@@ -180,7 +178,7 @@ theorem JoinedIn.target_mem (h : JoinedIn F x y) : y ∈ F :=
   h.mem.2
 
 /-- When `x` and `y` are joined in `F`, choose a path from `x` to `y` inside `F` -/
-def JoinedIn.somePath (h : JoinedIn F x y) : Path x y :=
+noncomputable def JoinedIn.somePath (h : JoinedIn F x y) : Path x y :=
   Classical.choose h
 
 theorem JoinedIn.somePath_mem (h : JoinedIn F x y) (t : I) : h.somePath t ∈ F :=
@@ -562,7 +560,7 @@ namespace PathConnectedSpace
 variable [PathConnectedSpace X]
 
 /-- Use path-connectedness to build a path between two points. -/
-def somePath (x y : X) : Path x y :=
+noncomputable def somePath (x y : X) : Path x y :=
   Nonempty.some (joined x y)
 
 instance : Subsingleton (ZerothHomotopy X) :=

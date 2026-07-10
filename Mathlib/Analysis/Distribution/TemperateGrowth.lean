@@ -21,8 +21,6 @@ import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 
 @[expose] public section
 
-noncomputable section
-
 open scoped Nat NNReal ContDiff
 
 open Asymptotics
@@ -427,7 +425,7 @@ class HasTemperateGrowth (μ : Measure E) : Prop where
 open scoped Classical in
 /-- An integer exponent `l` such that `(1 + ‖x‖) ^ (-l)` is integrable if `μ` has
 temperate growth. -/
-def integrablePower (μ : Measure E) : ℕ :=
+noncomputable def integrablePower (μ : Measure E) : ℕ :=
   if h : μ.HasTemperateGrowth then h.exists_integrable.choose else 0
 
 lemma integrable_pow_neg_integrablePower

@@ -32,8 +32,6 @@ literature.
 @[expose] public section
 
 
-noncomputable section
-
 open scoped BoundedContinuousFunction NNReal ENNReal
 open Set Function TopologicalSpace CompactlySupported CompactlySupportedContinuousMap
   MeasureTheory
@@ -57,7 +55,7 @@ end Monotone
 with values in `ℝ≥0`, for `K ⊆ X` compact define `λ(K) = inf {Λf | 1≤f on K}`.
 When `X` is a locally compact T2 space, this will be shown to be a
 content, and will be shown to agree with the Riesz measure on the compact subsets `K ⊆ X`. -/
-def rieszContentAux : Compacts X → ℝ≥0 := fun K =>
+noncomputable def rieszContentAux : Compacts X → ℝ≥0 := fun K =>
   sInf (Λ '' { f : C_c(X, ℝ≥0) | ∀ x ∈ K, (1 : ℝ≥0) ≤ f x })
 
 section RieszMonotone
@@ -319,7 +317,7 @@ variable [T2Space X] [LocallyCompactSpace X] [MeasurableSpace X] [BorelSpace X]
 /-- `rieszContent` gives a `Content` from `Λ : C_c(X, ℝ≥0) →ₗ[ℝ≥0] ℝ≥0`. Here `rieszContent Λ` is
 promoted to a measure. It will be later shown that
 `∫ (x : X), f x ∂(rieszMeasure Λ hΛ) = Λ f` for all `f : C_c(X, ℝ≥0)`. -/
-def rieszMeasure := (rieszContent Λ).measure
+noncomputable def rieszMeasure := (rieszContent Λ).measure
 
 lemma le_rieszMeasure_of_isCompact_tsupport_subset {f : C_c(X, ℝ≥0)} (hf : ∀ x, f x ≤ 1)
     {K : Set X} (hK : IsCompact K) (h : tsupport f ⊆ K) : .ofNNReal (Λ f) ≤ rieszMeasure Λ K := by

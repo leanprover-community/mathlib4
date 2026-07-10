@@ -35,8 +35,6 @@ defined in `Mathlib/CategoryTheory/Simple.lean`
 @[expose] public section
 
 
-noncomputable section
-
 universe u v
 
 open CategoryTheory LinearMap CategoryTheory.MonoidalCategory Representation Module
@@ -53,7 +51,7 @@ variable {G k V W : Type*} [Monoid G] [Field k] [AddCommGroup V] [Module k V]
 
 /-- The character of a representation `ρ : Representation k G V` is the function associating to
 `g : G` the trace of the linear map `ρ g`. -/
-def character (g : G) :=
+noncomputable def character (g : G) :=
   LinearMap.trace k V (ρ g)
 
 omit [FiniteDimensional k V] in
@@ -153,7 +151,7 @@ variable {G : Type v} [Monoid G]
 
 /-- The character of a representation `V : FDRep k G` is the function associating to `g : G` the
 trace of the linear map `V.ρ g`. -/
-def character (V : FDRep k G) (g : G) :=
+noncomputable def character (V : FDRep k G) (g : G) :=
   LinearMap.trace k V (V.ρ g)
 
 theorem char_mul_comm (V : FDRep k G) (g : G) (h : G) :

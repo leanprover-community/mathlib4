@@ -36,8 +36,6 @@ the 0th component of which must be nonzero.
 @[expose] public section
 
 
-noncomputable section
-
 namespace WittVector
 
 open Function

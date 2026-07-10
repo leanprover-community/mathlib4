@@ -29,8 +29,6 @@ We follow a nice proof from http://drorbn.net/AcademicPensieve/2015-12/CayleyHam
 
 @[expose] public section
 
-noncomputable section
-
 universe u v w
 
 namespace Matrix
@@ -46,7 +44,7 @@ variable (i j : n)
 /-- The "characteristic matrix" of `M : Matrix n n R` is the matrix of polynomials $t I - M$.
 The determinant of this matrix is the characteristic polynomial.
 -/
-def charmatrix (M : Matrix n n R) : Matrix n n R[X] :=
+noncomputable def charmatrix (M : Matrix n n R) : Matrix n n R[X] :=
   Matrix.scalar n (X : R[X]) - (C : R →+* R[X]).mapMatrix M
 
 theorem charmatrix_apply :
@@ -129,7 +127,7 @@ lemma charmatrix_blockTriangular_iff {α : Type*} [Preorder α] {M : Matrix n n 
 alias ⟨BlockTriangular.of_charmatrix, BlockTriangular.charmatrix⟩ := charmatrix_blockTriangular_iff
 
 /-- The characteristic polynomial of a matrix `M` is given by $\det (t I - M)$. -/
-def charpoly (M : Matrix n n R) : R[X] :=
+noncomputable def charpoly (M : Matrix n n R) : R[X] :=
   (charmatrix M).det
 
 theorem eval_charpoly (M : Matrix m m R) (t : R) :

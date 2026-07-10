@@ -28,8 +28,6 @@ We define the normed group structure on `AddCircle p`, for `p : ℝ`. For exampl
 public section
 
 
-noncomputable section
-
 open Metric QuotientAddGroup Set
 
 open Int hiding mem_zmultiples_iff
@@ -40,6 +38,7 @@ namespace AddCircle
 
 variable (p : ℝ)
 
+noncomputable
 instance : NormedAddCommGroup (AddCircle p) := QuotientAddGroup.instNormedAddCommGroup _
 
 @[simp]

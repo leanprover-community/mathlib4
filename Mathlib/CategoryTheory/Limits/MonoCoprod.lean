@@ -33,8 +33,6 @@ TODO: define distributive categories, and show that they satisfy `MonoCoprod`, s
 @[expose] public section
 
 
-noncomputable section
-
 universe u
 
 namespace CategoryTheory

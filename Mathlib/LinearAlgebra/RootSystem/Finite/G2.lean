@@ -46,8 +46,6 @@ Once sufficient API for `RootPairing.Base` has been developed:
 
 @[expose] public section
 
-noncomputable section
-
 open FaithfulSMul Function Set Submodule
 open List hiding mem_toFinset
 
@@ -79,7 +77,7 @@ section IsG2
 /-- By making an arbitrary choice of roots pairing to `-3`, we can obtain an embedded `𝔤₂` root
 system just from the knowledge that such a pairs exists. -/
 @[implicit_reducible]
-def IsG2.toEmbeddedG2 [P.IsG2] : P.EmbeddedG2 where
+noncomputable def IsG2.toEmbeddedG2 [P.IsG2] : P.EmbeddedG2 where
   long := (IsG2.exists_pairingIn_neg_three (P := P)).choose
   short := (IsG2.exists_pairingIn_neg_three (P := P)).choose_spec.choose
   pairingIn_long_short := (IsG2.exists_pairingIn_neg_three (P := P)).choose_spec.choose_spec
@@ -538,7 +536,7 @@ variable [P.IsIrreducible]
 /-- The distinguished basis carried by an `EmbeddedG2`.
 
 In fact this is a `RootPairing.Base`. TODO Upgrade to this stronger statement. -/
-def basis : Module.Basis (Fin 2) R M :=
+noncomputable def basis : Module.Basis (Fin 2) R M :=
   have : LinearIndependent R ![EmbeddedG2.shortRoot P, EmbeddedG2.longRoot P] := by
     have := pairing_long_short P
     refine (IsReduced.linearIndependent_iff P).mpr ⟨fun h ↦ ?_, fun h ↦ ?_⟩
@@ -568,7 +566,7 @@ lemma mem_allRoots (i : ι) :
 
 open scoped Classical in
 /-- The natural labelling of `RootPairing.EmbeddedG2.allRoots`. -/
-@[simps] def indexEquivAllRoots : ι ≃ (allRoots P).toFinset :=
+@[simps] noncomputable def indexEquivAllRoots : ι ≃ (allRoots P).toFinset :=
   { toFun i := ⟨P.root i, List.mem_toFinset.mpr <| mem_allRoots P i⟩
     invFun x := (allRoots_subset_range_root P x.property).choose
     left_inv i := by simp

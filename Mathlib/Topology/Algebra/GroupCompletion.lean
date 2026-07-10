@@ -31,8 +31,6 @@ the main constructions deal with continuous group morphisms.
 @[expose] public section
 
 
-noncomputable section
-
 variable {M R α β : Type*}
 
 section Group
@@ -44,13 +42,13 @@ variable [UniformSpace α]
 instance [Zero α] : Zero (Completion α) :=
   ⟨(0 : α)⟩
 
-instance [Neg α] : Neg (Completion α) :=
+noncomputable instance [Neg α] : Neg (Completion α) :=
   ⟨Completion.map (fun a ↦ -a : α → α)⟩
 
-instance [Add α] : Add (Completion α) :=
+noncomputable instance [Add α] : Add (Completion α) :=
   ⟨Completion.map₂ (· + ·)⟩
 
-instance [Sub α] : Sub (Completion α) :=
+noncomputable instance [Sub α] : Sub (Completion α) :=
   ⟨Completion.map₂ Sub.sub⟩
 
 @[norm_cast]
@@ -69,7 +67,7 @@ open UniformSpace
 
 section Zero
 
-instance [UniformSpace α] [MonoidWithZero M] [Zero α] [MulActionWithZero M α]
+noncomputable instance [UniformSpace α] [MonoidWithZero M] [Zero α] [MulActionWithZero M α]
     [UniformContinuousConstSMul M α] : MulActionWithZero M (Completion α) where
   smul_zero := fun r ↦ by rw [← coe_zero, ← coe_smul, MulActionWithZero.smul_zero r]
   zero_smul :=
@@ -94,7 +92,7 @@ theorem coe_sub (a b : α) : ((a - b : α) : Completion α) = a - b :=
 theorem coe_add (a b : α) : ((a + b : α) : Completion α) = a + b :=
   (map₂_coe_coe a b (· + ·) uniformContinuous_add).symm
 
-instance : AddMonoid (Completion α) where
+noncomputable instance : AddMonoid (Completion α) where
   zero_add a :=
     Completion.induction_on a
       (isClosed_eq (continuous_map₂ continuous_const continuous_id) continuous_id) fun a ↦
@@ -119,7 +117,7 @@ instance : AddMonoid (Completion α) where
       show (n + 1) • (a : Completion α) = n • (a : Completion α) + (a : Completion α) by
         rw [← coe_smul, succ_nsmul, coe_add, coe_smul]
 
-instance : SubNegMonoid (Completion α) where
+noncomputable instance : SubNegMonoid (Completion α) where
   sub_eq_add_neg a b :=
     Completion.induction_on₂ a b
       (isClosed_eq (continuous_map₂ continuous_fst continuous_snd)
@@ -141,7 +139,7 @@ instance : SubNegMonoid (Completion α) where
           rw [← coe_smul, show (Int.negSucc n) • a = -((n.succ : ℤ) • a) from
             SubNegMonoid.zsmul_neg' n a, coe_neg, coe_smul]
 
-instance addGroup : AddGroup (Completion α) where
+noncomputable instance addGroup : AddGroup (Completion α) where
   neg_add_cancel a :=
     Completion.induction_on a
       (isClosed_eq (continuous_map₂ Completion.continuous_map continuous_id) continuous_const)
@@ -153,7 +151,7 @@ instance addGroup : AddGroup (Completion α) where
 instance isUniformAddGroup : IsUniformAddGroup (Completion α) :=
   ⟨uniformContinuous_map₂ Sub.sub⟩
 
-instance {M} [Monoid M] [DistribMulAction M α] [UniformContinuousConstSMul M α] :
+noncomputable instance {M} [Monoid M] [DistribMulAction M α] [UniformContinuousConstSMul M α] :
     DistribMulAction M (Completion α) where
   smul_add r x y :=
     induction_on₂ x y
@@ -182,7 +180,7 @@ section UniformAddCommGroup
 
 variable [UniformSpace α] [AddCommGroup α] [IsUniformAddGroup α]
 
-instance instAddCommGroup : AddCommGroup (Completion α) :=
+noncomputable instance instAddCommGroup : AddCommGroup (Completion α) :=
   { (inferInstance : AddGroup <| Completion α) with
     add_comm a b :=
       Completion.induction_on₂ a b
@@ -191,7 +189,7 @@ instance instAddCommGroup : AddCommGroup (Completion α) :=
         change (x : Completion α) + ↑y = ↑y + ↑x
         rw [← coe_add, ← coe_add, add_comm] }
 
-instance instModule [Semiring R] [Module R α] [UniformContinuousConstSMul R α] :
+noncomputable instance instModule [Semiring R] [Module R α] [UniformContinuousConstSMul R α] :
     Module R (Completion α) :=
   { (inferInstance : DistribMulAction R <| Completion α),
     (inferInstance : MulActionWithZero R <| Completion α) with
@@ -212,6 +210,7 @@ variable [UniformSpace α] [AddGroup α] [IsUniformAddGroup α] [UniformSpace β
 open UniformSpace UniformSpace.Completion
 
 /-- Extension to the completion of a continuous group hom. -/
+noncomputable
 def AddMonoidHom.extension [CompleteSpace β] [T0Space β] (f : α →+ β) (hf : Continuous f) :
     Completion α →+ β :=
   have hf : UniformContinuous f := uniformContinuous_addMonoidHom_of_continuous hf
@@ -234,6 +233,7 @@ theorem AddMonoidHom.continuous_extension [CompleteSpace β] [T0Space β] (f : �
   UniformSpace.Completion.continuous_extension
 
 /-- Completion of a continuous group hom, as a group hom. -/
+noncomputable
 def AddMonoidHom.completion (f : α →+ β) (hf : Continuous f) : Completion α →+ Completion β :=
   (toCompl.comp f).extension (continuous_toCompl.comp hf)
 

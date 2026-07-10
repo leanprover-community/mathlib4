@@ -566,23 +566,23 @@ instance (R : Type*) [CommRing R] [IsDomain R] [IsDiscreteValuationRing R] :
       Ideal.span_singleton_pow, Ideal.mem_span_singleton, ← addVal_le_iff_dvd, hϖ.addVal_pow] at hx
     rwa [← addVal_eq_top_iff, ENat.eq_top_iff_forall_ge]
 
-noncomputable section toEuclideanDomain
+section toEuclideanDomain
 variable {R : Type*} [CommRing R] [IsDomain R] [IsDiscreteValuationRing R]
 
 /-- A noncomputable quotient to define the Euclidean domain structure. The GCD algorithm only takes
 two steps to terminate. Given `GCD(x,y)`, if `x ∣ y` then `y%x = 0` so we're done in one step;
 otherwise `y%x = y` and then `GCD(x,y) = GCD(y,x)` which brings us back to the first case. -/
-def quotient (x y : R) : R :=
+noncomputable def quotient (x y : R) : R :=
   open scoped Classical in if y = 0 then 0 else if h : y ∣ x then h.choose else 0
 
 /-- A noncomputable remainder to define the Euclidean domain structure. The GCD algorithm only takes
 two steps to terminate. Given `GCD(x,y)`, if `x ∣ y` then `y%x = 0` so we're done in one step;
 otherwise `y%x = y` and then `GCD(x,y) = GCD(y,x)` which brings us back to the first case. -/
-def remainder (x y : R) : R :=
+noncomputable def remainder (x y : R) : R :=
   open scoped Classical in if y ∣ x then 0 else x
 
 /-- A modification of the valuation, sending `0` to `⊥` instead of `⊤`. -/
-def toWithBotNat (x : R) : WithBot ℕ :=
+noncomputable def toWithBotNat (x : R) : WithBot ℕ :=
   addVal R x
 
 @[simp] lemma toWithBotNat_zero : toWithBotNat (R := R) 0 = ⊥ :=
@@ -620,7 +620,7 @@ only takes two steps to terminate. Given `GCD(x,y)`, if `x ∣ y` then `y%x = 0`
 step; otherwise `y%x = y` and then `GCD(x,y) = GCD(y,x)` which brings us back to the first case.
 See `EuclideanDomain.to_principal_ideal_domain` for EuclideanDomain ⇒ PID. -/
 @[implicit_reducible]
-def toEuclideanDomain : EuclideanDomain R where
+noncomputable def toEuclideanDomain : EuclideanDomain R where
   quotient := quotient
   quotient_zero x := by simp [quotient]
   remainder := remainder

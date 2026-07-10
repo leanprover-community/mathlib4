@@ -25,8 +25,6 @@ public section
 -- Guard against import creep:
 assert_not_exists InnerProductSpace Real.arctan FiniteDimensional.proper
 
-noncomputable section
-
 open NNReal ENNReal MeasureTheory
 
 namespace Real

@@ -16,7 +16,7 @@ related by the lemma `Ordinal.opow_le_iff_le_log : b ^ c ≤ x ↔ c ≤ log b x
 `b`, `c`.
 -/
 
-public noncomputable section
+public section
 
 open Function Set Equiv Order
 open scoped Cardinal Ordinal
@@ -29,7 +29,7 @@ namespace Ordinal
 
 We call this `opow` in theorems in order to disambiguate from other exponentials. -/
 @[no_expose]
-instance instPow : Pow Ordinal Ordinal :=
+noncomputable instance instPow : Pow Ordinal Ordinal :=
   ⟨fun a b ↦ if a = 0 then 1 - b else
     limitRecOn b 1 (fun _ x ↦ x * a) fun o _ f ↦ ⨆ x : Iio o, f x.1 x.2⟩
 
@@ -280,7 +280,7 @@ theorem opow_mul_lt_opow {b u v x : Ordinal} (hv : v < b) (hu : u < x) : b ^ u *
 
 We special case `log 0 x = log 1 x = 0`, as well as `log b 0 = 0`. -/
 @[pp_nodot]
-def log (b x : Ordinal) : Ordinal :=
+noncomputable def log (b x : Ordinal) : Ordinal :=
   sSup ((b ^ ·) ⁻¹' Iic x)
 
 @[simp]

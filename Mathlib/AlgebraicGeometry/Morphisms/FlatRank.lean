@@ -49,13 +49,13 @@ universe u
 
 namespace AlgebraicGeometry
 
-noncomputable section
+section
 
 variable {X S Y T : Scheme.{u}} (f : X ⟶ S)
 
 /-- The rank of a morphism `f : X ⟶ S` of schemes at a point `s : S`, when `S` is affine.
 This is used as an auxiliary definition to define `AlgebraicGeometry.finrank`. -/
-private def IsAffine.finrank [IsAffine S] (f : X ⟶ S) (s : S) : ℕ :=
+private noncomputable def IsAffine.finrank [IsAffine S] (f : X ⟶ S) (s : S) : ℕ :=
   f.appTop.hom.finrank (S.isoSpec.hom s)
 
 private lemma IsAffine.finrank_of_isPullback [IsAffine S] [IsAffine T]
@@ -86,7 +86,7 @@ private lemma IsAffine.finrank_comp_left_of_isIso [IsAffine S]
 flat and locally of finite presentation, this is a locally constant function (see
 `AlgebraicGeometry.isLocallyConstant_finrank`). -/
 @[stacks 02KA "second part"]
-def Scheme.Hom.finrank {X S : Scheme.{u}} (f : X ⟶ S) (s : S) : ℕ :=
+noncomputable def Scheme.Hom.finrank {X S : Scheme.{u}} (f : X ⟶ S) (s : S) : ℕ :=
   IsAffine.finrank (pullback.snd f (S.affineOpenCover.f <| S.affineOpenCover.idx s))
     (S.affineOpenCover.covers s).choose
 

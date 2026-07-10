@@ -129,8 +129,6 @@ Bochner integral, simple function, function space, Lebesgue dominated convergenc
 
 @[expose] public section
 
-noncomputable section
-
 open Filter ENNReal EMetric Set TopologicalSpace Topology
 open scoped NNReal ENNReal MeasureTheory
 
@@ -153,7 +151,7 @@ variable [NormedAddCommGroup E] [NormedDivisionRing 𝕜]
 
 open scoped Classical in
 /-- The Bochner integral -/
-irreducible_def integral {_ : MeasurableSpace α} (μ : Measure α) (f : α → G) : G :=
+noncomputable irreducible_def integral {_ : MeasurableSpace α} (μ : Measure α) (f : α → G) : G :=
   if _ : CompleteSpace G then
     if hf : Integrable f μ then L1.integral (hf.toL1 f) else 0
   else 0

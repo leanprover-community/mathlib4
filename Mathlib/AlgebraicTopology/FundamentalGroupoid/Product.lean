@@ -30,8 +30,6 @@ In this file, we give the following definitions/theorems:
 @[expose] public section
 
 
-noncomputable section
-
 open scoped FundamentalGroupoid CategoryTheory
 
 namespace FundamentalGroupoidFunctor
@@ -44,7 +42,7 @@ variable {I : Type u} (X : I → TopCat.{u})
 
 /-- The projection map Π i, X i → X i induces a map π(Π i, X i) ⟶ π(X i).
 -/
-def proj (i : I) : πₓ (TopCat.of (∀ i, X i)) ⥤ πₓ (X i) :=
+noncomputable def proj (i : I) : πₓ (TopCat.of (∀ i, X i)) ⥤ πₓ (X i) :=
   πₘ (TopCat.ofHom ⟨_, continuous_apply i⟩)
 
 /-- The projection map is precisely `Path.Homotopic.proj` interpreted as a functor -/
@@ -57,7 +55,7 @@ theorem proj_map (i : I) (x₀ x₁ : πₓ (TopCat.of (∀ i, X i))) (p : x₀ 
 groupoid of the pi product. This is actually an isomorphism (see `piIso`)
 -/
 @[simps]
-def piToPiTop : (∀ i, πₓ (X i)) ⥤ πₓ (TopCat.of (∀ i, X i)) where
+noncomputable def piToPiTop : (∀ i, πₓ (X i)) ⥤ πₓ (TopCat.of (∀ i, X i)) where
   obj g := ⟨fun i => (g i).as⟩
   map p := Path.Homotopic.pi p
   map_id x := by
@@ -71,6 +69,7 @@ set_option backward.isDefEq.respectTransparency false in
 of the induced projections. This shows that `fundamentalGroupoidFunctor` preserves products.
 -/
 @[simps]
+noncomputable
 def piIso : CategoryTheory.Grpd.of (∀ i : I, πₓ (X i)) ≅ πₓ (TopCat.of (∀ i, X i)) where
   hom := piToPiTop X
   inv := CategoryTheory.Functor.pi' (proj X)
@@ -93,7 +92,7 @@ section Preserves
 open CategoryTheory
 
 /-- Equivalence between the categories of cones over the objects `π Xᵢ` written in two ways -/
-def coneDiscreteComp :
+noncomputable def coneDiscreteComp :
     Limits.Cone (Discrete.functor X ⋙ π) ≌ Limits.Cone (Discrete.functor fun i => πₓ (X i)) :=
   Limits.Cone.postcomposeEquivalence (Discrete.compNatIsoDiscrete X π)
 
@@ -103,7 +102,7 @@ theorem coneDiscreteComp_obj_mapCone :
   rfl
 
 /-- This is `piIso.inv` as a cone morphism (in fact, isomorphism) -/
-def piTopToPiCone :
+noncomputable def piTopToPiCone :
     Limits.Fan.mk (πₓ (TopCat.of (∀ i, X i))) (proj X) ⟶ Grpd.piLimitFan fun i : I => πₓ (X i) where
   hom := CategoryTheory.Functor.pi' (proj X)
 
@@ -174,7 +173,7 @@ set_option backward.isDefEq.respectTransparency false in
 of the induced left and right projections.
 -/
 @[simps]
-def prodIso : CategoryTheory.Grpd.of (πₓ A × πₓ B) ≅ πₓ (TopCat.of (A × B)) where
+noncomputable def prodIso : CategoryTheory.Grpd.of (πₓ A × πₓ B) ≅ πₓ (TopCat.of (A × B)) where
   hom := prodToProdTop A B
   inv := (projLeft A B).prod' (projRight A B)
   hom_inv_id := by

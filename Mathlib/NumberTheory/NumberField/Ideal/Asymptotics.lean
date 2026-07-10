@@ -24,8 +24,6 @@ We prove several asymptotics involving integral ideals of a number field.
 
 @[expose] public section
 
-noncomputable section
-
 open Ideal
 
 variable (K : Type*) [Field K] [NumberField K]
@@ -53,7 +51,7 @@ private theorem tendsto_norm_le_and_mk_eq_div_atTop_aux₁ (hJ : ClassGroup.mk0 
     (mul_le_mul_iff_of_pos_left (Nat.cast_pos.mpr (absNorm_pos_of_nonZeroDivisors J))).symm
 
 open scoped Classical in
-private def tendsto_norm_le_and_mk_eq_div_atTop_aux₂ :
+private noncomputable def tendsto_norm_le_and_mk_eq_div_atTop_aux₂ :
     ↑({x | x ∈ (toMixed K) ⁻¹' fundamentalCone K ∧ mixedEmbedding.norm ((toMixed K) x) ≤ s} ∩
       (ZLattice.comap ℝ (idealLattice K ((FractionalIdeal.mk0 K) J)) (toMixed K).toLinearMap))
         ≃ {a : idealSet K J // mixedEmbedding.norm (a : mixedSpace K) ≤ s} := by

@@ -39,8 +39,6 @@ We define and prove basic properties about Artinian and locally Artinian Schemes
 
 public section
 
-noncomputable section
-
 open CategoryTheory
 
 universe u

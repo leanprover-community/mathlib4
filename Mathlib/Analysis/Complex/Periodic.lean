@@ -28,8 +28,6 @@ open Complex Filter Asymptotics
 
 open scoped Real Topology
 
-noncomputable section
-
 local notation "I∞" => comap im atTop
 
 variable (h : ℝ)
@@ -37,10 +35,10 @@ variable (h : ℝ)
 namespace Function.Periodic
 
 /-- Parameter for q-expansions, `qParam h z = exp (2 * π * I * z / h)` -/
-def qParam (z : ℂ) : ℂ := exp (2 * π * I * z / h)
+noncomputable def qParam (z : ℂ) : ℂ := exp (2 * π * I * z / h)
 
 /-- One-sided inverse of `qParam h`. -/
-def invQParam (q : ℂ) : ℂ := h / (2 * π * I) * log q
+noncomputable def invQParam (q : ℂ) : ℂ := h / (2 * π * I) * log q
 
 local notation "𝕢" => qParam
 
@@ -116,7 +114,7 @@ section PeriodicOnℂ
 variable (h : ℝ) (f : ℂ → ℂ)
 
 /-- The function `q ↦ f (invQParam h q)`, extended by a non-canonical choice of limit at 0. -/
-def cuspFunction : ℂ → ℂ :=
+noncomputable def cuspFunction : ℂ → ℂ :=
   update (f ∘ invQParam h) 0 (limUnder (𝓝[≠] 0) (f ∘ invQParam h))
 
 theorem cuspFunction_eq_of_nonzero {q : ℂ} (hq : q ≠ 0) :

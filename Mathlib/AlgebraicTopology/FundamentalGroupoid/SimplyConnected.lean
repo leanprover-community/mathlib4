@@ -28,8 +28,6 @@ We also define the corresponding predicate for sets.
 
 @[expose] public section
 
-noncomputable section
-
 open CategoryTheory
 open scoped ContinuousMap
 

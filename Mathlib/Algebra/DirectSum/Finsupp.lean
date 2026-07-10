@@ -20,8 +20,6 @@ public import Mathlib.Data.Finsupp.ToDFinsupp
 
 universe u v w
 
-noncomputable section
-
 open DirectSum
 
 open LinearMap Submodule
@@ -34,7 +32,7 @@ variable (R M) (ι : Type*) [DecidableEq ι]
 
 /-- The finitely supported functions `ι →₀ M` are in linear equivalence with the direct sum of
 copies of M indexed by ι. -/
-def finsuppLEquivDirectSum : (ι →₀ M) ≃ₗ[R] ⨁ _ : ι, M :=
+noncomputable def finsuppLEquivDirectSum : (ι →₀ M) ≃ₗ[R] ⨁ _ : ι, M :=
   haveI : ∀ m : M, Decidable (m ≠ 0) := Classical.decPred _
   finsuppLequivDFinsupp R
 

@@ -124,8 +124,6 @@ what is the best way to do this. The exact design may be decided when it is need
 @[expose] public section
 
 
-noncomputable section
-
 open CategoryTheory Category Idempotents
 
 variable {A : Type*} [Category* A] [Abelian A]
@@ -139,17 +137,17 @@ namespace DoldKan
 open AlgebraicTopology.DoldKan
 
 /-- The functor `N` for the equivalence is `normalizedMooreComplex A` -/
-def N : SimplicialObject A ⥤ ChainComplex A ℕ :=
+noncomputable def N : SimplicialObject A ⥤ ChainComplex A ℕ :=
   AlgebraicTopology.normalizedMooreComplex A
 
 /-- The functor `Γ` for the equivalence is the same as in the pseudoabelian case. -/
-def Γ : ChainComplex A ℕ ⥤ SimplicialObject A :=
+noncomputable def Γ : ChainComplex A ℕ ⥤ SimplicialObject A :=
   Idempotents.DoldKan.Γ
 
 /-- The comparison isomorphism between `normalizedMooreComplex A` and
 the functor `Idempotents.DoldKan.N` from the pseudoabelian case -/
 @[simps!]
-def comparisonN : (N : SimplicialObject A ⥤ _) ≅ Idempotents.DoldKan.N :=
+noncomputable def comparisonN : (N : SimplicialObject A ⥤ _) ≅ Idempotents.DoldKan.N :=
   calc
     N ≅ N ⋙ 𝟭 _ := Functor.leftUnitor N
     _ ≅ N ⋙ (toKaroubiEquivalence _).functor ⋙ (toKaroubiEquivalence _).inverse :=
@@ -162,7 +160,7 @@ def comparisonN : (N : SimplicialObject A ⥤ _) ≅ Idempotents.DoldKan.N :=
 
 /-- The Dold-Kan equivalence for abelian categories -/
 @[simps! functor]
-def equivalence : SimplicialObject A ≌ ChainComplex A ℕ :=
+noncomputable def equivalence : SimplicialObject A ≌ ChainComplex A ℕ :=
   (Idempotents.DoldKan.equivalence (C := A)).changeFunctor comparisonN.symm
 
 theorem equivalence_inverse : (equivalence : SimplicialObject A ≌ _).inverse = Γ :=

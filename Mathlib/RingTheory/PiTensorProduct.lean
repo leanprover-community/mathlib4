@@ -27,7 +27,7 @@ variable {ι R' R : Type*} {A : ι → Type*}
 
 namespace PiTensorProduct
 
-noncomputable section AddCommMonoidWithOne
+section AddCommMonoidWithOne
 
 variable [CommSemiring R] [∀ i, AddCommMonoidWithOne (A i)] [∀ i, Module R (A i)]
 
@@ -42,7 +42,7 @@ instance instAddCommMonoidWithOne : AddCommMonoidWithOne (⨂[R] i, A i) where
 
 end AddCommMonoidWithOne
 
-noncomputable section NonUnitalNonAssocSemiring
+section NonUnitalNonAssocSemiring
 
 variable [CommSemiring R] [∀ i, NonUnitalNonAssocSemiring (A i)]
 variable [∀ i, Module R (A i)] [∀ i, SMulCommClass R (A i) (A i)] [∀ i, IsScalarTower R (A i) (A i)]
@@ -90,7 +90,7 @@ instance instNonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring (⨂[R] i, A 
 
 end NonUnitalNonAssocSemiring
 
-noncomputable section NonAssocSemiring
+section NonAssocSemiring
 
 variable [CommSemiring R] [∀ i, NonAssocSemiring (A i)]
 variable [∀ i, Module R (A i)] [∀ i, SMulCommClass R (A i) (A i)] [∀ i, IsScalarTower R (A i) (A i)]
@@ -120,7 +120,7 @@ def tprodMonoidHom : (Π i, A i) →* ⨂[R] i, A i where
 
 end NonAssocSemiring
 
-noncomputable section NonUnitalSemiring
+section NonUnitalSemiring
 
 variable [CommSemiring R] [∀ i, NonUnitalSemiring (A i)]
 variable [∀ i, Module R (A i)] [∀ i, SMulCommClass R (A i) (A i)] [∀ i, IsScalarTower R (A i) (A i)]
@@ -141,7 +141,7 @@ instance instNonUnitalSemiring : NonUnitalSemiring (⨂[R] i, A i) where
 
 end NonUnitalSemiring
 
-noncomputable section Semiring
+section Semiring
 
 variable [CommSemiring R'] [CommSemiring R] [∀ i, Semiring (A i)]
 variable [Algebra R' R] [∀ i, Algebra R (A i)] [∀ i, Algebra R' (A i)]
@@ -228,7 +228,7 @@ theorem algHom_ext {S : Type*} [Finite ι] [DecidableEq ι] [Semiring S] [Algebr
 
 end Semiring
 
-noncomputable section Ring
+section Ring
 
 variable [CommRing R] [∀ i, Ring (A i)] [∀ i, Algebra R (A i)]
 
@@ -238,7 +238,7 @@ instance instRing : Ring (⨂[R] i, A i) where
 
 end Ring
 
-noncomputable section CommSemiring
+section CommSemiring
 
 variable [CommSemiring R] [∀ i, CommSemiring (A i)] [∀ i, Algebra R (A i)]
 
@@ -304,7 +304,7 @@ end
 
 end CommSemiring
 
-noncomputable section CommRing
+section CommRing
 
 variable [CommRing R] [∀ i, CommRing (A i)] [∀ i, Algebra R (A i)]
 instance instCommRing : CommRing (⨂[R] i, A i) where

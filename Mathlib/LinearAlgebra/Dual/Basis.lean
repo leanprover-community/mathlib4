@@ -36,8 +36,6 @@ This file concerns bases on dual vector spaces.
 
 open Module Dual Submodule LinearMap Function
 
-noncomputable section
-
 namespace Module.Basis
 
 universe u v w uR uM uK uV uι
@@ -50,7 +48,7 @@ variable (b : Basis ι R M)
 
 /-- The linear map from a vector space equipped with basis to its dual vector space,
 taking basis elements to corresponding dual basis elements. -/
-def toDual : M →ₗ[R] Module.Dual R M :=
+noncomputable def toDual : M →ₗ[R] Module.Dual R M :=
   b.constr ℕ fun v => b.constr ℕ fun w => if w = v then (1 : R) else 0
 
 theorem toDual_apply (i j : ι) : b.toDual (b i) (b j) = if i = j then 1 else 0 := by
@@ -82,7 +80,7 @@ theorem coe_toDual_self (i : ι) : b.toDual (b i) = b.coord i := by
   apply toDual_apply_right
 
 /-- `h.toDualFlip v` is the linear map sending `w` to `h.toDual w v`. -/
-def toDualFlip (m : M) : M →ₗ[R] R :=
+noncomputable def toDualFlip (m : M) : M →ₗ[R] R :=
   b.toDual.flip m
 
 theorem toDualFlip_apply (m₁ m₂ : M) : b.toDualFlip m₁ m₂ = b.toDual m₂ m₁ :=
@@ -120,7 +118,7 @@ section Finite
 variable [Finite ι]
 
 /-- A vector space is linearly equivalent to its dual space. -/
-def toDualEquiv : M ≃ₗ[R] Dual R M :=
+noncomputable def toDualEquiv : M ≃ₗ[R] Dual R M :=
   .ofBijective b.toDual ⟨b.toDual_injective, range_eq_top.mp b.toDual_range⟩
 
 -- `simps` times out when generating this
@@ -129,7 +127,7 @@ theorem toDualEquiv_apply (m : M) : b.toDualEquiv m = b.toDual m :=
   rfl
 
 /-- Maps a basis for `V` to a basis for the dual space. -/
-def dualBasis : Basis ι R (Dual R M) :=
+noncomputable def dualBasis : Basis ι R (Dual R M) :=
   b.map b.toDualEquiv
 
 -- We use `j = i` to match `Basis.repr_self`
@@ -235,7 +233,7 @@ variable [CommSemiring R] [AddCommMonoid M] [Module R M]
 variable {e : ι → M} {ε : ι → Dual R M}
 
 /-- The coefficients of `v` on the basis `e` -/
-def coeffs (h : DualBases e ε) (m : M) : ι →₀ R where
+noncomputable def coeffs (h : DualBases e ε) (m : M) : ι →₀ R where
   toFun i := ε i m
   support := (h.finite m).toFinset
   mem_support_toFun i := by rw [Set.Finite.mem_toFinset, Set.mem_setOf_eq]
@@ -275,7 +273,7 @@ theorem lc_coeffs (m : M) : DualBases.lc e (h.coeffs m) = m := h.total <| by sim
 
 /-- `(h : DualBases e ε).basis` shows the family of vectors `e` forms a basis. -/
 @[simps repr_apply, simps -isSimp repr_symm_apply]
-def basis : Basis ι R M :=
+noncomputable def basis : Basis ι R M :=
   Basis.ofRepr
     { toFun := coeffs h
       invFun := lc e

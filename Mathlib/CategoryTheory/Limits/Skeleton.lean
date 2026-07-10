@@ -23,8 +23,6 @@ If this is something we really want, we should consider changing the category in
 
 public section
 
-noncomputable section
-
 open CategoryTheory ThinSkeleton
 
 namespace CategoryTheory.Limits

@@ -58,8 +58,6 @@ public section
 
 universe u v
 
-noncomputable section
-
 open Set Topology Filter unitInterval
 
 variable {X : Type u} [TopologicalSpace X]

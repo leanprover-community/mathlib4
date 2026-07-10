@@ -31,8 +31,6 @@ to be precisely what we want here too.
 @[expose] public section
 
 
-noncomputable section
-
 open Finsupp
 
 open scoped Pointwise
@@ -43,7 +41,7 @@ namespace Finset
 
 open scoped Classical in
 /-- Finitely supported product of finsets. -/
-protected def finsupp (s : Finset ι) (t : ι → Finset α) : Finset (ι →₀ α) :=
+protected noncomputable def finsupp (s : Finset ι) (t : ι → Finset α) : Finset (ι →₀ α) :=
   (s.pi t).map ⟨indicator s, indicator_injective s⟩
 
 theorem mem_finsupp_iff {t : ι → Finset α} :
@@ -86,7 +84,7 @@ namespace Finsupp
 
 /-- Given a finitely supported function `f : ι →₀ Finset α`, one can define the finset
 `f.pi` of all finitely supported functions whose value at `i` is in `f i` for all `i`. -/
-def pi (f : ι →₀ Finset α) : Finset (ι →₀ α) :=
+noncomputable def pi (f : ι →₀ Finset α) : Finset (ι →₀ α) :=
   f.support.finsupp f
 
 @[simp]

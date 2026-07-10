@@ -30,8 +30,6 @@ Moreover, we prove some lemmas about the fixed points of specific normal functio
 @[expose] public section
 
 
-noncomputable section
-
 universe u v
 
 open Function Order
@@ -51,7 +49,7 @@ finitely many functions in the family to `a`.
 
 `Ordinal.nfpFamily_fp` shows this is a fixed point, `Ordinal.le_nfpFamily` shows it's at
 least `a`, and `Ordinal.nfpFamily_le_fp` shows this is the least ordinal with these properties. -/
-def nfpFamily (f : ι → Ordinal.{u} → Ordinal.{u}) (a : Ordinal.{u}) : Ordinal :=
+noncomputable def nfpFamily (f : ι → Ordinal.{u} → Ordinal.{u}) (a : Ordinal.{u}) : Ordinal :=
   ⨆ i, List.foldr f a i
 
 theorem foldr_le_nfpFamily [Small.{u} ι] (f : ι → Ordinal.{u} → Ordinal.{u}) (a l) :
@@ -129,7 +127,7 @@ theorem not_bddAbove_fp_family [Small.{u} ι] (H : ∀ i, IsNormal (f i)) :
 
 This is defined for all functions such that `Ordinal.derivFamily_zero`,
 `Ordinal.derivFamily_succ`, and `Ordinal.derivFamily_limit` are satisfied. -/
-def derivFamily (f : ι → Ordinal.{u} → Ordinal.{u}) (o : Ordinal.{u}) : Ordinal.{u} :=
+noncomputable def derivFamily (f : ι → Ordinal.{u} → Ordinal.{u}) (o : Ordinal.{u}) : Ordinal.{u} :=
   limitRecOn o (nfpFamily f 0) (fun _ IH => nfpFamily f (succ IH))
     fun a _ g => ⨆ b : Set.Iio a, g _ b.2
 
@@ -243,7 +241,7 @@ variable {f : Ordinal.{u} → Ordinal.{u}}
 /-- The next fixed point function, the least fixed point of the normal function `f`, at least `a`.
 
 This is defined as `nfpFamily` applied to a family consisting only of `f`. -/
-def nfp (f : Ordinal → Ordinal) : Ordinal → Ordinal :=
+noncomputable def nfp (f : Ordinal → Ordinal) : Ordinal → Ordinal :=
   nfpFamily fun _ : Unit => f
 
 theorem nfp_eq_nfpFamily (f : Ordinal → Ordinal) : nfp f = nfpFamily fun _ : Unit => f :=
@@ -334,7 +332,7 @@ theorem not_bddAbove_fp (H : IsNormal f) : ¬ BddAbove (Function.fixedPoints f) 
 /-- The derivative of a normal function `f` is the sequence of fixed points of `f`.
 
 This is defined as `Ordinal.derivFamily` applied to a trivial family consisting only of `f`. -/
-def deriv (f : Ordinal → Ordinal) : Ordinal → Ordinal :=
+noncomputable def deriv (f : Ordinal → Ordinal) : Ordinal → Ordinal :=
   derivFamily fun _ : Unit => f
 
 theorem deriv_eq_derivFamily (f : Ordinal → Ordinal) : deriv f = derivFamily fun _ : Unit => f :=

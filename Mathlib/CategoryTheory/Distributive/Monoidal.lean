@@ -61,8 +61,6 @@ pointed types and the coproduct given by the wedge sum is distributive.
 
 universe v v₂ u u₂
 
-noncomputable section
-
 namespace CategoryTheory
 
 open Category MonoidalCategory Limits Iso
@@ -94,7 +92,7 @@ section IsMonoidalLeftDistrib
 attribute [instance] IsMonoidalLeftDistrib.preservesBinaryCoproducts_tensorLeft
 
 /-- The canonical left distributivity isomorphism -/
-def leftDistrib [IsMonoidalLeftDistrib C] (X Y Z : C) :
+noncomputable def leftDistrib [IsMonoidalLeftDistrib C] (X Y Z : C) :
     (X ⊗ Y) ⨿ (X ⊗ Z) ≅ X ⊗ (Y ⨿ Z) :=
   PreservesColimitPair.iso (tensorLeft X) Y Z
 
@@ -152,6 +150,7 @@ section IsMonoidalRightDistrib
 attribute [instance] IsMonoidalRightDistrib.preservesBinaryCoproducts_tensorRight
 
 /-- The canonical right distributivity isomorphism -/
+noncomputable
 def rightDistrib [IsMonoidalRightDistrib C] (X Y Z : C) : (Y ⊗ X) ⨿ (Z ⊗ X) ≅ (Y ⨿ Z) ⊗ X :=
   PreservesColimitPair.iso (tensorRight X) Y Z
 

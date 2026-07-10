@@ -40,8 +40,6 @@ thereby also equivalent to the default sheaf condition.
 
 assert_not_exists IsOrderedMonoid
 
-noncomputable section
-
 universe w
 
 open TopologicalSpace TopCat Opposite CategoryTheory CategoryTheory.Limits
@@ -94,7 +92,7 @@ open CategoryTheory.Pairwise.Hom
 /-- Implementation detail:
 the morphism level of `pairwiseToOpensLeCover : Pairwise ι ⥤ OpensLeCover U`
 -/
-def pairwiseToOpensLeCoverMap :
+noncomputable def pairwiseToOpensLeCoverMap :
     ∀ {V W : Pairwise ι}, (V ⟶ W) → (pairwiseToOpensLeCoverObj U V ⟶ pairwiseToOpensLeCoverObj U W)
   | _, _, id_single _ => 𝟙 _
   | _, _, id_pair _ _ => 𝟙 _
@@ -105,7 +103,7 @@ def pairwiseToOpensLeCoverMap :
 of open sets below some `U i`.
 -/
 @[simps]
-def pairwiseToOpensLeCover : Pairwise ι ⥤ OpensLeCover U where
+noncomputable def pairwiseToOpensLeCover : Pairwise ι ⥤ OpensLeCover U where
   obj := pairwiseToOpensLeCoverObj U
   map {_ _} i := pairwiseToOpensLeCoverMap U i
 
@@ -214,7 +212,7 @@ instance : Functor.Final (pairwiseToOpensLeCover U) :=
 /-- The diagram in `Opens X` indexed by pairwise intersections from `U` is isomorphic
 (in fact, equal) to the diagram factored through `OpensLeCover U`.
 -/
-def pairwiseDiagramIso :
+noncomputable def pairwiseDiagramIso :
     Pairwise.diagram U ≅ pairwiseToOpensLeCover U ⋙ ObjectProperty.ι _ where
   hom := { app := by rintro (i | ⟨i, j⟩) <;> exact 𝟙 _ }
   inv := { app := by rintro (i | ⟨i, j⟩) <;> exact 𝟙 _ }
@@ -224,7 +222,7 @@ The cocone `Pairwise.cocone U` with cocone point `iSup U` over `Pairwise.diagram
 to the cocone `opensLeCoverCocone U` (with the same cocone point)
 after appropriate whiskering and postcomposition.
 -/
-def pairwiseCoconeIso :
+noncomputable def pairwiseCoconeIso :
     (Pairwise.cocone U).op ≅
       (Cone.postcomposeEquivalence (NatIso.op (pairwiseDiagramIso U :) :)).functor.obj
         ((opensLeCoverCocone U).op.whisker (pairwiseToOpensLeCover U).op) :=
@@ -238,7 +236,7 @@ variable (F : Presheaf C X) {ι : Type*} (U : ι → Opens X)
 
 /-- The diagram over all `{ V : Opens X // ∃ i, V ≤ U i }` is a limit iff the diagram
 over `U i` and `U i ⊓ U j` is a limit. -/
-def isLimitOpensLeCoverEquivPairwise :
+noncomputable def isLimitOpensLeCoverEquivPairwise :
     IsLimit (F.mapCone (opensLeCoverCocone U).op) ≃ IsLimit (F.mapCone (Pairwise.cocone U).op) :=
   calc
     IsLimit (F.mapCone (opensLeCoverCocone U).op) ≃
@@ -336,7 +334,7 @@ set_option backward.defeqAttrib.useBackward true in
 /-- (Implementation).
 Every cone over `F(U) ⟶ F(U ⊓ V)` and `F(V) ⟶ F(U ⊓ V)` factors through `F(U ⊔ V)`.
 -/
-def interUnionPullbackConeLift : s.pt ⟶ F.1.obj (op (U ⊔ V)) := by
+noncomputable def interUnionPullbackConeLift : s.pt ⟶ F.1.obj (op (U ⊔ V)) := by
   let ι : ULift.{w} WalkingPair → Opens X := fun j => WalkingPair.casesOn j.down U V
   have hι : U ⊔ V = iSup ι := by
     ext
@@ -388,7 +386,7 @@ theorem interUnionPullbackConeLift_right :
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- For a sheaf `F`, `F(U ⊔ V)` is the pullback of `F(U) ⟶ F(U ⊓ V)` and `F(V) ⟶ F(U ⊓ V)`. -/
-def isLimitPullbackCone : IsLimit (interUnionPullbackCone F U V) := by
+noncomputable def isLimitPullbackCone : IsLimit (interUnionPullbackCone F U V) := by
   let ι : ULift.{w} WalkingPair → Opens X := fun ⟨j⟩ => WalkingPair.casesOn j U V
   have hι : U ⊔ V = iSup ι := by
     ext
@@ -425,7 +423,7 @@ def isLimitPullbackCone : IsLimit (interUnionPullbackCone F U V) := by
       apply interUnionPullbackConeLift_right
 
 /-- If `U, V` are disjoint, then `F(U ⊔ V) = F(U) × F(V)`. -/
-def isProductOfDisjoint (h : U ⊓ V = ⊥) :
+noncomputable def isProductOfDisjoint (h : U ⊓ V = ⊥) :
     IsLimit
       (BinaryFan.mk (F.1.map (homOfLE le_sup_left : _ ⟶ U ⊔ V).op)
         (F.1.map (homOfLE le_sup_right : _ ⟶ U ⊔ V).op)) :=

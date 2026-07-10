@@ -28,8 +28,6 @@ The dual notions for pushouts are also available.
 
 @[expose] public section
 
-noncomputable section
-
 open CategoryTheory
 
 universe w v₁ v₂ v u u₂

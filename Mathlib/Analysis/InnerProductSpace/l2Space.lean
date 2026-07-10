@@ -86,8 +86,6 @@ Hilbert space, Hilbert sum, l2, Hilbert basis, unitary equivalence, isometric is
 open RCLike Submodule Filter
 open scoped NNReal ENNReal ComplexConjugate Topology lp
 
-noncomputable section
-
 variable {ι 𝕜 : Type*} [RCLike 𝕜] {E : Type*}
 variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 variable {G : ι → Type*} [∀ i, NormedAddCommGroup (G i)] [∀ i, InnerProductSpace 𝕜 (G i)]
@@ -107,7 +105,7 @@ theorem summable_inner (f g : lp G 2) : Summable fun i => ⟪f i, g i⟫ := by
   -- Then apply Cauchy-Schwarz pointwise
   exact norm_inner_le_norm (𝕜 := 𝕜) _ _
 
-instance instInnerProductSpace : InnerProductSpace 𝕜 (lp G 2) :=
+noncomputable instance instInnerProductSpace : InnerProductSpace 𝕜 (lp G 2) :=
   { lp.normedAddCommGroup (E := G) (p := 2) with
     inner := fun f g => ∑' i, ⟪f i, g i⟫
     norm_sq_eq_re_inner := fun f => by
@@ -183,7 +181,7 @@ protected theorem summable_of_lp (f : lp G 2) :
 
 /-- A mutually orthogonal family of subspaces of `E` induce a linear isometry from `lp 2` of the
 subspaces into `E`. -/
-protected def linearIsometry (hV : OrthogonalFamily 𝕜 G V) : lp G 2 →ₗᵢ[𝕜] E where
+protected noncomputable def linearIsometry (hV : OrthogonalFamily 𝕜 G V) : lp G 2 →ₗᵢ[𝕜] E where
   toFun f := ∑' i, V i (f i)
   map_add' f g := by
     simp only [(hV.summable_of_lp f).tsum_add (hV.summable_of_lp g), lp.coeFn_add, Pi.add_apply,
@@ -377,12 +375,12 @@ end
 
 namespace HilbertBasis
 
-instance {ι : Type*} : Inhabited (HilbertBasis ι 𝕜 ℓ²(ι, 𝕜)) :=
+noncomputable instance {ι : Type*} : Inhabited (HilbertBasis ι 𝕜 ℓ²(ι, 𝕜)) :=
   ⟨ofRepr (LinearIsometryEquiv.refl 𝕜 _)⟩
 
 open scoped Classical in
 /-- `b i` is the `i`th basis vector. -/
-instance instFunLike : FunLike (HilbertBasis ι 𝕜 E) ι E where
+noncomputable instance instFunLike : FunLike (HilbertBasis ι 𝕜 E) ι E where
   coe b i := b.repr.symm (lp.single 2 i (1 : 𝕜))
   coe_injective
   | ⟨b₁⟩, ⟨b₂⟩, h => by
@@ -471,7 +469,8 @@ protected theorem tsum_inner_mul_inner (b : HilbertBasis ι 𝕜 E) (x y : E) :
 -- Note: this should be `b.repr` composed with an identification of `lp (fun i : ι => 𝕜) p` with
 -- `PiLp p (fun i : ι => 𝕜)` (in this case with `p = 2`), but we don't have this yet (July 2022).
 /-- A finite Hilbert basis is an orthonormal basis. -/
-protected def toOrthonormalBasis [Fintype ι] (b : HilbertBasis ι 𝕜 E) : OrthonormalBasis ι 𝕜 E :=
+protected noncomputable
+def toOrthonormalBasis [Fintype ι] (b : HilbertBasis ι 𝕜 E) : OrthonormalBasis ι 𝕜 E :=
   OrthonormalBasis.mk b.orthonormal
     (by
       refine Eq.ge ?_
@@ -509,7 +508,8 @@ variable {v : ι → E} (hv : Orthonormal 𝕜 v)
 include hv
 
 /-- An orthonormal family of vectors whose span is dense in the whole module is a Hilbert basis. -/
-protected def mk (hsp : ⊤ ≤ (span 𝕜 (Set.range v)).topologicalClosure) : HilbertBasis ι 𝕜 E :=
+protected noncomputable
+def mk (hsp : ⊤ ≤ (span 𝕜 (Set.range v)).topologicalClosure) : HilbertBasis ι 𝕜 E :=
   HilbertBasis.ofRepr <| (hv.isHilbertSum hsp).linearIsometryEquiv
 
 theorem _root_.Orthonormal.linearIsometryEquiv_symm_apply_single_one [DecidableEq ι] (h i) :
@@ -525,7 +525,8 @@ protected theorem coe_mk (hsp : ⊤ ≤ (span 𝕜 (Set.range v)).topologicalClo
 
 /-- An orthonormal family of vectors whose span has trivial orthogonal complement is a Hilbert
 basis. -/
-protected def mkOfOrthogonalEqBot (hsp : (span 𝕜 (Set.range v))ᗮ = ⊥) : HilbertBasis ι 𝕜 E :=
+protected noncomputable
+def mkOfOrthogonalEqBot (hsp : (span 𝕜 (Set.range v))ᗮ = ⊥) : HilbertBasis ι 𝕜 E :=
   HilbertBasis.mk hv
     (by rw [← orthogonal_orthogonal_eq_closure, ← eq_top_iff, orthogonal_eq_top_iff, hsp])
 
@@ -537,7 +538,8 @@ protected theorem coe_mkOfOrthogonalEqBot (hsp : (span 𝕜 (Set.range v))ᗮ = 
 -- Note : this should be `b.repr` composed with an identification of `lp (fun i : ι => 𝕜) p` with
 -- `PiLp p (fun i : ι => 𝕜)` (in this case with `p = 2`), but we don't have this yet (July 2022).
 /-- An orthonormal basis is a Hilbert basis. -/
-protected def _root_.OrthonormalBasis.toHilbertBasis [Fintype ι] (b : OrthonormalBasis ι 𝕜 E) :
+protected noncomputable
+def _root_.OrthonormalBasis.toHilbertBasis [Fintype ι] (b : OrthonormalBasis ι 𝕜 E) :
     HilbertBasis ι 𝕜 E :=
   HilbertBasis.mk b.orthonormal <| by
     simpa only [← OrthonormalBasis.coe_toBasis, b.toBasis.span_eq, eq_top_iff] using!

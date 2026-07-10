@@ -25,8 +25,6 @@ and the affine span of a set of points.
 
 @[expose] public section
 
-noncomputable section
-
 open Affine
 
 open Set

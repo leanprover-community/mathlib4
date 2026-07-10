@@ -37,8 +37,6 @@ normalized Moore complex functor shall be obtained in `Normalized.lean`.
 
 open CategoryTheory CategoryTheory.Category CategoryTheory.Idempotents
 
-noncomputable section
-
 namespace AlgebraicTopology
 
 namespace DoldKan
@@ -49,7 +47,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- The functor `SimplicialObject C ⥤ Karoubi (ChainComplex C ℕ)` which maps
 `X` to the formal direct factor of `K[X]` defined by `PInfty`. -/
 @[simps]
-def N₁ : SimplicialObject C ⥤ Karoubi (ChainComplex C ℕ) where
+noncomputable def N₁ : SimplicialObject C ⥤ Karoubi (ChainComplex C ℕ) where
   obj X :=
     { X := AlternatingFaceMapComplex.obj X
       p := PInfty
@@ -59,11 +57,11 @@ def N₁ : SimplicialObject C ⥤ Karoubi (ChainComplex C ℕ) where
 
 /-- The extension of `N₁` to the Karoubi envelope of `SimplicialObject C`. -/
 @[simps!]
-def N₂ : Karoubi (SimplicialObject C) ⥤ Karoubi (ChainComplex C ℕ) :=
+noncomputable def N₂ : Karoubi (SimplicialObject C) ⥤ Karoubi (ChainComplex C ℕ) :=
   (functorExtension₁ _ _).obj N₁
 
 /-- The canonical isomorphism `toKaroubi (SimplicialObject C) ⋙ N₂ ≅ N₁`. -/
-def toKaroubiCompN₂IsoN₁ : toKaroubi (SimplicialObject C) ⋙ N₂ ≅ N₁ :=
+noncomputable def toKaroubiCompN₂IsoN₁ : toKaroubi (SimplicialObject C) ⋙ N₂ ≅ N₁ :=
   (functorExtension₁CompWhiskeringLeftToKaroubiIso _ _).app N₁
 
 @[simp]

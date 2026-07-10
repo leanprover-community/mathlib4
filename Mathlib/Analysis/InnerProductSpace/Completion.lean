@@ -17,8 +17,6 @@ product spaces.
 
 public section
 
-noncomputable section
-
 variable {𝕜 E F : Type*} [RCLike 𝕜]
 
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
@@ -58,6 +56,7 @@ namespace UniformSpace.Completion
 
 open RCLike Function
 
+noncomputable
 instance toInner {𝕜' E' : Type*} [TopologicalSpace 𝕜'] [UniformSpace E'] [Inner 𝕜' E'] :
     Inner 𝕜' (Completion E') where
   inner := curry <| (isDenseInducing_coe.prodMap isDenseInducing_coe).extend (uncurry (inner 𝕜'))
@@ -86,7 +85,7 @@ protected theorem Continuous.inner {α : Type*} [TopologicalSpace α] {f g : α 
     (hf : Continuous f) (hg : Continuous g) : Continuous (fun x : α => ⟪f x, g x⟫) :=
   UniformSpace.Completion.continuous_inner.comp (hf.prodMk hg :)
 
-instance innerProductSpace : InnerProductSpace 𝕜 (Completion E) where
+noncomputable instance innerProductSpace : InnerProductSpace 𝕜 (Completion E) where
   norm_sq_eq_re_inner x :=
     Completion.induction_on x (isClosed_eq (by fun_prop) (by fun_prop))
       fun a => by simp only [norm_coe, inner_coe, inner_self_eq_norm_sq]

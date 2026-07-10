@@ -52,8 +52,6 @@ As in other polynomial files, we typically use the notation:
 @[expose] public section
 
 
-noncomputable section
-
 open Set Function Finsupp AddMonoidAlgebra
 
 universe u v w
@@ -77,7 +75,7 @@ section Degrees
 
 (For example, `degrees (x^2 * y + y^3)` would be `{x, x, y, y, y}`.)
 -/
-def degrees (p : MvPolynomial σ R) : Multiset σ :=
+noncomputable def degrees (p : MvPolynomial σ R) : Multiset σ :=
   letI := Classical.decEq σ
   p.support.sup fun s : σ →₀ ℕ => toMultiset s
 
@@ -213,7 +211,7 @@ section DegreeOf
 
 
 /-- `degreeOf n p` gives the highest power of $X_n$ that appears in `p` -/
-def degreeOf (n : σ) (p : MvPolynomial σ R) : ℕ :=
+noncomputable def degreeOf (n : σ) (p : MvPolynomial σ R) : ℕ :=
   letI := Classical.decEq σ
   p.degrees.count n
 

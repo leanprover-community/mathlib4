@@ -56,8 +56,6 @@ assert_not_exists Monoid
 
 open List Function Set
 
-noncomputable section
-
 universe u v w v' w'
 
 variable {α β : Type u}
@@ -119,7 +117,7 @@ theorem mk_out (c : Cardinal) : #c.out = c :=
   Quotient.out_eq _
 
 /-- The representative of the cardinal of a type is equivalent to the original type. -/
-def outMkEquiv {α : Type v} : (#α).out ≃ α :=
+noncomputable def outMkEquiv {α : Type v} : (#α).out ≃ α :=
   Nonempty.some <| Cardinal.eq.mp (by simp)
 
 theorem mk_congr (e : α ≃ β) : #α = #β :=

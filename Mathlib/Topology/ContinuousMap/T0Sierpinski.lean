@@ -24,8 +24,6 @@ also injective and therefore an embedding.
 
 open Topology
 
-noncomputable section
-
 namespace TopologicalSpace
 
 theorem eq_induced_by_maps_to_sierpinski (X : Type*) [t : TopologicalSpace X] :

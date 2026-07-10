@@ -31,7 +31,7 @@ field of `k⟦X⟧` and `k`, when `k` is a field.
 @[expose] public section
 
 
-noncomputable section
+section
 
 open Polynomial
 
@@ -49,7 +49,7 @@ section Ring
 variable [Ring R]
 
 /-- Auxiliary function used for computing inverse of a power series -/
-protected def inv.aux : R → R⟦X⟧ → R⟦X⟧ :=
+protected noncomputable def inv.aux : R → R⟦X⟧ → R⟦X⟧ :=
   MvPowerSeries.inv.aux
 
 theorem coeff_inv_aux (n : ℕ) (a : R) (φ : R⟦X⟧) :
@@ -81,7 +81,7 @@ theorem coeff_inv_aux (n : ℕ) (a : R) (φ : R⟦X⟧) :
     · simpa [Finsupp.single_eq_same] using hh ()
 
 /-- A formal power series is invertible if the constant coefficient is invertible. -/
-def invOfUnit (φ : R⟦X⟧) (u : Rˣ) : R⟦X⟧ :=
+noncomputable def invOfUnit (φ : R⟦X⟧) (u : Rˣ) : R⟦X⟧ :=
   MvPowerSeries.invOfUnit φ u
 
 theorem coeff_invOfUnit (n : ℕ) (φ : R⟦X⟧) (u : Rˣ) :
@@ -128,7 +128,7 @@ section Field
 variable {k : Type*} [Field k]
 
 /-- The inverse 1/f of a power series f defined over a field -/
-protected abbrev inv : k⟦X⟧ → k⟦X⟧ :=
+protected noncomputable abbrev inv : k⟦X⟧ → k⟦X⟧ :=
   MvPowerSeries.inv
 
 theorem inv_eq_inv_aux (φ : k⟦X⟧) : φ⁻¹ = inv.aux (constantCoeff φ)⁻¹ φ :=
@@ -199,7 +199,7 @@ theorem smul_inv (r : k) (φ : k⟦X⟧) : (r • φ)⁻¹ = r⁻¹ • φ⁻¹ 
 
 /-- `firstUnitCoeff` is the non-zero coefficient whose index is `f.order`, seen as a unit of the
   field. It is obtained using `divided_by_X_pow_order`, defined in `PowerSeries.Order`. -/
-def firstUnitCoeff {f : k⟦X⟧} (hf : f ≠ 0) : kˣ :=
+noncomputable def firstUnitCoeff {f : k⟦X⟧} (hf : f ≠ 0) : kˣ :=
   have : Invertible (constantCoeff (divXPowOrder f)) := by
     apply invertibleOfNonzero
     simpa [constantCoeff_divXPowOrder_eq_zero_iff.not]
@@ -208,7 +208,7 @@ def firstUnitCoeff {f : k⟦X⟧} (hf : f ≠ 0) : kˣ :=
 /-- `Inv_divided_by_X_pow_order` is the inverse of the element obtained by diving a non-zero power
 series by the largest power of `X` dividing it. Useful to create a term of type `Units`, done in
 `Unit_divided_by_X_pow_order` -/
-def Inv_divided_by_X_pow_order {f : k⟦X⟧} (hf : f ≠ 0) : k⟦X⟧ :=
+noncomputable def Inv_divided_by_X_pow_order {f : k⟦X⟧} (hf : f ≠ 0) : k⟦X⟧ :=
   invOfUnit (divXPowOrder f) (firstUnitCoeff hf)
 
 @[simp]
@@ -225,7 +225,7 @@ theorem Inv_divided_by_X_pow_order_leftInv {f : k⟦X⟧} (hf : f ≠ 0) :
 open scoped Classical in
 /-- `Unit_of_divided_by_X_pow_order` is the unit power series obtained by dividing a non-zero
 power series by the largest power of `X` that divides it. -/
-def Unit_of_divided_by_X_pow_order (f : k⟦X⟧) : k⟦X⟧ˣ :=
+noncomputable def Unit_of_divided_by_X_pow_order (f : k⟦X⟧) : k⟦X⟧ˣ :=
   if hf : f = 0 then 1
   else
     { val := divXPowOrder f
@@ -311,7 +311,7 @@ theorem maximalIdeal_eq_span_X : IsLocalRing.maximalIdeal (k⟦X⟧) = Ideal.spa
       apply Ideal.eq_top_of_isUnit_mem I hfI0 (IsUnit.map C (Ne.isUnit hfX))
   rw [IsLocalRing.eq_maximalIdeal hX]
 
-instance : StrongNormalizationMonoid k⟦X⟧ where
+noncomputable instance : StrongNormalizationMonoid k⟦X⟧ where
   normUnit f := (Unit_of_divided_by_X_pow_order f)⁻¹
   normUnit_zero := by simp only [Unit_of_divided_by_X_pow_order_zero, inv_one]
   normUnit_mul hf hg := by
@@ -353,7 +353,7 @@ theorem ker_coeff_eq_max_ideal : RingHom.ker (constantCoeff (R := k)) = maximalI
 
 /-- The ring isomorphism between the residue field of the ring of power series valued in a field `K`
 and `K` itself. -/
-def residueFieldOfPowerSeries : ResidueField k⟦X⟧ ≃+* k :=
+noncomputable def residueFieldOfPowerSeries : ResidueField k⟦X⟧ ≃+* k :=
   Ideal.quotEquivOfEq (ker_coeff_eq_max_ideal).symm |>.trans
     (RingHom.quotientKerEquivOfSurjective constantCoeff_surj)
 

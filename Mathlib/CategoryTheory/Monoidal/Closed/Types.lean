@@ -23,7 +23,7 @@ Note this implies that the category of presheaves on a small category `C` is Car
 
 namespace CategoryTheory
 
-noncomputable section
+section
 
 open Category Limits MonoidalCategory
 
@@ -46,7 +46,7 @@ instance (X : Type v₁) : (tensorLeft X).IsLeftAdjoint :=
 instance : MonoidalClosed (Type v₁) := MonoidalClosed.mk
   fun X => Closed.mk _ (Types.tensorProductAdjunction X)
 
-instance {C : Type v₁} [SmallCategory C] : MonoidalClosed (C ⥤ Type v₁) :=
+noncomputable instance {C : Type v₁} [SmallCategory C] : MonoidalClosed (C ⥤ Type v₁) :=
   MonoidalClosed.mk fun F => by
     haveI : ∀ X : Type v₁, PreservesColimits (tensorLeft X) := by infer_instance
     letI : PreservesColimits (tensorLeft F) := ⟨by infer_instance⟩
@@ -59,7 +59,7 @@ attribute [local instance] uliftCategory in
 /-- This is not a good instance because of the universe levels. Below is the instance where the
 target category is `Type (max u₁ v₁)`. -/
 @[implicit_reducible]
-def cartesianClosedFunctorToTypes {C : Type u₁} [Category.{v₁} C] :
+noncomputable def cartesianClosedFunctorToTypes {C : Type u₁} [Category.{v₁} C] :
     MonoidalClosed (C ⥤ Type (max u₁ v₁ u₂)) :=
   let e : (ULiftHom.{max u₁ v₁ u₂} (ULift.{max u₁ v₁ u₂} C)) ⥤ Type (max u₁ v₁ u₂) ≌
       C ⥤ Type (max u₁ v₁ u₂) :=
@@ -69,12 +69,12 @@ def cartesianClosedFunctorToTypes {C : Type u₁} [Category.{v₁} C] :
 
 -- TODO: once we have `MonoidalClosed` instances for functor categories into general monoidal
 -- closed categories, replace this with that, as it will be a more explicit construction.
-instance {C : Type u₁} [Category.{v₁} C] : MonoidalClosed (C ⥤ Type (max u₁ v₁)) :=
+noncomputable instance {C : Type u₁} [Category.{v₁} C] : MonoidalClosed (C ⥤ Type (max u₁ v₁)) :=
   cartesianClosedFunctorToTypes
 
 -- TODO: once we have `MonoidalClosed` instances for functor categories into general monoidal
 -- closed categories, replace this with that, as it will be a more explicit construction.
-instance {C : Type u₁} [Category.{v₁} C] [EssentiallySmall.{v₁} C] :
+noncomputable instance {C : Type u₁} [Category.{v₁} C] [EssentiallySmall.{v₁} C] :
     MonoidalClosed (C ⥤ Type v₁) :=
   let e : (SmallModel C) ⥤ Type v₁ ≌ C ⥤ Type v₁ :=
     Functor.asEquivalence ((Functor.whiskeringLeft _ _ _).obj (equivSmallModel _).functor)

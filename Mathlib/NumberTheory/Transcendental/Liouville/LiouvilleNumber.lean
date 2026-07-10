@@ -35,8 +35,6 @@ lemmas for $m \in \mathbb{R}$.
 @[expose] public section
 
 
-noncomputable section
-
 open scoped Nat
 
 open Real Finset
@@ -48,7 +46,7 @@ $$
 The series converges only for `1 < m`. However, there is no restriction on `m`, since,
 if the series does not converge, then the sum of the series is defined to be zero.
 -/
-def liouvilleNumber (m : ℝ) : ℝ :=
+noncomputable def liouvilleNumber (m : ℝ) : ℝ :=
   ∑' i : ℕ, 1 / m ^ i !
 
 namespace LiouvilleNumber
@@ -59,7 +57,7 @@ $$
 \sum_{i=0}^k\frac{1}{m^{i!}}.
 $$
 -/
-def partialSum (m : ℝ) (k : ℕ) : ℝ :=
+noncomputable def partialSum (m : ℝ) (k : ℕ) : ℝ :=
   ∑ i ∈ range (k + 1), 1 / m ^ i !
 
 /-- `LiouvilleNumber.remainder` is the sum of the series of the terms in `liouvilleNumber m`
@@ -68,7 +66,7 @@ $$
 \sum_{i=k+1}^\infty\frac{1}{m^{i!}}.
 $$
 -/
-def remainder (m : ℝ) (k : ℕ) : ℝ :=
+noncomputable def remainder (m : ℝ) (k : ℕ) : ℝ :=
   ∑' i, 1 / m ^ (i + (k + 1))!
 
 /-!

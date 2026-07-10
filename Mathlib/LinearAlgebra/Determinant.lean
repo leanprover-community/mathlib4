@@ -49,8 +49,6 @@ basis, det, determinant
 @[expose] public section
 
 
-noncomputable section
-
 open Matrix Module LinearMap Submodule Set Function
 
 universe u v w
@@ -67,7 +65,7 @@ variable {A : Type*} [CommRing A]
 variable {m n : Type*}
 
 /-- If `R^m` and `R^n` are linearly equivalent, then `m` and `n` are also equivalent. -/
-def equivOfPiLEquivPi {R : Type*} [Finite m] [Finite n] [CommRing R] [Nontrivial R]
+noncomputable def equivOfPiLEquivPi {R : Type*} [Finite m] [Finite n] [CommRing R] [Nontrivial R]
     (e : (m → R) ≃ₗ[R] n → R) : m ≃ n :=
   Basis.indexEquiv (Basis.ofEquivFun e.symm) (Pi.basisFun _ _)
 
@@ -77,7 +75,7 @@ variable [Fintype m] [Fintype n]
 
 /-- If `M` and `M'` are each other's inverse matrices, they are square matrices up to
 equivalence of types. -/
-def indexEquivOfInv [Nontrivial A] [DecidableEq m] [DecidableEq n] {M : Matrix m n A}
+noncomputable def indexEquivOfInv [Nontrivial A] [DecidableEq m] [DecidableEq n] {M : Matrix m n A}
     {M' : Matrix n m A} (hMM' : M * M' = 1) (hM'M : M' * M = 1) : m ≃ n :=
   equivOfPiLEquivPi (toLin'OfInv hMM' hM'M)
 
@@ -132,7 +130,7 @@ there is no good way to generalize over universe parameters, so we can't fully s
 type that it does not depend on the choice of basis. Instead you can use the `detAux_def''` lemma,
 or avoid mentioning a basis at all using `LinearMap.det`.
 -/
-irreducible_def detAux : Trunc (Basis ι A M) → (M →ₗ[A] M) →* A :=
+noncomputable irreducible_def detAux : Trunc (Basis ι A M) → (M →ₗ[A] M) →* A :=
   Trunc.lift
     (fun b : Basis ι A M => detMonoidHom.comp (toMatrixAlgEquiv b : (M →ₗ[A] M) →* Matrix ι ι A))
     fun b c => MonoidHom.ext <| det_toMatrix_eq_det_toMatrix b c
@@ -176,7 +174,7 @@ open scoped Classical in
 
 If there is no finite basis on `M`, the result is `1` instead.
 -/
-protected irreducible_def det : (M →ₗ[A] M) →* A :=
+protected noncomputable irreducible_def det : (M →ₗ[A] M) →* A :=
   if H : ∃ s : Finset M, Nonempty (Basis s A M) then LinearMap.detAux (Trunc.mk H.choose_spec.some)
   else 1
 
@@ -427,7 +425,7 @@ end Algebra
 namespace LinearEquiv
 
 /-- On a `LinearEquiv`, the domain of `LinearMap.det` can be promoted to `Rˣ`. -/
-protected def det : (M ≃ₗ[R] M) →* Rˣ :=
+protected noncomputable def det : (M ≃ₗ[R] M) →* Rˣ :=
   (Units.map (LinearMap.det : (M →ₗ[R] M) →* R)).comp
     (LinearMap.GeneralLinearGroup.generalLinearEquiv R M).symm.toMonoidHom
 
@@ -514,7 +512,7 @@ theorem LinearEquiv.det_coe_symm {𝕜 : Type*} [Field 𝕜] [Module 𝕜 M] (f 
 
 /-- Builds a linear equivalence from a linear map whose determinant in some bases is a unit. -/
 @[simps]
-def LinearEquiv.ofIsUnitDet {f : M →ₗ[R] M'} {v : Basis ι R M} {v' : Basis ι R M'}
+noncomputable def LinearEquiv.ofIsUnitDet {f : M →ₗ[R] M'} {v : Basis ι R M} {v' : Basis ι R M'}
     (h : IsUnit (LinearMap.toMatrix v v' f).det) : M ≃ₗ[R] M' where
   toFun := f
   map_add' := f.map_add
@@ -569,6 +567,7 @@ theorem LinearMap.coe_equivOfIsUnitDet
 
 /-- Builds a linear equivalence from a linear map on a finite-dimensional vector space whose
 determinant is nonzero. -/
+noncomputable
 abbrev LinearMap.equivOfDetNeZero {𝕜 : Type*} [Field 𝕜] {M : Type*} [AddCommGroup M] [Module 𝕜 M]
     [FiniteDimensional 𝕜 M] (f : M →ₗ[𝕜] M) (hf : LinearMap.det f ≠ 0) : M ≃ₗ[𝕜] M :=
   have : IsUnit (LinearMap.toMatrix (Module.finBasis 𝕜 M)
@@ -599,7 +598,7 @@ namespace Module.Basis
 set_option backward.defeqAttrib.useBackward true in
 /-- The determinant of a family of vectors with respect to some basis, as an alternating
 multilinear map. -/
-nonrec def det : M [⋀^ι]→ₗ[R] R where
+noncomputable nonrec def det : M [⋀^ι]→ₗ[R] R where
   toMultilinearMap :=
     MultilinearMap.mk' (fun v ↦ det (e.toMatrix v))
       (fun v i x y ↦ by

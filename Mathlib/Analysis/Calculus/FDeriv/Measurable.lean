@@ -84,8 +84,6 @@ derivative, measurable function, Borel σ-algebra
 @[expose] public section
 
 
-noncomputable section
-
 open Set Metric Asymptotics Filter ContinuousLinearMap MeasureTheory TopologicalSpace
 open scoped Topology
 

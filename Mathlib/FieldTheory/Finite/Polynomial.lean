@@ -48,7 +48,7 @@ end MvPolynomial
 
 namespace MvPolynomial
 
-noncomputable section
+section
 
 open Set LinearMap Submodule
 
@@ -59,7 +59,7 @@ section Indicator
 variable [Fintype K] [Fintype σ]
 
 /-- Over a field, this is the indicator function as an `MvPolynomial`. -/
-def indicator [CommRing K] (a : σ → K) : MvPolynomial σ K :=
+noncomputable def indicator [CommRing K] (a : σ → K) : MvPolynomial σ K :=
   ∏ n, (1 - (X n - C (a n)) ^ (Fintype.card K - 1))
 
 section CommRing
@@ -119,7 +119,7 @@ variable (K σ)
 set_option backward.isDefEq.respectTransparency false in
 /-- `MvPolynomial.eval` as a `K`-linear map. -/
 @[simps]
-def evalₗ [CommSemiring K] : MvPolynomial σ K →ₗ[K] (σ → K) → K where
+noncomputable def evalₗ [CommSemiring K] : MvPolynomial σ K →ₗ[K] (σ → K) → K where
   toFun p e := eval e p
   map_add' p q := by ext x; simp
   map_smul' a p := by ext e; simp

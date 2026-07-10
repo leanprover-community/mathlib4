@@ -56,8 +56,6 @@ The file also contains an identification between the definitions in
 
 universe v u
 
-noncomputable section
-
 open CategoryTheory Limits Representation
 
 variable {k G : Type u} [CommRing k] [Group G] (A : Rep k G)
@@ -254,7 +252,7 @@ open ShortComplex
 
 /-- The (exact) short complex `A.ρ.invariants ⟶ A ⟶ (G → A)`. -/
 @[simps! -isSimp f g]
-def shortComplexH0 : ShortComplex (ModuleCat k) :=
+noncomputable def shortComplexH0 : ShortComplex (ModuleCat k) :=
   mk _ _ (subtype_comp_d₀₁ A)
 
 /-- The short complex `A --d₀₁--> Fun(G, A) --d₁₂--> Fun(G × G, A)`. -/
@@ -758,13 +756,13 @@ lemma shortComplexH0_exact : (shortComplexH0 A).Exact := by
 /-- The arrow `A --d₀₁--> Fun(G, A)` is isomorphic to the differential
 `(inhomogeneousCochains A).d 0 1` of the complex of inhomogeneous cochains of `A`. -/
 @[simps! hom_left hom_right inv_left inv_right]
-def dArrowIso₀₁ :
+noncomputable def dArrowIso₀₁ :
     Arrow.mk ((inhomogeneousCochains A).d 0 1) ≅ Arrow.mk (d₀₁ A) :=
   Arrow.isoMk (cochainsIso₀ A) (cochainsIso₁ A) (comp_d₀₁_eq A)
 
 /-- The 0-cocycles of the complex of inhomogeneous cochains of `A` are isomorphic to
 `A.ρ.invariants`, which is a simpler type. -/
-def cocyclesIso₀ : cocycles A 0 ≅ ModuleCat.of k A.ρ.invariants :=
+noncomputable def cocyclesIso₀ : cocycles A 0 ≅ ModuleCat.of k A.ρ.invariants :=
   KernelFork.mapIsoOfIsLimit
     ((inhomogeneousCochains A).cyclesIsKernel 0 1 (by simp)) (shortComplexH0_exact A).fIsKernel
       (dArrowIso₀₁ A)
@@ -798,14 +796,14 @@ section isoCocycles₁
 /-- The short complex `A --d₀₁--> Fun(G, A) --d₁₂--> Fun(G × G, A)` is isomorphic to the 1st
 short complex associated to the complex of inhomogeneous cochains of `A`. -/
 @[simps! hom inv]
-def isoShortComplexH1 : (inhomogeneousCochains A).sc 1 ≅ shortComplexH1 A :=
+noncomputable def isoShortComplexH1 : (inhomogeneousCochains A).sc 1 ≅ shortComplexH1 A :=
   (inhomogeneousCochains A).isoSc' 0 1 2 (by simp) (by simp) ≪≫
     isoMk (cochainsIso₀ A) (cochainsIso₁ A) (cochainsIso₂ A)
       (comp_d₀₁_eq A) (comp_d₁₂_eq A)
 
 /-- The 1-cocycles of the complex of inhomogeneous cochains of `A` are isomorphic to
 `cocycles₁ A`, which is a simpler type. -/
-def isoCocycles₁ : cocycles A 1 ≅ ModuleCat.of k (cocycles₁ A) :=
+noncomputable def isoCocycles₁ : cocycles A 1 ≅ ModuleCat.of k (cocycles₁ A) :=
   cyclesMapIso' (isoShortComplexH1 A) _ (shortComplexH1 A).moduleCatLeftHomologyData
 
 set_option backward.defeqAttrib.useBackward true in
@@ -851,7 +849,7 @@ section isoCocycles₂
 /-- The short complex `Fun(G, A) --d₁₂--> Fun(G × G, A) --dTwo--> Fun(G × G × G, A)` is
 isomorphic to the 2nd short complex associated to the complex of inhomogeneous cochains of `A`. -/
 @[simps! hom inv]
-def isoShortComplexH2 :
+noncomputable def isoShortComplexH2 :
     (inhomogeneousCochains A).sc 2 ≅ shortComplexH2 A :=
   (inhomogeneousCochains A).isoSc' 1 2 3 (by simp) (by simp) ≪≫
     isoMk (cochainsIso₁ A) (cochainsIso₂ A) (cochainsIso₃ A)
@@ -859,7 +857,7 @@ def isoShortComplexH2 :
 
 /-- The 2-cocycles of the complex of inhomogeneous cochains of `A` are isomorphic to
 `cocycles₂ A`, which is a simpler type. -/
-def isoCocycles₂ : cocycles A 2 ≅ ModuleCat.of k (cocycles₂ A) :=
+noncomputable def isoCocycles₂ : cocycles A 2 ≅ ModuleCat.of k (cocycles₂ A) :=
   cyclesMapIso' (isoShortComplexH2 A) _ (shortComplexH2 A).moduleCatLeftHomologyData
 
 set_option backward.defeqAttrib.useBackward true in
@@ -903,11 +901,11 @@ section H0
 
 /-- Shorthand for the 0th group cohomology of a `k`-linear `G`-representation `A`, `H⁰(G, A)`,
 defined as the 0th cohomology of the complex of inhomogeneous cochains of `A`. -/
-abbrev H0 := groupCohomology A 0
+noncomputable abbrev H0 := groupCohomology A 0
 
 /-- The 0th group cohomology of `A`, defined as the 0th cohomology of the complex of inhomogeneous
 cochains, is isomorphic to the invariants of the representation on `A`. -/
-def H0Iso : H0 A ≅ ModuleCat.of k A.ρ.invariants :=
+noncomputable def H0Iso : H0 A ≅ ModuleCat.of k A.ρ.invariants :=
   (CochainComplex.isoHomologyπ₀ _).symm ≪≫ cocyclesIso₀ A
 
 set_option backward.isDefEq.respectTransparency false in
@@ -926,7 +924,7 @@ section IsTrivial
 variable [A.IsTrivial]
 
 /-- When the representation on `A` is trivial, then `H⁰(G, A)` is all of `A.` -/
-def H0IsoOfIsTrivial :
+noncomputable def H0IsoOfIsTrivial :
     H0 A ≅ ModuleCat.of k A.V :=
     H0Iso A ≪≫ (LinearEquiv.ofTop _ (invariants_eq_top A.ρ)).toModuleIso
 
@@ -951,10 +949,10 @@ section H1
 
 /-- Shorthand for the 1st group cohomology of a `k`-linear `G`-representation `A`, `H¹(G, A)`,
 defined as the 1st cohomology of the complex of inhomogeneous cochains of `A`. -/
-abbrev H1 := groupCohomology A 1
+noncomputable abbrev H1 := groupCohomology A 1
 
 /-- The quotient map from the 1-cocycles of `A`, as a submodule of `G → A`, to `H¹(G, A)`. -/
-def H1π : ModuleCat.of k (cocycles₁ A) ⟶ H1 A :=
+noncomputable def H1π : ModuleCat.of k (cocycles₁ A) ⟶ H1 A :=
   (isoCocycles₁ A).inv ≫ π A 1
 
 set_option backward.isDefEq.respectTransparency false in
@@ -988,7 +986,7 @@ variable (A)
 
 /-- The 1st group cohomology of `A`, defined as the 1st cohomology of the complex of inhomogeneous
 cochains, is isomorphic to `cocycles₁ A ⧸ coboundaries₁ A`, which is a simpler type. -/
-def H1Iso : H1 A ≅ (shortComplexH1 A).moduleCatLeftHomologyData.H :=
+noncomputable def H1Iso : H1 A ≅ (shortComplexH1 A).moduleCatLeftHomologyData.H :=
   (leftHomologyIso _).symm ≪≫ (leftHomologyMapIso' (isoShortComplexH1 A) _ _)
 
 set_option backward.isDefEq.respectTransparency false in
@@ -1004,7 +1002,7 @@ variable [A.IsTrivial]
 
 /-- When `A : Rep k G` is a trivial representation of `G`, `H¹(G, A)` is isomorphic to the
 group homs `G → A`. -/
-def H1IsoOfIsTrivial :
+noncomputable def H1IsoOfIsTrivial :
     H1 A ≅ ModuleCat.of k (Additive G →+ A) :=
   (HomologicalComplex.isoHomologyπ _ 0 1 (CochainComplex.prev_nat_succ 0) <| by
     ext; simp [inhomogeneousCochains.d, Unique.eq_default (α := Fin 0 → G),
@@ -1032,10 +1030,10 @@ section H2
 
 /-- Shorthand for the 2nd group cohomology of a `k`-linear `G`-representation `A`, `H²(G, A)`,
 defined as the 2nd cohomology of the complex of inhomogeneous cochains of `A`. -/
-abbrev H2 := groupCohomology A 2
+noncomputable abbrev H2 := groupCohomology A 2
 
 /-- The quotient map from the 2-cocycles of `A`, as a submodule of `G × G → A`, to `H²(G, A)`. -/
-def H2π : ModuleCat.of k (cocycles₂ A) ⟶ H2 A :=
+noncomputable def H2π : ModuleCat.of k (cocycles₂ A) ⟶ H2 A :=
   (isoCocycles₂ A).inv ≫ π A 2
 
 set_option backward.isDefEq.respectTransparency false in
@@ -1069,7 +1067,7 @@ variable (A)
 
 /-- The 2nd group cohomology of `A`, defined as the 2nd cohomology of the complex of inhomogeneous
 cochains, is isomorphic to `cocycles₂ A ⧸ coboundaries₂ A`, which is a simpler type. -/
-def H2Iso : H2 A ≅ (shortComplexH2 A).moduleCatLeftHomologyData.H :=
+noncomputable def H2Iso : H2 A ≅ (shortComplexH2 A).moduleCatLeftHomologyData.H :=
   (leftHomologyIso _).symm ≪≫ (leftHomologyMapIso' (isoShortComplexH2 A) _ _)
 
 set_option backward.isDefEq.respectTransparency false in

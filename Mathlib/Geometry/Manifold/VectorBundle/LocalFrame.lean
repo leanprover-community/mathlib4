@@ -116,7 +116,7 @@ variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
   [∀ x : M, TopologicalSpace (V x)]
   [FiberBundle F V]
 
-noncomputable section
+section
 
 section IsLocalFrame
 
@@ -162,7 +162,7 @@ lemma contMDiffAt (hs : IsLocalFrameOn I F n s u) (hu : IsOpen u) (hx : x ∈ u)
   (hs.contMDiffOn i).contMDiffAt <| hu.mem_nhds hx
 
 /-- Given a local frame `{s i}` on `U ∋ x`, returns the basis `{s i}` of `V x` -/
-def toBasisAt (hs : IsLocalFrameOn I F n s u) (hx : x ∈ u) : Basis ι 𝕜 (V x) :=
+noncomputable def toBasisAt (hs : IsLocalFrameOn I F n s u) (hx : x ∈ u) : Basis ι 𝕜 (V x) :=
   Basis.mk (hs.linearIndependent hx) (hs.generating hx)
 
 @[simp]
@@ -187,7 +187,7 @@ alias fintype_of_finiteDimensional := fintypeOfFiniteDimensional
 open scoped Classical in
 /-- Coefficients of a section `s` of `V` w.r.t. a local frame `{s i}` on `u`.
 Outside of `u`, this returns the junk value 0. -/
-def coeff (hs : IsLocalFrameOn I F n s u) (i : ι) : Π x : M, (V x →ₗ[𝕜] 𝕜) := fun x ↦
+noncomputable def coeff (hs : IsLocalFrameOn I F n s u) (i : ι) : Π x : M, (V x →ₗ[𝕜] 𝕜) := fun x ↦
   if hx : x ∈ u then (hs.toBasisAt hx).coord i else 0
 
 variable {x : M}
@@ -334,7 +334,7 @@ variable [VectorBundle 𝕜 F V] [ContMDiffVectorBundle n F V I] {ι : Type*} {x
 
 /-- Given a compatible local trivialisation `e` of `V` and a basis `b` of the model fiber `F`,
 return the corresponding basis of `V x`. -/
-def basisAt (hx : x ∈ e.baseSet) : Basis ι 𝕜 (V x) :=
+noncomputable def basisAt (hx : x ∈ e.baseSet) : Basis ι 𝕜 (V x) :=
   b.map (e.linearEquivAt (R := 𝕜) x hx).symm
 
 open scoped Classical in
@@ -342,7 +342,7 @@ open scoped Classical in
 `b` of the model fiber `F`. Use `e.localFrame b i` to access the `i`-th section in that frame.
 
 If `x` is outside of `e.baseSet`, this returns the junk value 0. -/
-def localFrame : ι → (x : M) → V x :=
+noncomputable def localFrame : ι → (x : M) → V x :=
   fun i x ↦ if hx : x ∈ e.baseSet then e.basisAt b hx i else 0
 
 @[simp]
@@ -384,7 +384,7 @@ variable (I) in
 /-- Coefficients of a section `s` of `V` w.r.t. the local frame `b.localFrame e i`.
 
 If x is outside of `e.baseSet`, this returns the junk value 0. -/
-def localFrame_coeff (i : ι) : Π x : M, (V x →ₗ[𝕜] 𝕜) :=
+noncomputable def localFrame_coeff (i : ι) : Π x : M, (V x →ₗ[𝕜] 𝕜) :=
   (e.isLocalFrameOn_localFrame_baseSet I 1 b).coeff i
 
 variable {e b}

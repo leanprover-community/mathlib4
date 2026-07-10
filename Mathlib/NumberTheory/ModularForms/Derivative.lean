@@ -32,11 +32,12 @@ open scoped Manifold MatrixGroups ModularForm Topology
 
 namespace Derivative
 
-@[expose] public noncomputable section
+@[expose] public section
 
 /--
 Normalized derivative $D = \frac{1}{2\pi i} \frac{d}{dz}$.
 -/
+noncomputable
 def normalizedDerivOfComplex (F : ℍ → ℂ) (z : ℍ) : ℂ := (2 * π * I)⁻¹ * deriv (F ∘ ofComplex) z
 
 /-- We denote the normalized derivative by `D`. -/
@@ -125,7 +126,7 @@ theorem normalizedDerivOfComplex_pow (F : ℍ → ℂ) (n : ℕ) (hF : MDiff F) 
 /--
 Serre derivative of weight $k$.
 -/
-def serreDerivative (k : ℂ) (F : ℍ → ℂ) (z : ℍ) : ℂ :=
+noncomputable def serreDerivative (k : ℂ) (F : ℍ → ℂ) (z : ℍ) : ℂ :=
   D F z - k * 12⁻¹ * EisensteinSeries.E2 z * F z
 
 @[simp]

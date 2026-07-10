@@ -54,7 +54,7 @@ artifact, really.
 @[expose] public section
 
 
-noncomputable section
+section
 
 open Topology
 
@@ -358,7 +358,7 @@ theorem ContinuousLinearMap.isBoundedBilinearMap (f : E →L[𝕜] F →L[𝕜] 
 
 /-- A bounded bilinear map `f : E × F → G` defines a continuous linear map
 `f : E →L[𝕜] F →L[𝕜] G`. -/
-def IsBoundedBilinearMap.toContinuousLinearMap (hf : IsBoundedBilinearMap 𝕜 f) :
+noncomputable def IsBoundedBilinearMap.toContinuousLinearMap (hf : IsBoundedBilinearMap 𝕜 f) :
     E →L[𝕜] F →L[𝕜] G :=
   LinearMap.mkContinuousOfExistsBound₂
     (LinearMap.mk₂ _ f.curry hf.add_left hf.smul_left hf.add_right hf.smul_right) <|
@@ -409,12 +409,14 @@ theorem isBoundedBilinearMap_compMultilinear {ι : Type*} {E : ι → Type*} [Fi
 We define this function here as a linear map `E × F →ₗ[𝕜] G`, then `IsBoundedBilinearMap.deriv`
 strengthens it to a continuous linear map `E × F →L[𝕜] G`.
 -/
+noncomputable
 def IsBoundedBilinearMap.linearDeriv (h : IsBoundedBilinearMap 𝕜 f) (p : E × F) : E × F →ₗ[𝕜] G :=
   (h.toContinuousLinearMap.deriv₂ p).toLinearMap
 
 /-- The derivative of a bounded bilinear map at a point `p : E × F`, as a continuous linear map
 from `E × F` to `G`. The statement that this is indeed the derivative of `f` is
 `IsBoundedBilinearMap.hasFDerivAt` in `Analysis.Calculus.FDeriv`. -/
+noncomputable
 def IsBoundedBilinearMap.deriv (h : IsBoundedBilinearMap 𝕜 f) (p : E × F) : E × F →L[𝕜] G :=
   h.toContinuousLinearMap.deriv₂ p
 

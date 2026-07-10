@@ -58,8 +58,6 @@ open Filter Module Set TopologicalSpace Topology
 
 universe u v w x
 
-noncomputable section
-
 section FiniteDimensional
 
 variable {𝕜 E F : Type*}
@@ -426,6 +424,7 @@ theorem FiniteDimensional.nonempty_continuousLinearEquiv_iff_finrank_eq :
 
 /-- A continuous linear equivalence between two finite-dimensional topological vector spaces over a
 complete normed field of the same (finite) dimension. -/
+noncomputable
 def ContinuousLinearEquiv.ofFinrankEq (cond : finrank 𝕜 E = finrank 𝕜 F) : E ≃L[𝕜] F :=
   (LinearEquiv.ofFinrankEq E F cond).toContinuousLinearEquiv
 
@@ -435,7 +434,7 @@ namespace Module.Basis
 variable {ι : Type*} [Finite ι] [T2Space E]
 
 /-- Construct a continuous linear map given the value at a finite basis. -/
-def constrL (v : Basis ι 𝕜 E) (f : ι → F) : E →L[𝕜] F :=
+noncomputable def constrL (v : Basis ι 𝕜 E) (f : ι → F) : E →L[𝕜] F :=
   haveI : FiniteDimensional 𝕜 E := v.finiteDimensional_of_finite
   LinearMap.toContinuousLinearMap (v.constr 𝕜 f)
 
@@ -446,7 +445,7 @@ theorem coe_constrL (v : Basis ι 𝕜 E) (f : ι → F) : (v.constrL f : E →�
 /-- The continuous linear equivalence between a vector space over `𝕜` with a finite basis and
 functions from its basis indexing type to `𝕜`. -/
 @[simps! apply]
-def equivFunL (v : Basis ι 𝕜 E) : E ≃L[𝕜] ι → 𝕜 :=
+noncomputable def equivFunL (v : Basis ι 𝕜 E) : E ≃L[𝕜] ι → 𝕜 :=
   { v.equivFun with
     continuous_toFun :=
       haveI : FiniteDimensional 𝕜 E := v.finiteDimensional_of_finite
@@ -477,7 +476,7 @@ variable [T2Space E] [FiniteDimensional 𝕜 E]
 
 /-- Builds a continuous linear equivalence from a continuous linear map on a finite-dimensional
 vector space whose determinant is nonzero. -/
-def toContinuousLinearEquivOfDetNeZero (f : E →L[𝕜] E) (hf : f.det ≠ 0) : E ≃L[𝕜] E :=
+noncomputable def toContinuousLinearEquivOfDetNeZero (f : E →L[𝕜] E) (hf : f.det ≠ 0) : E ≃L[𝕜] E :=
   ((f : E →ₗ[𝕜] E).equivOfDetNeZero hf).toContinuousLinearEquiv
 
 @[simp]

@@ -67,8 +67,6 @@ assert_not_exists IsGalois
 
 open Module Polynomial IntermediateField Field
 
-noncomputable section
-
 universe u v w
 
 variable (F : Type u) (E : Type v) [Field F] [Field E] [Algebra F E]
@@ -268,17 +266,17 @@ namespace Field
 /-- The (infinite) separable degree for a general field extension `E / F` is defined
 to be the degree of `separableClosure F E / F`. -/
 @[stacks 030L "Part 1"]
-def sepDegree := Module.rank F (separableClosure F E)
+noncomputable def sepDegree := Module.rank F (separableClosure F E)
 
 /-- The (infinite) inseparable degree for a general field extension `E / F` is defined
 to be the degree of `E / separableClosure F E`. -/
 @[stacks 030L "Part 2"]
-def insepDegree := Module.rank (separableClosure F E) E
+noncomputable def insepDegree := Module.rank (separableClosure F E) E
 
 /-- The finite inseparable degree for a general field extension `E / F` is defined
 to be the degree of `E / separableClosure F E` as a natural number. It is defined to be zero
 if such field extension is infinite. -/
-def finInsepDegree : ℕ := finrank (separableClosure F E) E
+noncomputable def finInsepDegree : ℕ := finrank (separableClosure F E) E
 
 theorem finInsepDegree_def' : finInsepDegree F E = Cardinal.toNat (insepDegree F E) := rfl
 

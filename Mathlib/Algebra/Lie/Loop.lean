@@ -46,8 +46,6 @@ lie ring, lie algebra, base change, Laurent polynomial
 
 @[expose] public section
 
-noncomputable section
-
 open scoped TensorProduct
 
 variable (R A L : Type*)
@@ -64,7 +62,7 @@ abbrev loopAlgebra := AddMonoidAlgebra R A ⊗[R] L
 open LaurentPolynomial in
 /-- An Lie algebra isomorphism between the Loop algebra (with `A = ℤ`) and the tensor product with
 Laurent polynomials. -/
-def loopAlgebraEquivLaurent :
+noncomputable def loopAlgebraEquivLaurent :
     loopAlgebra R ℤ L ≃ₗ⁅R⁆ R[T;T⁻¹] ⊗[R] L :=
   LieEquiv.refl
 
@@ -72,7 +70,7 @@ namespace LoopAlgebra
 
 open scoped Classical in
 /-- A linear isomorphism to finitely supported functions. -/
-def toFinsupp : loopAlgebra R A L ≃ₗ[R] A →₀ L :=
+noncomputable def toFinsupp : loopAlgebra R A L ≃ₗ[R] A →₀ L :=
   TensorProduct.equivFinsuppOfBasisLeft (AddMonoidAlgebra.basis A R)
 
 @[simp]
@@ -90,7 +88,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- The residue pairing on the loop algebra.  When `A = ℤ` and the elements are viewed as Laurent
 polynomials with coefficients in `L`, the pairing is interpreted as `(f, g) ↦ Res f dg`. -/
 @[simps]
-def residuePairing [AddCommGroup A] [DistribSMul A R] [SMulCommClass A R R]
+noncomputable def residuePairing [AddCommGroup A] [DistribSMul A R] [SMulCommClass A R R]
     (Φ : LinearMap.BilinForm R L) :
     LinearMap.BilinForm R (loopAlgebra R A L) where
   toFun f :=
@@ -116,7 +114,7 @@ def residuePairing [AddCommGroup A] [DistribSMul A R] [SMulCommClass A R R]
 open LieModule in
 /-- A 2-cochain on a loop algebra given by an invariant bilinear form. When `A = ℤ`, the alternating
 condition amounts to the fact that Res f df = 0. -/
-def twoCochainOfBilinear [CommRing A] [IsAddTorsionFree R] [Algebra A R]
+noncomputable def twoCochainOfBilinear [CommRing A] [IsAddTorsionFree R] [Algebra A R]
     (Φ : LinearMap.BilinForm R L) (hΦ : Φ.IsSymm) :
     Cohomology.twoCochain R (loopAlgebra R A L) (TrivialLieModule R (loopAlgebra R A L) R) where
   val := (residuePairing R A L Φ).compr₂ (TrivialLieModule.equiv R (loopAlgebra R A L) R).symm
@@ -146,7 +144,7 @@ lemma twoCochainOfBilinear_apply_apply [CommRing A] [IsAddTorsionFree R] [Algebr
 open LieModule in
 /-- A 2-cocycle on a loop algebra given by an invariant bilinear form. -/
 @[simps]
-def twoCocycleOfBilinear [CommRing A] [IsAddTorsionFree R] [Algebra A R]
+noncomputable def twoCocycleOfBilinear [CommRing A] [IsAddTorsionFree R] [Algebra A R]
     (Φ : LinearMap.BilinForm R L) (hΦ : Φ.lieInvariant L) (hΦs : Φ.IsSymm) :
     Cohomology.twoCocycle R (loopAlgebra R A L) (TrivialLieModule R (loopAlgebra R A L) R) where
   val := twoCochainOfBilinear R A L Φ hΦs

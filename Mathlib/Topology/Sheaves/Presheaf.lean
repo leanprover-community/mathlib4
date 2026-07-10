@@ -270,15 +270,15 @@ end Iso
 
 variable [HasColimits C]
 
-noncomputable section
+section
 
 /-- Pullback a presheaf on `Y` along a continuous map `f : X ⟶ Y`, obtaining a presheaf
 on `X`. -/
-def pullback {X Y : TopCat.{v}} (f : X ⟶ Y) : Y.Presheaf C ⥤ X.Presheaf C :=
+noncomputable def pullback {X Y : TopCat.{v}} (f : X ⟶ Y) : Y.Presheaf C ⥤ X.Presheaf C :=
   (Opens.map f).op.lan
 
 /-- The pullback and pushforward along a continuous map are adjoint to each other. -/
-def pullbackPushforwardAdjunction {X Y : TopCat.{v}} (f : X ⟶ Y) :
+noncomputable def pullbackPushforwardAdjunction {X Y : TopCat.{v}} (f : X ⟶ Y) :
     pullback C f ⊣ pushforward C f :=
   Functor.lanAdjunction _ _
 
@@ -286,13 +286,13 @@ def pullbackPushforwardAdjunction {X Y : TopCat.{v}} (f : X ⟶ Y) :
 alias pushforwardPullbackAdjunction := pullbackPushforwardAdjunction
 
 /-- Pulling back along a homeomorphism is the same as pushing forward along its inverse. -/
-def pullbackHomIsoPushforwardInv {X Y : TopCat.{v}} (H : X ≅ Y) :
+noncomputable def pullbackHomIsoPushforwardInv {X Y : TopCat.{v}} (H : X ≅ Y) :
     pullback C H.hom ≅ pushforward C H.inv :=
   Adjunction.leftAdjointUniq (pullbackPushforwardAdjunction C H.hom)
     (presheafEquivOfIso C H.symm).toAdjunction
 
 /-- Pulling back along the inverse of a homeomorphism is the same as pushing forward along it. -/
-def pullbackInvIsoPushforwardHom {X Y : TopCat.{v}} (H : X ≅ Y) :
+noncomputable def pullbackInvIsoPushforwardHom {X Y : TopCat.{v}} (H : X ≅ Y) :
     pullback C H.inv ≅ pushforward C H.hom :=
   Adjunction.leftAdjointUniq (pullbackPushforwardAdjunction C H.inv)
     (presheafEquivOfIso C H).toAdjunction
@@ -300,6 +300,7 @@ def pullbackInvIsoPushforwardHom {X Y : TopCat.{v}} (H : X ≅ Y) :
 variable {C}
 
 /-- If `f '' U` is open, then `f⁻¹ℱ U ≅ ℱ (f '' U)`. -/
+noncomputable
 def pullbackObjObjOfImageOpen {X Y : TopCat.{v}} (f : X ⟶ Y) (ℱ : Y.Presheaf C) (U : Opens X)
     (H : IsOpen (f '' U)) : ((pullback C f).obj ℱ).obj (op U) ≅ ℱ.obj (op ⟨_, H⟩) := by
   let x : CostructuredArrow (Opens.map f).op (op U) := CostructuredArrow.mk
@@ -346,7 +347,7 @@ end TopCat.Presheaf
 
 namespace IsOpenMap
 
-noncomputable section
+section
 
 variable {C} [Limits.HasColimits C]
 
@@ -357,6 +358,7 @@ If `f : X ⟶ Y` is an open map and `ℱ` is a presheaf on `Y`, then the pullbac
 isomorphic to the composition of `ℱ` and of the functor `(Open X)ᵒᵖ ⥤ (Open Y)ᵒᵖ` induced by `f`.
 -/
 @[simps!]
+noncomputable
 def pullbackObjIso {X Y : TopCat.{v}} {f : X ⟶ Y} (hf : IsOpenMap f) (ℱ : Y.Presheaf C) :
     (pullback C f).obj ℱ ≅ hf.functor.op ⋙ ℱ :=
   NatIso.ofComponents
@@ -402,7 +404,7 @@ If `f : X ⟶ Y`, this is the isomorphism between the pullback functor by `f` an
 induced by `f`.
 -/
 @[simps!]
-def pullbackIso {X Y : TopCat.{v}} {f : X ⟶ Y} (hf : IsOpenMap f) :
+noncomputable def pullbackIso {X Y : TopCat.{v}} {f : X ⟶ Y} (hf : IsOpenMap f) :
     pullback C f ≅ (Functor.whiskeringLeft _ _ _).obj hf.functor.op :=
   NatIso.ofComponents hf.pullbackObjIso hf.pullbackObjIso_hom_naturality
 

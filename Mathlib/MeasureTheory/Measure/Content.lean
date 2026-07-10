@@ -55,8 +55,6 @@ When the space is locally compact, `μ.measure` is also regular.
 
 universe u v w
 
-noncomputable section
-
 open Set TopologicalSpace
 
 open NNReal ENNReal MeasureTheory
@@ -118,7 +116,7 @@ theorem empty : μ ⊥ = 0 := by simpa [toNNReal_eq_zero_iff] using μ.sup_disjo
 /-- Constructing the inner content of a content. From a content defined on the compact sets, we
   obtain a function defined on all open sets, by taking the supremum of the content of all compact
   subsets. -/
-def innerContent (U : Opens G) : ℝ≥0∞ :=
+noncomputable def innerContent (U : Opens G) : ℝ≥0∞ :=
   ⨆ (K : Compacts G) (_ : (K : Set G) ⊆ U), μ K
 
 theorem le_innerContent (K : Compacts G) (U : Opens G) (h2 : (K : Set G) ⊆ U) :
@@ -227,7 +225,7 @@ theorem innerContent_mono' ⦃U V : Set G⦄ (hU : IsOpen U) (hV : IsOpen V) (h2
 section OuterMeasure
 
 /-- Extending a content on compact sets to an outer measure on all sets. -/
-protected def outerMeasure : OuterMeasure G :=
+protected noncomputable def outerMeasure : OuterMeasure G :=
   inducedOuterMeasure (fun U hU => μ.innerContent ⟨U, hU⟩) isOpen_empty μ.innerContent_bot
 
 variable [R1Space G]
@@ -352,7 +350,7 @@ theorem borel_le_caratheodory : S ≤ μ.outerMeasure.caratheodory := by
   exact μ.sup_disjoint L' M' (subset_sdiff.1 hM').2.symm isClosed_closure isClosed_closure
 
 /-- The measure induced by the outer measure coming from a content, on the Borel sigma-algebra. -/
-protected def measure : Measure G :=
+protected noncomputable def measure : Measure G :=
   μ.outerMeasure.toMeasure μ.borel_le_caratheodory
 
 theorem measure_apply {s : Set G} (hs : MeasurableSet s) : μ.measure s = μ.outerMeasure s :=

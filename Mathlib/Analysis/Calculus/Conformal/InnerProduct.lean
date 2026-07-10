@@ -18,8 +18,6 @@ is conformal at `x` iff the derivative preserves inner products up to a scalar m
 @[expose] public section
 
 
-noncomputable section
-
 variable {E F : Type*}
 variable [NormedAddCommGroup E] [NormedAddCommGroup F]
 variable [InnerProductSpace ℝ E] [InnerProductSpace ℝ F]
@@ -40,7 +38,7 @@ theorem conformalAt_iff {f : E → F} {x : E} {f' : E →L[ℝ] F} (h : HasFDeri
 
 /-- The conformal factor of a conformal map at some point `x`. Some authors refer to this function
 as the characteristic function of the conformal map. -/
-def conformalFactorAt {f : E → F} {x : E} (h : ConformalAt f x) : ℝ :=
+noncomputable def conformalFactorAt {f : E → F} {x : E} (h : ConformalAt f x) : ℝ :=
   Classical.choose (conformalAt_iff'.mp h)
 
 theorem conformalFactorAt_pos {f : E → F} {x : E} (h : ConformalAt f x) : 0 < conformalFactorAt h :=

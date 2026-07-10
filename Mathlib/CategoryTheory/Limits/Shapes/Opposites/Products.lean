@@ -19,8 +19,6 @@ We construct products and coproducts in the opposite categories.
 
 universe v₁ v₂ u₁ u₂
 
-noncomputable section
-
 open CategoryTheory
 
 open CategoryTheory.Functor
@@ -117,7 +115,7 @@ noncomputable def Cofan.IsColimit.op {c : Cofan Z} (hc : IsColimit c) : IsLimit 
 The canonical isomorphism from the opposite of an abstract coproduct to the corresponding product
 in the opposite category.
 -/
-def opCoproductIsoProduct' {c : Cofan Z} {f : Fan (op <| Z ·)}
+noncomputable def opCoproductIsoProduct' {c : Cofan Z} {f : Fan (op <| Z ·)}
     (hc : IsColimit c) (hf : IsLimit f) : op c.pt ≅ f.pt :=
   IsLimit.conePointUniqueUpToIso (Cofan.IsColimit.op hc) hf
 
@@ -126,7 +124,7 @@ variable (Z) in
 The canonical isomorphism from the opposite of the coproduct to the product in the opposite
 category.
 -/
-def opCoproductIsoProduct :
+noncomputable def opCoproductIsoProduct :
     op (∐ Z) ≅ ∏ᶜ (op <| Z ·) :=
   opCoproductIsoProduct' (coproductIsCoproduct Z) (productIsProduct (op <| Z ·))
 
@@ -229,7 +227,7 @@ noncomputable def Fan.IsLimit.op {f : Fan Z} (hf : IsLimit f) : IsColimit f.op :
 The canonical isomorphism from the opposite of an abstract product to the corresponding coproduct
 in the opposite category.
 -/
-def opProductIsoCoproduct' {f : Fan Z} {c : Cofan (op <| Z ·)}
+noncomputable def opProductIsoCoproduct' {f : Fan Z} {c : Cofan (op <| Z ·)}
     (hf : IsLimit f) (hc : IsColimit c) : op f.pt ≅ c.pt :=
   IsColimit.coconePointUniqueUpToIso (Fan.IsLimit.op hf) hc
 
@@ -238,7 +236,7 @@ variable (Z) in
 The canonical isomorphism from the opposite of the product to the coproduct in the opposite
 category.
 -/
-def opProductIsoCoproduct :
+noncomputable def opProductIsoCoproduct :
     op (∏ᶜ Z) ≅ ∐ (op <| Z ·) :=
   opProductIsoCoproduct' (productIsProduct Z) (coproductIsCoproduct (op <| Z ·))
 
@@ -308,7 +306,7 @@ variable (A B) in
 The canonical isomorphism from the opposite of the binary product to the coproduct in the opposite
 category.
 -/
-def opProdIsoCoprod : op (A ⨯ B) ≅ (op A ⨿ op B) where
+noncomputable def opProdIsoCoprod : op (A ⨯ B) ≅ (op A ⨿ op B) where
   hom := (prod.lift coprod.inl.unop coprod.inr.unop).op
   inv := coprod.desc prod.fst.op prod.snd.op
   hom_inv_id := by

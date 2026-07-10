@@ -25,7 +25,7 @@ such that `M^~(U)` is the set of dependent functions that are locally fractions.
 
 -/
 
-@[expose] public noncomputable section
+@[expose] public section
 
 universe u
 
@@ -38,7 +38,7 @@ namespace AlgebraicGeometry
 open _root_.PrimeSpectrum
 
 /-- The forgetful functor from `𝒪_{Spec R}` modules to sheaves of `R`-modules. -/
-def modulesSpecToSheaf :
+noncomputable def modulesSpecToSheaf :
     (Spec R).Modules ⥤ TopCat.Sheaf (ModuleCat R) (Spec R) :=
   SheafOfModules.forgetToSheafModuleCat (Spec R).ringCatSheaf (.op ⊤)
     (Limits.initialOpOfTerminal Limits.isTerminalTop) ⋙
@@ -52,6 +52,7 @@ def moduleSpecΓFunctor : (Spec (.of R)).Modules ⥤ ModuleCat R :=
 set_option backward.isDefEq.respectTransparency false in
 open PrimeSpectrum in
 /-- The forgetful functor from `𝒪_{Spec R}` modules to sheaves of `R`-modules is fully faithful. -/
+noncomputable
 def SpecModulesToSheafFullyFaithful : (modulesSpecToSheaf (R := R)).FullyFaithful where
   preimage {M N} f := ⟨fun U ↦ ModuleCat.ofHom ⟨(f.1.app U).hom.toAddHom, by
     intro t m
@@ -88,7 +89,7 @@ namespace Scheme.Modules
 
 variable {M : (Spec R).Modules} {U V : (Spec R).Opens}
 
-instance : Module R Γ(M, U) :=
+noncomputable instance : Module R Γ(M, U) :=
   inferInstanceAs <| Module R ((modulesSpecToSheaf.obj M).obj.obj (.op U))
 
 instance : IsScalarTower R Γ(Spec R, U) Γ(M, U) :=
@@ -145,7 +146,7 @@ end Scheme.Modules
 /--
 `M^~` as a sheaf of `𝒪_{Spec R}`-modules
 -/
-def tilde : (Spec R).Modules where
+noncomputable def tilde : (Spec R).Modules where
   val := moduleStructurePresheaf R M
   isSheaf := (TopCat.Presheaf.isSheaf_iff_isSheaf_comp (forget AddCommGrpCat) _).2
     (structureSheafInType R M).2
@@ -165,6 +166,7 @@ def modulesSpecToSheafIso :
         ((structureSheafInType R R).obj.obj U) r m }) fun _ ↦ rfl
 
 /-- The map from `M` to `Γ(M, U)`. This is a localization map when `U = D(f)`. -/
+noncomputable
 def toOpen (U : (Spec R).Opens) : M ⟶ (modulesSpecToSheaf.obj (tilde M)).presheaf.obj (.op U) :=
   ModuleCat.ofHom (StructureSheaf.toOpenₗ R M U) ≫ ((modulesSpecToSheafIso M).app _).inv
 
@@ -326,14 +328,14 @@ noncomputable def Scheme.Modules.fromTildeΓNatTrans :
 
 /-- `tilde.isoTop` bundled as a natural isomorphism.
 This is the unit of the tilde-Gamma adjunction. -/
-def tilde.toTildeΓNatIso : 𝟭 _ ≅ tilde.functor R ⋙ moduleSpecΓFunctor :=
+noncomputable def tilde.toTildeΓNatIso : 𝟭 _ ≅ tilde.functor R ⋙ moduleSpecΓFunctor :=
   NatIso.ofComponents tilde.isoTop fun f ↦ (tilde.toOpen_map_app f _).symm
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 open Scheme.Modules in
 /-- The tilde-Gamma adjunction. -/
-def tilde.adjunction : tilde.functor R ⊣ moduleSpecΓFunctor where
+noncomputable def tilde.adjunction : tilde.functor R ⊣ moduleSpecΓFunctor where
   unit := toTildeΓNatIso.hom
   counit := fromTildeΓNatTrans
   left_triangle_components M := by
@@ -366,7 +368,7 @@ instance : IsIso (tilde.adjunction (R := R)).unit := by
 
 /-- The tilde functor is fully faithful. We will later show that the essential image is
 exactly quasi-coherent modules. -/
-def tilde.fullyFaithfulFunctor : (tilde.functor R).FullyFaithful :=
+noncomputable def tilde.fullyFaithfulFunctor : (tilde.functor R).FullyFaithful :=
   tilde.adjunction.fullyFaithfulLOfIsIsoUnit
 
 instance : (tilde.functor R).Full := tilde.fullyFaithfulFunctor.full
@@ -526,7 +528,7 @@ theorem isIso_fromTildeΓ_iff_isLocalizing (M : (Spec R).Modules) :
     simpa using IsIso.id _
 
 /-- `Scheme.Modules.pushforward` and `modulesSpecToSheaf` commute -/
-def pushforwardCompModulesSpecToSheafIso :
+noncomputable def pushforwardCompModulesSpecToSheafIso :
     Scheme.Modules.pushforward (Spec.map φ) ⋙ modulesSpecToSheaf ≅
       modulesSpecToSheaf ⋙ TopCat.Sheaf.pushforward (ModuleCat S) (Spec.map φ).base ⋙
       sheafCompose _ (ModuleCat.restrictScalars φ.hom) :=
@@ -574,7 +576,7 @@ instance Scheme.Modules.isQuasicoherent_restrictFunctor {X Y : Scheme.{u}} (f : 
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The presentation of `M.restrict f` by restricting a presentation of `M`. -/
-def Scheme.Modules.presentationRestrict {X Y : Scheme.{u}} (f : Y ⟶ X)
+noncomputable def Scheme.Modules.presentationRestrict {X Y : Scheme.{u}} (f : Y ⟶ X)
     [IsOpenImmersion f] {M : X.Modules} (pres : M.Presentation) :
     (M.restrict f).Presentation :=
   have : PreservesColimitsOfSize.{u, u} (Scheme.Modules.restrictFunctor f) :=
@@ -878,7 +880,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- `M ↦ M^~` is an equivalence of categories from `ModuleCat R` to the full subcategory
 of quasi-coherent `𝒪_{Spec R}`-modules. -/
 @[simps! functor inverse unitIso counitIso_hom_app_hom]
-def tildeEquiv :
+noncomputable def tildeEquiv :
     ModuleCat R ≌ (SheafOfModules.isQuasicoherent (Spec R).ringCatSheaf).FullSubcategory where
   functor := ObjectProperty.lift _ (tilde.functor R) fun _ ↦ by
     dsimp [SheafOfModules.isQuasicoherent]

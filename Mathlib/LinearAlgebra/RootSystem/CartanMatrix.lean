@@ -33,8 +33,6 @@ This file contains definitions and basic results about Cartan matrices of root p
 
 @[expose] public section
 
-noncomputable section
-
 open FaithfulSMul (algebraMap_injective)
 open Function Set
 open Matrix
@@ -51,7 +49,7 @@ variable (S : Type*) [CommRing S] [Algebra S R]
 /-- The Cartan matrix of a root pairing, taking values in `S`, with respect to a base `b`.
 
 See also `RootPairing.Base.cartanMatrix`. -/
-def cartanMatrixIn :
+noncomputable def cartanMatrixIn :
     Matrix b.support b.support S :=
   .of fun i j ↦ P.pairingIn S i j
 
@@ -105,7 +103,7 @@ section IsCrystallographic
 variable [P.IsCrystallographic]
 
 /-- The Cartan matrix of a crystallographic root pairing, with respect to a base `b`. -/
-abbrev cartanMatrix :
+noncomputable abbrev cartanMatrix :
     Matrix b.support b.support ℤ :=
   b.cartanMatrixIn ℤ
 
@@ -353,7 +351,7 @@ lemma apply_mem_range_root_of_cartanMatrixEq
     exact mem_range_self _
 
 /-- A root system is determined by its Cartan matrix. -/
-def equivOfCartanMatrixEq [Finite ι₂] [P₂.IsRootSystem] [P₂.IsReduced]
+noncomputable def equivOfCartanMatrixEq [Finite ι₂] [P₂.IsRootSystem] [P₂.IsReduced]
     (he : ∀ i j, b₂.cartanMatrix (e i) (e j) = b.cartanMatrix i j) :
     P.Equiv P₂ :=
   let f : M ≃ₗ[R] M₂ := b.toWeightBasis.equiv b₂.toWeightBasis e

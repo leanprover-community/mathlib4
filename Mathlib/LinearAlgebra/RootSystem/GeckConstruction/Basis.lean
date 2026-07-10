@@ -27,8 +27,6 @@ which we construct here.
 
 @[expose] public section
 
-noncomputable section
-
 open Set
 
 namespace RootPairing.GeckConstruction
@@ -41,7 +39,7 @@ variable {ι K M N : Type*} [Fintype ι] [DecidableEq ι] [Field K] [CharZero K]
 attribute [local instance 100] LieRing.ofAssociativeRing
 
 /-- The Geck construction yields a basis of the Lie algebra it constructs. -/
-def basis :
+noncomputable def basis :
     LieAlgebra.Basis b.support K (lieAlgebra b) where
   A := b.cartanMatrix
   h i := ⟨h i, h_mem_lieAlgebra i⟩
@@ -94,7 +92,7 @@ instance : (cartanSubalgebra' b).IsCartanSubalgebra :=
 open LieAlgebra.IsKilling in
 /-- Up to equivalence, `LieAlgebra.IsKilling.rootSystem` is left inverse to
 `RootPairing.GeckConstruction.lieAlgebra`. -/
-def equivRootSystem [IsAlgClosed K] :
+noncomputable def equivRootSystem [IsAlgClosed K] :
     P.Equiv (rootSystem (basis b).cartan) :=
   b.equivOfCartanMatrixEq _ (basis b).baseSupportEquiv <| by simp [(basis b).cartanMatrix_base_eq]
 

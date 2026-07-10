@@ -60,8 +60,6 @@ As in other polynomial files, we typically use the notation:
 
 open Equiv (Perm)
 
-noncomputable section
-
 namespace Multiset
 
 variable {R : Type*} [CommSemiring R]
@@ -175,7 +173,7 @@ end IsSymmetric
 
 /-- `MvPolynomial.rename` induces an isomorphism between the symmetric subalgebras. -/
 @[simps! apply_coe symm_apply_coe]
-def renameSymmetricSubalgebra [CommSemiring R] (e : σ ≃ τ) :
+noncomputable def renameSymmetricSubalgebra [CommSemiring R] (e : σ ≃ τ) :
     symmetricSubalgebra σ R ≃ₐ[R] symmetricSubalgebra τ R :=
   AlgEquiv.ofAlgHom
     (((rename e).comp (symmetricSubalgebra σ R).val).codRestrict _ <| fun x => x.2.rename e)
@@ -191,13 +189,14 @@ open Finset
 
 /-- The `n`th elementary symmetric `MvPolynomial σ R`.
 It is the sum over all the degree n squarefree monomials in `MvPolynomial σ R`. -/
-def esymm (n : ℕ) : MvPolynomial σ R :=
+noncomputable def esymm (n : ℕ) : MvPolynomial σ R :=
   ∑ t ∈ powersetCard n univ, ∏ i ∈ t, X i
 
 /--
 `esymmPart` is the product of the symmetric polynomials `esymm μᵢ`,
 where `μ = (μ₁, μ₂, ...)` is a partition.
 -/
+noncomputable
 def esymmPart {n : ℕ} (μ : n.Partition) : MvPolynomial σ R := (μ.parts.map (esymm σ R)).prod
 
 /-- The `n`th elementary symmetric `MvPolynomial σ R` is obtained by evaluating the
@@ -301,10 +300,11 @@ variable [DecidableEq σ] [DecidableEq τ]
 
 /-- The `n`th complete homogeneous symmetric `MvPolynomial σ R`.
 It is the sum over all the degree n monomials in `MvPolynomial σ R`. -/
-def hsymm (n : ℕ) : MvPolynomial σ R := ∑ s : Sym σ n, (s.1.map X).prod
+noncomputable def hsymm (n : ℕ) : MvPolynomial σ R := ∑ s : Sym σ n, (s.1.map X).prod
 
 /-- `hsymmPart` is the product of the symmetric polynomials `hsymm μᵢ`,
 where `μ = (μ₁, μ₂, ...)` is a partition. -/
+noncomputable
 def hsymmPart {n : ℕ} (μ : n.Partition) : MvPolynomial σ R := (μ.parts.map (hsymm σ R)).prod
 
 @[simp]
@@ -340,10 +340,11 @@ open Finset
 
 /-- The degree-`n` power sum symmetric `MvPolynomial σ R`.
 It is the sum over all the `n`-th powers of the variables. -/
-def psum (n : ℕ) : MvPolynomial σ R := ∑ i, X i ^ n
+noncomputable def psum (n : ℕ) : MvPolynomial σ R := ∑ i, X i ^ n
 
 /-- `psumPart` is the product of the symmetric polynomials `psum μᵢ`,
 where `μ = (μ₁, μ₂, ...)` is a partition. -/
+noncomputable
 def psumPart {n : ℕ} (μ : n.Partition) : MvPolynomial σ R := (μ.parts.map (psum σ R)).prod
 
 @[simp]
@@ -374,7 +375,7 @@ variable [DecidableEq σ] [DecidableEq τ] {n : ℕ}
 /-- The monomial symmetric `MvPolynomial σ R` with exponent set μ.
 It is the sum over all the monomials in `MvPolynomial σ R` such that
 the multiset of exponents is equal to the multiset of parts of μ. -/
-def msymm (μ : n.Partition) : MvPolynomial σ R :=
+noncomputable def msymm (μ : n.Partition) : MvPolynomial σ R :=
   ∑ s : {a : Sym σ n // .ofSym a = μ}, (s.1.1.map X).prod
 
 @[simp]

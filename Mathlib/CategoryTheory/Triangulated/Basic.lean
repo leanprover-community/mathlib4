@@ -23,8 +23,6 @@ TODO: generalise this to n-angles in n-angulated categories as in https://arxiv.
 @[expose] public section
 
 
-noncomputable section
-
 open CategoryTheory Limits
 
 universe v v₀ v₁ v₂ u u₀ u₁ u₂
@@ -75,13 +73,13 @@ variable [HasZeroObject C] [HasZeroMorphisms C]
 
 open ZeroObject
 
-instance : Inhabited (Triangle C) :=
+noncomputable instance : Inhabited (Triangle C) :=
   ⟨⟨0, 0, 0, 0, 0, 0⟩⟩
 
 /-- For each object in `C`, there is a triangle of the form `(X,X,0,𝟙 X,0,0)`
 -/
 @[simps!]
-def contractibleTriangle (X : C) : Triangle C :=
+noncomputable def contractibleTriangle (X : C) : Triangle C :=
   Triangle.mk (𝟙 X) (0 : X ⟶ 0) 0
 
 end
@@ -322,13 +320,14 @@ end Triangle
 
 /-- The obvious triangle `X₁ ⟶ X₁ ⊞ X₂ ⟶ X₂ ⟶ X₁⟦1⟧`. -/
 @[simps!]
+noncomputable
 def binaryBiproductTriangle (X₁ X₂ : C) [HasZeroMorphisms C] [HasBinaryBiproduct X₁ X₂] :
     Triangle C :=
   Triangle.mk biprod.inl (Limits.biprod.snd : X₁ ⊞ X₂ ⟶ _) 0
 
 /-- The obvious triangle `X₁ ⟶ X₁ ⨯ X₂ ⟶ X₂ ⟶ X₁⟦1⟧`. -/
 @[simps!]
-def binaryProductTriangle (X₁ X₂ : C) [HasZeroMorphisms C] [HasBinaryProduct X₁ X₂] :
+noncomputable def binaryProductTriangle (X₁ X₂ : C) [HasZeroMorphisms C] [HasBinaryProduct X₁ X₂] :
     Triangle C :=
   Triangle.mk ((Limits.prod.lift (𝟙 X₁) 0)) (Limits.prod.snd : X₁ ⨯ X₂ ⟶ _) 0
 
@@ -337,7 +336,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- The canonical isomorphism of triangles
 `binaryProductTriangle X₁ X₂ ≅ binaryBiproductTriangle X₁ X₂`. -/
 @[simps!]
-def binaryProductTriangleIsoBinaryBiproductTriangle
+noncomputable def binaryProductTriangleIsoBinaryBiproductTriangle
     (X₁ X₂ : C) [HasZeroMorphisms C] [HasBinaryBiproduct X₁ X₂] :
     binaryProductTriangle X₁ X₂ ≅ binaryBiproductTriangle X₁ X₂ :=
   Triangle.isoMk _ _ (Iso.refl _) (biprod.isoProd X₁ X₂).symm (Iso.refl _)
@@ -351,7 +350,7 @@ variable {J : Type*} (T : J → Triangle C)
 
 /-- The product of a family of triangles. -/
 @[simps!]
-def productTriangle : Triangle C :=
+noncomputable def productTriangle : Triangle C :=
   Triangle.mk (Limits.Pi.map (fun j => (T j).mor₁))
     (Limits.Pi.map (fun j => (T j).mor₂))
     (Limits.Pi.map (fun j => (T j).mor₃) ≫ inv (piComparison _ _))
@@ -359,7 +358,7 @@ def productTriangle : Triangle C :=
 set_option backward.defeqAttrib.useBackward true in
 /-- A projection from the product of a family of triangles. -/
 @[simps]
-def productTriangle.π (j : J) :
+noncomputable def productTriangle.π (j : J) :
     productTriangle T ⟶ T j where
   hom₁ := Pi.π _ j
   hom₂ := Pi.π _ j
@@ -367,13 +366,13 @@ def productTriangle.π (j : J) :
 
 /-- The fan given by `productTriangle T`. -/
 @[simp]
-def productTriangle.fan : Fan T := Fan.mk (productTriangle T) (productTriangle.π T)
+noncomputable def productTriangle.fan : Fan T := Fan.mk (productTriangle T) (productTriangle.π T)
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- A family of morphisms `T' ⟶ T j` lifts to a morphism `T' ⟶ productTriangle T`. -/
 @[simps]
-def productTriangle.lift {T' : Triangle C} (φ : ∀ j, T' ⟶ T j) :
+noncomputable def productTriangle.lift {T' : Triangle C} (φ : ∀ j, T' ⟶ T j) :
     T' ⟶ productTriangle T where
   hom₁ := Pi.lift (fun j => (φ j).hom₁)
   hom₂ := Pi.lift (fun j => (φ j).hom₂)
@@ -386,7 +385,7 @@ def productTriangle.lift {T' : Triangle C} (φ : ∀ j, T' ⟶ T j) :
 set_option backward.isDefEq.respectTransparency false in
 /-- The triangle `productTriangle T` satisfies the universal property of the categorical
 product of the triangles `T`. -/
-def productTriangle.isLimitFan : IsLimit (productTriangle.fan T) :=
+noncomputable def productTriangle.isLimitFan : IsLimit (productTriangle.fan T) :=
   Fan.IsLimit.mk _ (fun s => productTriangle.lift T s.proj) (fun s j => by cat_disch) (by
     intro s m hm
     ext1
@@ -413,6 +412,7 @@ set_option backward.defeqAttrib.useBackward true in
 variable (C) in
 /-- The functor `C ⥤ Triangle C` which sends `X` to `contractibleTriangle X`. -/
 @[simps]
+noncomputable
 def contractibleTriangleFunctor [HasZeroObject C] [HasZeroMorphisms C] : C ⥤ Triangle C where
   obj X := contractibleTriangle X
   map f :=

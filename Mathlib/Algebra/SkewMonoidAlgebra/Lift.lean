@@ -15,8 +15,6 @@ public import Mathlib.Algebra.Algebra.Equiv
 
 @[expose] public section
 
-noncomputable section
-
 namespace SkewMonoidAlgebra
 
 variable {k G H : Type*}
@@ -27,7 +25,7 @@ variable [CommSemiring k] [Monoid G] [Monoid H]
 variable {A B : Type*} [Semiring A] [Algebra k A] [Semiring B] [Algebra k B]
 
 /-- `liftNCRingHom` as an `AlgHom`, for when `f` is an `AlgHom` -/
-def liftNCAlgHom [MulSemiringAction G A] [SMulCommClass G k A] (f : A →ₐ[k] B)
+noncomputable def liftNCAlgHom [MulSemiringAction G A] [SMulCommClass G k A] (f : A →ₐ[k] B)
     (g : G →* B) (h_comm : ∀ {x y}, (f (y • x)) * g y = (g y) * (f x)) :
     SkewMonoidAlgebra A G →ₐ[k] B where
   __ := liftNCRingHom (f : A →+* B) g h_comm
@@ -40,7 +38,7 @@ variable (k G A)
 
 /-- Any monoid homomorphism `G →* A` can be lifted to an algebra homomorphism
   `SkewMonoidAlgebra k G →ₐ[k] A`. -/
-def lift : (G →* A) ≃ (AlgHom k (SkewMonoidAlgebra k G) A) where
+noncomputable def lift : (G →* A) ≃ (AlgHom k (SkewMonoidAlgebra k G) A) where
   invFun f := (f : SkewMonoidAlgebra k G →* A).comp (of k G)
   toFun F := by
     apply liftNCAlgHom (Algebra.ofId k A) F
@@ -91,6 +89,7 @@ theorem lift_unique (F : AlgHom k (SkewMonoidAlgebra k G) A)
 /-- If `f : G → H` is a multiplicative homomorphism between two monoids, then
 `mapDomain f` is an algebra homomorphism between their monoid algebras. -/
 @[simps!]
+noncomputable
 def mapDomainAlgHom (k A : Type*) [CommSemiring k] [Semiring A] [Algebra k A] {H F : Type*}
     [Monoid H] [FunLike F G H] [MonoidHomClass F G H] [MulSemiringAction G A]
     [MulSemiringAction H A] [SMulCommClass G k A] [SMulCommClass H k A] {f : F}
@@ -157,7 +156,7 @@ def domCongr [AddCommMonoid A] (e : G ≃ H) : SkewMonoidAlgebra A G ≃+ SkewMo
 /-- An equivalence of domains induces a linear equivalence of finitely supported functions.
 
 This is `domCongr` as a `LinearEquiv`. -/
-def domLCongr [Semiring k] [AddCommMonoid A] [Module k A] (e : G ≃ H) :
+noncomputable def domLCongr [Semiring k] [AddCommMonoid A] [Module k A] (e : G ≃ H) :
     SkewMonoidAlgebra A G ≃ₗ[k] SkewMonoidAlgebra A H :=
   (domCongr e : SkewMonoidAlgebra A G ≃+ SkewMonoidAlgebra A H).toLinearEquiv <| by
     simp only [domCongr_apply]
@@ -172,7 +171,7 @@ variable [Monoid G] [Monoid H] [Semiring A] [CommSemiring k] [Algebra k A] [MulS
 /-- If `e : G ≃* H` is a multiplicative equivalence between two monoids and
 ` ∀ (a : G) (x : A), a • x = (e a) • x`, then `SkewMonoidAlgebra.domCongr e` is an
 algebra equivalence between their skew monoid algebras. -/
-def domCongrAlg {e : G ≃* H} (he : ∀ (a : G) (x : A), a • x = (e a) • x) :
+noncomputable def domCongrAlg {e : G ≃* H} (he : ∀ (a : G) (x : A), a • x = (e a) • x) :
     SkewMonoidAlgebra A G ≃ₐ[k] SkewMonoidAlgebra A H :=
   AlgEquiv.ofLinearEquiv
     (domLCongr e : SkewMonoidAlgebra A G ≃ₗ[k] SkewMonoidAlgebra A H)

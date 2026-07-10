@@ -16,8 +16,6 @@ public import Mathlib.RingTheory.Finiteness.Defs
 
 public section
 
-noncomputable section
-
 namespace Finsupp
 
 variable {M : Type*} {R : Type*} [Semiring R] [AddCommMonoid M] [Module R M]

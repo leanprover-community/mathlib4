@@ -21,8 +21,6 @@ We provide basic instances, as well as a custom tactic for discharging
 
 @[expose] public section
 
-noncomputable section
-
 open Topology Filter Set Int Set.Icc
 
 /-! ### The unit interval -/
@@ -225,7 +223,7 @@ protected theorem prod_mem {ι : Type*} {t : Finset ι} {f : ι → ℝ}
     (h : ∀ c ∈ t, f c ∈ unitInterval) :
     ∏ c ∈ t, f c ∈ unitInterval := _root_.prod_mem (S := unitInterval.submonoid) h
 
-instance : LinearOrderedCommMonoidWithZero I where
+noncomputable instance : LinearOrderedCommMonoidWithZero I where
   isBot_zero x := x.2.1
   mul_lt_mul_of_pos_left i hi j k hjk := by
     simp only [← Subtype.coe_lt_coe, coe_mul]; gcongr
@@ -364,7 +362,7 @@ theorem continuous_convexComb_prod {a b : ℝ} :
 Helper definition for `convexComb_assoc`, giving one of the coefficients appearing
 when we reassociate a convex combination.
 -/
-abbrev convexComb_assoc_coeff₁ (s t : unitInterval) : unitInterval :=
+noncomputable abbrev convexComb_assoc_coeff₁ (s t : unitInterval) : unitInterval :=
   ⟨s * (1 - t) / (1 - s * t),
     by
       apply div_nonneg
@@ -413,7 +411,7 @@ abbrev convexComb_assoc_coeff₁' (s t : unitInterval) : unitInterval :=
 Helper definition for `convexComb_assoc'`, giving one of the coefficients appearing
 when we reassociate a convex combination in the reverse direction.
 -/
-abbrev convexComb_assoc_coeff₂' (s t : unitInterval) : unitInterval :=
+noncomputable abbrev convexComb_assoc_coeff₂' (s t : unitInterval) : unitInterval :=
   unitInterval.symm (convexComb_assoc_coeff₁ (unitInterval.symm t) (unitInterval.symm s))
 
 theorem convexComb_assoc' {a b : ℝ} (x y z : Icc a b) (s t : unitInterval) :

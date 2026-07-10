@@ -17,7 +17,7 @@ This file defines the bundled category `CommHopfAlgCat` of commutative Hopf alge
 commutative ring `R` along with the forgetful functor to `CommBialgCat`.
 -/
 
-public noncomputable section
+public section
 
 open CategoryTheory Coalgebra HopfAlgebra Limits
 
@@ -168,7 +168,7 @@ end CommHopfAlgCat
 
 attribute [local ext] Quiver.Hom.unop_inj
 
-instance CommAlgCat.grpObjOpOf {A : Type u} [CommRing A] [HopfAlgebra R A] :
+noncomputable instance CommAlgCat.grpObjOpOf {A : Type u} [CommRing A] [HopfAlgebra R A] :
     GrpObj (Opposite.op <| CommAlgCat.of R A) where
   inv := (CommAlgCat.ofHom <| antipodeAlgHom R A).op
   left_inv := by
@@ -196,7 +196,7 @@ open Opposite MonObj
 lemma CommAlgCat.inv_op_of_unop_hom {A : Type u} [CommRing A] [HopfAlgebra R A] :
     ι[op <| CommAlgCat.of R A].unop.hom = antipodeAlgHom R A := rfl
 
-instance (A : (CommAlgCat R)ᵒᵖ) [GrpObj A] : HopfAlgebra R A.unop :=
+noncomputable instance (A : (CommAlgCat R)ᵒᵖ) [GrpObj A] : HopfAlgebra R A.unop :=
   .ofAlgHom ι[A].unop.hom
     congr($(GrpObj.left_inv (X := A)).unop.hom)
     congr($(GrpObj.right_inv (X := A)).unop.hom)
@@ -206,6 +206,7 @@ variable (R) in
 `R`-algebras. -/
 @[expose, simps! functor_obj_unop_X inverse_obj unitIso_hom_app unitIso_inv_app counitIso_hom_app
   counitIso_inv_app]
+noncomputable
 def commHopfAlgCatEquivCogrpCommAlgCat : CommHopfAlgCat R ≌ (Grp (CommAlgCat R)ᵒᵖ)ᵒᵖ where
   functor.obj A := op <| .mk <| op <| .of R A
   functor.map {A B} f := op <| .mk <| .mk' <| op <| CommAlgCat.ofHom f.hom

@@ -119,7 +119,7 @@ instance : MonoidalLinear R (Action V G) where
 
 end
 
-noncomputable section
+section
 
 /-- Upgrading the functor `Action V G ⥤ (SingleObj G ⥤ V)` to a monoidal functor. -/
 instance FunctorCategoryEquivalence.functorMonoidal :
@@ -132,12 +132,12 @@ instance functorCategoryEquivalenceFunctorMonoidal :
   inferInstanceAs FunctorCategoryEquivalence.functor.Monoidal
 
 /-- Upgrading the functor `(SingleObj G ⥤ V) ⥤ Action V G` to a monoidal functor. -/
-instance FunctorCategoryEquivalence.inverseMonoidal :
+noncomputable instance FunctorCategoryEquivalence.inverseMonoidal :
     (FunctorCategoryEquivalence.inverse (V := V) (G := G)).Monoidal :=
   inferInstanceAs (Monoidal.equivalenceTransported
     (Action.functorCategoryEquivalence V G).symm).functor.Monoidal
 
-instance functorCategoryEquivalenceInverseMonoidal :
+noncomputable instance functorCategoryEquivalenceInverseMonoidal :
     (functorCategoryEquivalence V G).inverse.Monoidal :=
   inferInstanceAs FunctorCategoryEquivalence.inverse.Monoidal
 
@@ -160,26 +160,26 @@ lemma FunctorCategoryEquivalence.functor_δ (A B : Action V G) :
 
 variable (H : Type*) [Group H]
 
-instance [RightRigidCategory V] : RightRigidCategory (SingleObj H ⥤ V) := by
+noncomputable instance [RightRigidCategory V] : RightRigidCategory (SingleObj H ⥤ V) := by
   infer_instance
 
 /-- If `V` is right rigid, so is `Action V G`. -/
-instance [RightRigidCategory V] : RightRigidCategory (Action V H) :=
+noncomputable instance [RightRigidCategory V] : RightRigidCategory (Action V H) :=
   rightRigidCategoryOfEquivalence
     (functorCategoryEquivalence V H).toAdjunction
 
-instance [LeftRigidCategory V] : LeftRigidCategory (SingleObj H ⥤ V) := by
+noncomputable instance [LeftRigidCategory V] : LeftRigidCategory (SingleObj H ⥤ V) := by
   infer_instance
 
 /-- If `V` is left rigid, so is `Action V G`. -/
-instance [LeftRigidCategory V] : LeftRigidCategory (Action V H) :=
+noncomputable instance [LeftRigidCategory V] : LeftRigidCategory (Action V H) :=
   leftRigidCategoryOfEquivalence (functorCategoryEquivalence V H).toAdjunction
 
-instance [RigidCategory V] : RigidCategory (SingleObj H ⥤ V) := by
+noncomputable instance [RigidCategory V] : RigidCategory (SingleObj H ⥤ V) := by
   infer_instance
 
 /-- If `V` is rigid, so is `Action V G`. -/
-instance [RigidCategory V] : RigidCategory (Action V H) :=
+noncomputable instance [RigidCategory V] : RigidCategory (Action V H) :=
   rigidCategoryOfEquivalence (functorCategoryEquivalence V H).toAdjunction
 
 variable {V H}

@@ -34,8 +34,6 @@ following are equivalent.
 
 universe v₁ v₂ u₁ u₂
 
-noncomputable section
-
 namespace CategoryTheory
 
 open Category
@@ -82,7 +80,7 @@ the presence of a natural isomorphism `i ⋙ exp A ⋙ leftAdjoint i ⋙ i ≅ i
 `(A ⟹ iB) ≅ i L (A ⟹ iB)`, naturally in `B`.
 The converse is given in `ExponentialIdeal.mk_of_iso`.
 -/
-def exponentialIdealReflective (A : C) [Reflective i] [ExponentialIdeal i] :
+noncomputable def exponentialIdealReflective (A : C) [Reflective i] [ExponentialIdeal i] :
     i ⋙ ihom A ⋙ reflector i ⋙ i ≅ i ⋙ ihom A := by
   symm
   apply NatIso.ofComponents _ _
@@ -123,6 +121,7 @@ finite chosen products. -/
 -- Note: This is not an instance as one might already have a (different) `CartesianMonoidalCategory`
 -- instance on `D` (as for example with sheaves).
 -- See note [reducible non-instances]
+noncomputable
 abbrev CartesianMonoidalCategory.ofReflective [CartesianMonoidalCategory C] [Reflective i] :
     CartesianMonoidalCategory D :=
   .ofChosenFiniteProducts
@@ -202,6 +201,7 @@ takes in an explicit choice of lift of the essential image of `i` to `D`, in the
 `l ⋙ i` is defeq to `i.essImage.ι`, images of exponential objects in `D` under `i` will be defeq
 to the respective exponential objects in `C`. -/
 @[implicit_reducible]
+noncomputable
 def cartesianClosedOfReflective' (l : i.EssImageSubcategory ⥤ D) (φ : l ⋙ i ≅ i.essImage.ι) :
     MonoidalClosed D where
   closed := fun B =>
@@ -229,7 +229,7 @@ exponential objects in `D` by applying the reflector to them, even though they a
 essential image of `i`; if you need better control over definitional equality, use
 `cartesianClosedOfReflective'` instead. -/
 @[implicit_reducible]
-def cartesianClosedOfReflective : MonoidalClosed D :=
+noncomputable def cartesianClosedOfReflective : MonoidalClosed D :=
   cartesianClosedOfReflective' i (i.essImage.ι ⋙ reflector i)
     (NatIso.ofComponents (fun X ↦
       have := Functor.essImage.unit_isIso X.2

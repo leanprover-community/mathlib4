@@ -64,7 +64,7 @@ The implementation of the seminorms is taken almost literally from `ContinuousLi
 Schwartz space, tempered distributions
 -/
 
-@[expose] public noncomputable section
+@[expose] public section
 
 open scoped Nat NNReal ContDiff
 
@@ -209,7 +209,7 @@ end Aux
 section SeminormAux
 
 /-- Helper definition for the seminorms of the Schwartz space. -/
-private protected def seminormAux (k n : ℕ) (f : 𝓢(E, F)) : ℝ :=
+private protected noncomputable def seminormAux (k n : ℕ) (f : 𝓢(E, F)) : ℝ :=
   sInf { c | 0 ≤ c ∧ ∀ x, ‖x‖ ^ k * ‖iteratedFDeriv ℝ n f x‖ ≤ c }
 
 private theorem seminormAux_nonneg (k n : ℕ) (f : 𝓢(E, F)) : 0 ≤ f.seminormAux k n :=
@@ -407,7 +407,7 @@ variable (𝕜)
 /-- The seminorms of the Schwartz space given by the best constants in the definition of
 `𝓢(E, F)`. -/
 @[no_expose]
-protected def seminorm (k n : ℕ) : Seminorm 𝕜 𝓢(E, F) :=
+protected noncomputable def seminorm (k n : ℕ) : Seminorm 𝕜 𝓢(E, F) :=
   Seminorm.ofSMulLE (SchwartzMap.seminormAux k n) (seminormAux_zero k n) (seminormAux_add_le k n)
     (seminormAux_smul_le k n)
 
@@ -461,7 +461,7 @@ theorem norm_le_seminorm (f : 𝓢(E, F)) (x₀ : E) : ‖f x₀‖ ≤ (Schwart
 variable (E F)
 
 /-- The family of Schwartz seminorms. -/
-def _root_.schwartzSeminormFamily : SeminormFamily 𝕜 𝓢(E, F) (ℕ × ℕ) :=
+noncomputable def _root_.schwartzSeminormFamily : SeminormFamily 𝕜 𝓢(E, F) (ℕ × ℕ) :=
   fun m => SchwartzMap.seminorm 𝕜 m.1 m.2
 
 @[simp]
@@ -510,7 +510,7 @@ section Topology
 variable [NormedField 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
 variable (𝕜 E F)
 
-instance instTopologicalSpace : TopologicalSpace 𝓢(E, F) :=
+noncomputable instance instTopologicalSpace : TopologicalSpace 𝓢(E, F) :=
   (schwartzSeminormFamily ℝ E F).moduleFilterBasis.topology'
 
 theorem _root_.schwartz_withSeminorms : WithSeminorms (schwartzSeminormFamily 𝕜 E F) := by
@@ -528,7 +528,7 @@ instance instContinuousSMul : ContinuousSMul 𝕜 𝓢(E, F) := by
 instance instIsTopologicalAddGroup : IsTopologicalAddGroup 𝓢(E, F) :=
   (schwartzSeminormFamily ℝ E F).addGroupFilterBasis.isTopologicalAddGroup
 
-instance instUniformSpace : UniformSpace 𝓢(E, F) :=
+noncomputable instance instUniformSpace : UniformSpace 𝓢(E, F) :=
   fast_instance% (schwartzSeminormFamily ℝ E F).addGroupFilterBasis.uniformSpace
 
 instance instIsUniformAddGroup : IsUniformAddGroup 𝓢(E, F) :=
@@ -644,7 +644,7 @@ variable [NormedAddCommGroup G] [NormedSpace ℝ G] [NormedSpace 𝕜 G] [SMulCo
 
 variable (𝕜 E G) in
 /-- The map applying a vector to Hom-valued Schwartz function as a continuous linear map. -/
-protected def evalCLM (m : F) : 𝓢(E, F →L[ℝ] G) →L[𝕜] 𝓢(E, G) :=
+protected noncomputable def evalCLM (m : F) : 𝓢(E, F →L[ℝ] G) →L[𝕜] 𝓢(E, G) :=
   mkCLM (fun f x => f x m) (fun _ _ _ => rfl) (fun _ _ _ => rfl)
     (fun f => ContDiff.clm_apply f.2 contDiff_const) <| by
   rintro ⟨k, n⟩
@@ -735,7 +735,7 @@ variable (F) in
 open scoped Classical in
 /-- The map `f ↦ (x ↦ g x • f x)` as a continuous `𝕜`-linear map on Schwartz space,
 where `g` is a function of temperate growth. -/
-def smulLeftCLM (g : E → 𝕜) : 𝓢(E, F) →L[𝕜] 𝓢(E, F) :=
+noncomputable def smulLeftCLM (g : E → 𝕜) : 𝓢(E, F) →L[𝕜] 𝓢(E, F) :=
   if hg : g.HasTemperateGrowth then
     SchwartzMap.bilinLeftCLM (ContinuousLinearMap.lsmul 𝕜 𝕜).flip hg
   else 0
@@ -831,7 +831,7 @@ variable [NormedSpace 𝕜 E] [NormedSpace 𝕜 G]
 /-- The bilinear pairing of Schwartz functions.
 
 The continuity in the left argument is provided in `SchwartzMap.pairing_continuous_left`. -/
-def pairing (B : E →L[𝕜] F →L[𝕜] G) : 𝓢(D, E) →ₗ[𝕜] 𝓢(D, F) →L[𝕜] 𝓢(D, G) where
+noncomputable def pairing (B : E →L[𝕜] F →L[𝕜] G) : 𝓢(D, E) →ₗ[𝕜] 𝓢(D, F) →L[𝕜] 𝓢(D, G) where
   toFun f := bilinLeftCLM B.flip f.hasTemperateGrowth
   map_add' _ _ := by ext; simp
   map_smul' _ _ := by ext; simp
@@ -857,7 +857,7 @@ open ContinuousLinearMap
 variable (𝕜 F) in
 /-- Scalar multiplication with a continuous linear map as a continuous linear map on Schwartz
 functions. -/
-def smulRightCLM (L : E →L[ℝ] G →L[ℝ] ℝ) : 𝓢(E, F) →L[𝕜] 𝓢(E, G →L[ℝ] F) :=
+noncomputable def smulRightCLM (L : E →L[ℝ] G →L[ℝ] ℝ) : 𝓢(E, F) →L[𝕜] 𝓢(E, G →L[ℝ] F) :=
   mkCLM (fun f x ↦ (L x).smulRight (f x)) (by intros; ext; simp)
     (by intro c g x; ext v; simpa using smul_comm (L x v) c (g x))
     (by fun_prop) <| by
@@ -1002,7 +1002,7 @@ def compCLMOfAntilipschitz {K : ℝ≥0} {g : D → E}
 
 /-- Composition with a continuous linear equiv on the right is a continuous linear map on
 Schwartz space. -/
-def compCLMOfContinuousLinearEquiv (g : D ≃L[ℝ] E) :
+noncomputable def compCLMOfContinuousLinearEquiv (g : D ≃L[ℝ] E) :
     𝓢(E, F) →L[𝕜] 𝓢(D, F) :=
   compCLMOfAntilipschitz 𝕜 (g.toContinuousLinearMap.hasTemperateGrowth) g.antilipschitz
 
@@ -1134,7 +1134,7 @@ lemma integrable (f : 𝓢(D, V)) : Integrable f μ :=
 
 variable (𝕜 μ) in
 /-- The integral as a continuous linear map from Schwartz space to the codomain. -/
-def integralCLM : 𝓢(D, V) →L[𝕜] V := by
+noncomputable def integralCLM : 𝓢(D, V) →L[𝕜] V := by
   refine mkCLMtoNormedSpace (∫ x, · x ∂μ)
     (fun f g ↦ integral_add f.integrable g.integrable) (integral_smul · ·) ?_
   rcases hμ.exists_integrable with ⟨n, h⟩
@@ -1170,7 +1170,7 @@ instance instBoundedContinuousMapClass : BoundedContinuousMapClass 𝓢(E, F) E 
     (BoundedContinuousFunction.dist_le_two_norm' (norm_le_seminorm ℝ f))⟩
 
 /-- Schwartz functions as bounded continuous functions -/
-def toBoundedContinuousFunction (f : 𝓢(E, F)) : E →ᵇ F :=
+noncomputable def toBoundedContinuousFunction (f : 𝓢(E, F)) : E →ᵇ F :=
   BoundedContinuousFunction.ofNormedAddCommGroup f (SchwartzMap.continuous f)
     (SchwartzMap.seminorm ℝ 0 0 f) (norm_le_seminorm ℝ f)
 
@@ -1180,7 +1180,7 @@ theorem toBoundedContinuousFunction_apply (f : 𝓢(E, F)) (x : E) :
   rfl
 
 /-- Schwartz functions as continuous functions -/
-def toContinuousMap (f : 𝓢(E, F)) : C(E, F) :=
+noncomputable def toContinuousMap (f : 𝓢(E, F)) : C(E, F) :=
   f.toBoundedContinuousFunction.toContinuousMap
 
 theorem norm_toBoundedContinuousFunction_le (f : 𝓢(E, F)) :
@@ -1192,7 +1192,7 @@ variable [RCLike 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
 
 /-- The inclusion map from Schwartz functions to bounded continuous functions as a continuous linear
 map. -/
-def toBoundedContinuousFunctionCLM : 𝓢(E, F) →L[𝕜] E →ᵇ F :=
+noncomputable def toBoundedContinuousFunctionCLM : 𝓢(E, F) →L[𝕜] E →ᵇ F :=
   mkCLMtoNormedSpace toBoundedContinuousFunction (by intros; ext; simp) (by intros; ext; simp)
     (⟨{0}, 1, zero_le_one, by
       simpa [BoundedContinuousFunction.norm_le (apply_nonneg _ _)] using norm_le_seminorm 𝕜 ⟩)
@@ -1244,7 +1244,7 @@ variable [RCLike 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
 
 /-- The inclusion map from Schwartz functions to continuous functions vanishing at infinity as a
 continuous linear map. -/
-def toZeroAtInftyCLM : 𝓢(E, F) →L[𝕜] C₀(E, F) :=
+noncomputable def toZeroAtInftyCLM : 𝓢(E, F) →L[𝕜] C₀(E, F) :=
   mkCLMtoNormedSpace toZeroAtInfty (by intros; ext; simp) (by intros; ext; simp)
     (⟨{0}, 1, zero_le_one, by simpa [← ZeroAtInftyContinuousMap.norm_toBCF_eq_norm,
       BoundedContinuousFunction.norm_le (apply_nonneg _ _)] using norm_le_seminorm 𝕜 ⟩)
@@ -1366,7 +1366,7 @@ theorem norm_toLp_le_seminorm (p : ℝ≥0∞) (μ : Measure E := by volume_tac)
 
 variable (𝕜 F) in
 /-- Continuous linear map from Schwartz functions to `L^p`. -/
-def toLpCLM (p : ℝ≥0∞) [Fact (1 ≤ p)] (μ : Measure E := by volume_tac)
+noncomputable def toLpCLM (p : ℝ≥0∞) [Fact (1 ≤ p)] (μ : Measure E := by volume_tac)
     [hμ : μ.HasTemperateGrowth] : 𝓢(E, F) →L[𝕜] Lp F p μ :=
   mkCLMtoNormedSpace (fun f ↦ f.toLp p μ) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) <| by
     rcases norm_toLp_le_seminorm 𝕜 F p μ with ⟨k, C, hC_pos, hC⟩

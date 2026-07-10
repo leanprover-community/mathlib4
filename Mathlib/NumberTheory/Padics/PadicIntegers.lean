@@ -52,8 +52,6 @@ p-adic, p adic, padic, p-adic integer
 
 open Padic Metric IsLocalRing
 
-noncomputable section
-
 variable (p : ℕ) [hp : Fact p.Prime]
 
 /-- The `p`-adic integers `ℤ_[p]` are the `p`-adic numbers with norm `≤ 1`. -/
@@ -89,9 +87,9 @@ theorem mem_subring_iff {x : ℚ_[p]} : x ∈ subring p ↔ ‖x‖ ≤ 1 := Iff
 
 variable {p}
 
-instance instCommRing : CommRing ℤ_[p] := inferInstanceAs <| CommRing (subring p)
+noncomputable instance instCommRing : CommRing ℤ_[p] := inferInstanceAs <| CommRing (subring p)
 
-instance : Inhabited ℤ_[p] := ⟨0⟩
+noncomputable instance : Inhabited ℤ_[p] := ⟨0⟩
 
 @[simp]
 theorem mk_zero {h} : (⟨0, h⟩ : ℤ_[p]) = (0 : ℤ_[p]) := rfl
@@ -127,7 +125,7 @@ theorem coe_intCast (z : ℤ) : ((z : ℤ_[p]) : ℚ_[p]) = z := rfl
 
 /-- The coercion from `ℤ_[p]` to `ℚ_[p]` as a ring homomorphism. -/
 @[simps!]
-def Coe.ringHom : ℤ_[p] →+* ℚ_[p] := (subring p).subtype
+noncomputable def Coe.ringHom : ℤ_[p] →+* ℚ_[p] := (subring p).subtype
 
 @[simp, norm_cast]
 theorem coe_pow (x : ℤ_[p]) (n : ℕ) : (↑(x ^ n) : ℚ_[p]) = (↑x : ℚ_[p]) ^ n := rfl
@@ -147,7 +145,7 @@ lemma isOpenEmbedding_coe : IsOpenEmbedding ((↑) : ℤ_[p] → ℚ_[p]) := by
 
 /-- The inverse of a `p`-adic integer with norm equal to `1` is also a `p`-adic integer.
 Otherwise, the inverse is defined to be `0`. -/
-def inv : ℤ_[p] → ℤ_[p]
+noncomputable def inv : ℤ_[p] → ℤ_[p]
   | ⟨k, _⟩ => if h : ‖k‖ = 1 then ⟨k⁻¹, by simp [h]⟩ else 0
 
 set_option backward.isDefEq.respectTransparency false in
@@ -177,7 +175,7 @@ We now show that `ℤ_[p]` is a
 
 variable (p)
 
-instance : MetricSpace ℤ_[p] := inferInstanceAs <| MetricSpace (Subtype _)
+noncomputable instance : MetricSpace ℤ_[p] := inferInstanceAs <| MetricSpace (Subtype _)
 
 instance : IsUltrametricDist ℤ_[p] := IsUltrametricDist.subtype _
 
@@ -185,12 +183,12 @@ instance completeSpace : CompleteSpace ℤ_[p] :=
   have : IsClosed { x : ℚ_[p] | ‖x‖ ≤ 1 } := isClosed_le continuous_norm continuous_const
   this.completeSpace_coe
 
-instance : Norm ℤ_[p] := ⟨fun z => ‖(z : ℚ_[p])‖⟩
+noncomputable instance : Norm ℤ_[p] := ⟨fun z => ‖(z : ℚ_[p])‖⟩
 
 variable {p} in
 theorem norm_def {z : ℤ_[p]} : ‖z‖ = ‖(z : ℚ_[p])‖ := rfl
 
-instance : NormedCommRing ℤ_[p] where
+noncomputable instance : NormedCommRing ℤ_[p] where
   dist_eq := by
     rintro ⟨x, hx⟩ ⟨y, hy⟩
     exact dist_eq_norm_neg_add x y
@@ -318,7 +316,7 @@ lemma valuation_coe_nonneg : 0 ≤ (x : ℚ_[p]).valuation := by
   exact mod_cast hp.out.one_lt
 
 /-- `PadicInt.valuation` lifts the `p`-adic valuation on `ℚ` to `ℤ_[p]`. -/
-def valuation (x : ℤ_[p]) : ℕ := (x : ℚ_[p]).valuation.toNat
+noncomputable def valuation (x : ℤ_[p]) : ℕ := (x : ℚ_[p]).valuation.toNat
 
 @[simp, norm_cast] lemma valuation_coe (x : ℤ_[p]) : (x : ℚ_[p]).valuation = x.valuation := by
   simp [valuation, valuation_coe_nonneg]
@@ -386,7 +384,7 @@ theorem not_isUnit_iff {z : ℤ_[p]} : ¬IsUnit z ↔ ‖z‖ < 1 := by
   simpa using mem_nonunits
 
 /-- A `p`-adic number `u` with `‖u‖ = 1` is a unit of `ℤ_[p]`. -/
-def mkUnits {u : ℚ_[p]} (h : ‖u‖ = 1) : ℤ_[p]ˣ :=
+noncomputable def mkUnits {u : ℚ_[p]} (h : ‖u‖ = 1) : ℤ_[p]ˣ :=
   let z : ℤ_[p] := ⟨u, le_of_eq h⟩
   ⟨z, z.inv, mul_inv h, inv_mul h⟩
 
@@ -400,7 +398,7 @@ theorem norm_units (u : ℤ_[p]ˣ) : ‖(u : ℤ_[p])‖ = 1 := isUnit_iff.mp <|
 
 /-- `unitCoeff hx` is the unit `u` in the unique representation `x = u * p ^ n`.
 See `unitCoeff_spec`. -/
-def unitCoeff {x : ℤ_[p]} (hx : x ≠ 0) : ℤ_[p]ˣ :=
+noncomputable def unitCoeff {x : ℤ_[p]} (hx : x ≠ 0) : ℤ_[p]ˣ :=
   let u : ℚ_[p] := x * (p : ℚ_[p]) ^ (-x.valuation : ℤ)
   have hu : ‖u‖ = 1 := by
     simp [u, hx, pow_ne_zero _ (NeZero.ne _), norm_eq_zpow_neg_valuation]
@@ -554,7 +552,7 @@ end Dvr
 
 section FractionRing
 
-instance algebra : Algebra ℤ_[p] ℚ_[p] :=
+noncomputable instance algebra : Algebra ℤ_[p] ℚ_[p] :=
   inferInstanceAs <| Algebra (subring p) _
 
 @[simp]

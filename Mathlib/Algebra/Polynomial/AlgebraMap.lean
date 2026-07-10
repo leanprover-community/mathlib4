@@ -34,8 +34,6 @@ We promote `eval₂` to an algebra hom in `aeval`.
 
 assert_not_exists Ideal
 
-noncomputable section
-
 open Finset
 
 open Polynomial
@@ -52,7 +50,7 @@ variable [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
 variable {p q r : R[X]}
 
 /-- Note that this instance also provides `Algebra R R[X]`. -/
-instance algebraOfAlgebra : Algebra R A[X] where
+noncomputable instance algebraOfAlgebra : Algebra R A[X] where
   smul_def' r p :=
     toFinsupp_injective <| by
       dsimp only [RingHom.toFun_eq_coe, RingHom.comp_apply]
@@ -92,7 +90,7 @@ theorem algebraMap_eq : algebraMap R R[X] = C :=
 
 /-- `Polynomial.C` as an `AlgHom`. -/
 @[simps! apply]
-def CAlgHom : A →ₐ[R] A[X] where
+noncomputable def CAlgHom : A →ₐ[R] A[X] where
   toRingHom := C
   commutes' _ := rfl
 
@@ -165,7 +163,7 @@ section Map
 /-- `Polynomial.map` as an `AlgHom` for noncommutative algebras.
 
   This is the algebra version of `Polynomial.mapRingHom`. -/
-def mapAlgHom (f : A →ₐ[R] B) : Polynomial A →ₐ[R] Polynomial B where
+noncomputable def mapAlgHom (f : A →ₐ[R] B) : Polynomial A →ₐ[R] Polynomial B where
   toRingHom := mapRingHom f.toRingHom
   commutes' := by simp
 
@@ -204,7 +202,7 @@ lemma mapAlgHom_monomial (f : A →ₐ[R] B) (n : ℕ) (a : A) :
     mapAlgHom f (monomial n a) = monomial n (f a) := by simp
 
 /-- If `A` and `B` are isomorphic as `R`-algebras, then so are their polynomial rings -/
-def mapAlgEquiv (f : A ≃ₐ[R] B) : Polynomial A ≃ₐ[R] Polynomial B :=
+noncomputable def mapAlgEquiv (f : A ≃ₐ[R] B) : Polynomial A ≃ₐ[R] Polynomial B :=
   AlgEquiv.ofAlgHom (mapAlgHom f.toAlgHom) (mapAlgHom f.symm.toAlgHom) (by simp) (by simp)
 
 @[simp]
@@ -244,7 +242,7 @@ variable (R A) in
 /-- Given a valuation `x` of the variable in an `R`-algebra `A`, the bijection induced by the unique
 `R`-algebra homomorphism from `R[X]` to `A` sending `X` to `x`. -/
 @[simps! symm_apply]
-def aevalEquiv : A ≃ (R[X] →ₐ[R] A) where
+noncomputable def aevalEquiv : A ≃ (R[X] →ₐ[R] A) where
   toFun x := eval₂AlgHom (Algebra.ofId _ _) x (Algebra.commutes · _)
   invFun f := f X
   left_inv := eval₂_X _
@@ -254,14 +252,14 @@ def aevalEquiv : A ≃ (R[X] →ₐ[R] A) where
 the unique `R`-algebra homomorphism from `R[X]` to `A` sending `X` to `x`.
 
 This is a stronger variant of the linear map `Polynomial.leval`. -/
-def aeval : R[X] →ₐ[R] A :=
+noncomputable def aeval : R[X] →ₐ[R] A :=
   aevalEquiv R A x
 
 lemma aevalEquiv_apply (x : A) : aevalEquiv R A x = aeval x :=
   rfl
 
 /-- The map `R[X] → S[X]` as an algebra homomorphism. -/
-def mapAlg (R : Type u) [CommSemiring R] (S : Type v) [Semiring S] [Algebra R S] :
+noncomputable def mapAlg (R : Type u) [CommSemiring R] (S : Type v) [Semiring S] [Algebra R S] :
     R[X] →ₐ[R] S[X] :=
   @aeval _ S[X] _ _ _ (X : S[X])
 
@@ -339,6 +337,7 @@ end IsScalarTower
 /-- Two polynomials `p` and `q` such that `p(q(X))=X` and `q(p(X))=X`
   induces an automorphism of the polynomial algebra. -/
 @[simps! apply]
+noncomputable
 def algEquivOfCompEqX (p q : R[X]) (hpq : p.comp q = X) (hqp : q.comp p = X) : R[X] ≃ₐ[R] R[X] := by
   refine AlgEquiv.ofAlgHom (aeval p) (aeval q) ?_ ?_ <;>
     exact AlgHom.ext fun _ ↦ by simp [← comp_eq_aeval, comp_assoc, hpq, hqp]
@@ -356,6 +355,7 @@ theorem algEquivOfCompEqX_symm (p q : R[X]) (hpq : p.comp q = X) (hqp : q.comp p
 /-- The automorphism of the polynomial algebra given by `p(X) ↦ p(a * X + b)`,
   with inverse `p(X) ↦ p(a⁻¹ * (X - b))`. -/
 @[simps!]
+noncomputable
 def algEquivCMulXAddC {R : Type*} [CommRing R] (a b : R) [Invertible a] : R[X] ≃ₐ[R] R[X] :=
   algEquivOfCompEqX (C a * X + C b) (C ⅟a * (X - C b))
     (by simp [← C_mul, ← mul_assoc]) (by simp [← C_mul, ← mul_assoc])
@@ -370,7 +370,7 @@ theorem algEquivCMulXAddC_symm_eq {R : Type*} [CommRing R] (a b : R) [Invertible
 /-- The automorphism of the polynomial algebra given by `p(X) ↦ p(X+t)`,
   with inverse `p(X) ↦ p(X-t)`. -/
 @[simps! apply]
-def algEquivAevalXAddC {R : Type*} [CommRing R] (t : R) : R[X] ≃ₐ[R] R[X] :=
+noncomputable def algEquivAevalXAddC {R : Type*} [CommRing R] (t : R) : R[X] ≃ₐ[R] R[X] :=
   algEquivOfCompEqX (X + C t) (X - C t) (by simp) (by simp)
 
 @[simp]
@@ -385,7 +385,7 @@ theorem algEquivAevalXAddC_symm {R : Type*} [CommRing R] (t : R) :
 
 /-- The involutive automorphism of the polynomial algebra given by `p(X) ↦ p(-X)`. -/
 @[simps!]
-def algEquivAevalNegX {R : Type*} [CommRing R] : R[X] ≃ₐ[R] R[X] :=
+noncomputable def algEquivAevalNegX {R : Type*} [CommRing R] : R[X] ≃ₐ[R] R[X] :=
   algEquivOfCompEqX (-X) (-X) (by simp) (by simp)
 
 theorem comp_neg_X_comp_neg_X {R : Type*} [CommRing R] (p : R[X]) :

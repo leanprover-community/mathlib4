@@ -28,8 +28,6 @@ Let `X` be a profinite set.
 @[expose] public section
 
 
-noncomputable section
-
 universe u v w
 
 open CategoryTheory Function
@@ -52,7 +50,7 @@ instance projective_ultrafilter (X : Type u) : Projective (of <| Ultrafilter X) 
     rfl
 
 /-- For any profinite `X`, the natural map `Ultrafilter X → X` is a projective presentation. -/
-def projectivePresentation (X : Profinite.{u}) : ProjectivePresentation X where
+noncomputable def projectivePresentation (X : Profinite.{u}) : ProjectivePresentation X where
   p := of <| Ultrafilter X
   f := CompHausLike.ofHom _ ⟨_, continuous_ultrafilter_extend id⟩
   projective := Profinite.projective_ultrafilter X

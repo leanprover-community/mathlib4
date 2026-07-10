@@ -51,7 +51,7 @@ Occasionally this leads to proofs that are uglier than expected.
 
 @[expose] public section
 
-noncomputable section
+section
 
 open Finset (antidiagonal mem_antidiagonal)
 
@@ -77,11 +77,11 @@ section Semiring
 variable [Semiring R]
 
 /-- The `n`th coefficient of a formal power series. -/
-def coeff (n : ℕ) : R⟦X⟧ →ₗ[R] R :=
+noncomputable def coeff (n : ℕ) : R⟦X⟧ →ₗ[R] R :=
   MvPowerSeries.coeff (single () n)
 
 /-- The `n`th monomial with coefficient `a` as formal power series. -/
-def monomial (n : ℕ) : R →ₗ[R] R⟦X⟧ :=
+noncomputable def monomial (n : ℕ) : R →ₗ[R] R⟦X⟧ :=
   MvPowerSeries.monomial (single () n)
 
 theorem coeff_def {s : Unit →₀ ℕ} {n : ℕ} (h : s () = n) :
@@ -147,7 +147,7 @@ theorem constantCoeff_eq (f : R⟦X⟧) :
     constantCoeff f = MvPowerSeries.constantCoeff f := rfl
 
 /-- The constant formal power series. -/
-def C : R →+* R⟦X⟧ :=
+noncomputable def C : R →+* R⟦X⟧ :=
   MvPowerSeries.C
 
 lemma C_apply {r : R} : C r = MvPowerSeries.C r := rfl
@@ -155,7 +155,7 @@ lemma C_apply {r : R} : C r = MvPowerSeries.C r := rfl
 @[simp] lemma algebraMap_eq {R : Type*} [CommSemiring R] : algebraMap R R⟦X⟧ = C := rfl
 
 /-- The variable of the formal power series ring. -/
-def X : R⟦X⟧ :=
+noncomputable def X : R⟦X⟧ :=
   MvPowerSeries.X ()
 
 lemma X_apply : X (R := R) = MvPowerSeries.X () := rfl
@@ -518,7 +518,7 @@ variable [Ring R] (p : PowerSeries R) (T : Subring R) (hp : ∀ n, p.coeff n ∈
 /-- Given a formal power series `p` and a subring `T` that contains the
 coefficients of `p`, return the corresponding formal power series
 whose coefficients are in `T`. -/
-def toSubring : PowerSeries T := mk fun n => ⟨p.coeff n, hp n⟩
+noncomputable def toSubring : PowerSeries T := mk fun n => ⟨p.coeff n, hp n⟩
 
 @[simp]
 theorem coeff_toSubring {n : ℕ} : (p.toSubring T hp).coeff n = p.coeff n := by
@@ -886,7 +886,7 @@ variable (A : Type*) [Semiring A] [Algebra R A]
 /-- The coercion from polynomials to power series
 as an algebra homomorphism.
 -/
-def coeToPowerSeries.algHom : R[X] →ₐ[R] PowerSeries A :=
+noncomputable def coeToPowerSeries.algHom : R[X] →ₐ[R] PowerSeries A :=
   { (PowerSeries.map (algebraMap R A)).comp coeToPowerSeries.ringHom with
     commutes' := fun r => by simp [PowerSeries.algebraMap_apply] }
 
@@ -920,13 +920,14 @@ open Polynomial
 
 variable {R A : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A] (f : R⟦X⟧)
 
-instance algebraPolynomial : Algebra R[X] A⟦X⟧ :=
+noncomputable instance algebraPolynomial : Algebra R[X] A⟦X⟧ :=
   RingHom.toAlgebra (Polynomial.coeToPowerSeries.algHom A).toRingHom
 
-instance algebraPowerSeries : Algebra R⟦X⟧ A⟦X⟧ :=
+noncomputable instance algebraPowerSeries : Algebra R⟦X⟧ A⟦X⟧ :=
   (map (algebraMap R A)).toAlgebra
 
 -- see Note [lower instance priority]
+noncomputable
 instance (priority := 100) algebraPolynomial' {A : Type*} [CommSemiring A] [Algebra R A[X]] :
     Algebra R A⟦X⟧ :=
   RingHom.toAlgebra <| Polynomial.coeToPowerSeries.ringHom.comp (algebraMap R A[X])

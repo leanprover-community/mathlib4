@@ -26,8 +26,6 @@ open Set Filter Function
 
 open Topology
 
-noncomputable section
-
 namespace Real
 
 theorem mul_log_strictMonoOn : StrictMonoOn (fun x ↦ x * log x) <| .Ici <| exp (-1) := by

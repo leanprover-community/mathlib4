@@ -44,7 +44,7 @@ variable {C J : Type*} (r : C → J → Prop)
 
 namespace Imo1998Q2
 
-noncomputable section
+section
 
 /-- An ordered pair of judges. -/
 abbrev JudgePair (J : Type*) :=
@@ -86,7 +86,7 @@ theorem JudgePair.agree_iff_same_rating (p : JudgePair J) (c : C) :
 
 open scoped Classical in
 /-- The set of contestants on which two judges agree. -/
-def agreedContestants [Fintype C] (p : JudgePair J) : Finset C :=
+noncomputable def agreedContestants [Fintype C] (p : JudgePair J) : Finset C :=
   Finset.univ.filter fun c => p.Agree r c
 section
 
@@ -94,7 +94,7 @@ variable [Fintype J] [Fintype C]
 
 open scoped Classical in
 /-- All incidences of agreement. -/
-def A : Finset (AgreedTriple C J) :=
+noncomputable def A : Finset (AgreedTriple C J) :=
   Finset.univ.filter @fun (a : AgreedTriple C J) =>
     (a.judgePair.Agree r a.contestant ∧ a.judgePair.Distinct)
 

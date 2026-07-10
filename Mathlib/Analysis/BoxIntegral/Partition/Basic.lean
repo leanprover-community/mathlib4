@@ -43,8 +43,6 @@ rectangular box, partition
 open Set Finset Function
 open scoped NNReal
 
-noncomputable section
-
 namespace BoxIntegral
 
 variable {ι : Type*}
@@ -259,7 +257,7 @@ open scoped Classical in
 Though we only use the values of `πi` on the boxes of `π`, we require `πi` to be a globally defined
 function. -/
 @[simps]
-def biUnion (πi : ∀ J : Box ι, Prepartition J) : Prepartition I where
+noncomputable def biUnion (πi : ∀ J : Box ι, Prepartition J) : Prepartition I where
   boxes := π.boxes.biUnion fun J => (πi J).boxes
   le_of_mem' J hJ := by
     simp only [Finset.mem_biUnion, mem_boxes] at hJ
@@ -316,7 +314,7 @@ theorem sum_biUnion_boxes {M : Type*} [AddCommMonoid M] (π : Prepartition I)
 open scoped Classical in
 /-- Given a box `J ∈ π.biUnion πi`, returns the box `J' ∈ π` such that `J ∈ πi J'`.
 For `J ∉ π.biUnion πi`, returns `I`. -/
-def biUnionIndex (πi : ∀ (J : Box ι), Prepartition J) (J : Box ι) : Box ι :=
+noncomputable def biUnionIndex (πi : ∀ (J : Box ι), Prepartition J) (J : Box ι) : Box ι :=
   if hJ : J ∈ π.biUnion πi then (π.mem_biUnion.1 hJ).choose else I
 
 theorem biUnionIndex_mem (hJ : J ∈ π.biUnion πi) : π.biUnionIndex πi J ∈ π := by
@@ -418,7 +416,7 @@ theorem sum_ofWithBot {M : Type*} [AddCommMonoid M] (boxes : Finset (WithBot (Bo
 
 open scoped Classical in
 /-- Restrict a prepartition to a box. -/
-def restrict (π : Prepartition I) (J : Box ι) : Prepartition J :=
+noncomputable def restrict (π : Prepartition I) (J : Box ι) : Prepartition J :=
   ofWithBot (π.boxes.image fun J' : Box ι => J ⊓ J')
     (fun J' hJ' => by
       rcases Finset.mem_image.1 hJ' with ⟨J', -, rfl⟩
@@ -502,7 +500,7 @@ theorem le_biUnion_iff {πi : ∀ J, Prepartition J} {π' : Prepartition I} :
     rcases Hi J hJ this with ⟨Ji, hJi, hlei⟩
     exact ⟨Ji, π.mem_biUnion.2 ⟨J, hJ, hJi⟩, hlei⟩
 
-instance : SemilatticeInf (Prepartition I) :=
+noncomputable instance : SemilatticeInf (Prepartition I) :=
   { inf := fun π₁ π₂ => π₁.biUnion fun J => π₂.restrict J
     inf_le_left := fun π₁ _ => π₁.biUnion_le _
     inf_le_right := fun _ _ => (biUnion_le_iff _).2 fun _ _ => le_rfl
@@ -522,7 +520,7 @@ theorem iUnion_inf (π₁ π₂ : Prepartition I) : (π₁ ⊓ π₂).iUnion = �
 open scoped Classical in
 /-- The prepartition with boxes `{J ∈ π | p J}`. -/
 @[simps]
-def filter (π : Prepartition I) (p : Box ι → Prop) : Prepartition I where
+noncomputable def filter (π : Prepartition I) (p : Box ι → Prop) : Prepartition I where
   boxes := {J ∈ π.boxes | p J}
   le_of_mem' _ hJ := π.le_of_mem (mem_filter.1 hJ).1
   pairwiseDisjoint _ h₁ _ h₂ := π.disjoint_coe_of_mem (mem_filter.1 h₁).1 (mem_filter.1 h₂).1
@@ -565,6 +563,7 @@ theorem sum_fiberwise {α M} [AddCommMonoid M] (π : Prepartition I) (f : Box ι
 open scoped Classical in
 /-- Union of two disjoint prepartitions. -/
 @[simps]
+noncomputable
 def disjUnion (π₁ π₂ : Prepartition I) (h : Disjoint π₁.iUnion π₂.iUnion) : Prepartition I where
   boxes := π₁.boxes ∪ π₂.boxes
   le_of_mem' _ hJ := (Finset.mem_union.1 hJ).elim π₁.le_of_mem π₂.le_of_mem
@@ -596,7 +595,7 @@ variable [Fintype ι]
 
 /-- The distortion of a prepartition is the maximum of the distortions of the boxes of this
 prepartition. -/
-def distortion : ℝ≥0 :=
+noncomputable def distortion : ℝ≥0 :=
   π.boxes.sup Box.distortion
 
 theorem distortion_le_of_mem (h : J ∈ π) : J.distortion ≤ π.distortion :=

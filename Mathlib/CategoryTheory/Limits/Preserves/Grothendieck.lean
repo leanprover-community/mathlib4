@@ -26,7 +26,7 @@ open Functor
 
 namespace Limits
 
-noncomputable section
+section
 
 variable {C : Type u₁} [Category.{v₁} C]
 variable {H : Type u₂} [Category.{v₂} H]
@@ -39,7 +39,7 @@ set_option backward.isDefEq.respectTransparency false in
 then the fiberwise colimit of the limit of a functor `K : J ⥤ Grothendieck F ⥤ H` is naturally
 isomorphic to taking the limit of the composition `K ⋙ fiberwiseColim F H`. -/
 @[simps!]
-def fiberwiseColimitLimitIso (K : J ⥤ Grothendieck F ⥤ H)
+noncomputable def fiberwiseColimitLimitIso (K : J ⥤ Grothendieck F ⥤ H)
     [∀ (c : C), HasColimitsOfShape (↑(F.obj c)) H] [HasLimitsOfShape J H]
     [∀ c, PreservesLimitsOfShape J (colim (J := F.obj c) (C := H))] :
     fiberwiseColimit (limit K) ≅ limit (K ⋙ fiberwiseColim F H) :=

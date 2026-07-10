@@ -17,8 +17,6 @@ public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.AbelianImages
 
 public section
 
-noncomputable section
-
 universe v u
 
 open CategoryTheory Limits

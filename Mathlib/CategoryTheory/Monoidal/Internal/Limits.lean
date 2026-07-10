@@ -27,8 +27,6 @@ open CategoryTheory Limits MonoidalCategory
 
 universe v u w
 
-noncomputable section
-
 namespace CategoryTheory
 namespace Mon
 

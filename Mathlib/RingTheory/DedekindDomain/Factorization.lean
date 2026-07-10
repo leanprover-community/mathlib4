@@ -54,8 +54,6 @@ dedekind domain, fractional ideal, ideal, factorization
 
 @[expose] public section
 
-noncomputable section
-
 open scoped nonZeroDivisors
 
 open Set Function UniqueFactorizationMonoid IsDedekindDomain IsDedekindDomain.HeightOneSpectrum
@@ -68,7 +66,7 @@ variable [IsDedekindDomain R] (v : HeightOneSpectrum R)
 
 /-- Given a maximal ideal `v` and an ideal `I` of `R`, `maxPowDividing` returns the maximal
   power of `v` dividing `I`. -/
-def IsDedekindDomain.HeightOneSpectrum.maxPowDividing (I : Ideal R) : Ideal R :=
+noncomputable def IsDedekindDomain.HeightOneSpectrum.maxPowDividing (I : Ideal R) : Ideal R :=
   v.asIdeal ^ (Associates.mk v.asIdeal).count (Associates.mk I).factors
 
 open Associates in
@@ -306,7 +304,7 @@ variable (K)
 open Classical in
 /-- If `I` is a nonzero fractional ideal, `a ∈ R`, and `J` is an ideal of `R` such that `I = a⁻¹J`,
 then we define `val_v(I)` as `(val_v(J) - val_v(a))`. If `I = 0`, we set `val_v(I) = 0`. -/
-def count (I : FractionalIdeal R⁰ K) : ℤ :=
+noncomputable def count (I : FractionalIdeal R⁰ K) : ℤ :=
   dite (I = 0) (fun _ : I = 0 => 0) fun _ : ¬I = 0 =>
     let a := choose (exists_eq_spanSingleton_mul I)
     let J := choose (choose_spec (exists_eq_spanSingleton_mul I))

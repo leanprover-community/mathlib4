@@ -33,8 +33,6 @@ with a functor (definitionally) equal to `normalizedMooreComplex A`.
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits
   CategoryTheory.Subobject CategoryTheory.Idempotents DoldKan
 
-noncomputable section
-
 namespace AlgebraicTopology
 
 namespace DoldKan
@@ -63,7 +61,7 @@ theorem factors_normalizedMooreComplex_PInfty (n : ℕ) :
 set_option backward.isDefEq.respectTransparency false in
 /-- `PInfty` factors through the normalized Moore complex -/
 @[simps!]
-def PInftyToNormalizedMooreComplex (X : SimplicialObject A) : K[X] ⟶ N[X] :=
+noncomputable def PInftyToNormalizedMooreComplex (X : SimplicialObject A) : K[X] ⟶ N[X] :=
   ChainComplex.ofHom
     (fun n => factorThru _ _ (factors_normalizedMooreComplex_PInfty n)) fun n => by
     rw [← cancel_mono (NormalizedMooreComplex.objX X n).arrow, assoc, assoc, factorThru_arrow,
@@ -110,7 +108,7 @@ instance : Mono (inclusionOfMooreComplexMap X) :=
 
 set_option backward.isDefEq.respectTransparency false in
 /-- `inclusionOfMooreComplexMap X` is a split mono. -/
-def splitMonoInclusionOfMooreComplexMap (X : SimplicialObject A) :
+noncomputable def splitMonoInclusionOfMooreComplexMap (X : SimplicialObject A) :
     SplitMono (inclusionOfMooreComplexMap X) where
   retraction := PInftyToNormalizedMooreComplex X
   id := by
@@ -126,6 +124,7 @@ set_option backward.isDefEq.respectTransparency false in
 the functor `N₁ : SimplicialObject A ⥤ Karoubi (ChainComplex A ℕ)` defined
 using `PInfty` identifies to the composition of the normalized Moore complex functor
 and the inclusion in the Karoubi envelope. -/
+noncomputable
 def N₁_iso_normalizedMooreComplex_comp_toKaroubi : N₁ ≅ normalizedMooreComplex A ⋙ toKaroubi _ where
   hom :=
     { app := fun X => { f := PInftyToNormalizedMooreComplex X } }

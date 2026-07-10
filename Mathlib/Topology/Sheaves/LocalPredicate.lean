@@ -38,8 +38,6 @@ We give conditions sufficient to show that this map is injective and/or surjecti
 
 @[expose] public section
 
-noncomputable section
-
 variable {X : TopCat}
 variable (T : X → Type*)
 
@@ -291,7 +289,7 @@ def LocalPredicate.cocone (P : LocalPredicate T) (x : X) :
 
 /-- There is a canonical map from the stalk to the original fiber, given by evaluating sections.
 -/
-def stalkToFiber (P : LocalPredicate T) (x : X) :
+noncomputable def stalkToFiber (P : LocalPredicate T) (x : X) :
     (subsheafToTypes P).presheaf.stalk x ⟶ T x :=
   colimit.desc _ (P.cocone x)
 

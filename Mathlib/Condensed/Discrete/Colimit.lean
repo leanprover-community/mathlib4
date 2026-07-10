@@ -22,8 +22,6 @@ condensed sets.
 
 universe u
 
-noncomputable section
-
 open CategoryTheory Functor Limits FintypeCat CompHausLike.LocallyConstant
 
 namespace Condensed
@@ -93,6 +91,7 @@ end LocallyConstantAsColimit
 Given a presheaf `F` on `Profinite`, `lanPresheaf F` is the left Kan extension of its
 restriction to finite sets along the inclusion functor of finite sets into `Profinite`.
 -/
+noncomputable
 abbrev lanPresheaf (F : Profinite.{u}ᵒᵖ ⥤ Type (u + 1)) : Profinite.{u}ᵒᵖ ⥤ Type (u + 1) :=
   pointwiseLeftKanExtension toProfinite.op (toProfinite.op ⋙ F)
 
@@ -100,7 +99,7 @@ abbrev lanPresheaf (F : Profinite.{u}ᵒᵖ ⥤ Type (u + 1)) : Profinite.{u}ᵒ
 To presheaves on `Profinite` whose restrictions to finite sets are isomorphic have isomorphic left
 Kan extensions.
 -/
-def lanPresheafExt {F G : Profinite.{u}ᵒᵖ ⥤ Type (u + 1)}
+noncomputable def lanPresheafExt {F G : Profinite.{u}ᵒᵖ ⥤ Type (u + 1)}
     (i : toProfinite.op ⋙ F ≅ toProfinite.op ⋙ G) : lanPresheaf F ≅ lanPresheaf G :=
   leftKanExtensionUniqueOfIso _ (pointwiseLeftKanExtensionUnit _ _) i _
     (pointwiseLeftKanExtensionUnit _ _)
@@ -134,7 +133,7 @@ instance : Final <| Profinite.Extend.functorOp S.asLimitCone :=
 A presheaf, which takes a profinite set written as a cofiltered limit to the corresponding
 colimit, agrees with the left Kan extension of its restriction.
 -/
-def lanPresheafIso (hF : IsColimit <| F.mapCocone S.asLimitCone.op) :
+noncomputable def lanPresheafIso (hF : IsColimit <| F.mapCocone S.asLimitCone.op) :
     (lanPresheaf F).obj ⟨S⟩ ≅ F.obj ⟨S⟩ :=
   (Functor.Final.colimitIso (Profinite.Extend.functorOp S.asLimitCone) _).symm ≪≫
     (colimit.isColimit _).coconePointUniqueUpToIso hF
@@ -148,6 +147,7 @@ lemma lanPresheafIso_hom (hF : IsColimit <| F.mapCocone S.asLimitCone.op) :
 
 set_option backward.isDefEq.respectTransparency false in
 /-- `lanPresheafIso` is natural in `S`. -/
+noncomputable
 def lanPresheafNatIso (hF : ∀ S : Profinite, IsColimit <| F.mapCocone S.asLimitCone.op) :
     lanPresheaf F ≅ F :=
   NatIso.ofComponents (fun ⟨S⟩ ↦ (lanPresheafIso (hF S)))
@@ -162,7 +162,7 @@ lemma lanPresheafNatIso_hom_app (hF : ∀ S : Profinite, IsColimit <| F.mapCocon
 /--
 `lanPresheaf (locallyConstantPresheaf X)` is a sheaf for the coherent topology on `Profinite`.
 -/
-def lanSheafProfinite (X : Type (u + 1)) :
+noncomputable def lanSheafProfinite (X : Type (u + 1)) :
     Sheaf (coherentTopology Profinite.{u}) (Type (u + 1)) where
   obj := lanPresheaf (locallyConstantPresheaf X)
   property := by
@@ -172,7 +172,7 @@ def lanSheafProfinite (X : Type (u + 1)) :
       (hs := fun _ _ _ ↦ ((Profinite.effectiveEpi_tfae _).out 0 2).mp)).obj X).property
 
 /-- `lanPresheaf (locallyConstantPresheaf X)` as a condensed set. -/
-def lanCondensedSet (X : Type (u + 1)) : CondensedSet.{u} :=
+noncomputable def lanCondensedSet (X : Type (u + 1)) : CondensedSet.{u} :=
   (ProfiniteCompHaus.equivalence _).functor.obj (lanSheafProfinite X)
 
 variable (F : Profinite.{u}ᵒᵖ ⥤ Type (u + 1))
@@ -218,7 +218,7 @@ noncomputable instance (X : Profinite) [Finite X] :
   preservesLimitsOfShape_of_equiv (Discrete.equivalence e.symm) F
 
 /-- Auxiliary definition for `isoFinYoneda`. -/
-def isoFinYonedaComponents (X : Profinite.{u}) [Finite X] :
+noncomputable def isoFinYonedaComponents (X : Profinite.{u}) [Finite X] :
     F.obj ⟨X⟩ ≅ (X → F.obj ⟨Profinite.of PUnit.{u + 1}⟩) :=
   (isLimitFanMkObjOfIsLimit F _ _
     (Cofan.IsColimit.op (fintypeCatAsCofanIsColimit X))).conePointUniqueUpToIso
@@ -253,7 +253,7 @@ The restriction of a finite-product-preserving presheaf `F` on `Profinite` to th
 finite sets is isomorphic to `finYoneda F`.
 -/
 @[simps! +dsimpLhs]
-def isoFinYoneda : toProfinite.op ⋙ F ≅ finYoneda F :=
+noncomputable def isoFinYoneda : toProfinite.op ⋙ F ≅ finYoneda F :=
   NatIso.ofComponents (fun X ↦ isoFinYonedaComponents F (toProfinite.obj X.unop)) fun _ ↦ by
     simp only [comp_obj, op_obj, finYoneda_obj, Functor.comp_map, op_map]
     ext
@@ -266,7 +266,7 @@ def isoFinYoneda : toProfinite.op ⋙ F ≅ finYoneda F :=
 A presheaf `F`, which takes a profinite set written as a cofiltered limit to the corresponding
 colimit, is isomorphic to the presheaf `LocallyConstant - F(*)`.
 -/
-def isoLocallyConstantOfIsColimit
+noncomputable def isoLocallyConstantOfIsColimit
     (hF : ∀ S : Profinite, IsColimit <| F.mapCocone S.asLimitCone.op) :
     F ≅ locallyConstantPresheaf (F.obj (toProfinite.op.obj ⟨of <| PUnit.{u + 1}⟩)) :=
   (lanPresheafNatIso hF).symm ≪≫
@@ -390,6 +390,7 @@ instance (S : LightProfinite.{u}ᵒᵖ) :
 Given a presheaf `F` on `LightProfinite`, `lanPresheaf F` is the left Kan extension of its
 restriction to finite sets along the inclusion functor of finite sets into `Profinite`.
 -/
+noncomputable
 abbrev lanPresheaf (F : LightProfinite.{u}ᵒᵖ ⥤ Type u) : LightProfinite.{u}ᵒᵖ ⥤ Type u :=
   pointwiseLeftKanExtension toLightProfinite.op (toLightProfinite.op ⋙ F)
 
@@ -397,7 +398,7 @@ abbrev lanPresheaf (F : LightProfinite.{u}ᵒᵖ ⥤ Type u) : LightProfinite.{u
 To presheaves on `LightProfinite` whose restrictions to finite sets are isomorphic have isomorphic
 left Kan extensions.
 -/
-def lanPresheafExt {F G : LightProfinite.{u}ᵒᵖ ⥤ Type u}
+noncomputable def lanPresheafExt {F G : LightProfinite.{u}ᵒᵖ ⥤ Type u}
     (i : toLightProfinite.op ⋙ F ≅ toLightProfinite.op ⋙ G) : lanPresheaf F ≅ lanPresheaf G :=
   leftKanExtensionUniqueOfIso _ (pointwiseLeftKanExtensionUnit _ _) i _
     (pointwiseLeftKanExtensionUnit _ _)
@@ -431,6 +432,7 @@ instance : Final <| LightProfinite.Extend.functorOp S.asLimitCone :=
 A presheaf, which takes a light profinite set written as a sequential limit to the corresponding
 colimit, agrees with the left Kan extension of its restriction.
 -/
+noncomputable
 def lanPresheafIso (hF : IsColimit <| F.mapCocone (coconeRightOpOfCone S.asLimitCone)) :
     (lanPresheaf F).obj ⟨S⟩ ≅ F.obj ⟨S⟩ :=
   (Functor.Final.colimitIso (LightProfinite.Extend.functorOp S.asLimitCone) _).symm ≪≫
@@ -445,7 +447,7 @@ lemma lanPresheafIso_hom (hF : IsColimit <| F.mapCocone (coconeRightOpOfCone S.a
 
 set_option backward.isDefEq.respectTransparency false in
 /-- `lanPresheafIso` is natural in `S`. -/
-def lanPresheafNatIso
+noncomputable def lanPresheafNatIso
     (hF : ∀ S : LightProfinite, IsColimit <| F.mapCocone (coconeRightOpOfCone S.asLimitCone)) :
     lanPresheaf F ≅ F := by
   refine NatIso.ofComponents
@@ -464,7 +466,7 @@ lemma lanPresheafNatIso_hom_app
 /--
 `lanPresheaf (locallyConstantPresheaf X)` as a light condensed set.
 -/
-def lanLightCondSet (X : Type u) : LightCondSet.{u} where
+noncomputable def lanLightCondSet (X : Type u) : LightCondSet.{u} where
   obj := lanPresheaf (locallyConstantPresheaf X)
   property := by
     rw [Presheaf.isSheaf_of_iso_iff (lanPresheafNatIso
@@ -511,7 +513,7 @@ noncomputable instance (X : FintypeCat.{u}) : PreservesLimitsOfShape (Discrete X
   preservesLimitsOfShape_of_equiv (Discrete.equivalence e.symm) F
 
 /-- Auxiliary definition for `isoFinYoneda`. -/
-def isoFinYonedaComponents (X : LightProfinite.{u}) [Finite X] :
+noncomputable def isoFinYonedaComponents (X : LightProfinite.{u}) [Finite X] :
     F.obj ⟨X⟩ ≅ (X → F.obj ⟨LightProfinite.of PUnit.{u + 1}⟩) :=
   (isLimitFanMkObjOfIsLimit F _ _
     (Cofan.IsColimit.op (fintypeCatAsCofanIsColimit X))).conePointUniqueUpToIso
@@ -545,7 +547,7 @@ The restriction of a finite-product-preserving presheaf `F` on `Profinite` to th
 finite sets is isomorphic to `finYoneda F`.
 -/
 @[simps! +dsimpLhs]
-def isoFinYoneda : toLightProfinite.op ⋙ F ≅ finYoneda F :=
+noncomputable def isoFinYoneda : toLightProfinite.op ⋙ F ≅ finYoneda F :=
   NatIso.ofComponents (fun X ↦ isoFinYonedaComponents F (toLightProfinite.obj X.unop)) fun _ ↦ by
     simp only [comp_obj, op_obj, finYoneda_obj, Functor.comp_map, op_map]
     ext
@@ -558,7 +560,7 @@ def isoFinYoneda : toLightProfinite.op ⋙ F ≅ finYoneda F :=
 A presheaf `F`, which takes a light profinite set written as a sequential limit to the corresponding
 colimit, is isomorphic to the presheaf `LocallyConstant - F(*)`.
 -/
-def isoLocallyConstantOfIsColimit (hF : ∀ S : LightProfinite, IsColimit <|
+noncomputable def isoLocallyConstantOfIsColimit (hF : ∀ S : LightProfinite, IsColimit <|
     F.mapCocone (coconeRightOpOfCone S.asLimitCone)) :
       F ≅ (locallyConstantPresheaf
         (F.obj (toLightProfinite.op.obj ⟨of PUnit.{u + 1}⟩))) :=

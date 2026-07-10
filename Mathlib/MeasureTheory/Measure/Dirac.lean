@@ -23,8 +23,6 @@ and prove some basic facts about it.
 open Function Set
 open scoped ENNReal NNReal
 
-noncomputable section
-
 variable {α β δ : Type*} [MeasurableSpace α] [MeasurableSpace β] {s : Set α} {a : α}
 
 namespace MeasureTheory
@@ -32,9 +30,9 @@ namespace MeasureTheory
 namespace Measure
 
 /-- The dirac measure. -/
-def dirac (a : α) : Measure α := (OuterMeasure.dirac a).toMeasure (by simp)
+noncomputable def dirac (a : α) : Measure α := (OuterMeasure.dirac a).toMeasure (by simp)
 
-instance : MeasureSpace PUnit :=
+noncomputable instance : MeasureSpace PUnit :=
   ⟨dirac PUnit.unit⟩
 
 theorem le_dirac_apply {a} : s.indicator 1 a ≤ dirac a s :=

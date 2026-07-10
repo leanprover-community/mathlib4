@@ -46,8 +46,6 @@ in the one for `LiftPropWithinAt`.
 
 @[expose] public section
 
-noncomputable section
-
 open Set Filter TopologicalSpace
 open scoped Manifold Topology
 

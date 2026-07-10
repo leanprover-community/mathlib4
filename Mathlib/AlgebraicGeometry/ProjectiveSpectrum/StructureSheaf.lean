@@ -50,8 +50,6 @@ Then we establish that `Proj 𝒜` is a `LocallyRingedSpace`:
 @[expose] public section
 
 
-noncomputable section
-
 namespace AlgebraicGeometry
 
 open scoped DirectSum Pointwise
@@ -246,7 +244,7 @@ def openToLocalization (U : Opens (ProjectiveSpectrum.top 𝒜)) (x : Projective
 /-- The ring homomorphism from the stalk of the structure sheaf of `Proj` at a point corresponding
 to a homogeneous prime ideal `x` to the *homogeneous localization* at `x`,
 formed by gluing the `openToLocalization` maps. -/
-def stalkToFiberRingHom (x : ProjectiveSpectrum.top 𝒜) :
+noncomputable def stalkToFiberRingHom (x : ProjectiveSpectrum.top 𝒜) :
     (Proj.structureSheaf 𝒜).presheaf.stalk x ⟶ CommRingCat.of (at x) :=
   Limits.colimit.desc ((OpenNhds.inclusion x).op ⋙ (Proj.structureSheaf 𝒜).1)
     { pt := _
@@ -289,7 +287,7 @@ open HomogeneousLocalization in
 /-- Given any point `x` and `f` in the homogeneous localization at `x`, there is an element in the
 stalk at `x` obtained by `sectionInBasicOpen`. This is the inverse of `stalkToFiberRingHom`.
 -/
-def homogeneousLocalizationToStalk (x : ProjectiveSpectrum.top 𝒜) (y : at x) :
+noncomputable def homogeneousLocalizationToStalk (x : ProjectiveSpectrum.top 𝒜) (y : at x) :
     (Proj.structureSheaf 𝒜).presheaf.stalk x := Quotient.liftOn' y (fun f =>
   (Proj.structureSheaf 𝒜).presheaf.germ _ x (mem_basicOpen_den _ x f) (sectionInBasicOpen _ x f))
   fun f g (e : f.embedding = g.embedding) ↦ by
@@ -336,7 +334,7 @@ lemma stalkToFiberRingHom_homogeneousLocalizationToStalk (x z) :
 
 /-- Using `homogeneousLocalizationToStalk`, we construct a ring isomorphism between stalk at `x`
 and homogeneous localization at `x` for any point `x` in `Proj`. -/
-def Proj.stalkIso' (x : ProjectiveSpectrum.top 𝒜) :
+noncomputable def Proj.stalkIso' (x : ProjectiveSpectrum.top 𝒜) :
     (Proj.structureSheaf 𝒜).presheaf.stalk x ≃+* at x where
   __ := (stalkToFiberRingHom _ x).hom
   invFun := homogeneousLocalizationToStalk 𝒜 x

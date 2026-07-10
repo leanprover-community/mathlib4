@@ -32,7 +32,6 @@ The proof of `linear_isometry_complex_aux` is separated in the following parts:
 @[expose] public section
 
 
-noncomputable section
 suppress_compilation -- needed to avoid a panic!
 
 open Complex

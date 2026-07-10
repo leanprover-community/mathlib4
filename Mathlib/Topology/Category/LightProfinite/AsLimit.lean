@@ -20,8 +20,6 @@ We also prove that the projection and transition maps in this limit are surjecti
 
 @[expose] public section
 
-noncomputable section
-
 open CategoryTheory Limits CompHausLike
 
 namespace LightProfinite
@@ -31,22 +29,23 @@ universe u
 variable (S : LightProfinite.{u})
 
 /-- The functor `ℕᵒᵖ ⥤ FintypeCat` whose limit is isomorphic to `S`. -/
-abbrev fintypeDiagram : ℕᵒᵖ ⥤ FintypeCat := S.toLightDiagram.diagram
+noncomputable abbrev fintypeDiagram : ℕᵒᵖ ⥤ FintypeCat := S.toLightDiagram.diagram
 
 /-- An abbreviation for `S.fintypeDiagram ⋙ FintypeCat.toProfinite`. -/
+noncomputable
 abbrev diagram : ℕᵒᵖ ⥤ LightProfinite := S.fintypeDiagram ⋙ FintypeCat.toLightProfinite
 
 /--
 A cone over `S.diagram` whose cone point is isomorphic to `S`.
 (Auxiliary definition, use `S.asLimitCone` instead.)
 -/
-def asLimitConeAux : Cone S.diagram :=
+noncomputable def asLimitConeAux : Cone S.diagram :=
   let c : Cone (S.diagram ⋙ lightToProfinite) := S.toLightDiagram.cone
   let hc : IsLimit c := S.toLightDiagram.isLimit
   liftLimit hc
 
 /-- An auxiliary isomorphism of cones used to prove that `S.asLimitConeAux` is a limit cone. -/
-def isoMapCone : lightToProfinite.mapCone S.asLimitConeAux ≅ S.toLightDiagram.cone :=
+noncomputable def isoMapCone : lightToProfinite.mapCone S.asLimitConeAux ≅ S.toLightDiagram.cone :=
   let c : Cone (S.diagram ⋙ lightToProfinite) := S.toLightDiagram.cone
   let hc : IsLimit c := S.toLightDiagram.isLimit
   liftedLimitMapsToOriginal hc
@@ -55,13 +54,13 @@ def isoMapCone : lightToProfinite.mapCone S.asLimitConeAux ≅ S.toLightDiagram.
 `S.asLimitConeAux` is indeed a limit cone.
 (Auxiliary definition, use `S.asLimit` instead.)
 -/
-def asLimitAux : IsLimit S.asLimitConeAux :=
+noncomputable def asLimitAux : IsLimit S.asLimitConeAux :=
   let hc : IsLimit (lightToProfinite.mapCone S.asLimitConeAux) :=
     S.toLightDiagram.isLimit.ofIsoLimit S.isoMapCone.symm
   isLimitOfReflects lightToProfinite hc
 
 /-- A cone over `S.diagram` whose cone point is `S`. -/
-def asLimitCone : Cone S.diagram where
+noncomputable def asLimitCone : Cone S.diagram where
   pt := S
   π := {
     app := fun n ↦ (lightToProfiniteFullyFaithful.preimageIso <|
@@ -70,15 +69,15 @@ def asLimitCone : Cone S.diagram where
 
 set_option backward.isDefEq.respectTransparency false in
 /-- `S.asLimitCone` is indeed a limit cone. -/
-def asLimit : IsLimit S.asLimitCone := S.asLimitAux.ofIsoLimit <|
+noncomputable def asLimit : IsLimit S.asLimitCone := S.asLimitAux.ofIsoLimit <|
   Cone.ext (lightToProfiniteFullyFaithful.preimageIso <|
     (Cone.forget _).mapIso S.isoMapCone) (fun _ ↦ by rw [← @Iso.inv_comp_eq]; rfl)
 
 /-- A bundled version of `S.asLimitCone` and `S.asLimit`. -/
-def lim : Limits.LimitCone S.diagram := ⟨S.asLimitCone, S.asLimit⟩
+noncomputable def lim : Limits.LimitCone S.diagram := ⟨S.asLimitCone, S.asLimit⟩
 
 /-- The projection from `S` to the `n`th component of `S.diagram`. -/
-abbrev proj (n : ℕ) : S ⟶ S.diagram.obj ⟨n⟩ := S.asLimitCone.π.app ⟨n⟩
+noncomputable abbrev proj (n : ℕ) : S ⟶ S.diagram.obj ⟨n⟩ := S.asLimitCone.π.app ⟨n⟩
 
 lemma lightToProfinite_map_proj_eq (n : ℕ) : lightToProfinite.map (S.proj n) =
     (lightToProfinite.obj S).asLimitCone.π.app _ := by
@@ -93,14 +92,14 @@ lemma proj_surjective (n : ℕ) : Function.Surjective (S.proj n) := by
   exact DiscreteQuotient.proj_surjective _
 
 /-- An abbreviation for the `n`th component of `S.diagram`. -/
-abbrev component (n : ℕ) : LightProfinite := S.diagram.obj ⟨n⟩
+noncomputable abbrev component (n : ℕ) : LightProfinite := S.diagram.obj ⟨n⟩
 
 /-- The transition map from `S_{n+1}` to `S_n` in `S.diagram`. -/
-abbrev transitionMap (n : ℕ) : S.component (n + 1) ⟶ S.component n :=
+noncomputable abbrev transitionMap (n : ℕ) : S.component (n + 1) ⟶ S.component n :=
   S.diagram.map ⟨homOfLE (Nat.le_succ _)⟩
 
 /-- The transition map from `S_m` to `S_n` in `S.diagram`, when `m ≤ n`. -/
-abbrev transitionMapLE {n m : ℕ} (h : n ≤ m) : S.component m ⟶ S.component n :=
+noncomputable abbrev transitionMapLE {n m : ℕ} (h : n ≤ m) : S.component m ⟶ S.component n :=
   S.diagram.map ⟨homOfLE h⟩
 
 lemma proj_comp_transitionMap (n : ℕ) :

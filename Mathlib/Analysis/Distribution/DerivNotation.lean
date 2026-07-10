@@ -25,7 +25,7 @@ test functions, distributions, tempered distributions, and Sobolev spaces (and o
 function spaces).
 -/
 
-@[expose] public noncomputable section
+@[expose] public section
 
 universe u' u v w
 
@@ -345,7 +345,7 @@ variable [CommRing R]
 
 variable (R E V₁) in
 /-- The Laplacian defined by iterated `lineDerivOp` as a continuous linear map. -/
-def laplacianCLM : V₁ →L[R] V₃ :=
+noncomputable def laplacianCLM : V₁ →L[R] V₃ :=
   ∑ i, lineDerivOpCLM R V₂ (stdOrthonormalBasis ℝ E i) ∘L
     lineDerivOpCLM R V₁ (stdOrthonormalBasis ℝ E i)
 

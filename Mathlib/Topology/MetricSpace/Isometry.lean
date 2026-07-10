@@ -25,8 +25,6 @@ theory for `PseudoMetricSpace` and we specialize to `MetricSpace` when needed.
 
 open Topology
 
-noncomputable section
-
 universe u v w
 
 variable {F ι : Type*} {α : Type u} {β : Type v} {γ : Type w}
@@ -722,7 +720,7 @@ end IsometryEquiv
 /-- An isometry induces an isometric isomorphism between the source space and the
 range of the isometry. -/
 @[simps! +simpRhs toEquiv apply]
-def Isometry.isometryEquivOnRange [EMetricSpace α] [PseudoEMetricSpace β] {f : α → β}
+noncomputable def Isometry.isometryEquivOnRange [EMetricSpace α] [PseudoEMetricSpace β] {f : α → β}
     (h : Isometry f) : α ≃ᵢ range f where
   isometry_toFun := h
   toEquiv := Equiv.ofInjective f h.injective

@@ -34,18 +34,17 @@ open Complex Real Asymptotics Filter Topology
 
 open scoped ComplexConjugate
 
-noncomputable section
-
 section term_defs
 /-!
 ## Definitions of the summands
 -/
 
 /-- Summand in the series for the Jacobi theta function. -/
+noncomputable
 def jacobiTheta₂_term (n : ℤ) (z τ : ℂ) : ℂ := cexp (2 * π * I * n * z + π * I * n ^ 2 * τ)
 
 /-- Summand in the series for the Fréchet derivative of the Jacobi theta function. -/
-def jacobiTheta₂_term_fderiv (n : ℤ) (z τ : ℂ) : ℂ × ℂ →L[ℂ] ℂ :=
+noncomputable def jacobiTheta₂_term_fderiv (n : ℤ) (z τ : ℂ) : ℂ × ℂ →L[ℂ] ℂ :=
   cexp (2 * π * I * n * z + π * I * n ^ 2 * τ) •
     ((2 * π * I * n) • (ContinuousLinearMap.fst ℂ ℂ ℂ) +
       (π * I * n ^ 2) • (ContinuousLinearMap.snd ℂ ℂ ℂ))
@@ -59,7 +58,7 @@ lemma hasFDerivAt_jacobiTheta₂_term (n : ℤ) (z τ : ℂ) :
   exact (hasFDerivAt_fst.const_mul _).add (hasFDerivAt_snd.const_mul _)
 
 /-- Summand in the series for the `z`-derivative of the Jacobi theta function. -/
-def jacobiTheta₂'_term (n : ℤ) (z τ : ℂ) := 2 * π * I * n * jacobiTheta₂_term n z τ
+noncomputable def jacobiTheta₂'_term (n : ℤ) (z τ : ℂ) := 2 * π * I * n * jacobiTheta₂_term n z τ
 
 end term_defs
 
@@ -249,15 +248,16 @@ end term_bounds
 /-- The two-variable Jacobi theta function,
 `θ z τ = ∑' (n : ℤ), cexp (2 * π * I * n * z + π * I * n ^ 2 * τ)`.
 -/
-def jacobiTheta₂ (z τ : ℂ) : ℂ := ∑' n : ℤ, jacobiTheta₂_term n z τ
+noncomputable def jacobiTheta₂ (z τ : ℂ) : ℂ := ∑' n : ℤ, jacobiTheta₂_term n z τ
 
 /-- Fréchet derivative of the two-variable Jacobi theta function. -/
+noncomputable
 def jacobiTheta₂_fderiv (z τ : ℂ) : ℂ × ℂ →L[ℂ] ℂ := ∑' n : ℤ, jacobiTheta₂_term_fderiv n z τ
 
 /-- The `z`-derivative of the Jacobi theta function,
 `θ' z τ = ∑' (n : ℤ), 2 * π * I * n * cexp (2 * π * I * n * z + π * I * n ^ 2 * τ)`.
 -/
-def jacobiTheta₂' (z τ : ℂ) := ∑' n : ℤ, jacobiTheta₂'_term n z τ
+noncomputable def jacobiTheta₂' (z τ : ℂ) := ∑' n : ℤ, jacobiTheta₂'_term n z τ
 
 lemma hasSum_jacobiTheta₂_term (z : ℂ) {τ : ℂ} (hτ : 0 < im τ) :
     HasSum (fun n ↦ jacobiTheta₂_term n z τ) (jacobiTheta₂ z τ) :=

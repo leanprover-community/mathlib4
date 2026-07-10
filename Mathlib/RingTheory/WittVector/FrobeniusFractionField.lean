@@ -40,8 +40,6 @@ the classification of one-dimensional isocrystals over an algebraically closed f
 @[expose] public section
 
 
-noncomputable section
-
 namespace WittVector
 
 variable (p : ℕ) [hp : Fact p.Prime]
@@ -69,7 +67,7 @@ variable {k : Type*} [CommRing k] [CharP k p]
 open Polynomial
 
 /-- The root of this polynomial determines the `n+1`st coefficient of our solution. -/
-def succNthDefiningPoly (n : ℕ) (a₁ a₂ : 𝕎 k) (bs : Fin (n + 1) → k) : Polynomial k :=
+noncomputable def succNthDefiningPoly (n : ℕ) (a₁ a₂ : 𝕎 k) (bs : Fin (n + 1) → k) : Polynomial k :=
   X ^ p * C (a₁.coeff 0 ^ p ^ (n + 1)) - X * C (a₂.coeff 0 ^ p ^ (n + 1)) +
     C
       (a₁.coeff (n + 1) * (bs 0 ^ p) ^ p ^ (n + 1) +
@@ -108,7 +106,7 @@ theorem root_exists (n : ℕ) (a₁ a₂ : 𝕎 k) (bs : Fin (n + 1) → k) (ha�
       hp.out.ne_zero, not_false_eq_true]
 
 /-- This is the `n+1`st coefficient of our solution, projected from `root_exists`. -/
-def succNthVal (n : ℕ) (a₁ a₂ : 𝕎 k) (bs : Fin (n + 1) → k) (ha₁ : a₁.coeff 0 ≠ 0)
+noncomputable def succNthVal (n : ℕ) (a₁ a₂ : 𝕎 k) (bs : Fin (n + 1) → k) (ha₁ : a₁.coeff 0 ≠ 0)
     (ha₂ : a₂.coeff 0 ≠ 0) : k :=
   Classical.choose (root_exists p n a₁ a₂ bs ha₁ ha₂)
 
@@ -146,7 +144,7 @@ theorem solution_pow (a₁ a₂ : 𝕎 k) : ∃ x : k, x ^ (p - 1) = a₂.coeff 
   IsAlgClosed.exists_pow_nat_eq _ <| tsub_pos_of_lt hp.out.one_lt
 
 /-- The base case (0th coefficient) of our solution vector. -/
-def solution (a₁ a₂ : 𝕎 k) : k :=
+noncomputable def solution (a₁ a₂ : 𝕎 k) : k :=
   Classical.choose <| solution_pow p a₁ a₂
 
 theorem solution_spec (a₁ a₂ : 𝕎 k) : solution p a₁ a₂ ^ (p - 1) = a₂.coeff 0 / a₁.coeff 0 :=
@@ -185,6 +183,7 @@ noncomputable def frobeniusRotationCoeff {a₁ a₂ : 𝕎 k} (ha₁ : a₁.coef
 /-- For nonzero `a₁` and `a₂`, `frobeniusRotation a₁ a₂` is a Witt vector that satisfies the
 equation `frobenius (frobeniusRotation a₁ a₂) * a₁ = (frobeniusRotation a₁ a₂) * a₂`.
 -/
+noncomputable
 def frobeniusRotation {a₁ a₂ : 𝕎 k} (ha₁ : a₁.coeff 0 ≠ 0) (ha₂ : a₂.coeff 0 ≠ 0) : 𝕎 k :=
   WittVector.mk p (frobeniusRotationCoeff p ha₁ ha₂)
 

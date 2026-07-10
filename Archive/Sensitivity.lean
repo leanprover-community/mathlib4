@@ -37,7 +37,7 @@ namespace Sensitivity
 
 /-! The next two lines assert we do not want to give a constructive proof,
 but rather use classical logic. -/
-noncomputable section
+section
 
 local notation "√" => Real.sqrt
 
@@ -168,7 +168,7 @@ variable (n : ℕ)
 /-! `V n` is a real vector space whose equality relation is computable. -/
 
 
-instance : DecidableEq (V n) := by induction n <;> · dsimp only [V]; infer_instance
+noncomputable instance : DecidableEq (V n) := by induction n <;> · dsimp only [V]; infer_instance
 
 instance : AddCommGroup (V n) := by induction n <;> · dsimp only [V]; infer_instance
 

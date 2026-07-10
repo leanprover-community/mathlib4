@@ -57,8 +57,6 @@ measure, almost everywhere, measure space
 
 assert_not_exists Module.Basis
 
-noncomputable section
-
 open Set Function MeasurableSpace Topology Filter ENNReal NNReal
 
 open Filter hiding map
@@ -118,6 +116,7 @@ theorem trimmed (μ : Measure α) : μ.toOuterMeasure.trim = μ.toOuterMeasure :
 /-! ### General facts about measures -/
 
 /-- Obtain a measure by giving a countably additive function that sends `∅` to `0`. -/
+noncomputable
 def ofMeasurable (m : ∀ s : Set α, MeasurableSet s → ℝ≥0∞) (m0 : m ∅ MeasurableSet.empty = 0)
     (mU :
       ∀ ⦃f : ℕ → Set α⦄ (h : ∀ i, MeasurableSet (f i)),
@@ -431,7 +430,7 @@ lemma of_discrete [DiscreteMeasurableSpace α] : AEMeasurable f μ :=
 /-- Given an almost everywhere measurable function `f`, associate to it a measurable function
 that coincides with it almost everywhere. `f` is explicit in the definition to make sure that
 it shows in pretty-printing. -/
-def mk (f : α → β) (h : AEMeasurable f μ) : α → β :=
+noncomputable def mk (f : α → β) (h : AEMeasurable f μ) : α → β :=
   Classical.choose h
 
 @[fun_prop]

@@ -27,7 +27,7 @@ A morphism of schemes is just a morphism of the underlying locally ringed spaces
 
 universe u
 
-noncomputable section
+section
 
 open TopologicalSpace CategoryTheory TopCat Opposite
 
@@ -234,7 +234,7 @@ lemma appLE_congr (e : V ≤ f ⁻¹ᵁ U) (e₁ : U = U') (e₂ : V = V')
 
 /-- A morphism of schemes `f : X ⟶ Y` induces a local ring homomorphism from
 `Y.presheaf.stalk (f x)` to `X.presheaf.stalk x` for any `x : X`. -/
-def stalkMap (x : X) : Y.presheaf.stalk (f x) ⟶ X.presheaf.stalk x :=
+noncomputable def stalkMap (x : X) : Y.presheaf.stalk (f x) ⟶ X.presheaf.stalk x :=
   f.toLRSHom.stalkMap x
 
 protected lemma ext {f g : X ⟶ Y} (h_base : f.base = g.base)
@@ -479,7 +479,7 @@ open scoped SpecOfNotation
 #check Spec(R)
 ```
 -/
-def Spec (R : CommRingCat) : Scheme where
+noncomputable def Spec (R : CommRingCat) : Scheme where
   local_affine _ := ⟨⟨⊤, trivial⟩, R, ⟨(Spec.toLocallyRingedSpace.obj (op R)).restrictTopIso⟩⟩
   toLocallyRingedSpace := Spec.locallyRingedSpaceObj R
 
@@ -496,7 +496,7 @@ theorem Spec_toLocallyRingedSpace (R : CommRingCat) :
   rfl
 
 /-- The induced map of a ring homomorphism on the ring spectra, as a morphism of schemes. -/
-def Spec.map {R S : CommRingCat} (f : R ⟶ S) : Spec S ⟶ Spec R :=
+noncomputable def Spec.map {R S : CommRingCat} (f : R ⟶ S) : Spec S ⟶ Spec R :=
   ⟨Spec.locallyRingedSpaceMap f⟩
 
 @[simp]
@@ -510,7 +510,7 @@ theorem Spec.map_comp {R S T : CommRingCat} (f : R ⟶ S) (g : S ⟶ T) :
 
 /-- The spectrum, as a contravariant functor from commutative rings to schemes. -/
 @[simps]
-protected def Scheme.Spec : CommRingCatᵒᵖ ⥤ Scheme where
+protected noncomputable def Scheme.Spec : CommRingCatᵒᵖ ⥤ Scheme where
   obj R := Spec (unop R)
   map f := Spec.map f.unop
   map_id R := by simp
@@ -612,13 +612,13 @@ theorem Γ_map_op {X Y : Scheme} (f : X ⟶ Y) : Γ.map f.op = f.appTop :=
 The counit (`SpecΓIdentity.inv.op`) of the adjunction `Γ ⊣ Spec` as a natural isomorphism.
 This is almost never needed in practical use cases. Use `ΓSpecIso` instead.
 -/
-def SpecΓIdentity : Scheme.Spec.rightOp ⋙ Scheme.Γ ≅ 𝟭 _ :=
+noncomputable def SpecΓIdentity : Scheme.Spec.rightOp ⋙ Scheme.Γ ≅ 𝟭 _ :=
   LocallyRingedSpace.SpecΓIdentity
 
 variable (R : CommRingCat.{u})
 
 /-- The global sections of `Spec R` is isomorphic to `R`. -/
-def ΓSpecIso : Γ(Spec R, ⊤) ≅ R := SpecΓIdentity.app R
+noncomputable def ΓSpecIso : Γ(Spec R, ⊤) ≅ R := SpecΓIdentity.app R
 
 @[simp] lemma SpecΓIdentity_app : SpecΓIdentity.app R = ΓSpecIso R := rfl
 @[simp] lemma SpecΓIdentity_hom_app : SpecΓIdentity.hom.app R = (ΓSpecIso R).hom := rfl

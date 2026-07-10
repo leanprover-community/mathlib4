@@ -82,7 +82,7 @@ theorem aeval_continuousMap_apply (g : R[X]) (f : C(α, R)) (x : α) :
 
 end
 
-noncomputable section
+section
 
 variable [CommSemiring R] [TopologicalSpace R] [IsTopologicalSemiring R]
 

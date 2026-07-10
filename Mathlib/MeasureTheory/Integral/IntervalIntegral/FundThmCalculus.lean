@@ -145,8 +145,6 @@ public section
 
 assert_not_exists HasDerivAt.mul -- guard against import creep
 
-noncomputable section
-
 open MeasureTheory Set Filter Function Asymptotics
 
 open scoped Topology ENNReal Interval NNReal

@@ -22,8 +22,6 @@ TODO: an iff characterisation of `(imageSubobject f).Factors h`
 
 universe v u
 
-noncomputable section
-
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits CategoryTheory.Subobject Opposite
 
 variable {C : Type u} [Category.{v} C] {X Y Z : C}
@@ -58,12 +56,12 @@ section Equalizer
 variable (f g : X ⟶ Y) [HasEqualizer f g]
 
 /-- The equalizer of morphisms `f g : X ⟶ Y` as a `Subobject X`. -/
-abbrev equalizerSubobject : Subobject X :=
+noncomputable abbrev equalizerSubobject : Subobject X :=
   Subobject.mk (equalizer.ι f g)
 
 /-- The underlying object of `equalizerSubobject f g` is (up to isomorphism!)
 the same as the chosen object `equalizer f g`. -/
-def equalizerSubobjectIso : (equalizerSubobject f g : C) ≅ equalizer f g :=
+noncomputable def equalizerSubobjectIso : (equalizerSubobject f g : C) ≅ equalizer f g :=
   Subobject.underlyingIso (equalizer.ι f g)
 
 @[reassoc (attr := simp)]
@@ -118,12 +116,12 @@ section Kernel
 variable [HasZeroMorphisms C] (f : X ⟶ Y) [HasKernel f]
 
 /-- The kernel of a morphism `f : X ⟶ Y` as a `Subobject X`. -/
-abbrev kernelSubobject : Subobject X :=
+noncomputable abbrev kernelSubobject : Subobject X :=
   Subobject.mk (kernel.ι f)
 
 /-- The underlying object of `kernelSubobject f` is (up to isomorphism!)
 the same as the chosen object `kernel f`. -/
-def kernelSubobjectIso : (kernelSubobject f : C) ≅ kernel f :=
+noncomputable def kernelSubobjectIso : (kernelSubobject f : C) ≅ kernel f :=
   Subobject.underlyingIso (kernel.ι f)
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
@@ -153,6 +151,7 @@ theorem kernelSubobject_factors_iff {W : C} (h : W ⟶ X) :
     kernelSubobject_factors f h⟩
 
 /-- A factorisation of `h : W ⟶ X` through `kernelSubobject f`, assuming `h ≫ f = 0`. -/
+noncomputable
 def factorThruKernelSubobject {W : C} (h : W ⟶ X) (w : h ≫ f = 0) : W ⟶ kernelSubobject f :=
   (kernelSubobject f).factorThru h (kernelSubobject_factors f h w)
 
@@ -173,7 +172,7 @@ variable {f} {X' Y' : C} {f' : X' ⟶ Y'} [HasKernel f']
 
 set_option backward.isDefEq.respectTransparency false in
 /-- A commuting square induces a morphism between the kernel subobjects. -/
-def kernelSubobjectMap (sq : Arrow.mk f ⟶ Arrow.mk f') :
+noncomputable def kernelSubobjectMap (sq : Arrow.mk f ⟶ Arrow.mk f') :
     (kernelSubobject f : C) ⟶ (kernelSubobject f' : C) :=
   Subobject.factorThru _ ((kernelSubobject f).arrow ≫ sq.left)
     (kernelSubobject_factors _ _ (by simp))
@@ -221,7 +220,7 @@ theorem le_kernelSubobject (A : Subobject X) (h : A.arrow ≫ f = 0) : A ≤ ker
 /-- The isomorphism between the kernel of `f ≫ g` and the kernel of `g`,
 when `f` is an isomorphism.
 -/
-def kernelSubobjectIsoComp {X' : C} (f : X' ⟶ X) [IsIso f] (g : X ⟶ Y) [HasKernel g] :
+noncomputable def kernelSubobjectIsoComp {X' : C} (f : X' ⟶ X) [IsIso f] (g : X ⟶ Y) [HasKernel g] :
     (kernelSubobject (f ≫ g) : C) ≅ (kernelSubobject g : C) :=
   kernelSubobjectIso _ ≪≫ kernelIsIsoComp f g ≪≫ (kernelSubobjectIso _).symm
 
@@ -258,6 +257,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- Taking cokernels is an order-reversing map from the subobjects of `X` to the quotient objects
 of `X`. -/
 @[simps]
+noncomputable
 def cokernelOrderHom [HasCokernels C] (X : C) : Subobject X →o (Subobject (op X))ᵒᵈ where
   toFun :=
     Subobject.lift (fun _ f _ => Subobject.mk (cokernel.π f).op)
@@ -282,7 +282,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- Taking kernels is an order-reversing map from the quotient objects of `X` to the subobjects of
 `X`. -/
 @[simps]
-def kernelOrderHom [HasKernels C] (X : C) : (Subobject (op X))ᵒᵈ →o Subobject X where
+noncomputable def kernelOrderHom [HasKernels C] (X : C) : (Subobject (op X))ᵒᵈ →o Subobject X where
   toFun :=
     Subobject.lift (fun _ f _ => Subobject.mk (kernel.ι f.unop))
       (by
@@ -309,12 +309,12 @@ section Image
 variable (f : X ⟶ Y) [HasImage f]
 
 /-- The image of a morphism `f g : X ⟶ Y` as a `Subobject Y`. -/
-abbrev imageSubobject : Subobject Y :=
+noncomputable abbrev imageSubobject : Subobject Y :=
   Subobject.mk (image.ι f)
 
 /-- The underlying object of `imageSubobject f` is (up to isomorphism!)
 the same as the chosen object `image f`. -/
-def imageSubobjectIso : (imageSubobject f : C) ≅ image f :=
+noncomputable def imageSubobjectIso : (imageSubobject f : C) ≅ image f :=
   Subobject.underlyingIso (image.ι f)
 
 @[reassoc (attr := simp)]
@@ -326,7 +326,7 @@ theorem imageSubobject_arrow' :
     (imageSubobjectIso f).inv ≫ (imageSubobject f).arrow = image.ι f := by simp [imageSubobjectIso]
 
 /-- A factorisation of `f : X ⟶ Y` through `imageSubobject f`. -/
-def factorThruImageSubobject : X ⟶ imageSubobject f :=
+noncomputable def factorThruImageSubobject : X ⟶ imageSubobject f :=
   factorThruImage f ≫ (imageSubobjectIso f).inv
 
 instance [HasEqualizers C] : Epi (factorThruImageSubobject f) := by
@@ -401,7 +401,7 @@ section
 variable [HasEqualizers C]
 
 /-- Postcomposing by an isomorphism gives an isomorphism between image subobjects. -/
-def imageSubobjectCompIso (f : X ⟶ Y) [HasImage f] {Y' : C} (h : Y ⟶ Y') [IsIso h] :
+noncomputable def imageSubobjectCompIso (f : X ⟶ Y) [HasImage f] {Y' : C} (h : Y ⟶ Y') [IsIso h] :
     (imageSubobject (f ≫ h) : C) ≅ (imageSubobject f : C) :=
   imageSubobjectIso _ ≪≫ (image.compIso _ _).symm ≪≫ (imageSubobjectIso _).symm
 
@@ -444,7 +444,7 @@ theorem imageSubobject_le_mk {A B : C} {X : C} (g : X ⟶ B) [Mono g] (f : A ⟶
 
 /-- Given a commutative square between morphisms `f` and `g`,
 we have a morphism in the category from `imageSubobject f` to `imageSubobject g`. -/
-def imageSubobjectMap {W X Y Z : C} {f : W ⟶ X} [HasImage f] {g : Y ⟶ Z} [HasImage g]
+noncomputable def imageSubobjectMap {W X Y Z : C} {f : W ⟶ X} [HasImage f] {g : Y ⟶ Z} [HasImage g]
     (sq : Arrow.mk f ⟶ Arrow.mk g) [HasImageMap sq] :
     (imageSubobject f : C) ⟶ (imageSubobject g : C) :=
   (imageSubobjectIso f).hom ≫ image.map sq ≫ (imageSubobjectIso g).inv

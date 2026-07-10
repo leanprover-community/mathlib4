@@ -28,8 +28,6 @@ open scoped Real
 variable {V X : Type*}
 variable [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace X] [NormedAddTorsor V X]
 
-noncomputable section
-
 namespace Imo2001Q5
 
 variable (X) in
@@ -88,7 +86,7 @@ lemma BPC_eq : ∠ s.B s.P s.C = π := by rw [angle_eq_pi_iff_sbtw]; exact s.sbt
 
 /-- `x = ∠ABQ = ∠QBC`. This is the main angle in the solution and it suffices to show
 this is `2 * π / 9`. -/
-def x : ℝ := ∠ s.A s.B s.Q
+noncomputable def x : ℝ := ∠ s.A s.B s.Q
 
 lemma ABQ_eq : ∠ s.A s.B s.Q = s.x := rfl
 

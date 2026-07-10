@@ -533,7 +533,7 @@ abbrev toCofork (G : ReflexiveCofork F) : Cofork (F.map left) (F.map right) :=
 
 end ReflexiveCofork
 
-noncomputable section
+section
 open WalkingReflexivePair WalkingReflexivePair.Hom
 
 variable (F : WalkingReflexivePair ⥤ C)
@@ -541,7 +541,7 @@ variable (F : WalkingReflexivePair ⥤ C)
 /-- Forgetting the reflexion yields an equivalence between cocones over a bundled reflexive pair and
 coforks on the underlying parallel pair. -/
 @[simps! functor_obj_pt inverse_obj_pt]
-def reflexiveCoforkEquivCofork :
+noncomputable def reflexiveCoforkEquivCofork :
     ReflexiveCofork F ≌ Cofork (F.map left) (F.map right) :=
   (Functor.Final.coconesEquiv _ F).symm.trans (Cocone.precomposeEquivalence
     (diagramIsoParallelPair (WalkingParallelPair.inclusionWalkingReflexivePair ⋙ F)))
@@ -568,7 +568,7 @@ lemma reflexiveCoforkEquivCofork_inverse_obj_π
 set_option backward.defeqAttrib.useBackward true in
 /-- The equivalence between reflexive coforks and coforks sends a reflexive cofork to its underlying
 cofork. -/
-def reflexiveCoforkEquivCoforkObjIso (G : ReflexiveCofork F) :
+noncomputable def reflexiveCoforkEquivCoforkObjIso (G : ReflexiveCofork F) :
     (reflexiveCoforkEquivCofork F).functor.obj G ≅ G.toCofork :=
   Cofork.ext (Iso.refl _)
     (by simp [reflexiveCoforkEquivCofork, Cofork.π])
@@ -583,7 +583,7 @@ instance reflexivePair_hasColimit_of_hasCoequalizer
   hasReflexiveCoequalizer_iff_hasCoequalizer _ |>.mpr h
 
 /-- A reflexive cofork is a colimit cocone if and only if the underlying cofork is. -/
-def ReflexiveCofork.isColimitEquiv (G : ReflexiveCofork F) :
+noncomputable def ReflexiveCofork.isColimitEquiv (G : ReflexiveCofork F) :
     IsColimit (G.toCofork) ≃ IsColimit G :=
   IsColimit.equivIsoColimit (reflexiveCoforkEquivCoforkObjIso F G).symm |>.trans <|
     (IsColimit.precomposeHomEquiv (diagramIsoParallelPair _).symm (G.whisker _)).trans <|
@@ -595,7 +595,7 @@ variable [HasCoequalizer (F.map left) (F.map right)]
 
 /-- The colimit of a functor out of the walking reflexive pair is the same as the colimit of the
 underlying parallel pair. -/
-def reflexiveCoequalizerIsoCoequalizer :
+noncomputable def reflexiveCoequalizerIsoCoequalizer :
     colimit F ≅ coequalizer (F.map left) (F.map right) :=
   ((ReflexiveCofork.isColimitEquiv _ _).symm (colimit.isColimit F)).coconePointUniqueUpToIso
     (colimit.isColimit _)
@@ -625,7 +625,7 @@ instance ofIsReflexivePair_hasColimit_of_hasCoequalizer :
 
 /-- The coequalizer of a reflexive pair can be promoted to the colimit of a diagram out of the
 walking reflexive pair -/
-def colimitOfIsReflexivePairIsoCoequalizer :
+noncomputable def colimitOfIsReflexivePairIsoCoequalizer :
     colimit (ofIsReflexivePair f g) ≅ coequalizer f g :=
   @reflexiveCoequalizerIsoCoequalizer _ _ (ofIsReflexivePair f g) h
 

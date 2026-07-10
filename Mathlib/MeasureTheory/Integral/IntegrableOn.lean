@@ -23,8 +23,6 @@ at `l`.
 @[expose] public section
 
 
-noncomputable section
-
 open Set Filter TopologicalSpace MeasureTheory Function
 
 open scoped Topology Interval Filter ENNReal MeasureTheory

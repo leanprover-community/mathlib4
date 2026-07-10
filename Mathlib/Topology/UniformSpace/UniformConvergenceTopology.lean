@@ -136,8 +136,6 @@ uniform convergence
 
 @[expose] public section
 
-noncomputable section
-
 open Filter Set Topology
 open scoped Uniformity
 

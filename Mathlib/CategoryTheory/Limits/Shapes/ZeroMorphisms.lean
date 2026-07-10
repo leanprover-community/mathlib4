@@ -30,7 +30,7 @@ zero object provides zero morphisms, as the unique morphisms factoring through t
 @[expose] public section
 
 
-noncomputable section
+section
 
 universe w v v' u u'
 
@@ -227,7 +227,7 @@ the `HasZeroMorphisms` instances will not be definitionally equal. For this reas
 code should generally ask for an instance of `HasZeroMorphisms` separately, even if it already
 asks for an instance of `HasZeroObject`. -/
 @[implicit_reducible]
-def IsZero.hasZeroMorphisms {O : C} (hO : IsZero O) : HasZeroMorphisms C where
+noncomputable def IsZero.hasZeroMorphisms {O : C} (hO : IsZero O) : HasZeroMorphisms C where
   zero X Y := { zero := hO.from_ X ≫ hO.to_ Y }
   zero_comp X {Y Z} f := by
     change (hO.from_ X ≫ hO.to_ Y) ≫ f = hO.from_ X ≫ hO.to_ Z
@@ -255,7 +255,7 @@ the `HasZeroMorphisms` instances will not be definitionally equal. For this reas
 code should generally ask for an instance of `HasZeroMorphisms` separately, even if it already
 asks for an instance of `HasZeroObject`. -/
 @[implicit_reducible]
-def zeroMorphismsOfZeroObject : HasZeroMorphisms C where
+noncomputable def zeroMorphismsOfZeroObject : HasZeroMorphisms C where
   zero X _ := { zero := (default : X ⟶ 0) ≫ default }
   zero_comp X {Y Z} f := by
     change ((default : X ⟶ 0) ≫ default) ≫ f = (default : X ⟶ 0) ≫ default
@@ -364,7 +364,7 @@ theorem epi_of_target_iso_zero {X Y : C} (f : X ⟶ Y) (i : Y ≅ 0) : Epi f :=
 
 Because `X ≅ 0` contains data (even if a subsingleton), we express this `↔` as an `≃`.
 -/
-def idZeroEquivIsoZero (X : C) : 𝟙 X = 0 ≃ (X ≅ 0) where
+noncomputable def idZeroEquivIsoZero (X : C) : 𝟙 X = 0 ≃ (X ≅ 0) where
   toFun h :=
     { hom := 0
       inv := 0 }
@@ -382,31 +382,31 @@ theorem idZeroEquivIsoZero_apply_inv (X : C) (h : 𝟙 X = 0) : ((idZeroEquivIso
 
 /-- If `0 : X ⟶ Y` is a monomorphism, then `X ≅ 0`. -/
 @[simps]
-def isoZeroOfMonoZero {X Y : C} (_ : Mono (0 : X ⟶ Y)) : X ≅ 0 where
+noncomputable def isoZeroOfMonoZero {X Y : C} (_ : Mono (0 : X ⟶ Y)) : X ≅ 0 where
   hom := 0
   inv := 0
   hom_inv_id := (cancel_mono (0 : X ⟶ Y)).mp (by simp)
 
 /-- If `0 : X ⟶ Y` is an epimorphism, then `Y ≅ 0`. -/
 @[simps]
-def isoZeroOfEpiZero {X Y : C} (_ : Epi (0 : X ⟶ Y)) : Y ≅ 0 where
+noncomputable def isoZeroOfEpiZero {X Y : C} (_ : Epi (0 : X ⟶ Y)) : Y ≅ 0 where
   hom := 0
   inv := 0
   hom_inv_id := (cancel_epi (0 : X ⟶ Y)).mp (by simp)
 
 /-- If a monomorphism out of `X` is zero, then `X ≅ 0`. -/
-def isoZeroOfMonoEqZero {X Y : C} {f : X ⟶ Y} [Mono f] (h : f = 0) : X ≅ 0 := by
+noncomputable def isoZeroOfMonoEqZero {X Y : C} {f : X ⟶ Y} [Mono f] (h : f = 0) : X ≅ 0 := by
   subst h
   apply isoZeroOfMonoZero (Y := Y) ‹_›
 
 /-- If an epimorphism in to `Y` is zero, then `Y ≅ 0`. -/
-def isoZeroOfEpiEqZero {X Y : C} {f : X ⟶ Y} [Epi f] (h : f = 0) : Y ≅ 0 := by
+noncomputable def isoZeroOfEpiEqZero {X Y : C} {f : X ⟶ Y} [Epi f] (h : f = 0) : Y ≅ 0 := by
   subst h
   apply isoZeroOfEpiZero (X := X) ‹_›
 
 /-- If an object `X` is isomorphic to 0, there's no need to use choice to construct
 an explicit isomorphism: the zero morphism suffices. -/
-def isoOfIsIsomorphicZero {X : C} (P : IsIsomorphic X 0) : X ≅ 0 where
+noncomputable def isoOfIsIsomorphicZero {X : C} (P : IsIsomorphic X 0) : X ≅ 0 where
   hom := 0
   inv := 0
   hom_inv_id := by
@@ -448,7 +448,7 @@ open ZeroObject
 /-- A zero morphism `0 : X ⟶ Y` is an isomorphism if and only if
 `X` and `Y` are isomorphic to the zero object.
 -/
-def isIsoZeroEquivIsoZero (X Y : C) : IsIso (0 : X ⟶ Y) ≃ (X ≅ 0) × (Y ≅ 0) := by
+noncomputable def isIsoZeroEquivIsoZero (X Y : C) : IsIso (0 : X ⟶ Y) ≃ (X ≅ 0) × (Y ≅ 0) := by
   -- This is lame, because `Prod` can't cope with `Prop`, so we can't use `Equiv.prodCongr`.
   refine (isIsoZeroEquiv X Y).trans ?_
   symm
@@ -483,7 +483,7 @@ theorem isIso_of_source_target_iso_zero {X Y : C} (f : X ⟶ Y) (i : X ≅ 0) (j
 /-- A zero morphism `0 : X ⟶ X` is an isomorphism if and only if
 `X` is isomorphic to the zero object.
 -/
-def isIsoZeroSelfEquivIsoZero (X : C) : IsIso (0 : X ⟶ X) ≃ (X ≅ 0) :=
+noncomputable def isIsoZeroSelfEquivIsoZero (X : C) : IsIso (0 : X ⟶ X) ≃ (X ≅ 0) :=
   (isIsoZeroEquivIsoZero X X).trans subsingletonProdSelfEquiv
 
 end IsIso
@@ -525,14 +525,14 @@ open ZeroObject
 /-- The zero morphism has a `MonoFactorisation` through the zero object.
 -/
 @[simps]
-def monoFactorisationZero (X Y : C) : MonoFactorisation (0 : X ⟶ Y) where
+noncomputable def monoFactorisationZero (X Y : C) : MonoFactorisation (0 : X ⟶ Y) where
   I := 0
   m := 0
   e := 0
 
 /-- The factorisation through the zero object is an image factorisation.
 -/
-def imageFactorisationZero (X Y : C) : ImageFactorisation (0 : X ⟶ Y) where
+noncomputable def imageFactorisationZero (X Y : C) : ImageFactorisation (0 : X ⟶ Y) where
   F := monoFactorisationZero X Y
   isImage := { lift := fun _ => 0 }
 
@@ -540,11 +540,11 @@ instance hasImage_zero {X Y : C} : HasImage (0 : X ⟶ Y) :=
   HasImage.mk <| imageFactorisationZero _ _
 
 /-- The image of a zero morphism is the zero object. -/
-def imageZero {X Y : C} : image (0 : X ⟶ Y) ≅ 0 :=
+noncomputable def imageZero {X Y : C} : image (0 : X ⟶ Y) ≅ 0 :=
   IsImage.isoExt (Image.isImage (0 : X ⟶ Y)) (imageFactorisationZero X Y).isImage
 
 /-- The image of a morphism which is equal to zero is the zero object. -/
-def imageZero' {X Y : C} {f : X ⟶ Y} (h : f = 0) [HasImage f] : image f ≅ 0 :=
+noncomputable def imageZero' {X Y : C} {f : X ⟶ Y} (h : f = 0) [HasImage f] : image f ≅ 0 :=
   image.eqToIso h ≪≫ imageZero
 
 set_option backward.defeqAttrib.useBackward true in
@@ -667,7 +667,7 @@ section PiIota
 variable [HasZeroMorphisms C] {β : Type w} [DecidableEq β] (f : β → C) [HasProduct f]
 
 /-- In the presence of 0-morphism we can define an inclusion morphism into any product. -/
-def Pi.ι (b : β) : f b ⟶ ∏ᶜ f :=
+noncomputable def Pi.ι (b : β) : f b ⟶ ∏ᶜ f :=
   Pi.lift (Function.update (fun _ ↦ 0) b (𝟙 _))
 
 set_option backward.isDefEq.respectTransparency false in
@@ -695,7 +695,7 @@ section SigmaPi
 variable [HasZeroMorphisms C] {β : Type w} [DecidableEq β] (f : β → C) [HasCoproduct f]
 
 /-- In the presence of 0-morphisms we can define a projection morphism from any coproduct. -/
-def Sigma.π (b : β) : ∐ f ⟶ f b :=
+noncomputable def Sigma.π (b : β) : ∐ f ⟶ f b :=
   Limits.Sigma.desc (Function.update (fun _ ↦ 0) b (𝟙 _))
 
 set_option backward.isDefEq.respectTransparency false in
@@ -724,12 +724,12 @@ variable [HasZeroMorphisms C] (X Y : C) [HasBinaryProduct X Y]
 
 /-- If a category `C` has 0-morphisms, there is a canonical inclusion from the first component `X`
 into any product of objects `X ⨯ Y`. -/
-def prod.inl : X ⟶ X ⨯ Y :=
+noncomputable def prod.inl : X ⟶ X ⨯ Y :=
   prod.lift (𝟙 _) 0
 
 /-- If a category `C` has 0-morphisms, there is a canonical inclusion from the second component `Y`
 into any product of objects `X ⨯ Y`. -/
-def prod.inr : Y ⟶ X ⨯ Y :=
+noncomputable def prod.inr : Y ⟶ X ⨯ Y :=
   prod.lift 0 (𝟙 _)
 
 set_option backward.isDefEq.respectTransparency false in
@@ -766,12 +766,12 @@ variable [HasZeroMorphisms C] (X Y : C) [HasBinaryCoproduct X Y]
 
 /-- If a category `C` has 0-morphisms, there is a canonical projection from a coproduct `X ⨿ Y` to
 its first component `X`. -/
-def coprod.fst : X ⨿ Y ⟶ X :=
+noncomputable def coprod.fst : X ⨿ Y ⟶ X :=
   coprod.desc (𝟙 _) 0
 
 /-- If a category `C` has 0-morphisms, there is a canonical projection from a coproduct `X ⨿ Y` to
 its second component `Y`. -/
-def coprod.snd : X ⨿ Y ⟶ Y :=
+noncomputable def coprod.snd : X ⨿ Y ⟶ Y :=
   coprod.desc 0 (𝟙 _)
 
 set_option backward.isDefEq.respectTransparency false in

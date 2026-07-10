@@ -35,8 +35,6 @@ This functor is one direction of the Dold-Kan equivalence, which we're still wor
 
 universe v u
 
-noncomputable section
-
 open CategoryTheory CategoryTheory.Limits
 
 open Opposite
@@ -61,7 +59,7 @@ variable (X : SimplicialObject C)
 
 /-- The normalized Moore complex in degree `n`, as a subobject of `X n`.
 -/
-def objX : ∀ n : ℕ, Subobject (X.obj (op ⦋n⦌))
+noncomputable def objX : ∀ n : ℕ, Subobject (X.obj (op ⦋n⦌))
   | 0 => ⊤
   | n + 1 => Finset.univ.inf fun k : Fin (n + 1) => kernelSubobject (X.δ k.succ)
 
@@ -76,7 +74,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- The differentials in the normalized Moore complex.
 -/
 @[simp]
-def objD : ∀ n : ℕ, (objX X (n + 1) : C) ⟶ (objX X n : C)
+noncomputable def objD : ∀ n : ℕ, (objX X (n + 1) : C) ⟶ (objX X n : C)
   | 0 => Subobject.arrow _ ≫ X.δ (0 : Fin 2) ≫ inv (⊤ : Subobject _).arrow
   | n + 1 => by
     -- The differential is `Subobject.arrow _ ≫ X.δ (0 : Fin (n+3))`,
@@ -113,7 +111,7 @@ theorem d_squared (n : ℕ) : objD X (n + 1) ≫ objD X n = 0 := by
 /-- The normalized Moore complex functor, on objects.
 -/
 @[simps!]
-def obj (X : SimplicialObject C) : ChainComplex C ℕ :=
+noncomputable def obj (X : SimplicialObject C) : ChainComplex C ℕ :=
   ChainComplex.of (fun n => (objX X n : C))
     (-- the coercion here picks a representative of the subobject
       objD X) (d_squared X)
@@ -124,7 +122,7 @@ set_option backward.defeqAttrib.useBackward true in
 /-- The normalized Moore complex functor, on morphisms.
 -/
 @[simps!]
-def map (f : X ⟶ Y) : obj X ⟶ obj Y :=
+noncomputable def map (f : X ⟶ Y) : obj X ⟶ obj Y :=
   ChainComplex.ofHom
     (fun n => factorThru _ (arrow _ ≫ f.app (op ⦋n⦌)) (by
       cases n <;> dsimp
@@ -151,7 +149,7 @@ The differentials are induced from `X.δ 0`,
 which maps each of these intersections of kernels to the next.
 -/
 @[simps]
-def normalizedMooreComplex : SimplicialObject C ⥤ ChainComplex C ℕ where
+noncomputable def normalizedMooreComplex : SimplicialObject C ⥤ ChainComplex C ℕ where
   obj := obj
   map f := map f
 

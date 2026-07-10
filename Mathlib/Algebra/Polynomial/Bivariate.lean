@@ -32,7 +32,7 @@ open scoped Polynomial.Bivariate
 
 namespace Polynomial
 
-noncomputable section
+section
 
 variable {R S : Type*}
 
@@ -41,10 +41,10 @@ section Semiring
 variable [Semiring R]
 
 /-- `evalEval x y p` is the evaluation `p(x,y)` of a two-variable polynomial `p : R[X][Y]`. -/
-abbrev evalEval (x y : R) (p : R[X][Y]) : R := eval x (eval (C y) p)
+noncomputable abbrev evalEval (x y : R) (p : R[X][Y]) : R := eval x (eval (C y) p)
 
 /-- A constant viewed as a polynomial in two variables. -/
-abbrev CC (r : R) : R[X][Y] := C (C r)
+noncomputable abbrev CC (r : R) : R[X][Y] := C (C r)
 
 lemma evalEval_C (x y : R) (p : R[X]) : (C p).evalEval x y = p.eval x := by
   rw [evalEval, eval_C]
@@ -148,7 +148,7 @@ lemma evalEval_dvd (x y : R) {p q : R[X][Y]} : p ∣ q → p.evalEval x y ∣ q.
 lemma coe_algebraMap_eq_CC : algebraMap R R[X][Y] = CC (R := R) := rfl
 
 /-- `evalEval x y` as a ring homomorphism. -/
-@[simps!] abbrev evalEvalRingHom (x y : R) : R[X][Y] →+* R :=
+@[simps!] noncomputable abbrev evalEvalRingHom (x y : R) : R[X][Y] →+* R :=
   (evalRingHom x).comp (evalRingHom <| C y)
 
 lemma coe_evalEvalRingHom (x y : R) : evalEvalRingHom x y = evalEval x y := rfl
@@ -211,7 +211,7 @@ end
 
 section aevalAeval
 
-noncomputable section
+section
 
 variable {R A : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A]
 
@@ -219,7 +219,7 @@ variable (R A) in
 /-- Given valuations `x` and `y` of the variables in an `R`-algebra `A`, the bijection induced by
 the unique `R`-algebra homomorphism from `R[X][Y]` to `A` sending `X` to `x` and `Y` to `y`. -/
 @[simps! apply_apply symm_apply]
-def aevalAevalEquiv : A × A ≃ (R[X][Y] →ₐ[R] A) where
+noncomputable def aevalAevalEquiv : A × A ≃ (R[X][Y] →ₐ[R] A) where
   toFun xy := aeval xy.fst |>.restrictScalars R |>.comp <|
     let := Polynomial.algebra; aeval (R := R[X]) (C xy.snd) |>.restrictScalars R
   invFun f := ⟨f <| C X, f Y⟩
@@ -228,7 +228,7 @@ def aevalAevalEquiv : A × A ≃ (R[X][Y] →ₐ[R] A) where
 
 /-- Given valuations `x` and `y` of the variables in an `R`-algebra `A`, `aevalAeval x y` is
 the unique `R`-algebra homomorphism from `R[X][Y]` to `A` sending `X` to `x` and `Y` to `y`. -/
-abbrev aevalAeval (x y : A) : R[X][Y] →ₐ[R] A :=
+noncomputable abbrev aevalAeval (x y : A) : R[X][Y] →ₐ[R] A :=
   aevalAevalEquiv R A ⟨x, y⟩
 
 lemma aevalAevalEquiv_apply (xy : A × A) : aevalAevalEquiv R A xy = aevalAeval xy.1 xy.2 :=
@@ -245,7 +245,7 @@ lemma aevalAeval_X (x y : A) : (C X : R[X][Y]).aevalAeval x y = x := by rw [aeva
 lemma aevalAeval_Y (x y : A) : (Y : R[X][Y]).aevalAeval x y = y := by simp
 
 /-- The R-algebra automorphism given by `X ↦ Y` and `Y ↦ X`. -/
-def Bivariate.swap : R[X][Y] ≃ₐ[R] R[X][Y] := by
+noncomputable def Bivariate.swap : R[X][Y] ≃ₐ[R] R[X][Y] := by
   apply AlgEquiv.ofAlgHom (aevalAeval (Y : R[X][Y]) (C X)) (aevalAeval (Y : R[X][Y]) (C X))
     <;> (ext n m <;> simp)
 

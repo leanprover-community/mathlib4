@@ -28,7 +28,7 @@ namespace CategoryTheory.MonoidalCategory.DayConvolution
 open scoped ExternalProduct
 open Opposite
 
-noncomputable section
+section
 
 variable {C : Type u₁} [Category.{v₁} C] {V : Type u₂} [Category.{v₂} V]
   [MonoidalCategory C] [BraidedCategory C]
@@ -58,7 +58,7 @@ def braidingInvCorepresenting : G ⊠ F ⟶ tensor C ⋙ F ⊛ G where
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The braiding isomorphism for Day convolution. -/
-def braiding : F ⊛ G ≅ G ⊛ F where
+noncomputable def braiding : F ⊛ G ≅ G ⊛ F where
   hom := corepresentableBy F G |>.homEquiv.symm <| braidingHomCorepresenting F G
   inv := corepresentableBy G F |>.homEquiv.symm <| braidingInvCorepresenting F G
   hom_inv_id := by

@@ -34,7 +34,7 @@ universe issues with indexed families.
 
 -/
 
-@[expose] public noncomputable section
+@[expose] public section
 
 universe u v w u₁ u₂
 
@@ -85,7 +85,7 @@ variable [IsStrictOrderedRing R]
 
 /-- The point mass distribution concentrated at `x`. -/
 @[simps weights]
-def single (x : M) : StdSimplex R M where
+noncomputable def single (x : M) : StdSimplex R M where
   weights := .single x 1
   nonneg := by simp
   total := by simp
@@ -105,6 +105,7 @@ theorem mk_single (x : M) {nonneg total} : (mk (.single x (1 : R)) nonneg total)
 
 /-- A probability distribution with weight `s` on `x` and weight `t` on `y`. -/
 @[simps weights]
+noncomputable
 def duple (x y : M) {s t : R} (hs : 0 ≤ s) (ht : 0 ≤ t) (h : s + t = 1) : StdSimplex R M where
   weights := .single x s + .single y t
   nonneg := add_nonneg (by simpa) (by simpa)
@@ -115,6 +116,7 @@ Map a function over the support of a standard simplex.
 For each n : N, the weight is the sum of weights of all m : M with g m = n.
 -/
 @[simps weights]
+noncomputable
 def map {M : Type v} {N : Type w} (g : M → N) (f : StdSimplex R M) : StdSimplex R N where
   weights := f.weights.mapDomain g
   nonneg := f.weights.mapDomain_nonneg f.nonneg
@@ -152,7 +154,7 @@ Given a distribution over distributions, flattens it to a single distribution.
 Use `ConvexSpace.sConvexComb` instead.
 -/
 @[simps weights]
-def join (f : StdSimplex R (StdSimplex R M)) : StdSimplex R M where
+noncomputable def join (f : StdSimplex R (StdSimplex R M)) : StdSimplex R M where
   weights := f.weights.sum (fun d r => r • d.weights)
   nonneg := f.weights.sum_nonneg fun d _ ↦ smul_nonneg (f.nonneg d) d.nonneg
   total := by simp [sum_sum_index, sum_smul_index, ← mul_sum]
@@ -184,6 +186,7 @@ private lemma restrict_ne_zero_aux {w : StdSimplex K X} {p : X → Prop} [Decida
 
 /-- Project an element of the standard simplex to a lower-dimensional standard simplex,
 assuming at least one non-zero weight subsists. -/
+noncomputable
 def restrict (w : StdSimplex K X) (s : Set X) (hs : ∃ x ∈ s, w.weights x ≠ 0) : StdSimplex K X where
   weights := open scoped Classical in
     ((w.weights.filter (· ∈ s)).sum fun x k ↦ k)⁻¹ • w.weights.filter (· ∈ s)
@@ -256,9 +259,10 @@ attribute [simp] sConvexComb_single
 alias ConvexSpace.convexCombination_single := sConvexComb_single
 
 /-- Take a convex combination with the given weight distribution of an indexed family of points. -/
-def iConvexComb (s : StdSimplex R I) (f : I → M) : M := sConvexComb (s.map f)
+noncomputable def iConvexComb (s : StdSimplex R I) (f : I → M) : M := sConvexComb (s.map f)
 
 /-- Take a convex combination of two points. -/
+noncomputable
 def convexCombPair (s t : R) (hs : 0 ≤ s) (ht : 0 ≤ t) (hst : s + t = 1) (x y : M) : M :=
   sConvexComb (.duple x y hs ht hst)
 
@@ -270,7 +274,7 @@ namespace StdSimplex
 export ConvexSpace (sConvexComb)
 export Convexity (iConvexComb)
 
-instance : ConvexSpace R (StdSimplex R I) where
+noncomputable instance : ConvexSpace R (StdSimplex R I) where
   sConvexComb σ := σ.join
   assoc f := by exact (join_join f).symm
   sConvexComb_single := by exact join_single

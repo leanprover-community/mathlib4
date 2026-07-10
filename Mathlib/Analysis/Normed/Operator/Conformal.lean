@@ -41,8 +41,6 @@ The definition of conformality in this file does NOT require the maps to be orie
 @[expose] public section
 
 
-noncomputable section
-
 open Function LinearIsometry ContinuousLinearMap
 
 /-- A continuous linear map `f'` is said to be conformal if it's

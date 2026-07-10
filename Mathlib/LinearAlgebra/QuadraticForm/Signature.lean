@@ -33,7 +33,7 @@ the course of their studies at ETH Zürich.
 
 open Finset QuadraticMap
 
-public noncomputable section
+public section
 
 variable {R M M' : Type*} [AddCommGroup M] [AddCommGroup M']
 
@@ -62,7 +62,7 @@ subspace of `M`. (Defined as `0` if `M` is infinite-dimensional). -/
 Note the proof of nonemptiness needed for `max'` is a little fiddly since we are not assuming
 `Nontrivial R`, and the `⊥` submodule of a module over the zero ring has finrank 1, not 0.
 -/
-def sigPos : ℕ := max' {r ∈ Iic (Module.finrank R M) |
+noncomputable def sigPos : ℕ := max' {r ∈ Iic (Module.finrank R M) |
     ∃ V : Submodule R M, Module.finrank R V = r ∧ (Q.restrict V).PosDef}
   ⟨Module.finrank R (⊥ : Submodule R M), by
     simp only [mem_filter, mem_Iic]
@@ -95,7 +95,7 @@ lemma le_sigPos_of_posDef [Module.Finite R M] [StrongRankCondition R]
 
 /-- For quadratic forms on finite-dimensional spaces, the maximal finrank of a negative-definite
 subspace of `M`. (Defined as `0` if `M` is infinite-dimensional). -/
-def sigNeg : ℕ := sigPos (-Q)
+noncomputable def sigNeg : ℕ := sigPos (-Q)
 
 /-- Defining property of `sigNeg`. -/
 lemma sigNeg_isGreatest [Module.Finite R M] [StrongRankCondition R] : IsGreatest

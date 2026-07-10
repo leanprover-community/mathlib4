@@ -320,7 +320,7 @@ instance isLeftAdjoint_pushforward_of_isIso [F.IsCocontinuous J K] [IsIso φ] [F
       IsIso.eq_inv_comp] at this
     simp [ψ, shAdj, ← this, ← Functor.map_comp_assoc, ← op_comp]
 
-noncomputable section
+section
 
 open CategoryTheory Limits
 
@@ -329,7 +329,7 @@ variable {C : Type u'} [Category.{v'} C] [HasBinaryProducts C] {J : Grothendieck
 
 set_option backward.defeqAttrib.useBackward true in
 /-- The canonical morphism from `R` to the pushforward of its restriction to `Over x`. -/
-def pushforwardOver (x : C) :
+noncomputable def pushforwardOver (x : C) :
     R ⟶ ((Over.star x).sheafPushforwardContinuous RingCat J (J.over x)).obj (R.over x) :=
   ⟨{app U := R.obj.map Limits.prod.snd.op
     naturality U V f := by simp [← Functor.map_comp, ← op_comp]; rfl }⟩
@@ -337,7 +337,7 @@ def pushforwardOver (x : C) :
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The adjunction between restriction to `Over x` and pushforward along `Over.star x`. -/
-def overPushforwardOverAdj (x : C) :
+noncomputable def overPushforwardOverAdj (x : C) :
     pushforward.{w} (𝟙 (R.over x)) ⊣ pushforward.{w} (pushforwardOver x) := by
   refine pushforwardPushforwardAdj (Over.forgetAdjStar x) (𝟙 (R.over x)) _ ?_ ?_
   · ext y : 2
@@ -352,7 +352,7 @@ variable (R) in
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The adjunction between pushforward along `Over.map` and pushforward along `Over.pullback`. -/
-def overMapPushforwardAdj [HasPullbacks C] {X Y : C} (f : X ⟶ Y) :
+noncomputable def overMapPushforwardAdj [HasPullbacks C] {X Y : C} (f : X ⟶ Y) :
     overMap R f ⊣ overPullback R f := by
   refine pushforwardPushforwardAdj (Over.mapPullbackAdj f) _ _ ?_ ?_
   · ext

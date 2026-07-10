@@ -32,8 +32,6 @@ public section
 
 open Set Function CategoryTheory
 
-noncomputable section
-
 universe v u
 
 variable {R : Type u} [CommRing R]

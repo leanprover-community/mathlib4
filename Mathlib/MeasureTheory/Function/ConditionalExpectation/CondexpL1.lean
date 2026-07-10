@@ -32,8 +32,6 @@ The conditional expectation of an `L²` function is defined in
 @[expose] public section
 
 
-noncomputable section
-
 open TopologicalSpace MeasureTheory.Lp Filter ContinuousLinearMap
 
 open scoped NNReal ENNReal Topology MeasureTheory
@@ -72,6 +70,7 @@ section CondexpIndL1Fin
 
 /-- Conditional expectation of the indicator of a measurable set with finite measure,
 as a function in L1. -/
+noncomputable
 def condExpIndL1Fin (hm : m ≤ m0) [SigmaFinite (μ.trim hm)] (hs : MeasurableSet s) (hμs : μ s ≠ ∞)
     (x : G) : α →₁[μ] G :=
   (integrable_condExpIndSMul hm hs hμs x).toL1 _
@@ -149,7 +148,7 @@ section CondexpIndL1
 open scoped Classical in
 /-- Conditional expectation of the indicator of a set, as a function in L1. Its value for sets
 which are not both measurable and of finite measure is not used: we set it to 0. -/
-def condExpIndL1 {m m0 : MeasurableSpace α} (hm : m ≤ m0) (μ : Measure α) (s : Set α)
+noncomputable def condExpIndL1 {m m0 : MeasurableSpace α} (hm : m ≤ m0) (μ : Measure α) (s : Set α)
     [SigmaFinite (μ.trim hm)] (x : G) : α →₁[μ] G :=
   if hs : MeasurableSet s ∧ μ s ≠ ∞ then condExpIndL1Fin hm hs.1 hs.2 x else 0
 
@@ -223,6 +222,7 @@ end CondexpIndL1
 variable (G)
 
 /-- Conditional expectation of the indicator of a set, as a linear map from `G` to L1. -/
+noncomputable
 def condExpInd {m m0 : MeasurableSpace α} (hm : m ≤ m0) (μ : Measure α) [SigmaFinite (μ.trim hm)]
     (s : Set α) : G →L[ℝ] α →₁[μ] G where
   toFun := condExpIndL1 hm μ s
@@ -318,7 +318,7 @@ section CondExpL1CLM
 variable (F')
 
 /-- Conditional expectation of a function as a linear map from `α →₁[μ] F'` to itself. -/
-def condExpL1CLM (hm : m ≤ m0) (μ : Measure α) [CompleteSpace ↑(Lp F' 1 μ)]
+noncomputable def condExpL1CLM (hm : m ≤ m0) (μ : Measure α) [CompleteSpace ↑(Lp F' 1 μ)]
     [SigmaFinite (μ.trim hm)] :
     (α →₁[μ] F') →L[ℝ] α →₁[μ] F' :=
   L1.setToL1 (dominatedFinMeasAdditive_condExpInd F' hm μ)
@@ -447,7 +447,7 @@ end CondExpL1CLM
 set_option linter.overlappingInstances false in
 /-- Conditional expectation of a function, in L1. Its value is 0 if the function is not
 integrable. The function-valued `condExp` should be used instead in most cases. -/
-def condExpL1 (hm : m ≤ m0) (μ : Measure α) [SigmaFinite (μ.trim hm)]
+noncomputable def condExpL1 (hm : m ≤ m0) (μ : Measure α) [SigmaFinite (μ.trim hm)]
     (f : α → F') : α →₁[μ] F' :=
   setToFun μ (condExpInd F' hm μ) (dominatedFinMeasAdditive_condExpInd F' hm μ) f
 

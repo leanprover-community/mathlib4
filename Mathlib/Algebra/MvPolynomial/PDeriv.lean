@@ -43,8 +43,6 @@ As in other polynomial files, we typically use the notation:
 @[expose] public section
 
 
-noncomputable section
-
 universe u v
 
 namespace MvPolynomial
@@ -58,7 +56,7 @@ section PDeriv
 variable [CommSemiring R]
 
 /-- `pderiv i p` is the partial derivative of `p` with respect to `i` -/
-def pderiv (i : σ) : Derivation R (MvPolynomial σ R) (MvPolynomial σ R) :=
+noncomputable def pderiv (i : σ) : Derivation R (MvPolynomial σ R) (MvPolynomial σ R) :=
   letI := Classical.decEq σ
   mkDerivation R <| Pi.single i 1
 

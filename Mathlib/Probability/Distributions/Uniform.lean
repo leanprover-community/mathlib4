@@ -48,8 +48,6 @@ open scoped Finset MeasureTheory NNReal ENNReal
 -- TODO: We can't `open ProbabilityTheory` without opening the `ProbabilityTheory` scope :(
 open TopologicalSpace MeasureTheory.Measure PMF
 
-noncomputable section
-
 namespace MeasureTheory
 
 variable {E : Type*} [MeasurableSpace E] {μ : Measure E}
@@ -186,7 +184,7 @@ lemma IsUniform.cond {s : Set E} :
 
 /-- The density of the uniform measure on a set with respect to itself. This allows us to abstract
 away the choice of random variable and probability space. -/
-def uniformPDF (s : Set E) (x : E) (μ : Measure E := by volume_tac) : ℝ≥0∞ :=
+noncomputable def uniformPDF (s : Set E) (x : E) (μ : Measure E := by volume_tac) : ℝ≥0∞ :=
   s.indicator ((μ s)⁻¹ • (1 : E → ℝ≥0∞)) x
 
 /-- Check that indeed any uniform random variable has the uniformPDF. -/
@@ -213,7 +211,7 @@ open scoped NNReal ENNReal
 section UniformOfFinset
 
 /-- Uniform distribution taking the same non-zero probability on the nonempty finset `s` -/
-def uniformOfFinset (s : Finset α) (hs : s.Nonempty) : PMF α := by
+noncomputable def uniformOfFinset (s : Finset α) (hs : s.Nonempty) : PMF α := by
   classical
   refine ofFinset (fun a => if a ∈ s then s.card⁻¹ else 0) s ?_ ?_
   · simp only [Finset.sum_ite_mem, Finset.inter_self, Finset.sum_const, nsmul_eq_mul]
@@ -281,7 +279,7 @@ end UniformOfFinset
 section UniformOfFintype
 
 /-- The uniform pmf taking the same uniform value on all of the fintype `α` -/
-def uniformOfFintype (α : Type*) [Fintype α] [Nonempty α] : PMF α :=
+noncomputable def uniformOfFintype (α : Type*) [Fintype α] [Nonempty α] : PMF α :=
   uniformOfFinset Finset.univ Finset.univ_nonempty
 
 variable [Fintype α] [Nonempty α]
@@ -321,7 +319,7 @@ section OfMultiset
 open scoped Classical in
 /-- Given a non-empty multiset `s` we construct the `PMF` which sends `a` to the fraction of
   elements in `s` that are `a`. -/
-def ofMultiset (s : Multiset α) (hs : s ≠ 0) : PMF α :=
+noncomputable def ofMultiset (s : Multiset α) (hs : s ≠ 0) : PMF α :=
   ⟨fun a => s.count a / (Multiset.card s),
     ENNReal.summable.hasSum_iff.2
       (calc

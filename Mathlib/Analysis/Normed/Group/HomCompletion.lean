@@ -51,8 +51,6 @@ The vertical maps in the above diagrams are also normed group homs constructed i
 @[expose] public section
 
 
-noncomputable section
-
 open Set NormedAddGroupHom UniformSpace
 
 section Completion
@@ -61,7 +59,7 @@ variable {G : Type*} [SeminormedAddCommGroup G] {H : Type*} [SeminormedAddCommGr
   {K : Type*} [SeminormedAddCommGroup K]
 
 /-- The normed group hom induced between completions. -/
-def NormedAddGroupHom.completion (f : NormedAddGroupHom G H) :
+noncomputable def NormedAddGroupHom.completion (f : NormedAddGroupHom G H) :
     NormedAddGroupHom (Completion G) (Completion H) :=
   .ofLipschitz (f.toAddMonoidHom.completion f.continuous) f.lipschitz.completion_map
 
@@ -84,7 +82,7 @@ theorem NormedAddGroupHom.completion_coe' (f : NormedAddGroupHom G H) (g : G) :
 
 /-- Completion of normed group homs as a normed group hom. -/
 @[simps]
-def normedAddGroupHomCompletionHom :
+noncomputable def normedAddGroupHomCompletionHom :
     NormedAddGroupHom G H →+ NormedAddGroupHom (Completion G) (Completion H) where
   toFun := NormedAddGroupHom.completion
   map_zero' := toAddMonoidHom_injective AddMonoidHom.completion_zero
@@ -185,6 +183,7 @@ variable {H : Type*} [SeminormedAddCommGroup H] [T0Space H] [CompleteSpace H]
 
 /-- If `H` is complete, the extension of `f : NormedAddGroupHom G H` to a
 `NormedAddGroupHom (completion G) H`. -/
+noncomputable
 def NormedAddGroupHom.extension (f : NormedAddGroupHom G H) : NormedAddGroupHom (Completion G) H :=
   .ofLipschitz (f.toAddMonoidHom.extension f.continuous) <|
     let _ := MetricSpace.ofT0PseudoMetricSpace H

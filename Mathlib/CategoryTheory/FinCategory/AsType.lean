@@ -16,8 +16,6 @@ public import Mathlib.Data.Fintype.EquivFin
 
 universe w v u
 
-noncomputable section
-
 namespace CategoryTheory
 
 namespace FinCategory
@@ -29,7 +27,7 @@ variable (α : Type*) [Fintype α] [SmallCategory α] [FinCategory α]
 abbrev ObjAsType : Type :=
   InducedCategory α (Fintype.equivFin α).symm
 
-instance {i j : ObjAsType α} : Fintype (i ⟶ j) :=
+noncomputable instance {i j : ObjAsType α} : Fintype (i ⟶ j) :=
   Fintype.ofEquiv _ InducedCategory.homEquiv.symm
 
 /-- The constructed category is indeed equivalent to `α`. -/

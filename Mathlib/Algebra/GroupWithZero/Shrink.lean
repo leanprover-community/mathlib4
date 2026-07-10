@@ -15,15 +15,16 @@ public import Mathlib.Algebra.GroupWithZero.TransferInstance
 
 public section
 
-noncomputable section
-
 universe v
 variable {M α : Type*} [Small.{v} α]
 
-instance [SemigroupWithZero α] : SemigroupWithZero (Shrink α) :=
+noncomputable instance [SemigroupWithZero α] : SemigroupWithZero (Shrink α) :=
   (equivShrink _).symm.semigroupWithZero
+noncomputable
 instance [MulZeroClass α] : MulZeroClass (Shrink α) := (equivShrink _).symm.mulZeroClass
+noncomputable
 instance [MulZeroOneClass α] : MulZeroOneClass (Shrink α) := (equivShrink _).symm.mulZeroOneClass
 
+noncomputable
 instance [Monoid M] [AddCommMonoid α] [DistribMulAction M α] : DistribMulAction M (Shrink.{v} α) :=
   (equivShrink α).symm.distribMulAction M

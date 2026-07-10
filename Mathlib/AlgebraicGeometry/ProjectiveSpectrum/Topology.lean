@@ -40,8 +40,6 @@ It is naturally endowed with a topology: the Zariski topology.
 @[expose] public section
 
 
-noncomputable section
-
 open DirectSum Pointwise SetLike TopCat TopologicalSpace CategoryTheory Opposite
 
 variable {A σ : Type*}

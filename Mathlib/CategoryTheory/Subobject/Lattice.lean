@@ -22,8 +22,6 @@ and the `SemilatticeSup (Subobject X)` instance when `[HasImages C] [HasBinaryCo
 
 universe w v₁ v₂ u₁ u₂
 
-noncomputable section
-
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits
 
 variable {C : Type u₁} [Category.{v₁} C] {X Y Z : C}
@@ -62,18 +60,18 @@ variable [HasPullbacks C]
 
 /-- The pullback of the top object in `MonoOver Y`
 is (isomorphic to) the top object in `MonoOver X`. -/
-def pullbackTop (f : X ⟶ Y) : (pullback f).obj ⊤ ≅ ⊤ :=
+noncomputable def pullbackTop (f : X ⟶ Y) : (pullback f).obj ⊤ ≅ ⊤ :=
   iso_of_both_ways (leTop _)
     (homMk (pullback.lift f (𝟙 _) (by simp)) (pullback.lift_snd _ _ _))
 
 /-- There is a morphism from `⊤ : MonoOver A` to the pullback of a monomorphism along itself;
 as the category is thin this is an isomorphism. -/
-def topLEPullbackSelf {A B : C} (f : A ⟶ B) [Mono f] :
+noncomputable def topLEPullbackSelf {A B : C} (f : A ⟶ B) [Mono f] :
     (⊤ : MonoOver A) ⟶ (pullback f).obj (mk f) :=
   homMk _ (pullback.lift_snd _ _ rfl)
 
 /-- The pullback of a monomorphism along itself is isomorphic to the top object. -/
-def pullbackSelf {A B : C} (f : A ⟶ B) [Mono f] : (pullback f).obj (mk f) ≅ ⊤ :=
+noncomputable def pullbackSelf {A B : C} (f : A ⟶ B) [Mono f] : (pullback f).obj (mk f) ≅ ⊤ :=
   iso_of_both_ways (leTop _) (topLEPullbackSelf _)
 
 end
@@ -84,7 +82,7 @@ section Bot
 
 variable [HasInitial C] [InitialMonoClass C]
 
-instance {X : C} : Bot (MonoOver X) where bot := mk (initial.to X)
+noncomputable instance {X : C} : Bot (MonoOver X) where bot := mk (initial.to X)
 
 @[simp]
 theorem bot_left (X : C) : ((⊥ : MonoOver X) : C) = ⊥_ C :=
@@ -95,11 +93,11 @@ theorem bot_arrow {X : C} : (⊥ : MonoOver X).arrow = initial.to X :=
   rfl
 
 /-- The (unique) morphism from `⊥ : MonoOver X` to any other `f : MonoOver X`. -/
-def botLE {X : C} (f : MonoOver X) : ⊥ ⟶ f :=
+noncomputable def botLE {X : C} (f : MonoOver X) : ⊥ ⟶ f :=
   homMk (initial.to _)
 
 /-- `map f` sends `⊥ : MonoOver X` to `⊥ : MonoOver Y`. -/
-def mapBot (f : X ⟶ Y) [Mono f] : (map f).obj ⊥ ≅ ⊥ :=
+noncomputable def mapBot (f : X ⟶ Y) [Mono f] : (map f).obj ⊥ ≅ ⊥ :=
   iso_of_both_ways (homMk (initial.to _)) (homMk (𝟙 _))
 
 end Bot
@@ -111,7 +109,7 @@ variable [HasZeroObject C]
 open ZeroObject
 
 /-- The object underlying `⊥ : Subobject B` is (up to isomorphism) the zero object. -/
-def botCoeIsoZero {B : C} : ((⊥ : MonoOver B) : C) ≅ 0 :=
+noncomputable def botCoeIsoZero {B : C} : ((⊥ : MonoOver B) : C) ≅ 0 :=
   initialIsInitial.uniqueUpToIso HasZeroObject.zeroIsInitial
 
 theorem bot_arrow_eq_zero [HasZeroMorphisms C] {B : C} : (⊥ : MonoOver B).arrow = 0 :=
@@ -137,7 +135,7 @@ but we reuse all the names from `SemilatticeInf` because they will be used to co
 `SemilatticeInf (Subobject A)` shortly.
 -/
 @[simps]
-def inf {A : C} : MonoOver A ⥤ MonoOver A ⥤ MonoOver A where
+noncomputable def inf {A : C} : MonoOver A ⥤ MonoOver A ⥤ MonoOver A where
   obj f := pullback f.arrow ⋙ map f.arrow
   map k :=
     { app := fun g => by
@@ -148,16 +146,17 @@ def inf {A : C} : MonoOver A ⥤ MonoOver A ⥤ MonoOver A where
         rw [pullback.lift_snd_assoc, assoc, w k] }
 
 /-- A morphism from the "infimum" of two objects in `MonoOver A` to the first object. -/
-def infLELeft {A : C} (f g : MonoOver A) : (inf.obj f).obj g ⟶ f :=
+noncomputable def infLELeft {A : C} (f g : MonoOver A) : (inf.obj f).obj g ⟶ f :=
   homMk _ rfl
 
 /-- A morphism from the "infimum" of two objects in `MonoOver A` to the second object. -/
-def infLERight {A : C} (f g : MonoOver A) : (inf.obj f).obj g ⟶ g :=
+noncomputable def infLERight {A : C} (f g : MonoOver A) : (inf.obj f).obj g ⟶ g :=
   homMk _ pullback.condition
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- A morphism version of the `le_inf` axiom. -/
+noncomputable
 def leInf {A : C} (f g h : MonoOver A) : (h ⟶ f) → (h ⟶ g) → (h ⟶ (inf.obj f).obj g) :=
   fun k₁ k₂ ↦ homMk (pullback.lift k₂.hom.left k₁.hom.left (by simp))
 
@@ -170,23 +169,24 @@ variable [HasImages C] [HasBinaryCoproducts C]
 /-- When `[HasImages C] [HasBinaryCoproducts C]`, `MonoOver A` has a `sup` construction,
 which is functorial in both arguments,
 and which on `Subobject A` will induce a `SemilatticeSup`. -/
-def sup {A : C} : MonoOver A ⥤ MonoOver A ⥤ MonoOver A :=
+noncomputable def sup {A : C} : MonoOver A ⥤ MonoOver A ⥤ MonoOver A :=
   Functor.curryObj ((forget A).prod (forget A) ⋙ Functor.uncurry.obj Over.coprod ⋙ image)
 
 /-- A morphism version of `le_sup_left`. -/
-def leSupLeft {A : C} (f g : MonoOver A) : f ⟶ (sup.obj f).obj g := by
+noncomputable def leSupLeft {A : C} (f g : MonoOver A) : f ⟶ (sup.obj f).obj g := by
   refine homMk (coprod.inl ≫ factorThruImage _) ?_
   erw [Category.assoc, image.fac, coprod.inl_desc]
   rfl
 
 /-- A morphism version of `le_sup_right`. -/
-def leSupRight {A : C} (f g : MonoOver A) : g ⟶ (sup.obj f).obj g := by
+noncomputable def leSupRight {A : C} (f g : MonoOver A) : g ⟶ (sup.obj f).obj g := by
   refine homMk (coprod.inr ≫ factorThruImage _) ?_
   erw [Category.assoc, image.fac, coprod.inr_desc]
   rfl
 
 set_option backward.defeqAttrib.useBackward true in
 /-- A morphism version of `sup_le`. -/
+noncomputable
 def supLe {A : C} (f g h : MonoOver A) : (f ⟶ h) → (g ⟶ h) → ((sup.obj f).obj g ⟶ h) := by
   intro k₁ k₂
   refine homMk ?_ ?_
@@ -275,7 +275,7 @@ section OrderBot
 
 variable [HasInitial C] [InitialMonoClass C]
 
-instance orderBot {X : C} : OrderBot (Subobject X) where
+noncomputable instance orderBot {X : C} : OrderBot (Subobject X) where
   bot := Quotient.mk'' ⊥
   bot_le := by
     refine Quotient.ind' fun f => ?_
@@ -285,7 +285,7 @@ theorem bot_eq_initial_to {B : C} : (⊥ : Subobject B) = Subobject.mk (initial.
   rfl
 
 /-- The object underlying `⊥ : Subobject B` is (up to isomorphism) the initial object. -/
-def botCoeIsoInitial {B : C} : ((⊥ : Subobject B) : C) ≅ ⊥_ C :=
+noncomputable def botCoeIsoInitial {B : C} : ((⊥ : Subobject B) : C) ≅ ⊥_ C :=
   underlyingIso _
 
 theorem map_bot (f : X ⟶ Y) [Mono f] : (map f).obj ⊥ = ⊥ :=
@@ -300,7 +300,7 @@ variable [HasZeroObject C]
 open ZeroObject
 
 /-- The object underlying `⊥ : Subobject B` is (up to isomorphism) the zero object. -/
-def botCoeIsoZero {B : C} : ((⊥ : Subobject B) : C) ≅ 0 :=
+noncomputable def botCoeIsoZero {B : C} : ((⊥ : Subobject B) : C) ≅ 0 :=
   botCoeIsoInitial ≪≫ initialIsInitial.uniqueUpToIso HasZeroObject.zeroIsInitial
 
 variable [HasZeroMorphisms C]
@@ -334,7 +334,7 @@ variable (C)
 
 /-- Sending `X : C` to `Subobject X` is a contravariant functor `Cᵒᵖ ⥤ Type`. -/
 @[simps]
-def functor [HasPullbacks C] : Cᵒᵖ ⥤ Type max u₁ v₁ where
+noncomputable def functor [HasPullbacks C] : Cᵒᵖ ⥤ Type max u₁ v₁ where
   obj X := Subobject X.unop
   map f := ↾(pullback f.unop).obj
   map_id _ := by ext : 3; simp [pullback_id]
@@ -347,7 +347,7 @@ section SemilatticeInfTop
 variable [HasPullbacks C]
 
 /-- The functorial infimum on `MonoOver A` descends to an infimum on `Subobject A`. -/
-def inf {A : C} : Subobject A ⥤ Subobject A ⥤ Subobject A :=
+noncomputable def inf {A : C} : Subobject A ⥤ Subobject A ⥤ Subobject A :=
   ThinSkeleton.map₂ MonoOver.inf
 
 theorem inf_le_left {A : C} (f g : Subobject A) : (inf.obj f).obj g ≤ f :=
@@ -362,7 +362,7 @@ theorem le_inf {A : C} (h f g : Subobject A) : h ≤ f → h ≤ g → h ≤ (in
       rintro f g h ⟨k⟩ ⟨l⟩
       exact ⟨MonoOver.leInf _ _ _ k l⟩)
 
-instance semilatticeInf {B : C} : SemilatticeInf (Subobject B) where
+noncomputable instance semilatticeInf {B : C} : SemilatticeInf (Subobject B) where
   inf := fun m n => (inf.obj m).obj n
   inf_le_left := inf_le_left
   inf_le_right := inf_le_right
@@ -489,10 +489,10 @@ section SemilatticeSup
 variable [HasImages C] [HasBinaryCoproducts C]
 
 /-- The functorial supremum on `MonoOver A` descends to a supremum on `Subobject A`. -/
-def sup {A : C} : Subobject A ⥤ Subobject A ⥤ Subobject A :=
+noncomputable def sup {A : C} : Subobject A ⥤ Subobject A ⥤ Subobject A :=
   ThinSkeleton.map₂ MonoOver.sup
 
-instance semilatticeSup {B : C} : SemilatticeSup (Subobject B) where
+noncomputable instance semilatticeSup {B : C} : SemilatticeSup (Subobject B) where
   sup := fun m n => (sup.obj m).obj n
   le_sup_left := fun m n => Quotient.inductionOn₂' m n fun _ _ => ⟨MonoOver.leSupLeft _ _⟩
   le_sup_right := fun m n => Quotient.inductionOn₂' m n fun _ _ => ⟨MonoOver.leSupRight _ _⟩
@@ -527,12 +527,13 @@ end SemilatticeSup
 
 section Lattice
 
+noncomputable
 instance boundedOrder [HasInitial C] [InitialMonoClass C] {B : C} : BoundedOrder (Subobject B) :=
   { Subobject.orderTop, Subobject.orderBot with }
 
 variable [HasPullbacks C] [HasImages C] [HasBinaryCoproducts C]
 
-instance {B : C} : Lattice (Subobject B) :=
+noncomputable instance {B : C} : Lattice (Subobject B) :=
   { Subobject.semilatticeInf, Subobject.semilatticeSup with }
 
 end Lattice
@@ -545,6 +546,7 @@ variable [LocallySmall.{w} C] [WellPowered.{w} C]
 (This is just the diagram of all the subobjects pasted together, but using `WellPowered C`
 to make the diagram small.)
 -/
+noncomputable
 def wideCospan {A : C} (s : Set (Subobject A)) : WidePullbackShape (equivShrink _ '' s) ⥤ C :=
   WidePullbackShape.wideCospan A
     (fun j : equivShrink _ '' s => ((equivShrink (Subobject A)).symm j : C)) fun j =>
@@ -558,7 +560,7 @@ theorem wideCospan_map_term {A : C} (s : Set (Subobject A)) (j) :
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary construction of a cone for `le_inf`. -/
-def leInfCone {A : C} (s : Set (Subobject A)) (f : Subobject A) (k : ∀ g ∈ s, f ≤ g) :
+noncomputable def leInfCone {A : C} (s : Set (Subobject A)) (f : Subobject A) (k : ∀ g ∈ s, f ≤ g) :
     Cone (wideCospan s) :=
   WidePullbackShape.mkCone f.arrow
     (fun j =>
@@ -579,12 +581,12 @@ variable [HasWidePullbacks.{w} C]
 
 /-- The limit of `wideCospan s`. (This will be the supremum of the set of subobjects.)
 -/
-def widePullback {A : C} (s : Set (Subobject A)) : C :=
+noncomputable def widePullback {A : C} (s : Set (Subobject A)) : C :=
   Limits.limit (wideCospan s)
 
 /-- The inclusion map from `widePullback s` to `A`
 -/
-def widePullbackι {A : C} (s : Set (Subobject A)) : widePullback s ⟶ A :=
+noncomputable def widePullbackι {A : C} (s : Set (Subobject A)) : widePullback s ⟶ A :=
   Limits.limit.π (wideCospan s) none
 
 set_option backward.isDefEq.respectTransparency false in
@@ -600,7 +602,7 @@ instance widePullbackι_mono {A : C} (s : Set (Subobject A)) : Mono (widePullbac
 
 /-- When `[WellPowered C]` and `[HasWidePullbacks C]`, `Subobject A` has arbitrary infimums.
 -/
-def sInf {A : C} (s : Set (Subobject A)) : Subobject A :=
+noncomputable def sInf {A : C} (s : Set (Subobject A)) : Subobject A :=
   Subobject.mk (widePullbackι s)
 
 set_option backward.isDefEq.respectTransparency false in
@@ -625,7 +627,7 @@ theorem le_sInf {A : C} (s : Set (Subobject A)) (f : Subobject A) (k : ∀ g ∈
   · dsimp [sInf]
     rw [assoc, underlyingIso_arrow, widePullbackι, limit.lift_π, leInfCone_π_app_none]
 
-instance completeSemilatticeInf {B : C} : CompleteSemilatticeInf (Subobject B) where
+noncomputable instance completeSemilatticeInf {B : C} : CompleteSemilatticeInf (Subobject B) where
   sInf := sInf
   isGLB_sInf _ := ⟨sInf_le _, le_sInf _⟩
 
@@ -638,14 +640,14 @@ variable [LocallySmall.{w} C] [WellPowered.{w} C] [HasCoproducts.{w} C]
 /-- The universal morphism out of the coproduct of a set of subobjects,
 after using `[WellPowered C]` to reindex by a small type.
 -/
-def smallCoproductDesc {A : C} (s : Set (Subobject A)) :=
+noncomputable def smallCoproductDesc {A : C} (s : Set (Subobject A)) :=
   Limits.Sigma.desc fun j : equivShrink _ '' s => ((equivShrink (Subobject A)).symm j).arrow
 
 variable [HasImages C]
 
 /-- When `[WellPowered C] [HasImages C] [HasCoproducts C]`,
 `Subobject A` has arbitrary supremums. -/
-def sSup {A : C} (s : Set (Subobject A)) : Subobject A :=
+noncomputable def sSup {A : C} (s : Set (Subobject A)) : Subobject A :=
   Subobject.mk (image.ι (smallCoproductDesc s))
 
 set_option backward.isDefEq.respectTransparency false in
@@ -677,7 +679,7 @@ theorem sSup_le {A : C} (s : Set (Subobject A)) (f : Subobject A) (k : ∀ g ∈
   · dsimp [sSup]
     rw [assoc, image.lift_fac, underlyingIso_hom_comp_eq_mk]
 
-instance completeSemilatticeSup {B : C} : CompleteSemilatticeSup (Subobject B) where
+noncomputable instance completeSemilatticeSup {B : C} : CompleteSemilatticeSup (Subobject B) where
   sSup := sSup
   isLUB_sSup _ := ⟨le_sSup _, sSup_le _⟩
 
@@ -690,7 +692,7 @@ variable [LocallySmall.{w} C] [WellPowered.{w} C] [HasWidePullbacks.{w} C]
 
 attribute [local instance] has_smallest_coproducts_of_hasCoproducts
 
-instance {B : C} : CompleteLattice (Subobject B) :=
+noncomputable instance {B : C} : CompleteLattice (Subobject B) :=
   { Subobject.semilatticeInf, Subobject.semilatticeSup, Subobject.boundedOrder,
     Subobject.completeSemilatticeInf, Subobject.completeSemilatticeSup with }
 
@@ -726,7 +728,7 @@ end ZeroObject
 section SubobjectSubobject
 
 /-- The subobject lattice of a subobject `Y` is order isomorphic to the interval `Set.Iic Y`. -/
-def subobjectOrderIso {X : C} (Y : Subobject X) : Subobject (Y : C) ≃o Set.Iic Y where
+noncomputable def subobjectOrderIso {X : C} (Y : Subobject X) : Subobject (Y : C) ≃o Set.Iic Y where
   toFun Z :=
     ⟨Subobject.mk (Z.arrow ≫ Y.arrow),
       Set.mem_Iic.mpr (le_of_comm ((underlyingIso _).hom ≫ Z.arrow) (by simp))⟩

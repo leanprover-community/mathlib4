@@ -34,7 +34,7 @@ universe w' w v u
 variable {C : Type u} [Category.{v} C] (J : GrothendieckTopology C)
 variable {D : Type w} [Category.{w'} D]
 
-noncomputable section
+section
 
 variable [∀ (P : Cᵒᵖ ⥤ D) (X : C) (S : J.Cover X), HasMultiequalizer (S.index P)]
 variable (P : Cᵒᵖ ⥤ D)
@@ -42,7 +42,7 @@ variable (P : Cᵒᵖ ⥤ D)
 set_option backward.isDefEq.respectTransparency false in
 /-- The diagram whose colimit defines the values of `plus`. -/
 @[simps]
-def diagram (X : C) : (J.Cover X)ᵒᵖ ⥤ D where
+noncomputable def diagram (X : C) : (J.Cover X)ᵒᵖ ⥤ D where
   obj S := multiequalizer (S.unop.index P)
   map {S _} f :=
     Multiequalizer.lift _ _ (fun I => Multiequalizer.ι (S.unop.index P) (I.map f.unop))
@@ -51,6 +51,7 @@ def diagram (X : C) : (J.Cover X)ᵒᵖ ⥤ D where
 set_option backward.isDefEq.respectTransparency false in
 /-- A helper definition used to define the morphisms for `plus`. -/
 @[simps]
+noncomputable
 def diagramPullback {X Y : C} (f : X ⟶ Y) : J.diagram P Y ⟶ (J.pullback f).op ⋙ J.diagram P X where
   app S :=
     Multiequalizer.lift _ _ (fun I => Multiequalizer.ι (S.unop.index P) I.base) fun I =>
@@ -62,6 +63,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- A natural transformation `P ⟶ Q` induces a natural transformation
 between diagrams whose colimits define the values of `plus`. -/
 @[simps]
+noncomputable
 def diagramNatTrans {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) (X : C) : J.diagram P X ⟶ J.diagram Q X where
   app W :=
     Multiequalizer.lift _ _ (fun _ => Multiequalizer.ι _ _ ≫ η.app _) (fun i => by
@@ -97,7 +99,7 @@ theorem diagramNatTrans_comp {P Q R : Cᵒᵖ ⥤ D} (η : P ⟶ Q) (γ : Q ⟶ 
 variable (D) in
 /-- `J.diagram P`, as a functor in `P`. -/
 @[simps]
-def diagramFunctor (X : C) : (Cᵒᵖ ⥤ D) ⥤ (J.Cover X)ᵒᵖ ⥤ D where
+noncomputable def diagramFunctor (X : C) : (Cᵒᵖ ⥤ D) ⥤ (J.Cover X)ᵒᵖ ⥤ D where
   obj P := J.diagram P X
   map η := J.diagramNatTrans η X
 
@@ -107,7 +109,7 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The plus construction, associating a presheaf to any presheaf.
 See `plusFunctor` below for a functorial version. -/
-def plusObj : Cᵒᵖ ⥤ D where
+noncomputable def plusObj : Cᵒᵖ ⥤ D where
   obj X := colimit (J.diagram P X.unop)
   map f := colimMap (J.diagramPullback P f.unop) ≫ colimit.pre _ _
   map_id := by
@@ -147,7 +149,7 @@ def plusObj : Cᵒᵖ ⥤ D where
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- An auxiliary definition used in `plus` below. -/
-def plusMap {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) : J.plusObj P ⟶ J.plusObj Q where
+noncomputable def plusMap {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) : J.plusObj P ⟶ J.plusObj Q where
   app X := colimMap (J.diagramNatTrans η X.unop)
   naturality := by
     intro X Y f
@@ -185,14 +187,14 @@ theorem plusMap_comp {P Q R : Cᵒᵖ ⥤ D} (η : P ⟶ Q) (γ : Q ⟶ R) :
 variable (D) in
 /-- The plus construction, a functor sending `P` to `J.plusObj P`. -/
 @[simps]
-def plusFunctor : (Cᵒᵖ ⥤ D) ⥤ Cᵒᵖ ⥤ D where
+noncomputable def plusFunctor : (Cᵒᵖ ⥤ D) ⥤ Cᵒᵖ ⥤ D where
   obj P := J.plusObj P
   map η := J.plusMap η
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The canonical map from `P` to `J.plusObj P`.
 See `toPlusNatTrans` for a functorial version. -/
-def toPlus : P ⟶ J.plusObj P where
+noncomputable def toPlus : P ⟶ J.plusObj P where
   app X := Cover.toMultiequalizer (⊤ : J.Cover X.unop) P ≫ colimit.ι (J.diagram P X.unop) (op ⊤)
   naturality := by
     intro X Y f
@@ -224,7 +226,7 @@ set_option backward.defeqAttrib.useBackward true in
 variable (D) in
 /-- The natural transformation from the identity functor to `plus`. -/
 @[simps]
-def toPlusNatTrans : 𝟭 (Cᵒᵖ ⥤ D) ⟶ J.plusFunctor D where
+noncomputable def toPlusNatTrans : 𝟭 (Cᵒᵖ ⥤ D) ⟶ J.plusFunctor D where
   app P := J.toPlus P
 
 set_option backward.defeqAttrib.useBackward true in
@@ -266,7 +268,7 @@ theorem isIso_toPlus_of_isSheaf (hP : Presheaf.IsSheaf J P) : IsIso (J.toPlus P)
   exact IsIso.of_isIso_fac_left this
 
 /-- The natural isomorphism between `P` and `P⁺` when `P` is a sheaf. -/
-def isoToPlus (hP : Presheaf.IsSheaf J P) : P ≅ J.plusObj P :=
+noncomputable def isoToPlus (hP : Presheaf.IsSheaf J P) : P ≅ J.plusObj P :=
   letI := isIso_toPlus_of_isSheaf J P hP
   asIso (J.toPlus P)
 
@@ -275,6 +277,7 @@ theorem isoToPlus_hom (hP : Presheaf.IsSheaf J P) : (J.isoToPlus P hP).hom = J.t
   rfl
 
 /-- Lift a morphism `P ⟶ Q` to `P⁺ ⟶ Q` when `Q` is a sheaf. -/
+noncomputable
 def plusLift {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) (hQ : Presheaf.IsSheaf J Q) : J.plusObj P ⟶ Q :=
   J.plusMap η ≫ (J.isoToPlus Q hQ).inv
 

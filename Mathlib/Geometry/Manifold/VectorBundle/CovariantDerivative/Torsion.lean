@@ -25,7 +25,7 @@ bundle `TM` of some manifold `M`.
 
 -/
 
-public noncomputable section
+public section
 
 open Bundle Set NormedSpace FiberBundle
 open scoped Manifold ContDiff
@@ -40,7 +40,7 @@ namespace IsCovariantDerivativeOn
 
 /-- The torsion of a covariant derivative on the tangent bundle `TM`, as a bare function.
 Prefer to use `IsCovariantDerivativeOn.torsion` (which is a 2-tensor) instead. -/
-private def torsionAux
+private noncomputable def torsionAux
     (cov : (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x →L[𝕜] TangentSpace I x)) :
     (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x) :=
   fun X Y x ↦ cov Y x (X x) - cov X x (Y x) - VectorField.mlieBracket I X Y x
@@ -117,6 +117,7 @@ variable [CompleteSpace 𝕜] [CompleteSpace E] [FiniteDimensional 𝕜 E] [IsMa
   {X Y : Π x : M, TangentSpace I x}
 
 /-- The torsion tensor of a covariant derivative on the tangent bundle of a manifold. -/
+noncomputable
 def torsion (x : M) : TangentSpace I x →L[𝕜] TangentSpace I x →L[𝕜] TangentSpace I x :=
   cov.isCovariantDerivativeOn.torsion x
 

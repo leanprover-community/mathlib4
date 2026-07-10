@@ -22,8 +22,6 @@ open Complex UpperHalfPlane ModularForm
 
 open scoped MatrixGroups
 
-noncomputable section
-
 section SlashInvariantForms
 
 open ModularForm

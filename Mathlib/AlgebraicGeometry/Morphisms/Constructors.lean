@@ -38,8 +38,6 @@ universe u v w
 
 open TopologicalSpace CategoryTheory CategoryTheory.Limits Opposite
 
-noncomputable section
-
 namespace AlgebraicGeometry
 
 section Diagonal

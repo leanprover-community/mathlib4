@@ -27,8 +27,6 @@ classes `PreservesBiproduct` and `PreservesBinaryBiproduct`. We then
 
 universe w₁ w₂ v₁ v₂ u₁ u₂
 
-noncomputable section
-
 open CategoryTheory
 
 open CategoryTheory.Limits
@@ -97,6 +95,7 @@ attribute [inherit_doc PreservesBiproduct] PreservesBiproduct.preserves
 
 /-- A functor `F` preserves biproducts of `f` if `F` maps every bilimit bicone over `f` to a
 bilimit bicone over `F.obj ∘ f`. -/
+noncomputable
 def isBilimitOfPreserves {f : J → C} (F : C ⥤ D) [PreservesZeroMorphisms F] [PreservesBiproduct f F]
     {b : Bicone f} (hb : b.IsBilimit) : (F.mapBicone b).IsBilimit :=
   (PreservesBiproduct.preserves hb).some
@@ -155,7 +154,7 @@ attribute [inherit_doc PreservesBinaryBiproduct] PreservesBinaryBiproduct.preser
 
 /-- A functor `F` preserves binary biproducts of `X` and `Y` if `F` maps every bilimit bicone over
 `X` and `Y` to a bilimit bicone over `F.obj X` and `F.obj Y`. -/
-def isBinaryBilimitOfPreserves {X Y : C} (F : C ⥤ D) [PreservesZeroMorphisms F]
+noncomputable def isBinaryBilimitOfPreserves {X Y : C} (F : C ⥤ D) [PreservesZeroMorphisms F]
     [PreservesBinaryBiproduct X Y F] {b : BinaryBicone X Y} (hb : b.IsBilimit) :
     (F.mapBinaryBicone b).IsBilimit :=
   (PreservesBinaryBiproduct.preserves hb).some
@@ -209,7 +208,7 @@ variable [HasBiproduct (F.obj ∘ f)]
 
 /-- As for products, any functor between categories with biproducts gives rise to a morphism
 `F.obj (⨁ f) ⟶ ⨁ (F.obj ∘ f)`. -/
-def biproductComparison : F.obj (⨁ f) ⟶ ⨁ F.obj ∘ f :=
+noncomputable def biproductComparison : F.obj (⨁ f) ⟶ ⨁ F.obj ∘ f :=
   biproduct.lift fun j => F.map (biproduct.π f j)
 
 @[reassoc (attr := simp)]
@@ -219,7 +218,7 @@ theorem biproductComparison_π (j : J) :
 
 /-- As for coproducts, any functor between categories with biproducts gives rise to a morphism
 `⨁ (F.obj ∘ f) ⟶ F.obj (⨁ f)` -/
-def biproductComparison' : ⨁ F.obj ∘ f ⟶ F.obj (⨁ f) :=
+noncomputable def biproductComparison' : ⨁ F.obj ∘ f ⟶ F.obj (⨁ f) :=
   biproduct.desc fun j => F.map (biproduct.ι f j)
 
 @[reassoc (attr := simp)]
@@ -241,7 +240,7 @@ theorem biproductComparison'_comp_biproductComparison :
 
 /-- `biproduct_comparison F f` is a split epimorphism. -/
 @[simps]
-def splitEpiBiproductComparison : SplitEpi (biproductComparison F f) where
+noncomputable def splitEpiBiproductComparison : SplitEpi (biproductComparison F f) where
   section_ := biproductComparison' F f
   id := by simp
 
@@ -250,7 +249,7 @@ instance : IsSplitEpi (biproductComparison F f) :=
 
 /-- `biproduct_comparison' F f` is a split monomorphism. -/
 @[simps]
-def splitMonoBiproductComparison' : SplitMono (biproductComparison' F f) where
+noncomputable def splitMonoBiproductComparison' : SplitMono (biproductComparison' F f) where
   retraction := biproductComparison F f
   id := by simp
 
@@ -275,7 +274,7 @@ instance (priority := low) hasBiproduct_of_preserves' : HasBiproduct fun i => F.
 
 /-- If `F` preserves a biproduct, we get a definitionally nice isomorphism
 `F.obj (⨁ f) ≅ ⨁ (F.obj ∘ f)`. -/
-abbrev mapBiproduct : F.obj (⨁ f) ≅ ⨁ F.obj ∘ f :=
+noncomputable abbrev mapBiproduct : F.obj (⨁ f) ≅ ⨁ F.obj ∘ f :=
   biproduct.uniqueUpToIso _ (isBilimitOfPreserves _ (biproduct.isBilimit _))
 
 theorem mapBiproduct_hom :
@@ -294,7 +293,7 @@ variable [HasBinaryBiproduct (F.obj X) (F.obj Y)]
 
 /-- As for products, any functor between categories with binary biproducts gives rise to a
 morphism `F.obj (X ⊞ Y) ⟶ F.obj X ⊞ F.obj Y`. -/
-def biprodComparison : F.obj (X ⊞ Y) ⟶ F.obj X ⊞ F.obj Y :=
+noncomputable def biprodComparison : F.obj (X ⊞ Y) ⟶ F.obj X ⊞ F.obj Y :=
   biprod.lift (F.map biprod.fst) (F.map biprod.snd)
 
 @[reassoc (attr := simp)]
@@ -307,7 +306,7 @@ theorem biprodComparison_snd : biprodComparison F X Y ≫ biprod.snd = F.map bip
 
 /-- As for coproducts, any functor between categories with binary biproducts gives rise to a
 morphism `F.obj X ⊞ F.obj Y ⟶ F.obj (X ⊞ Y)`. -/
-def biprodComparison' : F.obj X ⊞ F.obj Y ⟶ F.obj (X ⊞ Y) :=
+noncomputable def biprodComparison' : F.obj X ⊞ F.obj Y ⟶ F.obj (X ⊞ Y) :=
   biprod.desc (F.map biprod.inl) (F.map biprod.inr)
 
 @[reassoc (attr := simp)]
@@ -329,7 +328,7 @@ theorem biprodComparison'_comp_biprodComparison :
 
 /-- `biprodComparison F X Y` is a split epi. -/
 @[simps]
-def splitEpiBiprodComparison : SplitEpi (biprodComparison F X Y) where
+noncomputable def splitEpiBiprodComparison : SplitEpi (biprodComparison F X Y) where
   section_ := biprodComparison' F X Y
   id := by simp
 
@@ -338,7 +337,7 @@ instance : IsSplitEpi (biprodComparison F X Y) :=
 
 /-- `biprodComparison' F X Y` is a split mono. -/
 @[simps]
-def splitMonoBiprodComparison' : SplitMono (biprodComparison' F X Y) where
+noncomputable def splitMonoBiprodComparison' : SplitMono (biprodComparison' F X Y) where
   retraction := biprodComparison F X Y
   id := by simp
 
@@ -356,7 +355,7 @@ instance hasBinaryBiproduct_of_preserves : HasBinaryBiproduct (F.obj X) (F.obj Y
 
 /-- If `F` preserves a binary biproduct, we get a definitionally nice isomorphism
 `F.obj (X ⊞ Y) ≅ F.obj X ⊞ F.obj Y`. -/
-abbrev mapBiprod : F.obj (X ⊞ Y) ≅ F.obj X ⊞ F.obj Y :=
+noncomputable abbrev mapBiprod : F.obj (X ⊞ Y) ≅ F.obj X ⊞ F.obj Y :=
   biprod.uniqueUpToIso _ _ (isBinaryBilimitOfPreserves F (BinaryBiproduct.isBilimit _ _))
 
 theorem mapBiprod_hom : (mapBiprod F X Y).hom = biprod.lift (F.map biprod.fst) (F.map biprod.snd) :=

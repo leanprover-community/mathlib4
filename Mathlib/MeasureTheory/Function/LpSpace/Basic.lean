@@ -59,8 +59,6 @@ function coercion from the coercion to almost everywhere defined functions.
 
 @[expose] public section
 
-noncomputable section
-
 open MeasureTheory Filter
 open scoped NNReal ENNReal
 
@@ -137,7 +135,7 @@ end MemLp
 
 namespace Lp
 
-instance instCoeFun : CoeFun (Lp E p μ) (fun _ => α → E) :=
+noncomputable instance instCoeFun : CoeFun (Lp E p μ) (fun _ => α → E) :=
   ⟨fun f => ((f : α →ₘ[μ] E) : α → E)⟩
 
 @[ext high]
@@ -212,15 +210,16 @@ theorem const_mem_Lp (α) {_ : MeasurableSpace α} (μ : Measure α) (c : E) [Is
     @AEEqFun.const α _ _ μ _ c ∈ Lp E p μ :=
   (memLp_const c).eLpNorm_mk_lt_top
 
-instance instNorm : Norm (Lp E p μ) where norm f := ENNReal.toReal (eLpNorm f p μ)
+noncomputable instance instNorm : Norm (Lp E p μ) where norm f := ENNReal.toReal (eLpNorm f p μ)
 
 -- note: we need this to be defeq to the instance from `SeminormedAddGroup.toNNNorm`, so
 -- can't use `ENNReal.toNNReal (eLpNorm f p μ)`
+noncomputable
 instance instNNNorm : NNNorm (Lp E p μ) where nnnorm f := .mk ‖f‖ ENNReal.toReal_nonneg
 
-instance instDist : Dist (Lp E p μ) where dist f g := ‖-f + g‖
+noncomputable instance instDist : Dist (Lp E p μ) where dist f g := ‖-f + g‖
 
-instance instEDist : EDist (Lp E p μ) where edist f g := eLpNorm (-⇑f + ⇑g) p μ
+noncomputable instance instEDist : EDist (Lp E p μ) where edist f g := eLpNorm (-⇑f + ⇑g) p μ
 
 theorem norm_def (f : Lp E p μ) : ‖f‖ = ENNReal.toReal (eLpNorm f p μ) :=
   rfl
@@ -383,7 +382,7 @@ theorem norm_le_of_ae_bound [IsFiniteMeasure μ] {f : Lp E p μ} {C : ℝ} (hC :
 
 instance instAddCommGroup : AddCommGroup (Lp E p μ) := inferInstance
 
-instance instNormedAddCommGroup [hp : Fact (1 ≤ p)] : NormedAddCommGroup (Lp E p μ) :=
+noncomputable instance instNormedAddCommGroup [hp : Fact (1 ≤ p)] : NormedAddCommGroup (Lp E p μ) :=
   fast_instance%
   { AddGroupNorm.toNormedAddCommGroup
       { toFun := (norm : Lp E p μ → ℝ)
@@ -734,7 +733,7 @@ variable {𝕜 𝕜' : Type*} [NontriviallyNormedField 𝕜] [NontriviallyNormed
 variable {σ : 𝕜 →+* 𝕜'} [RingHomIsometric σ]
 
 /-- Composing `f : Lp` with `L : E →L[𝕜] F`. -/
-def compLp (L : E →SL[σ] F) (f : Lp E p μ) : Lp F p μ :=
+noncomputable def compLp (L : E →SL[σ] F) (f : Lp E p μ) : Lp F p μ :=
   L.lipschitz.compLp (map_zero L) f
 
 theorem coeFn_compLp (L : E →SL[σ] F) (f : Lp E p μ) : ∀ᵐ a ∂μ, (L.compLp f) a = L (f a) :=
@@ -787,7 +786,7 @@ theorem norm_compLp_le (L : E →SL[σ] F) (f : Lp E p μ) : ‖L.compLp f‖ �
 variable (μ p)
 
 /-- Composing `f : Lp E p μ` with `L : E →L[𝕜] F`, seen as a `𝕜`-linear map on `Lp E p μ`. -/
-@[simps] def compLpₗ (L : E →SL[σ] F) : Lp E p μ →ₛₗ[σ] Lp F p μ where
+@[simps] noncomputable def compLpₗ (L : E →SL[σ] F) : Lp E p μ →ₛₗ[σ] Lp F p μ where
   toFun f := L.compLp f
   map_add' f g := by
     ext1
@@ -808,7 +807,7 @@ variable (μ p)
 * `ContinuousLinearMap.compLeftContinuousBounded` for bounded continuous functions,
 * `ContinuousLinearMap.compLeftContinuousCompact` for continuous functions on compact spaces.
 -/
-def compLpL [Fact (1 ≤ p)] (L : E →SL[σ] F) : Lp E p μ →SL[σ] Lp F p μ :=
+noncomputable def compLpL [Fact (1 ≤ p)] (L : E →SL[σ] F) : Lp E p μ →SL[σ] Lp F p μ :=
   LinearMap.mkContinuous (L.compLpₗ p μ) ‖L‖ L.norm_compLp_le
 
 variable {μ p}
@@ -836,7 +835,7 @@ variable {F G : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 variable (μ p) in
 /-- Given a continuous bilinear map `G → E → F`, construct the associated bilinear map
 `G → Lp E p μ → Lp F p μ`. -/
-@[simps] def compLpₗ₂ (B : G →L[𝕜] E →L[𝕜] F) : G →ₗ[𝕜] Lp E p μ →ₗ[𝕜] Lp F p μ where
+@[simps] noncomputable def compLpₗ₂ (B : G →L[𝕜] E →L[𝕜] F) : G →ₗ[𝕜] Lp E p μ →ₗ[𝕜] Lp F p μ where
   toFun g := (B g).compLpₗ p μ
   map_add' g h := by
     ext f
@@ -853,7 +852,7 @@ variable (μ p) in
 variable (μ p) in
 /-- Given a continuous bilinear map `G → E → F`, construct the associated continuous bilinear map
 `G → Lp E p μ → Lp F p μ`. -/
-def compLpL₂ [Fact (1 ≤ p)] (B : G →L[𝕜] E →L[𝕜] F) :
+noncomputable def compLpL₂ [Fact (1 ≤ p)] (B : G →L[𝕜] E →L[𝕜] F) :
     G →L[𝕜] Lp E p μ →L[𝕜] Lp F p μ :=
   (B.compLpₗ₂ p μ).mkContinuous₂ ‖B‖ (fun c f ↦ by
     simp only [compLpₗ₂_apply, compLpₗ_apply]

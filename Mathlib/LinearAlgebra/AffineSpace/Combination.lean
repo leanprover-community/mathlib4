@@ -42,8 +42,6 @@ These definitions are for sums over a `Finset`; versions for a
 @[expose] public section
 
 
-noncomputable section
-
 open Affine
 
 namespace Finset
@@ -228,7 +226,7 @@ theorem weightedVSubOfPoint_const_smul (w : ι → k) (p : ι → P) (b : P) (c 
 from the given points, as a linear map on the weights.  This is
 intended to be used when the sum of the weights is 0; that condition
 is specified as a hypothesis on those lemmas that require it. -/
-def weightedVSub (p : ι → P) : (ι → k) →ₗ[k] V :=
+noncomputable def weightedVSub (p : ι → P) : (ι → k) →ₗ[k] V :=
   s.weightedVSubOfPoint p (Classical.choice S.nonempty)
 
 /-- Applying `weightedVSub` with given weights.  This is for the case
@@ -345,7 +343,7 @@ the weights.  This is intended to be used when the sum of the weights
 is 1, in which case it is an affine combination (barycenter) of the
 points with the given weights; that condition is specified as a
 hypothesis on those lemmas that require it. -/
-def affineCombination (p : ι → P) : (ι → k) →ᵃ[k] P where
+noncomputable def affineCombination (p : ι → P) : (ι → k) →ᵃ[k] P where
   toFun w := s.weightedVSubOfPoint p (Classical.choice S.nonempty) w +ᵥ Classical.choice S.nonempty
   linear := s.weightedVSub p
   map_vadd' w₁ w₂ := by simp_rw [vadd_vadd, weightedVSub, vadd_eq_add, map_add]

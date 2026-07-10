@@ -25,15 +25,13 @@ TODO: Generalise the results here from the concrete `completion` to any `Abstrac
 @[expose] public section
 
 
-noncomputable section
-
 namespace UniformSpace
 
 namespace Completion
 
 variable (𝕜 E : Type*)
 
-instance [NormedField 𝕜] [SeminormedAddCommGroup E] [NormedSpace 𝕜 E] :
+noncomputable instance [NormedField 𝕜] [SeminormedAddCommGroup E] [NormedSpace 𝕜 E] :
     NormedSpace 𝕜 (Completion E) where
   norm_smul_le := norm_smul_le
 
@@ -54,7 +52,7 @@ theorem coe_toComplₗᵢ : ⇑(toComplₗᵢ : E →ₗᵢ[𝕜] Completion E) 
   rfl
 
 /-- Embedding of a normed space to its completion as a continuous linear map. -/
-def toComplL : E →L[𝕜] Completion E :=
+noncomputable def toComplL : E →L[𝕜] Completion E :=
   toComplₗᵢ.toContinuousLinearMap
 
 @[simp]
@@ -72,7 +70,7 @@ section Algebra
 
 variable (A : Type*)
 
-instance [SeminormedRing A] : NormedRing (Completion A) where
+noncomputable instance [SeminormedRing A] : NormedRing (Completion A) where
   __ : NormedAddCommGroup (Completion A) := inferInstance
   __ : Ring (Completion A) := inferInstance
   norm_mul_le x y := by
@@ -80,15 +78,15 @@ instance [SeminormedRing A] : NormedRing (Completion A) where
     | hp => apply isClosed_le <;> fun_prop
     | ih x y => simpa only [← coe_mul, norm_coe] using norm_mul_le x y
 
-instance [SeminormedCommRing A] : NormedCommRing (Completion A) where
+noncomputable instance [SeminormedCommRing A] : NormedCommRing (Completion A) where
   __ : CommRing (Completion A) := inferInstance
   __ : NormedRing (Completion A) := inferInstance
 
-instance [NormedField 𝕜] [SeminormedCommRing A] [NormedAlgebra 𝕜 A] :
+noncomputable instance [NormedField 𝕜] [SeminormedCommRing A] [NormedAlgebra 𝕜 A] :
     NormedAlgebra 𝕜 (Completion A) where
   norm_smul_le := norm_smul_le
 
-instance [NormedField A] [CompletableTopField A] :
+noncomputable instance [NormedField A] [CompletableTopField A] :
     NormedField (UniformSpace.Completion A) where
   __ : NormedCommRing (Completion A) := inferInstance
   __ : Field (Completion A) := inferInstance

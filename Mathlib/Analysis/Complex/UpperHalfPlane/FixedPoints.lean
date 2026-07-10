@@ -33,7 +33,7 @@ on the upper half-plane.
 open Matrix
 open scoped MatrixGroups ComplexConjugate
 
-public noncomputable section
+public section
 
 namespace UpperHalfPlane
 
@@ -138,7 +138,7 @@ theorem isElliptic_of_exists_smul_eq_self (h : 0 < g.val.det) (hgc : g ∉ Subgr
   simp only [z.ne_ofReal, false_or] at hz
 
 /-- The unique fixed point of an orientation-preserving elliptic matrix acting on `ℍ`. -/
-def fixedPt (g : GL (Fin 2) ℝ) (hell : g.IsElliptic) : ℍ :=
+noncomputable def fixedPt (g : GL (Fin 2) ℝ) (hell : g.IsElliptic) : ℍ :=
   ⟨(g 0 0 - g 1 1) / (2 * g 1 0) + .I * (√(-g.val.discr) / (2 * |g 1 0|)), by
     simpa [div_pos, Complex.div_re, Complex.div_im, hell.c_ne_zero]⟩
 

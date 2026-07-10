@@ -51,8 +51,6 @@ isometrically and in a way compatible with `f n`.
 
 @[expose] public section
 
-noncomputable section
-
 universe u v w
 
 open Function Set Uniformity Topology
@@ -65,7 +63,7 @@ variable {X : Type u} {Y : Type v} {Z : Type w}
 variable [MetricSpace X] [MetricSpace Y] {Φ : Z → X} {Ψ : Z → Y} {ε : ℝ}
 
 /-- Define a predistance on `X ⊕ Y`, for which `Φ p` and `Ψ p` are at distance `ε` -/
-def glueDist (Φ : Z → X) (Ψ : Z → Y) (ε : ℝ) : X ⊕ Y → X ⊕ Y → ℝ
+noncomputable def glueDist (Φ : Z → X) (Ψ : Z → Y) (ε : ℝ) : X ⊕ Y → X ⊕ Y → ℝ
   | .inl x, .inl y => dist x y
   | .inr x, .inr y => dist x y
   | .inl x, .inr y => (⨅ p, dist x (Φ p) + dist y (Ψ p)) + ε
@@ -184,7 +182,7 @@ set_option backward.privateInPublic.warn false in
 glue the two spaces `X` and `Y` along the images of `Φ` and `Ψ`, so that `Φ p` and `Ψ p` are
 at distance `ε`. -/
 @[implicit_reducible]
-def glueMetricApprox [Nonempty Z] (Φ : Z → X) (Ψ : Z → Y) (ε : ℝ) (ε0 : 0 < ε)
+noncomputable def glueMetricApprox [Nonempty Z] (Φ : Z → X) (Ψ : Z → Y) (ε : ℝ) (ε0 : 0 < ε)
     (H : ∀ p q, |dist (Φ p) (Φ q) - dist (Ψ p) (Ψ q)| ≤ 2 * ε) : MetricSpace (X ⊕ Y) where
   dist := glueDist Φ Ψ ε
   dist_self := glueDist_self Φ Ψ ε
@@ -219,7 +217,7 @@ We embed isometrically each factor, set the basepoints at distance 1,
 arbitrarily, and say that the distance from `a` to `b` is the sum of the distances of `a` and `b` to
 their respective basepoints, plus the distance 1 between the basepoints.
 Since there is an arbitrary choice in this construction, it is not an instance by default. -/
-protected def Sum.dist : X ⊕ Y → X ⊕ Y → ℝ
+protected noncomputable def Sum.dist : X ⊕ Y → X ⊕ Y → ℝ
   | .inl a, .inl a' => dist a a'
   | .inr b, .inr b' => dist b b'
   | .inl a, .inr b => dist a (Nonempty.some ⟨a⟩) + 1 + dist (Nonempty.some ⟨b⟩) b
@@ -263,7 +261,7 @@ set_option backward.privateInPublic.warn false in
 follow from our choice of the distance. The harder work is to show that the uniform structure
 defined by the distance coincides with the disjoint union uniform structure. -/
 @[instance_reducible]
-def metricSpaceSum : MetricSpace (X ⊕ Y) where
+noncomputable def metricSpaceSum : MetricSpace (X ⊕ Y) where
   dist := Sum.dist
   dist_self x := by cases x <;> simp only [Sum.dist, dist_self]
   dist_comm := Sum.dist_comm
@@ -317,7 +315,7 @@ We embed isometrically each factor, set the basepoints at distance 1, arbitraril
 and say that the distance from `a` to `b` is the sum of the distances of `a` and `b` to
 their respective basepoints, plus the distance 1 between the basepoints.
 Since there is an arbitrary choice in this construction, it is not an instance by default. -/
-protected def dist : (Σ i, E i) → (Σ i, E i) → ℝ
+protected noncomputable def dist : (Σ i, E i) → (Σ i, E i) → ℝ
   | ⟨i, x⟩, ⟨j, y⟩ =>
     if h : i = j then
       haveI : E j = E i := by rw [h]
@@ -330,7 +328,7 @@ and say that the distance from `a` to `b` is the sum of the distances of `a` and
 their respective basepoints, plus the distance 1 between the basepoints.
 Since there is an arbitrary choice in this construction, it is not an instance by default. -/
 @[instance_reducible]
-def instDist : Dist (Σ i, E i) :=
+noncomputable def instDist : Dist (Σ i, E i) :=
   ⟨Sigma.dist⟩
 
 attribute [local instance] Sigma.instDist
@@ -414,7 +412,7 @@ and say that the distance from `a` to `b` is the sum of the distances of `a` and
 their respective basepoints, plus the distance 1 between the basepoints.
 Since there is an arbitrary choice in this construction, it is not an instance by default. -/
 @[instance_reducible]
-protected def metricSpace : MetricSpace (Σ i, E i) := by
+protected noncomputable def metricSpace : MetricSpace (Σ i, E i) := by
   refine MetricSpace.ofDistTopology Sigma.dist ?_ ?_ Sigma.dist_triangle Sigma.isOpen_iff ?_
   · rintro ⟨i, x⟩
     simp [Sigma.dist]
@@ -469,6 +467,7 @@ set_option backward.privateInPublic.warn false in
 /-- Given two isometric embeddings `Φ : Z → X` and `Ψ : Z → Y`, we define a pseudometric space
 structure on `X ⊕ Y` by declaring that `Φ x` and `Ψ x` are at distance `0`. -/
 @[implicit_reducible]
+noncomputable
 def gluePremetric (hΦ : Isometry Φ) (hΨ : Isometry Ψ) : PseudoMetricSpace (X ⊕ Y) where
   dist := glueDist Φ Ψ 0
   dist_self := glueDist_self Φ Ψ 0
@@ -480,23 +479,23 @@ space `GlueSpace hΦ hΨ` by identifying in `X ⊕ Y` the points `Φ x` and `Ψ 
 def GlueSpace (hΦ : Isometry Φ) (hΨ : Isometry Ψ) : Type _ :=
   @SeparationQuotient _ (gluePremetric hΦ hΨ).toUniformSpace.toTopologicalSpace
 
-instance (hΦ : Isometry Φ) (hΨ : Isometry Ψ) : MetricSpace (GlueSpace hΦ hΨ) :=
+noncomputable instance (hΦ : Isometry Φ) (hΨ : Isometry Ψ) : MetricSpace (GlueSpace hΦ hΨ) :=
   inferInstanceAs <| MetricSpace <|
     @SeparationQuotient _ (gluePremetric hΦ hΨ).toUniformSpace.toTopologicalSpace
 
 /-- The canonical map from `X` to the space obtained by gluing isometric subsets in `X` and `Y`. -/
-def toGlueL (hΦ : Isometry Φ) (hΨ : Isometry Ψ) (x : X) : GlueSpace hΦ hΨ :=
+noncomputable def toGlueL (hΦ : Isometry Φ) (hΨ : Isometry Ψ) (x : X) : GlueSpace hΦ hΨ :=
   Quotient.mk'' (.inl x)
 
 /-- The canonical map from `Y` to the space obtained by gluing isometric subsets in `X` and `Y`. -/
-def toGlueR (hΦ : Isometry Φ) (hΨ : Isometry Ψ) (y : Y) : GlueSpace hΦ hΨ :=
+noncomputable def toGlueR (hΦ : Isometry Φ) (hΨ : Isometry Ψ) (y : Y) : GlueSpace hΦ hΨ :=
   Quotient.mk'' (.inr y)
 
-instance inhabitedLeft (hΦ : Isometry Φ) (hΨ : Isometry Ψ) [Inhabited X] :
+noncomputable instance inhabitedLeft (hΦ : Isometry Φ) (hΨ : Isometry Ψ) [Inhabited X] :
     Inhabited (GlueSpace hΦ hΨ) :=
   ⟨toGlueL _ _ default⟩
 
-instance inhabitedRight (hΦ : Isometry Φ) (hΨ : Isometry Ψ) [Inhabited Y] :
+noncomputable instance inhabitedRight (hΦ : Isometry Φ) (hΨ : Isometry Ψ) [Inhabited Y] :
     Inhabited (GlueSpace hΦ hΨ) :=
   ⟨toGlueR _ _ default⟩
 

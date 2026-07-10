@@ -35,8 +35,6 @@ type class and the main results are the instances `UniformSpace.Completion.Field
 
 @[expose] public section
 
-noncomputable section
-
 open uniformity Topology
 
 open Set UniformSpace UniformSpace.Completion Filter
@@ -64,7 +62,7 @@ instance (priority := 100) [T0Space K] : Nontrivial (hat K) :=
 variable {K}
 
 /-- extension of inversion to the completion of a field. -/
-def hatInv : hat K → hat K :=
+noncomputable def hatInv : hat K → hat K :=
   isDenseInducing_coe.extend fun x : K => (↑x⁻¹ : hat K)
 
 @[fun_prop]
@@ -97,7 +95,7 @@ open scoped Classical in
 The value of `hat_inv` at zero is not really specified, although it's probably zero.
 Here we explicitly enforce the `inv_zero` axiom.
 -/
-instance instInvCompletion : Inv (hat K) :=
+noncomputable instance instInvCompletion : Inv (hat K) :=
   ⟨fun x => if x = 0 then 0 else hatInv x⟩
 
 variable [IsTopologicalDivisionRing K]
@@ -146,7 +144,7 @@ theorem mul_hatInv_cancel {x : hat K} (x_ne : x ≠ 0) : x * hatInv x = 1 := by
   replace fxclo := closure_mono this fxclo
   rwa [closure_singleton, mem_singleton_iff] at fxclo
 
-instance instField : Field (hat K) where
+noncomputable instance instField : Field (hat K) where
   mul_inv_cancel := fun x x_ne => by simp only [Inv.inv, if_neg x_ne, mul_hatInv_cancel x_ne]
   inv_zero := by simp only [Inv.inv, ite_true]
   -- TODO: use a better defeq

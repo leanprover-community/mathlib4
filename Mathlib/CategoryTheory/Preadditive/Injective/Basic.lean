@@ -16,8 +16,6 @@ An object `J` is injective iff every morphism into `J` can be obtained by extend
 @[expose] public section
 
 
-noncomputable section
-
 open CategoryTheory Limits Opposite
 
 universe v v₁ v₂ u₁ u₂
@@ -75,7 +73,7 @@ namespace Injective
 /--
 Let `J` be injective and `g` a morphism into `J`, then `g` can be factored through any monomorphism.
 -/
-def factorThru {J X Y : C} [Injective J] (g : X ⟶ J) (f : X ⟶ Y) [Mono f] : Y ⟶ J :=
+noncomputable def factorThru {J X Y : C} [Injective J] (g : X ⟶ J) (f : X ⟶ Y) [Mono f] : Y ⟶ J :=
   (Injective.factors g f).choose
 
 @[reassoc (attr := simp)]
@@ -215,7 +213,7 @@ lemma exists_presentation (X : C) : ∃ (p : InjectivePresentation X), IsZero X 
 /-- `Injective.under X` provides an arbitrarily chosen injective object equipped with
 a monomorphism `Injective.ι : X ⟶ Injective.under X`.
 -/
-def under (X : C) : C :=
+noncomputable def under (X : C) : C :=
   (exists_presentation X).choose.J
 
 instance injective_under (X : C) : Injective (under X) :=
@@ -224,7 +222,7 @@ instance injective_under (X : C) : Injective (under X) :=
 /-- The monomorphism `Injective.ι : X ⟶ Injective.under X`
 from the arbitrarily chosen injective object under `X`.
 -/
-def ι (X : C) : X ⟶ under X :=
+noncomputable def ι (X : C) : X ⟶ under X :=
   (exists_presentation X).choose.f
 
 instance ι_mono (X : C) : Mono (ι X) :=
@@ -241,7 +239,7 @@ variable [HasZeroMorphisms C] {X Y : C} (f : X ⟶ Y) [HasCokernel f]
 /-- When `C` has enough injectives, the object `Injective.syzygies f` is
 an arbitrarily chosen injective object under `cokernel f`.
 -/
-def syzygies : C :=
+noncomputable def syzygies : C :=
   under (cokernel f)
 deriving Injective
 
@@ -251,7 +249,7 @@ deriving Injective
 
 (When `C` is abelian, we have `exact f (injective.d f)`.)
 -/
-abbrev d : Y ⟶ syzygies f :=
+noncomputable abbrev d : Y ⟶ syzygies f :=
   cokernel.π f ≫ ι (cokernel f)
 
 end

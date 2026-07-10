@@ -15,8 +15,6 @@ The structure of a metric space on `ℕ+` is introduced in this file, induced fr
 
 public section
 
-noncomputable section
-
 open Metric
 
 namespace PNat

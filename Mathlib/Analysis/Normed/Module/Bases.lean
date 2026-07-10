@@ -74,8 +74,6 @@ This file provides a unified structure `GeneralSchauderBasis` that captures both
 
 @[expose] public section
 
-noncomputable section
-
 open Filter Topology LinearMap Set ENNReal NNReal
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
@@ -465,7 +463,7 @@ lemma exists_coeff (n : ℕ) (x : X) :
   exact Submodule.mem_span_singleton.mp (hspan.symm ▸ LinearMap.mem_range_self S x)
 
 /-- The coefficient functional value for the basis construction. -/
-def basisCoeff (n : ℕ) (x : X) : 𝕜 :=
+noncomputable def basisCoeff (n : ℕ) (x : X) : 𝕜 :=
   Classical.choose (exists_coeff D n x)
 
 /-- The coefficient satisfies `basisCoeff D n x • D.e n = (succSub D.P n) x`. -/
@@ -475,7 +473,7 @@ lemma basisCoeff_spec (n : ℕ) (x : X) :
   Classical.choose_spec (exists_coeff D n x)
 
 /-- Constructs a Schauder basis from rank one decomposition. -/
-def basis : SchauderBasis 𝕜 X :=
+noncomputable def basis : SchauderBasis 𝕜 X :=
   let coeff := basisCoeff D
   have hcoeff : ∀ n x, (succSub D.P n) x = coeff n x • D.e n := fun n x ↦
     (basisCoeff_spec D n x).symm

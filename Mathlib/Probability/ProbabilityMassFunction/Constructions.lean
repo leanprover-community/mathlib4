@@ -33,7 +33,7 @@ universe u v
 
 namespace PMF
 
-noncomputable section
+section
 
 variable {α β γ : Type*}
 
@@ -42,7 +42,7 @@ open NNReal ENNReal Finset MeasureTheory
 section Map
 
 /-- The functorial action of a function on a `PMF`. -/
-def map (f : α → β) (p : PMF α) : PMF β :=
+noncomputable def map (f : α → β) (p : PMF α) : PMF β :=
   bind p (pure ∘ f)
 
 variable (f : α → β) (p : PMF α) (b : β)
@@ -109,7 +109,7 @@ end Map
 section Seq
 
 /-- The monadic sequencing operation for `PMF`. -/
-def seq (q : PMF (α → β)) (p : PMF α) : PMF β :=
+noncomputable def seq (q : PMF (α → β)) (p : PMF α) : PMF β :=
   q.bind fun m => p.bind fun a => pure (m a)
 
 variable (q : PMF (α → β)) (p : PMF α) (b : β)
@@ -151,7 +151,7 @@ example {R : Type u} [Ring R] (x : PMF ℕ) : PMF R := do
 ```
 where `x` is in universe `0`, but the return value is in universe `u`.
 -/
-instance : ULiftable PMF.{u} PMF.{v} where
+noncomputable instance : ULiftable PMF.{u} PMF.{v} where
   congr e :=
     { toFun := map e, invFun := map e.symm
       left_inv := fun a => by simp [map_comp, map_id]
@@ -244,7 +244,7 @@ section normalize
 
 /-- Given an `f` with non-zero and non-infinite sum, get a `PMF` by normalizing `f` by its `tsum`.
 -/
-def normalize (f : α → ℝ≥0∞) (hf0 : tsum f ≠ 0) (hf : tsum f ≠ ∞) : PMF α :=
+noncomputable def normalize (f : α → ℝ≥0∞) (hf0 : tsum f ≠ 0) (hf : tsum f ≠ ∞) : PMF α :=
   ⟨fun a => f a * (∑' x, f x)⁻¹,
     ENNReal.summable.hasSum_iff.2 (ENNReal.tsum_mul_right.trans (ENNReal.mul_inv_cancel hf0 hf))⟩
 
@@ -264,7 +264,7 @@ end normalize
 section Filter
 
 /-- Create new `PMF` by filtering on a set with non-zero measure and normalizing. -/
-def filter (p : PMF α) (s : Set α) (h : ∃ a ∈ s, a ∈ p.support) : PMF α :=
+noncomputable def filter (p : PMF α) (s : Set α) (h : ∃ a ∈ s, a ∈ p.support) : PMF α :=
   PMF.normalize (s.indicator p) (by simpa using h) (p.tsum_coe_indicator_ne_top s)
 
 variable {p : PMF α} {s : Set α} (h : ∃ a ∈ s, a ∈ p.support)

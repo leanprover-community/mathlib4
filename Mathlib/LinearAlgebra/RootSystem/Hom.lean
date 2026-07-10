@@ -52,8 +52,6 @@ given in SGA III Exp. 21 Section 6.
 
 open Set Function
 
-noncomputable section
-
 variable {ι R M N : Type*} [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
 
 namespace RootPairing
@@ -270,7 +268,7 @@ add_decl_doc Equiv.toHom
 namespace Equiv
 
 /-- The linear equivalence of weight spaces given by an equivalence of root pairings. -/
-def weightEquiv (e : RootPairing.Equiv P Q) : M ≃ₗ[R] M₂ :=
+noncomputable def weightEquiv (e : RootPairing.Equiv P Q) : M ≃ₗ[R] M₂ :=
     LinearEquiv.ofBijective _ e.bijective_weightMap
 
 @[simp]
@@ -290,7 +288,7 @@ lemma weightMap_weightEquiv_symm (e : RootPairing.Equiv P Q) (m : M₂) :
   exact LinearEquiv.apply_symm_apply (weightEquiv P Q e) m
 
 /-- The contravariant equivalence of coweight spaces given by an equivalence of root pairings. -/
-def coweightEquiv (e : RootPairing.Equiv P Q) : N₂ ≃ₗ[R] N :=
+noncomputable def coweightEquiv (e : RootPairing.Equiv P Q) : N₂ ≃ₗ[R] N :=
   LinearEquiv.ofBijective _ e.bijective_coweightMap
 
 @[simp]
@@ -409,6 +407,7 @@ lemma coweightEquiv_mul {P : RootPairing ι R M N} (x y : RootPairing.Equiv P P)
   rfl
 
 /-- The inverse of a root pairing equivalence. -/
+noncomputable
 def symm {ι₂ M₂ N₂ : Type*} [AddCommGroup M₂] [Module R M₂] [AddCommGroup N₂] [Module R N₂]
     (P : RootPairing ι R M N) (Q : RootPairing ι₂ R M₂ N₂) (f : RootPairing.Equiv P Q) :
     RootPairing.Equiv Q P where
@@ -466,7 +465,7 @@ lemma inv_indexEquiv {ι₂ M₂ N₂ : Type*} [AddCommGroup M₂] [Module R M�
   rfl
 
 /-- Equivalences form a group. -/
-instance (P : RootPairing ι R M N) : Group (RootPairing.Equiv P P) where
+noncomputable instance (P : RootPairing ι R M N) : Group (RootPairing.Equiv P P) where
   mul := comp
   mul_assoc := comp_assoc
   one := id P
@@ -483,7 +482,7 @@ instance (P : RootPairing ι R M N) : Group (RootPairing.Equiv P P) where
 
 /-- For finite roots systems in characteristic zero, a linear equivalence preserving roots, also
 preserves coroots, and is thus an equivalence of root systems. -/
-def mk' [IsDomain R] [CharZero R] [Module.IsTorsionFree R M₂] [Finite ι₂]
+noncomputable def mk' [IsDomain R] [CharZero R] [Module.IsTorsionFree R M₂] [Finite ι₂]
     (P : RootPairing ι R M N) [P.IsRootSystem] (Q : RootPairing ι₂ R M₂ N₂) [Q.IsRootSystem]
     (f : M ≃ₗ[R] M₂) (e : ι ≃ ι₂) (hf : ∀ i, f (P.root i) = Q.root (e i)) :
     P.Equiv Q where
@@ -514,7 +513,7 @@ namespace Equiv
 
 /-- The isomorphism between the automorphism group of a root pairing and the group of invertible
 endomorphisms. -/
-def toEndUnit (P : RootPairing ι R M N) : Aut P ≃* (End P)ˣ where
+noncomputable def toEndUnit (P : RootPairing ι R M N) : Aut P ≃* (End P)ˣ where
   toFun f :=
   { val := f.toHom
     inv := (Equiv.symm P P f).toHom
@@ -557,7 +556,7 @@ lemma toEndUnit_inv (P : RootPairing ι R M N) (g : Aut P) :
 
 /-- The weight space representation of automorphisms -/
 @[simps]
-def weightHom (P : RootPairing ι R M N) : Aut P →* (M ≃ₗ[R] M) where
+noncomputable def weightHom (P : RootPairing ι R M N) : Aut P →* (M ≃ₗ[R] M) where
   toFun := weightEquiv P P
   map_one' := by ext; simp
   map_mul' x y := by ext; simp
@@ -581,7 +580,7 @@ lemma weightEquiv_inv {P : RootPairing ι R M N} (g : Aut P) :
 
 /-- The coweight space representation of automorphisms -/
 @[simps]
-def coweightHom (P : RootPairing ι R M N) : Aut P →* (N ≃ₗ[R] N)ᵐᵒᵖ where
+noncomputable def coweightHom (P : RootPairing ι R M N) : Aut P →* (N ≃ₗ[R] N)ᵐᵒᵖ where
   toFun g := MulOpposite.op (coweightEquiv P P g)
   map_one' := by
     simp only [MulOpposite.op_eq_one_iff]
@@ -666,7 +665,7 @@ lemma reflection_inv (P : RootPairing ι R M N) (i : ι) :
   · exact LinearMap.ext_iff.mpr (fun x => by simp [← coweightEquiv_apply])
   · exact _root_.Equiv.ext (fun j => by simp)
 
-instance : DistribMulAction P.Aut M where
+noncomputable instance : DistribMulAction P.Aut M where
   smul w x := weightHom P w x
   one_smul _ := rfl
   mul_smul _ _ _ := rfl
@@ -680,7 +679,7 @@ instance : DistribMulAction P.Aut M where
   simpa using! (congr_fun g.root_weightMap i).symm
 
 open MulOpposite in
-instance : DistribMulAction P.Autᵐᵒᵖ N where
+noncomputable instance : DistribMulAction P.Autᵐᵒᵖ N where
   smul w x := unop (coweightHom P (unop w)) x
   one_smul _ := rfl
   mul_smul _ _ _ := rfl

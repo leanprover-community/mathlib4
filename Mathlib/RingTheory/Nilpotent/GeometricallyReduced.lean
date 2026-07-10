@@ -42,8 +42,6 @@ public section
 
 open TensorProduct
 
-noncomputable section
-
 namespace Algebra
 
 variable {k A : Type*} [Field k] [Ring A] [Algebra k A]

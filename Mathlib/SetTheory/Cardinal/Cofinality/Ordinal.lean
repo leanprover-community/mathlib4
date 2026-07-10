@@ -26,7 +26,7 @@ cofinality of the ordinal `o` when viewed as a linear order.
   write its cofinality as `c.ord.cof`.
 -/
 
-public noncomputable section
+public section
 
 open Function Cardinal Set Order
 open scoped Ordinal
@@ -45,7 +45,7 @@ namespace Ordinal
 /-- The cofinality on an ordinal is the `Order.cof` of any isomorphic linear order.
 
 In particular, `cof 0 = 0` and `cof (succ o) = 1`. -/
-def cof (o : Ordinal.{u}) : Cardinal.{u} :=
+noncomputable def cof (o : Ordinal.{u}) : Cardinal.{u} :=
   o.liftOnWellOrder (fun α _ _ ↦ Order.cof α) fun _ _ _ _ _ _ h ↦
     let ⟨f⟩ := type_eq.1 h
     (OrderIso.ofRelIsoLT f).cof_congr

@@ -148,7 +148,7 @@ instance [F.Final] [G.Final] : (F.prod' G).Final :=
 
 end
 
-noncomputable section SmallCategory
+section SmallCategory
 
 open MonoidalCategory CartesianMonoidalCategory
 

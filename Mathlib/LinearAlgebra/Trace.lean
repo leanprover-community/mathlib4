@@ -28,8 +28,6 @@ linear map, trace, diagonal
 
 @[expose] public section
 
-noncomputable section
-
 universe u v w
 
 namespace LinearMap
@@ -45,7 +43,7 @@ variable {κ : Type*} [DecidableEq κ] [Fintype κ]
 variable (b : Basis ι R M) (c : Basis κ R M)
 
 /-- The trace of an endomorphism given a basis. -/
-def traceAux : (M →ₗ[R] M) →ₗ[R] R :=
+noncomputable def traceAux : (M →ₗ[R] M) →ₗ[R] R :=
   Matrix.traceLinearMap ι R R ∘ₗ ↑(LinearMap.toMatrix b b)
 
 -- Can't be `simp` because it would cause a loop.
@@ -72,7 +70,7 @@ theorem traceAux_eq : traceAux R b = traceAux R c :=
 variable (M) in
 open scoped Classical in
 /-- Trace of an endomorphism independent of basis. -/
-def trace : (M →ₗ[R] M) →ₗ[R] R :=
+noncomputable def trace : (M →ₗ[R] M) →ₗ[R] R :=
   if H : ∃ s : Finset M, Nonempty (Basis s R M) then traceAux R H.choose_spec.some else 0
 
 open scoped Classical in

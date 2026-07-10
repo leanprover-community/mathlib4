@@ -38,7 +38,7 @@ variable {H : Type u₂} [Category.{v₂} H]
 variable (G : Grothendieck F ⥤ H)
 
 
-noncomputable section
+section
 
 variable [∀ {X Y : C} (f : X ⟶ Y), HasColimit ((F.map f).toFunctor ⋙ Grothendieck.ι F Y ⋙ G)]
 
@@ -52,7 +52,7 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- A functor taking a colimit on each fiber of a functor `G : Grothendieck F ⥤ H`. -/
 @[simps]
-def fiberwiseColimit : C ⥤ H where
+noncomputable def fiberwiseColimit : C ⥤ H where
   obj X := colimit (Grothendieck.ι F X ⋙ G)
   map {X Y} f := colimMap (whiskerRight (Grothendieck.ιNatTrans f) G ≫
     (associator _ _ _).hom) ≫ colimit.pre (Grothendieck.ι F Y ⋙ G) (F.map f).toFunctor
@@ -91,6 +91,7 @@ variable (H) (F) in
 /-- Similar to `colimit` and `colim`, taking fiberwise colimits is a functor
 `(Grothendieck F ⥤ H) ⥤ (C ⥤ H)` between functor categories. -/
 @[simps]
+noncomputable
 def fiberwiseColim [∀ c, HasColimitsOfShape (F.obj c) H] : (Grothendieck F ⥤ H) ⥤ (C ⥤ H) where
   obj G := fiberwiseColimit G
   map α :=
@@ -104,7 +105,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- Every functor `G : Grothendieck F ⥤ H` induces a natural transformation from `G` to the
 composition of the forgetful functor on `Grothendieck F` with the fiberwise colimit on `G`. -/
 @[simps]
-def natTransIntoForgetCompFiberwiseColimit :
+noncomputable def natTransIntoForgetCompFiberwiseColimit :
     G ⟶ Grothendieck.forget F ⋙ fiberwiseColimit G where
   app X := colimit.ι (Grothendieck.ι F X.base ⋙ G) X.fiber
   naturality _ _ f := by
@@ -123,7 +124,7 @@ variable {G} in
 /-- A cocone on a functor `G : Grothendieck F ⥤ H` induces a cocone on the fiberwise colimit
 on `G`. -/
 @[simps]
-def coconeFiberwiseColimitOfCocone (c : Cocone G) : Cocone (fiberwiseColimit G) where
+noncomputable def coconeFiberwiseColimitOfCocone (c : Cocone G) : Cocone (fiberwiseColimit G) where
   pt := c.pt
   ι := { app := fun X => colimit.desc _ (c.whisker (Grothendieck.ι F X)),
          naturality := fun _ _ f => by dsimp; ext; simp }
@@ -133,7 +134,7 @@ set_option backward.isDefEq.respectTransparency false in
 variable {G} in
 /-- If `c` is a colimit cocone on `G : Grothendieck F ⥤ H`, then the induced cocone on the
 fiberwise colimit on `G` is a colimit cocone, too. -/
-def isColimitCoconeFiberwiseColimitOfCocone {c : Cocone G} (hc : IsColimit c) :
+noncomputable def isColimitCoconeFiberwiseColimitOfCocone {c : Cocone G} (hc : IsColimit c) :
     IsColimit (coconeFiberwiseColimitOfCocone c) where
   desc s := hc.desc <| Cocone.mk s.pt <| natTransIntoForgetCompFiberwiseColimit G ≫
     whiskerLeft (Grothendieck.forget F) s.ι
@@ -156,7 +157,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- For a functor `G : Grothendieck F ⥤ H`, every cocone over `fiberwiseColimit G` induces a
 cocone over `G` itself. -/
 @[simps]
-def coconeOfCoconeFiberwiseColimit (c : Cocone (fiberwiseColimit G)) : Cocone G where
+noncomputable def coconeOfCoconeFiberwiseColimit (c : Cocone (fiberwiseColimit G)) : Cocone G where
   pt := c.pt
   ι := { app := fun X => colimit.ι (Grothendieck.ι F X.base ⋙ G) X.fiber ≫ c.ι.app X.base
          naturality := fun {X Y} ⟨f, g⟩ => by
@@ -172,6 +173,7 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- If a cocone `c` over a functor `G : Grothendieck F ⥤ H` is a colimit, then the induced cocone
 `coconeOfFiberwiseCocone G c` -/
+noncomputable
 def isColimitCoconeOfFiberwiseCocone {c : Cocone (fiberwiseColimit G)} (hc : IsColimit c) :
     IsColimit (coconeOfCoconeFiberwiseColimit c) where
   desc s := hc.desc <| Cocone.mk s.pt <|
@@ -197,7 +199,7 @@ lemma hasColimit_of_hasColimit_fiberwiseColimit_of_hasColimit : HasColimit G whe
 /-- For every functor `G` on the Grothendieck construction `Grothendieck F`, if `G` has a colimit
 and every fiber of `G` has a colimit, then taking this colimit is isomorphic to first taking the
 fiberwise colimit and then the colimit of the resulting functor. -/
-def colimitFiberwiseColimitIso : colimit (fiberwiseColimit G) ≅ colimit G :=
+noncomputable def colimitFiberwiseColimitIso : colimit (fiberwiseColimit G) ≅ colimit G :=
   IsColimit.coconePointUniqueUpToIso (colimit.isColimit (fiberwiseColimit G))
     (isColimitCoconeFiberwiseColimitOfCocone (colimit.isColimit _))
 
@@ -225,7 +227,7 @@ theorem hasColimitsOfShape_grothendieck [∀ X, HasColimitsOfShape (F.obj X) H]
     [HasColimitsOfShape C H] : HasColimitsOfShape (Grothendieck F) H where
   has_colimit _ := hasColimit_of_hasColimit_fiberwiseColimit_of_hasColimit _
 
-noncomputable section FiberwiseColim
+section FiberwiseColim
 
 variable [∀ (c : C), HasColimitsOfShape (↑(F.obj c)) H] [HasColimitsOfShape C H]
 
@@ -234,14 +236,14 @@ set_option backward.isDefEq.respectTransparency false in
 /-- The isomorphism `colimitFiberwiseColimitIso` induces an isomorphism of functors `(J ⥤ C) ⥤ C`
 between `fiberwiseColim F H ⋙ colim` and `colim`. -/
 @[simps!]
-def fiberwiseColimCompColimIso : fiberwiseColim F H ⋙ colim ≅ colim :=
+noncomputable def fiberwiseColimCompColimIso : fiberwiseColim F H ⋙ colim ≅ colim :=
   NatIso.ofComponents (fun G => colimitFiberwiseColimitIso G)
     fun _ => by (iterate 2 apply colimit.hom_ext; intro); simp
 
 /-- Composing `fiberwiseColim F H` with the evaluation functor `(evaluation C H).obj c` is
 naturally isomorphic to precomposing the Grothendieck inclusion `Grothendieck.ι` to `colim`. -/
 @[simps!]
-def fiberwiseColimCompEvaluationIso (c : C) :
+noncomputable def fiberwiseColimCompEvaluationIso (c : C) :
     fiberwiseColim F H ⋙ (evaluation C H).obj c ≅
       (whiskeringLeft _ _ _).obj (Grothendieck.ι F c) ⋙ colim :=
   Iso.refl _

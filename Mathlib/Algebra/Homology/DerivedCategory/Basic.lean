@@ -58,7 +58,7 @@ instance should be obtained at the beginning of the proof, using the term
 
 -/
 
-@[expose] public noncomputable section
+@[expose] public section
 
 assert_not_exists TwoSidedIdeal
 
@@ -78,7 +78,7 @@ abbrev HasDerivedCategory := MorphismProperty.HasLocalization.{w}
 with respect to quasi-isomorphisms. This should be used only while proving statements
 which do not involve the derived category. -/
 @[instance_reducible]
-def HasDerivedCategory.standard : HasDerivedCategory.{max u v} C :=
+noncomputable def HasDerivedCategory.standard : HasDerivedCategory.{max u v} C :=
   MorphismProperty.HasLocalization.standard _
 
 variable [HasDerivedCategory.{w} C]
@@ -137,7 +137,7 @@ instance : Qh.IsLocalization (HomotopyCategory.subcategoryAcyclic C).trW := by
   rw [← HomotopyCategory.quasiIso_eq_trW_subcategoryAcyclic]
   infer_instance
 
-instance : Preadditive (DerivedCategory C) :=
+noncomputable instance : Preadditive (DerivedCategory C) :=
   Localization.preadditive Qh (HomotopyCategory.subcategoryAcyclic C).trW
 
 instance : (Qh (C := C)).Additive :=
@@ -149,13 +149,13 @@ instance : (Q (C := C)).Additive :=
 instance : HasZeroObject (DerivedCategory C) :=
   Q.hasZeroObject_of_additive
 
-instance : HasShift (DerivedCategory C) ℤ :=
+noncomputable instance : HasShift (DerivedCategory C) ℤ :=
   HasShift.localized Qh (HomotopyCategory.subcategoryAcyclic C).trW ℤ
 
-instance : (Qh (C := C)).CommShift ℤ :=
+noncomputable instance : (Qh (C := C)).CommShift ℤ :=
   Functor.CommShift.localized Qh (HomotopyCategory.subcategoryAcyclic C).trW ℤ
 
-instance : (Q (C := C)).CommShift ℤ :=
+noncomputable instance : (Q (C := C)).CommShift ℤ :=
   Functor.CommShift.ofIso (quotientCompQhIso C) ℤ
 
 instance : NatTrans.CommShift (quotientCompQhIso C).hom ℤ :=
@@ -166,7 +166,7 @@ instance (n : ℤ) : (shiftFunctor (DerivedCategory C) n).Additive := by
     Qh (HomotopyCategory.subcategoryAcyclic C).trW]
   exact Functor.additive_of_iso (Qh.commShiftIso n)
 
-instance : Pretriangulated (DerivedCategory C) :=
+noncomputable instance : Pretriangulated (DerivedCategory C) :=
   Triangulated.Localization.pretriangulated
     Qh (HomotopyCategory.subcategoryAcyclic C).trW
 
@@ -234,12 +234,12 @@ variable (C)
 
 /-- The single functors `C ⥤ DerivedCategory C` for all `n : ℤ` along with
 their compatibilities with shifts. -/
-def singleFunctors : SingleFunctors C (DerivedCategory C) ℤ :=
+noncomputable def singleFunctors : SingleFunctors C (DerivedCategory C) ℤ :=
   (HomotopyCategory.singleFunctors C).postcomp Qh
 
 /-- The single functor `C ⥤ DerivedCategory C` which sends `X : C` to the
 single cochain complex with `X` sitting in degree `n : ℤ`. -/
-abbrev singleFunctor (n : ℤ) := (singleFunctors C).functor n
+noncomputable abbrev singleFunctor (n : ℤ) := (singleFunctors C).functor n
 
 set_option backward.defeqAttrib.useBackward true in
 instance (n : ℤ) : (singleFunctor C n).Additive := by
@@ -258,13 +258,13 @@ instance (n : ℤ) : (singleFunctor C n).Additive := by
 /-- The isomorphism
 `DerivedCategory.singleFunctors C ≅ (HomotopyCategory.singleFunctors C).postcomp Qh` given
 by the definition of `DerivedCategory.singleFunctors`. -/
-def singleFunctorsPostcompQhIso :
+noncomputable def singleFunctorsPostcompQhIso :
     singleFunctors C ≅ (HomotopyCategory.singleFunctors C).postcomp Qh :=
   Iso.refl _
 
 /-- The isomorphism
 `DerivedCategory.singleFunctors C ≅ (CochainComplex.singleFunctors C).postcomp Q`. -/
-def singleFunctorsPostcompQIso :
+noncomputable def singleFunctorsPostcompQIso :
     singleFunctors C ≅ (CochainComplex.singleFunctors C).postcomp Q :=
   (SingleFunctors.postcompFunctor C ℤ (Qh : _ ⥤ DerivedCategory C)).mapIso
     (HomotopyCategory.singleFunctorsPostcompQuotientIso C) ≪≫
@@ -290,7 +290,7 @@ lemma singleFunctorsPostcompQIso_inv_hom (n : ℤ) :
   rfl
 
 /-- The isomorphism `singleFunctor C n ≅ CochainComplex.singleFunctor C n ⋙ Q`. -/
-def singleFunctorIsoCompQ (n : ℤ) :
+noncomputable def singleFunctorIsoCompQ (n : ℤ) :
     singleFunctor C n ≅ CochainComplex.singleFunctor C n ⋙ Q := Iso.refl _
 
 lemma isIso_Q_map_iff_quasiIso {K L : CochainComplex C ℤ} (φ : K ⟶ L) :

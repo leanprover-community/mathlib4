@@ -21,8 +21,6 @@ and `MonoidAlgebra`.
 @[expose] public section
 
 
-noncomputable section
-
 open Finset
 
 universe u₁ u₂ u₃ u₄ u₅
@@ -40,7 +38,7 @@ variable [MulZeroClass β]
 
 /-- The product of `f g : α →₀ β` is the finitely supported function
   whose value at `a` is `f a * g a`. -/
-instance : Mul (α →₀ β) :=
+noncomputable instance : Mul (α →₀ β) :=
   ⟨zipWith (· * ·) (mul_zero 0)⟩
 
 theorem coe_mul (g₁ g₂ : α →₀ β) : ⇑(g₁ * g₂) = g₁ * g₂ :=
@@ -66,32 +64,32 @@ theorem support_mul [DecidableEq α] {g₁ g₂ : α →₀ β} :
     (g₁ * g₂).support ⊆ g₁.support ∩ g₂.support :=
   subset_inter support_mul_subset_left support_mul_subset_right
 
-instance : MulZeroClass (α →₀ β) :=
+noncomputable instance : MulZeroClass (α →₀ β) :=
   DFunLike.coe_injective.mulZeroClass _ coe_zero coe_mul
 
 end
 
-instance [SemigroupWithZero β] : SemigroupWithZero (α →₀ β) :=
+noncomputable instance [SemigroupWithZero β] : SemigroupWithZero (α →₀ β) :=
   DFunLike.coe_injective.semigroupWithZero _ coe_zero coe_mul
 
-instance [NonUnitalNonAssocSemiring β] : NonUnitalNonAssocSemiring (α →₀ β) :=
+noncomputable instance [NonUnitalNonAssocSemiring β] : NonUnitalNonAssocSemiring (α →₀ β) :=
   DFunLike.coe_injective.nonUnitalNonAssocSemiring _ coe_zero coe_add coe_mul fun _ _ ↦ rfl
 
-instance [NonUnitalSemiring β] : NonUnitalSemiring (α →₀ β) :=
+noncomputable instance [NonUnitalSemiring β] : NonUnitalSemiring (α →₀ β) :=
   DFunLike.coe_injective.nonUnitalSemiring _ coe_zero coe_add coe_mul fun _ _ ↦ rfl
 
-instance [NonUnitalCommSemiring β] : NonUnitalCommSemiring (α →₀ β) :=
+noncomputable instance [NonUnitalCommSemiring β] : NonUnitalCommSemiring (α →₀ β) :=
   DFunLike.coe_injective.nonUnitalCommSemiring _ coe_zero coe_add coe_mul fun _ _ ↦ rfl
 
-instance [NonUnitalNonAssocRing β] : NonUnitalNonAssocRing (α →₀ β) :=
+noncomputable instance [NonUnitalNonAssocRing β] : NonUnitalNonAssocRing (α →₀ β) :=
   DFunLike.coe_injective.nonUnitalNonAssocRing _ coe_zero coe_add coe_mul coe_neg coe_sub
     (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
-instance [NonUnitalRing β] : NonUnitalRing (α →₀ β) :=
+noncomputable instance [NonUnitalRing β] : NonUnitalRing (α →₀ β) :=
   DFunLike.coe_injective.nonUnitalRing _ coe_zero coe_add coe_mul coe_neg coe_sub (fun _ _ ↦ rfl)
     fun _ _ ↦ rfl
 
-instance [NonUnitalCommRing β] : NonUnitalCommRing (α →₀ β) :=
+noncomputable instance [NonUnitalCommRing β] : NonUnitalCommRing (α →₀ β) :=
   DFunLike.coe_injective.nonUnitalCommRing _ coe_zero coe_add coe_mul coe_neg coe_sub
     (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
@@ -104,9 +102,10 @@ lemma pointwise_smul_support_finite [Zero γ] [SMulZeroClass β γ] (f : α → 
 -- def rather than an instance.
 /-- Pointwise scalar multiplication given by `(f • g) x = f x • g x`. -/
 -- see Note [reducible non-instances]
-abbrev pointwiseScalar [Zero γ] [SMulZeroClass β γ] : SMul (α → β) (α →₀ γ) where
+noncomputable abbrev pointwiseScalar [Zero γ] [SMulZeroClass β γ] : SMul (α → β) (α →₀ γ) where
   smul f g := Finsupp.ofSupportFinite (fun a ↦ f a • g a) (pointwise_smul_support_finite ..)
 
+noncomputable
 instance pointwiseScalarSemiring [Semiring β] : SMul (α → β) (α →₀ β) := pointwiseScalar
 
 @[simp]
@@ -114,7 +113,7 @@ theorem coe_pointwise_smul [Semiring β] (f : α → β) (g : α →₀ β) : �
   rfl
 
 /-- The pointwise multiplicative action of functions on finitely supported functions -/
-instance pointwiseModule [Semiring β] : Module (α → β) (α →₀ β) :=
+noncomputable instance pointwiseModule [Semiring β] : Module (α → β) (α →₀ β) :=
   Function.Injective.module _ coeFnAddHom DFunLike.coe_injective coe_pointwise_smul
 
 instance [Semiring β] : IsScalarTower β (α → β) (α →₀ β) where

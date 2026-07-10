@@ -25,8 +25,6 @@ universe s t w' w v u
 
 variable {C : Type u} [Category.{v} C] {J : GrothendieckTopology C}
 
-noncomputable section
-
 namespace CategoryTheory.GrothendieckTopology
 
 variable {D : Type w} [Category.{t} D]
@@ -37,7 +35,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- An auxiliary definition to be used in the proof of the fact that
 `J.diagramFunctor D X` preserves limits. -/
 @[simps]
-def coneCompEvaluationOfConeCompDiagramFunctorCompEvaluation {X : C} {K : Type s}
+noncomputable def coneCompEvaluationOfConeCompDiagramFunctorCompEvaluation {X : C} {K : Type s}
     [SmallCategory K] {F : K ⥤ Cᵒᵖ ⥤ D} {W : J.Cover X} (i : W.Arrow)
     (E : Cone (F ⋙ J.diagramFunctor D X ⋙ (evaluation (J.Cover X)ᵒᵖ D).obj (op W))) :
     Cone (F ⋙ (evaluation _ _).obj (op i.Y)) where
@@ -52,6 +50,7 @@ def coneCompEvaluationOfConeCompDiagramFunctorCompEvaluation {X : C} {K : Type s
         simp only [Multiequalizer.lift_ι, Category.assoc] }
 
 /-- Auxiliary definition for `liftToDiagramLimitObj`. -/
+noncomputable
 def liftToDiagramLimitObjAux {X : C} {K : Type s} [SmallCategory K] [HasLimitsOfShape K D]
     {W : (J.Cover X)ᵒᵖ} (F : K ⥤ Cᵒᵖ ⥤ D)
     (E : Cone (F ⋙ J.diagramFunctor D X ⋙ (evaluation (J.Cover X)ᵒᵖ D).obj W))
@@ -73,6 +72,7 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- An auxiliary definition to be used in the proof of the fact that
 `J.diagramFunctor D X` preserves limits. -/
+noncomputable
 abbrev liftToDiagramLimitObj {X : C} {K : Type s} [SmallCategory K] [HasLimitsOfShape K D]
     {W : (J.Cover X)ᵒᵖ} (F : K ⥤ Cᵒᵖ ⥤ D)
     (E : Cone (F ⋙ J.diagramFunctor D X ⋙ (evaluation (J.Cover X)ᵒᵖ D).obj W)) :
@@ -130,7 +130,7 @@ variable [∀ X : C, Small.{t, max u v} (J.Cover X)ᵒᵖ]
 set_option backward.isDefEq.respectTransparency false in
 /-- An auxiliary definition to be used in the proof that `J.plusFunctor D` commutes
 with finite limits. -/
-def liftToPlusObjLimitObj {K : Type s} [SmallCategory K] [FinCategory K]
+noncomputable def liftToPlusObjLimitObj {K : Type s} [SmallCategory K] [FinCategory K]
     [HasLimitsOfShape K D] [PreservesLimitsOfShape K (forget D)]
     [ReflectsLimitsOfShape K (forget D)] (F : K ⥤ Cᵒᵖ ⥤ D) (X : C)
     (S : Cone (F ⋙ J.plusFunctor D ⋙ (evaluation Cᵒᵖ D).obj (op X))) :
@@ -283,15 +283,15 @@ instance preservesFiniteLimits_presheafToSheaf [PreservesLimits (forget D)]
 variable (J D)
 
 /-- `plusPlusSheaf` is isomorphic to an arbitrary choice of left adjoint. -/
-def plusPlusSheafIsoPresheafToSheaf : plusPlusSheaf J D ≅ presheafToSheaf J D :=
+noncomputable def plusPlusSheafIsoPresheafToSheaf : plusPlusSheaf J D ≅ presheafToSheaf J D :=
   (plusPlusAdjunction J D).leftAdjointUniq (sheafificationAdjunction J D)
 
 /-- `plusPlusFunctor` is isomorphic to `sheafification`. -/
-def plusPlusFunctorIsoSheafification : J.sheafification D ≅ sheafification J D :=
+noncomputable def plusPlusFunctorIsoSheafification : J.sheafification D ≅ sheafification J D :=
   Functor.isoWhiskerRight (plusPlusSheafIsoPresheafToSheaf J D) (sheafToPresheaf J D)
 
 /-- `plusPlus` is isomorphic to `sheafify`. -/
-def plusPlusIsoSheafify (P : Cᵒᵖ ⥤ D) : J.sheafify P ≅ sheafify J P :=
+noncomputable def plusPlusIsoSheafify (P : Cᵒᵖ ⥤ D) : J.sheafify P ≅ sheafify J P :=
   (sheafToPresheaf J D).mapIso ((plusPlusSheafIsoPresheafToSheaf J D).app P)
 
 set_option backward.defeqAttrib.useBackward true in

@@ -23,8 +23,6 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 
 @[expose] public section
 
-noncomputable section
-
 universe v u
 
 open MvPolynomial Opposite CategoryTheory
@@ -34,7 +32,7 @@ namespace CommRingCat
 /-- The free functor `Type u ⥤ CommRingCat` sending a type `X` to the multivariable (commutative)
 polynomials with variables `x : X`.
 -/
-def free : Type u ⥤ CommRingCat.{u} where
+noncomputable def free : Type u ⥤ CommRingCat.{u} where
   obj α := of (MvPolynomial α ℤ)
   map {X Y} f := ofHom (↑(rename f : _ →ₐ[ℤ] _) : MvPolynomial X ℤ →+* MvPolynomial Y ℤ)
 
@@ -48,7 +46,7 @@ theorem free_map_coe {α β : Type u} {f : α ⟶ β} : ⇑(free.map f) = ⇑(re
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The free-forgetful adjunction for commutative rings. -/
-def adj : free ⊣ forget CommRingCat.{u} :=
+noncomputable def adj : free ⊣ forget CommRingCat.{u} :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun _ _ ↦
         { toFun := fun f ↦ ↾(homEquiv f.hom)
@@ -88,7 +86,7 @@ def coyonedaUnique {n : Type v} [Unique n] : coyoneda.obj (op n) ≅ 𝟭 CommRi
 set_option backward.defeqAttrib.useBackward true in
 /-- The monoid algebra functor `CommGrpCat ⥤ R-Alg` given by `G ↦ R[G]`. -/
 @[simps]
-def monoidAlgebra (R : CommRingCat.{max u v}) : CommMonCat.{v} ⥤ Under R where
+noncomputable def monoidAlgebra (R : CommRingCat.{max u v}) : CommMonCat.{v} ⥤ Under R where
   obj G := Under.mk (CommRingCat.ofHom MonoidAlgebra.singleOneRingHom)
   map f := Under.homMk (CommRingCat.ofHom <| MonoidAlgebra.mapDomainRingHom R f.hom)
   map_comp f g := by ext : 2; apply MonoidAlgebra.ringHom_ext <;> intro <;> simp
@@ -96,7 +94,7 @@ def monoidAlgebra (R : CommRingCat.{max u v}) : CommMonCat.{v} ⥤ Under R where
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The adjunction `G ↦ R[G]` and `S ↦ Sˣ` between `CommGrpCat` and `R-Alg`. -/
-def monoidAlgebraAdj (R : CommRingCat.{u}) :
+noncomputable def monoidAlgebraAdj (R : CommRingCat.{u}) :
     monoidAlgebra R ⊣ Under.forget R ⋙ forget₂ _ _ where
   unit := { app G := CommMonCat.ofHom (MonoidAlgebra.of R G) }
   counit :=
@@ -112,7 +110,7 @@ def monoidAlgebraAdj (R : CommRingCat.{u}) :
   right_triangle_components S := by dsimp; ext; simp [MonoidAlgebra.liftNCRingHom]
 
 /-- The adjunction `G ↦ ℤ[G]` and `R ↦ Rˣ` between `CommGrpCat` and `CommRing`. -/
-def forget₂Adj {R : CommRingCat.{u}} (hR : Limits.IsInitial R) :
+noncomputable def forget₂Adj {R : CommRingCat.{u}} (hR : Limits.IsInitial R) :
     monoidAlgebra R ⋙ Under.forget R ⊣ forget₂ _ _ :=
   (monoidAlgebraAdj R).comp (Under.equivalenceOfIsInitial hR).toAdjunction
 

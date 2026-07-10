@@ -38,7 +38,7 @@ assumption, but one may use
 
 -/
 
-@[expose] public noncomputable section
+@[expose] public section
 
 universe w v u
 
@@ -76,7 +76,7 @@ instance : W.Q'.IsLocalization W := HasLocalization.hL
 
 /-- The constructed localized category. -/
 @[implicit_reducible]
-def HasLocalization.standard : HasLocalization.{max u v} W where
+noncomputable def HasLocalization.standard : HasLocalization.{max u v} W where
   L := W.Q
 
 end MorphismProperty

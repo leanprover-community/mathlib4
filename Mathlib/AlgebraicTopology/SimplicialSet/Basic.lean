@@ -121,21 +121,21 @@ def truncationCompTrunc {n m : ℕ} (h : m ≤ n) :
 
 open SimplexCategory
 
-noncomputable section
+section
 
 /-- The n-skeleton as a functor `SSet.Truncated n ⥤ SSet`. -/
-protected abbrev Truncated.sk (n : ℕ) : SSet.Truncated n ⥤ SSet.{u} :=
+protected noncomputable abbrev Truncated.sk (n : ℕ) : SSet.Truncated n ⥤ SSet.{u} :=
   SimplicialObject.Truncated.sk n
 
 /-- The n-coskeleton as a functor `SSet.Truncated n ⥤ SSet`. -/
-protected abbrev Truncated.cosk (n : ℕ) : SSet.Truncated n ⥤ SSet.{u} :=
+protected noncomputable abbrev Truncated.cosk (n : ℕ) : SSet.Truncated n ⥤ SSet.{u} :=
   SimplicialObject.Truncated.cosk n
 
 /-- The n-skeleton as an endofunctor on `SSet`. -/
-abbrev sk (n : ℕ) : SSet.{u} ⥤ SSet.{u} := SimplicialObject.sk n
+noncomputable abbrev sk (n : ℕ) : SSet.{u} ⥤ SSet.{u} := SimplicialObject.sk n
 
 /-- The n-coskeleton as an endofunctor on `SSet`. -/
-abbrev cosk (n : ℕ) : SSet.{u} ⥤ SSet.{u} := SimplicialObject.cosk n
+noncomputable abbrev cosk (n : ℕ) : SSet.{u} ⥤ SSet.{u} := SimplicialObject.cosk n
 
 end
 

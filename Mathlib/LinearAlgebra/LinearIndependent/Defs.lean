@@ -78,8 +78,6 @@ linearly dependent, linear dependence, linearly independent, linear independence
 
 assert_not_exists Cardinal
 
-noncomputable section
-
 open Function Module Set Submodule
 
 universe u' u
@@ -446,7 +444,7 @@ section repr
 /-- Canonical isomorphism between linear combinations and the span of linearly independent vectors.
 -/
 @[simps (rhsMd := default) apply_coe symm_apply]
-def LinearIndependent.linearCombinationEquiv (hv : LinearIndependent R v) :
+noncomputable def LinearIndependent.linearCombinationEquiv (hv : LinearIndependent R v) :
     (ι →₀ R) ≃ₗ[R] span R (range v) := by
   refine LinearEquiv.ofBijective (LinearMap.codRestrict (span R (range v))
     (Finsupp.linearCombination R v) ?_) ⟨hv.codRestrict _, ?_⟩
@@ -460,6 +458,7 @@ def LinearIndependent.linearCombinationEquiv (hv : LinearIndependent R v) :
 Given a family of linearly independent vectors, we can represent any vector in their span as
 a linear combination of these vectors. These are provided by this linear map.
 It is simply one direction of `LinearIndependent.linearCombinationEquiv`. -/
+noncomputable
 def LinearIndependent.repr (hv : LinearIndependent R v) : span R (range v) →ₗ[R] ι →₀ R :=
   hv.linearCombinationEquiv.symm
 

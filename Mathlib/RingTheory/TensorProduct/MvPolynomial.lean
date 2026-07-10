@@ -44,7 +44,7 @@ Let `Semiring R`, `Algebra R S` and `Module R N`.
 
 universe u v
 
-noncomputable section
+section
 
 namespace MvPolynomial
 
@@ -136,7 +136,7 @@ lemma aeval_one_tmul (f : σ → S) (p : MvPolynomial σ R) :
 
 variable (S σ ι) in
 /-- `S[X] ⊗[R] R[Y] ≃ S[X, Y]` -/
-def tensorEquivSum :
+noncomputable def tensorEquivSum :
     MvPolynomial σ S ⊗[R] MvPolynomial ι R ≃ₐ[S] MvPolynomial (σ ⊕ ι) S :=
   ((algebraTensorAlgEquiv _ _).restrictScalars _).trans
     ((sumAlgEquiv _ _ _).symm.trans (renameEquiv _ (.sumComm ι σ)))

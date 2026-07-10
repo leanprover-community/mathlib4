@@ -164,23 +164,23 @@ namespace HasSubobjectClassifier
 
 variable [HasSubobjectClassifier C]
 
-noncomputable section
+section
 variable (C)
 
 /-- Notation for the `Ω₀` in an arbitrary choice of a subobject classifier -/
-abbrev Ω₀ : C := HasSubobjectClassifier.exists_classifier.some.Ω₀
+noncomputable abbrev Ω₀ : C := HasSubobjectClassifier.exists_classifier.some.Ω₀
 
 @[deprecated (since := "2026-03-06")]
 alias _root_.CategoryTheory.HasClassifier.Ω₀ := Ω₀
 
 /-- Notation for the `Ω` in an arbitrary choice of a subobject classifier -/
-abbrev Ω : C := HasSubobjectClassifier.exists_classifier.some.Ω
+noncomputable abbrev Ω : C := HasSubobjectClassifier.exists_classifier.some.Ω
 
 @[deprecated (since := "2026-03-06")]
 alias _root_.CategoryTheory.HasClassifier.Ω := Ω
 
 /-- Notation for the "truth arrow" in an arbitrary choice of a subobject classifier -/
-abbrev truth : Ω₀ C ⟶ Ω C := HasSubobjectClassifier.exists_classifier.some.truth
+noncomputable abbrev truth : Ω₀ C ⟶ Ω C := HasSubobjectClassifier.exists_classifier.some.truth
 
 @[deprecated (since := "2026-03-06")]
 alias _root_.CategoryTheory.HasClassifier.truth := truth
@@ -188,7 +188,7 @@ alias _root_.CategoryTheory.HasClassifier.truth := truth
 variable {C} {U X : C} (m : U ⟶ X) [Mono m]
 
 /-- returns the characteristic morphism of the subobject `(m : U ⟶ X) [Mono m]` -/
-def χ : X ⟶ Ω C :=
+noncomputable def χ : X ⟶ Ω C :=
   HasSubobjectClassifier.exists_classifier.some.χ m
 
 @[deprecated (since := "2026-03-06")]

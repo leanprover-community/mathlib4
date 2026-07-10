@@ -77,7 +77,7 @@ it should not be hard to fill in the details.
 @[expose] public section
 
 
-noncomputable section
+section
 
 open Finset (antidiagonal mem_antidiagonal)
 
@@ -129,7 +129,7 @@ variable [Semiring R]
   of multivariate formal power series associating to each `a`
   the map sending `n : σ →₀ ℕ` to the value `a`
   and sending all other `x : σ →₀ ℕ` different from `n` to `0`. -/
-def monomial (n : σ →₀ ℕ) : R →ₗ[R] MvPowerSeries σ R :=
+noncomputable def monomial (n : σ →₀ ℕ) : R →ₗ[R] MvPowerSeries σ R :=
   letI := Classical.decEq σ
   LinearMap.single R (fun _ ↦ R) n
 
@@ -195,7 +195,7 @@ theorem ne_zero_iff_exists_coeff_ne_zero (f : MvPowerSeries σ R) :
 
 variable (m n : σ →₀ ℕ) (φ ψ : MvPowerSeries σ R)
 
-instance : One (MvPowerSeries σ R) :=
+noncomputable instance : One (MvPowerSeries σ R) :=
   ⟨monomial (0 : σ →₀ ℕ) 1⟩
 
 theorem coeff_one [DecidableEq σ] : coeff n (1 : MvPowerSeries σ R) = if n = 0 then 1 else 0 :=
@@ -207,12 +207,12 @@ theorem coeff_zero_one : coeff (R := R) (0 : σ →₀ ℕ) 1 = 1 :=
 theorem monomial_zero_one : monomial (R := R) (0 : σ →₀ ℕ) 1 = 1 :=
   rfl
 
-instance : AddMonoidWithOne (MvPowerSeries σ R) where
+noncomputable instance : AddMonoidWithOne (MvPowerSeries σ R) where
   natCast := fun n => monomial 0 n
   natCast_zero := by simp [Nat.cast]
   natCast_succ := by simp [Nat.cast, monomial_zero_one]
 
-instance : Mul (MvPowerSeries σ R) :=
+noncomputable instance : Mul (MvPowerSeries σ R) :=
   letI := Classical.decEq σ
   ⟨fun φ ψ n => ∑ p ∈ antidiagonal n, coeff p.1 φ * coeff p.2 ψ⟩
 
@@ -290,7 +290,7 @@ protected theorem mul_assoc (φ₁ φ₂ φ₃ : MvPowerSeries σ R) : φ₁ * �
   apply Finset.sum_nbij' (fun ⟨⟨_i, j⟩, ⟨k, l⟩⟩ ↦ ⟨(k, l + j), (l, j)⟩)
     (fun ⟨⟨i, _j⟩, ⟨k, l⟩⟩ ↦ ⟨(i + k, l), (i, k)⟩) <;> aesop (add simp [add_assoc, mul_assoc])
 
-instance : Semiring (MvPowerSeries σ R) where
+noncomputable instance : Semiring (MvPowerSeries σ R) where
   mul_one := MvPowerSeries.mul_one
   one_mul := MvPowerSeries.one_mul
   mul_assoc := MvPowerSeries.mul_assoc
@@ -301,16 +301,16 @@ instance : Semiring (MvPowerSeries σ R) where
 
 end Semiring
 
-instance [CommSemiring R] : CommSemiring (MvPowerSeries σ R) where
+noncomputable instance [CommSemiring R] : CommSemiring (MvPowerSeries σ R) where
   mul_comm := fun φ ψ =>
     ext fun n => by
       classical
       simpa only [coeff_mul, mul_comm] using
         sum_antidiagonal_swap n fun a b => coeff a φ * coeff b ψ
 
-instance [Ring R] : Ring (MvPowerSeries σ R) where
+noncomputable instance [Ring R] : Ring (MvPowerSeries σ R) where
 
-instance [CommRing R] : CommRing (MvPowerSeries σ R) where
+noncomputable instance [CommRing R] : CommRing (MvPowerSeries σ R) where
 
 section Semiring
 
@@ -331,7 +331,7 @@ theorem monomial_mul_monomial (m n : σ →₀ ℕ) (a b : R) :
     exact (h₁ <| le_add_left le_rfl).elim
 
 /-- The constant multivariate formal power series. -/
-def C : R →+* MvPowerSeries σ R :=
+noncomputable def C : R →+* MvPowerSeries σ R :=
   { monomial (0 : σ →₀ ℕ) with
     map_one' := rfl
     map_mul' := fun a b => Eq.trans (by simp) (monomial_mul_monomial _ _ a b).symm
@@ -371,7 +371,7 @@ theorem C_surjective [IsEmpty σ] : Function.Surjective (C : R → MvPowerSeries
 @[simp] theorem C_inj (r s : R) : (C r : MvPowerSeries σ R) = C s ↔ r = s := (C_injective).eq_iff
 
 /-- The variables of the multivariate formal power series ring. -/
-def X (s : σ) : MvPowerSeries σ R :=
+noncomputable def X (s : σ) : MvPowerSeries σ R :=
   monomial (single s 1) 1
 
 theorem coeff_X [DecidableEq σ] (n : σ →₀ ℕ) (s : σ) :
@@ -771,7 +771,7 @@ section Algebra
 variable {A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
   {B : Type*} [Semiring B] [Algebra R B]
 
-instance : Algebra R (MvPowerSeries σ A) where
+noncomputable instance : Algebra R (MvPowerSeries σ A) where
   algebraMap := (MvPowerSeries.map (algebraMap R A)).comp C
   commutes' := fun a φ => by
     ext n
@@ -949,7 +949,7 @@ variable (A : Type*) [CommSemiring A] [Algebra R A]
 /-- The coercion from multivariate polynomials to multivariate power series
 as an algebra homomorphism.
 -/
-def coeToMvPowerSeries.algHom : MvPolynomial σ R →ₐ[R] MvPowerSeries σ A :=
+noncomputable def coeToMvPowerSeries.algHom : MvPolynomial σ R →ₐ[R] MvPowerSeries σ A :=
   { (MvPowerSeries.map (algebraMap R A)).comp coeToMvPowerSeries.ringHom with
     commutes' := fun r => by simp [MvPowerSeries.algebraMap_apply] }
 
@@ -993,10 +993,10 @@ namespace MvPowerSeries
 
 variable {σ R A : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A] (f : MvPowerSeries σ R)
 
-instance algebraMvPolynomial : Algebra (MvPolynomial σ R) (MvPowerSeries σ A) :=
+noncomputable instance algebraMvPolynomial : Algebra (MvPolynomial σ R) (MvPowerSeries σ A) :=
   RingHom.toAlgebra (MvPolynomial.coeToMvPowerSeries.algHom A).toRingHom
 
-instance algebraMvPowerSeries : Algebra (MvPowerSeries σ R) (MvPowerSeries σ A) :=
+noncomputable instance algebraMvPowerSeries : Algebra (MvPowerSeries σ R) (MvPowerSeries σ A) :=
   (map (algebraMap R A)).toAlgebra
 
 variable (A)

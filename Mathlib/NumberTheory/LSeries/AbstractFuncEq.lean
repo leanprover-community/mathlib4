@@ -65,8 +65,6 @@ generalising the existing proofs in situ, or by a separate wrapper `FEPairWithLe
 applies a scaling factor to `f` and `g` to reduce to the `N = 1` case.
 -/
 
-noncomputable section
-
 open Real Complex Filter Topology Asymptotics Set MeasureTheory
 
 variable (E : Type*) [NormedAddCommGroup E] [NormedSpace ℂ E]
@@ -113,7 +111,7 @@ lemma WeakFEPair.h_feq' (P : WeakFEPair E) (x : ℝ) (hx : 0 < x) :
 
 /-- The hypotheses are symmetric in `f` and `g`, with the constant `ε` replaced by `ε⁻¹`. -/
 @[simps]
-def WeakFEPair.symm (P : WeakFEPair E) : WeakFEPair E where
+noncomputable def WeakFEPair.symm (P : WeakFEPair E) : WeakFEPair E where
   f := P.g
   g := P.f
   k := P.k
@@ -244,12 +242,12 @@ variable (P : WeakFEPair E)
 /-- Piecewise modified version of `f` with optimal asymptotics. We deliberately choose intervals
 which don't quite join up, so the function is `0` at `x = 1`, in order to maintain symmetry;
 there is no "good" choice of value at `1`. -/
-def f_modif : ℝ → E :=
+noncomputable def f_modif : ℝ → E :=
   (Ioi 1).indicator (fun x ↦ P.f x - P.f₀) +
   (Ioo 0 1).indicator (fun x ↦ P.f x - (P.ε * ↑(x ^ (-P.k))) • P.g₀)
 
 /-- Piecewise modified version of `g` with optimal asymptotics. -/
-def g_modif : ℝ → E :=
+noncomputable def g_modif : ℝ → E :=
   (Ioi 1).indicator (fun x ↦ P.g x - P.g₀) +
   (Ioo 0 1).indicator (fun x ↦ P.g x - (P.ε⁻¹ * ↑(x ^ (-P.k))) • P.f₀)
 
@@ -295,7 +293,7 @@ correction terms from `f` and `g`.
 
 (See `WeakFEPair.isStrongFEPair_toStrongFEPair` for the proof that this is actually a strong
 FE-pair.) -/
-def toStrongFEPair : WeakFEPair E where
+noncomputable def toStrongFEPair : WeakFEPair E where
   f := P.f_modif
   g := P.symm.f_modif
   k := P.k
@@ -373,10 +371,10 @@ lemma f_modif_aux2 [CompleteSpace E] {s : ℂ} (hs : P.k < re s) :
 
 /-- An entire function which differs from the Mellin transform of `f - f₀`, where defined, by a
 correction term of the form `A / s + B / (k - s)`. -/
-def Λ₀ : ℂ → E := mellin P.f_modif
+noncomputable def Λ₀ : ℂ → E := mellin P.f_modif
 
 /-- A meromorphic function which agrees with the Mellin transform of `f - f₀` where defined -/
-def Λ (s : ℂ) : E := P.Λ₀ s - (1 / s) • P.f₀ - (P.ε / (P.k - s)) • P.g₀
+noncomputable def Λ (s : ℂ) : E := P.Λ₀ s - (1 / s) • P.f₀ - (P.ε / (P.k - s)) • P.g₀
 
 lemma Λ₀_eq (s : ℂ) : P.Λ₀ s = P.Λ s + (1 / s) • P.f₀ + (P.ε / (P.k - s)) • P.g₀ := by
   unfold Λ Λ₀

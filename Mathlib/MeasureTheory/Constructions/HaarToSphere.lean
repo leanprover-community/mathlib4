@@ -37,7 +37,6 @@ open scoped Pointwise ENNReal NNReal
 
 local notation "dim" => Module.finrank ℝ
 
-noncomputable section
 namespace MeasureTheory
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
@@ -48,7 +47,7 @@ namespace Measure
 /-- If `μ` is an additive Haar measure on a normed space `E`,
 then `μ.toSphere` is the measure on the unit sphere in `E`
 such that `μ.toSphere s = Module.finrank ℝ E • μ (Set.Ioo (0 : ℝ) 1 • s)`. -/
-def toSphere (μ : Measure E) : Measure (sphere (0 : E) 1) :=
+noncomputable def toSphere (μ : Measure E) : Measure (sphere (0 : E) 1) :=
   dim E • ((μ.comap (Subtype.val ∘ (homeomorphUnitSphereProd E).symm)).restrict
     (univ ×ˢ Iio ⟨1, mem_Ioi.2 one_pos⟩)).fst
 
@@ -110,7 +109,7 @@ instance : IsFiniteMeasure μ.toSphere where
       measure_ball_lt_top.trans_le' <| measure_mono sdiff_subset
 
 /-- The measure on `(0, +∞)` that has density `(· ^ n)` with respect to the Lebesgue measure. -/
-def volumeIoiPow (n : ℕ) : Measure (Ioi (0 : ℝ)) :=
+noncomputable def volumeIoiPow (n : ℕ) : Measure (Ioi (0 : ℝ)) :=
   .withDensity (.comap Subtype.val volume) fun r ↦ .ofReal (r.1 ^ n)
 
 lemma volumeIoiPow_apply_Iio (n : ℕ) (x : Ioi (0 : ℝ)) :

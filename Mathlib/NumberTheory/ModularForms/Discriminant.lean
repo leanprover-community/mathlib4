@@ -42,12 +42,10 @@ open UpperHalfPlane hiding I
 
 open scoped Real Topology
 
-noncomputable section
-
 namespace ModularForm
 
 /-- The modular discriminant `Δ(z) = η(z) ^ 24`, where `η` is the Dedekind eta function. -/
-@[expose] public def discriminant (z : ℍ) := (eta z) ^ 24
+@[expose] public noncomputable def discriminant (z : ℍ) := (eta z) ^ 24
 
 local notation "Δ" => discriminant
 
@@ -232,7 +230,7 @@ open ModularForm
 local notation "Δ" => ModularForm.discriminant
 
 /-- The modular discriminant `Δ` as a cusp form of weight 12 and level 1. -/
-@[expose] def discriminant : CuspForm 𝒮ℒ 12 where
+@[expose] noncomputable def discriminant : CuspForm 𝒮ℒ 12 where
   toFun := Δ
   slash_action_eq' A hA := by
     obtain ⟨A, rfl⟩ := hA

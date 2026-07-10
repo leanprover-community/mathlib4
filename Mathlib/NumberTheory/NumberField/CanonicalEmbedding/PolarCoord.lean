@@ -58,7 +58,7 @@ namespace NumberField.mixedEmbedding
 open NumberField NumberField.InfinitePlace NumberField.mixedEmbedding ENNReal MeasureTheory
   MeasureTheory.Measure Real
 
-noncomputable section realMixedSpace
+section realMixedSpace
 
 /--
 The real mixed space `ℝ^r₁ × (ℝ × ℝ)^r₂` with `(r₁, r₂)` the signature of `K`.
@@ -93,7 +93,7 @@ The polar coordinate open partial homeomorphism of `ℝ^r₁ × (ℝ × ℝ)^r�
 the first component and mapping `(rᵢ cos θᵢ, rᵢ sin θᵢ)ᵢ` to `(rᵢ, θᵢ)ᵢ` on the second component.
 -/
 @[simps! apply target]
-def polarCoordReal : OpenPartialHomeomorph (realMixedSpace K) (realMixedSpace K) :=
+noncomputable def polarCoordReal : OpenPartialHomeomorph (realMixedSpace K) (realMixedSpace K) :=
   (OpenPartialHomeomorph.refl _).prod (OpenPartialHomeomorph.pi fun _ ↦ polarCoord)
 
 theorem measurable_polarCoordReal_symm :
@@ -114,6 +114,7 @@ open ContinuousLinearMap in
 /--
 The derivative of `polarCoordReal.symm`, see `hasFDerivAt_polarCoordReal_symm`.
 -/
+noncomputable
 def FDerivPolarCoordRealSymm : realMixedSpace K → realMixedSpace K →L[ℝ] realMixedSpace K :=
   fun x ↦ (fst ℝ _ _).prod <| (fderivPiPolarCoordSymm x.2).comp (snd ℝ _ _)
 
@@ -221,7 +222,7 @@ protected theorem lintegral_comp_polarCoord_symm (f : mixedSpace K → ℝ≥0�
 
 end mixedSpace
 
-noncomputable section polarSpace
+section polarSpace
 
 open MeasurableEquiv
 
@@ -237,7 +238,7 @@ The measurable equivalence between the `realMixedSpace` and the `polarSpace`. It
 homeomorphism, see `homeoRealMixedSpacePolarSpace`, but defining it in this way makes it easier
 to prove that it is volume preserving, see `volume_preserving_homeoRealMixedSpacePolarSpace`.
 -/
-def measurableEquivRealMixedSpacePolarSpace : realMixedSpace K ≃ᵐ polarSpace K :=
+noncomputable def measurableEquivRealMixedSpacePolarSpace : realMixedSpace K ≃ᵐ polarSpace K :=
   MeasurableEquiv.trans (prodCongr (refl _)
     (arrowProdEquivProdArrow ℝ ℝ _)) <|
     MeasurableEquiv.trans prodAssoc.symm <|
@@ -251,7 +252,7 @@ open scoped Classical in
 /--
 The homeomorphism between the `realMixedSpace` and the `polarSpace`.
 -/
-def homeoRealMixedSpacePolarSpace : realMixedSpace K ≃ₜ polarSpace K :=
+noncomputable def homeoRealMixedSpacePolarSpace : realMixedSpace K ≃ₜ polarSpace K :=
 { measurableEquivRealMixedSpacePolarSpace K with
   continuous_toFun := by
     change Continuous fun x : realMixedSpace K ↦ (fun w ↦ if hw : w.IsReal then x.1 ⟨w, hw⟩ else
@@ -303,6 +304,7 @@ space `ℝ^(r₁ + r₂) × ℝ^r₂` defined by sending `x` to `x w` or `‖x w
 real or complex for the first component, and to `Arg (x w)`, `w` complex, for the second component.
 -/
 @[simps!]
+noncomputable
 def polarSpaceCoord [NumberField K] : OpenPartialHomeomorph (mixedSpace K) (polarSpace K) :=
     (mixedEmbedding.polarCoord K).transHomeomorph (homeoRealMixedSpacePolarSpace K)
 

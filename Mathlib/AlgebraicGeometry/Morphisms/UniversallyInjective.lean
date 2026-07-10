@@ -27,8 +27,6 @@ purely inseparable residue field extensions (also known as a radical morphism), 
 
 public section
 
-noncomputable section
-
 open CategoryTheory CategoryTheory.Limits Opposite TopologicalSpace
 
 universe v u

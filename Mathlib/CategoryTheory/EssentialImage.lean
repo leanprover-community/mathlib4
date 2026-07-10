@@ -28,8 +28,6 @@ a functor decomposes into an essentially surjective functor and a fully faithful
 
 universe v₁ v₂ v₃ u₁ u₂ u₃
 
-noncomputable section
-
 namespace CategoryTheory
 
 variable {C : Type u₁} {D : Type u₂} {E : Type u₃}
@@ -45,7 +43,7 @@ This is the "non-evil" way of describing the image of a functor.
 def essImage (F : C ⥤ D) : ObjectProperty D := fun Y => ∃ X : C, Nonempty (F.obj X ≅ Y)
 
 /-- Get the witnessing object that `Y` is in the subcategory given by `F`. -/
-def essImage.witness {Y : D} (h : F.essImage Y) : C :=
+noncomputable def essImage.witness {Y : D} (h : F.essImage Y) : C :=
   h.choose
 
 lemma isoClosure_eq_essImage : ObjectProperty.isoClosure (· ∈ Set.range F.obj) = F.essImage := by
@@ -53,7 +51,7 @@ lemma isoClosure_eq_essImage : ObjectProperty.isoClosure (· ∈ Set.range F.obj
   exact ⟨fun ⟨_, ⟨Z, rfl⟩, ⟨e⟩⟩ ↦ ⟨Z, ⟨e.symm⟩⟩, fun ⟨Z, ⟨e⟩⟩ ↦ ⟨F.obj Z, ⟨Z, rfl⟩, ⟨e.symm⟩⟩⟩
 
 /-- Extract the isomorphism between `F.obj h.witness` and `Y` itself. -/
-def essImage.getIso {Y : D} (h : F.essImage Y) : F.obj h.witness ≅ Y :=
+noncomputable def essImage.getIso {Y : D} (h : F.essImage Y) : F.obj h.witness ≅ Y :=
   Classical.choice h.choose_spec
 
 /-- Being in the essential image is a "hygienic" property: it is preserved under isomorphism. -/
@@ -122,12 +120,12 @@ variable [F.EssSurj]
 /-- Given an essentially surjective functor, we can find a preimage for every object `Y` in the
     codomain. Applying the functor to this preimage will yield an object isomorphic to `Y`, see
     `obj_obj_preimage_iso`. -/
-def objPreimage (Y : D) : C :=
+noncomputable def objPreimage (Y : D) : C :=
   essImage.witness (EssSurj.mem_essImage F Y)
 
 /-- Applying an essentially surjective functor to a preimage of `Y` yields an object that is
     isomorphic to `Y`. -/
-def objObjPreimageIso (Y : D) : F.obj (F.objPreimage Y) ≅ Y :=
+noncomputable def objObjPreimageIso (Y : D) : F.obj (F.objPreimage Y) ≅ Y :=
   Functor.essImage.getIso _
 
 /-- The induced functor of a faithful functor is faithful. -/
@@ -177,7 +175,7 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Lift a functor `G : J ⥤ D` to the essential image of a fully faithful functor `F : C ⥤ D` to a
 functor `G' : J ⥤ C` such that `G' ⋙ F ≅ G`. See `essImage.liftFunctorCompIso`. -/
-@[simps] def essImage.liftFunctor : J ⥤ C where
+@[simps] noncomputable def essImage.liftFunctor : J ⥤ C where
   obj j := F.toEssImage.objPreimage ⟨G.obj j, hG j⟩
   map {i j} f :=
     F.preimage <|
@@ -189,7 +187,7 @@ functor `G' : J ⥤ C` such that `G' ⋙ F ≅ G`. See `essImage.liftFunctorComp
 set_option backward.isDefEq.respectTransparency false in
 /-- A functor `G : J ⥤ D` to the essential image of a fully faithful functor `F : C ⥤ D` does
 factor through `essImage.liftFunctor G F hG`. -/
-@[simps!] def essImage.liftFunctorCompIso : essImage.liftFunctor G F hG ⋙ F ≅ G :=
+@[simps!] noncomputable def essImage.liftFunctorCompIso : essImage.liftFunctor G F hG ⋙ F ≅ G :=
   NatIso.ofComponents
     (fun i ↦ F.essImage.ι.mapIso (F.toEssImage.objObjPreimageIso ⟨G.obj i, hG _⟩))
 

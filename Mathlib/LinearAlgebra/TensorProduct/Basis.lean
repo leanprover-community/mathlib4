@@ -20,7 +20,7 @@ and shows that the tensor product of free modules is again free.
 @[expose] public section
 
 
-noncomputable section
+section
 
 open LinearMap Module Set Submodule
 
@@ -35,7 +35,7 @@ variable {R : Type*} {S : Type*} {M : Type*} {N : Type*} {ι : Type*} {κ : Type
 namespace Module.Basis
 
 /-- If `b : ι → M` and `c : κ → N` are bases then so is `fun i ↦ b i.1 ⊗ₜ c i.2 : ι × κ → M ⊗ N`. -/
-def tensorProduct (b : Basis ι S M) (c : Basis κ R N) :
+noncomputable def tensorProduct (b : Basis ι S M) (c : Basis κ R N) :
     Basis (ι × κ) S (M ⊗[R] N) :=
   Finsupp.basisSingleOne.map
     ((TensorProduct.AlgebraTensorModule.congr b.repr c.repr).trans <|
@@ -85,7 +85,7 @@ variable (ℬ : Basis ι R M) (𝒞 : Basis κ R N) (x : M ⊗[R] N)
 If `{𝒞ᵢ}` is a basis for the module `N`, then every elements of `x ∈ M ⊗ N` can be uniquely written
 as `∑ᵢ mᵢ ⊗ 𝒞ᵢ` for some `mᵢ ∈ M`.
 -/
-def TensorProduct.equivFinsuppOfBasisRight : M ⊗[R] N ≃ₗ[R] κ →₀ M :=
+noncomputable def TensorProduct.equivFinsuppOfBasisRight : M ⊗[R] N ≃ₗ[R] κ →₀ M :=
   LinearEquiv.lTensor M 𝒞.repr ≪≫ₗ TensorProduct.finsuppScalarRight R R M κ
 
 @[simp]
@@ -127,7 +127,7 @@ lemma TensorProduct.sum_tmul_basis_right_eq_zero
 If `{ℬᵢ}` is a basis for the module `M`, then every elements of `x ∈ M ⊗ N` can be uniquely written
 as `∑ᵢ ℬᵢ ⊗ nᵢ` for some `nᵢ ∈ N`.
 -/
-def TensorProduct.equivFinsuppOfBasisLeft : M ⊗[R] N ≃ₗ[R] ι →₀ N :=
+noncomputable def TensorProduct.equivFinsuppOfBasisLeft : M ⊗[R] N ≃ₗ[R] ι →₀ N :=
   TensorProduct.comm R M N ≪≫ₗ TensorProduct.equivFinsuppOfBasisRight ℬ
 
 @[simp]

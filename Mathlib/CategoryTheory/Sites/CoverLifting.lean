@@ -47,8 +47,6 @@ small colimits.
 
 universe w' w v v₁ v₂ v₃ u u₁ u₂ u₃
 
-noncomputable section
-
 open CategoryTheory
 
 open Opposite
@@ -170,7 +168,7 @@ variable {X : D} {S : K.Cover X} (s : Multifork (S.index R))
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `lift`. -/
-def liftAux {Y : C} (f : G.obj Y ⟶ X) : s.pt ⟶ F.obj (op Y) :=
+noncomputable def liftAux {Y : C} (f : G.obj Y ⟶ X) : s.pt ⟶ F.obj (op Y) :=
   Multifork.IsLimit.lift (hF.isLimitMultifork ⟨_, G.cover_lift J K (K.pullback_stable f S.2)⟩)
     (fun k ↦ s.ι (⟨_, G.map k.f ≫ f, k.hf⟩) ≫ α.app (op k.Y)) (by
       intro { fst := ⟨Y₁, p₁, hp₁⟩, snd := ⟨Y₂, p₂, hp₂⟩, r := ⟨W, g₁, g₂, w⟩ }
@@ -222,7 +220,7 @@ variable {α}
 
 set_option backward.defeqAttrib.useBackward true in
 /-- Auxiliary definition for `isLimitMultifork` -/
-def lift : s.pt ⟶ R.obj (op X) :=
+noncomputable def lift : s.pt ⟶ R.obj (op X) :=
   (hR (op X)).lift (Cone.mk _
     { app := fun j ↦ liftAux hF α s j.hom.unop
       naturality := fun j j' φ ↦ by
@@ -263,7 +261,7 @@ lemma hom_ext {W : A} {f g : W ⟶ R.obj (op X)}
 variable (S)
 
 /-- Auxiliary definition for `ran_isSheaf_of_isCocontinuous` -/
-def isLimitMultifork : IsLimit (S.multifork R) :=
+noncomputable def isLimitMultifork : IsLimit (S.multifork R) :=
   Multifork.IsLimit.mk _ (lift hF hR) (fac hF hR)
     (fun s _ hm ↦ hom_ext K hF hR (fun i ↦ (hm i).trans (fac hF hR s i).symm))
 
@@ -287,13 +285,13 @@ theorem ran_isSheaf_of_isCocontinuous (ℱ : Sheaf J A) :
 variable (A J)
 
 /-- A cocontinuous functor induces a pushforward functor on categories of sheaves. -/
-def Functor.sheafPushforwardCocontinuous : Sheaf J A ⥤ Sheaf K A :=
+noncomputable def Functor.sheafPushforwardCocontinuous : Sheaf J A ⥤ Sheaf K A :=
   ObjectProperty.lift _ (sheafToPresheaf _ _ ⋙ G.op.ran) (ran_isSheaf_of_isCocontinuous _ K)
 
 /-- `G.sheafPushforwardCocontinuous A J K : Sheaf J A ⥤ Sheaf K A` is induced
 by the right Kan extension functor `G.op.ran` on presheaves. -/
 @[simps! hom inv]
-def Functor.sheafPushforwardCocontinuousCompSheafToPresheafIso :
+noncomputable def Functor.sheafPushforwardCocontinuousCompSheafToPresheafIso :
     G.sheafPushforwardCocontinuous A J K ⋙ sheafToPresheaf K A ≅
       sheafToPresheaf J A ⋙ G.op.ran := Iso.refl _
 
@@ -378,7 +376,7 @@ alias sheafAdjunctionCocontinuous_homEquiv_apply_val :=
 variable [HasWeakSheafify J A] [HasWeakSheafify K A]
 
 /-- The natural isomorphism exhibiting compatibility between pushforward and sheafification. -/
-def pushforwardContinuousSheafificationCompatibility :
+noncomputable def pushforwardContinuousSheafificationCompatibility :
     (whiskeringLeft _ _ A).obj G.op ⋙ presheafToSheaf J A ≅
     presheafToSheaf K A ⋙ G.sheafPushforwardContinuous A J K :=
   ((G.op.ranAdjunction A).comp (sheafificationAdjunction J A)).leftAdjointUniq

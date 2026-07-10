@@ -59,8 +59,6 @@ in general), and `ι` is countable.
 
 @[expose] public section
 
-noncomputable section
-
 open Topology TopologicalSpace Set Metric Filter Function
 
 attribute [local simp] pow_le_pow_iff_right₀ one_lt_two inv_le_inv₀ zero_le_two zero_lt_two
@@ -74,7 +72,7 @@ namespace PiNat
 open scoped Classical in
 /-- In a product space `Π n, E n`, then `firstDiff x y` is the first index at which `x` and `y`
 differ. If `x = y`, then by convention we set `firstDiff x x = 0`. -/
-irreducible_def firstDiff (x y : ∀ n, E n) : ℕ :=
+noncomputable irreducible_def firstDiff (x y : ∀ n, E n) : ℕ :=
   if h : x ≠ y then Nat.find (ne_iff.1 h) else 0
 
 theorem apply_firstDiff_ne {x y : ∀ n, E n} (h : x ≠ y) :
@@ -253,7 +251,7 @@ open scoped Classical in
 /-- The distance function on a product space `Π n, E n`, given by `dist x y = (1/2)^n` where `n` is
 the first index at which `x` and `y` differ. -/
 @[instance_reducible]
-protected def dist : Dist (∀ n, E n) :=
+protected noncomputable def dist : Dist (∀ n, E n) :=
   ⟨fun x y => if x ≠ y then (1 / 2 : ℝ) ^ firstDiff x y else 0⟩
 
 attribute [local instance] PiNat.dist
@@ -395,7 +393,7 @@ but it does not take care of a possible uniformity. If the `E n` have a uniform 
 there will be two non-defeq uniform structures on `Π n, E n`, the product one and the one coming
 from the metric structure. In this case, use `metricSpaceOfDiscreteUniformity` instead. -/
 @[instance_reducible]
-protected def metricSpace : MetricSpace (∀ n, E n) :=
+protected noncomputable def metricSpace : MetricSpace (∀ n, E n) :=
   MetricSpace.ofDistTopology dist PiNat.dist_self PiNat.dist_comm PiNat.dist_triangle
     isOpen_iff_dist PiNat.eq_of_dist_eq_zero
 
@@ -403,7 +401,8 @@ protected def metricSpace : MetricSpace (∀ n, E n) :=
 where the distance is given by `dist x y = (1/2)^n`, where `n` is the smallest index where `x` and
 `y` differ. Not registered as a global instance by default. -/
 @[implicit_reducible]
-protected def metricSpaceOfDiscreteUniformity {E : ℕ → Type*} [∀ n, UniformSpace (E n)]
+protected noncomputable
+def metricSpaceOfDiscreteUniformity {E : ℕ → Type*} [∀ n, UniformSpace (E n)]
     (h : ∀ n, uniformity (E n) = 𝓟 SetRel.id) : MetricSpace (∀ n, E n) :=
   haveI : ∀ n, DiscreteTopology (E n) := fun n => discreteTopology_of_discrete_uniformity (h n)
   { dist_triangle := PiNat.dist_triangle
@@ -439,7 +438,7 @@ protected def metricSpaceOfDiscreteUniformity {E : ℕ → Type*} [∀ n, Unifor
 where `n` is the smallest index where `x` and `y` differ.
 Not registered as a global instance by default. -/
 @[implicit_reducible]
-def metricSpaceNatNat : MetricSpace (ℕ → ℕ) :=
+noncomputable def metricSpaceNatNat : MetricSpace (ℕ → ℕ) :=
   PiNat.metricSpaceOfDiscreteUniformity fun _ => rfl
 
 attribute [local instance] PiNat.metricSpace
@@ -486,7 +485,7 @@ open scoped Classical in
 /-- Given a point `x` in a product space `Π (n : ℕ), E n`, and `s` a subset of this space, then
 `shortestPrefixDiff x s` if the smallest `n` for which there is no element of `s` having the same
 prefix of length `n` as `x`. If there is no such `n`, then use `0` by convention. -/
-def shortestPrefixDiff {E : ℕ → Type*} (x : ∀ n, E n) (s : Set (∀ n, E n)) : ℕ :=
+noncomputable def shortestPrefixDiff {E : ℕ → Type*} (x : ∀ n, E n) (s : Set (∀ n, E n)) : ℕ :=
   if h : ∃ n, Disjoint s (cylinder x n) then Nat.find h else 0
 
 theorem firstDiff_lt_shortestPrefixDiff {s : Set (∀ n, E n)} (hs : IsClosed s) {x y : ∀ n, E n}
@@ -509,7 +508,7 @@ theorem shortestPrefixDiff_pos {s : Set (∀ n, E n)} (hs : IsClosed s) (hne : s
 /-- Given a point `x` in a product space `Π (n : ℕ), E n`, and `s` a subset of this space, then
 `longestPrefix x s` if the largest `n` for which there is an element of `s` having the same
 prefix of length `n` as `x`. If there is no such `n`, use `0` by convention. -/
-def longestPrefix {E : ℕ → Type*} (x : ∀ n, E n) (s : Set (∀ n, E n)) : ℕ :=
+noncomputable def longestPrefix {E : ℕ → Type*} (x : ∀ n, E n) (s : Set (∀ n, E n)) : ℕ :=
   shortestPrefixDiff x s - 1
 
 theorem firstDiff_le_longestPrefix {s : Set (∀ n, E n)} (hs : IsClosed s) {x y : ∀ n, E n}
@@ -797,7 +796,7 @@ one may put an extended distance on their product `Π i, E i`.
 It is highly non-canonical, though, and therefore not registered as a global instance.
 The distance we use here is `edist x y = ∑' i, min (1/2)^(encode i) (edist (x i) (y i))`. -/
 @[instance_reducible]
-protected def edist : EDist (∀ i, F i) where
+protected noncomputable def edist : EDist (∀ i, F i) where
   edist x y := ∑' i, min (2⁻¹ ^ encode i) (edist (x i) (y i))
 
 attribute [scoped instance] PiCountable.edist
@@ -831,7 +830,7 @@ one may put an extended distance on their product `Π i, E i`.
 It is highly non-canonical, though, and therefore not registered as a global instance.
 The distance we use here is `edist x y = ∑' i, min (1/2)^(encode i) (edist (x i) (y i))`. -/
 @[instance_reducible]
-protected def pseudoEMetricSpace : PseudoEMetricSpace (∀ i, F i) where
+protected noncomputable def pseudoEMetricSpace : PseudoEMetricSpace (∀ i, F i) where
   edist_self x := by simp [edist_eq_tsum]
   edist_comm x y := by simp [edist_eq_tsum, edist_comm]
   edist_triangle x y z := calc
@@ -896,7 +895,7 @@ one may put an extended distance on their product `Π i, E i`.
 It is highly non-canonical, though, and therefore not registered as a global instance.
 The distance we use here is `edist x y = ∑' i, min (1/2)^(encode i) (edist (x i) (y i))`. -/
 @[instance_reducible]
-protected def emetricSpace : EMetricSpace (∀ i, F i) where
+protected noncomputable def emetricSpace : EMetricSpace (∀ i, F i) where
   eq_of_edist_eq_zero := by simp [edist_eq_tsum, funext_iff]
 
 end EMetricSpace
@@ -912,7 +911,7 @@ variable [∀ i, PseudoMetricSpace (F i)] {x y : ∀ i, F i} {i : ι}
 It is highly non-canonical, though, and therefore not registered as a global instance.
 The distance we use here is `dist x y = ∑' i, min (1/2)^(encode i) (dist (x i) (y i))`. -/
 @[instance_reducible]
-protected def dist : Dist (∀ i, F i) where
+protected noncomputable def dist : Dist (∀ i, F i) where
   dist x y := ∑' i, min (2⁻¹ ^ encode i) (dist (x i) (y i))
 
 attribute [scoped instance] PiCountable.dist
@@ -938,7 +937,7 @@ lemma dist_le_dist_pi_of_dist_lt (h : dist x y < 2⁻¹ ^ encode i) : dist (x i)
 It is highly non-canonical, though, and therefore not registered as a global instance.
 The distance we use here is `dist x y = ∑' i, min (1/2)^(encode i) (dist (x i) (y i))`. -/
 @[instance_reducible]
-protected def pseudoMetricSpace : PseudoMetricSpace (∀ i, F i) :=
+protected noncomputable def pseudoMetricSpace : PseudoMetricSpace (∀ i, F i) :=
   PseudoEMetricSpace.toPseudoMetricSpaceOfDist dist (fun x y ↦ by rw [dist_eq_tsum]; positivity)
   fun x y ↦ by
     rw [edist_eq_tsum, dist_eq_tsum,
@@ -957,7 +956,7 @@ variable [∀ i, MetricSpace (F i)]
 It is highly non-canonical, though, and therefore not registered as a global instance.
 The distance we use here is `edist x y = ∑' i, min (1/2)^(encode i) (edist (x i) (y i))`. -/
 @[implicit_reducible]
-protected def metricSpace : MetricSpace (∀ i, F i) :=
+protected noncomputable def metricSpace : MetricSpace (∀ i, F i) :=
   EMetricSpace.toMetricSpaceOfDist dist (by simp) (by simp [edist_dist])
 
 end MetricSpace

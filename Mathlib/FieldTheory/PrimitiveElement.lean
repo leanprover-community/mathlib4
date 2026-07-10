@@ -41,8 +41,6 @@ exists_adjoin_simple_eq_top
 
 @[expose] public section
 
-noncomputable section
-
 open Module Polynomial IntermediateField
 
 namespace Field

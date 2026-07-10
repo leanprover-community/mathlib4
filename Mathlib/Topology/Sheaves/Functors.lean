@@ -28,8 +28,6 @@ topological spaces X and Y.
 @[expose] public section
 
 
-noncomputable section
-
 universe w v u
 
 open CategoryTheory
@@ -68,7 +66,7 @@ lemma pushforward_forget (f : X ⟶ Y) :
 /--
 Pushforward of sheaves is isomorphic (actually definitionally equal) to pushforward of presheaves.
 -/
-def pushforwardForgetIso (f : X ⟶ Y) :
+noncomputable def pushforwardForgetIso (f : X ⟶ Y) :
     pushforward C f ⋙ forget C Y ≅ forget C X ⋙ Presheaf.pushforward C f := Iso.refl _
 
 variable {C}
@@ -88,19 +86,19 @@ variable [(CategoryTheory.forget A).ReflectsIsomorphisms]
 /--
 The pullback functor.
 -/
-def pullback (f : X ⟶ Y) : Y.Sheaf A ⥤ X.Sheaf A :=
+noncomputable def pullback (f : X ⟶ Y) : Y.Sheaf A ⥤ X.Sheaf A :=
   (Opens.map f).sheafPullback _ _ _
 
 /--
 The pullback of a sheaf is isomorphic (actually definitionally equal) to the sheafification
 of the pullback as a presheaf.
 -/
-def pullbackIso (f : X ⟶ Y) :
+noncomputable def pullbackIso (f : X ⟶ Y) :
     pullback A f ≅ forget A Y ⋙ Presheaf.pullback A f ⋙ presheafToSheaf _ _ :=
   Functor.sheafPullbackConstruction.sheafPullbackIso _ _ _ _
 
 /-- The adjunction between pullback and pushforward for sheaves on topological spaces. -/
-def pullbackPushforwardAdjunction (f : X ⟶ Y) :
+noncomputable def pullbackPushforwardAdjunction (f : X ⟶ Y) :
     pullback A f ⊣ pushforward A f :=
   (Opens.map f).sheafAdjunctionContinuous _ _ _
 
@@ -139,7 +137,7 @@ The pullback of a sheaf by an open embedding `f` is isomorphic to its naive pull
 `IsOpenEmbedding.sheafPullback`, i.e. to the composition by the functor `IsOpenMap.functor f`.
 Also, this is an isomorphism of functors.
 -/
-def sheafPullbackIso : Sheaf.pullback A f ≅ hf.sheafPullback A := by
+noncomputable def sheafPullbackIso : Sheaf.pullback A f ≅ hf.sheafPullback A := by
   refine Sheaf.pullbackIso A f ≪≫ NatIso.ofComponents (fun F ↦ ?_) (fun u ↦ ?_)
   · exact (presheafToSheaf (Opens.grothendieckTopology ↑X) A).mapIso
       (hf.isOpenMap.pullbackIso.app _) ≪≫

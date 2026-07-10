@@ -79,8 +79,6 @@ of Faa di Bruno formula to identify the sums that show up.
 
 @[expose] public section
 
-noncomputable section
-
 open Set Fin Filter Function
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
@@ -521,7 +519,7 @@ def eraseLeft (c : OrderedFinpartition (n + 1)) (hc : range (c.emb 0) = {0}) :
 
 /-- Given an ordered finpartition of `n+1`, with a leftmost atom different from `{0}`, remove `{0}`
 from the atom that contains it, to form an ordered finpartition of `n`. -/
-def eraseMiddle (c : OrderedFinpartition (n + 1)) (hc : range (c.emb 0) ≠ {0}) :
+noncomputable def eraseMiddle (c : OrderedFinpartition (n + 1)) (hc : range (c.emb 0) ≠ {0}) :
     OrderedFinpartition n where
   length := c.length
   partSize := update c.partSize (c.index 0) (c.partSize (c.index 0) - 1)
@@ -634,7 +632,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- Extending the ordered partitions of `Fin n` bijects with the ordered partitions
 of `Fin (n+1)`. -/
 @[simps apply]
-def extendEquiv (n : ℕ) :
+noncomputable def extendEquiv (n : ℕ) :
     ((c : OrderedFinpartition n) × Option (Fin c.length)) ≃ OrderedFinpartition (n + 1) where
   toFun c := c.1.extend c.2
   invFun c := if h : range (c.emb 0) = {0} then ⟨c.eraseLeft h, none⟩ else

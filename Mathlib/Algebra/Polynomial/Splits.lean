@@ -696,7 +696,7 @@ theorem splits_iff_splits {f : R[X]} :
 
 end Field
 
-noncomputable section
+section
 
 open Polynomial
 

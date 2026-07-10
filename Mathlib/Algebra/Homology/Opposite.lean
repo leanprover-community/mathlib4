@@ -33,8 +33,6 @@ opposite, chain complex, cochain complex, homology, cohomology, homological comp
 @[expose] public section
 
 
-noncomputable section
-
 open Opposite CategoryTheory CategoryTheory.Limits
 
 section
@@ -326,13 +324,13 @@ lemma acyclic_op_iff (K : HomologicalComplex V c) :
 
 /-- If `K` is a homological complex, then the homology of `K.op` identifies to
 the opposite of the homology of `K`. -/
-def homologyOp (K : HomologicalComplex V c) (i : ι) [K.HasHomology i] :
+noncomputable def homologyOp (K : HomologicalComplex V c) (i : ι) [K.HasHomology i] :
     K.op.homology i ≅ op (K.homology i) :=
   (K.sc i).homologyOpIso
 
 /-- If `K` is a homological complex in the opposite category,
 then the homology of `K.unop` identifies to the opposite of the homology of `K`. -/
-def homologyUnop (K : HomologicalComplex Vᵒᵖ c) (i : ι) [K.HasHomology i] :
+noncomputable def homologyUnop (K : HomologicalComplex Vᵒᵖ c) (i : ι) [K.HasHomology i] :
     K.unop.homology i ≅ unop (K.homology i) :=
   (K.unop.homologyOp i).unop
 
@@ -341,11 +339,11 @@ section
 variable (K : HomologicalComplex V c) (i : ι) [K.HasHomology i]
 
 /-- The canonical isomorphism `K.op.cycles i ≅ op (K.opcycles i)`. -/
-def cyclesOpIso : K.op.cycles i ≅ op (K.opcycles i) :=
+noncomputable def cyclesOpIso : K.op.cycles i ≅ op (K.opcycles i) :=
   (K.sc i).cyclesOpIso
 
 /-- The canonical isomorphism `K.op.opcycles i ≅ op (K.cycles i)`. -/
-def opcyclesOpIso : K.op.opcycles i ≅ op (K.cycles i) :=
+noncomputable def opcyclesOpIso : K.op.opcycles i ≅ op (K.cycles i) :=
   (K.sc i).opcyclesOpIso
 
 variable (j : ι)
@@ -414,19 +412,19 @@ variable (V c) [CategoryWithHomology V] (i : ι)
 
 /-- The natural isomorphism `K.op.cycles i ≅ op (K.opcycles i)`. -/
 @[simps!]
-def cyclesOpNatIso :
+noncomputable def cyclesOpNatIso :
     opFunctor V c ⋙ cyclesFunctor Vᵒᵖ c.symm i ≅ (opcyclesFunctor V c i).op :=
   NatIso.ofComponents (fun K ↦ (unop K).cyclesOpIso i)
     (fun _ ↦ cyclesOpIso_hom_naturality _ _)
 
 /-- The natural isomorphism `K.op.opcycles i ≅ op (K.cycles i)`. -/
-def opcyclesOpNatIso :
+noncomputable def opcyclesOpNatIso :
     opFunctor V c ⋙ opcyclesFunctor Vᵒᵖ c.symm i ≅ (cyclesFunctor V c i).op :=
   NatIso.ofComponents (fun K ↦ (unop K).opcyclesOpIso i)
     (fun _ ↦ opcyclesOpIso_hom_naturality _ _)
 
 /-- The natural isomorphism `K.op.homology i ≅ op (K.homology i)`. -/
-def homologyOpNatIso :
+noncomputable def homologyOpNatIso :
     opFunctor V c ⋙ homologyFunctor Vᵒᵖ c.symm i ≅ (homologyFunctor V c i).op :=
   NatIso.ofComponents (fun K ↦ (unop K).homologyOp i)
     (fun _ ↦ homologyOp_hom_naturality _ _)

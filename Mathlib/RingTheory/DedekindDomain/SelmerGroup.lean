@@ -70,7 +70,7 @@ local notation K "/" n => Kˣ ⧸ (powMonoidHom n : Kˣ →* Kˣ).range
 
 namespace IsDedekindDomain
 
-noncomputable section
+section
 
 open WithZero
 open scoped WithZero nonZeroDivisors
@@ -86,7 +86,7 @@ variable {R : Type u} [CommRing R] [IsDedekindDomain R] {K : Type v} [Field K]
 namespace HeightOneSpectrum
 
 /-- The multiplicative `v`-adic valuation on `Kˣ`. -/
-def valuationOfNeZeroToFun (x : Kˣ) : Multiplicative ℤ :=
+noncomputable def valuationOfNeZeroToFun (x : Kˣ) : Multiplicative ℤ :=
   let hx := IsLocalization.sec R⁰ (x : K)
   Multiplicative.ofAdd <|
     (-(Associates.mk v.asIdeal).count (Associates.mk <| Ideal.span {hx.fst}).factors : ℤ) -
@@ -105,7 +105,7 @@ theorem valuationOfNeZeroToFun_eq (x : Kˣ) :
     ← exp_neg, ← exp_add, valuationOfNeZeroToFun, ← sub_eq_add_neg, exp]
 
 /-- The multiplicative `v`-adic valuation on `Kˣ`. -/
-def valuationOfNeZero : Kˣ →* Multiplicative ℤ where
+noncomputable def valuationOfNeZero : Kˣ →* Multiplicative ℤ where
   toFun := v.valuationOfNeZeroToFun
   map_one' := by rw [← WithZero.coe_inj, valuationOfNeZeroToFun_eq]; exact map_one _
   map_mul' _ _ := by
@@ -131,7 +131,7 @@ theorem valuation_of_unit_eq (x : Rˣ) :
     exact v.intValuation_le_one _
 
 /-- The multiplicative `v`-adic valuation on `Kˣ` modulo `n`-th powers. -/
-def valuationOfNeZeroMod (n : ℕ) : (K / n) →* Multiplicative (ZMod n) :=
+noncomputable def valuationOfNeZeroMod (n : ℕ) : (K / n) →* Multiplicative (ZMod n) :=
   -- TODO: this definition does a lot of defeq abuse between `Multiplicative` and `Additive`,
   -- so we need `erw` below.
   (Int.quotientZMultiplesNatEquivZMod n).toMultiplicative.toMonoidHom.comp <|
@@ -173,7 +173,7 @@ namespace selmerGroup
 theorem monotone (hS : S ≤ S') : K⟮S,n⟯ ≤ K⟮S',n⟯ := fun _ hx v => hx v ∘ mt (@hS v)
 
 /-- The multiplicative `v`-adic valuations on `K⟮S, n⟯` for all `v ∈ S`. -/
-def valuation : K⟮S,n⟯ →* S → Multiplicative (ZMod n) where
+noncomputable def valuation : K⟮S,n⟯ →* S → Multiplicative (ZMod n) where
   toFun x v := (v : HeightOneSpectrum R).valuationOfNeZeroMod n (x : K / n)
   map_one' := funext fun _ => map_one _
   map_mul' x y := by simp only [Subgroup.coe_mul, map_mul]; rfl

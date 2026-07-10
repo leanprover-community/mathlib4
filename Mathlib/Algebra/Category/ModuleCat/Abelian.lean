@@ -20,8 +20,6 @@ Additionally, two linear maps are exact in the categorical sense iff `range f = 
 
 open CategoryTheory Limits
 
-noncomputable section
-
 universe w v u
 
 namespace ModuleCat
@@ -30,7 +28,7 @@ variable {R : Type u} [Ring R] {M N : ModuleCat.{v} R} (f : M ⟶ N)
 
 /-- In the category of modules, every monomorphism is normal. -/
 @[implicit_reducible]
-def normalMono (hf : Mono f) : NormalMono f where
+noncomputable def normalMono (hf : Mono f) : NormalMono f where
   Z := of R (N ⧸ LinearMap.range f.hom)
   g := ofHom (LinearMap.range f.hom).mkQ
   w := hom_ext <| LinearMap.range_mkQ_comp _
@@ -52,7 +50,7 @@ def normalMono (hf : Mono f) : NormalMono f where
 
 /-- In the category of modules, every epimorphism is normal. -/
 @[implicit_reducible]
-def normalEpi (hf : Epi f) : NormalEpi f where
+noncomputable def normalEpi (hf : Epi f) : NormalEpi f where
   W := of R (LinearMap.ker f.hom)
   g := ofHom (LinearMap.ker f.hom).subtype
   w := hom_ext <| LinearMap.comp_ker_subtype _

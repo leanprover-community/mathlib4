@@ -79,7 +79,7 @@ lemma SlashAction.slash_eq_zero_iff {β G α : Type*} [Group G] [AddGroup α] [S
 
 namespace ModularForm
 
-noncomputable section
+section
 
 variable {k : ℤ} (f : ℍ → ℂ)
 
@@ -88,7 +88,7 @@ section privateSlash
 set_option backward.privateInPublic true in
 /-- The weight `k` action of `GL (Fin 2) ℝ` on functions `f : ℍ → ℂ`. Invoking this directly is
 deprecated; it should always be used via the `SlashAction` instance. -/
-private def privateSlash (k : ℤ) (γ : GL (Fin 2) ℝ) (f : ℍ → ℂ) (x : ℍ) : ℂ :=
+private noncomputable def privateSlash (k : ℤ) (γ : GL (Fin 2) ℝ) (f : ℍ → ℂ) (x : ℍ) : ℂ :=
   σ γ (f (γ • x)) * |γ.det.val| ^ (k - 1) * UpperHalfPlane.denom γ x ^ (-k)
 
 -- Why is `noncomputable` flag needed here, when we're in a noncomputable section already?
@@ -127,7 +127,7 @@ private theorem zero_slash (k : ℤ) (A : GL (Fin 2) ℝ) : (0 : ℍ → ℂ) �
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- The weight `k` action of `GL (Fin 2) ℝ` on functions `f : ℍ → ℂ`. -/
-instance : SlashAction ℤ (GL (Fin 2) ℝ) (ℍ → ℂ) where
+noncomputable instance : SlashAction ℤ (GL (Fin 2) ℝ) (ℍ → ℂ) where
   map := privateSlash
   zero_slash := zero_slash
   slash_one := slash_one
@@ -149,7 +149,7 @@ theorem smul_slash (k : ℤ) (A : GL (Fin 2) ℝ) (f : ℍ → ℂ) (c : ℂ) :
   ext τ : 1
   simp only [slash_apply, Pi.smul_apply, smul_eq_mul, map_mul, mul_assoc]
 
-instance SLAction : SlashAction ℤ SL(2, ℤ) (ℍ → ℂ) :=
+noncomputable instance SLAction : SlashAction ℤ SL(2, ℤ) (ℍ → ℂ) :=
   monoidHomSlashAction (Matrix.SpecialLinearGroup.mapGL ℝ)
 
 theorem SL_slash (γ : SL(2, ℤ)) : f ∣[k] γ = f ∣[k] (γ : GL (Fin 2) ℝ) :=

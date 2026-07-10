@@ -53,8 +53,6 @@ with the same condition on retaining the non-zero-divisor property across the ma
 
 universe u v
 
-noncomputable section
-
 open scoped nonZeroDivisors Polynomial
 
 variable {K : Type u}
@@ -66,20 +64,20 @@ section Field
 variable [CommRing K]
 
 /-- The zero rational function. -/
-protected irreducible_def zero : K⟮X⟯ :=
+protected noncomputable irreducible_def zero : K⟮X⟯ :=
   ⟨0⟩
 
-instance : Zero K⟮X⟯ :=
+noncomputable instance : Zero K⟮X⟯ :=
   ⟨RatFunc.zero⟩
 
 theorem ofFractionRing_zero : (ofFractionRing 0 : K⟮X⟯) = 0 :=
   zero_def.symm
 
 /-- Addition of rational functions. -/
-protected irreducible_def add : K⟮X⟯ → K⟮X⟯ → K⟮X⟯
+protected noncomputable irreducible_def add : K⟮X⟯ → K⟮X⟯ → K⟮X⟯
   | ⟨p⟩, ⟨q⟩ => ⟨p + q⟩
 
-instance : Add K⟮X⟯ :=
+noncomputable instance : Add K⟮X⟯ :=
   ⟨RatFunc.add⟩
 
 theorem ofFractionRing_add (p q : FractionRing K[X]) :
@@ -87,10 +85,10 @@ theorem ofFractionRing_add (p q : FractionRing K[X]) :
   (add_def _ _).symm
 
 /-- Subtraction of rational functions. -/
-protected irreducible_def sub : K⟮X⟯ → K⟮X⟯ → K⟮X⟯
+protected noncomputable irreducible_def sub : K⟮X⟯ → K⟮X⟯ → K⟮X⟯
   | ⟨p⟩, ⟨q⟩ => ⟨p - q⟩
 
-instance : Sub K⟮X⟯ :=
+noncomputable instance : Sub K⟮X⟯ :=
   ⟨RatFunc.sub⟩
 
 theorem ofFractionRing_sub (p q : FractionRing K[X]) :
@@ -98,10 +96,10 @@ theorem ofFractionRing_sub (p q : FractionRing K[X]) :
   (sub_def _ _).symm
 
 /-- Additive inverse of a rational function. -/
-protected irreducible_def neg : K⟮X⟯ → K⟮X⟯
+protected noncomputable irreducible_def neg : K⟮X⟯ → K⟮X⟯
   | ⟨p⟩ => ⟨-p⟩
 
-instance : Neg K⟮X⟯ :=
+noncomputable instance : Neg K⟮X⟯ :=
   ⟨RatFunc.neg⟩
 
 theorem ofFractionRing_neg (p : FractionRing K[X]) :
@@ -109,20 +107,20 @@ theorem ofFractionRing_neg (p : FractionRing K[X]) :
   (neg_def _).symm
 
 /-- The multiplicative unit of rational functions. -/
-protected irreducible_def one : K⟮X⟯ :=
+protected noncomputable irreducible_def one : K⟮X⟯ :=
   ⟨1⟩
 
-instance : One K⟮X⟯ :=
+noncomputable instance : One K⟮X⟯ :=
   ⟨RatFunc.one⟩
 
 theorem ofFractionRing_one : (ofFractionRing 1 : K⟮X⟯) = 1 :=
   one_def.symm
 
 /-- Multiplication of rational functions. -/
-protected irreducible_def mul : K⟮X⟯ → K⟮X⟯ → K⟮X⟯
+protected noncomputable irreducible_def mul : K⟮X⟯ → K⟮X⟯ → K⟮X⟯
   | ⟨p⟩, ⟨q⟩ => ⟨p * q⟩
 
-instance : Mul K⟮X⟯ :=
+noncomputable instance : Mul K⟮X⟯ :=
   ⟨RatFunc.mul⟩
 
 theorem ofFractionRing_mul (p q : FractionRing K[X]) :
@@ -134,10 +132,10 @@ section IsDomain
 variable [IsDomain K]
 
 /-- Division of rational functions. -/
-protected irreducible_def div : K⟮X⟯ → K⟮X⟯ → K⟮X⟯
+protected noncomputable irreducible_def div : K⟮X⟯ → K⟮X⟯ → K⟮X⟯
   | ⟨p⟩, ⟨q⟩ => ⟨p / q⟩
 
-instance : Div K⟮X⟯ :=
+noncomputable instance : Div K⟮X⟯ :=
   ⟨RatFunc.div⟩
 
 theorem ofFractionRing_div (p q : FractionRing K[X]) :
@@ -145,10 +143,10 @@ theorem ofFractionRing_div (p q : FractionRing K[X]) :
   (div_def _ _).symm
 
 /-- Multiplicative inverse of a rational function. -/
-protected irreducible_def inv : K⟮X⟯ → K⟮X⟯
+protected noncomputable irreducible_def inv : K⟮X⟯ → K⟮X⟯
   | ⟨p⟩ => ⟨p⁻¹⟩
 
-instance : Inv K⟮X⟯ :=
+noncomputable instance : Inv K⟮X⟯ :=
   ⟨RatFunc.inv⟩
 
 theorem ofFractionRing_inv (p : FractionRing K[X]) :
@@ -216,7 +214,7 @@ variable (K)
 instance [Subsingleton K] : Subsingleton K⟮X⟯ :=
   toFractionRing_injective.subsingleton
 
-instance : Inhabited K⟮X⟯ :=
+noncomputable instance : Inhabited K⟮X⟯ :=
   ⟨0⟩
 
 instance instNontrivial [Nontrivial K] : Nontrivial K⟮X⟯ :=
@@ -271,7 +269,7 @@ variable (K) [CommRing K]
 This is an intermediate step on the way to the full instance `RatFunc.instCommRing`.
 -/
 @[implicit_reducible]
-def instCommMonoid : CommMonoid K⟮X⟯ where
+noncomputable def instCommMonoid : CommMonoid K⟮X⟯ where
   mul_assoc := by frac_tac
   mul_comm := by frac_tac
   one_mul := by frac_tac
@@ -283,7 +281,7 @@ def instCommMonoid : CommMonoid K⟮X⟯ where
 This is an intermediate step on the way to the full instance `RatFunc.instCommRing`.
 -/
 @[implicit_reducible]
-def instAddCommGroup : AddCommGroup K⟮X⟯ where
+noncomputable def instAddCommGroup : AddCommGroup K⟮X⟯ where
   add_assoc := by frac_tac
   add_comm := by frac_tac
   zero_add := by frac_tac
@@ -296,7 +294,7 @@ def instAddCommGroup : AddCommGroup K⟮X⟯ where
   zsmul_succ' _ := by smul_tac
   zsmul_neg' _ := by smul_tac
 
-instance instCommRing : CommRing K⟮X⟯ :=
+noncomputable instance instCommRing : CommRing K⟮X⟯ :=
   { instCommMonoid K, instAddCommGroup K with
     zero_mul := by frac_tac
     mul_zero := by frac_tac
@@ -318,7 +316,7 @@ open scoped Classical in
 to a `R⟮X⟯ →* S⟮X⟯`,
 on the condition that `φ` maps non-zero-divisors to non-zero-divisors,
 by mapping both the numerator and denominator and quotienting them. -/
-def map [MonoidHomClass F R[X] S[X]] (φ : F) (hφ : R[X]⁰ ≤ S[X]⁰.comap φ) :
+noncomputable def map [MonoidHomClass F R[X] S[X]] (φ : F) (hφ : R[X]⁰ ≤ S[X]⁰.comap φ) :
     R⟮X⟯ →* S⟮X⟯ where
   toFun f :=
     RatFunc.liftOn f
@@ -365,7 +363,7 @@ theorem map_injective [MonoidHomClass F R[X] S[X]] (φ : F) (hφ : R[X]⁰ ≤ S
 to a `R⟮X⟯ →+* S⟮X⟯`,
 on the condition that `φ` maps non-zero-divisors to non-zero-divisors,
 by mapping both the numerator and denominator and quotienting them. -/
-def mapRingHom [RingHomClass F R[X] S[X]] (φ : F) (hφ : R[X]⁰ ≤ S[X]⁰.comap φ) :
+noncomputable def mapRingHom [RingHomClass F R[X] S[X]] (φ : F) (hφ : R[X]⁰ ≤ S[X]⁰.comap φ) :
     R⟮X⟯ →+* S⟮X⟯ :=
   { map φ hφ with
     map_zero' := by
@@ -390,6 +388,7 @@ theorem coe_mapRingHom_eq_coe_map [RingHomClass F R[X] S[X]] (φ : F) (hφ : R[X
 /-- Lift a monoid with zero homomorphism `R[X] →*₀ G₀` to a `R⟮X⟯ →*₀ G₀`
 on the condition that `φ` maps non-zero-divisors to non-zero-divisors,
 by mapping both the numerator and denominator and quotienting them. -/
+noncomputable
 def liftMonoidWithZeroHom (φ : R[X] →*₀ G₀) (hφ : R[X]⁰ ≤ G₀⁰.comap φ) : R⟮X⟯ →*₀ G₀ where
   toFun f :=
     RatFunc.liftOn f (fun p q => φ p / φ q) fun {p q p' q'} hq hq' h => by
@@ -432,7 +431,7 @@ theorem liftMonoidWithZeroHom_injective [Nontrivial R] (φ : R[X] →*₀ G₀) 
 
 /-- Lift an injective ring homomorphism `R[X] →+* L` to a `R⟮X⟯ →+* L`
 by mapping both the numerator and denominator and quotienting them. -/
-def liftRingHom (φ : R[X] →+* L) (hφ : R[X]⁰ ≤ L⁰.comap φ) : R⟮X⟯ →+* L :=
+noncomputable def liftRingHom (φ : R[X] →+* L) (hφ : R[X]⁰ ≤ L⁰.comap φ) : R⟮X⟯ →+* L :=
   { liftMonoidWithZeroHom φ.toMonoidWithZeroHom hφ with
     map_add' := fun x y => by
       simp only [ZeroHom.toFun_eq_coe, MonoidWithZeroHom.toZeroHom_coe]
@@ -475,7 +474,7 @@ end LiftHom
 variable (K)
 
 @[stacks 09FK]
-instance instField [IsDomain K] : Field K⟮X⟯ where
+noncomputable instance instField [IsDomain K] : Field K⟮X⟯ where
   inv_zero := by frac_tac
   div_eq_mul_inv := by frac_tac
   mul_inv_cancel _ := mul_inv_cancel
@@ -493,7 +492,7 @@ section IsDomain
 
 variable [IsDomain K]
 
-instance (R : Type*) [CommSemiring R] [Algebra R K[X]] : Algebra R K⟮X⟯ where
+noncomputable instance (R : Type*) [CommSemiring R] [Algebra R K[X]] : Algebra R K⟮X⟯ where
   algebraMap :=
   { toFun x := RatFunc.mk (algebraMap _ _ x) 1
     map_add' x y := by simp only [mk_one', map_add, ofFractionRing_add]
@@ -512,9 +511,9 @@ variable {K}
 /-- The coercion from polynomials to rational functions, implemented as the algebra map from a
 domain to its field of fractions -/
 @[coe]
-def coePolynomial (P : Polynomial K) : K⟮X⟯ := algebraMap _ _ P
+noncomputable def coePolynomial (P : Polynomial K) : K⟮X⟯ := algebraMap _ _ P
 
-instance : Coe (Polynomial K) K⟮X⟯ := ⟨coePolynomial⟩
+noncomputable instance : Coe (Polynomial K) K⟮X⟯ := ⟨coePolynomial⟩
 
 theorem mk_one (x : K[X]) : RatFunc.mk x 1 = algebraMap _ _ x :=
   rfl
@@ -628,7 +627,7 @@ variable {L R S : Type*} [Field L] [CommRing R] [IsDomain R] [CommSemiring S] [A
 to a `K⟮X⟯ →ₐ[S] R⟮X⟯`,
 on the condition that `φ` maps non-zero-divisors to non-zero-divisors,
 by mapping both the numerator and denominator and quotienting them. -/
-def mapAlgHom (φ : K[X] →ₐ[S] R[X]) (hφ : K[X]⁰ ≤ R[X]⁰.comap φ) : K⟮X⟯ →ₐ[S] R⟮X⟯ :=
+noncomputable def mapAlgHom (φ : K[X] →ₐ[S] R[X]) (hφ : K[X]⁰ ≤ R[X]⁰.comap φ) : K⟮X⟯ →ₐ[S] R⟮X⟯ :=
   { mapRingHom φ hφ with
     commutes' := fun r => by
       simp_rw [RingHom.toFun_eq_coe, coe_mapRingHom_eq_coe_map, algebraMap_apply r, map_apply_div,
@@ -640,7 +639,7 @@ theorem coe_mapAlgHom_eq_coe_map (φ : K[X] →ₐ[S] R[X]) (hφ : K[X]⁰ ≤ R
 
 /-- Lift an injective algebra homomorphism `K[X] →ₐ[S] L` to a `K⟮X⟯ →ₐ[S] L`
 by mapping both the numerator and denominator and quotienting them. -/
-def liftAlgHom : K⟮X⟯ →ₐ[S] L :=
+noncomputable def liftAlgHom : K⟮X⟯ →ₐ[S] L :=
   { liftRingHom φ.toRingHom hφ with
     commutes' := fun r => by
       simp_rw [RingHom.toFun_eq_coe, AlgHom.toRingHom_eq_coe, algebraMap_apply r,
@@ -755,7 +754,7 @@ variable (R L : Type*) [CommRing R] [Field L] [IsDomain R] [Algebra R[X] L] [Fai
 /-- `FractionRing.liftAlgebra` specialized to `R⟮X⟯`.
 
 This is a scoped instance because it creates a diamond when `L = R⟮X⟯`. -/
-scoped instance liftAlgebra : Algebra R⟮X⟯ L :=
+noncomputable scoped instance liftAlgebra : Algebra R⟮X⟯ L :=
   RingHom.toAlgebra (IsFractionRing.lift (FaithfulSMul.algebraMap_injective R[X] _))
 
 /-- `FractionRing.isScalarTower_liftAlgebra` specialized to `R⟮X⟯`. -/
@@ -842,7 +841,7 @@ variable [Field K]
 open scoped Classical in
 /-- `RatFunc.numDenom` are numerator and denominator of a rational function over a field,
 normalized such that the denominator is monic. -/
-def numDenom (x : K⟮X⟯) : K[X] × K[X] :=
+noncomputable def numDenom (x : K⟮X⟯) : K[X] × K[X] :=
   x.liftOn'
     (fun p q =>
       if q = 0 then ⟨0, 1⟩
@@ -887,7 +886,7 @@ theorem numDenom_div (p : K[X]) {q : K[X]} (hq : q ≠ 0) :
 
 /-- `RatFunc.num` is the numerator of a rational function,
 normalized such that the denominator is monic. -/
-def num (x : K⟮X⟯) : K[X] :=
+noncomputable def num (x : K⟮X⟯) : K[X] :=
   x.numDenom.1
 
 open scoped Classical in
@@ -929,7 +928,7 @@ theorem num_div_dvd' (p : K[X]) {q : K[X]} (hq : q ≠ 0) :
 
 /-- `RatFunc.denom` is the denominator of a rational function,
 normalized such that it is monic. -/
-def denom (x : K⟮X⟯) : K[X] :=
+noncomputable def denom (x : K⟮X⟯) : K[X] :=
   x.numDenom.2
 
 open scoped Classical in

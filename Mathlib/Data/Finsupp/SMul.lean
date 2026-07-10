@@ -25,8 +25,6 @@ This file is a `noncomputable theory` and uses classical logic throughout.
 @[expose] public section
 
 
-noncomputable section
-
 open Finset Function
 
 variable {α β M N G R : Type*}
@@ -52,7 +50,7 @@ variable [Monoid G] [MulAction G α] [AddCommMonoid M]
 This is not an instance as it would conflict with the action on the range.
 See the `instance_diamonds` test for examples of such conflicts. -/
 @[instance_reducible]
-def comapSMul : SMul G (α →₀ M) where smul g := mapDomain (g • ·)
+noncomputable def comapSMul : SMul G (α →₀ M) where smul g := mapDomain (g • ·)
 
 attribute [local instance] comapSMul
 
@@ -65,7 +63,7 @@ theorem comapSMul_single (g : G) (a : α) (b : M) : g • single a b = single (g
 
 /-- `Finsupp.comapSMul` is multiplicative -/
 @[instance_reducible]
-def comapMulAction : MulAction G (α →₀ M) where
+noncomputable def comapMulAction : MulAction G (α →₀ M) where
   one_smul f := by rw [comapSMul_def, one_smul_eq_id, mapDomain_id]
   mul_smul g g' f := by
     rw [comapSMul_def, comapSMul_def, comapSMul_def, ← comp_smul_left, mapDomain_comp]
@@ -74,7 +72,7 @@ attribute [local instance] comapMulAction
 
 /-- `Finsupp.comapSMul` is distributive -/
 @[instance_reducible]
-def comapDistribMulAction : DistribMulAction G (α →₀ M) where
+noncomputable def comapDistribMulAction : DistribMulAction G (α →₀ M) where
   smul_zero g := by
     ext a
     simp only [comapSMul_def]
@@ -120,13 +118,13 @@ instance faithfulSMul [Nonempty α] [Zero M] [SMulZeroClass R M] [FaithfulSMul R
 
 variable (α M)
 
-instance distribMulAction [Monoid R] [AddMonoid M] [DistribMulAction R M] :
+noncomputable instance distribMulAction [Monoid R] [AddMonoid M] [DistribMulAction R M] :
     DistribMulAction R (α →₀ M) :=
   { Finsupp.distribSMul _ _ with
     one_smul := fun x => ext fun y => one_smul R (x y)
     mul_smul := fun r s x => ext fun y => mul_smul r s (x y) }
 
-instance module [Semiring R] [AddCommMonoid M] [Module R M] : Module R (α →₀ M) :=
+noncomputable instance module [Semiring R] [AddCommMonoid M] [Module R M] : Module R (α →₀ M) :=
   { toDistribMulAction := Finsupp.distribMulAction α M
     zero_smul := fun _ => ext fun _ => zero_smul _ _
     add_smul := fun _ _ _ => ext fun _ => add_smul _ _ _ }
@@ -202,7 +200,7 @@ variable [Monoid R] [AddMonoid M] [AddMonoid N] [DistribMulAction R M] [DistribM
 /-- `Finsupp.single` as a `DistribMulActionSemiHom`.
 
 See also `Finsupp.lsingle` for the version as a linear map. -/
-def DistribMulActionHom.single (a : α) : M →+[R] α →₀ M :=
+noncomputable def DistribMulActionHom.single (a : α) : M →+[R] α →₀ M :=
   { singleAddHom a with
     map_smul' := fun k m => by simp }
 

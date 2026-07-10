@@ -20,8 +20,6 @@ facts about this, including how it changes under multiplication and composition.
 
 @[expose] public section
 
-noncomputable section
-
 open Filter Function Set
 
 open scoped Topology
@@ -31,7 +29,7 @@ variable {𝕜 𝕜' : Type*} [NontriviallyNormedField 𝕜] [NontriviallyNormed
 
 /-- The logarithmic derivative of a function defined as `deriv f /f`. Note that it will be zero
 at `x` if `f` is not DifferentiableAt `x`. -/
-def logDeriv (f : 𝕜 → 𝕜') :=
+noncomputable def logDeriv (f : 𝕜 → 𝕜') :=
   deriv f / f
 
 theorem logDeriv_apply (f : 𝕜 → 𝕜') (x : 𝕜) : logDeriv f x = deriv f x / f x := rfl

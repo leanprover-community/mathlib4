@@ -33,7 +33,6 @@ This file equips a smooth manifold with the structure of a locally ringed space.
 
 @[expose] public section
 
-noncomputable section
 universe u
 
 open scoped ContDiff
@@ -130,7 +129,7 @@ instance smoothSheafCommRing.instLocalRing_stalk (x : M) :
 variable (M)
 
 /-- A smooth manifold can be considered as a locally ringed space. -/
-def ChartedSpace.locallyRingedSpace : LocallyRingedSpace where
+noncomputable def ChartedSpace.locallyRingedSpace : LocallyRingedSpace where
   carrier := TopCat.of M
   presheaf := smoothPresheafCommRing IM 𝓘(𝕜) M 𝕜
   IsSheaf := (smoothSheafCommRing IM 𝓘(𝕜) M 𝕜).property
@@ -144,7 +143,7 @@ open CategoryTheory Limits
 variable {M IM IN}
 
 /-- (Implementation): Use `ChartedSpace.locallyRingedSpaceMap`. -/
-def ChartedSpace.locallyRingedSpaceMapAux (f : M → N) (hf : ContMDiff IM IN ∞ f) :
+noncomputable def ChartedSpace.locallyRingedSpaceMapAux (f : M → N) (hf : ContMDiff IM IN ∞ f) :
     (locallyRingedSpace IM M).toPresheafedSpace ⟶
       (locallyRingedSpace IN N).toPresheafedSpace where
   base := TopCat.ofHom ⟨f, hf.continuous⟩
@@ -166,7 +165,7 @@ lemma ChartedSpace.stalkMap_locallyRingedSpaceMapAux (f : M → N) (hf : ContMDi
 set_option backward.isDefEq.respectTransparency false in
 /-- A smooth function of manifolds `f : M → N` induces a morphism of locally ringed spaces. -/
 @[simps! base]
-def ChartedSpace.locallyRingedSpaceMap (f : M → N) (hf : ContMDiff IM IN ∞ f) :
+noncomputable def ChartedSpace.locallyRingedSpaceMap (f : M → N) (hf : ContMDiff IM IN ∞ f) :
     locallyRingedSpace IM M ⟶ locallyRingedSpace IN N where
   __ := locallyRingedSpaceMapAux f hf
   prop x := by
@@ -222,7 +221,7 @@ instance (U : Opens M) :
 
 /-- Viewing a manifold as a locally ringed space commutes with restriction to open subsets. -/
 @[simps]
-def ChartedSpace.restrictLocallyRingedSpaceIso (U : Opens M) :
+noncomputable def ChartedSpace.restrictLocallyRingedSpaceIso (U : Opens M) :
     (locallyRingedSpace IM M).restrict U.isOpenEmbedding ≅
       locallyRingedSpace IM U where
   hom := LocallyRingedSpace.IsOpenImmersion.lift

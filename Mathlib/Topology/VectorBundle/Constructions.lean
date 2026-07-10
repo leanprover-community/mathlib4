@@ -30,8 +30,6 @@ Vector bundle, direct sum, pullback
 
 public section
 
-noncomputable section
-
 open Bundle Set FiberBundle
 
 /-! ### The trivial vector bundle -/

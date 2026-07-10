@@ -24,8 +24,6 @@ for covering maps like `(↑) : ℝ → AddCircle (1 : ℝ)`.
 open Function Set Filter
 open scoped ENNReal
 
-noncomputable section
-
 namespace MeasureTheory
 
 namespace Measure
@@ -40,6 +38,7 @@ Note that if `f` is not injective, this definition assigns `Set.univ` measure ze
 
 If the linearity is not needed, please use `comap` instead, which works for a larger class of
 functions. `comapₗ` is an auxiliary definition and most lemmas deal with comap. -/
+noncomputable
 def comapₗ [MeasurableSpace α] [MeasurableSpace β] (f : α → β) : Measure β →ₗ[ℝ≥0∞] Measure α :=
   if hf : Injective f ∧ ∀ s, MeasurableSet s → MeasurableSet (f '' s) then
     liftLinear (OuterMeasure.comap f) fun μ s hs t => by
@@ -59,6 +58,7 @@ open scoped Classical in
 then for each measurable set `s` we have `comap f μ s = μ (f '' s)`.
 
 Note that if `f` is not injective, this definition assigns `Set.univ` measure zero. -/
+noncomputable
 def comap [MeasurableSpace α] [MeasurableSpace β] (f : α → β) (μ : Measure β) : Measure α :=
   if hf : Injective f ∧ ∀ s, MeasurableSet s → NullMeasurableSet (f '' s) μ then
     (OuterMeasure.comap f μ.toOuterMeasure).toMeasure fun s hs t => by

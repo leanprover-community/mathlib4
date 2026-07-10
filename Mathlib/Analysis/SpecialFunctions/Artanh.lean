@@ -37,8 +37,6 @@ artanh, arctanh, argtanh, atanh
 @[expose] public section
 
 
-noncomputable section
-
 open Function Filter Set
 
 open scoped Topology
@@ -49,7 +47,7 @@ variable {x y : ℝ}
 
 /-- `artanh` is defined using a logarithm, `artanh x = log √((1 + x) / (1 - x))`. -/
 @[pp_nodot]
-def artanh (x : ℝ) :=
+noncomputable def artanh (x : ℝ) :=
   log √((1 + x) / (1 - x))
 
 theorem artanh_eq_half_log {x : ℝ} (hx : x ∈ Icc (-1) 1) :
@@ -139,7 +137,7 @@ theorem artanh_nonpos {x : ℝ} (hx : x ≤ 0) : artanh x ≤ 0 := by
   case neg => grind [artanh_eq_zero_iff]
 
 /-- `Real.tanh` as a `PartialEquiv`. -/
-def tanhPartialEquiv : PartialEquiv ℝ ℝ where
+noncomputable def tanhPartialEquiv : PartialEquiv ℝ ℝ where
   toFun := tanh
   invFun := artanh
   source := univ

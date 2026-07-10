@@ -34,8 +34,6 @@ This file defines affinely independent families of points.
 @[expose] public section
 
 
-noncomputable section
-
 open Finset Function Module
 open scoped Affine
 

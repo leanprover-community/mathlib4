@@ -59,8 +59,6 @@ inequalities this can be changed.
 
 universe w v₁ v₂ v₃ u₁ u₂ u₃
 
-noncomputable section
-
 namespace CategoryTheory
 
 open Opposite CategoryTheory Category Limits Sieve
@@ -223,7 +221,7 @@ variable {J}
   If `P` is a sheaf, `S` is a cover of `X`, and `x` is a collection of morphisms from `E`
   to `P` evaluated at terms in the cover which are compatible, then we can amalgamate
   the `x`s to obtain a single morphism `E ⟶ P.obj (op X)`. -/
-def IsSheaf.amalgamate {A : Type u₂} [Category.{v₂} A] {E : A} {X : C} {P : Cᵒᵖ ⥤ A}
+noncomputable def IsSheaf.amalgamate {A : Type u₂} [Category.{v₂} A] {E : A} {X : C} {P : Cᵒᵖ ⥤ A}
     (hP : Presheaf.IsSheaf J P) (S : J.Cover X) (x : ∀ I : S.Arrow, E ⟶ P.obj (op I.Y))
     (hx : ∀ ⦃I₁ I₂ : S.Arrow⦄ (r : I₁.Relation I₂),
        x I₁ ≫ P.map r.g₁.op = x I₂ ≫ P.map r.g₂.op) : E ⟶ P.obj (op X) :=
@@ -271,7 +269,7 @@ lemma IsSheaf.existsUnique_amalgamation_ofArrows :
 /-- If `P : Cᵒᵖ ⥤ A` is a sheaf and `f i : X i ⟶ S` is a covering family, then
 a morphism `E ⟶ P.obj (op S)` can be constructed from a compatible family of
 morphisms `x : E ⟶ P.obj (op (X i))`. -/
-def IsSheaf.amalgamateOfArrows : E ⟶ P.obj (op S) :=
+noncomputable def IsSheaf.amalgamateOfArrows : E ⟶ P.obj (op S) :=
   (hP.existsUnique_amalgamation_ofArrows f hf x hx).choose
 
 @[reassoc (attr := simp)]
@@ -458,7 +456,7 @@ instance : Inhabited (Sheaf (⊥ : GrothendieckTopology C) (Type w)) :=
 variable {J} {A}
 
 /-- If the empty sieve is a cover of `X`, then `F(X)` is terminal. -/
-def Sheaf.isTerminalOfBotCover (F : Sheaf J A) (X : C) (H : ⊥ ∈ J X) :
+noncomputable def Sheaf.isTerminalOfBotCover (F : Sheaf J A) (X : C) (H : ⊥ ∈ J X) :
     IsTerminal (F.1.obj (op X)) := by
   refine @IsTerminal.ofUnique _ _ _ ?_
   intro Y
@@ -523,6 +521,7 @@ variable (P : Cᵒᵖ ⥤ A) (P' : Cᵒᵖ ⥤ A')
 section MultiequalizerConditions
 
 /-- When `P` is a sheaf and `S` is a cover, the associated multifork is a limit. -/
+noncomputable
 def isLimitOfIsSheaf {X : C} (S : J.Cover X) (hP : IsSheaf J P) : IsLimit (S.multifork P) where
   lift := fun E : Multifork _ => hP.amalgamate S (fun _ => E.ι _)
     (fun _ _ r => E.condition ⟨r⟩)
@@ -565,7 +564,7 @@ theorem isSheaf_iff_multifork :
 variable {J P} in
 /-- If `F : Cᵒᵖ ⥤ A` is a sheaf for a Grothendieck topology `J` on `C`,
 and `S` is a cover of `X : C`, then the multifork `S.multifork F` is limit. -/
-def IsSheaf.isLimitMultifork
+noncomputable def IsSheaf.isLimitMultifork
     (hP : Presheaf.IsSheaf J P) {X : C} (S : J.Cover X) : IsLimit (S.multifork P) := by
   rw [Presheaf.isSheaf_iff_multifork] at hP
   exact (hP X S).some
@@ -596,13 +595,13 @@ variable [HasProducts.{max u₁ v₁} A']
 /-- The middle object of the fork diagram given in Equation (3) of [MM92], as well as the fork
 diagram of the Stacks entry. -/
 @[stacks 00VM "The middle object of the fork diagram there."]
-def firstObj : A :=
+noncomputable def firstObj : A :=
   ∏ᶜ fun f : Σ V, { f : V ⟶ U // R f } => P.obj (op f.1)
 
 /-- The left morphism of the fork diagram given in Equation (3) of [MM92], as well as the fork
 diagram of the Stacks entry. -/
 @[stacks 00VM "The left morphism the fork diagram there."]
-def forkMap : P.obj (op U) ⟶ firstObj R P :=
+noncomputable def forkMap : P.obj (op U) ⟶ firstObj R P :=
   Pi.lift fun f => P.map f.2.1.op
 
 variable [HasPullbacks C]
@@ -611,18 +610,18 @@ variable [HasPullbacks C]
 contains the data used to check a family of elements for a presieve is compatible.
 -/
 @[stacks 00VM "The rightmost object of the fork diagram there."]
-def secondObj : A :=
+noncomputable def secondObj : A :=
   ∏ᶜ fun fg : (Σ V, { f : V ⟶ U // R f }) × Σ W, { g : W ⟶ U // R g } =>
     P.obj (op (pullback fg.1.2.1 fg.2.2.1))
 
 /-- The map `pr₀*` of the Stacks entry. -/
 @[stacks 00VM "The map `pr₀*` there."]
-def firstMap : firstObj R P ⟶ secondObj R P :=
+noncomputable def firstMap : firstObj R P ⟶ secondObj R P :=
   Pi.lift fun _ => Pi.π _ _ ≫ P.map (pullback.fst _ _).op
 
 /-- The map `pr₁*` of the Stacks entry. -/
 @[stacks 00VM "The map `pr₁*` there."]
-def secondMap : firstObj R P ⟶ secondObj R P :=
+noncomputable def secondMap : firstObj R P ⟶ secondObj R P :=
   Pi.lift fun _ => Pi.π _ _ ≫ P.map (pullback.snd _ _).op
 
 set_option backward.isDefEq.respectTransparency false in
@@ -645,7 +644,7 @@ set_option backward.isDefEq.respectTransparency false in
 -- Again I wonder whether `UnivLE` can somehow be used to allow `s` to take
 -- values in a more general universe.
 /-- (Implementation). An auxiliary lemma to convert between sheaf conditions. -/
-def isSheafForIsSheafFor' (P : Cᵒᵖ ⥤ A) (s : A ⥤ Type (max v₁ u₁))
+noncomputable def isSheafForIsSheafFor' (P : Cᵒᵖ ⥤ A) (s : A ⥤ Type (max v₁ u₁))
     [∀ J, PreservesLimitsOfShape (Discrete.{max v₁ u₁} J) s] (U : C) (R : Presieve U) :
     IsLimit (s.mapCone (Fork.ofι _ (w R P))) ≃
       IsLimit (Fork.ofι _ (Equalizer.Presieve.w (P ⋙ s) R)) := by

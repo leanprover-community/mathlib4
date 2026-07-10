@@ -55,8 +55,6 @@ Ideally this would conveniently interact with both `Mat_` and `Matrix`.
 
 open CategoryTheory CategoryTheory.Preadditive
 
-noncomputable section
-
 namespace CategoryTheory
 
 universe w v₁ v₂ u₁ u₂
@@ -86,6 +84,7 @@ namespace Hom
 
 open scoped Classical in
 /-- The identity matrix consists of identity morphisms on the diagonal, and zeros elsewhere. -/
+noncomputable
 def id (M : Mat_ C) : Hom M M := fun i j => if h : i = j then eqToHom (congr_arg M.X h) else 0
 
 /-- Composition of matrices using matrix multiplication. -/
@@ -98,7 +97,7 @@ section
 
 attribute [local simp] Hom.id Hom.comp
 
-instance : Category.{v₁} (Mat_ C) where
+noncomputable instance : Category.{v₁} (Mat_ C) where
   Hom := Hom
   id := Hom.id
   comp f g := f.comp g
@@ -257,7 +256,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- The identity functor induces the identity functor on matrix categories.
 -/
 @[simps!]
-def mapMatId : (𝟭 C).mapMat_ ≅ 𝟭 (Mat_ C) :=
+noncomputable def mapMatId : (𝟭 C).mapMat_ ≅ 𝟭 (Mat_ C) :=
   NatIso.ofComponents (fun M => eqToIso (by cases M; rfl)) fun {M N} f => by
     classical
     ext
@@ -268,6 +267,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- Composite functors induce composite functors on matrix categories.
 -/
 @[simps!]
+noncomputable
 def mapMatComp {E : Type*} [Category.{v₁} E] [Preadditive E] (F : C ⥤ D) [Functor.Additive F]
     (G : D ⥤ E) [Functor.Additive G] : (F ⋙ G).mapMat_ ≅ F.mapMat_ ⋙ G.mapMat_ :=
   NatIso.ofComponents (fun M => eqToIso (by cases M; rfl)) fun {M N} f => by
@@ -313,6 +313,7 @@ open scoped Classical in
 /-- Every object in `Mat_ C` is isomorphic to the biproduct of its summands.
 -/
 @[simps]
+noncomputable
 def isoBiproductEmbedding (M : Mat_ C) : M ≅ ⨁ fun i => (embedding C).obj (M.X i) where
   hom := biproduct.lift fun i j _ => if h : j = i then eqToHom (congr_arg M.X h) else 0
   inv := biproduct.desc fun i _ k => if h : i = k then eqToHom (congr_arg M.X h) else 0
@@ -351,7 +352,7 @@ instance (F : Mat_ C ⥤ D) [Functor.Additive F] (M : Mat_ C) :
   F.hasBiproduct_of_preserves _
 
 /-- Every `M` is a direct sum of objects from `C`, and `F` preserves biproducts. -/
-def additiveObjIsoBiproduct (F : Mat_ C ⥤ D) [Functor.Additive F] (M : Mat_ C) :
+noncomputable def additiveObjIsoBiproduct (F : Mat_ C ⥤ D) [Functor.Additive F] (M : Mat_ C) :
     F.obj M ≅ ⨁ fun i => F.obj ((embedding C).obj (M.X i)) :=
   F.mapIso (isoBiproductEmbedding M) ≪≫ F.mapBiproduct _
 
@@ -408,7 +409,7 @@ attribute [local simp] biproduct.lift_desc
 /-- Any additive functor `C ⥤ D` to a category `D` with finite biproducts extends to
 a functor `Mat_ C ⥤ D`. -/
 @[simps]
-def lift (F : C ⥤ D) [Functor.Additive F] : Mat_ C ⥤ D where
+noncomputable def lift (F : C ⥤ D) [Functor.Additive F] : Mat_ C ⥤ D where
   obj X := ⨁ fun i => F.obj (X.X i)
   map f := biproduct.matrix fun i j => F.map (f i j)
   map_id X := by
@@ -424,7 +425,7 @@ instance lift_additive (F : C ⥤ D) [Functor.Additive F] : Functor.Additive (li
 set_option backward.defeqAttrib.useBackward true in
 /-- An additive functor `C ⥤ D` factors through its lift to `Mat_ C ⥤ D`. -/
 @[simps!]
-def embeddingLiftIso (F : C ⥤ D) [Functor.Additive F] : embedding C ⋙ lift F ≅ F :=
+noncomputable def embeddingLiftIso (F : C ⥤ D) [Functor.Additive F] : embedding C ⋙ lift F ≅ F :=
   NatIso.ofComponents
     (fun X =>
       { hom := biproduct.desc fun _ => 𝟙 (F.obj X)
@@ -434,7 +435,7 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- `Mat_.lift F` is the unique additive functor `L : Mat_ C ⥤ D` such that `F ≅ embedding C ⋙ L`.
 -/
-def liftUnique (F : C ⥤ D) [Functor.Additive F] (L : Mat_ C ⥤ D) [Functor.Additive L]
+noncomputable def liftUnique (F : C ⥤ D) [Functor.Additive F] (L : Mat_ C ⥤ D) [Functor.Additive L]
     (α : embedding C ⋙ L ≅ F) : L ≅ lift F :=
   NatIso.ofComponents
     (fun M =>
@@ -458,13 +459,13 @@ def liftUnique (F : C ⥤ D) [Functor.Additive F] (L : Mat_ C ⥤ D) [Functor.Ad
 -- TODO is there some uniqueness statement for the natural isomorphism in `liftUnique`?
 /-- Two additive functors `Mat_ C ⥤ D` are naturally isomorphic if
 their precompositions with `embedding C` are naturally isomorphic as functors `C ⥤ D`. -/
-def ext {F G : Mat_ C ⥤ D} [Functor.Additive F] [Functor.Additive G]
+noncomputable def ext {F G : Mat_ C ⥤ D} [Functor.Additive F] [Functor.Additive G]
     (α : embedding C ⋙ F ≅ embedding C ⋙ G) : F ≅ G :=
   liftUnique (embedding C ⋙ G) _ α ≪≫ (liftUnique _ _ (Iso.refl _)).symm
 
 /-- Natural isomorphism needed in the construction of `equivalenceSelfOfHasFiniteBiproducts`.
 -/
-def equivalenceSelfOfHasFiniteBiproductsAux [HasFiniteBiproducts C] :
+noncomputable def equivalenceSelfOfHasFiniteBiproductsAux [HasFiniteBiproducts C] :
     embedding C ⋙ 𝟭 (Mat_ C) ≅ embedding C ⋙ lift (𝟭 C) ⋙ embedding C :=
   Functor.rightUnitor _ ≪≫
     (Functor.leftUnitor _).symm ≪≫
@@ -476,6 +477,7 @@ A preadditive category that already has finite biproducts is equivalent to its a
 Note that we only prove this for a large category;
 otherwise there are universe issues that I haven't attempted to sort out.
 -/
+noncomputable
 def equivalenceSelfOfHasFiniteBiproducts (C : Type (u₁ + 1)) [LargeCategory C] [Preadditive C]
     [HasFiniteBiproducts C] : Mat_ C ≌ C :=
   Equivalence.mk
@@ -514,7 +516,7 @@ open Matrix
 
 attribute [local instance] FintypeCat.fintype in
 open scoped Classical in
-instance (R : Type u) [Semiring R] : Category (Mat R) where
+noncomputable instance (R : Type u) [Semiring R] : Category (Mat R) where
   Hom X Y := Matrix X Y R
   id X := (1 : Matrix X X R)
   comp {X Y Z} f g := (show Matrix X Y R from f) * (show Matrix Y Z R from g)
@@ -601,7 +603,7 @@ instance : (equivalenceSingleObjInverse R).IsEquivalence where
 
 /-- The categorical equivalence between the category of matrices over a ring,
 and the category of matrices over that ring considered as a single-object category. -/
-def equivalenceSingleObj : Mat R ≌ Mat_ (SingleObj Rᵐᵒᵖ) :=
+noncomputable def equivalenceSingleObj : Mat R ≌ Mat_ (SingleObj Rᵐᵒᵖ) :=
   (equivalenceSingleObjInverse R).asEquivalence.symm
 
 instance (X Y : Mat R) : AddCommGroup (X ⟶ Y) :=

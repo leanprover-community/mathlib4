@@ -51,8 +51,6 @@ open Metric Set Module MeasureTheory Filter Fin
 
 open scoped ENNReal Topology
 
-noncomputable section
-
 namespace Besicovitch
 
 variable {E : Type*} [NormedAddCommGroup E]
@@ -63,7 +61,7 @@ variable [NormedSpace ℝ E] {N : ℕ} {τ : ℝ} (a : SatelliteConfig E N τ)
 
 /-- Rescaling a satellite configuration in a vector space, to put the basepoint at `0` and the base
 radius at `1`. -/
-def centerAndRescale : SatelliteConfig E N τ where
+noncomputable def centerAndRescale : SatelliteConfig E N τ where
   c i := (a.r (last N))⁻¹ • (a.c i - a.c (last N))
   r i := (a.r (last N))⁻¹ * a.r i
   rpos i := by positivity
@@ -95,7 +93,7 @@ end SatelliteConfig
 
 /-- The maximum cardinality of a `1`-separated set in the ball of radius `2`. This is also the
 optimal number of families in the Besicovitch covering theorem. -/
-def multiplicity (E : Type*) [NormedAddCommGroup E] :=
+noncomputable def multiplicity (E : Type*) [NormedAddCommGroup E] :=
   sSup {N | ∃ s : Finset E, s.card = N ∧ (∀ c ∈ s, ‖c‖ ≤ 2) ∧ ∀ c ∈ s, ∀ d ∈ s, c ≠ d → 1 ≤ ‖c - d‖}
 
 section
@@ -243,7 +241,7 @@ theorem exists_goodδ :
 
 /-- A small positive number such that any `1 - δ`-separated set in the ball of radius `2` has
 cardinality at most `Besicovitch.multiplicity E`. -/
-def goodδ : ℝ :=
+noncomputable def goodδ : ℝ :=
   (exists_goodδ E).choose
 
 theorem goodδ_lt_one : goodδ E < 1 :=
@@ -252,7 +250,7 @@ theorem goodδ_lt_one : goodδ E < 1 :=
 /-- A number `τ > 1`, but chosen close enough to `1` so that the construction in the Besicovitch
 covering theorem using this parameter `τ` will give the smallest possible number of covering
 families. -/
-def goodτ : ℝ :=
+noncomputable def goodτ : ℝ :=
   1 + goodδ E / 4
 
 theorem one_lt_goodτ : 1 < goodτ E := by

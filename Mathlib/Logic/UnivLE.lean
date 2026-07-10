@@ -23,8 +23,6 @@ public section
 
 universe u v w
 
-noncomputable section
-
 /--
 A class expressing a universe inequality. `UnivLE.{u, v}` expresses that `u ≤ v`.
 

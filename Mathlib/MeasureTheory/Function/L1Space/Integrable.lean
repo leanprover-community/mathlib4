@@ -38,8 +38,6 @@ integrable
 @[expose] public section
 
 
-noncomputable section
-
 open EMetric ENNReal Filter MeasureTheory NNReal Set TopologicalSpace
 
 open scoped Topology

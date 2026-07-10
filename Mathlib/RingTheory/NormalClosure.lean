@@ -32,7 +32,7 @@ of `Frac S`. In particular, if `S` is a Dedekind domain, then `T` is also a Dede
 
 namespace Ring
 
-noncomputable section NormalClosure
+section NormalClosure
 
 variable (R S : Type*) [CommRing R] [CommRing S] [IsDomain R] [IsDomain S]
   [Algebra R S] [Module.IsTorsionFree R S]
@@ -42,6 +42,7 @@ We register this specific instance as a local instance rather than making
 `FractionRing.liftAlgebra` a local instance because the latter causes timeouts since
 it is too general.
 -/
+noncomputable
 local instance : Algebra (FractionRing R) (FractionRing S) := FractionRing.liftAlgebra _ _
 
 local notation3 "K" => FractionRing R
@@ -53,7 +54,7 @@ local notation3 "E" => IntermediateField.normalClosure (FractionRing R) (Fractio
 /--
 This is a local instance since it is only used in this file to construct `Ring.NormalClosure`.
 -/
-local instance : Algebra S E := ((algebraMap L E).comp (algebraMap S L)).toAlgebra
+noncomputable local instance : Algebra S E := ((algebraMap L E).comp (algebraMap S L)).toAlgebra
 
 local instance : IsScalarTower S L E := IsScalarTower.of_algebraMap_eq' rfl
 
@@ -64,20 +65,20 @@ def NormalClosure : Type _ := integralClosure S E
 
 local notation3 "T" => NormalClosure R S
 
-instance : CommRing T := inferInstanceAs (CommRing (integralClosure S E))
+noncomputable instance : CommRing T := inferInstanceAs (CommRing (integralClosure S E))
 
 instance : IsDomain T := inferInstanceAs (IsDomain (integralClosure S E))
 
 instance : Nontrivial T := inferInstanceAs (Nontrivial (integralClosure S E))
 
-instance : Algebra S T := inferInstanceAs (Algebra S (integralClosure S E))
+noncomputable instance : Algebra S T := inferInstanceAs (Algebra S (integralClosure S E))
 
 /--
 This is a local instance since it is only used in this file to construct `Ring.NormalClosure`.
 -/
-local instance : Algebra T E := inferInstanceAs (Algebra (integralClosure S E) E)
+noncomputable local instance : Algebra T E := inferInstanceAs (Algebra (integralClosure S E) E)
 
-instance : Algebra R T := ((algebraMap S T).comp (algebraMap R S)).toAlgebra
+noncomputable instance : Algebra R T := ((algebraMap S T).comp (algebraMap R S)).toAlgebra
 
 local instance : IsScalarTower S T E :=
   inferInstanceAs (IsScalarTower S (integralClosure S E) E)

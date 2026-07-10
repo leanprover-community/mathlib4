@@ -19,8 +19,6 @@ Lemmas on topological sums in groups (as opposed to monoids).
 
 public section
 
-noncomputable section
-
 open Filter Finset Function
 
 open scoped Topology

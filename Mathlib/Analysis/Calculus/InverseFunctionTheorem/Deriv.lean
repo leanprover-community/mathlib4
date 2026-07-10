@@ -23,14 +23,13 @@ open scoped Topology
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜] (f : 𝕜 → 𝕜)
 
-noncomputable section
 namespace HasStrictDerivAt
 
 variable (f' a : 𝕜) (hf : HasStrictDerivAt f f' a) (hf' : f' ≠ 0)
 include hf hf'
 
 /-- A function that is inverse to `f` near `a`. -/
-abbrev localInverse : 𝕜 → 𝕜 :=
+noncomputable abbrev localInverse : 𝕜 → 𝕜 :=
   (hf.hasStrictFDerivAt_equiv hf').localInverse _ _ _
 
 variable {f f' a}

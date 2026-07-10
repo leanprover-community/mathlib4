@@ -31,8 +31,6 @@ We also prove basic properties of it.
 
 @[expose] public section
 
-noncomputable section
-
 open scoped Polynomial
 
 namespace Polynomial
@@ -40,12 +38,12 @@ namespace Polynomial
 variable {R : Type*} [CommRing R]
 
 /-- Wronskian of a pair of polynomials, `W(a, b) = ab' - a'b`. -/
-def wronskian (a b : R[X]) : R[X] :=
+noncomputable def wronskian (a b : R[X]) : R[X] :=
   a * (derivative b) - (derivative a) * b
 
 variable (R) in
 /-- `Polynomial.wronskian` as a bilinear map. -/
-def wronskianBilin : R[X] →ₗ[R] R[X] →ₗ[R] R[X] :=
+noncomputable def wronskianBilin : R[X] →ₗ[R] R[X] →ₗ[R] R[X] :=
   (LinearMap.mul R R[X]).compl₂ derivative - (LinearMap.mul R R[X]).comp derivative
 
 @[simp]

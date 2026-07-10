@@ -26,8 +26,6 @@ public section
 
 open Filter Asymptotics ContinuousLinearMap Set Metric Topology NNReal ENNReal
 
-noncomputable section
-
 section
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]

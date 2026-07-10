@@ -304,7 +304,7 @@ instance stalk_iso [HasColimits C] (x : X) : IsIso (f.stalkMap x) := by
 
 end
 
-noncomputable section Pullback
+section Pullback
 
 variable {X Y Z : PresheafedSpace C} (f : X ⟶ Z) [hf : IsOpenImmersion f] (g : Y ⟶ Z)
 
@@ -312,7 +312,7 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- (Implementation.) The projection map when constructing the pullback along an open immersion.
 -/
-def pullbackConeOfLeftFst :
+noncomputable def pullbackConeOfLeftFst :
     Y.restrict (TopCat.snd_isOpenEmbedding_of_left hf.base_open g.base) ⟶ X where
   base := pullback.fst _ _
   c :=
@@ -361,7 +361,7 @@ theorem pullback_cone_of_left_condition : pullbackConeOfLeftFst f g ≫ f = Y.of
 /-- We construct the pullback along an open immersion via restricting along the pullback of the
 maps of underlying spaces (which is also an open embedding).
 -/
-def pullbackConeOfLeft : PullbackCone f g :=
+noncomputable def pullbackConeOfLeft : PullbackCone f g :=
   PullbackCone.mk (pullbackConeOfLeftFst f g) (Y.ofRestrict _)
     (pullback_cone_of_left_condition f g)
 
@@ -370,7 +370,7 @@ variable (s : PullbackCone f g)
 set_option backward.defeqAttrib.useBackward true in
 /-- (Implementation.) Any cone over `cospan f g` indeed factors through the constructed cone.
 -/
-def pullbackConeOfLeftLift : s.pt ⟶ (pullbackConeOfLeft f g).pt where
+noncomputable def pullbackConeOfLeftLift : s.pt ⟶ (pullbackConeOfLeft f g).pt where
   base :=
     pullback.lift s.fst.base s.snd.base
       (congr_arg (fun x => PresheafedSpace.Hom.base x) s.condition)
@@ -441,7 +441,7 @@ instance pullbackConeSndIsOpenImmersion : IsOpenImmersion (pullbackConeOfLeft f 
   infer_instance
 
 /-- The constructed pullback cone is indeed the pullback. -/
-def pullbackConeOfLeftIsLimit : IsLimit (pullbackConeOfLeft f g) := by
+noncomputable def pullbackConeOfLeftIsLimit : IsLimit (pullbackConeOfLeft f g) := by
   apply PullbackCone.isLimitAux'
   intro s
   use pullbackConeOfLeftLift f g s
@@ -512,7 +512,7 @@ For an open immersion `f : X ⟶ Z`, given any morphism of schemes `g : Y ⟶ Z`
 image is contained in the image of `f`, we can lift this morphism to a unique `Y ⟶ X` that
 commutes with these maps.
 -/
-def lift (H : Set.range g.base ⊆ Set.range f.base) : Y ⟶ X :=
+noncomputable def lift (H : Set.range g.base ⊆ Set.range f.base) : Y ⟶ X :=
   haveI := pullback_snd_isIso_of_range_subset f g H
   inv (pullback.snd f g) ≫ pullback.fst _ _
 
@@ -526,6 +526,7 @@ theorem lift_uniq (H : Set.range g.base ⊆ Set.range f.base) (l : Y ⟶ X) (hl 
 
 /-- Two open immersions with equal range is isomorphic. -/
 @[simps]
+noncomputable
 def isoOfRangeEq [IsOpenImmersion g] (e : Set.range f.base = Set.range g.base) : X ≅ Y where
   hom := lift g f (le_of_eq e)
   inv := lift f g (le_of_eq e.symm)
@@ -642,7 +643,7 @@ instance comp {X Y Z : SheafedSpace C} (f : X ⟶ Y) (g : Y ⟶ Z) [SheafedSpace
     [SheafedSpace.IsOpenImmersion g] : SheafedSpace.IsOpenImmersion (f ≫ g) :=
   PresheafedSpace.IsOpenImmersion.comp f.hom g.hom
 
-noncomputable section Pullback
+section Pullback
 
 variable {X Y Z : SheafedSpace C} (f : X ⟶ Z) (g : Y ⟶ Z)
 variable [H : SheafedSpace.IsOpenImmersion f]
@@ -680,14 +681,14 @@ instance hasLimit_cospan_forget_of_right' :
     HasLimit (cospan ((cospan g f ⋙ forget).map Hom.inl) ((cospan g f ⋙ forget).map Hom.inr)) :=
   show HasLimit (cospan ((forget).map g) ((forget).map f)) from inferInstance
 
-instance forgetCreatesPullbackOfLeft : CreatesLimit (cospan f g) forget :=
+noncomputable instance forgetCreatesPullbackOfLeft : CreatesLimit (cospan f g) forget :=
   createsLimitOfFullyFaithfulOfIso
     (PresheafedSpace.IsOpenImmersion.toSheafedSpace Y
       (@pullback.snd (PresheafedSpace C) _ _ _ _ f.hom g.hom _))
     (eqToIso (show pullback _ _ = pullback _ _ by congr) ≪≫
       HasLimit.isoOfNatIso (diagramIsoCospan _).symm)
 
-instance forgetCreatesPullbackOfRight : CreatesLimit (cospan g f) forget :=
+noncomputable instance forgetCreatesPullbackOfRight : CreatesLimit (cospan g f) forget :=
   createsLimitOfFullyFaithfulOfIso
     (PresheafedSpace.IsOpenImmersion.toSheafedSpace Y
       (@pullback.fst (PresheafedSpace C) _ _ _ _ g.hom f.hom _))
@@ -981,7 +982,7 @@ instance (X : LocallyRingedSpace) {U : TopCat.{w}} (f : U ⟶ X.toTopCat) (hf : 
     LocallyRingedSpace.IsOpenImmersion (X.ofRestrict hf) :=
   PresheafedSpace.IsOpenImmersion.ofRestrict X.toPresheafedSpace hf
 
-noncomputable section Pullback
+section Pullback
 
 variable {X Y Z : LocallyRingedSpace} (f : X ⟶ Z) (g : Y ⟶ Z)
 variable [H : LocallyRingedSpace.IsOpenImmersion f]
@@ -1001,7 +1002,7 @@ instance : SheafedSpace.IsOpenImmersion (LocallyRingedSpace.forgetToSheafedSpace
 
 set_option backward.isDefEq.respectTransparency false in
 /-- An explicit pullback cone over `cospan f g` if `f` is an open immersion. -/
-def pullbackConeOfLeft : PullbackCone f g := by
+noncomputable def pullbackConeOfLeft : PullbackCone f g := by
   refine PullbackCone.mk ?_
       (Y.ofRestrict (TopCat.snd_isOpenEmbedding_of_left H.base_open g.base)) ?_
   · use PresheafedSpace.IsOpenImmersion.pullbackConeOfLeftFst f.1 g.1
@@ -1021,7 +1022,7 @@ instance : LocallyRingedSpace.IsOpenImmersion (pullbackConeOfLeft f g).snd :=
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The constructed `pullbackConeOfLeft` is indeed limiting. -/
-def pullbackConeOfLeftIsLimit : IsLimit (pullbackConeOfLeft f g) :=
+noncomputable def pullbackConeOfLeftIsLimit : IsLimit (pullbackConeOfLeft f g) :=
   PullbackCone.isLimitAux' _ fun s => by
     refine ⟨LocallyRingedSpace.Hom.mk (PresheafedSpace.IsOpenImmersion.pullbackConeOfLeftLift
         f.1 g.1 (PullbackCone.mk _ _ (congr_arg LocallyRingedSpace.Hom.toHom s.condition))) ?_,
@@ -1149,7 +1150,7 @@ For an open immersion `f : X ⟶ Z`, given any morphism of schemes `g : Y ⟶ Z`
 image is contained in the image of `f`, we can lift this morphism to a unique `Y ⟶ X` that
 commutes with these maps.
 -/
-def lift (H' : Set.range g.base ⊆ Set.range f.base) : Y ⟶ X :=
+noncomputable def lift (H' : Set.range g.base ⊆ Set.range f.base) : Y ⟶ X :=
   have := pullback_snd_isIso_of_range_subset f g H'
   inv (pullback.snd f g) ≫ pullback.fst _ _
 

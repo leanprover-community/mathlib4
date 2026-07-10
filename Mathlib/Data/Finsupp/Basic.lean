@@ -38,8 +38,6 @@ This file is a `noncomputable theory` and uses classical logic throughout.
 @[expose] public section
 
 
-noncomputable section
-
 open Finset Function
 
 variable {α β γ ι M N P G H R S : Type*}
@@ -265,7 +263,7 @@ variable [AddCommMonoid M] {v v₁ v₂ : α →₀ M}
 /-- Given `f : α → β` and `v : α →₀ M`, `mapDomain f v : β →₀ M`
   is the finitely supported function whose value at `a : β` is the sum
   of `v x` over all `x` such that `f x = a`. -/
-def mapDomain (f : α → β) (v : α →₀ M) : β →₀ M :=
+noncomputable def mapDomain (f : α → β) (v : α →₀ M) : β →₀ M :=
   v.sum fun a => single (f a)
 
 @[simp] theorem mapDomain_apply {f : α → β} (hf : Function.Injective f) (x : α →₀ M) (a : α) :
@@ -339,7 +337,7 @@ theorem mapDomain_equiv_apply {f : α ≃ β} (x : α →₀ M) (a : β) :
 
 /-- `Finsupp.mapDomain` is an `AddMonoidHom`. -/
 @[simps]
-def mapDomain.addMonoidHom (f : α → β) : (α →₀ M) →+ β →₀ M where
+noncomputable def mapDomain.addMonoidHom (f : α → β) : (α →₀ M) →+ β →₀ M where
   toFun := mapDomain f
   map_zero' := mapDomain_zero
   map_add' _ _ := mapDomain_add
@@ -443,7 +441,7 @@ theorem mapDomain_surjective {f : α → β} (hf : f.Surjective) :
 
 /-- When `f` is an embedding we have an embedding `(α →₀ ℕ) ↪ (β →₀ ℕ)` given by `mapDomain`. -/
 @[simps]
-def mapDomainEmbedding {α β : Type*} (f : α ↪ β) : (α →₀ ℕ) ↪ β →₀ ℕ :=
+noncomputable def mapDomainEmbedding {α β : Type*} (f : α ↪ β) : (α →₀ ℕ) ↪ β →₀ ℕ :=
   ⟨Finsupp.mapDomain f, Finsupp.mapDomain_injective f.injective⟩
 
 theorem mapDomain.addMonoidHom_comp_mapRange [AddCommMonoid N] (f : α → β) (g : M →+ N) :
@@ -497,6 +495,7 @@ section ComapDomain
 the preimage of `l.support`, `comapDomain f l hf` is the finitely supported function
 from `α` to `M` given by composing `l` with `f`. -/
 @[simps support]
+noncomputable
 def comapDomain [Zero M] (f : α → β) (l : β →₀ M) (hf : Set.InjOn f (f ⁻¹' ↑l.support)) :
     α →₀ M where
   support := l.support.preimage f hf
@@ -598,7 +597,7 @@ theorem comapDomain_add_of_injective (hf : Function.Injective f) (v₁ v₂ : β
 
 /-- `Finsupp.comapDomain` is an `AddMonoidHom`. -/
 @[simps]
-def comapDomain.addMonoidHom (hf : Function.Injective f) : (β →₀ M) →+ α →₀ M where
+noncomputable def comapDomain.addMonoidHom (hf : Function.Injective f) : (β →₀ M) →+ α →₀ M where
   toFun x := comapDomain f x hf.injOn
   map_zero' := comapDomain_zero f
   map_add' := comapDomain_add_of_injective hf
@@ -735,7 +734,7 @@ section Frange
 variable [Zero M]
 
 /-- `frange f` is the image of `f` on the support of `f`. -/
-def frange (f : α →₀ M) : Finset M :=
+noncomputable def frange (f : α →₀ M) : Finset M :=
   haveI := Classical.decEq M
   Finset.image f f.support
 
@@ -772,7 +771,7 @@ variable [Zero M] {p : α → Prop}
 
 /--
 `subtypeDomain p f` is the restriction of the finitely supported function `f` to subtype `p`. -/
-def subtypeDomain (p : α → Prop) (f : α →₀ M) : Subtype p →₀ M where
+noncomputable def subtypeDomain (p : α → Prop) (f : α →₀ M) : Subtype p →₀ M where
   support :=
     haveI := Classical.decPred p
     f.support.subtype p
@@ -827,7 +826,7 @@ theorem subtypeDomain_add {v v' : α →₀ M} :
   ext fun _ => rfl
 
 /-- `subtypeDomain` but as an `AddMonoidHom`. -/
-def subtypeDomainAddMonoidHom : (α →₀ M) →+ Subtype p →₀ M where
+noncomputable def subtypeDomainAddMonoidHom : (α →₀ M) →+ Subtype p →₀ M where
   toFun := subtypeDomain p
   map_zero' := subtypeDomain_zero
   map_add' _ _ := subtypeDomain_add
@@ -964,7 +963,7 @@ open scoped Classical in
 /-- Given a finitely supported function `f` from a product type `α × β` to `γ`,
 `curry f` is the "curried" finitely supported function from `α` to the type of
 finitely supported functions from `β` to `γ`. -/
-protected def curry (f : α × β →₀ M) : α →₀ β →₀ M where
+protected noncomputable def curry (f : α × β →₀ M) : α →₀ β →₀ M where
   toFun a :=
     { toFun b := f (a, b)
       support := f.support.filterMap (fun x ↦ if x.1 = a then x.2 else none) <| by simp +contextual
@@ -1000,7 +999,7 @@ theorem sum_curry_index [AddCommMonoid N] (f : α × β →₀ M) (g : α → β
 
 /-- The equivalence between `α × β →₀ M` and `α →₀ β →₀ M` given by currying/uncurrying. -/
 @[simps]
-def curryEquiv : (α × β →₀ M) ≃ (α →₀ β →₀ M) where
+noncomputable def curryEquiv : (α × β →₀ M) ≃ (α →₀ β →₀ M) where
   toFun := Finsupp.curry
   invFun := Finsupp.uncurry
   left_inv := uncurry_curry
@@ -1113,6 +1112,7 @@ lemma sumElim_add [AddZeroClass M] (a b : α →₀ M) (c d : β →₀ M) :
 
 This is the `Finsupp` version of `Equiv.sum_arrow_equiv_prod_arrow`. -/
 @[simps apply symm_apply]
+noncomputable
 def sumFinsuppEquivProdFinsupp {α β γ : Type*} [Zero γ] : (α ⊕ β →₀ γ) ≃ (α →₀ γ) × (β →₀ γ) where
   toFun f :=
     ⟨f.comapDomain Sum.inl Sum.inl_injective.injOn,
@@ -1145,6 +1145,7 @@ variable [AddMonoid M]
 
 This is the `Finsupp` version of `Equiv.sum_arrow_equiv_prod_arrow`. -/
 @[simps! apply symm_apply]
+noncomputable
 def sumFinsuppAddEquivProdFinsupp {α β : Type*} : (α ⊕ β →₀ M) ≃+ (α →₀ M) × (β →₀ M) :=
   { sumFinsuppEquivProdFinsupp with
     map_add' := by
@@ -1254,7 +1255,7 @@ end
 between the subtype of finitely supported functions with support contained in `s` and
 the type of finitely supported functions from `s`. -/
 -- TODO: add [DecidablePred (· ∈ s)] as an assumption
-@[simps apply] def restrictSupportEquiv (s : Set α) (M : Type*) [AddCommMonoid M] :
+@[simps apply] noncomputable def restrictSupportEquiv (s : Set α) (M : Type*) [AddCommMonoid M] :
     { f : α →₀ M // ↑f.support ⊆ s } ≃ (s →₀ M) where
   toFun f := subtypeDomain (· ∈ s) f.1
   invFun f := letI := Classical.decPred (· ∈ s); ⟨f.extendDomain, support_extendDomain_subset _⟩
@@ -1322,7 +1323,7 @@ a finitely supported function from `as i` to `M`.
 
 This is the `Finsupp` version of `Sigma.curry`.
 -/
-def split (i : ι) : αs i →₀ M :=
+noncomputable def split (i : ι) : αs i →₀ M :=
   l.comapDomain (Sigma.mk i) fun _ _ _ _ hx => heq_iff_eq.1 (Sigma.mk.inj hx).2
 
 theorem split_apply (i : ι) (x : αs i) : split l i x = l ⟨i, x⟩ := by
@@ -1330,7 +1331,7 @@ theorem split_apply (i : ι) (x : αs i) : split l i x = l ⟨i, x⟩ := by
 
 /-- Given `l`, a finitely supported function from the sigma type `Σ (i : ι), αs i` to `β`,
 `split_support l` is the finset of indices in `ι` that appear in the support of `l`. -/
-def splitSupport (l : (Σ i, αs i) →₀ M) : Finset ι :=
+noncomputable def splitSupport (l : (Σ i, αs i) →₀ M) : Finset ι :=
   haveI := Classical.decEq ι
   l.support.image Sigma.fst
 
@@ -1344,6 +1345,7 @@ theorem mem_splitSupport_iff_nonzero (i : ι) : i ∈ splitSupport l ↔ split l
 an `ι`-indexed family `g` of functions from `(αs i →₀ β)` to `γ`, `split_comp` defines a
 finitely supported function from the index type `ι` to `γ` given by composing `g i` with
 `split l i`. -/
+noncomputable
 def splitComp [Zero N] (g : ∀ i, (αs i →₀ M) → N) (hg : ∀ i x, x = 0 ↔ g i x = 0) : ι →₀ N where
   support := splitSupport l
   toFun i := g i (split l i)

@@ -22,8 +22,6 @@ see `CategoryTheory.Limits.Shapes.ZeroMorphisms`.
 @[expose] public section
 
 
-noncomputable section
-
 universe v u v' u'
 
 open CategoryTheory
@@ -55,7 +53,7 @@ variable {X Y : C}
 
 `to` is a reserved word, it was replaced by `to_`
 -/
-protected def to_ (h : IsZero X) (Y : C) : X ⟶ Y :=
+protected noncomputable def to_ (h : IsZero X) (Y : C) : X ⟶ Y :=
   @default _ <| (h.unique_to Y).some.toInhabited
 
 theorem eq_to (h : IsZero X) (f : X ⟶ Y) : f = h.to_ Y :=
@@ -68,7 +66,7 @@ theorem to_eq (h : IsZero X) (f : X ⟶ Y) : h.to_ Y = f :=
 
 `from` is a reserved word, it was replaced by `from_`
 -/
-protected def from_ (h : IsZero X) (Y : C) : Y ⟶ X :=
+protected noncomputable def from_ (h : IsZero X) (Y : C) : Y ⟶ X :=
   @default _ <| (h.unique_from Y).some.toInhabited
 
 theorem eq_from (h : IsZero X) (f : Y ⟶ X) : f = h.from_ Y :=
@@ -90,7 +88,7 @@ lemma mono (h : IsZero X) {Y : C} (f : X ⟶ Y) : Mono f where
   right_cancellation _ _ _ := h.eq_of_tgt _ _
 
 /-- Any two zero objects are isomorphic. -/
-def iso (hX : IsZero X) (hY : IsZero Y) : X ≅ Y where
+noncomputable def iso (hX : IsZero X) (hY : IsZero Y) : X ≅ Y where
   hom := hX.to_ Y
   inv := hX.from_ Y
   hom_inv_id := hX.eq_of_src _ _
@@ -100,19 +98,19 @@ lemma isIso (hX : IsZero X) (hY : IsZero Y) (f : X ⟶ Y) : IsIso f :=
   ⟨hY.to_ _, hX.eq_of_src _ _, hY.eq_of_src _ _⟩
 
 /-- A zero object is in particular initial. -/
-protected def isInitial (hX : IsZero X) : IsInitial X :=
+protected noncomputable def isInitial (hX : IsZero X) : IsInitial X :=
   @IsInitial.ofUnique _ _ X fun Y => (hX.unique_to Y).some
 
 /-- A zero object is in particular terminal. -/
-protected def isTerminal (hX : IsZero X) : IsTerminal X :=
+protected noncomputable def isTerminal (hX : IsZero X) : IsTerminal X :=
   @IsTerminal.ofUnique _ _ X fun Y => (hX.unique_from Y).some
 
 /-- The (unique) isomorphism between any initial object and the zero object. -/
-def isoIsInitial (hX : IsZero X) (hY : IsInitial Y) : X ≅ Y :=
+noncomputable def isoIsInitial (hX : IsZero X) (hY : IsInitial Y) : X ≅ Y :=
   IsInitial.uniqueUpToIso hX.isInitial hY
 
 /-- The (unique) isomorphism between any terminal object and the zero object. -/
-def isoIsTerminal (hX : IsZero X) (hY : IsTerminal Y) : X ≅ Y :=
+noncomputable def isoIsTerminal (hX : IsZero X) (hY : IsTerminal Y) : X ≅ Y :=
   IsTerminal.uniqueUpToIso hX.isTerminal hY
 
 theorem of_iso (hY : IsZero Y) (e : X ≅ Y) : IsZero X := by
@@ -133,7 +131,7 @@ theorem unop {X : Cᵒᵖ} (h : IsZero X) : IsZero (Opposite.unop X) :=
 
 variable (Y) in
 /-- A zero object is a retract of every object. -/
-def retract (h : IsZero X) : Retract X Y where
+noncomputable def retract (h : IsZero X) : Retract X Y where
   i := h.to_ Y
   r := h.from_ Y
   retract := h.isInitial.hom_ext _ _
@@ -192,7 +190,7 @@ variable [HasZeroObject C]
 This cannot be a global instance as it will trigger for every `Zero C` typeclass search.
 -/
 @[instance_reducible]
-protected def HasZeroObject.zero' : Zero C where zero := HasZeroObject.zero.choose
+protected noncomputable def HasZeroObject.zero' : Zero C where zero := HasZeroObject.zero.choose
 
 scoped[ZeroObject] attribute [instance] CategoryTheory.Limits.HasZeroObject.zero'
 
@@ -217,7 +215,7 @@ theorem IsZero.hasZeroObject {X : C} (hX : IsZero X) : HasZeroObject C :=
   ⟨⟨X, hX⟩⟩
 
 /-- Every zero object is isomorphic to *the* zero object. -/
-def IsZero.isoZero [HasZeroObject C] {X : C} (hX : IsZero X) : X ≅ 0 :=
+noncomputable def IsZero.isoZero [HasZeroObject C] {X : C} (hX : IsZero X) : X ≅ 0 :=
   hX.iso (isZero_zero C)
 
 theorem IsZero.obj [HasZeroObject D] {F : C ⥤ D} (hF : IsZero F) (X : C) : IsZero (F.obj X) := by
@@ -240,12 +238,12 @@ variable [HasZeroObject C]
 
 /-- There is a unique morphism from the zero object to any object `X`. -/
 @[instance_reducible]
-protected def uniqueTo (X : C) : Unique (0 ⟶ X) :=
+protected noncomputable def uniqueTo (X : C) : Unique (0 ⟶ X) :=
   ((isZero_zero C).unique_to X).some
 
 /-- There is a unique morphism from any object `X` to the zero object. -/
 @[instance_reducible]
-protected def uniqueFrom (X : C) : Unique (X ⟶ 0) :=
+protected noncomputable def uniqueFrom (X : C) : Unique (X ⟶ 0) :=
   ((isZero_zero C).unique_from X).some
 
 scoped[ZeroObject] attribute [instance] CategoryTheory.Limits.HasZeroObject.uniqueTo
@@ -271,11 +269,11 @@ instance zero_to_zero_isIso (f : (0 : C) ⟶ 0) : IsIso f := by
   subsingleton
 
 /-- A zero object is in particular initial. -/
-def zeroIsInitial : IsInitial (0 : C) :=
+noncomputable def zeroIsInitial : IsInitial (0 : C) :=
   (isZero_zero C).isInitial
 
 /-- A zero object is in particular terminal. -/
-def zeroIsTerminal : IsTerminal (0 : C) :=
+noncomputable def zeroIsTerminal : IsTerminal (0 : C) :=
   (isZero_zero C).isTerminal
 
 /-- A zero object is in particular initial. -/
@@ -287,19 +285,19 @@ instance (priority := 10) hasTerminal : HasTerminal C :=
   hasTerminal_of_unique 0
 
 /-- The (unique) isomorphism between any initial object and the zero object. -/
-def zeroIsoIsInitial {X : C} (t : IsInitial X) : 0 ≅ X :=
+noncomputable def zeroIsoIsInitial {X : C} (t : IsInitial X) : 0 ≅ X :=
   zeroIsInitial.uniqueUpToIso t
 
 /-- The (unique) isomorphism between any terminal object and the zero object. -/
-def zeroIsoIsTerminal {X : C} (t : IsTerminal X) : 0 ≅ X :=
+noncomputable def zeroIsoIsTerminal {X : C} (t : IsTerminal X) : 0 ≅ X :=
   zeroIsTerminal.uniqueUpToIso t
 
 /-- The (unique) isomorphism between the chosen initial object and the chosen zero object. -/
-def zeroIsoInitial [HasInitial C] : 0 ≅ ⊥_ C :=
+noncomputable def zeroIsoInitial [HasInitial C] : 0 ≅ ⊥_ C :=
   zeroIsInitial.uniqueUpToIso initialIsInitial
 
 /-- The (unique) isomorphism between the chosen terminal object and the chosen zero object. -/
-def zeroIsoTerminal [HasTerminal C] : 0 ≅ ⊤_ C :=
+noncomputable def zeroIsoTerminal [HasTerminal C] : 0 ≅ ⊤_ C :=
   zeroIsTerminal.uniqueUpToIso terminalIsTerminal
 
 instance (priority := 100) initialMonoClass : InitialMonoClass C :=

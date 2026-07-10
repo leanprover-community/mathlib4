@@ -173,7 +173,7 @@ def equiv {C : Type _} [Category* C] (r : HomRel C) : Quotient r ≃ C where
   toFun x := x.1
   invFun x := ⟨x⟩
 
-noncomputable section
+section
 
 variable {G : Type*} [Groupoid G] (r : HomRel G)
 

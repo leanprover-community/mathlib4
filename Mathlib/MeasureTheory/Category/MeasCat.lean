@@ -30,8 +30,6 @@ measurable space, giry monad, borel
 @[expose] public section
 
 
-noncomputable section
-
 open CategoryTheory MeasureTheory
 
 open scoped ENNReal
@@ -82,14 +80,14 @@ the pure values are the Dirac measure, and the bind operation maps to the integr
 In probability theory, the `MeasCat`-morphisms `X → Prob X` are (sub-)Markov kernels (here `Prob` is
 the restriction of `Measure` to (sub-)probability spaces.)
 -/
-def Measure : MeasCat ⥤ MeasCat where
+noncomputable def Measure : MeasCat ⥤ MeasCat where
   obj X := of (@MeasureTheory.Measure X.1 X.2)
   map f := ⟨Measure.map (⇑f), Measure.measurable_map f.1 f.2⟩
   map_id X := Subtype.ext <| funext fun μ => @Measure.map_id X.carrier X.str μ
   map_comp := fun ⟨_, hf⟩ ⟨_, hg⟩ => Subtype.ext <| funext fun _ => (Measure.map_map hg hf).symm
 
 /-- The Giry monad, i.e. the monadic structure associated with `Measure`. -/
-def Giry : CategoryTheory.Monad MeasCat where
+noncomputable def Giry : CategoryTheory.Monad MeasCat where
   toFunctor := Measure
   η :=
     { app := fun X => ⟨@Measure.dirac X.1 X.2, Measure.measurable_dirac⟩
@@ -104,7 +102,7 @@ def Giry : CategoryTheory.Monad MeasCat where
 
 /-- An example of an algebra on `Measure`: the nonnegative Lebesgue integral is a hom, behaving
 nicely under the monad operations. -/
-def Integral : Giry.Algebra where
+noncomputable def Integral : Giry.Algebra where
   A := MeasCat.of ℝ≥0∞
   a := ⟨fun m : MeasureTheory.Measure ℝ≥0∞ ↦ ∫⁻ x, x ∂m, Measure.measurable_lintegral measurable_id⟩
   unit := Subtype.ext <| funext fun _ : ℝ≥0∞ => lintegral_dirac' _ measurable_id

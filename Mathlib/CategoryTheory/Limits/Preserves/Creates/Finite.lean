@@ -37,9 +37,9 @@ class CreatesFiniteLimits (F : C ⥤ D) where
 
 attribute [instance_reducible, instance] CreatesFiniteLimits.createsFiniteLimits
 
-noncomputable section
+section
 
-instance (priority := 100) createsLimitsOfShapeOfCreatesFiniteLimits (F : C ⥤ D)
+noncomputable instance (priority := 100) createsLimitsOfShapeOfCreatesFiniteLimits (F : C ⥤ D)
     [CreatesFiniteLimits F] (J : Type w) [SmallCategory J] [FinCategory J] :
     CreatesLimitsOfShape J F :=
   createsLimitsOfShapeOfEquiv (FinCategory.equivAsType J) _
@@ -47,16 +47,16 @@ instance (priority := 100) createsLimitsOfShapeOfCreatesFiniteLimits (F : C ⥤ 
 -- Cannot be an instance because of unbound universe variables.
 /-- If `F` creates limits of any size, it creates finite limits. -/
 @[implicit_reducible]
-def CreatesLimitsOfSize.createsFiniteLimits (F : C ⥤ D)
+noncomputable def CreatesLimitsOfSize.createsFiniteLimits (F : C ⥤ D)
     [CreatesLimitsOfSize.{w, w'} F] : CreatesFiniteLimits F where
   createsFiniteLimits J _ _ := createsLimitsOfShapeOfEquiv
     ((ShrinkHoms.equivalence.{w} J).trans (Shrink.equivalence.{w'} _)).symm _
 
-instance (priority := 120) CreatesLimitsOfSize0.createsFiniteLimits (F : C ⥤ D)
+noncomputable instance (priority := 120) CreatesLimitsOfSize0.createsFiniteLimits (F : C ⥤ D)
     [CreatesLimitsOfSize.{0, 0} F] : CreatesFiniteLimits F :=
   CreatesLimitsOfSize.createsFiniteLimits F
 
-instance (priority := 100) CreatesLimits.createsFiniteLimits (F : C ⥤ D)
+noncomputable instance (priority := 100) CreatesLimits.createsFiniteLimits (F : C ⥤ D)
     [CreatesLimits F] : CreatesFiniteLimits F :=
   CreatesLimitsOfSize.createsFiniteLimits F
 
@@ -70,7 +70,7 @@ def createsFiniteLimitsOfCreatesFiniteLimitsOfSize (F : C ⥤ D)
     haveI := h (ULiftHom (ULift J)) CategoryTheory.finCategoryUlift
     createsLimitsOfShapeOfEquiv (ULiftHomULiftCategory.equiv J).symm _
 
-instance compCreatesFiniteLimits (F : C ⥤ D) (G : D ⥤ E) [CreatesFiniteLimits F]
+noncomputable instance compCreatesFiniteLimits (F : C ⥤ D) (G : D ⥤ E) [CreatesFiniteLimits F]
     [CreatesFiniteLimits G] : CreatesFiniteLimits (F ⋙ G) where
   createsFiniteLimits _ _ _ := compCreatesLimitsOfShape F G
 
@@ -99,7 +99,7 @@ class CreatesFiniteProducts (F : C ⥤ D) where
 
 attribute [instance_reducible, instance] CreatesFiniteProducts.creates
 
-noncomputable section
+section
 
 /-- The condition of `CreatesFiniteProducts` can be checked for finite types in an arbitrary
 universe. -/
@@ -109,12 +109,12 @@ def CreatesFiniteProducts.mk' (F : C ⥤ D)
     CreatesFiniteProducts F where
   creates _ _ := createsLimitsOfShapeOfEquiv (Discrete.equivalence Equiv.ulift.{w}) F
 
-instance (priority := 100) createsLimitsOfShapeOfCreatesFiniteProducts (F : C ⥤ D)
+noncomputable instance (priority := 100) createsLimitsOfShapeOfCreatesFiniteProducts (F : C ⥤ D)
     [CreatesFiniteProducts F] (J : Type w) [Finite J] : CreatesLimitsOfShape (Discrete J) F :=
   createsLimitsOfShapeOfEquiv
     (Discrete.equivalence (Finite.exists_equiv_fin J).choose_spec.some.symm) F
 
-instance compCreatesFiniteProducts (F : C ⥤ D) (G : D ⥤ E) [CreatesFiniteProducts F]
+noncomputable instance compCreatesFiniteProducts (F : C ⥤ D) (G : D ⥤ E) [CreatesFiniteProducts F]
     [CreatesFiniteProducts G] : CreatesFiniteProducts (F ⋙ G) where
   creates _ _ := compCreatesLimitsOfShape _ _
 
@@ -124,7 +124,7 @@ def createsFiniteProductsOfNatIso {F G : C ⥤ D} {h : F ≅ G} [CreatesFinitePr
     CreatesFiniteProducts G where
   creates _ _ := createsLimitsOfShapeOfNatIso h
 
-instance (F : C ⥤ D) [CreatesFiniteLimits F] : CreatesFiniteProducts F where
+noncomputable instance (F : C ⥤ D) [CreatesFiniteLimits F] : CreatesFiniteProducts F where
   creates _ _ := inferInstance
 
 end
@@ -138,9 +138,9 @@ class CreatesFiniteColimits (F : C ⥤ D) where
 
 attribute [instance_reducible, instance] CreatesFiniteColimits.createsFiniteColimits
 
-noncomputable section
+section
 
-instance (priority := 100) createsColimitsOfShapeOfCreatesFiniteColimits (F : C ⥤ D)
+noncomputable instance (priority := 100) createsColimitsOfShapeOfCreatesFiniteColimits (F : C ⥤ D)
     [CreatesFiniteColimits F] (J : Type w) [SmallCategory J] [FinCategory J] :
     CreatesColimitsOfShape J F :=
   createsColimitsOfShapeOfEquiv (FinCategory.equivAsType J) _
@@ -148,16 +148,16 @@ instance (priority := 100) createsColimitsOfShapeOfCreatesFiniteColimits (F : C 
 -- Cannot be an instance because of unbound universe variables.
 /-- If `F` creates colimits of any size, it creates finite colimits. -/
 @[implicit_reducible]
-def CreatesColimitsOfSize.createsFiniteColimits (F : C ⥤ D)
+noncomputable def CreatesColimitsOfSize.createsFiniteColimits (F : C ⥤ D)
     [CreatesColimitsOfSize.{w, w'} F] : CreatesFiniteColimits F where
   createsFiniteColimits J _ _ := createsColimitsOfShapeOfEquiv
     ((ShrinkHoms.equivalence.{w} J).trans (Shrink.equivalence.{w'} _)).symm _
 
-instance (priority := 120) CreatesColimitsOfSize0.createsFiniteColimits (F : C ⥤ D)
+noncomputable instance (priority := 120) CreatesColimitsOfSize0.createsFiniteColimits (F : C ⥤ D)
     [CreatesColimitsOfSize.{0, 0} F] : CreatesFiniteColimits F :=
   CreatesColimitsOfSize.createsFiniteColimits F
 
-instance (priority := 100) CreatesColimits.createsFiniteColimits (F : C ⥤ D)
+noncomputable instance (priority := 100) CreatesColimits.createsFiniteColimits (F : C ⥤ D)
     [CreatesColimits F] : CreatesFiniteColimits F :=
   CreatesColimitsOfSize.createsFiniteColimits F
 
@@ -171,7 +171,7 @@ def createsFiniteColimitsOfCreatesFiniteColimitsOfSize (F : C ⥤ D)
     haveI := h (ULiftHom (ULift J)) CategoryTheory.finCategoryUlift
     createsColimitsOfShapeOfEquiv (ULiftHomULiftCategory.equiv J).symm _
 
-instance compCreatesFiniteColimits (F : C ⥤ D) (G : D ⥤ E) [CreatesFiniteColimits F]
+noncomputable instance compCreatesFiniteColimits (F : C ⥤ D) (G : D ⥤ E) [CreatesFiniteColimits F]
     [CreatesFiniteColimits G] : CreatesFiniteColimits (F ⋙ G) where
   createsFiniteColimits _ _ _ := compCreatesColimitsOfShape F G
 
@@ -200,13 +200,14 @@ class CreatesFiniteCoproducts (F : C ⥤ D) where
 
 attribute [instance_reducible, instance] CreatesFiniteCoproducts.creates
 
-noncomputable section
+section
 
-instance (priority := 100) createsColimitsOfShapeOfCreatesFiniteProducts (F : C ⥤ D)
+noncomputable instance (priority := 100) createsColimitsOfShapeOfCreatesFiniteProducts (F : C ⥤ D)
     [CreatesFiniteCoproducts F] (J : Type w) [Finite J] : CreatesColimitsOfShape (Discrete J) F :=
   createsColimitsOfShapeOfEquiv
     (Discrete.equivalence (Finite.exists_equiv_fin J).choose_spec.some.symm) F
 
+noncomputable
 instance compCreatesFiniteCoproducts (F : C ⥤ D) (G : D ⥤ E) [CreatesFiniteCoproducts F]
     [CreatesFiniteCoproducts G] : CreatesFiniteCoproducts (F ⋙ G) where
   creates _ _ := compCreatesColimitsOfShape _ _
@@ -217,7 +218,7 @@ def createsFiniteCoproductsOfNatIso {F G : C ⥤ D} {h : F ≅ G} [CreatesFinite
     CreatesFiniteCoproducts G where
   creates _ _ := createsColimitsOfShapeOfNatIso h
 
-instance (F : C ⥤ D) [CreatesFiniteColimits F] : CreatesFiniteCoproducts F where
+noncomputable instance (F : C ⥤ D) [CreatesFiniteColimits F] : CreatesFiniteCoproducts F where
   creates _ _ := inferInstance
 
 end

@@ -52,7 +52,7 @@ cluster point in `A`, and every countable open cover of `A` admits a finite subc
 
 @[expose] public section
 
-noncomputable section
+section
 
 open Set Filter Topology
 

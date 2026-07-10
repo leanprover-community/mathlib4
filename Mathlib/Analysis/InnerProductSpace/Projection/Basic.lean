@@ -103,17 +103,19 @@ theorem isTopCompl_orthogonal [K.HasOrthogonalProjection] : IsTopCompl K Kᗮ wh
   continuous_projection := AddMonoidHomClass.continuous_of_bound _ 1 fun x ↦ by
     grw [norm_projection_orthogonal_le, one_mul]
 
-noncomputable section
+section
 
 section orthogonalProjection
 
 variable [K.HasOrthogonalProjection]
 
 /-- The orthogonal projection onto a complete subspace. -/
+noncomputable
 def orthogonalProjectionOnto : E →L[𝕜] K := K.projectionOntoL Kᗮ K.isTopCompl_orthogonal
 
 /-- The orthogonal projection onto a subspace. -/
-@[deprecated orthogonalProjectionOnto (since := "2026-05-05")] abbrev orthogonalProjection :
+@[deprecated orthogonalProjectionOnto (since := "2026-05-05")] noncomputable
+abbrev orthogonalProjection :
     E →L[𝕜] K := K.orthogonalProjectionOnto
 
 variable {K}
@@ -121,7 +123,7 @@ variable {K}
 /-- The orthogonal projection onto a subspace as a map from the full space to itself,
 as opposed to `Submodule.orthogonalProjectionOnto`, which maps into the subtype. This
 version is important as it satisfies `IsStarProjection`. -/
-def starProjection (U : Submodule 𝕜 E) [U.HasOrthogonalProjection] :
+noncomputable def starProjection (U : Submodule 𝕜 E) [U.HasOrthogonalProjection] :
     E →L[𝕜] E := U.subtypeL ∘L U.orthogonalProjectionOnto
 
 /-- The orthogonal projection onto a complete subspace, as an
@@ -129,7 +131,7 @@ unbundled function. This definition is only intended for use in
 setting up the bundled version `orthogonalProjection` and should not
 be used once that is defined. -/
 @[deprecated "Please use `orthogonalProjectionOnto` or `starProjection`." (since := "2026-06-10")]
-abbrev orthogonalProjectionFn (x : E) : E := K.starProjection x
+noncomputable abbrev orthogonalProjectionFn (x : E) : E := K.starProjection x
 
 @[deprecated "Please use `orthogonalProjectionOnto` or `starProjection`." (since := "2026-06-10")]
 theorem orthogonalProjectionFn_eq (v : E) :

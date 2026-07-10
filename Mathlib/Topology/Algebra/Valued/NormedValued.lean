@@ -31,8 +31,6 @@ norm, nonarchimedean, nontrivial, valuation, rank one
 @[expose] public section
 
 
-noncomputable section
-
 open Filter Set Valuation MonoidWithZeroHom
 
 open scoped NNReal
@@ -58,7 +56,7 @@ theorem valuation_apply (x : K) : valuation x = ‖x‖₊ := rfl
 open MonoidWithZeroHom MonoidWithZeroHom.ValueGroup₀
 
 /-- The valuation of a normed field has rank at most one -/
-instance : RankLeOne (valuation (K := K)) where
+noncomputable instance : RankLeOne (valuation (K := K)) where
   hom' := embedding
   strictMono' := embedding_strictMono
 
@@ -98,7 +96,7 @@ def toValued : Valued K ℝ≥0 :=
         · exact NNReal.coe_pos.mpr <| embedding_strictMono.lt_iff_lt.mpr ε.zero_lt
         · simpa [restrict_lt_iff_lt_embedding] using! (mem_ball_zero_iff.mp hx) }
 
-instance {K : Type*} [NontriviallyNormedField K] [IsUltrametricDist K] :
+noncomputable instance {K : Type*} [NontriviallyNormedField K] [IsUltrametricDist K] :
     Valuation.RankOne (valuation (K := K)) where
   hom' := ValueGroup₀.embedding
   strictMono' := ValueGroup₀.embedding_strictMono
@@ -117,7 +115,7 @@ variable {L : Type*} [Field L] {Γ₀ : Type*} [LinearOrderedCommGroupWithZero �
   (v : Valuation L Γ₀) [hv : RankOne v]
 
 /-- The norm function determined by a rank one valuation on a field `L`. -/
-def norm : L → ℝ := fun x : L => hv.hom _ (v.restrict x)
+noncomputable def norm : L → ℝ := fun x : L => hv.hom _ (v.restrict x)
 
 theorem norm_def {x : L} : v.norm x = hv.hom _ (v.restrict x) := rfl
 
@@ -146,7 +144,7 @@ open Valuation
 
 /-- The normed field structure determined by a rank one valuation. -/
 @[instance_reducible]
-def toNormedField : NormedField L :=
+noncomputable def toNormedField : NormedField L :=
   { (inferInstance : Field L) with
     norm := val.v.norm
     dist := fun x y => val.v.norm (x - y)
@@ -267,7 +265,7 @@ end toNormedField
 The nontrivially normed field structure determined by a rank one valuation.
 -/
 @[instance_reducible]
-def toNontriviallyNormedField : NontriviallyNormedField L := {
+noncomputable def toNontriviallyNormedField : NontriviallyNormedField L := {
   val.toNormedField with
   non_trivial := by
     obtain ⟨x, hx⟩ := Valuation.RankOne.nontrivial val.v

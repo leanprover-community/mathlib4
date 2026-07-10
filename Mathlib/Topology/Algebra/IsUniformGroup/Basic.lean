@@ -29,8 +29,6 @@ public import Mathlib.Tactic.Abel
 
 @[expose] public section
 
-noncomputable section
-
 open Uniformity Topology Filter Pointwise
 
 section IsUniformGroup

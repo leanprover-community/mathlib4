@@ -34,7 +34,7 @@ continuous functional calculus, normal, selfadjoint
 
 open Topology
 
-noncomputable section
+section
 
 local notation "σₙ" => quasispectrum
 local notation "σ" => spectrum

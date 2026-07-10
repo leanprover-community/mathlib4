@@ -22,8 +22,6 @@ to the interior, the closure, and the frontier of the other set.
 open Metric Bornology Filter Set
 open scoped NNReal Topology Pointwise
 
-noncomputable section
-
 section Module
 
 variable {E : Type*} [AddCommGroup E] [Module ℝ E]
@@ -34,7 +32,7 @@ that has the same gauge w.r.t. `t` as `x` has w.r.t. `s`.
 The characteristic property is satisfied if `gauge t x ≠ 0`, see `gauge_gaugeRescale'`.
 In particular, it is satisfied for all `x`,
 provided that `t` is absorbent and von Neumann bounded. -/
-def gaugeRescale (s t : Set E) (x : E) : E := (gauge s x / gauge t x) • x
+noncomputable def gaugeRescale (s t : Set E) (x : E) : E := (gauge s x / gauge t x) • x
 
 theorem gaugeRescale_def (s t : Set E) (x : E) :
     gaugeRescale s t x = (gauge s x / gauge t x) • x :=
@@ -87,7 +85,7 @@ theorem gaugeRescale_gaugeRescale {s t u : Set E} (hta : Absorbent ℝ t) (htb :
   exacts [((gauge_pos hta htb).2 hx).ne', div_nonneg (gauge_nonneg _) (gauge_nonneg _)]
 
 /-- `gaugeRescale` bundled as an `Equiv`. -/
-def gaugeRescaleEquiv (s t : Set E) (hsa : Absorbent ℝ s) (hsb : IsVonNBounded ℝ s)
+noncomputable def gaugeRescaleEquiv (s t : Set E) (hsa : Absorbent ℝ s) (hsb : IsVonNBounded ℝ s)
     (hta : Absorbent ℝ t) (htb : IsVonNBounded ℝ t) : E ≃ E where
   toFun := gaugeRescale s t
   invFun := gaugeRescale t s
@@ -125,7 +123,7 @@ theorem continuous_gaugeRescale {s t : Set E} (hs : Convex ℝ s) (hs₀ : s ∈
       ((gauge_pos hta htb).2 hx).ne').smul continuousAt_id
 
 /-- `gaugeRescale` bundled as a `Homeomorph`. -/
-def gaugeRescaleHomeomorph (s t : Set E)
+noncomputable def gaugeRescaleHomeomorph (s t : Set E)
     (hsc : Convex ℝ s) (hs₀ : s ∈ 𝓝 0) (hsb : IsVonNBounded ℝ s)
     (htc : Convex ℝ t) (ht₀ : t ∈ 𝓝 0) (htb : IsVonNBounded ℝ t) : E ≃ₜ E where
   toEquiv := gaugeRescaleEquiv s t (absorbent_nhds_zero hs₀) hsb (absorbent_nhds_zero ht₀) htb

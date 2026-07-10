@@ -42,8 +42,6 @@ p-adic, p adic, padic, norm, valuation, Cauchy, completion, p-adic completion
 
 @[expose] public section
 
-noncomputable section
-
 open Valuation
 
 open scoped NNReal
@@ -58,12 +56,13 @@ namespace PadicAlgCl
 /-- `PadicAlgCl p` is an algebraic extension of `ℚ_[p]`. -/
 instance isAlgebraic : Algebra.IsAlgebraic ℚ_[p] (PadicAlgCl p) := AlgebraicClosure.isAlgebraic _
 
-instance : Coe ℚ_[p] (PadicAlgCl p) := ⟨algebraMap ℚ_[p] (PadicAlgCl p)⟩
+noncomputable instance : Coe ℚ_[p] (PadicAlgCl p) := ⟨algebraMap ℚ_[p] (PadicAlgCl p)⟩
 
 theorem coe_eq : (Coe.coe : ℚ_[p] → PadicAlgCl p) = algebraMap ℚ_[p] (PadicAlgCl p) := rfl
 
 /-- `PadicAlgCl p` is a normed field, where the norm is the `p`-adic norm, that is, the
 spectral norm induced by the `p`-adic norm on `ℚ_[p]`. -/
+noncomputable
 instance normedField : NormedField (PadicAlgCl p) := spectralNorm.normedField ℚ_[p] (PadicAlgCl p)
 
 /-- The norm on `PadicAlgCl p` is nonarchimedean. -/
@@ -71,6 +70,7 @@ theorem isNonarchimedean : IsNonarchimedean (norm : PadicAlgCl p → ℝ) :=
   isNonarchimedean_spectralNorm (K := ℚ_[p]) (L := PadicAlgCl p)
 
 /-- `PadicAlgCl p` is a normed algebra over `ℚ_[p]`. -/
+noncomputable
 instance normedAlgebra : NormedAlgebra ℚ_[p] (PadicAlgCl p) := spectralNorm.normedAlgebra _ _
 
 /-- The norm on `PadicAlgCl p` is the spectral norm induced by the `p`-adic norm on `ℚ_[p]`. -/
@@ -86,7 +86,7 @@ instance isUltrametricDist : IsUltrametricDist (PadicAlgCl p) :=
   IsUltrametricDist.isUltrametricDist_of_forall_norm_add_le_max_norm (PadicAlgCl.isNonarchimedean p)
 
 /-- `PadicAlgCl p` is a valued field, with the valuation corresponding to the `p`-adic norm. -/
-instance valued : Valued (PadicAlgCl p) ℝ≥0 := NormedField.toValued
+noncomputable instance valued : Valued (PadicAlgCl p) ℝ≥0 := NormedField.toValued
 
 /-- The valuation of `x : PadicAlgCl p` agrees with its `ℝ≥0`-valued norm. -/
 theorem valuation_def (x : PadicAlgCl p) : Valued.v x = ‖x‖₊ := rfl
@@ -105,7 +105,7 @@ open MonoidWithZeroHom.ValueGroup₀
 
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The valuation on `PadicAlgCl p` has rank one. -/
-instance : RankOne (PadicAlgCl.valued p).v where
+noncomputable instance : RankOne (PadicAlgCl.valued p).v where
   hom'        := embedding
   strictMono' := embedding_strictMono
   exists_val_nontrivial := by
@@ -119,7 +119,7 @@ instance : UniformContinuousConstSMul ℚ_[p] (PadicAlgCl p) :=
   uniformContinuousConstSMul_of_continuousConstSMul ℚ_[p] (PadicAlgCl p)
 
 /-- The norm on `PadicAlgCl p` is nontrivial. -/
-instance nontriviallyNormedField : NontriviallyNormedField (PadicAlgCl p) where
+noncomputable instance nontriviallyNormedField : NontriviallyNormedField (PadicAlgCl p) where
   non_trivial := by
     choose x hx using NontriviallyNormedField.non_trivial (α := ℚ_[p])
     use x
@@ -142,7 +142,7 @@ notation "ℂ_[" p "]" => PadicComplex p
 namespace PadicComplex
 
 /-- `ℂ_[p]` is a valued field, where the valuation is the one extending that on `PadicAlgCl p`. -/
-instance valued : Valued ℂ_[p] ℝ≥0 := Valued.valuedCompletion
+noncomputable instance valued : Valued ℂ_[p] ℝ≥0 := Valued.valuedCompletion
 
 /-- The valuation on `ℂ_[p]` extends the valuation on `PadicAlgCl p`. -/
 theorem valuation_extends (x : PadicAlgCl p) : Valued.v (x : ℂ_[p]) = Valued.v x :=
@@ -167,7 +167,7 @@ open MonoidWithZeroHom.ValueGroup₀
 
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The valuation on `ℂ_[p]` has rank one. -/
-instance : RankOne (PadicComplex.valued p).v where
+noncomputable instance : RankOne (PadicComplex.valued p).v where
   hom'        := embedding
   strictMono' := embedding_strictMono
   exists_val_nontrivial := by
@@ -181,7 +181,7 @@ instance : RankOne (PadicComplex.valued p).v where
 theorem RankOne.hom_eq_embedding : RankOne.hom (PadicComplex.valued p).v = embedding := rfl
 
 /-- `ℂ_[p]` is a normed field, where the norm extends from `PadicAlgCl` along completion. -/
-instance normedField : NormedField ℂ_[p] := inferInstance
+noncomputable instance normedField : NormedField ℂ_[p] := inferInstance
 
 -- Ensure that the norm instance on `ℂ_[p]` is extended from `PadicAlgCl p`.
 example : (‖·‖ : ℂ_[p] → ℝ) = (UniformSpace.Completion.instNorm (PadicAlgCl p)).norm := by
@@ -230,7 +230,7 @@ theorem nnnorm_extends' (x : ℚ_[p]) : ‖(x : ℂ_[p])‖₊ = ‖x‖₊ := b
   simp
 
 /-- The norm on `ℂ_[p]` is nontrivial. -/
-instance nontriviallyNormedField : NontriviallyNormedField ℂ_[p] where
+noncomputable instance nontriviallyNormedField : NontriviallyNormedField ℂ_[p] where
   non_trivial := by
     choose x hx using NontriviallyNormedField.non_trivial (α := ℚ_[p])
     use x
@@ -248,6 +248,7 @@ end PadicComplex
 
 /-- We define `𝓞_ℂ_[p]` as the valuation subring of `ℂ_[p]`, consisting of those elements with
   valuation `≤ 1`. -/
+noncomputable
 def PadicComplexInt : ValuationSubring ℂ_[p] := (PadicComplex.valued p).v.valuationSubring
 
 /-- We define `𝓞_ℂ_[p]` as the subring of elements of `ℂ_[p]` with valuation `≤ 1`. -/

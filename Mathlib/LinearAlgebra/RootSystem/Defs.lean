@@ -67,8 +67,6 @@ open Module hiding reflection
 open Submodule (span span_image)
 open AddSubgroup (zmultiples)
 
-noncomputable section
-
 variable (ι R M N : Type*)
   [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
 
@@ -659,7 +657,7 @@ section Map
 variable {ι₂ M₂ N₂ : Type*} [AddCommGroup M₂] [Module R M₂] [AddCommGroup N₂] [Module R N₂]
 
 /-- Push forward a root pairing along linear equivalences, also reindexing the (co)roots. -/
-protected def map (e : ι ≃ ι₂) (f : M ≃ₗ[R] M₂) (g : N ≃ₗ[R] N₂) :
+protected noncomputable def map (e : ι ≃ ι₂) (f : M ≃ₗ[R] M₂) (g : N ≃ₗ[R] N₂) :
     RootPairing ι₂ R M₂ N₂ where
   __ := (f.symm.trans P.toPerfPair).trans g.symm.dualMap
   isPerfPair_toLinearMap := by

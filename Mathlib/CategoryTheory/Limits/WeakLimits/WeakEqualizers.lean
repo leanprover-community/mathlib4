@@ -19,8 +19,6 @@ These are weak limits for diagrams of shape `WalkingParallelPair`.
 
 universe u v w
 
-noncomputable section
-
 open CategoryTheory Category Limits
 
 variable {C : Type*} [Category* C]
@@ -65,7 +63,7 @@ theorem weakEqualizer.condition : weakEqualizer.ι f g ≫ f = weakEqualizer.ι 
 
 set_option backward.defeqAttrib.useBackward true in
 /-- The weak equalizer built from `weakEqualizer.ι f g` is weakly limiting. -/
-def weakEqualizerIsWeakEqualizer : IsWeakLimit (Fork.ofι (weakEqualizer.ι f g)
+noncomputable def weakEqualizerIsWeakEqualizer : IsWeakLimit (Fork.ofι (weakEqualizer.ι f g)
     (weakEqualizer.condition f g)) :=
   IsWeakLimit.ofIsoWeakLimit (weakLimit.isWeakLimit _) (Fork.ext (Iso.refl _) (by simp))
 
@@ -84,7 +82,7 @@ theorem weakEqualizer.lift_ι {W : C} (k : W ⟶ X) (h : k ≫ f = k ≫ g) :
 
 /-- A morphism `k : W ⟶ X` satisfying `k ≫ f = k ≫ g` induces a morphism
 `l : W ⟶ weakEqualizer f g` satisfying `l ≫ weakEqualizer.ι f g = k`. -/
-def weakEqualizer.lift' {W : C} (k : W ⟶ X) (h : k ≫ f = k ≫ g) :
+noncomputable def weakEqualizer.lift' {W : C} (k : W ⟶ X) (h : k ≫ f = k ≫ g) :
     { l : W ⟶ weakEqualizer f g // l ≫ weakEqualizer.ι f g = k } :=
   ⟨weakEqualizer.lift k h, weakEqualizer.lift_ι _ _⟩
 

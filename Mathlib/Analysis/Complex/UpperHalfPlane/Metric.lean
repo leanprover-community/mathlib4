@@ -27,8 +27,6 @@ ball/sphere with another center and radius.
 @[expose] public section
 
 
-noncomputable section
-
 open Filter Metric Real Set Topology
 open scoped UpperHalfPlane ComplexConjugate NNReal Topology MatrixGroups
 
@@ -36,7 +34,7 @@ variable {z w : ℍ} {r : ℝ}
 
 namespace UpperHalfPlane
 
-instance : Dist ℍ :=
+noncomputable instance : Dist ℍ :=
   ⟨fun z w => 2 * arsinh (dist (z : ℂ) w / (2 * √(z.im * w.im)))⟩
 
 theorem dist_eq (z w : ℍ) : dist z w = 2 * arsinh (dist (z : ℂ) w / (2 * √(z.im * w.im))) :=
@@ -110,7 +108,7 @@ theorem dist_le_dist_coe_div_sqrt (z w : ℍ) : dist z w ≤ dist (z : ℂ) w / 
 /-- An auxiliary `MetricSpace` instance on the upper half-plane. This instance has bad projection
 to `TopologicalSpace`. We replace it later. -/
 @[implicit_reducible]
-def metricSpaceAux : MetricSpace ℍ where
+noncomputable def metricSpaceAux : MetricSpace ℍ where
   dist := dist
   dist_self z := by rw [dist_eq, dist_self, zero_div, arsinh_zero, mul_zero]
   dist_comm := UpperHalfPlane.dist_comm
@@ -126,7 +124,7 @@ theorem cosh_dist' (z w : ℍ) :
   ring
 
 /-- Euclidean center of the circle with center `z` and radius `r` in the hyperbolic metric. -/
-def center (z : ℍ) (r : ℝ) : ℍ :=
+noncomputable def center (z : ℍ) (r : ℝ) : ℍ :=
   ⟨⟨z.re, z.im * Real.cosh r⟩, by positivity⟩
 
 @[simp]
@@ -249,7 +247,7 @@ theorem le_dist_coe (z w : ℍ) : w.im * (1 - Real.exp (-dist z w)) ≤ dist (z 
 
 /-- The hyperbolic metric on the upper half plane. We ensure that the projection to
 `TopologicalSpace` is definitionally equal to the subtype topology. -/
-instance : MetricSpace ℍ :=
+noncomputable instance : MetricSpace ℍ :=
   metricSpaceAux.replaceTopology <| by
     refine le_antisymm (continuous_id_iff_le.1 ?_) ?_
     · refine (@continuous_iff_continuous_dist ℍ ℍ metricSpaceAux.toPseudoMetricSpace _ _).2 ?_

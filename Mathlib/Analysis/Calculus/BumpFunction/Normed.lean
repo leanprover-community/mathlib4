@@ -18,8 +18,6 @@ In this file we define `ContDiffBump.normed f μ` to be the bump function `f` no
 
 @[expose] public section
 
-noncomputable section
-
 open Function Filter Set Metric MeasureTheory Module Measure
 open scoped Topology
 
@@ -29,7 +27,7 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [HasContDiffBump
   [MeasurableSpace E] {c : E} (f : ContDiffBump c) {x : E} {n : ℕ∞} {μ : Measure E}
 
 /-- A bump function normed so that `∫ x, f.normed μ x ∂μ = 1`. -/
-protected def normed (μ : Measure E) : E → ℝ := fun x => f x / ∫ x, f x ∂μ
+protected noncomputable def normed (μ : Measure E) : E → ℝ := fun x => f x / ∫ x, f x ∂μ
 
 theorem normed_def {μ : Measure E} (x : E) : f.normed μ x = f x / ∫ x, f x ∂μ :=
   rfl

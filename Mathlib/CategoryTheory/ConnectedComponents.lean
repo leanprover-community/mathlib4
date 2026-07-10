@@ -26,8 +26,6 @@ components of `J`, and it is shown that this is equivalent to `J`.
 
 universe v₁ v₂ v₃ u₁ u₂
 
-noncomputable section
-
 open CategoryTheory.Category
 
 namespace CategoryTheory
@@ -100,7 +98,7 @@ instance (j : ConnectedComponents J) : Nonempty j.Component := by
   induction j using Quotient.inductionOn'
   exact ⟨⟨_, rfl⟩⟩
 
-instance (j : ConnectedComponents J) : Inhabited j.Component :=
+noncomputable instance (j : ConnectedComponents J) : Inhabited j.Component :=
   Classical.inhabited_of_nonempty'
 
 /-- Each connected component of the category is connected. -/
@@ -176,7 +174,7 @@ instance : (decomposedTo J).IsEquivalence where
 
 /-- This gives that any category is equivalent to a disjoint union of connected categories. -/
 @[simps! functor]
-def decomposedEquiv : Decomposed J ≌ J :=
+noncomputable def decomposedEquiv : Decomposed J ≌ J :=
   (decomposedTo J).asEquivalence
 
 end CategoryTheory

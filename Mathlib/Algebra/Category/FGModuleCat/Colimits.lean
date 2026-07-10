@@ -21,8 +21,6 @@ And hence `FGModuleCat K` has all finite colimits.
 
 @[expose] public section
 
-noncomputable section
-
 universe v u
 
 open CategoryTheory Limits
@@ -48,14 +46,14 @@ instance (F : J ⥤ FGModuleCat k) :
 
 /-- The forgetful functor from `FGModuleCat k` to `ModuleCat k` creates all finite colimits. -/
 @[implicit_reducible]
-def forget₂CreatesColimit (F : J ⥤ FGModuleCat k) :
+noncomputable def forget₂CreatesColimit (F : J ⥤ FGModuleCat k) :
     CreatesColimit F (forget₂ (FGModuleCat k) (ModuleCat.{v} k)) :=
   createsColimitOfFullyFaithfulOfIso
     ⟨(colimit (F ⋙ forget₂ (FGModuleCat k) (ModuleCat.{v} k)) : ModuleCat.{v} k),
       by rw [ModuleCat.isFG_iff]; infer_instance⟩
     (Iso.refl _)
 
-instance : CreatesColimitsOfShape J (forget₂ (FGModuleCat k) (ModuleCat.{v} k)) where
+noncomputable instance : CreatesColimitsOfShape J (forget₂ (FGModuleCat k) (ModuleCat.{v} k)) where
   CreatesColimit {F} := forget₂CreatesColimit F
 
 instance (J : Type) [SmallCategory J] [FinCategory J] :

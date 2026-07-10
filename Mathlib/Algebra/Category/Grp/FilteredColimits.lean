@@ -28,8 +28,6 @@ Similarly for `AddGrpCat`, `CommGrpCat` and `AddCommGrpCat`.
 
 universe v u
 
-noncomputable section
-
 open CategoryTheory Limits
 
 open IsFiltered renaming max → max' -- avoid name collision with `_root_.max`.

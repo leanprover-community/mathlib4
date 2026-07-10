@@ -34,8 +34,6 @@ then `finrank (FixedPoints.subfield G F) F = Fintype.card G`.
 @[expose] public section
 
 
-noncomputable section
-
 open MulAction Finset Module
 
 universe u v w
@@ -179,7 +177,7 @@ section Fintype
 variable [Fintype G] (x : F)
 
 /-- `minpoly G F x` is the minimal polynomial of `(x : F)` over `FixedPoints.subfield G F`. -/
-def minpoly : Polynomial (FixedPoints.subfield G F) :=
+noncomputable def minpoly : Polynomial (FixedPoints.subfield G F) :=
   (prodXSubSMul G F x).toSubring (FixedPoints.subfield G F).toSubring fun _ hc g =>
     let ⟨n, _, hn⟩ := Polynomial.mem_coeffs_iff.1 hc
     hn.symm ▸ prodXSubSMul.coeff G F x g n
@@ -360,6 +358,7 @@ theorem toAlgHom_bijective [Finite G] [FaithfulSMul G F] :
       exact LE.le.trans_eq (finrank_algHom _ F) (finrank_linearMap_self _ _ _)
 
 /-- Bijection between `G` and algebra endomorphisms of `F` that fix the fixed points. -/
+noncomputable
 def toAlgHomEquiv [Finite G] [FaithfulSMul G F] : G ≃ (F →ₐ[FixedPoints.subfield G F] F) :=
   Equiv.ofBijective _ (toAlgHom_bijective G F)
 
@@ -371,6 +370,7 @@ theorem toAlgAut_bijective [Finite G] [FaithfulSMul G F] :
       rwa [DFunLike.ext_iff] at h ⊢
 
 /-- Bijection between `G` and algebra automorphisms of `F` that fix the fixed points. -/
+noncomputable
 def toAlgAutMulEquiv [Finite G] [FaithfulSMul G F] : G ≃* (F ≃ₐ[FixedPoints.subfield G F] F) :=
   MulEquiv.ofBijective _ (toAlgAut_bijective G F)
 

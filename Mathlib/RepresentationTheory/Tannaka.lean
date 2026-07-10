@@ -25,7 +25,7 @@ The main result is the isomorphism `equiv : G ≃* Aut (forget k G)`.
 
 @[expose] public section
 
-noncomputable section
+section
 
 open CategoryTheory MonoidalCategory ModuleCat Finset Pi
 
@@ -52,7 +52,7 @@ def forget := LaxMonoidalFunctor.of (forget₂ (FDRep k G) (FGModuleCat k))
 
 /-- Definition of `equivHom g : Aut (forget k G)` by its components. -/
 @[simps]
-def equivApp (g : G) (X : FDRep k G) : X.V ≅ X.V where
+noncomputable def equivApp (g : G) (X : FDRep k G) : X.V ≅ X.V where
   hom := InducedCategory.homMk (ofHom (X.ρ g))
   inv := InducedCategory.homMk (ofHom (X.ρ g⁻¹))
   hom_inv_id := by
@@ -65,7 +65,7 @@ def equivApp (g : G) (X : FDRep k G) : X.V ≅ X.V where
 variable (k G) in
 /-- The group homomorphism `G →* Aut (forget k G)` shown to be an isomorphism. -/
 @[simps]
-def equivHom : G →* Aut (forget k G) where
+noncomputable def equivHom : G →* Aut (forget k G) where
   toFun g :=
     LaxMonoidalFunctor.isoOfComponents (equivApp g) (fun f ↦ (f.comm g).symm) rfl (by intros; rfl)
   map_one' := by ext; simp; rfl
@@ -105,7 +105,7 @@ lemma leftRegular_apply (s t : G) (f : G → k) : leftRegular s f t = f (s⁻¹ 
 
 /-- The right regular representation `rightRegular` on `G → k` as a `FDRep k G`. -/
 @[simp]
-def rightFDRep [Finite G] : FDRep k G := FDRep.of rightRegular
+noncomputable def rightFDRep [Finite G] : FDRep k G := FDRep.of rightRegular
 
 end definitions
 
@@ -119,7 +119,7 @@ lemma equivHom_injective [Nontrivial k] : Function.Injective (equivHom k G) := b
   simp_all [single_apply]
 
 /-- The `FDRep k G` morphism induced by multiplication on `G → k`. -/
-def mulRepHom : rightFDRep (k := k) (G := G) ⊗ rightFDRep ⟶ rightFDRep where
+noncomputable def mulRepHom : rightFDRep (k := k) (G := G) ⊗ rightFDRep ⟶ rightFDRep where
   hom := InducedCategory.homMk (ofHom (LinearMap.mul' k (G → k)))
   comm := by
     intro
@@ -140,7 +140,7 @@ lemma map_mul_toRightFDRepComp (η : Aut (forget k G)) (f g : G → k) :
 set_option backward.isDefEq.respectTransparency false in
 /-- The `rightFDRep` component of `η : Aut (forget k G)` gives rise to
 an algebra morphism `(G → k) →ₐ[k] (G → k)`. -/
-def algHomOfRightFDRepComp (η : Aut (forget k G)) : (G → k) →ₐ[k] (G → k) := by
+noncomputable def algHomOfRightFDRepComp (η : Aut (forget k G)) : (G → k) →ₐ[k] (G → k) := by
   let α : (G → k) →ₗ[k] (G → k) := (η.hom.hom.app rightFDRep).hom.hom
   let α_inv : (G → k) →ₗ[k] (G → k) := (η.inv.hom.app rightFDRep).hom.hom
   refine AlgHom.ofLinearMap α ?_ (map_mul_toRightFDRepComp η)
@@ -154,7 +154,7 @@ def algHomOfRightFDRepComp (η : Aut (forget k G)) : (G → k) →ₐ[k] (G → 
 /-- For `v : X` and `G` a finite group, the `G`-equivariant linear map from the right
 regular representation `rightFDRep` to `X` sending `single 1 1` to `v`. -/
 @[simps]
-def sumSMulInv [Fintype G] {X : FDRep k G} (v : X) : (G → k) →ₗ[k] X where
+noncomputable def sumSMulInv [Fintype G] {X : FDRep k G} (v : X) : (G → k) →ₗ[k] X where
   toFun f := ∑ s : G, (f s) • (X.ρ s⁻¹ v)
   map_add' _ _ := by simp [add_smul, sum_add_distrib]
   map_smul' _ _ := by simp [smul_sum, smul_smul]
@@ -168,7 +168,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- For `v : X` and `G` a finite group, the representation morphism from the right
 regular representation `rightFDRep` to `X` sending `single 1 1` to `v`. -/
 @[simps]
-def ofRightFDRep [Fintype G] (X : FDRep k G) (v : X) : rightFDRep ⟶ X where
+noncomputable def ofRightFDRep [Fintype G] (X : FDRep k G) (v : X) : rightFDRep ⟶ X where
   hom := InducedCategory.homMk (ofHom (sumSMulInv v))
   comm t := by
     ext f
@@ -188,7 +188,7 @@ lemma toRightFDRepComp_injective {η₁ η₂ : Aut (forget k G)}
   simpa using congr(($h1).hom (single 1 1))
 
 /-- `leftRegular` as a morphism `rightFDRep k G ⟶ rightFDRep k G` in `FDRep k G`. -/
-def leftRegularFDRepHom (s : G) : End (rightFDRep : FDRep k G) where
+noncomputable def leftRegularFDRepHom (s : G) : End (rightFDRep : FDRep k G) where
   hom := InducedCategory.homMk (ofHom (leftRegular s))
   comm _ := by
     ext f
@@ -223,7 +223,7 @@ variable (k G) in
 
 A finite group `G` is isomorphic to `Aut (forget k G)`, where `k` is any integral domain,
 and `forget k G` is the monoidal forgetful functor `FDRep k G ⥤ FGModuleCat k G`. -/
-def equiv [IsDomain k] : G ≃* Aut (forget k G) :=
+noncomputable def equiv [IsDomain k] : G ≃* Aut (forget k G) :=
   MulEquiv.ofBijective (equivHom k G) ⟨equivHom_injective, equivHom_surjective⟩
 
 end FiniteGroup

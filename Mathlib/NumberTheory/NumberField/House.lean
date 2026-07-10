@@ -29,14 +29,14 @@ variable {K : Type*} [Field K] [NumberField K]
 
 namespace NumberField
 
-noncomputable section
+section
 
 open Module.Free Module canonicalEmbedding Matrix Finset
 
 attribute [local instance] Matrix.seminormedAddCommGroup
 
 /-- The house of an algebraic number as the norm of its image by the canonical embedding. -/
-def house (α : K) : ℝ := ‖canonicalEmbedding K α‖
+noncomputable def house (α : K) : ℝ := ‖canonicalEmbedding K α‖
 
 /-- The house is the largest of the modulus of the conjugates of an algebraic number. -/
 theorem house_eq_sup' (α : K) :
@@ -112,7 +112,7 @@ end NumberField
 
 namespace NumberField.house
 
-noncomputable section
+section
 
 variable (K)
 
@@ -127,7 +127,7 @@ variable [DecidableEq (K →+* ℂ)]
 set_option backward.privateInPublic true in
 /-- `c` is defined as the product of the maximum absolute
   value of the entries of the inverse of the matrix `basisMatrix` and  `finrank ℚ K`. -/
-private def c := (finrank ℚ K) * ‖((basisMatrix K).transpose)⁻¹‖
+private noncomputable def c := (finrank ℚ K) * ‖((basisMatrix K).transpose)⁻¹‖
 
 private theorem c_nonneg : 0 ≤ c K := by
   rw [c]
@@ -156,11 +156,11 @@ theorem basis_repr_norm_le_const_mul_house (α : 𝓞 K) (i : K →+* ℂ) :
 
 /-- `newBasis K` defines a reindexed basis of the ring of integers of `K`,
   adjusted by the inverse of the equivalence `equivReindex`. -/
-private def newBasis := (RingOfIntegers.basis K).reindex (equivReindex K).symm
+private noncomputable def newBasis := (RingOfIntegers.basis K).reindex (equivReindex K).symm
 
 /-- `supOfBasis K` calculates the supremum of the absolute values of
   the elements in `newBasis K`. -/
-private def supOfBasis : ℝ := univ.sup' univ_nonempty
+private noncomputable def supOfBasis : ℝ := univ.sup' univ_nonempty
   fun r ↦ house (algebraMap (𝓞 K) K (newBasis K r))
 
 end DecidableEq
@@ -173,13 +173,14 @@ variable {α : Type*} {β : Type*} (a : Matrix α β (𝓞 K))
 
 /-- `a' K a` returns the integer coefficients of the basis vector in the
   expansion of the product of an algebraic integer and a basis vectors. -/
-private def a' : α → β → (K →+* ℂ) → (K →+* ℂ) → ℤ := fun k l r =>
+private noncomputable def a' : α → β → (K →+* ℂ) → (K →+* ℂ) → ℤ := fun k l r =>
   (newBasis K).repr (a k l * (newBasis K) r)
 
 set_option backward.privateInPublic true in
 /-- `asiegel K a` is the integer matrix of the coefficients of the
 product of matrix elements and basis vectors. -/
-private def asiegel : Matrix (α × (K →+* ℂ)) (β × (K →+* ℂ)) ℤ := fun k l => a' K a k.1 l.1 l.2 k.2
+private noncomputable
+def asiegel : Matrix (α × (K →+* ℂ)) (β × (K →+* ℂ)) ℤ := fun k l => a' K a k.1 l.1 l.2 k.2
 
 variable (ha : a ≠ 0)
 
@@ -206,7 +207,7 @@ private theorem asiegel_ne_0 : asiegel K a ≠ 0 := by
 variable {p q : ℕ} (h0p : 0 < p) (hpq : p < q) (x : β × (K →+* ℂ) → ℤ) (hxl : x ≠ 0)
 
 /-- `ξ` is the product of `x (l, r)` and the `r`-th basis element of the newBasis of `K`. -/
-private def ξ : β → 𝓞 K := fun l => ∑ r : K →+* ℂ, x (l, r) * (newBasis K r)
+private noncomputable def ξ : β → 𝓞 K := fun l => ∑ r : K →+* ℂ, x (l, r) * (newBasis K r)
 
 set_option backward.privateInPublic true in
 include hxl in
@@ -260,7 +261,7 @@ variable {A : ℝ} (habs : ∀ k l, (house ((algebraMap (𝓞 K) K) (a k l))) �
 variable [DecidableEq (K →+* ℂ)]
 
 /-- `c₂` is the product of the maximum of `1` and `c`, and `supOfBasis`. -/
-private abbrev c₂ := max 1 (c K) * (supOfBasis K)
+private noncomputable abbrev c₂ := max 1 (c K) * (supOfBasis K)
 
 private theorem c₂_nonneg : 0 ≤ c₂ K :=
   mul_nonneg (le_trans zero_le_one (le_max_left ..)) (supOfBasis_nonneg _)
@@ -302,7 +303,7 @@ private theorem asiegel_remark : ‖asiegel K a‖ ≤ c₂ K * A := by
   · exact mul_nonneg (c₂_nonneg _) Apos
 
 /-- `c₁ K` is the product of `finrank ℚ K` and  `c₂ K` and depends on `K`. -/
-private def c₁ := finrank ℚ K * c₂ K
+private noncomputable def c₁ := finrank ℚ K * c₂ K
 
 include habs Apos hxbound hpq in
 private theorem house_le_bound : ∀ l, house (ξ K x l).1 ≤ (c₁ K) *

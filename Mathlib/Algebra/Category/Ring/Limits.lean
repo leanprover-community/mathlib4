@@ -33,8 +33,6 @@ open CategoryTheory Limits
 
 universe v u w
 
-noncomputable section
-
 namespace SemiRingCat
 
 variable {J : Type v} [Category.{w} J] (F : J ⥤ SemiRingCat.{u})
@@ -54,13 +52,13 @@ instance sectionsSemiring : Semiring (F ⋙ forget SemiRingCat.{u}).sections :=
 
 variable [Small.{u} (Functor.sections (F ⋙ forget SemiRingCat.{u}))]
 
-instance limitSemiring :
+noncomputable instance limitSemiring :
     Semiring (Types.Small.limitCone.{v, u} (F ⋙ forget SemiRingCat.{u})).pt :=
   let _ : Semiring (F ⋙ forget SemiRingCat).sections := (sectionsSubsemiring F).toSemiring
   inferInstanceAs <| Semiring (Shrink (F ⋙ forget SemiRingCat).sections)
 
 /-- `limit.π (F ⋙ forget SemiRingCat) j` as a `RingHom`. -/
-def limitπRingHom (j) :
+noncomputable def limitπRingHom (j) :
     (Types.Small.limitCone.{v, u} (F ⋙ forget SemiRingCat)).pt →+* (F ⋙ forget SemiRingCat).obj j :=
   let f : J ⥤ AddMonCat.{u} := F ⋙ forget₂ SemiRingCat.{u} AddCommMonCat.{u} ⋙
     forget₂ AddCommMonCat AddMonCat
@@ -80,7 +78,7 @@ namespace HasLimits
 /-- Construction of a limit cone in `SemiRingCat`.
 (Internal use only; use the limits API.)
 -/
-def limitCone : Cone F where
+noncomputable def limitCone : Cone F where
   pt := SemiRingCat.of (Types.Small.limitCone (F ⋙ forget _)).pt
   π :=
     { app := fun j ↦ SemiRingCat.ofHom <| limitπRingHom.{v, u} F j
@@ -93,7 +91,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- Witness that the limit cone in `SemiRingCat` is a limit cone.
 (Internal use only; use the limits API.)
 -/
-def limitConeIsLimit : IsLimit (limitCone F) := by
+noncomputable def limitConeIsLimit : IsLimit (limitCone F) := by
   refine IsLimit.ofFaithful (forget SemiRingCat.{u}) (Types.Small.limitConeIsLimit.{v, u} _)
     (fun s => ofHom { toFun := _, map_one' := ?_, map_mul' := ?_, map_zero' := ?_, map_add' := ?_ })
     (fun s => rfl)
@@ -128,7 +126,7 @@ instance hasLimits : HasLimits SemiRingCat.{u} :=
 /--
 Auxiliary lemma to prove the cone induced by `limitCone` is a limit cone.
 -/
-def forget₂AddCommMonPreservesLimitsAux :
+noncomputable def forget₂AddCommMonPreservesLimitsAux :
     IsLimit ((forget₂ SemiRingCat AddCommMonCat).mapCone (limitCone F)) := by
   let _ : Small.{u} (Functor.sections ((F ⋙ forget₂ _ AddCommMonCat) ⋙ forget _)) :=
     inferInstanceAs <| Small.{u} (Functor.sections (F ⋙ forget SemiRingCat))
@@ -149,7 +147,7 @@ instance forget₂AddCommMon_preservesLimits :
 
 /-- An auxiliary declaration to speed up typechecking.
 -/
-def forget₂MonPreservesLimitsAux :
+noncomputable def forget₂MonPreservesLimitsAux :
     IsLimit ((forget₂ SemiRingCat MonCat).mapCone (limitCone F)) := by
   let _ : Small.{u} (Functor.sections ((F ⋙ forget₂ _ MonCat) ⋙ forget MonCat)) :=
     inferInstanceAs <| Small.{u} (Functor.sections (F ⋙ forget SemiRingCat))
@@ -191,7 +189,7 @@ instance commSemiringObj (j) :
 
 variable [Small.{u} (Functor.sections (F ⋙ forget CommSemiRingCat))]
 
-instance limitCommSemiring :
+noncomputable instance limitCommSemiring :
     CommSemiring (Types.Small.limitCone.{v, u} (F ⋙ forget CommSemiRingCat.{u})).pt :=
   let _ : CommSemiring (F ⋙ forget CommSemiRingCat.{u}).sections :=
     @Subsemiring.toCommSemiring (∀ j, F.obj j) _
@@ -203,7 +201,7 @@ instance limitCommSemiring :
 All we need to do is notice that the limit point has a `CommSemiring` instance available,
 and then reuse the existing limit.
 -/
-instance :
+noncomputable instance :
     CreatesLimit F (forget₂ CommSemiRingCat.{u} SemiRingCat.{u}) :=
   -- Porting note: Lean cannot see `CommSemiRingCat ⥤ SemiRingCat` reflects isomorphism, so this
   -- instance is added.
@@ -229,7 +227,7 @@ instance :
 /-- A choice of limit cone for a functor into `CommSemiRingCat`.
 (Generally, you'll just want to use `limit F`.)
 -/
-def limitCone : Cone F :=
+noncomputable def limitCone : Cone F :=
   let _ : Small.{u} (Functor.sections ((F ⋙ forget₂ _ SemiRingCat.{u}) ⋙ forget _)) :=
     inferInstanceAs <| Small.{u} (Functor.sections (F ⋙ forget _))
   liftLimit (limit.isLimit (F ⋙ forget₂ CommSemiRingCat.{u} SemiRingCat.{u}))
@@ -237,7 +235,7 @@ def limitCone : Cone F :=
 /-- The chosen cone is a limit cone.
 (Generally, you'll just want to use `limit.cone F`.)
 -/
-def limitConeIsLimit : IsLimit (limitCone F) :=
+noncomputable def limitConeIsLimit : IsLimit (limitCone F) :=
   liftedLimitIsLimit _
 
 /-- If `(F ⋙ forget CommSemiRingCat).sections` is `u`-small, `F` has a limit. -/
@@ -300,6 +298,7 @@ def sectionsSubring : Subring (∀ j, F.obj j) :=
 
 variable [Small.{u} (Functor.sections (F ⋙ forget RingCat.{u}))]
 
+noncomputable
 instance limitRing : Ring.{u} (Types.Small.limitCone.{v, u} (F ⋙ forget RingCat.{u})).pt :=
   let _ : Ring (F ⋙ forget RingCat.{u}).sections := (sectionsSubring F).toRing
   inferInstanceAs <| Ring (Shrink _)
@@ -309,7 +308,7 @@ instance limitRing : Ring.{u} (Types.Small.limitCone.{v, u} (F ⋙ forget RingCa
 All we need to do is notice that the limit point has a `Ring` instance available,
 and then reuse the existing limit.
 -/
-instance : CreatesLimit F (forget₂ RingCat.{u} SemiRingCat.{u}) :=
+noncomputable instance : CreatesLimit F (forget₂ RingCat.{u} SemiRingCat.{u}) :=
   have : (forget₂ RingCat SemiRingCat).ReflectsIsomorphisms :=
     CategoryTheory.reflectsIsomorphisms_forget₂ _ _
   have : Small.{u} (Functor.sections ((F ⋙ forget₂ _ SemiRingCat) ⋙ forget _)) :=
@@ -331,7 +330,7 @@ instance : CreatesLimit F (forget₂ RingCat.{u} SemiRingCat.{u}) :=
 /-- A choice of limit cone for a functor into `RingCat`.
 (Generally, you'll just want to use `limit F`.)
 -/
-def limitCone : Cone F :=
+noncomputable def limitCone : Cone F :=
   let _ : Small.{u} (Functor.sections ((F ⋙ forget₂ _ SemiRingCat) ⋙ forget _)) :=
     inferInstanceAs <| Small.{u} (Functor.sections (F ⋙ forget _))
   liftLimit (limit.isLimit (F ⋙ forget₂ RingCat.{u} SemiRingCat.{u}))
@@ -339,7 +338,7 @@ def limitCone : Cone F :=
 /-- The chosen cone is a limit cone.
 (Generally, you'll just want to use `limit.cone F`.)
 -/
-def limitConeIsLimit : IsLimit (limitCone F) :=
+noncomputable def limitConeIsLimit : IsLimit (limitCone F) :=
   liftedLimitIsLimit _
 
 /-- If `(F ⋙ forget RingCat).sections` is `u`-small, `F` has a limit. -/
@@ -371,7 +370,7 @@ instance forget₂SemiRing_preservesLimits : PreservesLimits (forget₂ RingCat 
 
 /-- An auxiliary declaration to speed up typechecking.
 -/
-def forget₂AddCommGroupPreservesLimitsAux :
+noncomputable def forget₂AddCommGroupPreservesLimitsAux :
     IsLimit ((forget₂ RingCat.{u} AddCommGrpCat).mapCone (limitCone.{v, u} F)) := by
   let _ : Small.{u} (Functor.sections ((F ⋙ forget₂ RingCat.{u} AddCommGrpCat.{u}) ⋙ forget _)) :=
     inferInstanceAs <| Small.{u} (Functor.sections (F ⋙ forget _))
@@ -414,7 +413,7 @@ instance commRingObj (j) : CommRing ((F ⋙ forget CommRingCat).obj j) :=
 
 variable [Small.{u} (Functor.sections (F ⋙ forget CommRingCat))]
 
-instance limitCommRing :
+noncomputable instance limitCommRing :
     CommRing.{u} (Types.Small.limitCone.{v, u} (F ⋙ forget CommRingCat.{u})).pt :=
   let _ : CommRing (F ⋙ forget CommRingCat).sections := @Subring.toCommRing (∀ j, F.obj j) _
     (RingCat.sectionsSubring.{v, u} (F ⋙ forget₂ CommRingCat RingCat.{u}))
@@ -425,7 +424,7 @@ instance limitCommRing :
 All we need to do is notice that the limit point has a `CommRing` instance available,
 and then reuse the existing limit.
 -/
-instance : CreatesLimit F (forget₂ CommRingCat.{u} RingCat.{u}) :=
+noncomputable instance : CreatesLimit F (forget₂ CommRingCat.{u} RingCat.{u}) :=
   /-
     A terse solution here would be
     ```
@@ -462,13 +461,13 @@ instance : CreatesLimit F (forget₂ CommRingCat.{u} RingCat.{u}) :=
 /-- A choice of limit cone for a functor into `CommRingCat`.
 (Generally, you'll just want to use `limit F`.)
 -/
-def limitCone : Cone F :=
+noncomputable def limitCone : Cone F :=
   let _ : Small.{u} (Functor.sections ((F ⋙ forget₂ CommRingCat RingCat) ⋙ forget RingCat)) :=
     inferInstanceAs <| Small.{u} (Functor.sections (F ⋙ forget _))
   liftLimit (limit.isLimit (F ⋙ forget₂ CommRingCat.{u} RingCat.{u}))
 
 /-- The chosen cone is a limit cone. (Generally, you'll just want to use `limit.cone F`.) -/
-def limitConeIsLimit : IsLimit (limitCone.{v, u} F) :=
+noncomputable def limitConeIsLimit : IsLimit (limitCone.{v, u} F) :=
   liftedLimitIsLimit _
 
 /-- If `(F ⋙ forget CommRingCat).sections` is `u`-small, `F` has a limit. -/
@@ -501,7 +500,7 @@ instance forget₂Ring_preservesLimits : PreservesLimits (forget₂ CommRingCat 
 
 /-- An auxiliary declaration to speed up typechecking.
 -/
-def forget₂CommSemiRingPreservesLimitsAux :
+noncomputable def forget₂CommSemiRingPreservesLimitsAux :
     IsLimit ((forget₂ CommRingCat CommSemiRingCat).mapCone (limitCone F)) := by
   let _ : Small.{u} ((F ⋙ forget₂ _ CommSemiRingCat) ⋙ forget _).sections :=
     inferInstanceAs <| Small.{u} (F ⋙ forget _).sections

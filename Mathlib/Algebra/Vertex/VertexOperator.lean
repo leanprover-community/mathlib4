@@ -30,8 +30,6 @@ In this file we introduce vertex operators as linear maps to Laurent series.
 
 @[expose] public section
 
-noncomputable section
-
 variable {R V : Type*} [CommRing R] [AddCommGroup V] [Module R V]
 
 /-- A vertex operator over a commutative ring `R` is an `R`-linear map from an `R`-module `V` to

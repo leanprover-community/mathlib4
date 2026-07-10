@@ -20,21 +20,19 @@ public section
 open CategoryTheory
 
 
-noncomputable section
-
 universe v u
 
 variable {R : Type u} [CommRing R]
 
 namespace AlgCat
 
-instance : BraidedCategory (AlgCat.{u} R) :=
+noncomputable instance : BraidedCategory (AlgCat.{u} R) :=
   .ofFaithful (forget₂ (AlgCat R) (ModuleCat R))
     fun X Y ↦ (Algebra.TensorProduct.comm R X Y).toAlgebraIso
 
-instance : (forget₂ (AlgCat R) (ModuleCat R)).Braided where
+noncomputable instance : (forget₂ (AlgCat R) (ModuleCat R)).Braided where
 
-instance instSymmetricCategory : SymmetricCategory (AlgCat.{u} R) :=
+noncomputable instance instSymmetricCategory : SymmetricCategory (AlgCat.{u} R) :=
   .ofFaithful (forget₂ (AlgCat R) (ModuleCat R))
 
 end AlgCat

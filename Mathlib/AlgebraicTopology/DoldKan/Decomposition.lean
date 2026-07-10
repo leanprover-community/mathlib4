@@ -37,8 +37,6 @@ reflects isomorphisms.
 open CategoryTheory CategoryTheory.Category CategoryTheory.Preadditive
   Opposite Simplicial
 
-noncomputable section
-
 namespace AlgebraicTopology
 
 namespace DoldKan
@@ -97,7 +95,7 @@ namespace MorphComponents
 variable {X} {n : ℕ} {Z Z' : C} (f : MorphComponents X n Z) (g : X' ⟶ X) (h : Z ⟶ Z')
 
 /-- The morphism `X _⦋n+1⦌ ⟶ Z` associated to `f : MorphComponents X n Z`. -/
-def φ {Z : C} (f : MorphComponents X n Z) : X _⦋n + 1⦌ ⟶ Z :=
+noncomputable def φ {Z : C} (f : MorphComponents X n Z) : X _⦋n + 1⦌ ⟶ Z :=
   PInfty.f (n + 1) ≫ f.a + ∑ i : Fin (n + 1), (P i).f (n + 1) ≫ X.δ i.rev.succ ≫
     f.b (Fin.rev i)
 
@@ -106,7 +104,7 @@ variable (X n)
 /-- the canonical `MorphComponents` whose associated morphism is the identity
 (see `F_id`) thanks to `decomposition_Q n (n+1)` -/
 @[simps]
-def id : MorphComponents X n (X _⦋n + 1⦌) where
+noncomputable def id : MorphComponents X n (X _⦋n + 1⦌) where
   a := PInfty.f (n + 1)
   b i := X.σ i
 

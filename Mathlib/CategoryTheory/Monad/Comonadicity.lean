@@ -49,7 +49,7 @@ namespace Comonad
 
 open Limits
 
-noncomputable section
+section
 
 -- Hide the implementation details in this namespace.
 namespace ComonadicityInternal
@@ -81,7 +81,7 @@ instance main_pair_F_cosplit (A : adj.toComonad.Coalgebra) :
   splittable := ⟨_, _, ⟨beckSplitEqualizer A⟩⟩
 
 /-- The object function for the right adjoint to the comparison functor. -/
-def comparisonRightAdjointObj (A : adj.toComonad.Coalgebra)
+noncomputable def comparisonRightAdjointObj (A : adj.toComonad.Coalgebra)
     [HasEqualizer (G.map A.a) (adj.unit.app _)] : C :=
   equalizer (G.map A.a) (adj.unit.app _)
 
@@ -92,7 +92,7 @@ We have a bijection of homsets which will be used to construct the right adjoint
 functor.
 -/
 @[simps!]
-def comparisonRightAdjointHomEquiv (A : adj.toComonad.Coalgebra) (B : C)
+noncomputable def comparisonRightAdjointHomEquiv (A : adj.toComonad.Coalgebra) (B : C)
     [HasEqualizer (G.map A.a) (adj.unit.app (G.obj A.A))] :
     ((comparison adj).obj B ⟶ A) ≃ (B ⟶ comparisonRightAdjointObj adj A) where
       toFun f := by
@@ -115,7 +115,7 @@ def comparisonRightAdjointHomEquiv (A : adj.toComonad.Coalgebra) (B : C)
 set_option backward.isDefEq.respectTransparency false in
 /-- Construct the adjunction to the comparison functor.
 -/
-def rightAdjointComparison
+noncomputable def rightAdjointComparison
     [∀ A : adj.toComonad.Coalgebra, HasEqualizer (G.map A.a)
       (adj.unit.app (G.obj A.A))] :
     adj.toComonad.Coalgebra ⥤ C := by
@@ -130,7 +130,7 @@ def rightAdjointComparison
 /-- Provided we have the appropriate equalizers, we have an adjunction to the comparison functor.
 -/
 @[simps! counit]
-def comparisonAdjunction
+noncomputable def comparisonAdjunction
     [∀ A : adj.toComonad.Coalgebra, HasEqualizer (G.map A.a)
       (adj.unit.app (G.obj A.A))] :
     comparison adj ⊣ rightAdjointComparison adj :=
@@ -150,7 +150,7 @@ theorem comparisonAdjunction_counit_f_aux
 the Beck equalizer is the counit for the adjunction on the comparison functor.
 -/
 @[simps! pt]
-def counitFork (A : adj.toComonad.Coalgebra)
+noncomputable def counitFork (A : adj.toComonad.Coalgebra)
     [HasEqualizer (G.map A.a) (adj.unit.app (G.obj A.A))] :
     Fork (F.map (G.map A.a)) (F.map (adj.unit.app (G.obj A.A))) :=
   Fork.ofι (F.map (equalizer.ι (G.map A.a) (adj.unit.app (G.obj A.A))))
@@ -183,14 +183,14 @@ def unitFork (B : C) :
 
 variable {adj} in
 /-- The counit fork is a limit provided `F` preserves it. -/
-def counitLimitOfPreservesEqualizer (A : adj.toComonad.Coalgebra)
+noncomputable def counitLimitOfPreservesEqualizer (A : adj.toComonad.Coalgebra)
     [HasEqualizer (G.map A.a) (adj.unit.app (G.obj A.A))]
     [PreservesLimit (parallelPair (G.map A.a) (adj.unit.app (G.obj A.A))) F] :
     IsLimit (counitFork (G := G) A) :=
   isLimitOfHasEqualizerOfPreservesLimit F _ _
 
 /-- The unit fork is a limit provided `F` coreflects it. -/
-def unitEqualizerOfCoreflectsEqualizer (B : C)
+noncomputable def unitEqualizerOfCoreflectsEqualizer (B : C)
     [ReflectsLimit (parallelPair (G.map (F.map (adj.unit.app B)))
       (adj.unit.app (G.obj (F.obj B)))) F] :
     IsLimit (unitFork (adj := adj) B) :=
@@ -231,7 +231,7 @@ If `F` is comonadic, it creates limits of `F`-cosplit pairs. This is the "boring
 Beck's comonadicity theorem, the converse is given in `comonadicOfCreatesFSplitEqualizers`.
 -/
 @[implicit_reducible]
-def createsFSplitEqualizersOfComonadic [ComonadicLeftAdjoint F] ⦃A B⦄ (f g : A ⟶ B)
+noncomputable def createsFSplitEqualizersOfComonadic [ComonadicLeftAdjoint F] ⦃A B⦄ (f g : A ⟶ B)
     [F.IsCosplitPair f g] : CreatesLimit (parallelPair f g) F := by
   apply +allowSynthFailures comonadicCreatesLimitOfPreservesLimit
   all_goals

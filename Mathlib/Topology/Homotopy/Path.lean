@@ -39,8 +39,6 @@ universe u v
 variable {X : Type u} {Y : Type v} [TopologicalSpace X] [TopologicalSpace Y]
 variable {x₀ x₁ x₂ x₃ : X}
 
-noncomputable section
-
 open unitInterval
 
 namespace Path
@@ -116,7 +114,7 @@ theorem symm_bijective : Function.Bijective (Homotopy.symm : Homotopy p₀ p₁ 
 Given `Homotopy p₀ p₁` and `Homotopy p₁ p₂`, we can define a `Homotopy p₀ p₂` by putting the first
 homotopy on `[0, 1/2]` and the second on `[1/2, 1]`.
 -/
-def trans (F : Homotopy p₀ p₁) (G : Homotopy p₁ p₂) : Homotopy p₀ p₂ :=
+noncomputable def trans (F : Homotopy p₀ p₁) (G : Homotopy p₁ p₂) : Homotopy p₀ p₂ :=
   ContinuousMap.HomotopyRel.trans F G
 
 theorem trans_apply (F : Homotopy p₀ p₁) (G : Homotopy p₁ p₂) (x : I × I) :
@@ -154,6 +152,7 @@ variable {p₀ q₀ : Path x₀ x₁} {p₁ q₁ : Path x₁ x₂}
 Furthermore, suppose `F : Homotopy p₀ q₀` and `G : Homotopy p₁ q₁`. Then we can define a homotopy
 from `p₀.trans p₁` to `q₀.trans q₁`.
 -/
+noncomputable
 def hcomp (F : Homotopy p₀ q₀) (G : Homotopy p₁ q₁) : Homotopy (p₀.trans p₁) (q₀.trans q₁) where
   toFun x :=
     if (x.2 : ℝ) ≤ 1 / 2 then (F.eval x.1).extend (2 * x.2) else (G.eval x.1).extend (2 * x.2 - 1)
@@ -384,7 +383,7 @@ theorem cast_heq {x y x' y' : X} (hx : x' = x) (hy : y' = y) {γ : Homotopic.Quo
   cases hx; cases hy; exact heq_of_eq γ.cast_rfl_rfl
 
 /-- The composition of path homotopy classes. This is `Path.trans` descended to the quotient. -/
-def trans (P₀ : Path.Homotopic.Quotient x₀ x₁) (P₁ : Path.Homotopic.Quotient x₁ x₂) :
+noncomputable def trans (P₀ : Path.Homotopic.Quotient x₀ x₁) (P₁ : Path.Homotopic.Quotient x₁ x₂) :
     Path.Homotopic.Quotient x₀ x₂ :=
   Quotient.map₂ Path.trans (fun (_ : Path x₀ x₁) _ hp (_ : Path x₁ x₂) _ hq => hcomp hp hq) P₀ P₁
 

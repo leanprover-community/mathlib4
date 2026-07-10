@@ -104,8 +104,6 @@ universe u v
 
 open TopologicalSpace CategoryTheory CategoryTheory.Limits Opposite
 
-noncomputable section
-
 namespace AlgebraicGeometry
 
 /-- A property is Zariski-local at target if it is local at target in the Zariski topology. -/

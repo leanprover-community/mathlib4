@@ -21,8 +21,6 @@ We also calculate the homology of a totally disconnected space as an example.
 
 @[expose] public section
 
-noncomputable section
-
 namespace AlgebraicTopology
 
 open CategoryTheory Limits
@@ -33,7 +31,7 @@ variable (C : Type u) [Category.{v} C] [HasCoproducts.{w} C]
 variable [Preadditive C] (n : ℕ)
 
 /-- The singular chain complex functor with coefficients in `C`. -/
-def singularChainComplexFunctor :
+noncomputable def singularChainComplexFunctor :
     C ⥤ TopCat.{w} ⥤ ChainComplex C ℕ :=
   SSet.chainComplexFunctor.{w} C ⋙ (Functor.whiskeringLeft _ _ _).obj TopCat.toSSet.{w}
 
@@ -52,7 +50,7 @@ instance [Limits.HasPullbacks C] {X : C} :
     infer_instance
 
 /-- The `n`-th singular homology functor with coefficients in `C`. -/
-def singularHomologyFunctor [CategoryWithHomology C] : C ⥤ TopCat.{w} ⥤ C :=
+noncomputable def singularHomologyFunctor [CategoryWithHomology C] : C ⥤ TopCat.{w} ⥤ C :=
   singularChainComplexFunctor C ⋙
     (Functor.whiskeringRight _ _ _).obj (HomologicalComplex.homologyFunctor _ _ n)
 
@@ -63,6 +61,7 @@ open scoped Simplicial
 open HomologicalComplex (eval)
 
 /-- The adjunction `Hom(Cⁿ(-, X), F) ≃ Hom(X, F(Δ[n]))` for `X : C` and `F : Top ⥤ C`. -/
+noncomputable
 def singularChainComplexFunctorAdjunction : (Functor.postcompose₂.obj (eval _ _ n)).obj
     (singularChainComplexFunctor C) ⊣ (evaluation _ _).obj (SimplexCategory.toTop.obj ⦋n⦌) :=
   ((SSet.chainComplexFunctorAdjunction C n).comp (sSetTopAdj.whiskerLeft _)).ofNatIsoRight

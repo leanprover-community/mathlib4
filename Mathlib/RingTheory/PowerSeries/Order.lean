@@ -28,7 +28,7 @@ proving that `R⟦X⟧` is a normalization monoid, which is done in `PowerSeries
 -/
 
 @[expose] public section
-noncomputable section
+section
 
 open Polynomial
 
@@ -50,7 +50,7 @@ theorem exists_coeff_ne_zero_iff_ne_zero : (∃ n : ℕ, coeff n φ ≠ 0) ↔ �
 
 /-- The order of a formal power series `φ` is the greatest `n : ℕ∞`
 such that `X^n` divides `φ`. The order is `⊤` if and only if `φ = 0`. -/
-def order (φ : R⟦X⟧) : ℕ∞ :=
+noncomputable def order (φ : R⟦X⟧) : ℕ∞ :=
   letI := Classical.decEq R
   letI := Classical.decEq R⟦X⟧
   if h : φ = 0 then ⊤ else Nat.find (exists_coeff_ne_zero_iff_ne_zero.mpr h)
@@ -288,7 +288,7 @@ theorem order_neg {R : Type*} [Ring R] (φ : PowerSeries R) : (-φ).order = φ.o
 
 /-- Given a non-zero power series `f`, `divXPowOrder f` is the power series obtained by
 dividing out the largest power of X that divides `f`, that is its order -/
-def divXPowOrder (f : R⟦X⟧) : R⟦X⟧ :=
+noncomputable def divXPowOrder (f : R⟦X⟧) : R⟦X⟧ :=
   .mk fun n ↦ coeff (n + f.order.toNat) f
 
 @[simp]
@@ -433,7 +433,7 @@ theorem divXPowOrder_mul {f g : R⟦X⟧} :
 variable [Nontrivial R]
 
 /-- `PowerSeries.order` as a `MonoidHom`. -/
-def orderHom : R⟦X⟧ →* Multiplicative ℕ∞ where
+noncomputable def orderHom : R⟦X⟧ →* Multiplicative ℕ∞ where
   toFun g := .ofAdd g.order
   map_one' := order_one
   map_mul' := order_mul
@@ -449,7 +449,7 @@ theorem order_prod {R : Type*} [CommSemiring R] [NoZeroDivisors R] [Nontrivial R
   map_prod orderHom φ s
 
 /-- `PowerSeries.divXPowOrder` as a `MonoidHom`. -/
-def divXPowOrderHom : R⟦X⟧ →* R⟦X⟧ where
+noncomputable def divXPowOrderHom : R⟦X⟧ →* R⟦X⟧ where
   toFun g := g.divXPowOrder
   map_one' := divXPowOrder_one
   map_mul' f g := divXPowOrder_mul (f := f) (g := g)

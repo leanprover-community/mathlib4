@@ -23,8 +23,6 @@ We show that the following are analytic:
 
 @[expose] public section
 
-noncomputable section
-
 open scoped Topology Ring
 open Filter Asymptotics ENNReal NNReal
 

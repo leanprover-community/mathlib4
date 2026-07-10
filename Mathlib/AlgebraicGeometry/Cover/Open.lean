@@ -23,8 +23,6 @@ This file provides the basic API for open covers of schemes.
 @[expose] public section
 
 
-noncomputable section
-
 open TopologicalSpace CategoryTheory Opposite CategoryTheory.Limits
 
 universe v v₁ v₂ u
@@ -50,7 +48,7 @@ instance {𝒱 : OpenCover X} (f : 𝒰 ⟶ 𝒱) (i : 𝒰.I₀) : IsOpenImmers
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The affine cover of a scheme. -/
-def affineCover (X : Scheme.{u}) : OpenCover X := by
+noncomputable def affineCover (X : Scheme.{u}) : OpenCover X := by
   choose U R h using X.local_affine
   let e (x) := (h x).some
   exact
@@ -63,7 +61,7 @@ def affineCover (X : Scheme.{u}) : OpenCover X := by
       change ((((e x).hom ≫ (e x).inv).base ≫ (X.ofRestrict _).base)) ⟨x, _⟩ = x
       cat_disch }
 
-instance : Inhabited X.OpenCover :=
+noncomputable instance : Inhabited X.OpenCover :=
   ⟨X.affineCover⟩
 
 theorem OpenCover.iSup_opensRange {X : Scheme.{u}} (𝒰 : Scheme.OpenCover.{v} X) :
@@ -78,6 +76,7 @@ lemma OpenCover.isOpenCover_opensRange {X : Scheme.{u}} (𝒰 : OpenCover.{v} X)
 /-- Every open cover of a quasi-compact scheme can be refined into a finite subcover.
 -/
 @[simps! X f]
+noncomputable
 def OpenCover.finiteSubcover {X : Scheme.{u}} (𝒰 : OpenCover.{v} X) [H : CompactSpace X] :
     OpenCover X := by
   have :=
@@ -98,7 +97,7 @@ def OpenCover.finiteSubcover {X : Scheme.{u}} (𝒰 : OpenCover.{v} X) [H : Comp
         rw [presieve₀_mem_precoverage_iff]
         exact ⟨h, inferInstance⟩ }
 
-instance [H : CompactSpace X] : Fintype 𝒰.finiteSubcover.I₀ := by
+noncomputable instance [H : CompactSpace X] : Fintype 𝒰.finiteSubcover.I₀ := by
   delta OpenCover.finiteSubcover; infer_instance
 
 theorem OpenCover.compactSpace {X : Scheme.{u}} (𝒰 : X.OpenCover) [Finite 𝒰.I₀]
@@ -129,7 +128,7 @@ instance {X : Scheme.{u}} (𝒰 : X.AffineOpenCover) (j : 𝒰.I₀) : IsOpenImm
 
 /-- The open cover associated to an affine open cover. -/
 @[simps! I₀ X f]
-def openCover {X : Scheme.{u}} (𝒰 : X.AffineOpenCover) : X.OpenCover :=
+noncomputable def openCover {X : Scheme.{u}} (𝒰 : X.AffineOpenCover) : X.OpenCover :=
   AffineCover.cover 𝒰
 
 end AffineOpenCover
@@ -137,7 +136,7 @@ end AffineOpenCover
 set_option backward.isDefEq.respectTransparency false in
 /-- A choice of an affine open cover of a scheme. -/
 @[simps]
-def affineOpenCover (X : Scheme.{u}) : X.AffineOpenCover where
+noncomputable def affineOpenCover (X : Scheme.{u}) : X.AffineOpenCover where
   X := _
   I₀ := X.affineCover.I₀
   f := X.affineCover.f
@@ -153,6 +152,7 @@ set_option backward.isDefEq.respectTransparency false in
 The morphism in the category of open covers which proves that this is indeed a refinement, see
 `AlgebraicGeometry.Scheme.OpenCover.fromAffineRefinement`.
 -/
+noncomputable
 def OpenCover.affineRefinement {X : Scheme.{u}} (𝓤 : X.OpenCover) : X.AffineOpenCover where
   X := _
   I₀ := (𝓤.bind fun j => (𝓤.X j).affineCover).I₀
@@ -162,7 +162,7 @@ def OpenCover.affineRefinement {X : Scheme.{u}} (𝓤 : X.OpenCover) : X.AffineO
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The pullback of the affine refinement is the pullback of the affine cover. -/
-def OpenCover.pullbackCoverAffineRefinementObjIso (f : X ⟶ Y) (𝒰 : Y.OpenCover) (i) :
+noncomputable def OpenCover.pullbackCoverAffineRefinementObjIso (f : X ⟶ Y) (𝒰 : Y.OpenCover) (i) :
     (𝒰.affineRefinement.openCover.pullback₁ f).X i ≅
       ((𝒰.X i.1).affineCover.pullback₁ (𝒰.pullbackHom f i.1)).X i.2 :=
   pullbackSymmetry _ _ ≪≫ (pullbackRightPullbackFstIso _ _ _).symm ≪≫
@@ -219,7 +219,7 @@ def affineOpenCoverOfSpanRangeEqTop {R : CommRingCat} {ι : Type*} (s : ι → R
     exact (eq_iff_iff.mp congr(x ∈ $this)).mpr H.choose_spec
 
 /-- Given any open cover `𝓤`, this is an affine open cover which refines it. -/
-def OpenCover.fromAffineRefinement {X : Scheme.{u}} (𝓤 : X.OpenCover) :
+noncomputable def OpenCover.fromAffineRefinement {X : Scheme.{u}} (𝓤 : X.OpenCover) :
     𝓤.affineRefinement.openCover ⟶ 𝓤 where
   s₀ j := j.fst
   h₀ j := (𝓤.X j.fst).affineCover.f _
@@ -265,7 +265,7 @@ lemma isNilpotent_of_isNilpotent_cover {X : Scheme.{u}} {U : X.Opens} (s : Γ(X,
 section deprecated
 
 /-- The basic open sets form an affine open cover of `Spec R`. -/
-def affineBasisCoverOfAffine (R : CommRingCat.{u}) : OpenCover (Spec R) where
+noncomputable def affineBasisCoverOfAffine (R : CommRingCat.{u}) : OpenCover (Spec R) where
   I₀ := R
   X r := Spec <| .of <| Localization.Away r
   f r := Spec.map (CommRingCat.ofHom (algebraMap R (Localization.Away r)))
@@ -278,11 +278,11 @@ def affineBasisCoverOfAffine (R : CommRingCat.{u}) : OpenCover (Spec R) where
 
 /-- We may bind the basic open sets of an open affine cover to form an affine cover that is also
 a basis. -/
-def affineBasisCover (X : Scheme.{u}) : OpenCover X :=
+noncomputable def affineBasisCover (X : Scheme.{u}) : OpenCover X :=
   X.affineCover.bind fun _ => affineBasisCoverOfAffine _
 
 /-- The coordinate ring of a component in the `affine_basis_cover`. -/
-def affineBasisCoverRing (X : Scheme.{u}) (i : X.affineBasisCover.I₀) : CommRingCat :=
+noncomputable def affineBasisCoverRing (X : Scheme.{u}) (i : X.affineBasisCover.I₀) : CommRingCat :=
   CommRingCat.of <| @Localization.Away (X.local_affine i.1).choose_spec.choose _ i.2
 
 theorem affineBasisCover_obj (X : Scheme.{u}) (i : X.affineBasisCover.I₀) :

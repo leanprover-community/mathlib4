@@ -28,8 +28,6 @@ The machinery around `vanishingIdeal` and `zeroLocus` is also minimal, I only ad
 
 open Ideal
 
-noncomputable section
-
 namespace MvPolynomial
 
 variable {k K : Type*} [Field k] [Field K] [Algebra k K]

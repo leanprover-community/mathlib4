@@ -26,8 +26,6 @@ Analogous constructions for Noetherian modules.
 
 @[expose] public section
 
-noncomputable section
-
 universe v u
 
 open CategoryTheory Limits
@@ -56,14 +54,14 @@ instance (F : J ⥤ FGModuleCat k) :
 
 /-- The forgetful functor from `FGModuleCat k` to `ModuleCat k` creates all finite limits. -/
 @[implicit_reducible]
-def forget₂CreatesLimit (F : J ⥤ FGModuleCat k) :
+noncomputable def forget₂CreatesLimit (F : J ⥤ FGModuleCat k) :
     CreatesLimit F (forget₂ (FGModuleCat k) (ModuleCat.{v} k)) :=
   createsLimitOfFullyFaithfulOfIso
     ⟨(limit (F ⋙ forget₂ (FGModuleCat k) (ModuleCat.{v} k)) : ModuleCat.{v} k),
       by rw [ModuleCat.isFG_iff]; infer_instance⟩
     (Iso.refl _)
 
-instance : CreatesLimitsOfShape J (forget₂ (FGModuleCat k) (ModuleCat.{v} k)) where
+noncomputable instance : CreatesLimitsOfShape J (forget₂ (FGModuleCat k) (ModuleCat.{v} k)) where
   CreatesLimit {F} := forget₂CreatesLimit F
 
 instance (J : Type) [SmallCategory J] [FinCategory J] :

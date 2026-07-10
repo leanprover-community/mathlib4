@@ -24,8 +24,6 @@ open CategoryTheory Limits Set TopologicalSpace Topology
 
 universe v u w
 
-noncomputable section
-
 namespace TopCat
 
 variable {J : Type v} [Category.{w} J]
@@ -56,7 +54,7 @@ def piFanIsLimit {ι : Type v} (α : ι → TopCat.{max v u}) : IsLimit (piFan �
 /-- The product is homeomorphic to the product of the underlying spaces,
 equipped with the product topology.
 -/
-def piIsoPi {ι : Type v} (α : ι → TopCat.{max v u}) : ∏ᶜ α ≅ TopCat.of (∀ i, α i) :=
+noncomputable def piIsoPi {ι : Type v} (α : ι → TopCat.{max v u}) : ∏ᶜ α ≅ TopCat.of (∀ i, α i) :=
   (limit.isLimit _).conePointUniqueUpToIso (piFanIsLimit.{v, u} α)
 
 set_option backward.isDefEq.respectTransparency false in
@@ -98,6 +96,7 @@ def sigmaCofanIsColimit {ι : Type v} (β : ι → TopCat.{max v u}) : IsColimit
 
 /-- The coproduct is homeomorphic to the disjoint union of the topological spaces.
 -/
+noncomputable
 def sigmaIsoSigma {ι : Type v} (α : ι → TopCat.{max v u}) : ∐ α ≅ TopCat.of (Σ i, α i) :=
   (colimit.isColimit _).coconePointUniqueUpToIso (sigmaCofanIsColimit.{v, u} α)
 
@@ -149,7 +148,7 @@ def prodBinaryFanIsLimit (X Y : TopCat.{u}) : IsLimit (prodBinaryFan X Y) where
 /-- The homeomorphism between `X ⨯ Y` and the set-theoretic product of `X` and `Y`,
 equipped with the product topology.
 -/
-def prodIsoProd (X Y : TopCat.{u}) : X ⨯ Y ≅ TopCat.of (X × Y) :=
+noncomputable def prodIsoProd (X Y : TopCat.{u}) : X ⨯ Y ≅ TopCat.of (X × Y) :=
   (limit.isLimit _).conePointUniqueUpToIso (prodBinaryFanIsLimit X Y)
 
 set_option backward.isDefEq.respectTransparency false in

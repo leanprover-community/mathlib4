@@ -69,8 +69,6 @@ pullbacks.
 
 @[expose] public section
 
-noncomputable section
-
 open CategoryTheory
 
 universe w v₁ v₂ v u u₂
@@ -92,39 +90,46 @@ abbrev HasPushout {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) :=
   HasColimit (span f g)
 
 /-- `pullback f g` computes the pullback of a pair of morphisms with the same target. -/
-abbrev pullback {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g] :=
+noncomputable abbrev pullback {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g] :=
   limit (cospan f g)
 
 /-- The cone associated to the pullback of `f` and `g` -/
+noncomputable
 abbrev pullback.cone {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g] : PullbackCone f g :=
   limit.cone (cospan f g)
 
 /-- `pushout f g` computes the pushout of a pair of morphisms with the same source. -/
-abbrev pushout {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) [HasPushout f g] :=
+noncomputable abbrev pushout {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) [HasPushout f g] :=
   colimit (span f g)
 
 /-- The cocone associated to the pushout of `f` and `g` -/
+noncomputable
 abbrev pushout.cocone {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) [HasPushout f g] : PushoutCocone f g :=
   colimit.cocone (span f g)
 
 /-- The first projection of the pullback of `f` and `g`. -/
+noncomputable
 abbrev pullback.fst {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g] : pullback f g ⟶ X :=
   limit.π (cospan f g) WalkingCospan.left
 
 /-- The second projection of the pullback of `f` and `g`. -/
+noncomputable
 abbrev pullback.snd {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g] : pullback f g ⟶ Y :=
   limit.π (cospan f g) WalkingCospan.right
 
 /-- The first inclusion into the pushout of `f` and `g`. -/
+noncomputable
 abbrev pushout.inl {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) [HasPushout f g] : Y ⟶ pushout f g :=
   colimit.ι (span f g) WalkingSpan.left
 
 /-- The second inclusion into the pushout of `f` and `g`. -/
+noncomputable
 abbrev pushout.inr {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) [HasPushout f g] : Z ⟶ pushout f g :=
   colimit.ι (span f g) WalkingSpan.right
 
 /-- A pair of morphisms `h : W ⟶ X` and `k : W ⟶ Y` satisfying `h ≫ f = k ≫ g` induces a morphism
 `pullback.lift : W ⟶ pullback f g`. -/
+noncomputable
 abbrev pullback.lift {W X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} [HasPullback f g] (h : W ⟶ X)
     (k : W ⟶ Y) (w : h ≫ f = k ≫ g := by cat_disch) : W ⟶ pullback f g :=
   limit.lift _ (PullbackCone.mk h k w)
@@ -137,6 +142,7 @@ lemma pullback.exists_lift {W X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullbac
 
 /-- A pair of morphisms `h : Y ⟶ W` and `k : Z ⟶ W` satisfying `f ≫ h = g ≫ k` induces a morphism
 `pushout.desc : pushout f g ⟶ W`. -/
+noncomputable
 abbrev pushout.desc {W X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} [HasPushout f g] (h : Y ⟶ W) (k : Z ⟶ W)
     (w : f ≫ h = g ≫ k := by cat_disch) : pushout f g ⟶ W :=
   colimit.desc _ (PushoutCocone.mk h k w)
@@ -148,12 +154,12 @@ lemma pushout.exists_desc {W X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) [HasPushout 
   ⟨pushout.desc h k, by simp⟩
 
 /-- The cone associated to a pullback is a limit cone. -/
-abbrev pullback.isLimit {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g] :
+noncomputable abbrev pullback.isLimit {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g] :
     IsLimit (pullback.cone f g) :=
   limit.isLimit (cospan f g)
 
 /-- The cocone associated to a pushout is a colimit cone. -/
-abbrev pushout.isColimit {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) [HasPushout f g] :
+noncomputable abbrev pushout.isColimit {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) [HasPushout f g] :
     IsColimit (pushout.cocone f g) :=
   colimit.isColimit (span f g)
 
@@ -193,6 +199,7 @@ theorem pushout.inr_desc {W X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} [HasPushout f
 
 /-- A pair of morphisms `h : W ⟶ X` and `k : W ⟶ Y` satisfying `h ≫ f = k ≫ g` induces a morphism
 `l : W ⟶ pullback f g` such that `l ≫ pullback.fst = h` and `l ≫ pullback.snd = k`. -/
+noncomputable
 def pullback.lift' {W X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} [HasPullback f g] (h : W ⟶ X) (k : W ⟶ Y)
     (w : h ≫ f = k ≫ g) :
     { l : W ⟶ pullback f g // l ≫ pullback.fst f g = h ∧ l ≫ pullback.snd f g = k } :=
@@ -200,6 +207,7 @@ def pullback.lift' {W X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} [HasPullback f g] (
 
 /-- A pair of morphisms `h : Y ⟶ W` and `k : Z ⟶ W` satisfying `f ≫ h = g ≫ k` induces a morphism
 `l : pushout f g ⟶ W` such that `pushout.inl _ _ ≫ l = h` and `pushout.inr _ _ ≫ l = k`. -/
+noncomputable
 def pushout.desc' {W X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} [HasPushout f g] (h : Y ⟶ W) (k : Z ⟶ W)
     (w : f ≫ h = g ≫ k) :
     { l : pushout f g ⟶ W // pushout.inl _ _ ≫ l = h ∧ pushout.inr _ _ ≫ l = k } :=
@@ -226,7 +234,7 @@ theorem pullback.hom_ext {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} [HasPullback f 
   limit.hom_ext <| PullbackCone.equalizer_ext _ h₀ h₁
 
 /-- The pullback cone built from the pullback projections is a pullback. -/
-def pullbackIsPullback {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g] :
+noncomputable def pullbackIsPullback {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g] :
     IsLimit (PullbackCone.mk (pullback.fst f g) (pullback.snd f g) pullback.condition) :=
   PullbackCone.mkSelfIsLimit <| pullback.isLimit f g
 
@@ -240,7 +248,7 @@ theorem pushout.hom_ext {X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} [HasPushout f g]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The pushout cocone built from the pushout coprojections is a pushout. -/
-def pushoutIsPushout {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) [HasPushout f g] :
+noncomputable def pushoutIsPushout {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) [HasPushout f g] :
     IsColimit (PushoutCocone.mk (pushout.inl f g) (pushout.inr _ _) pushout.condition) :=
   PushoutCocone.IsColimit.mk _ (fun s => pushout.desc s.inl s.inr s.condition) (by simp) (by simp)
     (by cat_disch)
@@ -267,6 +275,7 @@ W ⟶ Y
 X ⟶ Z
 ```
 -/
+noncomputable
 abbrev pullback.map {W X Y Z S T : C} (f₁ : W ⟶ S) (f₂ : X ⟶ S) [HasPullback f₁ f₂] (g₁ : Y ⟶ T)
     (g₂ : Z ⟶ T) [HasPullback g₁ g₂] (i₁ : W ⟶ Y) (i₂ : X ⟶ Z) (i₃ : S ⟶ T)
     (eq₁ : f₁ ≫ i₃ = i₁ ≫ g₁) (eq₂ : f₂ ≫ i₃ = i₂ ≫ g₂) : pullback f₁ f₂ ⟶ pullback g₁ g₂ :=
@@ -274,6 +283,7 @@ abbrev pullback.map {W X Y Z S T : C} (f₁ : W ⟶ S) (f₂ : X ⟶ S) [HasPull
     (by simp only [Category.assoc, ← eq₁, ← eq₂, pullback.condition_assoc])
 
 /-- The canonical map `X ×ₛ Y ⟶ X ×ₜ Y` given `S ⟶ T`. -/
+noncomputable
 abbrev pullback.mapDesc {X Y S T : C} (f : X ⟶ S) (g : Y ⟶ S) (i : S ⟶ T) [HasPullback f g]
     [HasPullback (f ≫ i) (g ≫ i)] : pullback f g ⟶ pullback (f ≫ i) (g ≫ i) :=
   pullback.map f g (f ≫ i) (g ≫ i) (𝟙 _) (𝟙 _) i (Category.id_comp _).symm (Category.id_comp _).symm
@@ -306,6 +316,7 @@ S ⟶ T
   X ⟶ Z
 ```
 -/
+noncomputable
 abbrev pushout.map {W X Y Z S T : C} (f₁ : S ⟶ W) (f₂ : S ⟶ X) [HasPushout f₁ f₂] (g₁ : T ⟶ Y)
     (g₂ : T ⟶ Z) [HasPushout g₁ g₂] (i₁ : W ⟶ Y) (i₂ : X ⟶ Z) (i₃ : S ⟶ T) (eq₁ : f₁ ≫ i₁ = i₃ ≫ g₁)
     (eq₂ : f₂ ≫ i₂ = i₃ ≫ g₂) : pushout f₁ f₂ ⟶ pushout g₁ g₂ :=
@@ -313,6 +324,7 @@ abbrev pushout.map {W X Y Z S T : C} (f₁ : S ⟶ W) (f₂ : S ⟶ X) [HasPusho
     (by simp only [reassoc_of% eq₁, reassoc_of% eq₂, condition])
 
 /-- The canonical map `X ⨿ₛ Y ⟶ X ⨿ₜ Y` given `S ⟶ T`. -/
+noncomputable
 abbrev pushout.mapLift {X Y S T : C} (f : T ⟶ X) (g : T ⟶ Y) (i : S ⟶ T) [HasPushout f g]
     [HasPushout (i ≫ f) (i ≫ g)] : pushout (i ≫ f) (i ≫ g) ⟶ pushout f g :=
   pushout.map (i ≫ f) (i ≫ g) f g (𝟙 _) (𝟙 _) i (Category.comp_id _) (Category.comp_id _)
@@ -349,6 +361,7 @@ instance pullback.map_isIso {W X Y Z S T : C} (f₁ : W ⟶ S) (f₂ : X ⟶ S) 
 /-- If `f₁ = f₂` and `g₁ = g₂`, we may construct a canonical
 isomorphism `pullback f₁ g₁ ≅ pullback f₂ g₂` -/
 @[simps! hom]
+noncomputable
 def pullback.congrHom {X Y Z : C} {f₁ f₂ : X ⟶ Z} {g₁ g₂ : Y ⟶ Z} (h₁ : f₁ = f₂) (h₂ : g₁ = g₂)
     [HasPullback f₁ g₁] [HasPullback f₂ g₂] : pullback f₁ g₁ ≅ pullback f₂ g₂ :=
   asIso <| pullback.map _ _ _ _ (𝟙 _) (𝟙 _) (𝟙 _) (by simp [h₁]) (by simp [h₂])
@@ -383,6 +396,7 @@ theorem pullback.mapDesc_comp {X Y S T S' : C} (f : X ⟶ T) (g : Y ⟶ T) (i : 
 /-- If `f₁ = f₂` and `g₁ = g₂`, we may construct a canonical
 isomorphism `pushout f₁ g₁ ≅ pullback f₂ g₂` -/
 @[simps! hom]
+noncomputable
 def pushout.congrHom {X Y Z : C} {f₁ f₂ : X ⟶ Y} {g₁ g₂ : X ⟶ Z} (h₁ : f₁ = f₂) (h₂ : g₁ = g₂)
     [HasPushout f₁ g₁] [HasPushout f₂ g₂] : pushout f₁ g₁ ≅ pushout f₂ g₂ :=
   asIso <| pushout.map _ _ _ _ (𝟙 _) (𝟙 _) (𝟙 _) (by simp [h₁]) (by simp [h₂])
@@ -412,6 +426,7 @@ variable {D : Type u₂} [Category.{v₂} D] (G : C ⥤ D)
 This is an isomorphism iff `G` preserves the pullback of `f,g`; see
 `Mathlib/CategoryTheory/Limits/Preserves/Shapes/Pullbacks.lean`
 -/
+noncomputable
 def pullbackComparison (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g] [HasPullback (G.map f) (G.map g)] :
     G.obj (pullback f g) ⟶ pullback (G.map f) (G.map g) :=
   pullback.lift (G.map (pullback.fst f g)) (G.map (pullback.snd f g))
@@ -455,6 +470,7 @@ lemma pullbackComparison_comp {E : Type*} [Category* E] (F : C ⥤ D) (G : D ⥤
 This is an isomorphism iff `G` preserves the pushout of `f,g`; see
 `Mathlib/CategoryTheory/Limits/Preserves/Shapes/Pullbacks.lean`
 -/
+noncomputable
 def pushoutComparison (f : X ⟶ Y) (g : X ⟶ Z) [HasPushout f g] [HasPushout (G.map f) (G.map g)] :
     pushout (G.map f) (G.map g) ⟶ G.obj (pushout f g) :=
   pushout.desc (G.map (pushout.inl _ _)) (G.map (pushout.inr _ _))
@@ -495,7 +511,7 @@ theorem hasPullback_symmetry [HasPullback f g] : HasPullback g f :=
 attribute [local instance] hasPullback_symmetry
 
 /-- The isomorphism `X ×[Z] Y ≅ Y ×[Z] X`. -/
-def pullbackSymmetry [HasPullback f g] : pullback f g ≅ pullback g f :=
+noncomputable def pullbackSymmetry [HasPullback f g] : pullback f g ≅ pullback g f :=
   IsLimit.conePointUniqueUpToIso
     (PullbackCone.flipIsLimit (pullbackIsPullback f g)) (limit.isLimit _)
 
@@ -532,7 +548,7 @@ theorem hasPushout_symmetry [HasPushout f g] : HasPushout g f :=
 attribute [local instance] hasPushout_symmetry
 
 /-- The isomorphism `Y ⨿[X] Z ≅ Z ⨿[X] Y`. -/
-def pushoutSymmetry [HasPushout f g] : pushout f g ≅ pushout g f :=
+noncomputable def pushoutSymmetry [HasPushout f g] : pushout f g ≅ pushout g f :=
   IsColimit.coconePointUniqueUpToIso
     (PushoutCocone.flipIsColimit (pushoutIsPushout f g)) (colimit.isColimit _)
 

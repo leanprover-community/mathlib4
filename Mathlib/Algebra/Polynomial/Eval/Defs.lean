@@ -31,8 +31,6 @@ We include results on applying the definitions to `C`, `X` and ring operations.
 
 @[expose] public section
 
-noncomputable section
-
 open Finset AddMonoidAlgebra
 
 open Polynomial
@@ -378,7 +376,7 @@ end Eval
 section Comp
 
 /-- The composition of polynomials as a polynomial. -/
-def comp (p q : R[X]) : R[X] :=
+noncomputable def comp (p q : R[X]) : R[X] :=
   p.eval₂ C q
 
 theorem comp_eq_sum_left : p.comp q = p.sum fun e a => C a * q ^ e := by rw [comp, eval₂_eq_sum]
@@ -491,7 +489,7 @@ variable [Semiring S]
 variable (f : R →+* S)
 
 /-- `map f p` maps a polynomial `p` across a ring hom `f` -/
-def map : R[X] → S[X] :=
+noncomputable def map : R[X] → S[X] :=
   eval₂ (C.comp f) X
 
 @[simp]
@@ -531,7 +529,7 @@ protected theorem map_mul : (p * q).map f = p.map f * q.map f := by
 -- the relevant code is (both lines): https://github.com/leanprover-community/
 -- lean/blob/487ac5d7e9b34800502e1ddf3c7c806c01cf9d51/src/frontends/lean/elaborator.cpp#L1876-L1913
 /-- `Polynomial.map` as a `RingHom`. -/
-def mapRingHom (f : R →+* S) : R[X] →+* S[X] where
+noncomputable def mapRingHom (f : R →+* S) : R[X] →+* S[X] where
   toFun := Polynomial.map f
   map_add' _ _ := Polynomial.map_add f
   map_zero' := Polynomial.map_zero f
@@ -634,7 +632,7 @@ lemma isRoot_comp {R} [CommSemiring R] {p q : R[X]} {r : R} :
     (p.comp q).IsRoot r ↔ p.IsRoot (q.eval r) := by simp_rw [IsRoot, eval_comp]
 
 /-- `comp p`, regarded as a ring homomorphism from `R[X]` to itself. -/
-def compRingHom : R[X] → R[X] →+* R[X] :=
+noncomputable def compRingHom : R[X] → R[X] →+* R[X] :=
   eval₂RingHom C
 
 @[simp]

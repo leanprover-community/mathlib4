@@ -26,8 +26,6 @@ is always an isomorphism is an abelian category.
 @[expose] public section
 
 
-noncomputable section
-
 universe v u
 
 open CategoryTheory
@@ -44,15 +42,15 @@ section Image
 variable [HasCokernel f] [HasKernel (cokernel.π f)]
 
 /-- The kernel of the cokernel of `f` is called the (abelian) image of `f`. -/
-protected abbrev image : C :=
+protected noncomputable abbrev image : C :=
   kernel (cokernel.π f)
 
 /-- The inclusion of the image into the codomain. -/
-protected abbrev image.ι : Abelian.image f ⟶ Q :=
+protected noncomputable abbrev image.ι : Abelian.image f ⟶ Q :=
   kernel.ι (cokernel.π f)
 
 /-- There is a canonical epimorphism `p : P ⟶ image f` for every `f`. -/
-protected abbrev factorThruImage : P ⟶ Abelian.image f :=
+protected noncomputable abbrev factorThruImage : P ⟶ Abelian.image f :=
   kernel.lift (cokernel.π f) f <| cokernel.condition f
 
 /-- `f` factors through its image via the canonical morphism `p`. -/
@@ -69,15 +67,15 @@ section Coimage
 variable [HasKernel f] [HasCokernel (kernel.ι f)]
 
 /-- The cokernel of the kernel of `f` is called the (abelian) coimage of `f`. -/
-protected abbrev coimage : C :=
+protected noncomputable abbrev coimage : C :=
   cokernel (kernel.ι f)
 
 /-- The projection onto the coimage. -/
-protected abbrev coimage.π : P ⟶ Abelian.coimage f :=
+protected noncomputable abbrev coimage.π : P ⟶ Abelian.coimage f :=
   cokernel.π (kernel.ι f)
 
 /-- There is a canonical monomorphism `i : coimage f ⟶ Q`. -/
-protected abbrev factorThruCoimage : Abelian.coimage f ⟶ Q :=
+protected noncomputable abbrev factorThruCoimage : Abelian.coimage f ⟶ Q :=
   cokernel.desc (kernel.ι f) f <| kernel.condition f
 
 /-- `f` factors through its coimage via the canonical morphism `p`. -/
@@ -99,12 +97,12 @@ In any abelian category this is an isomorphism.
 Conversely, any additive category with kernels and cokernels and
 in which this is always an isomorphism, is abelian. -/
 @[stacks 0107]
-def coimageImageComparison : Abelian.coimage f ⟶ Abelian.image f :=
+noncomputable def coimageImageComparison : Abelian.coimage f ⟶ Abelian.image f :=
   cokernel.desc (kernel.ι f) (kernel.lift (cokernel.π f) f (by simp)) (by ext; simp)
 
 /-- An alternative formulation of the canonical map from the abelian coimage to the abelian image.
 -/
-def coimageImageComparison' : Abelian.coimage f ⟶ Abelian.image f :=
+noncomputable def coimageImageComparison' : Abelian.coimage f ⟶ Abelian.image f :=
   kernel.lift (cokernel.π f) (cokernel.desc (kernel.ι f) f (by simp)) (by ext; simp)
 
 theorem coimageImageComparison_eq_coimageImageComparison' :
@@ -123,7 +121,7 @@ variable [HasKernels C] [HasCokernels C]
 set_option backward.defeqAttrib.useBackward true in
 /-- The coimage-image comparison morphism is functorial. -/
 @[simps! obj map]
-def coimageImageComparisonFunctor : Arrow C ⥤ Arrow C where
+noncomputable def coimageImageComparisonFunctor : Arrow C ⥤ Arrow C where
   obj f := Arrow.mk (coimageImageComparison f.hom)
   map {f g} η := Arrow.homMk
     (cokernel.map _ _ (kernel.map _ _ η.left η.right (by simp)) η.left (by simp))

@@ -23,8 +23,6 @@ It suffices to check that preimages of affine open sets are compact
 public section
 
 
-noncomputable section
-
 open CategoryTheory CategoryTheory.Limits Opposite TopologicalSpace
 
 universe u

@@ -22,8 +22,6 @@ and `span f g` construct functors from the walking (co)span, hitting the given m
 
 @[expose] public section
 
-noncomputable section
-
 open CategoryTheory
 
 universe w v₁ v₂ v u u₂

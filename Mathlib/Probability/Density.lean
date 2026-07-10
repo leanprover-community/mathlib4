@@ -52,8 +52,6 @@ open scoped MeasureTheory NNReal ENNReal
 
 open TopologicalSpace MeasureTheory Measure ProbabilityTheory
 
-noncomputable section
-
 namespace MeasureTheory
 
 variable {Ω E : Type*} [MeasurableSpace E]
@@ -114,6 +112,7 @@ end HasPDF
 
 /-- If `X` is a random variable, then `pdf X ℙ μ`
 is the Radon–Nikodym derivative of the push-forward measure of `ℙ` along `X` with respect to `μ`. -/
+noncomputable
 def pdf {_ : MeasurableSpace Ω} (X : Ω → E) (ℙ : Measure Ω) (μ : Measure E := by volume_tac) :
     E → ℝ≥0∞ :=
   (map X ℙ).rnDeriv μ

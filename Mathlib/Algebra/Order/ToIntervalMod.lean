@@ -33,8 +33,6 @@ to a number in a given interval, modulo the length of that interval.
 
 assert_not_exists TwoSidedIdeal
 
-noncomputable section
-
 section LinearOrderedAddCommGroup
 
 variable {α : Type*} [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α] [hα : Archimedean α]
@@ -46,7 +44,7 @@ include hp
 
 /--
 The unique integer such that this multiple of `p`, subtracted from `b`, is in `Ico a (a + p)`. -/
-def toIcoDiv (a b : α) : ℤ :=
+noncomputable def toIcoDiv (a b : α) : ℤ :=
   (existsUnique_sub_zsmul_mem_Ico hp b a).choose
 
 theorem sub_toIcoDiv_zsmul_mem_Ico (a b : α) : b - toIcoDiv hp a b • p ∈ Set.Ico a (a + p) :=
@@ -59,7 +57,7 @@ alias ⟨_, toIcoDiv_eq_of_sub_zsmul_mem_Ico⟩ := toIcoDiv_eq_iff
 
 /--
 The unique integer such that this multiple of `p`, subtracted from `b`, is in `Ioc a (a + p)`. -/
-def toIocDiv (a b : α) : ℤ :=
+noncomputable def toIocDiv (a b : α) : ℤ :=
   (existsUnique_sub_zsmul_mem_Ioc hp b a).choose
 
 theorem sub_toIocDiv_zsmul_mem_Ioc (a b : α) : b - toIocDiv hp a b • p ∈ Set.Ioc a (a + p) :=
@@ -71,11 +69,11 @@ theorem toIocDiv_eq_iff : toIocDiv hp a b = n ↔ b - n • p ∈ Set.Ioc a (a +
 alias ⟨_, toIocDiv_eq_of_sub_zsmul_mem_Ioc⟩ := toIocDiv_eq_iff
 
 /-- Reduce `b` to the interval `Ico a (a + p)`. -/
-def toIcoMod (a b : α) : α :=
+noncomputable def toIcoMod (a b : α) : α :=
   b - toIcoDiv hp a b • p
 
 /-- Reduce `b` to the interval `Ioc a (a + p)`. -/
-def toIocMod (a b : α) : α :=
+noncomputable def toIocMod (a b : α) : α :=
   b - toIocDiv hp a b • p
 
 theorem toIcoMod_mem_Ico (a b : α) : toIcoMod hp a b ∈ Set.Ico a (a + p) :=
@@ -765,6 +763,7 @@ end Zero
 
 /-- `toIcoMod` as an equiv from the quotient. -/
 @[simps symm_apply]
+noncomputable
 def QuotientAddGroup.equivIcoMod (a : α) : α ⧸ AddSubgroup.zmultiples p ≃ Set.Ico a (a + p) where
   toFun b :=
     ⟨(toIcoMod_periodic hp a).lift b, QuotientAddGroup.induction_on b <| toIcoMod_mem_Ico hp a⟩
@@ -788,6 +787,7 @@ theorem QuotientAddGroup.equivIcoMod_zero (a : α) :
 
 /-- `toIocMod` as an equiv from the quotient. -/
 @[simps symm_apply]
+noncomputable
 def QuotientAddGroup.equivIocMod (a : α) : α ⧸ AddSubgroup.zmultiples p ≃ Set.Ioc a (a + p) where
   toFun b :=
     ⟨(toIocMod_periodic hp a).lift b, QuotientAddGroup.induction_on b <| toIocMod_mem_Ioc hp a⟩

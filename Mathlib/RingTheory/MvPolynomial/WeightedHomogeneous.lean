@@ -50,8 +50,6 @@ occurring in `φ` have the same weighted degree `m`.
 @[expose] public section
 
 
-noncomputable section
-
 open Set Function Finset Finsupp AddMonoidAlgebra
 
 variable {R M : Type*} [CommSemiring R]
@@ -72,7 +70,7 @@ section SemilatticeSup
 variable [SemilatticeSup M]
 
 /-- The weighted total degree of a multivariate polynomial, taking values in `WithBot M`. -/
-def weightedTotalDegree' (w : σ → M) (p : MvPolynomial σ R) : WithBot M :=
+noncomputable def weightedTotalDegree' (w : σ → M) (p : MvPolynomial σ R) : WithBot M :=
   p.support.sup fun s => weight w s
 
 /-- The `weightedTotalDegree'` of a polynomial `p` is `⊥` if and only if `p = 0`. -/
@@ -93,7 +91,7 @@ variable [OrderBot M]
 
 /-- When `M` has a `⊥` element, we can define the weighted total degree of a multivariate
   polynomial as a function taking values in `M`. -/
-def weightedTotalDegree (w : σ → M) (p : MvPolynomial σ R) : M :=
+noncomputable def weightedTotalDegree (w : σ → M) (p : MvPolynomial σ R) : M :=
   p.support.sup fun s => weight w s
 
 /-- This lemma relates `weightedTotalDegree` and `weightedTotalDegree'`. -/
@@ -353,6 +351,7 @@ lemma WeightedHomogeneousSubmodule.gradedMonoid {w : σ → M} :
   weighted degree `n`, with respect to the weights `w`.
   See `sum_weightedHomogeneousComponent` for the statement that `φ` is equal to the sum
   of all its weighted homogeneous components. -/
+noncomputable
 def weightedHomogeneousComponent (w : σ → M) (n : M) : MvPolynomial σ R →ₗ[R] MvPolynomial σ R :=
   letI := Classical.decEq M
   (coeffLinearEquiv _).symm.toLinearMap ∘ₗ Submodule.subtype _ ∘ₗ
@@ -633,7 +632,7 @@ theorem weightedHomogeneousComponent_eq_zero_of_notMem [DecidableEq M]
 variable (R)
 
 /-- The `decompose'` argument of `weightedDecomposition`. -/
-def decompose' [DecidableEq M] := fun φ : MvPolynomial σ R =>
+noncomputable def decompose' [DecidableEq M] := fun φ : MvPolynomial σ R =>
   DirectSum.mk (fun i : M => ↥(weightedHomogeneousSubmodule R w i))
     (Finset.image (weight w) φ.support) fun m =>
       ⟨weightedHomogeneousComponent w m φ, weightedHomogeneousComponent_mem w φ m⟩
@@ -649,7 +648,7 @@ theorem decompose'_apply [DecidableEq M] (φ : MvPolynomial σ R) (m : M) :
 /-- Given a weight `w`, the decomposition of `MvPolynomial σ R` into weighted homogeneous
 submodules -/
 @[implicit_reducible]
-def weightedDecomposition [DecidableEq M] :
+noncomputable def weightedDecomposition [DecidableEq M] :
     DirectSum.Decomposition (weightedHomogeneousSubmodule R w) where
   decompose' := decompose' R w
   left_inv φ := by
@@ -675,7 +674,7 @@ def weightedDecomposition [DecidableEq M] :
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- Given a weight, `MvPolynomial` as a graded algebra -/
 @[implicit_reducible]
-def weightedGradedAlgebra [DecidableEq M] :
+noncomputable def weightedGradedAlgebra [DecidableEq M] :
     GradedAlgebra (weightedHomogeneousSubmodule R w) where
   toDecomposition := weightedDecomposition R w
   toGradedMonoid  := WeightedHomogeneousSubmodule.gradedMonoid

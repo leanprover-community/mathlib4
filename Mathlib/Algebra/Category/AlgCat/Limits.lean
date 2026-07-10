@@ -29,7 +29,6 @@ open CategoryTheory Limits
 universe v w u t
 
 -- `u` is determined by the ring, so can come later
-noncomputable section
 
 namespace AlgCat
 
@@ -61,17 +60,17 @@ variable [Small.{w} (F ⋙ forget (AlgCat.{w} R)).sections]
 instance : Small.{w} (sectionsSubalgebra F) :=
   inferInstanceAs <| Small.{w} (F ⋙ forget _).sections
 
-instance limitSemiring :
+noncomputable instance limitSemiring :
     Ring.{w} (Types.Small.limitCone.{v, w} (F ⋙ forget (AlgCat.{w} R))).pt :=
   inferInstanceAs <| Ring (Shrink (sectionsSubalgebra F))
 
-instance limitAlgebra :
+noncomputable instance limitAlgebra :
     Algebra R (Types.Small.limitCone (F ⋙ forget (AlgCat.{w} R))).pt :=
   inferInstanceAs <| Algebra R (Shrink (sectionsSubalgebra F))
 
 set_option backward.isDefEq.respectTransparency false in
 /-- `limit.π (F ⋙ forget (AlgCat R)) j` as an `AlgHom`. -/
-def limitπAlgHom (j) :
+noncomputable def limitπAlgHom (j) :
     (Types.Small.limitCone (F ⋙ forget (AlgCat R))).pt →ₐ[R]
       (F ⋙ forget (AlgCat.{w} R)).obj j :=
   letI : Small.{w}
@@ -95,7 +94,7 @@ namespace HasLimits
 /-- Construction of a limit cone in `AlgCat R`.
 (Internal use only; use the limits API.)
 -/
-def limitCone : Cone F where
+noncomputable def limitCone : Cone F where
   pt := AlgCat.of R (Types.Small.limitCone (F ⋙ forget _)).pt
   π :=
     { app := fun j ↦ ofHom <| limitπAlgHom F j
@@ -107,7 +106,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- Witness that the limit cone in `AlgCat R` is a limit cone.
 (Internal use only; use the limits API.)
 -/
-def limitConeIsLimit : IsLimit (limitCone.{v, w} F) := by
+noncomputable def limitConeIsLimit : IsLimit (limitCone.{v, w} F) := by
   refine
     IsLimit.ofFaithful (forget (AlgCat R)) (Types.Small.limitConeIsLimit.{v, w} _)
       (fun s => ofHom

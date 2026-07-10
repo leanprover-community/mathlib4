@@ -28,8 +28,6 @@ The duals are also shown.
 
 universe v₁ v₂ u₁ u₂
 
-noncomputable section
-
 namespace CategoryTheory
 
 open Limits
@@ -45,7 +43,7 @@ attribute [local simp] eq_iff_true_of_subsingleton in
 which is helpful for constructing a left adjoint to `G`.
 -/
 @[simps]
-def leftAdjointOfStructuredArrowInitialsAux (A : C) (B : D) :
+noncomputable def leftAdjointOfStructuredArrowInitialsAux (A : C) (B : D) :
     ((⊥_ StructuredArrow A G).right ⟶ B) ≃ (A ⟶ G.obj B) where
   toFun g := (⊥_ StructuredArrow A G).hom ≫ G.map g
   invFun f := CommaMorphism.right (initial.to (StructuredArrow.mk f))
@@ -64,13 +62,14 @@ def leftAdjointOfStructuredArrowInitialsAux (A : C) (B : D) :
 If each structured arrow category on `G` has an initial object, construct a left adjoint to `G`. It
 is shown that it is a left adjoint in `adjunctionOfStructuredArrowInitials`.
 -/
-def leftAdjointOfStructuredArrowInitials : C ⥤ D :=
+noncomputable def leftAdjointOfStructuredArrowInitials : C ⥤ D :=
   Adjunction.leftAdjointOfEquiv (leftAdjointOfStructuredArrowInitialsAux G) fun _ _ => by simp
 
 /--
 If each structured arrow category on `G` has an initial object, we have a constructed left adjoint
 to `G`.
 -/
+noncomputable
 def adjunctionOfStructuredArrowInitials : leftAdjointOfStructuredArrowInitials G ⊣ G :=
   Adjunction.adjunctionOfEquivLeft _ _
 
@@ -90,7 +89,7 @@ attribute [local simp] eq_iff_true_of_subsingleton in
 which is helpful for constructing a right adjoint to `G`.
 -/
 @[simps]
-def rightAdjointOfCostructuredArrowTerminalsAux (B : D) (A : C) :
+noncomputable def rightAdjointOfCostructuredArrowTerminalsAux (B : D) (A : C) :
     (G.obj B ⟶ A) ≃ (B ⟶ (⊤_ CostructuredArrow G A).left) where
   toFun g := CommaMorphism.left (terminal.from (CostructuredArrow.mk g))
   invFun g := G.map g ≫ (⊤_ CostructuredArrow G A).hom
@@ -109,7 +108,7 @@ set_option backward.isDefEq.respectTransparency false in
 If each costructured arrow category on `G` has a terminal object, construct a right adjoint to `G`.
 It is shown that it is a right adjoint in `adjunctionOfCostructuredArrowTerminals`.
 -/
-def rightAdjointOfCostructuredArrowTerminals : C ⥤ D :=
+noncomputable def rightAdjointOfCostructuredArrowTerminals : C ⥤ D :=
   Adjunction.rightAdjointOfEquiv (rightAdjointOfCostructuredArrowTerminalsAux G)
       fun B₁ B₂ A f g => by
     rw [← Equiv.eq_symm_apply]
@@ -118,6 +117,7 @@ def rightAdjointOfCostructuredArrowTerminals : C ⥤ D :=
 /-- If each costructured arrow category on `G` has a terminal object, we have a constructed right
 adjoint to `G`.
 -/
+noncomputable
 def adjunctionOfCostructuredArrowTerminals : G ⊣ rightAdjointOfCostructuredArrowTerminals G :=
   Adjunction.adjunctionOfEquivRight _ _
 

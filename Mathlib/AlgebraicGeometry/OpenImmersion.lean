@@ -20,8 +20,6 @@ public import Mathlib.CategoryTheory.Limits.Preorder
 -- Explicit universe annotations were used in this file to improve performance https://github.com/leanprover-community/mathlib4/issues/12737
 
 
-noncomputable section
-
 open TopologicalSpace CategoryTheory Opposite Topology
 
 open CategoryTheory.Limits
@@ -222,7 +220,7 @@ lemma isIso_app (V : Y.Opens) (hV : V ≤ f.opensRange) : IsIso (f.app V) := by
   infer_instance
 
 /-- The isomorphism `Γ(Y, f(U)) ≅ Γ(X, U)` induced by an open immersion `f : X ⟶ Y`. -/
-def appIso (U) : Γ(Y, f ''ᵁ U) ≅ Γ(X, U) :=
+noncomputable def appIso (U) : Γ(Y, f ''ᵁ U) ≅ Γ(X, U) :=
   (asIso <| LocallyRingedSpace.IsOpenImmersion.invApp f.toLRSHom U).symm
 
 @[reassoc (attr := simp)]
@@ -527,7 +525,7 @@ theorem _root_.AlgebraicGeometry.isIso_iff_isIso_stalkMap {X Y : Scheme.{u}} (f 
   · intro H; exact ⟨inferInstance, (TopCat.homeoOfIso (asIso f.base)).isOpenEmbedding⟩
 
 /-- An open immersion induces an isomorphism from the domain onto the image -/
-def isoRestrict : X ≅ Z.restrict f.isOpenEmbedding :=
+noncomputable def isoRestrict : X ≅ Z.restrict f.isOpenEmbedding :=
   Scheme.fullyFaithfulForgetToLocallyRingedSpace.preimageIso
     (LocallyRingedSpace.IsOpenImmersion.isoRestrict f.toLRSHom)
 
@@ -563,13 +561,13 @@ instance hasLimit_cospan_forget_of_right' :
   show HasLimit (cospan ((forget).map g) ((forget).map f)) from inferInstance
 
 set_option backward.defeqAttrib.useBackward true in
-instance forgetCreatesPullbackOfLeft : CreatesLimit (cospan f g) forget :=
+noncomputable instance forgetCreatesPullbackOfLeft : CreatesLimit (cospan f g) forget :=
   createsLimitOfFullyFaithfulOfIso
     (PresheafedSpace.IsOpenImmersion.toScheme Y (pullback.snd f.toLRSHom g.toLRSHom).toShHom.hom)
     (eqToIso (by simp) ≪≫ HasLimit.isoOfNatIso (diagramIsoCospan _).symm)
 
 set_option backward.defeqAttrib.useBackward true in
-instance forgetCreatesPullbackOfRight : CreatesLimit (cospan g f) forget :=
+noncomputable instance forgetCreatesPullbackOfRight : CreatesLimit (cospan g f) forget :=
   createsLimitOfFullyFaithfulOfIso
     (PresheafedSpace.IsOpenImmersion.toScheme Y (pullback.fst g.toLRSHom f.toLRSHom).1)
     (eqToIso (by simp) ≪≫ HasLimit.isoOfNatIso (diagramIsoCospan _).symm)
@@ -686,7 +684,7 @@ For an open immersion `f : X ⟶ Z`, given any morphism of schemes `g : Y ⟶ Z`
 image is contained in the image of `f`, we can lift this morphism to a unique `Y ⟶ X` that
 commutes with these maps.
 -/
-def lift (H' : Set.range g ⊆ Set.range f) : Y ⟶ X :=
+noncomputable def lift (H' : Set.range g ⊆ Set.range f) : Y ⟶ X :=
   ⟨LocallyRingedSpace.IsOpenImmersion.lift f.toLRSHom g.toLRSHom H'⟩
 
 @[reassoc (attr := simp)]
@@ -712,7 +710,7 @@ theorem isPullback_lift_id
   · simp
 
 /-- Two open immersions with equal range are isomorphic. -/
-def isoOfRangeEq [IsOpenImmersion g] (e : Set.range f = Set.range g) : X ≅ Y where
+noncomputable def isoOfRangeEq [IsOpenImmersion g] (e : Set.range f = Set.range g) : X ≅ Y where
   hom := lift g f (le_of_eq e)
   inv := lift f g (le_of_eq e.symm)
   hom_inv_id := by rw [← cancel_mono f]; simp

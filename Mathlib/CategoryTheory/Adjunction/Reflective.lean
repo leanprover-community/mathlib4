@@ -23,8 +23,6 @@ Note properties of reflective functors relating to limits and colimits are inclu
 
 universe v₁ v₂ v₃ u₁ u₂ u₃
 
-noncomputable section
-
 namespace CategoryTheory
 
 open Category Adjunction
@@ -54,7 +52,7 @@ instance [Reflective i] : i.IsRightAdjoint := ⟨_, ⟨reflectorAdjunction i⟩�
 instance [Reflective i] : (reflector i).IsLeftAdjoint := ⟨_, ⟨reflectorAdjunction i⟩⟩
 
 /-- A reflective functor is fully faithful. -/
-def Functor.fullyFaithfulOfReflective [Reflective i] : i.FullyFaithful :=
+noncomputable def Functor.fullyFaithfulOfReflective [Reflective i] : i.FullyFaithful :=
   (reflectorAdjunction i).fullyFaithfulROfIsIsoCounit
 
 set_option backward.isDefEq.respectTransparency false in
@@ -110,7 +108,7 @@ instance Reflective.comp (F : C ⥤ D) (G : D ⥤ E) [Reflective F] [Reflective 
   adj := (reflectorAdjunction G).comp (reflectorAdjunction F)
 
 /-- (Implementation) Auxiliary definition for `unitCompPartialBijective`. -/
-def unitCompPartialBijectiveAux [Reflective i] (A : C) (B : D) :
+noncomputable def unitCompPartialBijectiveAux [Reflective i] (A : C) (B : D) :
     (A ⟶ i.obj B) ≃ (i.obj ((reflector i).obj A) ⟶ i.obj B) :=
   ((reflectorAdjunction i).homEquiv _ _).symm.trans
     (Functor.FullyFaithful.ofFullyFaithful i).homEquiv
@@ -132,7 +130,7 @@ This establishes there is a natural bijection `(A ⟶ B) ≃ (i.obj (L.obj A) �
 from the point of view of objects in `D`, `A` and `i.obj (L.obj A)` look the same: specifically
 that `η.app A` is an isomorphism.
 -/
-def unitCompPartialBijective [Reflective i] (A : C) {B : C} (hB : i.essImage B) :
+noncomputable def unitCompPartialBijective [Reflective i] (A : C) {B : C} (hB : i.essImage B) :
     (A ⟶ B) ≃ (i.obj ((reflector i).obj A) ⟶ B) :=
   calc
     (A ⟶ B) ≃ (A ⟶ i.obj (Functor.essImage.witness hB)) := Iso.homCongr (Iso.refl _) hB.getIso.symm
@@ -171,7 +169,7 @@ attribute [local ext] Functor.essImage_ext in
 /-- If `i : D ⥤ C` is reflective, the inverse functor of `i ≌ F.essImage` can be explicitly
 defined by the reflector. -/
 @[simps]
-def equivEssImageOfReflective [Reflective i] : D ≌ i.EssImageSubcategory where
+noncomputable def equivEssImageOfReflective [Reflective i] : D ≌ i.EssImageSubcategory where
   functor := i.toEssImage
   inverse := i.essImage.ι ⋙ reflector i
   unitIso := (asIso <| (reflectorAdjunction i).counit).symm
@@ -201,7 +199,7 @@ instance [Coreflective j] : j.IsLeftAdjoint := ⟨_, ⟨coreflectorAdjunction j�
 instance [Coreflective j] : (coreflector j).IsRightAdjoint := ⟨_, ⟨coreflectorAdjunction j⟩⟩
 
 /-- A coreflective functor is fully faithful. -/
-def Functor.fullyFaithfulOfCoreflective [Coreflective j] : j.FullyFaithful :=
+noncomputable def Functor.fullyFaithfulOfCoreflective [Coreflective j] : j.FullyFaithful :=
   (coreflectorAdjunction j).fullyFaithfulLOfIsIsoUnit
 
 set_option backward.isDefEq.respectTransparency false in

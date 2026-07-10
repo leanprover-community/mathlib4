@@ -28,8 +28,6 @@ function with finite support, module, linear algebra
 
 @[expose] public section
 
-noncomputable section
-
 open Set LinearMap Submodule
 
 namespace Finsupp
@@ -94,7 +92,7 @@ variable [Module S N] [SMulCommClass R₂ S N]
 
 See note [bundled maps over different rings] for why separate `R` and `S` semirings are used.
 -/
-def lsum : (α → M →ₛₗ[σ] N) ≃ₗ[S] (α →₀ M) →ₛₗ[σ] N where
+noncomputable def lsum : (α → M →ₛₗ[σ] N) ≃ₗ[S] (α →₀ M) →ₛₗ[σ] N where
   toFun F :=
     { toFun := fun d => d.sum fun i => F i
       map_add' := (liftAddHom (α := α) (M := M) (N := N) fun x => (F x).toAddMonoidHom).map_add
@@ -180,7 +178,7 @@ end
 
 This is `Finsupp.domCongr` as a `LinearEquiv`.
 See also `LinearMap.funCongrLeft` for the case of arbitrary functions. -/
-protected def domLCongr {α₁ α₂ : Type*} (e : α₁ ≃ α₂) : (α₁ →₀ M) ≃ₗ[R] α₂ →₀ M :=
+protected noncomputable def domLCongr {α₁ α₂ : Type*} (e : α₁ ≃ α₂) : (α₁ →₀ M) ≃ₗ[R] α₂ →₀ M :=
   (Finsupp.domCongr e : (α₁ →₀ M) ≃+ (α₂ →₀ M)).toLinearEquiv <| by
     simpa only [equivMapDomain_eq_mapDomain, domCongr_apply] using! (lmapDomain M R e).map_smul
 
@@ -213,7 +211,7 @@ variable [RingHomInvPair σ σ_inv] [RingHomInvPair σ_inv σ]
 
 /-- An equivalence of domain and a linear equivalence of codomain induce a linear equivalence of the
 corresponding finitely supported functions. -/
-def lcongr {ι κ : Sort _} (e₁ : ι ≃ κ) (e₂ : M ≃ₛₗ[σ] N) : (ι →₀ M) ≃ₛₗ[σ] κ →₀ N :=
+noncomputable def lcongr {ι κ : Sort _} (e₁ : ι ≃ κ) (e₂ : M ≃ₛₗ[σ] N) : (ι →₀ M) ≃ₛₗ[σ] κ →₀ N :=
   (Finsupp.domLCongr e₁).trans (mapRange.linearEquiv e₂)
 
 @[simp]
@@ -263,6 +261,7 @@ open Finsupp Function
 
 -- See also `LinearMap.splittingOfFunOnFintypeSurjective`
 /-- A surjective linear map to finitely supported functions has a splitting. -/
+noncomputable
 def splittingOfFinsuppSurjective (f : M →ₗ[R] α →₀ R) (s : Surjective f) : (α →₀ R) →ₗ[R] M :=
   Finsupp.lift _ _ _ fun x : α => (s (Finsupp.single x 1)).choose
 
@@ -320,7 +319,7 @@ variable [SMulCommClass R S S]
 /-- If `M` and `N` are submodules of an `R`-algebra `S`, `m : ι → M` is a family of elements, then
 there is an `R`-linear map from `ι →₀ N` to `S` which maps `{ n_i }` to the sum of `m_i * n_i`.
 This is used in the definition of linearly disjointness. -/
-def mulLeftMap {M : Submodule R S} (N : Submodule R S) {ι : Type*} (m : ι → M) :
+noncomputable def mulLeftMap {M : Submodule R S} (N : Submodule R S) {ι : Type*} (m : ι → M) :
     (ι →₀ N) →ₗ[R] S := Finsupp.lsum R fun i ↦ (m i).1 • N.subtype
 
 theorem mulLeftMap_apply {M N : Submodule R S} {ι : Type*} (m : ι → M) (n : ι →₀ N) :
@@ -338,7 +337,7 @@ variable [IsScalarTower R S S]
 /-- If `M` and `N` are submodules of an `R`-algebra `S`, `n : ι → N` is a family of elements, then
 there is an `R`-linear map from `ι →₀ M` to `S` which maps `{ m_i }` to the sum of `m_i * n_i`.
 This is used in the definition of linearly disjointness. -/
-def mulRightMap (M : Submodule R S) {N : Submodule R S} {ι : Type*} (n : ι → N) :
+noncomputable def mulRightMap (M : Submodule R S) {N : Submodule R S} {ι : Type*} (n : ι → N) :
     (ι →₀ M) →ₗ[R] S := Finsupp.lsum R fun i ↦ MulOpposite.op (n i).1 • M.subtype
 
 theorem mulRightMap_apply {M N : Submodule R S} {ι : Type*} (n : ι → N) (m : ι →₀ M) :

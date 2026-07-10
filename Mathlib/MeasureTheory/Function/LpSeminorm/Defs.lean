@@ -34,8 +34,6 @@ and is almost everywhere strongly measurable.
 
 @[expose] public section
 
-noncomputable section
-
 open scoped NNReal ENNReal
 
 variable {α ε ε' E F G : Type*} {m m0 : MeasurableSpace α} {p : ℝ≥0∞} {q : ℝ} {f : α → E}
@@ -66,7 +64,7 @@ this quantity is finite.
 
 Note: this is a purely auxiliary quantity; lemmas about `eLpNorm'` should only be used to
 prove results about `eLpNorm`; every `eLpNorm'` lemma should have a `eLpNorm` version. -/
-def eLpNorm' {_ : MeasurableSpace α} (f : α → ε) (q : ℝ) (μ : Measure α) : ℝ≥0∞ :=
+noncomputable def eLpNorm' {_ : MeasurableSpace α} (f : α → ε) (q : ℝ) (μ : Measure α) : ℝ≥0∞ :=
   (∫⁻ a, ‖f a‖ₑ ^ q ∂μ) ^ (1 / q)
 
 lemma eLpNorm'_eq_lintegral_enorm (f : α → ε) (q : ℝ) (μ : Measure α) :
@@ -74,7 +72,7 @@ lemma eLpNorm'_eq_lintegral_enorm (f : α → ε) (q : ℝ) (μ : Measure α) :
   rfl
 
 /-- seminorm for `ℒ∞`, equal to the essential supremum of `‖f‖`. -/
-def eLpNormEssSup (f : α → ε) (μ : Measure α) :=
+noncomputable def eLpNormEssSup (f : α → ε) (μ : Measure α) :=
   essSup (fun x => ‖f x‖ₑ) μ
 
 lemma eLpNormEssSup_eq_essSup_enorm (f : α → ε) (μ : Measure α) :
@@ -82,7 +80,7 @@ lemma eLpNormEssSup_eq_essSup_enorm (f : α → ε) (μ : Measure α) :
 
 /-- `ℒp` seminorm, equal to `0` for `p=0`, to `(∫ ‖f a‖^p ∂μ) ^ (1/p)` for `0 < p < ∞` and to
 `essSup ‖f‖ μ` for `p = ∞`. -/
-def eLpNorm {_ : MeasurableSpace α}
+noncomputable def eLpNorm {_ : MeasurableSpace α}
     (f : α → ε) (p : ℝ≥0∞) (μ : Measure α := by volume_tac) : ℝ≥0∞ :=
   if p = 0 then 0 else if p = ∞ then eLpNormEssSup f μ else eLpNorm' f (ENNReal.toReal p) μ
 

@@ -19,8 +19,6 @@ This file contains results on the interaction of `Polynomial.eval` and `Polynomi
 
 @[expose] public section
 
-noncomputable section
-
 open Finset AddMonoidAlgebra
 
 open Polynomial
@@ -128,7 +126,7 @@ variable [Semiring S] {f : R →+* S} {p : R[X]}
 variable (f) in
 /-- If `R` and `S` are isomorphic, then so are their polynomial rings. -/
 @[simps!]
-def mapEquiv (e : R ≃+* S) : R[X] ≃+* S[X] :=
+noncomputable def mapEquiv (e : R ≃+* S) : R[X] ≃+* S[X] :=
   RingEquiv.ofRingHom (mapRingHom (e : R →+* S)) (mapRingHom (e.symm : S →+* R)) (by ext; simp)
     (by ext; simp)
 

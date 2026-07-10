@@ -35,8 +35,6 @@ Frobenius reciprocity, Cartesian closed functor
 @[expose] public section
 
 
-noncomputable section
-
 namespace CategoryTheory
 
 open Category MonoidalClosed MonoidalCategory CartesianMonoidalCategory TwoSquare
@@ -79,7 +77,7 @@ variable [Limits.PreservesLimitsOfShape (Discrete Limits.WalkingPair) F]
 /-- The exponential comparison map.
 `F` is a Cartesian closed functor if this is an iso for all `A`.
 -/
-def expComparison (A : C) : TwoSquare (ihom A) F F (ihom (F.obj A)) :=
+noncomputable def expComparison (A : C) : TwoSquare (ihom A) F F (ihom (F.obj A)) :=
   mateEquiv (ihom.adjunction A) (ihom.adjunction (F.obj A)) (prodComparisonNatIso F A).inv
 
 set_option backward.isDefEq.respectTransparency false in

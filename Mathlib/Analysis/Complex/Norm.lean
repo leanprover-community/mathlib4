@@ -15,15 +15,13 @@ public import Mathlib.Data.Complex.Basic
 
 @[expose] public section
 
-noncomputable section
-
 open ComplexConjugate Topology Filter Set
 
 namespace Complex
 variable {z : ℂ}
 
 @[no_expose]
-instance instNorm : Norm ℂ where
+noncomputable instance instNorm : Norm ℂ where
   norm z := √(normSq z)
 
 theorem norm_def (z : ℂ) : ‖z‖ = √(normSq z) := (rfl)
@@ -61,7 +59,7 @@ protected theorem norm_map_zero' : ‖(0 : ℂ)‖ = 0 :=
 protected theorem norm_neg' (z : ℂ) : ‖-z‖ = ‖z‖ := by
   rw [Complex.norm_def, norm_def, normSq_neg]
 
-instance instNormedAddCommGroup : NormedAddCommGroup ℂ :=
+noncomputable instance instNormedAddCommGroup : NormedAddCommGroup ℂ :=
   AddGroupNorm.toNormedAddCommGroup
   { toFun := norm
     map_zero' := Complex.norm_map_zero'

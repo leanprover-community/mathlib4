@@ -85,8 +85,6 @@ weak convergence of measures, finite measure
 @[expose] public section
 
 
-noncomputable section
-
 open BoundedContinuousFunction Filter MeasureTheory Set Topology
 open scoped ENNReal NNReal Function
 
@@ -273,7 +271,7 @@ theorem toMeasure_sum {ι : Type*} {s : Finset ι} {ν : ι → FiniteMeasure Ω
     ↑(∑ i ∈ s, ν i) = ∑ i ∈ s, (ν i : Measure Ω) :=
   map_sum toMeasureAddMonoidHom _ _
 
-instance {Ω : Type*} [MeasurableSpace Ω] : Module ℝ≥0 (FiniteMeasure Ω) :=
+noncomputable instance {Ω : Type*} [MeasurableSpace Ω] : Module ℝ≥0 (FiniteMeasure Ω) :=
   Function.Injective.module _ toMeasureAddMonoidHom toMeasure_injective toMeasure_smul
 
 @[simp]
@@ -282,7 +280,7 @@ theorem smul_apply [IsScalarTower R ℝ≥0 ℝ≥0] (c : R) (μ : FiniteMeasure
   rw [coeFn_smul, Pi.smul_apply]
 
 /-- Restrict a finite measure μ to a set A. -/
-def restrict (μ : FiniteMeasure Ω) (A : Set Ω) : FiniteMeasure Ω where
+noncomputable def restrict (μ : FiniteMeasure Ω) (A : Set Ω) : FiniteMeasure Ω where
   val := (μ : Measure Ω).restrict A
   property := MeasureTheory.isFiniteMeasureRestrict (μ : Measure Ω) A
 
@@ -390,7 +388,7 @@ theorem ext_of_forall_integral_eq [HasOuterApproxClosed Ω] [BorelSpace Ω]
 /-- The pairing of a finite (Borel) measure `μ` with a nonnegative bounded continuous
 function is obtained by (Lebesgue) integrating the (test) function against the measure.
 This is `MeasureTheory.FiniteMeasure.testAgainstNN`. -/
-def testAgainstNN (μ : FiniteMeasure Ω) (f : Ω →ᵇ ℝ≥0) : ℝ≥0 :=
+noncomputable def testAgainstNN (μ : FiniteMeasure Ω) (f : Ω →ᵇ ℝ≥0) : ℝ≥0 :=
   (∫⁻ ω, f ω ∂(μ : Measure Ω)).toNNReal
 
 @[simp]
@@ -485,7 +483,7 @@ theorem testAgainstNN_lipschitz (μ : FiniteMeasure Ω) :
 
 /-- Finite measures yield elements of the `WeakDual` of bounded continuous nonnegative
 functions via `MeasureTheory.FiniteMeasure.testAgainstNN`, i.e., integration. -/
-def toWeakDualBCNN (μ : FiniteMeasure Ω) : WeakDual ℝ≥0 (Ω →ᵇ ℝ≥0) where
+noncomputable def toWeakDualBCNN (μ : FiniteMeasure Ω) : WeakDual ℝ≥0 (Ω →ᵇ ℝ≥0) where
   toFun f := μ.testAgainstNN f
   map_add' := testAgainstNN_add μ
   map_smul' := testAgainstNN_smul μ
@@ -502,7 +500,7 @@ theorem toWeakDualBCNN_apply (μ : FiniteMeasure Ω) (f : Ω →ᵇ ℝ≥0) :
 /-- The topology of weak convergence on `MeasureTheory.FiniteMeasure Ω` is inherited (induced)
 from the weak-\* topology on `WeakDual ℝ≥0 (Ω →ᵇ ℝ≥0)` via the function
 `MeasureTheory.FiniteMeasure.toWeakDualBCNN`. -/
-instance instTopologicalSpace : TopologicalSpace (FiniteMeasure Ω) :=
+noncomputable instance instTopologicalSpace : TopologicalSpace (FiniteMeasure Ω) :=
   TopologicalSpace.induced toWeakDualBCNN inferInstance
 
 theorem toWeakDualBCNN_continuous : Continuous (@toWeakDualBCNN Ω _ _ _) :=

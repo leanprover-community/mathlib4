@@ -48,8 +48,6 @@ uniform spaces, completion, universal property
 @[expose] public section
 
 
-noncomputable section
-
 open Filter Set Function
 
 /-- A completion of `α` is the data of a complete separated uniform space
@@ -117,7 +115,7 @@ variable [UniformSpace β]
 section Extend
 
 /-- Extension of maps to completions -/
-protected def extend (f : α → β) : hatα → β :=
+protected noncomputable def extend (f : α → β) : hatα → β :=
   open scoped Classical in
   if UniformContinuous f then pkg.isDenseInducing.extend f else fun x => f (pkg.dense.some x)
 
@@ -179,7 +177,7 @@ local notation "hatβ" => pkg'.space
 local notation "ι'" => pkg'.coe
 
 /-- Lifting maps to completions -/
-protected def map (f : α → β) : hatα → hatβ :=
+protected noncomputable def map (f : α → β) : hatα → hatβ :=
   pkg.extend (ι' ∘ f)
 
 local notation "map" => pkg.map pkg'
@@ -229,7 +227,7 @@ theorem map_comp {g : β → γ} {f : α → β} (hg : UniformContinuous g) (hf 
   pkg.extend_map pkg' (pkg''.uniformContinuous_coe.comp hg) hf
 
 /-- The uniform isomorphism between two completions of isomorphic uniform spaces. -/
-def mapEquiv (e : α ≃ᵤ β) : hatα ≃ᵤ hatβ where
+noncomputable def mapEquiv (e : α ≃ᵤ β) : hatα ≃ᵤ hatβ where
   toFun := pkg.map pkg' e
   invFun := pkg'.map pkg e.symm
   uniformContinuous_toFun := uniformContinuous_map ..
@@ -255,7 +253,7 @@ section Compare
 variable (pkg' : AbstractCompletion.{vα'} α)
 
 /-- The comparison map between two completions of the same uniform space. -/
-def compare : pkg.space → pkg'.space :=
+noncomputable def compare : pkg.space → pkg'.space :=
   pkg.extend pkg'.coe
 
 @[fun_prop]
@@ -274,7 +272,7 @@ theorem inverse_compare : pkg.compare pkg' ∘ pkg'.compare pkg = id := by
   rfl
 
 /-- The uniform bijection between two completions of the same uniform space. -/
-def compareEquiv : pkg.space ≃ᵤ pkg'.space where
+noncomputable def compareEquiv : pkg.space ≃ᵤ pkg'.space where
   toFun := pkg.compare pkg'
   invFun := pkg'.compare pkg
   left_inv := congr_fun (pkg'.inverse_compare pkg)
@@ -363,7 +361,7 @@ variable {γ : Type uγ} [UniformSpace γ]
 open Function
 
 /-- Extend two variable map to completions. -/
-protected def extend₂ (f : α → β → γ) : hatα → hatβ → γ :=
+protected noncomputable def extend₂ (f : α → β → γ) : hatα → hatβ → γ :=
   curry <| (pkg.prod pkg').extend (uncurry f)
 
 section T0Space
@@ -404,7 +402,7 @@ local notation "ι''" => pkg''.coe
 local notation f " ∘₂ " g => bicompr f g
 
 /-- Lift two variable maps to completions. -/
-protected def map₂ (f : α → β → γ) : hatα → hatβ → hatγ :=
+protected noncomputable def map₂ (f : α → β → γ) : hatα → hatβ → hatγ :=
   pkg.extend₂ pkg' (pkg''.coe ∘₂ f)
 
 @[fun_prop]

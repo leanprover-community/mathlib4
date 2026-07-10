@@ -45,8 +45,6 @@ the literature while the compact coherentification is often called the k-ificati
 
 public section
 
-noncomputable section
-
 open Set Set.Notation Topology
 
 /-! ### Compactly coherent spaces-/
@@ -127,11 +125,11 @@ namespace CompactCoherentification
 scoped notation "𝐤" X:max => CompactCoherentification X
 
 /-- The map taking a space to its compact coherentification. -/
-protected def mk (X : Type*) : X ≃ CompactCoherentification X := Equiv.refl _
+protected noncomputable def mk (X : Type*) : X ≃ CompactCoherentification X := Equiv.refl _
 
 /-- For a map `f : X → Y` of topological spaces, `CompactCoherentification.map f` is the
 corresponding map between the compact coherentifications of `X` and `Y`. -/
-protected def map {X Y : Type*} (f : X → Y) : 𝐤X  → 𝐤Y :=
+protected noncomputable def map {X Y : Type*} (f : X → Y) : 𝐤X  → 𝐤Y :=
   CompactCoherentification.mk Y ∘ f ∘ (CompactCoherentification.mk X).symm
 
 protected lemma map_comp_mk {X Y : Type*} {f : X → Y} :
@@ -143,7 +141,7 @@ variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
 
 /-- For a topological space `X` the compact coherentification is defined as:
 `A` is open iff for all compact sets `B`, the intersection `A ∩ B` is open in `B`. -/
-instance instTopologicalSpace :
+noncomputable instance instTopologicalSpace :
     TopologicalSpace (𝐤X) :=
   .coinduced (.mk X)
     (⨆ (K : Set X) (_ : IsCompact K), .coinduced (Subtype.val (p := K))
@@ -250,7 +248,7 @@ instance instCompactlyCoherentSpace : CompactlyCoherentSpace (𝐤X) := by
   exact hU K _ (continuous_rng_of_compactSpace.mpr continuous_subtype_val)
 
 /-- The compact coherentification preserves the topology of k-spaces. -/
-protected def homeo [CompactlyCoherentSpace X] : X ≃ₜ 𝐤X where
+protected noncomputable def homeo [CompactlyCoherentSpace X] : X ≃ₜ 𝐤X where
   toEquiv := CompactCoherentification.mk X
   continuous_toFun := continuous_mk
   continuous_invFun := continuous_mk_symm

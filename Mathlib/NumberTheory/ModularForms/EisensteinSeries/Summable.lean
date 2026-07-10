@@ -19,7 +19,6 @@ boundedness of Eisenstein series at infinity.
 -/
 
 @[expose] public section
-noncomputable section
 
 open Complex UpperHalfPlane Set Finset Topology Filter Asymptotics
 
@@ -65,7 +64,7 @@ section bounding_functions
 
 /-- Auxiliary function used for bounding Eisenstein series, defined as
   `z.im ^ 2 / (z.re ^ 2 + z.im ^ 2)`. -/
-def r1 : ℝ := z.im ^ 2 / (z.re ^ 2 + z.im ^ 2)
+noncomputable def r1 : ℝ := z.im ^ 2 / (z.re ^ 2 + z.im ^ 2)
 
 lemma r1_eq : r1 z = 1 / ((z.re / z.im) ^ 2 + 1) := by
   rw [div_pow, div_add_one (by positivity), one_div_div, r1]
@@ -86,7 +85,7 @@ lemma r1_aux_bound (c : ℝ) {d : ℝ} (hd : 1 ≤ d ^ 2) :
 
 /-- This function is used to give an upper bound on the summands in Eisenstein series; it is
 defined by `z ↦ min z.im √(z.im ^ 2 / (z.re ^ 2 + z.im ^ 2))`. -/
-def r : ℝ := min z.im √(r1 z)
+noncomputable def r : ℝ := min z.im √(r1 z)
 
 lemma r_pos : 0 < r z := by
   simp only [r, lt_min_iff, im_pos, Real.sqrt_pos, r1_pos, and_self]

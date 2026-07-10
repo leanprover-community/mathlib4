@@ -38,8 +38,6 @@ characteristic 0 form a root system. We achieve this by studying root chains.
 
 @[expose] public section
 
-noncomputable section
-
 namespace LieAlgebra.IsKilling
 
 open LieModule Module
@@ -67,7 +65,7 @@ private lemma chainLength_aux (hα : α.IsNonZero) {x} (hx : x ∈ rootSpace H (
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- The length of the `α`-chain through `β`. See `chainBotCoeff_add_chainTopCoeff`. -/
-def chainLength (α β : Weight K H L) : ℕ :=
+noncomputable def chainLength (α β : Weight K H L) : ℕ :=
   letI := Classical.propDecidable
   if hα : α.IsZero then 0 else
     (chainLength_aux α β hα (chainTop α β).exists_ne_zero.choose_spec.1).choose
@@ -361,7 +359,7 @@ lemma eq_neg_or_eq_of_eq_smul (hβ : β.IsNonZero) (k : K) (h : (β : H → K) =
   · exact .inr (by ext; rw [h, one_smul])
 
 /-- The reflection of a root along another. -/
-def reflectRoot (α β : Weight K H L) : Weight K H L where
+noncomputable def reflectRoot (α β : Weight K H L) : Weight K H L where
   toFun := β - β (coroot α) • α
   genWeightSpace_ne_bot' := by
     by_cases hα : α.IsZero
@@ -384,7 +382,7 @@ variable (H)
 
 /-- The root system of a finite-dimensional Lie algebra with non-degenerate Killing form over a
 field of characteristic zero, relative to a splitting Cartan subalgebra. -/
-def rootSystem :
+noncomputable def rootSystem :
     RootPairing H.root K (Dual K H) H :=
   RootPairing.mk''
     .id

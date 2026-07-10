@@ -134,8 +134,6 @@ linearly disjoint, linearly independent, tensor product
 open Module
 open scoped TensorProduct
 
-noncomputable section
-
 universe u v w
 
 namespace Submodule
@@ -158,7 +156,7 @@ variable {M N}
 
 /-- If `M` and `N` are linearly disjoint submodules, then there is the natural isomorphism
 `M ⊗[R] N ≃ₗ[R] M * N` induced by multiplication in `S`. -/
-protected def LinearDisjoint.mulMap (H : M.LinearDisjoint N) : M ⊗[R] N ≃ₗ[R] M * N :=
+protected noncomputable def LinearDisjoint.mulMap (H : M.LinearDisjoint N) : M ⊗[R] N ≃ₗ[R] M * N :=
   LinearEquiv.ofInjective (M.mulMap N) H.injective ≪≫ₗ LinearEquiv.ofEq _ _ (mulMap_range M N)
 
 @[simp]

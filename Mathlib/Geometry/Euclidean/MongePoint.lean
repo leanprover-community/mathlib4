@@ -47,8 +47,6 @@ generalization, the Monge point of a simplex.
 
 @[expose] public section
 
-noncomputable section
-
 open scoped RealInnerProductSpace
 
 namespace Affine
@@ -72,7 +70,7 @@ Here, we use that ratio to define the Monge point (so resulting
 in a point that equals the centroid in 0 or 1 dimensions), and then
 show in subsequent lemmas that the point so defined lies in the Monge
 planes and is their unique point of intersection. -/
-def mongePoint {n : ℕ} (s : Simplex ℝ P n) : P :=
+noncomputable def mongePoint {n : ℕ} (s : Simplex ℝ P n) : P :=
   (((n + 1 : ℕ) : ℝ) / ((n - 1 : ℕ) : ℝ)) •
       ((univ : Finset (Fin (n + 1))).centroid ℝ s.points -ᵥ s.circumcenter) +ᵥ
     s.circumcenter
@@ -140,6 +138,7 @@ theorem mongePoint_eq_of_range_eq {n : ℕ} {s₁ s₂ : Simplex ℝ P n}
 
 /-- The weights for the Monge point of an (n+2)-simplex, in terms of
 `pointsWithCircumcenter`. -/
+noncomputable
 def mongePointWeightsWithCircumcenter (n : ℕ) : PointsWithCircumcenterIndex (n + 2) → ℝ
   | pointIndex _ => ((n + 1 : ℕ) : ℝ)⁻¹
   | circumcenterIndex => -2 / ((n + 1 : ℕ) : ℝ)
@@ -178,7 +177,7 @@ theorem mongePoint_eq_affineCombination_of_pointsWithCircumcenter {n : ℕ}
 /-- The weights for the Monge point of an (n+2)-simplex, minus the
 centroid of an n-dimensional face, in terms of
 `pointsWithCircumcenter`.  This definition is only valid when `i₁ ≠ i₂`. -/
-def mongePointVSubFaceCentroidWeightsWithCircumcenter {n : ℕ} (i₁ i₂ : Fin (n + 3)) :
+noncomputable def mongePointVSubFaceCentroidWeightsWithCircumcenter {n : ℕ} (i₁ i₂ : Fin (n + 3)) :
     PointsWithCircumcenterIndex (n + 2) → ℝ
   | pointIndex i => if i = i₁ ∨ i = i₂ then ((n + 1 : ℕ) : ℝ)⁻¹ else 0
   | circumcenterIndex => -2 / ((n + 1 : ℕ) : ℝ)
@@ -261,6 +260,7 @@ subspace of the subspace spanned by the simplex that passes through
 the centroid of an n-dimensional face and is orthogonal to the
 opposite edge (in 2 dimensions, this is the same as an altitude).
 This definition is only intended to be used when `i₁ ≠ i₂`. -/
+noncomputable
 def mongePlane {n : ℕ} (s : Simplex ℝ P (n + 2)) (i₁ i₂ : Fin (n + 3)) : AffineSubspace ℝ P :=
   mk' (({i₁, i₂}ᶜ : Finset (Fin (n + 3))).centroid ℝ s.points) (ℝ ∙ (s.points i₁ -ᵥ s.points i₂))ᗮ ⊓
     affineSpan ℝ (Set.range s.points)
@@ -363,7 +363,7 @@ variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V
 /-- The orthocenter of a triangle is the intersection of its
 altitudes.  It is defined here as the 2-dimensional case of the
 Monge point. -/
-def orthocenter (t : Triangle ℝ P) : P :=
+noncomputable def orthocenter (t : Triangle ℝ P) : P :=
   t.mongePoint
 
 /-- The orthocenter equals the Monge point. -/

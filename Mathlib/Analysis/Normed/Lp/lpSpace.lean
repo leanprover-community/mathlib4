@@ -59,8 +59,6 @@ say that `‖-f‖ = ‖f‖`, instead of the non-working `f.norm_neg`.
 
 @[expose] public section
 
-noncomputable section
-
 open scoped NNReal ENNReal Function
 
 variable {𝕜 𝕜' : Type*} {α : Type*} {E : α → Type*} {p q : ℝ≥0∞} [∀ i, NormedAddCommGroup (E i)]
@@ -436,7 +434,7 @@ theorem coeFn_sum {ι : Type*} (f : ι → lp E p) (s : Finset ι) :
 theorem coeFn_sub (f g : lp E p) : ⇑(f - g) = f - g :=
   rfl
 
-instance : Norm (lp E p) where
+noncomputable instance : Norm (lp E p) where
   norm f :=
     if hp : p = 0 then by
       subst hp
@@ -542,7 +540,7 @@ theorem norm_neg ⦃f : lp E p⦄ : ‖-f‖ = ‖f‖ := by
     apply (lp.hasSum_norm hp (-f)).unique
     simpa only [coeFn_neg, Pi.neg_apply, _root_.norm_neg] using lp.hasSum_norm hp f
 
-instance normedAddCommGroup [hp : Fact (1 ≤ p)] : NormedAddCommGroup (lp E p) :=
+noncomputable instance normedAddCommGroup [hp : Fact (1 ≤ p)] : NormedAddCommGroup (lp E p) :=
   fast_instance% AddGroupNorm.toNormedAddCommGroup
     { toFun := norm
       map_zero' := norm_zero
@@ -860,13 +858,14 @@ instance nonUnitalRing : NonUnitalRing (lp B ∞) := fast_instance%
   Function.Injective.nonUnitalRing lp.coeFun.coe Subtype.coe_injective (lp.coeFn_zero B ∞)
     lp.coeFn_add infty_coeFn_mul lp.coeFn_neg lp.coeFn_sub (fun _ _ => rfl) fun _ _ => rfl
 
-instance nonUnitalNormedRing : NonUnitalNormedRing (lp B ∞) :=
+noncomputable instance nonUnitalNormedRing : NonUnitalNormedRing (lp B ∞) :=
   { lp.nonUnitalRing, lp.normedAddCommGroup with
     norm_mul_le f g := lp.norm_le_of_forall_le (by positivity) fun i ↦ calc
       ‖(f * g) i‖ ≤ ‖f i‖ * ‖g i‖ := norm_mul_le _ _
       _ ≤ ‖f‖ * ‖g‖ := mul_le_mul (lp.norm_apply_le_norm ENNReal.top_ne_zero f i)
         (lp.norm_apply_le_norm ENNReal.top_ne_zero g i) (norm_nonneg _) (norm_nonneg _) }
 
+noncomputable
 instance nonUnitalNormedCommRing {B : I → Type*} [∀ i, NonUnitalNormedCommRing (B i)] :
     NonUnitalNormedCommRing (lp B ∞) where
   mul_comm _ _ := ext <| mul_comm ..
@@ -951,7 +950,7 @@ theorem infty_coeFn_intCast (z : ℤ) : ⇑(z : lp B ∞) = z :=
 instance [Nonempty I] : NormOneClass (lp B ∞) where
   norm_one := by simp_rw [lp.norm_eq_ciSup, infty_coeFn_one, Pi.one_apply, norm_one, ciSup_const]
 
-instance inftyNormedRing : NormedRing (lp B ∞) :=
+noncomputable instance inftyNormedRing : NormedRing (lp B ∞) :=
   { lp.inftyRing, lp.nonUnitalNormedRing with }
 
 end NormedRing
@@ -960,7 +959,7 @@ section NormedCommRing
 
 variable {I : Type*} {B : I → Type*} [∀ i, NormedCommRing (B i)] [∀ i, NormOneClass (B i)]
 
-instance inftyNormedCommRing : NormedCommRing (lp B ∞) where
+noncomputable instance inftyNormedCommRing : NormedCommRing (lp B ∞) where
   mul_comm := mul_comm
 
 end NormedCommRing
@@ -1262,7 +1261,7 @@ def evalₗ (i : α) : lp E p →ₗ[𝕜] E i where
 
 variable (𝕜 E p) in
 /-- Evaluation at a single coordinate, as a continuous linear map on `lp E p`. -/
-def evalCLM [Fact (1 ≤ p)] (i : α) : lp E p →L[𝕜] E i :=
+noncomputable def evalCLM [Fact (1 ≤ p)] (i : α) : lp E p →L[𝕜] E i :=
   (evalₗ E p i).mkContinuous 1 fun x ↦ by
     have hp : p ≠ 0 := zero_lt_one.trans_le Fact.out |>.ne'
     simpa only [evalₗ_apply, one_mul, ge_iff_le] using norm_apply_le_norm hp x i

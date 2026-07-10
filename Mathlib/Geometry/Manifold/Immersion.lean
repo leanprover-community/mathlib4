@@ -101,7 +101,7 @@ This shortens the overall argument, as the definition of submersions has the sam
 open scoped Topology ContDiff
 open Function Set
 
-public noncomputable section
+public section
 
 namespace Manifold
 
@@ -217,6 +217,7 @@ w.r.t. this chart and the data `h.codChart` and `h.equiv`,
 `f` will look like an inclusion `u ↦ (u, 0)` in these extended charts.
 The particular chart is arbitrary, but this choice matches the witnesses given by
 `h.codChart` and `h.codChart`. -/
+noncomputable
 def domChart (h : IsImmersionAtOfComplement F I J n f x) : OpenPartialHomeomorph M H :=
   LiftSourceTargetPropertyAt.domChart h
 
@@ -225,6 +226,7 @@ w.r.t. this chart and the data `h.domChart` and `h.equiv`,
 `f` will look like an inclusion `u ↦ (u, 0)` in these extended charts.
 The particular chart is arbitrary, but this choice matches the witnesses given by
 `h.equiv` and `h.domChart`. -/
+noncomputable
 def codChart (h : IsImmersionAtOfComplement F I J n f x) : OpenPartialHomeomorph N G :=
   LiftSourceTargetPropertyAt.codChart h
 
@@ -253,7 +255,7 @@ lemma mapsto_domChart_source_codChart_source (h : IsImmersionAtOfComplement F I 
 /-- A linear equivalence `E × F ≃L[𝕜] E''` which belongs to the data of an immersion `f` at `x`:
 the particular equivalence is arbitrary, but this choice matches the witnesses given by
 `h.domChart` and `h.codChart`. -/
-def equiv (h : IsImmersionAtOfComplement F I J n f x) : (E × F) ≃L[𝕜] E'' :=
+noncomputable def equiv (h : IsImmersionAtOfComplement F I J n f x) : (E × F) ≃L[𝕜] E'' :=
   Classical.choose <| LiftSourceTargetPropertyAt.property h
 
 lemma writtenInCharts (h : IsImmersionAtOfComplement F I J n f x) :
@@ -322,10 +324,12 @@ def smallComplement (hf : IsImmersionAtOfComplement F I J n f x) : Type u :=
   haveI := hf.small
   Shrink.{u} F
 
+noncomputable
 instance (hf : IsImmersionAtOfComplement F I J n f x) : NormedAddCommGroup hf.smallComplement :=
   haveI := hf.small
   inferInstanceAs <| NormedAddCommGroup (Shrink F)
 
+noncomputable
 instance (hf : IsImmersionAtOfComplement F I J n f x) : NormedSpace 𝕜 hf.smallComplement :=
   haveI := hf.small
   inferInstanceAs <| NormedSpace 𝕜 (Shrink F)
@@ -334,6 +338,7 @@ instance (hf : IsImmersionAtOfComplement F I J n f x) : NormedSpace 𝕜 hf.smal
 a continuous linear equivalence from `F` to the small complement of `F`:
 mathematically, this is just the identity map; however, this is technically useful as it enables
 us to always work with `hf.smallComplement`. -/
+noncomputable
 def smallEquiv (hf : IsImmersionAtOfComplement F I J n f x) : F ≃L[𝕜] hf.smallComplement :=
   haveI := hf.small
   ((equivShrink F).symm.continuousLinearEquiv 𝕜).symm
@@ -471,10 +476,11 @@ lemma mk_of_continuousAt {f : M → N} {x : M} (hf : ContinuousAt f x) (equiv : 
 `E'` of `N` -/
 def complement (h : IsImmersionAt I J n f x) : Type u := Classical.choose h
 
-@[no_expose] instance (h : IsImmersionAt I J n f x) : NormedAddCommGroup h.complement :=
+@[no_expose] noncomputable
+instance (h : IsImmersionAt I J n f x) : NormedAddCommGroup h.complement :=
   Classical.choose <| Classical.choose_spec h
 
-@[no_expose] instance (h : IsImmersionAt I J n f x) : NormedSpace 𝕜 h.complement :=
+@[no_expose] noncomputable instance (h : IsImmersionAt I J n f x) : NormedSpace 𝕜 h.complement :=
   Classical.choose <| Classical.choose_spec <| Classical.choose_spec h
 
 lemma isImmersionAtOfComplement_complement (h : IsImmersionAt I J n f x) :
@@ -486,7 +492,7 @@ w.r.t. this chart and the data `h.codChart` and `h.equiv`,
 `f` will look like an inclusion `u ↦ (u, 0)` in these extended charts.
 The particular chart is arbitrary, but this choice matches the witnesses given by
 `h.codChart` and `h.codChart`. -/
-def domChart (h : IsImmersionAt I J n f x) : OpenPartialHomeomorph M H :=
+noncomputable def domChart (h : IsImmersionAt I J n f x) : OpenPartialHomeomorph M H :=
   h.isImmersionAtOfComplement_complement.domChart
 
 /-- A choice of chart on the co-domain `N` of an immersion `f` at `x`:
@@ -494,7 +500,7 @@ w.r.t. this chart and the data `h.domChart` and `h.equiv`,
 `f` will look like an inclusion `u ↦ (u, 0)` in these extended charts.
 The particular chart is arbitrary, but this choice matches the witnesses given by
 `h.equiv` and `h.domChart`. -/
-def codChart (h : IsImmersionAt I J n f x) : OpenPartialHomeomorph N G :=
+noncomputable def codChart (h : IsImmersionAt I J n f x) : OpenPartialHomeomorph N G :=
   h.isImmersionAtOfComplement_complement.codChart
 
 lemma mem_domChart_source (h : IsImmersionAt I J n f x) : x ∈ h.domChart.source :=
@@ -518,7 +524,7 @@ lemma source_subset_preimage_source (h : IsImmersionAt I J n f x) :
 /-- A linear equivalence `E × F ≃L[𝕜] E''` which belongs to the data of an immersion `f` at `x`:
 the particular equivalence is arbitrary, but this choice matches the witnesses given by
 `h.domChart` and `h.codChart`. -/
-def equiv (h : IsImmersionAt I J n f x) : (E × h.complement) ≃L[𝕜] E'' :=
+noncomputable def equiv (h : IsImmersionAt I J n f x) : (E × h.complement) ≃L[𝕜] E'' :=
   h.isImmersionAtOfComplement_complement.equiv
 
 lemma writtenInCharts (h : IsImmersionAt I J n f x) :
@@ -762,10 +768,10 @@ variable {f g : M → N}
 `E'` of `N` -/
 def complement (h : IsImmersion I J n f) : Type u := Classical.choose h
 
-@[no_expose] instance (h : IsImmersion I J n f) : NormedAddCommGroup h.complement :=
+@[no_expose] noncomputable instance (h : IsImmersion I J n f) : NormedAddCommGroup h.complement :=
   Classical.choose <| Classical.choose_spec h
 
-@[no_expose] instance (h : IsImmersion I J n f) : NormedSpace 𝕜 h.complement :=
+@[no_expose] noncomputable instance (h : IsImmersion I J n f) : NormedSpace 𝕜 h.complement :=
   Classical.choose <| Classical.choose_spec <| Classical.choose_spec h
 
 lemma isImmersionOfComplement_complement (h : IsImmersion I J n f) :

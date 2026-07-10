@@ -21,8 +21,6 @@ If a category has binary products and weak equalizers, then it has weak pullback
 
 universe u v w
 
-noncomputable section
-
 open CategoryTheory Category Limits
 
 variable {C : Type*} [Category* C]
@@ -38,26 +36,27 @@ abbrev HasWeakPullback {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) :=
 
 /-- `weakPullback f g` computes the weak pullback of a pair of morphisms
 with the same target. -/
-abbrev weakPullback {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasWeakPullback f g] :=
+noncomputable abbrev weakPullback {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasWeakPullback f g] :=
   weakLimit (cospan f g)
 
 /-- The cone associated to the weak pullback of `f` and `g` -/
-abbrev weakPullback.cone {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z)
+noncomputable abbrev weakPullback.cone {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z)
     [HasWeakPullback f g] : PullbackCone f g :=
   weakLimit.cone (cospan f g)
 
 /-- The first projection of the weak pullback of `f` and `g`. -/
-abbrev weakPullback.fst {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasWeakPullback f g] :
+noncomputable abbrev weakPullback.fst {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasWeakPullback f g] :
     weakPullback f g ⟶ X :=
   weakLimit.π (cospan f g) WalkingCospan.left
 
 /-- The second projection of the weak pullback of `f` and `g`. -/
-abbrev weakPullback.snd {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasWeakPullback f g] :
+noncomputable abbrev weakPullback.snd {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasWeakPullback f g] :
     weakPullback f g ⟶ Y :=
   weakLimit.π (cospan f g) WalkingCospan.right
 
 /-- A pair of morphisms `h : W ⟶ X` and `k : W ⟶ Y` satisfying `h ≫ f = k ≫ g` induces a morphism
 `weakPullback.lift : W ⟶ weakPullback f g`. -/
+noncomputable
 abbrev weakPullback.lift {W X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} [HasWeakPullback f g] (h : W ⟶ X)
     (k : W ⟶ Y) (w : h ≫ f = k ≫ g := by cat_disch) : W ⟶ weakPullback f g :=
   weakLimit.lift _ (PullbackCone.mk h k w)
@@ -70,6 +69,7 @@ lemma weakPullback.exists_lift {W X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasWea
   ⟨weakPullback.lift h k, by simp⟩
 
 /-- The cone associated to a weak pullback is a weak limit cone. -/
+noncomputable
 abbrev weakPullback.isWeakLimit {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasWeakPullback f g] :
     IsWeakLimit (weakPullback.cone f g) :=
   weakLimit.isWeakLimit (cospan f g)
@@ -98,7 +98,7 @@ theorem weakPullback.lift_snd {W X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z}
 
 /-- A pair of morphisms `h : W ⟶ X` and `k : W ⟶ Y` satisfying `h ≫ f = k ≫ g` induces a morphism
 `l : W ⟶ weakPullback f g` such that `l ≫ weakPullback.fst = h` and `l ≫ weakPullback.snd = k`. -/
-def weakPullback.lift' {W X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} [HasWeakPullback f g]
+noncomputable def weakPullback.lift' {W X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} [HasWeakPullback f g]
     (h : W ⟶ X) (k : W ⟶ Y) (w : h ≫ f = k ≫ g) :
       { l : W ⟶ weakPullback f g //
       l ≫ weakPullback.fst f g = h ∧ l ≫ weakPullback.snd f g = k } :=
@@ -120,6 +120,7 @@ W ⟶ Y
 X ⟶ Z
 ```
 -/
+noncomputable
 abbrev weakPullback.map {W X Y Z S T : C} (f₁ : W ⟶ S) (f₂ : X ⟶ S) [HasWeakPullback f₁ f₂]
     (g₁ : Y ⟶ T) (g₂ : Z ⟶ T) [HasWeakPullback g₁ g₂] (i₁ : W ⟶ Y) (i₂ : X ⟶ Z) (i₃ : S ⟶ T)
     (eq₁ : f₁ ≫ i₃ = i₁ ≫ g₁) (eq₂ : f₂ ≫ i₃ = i₂ ≫ g₂) :
@@ -129,6 +130,7 @@ abbrev weakPullback.map {W X Y Z S T : C} (f₁ : W ⟶ S) (f₂ : X ⟶ S) [Has
 
 /-- A morphism from the weak pullback of `W ⟶ S` and `X ⟶ S` to the weak pullback of
 `Y ⟶ T` and `Z ⟶ T` given `S ⟶ T`. -/
+noncomputable
 abbrev weakPullback.mapDesc {X Y S T : C} (f : X ⟶ S) (g : Y ⟶ S) (i : S ⟶ T) [HasWeakPullback f g]
     [HasWeakPullback (f ≫ i) (g ≫ i)] : weakPullback f g ⟶ weakPullback (f ≫ i) (g ≫ i) :=
   weakPullback.map f g (f ≫ i) (g ≫ i) (𝟙 _) (𝟙 _) i (Category.id_comp _).symm
@@ -204,6 +206,7 @@ def mkSelfIsWeakLimit {t : PullbackCone f g} (ht : IsWeakLimit t) :
 end PullbackCone
 
 /-- The weak pullback cone built from the weak pullback projections is a weak pullback. -/
+noncomputable
 def weakPullbackIsWeakPullback {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasWeakPullback f g] :
     IsWeakLimit (PullbackCone.mk (weakPullback.fst f g) (weakPullback.snd f g)
     weakPullback.condition) :=

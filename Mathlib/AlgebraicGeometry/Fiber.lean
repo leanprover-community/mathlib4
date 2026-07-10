@@ -26,8 +26,6 @@ public import Mathlib.AlgebraicGeometry.Morphisms.FiniteType
 
 universe u
 
-noncomputable section
-
 open CategoryTheory Limits
 
 namespace AlgebraicGeometry
@@ -35,15 +33,16 @@ namespace AlgebraicGeometry
 variable {X Y : Scheme.{u}}
 
 /-- `f.fiber y` is the scheme-theoretic fiber of `f` at `y`. -/
+noncomputable
 def Scheme.Hom.fiber (f : X ⟶ Y) (y : Y) : Scheme := pullback f (Y.fromSpecResidueField y)
 
 /-- `f.fiberι y : f.fiber y ⟶ X` is the embedding of the scheme-theoretic fiber into `X`. -/
-def Scheme.Hom.fiberι (f : X ⟶ Y) (y : Y) : f.fiber y ⟶ X := pullback.fst _ _
+noncomputable def Scheme.Hom.fiberι (f : X ⟶ Y) (y : Y) : f.fiber y ⟶ X := pullback.fst _ _
 
-instance (f : X ⟶ Y) (y : Y) : (f.fiber y).CanonicallyOver X where hom := f.fiberι y
+noncomputable instance (f : X ⟶ Y) (y : Y) : (f.fiber y).CanonicallyOver X where hom := f.fiberι y
 
 /-- The canonical map from the scheme-theoretic fiber to the residue field. -/
-def Scheme.Hom.fiberToSpecResidueField (f : X ⟶ Y) (y : Y) :
+noncomputable def Scheme.Hom.fiberToSpecResidueField (f : X ⟶ Y) (y : Y) :
     f.fiber y ⟶ Spec (Y.residueField y) :=
   pullback.snd _ _
 
@@ -53,7 +52,7 @@ lemma Scheme.Hom.fiber_fac (f : X ⟶ Y) (y : Y) :
   pullback.condition
 
 /-- The fiber of `f` at `y` is naturally a `κ(y)`-scheme. -/
-@[reducible] def Scheme.Hom.fiberOverSpecResidueField
+@[reducible] noncomputable def Scheme.Hom.fiberOverSpecResidueField
     (f : X ⟶ Y) (y : Y) : (f.fiber y).Over (Spec (Y.residueField y)) where
   hom := f.fiberToSpecResidueField y
 
@@ -99,7 +98,7 @@ instance (f : X ⟶ Y) (y : Y) : IsPreimmersion (f.fiberι y) :=
   MorphismProperty.pullback_fst _ _ inferInstance
 
 /-- The scheme-theoretic fiber of `f` at `y` is homeomorphic to `f ⁻¹' {y}`. -/
-def Scheme.Hom.fiberHomeo (f : X ⟶ Y) (y : Y) : f.fiber y ≃ₜ f ⁻¹' {y} :=
+noncomputable def Scheme.Hom.fiberHomeo (f : X ⟶ Y) (y : Y) : f.fiber y ≃ₜ f ⁻¹' {y} :=
   .trans (f.fiberι y).isEmbedding.toHomeomorph (.setCongr (f.range_fiberι y))
 
 @[simp]
@@ -112,7 +111,7 @@ lemma Scheme.Hom.fiberι_fiberHomeo_symm (f : X ⟶ Y) (y : Y) (x : f ⁻¹' {y}
   congr($((f.fiberHomeo y).apply_symm_apply x).1)
 
 /-- A point `x` as a point in the fiber of `f` at `f x`. -/
-def Scheme.Hom.asFiber (f : X ⟶ Y) (x : X) : f.fiber (f x) :=
+noncomputable def Scheme.Hom.asFiber (f : X ⟶ Y) (x : X) : f.fiber (f x) :=
     (f.fiberHomeo (f x)).symm ⟨x, rfl⟩
 
 @[simp]
@@ -143,6 +142,7 @@ instance (f : X ⟶ Y) (y : Y) [LocallyOfFiniteType f] : JacobsonSpace (f.fiber 
   LocallyOfFiniteType.jacobsonSpace (f.fiberToSpecResidueField y)
 
 /-- The `κ(x)`-point of `f ⁻¹' {f x}` corresponding to `x`. -/
+noncomputable
 def Scheme.Hom.asFiberHom (f : X ⟶ Y) (x : X) : Spec (X.residueField x) ⟶ f.fiber (f x) :=
   pullback.lift (X.fromSpecResidueField x) (Spec.map (f.residueFieldMap _)) (by simp)
 

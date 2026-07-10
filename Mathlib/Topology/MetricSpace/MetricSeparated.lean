@@ -28,8 +28,6 @@ constant.
 open EMetric Set
 open scoped NNReal ENNReal
 
-noncomputable section
-
 namespace Metric
 variable {X Y : Type*} [PseudoEMetricSpace X] [PseudoEMetricSpace Y]
 variable {s t : Set X} {ε δ : ℝ≥0∞} {x : X} {y : Y}

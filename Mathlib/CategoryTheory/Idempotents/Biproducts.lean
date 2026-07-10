@@ -24,8 +24,6 @@ the idempotent endomorphism `𝟙 P.X - P.p`.
 @[expose] public section
 
 
-noncomputable section
-
 open CategoryTheory.Category
 
 open CategoryTheory.Limits
@@ -47,6 +45,7 @@ namespace Biproducts
 /-- The `Bicone` used in order to obtain the existence of
 the biproduct of a functor `J ⥤ Karoubi C` when the category `C` is additive. -/
 @[simps]
+noncomputable
 def bicone [HasFiniteBiproducts C] {J : Type} [Finite J] (F : J → Karoubi C) : Bicone F where
   pt :=
     { X := biproduct fun j => (F j).X
@@ -118,7 +117,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- A formal direct factor `P : Karoubi C` of an object `P.X : C` in a
 preadditive category is actually a direct factor of the image `(toKaroubi C).obj P.X`
 of `P.X` in the category `Karoubi C` -/
-def decomposition (P : Karoubi C) : P ⊞ P.complement ≅ (toKaroubi _).obj P.X where
+noncomputable def decomposition (P : Karoubi C) : P ⊞ P.complement ≅ (toKaroubi _).obj P.X where
   hom := biprod.desc P.decompId_i P.complement.decompId_i
   inv := biprod.lift P.decompId_p P.complement.decompId_p
   hom_inv_id := by

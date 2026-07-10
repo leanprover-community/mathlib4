@@ -58,8 +58,6 @@ commute with the maps in the diagram (the green arrows), which is just a lengthy
 @[expose] public section
 
 
-noncomputable section
-
 open TopologicalSpace CategoryTheory Opposite Topology
 
 open CategoryTheory.Limits AlgebraicGeometry.PresheafedSpace
@@ -120,7 +118,7 @@ local notation "π₂⁻¹ " i ", " j ", " k =>
   (PresheafedSpace.IsOpenImmersion.pullbackSndOfLeft (D.f i j) (D.f i k)).invApp
 
 /-- The glue data of topological spaces associated to a family of glue data of PresheafedSpaces. -/
-abbrev toTopGlueData : TopCat.GlueData :=
+noncomputable abbrev toTopGlueData : TopCat.GlueData :=
   { f_open := fun i j => (D.f_open i j).base_open
     toGlueData := 𝖣.mapGlueData (forget C) }
 
@@ -261,7 +259,7 @@ theorem ι_image_preimage_eq (i j : D.J) (U : Opens (D.U i).carrier) :
     infer_instance
 
 /-- (Implementation). The map `Γ(𝒪_{U_i}, U) ⟶ Γ(𝒪_{U_j}, 𝖣.ι j ⁻¹' 𝖣.ι i '' U)` -/
-def opensImagePreimageMap (i j : D.J) (U : Opens (D.U i).carrier) :
+noncomputable def opensImagePreimageMap (i j : D.J) (U : Opens (D.U i).carrier) :
     (D.U i).presheaf.obj (op U) ⟶
     (D.U j).presheaf.obj (op <|
       (Opens.map (𝖣.ι j).base).obj ((D.ι_isOpenEmbedding i).functor.obj U)) :=
@@ -309,19 +307,19 @@ theorem opensImagePreimageMap_app_assoc (i j k : D.J) (U : Opens (D.U i).carrier
 
 /-- (Implementation) Given an open subset of one of the spaces `U ⊆ Uᵢ`, the sheaf component of
 the image `ι '' U` in the glued space is the limit of this diagram. -/
-abbrev diagramOverOpen {i : D.J} (U : Opens (D.U i).carrier) :
+noncomputable abbrev diagramOverOpen {i : D.J} (U : Opens (D.U i).carrier) :
     (WalkingMultispan (.prod D.J))ᵒᵖ ⥤ C :=
   componentwiseDiagram 𝖣.diagram.multispan ((D.ι_isOpenEmbedding i).functor.obj U)
 
 /-- (Implementation)
 The projection from the limit of `diagram_over_open` to a component of `D.U j`. -/
-abbrev diagramOverOpenπ {i : D.J} (U : Opens (D.U i).carrier) (j : D.J) :=
+noncomputable abbrev diagramOverOpenπ {i : D.J} (U : Opens (D.U i).carrier) (j : D.J) :=
   limit.π (D.diagramOverOpen U) (op (WalkingMultispan.right j))
 
 set_option backward.isDefEq.respectTransparency false in
 /-- (Implementation) We construct the map `Γ(𝒪_{U_i}, U) ⟶ Γ(𝒪_V, U_V)` for each `V` in the gluing
 diagram. We will lift these maps into `ιInvApp`. -/
-def ιInvAppπApp {i : D.J} (U : Opens (D.U i).carrier) (j) :
+noncomputable def ιInvAppπApp {i : D.J} (U : Opens (D.U i).carrier) (j) :
     (𝖣.U i).presheaf.obj (op U) ⟶ (D.diagramOverOpen U).obj (op j) := by
   rcases j with (⟨j, k⟩ | j)
   · refine
@@ -339,7 +337,7 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- (Implementation) The natural map `Γ(𝒪_{U_i}, U) ⟶ Γ(𝒪_X, 𝖣.ι i '' U)`.
 This forms the inverse of `(𝖣.ι i).c.app (op U)`. -/
-def ιInvApp {i : D.J} (U : Opens (D.U i).carrier) :
+noncomputable def ιInvApp {i : D.J} (U : Opens (D.U i).carrier) :
     (D.U i).presheaf.obj (op U) ⟶ limit (D.diagramOverOpen U) :=
   limit.lift (D.diagramOverOpen U)
     { pt := (D.U i).presheaf.obj (op U)
@@ -424,7 +422,7 @@ theorem ιInvApp_π {i : D.J} (U : Opens (D.U i).carrier) :
       infer_instance
 
 /-- The `eqToHom` given by `ιInvApp_π`. -/
-abbrev ιInvAppπEqMap {i : D.J} (U : Opens (D.U i).carrier) :=
+noncomputable abbrev ιInvAppπEqMap {i : D.J} (U : Opens (D.U i).carrier) :=
   (D.U i).presheaf.map (eqToIso (D.ιInvApp_π U).choose).inv
 
 set_option backward.isDefEq.respectTransparency false in
@@ -502,7 +500,7 @@ Vᵢⱼ ⟶ Uᵢ
  Uⱼ ⟶ X
 ```
 -/
-def vPullbackConeIsLimit (i j : D.J) : IsLimit (𝖣.vPullbackCone i j) :=
+noncomputable def vPullbackConeIsLimit (i j : D.J) : IsLimit (𝖣.vPullbackCone i j) :=
   PullbackCone.isLimitAux' _ fun s => by
     refine ⟨?_, ?_, ?_, ?_⟩
     · refine PresheafedSpace.IsOpenImmersion.lift (D.f i j) s.fst ?_
@@ -570,14 +568,14 @@ variable (D : GlueData C)
 local notation "𝖣" => D.toGlueData
 
 /-- The glue data of presheafed spaces associated to a family of glue data of sheafed spaces. -/
-abbrev toPresheafedSpaceGlueData : PresheafedSpace.GlueData C :=
+noncomputable abbrev toPresheafedSpaceGlueData : PresheafedSpace.GlueData C :=
   { f_open := D.f_open
     toGlueData := 𝖣.mapGlueData forgetToPresheafedSpace }
 
 variable [HasLimits C]
 
 /-- The gluing as sheafed spaces is isomorphic to the gluing as presheafed spaces. -/
-abbrev isoPresheafedSpace :
+noncomputable abbrev isoPresheafedSpace :
     𝖣.glued.toPresheafedSpace ≅ D.toPresheafedSpaceGlueData.toGlueData.glued :=
   𝖣.gluedIso forgetToPresheafedSpace
 
@@ -604,7 +602,7 @@ Vᵢⱼ ⟶ Uᵢ
  Uⱼ ⟶ X
 ```
 -/
-def vPullbackConeIsLimit (i j : D.J) : IsLimit (𝖣.vPullbackCone i j) :=
+noncomputable def vPullbackConeIsLimit (i j : D.J) : IsLimit (𝖣.vPullbackCone i j) :=
   𝖣.vPullbackConeIsLimitOfMap forgetToPresheafedSpace i j
     (D.toPresheafedSpaceGlueData.vPullbackConeIsLimit _ _)
 
@@ -645,11 +643,12 @@ variable (D : GlueData.{u})
 local notation "𝖣" => D.toGlueData
 
 /-- The glue data of ringed spaces associated to a family of glue data of locally ringed spaces. -/
-abbrev toSheafedSpaceGlueData : SheafedSpace.GlueData CommRingCat :=
+noncomputable abbrev toSheafedSpaceGlueData : SheafedSpace.GlueData CommRingCat :=
   { f_open := D.f_open
     toGlueData := 𝖣.mapGlueData forgetToSheafedSpace }
 
 /-- The gluing as locally ringed spaces is isomorphic to the gluing as ringed spaces. -/
+noncomputable
 abbrev isoSheafedSpace : 𝖣.glued.toSheafedSpace ≅ D.toSheafedSpaceGlueData.toGlueData.glued :=
   𝖣.gluedIso forgetToSheafedSpace
 
@@ -682,7 +681,7 @@ Vᵢⱼ ⟶ Uᵢ
  Uⱼ ⟶ X
 ```
 -/
-def vPullbackConeIsLimit (i j : D.J) : IsLimit (𝖣.vPullbackCone i j) :=
+noncomputable def vPullbackConeIsLimit (i j : D.J) : IsLimit (𝖣.vPullbackCone i j) :=
   𝖣.vPullbackConeIsLimitOfMap forgetToSheafedSpace i j
     (D.toSheafedSpaceGlueData.vPullbackConeIsLimit _ _)
 

@@ -23,7 +23,7 @@ If the category is preadditive, then weak equalizers exist if and only if weak k
 
 universe u v w
 
-noncomputable section
+section
 
 open CategoryTheory Category Limits
 
@@ -53,11 +53,11 @@ section
 variable [HasWeakKernel f]
 
 /-- The weak kernel of a morphism. -/
-abbrev weakKernel : C :=
+noncomputable abbrev weakKernel : C :=
   weakEqualizer f 0
 
 /-- The map from `weakKernel f` into the source of `f`. -/
-abbrev weakKernel.ι : weakKernel f ⟶ X :=
+noncomputable abbrev weakKernel.ι : weakKernel f ⟶ X :=
   weakEqualizer.ι f 0
 
 @[simp]
@@ -69,13 +69,13 @@ theorem weakKernel.condition : weakKernel.ι f ≫ f = 0 :=
 
 set_option backward.defeqAttrib.useBackward true in
 /-- The weak kernel built from `weakKernel.ι f` is weakly limiting. -/
-def weakKernelIsWeakKernel :
+noncomputable def weakKernelIsWeakKernel :
     IsWeakLimit (Fork.ofι (weakKernel.ι f) ((weakKernel.condition f).trans comp_zero.symm)) :=
   IsWeakLimit.ofIsoWeakLimit (weakLimit.isWeakLimit _) (Fork.ext (Iso.refl _) (by simp))
 
 /-- Given any morphism `k : W ⟶ X` satisfying `k ≫ f = 0`, `k` factors through
 `weakKernel.ι f` via `weakKernel.lift : W ⟶ weakKernel f`. -/
-abbrev weakKernel.lift {W : C} (k : W ⟶ X) (h : k ≫ f = 0) : W ⟶ weakKernel f :=
+noncomputable abbrev weakKernel.lift {W : C} (k : W ⟶ X) (h : k ≫ f = 0) : W ⟶ weakKernel f :=
   (weakKernelIsWeakKernel f).lift (KernelFork.ofι k h)
 
 @[reassoc (attr := simp)]
@@ -85,7 +85,7 @@ theorem weakKernel.lift_ι {W : C} (k : W ⟶ X) (h : k ≫ f = 0) :
 
 /-- Any morphism `k : W ⟶ X` satisfying `k ≫ f = 0` induces a morphism `l : W ⟶ weakKernel f`
 such that `l ≫ weakKernel.ι f = k`. -/
-def weakKernel.lift' {W : C} (k : W ⟶ X) (h : k ≫ f = 0) :
+noncomputable def weakKernel.lift' {W : C} (k : W ⟶ X) (h : k ≫ f = 0) :
     { l : W ⟶ weakKernel f // l ≫ weakKernel.ι f = k } :=
   ⟨weakKernel.lift f k h, weakKernel.lift_ι _ _ _⟩
 

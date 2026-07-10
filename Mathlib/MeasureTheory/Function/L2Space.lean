@@ -27,8 +27,6 @@ is also an inner product space, with inner product defined as `inner f g := ∫ 
 
 @[expose] public section
 
-noncomputable section
-
 open TopologicalSpace MeasureTheory MeasureTheory.Lp Filter
 
 open scoped NNReal ENNReal MeasureTheory InnerProductSpace
@@ -131,7 +129,7 @@ section InnerProductSpace
 
 open scoped ComplexConjugate
 
-instance : Inner 𝕜 (α →₂[μ] E) :=
+noncomputable instance : Inner 𝕜 (α →₂[μ] E) :=
   ⟨fun f g => ∫ a, ⟪f a, g a⟫ ∂μ⟩
 
 theorem inner_def (f g : α →₂[μ] E) : ⟪f, g⟫ = ∫ a : α, ⟪f a, g a⟫ ∂μ :=
@@ -187,7 +185,7 @@ private theorem smul_left' (f g : α →₂[μ] E) (r : 𝕜) : ⟪r • f, g⟫
   simp only
   rw [smul_eq_mul, ← inner_smul_left, hx, Pi.smul_apply]
 
-instance innerProductSpace : InnerProductSpace 𝕜 (α →₂[μ] E) where
+noncomputable instance innerProductSpace : InnerProductSpace 𝕜 (α →₂[μ] E) where
   norm_sq_eq_re_inner := private norm_sq_eq_re_inner
   conj_inner_symm _ _ := by simp_rw [inner_def, ← integral_conj, inner_conj_symm]
   add_left := private add_left'

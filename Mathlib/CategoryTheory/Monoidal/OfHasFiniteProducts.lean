@@ -32,8 +32,6 @@ Once we have cocartesian-monoidal categories, replace `monoidalOfHasFiniteCoprod
 
 universe v u
 
-noncomputable section
-
 namespace CategoryTheory
 
 variable (C : Type u) [Category.{v} C] {X Y : C}
@@ -46,6 +44,7 @@ section
 the four fields starting from `id_tensorHom_id` were provided by the auto_param -/
 /-- A category with an initial object and binary coproducts has a natural monoidal structure. -/
 @[instance_reducible]
+noncomputable
 def monoidalOfHasFiniteCoproducts [HasInitial C] [HasBinaryCoproducts C] : MonoidalCategory C :=
   letI : MonoidalCategoryStruct C := {
     tensorObj := fun X Y ↦ X ⨿ Y
@@ -133,7 +132,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- The monoidal structure coming from finite coproducts is symmetric.
 -/
 @[simps, implicit_reducible]
-def symmetricOfHasFiniteCoproducts [HasInitial C] [HasBinaryCoproducts C] :
+noncomputable def symmetricOfHasFiniteCoproducts [HasInitial C] [HasBinaryCoproducts C] :
     SymmetricCategory C where
   braiding := Limits.coprod.braiding
   braiding_naturality_left f g := by simp
@@ -152,7 +151,7 @@ variable {D : Type*} [Category* D] (F : C ⥤ D)
   [HasTerminal D] [HasBinaryProducts D]
 
 @[deprecated Functor.OplaxMonoidal.ofChosenFiniteProducts (since := "2025-10-19")]
-instance :
+noncomputable instance :
     have : HasFiniteProducts C := hasFiniteProducts_of_has_binary_and_terminal
     have : HasFiniteProducts D := hasFiniteProducts_of_has_binary_and_terminal
     let : CartesianMonoidalCategory C := .ofHasFiniteProducts
@@ -201,7 +200,7 @@ instance (X Y : C) :
 /-- Promote a functor that preserves finite products to a monoidal functor between
 categories equipped with the monoidal category structure given by finite products. -/
 @[deprecated Functor.Monoidal.ofChosenFiniteProducts (since := "2025-10-19")]
-instance :
+noncomputable instance :
     have : HasFiniteProducts C := hasFiniteProducts_of_has_binary_and_terminal
     have : HasFiniteProducts D := hasFiniteProducts_of_has_binary_and_terminal
     let : CartesianMonoidalCategory C := .ofHasFiniteProducts

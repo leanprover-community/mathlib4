@@ -64,8 +64,6 @@ assert_not_exists Field
 
 open List Function Order Set
 
-noncomputable section
-
 universe u v w v' w'
 
 variable {α β : Type u}
@@ -92,7 +90,7 @@ instance partialOrder : PartialOrder Cardinal.{u} where
     rintro ⟨α⟩ ⟨β⟩ ⟨e₁⟩ ⟨e₂⟩
     exact Quotient.sound (e₁.antisymm e₂)
 
-instance linearOrder : LinearOrder Cardinal.{u} :=
+noncomputable instance linearOrder : LinearOrder Cardinal.{u} :=
   { Cardinal.partialOrder with
     le_total := by
       rintro ⟨α⟩ ⟨β⟩
@@ -344,7 +342,7 @@ theorem cantor (a : Cardinal.{u}) : a < 2 ^ a := by
 instance : NoMaxOrder Cardinal.{u} where exists_gt a := ⟨_, cantor a⟩
 
 -- short-circuit type class inference
-instance : DistribLattice Cardinal.{u} := inferInstance
+noncomputable instance : DistribLattice Cardinal.{u} := inferInstance
 
 theorem power_le_max_power_one {a b c : Cardinal} (h : b ≤ c) : a ^ b ≤ max (a ^ c) 1 := by
   by_cases ha : a = 0
@@ -375,7 +373,7 @@ instance : WellFoundedRelation Cardinal.{u} :=
 instance : WellFoundedLT Cardinal.{u} :=
   ⟨Cardinal.lt_wf⟩
 
-instance : ConditionallyCompleteLinearOrderBot Cardinal :=
+noncomputable instance : ConditionallyCompleteLinearOrderBot Cardinal :=
   WellFoundedLT.conditionallyCompleteLinearOrderBot _
 
 @[simp]
@@ -383,7 +381,7 @@ theorem sInf_empty : sInf (∅ : Set Cardinal.{u}) = 0 :=
   dif_neg Set.not_nonempty_empty
 
 /-- Note that the successor of `c` is not the same as `c + 1` except in the case of finite `c`. -/
-@[no_expose] instance : SuccOrder Cardinal := .ofLinearWellFoundedLT _
+@[no_expose] noncomputable instance : SuccOrder Cardinal := .ofLinearWellFoundedLT _
 
 @[deprecated Order.succ_eq_csInf (since := "2026-03-21")]
 theorem succ_def (c : Cardinal) : succ c = sInf { c' | c < c' } :=
@@ -531,7 +529,7 @@ theorem nonempty_embedding_to_cardinal : Nonempty (α ↪ Cardinal.{u}) :=
     not_le_of_gt (by rw [hx]; exact cantor _) this
 
 /-- An embedding of any type to the set of cardinals in its universe. -/
-def embeddingToCardinal : α ↪ Cardinal.{u} :=
+noncomputable def embeddingToCardinal : α ↪ Cardinal.{u} :=
   Classical.choice nonempty_embedding_to_cardinal
 
 /-- Any type can be endowed with a well order, obtained by pulling back the well order over

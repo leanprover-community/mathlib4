@@ -39,8 +39,6 @@ open CategoryTheory.Limits
 
 universe v u w
 
-noncomputable section
-
 namespace TopCat
 
 section TopologicalKonig

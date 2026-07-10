@@ -18,8 +18,6 @@ The main def is `Polynomial.binomExpansion`.
 @[expose] public section
 
 
-noncomputable section
-
 namespace Polynomial
 
 universe u v w x y z

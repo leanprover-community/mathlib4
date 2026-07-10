@@ -24,8 +24,6 @@ This file defines oriented angles in Euclidean affine spaces.
 @[expose] public section
 
 
-noncomputable section
-
 open Module Complex
 
 open scoped Affine EuclideanGeometry Real RealInnerProductSpace ComplexConjugate
@@ -41,7 +39,7 @@ abbrev o := @Module.Oriented.positiveOrientation
 /-- The oriented angle at `p₂` between the line segments to `p₁` and `p₃`, modulo `2 * π`. If
 either of those points equals `p₂`, this is 0. See `EuclideanGeometry.angle` for the
 corresponding unoriented angle definition. -/
-def oangle (p₁ p₂ p₃ : P) : Real.Angle :=
+noncomputable def oangle (p₁ p₂ p₃ : P) : Real.Angle :=
   o.oangle (p₁ -ᵥ p₂) (p₃ -ᵥ p₂)
 
 @[inherit_doc] scoped notation "∡" => EuclideanGeometry.oangle

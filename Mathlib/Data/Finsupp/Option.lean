@@ -36,8 +36,6 @@ This file is a `noncomputable theory` and uses classical logic throughout.
 @[expose] public section
 
 
-noncomputable section
-
 open Finset Function
 
 variable {α M N R : Type*}
@@ -51,7 +49,7 @@ section Zero
 variable [Zero M]
 
 /-- Restrict a finitely supported function on `Option α` to a finitely supported function on `α`. -/
-def some (f : Option α →₀ M) : α →₀ M :=
+noncomputable def some (f : Option α →₀ M) : α →₀ M :=
   f.comapDomain Option.some fun _ => by simp
 
 @[simp]
@@ -116,7 +114,7 @@ def optionEquiv : (Option α →₀ M) ≃ M × (α →₀ M) where
 Extend a finitely supported function on `α` to a finitely supported function on `Option α`,
 provided a default value for `none`.
 -/
-def optionElim (y : M) (f : α →₀ M) : Option α →₀ M :=
+noncomputable def optionElim (y : M) (f : α →₀ M) : Option α →₀ M :=
   optionEquiv.invFun (y, f)
 
 lemma optionElim_apply_none (y : M) (f : α →₀ M) : f.optionElim y none = y := by

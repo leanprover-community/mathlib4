@@ -45,8 +45,6 @@ function field, ring of integers
 @[expose] public section
 
 
-noncomputable section
-
 open scoped nonZeroDivisors Polynomial WithZero RatFunc
 
 variable (F K : Type*) [Field F] [Field K]
@@ -92,7 +90,7 @@ theorem algebraMap_injective [Algebra F[X] K] [Algebra F⟮X⟯ K]
 We don't actually assume `K` is a function field over `F` in the definition,
 only when proving its properties.
 -/
-def ringOfIntegers [Algebra F[X] K] :=
+noncomputable def ringOfIntegers [Algebra F[X] K] :=
   integralClosure F[X] K
 
 namespace ringOfIntegers
@@ -190,7 +188,7 @@ alias FqtInfty := RatFunc.CompletionAtInfty
 
 @[deprecated "Use the anonymous `Valued` instance on `RatFunc.CompletionAtInfty`"
 (since := "2026-04-14")]
-instance valuedFqtInfty [DecidableEq F⟮X⟯] :
+noncomputable instance valuedFqtInfty [DecidableEq F⟮X⟯] :
     Valued (RatFunc.CompletionAtInfty F) ℤᵐ⁰ :=
   inferInstance
 

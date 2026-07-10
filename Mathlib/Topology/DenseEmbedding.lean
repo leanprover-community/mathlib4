@@ -27,8 +27,6 @@ has to be `IsDenseInducing` (not necessarily injective).
 @[expose] public section
 
 
-noncomputable section
-
 open Filter Set Topology
 
 variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*}
@@ -137,7 +135,7 @@ variable [TopologicalSpace γ]
 /-- If `i : α → β` is a dense inducing, then any function `f : α → γ` "extends" to a function `g =
   IsDenseInducing.extend di f : β → γ`. If `γ` is Hausdorff and `f` has a continuous extension, then
   `g` is the unique such extension. In general, `g` might not be continuous or even extend `f`. -/
-def extend (di : IsDenseInducing i) (f : α → γ) (b : β) : γ :=
+noncomputable def extend (di : IsDenseInducing i) (f : α → γ) (b : β) : γ :=
   @limUnder _ _ _ ⟨f (di.dense.some b)⟩ (comap i (𝓝 b)) f
 
 theorem tendsto_extend (di : IsDenseInducing i) {f : α → γ} {a : α} (hf : ContinuousAt f a) :

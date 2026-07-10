@@ -215,10 +215,10 @@ def idComputer (αΓ : Type) [Fintype αΓ] : FinTM2 where
 instance inhabitedFinTM2 : Inhabited FinTM2 :=
   ⟨idComputer Bool⟩
 
-noncomputable section
+section
 
 /-- A proof that the identity map on α is computable in polytime. -/
-def idComputableInPolyTime {α αΓ : Type} [Fintype αΓ] (ea : α → List αΓ) :
+noncomputable def idComputableInPolyTime {α αΓ : Type} [Fintype αΓ] (ea : α → List αΓ) :
     @TM2ComputableInPolyTime α α αΓ αΓ ea ea id where
   tm := idComputer αΓ
   inputAlphabet := Equiv.cast rfl
@@ -229,17 +229,17 @@ def idComputableInPolyTime {α αΓ : Type} [Fintype αΓ] (ea : α → List α�
       evals_in_steps := rfl
       steps_le_m := by simp only [Polynomial.eval_one, le_refl] }
 
-instance inhabitedTM2ComputableInPolyTime :
+noncomputable instance inhabitedTM2ComputableInPolyTime :
     Inhabited (TM2ComputableInPolyTime encodeBool encodeBool id) :=
   ⟨idComputableInPolyTime encodeBool⟩
 
-instance inhabitedTM2OutputsInTime :
+noncomputable instance inhabitedTM2OutputsInTime :
     Inhabited
       (TM2OutputsInTime (idComputer Bool) (List.map (Equiv.cast rfl).invFun [false])
         (some (List.map (Equiv.cast rfl).invFun [false])) (Polynomial.eval 1 1)) :=
   ⟨(idComputableInPolyTime encodeBool).outputsFun false⟩
 
-instance inhabitedTM2Outputs :
+noncomputable instance inhabitedTM2Outputs :
     Inhabited
       (TM2Outputs (idComputer Bool) (List.map (Equiv.cast rfl).invFun [false])
         (some (List.map (Equiv.cast rfl).invFun [false]))) :=
@@ -253,24 +253,24 @@ instance inhabitedTM2EvalsTo : Inhabited (EvalsTo (fun _ : Unit => some ⟨⟩) 
   ⟨EvalsTo.refl _ _⟩
 
 /-- A proof that the identity map on α is computable in time. -/
-def idComputableInTime {α αΓ : Type} [Fintype αΓ] (ea : α → List αΓ) :
+noncomputable def idComputableInTime {α αΓ : Type} [Fintype αΓ] (ea : α → List αΓ) :
     @TM2ComputableInTime α α αΓ αΓ ea ea id :=
   TM2ComputableInPolyTime.toTM2ComputableInTime <| idComputableInPolyTime ea
 
-instance inhabitedTM2ComputableInTime :
+noncomputable instance inhabitedTM2ComputableInTime :
     Inhabited (TM2ComputableInTime encodeBool encodeBool id) :=
   ⟨idComputableInTime encodeBool⟩
 
 /-- A proof that the identity map on α is computable. -/
-def idComputable {α αΓ : Type} [Fintype αΓ] (ea : α → List αΓ) :
+noncomputable def idComputable {α αΓ : Type} [Fintype αΓ] (ea : α → List αΓ) :
     @TM2Computable α α αΓ αΓ ea ea id :=
   TM2ComputableInTime.toTM2Computable <| idComputableInTime ea
 
-instance inhabitedTM2Computable :
+noncomputable instance inhabitedTM2Computable :
     Inhabited (TM2Computable encodeBool encodeBool id) :=
   ⟨idComputable encodeBool⟩
 
-instance inhabitedTM2ComputableAux : Inhabited (TM2ComputableAux Bool Bool) :=
+noncomputable instance inhabitedTM2ComputableAux : Inhabited (TM2ComputableAux Bool Bool) :=
   ⟨(default : TM2Computable encodeBool encodeBool id).toTM2ComputableAux⟩
 
 /--

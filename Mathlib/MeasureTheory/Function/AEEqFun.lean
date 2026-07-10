@@ -75,8 +75,6 @@ function space, almost everywhere equal, `L⁰`, ae_eq_fun
 -- Guard against import creep
 assert_not_exists InnerProductSpace
 
-noncomputable section
-
 open Topology Set Filter TopologicalSpace ENNReal EMetric MeasureTheory Function
 
 variable {α β γ δ : Type*} [MeasurableSpace α] {μ ν : Measure α}
@@ -127,13 +125,13 @@ open scoped Classical in
 functions to functions. We ensure that if `f` has a constant representative,
 then we choose that one. -/
 @[coe]
-def cast (f : α →ₘ[μ] β) : α → β :=
+noncomputable def cast (f : α →ₘ[μ] β) : α → β :=
   if h : ∃ (b : β), f = mk (const α b) aestronglyMeasurable_const then
     const α <| Classical.choose h else
     AEStronglyMeasurable.mk _ (Quotient.out f : { f : α → β // AEStronglyMeasurable f μ }).2
 
 /-- A measurable representative of an `AEEqFun` [f] -/
-instance instCoeFun : CoeFun (α →ₘ[μ] β) fun _ => α → β := ⟨cast⟩
+noncomputable instance instCoeFun : CoeFun (α →ₘ[μ] β) fun _ => α → β := ⟨cast⟩
 
 @[fun_prop]
 protected theorem stronglyMeasurable (f : α →ₘ[μ] β) : StronglyMeasurable f := by
@@ -909,7 +907,7 @@ end Module
 open ENNReal
 
 /-- For `f : α → ℝ≥0∞`, define `∫ [f]` to be `∫ f` -/
-def lintegral (f : α →ₘ[μ] ℝ≥0∞) : ℝ≥0∞ :=
+noncomputable def lintegral (f : α →ₘ[μ] ℝ≥0∞) : ℝ≥0∞ :=
   Quotient.liftOn' f (fun f => ∫⁻ a, (f : α → ℝ≥0∞) a ∂μ) fun _ _ => lintegral_congr_ae
 
 @[simp]

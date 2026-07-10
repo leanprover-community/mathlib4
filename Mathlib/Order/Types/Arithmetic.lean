@@ -37,7 +37,7 @@ The following are notations in the `OrderType` namespace:
 order type, order isomorphism, linear order
 -/
 
-public noncomputable section
+public section
 
 namespace OrderType
 
@@ -138,7 +138,7 @@ instance : LeftDistribClass OrderType where
 def eta : OrderType := type ℚ
 
 /-- The order type of the real numbers. -/
-def theta : OrderType := type ℝ
+noncomputable def theta : OrderType := type ℝ
 
 @[inherit_doc]
 scoped notation "η" => OrderType.eta

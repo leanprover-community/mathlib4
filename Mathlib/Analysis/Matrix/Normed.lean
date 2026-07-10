@@ -54,8 +54,6 @@ It is separated to avoid extraneous imports in this file.
 
 @[expose] public section
 
-noncomputable section
-
 open WithLp
 open scoped NNReal Matrix
 
@@ -235,7 +233,7 @@ section LinftyOp
 declared as an instance because there are several natural choices for defining the norm of a
 matrix. -/
 @[instance_reducible, local instance]
-protected def linftyOpSeminormedAddCommGroup [SeminormedAddCommGroup α] :
+protected noncomputable def linftyOpSeminormedAddCommGroup [SeminormedAddCommGroup α] :
     SeminormedAddCommGroup (Matrix m n α) :=
   fast_instance%
   @Pi.seminormedAddCommGroup m _ _ (fun _ ↦ PiLp.seminormedAddCommGroupToPi 1 (fun _ : n ↦ α))
@@ -244,7 +242,7 @@ protected def linftyOpSeminormedAddCommGroup [SeminormedAddCommGroup α] :
 declared as an instance because there are several natural choices for defining the norm of a
 matrix. -/
 @[instance_reducible, local instance]
-protected def linftyOpNormedAddCommGroup [NormedAddCommGroup α] :
+protected noncomputable def linftyOpNormedAddCommGroup [NormedAddCommGroup α] :
     NormedAddCommGroup (Matrix m n α) :=
   fast_instance%
   @Pi.normedAddCommGroup m _ _ (fun _ ↦ PiLp.normedAddCommGroupToPi 1 (fun _ : n ↦ α))
@@ -359,7 +357,7 @@ end NonUnitalSeminormedRing
 non-unital ring. Not declared as an instance because there are several natural choices for defining
 the norm of a matrix. -/
 @[instance_reducible, local instance]
-protected def linftyOpNonUnitalSemiNormedRing [NonUnitalSeminormedRing α] :
+protected noncomputable def linftyOpNonUnitalSemiNormedRing [NonUnitalSeminormedRing α] :
     NonUnitalSeminormedRing (Matrix n n α) :=
   { Matrix.linftyOpSeminormedAddCommGroup, Matrix.instNonUnitalRing with
     norm_mul_le := linfty_opNorm_mul }
@@ -373,7 +371,7 @@ instance linfty_opNormOneClass [SeminormedRing α] [NormOneClass α] [DecidableE
 declared as an instance because there are several natural choices for defining the norm of a
 matrix. -/
 @[instance_reducible, local instance]
-protected def linftyOpSemiNormedRing [SeminormedRing α] [DecidableEq n] :
+protected noncomputable def linftyOpSemiNormedRing [SeminormedRing α] [DecidableEq n] :
     SeminormedRing (Matrix n n α) :=
   { Matrix.linftyOpNonUnitalSemiNormedRing, Matrix.instRing with }
 
@@ -381,7 +379,7 @@ protected def linftyOpSemiNormedRing [SeminormedRing α] [DecidableEq n] :
 non-unital ring. Not declared as an instance because there are several natural choices for defining
 the norm of a matrix. -/
 @[instance_reducible, local instance]
-protected def linftyOpNonUnitalNormedRing [NonUnitalNormedRing α] :
+protected noncomputable def linftyOpNonUnitalNormedRing [NonUnitalNormedRing α] :
     NonUnitalNormedRing (Matrix n n α) :=
   { Matrix.linftyOpNonUnitalSemiNormedRing with
     eq_of_dist_eq_zero := eq_of_dist_eq_zero }
@@ -390,7 +388,8 @@ protected def linftyOpNonUnitalNormedRing [NonUnitalNormedRing α] :
 declared as an instance because there are several natural choices for defining the norm of a
 matrix. -/
 @[instance_reducible, local instance]
-protected def linftyOpNormedRing [NormedRing α] [DecidableEq n] : NormedRing (Matrix n n α) :=
+protected noncomputable
+def linftyOpNormedRing [NormedRing α] [DecidableEq n] : NormedRing (Matrix n n α) :=
   { Matrix.linftyOpSemiNormedRing with
     eq_of_dist_eq_zero := eq_of_dist_eq_zero }
 
@@ -407,7 +406,7 @@ section
 variable [NormedDivisionRing α] [NormedAlgebra ℝ α]
 
 /-- Auxiliary construction; an element of norm 1 such that `a * unitOf a = ‖a‖`. -/
-private def unitOf (a : α) : α := by classical exact if a = 0 then 1 else ‖a‖ • a⁻¹
+private noncomputable def unitOf (a : α) : α := by classical exact if a = 0 then 1 else ‖a‖ • a⁻¹
 
 private theorem norm_unitOf (a : α) : ‖unitOf a‖₊ = 1 := by
   rw [unitOf]
@@ -498,7 +497,7 @@ open scoped Matrix
 declared as an instance because there are several natural choices for defining the norm of a
 matrix. -/
 @[instance_reducible, local instance]
-def frobeniusSeminormedAddCommGroup [SeminormedAddCommGroup α] :
+noncomputable def frobeniusSeminormedAddCommGroup [SeminormedAddCommGroup α] :
     SeminormedAddCommGroup (Matrix m n α) :=
   fast_instance%
   @PiLp.seminormedAddCommGroupToPi 2 _ _ _ _ (fun _ ↦ PiLp.seminormedAddCommGroupToPi 2 _)
@@ -507,6 +506,7 @@ def frobeniusSeminormedAddCommGroup [SeminormedAddCommGroup α] :
 declared as an instance because there are several natural choices for defining the norm of a
 matrix. -/
 @[instance_reducible, local instance]
+noncomputable
 def frobeniusNormedAddCommGroup [NormedAddCommGroup α] : NormedAddCommGroup (Matrix m n α) :=
   fast_instance% @PiLp.normedAddCommGroupToPi 2 _ _ _ _ (fun _ ↦ PiLp.normedAddCommGroupToPi 2 _)
 
@@ -650,7 +650,7 @@ theorem frobenius_norm_mul (A : Matrix l m α) (B : Matrix m n α) : ‖A * B‖
 declared as an instance because there are several natural choices for defining the norm of a
 matrix. -/
 @[instance_reducible, local instance]
-def frobeniusNormedRing [DecidableEq m] : NormedRing (Matrix m m α) :=
+noncomputable def frobeniusNormedRing [DecidableEq m] : NormedRing (Matrix m m α) :=
   { Matrix.frobeniusSeminormedAddCommGroup, Matrix.instRing with
     norm_mul_le := frobenius_norm_mul
     eq_of_dist_eq_zero := eq_of_dist_eq_zero }

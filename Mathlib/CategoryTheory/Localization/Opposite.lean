@@ -19,8 +19,6 @@ is shown in this file that `L.op : Cᵒᵖ ⥤ Dᵒᵖ` is also a localization f
 @[expose] public section
 
 
-noncomputable section
-
 open CategoryTheory CategoryTheory.Category
 
 namespace CategoryTheory

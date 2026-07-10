@@ -15,8 +15,6 @@ This file contains preliminaries for the definition of a `C^n` vector bundle: an
 
 @[expose] public section
 
-noncomputable section
-
 open Set TopologicalSpace
 
 open scoped Manifold Topology ContDiff

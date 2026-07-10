@@ -46,8 +46,6 @@ on `(-∞, 0]` and to `y` on `[1, +∞)`.
 
 @[expose] public section
 
-noncomputable section
-
 open Topology Filter unitInterval Set Function
 
 variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {x y z : X} {ι : Type*}
@@ -186,7 +184,7 @@ theorem continuous_uncurry_iff {Y} [TopologicalSpace Y] {g : Y → Path x y} :
     continuous_of_continuous_uncurry (fun (y : Y) ↦ ContinuousMap.mk (g y))⟩
 
 /-- A continuous map extending a path to `ℝ`, constant before `0` and after `1`. -/
-def extend : C(ℝ, X) where
+noncomputable def extend : C(ℝ, X) where
   toFun := IccExtend zero_le_one γ
 
 /-- See Note [continuity lemma statement]. -/
@@ -271,7 +269,7 @@ attribute [local simp] Iic_def
 /-- Concatenation of two paths from `x` to `y` and from `y` to `z`, putting the first
 path on `[0, 1/2]` and the second one on `[1/2, 1]`. -/
 @[trans]
-def trans (γ : Path x y) (γ' : Path y z) : Path x z where
+noncomputable def trans (γ : Path x y) (γ' : Path y z) : Path x z where
   toFun := (fun t : ℝ => if t ≤ 1 / 2 then γ.extend (2 * t) else γ'.extend (2 * t - 1)) ∘ (↑)
   continuous_toFun := by
     refine
@@ -527,7 +525,7 @@ def inv {a b : X} [Inv X] [ContinuousInv X] (γ : Path a b) :
 
 /-- `γ.truncate t₀ t₁` is the path which follows the path `γ` on the time interval `[t₀, t₁]`
 and stays still otherwise. -/
-def truncate {X : Type*} [TopologicalSpace X] {a b : X} (γ : Path a b) (t₀ t₁ : ℝ) :
+noncomputable def truncate {X : Type*} [TopologicalSpace X] {a b : X} (γ : Path a b) (t₀ t₁ : ℝ) :
     Path (γ.extend <| min t₀ t₁) (γ.extend t₁) where
   toFun s := γ.extend (min (max s t₀) t₁)
   continuous_toFun := γ.continuous_extend.comp (by fun_prop)
@@ -551,7 +549,7 @@ def truncate {X : Type*} [TopologicalSpace X] {a b : X} (γ : Path a b) (t₀ t�
 
 /-- `γ.truncateOfLE t₀ t₁ h`, where `h : t₀ ≤ t₁` is `γ.truncate t₀ t₁`
 casted as a path from `γ.extend t₀` to `γ.extend t₁`. -/
-def truncateOfLE {X : Type*} [TopologicalSpace X] {a b : X} (γ : Path a b) {t₀ t₁ : ℝ}
+noncomputable def truncateOfLE {X : Type*} [TopologicalSpace X] {a b : X} (γ : Path a b) {t₀ t₁ : ℝ}
     (h : t₀ ≤ t₁) : Path (γ.extend t₀) (γ.extend t₁) :=
   (γ.truncate t₀ t₁).cast (by rw [min_eq_left h]) rfl
 

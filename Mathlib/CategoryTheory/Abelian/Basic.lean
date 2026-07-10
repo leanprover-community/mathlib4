@@ -85,8 +85,6 @@ convention:
 @[expose] public section
 
 
-noncomputable section
-
 open CategoryTheory
 
 open CategoryTheory.Preadditive
@@ -139,7 +137,7 @@ namespace OfCoimageImageComparisonIsIso
 
 /-- The factorisation of a morphism through its abelian image. -/
 @[simps]
-def imageMonoFactorisation {X Y : C} (f : X ⟶ Y) : MonoFactorisation f where
+noncomputable def imageMonoFactorisation {X Y : C} (f : X ⟶ Y) : MonoFactorisation f where
   I := Abelian.image f
   m := kernel.ι _
   m_mono := inferInstance
@@ -157,6 +155,7 @@ theorem imageMonoFactorisation_e' {X Y : C} (f : X ⟶ Y) :
 set_option backward.isDefEq.respectTransparency false in
 /-- If the coimage-image comparison morphism for a morphism `f` is an isomorphism,
 we obtain an image factorisation of `f`. -/
+noncomputable
 def imageFactorisation {X Y : C} (f : X ⟶ Y) [IsIso (Abelian.coimageImageComparison f)] :
     ImageFactorisation f where
   F := imageMonoFactorisation f
@@ -343,7 +342,7 @@ end
 
 /-- Factoring through the image is a strong epi-mono factorisation. -/
 @[simps]
-def imageStrongEpiMonoFactorisation : StrongEpiMonoFactorisation f where
+noncomputable def imageStrongEpiMonoFactorisation : StrongEpiMonoFactorisation f where
   I := Abelian.image f
   m := image.ι f
   m_mono := by infer_instance
@@ -352,7 +351,7 @@ def imageStrongEpiMonoFactorisation : StrongEpiMonoFactorisation f where
 
 /-- Factoring through the coimage is a strong epi-mono factorisation. -/
 @[simps]
-def coimageStrongEpiMonoFactorisation : StrongEpiMonoFactorisation f where
+noncomputable def coimageStrongEpiMonoFactorisation : StrongEpiMonoFactorisation f where
   I := Abelian.coimage f
   m := Abelian.factorThruCoimage f
   m_mono := by infer_instance
@@ -393,12 +392,12 @@ instance : IsIso (coimageImageComparison f) := by
 
 /-- There is a canonical isomorphism between the abelian coimage and the abelian image of a
     morphism. -/
-abbrev coimageIsoImage : Abelian.coimage f ≅ Abelian.image f :=
+noncomputable abbrev coimageIsoImage : Abelian.coimage f ≅ Abelian.image f :=
   asIso (coimageImageComparison f)
 
 /-- There is a canonical isomorphism between the abelian coimage and the categorical image of a
     morphism. -/
-abbrev coimageIsoImage' : Abelian.coimage f ≅ image f :=
+noncomputable abbrev coimageIsoImage' : Abelian.coimage f ≅ image f :=
   IsImage.isoExt (coimageStrongEpiMonoFactorisation f).toMonoIsImage (Image.isImage f)
 
 set_option backward.isDefEq.respectTransparency false in
@@ -426,13 +425,13 @@ variable {Z : C} (g : Y ⟶ Z)
 
 /-- `Abelian.image` as a functor from the arrow category. -/
 @[simps]
-def im : Arrow C ⥤ C where
+noncomputable def im : Arrow C ⥤ C where
   obj f := Abelian.image f.hom
   map {f g} u := kernel.lift _ (Abelian.image.ι f.hom ≫ u.right) <| by simp [← Arrow.w_assoc u]
 
 /-- `Abelian.coimage` as a functor from the arrow category. -/
 @[simps]
-def coim : Arrow C ⥤ C where
+noncomputable def coim : Arrow C ⥤ C where
   obj f := Abelian.coimage f.hom
   map {f g} u := cokernel.desc _ (u.left ≫ Abelian.coimage.π g.hom) <| by
     simp [← Category.assoc, coimage.comp_π_eq_zero]; simp
@@ -442,12 +441,12 @@ def coim : Arrow C ⥤ C where
 set_option backward.defeqAttrib.useBackward true in
 /-- The image and coimage of an arrow are naturally isomorphic. -/
 @[simps!]
-def coimIsoIm : coim (C := C) ≅ im :=
+noncomputable def coimIsoIm : coim (C := C) ≅ im :=
   NatIso.ofComponents fun _ ↦ Abelian.coimageIsoImage _
 
 /-- There is a canonical isomorphism between the abelian image and the categorical image of a
     morphism. -/
-abbrev imageIsoImage : Abelian.image f ≅ image f :=
+noncomputable abbrev imageIsoImage : Abelian.image f ≅ image f :=
   IsImage.isoExt (imageStrongEpiMonoFactorisation f).toMonoIsImage (Image.isImage f)
 
 set_option backward.isDefEq.respectTransparency false in
@@ -474,14 +473,14 @@ attribute [local instance] nonPreadditiveAbelian
 /-- In an abelian category, an epi is the cokernel of its kernel. More precisely:
     If `f` is an epimorphism and `s` is some limit kernel cone on `f`, then `f` is a cokernel
     of `fork.ι s`. -/
-def epiIsCokernelOfKernel [Epi f] (s : Fork f 0) (h : IsLimit s) :
+noncomputable def epiIsCokernelOfKernel [Epi f] (s : Fork f 0) (h : IsLimit s) :
     IsColimit (CokernelCofork.ofπ f (KernelFork.condition s)) :=
   NonPreadditiveAbelian.epiIsCokernelOfKernel s h
 
 /-- In an abelian category, a mono is the kernel of its cokernel. More precisely:
     If `f` is a monomorphism and `s` is some colimit cokernel cocone on `f`, then `f` is a kernel
     of `cofork.π s`. -/
-def monoIsKernelOfCokernel [Mono f] (s : Cofork f 0) (h : IsColimit s) :
+noncomputable def monoIsKernelOfCokernel [Mono f] (s : Cofork f 0) (h : IsColimit s) :
     IsLimit (KernelFork.ofι f (CokernelCofork.condition s)) :=
   NonPreadditiveAbelian.monoIsKernelOfCokernel s h
 
@@ -489,7 +488,7 @@ variable (f)
 
 /-- In an abelian category, any morphism that turns to zero when precomposed with the kernel of an
     epimorphism factors through that epimorphism. -/
-def epiDesc [Epi f] {T : C} (g : X ⟶ T) (hg : kernel.ι f ≫ g = 0) : Y ⟶ T :=
+noncomputable def epiDesc [Epi f] {T : C} (g : X ⟶ T) (hg : kernel.ι f ≫ g = 0) : Y ⟶ T :=
   (epiIsCokernelOfKernel _ (limit.isLimit _)).desc (CokernelCofork.ofπ _ hg)
 
 @[reassoc (attr := simp)]
@@ -499,7 +498,7 @@ theorem comp_epiDesc [Epi f] {T : C} (g : X ⟶ T) (hg : kernel.ι f ≫ g = 0) 
 
 /-- In an abelian category, any morphism that turns to zero when postcomposed with the cokernel of a
     monomorphism factors through that monomorphism. -/
-def monoLift [Mono f] {T : C} (g : T ⟶ Y) (hg : g ≫ cokernel.π f = 0) : T ⟶ X :=
+noncomputable def monoLift [Mono f] {T : C} (g : T ⟶ Y) (hg : g ≫ cokernel.π f = 0) : T ⟶ X :=
   (monoIsKernelOfCokernel _ (colimit.isColimit _)).lift (KernelFork.ofι _ hg)
 
 @[reassoc (attr := simp)]
@@ -587,21 +586,21 @@ variable [Limits.HasPullbacks C] {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z)
 
 
 /-- The canonical map `pullback f g ⟶ X ⊞ Y` -/
-abbrev pullbackToBiproduct : pullback f g ⟶ X ⊞ Y :=
+noncomputable abbrev pullbackToBiproduct : pullback f g ⟶ X ⊞ Y :=
   biprod.lift (pullback.fst f g) (pullback.snd f g)
 
 /-- The canonical map `pullback f g ⟶ X ⊞ Y` induces a kernel cone on the map
     `biproduct X Y ⟶ Z` induced by `f` and `g`. A slightly more intuitive way to think of
     this may be that it induces an equalizer fork on the maps induced by `(f, 0)` and
     `(0, g)`. -/
-abbrev pullbackToBiproductFork : KernelFork (biprod.desc f (-g)) :=
+noncomputable abbrev pullbackToBiproductFork : KernelFork (biprod.desc f (-g)) :=
   KernelFork.ofι (pullbackToBiproduct f g) <| by
     rw [biprod.lift_desc, comp_neg, pullback.condition, add_neg_cancel]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The canonical map `pullback f g ⟶ X ⊞ Y` is a kernel of the map induced by
     `(f, -g)`. -/
-def isLimitPullbackToBiproduct : IsLimit (pullbackToBiproductFork f g) :=
+noncomputable def isLimitPullbackToBiproduct : IsLimit (pullbackToBiproductFork f g) :=
   Fork.IsLimit.mk _
     (fun s =>
       pullback.lift (Fork.ι s ≫ biprod.fst) (Fork.ι s ≫ biprod.snd) <|
@@ -621,19 +620,19 @@ namespace BiproductToPushoutIsCokernel
 variable [Limits.HasPushouts C] {W X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z)
 
 /-- The canonical map `Y ⊞ Z ⟶ pushout f g` -/
-abbrev biproductToPushout : Y ⊞ Z ⟶ pushout f g :=
+noncomputable abbrev biproductToPushout : Y ⊞ Z ⟶ pushout f g :=
   biprod.desc (pushout.inl _ _) (pushout.inr _ _)
 
 /-- The canonical map `Y ⊞ Z ⟶ pushout f g` induces a cokernel cofork on the map
     `X ⟶ Y ⊞ Z` induced by `f` and `-g`. -/
-abbrev biproductToPushoutCofork : CokernelCofork (biprod.lift f (-g)) :=
+noncomputable abbrev biproductToPushoutCofork : CokernelCofork (biprod.lift f (-g)) :=
   CokernelCofork.ofπ (biproductToPushout f g) <| by
     rw [biprod.lift_desc, neg_comp, pushout.condition, add_neg_cancel]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The cofork induced by the canonical map `Y ⊞ Z ⟶ pushout f g` is in fact a colimit cokernel
     cofork. -/
-def isColimitBiproductToPushout : IsColimit (biproductToPushoutCofork f g) :=
+noncomputable def isColimitBiproductToPushout : IsColimit (biproductToPushoutCofork f g) :=
   Cofork.IsColimit.mk _
     (fun s =>
       pushout.desc (biprod.inl ≫ Cofork.π s) (biprod.inr ≫ Cofork.π s) <|
@@ -820,7 +819,7 @@ variable (C : Type u) [Category.{v} C] [NonPreadditiveAbelian C]
 
 /-- Every `NonPreadditiveAbelian` category can be promoted to an abelian category. -/
 @[implicit_reducible]
-def abelian : Abelian C where
+noncomputable def abelian : Abelian C where
   toPreadditive := NonPreadditiveAbelian.preadditive
   normalMonoOfMono := fun f _ ↦ ⟨normalMonoOfMono f⟩
   normalEpiOfEpi := fun f _ ↦ ⟨normalEpiOfEpi f⟩

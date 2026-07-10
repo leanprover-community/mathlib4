@@ -56,8 +56,6 @@ open scoped ENNReal ContDiff Topology
 
 local notation "⟪" x ", " y "⟫" => inner ℝ x y
 
-noncomputable section
-
 variable
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
   {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℝ E H} {n : ℕ∞ω}
@@ -219,7 +217,7 @@ as in the vector space.
 Should not be a global instance, as it does not coincide definitionally with the Riemannian
 structure for inner product spaces, but can be activated locally. -/
 @[instance_reducible]
-def normedAddCommGroupTangentSpaceVectorSpace (x : E) :
+noncomputable def normedAddCommGroupTangentSpaceVectorSpace (x : E) :
     NormedAddCommGroup (TangentSpace% x) :=
   inferInstanceAs (NormedAddCommGroup E)
 
@@ -231,7 +229,7 @@ as in the vector space.
 Should not be a global instance, as it does not coincide definitionally with the Riemannian
 structure for inner product spaces, but can be activated locally. -/
 @[instance_reducible]
-def normedSpaceTangentSpaceVectorSpace (x : E) : NormedSpace ℝ (TangentSpace% x) :=
+noncomputable def normedSpaceTangentSpaceVectorSpace (x : E) : NormedSpace ℝ (TangentSpace% x) :=
   inferInstanceAs (NormedSpace ℝ E)
 
 attribute [local instance] normedSpaceTangentSpaceVectorSpace
@@ -511,7 +509,8 @@ so that the topology is defeq to the original one.
 This should only be used when constructing data in specific situations. To develop the theory,
 one should rather assume that there is an already existing emetric space structure, which satisfies
 additionally the predicate `IsRiemannianManifold I M`. -/
-@[reducible] def PseudoEMetricSpace.ofRiemannianMetric [RegularSpace M] : PseudoEMetricSpace M :=
+@[reducible] noncomputable
+def PseudoEMetricSpace.ofRiemannianMetric [RegularSpace M] : PseudoEMetricSpace M :=
   PseudoEMetricSpace.ofEDistOfTopology (riemannianEDist I (M := M))
     (fun _ ↦ riemannianEDist_self)
     (fun _ _ ↦ riemannianEDist_comm)
@@ -539,7 +538,7 @@ so that the topology is defeq to the original one.
 This should only be used when constructing data in specific situations. To develop the theory,
 one should rather assume that there is an already existing emetric space structure, which satisfies
 additionally the predicate `IsRiemannianManifold I M`. -/
-@[reducible] def EMetricSpace.ofRiemannianMetric [T3Space M] : EMetricSpace M :=
+@[reducible] noncomputable def EMetricSpace.ofRiemannianMetric [T3Space M] : EMetricSpace M :=
   letI : PseudoEMetricSpace M := .ofRiemannianMetric I M
   EMetricSpace.ofT0PseudoEMetricSpace M
 

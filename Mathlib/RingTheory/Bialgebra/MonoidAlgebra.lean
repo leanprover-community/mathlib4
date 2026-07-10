@@ -26,8 +26,6 @@ coalgebra structure.
 
 @[expose] public section
 
-noncomputable section
-
 open Bialgebra
 
 variable {R A M N O : Type*}
@@ -37,7 +35,7 @@ variable [CommSemiring R] [Semiring A] [Bialgebra R A] [Monoid M] [Monoid N] [Mo
 
 variable (R A M) in
 @[to_additive (dont_translate := R A)]
-instance instBialgebra : Bialgebra R A[M] where
+noncomputable instance instBialgebra : Bialgebra R A[M] where
   counit_one := by simp only [one_def, counit_single, Bialgebra.counit_one]
   mul_compr₂_counit := by ext; simp
   comul_one := by
@@ -89,7 +87,7 @@ open AddMonoidAlgebra
 
 variable {R : Type*} [CommSemiring R] {A : Type*} [Semiring A] [Bialgebra R A]
 
-instance instBialgebra : Bialgebra R A[T;T⁻¹] :=
+noncomputable instance instBialgebra : Bialgebra R A[T;T⁻¹] :=
   inferInstanceAs <| Bialgebra R A[ℤ]
 
 @[simp]

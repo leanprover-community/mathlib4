@@ -39,8 +39,6 @@ Someone may like to formalize that lemma, and restate this theorem in terms of `
 @[expose] public section
 
 
-noncomputable section
-
 namespace CategoryTheory
 
 open Limits
@@ -109,6 +107,7 @@ via a functor that preserves zero morphisms,
 then `C` is also abelian.
 -/
 @[implicit_reducible]
+noncomputable
 def abelianOfEquivalence {C : Type u₁} [Category.{v₁} C] [Preadditive C] [HasFiniteProducts C]
     {D : Type u₂} [Category.{v₂} D] [Abelian D] (F : C ⥤ D)
     [F.IsEquivalence] : Abelian C :=
@@ -126,7 +125,7 @@ variable [Preadditive C]
 
 variable (C)
 
-instance preadditive : Preadditive.{w} (ShrinkHoms C) :=
+noncomputable instance preadditive : Preadditive.{w} (ShrinkHoms C) :=
   .ofFullyFaithful (equivalence C).fullyFaithfulInverse
 
 instance : (inverse C).Additive :=

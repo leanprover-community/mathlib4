@@ -37,7 +37,7 @@ but not in general. See [Fields1971]
 
 public section
 
-noncomputable section
+section
 
 open Finset (antidiagonal mem_antidiagonal)
 

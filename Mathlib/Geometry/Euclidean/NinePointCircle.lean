@@ -34,7 +34,7 @@ specific points as desired.
 
 @[expose] public section
 
-noncomputable section
+section
 
 open AffineSubspace EuclideanGeometry
 
@@ -49,7 +49,7 @@ identifier, we still use the name "nine-point circle" even for higher dimensions
 $N$ is defined on the Euler line, collinear with circumcenter $O$ and centroid $G$, in the order of
 $O$, $G$, and $N$, with $OG : GN = n : 1$. The radius is $1/n$ of the circumradius.
 -/
-def ninePointCircle {n : ℕ} (s : Simplex ℝ P n) : Sphere P where
+noncomputable def ninePointCircle {n : ℕ} (s : Simplex ℝ P n) : Sphere P where
   center := ((n + 1) / n : ℝ) • (s.centroid -ᵥ s.circumcenter) +ᵥ s.circumcenter
   radius := s.circumradius / (n : ℝ)
 
@@ -117,7 +117,7 @@ theorem ninePointCircle_eq_circumsphere_medial {n : ℕ} [NeZero n] (s : Simplex
 being $1/n$th of the way from the Monge point to a vertex. Specifically for triangles, these are
 the midpoints between the orthocenter and a given vertex
 (`Affine.Triangle.eulerPoint_eq_midpoint`). -/
-def eulerPoint {n : ℕ} (s : Simplex ℝ P n) (i : Fin (n + 1)) :=
+noncomputable def eulerPoint {n : ℕ} (s : Simplex ℝ P n) (i : Fin (n + 1)) :=
   (n : ℝ)⁻¹ • (s.points i -ᵥ s.mongePoint) +ᵥ s.mongePoint
 
 @[simp]
