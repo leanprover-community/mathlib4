@@ -59,8 +59,8 @@ protected lemma isStrictMap_iff_isOpenQuotientMap_rangeRestrict [RingHomSurjecti
 
 variable [TopologicalSpace M'] [IsTopologicalAddGroup M'] [TopologicalSpace Nₗ']
 
-/-- The product (in the sense of `LinearMap.prodMap`) of linear maps is strict if and only if each
-of the maps is strict. -/
+/-- The product (in the sense of `LinearMap.prodMap`) of linear maps is strict if and only if both
+maps are strict. -/
 protected lemma isStrictMap_prodMap_iff :
     IsStrictMap (fₗ.prodMap gₗ) ↔ IsStrictMap fₗ ∧ IsStrictMap gₗ :=
   AddMonoidHom.isStrictMap_prodMap_iff (f := fₗ.toAddMonoidHom) (g := gₗ.toAddMonoidHom)

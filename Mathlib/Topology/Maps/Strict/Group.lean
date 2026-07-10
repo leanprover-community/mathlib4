@@ -83,7 +83,7 @@ variable [TopologicalSpace G'] [IsTopologicalGroup G'] [TopologicalSpace H']
 /-- The product (in the sense of `Prod.map`) of group homomorphisms is strict if and only if each
 of the homomorphisms is strict. -/
 @[to_additive isStrictMap_prodMap_iff /-- The product (in the sense of `Prod.map`) of additive group
-homomorphisms is strict if and only if each of the homomorphisms is strict. -/]
+homomorphisms is strict if and only if both homomorphisms are strict. -/]
 protected lemma isStrictMap_prodMap_iff :
     IsStrictMap (f.prodMap g) ↔ IsStrictMap f ∧ IsStrictMap g := by
   simp_rw [MonoidHom.isStrictMap_iff_isOpenQuotientMap_rangeRestrict]
