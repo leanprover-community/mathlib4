@@ -77,7 +77,14 @@ theorem _root_.MeasureTheory.Measure.ext_of_integral_eq_on_compactlySupported_nn
   apply Measure.ext_of_integral_eq_on_compactlySupported
   intro f
   repeat rw [integral_eq_integral_pos_part_sub_integral_neg_part f.integrable]
-  erw [hμν f.nnrealPart, hμν (-f).nnrealPart]
+  congr 1
+  · specialize hμν f.nnrealPart
+    simpa [hμν
+    sorry
+  simp [-Real.coe_toNNReal', hμν f.nnrealPart]
+  simp only [Real.coe_toNNReal']
+  rw??
+  erw [hμν f, hμν (-f).nnrealPart]
   rfl
 
 /-- If two regular measures induce the same linear functional on `C_c(X, ℝ≥0)`, then they are
