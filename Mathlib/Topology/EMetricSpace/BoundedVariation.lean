@@ -1183,9 +1183,13 @@ theorem MonotoneOn.eVariationOn_eq (hf : MonotoneOn f s) (as : a ∈ s) (bs : b 
     grw [← h.dist_le (x := a) (y := b)] <;> grind [Real.dist_eq]
   · simp [hab, hf bs as hab.le]
 
+@[deprecated MonotoneOn.eVariationOn_eq (since := "2026-07-08")]
+theorem MonotoneOn.eVariationOn_le (hf : MonotoneOn f s) (as : a ∈ s) (bs : b ∈ s) :
+    eVariationOn f (s ∩ Icc a b) ≤ .ofReal (f b - f a) := (hf.eVariationOn_eq as bs).le
+
 theorem MonotoneOn.locallyBoundedVariationOn (hf : MonotoneOn f s) :
     LocallyBoundedVariationOn f s := fun _ _ as bs =>
-  ((hf.eVariationOn_eq as bs).le.trans_lt ofReal_lt_top).ne
+  ((hf.eVariationOn_eq as bs) ▸ ofReal_lt_top).ne
 
 theorem MonotoneOn.boundedVariationOn (hf : MonotoneOn f s) (h : ∀ x ∈ s, |f x| ≤ C) :
     BoundedVariationOn f s := by
@@ -1194,12 +1198,8 @@ theorem MonotoneOn.boundedVariationOn (hf : MonotoneOn f s) (h : ∀ x ∈ s, |f
   rw [eVariationOn.eq_biSup_inter_Icc]
   simp only [mem_setOf_eq, iSup_le_iff, and_imp, Prod.forall]
   intro a b as bs hab
-  grw [(hf.eVariationOn_eq as bs).le]
+  grw [hf.eVariationOn_eq as bs]
   exact ofReal_mono (by grind)
-
-@[deprecated MonotoneOn.eVariationOn_eq (since := "2026-07-08")]
-theorem MonotoneOn.eVariationOn_le (hf : MonotoneOn f s) (as : a ∈ s) (bs : b ∈ s) :
-    eVariationOn f (s ∩ Icc a b) ≤ .ofReal (f b - f a) := (hf.eVariationOn_eq as bs).le
 
 /-- The variation of the identity on `s ∩ Icc a b` is `b - a`. -/
 lemma eVariationOn_id {a b : ℝ} {s : Set ℝ} (as : a ∈ s) (bs : b ∈ s) :
