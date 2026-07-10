@@ -82,6 +82,8 @@ variable [P.IsPrime] [Q.IsPrime] (K L : Type*) [Field K] [Field L] [Algebra K L]
 
 open Polynomial in
 include P Q G in
+/-- If `Q` is a prime ideal of `B` lying over a prime ideal `P` of `A`,
+then the extension `Frac(B/Q)` over `Frac(A/P)` is normal. -/
 lemma normal : Normal K L := by
   have := Algebra.IsInvariant.isIntegral A B G
   have := isAlgebraic_of_isFractionRing (A ⧸ P) (B ⧸ Q) K L
@@ -124,6 +126,7 @@ lemma normal : Normal K L := by
     exact mt (comp_C_mul_X_eq_zero_iff (by simpa)).mp (map_monic_ne_zero h_monic)
 
 include P Q in
+/-- If the extension `Frac(B/Q)` over `Frac(A/P)` is separable, then it is finite dimensional. -/
 lemma finite_of_isInvariant [SMulCommClass G A B] [Algebra.IsSeparable K L] :
     Module.Finite K L := by
   have : IsGalois K L := { __ := normal G P Q K L }
@@ -134,9 +137,8 @@ end Ideal.IsFractionRing
 
 attribute [local instance] Ideal.Quotient.field in
 include G in
-/--
-For any domain `k` containing `B ⧸ Q`,
-any endomorphism of `k` can be restricted to an endomorphism of `B ⧸ Q`. -/
+/-- If `Q` is a maximal ideal of `B` lying over a maximal ideal `P` of `A`,
+then the extension `B/Q` over `A/P` is normal. -/
 lemma Ideal.Quotient.normal [P.IsMaximal] [Q.IsMaximal] :
     Normal (A ⧸ P) (B ⧸ Q) :=
   IsFractionRing.normal G P Q (A ⧸ P) (B ⧸ Q)
