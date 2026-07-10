@@ -128,6 +128,16 @@ theorem apply_ne_top (p : PMF α) (a : α) : p a ≠ ∞ :=
 theorem apply_lt_top (p : PMF α) (a : α) : p a < ∞ :=
   lt_of_le_of_ne le_top (p.apply_ne_top a)
 
+instance [IsEmpty α] : IsEmpty (PMF α) where
+  false f := zero_ne_one <| tendsto_nhds_unique hasSum_empty f.2
+
+instance [Subsingleton α] : Subsingleton (PMF α) where
+  allEq p q := by
+    ext a
+    have := uniqueOfSubsingleton a
+    simp_rw [Unique.uniq, DFunLike.coe, HasSum.unique (hasSum_unique p.1) p.hasSum_coe_one,
+      HasSum.unique (hasSum_unique q.1) q.hasSum_coe_one]
+
 section OuterMeasure
 
 open OuterMeasure
