@@ -52,4 +52,23 @@ instance [∀ i, Mul (α i)] [∀ i, PartialOrder (α i)] [∀ i, MulLeftStrictM
     MulLeftMono (Lex (∀ i, α i)) :=
   mulLeftMono_of_mulLeftStrictMono _
 
+/-- For the lexicographic order on a pi type, right multiplication is strictly monotone as soon as
+it is strictly monotone on every factor. This does not require commutativity, unlike
+`Pi.Lex.isOrderedCancelMonoid`. -/
+@[to_additive /-- For the lexicographic order on a pi type, right addition is strictly monotone as
+soon as it is strictly monotone on every summand. -/]
+instance [∀ i, Mul (α i)] [∀ i, Preorder (α i)] [∀ i, MulRightStrictMono (α i)] :
+    MulRightStrictMono (Lex (∀ i, α i)) :=
+  ⟨fun z _ _ ⟨i, hi₁, hi₂⟩ =>
+    ⟨i, fun j hj => congr_arg (· * z j) (hi₁ j hj), mul_lt_mul_left hi₂ (z i)⟩⟩
+
+/-- For the lexicographic order on a pi type, right multiplication is monotone as soon as it is
+strictly monotone on every factor. This does not require commutativity, unlike
+`Pi.Lex.isOrderedCancelMonoid`. -/
+@[to_additive /-- For the lexicographic order on a pi type, right addition is monotone as soon as it
+is strictly monotone on every summand. -/]
+instance [∀ i, Mul (α i)] [∀ i, PartialOrder (α i)] [∀ i, MulRightStrictMono (α i)] :
+    MulRightMono (Lex (∀ i, α i)) :=
+  mulRightMono_of_mulRightStrictMono _
+
 end Pi.Lex

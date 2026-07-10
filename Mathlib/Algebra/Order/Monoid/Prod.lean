@@ -78,6 +78,18 @@ instance [Mul α] [Preorder α] [MulLeftStrictMono α]
     (fun hxy ↦ le_iff.2 <|
       Or.inr ⟨by simp only [ofLex_mul, fst_mul, hxy.1], mul_le_mul_right hxy.2 _⟩)⟩
 
+/-- For the lexicographic order on a product, right multiplication is monotone as soon as it is
+strictly monotone on the first factor and monotone on the second. This does not require
+commutativity, unlike `Prod.Lex.isOrderedMonoid`. -/
+@[to_additive /-- For the lexicographic order on a product, right addition is monotone as soon as it
+is strictly monotone on the first summand and monotone on the second. -/]
+instance [Mul α] [Preorder α] [MulRightStrictMono α]
+    [Mul β] [Preorder β] [MulRightMono β] : MulRightMono (α ×ₗ β) :=
+  ⟨fun _ _ _ hxy ↦ (le_iff.1 hxy).elim
+    (fun hxy ↦ left _ _ <| mul_lt_mul_left hxy _)
+    (fun hxy ↦ le_iff.2 <|
+      Or.inr ⟨by simp only [ofLex_mul, fst_mul, hxy.1], mul_le_mul_left hxy.2 _⟩)⟩
+
 end Lex
 
 end Prod
