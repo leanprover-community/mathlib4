@@ -60,7 +60,7 @@ namespace Metric
 
 variable {x y z : α} {ε ε₁ ε₂ : ℝ≥0∞} [EDist α]
 
-/-- `EMetric.ball x ε` is the set of all points `y` with `edist y x < ε` -/
+/-- `Metric.eball x ε` is the set of all points `y` with `edist y x < ε` -/
 def eball (x : α) (ε : ℝ≥0∞) : Set α :=
   { y | edist y x < ε }
 
