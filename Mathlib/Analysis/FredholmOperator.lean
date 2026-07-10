@@ -383,6 +383,55 @@ end DefTFAE
 
 section Constructions
 
+theorem _root_.ContinuousLinearEquiv.isFredholm (e : E ≃L[𝕜] F) :
+    IsFredholm (e : E →L[𝕜] F) where
+  isStrictMap := e.isHomeomorph.isStrictMap
+  isClosed_range := by simp
+  finite_ker := by --show FiniteDimensional 𝕜 e.toLinearEquiv.toLinearMap.ker by
+    rw [LinearMap.ker_eq_bot.2 (by exact EquivLike.injective e)]
+    infer_instance
+  finite_coker := by simp
+  closedComplemented_ker := by simp
+
+theorem IsFredholm.id : IsFredholm (.id 𝕜 E) :=
+    ContinuousLinearEquiv.refl 𝕜 E |>.isFredholm
+
+theorem _root_.Topology.IsClosedEmbedding.isFredholmStruct {f : E →L[𝕜] F}
+    (hf : IsClosedEmbedding f) (hcofg : f.range.CoFG) :
+    IsFredholm f where
+  isStrictMap := hf.isStrictMap
+  isClosed_range := hf.isClosed_range
+  finite_ker := by
+    rw [LinearMap.ker_eq_bot.2 hf.injective]
+    infer_instance
+  finite_coker := by simp [hcofg]
+  closedComplemented_ker := by
+    rw [LinearMap.ker_eq_bot.2 hf.injective]
+    exact closedComplemented_bot
+
+theorem _root_.Submodule.isFredholm_subtypeL {p : Submodule 𝕜 E}
+    (hp : IsClosed (p : Set E)) (hc : p.CoFG) :
+    IsFredholm p.subtypeL :=
+  (IsClosedEmbedding.subtypeVal hp).isFredholmStruct (by simpa)
+
+theorem _root_.Topology.IsQuotientMap.isFredholm {f : E →L[𝕜] F} (hq : IsQuotientMap f)
+    (hfg : FiniteDimensional 𝕜 f.ker) (hcompl : f.ker.ClosedComplemented) :
+    IsFredholm f where
+  isStrictMap := hq.isStrictMap
+  isClosed_range := by
+    rw [LinearMap.range_eq_top.2 hq.surjective]
+    exact isClosed_univ
+  finite_ker := hfg
+  finite_coker := by
+    rw [LinearMap.range_eq_top.2 hq.surjective]
+    exact Submodule.CoFG.top
+  closedComplemented_ker := hcompl
+
+theorem _root_.Submodule.mkQL_isFredholmStruct {p : Submodule 𝕜 E} (hc : FiniteDimensional 𝕜 p)
+    (hcompl : p.ClosedComplemented) :
+    IsFredholm p.mkQL :=
+  p.isQuotientMap_mkQL.isFredholm (by rwa [toLinearMap_mkQL, ker_mkQ]) (by simpa)
+
 variable [CompleteSpace 𝕜] [IsTopologicalAddGroup E] [IsTopologicalAddGroup F]
   [IsTopologicalAddGroup G] [ContinuousSMul 𝕜 E] [ContinuousSMul 𝕜 F] [ContinuousSMul 𝕜 G]
   [T2Space E] [T2Space F] [T2Space G]
@@ -419,14 +468,6 @@ theorem IsFredholm.comp_iff_right {f : E →L[𝕜] F} {f' : F →L[𝕜] G} (hf
   rcases hf' with ⟨g', hg'⟩
   rcases hcomp with ⟨w, hw⟩
   exact ⟨w ∘L f', .symm <| hg'.symm.of_comp_right hw.symm⟩
-
-theorem _root_.ContinuousLinearEquiv.isFredholm (e : E ≃L[𝕜] F) :
-    IsFredholm (e : E →L[𝕜] F) :=
-  isFredholm_iff_exists_isQuasiInverse.mpr
-    ⟨e.symm, by simp [IsQuasiInverse, IsLeftQuasiInverse, IsRightQuasiInverse]⟩
-
-theorem IsFredholm.id : IsFredholm (.id 𝕜 E) :=
-    ContinuousLinearEquiv.refl 𝕜 E |>.isFredholm
 
 end Constructions
 
