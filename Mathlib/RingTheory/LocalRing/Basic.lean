@@ -44,7 +44,7 @@ theorem isUnit_or_isUnit_of_isUnit_add {a b : R} (h : IsUnit (a + b)) : IsUnit a
   apply Or.imp _ _ (isUnit_or_isUnit_of_add_one hu) <;> exact (u⁻¹.isUnit_units_mul _).mp
 
 theorem nonunits_add {a b : R} (ha : a ∈ nonunits R) (hb : b ∈ nonunits R) : a + b ∈ nonunits R :=
-  fun H => not_or_intro ha hb (isUnit_or_isUnit_of_isUnit_add H)
+  fun H ↦ not_or_intro ha hb (isUnit_or_isUnit_of_isUnit_add H)
 
 variable (R) in
 /-- The nonunits of a local semiring form an additive submonoid. -/
@@ -53,7 +53,7 @@ variable (R) in
   zero_mem' := by simp
   add_mem' := nonunits_add
 
-theorem exists_of_isUnit_sum {ι} {s : Finset ι} {f : ι → R}
+theorem exists_of_isUnit_sum {ι : Type*} {s : Finset ι} {f : ι → R}
     (h : IsUnit (∑ i ∈ s, f i)) : ∃ i ∈ s, IsUnit (f i) := by
   contrapose! h; exact (nonunitsAddSubmonoid R).sum_mem h
 
