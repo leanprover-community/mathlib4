@@ -99,24 +99,20 @@ section -- and a specialisation to manifolds
 -- Let `M` be a `C²` manifold modeled on `(E, H)`, endowed with a Riemannian metric.
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
   {H : Type*} [TopologicalSpace H] (I : ModelWithCorners ℝ E H)
-  {M : Type*} [EMetricSpace M] [ChartedSpace H M] [IsManifold I 2 M]
+  {M : Type*} [TopologicalSpace M] [ChartedSpace H M] [IsManifold I 1 M]
   [RiemannianBundle (fun (x : M) ↦ TangentSpace I x)]
 
 lemma injective_inner_mdifferentiableAt_vectorField [CompleteSpace E] (x : M) :
     Function.Injective
       (fun X₀ : TangentSpace I x ↦
-        fun (Z : Π x, TangentSpace I x) (_ : MDiffAt (T% Z) x) ↦ (⟪X₀, Z x⟫)) := by
-  have := VectorBundle.completeSpace ℝ E (TangentSpace I (M := M))
-  set Φ := InnerProductSpace.toDual ℝ (TangentSpace I x)
-  exact (injective_eval_mdifferentiableAt_vectorField I ℝ x).comp Φ.injective
+        fun (Z : Π x, TangentSpace I x) (_ : MDiffAt (T% Z) x) ↦ (⟪X₀, Z x⟫)) :=
+  injective_inner_mdifferentiableAt_section (E := TangentSpace I) I E x
 
 lemma injective_inner_contMDiffAt_vectorField {n : ℕ∞ω} [CompleteSpace E] (x : M) :
     Function.Injective
       (fun X₀ : TangentSpace I x ↦
-        fun (Z : Π x, TangentSpace I x) (_ : CMDiffAt n (T% Z) x) ↦ (⟪X₀, Z x⟫)) := by
-  have := VectorBundle.completeSpace ℝ E (TangentSpace I (M := M))
-  set Φ := InnerProductSpace.toDual ℝ (TangentSpace I x)
-  exact (injective_eval_contMDiffAt_vectorField I ℝ x).comp Φ.injective
+        fun (Z : Π x, TangentSpace I x) (_ : CMDiffAt n (T% Z) x) ↦ (⟪X₀, Z x⟫)) :=
+  injective_inner_contMDiffAt_section (E := TangentSpace I) I E n x
 
 end
 
@@ -127,7 +123,7 @@ variable
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
   {H : Type*} [TopologicalSpace H] (I : ModelWithCorners ℝ E H)
 
-variable {M : Type*} [EMetricSpace M] [ChartedSpace H M] [IsManifold I 2 M]
+variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M] [IsManifold I 2 M]
 
 -- From now on, `M` is endowed with a Riemannian metric.
 variable
@@ -151,7 +147,7 @@ variable [IsContMDiffRiemannianBundle I 1 E (fun (x : M) ↦ TangentSpace I x)]
 
 -- Local notation for pointwise inner products of vector fields.
 -- Note this does not cause ambiguity with the notation obtained
--- with `open scoped RealInnerProductSpace.`
+-- with `open scoped RealInnerProductSpace`.
 local notation "⟪" X ", " Y "⟫" => fun x ↦ inner ℝ (X x) (Y x)
 
 /- TODO: The next two lemmas are workarounds for some version of https://github.com/leanprover/lean4/issues/9077
@@ -183,7 +179,7 @@ section uniqueness
 
 variable {cov cov'}
 
-/-- Auxiliary lemma towards the uniquness of the Levi-Civita connection: expressing the term
+/-- Auxiliary lemma towards the uniqueness of the Levi-Civita connection: expressing the term
 `⟨∇ X Y, Z⟩` for all differentiable vector fields `X`, `Y` and `Z`, without reference to `∇`. -/
 public lemma IsLeviCivitaConnection.apply_eq [FiniteDimensional ℝ E]
     (h : cov.IsLeviCivitaConnection)
@@ -262,7 +258,7 @@ theorem leviCivitaAux_tensorial₂ [FiniteDimensional ℝ E]
       inner_add_left, inner_add_right]
     ring
 
-/-- Almost the underlying function underlying our construction of the Levi-Civita connection:
+/-- Almost the function underlying our construction of the Levi-Civita connection:
 this is the desired `(1,1)`-tensor, but without considerations to the junk value when
 applied to non-differentiable vector fields. -/
 noncomputable def lcAux₁ [FiniteDimensional ℝ E]
@@ -350,7 +346,7 @@ public theorem leviCivitaConnection_apply_right [FiniteDimensional ℝ E] {x : M
   rw [real_inner_comm]
   exact lcAux_apply _ hZ hY hX
 
-public lemma leviCivitaConnection_isMetricCompatible [FiniteDimensional ℝ E] :
+public lemma isMetricCompatible_leviCivitaConnection[FiniteDimensional ℝ E] :
     (leviCivitaConnection I M).IsMetricCompatible (M := M) (V := TangentSpace I) := by
   rw [isMetricCompatible_iff]
   intro x X Y Z hX hY hZ
