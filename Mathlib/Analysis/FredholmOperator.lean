@@ -113,6 +113,19 @@ lemma FredholmPackage.range_eq {u : E →L[𝕜] F} (pkg : FredholmPackage u) :
     u.range = pkg.dec_codom.X₁ := by
   simp [pkg.eq_equiv, range_comp]
 
+lemma FredholmPackage.mapsTo {u : E →L[𝕜] F} (pkg : FredholmPackage u) :
+    MapsTo u pkg.dec_dom.X₁ pkg.dec_codom.X₁ := by
+  simpa [← FredholmPackage.range_eq, LinearMap.coe_range] using Set.mapsTo_range _ _
+
+lemma FredholmPackage.equiv_eq_restrict {u : E →L[𝕜] F} (pkg : FredholmPackage u) :
+    pkg.equiv = u.restrict pkg.mapsTo := by
+  ext x
+  simp [pkg.eq_equiv]
+
+lemma FredholmPackage.isInvertible_restrict {u : E →L[𝕜] F} (pkg : FredholmPackage u) :
+    u.restrict pkg.mapsTo |>.IsInvertible :=
+  ⟨pkg.equiv, pkg.equiv_eq_restrict⟩
+
 /-- The data of a Fredholm package for `u` determines a canonical quasi-inverse of `u`. -/
 def FredholmPackage.quasiInverse {u : E →L[𝕜] F} (pkg : FredholmPackage u) :
     F →L[𝕜] E :=
@@ -141,6 +154,12 @@ section TFAE
 end TFAE
 
 variable [T2Space E] [T2Space F] in
+/-- Assume that `u : E →L[𝕜] F` has a continuous quasi-invers. Then there are closed
+subspaces of finite codimensions `E₁` and `F₁` between which `u` induces an isomorphism.
+
+This statement is private because it is superseded by later results: using `isFredholm_tfae`,
+you can build a `FredholmPackage` for `u`, and then apply `FredholmPackage.isInvertible_restrict`.
+-/
 private theorem exists_restrict_isInvertible_of_isQuasiInverse {u : E →L[𝕜] F}
     {v : F →L[𝕜] E} (huv : u.IsQuasiInverse v) :
     ∃ (E₁ : Submodule 𝕜 E) (F₁ : Submodule 𝕜 F),
