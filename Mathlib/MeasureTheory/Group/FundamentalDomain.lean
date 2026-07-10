@@ -5,9 +5,6 @@ Authors: Yury Kudryashov, Alex Kontorovich, Heather Macbeth
 -/
 module
 
-public import Mathlib.MeasureTheory.Group.Action
-public import Mathlib.MeasureTheory.Group.Pointwise
-public import Mathlib.MeasureTheory.Integral.Lebesgue.Map
 public import Mathlib.MeasureTheory.Integral.Bochner.Set
 
 /-!
@@ -675,7 +672,7 @@ class HasFundamentalDomain (G : Type*) (α : Type*) [One G] [SMul G α] [Measura
 
 attribute [to_additive existing] MeasureTheory.HasFundamentalDomain
 
-open Classical in
+open scoped Classical in
 /-- The `covolume` of an action of `G` on `α` the volume of some fundamental domain, or `0` if
 none exists. -/
 @[to_additive addCovolume /-- The `addCovolume` of an action of `G` on `α` is the volume of some
