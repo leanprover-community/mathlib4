@@ -23,7 +23,7 @@ This file defines finitely presented groups.
 
 ## Main definitions
 * `Subgroup.IsFinitelyNormallyGenerated N`: says that the subgroup `N` is the normal closure of a
-  finitely generated subgroup.
+  finite set.
 * `IsFinitelyPresented`: defines when a group is finitely presented.
 
 ## Main results
@@ -40,9 +40,9 @@ finitely presented group, finitely generated normal closure
 variable {G H α β : Type*} [Group G] [Group H]
 
 /-- `N.IsFinitelyNormallyGenerated` says that the subgroup `N` is the normal closure
- of a finitely-generated subgroup. -/
+ of a finite set. -/
 @[to_additive /-- `N.IsFinitelyNormallyGenerated` says that the additive subgroup `N`
-is the normal closure of an additive finitely-generated subgroup. -/]
+is the normal closure of a finite set. -/]
 def Subgroup.IsFinitelyNormallyGenerated (N : Subgroup G) : Prop :=
   ∃ S : Set G, S.Finite ∧ Subgroup.normalClosure S = N
 
