@@ -60,54 +60,7 @@ instance (priority := 100) {A : Type*} [CommRing A] [IsArtinianRing A] [IsLocalR
     rw [hn, zero_smul, Ideal.zero_eq_bot, SModEq.bot] at hf
     rw [hf]
 
-open TensorProduct in
-lemma tensorProduct_reesAlgebra_isNoetherian_of_fg [IsNoetherianRing (R ⧸ I)] (fg : I.FG) :
-    IsNoetherianRing ((R ⧸ I) ⊗[R] (reesAlgebra I)) := by
-  have : Algebra.FiniteType R (reesAlgebra I) := ⟨(reesAlgebra I).fg_top.mpr (reesAlgebra.fg fg)⟩
-  have := this.baseChange (R ⧸ I)
-  exact Algebra.FiniteType.isNoetherianRing (R ⧸ I) _
-
-lemma isNoetherianRing_reesAlgebra_quotient [IsNoetherianRing (R ⧸ I)] (fg : I.FG) :
-    IsNoetherianRing ((reesAlgebra I) ⧸ I.map (algebraMap R (reesAlgebra I))) := by
-  have := tensorProduct_reesAlgebra_isNoetherian_of_fg I fg
-  exact isNoetherianRing_of_ringEquiv  _
-     (Algebra.TensorProduct.quotIdealMapEquivQuotTensor (reesAlgebra I) I).symm.toRingEquiv
-
 open Polynomial
-
-lemma Polynomial.monomial_mem_reesAlgebra (i : ℕ) {r : R} (mem : r ∈ I ^ i) :
-    monomial i r ∈ reesAlgebra I := by
-  refine (mem_reesAlgebra_iff _ _).mpr (fun n ↦ ?_)
-  by_cases eqi : n = i
-  · simpa [eqi]
-  · simp [coeff_monomial_of_ne _ eqi]
-
-lemma mem_map_algebraMap_reesAlgebra_iff (f : reesAlgebra I) :
-    f ∈ I.map (algebraMap R (reesAlgebra I)) ↔ ∀ n, f.1.coeff n ∈ I ^ (n + 1) := by
-  refine ⟨fun h n ↦ ?_, fun h ↦ ?_⟩
-  · rw [← Submodule.restrictScalars_mem R, ← Ideal.smul_top_eq_map] at h
-    induction h using Submodule.smul_induction_on' with
-    | smul r hr m hm =>
-      simpa [pow_succ'] using Ideal.mul_mem_mul hr ((mem_reesAlgebra_iff I _).mp m.2 n)
-    | add x hx y hy memx memy => simpa using add_mem memx memy
-  · have mem' (i : ℕ) {r : R} : r ∈ I ^ i → _ := fun mem ↦ monomial_mem_reesAlgebra I i mem
-    have mem (i : ℕ) := monomial_mem_reesAlgebra I i ((mem_reesAlgebra_iff I _).mp f.2 i)
-    have : f = ∑ i ∈ f.1.support, ⟨(Polynomial.monomial i) (f.1.coeff i), mem i⟩ :=
-      SetCoe.ext (by simpa using f.1.as_sum_support)
-    rw [this]
-    apply sum_mem (fun i hi ↦ ?_)
-    have {r : R} (h' : r ∈ I * I ^ i) : ⟨(Polynomial.monomial i) r,mem' i (Ideal.mul_le_left h')⟩
-      ∈ I.map (algebraMap R (reesAlgebra I)) := by
-      induction h' using Submodule.mul_induction_on' with
-      | mem_mul_mem s hs t ht =>
-        have : ⟨(Polynomial.monomial i) (s * t), mem' i (Ideal.mul_mem_left _ s ht)⟩ =
-          s • (⟨(Polynomial.monomial i) t, mem' i ht⟩: reesAlgebra I) := by
-          simp [Polynomial.smul_monomial]
-        rw [this, Algebra.smul_def]
-        exact Ideal.mul_mem_right _ _ (Ideal.mem_map_of_mem _ hs)
-      | add s1 hs1 s2 hs2 mem1 mem2 => simpa using add_mem mem1 mem2
-    apply this
-    simpa [pow_succ'] using h i
 
 /-- The canonical morphism from `reesAlgebra` to associated graded ring. -/
 noncomputable abbrev reesAlgebraToAssociatedGraded :
@@ -139,7 +92,7 @@ lemma exists_monomial_span_of_fg (J : Ideal R) (fg : (J.toAssociatedGraded I).FG
   let coeff : ι → R := fun ⟨i, j⟩ ↦ (g i).1.coeff j.1
   have monomial_mem (i : ι) : monomial (deg i) (coeff i) ∈ reesAlgebra I := by
     match i with
-    | ⟨i, j⟩ => exact monomial_mem_reesAlgebra I _ ((mem_reesAlgebra_iff I _).mp (g i).2 j)
+    | ⟨i, j⟩ => exact reesAlgebra.monomial_mem.mpr ((mem_reesAlgebra_iff I _).mp (g i).2 j)
   have monomial_mem' (i : ι) : monomial (deg i) (coeff i) ∈ J.map C := by
     match i with
     | ⟨i, j⟩ =>
@@ -182,7 +135,7 @@ lemma exists_coeffs_sub_mem (n : ℕ) (J : Ideal R) (ι : Type u) [Fintype ι] (
     (r : R) (rmem_J : r ∈ J) (rmem_pow : r ∈ I ^ n) : ∃ (coeff' : ι → R),
     (∀ i : ι, coeff' i ∈ I ^ (n - deg i)) ∧ (∀ i : ι, deg i > n → coeff' i = 0) ∧
       r - ∑ x : ι, coeff' x * coeff x ∈ I ^ (n + 1) := by
-  have : (reesAlgebraToAssociatedGraded I) ⟨monomial n r, monomial_mem_reesAlgebra I n rmem_pow⟩ ∈
+  have : (reesAlgebraToAssociatedGraded I) ⟨monomial n r, reesAlgebra.monomial_mem.mpr rmem_pow⟩ ∈
     J.toAssociatedGraded I := by
     apply Ideal.mem_map_of_mem
     simp only [Ideal.mem_comap, Subalgebra.coe_val, Ideal.mem_map_C_iff]
@@ -195,7 +148,7 @@ lemma exists_coeffs_sub_mem (n : ℕ) (J : Ideal R) (ι : Type u) [Fintype ι] (
   let c' : ι → (reesAlgebra I) := fun i ↦ Classical.choose (Ideal.Quotient.mk_surjective (c i))
   let c'_spec (i : ι) : (reesAlgebraToAssociatedGraded I) (c' i) = c i :=
     Classical.choose_spec (Ideal.Quotient.mk_surjective (c i))
-  have : (reesAlgebraToAssociatedGraded I) ⟨monomial n r, monomial_mem_reesAlgebra I n rmem_pow⟩ =
+  have : (reesAlgebraToAssociatedGraded I) ⟨monomial n r, reesAlgebra.monomial_mem.mpr rmem_pow⟩ =
     (reesAlgebraToAssociatedGraded I) (∑ i, c' i * f i) := by simp [← hc, c'_spec]
   rw [Ideal.Quotient.mk_eq_mk_iff_sub_mem, mem_map_algebraMap_reesAlgebra_iff] at this
   have coeff_eq := this n
@@ -219,7 +172,7 @@ lemma exists_coeffs_sub_mem (n : ℕ) (J : Ideal R) (ι : Type u) [Fintype ι] (
 lemma isNoetherianRing_of_isAdicComplete_of_fg [IsNoetherianRing (R ⧸ I)] (fg : I.FG)
     [IsAdicComplete I R] : IsNoetherianRing R := by
   apply (isNoetherianRing_iff_ideal_fg R).mpr (fun J ↦ ?_)
-  have := isNoetherianRing_reesAlgebra_quotient I fg
+  have := isNoetherianRing_reesAlgebra_quotient fg
   obtain ⟨ι, f, deg, coeff, fin, eq, memJ, map_eq⟩ :=
     exists_monomial_span_of_fg I J (Ideal.fg_of_isNoetherianRing _)
   have : Fintype ι := Fintype.ofFinite ι
@@ -241,7 +194,7 @@ lemma isNoetherianRing_of_isAdicComplete_of_fg [IsNoetherianRing (R ⧸ I)] (fg 
       induction n with
       | zero =>
         exact ⟨Classical.choose (exist 0 j hj (by simp)),
-        (Classical.choose_spec (exist 0 j hj (by simp))).2.2⟩
+          (Classical.choose_spec (exist 0 j hj (by simp))).2.2⟩
       | succ n coeffs'n =>
         refine ⟨coeffs'n + Classical.choose (exist (n + 1) _ (memJ' coeffs'n.1) coeffs'n.2), ?_⟩
         simp only [gt_iff_lt, Pi.add_apply, add_mul, Finset.sum_add_distrib, ← sub_sub]
@@ -283,8 +236,7 @@ lemma isNoetherianRing_of_isAdicComplete_of_fg [IsNoetherianRing (R ⧸ I)] (fg 
     have mod_eqj (n : ℕ) : ∑ i, (coeffs'_seq i n) * coeff i ≡ j [SMOD I ^ n • (⊤ : Ideal R)] := by
       rw [smul_eq_mul, Ideal.mul_top, SModEq.comm, SModEq.sub_mem]
       have : n ≤ n + d + 1 := by omega
-      apply Ideal.pow_le_pow_right this
-      exact (coeffs' (n + d)).2
+      exact Ideal.pow_le_pow_right this (coeffs' (n + d)).2
     rw [Ideal.mem_span_range_iff_exists_fun]
     use coeffs'_lim
     rw [IsHausdorff.eq_iff_smodEq (I := I)]
