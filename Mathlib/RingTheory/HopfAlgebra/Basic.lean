@@ -241,7 +241,14 @@ noncomputable abbrev ofAntipodeOfAdjoin
           _ = (Algebra.linearMap R A ∘ₗ ε) x * ∑ j ∈ (ℛ R y).index,
               ((MulOpposite.opLinearEquiv R).symm.toLinearMap ∘ₗ S.toLinearMap) ((ℛ R y).left j) *
               (ℛ R y).right j := by
-              sorry
+              congr 1
+              unfold P at hyP
+              rw [← hyP]
+              simp only [LinearMap.coe_comp, Function.comp_apply]
+              rw [← Coalgebra.Repr.eq (ℛ R y)]
+              simp only [map_sum, LinearMap.rTensor_tmul, LinearMap.mul'_apply,
+                LinearMap.coe_comp, Function.comp_apply, LinearEquiv.coe_coe,
+                MulOpposite.coe_opLinearEquiv_symm, AlgHom.coe_toLinearMap]
           -- `ε(x)•1 = algebraMap R A (ε x)` is central (`Algebra.commutes`), so it slides
           -- between `S'(y₍₁₎)` and `y₍₂₎`; then replace it using `hxP`
           _ = ∑ j ∈ (ℛ R y).index,
