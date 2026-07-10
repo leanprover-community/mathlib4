@@ -17,8 +17,41 @@ public import Mathlib.Algebra.Module.LinearMap.Index
 Fix `𝕜` a complete `NontriviallyNormedField`, and `E`, `F` be two Hausdorff topological vector
 spaces over `𝕜`.
 
-In this file, we define what it means for a continuous linear map `T : E →L[𝕜] F` to be
-a **Fredholm operator**.
+We say that a continuous linear map `T : E →L[𝕜] F` is a **Fredholm operator** if it satisfies
+the following four equivalent conditions:
+
+1. `T` is strict, its range is closed and has finite codimension, and its kernel is (topologically)
+  complemented and has finite dimension. This is chosen as the definition, see `IsFredholm`.
+2. `T` admits a continuous **quasi-inverse**, in the sense of `LinearMap.IsQuasiInverse`.
+3. There are finite-codimension subspaces `E₁` and `F₁` of `E` and `F` between which `T` induces
+  an isomorphism.
+4. `T` admits a `FredholmPackage`: there are topological decompositions `E = E₁ ⊕ E₀`,
+  `F = F₁ ⊕ F₀`, where `E₀` and `F₀` are finite dimensional, and an isomorphism `Φ : E₁ ≃L[𝕜] F₁`
+  such that `T` is zero on `E₀` and coincides with `Φ` on `E₁`; in other words, in these
+  decompositions, `T` is given by the matrix $$\begin{pmatrix} Φ & 0 \cr 0 & 0 \end{pmatrix}$$
+
+## Main definitions
+
+* `ContinuousLinearMap.IsFredholm`: a continuous linear map `u : E →L[𝕜] F` is a
+  **Fredholm operator** if it is strict, its range is closed and has finite codimension, and its
+  kernel is (topologically) complemented and has finite dimension.
+* `FredholmDecomposition`: a **Fredholm decomposition** of a topological vector space `E` is the
+  data of two subspaces `X₀` and `X₁` which are topological complements, and where `X₀` is finite
+  dimensional.
+* `ContinuousLinearMap.FredholmPackage`: a **Fredholm package** for `u : E →L[𝕜] F` is the data of
+  Fredholm decompositions `dec_dom` and `dec_codom` of `E` and `F` respectively, together with
+  a continuous linear equivalence `equiv : dec_dom.X₁ ≃ₗ[𝕜] dec_codom.X₁` between the "essential"
+  (i.e finite codimension) parts of these decompositions, such that `u` equals the composition
+  `dec_codom.X₁.subtypeL ∘L equiv ∘L dec_dom.proj`.
+
+Note that the data of a `FredholmPackage` for an operator is morally the strongest of the
+equivalent ways to assume that `u` is Fredholm (for example, it is clear how to build a canonical
+continuous quasi-inverse of `u` from such a package).
+
+Hence, you should not typically prove that an operator is Fredholm by building a Fredholm package
+(consider using `IsFredholm.of_isInvertible_restrict`); instead, when you know that an operator is
+Fredholm, you can obtain a `FredholmPackage` from `IsFredholm.nonempty_fredholmPackage`
+in order to conveniently use the full strength of Fredholmness.
 -/
 
 @[expose] public noncomputable section
@@ -73,7 +106,7 @@ variable (𝕜 E) in
 
 Note that we purposefully use the index `₀` for the "inessential" (i.e finite dimensional)
 part of the decomposition. -/
-structure FredholmDecomposition where
+structure _root_.FredholmDecomposition where
   X₀ : Submodule 𝕜 E
   X₁ : Submodule 𝕜 E
   isTopCompl : IsTopCompl X₁ X₀
@@ -82,19 +115,16 @@ structure FredholmDecomposition where
 /-- Given a fredhom decomposition `dec` of the space `E`, `dec.proj` is the (continuous linear)
 projection onto the "essential part" `dec.X₁` along the "inessential part" `dec.X₀`.
 This is a Fredholm operator. -/
-abbrev FredholmDecomposition.proj (dec : FredholmDecomposition 𝕜 E) :
+abbrev _root_.FredholmDecomposition.proj (dec : FredholmDecomposition 𝕜 E) :
     E →L[𝕜] dec.X₁ := dec.X₁.projectionOntoL dec.X₀ dec.isTopCompl
 
 /-- Let `u : E →L[𝕜] F` be a continuous linear map. A **Fredholm package** for `u` is the data of
 Fredholm decompositions `dec_dom` and `dec_codom` of `E` and `F` respectively, together with
 a continuous linear equivalence `equiv : dec_dom.X₁ ≃ₗ[𝕜] dec_codom.X₁` between the "essential"
 (i.e finite codimension) parts of these decompositions, such that `u` equals the composition
-`u = dec_codom.X₁.subtypeL ∘L equiv ∘L dec_dom.proj`. In other words, in these
+`dec_codom.X₁.subtypeL ∘L equiv ∘L dec_dom.proj`. In other words, in these
 "essential ⊕ inessential" decompositions, the matrix of `u` is
-```
-equiv 0
-0     0
-```
+$$\begin{pmatrix} \texttt{equiv} & 0 \cr 0 & 0 \end{pmatrix}$$
 
 We will show in `isFredholm_tfae` that an operator is Fredholm if and only if it admits
 a Fredholm package. In practice, the condition that `u` is Fredholm is always easier to
