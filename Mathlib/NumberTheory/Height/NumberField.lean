@@ -129,7 +129,8 @@ lemma mulHeight_eq {ι : Type*} {x : ι → K} (hx : x ≠ 0) :
     prod_archAbsVal_eq, prod_nonarchAbsVal_eq fun v ↦ ⨆ i, v (x i)]
 
 open Classical IntermediateField in
-/-- The absolute multiplicative height of an algebraic number. -/
+/-- The absolute multiplicative height of an algebraic number. This is defined for elements of any
+field of characteristic zero, with a junk value of `0` if the element is not algebraic. -/
 noncomputable def absMulHeight₁ {K : Type*} [Field K] [CharZero K] (x : K) : ℝ :=
   if hx : IsIntegral ℚ x then
     haveI : FiniteDimensional ℚ ℚ⟮x⟯ := adjoin.finiteDimensional hx
