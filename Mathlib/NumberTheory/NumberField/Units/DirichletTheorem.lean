@@ -410,7 +410,7 @@ theorem logEmbeddingQuot_injective :
 
 /-- The linear equivalence between `(𝓞 K)ˣ ⧸ (torsion K)` as an additive `ℤ`-module and
 `unitLattice` . -/
-def logEmbeddingEquiv :
+noncomputable def logEmbeddingEquiv :
     Additive ((𝓞 K)ˣ ⧸ (torsion K)) ≃ₗ[ℤ] (unitLattice K) :=
   LinearEquiv.ofBijective ((logEmbeddingQuot K).codRestrict (unitLattice K)
     (Quotient.ind fun _ ↦ logEmbeddingQuot_apply K _ ▸
@@ -460,17 +460,17 @@ theorem finrank_eq : finrank ℤ (Additive (𝓞 K)ˣ) = rank K := by
   simpa [← finrank_modTorsion] using! finrank_quotient_torsion_eq.symm
 
 /-- A basis of the quotient `(𝓞 K)ˣ ⧸ (torsion K)` seen as an additive ℤ-module. -/
-def basisModTorsion : Basis (Fin (rank K)) ℤ (Additive ((𝓞 K)ˣ ⧸ (torsion K))) :=
+noncomputable def basisModTorsion : Basis (Fin (rank K)) ℤ (Additive ((𝓞 K)ˣ ⧸ (torsion K))) :=
   Basis.reindex (Module.Free.chooseBasis ℤ _) (Fintype.equivOfCardEq <| by
     rw [← Module.finrank_eq_card_chooseBasisIndex, finrank_modTorsion, Fintype.card_fin])
 
 /-- The basis of the `unitLattice` obtained by mapping `basisModTorsion` via `logEmbedding`. -/
-def basisUnitLattice : Basis (Fin (rank K)) ℤ (unitLattice K) :=
+noncomputable def basisUnitLattice : Basis (Fin (rank K)) ℤ (unitLattice K) :=
   (basisModTorsion K).map (logEmbeddingEquiv K)
 
 /-- A fundamental system of units of `K`. The units of `fundSystem` are arbitrary lifts of the
 units in `basisModTorsion`. -/
-def fundSystem : Fin (rank K) → (𝓞 K)ˣ :=
+noncomputable def fundSystem : Fin (rank K) → (𝓞 K)ˣ :=
   -- `:)` prevents the `⧸` decaying to a quotient by `leftRel` when we unfold this later
   fun i ↦ Quotient.out ((basisModTorsion K i).toMul :)
 
