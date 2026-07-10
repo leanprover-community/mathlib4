@@ -179,6 +179,20 @@ def homMk' (f : StructuredArrow S T) (g : f.right ⟶ Y') : f ⟶ mk (f.hom ≫ 
 
 attribute [to_dual existing] homMk'_left homMk'_right
 
+lemma homMk'_id (f : StructuredArrow S T) : homMk' f (𝟙 f.right) = eqToHom (by cat_disch) := by
+  simp [eqToHom_right]
+
+lemma homMk'_mk_id (f : S ⟶ T.obj Y) : homMk' (mk f) (𝟙 Y) = eqToHom (by simp) :=
+  homMk'_id _
+
+lemma homMk'_comp (f : StructuredArrow S T) (g : f.right ⟶ Y') (g' : Y' ⟶ Y'') :
+    homMk' f (g ≫ g') = homMk' f g ≫ homMk' (mk (f.hom ≫ T.map g)) g' ≫ eqToHom (by simp) := by
+  simp [eqToHom_right]
+
+lemma homMk'_mk_comp (f : S ⟶ T.obj Y) (g : Y ⟶ Y') (g' : Y' ⟶ Y'') :
+    homMk' (mk f) (g ≫ g') = homMk' (mk f) g ≫ homMk' (mk (f ≫ T.map g)) g' ≫ eqToHom (by simp) :=
+  homMk'_comp _ _ _
+
 set_option linter.translate.warnInvalid false in
 /-- Variant of `homMk'` where both objects are applications of `mk`. -/
 @[to_dual (attr := simps) /-- Variant of `homMk'` where both objects are applications of `mk`. -/]
