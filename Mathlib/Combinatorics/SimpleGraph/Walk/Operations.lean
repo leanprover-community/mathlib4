@@ -559,14 +559,6 @@ set_option backward.isDefEq.respectTransparency false in
 lemma drop_getVert (p : G.Walk u v) (n m : ℕ) : (p.drop n).getVert m = p.getVert (n + m) := by
   induction p generalizing n <;> cases n <;> simp [*, drop, add_right_comm]
 
-@[simp]
-theorem support_drop {u v : V} (p : G.Walk u v) (n : ℕ) :
-    (p.drop n).support = p.support.drop (min n p.length) := by
-  match p, n with
-  | .nil, _ => simp [drop]
-  | .cons _ _, 0 => simp [drop]
-  | .cons _ _, n + 1 => simp [drop, support_drop]
-
 set_option backward.isDefEq.respectTransparency false in
 lemma drop_add_heq (p : G.Walk u v) (n m : ℕ) : p.drop (n + m) ≍ (p.drop n).drop m := by
   rw [add_comm]
@@ -575,13 +567,6 @@ lemma drop_add_heq (p : G.Walk u v) (n m : ℕ) : p.drop (n + m) ≍ (p.drop n).
 lemma drop_add_eq (p : G.Walk u v) (n m : ℕ) :
     p.drop (n + m) = ((p.drop n).drop m).copy (drop_getVert ..) rfl :=
   eq_of_heq <| drop_add_heq .. |>.trans <| by simp [Walk.copy]
-
-@[simp]
-theorem drop_drop (p : G.Walk u v) (n m : ℕ) :
-    (p.drop n).drop m = (p.drop (n + m)).copy (drop_getVert ..).symm rfl := by
-  apply ext_support
-  simp
-  grind
 
 set_option backward.isDefEq.respectTransparency false in
 lemma nil_drop_iff (p : G.Walk u v) (n : ℕ) : (p.drop n).Nil ↔ p.length ≤ n := by
@@ -692,9 +677,16 @@ lemma nil_drop_of_length_le {u v n} {p : G.Walk u v} (h : p.length ≤ n) :
     (p.drop n).Nil := by
   rw [← length_eq_zero_iff, drop_length, Nat.sub_eq_zero_of_le h]
 
+@[simp]
 lemma drop_support_eq_support_drop_min {u v} (p : G.Walk u v) (n : ℕ) :
     (p.drop n).support = p.support.drop (n ⊓ p.length) := by
   induction p generalizing n <;> cases n <;> simp [*, drop]
+
+@[simp]
+theorem drop_drop (p : G.Walk u v) (n m : ℕ) :
+    (p.drop n).drop m = (p.drop (n + m)).copy (drop_getVert ..).symm rfl := by
+  apply ext_support
+  grind [support_copy, drop_support_eq_support_drop_min, drop_length, List.drop_drop]
 
 @[simp]
 theorem append_take_drop_eq (p : G.Walk u v) (n : ℕ) : (p.take n).append (p.drop n) = p := by
