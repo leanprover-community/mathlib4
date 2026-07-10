@@ -88,17 +88,18 @@ theorem contMDiffOn_chart_symm [IsManifold I n M] :
     ContMDiffOn I I n (chartAt H x).symm (chartAt H x).target :=
   contMDiffOn_symm_of_mem_maximalAtlas <| chart_mem_maximalAtlas x
 
-theorem contMDiffAt_extend {x : M} (he : e ∈ maximalAtlas I n M) (hx : x ∈ e.source) :
+theorem OpenPartialHomeomorph.contMDiffAt_extend {x : M}
+    (he : e ∈ maximalAtlas I n M) (hx : x ∈ e.source) :
     ContMDiffAt I 𝓘(𝕜, E) n (e.extend I) x :=
   (I.contMDiff _).comp x <| contMDiffAt_of_mem_maximalAtlas he hx
 
-theorem contMDiffOn_extend (he : e ∈ maximalAtlas I n M) :
+theorem OpenPartialHomeomorph.contMDiffOn_extend (he : e ∈ maximalAtlas I n M) :
     ContMDiffOn I 𝓘(𝕜, E) n (e.extend I) e.source :=
-  fun _x' hx' ↦ (contMDiffAt_extend he hx').contMDiffWithinAt
+  fun _x' hx' ↦ (e.contMDiffAt_extend he hx').contMDiffWithinAt
 
 theorem contMDiffAt_extChartAt' [IsManifold I n M] {x' : M} (h : x' ∈ (chartAt H x).source) :
     ContMDiffAt I 𝓘(𝕜, E) n (extChartAt I x) x' :=
-  contMDiffAt_extend (chart_mem_maximalAtlas x) h
+  (chartAt H x).contMDiffAt_extend (chart_mem_maximalAtlas x) h
 
 theorem contMDiffAt_extChartAt : ContMDiffAt I 𝓘(𝕜, E) n (extChartAt I x) x := by
   rw [contMDiffAt_iff_source]
@@ -108,7 +109,7 @@ theorem contMDiffAt_extChartAt : ContMDiffAt I 𝓘(𝕜, E) n (extChartAt I x) 
 
 theorem contMDiffOn_extChartAt [IsManifold I n M] :
     ContMDiffOn I 𝓘(𝕜, E) n (extChartAt I x) (chartAt H x).source :=
-  contMDiffOn_extend (chart_mem_maximalAtlas x)
+  (chartAt H x).contMDiffOn_extend (chart_mem_maximalAtlas x)
 
 theorem contMDiffOn_extend_symm (he : e ∈ maximalAtlas I n M) :
     ContMDiffOn 𝓘(𝕜, E) I n (e.extend I).symm (I '' e.target) := by
