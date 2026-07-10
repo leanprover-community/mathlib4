@@ -66,13 +66,6 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   (I : ModelWithCorners 𝕜 E H) {n : ℕ∞} [IsManifold I n M]
 
--- the action is smooth
-variable {H' : Type*} [TopologicalSpace H']
-  {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
-  {I' : ModelWithCorners 𝕜 E' H'}
-  [TopologicalSpace G] [ChartedSpace H' G]
-  [ContMDiffSMul I' I n G M]
-
 omit [T2Space M] [LocallyCompactSpace M] in
 lemma mem_contDiffGroupoid_of_contMDiff_chartAt {x y : M} {h : OpenPartialHomeomorph M M}
     (hh : ContMDiff I I n h) (hhsymm : ContMDiff I I n h.symm) :
@@ -185,7 +178,8 @@ lemma StructureGroupoid.restr_mem_of_eqOn {G : StructureGroupoid X}
 
 end
 
-#check ContMDiffSMul.contMDiff_const_smul
+-- the action is smooth
+variable [TopologicalSpace G] [ChartedSpace H G] [ContMDiffSMul I I n G M]
 
 instance : IsManifold I n (orbitRel.Quotient G M) where
   compatible := by
@@ -203,10 +197,9 @@ instance : IsManifold I n (orbitRel.Quotient G M) where
     refine StructureGroupoid.restr_mem_of_eqOn (mem_contDiffGroupoid_of_contMDiff_chartAt I ?_ ?_)
       hto (hg0'.mono inter_subset_right) ?_
     · rw [Homeomorph.toOpenPartialHomeomorph_apply]
-      change ContMDiff I I n (fun x ↦ g0 • x)
-      exact ContMDiffSMul.contMDiff_const_smul (I := I') g0
+      exact ContMDiffSMul.contMDiff_const_smul (I := I) g0
     · rw [Homeomorph.toOpenPartialHomeomorph_symm_apply]
-      sorry
+      exact ContMDiffSMul.contMDiff_const_smul (I := I) g0⁻¹
     · rintro h' ⟨⟨hQ1, -, hQ4⟩, -, hcert⟩
       exact ⟨hQ1, mem_univ _, by simpa [← smul_eqOn x y g0 hcert] using hQ4⟩
 
