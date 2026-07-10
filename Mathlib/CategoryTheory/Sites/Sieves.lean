@@ -1499,3 +1499,6 @@ lemma Presieve.functorPushforward_overForget
   (Sieve.arrows_generate_map_eq_functorPushforward (Over.forget S)).symm
 
 end CategoryTheory
+
+-- pushed over the edge in `nightly-testing`, should be split after landing on master
+set_option linter.style.longFile 1600
