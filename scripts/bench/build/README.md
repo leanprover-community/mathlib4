@@ -1,6 +1,6 @@
 # The `build` benchmark
 
-This benchmark executes a complete build of mathlib4 and collects global and per-module metrics.
+This benchmark executes a complete build and collects global and per-module metrics.
 
 The following metrics are collected by a wrapper around the entire build process:
 
