@@ -43,9 +43,6 @@ variable {X : Scheme.{u}} (k : Type u) [Field k] [X.Over (Spec (CommRingCat.of k
     [IsIntegral X] [IsNoetherian X] [IsRegularInCodimensionOne X]
     (D : AlgebraicCycle X ℤ)
 
-/-- Additivity of `χ` on a short exact sequence whose third term is the canonical cokernel
-`Q_p(E)`: if the terms have well-defined Euler characteristics, the middle one exceeds the
-first by `dim_k κ(p)`. -/
 lemma eulerChar_step {p : X} (hp : coheight p = 1)
     (E : AlgebraicCycle X ℤ) (o : ShortComplex X.Modules) (ho : o.ShortExact)
     (hχ₁ : o.X₁.HasFiniteEulerCharacteristic k)
@@ -93,7 +90,7 @@ lemma eulerChar_sub_step [Order.KrullDimLE 1 X]
     (E : AlgebraicCycle X ℤ) (hE : IsWeilDivisor E) {p : X} (hp : coheight p = 1) :
     (sheaf (E - single p 1)).eulerChar k =
       (sheaf E).eulerChar k - Module.finrank k (X.residueField p) := by
-  have hkey : (sheaf E).eulerChar k =
+  have : (sheaf E).eulerChar k =
       (sheaf (E - single p 1)).eulerChar k + Module.finrank k (X.residueField p) :=
     eulerChar_step k hp E
       (twistedClosedSubschemeComplex₁ (D := E) (D' := E - single p 1) hp (by simp))
@@ -110,9 +107,13 @@ open Classical in
 /--
 **Conditional Riemann-Roch.** Let `X` be a curve over a field `k`: an integral Noetherian
 scheme, regular in codimension one, of Krull dimension at most one and locally of finite type
-over `k`. If the structure sheaf `𝒪ₓ` has a well-defined Euler characteristic (`Hⁿ(X, 𝒪ₓ)` is
+over `k`. If the structure sheaf `𝒪ₓ` has a well-defined finite Euler characteristic (`Hⁿ(X, 𝒪ₓ)` is
 finite dimensional for every `n` and vanishes in all sufficiently large degrees), then for
 every Weil divisor `D`, `χ(𝒪ₓ(D)) = deg D + χ(𝒪ₓ)`.
+
+Note that this claim that the Euler characteristic is finite is the reason I have labelled this
+result "conditional". This holds whenever `X` is proper over `k`, but showing this is a nontrivial
+task.
 -/
 theorem riemann_roch [Order.KrullDimLE 1 X]
     [LocallyOfFiniteType (X ↘ Spec (CommRingCat.of k))]
