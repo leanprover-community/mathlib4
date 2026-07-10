@@ -10,6 +10,7 @@ public import Mathlib.Geometry.Manifold.MFDeriv.UniqueDifferential
 
 /-!
 # Diffeomorphisms
+
 This file implements diffeomorphisms.
 
 ## Definitions

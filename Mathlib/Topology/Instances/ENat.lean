@@ -69,11 +69,11 @@ theorem tendsto_natCast_nhds_top : Tendsto Nat.cast atTop (𝓝 (⊤ : ℕ∞)) 
   filter_upwards [eventually_ge_atTop (n + 1)] with a ha using by simpa
 
 instance : ContinuousAdd ℕ∞ := by
-  refine ⟨continuous_iff_continuousAt.2 fun (a, b) ↦ ?_⟩
+  refine ⟨continuous_iff_continuousAt.mpr fun (a, b) ↦ ?_⟩
   match a, b with
   | ⊤, _ => exact tendsto_nhds_top_mono' continuousAt_fst fun p ↦ le_add_right le_rfl
   | (a : ℕ), ⊤ => exact tendsto_nhds_top_mono' continuousAt_snd fun p ↦ le_add_left le_rfl
-  | (a : ℕ), (b : ℕ) => simp [ContinuousAt, nhds_prod_eq, tendsto_pure_nhds]
+  | (a : ℕ), (b : ℕ) => simp [ContinuousAt, nhds_prod_eq]
 
 instance : ContinuousMul ℕ∞ where
   continuous_mul :=
