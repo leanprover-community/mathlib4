@@ -145,7 +145,7 @@ lemma quotientTransitionMap_locally_smul {h : H} (hh : h ∈ (quotientTransition
           (chartAt H y.out))) := by
   simp only [quotientTransitionMap, OpenPartialHomeomorph.trans_source, mem_inter_iff,
     mem_preimage] at hh
-  obtain ⟨-, ⟨-, hmid⟩, -⟩ := hh
+  obtain ⟨_, ⟨_, hmid⟩, _⟩ := hh
   obtain ⟨g, hg⟩ := exists_smul_mem_πinv_target ((chartAt H x.out).symm h)
     (by rwa [quotient_IsLocalHomeomorph.localInverseAt_symm] at hmid)
   exact ⟨g, hg, quotientTransitionMap_eqOn_smul x y g⟩
@@ -199,7 +199,7 @@ instance : IsManifold I n (orbitRel.Quotient G M) where
       exact ContMDiffSMul.contMDiff_const_smul (I := I) g0
     · rw [Homeomorph.toOpenPartialHomeomorph_symm_apply]
       exact ContMDiffSMul.contMDiff_const_smul (I := I) g0⁻¹
-    · rintro h' ⟨⟨hQ1, -, hQ4⟩, -, hcert⟩
+    · rintro h' ⟨⟨hQ1, _, hQ4⟩, _, hcert⟩
       exact ⟨hQ1, mem_univ _, by simpa [← smul_eqOn x y g0 hcert] using hQ4⟩
 
 end MulAction
