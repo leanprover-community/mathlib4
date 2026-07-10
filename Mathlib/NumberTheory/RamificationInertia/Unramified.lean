@@ -147,12 +147,11 @@ theorem isUnramifiedIn_iff_forall_of_isDedekindDomain [IsDomain R] [IsDedekindDo
 
 /-- For a prime `𝔓` of `S` lying over an unramified prime `𝔭` of `R`, the ramification index
 `e(𝔓 ∣ 𝔭)` equals `1`. -/
-theorem IsUnramifiedIn.ramificationIdx_eq_one [IsDomain R]
-    [Module.Finite ℤ R] [CharZero R] [EssFiniteType R S]
-    [Algebra.IsIntegral R S] {𝔭 : Ideal R} (hunr : IsUnramifiedIn S 𝔭) {𝔓 : Ideal S}
+theorem IsUnramifiedIn.ramificationIdx_eq_one [EssFiniteType R S]
+    {𝔭 : Ideal R} (hunr : IsUnramifiedIn S 𝔭) {𝔓 : Ideal S}
     [𝔓.IsPrime] (hP : 𝔓.LiesOver 𝔭) : Ideal.ramificationIdx 𝔓 R = 1 :=
-  Ideal.ramificationIdx_eq_one_iff.mpr
-    (hunr 𝔓 inferInstance hP)
+  have : IsUnramifiedAt R 𝔓 := hunr 𝔓 inferInstance hP
+  Ideal.ramificationIdx_eq_one 𝔓 R
 
 /-- A nonzero ideal of `R` is unramified in `S` if and only if every prime ideal of `S` lying
 over it has ramification index `1`. -/
