@@ -40,6 +40,103 @@ degree            ramif. index   inertia deg.
 
 @[expose] public section
 
+section basic
+
+namespace Ideal
+
+open MulAction Pointwise
+
+variable {B : Type*} [CommRing B] (G : Type*) [Group G] [MulSemiringAction G B]
+  (P : Ideal B) (C : Type*) [CommRing C] [Algebra C B]
+
+/-- `P.IsDecompositionRing G C` states that the intermediate ring `C` of `B` is a *decomposition
+ring* of the prime `P`: the ring `B` is Galois over `C` with Galois group the *decomposition group*
+of `P`, that is the stabilizer of `P` under the action of `G`.
+
+This is the ring-level characteristic predicate`; the classical decomposition *field* is
+recovered by passing to fraction fields. -/
+@[mk_iff]
+class IsDecompositionRing extends IsGaloisGroup (stabilizer G P) C B
+
+instance [h : IsGaloisGroup (stabilizer G P) C B] : IsDecompositionRing G P C where
+  toIsGaloisGroup := h
+
+/-- `P.IsInertiaRing G C` states that the intermediate ring `C` of `B` is an *inertia ring* of the
+prime `P`: the ring `B` is Galois over `C` with Galois group the *inertia group* of `P`, that is the
+elements of `G` acting trivially modulo `P` (a subgroup of the decomposition group).
+
+This is the ring-level characteristic predicate; the classical inertia *field* is recovered by
+passing to fraction fields. -/
+@[mk_iff]
+class IsInertiaRing extends IsGaloisGroup (inertia G P) C B
+
+instance [h : IsGaloisGroup (inertia G P) C B] : IsInertiaRing G P C where
+  toIsGaloisGroup := h
+
+variable (C' : Type*) [CommRing C'] [Algebra C' B]
+
+/-- Two decomposition rings are isomorphic. -/
+noncomputable def IsDecompositionRing.ringEquiv [IsDecompositionRing G P C]
+    [IsDecompositionRing G P C'] [FaithfulSMul C B] [FaithfulSMul C' B] :
+    C ≃+* C' :=
+  IsGaloisGroup.ringEquiv (stabilizer G P) C C' B
+
+@[simp]
+theorem IsDecompositionRing.algebraMap_ringEquiv_apply [IsDecompositionRing G P C]
+    [IsDecompositionRing G P C'] [FaithfulSMul C B] [FaithfulSMul C' B] (x : C) :
+    algebraMap C' B (IsDecompositionRing.ringEquiv G P C C' x) = algebraMap C B x := by
+  simp [IsDecompositionRing.ringEquiv, IsGaloisGroup.ringEquiv]
+
+@[simp]
+theorem IsDecompositionRing.algebraMap_ringEquiv_symm_apply [IsDecompositionRing G P C]
+    [IsDecompositionRing G P C'] [FaithfulSMul C B] [FaithfulSMul C' B] (x : C') :
+    algebraMap C B ((IsDecompositionRing.ringEquiv G P C C').symm x) = algebraMap C' B x := by
+  simp [IsDecompositionRing.ringEquiv, IsGaloisGroup.ringEquiv]
+
+/-- Two inertia rings are isomorphic. -/
+noncomputable def IsInertiaRing.ringEquiv [IsInertiaRing G P C]
+    [IsInertiaRing G P C'] [FaithfulSMul C B] [FaithfulSMul C' B] :
+    C ≃+* C' :=
+  IsGaloisGroup.ringEquiv (inertia G P) C C' B
+
+@[simp]
+theorem IsInertiaRing.algebraMap_ringEquiv_apply [IsInertiaRing G P C]
+    [IsInertiaRing G P C'] [FaithfulSMul C B] [FaithfulSMul C' B] (x : C) :
+    algebraMap C' B (IsInertiaRing.ringEquiv G P C C' x) = algebraMap C B x := by
+  simp [IsInertiaRing.ringEquiv, IsGaloisGroup.ringEquiv]
+
+@[simp]
+theorem IsInertiaRing.algebraMap_ringEquiv_symm_apply [IsInertiaRing G P C]
+    [IsInertiaRing G P C'] [FaithfulSMul C B] [FaithfulSMul C' B] (x : C') :
+    algebraMap C B ((IsInertiaRing.ringEquiv G P C C').symm x) = algebraMap C' B x := by
+  simp [IsInertiaRing.ringEquiv, IsGaloisGroup.ringEquiv]
+
+variable (A K L : Type*) [CommRing A] [Field K] [Field L] [Algebra B L] [IsFractionRing B L]
+  [Algebra A B] [Algebra A L] [IsScalarTower A B L] [Algebra K L]
+  [MulSemiringAction Gal(L/K) B] [SMulDistribClass Gal(L/K) B L]
+
+/-- If `D` is the decomposition field of `P` and `C` is an integrally closed subring of `D` whose
+fraction field is `D`, over which `B` is integral, then `C` is a decomposition ring of `P`. -/
+theorem IsDecompositionRing.of_isFractionRing (C D : Type*) [CommRing C] [Algebra C B] [Field D]
+    [Algebra C D] [Algebra C L] [Algebra D L] [IsScalarTower C D L] [IsScalarTower C B L]
+    [IsFractionRing C D] [IsIntegrallyClosed C] [Algebra.IsIntegral C B]
+    [IsGaloisGroup (stabilizer Gal(L/K) P) D L] :
+    IsDecompositionRing Gal(L/K) P C :=
+  {toIsGaloisGroup := .of_isFractionRing (stabilizer Gal(L/K) P) C B D L}
+
+/-- If `E` is the inertia field of `P` and `C` is an integrally closed subring of `E` whose
+fraction field is `E`, over which `B` is integral, then `C` is an inertia ring of `P`. -/
+theorem IsInertiaRing.of_isFractionRing (C D : Type*) [CommRing C] [Algebra C B] [Field D]
+    [Algebra C D] [Algebra C L] [Algebra D L] [IsScalarTower C D L] [IsScalarTower C B L]
+    [IsFractionRing C D] [IsIntegrallyClosed C] [Algebra.IsIntegral C B]
+    [IsGaloisGroup (inertia Gal(L/K) P) D L] :
+    IsInertiaRing Gal(L/K) P C :=
+  {toIsGaloisGroup := .of_isFractionRing (inertia Gal(L/K) P) C B D L}
+
+end Ideal
+
+end basic
+
 variable (A K L : Type*) {B : Type*} [Field K] [Field L] [Algebra K L] [CommRing A] [CommRing B]
   [Algebra A B] {p : Ideal A} (P : Ideal B) [P.LiesOver p]
 
