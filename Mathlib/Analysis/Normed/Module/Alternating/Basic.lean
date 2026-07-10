@@ -499,7 +499,7 @@ lemma fderivCompContinuousLinearMap_of_isEmpty [IsEmpty ι] :
 
 variable (G) in
 /-- `fderivCompContinuousLinearMap` as a continuous linear map -/
-def fderivCompContinuousLinearMapCLM (g : E →L[𝕜] F) :
+noncomputable def fderivCompContinuousLinearMapCLM (g : E →L[𝕜] F) :
     (F [⋀^ι]→L[𝕜] G) →L[𝕜] (E →L[𝕜] F) →L[𝕜] (E [⋀^ι]→L[𝕜] G) :=
   LinearMap.mkContinuous
     { toFun := (fderivCompContinuousLinearMap · g)
