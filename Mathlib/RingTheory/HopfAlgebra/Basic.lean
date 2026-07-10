@@ -233,40 +233,37 @@ noncomputable abbrev ofAntipodeOfAdjoin
       · -- this is the harder one, likely reducing to a calc and repr
         intro x y hx hy hxP hyP
         unfold P
-        set α := ℛ R (x * y) with hα
         symm
         calc
           _ = (Algebra.linearMap R A ∘ₗ ε) x * (Algebra.linearMap R A ∘ₗ ε) y := by
               simp only [LinearMap.coe_comp, Function.comp_apply, counit_mul, linearMap_apply, map_mul]
-          _ = (∑ i ∈ (ℛ R x).index, (ℛ R x).left i * ((MulOpposite.opLinearEquiv R).symm.toLinearMap
-              ∘ₗ S.toLinearMap) ((ℛ R x).right i)) * (Algebra.linearMap R A ∘ₗ ε) y := by
-              congr 1
-              unfold P at hxP
-              rw [← hxP]
-              simp only [LinearMap.coe_comp, Function.comp_apply]
-              -- rw [Coalgebra.Repr.eq (R := R) x]
-              -- simp only [map_sum, LinearMap.rTensor_tmul, LinearMap.mul'_apply]
+          -- replace `ε(y)•1` using `hyP` (the outer sum must be over `y`, not `x`)
+          _ = (Algebra.linearMap R A ∘ₗ ε) x * ∑ j ∈ (ℛ R y).index,
+              ((MulOpposite.opLinearEquiv R).symm.toLinearMap ∘ₗ S.toLinearMap) ((ℛ R y).left j) *
+              (ℛ R y).right j := by
               sorry
-              -- congr
-              -- simp only [LinearMap.coe_comp, Function.comp_apply, linearMap_apply,
-              --   LinearEquiv.coe_coe, MulOpposite.coe_opLinearEquiv_symm, AlgHom.coe_toLinearMap]
-              -- unfold P at hxP
-              -- rw [← show (algebraMap R A) (ε x) = (Algebra.linearMap R A ∘ₗ ε) x by exact DFunLike.congr_fun rfl (ε x)] at hxP
-              -- rw [← hxP]
-              -- sorry
-          _ = ∑ i ∈ (ℛ R x).index, (ℛ R x).left i * (∑ j ∈ (ℛ R y).index, (ℛ R y).left j *
-              (((MulOpposite.opLinearEquiv R).symm.toLinearMap ∘ₗ S.toLinearMap) ((ℛ R y).right j)))
-              * (((MulOpposite.opLinearEquiv R).symm.toLinearMap ∘ₗ S.toLinearMap) ((ℛ R x).right i)) := by
-
+          -- `ε(x)•1 = algebraMap R A (ε x)` is central (`Algebra.commutes`), so it slides
+          -- between `S'(y₍₁₎)` and `y₍₂₎`; then replace it using `hxP`
+          _ = ∑ j ∈ (ℛ R y).index,
+              ((MulOpposite.opLinearEquiv R).symm.toLinearMap ∘ₗ S.toLinearMap) ((ℛ R y).left j) *
+              (∑ i ∈ (ℛ R x).index,
+                ((MulOpposite.opLinearEquiv R).symm.toLinearMap ∘ₗ S.toLinearMap) ((ℛ R x).left i) *
+                (ℛ R x).right i) *
+              (ℛ R y).right j := by
               sorry
-
-          _ = ∑ i ∈ (ℛ R x).index, ∑ j ∈ (ℛ R y).index, ((ℛ R x).left i) * ((ℛ R y).right j) *
-              (((MulOpposite.opLinearEquiv R).symm.toLinearMap ∘ₗ S.toLinearMap) ((ℛ R x).right i) * ((ℛ R y).right j)) := by sorry
-          _ = ∑ k ∈ (ℛ R (x * y)).index, (ℛ R (x * y)).left k * (((MulOpposite.opLinearEquiv R).symm.toLinearMap ∘ₗ S.toLinearMap) ((ℛ R (x * y)).right k)) := by sorry
+          -- distribute (`Finset.mul_sum`/`Finset.sum_mul`), swap sums (`Finset.sum_comm`),
+          -- and use that `S` is an anti-hom: `S'(x₍₁₎ * y₍₁₎) = S'(y₍₁₎) * S'(x₍₁₎)`
+          _ = ∑ i ∈ (ℛ R x).index, ∑ j ∈ (ℛ R y).index,
+              ((MulOpposite.opLinearEquiv R).symm.toLinearMap ∘ₗ S.toLinearMap)
+                ((ℛ R x).left i * (ℛ R y).left j) *
+              ((ℛ R x).right i * (ℛ R y).right j) := by
+              sorry
+          -- `comul (x * y) = comul x * comul y` (`map_mul` of `Bialgebra.comulAlgHom`),
+          -- then `Coalgebra.Repr.eq` for `x` and `y`, `Finset.sum_mul_sum`,
+          -- `Algebra.TensorProduct.tmul_mul_tmul`, and push through `map_sum`,
+          -- `LinearMap.rTensor_tmul`, `LinearMap.mul'_apply`
           _ = _ := by
-            have : x * y ∈ adjoin R X := by sorry
-
-            sorry
+              sorry
       · exact hy
     specialize hgood t (by rw [hX]; exact Algebra.mem_top)
     exact hgood
