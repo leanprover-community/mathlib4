@@ -874,8 +874,8 @@ theorem integral_boundary_unbounded_rect_eq_zero_of_differentiable_on_off_counta
     (hint₁ : IntegrableOn (fun (t : ℝ) ↦ f (x₁ + t * I)) (Ioi y) volume)
     (hint₂ : IntegrableOn (fun (t : ℝ) ↦ f (x₂ + t * I)) (Ioi y) volume)
     (htendsto : Tendsto f (comap im atTop) (𝓝 0)) :
-    (∫ (x : ℝ) in x₁..x₂, f (x + y * I)) + (I • ∫ (t : ℝ) in Ioi y, f (x₂ + t * I))
-      - (I • ∫ (t : ℝ) in Ioi y, f (x₁ + t * I)) = 0 := by
+    (∫ (x : ℝ) in x₁..x₂, f (x + y * I)) + (I • ∫ (t : ℝ) in Ioi y, f (x₂ + t * I)) -
+      (I • ∫ (t : ℝ) in Ioi y, f (x₁ + t * I)) = 0 := by
   refine integral_boundary_unbounded_rect_eq_zero_of_differentiable_on_off_countable' y hcont s hs
     hdiff ?_ ?_ htendsto
   · exact intervalIntegral_tendsto_integral_Ioi y hint₁ fun ⦃U⦄ a ↦ a
