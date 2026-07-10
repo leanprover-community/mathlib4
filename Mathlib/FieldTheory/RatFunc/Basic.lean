@@ -254,8 +254,8 @@ macro "smul_tac" : tactic => `(tactic|
         | rintro (⟨⟩ : _⟮X⟯)
         | intro) <;>
     simp_rw [← ofFractionRing_smul] <;>
-    simp only [add_comm, mul_comm, zero_smul, succ_nsmul, zsmul_eq_mul, mul_add, mul_one, mul_zero,
-      neg_add, mul_neg,
+    simp only [add_comm, mul_comm, zero_smul, one_smul, succ_psmul, succ_nsmul, zsmul_eq_mul,
+      mul_add, mul_one, mul_zero, neg_add, mul_neg,
       Int.cast_zero, Int.cast_add, Int.cast_one,
       Int.cast_negSucc, Int.cast_natCast, Nat.cast_succ,
       Localization.mk_zero, Localization.add_mk_self, Localization.neg_mk,
@@ -290,6 +290,8 @@ def instAddCommGroup : AddCommGroup K⟮X⟯ where
   add_zero := by frac_tac
   neg_add_cancel := by frac_tac
   sub_eq_add_neg := by frac_tac
+  psmul_one := by smul_tac
+  psmul_succ _ := by smul_tac
   nsmul_zero := by smul_tac
   nsmul_succ _ := by smul_tac
   zsmul_zero' := by smul_tac
