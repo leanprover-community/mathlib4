@@ -288,7 +288,12 @@ noncomputable abbrev ofAntipodeOfAdjoin
           -- `Algebra.TensorProduct.tmul_mul_tmul`, and push through `map_sum`,
           -- `LinearMap.rTensor_tmul`, `LinearMap.mul'_apply`
           _ = _ := by
-              sorry
+              simp only [LinearMap.coe_comp, Function.comp_apply]
+              rw [comul_mul, ← Coalgebra.Repr.eq (ℛ R x), ← Coalgebra.Repr.eq (ℛ R y),
+                Finset.sum_mul_sum]
+              simp only [Algebra.TensorProduct.tmul_mul_tmul, map_sum, LinearMap.rTensor_tmul,
+                LinearMap.mul'_apply, LinearMap.coe_comp, Function.comp_apply,
+                LinearEquiv.coe_coe, MulOpposite.coe_opLinearEquiv_symm, AlgHom.coe_toLinearMap]
       · exact hy
     specialize hgood t (by rw [hX]; exact Algebra.mem_top)
     exact hgood
