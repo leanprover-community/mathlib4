@@ -413,12 +413,13 @@ lemma Module.exists_localizedMap_surjective_of_surjective [Module.FinitePresenta
     (S : Submonoid R) {Mₚ : Type*} [AddCommGroup Mₚ] [Module R Mₚ]
     (f : M →ₗ[R] Mₚ) [IsLocalizedModule S f] {Nₚ : Type*} [AddCommGroup Nₚ] [Module R Nₚ]
     (g : N →ₗ[R] Nₚ) [IsLocalizedModule S g] {ϕ : Mₚ →ₗ[R] Nₚ} (hϕ : Function.Surjective ϕ) :
-    ∃ φ : M →ₗ[R] N, Function.Surjective (IsLocalizedModule.map S f g φ) := by
+    ∃ (φ : M →ₗ[R] N) (s : S) (_ : IsLocalizedModule.map S f g φ = s • ϕ),
+      Function.Surjective (IsLocalizedModule.map S f g φ) := by
   obtain ⟨φ, s, hφ⟩ := FinitePresentation.exists_lift_of_isLocalizedModule S g (ϕ ∘ₗ f)
-  refine ⟨φ, ?_⟩
   have hmap : IsLocalizedModule.map S f g φ = s • ϕ := by
     apply IsLocalizedModule.linearMap_ext S f g
     simp [IsLocalizedModule.map_comp, hφ, LinearMap.smul_comp]
+  refine ⟨φ, s, hmap, ?_⟩
   simpa only [hmap] using! ((End.isUnit_iff _).mp (IsLocalizedModule.map_units g s)).2.comp hϕ
 
 lemma Module.Finite.exists_smul_of_comp_eq_of_isLocalizedModule
