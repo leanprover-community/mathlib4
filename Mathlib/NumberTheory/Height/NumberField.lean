@@ -8,6 +8,8 @@ module
 public import Mathlib.NumberTheory.Height.Basic
 public import Mathlib.NumberTheory.Height.Northcott
 public import Mathlib.NumberTheory.NumberField.ProductFormula
+public import Mathlib.NumberTheory.NumberField.Completion.Ramification
+public import Mathlib.NumberTheory.RamificationInertia.Valuation
 
 import Mathlib.Algebra.FiniteSupport.Basic
 import Mathlib.Algebra.Order.Hom.Lattice
@@ -127,6 +129,213 @@ lemma mulHeight_eq {ι : Type*} {x : ι → K} (hx : x ≠ 0) :
       (∏ v : InfinitePlace K, (⨆ i, v (x i)) ^ v.mult) * ∏ᶠ v : FinitePlace K, ⨆ i, v (x i) := by
   simp only [FinitePlace.coe_apply, InfinitePlace.coe_apply, Height.mulHeight_eq hx,
     prod_archAbsVal_eq, prod_nonarchAbsVal_eq fun v ↦ ⨆ i, v (x i)]
+
+section extension
+
+variable (L : Type*) [Field L] [NumberField L] [Algebra K L]
+
+attribute [mk_iff] AbsoluteValue.LiesOver
+
+theorem _root_.NumberField.InfinitePlace.liesOver_iff_comap_eq {K L : Type*} [Field K] [Field L]
+    [NumberField K] [NumberField L] [Algebra K L] {v : InfinitePlace K} {w : InfinitePlace L} :
+    w.1.LiesOver v.1 ↔ w.comap (algebraMap K L) = v := by
+  rw [AbsoluteValue.liesOver_iff, AbsoluteValue.ext_iff, InfinitePlace.ext_iff]
+  rfl
+
+@[to_additive]
+theorem finprod_fiberwise {ι κ M : Type*} [CommMonoid M]
+    (s : Set ι) (g : ι → κ) (f : ι → M) (hf : f.HasFiniteMulSupport) :
+    ∏ᶠ j, ∏ᶠ i ∈ {i ∈ s | g i = j}, f i = ∏ᶠ i ∈ s, f i := by
+  classical
+  let t := hf.toFinset
+  have : ∀ i, f i ≠ 1 → i ∈ t := by simp [t]
+  have : ∀ i ∈ (hf.toFinset.filter (· ∈ s)), g i ∈ t.image g := by grind
+  rw [finprod_mem_eq_prod_filter f s hf, ← Finset.prod_fiberwise_of_maps_to this,
+    finprod_eq_prod_of_mulSupport_subset]
+  · apply Finset.prod_congr rfl
+    intro k hk
+    apply finprod_mem_eq_prod_of_subset
+    · grind [Function.mem_mulSupport]
+    · grind
+  · rw [Function.mulSupport_subset_iff]
+    intro x
+    contrapose!
+    intro h
+    apply finprod_mem_eq_one_of_forall_eq_one
+    grind
+
+@[to_additive]
+theorem finprod_fiberwise_univ {ι κ M : Type*} [CommMonoid M]
+    (g : ι → κ) (f : ι → M) (hf : f.HasFiniteMulSupport) :
+    ∏ᶠ j, ∏ᶠ i ∈ {i | g i = j}, f i = ∏ᶠ i, f i := by
+  simpa using finprod_fiberwise Set.univ g f hf
+
+theorem finprod_mem_pow_eq_pow_finsum {ι M : Type*} [CommMonoid M] (s : Set ι) (f : ι → ℕ)
+    (hf : (s ∩ f.support).Finite) (a : M) :
+    ∏ᶠ i ∈ s, a ^ f i = a ^ ∑ᶠ i ∈ s, f i := by
+  classical
+  rw [finprod_mem_eq_prod_of_subset (t := hf.toFinset.filter (· ∈ s)), Finset.prod_pow_eq_pow_sum,
+    finsum_mem_eq_sum_of_subset (t := hf.toFinset.filter (· ∈ s))]
+  · simp [Function.support]
+    grind
+  · simp
+    grind
+  · simp [Function.mulSupport]
+    intro x ⟨hx1, hx2⟩
+    refine ⟨?_, hx1⟩
+    contrapose! hx2
+    simp [hx2]
+    rw [hx2 hx1, pow_zero]
+  · simp
+    grind
+
+open IsDedekindDomain in
+theorem foo {f : Ideal (𝓞 L) → ℝ} (v : HeightOneSpectrum (𝓞 K)) :
+    ∏ᶠ (w : HeightOneSpectrum (𝓞 L)) (_ : w.under (𝓞 K) = v), f w.1 =
+      ∏ w ∈ IsDedekindDomain.primesOverFinset v.1 (𝓞 L), f w := by
+  sorry
+
+open scoped NumberField.LiesOver
+
+theorem mult_mul_finrank (v : InfinitePlace K) (w : InfinitePlace L) [hh : w.1.LiesOver v.1] :
+    v.mult * Module.finrank v.Completion w.Completion = w.mult := by
+  have : v = w.comap (algebraMap K L) := by
+    have h1 := hh.comp_eq.symm
+    rw [InfinitePlace.ext_iff]
+    rwa [AbsoluteValue.ext_iff] at h1
+  by_cases h : w.IsUnramified K
+  · rw [NumberField.InfinitePlace.Completion.finrank_eq_one_of_isUnramified v h, mul_one]
+    convert NumberField.InfinitePlace.IsUnramified.eq h
+  · rw [NumberField.InfinitePlace.Completion.finrank_eq_two_of_isRamified v h]
+    have := InfinitePlace.isRamified_iff.mp h
+    rw [InfinitePlace.mult, if_pos, InfinitePlace.mult, if_neg, one_mul]
+    simpa using this.1
+    convert this.2
+
+open IsDedekindDomain in
+theorem mulHeight_pow_finrank_aux {ι : Type*} [Nonempty ι] [Finite ι]
+    (x : ι → K) (hx : ∀ i, x i ≠ 0) : -- is nonempty required?
+    mulHeight x ^ Module.finrank K L = mulHeight (algebraMap K L ∘ x) := by
+  classical
+  by_cases hx' : x = 0
+  · simp [hx']
+  rw [mulHeight_eq hx', mulHeight_eq (by simpa [funext_iff] using hx'), mul_pow]
+  simp only [Function.comp_apply]
+  congr
+  · rw [← Finset.prod_pow]
+    let g : InfinitePlace L → InfinitePlace K := fun v ↦ v.comap (algebraMap K L)
+    rw [← Finset.univ.prod_fiberwise g]
+    apply Finset.prod_congr rfl fun v _ ↦ ?_
+    simp_rw [← InfinitePlace.comap_apply]
+    have key : ∏ w with g w = v, (⨆ i, w.comap (algebraMap K L) (x i)) ^ w.mult =
+        ∏ w with g w = v, (⨆ i, v (x i)) ^ w.mult := by
+      apply Finset.prod_congr rfl fun w hw ↦ ?_
+      rw [Finset.mem_filter_univ, ← InfinitePlace.liesOver_iff_comap_eq] at hw
+      rw [NumberField.InfinitePlace.LiesOver.comap_eq w v]
+    rw [key, Finset.prod_pow_eq_pow_sum, ← pow_mul]
+    congr
+    rw [← v.sum_inertiaDeg_eq_finrank K L, Finset.mul_sum]
+    have : (InfinitePlace.placesOver L v).toFinset =
+        ({w | g w = v} : Finset (InfinitePlace L)) := by
+      ext w
+      simp [InfinitePlace.placesOver, g, InfinitePlace.liesOver_iff_comap_eq]
+    apply Finset.sum_congr this
+    intro w hw
+    rw [Finset.mem_filter_univ, ← InfinitePlace.liesOver_iff_comap_eq] at hw
+    rw [InfinitePlace.inertiaDeg_eq_finrank]
+    apply mult_mul_finrank
+  · simp_rw [← finprod_comp_equiv NumberField.FinitePlace.equivHeightOneSpectrum.symm]
+    let g : HeightOneSpectrum (𝓞 L) → HeightOneSpectrum (𝓞 K) := fun v ↦ v.under (𝓞 K)
+    rw [← finprod_fiberwise_univ g, finprod_pow]
+    · apply finprod_congr
+      intro v
+      simp_rw [NumberField.FinitePlace.equivHeightOneSpectrum_symm_apply]
+      have key : ∀ (w : HeightOneSpectrum (𝓞 L)) (hw : w ∈ ({w | g w = v})) (i : ι),
+        ‖FinitePlace.embedding w (algebraMap K L (x i))‖ = ‖FinitePlace.embedding v (x i)‖ ^
+          (w.1.ramificationIdx (𝓞 K) * w.1.inertiaDeg (𝓞 K)) := by
+        intro w hw i
+        rw [← hw]
+        simp_rw [FinitePlace.norm_embedding, HeightOneSpectrum.adicAbv_def]
+        have : w.1.LiesOver v.1 := by
+          rw [Set.mem_setOf_eq, HeightOneSpectrum.ext_iff] at hw
+          exact ⟨hw.symm⟩
+        rw [hw, ← IsDedekindDomain.HeightOneSpectrum.valuation_liesOver L v w (x i),
+          map_pow, Ideal.ramificationIdx'_eq_ramificationIdx v.1 w.1 v.ne_bot]
+        simp [WithZeroMulInt.toNNReal, MonoidWithZeroHom.coe_mk]
+        split_ifs
+        · simp
+          symm
+          rw [zero_pow, zero_pow]
+          exact (w.asIdeal.ramificationIdx_pos (𝓞 K)).ne'
+          exact (mul_pos (w.asIdeal.ramificationIdx_pos (𝓞 K))
+            (w.asIdeal.inertiaDeg_pos (𝓞 K))).ne'
+        · rw [← Ideal.absNorm_pow_inertiaDeg v.1 w.1]
+          simp
+          push_cast
+          simp_rw [← zpow_natCast, ← zpow_mul]
+          grind
+      simp +contextual only [key]
+      simp [g]
+      let f : Ideal (𝓞 L) → ℝ :=
+        fun w ↦ ⨆ i : ι, ‖(FinitePlace.embedding v) (x i)‖ ^ (w.ramificationIdx (𝓞 K) * w.inertiaDeg (𝓞 K))
+      rw [foo L v (f := f)]
+
+      have key : ∀ i : ι, 0 ≤ ‖(FinitePlace.embedding v) (x i)‖ := by
+        intro i
+        positivity
+      simp_rw [f]
+      simp_rw [← Real.iSup_pow key]
+      rw [Finset.prod_pow_eq_pow_sum]
+      congr
+      rw [Algebra.IsAlgebraic.finrank_of_isFractionRing (𝓞 K) K (𝓞 L) L]
+      rw [← Ideal.sum_ramification_inertia_eq_finrank v.1 (𝓞 L)]
+      symm
+      apply Finset.sum_subtype
+      intro I
+      rw [IsDedekindDomain.mem_primesOverFinset_iff]
+      exact v.ne_bot
+    · apply Function.HasFiniteMulSupport.comp_of_injective
+        FinitePlace.equivHeightOneSpectrum.symm.injective
+          (Function.HasFiniteMulSupport.iSup fun i ↦ FinitePlace.hasFiniteMulSupport (hx i))
+    · apply Function.HasFiniteMulSupport.comp_of_injective
+        FinitePlace.equivHeightOneSpectrum.symm.injective
+          (f := fun v ↦ ⨆ i, v (algebraMap K L (x i)))
+      exact (Function.HasFiniteMulSupport.iSup fun i ↦ FinitePlace.hasFiniteMulSupport
+        ((map_ne_zero _).mpr (hx i)))
+
+open IsDedekindDomain in
+theorem mulHeight_pow_finrank {ι : Type*} (x : ι → K) [Finite ι] :
+    mulHeight x ^ Module.finrank K L = mulHeight (algebraMap K L ∘ x) := by
+  classical
+  by_cases hx : x = 0
+  · simp [hx]
+  rw [mulHeight_eq_mulHeight_restrict_support]
+  conv_rhs => rw [mulHeight_eq_mulHeight_restrict_support]
+  have : Function.support (algebraMap K L ∘ x) = Function.support x := by
+    ext
+    simp
+  rw [this]
+  have : Nonempty (Function.support x) := by
+    rwa [Set.nonempty_coe_sort, Function.support_nonempty_iff]
+  apply mulHeight_pow_finrank_aux
+  simp
+
+#exit
+
+theorem mulHeight₁_pow_finrank (x : K) :
+    mulHeight₁ x ^ Module.finrank K L = mulHeight₁ (algebraMap K L x) := by
+  rw [mulHeight₁_eq_mulHeight, mulHeight₁_eq_mulHeight, mulHeight_pow_finrank]
+  congr; ext i; fin_cases i <;> simp
+
+theorem finrank_nsmul_logHeight {ι : Type*} (x : ι → K) :
+    Module.finrank K L • logHeight x = logHeight (algebraMap K L ∘ x) := by
+  simp [logHeight_eq_log_mulHeight, ← mulHeight_pow_finrank]
+
+theorem finrank_nsmul_logHeight₁ (x : K) :
+    Module.finrank K L • logHeight₁ x = logHeight₁ (algebraMap K L x) := by
+  simp [logHeight₁_eq_log_mulHeight₁, ← mulHeight₁_pow_finrank]
+
+end extension
 
 variable (K) in
 lemma totalWeight_eq_sum_mult : totalWeight K = ∑ v : InfinitePlace K, v.mult := by
