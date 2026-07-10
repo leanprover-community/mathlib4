@@ -39,10 +39,10 @@ the following four equivalent conditions:
   data of two subspaces `X₀` and `X₁` which are topological complements, and where `X₀` is finite
   dimensional.
 * `ContinuousLinearMap.FredholmPackage`: a **Fredholm package** for `u : E →L[𝕜] F` is the data of
-  Fredholm decompositions `dec_dom` and `dec_codom` of `E` and `F` respectively, together with
-  a continuous linear equivalence `equiv : dec_dom.X₁ ≃ₗ[𝕜] dec_codom.X₁` between the "essential"
+  Fredholm decompositions `decDom` and `decCodom` of `E` and `F` respectively, together with
+  a continuous linear equivalence `equiv : decDom.X₁ ≃ₗ[𝕜] decCodom.X₁` between the "essential"
   (i.e finite codimension) parts of these decompositions, such that `u` equals the composition
-  `dec_codom.X₁.subtypeL ∘L equiv ∘L dec_dom.proj`.
+  `decCodom.X₁.subtypeL ∘L equiv ∘L decDom.proj`.
 
 Note that the data of a `FredholmPackage` for an operator is morally the strongest of the
 equivalent ways to assume that `u` is Fredholm (for example, it is clear how to build a canonical
@@ -147,7 +147,9 @@ variable (𝕜 E) in
 Note that we purposefully use the index `₀` for the "inessential" (i.e finite dimensional)
 part of the decomposition. -/
 structure _root_.FredholmDecomposition where
+  /-- The inessential (i.e finite dimensional) part of a Fredholm decomposition. -/
   X₀ : Submodule 𝕜 E
+  /-- The essential (i.e finite co-dimensional) part of a Fredholm decomposition. -/
   X₁ : Submodule 𝕜 E
   isTopCompl : IsTopCompl X₁ X₀
   finite_X₀ : FiniteDimensional 𝕜 X₀
@@ -159,10 +161,10 @@ abbrev _root_.FredholmDecomposition.proj (dec : FredholmDecomposition 𝕜 E) :
     E →L[𝕜] dec.X₁ := dec.X₁.projectionOntoL dec.X₀ dec.isTopCompl
 
 /-- Let `u : E →L[𝕜] F` be a continuous linear map. A **Fredholm package** for `u` is the data of
-Fredholm decompositions `dec_dom` and `dec_codom` of `E` and `F` respectively, together with
-a continuous linear equivalence `equiv : dec_dom.X₁ ≃ₗ[𝕜] dec_codom.X₁` between the "essential"
+Fredholm decompositions `decDom` and `decCodom` of `E` and `F` respectively, together with
+a continuous linear equivalence `equiv : decDom.X₁ ≃ₗ[𝕜] decCodom.X₁` between the "essential"
 (i.e finite codimension) parts of these decompositions, such that `u` equals the composition
-`dec_codom.X₁.subtypeL ∘L equiv ∘L dec_dom.proj`. In other words, in these
+`decCodom.X₁.subtypeL ∘L equiv ∘L decDom.proj`. In other words, in these
 "essential ⊕ inessential" decompositions, the matrix of `u` is
 $$\begin{pmatrix} \texttt{equiv} & 0 \cr 0 & 0 \end{pmatrix}$$
 
@@ -171,20 +173,23 @@ a Fredholm package. In practice, the condition that `u` is Fredholm is always ea
 prove, so if you need a Fredholm package you should probably get it from
 `IsFredholm.nonempty_fredholmPackage` or `IsFredholm.fredholmPackage`. -/
 structure FredholmPackage (u : E →L[𝕜] F) where
-  dec_dom : FredholmDecomposition 𝕜 E
-  dec_codom : FredholmDecomposition 𝕜 F
-  equiv : dec_dom.X₁ ≃L[𝕜] dec_codom.X₁
-  eq_equiv : u = dec_codom.X₁.subtypeL ∘L equiv ∘L dec_dom.proj
+  /-- A `FredholmDecomposition` of the domain. -/
+  decDom : FredholmDecomposition 𝕜 E
+  /-- A `FredholmDecomposition` of the codomain. -/
+  decCodom : FredholmDecomposition 𝕜 F
+  /-- An isomorphism between the essential parts of `decDom` and `decCodom`. -/
+  equiv : decDom.X₁ ≃L[𝕜] decCodom.X₁
+  eq_equiv : u = decCodom.X₁.subtypeL ∘L equiv ∘L decDom.proj
 
 lemma FredholmPackage.ker_eq {u : E →L[𝕜] F} (pkg : FredholmPackage u) :
-    u.ker = pkg.dec_dom.X₀ := by simp [pkg.eq_equiv, ker_comp]
+    u.ker = pkg.decDom.X₀ := by simp [pkg.eq_equiv, ker_comp]
 
 lemma FredholmPackage.range_eq {u : E →L[𝕜] F} (pkg : FredholmPackage u) :
-    u.range = pkg.dec_codom.X₁ := by
+    u.range = pkg.decCodom.X₁ := by
   simp [pkg.eq_equiv, range_comp]
 
 lemma FredholmPackage.mapsTo {u : E →L[𝕜] F} (pkg : FredholmPackage u) :
-    MapsTo u pkg.dec_dom.X₁ pkg.dec_codom.X₁ := by
+    MapsTo u pkg.decDom.X₁ pkg.decCodom.X₁ := by
   simpa [← FredholmPackage.range_eq, LinearMap.coe_range] using Set.mapsTo_range _ _
 
 lemma FredholmPackage.equiv_eq_restrict {u : E →L[𝕜] F} (pkg : FredholmPackage u) :
@@ -199,17 +204,17 @@ lemma FredholmPackage.isInvertible_restrict {u : E →L[𝕜] F} (pkg : Fredholm
 /-- The data of a Fredholm package for `u` determines a canonical quasi-inverse of `u`. -/
 def FredholmPackage.quasiInverse {u : E →L[𝕜] F} (pkg : FredholmPackage u) :
     F →L[𝕜] E :=
-  pkg.dec_dom.X₁.subtypeL ∘L pkg.equiv.symm ∘L pkg.dec_codom.proj
+  pkg.decDom.X₁.subtypeL ∘L pkg.equiv.symm ∘L pkg.decCodom.proj
 
 /-- The data of a Fredholm package for `u` determines a canonical quasi-inverse of `u`. -/
 lemma FredholmPackage.isQuasiInverse {u : E →L[𝕜] F} (pkg : FredholmPackage u) :
     u.IsQuasiInverse pkg.quasiInverse := by
   nth_rw 1 [pkg.eq_equiv, quasiInverse]
-  have hdom : IsQuasiInverse pkg.dec_dom.X₁.subtype pkg.dec_dom.proj :=
-    have := pkg.dec_dom.finite_X₀
+  have hdom : IsQuasiInverse pkg.decDom.X₁.subtype pkg.decDom.proj :=
+    have := pkg.decDom.finite_X₀
     isQuasiInverse_subtype_projectionOnto _
-  have hcodom : IsQuasiInverse pkg.dec_codom.X₁.subtype pkg.dec_codom.proj :=
-    have := pkg.dec_codom.finite_X₀
+  have hcodom : IsQuasiInverse pkg.decCodom.X₁.subtype pkg.decCodom.proj :=
+    have := pkg.decCodom.finite_X₀
     isQuasiInverse_subtype_projectionOnto _
   refine .of_comp_left hcodom.symm <| .of_comp_right hdom ?_
   simp_rw [FredholmDecomposition.proj, toLinearMap_comp, toLinearMap_subtypeL,
@@ -294,12 +299,12 @@ def IsFredholm.fredholmPackage {u : E →L[𝕜] F}
     (u_fred : IsFredholm u) {dom₁ : Submodule 𝕜 E} {codom₀ : Submodule 𝕜 F}
     (h_dom : IsTopCompl u.ker dom₁) (h_codom : IsTopCompl u.range codom₀) :
     FredholmPackage u where
-  dec_dom := {
+  decDom := {
     X₀ := u.ker
     X₁ := dom₁
     isTopCompl := h_dom.symm
     finite_X₀ := u_fred.finite_ker }
-  dec_codom := {
+  decCodom := {
     X₀ := codom₀
     X₁ := u.range
     isTopCompl := h_codom
