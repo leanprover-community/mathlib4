@@ -801,7 +801,7 @@ theorem closedInterior_eq_interior_union_surface [IsOrderedAddMonoid k] [ZeroLEO
 
 theorem closedInterior_sdiff_interior [IsOrderedAddMonoid k] [ZeroLEOneClass k]
     {n : ℕ} [NeZero n] (s : Simplex k P n) :
-    s.closedInterior \ s.interior = ⋃ i : Fin (n + 1), (s.faceOpposite i).closedInterior := by
+    s.closedInterior \ s.interior = s.surface := by
   simpa [closedInterior_eq_interior_union] using
     fun i ↦ (s.disjoint_interior_closedInterior_faceOpposite i).symm
 
