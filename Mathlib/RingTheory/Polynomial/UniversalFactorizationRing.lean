@@ -593,12 +593,9 @@ def UniversalCoprimeFactorizationRing.homEquiv :
           AlgHom.comp_toRingHom, ← Polynomial.map_map] <;> rfl⟩
   invFun q := by
     letI f := (UniversalFactorizationRing.homEquiv S m k hn p).symm ⟨q.1, q.2.1⟩
-    refine IsLocalization.liftAlgHom (f := f)
-      (M := .powers (UniversalFactorizationRing.presentation m k hn p).jacobian) ?_
+    apply IsLocalization.Away.liftAlgHom (f := f)
+      (UniversalFactorizationRing.presentation m k hn p).jacobian
     nontriviality S
-    rw [Subtype.forall]
-    change Submonoid.powers _ ≤ (IsUnit.submonoid _).comap f
-    simp only [Submonoid.powers_le, Submonoid.mem_comap, IsUnit.mem_submonoid_iff]
     rw [← AlgHom.coe_toRingHom, UniversalFactorizationRing.jacobian_resentation, map_mul,
       ← Polynomial.resultant_map_map, IsUnit.mul_iff]
     refine ⟨by cases n <;> simp, ?_⟩
@@ -612,7 +609,7 @@ def UniversalCoprimeFactorizationRing.homEquiv :
   left_inv f := by
     apply IsLocalization.algHom_ext
       (.powers (UniversalFactorizationRing.presentation m k hn p).jacobian)
-    ext; simp
+    ext; simp [Algebra.algHom]
   right_inv q := by
     apply Subtype.ext
     convert! congr($((UniversalFactorizationRing.homEquiv S m k hn p).apply_symm_apply
@@ -679,7 +676,6 @@ lemma UniversalCoprimeFactorizationRing.exists_liesOver_residueFieldMap_bijectiv
         MonicDegreeEq.map, Polynomial.map_map]
       rfl
 
-set_option maxHeartbeats 400000 in -- Needed after nightly-2026-03-04
 open UniversalCoprimeFactorizationRing in
 /-- If a monic polynomial `p : R[X]` factors into a product of coprime monic polynomials `p = f * g`
 in the residue field `κ(P)` of some `P : Spec R`,

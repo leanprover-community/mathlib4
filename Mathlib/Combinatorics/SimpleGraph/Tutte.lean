@@ -16,7 +16,7 @@ public import Mathlib.Data.Fintype.Card
 
 ## Main definitions
 
-* `SimpleGraph.TutteViolator G u` is a set of vertices `u` such that the amount of
+* `SimpleGraph.IsTutteViolator G u` is a set of vertices `u` such that the amount of
   odd components left after deleting `u` from `G` is larger than the number of vertices in `u`.
   This certifies non-existence of a perfect matching.
 
@@ -90,7 +90,7 @@ private lemma Subgraph.IsMatching.exists_verts_compl_subset_universalVerts
   have exists_complMatch (K : G.deleteUniversalVerts.coe.ConnectedComponent) :
       ∃ M : Subgraph G, M.verts = Subtype.val '' K.supp \ M1.verts ∧ M.IsMatching := by
     have : G.IsClique (Subtype.val '' K.supp \ M1.verts) :=
-      ((h' K).of_induce).subset Set.diff_subset
+      ((h' K).of_induce).subset Set.sdiff_subset
     rw [← this.even_iff_exists_isMatching (Set.toFinite _), hM1.1]
     exact even_ncard_image_val_supp_sdiff_image_val_rep_union _ ht hrep
   choose complMatch hcomplMatch_compl hcomplMatch_match using exists_complMatch
@@ -99,7 +99,7 @@ private lemma Subgraph.IsMatching.exists_verts_compl_subset_universalVerts
     refine .iSup hcomplMatch_match fun i j hij ↦ (?_ : Disjoint _ _)
     rw [(hcomplMatch_match i).support_eq_verts, hcomplMatch_compl i,
         (hcomplMatch_match j).support_eq_verts, hcomplMatch_compl j]
-    exact Set.disjoint_of_subset Set.diff_subset Set.diff_subset <|
+    exact Set.disjoint_of_subset Set.sdiff_subset Set.sdiff_subset <|
       Set.disjoint_image_of_injective Subtype.val_injective <|
         SimpleGraph.pairwise_disjoint_supp_connectedComponent _ hij
   have disjointM12 : Disjoint M1.support M2.support := by
@@ -108,7 +108,7 @@ private lemma Subgraph.IsMatching.exists_verts_compl_subset_universalVerts
     exact fun K ↦ hcomplMatch_compl K ▸ Set.disjoint_sdiff_right
   -- The only vertices left are indeed contained in universalVerts
   have : (M1.verts ∪ M2.verts)ᶜ ⊆ G.universalVerts := by
-    rw [Set.compl_subset_comm, Set.compl_eq_univ_diff]
+    rw [Set.compl_subset_comm, Set.compl_eq_univ_sdiff]
     intro v hv
     by_cases h : v ∈ M1.verts
     · exact M1.verts.mem_union_left _ h
@@ -294,21 +294,21 @@ lemma exists_isTutteViolator (h : ∀ (M : G.Subgraph), ¬M.IsPerfectMatching)
     obtain ⟨p, hp⟩ := Reachable.exists_path_of_dist (K.connected_toSimpleGraph x y)
     obtain ⟨x, a, b, hxa, hxb, hnadjxb, hnxb⟩ := Walk.exists_adj_adj_not_adj_ne hp.2
       (p.reachable.one_lt_dist_of_ne_of_not_adj hxy.1 hxy.2)
-    simp only [ConnectedComponent.toSimpleGraph, deleteUniversalVerts, universalVerts, ne_eq,
+    simp only [ConnectedComponent.toSimpleGraph, deleteUniversalVerts, universalVerts,
       Subgraph.verts_top, comap_adj, Function.Embedding.coe_subtype,
       Subgraph.coe_adj, Subgraph.induce_adj, Subtype.coe_prop, Subgraph.top_adj, true_and]
       at hxa hxb hnadjxb
-    obtain ⟨c, hc⟩ : ∃ (c : V), (a : V) ≠ c ∧ ¬ Gmax.Adj c a := by
-      simpa [universalVerts] using a.1.2.2
-    have hbnec : b.val.val ≠ c := by rintro rfl; exact hc.2 hxb.symm
+    obtain ⟨c, hc⟩ : ∃ (c : V), (a : V) ≠ c ∧ ¬ Gmax.Adj a c := by
+      simpa [universalVerts, IsUniversal] using a.1.2.2
+    have hbnec : b.val.val ≠ c := by rintro rfl; exact hc.2 hxb
     obtain ⟨_, hG1⟩ := hMaximal _ <| left_lt_sup.mpr (by
       rw [edge_le_iff (v := x.1.1) (w := b.1.1)]
       simp [hnadjxb, Subtype.val_injective.ne <| Subtype.val_injective.ne hnxb])
     obtain ⟨_, hG2⟩ := hMaximal _ <| left_lt_sup.mpr (by
-      rwa [edge_le_iff (v := a.1.1) (w := c), adj_comm, not_or])
-    have hcnex : c ≠ x.val.val := by rintro rfl; exact hc.2 hxa
+      rwa [edge_le_iff (v := a.1.1) (w := c), not_or])
+    have hcnex : x.val.val ≠ c := by rintro rfl; exact hc.2 hxa.symm
     obtain ⟨Mcon, hMcon⟩ := tutte_exists_isPerfectMatching_of_near_matchings hxa
-      hxb hnadjxb (fun hadj ↦ hc.2 hadj.symm) (by lia) hcnex.symm hc.1 hbnec hG1 hG2
+      hxb hnadjxb (fun hadj ↦ hc.2 hadj) (by lia) hcnex hc.1 hbnec hG1 hG2
     exact hMatchingFree Mcon hMcon
 
 /-- **Tutte's theorem**
