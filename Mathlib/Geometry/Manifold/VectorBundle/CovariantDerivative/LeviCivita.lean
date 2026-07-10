@@ -75,6 +75,8 @@ variable
   [∀ x, InnerProductSpace ℝ (E x)] [FiberBundle F E] [VectorBundle ℝ F E]
 
 variable (IB F E) in
+/-- A vector in `E x` is uniquely determined by its scalar product with sections that
+are differentiable at `x` -/
 public lemma injective_inner_mdifferentiableAt_section [CompleteSpace F] (x : B) :
     Function.Injective
       (fun X₀ : E x ↦
@@ -84,6 +86,8 @@ public lemma injective_inner_mdifferentiableAt_section [CompleteSpace F] (x : B)
   exact (VectorBundle.injective_eval_mdifferentiableAt_sec ..).comp Φ.injective
 
 variable (IB F E) in
+/-- A vector in `E x` is uniquely determined by its scalar product with sections that
+are `C^n` at `x` -/
 public lemma injective_inner_contMDiffAt_section [CompleteSpace F] (n : ℕ∞ω) (x : B) :
     Function.Injective
       (fun X₀ : E x ↦
@@ -102,12 +106,15 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
   {M : Type*} [TopologicalSpace M] [ChartedSpace H M] [IsManifold I 1 M]
   [RiemannianBundle (fun (x : M) ↦ TangentSpace I x)]
 
+/-- A tangent vector at `x` is uniquely determined by its scalar product with differentiable
+vector fields -/
 lemma injective_inner_mdifferentiableAt_vectorField [CompleteSpace E] (x : M) :
     Function.Injective
       (fun X₀ : TangentSpace I x ↦
         fun (Z : Π x, TangentSpace I x) (_ : MDiffAt (T% Z) x) ↦ (⟪X₀, Z x⟫)) :=
   injective_inner_mdifferentiableAt_section (E := TangentSpace I) I E x
 
+/-- A tangent vector at `x` is uniquely determined by its scalar product with `C^n` vector fields -/
 lemma injective_inner_contMDiffAt_vectorField {n : ℕ∞ω} [CompleteSpace E] (x : M) :
     Function.Injective
       (fun X₀ : TangentSpace I x ↦
@@ -346,7 +353,7 @@ public theorem leviCivitaConnection_apply_right [FiniteDimensional ℝ E] {x : M
   rw [real_inner_comm]
   exact lcAux_apply _ hZ hY hX
 
-public lemma isMetricCompatible_leviCivitaConnection[FiniteDimensional ℝ E] :
+public lemma isMetricCompatible_leviCivitaConnection [FiniteDimensional ℝ E] :
     (leviCivitaConnection I M).IsMetricCompatible (M := M) (V := TangentSpace I) := by
   rw [isMetricCompatible_iff]
   intro x X Y Z hX hY hZ
@@ -373,7 +380,7 @@ public lemma leviCivitaConnection_torsion_eq_zero [FiniteDimensional ℝ E] :
 /-- `leviCivitaConnection` is a Levi-Civita connection (i.e., compatible and torsion-free) -/
 public lemma leviCivitaConnection_isLeviCivitaConnection [FiniteDimensional ℝ E] :
     (leviCivitaConnection I M).IsLeviCivitaConnection :=
-  ⟨leviCivitaConnection_isMetricCompatible I, leviCivitaConnection_torsion_eq_zero I⟩
+  ⟨isMetricCompatible_leviCivitaConnection I, leviCivitaConnection_torsion_eq_zero I⟩
 
 end existence
 
