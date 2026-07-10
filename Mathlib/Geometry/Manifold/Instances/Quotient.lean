@@ -7,7 +7,6 @@ Authors: Michael Rothgang, Pepa Montero, Archibald Browne, Enrique Díaz, Juan J
 module
 
 public import Mathlib.Topology.Covering.Quotient
-public import Mathlib.Geometry.Manifold.ContMDiff.Defs
 public import Mathlib.Geometry.Manifold.Algebra.SMul
 
 /-!
@@ -206,3 +205,5 @@ instance : IsManifold I n (orbitRel.Quotient G M) where
 end MulAction
 
 end
+
+#min_imports
