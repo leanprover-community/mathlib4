@@ -52,6 +52,21 @@ Hence, you should not typically prove that an operator is Fredholm by building a
 (consider using `IsFredholm.of_isInvertible_restrict`); instead, when you know that an operator is
 Fredholm, you can obtain a `FredholmPackage` from `IsFredholm.nonempty_fredholmPackage`
 in order to conveniently use the full strength of Fredholmness.
+
+## Main statements
+
+* `ContinuousLinearMap.isFredholm_tfae`: the equivalence between conditions 1, 2, 3 and 4 above.
+  In practice, most of the interesting directions should be covered by specific API lemmas.
+* `ContinuousLinearMap.FredholmPackage.isQuasiInverse`: given a `FredholmPackage` for `u`,
+  one can build a canonical continuous quasi-inverse of `u`.
+* `ContinuousLinearMap.IsFredholm.of_isInvertible_restrict`: if a continuous linear map induces
+  an isomorphism between finite codimension subspaces, then it is Fredholm.
+* `ContinuousLinearMap.IsFredholm.of_restrict` (not in Mathlib yet) is a generalization
+  of the above: if a continuous linear map induces a Fredholm operator between finite codimension
+  subspaces, then the original map is Fredholm as well.
+* `IsFredholm.nonempty_fredholmPackage`: every Fredholm operator admits a Fredholm package.
+  This is the primary way to obtain Fredholm packages.
+
 -/
 
 @[expose] public noncomputable section
@@ -81,8 +96,7 @@ has finite dimension.
 See also `isFredholm_tfae` for other equivalent characterizations.
 We will also prove later (not in Mathlib yet) that for maps between Banach (or even Fréchet)
 spaces over `ℝ` or `ℂ`, all the conditions follow from the kernel and cokernel having finite
-dimension.
--/
+dimension. -/
 structure IsFredholm (u : E →L[𝕜] F) : Prop where
   isStrictMap : IsStrictMap u
   isClosed_range : IsClosed (u.range : Set F)
@@ -91,6 +105,7 @@ structure IsFredholm (u : E →L[𝕜] F) : Prop where
   closedComplemented_ker : u.ker.ClosedComplemented
 
 variable [CompleteSpace 𝕜] [IsTopologicalAddGroup F] [ContinuousSMul 𝕜 F] in
+/-- A Fredholm operator has (topologically) complemented range. -/
 lemma IsFredholm.closedComplemented_range {u : E →L[𝕜] F} (u_fred : IsFredholm u) :
     u.range.ClosedComplemented :=
   have := u_fred.finite_coker
@@ -288,6 +303,19 @@ theorem IsFredholm.nonempty_fredholmPackage {u : E →L[𝕜] F}
 
 variable [T2Space E] [T2Space F]
 
+/--
+Let `E`, `F` be two Hausdorff topological vector spaces over a complete `NontriviallyNormedField`
+denoted `𝕜`, and `u : E →L[𝕜] F` a continuous linear map. The followng conditions are equivalent:
+
+1. `T` is a **Fredholm operator**, in the sense of `ContinuousLinearMap.IsFredholm`.
+2. `T` admits a continuous **quasi-inverse**, in the sense of `LinearMap.IsQuasiInverse`.
+3. There are finite-codimension subspaces `E₁` and `F₁` of `E` and `F` between which `T` induces
+  an isomorphism.
+4. `T` admits a `FredholmPackage`.
+
+In practice, condition `4` is the "strongest", so you should probably not use it to *prove* that an
+operator is Fredholm.
+-/
 theorem isFredholm_tfae (u : E →L[𝕜] F) : List.TFAE
     [
       IsFredholm u,
