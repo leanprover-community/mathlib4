@@ -534,9 +534,16 @@ def boolToPropOrBool (x y : Bool) : PropOrBool x :=
   | true => y = true
   | false => y
 
-theorem foo : let t := true; boolToPropOrBool t t := by
+example : let t := true; boolToPropOrBool t t := by
   intro t
   have h : t = true := rfl
   rw! [h]
   guard_target =ₛ boolToPropOrBool true true
   rfl
+
+example : let t := true; boolToPropOrBool (t || true) t := by
+  intro t
+  have h : t = false := test_sorry
+  rw! [h]
+  guard_target =ₛ boolToPropOrBool (false || true) false
+  contradiction
