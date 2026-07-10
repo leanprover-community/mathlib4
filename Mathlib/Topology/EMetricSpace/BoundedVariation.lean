@@ -1216,9 +1216,10 @@ lemma eVariationOn_id_Icc (a b : ℝ) : eVariationOn id (Icc a b) = .ofReal (b -
 lemma BoundedVariationOn.id_Icc (a b : ℝ) : BoundedVariationOn id (Icc a b) := by
   simp [BoundedVariationOn]
 
+end Monotone
+
 /-! ### Lipschitz functions and bounded variation -/
 
-end Monotone
 section LipschitzOnWith
 
 variable {F : Type*} [PseudoEMetricSpace F]
