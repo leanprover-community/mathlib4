@@ -84,7 +84,7 @@ theorem toNonUnitalNonAssocSemiring_injective :
     Function.Injective (@toNonUnitalNonAssocSemiring R) := by
   intro R₁ R₂ h
   have h' : R₁.toSemigroup = R₂.toSemigroup := Semigroup.ext congr($(h).mul)
-  have := congr($(h').ppow)
+  have := congr($(h').toPPow)
   rcases R₁ with ⟨⟩
   rcases R₂ with ⟨⟩
   congr
@@ -198,7 +198,7 @@ namespace NonUnitalRing
     ext : 1 <;> assumption
   have : inst₁.toSemigroup = inst₂.toSemigroup := by
     ext : 1 <;> assumption
-  have := congr($(this).ppow)
+  have := congr($(this).toPPow)
   -- Split into fields and prove they are equal using the above.
   cases inst₁; cases inst₂
   congr
