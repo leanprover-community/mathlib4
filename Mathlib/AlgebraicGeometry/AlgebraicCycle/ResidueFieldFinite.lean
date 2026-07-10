@@ -126,4 +126,11 @@ lemma isClosed_singleton_of_coheight_eq_one [Order.KrullDimLE 1 X]
   have hle : z ≤ q := Scheme.le_iff_specializes.mpr hspec
   exact ((Scheme.le_iff_specializes.mp (hmin hle)).antisymm hspec).eq
 
+/-- The residue field at a codimension-one point of a curve locally of finite type over `k`
+is a finite extension of `k`: the point is closed, so this is Zariski's lemma. -/
+lemma finite_residueField_of_coheight_eq_one [Order.KrullDimLE 1 X]
+    [LocallyOfFiniteType (X ↘ Spec (CommRingCat.of k))] {q : X} (hq : coheight q = 1) :
+    Module.Finite k (X.residueField q) :=
+  finite_residueField_of_isClosed k (isClosed_singleton_of_coheight_eq_one hq)
+
 end AlgebraicGeometry.AlgebraicCycle.SheafViaSubmodule

@@ -29,10 +29,10 @@ in the line `L_p(D)`, `residueLineSheaf`):
 
 Along the way we provide two pieces of reusable API:
 
-* `hLinearEquivOfIso`/`h_eq_of_iso`/`eulerChar_eq_of_iso`: an isomorphism of sheaves of
-  modules induces `k`-linear isomorphisms on cohomology, so `hⁿ` and `χ` are
-  isomorphism-invariant (TODO: move next to `Scheme.Modules.eulerChar` in
-  `Mathlib.AlgebraicGeometry.AlgebraicCycle.EulerCharAdditive`);
+* `hLinearEquivOfIso`/`h_eq_of_iso`/`eulerChar_eq_of_iso`/`hasEulerCharacteristic_of_iso`:
+  an isomorphism of sheaves of modules induces `k`-linear isomorphisms on cohomology, so `hⁿ`,
+  `χ` and its well-definedness are isomorphism-invariant (TODO: move next to
+  `Scheme.Modules.eulerChar` in `Mathlib.AlgebraicGeometry.AlgebraicCycle.EulerCharAdditive`);
 * `skyscraperSectionsAddEquiv`: the sections of a skyscraper presheaf over an open containing
   the point are its value (TODO: upstream to the skyscraper development).
 -/
@@ -86,6 +86,17 @@ lemma eulerChar_eq_of_iso (e : F ≅ G) :
     Scheme.Modules.eulerChar k F = Scheme.Modules.eulerChar k G := by
   rw [Scheme.Modules.eulerChar, Scheme.Modules.eulerChar]
   exact finsum_congr fun n => by rw [h_eq_of_iso k e n]
+
+/-- A well-defined Euler characteristic transports along an isomorphism of sheaves of
+modules. -/
+lemma hasEulerCharacteristic_of_iso (e : F ≅ G)
+    (hF : F.HasEulerCharacteristic k) : G.HasEulerCharacteristic k := by
+  obtain ⟨N, hb⟩ := hF.vanishing
+  refine ⟨fun n => ?_, N, fun n hn => ?_⟩
+  · haveI := hF.finite n
+    exact Module.Finite.equiv (hLinearEquivOfIso k e n)
+  · haveI := hb n hn
+    exact ((hLinearEquivOfIso k e n).symm.toEquiv).subsingleton
 
 end IsoInvariance
 

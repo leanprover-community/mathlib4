@@ -1,3 +1,4 @@
+import Mathlib.AlgebraicGeometry.Properties
 import Mathlib.Order.KrullDimension
 
 /-!
@@ -7,10 +8,11 @@ This file records two order-theoretic characterisations of `Order.KrullDimLE n` 
 `KrullDimLE n` holds iff every point of coheight at least `n` is minimal (equivalently, every point
 of height at least `n` is maximal). Geometrically, applied to the specialization order of a scheme,
 `KrullDimLE 1` says exactly that the codimension-one points are closed, which is how a curve enters
-the Riemann–Roch argument.
+the Riemann–Roch argument; this geometric consequence is recorded as
+`AlgebraicGeometry.eq_of_le_of_coheight_eq_one`.
 
-TODO: These are general facts about `Order.KrullDimLE` and should be upstreamed to
-`Mathlib.Order.KrullDimension`.
+TODO: The order-theoretic facts are general facts about `Order.KrullDimLE` and should be upstreamed
+to `Mathlib.Order.KrullDimension`.
 -/
 
 open Order
@@ -71,3 +73,20 @@ lemma Order.KrullDimLE.isMin_of_le_coheight {X : Type*} [Preorder X] {n : ℕ}
 lemma Order.KrullDimLE.isMax_of_le_height {X : Type*} [Preorder X] {n : ℕ}
     [Order.KrullDimLE n X] {x : X} (hx : n ≤ height x) : IsMax x :=
   krullDimLE_iff_height_le_isMax.mp ‹_› x hx
+
+/-!
+### Application to the specialization order of a scheme
+-/
+
+namespace AlgebraicGeometry
+
+/-- On a scheme of Krull dimension at most one, a codimension-one point is a closed point:
+every point specializing to it is equal to it. -/
+lemma eq_of_le_of_coheight_eq_one {X : Scheme} [Order.KrullDimLE 1 X] {x : X}
+    (hx : coheight x = 1) :
+    ∀ y, y ≤ x → y = x := fun _ hy =>
+  have hmin : IsMin x :=
+    Order.KrullDimLE.isMin_of_le_coheight (n := 1) (by simpa using hx.ge)
+  ((Scheme.le_iff_specializes.mp (hmin hy)).antisymm (Scheme.le_iff_specializes.mp hy)).eq
+
+end AlgebraicGeometry

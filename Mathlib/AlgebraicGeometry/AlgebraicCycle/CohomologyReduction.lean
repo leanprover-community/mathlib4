@@ -3,15 +3,19 @@ Copyright (c) 2026 Raphael Douglas Giles. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Raphael Douglas Giles
 -/
-import Mathlib.AlgebraicGeometry.AlgebraicCycle.SkyscraperEulerChar
 import Mathlib.AlgebraicGeometry.AlgebraicCycle.LocallyFinsupp
+import Mathlib.AlgebraicGeometry.AlgebraicCycle.ResidueFieldFinite
+import Mathlib.AlgebraicGeometry.AlgebraicCycle.SkyscraperEulerChar
+import Mathlib.AlgebraicGeometry.AlgebraicCycle.StructureSheafIso
 
 /-!
 # Reduction of cohomological finiteness and vanishing to the structure sheaf
 
 In RiemannRoch.lean, the conditional Riemann-Roch theorem `riemann_roch` assumes finiteness and
 eventual vanishing of the cohomology of `𝒪ₓ(D)` for *every* Weil divisor `D`.
-In this file we reduce those hypotheses to the single sheaf `𝒪ₓ(0)`.
+In this file we reduce those hypotheses to the single sheaf `𝒪ₓ(0)`: the culmination is
+`hasEulerCharacteristic_sheaf`, which produces a well-defined Euler characteristic for every
+divisorial sheaf `𝒪ₓ(D)` from one for the structure sheaf `𝒪ₓ`.
 -/
 
 namespace AlgebraicGeometry.AlgebraicCycle.SheafViaSubmodule
@@ -196,5 +200,43 @@ lemma subsingleton_H_sheaf_of_structureSheaf {N : ℕ}
     obtain ⟨m, rfl⟩ : ∃ m, n = m + 1 := ⟨n - 1, by omega⟩
     exact subsingleton_H_first_succ k _ hS m
       (subsingleton_H_residueLineSheaf_of_pos hp E (by omega : 0 < m)) (ih (m + 1) hn)
+
+/-!
+### Well-defined Euler characteristics
+
+On a curve locally of finite type over `k`, the closedness and residue-field hypotheses of the
+reduction lemmas above are automatic (`eq_of_le_of_coheight_eq_one` and
+`finite_residueField_of_coheight_eq_one`), so we can package finiteness and vanishing into
+`Scheme.Modules.HasEulerCharacteristic`.
+-/
+
+/-- The canonical cokernel `Q_p(E)` has a well-defined Euler characteristic: its cohomology
+is finite dimensional since the residue field `κ(p)` is finite over `k`, and its
+positive-degree cohomology vanishes by flasqueness. -/
+lemma hasEulerCharacteristic_residueLineSheaf [Order.KrullDimLE 1 X]
+    [LocallyOfFiniteType (X ↘ Spec (CommRingCat.of k))] {p : X} (hp : coheight p = 1)
+    (E : AlgebraicCycle X ℤ) :
+    (residueLineSheaf hp E).HasEulerCharacteristic k :=
+  ⟨fun n => finite_H_residueLineSheaf_of_finite_residueField k hp E
+      (finite_residueField_of_coheight_eq_one k hp) n,
+    0, fun _ hn => subsingleton_H_residueLineSheaf_of_pos hp E hn⟩
+
+/-- Every divisorial sheaf `𝒪ₓ(E)`, for `E` a Weil divisor, inherits a well-defined Euler
+characteristic from the structure sheaf: transport `χ(𝒪ₓ)` along `𝒪ₓ ≅ 𝒪ₓ(0)`, then
+transfer finiteness and vanishing through the twisting short exact sequences. -/
+lemma hasEulerCharacteristic_sheaf [Order.KrullDimLE 1 X]
+    [LocallyOfFiniteType (X ↘ Spec (CommRingCat.of k))]
+    (hχ₀ : (structureSheafModule X).HasEulerCharacteristic k)
+    {E : AlgebraicCycle X ℤ} (hE : IsWeilDivisor E) :
+    (sheaf E).HasEulerCharacteristic k := by
+  have hχ₀' : (sheaf (0 : AlgebraicCycle X ℤ)).HasEulerCharacteristic k :=
+    hasEulerCharacteristic_of_iso k (unitIsoSheafZero (X := X)) hχ₀
+  obtain ⟨N, hb₀⟩ := hχ₀'.vanishing
+  exact ⟨finite_H_sheaf_of_structureSheaf k
+      (fun q hq => finite_residueField_of_coheight_eq_one k hq) hχ₀'.finite
+      (fun x hx => eq_of_le_of_coheight_eq_one hx) hE,
+    max N 1,
+    subsingleton_H_sheaf_of_structureSheaf k hb₀
+      (fun x hx => eq_of_le_of_coheight_eq_one hx) hE⟩
 
 end AlgebraicGeometry.AlgebraicCycle.SheafViaSubmodule

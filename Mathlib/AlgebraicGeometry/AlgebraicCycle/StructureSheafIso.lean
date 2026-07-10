@@ -8,21 +8,7 @@ import Mathlib.AlgebraicGeometry.AlgebraicCycle.ExactSequence
 /-!
 # `𝒪ₓ(0)` is the structure sheaf
 
-In this file we show that on a curve (`Order.KrullDimLE 1 X`), the divisorial sheaf `𝒪ₓ(0)` of
-`SheafViaSubmodule` is isomorphic, as a sheaf of modules, to the structure sheaf `𝒪ₓ` — the
-free rank-one sheaf of modules `SheafOfModules.unit X.ringCatSheaf`, here abbreviated
-`structureSheafModule X`.
-
-The canonical morphism `𝒪ₓ ⟶ 𝒪ₓ(0)` sends a section `a` to `a • 1`, viewing the rational
-function `1` as a section of `𝒪ₓ(0)`; on an open `U` its underlying rational function is the
-generic germ of `a`. Injectivity is injectivity of germs on an integral scheme. Surjectivity
-is where the curve hypothesis enters: a section of `𝒪ₓ(0)` over `U` is a rational function `f`
-with `0 ≤ ord f z` at every codimension-one `z ∈ U`, so `f` lies in the image of the local
-ring at every codimension-one point of `U`; since every other point of `U` is the generic
-point (where there is no condition), `f` is locally a section everywhere on `U`, and the local
-liftings glue to a section with generic germ `f` (`exists_germ_eq_of_mem_carrier`).
-
-The main result is `unitIsoSheafZero : structureSheafModule X ≅ sheaf 0`.
+In this file we construct an isomorphism between `𝒪ₓ(0)` and `𝒪ₓ` in the case where `X` is a curve.
 
 TODO: Here we present a proof of this fact that relies on `X` being a curve. This assumption is
 unecessary - the proper thing to do is to show this under the assumption that `X` is normal.
@@ -41,7 +27,8 @@ universe u
 variable {X : Scheme.{u}} [IsIntegral X] [IsNoetherian X] [IsRegularInCodimensionOne X]
 
 variable (X) in
-/-- The structure sheaf `𝒪ₓ`, as the free rank-one sheaf of modules over itself. -/
+/-- Thin wrapper around `SheafOfModules.unit` that allows me to use dot notation for things defined
+for Scheme.Modules. -/
 noncomputable abbrev structureSheafModule : X.Modules :=
   SheafOfModules.unit X.ringCatSheaf
 
