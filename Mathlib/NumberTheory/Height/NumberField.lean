@@ -214,7 +214,27 @@ theorem mult_mul_finrank (v : InfinitePlace K) (w : InfinitePlace L) [hh : w.1.L
     rw [InfinitePlace.not_isReal_iff_isComplex]
     exact InfinitePlace.IsRamified.isComplex h
 
-open IsDedekindDomain InfinitePlace in
+open IsDedekindDomain in
+theorem _root_.NumberField.FinitePlace.equivHeightOneSpectrum_symm_apply_algebraMap
+    {K L : Type*} [Field K] [Field L] [NumberField K] [NumberField L] [Algebra K L]
+    (v : HeightOneSpectrum (𝓞 K)) (w : HeightOneSpectrum (𝓞 L)) (x : K)
+    [w.1.LiesOver v.1] :
+    FinitePlace.equivHeightOneSpectrum.symm w (algebraMap K L x) =
+      FinitePlace.equivHeightOneSpectrum.symm v x ^
+        (w.1.ramificationIdx (𝓞 K) * w.1.inertiaDeg (𝓞 K)) := by
+  by_cases hx : x = 0
+  · rw [hx, map_zero, map_zero, map_zero, zero_pow]
+    exact (mul_pos (w.asIdeal.ramificationIdx_pos (𝓞 K)) (w.asIdeal.inertiaDeg_pos (𝓞 K))).ne'
+  simp_rw [NumberField.FinitePlace.equivHeightOneSpectrum_symm_apply,
+    FinitePlace.norm_embedding, HeightOneSpectrum.adicAbv_def]
+  rw [← IsDedekindDomain.HeightOneSpectrum.valuation_liesOver L v, map_pow,
+    Ideal.ramificationIdx'_eq_ramificationIdx v.1 w.1 v.ne_bot,
+    WithZeroMulInt.toNNReal_neg_apply _ (by simpa), WithZeroMulInt.toNNReal_neg_apply _ (by simpa),
+    ← Ideal.absNorm_pow_inertiaDeg v.1 w.1]
+  simp only [Nat.cast_pow, NNReal.coe_zpow, ← zpow_natCast, ← zpow_mul]
+  grind
+
+open IsDedekindDomain FinitePlace InfinitePlace in
 private theorem mulHeight_pow_finrank_aux {ι : Type*} [Nonempty ι] [Finite ι]
     (x : ι → K) (hx : ∀ i, x i ≠ 0) :
     mulHeight x ^ Module.finrank K L = mulHeight (algebraMap K L ∘ x) := by
@@ -227,56 +247,35 @@ private theorem mulHeight_pow_finrank_aux {ι : Type*} [Nonempty ι] [Finite ι]
       ← Finset.univ.prod_fiberwise fun v : InfinitePlace L ↦ v.comap (algebraMap K L)]
     apply Finset.prod_congr rfl fun v _ ↦ ?_
     set s : Finset (InfinitePlace L) := {w | w.comap (algebraMap K L) = v}
-    have key1 (w : InfinitePlace L) (hw : w ∈ s) (i : ι) :
+    have key1 w (hw : w ∈ s) i :
         w.comap (algebraMap K L) (x i) = v (x i) := by
       rw [Finset.mem_filter_univ, ← liesOver_iff_comap_eq] at hw
       rw [LiesOver.comap_eq w v]
-    have key2 (w : InfinitePlace L) (hw : w ∈ s) : v.mult * v.inertiaDeg w = w.mult := by
+    have key2 w (hw : w ∈ s) : v.mult * v.inertiaDeg w = w.mult := by
       rw [Finset.mem_filter_univ, ← liesOver_iff_comap_eq] at hw
-      rw [InfinitePlace.inertiaDeg_eq_finrank, mult_mul_finrank]
+      rw [inertiaDeg_eq_finrank, mult_mul_finrank]
     have key3 : (v.placesOver L).toFinset = s := by
-      simp [InfinitePlace.placesOver, InfinitePlace.liesOver_iff_comap_eq, s]
+      simp [InfinitePlace.placesOver, liesOver_iff_comap_eq, s]
     simp +contextual only [Finset.prod_pow_eq_pow_sum, Finset.mul_sum,
       ← v.sum_inertiaDeg_eq_finrank K L, key1, key2, key3]
   · simp_rw [Function.comp_apply]
-    simp_rw [← finprod_comp_equiv NumberField.FinitePlace.equivHeightOneSpectrum.symm]
+    simp_rw [← finprod_comp_equiv equivHeightOneSpectrum.symm]
     let g : HeightOneSpectrum (𝓞 L) → HeightOneSpectrum (𝓞 K) := fun v ↦ v.under (𝓞 K)
     rw [← finprod_fiberwise_univ g, finprod_pow]
-    · apply finprod_congr
-      intro v
-      simp_rw [NumberField.FinitePlace.equivHeightOneSpectrum_symm_apply]
-      have key : ∀ (w : HeightOneSpectrum (𝓞 L)) (hw : w ∈ ({w | g w = v})) (i : ι),
-        ‖FinitePlace.embedding w (algebraMap K L (x i))‖ = ‖FinitePlace.embedding v (x i)‖ ^
-          (w.1.ramificationIdx (𝓞 K) * w.1.inertiaDeg (𝓞 K)) := by
-        intro w hw i
-        rw [← hw]
-        simp_rw [FinitePlace.norm_embedding, HeightOneSpectrum.adicAbv_def]
+    · refine finprod_congr fun v ↦ ?_
+      have key w (hw : w ∈ ({w | g w = v})) x :
+        equivHeightOneSpectrum.symm w (algebraMap K L x) =
+          equivHeightOneSpectrum.symm v x ^ (w.1.ramificationIdx (𝓞 K) * w.1.inertiaDeg (𝓞 K)) := by
         have : w.1.LiesOver v.1 := by
           rw [Set.mem_setOf_eq, HeightOneSpectrum.ext_iff] at hw
           exact ⟨hw.symm⟩
-        rw [hw, ← IsDedekindDomain.HeightOneSpectrum.valuation_liesOver L v w (x i),
-          map_pow, Ideal.ramificationIdx'_eq_ramificationIdx v.1 w.1 v.ne_bot]
-        simp [WithZeroMulInt.toNNReal, MonoidWithZeroHom.coe_mk]
-        split_ifs
-        · simp
-          symm
-          rw [zero_pow, zero_pow]
-          exact (w.asIdeal.ramificationIdx_pos (𝓞 K)).ne'
-          exact (mul_pos (w.asIdeal.ramificationIdx_pos (𝓞 K))
-            (w.asIdeal.inertiaDeg_pos (𝓞 K))).ne'
-        · rw [← Ideal.absNorm_pow_inertiaDeg v.1 w.1]
-          simp
-          push_cast
-          simp_rw [← zpow_natCast, ← zpow_mul]
-          grind
+        apply FinitePlace.equivHeightOneSpectrum_symm_apply_algebraMap
       simp +contextual only [key]
       simp [g]
       let f : Ideal (𝓞 L) → ℝ :=
-        fun w ↦ ⨆ i : ι, ‖(FinitePlace.embedding v) (x i)‖ ^ (w.ramificationIdx (𝓞 K) * w.inertiaDeg (𝓞 K))
+        fun w ↦ ⨆ i : ι, FinitePlace.equivHeightOneSpectrum.symm v (x i) ^ (w.ramificationIdx (𝓞 K) * w.inertiaDeg (𝓞 K))
       rw [foo L v (f := f)]
-      have key : ∀ i : ι, 0 ≤ ‖(FinitePlace.embedding v) (x i)‖ := by
-        intro i
-        positivity
+      have key i : 0 ≤ FinitePlace.equivHeightOneSpectrum.symm v (x i) := by positivity
       simp_rw [f]
       simp_rw [← Real.iSup_pow key]
       rw [Finset.prod_pow_eq_pow_sum]
