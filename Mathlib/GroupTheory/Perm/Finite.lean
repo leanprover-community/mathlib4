@@ -125,7 +125,6 @@ theorem perm_mapsTo_inl_iff_mapsTo_inr {m n : Type*} [Finite m] [Finite n] (σ :
     obtain ⟨y, hy⟩ := h ⟨r, rfl⟩
     grind
 
-set_option backward.isDefEq.respectTransparency false in
 theorem mem_sumCongrHom_range_of_perm_mapsTo_inl {m n : Type*} [Finite m] [Finite n]
     {σ : Perm (m ⊕ n)} (h : Set.MapsTo σ (Set.range Sum.inl) (Set.range Sum.inl)) :
     σ ∈ (sumCongrHom m n).range := by
@@ -143,14 +142,11 @@ theorem mem_sumCongrHom_range_of_perm_mapsTo_inl {m n : Type*} [Finite m] [Finit
   rw [Perm.sumCongrHom_apply]
   ext (a | b)
   · rw [Equiv.sumCongr_apply, Sum.map_inl, permCongr_apply, Equiv.symm_symm,
-      apply_ofInjective_symm Sum.inl_injective]
-    rw [ofInjective_apply, Subtype.coe_mk, Subtype.coe_mk]
-    dsimp [Set.range]
-    rw [subtypePerm_apply]
+      apply_ofInjective_symm Sum.inl_injective, ofInjective_apply]
+    rfl
   · rw [Equiv.sumCongr_apply, Sum.map_inr, permCongr_apply, Equiv.symm_symm,
       apply_ofInjective_symm Sum.inr_injective, ofInjective_apply]
-    dsimp [Set.range]
-    rw [subtypePerm_apply]
+    rfl
 
 nonrec theorem Disjoint.orderOf {σ τ : Perm α} (hστ : Disjoint σ τ) :
     orderOf (σ * τ) = Nat.lcm (orderOf σ) (orderOf τ) :=
