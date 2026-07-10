@@ -55,9 +55,6 @@ lemma bijective_pushforwardSections [F.Final] :
     Function.Bijective (pushforwardSections φ (M := M)) :=
   Functor.bijective_sectionsPrecomp _ _
 
-variable [J.HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
-  [K.HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
-
 /-- The canonical morphism `unit S ⟶ (pushforward.{u} φ).obj (unit R)`
 of sheaves of modules corresponding to a continuous map between ringed sites. -/
 noncomputable def unitToPushforwardObjUnit : unit S ⟶ (pushforward.{u} φ).obj (unit R) where
