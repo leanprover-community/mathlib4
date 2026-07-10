@@ -138,9 +138,9 @@ theorem ContMDiff.smul (hf : CMDiff n f) (hg : CMDiff n g) :
     CMDiff n (f • g) := fun x ↦ (hf x).smul (hg x)
 
 @[to_additive]
-theorem ContMDiffSMul.contMDiff_const_smul {n : ℕ∞ω} [ContMDiffSMul I I' n G M] :
-    ∀ g : G, CMDiff n fun x : M ↦ g • x :=
-  fun g ↦ (contMDiff_const : CMDiff n (fun _ : M ↦ g)).smul contMDiff_id
+theorem ContMDiffSMul.contMDiff_const_smul {n : ℕ∞ω} [ContMDiffSMul I I' n G M] (g : G) :
+    CMDiff n fun x : M ↦ g • x :=
+  (contMDiff_const : CMDiff n (fun _ : M ↦ g)).smul contMDiff_id
 
 end
 
