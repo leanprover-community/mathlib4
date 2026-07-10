@@ -211,12 +211,11 @@ abbrev ofAntipodeOfAdjoin
   antipode := (MulOpposite.opLinearEquiv R).symm.toLinearMap ∘ₗ S.toLinearMap
   mul_antipode_rTensor_comul := by
     ext t
-    let P : A → Prop := fun y ↦ (mul' R A ∘ₗ
-      rTensor A ((MulOpposite.opLinearEquiv (M := A) R).symm ∘ₗ S.toLinearMap) ∘ₗ
+    let P y : Prop := (mul' R A ∘ₗ rTensor A
+      ((MulOpposite.opLinearEquiv (M := A) R).symm ∘ₗ S.toLinearMap) ∘ₗ
       CoalgebraStruct.comul) y = (Algebra.linearMap R A ∘ₗ CoalgebraStruct.counit) y
     have hgood y (hy : y ∈ adjoin R X) : P y := by
-      refine adjoin_induction (R := R) (s := X) (p := fun y _ => P y)
-        hxr (fun r ↦ ?_) ?_ ?_ hy
+      refine adjoin_induction (p := fun y _ => P y) hxr (fun r ↦ ?_) ?_ ?_ hy
       · simp_all only [mem_top, coe_comp, Function.comp_apply,
         linearMap_apply, comul_algebraMap, TensorProduct.algebraMap_apply,
         rTensor_tmul, LinearEquiv.coe_coe, MulOpposite.coe_opLinearEquiv_symm,
@@ -231,18 +230,15 @@ abbrev ofAntipodeOfAdjoin
           unfold P at hz
           simp only [coe_comp, Function.comp_apply, linearMap_apply] at hz
           rw [← hz, ← Coalgebra.Repr.eq (ℛ R z)]
-          simp only [map_sum, rTensor_tmul, mul'_apply,
-            coe_comp, Function.comp_apply, LinearEquiv.coe_coe,
-            MulOpposite.coe_opLinearEquiv_symm, AlgHom.coe_toLinearMap]
+          simp only [map_sum, rTensor_tmul, mul'_apply, coe_comp, Function.comp_apply,
+            LinearEquiv.coe_coe, MulOpposite.coe_opLinearEquiv_symm, AlgHom.coe_toLinearMap]
         unfold P
         symm
         calc
           _ = algebraMap R A (ε x) * ∑ j ∈ (ℛ R y).index,
               ((MulOpposite.opLinearEquiv R).symm.toLinearMap ∘ₗ S.toLinearMap) ((ℛ R y).left j) *
-              (ℛ R y).right j := by
-              rw [key y hyP]
-              simp only [coe_comp, Function.comp_apply, counit_mul,
-                linearMap_apply, map_mul]
+              (ℛ R y).right j := by rw [key y hyP]; simp only [coe_comp, Function.comp_apply,
+              counit_mul, linearMap_apply, map_mul]
           _ = ∑ j ∈ (ℛ R y).index,
               ((MulOpposite.opLinearEquiv R).symm.toLinearMap ∘ₗ S.toLinearMap) ((ℛ R y).left j) *
               (∑ i ∈ (ℛ R x).index,
@@ -265,8 +261,7 @@ abbrev ofAntipodeOfAdjoin
     let P : A → Prop := fun y ↦ (mul' R A ∘ₗ
       lTensor A ((MulOpposite.opLinearEquiv (M := A) R).symm ∘ₗ S.toLinearMap) ∘ₗ
       CoalgebraStruct.comul) y = (Algebra.linearMap R A ∘ₗ CoalgebraStruct.counit) y
-    have hgood : ∀ y ∈ adjoin R X, P y := by
-      intro y hy
+    have hgood y (hy : y ∈ adjoin R X) : P y := by
       refine adjoin_induction (R := R) (s := X) (p := fun y _ => P y)
         hxl (fun r ↦ ?_) ?_ ?_ hy
       · simp_all only [mem_top, coe_comp, Function.comp_apply,
