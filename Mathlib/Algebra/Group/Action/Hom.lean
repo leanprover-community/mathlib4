@@ -44,17 +44,15 @@ variable (α)
 a multiplicative action of `N` on `α`.
 
 See note [reducible non-instances]. -/
-@[to_additive]
+@[to_additive
+/-- An additive action of `M` on `α` and an additive monoid homomorphism `N → M` induce
+an additive action of `N` on `α`.
+
+See note [reducible non-instances]. -/]
 abbrev compHom [Monoid N] (g : N →* M) : MulAction N α where
   smul := SMul.comp.smul g
   one_smul _ := by simpa [(· • ·)] using one_smul ..
   mul_smul _ _ _ := by simpa [(· • ·)] using mul_smul ..
-
-/-- An additive action of `M` on `α` and an additive monoid homomorphism `N → M` induce
-an additive action of `N` on `α`.
-
-See note [reducible non-instances]. -/
-add_decl_doc AddAction.compHom
 
 @[to_additive]
 lemma compHom_smul_def

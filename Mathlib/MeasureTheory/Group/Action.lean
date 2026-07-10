@@ -251,7 +251,22 @@ variable [MeasurableConstSMul G α] in
 5. for any `c : G`, scalar multiplication by `c` maps `μ` to `μ`;
 
 6. for any `c : G`, scalar multiplication by `c` is a measure-preserving map. -/
-@[to_additive]
+@[to_additive
+/-- Equivalent definitions of a measure invariant under an additive action of a group.
+
+- 0: `VAddInvariantMeasure G α μ`;
+
+- 1: for every `c : G` and a measurable set `s`, the measure of the preimage of `s` under
+     vector addition `(c +ᵥ ·)` is equal to the measure of `s`;
+
+- 2: for every `c : G` and a measurable set `s`, the measure of the image `c +ᵥ s` of `s` under
+     vector addition `(c +ᵥ ·)` is equal to the measure of `s`;
+
+- 3, 4: properties 2, 3 for any set, including non-measurable ones;
+
+- 5: for any `c : G`, vector addition of `c` maps `μ` to `μ`;
+
+- 6: for any `c : G`, vector addition of `c` is a measure-preserving map. -/]
 theorem smulInvariantMeasure_tfae :
     List.TFAE
       [SMulInvariantMeasure G α μ,
@@ -276,23 +291,6 @@ theorem smulInvariantMeasure_tfae :
     exact H c⁻¹ s hs
   tfae_finish
 
-/-- Equivalent definitions of a measure invariant under an additive action of a group.
-
-- 0: `VAddInvariantMeasure G α μ`;
-
-- 1: for every `c : G` and a measurable set `s`, the measure of the preimage of `s` under
-     vector addition `(c +ᵥ ·)` is equal to the measure of `s`;
-
-- 2: for every `c : G` and a measurable set `s`, the measure of the image `c +ᵥ s` of `s` under
-     vector addition `(c +ᵥ ·)` is equal to the measure of `s`;
-
-- 3, 4: properties 2, 3 for any set, including non-measurable ones;
-
-- 5: for any `c : G`, vector addition of `c` maps `μ` to `μ`;
-
-- 6: for any `c : G`, vector addition of `c` is a measure-preserving map. -/
-add_decl_doc vaddInvariantMeasure_tfae
-
 variable {G}
 variable [SMulInvariantMeasure G α μ]
 
@@ -313,7 +311,10 @@ include G in
 /-- If measure `μ` is invariant under a group action and is nonzero on a compact set `K`, then it is
 positive on any nonempty open set. In case of a regular measure, one can assume `μ ≠ 0` instead of
 `μ K ≠ 0`, see `MeasureTheory.measure_isOpen_pos_of_smulInvariant_of_ne_zero`. -/
-@[to_additive]
+@[to_additive
+/-- If measure `μ` is invariant under an additive group action and is nonzero on a compact set `K`,
+then it is positive on any nonempty open set. In case of a regular measure, one can assume `μ ≠ 0`
+instead of `μ K ≠ 0`, see `MeasureTheory.measure_isOpen_pos_of_vaddInvariant_of_ne_zero`. -/]
 theorem measure_isOpen_pos_of_smulInvariant_of_compact_ne_zero (hK : IsCompact K) (hμK : μ K ≠ 0)
     (hU : IsOpen U) (hne : U.Nonempty) : 0 < μ U :=
   let ⟨t, ht⟩ := hK.exists_finite_cover_smul G hU hne
@@ -321,11 +322,6 @@ theorem measure_isOpen_pos_of_smulInvariant_of_compact_ne_zero (hK : IsCompact K
     hμK <|
       measure_mono_null ht <|
         (measure_biUnion_null_iff t.countable_toSet).2 fun _ _ => by rwa [measure_smul]
-
-/-- If measure `μ` is invariant under an additive group action and is nonzero on a compact set `K`,
-then it is positive on any nonempty open set. In case of a regular measure, one can assume `μ ≠ 0`
-instead of `μ K ≠ 0`, see `MeasureTheory.measure_isOpen_pos_of_vaddInvariant_of_ne_zero`. -/
-add_decl_doc measure_isOpen_pos_of_vaddInvariant_of_compact_ne_zero
 
 include G
 
