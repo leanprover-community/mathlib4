@@ -103,8 +103,10 @@ open LinearMap.FiniteRangeSetoid
 section TVS
 namespace ContinuousLinearMap
 
-variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜] [AddCommGroup E] [AddCommGroup F]
-    [Module 𝕜 E] [Module 𝕜 F] [TopologicalSpace E] [TopologicalSpace F]
+variable {𝕜 E F G : Type*} [NontriviallyNormedField 𝕜]
+    [AddCommGroup E] [AddCommGroup F] [AddCommGroup G]
+    [Module 𝕜 E] [Module 𝕜 F] [Module 𝕜 G]
+    [TopologicalSpace E] [TopologicalSpace F] [TopologicalSpace G]
 
 /-!
 ## Definition and equivalent conditions
@@ -368,7 +370,36 @@ theorem FredholmPackage.isFredholm {u : E →L[𝕜] F} (pkg : FredholmPackage u
     IsFredholm u :=
   isFredholm_tfae u |>.out 3 0 |>.mp (Nonempty.intro pkg)
 
+theorem isFredholm_iff_exists_isQuasiInverse {u : E →L[𝕜] F} :
+    IsFredholm u ↔ ∃ v : F →L[𝕜] E, u.IsQuasiInverse v :=
+  isFredholm_tfae u |>.out 0 1
+
 end DefTFAE
+
+section Constructions
+
+variable [CompleteSpace 𝕜] [IsTopologicalAddGroup E] [IsTopologicalAddGroup F]
+  [IsTopologicalAddGroup G] [ContinuousSMul 𝕜 E] [ContinuousSMul 𝕜 F] [ContinuousSMul 𝕜 G]
+  [T2Space E] [T2Space F] [T2Space G]
+
+theorem isFredholm_congr {u u' : E →L[𝕜] F} (h : u.toLinearMap ≈ u'.toLinearMap) :
+    IsFredholm u ↔ IsFredholm u' := by
+  simp_rw [isFredholm_iff_exists_isQuasiInverse]
+  refine exists_congr fun _ ↦ isQuasiInverse_congr (Setoid.symm h) (Setoid.refl _)
+
+theorem IsFredholm.congr {u u' : E →L[𝕜] F} (hu : IsFredholm u)
+    (h : u.toLinearMap ≈ u'.toLinearMap) :
+    IsFredholm u' := by
+  rwa [← isFredholm_congr h]
+
+theorem IsFredholm.comp {f : E →L[𝕜] F} {f' : F →L[𝕜] G} (hf : IsFredholm f)
+    (hf' : IsFredholm f') : IsFredholm (f' ∘L f) := by
+  rw [isFredholm_iff_exists_isQuasiInverse] at *
+  rcases hf with ⟨g, hg⟩
+  rcases hf' with ⟨g', hg'⟩
+  exact ⟨g ∘L g', hg'.comp hg⟩
+
+end Constructions
 
 end ContinuousLinearMap
 end TVS
