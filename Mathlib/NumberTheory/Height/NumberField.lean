@@ -41,6 +41,27 @@ When this file gets long, split the material on heights over `ℚ` off into a fi
 ### Instance for number fields
 -/
 
+-- PRed
+open IsDedekindDomain NumberField in
+theorem _root_.NumberField.FinitePlace.equivHeightOneSpectrum_symm_apply_algebraMap
+    {K L : Type*} [Field K] [Field L] [NumberField K] [NumberField L] [Algebra K L]
+    (v : HeightOneSpectrum (𝓞 K)) (w : HeightOneSpectrum (𝓞 L)) (x : K)
+    [w.1.LiesOver v.1] :
+    FinitePlace.equivHeightOneSpectrum.symm w (algebraMap K L x) =
+      FinitePlace.equivHeightOneSpectrum.symm v x ^
+        (w.1.ramificationIdx (𝓞 K) * w.1.inertiaDeg (𝓞 K)) := by
+  by_cases hx : x = 0
+  · rw [hx, map_zero, map_zero, map_zero, zero_pow]
+    exact (mul_pos (w.asIdeal.ramificationIdx_pos (𝓞 K)) (w.asIdeal.inertiaDeg_pos (𝓞 K))).ne'
+  simp_rw [NumberField.FinitePlace.equivHeightOneSpectrum_symm_apply,
+    FinitePlace.norm_embedding, HeightOneSpectrum.adicAbv_def]
+  rw [← IsDedekindDomain.HeightOneSpectrum.valuation_liesOver L v, map_pow,
+    Ideal.ramificationIdx'_eq_ramificationIdx v.1 w.1 v.ne_bot,
+    WithZeroMulInt.toNNReal_neg_apply _ (by simpa), WithZeroMulInt.toNNReal_neg_apply _ (by simpa),
+    ← Ideal.absNorm_pow_inertiaDeg v.1 w.1]
+  simp only [Nat.cast_pow, NNReal.coe_zpow, ← zpow_natCast, ← zpow_mul]
+  grind
+
 namespace NumberField
 
 open Height
@@ -213,26 +234,6 @@ theorem mult_mul_finrank (v : InfinitePlace K) (w : InfinitePlace L) [hh : w.1.L
       InfinitePlace.mult, if_pos (InfinitePlace.IsRamified.isReal h), InfinitePlace.mult, if_neg] -- add mult_isReal and mult_isComplex
     rw [InfinitePlace.not_isReal_iff_isComplex]
     exact InfinitePlace.IsRamified.isComplex h
-
-open IsDedekindDomain in
-theorem _root_.NumberField.FinitePlace.equivHeightOneSpectrum_symm_apply_algebraMap
-    {K L : Type*} [Field K] [Field L] [NumberField K] [NumberField L] [Algebra K L]
-    (v : HeightOneSpectrum (𝓞 K)) (w : HeightOneSpectrum (𝓞 L)) (x : K)
-    [w.1.LiesOver v.1] :
-    FinitePlace.equivHeightOneSpectrum.symm w (algebraMap K L x) =
-      FinitePlace.equivHeightOneSpectrum.symm v x ^
-        (w.1.ramificationIdx (𝓞 K) * w.1.inertiaDeg (𝓞 K)) := by
-  by_cases hx : x = 0
-  · rw [hx, map_zero, map_zero, map_zero, zero_pow]
-    exact (mul_pos (w.asIdeal.ramificationIdx_pos (𝓞 K)) (w.asIdeal.inertiaDeg_pos (𝓞 K))).ne'
-  simp_rw [NumberField.FinitePlace.equivHeightOneSpectrum_symm_apply,
-    FinitePlace.norm_embedding, HeightOneSpectrum.adicAbv_def]
-  rw [← IsDedekindDomain.HeightOneSpectrum.valuation_liesOver L v, map_pow,
-    Ideal.ramificationIdx'_eq_ramificationIdx v.1 w.1 v.ne_bot,
-    WithZeroMulInt.toNNReal_neg_apply _ (by simpa), WithZeroMulInt.toNNReal_neg_apply _ (by simpa),
-    ← Ideal.absNorm_pow_inertiaDeg v.1 w.1]
-  simp only [Nat.cast_pow, NNReal.coe_zpow, ← zpow_natCast, ← zpow_mul]
-  grind
 
 open IsDedekindDomain FinitePlace InfinitePlace in
 private theorem mulHeight_pow_finrank_aux {ι : Type*} [Nonempty ι] [Finite ι]
