@@ -164,7 +164,7 @@ theorem prod_le_univ_prod_of_one_le' [MulLeftMono N] [Fintype ι] {s : Finset ι
 @[to_additive sum_le_sum_of_injOn]
 theorem prod_le_prod_of_injOn' [DecidableEq α] [MulLeftMono N]
     {g : α → N} {s : Finset ι} {t : Finset α} (e : ι → α) (he : Set.InjOn e s)
-    (ht : Finset.image e s ⊆ t) (h : ∀ i ∈ s, f i ≤ g (e i))
+    (ht : image e s ⊆ t) (h : ∀ i ∈ s, f i ≤ g (e i))
     (hg : ∀ a ∈ t, a ∉ image e s → 1 ≤ g a) :
     ∏ i ∈ s, f i ≤ ∏ a ∈ t, g a := by
   refine le_trans ?_ <| prod_le_prod_of_subset_of_one_le' ht hg
