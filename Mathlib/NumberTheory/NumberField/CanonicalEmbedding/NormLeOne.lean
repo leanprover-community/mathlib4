@@ -248,12 +248,13 @@ variable (K)
 
 theorem expMap_source :
     expMap.source = (Set.univ : Set (realSpace K)) := by
-  simp_rw [expMap, OpenPartialHomeomorph.pi_toPartialEquiv, PartialEquiv.pi_source, expMap_single,
-    Set.pi_univ Set.univ]
+  simp_rw [expMap, OpenPartialHomeomorph.pi_toPartialHomeomorph,
+    PartialEquiv.pi_source, expMap_single, Set.pi_univ Set.univ]
 
 theorem expMap_target :
     expMap.target = Set.univ.pi fun (_ : InfinitePlace K) ↦ Set.Ioi 0 := by
-  simp_rw [expMap, OpenPartialHomeomorph.pi_toPartialEquiv, PartialEquiv.pi_target, expMap_single]
+  simp_rw [expMap, OpenPartialHomeomorph.pi_toPartialHomeomorph,
+    PartialEquiv.pi_target, expMap_single]
 
 theorem injective_expMap :
     Function.Injective (expMap : realSpace K → realSpace K) :=
@@ -532,7 +533,6 @@ theorem logMap_expMapBasis (x : realSpace K) :
     logMap (mixedSpaceOfRealSpace (expMapBasis x)) ∈
         ZSpan.fundamentalDomain ((basisUnitLattice K).ofZLatticeBasis ℝ (unitLattice K))
       ↔ ∀ w, w ≠ w₀ → x w ∈ Set.Ico 0 1 := by
-  classical
   simp_rw [ZSpan.mem_fundamentalDomain, equivFinRank.forall_congr_left, Subtype.forall]
   refine forall₂_congr fun w hw ↦ ?_
   rw [expMapBasis_apply'', map_smul, logMap_real_smul (norm_expMapBasis_ne_zero _)
