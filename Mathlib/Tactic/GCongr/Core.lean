@@ -688,7 +688,7 @@ def applyGCongrLemma (g : MVarId) (lem : GCongr.GCongrLemma) :
   let type ← inferType const
   -- Use `withDefault` so that we can unfold `Monotone`.
   let (mvars, bis, type) ← withDefault <| forallMetaTelescopeReducing type lem.numHyps
-  guard <| ← approxDefEq <| isDefEq (← g.getType) (preprocess type)
+  guard <| ← approxDefEq <| isDefEq (← g.getType) (← preprocess type)
   g.assign (mkAppN const mvars)
   let mut sideGoals := #[]
   for mvar in mvars, i in 0...* do
@@ -728,12 +728,12 @@ where
   /-- Remove any redundant eta expansions in the arguments on either side of the relation `e`.
   As a result, the corresponding binder names are removed, so they cannot end up in the expression
   produced by `grw`. -/
-  preprocess (e : Expr) : Expr :=
-    let etaArgs (x : Expr) := x.withApp (mkAppN · <| ·.map Expr.eta)
-    match e with
-    | .forallE _ lhs rhs _ => e.updateForallE! (etaArgs lhs) (etaArgs rhs)
-    | mkApp2 rel lhs rhs => mkApp2 rel (etaArgs lhs) (etaArgs rhs)
-    | _ => e
+  preprocess (e : Expr) : MetaM Expr := do
+    let normArgs (x : Expr) := x.headBeta.withApp (mkAppN · <| ·.map Expr.eta)
+    match ← whnf e with
+    | .forallE _ lhs rhs _ => return e.updateForallE! (normArgs lhs) (normArgs rhs)
+    | mkApp2 rel lhs rhs => return mkApp2 rel (normArgs lhs) (normArgs rhs)
+    | _ => throwError "internal `gcongr` error: expected `{e}` to be a relation"
 
 /-- The core of the `gcongr` tactic.  Parse a goal into the form `(f _ ... _) ∼ (f _ ... _)`,
 look up any relevant `@[gcongr]` lemmas, try to apply them, recursively run the tactic itself on
