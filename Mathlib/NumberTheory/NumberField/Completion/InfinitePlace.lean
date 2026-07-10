@@ -149,7 +149,7 @@ instance : Coe (WithAbs v.1) v.Completion where
   coe x := ofCompletion (x : v.1.Completion)
 
 /-- Coercion of an element of `K` into the completion. -/
-instance (priority := 99) : Coe K v.Completion where
+instance : Coe K v.Completion where
   coe k := ofCompletion (k : v.1.Completion)
 
 @[simp] lemma coe_toCompletion (x : WithAbs v.1) :
@@ -350,14 +350,12 @@ theorem liesOver_extensionEmbedding [ContinuousSMul v.Completion w.Completion]
     ComplexEmbedding.LiesOver (extensionEmbedding w) (extensionEmbedding v) where
   over := by
     ext x
-    induction x using induction_on with
-    | hp =>
-      exact isClosed_eq
+    induction x using induction_on
+    · exact isClosed_eq
         ((isometry_extensionEmbedding w).continuous.comp
           (continuous_algebraMap v.Completion w.Completion))
         (isometry_extensionEmbedding v).continuous
-    | ih a =>
-      simp [WithAbs.algebraMap_left_apply, WithAbs.algebraMap_right_apply,
+    · simp [WithAbs.algebraMap_left_apply, WithAbs.algebraMap_right_apply,
         ← ComplexEmbedding.LiesOver.over w.embedding v.embedding]
 
 theorem liesOver_conjugate_extensionEmbedding [ContinuousSMul v.Completion w.Completion]
@@ -365,14 +363,12 @@ theorem liesOver_conjugate_extensionEmbedding [ContinuousSMul v.Completion w.Com
     ComplexEmbedding.LiesOver (conjugate (extensionEmbedding w)) (extensionEmbedding v) where
   over := by
     ext x
-    induction x using induction_on with
-    | hp =>
-      simpa using! isClosed_eq (.comp (by fun_prop)
+    induction x using induction_on
+    · simpa using! isClosed_eq (.comp (by fun_prop)
           ((isometry_extensionEmbedding w).continuous.comp <|
             continuous_algebraMap v.Completion w.Completion))
         (isometry_extensionEmbedding v).continuous
-    | ih a =>
-      simp [WithAbs.algebraMap_left_apply, WithAbs.algebraMap_right_apply,
+    · simp [WithAbs.algebraMap_left_apply, WithAbs.algebraMap_right_apply,
         ← ComplexEmbedding.LiesOver.over (conjugate w.embedding) v.embedding]
 
 omit [Algebra K L] in
