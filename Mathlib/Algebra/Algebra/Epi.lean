@@ -16,7 +16,6 @@ public import Mathlib.RingTheory.TensorProduct.Finite
 
 @[expose] public section
 
-noncomputable section
 open Function TensorProduct
 
 namespace Algebra
@@ -156,7 +155,7 @@ lemma injective_lift_lsmul :
   simpa [f] using! congr_arg f (tmul_comm R 1 a)
 
 /-- A heterogeneous variant of `TensorProduct.lid` when `R → A` is epi. -/
-def _root_.TensorProduct.lid' : A ⊗[R] M ≃ₗ[A] M :=
+noncomputable def _root_.TensorProduct.lid' : A ⊗[R] M ≃ₗ[A] M :=
   .ofBijective
     (AlgebraTensorModule.lift <| LinearMap.restrictScalarsₗ R A M M A ∘ₗ LinearMap.lsmul A M)
     ⟨injective_lift_lsmul R A M, fun m ↦ ⟨1 ⊗ₜ m, by simp⟩⟩

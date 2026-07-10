@@ -27,8 +27,6 @@ open CategoryTheory CategoryTheory.Limits
 
 universe v u w
 
-noncomputable section
-
 variable {J : Type v} [Category.{w} J]
 
 namespace GrpCat
@@ -445,7 +443,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- The categorical kernel of a morphism in `AddCommGrpCat`
 agrees with the usual group-theoretical kernel.
 -/
-def kernelIsoKer {G H : AddCommGrpCat.{u}} (f : G ⟶ H) :
+noncomputable def kernelIsoKer {G H : AddCommGrpCat.{u}} (f : G ⟶ H) :
     kernel f ≅ AddCommGrpCat.of f.hom.ker where
   hom := ofHom
     { toFun := fun g => ⟨kernel.ι f g, ConcreteCategory.congr_hom (kernel.condition f) g⟩
@@ -480,7 +478,7 @@ theorem kernelIsoKer_inv_comp_ι {G H : AddCommGrpCat.{u}} (f : G ⟶ H) :
 /-- The categorical kernel inclusion for `f : G ⟶ H`, as an object over `G`,
 agrees with the `AddSubgroup.subtype` map.
 -/
-def kernelIsoKerOver {G H : AddCommGrpCat.{u}} (f : G ⟶ H) :
+noncomputable def kernelIsoKerOver {G H : AddCommGrpCat.{u}} (f : G ⟶ H) :
     Over.mk (kernel.ι f) ≅ @Over.mk _ _ G (AddCommGrpCat.of f.hom.ker)
       (ofHom (AddSubgroup.subtype f.hom.ker)) :=
   Over.isoMk (kernelIsoKer f)

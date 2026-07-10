@@ -76,8 +76,6 @@ This file is a `noncomputable theory` and uses classical logic throughout.
 
 assert_not_exists CompleteLattice Monoid
 
-noncomputable section
-
 open Finset Function
 
 variable {α β ι M N O G H : Type*}
@@ -202,7 +200,7 @@ theorem support_subset_iff {s : Set α} {f : α →₀ M} :
 /-- Given `Finite α`, `equivFunOnFinite` is the `Equiv` between `α →₀ β` and `α → β`.
   (All functions on a finite type are finitely supported.) -/
 @[simps]
-def equivFunOnFinite [Finite α] : (α →₀ M) ≃ (α → M) where
+noncomputable def equivFunOnFinite [Finite α] : (α →₀ M) ≃ (α → M) where
   toFun := (⇑)
   invFun f := mk (Function.support f).toFinite.toFinset f fun _a => Set.Finite.mem_toFinset _
 
@@ -227,14 +225,14 @@ section OnFinset
 variable [Zero M]
 
 /-- The (not exposed) support of `Finsupp.onFinset`. -/
-@[no_expose] def onFinsetSupport (s : Finset α) (f : α → M) : Finset α :=
+@[no_expose] noncomputable def onFinsetSupport (s : Finset α) (f : α → M) : Finset α :=
   haveI := Classical.decEq M
   {a ∈ s | f a ≠ 0}
 
 /-- `Finsupp.onFinset s f hf` is the finsupp function representing `f` restricted to the finset `s`.
 The function must be `0` outside of `s`. Use this when the set needs to be filtered anyways,
 otherwise a better set representation is often available. -/
-def onFinset (s : Finset α) (f : α → M) (hf : ∀ a, f a ≠ 0 → a ∈ s) : α →₀ M where
+noncomputable def onFinset (s : Finset α) (f : α → M) (hf : ∀ a, f a ≠ 0 → a ∈ s) : α →₀ M where
   support := onFinsetSupport s f
   toFun := f
   mem_support_toFun := by simpa [onFinsetSupport]
@@ -308,7 +306,7 @@ bundled (defined in `Mathlib/Data/Finsupp/Basic.lean`):
 * `Finsupp.mapRange.linearMap`
 * `Finsupp.mapRange.linearEquiv`
 -/
-def mapRange (f : M → N) (hf : f 0 = 0) (g : α →₀ M) : α →₀ N :=
+noncomputable def mapRange (f : M → N) (hf : f 0 = 0) (g : α →₀ M) : α →₀ N :=
   onFinset g.support (f ∘ g) fun a => by
     rw [mem_support_iff, not_imp_not]; exact fun H => (congr_arg f H).trans hf
 
@@ -377,7 +375,7 @@ variable [Zero M] [Zero N] [Zero O]
 
 /-- `Finsupp.mapRange` as an equiv. -/
 @[simps (attr := grind =) apply]
-def mapRange.equiv (e : M ≃ N) (hf : e 0 = 0) : (ι →₀ M) ≃ (ι →₀ N) where
+noncomputable def mapRange.equiv (e : M ≃ N) (hf : e 0 = 0) : (ι →₀ M) ≃ (ι →₀ N) where
   toFun := mapRange e hf
   invFun := mapRange e.symm <| by simp [← hf]
   left_inv x := by ext; simp
@@ -405,7 +403,7 @@ variable [Zero M] [Zero N]
 /-- Given `f : α ↪ β` and `v : α →₀ M`, `Finsupp.embDomain f v : β →₀ M`
 is the finitely supported function whose value at `f a : β` is `v a`.
 For a `b : β` outside the range of `f`, it is zero. -/
-def embDomain (f : α ↪ β) (v : α →₀ M) : β →₀ M where
+noncomputable def embDomain (f : α ↪ β) (v : α →₀ M) : β →₀ M where
   support := v.support.map f
   toFun a₂ :=
     haveI := Classical.decEq β
@@ -483,7 +481,7 @@ variable [Zero M] [Zero N] [Zero O]
 /-- Given finitely supported functions `g₁ : α →₀ M` and `g₂ : α →₀ N` and function `f : M → N → O`,
 `Finsupp.zipWith f hf g₁ g₂` is the finitely supported function `α →₀ O` satisfying
 `zipWith f hf g₁ g₂ a = f (g₁ a) (g₂ a)`, which is well-defined when `f 0 0 = 0`. -/
-def zipWith (f : M → N → O) (hf : f 0 0 = 0) (g₁ : α →₀ M) (g₂ : α →₀ N) : α →₀ O :=
+noncomputable def zipWith (f : M → N → O) (hf : f 0 0 = 0) (g₁ : α →₀ M) (g₂ : α →₀ N) : α →₀ O :=
   onFinset
     (haveI := Classical.decEq α; g₁.support ∪ g₂.support)
     (fun a => f (g₁ a) (g₂ a))

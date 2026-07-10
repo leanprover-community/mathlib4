@@ -40,8 +40,6 @@ build the general theory. We do not define it here.
 
 @[expose] public section
 
-noncomputable section
-
 variable {𝕜 E F G : Type*}
 
 open Topology NNReal Filter ENNReal Set Asymptotics
@@ -56,7 +54,7 @@ variable [ContinuousConstSMul 𝕜 E] [ContinuousConstSMul 𝕜 F]
 
 /-- Given a formal multilinear series `p` and a vector `x`, then `p.sum x` is the sum `Σ pₙ xⁿ`. A
 priori, it only behaves well when `‖x‖ < p.radius`. -/
-protected def sum (p : FormalMultilinearSeries 𝕜 E F) (x : E) : F :=
+protected noncomputable def sum (p : FormalMultilinearSeries 𝕜 E F) (x : E) : F :=
   ∑' n : ℕ, p n fun _ => x
 
 theorem sum_mem {S : Type*} {s : S} [SetLike S F] [AddSubmonoidClass S F]
@@ -90,7 +88,7 @@ variable (p : FormalMultilinearSeries 𝕜 E F) {r : ℝ≥0}
 /-- The radius of a formal multilinear series is the largest `r` such that the sum `Σ ‖pₙ‖ ‖y‖ⁿ`
 converges for all `‖y‖ < r`. This implies that `Σ pₙ yⁿ` converges for all `‖y‖ < r`, but these
 definitions are *not* equivalent in general. -/
-def radius (p : FormalMultilinearSeries 𝕜 E F) : ℝ≥0∞ :=
+noncomputable def radius (p : FormalMultilinearSeries 𝕜 E F) : ℝ≥0∞ :=
   ⨆ (r : ℝ≥0) (C : ℝ) (_ : ∀ n, ‖p n‖ * (r : ℝ) ^ n ≤ C), (r : ℝ≥0∞)
 
 /-- If `‖pₙ‖ rⁿ` is bounded in `n`, then the radius of `p` is at least `r`. -/

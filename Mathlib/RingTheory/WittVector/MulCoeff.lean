@@ -30,8 +30,6 @@ that needs to happen in characteristic 0.
 @[expose] public section
 
 
-noncomputable section
-
 namespace WittVector
 
 variable (p : ℕ) [hp : Fact p.Prime]
@@ -49,7 +47,7 @@ open Finset MvPolynomial
 (∑ i ∈ range n, (y.coeff i)^(p^(n-i)) * p^i.val)
 ```
 -/
-def wittPolyProd (n : ℕ) : 𝕄 :=
+noncomputable def wittPolyProd (n : ℕ) : 𝕄 :=
   rename (Prod.mk (0 : Fin 2)) (wittPolynomial p ℤ n) *
     rename (Prod.mk (1 : Fin 2)) (wittPolynomial p ℤ n)
 
@@ -61,7 +59,7 @@ theorem wittPolyProd_vars (n : ℕ) : (wittPolyProd p n).vars ⊆ univ ×ˢ rang
     simp [wittPolynomial_vars, image_subset_iff]
 
 /-- The "remainder term" of `WittVector.wittPolyProd`. See `mul_polyOfInterest_aux2`. -/
-def wittPolyProdRemainder (n : ℕ) : 𝕄 :=
+noncomputable def wittPolyProdRemainder (n : ℕ) : 𝕄 :=
   ∑ i ∈ range n, (p : 𝕄) ^ i * wittMul p i ^ p ^ (n - i)
 
 theorem wittPolyProdRemainder_vars (n : ℕ) :
@@ -85,7 +83,7 @@ theorem wittPolyProdRemainder_vars (n : ℕ) :
 `wittPolyProd p (n+1)` will have variables up to `n+1`,
 but `remainder` will only have variables up to `n`.
 -/
-def remainder (n : ℕ) : 𝕄 :=
+noncomputable def remainder (n : ℕ) : 𝕄 :=
   (∑ x ∈ range (n + 1),
     (rename (Prod.mk 0)) ((monomial (Finsupp.single x (p ^ (n + 1 - x)))) ((p : ℤ) ^ x))) *
    ∑ x ∈ range (n + 1),
@@ -105,7 +103,7 @@ theorem remainder_vars (n : ℕ) : (remainder p n).vars ⊆ univ ×ˢ range (n +
       exact mod_cast hp.out.ne_zero
 
 /-- This is the polynomial whose degree we want to get a handle on. -/
-def polyOfInterest (n : ℕ) : 𝕄 :=
+noncomputable def polyOfInterest (n : ℕ) : 𝕄 :=
   wittMul p (n + 1) + (p : 𝕄) ^ (n + 1) * X (0, n + 1) * X (1, n + 1) -
     X (0, n + 1) * rename (Prod.mk (1 : Fin 2)) (wittPolynomial p ℤ (n + 1)) -
     X (1, n + 1) * rename (Prod.mk (0 : Fin 2)) (wittPolynomial p ℤ (n + 1))
@@ -271,7 +269,7 @@ variable {k}
 /--
 Produces the "remainder function" of the `n+1`st coefficient, which does not depend on the `n+1`st
 coefficients of the inputs. -/
-def nthRemainder (n : ℕ) : (Fin (n + 1) → k) → (Fin (n + 1) → k) → k :=
+noncomputable def nthRemainder (n : ℕ) : (Fin (n + 1) → k) → (Fin (n + 1) → k) → k :=
   Classical.choose (nth_mul_coeff p k n)
 
 theorem nthRemainder_spec (n : ℕ) (x y : 𝕎 k) : (x * y).coeff (n + 1) =

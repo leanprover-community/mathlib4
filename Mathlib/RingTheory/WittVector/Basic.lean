@@ -49,8 +49,6 @@ in this file.
 @[expose] public section
 
 
-noncomputable section
-
 open MvPolynomial Function
 
 variable {p : ℕ} {R S : Type*} [CommRing R] [CommRing S]
@@ -134,7 +132,7 @@ producing a value in `R`.
 This function will be bundled as the ring homomorphism `WittVector.ghostMap`
 once the ring structure is available,
 but we rely on it to set up the ring structure in the first place. -/
-private def ghostFun : 𝕎 R → ℕ → R := fun x n => aeval x.coeff (W_ ℤ n)
+private noncomputable def ghostFun : 𝕎 R → ℕ → R := fun x n => aeval x.coeff (W_ ℤ n)
 
 section Tactic
 open Lean Elab Tactic
@@ -210,7 +208,7 @@ variable (p) (R)
 set_option backward.privateInPublic true in
 /-- The bijection between `𝕎 R` and `ℕ → R`, under the assumption that `p` is invertible in `R`.
 In `WittVector.ghostEquiv` we upgrade this to an isomorphism of rings. -/
-private def ghostEquiv' [Invertible (p : R)] : 𝕎 R ≃ (ℕ → R) where
+private noncomputable def ghostEquiv' [Invertible (p : R)] : 𝕎 R ≃ (ℕ → R) where
   toFun := ghostFun
   invFun x := mk p fun n => aeval x (xInTermsOfW p R n)
   left_inv := by
@@ -229,19 +227,19 @@ private def ghostEquiv' [Invertible (p : R)] : 𝕎 R ≃ (ℕ → R) where
 
 variable [Fact p.Prime]
 
-private local instance comm_ring_aux₁ : CommRing (𝕎 (MvPolynomial R ℚ)) :=
+private noncomputable local instance comm_ring_aux₁ : CommRing (𝕎 (MvPolynomial R ℚ)) :=
   (ghostEquiv' p (MvPolynomial R ℚ)).injective.commRing ghostFun ghostFun_zero ghostFun_one
     ghostFun_add ghostFun_mul ghostFun_neg ghostFun_sub ghostFun_nsmul ghostFun_zsmul
     ghostFun_pow ghostFun_natCast ghostFun_intCast
 
 set_option backward.privateInPublic true in
-private local instance comm_ring_aux₂ : CommRing (𝕎 (MvPolynomial R ℤ)) :=
+private noncomputable local instance comm_ring_aux₂ : CommRing (𝕎 (MvPolynomial R ℤ)) :=
   (mapFun.injective _ <| map_injective (Int.castRingHom ℚ) Int.cast_injective).commRing _
     (mapFun.zero _) (mapFun.one _) (mapFun.add _) (mapFun.mul _) (mapFun.neg _) (mapFun.sub _)
     (mapFun.nsmul _) (mapFun.zsmul _) (mapFun.pow _) (mapFun.natCast _) (mapFun.intCast _)
 
 /-- The commutative ring structure on `𝕎 R`. -/
-instance : CommRing (𝕎 R) :=
+noncomputable instance : CommRing (𝕎 R) :=
   (mapFun.surjective _ <| counit_surjective _).commRing (mapFun <| MvPolynomial.counit _)
     (mapFun.zero _) (mapFun.one _) (mapFun.add _) (mapFun.mul _) (mapFun.neg _) (mapFun.sub _)
     (mapFun.nsmul _) (mapFun.zsmul _) (mapFun.pow _) (mapFun.natCast _) (mapFun.intCast _)
@@ -284,7 +282,7 @@ set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- `WittVector.ghostMap` is a ring homomorphism that maps each Witt vector
 to the sequence of its ghost components. -/
-def ghostMap : 𝕎 R →+* ℕ → R where
+noncomputable def ghostMap : 𝕎 R →+* ℕ → R where
   toFun := ghostFun
   map_zero' := ghostFun_zero
   map_one' := ghostFun_one
@@ -293,7 +291,7 @@ def ghostMap : 𝕎 R →+* ℕ → R where
 
 /-- Evaluates the `n`th Witt polynomial on the first `n` coefficients of `x`,
 producing a value in `R`. -/
-def ghostComponent (n : ℕ) : 𝕎 R →+* R :=
+noncomputable def ghostComponent (n : ℕ) : 𝕎 R →+* R :=
   (Pi.evalRingHom _ n).comp ghostMap
 
 theorem ghostComponent_apply (n : ℕ) (x : 𝕎 R) : ghostComponent n x = aeval x.coeff (W_ ℤ n) :=
@@ -326,7 +324,7 @@ variable [Invertible (p : R)]
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- `WittVector.ghostMap` is a ring isomorphism when `p` is invertible in `R`. -/
-def ghostEquiv : 𝕎 R ≃+* (ℕ → R) :=
+noncomputable def ghostEquiv : 𝕎 R ≃+* (ℕ → R) :=
   { (ghostMap : 𝕎 R →+* ℕ → R), ghostEquiv' p R with }
 
 @[simp]

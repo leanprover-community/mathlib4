@@ -116,8 +116,6 @@ open scoped NNReal ENNReal Topology
 
 open Metric EMetric Set Function Filter Encodable Module TopologicalSpace
 
-noncomputable section
-
 variable {ι X Y : Type*} [EMetricSpace X] [EMetricSpace Y]
 
 namespace MeasureTheory
@@ -245,18 +243,18 @@ measures. We also prove basic lemmas about `map`/`comap` of these measures.
 /-- Auxiliary definition for `OuterMeasure.mkMetric'`: given a function on sets
 `m : Set X → ℝ≥0∞`, returns the maximal outer measure `μ` such that `μ s ≤ m s`
 for any set `s` of diameter at most `r`. -/
-def mkMetric'.pre (m : Set X → ℝ≥0∞) (r : ℝ≥0∞) : OuterMeasure X :=
+noncomputable def mkMetric'.pre (m : Set X → ℝ≥0∞) (r : ℝ≥0∞) : OuterMeasure X :=
   boundedBy <| extend fun s (_ : ediam s ≤ r) => m s
 
 /-- Given a function `m : Set X → ℝ≥0∞`, `mkMetric' m` is the supremum of `mkMetric'.pre m r`
 over `r > 0`. Equivalently, it is the limit of `mkMetric'.pre m r` as `r` tends to zero from
 the right. -/
-def mkMetric' (m : Set X → ℝ≥0∞) : OuterMeasure X :=
+noncomputable def mkMetric' (m : Set X → ℝ≥0∞) : OuterMeasure X :=
   ⨆ r > 0, mkMetric'.pre m r
 
 /-- Given a function `m : ℝ≥0∞ → ℝ≥0∞` and `r > 0`, let `μ r` be the maximal outer measure such that
 `μ s ≤ m (ediam s)` whenever `ediam s < r`. Then `mkMetric m = ⨆ r > 0, μ r`. -/
-def mkMetric (m : ℝ≥0∞ → ℝ≥0∞) : OuterMeasure X :=
+noncomputable def mkMetric (m : ℝ≥0∞ → ℝ≥0∞) : OuterMeasure X :=
   mkMetric' fun s => m (ediam s)
 
 namespace mkMetric'
@@ -414,13 +412,13 @@ variable [MeasurableSpace X] [BorelSpace X]
 /-- Given a function `m : Set X → ℝ≥0∞`, `mkMetric' m` is the supremum of `μ r`
 over `r > 0`, where `μ r` is the maximal outer measure `μ` such that `μ s ≤ m s`
 for all `s`. While each `μ r` is an *outer* measure, the supremum is a measure. -/
-def mkMetric' (m : Set X → ℝ≥0∞) : Measure X :=
+noncomputable def mkMetric' (m : Set X → ℝ≥0∞) : Measure X :=
   (OuterMeasure.mkMetric' m).toMeasure (OuterMeasure.mkMetric'_isMetric _).le_caratheodory
 
 /-- Given a function `m : ℝ≥0∞ → ℝ≥0∞`, `mkMetric m` is the supremum of `μ r` over `r > 0`, where
 `μ r` is the maximal outer measure `μ` such that `μ s ≤ m s` for all sets `s` that contain at least
 two points. While each `mkMetric'.pre` is an *outer* measure, the supremum is a measure. -/
-def mkMetric (m : ℝ≥0∞ → ℝ≥0∞) : Measure X :=
+noncomputable def mkMetric (m : ℝ≥0∞ → ℝ≥0∞) : Measure X :=
   (OuterMeasure.mkMetric m).toMeasure (OuterMeasure.mkMetric'_isMetric _).le_caratheodory
 
 @[simp]
@@ -533,7 +531,7 @@ theorem mkMetric_le_liminf_sum {β : Type*} {ι : β → Type*} [hι : ∀ n, Fi
 
 
 /-- Hausdorff measure on an (e)metric space. -/
-def hausdorffMeasure (d : ℝ) : Measure X :=
+noncomputable def hausdorffMeasure (d : ℝ) : Measure X :=
   mkMetric fun r => r ^ d
 
 @[inherit_doc]

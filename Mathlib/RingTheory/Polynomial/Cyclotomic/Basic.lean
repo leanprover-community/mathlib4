@@ -47,8 +47,6 @@ to get a polynomial with integer coefficients and then we map it to `R[X]`, for 
 
 open scoped Polynomial
 
-noncomputable section
-
 universe u
 
 namespace Polynomial
@@ -61,7 +59,7 @@ variable {R : Type*} [CommRing R] [IsDomain R]
 
 /-- The modified `n`-th cyclotomic polynomial with coefficients in `R`, it is the usual cyclotomic
 polynomial if there is a primitive `n`-th root of unity in `R`. -/
-def cyclotomic' (n : ℕ) (R : Type*) [CommRing R] [IsDomain R] : R[X] :=
+noncomputable def cyclotomic' (n : ℕ) (R : Type*) [CommRing R] [IsDomain R] : R[X] :=
   ∏ μ ∈ primitiveRoots n R, (X - C μ)
 
 /-- The zeroth modified cyclotomic polynomial is `1`. -/
@@ -227,7 +225,7 @@ end Cyclotomic'
 section Cyclotomic
 
 /-- The `n`-th cyclotomic polynomial with coefficients in `R`. -/
-def cyclotomic (n : ℕ) (R : Type*) [Ring R] : R[X] :=
+noncomputable def cyclotomic (n : ℕ) (R : Type*) [Ring R] : R[X] :=
   if h : n = 0 then 1
   else map (Int.castRingHom R) (int_coeff_of_cyclotomic' (Complex.isPrimitiveRoot_exp n h)).choose
 

@@ -42,8 +42,6 @@ setting, see the file `Mathlib/MeasureTheory/Measure/Haar/Unique.lean`.
 @[expose] public section
 
 
-noncomputable section
-
 open Set hiding prod_eq
 
 open Function MeasureTheory

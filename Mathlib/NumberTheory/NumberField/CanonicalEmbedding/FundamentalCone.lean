@@ -47,19 +47,19 @@ namespace NumberField.mixedEmbedding
 
 open NumberField NumberField.InfinitePlace
 
-noncomputable section UnitSMul
+section UnitSMul
 
 /-- The action of `(𝓞 K)ˣ` on the mixed space `ℝ^r₁ × ℂ^r₂` defined, for `u : (𝓞 K)ˣ`, by
 multiplication component by component with `mixedEmbedding K u`. -/
 @[simps]
-instance unitSMul : SMul (𝓞 K)ˣ (mixedSpace K) where
+noncomputable instance unitSMul : SMul (𝓞 K)ˣ (mixedSpace K) where
   smul u x := mixedEmbedding K u * x
 
-instance : MulAction (𝓞 K)ˣ (mixedSpace K) where
+noncomputable instance : MulAction (𝓞 K)ˣ (mixedSpace K) where
   one_smul := fun _ ↦ by simp_rw [unitSMul_smul, Units.coe_one, map_one, one_mul]
   mul_smul := fun _ _ _ ↦ by simp_rw [unitSMul_smul, Units.coe_mul, map_mul, mul_assoc]
 
-instance : SMulZeroClass (𝓞 K)ˣ (mixedSpace K) where
+noncomputable instance : SMulZeroClass (𝓞 K)ˣ (mixedSpace K) where
   smul_zero := fun _ ↦ by simp_rw [unitSMul_smul, mul_zero]
 
 variable {K}
@@ -87,7 +87,7 @@ theorem norm_unit_smul (u : (𝓞 K)ˣ) (x : mixedSpace K) :
 
 end UnitSMul
 
-noncomputable section logMap
+section logMap
 
 open NumberField.Units NumberField.Units.dirichletUnitTheorem Module
 
@@ -96,7 +96,7 @@ variable [NumberField K] {K}
 /-- The map from the mixed space to `logSpace K` defined in such way that: 1) it factors the map
 `logEmbedding`, see `logMap_eq_logEmbedding`; 2) it is constant on the sets
 `{c • x | c ∈ ℝ, c ≠ 0}` if `norm x ≠ 0`, see `logMap_real_smul`. -/
-def logMap (x : mixedSpace K) : logSpace K := fun w ↦
+noncomputable def logMap (x : mixedSpace K) : logSpace K := fun w ↦
   mult w.val * (Real.log (normAtPlace w.val x) -
     Real.log (mixedEmbedding.norm x) * (finrank ℚ K : ℝ)⁻¹)
 
@@ -166,7 +166,7 @@ theorem logMap_eq_of_normAtPlace_eq (h : ∀ w, normAtPlace w x = normAtPlace w 
 
 end logMap
 
-noncomputable section
+section
 
 open NumberField.Units NumberField.Units.dirichletUnitTheorem
 
@@ -285,7 +285,7 @@ open scoped nonZeroDivisors
 `mixedEmbedding` is equal to `a`. Note that we state the fact that `x ≠ 0` by saying that `x` is
 a nonzero divisors since we will use later on the isomorphism
 `Ideal.associatesNonZeroDivisorsEquivIsPrincipal`, see `integerSetEquiv`. -/
-def preimageOfMemIntegerSet (a : integerSet K) : (𝓞 K)⁰ :=
+noncomputable def preimageOfMemIntegerSet (a : integerSet K) : (𝓞 K)⁰ :=
   ⟨(mem_integerSet.mp a.prop).2.choose, mem_nonZeroDivisors_of_ne_zero (by
   simp_rw [ne_eq, ← RingOfIntegers.coe_injective.eq_iff, ← (mixedEmbedding_injective K).eq_iff,
     map_zero, (mem_integerSet.mp a.prop).2.choose_spec, ne_zero_of_mem_integerSet,
@@ -321,10 +321,10 @@ theorem torsion_unitSMul_mem_integerSet {x : mixedSpace K} {ζ : (𝓞 K)ˣ} (h�
 
 /-- The action of `torsion K` on `integerSet K`. -/
 @[simps]
-instance integerSetTorsionSMul : SMul (torsion K) (integerSet K) where
+noncomputable instance integerSetTorsionSMul : SMul (torsion K) (integerSet K) where
   smul := fun ⟨ζ, hζ⟩ ⟨x, hx⟩ ↦ ⟨ζ • x, torsion_unitSMul_mem_integerSet hζ hx⟩
 
-instance : MulAction (torsion K) (integerSet K) where
+noncomputable instance : MulAction (torsion K) (integerSet K) where
   one_smul := fun _ ↦ by
     rw [Subtype.mk_eq_mk, integerSetTorsionSMul_smul_coe, OneMemClass.coe_one, one_smul]
   mul_smul := fun _ _ _ ↦ by
@@ -333,6 +333,7 @@ instance : MulAction (torsion K) (integerSet K) where
 
 /-- The `mixedEmbedding.norm` of `a : integerSet K` as a natural number, see also
 `intNorm_coe`. -/
+noncomputable
 def intNorm (a : integerSet K) : ℕ := (Algebra.norm ℤ (preimageOfMemIntegerSet a : 𝓞 K)).natAbs
 
 @[simp]
@@ -342,7 +343,7 @@ theorem intNorm_coe (a : integerSet K) :
     ← norm_eq_norm, mixedEmbedding_preimageOfMemIntegerSet]
 
 /-- The norm `intNorm` lifts to a function on `integerSet K` modulo `torsion K`. -/
-def quotIntNorm :
+noncomputable def quotIntNorm :
     Quotient (MulAction.orbitRel (torsion K) (integerSet K)) → ℕ :=
   Quotient.lift (fun x ↦ intNorm x) fun a b ⟨u, hu⟩ ↦ by
     rw [← Nat.cast_inj (R := ℝ), intNorm_coe, intNorm_coe, ← hu, integerSetTorsionSMul_smul_coe,
@@ -355,7 +356,7 @@ variable (K) in
 /-- The map that sends an element of `a : integerSet K` to the associates class
 of its preimage in `(𝓞 K)⁰`. By quotienting by the kernel of the map, which is equal to the
 subgroup of torsion, we get the equivalence `integerSetQuotEquivAssociates`. -/
-def integerSetToAssociates (a : integerSet K) : Associates (𝓞 K)⁰ :=
+noncomputable def integerSetToAssociates (a : integerSet K) : Associates (𝓞 K)⁰ :=
   ⟦preimageOfMemIntegerSet a⟧
 
 @[simp]
@@ -389,7 +390,7 @@ theorem integerSetToAssociates_eq_iff (a b : integerSet K) :
 
 variable (K) in
 /-- The equivalence between `integerSet K` modulo `torsion K` and `Associates (𝓞 K)⁰`. -/
-def integerSetQuotEquivAssociates :
+noncomputable def integerSetQuotEquivAssociates :
     Quotient (MulAction.orbitRel (torsion K) (integerSet K)) ≃ Associates (𝓞 K)⁰ :=
   Equiv.ofBijective
     (Quotient.lift (integerSetToAssociates K)
@@ -418,7 +419,7 @@ open Submodule Ideal
 variable (K) in
 /-- The equivalence between `integerSet K` and the product of the set of nonzero principal
 ideals of `K` and the torsion of `K`. -/
-def integerSetEquiv :
+noncomputable def integerSetEquiv :
     integerSet K ≃ {I : (Ideal (𝓞 K))⁰ // IsPrincipal I.val} × torsion K :=
   (MulAction.selfEquivSigmaOrbitsQuotientStabilizer (torsion K) (integerSet K)).trans
     ((Equiv.sigmaEquivProdOfEquiv (by
@@ -435,7 +436,7 @@ theorem integerSetEquiv_apply_fst (a : integerSet K) :
 variable (K) in
 /-- For an integer `n`, The equivalence between the elements of `integerSet K` of norm `n`
 and the product of the set of nonzero principal ideals of `K` of norm `n` and the torsion of `K`. -/
-def integerSetEquivNorm (n : ℕ) :
+noncomputable def integerSetEquivNorm (n : ℕ) :
     {a : integerSet K // mixedEmbedding.norm (a : mixedSpace K) = n} ≃
       {I : (Ideal (𝓞 K))⁰ // IsPrincipal (I : Ideal (𝓞 K)) ∧
         absNorm (I : Ideal (𝓞 K)) = n} × (torsion K) :=
@@ -506,7 +507,7 @@ theorem preimage_of_IdealSetMap (a : idealSet K J) :
 
 /-- The map `idealSetMap` is actually an equiv between `idealSet K J` and the elements of
 `integerSet K` whose preimage lies in `J`. -/
-def idealSetEquiv : idealSet K J ≃
+noncomputable def idealSetEquiv : idealSet K J ≃
     {a : integerSet K | (preimageOfMemIntegerSet a : 𝓞 K) ∈ (J : Set (𝓞 K))} :=
   Equiv.ofBijective (fun a ↦ ⟨idealSetMap K J a, preimage_of_IdealSetMap K J a⟩)
     ⟨fun _ _ h ↦ (by
@@ -535,7 +536,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- For an integer `n`, The equivalence between the elements of `idealSet K` of norm `n` and
 the product of the set of nonzero principal ideals of `K` divisible by `J` of norm `n` and the
 torsion of `K`. -/
-def idealSetEquivNorm (n : ℕ) :
+noncomputable def idealSetEquivNorm (n : ℕ) :
     {a : idealSet K J // mixedEmbedding.norm (a : mixedSpace K) = n} ≃
       {I : (Ideal (𝓞 K))⁰ // (J : Ideal (𝓞 K)) ∣ I ∧ IsPrincipal (I : Ideal (𝓞 K)) ∧
         absNorm (I : Ideal (𝓞 K)) = n} × (torsion K) :=

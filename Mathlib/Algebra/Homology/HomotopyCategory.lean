@@ -22,8 +22,6 @@ with chain maps identified when they are homotopic.
 
 universe v u
 
-noncomputable section
-
 open CategoryTheory CategoryTheory.Limits HomologicalComplex
 
 variable {R : Type*} [Semiring R]
@@ -79,7 +77,7 @@ instance [Linear R V] : Functor.Linear R (quotient V c) :=
 
 open ZeroObject
 
-instance [HasZeroObject V] : Inhabited (HomotopyCategory V c) :=
+noncomputable instance [HasZeroObject V] : Inhabited (HomotopyCategory V c) :=
   ⟨(quotient V c).obj 0⟩
 
 instance [HasZeroObject V] : HasZeroObject (HomotopyCategory V c) :=
@@ -114,7 +112,7 @@ theorem eq_of_homotopy {C D : HomologicalComplex V c} (f g : C ⟶ D) (h : Homot
   CategoryTheory.Quotient.sound _ ⟨h⟩
 
 /-- If two chain maps become equal in the homotopy category, then they are homotopic. -/
-def homotopyOfEq {C D : HomologicalComplex V c} (f g : C ⟶ D)
+noncomputable def homotopyOfEq {C D : HomologicalComplex V c} (f g : C ⟶ D)
     (w : (quotient V c).map f = (quotient V c).map g) : Homotopy f g :=
   ((Quotient.functor_map_eq_iff _ _ _).mp w).some
 
@@ -127,7 +125,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- An arbitrarily chosen representation of the image of a chain map in the homotopy category
 is homotopic to the original chain map.
 -/
-def homotopyOutMap {C D : HomologicalComplex V c} (f : C ⟶ D) :
+noncomputable def homotopyOutMap {C D : HomologicalComplex V c} (f : C ⟶ D) :
     Homotopy ((quotient V c).map f).out f := by
   apply homotopyOfEq
   simp
@@ -152,7 +150,7 @@ def isoOfHomotopyEquiv {C D : HomologicalComplex V c} (f : HomotopyEquiv C D) :
 set_option backward.isDefEq.respectTransparency false in
 /-- If two complexes become isomorphic in the homotopy category,
   then they were homotopy equivalent. -/
-def homotopyEquivOfIso {C D : HomologicalComplex V c}
+noncomputable def homotopyEquivOfIso {C D : HomologicalComplex V c}
     (i : (quotient V c).obj C ≅ (quotient V c).obj D) : HomotopyEquiv C D where
   hom := Quot.out i.hom
   inv := Quot.out i.inv
@@ -299,7 +297,7 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The preimage by a fully faithful functor of a homotopy between morphisms
 of homological complexes. -/
-def Functor.preimageHomotopy
+noncomputable def Functor.preimageHomotopy
     (F : V ⥤ W) [F.Additive] [F.Full] [F.Faithful]
     {K L : HomologicalComplex V c} {f₁ f₂ : K ⟶ L}
     (H : Homotopy ((F.mapHomologicalComplex c).map f₁) ((F.mapHomologicalComplex c).map f₂)) :

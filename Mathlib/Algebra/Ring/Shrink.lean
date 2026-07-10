@@ -14,49 +14,50 @@ public import Mathlib.Algebra.Ring.TransferInstance
 
 @[expose] public section
 
-noncomputable section
-
 namespace Shrink
 universe v
 variable {α : Type*} [Small.{v} α]
 
 variable (α) in
 /-- Shrink `α` to a smaller universe preserves ring structure. -/
-def ringEquiv [Add α] [Mul α] : Shrink.{v} α ≃+* α := (equivShrink α).symm.ringEquiv
+noncomputable def ringEquiv [Add α] [Mul α] : Shrink.{v} α ≃+* α := (equivShrink α).symm.ringEquiv
 
-instance [NonUnitalNonAssocSemiring α] : NonUnitalNonAssocSemiring (Shrink.{v} α) :=
+noncomputable instance [NonUnitalNonAssocSemiring α] : NonUnitalNonAssocSemiring (Shrink.{v} α) :=
   (equivShrink α).symm.nonUnitalNonAssocSemiring
 
-instance [NonUnitalSemiring α] : NonUnitalSemiring (Shrink.{v} α) :=
+noncomputable instance [NonUnitalSemiring α] : NonUnitalSemiring (Shrink.{v} α) :=
   (equivShrink α).symm.nonUnitalSemiring
 
-instance [AddMonoidWithOne α] : AddMonoidWithOne (Shrink.{v} α) :=
+noncomputable instance [AddMonoidWithOne α] : AddMonoidWithOne (Shrink.{v} α) :=
   (equivShrink α).symm.addMonoidWithOne
 
-instance [AddGroupWithOne α] : AddGroupWithOne (Shrink.{v} α) :=
+noncomputable instance [AddGroupWithOne α] : AddGroupWithOne (Shrink.{v} α) :=
   (equivShrink α).symm.addGroupWithOne
 
-instance [NonAssocSemiring α] : NonAssocSemiring (Shrink.{v} α) :=
+noncomputable instance [NonAssocSemiring α] : NonAssocSemiring (Shrink.{v} α) :=
   (equivShrink α).symm.nonAssocSemiring
 
-instance [Semiring α] : Semiring (Shrink.{v} α) := (equivShrink α).symm.semiring
+noncomputable instance [Semiring α] : Semiring (Shrink.{v} α) := (equivShrink α).symm.semiring
 
-instance [NonUnitalCommSemiring α] : NonUnitalCommSemiring (Shrink.{v} α) :=
+noncomputable instance [NonUnitalCommSemiring α] : NonUnitalCommSemiring (Shrink.{v} α) :=
   (equivShrink α).symm.nonUnitalCommSemiring
 
+noncomputable
 instance [CommSemiring α] : CommSemiring (Shrink.{v} α) := (equivShrink α).symm.commSemiring
 
-instance [NonUnitalNonAssocRing α] : NonUnitalNonAssocRing (Shrink.{v} α) :=
+noncomputable instance [NonUnitalNonAssocRing α] : NonUnitalNonAssocRing (Shrink.{v} α) :=
   (equivShrink α).symm.nonUnitalNonAssocRing
 
+noncomputable
 instance [NonUnitalRing α] : NonUnitalRing (Shrink.{v} α) := (equivShrink α).symm.nonUnitalRing
+noncomputable
 instance [NonAssocRing α] : NonAssocRing (Shrink.{v} α) := (equivShrink α).symm.nonAssocRing
-instance [Ring α] : Ring (Shrink.{v} α) := (equivShrink α).symm.ring
+noncomputable instance [Ring α] : Ring (Shrink.{v} α) := (equivShrink α).symm.ring
 
-instance [NonUnitalCommRing α] : NonUnitalCommRing (Shrink.{v} α) :=
+noncomputable instance [NonUnitalCommRing α] : NonUnitalCommRing (Shrink.{v} α) :=
   (equivShrink α).symm.nonUnitalCommRing
 
-instance [CommRing α] : CommRing (Shrink.{v} α) := (equivShrink α).symm.commRing
+noncomputable instance [CommRing α] : CommRing (Shrink.{v} α) := (equivShrink α).symm.commRing
 instance [Semiring α] [IsDomain α] : IsDomain (Shrink.{v} α) := (Shrink.ringEquiv α).isDomain
 
 end Shrink

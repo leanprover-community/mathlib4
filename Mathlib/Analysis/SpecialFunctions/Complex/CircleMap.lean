@@ -22,13 +22,13 @@ This file defines the circle map $θ ↦ c + R e^{θi}$, a parametrization of a 
 -/
 
 @[expose] public section
-noncomputable section circleMap
+section circleMap
 
 open Complex ComplexConjugate Function Metric Real
 
 /-- The exponential map $θ ↦ c + R e^{θi}$. The range of this map is the circle in `ℂ` with center
 `c` and radius `|R|`. -/
-def circleMap (c : ℂ) (R : ℝ) : ℝ → ℂ := fun θ => c + R * exp (θ * I)
+noncomputable def circleMap (c : ℂ) (R : ℝ) : ℝ → ℂ := fun θ => c + R * exp (θ * I)
 
 @[simp]
 theorem circleMap_sub_center (c : ℂ) (R : ℝ) (θ : ℝ) : circleMap c R θ - c = circleMap 0 R θ := by

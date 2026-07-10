@@ -35,7 +35,7 @@ positive semidefinite matrices.
   *An introduction to the theory of reproducing kernel Hilbert spaces*][MR3526117]
 -/
 
-public noncomputable section
+public section
 
 open ContinuousLinearMap InnerProductSpace Submodule ComplexConjugate
 
@@ -96,10 +96,11 @@ variable (H) [CompleteSpace H] [CompleteSpace V]
 
 /-- The kernel functions of a reproducing kernel Hilbert space are the adjoint of
 the point evaluation. -/
-def kerFun (x : X) : V →L[𝕜] H := (.proj x ∘L coeCLM 𝕜).adjoint
+noncomputable def kerFun (x : X) : V →L[𝕜] H := (.proj x ∘L coeCLM 𝕜).adjoint
 
 /-- The kernel of a reproducing kernel Hilbert space is a matrix of entries given by the
 kernel functions. -/
+noncomputable
 def kernel : Matrix X X (V →L[𝕜] V) := .of fun x y ↦ (kerFun H x).adjoint ∘L kerFun H y
 
 lemma kerFun_apply (y : X) (v : V) (x : X) : kerFun H y v x = kernel H x y v := by
@@ -243,10 +244,10 @@ instance instPreInnerProductSpaceCoreH₀ : PreInnerProductSpace.Core 𝕜 (H₀
     have := (posSemidef_tfae.out 0 1).mp (Fact.out : K.PosSemidef)
     exact this.2
 
-instance instSeminormedAddCommGroupH₀ : SeminormedAddCommGroup (H₀ K) :=
+noncomputable instance instSeminormedAddCommGroupH₀ : SeminormedAddCommGroup (H₀ K) :=
   InnerProductSpace.Core.toSeminormedAddCommGroup (𝕜 := 𝕜)
 
-instance instInnerProductSpaceH₀ : InnerProductSpace 𝕜 (H₀ K) := .ofCore _
+noncomputable instance instInnerProductSpaceH₀ : InnerProductSpace 𝕜 (H₀ K) := .ofCore _
 
 private lemma inner_H₀_def (f g : H₀ K) :
     ⟪f, g⟫_𝕜 = f.sum fun ⟨y, u⟩ z ↦ g.sum fun ⟨x, v⟩ w ↦ star z * w * ⟪K x y u, v⟫_𝕜 := rfl
@@ -260,7 +261,7 @@ abbrev OfKernel := UniformSpace.Completion (H₀ K)
 
 namespace OfKernel
 
-private abbrev kerFunAux (x : X) : V →ₗ[𝕜] UniformSpace.Completion (H₀ K) where
+private noncomputable abbrev kerFunAux (x : X) : V →ₗ[𝕜] UniformSpace.Completion (H₀ K) where
   toFun v := .coe' (.single ⟨x, v⟩ 1)
   map_add' _ _ := by
     refine UniformSpace.Completion.denseRange_coe.eq_of_inner_left 𝕜 fun f ↦ ?_
@@ -274,7 +275,7 @@ variable (K) in
 This is marked as private because it equals `RKHS.kerFun`. However, it must be defined separately
 since the `RKHS.kerFun` spelling depends on the `RKHS (OfKernel K)` instance, which itself
 depends on `OfKernel.kerFun`. -/
-private abbrev kerFun (x : X) :
+private noncomputable abbrev kerFun (x : X) :
     V →L[𝕜] UniformSpace.Completion (H₀ K) := (kerFunAux x).mkContinuous √‖K x x‖ fun v ↦ by
   refine (sq_le_sq₀ (by simp) (by simp [mul_nonneg])).mp ?_
   simp only [LinearMap.coe_mk, AddHom.coe_mk, UniformSpace.Completion.norm_coe,
@@ -287,7 +288,7 @@ private abbrev kerFun (x : X) :
     _ ≤ _ := by simp [mul_pow, mul_assoc, ← sq]
 
 @[no_expose]
-instance instRKHS : RKHS 𝕜 (OfKernel K) X V where
+noncomputable instance instRKHS : RKHS 𝕜 (OfKernel K) X V where
   coeCLM := .pi fun x ↦ (OfKernel.kerFun K x).adjoint
   coeCLM_injective := by
     refine (injective_iff_map_eq_zero _).mpr fun f h ↦ ?_

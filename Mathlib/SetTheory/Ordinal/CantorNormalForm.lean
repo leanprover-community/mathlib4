@@ -33,7 +33,7 @@ normal form:
 - Prove the basic results relating the CNF to the arithmetic operations on ordinals.
 -/
 
-public noncomputable section
+public section
 
 universe u
 
@@ -45,7 +45,7 @@ namespace Ordinal.CNF
 
 /-- Inducts on the base `b` expansion of an ordinal. -/
 @[elab_as_elim]
-protected def rec (b : Ordinal) {C : Ordinal → Sort*} (H0 : C 0)
+protected noncomputable def rec (b : Ordinal) {C : Ordinal → Sort*} (H0 : C 0)
     (H : ∀ o, o ≠ 0 → C (o % b ^ log b o) → C o) (o : Ordinal) : C o :=
   if h : o = 0 then h ▸ H0 else H o h (CNF.rec b H0 H (o % b ^ log b o))
 termination_by o
@@ -68,7 +68,7 @@ We special-case `CNF 0 o = CNF 1 o = [(0, o)]` for `o ≠ 0`.
 
 `CNF b (b ^ u₁ * v₁ + b ^ u₂ * v₂) = [(u₁, v₁), (u₂, v₂)]` -/
 @[pp_nodot]
-def _root_.Ordinal.CNF (b o : Ordinal) : List (Ordinal × Ordinal) :=
+noncomputable def _root_.Ordinal.CNF (b o : Ordinal) : List (Ordinal × Ordinal) :=
   CNF.rec b [] (fun o _ IH ↦ (log b o, o / b ^ log b o)::IH) o
 
 @[simp]
@@ -173,7 +173,7 @@ open AList Finsupp
 /-- `CNF.coeff b o` is the finitely supported function returning the coefficient of `b ^ e` in the
 Cantor Normal Form (`CNF`) of `o`, for each `e`. -/
 @[pp_nodot]
-def coeff (b o : Ordinal) : Ordinal →₀ Ordinal :=
+noncomputable def coeff (b o : Ordinal) : Ordinal →₀ Ordinal :=
   lookupFinsupp ⟨_, nodupKeys b o⟩
 
 theorem support_coeff (b o : Ordinal) :
@@ -262,7 +262,7 @@ theorem coeff_opow_mul_add {b e x y : Ordinal}
 
 /-- `CNF.eval f` evaluates a Finsupp `f : Ordinal →₀ Ordinal`, interpreted as a
 base `b` expansion on ordinals. -/
-def eval (b : Ordinal) (f : Ordinal →₀ Ordinal) : Ordinal :=
+noncomputable def eval (b : Ordinal) (f : Ordinal →₀ Ordinal) : Ordinal :=
   (f.support.sort (· ≥ ·)).foldr (fun p r ↦ b ^ p * f p + r) 0
 
 @[simp]

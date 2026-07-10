@@ -27,7 +27,7 @@ universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 
 namespace CategoryTheory.MonoidalCategory.ExternalProduct
 
-noncomputable section
+section
 open scoped Prod
 
 variable {V : Type u₁} [Category.{v₁} V] [MonoidalCategory V]
@@ -50,7 +50,7 @@ set_option backward.defeqAttrib.useBackward true in
 and if tensoring right with an object preserves colimits in `V`,
 then `H' ⊠ K : D' × E ⥤ V` is a pointwise left Kan extension along `L × (𝟭 E)` at `(d, e)`
 for every `e : E`. -/
-def isPointwiseLeftKanExtensionAtExtensionUnitLeft
+noncomputable def isPointwiseLeftKanExtensionAtExtensionUnitLeft
     (d : D') (P : (Functor.LeftExtension.mk H' α).IsPointwiseLeftKanExtensionAt d) (e : E)
     [Limits.PreservesColimitsOfShape (CostructuredArrow L d) (tensorRight <| K.obj e)] :
     Functor.LeftExtension.mk (H' ⊠ K) (extensionUnitLeft H' α K) |>.IsPointwiseLeftKanExtensionAt
@@ -85,7 +85,7 @@ def isPointwiseLeftKanExtensionAtExtensionUnitLeft
 /-- If `H' : D' ⥤ V` is a pointwise left Kan extension along `L : D ⥤ D'`,
 and if tensoring right with an object preserves colimits in `V`
 then `H' ⊠ K : D' × E ⥤ V` is a pointwise left Kan extension along `L × (𝟭 E)`. -/
-def isPointwiseLeftKanExtensionExtensionUnitLeft
+noncomputable def isPointwiseLeftKanExtensionExtensionUnitLeft
     [∀ d : D', ∀ e : E,
       Limits.PreservesColimitsOfShape (CostructuredArrow L d) (tensorRight <| K.obj e)]
     (P : (Functor.LeftExtension.mk H' α).IsPointwiseLeftKanExtension) :
@@ -97,7 +97,7 @@ set_option backward.defeqAttrib.useBackward true in
 if tensoring left with an object preserves colimits in `V`,
 then `K ⊠ H' : D' × E ⥤ V` is a pointwise left Kan extension along `(𝟭 E) × L` at `(e, d)` for
 every `e`. -/
-def isPointwiseLeftKanExtensionAtExtensionUnitRight
+noncomputable def isPointwiseLeftKanExtensionAtExtensionUnitRight
     (d : D') (P : (Functor.LeftExtension.mk H' α).IsPointwiseLeftKanExtensionAt d) (e : E)
     [Limits.PreservesColimitsOfShape (CostructuredArrow L d) (tensorLeft <| K.obj e)] :
     (Functor.LeftExtension.mk (K ⊠ H')
@@ -133,7 +133,7 @@ def isPointwiseLeftKanExtensionAtExtensionUnitRight
 /-- If `H' : D' ⥤ V` is a pointwise left Kan extension along `L : D ⥤ D'` and
 if tensoring left with an object preserves colimits in `V`,
 then `K ⊠ H' : D' × E ⥤ V` is a pointwise left Kan extension along `(𝟭 E) × L`. -/
-def isPointwiseLeftKanExtensionExtensionUnitRight
+noncomputable def isPointwiseLeftKanExtensionExtensionUnitRight
     [∀ d : D', ∀ e : E,
       Limits.PreservesColimitsOfShape (CostructuredArrow L d) (tensorLeft <| K.obj e)]
     (P : Functor.LeftExtension.mk H' α |>.IsPointwiseLeftKanExtension) :

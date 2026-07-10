@@ -61,8 +61,6 @@ since there is no well-behaved measure on the domain of `f`.
 open scoped ENNReal
 open Set Function Equiv Finset
 
-noncomputable section
-
 namespace MeasureTheory
 
 section LMarginal
@@ -75,7 +73,7 @@ variable {s t : Finset δ} {f : (∀ i, X i) → ℝ≥0∞} {x : ∀ i, X i}
   remaining variables (it will be constant in the `xᵢ` for `i ∈ s`).
   This is the marginal distribution of all variables not in `s` when the considered measure
   is the product measure. -/
-def lmarginal (μ : ∀ i, Measure (X i)) (s : Finset δ) (f : (∀ i, X i) → ℝ≥0∞)
+noncomputable def lmarginal (μ : ∀ i, Measure (X i)) (s : Finset δ) (f : (∀ i, X i) → ℝ≥0∞)
     (x : ∀ i, X i) : ℝ≥0∞ :=
   ∫⁻ y : ∀ i : s, X i, f (updateFinset x s y) ∂Measure.pi fun i : s => μ i
 

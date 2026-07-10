@@ -38,8 +38,6 @@ not the Hausdorff condition. We then define `StoneCech α` as `T2Quotient (PreSt
 @[expose] public section
 
 
-noncomputable section
-
 open Filter Set
 
 open Topology
@@ -170,7 +168,7 @@ variable {γ : Type*} [TopologicalSpace γ]
 
 /-- The extension of a function `α → γ` to a function `Ultrafilter α → γ`.
   When `γ` is a compact Hausdorff space it will be continuous. -/
-def Ultrafilter.extend (f : α → γ) : Ultrafilter α → γ :=
+noncomputable def Ultrafilter.extend (f : α → γ) : Ultrafilter α → γ :=
   letI : TopologicalSpace α := ⊥
   isDenseInducing_pure.extend f
 
@@ -281,7 +279,7 @@ lemma preStoneCechCompat {F G : Ultrafilter α} {x : α} (hF : ↑F ≤ 𝓝 x) 
 
 /-- The extension of a continuous function from `α` to a compact
   Hausdorff space `β` to the pre-Stone-Čech compactification of `α`. -/
-def preStoneCechExtend : PreStoneCech α → β :=
+noncomputable def preStoneCechExtend : PreStoneCech α → β :=
   Quot.lift (Ultrafilter.extend g) fun _ _ ⟨_, hF, hG⟩ ↦ preStoneCechCompat hg hF hG
 
 @[simp]
@@ -367,7 +365,7 @@ variable [CompactSpace β]
 /-- The extension of a continuous function from `α` to a compact
   Hausdorff space `β` to the Stone-Čech compactification of `α`.
   This extension implements the universal property of this compactification. -/
-def stoneCechExtend : StoneCech α → β :=
+noncomputable def stoneCechExtend : StoneCech α → β :=
   T2Quotient.lift (continuous_preStoneCechExtend hg)
 
 @[simp]

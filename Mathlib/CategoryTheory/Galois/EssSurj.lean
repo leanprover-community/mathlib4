@@ -39,8 +39,6 @@ For the case `Y = Aut F ⧸ U` we closely follow the second part of Stacks Proje
 
 @[expose] public section
 
-noncomputable section
-
 universe u₁ u₂
 
 namespace CategoryTheory
@@ -56,13 +54,13 @@ variable [GaloisCategory C] [FiberFunctor F]
 variable {G : Type*} [Group G] [TopologicalSpace G] [IsTopologicalGroup G] [CompactSpace G]
 
 set_option backward.privateInPublic true in
-private local instance fintypeQuotient (H : OpenSubgroup (G)) :
+private noncomputable local instance fintypeQuotient (H : OpenSubgroup (G)) :
     Fintype (G ⧸ (H : Subgroup (G))) :=
   have : Finite (G ⧸ H.toSubgroup) := H.toSubgroup.quotient_finite_of_isOpen H.isOpen'
   Fintype.ofFinite _
 
 set_option backward.privateInPublic true in
-private local instance fintypeQuotientStabilizer {X : Type*} [MulAction G X]
+private noncomputable local instance fintypeQuotientStabilizer {X : Type*} [MulAction G X]
     [TopologicalSpace X] [ContinuousSMul G X] [DiscreteTopology X] (x : X) :
     Fintype (G ⧸ (MulAction.stabilizer (G) x)) :=
   fintypeQuotient ⟨MulAction.stabilizer (G) x, stabilizer_isOpen (G) x⟩
@@ -106,7 +104,7 @@ set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- If `X` is connected and `x` is in the fiber of `X`, `F.obj X` is isomorphic
 to the quotient of `Aut F` by the stabilizer of `x` as `Aut F`-sets. -/
-def fiberIsoQuotientStabilizer (X : C) [IsConnected X] (x : F.obj X) :
+noncomputable def fiberIsoQuotientStabilizer (X : C) [IsConnected X] (x : F.obj X) :
     (functorToAction F).obj X ≅ Aut F ⧸ₐ MulAction.stabilizer (Aut F) x :=
   haveI : IsConnected ((functorToAction F).obj X) := PreservesIsConnected.preserves
   letI : Fintype (Aut F ⧸ MulAction.stabilizer (Aut F) x) := fintypeQuotientStabilizer x
@@ -131,7 +129,7 @@ of this composed diagram is `Aut F ⧸ V`. Finally, we obtain `F.obj (A ⧸ V) �
 `Aut F`-sets.
 -/
 
-private def quotientToEndObjectHom :
+private noncomputable def quotientToEndObjectHom :
     V.toSubgroup ⧸ Subgroup.subgroupOf U.toSubgroup V.toSubgroup →* End A :=
   let ff : (functorToAction F).FullyFaithful := FullyFaithful.ofFullyFaithful (functorToAction F)
   let e : End A ≃* End (Aut F ⧸ₐ U.toSubgroup) := (ff.mulEquivEnd A).trans (Iso.conj u)
@@ -145,7 +143,7 @@ private lemma functorToAction_map_quotientToEndObjectHom
   simp [← cancel_epi u.inv, ← cancel_mono u.hom, ← Iso.conj_apply, quotientToEndObjectHom]
 
 @[simps!]
-private def quotientDiag : SingleObj (V.toSubgroup ⧸ Subgroup.subgroupOf U V) ⥤ C :=
+private noncomputable def quotientDiag : SingleObj (V.toSubgroup ⧸ Subgroup.subgroupOf U V) ⥤ C :=
   SingleObj.functor (quotientToEndObjectHom V h u)
 
 variable {V} (hUinV : U ≤ V)
@@ -153,7 +151,7 @@ variable {V} (hUinV : U ≤ V)
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[simps]
-private def coconeQuotientDiag :
+private noncomputable def coconeQuotientDiag :
     Cocone (quotientDiag V h u ⋙ functorToAction F) where
   pt := Aut F ⧸ₐ V.toSubgroup
   ι := SingleObj.natTrans (u.hom ≫ quotientToQuotientOfLE V.toSubgroup U.toSubgroup hUinV) <| by
@@ -174,7 +172,7 @@ private def coconeQuotientDiag :
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[simps]
-private def coconeQuotientDiagDesc
+private noncomputable def coconeQuotientDiagDesc
     (s : Cocone (quotientDiag V h u ⋙ functorToAction F)) :
       (coconeQuotientDiag h u hUinV).pt ⟶ s.pt where
   hom := FintypeCat.homMk
@@ -203,7 +201,7 @@ private def coconeQuotientDiagDesc
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The constructed cocone `coconeQuotientDiag` on the diagram `quotientDiag` is colimiting. -/
-private def coconeQuotientDiagIsColimit :
+private noncomputable def coconeQuotientDiagIsColimit :
     IsColimit (coconeQuotientDiag h u hUinV) where
   desc := coconeQuotientDiagDesc h u hUinV
   fac s j := by

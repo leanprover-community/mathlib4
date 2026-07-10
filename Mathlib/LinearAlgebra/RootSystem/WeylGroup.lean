@@ -42,8 +42,6 @@ open Set Function
 
 variable {ι R M N : Type*}
 
-noncomputable section
-
 namespace RootPairing
 
 variable [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
@@ -51,7 +49,7 @@ variable [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N
 
 /-- The `Weyl group` of a root pairing is the group of automorphisms of the root pairing generated
 by reflections. -/
-def weylGroup : Subgroup (Aut P) :=
+noncomputable def weylGroup : Subgroup (Aut P) :=
   Subgroup.closure (range (Equiv.reflection P))
 
 lemma reflection_mem_weylGroup : Equiv.reflection P i ∈ P.weylGroup :=
@@ -157,7 +155,7 @@ lemma range_weylGroup_coweightHom :
       simpa only [← Submonoid.mk_mul_mk _ w₁ w₂ hw₁ hw₂, map_mul] using! Subgroup.mul_mem _ h₁ h₂
 
 /-- The permutation representation of the Weyl group induced by `reflectionPerm`. -/
-abbrev weylGroupToPerm := (Equiv.indexHom P).restrict P.weylGroup
+noncomputable abbrev weylGroupToPerm := (Equiv.indexHom P).restrict P.weylGroup
 
 lemma range_weylGroupToPerm :
     P.weylGroupToPerm.range = Subgroup.closure (range P.reflectionPerm) := by
@@ -185,11 +183,11 @@ lemma range_weylGroupToPerm :
       simpa only [← Submonoid.mk_mul_mk _ w₁ w₂ hw₁ hw₂, map_mul] using! Subgroup.mul_mem _ h₁ h₂
 
 /-- The natural representation of the Weyl group on the root space. -/
-def weylGroupRootRep : Representation R P.weylGroup M :=
+noncomputable def weylGroupRootRep : Representation R P.weylGroup M :=
   Representation.ofDistribMulAction R P.weylGroup M
 
 /-- The natural representation of the Weyl group on the coroot space. -/
-def weylGroupCorootRep : Representation R P.weylGroup.op N :=
+noncomputable def weylGroupCorootRep : Representation R P.weylGroup.op N :=
   Representation.ofDistribMulAction R P.weylGroup.op N
 
 lemma weylGroup_apply_root (g : P.weylGroup) (i : ι) :

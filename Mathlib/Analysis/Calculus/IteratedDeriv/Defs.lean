@@ -43,8 +43,6 @@ iterated Fréchet derivative.
 
 @[expose] public section
 
-noncomputable section
-
 open scoped Topology ContDiff
 open Filter Asymptotics Set
 
@@ -52,12 +50,12 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 /-- The `n`-th iterated derivative of a function from `𝕜` to `F`, as a function from `𝕜` to `F`. -/
-def iteratedDeriv (n : ℕ) (f : 𝕜 → F) (x : 𝕜) : F :=
+noncomputable def iteratedDeriv (n : ℕ) (f : 𝕜 → F) (x : 𝕜) : F :=
   (iteratedFDeriv 𝕜 n f x : (Fin n → 𝕜) → F) fun _ : Fin n => 1
 
 /-- The `n`-th iterated derivative of a function from `𝕜` to `F` within a set `s`, as a function
 from `𝕜` to `F`. -/
-def iteratedDerivWithin (n : ℕ) (f : 𝕜 → F) (s : Set 𝕜) (x : 𝕜) : F :=
+noncomputable def iteratedDerivWithin (n : ℕ) (f : 𝕜 → F) (s : Set 𝕜) (x : 𝕜) : F :=
   (iteratedFDerivWithin 𝕜 n f s x : (Fin n → 𝕜) → F) fun _ : Fin n => 1
 
 variable {n : ℕ} {f : 𝕜 → F} {s : Set 𝕜} {x : 𝕜}

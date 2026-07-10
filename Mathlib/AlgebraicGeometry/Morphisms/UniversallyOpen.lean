@@ -23,8 +23,6 @@ base changes.
 
 public section
 
-noncomputable section
-
 open CategoryTheory CategoryTheory.Limits Opposite TopologicalSpace
 
 universe v u

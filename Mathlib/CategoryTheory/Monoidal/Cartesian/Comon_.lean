@@ -21,8 +21,6 @@ open CategoryTheory MonoidalCategory CartesianMonoidalCategory Limits ComonObj
 
 universe v u
 
-noncomputable section
-
 namespace CategoryTheory
 variable (C : Type u) [Category.{v} C] [CartesianMonoidalCategory C]
 

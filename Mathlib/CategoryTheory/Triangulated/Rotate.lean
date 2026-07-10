@@ -21,8 +21,6 @@ set_option backward.defeqAttrib.useBackward true
 @[expose] public section
 
 
-noncomputable section
-
 open CategoryTheory
 
 open CategoryTheory.Preadditive

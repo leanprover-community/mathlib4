@@ -41,8 +41,6 @@ product, subspace, quotient space
 
 @[expose] public section
 
-noncomputable section
-
 open Topology TopologicalSpace Set Filter Function
 open scoped Set.Notation
 

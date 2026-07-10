@@ -16,8 +16,6 @@ public import Mathlib.Topology.ContinuousMap.Star
 
 @[expose] public section
 
-noncomputable section
-
 open Topology Bornology NNReal uniformity UniformConvergence RCLike BoundedContinuousFunction
 
 open Set Filter Metric Function
@@ -53,7 +51,7 @@ variable {𝕜 : Type*} [NormedField 𝕜] [StarRing 𝕜] [TopologicalSpace α]
 
 variable [NormedSpace 𝕜 β] [StarModule 𝕜 β]
 
-instance instStarAddMonoid : StarAddMonoid (α →ᵇ β) where
+noncomputable instance instStarAddMonoid : StarAddMonoid (α →ᵇ β) where
   star f := f.comp star starNormedAddGroupHom.lipschitz
   star_involutive f := ext fun x => star_star (f x)
   star_add f g := ext fun x => star_add (f x) (g x)
@@ -79,7 +77,7 @@ section CStarRing
 variable [TopologicalSpace α]
 variable [NonUnitalNormedRing β] [StarRing β]
 
-instance instStarRing [NormedStarGroup β] : StarRing (α →ᵇ β) where
+noncomputable instance instStarRing [NormedStarGroup β] : StarRing (α →ᵇ β) where
   __ := instStarAddMonoid
   star_mul f g := ext fun x ↦ star_mul (f x) (g x)
 

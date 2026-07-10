@@ -21,8 +21,6 @@ The definition does not assume `sel` actually is a choice function, i.e. `sel s 
 
 assert_not_exists RelIso
 
-noncomputable section
-
 open Function
 
 namespace Set

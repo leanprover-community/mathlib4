@@ -809,7 +809,7 @@ theorem _root_.Pi.map_injective
 
 end Update
 
-noncomputable section Extend
+section Extend
 
 variable {α β γ : Sort*} {f : α → β}
 
@@ -825,7 +825,7 @@ This definition is mathematically meaningful only when `f a₁ = f a₂ → g a�
 
 A typical use case is extending a function from a subtype to the entire type. If you wish to extend
 `g : {b : β // p b} → γ` to a function `β → γ`, you should use `Function.extend Subtype.val g j`. -/
-def extend (f : α → β) (g : α → γ) (j : β → γ) : β → γ := fun b ↦
+noncomputable def extend (f : α → β) (g : α → γ) (j : β → γ) : β → γ := fun b ↦
   open scoped Classical in
   if h : ∃ a, f a = b then g (Classical.choose h) else j b
 

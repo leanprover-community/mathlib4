@@ -33,8 +33,6 @@ which shall be an equivalence for any additive category `C`.
 @[expose] public section
 
 
-noncomputable section
-
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits SimplexCategory
   SimplicialObject Opposite CategoryTheory.Idempotents Simplicial DoldKan
 
@@ -80,7 +78,7 @@ def summand (Δ : SimplexCategoryᵒᵖ) (A : Splitting.IndexSet Δ) : C :=
 
 /-- The functor `Γ₀` sends a chain complex `K` to the simplicial object which
 sends `Δ` to the direct sum of the objects `summand K Δ A` for all `A : Splitting.IndexSet Δ` -/
-def obj₂ (K : ChainComplex C ℕ) (Δ : SimplexCategoryᵒᵖ) [HasFiniteCoproducts C] : C :=
+noncomputable def obj₂ (K : ChainComplex C ℕ) (Δ : SimplexCategoryᵒᵖ) [HasFiniteCoproducts C] : C :=
   ∐ fun A : Splitting.IndexSet Δ => summand K Δ A
 
 namespace Termwise
@@ -88,7 +86,7 @@ namespace Termwise
 /-- A monomorphism `i : Δ' ⟶ Δ` induces a morphism `K.X Δ.len ⟶ K.X Δ'.len` which
 is the identity if `Δ = Δ'`, the differential on the complex `K` if `i = δ 0`, and
 zero otherwise. -/
-def mapMono (K : ChainComplex C ℕ) {Δ' Δ : SimplexCategory} (i : Δ' ⟶ Δ) [Mono i] :
+noncomputable def mapMono (K : ChainComplex C ℕ) {Δ' Δ : SimplexCategory} (i : Δ' ⟶ Δ) [Mono i] :
     K.X Δ.len ⟶ K.X Δ'.len := by
   by_cases Δ = Δ'
   · exact eqToHom (by congr)
@@ -168,6 +166,7 @@ variable [HasFiniteCoproducts C]
 a morphism `Δ' → Δ` in `SimplexCategory` is defined on each summand
 associated to an `A : Splitting.IndexSet Δ` in terms of the epi-mono factorisation
 of `θ ≫ A.e`. -/
+noncomputable
 def map (K : ChainComplex C ℕ) {Δ' Δ : SimplexCategoryᵒᵖ} (θ : Δ ⟶ Δ') : obj₂ K Δ ⟶ obj₂ K Δ' :=
   Sigma.desc fun A =>
     Termwise.mapMono K (image.ι (θ.unop ≫ A.e)) ≫ Sigma.ι (summand K Δ') (A.pull θ)
@@ -201,7 +200,7 @@ variable [HasFiniteCoproducts C]
 set_option backward.isDefEq.respectTransparency false in
 /-- The functor `Γ₀ : ChainComplex C ℕ ⥤ SimplicialObject C`, on objects. -/
 @[simps]
-def obj (K : ChainComplex C ℕ) : SimplicialObject C where
+noncomputable def obj (K : ChainComplex C ℕ) : SimplicialObject C where
   obj Δ := Obj.obj₂ K Δ
   map θ := Obj.map K θ
   map_id Δ := colimit.hom_ext (fun ⟨A⟩ => by
@@ -222,7 +221,7 @@ def obj (K : ChainComplex C ℕ) : SimplicialObject C where
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- By construction, the simplicial `Γ₀.obj K` is equipped with a splitting. -/
-def splitting (K : ChainComplex C ℕ) : SimplicialObject.Splitting (Γ₀.obj K) where
+noncomputable def splitting (K : ChainComplex C ℕ) : SimplicialObject.Splitting (Γ₀.obj K) where
   N n := K.X n
   ι n := Sigma.ι (Γ₀.Obj.summand K (op ⦋n⦌)) (Splitting.IndexSet.id (op ⦋n⦌))
   isColimit' Δ := IsColimit.ofIsoColimit (colimit.isColimit _) (Cofan.ext (Iso.refl _) (by
@@ -282,7 +281,7 @@ theorem Obj.map_epi_on_summand_id {Δ Δ' : SimplexCategory} (e : Δ' ⟶ Δ) [E
 set_option backward.isDefEq.respectTransparency false in
 /-- The functor `Γ₀ : ChainComplex C ℕ ⥤ SimplicialObject C`, on morphisms. -/
 @[simps]
-def map {K K' : ChainComplex C ℕ} (f : K ⟶ K') : obj K ⟶ obj K' where
+noncomputable def map {K K' : ChainComplex C ℕ} (f : K ⟶ K') : obj K ⟶ obj K' where
   app Δ := (Γ₀.splitting K).desc Δ fun A => f.f A.1.unop.len ≫
     ((Γ₀.splitting K').cofan _).inj A
   naturality {Δ' Δ} θ := by
@@ -303,7 +302,7 @@ that induces `Γ₀ : ChainComplex C ℕ ⥤ SimplicialObject C`, which
 shall be the inverse functor of the Dold-Kan equivalence for
 abelian or pseudo-abelian categories. -/
 @[simps]
-def Γ₀' : ChainComplex C ℕ ⥤ SimplicialObject.Split C where
+noncomputable def Γ₀' : ChainComplex C ℕ ⥤ SimplicialObject.Split C where
   obj K := SimplicialObject.Split.mk' (Γ₀.splitting K)
   map {K K'} f :=
     { F := Γ₀.map f
@@ -317,14 +316,14 @@ def Γ₀' : ChainComplex C ℕ ⥤ SimplicialObject.Split C where
 the inverse functor of the Dold-Kan equivalence when `C` is an abelian
 category, or more generally a pseudoabelian category. -/
 @[simps!]
-def Γ₀ : ChainComplex C ℕ ⥤ SimplicialObject C :=
+noncomputable def Γ₀ : ChainComplex C ℕ ⥤ SimplicialObject C :=
   Γ₀' ⋙ Split.forget _
 
 /-- The extension of `Γ₀ : ChainComplex C ℕ ⥤ SimplicialObject C`
 on the idempotent completions. It shall be an equivalence of categories
 for any additive category `C`. -/
 @[simps!]
-def Γ₂ : Karoubi (ChainComplex C ℕ) ⥤ Karoubi (SimplicialObject C) :=
+noncomputable def Γ₂ : Karoubi (ChainComplex C ℕ) ⥤ Karoubi (SimplicialObject C) :=
   (CategoryTheory.Idempotents.functorExtension₂ _ _).obj Γ₀
 
 theorem HigherFacesVanish.on_Γ₀_summand_id (K : ChainComplex C ℕ) (n : ℕ) :

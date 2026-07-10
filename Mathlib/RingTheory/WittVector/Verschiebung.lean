@@ -29,7 +29,7 @@ variable {p : ℕ} {R S : Type*} [CommRing R] [CommRing S]
 
 local notation "𝕎" => WittVector p -- type as `\bbW`
 
-noncomputable section
+section
 
 /-- `verschiebungFun x` shifts the coefficients of `x` up by one,
 by inserting 0 as the 0th coefficient.
@@ -70,7 +70,7 @@ theorem ghostComponent_verschiebungFun [hp : Fact p.Prime] (x : 𝕎 R) (n : ℕ
 /-- The 0th Verschiebung polynomial is 0. For `n > 0`, the `n`th Verschiebung polynomial is the
 variable `X (n-1)`.
 -/
-def verschiebungPoly (n : ℕ) : MvPolynomial ℕ ℤ :=
+noncomputable def verschiebungPoly (n : ℕ) : MvPolynomial ℕ ℤ :=
   if n = 0 then 0 else X (n - 1)
 
 @[simp]

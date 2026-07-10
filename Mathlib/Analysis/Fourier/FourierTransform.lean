@@ -58,8 +58,6 @@ Fourier transform of an integrable function is continuous (under mild assumption
 @[expose] public section
 
 
-noncomputable section
-
 local notation "𝕊" => Circle
 
 open MeasureTheory Filter
@@ -79,6 +77,7 @@ section Defs
 
 /-- The Fourier transform integral for `f : V → E`, with respect to a bilinear form `L : V × W → 𝕜`
 and an additive character `e`. -/
+noncomputable
 def fourierIntegral (e : AddChar 𝕜 𝕊) (μ : Measure V) (L : V →ₗ[𝕜] W →ₗ[𝕜] 𝕜) (f : V → E)
     (w : W) : E :=
   ∫ v, e (-L v w) • f v ∂μ
@@ -337,7 +336,7 @@ section Defs
 
 /-- The Fourier transform integral for `f : 𝕜 → E`, with respect to the measure `μ` and additive
 character `e`. -/
-def fourierIntegral (e : AddChar 𝕜 𝕊) (μ : Measure 𝕜) (f : 𝕜 → E) (w : 𝕜) : E :=
+noncomputable def fourierIntegral (e : AddChar 𝕜 𝕊) (μ : Measure 𝕜) (f : 𝕜 → E) (w : 𝕜) : E :=
   VectorFourier.fourierIntegral e μ (LinearMap.mul 𝕜 𝕜) f w
 
 theorem fourierIntegral_def (e : AddChar 𝕜 𝕊) (μ : Measure 𝕜) (f : 𝕜 → E) (w : 𝕜) :
@@ -426,10 +425,10 @@ open scoped RealInnerProductSpace
 
 variable [FiniteDimensional ℝ V]
 
-instance instFourierTransform : FourierTransform (V → E) (V → E) where
+noncomputable instance instFourierTransform : FourierTransform (V → E) (V → E) where
   fourier f := VectorFourier.fourierIntegral 𝐞 volume (innerₗ V) f
 
-instance instFourierTransformInv : FourierTransformInv (V → E) (V → E) where
+noncomputable instance instFourierTransformInv : FourierTransformInv (V → E) (V → E) where
   fourierInv f w := VectorFourier.fourierIntegral 𝐞 volume (-innerₗ V) f w
 
 lemma fourier_eq (f : V → E) (w : V) :
@@ -541,7 +540,7 @@ alias fourierIntegral_continuousMultilinearMap_apply := fourier_continuousMultil
 open scoped BoundedContinuousFunction
 
 /-- The Fourier transform from `L1` functions to bounded continuous functions. -/
-def Lp.fourierTransform (f : Lp (α := V) E 1) : V →ᵇ E :=
+noncomputable def Lp.fourierTransform (f : Lp (α := V) E 1) : V →ᵇ E :=
   BoundedContinuousFunction.ofNormedAddCommGroup (𝓕 (f : V → E))
   (VectorFourier.fourierIntegral_continuous Real.continuous_fourierChar
     (innerSL ℝ).continuous₂ (L1.integrable_coeFn f))
@@ -569,7 +568,7 @@ theorem fourierTransform_toLp {f : V → E} (hf : MemLp f 1) :
 variable (V E) in
 /-- The Fourier transform from `L1` functions to bounded continuous functions as a continuous linear
 map. -/
-def Lp.fourierTransformCLM : Lp (α := V) E 1 →L[ℂ] V →ᵇ E :=
+noncomputable def Lp.fourierTransformCLM : Lp (α := V) E 1 →L[ℂ] V →ᵇ E :=
   LinearMap.mkContinuous
     { toFun := Lp.fourierTransform
       map_add' f g := by

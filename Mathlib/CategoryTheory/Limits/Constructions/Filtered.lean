@@ -27,8 +27,6 @@ We also deduce the dual statement by invoking the original statement in `Cᵒᵖ
 
 universe w v u
 
-noncomputable section
-
 open CategoryTheory Opposite
 
 variable {C : Type u} [Category.{v} C] {α : Type w}
@@ -43,7 +41,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- If `C` has finite coproducts, a functor `Discrete α ⥤ C` lifts to a functor
 `Finset (Discrete α) ⥤ C` by taking coproducts. -/
 @[simps!]
-def liftToFinsetObj (F : Discrete α ⥤ C) : Finset (Discrete α) ⥤ C where
+noncomputable def liftToFinsetObj (F : Discrete α ⥤ C) : Finset (Discrete α) ⥤ C where
   obj s := ∐ fun x : s => F.obj x
   map {_ Y} h := Sigma.desc fun y =>
     Sigma.ι (fun (x : { x // x ∈ Y }) => F.obj x) ⟨y, h.down.down y.2⟩
@@ -53,7 +51,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- If `C` has finite coproducts and filtered colimits, we can construct arbitrary coproducts by
 taking the colimit of the diagram formed by the coproducts of finite sets over the indexing type. -/
 @[simps!]
-def liftToFinsetColimitCocone [HasColimitsOfShape (Finset (Discrete α)) C]
+noncomputable def liftToFinsetColimitCocone [HasColimitsOfShape (Finset (Discrete α)) C]
     (F : Discrete α ⥤ C) : ColimitCocone F where
   cocone :=
     { pt := colimit (liftToFinsetObj F)
@@ -83,7 +81,7 @@ variable (C) (α) in
 /-- The functor taking a functor `Discrete α ⥤ C` to a functor `Finset (Discrete α) ⥤ C` by taking
 coproducts. -/
 @[simps!]
-def liftToFinset : (Discrete α ⥤ C) ⥤ (Finset (Discrete α) ⥤ C) where
+noncomputable def liftToFinset : (Discrete α ⥤ C) ⥤ (Finset (Discrete α) ⥤ C) where
   obj := liftToFinsetObj
   map := fun β => { app := fun _ => Sigma.map (fun x => β.app x.val) }
 
@@ -92,7 +90,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- The converse of the construction in `liftToFinsetColimitCocone`: we can form a cocone on the
 coproduct of `f` whose legs are the coproducts over the finite subsets of `α`. -/
 @[simps!]
-def finiteSubcoproductsCocone (f : α → C) [HasCoproduct f] :
+noncomputable def finiteSubcoproductsCocone (f : α → C) [HasCoproduct f] :
     Cocone (liftToFinsetObj (Discrete.functor f)) where
   pt := ∐ f
   ι := { app S := Sigma.desc fun s => Sigma.ι f _ }
@@ -100,6 +98,7 @@ def finiteSubcoproductsCocone (f : α → C) [HasCoproduct f] :
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The cocone `finiteSubcoproductsCocone` is a colimit cocone. -/
+noncomputable
 def isColimitFiniteSubproductsCocone (f : α → C) [HasColimitsOfShape (Finset (Discrete α)) C]
     [HasCoproduct f] : IsColimit (finiteSubcoproductsCocone f) :=
   IsColimit.ofIsoColimit (colimit.isColimit _)
@@ -159,7 +158,7 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The `liftToFinset` functor, precomposed with forming a colimit, is a coproduct on the original
 functor. -/
-def liftToFinsetColimIso : liftToFinset C α ⋙ colim ≅ colim :=
+noncomputable def liftToFinsetColimIso : liftToFinset C α ⋙ colim ≅ colim :=
   NatIso.ofComponents
     (fun F => Iso.symm <| colimit.isoColimitCocone (liftToFinsetColimitCocone F))
     (fun β => by
@@ -175,7 +174,7 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- `liftToFinset`, when composed with the evaluation functor, results in the whiskering composed
 with `colim`. -/
-def liftToFinsetEvaluationIso [HasFiniteCoproducts C] (I : Finset (Discrete α)) :
+noncomputable def liftToFinsetEvaluationIso [HasFiniteCoproducts C] (I : Finset (Discrete α)) :
     liftToFinset C α ⋙ (evaluation _ _).obj I ≅
     (Functor.whiskeringLeft _ _ _).obj (Discrete.functor (·.val)) ⋙ colim (J := Discrete I) :=
   NatIso.ofComponents (fun _ => HasColimit.isoOfNatIso (Discrete.natIso fun _ => Iso.refl _))
@@ -191,7 +190,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- If `C` has finite coproducts, a functor `Discrete α ⥤ C` lifts to a functor
 `Finset (Discrete α) ⥤ C` by taking coproducts. -/
 @[simps!]
-def liftToFinsetObj (F : Discrete α ⥤ C) : (Finset (Discrete α))ᵒᵖ ⥤ C where
+noncomputable def liftToFinsetObj (F : Discrete α ⥤ C) : (Finset (Discrete α))ᵒᵖ ⥤ C where
   obj s := ∏ᶜ (fun x : s.unop => F.obj x)
   map {Y _} h := Pi.lift fun y =>
     Pi.π (fun (x : { x // x ∈ Y.unop }) => F.obj x) ⟨y, h.unop.down.down y.2⟩
@@ -202,7 +201,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- If `C` has finite coproducts and filtered colimits, we can construct arbitrary coproducts by
 taking the colimit of the diagram formed by the coproducts of finite sets over the indexing type. -/
 @[simps!]
-def liftToFinsetLimitCone [HasLimitsOfShape (Finset (Discrete α))ᵒᵖ C]
+noncomputable def liftToFinsetLimitCone [HasLimitsOfShape (Finset (Discrete α))ᵒᵖ C]
     (F : Discrete α ⥤ C) : LimitCone F where
   cone :=
     { pt := limit (liftToFinsetObj F)
@@ -229,7 +228,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- The converse of the construction in `liftToFinsetLimitCone`: we can form a cone on the
 product of `f` whose legs are the products over the finite subsets of `α`. -/
 @[simps!]
-def finiteSubproductsCone (f : α → C) [HasProduct f] :
+noncomputable def finiteSubproductsCone (f : α → C) [HasProduct f] :
     Cone (liftToFinsetObj (Discrete.functor f)) where
   pt := ∏ᶜ f
   π := { app S := Pi.lift fun s => Pi.π f _ }
@@ -237,6 +236,7 @@ def finiteSubproductsCone (f : α → C) [HasProduct f] :
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The cone `finiteSubproductsCone` is a limit cone. -/
+noncomputable
 def isLimitFiniteSubproductsCone (f : α → C) [HasLimitsOfShape (Finset (Discrete α))ᵒᵖ C]
     [HasProduct f] : IsLimit (finiteSubproductsCone f) :=
   IsLimit.ofIsoLimit (limit.isLimit _)
@@ -259,7 +259,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- The functor taking a functor `Discrete α ⥤ C` to a functor `Finset (Discrete α) ⥤ C` by taking
 coproducts. -/
 @[simps!]
-def liftToFinset : (Discrete α ⥤ C) ⥤ ((Finset (Discrete α))ᵒᵖ ⥤ C) where
+noncomputable def liftToFinset : (Discrete α ⥤ C) ⥤ ((Finset (Discrete α))ᵒᵖ ⥤ C) where
   obj := liftToFinsetObj
   map := fun β => { app := fun _ => Pi.map (fun x => β.app x.val) }
 
@@ -267,7 +267,7 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The `liftToFinset` functor, precomposed with forming a colimit, is a coproduct on the original
 functor. -/
-def liftToFinsetLimIso [HasLimitsOfShape (Finset (Discrete α))ᵒᵖ C]
+noncomputable def liftToFinsetLimIso [HasLimitsOfShape (Finset (Discrete α))ᵒᵖ C]
     [HasLimitsOfShape (Discrete α) C] : liftToFinset C α ⋙ lim ≅ lim :=
   NatIso.ofComponents
     (fun F => Iso.symm <| limit.isoLimitCone (liftToFinsetLimitCone F))
@@ -280,7 +280,7 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- `liftToFinset`, when composed with the evaluation functor, results in the whiskering composed
 with `colim`. -/
-def liftToFinsetEvaluationIso (I : Finset (Discrete α)) :
+noncomputable def liftToFinsetEvaluationIso (I : Finset (Discrete α)) :
     liftToFinset C α ⋙ (evaluation _ _).obj ⟨I⟩ ≅
     (Functor.whiskeringLeft _ _ _).obj (Discrete.functor (·.val)) ⋙ lim (J := Discrete I) :=
   NatIso.ofComponents (fun _ => HasLimit.isoOfNatIso (Discrete.natIso fun _ => Iso.refl _))

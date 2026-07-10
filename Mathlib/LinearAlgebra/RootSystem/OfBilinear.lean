@@ -28,8 +28,6 @@ integral lattice with an arbitrary reflexive module equipped with a bilinear for
 
 open Set Function Module
 
-noncomputable section
-
 variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
 
 namespace LinearMap
@@ -54,7 +52,7 @@ lemma of_dvd_two [IsCancelMulZero R] [NeZero (2 : R)] (hx : B x x ∣ 2) :
 variable (hx : IsReflective B x)
 
 /-- The coroot attached to a reflective vector. -/
-def coroot : M →ₗ[R] R where
+noncomputable def coroot : M →ₗ[R] R where
   toFun y := (hx.2 y).choose
   map_add' a b := by
     refine hx.1.1 ?_
@@ -115,6 +113,7 @@ open LinearMap IsReflective
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The root pairing given by all reflective vectors for a bilinear form. -/
+noncomputable
 def ofBilinear [IsReflexive R M] (B : M →ₗ[R] M →ₗ[R] R) (hNB : LinearMap.Nondegenerate B)
     (hSB : LinearMap.IsSymm B) (h2 : IsRegular (2 : R)) :
     RootPairing {x : M | IsReflective B x} R M (Dual R M) where

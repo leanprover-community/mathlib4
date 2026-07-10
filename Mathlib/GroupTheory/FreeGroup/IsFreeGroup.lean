@@ -46,8 +46,6 @@ universe u
 
 open Function Set
 
-noncomputable section
-
 /-- A free group basis `FreeGroupBasis ι G` is a structure recording the isomorphism between a
 group `G` and the free group over `ι`. One may think of such a basis as a function from `ι` to `G`
 (which is registered through a `FunLike` instance) together with the fact that the morphism induced
@@ -154,7 +152,7 @@ def ofLift {G : Type u} [Group G] (X : Type u) (of : X → G)
 /-- If a group satisfies the universal property of a free group with respect to a given type, then
 it admits a free group basis based on this type. Here
 the universal property is expressed as in `IsFreeGroup.unique_lift`. -/
-def ofUniqueLift {G : Type u} [Group G] (X : Type u) (of : X → G)
+noncomputable def ofUniqueLift {G : Type u} [Group G] (X : Type u) (of : X → G)
     (h : ∀ {H : Type u} [Group H] (f : X → H), ∃! F : G →* H, ∀ a, F (of a) = f a) :
     FreeGroupBasis X G :=
   let lift {H : Type u} [Group H] : (X → H) ≃ (G →* H) :=
@@ -173,31 +171,31 @@ namespace IsFreeGroup
 variable (G : Type*) [Group G] [IsFreeGroup G]
 
 /-- A set of generators of a free group, chosen arbitrarily -/
-def Generators : Type _ := (IsFreeGroup.nonempty_basis (G := G)).choose
+noncomputable def Generators : Type _ := (IsFreeGroup.nonempty_basis (G := G)).choose
 
 /-- Any free group is isomorphic to "the" free group. -/
-irreducible_def mulEquiv : FreeGroup (Generators G) ≃* G :=
+noncomputable irreducible_def mulEquiv : FreeGroup (Generators G) ≃* G :=
   (IsFreeGroup.nonempty_basis (G := G)).choose_spec.some.repr.symm
 
 /-- A free group basis of a free group `G`, over the set `Generators G`. -/
-def basis : FreeGroupBasis (Generators G) G := FreeGroupBasis.ofRepr (mulEquiv G).symm
+noncomputable def basis : FreeGroupBasis (Generators G) G := FreeGroupBasis.ofRepr (mulEquiv G).symm
 
 /-- Any free group is isomorphic to "the" free group. -/
 @[simps!]
-def toFreeGroup : G ≃* FreeGroup (Generators G) :=
+noncomputable def toFreeGroup : G ≃* FreeGroup (Generators G) :=
   (mulEquiv G).symm
 
 variable {G}
 
 /-- The canonical injection of G's generators into G -/
-def of : Generators G → G :=
+noncomputable def of : Generators G → G :=
   (mulEquiv G).toFun ∘ FreeGroup.of
 
 variable {H : Type*} [Group H]
 
 /-- The equivalence between functions on the generators and group homomorphisms from a free group
 given by those generators. -/
-def lift : (Generators G → H) ≃ (G →* H) :=
+noncomputable def lift : (Generators G → H) ≃ (G →* H) :=
   (basis G).lift
 
 @[simp]

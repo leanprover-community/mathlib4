@@ -32,8 +32,6 @@ additive Haar measure on a finite-dimensional real vector space.
 
 assert_not_exists MeasureTheory.integral
 
-noncomputable section
-
 open Set Filter MeasureTheory MeasureTheory.Measure TopologicalSpace Metric
 
 open ENNReal (ofReal)

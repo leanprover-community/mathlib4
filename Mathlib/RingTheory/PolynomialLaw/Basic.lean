@@ -63,8 +63,6 @@ only assumes `R` is a commutative semiring.
 
 universe u v w
 
-noncomputable section PolynomialLaw
-
 open scoped TensorProduct
 
 open LinearMap TensorProduct AlgHom RingCon
@@ -125,7 +123,7 @@ theorem id_apply' {S : Type u} [CommSemiring S] [Algebra R S] :
 noncomputable def add : M →ₚₗ[R] N where
   toFun' S _ _ := f.toFun' S + g.toFun' S
 
-instance : Add (PolynomialLaw R M N) := ⟨add⟩
+noncomputable instance : Add (PolynomialLaw R M N) := ⟨add⟩
 
 @[simp]
 theorem add_def (S : Type u) [CommSemiring S] [Algebra R S] :
@@ -160,7 +158,7 @@ instance : MulAction R (M →ₚₗ[R] N) where
   one_smul := one_smul
   mul_smul a b f := by ext; simp only [smul_def, mul_smul]
 
-instance : AddCommMonoid (M →ₚₗ[R] N) where
+noncomputable instance : AddCommMonoid (M →ₚₗ[R] N) where
   add_assoc f g h := by ext; simp only [add_def, add_assoc]
   zero_add f := by ext; simp only [add_def, zero_add, zero_def]
   add_zero f := by ext; simp only [add_def, add_zero, zero_def]
@@ -189,13 +187,13 @@ variable {R : Type u} [CommRing R]
 noncomputable def neg : M →ₚₗ[R] N where
   toFun' S _ _ := (-1 : R) • f.toFun' S
 
-instance : Neg (M →ₚₗ[R] N) := ⟨neg⟩
+noncomputable instance : Neg (M →ₚₗ[R] N) := ⟨neg⟩
 
 @[simp]
 theorem neg_def (S : Type u) [CommSemiring S] [Algebra R S] :
     (-f).toFun' S = (-1 : R) • f.toFun' S := rfl
 
-instance : AddCommGroup (M →ₚₗ[R] N) where
+noncomputable instance : AddCommGroup (M →ₚₗ[R] N) where
   zsmul n f := (n : R) • f
   zsmul_zero' f := by simp_rw [HSMul.hSMul, SMul.smul]; simp only [Int.cast_zero, zero_smul]
   zsmul_succ' n f := by
@@ -307,7 +305,7 @@ def lifts : Type _ := Σ (s : Finset S), (MvPolynomial (Fin s.card) R) ⊗[R] M
 variable {S}
 
 /-- The lift of `f.toFun` to the type `lifts` -/
-def φ (s : Finset S) : MvPolynomial (Fin s.card) R →ₐ[R] S :=
+noncomputable def φ (s : Finset S) : MvPolynomial (Fin s.card) R →ₐ[R] S :=
   aeval (R := R) (fun n ↦ (s.equivFin.symm n : S))
 
 theorem range_φ (s : Finset S) : (φ R s).range = Algebra.adjoin R s := by
@@ -320,15 +318,16 @@ theorem range_φ (s : Finset S) : (φ R s).range = Algebra.adjoin R s := by
 variable (S)
 
 /-- The projection from `φ` to `S ⊗[R] M`. -/
-def π : lifts R M S → S ⊗[R] M := fun ⟨s, p⟩ ↦ rTensor M (φ R s).toLinearMap p
+noncomputable def π : lifts R M S → S ⊗[R] M := fun ⟨s, p⟩ ↦ rTensor M (φ R s).toLinearMap p
 
 variable {R M N}
 
 /-- The auxiliary lift of `PolynomialLaw.toFun'` on `PolynomialLaw.lifts` -/
-def toFunLifted : lifts R M S → S ⊗[R] N :=
+noncomputable def toFunLifted : lifts R M S → S ⊗[R] N :=
   fun ⟨s, p⟩ ↦ rTensor N (φ R s).toLinearMap (f.toFun' (MvPolynomial (Fin s.card) R) p)
 
 /-- The extension of `PolynomialLaw.toFun'` to all universes. -/
+noncomputable
 def toFun : S ⊗[R] M → S ⊗[R] N := Function.extend (π R M S) (f.toFunLifted S) (fun _ ↦ 0)
 
 variable {S}

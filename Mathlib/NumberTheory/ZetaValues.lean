@@ -31,8 +31,6 @@ zeta functions, in terms of Bernoulli polynomials.
 
 @[expose] public section
 
-noncomputable section
-
 open scoped Nat Real Interval
 
 open Complex MeasureTheory Set intervalIntegral
@@ -45,7 +43,7 @@ section BernoulliFunProps
 
 
 /-- The function `x ↦ Bₖ(x) : ℝ → ℝ`. -/
-def bernoulliFun (k : ℕ) (x : ℝ) : ℝ :=
+noncomputable def bernoulliFun (k : ℕ) (x : ℝ) : ℝ :=
   (Polynomial.map (algebraMap ℚ ℝ) (Polynomial.bernoulli k)).eval x
 
 section Evaluation
@@ -216,7 +214,7 @@ section BernoulliFourierCoeffs
 
 
 /-- The `n`-th Fourier coefficient of the `k`-th Bernoulli function on the interval `[0, 1]`. -/
-def bernoulliFourierCoeff (k : ℕ) (n : ℤ) : ℂ :=
+noncomputable def bernoulliFourierCoeff (k : ℕ) (n : ℤ) : ℂ :=
   fourierCoeffOn zero_lt_one (fun x => bernoulliFun k x) n
 
 /-- Recurrence relation (in `k`) for the `n`-th Fourier coefficient of `Bₖ`. -/
@@ -270,7 +268,7 @@ theory, to obtain an explicit formula for `∑ (n:ℤ), 1 / n ^ k * fourier n x`
 
 
 /-- The Bernoulli polynomial, extended from `[0, 1)` to the unit circle. -/
-def periodizedBernoulli (k : ℕ) : 𝕌 → ℝ :=
+noncomputable def periodizedBernoulli (k : ℕ) : 𝕌 → ℝ :=
   AddCircle.liftIco 1 0 (bernoulliFun k)
 
 theorem periodizedBernoulli.continuous {k : ℕ} (hk : k ≠ 1) : Continuous (periodizedBernoulli k) :=

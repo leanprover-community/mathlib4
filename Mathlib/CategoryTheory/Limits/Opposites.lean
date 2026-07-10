@@ -20,8 +20,6 @@ We construct limits and colimits in the opposite categories.
 
 universe w v₁ v₂ u₁ u₂
 
-noncomputable section
-
 open CategoryTheory
 
 open CategoryTheory.Functor
@@ -292,7 +290,7 @@ instance hasLimit_unop_of_hasColimit (F : Jᵒᵖ ⥤ Cᵒᵖ) [HasColimit F] : 
       isLimit := isLimitConeUnopOfCocone _ (colimit.isColimit _) }
 
 /-- The limit of `F.op` is the opposite of `colimit F`. -/
-def limitOpIsoOpColimit (F : J ⥤ C) [HasColimit F] :
+noncomputable def limitOpIsoOpColimit (F : J ⥤ C) [HasColimit F] :
     limit F.op ≅ op (colimit F) :=
   limit.isoLimitCone ⟨_, (colimit.isColimit _).op⟩
 
@@ -309,7 +307,7 @@ lemma limitOpIsoOpColimit_hom_comp_ι (F : J ⥤ C) [HasColimit F] (j : J) :
   simp [← Iso.eq_inv_comp]
 
 /-- The limit of `F.leftOp` is the unopposite of `colimit F`. -/
-def limitLeftOpIsoUnopColimit (F : J ⥤ Cᵒᵖ) [HasColimit F] :
+noncomputable def limitLeftOpIsoUnopColimit (F : J ⥤ Cᵒᵖ) [HasColimit F] :
     limit F.leftOp ≅ unop (colimit F) :=
   limit.isoLimitCone ⟨_, isLimitConeLeftOpOfCocone _ (colimit.isColimit _)⟩
 
@@ -326,7 +324,7 @@ lemma limitLeftOpIsoUnopColimit_hom_comp_ι (F : J ⥤ Cᵒᵖ) [HasColimit F] (
   simp [← Iso.eq_inv_comp]
 
 /-- The limit of `F.rightOp` is the opposite of `colimit F`. -/
-def limitRightOpIsoOpColimit (F : Jᵒᵖ ⥤ C) [HasColimit F] :
+noncomputable def limitRightOpIsoOpColimit (F : Jᵒᵖ ⥤ C) [HasColimit F] :
     limit F.rightOp ≅ op (colimit F) :=
   limit.isoLimitCone ⟨_, isLimitConeRightOpOfCocone _ (colimit.isColimit _)⟩
 
@@ -343,7 +341,7 @@ lemma limitRightOpIsoOpColimit_hom_comp_ι (F : Jᵒᵖ ⥤ C) [HasColimit F] (j
   simp [← Iso.eq_inv_comp]
 
 /-- The limit of `F.unop` is the unopposite of `colimit F`. -/
-def limitUnopIsoUnopColimit (F : Jᵒᵖ ⥤ Cᵒᵖ) [HasColimit F] :
+noncomputable def limitUnopIsoUnopColimit (F : Jᵒᵖ ⥤ Cᵒᵖ) [HasColimit F] :
     limit F.unop ≅ unop (colimit F) :=
   limit.isoLimitCone ⟨_, isLimitConeUnopOfCocone _ (colimit.isColimit _)⟩
 
@@ -423,7 +421,7 @@ instance hasColimit_unop_of_hasLimit (F : Jᵒᵖ ⥤ Cᵒᵖ) [HasLimit F] : Ha
       isColimit := isColimitCoconeUnopOfCone _ (limit.isLimit _) }
 
 /-- The colimit of `F.op` is the opposite of `limit F`. -/
-def colimitOpIsoOpLimit (F : J ⥤ C) [HasLimit F] :
+noncomputable def colimitOpIsoOpLimit (F : J ⥤ C) [HasLimit F] :
     colimit F.op ≅ op (limit F) :=
   colimit.isoColimitCocone ⟨_, (limit.isLimit _).op⟩
 
@@ -440,7 +438,7 @@ lemma π_comp_colimitOpIsoOpLimit_inv (F : J ⥤ C) [HasLimit F] (j : J) :
   simp [Iso.comp_inv_eq]
 
 /-- The colimit of `F.leftOp` is the unopposite of `limit F`. -/
-def colimitLeftOpIsoUnopLimit (F : J ⥤ Cᵒᵖ) [HasLimit F] :
+noncomputable def colimitLeftOpIsoUnopLimit (F : J ⥤ Cᵒᵖ) [HasLimit F] :
     colimit F.leftOp ≅ unop (limit F) :=
   colimit.isoColimitCocone ⟨_, isColimitCoconeLeftOpOfCone _ (limit.isLimit _)⟩
 
@@ -457,7 +455,7 @@ lemma π_comp_colimitLeftOpIsoUnopLimit_inv (F : J ⥤ Cᵒᵖ) [HasLimit F] (j 
   simp [Iso.comp_inv_eq]
 
 /-- The colimit of `F.rightOp` is the opposite of `limit F`. -/
-def colimitRightOpIsoUnopLimit (F : Jᵒᵖ ⥤ C) [HasLimit F] :
+noncomputable def colimitRightOpIsoUnopLimit (F : Jᵒᵖ ⥤ C) [HasLimit F] :
     colimit F.rightOp ≅ op (limit F) :=
   colimit.isoColimitCocone ⟨_, isColimitCoconeRightOpOfCone _ (limit.isLimit _)⟩
 
@@ -474,7 +472,7 @@ lemma π_comp_colimitRightOpIsoUnopLimit_inv (F : Jᵒᵖ ⥤ C) [HasLimit F] (j
   simp [Iso.comp_inv_eq]
 
 /-- The colimit of `F.unop` is the unopposite of `limit F`. -/
-def colimitUnopIsoOpLimit (F : Jᵒᵖ ⥤ Cᵒᵖ) [HasLimit F] :
+noncomputable def colimitUnopIsoOpLimit (F : Jᵒᵖ ⥤ Cᵒᵖ) [HasLimit F] :
     colimit F.unop ≅ unop (limit F) :=
   colimit.isoColimitCocone ⟨_, isColimitCoconeUnopOfCone _ (limit.isLimit _)⟩
 

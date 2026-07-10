@@ -25,8 +25,6 @@ open Set Filter UniformSpace Metric
 
 open Filter Topology Uniformity
 
-noncomputable section
-
 universe u v
 
 variable {α : Type u} {β : Type v} [PseudoMetricSpace α]
@@ -35,7 +33,7 @@ namespace UniformSpace.Completion
 
 /-- The distance on the completion is obtained by extending the distance on the original space,
 by uniform continuity. -/
-instance : Dist (Completion α) :=
+noncomputable instance : Dist (Completion α) :=
   ⟨Completion.extension₂ dist⟩
 
 /-- The new distance is uniformly continuous. -/
@@ -144,7 +142,7 @@ protected theorem uniformity_dist : 𝓤 (Completion α) = ⨅ ε > 0, 𝓟 { p 
   simpa [iInf_subtype] using @Completion.uniformity_dist' α _
 
 /-- Metric space structure on the completion of a `PseudoMetric` space. -/
-instance instMetricSpace : MetricSpace (Completion α) :=
+noncomputable instance instMetricSpace : MetricSpace (Completion α) :=
   @MetricSpace.ofT0PseudoMetricSpace _
     { dist_self := Completion.dist_self
       dist_comm := Completion.dist_comm
@@ -206,6 +204,7 @@ variable [Ring α] [IsTopologicalRing α] [IsUniformAddGroup α] [Ring β]
     [PseudoMetricSpace β] [IsUniformAddGroup β] [IsTopologicalRing β]
 
 /-- The extension of an isometry to the completion of the domain. -/
+noncomputable
 def Isometry.extensionHom [CompleteSpace β] [T0Space β] {f : α →+* β} (h : Isometry f) :
     Completion α →+* β := Completion.extensionHom f h.continuous
 
@@ -214,6 +213,7 @@ theorem Isometry.extensionHom_coe [CompleteSpace β] [T0Space β] {f : α →+* 
     (x : α) : h.extensionHom x = f x := Completion.extensionHom_coe f h.continuous _
 
 /-- The lift of an isometry to completions. -/
+noncomputable
 def Isometry.mapRingHom {f : α →+* β} (h : Isometry f) : Completion α →+* Completion β :=
   Completion.mapRingHom f h.continuous
 

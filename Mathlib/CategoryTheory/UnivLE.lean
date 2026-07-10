@@ -21,8 +21,6 @@ open CategoryTheory
 
 universe u v
 
-noncomputable section
-
 theorem UnivLE.ofEssSurj (w : (uliftFunctor.{u, v} : Type v ⥤ Type max u v).EssSurj) :
     UnivLE.{max u v, v} where
   small α := by
@@ -41,7 +39,7 @@ theorem UnivLE_iff_essSurj :
 
 instance [UnivLE.{max u v, v}] : uliftFunctor.{u, v}.IsEquivalence where
 
-def UnivLE.witness [UnivLE.{max u v, v}] : Type u ⥤ Type v :=
+noncomputable def UnivLE.witness [UnivLE.{max u v, v}] : Type u ⥤ Type v :=
   uliftFunctor.{v, u} ⋙ (uliftFunctor.{u, v}).inv
 
 instance [UnivLE.{max u v, v}] : UnivLE.witness.{u, v}.Faithful :=

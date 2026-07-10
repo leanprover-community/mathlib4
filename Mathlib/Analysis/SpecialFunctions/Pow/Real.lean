@@ -18,8 +18,6 @@ We construct the power functions `x ^ y`, where `x` and `y` are real numbers.
 @[expose] public section
 
 
-noncomputable section
-
 open Real ComplexConjugate Finset Set
 
 /-

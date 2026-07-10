@@ -21,8 +21,6 @@ public import Mathlib.Order.Filter.AtTopBot.Finset
 
 @[expose] public section
 
-noncomputable section
-
 open Filter Function
 
 open scoped Topology

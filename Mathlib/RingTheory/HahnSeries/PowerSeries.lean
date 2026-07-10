@@ -40,8 +40,6 @@ we get the more familiar semiring of formal power series with coefficients in `R
 
 open Finset Function Pointwise Polynomial
 
-noncomputable section
-
 variable {Γ R : Type*}
 
 namespace HahnSeries
@@ -52,7 +50,7 @@ variable [Semiring R]
 
 /-- The ring `R⟦ℕ⟧` is isomorphic to `PowerSeries R`. -/
 @[simps]
-def toPowerSeries : R⟦ℕ⟧ ≃+* PowerSeries R where
+noncomputable def toPowerSeries : R⟦ℕ⟧ ≃+* PowerSeries R where
   toFun f := PowerSeries.mk f.coeff
   invFun f := ⟨fun n => PowerSeries.coeff n f, .of_linearOrder _⟩
   left_inv f := by
@@ -87,7 +85,7 @@ theorem coeff_toPowerSeries_symm {f : PowerSeries R} {n : ℕ} :
 variable (Γ R) [Semiring Γ] [PartialOrder Γ] [IsStrictOrderedRing Γ]
 
 /-- Casts a power series as a Hahn series with coefficients from a strictly ordered semiring. -/
-def ofPowerSeries : PowerSeries R →+* R⟦Γ⟧ :=
+noncomputable def ofPowerSeries : PowerSeries R →+* R⟦Γ⟧ :=
   (HahnSeries.embDomainRingHom (Nat.castAddMonoidHom Γ) Nat.strictMono_cast.injective fun _ _ =>
         Nat.cast_le).comp
     (RingEquiv.toRingHom toPowerSeries.symm)
@@ -199,7 +197,7 @@ variable (R) [CommSemiring R] {A : Type*} [Semiring A] [Algebra R A]
 
 /-- The `R`-algebra `A⟦ℕ⟧` is isomorphic to `PowerSeries A`. -/
 @[simps!]
-def toPowerSeriesAlg : A⟦ℕ⟧ ≃ₐ[R] PowerSeries A :=
+noncomputable def toPowerSeriesAlg : A⟦ℕ⟧ ≃ₐ[R] PowerSeries A :=
   { toPowerSeries with
     commutes' := fun r => by
       ext n
@@ -209,12 +207,12 @@ variable (Γ) [Semiring Γ] [PartialOrder Γ] [IsStrictOrderedRing Γ]
 
 /-- Casting a power series as a Hahn series with coefficients from a strictly ordered semiring. -/
 @[simps!]
-def ofPowerSeriesAlg : PowerSeries A →ₐ[R] A⟦Γ⟧ :=
+noncomputable def ofPowerSeriesAlg : PowerSeries A →ₐ[R] A⟦Γ⟧ :=
   (HahnSeries.embDomainAlgHom (Nat.castAddMonoidHom Γ) Nat.strictMono_cast.injective fun _ _ =>
         Nat.cast_le).comp
     (AlgEquiv.toAlgHom (toPowerSeriesAlg R).symm)
 
-instance powerSeriesAlgebra {S : Type*} [CommSemiring S] [Algebra S (PowerSeries R)] :
+noncomputable instance powerSeriesAlgebra {S : Type*} [CommSemiring S] [Algebra S (PowerSeries R)] :
     Algebra S R⟦Γ⟧ :=
   RingHom.toAlgebra <| (ofPowerSeries Γ R).comp (algebraMap S (PowerSeries R))
 

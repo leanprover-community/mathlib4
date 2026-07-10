@@ -70,8 +70,6 @@ open ModularForm ModularGroup Filter Complex MatrixGroups Set SummationFilter
 
 open scoped Real Topology
 
-noncomputable section
-
 namespace EisensteinSeries
 
 /-- This is an auxiliary correction term for proving how E2 transforms. It allows us to work with
@@ -89,7 +87,7 @@ lemma δ_eventually_cofinite : δ =ᶠ[cofinite] 0 := by
   simp_all [δ]
 
 /-- This term gives an alternative infinite sum for G2 which is absolutely convergent. -/
-abbrev G2Term (z : ℍ) (m : Fin 2 → ℤ) : ℂ :=
+noncomputable abbrev G2Term (z : ℍ) (m : Fin 2 → ℤ) : ℂ :=
     (((m 0 : ℂ) * z + m 1) ^ 2 * (m 0 * z + m 1 + 1))⁻¹ + δ m
 
 lemma G2Term_summable (z : ℍ) : Summable (G2Term z) := by

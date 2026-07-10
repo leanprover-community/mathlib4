@@ -39,8 +39,6 @@ We give methods for computing coefficients of the characteristic polynomial.
 @[expose] public section
 
 
-noncomputable section
-
 universe u v w z
 
 open Finset Matrix Polynomial
@@ -289,7 +287,7 @@ open LaurentPolynomial hiding C
 It has some advantages over the characteristic polynomial, including the fact that it can be
 extended to infinite dimensions (for appropriate operators). In such settings it is known as the
 "characteristic power series". -/
-def charpolyRev (M : Matrix n n R) : R[X] := det (1 - (X : R[X]) • M.map C)
+noncomputable def charpolyRev (M : Matrix n n R) : R[X] := det (1 - (X : R[X]) • M.map C)
 
 lemma reverse_charpoly (M : Matrix n n R) :
     M.charpoly.reverse = M.charpolyRev := by

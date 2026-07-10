@@ -42,8 +42,6 @@ when `F` is a commutative formal group law
 
 variable {R : Type*} [CommRing R] {S : Type*} [CommRing S] {σ τ : Type*}
 
-noncomputable section
-
 open MvPowerSeries Finsupp
 
 name_power_vars X₀, X₁ over R
@@ -125,7 +123,7 @@ via the substitution operation $x +_F y = F(x, y)$. -/
 @[nolint unusedArguments]
 def Point (F : FormalGroup R) (σ : Type*) := {f : MvPowerSeries σ R // PowerSeries.HasSubst f}
 
-instance : Add (F.Point σ) where
+noncomputable instance : Add (F.Point σ) where
   add x y := ⟨F.toPowerSeries.subst ![x.val, y.val],
     IsNilpotent_subst (by simp [hasSubst_of_constantCoeff_nilpotent, x.prop, y.prop])
       (F.zero_constantCoeff ▸ IsNilpotent.zero)⟩
@@ -142,7 +140,7 @@ lemma zero_apply : (0 : F.Point σ).val = (0 : MvPowerSeries σ R) := rfl
 
 /-- Additive formal group law `𝔾ₐ(X,Y) = X + Y`. -/
 @[simps]
-def 𝔾ₐ : FormalGroup R where
+noncomputable def 𝔾ₐ : FormalGroup R where
   toPowerSeries := X₀ + X₁
   zero_constantCoeff := by simp
   lin_coeff_X := by simp [coeff_index_single_X]
@@ -158,7 +156,7 @@ instance : (𝔾ₐ (R := R)).IsComm where
 
 /-- Multiplicative formal group law `𝔾ₘ(X,Y) = X + Y + XY`. -/
 @[simps]
-def 𝔾ₘ : FormalGroup R where
+noncomputable def 𝔾ₘ : FormalGroup R where
   toPowerSeries := X₀ + X₁ + X₀ * X₁
   zero_constantCoeff := by simp
   lin_coeff_X := by
@@ -181,7 +179,7 @@ instance : (𝔾ₘ (R := R)).IsComm where
 formal group law formal group law over `S`. This is constructed by applying `f` to all coefficients
 of the underlying power series. -/
 @[simps]
-def map (f : R →+* S) : FormalGroup S where
+noncomputable def map (f : R →+* S) : FormalGroup S where
   toPowerSeries := (F : MvPowerSeries (Fin 2) R).map f
   zero_constantCoeff := by simp [constantCoeff_map, F.zero_constantCoeff, map_zero]
   lin_coeff_X := by simp [F.lin_coeff_X]
@@ -202,7 +200,7 @@ namespace FormalGroup
 variable (F : FormalGroup R)
 
 /-- An abbreviation of $F(X,0)$ for a formal group $F$. -/
-abbrev Xzero : PowerSeries R := subst ![PowerSeries.X, 0] F.toPowerSeries
+noncomputable abbrev Xzero : PowerSeries R := subst ![PowerSeries.X, 0] F.toPowerSeries
 
 lemma constantCoeff_Xzero : F.Xzero.constantCoeff = 0 := by
   simp [PowerSeries.constantCoeff, Xzero, PowerSeries.X, MvPowerSeries.constantCoeff_subst_eq_zero
@@ -253,7 +251,7 @@ lemma Xzero_eq_X : F.Xzero = PowerSeries.X := by
       rw [Xzero_subst_Xzero, F.Xzero.subst_substInv_left F.constantCoeff_Xzero]
 
 /-- An abbreviation of $F(0,X)$ for a formal group $F$. -/
-abbrev zeroX : PowerSeries R := subst ![0, PowerSeries.X] F.toPowerSeries
+noncomputable abbrev zeroX : PowerSeries R := subst ![0, PowerSeries.X] F.toPowerSeries
 
 lemma constantCoeff_zeroX : F.zeroX.constantCoeff = 0 := by
   simp [PowerSeries.constantCoeff, zeroX, PowerSeries.X, MvPowerSeries.constantCoeff_subst_eq_zero
@@ -328,13 +326,13 @@ theorem zero_add {f : MvPowerSeries σ R} (hf : PowerSeries.HasSubst f) :
     _ = _ := by
       simp [zeroX_eq_X, PowerSeries.subst_X hf]
 
-instance : AddMonoid (F.Point σ) where
+noncomputable instance : AddMonoid (F.Point σ) where
   zero_add x := Subtype.ext (zero_add F x.prop)
   add_zero x := Subtype.ext (add_zero F x.prop)
   nsmul := nsmulRec
   add_assoc x y z := Subtype.ext <| F.assoc' x.prop y.prop z.prop
 
-instance [F.IsComm] : AddCommMonoid (F.Point σ) where
+noncomputable instance [F.IsComm] : AddCommMonoid (F.Point σ) where
   add_comm x y := Subtype.ext <| F.comm' x.prop y.prop
 
 end FormalGroup

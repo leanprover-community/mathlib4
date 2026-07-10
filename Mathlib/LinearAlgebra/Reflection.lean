@@ -57,8 +57,6 @@ open Function Set
 open Module
 open Submodule (span)
 
-noncomputable section
-
 variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M] (x : M) (f : Dual R M) (y : M)
 
 namespace Module

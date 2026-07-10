@@ -48,7 +48,7 @@ namespace Monad
 
 open Limits
 
-noncomputable section
+section
 
 -- Hide the implementation details in this namespace.
 namespace MonadicityInternal
@@ -80,7 +80,7 @@ instance main_pair_G_split (A : adj.toMonad.Algebra) :
   splittable := ⟨_, _, ⟨beckSplitCoequalizer A⟩⟩
 
 /-- The object function for the left adjoint to the comparison functor. -/
-def comparisonLeftAdjointObj (A : adj.toMonad.Algebra)
+noncomputable def comparisonLeftAdjointObj (A : adj.toMonad.Algebra)
     [HasCoequalizer (F.map A.a) (adj.counit.app _)] : D :=
   coequalizer (F.map A.a) (adj.counit.app _)
 
@@ -90,7 +90,7 @@ We have a bijection of homsets which will be used to construct the left adjoint 
 functor.
 -/
 @[simps!]
-def comparisonLeftAdjointHomEquiv (A : adj.toMonad.Algebra) (B : D)
+noncomputable def comparisonLeftAdjointHomEquiv (A : adj.toMonad.Algebra) (B : D)
     [HasCoequalizer (F.map A.a) (adj.counit.app (F.obj A.A))] :
     (comparisonLeftAdjointObj adj A ⟶ B) ≃ (A ⟶ (comparison adj).obj B) :=
   calc
@@ -114,7 +114,7 @@ def comparisonLeftAdjointHomEquiv (A : adj.toMonad.Algebra) (B : D)
 set_option backward.isDefEq.respectTransparency false in
 /-- Construct the adjunction to the comparison functor.
 -/
-def leftAdjointComparison
+noncomputable def leftAdjointComparison
     [∀ A : adj.toMonad.Algebra, HasCoequalizer (F.map A.a)
       (adj.counit.app (F.obj A.A))] :
     adj.toMonad.Algebra ⥤ D := by
@@ -129,7 +129,7 @@ def leftAdjointComparison
 /-- Provided we have the appropriate coequalizers, we have an adjunction to the comparison functor.
 -/
 @[simps! counit]
-def comparisonAdjunction
+noncomputable def comparisonAdjunction
     [∀ A : adj.toMonad.Algebra, HasCoequalizer (F.map A.a)
       (adj.counit.app (F.obj A.A))] :
     leftAdjointComparison adj ⊣ comparison adj :=
@@ -150,7 +150,7 @@ theorem comparisonAdjunction_unit_f_aux
 coequalizer to this cofork is the unit for the adjunction on the comparison functor.
 -/
 @[simps! pt]
-def unitCofork (A : adj.toMonad.Algebra)
+noncomputable def unitCofork (A : adj.toMonad.Algebra)
     [HasCoequalizer (F.map A.a) (adj.counit.app (F.obj A.A))] :
     Cofork (G.map (F.map A.a)) (G.map (adj.counit.app (F.obj A.A))) :=
   Cofork.ofπ (G.map (coequalizer.π (F.map A.a) (adj.counit.app (F.obj A.A))))
@@ -188,14 +188,14 @@ def counitCofork (B : D) :
 
 variable {adj} in
 /-- The unit cofork is a colimit provided `G` preserves it. -/
-def unitColimitOfPreservesCoequalizer (A : adj.toMonad.Algebra)
+noncomputable def unitColimitOfPreservesCoequalizer (A : adj.toMonad.Algebra)
     [HasCoequalizer (F.map A.a) (adj.counit.app (F.obj A.A))]
     [PreservesColimit (parallelPair (F.map A.a) (adj.counit.app (F.obj A.A))) G] :
     IsColimit (unitCofork (G := G) A) :=
   isColimitOfHasCoequalizerOfPreservesColimit G _ _
 
 /-- The counit cofork is a colimit provided `G` reflects it. -/
-def counitCoequalizerOfReflectsCoequalizer (B : D)
+noncomputable def counitCoequalizerOfReflectsCoequalizer (B : D)
     [ReflectsColimit (parallelPair (F.map (G.map (adj.counit.app B)))
       (adj.counit.app (F.obj (G.obj B)))) G] :
     IsColimit (counitCofork (adj := adj) B) :=
@@ -235,7 +235,7 @@ If `G` is monadic, it creates colimits of `G`-split pairs. This is the "boring" 
 monadicity theorem, the converse is given in `monadicOfCreatesGSplitCoequalizers`.
 -/
 @[implicit_reducible]
-def createsGSplitCoequalizersOfMonadic [MonadicRightAdjoint G] ⦃A B⦄ (f g : A ⟶ B)
+noncomputable def createsGSplitCoequalizersOfMonadic [MonadicRightAdjoint G] ⦃A B⦄ (f g : A ⟶ B)
     [G.IsSplitPair f g] : CreatesColimit (parallelPair f g) G := by
   apply +allowSynthFailures monadicCreatesColimitOfPreservesColimit
     -- Porting note: oddly +allowSynthFailures had no effect here and below

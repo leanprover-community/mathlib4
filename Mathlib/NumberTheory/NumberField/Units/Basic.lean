@@ -36,7 +36,7 @@ number field, units
 
 open scoped NumberField
 
-noncomputable section
+section
 
 open NumberField Units
 
@@ -172,7 +172,7 @@ instance : Finite (torsion K) := by
 instance : IsCyclic (torsion K) := isCyclic_subgroup_units _
 
 /-- The order of the torsion subgroup. -/
-def torsionOrder : ℕ := Nat.card (torsion K)
+noncomputable def torsionOrder : ℕ := Nat.card (torsion K)
 
 theorem torsionOrder_pos : 0 < torsionOrder K :=
   Nat.card_pos

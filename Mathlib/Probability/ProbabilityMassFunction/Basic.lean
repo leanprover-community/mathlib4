@@ -35,8 +35,6 @@ probability mass function, discrete probability measure
 @[expose] public section
 
 
-noncomputable section
-
 variable {α : Type*}
 
 open NNReal ENNReal MeasureTheory
@@ -134,7 +132,7 @@ open OuterMeasure
 
 /-- Construct an `OuterMeasure` from a `PMF`, by assigning measure to each set `s : Set α` equal
   to the sum of `p x` for each `x ∈ α`. -/
-def toOuterMeasure (p : PMF α) : OuterMeasure α :=
+noncomputable def toOuterMeasure (p : PMF α) : OuterMeasure α :=
   OuterMeasure.sum fun x : α => p x • dirac x
 
 variable (p : PMF α) (s : Set α)
@@ -210,7 +208,7 @@ section Measure
 
 /-- Since every set is Carathéodory-measurable under `PMF.toOuterMeasure`,
   we can further extend this `OuterMeasure` to a `Measure` on `α`. -/
-def toMeasure [MeasurableSpace α] (p : PMF α) : Measure α :=
+noncomputable def toMeasure [MeasurableSpace α] (p : PMF α) : Measure α :=
   p.toOuterMeasure.toMeasure (p.toOuterMeasure_caratheodory.symm ▸ le_top)
 
 variable [MeasurableSpace α] (p : PMF α) {s : Set α}

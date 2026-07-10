@@ -30,8 +30,6 @@ The dual is also given.
 @[expose] public section
 
 
-noncomputable section
-
 universe v₁ v₂ u₁ u₂
 
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits CategoryTheory.Functor
@@ -80,14 +78,14 @@ def isLimitMapConePullbackConeEquiv :
   (PullbackCone.mk _ _ comm).isLimitMapConeEquiv G
 
 /-- The property of preserving pullbacks expressed in terms of binary fans. -/
-def isLimitPullbackConeMapOfIsLimit [PreservesLimit (cospan f g) G]
+noncomputable def isLimitPullbackConeMapOfIsLimit [PreservesLimit (cospan f g) G]
     (l : IsLimit (PullbackCone.mk h k comm)) :
     have : G.map h ≫ G.map f = G.map k ≫ G.map g := by rw [← G.map_comp, ← G.map_comp, comm]
     IsLimit (PullbackCone.mk (G.map h) (G.map k) this) :=
   (PullbackCone.isLimitMapConeEquiv _ G).1 (isLimitOfPreserves G l)
 
 /-- The property of reflecting pullbacks expressed in terms of binary fans. -/
-def isLimitOfIsLimitPullbackConeMap [ReflectsLimit (cospan f g) G]
+noncomputable def isLimitOfIsLimitPullbackConeMap [ReflectsLimit (cospan f g) G]
     (l : IsLimit (PullbackCone.mk (G.map h) (G.map k) (show G.map h ≫ G.map f = G.map k ≫ G.map g
     from by simp only [← G.map_comp, comm]))) : IsLimit (PullbackCone.mk h k comm) :=
   isLimitOfReflects G
@@ -97,7 +95,7 @@ variable (f g) [PreservesLimit (cospan f g) G]
 
 /-- If `G` preserves pullbacks and `C` has them, then the pullback cone constructed of the mapped
 morphisms of the pullback cone is a limit. -/
-def isLimitOfHasPullbackOfPreservesLimit [HasPullback f g] :
+noncomputable def isLimitOfHasPullbackOfPreservesLimit [HasPullback f g] :
     have : G.map (pullback.fst f g) ≫ G.map f = G.map (pullback.snd f g) ≫ G.map g := by
       simp only [← G.map_comp, pullback.condition]
     IsLimit (PullbackCone.mk (G.map (pullback.fst f g)) (G.map (pullback.snd f g)) this) :=
@@ -127,7 +125,7 @@ variable [HasPullback f g] [HasPullback (G.map f) (G.map g)]
 
 /-- If `G` preserves the pullback of `(f,g)`, then the pullback comparison map for `G` at `(f,g)` is
 an isomorphism. -/
-def PreservesPullback.iso : G.obj (pullback f g) ≅ pullback (G.map f) (G.map g) :=
+noncomputable def PreservesPullback.iso : G.obj (pullback f g) ≅ pullback (G.map f) (G.map g) :=
   IsLimit.conePointUniqueUpToIso (isLimitOfHasPullbackOfPreservesLimit G f g) (limit.isLimit _)
 
 @[simp]
@@ -160,7 +158,7 @@ theorem PreservesPullback.iso_inv_snd :
 
 /-- A pullback cone in `C` is a limit iff it is so after the application
 of `coyoneda.obj X` for all `X : Cᵒᵖ`. -/
-def PullbackCone.isLimitCoyonedaEquiv (c : PullbackCone f g) :
+noncomputable def PullbackCone.isLimitCoyonedaEquiv (c : PullbackCone f g) :
     IsLimit c ≃ ∀ (X : Cᵒᵖ), IsLimit (c.map (coyoneda.obj X)) :=
   (Cone.isLimitCoyonedaEquiv c).trans
     (Equiv.piCongrRight (fun X ↦ c.isLimitMapConeEquiv (coyoneda.obj X)))
@@ -213,14 +211,14 @@ def isColimitMapCoconePushoutCoconeEquiv :
           simp only [Category.comp_id, Category.id_comp, ← G.map_comp]
 
 /-- The property of preserving pushouts expressed in terms of binary cofans. -/
-def isColimitPushoutCoconeMapOfIsColimit [PreservesColimit (span f g) G]
+noncomputable def isColimitPushoutCoconeMapOfIsColimit [PreservesColimit (span f g) G]
     (l : IsColimit (PushoutCocone.mk h k comm)) :
     IsColimit (PushoutCocone.mk (G.map h) (G.map k) (show G.map f ≫ G.map h = G.map g ≫ G.map k
       by simp only [← G.map_comp, comm])) :=
   isColimitMapCoconePushoutCoconeEquiv G comm (isColimitOfPreserves G l)
 
 /-- The property of reflecting pushouts expressed in terms of binary cofans. -/
-def isColimitOfIsColimitPushoutCoconeMap [ReflectsColimit (span f g) G]
+noncomputable def isColimitOfIsColimitPushoutCoconeMap [ReflectsColimit (span f g) G]
     (l : IsColimit (PushoutCocone.mk (G.map h) (G.map k) (show G.map f ≫ G.map h =
       G.map g ≫ G.map k from by simp only [← G.map_comp, comm]))) :
     IsColimit (PushoutCocone.mk h k comm) :=
@@ -230,7 +228,7 @@ variable (f g) [PreservesColimit (span f g) G]
 
 /-- If `G` preserves pushouts and `C` has them, then the pushout cocone constructed of the mapped
 morphisms of the pushout cocone is a colimit. -/
-def isColimitOfHasPushoutOfPreservesColimit [i : HasPushout f g] :
+noncomputable def isColimitOfHasPushoutOfPreservesColimit [i : HasPushout f g] :
     IsColimit (PushoutCocone.mk (G.map (pushout.inl _ _)) (G.map (@pushout.inr _ _ _ _ _ f g i))
     (show G.map f ≫ G.map (pushout.inl _ _) = G.map g ≫ G.map (pushout.inr _ _) from by
       simp only [← G.map_comp, pushout.condition])) :=
@@ -255,7 +253,7 @@ variable [HasPushout f g] [HasPushout (G.map f) (G.map g)]
 
 /-- If `G` preserves the pushout of `(f,g)`, then the pushout comparison map for `G` at `(f,g)` is
 an isomorphism. -/
-def PreservesPushout.iso : pushout (G.map f) (G.map g) ≅ G.obj (pushout f g) :=
+noncomputable def PreservesPushout.iso : pushout (G.map f) (G.map g) ≅ G.obj (pushout f g) :=
   IsColimit.coconePointUniqueUpToIso (colimit.isColimit _)
     (isColimitOfHasPushoutOfPreservesColimit G f g)
 
@@ -336,7 +334,7 @@ instance : IsIso (pushoutComparison G f g) := by
 set_option backward.defeqAttrib.useBackward true in
 /-- A pushout cocone in `C` is colimit iff it becomes limit
 after the application of `yoneda.obj X` for all `X : C`. -/
-def PushoutCocone.isColimitYonedaEquiv (c : PushoutCocone f g) :
+noncomputable def PushoutCocone.isColimitYonedaEquiv (c : PushoutCocone f g) :
     IsColimit c ≃ ∀ (X : C), IsLimit (c.op.map (yoneda.obj X)) :=
   (Limits.Cocone.isColimitYonedaEquiv c).trans
     (Equiv.piCongrRight (fun X ↦

@@ -18,8 +18,6 @@ We construct kernels and cokernels in the opposite categories.
 
 universe v₁ v₂ u₁ u₂
 
-noncomputable section
-
 open CategoryTheory
 
 open CategoryTheory.Functor

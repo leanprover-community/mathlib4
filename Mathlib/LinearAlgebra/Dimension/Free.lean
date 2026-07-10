@@ -24,8 +24,6 @@ public import Mathlib.SetTheory.Cardinal.Finsupp
 @[expose] public section
 
 
-noncomputable section
-
 universe u v v' w
 
 open Cardinal Basis Submodule Function Set Module
@@ -181,13 +179,13 @@ section
 variable (M M' M₁)
 
 /-- Two vector spaces are isomorphic if they have the same dimension. -/
-def LinearEquiv.ofLiftRankEq
+noncomputable def LinearEquiv.ofLiftRankEq
     (cond : Cardinal.lift.{v'} (Module.rank R M) = Cardinal.lift.{v} (Module.rank R M')) :
     M ≃ₗ[R] M' :=
   Classical.choice (nonempty_linearEquiv_of_lift_rank_eq cond)
 
 /-- Two vector spaces are isomorphic if they have the same dimension. -/
-def LinearEquiv.ofRankEq (cond : Module.rank R M = Module.rank R M₁) : M ≃ₗ[R] M₁ :=
+noncomputable def LinearEquiv.ofRankEq (cond : Module.rank R M = Module.rank R M₁) : M ≃ₗ[R] M₁ :=
   Classical.choice (nonempty_linearEquiv_of_rank_eq cond)
 
 end

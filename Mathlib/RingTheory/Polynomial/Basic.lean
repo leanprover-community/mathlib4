@@ -23,8 +23,6 @@ public import Mathlib.RingTheory.Noetherian.Basic
 
 @[expose] public section
 
-noncomputable section
-
 open Polynomial
 
 open Finset
@@ -49,11 +47,11 @@ instance instExpChar (p : ℕ) [h : ExpChar R p] : ExpChar R[X] p := by
 variable (R)
 
 /-- The `R`-submodule of `R[X]` consisting of polynomials of degree ≤ `n`. -/
-def degreeLE (n : WithBot ℕ) : Submodule R R[X] :=
+noncomputable def degreeLE (n : WithBot ℕ) : Submodule R R[X] :=
   ⨅ k : ℕ, ⨅ _ : ↑k > n, LinearMap.ker (lcoeff R k)
 
 /-- The `R`-submodule of `R[X]` consisting of polynomials of degree < `n`. -/
-def degreeLT (n : ℕ) : Submodule R R[X] :=
+noncomputable def degreeLT (n : ℕ) : Submodule R R[X] :=
   ⨅ k : ℕ, ⨅ (_ : k ≥ n), LinearMap.ker (lcoeff R k)
 
 variable {R}
@@ -108,7 +106,7 @@ theorem degreeLT_eq_span_X_pow [DecidableEq R] {n : ℕ} :
   exact lt_of_le_of_lt (degree_X_pow_le _) (WithBot.coe_lt_coe.2 <| Finset.mem_range.1 hk)
 
 /-- The first `n` coefficients on `degreeLT n` form a linear equivalence with `Fin n → R`. -/
-def degreeLTEquiv (R) [Semiring R] (n : ℕ) : degreeLT R n ≃ₗ[R] Fin n → R where
+noncomputable def degreeLTEquiv (R) [Semiring R] (n : ℕ) : degreeLT R n ≃ₗ[R] Fin n → R where
   toFun p n := (↑p : R[X]).coeff n
   invFun f :=
     ⟨∑ i : Fin n, monomial i (f i),
@@ -160,7 +158,7 @@ theorem degreeLT_succ_eq_degreeLE {n : ℕ} : degreeLT R (n + 1) = degreeLE R n 
 
 /-- The equivalence between monic polynomials of degree `n` and polynomials of degree less than
 `n`, formed by adding a term `X ^ n`. -/
-def monicEquivDegreeLT [Nontrivial R] (n : ℕ) :
+noncomputable def monicEquivDegreeLT [Nontrivial R] (n : ℕ) :
     { p : R[X] // p.Monic ∧ p.natDegree = n } ≃ degreeLT R n where
   toFun p := ⟨p.1.eraseLead, by
     rcases p with ⟨p, hp, rfl⟩
@@ -292,7 +290,7 @@ variable [Ring R]
 
 /-- Given a polynomial, return the polynomial whose coefficients are in
 the ring closure of the original coefficients. -/
-def restriction (p : R[X]) : Polynomial (Subring.closure (↑p.coeffs : Set R)) :=
+noncomputable def restriction (p : R[X]) : Polynomial (Subring.closure (↑p.coeffs : Set R)) :=
   ∑ i ∈ p.support,
     monomial i
       (⟨p.coeff i,
@@ -385,17 +383,17 @@ variable (I)
 
 /-- Given an ideal `I` of `R[X]`, make the `R`-submodule of `I`
 consisting of polynomials of degree ≤ `n`. -/
-def degreeLE (n : WithBot ℕ) : Submodule R R[X] :=
+noncomputable def degreeLE (n : WithBot ℕ) : Submodule R R[X] :=
   Polynomial.degreeLE R n ⊓ I.ofPolynomial
 
 /-- Given an ideal `I` of `R[X]`, make the ideal in `R` of
 leading coefficients of polynomials in `I` with degree ≤ `n`. -/
-def leadingCoeffNth (n : ℕ) : Ideal R :=
+noncomputable def leadingCoeffNth (n : ℕ) : Ideal R :=
   (I.degreeLE n).map <| lcoeff R n
 
 /-- Given an ideal `I` in `R[X]`, make the ideal in `R` of the
 leading coefficients in `I`. -/
-def leadingCoeff : Ideal R :=
+noncomputable def leadingCoeff : Ideal R :=
   ⨆ n : ℕ, I.leadingCoeffNth n
 
 end Semiring

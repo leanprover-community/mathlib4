@@ -28,8 +28,6 @@ This file records basic facts about uniformly locally doubling measures.
 
 assert_not_exists Real.instPow
 
-noncomputable section
-
 open Set Filter Metric MeasureTheory TopologicalSpace ENNReal NNReal Topology
 
 /-- A measure `μ` is said to be a uniformly locally doubling measure if there exists a constant `C`
@@ -58,7 +56,7 @@ theorem exists_measure_closedBall_le_mul :
 /-- A doubling constant for a uniformly locally doubling measure.
 
 See also `IsUnifLocDoublingMeasure.scalingConstantOf`. -/
-def doublingConstant : ℝ≥0 :=
+noncomputable def doublingConstant : ℝ≥0 :=
   Classical.choose <| exists_measure_closedBall_le_mul μ
 
 theorem eventually_measure_le_doublingConstant_mul :
@@ -89,7 +87,7 @@ theorem exists_eventually_forall_measure_closedBall_le_mul (K : ℝ) :
 
 /-- A variant of `IsUnifLocDoublingMeasure.doublingConstant` which allows for scaling the
 radius by values other than `2`. -/
-def scalingConstantOf (K : ℝ) : ℝ≥0 :=
+noncomputable def scalingConstantOf (K : ℝ) : ℝ≥0 :=
   max (Classical.choose <| exists_eventually_forall_measure_closedBall_le_mul μ K) 1
 
 @[simp]
@@ -129,7 +127,7 @@ theorem eventually_measure_le_scaling_constant_mul' (K : ℝ) (hK : 0 < K) :
 /-- A scale below which the doubling measure `μ` satisfies good rescaling properties when one
 multiplies the radius of balls by at most `K`, as stated
 in `IsUnifLocDoublingMeasure.measure_mul_le_scalingConstantOf_mul`. -/
-def scalingScaleOf (K : ℝ) : ℝ :=
+noncomputable def scalingScaleOf (K : ℝ) : ℝ :=
   (eventually_measure_mul_le_scalingConstantOf_mul μ K).choose
 
 theorem scalingScaleOf_pos (K : ℝ) : 0 < scalingScaleOf μ K :=

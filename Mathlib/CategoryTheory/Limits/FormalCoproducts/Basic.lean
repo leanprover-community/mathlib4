@@ -360,7 +360,7 @@ instance : HasPullbacks (FormalCoproduct.{w} C) :=
 
 end Pullback
 
-noncomputable section HasCoproducts
+section HasCoproducts
 
 variable [HasCoproducts.{w} A] (C) (J : Type w) (f : J → FormalCoproduct.{w} C) (F : C ⥤ A)
 
@@ -368,7 +368,7 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- A copresheaf valued in a category `A` with arbitrary coproducts, can be extended to the category
 of formal coproducts. -/
-@[simps!] def eval : (C ⥤ A) ⥤ (FormalCoproduct.{w} C ⥤ A) where
+@[simps!] noncomputable def eval : (C ⥤ A) ⥤ (FormalCoproduct.{w} C ⥤ A) where
   obj F :=
     { obj X := ∐ fun (i : X.I) ↦ F.obj (X.obj i)
       map {X Y} f := Sigma.desc fun i ↦ F.map (f.φ i) ≫ Sigma.ι (F.obj ∘ Y.obj) (f.f i)
@@ -378,7 +378,7 @@ of formal coproducts. -/
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- `eval(F)` restricted to the original category (via `incl`) is the original copresheaf `F`. -/
-@[simps!] def evalCompInclIsoId :
+@[simps!] noncomputable def evalCompInclIsoId :
     eval C A ⋙ (whiskeringLeft _ _ A).obj (incl C) ≅ Functor.id (C ⥤ A) :=
   NatIso.ofComponents fun F ↦ NatIso.ofComponents
     (fun x ↦ ⟨Sigma.desc fun _ ↦ 𝟙 _, Sigma.ι (fun _ ↦ F.obj x) PUnit.unit, by aesop, by simp⟩)
@@ -388,6 +388,7 @@ variable {C A}
 
 set_option backward.isDefEq.respectTransparency false in
 /-- `eval(F)` preserves arbitrary coproducts. -/
+noncomputable
 def isColimitEvalMapCoconeCofan : IsColimit (((eval.{w} C A).obj F).mapCocone (cofan.{w} J f)) where
   desc s := Sigma.desc fun i ↦ Sigma.ι (F.obj ∘ (f i.1).obj) i.2 ≫ s.ι.app ⟨i.1⟩
   fac s i := Sigma.hom_ext _ _ fun i ↦ by simp [cofan, Function.comp_def]
@@ -418,7 +419,7 @@ protected noncomputable abbrev shrinkYoneda [LocallySmall.{w} C] :
 
 end HasCoproducts
 
-noncomputable section HasProducts
+section HasProducts
 
 variable [HasProducts.{w} A] (C) (J : Type w) (f : J → FormalCoproduct.{w} C) (F : Cᵒᵖ ⥤ A)
 
@@ -426,7 +427,7 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- A presheaf valued in a category `A` with arbitrary products can be extended to the category of
 formal coproducts. -/
-@[simps!] def evalOp : (Cᵒᵖ ⥤ A) ⥤ ((FormalCoproduct.{w} C)ᵒᵖ ⥤ A) where
+@[simps!] noncomputable def evalOp : (Cᵒᵖ ⥤ A) ⥤ ((FormalCoproduct.{w} C)ᵒᵖ ⥤ A) where
   obj F :=
     { obj X := ∏ᶜ fun (i : X.unop.I) ↦ F.obj (op (X.unop.obj i))
       map f := Pi.lift fun i ↦ Pi.π _ (f.unop.f i) ≫ F.map (f.unop.φ i).op }
@@ -435,7 +436,7 @@ formal coproducts. -/
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- `evalOp(F)` restricted to the original category (via `incl`) is the original presheaf `F`. -/
-@[simps!] def evalOpCompInlIsoId :
+@[simps!] noncomputable def evalOpCompInlIsoId :
     evalOp C A ⋙ (whiskeringLeft _ _ A).obj (incl C).op ≅ Functor.id (Cᵒᵖ ⥤ A) :=
   NatIso.ofComponents fun F ↦ NatIso.ofComponents fun x ↦
     ⟨Pi.π _ PUnit.unit, Pi.lift fun _ ↦ 𝟙 _, by aesop, by simp⟩
@@ -445,6 +446,7 @@ variable {C A}
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- `evalOp(F)` preserves arbitrary products. -/
+noncomputable
 def isLimitEvalMapConeCofanOp : IsLimit (((evalOp.{w} C A).obj F).mapCone (cofan.{w} J f).op) where
   lift s := Pi.lift fun i ↦ s.π.app ⟨i.1⟩ ≫ Pi.π _ i.2
   fac s i := Pi.hom_ext _ _ fun i ↦ by simp [cofan]

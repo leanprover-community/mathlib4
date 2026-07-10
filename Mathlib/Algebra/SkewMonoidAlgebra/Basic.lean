@@ -32,8 +32,6 @@ yields a not-necessarily-unital, not-necessarily-associative algebra.
 @[expose] public section
 
 
-noncomputable section
-
 /-- The skew monoid algebra of `G` over `k` is the type of finite formal `k`-linear
 combinations of terms of `G`, endowed with a skewed convolution product. -/
 structure SkewMonoidAlgebra (k : Type*) (G : Type*) [Zero k] where
@@ -61,12 +59,12 @@ variable [AddMonoid k]
 
 set_option backward.privateInPublic true in
 @[irreducible]
-private def add :
+private noncomputable def add :
     SkewMonoidAlgebra k G → SkewMonoidAlgebra k G → SkewMonoidAlgebra k G
   | ⟨a⟩, ⟨b⟩ => ⟨a + b⟩
 
 set_option backward.privateInPublic true in
-private def smul {S : Type*} [SMulZeroClass S k] :
+private noncomputable def smul {S : Type*} [SMulZeroClass S k] :
     S → SkewMonoidAlgebra k G → SkewMonoidAlgebra k G
   | s, ⟨b⟩ => ⟨s • b⟩
 
@@ -74,11 +72,11 @@ instance : Zero (SkewMonoidAlgebra k G) := ⟨⟨0⟩⟩
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
-instance : Add (SkewMonoidAlgebra k G) := ⟨add⟩
+noncomputable instance : Add (SkewMonoidAlgebra k G) := ⟨add⟩
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
-instance {S : Type*} [SMulZeroClass S k] :
+noncomputable instance {S : Type*} [SMulZeroClass S k] :
     SMulZeroClass S (SkewMonoidAlgebra k G) where
   smul s f := smul s f
   smul_zero a := by exact congr_arg ofCoeff (smul_zero a)
@@ -169,7 +167,7 @@ instance [Nontrivial k] [Nonempty G] :
 instance [Subsingleton k] : Unique (SkewMonoidAlgebra k G) :=
   Function.Injective.unique coeff_injective
 
-instance : AddMonoid (SkewMonoidAlgebra k G) where
+noncomputable instance : AddMonoid (SkewMonoidAlgebra k G) where
   __ := coeff_injective.addMonoid _ coeff_zero coeff_add
     (fun _ _ ↦ coeff_smul _ _)
 
@@ -233,7 +231,7 @@ end Coeff
 section Single
 
 /-- `single a b` is the finitely supported function with value `b` at `a` and zero otherwise. -/
-def single (a : G) (b : k) : SkewMonoidAlgebra k G := ⟨Finsupp.single a b⟩
+noncomputable def single (a : G) (b : k) : SkewMonoidAlgebra k G := ⟨Finsupp.single a b⟩
 
 @[simp]
 theorem coeff_single (a : G) (b : k) : (single a b).coeff = Finsupp.single a b := rfl
@@ -306,10 +304,10 @@ variable [One G] [AddMonoidWithOne k]
 
 /-- The unit of the multiplication is `single 1 1`, i.e. the function that is `1` at `1` and
   zero elsewhere. -/
-instance : One (SkewMonoidAlgebra k G) where
+noncomputable instance : One (SkewMonoidAlgebra k G) where
   one := single 1 1
 
-instance : AddMonoidWithOne (SkewMonoidAlgebra k G) where
+noncomputable instance : AddMonoidWithOne (SkewMonoidAlgebra k G) where
 
 theorem ofCoeff_one : (⟨Finsupp.single 1 1⟩ : SkewMonoidAlgebra k G) = 1 := rfl
 
@@ -357,7 +355,7 @@ section AddCommMonoid
 
 variable [AddCommMonoid k]
 
-instance : AddCommMonoid (SkewMonoidAlgebra k G) where
+noncomputable instance : AddCommMonoid (SkewMonoidAlgebra k G) where
   __ := coeff_injective.addCommMonoid _ coeff_zero coeff_add
     (fun _ _ ↦ coeff_smul _ _)
 
@@ -506,7 +504,7 @@ all `x` such that `f x = a`.
 Note that `SkewMonoidAlgebra.mapDomain` is defined as an `AddHom`, while `MonoidAlgebra.mapDomain`
 is defined as a function. -/
 @[simps]
-def mapDomain :
+noncomputable def mapDomain :
     SkewMonoidAlgebra k G →+ SkewMonoidAlgebra k G' where
   toFun v      := v.sum fun a ↦ single (f a)
   map_zero'    := sum_zero_index
@@ -550,7 +548,7 @@ If `k` is a semiring and `f` is a ring homomorphism and for all `x : R`, `y : G`
 
 If `R` is a `k`-algebra and `f = algebraMap k R`, then the result is an algebra homomorphism called
 `SkewMonoidAlgebra.lift`. -/
-def liftNC {R : Type*} [NonUnitalNonAssocSemiring R] (f : k →+ R) (g : G → R) :
+noncomputable def liftNC {R : Type*} [NonUnitalNonAssocSemiring R] (f : k →+ R) (g : G → R) :
     SkewMonoidAlgebra k G →+ R :=
   (Finsupp.liftAddHom fun x ↦ (AddMonoidHom.mulRight (g x)).comp f).comp
     (AddEquiv.toAddMonoidHom coeffAddEquiv)
@@ -571,7 +569,7 @@ section AddGroup
 
 variable [AddGroup k]
 
-@[no_expose] instance : Neg (SkewMonoidAlgebra k G) :=
+@[no_expose] noncomputable instance : Neg (SkewMonoidAlgebra k G) :=
   ⟨fun ⟨a⟩ ↦ ⟨-a⟩⟩
 
 @[simp]
@@ -580,7 +578,7 @@ theorem ofCoeff_neg {a} : (⟨-a⟩ : SkewMonoidAlgebra k G) = -⟨a⟩ :=
 
 @[deprecated (since := "2026-07-04")] alias ofFinsupp_neg := ofCoeff_neg
 
-instance : AddGroup (SkewMonoidAlgebra k G) where
+noncomputable instance : AddGroup (SkewMonoidAlgebra k G) where
   zsmul := zsmulRec
   neg_add_cancel a := by cases a; simp [← ofCoeff_neg, ← ofCoeff_add]
 
@@ -613,7 +611,7 @@ section AddCommGroup
 
 variable [AddCommGroup k]
 
-instance : AddCommGroup (SkewMonoidAlgebra k G) where
+noncomputable instance : AddCommGroup (SkewMonoidAlgebra k G) where
   add_comm
 
 end AddCommGroup
@@ -622,7 +620,7 @@ section AddGroupWithOne
 
 variable [AddGroupWithOne k] [One G]
 
-instance : AddGroupWithOne (SkewMonoidAlgebra k G) where
+noncomputable instance : AddGroupWithOne (SkewMonoidAlgebra k G) where
   __ := instAddGroup
 
 theorem intCast_def (z : ℤ) : (z : SkewMonoidAlgebra k G) = single (1 : G) (z : k) := by
@@ -663,7 +661,7 @@ variable [SMul G k] [NonUnitalNonAssocSemiring k]
 /-- The product of `f g : SkewMonoidAlgebra k G` is the finitely supported function whose value
   at `a` is the sum of `f x * (x • g y)` over all pairs `x, y` such that `x * y = a`.
   (Think of a skew group ring.) -/
-instance : Mul (SkewMonoidAlgebra k G) :=
+noncomputable instance : Mul (SkewMonoidAlgebra k G) :=
   ⟨fun f g ↦ f.sum fun a₁ b₁ ↦ g.sum fun a₂ b₂ ↦ single (a₁ * a₂) (b₁ * (a₁ • b₂))⟩
 
 theorem mul_def {f g : SkewMonoidAlgebra k G} :
@@ -674,6 +672,7 @@ end SMul
 
 section DistribSMul
 
+noncomputable
 instance instNonUnitalNonAssocSemiring [NonUnitalNonAssocSemiring k] [DistribSMul G k] :
     NonUnitalNonAssocSemiring (SkewMonoidAlgebra k G) where
   left_distrib f g h := by
@@ -714,7 +713,7 @@ variable [Semiring k] [Monoid G] [MulSemiringAction G k]
 
 open MulSemiringAction
 
-instance : NonUnitalSemiring (SkewMonoidAlgebra k G) where
+noncomputable instance : NonUnitalSemiring (SkewMonoidAlgebra k G) where
   mul_assoc f g h := by
     induction f with
     | single x a => induction g with
@@ -724,7 +723,7 @@ instance : NonUnitalSemiring (SkewMonoidAlgebra k G) where
       | add => simp_all [add_mul, mul_add]
     | add => simp_all [add_mul]
 
-instance : NonAssocSemiring (SkewMonoidAlgebra k G) where
+noncomputable instance : NonAssocSemiring (SkewMonoidAlgebra k G) where
   one_mul f := by
     induction f with
     | single g a => rw [one_def, mul_def, sum_single_index] <;> simp
@@ -734,13 +733,14 @@ instance : NonAssocSemiring (SkewMonoidAlgebra k G) where
     | single g a => rw [one_def, mul_def, sum_single_index, sum_single_index] <;> simp
     | add f g _ _ => simp_all [add_mul]
 
-instance : Semiring (SkewMonoidAlgebra k G) where
+noncomputable instance : Semiring (SkewMonoidAlgebra k G) where
   __ := instNonUnitalSemiring
   __ := instNonAssocSemiring
 
 variable {R : Type*} [Semiring R]
 
 /-- `liftNC` as a `RingHom`, for when `f x` and `g y` commute -/
+noncomputable
 def liftNCRingHom (f : k →+* R) (g : G →* R) (h_comm : ∀ {x y}, (f (y • x)) * g y = (g y) * (f x)) :
     SkewMonoidAlgebra k G →+* R where
   __ := liftNC (f : k →+ R) g
@@ -753,22 +753,22 @@ end Semiring
 
 section DerivedInstances
 
-instance instNonUnitalNonAssocRing [Ring k] [Monoid G] [MulSemiringAction G k] :
+noncomputable instance instNonUnitalNonAssocRing [Ring k] [Monoid G] [MulSemiringAction G k] :
     NonUnitalNonAssocRing (SkewMonoidAlgebra k G) where
   __ := instAddCommGroup
   __ := instNonUnitalNonAssocSemiring
 
-instance instNonUnitalRing [Ring k] [Monoid G] [MulSemiringAction G k] :
+noncomputable instance instNonUnitalRing [Ring k] [Monoid G] [MulSemiringAction G k] :
     NonUnitalRing (SkewMonoidAlgebra k G) where
   __ := instAddCommGroup
   __ := instNonUnitalSemiring
 
-instance instNonAssocRing [Ring k] [Monoid G] [MulSemiringAction G k] :
+noncomputable instance instNonAssocRing [Ring k] [Monoid G] [MulSemiringAction G k] :
     NonAssocRing (SkewMonoidAlgebra k G) where
   __ := instAddCommGroup
   __ := instNonAssocSemiring
 
-instance instCommSemiring [CommSemiring k] [CommMonoid G] [MulSemiringAction G k]
+noncomputable instance instCommSemiring [CommSemiring k] [CommMonoid G] [MulSemiringAction G k]
     [SMulCommClass G k k] : CommSemiring (SkewMonoidAlgebra k G) where
   mul_comm a b := by
     have hgk (g : G) (r : k) : g • r = r := by
@@ -778,23 +778,24 @@ instance instCommSemiring [CommSemiring k] [CommMonoid G] [MulSemiringAction G k
     exact Finsupp.sum_congr (fun x _ ↦ Finsupp.sum_congr
       (fun y _ ↦ by rw [mul_comm, mul_comm (a.coeff y) _]))
 
+noncomputable
 instance instRing [Ring k] [Monoid G] [MulSemiringAction G k] : Ring (SkewMonoidAlgebra k G) where
   __ := instNonAssocRing
   __ := instSemiring
 
 variable {S S₁ S₂ : Type*}
 
-instance [AddMonoid k] [DistribSMul S k] :
+noncomputable instance [AddMonoid k] [DistribSMul S k] :
     DistribSMul S (SkewMonoidAlgebra k G) where
   __ := coeff_injective.distribSMul ⟨⟨coeff, coeff_zero⟩, coeff_add⟩
     coeff_smul
 
-instance [Monoid S] [AddMonoid k] [DistribMulAction S k] :
+noncomputable instance [Monoid S] [AddMonoid k] [DistribMulAction S k] :
     DistribMulAction S (SkewMonoidAlgebra k G) where
   __ := coeff_injective.distribMulAction ⟨⟨coeff, coeff_zero (k := k)⟩, coeff_add⟩
       coeff_smul
 
-instance [Semiring S] [AddCommMonoid k] [Module S k] :
+noncomputable instance [Semiring S] [AddCommMonoid k] [Module S k] :
     Module S (SkewMonoidAlgebra k G) where
   __ := coeff_injective.module _ ⟨⟨coeff, coeff_zero⟩, coeff_add⟩ coeff_smul
 
@@ -822,13 +823,14 @@ section Module.Free
 variable [Semiring S]
 
 /-- Linear equivalence between `SkewMonoidAlgebra k G` and `G →₀ k`. -/
+noncomputable
 def coeffLinearEquiv [AddCommMonoid k] [Module S k] : SkewMonoidAlgebra k G ≃ₗ[S] (G →₀ k) :=
   AddEquiv.toLinearEquiv coeffAddEquiv (by simp)
 
 @[deprecated (since := "2026-07-04")] alias toFinsuppLinearEquiv := coeffLinearEquiv
 
 /-- The basis on `SkewMonoidAlgebra k G` with basis vectors `fun i ↦ single i 1` -/
-def basisSingleOne [Semiring k] : Module.Basis G k (SkewMonoidAlgebra k G) where
+noncomputable def basisSingleOne [Semiring k] : Module.Basis G k (SkewMonoidAlgebra k G) where
   repr := coeffLinearEquiv
 
 instance [Semiring k] : Module.Free k (SkewMonoidAlgebra k G) :=
@@ -843,7 +845,7 @@ variable {M α : Type*} [Monoid G] [AddCommMonoid M] [MulAction G α]
 This is not an instance as it would conflict with the action on the range.
 See the file `MathlibTest/instance_diamonds.lean` for examples of such conflicts. -/
 @[instance_reducible]
-def comapSMul : SMul G (SkewMonoidAlgebra M α) where smul g := mapDomain (g • ·)
+noncomputable def comapSMul : SMul G (SkewMonoidAlgebra M α) where smul g := mapDomain (g • ·)
 
 attribute [local instance] comapSMul
 
@@ -855,7 +857,7 @@ theorem comapSMul_single (g : G) (a : α) (b : M) : g • single a b = single (g
 
 /-- `comapSMul` is multiplicative -/
 @[instance_reducible]
-def comapMulAction : MulAction G (SkewMonoidAlgebra M α) where
+noncomputable def comapMulAction : MulAction G (SkewMonoidAlgebra M α) where
   one_smul f := by rw [comapSMul_def, one_smul_eq_id, mapDomain_id]
   mul_smul g g' f := by
     rw [comapSMul_def, comapSMul_def, comapSMul_def, ← comp_smul_left, mapDomain_comp]
@@ -864,7 +866,7 @@ attribute [local instance] comapMulAction
 /-- This is not an instance as it conflicts with `SkewMonoidAlgebra.distribMulAction`
   when `G = kˣ`. -/
 @[implicit_reducible]
-def comapDistribMulActionSelf [AddCommMonoid k] :
+noncomputable def comapDistribMulActionSelf [AddCommMonoid k] :
     DistribMulAction G (SkewMonoidAlgebra k G) where
   smul_zero g := by
     ext
@@ -1035,7 +1037,7 @@ variable [AddCommMonoid k]
 
 See `lsingle` for the stronger version as a linear map. -/
 @[simps]
-def singleAddHom (a : G) : k →+ SkewMonoidAlgebra k G where
+noncomputable def singleAddHom (a : G) : k →+ SkewMonoidAlgebra k G where
   toFun := single a
   map_zero' := single_zero a
   map_add' _ := single_add a _
@@ -1062,7 +1064,7 @@ theorem single_mul_single {a₁ a₂ : G} {b₁ b₂ : k} :
     (sum_single_index (by simp [smul_zero, mul_zero, single_zero]))
 
 /-- `single 1` as a `RingHom` -/
-def singleOneRingHom : k →+* SkewMonoidAlgebra k G where
+noncomputable def singleOneRingHom : k →+* SkewMonoidAlgebra k G where
   __ := singleAddHom 1
   map_one' := rfl
   map_mul' x y := by simp [ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe, singleAddHom_apply,
@@ -1112,7 +1114,7 @@ theorem mapDomain_mul [MulSemiringAction α β] [MulSemiringAction α₂ β]
 /-- If f : G → H is a multiplicative homomorphism between two monoids and
   `∀ (a : G) (x : k), a • x = (f a) • x`, then `mapDomain f` is a ring homomorphism
   between their skew monoid algebras. -/
-def mapDomainRingHom [MulSemiringAction α β] [MulSemiringAction α₂ β]
+noncomputable def mapDomainRingHom [MulSemiringAction α β] [MulSemiringAction α₂ β]
     [MonoidHomClass F α α₂] {f : F} (hf : ∀ (a : α) (x : β), a • x = (f a) • x) :
     SkewMonoidAlgebra β α →+* SkewMonoidAlgebra β α₂ where
   __ := (mapDomain f : SkewMonoidAlgebra β α →+ SkewMonoidAlgebra β α₂)
@@ -1129,7 +1131,7 @@ variable [Monoid G] [MulSemiringAction G k]
 
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The embedding of a monoid into its skew monoid algebra. -/
-def of : G →* SkewMonoidAlgebra k G where
+noncomputable def of : G →* SkewMonoidAlgebra k G where
   toFun a      := single a 1
   map_one'     := rfl
   map_mul' a b := by simp
@@ -1195,7 +1197,7 @@ variable {R M N : Type*} [Semiring R] [AddCommMonoid M] [AddCommMonoid N]
 
 See also `lsingle` for the version as a linear map. -/
 @[simps]
-def DistribMulActionHom.single [DistribMulAction R M] {α : Type*} (a : α) :
+noncomputable def DistribMulActionHom.single [DistribMulAction R M] {α : Type*} (a : α) :
     M →+[R] SkewMonoidAlgebra M α where
   __ := singleAddHom a
   map_smul' k m := by simp [singleAddHom, smul_single, MonoidHom.id_apply]
@@ -1215,7 +1217,7 @@ theorem distribMulActionHom_ext' [DistribMulAction R M] [DistribMulAction R N] {
 
 variable (R) in
 /-- Interpret `single a` as a linear map. -/
-def lsingle {α : Type*} (a : α) [Module R M] : M →ₗ[R] (SkewMonoidAlgebra M α) where
+noncomputable def lsingle {α : Type*} (a : α) [Module R M] : M →ₗ[R] (SkewMonoidAlgebra M α) where
   __ := singleAddHom a
   map_smul' _ _ := (smul_single _ _ _).symm
 
@@ -1261,7 +1263,7 @@ variable {A : Type*} [Semiring A] [Algebra k A]
 
 /-- The instance `Algebra k (SkewMonoidAlgebra A G)` whenever we have `Algebra k A`.
   In particular this provides the instance `Algebra k (SkewMonoidAlgebra k G)`. -/
-instance [MulSemiringAction G A]
+noncomputable instance [MulSemiringAction G A]
     [SMulCommClass G k A] : Algebra k (SkewMonoidAlgebra A G) where
   algebraMap := singleOneRingHom.comp (algebraMap k A)
   smul_def' r a := by ext; simp [Algebra.smul_def, singleOneRingHom, coeff_single_one_mul]

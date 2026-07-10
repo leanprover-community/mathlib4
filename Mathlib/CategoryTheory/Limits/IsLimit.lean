@@ -36,8 +36,6 @@ e.g. a `@[dualize]` attribute that behaves similarly to `@[to_additive]`.
 @[expose] public section
 
 
-noncomputable section
-
 open CategoryTheory CategoryTheory.Category CategoryTheory.Functor Opposite
 
 namespace CategoryTheory.Limits
@@ -124,7 +122,7 @@ theorem existsUnique {t : Cone F} (h : IsLimit t) (s : Cone F) :
 
 /-- Noncomputably make a limit cone from the existence of unique factorizations. -/
 @[to_dual /-- Noncomputably make a colimit cocone from the existence of unique factorizations. -/]
-def ofExistsUnique {t : Cone F}
+noncomputable def ofExistsUnique {t : Cone F}
     (ht : ∀ s : Cone F, ∃! l : s.pt ⟶ t.pt, ∀ j, l ≫ t.π.app j = s.π.app j) : IsLimit t := by
   choose s hs hs' using ht
   exact ⟨s, hs, hs'⟩
@@ -224,7 +222,7 @@ first cone was limiting also.
 /-- If the canonical morphism to a cocone point from a colimiting cocone point is an iso, then the
 first cocone was colimiting also.
 -/]
-def ofPointIso {r t : Cone F} (P : IsLimit r) [i : IsIso (P.lift t)] : IsLimit t :=
+noncomputable def ofPointIso {r t : Cone F} (P : IsLimit r) [i : IsIso (P.lift t)] : IsLimit t :=
   ofIsoLimit P (by
     haveI : IsIso (P.liftConeMorphism t).hom := i
     haveI : IsIso (P.liftConeMorphism t) := Cone.cone_iso_of_hom_iso _
@@ -418,19 +416,20 @@ def whiskerEquivalenceEquiv {s : Cone F} (e : K ≌ J) : IsLimit s ≃ IsLimit (
 
 /-- A limit cone extended by an isomorphism is a limit cone. -/
 @[to_dual /-- A colimit cocone extended by an isomorphism is a colimit cocone. -/]
-def extendIso {s : Cone F} {X : C} (i : X ⟶ s.pt) [IsIso i] (hs : IsLimit s) :
+noncomputable def extendIso {s : Cone F} {X : C} (i : X ⟶ s.pt) [IsIso i] (hs : IsLimit s) :
     IsLimit (s.extend i) :=
   IsLimit.ofIsoLimit hs (Cone.extendIso s (asIso' i))
 
 /-- A cone is a limit cone if its extension by an isomorphism is. -/
 @[to_dual /-- A cocone is a colimit cocone if its extension by an isomorphism is. -/]
+noncomputable
 def ofExtendIso {s : Cone F} {X : C} (i : X ⟶ s.pt) [IsIso i] (hs : IsLimit (s.extend i)) :
     IsLimit s :=
   IsLimit.ofIsoLimit hs (Cone.extendIso s (asIso' i)).symm
 
 /-- A cone is a limit cone iff its extension by an isomorphism is. -/
 @[to_dual /-- A cocone is a colimit cocone iff its extension by an isomorphism is. -/]
-def extendIsoEquiv {s : Cone F} {X : C} (i : X ⟶ s.pt) [IsIso i] :
+noncomputable def extendIsoEquiv {s : Cone F} {X : C} (i : X ⟶ s.pt) [IsIso i] :
     IsLimit s ≃ IsLimit (s.extend i) :=
   equivOfSubsingletonOfSubsingleton (extendIso i) (ofExtendIso i)
 

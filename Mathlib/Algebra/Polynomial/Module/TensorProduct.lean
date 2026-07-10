@@ -20,14 +20,12 @@ For a commutative ring `R` and an `R`-module `M`, we obtain an isomorphism betwe
 
 open Polynomial TensorProduct LinearMap
 
-noncomputable section
-
 variable (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M]
 
 namespace PolynomialModule
 
 /-- The `R[X]`-linear equivalence `(R[X] ⊗[R] M) ≃ₗ[R[X]] (PolynomialModule R M)`. -/
-def polynomialTensorProductLEquivPolynomialModule :
+noncomputable def polynomialTensorProductLEquivPolynomialModule :
     R[X] ⊗[R] M ≃ₗ[R[X]] PolynomialModule R M :=
   let e := liftBaseChange R[X] <| lsingle R (M := M) 0
   let inv := (eval X).restrictScalars R ∘ₗ map R[X] (TensorProduct.mk R R[X] M 1)

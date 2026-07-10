@@ -68,8 +68,6 @@ stronger than SLC.
 
 @[expose] public section
 
-noncomputable section
-
 open Topology Filter Set Function ContinuousMap
 
 variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {x y : X} {ι : Type*}

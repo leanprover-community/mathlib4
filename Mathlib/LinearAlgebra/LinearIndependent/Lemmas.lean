@@ -56,8 +56,6 @@ linearly dependent, linear dependence, linearly independent, linear independence
 
 assert_not_exists Cardinal
 
-noncomputable section
-
 open Function Module Set Submodule
 
 universe u' u

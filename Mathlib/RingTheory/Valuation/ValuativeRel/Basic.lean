@@ -63,8 +63,6 @@ Split this file. For instance, the universal properties of `ValueGroupWithZero` 
 
 @[expose] public section
 
-noncomputable section
-
 /-- The class `[ValuativeRel R]` class introduces an operator `x ≤ᵥ y : Prop` for `x y : R`
 which is the natural relation arising from (the equivalence class of) a valuation on `R` when `R`
 is a ring. More precisely, if `v` is a valuation on `R` then the associated relation is
@@ -618,7 +616,7 @@ instance : LE (ValueGroupWithZero R) where
 theorem ValueGroupWithZero.mk_le_mk (x y : R) (t s : posSubmonoid R) :
     ValueGroupWithZero.mk x t ≤ ValueGroupWithZero.mk y s ↔ x * s ≤ᵥ y * t := Iff.rfl
 
-instance : LinearOrder (ValueGroupWithZero R) where
+noncomputable instance : LinearOrder (ValueGroupWithZero R) where
   le_refl := ValueGroupWithZero.ind fun _ _ => .rfl
   le_trans a b c hab hbc := by
     induction a using ValueGroupWithZero.ind with | mk a₁ a₂
@@ -672,7 +670,7 @@ instance : IsOrderedMonoid (ValueGroupWithZero R) where
     nth_grw 2 [veq_mul_mul_mul_comm]
     exact mul_vle_mul_left hab _
 
-instance : Inv (ValueGroupWithZero R) where
+noncomputable instance : Inv (ValueGroupWithZero R) where
   inv := ValueGroupWithZero.lift (fun x s => by
     classical exact if h : x ≤ᵥ 0 then 0 else .mk s ⟨x, h⟩) <| by
     intro x y t s h₁ h₂
@@ -696,7 +694,7 @@ theorem ValueGroupWithZero.inv_mk (x : R) (y : posSubmonoid R) (hx : ¬x ≤ᵥ 
     (ValueGroupWithZero.mk x y)⁻¹ = ValueGroupWithZero.mk (y : R) ⟨x, hx⟩ := dif_neg hx
 
 /-- The value group-with-zero is a linearly ordered commutative group with zero. -/
-instance : LinearOrderedCommGroupWithZero (ValueGroupWithZero R) where
+noncomputable instance : LinearOrderedCommGroupWithZero (ValueGroupWithZero R) where
   isBot_zero _ := bot_le
   exists_pair_ne := by
     refine ⟨0, 1, fun h => ?_⟩
@@ -1334,7 +1332,7 @@ lemma leftInverse_embedding_orderMonoidIso : Function.LeftInverse embedding
 
 /-- The isomorphism between `ValueGroupWithZero R` and `ValueGroup₀ (valuation R)`. -/
 @[deprecated "use ValueGroupWithZero.orderMonoidIso instead" (since := "2026-03-17")]
-def valueGroupWithZero_equiv_valueGroup₀ := orderMonoidIso (valuation R)
+noncomputable def valueGroupWithZero_equiv_valueGroup₀ := orderMonoidIso (valuation R)
 
 end ValueGroupWithZero
 
@@ -1410,7 +1408,7 @@ instance compatible_comap {Γ : Type*}
 
 variable (A B) in
 /-- The map on value groups-with-zero associated to the structure morphism of an algebra. -/
-def mapValueGroupWithZero : ValueGroupWithZero A →*₀ ValueGroupWithZero B :=
+noncomputable def mapValueGroupWithZero : ValueGroupWithZero A →*₀ ValueGroupWithZero B :=
   have := compatible_comap A (valuation B)
   embedding.comp (orderMonoidIso ((valuation B).comap (algebraMap A B))).toMonoidWithZeroHom
 

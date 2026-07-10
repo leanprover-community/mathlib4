@@ -22,22 +22,20 @@ normed group, completion
 public section
 
 
-noncomputable section
-
 namespace UniformSpace
 
 namespace Completion
 
 variable (E : Type*)
 
-instance [UniformSpace E] [Norm E] : Norm (Completion E) where
+noncomputable instance [UniformSpace E] [Norm E] : Norm (Completion E) where
   norm := Completion.extension Norm.norm
 
 @[simp]
 theorem norm_coe {E} [SeminormedAddCommGroup E] (x : E) : ‖(x : Completion E)‖ = ‖x‖ :=
   Completion.extension_coe uniformContinuous_norm x
 
-instance [SeminormedAddCommGroup E] : NormedAddCommGroup (Completion E) where
+noncomputable instance [SeminormedAddCommGroup E] : NormedAddCommGroup (Completion E) where
   dist_eq x y := by
     induction x, y using Completion.induction_on₂
     · refine isClosed_eq (Completion.uniformContinuous_extension₂ _).continuous ?_

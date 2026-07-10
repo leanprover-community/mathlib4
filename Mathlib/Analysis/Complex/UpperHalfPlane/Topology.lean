@@ -22,15 +22,13 @@ various instances.
 
 @[expose] public section
 
-noncomputable section
-
 open Complex Filter Function Set TopologicalSpace Topology
 
 open scoped ComplexConjugate
 
 namespace UpperHalfPlane
 
-instance : TopologicalSpace ℍ :=
+noncomputable instance : TopologicalSpace ℍ :=
   .induced UpperHalfPlane.coe inferInstance
 
 @[fun_prop]
@@ -141,6 +139,7 @@ end strips
 section ofComplex
 
 /-- A section `ℂ → ℍ` of the natural inclusion map, bundled as an `OpenPartialHomeomorph`. -/
+noncomputable
 def ofComplex : OpenPartialHomeomorph ℂ ℍ := (isOpenEmbedding_coe.toOpenPartialHomeomorph _).symm
 
 /-- Extend a function on `ℍ` arbitrarily to a function on all of `ℂ`. -/

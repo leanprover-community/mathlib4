@@ -31,8 +31,6 @@ constructed via tensor products.
 
 universe u v w
 
-noncomputable section
-
 open CategoryTheory Functor CartesianMonoidalCategory Limits AlgebraicGeometry
 
 namespace AlgebraicGeometry.Scheme
@@ -44,12 +42,12 @@ variable [∀ i, HasPullback (𝒰.f i ≫ f) g]
 
 /-- The intersection of `Uᵢ ×[Z] Y` and `Uⱼ ×[Z] Y` is given by (Uᵢ ×[Z] Y) ×[X] Uⱼ -/
 @[implicit_reducible]
-def v (i j : 𝒰.I₀) : Scheme :=
+noncomputable def v (i j : 𝒰.I₀) : Scheme :=
   pullback ((pullback.fst (𝒰.f i ≫ f) g) ≫ 𝒰.f i) (𝒰.f j)
 
 /-- The canonical transition map `(Uᵢ ×[Z] Y) ×[X] Uⱼ ⟶ (Uⱼ ×[Z] Y) ×[X] Uᵢ` given by the fact
 that pullbacks are associative and symmetric. -/
-def t (i j : 𝒰.I₀) : v 𝒰 f g i j ⟶ v 𝒰 f g j i := by
+noncomputable def t (i j : 𝒰.I₀) : v 𝒰 f g i j ⟶ v 𝒰 f g j i := by
   have : HasPullback (pullback.snd _ _ ≫ 𝒰.f i ≫ f) g :=
     hasPullback_assoc_symm (𝒰.f j) (𝒰.f i) (𝒰.f i ≫ f) g
   have : HasPullback (pullback.snd _ _ ≫ 𝒰.f j ≫ f) g :=
@@ -88,12 +86,12 @@ theorem t_id (i : 𝒰.I₀) : t 𝒰 f g i i = 𝟙 _ := by
   · rw [← cancel_mono (𝒰.f i)]; simp only [pullback.condition, t_snd, Category.assoc]
 
 /-- The inclusion map of `V i j = (Uᵢ ×[Z] Y) ×[X] Uⱼ ⟶ Uᵢ ×[Z] Y` -/
-abbrev fV (i j : 𝒰.I₀) : v 𝒰 f g i j ⟶ pullback (𝒰.f i ≫ f) g :=
+noncomputable abbrev fV (i j : 𝒰.I₀) : v 𝒰 f g i j ⟶ pullback (𝒰.f i ≫ f) g :=
   pullback.fst _ _
 
 /-- The map `((Xᵢ ×[Z] Y) ×[X] Xⱼ) ×[Xᵢ ×[Z] Y] ((Xᵢ ×[Z] Y) ×[X] Xₖ)` ⟶
 `((Xⱼ ×[Z] Y) ×[X] Xₖ) ×[Xⱼ ×[Z] Y] ((Xⱼ ×[Z] Y) ×[X] Xᵢ)` needed for gluing -/
-def t' (i j k : 𝒰.I₀) :
+noncomputable def t' (i j k : 𝒰.I₀) :
     pullback (fV 𝒰 f g i j) (fV 𝒰 f g i k) ⟶ pullback (fV 𝒰 f g j k) (fV 𝒰 f g j i) := by
   refine (pullbackRightPullbackFstIso ..).hom ≫ ?_
   refine ?_ ≫ (pullbackSymmetry _ _).hom
@@ -196,7 +194,7 @@ theorem cocycle (i j k : 𝒰.I₀) : t' 𝒰 f g i j k ≫ t' 𝒰 f g j k i �
 
 /-- Given `Uᵢ ×[Z] Y`, this is the glued fibred product `X ×[Z] Y`. -/
 @[simps U V f t t', simps -isSimp J]
-def gluing : Scheme.GlueData.{u} where
+noncomputable def gluing : Scheme.GlueData.{u} where
   J := 𝒰.I₀
   U i := pullback (𝒰.f i ≫ f) g
   V := fun ⟨i, j⟩ => v 𝒰 f g i j
@@ -221,13 +219,13 @@ lemma gluing_ι (j : 𝒰.I₀) :
 
 set_option backward.defeqAttrib.useBackward true in
 /-- The first projection from the glued scheme into `X`. -/
-def p1 : (gluing 𝒰 f g).glued ⟶ X := by
+noncomputable def p1 : (gluing 𝒰 f g).glued ⟶ X := by
   apply Multicoequalizer.desc (gluing 𝒰 f g).diagram _ fun i ↦ pullback.fst _ _ ≫ 𝒰.f i
   simp [t_fst_fst_assoc, ← pullback.condition]
 
 set_option backward.defeqAttrib.useBackward true in
 /-- The second projection from the glued scheme into `Y`. -/
-def p2 : (gluing 𝒰 f g).glued ⟶ Y := by
+noncomputable def p2 : (gluing 𝒰 f g).glued ⟶ Y := by
   apply Multicoequalizer.desc _ _ fun i ↦ pullback.snd _ _
   simp [t_fst_snd]
 
@@ -243,7 +241,7 @@ set_option backward.isDefEq.respectTransparency false in
 The canonical map `(s.X ×[X] Uᵢ) ×[s.X] (s.X ×[X] Uⱼ) ⟶ (Uᵢ ×[Z] Y) ×[X] Uⱼ`
 
 This is used in `gluedLift`. -/
-def gluedLiftPullbackMap (i j : 𝒰.I₀) :
+noncomputable def gluedLiftPullbackMap (i j : 𝒰.I₀) :
     pullback ((𝒰.pullback₁ s.fst).f i) ((𝒰.pullback₁ s.fst).f j) ⟶
       (gluing 𝒰 f g).V ⟨i, j⟩ := by
   refine (pullbackRightPullbackFstIso _ _ _).hom ≫ ?_
@@ -281,7 +279,7 @@ to glue these into a map `s.X ⟶ Uᵢ ×[Z] Y`, we need to show that the maps a
 `(s.fst ⁻¹' Uᵢ) ×[s.X] (s.fst ⁻¹' Uⱼ) ⟶ Uᵢ ×[Z] Y`. This is achieved by showing that both of these
 maps factors through `gluedLiftPullbackMap`.
 -/
-def gluedLift : s.pt ⟶ (gluing 𝒰 f g).glued := by
+noncomputable def gluedLift : s.pt ⟶ (gluing 𝒰 f g).glued := by
   fapply Cover.glueMorphisms (𝒰.pullback₁ s.fst)
   · exact fun i ↦ (pullbackSymmetry _ _).hom ≫
       pullback.map _ _ _ _ (𝟙 _) s.snd f (Category.id_comp _).symm s.condition ≫ (gluing 𝒰 f g).ι i
@@ -323,7 +321,7 @@ The canonical map `(W ×[X] Uᵢ) ×[W] (Uⱼ ×[Z] Y) ⟶ (Uⱼ ×[Z] Y) ×[X] 
 the glued fibred product.
 
 This is used in `lift_comp_ι`. -/
-def pullbackFstιToV (i j : 𝒰.I₀) :
+noncomputable def pullbackFstιToV (i j : 𝒰.I₀) :
     pullback (pullback.fst (p1 𝒰 f g) (𝒰.f i)) ((gluing 𝒰 f g).ι j) ⟶
       v 𝒰 f g j i :=
   (pullbackSymmetry _ _ ≪≫ pullbackRightPullbackFstIso (p1 𝒰 f g) (𝒰.f i) _).hom ≫
@@ -373,6 +371,7 @@ theorem lift_comp_ι (i : 𝒰.I₀) :
 set_option backward.isDefEq.respectTransparency false in
 /-- The canonical isomorphism between `W ×[X] Uᵢ` and `Uᵢ ×[X] Y`. That is, the preimage of `Uᵢ` in
 `W` along `p1` is indeed `Uᵢ ×[X] Y`. -/
+noncomputable
 def pullbackP1Iso (i : 𝒰.I₀) : pullback (p1 𝒰 f g) (𝒰.f i) ≅ pullback (𝒰.f i ≫ f) g := by
   fconstructor
   · exact
@@ -417,7 +416,7 @@ theorem pullbackP1Iso_hom_ι (i : 𝒰.I₀) :
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The glued scheme (`(gluing 𝒰 f g).glued`) is indeed the pullback of `f` and `g`. -/
-def gluedIsLimit : IsLimit (PullbackCone.mk _ _ (p_comm 𝒰 f g)) := by
+noncomputable def gluedIsLimit : IsLimit (PullbackCone.mk _ _ (p_comm 𝒰 f g)) := by
   apply PullbackCone.isLimitAux'
   intro s
   refine ⟨gluedLift 𝒰 f g s, gluedLift_p1 𝒰 f g s, gluedLift_p2 𝒰 f g s, ?_⟩
@@ -499,7 +498,7 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Given an open cover `{ Xᵢ }` of `X`, then `X ×[Z] Y` is covered by `Xᵢ ×[Z] Y`. -/
 @[simps! I₀ X f]
-def openCoverOfLeft (𝒰 : OpenCover.{v} X) (f : X ⟶ Z) (g : Y ⟶ Z) :
+noncomputable def openCoverOfLeft (𝒰 : OpenCover.{v} X) (f : X ⟶ Z) (g : Y ⟶ Z) :
     OpenCover (pullback f g) where
   I₀ := 𝒰.I₀
   X i := pullback (𝒰.f i ≫ f) g
@@ -528,7 +527,7 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Given an open cover `{ Yᵢ }` of `Y`, then `X ×[Z] Y` is covered by `X ×[Z] Yᵢ`. -/
 @[simps! I₀ X f]
-def openCoverOfRight (𝒰 : OpenCover.{v} Y) (f : X ⟶ Z) (g : Y ⟶ Z) :
+noncomputable def openCoverOfRight (𝒰 : OpenCover.{v} Y) (f : X ⟶ Z) (g : Y ⟶ Z) :
     OpenCover.{v} (pullback f g) := by
   fapply
     ((openCoverOfLeft 𝒰 g f).pushforwardIso (pullbackSymmetry _ _).hom).copy 𝒰.I₀
@@ -544,6 +543,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- Given an open cover `{ Xᵢ }` of `X` and an open cover `{ Yⱼ }` of `Y`, then
 `X ×[Z] Y` is covered by `Xᵢ ×[Z] Yⱼ`. -/
 @[simps! I₀ X f]
+noncomputable
 def openCoverOfLeftRight (𝒰X : OpenCover.{v} X) (𝒰Y : OpenCover.{w} Y) (f : X ⟶ Z) (g : Y ⟶ Z) :
     OpenCover.{max v w} (pullback f g) := by
   fapply
@@ -560,7 +560,7 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- (Implementation). Use `openCoverOfBase` instead. -/
 @[simps! f]
-def openCoverOfBase' (𝒰 : OpenCover.{v} Z) (f : X ⟶ Z) (g : Y ⟶ Z) :
+noncomputable def openCoverOfBase' (𝒰 : OpenCover.{v} Z) (f : X ⟶ Z) (g : Y ⟶ Z) :
     OpenCover.{v} (pullback f g) := by
   apply (openCoverOfLeft (𝒰.pullback₁ f) f g).bind
   intro i
@@ -578,7 +578,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- Given an open cover `{ Zᵢ }` of `Z`, then `X ×[Z] Y` is covered by `Xᵢ ×[Zᵢ] Yᵢ`, where
   `Xᵢ = X ×[Z] Zᵢ` and `Yᵢ = Y ×[Z] Zᵢ` is the preimage of `Zᵢ` in `X` and `Y`. -/
 @[simps! I₀ X f]
-def openCoverOfBase (𝒰 : OpenCover.{v} Z) (f : X ⟶ Z) (g : Y ⟶ Z) :
+noncomputable def openCoverOfBase (𝒰 : OpenCover.{v} Z) (f : X ⟶ Z) (g : Y ⟶ Z) :
     OpenCover.{v} (pullback f g) := by
   apply
     (openCoverOfBase' 𝒰 f g).copy 𝒰.I₀
@@ -702,8 +702,8 @@ instance Scheme.pullback_map_isOpenImmersion {X Y S X' Y' S' : Scheme}
 section CartesianMonoidalCategory
 variable {S : Scheme}
 
-instance : CartesianMonoidalCategory (Over S) := Over.cartesianMonoidalCategory _
-instance : BraidedCategory (Over S) := .ofCartesianMonoidalCategory
+noncomputable instance : CartesianMonoidalCategory (Over S) := Over.cartesianMonoidalCategory _
+noncomputable instance : BraidedCategory (Over S) := .ofCartesianMonoidalCategory
 
 end CartesianMonoidalCategory
 
@@ -810,10 +810,11 @@ namespace Scheme
 variable {M S T : Scheme.{u}} [M.Over S] {f : T ⟶ S}
 
 @[simps]
-instance canonicallyOverPullback : (pullback (M ↘ S) f).CanonicallyOver T where
+noncomputable instance canonicallyOverPullback : (pullback (M ↘ S) f).CanonicallyOver T where
   hom := pullback.snd (M ↘ S) f
 
 @[simps! -isSimp mul one]
+noncomputable
 instance monObjAsOverPullback [MonObj (asOver M S)] : MonObj (asOver (pullback (M ↘ S) f) T) := by
   unfold asOver OverClass.asOver at *; exact Over.monObjMkPullbackSnd
 
@@ -821,6 +822,7 @@ instance isCommMonObj_asOver_pullback [MonObj (asOver M S)] [IsCommMonObj (asOve
     IsCommMonObj (asOver (pullback (M ↘ S) f) T) := by
   unfold asOver OverClass.asOver at *; exact Over.isCommMonObj_mk_pullbackSnd
 
+noncomputable
 instance GrpObjAsOverPullback [GrpObj (asOver M S)] : GrpObj (asOver (pullback (M ↘ S) f) T) := by
   unfold asOver OverClass.asOver at *; exact Over.grpObjMkPullbackSnd
 

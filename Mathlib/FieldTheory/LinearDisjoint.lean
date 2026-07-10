@@ -139,8 +139,6 @@ open scoped TensorProduct
 
 open Module IntermediateField
 
-noncomputable section
-
 universe u v w
 
 namespace IntermediateField

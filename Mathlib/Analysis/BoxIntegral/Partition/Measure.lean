@@ -29,8 +29,6 @@ rectangular box, measure
 
 open Set
 
-noncomputable section
-
 open scoped ENNReal BoxIntegral
 
 variable {ι : Type*}
@@ -137,7 +135,8 @@ variable [Fintype ι]
 
 /-- Box-additive map sending each box `I` to the continuous linear endomorphism
 `x ↦ (volume I).toReal • x`. -/
-protected def volume {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] : ι →ᵇᵃ E →L[ℝ] E :=
+protected noncomputable
+def volume {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] : ι →ᵇᵃ E →L[ℝ] E :=
   (volume : Measure (ι → ℝ)).toBoxAdditive.toSMul
 
 theorem volume_apply {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] (I : Box ι) (x : E) :

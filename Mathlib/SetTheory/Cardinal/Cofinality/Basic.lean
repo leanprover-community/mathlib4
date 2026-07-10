@@ -15,7 +15,7 @@ This file contains the definition of the cofinality `Order.cof α` of an order. 
 cardinality of a cofinal subset.
 -/
 
-public noncomputable section
+public section
 
 open Function Cardinal Set Order
 
@@ -32,7 +32,7 @@ variable [Preorder α]
 variable (α) in
 /-- The cofinality of a preorder is the smallest cardinality of a cofinal subset. -/
 @[wikidata Q1283623]
-def cof : Cardinal :=
+noncomputable def cof : Cardinal :=
   ⨅ s : {s : Set α // IsCofinal s}, #s
 
 theorem cof_le {s : Set α} (h : IsCofinal s) : cof α ≤ #s :=

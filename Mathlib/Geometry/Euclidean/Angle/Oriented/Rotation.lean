@@ -22,8 +22,6 @@ This file defines rotations by oriented angles in real inner product spaces.
 @[expose] public section
 
 
-noncomputable section
-
 open Module Complex
 
 open scoped Real RealInnerProductSpace ComplexConjugate
@@ -40,7 +38,7 @@ variable [Fact (finrank ℝ V = 2)] [Fact (finrank ℝ V' = 2)] (o : Orientation
 local notation "J" => o.rightAngleRotation
 
 /-- Auxiliary construction to build a rotation by the oriented angle `θ`. -/
-def rotationAux (θ : Real.Angle) : V →ₗᵢ[ℝ] V :=
+noncomputable def rotationAux (θ : Real.Angle) : V →ₗᵢ[ℝ] V :=
   LinearMap.isometryOfInner
     (Real.Angle.cos θ • LinearMap.id +
       Real.Angle.sin θ • (LinearIsometryEquiv.toLinearEquiv J).toLinearMap)
@@ -59,7 +57,7 @@ theorem rotationAux_apply (θ : Real.Angle) (x : V) :
   rfl
 
 /-- A rotation by the oriented angle `θ`. -/
-def rotation (θ : Real.Angle) : V ≃ₗᵢ[ℝ] V :=
+noncomputable def rotation (θ : Real.Angle) : V ≃ₗᵢ[ℝ] V :=
   LinearIsometryEquiv.ofLinearIsometry (o.rotationAux θ)
     (Real.Angle.cos θ • LinearMap.id -
       Real.Angle.sin θ • (LinearIsometryEquiv.toLinearEquiv J).toLinearMap)

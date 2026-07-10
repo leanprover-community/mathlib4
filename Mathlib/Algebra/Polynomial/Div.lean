@@ -21,8 +21,6 @@ We also define `rootMultiplicity`.
 
 @[expose] public section
 
-noncomputable section
-
 open Polynomial
 
 open Finset
@@ -129,12 +127,12 @@ noncomputable def divModByMonicAux : ∀ (_p : R[X]) {q : R[X]}, Monic q → R[X
   termination_by p => p
 
 /-- `divByMonic`, denoted as `p /ₘ q`, gives the quotient of `p` by a monic polynomial `q`. -/
-def divByMonic (p q : R[X]) : R[X] :=
+noncomputable def divByMonic (p q : R[X]) : R[X] :=
   letI := Classical.decEq R
   if hq : Monic q then (divModByMonicAux p hq).1 else 0
 
 /-- `modByMonic`, denoted as `p  %ₘ q`, gives the remainder of `p` by a monic polynomial `q`. -/
-def modByMonic (p q : R[X]) : R[X] :=
+noncomputable def modByMonic (p q : R[X]) : R[X] :=
   letI := Classical.decEq R
   if hq : Monic q then (divModByMonicAux p hq).2 else p
 
@@ -496,7 +494,7 @@ section multiplicity
 Prefer `Classical.dec`, as the algorithm relies on `%ₘ` and so is `noncomputable`.
 -/
 @[deprecated Classical.dec (since := "2026-02-07")]
-def decidableDvdMonic [DecidableEq R] (p : R[X]) (hq : Monic q) : Decidable (q ∣ p) :=
+noncomputable def decidableDvdMonic [DecidableEq R] (p : R[X]) (hq : Monic q) : Decidable (q ∣ p) :=
   decidable_of_iff (p %ₘ q = 0) (modByMonic_eq_zero_iff_dvd hq)
 
 theorem finiteMultiplicity_X_sub_C (a : R) (h0 : p ≠ 0) : FiniteMultiplicity (X - C a) p := by
@@ -508,7 +506,7 @@ theorem finiteMultiplicity_X_sub_C (a : R) (h0 : p ≠ 0) : FiniteMultiplicity (
 /- TODO: stripping out classical for decidability instance parameter might
 make for better ergonomics -/
 /-- The largest power of `X - C a` which divides `p`. -/
-def rootMultiplicity (a : R) (p : R[X]) : ℕ :=
+noncomputable def rootMultiplicity (a : R) (p : R[X]) : ℕ :=
   letI := Classical.decEq R
   if h0 : p = 0 then 0
   else

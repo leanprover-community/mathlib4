@@ -68,7 +68,7 @@ open scoped Manifold ContDiff Topology
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 
-@[expose] public noncomputable section
+@[expose] public section
 
 /-! ## Local unbundled theory -/
 
@@ -306,7 +306,7 @@ section difference
 
 /-- The difference of two covariant derivatives, as a function `Γ(V) → Γ(Hom(TM, V))`.
 Future lemmas will upgrade this to a one-form taking values in the endomorphisms of `V`. -/
-private def differenceAux
+private noncomputable def differenceAux
     (cov cov' : (Π x : M, V x) → (Π x : M, TangentSpace I x →L[𝕜] V x)) :
     (Π x : M, V x) → (Π x : M, TangentSpace I x →L[𝕜] V x) :=
   fun σ ↦ cov σ - cov' σ
@@ -335,7 +335,7 @@ variable [CompleteSpace 𝕜] [FiniteDimensional 𝕜 F]
 open scoped Classical in
 /-- The difference of two covariant derivatives, as a one-form taking values in the
 endomorphisms of `V`. -/
-@[no_expose] def difference (x : M) : V x →L[𝕜] TangentSpace I x →L[𝕜] V x :=
+@[no_expose] noncomputable def difference (x : M) : V x →L[𝕜] TangentSpace I x →L[𝕜] V x :=
   if hxs : x ∈ s then
     TensorialAt.mkHom _ x (differenceAux_tensorial hcov hcov' _ hxs)
   else
@@ -433,14 +433,14 @@ one-forms taking values in the endomorphisms of the bundle, but we don’t packa
 
 /-- An affine combination of covariant derivatives as a covariant derivative. -/
 @[simps]
-def affine_combination (cov cov' : CovariantDerivative I F V) (g : M → 𝕜) :
+noncomputable def affine_combination (cov cov' : CovariantDerivative I F V) (g : M → 𝕜) :
     CovariantDerivative I F V where
   toFun := fun σ ↦ (g • (cov σ)) + (1 - g) • (cov' σ)
   isCovariantDerivativeOnUniv :=
     cov.isCovariantDerivativeOn.affine_combination cov'.isCovariantDerivativeOn _
 
 /-- A finite affine combination of covariant derivatives as a covariant derivative. -/
-def finite_affine_combination {ι : Type*} {s : Finset ι}
+noncomputable def finite_affine_combination {ι : Type*} {s : Finset ι}
     (cov : ι → CovariantDerivative I F V) {f : ι → M → 𝕜} (hf : ∑ i ∈ s, f i = 1) :
     CovariantDerivative I F V where
   toFun t x := ∑ i ∈ s, (f i x) • (cov i) t x
@@ -471,7 +471,7 @@ lemma ContMDiffCovariantDerivative.finite_affine_combination [IsManifold I 1 M] 
 
 /-- Adding a one-form taking values in the endomorphisms of the vector bundle to a covariant
   derivative gives a covariant derivative. -/
-def addOneForm (cov : CovariantDerivative I F V)
+noncomputable def addOneForm (cov : CovariantDerivative I F V)
     (A : Π (x : M), V x →L[𝕜] TangentSpace I x →L[𝕜] V x) : CovariantDerivative I F V where
   toFun := fun σ x ↦ cov σ x + A x (σ x)
   isCovariantDerivativeOnUniv := cov.isCovariantDerivativeOnUniv.add_one_form A
@@ -485,7 +485,7 @@ variable [CompleteSpace 𝕜] [IsManifold I 1 M] [FiniteDimensional 𝕜 F]
 
 /-- The difference of two covariant derivatives, as a one-form taking values in the
 endomorphisms of `V`. -/
-def difference (cov cov' : CovariantDerivative I F V) :
+noncomputable def difference (cov cov' : CovariantDerivative I F V) :
     Π (x : M), V x →L[𝕜] TangentSpace I x →L[𝕜] V x :=
   cov.isCovariantDerivativeOnUniv.difference cov'.isCovariantDerivativeOnUniv
 

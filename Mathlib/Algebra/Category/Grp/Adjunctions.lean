@@ -38,8 +38,6 @@ category of abelian groups.
 
 assert_not_exists Cardinal
 
-noncomputable section
-
 universe u
 
 open CategoryTheory Limits

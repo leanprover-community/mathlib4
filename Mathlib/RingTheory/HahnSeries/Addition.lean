@@ -34,8 +34,6 @@ coefficients.
 
 open Finset Function
 
-noncomputable section
-
 variable {Γ Γ' R S U V α : Type*}
 
 namespace HahnSeries
@@ -277,7 +275,7 @@ theorem order_lt_order_of_eq_add_single {R} {Γ} [LinearOrder Γ] [Zero Γ] [Add
 
 /-- `single` as an additive monoid/group homomorphism -/
 @[simps!]
-def single.addMonoidHom (a : Γ) : R →+ R⟦Γ⟧ :=
+noncomputable def single.addMonoidHom (a : Γ) : R →+ R⟦Γ⟧ :=
   { single a with
     map_add' := single_add _ }
 
@@ -492,7 +490,7 @@ instance : Module R V⟦Γ⟧ where
 
 /-- `single` as a linear map -/
 @[simps]
-def single.linearMap (a : Γ) : V →ₗ[R] V⟦Γ⟧ :=
+noncomputable def single.linearMap (a : Γ) : V →ₗ[R] V⟦Γ⟧ :=
   { single.addMonoidHom a with
     map_smul' := fun r s => by
       ext b
@@ -542,7 +540,7 @@ theorem embDomain_smul (f : Γ ↪o Γ') (r : R) (x : R⟦Γ⟧) :
 
 /-- Extending the domain of Hahn series is a linear map. -/
 @[simps]
-def embDomainLinearMap (f : Γ ↪o Γ') : R⟦Γ⟧ →ₗ[R] R⟦Γ'⟧ where
+noncomputable def embDomainLinearMap (f : Γ ↪o Γ') : R⟦Γ⟧ →ₗ[R] R⟦Γ'⟧ where
   toFun := embDomain f
   map_add' := embDomain_add f
   map_smul' := embDomain_smul f

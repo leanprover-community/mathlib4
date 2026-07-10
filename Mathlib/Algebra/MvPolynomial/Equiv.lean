@@ -46,8 +46,6 @@ equivalence, isomorphism, morphism, ring hom, hom
 @[expose] public section
 
 
-noncomputable section
-
 open Polynomial Set Function Finsupp AddMonoidAlgebra
 
 universe u v w x
@@ -65,7 +63,7 @@ variable (R) [CommSemiring R]
 /-- The algebra isomorphism between multivariable polynomials indexed by a type with a unique
 element and polynomials over the ground ring. -/
 @[simps]
-def uniqueAlgEquiv (σ : Type*) [Unique σ] : MvPolynomial σ R ≃ₐ[R] R[X] where
+noncomputable def uniqueAlgEquiv (σ : Type*) [Unique σ] : MvPolynomial σ R ≃ₐ[R] R[X] where
   toFun := eval₂ Polynomial.C fun _ => Polynomial.X
   invFun := Polynomial.eval₂ MvPolynomial.C (X default)
   left_inv := by
@@ -121,7 +119,7 @@ theorem coeff_uniqueAlgEquiv_symm [Unique σ] (P : Polynomial R) (d : σ →₀ 
 /-- The algebra isomorphism between multivariable polynomials in a single variable and
 polynomials over the ground ring. -/
 @[deprecated uniqueAlgEquiv (since := "2026-04-15")]
-abbrev pUnitAlgEquiv := uniqueAlgEquiv (R := R) PUnit
+noncomputable abbrev pUnitAlgEquiv := uniqueAlgEquiv (R := R) PUnit
 
 @[deprecated uniqueAlgEquiv_monomial (since := "2026-04-15")]
 theorem pUnitAlgEquiv_monomial {d : PUnit →₀ ℕ} {r : R} :
@@ -140,7 +138,7 @@ section Map
 variable {R} (σ)
 
 /-- If `e : A ≃+* B` is an isomorphism of rings, then so is `map e`. -/
-def mapEquiv [CommSemiring S₁] [CommSemiring S₂] (e : S₁ ≃+* S₂) :
+noncomputable def mapEquiv [CommSemiring S₁] [CommSemiring S₂] (e : S₁ ≃+* S₂) :
     MvPolynomial σ S₁ ≃+* MvPolynomial σ S₂ :=
   AddMonoidAlgebra.mapRingEquiv _ e
 
@@ -167,7 +165,7 @@ variable {A₁ A₂ A₃ : Type*} [CommSemiring A₁] [CommSemiring A₂] [CommS
 variable [Algebra R A₁] [Algebra R A₂] [Algebra R A₃]
 
 /-- If `e : A ≃ₐ[R] B` is an isomorphism of `R`-algebras, then so is `map e`. -/
-def mapAlgEquiv (e : A₁ ≃ₐ[R] A₂) : MvPolynomial σ A₁ ≃ₐ[R] MvPolynomial σ A₂ :=
+noncomputable def mapAlgEquiv (e : A₁ ≃ₐ[R] A₂) : MvPolynomial σ A₁ ≃ₐ[R] MvPolynomial σ A₂ :=
   AddMonoidAlgebra.mapAlgEquiv _ _ e
 
 @[simp]
@@ -263,7 +261,7 @@ variable (σ) in
 /-- The algebra isomorphism between multivariable polynomials in no variables
 and the ground ring. -/
 @[simps! apply]
-def isEmptyAlgEquiv : MvPolynomial σ R ≃ₐ[R] R := AddMonoidAlgebra.uniqueAlgEquiv ..
+noncomputable def isEmptyAlgEquiv : MvPolynomial σ R ≃ₐ[R] R := AddMonoidAlgebra.uniqueAlgEquiv ..
 
 variable {R S₁} in
 @[simp]
@@ -280,7 +278,7 @@ variable (σ) in
 /-- The ring isomorphism between multivariable polynomials in no variables
 and the ground ring. -/
 @[simps! apply]
-def isEmptyRingEquiv : MvPolynomial σ R ≃+* R := AddMonoidAlgebra.uniqueRingEquiv _
+noncomputable def isEmptyRingEquiv : MvPolynomial σ R ≃+* R := AddMonoidAlgebra.uniqueRingEquiv _
 
 variable (σ) in
 @[simp] lemma isEmptyRingEquiv_symm_apply (r : R) : (isEmptyRingEquiv R σ).symm r = C r :=
@@ -301,6 +299,7 @@ end isEmptyRingEquiv
 
 /-- A helper function for `sumRingEquiv`. -/
 @[simps]
+noncomputable
 def mvPolynomialEquivMvPolynomial [CommSemiring S₃] (f : MvPolynomial S₁ R →+* MvPolynomial S₂ S₃)
     (g : MvPolynomial S₂ S₃ →+* MvPolynomial S₁ R) (hfgC : (f.comp g).comp C = C)
     (hfgX : ∀ n, f (g (X n)) = X n) (hgfC : (g.comp f).comp C = C) (hgfX : ∀ n, g (f (X n)) = X n) :
@@ -316,7 +315,7 @@ def mvPolynomialEquivMvPolynomial [CommSemiring S₃] (f : MvPolynomial S₁ R �
 and multivariable polynomials in one of the types,
 with coefficients in multivariable polynomials in the other type.
 -/
-def sumRingEquiv : MvPolynomial (S₁ ⊕ S₂) R ≃+* MvPolynomial S₁ (MvPolynomial S₂ R) :=
+noncomputable def sumRingEquiv : MvPolynomial (S₁ ⊕ S₂) R ≃+* MvPolynomial S₁ (MvPolynomial S₂ R) :=
   (mapDomainRingEquiv _ sumFinsuppAddEquivProdFinsupp).trans curryRingEquiv
 
 @[simp]
@@ -350,7 +349,7 @@ with coefficients in multivariable polynomials in the other type.
 See `sumRingEquiv` for the ring isomorphism.
 -/
 @[deprecated sumRingEquiv (since := "2026-06-18")]
-def sumToIter : MvPolynomial (S₁ ⊕ S₂) R →+* MvPolynomial S₁ (MvPolynomial S₂ R) :=
+noncomputable def sumToIter : MvPolynomial (S₁ ⊕ S₂) R →+* MvPolynomial S₁ (MvPolynomial S₂ R) :=
   eval₂Hom (C.comp C) fun bc => Sum.recOn bc X (C ∘ X)
 
 @[deprecated sumRingEquiv_C (since := "2026-06-18")]
@@ -372,7 +371,7 @@ to multivariable polynomials in the sum of the two types.
 See `sumRingEquiv` for the ring isomorphism.
 -/
 @[deprecated sumRingEquiv (since := "2026-06-18")]
-def iterToSum : MvPolynomial S₁ (MvPolynomial S₂ R) →+* MvPolynomial (S₁ ⊕ S₂) R :=
+noncomputable def iterToSum : MvPolynomial S₁ (MvPolynomial S₂ R) →+* MvPolynomial (S₁ ⊕ S₂) R :=
   eval₂Hom (eval₂Hom C (X ∘ Sum.inr)) (X ∘ Sum.inl)
 
 @[deprecated sumRingEquiv_symm_C_C (since := "2026-06-18")]
@@ -395,6 +394,7 @@ and multivariable polynomials in one of the types,
 with coefficients in multivariable polynomials in the other type.
 -/
 @[simps!]
+noncomputable
 def sumAlgEquiv : MvPolynomial (S₁ ⊕ S₂) R ≃ₐ[R] MvPolynomial S₁ (MvPolynomial S₂ R) :=
   (domCongr _ _ sumFinsuppAddEquivProdFinsupp).trans (curryAlgEquiv _)
 
@@ -465,6 +465,7 @@ attribute [local instance] IsScalarTower.right
 polynomials with coefficients in `MvPolynomial S₁ R`.
 -/
 @[simps! -isSimp]
+noncomputable
 def optionEquivLeft : MvPolynomial (Option S₁) R ≃ₐ[R] Polynomial (MvPolynomial S₁ R) :=
   AlgEquiv.ofAlgHom (MvPolynomial.aeval fun o => o.elim Polynomial.X fun s => Polynomial.C (X s))
     (Polynomial.aevalTower (MvPolynomial.rename some) (X none))
@@ -617,7 +618,7 @@ end optionEquivLeft
 multivariable polynomials with coefficients in polynomials.
 -/
 @[simps!]
-def optionEquivRight : MvPolynomial (Option S₁) R ≃ₐ[R] MvPolynomial S₁ R[X] :=
+noncomputable def optionEquivRight : MvPolynomial (Option S₁) R ≃ₐ[R] MvPolynomial S₁ R[X] :=
   AlgEquiv.ofAlgHom (MvPolynomial.aeval fun o => o.elim (C Polynomial.X) X)
     (MvPolynomial.aevalTower (Polynomial.aeval (X none)) fun i => X (Option.some i))
     (by
@@ -644,6 +645,7 @@ variable (n : ℕ)
 /-- The algebra isomorphism between multivariable polynomials in `Fin (n + 1)` and
 polynomials over multivariable polynomials in `Fin n`.
 -/
+noncomputable
 def finSuccEquiv : MvPolynomial (Fin (n + 1)) R ≃ₐ[R] Polynomial (MvPolynomial (Fin n) R) :=
   (renameEquiv R (_root_.finSuccEquiv n)).trans (optionEquivLeft R (Fin n))
 

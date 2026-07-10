@@ -252,7 +252,7 @@ namespace DifferentialObject
 variable {S : Type*} [AddCommGroupWithOne S] (C : Type u) [Category.{v} C]
 variable [HasZeroMorphisms C] [HasShift C S]
 
-noncomputable section
+section
 
 set_option backward.defeqAttrib.useBackward true in
 /-- The shift functor on `DifferentialObject S C`. -/

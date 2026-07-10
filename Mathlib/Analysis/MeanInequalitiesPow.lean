@@ -49,8 +49,6 @@ universe u v
 
 open Finset NNReal ENNReal
 
-noncomputable section
-
 variable {ι : Type u} (s : Finset ι)
 
 namespace Real

@@ -487,7 +487,7 @@ attribute [instance] ExistsHomHomCompEqCompAux.h𝒰S ExistsHomHomCompEqCompAux.
 
 namespace ExistsHomHomCompEqCompAux
 
-noncomputable section
+section
 
 variable {D t f c} [∀ {i j : I} (f : i ⟶ j), IsAffineHom (D.map f)]
 variable (A : ExistsHomHomCompEqCompAux D t f)
@@ -515,15 +515,15 @@ lemma exists_index : ∃ (i' : I) (hii' : i' ⟶ A.i),
 /-- (Implementation)
 The index `i'` such that `a` and `b` restricted onto `i'` maps into the diagonal components.
 See the section docstring. -/
-def i' : I := A.exists_index.choose
+noncomputable def i' : I := A.exists_index.choose
 
 /-- (Implementation) The map from `i'` to `i`. See the section docstring. -/
-def hii' : A.i' ⟶ A.i := A.exists_index.choose_spec.choose
+noncomputable def hii' : A.i' ⟶ A.i := A.exists_index.choose_spec.choose
 
 /-- (Implementation)
 The map sending `x` to `(a x, b x)`, which should fall in the diagonal component.
 See the section docstring. -/
-def g : D.obj A.i' ⟶ pullback f f :=
+noncomputable def g : D.obj A.i' ⟶ pullback f f :=
   (D.map A.hii' ≫ pullback.lift A.a A.b (A.ha.symm.trans A.hb))
 
 set_option backward.isDefEq.respectTransparency false in
@@ -550,11 +550,11 @@ noncomputable def 𝒰D : Scheme.OpenCover.{u} (D.obj A.i') :=
 attribute [-simp] cast_eq eq_mpr_eq_cast
 
 /-- (Implementation) The diagram restricted to `Over i'`. See the section docstring. -/
-def D' (j : A.𝒰D.I₀) : Over A.i' ⥤ Scheme :=
+noncomputable def D' (j : A.𝒰D.I₀) : Over A.i' ⥤ Scheme :=
   Over.post D ⋙ Over.pullback (A.𝒰D.f j) ⋙ Over.forget _
 
 /-- (Implementation) The limit cone restricted to `Over i'`. See the section docstring. -/
-def c' (j : A.𝒰D.I₀) : Cone (A.D' j) :=
+noncomputable def c' (j : A.𝒰D.I₀) : Cone (A.D' j) :=
   (Over.pullback (A.𝒰D.f j) ⋙ Over.forget _).mapCone ((Over.conePost _ _).obj A.c)
 
 attribute [local instance] IsCofiltered.isConnected
@@ -562,7 +562,7 @@ attribute [local instance] IsCofiltered.isConnected
 /-- (Implementation)
 The limit cone restricted to `Over i'` is still a limit because the diagram is cofiltered.
 See the section docstring. -/
-def hc' (j : A.𝒰D.I₀) : IsLimit (A.c' j) :=
+noncomputable def hc' (j : A.𝒰D.I₀) : IsLimit (A.c' j) :=
   isLimitOfPreserves (Over.pullback (A.𝒰D.f j) ⋙ Over.forget _) (Over.isLimitConePost _ A.hc)
 
 variable [∀ i, IsAffineHom (A.c.π.app i)]

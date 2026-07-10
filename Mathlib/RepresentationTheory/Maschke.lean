@@ -36,7 +36,7 @@ of a finite group is semisimple (i.e. a direct sum of irreducibles).
 
 @[expose] public section
 
-noncomputable section
+section
 
 open Module MonoidAlgebra
 open scoped Ring
@@ -65,7 +65,7 @@ variable {W : Type*} [AddCommGroup W] [Module k W] [Module k[G] W] [IsScalarTowe
 variable (π : W →ₗ[k] V)
 
 /-- We define the conjugate of `π` by `g`, as a `k`-linear map. -/
-def conjugate (g : G) : W →ₗ[k] V :=
+noncomputable def conjugate (g : G) : W →ₗ[k] V :=
   GroupSMul.linearMap k V g⁻¹ ∘ₗ π ∘ₗ GroupSMul.linearMap k W g
 
 theorem conjugate_apply (g : G) (v : W) :
@@ -89,7 +89,7 @@ variable (G) [Fintype G]
 
 (We postpone dividing by the size of the group as long as possible.)
 -/
-def sumOfConjugates : W →ₗ[k] V :=
+noncomputable def sumOfConjugates : W →ₗ[k] V :=
   ∑ g : G, π.conjugate g
 
 lemma sumOfConjugates_apply (v : W) : π.sumOfConjugates G v = ∑ g : G, π.conjugate g v :=
@@ -97,7 +97,7 @@ lemma sumOfConjugates_apply (v : W) : π.sumOfConjugates G v = ∑ g : G, π.con
 
 /-- In fact, the sum over `g : G` of the conjugate of `π` by `g` is a `k[G]`-linear map.
 -/
-def sumOfConjugatesEquivariant : W →ₗ[k[G]] V :=
+noncomputable def sumOfConjugatesEquivariant : W →ₗ[k[G]] V :=
   MonoidAlgebra.equivariantOfLinearOfComm (π.sumOfConjugates G) fun g v => by
     simp only [sumOfConjugates_apply, Finset.smul_sum, conjugate_apply]
     refine Fintype.sum_bijective (· * g) (Group.mulRight_bijective g) _ _ fun i ↦ ?_
@@ -112,7 +112,7 @@ section
 /-- We construct our `k[G]`-linear retraction of `i` as
 $$ \frac{1}{|G|} \sum_{g \in G} g⁻¹ • π(g • -). $$
 -/
-def equivariantProjection : W →ₗ[k[G]] V :=
+noncomputable def equivariantProjection : W →ₗ[k[G]] V :=
   (Fintype.card G : k)⁻¹ʳ • π.sumOfConjugatesEquivariant G
 
 theorem equivariantProjection_apply (v : W) :

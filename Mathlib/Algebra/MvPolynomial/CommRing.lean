@@ -37,8 +37,6 @@ As in other polynomial files, we typically use the notation:
 @[expose] public section
 
 
-noncomputable section
-
 open Set Function Finsupp
 
 universe u v
@@ -160,7 +158,7 @@ theorem eval₂Hom_X {R : Type u} (c : ℤ →+* S) (f : MvPolynomial R ℤ →+
 
 /-- Ring homomorphisms out of integer polynomials on a type `σ` are the same as
 functions out of the type `σ`. -/
-def homEquiv : (MvPolynomial σ ℤ →+* S) ≃ (σ → S) where
+noncomputable def homEquiv : (MvPolynomial σ ℤ →+* S) ≃ (σ → S) where
   toFun f := f ∘ X
   invFun f := eval₂Hom (Int.castRingHom S) f
   left_inv _ := RingHom.ext <| eval₂Hom_X _ _

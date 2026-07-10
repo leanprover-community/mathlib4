@@ -32,7 +32,7 @@ compact Hausdorff spaces.
 
 @[expose] public section
 
-noncomputable section
+section
 
 open Function Set
 

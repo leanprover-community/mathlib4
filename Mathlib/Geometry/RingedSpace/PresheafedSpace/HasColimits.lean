@@ -36,8 +36,6 @@ The limit of this diagram then constitutes the colimit presheaf.
 @[expose] public section
 
 
-noncomputable section
-
 universe v' u' v u
 
 open CategoryTheory Opposite CategoryTheory.Category CategoryTheory.Functor CategoryTheory.Limits
@@ -80,7 +78,7 @@ the colimit of the underlying spaces, and taking componentwise limit.
 This is the componentwise diagram for an open set `U` of the colimit of the underlying spaces.
 -/
 @[simps]
-def componentwiseDiagram (F : J ⥤ PresheafedSpace.{_, _, v} C) [HasColimit F]
+noncomputable def componentwiseDiagram (F : J ⥤ PresheafedSpace.{_, _, v} C) [HasColimit F]
     (U : Opens (Limits.colimit F).carrier) : Jᵒᵖ ⥤ C where
   obj j := (F.obj (unop j)).presheaf.obj (op ((Opens.map (colimit.ι F (unop j)).base).obj U))
   map {j k} f := (F.map f.unop).c.app _ ≫
@@ -98,7 +96,7 @@ we can push all the presheaves forward to the colimit `X` of the underlying topo
 obtaining a diagram in `(Presheaf C X)ᵒᵖ`.
 -/
 @[simps]
-def pushforwardDiagramToColimit (F : J ⥤ PresheafedSpace.{_, _, v} C) :
+noncomputable def pushforwardDiagramToColimit (F : J ⥤ PresheafedSpace.{_, _, v} C) :
     J ⥤ (Presheaf C (colimit (F ⋙ PresheafedSpace.forget C)))ᵒᵖ where
   obj j := op (colimit.ι (F ⋙ PresheafedSpace.forget C) j _* (F.obj j).presheaf)
   map {j j'} f :=
@@ -134,7 +132,7 @@ variable [∀ X : TopCat.{v}, HasLimitsOfShape Jᵒᵖ (X.Presheaf C)]
 
 /-- Auxiliary definition for `AlgebraicGeometry.PresheafedSpace.instHasColimits`.
 -/
-def colimit (F : J ⥤ PresheafedSpace.{_, _, v} C) : PresheafedSpace C where
+noncomputable def colimit (F : J ⥤ PresheafedSpace.{_, _, v} C) : PresheafedSpace C where
   carrier := Limits.colimit (F ⋙ PresheafedSpace.forget C)
   presheaf := limit (pushforwardDiagramToColimit F).leftOp
 
@@ -153,7 +151,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `AlgebraicGeometry.PresheafedSpace.instHasColimits`.
 -/
 @[simps]
-def colimitCocone (F : J ⥤ PresheafedSpace.{_, _, v} C) : Cocone F where
+noncomputable def colimitCocone (F : J ⥤ PresheafedSpace.{_, _, v} C) : Cocone F where
   pt := colimit F
   ι :=
     { app := fun j =>
@@ -174,6 +172,7 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `AlgebraicGeometry.PresheafedSpace.colimitCoconeIsColimit`.
 -/
+noncomputable
 def descCApp (F : J ⥤ PresheafedSpace.{_, _, v} C) (s : Cocone F) (U : (Opens s.pt.carrier)ᵒᵖ) :
     s.pt.presheaf.obj U ⟶
       (colimit.desc (F ⋙ PresheafedSpace.forget C) ((PresheafedSpace.forget C).mapCocone s) _*
@@ -220,7 +219,7 @@ theorem desc_c_naturality (F : J ⥤ PresheafedSpace.{_, _, v} C) (s : Cocone F)
 
 /-- Auxiliary definition for `AlgebraicGeometry.PresheafedSpace.colimitCoconeIsColimit`.
 -/
-def desc (F : J ⥤ PresheafedSpace.{_, _, v} C) (s : Cocone F) : colimit F ⟶ s.pt where
+noncomputable def desc (F : J ⥤ PresheafedSpace.{_, _, v} C) (s : Cocone F) : colimit F ⟶ s.pt where
   base := colimit.desc (F ⋙ PresheafedSpace.forget C) ((PresheafedSpace.forget C).mapCocone s)
   c :=
     { app := fun U => descCApp F s U
@@ -247,7 +246,7 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `AlgebraicGeometry.PresheafedSpace.instHasColimits`.
 -/
-def colimitCoconeIsColimit (F : J ⥤ PresheafedSpace.{_, _, v} C) :
+noncomputable def colimitCoconeIsColimit (F : J ⥤ PresheafedSpace.{_, _, v} C) :
     IsColimit (colimitCocone F) where
   desc s := desc F s
   fac s := desc_fac F s
@@ -300,6 +299,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- The components of the colimit of a diagram of `PresheafedSpace C` is obtained
 via taking componentwise limits.
 -/
+noncomputable
 def colimitPresheafObjIsoComponentwiseLimit (F : J ⥤ PresheafedSpace.{_, _, v} C) [HasColimit F]
     (U : Opens (Limits.colimit F).carrier) :
     (Limits.colimit F).presheaf.obj (op U) ≅ limit (componentwiseDiagram F U) := by

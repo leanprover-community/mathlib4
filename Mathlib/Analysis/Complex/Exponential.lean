@@ -46,7 +46,7 @@ theorem isCauSeq_norm_exp (z : ℂ) :
       gcongr
       exact le_trans hm (Nat.le_succ _)
 
-noncomputable section
+section
 
 theorem isCauSeq_exp (z : ℂ) : IsCauSeq (‖·‖) fun n => ∑ m ∈ range n, z ^ m / m.factorial :=
   (isCauSeq_norm_exp z).of_abv
@@ -54,12 +54,12 @@ theorem isCauSeq_exp (z : ℂ) : IsCauSeq (‖·‖) fun n => ∑ m ∈ range n,
 /-- The Cauchy sequence consisting of partial sums of the Taylor series of
 the complex exponential function -/
 @[pp_nodot]
-def exp' (z : ℂ) : CauSeq ℂ (‖·‖) :=
+noncomputable def exp' (z : ℂ) : CauSeq ℂ (‖·‖) :=
   ⟨fun n => ∑ m ∈ range n, z ^ m / m.factorial, isCauSeq_exp z⟩
 
 /-- The complex exponential function, defined via its Taylor series -/
 @[pp_nodot]
-irreducible_def exp (z : ℂ) : ℂ :=
+noncomputable irreducible_def exp (z : ℂ) : ℂ :=
   CauSeq.lim (exp' z)
 
 /-- scoped notation for the complex exponential function -/
@@ -73,11 +73,11 @@ namespace Real
 
 open Complex
 
-noncomputable section
+section
 
 /-- The real exponential function, defined as the real part of the complex exponential -/
 @[pp_nodot, wikidata Q168698]
-nonrec def exp (x : ℝ) : ℝ :=
+noncomputable nonrec def exp (x : ℝ) : ℝ :=
   (exp x).re
 
 /-- scoped notation for the real exponential function -/

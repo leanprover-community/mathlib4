@@ -39,8 +39,6 @@ rectangular box, partition, hyperplane
 
 @[expose] public section
 
-noncomputable section
-
 open Function Set Filter
 
 namespace BoxIntegral
@@ -56,7 +54,7 @@ open scoped Classical in
 `I` into two boxes. `BoxIntegral.Box.splitLower I i x` is the box `I ∩ {y | y i ≤ x}`
 (if it is nonempty). As usual, we represent a box that may be empty as
 `WithBot (BoxIntegral.Box ι)`. -/
-def splitLower (I : Box ι) (i : ι) (x : ℝ) : WithBot (Box ι) :=
+noncomputable def splitLower (I : Box ι) (i : ι) (x : ℝ) : WithBot (Box ι) :=
   mk' I.lower (update I.upper i (min x (I.upper i)))
 
 @[simp]
@@ -93,7 +91,7 @@ open scoped Classical in
 `I` into two boxes. `BoxIntegral.Box.splitUpper I i x` is the box `I ∩ {y | x < y i}`
 (if it is nonempty). As usual, we represent a box that may be empty as
 `WithBot (BoxIntegral.Box ι)`. -/
-def splitUpper (I : Box ι) (i : ι) (x : ℝ) : WithBot (Box ι) :=
+noncomputable def splitUpper (I : Box ι) (i : ι) (x : ℝ) : WithBot (Box ι) :=
   mk' (update I.lower i (max x (I.lower i))) I.upper
 
 @[simp]
@@ -151,7 +149,7 @@ variable {I J : Box ι} {i : ι} {x : ℝ}
 open scoped Classical in
 /-- The partition of `I : Box ι` into the boxes `I ∩ {y | y ≤ x i}` and `I ∩ {y | x i < y}`.
 One of these boxes can be empty, then this partition is just the single-box partition `⊤`. -/
-def split (I : Box ι) (i : ι) (x : ℝ) : Prepartition I :=
+noncomputable def split (I : Box ι) (i : ι) (x : ℝ) : Prepartition I :=
   ofWithBot {I.splitLower i x, I.splitUpper i x}
     (by
       simp only [Finset.mem_insert, Finset.mem_singleton]
@@ -220,7 +218,7 @@ theorem inf_split (π : Prepartition I) (i : ι) (x : ℝ) :
 
 /-- Split a box along many hyperplanes `{y | y i = x}`; each hyperplane is given by the pair
 `(i x)`. -/
-def splitMany (I : Box ι) (s : Finset (ι × ℝ)) : Prepartition I :=
+noncomputable def splitMany (I : Box ι) (s : Finset (ι × ℝ)) : Prepartition I :=
   s.inf fun p => split I p.1 p.2
 
 @[simp]
@@ -334,7 +332,7 @@ theorem exists_iUnion_eq_sdiff (π : Prepartition I) :
 
 /-- If `π` is a prepartition of `I`, then `π.compl` is a prepartition of `I`
 such that `π.compl.iUnion = I \ π.iUnion`. -/
-def compl (π : Prepartition I) : Prepartition I :=
+noncomputable def compl (π : Prepartition I) : Prepartition I :=
   π.exists_iUnion_eq_sdiff.choose
 
 @[simp]

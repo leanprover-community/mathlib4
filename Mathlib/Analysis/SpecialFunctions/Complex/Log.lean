@@ -16,8 +16,6 @@ Basic properties, relationship with `exp`.
 
 @[expose] public section
 
-noncomputable section
-
 namespace Complex
 
 open Set Filter Bornology

@@ -64,8 +64,6 @@ assert_not_exists LinearMap.pi LinearIndependent Cardinal
 -- TODO: assert_not_exists Submodule
 -- (should be possible after splitting `Mathlib/LinearAlgebra/Finsupp/LinearCombination.lean`)
 
-noncomputable section
-
 universe u
 
 open Function Set Submodule Finsupp
@@ -96,7 +94,7 @@ structure Basis where
 
 namespace Basis
 
-instance : Inhabited (Basis ι R (ι →₀ R)) :=
+noncomputable instance : Inhabited (Basis ι R (ι →₀ R)) :=
   ⟨.ofRepr (LinearEquiv.refl _ _)⟩
 
 variable (b b₁ : Basis ι R M) (i : ι) (c : R) (x : M)
@@ -107,7 +105,7 @@ theorem repr_injective : Injective (repr : Basis ι R M → M ≃ₗ[R] ι →�
   cases f; cases g; congr
 
 /-- `b i` is the `i`th basis vector. -/
-instance instFunLike : FunLike (Basis ι R M) ι M where
+noncomputable instance instFunLike : FunLike (Basis ι R M) ι M where
   coe b i := b.repr.symm (Finsupp.single i 1)
   coe_injective f g h := repr_injective <| LinearEquiv.symm_bijective.injective <|
     LinearEquiv.toLinearMap_injective <| by ext; exact congr_fun h _
@@ -165,7 +163,7 @@ variable (f : M ≃ₗ[R] M')
 
 /-- Apply the linear equivalence `f` to the basis vectors. -/
 @[simps]
-protected def map : Basis ι R M' :=
+protected noncomputable def map : Basis ι R M' :=
   ofRepr (f.symm.trans b.repr)
 
 @[simp]
@@ -183,7 +181,7 @@ variable (b' : Basis ι' R M')
 variable (e : ι ≃ ι')
 
 /-- `b.reindex (e : ι ≃ ι')` is a basis indexed by `ι'` -/
-def reindex : Basis ι' R M :=
+noncomputable def reindex : Basis ι' R M :=
   .ofRepr (b.repr.trans (Finsupp.domLCongr e))
 
 theorem reindex_apply (i' : ι') : b.reindex e i' = b (e.symm i') :=
@@ -222,7 +220,7 @@ open Fintype
 
 /-- A module over `R` with a finite basis is linearly equivalent to functions from its basis to `R`.
 -/
-def Basis.equivFun [Finite ι] (b : Basis ι R M) : M ≃ₗ[R] ι → R :=
+noncomputable def Basis.equivFun [Finite ι] (b : Basis ι R M) : M ≃ₗ[R] ι → R :=
   LinearEquiv.trans b.repr
     ({ Finsupp.equivFunOnFinite with
         toFun := (↑)
@@ -232,7 +230,7 @@ def Basis.equivFun [Finite ι] (b : Basis ι R M) : M ≃ₗ[R] ι → R :=
 
 /-- A module over a finite ring that admits a finite basis is finite. -/
 @[implicit_reducible]
-def fintypeOfFintype [Fintype ι] (b : Basis ι R M) [Fintype R] : Fintype M :=
+noncomputable def fintypeOfFintype [Fintype ι] (b : Basis ι R M) [Fintype R] : Fintype M :=
   haveI := Classical.decEq ι
   Fintype.ofEquiv _ b.equivFun.toEquiv.symm
 
@@ -270,7 +268,7 @@ theorem Basis.repr_sum_self [Fintype ι] (b : Basis ι R M) (c : ι → R) :
 
 /-- Define a basis by mapping each vector `x : M` to its coordinates `e x : ι → R`,
 as long as `ι` is finite. -/
-def Basis.ofEquivFun [Finite ι] (e : M ≃ₗ[R] ι → R) : Basis ι R M :=
+noncomputable def Basis.ofEquivFun [Finite ι] (e : M ≃ₗ[R] ι → R) : Basis ι R M :=
   .ofRepr <| e.trans <| LinearEquiv.symm <| Finsupp.linearEquivFunOnFinite R R ι
 
 @[simp]
@@ -384,7 +382,7 @@ then a basis for `M` as `R`-module is also a basis for `M` as `R'`-module.
 See also `Basis.algebraMapCoeffs` for the case where `f` is equal to `algebraMap`.
 -/
 @[simps +simpRhs]
-def mapCoeffs (h : ∀ (c) (x : M), f c • x = c • x) : Basis ι R' M := by
+noncomputable def mapCoeffs (h : ∀ (c) (x : M), f c • x = c • x) : Basis ι R' M := by
   letI : Module R' R := Module.compHom R (↑f.symm : R' →+* R)
   haveI : IsScalarTower R' R M :=
     { smul_assoc := fun x y z => by
@@ -407,7 +405,7 @@ end MapCoeffs
 section ReindexRange
 
 /-- `b.reindexRange` is a basis indexed by `range b`, the basis vectors themselves. -/
-def reindexRange : Basis (range b) R M :=
+noncomputable def reindexRange : Basis (range b) R M :=
   haveI := Classical.dec (Nontrivial R)
   if h : Nontrivial R then
     b.reindex (Equiv.ofInjective b (Basis.injective b))
@@ -461,7 +459,7 @@ variable [Fintype ι] [DecidableEq M]
 
 /-- `b.reindexFinsetRange` is a basis indexed by `Finset.univ.image b`,
 the finite set of basis vectors themselves. -/
-def reindexFinsetRange : Basis (Finset.univ.image b) R M :=
+noncomputable def reindexFinsetRange : Basis (Finset.univ.image b) R M :=
   b.reindexRange.reindex ((Equiv.refl M).subtypeEquiv (by simp))
 
 theorem reindexFinsetRange_self (i : ι) (h := Finset.mem_image_of_mem b (Finset.mem_univ i)) :
@@ -508,7 +506,7 @@ If `R` is commutative, you can set `S := R`; if `R` is not commutative,
 you can recover an `AddEquiv` by setting `S := ℕ`.
 See library note [bundled maps over different rings].
 -/
-def constr : (ι → M') ≃ₗ[S] M →ₗ[R] M' where
+noncomputable def constr : (ι → M') ≃ₗ[S] M →ₗ[R] M' where
   toFun f := (Finsupp.linearCombination R id).comp <| Finsupp.lmapDomain R R f ∘ₗ ↑b.repr
   invFun f i := f (b i)
   left_inv f := by
@@ -577,7 +575,7 @@ variable [AddCommMonoid M''] [Module R M'']
 
 /-- If `b` is a basis for `M` and `b'` a basis for `M'`, and the index types are equivalent,
 `b.equiv b' e` is a linear equivalence `M ≃ₗ[R] M'`, mapping `b i` to `b' (e i)`. -/
-protected def equiv : M ≃ₗ[R] M' :=
+protected noncomputable def equiv : M ≃ₗ[R] M' :=
   b.repr.trans (b'.reindex e.symm).repr.symm
 
 @[simp]
@@ -613,6 +611,7 @@ variable [SMulCommClass R R M']
 and `f`, `g` form a bijection between the basis vectors,
 `b.equiv' b' f g hf hg hgf hfg` is a linear equivalence `M ≃ₗ[R] M'`, mapping `b i` to `f (b i)`.
 -/
+noncomputable
 def equiv' (f : M → M') (g : M' → M) (hf : ∀ i, f (b i) ∈ range b') (hg : ∀ i, g (b' i) ∈ range b)
     (hgf : ∀ i, g (f (b i)) = b i) (hfg : ∀ i, f (g (b' i)) = b' i) : M ≃ₗ[R] M' :=
   { constr (M' := M') b R (f ∘ b) with
@@ -664,7 +663,7 @@ with respect to the basis `b`.
 finite-dimensional spaces it is the `ι`th basis vector of the dual space.
 -/
 @[simps!]
-def coord : M →ₗ[R] R :=
+noncomputable def coord : M →ₗ[R] R :=
   Finsupp.lapply i ∘ₗ ↑b.repr
 
 theorem forall_coord_eq_zero_iff {x : M} : (∀ i, b.coord i x = 0) ↔ x = 0 :=

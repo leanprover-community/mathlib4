@@ -38,7 +38,7 @@ In this file we define the various notions of derivatives of Schwartz functions.
 
 -/
 
-@[expose] public noncomputable section
+@[expose] public section
 
 variable {ι 𝕜 𝕜' D E F V F F₁ F₂ F₃ : Type*}
 
@@ -57,7 +57,7 @@ variable [RCLike 𝕜] [NormedSpace 𝕜 F]
 
 variable (F) in
 /-- The 1-dimensional derivative on Schwartz space as a continuous `𝕜`-linear map. -/
-def derivCLM : 𝓢(ℝ, F) →L[𝕜] 𝓢(ℝ, F) :=
+noncomputable def derivCLM : 𝓢(ℝ, F) →L[𝕜] 𝓢(ℝ, F) :=
   mkCLM (deriv ·) (fun f g _ => deriv_add f.differentiableAt g.differentiableAt)
     (fun a f _ => deriv_const_smul a f.differentiableAt)
     (fun f => (contDiff_succ_iff_deriv.mp (f.smooth ⊤)).2.2) fun ⟨k, n⟩ =>
@@ -81,7 +81,7 @@ variable [SMulCommClass ℝ 𝕜 F]
 
 variable (E F) in
 /-- The Fréchet derivative on Schwartz space as a continuous `𝕜`-linear map. -/
-def fderivCLM : 𝓢(E, F) →L[𝕜] 𝓢(E, E →L[ℝ] F) :=
+noncomputable def fderivCLM : 𝓢(E, F) →L[𝕜] 𝓢(E, E →L[ℝ] F) :=
   mkCLM (fderiv ℝ ·) (fun f g _ => fderiv_add f.differentiableAt g.differentiableAt)
     (fun a f _ => fderiv_const_smul f.differentiableAt a)
     (fun f => (contDiff_succ_iff_fderiv.mp (f.smooth ⊤)).2.2) fun ⟨k, n⟩ =>
@@ -98,7 +98,7 @@ theorem hasFDerivAt (f : 𝓢(E, F)) (x : E) : HasFDerivAt f (fderiv ℝ f x) x 
 
 /-- The partial derivative (or directional derivative) in the direction `m : E` as a
 continuous linear map on Schwartz space. -/
-instance : LineDeriv E 𝓢(E, F) 𝓢(E, F) where
+noncomputable instance : LineDeriv E 𝓢(E, F) 𝓢(E, F) where
   lineDerivOp m f := (SchwartzMap.evalCLM ℝ E F m ∘L fderivCLM ℝ E F) f
 
 theorem lineDerivOp_apply_eq_fderiv (m : E) (f : 𝓢(E, F)) (x : E) :
@@ -214,7 +214,7 @@ variable [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
 
 open Laplacian LineDeriv
 
-instance : Laplacian 𝓢(E, F) 𝓢(E, F) where
+noncomputable instance : Laplacian 𝓢(E, F) 𝓢(E, F) where
   laplacian := laplacianCLM ℝ E 𝓢(E, F)
 
 theorem laplacianCLM_eq' (f : 𝓢(E, F)) : laplacianCLM ℝ E 𝓢(E, F) f = Δ f := rfl

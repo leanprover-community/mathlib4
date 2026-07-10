@@ -41,8 +41,6 @@ complemented subspace, Banach space
 variable {𝕜 E F G : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedAddCommGroup G] [NormedSpace 𝕜 G]
 
-noncomputable section
-
 open LinearMap (ker range)
 
 namespace ContinuousLinearMap
@@ -52,6 +50,7 @@ variable [CompleteSpace E] [CompleteSpace (F × G)]
 /-- If `f : E →L[R] F` and `g : E →L[R] G` are two surjective linear maps and
 their kernels are complement of each other, then `x ↦ (f x, g x)` defines
 a linear equivalence `E ≃L[R] F × G`. -/
+noncomputable
 nonrec def equivProdOfSurjectiveOfIsCompl (f : E →L[𝕜] F) (g : E →L[𝕜] G) (hf : f.range = ⊤)
     (hg : g.range = ⊤) (hfg : IsCompl f.ker g.ker) : E ≃L[𝕜] F × G :=
   (f.equivProdOfSurjectiveOfIsCompl (g : E →ₗ[𝕜] G) hf hg hfg).toContinuousLinearEquivOfContinuous
@@ -95,7 +94,7 @@ variable (p q)
 /-- If `q` is a closed complement of a closed subspace `p`, then `p × q` is continuously
 isomorphic to `E`. -/
 @[deprecated prodEquivOfIsTopCompl (since := "2026-06-07")]
-def prodEquivOfClosedCompl (h : IsCompl p q) (hp : IsClosed (p : Set E))
+noncomputable def prodEquivOfClosedCompl (h : IsCompl p q) (hp : IsClosed (p : Set E))
     (hq : IsClosed (q : Set E)) : (p × q) ≃L[𝕜] E := by
   haveI := hp.completeSpace_coe; haveI := hq.completeSpace_coe
   refine (p.prodEquivOfIsCompl q h).toContinuousLinearEquivOfContinuous ?_
@@ -103,7 +102,7 @@ def prodEquivOfClosedCompl (h : IsCompl p q) (hp : IsClosed (p : Set E))
 
 /-- Projection to a closed submodule along a closed complement. -/
 @[deprecated projectionOntoL (since := "2026-06-07")]
-def linearProjOfClosedCompl (h : IsCompl p q) (hp : IsClosed (p : Set E))
+noncomputable def linearProjOfClosedCompl (h : IsCompl p q) (hp : IsClosed (p : Set E))
     (hq : IsClosed (q : Set E)) : E →L[𝕜] p :=
   ContinuousLinearMap.fst 𝕜 p q ∘L ↑(prodEquivOfClosedCompl p q h hp hq).symm
 

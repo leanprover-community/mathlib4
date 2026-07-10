@@ -49,7 +49,7 @@ class HasSheafify : Prop where
 
 instance [HasSheafify J A] : HasWeakSheafify J A := HasSheafify.isRightAdjoint
 
-noncomputable section
+section
 
 instance [HasSheafify J A] : PreservesFiniteLimits ((sheafToPresheaf J A).leftAdjoint) :=
   HasSheafify.isLeftExact
@@ -70,20 +70,20 @@ instance {F G : Sheaf J A} [HasWeakSheafify J A] (f : F ⟶ G) [Mono f] : Mono f
   inferInstanceAs (Mono ((sheafToPresheaf J A).map f))
 
 /-- The sheafification functor, left adjoint to the inclusion. -/
-def presheafToSheaf [HasWeakSheafify J A] : (Cᵒᵖ ⥤ A) ⥤ Sheaf J A :=
+noncomputable def presheafToSheaf [HasWeakSheafify J A] : (Cᵒᵖ ⥤ A) ⥤ Sheaf J A :=
   (sheafToPresheaf J A).leftAdjoint
 
 instance [HasSheafify J A] : PreservesFiniteLimits (presheafToSheaf J A) :=
   HasSheafify.isLeftExact
 
 /-- The sheafification-inclusion adjunction. -/
-def sheafificationAdjunction [HasWeakSheafify J A] :
+noncomputable def sheafificationAdjunction [HasWeakSheafify J A] :
     presheafToSheaf J A ⊣ sheafToPresheaf J A := Adjunction.ofIsRightAdjoint _
 
 instance [HasWeakSheafify J A] : (presheafToSheaf J A).IsLeftAdjoint :=
   ⟨_, ⟨sheafificationAdjunction J A⟩⟩
 
-instance [HasWeakSheafify J A] : Reflective (sheafToPresheaf J A) where
+noncomputable instance [HasWeakSheafify J A] : Reflective (sheafToPresheaf J A) where
   L := presheafToSheaf J A
   adj := sheafificationAdjunction _ _
 

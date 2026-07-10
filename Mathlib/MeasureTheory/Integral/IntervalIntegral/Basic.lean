@@ -51,8 +51,6 @@ integral
 @[expose] public section
 
 
-noncomputable section
-
 open MeasureTheory Set Filter Function TopologicalSpace
 
 open scoped Topology Filter ENNReal Interval NNReal
@@ -653,7 +651,7 @@ variable [NormedSpace ℝ E]
 /-- The interval integral `∫ x in a..b, f x ∂μ` is defined
 as `∫ x in Ioc a b, f x ∂μ - ∫ x in Ioc b a, f x ∂μ`. If `a ≤ b`, then it equals
 `∫ x in Ioc a b, f x ∂μ`, otherwise it equals `-∫ x in Ioc b a, f x ∂μ`. -/
-def intervalIntegral (f : ℝ → E) (a b : ℝ) (μ : Measure ℝ) : E :=
+noncomputable def intervalIntegral (f : ℝ → E) (a b : ℝ) (μ : Measure ℝ) : E :=
   (∫ x in Ioc a b, f x ∂μ) - ∫ x in Ioc b a, f x ∂μ
 
 @[inherit_doc intervalIntegral]

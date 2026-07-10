@@ -18,8 +18,6 @@ We give several tools for proving that polynomials are monic, e.g.
 @[expose] public section
 
 
-noncomputable section
-
 open Finset
 
 open Polynomial

@@ -16,8 +16,6 @@ This file provides some basic results about the pullback (and pushout) of an iso
 
 @[expose] public section
 
-noncomputable section
-
 open CategoryTheory
 
 universe w v₁ v₂ v u u₂
@@ -33,7 +31,7 @@ open WalkingCospan
 variable (f : X ⟶ Z) (g : Y ⟶ Z) [IsIso f]
 
 /-- If `f : X ⟶ Z` is iso, then `X ×[Z] Y ≅ Y`. This is the explicit limit cone. -/
-def pullbackConeOfLeftIso : PullbackCone f g :=
+noncomputable def pullbackConeOfLeftIso : PullbackCone f g :=
   PullbackCone.mk (g ≫ inv f) (𝟙 _) <| by simp
 
 @[simp]
@@ -53,7 +51,7 @@ theorem pullbackConeOfLeftIso_π_app_left : (pullbackConeOfLeftIso f g).π.app l
 theorem pullbackConeOfLeftIso_π_app_right : (pullbackConeOfLeftIso f g).π.app right = 𝟙 _ := rfl
 
 /-- Verify that the constructed limit cone is indeed a limit. -/
-def pullbackConeOfLeftIsoIsLimit : IsLimit (pullbackConeOfLeftIso f g) :=
+noncomputable def pullbackConeOfLeftIsoIsLimit : IsLimit (pullbackConeOfLeftIso f g) :=
   PullbackCone.isLimitAux' _ fun s => ⟨s.snd, by simp [← s.condition_assoc]⟩
 
 theorem hasPullback_of_left_iso : HasPullback f g :=
@@ -82,7 +80,7 @@ open WalkingCospan
 variable (f : X ⟶ Z) (g : Y ⟶ Z) [IsIso g]
 
 /-- If `g : Y ⟶ Z` is iso, then `X ×[Z] Y ≅ X`. This is the explicit limit cone. -/
-def pullbackConeOfRightIso : PullbackCone f g :=
+noncomputable def pullbackConeOfRightIso : PullbackCone f g :=
   PullbackCone.mk (𝟙 _) (f ≫ inv g) <| by simp
 
 @[simp]
@@ -103,7 +101,7 @@ theorem pullbackConeOfRightIso_π_app_right : (pullbackConeOfRightIso f g).π.ap
   rfl
 
 /-- Verify that the constructed limit cone is indeed a limit. -/
-def pullbackConeOfRightIsoIsLimit : IsLimit (pullbackConeOfRightIso f g) :=
+noncomputable def pullbackConeOfRightIsoIsLimit : IsLimit (pullbackConeOfRightIso f g) :=
   PullbackCone.isLimitAux' _ fun s => ⟨s.fst, by simp [s.condition_assoc]⟩
 
 theorem hasPullback_of_right_iso : HasPullback f g :=
@@ -132,7 +130,7 @@ open WalkingSpan
 variable (f : X ⟶ Y) (g : X ⟶ Z) [IsIso f]
 
 /-- If `f : X ⟶ Y` is iso, then `Y ⨿[X] Z ≅ Z`. This is the explicit colimit cocone. -/
-def pushoutCoconeOfLeftIso : PushoutCocone f g :=
+noncomputable def pushoutCoconeOfLeftIso : PushoutCocone f g :=
   PushoutCocone.mk (inv f ≫ g) (𝟙 _) <| by simp
 
 @[simp]
@@ -155,7 +153,7 @@ theorem pushoutCoconeOfLeftIso_ι_app_left : (pushoutCoconeOfLeftIso f g).ι.app
 theorem pushoutCoconeOfLeftIso_ι_app_right : (pushoutCoconeOfLeftIso f g).ι.app right = 𝟙 _ := rfl
 
 /-- Verify that the constructed cocone is indeed a colimit. -/
-def pushoutCoconeOfLeftIsoIsLimit : IsColimit (pushoutCoconeOfLeftIso f g) :=
+noncomputable def pushoutCoconeOfLeftIsoIsLimit : IsColimit (pushoutCoconeOfLeftIso f g) :=
   PushoutCocone.isColimitAux' _ fun s => ⟨s.inr, by simp [← s.condition]⟩
 
 theorem hasPushout_of_left_iso : HasPushout f g :=
@@ -184,7 +182,7 @@ open WalkingSpan
 variable (f : X ⟶ Y) (g : X ⟶ Z) [IsIso g]
 
 /-- If `f : X ⟶ Z` is iso, then `Y ⨿[X] Z ≅ Y`. This is the explicit colimit cocone. -/
-def pushoutCoconeOfRightIso : PushoutCocone f g :=
+noncomputable def pushoutCoconeOfRightIso : PushoutCocone f g :=
   PushoutCocone.mk (𝟙 _) (inv g ≫ f) <| by simp
 
 @[simp]
@@ -207,7 +205,7 @@ theorem pushoutCoconeOfRightIso_ι_app_right :
     (pushoutCoconeOfRightIso f g).ι.app right = inv g ≫ f := rfl
 
 /-- Verify that the constructed cocone is indeed a colimit. -/
-def pushoutCoconeOfRightIsoIsLimit : IsColimit (pushoutCoconeOfRightIso f g) :=
+noncomputable def pushoutCoconeOfRightIsoIsLimit : IsColimit (pushoutCoconeOfRightIso f g) :=
   PushoutCocone.isColimitAux' _ fun s => ⟨s.inl, by simp [← s.condition]⟩
 
 theorem hasPushout_of_right_iso : HasPushout f g :=

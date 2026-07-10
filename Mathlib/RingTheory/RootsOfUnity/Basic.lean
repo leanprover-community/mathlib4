@@ -39,8 +39,6 @@ satisfied for all units).
 
 @[expose] public section
 
-noncomputable section
-
 open Polynomial
 
 open Finset

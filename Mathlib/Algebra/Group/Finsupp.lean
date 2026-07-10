@@ -20,8 +20,6 @@ assert_not_exists MonoidWithZero
 
 open Finset
 
-noncomputable section
-
 variable {ι F M N O G H : Type*}
 
 namespace Finsupp
@@ -34,7 +32,7 @@ lemma apply_single [FunLike F M N] [ZeroHomClass F M N] (e : F) (i : ι) (m : M)
 /-- Composition with a fixed zero-preserving homomorphism is itself a zero-preserving homomorphism
 on functions. -/
 @[simps]
-def mapRange.zeroHom (f : ZeroHom M N) : ZeroHom (ι →₀ M) (ι →₀ N) where
+noncomputable def mapRange.zeroHom (f : ZeroHom M N) : ZeroHom (ι →₀ M) (ι →₀ N) where
   toFun := Finsupp.mapRange f f.map_zero
   map_zero' := mapRange_zero
 
@@ -49,7 +47,7 @@ end Zero
 section AddZeroClass
 variable [AddZeroClass M] [AddZeroClass N] {f : M → N} {g₁ g₂ : ι →₀ M}
 
-instance instAdd : Add (ι →₀ M) where add := zipWith (· + ·) (add_zero 0)
+noncomputable instance instAdd : Add (ι →₀ M) where add := zipWith (· + ·) (add_zero 0)
 
 @[simp, norm_cast] lemma coe_add (f g : ι →₀ M) : ⇑(f + g) = f + g := rfl
 
@@ -66,7 +64,7 @@ lemma support_add_eq [DecidableEq ι] (h : Disjoint g₁.support g₂.support) :
   le_antisymm support_zipWith fun a ha => by
     cases (Finset.mem_union_of_disjoint h).mp ha <;> simp_all
 
-instance instAddZeroClass : AddZeroClass (ι →₀ M) :=
+noncomputable instance instAddZeroClass : AddZeroClass (ι →₀ M) :=
   fast_instance% DFunLike.coe_injective.addZeroClass _ coe_zero coe_add
 
 instance instIsLeftCancelAdd [IsLeftCancelAdd M] : IsLeftCancelAdd (ι →₀ M) where
@@ -129,7 +127,7 @@ lemma mapRange_add' [FunLike F M N] [AddMonoidHomClass F M N] {f : F} (g₁ g₂
 
 /-- Bundle `Finsupp.embDomain f` as an additive map from `ι →₀ M` to `F →₀ M`. -/
 @[simps]
-def embDomain.addMonoidHom (f : ι ↪ F) : (ι →₀ M) →+ F →₀ M where
+noncomputable def embDomain.addMonoidHom (f : ι ↪ F) : (ι →₀ M) →+ F →₀ M where
   toFun v := embDomain f v
   map_zero' := by simp
   map_add' v w := by
@@ -200,7 +198,7 @@ theorem addCommute_of_disjoint {f g : ι →₀ M} (h : Disjoint f.support g.sup
 See `Finsupp.lsingle` in `Mathlib/LinearAlgebra/Finsupp/Defs.lean` for the stronger version as a
 linear map. -/
 @[simps]
-def singleAddHom (a : ι) : M →+ ι →₀ M where
+noncomputable def singleAddHom (a : ι) : M →+ ι →₀ M where
   toFun := single a
   map_zero' := single_zero a
   map_add' := single_add a
@@ -243,7 +241,7 @@ lemma erase_add (a : ι) (f f' : ι →₀ M) : erase a (f + f') = erase a f + e
 
 /-- `Finsupp.erase` as an `AddMonoidHom`. -/
 @[simps]
-def eraseAddHom (a : ι) : (ι →₀ M) →+ ι →₀ M where
+noncomputable def eraseAddHom (a : ι) : (ι →₀ M) →+ ι →₀ M where
   toFun := erase a
   map_zero' := erase_zero a
   map_add' := erase_add a
@@ -339,13 +337,14 @@ variable [AddMonoid M]
 
 /-- Note the general `SMul` instance for `Finsupp` doesn't apply as `ℕ` is not distributive
 unless `F i`'s addition is commutative. -/
+noncomputable
 instance instNatSMul : SMul ℕ (ι →₀ M) where smul n v := v.mapRange (n • ·) (nsmul_zero _)
 
 @[simp, norm_cast] lemma coe_nsmul (n : ℕ) (f : ι →₀ M) : ⇑(n • f) = n • ⇑f := rfl
 
 lemma nsmul_apply (n : ℕ) (f : ι →₀ M) (x : ι) : (n • f) x = n • f x := rfl
 
-instance instAddMonoid : AddMonoid (ι →₀ M) :=
+noncomputable instance instAddMonoid : AddMonoid (ι →₀ M) :=
   fast_instance% DFunLike.coe_injective.addMonoid _ coe_zero coe_add fun _ _ => rfl
 
 instance instIsAddTorsionFree [IsAddTorsionFree M] : IsAddTorsionFree (ι →₀ M) :=
@@ -356,7 +355,7 @@ end AddMonoid
 section AddCommMonoid
 variable [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid O]
 
-instance instAddCommMonoid : AddCommMonoid (ι →₀ M) :=
+noncomputable instance instAddCommMonoid : AddCommMonoid (ι →₀ M) :=
   fast_instance% DFunLike.coe_injective.addCommMonoid
     DFunLike.coe coe_zero coe_add (fun _ _ => rfl)
 
@@ -370,7 +369,7 @@ lemma single_add_single_eq_single_add_single {k l m n : ι} {u v : M} (hu : u �
 /-- Composition with a fixed additive homomorphism is itself an additive homomorphism on functions.
 -/
 @[simps]
-def mapRange.addMonoidHom (f : M →+ N) : (ι →₀ M) →+ ι →₀ N where
+noncomputable def mapRange.addMonoidHom (f : M →+ N) : (ι →₀ M) →+ ι →₀ N where
   toFun := mapRange f f.map_zero
   map_zero' := mapRange_zero
   map_add' := mapRange_add f.map_add
@@ -390,7 +389,7 @@ lemma mapRange.addMonoidHom_toZeroHom (f : M →+ N) :
 
 /-- `Finsupp.mapRange.AddMonoidHom` as an equiv. -/
 @[simps! apply]
-def mapRange.addEquiv (em' : M ≃+ N) : (ι →₀ M) ≃+ (ι →₀ N) where
+noncomputable def mapRange.addEquiv (em' : M ≃+ N) : (ι →₀ M) ≃+ (ι →₀ N) where
   toEquiv := mapRange.equiv em' em'.map_zero
   __ := mapRange.addMonoidHom em'.toAddMonoidHom
 
@@ -415,6 +414,7 @@ lemma mapRange.addEquiv_toEquiv (e : M ≃+ N) :
 
 end AddCommMonoid
 
+noncomputable
 instance instNeg [NegZeroClass G] : Neg (ι →₀ G) where neg := mapRange Neg.neg neg_zero
 
 @[simp, norm_cast] lemma coe_neg [NegZeroClass G] (g : ι →₀ G) : ⇑(-g) = -g := rfl
@@ -426,7 +426,7 @@ lemma mapRange_neg [NegZeroClass G] [NegZeroClass H] {f : G → H} {hf : f 0 = 0
     (hf' : ∀ x, f (-x) = -f x) (v : ι →₀ G) : mapRange f hf (-v) = -mapRange f hf v :=
   ext fun _ => by simp only [hf', neg_apply, mapRange_apply]
 
-instance instSub [SubNegZeroMonoid G] : Sub (ι →₀ G) :=
+noncomputable instance instSub [SubNegZeroMonoid G] : Sub (ι →₀ G) :=
   ⟨zipWith Sub.sub (sub_zero _)⟩
 
 @[simp, norm_cast] lemma coe_sub [SubNegZeroMonoid G] (g₁ g₂ : ι →₀ G) : ⇑(g₁ - g₂) = g₁ - g₂ := rfl
@@ -453,10 +453,10 @@ lemma mapRange_sub' [SubtractionMonoid H] [FunLike F G H] [AddMonoidHomClass F G
 
 /-- Note the general `SMul` instance for `Finsupp` doesn't apply as `ℤ` is not distributive
 unless `F i`'s addition is commutative. -/
-instance instIntSMul : SMul ℤ (ι →₀ G) :=
+noncomputable instance instIntSMul : SMul ℤ (ι →₀ G) :=
   ⟨fun n v => v.mapRange (n • ·) (zsmul_zero _)⟩
 
-instance instAddGroup : AddGroup (ι →₀ G) :=
+noncomputable instance instAddGroup : AddGroup (ι →₀ G) :=
   fast_instance% DFunLike.coe_injective.addGroup DFunLike.coe coe_zero coe_add coe_neg coe_sub
     (fun _ _ => rfl) fun _ _ => rfl
 
@@ -499,7 +499,7 @@ lemma erase_sub (a : ι) (f₁ f₂ : ι →₀ G) : erase a (f₁ - f₂) = era
 
 end AddGroup
 
-instance instAddCommGroup [AddCommGroup G] : AddCommGroup (ι →₀ G) :=
+noncomputable instance instAddCommGroup [AddCommGroup G] : AddCommGroup (ι →₀ G) :=
   fast_instance% DFunLike.coe_injective.addCommGroup DFunLike.coe coe_zero coe_add coe_neg coe_sub
     (fun _ _ => rfl) fun _ _ => rfl
 

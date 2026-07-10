@@ -23,8 +23,6 @@ We define the pullback and pushforward of ideal sheaves in this file.
 
 @[expose] public section
 
-noncomputable section
-
 universe u
 
 open CategoryTheory Limits
@@ -36,11 +34,11 @@ variable {X Y Z : Scheme.{u}}
 namespace Scheme.IdealSheafData
 
 /-- The pullback of an ideal sheaf. -/
-def comap (I : Y.IdealSheafData) (f : X ⟶ Y) : X.IdealSheafData :=
+noncomputable def comap (I : Y.IdealSheafData) (f : X ⟶ Y) : X.IdealSheafData :=
   (pullback.fst f I.subschemeι).ker
 
 /-- The subscheme associated to the pullback ideal sheaf is isomorphic to the fibred product. -/
-def comapIso (I : Y.IdealSheafData) (f : X ⟶ Y) :
+noncomputable def comapIso (I : Y.IdealSheafData) (f : X ⟶ Y) :
     (I.comap f).subscheme ≅ pullback f I.subschemeι :=
   (asIso (pullback.fst f I.subschemeι).toImage).symm
 
@@ -97,7 +95,7 @@ lemma _root_.AlgebraicGeometry.isPullback_of_isClosedImmersion
   rw [ker_fst_of_isClosedImmersion, h']
 
 /-- The pushforward of an ideal sheaf. -/
-def map (I : X.IdealSheafData) (f : X ⟶ Y) : Y.IdealSheafData :=
+noncomputable def map (I : X.IdealSheafData) (f : X ⟶ Y) : Y.IdealSheafData :=
   (I.subschemeι ≫ f).ker
 
 lemma le_map_iff_comap_le {I : X.IdealSheafData} {f : X ⟶ Y} {J : Y.IdealSheafData} :
@@ -204,7 +202,7 @@ lemma ideal_comap_of_isOpenImmersion
   simp
 
 /-- If `J ≤ I.map f`, then `f` restricts to a map `I ⟶ J` between the closed subschemes. -/
-def subschemeMap (I : X.IdealSheafData) (J : Y.IdealSheafData)
+noncomputable def subschemeMap (I : X.IdealSheafData) (J : Y.IdealSheafData)
     (f : X ⟶ Y) (H : J ≤ I.map f) : I.subscheme ⟶ J.subscheme :=
   IsClosedImmersion.lift J.subschemeι (I.subschemeι ≫ f) (by simpa using! H)
 

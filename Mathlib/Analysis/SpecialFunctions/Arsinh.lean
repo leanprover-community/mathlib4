@@ -39,8 +39,6 @@ arsinh, arcsinh, argsinh, asinh, sinh injective, sinh bijective, sinh surjective
 
 @[expose] public section
 
-noncomputable section
-
 open Function Filter Set
 
 open scoped Topology
@@ -51,7 +49,7 @@ variable {x y : ℝ}
 
 /-- `arsinh` is defined using a logarithm, `arsinh x = log (x + √(1 + x^2))`. -/
 @[pp_nodot]
-def arsinh (x : ℝ) :=
+noncomputable def arsinh (x : ℝ) :=
   log (x + √(1 + x ^ 2))
 
 theorem exp_arsinh (x : ℝ) : exp (arsinh x) = x + √(1 + x ^ 2) := by
@@ -98,7 +96,7 @@ theorem arsinh_sinh (x : ℝ) : arsinh (sinh x) = x :=
 
 /-- `Real.sinh` as an `Equiv`. -/
 @[simps]
-def sinhEquiv : ℝ ≃ ℝ where
+noncomputable def sinhEquiv : ℝ ≃ ℝ where
   toFun := sinh
   invFun := arsinh
   left_inv := arsinh_sinh
@@ -106,13 +104,13 @@ def sinhEquiv : ℝ ≃ ℝ where
 
 /-- `Real.sinh` as an `OrderIso`. -/
 @[simps! -fullyApplied]
-def sinhOrderIso : ℝ ≃o ℝ where
+noncomputable def sinhOrderIso : ℝ ≃o ℝ where
   toEquiv := sinhEquiv
   map_rel_iff' := @sinh_le_sinh
 
 /-- `Real.sinh` as a `Homeomorph`. -/
 @[simps! -fullyApplied]
-def sinhHomeomorph : ℝ ≃ₜ ℝ :=
+noncomputable def sinhHomeomorph : ℝ ≃ₜ ℝ :=
   sinhOrderIso.toHomeomorph
 
 theorem arsinh_bijective : Bijective arsinh :=

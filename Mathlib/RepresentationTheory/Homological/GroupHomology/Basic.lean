@@ -72,7 +72,7 @@ for commutative rings.
 
 @[expose] public section
 
-noncomputable section
+section
 
 universe u v w
 
@@ -87,6 +87,7 @@ section Tor
 variable {k G} in
 /-- Given `A : Rep k G` and a chain complex `P` in `Rep k G`, this is the chain complex whose
 `n`th object is `(A ⊗ Pₙ)_G`. -/
+noncomputable
 abbrev HomologicalComplex.coinvariantsTensorObj {α : Type*} [AddRightCancelSemigroup α] [One α]
     (A : Rep k G) (P : ChainComplex (Rep k G) α) :
     ChainComplex (ModuleCat k) α :=
@@ -96,14 +97,14 @@ namespace Rep
 
 /-- The left-derived functors given by deriving the second argument of `A, B ↦ (A ⊗[k] B)_G`. -/
 @[simps]
-def Tor (n : ℕ) : Rep k G ⥤ Rep k G ⥤ ModuleCat k where
+noncomputable def Tor (n : ℕ) : Rep k G ⥤ Rep k G ⥤ ModuleCat k where
   obj X := Functor.leftDerived ((coinvariantsTensor k G).obj X) n
   map f := NatTrans.leftDerived ((coinvariantsTensor k G).map f) n
 
 variable {k G} (A : Rep.{w} k G)
 
 /-- `Tor` can be computed using a projective resolution. -/
-abbrev torIso (A : Rep k G) {B : Rep k G} (P : ProjectiveResolution B) (n : ℕ) :
+noncomputable abbrev torIso (A : Rep k G) {B : Rep k G} (P : ProjectiveResolution B) (n : ℕ) :
     ((Rep.Tor k G n).obj A).obj B ≅ (P.complex.coinvariantsTensorObj A).homology n :=
   P.isoLeftDerivedObj _ n
 
@@ -124,7 +125,7 @@ variable {k G : Type u} [CommRing k] [Group G] (A : Rep.{u} k G) (n : ℕ)
 namespace inhomogeneousChains
 
 /-- The differential in the complex of inhomogeneous chains used to calculate group homology. -/
-def d : ModuleCat.of k ((Fin (n + 1) → G) →₀ A) ⟶ ModuleCat.of k ((Fin n → G) →₀ A) :=
+noncomputable def d : ModuleCat.of k ((Fin (n + 1) → G) →₀ A) ⟶ ModuleCat.of k ((Fin n → G) →₀ A) :=
   ModuleCat.ofHom <| lsum (R := k) k fun g => lsingle (fun i => g i.succ) ∘ₗ A.ρ (g 0)⁻¹ +
     Finset.univ.sum fun j : Fin (n + 1) =>
       (-1 : k) ^ ((j : ℕ) + 1) • lsingle (Fin.contractNth j (· * ·) g)
@@ -184,7 +185,7 @@ theorem inhomogeneousChains.d_comp_d :
 set_option backward.isDefEq.respectTransparency false in
 /-- Given a `k`-linear `G`-representation `A`, the complex of inhomogeneous chains is isomorphic
 to `(A ⊗[k] P)_G`, where `P` is the bar resolution of `k` as a trivial `G`-representation. -/
-def inhomogeneousChainsIso [DecidableEq G] :
+noncomputable def inhomogeneousChainsIso [DecidableEq G] :
     inhomogeneousChains A ≅ (barComplex k G).coinvariantsTensorObj A := by
   refine HomologicalComplex.Hom.isoOfComponents ?_ ?_
   · intro i
@@ -194,7 +195,7 @@ def inhomogeneousChainsIso [DecidableEq G] :
 
 /-- The `n`-cycles `Zₙ(G, A)` of a `k`-linear `G`-representation `A`, i.e. the kernel of the
 differential `Cₙ(G, A) ⟶ Cₙ₋₁(G, A)` in the complex of inhomogeneous chains. -/
-abbrev cycles (n : ℕ) : ModuleCat k := (inhomogeneousChains A).cycles n
+noncomputable abbrev cycles (n : ℕ) : ModuleCat k := (inhomogeneousChains A).cycles n
 
 open HomologicalComplex
 
@@ -202,12 +203,13 @@ variable {A} in
 /-- When `m = 0` this makes a term of `cycles A 0` from any element of `A` (or more precisely
 any element in the kernel of `d₀,₀ = 0`). When `m` is positive, this makes a term of `cycles A m`
 from any element of the kernel of `dₘ,ₘ₋₁`. -/
+noncomputable
 abbrev cyclesMk (m n : ℕ) (h : (ComplexShape.down ℕ).next m = n) (f : (Fin m → G) →₀ A)
     (hf : (inhomogeneousChains A).d m n f = 0) : cycles A m :=
   (inhomogeneousChains A).cyclesMk f n h hf
 
 /-- The natural inclusion of the `n`-cycles `Zₙ(G, A)` into the `n`-chains `Cₙ(G, A).` -/
-abbrev iCycles (n : ℕ) : cycles A n ⟶ (inhomogeneousChains A).X n :=
+noncomputable abbrev iCycles (n : ℕ) : cycles A n ⟶ (inhomogeneousChains A).X n :=
   (inhomogeneousChains A).iCycles n
 
 variable {A} in
@@ -218,7 +220,7 @@ theorem iCycles_mk {m n : ℕ} (h : (ComplexShape.down ℕ).next m = n) (f : (Fi
 
 /-- This is the map from `i`-chains to `j`-cycles induced by the differential in the complex of
 inhomogeneous chains. -/
-abbrev toCycles (i j : ℕ) : (inhomogeneousChains A).X i ⟶ cycles A j :=
+noncomputable abbrev toCycles (i j : ℕ) : (inhomogeneousChains A).X i ⟶ cycles A j :=
   (inhomogeneousChains A).toCycles i j
 
 end groupHomology
@@ -229,12 +231,12 @@ variable {k G : Type u} [CommRing k] [Group G] (A : Rep k G)
 
 /-- The group homology of a `k`-linear `G`-representation `A`, as the homology of its complex
 of inhomogeneous chains. -/
-def groupHomology (n : ℕ) : ModuleCat k :=
+noncomputable def groupHomology (n : ℕ) : ModuleCat k :=
   (inhomogeneousChains A).homology n
 
 /-- The natural map from `n`-cycles to `n`th group homology for a `k`-linear
 `G`-representation `A`. -/
-abbrev groupHomology.π (n : ℕ) :
+noncomputable abbrev groupHomology.π (n : ℕ) :
     cycles A n ⟶ groupHomology A n :=
   (inhomogeneousChains A).homologyπ n
 
@@ -249,7 +251,7 @@ theorem groupHomology_induction_on {n : ℕ}
 
 /-- The `n`th group homology of a `k`-linear `G`-representation `A` is isomorphic to
 `Torₙ(A, k)` (taken in `Rep k G`), where `k` is a trivial `k`-linear `G`-representation. -/
-def groupHomologyIsoTor [DecidableEq G] (n : ℕ) :
+noncomputable def groupHomologyIsoTor [DecidableEq G] (n : ℕ) :
     groupHomology A n ≅ ((Tor k G n).obj A).obj (Rep.trivial k G k) :=
   isoOfQuasiIsoAt (HomotopyEquiv.ofIso (inhomogeneousChainsIso A)).hom n ≪≫
     (torIso A (barResolution k G) n).symm
@@ -257,7 +259,7 @@ def groupHomologyIsoTor [DecidableEq G] (n : ℕ) :
 /-- The `n`th group homology of a `k`-linear `G`-representation `A` is isomorphic to
 `Hₙ((A ⊗ P)_G)`, where `P` is any projective resolution of `k` as a trivial `k`-linear
 `G`-representation. -/
-def groupHomologyIso [DecidableEq G] (A : Rep k G) (n : ℕ)
+noncomputable def groupHomologyIso [DecidableEq G] (A : Rep k G) (n : ℕ)
     (P : ProjectiveResolution (Rep.trivial k G k)) :
     groupHomology A n ≅ (P.complex.coinvariantsTensorObj A).homology n :=
   groupHomologyIsoTor A n ≪≫ torIso A P n

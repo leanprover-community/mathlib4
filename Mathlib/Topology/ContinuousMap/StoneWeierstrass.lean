@@ -53,8 +53,6 @@ on non-compact spaces.
 
 assert_not_exists Unitization
 
-noncomputable section
-
 namespace ContinuousMap
 
 variable {X : Type*} [TopologicalSpace X] [CompactSpace X]

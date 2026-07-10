@@ -16,8 +16,6 @@ some theorems about orthogonal families of subspaces.
 
 @[expose] public section
 
-noncomputable section
-
 open RCLike Real Filter Topology ComplexConjugate Finsupp Module
 
 open LinearMap (BilinForm)

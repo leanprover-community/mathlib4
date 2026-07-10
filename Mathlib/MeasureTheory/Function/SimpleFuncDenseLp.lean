@@ -44,8 +44,6 @@ For `E` finite-dimensional, simple functions `α →ₛ E` are dense in L^∞ --
 @[expose] public section
 
 
-noncomputable section
-
 
 open Set Function Filter TopologicalSpace ENNReal EMetric Finset
 
@@ -494,7 +492,7 @@ end ToLp
 section ToSimpleFunc
 
 /-- Find a representative of a `Lp.simpleFunc`. -/
-def toSimpleFunc (f : Lp.simpleFunc E p μ) : α →ₛ E :=
+noncomputable def toSimpleFunc (f : Lp.simpleFunc E p μ) : α →ₛ E :=
   Classical.choose f.2
 
 /-- `(toSimpleFunc f)` is measurable. -/
@@ -581,7 +579,7 @@ section Induction
 variable (p) in
 /-- The characteristic function of a finite-measure measurable set `s`, as an `Lp` simple function.
 -/
-def indicatorConst {s : Set α} (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (c : E) :
+noncomputable def indicatorConst {s : Set α} (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (c : E) :
     Lp.simpleFunc E p μ :=
   toLp ((SimpleFunc.const _ c).piecewise s hs (SimpleFunc.const _ 0))
     (memLp_indicator_const p hs c (Or.inr hμs))

@@ -20,8 +20,6 @@ whose integral against a multivariate polynomial `P` of total degree at most `N`
 This is a test of the state of the library suggested by Martin Hairer.
 -/
 
-noncomputable section
-
 open Metric Set MeasureTheory PiLp
 open MvPolynomial hiding support
 open Function hiding eval
@@ -84,7 +82,7 @@ open ContDiffSupportedOn
 variable (ι)
 /-- Interpreting a multivariate polynomial as an element of the dual of smooth functions supported
 in the unit ball, via integration against Lebesgue measure. -/
-def L : MvPolynomial ι ℝ →ₗ[ℝ]
+noncomputable def L : MvPolynomial ι ℝ →ₗ[ℝ]
     Module.Dual ℝ (ContDiffSupportedOn ℝ (EuclideanSpace ℝ ι) ℝ ⊤ (closedBall 0 1)) :=
   have int := ContDiffSupportedOn.integrable_eval_mul (ι := ι)
   .mk₂ ℝ (fun p f ↦ ∫ x : EuclideanSpace ℝ ι, eval x p • f x)

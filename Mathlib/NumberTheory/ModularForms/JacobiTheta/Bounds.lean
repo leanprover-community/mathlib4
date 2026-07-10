@@ -39,8 +39,6 @@ hence Dirichlet L-functions, etc).
 
 open Set Filter Topology Asymptotics Real
 
-noncomputable section
-
 namespace HurwitzKernelBounds
 
 section lemmas
@@ -67,10 +65,10 @@ end lemmas
 section nat
 
 /-- Summand in the sum to be bounded (`ℕ` version). -/
-def f_nat (k : ℕ) (a t : ℝ) (n : ℕ) : ℝ := (n + a) ^ k * exp (-π * (n + a) ^ 2 * t)
+noncomputable def f_nat (k : ℕ) (a t : ℝ) (n : ℕ) : ℝ := (n + a) ^ k * exp (-π * (n + a) ^ 2 * t)
 
 /-- An upper bound for the summand when `0 ≤ a`. -/
-def g_nat (k : ℕ) (a t : ℝ) (n : ℕ) : ℝ := (n + a) ^ k * exp (-π * (n + a ^ 2) * t)
+noncomputable def g_nat (k : ℕ) (a t : ℝ) (n : ℕ) : ℝ := (n + a) ^ k * exp (-π * (n + a ^ 2) * t)
 
 lemma f_le_g_nat (k : ℕ) {a t : ℝ} (ha : 0 ≤ a) (ht : 0 < t) (n : ℕ) :
     ‖f_nat k a t n‖ ≤ g_nat k a t n := by
@@ -82,7 +80,7 @@ lemma f_le_g_nat (k : ℕ) {a t : ℝ} (ha : 0 ≤ a) (ht : 0 < t) (n : ℕ) :
   linear_combination H₁ + H₂
 
 /-- The sum to be bounded (`ℕ` version). -/
-def F_nat (k : ℕ) (a t : ℝ) : ℝ := ∑' n, f_nat k a t n
+noncomputable def F_nat (k : ℕ) (a t : ℝ) : ℝ := ∑' n, f_nat k a t n
 
 lemma summable_f_nat (k : ℕ) (a : ℝ) {t : ℝ} (ht : 0 < t) : Summable (f_nat k a t) := by
   have : Summable fun n : ℕ ↦ n ^ k * exp (-π * (n + a) ^ 2 * t) := by
@@ -206,7 +204,7 @@ end nat
 section int
 
 /-- Summand in the sum to be bounded (`ℤ` version). -/
-def f_int (k : ℕ) (a t : ℝ) (n : ℤ) : ℝ := |n + a| ^ k * exp (-π * (n + a) ^ 2 * t)
+noncomputable def f_int (k : ℕ) (a t : ℝ) (n : ℤ) : ℝ := |n + a| ^ k * exp (-π * (n + a) ^ 2 * t)
 
 lemma f_int_ofNat (k : ℕ) {a : ℝ} (ha : 0 ≤ a) (t : ℝ) (n : ℕ) :
     f_int k a t (Int.ofNat n) = f_nat k a t n := by
@@ -230,7 +228,7 @@ lemma summable_f_int (k : ℕ) (a : ℝ) {t : ℝ} (ht : 0 < t) : Summable (f_in
       (by { push_cast; ring } : -↑(m + 1) + a = -(m + (1 - a))), abs_neg, neg_sq]
 
 /-- The sum to be bounded (`ℤ` version). -/
-def F_int (k : ℕ) (a : UnitAddCircle) (t : ℝ) : ℝ :=
+noncomputable def F_int (k : ℕ) (a : UnitAddCircle) (t : ℝ) : ℝ :=
   (show Function.Periodic (fun b ↦ ∑' (n : ℤ), f_int k b t n) 1 by
     intro b
     simp_rw [← (Equiv.addRight (1 : ℤ)).tsum_eq (f := fun n ↦ f_int k b t n)]

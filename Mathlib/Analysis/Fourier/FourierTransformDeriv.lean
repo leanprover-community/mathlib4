@@ -83,8 +83,6 @@ in `Real.deriv_fourierIntegral` and `Real.iteratedDeriv_fourierIntegral`.
 
 @[expose] public section
 
-noncomputable section
-
 open Real Complex MeasureTheory Filter TopologicalSpace
 
 open scoped FourierTransform Topology ContDiff
@@ -161,7 +159,7 @@ variable {V W : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
 /-- Send a function `f : V → E` to the function `f : V → Hom (W, E)` given by
 `v ↦ (w ↦ -2 * π * I * L (v, w) • f v)`. This is designed so that the Fourier transform of
 `fourierSMulRight L f` is the derivative of the Fourier transform of `f`. -/
-def fourierSMulRight (v : V) : (W →L[ℝ] E) := -(2 * π * I) • (L v).smulRight (f v)
+noncomputable def fourierSMulRight (v : V) : (W →L[ℝ] E) := -(2 * π * I) • (L v).smulRight (f v)
 
 @[simp] lemma fourierSMulRight_apply (v : V) (w : W) :
     fourierSMulRight L f v w = -(2 * π * I) • L v w • f v := rfl
@@ -287,7 +285,7 @@ the space `W [×n]→L[ℝ] E`.
 This is designed so that the Fourier transform of `v ↦ fourierPowSMulRight L f v n` is the
 `n`-th derivative of the Fourier transform of `f`.
 -/
-def fourierPowSMulRight (f : V → E) (v : V) : FormalMultilinearSeries ℝ W E := fun n ↦
+noncomputable def fourierPowSMulRight (f : V → E) (v : V) : FormalMultilinearSeries ℝ W E := fun n ↦
   (- (2 * π * I)) ^ n • ((ContinuousMultilinearMap.mkPiRing ℝ (Fin n) (f v)).compContinuousLinearMap
   (fun _ ↦ L v))
 

@@ -26,16 +26,14 @@ We use this to transport the notion of `support` from `Finsupp` to `FreeAbelianG
 
 assert_not_exists Cardinal Module.Basis
 
-noncomputable section
-
 variable {X : Type*}
 
 /-- The group homomorphism `FreeAbelianGroup X →+ (X →₀ ℤ)`. -/
-def FreeAbelianGroup.toFinsupp : FreeAbelianGroup X →+ X →₀ ℤ :=
+noncomputable def FreeAbelianGroup.toFinsupp : FreeAbelianGroup X →+ X →₀ ℤ :=
   FreeAbelianGroup.lift fun x => Finsupp.single x (1 : ℤ)
 
 /-- The group homomorphism `(X →₀ ℤ) →+ FreeAbelianGroup X`. -/
-def Finsupp.toFreeAbelianGroup : (X →₀ ℤ) →+ FreeAbelianGroup X :=
+noncomputable def Finsupp.toFreeAbelianGroup : (X →₀ ℤ) →+ FreeAbelianGroup X :=
   Finsupp.liftAddHom fun x => (smulAddHom ℤ (FreeAbelianGroup X)).flip (FreeAbelianGroup.of x)
 
 @[simp] lemma FreeAbelianGroup.toFinsupp_of (x : X) : toFinsupp (of x) = .single x 1 := by
@@ -84,7 +82,7 @@ variable (X)
 
 /-- The additive equivalence between `FreeAbelianGroup X` and `(X →₀ ℤ)`. -/
 @[simps!]
-def equivFinsupp : FreeAbelianGroup X ≃+ (X →₀ ℤ) where
+noncomputable def equivFinsupp : FreeAbelianGroup X ≃+ (X →₀ ℤ) where
   toFun := toFinsupp
   invFun := toFreeAbelianGroup
   left_inv := toFreeAbelianGroup_toFinsupp
@@ -95,12 +93,12 @@ variable {X}
 
 /-- `coeff x` is the additive group homomorphism `FreeAbelianGroup X →+ ℤ`
 that sends `a` to the multiplicity of `x : X` in `a`. -/
-def coeff (x : X) : FreeAbelianGroup X →+ ℤ :=
+noncomputable def coeff (x : X) : FreeAbelianGroup X →+ ℤ :=
   (Finsupp.applyAddHom x).comp toFinsupp
 
 /-- `support a` for `a : FreeAbelianGroup X` is the finite set of `x : X`
 that occur in the formal sum `a`. -/
-def support (a : FreeAbelianGroup X) : Finset X :=
+noncomputable def support (a : FreeAbelianGroup X) : Finset X :=
   a.toFinsupp.support
 
 @[simp]

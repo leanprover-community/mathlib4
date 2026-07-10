@@ -81,8 +81,6 @@ universe u v
 
 open Function Set Filter Topology
 
-noncomputable section
-
 /-- A continuous partition of unity on a set `s : Set X` is a collection of continuous functions
 `f i` such that
 
@@ -180,7 +178,7 @@ variable {s : Set X} (ρ : PartitionOfUnity ι X s) (x₀ : X)
 
 /-- The support of a partition of unity at a point `x₀` as a `Finset`.
 This is the set of `i : ι` such that `x₀ ∈ support f i`, i.e. `f i x₀ ≠ 0`. -/
-def finsupport : Finset ι := (ρ.locallyFinite.point_finite x₀).toFinset
+noncomputable def finsupport : Finset ι := (ρ.locallyFinite.point_finite x₀).toFinset
 
 @[simp]
 theorem mem_finsupport (x₀ : X) {i} :
@@ -233,7 +231,7 @@ theorem finite_tsupport : {i | x₀ ∈ tsupport (ρ i)}.Finite := by
 
 /-- The tsupport of a partition of unity at a point `x₀` as a `Finset`.
   This is the set of `i : ι` such that `x₀ ∈ tsupport f i`. -/
-def fintsupport (x₀ : X) : Finset ι :=
+noncomputable def fintsupport (x₀ : X) : Finset ι :=
   (ρ.finite_tsupport x₀).toFinset
 
 theorem mem_fintsupport_iff (i : ι) : i ∈ ρ.fintsupport x₀ ↔ x₀ ∈ tsupport (ρ i) :=
@@ -338,7 +336,7 @@ theorem le_one (i : ι) (x : X) : f i x ≤ 1 :=
 open scoped Classical in
 /-- A `BumpCovering` that consists of a single function, uniformly equal to one, defined as an
 example for `Inhabited` instance. -/
-protected def single (i : ι) (s : Set X) : BumpCovering ι X s where
+protected noncomputable def single (i : ι) (s : Set X) : BumpCovering ι X s where
   toFun := Pi.single i 1
   locallyFinite' x := by
     refine ⟨univ, univ_mem, (finite_singleton i).subset ?_⟩
@@ -355,7 +353,7 @@ open scoped Classical in
 theorem coe_single (i : ι) (s : Set X) : ⇑(BumpCovering.single i s) = Pi.single i 1 := by
   rfl
 
-instance [Inhabited ι] : Inhabited (BumpCovering ι X s) :=
+noncomputable instance [Inhabited ι] : Inhabited (BumpCovering ι X s) :=
   ⟨BumpCovering.single default s⟩
 
 /-- A collection of bump functions `f i` is subordinate to a family of sets `U i` indexed by the
@@ -475,7 +473,7 @@ theorem exists_isSubordinate_hasCompactSupport_of_locallyFinite_t2space [Locally
       hs U ho hf hU
 
 /-- Index of a bump function such that `f i =ᶠ[𝓝 x] 1`. -/
-def ind (x : X) (hx : x ∈ s) : ι :=
+noncomputable def ind (x : X) (hx : x ∈ s) : ι :=
   (f.eventuallyEq_one' x hx).choose
 
 theorem eventuallyEq_one (x : X) (hx : x ∈ s) : f (f.ind x hx) =ᶠ[𝓝 x] 1 :=
@@ -494,7 +492,7 @@ words, `g i x = ∏ᶠ j < i, (1 - f j x) - ∏ᶠ j ≤ i, (1 - f j x)`, so
 of `1 - f j x` vanishes, and `∑ᶠ i, g i x = 1`.
 
 In order to avoid an assumption `LinearOrder ι`, we use `WellOrderingRel` instead of `(<)`. -/
-def toPOUFun (i : ι) (x : X) : ℝ :=
+noncomputable def toPOUFun (i : ι) (x : X) : ℝ :=
   f i x * ∏ᶠ (j) (_ : WellOrderingRel j i), (1 - f j x)
 
 theorem toPOUFun_zero_of_zero {i : ι} {x : X} (h : f i x = 0) : f.toPOUFun i x = 0 := by
@@ -553,7 +551,7 @@ words, `g i x = ∏ᶠ j < i, (1 - f j x) - ∏ᶠ j ≤ i, (1 - f j x)`, so
 of `1 - f j x` vanishes, and `∑ᶠ i, g i x = 1`.
 
 In order to avoid an assumption `LinearOrder ι`, we use `WellOrderingRel` instead of `(<)`. -/
-def toPartitionOfUnity : PartitionOfUnity ι X s where
+noncomputable def toPartitionOfUnity : PartitionOfUnity ι X s where
   toFun i := ⟨f.toPOUFun i, f.continuous_toPOUFun i⟩
   locallyFinite' := f.locallyFinite.subset f.support_toPOUFun_subset
   nonneg' i x :=
@@ -604,7 +602,7 @@ namespace PartitionOfUnity
 
 variable {s : Set X}
 
-instance [Inhabited ι] : Inhabited (PartitionOfUnity ι X s) :=
+noncomputable instance [Inhabited ι] : Inhabited (PartitionOfUnity ι X s) :=
   ⟨BumpCovering.toPartitionOfUnity default⟩
 
 /-- If `X` is a normal topological space and `U` is a locally finite open covering of a closed set

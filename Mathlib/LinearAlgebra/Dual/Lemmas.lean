@@ -77,8 +77,6 @@ This file contains basic results on dual vector spaces.
 
 open Module Submodule
 
-noncomputable section
-
 namespace Module
 
 variable (R A M : Type*)
@@ -904,7 +902,7 @@ theorem isCompl_dualAnnihilator {W W' : Subspace K V₁} (h : IsCompl W W') :
 
 /-- For finite-dimensional vector spaces, one can distribute duals over quotients by identifying
 `W.dualLift.range` with `W`. Note that this depends on a choice of splitting of `V₁`. -/
-def dualQuotDistrib [FiniteDimensional K V₁] (W : Subspace K V₁) :
+noncomputable def dualQuotDistrib [FiniteDimensional K V₁] (W : Subspace K V₁) :
     Module.Dual K (V₁ ⧸ W) ≃ₗ[K] Module.Dual K V₁ ⧸ LinearMap.range W.dualLift :=
   W.dualQuotEquivDualAnnihilator.trans W.quotDualEquivAnnihilator.symm
 

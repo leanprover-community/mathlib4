@@ -19,8 +19,6 @@ The type of bounded continuous functions taking values in a metric space, with t
 
 assert_not_exists CStarRing
 
-noncomputable section
-
 open Topology Bornology NNReal UniformConvergence
 
 open Set Filter Metric Function
@@ -134,7 +132,7 @@ def mkOfDiscrete [DiscreteTopology α] (f : α → β) (C : ℝ) (h : ∀ x y : 
   ⟨⟨f, continuous_of_discreteTopology⟩, ⟨C, h⟩⟩
 
 /-- The uniform distance between two bounded continuous functions. -/
-instance instDist : Dist (α →ᵇ β) :=
+noncomputable instance instDist : Dist (α →ᵇ β) :=
   ⟨fun f g => sInf { C | 0 ≤ C ∧ ∀ x : α, dist (f x) (g x) ≤ C }⟩
 
 theorem dist_eq : dist f g = sInf { C | 0 ≤ C ∧ ∀ x : α, dist (f x) (g x) ≤ C } := rfl
@@ -192,14 +190,14 @@ theorem dist_lt_iff_of_nonempty_compact [Nonempty α] [CompactSpace α] :
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- The type of bounded continuous functions, with the uniform distance, is a pseudometric space. -/
-instance instPseudoMetricSpace : PseudoMetricSpace (α →ᵇ β) where
+noncomputable instance instPseudoMetricSpace : PseudoMetricSpace (α →ᵇ β) where
   dist_self f := le_antisymm ((dist_le le_rfl).2 fun x => by simp) dist_nonneg'
   dist_comm f g := by simp [dist_eq, dist_comm]
   dist_triangle _ _ _ := (dist_le (add_nonneg dist_nonneg' dist_nonneg')).2
     fun _ => le_trans (dist_triangle _ _ _) (add_le_add (dist_coe_le_dist _) (dist_coe_le_dist _))
 
 /-- The type of bounded continuous functions, with the uniform distance, is a metric space. -/
-instance instMetricSpace {β} [MetricSpace β] : MetricSpace (α →ᵇ β) where
+noncomputable instance instMetricSpace {β} [MetricSpace β] : MetricSpace (α →ᵇ β) where
   eq_of_dist_eq_zero hfg := by
     ext x
     exact eq_of_dist_eq_zero (le_antisymm (hfg ▸ dist_coe_le_dist _) dist_nonneg)
@@ -413,7 +411,7 @@ variable {δ : Type*} [TopologicalSpace δ] [DiscreteTopology δ]
 
 /-- A version of `Function.extend` for bounded continuous maps. We assume that the domain has
 discrete topology, so we only need to verify boundedness. -/
-nonrec def extend (f : α ↪ δ) (g : α →ᵇ β) (h : δ →ᵇ β) : δ →ᵇ β where
+noncomputable nonrec def extend (f : α ↪ δ) (g : α →ᵇ β) (h : δ →ᵇ β) : δ →ᵇ β where
   toFun := extend f g h
   continuous_toFun := continuous_of_discreteTopology
   map_bounded' := by

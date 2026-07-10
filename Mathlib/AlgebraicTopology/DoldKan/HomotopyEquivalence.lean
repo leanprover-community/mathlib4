@@ -23,8 +23,6 @@ normalized Moore complex and the alternating face map complex of a simplicial ob
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits
   CategoryTheory.Preadditive Simplicial DoldKan
 
-noncomputable section
-
 namespace AlgebraicTopology
 
 namespace DoldKan
@@ -44,7 +42,7 @@ noncomputable def homotopyPToId : ∀ q : ℕ, Homotopy (P q : K[X] ⟶ _) (𝟙
     · simp only [add_zero, comp_zero]
 
 /-- The complement projection `Q q` to `P q` is homotopic to zero. -/
-def homotopyQToZero (q : ℕ) : Homotopy (Q q : K[X] ⟶ _) 0 :=
+noncomputable def homotopyQToZero (q : ℕ) : Homotopy (Q q : K[X] ⟶ _) 0 :=
   Homotopy.equivSubZero.toFun (homotopyPToId X q).symm
 
 set_option backward.isDefEq.respectTransparency false in
@@ -59,7 +57,7 @@ theorem homotopyPToId_eventually_constant {q n : ℕ} (hqn : n < q) :
 /-- Construction of the homotopy from `PInfty` to the identity using eventually
 (termwise) constant homotopies from `P q` to the identity for all `q` -/
 @[simps]
-def homotopyPInftyToId : Homotopy (PInfty : K[X] ⟶ _) (𝟙 _) where
+noncomputable def homotopyPInftyToId : Homotopy (PInfty : K[X] ⟶ _) (𝟙 _) where
   hom i j := (homotopyPToId X (j + 1)).hom i j
   zero i j hij := Homotopy.zero _ i j hij
   comm n := by
@@ -76,6 +74,7 @@ def homotopyPInftyToId : Homotopy (PInfty : K[X] ⟶ _) (𝟙 _) where
 /-- The inclusion of the Moore complex in the alternating face map complex
 is a homotopy equivalence -/
 @[simps]
+noncomputable
 def homotopyEquivNormalizedMooreComplexAlternatingFaceMapComplex {A : Type*} [Category* A]
     [Abelian A] {Y : SimplicialObject A} :
     HomotopyEquiv ((normalizedMooreComplex A).obj Y) ((alternatingFaceMapComplex A).obj Y) where

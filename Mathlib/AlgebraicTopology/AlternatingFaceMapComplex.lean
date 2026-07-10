@@ -46,8 +46,6 @@ open Opposite
 
 open Simplicial
 
-noncomputable section
-
 namespace AlgebraicTopology
 
 namespace AlternatingFaceMapComplex
@@ -218,7 +216,7 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The natural transformation which gives the augmentation of the alternating face map
 complex attached to an augmented simplicial object. -/
-def ε [Limits.HasZeroObject C] :
+noncomputable def ε [Limits.HasZeroObject C] :
     SimplicialObject.Augmented.drop ⋙ AlgebraicTopology.alternatingFaceMapComplex C ⟶
       SimplicialObject.Augmented.point ⋙ ChainComplex.single₀ C where
   app X := by
@@ -262,7 +260,7 @@ end AlternatingFaceMapComplex
 variable {A : Type*} [Category* A] [Abelian A]
 
 /-- The inclusion map of the Moore complex in the alternating face map complex -/
-def inclusionOfMooreComplexMap (X : SimplicialObject A) :
+noncomputable def inclusionOfMooreComplexMap (X : SimplicialObject A) :
     (normalizedMooreComplex A).obj X ⟶ (alternatingFaceMapComplex A).obj X :=
   ChainComplex.ofHom (fun n => (NormalizedMooreComplex.objX X n).arrow) <| fun i ↦ by
   /- we have to show the compatibility of the differentials on the alternating
@@ -293,6 +291,7 @@ set_option backward.defeqAttrib.useBackward true in
 /-- The inclusion map of the Moore complex in the alternating face map complex,
 as a natural transformation -/
 @[simps]
+noncomputable
 def inclusionOfMooreComplex : normalizedMooreComplex A ⟶ alternatingFaceMapComplex A where
   app := inclusionOfMooreComplexMap
 

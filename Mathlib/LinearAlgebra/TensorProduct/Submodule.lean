@@ -42,8 +42,6 @@ There are also `Submodule.mulLeftMap` and `Submodule.mulRightMap`, defined in ea
 
 open scoped TensorProduct
 
-noncomputable section
-
 universe u v w
 
 namespace Submodule

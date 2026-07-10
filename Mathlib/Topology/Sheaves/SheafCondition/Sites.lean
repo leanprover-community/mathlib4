@@ -26,8 +26,6 @@ induce cover-preserving functors, and that open embeddings induce continuous fun
 @[expose] public section
 
 
-noncomputable section
-
 open CategoryTheory TopologicalSpace Topology
 
 universe w v u
@@ -102,13 +100,13 @@ theorem mem_grothendieckTopology :
 /-- An index `i : ι` can be turned into a dependent pair `(V, f)`, where `V` is an open set and
 `f : V ⟶ iSup U` is a member of `presieveOfCovering U f`.
 -/
-def homOfIndex (i : ι) : Σ V, { f : V ⟶ iSup U // presieveOfCovering U f } :=
+noncomputable def homOfIndex (i : ι) : Σ V, { f : V ⟶ iSup U // presieveOfCovering U f } :=
   ⟨U i, Opens.leSupr U i, i, rfl⟩
 
 /-- By using the axiom of choice, a dependent pair `(V, f)` where `f : V ⟶ iSup U` is a member of
 `presieveOfCovering U f` can be turned into an index `i : ι`, such that `V = U i`.
 -/
-def indexOfHom (f : Σ V, { f : V ⟶ iSup U // presieveOfCovering U f }) : ι :=
+noncomputable def indexOfHom (f : Σ V, { f : V ⟶ iSup U // presieveOfCovering U f }) : ι :=
   f.2.2.choose
 
 theorem indexOfHom_spec (f : Σ V, { f : V ⟶ iSup U // presieveOfCovering U f }) :
@@ -225,11 +223,11 @@ variable {X : TopCat.{w}} {ι : Type*} {B : ι → Opens X}
 variable (F : X.Presheaf C) (F' : Sheaf C X)
 
 /-- The empty component of a sheaf is terminal. -/
-def isTerminalOfEmpty (F : Sheaf C X) : Limits.IsTerminal (F.obj.obj (op ⊥)) :=
+noncomputable def isTerminalOfEmpty (F : Sheaf C X) : Limits.IsTerminal (F.obj.obj (op ⊥)) :=
   F.isTerminalOfBotCover ⊥ (fun _ h => h.elim)
 
 /-- A variant of `isTerminalOfEmpty` that is easier to `apply`. -/
-def isTerminalOfEqEmpty (F : X.Sheaf C) {U : Opens X} (h : U = ⊥) :
+noncomputable def isTerminalOfEqEmpty (F : X.Sheaf C) {U : Opens X} (h : U = ⊥) :
     Limits.IsTerminal (F.obj.obj (op U)) := by
   convert! F.isTerminalOfEmpty
 
@@ -237,7 +235,7 @@ def isTerminalOfEqEmpty (F : X.Sheaf C) {U : Opens X} (h : U = ⊥) :
 is a sheaf on `X`, then a homomorphism between a presheaf `F` on `X` and `F'`
 is equivalent to a homomorphism between their restrictions to the indexing type
 `ι` of `B`, with the induced category structure on `ι`. -/
-def restrictHomEquivHom (h : Opens.IsBasis (Set.range B)) :
+noncomputable def restrictHomEquivHom (h : Opens.IsBasis (Set.range B)) :
     ((inducedFunctor B).op ⋙ F ⟶ (inducedFunctor B).op ⋙ F'.1) ≃ (F ⟶ F'.1) :=
   @Functor.IsCoverDense.restrictHomEquivHom _ _ _ _ _ _ _ _
     (Opens.coverDense_inducedFunctor h) _ F F'

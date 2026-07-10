@@ -40,8 +40,6 @@ As in other polynomial files, we typically use the notation:
 @[expose] public section
 
 
-noncomputable section
-
 open Set Function Finsupp AddMonoidAlgebra
 
 variable {σ τ α R S : Type*} [CommSemiring R] [CommSemiring S]
@@ -51,7 +49,7 @@ namespace MvPolynomial
 section Rename
 
 /-- Rename all the variables in a multivariable polynomial. -/
-def rename (f : σ → τ) : MvPolynomial σ R →ₐ[R] MvPolynomial τ R :=
+noncomputable def rename (f : σ → τ) : MvPolynomial σ R →ₐ[R] MvPolynomial τ R :=
   AddMonoidAlgebra.mapDomainAlgHom _ _ (mapDomain.addMonoidHom f)
 
 theorem rename_C (f : σ → τ) (r : R) : rename f (C r) = C r := by
@@ -128,7 +126,7 @@ open scoped Classical in
 /-- Given a function between sets of variables `f : σ → τ` that is injective with proof `hf`,
   `MvPolynomial.killCompl hf` is the `AlgHom` from `R[τ]` to `R[σ]` that is left inverse to
   `rename f : R[σ] → R[τ]` and sends the variables in the complement of the range of `f` to `0`. -/
-def killCompl : MvPolynomial τ R →ₐ[R] MvPolynomial σ R :=
+noncomputable def killCompl : MvPolynomial τ R →ₐ[R] MvPolynomial σ R :=
   aeval fun i => if h : i ∈ Set.range f then X <| (Equiv.ofInjective f hf).symm ⟨i, h⟩ else 0
 
 theorem killCompl_C (r : R) : killCompl hf (C r) = C r := algHom_C _ _
@@ -209,7 +207,7 @@ variable (R)
 
 /-- `MvPolynomial.rename e` is an equivalence when `e` is. -/
 @[simps apply]
-def renameEquiv (f : σ ≃ τ) : MvPolynomial σ R ≃ₐ[R] MvPolynomial τ R :=
+noncomputable def renameEquiv (f : σ ≃ τ) : MvPolynomial σ R ≃ₐ[R] MvPolynomial τ R :=
   { rename f with
     toFun := rename f
     invFun := rename f.symm

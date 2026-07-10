@@ -58,8 +58,6 @@ rectangular box
 
 open Set Function Metric Filter
 
-noncomputable section
-
 open scoped NNReal Topology
 
 namespace BoxIntegral
@@ -280,7 +278,7 @@ open scoped Classical in
 /-- Make a `WithBot (Box ι)` from a pair of corners `l u : ι → ℝ`. If `l i < u i` for all `i`,
 then the result is `⟨l, u, _⟩ : Box ι`, otherwise it is `⊥`. In any case, the result interpreted
 as a set in `ι → ℝ` is the set `{x : ι → ℝ | ∀ i, x i ∈ Ioc (l i) (u i)}`. -/
-def mk' (l u : ι → ℝ) : WithBot (Box ι) :=
+noncomputable def mk' (l u : ι → ℝ) : WithBot (Box ι) :=
   if h : ∀ i, l i < u i then ↑(⟨l, u, h⟩ : Box ι) else ⊥
 
 @[simp]
@@ -304,7 +302,7 @@ theorem coe_mk' (l u : ι → ℝ) : (mk' l u : Set (ι → ℝ)) = pi univ fun 
     rw [coe_bot, univ_pi_eq_empty]
     exact Ioc_eq_empty hi
 
-instance WithBot.inf : Min (WithBot (Box ι)) :=
+noncomputable instance WithBot.inf : Min (WithBot (Box ι)) :=
   ⟨fun I ↦
     WithBot.recBotCoe (fun _ ↦ ⊥)
       (fun I J ↦ WithBot.recBotCoe ⊥ (fun J ↦ mk' (I.lower ⊔ J.lower) (I.upper ⊓ J.upper)) J) I⟩
@@ -321,7 +319,7 @@ theorem coe_inf (I J : WithBot (Box ι)) : (↑(I ⊓ J) : Set (ι → ℝ)) = (
   simp only [coe_eq_pi, ← pi_inter_distrib, Ioc_inter_Ioc, Pi.sup_apply, Pi.inf_apply, coe_mk',
     coe_coe]
 
-instance : Lattice (WithBot (Box ι)) :=
+noncomputable instance : Lattice (WithBot (Box ι)) :=
   { inf := min
     inf_le_left := fun I J ↦ by
       rw [← withBotCoe_subset_iff, coe_inf]
@@ -440,7 +438,7 @@ variable [Fintype ι]
 /-- The distortion of a box `I` is the maximum of the ratios of the lengths of its edges.
 It is defined as the maximum of the ratios
 `nndist I.lower I.upper / nndist (I.lower i) (I.upper i)`. -/
-def distortion (I : Box ι) : ℝ≥0 :=
+noncomputable def distortion (I : Box ι) : ℝ≥0 :=
   Finset.univ.sup fun i : ι ↦ nndist I.lower I.upper / nndist (I.lower i) (I.upper i)
 
 theorem distortion_eq_of_sub_eq_div {I J : Box ι} {r : ℝ}

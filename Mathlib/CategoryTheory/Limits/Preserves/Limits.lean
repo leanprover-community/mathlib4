@@ -24,8 +24,6 @@ the files in the directory `Mathlib/CategoryTheory/Limits/Preserves/Shapes/`.
 
 universe w' w v₁ v₂ u₁ u₂
 
-noncomputable section
-
 namespace CategoryTheory
 
 open Category Limits
@@ -51,7 +49,7 @@ variable [HasLimit F]
 /-- If `G` preserves limits, we have an isomorphism from the image of the limit of a functor `F`
 to the limit of the functor `F ⋙ G`.
 -/
-def preservesLimitIso : G.obj (limit F) ≅ limit (F ⋙ G) :=
+noncomputable def preservesLimitIso : G.obj (limit F) ≅ limit (F ⋙ G) :=
   (isLimitOfPreserves G (limit.isLimit _)).conePointUniqueUpToIso (limit.isLimit _)
 
 @[reassoc (attr := simp)]
@@ -82,7 +80,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- If `C, D` has all limits of shape `J`, and `G` preserves them, then `preservesLimitsIso` is
 functorial w.r.t. `F`. -/
 @[simps!]
-def preservesLimitNatIso : lim ⋙ G ≅ (Functor.whiskeringRight J C D).obj G ⋙ lim :=
+noncomputable def preservesLimitNatIso : lim ⋙ G ≅ (Functor.whiskeringRight J C D).obj G ⋙ lim :=
   NatIso.ofComponents (fun F => preservesLimitIso G F)
     (by
       intro _ _ f
@@ -122,7 +120,7 @@ variable [HasColimit F]
 /-- If `G` preserves colimits, we have an isomorphism from the image of the colimit of a functor `F`
 to the colimit of the functor `F ⋙ G`.
 -/
-def preservesColimitIso : G.obj (colimit F) ≅ colimit (F ⋙ G) :=
+noncomputable def preservesColimitIso : G.obj (colimit F) ≅ colimit (F ⋙ G) :=
   (isColimitOfPreserves G (colimit.isColimit _)).coconePointUniqueUpToIso (colimit.isColimit _)
 
 @[reassoc (attr := simp)]
@@ -153,6 +151,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- If `C, D` has all colimits of shape `J`, and `G` preserves them, then `preservesColimitIso`
 is functorial w.r.t. `F`. -/
 @[simps!]
+noncomputable
 def preservesColimitNatIso : colim ⋙ G ≅ (Functor.whiskeringRight J C D).obj G ⋙ colim :=
   NatIso.ofComponents (fun F => preservesColimitIso G F)
     (by

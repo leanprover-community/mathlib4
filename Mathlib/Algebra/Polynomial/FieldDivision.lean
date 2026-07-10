@@ -23,8 +23,6 @@ This file starts looking like the ring theory of $R[X]$
 @[expose] public section
 
 
-noncomputable section
-
 open Polynomial
 open scoped Nat
 
@@ -198,6 +196,7 @@ theorem isRoot_of_isRoot_of_dvd_derivative_mul [CharZero R] {f g : R[X]} (hf0 : 
   lia
 
 
+noncomputable
 instance instNormalizationMonoid [NormalizationMonoid R] : NormalizationMonoid R[X] where
   normUnit p :=
     ⟨C ↑(normUnit p.leadingCoeff), C ↑(normUnit p.leadingCoeff)⁻¹, by
@@ -211,7 +210,7 @@ instance instNormalizationMonoid [NormalizationMonoid R] : NormalizationMonoid R
       Units.eq_inv_mul_iff_mul_eq, Units.val_mul, C_mul, ← mul_assoc, ← h2, ← C_mul]
     simp
 
-instance [StrongNormalizationMonoid R] : StrongNormalizationMonoid R[X] where
+noncomputable instance [StrongNormalizationMonoid R] : StrongNormalizationMonoid R[X] where
   normUnit_mul hp0 hq0 :=
     Units.ext
       (by
@@ -308,11 +307,11 @@ theorem isUnit_iff_degree_eq_zero : IsUnit p ↔ degree p = 0 :=
         rw [← C_mul, mul_inv_cancel₀ hc, C_1]⟩⟩
 
 /-- Division of polynomials. See `Polynomial.divByMonic` for more details. -/
-def div (p q : R[X]) :=
+noncomputable def div (p q : R[X]) :=
   C (leadingCoeff q)⁻¹ * (p /ₘ (q * C (leadingCoeff q)⁻¹))
 
 /-- Remainder of polynomial division. See `Polynomial.modByMonic` for more details. -/
-def mod (p q : R[X]) :=
+noncomputable def mod (p q : R[X]) :=
   p %ₘ (q * C (leadingCoeff q)⁻¹)
 
 private theorem quotient_mul_add_remainder_eq_aux (p q : R[X]) : q * div p q + mod p q = p := by
@@ -327,10 +326,10 @@ private theorem remainder_lt_aux (p : R[X]) (hq : q ≠ 0) : degree (mod p q) < 
   rw [← degree_mul_leadingCoeff_inv q hq]
   exact degree_modByMonic_lt p (monic_mul_leadingCoeff_inv hq)
 
-instance : Div R[X] :=
+noncomputable instance : Div R[X] :=
   ⟨div⟩
 
-instance : Mod R[X] :=
+noncomputable instance : Mod R[X] :=
   ⟨mod⟩
 
 theorem div_def : p / q = C (leadingCoeff q)⁻¹ * (p /ₘ (q * C (leadingCoeff q)⁻¹)) :=
@@ -354,7 +353,7 @@ theorem mul_div_eq_iff_isRoot : (X - C a) * (p / (X - C a)) = p ↔ IsRoot p a :
 
 alias ⟨_, IsRoot.mul_div_eq⟩ := mul_div_eq_iff_isRoot
 
-instance instEuclideanDomain : EuclideanDomain R[X] :=
+noncomputable instance instEuclideanDomain : EuclideanDomain R[X] :=
   { Polynomial.commRing,
     Polynomial.nontrivial with
     quotient := (· / ·)

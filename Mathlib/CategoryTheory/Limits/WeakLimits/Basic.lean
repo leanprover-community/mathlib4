@@ -33,8 +33,6 @@ if it has weak kernels.
 
 @[expose] public section
 
-noncomputable section
-
 open CategoryTheory Category Limits
 
 variable {J : Type*} [Category* J] {K : Type*} [Category* K] {C : Type*}
@@ -100,7 +98,7 @@ theorem HasWeakLimit.mk {F : J ⥤ C} (d : WeakLimitCone F) : HasWeakLimit F :=
 
 /-- Use the axiom of choice to extract explicit `WeakLimitCone F` from `HasWeakLimit F`. -/
 @[no_expose]
-def getWeakLimitCone (F : J ⥤ C) [HasWeakLimit F] : WeakLimitCone F :=
+noncomputable def getWeakLimitCone (F : J ⥤ C) [HasWeakLimit F] : WeakLimitCone F :=
   Classical.choice <| HasWeakLimit.exists_weakLimitCone
 
 variable (J C) in
@@ -116,15 +114,15 @@ instance (priority := 100) [HasLimitsOfShape J C] : HasWeakLimitsOfShape J C whe
 
 -- Interface to the `HasWeakLimit` class.
 /-- An arbitrary choice of weak limit cone for a functor. -/
-def weakLimit.cone (F : J ⥤ C) [HasWeakLimit F] : Cone F :=
+noncomputable def weakLimit.cone (F : J ⥤ C) [HasWeakLimit F] : Cone F :=
   (getWeakLimitCone F).cone
 
 /-- An arbitrary choice of weak limit object of a functor. -/
-def weakLimit (F : J ⥤ C) [HasWeakLimit F] :=
+noncomputable def weakLimit (F : J ⥤ C) [HasWeakLimit F] :=
   (weakLimit.cone F).pt
 
 /-- The projection from the weak limit object to a value of the functor. -/
-def weakLimit.π (F : J ⥤ C) [HasWeakLimit F] (j : J) : weakLimit F ⟶ F.obj j :=
+noncomputable def weakLimit.π (F : J ⥤ C) [HasWeakLimit F] (j : J) : weakLimit F ⟶ F.obj j :=
   (weakLimit.cone F).π.app j
 
 @[reassoc]
@@ -148,12 +146,12 @@ theorem weakLimit.w (F : J ⥤ C) [HasWeakLimit F] {j j' : J} (f : j ⟶ j') :
 
 /-- Evidence that the arbitrary choice of cone provided by `weakLimit.cone F`
 is a weak limit cone. -/
-def weakLimit.isWeakLimit (F : J ⥤ C) [HasWeakLimit F] :
+noncomputable def weakLimit.isWeakLimit (F : J ⥤ C) [HasWeakLimit F] :
     IsWeakLimit (weakLimit.cone F) :=
   (getWeakLimitCone F).isWeakLimit
 
 /-- A morphism from the cone point of any other cone to the weak limit object. -/
-def weakLimit.lift (F : J ⥤ C) [HasWeakLimit F] (c : Cone F) :
+noncomputable def weakLimit.lift (F : J ⥤ C) [HasWeakLimit F] (c : Cone F) :
     c.pt ⟶ weakLimit F :=
   (weakLimit.isWeakLimit F).lift c
 

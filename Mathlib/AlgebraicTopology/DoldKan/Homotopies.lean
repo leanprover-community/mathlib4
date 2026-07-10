@@ -63,8 +63,6 @@ compatible with the application of additive functors (see `map_Hσ`).
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits CategoryTheory.Preadditive
   CategoryTheory.SimplicialObject Homotopy Opposite Simplicial DoldKan
 
-noncomputable section
-
 namespace AlgebraicTopology
 
 namespace DoldKan
@@ -122,11 +120,11 @@ theorem hσ'_eq' {q n a : ℕ} (ha : n = a + q) :
   rw [hσ'_eq ha rfl, eqToHom_refl, comp_id]
 
 /-- The null homotopic map $(hσ q) ∘ d + d ∘ (hσ q)$ -/
-def Hσ (q : ℕ) : K[X] ⟶ K[X] :=
+noncomputable def Hσ (q : ℕ) : K[X] ⟶ K[X] :=
   nullHomotopicMap' (hσ' q)
 
 /-- `Hσ` is null homotopic -/
-def homotopyHσToZero (q : ℕ) : Homotopy (Hσ q : K[X] ⟶ K[X]) 0 :=
+noncomputable def homotopyHσToZero (q : ℕ) : Homotopy (Hσ q : K[X] ⟶ K[X]) 0 :=
   nullHomotopy' (hσ' q)
 
 /-- In degree `0`, the null homotopic map `Hσ` is zero. -/
@@ -152,6 +150,7 @@ theorem hσ'_naturality (q : ℕ) (n m : ℕ) (hnm : c.Rel m n) {X Y : Simplicia
 
 set_option backward.isDefEq.respectTransparency false in
 /-- For each q, `Hσ q` is a natural transformation. -/
+noncomputable
 def natTransHσ (q : ℕ) : alternatingFaceMapComplex C ⟶ alternatingFaceMapComplex C where
   app _ := Hσ q
   naturality _ _ f := by

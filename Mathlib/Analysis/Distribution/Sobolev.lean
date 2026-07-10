@@ -47,7 +47,7 @@ the definition of the Sobolev spaces.
 
 -/
 
-@[expose] public noncomputable section
+@[expose] public section
 
 variable {E F : Type*}
   [NormedAddCommGroup E] [NormedAddCommGroup F]
@@ -68,7 +68,7 @@ variable (E F) in
 
 Note that due to the convention of the Fourier transform, this is the operator
 `(1 - (2 * π) ^ (-2) • Δ) ^ (s / 2)` not `(1 - Δ) ^ (s / 2)`. -/
-def besselPotential (s : ℝ) : 𝓢'(E, F) →L[ℂ] 𝓢'(E, F) :=
+noncomputable def besselPotential (s : ℝ) : 𝓢'(E, F) →L[ℂ] 𝓢'(E, F) :=
   fourierMultiplierCLM F (fun x ↦ ((1 + ‖x‖ ^ 2) ^ (s / 2) : ℝ))
 
 variable (E F) in

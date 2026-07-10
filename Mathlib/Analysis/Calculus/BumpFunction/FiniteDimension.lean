@@ -27,8 +27,6 @@ the indicator function of `closedBall 0 1` with a function as above with `s = ba
 @[expose] public section
 
 
-noncomputable section
-
 open Set Metric TopologicalSpace Function Asymptotics MeasureTheory Module
   ContinuousLinearMap Filter MeasureTheory.Measure Bornology
 
@@ -206,7 +204,7 @@ namespace ExistsContDiffBumpBase
 
 /-- An auxiliary function to construct partitions of unity on finite-dimensional real vector spaces.
 It is the characteristic function of the closed unit ball. -/
-def φ : E → ℝ :=
+noncomputable def φ : E → ℝ :=
   (closedBall (0 : E) 1).indicator fun _ => (1 : ℝ)
 
 variable [NormedSpace ℝ E] [FiniteDimensional ℝ E]
@@ -247,7 +245,7 @@ theorem u_exists :
 variable {E} in
 /-- An auxiliary function to construct partitions of unity on finite-dimensional real vector spaces,
 which is smooth, symmetric, and with support equal to the unit ball. -/
-def u (x : E) : ℝ :=
+noncomputable def u (x : E) : ℝ :=
   Classical.choose (u_exists E) x
 
 theorem u_smooth : ContDiff ℝ ∞ (u : E → ℝ) :=
@@ -286,7 +284,7 @@ theorem u_int_pos : 0 < ∫ x : E, u x ∂μ := by
 
 /-- An auxiliary function to construct partitions of unity on finite-dimensional real vector spaces,
 which is smooth, symmetric, with support equal to the ball of radius `D` and integral `1`. -/
-def w (D : ℝ) (x : E) : ℝ :=
+noncomputable def w (D : ℝ) (x : E) : ℝ :=
   ((∫ x : E, u x ∂μ) * |D| ^ finrank ℝ E)⁻¹ • u (D⁻¹ • x)
 
 theorem w_def (D : ℝ) :
@@ -332,7 +330,7 @@ variable {E}
 It is the convolution between a smooth function of integral `1` supported in the ball of radius `D`,
 with the indicator function of the closed unit ball. Therefore, it is smooth, equal to `1` on the
 ball of radius `1 - D`, with support equal to the ball of radius `1 + D`. -/
-def y (D : ℝ) : E → ℝ :=
+noncomputable def y (D : ℝ) : E → ℝ :=
   w D ⋆[lsmul ℝ ℝ, μ] φ
 
 theorem y_neg (D : ℝ) (x : E) : y D (-x) = y D x := by

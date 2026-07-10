@@ -50,8 +50,6 @@ approach, it turns out that direct proofs are easier and more efficient.
 
 suppress_compilation
 
-noncomputable section
-
 open scoped NNReal Topology Uniformity
 open Finset Metric Function Filter
 
@@ -447,7 +445,7 @@ We use this seminorm
 to define a `SeminormedAddCommGroup` structure on `ContinuousMultilinearMap 𝕜 E G`,
 but we have to override the projection `UniformSpace`
 so that it is definitionally equal to the one coming from the topologies on `E` and `G`. -/
-protected def seminorm : Seminorm 𝕜 (ContinuousMultilinearMap 𝕜 E G) :=
+protected noncomputable def seminorm : Seminorm 𝕜 (ContinuousMultilinearMap 𝕜 E G) :=
   .ofSMulLE norm opNorm_zero opNorm_add_le fun c f ↦ f.opNorm_smul_le c
 
 lemma uniformity_eq_seminorm :
@@ -1206,7 +1204,8 @@ by the subsets `s` of `ι` of cardinality `k` and then the bijections between `F
 The fact that this is indeed the iterated Fréchet derivative is proved in
 `ContinuousMultilinearMap.iteratedFDeriv_eq`.
 -/
-protected def iteratedFDeriv (f : ContinuousMultilinearMap 𝕜 E₁ G) (k : ℕ) (x : (i : ι) → E₁ i) :
+protected noncomputable
+def iteratedFDeriv (f : ContinuousMultilinearMap 𝕜 E₁ G) (k : ℕ) (x : (i : ι) → E₁ i) :
     ContinuousMultilinearMap 𝕜 (fun (_ : Fin k) ↦ (∀ i, E₁ i)) G :=
   ∑ e : Fin k ↪ ι, iteratedFDerivComponent f e.toEquivRange (Pi.compRightL 𝕜 _ Subtype.val x)
 

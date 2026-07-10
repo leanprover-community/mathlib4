@@ -24,8 +24,6 @@ https://www.youtube.com/playlist?list=PLx5f8IelFRgGmu6gmL-Kf_Rl_6Mm7juZO).
 
 @[expose] public section
 
-noncomputable section
-
 universe u
 
 open CategoryTheory MonoidalCategory MonoidalClosed Limits Functor

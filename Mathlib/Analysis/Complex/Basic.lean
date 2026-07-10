@@ -53,18 +53,16 @@ instance instModuleSelf : Module ℂ ℂ := delta% inferInstance
 
 end Complex
 
-noncomputable section
-
 namespace Complex
 variable {z : ℂ}
 
 open ComplexConjugate Topology Filter
 
-instance : NormedField ℂ where
+noncomputable instance : NormedField ℂ where
   dist_eq _ _ := rfl
   norm_mul := Complex.norm_mul
 
-instance : DenselyNormedField ℂ where
+noncomputable instance : DenselyNormedField ℂ where
   lt_norm_lt r₁ r₂ h₀ hr :=
     let ⟨x, h⟩ := exists_between hr
     ⟨x, by rwa [norm_real, Real.norm_of_nonneg (h₀.trans_lt h.1).le]⟩
@@ -77,11 +75,12 @@ variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace ℂ E]
 
 -- see Note [lower instance priority]
 /-- The module structure from `Module.complexToReal` is a normed space. -/
-instance (priority := 900) _root_.NormedSpace.complexToReal : NormedSpace ℝ E :=
+noncomputable instance (priority := 900) _root_.NormedSpace.complexToReal : NormedSpace ℝ E :=
   NormedSpace.restrictScalars ℝ ℂ E
 
 -- see Note [lower instance priority]
 /-- The algebra structure from `Algebra.complexToReal` is a normed algebra. -/
+noncomputable
 instance (priority := 900) _root_.NormedAlgebra.complexToReal {A : Type*} [SeminormedRing A]
     [NormedAlgebra ℂ A] : NormedAlgebra ℝ A :=
   NormedAlgebra.restrictScalars ℝ ℂ A
@@ -129,7 +128,7 @@ instance instT2Space : T2Space ℂ := TopologicalSpace.t2Space_of_metrizableSpac
 
 /-- The natural `ContinuousLinearEquiv` from `ℂ` to `ℝ × ℝ`. -/
 @[simps! +simpRhs apply symm_apply_re symm_apply_im]
-def equivRealProdCLM : ℂ ≃L[ℝ] ℝ × ℝ :=
+noncomputable def equivRealProdCLM : ℂ ≃L[ℝ] ℝ × ℝ :=
   equivRealProdLm.toContinuousLinearEquivOfBounds 1 (√2) equivRealProd_apply_le' fun p =>
     norm_le_sqrt_two_mul_max (equivRealProd.symm p)
 
@@ -147,7 +146,7 @@ theorem tendsto_normSq_cocompact_atTop : Tendsto normSq (cocompact ℂ) atTop :=
 open ContinuousLinearMap
 
 /-- Continuous linear map version of the real part function, from `ℂ` to `ℝ`. -/
-def reCLM : ℂ →L[ℝ] ℝ :=
+noncomputable def reCLM : ℂ →L[ℝ] ℝ :=
   reLm.mkContinuous 1 fun x => by simp [abs_re_le_norm]
 
 @[continuity, fun_prop]
@@ -170,7 +169,7 @@ theorem reCLM_apply (z : ℂ) : (reCLM : ℂ → ℝ) z = z.re :=
   rfl
 
 /-- Continuous linear map version of the imaginary part function, from `ℂ` to `ℝ`. -/
-def imCLM : ℂ →L[ℝ] ℝ :=
+noncomputable def imCLM : ℂ →L[ℝ] ℝ :=
   imLm.mkContinuous 1 fun x => by simp [abs_im_le_norm]
 
 @[continuity, fun_prop]
@@ -253,12 +252,12 @@ theorem ringHom_eq_id_or_conj_of_continuous {f : ℂ →+* ℂ} (hf : Continuous
   simpa only [DFunLike.ext_iff] using! real_algHom_eq_id_or_conj (AlgHom.mk' f (map_real_smul f hf))
 
 /-- The complex-conjugation function from `ℂ` to itself is a continuous `ℝ`-algebra isomorphism. -/
-def conjCAE : ℂ ≃A[ℝ] ℂ := { conjAe, conjLIE.toContinuousLinearEquiv with }
+noncomputable def conjCAE : ℂ ≃A[ℝ] ℂ := { conjAe, conjLIE.toContinuousLinearEquiv with }
 
 /-- Continuous linear equiv version of the conj function, from `ℂ` to `ℂ`.
 
 This is an abbreviation for `conjCAE` coerced to a continuous linear map. -/
-abbrev conjCLE : ℂ ≃L[ℝ] ℂ := conjCAE.toContinuousLinearEquiv
+noncomputable abbrev conjCLE : ℂ ≃L[ℝ] ℂ := conjCAE.toContinuousLinearEquiv
 
 @[simp] lemma conjLIE_toCLE : conjLIE.toContinuousLinearEquiv = conjCLE := rfl
 
@@ -323,7 +322,7 @@ theorem ringHom_eq_ofReal_of_continuous {f : ℝ →+* ℂ} (h : Continuous f) :
       Subsingleton.elim (AlgHom.mk' f <| map_real_smul f h) (Algebra.ofId ℝ ℂ)
 
 /-- Continuous linear map version of the canonical embedding of `ℝ` in `ℂ`. -/
-def ofRealCLM : ℝ →L[ℝ] ℂ :=
+noncomputable def ofRealCLM : ℝ →L[ℝ] ℂ :=
   ofRealLI.toContinuousLinearMap
 
 @[simp]

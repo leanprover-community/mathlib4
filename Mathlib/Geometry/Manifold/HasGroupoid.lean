@@ -13,8 +13,6 @@ public import Mathlib.Geometry.Manifold.ChartedSpace
 
 @[expose] public section
 
-noncomputable section
-
 open TopologicalSpace Topology
 
 universe u
@@ -254,7 +252,7 @@ variable [Nonempty α]
 /-- An open embedding of `α` into `H` induces an `H`-charted space structure on `α`.
 See `OpenPartialHomeomorph.singletonChartedSpace`. -/
 @[implicit_reducible]
-def singletonChartedSpace {f : α → H} (h : IsOpenEmbedding f) : ChartedSpace H α :=
+noncomputable def singletonChartedSpace {f : α → H} (h : IsOpenEmbedding f) : ChartedSpace H α :=
   (h.toOpenPartialHomeomorph f).singletonChartedSpace (toOpenPartialHomeomorph_source _ _)
 
 theorem singletonChartedSpace_chartAt_eq {f : α → H} (h : IsOpenEmbedding f) {x : α} :
@@ -277,7 +275,7 @@ variable (G : StructureGroupoid H) [HasGroupoid M G]
 variable (s : Opens M)
 
 /-- An open subset of a charted space is naturally a charted space. -/
-protected instance instChartedSpace : ChartedSpace H s where
+protected noncomputable instance instChartedSpace : ChartedSpace H s where
   atlas := ⋃ x : s, {(chartAt H x.1).subtypeRestr ⟨x⟩}
   chartAt x := (chartAt H x.1).subtypeRestr ⟨x⟩
   mem_chart_source x := ⟨trivial, mem_chart_source H x.1⟩
@@ -462,6 +460,7 @@ theorem StructureGroupoid.restriction_mem_maximalAtlas_subtype
   exact G.mem_maximalAtlas_of_eqOnSource (M := s) this (G.subtypeRestr_mem_maximalAtlas he hs)
 
 /-- Each chart of a charted space is a structomorphism between its source and target. -/
+noncomputable
 def OpenPartialHomeomorph.toStructomorph {e : OpenPartialHomeomorph M H} (he : e ∈ atlas H M)
     [HasGroupoid M G] [ClosedUnderRestriction G] :
     let s : Opens M := { carrier := e.source, is_open' := e.open_source }

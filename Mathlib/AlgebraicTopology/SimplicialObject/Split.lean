@@ -38,8 +38,6 @@ Simplicial objects equipped with a splitting form a category
 @[expose] public section
 
 
-noncomputable section
-
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits Opposite SimplexCategory
 
 open Simplicial
@@ -83,7 +81,7 @@ theorem ext (A₁ A₂ : IndexSet Δ) (h₁ : A₁.1 = A₂.1) (h₂ : A₁.e �
   simp only [eqToHom_refl, comp_id, IndexSet.e] at h₂
   simp only [h₂]
 
-instance : Fintype (IndexSet Δ) :=
+noncomputable instance : Fintype (IndexSet Δ) :=
   Fintype.ofInjective
     (fun A =>
       ⟨⟨A.1.unop.len, Nat.lt_succ_iff.mpr (len_le_of_epi A.e)⟩,
@@ -176,7 +174,7 @@ variable {Δ' : SimplexCategoryᵒᵖ} (θ : Δ ⟶ Δ')
 /-- When `A : IndexSet Δ` and `θ : Δ → Δ'` is a morphism in `SimplexCategoryᵒᵖ`,
 an element in `IndexSet Δ'` can be defined by using the epi-mono factorisation
 of `θ.unop ≫ A.e`. -/
-def pull : IndexSet Δ' :=
+noncomputable def pull : IndexSet Δ' :=
   mk (factorThruImage (θ.unop ≫ A.e))
 
 @[reassoc]
@@ -293,7 +291,7 @@ set_option backward.defeqAttrib.useBackward true in
 /-- The image of a splitting of simplicial object by a functor which preserves
 finite coproducts -/
 @[simps]
-def map (F : C ⥤ D) [PreservesFiniteCoproducts F] :
+noncomputable def map (F : C ⥤ D) [PreservesFiniteCoproducts F] :
     Splitting (X ⋙ F) where
   N n := F.obj (s.N n)
   ι n := F.map (s.ι n)

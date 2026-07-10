@@ -23,8 +23,6 @@ interaction with a functor that preserves certain pullbacks.
 @[expose] public section
 
 
-noncomputable section
-
 open CategoryTheory.Limits
 
 namespace CategoryTheory
@@ -130,7 +128,7 @@ theorem t'_comp_eq_pullbackSymmetry (i j k : D.J) :
     simp [t_fac, t_fac_assoc]
 
 /-- (Implementation) The disjoint union of `U i`. -/
-def sigmaOpens [HasCoproduct D.U] : C :=
+noncomputable def sigmaOpens [HasCoproduct D.U] : C :=
   ∐ D.U
 
 /-- (Implementation) The diagram to take colimit of. -/
@@ -161,11 +159,11 @@ section
 variable [HasMulticoequalizer D.diagram]
 
 /-- The glued object given a family of gluing data. -/
-def glued : C :=
+noncomputable def glued : C :=
   multicoequalizer D.diagram
 
 /-- The map `D.U i ⟶ D.glued` for each `i`. -/
-def ι (i : D.J) : D.U i ⟶ D.glued :=
+noncomputable def ι (i : D.J) : D.U i ⟶ D.glued :=
   Multicoequalizer.π D.diagram i
 
 @[elementwise (attr := simp)]
@@ -174,13 +172,13 @@ theorem glue_condition (i j : D.J) : D.t i j ≫ D.f j i ≫ D.ι j = D.f i j �
 
 /-- The pullback cone spanned by `V i j ⟶ U i` and `V i j ⟶ U j`.
 This will often be a pullback diagram. -/
-def vPullbackCone (i j : D.J) : PullbackCone (D.ι i) (D.ι j) :=
+noncomputable def vPullbackCone (i j : D.J) : PullbackCone (D.ι i) (D.ι j) :=
   PullbackCone.mk (D.f i j) (D.t i j ≫ D.f j i) (by simp)
 
 variable [HasColimits C]
 
 /-- The projection `∐ D.U ⟶ D.glued` given by the colimit. -/
-def π : D.sigmaOpens ⟶ D.glued :=
+noncomputable def π : D.sigmaOpens ⟶ D.glued :=
   Multicoequalizer.sigmaπ D.diagram
 
 instance π_epi : Epi D.π := inferInstanceAs <| Epi (Multicoequalizer.sigmaπ D.diagram)
@@ -212,7 +210,7 @@ instance (i j k : D.J) : HasPullback (F.map (D.f i j)) (F.map (D.f i k)) :=
 
 /-- A functor that preserves the pullbacks of `f i j` and `f i k` can map a family of glue data. -/
 @[simps]
-def mapGlueData : GlueData C' where
+noncomputable def mapGlueData : GlueData C' where
   J := D.J
   U i := F.obj (D.U i)
   V i := F.obj (D.V i)
@@ -235,7 +233,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- The diagram of the image of a `GlueData` under a functor `F` is naturally isomorphic to the
 original diagram of the `GlueData` via `F`.
 -/
-def diagramIso : D.diagram.multispan ⋙ F ≅ (D.mapGlueData F).diagram.multispan :=
+noncomputable def diagramIso : D.diagram.multispan ⋙ F ≅ (D.mapGlueData F).diagram.multispan :=
   NatIso.ofComponents
     (fun x =>
       match x with
@@ -293,7 +291,7 @@ attribute [local instance] hasColimit_mapGlueData_diagram
 
 set_option backward.isDefEq.respectTransparency false in
 /-- If `F` preserves the gluing, we obtain an iso between the glued objects. -/
-def gluedIso : F.obj D.glued ≅ (D.mapGlueData F).glued :=
+noncomputable def gluedIso : F.obj D.glued ≅ (D.mapGlueData F).glued :=
   haveI : HasColimit (MultispanIndex.multispan (diagram (mapGlueData D F))) := inferInstance
   preservesColimitIso F D.diagram.multispan ≪≫ Limits.HasColimit.isoOfNatIso (D.diagramIso F)
 
@@ -310,7 +308,7 @@ theorem ι_gluedIso_inv (i : D.J) : (D.mapGlueData F).ι i ≫ (D.gluedIso F).in
 set_option backward.isDefEq.respectTransparency false in
 /-- If `F` preserves the gluing, and reflects the pullback of `U i ⟶ glued` and `U j ⟶ glued`,
 then `F` reflects the fact that `V_pullback_cone` is a pullback. -/
-def vPullbackConeIsLimitOfMap (i j : D.J) [ReflectsLimit (cospan (D.ι i) (D.ι j)) F]
+noncomputable def vPullbackConeIsLimitOfMap (i j : D.J) [ReflectsLimit (cospan (D.ι i) (D.ι j)) F]
     (hc : IsLimit ((D.mapGlueData F).vPullbackCone i j)) : IsLimit (D.vPullbackCone i j) := by
   apply isLimitOfReflects F
   apply (isLimitMapConePullbackConeEquiv _ _).symm _
@@ -377,7 +375,7 @@ variable {C}
 
 open scoped Classical in
 /-- (Implementation detail) the constructed `GlueData.f` from a `GlueData'`. -/
-abbrev GlueData'.f' (D : GlueData' C) (i j : D.J) :
+noncomputable abbrev GlueData'.f' (D : GlueData' C) (i j : D.J) :
     (if h : i = j then D.U i else D.V i j h) ⟶ D.U i :=
   if h : i = j then eqToHom (dif_pos h) else eqToHom (dif_neg h) ≫ D.f i j h
 
@@ -403,7 +401,7 @@ instance (D : GlueData' C) (i j k : D.J) :
 
 open scoped Classical in
 /-- (Implementation detail) the constructed `GlueData.t'` from a `GlueData'`. -/
-def GlueData'.t'' (D : GlueData' C) (i j k : D.J) :
+noncomputable def GlueData'.t'' (D : GlueData' C) (i j k : D.J) :
     pullback (D.f' i j) (D.f' i k) ⟶ pullback (D.f' j k) (D.f' j i) :=
   if hij : i = j then
     (pullbackSymmetry _ _).hom ≫
@@ -435,7 +433,7 @@ open scoped Classical in
 The constructed `GlueData` of a `GlueData'`, where `GlueData'` is a variant of `GlueData` that only
 requires conditions on `V (i, j)` when `i ≠ j`.
 -/
-def GlueData.ofGlueData' (D : GlueData' C) : GlueData C where
+noncomputable def GlueData.ofGlueData' (D : GlueData' C) : GlueData C where
   J := D.J
   U := D.U
   V ij := if h : ij.1 = ij.2 then D.U ij.1 else D.V ij.1 ij.2 h

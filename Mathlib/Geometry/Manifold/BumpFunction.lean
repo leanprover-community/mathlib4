@@ -44,8 +44,6 @@ open Function Filter Module Set Metric
 
 open scoped Topology Manifold ContDiff
 
-noncomputable section
-
 /-!
 ### Smooth bump function
 
@@ -78,10 +76,10 @@ variable {c : M} (f : SmoothBumpFunction I c) {x : M}
 
 /-- The function defined by `f : SmoothBumpFunction c`. Use automatic coercion to function
 instead. -/
-@[coe] def toFun : M → ℝ :=
+@[coe] noncomputable def toFun : M → ℝ :=
   indicator (chartAt H c).source (f.toContDiffBump ∘ extChartAt I c)
 
-instance : CoeFun (SmoothBumpFunction I c) fun _ => M → ℝ :=
+noncomputable instance : CoeFun (SmoothBumpFunction I c) fun _ => M → ℝ :=
   ⟨toFun⟩
 
 theorem coe_def : ⇑f = indicator (chartAt H c).source (f.toContDiffBump ∘ extChartAt I c) :=

@@ -37,8 +37,6 @@ set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 
-noncomputable section
-
 universe v v₂ u u₂
 
 namespace CategoryTheory
@@ -60,7 +58,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- In a category with pullbacks, a morphism `f : X ⟶ Y` induces a functor `Over Y ⥤ Over X`,
 by pulling back a morphism along `f`. -/
 @[simps! +simpRhs obj_left obj_hom map_left]
-def pullback {X Y : C} (f : X ⟶ Y) [HasPullbacksAlong f] :
+noncomputable def pullback {X Y : C} (f : X ⟶ Y) [HasPullbacksAlong f] :
     Over Y ⥤ Over X where
   obj g := Over.mk (pullback.snd g.hom f)
   map := fun g {h} {k} =>
@@ -71,7 +69,7 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- `Over.map f` is left adjoint to `Over.pullback f`. -/
 @[simps! unit_app counit_app]
-def mapPullbackAdj {X Y : C} (f : X ⟶ Y) [HasPullbacksAlong f] :
+noncomputable def mapPullbackAdj {X Y : C} (f : X ⟶ Y) [HasPullbacksAlong f] :
     Over.map f ⊣ pullback f :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun x y =>
@@ -108,10 +106,11 @@ instance faithful_pullback {X Y : C} (f : X ⟶ Y) [HasPullbacksAlong f]
   exact (mapPullbackAdj f).faithful_R_of_epi_counit_app
 
 /-- pullback (𝟙 X) : Over X ⥤ Over X is the identity functor. -/
-def pullbackId {X : C} : pullback (𝟙 X) ≅ 𝟭 _ :=
+noncomputable def pullbackId {X : C} : pullback (𝟙 X) ≅ 𝟭 _ :=
   conjugateIsoEquiv (mapPullbackAdj (𝟙 _)) (Adjunction.id (C := Over _)) (Over.mapId _).symm
 
 /-- pullback commutes with composition (up to natural isomorphism). -/
+noncomputable
 def pullbackComp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [HasPullbacksAlong f] [HasPullbacksAlong g] :
     pullback (f ≫ g) ≅ pullback g ⋙ pullback f :=
   conjugateIsoEquiv (mapPullbackAdj _) ((mapPullbackAdj _).comp (mapPullbackAdj _))
@@ -130,7 +129,7 @@ open pullback in
 If the right adjoint of `F` is `G`, then the right adjoint of `post F` is given by
 `(Y ⟶ F X) ↦ (G Y ⟶ X ×_{G F X} G Y ⟶ X)`. -/
 @[simps!]
-def postAdjunctionLeft [HasPullbacks C] {X : C} {F : C ⥤ D} {G : D ⥤ C} (a : F ⊣ G) :
+noncomputable def postAdjunctionLeft [HasPullbacks C] {X : C} {F : C ⥤ D} {G : D ⥤ C} (a : F ⊣ G) :
     post F ⊣ post G ⋙ pullback (a.unit.app X) :=
   ((mapPullbackAdj (a.unit.app X)).comp (postAdjunctionRight a)).ofNatIsoLeft <|
     NatIso.ofComponents fun Y ↦ isoMk (.refl _)
@@ -155,13 +154,14 @@ variable [HasBinaryProducts C]
 The functor from `C` to `Over X` which sends `Y : C` to `π₁ : X ⨯ Y ⟶ X`, sometimes denoted `X*`.
 -/
 @[simps! obj_left obj_hom map_left]
-def star : C ⥤ Over X := cofree _ ⋙ coalgebraToOver X
+noncomputable def star : C ⥤ Over X := cofree _ ⋙ coalgebraToOver X
 
 /-- The functor `Over.forget X : Over X ⥤ C` has a right adjoint given by `star X`.
 
 Note that the binary products assumption is necessary: the existence of a right adjoint to
 `Over.forget X` is equivalent to the existence of each binary product `X ⨯ -`.
 -/
+noncomputable
 def forgetAdjStar : forget X ⊣ star X := (coalgebraEquivOver X).symm.toAdjunction.comp (adj _)
 
 set_option backward.defeqAttrib.useBackward true in
@@ -203,7 +203,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- When `C` has pushouts, a morphism `f : X ⟶ Y` induces a functor `Under X ⥤ Under Y`,
 by pushing a morphism forward along `f`. -/
 @[simps]
-def pushout {X Y : C} (f : X ⟶ Y) [HasPushoutsAlong f] :
+noncomputable def pushout {X Y : C} (f : X ⟶ Y) [HasPushoutsAlong f] :
     Under X ⥤ Under Y where
   obj x := Under.mk (pushout.inr x.hom f)
   map := fun x {x'} {u} =>
@@ -213,7 +213,7 @@ def pushout {X Y : C} (f : X ⟶ Y) [HasPushoutsAlong f] :
 set_option backward.isDefEq.respectTransparency false in
 /-- `Under.pushout f` is left adjoint to `Under.map f`. -/
 @[simps! unit_app counit_app]
-def mapPushoutAdj {X Y : C} (f : X ⟶ Y) [HasPushoutsAlong f] :
+noncomputable def mapPushoutAdj {X Y : C} (f : X ⟶ Y) [HasPushoutsAlong f] :
     pushout f ⊣ map f :=
   Adjunction.mkOfHomEquiv {
     homEquiv := fun x y => {
@@ -248,12 +248,12 @@ instance faithful_pushout {X Y : C} (f : X ⟶ Y) [HasPushoutsAlong f]
   exact (mapPushoutAdj f).faithful_L_of_mono_unit_app
 
 /-- pushout (𝟙 X) : Under X ⥤ Under X is the identity functor. -/
-def pushoutId {X : C} : pushout (𝟙 X) ≅ 𝟭 _ :=
+noncomputable def pushoutId {X : C} : pushout (𝟙 X) ≅ 𝟭 _ :=
   (conjugateIsoEquiv (Adjunction.id (C := Under _)) (mapPushoutAdj (𝟙 _))).symm
     (Under.mapId X).symm
 
 /-- pushout commutes with composition (up to natural isomorphism). -/
-def pushoutComp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z)
+noncomputable def pushoutComp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z)
     [HasPushoutsAlong f] [HasPushoutsAlong g] :
     pushout (f ≫ g) ≅ pushout f ⋙ pushout g :=
   (conjugateIsoEquiv ((mapPushoutAdj _).comp (mapPushoutAdj _)) (mapPushoutAdj _)).symm
@@ -271,7 +271,7 @@ open pushout in
 If the left adjoint of `G` is `F`, then the left adjoint of `post G` is given by
 `(G Y ⟶ X) ↦ (Y ⟶ Y ⨿_{F G Y} F X ⟶ F X)`. -/
 @[simps!]
-def postAdjunctionRight [HasPushouts D] {Y : D} {F : C ⥤ D} {G : D ⥤ C} (a : F ⊣ G) :
+noncomputable def postAdjunctionRight [HasPushouts D] {Y : D} {F : C ⥤ D} {G : D ⥤ C} (a : F ⊣ G) :
     post F ⋙ pushout (a.counit.app Y) ⊣ post G :=
   ((postAdjunctionLeft a).comp (mapPushoutAdj (a.counit.app Y))).ofNatIsoRight <|
     NatIso.ofComponents fun Y ↦ isoMk (.refl _)
@@ -292,12 +292,13 @@ variable [HasBinaryCoproducts C]
 
 /-- The functor from `C` to `Under X` which sends `Y : C` to `in₁ : X ⟶ X ⨿ Y`. -/
 @[simps! obj_left obj_hom]
-def costar : C ⥤ Under X := Monad.free _ ⋙ algebraToUnder X
+noncomputable def costar : C ⥤ Under X := Monad.free _ ⋙ algebraToUnder X
 
 /-- The functor `Under.forget X : Under X ⥤ C` has a left adjoint given by `costar X`.
 
 Note that the binary coproducts assumption is necessary: the existence of a left adjoint to
 `Under.forget X` is equivalent to the existence of each binary coproduct `X ⨿ -`. -/
+noncomputable
 def costarAdjForget : costar X ⊣ forget X := (Monad.adj _).comp (algebraEquivUnder X).toAdjunction
 
 instance : (costar X).IsLeftAdjoint := ⟨_, ⟨costarAdjForget X⟩⟩

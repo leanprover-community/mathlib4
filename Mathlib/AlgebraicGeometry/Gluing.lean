@@ -55,8 +55,6 @@ glue presheafed spaces, sheafed spaces, and locally ringed spaces.
 @[expose] public section
 
 
-noncomputable section
-
 universe v u
 
 open TopologicalSpace CategoryTheory Opposite Topology
@@ -100,7 +98,7 @@ variable (D : GlueData.{u})
 local notation "𝖣" => D.toGlueData
 
 /-- The glue data of locally ringed spaces associated to a family of glue data of schemes. -/
-abbrev toLocallyRingedSpaceGlueData : LocallyRingedSpace.GlueData :=
+noncomputable abbrev toLocallyRingedSpaceGlueData : LocallyRingedSpace.GlueData :=
   { f_open := D.f_open
     toGlueData := 𝖣.mapGlueData forgetToLocallyRingedSpace }
 
@@ -126,7 +124,7 @@ instance (i : 𝖣.J) :
 set_option backward.isDefEq.respectTransparency false in
 /-- (Implementation). The glued scheme of a glue data.
 This should not be used outside this file. Use `AlgebraicGeometry.Scheme.GlueData.glued` instead. -/
-def gluedScheme : Scheme := by
+noncomputable def gluedScheme : Scheme := by
   apply LocallyRingedSpace.IsOpenImmersion.scheme
     D.toLocallyRingedSpaceGlueData.toGlueData.glued
   intro x
@@ -140,7 +138,7 @@ def gluedScheme : Scheme := by
     exact Set.mem_image_of_mem _ ⟨z, hz⟩
   · infer_instance
 
-instance : CreatesColimit 𝖣.diagram.multispan forgetToLocallyRingedSpace :=
+noncomputable instance : CreatesColimit 𝖣.diagram.multispan forgetToLocallyRingedSpace :=
   createsColimitOfFullyFaithfulOfIso D.gluedScheme
     (HasColimit.isoOfNatIso (𝖣.diagramIso forgetToLocallyRingedSpace).symm)
 
@@ -155,15 +153,15 @@ instance : HasMulticoequalizer 𝖣.diagram :=
   hasColimit_of_created _ forgetToLocallyRingedSpace
 
 /-- The glued scheme of a glued space. -/
-abbrev glued : Scheme :=
+noncomputable abbrev glued : Scheme :=
   𝖣.glued
 
 /-- The immersion from `D.U i` into the glued space. -/
-abbrev ι (i : D.J) : D.U i ⟶ D.glued :=
+noncomputable abbrev ι (i : D.J) : D.U i ⟶ D.glued :=
   𝖣.ι i
 
 /-- The gluing as sheafed spaces is isomorphic to the gluing as presheafed spaces. -/
-abbrev isoLocallyRingedSpace :
+noncomputable abbrev isoLocallyRingedSpace :
     D.glued.toLocallyRingedSpace ≅ D.toLocallyRingedSpaceGlueData.toGlueData.glued :=
   𝖣.gluedIso forgetToLocallyRingedSpace
 
@@ -187,7 +185,7 @@ theorem glue_condition (i j : D.J) : D.t i j ≫ D.f j i ≫ D.ι j = D.f i j �
 
 /-- The pullback cone spanned by `V i j ⟶ U i` and `V i j ⟶ U j`.
 This is a pullback diagram (`vPullbackConeIsLimit`). -/
-def vPullbackCone (i j : D.J) : PullbackCone (D.ι i) (D.ι j) :=
+noncomputable def vPullbackCone (i j : D.J) : PullbackCone (D.ι i) (D.ι j) :=
   PullbackCone.mk (D.f i j) (D.t i j ≫ D.f j i) (by simp)
 
 /-- The following diagram is a pullback, i.e. `Vᵢⱼ` is the intersection of `Uᵢ` and `Uⱼ` in `X`.
@@ -198,7 +196,7 @@ Vᵢⱼ ⟶ Uᵢ
  Uⱼ ⟶ X
 ```
 -/
-def vPullbackConeIsLimit (i j : D.J) : IsLimit (D.vPullbackCone i j) :=
+noncomputable def vPullbackConeIsLimit (i j : D.J) : IsLimit (D.vPullbackCone i j) :=
   𝖣.vPullbackConeIsLimitOfMap forgetToLocallyRingedSpace i j
     (D.toLocallyRingedSpaceGlueData.vPullbackConeIsLimit _ _)
 
@@ -207,7 +205,7 @@ local notation "D_" => TopCat.GlueData.toGlueData <|
 
 /-- The underlying topological space of the glued scheme is isomorphic to the gluing of the
 underlying spaces -/
-def isoCarrier :
+noncomputable def isoCarrier :
     D.glued.carrier ≅ (D_).glued := by
   refine (PresheafedSpace.forget _).mapIso ?_ ≪≫
     GlueData.gluedIso _ (PresheafedSpace.forget.{_, _, u} _)
@@ -259,7 +257,7 @@ theorem isOpen_iff (U : Set D.glued.carrier) : IsOpen U ↔ ∀ i, IsOpen (D.ι 
 
 /-- The open cover of the glued space given by the glue data. -/
 @[simps -isSimp]
-def openCover (D : Scheme.GlueData) : OpenCover D.glued where
+noncomputable def openCover (D : Scheme.GlueData) : OpenCover D.glued where
   I₀ := D.J
   X := D.U
   f := D.ι
@@ -274,7 +272,7 @@ namespace Cover
 variable {X : Scheme.{u}} (𝒰 : OpenCover.{u} X)
 
 /-- (Implementation) the transition maps in the glue data associated with an open cover. -/
-def gluedCoverT' (x y z : 𝒰.I₀) :
+noncomputable def gluedCoverT' (x y z : 𝒰.I₀) :
     pullback (pullback.fst (𝒰.f x) (𝒰.f y)) (pullback.fst (𝒰.f x) (𝒰.f z)) ⟶
       pullback (pullback.fst (𝒰.f y) (𝒰.f z)) (pullback.fst (𝒰.f y) (𝒰.f x)) := by
   refine (pullbackRightPullbackFstIso _ _ _).hom ≫ ?_
@@ -331,7 +329,7 @@ theorem glued_cover_cocycle (x y z : 𝒰.I₀) :
 /-- The glue data associated with an open cover.
 The canonical isomorphism `𝒰.gluedCover.glued ⟶ X` is provided by `𝒰.fromGlued`. -/
 @[simps]
-def gluedCover : Scheme.GlueData.{u} where
+noncomputable def gluedCover : Scheme.GlueData.{u} where
   J := 𝒰.I₀
   U := 𝒰.X
   V := fun ⟨x, y⟩ => pullback (𝒰.f x) (𝒰.f y)
@@ -347,7 +345,7 @@ def gluedCover : Scheme.GlueData.{u} where
 
 /-- The canonical morphism from the gluing of an open cover of `X` into `X`.
 This is an isomorphism, as witnessed by an `IsIso` instance. -/
-def fromGlued : 𝒰.gluedCover.glued ⟶ X := by
+noncomputable def fromGlued : 𝒰.gluedCover.glued ⟶ X := by
   fapply Multicoequalizer.desc
   · exact fun x => 𝒰.f x
   rintro ⟨x, y⟩
@@ -436,7 +434,7 @@ together into a morphism `X ⟶ Y`.
 Note:
 If `X` is exactly (defeq to) the gluing of `U i`, then using `Multicoequalizer.desc` suffices.
 -/
-def glueMorphisms (𝒰 : OpenCover.{v} X) {Y : Scheme.{u}} (f : ∀ x, 𝒰.X x ⟶ Y)
+noncomputable def glueMorphisms (𝒰 : OpenCover.{v} X) {Y : Scheme.{u}} (f : ∀ x, 𝒰.X x ⟶ Y)
     (hf : ∀ x y, pullback.fst (𝒰.f x) (𝒰.f y) ≫ f x = pullback.snd _ _ ≫ f y) :
     X ⟶ Y := by
   refine inv 𝒰.ulift.fromGlued ≫ ?_
@@ -610,7 +608,7 @@ lemma fst_inv_eq_snd_inv
 
 /-- (Implementation detail)
 The inclusion map `V i j ⟶ F j` in the glue data associated to a locally directed diagram. -/
-def tAux (i j : J) : (V F i j).toScheme ⟶ F.obj j :=
+noncomputable def tAux (i j : J) : (V F i j).toScheme ⟶ F.obj j :=
   (Scheme.Opens.iSupOpenCover _).glueMorphisms
     (fun k ↦ (F.map k.2.1).isoOpensRange.inv ≫ F.map k.2.2) fun k₁ k₂ ↦ by
       dsimp [Scheme.Opens.iSupOpenCover]
@@ -625,7 +623,7 @@ lemma homOfLE_tAux (i j : J) {k : J} (fi : k ⟶ i) (fj : k ⟶ j) :
 set_option backward.isDefEq.respectTransparency false in
 /-- (Implementation detail)
 The transition map `V i j ⟶ V j i` in the glue data associated to a locally directed diagram. -/
-def t (i j : J) : (V F i j).toScheme ⟶ (V F j i).toScheme :=
+noncomputable def t (i j : J) : (V F i j).toScheme ⟶ (V F j i).toScheme :=
   IsOpenImmersion.lift (V F j i).ι (tAux F i j) (by
     rintro _ ⟨x, rfl⟩
     obtain ⟨l, x, rfl⟩ := (Scheme.Opens.iSupOpenCover _).exists_eq x
@@ -650,7 +648,7 @@ The glue data associated to a locally directed diagram.
 
 One usually does not want to use this directly, and instead use the generic `colimit` API.
 -/
-def glueData : Scheme.GlueData where
+noncomputable def glueData : Scheme.GlueData where
   J := Shrink.{u} J
   U j := F.obj ↓j
   V ij := V F ↓ij.1 ↓ij.2
@@ -720,7 +718,7 @@ The cocone associated to a locally directed diagram.
 
 One usually does not want to use this directly, and instead use the generic `colimit` API.
 -/
-def cocone : Cocone F where
+noncomputable def cocone : Cocone F where
   pt := (glueData F).glued
   ι.app j := F.map (eqToHom (by simp)) ≫ (glueData F).ι (equivShrink _ j)
   ι.naturality {i j} f := by
@@ -795,14 +793,14 @@ instance : HasColimit F := ⟨_, isColimit F⟩
 instance : PreservesColimit F Scheme.forgetToLocallyRingedSpace :=
   preservesColimit_of_preserves_colimit_cocone (isColimit F) (isColimitForgetToLocallyRingedSpace F)
 
-instance : CreatesColimit F Scheme.forgetToLocallyRingedSpace :=
+noncomputable instance : CreatesColimit F Scheme.forgetToLocallyRingedSpace :=
   CategoryTheory.createsColimitOfReflectsIsomorphismsOfPreserves
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The open cover of the colimit of a locally directed diagram by the components. -/
 @[simps! I₀ X f]
-def openCover : (colimit F).OpenCover :=
+noncomputable def openCover : (colimit F).OpenCover :=
   Cover.copy ((coverOfIsIso ((isColimit F).coconePointUniqueUpToIso (colimit.isColimit F)).hom).bind
     fun i ↦ (glueData F).openCover) J F.obj (colimit.ι F)
     ((equivShrink J).trans <| (Equiv.uniqueSigma fun (_ : Unit) ↦ Shrink J).symm)

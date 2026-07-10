@@ -27,8 +27,6 @@ supported.
 
 @[expose] public section
 
-noncomputable section
-
 open Finset Finsupp Function Pointwise
 
 variable {ι α : Type*}
@@ -85,7 +83,7 @@ section PartialOrder
 variable [PartialOrder α] [Zero α] [LocallyFiniteOrder α] [DecidableEq ι] [DecidableEq α]
 variable (f g : ι →₀ α)
 
-instance instLocallyFiniteOrder : LocallyFiniteOrder (ι →₀ α) :=
+noncomputable instance instLocallyFiniteOrder : LocallyFiniteOrder (ι →₀ α) :=
   LocallyFiniteOrder.ofIcc (ι →₀ α) (fun f g => (f.support ∪ g.support).finsupp <| f.rangeIcc g)
     fun f g x => by
       refine

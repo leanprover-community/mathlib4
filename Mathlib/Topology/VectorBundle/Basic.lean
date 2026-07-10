@@ -58,8 +58,6 @@ Vector bundle
 
 @[expose] public section
 
-noncomputable section
-
 open Bundle Set Topology
 
 variable (R : Type*) {B : Type*} (F : Type*) (E : B → Type*)
@@ -88,7 +86,8 @@ variable [AddCommMonoid F] [Module R F] [∀ x, AddCommMonoid (E x)] [∀ x, Mod
 
 open scoped Classical in
 /-- A fiberwise linear inverse to `e`. -/
-protected def symmₗ (e : Pretrivialization F (π F E)) [e.IsLinear R] (b : B) : F →ₗ[R] E b := by
+protected noncomputable
+def symmₗ (e : Pretrivialization F (π F E)) [e.IsLinear R] (b : B) : F →ₗ[R] E b := by
   refine if hb : b ∈ e.baseSet then IsLinearMap.mk' (e.symm b) ?_ else 0
   exact (((e.linear R hb).mk' _).inverse (e.symm b) (e.symm_apply_apply_mk hb) fun v ↦
     congr_arg Prod.snd <| e.apply_mk_symm hb v).isLinear
@@ -106,6 +105,7 @@ lemma symmₗ_apply_of_notMem (e : Pretrivialization F (π F E)) [e.IsLinear R] 
 /-- A pretrivialization for a vector bundle defines linear equivalences between the
 fibers and the model space. -/
 @[simps -fullyApplied]
+noncomputable
 def linearEquivAt (e : Pretrivialization F (π F E)) [e.IsLinear R] (b : B) (hb : b ∈ e.baseSet) :
     E b ≃ₗ[R] F where
   toFun y := (e ⟨b, y⟩).2
@@ -117,7 +117,8 @@ def linearEquivAt (e : Pretrivialization F (π F E)) [e.IsLinear R] (b : B) (hb 
 
 open scoped Classical in
 /-- A fiberwise linear map equal to `e` on `e.baseSet`. -/
-protected def linearMapAt (e : Pretrivialization F (π F E)) [e.IsLinear R] (b : B) : E b →ₗ[R] F :=
+protected noncomputable
+def linearMapAt (e : Pretrivialization F (π F E)) [e.IsLinear R] (b : B) : E b →ₗ[R] F :=
   if hb : b ∈ e.baseSet then e.linearEquivAt R b hb else 0
 
 variable {R}
@@ -183,6 +184,7 @@ variable [AddCommMonoid F] [Module R F] [∀ x, AddCommMonoid (E x)] [∀ x, Mod
 
 /-- A trivialization for a vector bundle defines linear equivalences between the
 fibers and the model space. -/
+noncomputable
 def linearEquivAt (e : Trivialization F (π F E)) [e.IsLinear R] (b : B) (hb : b ∈ e.baseSet) :
     E b ≃ₗ[R] F :=
   e.toPretrivialization.linearEquivAt R b hb
@@ -201,7 +203,8 @@ theorem linearEquivAt_symm_apply (e : Trivialization F (π F E)) [e.IsLinear R] 
 
 variable (R) in
 /-- A fiberwise linear inverse to `e`. -/
-protected def symmₗ (e : Trivialization F (π F E)) [e.IsLinear R] (b : B) : F →ₗ[R] E b :=
+protected noncomputable
+def symmₗ (e : Trivialization F (π F E)) [e.IsLinear R] (b : B) : F →ₗ[R] E b :=
   e.toPretrivialization.symmₗ R b
 
 theorem coe_symmₗ (e : Trivialization F (π F E)) [e.IsLinear R] {b : B} (hb : b ∈ e.baseSet) :
@@ -220,7 +223,8 @@ theorem symmₗ_apply_of_notMem (e : Trivialization F (π F E)) [e.IsLinear R] {
 
 variable (R) in
 /-- A fiberwise linear map equal to `e` on `e.baseSet`. -/
-protected def linearMapAt (e : Trivialization F (π F E)) [e.IsLinear R] (b : B) : E b →ₗ[R] F :=
+protected noncomputable
+def linearMapAt (e : Trivialization F (π F E)) [e.IsLinear R] (b : B) : E b →ₗ[R] F :=
   e.toPretrivialization.linearMapAt R b
 
 open scoped Classical in
@@ -267,6 +271,7 @@ variable (R) in
 open scoped Classical in
 /-- A coordinate change function between two trivializations, as a continuous linear equivalence.
   Defined to be the identity when `b` does not lie in the base set of both trivializations. -/
+noncomputable
 def coordChangeL (e e' : Trivialization F (π F E)) [e.IsLinear R] [e'.IsLinear R] (b : B) :
     F ≃L[R] F :=
   { toLinearEquiv := if hb : b ∈ e.baseSet ∩ e'.baseSet
@@ -396,6 +401,7 @@ namespace Bundle.Trivialization
 /-- Forward map of `Bundle.Trivialization.continuousLinearEquivAt` (only propositionally equal),
   defined everywhere (`0` outside domain). -/
 @[simps -fullyApplied apply]
+noncomputable
 def continuousLinearMapAt (e : Trivialization F (π F E)) [e.IsLinear R] (b : B) : E b →L[R] F :=
   { e.linearMapAt R b with
     toFun := e.linearMapAt R b -- given explicitly to help `simps`
@@ -412,7 +418,7 @@ lemma continuousLinearMapAt_apply_of_mem (e : Trivialization F TotalSpace.proj)
   simp [coe_linearMapAt_of_mem e hb]
 
 /-- Backwards map of `Bundle.Trivialization.continuousLinearEquivAt`, defined everywhere. -/
-def symmL (e : Trivialization F (π F E)) [e.IsLinear R] (b : B) : F →L[R] E b :=
+noncomputable def symmL (e : Trivialization F (π F E)) [e.IsLinear R] (b : B) : F →L[R] E b :=
   { e.symmₗ R b with
     cont := by
       by_cases hb : b ∈ e.baseSet
@@ -446,7 +452,7 @@ variable (R) in
 /-- In a vector bundle, a trivialization in the fiber (which is a priori only linear)
 is in fact a continuous linear equiv between the fibers and the model fiber. -/
 @[simps -fullyApplied apply symm_apply]
-def continuousLinearEquivAt (e : Trivialization F (π F E)) [e.IsLinear R] (b : B)
+noncomputable def continuousLinearEquivAt (e : Trivialization F (π F E)) [e.IsLinear R] (b : B)
     (hb : b ∈ e.baseSet) : E b ≃L[R] F :=
   { e.toPretrivialization.linearEquivAt R b hb with
     toFun := fun y => (e ⟨b, y⟩).2 -- given explicitly to help `simps`
@@ -830,7 +836,7 @@ variable {R E F}
 
 /-- A randomly chosen coordinate change on a `VectorPrebundle`, given by
   the field `exists_coordChange`. -/
-def coordChange (a : VectorPrebundle R F E) {e e' : Pretrivialization F (π F E)}
+noncomputable def coordChange (a : VectorPrebundle R F E) {e e' : Pretrivialization F (π F E)}
     (he : e ∈ a.pretrivializationAtlas) (he' : e' ∈ a.pretrivializationAtlas) (b : B) : F →L[R] F :=
   Classical.choose (a.exists_coordChange e he e' he') b
 
@@ -964,7 +970,7 @@ This is the (second component of the) underlying function of a trivialization of
 defined even when `x` and `y` live in different base sets.
 Therefore, it is also convenient when working with the hom-bundle between pulled back bundles.
 -/
-def inCoordinates (x₀ x : B) (y₀ y : B') (ϕ : E x →SL[σ] E' y) : F →SL[σ] F' :=
+noncomputable def inCoordinates (x₀ x : B) (y₀ y : B') (ϕ : E x →SL[σ] E' y) : F →SL[σ] F' :=
   ((trivializationAt F' E' y₀).continuousLinearMapAt 𝕜₂ y).comp <|
     ϕ.comp <| (trivializationAt F E x₀).symmL 𝕜₁ x
 

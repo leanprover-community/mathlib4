@@ -50,8 +50,6 @@ of products.
 @[expose] public section
 
 
-noncomputable section
-
 namespace ContinuousMap
 
 open ContinuousMap
@@ -115,6 +113,7 @@ def piHomotopy (γ₀ γ₁ : ∀ i, Path (as i) (bs i)) (H : ∀ i, Path.Homoto
   ContinuousMap.HomotopyRel.pi H
 
 /-- The product of a family of path homotopy classes. -/
+noncomputable
 def pi (γ : ∀ i, Path.Homotopic.Quotient (as i) (bs i)) : Path.Homotopic.Quotient as bs :=
   (_root_.Quotient.map Path.pi fun x y hxy =>
     Nonempty.map (piHomotopy x y) (Classical.nonempty_pi.mpr hxy)) (Quotient.choice γ)

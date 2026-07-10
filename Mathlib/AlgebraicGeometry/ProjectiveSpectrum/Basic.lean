@@ -357,7 +357,7 @@ def stalkIso (x : Proj 𝒜) :
 
 end stalk
 
-noncomputable section ofGlobalSection
+section ofGlobalSection
 
 open Limits
 
@@ -365,7 +365,7 @@ variable {X : Scheme.{u}} (f : A →+* Γ(X, ⊤)) {x x' : Γ(X, ⊤)} {t t' : A
 
 /-- Given a graded ring `A` and a map `f : A →+* Γ(X, ⊤)`,
 for each homogeneous `t` of positive degree, it induces a map from `D(f(t)) ⟶ D₊(t)`. -/
-def toBasicOpenOfGlobalSections (H : f t = x) (h0d : 0 < d) (hd : t ∈ 𝒜 d) :
+noncomputable def toBasicOpenOfGlobalSections (H : f t = x) (h0d : 0 < d) (hd : t ∈ 𝒜 d) :
     (X.basicOpen x).toScheme ⟶ basicOpen 𝒜 t := by
   refine ?_ ≫ (basicOpenIsoSpec _ _ hd h0d).inv
   refine (X.isoOfEq (X.toSpecΓ_preimage_basicOpen x)).inv ≫ X.toSpecΓ ∣_ _ ≫ ?_
@@ -436,7 +436,7 @@ def openCoverOfMapIrrelevantEqTop : X.OpenCover :=
 set_option backward.defeqAttrib.useBackward true in
 /-- Given a graded ring `A` and a map `f : A →+* Γ(X, ⊤)` such that the image of the
 irrelevant ideal under `f` generates the whole ring, we can construct a map `X ⟶ Proj 𝒜`. -/
-def fromOfGlobalSections : X ⟶ Proj 𝒜 := by
+noncomputable def fromOfGlobalSections : X ⟶ Proj 𝒜 := by
   refine (openCoverOfMapIrrelevantEqTop 𝒜 f hf).glueMorphisms
     (fun ri ↦ toBasicOpenOfGlobalSections 𝒜 f rfl ri.2.2.1 ri.2.2.2 ≫ Scheme.Opens.ι _) ?_
   rintro x y

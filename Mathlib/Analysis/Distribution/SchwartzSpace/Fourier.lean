@@ -31,8 +31,6 @@ functions, in `fourierTransformCLM`. It is also given as a continuous linear equ
 open Real MeasureTheory MeasureTheory.Measure
 open scoped FourierTransform ComplexInnerProductSpace
 
-noncomputable section
-
 namespace SchwartzMap
 
 variable
@@ -48,7 +46,7 @@ Schwartz space.
 
 This definition is only to define the Fourier transform, use `FourierTransform.fourierCLM` instead.
 -/
-def fourierTransformCLM : 𝓢(V, E) →L[𝕜] 𝓢(V, E) := by
+noncomputable def fourierTransformCLM : 𝓢(V, E) →L[𝕜] 𝓢(V, E) := by
   refine mkCLM ((𝓕 : (V → E) → (V → E)) ·) ?_ ?_ ?_ ?_
   · intro f g
     simp [fourier_eq, integral_add ((fourierIntegral_convergent_iff _).mpr f.integrable)
@@ -83,7 +81,7 @@ def fourierTransformCLM : 𝓢(V, E) →L[𝕜] 𝓢(V, E) := by
         apply Seminorm.le_def.mp (Finset.le_sup (f := fun p ↦ SchwartzMap.seminorm 𝕜 p.1 p.2) this)
     _ = _ := by simp [mul_assoc]
 
-instance instFourierTransform : FourierTransform 𝓢(V, E) 𝓢(V, E) where
+noncomputable instance instFourierTransform : FourierTransform 𝓢(V, E) 𝓢(V, E) where
   fourier f := fourierTransformCLM ℂ f
 
 instance instFourierAdd : FourierAdd 𝓢(V, E) 𝓢(V, E) where
@@ -101,7 +99,7 @@ lemma fourier_coe (f : 𝓢(V, E)) : 𝓕 f = 𝓕 (f : V → E) := rfl
 theorem fourierTransformCLM_apply (f : 𝓢(V, E)) :
     fourierTransformCLM 𝕜 f = 𝓕 f := rfl
 
-instance instFourierTransformInv : FourierTransformInv 𝓢(V, E) 𝓢(V, E) where
+noncomputable instance instFourierTransformInv : FourierTransformInv 𝓢(V, E) 𝓢(V, E) where
   fourierInv := (compCLMOfContinuousLinearEquiv ℂ (LinearIsometryEquiv.neg ℝ (E := V)))
       ∘L (fourierTransformCLM ℂ)
 

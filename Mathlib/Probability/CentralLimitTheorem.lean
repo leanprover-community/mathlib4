@@ -31,8 +31,6 @@ central limit theorem
 
 public section
 
-noncomputable section
-
 open MeasureTheory ProbabilityTheory Complex Filter
 open scoped Real Topology
 

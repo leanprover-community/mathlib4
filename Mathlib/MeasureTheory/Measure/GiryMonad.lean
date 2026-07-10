@@ -33,8 +33,6 @@ giry monad
 @[expose] public section
 
 
-noncomputable section
-
 open ENNReal Set Filter
 
 variable {α β : Type*}
@@ -122,7 +120,7 @@ theorem measurable_lintegral {f : α → ℝ≥0∞} (hf : Measurable f) :
 
 /-- Monadic join on `Measure` in the category of measurable spaces and measurable
 functions. -/
-def join (m : Measure (Measure α)) : Measure α :=
+noncomputable def join (m : Measure (Measure α)) : Measure α :=
   Measure.ofMeasurable (fun s _ => ∫⁻ μ, μ s ∂m)
     (by simp only [measure_empty, lintegral_const, zero_mul])
     (by
@@ -225,7 +223,7 @@ theorem lintegral_join_le (f : α → ℝ≥0∞) (m : Measure (Measure α)) :
 
 /-- Monadic bind on `Measure`, only works in the category of measurable spaces and measurable
 functions. When the function `f` is not measurable the result is not well defined. -/
-def bind (m : Measure α) (f : α → Measure β) : Measure β :=
+noncomputable def bind (m : Measure α) (f : α → Measure β) : Measure β :=
   join (map f m)
 
 @[simp]

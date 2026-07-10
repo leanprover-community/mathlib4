@@ -27,7 +27,7 @@ open CategoryTheory CategoryTheory.Limits
 variable {ι : Type*}
 variable {V : Type u} [Category.{v} V] [HasZeroMorphisms V]
 
-noncomputable section
+section
 
 section
 
@@ -38,6 +38,7 @@ theorem image_le_kernel (w : f ≫ g = 0) : imageSubobject f ≤ kernelSubobject
 
 /-- The canonical morphism `imageSubobject f ⟶ kernelSubobject g` when `f ≫ g = 0`.
 -/
+noncomputable
 def imageToKernel (w : f ≫ g = 0) : (imageSubobject f : V) ⟶ (kernelSubobject g : V) :=
   Subobject.ofLE _ _ (image_le_kernel _ _ w)
 
@@ -159,7 +160,7 @@ this variant provides a morphism
 `image f ⟶ kernel g`,
 which is sometimes more convenient.
 -/
-def imageToKernel' (w : f ≫ g = 0) : image f ⟶ kernel g :=
+noncomputable def imageToKernel' (w : f ≫ g = 0) : image f ⟶ kernel g :=
   kernel.lift g (image.ι f) <| by
     ext
     simpa using w

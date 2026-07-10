@@ -42,8 +42,6 @@ set_option backward.defeqAttrib.useBackward true
 @[expose] public section
 
 
-noncomputable section
-
 open CategoryTheory.Category CategoryTheory.Functor
 
 namespace CategoryTheory
@@ -141,7 +139,7 @@ variable (G : C ⥤ D) (hG : W.IsInvertedBy G)
 
 /-- The lifting of a functor to the path category of `LocQuiver W` -/
 @[simps!]
-def liftToPathCategory : Paths (LocQuiver W) ⥤ D :=
+noncomputable def liftToPathCategory : Paths (LocQuiver W) ⥤ D :=
   Quiv.lift
     { obj := fun X => G.obj X.obj
       map := by
@@ -154,7 +152,7 @@ def liftToPathCategory : Paths (LocQuiver W) ⥤ D :=
 set_option backward.isDefEq.respectTransparency false in
 /-- The lifting of a functor `C ⥤ D` inverting `W` as a functor `W.Localization ⥤ D` -/
 @[simps!]
-def lift : W.Localization ⥤ D :=
+noncomputable def lift : W.Localization ⥤ D :=
   Quotient.lift (relations W) (liftToPathCategory G hG)
     (by
       rintro ⟨X⟩ ⟨Y⟩ f₁ f₂ r
@@ -309,7 +307,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- The function `(W.FunctorsInverting D) ⥤ (W.Localization ⥤ D)` induced by
 `Construction.lift`. -/
 @[simps!]
-def inverse : W.FunctorsInverting D ⥤ W.Localization ⥤ D where
+noncomputable def inverse : W.FunctorsInverting D ⥤ W.Localization ⥤ D where
   obj G := lift G.obj G.property
   map τ := natTransExtension (eqToHom (by rw [fac]) ≫ τ.hom ≫ eqToHom (by rw [fac]))
   map_id G :=
@@ -331,7 +329,7 @@ def inverse : W.FunctorsInverting D ⥤ W.Localization ⥤ D where
 
 /-- The unit isomorphism of the equivalence of categories `whiskeringLeftEquivalence W D`. -/
 @[simps!]
-def unitIso : 𝟭 (W.Localization ⥤ D) ≅ functor W D ⋙ inverse W D :=
+noncomputable def unitIso : 𝟭 (W.Localization ⥤ D) ≅ functor W D ⋙ inverse W D :=
   eqToIso
     (by
       refine Functor.ext (fun G => ?_) fun G₁ G₂ τ => ?_
@@ -344,7 +342,7 @@ def unitIso : 𝟭 (W.Localization ⥤ D) ≅ functor W D ⋙ inverse W D :=
 set_option backward.isDefEq.respectTransparency false in
 /-- The counit isomorphism of the equivalence of categories `WhiskeringLeftEquivalence W D`. -/
 @[simps!]
-def counitIso : inverse W D ⋙ functor W D ≅ 𝟭 (W.FunctorsInverting D) :=
+noncomputable def counitIso : inverse W D ⋙ functor W D ≅ 𝟭 (W.FunctorsInverting D) :=
   eqToIso
     (by
       refine Functor.ext ?_ ?_
@@ -364,7 +362,7 @@ end WhiskeringLeftEquivalence
 set_option backward.isDefEq.respectTransparency false in
 /-- The equivalence of categories `(W.Localization ⥤ D) ≌ (W.FunctorsInverting D)`
 induced by the composition with `W.Q : C ⥤ W.Localization`. -/
-def whiskeringLeftEquivalence : W.Localization ⥤ D ≌ W.FunctorsInverting D where
+noncomputable def whiskeringLeftEquivalence : W.Localization ⥤ D ≌ W.FunctorsInverting D where
   functor := WhiskeringLeftEquivalence.functor W D
   inverse := WhiskeringLeftEquivalence.inverse W D
   unitIso := WhiskeringLeftEquivalence.unitIso W D

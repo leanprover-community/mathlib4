@@ -45,8 +45,6 @@ in the file `Mathlib/RingTheory/LaurentSeries.lean`.
 
 open Finset Function
 
-noncomputable section
-
 /-- If `Γ` is linearly ordered and `R` has zero, then `R⟦Γ⟧` consists of
   formal series over `Γ` with coefficients in `R`, whose supports are well-founded. -/
 @[ext]
@@ -190,7 +188,7 @@ def iterateEquiv [PartialOrder Γ'] : R⟦Γ'⟧⟦Γ⟧ ≃ R⟦Γ ×ₗ Γ'⟧
 
 open scoped Classical in
 /-- `single a r` is the Hahn series which has coefficient `r` at `a` and zero otherwise. -/
-def single (a : Γ) : ZeroHom R R⟦Γ⟧ where
+noncomputable def single (a : Γ) : ZeroHom R R⟦Γ⟧ where
   toFun r :=
     { coeff := Pi.single a r
       isPWO_support' := (Set.isPWO_singleton a).mono Pi.support_single_subset }
@@ -251,7 +249,7 @@ variable {x : R⟦Γ⟧}
 open scoped Classical in
 /-- The orderTop of a Hahn series `x` is a minimal element of `WithTop Γ` where `x` has a nonzero
 coefficient if `x ≠ 0`, and is `⊤` when `x = 0`. -/
-def orderTop (x : R⟦Γ⟧) : WithTop Γ :=
+noncomputable def orderTop (x : R⟦Γ⟧) : WithTop Γ :=
   if h : x = 0 then ⊤ else x.isWF_support.min (support_nonempty_iff.2 h)
 
 @[simp]
@@ -325,7 +323,7 @@ theorem coeff_eq_zero_of_lt_orderTop {x : R⟦Γ⟧} {i : Γ} (hi : i < x.orderT
 
 /-- A leading coefficient of a Hahn series is the coefficient of a lowest-order nonzero term, or
 zero if the series vanishes. -/
-def leadingCoeff (x : R⟦Γ⟧) : R := x.orderTop.recTopCoe 0 x.coeff
+noncomputable def leadingCoeff (x : R⟦Γ⟧) : R := x.orderTop.recTopCoe 0 x.coeff
 
 @[simp]
 theorem leadingCoeff_zero : leadingCoeff (0 : R⟦Γ⟧) = 0 := by simp [leadingCoeff]
@@ -355,7 +353,7 @@ variable [Zero Γ]
 open scoped Classical in
 /-- The order of a nonzero Hahn series `x` is a minimal element of `Γ` where `x` has a
   nonzero coefficient, the order of 0 is 0. -/
-def order (x : R⟦Γ⟧) : Γ :=
+noncomputable def order (x : R⟦Γ⟧) : Γ :=
   if h : x = 0 then 0 else x.isWF_support.min (support_nonempty_iff.2 h)
 
 @[simp]
@@ -437,7 +435,7 @@ variable [PartialOrder Γ']
 
 open scoped Classical in
 /-- Extends the domain of a `HahnSeries` by an `OrderEmbedding`. -/
-def embDomain (f : Γ ↪o Γ') : R⟦Γ⟧ → R⟦Γ'⟧ := fun x =>
+noncomputable def embDomain (f : Γ ↪o Γ') : R⟦Γ⟧ → R⟦Γ'⟧ := fun x =>
   { coeff := fun b : Γ' => if h : b ∈ f '' x.support then x.coeff (Classical.choose h) else 0
     isPWO_support' :=
       (x.isPWO_support.image_of_monotone f.monotone).mono fun b hb => by

@@ -33,8 +33,6 @@ public import Mathlib.CategoryTheory.Sites.LeftExact
 
 universe v₁ v₂ v₃ u₁ u₂ u₃
 
-noncomputable section
-
 namespace CategoryTheory.Functor
 
 open Limits
@@ -52,11 +50,11 @@ variable [(G.sheafPushforwardContinuous A J K).IsRightAdjoint]
 
 /-- The pullback functor `Sheaf J A ⥤ Sheaf K A` associated to a functor `G : C ⥤ D` in the
 same direction as `G`. -/
-def sheafPullback : Sheaf J A ⥤ Sheaf K A :=
+noncomputable def sheafPullback : Sheaf J A ⥤ Sheaf K A :=
   (G.sheafPushforwardContinuous A J K).leftAdjoint
 
 /-- The pullback functor is left adjoint to the pushforward functor. -/
-def sheafAdjunctionContinuous :
+noncomputable def sheafAdjunctionContinuous :
     G.sheafPullback A J K ⊣ G.sheafPushforwardContinuous A J K :=
   Adjunction.ofIsRightAdjoint (G.sheafPushforwardContinuous A J K)
 
@@ -67,12 +65,12 @@ namespace sheafPullbackConstruction
 variable [∀ (F : Cᵒᵖ ⥤ A), G.op.HasLeftKanExtension F]
 
 /-- Construction of the pullback of sheaves using a left Kan extension. -/
-def sheafPullback [HasWeakSheafify K A] : Sheaf J A ⥤ Sheaf K A :=
+noncomputable def sheafPullback [HasWeakSheafify K A] : Sheaf J A ⥤ Sheaf K A :=
   sheafToPresheaf J A ⋙ G.op.lan ⋙ presheafToSheaf K A
 
 /-- The constructed `sheafPullback G A J K` is left adjoint
 to `G.sheafPushforwardContinuous A J K`. -/
-def sheafAdjunctionContinuous [HasWeakSheafify K A] :
+noncomputable def sheafAdjunctionContinuous [HasWeakSheafify K A] :
     sheafPullback G A J K ⊣ G.sheafPushforwardContinuous A J K :=
   ((G.op.lanAdjunction A).comp (sheafificationAdjunction K A)).restrictFullyFaithful
     (fullyFaithfulSheafToPresheaf J A) (Functor.FullyFaithful.id _) (Iso.refl _) (Iso.refl _)
@@ -82,7 +80,7 @@ instance [HasWeakSheafify K A] :
   (sheafAdjunctionContinuous G A J K).isRightAdjoint
 
 /-- The constructed pullback of sheaves is isomorphic to the abstract one. -/
-def sheafPullbackIso [HasWeakSheafify K A] :
+noncomputable def sheafPullbackIso [HasWeakSheafify K A] :
     Functor.sheafPullback G A J K ≅ sheafPullback G A J K :=
   Adjunction.leftAdjointUniq (Functor.sheafAdjunctionContinuous G A J K)
     (sheafAdjunctionContinuous G A J K)

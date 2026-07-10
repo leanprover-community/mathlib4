@@ -74,8 +74,6 @@ Lots is missing!
 
 open Polynomial Function AddMonoidAlgebra Finsupp
 
-noncomputable section
-
 variable {R S : Type*}
 
 /-- The semiring of Laurent polynomials with coefficients in the semiring `R`.
@@ -95,7 +93,7 @@ theorem LaurentPolynomial.ext [Semiring R] {p q : R[T;T⁻¹]} (h : ∀ a, p.coe
 
 /-- The ring homomorphism, taking a polynomial with coefficients in `R` to a Laurent polynomial
 with coefficients in `R`. -/
-def Polynomial.toLaurent [Semiring R] : R[X] →+* R[T;T⁻¹] :=
+noncomputable def Polynomial.toLaurent [Semiring R] : R[X] →+* R[T;T⁻¹] :=
   (mapDomainRingHom R Int.ofNatHom).comp (toFinsuppIso R).toRingHom
 
 /-- This is not a simp lemma, as it is usually preferable to use the lemmas about `C` and `X`
@@ -106,7 +104,7 @@ theorem Polynomial.toLaurent_apply [Semiring R] (p : R[X]) :
 
 /-- The `R`-algebra map, taking a polynomial with coefficients in `R` to a Laurent polynomial
 with coefficients in `R`. -/
-def Polynomial.toLaurentAlg [CommSemiring R] : R[X] →ₐ[R] R[T;T⁻¹] :=
+noncomputable def Polynomial.toLaurentAlg [CommSemiring R] : R[X] →ₐ[R] R[T;T⁻¹] :=
   (mapDomainAlgHom R R Int.ofNatHom).comp (toFinsuppIsoAlg R).toAlgHom
 
 @[simp] lemma Polynomial.coe_toLaurentAlg [CommSemiring R] :
@@ -128,7 +126,7 @@ theorem single_zero_one_eq_one : (.single 0 1 : R[T;T⁻¹]) = 1 := rfl
 
 /-- The ring homomorphism `C`, including `R` into the ring of Laurent polynomials over `R` as
 the constant Laurent polynomials. -/
-def C : R →+* R[T;T⁻¹] :=
+noncomputable def C : R →+* R[T;T⁻¹] :=
   singleZeroRingHom
 
 theorem algebraMap_apply {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A] (r : R) :
@@ -152,7 +150,7 @@ theorem single_eq_C (r : R) : .single 0 r = C r := rfl
 Using directly `T ^ n` does not work, since we want the exponents to be of Type `ℤ` and there
 is no `ℤ`-power defined on `R[T;T⁻¹]`.  Using that `T` is a unit introduces extra coercions.
 For these reasons, the definition of `T` is as a sequence. -/
-def T (n : ℤ) : R[T;T⁻¹] := .single n 1
+noncomputable def T (n : ℤ) : R[T;T⁻¹] := .single n 1
 
 @[simp] lemma T_apply (m n : ℤ) : (T n : R[T;T⁻¹]).coeff m = if n = m then 1 else 0 :=
   Finsupp.single_apply
@@ -216,7 +214,7 @@ theorem _root_.Polynomial.toLaurent_C_mul_X_pow (n : ℕ) (r : R) :
     toLaurent (Polynomial.C r * X ^ n) = C r * T n := by
   simp only [map_mul, Polynomial.toLaurent_C, Polynomial.toLaurent_X_pow]
 
-instance invertibleT (n : ℤ) : Invertible (T n : R[T;T⁻¹]) where
+noncomputable instance invertibleT (n : ℤ) : Invertible (T n : R[T;T⁻¹]) where
   invOf := T (-n)
   invOf_mul_self := by rw [← T_add, neg_add_cancel, T_zero]
   mul_invOf_self := by rw [← T_add, add_neg_cancel, T_zero]
@@ -291,7 +289,7 @@ theorem smul_eq_C_mul (r : R) (f : R[T;T⁻¹]) : r • f = C r * f := by
 /-- `trunc : R[T;T⁻¹] →+ R[X]` maps a Laurent polynomial `f` to the polynomial whose terms of
 nonnegative degree coincide with the ones of `f`.  The terms of negative degree of `f` "vanish".
 `trunc` is a left-inverse to `Polynomial.toLaurent`. -/
-def trunc : R[T;T⁻¹] →+ R[X] :=
+noncomputable def trunc : R[T;T⁻¹] →+ R[X] :=
   (toFinsuppIso R).symm.toAddMonoidHom.comp <| comapDomainAddMonoidHom (↑) Nat.cast_injective
 
 @[simp]
@@ -461,7 +459,7 @@ end DegreeBounds
 
 end Degrees
 
-instance : Module R[X] R[T;T⁻¹] :=
+noncomputable instance : Module R[X] R[T;T⁻¹] :=
   Module.compHom _ Polynomial.toLaurent
 
 instance (R : Type*) [Semiring R] : IsScalarTower R[X] R[X] R[T;T⁻¹] where
@@ -473,7 +471,7 @@ section CommSemiring
 
 variable [CommSemiring R] {S : Type*} [CommSemiring S] (f : R →+* S) (x : Sˣ)
 
-instance algebraPolynomial (R : Type*) [CommSemiring R] : Algebra R[X] R[T;T⁻¹] where
+noncomputable instance algebraPolynomial (R : Type*) [CommSemiring R] : Algebra R[X] R[T;T⁻¹] where
   algebraMap := Polynomial.toLaurent
   commutes' := fun f l => by simp [mul_comm]
   smul_def' := fun _ _ => rfl
@@ -526,7 +524,7 @@ theorem mk'_one_X :
 
 /-- Given a ring homomorphism `f : R →+* S` and a unit `x` in `S`, the induced homomorphism
 `R[T;T⁻¹] →+* S` sending `T` to `x` and `T⁻¹` to `x⁻¹`. -/
-def eval₂ : R[T;T⁻¹] →+* S :=
+noncomputable def eval₂ : R[T;T⁻¹] →+* S :=
   IsLocalization.lift (M := Submonoid.powers (X : R[X])) (g := Polynomial.eval₂RingHom f x) <| by
     rintro ⟨y, n, rfl⟩
     simpa only [coe_eval₂RingHom, eval₂_X_pow] using x.isUnit.pow n
@@ -574,6 +572,7 @@ section Inversion
 variable {R : Type*} [CommSemiring R]
 
 /-- The map which substitutes `T ↦ T⁻¹` into a Laurent polynomial. -/
+noncomputable
 def invert : R[T;T⁻¹] ≃ₐ[R] R[T;T⁻¹] := AddMonoidAlgebra.domCongr R R <| AddEquiv.neg _
 
 @[simp] lemma invert_T (n : ℤ) : invert (T n : R[T;T⁻¹]) = T (-n) :=

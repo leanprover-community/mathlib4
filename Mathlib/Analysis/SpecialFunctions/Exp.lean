@@ -24,8 +24,6 @@ exp
 
 @[expose] public section
 
-noncomputable section
-
 open Asymptotics Bornology Finset Filter Function Metric Set Topology
 
 open scoped Nat
@@ -300,7 +298,7 @@ theorem tendsto_div_pow_mul_exp_add_atTop (b c : ℝ) (n : ℕ) (hb : 0 ≠ b) :
     · rw [neg_zero]
 
 /-- `Real.exp` as an order isomorphism between `ℝ` and `(0, +∞)`. -/
-def expOrderIso : ℝ ≃o Ioi (0 : ℝ) :=
+noncomputable def expOrderIso : ℝ ≃o Ioi (0 : ℝ) :=
   StrictMono.orderIsoOfSurjective _
     (exp_strictMono.codRestrict fun x ↦ Set.mem_Ioi.mpr (exp_pos x)) <|
     (continuous_exp.subtype_mk _).surjective

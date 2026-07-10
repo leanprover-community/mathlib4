@@ -29,7 +29,7 @@ There are also various lemmas on bases on specific spaces (such as empty or sing
 
 assert_not_exists Ordinal
 
-noncomputable section
+section
 
 universe u
 
@@ -236,7 +236,7 @@ theorem maximal [Nontrivial R] (b : Basis ι R M) : b.linearIndependent.Maximal 
   simp only [u, Embedding.coeFn_mk, Subtype.mk_eq_mk] at W
   apply q ⟨j, W⟩
 
-instance uniqueBasis [Subsingleton R] : Unique (Basis ι R M) :=
+noncomputable instance uniqueBasis [Subsingleton R] : Unique (Basis ι R M) :=
   ⟨⟨⟨default⟩⟩, fun ⟨b⟩ => by rw [Subsingleton.elim b]⟩
 
 variable (b : Basis ι R M)
@@ -244,7 +244,7 @@ variable (b : Basis ι R M)
 section Singleton
 
 /-- `Basis.singleton ι R` is the basis sending the unique element of `ι` to `1 : R`. -/
-protected def singleton (ι R : Type*) [Unique ι] [Semiring R] : Basis ι R R :=
+protected noncomputable def singleton (ι R : Type*) [Unique ι] [Semiring R] : Basis ι R R :=
   ofRepr
     { toFun := fun x => Finsupp.single default x
       invFun := fun f => f default
@@ -273,10 +273,10 @@ section Empty
 variable (M)
 
 /-- If `M` is a subsingleton and `ι` is empty, this is the unique `ι`-indexed basis for `M`. -/
-protected def empty [Subsingleton M] [IsEmpty ι] : Basis ι R M :=
+protected noncomputable def empty [Subsingleton M] [IsEmpty ι] : Basis ι R M :=
   ofRepr 0
 
-instance emptyUnique [Subsingleton M] [IsEmpty ι] : Unique (Basis ι R M) where
+noncomputable instance emptyUnique [Subsingleton M] [IsEmpty ι] : Unique (Basis ι R M) where
   default := Basis.empty M
   uniq := fun _ => congr_arg ofRepr <| Subsingleton.elim _ _
 

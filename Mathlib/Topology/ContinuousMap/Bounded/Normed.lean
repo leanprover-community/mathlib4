@@ -22,8 +22,6 @@ pointwise operations and checking that they are compatible with the uniform dist
 
 assert_not_exists CStarRing
 
-noncomputable section
-
 open NNReal Set Function
 
 universe u v w
@@ -37,7 +35,7 @@ section NormedAddCommGroup
 variable [TopologicalSpace α] [SeminormedAddCommGroup β]
 variable (f g : α →ᵇ β) {x : α} {C : ℝ}
 
-instance instNorm : Norm (α →ᵇ β) := ⟨(dist · 0)⟩
+noncomputable instance instNorm : Norm (α →ᵇ β) := ⟨(dist · 0)⟩
 
 theorem norm_def : ‖f‖ = dist f 0 := rfl
 
@@ -162,7 +160,7 @@ instance instNormOneClass [Nonempty α] [One β] [NormOneClass β] : NormOneClas
   norm_one := by simp only [norm_eq_iSup_norm, coe_one, Pi.one_apply, norm_one, ciSup_const]
 
 /-- The pointwise opposite of a bounded continuous function is again bounded continuous. -/
-instance : Neg (α →ᵇ β) :=
+noncomputable instance : Neg (α →ᵇ β) :=
   ⟨fun f =>
     ofNormedAddCommGroup (-f) f.continuous.neg ‖f‖ fun x =>
       norm_neg ((⇑f) x) ▸ f.norm_coe_le_norm x⟩
@@ -195,14 +193,14 @@ theorem coe_zsmul (r : ℤ) (f : α →ᵇ β) : ⇑(r • f) = r • ⇑f := rf
 @[simp]
 theorem zsmul_apply (r : ℤ) (f : α →ᵇ β) (v : α) : (r • f) v = r • f v := rfl
 
-instance instAddCommGroup : AddCommGroup (α →ᵇ β) := fast_instance%
+noncomputable instance instAddCommGroup : AddCommGroup (α →ᵇ β) := fast_instance%
   DFunLike.coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => coe_nsmul _ _)
     fun _ _ => coe_zsmul _ _
 
-instance instSeminormedAddCommGroup : SeminormedAddCommGroup (α →ᵇ β) where
+noncomputable instance instSeminormedAddCommGroup : SeminormedAddCommGroup (α →ᵇ β) where
   dist_eq f g := by simp only [norm_eq, dist_eq, dist_eq_norm_neg_add, add_apply, neg_apply]
 
-instance instNormedAddCommGroup {α β} [TopologicalSpace α] [NormedAddCommGroup β] :
+noncomputable instance instNormedAddCommGroup {α β} [TopologicalSpace α] [NormedAddCommGroup β] :
     NormedAddCommGroup (α →ᵇ β) :=
   { instSeminormedAddCommGroup with
     eq_of_dist_eq_zero }
@@ -268,7 +266,7 @@ variable (α)
 /-- Postcomposition of bounded continuous functions into a normed module by a continuous linear map
 is a continuous linear map.
 Upgraded version of `ContinuousLinearMap.compLeftContinuous`, similar to `LinearMap.compLeft`. -/
-protected def _root_.ContinuousLinearMap.compLeftContinuousBounded (g : β →L[𝕜] γ) :
+protected noncomputable def _root_.ContinuousLinearMap.compLeftContinuousBounded (g : β →L[𝕜] γ) :
     (α →ᵇ β) →L[𝕜] α →ᵇ γ :=
   LinearMap.mkContinuous
     { toFun := fun f =>
@@ -295,11 +293,11 @@ section Seminormed
 
 variable [NonUnitalSeminormedRing R]
 
-instance instNonUnitalRing : NonUnitalRing (α →ᵇ R) := fast_instance%
+noncomputable instance instNonUnitalRing : NonUnitalRing (α →ᵇ R) := fast_instance%
   DFunLike.coe_injective.nonUnitalRing _ coe_zero coe_add coe_mul coe_neg coe_sub
     (fun _ _ => coe_nsmul _ _) fun _ _ => coe_zsmul _ _
 
-instance instNonUnitalSeminormedRing : NonUnitalSeminormedRing (α →ᵇ R) where
+noncomputable instance instNonUnitalSeminormedRing : NonUnitalSeminormedRing (α →ᵇ R) where
   __ := instSeminormedAddCommGroup
   __ := instNonUnitalRing
   norm_mul_le f g := norm_ofNormedAddCommGroup_le _ (by positivity)
@@ -345,15 +343,16 @@ lemma nnnorm_sum_eq_sup [IsCancelMulZero R] {ι : Type*} {f : ι → (α →ᵇ 
 
 end Seminormed
 
-instance instNonUnitalSeminormedCommRing [NonUnitalSeminormedCommRing R] :
+noncomputable instance instNonUnitalSeminormedCommRing [NonUnitalSeminormedCommRing R] :
     NonUnitalSeminormedCommRing (α →ᵇ R) where
   mul_comm _ _ := ext fun _ ↦ mul_comm ..
 
+noncomputable
 instance instNonUnitalNormedRing [NonUnitalNormedRing R] : NonUnitalNormedRing (α →ᵇ R) where
   __ := instNonUnitalSeminormedRing
   __ := instNormedAddCommGroup
 
-instance instNonUnitalNormedCommRing [NonUnitalNormedCommRing R] :
+noncomputable instance instNonUnitalNormedCommRing [NonUnitalNormedCommRing R] :
     NonUnitalNormedCommRing (α →ᵇ R) where
   mul_comm := mul_comm
 
@@ -390,12 +389,12 @@ instance : IntCast (α →ᵇ R) :=
 @[simp, norm_cast]
 theorem coe_intCast (n : ℤ) : ((n : α →ᵇ R) : α → R) = n := rfl
 
-instance instRing : Ring (α →ᵇ R) := fast_instance%
+noncomputable instance instRing : Ring (α →ᵇ R) := fast_instance%
   DFunLike.coe_injective.ring _ coe_zero coe_one coe_add coe_mul coe_neg coe_sub
     (fun _ _ => coe_nsmul _ _) (fun _ _ => coe_zsmul _ _) (fun _ _ => coe_pow _ _) coe_natCast
     coe_intCast
 
-instance instSeminormedRing : SeminormedRing (α →ᵇ R) where
+noncomputable instance instSeminormedRing : SeminormedRing (α →ᵇ R) where
   __ := instRing
   __ := instNonUnitalSeminormedRing
 
@@ -410,7 +409,7 @@ protected def _root_.RingHom.compLeftContinuousBounded (α : Type*)
 
 end Seminormed
 
-instance instNormedRing [NormedRing R] : NormedRing (α →ᵇ R) where
+noncomputable instance instNormedRing [NormedRing R] : NormedRing (α →ᵇ R) where
   __ := instRing
   __ := instNonUnitalNormedRing
 
@@ -420,14 +419,15 @@ section NormedCommRing
 
 variable [TopologicalSpace α] {R : Type*}
 
-instance instCommRing [SeminormedCommRing R] : CommRing (α →ᵇ R) where
+noncomputable instance instCommRing [SeminormedCommRing R] : CommRing (α →ᵇ R) where
   mul_comm _ _ := ext fun _ ↦ mul_comm _ _
 
+noncomputable
 instance instSeminormedCommRing [SeminormedCommRing R] : SeminormedCommRing (α →ᵇ R) where
   __ := instCommRing
   __ := instNonUnitalSeminormedRing
 
-instance instNormedCommRing [NormedCommRing R] : NormedCommRing (α →ᵇ R) where
+noncomputable instance instNormedCommRing [NormedCommRing R] : NormedCommRing (α →ᵇ R) where
   __ := instSeminormedCommRing
   __ := instNormedAddCommGroup
 
@@ -507,7 +507,7 @@ If `β` is a normed `𝕜`-space, then we show that the space of bounded continu
 functions from `α` to `β` is naturally a module over the algebra of bounded continuous
 functions from `α` to `𝕜`. -/
 
-instance instSMul' : SMul (α →ᵇ 𝕜) (α →ᵇ β) where
+noncomputable instance instSMul' : SMul (α →ᵇ 𝕜) (α →ᵇ β) where
   smul f g :=
     ofNormedAddCommGroup (fun x => f x • g x) (f.continuous.smul g.continuous) (‖f‖ * ‖g‖) fun x =>
       calc
@@ -515,7 +515,7 @@ instance instSMul' : SMul (α →ᵇ 𝕜) (α →ᵇ β) where
         _ ≤ ‖f‖ * ‖g‖ :=
           mul_le_mul (f.norm_coe_le_norm _) (g.norm_coe_le_norm _) (norm_nonneg _) (norm_nonneg _)
 
-instance instModule' : Module (α →ᵇ 𝕜) (α →ᵇ β) :=
+noncomputable instance instModule' : Module (α →ᵇ 𝕜) (α →ᵇ β) :=
   Module.ofMinimalAxioms
       (fun c _ _ => ext fun a => smul_add (c a) _ _)
       (fun _ _ _ => ext fun _ => add_smul _ _ _)

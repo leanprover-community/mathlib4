@@ -28,7 +28,7 @@ for `𝒮ℒ` (= `SL(2, ℤ)`) of even weight.
 * `ModularForm.sturm_bound_levelOne_nat`: convenience version for `k : ℕ`.
 -/
 
-@[expose] public noncomputable section
+@[expose] public section
 
 open UpperHalfPlane ModularForm SlashInvariantForm SlashInvariantFormClass ModularFormClass
   CuspFormClass MatrixGroups OnePoint Filter EisensteinSeries Asymptotics
@@ -45,7 +45,7 @@ namespace CuspForm
 
 /-- Multiply a modular form of weight `k - 12` by the discriminant to get a cusp form of
 weight `k`. Built directly as a `CuspForm` via `CuspForm.mulModularForm`. -/
-def ofMulDiscriminant (f : ModularForm 𝒮ℒ (k - 12)) : CuspForm 𝒮ℒ k :=
+noncomputable def ofMulDiscriminant (f : ModularForm 𝒮ℒ (k - 12)) : CuspForm 𝒮ℒ k :=
   CuspForm.mcast (by ring) (CuspForm.discriminant.mulModularForm f)
 
 @[simp]
@@ -60,7 +60,7 @@ lemma divByDiscriminant_slash_eq (f : CuspForm 𝒮ℒ k) (γ : SL(2, ℤ)) :
 
 /-- The linear equivalence between cusp forms of weight `k` and modular forms of weight `k - 12`,
 given by division by the discriminant. -/
-def discriminantEquiv : CuspForm 𝒮ℒ k ≃ₗ[ℂ] ModularForm 𝒮ℒ (k - 12) where
+noncomputable def discriminantEquiv : CuspForm 𝒮ℒ k ≃ₗ[ℂ] ModularForm 𝒮ℒ (k - 12) where
   toFun f :=
     { toFun z := f z / Δ z
       slash_action_eq' := fun _ ⟨γ, hγ⟩ ↦ hγ ▸ divByDiscriminant_slash_eq f γ
@@ -92,6 +92,7 @@ lemma discriminantEquiv_apply (f : CuspForm 𝒮ℒ k) (z : ℍ) :
 
 /-- Divide a cusp form by the discriminant to get a modular form of weight `k - 12`. -/
 @[deprecated discriminantEquiv (since := "2026-05-18")]
+noncomputable
 def divDiscriminant (f : CuspForm 𝒮ℒ k) : ModularForm 𝒮ℒ (k - 12) := discriminantEquiv f
 
 @[deprecated discriminantEquiv_apply (since := "2026-05-18")]

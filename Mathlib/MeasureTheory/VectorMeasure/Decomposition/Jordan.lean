@@ -45,8 +45,6 @@ Jordan decomposition theorem
 @[expose] public section
 
 
-noncomputable section
-
 open scoped MeasureTheory ENNReal NNReal
 
 variable {α : Type*} [MeasurableSpace α]
@@ -83,12 +81,12 @@ instance instInvolutiveNeg : InvolutiveNeg (JordanDecomposition α) where
   neg j := ⟨j.negPart, j.posPart, j.mutuallySingular.symm⟩
   neg_neg _ := JordanDecomposition.ext rfl rfl
 
-instance instSMul : SMul ℝ≥0 (JordanDecomposition α) where
+noncomputable instance instSMul : SMul ℝ≥0 (JordanDecomposition α) where
   smul r j :=
     ⟨r • j.posPart, r • j.negPart,
       MutuallySingular.smul _ (MutuallySingular.smul _ j.mutuallySingular.symm).symm⟩
 
-instance instSMulReal : SMul ℝ (JordanDecomposition α) where
+noncomputable instance instSMulReal : SMul ℝ (JordanDecomposition α) where
   smul r j := if 0 ≤ r then r.toNNReal • j else -((-r).toNNReal • j)
 
 @[simp]
@@ -146,7 +144,7 @@ theorem real_smul_negPart_neg (r : ℝ) (hr : r < 0) :
   rw [real_smul_def, ← smul_posPart, if_neg (not_le.2 hr), neg_negPart]
 
 /-- The signed measure associated with a Jordan decomposition. -/
-def toSignedMeasure : SignedMeasure α :=
+noncomputable def toSignedMeasure : SignedMeasure α :=
   j.posPart.toSignedMeasure - j.negPart.toSignedMeasure
 
 theorem toSignedMeasure_zero : (0 : JordanDecomposition α).toSignedMeasure = 0 := by
@@ -197,7 +195,7 @@ variable {s : SignedMeasure α}
 such that `s = j.toSignedMeasure`. This property is known as the Jordan decomposition
 theorem, and is shown by
 `MeasureTheory.SignedMeasure.toSignedMeasure_toJordanDecomposition`. -/
-def toJordanDecomposition (s : SignedMeasure α) : JordanDecomposition α :=
+noncomputable def toJordanDecomposition (s : SignedMeasure α) : JordanDecomposition α :=
   let i := s.exists_compl_positive_negative.choose
   have hi := s.exists_compl_positive_negative.choose_spec
   { posPart := s.toMeasureOfZeroLE i hi.1 hi.2.1
@@ -411,7 +409,7 @@ open JordanDecomposition
 /-- `MeasureTheory.SignedMeasure.toJordanDecomposition` and
 `MeasureTheory.JordanDecomposition.toSignedMeasure` form an `Equiv`. -/
 @[simps apply symm_apply]
-def toJordanDecompositionEquiv (α : Type*) [MeasurableSpace α] :
+noncomputable def toJordanDecompositionEquiv (α : Type*) [MeasurableSpace α] :
     SignedMeasure α ≃ JordanDecomposition α where
   toFun := toJordanDecomposition
   invFun := toSignedMeasure
@@ -457,7 +455,7 @@ theorem toJordanDecomposition_eq {s : SignedMeasure α} {j : JordanDecomposition
   rw [h, toJordanDecomposition_toSignedMeasure]
 
 /-- The total variation of a signed measure. -/
-def totalVariation (s : SignedMeasure α) : Measure α :=
+noncomputable def totalVariation (s : SignedMeasure α) : Measure α :=
   s.toJordanDecomposition.posPart + s.toJordanDecomposition.negPart
 
 theorem totalVariation_zero : (0 : SignedMeasure α).totalVariation = 0 := by

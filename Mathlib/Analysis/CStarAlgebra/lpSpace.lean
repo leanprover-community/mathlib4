@@ -17,21 +17,23 @@ in earlier files.
 public section
 open scoped ENNReal
 
-noncomputable section
+section
 
 variable {I : Type*} {A : I → Type*}
 
-instance [∀ i, NonUnitalCStarAlgebra (A i)] : NonUnitalCStarAlgebra (lp A ∞) where
+noncomputable instance [∀ i, NonUnitalCStarAlgebra (A i)] : NonUnitalCStarAlgebra (lp A ∞) where
 
+noncomputable
 instance [∀ i, NonUnitalCommCStarAlgebra (A i)] : NonUnitalCommCStarAlgebra (lp A ∞) where
 
 -- it's slightly weird that we need the `Nontrivial` instance here
 -- it's because we have no way to say that `‖(1 : A i)‖` is uniformly bounded as a type class
 -- aside from `∀ i, NormOneClass (A i)`, this holds automatically for C⋆-algebras though.
-instance [∀ i, Nontrivial (A i)] [∀ i, CStarAlgebra (A i)] : NormedRing (lp A ∞) where
+noncomputable instance [∀ i, Nontrivial (A i)] [∀ i, CStarAlgebra (A i)] : NormedRing (lp A ∞) where
   dist_eq := dist_eq_norm_neg_add
   norm_mul_le := norm_mul_le
 
+noncomputable
 instance [∀ i, Nontrivial (A i)] [∀ i, CommCStarAlgebra (A i)] : CommCStarAlgebra (lp A ∞) where
 
 end

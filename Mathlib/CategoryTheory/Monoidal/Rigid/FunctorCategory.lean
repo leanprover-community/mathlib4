@@ -17,8 +17,6 @@ public import Mathlib.CategoryTheory.Monoidal.FunctorCategory
 public section
 
 
-noncomputable section
-
 open CategoryTheory
 
 open CategoryTheory.MonoidalCategory
@@ -27,7 +25,7 @@ namespace CategoryTheory.Monoidal
 
 variable {C D : Type*} [Groupoid C] [Category* D] [MonoidalCategory D]
 
-instance functorHasRightDual [RightRigidCategory D] (F : C ⥤ D) : HasRightDual F where
+noncomputable instance functorHasRightDual [RightRigidCategory D] (F : C ⥤ D) : HasRightDual F where
   rightDual :=
     { obj := fun X => (F.obj X)ᘁ
       map := fun f => (F.map (inv f))ᘁ
@@ -50,9 +48,10 @@ instance functorHasRightDual [RightRigidCategory D] (F : C ⥤ D) : HasRightDual
               coevaluation_comp_rightAdjointMate, Category.assoc, ← comp_whiskerRight,
               IsIso.inv_hom_id, id_whiskerRight, Category.comp_id] } }
 
+noncomputable
 instance rightRigidFunctorCategory [RightRigidCategory D] : RightRigidCategory (C ⥤ D) where
 
-instance functorHasLeftDual [LeftRigidCategory D] (F : C ⥤ D) : HasLeftDual F where
+noncomputable instance functorHasLeftDual [LeftRigidCategory D] (F : C ⥤ D) : HasLeftDual F where
   leftDual :=
     { obj := fun X => ᘁ(F.obj X)
       map := fun f => ᘁ(F.map (inv f))
@@ -67,8 +66,9 @@ instance functorHasLeftDual [LeftRigidCategory D] (F : C ⥤ D) : HasLeftDual F 
           naturality := fun X Y f => by
             simp [tensorHom_def, coevaluation_comp_leftAdjointMate_assoc] } }
 
+noncomputable
 instance leftRigidFunctorCategory [LeftRigidCategory D] : LeftRigidCategory (C ⥤ D) where
 
-instance rigidFunctorCategory [RigidCategory D] : RigidCategory (C ⥤ D) where
+noncomputable instance rigidFunctorCategory [RigidCategory D] : RigidCategory (C ⥤ D) where
 
 end CategoryTheory.Monoidal

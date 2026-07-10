@@ -28,8 +28,6 @@ universe v u
 
 open CategoryTheory.Preadditive Opposite CategoryTheory.Limits
 
-noncomputable section
-
 namespace CategoryTheory
 
 variable {C : Type u} [Category.{v} C] [Preadditive C]

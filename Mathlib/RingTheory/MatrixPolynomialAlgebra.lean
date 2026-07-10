@@ -32,8 +32,6 @@ universe u v w
 open Polynomial TensorProduct
 open Algebra.TensorProduct (algHomOfLinearMapTensorProduct includeLeft)
 
-noncomputable section
-
 variable (R A : Type*)
 variable [CommSemiring R]
 variable [Semiring A] [Algebra R A]
@@ -169,7 +167,7 @@ lemma eval_det_add_X_smul {R : Type*} [CommRing R] (A : Matrix n n R[X]) (M : Ma
 
 variable {A}
 /-- Extend a ring hom `A → Mₙ(R)` to a ring hom `A[X] → Mₙ(R[X])`. -/
-def RingHom.polyToMatrix (f : A →+* Matrix n n R) : A[X] →+* Matrix n n R[X] :=
+noncomputable def RingHom.polyToMatrix (f : A →+* Matrix n n R) : A[X] →+* Matrix n n R[X] :=
   matPolyEquiv.symm.toRingHom.comp (mapRingHom f)
 
 variable {S : Type*} [CommSemiring S] (f : S →+* Matrix n n R)

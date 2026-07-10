@@ -15,14 +15,14 @@ This file defines the cartesian product of convex spaces.
 
 open Convexity Finsupp Set
 
-public noncomputable section
+public section
 
 variable {I R : Type*} [Semiring R] [PartialOrder R] [IsStrictOrderedRing R]
 
 namespace Prod
 variable {X Y : Type*} [ConvexSpace R X] [ConvexSpace R Y]
 
-instance : ConvexSpace R (X × Y) := .mk
+noncomputable instance : ConvexSpace R (X × Y) := .mk
   (fun w ↦ (w.iConvexComb fst, w.iConvexComb snd))
   (by simp)
   (by simp [iConvexComb_assoc])
@@ -64,7 +64,7 @@ end Prod
 namespace Pi
 variable {ι : Type*} {X : ι → Type*} [∀ i, ConvexSpace R (X i)] {i : ι}
 
-instance : ConvexSpace R (∀ i, X i) := .mk
+noncomputable instance : ConvexSpace R (∀ i, X i) := .mk
   (fun w i ↦ w.iConvexComb (· i))
   (by simp)
   (by simp [iConvexComb_assoc])
@@ -91,7 +91,7 @@ end Pi
 namespace Finsupp
 variable {ι : Type*} {X : Type*} [Zero X] [ConvexSpace R X] {i : ι}
 
-instance : ConvexSpace R (ι →₀ X) := .mk
+noncomputable instance : ConvexSpace R (ι →₀ X) := .mk
   (fun w ↦ by
     classical
     refine .onFinset (w.weights.support.biUnion Finsupp.support) (fun i ↦ w.iConvexComb (· i)) ?_

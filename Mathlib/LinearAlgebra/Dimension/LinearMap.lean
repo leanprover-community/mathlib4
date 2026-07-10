@@ -19,8 +19,6 @@ public import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
 public section
 
 
-noncomputable section
-
 universe u v v' v''
 
 variable {K : Type u} {V V₁ : Type v} {V' V'₁ : Type v'} {V'' : Type v''}
@@ -35,7 +33,7 @@ variable [Semiring K] [AddCommMonoid V] [Module K V] [AddCommMonoid V₁] [Modul
 variable [AddCommMonoid V'] [Module K V']
 
 /-- `rank f` is the rank of a `LinearMap` `f`, defined as the dimension of `f.range`. -/
-abbrev rank (f : V →ₗ[K] V') : Cardinal :=
+noncomputable abbrev rank (f : V →ₗ[K] V') : Cardinal :=
   Module.rank K (LinearMap.range f)
 
 theorem rank_le_range (f : V →ₗ[K] V') : rank f ≤ Module.rank K V' :=

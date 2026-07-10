@@ -17,8 +17,6 @@ In this file, we show that if a functor preserves spans and cospans, then it pre
 @[expose] public section
 
 
-noncomputable section
-
 namespace CategoryTheory
 
 namespace PreservesImage
@@ -39,7 +37,7 @@ variable [∀ {X Y Z : A} (f : X ⟶ Y) (g : X ⟶ Z), PreservesColimit (span f 
 /-- If a functor preserves limit spans and colimit cospans, then it preserves images.
 -/
 @[simps!]
-def iso {X Y : A} (f : X ⟶ Y) : image (L.map f) ≅ L.obj (image f) :=
+noncomputable def iso {X Y : A} (f : X ⟶ Y) : image (L.map f) ≅ L.obj (image f) :=
   let aux1 : StrongEpiMonoFactorisation (L.map f) :=
     { I := L.obj (Limits.image f)
       m := L.map <| Limits.image.ι _

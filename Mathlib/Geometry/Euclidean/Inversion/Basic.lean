@@ -26,8 +26,6 @@ Currently, we prove only a few basic lemmas needed to prove Ptolemy's inequality
 
 @[expose] public section
 
-noncomputable section
-
 open Metric Function AffineMap Set AffineSubspace
 open scoped Topology
 
@@ -41,7 +39,7 @@ variable {c x y : P} {R : ℝ}
 /-- Inversion in a sphere in an affine space. This map sends each point `x` to the point `y` such
 that `y -ᵥ c = (R / dist x c) ^ 2 • (x -ᵥ c)`, where `c` and `R` are the center and the radius the
 sphere. -/
-def inversion (c : P) (R : ℝ) (x : P) : P :=
+noncomputable def inversion (c : P) (R : ℝ) (x : P) : P :=
   (R / dist x c) ^ 2 • (x -ᵥ c) +ᵥ c
 
 theorem inversion_def :

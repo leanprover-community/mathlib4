@@ -34,8 +34,6 @@ valuation, rank one
 
 @[expose] public section
 
-noncomputable section
-
 open Function Multiplicative MonoidWithZeroHom MonoidWithZeroHom.ValueGroup₀
 
 open scoped NNReal
@@ -115,7 +113,7 @@ theorem hom_eq_zero_iff {x : ValueGroup₀ (.ofClass v)} : hom v x = 0 ↔ x = 0
   ⟨fun h ↦ zero_of_hom_zero v h, fun h ↦ by rw [h, map_zero]⟩
 
 /-- A nontrivial unit of `Γ₀`, given that there exists a rank one `v : Valuation R Γ₀`. -/
-def unit : Γ₀ˣ :=
+noncomputable def unit : Γ₀ˣ :=
   Units.mk0 (v (nontrivial v).choose) ((nontrivial v).choose_spec).1
 
 /-- A proof that `RankOne.unit v ≠ 1`. -/
@@ -135,7 +133,7 @@ instance isNontrivial_restrict : (v.restrict).IsNontrivial where
 
 variable (K : Type*) [DivisionRing K] (v : Valuation K Γ₀) [RankOne v]
 
-instance restrict_RankOne : RankOne (v.restrict) where
+noncomputable instance restrict_RankOne : RankOne (v.restrict) where
   hom' := (RankOne.hom v).comp embedding
   strictMono' := (strictMono v).comp embedding_strictMono
 
@@ -219,17 +217,18 @@ variable {R : Type*} [Ring R] [ValuativeRel R]
 /-- A valuative relation has a rank one valuation when it is both nontrivial
 and the rank is at most one. -/
 @[implicit_reducible]
+noncomputable
 def Valuation.RankOne.ofRankLeOneStruct [ValuativeRel.IsNontrivial R] (e : RankLeOneStruct R) :
     Valuation.RankOne (valuation R) where
   hom' := e.emb.comp embedding
   strictMono' := e.strictMono.comp embedding_strictMono
 
-instance [IsNontrivial R] [IsRankLeOne R] :
+noncomputable instance [IsNontrivial R] [IsRankLeOne R] :
     Valuation.RankOne (valuation R) :=
   Valuation.RankOne.ofRankLeOneStruct IsRankLeOne.nonempty.some
 
 /-- Convert between the rank one statement on valuative relation's induced valuation. -/
-def Valuation.RankOne.rankLeOneStruct (e : Valuation.RankOne (valuation R)) :
+noncomputable def Valuation.RankOne.rankLeOneStruct (e : Valuation.RankOne (valuation R)) :
     RankLeOneStruct R where
   emb := e.hom.comp (ValuativeRel.ValueGroupWithZero.embed (v := valuation R))
   strictMono := e.strictMono.comp (ValueGroupWithZero.embed_strictMono (valuation R))

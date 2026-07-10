@@ -31,17 +31,15 @@ it. We generally put such theorems into the `SetTheory.Cardinal.Finite` module.
 
 assert_not_exists Field
 
-noncomputable section
-
 variable {α β γ : Type*}
 
 /-- There is (noncomputably) an equivalence between a finite type `α` and `Fin (Nat.card α)`. -/
-def Finite.equivFin (α : Type*) [Finite α] : α ≃ Fin (Nat.card α) := by
+noncomputable def Finite.equivFin (α : Type*) [Finite α] : α ≃ Fin (Nat.card α) := by
   have := (Finite.exists_equiv_fin α).choose_spec.some
   rwa [Nat.card_eq_of_equiv_fin this]
 
 /-- Similar to `Finite.equivFin` but with control over the term used for the cardinality. -/
-def Finite.equivFinOfCardEq [Finite α] {n : ℕ} (h : Nat.card α = n) : α ≃ Fin n := by
+noncomputable def Finite.equivFinOfCardEq [Finite α] {n : ℕ} (h : Nat.card α = n) : α ≃ Fin n := by
   subst h
   apply Finite.equivFin
 

@@ -30,8 +30,6 @@ When `k` is also a field, this `b` can be chosen to be a unit of `𝕎 k`.
 @[expose] public section
 
 
-noncomputable section
-
 namespace WittVector
 
 variable {p : ℕ} [hp : Fact p.Prime]
@@ -43,7 +41,7 @@ section CommRing
 variable {k : Type*} [CommRing k] [CharP k p]
 
 /-- This is the `n+1`st coefficient of our inverse. -/
-def succNthValUnits (n : ℕ) (a : Units k) (A : 𝕎 k) (bs : Fin (n + 1) → k) : k :=
+noncomputable def succNthValUnits (n : ℕ) (a : Units k) (A : 𝕎 k) (bs : Fin (n + 1) → k) : k :=
   -↑(a⁻¹ ^ p ^ (n + 1)) *
     (A.coeff (n + 1) * ↑(a⁻¹ ^ p ^ (n + 1)) + nthRemainder p n (truncateFun (n + 1) A) bs)
 
@@ -58,7 +56,7 @@ noncomputable def inverseCoeff (a : Units k) (A : 𝕎 k) : ℕ → k
 /--
 Upgrade a Witt vector `A` whose first entry `A.coeff 0` is a unit to be, itself, a unit in `𝕎 k`.
 -/
-def mkUnit {a : Units k} {A : 𝕎 k} (hA : A.coeff 0 = a) : Units (𝕎 k) :=
+noncomputable def mkUnit {a : Units k} {A : 𝕎 k} (hA : A.coeff 0 = a) : Units (𝕎 k) :=
   Units.mkOfMulEqOne A (@WittVector.mk' p _ (inverseCoeff a A)) (by
     ext n
     induction n with

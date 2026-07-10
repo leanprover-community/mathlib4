@@ -71,7 +71,7 @@ Interaction with `CommSq`:
 
 @[expose] public section
 
-noncomputable section
+section
 
 open CategoryTheory
 

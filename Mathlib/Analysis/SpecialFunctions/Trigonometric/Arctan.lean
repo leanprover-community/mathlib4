@@ -24,8 +24,6 @@ The result of `arctan x + arctan y` is given by `arctan_add`, `arctan_add_eq_add
 @[expose] public section
 
 
-noncomputable section
-
 open Set Filter
 open scoped Topology
 
@@ -108,7 +106,7 @@ theorem image_tan_Ioo : tan '' Ioo (-(π / 2)) (π / 2) = univ :=
   univ_subset_iff.1 surjOn_tan
 
 /-- `Real.tan` as an `OrderIso` between `(-(π / 2), π / 2)` and `ℝ`. -/
-def tanOrderIso : Ioo (-(π / 2)) (π / 2) ≃o ℝ :=
+noncomputable def tanOrderIso : Ioo (-(π / 2)) (π / 2) ≃o ℝ :=
   (strictMonoOn_tan.orderIso _ _).trans <|
     (OrderIso.setCongr _ _ image_tan_Ioo).trans OrderIso.Set.univ
 
@@ -370,7 +368,7 @@ theorem continuousAt_arctan : ContinuousAt arctan x :=
   continuous_arctan.continuousAt
 
 /-- `Real.tan` as an `OpenPartialHomeomorph` between `(-(π / 2), π / 2)` and the whole line. -/
-def tanPartialHomeomorph : OpenPartialHomeomorph ℝ ℝ where
+noncomputable def tanPartialHomeomorph : OpenPartialHomeomorph ℝ ℝ where
   toFun := tan
   invFun := arctan
   source := Ioo (-(π / 2)) (π / 2)

@@ -39,8 +39,6 @@ open CategoryTheory Limits
 
 open scoped Simplicial
 
-noncomputable section
-
 universe v u w
 
 variable {C : Type u} [Category.{v} C]
@@ -53,7 +51,7 @@ variable [∀ n : ℕ, HasWidePullback.{0} f.right (fun _ : Fin (n + 1) => f.lef
 set_option backward.isDefEq.respectTransparency false in
 /-- The Čech nerve associated to an arrow. -/
 @[simps]
-def cechNerve : SimplicialObject C where
+noncomputable def cechNerve : SimplicialObject C where
   obj n := widePullback.{0} f.right (fun _ : Fin (n.unop.len + 1) => f.left) fun _ => f.hom
   map g := WidePullback.lift (WidePullback.base _)
     (fun i => WidePullback.π _ (g.unop.toOrderHom i)) (by simp)
@@ -62,7 +60,7 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The morphism between Čech nerves associated to a morphism of arrows. -/
 @[simps]
-def mapCechNerve {f g : Arrow C}
+noncomputable def mapCechNerve {f g : Arrow C}
     [∀ n : ℕ, HasWidePullback f.right (fun _ : Fin (n + 1) => f.left) fun _ => f.hom]
     [∀ n : ℕ, HasWidePullback g.right (fun _ : Fin (n + 1) => g.left) fun _ => g.hom] (F : f ⟶ g) :
     f.cechNerve ⟶ g.cechNerve where
@@ -74,7 +72,7 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The augmented Čech nerve associated to an arrow. -/
 @[simps]
-def augmentedCechNerve : SimplicialObject.Augmented C where
+noncomputable def augmentedCechNerve : SimplicialObject.Augmented C where
   left := f.cechNerve
   right := f.right
   hom := { app := fun _ => WidePullback.base _ }
@@ -82,7 +80,7 @@ def augmentedCechNerve : SimplicialObject.Augmented C where
 set_option backward.isDefEq.respectTransparency false in
 /-- The morphism between augmented Čech nerve associated to a morphism of arrows. -/
 @[simps]
-def mapAugmentedCechNerve {f g : Arrow C}
+noncomputable def mapAugmentedCechNerve {f g : Arrow C}
     [∀ n : ℕ, HasWidePullback f.right (fun _ : Fin (n + 1) => f.left) fun _ => f.hom]
     [∀ n : ℕ, HasWidePullback g.right (fun _ : Fin (n + 1) => g.left) fun _ => g.hom] (F : f ⟶ g) :
     f.augmentedCechNerve ⟶ g.augmentedCechNerve where
@@ -102,7 +100,7 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The Čech nerve construction, as a functor from `Arrow C`. -/
 @[simps]
-def cechNerve : Arrow C ⥤ SimplicialObject C where
+noncomputable def cechNerve : Arrow C ⥤ SimplicialObject C where
   obj f := f.cechNerve
   map F := Arrow.mapCechNerve F
 
@@ -110,14 +108,14 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The augmented Čech nerve construction, as a functor from `Arrow C`. -/
 @[simps!]
-def augmentedCechNerve : Arrow C ⥤ SimplicialObject.Augmented C where
+noncomputable def augmentedCechNerve : Arrow C ⥤ SimplicialObject.Augmented C where
   obj f := f.augmentedCechNerve
   map F := Arrow.mapAugmentedCechNerve F
 
 set_option backward.defeqAttrib.useBackward true in
 /-- A helper function used in defining the Čech adjunction. -/
 @[simps]
-def equivalenceRightToLeft (X : SimplicialObject.Augmented C) (F : Arrow C)
+noncomputable def equivalenceRightToLeft (X : SimplicialObject.Augmented C) (F : Arrow C)
     (G : X ⟶ F.augmentedCechNerve) : Augmented.toArrow.obj X ⟶ F where
   left := G.left.app _ ≫ WidePullback.π _ 0
   right := G.right
@@ -130,7 +128,7 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- A helper function used in defining the Čech adjunction. -/
 @[simps]
-def equivalenceLeftToRight (X : SimplicialObject.Augmented C) (F : Arrow C)
+noncomputable def equivalenceLeftToRight (X : SimplicialObject.Augmented C) (F : Arrow C)
     (G : Augmented.toArrow.obj X ⟶ F) : X ⟶ F.augmentedCechNerve where
   left :=
     { app := fun x =>
@@ -149,7 +147,7 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- A helper function used in defining the Čech adjunction. -/
 @[simps]
-def cechNerveEquiv (X : SimplicialObject.Augmented C) (F : Arrow C) :
+noncomputable def cechNerveEquiv (X : SimplicialObject.Augmented C) (F : Arrow C) :
     (Augmented.toArrow.obj X ⟶ F) ≃ (X ⟶ F.augmentedCechNerve) where
   toFun := equivalenceLeftToRight _ _
   invFun := equivalenceRightToLeft _ _
@@ -165,7 +163,7 @@ def cechNerveEquiv (X : SimplicialObject.Augmented C) (F : Arrow C) :
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The augmented Čech nerve construction is right adjoint to the `toArrow` functor. -/
-abbrev cechNerveAdjunction : (Augmented.toArrow : _ ⥤ Arrow C) ⊣ augmentedCechNerve :=
+noncomputable abbrev cechNerveAdjunction : (Augmented.toArrow : _ ⥤ Arrow C) ⊣ augmentedCechNerve :=
   Adjunction.mkOfHomEquiv
     { homEquiv := cechNerveEquiv
       homEquiv_naturality_left_symm := by dsimp [cechNerveEquiv]; cat_disch
@@ -190,7 +188,7 @@ variable [∀ n : ℕ, HasWidePushout f.left (fun _ : Fin (n + 1) => f.right) fu
 set_option backward.isDefEq.respectTransparency false in
 /-- The Čech conerve associated to an arrow. -/
 @[simps]
-def cechConerve : CosimplicialObject C where
+noncomputable def cechConerve : CosimplicialObject C where
   obj n := widePushout f.left (fun _ : Fin (n.len + 1) => f.right) fun _ => f.hom
   map {x y} g := by
     refine WidePushout.desc (WidePushout.head _)
@@ -201,7 +199,7 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The morphism between Čech conerves associated to a morphism of arrows. -/
 @[simps]
-def mapCechConerve {f g : Arrow C}
+noncomputable def mapCechConerve {f g : Arrow C}
     [∀ n : ℕ, HasWidePushout f.left (fun _ : Fin (n + 1) => f.right) fun _ => f.hom]
     [∀ n : ℕ, HasWidePushout g.left (fun _ : Fin (n + 1) => g.right) fun _ => g.hom] (F : f ⟶ g) :
     f.cechConerve ⟶ g.cechConerve where
@@ -213,7 +211,7 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The augmented Čech conerve associated to an arrow. -/
 @[simps]
-def augmentedCechConerve : CosimplicialObject.Augmented C where
+noncomputable def augmentedCechConerve : CosimplicialObject.Augmented C where
   left := f.left
   right := f.cechConerve
   hom :=
@@ -222,7 +220,7 @@ def augmentedCechConerve : CosimplicialObject.Augmented C where
 set_option backward.isDefEq.respectTransparency false in
 /-- The morphism between augmented Čech conerves associated to a morphism of arrows. -/
 @[simps]
-def mapAugmentedCechConerve {f g : Arrow C}
+noncomputable def mapAugmentedCechConerve {f g : Arrow C}
     [∀ n : ℕ, HasWidePushout f.left (fun _ : Fin (n + 1) => f.right) fun _ => f.hom]
     [∀ n : ℕ, HasWidePushout g.left (fun _ : Fin (n + 1) => g.right) fun _ => g.hom] (F : f ⟶ g) :
     f.augmentedCechConerve ⟶ g.augmentedCechConerve where
@@ -242,7 +240,7 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The Čech conerve construction, as a functor from `Arrow C`. -/
 @[simps]
-def cechConerve : Arrow C ⥤ CosimplicialObject C where
+noncomputable def cechConerve : Arrow C ⥤ CosimplicialObject C where
   obj f := f.cechConerve
   map F := Arrow.mapCechConerve F
 
@@ -250,14 +248,14 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The augmented Čech conerve construction, as a functor from `Arrow C`. -/
 @[simps]
-def augmentedCechConerve : Arrow C ⥤ CosimplicialObject.Augmented C where
+noncomputable def augmentedCechConerve : Arrow C ⥤ CosimplicialObject.Augmented C where
   obj f := f.augmentedCechConerve
   map F := Arrow.mapAugmentedCechConerve F
 
 set_option backward.defeqAttrib.useBackward true in
 /-- A helper function used in defining the Čech conerve adjunction. -/
 @[simps!]
-def equivalenceLeftToRight (F : Arrow C) (X : CosimplicialObject.Augmented C)
+noncomputable def equivalenceLeftToRight (F : Arrow C) (X : CosimplicialObject.Augmented C)
     (G : F.augmentedCechConerve ⟶ X) : F ⟶ Augmented.toArrow.obj X :=
   Arrow.homMk G.left (WidePushout.ι _ 0 ≫ G.right.app ⦋0⦌ :) (by
     dsimp
@@ -268,7 +266,7 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- A helper function used in defining the Čech conerve adjunction. -/
 @[simps!]
-def equivalenceRightToLeft (F : Arrow C) (X : CosimplicialObject.Augmented C)
+noncomputable def equivalenceRightToLeft (F : Arrow C) (X : CosimplicialObject.Augmented C)
     (G : F ⟶ Augmented.toArrow.obj X) : F.augmentedCechConerve ⟶ X where
   left := G.left
   right :=
@@ -295,7 +293,7 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- A helper function used in defining the Čech conerve adjunction. -/
 @[simps]
-def cechConerveEquiv (F : Arrow C) (X : CosimplicialObject.Augmented C) :
+noncomputable def cechConerveEquiv (F : Arrow C) (X : CosimplicialObject.Augmented C) :
     (F.augmentedCechConerve ⟶ X) ≃ (F ⟶ Augmented.toArrow.obj X) where
   toFun := equivalenceLeftToRight _ _
   invFun := equivalenceRightToLeft _ _
@@ -327,6 +325,7 @@ def cechConerveEquiv (F : Arrow C) (X : CosimplicialObject.Augmented C) :
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The augmented Čech conerve construction is left adjoint to the `toArrow` functor. -/
+noncomputable
 abbrev cechConerveAdjunction : augmentedCechConerve ⊣ (Augmented.toArrow : _ ⥤ Arrow C) :=
   Adjunction.mkOfHomEquiv { homEquiv := cechConerveEquiv }
 
@@ -334,6 +333,7 @@ end CosimplicialObject
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Given an object `X : C`, the natural simplicial object sending `⦋n⦌` to `Xⁿ⁺¹`. -/
+noncomputable
 def cechNerveTerminalFrom {C : Type u} [Category.{v} C] [HasFiniteProducts C] (X : C) :
     SimplicialObject C where
   obj n := ∏ᶜ fun _ : Fin (n.unop.len + 1) => X
@@ -344,10 +344,11 @@ namespace CechNerveTerminalFrom
 variable [HasTerminal C] (ι : Type w)
 
 /-- The diagram `Option ι ⥤ C` sending `none` to the terminal object and `some j` to `X`. -/
-def wideCospan (X : C) : WidePullbackShape ι ⥤ C :=
+noncomputable def wideCospan (X : C) : WidePullbackShape ι ⥤ C :=
   WidePullbackShape.wideCospan (terminal C) (fun _ : ι => X) fun _ => terminal.from X
 
 set_option backward.defeqAttrib.useBackward true in
+noncomputable
 instance uniqueToWideCospanNone (X Y : C) : Unique (Y ⟶ (wideCospan ι X).obj none) := by
   dsimp [wideCospan]
   infer_instance
@@ -357,7 +358,7 @@ variable [HasFiniteProducts C]
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The product `Xᶥ` is the vertex of a limit cone on `wideCospan ι X`. -/
-def wideCospan.limitCone [Finite ι] (X : C) : LimitCone (wideCospan ι X) where
+noncomputable def wideCospan.limitCone [Finite ι] (X : C) : LimitCone (wideCospan ι X) where
   cone :=
     { pt := ∏ᶜ fun _ : ι => X
       π :=
@@ -395,7 +396,7 @@ instance hasWidePullback' [Finite ι] (X : C) :
 instance hasLimit_wideCospan [Finite ι] (X : C) : HasLimit (wideCospan ι X) := hasWidePullback _ _
 
 /-- the isomorphism to the product induced by the limit cone `wideCospan ι X` -/
-def wideCospan.limitIsoPi [Finite ι] (X : C) :
+noncomputable def wideCospan.limitIsoPi [Finite ι] (X : C) :
     limit (wideCospan ι X) ≅ ∏ᶜ fun _ : ι => X :=
   (IsLimit.conePointUniqueUpToIso (limit.isLimit _)
     (wideCospan.limitCone ι X).2)
@@ -415,7 +416,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- Given an object `X : C`, the Čech nerve of the hom to the terminal object `X ⟶ ⊤_ C` is
 naturally isomorphic to a simplicial object sending `⦋n⦌` to `Xⁿ⁺¹` (when `C` is `G-Set`, this is
 `EG`, the universal cover of the classifying space of `G`). -/
-def iso (X : C) : (Arrow.mk (terminal.from X)).cechNerve ≅ cechNerveTerminalFrom X :=
+noncomputable def iso (X : C) : (Arrow.mk (terminal.from X)).cechNerve ≅ cechNerveTerminalFrom X :=
   NatIso.ofComponents (fun _ => wideCospan.limitIsoPi _ _) (fun {m n} f => by
     dsimp only [cechNerveTerminalFrom, Arrow.cechNerve]
     ext ⟨j⟩

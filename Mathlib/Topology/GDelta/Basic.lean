@@ -48,8 +48,6 @@ Gδ set, residual set, nowhere dense set, meagre set
 
 assert_not_exists UniformSpace
 
-noncomputable section
-
 open Topology TopologicalSpace Filter Encodable Set
 
 variable {X Y ι : Type*} {ι' : Sort*}

@@ -30,8 +30,6 @@ open Complex UpperHalfPlane Matrix.SpecialLinearGroup
 
 open scoped Topology Manifold MatrixGroups ComplexConjugate
 
-noncomputable section
-
 section ModularForm
 
 open ModularForm
@@ -321,7 +319,7 @@ def coeHom : ModularForm Γ k →+ ℍ → ℂ where
   map_zero' := coe_zero
   map_add' _ _ := rfl
 
-instance : Module ℝ (ModularForm Γ k) :=
+noncomputable instance : Module ℝ (ModularForm Γ k) :=
   Function.Injective.module ℝ coeHom DFunLike.coe_injective fun _ _ => rfl
 
 instance [Γ.HasDetOne] : Module ℂ (ModularForm Γ k) :=
@@ -515,7 +513,7 @@ def coeHom : CuspForm Γ k →+ ℍ → ℂ where
   map_zero' := CuspForm.coe_zero
   map_add' _ _ := rfl
 
-instance : Module ℝ (CuspForm Γ k) :=
+noncomputable instance : Module ℝ (CuspForm Γ k) :=
   Function.Injective.module ℝ coeHom DFunLike.coe_injective fun _ _ => rfl
 
 instance [Γ.HasDetOne] : Module ℂ (CuspForm Γ k) :=

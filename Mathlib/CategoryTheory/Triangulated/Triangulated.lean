@@ -19,8 +19,6 @@ pretriangulated categories which satisfy the octahedron axiom.
 
 assert_not_exists TwoSidedIdeal
 
-noncomputable section
-
 namespace CategoryTheory
 
 open Limits Category Preadditive Pretriangulated
@@ -144,6 +142,7 @@ variable (u₁₂ u₁₃ u₂₃ comm h₁₂ h₁₃ h₂₃)
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- When two diagrams are isomorphic, an octahedron for one gives an octahedron for the other. -/
+noncomputable
 def ofIso {X₁' X₂' X₃' Z₁₂' Z₂₃' Z₁₃' : C} (u₁₂' : X₁' ⟶ X₂') (u₂₃' : X₂' ⟶ X₃') (u₁₃' : X₁' ⟶ X₃')
     (comm' : u₁₂' ≫ u₂₃' = u₁₃')
     (e₁ : X₁ ≅ X₁') (e₂ : X₂ ≅ X₂') (e₃ : X₃ ≅ X₃')
@@ -315,7 +314,7 @@ class IsTriangulated : Prop where
 variable {C}
 
 /-- A choice of octahedron given by the octahedron axiom. -/
-@[no_expose] def Triangulated.someOctahedron [IsTriangulated C]
+@[no_expose] noncomputable def Triangulated.someOctahedron [IsTriangulated C]
     {X₁ X₂ X₃ Z₁₂ Z₂₃ Z₁₃ : C}
     {u₁₂ : X₁ ⟶ X₂} {u₂₃ : X₂ ⟶ X₃} {u₁₃ : X₁ ⟶ X₃} (comm : u₁₂ ≫ u₂₃ = u₁₃)
     {v₁₂ : X₂ ⟶ Z₁₂} {w₁₂ : Z₁₂ ⟶ X₁⟦(1 : ℤ)⟧} (h₁₂ : Triangle.mk u₁₂ v₁₂ w₁₂ ∈ distTriang C)
@@ -327,7 +326,7 @@ variable {C}
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- A choice of octahedron' given by the octahedron axiom. -/
-@[no_expose] def Triangulated.someOctahedron' [IsTriangulated C]
+@[no_expose] noncomputable def Triangulated.someOctahedron' [IsTriangulated C]
     {X₁ X₂ X₃ Z₁₂ Z₂₃ Z₁₃ : C}
     {u₁₂ : X₁ ⟶ X₂} {u₂₃ : X₂ ⟶ X₃} {u₁₃ : X₁ ⟶ X₃} (comm : u₁₂ ≫ u₂₃ = u₁₃)
     {v₁₂ : Z₁₂ ⟶ X₁} {w₁₂ : X₂ ⟶ Z₁₂⟦(1 : ℤ)⟧} (h₁₂ : Triangle.mk v₁₂ u₁₂ w₁₂ ∈ distTriang C)

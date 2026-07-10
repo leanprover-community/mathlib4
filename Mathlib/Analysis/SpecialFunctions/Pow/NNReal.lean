@@ -23,8 +23,6 @@ We also prove basic properties of these functions.
 
 @[expose] public section
 
-noncomputable section
-
 open Real NNReal ENNReal ComplexConjugate Finset Function Set
 
 namespace NNReal
@@ -199,7 +197,7 @@ theorem mul_rpow {x y : ℝ≥0} {z : ℝ} : (x * y) ^ z = x ^ z * y ^ z :=
 
 /-- `rpow` as a `MonoidHom` -/
 @[simps]
-def rpowMonoidHom (r : ℝ) : ℝ≥0 →* ℝ≥0 where
+noncomputable def rpowMonoidHom (r : ℝ) : ℝ≥0 →* ℝ≥0 where
   toFun := (· ^ r)
   map_one' := one_rpow _
   map_mul' _x _y := mul_rpow
@@ -461,7 +459,7 @@ theorem monotone_rpow_of_nonneg {z : ℝ} (h : 0 ≤ z) : Monotone fun x : ℝ�
 /-- Bundles `fun x : ℝ≥0 => x ^ y` into an order isomorphism when `y : ℝ` is positive,
 where the inverse is `fun x : ℝ≥0 => x ^ (1 / y)`. -/
 @[simps! apply]
-def orderIsoRpow (y : ℝ) (hy : 0 < y) : ℝ≥0 ≃o ℝ≥0 :=
+noncomputable def orderIsoRpow (y : ℝ) (hy : 0 < y) : ℝ≥0 ≃o ℝ≥0 :=
   (strictMono_rpow_of_pos hy).orderIsoOfRightInverse (fun x => x ^ y) (fun x => x ^ (1 / y))
     fun x => by
       dsimp
@@ -784,7 +782,7 @@ theorem monotone_rpow_of_nonneg {z : ℝ} (h : 0 ≤ z) : Monotone fun x : ℝ�
 /-- Bundles `fun x : ℝ≥0∞ => x ^ y` into an order isomorphism when `y : ℝ` is positive,
 where the inverse is `fun x : ℝ≥0∞ => x ^ (1 / y)`. -/
 @[simps! apply]
-def orderIsoRpow (y : ℝ) (hy : 0 < y) : ℝ≥0∞ ≃o ℝ≥0∞ :=
+noncomputable def orderIsoRpow (y : ℝ) (hy : 0 < y) : ℝ≥0∞ ≃o ℝ≥0∞ :=
   (strictMono_rpow_of_pos hy).orderIsoOfRightInverse (fun x => x ^ y) (fun x => x ^ (1 / y))
     fun x => by
     dsimp

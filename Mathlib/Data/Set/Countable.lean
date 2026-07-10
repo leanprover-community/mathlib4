@@ -29,8 +29,6 @@ sets, countable set
 
 assert_not_exists Monoid Multiset.sort
 
-noncomputable section
-
 open Function Set Encodable
 
 universe u v w x
@@ -73,14 +71,14 @@ alias ⟨Countable.nonempty_encodable, _⟩ := countable_iff_nonempty_encodable
 
 /-- Convert `Set.Countable s` to `Encodable s` (noncomputable). -/
 @[implicit_reducible]
-protected def Countable.toEncodable {s : Set α} (hs : s.Countable) : Encodable s :=
+protected noncomputable def Countable.toEncodable {s : Set α} (hs : s.Countable) : Encodable s :=
   Classical.choice hs.nonempty_encodable
 
 section Enumerate
 
 /-- Noncomputably enumerate elements in a set. The `default` value is used to extend the domain to
 all of `ℕ`. -/
-def enumerateCountable {s : Set α} (h : s.Countable) (default : α) : ℕ → α := fun n =>
+noncomputable def enumerateCountable {s : Set α} (h : s.Countable) (default : α) : ℕ → α := fun n =>
   match @Encodable.decode s h.toEncodable n with
   | some y => y
   | none => default

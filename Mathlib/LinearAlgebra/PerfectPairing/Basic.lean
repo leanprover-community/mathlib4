@@ -128,8 +128,6 @@ lemma IsPerfPair.of_injective' [FiniteDimensional K N] (h : Injective p) (h' : I
 end Field
 end LinearMap
 
-noncomputable section
-
 variable {R M N : Type*} [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
 
 namespace LinearMap
@@ -184,7 +182,7 @@ namespace LinearEquiv
 
 /-- For a reflexive module `M`, an equivalence `N ≃ₗ[R] Dual R M` naturally yields an equivalence
 `M ≃ₗ[R] Dual R N`. Such equivalences are known as perfect pairings. -/
-def flip : M ≃ₗ[R] Dual R N :=
+noncomputable def flip : M ≃ₗ[R] Dual R N :=
   (evalEquiv R M).trans e.dualMap
 
 @[simp] lemma coe_toLinearMap_flip : e.flip = (↑e : N →ₗ[R] Dual R M).flip := rfl

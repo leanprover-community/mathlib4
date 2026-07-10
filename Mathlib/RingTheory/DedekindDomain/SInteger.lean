@@ -45,8 +45,6 @@ S integer, S-integer, S unit, S-unit
 @[expose] public section
 
 
-noncomputable section
-
 open IsDedekindDomain
 
 open scoped nonZeroDivisors
@@ -62,7 +60,7 @@ namespace Set
 
 /-- The `R`-subalgebra of `S`-integers of `K`. -/
 @[simps!]
-def integer : Subalgebra R K :=
+noncomputable def integer : Subalgebra R K :=
   {
     (⨅ (v) (_ : v ∉ S), (v.valuation K).valuationSubring.toSubring).copy
         {x : K | ∀ (v) (_ : v ∉ S), v.valuation K x ≤ 1} <|
@@ -105,7 +103,7 @@ namespace Set
 
 /-- The subgroup of `S`-units of `Kˣ`. -/
 @[simps!]
-def unit : Subgroup Kˣ :=
+noncomputable def unit : Subgroup Kˣ :=
   (⨅ (v) (_ : v ∉ S), (v.valuation K).valuationSubring.unitGroup).copy
       {x : Kˣ | ∀ (v) (_ : v ∉ S), (v : HeightOneSpectrum R).valuation K x = 1} <|
     Set.ext fun _ => by

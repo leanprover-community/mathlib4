@@ -29,8 +29,6 @@ We show that the pullback and pushout squares for a biproduct are bi-Cartesian.
 
 @[expose] public section
 
-noncomputable section
-
 open CategoryTheory
 
 open CategoryTheory.Limits
@@ -165,7 +163,7 @@ instance hasPullback_biprod_fst_biprod_snd [HasBinaryBiproduct X Y] :
   HasLimit.mk ⟨_, (of_hasBinaryBiproduct X Y).isLimit⟩
 
 /-- The pullback of `biprod.inl` and `biprod.inr` is the zero object. -/
-def pullbackBiprodInlBiprodInr [HasBinaryBiproduct X Y] :
+noncomputable def pullbackBiprodInlBiprodInr [HasBinaryBiproduct X Y] :
     pullback (biprod.inl : X ⟶ _) (biprod.inr : Y ⟶ _) ≅ 0 :=
   limit.isoLimitCone ⟨_, (of_hasBinaryBiproduct X Y).isLimit⟩
 
@@ -277,7 +275,7 @@ instance hasPushout_biprod_fst_biprod_snd [HasBinaryBiproduct X Y] :
   HasColimit.mk ⟨_, (of_hasBinaryBiproduct X Y).isColimit⟩
 
 /-- The pushout of `biprod.fst` and `biprod.snd` is the zero object. -/
-def pushoutBiprodFstBiprodSnd [HasBinaryBiproduct X Y] :
+noncomputable def pushoutBiprodFstBiprodSnd [HasBinaryBiproduct X Y] :
     pushout (biprod.fst : _ ⟶ X) (biprod.snd : _ ⟶ Y) ≅ 0 :=
   colimit.isoColimitCocone ⟨_, (of_hasBinaryBiproduct X Y).isColimit⟩
 

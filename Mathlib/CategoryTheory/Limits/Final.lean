@@ -72,8 +72,6 @@ Dualise condition 3 above and the implications 2 ⇒ 3 and 3 ⇒ 1 to initial fu
 @[expose] public section
 
 
-noncomputable section
-
 universe v v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 
 namespace CategoryTheory
@@ -184,13 +182,13 @@ variable {E : Type u₃} [Category.{v₃} E] (G : D ⥤ E)
 When `F : C ⥤ D` is final, we denote by `lift F d` an arbitrary choice of object in `C` such that
 there exists a morphism `d ⟶ F.obj (lift F d)`.
 -/
-def lift (d : D) : C :=
+noncomputable def lift (d : D) : C :=
   (Classical.arbitrary (StructuredArrow d F)).right
 
 /-- When `F : C ⥤ D` is final, we denote by `homToLift` an arbitrary choice of morphism
 `d ⟶ F.obj (lift F d)`.
 -/
-def homToLift (d : D) : d ⟶ F.obj (lift F d) :=
+noncomputable def homToLift (d : D) : d ⟶ F.obj (lift F d) :=
   (Classical.arbitrary (StructuredArrow d F)).hom
 
 /-- We provide an induction principle for reasoning about `lift` and `homToLift`.
@@ -201,7 +199,7 @@ it suffices to perform that construction for some other pair of choices
 and to show how to transport such a construction
 *both* directions along a morphism between such choices.
 -/
-def induction {d : D} (Z : ∀ (X : C) (_ : d ⟶ F.obj X), Sort*)
+noncomputable def induction {d : D} (Z : ∀ (X : C) (_ : d ⟶ F.obj X), Sort*)
     (h₁ :
       ∀ (X₁ X₂) (k₁ : d ⟶ F.obj X₁) (k₂ : d ⟶ F.obj X₂) (f : X₁ ⟶ X₂),
         k₁ ≫ F.map f = k₂ → Z X₁ k₁ → Z X₂ k₂)
@@ -222,7 +220,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- Given a cocone over `F ⋙ G`, we can construct a `Cocone G` with the same cocone point.
 -/
 @[simps]
-def extendCocone : Cocone (F ⋙ G) ⥤ Cocone G where
+noncomputable def extendCocone : Cocone (F ⋙ G) ⥤ Cocone G where
   obj c :=
     { pt := c.pt
       ι :=
@@ -280,7 +278,7 @@ the category of cocones on `F ⋙ G` is equivalent to the category of cocones on
 for any `G : D ⥤ E`.
 -/
 @[simps]
-def coconesEquiv : Cocone (F ⋙ G) ≌ Cocone G where
+noncomputable def coconesEquiv : Cocone (F ⋙ G) ≌ Cocone G where
   functor := extendCocone
   inverse := Cocone.whiskering F
   unitIso := NatIso.ofComponents fun c => Cocone.ext (Iso.refl _)
@@ -291,19 +289,19 @@ variable {G}
 /-- When `F : C ⥤ D` is final, and `t : Cocone G` for some `G : D ⥤ E`,
 `t.whisker F` is a colimit cocone exactly when `t` is.
 -/
-def isColimitWhiskerEquiv (t : Cocone G) : IsColimit (t.whisker F) ≃ IsColimit t :=
+noncomputable def isColimitWhiskerEquiv (t : Cocone G) : IsColimit (t.whisker F) ≃ IsColimit t :=
   IsColimit.ofCoconeEquiv (coconesEquiv F G).symm
 
 /-- When `F` is final, and `t : Cocone (F ⋙ G)`,
 `extendCocone.obj t` is a colimit cocone exactly when `t` is.
 -/
-def isColimitExtendCoconeEquiv (t : Cocone (F ⋙ G)) :
+noncomputable def isColimitExtendCoconeEquiv (t : Cocone (F ⋙ G)) :
     IsColimit (extendCocone.obj t) ≃ IsColimit t :=
   IsColimit.ofCoconeEquiv (coconesEquiv F G)
 
 /-- Given a colimit cocone over `G : D ⥤ E` we can construct a colimit cocone over `F ⋙ G`. -/
 @[simps]
-def colimitCoconeComp (t : ColimitCocone G) : ColimitCocone (F ⋙ G) where
+noncomputable def colimitCoconeComp (t : ColimitCocone G) : ColimitCocone (F ⋙ G) where
   cocone := _
   isColimit := (isColimitWhiskerEquiv F _).symm t.isColimit
 
@@ -326,6 +324,7 @@ instance (priority := 100) comp_reflectsColimit {B : Type u₄} [Category.{v₄}
     let hc' := (isColimitExtendCoconeEquiv (G := G ⋙ H) F _).symm hc
     exact IsColimit.ofIsoColimit hc' (Cocone.ext (Iso.refl _) (by simp))
 
+noncomputable
 instance (priority := 100) compCreatesColimit {B : Type u₄} [Category.{v₄} B] {H : E ⥤ B}
     [CreatesColimit G H] : CreatesColimit (F ⋙ G) H where
   lifts {c} hc := by
@@ -346,7 +345,7 @@ variable (G)
 /-- When `F : C ⥤ D` is final, and `G : D ⥤ E` has a colimit, then `F ⋙ G` has a colimit also and
 `colimit (F ⋙ G) ≅ colimit G`. -/
 @[simps! -isSimp, stacks 04E7]
-def colimitIso [HasColimit G] : colimit (F ⋙ G) ≅ colimit G :=
+noncomputable def colimitIso [HasColimit G] : colimit (F ⋙ G) ≅ colimit G :=
   asIso (colimit.pre G F)
 
 @[reassoc (attr := simp)]
@@ -363,7 +362,7 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- A pointfree version of `colimitIso`, stating that whiskering by `F` followed by taking the
 colimit is isomorphic to taking the colimit on the codomain of `F`. -/
-def colimIso [HasColimitsOfShape D E] [HasColimitsOfShape C E] :
+noncomputable def colimIso [HasColimitsOfShape D E] [HasColimitsOfShape C E] :
     (whiskeringLeft _ _ _).obj F ⋙ colim ≅ colim (J := D) (C := E) :=
   NatIso.ofComponents (fun G => colimitIso F G) fun f => by
     simp only [comp_obj, whiskeringLeft_obj_obj, colim_obj, comp_map, whiskeringLeft_obj_map,
@@ -376,7 +375,7 @@ end
 
 /-- Given a colimit cocone over `F ⋙ G` we can construct a colimit cocone over `G`. -/
 @[simps]
-def colimitCoconeOfComp (t : ColimitCocone (F ⋙ G)) : ColimitCocone G where
+noncomputable def colimitCoconeOfComp (t : ColimitCocone (F ⋙ G)) : ColimitCocone G where
   cocone := extendCocone.obj t.cocone
   isColimit := (isColimitExtendCoconeEquiv F _).symm t.isColimit
 
@@ -411,7 +410,7 @@ theorem reflectsColimit_of_comp {B : Type u₄} [Category.{v₄} B] {H : E ⥤ B
 set_option backward.defeqAttrib.useBackward true in
 /-- If `F` is final and `F ⋙ G` creates colimits of `H`, then so does `G`. -/
 @[implicit_reducible]
-def createsColimitOfComp {B : Type u₄} [Category.{v₄} B] {H : E ⥤ B}
+noncomputable def createsColimitOfComp {B : Type u₄} [Category.{v₄} B] {H : E ⥤ B}
     [CreatesColimit (F ⋙ G) H] : CreatesColimit G H where
   reflects := (reflectsColimit_of_comp F).reflects
   lifts {c} hc := by
@@ -438,7 +437,7 @@ include F in
 /-- If `H` creates colimits of shape `C` and `F : C ⥤ D` is final, then `H` creates colimits of
 shape `D`. -/
 @[implicit_reducible]
-def createsColimitsOfShapeOfFinal {B : Type u₄} [Category.{v₄} B] (H : E ⥤ B)
+noncomputable def createsColimitsOfShapeOfFinal {B : Type u₄} [Category.{v₄} B] (H : E ⥤ B)
     [CreatesColimitsOfShape C H] : CreatesColimitsOfShape D H where
   CreatesColimit := createsColimitOfComp F
 
@@ -504,6 +503,7 @@ is an isomorphism (as it always is when `F` is final),
 then `colimit (F ⋙ coyoneda.obj (op d)) ≅ PUnit`
 (simply because `colimit (coyoneda.obj (op d)) ≅ PUnit`).
 -/
+noncomputable
 def Final.colimitCompCoyonedaIso (d : D) [IsIso (colimit.pre (coyoneda.obj (op d)) F)] :
     colimit (F ⋙ coyoneda.obj (op d)) ≅ PUnit :=
   asIso (colimit.pre (coyoneda.obj (op d)) F) ≪≫ Coyoneda.colimitCoyonedaIso (op d)
@@ -533,13 +533,13 @@ variable {E : Type u₃} [Category.{v₃} E] (G : D ⥤ E)
 When `F : C ⥤ D` is initial, we denote by `lift F d` an arbitrary choice of object in `C` such that
 there exists a morphism `F.obj (lift F d) ⟶ d`.
 -/
-def lift (d : D) : C :=
+noncomputable def lift (d : D) : C :=
   (Classical.arbitrary (CostructuredArrow F d)).left
 
 /-- When `F : C ⥤ D` is initial, we denote by `homToLift` an arbitrary choice of morphism
 `F.obj (lift F d) ⟶ d`.
 -/
-def homToLift (d : D) : F.obj (lift F d) ⟶ d :=
+noncomputable def homToLift (d : D) : F.obj (lift F d) ⟶ d :=
   (Classical.arbitrary (CostructuredArrow F d)).hom
 
 set_option backward.defeqAttrib.useBackward true in
@@ -551,7 +551,7 @@ it suffices to perform that construction for some other pair of choices
 and to show how to transport such a construction
 *both* directions along a morphism between such choices.
 -/
-def induction {d : D} (Z : ∀ (X : C) (_ : F.obj X ⟶ d), Sort*)
+noncomputable def induction {d : D} (Z : ∀ (X : C) (_ : F.obj X ⟶ d), Sort*)
     (h₁ :
       ∀ (X₁ X₂) (k₁ : F.obj X₁ ⟶ d) (k₂ : F.obj X₂ ⟶ d) (f : X₁ ⟶ X₂),
         F.map f ≫ k₂ = k₁ → Z X₁ k₁ → Z X₂ k₂)
@@ -579,7 +579,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- Given a cone over `F ⋙ G`, we can construct a `Cone G` with the same cocone point.
 -/
 @[simps]
-def extendCone : Cone (F ⋙ G) ⥤ Cone G where
+noncomputable def extendCone : Cone (F ⋙ G) ⥤ Cone G where
   obj c :=
     { pt := c.pt
       π :=
@@ -640,7 +640,7 @@ the category of cones on `F ⋙ G` is equivalent to the category of cones on `G`
 for any `G : D ⥤ E`.
 -/
 @[simps]
-def conesEquiv : Cone (F ⋙ G) ≌ Cone G where
+noncomputable def conesEquiv : Cone (F ⋙ G) ≌ Cone G where
   functor := extendCone
   inverse := Cone.whiskering F
   unitIso := NatIso.ofComponents fun c => Cone.ext (Iso.refl _)
@@ -651,18 +651,19 @@ variable {G}
 /-- When `F : C ⥤ D` is initial, and `t : Cone G` for some `G : D ⥤ E`,
 `t.whisker F` is a limit cone exactly when `t` is.
 -/
-def isLimitWhiskerEquiv (t : Cone G) : IsLimit (t.whisker F) ≃ IsLimit t :=
+noncomputable def isLimitWhiskerEquiv (t : Cone G) : IsLimit (t.whisker F) ≃ IsLimit t :=
   IsLimit.ofConeEquiv (conesEquiv F G).symm
 
 /-- When `F` is initial, and `t : Cone (F ⋙ G)`,
 `extendCone.obj t` is a limit cone exactly when `t` is.
 -/
+noncomputable
 def isLimitExtendConeEquiv (t : Cone (F ⋙ G)) : IsLimit (extendCone.obj t) ≃ IsLimit t :=
   IsLimit.ofConeEquiv (conesEquiv F G)
 
 /-- Given a limit cone over `G : D ⥤ E` we can construct a limit cone over `F ⋙ G`. -/
 @[simps]
-def limitConeComp (t : LimitCone G) : LimitCone (F ⋙ G) where
+noncomputable def limitConeComp (t : LimitCone G) : LimitCone (F ⋙ G) where
   cone := _
   isLimit := (isLimitWhiskerEquiv F _).symm t.isLimit
 
@@ -685,6 +686,7 @@ instance (priority := 100) comp_reflectsLimit {B : Type u₄} [Category.{v₄} B
     let hc' := (isLimitExtendConeEquiv (G := G ⋙ H) F _).symm hc
     exact IsLimit.ofIsoLimit hc' (Cone.ext (Iso.refl _) (by simp))
 
+noncomputable
 instance (priority := 100) compCreatesLimit {B : Type u₄} [Category.{v₄} B] {H : E ⥤ B}
     [CreatesLimit G H] : CreatesLimit (F ⋙ G) H where
   lifts {c} hc := by
@@ -706,14 +708,14 @@ variable (G)
 /-- When `F : C ⥤ D` is initial, and `G : D ⥤ E` has a limit, then `F ⋙ G` has a limit also and
 `limit (F ⋙ G) ≅ limit G`. -/
 @[simps! -isSimp, stacks 04E7]
-def limitIso [HasLimit G] : limit (F ⋙ G) ≅ limit G :=
+noncomputable def limitIso [HasLimit G] : limit (F ⋙ G) ≅ limit G :=
   (asIso (limit.pre G F)).symm
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- A pointfree version of `limitIso`, stating that whiskering by `F` followed by taking the
 limit is isomorphic to taking the limit on the codomain of `F`. -/
-def limIso [HasLimitsOfShape D E] [HasLimitsOfShape C E] :
+noncomputable def limIso [HasLimitsOfShape D E] [HasLimitsOfShape C E] :
     (whiskeringLeft _ _ _).obj F ⋙ lim ≅ lim (J := D) (C := E) :=
   Iso.symm <| NatIso.ofComponents (fun G => (limitIso F G).symm) fun f => by
     simp only [comp_obj, whiskeringLeft_obj_obj, lim_obj, comp_map, whiskeringLeft_obj_map, lim_map,
@@ -725,7 +727,7 @@ end
 
 /-- Given a limit cone over `F ⋙ G` we can construct a limit cone over `G`. -/
 @[simps]
-def limitConeOfComp (t : LimitCone (F ⋙ G)) : LimitCone G where
+noncomputable def limitConeOfComp (t : LimitCone (F ⋙ G)) : LimitCone G where
   cone := extendCone.obj t.cone
   isLimit := (isLimitExtendConeEquiv F _).symm t.isLimit
 
@@ -760,7 +762,7 @@ theorem reflectsLimit_of_comp {B : Type u₄} [Category.{v₄} B] {H : E ⥤ B}
 set_option backward.defeqAttrib.useBackward true in
 /-- If `F` is initial and `F ⋙ G` creates limits of `H`, then so does `G`. -/
 @[implicit_reducible]
-def createsLimitOfComp {B : Type u₄} [Category.{v₄} B] {H : E ⥤ B}
+noncomputable def createsLimitOfComp {B : Type u₄} [Category.{v₄} B] {H : E ⥤ B}
     [CreatesLimit (F ⋙ G) H] : CreatesLimit G H where
   reflects := (reflectsLimit_of_comp F).reflects
   lifts {c} hc := by
@@ -787,7 +789,7 @@ include F in
 /-- If `H` creates limits of shape `C` and `F : C ⥤ D` is initial, then `H` creates limits of shape
 `D`. -/
 @[implicit_reducible]
-def createsLimitsOfShapeOfInitial {B : Type u₄} [Category.{v₄} B] (H : E ⥤ B)
+noncomputable def createsLimitsOfShapeOfInitial {B : Type u₄} [Category.{v₄} B] (H : E ⥤ B)
     [CreatesLimitsOfShape C H] : CreatesLimitsOfShape D H where
   CreatesLimit := createsLimitOfComp F
 
@@ -1125,7 +1127,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- A natural transformation `α : F ⟶ G` between functors `F G : C ⥤ Cat` which is final on each
 fiber `(α.app X)` induces an equivalence of fiberwise colimits of `map α ⋙ H` and `H` for each
 functor `H : Grothendieck G ⥤ Type`. -/
-def Grothendieck.fiberwiseColimitMapCompEquivalence {C : Type u₁} [Category.{v₁} C]
+noncomputable def Grothendieck.fiberwiseColimitMapCompEquivalence {C : Type u₁} [Category.{v₁} C]
     {F G : C ⥤ Cat.{v₂, u₂}} (α : F ⟶ G) [∀ X, Final (α.app X).toFunctor]
     (H : Grothendieck G ⥤ Type u₂) : fiberwiseColimit (map α ⋙ H) ≅ fiberwiseColimit H :=
   NatIso.ofComponents

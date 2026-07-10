@@ -35,8 +35,6 @@ open Module hiding reflection
 open Submodule (span)
 open AddSubgroup (zmultiples)
 
-noncomputable section
-
 variable {ι R M N : Type*}
   [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
 
@@ -70,7 +68,7 @@ set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- The bijection on the indexing set induced by reflection. -/
 @[simps]
-protected def equiv_of_mapsTo :
+protected noncomputable def equiv_of_mapsTo :
     ι ≃ ι where
   toFun j := (exist_eq_reflection_of_mapsTo p root coroot i j h).choose
   invFun j := (exist_eq_reflection_of_mapsTo p root coroot i j h).choose
@@ -169,7 +167,7 @@ private lemma coroot_eq_coreflection_of_root_eq' [CharZero R] [IsDomain R] [IsTo
 set_option backward.isDefEq.respectTransparency false in
 /-- In characteristic zero if there is no torsion, to check that two finite families of roots and
 coroots form a root pairing, it is sufficient to check that they are stable under reflections. -/
-def mk' [CharZero R] [IsDomain R] [IsTorsionFree R M]
+noncomputable def mk' [CharZero R] [IsDomain R] [IsTorsionFree R M]
     (p : M →ₗ[R] N →ₗ[R] R) [p.IsPerfPair]
     (root : ι ↪ M)
     (coroot : ι ↪ N)
@@ -259,7 +257,7 @@ variable {k : Type*} [Field k] [CharZero k] [Module k M] [Module k N]
 crystallographic root system, we do not need to check that the coroots are stable under reflections
 since this follows from the corresponding property for the roots. Likewise, we do not need to
 check that the coroots span. -/
-def mk'' :
+noncomputable def mk'' :
     RootPairing ι k M N :=
   .mk' p root coroot hp hs <| by
     rintro i - ⟨j, rfl⟩

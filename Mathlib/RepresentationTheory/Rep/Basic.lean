@@ -39,7 +39,7 @@ structure Rep (k : Type u) (G : Type v) [Semiring k] [Monoid G] where
 
 namespace Rep
 
-noncomputable section
+section
 
 section semiring
 
@@ -336,25 +336,25 @@ variable (k G)
 
 /-- Given a `G`-action on `H`, this is `k[H]` bundled with the natural representation
 `G →* End(k[H])` as a term of type `Rep k G`. -/
-abbrev ofMulAction (H : Type w') [MulAction G H] : Rep k G :=
+noncomputable abbrev ofMulAction (H : Type w') [MulAction G H] : Rep k G :=
   of <| Representation.ofMulAction k G H
 
 /-- The `k`-linear `G`-representation on `k[G]`, induced by left multiplication. -/
-abbrev leftRegular : Rep k G :=
+noncomputable abbrev leftRegular : Rep k G :=
   ofMulAction k G G
 
 /-- The `k`-linear `G`-representation on `k[Gⁿ]`, induced by left multiplication. -/
-abbrev diagonal (n : ℕ) : Rep k G :=
+noncomputable abbrev diagonal (n : ℕ) : Rep k G :=
   ofMulAction k G (Fin n → G)
 
 /-- The natural isomorphism between the representations on `k[G¹]` and `k[G]` induced by left
 multiplication in `G`. -/
-abbrev diagonalOneIsoLeftRegular :
+noncomputable abbrev diagonalOneIsoLeftRegular :
     diagonal k G 1 ≅ leftRegular k G := Rep.mkIso (Representation.diagonalOneEquivLeftRegular k G)
 
 /-- When `H = {1}`, the `G`-representation on `k[H]` induced by an action of `G` on `H` is
 isomorphic to the trivial representation on `k`. -/
-abbrev ofMulActionSubsingletonIsoTrivial
+noncomputable abbrev ofMulActionSubsingletonIsoTrivial
     (H : Type u) [Subsingleton H] [MulOneClass H] [MulAction G H] :
     ofMulAction k G H ≅ trivial k G k :=
   mkIso <| Representation.ofMulActionSubsingletonEquivTrivial k G H
@@ -404,7 +404,7 @@ variable {k G}
 
 /-- Given an element `x : A`, there is a natural morphism of representations `k[G] ⟶ A` sending
 `g ↦ A.ρ(g)(x).` -/
-abbrev leftRegularHom (A : Rep k G) (x : A) : leftRegular k G ⟶ A :=
+noncomputable abbrev leftRegularHom (A : Rep k G) (x : A) : leftRegular k G ⟶ A :=
   Rep.ofHom ⟨Finsupp.lift A k G (fun g ↦ A.ρ g x) ∘ₗ (MonoidAlgebra.coeffLinearEquiv _).toLinearMap,
     fun g ↦ by ext; simp⟩
 
@@ -643,7 +643,7 @@ section monoidal
 open MonoidalCategory CategoryTheory Representation.IntertwiningMap
   Representation.TensorProduct
 
-instance : MonoidalCategory (Rep.{u} k G) where
+noncomputable instance : MonoidalCategory (Rep.{u} k G) where
   tensorObj X Y := of (X.ρ.tprod Y.ρ)
   whiskerLeft X _ _ f := ofHom (lTensor X.ρ f.hom)
   whiskerRight f Z := ofHom (rTensor Z.ρ f.hom)
@@ -725,7 +725,7 @@ instance : MonoidalLinear k (Rep.{u} k G) where
   whiskerLeft_smul _ _ _ _ _ := by ext1; simp [smul_hom]
   smul_whiskerRight _ _ _ _ _ := by ext1; simp [smul_hom]
 
-instance : BraidedCategory (Rep.{u} k G) where
+noncomputable instance : BraidedCategory (Rep.{u} k G) where
   braiding X Y := Rep.mkIso (Representation.TensorProduct.comm X.ρ Y.ρ)
   braiding_naturality_right _ _ _ _ := by ext1; simp [comm_comp_lTensor]
   braiding_naturality_left _ _ := by ext1; simp [comm_comp_rTensor]
@@ -744,7 +744,7 @@ lemma hom_braiding {X Y : Rep k G} : (β_ X Y).hom.hom =
     (Representation.TensorProduct.comm X.ρ Y.ρ).toIntertwiningMap := rfl
 
 open Representation.Equiv in
-instance : SymmetricCategory (Rep.{u} k G) where
+noncomputable instance : SymmetricCategory (Rep.{u} k G) where
   symmetry X Y := by ext1; simp [← comm_symm Y.ρ X.ρ, ← toIntertwiningMap_trans,
     trans_symm, toIntertwiningMap_refl]
 
@@ -778,6 +778,7 @@ set_option backward.isDefEq.respectTransparency false in
 `A ⊗ - ⊣ ihom(A, -)`. It sends `f : A ⊗ B ⟶ C` to a `Rep k G` morphism defined by currying the
 `k`-linear map underlying `f`, giving a map `A →ₗ[k] B →ₗ[k] C`, then flipping the arguments. -/
 @[simps]
+noncomputable
 def tensorHomEquiv (A B C : Rep.{u} k G) : (A ⊗ B ⟶ C) ≃ (B ⟶ (Rep.ihom A).obj C) where
   toFun f := Rep.ofHom ⟨(TensorProduct.curry f.hom.toLinearMap).flip, fun g ↦ by
     ext x y
@@ -827,6 +828,7 @@ set_option backward.isDefEq.respectTransparency false in
 
 /-- There is a `k`-linear isomorphism between the sets of representation morphisms `Hom(A ⊗ B, C)`
 and `Hom(B, Homₖ(A, C))`. -/
+noncomputable
 def MonoidalClosed.linearHomEquiv (A B C : Rep.{u} k G) : (A ⊗ B ⟶ C) ≃ₗ[k] B ⟶ A ⟶[Rep k G] C :=
   { (ihom.adjunction A).homEquiv _ _ with
     map_add' := fun _ _ => rfl
@@ -834,7 +836,7 @@ def MonoidalClosed.linearHomEquiv (A B C : Rep.{u} k G) : (A ⊗ B ⟶ C) ≃ₗ
 
 /-- There is a `k`-linear isomorphism between the sets of representation morphisms `Hom(A ⊗ B, C)`
 and `Hom(A, Homₖ(B, C))`. -/
-def MonoidalClosed.linearHomEquivComm (A B C : Rep.{u} k G) : (A ⊗ B ⟶ C) ≃ₗ[k] A ⟶ B
+noncomputable def MonoidalClosed.linearHomEquivComm (A B C : Rep.{u} k G) : (A ⊗ B ⟶ C) ≃ₗ[k] A ⟶ B
     ⟶[Rep k G] C :=
   Linear.homCongr k (β_ A B) (Iso.refl _) ≪≫ₗ MonoidalClosed.linearHomEquiv _ _ _
 
@@ -888,11 +890,11 @@ def normNatTrans : End (𝟭 (Rep k G)) where
 
 end
 
-noncomputable section Linearization
+section Linearization
 
 variable (k G)
 
-noncomputable section Finsupp
+section Finsupp
 
 open Finsupp
 
@@ -900,26 +902,26 @@ variable (α : Type u') (A : Rep k G)
 
 variable {k G} in
 /-- The representation on `α →₀ A` defined pointwise by a representation on `A`. -/
-abbrev finsupp : Rep k G :=
+noncomputable abbrev finsupp : Rep k G :=
   Rep.of (Representation.finsupp A.ρ α)
 
 @[simp] lemma finsupp_V : (finsupp α A).V = (α →₀ A.V) := rfl
 
 /-- The representation on `α →₀ k[G]` defined pointwise by the left regular representation on
 `k[G]`. -/
-abbrev free : Rep k G := Rep.of (Representation.free k G α)
+noncomputable abbrev free : Rep k G := Rep.of (Representation.free k G α)
 
 variable {α}
 
 /-- Given `f : α → A`, the natural representation morphism `(α →₀ k[G]) ⟶ A` sending
 `single a (single g r) ↦ r • A.ρ g (f a)`. -/
-abbrev freeLift (f : α → A) :
+noncomputable abbrev freeLift (f : α → A) :
     free k G α ⟶ A := Rep.ofHom (Representation.freeLift A.ρ f)
 
 variable (α) in
 /-- The natural linear equivalence between functions `α → A` and representation morphisms
 `(α →₀ k[G]) ⟶ A`. -/
-abbrev freeLiftLEquiv :
+noncomputable abbrev freeLiftLEquiv :
     (free k G α ⟶ A) ≃ₗ[k] (α → A) :=
   homLinearEquiv _ _ ≪≫ₗ Representation.freeLiftLEquiv A.ρ α
 
@@ -937,12 +939,12 @@ variable (A B : Rep.{u} k G) (α : Type u) [DecidableEq α]
 open TensorProduct in
 /-- Given representations `A, B` and a type `α`, this is the natural representation isomorphism
 `(α →₀ A) ⊗ B ≅ (A ⊗ B) →₀ α` sending `single x a ⊗ₜ b ↦ single x (a ⊗ₜ b)`. -/
-abbrev finsuppTensorLeft : A.finsupp α ⊗ B ≅ (A ⊗ B).finsupp α :=
+noncomputable abbrev finsuppTensorLeft : A.finsupp α ⊗ B ≅ (A ⊗ B).finsupp α :=
   mkIso (Representation.finsuppTensorLeft A.ρ B.ρ α)
 
 /-- Given representations `A, B` and a type `α`, this is the natural representation isomorphism
 `A ⊗ (α →₀ B) ≅ (A ⊗ B) →₀ α` sending `a ⊗ₜ single x b ↦ single x (a ⊗ₜ b)`. -/
-abbrev finsuppTensorRight : A ⊗ B.finsupp α ≅ (A ⊗ B).finsupp α :=
+noncomputable abbrev finsuppTensorRight : A ⊗ B.finsupp α ≅ (A ⊗ B).finsupp α :=
   mkIso (Representation.finsuppTensorRight A.ρ B.ρ α)
 
 section
@@ -950,6 +952,7 @@ section
 variable (k G α : Type u) [DecidableEq α] [CommRing k] [Monoid G]
 
 /-- The natural isomorphism sending `single g r₁ ⊗ single a r₂ ↦ single a (single g r₁r₂)`. -/
+noncomputable
 abbrev leftRegularTensorTrivialIsoFree : leftRegular k G ⊗ trivial k G k[α] ≅ free k G α :=
   mkIso (Representation.leftRegularTensorTrivialIsoFree α)
 
@@ -960,12 +963,12 @@ end Finsupp
 /-- The monoidal functor sending a type `H` with a `G`-action to the induced `k`-linear
 `G`-representation on `k[H].` -/
 @[simps]
-abbrev linearization : Action (Type w) G ⥤ Rep.{max w u} k G where
+noncomputable abbrev linearization : Action (Type w) G ⥤ Rep.{max w u} k G where
   obj X := .of <| .linearize k G X
   map f := Rep.ofHom <| Representation.linearizeMap f
 
 open MonoidalCategory Representation.LinearizeMonoidal in
-instance : (linearization k G).LaxMonoidal where
+noncomputable instance : (linearization k G).LaxMonoidal where
   ε := ofHom (ε k G)
   μ X Y := ofHom (μ X Y)
   μ_natural_left f Z := hom_ext <| μ_comp_rTensor f Z
@@ -975,7 +978,7 @@ instance : (linearization k G).LaxMonoidal where
   right_unitality X := hom_ext <| μ_rightUnitor X
 
 open MonoidalCategory Representation.LinearizeMonoidal in
-instance : (linearization k G).OplaxMonoidal where
+noncomputable instance : (linearization k G).OplaxMonoidal where
   η := ofHom (η k G)
   δ X Y := ofHom (δ X Y)
   δ_natural_left f Z := hom_ext <| rTensor_comp_δ Z f
@@ -985,7 +988,7 @@ instance : (linearization k G).OplaxMonoidal where
   oplax_right_unitality X := hom_ext <| rightUnitor_δ X
 
 open MonoidalCategory Representation.LinearizeMonoidal in
-instance : (linearization k G).Monoidal where
+noncomputable instance : (linearization k G).Monoidal where
   ε_η := hom_ext <| η_ε k G
   η_ε := hom_ext <| ε_η k G
   μ_δ X Y := hom_ext <| δ_μ (k := k) X Y
@@ -1026,20 +1029,20 @@ end
 variable (k G) in
 /-- The linearization of a type `X` on which `G` acts trivially is the trivial `G`-representation
 on `k[X]`. -/
-abbrev linearizationTrivialIso (X : Type u) :
+noncomputable abbrev linearizationTrivialIso (X : Type u) :
     (linearization k G).obj (Action.trivial _ X) ≅ trivial k G k[X] :=
   Rep.mkIso (Representation.linearizeTrivialIso k G X)
 
 variable (k G) in
 /-- The linearization of a type `H` with a `G`-action is definitionally isomorphic to the
 `k`-linear `G`-representation on `k[H]` induced by the `G`-action on `H`. -/
-abbrev linearizationOfMulActionIso (H : Type u) [MulAction G H] :
+noncomputable abbrev linearizationOfMulActionIso (H : Type u) [MulAction G H] :
     (linearization k G).obj (Action.ofMulAction G H) ≅ ofMulAction k G H :=
   Rep.mkIso (Representation.linearizeOfMulActionIso k G H)
 
 /-- Given a `k`-linear `G`-representation `A`, there is a `k`-linear isomorphism between
 representation morphisms `Hom(k[G], A)` and `A`. -/
-abbrev leftRegularHomEquiv (A : Rep k G) : (leftRegular k G ⟶ A) ≃ₗ[k] A :=
+noncomputable abbrev leftRegularHomEquiv (A : Rep k G) : (leftRegular k G ⟶ A) ≃ₗ[k] A :=
   homLinearEquiv _ _ ≪≫ₗ Representation.leftRegularMapEquiv A.ρ
 
 theorem leftRegularHomEquiv_symm_single {A : Rep k G} (x : A) (g : G) :

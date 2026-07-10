@@ -21,8 +21,6 @@ limits for `K`.
 
 open CategoryTheory CategoryTheory.Limits CategoryTheory.Functor
 
-noncomputable section
-
 namespace CategoryTheory
 
 universe w' w'₁ w w₁ v₁ v₂ v₃ u₁ u₂ u₃
@@ -160,7 +158,7 @@ lemma liftedLimitMapsToOriginal_hom_π
     Iso.hom_inv_id, Cone.category_id_hom, Category.id_comp]
 
 /-- The lifted cone is a limit. -/
-def liftedLimitIsLimit {K : J ⥤ C} {F : C ⥤ D} [CreatesLimit K F] {c : Cone (K ⋙ F)}
+noncomputable def liftedLimitIsLimit {K : J ⥤ C} {F : C ⥤ D} [CreatesLimit K F] {c : Cone (K ⋙ F)}
     (t : IsLimit c) : IsLimit (liftLimit t) :=
   isLimitOfReflects _ (IsLimit.ofIsoLimit t (liftedLimitMapsToOriginal t).symm)
 
@@ -195,6 +193,7 @@ def liftedColimitMapsToOriginal {K : J ⥤ C} {F : C ⥤ D} [CreatesColimit K F]
   (CreatesColimit.lifts c t).validLift
 
 /-- The lifted cocone is a colimit. -/
+noncomputable
 def liftedColimitIsColimit {K : J ⥤ C} {F : C ⥤ D} [CreatesColimit K F] {c : Cocone (K ⋙ F)}
     (t : IsColimit c) : IsColimit (liftColimit t) :=
   isColimitOfReflects _ (IsColimit.ofIsoColimit t (liftedColimitMapsToOriginal t).symm)
@@ -289,6 +288,7 @@ def createsLimitOfReflectsIso' {K : J ⥤ C} {F : C ⥤ D} [F.ReflectsIsomorphis
 /-- If `F` reflects isomorphisms, and we already know that the limit exists in the source and `F`
 preserves it, then `F` creates that limit. -/
 @[implicit_reducible]
+noncomputable
 def createsLimitOfReflectsIsomorphismsOfPreserves {K : J ⥤ C} {F : C ⥤ D} [F.ReflectsIsomorphisms]
     [HasLimit K] [PreservesLimit K F] : CreatesLimit K F :=
   createsLimitOfReflectsIso' (isLimitOfPreserves F (limit.isLimit _))
@@ -302,7 +302,7 @@ When `F` is fully faithful, to show that `F` creates the limit for `K` it suffic
 of a limit cone for `K ⋙ F`.
 -/
 @[implicit_reducible]
-def createsLimitOfFullyFaithfulOfLift' {K : J ⥤ C} {F : C ⥤ D} [F.Full] [F.Faithful]
+noncomputable def createsLimitOfFullyFaithfulOfLift' {K : J ⥤ C} {F : C ⥤ D} [F.Full] [F.Faithful]
     {l : Cone (K ⋙ F)} (hl : IsLimit l) (c : Cone K) (i : F.mapCone c ≅ l) :
     CreatesLimit K F :=
   createsLimitOfReflectsIso' hl ⟨⟨c, i⟩, isLimitOfReflects F (IsLimit.ofIsoLimit hl i.symm)⟩
@@ -314,7 +314,7 @@ def createsLimitOfFullyFaithfulOfLift' {K : J ⥤ C} {F : C ⥤ D} [F.Full] [F.F
 it suffices to exhibit a lift of the chosen limit cone for `K ⋙ F`.
 -/
 @[implicit_reducible]
-def createsLimitOfFullyFaithfulOfLift {K : J ⥤ C} {F : C ⥤ D} [F.Full] [F.Faithful]
+noncomputable def createsLimitOfFullyFaithfulOfLift {K : J ⥤ C} {F : C ⥤ D} [F.Full] [F.Faithful]
     [HasLimit (K ⋙ F)] (c : Cone K) (i : F.mapCone c ≅ limit.cone (K ⋙ F)) :
     CreatesLimit K F :=
   createsLimitOfFullyFaithfulOfLift' (limit.isLimit _) c i
@@ -329,7 +329,7 @@ When `F` is fully faithful, to show that `F` creates the limit for `K` it suffic
 limit point is in the essential image of `F`.
 -/
 @[implicit_reducible]
-def createsLimitOfFullyFaithfulOfIso' {K : J ⥤ C} {F : C ⥤ D} [F.Full] [F.Faithful]
+noncomputable def createsLimitOfFullyFaithfulOfIso' {K : J ⥤ C} {F : C ⥤ D} [F.Full] [F.Faithful]
     {l : Cone (K ⋙ F)} (hl : IsLimit l) (X : C) (i : F.obj X ≅ l.pt) : CreatesLimit K F :=
   createsLimitOfFullyFaithfulOfLift' hl
     { pt := X
@@ -347,12 +347,13 @@ def createsLimitOfFullyFaithfulOfIso' {K : J ⥤ C} {F : C ⥤ D} [F.Full] [F.Fa
 it suffices to show that the chosen limit point is in the essential image of `F`.
 -/
 @[implicit_reducible]
-def createsLimitOfFullyFaithfulOfIso {K : J ⥤ C} {F : C ⥤ D} [F.Full] [F.Faithful]
+noncomputable def createsLimitOfFullyFaithfulOfIso {K : J ⥤ C} {F : C ⥤ D} [F.Full] [F.Faithful]
     [HasLimit (K ⋙ F)] (X : C) (i : F.obj X ≅ limit (K ⋙ F)) : CreatesLimit K F :=
   createsLimitOfFullyFaithfulOfIso' (limit.isLimit _) X i
 
 /-- A fully faithful functor that preserves a limit that exists also creates the limit. -/
 @[implicit_reducible]
+noncomputable
 def createsLimitOfFullyFaithfulOfPreserves {K : J ⥤ C} {F : C ⥤ D} [F.Full] [F.Faithful]
     [HasLimit K] [PreservesLimit K F] : CreatesLimit K F :=
   createsLimitOfFullyFaithfulOfLift' (isLimitOfPreserves _ (limit.isLimit K)) _ (Iso.refl _)
@@ -413,7 +414,7 @@ def createsColimitOfReflectsIso' {K : J ⥤ C} {F : C ⥤ D} [F.ReflectsIsomorph
 /-- If `F` reflects isomorphisms, and we already know that the colimit exists in the source and `F`
 preserves it, then `F` creates that colimit. -/
 @[implicit_reducible]
-def createsColimitOfReflectsIsomorphismsOfPreserves {K : J ⥤ C} {F : C ⥤ D}
+noncomputable def createsColimitOfReflectsIsomorphismsOfPreserves {K : J ⥤ C} {F : C ⥤ D}
     [F.ReflectsIsomorphisms] [HasColimit K] [PreservesColimit K F] : CreatesColimit K F :=
   createsColimitOfReflectsIso' (isColimitOfPreserves F (colimit.isColimit _))
     ⟨⟨_, Iso.refl _⟩, colimit.isColimit _⟩
@@ -426,7 +427,7 @@ When `F` is fully faithful, to show that `F` creates the colimit for `K` it suff
 lift of a colimit cocone for `K ⋙ F`.
 -/
 @[implicit_reducible]
-def createsColimitOfFullyFaithfulOfLift' {K : J ⥤ C} {F : C ⥤ D} [F.Full] [F.Faithful]
+noncomputable def createsColimitOfFullyFaithfulOfLift' {K : J ⥤ C} {F : C ⥤ D} [F.Full] [F.Faithful]
     {l : Cocone (K ⋙ F)} (hl : IsColimit l) (c : Cocone K) (i : F.mapCocone c ≅ l) :
     CreatesColimit K F :=
   createsColimitOfReflectsIso' hl ⟨⟨c, i⟩, isColimitOfReflects F (IsColimit.ofIsoColimit hl i.symm)⟩
@@ -439,7 +440,7 @@ When `F` is fully faithful, and `HasColimit (K ⋙ F)`, to show that `F` creates
 it suffices to exhibit a lift of the chosen colimit cocone for `K ⋙ F`.
 -/
 @[implicit_reducible]
-def createsColimitOfFullyFaithfulOfLift {K : J ⥤ C} {F : C ⥤ D} [F.Full] [F.Faithful]
+noncomputable def createsColimitOfFullyFaithfulOfLift {K : J ⥤ C} {F : C ⥤ D} [F.Full] [F.Faithful]
     [HasColimit (K ⋙ F)] (c : Cocone K) (i : F.mapCocone c ≅ colimit.cocone (K ⋙ F)) :
     CreatesColimit K F :=
   createsColimitOfFullyFaithfulOfLift' (colimit.isColimit _) c i
@@ -453,7 +454,7 @@ When `F` is fully faithful, to show that `F` creates the colimit for `K` it suff
 a colimit point is in the essential image of `F`.
 -/
 @[implicit_reducible]
-def createsColimitOfFullyFaithfulOfIso' {K : J ⥤ C} {F : C ⥤ D} [F.Full] [F.Faithful]
+noncomputable def createsColimitOfFullyFaithfulOfIso' {K : J ⥤ C} {F : C ⥤ D} [F.Full] [F.Faithful]
     {l : Cocone (K ⋙ F)} (hl : IsColimit l) (X : C) (i : F.obj X ≅ l.pt) : CreatesColimit K F :=
   createsColimitOfFullyFaithfulOfLift' hl
     { pt := X
@@ -472,7 +473,7 @@ When `F` is fully faithful, and `HasColimit (K ⋙ F)`, to show that `F` creates
 it suffices to show that the chosen colimit point is in the essential image of `F`.
 -/
 @[implicit_reducible]
-def createsColimitOfFullyFaithfulOfIso {K : J ⥤ C} {F : C ⥤ D} [F.Full] [F.Faithful]
+noncomputable def createsColimitOfFullyFaithfulOfIso {K : J ⥤ C} {F : C ⥤ D} [F.Full] [F.Faithful]
     [HasColimit (K ⋙ F)] (X : C) (i : F.obj X ≅ colimit (K ⋙ F)) : CreatesColimit K F :=
   createsColimitOfFullyFaithfulOfIso' (colimit.isColimit _) X i
 
@@ -609,6 +610,7 @@ def createsColimitsOfShapeOfEquiv {J' : Type w₁} [Category.{w'₁} J'] (e : J 
 
 -- For the inhabited linter later.
 /-- If F creates the limit of K, any cone lifts to a limit. -/
+noncomputable
 def liftsToLimitOfCreates (K : J ⥤ C) (F : C ⥤ D) [CreatesLimit K F] (c : Cone (K ⋙ F))
     (t : IsLimit c) : LiftsToLimit K F c t where
   liftedCone := liftLimit t
@@ -617,6 +619,7 @@ def liftsToLimitOfCreates (K : J ⥤ C) (F : C ⥤ D) [CreatesLimit K F] (c : Co
 
 -- For the inhabited linter later.
 /-- If F creates the colimit of K, any cocone lifts to a colimit. -/
+noncomputable
 def liftsToColimitOfCreates (K : J ⥤ C) (F : C ⥤ D) [CreatesColimit K F] (c : Cocone (K ⋙ F))
     (t : IsColimit c) : LiftsToColimit K F c t where
   liftedCocone := liftColimit t
@@ -657,10 +660,12 @@ instance inhabitedLiftableCocone (c : Cocone (K ⋙ 𝟭 C)) : Inhabited (Liftab
   ⟨idLiftsCocone c⟩
 
 /-- Satisfy the inhabited linter -/
+noncomputable
 instance inhabitedLiftsToLimit (K : J ⥤ C) (F : C ⥤ D) [CreatesLimit K F] (c : Cone (K ⋙ F))
     (t : IsLimit c) : Inhabited (LiftsToLimit _ _ _ t) :=
   ⟨liftsToLimitOfCreates K F c t⟩
 
+noncomputable
 instance inhabitedLiftsToColimit (K : J ⥤ C) (F : C ⥤ D) [CreatesColimit K F] (c : Cocone (K ⋙ F))
     (t : IsColimit c) : Inhabited (LiftsToColimit _ _ _ t) :=
   ⟨liftsToColimitOfCreates K F c t⟩
@@ -670,7 +675,7 @@ section Comp
 variable {E : Type u₃} [ℰ : Category.{v₃} E]
 variable (F : C ⥤ D) (G : D ⥤ E)
 
-instance compCreatesLimit [CreatesLimit K F] [CreatesLimit (K ⋙ F) G] :
+noncomputable instance compCreatesLimit [CreatesLimit K F] [CreatesLimit (K ⋙ F) G] :
     CreatesLimit K (F ⋙ G) where
   lifts c t := by
     let c' : Cone ((K ⋙ F) ⋙ G) := c
@@ -681,9 +686,11 @@ instance compCreatesLimit [CreatesLimit K F] [CreatesLimit (K ⋙ F) G] :
             (liftedLimitMapsToOriginal (liftedLimitIsLimit t')) ≪≫
           liftedLimitMapsToOriginal t' }
 
+noncomputable
 instance compCreatesLimitsOfShape [CreatesLimitsOfShape J F] [CreatesLimitsOfShape J G] :
     CreatesLimitsOfShape J (F ⋙ G) where CreatesLimit := inferInstance
 
+noncomputable
 instance compCreatesLimits [CreatesLimitsOfSize.{w, w'} F] [CreatesLimitsOfSize.{w, w'} G] :
     CreatesLimitsOfSize.{w, w'} (F ⋙ G) where CreatesLimitsOfShape := inferInstance
 
@@ -693,7 +700,7 @@ instance preservesLimit_comp_of_createsLimit [CreatesLimit K F] [PreservesLimit 
     ((Functor.mapConeMapCone (liftLimit hc)).symm ≪≫
       (Cone.functoriality _ _).mapIso (liftedLimitMapsToOriginal hc))⟩
 
-instance compCreatesColimit [CreatesColimit K F] [CreatesColimit (K ⋙ F) G] :
+noncomputable instance compCreatesColimit [CreatesColimit K F] [CreatesColimit (K ⋙ F) G] :
     CreatesColimit K (F ⋙ G) where
   lifts c t :=
     let c' : Cocone ((K ⋙ F) ⋙ G) := c
@@ -704,9 +711,11 @@ instance compCreatesColimit [CreatesColimit K F] [CreatesColimit (K ⋙ F) G] :
             (liftedColimitMapsToOriginal (liftedColimitIsColimit t')) ≪≫
           liftedColimitMapsToOriginal t' }
 
+noncomputable
 instance compCreatesColimitsOfShape [CreatesColimitsOfShape J F] [CreatesColimitsOfShape J G] :
     CreatesColimitsOfShape J (F ⋙ G) where CreatesColimit := inferInstance
 
+noncomputable
 instance compCreatesColimits [CreatesColimitsOfSize.{w, w'} F] [CreatesColimitsOfSize.{w, w'} G] :
     CreatesColimitsOfSize.{w, w'} (F ⋙ G) where CreatesColimitsOfShape := inferInstance
 

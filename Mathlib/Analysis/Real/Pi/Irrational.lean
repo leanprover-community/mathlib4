@@ -36,13 +36,13 @@ The proof idea is as follows.
 
 public section
 
-noncomputable section
+section
 
 open intervalIntegral MeasureTheory.MeasureSpace Set Polynomial Real
 open scoped Nat
 
 /-- The sequence of integrals used for Cartwright's proof of irrationality of `π`. -/
-private def I (n : ℕ) (θ : ℝ) : ℝ := ∫ x in (-1)..1, (1 - x ^ 2) ^ n * cos (x * θ)
+private noncomputable def I (n : ℕ) (θ : ℝ) : ℝ := ∫ x in (-1)..1, (1 - x ^ 2) ^ n * cos (x * θ)
 
 variable {n : ℕ} {θ : ℝ}
 
@@ -144,7 +144,7 @@ The first of the two integer-coefficient polynomials that describe the behaviour
 sequence of integrals `I`.
 While not given in the informal proof, these are easy to deduce from the recursion formulae.
 -/
-private def sinPoly : ℕ → ℤ[X]
+private noncomputable def sinPoly : ℕ → ℤ[X]
   | 0 => C 2
   | 1 => C 4
   | n + 2 => ((2 : ℤ) * (2 * n + 3)) • sinPoly (n + 1) + monomial 2 (-4) * sinPoly n
@@ -155,7 +155,7 @@ The second of the two integer-coefficient polynomials that describe the behaviou
 sequence of integrals `I`.
 While not given in the informal proof, these are easy to deduce from the recursion formulae.
 -/
-private def cosPoly : ℕ → ℤ[X]
+private noncomputable def cosPoly : ℕ → ℤ[X]
   | 0 => 0
   | 1 => monomial 1 (-4)
   | n + 2 => ((2 : ℤ) * (2 * n + 3)) • cosPoly (n + 1) + monomial 2 (-4) * cosPoly n

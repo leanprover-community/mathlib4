@@ -21,7 +21,7 @@ level-1 modular forms, beyond those that fall out of the dimension formula direc
   ring `⨁ k, ModularForm 𝒮ℒ k`.
 -/
 
-public noncomputable section
+public section
 
 open UpperHalfPlane ModularForm ModularFormClass MatrixGroups EisensteinSeries
 

@@ -34,8 +34,6 @@ objects and morphisms).
 
 @[expose] public section
 
-noncomputable section
-
 universe u
 
 open UniformSpace MulOpposite CategoryTheory NormedAddGroupHom
@@ -45,7 +43,7 @@ namespace SemiNormedGrp
 
 /-- The completion of a seminormed group, as an endofunctor on `SemiNormedGrp`. -/
 @[simps]
-def completion : SemiNormedGrp.{u} ⥤ SemiNormedGrp.{u} where
+noncomputable def completion : SemiNormedGrp.{u} ⥤ SemiNormedGrp.{u} where
   obj V := SemiNormedGrp.of (Completion V)
   map f := SemiNormedGrp.ofHom f.hom.completion
   map_id _ := SemiNormedGrp.hom_ext completion_id
@@ -55,7 +53,7 @@ instance completion_completeSpace {V : SemiNormedGrp} : CompleteSpace (completio
   Completion.completeSpace _
 
 /-- The canonical morphism from a seminormed group `V` to its completion. -/
-def completion.incl {V : SemiNormedGrp} : V ⟶ completion.obj V :=
+noncomputable def completion.incl {V : SemiNormedGrp} : V ⟶ completion.obj V :=
   ofHom
   { toFun v := (v : Completion V)
     map_add' := Completion.coe_add
@@ -76,7 +74,7 @@ variable (V W : SemiNormedGrp)
 from the completion of `V` to the completion of `W`.
 The difference from the definition obtained from the functoriality of completion is in that the
 map sending a morphism `f` to the associated morphism of completions is itself additive. -/
-def completion.mapHom (V W : SemiNormedGrp.{u}) :
+noncomputable def completion.mapHom (V W : SemiNormedGrp.{u}) :
      (V ⟶ W) →+ (completion.obj V ⟶ completion.obj W) :=
   @AddMonoidHom.mk' _ _ (_) (_) completion.map fun f g =>
     SemiNormedGrp.hom_ext (f.hom.completion_add g.hom)
@@ -84,7 +82,7 @@ def completion.mapHom (V W : SemiNormedGrp.{u}) :
 theorem completion.map_zero (V W : SemiNormedGrp) : completion.map (0 : V ⟶ W) = 0 :=
   (completion.mapHom V W).map_zero
 
-instance : Preadditive SemiNormedGrp.{u} where
+noncomputable instance : Preadditive SemiNormedGrp.{u} where
 
 instance : Functor.Additive completion where
   map_add := SemiNormedGrp.hom_ext <| NormedAddGroupHom.completion_add _ _
@@ -92,7 +90,7 @@ instance : Functor.Additive completion where
 /-- Given a normed group hom `f : V → W` with `W` complete, this provides a lift of `f` to
 the completion of `V`. The lemmas `lift_unique` and `lift_comp_incl` provide the api for the
 universal property of the completion. -/
-def completion.lift {V W : SemiNormedGrp} [CompleteSpace W] [T0Space W] (f : V ⟶ W) :
+noncomputable def completion.lift {V W : SemiNormedGrp} [CompleteSpace W] [T0Space W] (f : V ⟶ W) :
     completion.obj V ⟶ W :=
   ofHom
   { toFun := f.hom.extension

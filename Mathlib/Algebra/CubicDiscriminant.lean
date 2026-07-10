@@ -36,8 +36,6 @@ cubic, discriminant, polynomial, root
 @[expose] public section
 
 
-noncomputable section
-
 /-- The structure representing a cubic polynomial. -/
 @[ext]
 structure Cubic (R : Type*) where
@@ -67,7 +65,7 @@ section Basic
 variable {P Q : Cubic R} {a b c d a' b' c' d' : R} [Semiring R]
 
 /-- Convert a cubic polynomial to a polynomial. -/
-def toPoly (P : Cubic R) : R[X] :=
+noncomputable def toPoly (P : Cubic R) : R[X] :=
   C P.a * X ^ 3 + C P.b * X ^ 2 + C P.c * X + C P.d
 
 theorem C_mul_prod_X_sub_C_eq [CommRing S] {w x y z : S} :
@@ -238,7 +236,7 @@ section Degree
 
 /-- The equivalence between cubic polynomials and polynomials of degree at most three. -/
 @[simps]
-def equiv : Cubic R ≃ { p : R[X] // p.degree ≤ 3 } where
+noncomputable def equiv : Cubic R ≃ { p : R[X] // p.degree ≤ 3 } where
   toFun P := ⟨P.toPoly, degree_cubic_le⟩
   invFun f := ⟨coeff f 3, coeff f 2, coeff f 1, coeff f 0⟩
   left_inv P := by ext <;> simp only [coeffs]
@@ -386,7 +384,7 @@ section Extension
 variable {P : Cubic R} [CommRing R] [CommRing S] {φ : R →+* S}
 
 /-- The roots of a cubic polynomial. -/
-def roots [IsDomain R] (P : Cubic R) : Multiset R :=
+noncomputable def roots [IsDomain R] (P : Cubic R) : Multiset R :=
   P.toPoly.roots
 
 theorem map_roots [IsDomain S] : (map φ P).roots = (Polynomial.map φ P.toPoly).roots := by

@@ -22,8 +22,6 @@ spaces.
 @[expose] public section
 
 
-noncomputable section
-
 open NNReal Topology
 
 open Filter

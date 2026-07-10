@@ -50,8 +50,6 @@ of the `Units`), but lemmas like `IsPrimitiveRoot.isUnit` and
 
 @[expose] public section
 
-noncomputable section
-
 open Polynomial Finset
 
 variable {M N G R S F : Type*} [CommMonoid M] [CommMonoid N] [DivisionCommMonoid G]
@@ -77,7 +75,7 @@ variable {k : ℕ}
 open scoped Classical in
 /-- `primitiveRoots k R` is the finset of primitive `k`-th roots of unity
 in the integral domain `R`. -/
-def primitiveRoots (k : ℕ) (R : Type*) [CommRing R] [IsDomain R] : Finset R :=
+noncomputable def primitiveRoots (k : ℕ) (R : Type*) [CommRing R] [IsDomain R] : Finset R :=
   {ζ ∈ (nthRoots k (1 : R)).toFinset | IsPrimitiveRoot ζ k}
 
 variable [CommRing R] [IsDomain R]
@@ -457,6 +455,7 @@ theorem pow_sub_one_eq [IsDomain R] {ζ : R} (hζ : IsPrimitiveRoot ζ k) (hk : 
 set_option backward.isDefEq.respectTransparency false in
 /-- The (additive) monoid equivalence between `ZMod k`
 and the powers of a primitive root of unity `ζ`. -/
+noncomputable
 def zmodEquivZPowers (h : IsPrimitiveRoot ζ k) : ZMod k ≃+ Additive (Subgroup.zpowers ζ) :=
   AddEquiv.ofBijective
     (AddMonoidHom.liftOfRightInverse (Int.castAddHom <| ZMod k) _ ZMod.intCast_rightInverse
@@ -735,7 +734,7 @@ def primitiveRootsPowEquiv {a b n : ℕ} (h : a * b ≡ 1 [MOD n]) :
 /-- Equivalence of coprime powers of primitive roots. Every `n`-th primitive root is taken to the
     `a`-th power given that `n` and `a` are coprime. -/
 @[simps! apply_coe]
-def primitiveRootsPowEquivOfCoprime {a n : ℕ} (h : a.Coprime n) [NeZero n] :
+noncomputable def primitiveRootsPowEquivOfCoprime {a n : ℕ} (h : a.Coprime n) [NeZero n] :
     primitiveRoots n R ≃ primitiveRoots n R :=
   haveI h2 := Nat.exists_mul_mod_eq_of_coprime 1 h NeZero.out
   haveI h3 : a * h2.choose ≡ 1 [MOD n] := by grind [Nat.ModEq]

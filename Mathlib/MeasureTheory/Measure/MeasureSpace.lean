@@ -82,7 +82,7 @@ measure, almost everywhere, measure space, completion, null set, null measurable
 
 @[expose] public section
 
-noncomputable section
+section
 
 open Set
 
@@ -776,6 +776,7 @@ variable [ms : MeasurableSpace α] {s t : Set α}
 
 /-- Obtain a measure by giving an outer measure where all sets in the σ-algebra are
   Carathéodory measurable. -/
+noncomputable
 def OuterMeasure.toMeasure (m : OuterMeasure α) (h : ms ≤ m.caratheodory) : Measure α :=
   Measure.ofMeasurable (fun s _ => m s) m.empty fun _f hf hd =>
     m.iUnion_eq_of_caratheodory (fun i => h _ (hf i)) hd
@@ -1145,7 +1146,7 @@ theorem sInf_caratheodory (s : Set α) (hs : MeasurableSet s) :
   rw [← measure_inter_add_sdiff u hs]
   exact add_le_add (hm <| inter_subset_inter_left _ htu) (hm <| sdiff_subset_sdiff_left htu)
 
-instance {_ : MeasurableSpace α} : InfSet (Measure α) :=
+noncomputable instance {_ : MeasurableSpace α} : InfSet (Measure α) :=
   ⟨fun m => (sInf (toOuterMeasure '' m)).toMeasure <| sInf_caratheodory⟩
 
 theorem sInf_apply (hs : MeasurableSet s) : sInf m s = sInf (toOuterMeasure '' m) s :=
@@ -1160,11 +1161,11 @@ private theorem measure_le_sInf (h : ∀ μ' ∈ m, μ ≤ μ') : μ ≤ sInf m 
     le_sInf <| forall_mem_image.2 fun _ hμ ↦ toOuterMeasure_le.2 <| h _ hμ
   le_iff.2 fun s hs => by rw [sInf_apply hs]; exact this s
 
-instance instCompleteSemilatticeInf {_ : MeasurableSpace α} :
+noncomputable instance instCompleteSemilatticeInf {_ : MeasurableSpace α} :
     CompleteSemilatticeInf (Measure α) where
   isGLB_sInf _ := private ⟨fun _ ↦ measure_sInf_le, fun _ ↦ measure_le_sInf⟩
 
-instance instCompleteLattice {_ : MeasurableSpace α} : CompleteLattice (Measure α) :=
+noncomputable instance instCompleteLattice {_ : MeasurableSpace α} : CompleteLattice (Measure α) :=
   { completeLatticeOfCompleteSemilatticeInf (Measure α) with
     top :=
       { toOuterMeasure := ⊤,

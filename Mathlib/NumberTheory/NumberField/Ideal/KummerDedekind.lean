@@ -49,8 +49,6 @@ Let `K` be a number field and `θ` an algebraic integer of `K`.
 
 @[expose] public section
 
-noncomputable section
-
 open Polynomial NumberField Ideal KummerDedekind UniqueFactorizationMonoid
 
 variable {K : Type*} [Field K]
@@ -61,7 +59,7 @@ namespace RingOfIntegers
 The smallest positive integer `d` contained in the conductor of `θ`. It is the smallest integer
 such that `d • 𝓞 K ⊆ ℤ[θ]`, see `exponent_eq_sInf`. It is set to `0` if `d` does not exists.
 -/
-def exponent (θ : 𝓞 K) : ℕ := absNorm (under ℤ (conductor ℤ θ))
+noncomputable def exponent (θ : 𝓞 K) : ℕ := absNorm (under ℤ (conductor ℤ θ))
 
 variable {θ : 𝓞 K}
 
@@ -83,7 +81,7 @@ variable [NumberField K] {θ : 𝓞 K} {p : ℕ} [Fact p.Prime]
 /--
 If `p` doesn't divide the exponent of `θ`, then `(ℤ / pℤ)[X] / (minpoly θ) ≃+* 𝓞 K / p(𝓞 K)`.
 -/
-def ZModXQuotSpanEquivQuotSpan (hp : ¬ p ∣ exponent θ) :
+noncomputable def ZModXQuotSpanEquivQuotSpan (hp : ¬ p ∣ exponent θ) :
     (ZMod p)[X] ⧸ span {map (Int.castRingHom (ZMod p)) (minpoly ℤ θ)} ≃+*
       𝓞 K ⧸ span {(p : 𝓞 K)} :=
   (quotientEquivAlgOfEq ℤ (by simp [Ideal.map_span, Polynomial.map_map])).toRingEquiv.trans
@@ -106,14 +104,14 @@ variable (p θ) in
 /--
 The finite set of monic irreducible factors of `minpoly ℤ θ` modulo `p`.
 -/
-abbrev monicFactorsMod : Finset ((ZMod p)[X]) :=
+noncomputable abbrev monicFactorsMod : Finset ((ZMod p)[X]) :=
   (normalizedFactors (map (Int.castRingHom (ZMod p)) (minpoly ℤ θ))).toFinset
 
 /--
 If `p` does not divide `exponent θ` and `Q` is a lift of a monic irreducible factor of
 `minpoly ℤ θ` modulo `p`, then `(ℤ / pℤ)[X] / Q ≃+* 𝓞 K / (p, Q(θ))`.
 -/
-def ZModXQuotSpanEquivQuotSpanPair (hp : ¬ p ∣ exponent θ) {Q : ℤ[X]}
+noncomputable def ZModXQuotSpanEquivQuotSpanPair (hp : ¬ p ∣ exponent θ) {Q : ℤ[X]}
     (hQ : Q.map (Int.castRingHom (ZMod p)) ∈ monicFactorsMod θ p) :
     (ZMod p)[X] ⧸ span {Polynomial.map (Int.castRingHom (ZMod p)) Q} ≃+*
       𝓞 K ⧸ span {(p : 𝓞 K), (aeval θ) Q} :=
@@ -145,7 +143,7 @@ attribute [local instance] Int.ideal_span_isMaximal_of_prime Ideal.Quotient.fiel
 
 set_option backward.privateInPublic true in
 open scoped Classical in
-private def primesOverSpanEquivMonicFactorsModAux (A : ℤ[X]) :
+private noncomputable def primesOverSpanEquivMonicFactorsModAux (A : ℤ[X]) :
     {Q // Q ∈ normalizedFactors (map (Ideal.Quotient.mk (span {(p : ℤ)})) A)} ≃
     (normalizedFactors (map (Int.castRingHom (ZMod p)) A)).toFinset :=
   (normalizedFactorsEquiv (f := (mapEquiv (Int.quotientSpanNatEquivZMod p)).toMulEquiv)
@@ -165,7 +163,7 @@ set_option backward.privateInPublic.warn false in
 If `p` does not divide `exponent θ`, then the prime ideals above `p` in `K` are in bijection
 with the monic irreducible factors of `minpoly ℤ θ` modulo `p`.
 -/
-def primesOverSpanEquivMonicFactorsMod (hp : ¬ p ∣ exponent θ) :
+noncomputable def primesOverSpanEquivMonicFactorsMod (hp : ¬ p ∣ exponent θ) :
     primesOver (span {(p : ℤ)}) (𝓞 K) ≃ monicFactorsMod θ p :=
   have h : span {(p : ℤ)} ≠ ⊥ := by simp [NeZero.ne p]
   ((Equiv.setCongr (by ext; simp [mem_primesOver_iff_mem_normalizedFactors _ h])).trans

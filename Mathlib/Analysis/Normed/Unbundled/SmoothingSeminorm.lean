@@ -45,8 +45,6 @@ smoothingSeminorm, seminorm, nonarchimedean
 
 @[expose] public section
 
-noncomputable section
-
 open Filter Nat Real
 
 open scoped Topology NNReal
@@ -56,7 +54,7 @@ variable {R : Type*} [CommRing R] (μ : RingSeminorm R)
 section smoothingSeminorm
 
 /-- The `ℝ`-valued sequence sending `n` to `(μ (x ^ n))^(1/n : ℝ)`. -/
-abbrev smoothingSeminormSeq (x : R) : ℕ → ℝ := fun n => μ (x ^ n) ^ (1 / n : ℝ)
+noncomputable abbrev smoothingSeminormSeq (x : R) : ℕ → ℝ := fun n => μ (x ^ n) ^ (1 / n : ℝ)
 
 /-- For any positive `ε`, there exists a positive natural number `m` such that
   `μ (x ^ (m : ℕ)) ^ (1 / m : ℝ) < iInf (fun (n : PNat), (μ(x ^(n : ℕ)))^(1/(n : ℝ))) + ε/2`. -/
@@ -97,7 +95,7 @@ theorem smoothingSeminormSeq_bddBelow (x : R) :
   ⟨0, zero_mem_lowerBounds_smoothingSeminormSeq_range μ x⟩
 
 /-- The iInf of the sequence `n ↦ μ(x ^ (n : ℕ)))^(1 / (n : ℝ)`. -/
-abbrev smoothingFun (x : R) : ℝ :=
+noncomputable abbrev smoothingFun (x : R) : ℝ :=
   iInf fun n : PNat => μ (x ^ (n : ℕ)) ^ (1 / (n : ℝ))
 
 /-- If `μ x = 0`, then `smoothingFun μ x` is the limit of `smoothingSeminormSeq μ x`. -/
@@ -284,7 +282,7 @@ variable {x y : R} (hn : ∀ n : ℕ, ∃ m < n + 1, μ ((x + y) ^ (n : ℕ)) ^ 
   (μ (x ^ m) * μ (y ^ (n - m : ℕ))) ^ (1 / (n : ℝ)))
 
 /-- Auxiliary sequence for the proof that `smoothingFun` is nonarchimedean. -/
-private def mu : ℕ → ℕ := fun n => Classical.choose (hn n)
+private noncomputable def mu : ℕ → ℕ := fun n => Classical.choose (hn n)
 
 private theorem mu_property (n : ℕ) : μ ((x + y) ^ (n : ℕ)) ^ (1 / (n : ℝ)) ≤
     (μ (x ^ mu μ hn n) * μ (y ^ (n - mu μ hn n : ℕ))) ^ (1 / (n : ℝ)) :=
@@ -518,6 +516,7 @@ end IsNonarchimedean
 
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- If `μ 1 ≤ 1` and `μ` is nonarchimedean, then `smoothingFun` is a ring seminorm. -/
+noncomputable
 def smoothingSeminorm (hμ1 : μ 1 ≤ 1) (hna : IsNonarchimedean μ) : RingSeminorm R where
   toFun     := smoothingFun μ
   map_zero' := by

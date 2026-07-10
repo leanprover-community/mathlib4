@@ -26,8 +26,6 @@ open Set MeasureTheory Metric Filter Function
 
 open scoped Interval Real
 
-noncomputable section
-
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] (R : ℝ) (z w : ℂ)
 
 namespace Complex
@@ -37,11 +35,11 @@ namespace Complex
 
 If `f` is differentiable and `w` is in the interior of the ball, then the integral from `0` to
 `2 * π` of this gives the value `f(w)`. -/
-def circleTransform (f : ℂ → E) (θ : ℝ) : E :=
+noncomputable def circleTransform (f : ℂ → E) (θ : ℝ) : E :=
   (2 * ↑π * I)⁻¹ • deriv (circleMap z R) θ • (circleMap z R θ - w)⁻¹ • f (circleMap z R θ)
 
 /-- The derivative of `circleTransform` w.r.t. `w`. -/
-def circleTransformDeriv (f : ℂ → E) (θ : ℝ) : E :=
+noncomputable def circleTransformDeriv (f : ℂ → E) (θ : ℝ) : E :=
   (2 * ↑π * I)⁻¹ • deriv (circleMap z R) θ • ((circleMap z R θ - w) ^ 2)⁻¹ • f (circleMap z R θ)
 
 theorem circleTransformDeriv_periodic (f : ℂ → E) :
@@ -80,7 +78,7 @@ theorem continuous_circleTransformDeriv {R : ℝ} (hR : 0 < R) {f : ℂ → E} {
   exact (continuous_circleMap_inv hw).smul (continuous_circleTransform hR hf hw)
 
 /-- A useful bound for circle integrals (with complex codomain) -/
-def circleTransformBoundingFunction (R : ℝ) (z : ℂ) (w : ℂ × ℝ) : ℂ :=
+noncomputable def circleTransformBoundingFunction (R : ℝ) (z : ℂ) (w : ℂ × ℝ) : ℂ :=
   circleTransformDeriv R z w.1 (fun _ => 1) w.2
 
 theorem continuousOn_prod_circle_transform_function {R r : ℝ} (hr : r < R) {z : ℂ} :

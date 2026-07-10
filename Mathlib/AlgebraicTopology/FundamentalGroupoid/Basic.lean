@@ -28,8 +28,6 @@ universe u
 variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
 variable {x₀ x₁ : X}
 
-noncomputable section
-
 open unitInterval
 
 namespace Path
@@ -39,7 +37,7 @@ namespace Homotopy
 section
 
 /-- Auxiliary function for `reflTransSymm`. -/
-def reflTransSymmAux (x : I × I) : ℝ :=
+noncomputable def reflTransSymmAux (x : I × I) : ℝ :=
   if (x.2 : ℝ) ≤ 1 / 2 then x.1 * 2 * x.2 else x.1 * (2 - 2 * x.2)
 
 @[continuity, fun_prop]
@@ -59,7 +57,7 @@ theorem reflTransSymmAux_mem_I (x : I × I) : reflTransSymmAux x ∈ I := by
 
 /-- For any path `p` from `x₀` to `x₁`, we have a homotopy from the constant path based at `x₀` to
   `p.trans p.symm`. -/
-def reflTransSymm (p : Path x₀ x₁) : Homotopy (Path.refl x₀) (p.trans p.symm) where
+noncomputable def reflTransSymm (p : Path x₀ x₁) : Homotopy (Path.refl x₀) (p.trans p.symm) where
   toFun x := p ⟨reflTransSymmAux x, reflTransSymmAux_mem_I x⟩
   continuous_toFun := by fun_prop
   map_zero_left := by simp [reflTransSymmAux]
@@ -74,7 +72,7 @@ def reflTransSymm (p : Path x₀ x₁) : Homotopy (Path.refl x₀) (p.trans p.sy
 
 /-- For any path `p` from `x₀` to `x₁`, we have a homotopy from the constant path based at `x₁` to
   `p.symm.trans p`. -/
-def reflSymmTrans (p : Path x₀ x₁) : Homotopy (Path.refl x₁) (p.symm.trans p) :=
+noncomputable def reflSymmTrans (p : Path x₀ x₁) : Homotopy (Path.refl x₁) (p.symm.trans p) :=
   (reflTransSymm p.symm).cast rfl <| congr_arg _ (Path.symm_symm _)
 
 end
@@ -82,7 +80,7 @@ end
 section TransRefl
 
 /-- Auxiliary function for `trans_refl_reparam`. -/
-def transReflReparamAux (t : I) : ℝ :=
+noncomputable def transReflReparamAux (t : I) : ℝ :=
   if (t : ℝ) ≤ 1 / 2 then 2 * t else 1
 
 @[continuity, fun_prop]
@@ -109,14 +107,14 @@ theorem trans_refl_reparam (p : Path x₀ x₁) :
   grind
 
 /-- For any path `p` from `x₀` to `x₁`, we have a homotopy from `p.trans (Path.refl x₁)` to `p`. -/
-def transRefl (p : Path x₀ x₁) : Homotopy (p.trans (Path.refl x₁)) p :=
+noncomputable def transRefl (p : Path x₀ x₁) : Homotopy (p.trans (Path.refl x₁)) p :=
   ((Homotopy.reparam p (fun t => ⟨transReflReparamAux t, transReflReparamAux_mem_I t⟩)
           (by fun_prop) (Subtype.ext transReflReparamAux_zero)
           (Subtype.ext transReflReparamAux_one)).cast
       rfl (trans_refl_reparam p).symm).symm
 
 /-- For any path `p` from `x₀` to `x₁`, we have a homotopy from `(Path.refl x₀).trans p` to `p`. -/
-def reflTrans (p : Path x₀ x₁) : Homotopy ((Path.refl x₀).trans p) p :=
+noncomputable def reflTrans (p : Path x₀ x₁) : Homotopy ((Path.refl x₀).trans p) p :=
   (transRefl p.symm).symm₂.cast (by simp) (by simp)
 
 end TransRefl
@@ -124,7 +122,7 @@ end TransRefl
 section Assoc
 
 /-- Auxiliary function for `trans_assoc_reparam`. -/
-def transAssocReparamAux (t : I) : ℝ :=
+noncomputable def transAssocReparamAux (t : I) : ℝ :=
   if (t : ℝ) ≤ 1 / 4 then 2 * t else if (t : ℝ) ≤ 1 / 2 then t + 1 / 4 else 1 / 2 * (t + 1)
 
 @[continuity, fun_prop]
@@ -157,7 +155,7 @@ theorem trans_assoc_reparam {x₀ x₁ x₂ x₃ : X} (p : Path x₀ x₁) (q : 
   · grind
 
 /-- For paths `p q r`, we have a homotopy from `(p.trans q).trans r` to `p.trans (q.trans r)`. -/
-def transAssoc {x₀ x₁ x₂ x₃ : X} (p : Path x₀ x₁) (q : Path x₁ x₂) (r : Path x₂ x₃) :
+noncomputable def transAssoc {x₀ x₁ x₂ x₃ : X} (p : Path x₀ x₁) (q : Path x₁ x₂) (r : Path x₂ x₃) :
     Homotopy ((p.trans q).trans r) (p.trans (q.trans r)) :=
   ((Homotopy.reparam (p.trans (q.trans r))
           (fun t => ⟨transAssocReparamAux t, transAssocReparamAux_mem_I t⟩) (by fun_prop)
@@ -283,7 +281,7 @@ instance (X : Type*) [Subsingleton X] :
 instance {X : Type*} [Inhabited X] : Inhabited (FundamentalGroupoid X) :=
   ⟨⟨default⟩⟩
 
-instance : Groupoid (FundamentalGroupoid X) where
+noncomputable instance : Groupoid (FundamentalGroupoid X) where
   Hom x y := Path.Homotopic.Quotient x.as y.as
   id x := ⟦Path.refl x.as⟧
   comp := Path.Homotopic.Quotient.trans
@@ -315,7 +313,7 @@ protected theorem map_comp {Z : Type*} [TopologicalSpace Z] (g : C(Y, Z)) (f : C
   simp only [map]; congr; ext x y ⟨p⟩; rfl
 
 /-- The functor sending a topological space `X` to its fundamental groupoid. -/
-def fundamentalGroupoidFunctor : TopCat ⥤ Grpd where
+noncomputable def fundamentalGroupoidFunctor : TopCat ⥤ Grpd where
   obj X := { α := FundamentalGroupoid X }
   map f := map f.hom
   map_id _ := FundamentalGroupoid.map_id

@@ -53,8 +53,6 @@ TODO: this file uses more made-up names; document these as well
 
 @[expose] public section
 
-noncomputable section
-
 open Set Filter Function
 open scoped Manifold Topology
 

@@ -30,8 +30,6 @@ theory of `SeminormedAddGroupHom` and we specialize to `NormedAddGroupHom` when 
 @[expose] public section
 
 
-noncomputable section
-
 open NNReal
 
 -- TODO: migrate to the new morphism / morphism_class style
@@ -180,10 +178,10 @@ theorem SurjectiveOnWith.surjOn {f : NormedAddGroupHom V₁ V₂} {K : AddSubgro
 
 
 /-- The operator norm of a seminormed group homomorphism is the inf of all its bounds. -/
-def opNorm (f : NormedAddGroupHom V₁ V₂) :=
+noncomputable def opNorm (f : NormedAddGroupHom V₁ V₂) :=
   sInf { c | 0 ≤ c ∧ ∀ x, ‖f x‖ ≤ c * ‖x‖ }
 
-instance hasOpNorm : Norm (NormedAddGroupHom V₁ V₂) :=
+noncomputable instance hasOpNorm : Norm (NormedAddGroupHom V₁ V₂) :=
   ⟨opNorm⟩
 
 theorem norm_def : ‖f‖ = sInf { c | 0 ≤ c ∧ ∀ x, ‖f x‖ ≤ c * ‖x‖ } :=
@@ -282,7 +280,7 @@ alias _root_.AddMonoidHom.mkNormedAddGroupHom_norm_le' := mkNormedAddGroupHom_no
 
 
 /-- Addition of normed group homs. -/
-instance add : Add (NormedAddGroupHom V₁ V₂) :=
+noncomputable instance add : Add (NormedAddGroupHom V₁ V₂) :=
   ⟨fun f g =>
     (f.toAddMonoidHom + g.toAddMonoidHom).mkNormedAddGroupHom (‖f‖ + ‖g‖) fun v =>
       calc
@@ -377,7 +375,7 @@ theorem coe_id : (NormedAddGroupHom.id V : V → V) = _root_.id :=
 
 
 /-- Opposite of a normed group hom. -/
-instance neg : Neg (NormedAddGroupHom V₁ V₂) :=
+noncomputable instance neg : Neg (NormedAddGroupHom V₁ V₂) :=
   ⟨fun f => (-f.toAddMonoidHom).mkNormedAddGroupHom ‖f‖ fun v => by simp [le_opNorm f v]⟩
 
 @[simp]
@@ -497,12 +495,13 @@ theorem zsmul_apply (r : ℤ) (f : NormedAddGroupHom V₁ V₂) (v : V₁) : (r 
 
 
 /-- Homs between two given normed groups form a commutative additive group. -/
-instance toAddCommGroup : AddCommGroup (NormedAddGroupHom V₁ V₂) :=
+noncomputable instance toAddCommGroup : AddCommGroup (NormedAddGroupHom V₁ V₂) :=
   coe_injective.addCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
     fun _ _ => rfl
 
 /-- Normed group homomorphisms themselves form a seminormed group with respect to
 the operator norm. -/
+noncomputable
 instance toSeminormedAddCommGroup : SeminormedAddCommGroup (NormedAddGroupHom V₁ V₂) :=
   AddGroupSeminorm.toSeminormedAddCommGroup
     { toFun := opNorm
@@ -512,6 +511,7 @@ instance toSeminormedAddCommGroup : SeminormedAddCommGroup (NormedAddGroupHom V�
 
 /-- Normed group homomorphisms themselves form a normed group with respect to
 the operator norm. -/
+noncomputable
 instance toNormedAddCommGroup {V₁ V₂ : Type*} [NormedAddCommGroup V₁] [NormedAddCommGroup V₂] :
     NormedAddCommGroup (NormedAddGroupHom V₁ V₂) :=
   AddGroupNorm.toNormedAddCommGroup
@@ -539,10 +539,11 @@ theorem sum_apply {ι : Type*} (s : Finset ι) (f : ι → NormedAddGroupHom V�
 /-! ### Module structure on normed group homs -/
 
 
-instance distribMulAction {R : Type*} [MonoidWithZero R] [DistribMulAction R V₂]
+noncomputable instance distribMulAction {R : Type*} [MonoidWithZero R] [DistribMulAction R V₂]
     [PseudoMetricSpace R] [IsBoundedSMul R V₂] : DistribMulAction R (NormedAddGroupHom V₁ V₂) :=
   Function.Injective.distribMulAction coeAddHom coe_injective coe_smul
 
+noncomputable
 instance module {R : Type*} [Semiring R] [Module R V₂] [PseudoMetricSpace R] [IsBoundedSMul R V₂] :
     Module R (NormedAddGroupHom V₁ V₂) :=
   Function.Injective.module _ coeAddHom coe_injective coe_smul
@@ -552,7 +553,7 @@ instance module {R : Type*} [Semiring R] [Module R V₂] [PseudoMetricSpace R] [
 
 /-- The composition of continuous normed group homs. -/
 @[simps!]
-protected def comp (g : NormedAddGroupHom V₂ V₃) (f : NormedAddGroupHom V₁ V₂) :
+protected noncomputable def comp (g : NormedAddGroupHom V₂ V₃) (f : NormedAddGroupHom V₁ V₂) :
     NormedAddGroupHom V₁ V₃ :=
   (g.toAddMonoidHom.comp f.toAddMonoidHom).mkNormedAddGroupHom (‖g‖ * ‖f‖) fun v =>
     calc
@@ -574,6 +575,7 @@ theorem norm_comp_le_of_le' {g : NormedAddGroupHom V₂ V₃} (C₁ C₂ C₃ : 
   exact norm_comp_le_of_le hg hf
 
 /-- Composition of normed groups hom as an additive group morphism. -/
+noncomputable
 def compHom : NormedAddGroupHom V₂ V₃ →+ NormedAddGroupHom V₁ V₂ →+ NormedAddGroupHom V₁ V₃ :=
   AddMonoidHom.mk'
     (fun g =>
@@ -793,7 +795,7 @@ theorem ι_comp_lift (φ : NormedAddGroupHom V₁ V) (h : f.comp φ = g.comp φ)
 
 /-- The lifting property of the equalizer as an equivalence. -/
 @[simps]
-def liftEquiv :
+noncomputable def liftEquiv :
     { φ : NormedAddGroupHom V₁ V // f.comp φ = g.comp φ } ≃
       NormedAddGroupHom V₁ (f.equalizer g) where
   toFun φ := lift φ φ.prop
@@ -803,6 +805,7 @@ def liftEquiv :
 /-- Given `φ : NormedAddGroupHom V₁ V₂` and `ψ : NormedAddGroupHom W₁ W₂` such that
 `ψ.comp f₁ = f₂.comp φ` and `ψ.comp g₁ = g₂.comp φ`, the induced morphism
 `NormedAddGroupHom (f₁.equalizer g₁) (f₂.equalizer g₂)`. -/
+noncomputable
 def map (φ : NormedAddGroupHom V₁ V₂) (ψ : NormedAddGroupHom W₁ W₂) (hf : ψ.comp f₁ = f₂.comp φ)
     (hg : ψ.comp g₁ = g₂.comp φ) : NormedAddGroupHom (f₁.equalizer g₁) (f₂.equalizer g₂) :=
   lift (φ.comp <| ι _ _) <| by

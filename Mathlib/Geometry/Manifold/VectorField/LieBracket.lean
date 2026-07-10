@@ -32,8 +32,6 @@ public section
 open Set Function Filter NormedSpace
 open scoped Topology Manifold ContDiff
 
-noncomputable section
-
 /- We work in the `VectorField` namespace because pullbacks, Lie brackets, and so on, are notions
 that make sense in a variety of contexts. We also prefix the notions with `m` to distinguish the
 manifold notions from the vector space notions. For instance, the Lie bracket of two vector
@@ -64,7 +62,7 @@ variable {V W V₁ W₁ : Π (x : M), TangentSpace I x}
 
 variable (I I') in
 /-- The Lie bracket of two vector fields in a manifold, within a set. -/
-def mlieBracketWithin (V W : Π (x : M), TangentSpace I x) (s : Set M) (x₀ : M) :
+noncomputable def mlieBracketWithin (V W : Π (x : M), TangentSpace I x) (s : Set M) (x₀ : M) :
     TangentSpace I x₀ :=
   mpullback I 𝓘(𝕜, E) (extChartAt I x₀)
     (lieBracketWithin 𝕜
@@ -74,7 +72,7 @@ def mlieBracketWithin (V W : Π (x : M), TangentSpace I x) (s : Set M) (x₀ : M
 
 variable (I I') in
 /-- The Lie bracket of two vector fields in a manifold. -/
-def mlieBracket (V W : Π (x : M), TangentSpace I x) (x₀ : M) : TangentSpace I x₀ :=
+noncomputable def mlieBracket (V W : Π (x : M), TangentSpace I x) (x₀ : M) : TangentSpace I x₀ :=
   mlieBracketWithin I V W univ x₀
 
 lemma mlieBracketWithin_def :

@@ -56,8 +56,6 @@ general case, we had two primes, e.g. `covolume.tendsto_card_div_pow''`.
 
 @[expose] public section
 
-noncomputable section
-
 namespace ZLattice
 
 open Submodule MeasureTheory Module MeasureTheory Module ZSpan
@@ -69,7 +67,7 @@ variable {E : Type*} [NormedAddCommGroup E] [MeasurableSpace E] (L : Submodule �
 /-- The covolume of a `ℤ`-lattice is the volume of some fundamental domain; see
 `ZLattice.covolume_eq_volume` for the proof that the volume does not depend on the choice of
 the fundamental domain. -/
-def covolume (μ : Measure E := by volume_tac) : ℝ := (addCovolume L E μ).toReal
+noncomputable def covolume (μ : Measure E := by volume_tac) : ℝ := (addCovolume L E μ).toReal
 
 end General
 

@@ -61,7 +61,7 @@ Precedence design: `f:68` and `g:67` gives right associativity (`f ⋆ g ⋆ h` 
 
 open scoped BigOperators
 
-noncomputable section
+section
 
 namespace DiscreteConvolution
 
@@ -97,7 +97,7 @@ variable [TopologicalSpace F]
 `(f ⋆[L] g) x = ∑' (a, b) : mulFiber x, L (f a) (g b)`. -/
 @[to_additive (dont_translate := S E E' F) addConvolution
   /-- Additive convolution: `(f ⋆₊[L] g) x = ∑' ab : addFiber x, L (f ab.1) (g ab.2)`. -/]
-def convolution (L : E →ₗ[S] E' →ₗ[S] F) (f : M → E) (g : M → E') : M → F :=
+noncomputable def convolution (L : E →ₗ[S] E' →ₗ[S] F) (f : M → E) (g : M → E') : M → F :=
   fun x => ∑' ab : mulFiber x, L (f ab.1.1) (g ab.1.2)
 
 /-- Notation for discrete convolution with explicit bilinear map:

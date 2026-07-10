@@ -27,8 +27,6 @@ I⁰ ---> I¹ ---> ... ----> Iⁿ ---> ...
 @[expose] public section
 
 
-noncomputable section
-
 universe v u
 
 namespace CategoryTheory
@@ -105,13 +103,13 @@ theorem complex_d_comp (n : ℕ) :
 /-- The (limit) kernel fork given by the composition
 `Z ⟶ I.cocomplex.X 0 ⟶ I.cocomplex.X 1` when `I : InjectiveResolution Z`. -/
 @[simp]
-def kernelFork : KernelFork (I.cocomplex.d 0 1) :=
+noncomputable def kernelFork : KernelFork (I.cocomplex.d 0 1) :=
   KernelFork.ofι _ I.ι_f_zero_comp_complex_d
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- `Z` is the kernel of `I.cocomplex.X 0 ⟶ I.cocomplex.X 1` when `I : InjectiveResolution Z`. -/
-def isLimitKernelFork : IsLimit (I.kernelFork) := by
+noncomputable def isLimitKernelFork : IsLimit (I.kernelFork) := by
   refine IsLimit.ofIsoLimit (I.cocomplex.cyclesIsKernel 0 1 (by simp)) (Iso.symm ?_)
   refine Fork.ext ((singleObjHomologySelfIso _ _ _).symm ≪≫
     isoOfQuasiIsoAt I.ι 0 ≪≫ I.cocomplex.isoHomologyπ₀.symm) ?_
@@ -130,7 +128,7 @@ variable (Z)
 
 /-- An injective object admits a trivial injective resolution: itself in degree 0. -/
 @[simps]
-def self [Injective Z] : InjectiveResolution Z where
+noncomputable def self [Injective Z] : InjectiveResolution Z where
   cocomplex := (CochainComplex.single₀ C).obj Z
   ι := 𝟙 ((CochainComplex.single₀ C).obj Z)
   injective n := by

@@ -28,8 +28,6 @@ well as such computations in `ℝ` when the natural proof passes through a fact 
 
 @[expose] public section
 
-noncomputable section
-
 open Set Function Filter Finset Metric Module Asymptotics Topology Nat NNReal ENNReal
 open scoped Ring
 
@@ -330,7 +328,7 @@ theorem geom_series_mul_one_add (x : R) (h : ‖x‖ < 1) :
 /-- In a normed ring with summable geometric series, a perturbation of `1` by an element `t`
 of distance less than `1` from `1` is a unit.  Here we construct its `Units` structure. -/
 @[simps val]
-def Units.oneSub (t : R) (h : ‖t‖ < 1) : Rˣ where
+noncomputable def Units.oneSub (t : R) (h : ‖t‖ < 1) : Rˣ where
   val := 1 - t
   inv := ∑' n : ℕ, t ^ n
   val_inv := mul_neg_geom_series t h

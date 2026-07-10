@@ -20,8 +20,6 @@ of sheafification, which follows easily from the content in this file.
 
 @[expose] public section
 
-noncomputable section
-
 namespace CategoryTheory.GrothendieckTopology
 
 open CategoryTheory Limits Opposite Functor
@@ -41,7 +39,7 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The diagram used to define `P⁺`, composed with `F`, is isomorphic
 to the diagram used to define `P ⋙ F`. -/
-def diagramCompIso (X : C) : J.diagram P X ⋙ F ≅ J.diagram (P ⋙ F) X :=
+noncomputable def diagramCompIso (X : C) : J.diagram P X ⋙ F ≅ J.diagram (P ⋙ F) X :=
   NatIso.ofComponents
     (fun W => by
       refine ?_ ≪≫ HasLimit.isoOfNatIso (W.unop.multicospanComp _ _).symm
@@ -69,7 +67,7 @@ variable [∀ X : C, PreservesColimitsOfShape (J.Cover X)ᵒᵖ F]
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The isomorphism between `P⁺ ⋙ F` and `(P ⋙ F)⁺`. -/
-def plusCompIso : J.plusObj P ⋙ F ≅ J.plusObj (P ⋙ F) :=
+noncomputable def plusCompIso : J.plusObj P ⋙ F ≅ J.plusObj (P ⋙ F) :=
   NatIso.ofComponents
     (fun X => by
       refine ?_ ≪≫ HasColimit.isoOfNatIso (J.diagramCompIso F P X.unop)
@@ -141,7 +139,7 @@ theorem plusCompIso_whiskerLeft {F G : D ⥤ E} (η : F ⟶ G) (P : Cᵒᵖ ⥤ 
 
 /-- The isomorphism between `P⁺ ⋙ F` and `(P ⋙ F)⁺`, functorially in `F`. -/
 @[simps! hom_app inv_app]
-def plusFunctorWhiskerLeftIso (P : Cᵒᵖ ⥤ D)
+noncomputable def plusFunctorWhiskerLeftIso (P : Cᵒᵖ ⥤ D)
     [∀ (F : D ⥤ E) (X : C), PreservesColimitsOfShape (J.Cover X)ᵒᵖ F]
     [∀ (F : D ⥤ E) (X : C) (W : J.Cover X) (P : Cᵒᵖ ⥤ D),
         PreservesLimit (W.index P).multicospan F] :
@@ -176,7 +174,7 @@ theorem plusCompIso_whiskerRight {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) :
 
 /-- The isomorphism between `P⁺ ⋙ F` and `(P ⋙ F)⁺`, functorially in `P`. -/
 @[simps! hom_app inv_app]
-def plusFunctorWhiskerRightIso :
+noncomputable def plusFunctorWhiskerRightIso :
     J.plusFunctor D ⋙ (whiskeringRight _ _ _).obj F ≅
       (whiskeringRight _ _ _).obj F ⋙ J.plusFunctor E :=
   NatIso.ofComponents (fun _ => J.plusCompIso _ _) @fun _ _ _ => plusCompIso_whiskerRight _ _ _

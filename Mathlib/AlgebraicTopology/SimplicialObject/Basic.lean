@@ -285,27 +285,27 @@ def truncationCompTrunc {n m : ℕ} (h : m ≤ n) :
 end Truncation
 
 
-noncomputable section
+section
 
 /-- The n-skeleton as a functor `SimplicialObject.Truncated C n ⥤ SimplicialObject C`. -/
-protected abbrev Truncated.sk (n : ℕ) [∀ (F : (SimplexCategory.Truncated n)ᵒᵖ ⥤ C),
+protected noncomputable abbrev Truncated.sk (n : ℕ) [∀ (F : (SimplexCategory.Truncated n)ᵒᵖ ⥤ C),
     (SimplexCategory.Truncated.inclusion n).op.HasLeftKanExtension F] :
     SimplicialObject.Truncated C n ⥤ SimplicialObject C :=
   lan (SimplexCategory.Truncated.inclusion n).op
 
 /-- The n-coskeleton as a functor `SimplicialObject.Truncated C n ⥤ SimplicialObject C`. -/
-protected abbrev Truncated.cosk (n : ℕ) [∀ (F : (SimplexCategory.Truncated n)ᵒᵖ ⥤ C),
+protected noncomputable abbrev Truncated.cosk (n : ℕ) [∀ (F : (SimplexCategory.Truncated n)ᵒᵖ ⥤ C),
     (SimplexCategory.Truncated.inclusion n).op.HasRightKanExtension F] :
     SimplicialObject.Truncated C n ⥤ SimplicialObject C :=
   ran (SimplexCategory.Truncated.inclusion n).op
 
 /-- The n-skeleton as an endofunctor on `SimplicialObject C`. -/
-abbrev sk (n : ℕ) [∀ (F : (SimplexCategory.Truncated n)ᵒᵖ ⥤ C),
+noncomputable abbrev sk (n : ℕ) [∀ (F : (SimplexCategory.Truncated n)ᵒᵖ ⥤ C),
     (SimplexCategory.Truncated.inclusion n).op.HasLeftKanExtension F] :
     SimplicialObject C ⥤ SimplicialObject C := truncation n ⋙ Truncated.sk n
 
 /-- The n-coskeleton as an endofunctor on `SimplicialObject C`. -/
-abbrev cosk (n : ℕ) [∀ (F : (SimplexCategory.Truncated n)ᵒᵖ ⥤ C),
+noncomputable abbrev cosk (n : ℕ) [∀ (F : (SimplexCategory.Truncated n)ᵒᵖ ⥤ C),
     (SimplexCategory.Truncated.inclusion n).op.HasRightKanExtension F] :
     SimplicialObject C ⥤ SimplicialObject C := truncation n ⋙ Truncated.cosk n
 

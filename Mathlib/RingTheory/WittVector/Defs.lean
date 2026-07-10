@@ -40,8 +40,6 @@ We use notation `𝕎 R`, entered `\bbW`, for the Witt vectors over `R`.
 @[expose] public section
 
 
-noncomputable section
-
 /-- `WittVector p R` is the ring of `p`-typical Witt vectors over the commutative ring `R`,
 where `p` is a prime number.
 
@@ -108,39 +106,39 @@ open MvPolynomial
 section RingOperations
 
 /-- The polynomials used for defining the element `0` of the ring of Witt vectors. -/
-def wittZero : ℕ → MvPolynomial (Fin 0 × ℕ) ℤ :=
+noncomputable def wittZero : ℕ → MvPolynomial (Fin 0 × ℕ) ℤ :=
   wittStructureInt p 0
 
 /-- The polynomials used for defining the element `1` of the ring of Witt vectors. -/
-def wittOne : ℕ → MvPolynomial (Fin 0 × ℕ) ℤ :=
+noncomputable def wittOne : ℕ → MvPolynomial (Fin 0 × ℕ) ℤ :=
   wittStructureInt p 1
 
 /-- The polynomials used for defining the addition of the ring of Witt vectors. -/
-def wittAdd : ℕ → MvPolynomial (Fin 2 × ℕ) ℤ :=
+noncomputable def wittAdd : ℕ → MvPolynomial (Fin 2 × ℕ) ℤ :=
   wittStructureInt p (X 0 + X 1)
 
 /-- The polynomials used for defining repeated addition of the ring of Witt vectors. -/
-def wittNSMul (n : ℕ) : ℕ → MvPolynomial (Fin 1 × ℕ) ℤ :=
+noncomputable def wittNSMul (n : ℕ) : ℕ → MvPolynomial (Fin 1 × ℕ) ℤ :=
   wittStructureInt p (n • X (0 : (Fin 1)))
 
 /-- The polynomials used for defining repeated addition of the ring of Witt vectors. -/
-def wittZSMul (n : ℤ) : ℕ → MvPolynomial (Fin 1 × ℕ) ℤ :=
+noncomputable def wittZSMul (n : ℤ) : ℕ → MvPolynomial (Fin 1 × ℕ) ℤ :=
   wittStructureInt p (n • X (0 : (Fin 1)))
 
 /-- The polynomials used for describing the subtraction of the ring of Witt vectors. -/
-def wittSub : ℕ → MvPolynomial (Fin 2 × ℕ) ℤ :=
+noncomputable def wittSub : ℕ → MvPolynomial (Fin 2 × ℕ) ℤ :=
   wittStructureInt p (X 0 - X 1)
 
 /-- The polynomials used for defining the multiplication of the ring of Witt vectors. -/
-def wittMul : ℕ → MvPolynomial (Fin 2 × ℕ) ℤ :=
+noncomputable def wittMul : ℕ → MvPolynomial (Fin 2 × ℕ) ℤ :=
   wittStructureInt p (X 0 * X 1)
 
 /-- The polynomials used for defining the negation of the ring of Witt vectors. -/
-def wittNeg : ℕ → MvPolynomial (Fin 1 × ℕ) ℤ :=
+noncomputable def wittNeg : ℕ → MvPolynomial (Fin 1 × ℕ) ℤ :=
   wittStructureInt p (-X 0)
 
 /-- The polynomials used for defining repeated addition of the ring of Witt vectors. -/
-def wittPow (n : ℕ) : ℕ → MvPolynomial (Fin 1 × ℕ) ℤ :=
+noncomputable def wittPow (n : ℕ) : ℕ → MvPolynomial (Fin 1 × ℕ) ℤ :=
   wittStructureInt p (X 0 ^ n)
 
 variable {p}
@@ -150,7 +148,7 @@ variable {p}
 Evaluates a polynomial whose variables come from the disjoint union of `k` copies of `ℕ`,
 with a curried evaluation `x`.
 This can be defined more generally but we use only a specific instance here. -/
-def peval {k : ℕ} (φ : MvPolynomial (Fin k × ℕ) ℤ) (x : Fin k → ℕ → R) : R :=
+noncomputable def peval {k : ℕ} (φ : MvPolynomial (Fin k × ℕ) ℤ) (x : Fin k → ℕ → R) : R :=
   aeval (Function.uncurry x) φ
 
 /-- Let `φ` be a family of polynomials, indexed by natural numbers, whose variables come from the
@@ -163,43 +161,43 @@ Instantiating `φ` with certain polynomials defined in
 ring operations on `𝕎 R`. For example, `WittVector.wittAdd` is such a `φ` with `k = 2`;
 evaluating this at `(x₀, x₁)` gives us the sum of two Witt vectors `x₀ + x₁`.
 -/
-def eval {k : ℕ} (φ : ℕ → MvPolynomial (Fin k × ℕ) ℤ) (x : Fin k → 𝕎 R) : 𝕎 R :=
+noncomputable def eval {k : ℕ} (φ : ℕ → MvPolynomial (Fin k × ℕ) ℤ) (x : Fin k → 𝕎 R) : 𝕎 R :=
   mk p fun n => peval (φ n) fun i => (x i).coeff
 
-instance : Zero (𝕎 R) :=
+noncomputable instance : Zero (𝕎 R) :=
   ⟨eval (wittZero p) ![]⟩
 
-instance : Inhabited (𝕎 R) :=
+noncomputable instance : Inhabited (𝕎 R) :=
   ⟨0⟩
 
-instance : One (𝕎 R) :=
+noncomputable instance : One (𝕎 R) :=
   ⟨eval (wittOne p) ![]⟩
 
-instance : Add (𝕎 R) :=
+noncomputable instance : Add (𝕎 R) :=
   ⟨fun x y => eval (wittAdd p) ![x, y]⟩
 
-instance : Sub (𝕎 R) :=
+noncomputable instance : Sub (𝕎 R) :=
   ⟨fun x y => eval (wittSub p) ![x, y]⟩
 
-instance hasNatScalar : SMul ℕ (𝕎 R) :=
+noncomputable instance hasNatScalar : SMul ℕ (𝕎 R) :=
   ⟨fun n x => eval (wittNSMul p n) ![x]⟩
 
-instance hasIntScalar : SMul ℤ (𝕎 R) :=
+noncomputable instance hasIntScalar : SMul ℤ (𝕎 R) :=
   ⟨fun n x => eval (wittZSMul p n) ![x]⟩
 
-instance : Mul (𝕎 R) :=
+noncomputable instance : Mul (𝕎 R) :=
   ⟨fun x y => eval (wittMul p) ![x, y]⟩
 
-instance : Neg (𝕎 R) :=
+noncomputable instance : Neg (𝕎 R) :=
   ⟨fun x => eval (wittNeg p) ![x]⟩
 
-instance hasNatPow : Pow (𝕎 R) ℕ :=
+noncomputable instance hasNatPow : Pow (𝕎 R) ℕ :=
   ⟨fun x n => eval (wittPow p n) ![x]⟩
 
-instance : NatCast (𝕎 R) :=
+noncomputable instance : NatCast (𝕎 R) :=
   ⟨Nat.unaryCast⟩
 
-instance : IntCast (𝕎 R) :=
+noncomputable instance : IntCast (𝕎 R) :=
   ⟨Int.castDef⟩
 
 end RingOperations

@@ -19,7 +19,7 @@ public import Mathlib.LinearAlgebra.Finsupp.LSum
 
 -/
 
-@[expose] public noncomputable section
+@[expose] public section
 
 open Finset
 
@@ -58,7 +58,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- The functor `M ↦ R[M]`, from the category of magmas to the category of non-unital,
 non-associative algebras over `R` is adjoint to the forgetful functor in the other direction. -/
 @[simps apply_apply symm_apply]
-def liftMagma [Module R A] [IsScalarTower R A A] [SMulCommClass R A A] :
+noncomputable def liftMagma [Module R A] [IsScalarTower R A A] [SMulCommClass R A A] :
     (M →ₙ* A) ≃ (R[M] →ₙₐ[R] A) where
   toFun f := {
     toAddMonoidHom :=
@@ -87,7 +87,7 @@ In particular this provides the instance `Algebra R R[M]`. -/
 /-- The instance `Algebra R R[M]` whenever we have `Algebra R R`.
 
 In particular this provides the instance `Algebra R R[M]`. -/]
-instance algebra : Algebra R A[M] where
+noncomputable instance algebra : Algebra R A[M] where
   algebraMap := singleOneRingHom.comp (algebraMap R A)
   smul_def' r a := by ext; simp [coeff_single_one_mul, Algebra.smul_def]
   commutes' r f := by ext; simp [coeff_single_one_mul, coeff_mul_single_one, Algebra.commutes]
@@ -95,7 +95,7 @@ instance algebra : Algebra R A[M] where
 /-- `MonoidAlgebra.single 1` as an `AlgHom` -/
 @[to_additive (dont_translate := R A) (attr := simps! apply)
 /-- `AddMonoidAlgebra.single 0` as an `AlgHom` -/]
-def singleOneAlgHom : A →ₐ[R] A[M] where
+noncomputable def singleOneAlgHom : A →ₐ[R] A[M] where
   __ := singleOneRingHom
   commutes' r := by ext; simp; rfl
 
@@ -121,7 +121,7 @@ variable (R M) in
 /-- The trivial monoid algebra is the base ring. -/
 @[to_additive (dont_translate := R A)
 /-- The trivial monoid algebra is the base ring. -/]
-def uniqueAlgEquiv [Subsingleton M] : A[M] ≃ₐ[R] A where
+noncomputable def uniqueAlgEquiv [Subsingleton M] : A[M] ≃ₐ[R] A where
   toRingEquiv := uniqueRingEquiv _
   commutes' r := by simp
 
@@ -152,7 +152,7 @@ variable (R) in
 /-- A product monoid algebra is a nested monoid algebra. -/
 @[to_additive (dont_translate := R A)
 /-- A product monoid algebra is a nested monoid algebra. -/]
-def curryAlgEquiv : A[M × N] ≃ₐ[R] A[N][M] where
+noncomputable def curryAlgEquiv : A[M × N] ≃ₐ[R] A[N][M] where
   toRingEquiv := curryRingEquiv
   commutes' r := by
     ext
@@ -177,7 +177,7 @@ is a non-unital algebra homomorphism between their magma algebras. -/
 /-- If `f : M → N` is a homomorphism between two additive magmas,
 then `AddMonoidAlgebra.mapDomain f` is a non-unital algebra homomorphism
 between their additive magma algebras. -/]
-def mapDomainNonUnitalAlgHom [CommSemiring R] [Semiring A] [Algebra R A]
+noncomputable def mapDomainNonUnitalAlgHom [CommSemiring R] [Semiring A] [Algebra R A]
     [Mul M] [Mul N] (f : M →ₙ* N) : A[M] →ₙₐ[R] A[N] where
   __ := mapDomainNonUnitalRingHom A f
   map_mul' := mapDomain_mul f
@@ -195,7 +195,7 @@ variable [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
   [Monoid M] [Monoid N] [Monoid O]
 
 /-- `liftNCRingHom` as an `AlgHom`, for when `f` is an `AlgHom` -/
-def liftNCAlgHom (f : A →ₐ[R] B) (g : M →* B) (h_comm : ∀ x y, Commute (f x) (g y)) :
+noncomputable def liftNCAlgHom (f : A →ₐ[R] B) (g : M →* B) (h_comm : ∀ x y, Commute (f x) (g y)) :
     A[M] →ₐ[R] B :=
   { liftNCRingHom (f : A →+* B) g h_comm with
     commutes' := by simp [liftNCRingHom] }
@@ -232,7 +232,7 @@ lemma algHom_ext' ⦃φ₁ φ₂ : A[M] →ₐ[R] B⦄
 
 variable (R A M) in
 /-- Any monoid homomorphism `M →* A` can be lifted to an algebra homomorphism `R[M] →ₐ[R] A`. -/
-def lift : (M →* A) ≃ (R[M] →ₐ[R] A) where
+noncomputable def lift : (M →* A) ≃ (R[M] →ₐ[R] A) where
   toFun F := liftNCAlgHom (Algebra.ofId R A) F fun _ _ ↦ Algebra.commutes _ _
   invFun f := (f : R[M] →* A).comp (of R M)
   left_inv f := by ext; simp
@@ -284,7 +284,7 @@ homomorphism between their monoid algebras. -/
 @[to_additive (dont_translate := R A) (attr := simps! apply)
 /-- If `f : M → N` is an additive monoid homomorphism, then `MonoidAlgebra.mapDomain f` is an
 algebra homomorphism between their additive monoid algebras. -/]
-def mapDomainAlgHom (f : M →* N) : A[M] →ₐ[R] A[N] where
+noncomputable def mapDomainAlgHom (f : M →* N) : A[M] →ₐ[R] A[N] where
   toRingHom := mapDomainRingHom A f
   commutes' := by simp
 
@@ -302,7 +302,7 @@ variable (R A) in
 @[to_additive (dont_translate := A)
 /-- If `e : M ≃+ N` is an additive equivalence between two additive monoids, then
 `AddMonoidAlgebra.domCongr e` is an algebra equivalence between their additive monoid algebras. -/]
-def domCongr (e : M ≃* N) : A[M] ≃ₐ[R] A[N] where
+noncomputable def domCongr (e : M ≃* N) : A[M] ≃ₐ[R] A[N] where
   toRingEquiv := mapDomainRingEquiv A e
   commutes' _ := by ext; simp
 
@@ -341,7 +341,7 @@ theorem trans_domCongr_domCongr (e : M ≃* N) (f : N ≃* O) :
 
 /-- `MonoidAlgebra.domCongr` as a `MonoidHom` from `MulAut`. -/
 @[simps]
-def domCongrAut : MulAut M →* A[M] ≃ₐ[R] A[M] where
+noncomputable def domCongrAut : MulAut M →* A[M] ≃ₐ[R] A[M] where
   toFun := MonoidAlgebra.domCongr R A
   map_one' := by rw [MulAut.one_def, AlgEquiv.aut_one, domCongr_refl]
   map_mul' _ _ := by rw [MulAut.mul_def, AlgEquiv.aut_mul, trans_domCongr_domCongr]
@@ -350,7 +350,7 @@ variable (R) in
 /-- Nested monoid algebras can be taken in an arbitrary order. -/
 @[to_additive
 /-- Nested monoid algebras can be taken in an arbitrary order. -/]
-def commAlgEquiv : A[M][N] ≃ₐ[R] A[N][M] :=
+noncomputable def commAlgEquiv : A[M][N] ≃ₐ[R] A[N][M] :=
   (curryAlgEquiv _).symm.trans <| .trans (domCongr _ _ <| .prodComm ..) (curryAlgEquiv _)
 
 @[to_additive (attr := simp)]
@@ -454,7 +454,7 @@ lemma mapAlgEquiv_trans (e₁ : A ≃ₐ[R] B) (e₂ : B ≃ₐ[R] C) :
 variable (R M) in
 /-- `MonoidAlgebra.mapRangeAlgEquiv` as a `MonoidHom` from `A ≃ₐ[R] A`. -/
 @[simps]
-def mapRangeAlgAut : (A ≃ₐ[R] A) →* A[M] ≃ₐ[R] A[M] where
+noncomputable def mapRangeAlgAut : (A ≃ₐ[R] A) →* A[M] ≃ₐ[R] A[M] where
   toFun f := mapAlgEquiv _ _ f
   map_one' := by ext; simp
   map_mul' x y := by ext; simp
@@ -465,6 +465,7 @@ section
 
 variable (R) in
 /-- When `V` is a `R[M]`-module, multiplication by a group element `g` is a `R`-linear map. -/
+noncomputable
 def GroupSMul.linearMap [Monoid M] [CommSemiring R] (V : Type*) [AddCommMonoid V] [Module R V]
     [Module R[M] V] [IsScalarTower R R[M] V] (g : M) : V →ₗ[R] V where
   toFun v := single g (1 : R) • v
@@ -556,7 +557,7 @@ set_option backward.isDefEq.respectTransparency false in
 non-unital, non-associative algebras over `R` is adjoint to the forgetful functor in the other
 direction. -/
 @[simps apply_apply symm_apply]
-def liftMagma [Module R A] [IsScalarTower R A A] [SMulCommClass R A A] :
+noncomputable def liftMagma [Module R A] [IsScalarTower R A A] [SMulCommClass R A A] :
     (Multiplicative M →ₙ* A) ≃ (R[M] →ₙₐ[R] A) where
   toFun f := {
     toAddMonoidHom :=
@@ -579,6 +580,7 @@ section lift
 variable [CommSemiring R] [AddMonoid M] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
 
 /-- `liftNCRingHom` as an `AlgHom`, for when `f` is an `AlgHom` -/
+noncomputable
 def liftNCAlgHom (f : A →ₐ[R] B) (g : Multiplicative M →* B) (h_comm : ∀ x y, Commute (f x) (g y)) :
     A[M] →ₐ[R] B :=
   { liftNCRingHom (f : A →+* B) g h_comm with
@@ -596,7 +598,7 @@ lemma algHom_ext' ⦃φ₁ φ₂ : A[M] →ₐ[R] B⦄
 variable (R M A) in
 /-- Any monoid homomorphism `M →* A` can be lifted to an algebra homomorphism
 `R[M] →ₐ[R] A`. -/
-def lift : (Multiplicative M →* A) ≃ (R[M] →ₐ[R] A) where
+noncomputable def lift : (Multiplicative M →* A) ≃ (R[M] →ₐ[R] A) where
   toFun F := liftNCAlgHom (Algebra.ofId R A) F fun _ _ => Algebra.commutes _ _
   invFun f := (f : R[M] →* A).comp (of R M)
   left_inv f := by ext; simp
@@ -655,7 +657,7 @@ alias lift_mapRangeRingHom_algebraMap := lift_mapRingHom_algebraMap
 variable (R A) in
 /-- `AddMonoidAlgebra.domCongr` as an `AddMonoidHom` from `AddAut`. -/
 @[simps]
-def domCongrAut : AddAut M →+ Additive (A[M] ≃ₐ[R] A[M]) where
+noncomputable def domCongrAut : AddAut M →+ Additive (A[M] ≃ₐ[R] A[M]) where
   toFun f := .ofMul (AddMonoidAlgebra.domCongr R A f)
   map_zero' := by ext; simp [AddAut.zero_def]
   map_add' _ _ := by ext; simp [AddAut.add_def]
@@ -667,7 +669,7 @@ variable [CommSemiring R] [AddMonoid M] [Semiring A] [Algebra R A]
 variable (R M) in
 /-- `AddMonoidAlgebra.mapAlgEquiv` as an `AddMonoidHom` from `R ≃ₐ[k] R`. -/
 @[simps]
-def mapAlgAut : (A ≃ₐ[R] A) →* A[M] ≃ₐ[R] A[M] where
+noncomputable def mapAlgAut : (A ≃ₐ[R] A) →* A[M] ≃ₐ[R] A[M] where
   toFun f := mapAlgEquiv _ _ f
   map_one' := by ext; simp
   map_mul' x y := by ext; simp
@@ -679,7 +681,7 @@ variable [CommSemiring R] [Semiring A] [Algebra R A]
 variable (A M) in
 /-- The algebra equivalence between `AddMonoidAlgebra` and `MonoidAlgebra` in terms of
 `Multiplicative`. -/
-def AddMonoidAlgebra.toMultiplicativeAlgEquiv [AddMonoid M] :
+noncomputable def AddMonoidAlgebra.toMultiplicativeAlgEquiv [AddMonoid M] :
     AddMonoidAlgebra A M ≃ₐ[R] MonoidAlgebra A (Multiplicative M) where
   toRingEquiv := AddMonoidAlgebra.toMultiplicative A M
   commutes' r := by simp [AddMonoidAlgebra.toMultiplicative]
@@ -687,7 +689,7 @@ def AddMonoidAlgebra.toMultiplicativeAlgEquiv [AddMonoid M] :
 variable (A M) in
 /-- The algebra equivalence between `MonoidAlgebra` and `AddMonoidAlgebra` in terms of
 `Additive`. -/
-def MonoidAlgebra.toAdditiveAlgEquiv [Monoid M] :
+noncomputable def MonoidAlgebra.toAdditiveAlgEquiv [Monoid M] :
     MonoidAlgebra A M ≃ₐ[R] AddMonoidAlgebra A (Additive M) where
   toRingEquiv := MonoidAlgebra.toAdditive A M
   commutes' r := by simp [MonoidAlgebra.toAdditive]

@@ -30,8 +30,6 @@ more glue.
 
 @[expose] public section
 
-noncomputable section
-
 open Circle Finset Function Module Multiplicative
 open Fintype (card)
 open Real hiding exp
@@ -44,7 +42,7 @@ variable (n : ℕ) [NeZero n]
 
 /-- Indexing of the complex characters of `ZMod n`. `AddChar.zmod n x` is the character sending `y`
 to `e ^ (2 * π * i * x * y / n)`. -/
-def zmod (x : ZMod n) : AddChar (ZMod n) Circle :=
+noncomputable def zmod (x : ZMod n) : AddChar (ZMod n) Circle :=
   AddChar.compAddMonoidHom ⟨AddCircle.toCircle, AddCircle.toCircle_zero, AddCircle.toCircle_add⟩ <|
     ZMod.toAddCircle.comp <| .mulLeft x
 
@@ -71,13 +69,13 @@ lemma zmod_injective : Injective (zmod n) := by
 @[simp] lemma zmod_inj {x y : ZMod n} : zmod n x = zmod n y ↔ x = y := zmod_injective.eq_iff
 
 /-- `AddChar.zmod` bundled as an `AddChar`. -/
-def zmodHom : AddChar (ZMod n) (AddChar (ZMod n) Circle) where
+noncomputable def zmodHom : AddChar (ZMod n) (AddChar (ZMod n) Circle) where
   toFun := zmod n
   map_zero_eq_one' := by simp
   map_add_eq_mul' := by simp
 
 /-- Character on a product of `ZMod`s given by `x ↦ ∏ i, e ^ (2 * π * I * x i * y / n)`. -/
-private def mkZModAux {ι : Type*} [DecidableEq ι] (n : ι → ℕ) [∀ i, NeZero (n i)]
+private noncomputable def mkZModAux {ι : Type*} [DecidableEq ι] (n : ι → ℕ) [∀ i, NeZero (n i)]
     (u : ∀ i, ZMod (n i)) : AddChar (⨁ i, ZMod (n i)) Circle :=
   AddChar.directSum fun i ↦ zmod (n i) (u i)
 
@@ -88,7 +86,7 @@ private lemma mkZModAux_injective {ι : Type*} [DecidableEq ι] {n : ι → ℕ}
 set_option backward.isDefEq.respectTransparency false in
 /-- The circle-valued characters of a finite abelian group are the same as its complex-valued
 characters. -/
-def circleEquivComplex [Finite α] : AddChar α Circle ≃+ AddChar α ℂ where
+noncomputable def circleEquivComplex [Finite α] : AddChar α Circle ≃+ AddChar α ℂ where
   toFun ψ := toMonoidHomEquiv.symm <| coeHom.comp ψ.toMonoidHom
   invFun ψ :=
     { toFun := fun a ↦ (⟨ψ a, mem_sphere_zero_iff_norm.2 <| ψ.norm_apply _⟩ : Circle)
@@ -109,7 +107,7 @@ def circleEquivComplex [Finite α] : AddChar α Circle ≃+ AddChar α ℂ where
   exact (card_addChar_le _ _).antisymm (Fintype.card_le_of_injective _ hf)
 
 /-- `ZMod n` is (noncanonically) isomorphic to its group of characters. -/
-def zmodAddEquiv : ZMod n ≃+ AddChar (ZMod n) ℂ := by
+noncomputable def zmodAddEquiv : ZMod n ≃+ AddChar (ZMod n) ℂ := by
   refine AddEquiv.ofBijective
     (circleEquivComplex.toAddMonoidHom.comp <| AddChar.toAddMonoidHom zmodHom) ?_
   rw [Fintype.bijective_iff_injective_and_card, card_eq]
@@ -122,7 +120,7 @@ section Finite
 variable (α) [Finite α]
 
 /-- Complex-valued characters of a finite abelian group `α` form a basis of `α → ℂ`. -/
-def complexBasis : Basis (AddChar α ℂ) ℂ (α → ℂ) :=
+noncomputable def complexBasis : Basis (AddChar α ℂ) ℂ (α → ℂ) :=
   basisOfLinearIndependentOfCardEqFinrank (AddChar.linearIndependent _ _) <| by
     cases nonempty_fintype α; rw [card_eq, Module.finrank_fintype_fun_eq_card]
 
@@ -171,6 +169,7 @@ lemma doubleDualEmb_ne_zero : (doubleDualEmb a : AddChar (AddChar α ℂ) ℂ) �
   doubleDualEmb_eq_zero.not
 
 /-- The double dual isomorphism of a finite abelian group. -/
+noncomputable
 def doubleDualEquiv : α ≃+ AddChar (AddChar α ℂ) ℂ := .ofBijective _ doubleDualEmb_bijective
 
 @[simp]

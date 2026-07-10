@@ -76,8 +76,6 @@ convergence in distribution, convergence in law, weak convergence of measures, p
 @[expose] public section
 
 
-noncomputable section
-
 open Set Filter BoundedContinuousFunction Topology
 open scoped ENNReal NNReal
 
@@ -107,7 +105,7 @@ namespace ProbabilityMeasure
 
 variable {Ω : Type*} [MeasurableSpace Ω]
 
-instance [Inhabited Ω] : Inhabited (ProbabilityMeasure Ω) :=
+noncomputable instance [Inhabited Ω] : Inhabited (ProbabilityMeasure Ω) :=
   ⟨⟨Measure.dirac default, Measure.dirac.isProbabilityMeasure⟩⟩
 
 /-- Coercion from `MeasureTheory.ProbabilityMeasure Ω` to `MeasureTheory.Measure Ω`. -/
@@ -285,7 +283,7 @@ theorem testAgainstNN_lipschitz (μ : ProbabilityMeasure Ω) :
 /-- The topology of weak convergence on `MeasureTheory.ProbabilityMeasure Ω`. This is inherited
 (induced) from the topology of weak convergence of finite measures via the inclusion
 `MeasureTheory.ProbabilityMeasure.toFiniteMeasure`. -/
-instance : TopologicalSpace (ProbabilityMeasure Ω) :=
+noncomputable instance : TopologicalSpace (ProbabilityMeasure Ω) :=
   TopologicalSpace.induced toFiniteMeasure inferInstance
 
 theorem toFiniteMeasure_continuous :
@@ -294,7 +292,7 @@ theorem toFiniteMeasure_continuous :
 
 /-- Probability measures yield elements of the `WeakDual` of bounded continuous nonnegative
 functions via `MeasureTheory.FiniteMeasure.testAgainstNN`, i.e., integration. -/
-def toWeakDualBCNN : ProbabilityMeasure Ω → WeakDual ℝ≥0 (Ω →ᵇ ℝ≥0) :=
+noncomputable def toWeakDualBCNN : ProbabilityMeasure Ω → WeakDual ℝ≥0 (Ω →ᵇ ℝ≥0) :=
   FiniteMeasure.toWeakDualBCNN ∘ toFiniteMeasure
 
 @[simp]
@@ -445,7 +443,7 @@ variable {Ω : Type*} [Nonempty Ω] {m0 : MeasurableSpace Ω} (μ : FiniteMeasur
 
 /-- Normalize a finite measure so that it becomes a probability measure, i.e., divide by the
 total mass. -/
-def normalize : ProbabilityMeasure Ω :=
+noncomputable def normalize : ProbabilityMeasure Ω :=
   if zero : μ.mass = 0 then ⟨Measure.dirac ‹Nonempty Ω›.some, Measure.dirac.isProbabilityMeasure⟩
   else
     { val := μ.mass⁻¹ • (μ : Measure Ω)

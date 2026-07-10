@@ -107,8 +107,6 @@ weak-star, weak dual
 
 @[expose] public section
 
-noncomputable section
-
 open Filter Function Bornology Metric Set Topology Filter
 
 variable {𝕜 M E : Type*}

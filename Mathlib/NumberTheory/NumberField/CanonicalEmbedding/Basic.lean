@@ -310,13 +310,13 @@ theorem disjoint_span_commMap_ker [NumberField K] :
 
 end commMap
 
-noncomputable section norm
+section norm
 
 variable {K}
 
 open scoped Classical in
 /-- The norm at the infinite place `w` of an element of the mixed space -/
-def normAtPlace (w : InfinitePlace K) : (mixedSpace K) →*₀ ℝ where
+noncomputable def normAtPlace (w : InfinitePlace K) : (mixedSpace K) →*₀ ℝ where
   toFun x := if hw : IsReal w then ‖x.1 ⟨w, hw⟩‖ else ‖x.2 ⟨w, not_isReal_iff_isComplex.mp hw⟩‖
   map_zero' := by simp
   map_one' := by simp
@@ -411,7 +411,7 @@ theorem norm_eq_sup'_normAtPlace (x : mixedSpace K) :
 /-- The norm of `x` is `∏ w, (normAtPlace x) ^ mult w`. It is defined such that the norm of
 `mixedEmbedding K a` for `a : K` is equal to the absolute value of the norm of `a` over `ℚ`,
 see `norm_eq_norm`. -/
-protected def norm : (mixedSpace K) →*₀ ℝ where
+protected noncomputable def norm : (mixedSpace K) →*₀ ℝ where
   toFun x := ∏ w, (normAtPlace w x) ^ (mult w)
   map_one' := by simp only [map_one, one_pow, prod_const_one]
   map_zero' := by simp [mult]
@@ -472,7 +472,7 @@ protected theorem continuous_norm : Continuous (mixedEmbedding.norm : (mixedSpac
 
 end norm
 
-noncomputable section stdBasis
+section stdBasis
 
 open Complex MeasureTheory MeasureTheory.Measure ZSpan Matrix ComplexConjugate
 
@@ -485,7 +485,7 @@ open scoped Classical in
 /-- The `ℝ`-basis of the mixed space of `K` formed by the vector equal to `1` at `w` and `0`
 elsewhere for `IsReal w` and by the couple of vectors equal to `1` (resp. `I`) at `w` and `0`
 elsewhere for `IsComplex w`. -/
-def stdBasis : Basis (index K) ℝ (mixedSpace K) :=
+noncomputable def stdBasis : Basis (index K) ℝ (mixedSpace K) :=
   Basis.prod (Pi.basisFun ℝ _)
     (Basis.reindex (Pi.basis fun _ => basisOneI) (Equiv.sigmaEquivProd _ _))
 
@@ -527,7 +527,7 @@ open scoped Classical in
 /-- The `Equiv` between `index K` and `K →+* ℂ` defined by sending a real infinite place `w` to
 the unique corresponding embedding `w.embedding`, and the pair `⟨w, 0⟩` (resp. `⟨w, 1⟩`) for a
 complex infinite place `w` to `w.embedding` (resp. `conjugate w.embedding`). -/
-def indexEquiv : (index K) ≃ (K →+* ℂ) := by
+noncomputable def indexEquiv : (index K) ≃ (K →+* ℂ) := by
   refine Equiv.ofBijective (fun c => ?_)
     ((Fintype.bijective_iff_surjective_and_card _).mpr ⟨?_, ?_⟩)
   · cases c with
@@ -564,7 +564,7 @@ open scoped Classical in
 /-- The matrix that gives the representation on `stdBasis` of the image by `commMap` of an
 element `x` of `(K →+* ℂ) → ℂ` fixed by the map `x_φ ↦ conj x_(conjugate φ)`,
 see `stdBasis_repr_eq_matrixToStdBasis_mul`. -/
-def matrixToStdBasis : Matrix (index K) (index K) ℂ :=
+noncomputable def matrixToStdBasis : Matrix (index K) (index K) ℂ :=
   fromBlocks (diagonal fun _ => 1) 0 0 <| reindex (Equiv.prodComm _ _) (Equiv.prodComm _ _)
     (blockDiagonal (fun _ => (2 : ℂ)⁻¹ • !![1, 1; -I, I]))
 
@@ -619,7 +619,7 @@ theorem stdBasis_repr_eq_matrixToStdBasis_mul (x : (K →+* ℂ) → ℂ)
 
 end stdBasis
 
-noncomputable section integerLattice
+section integerLattice
 
 variable [NumberField K]
 
@@ -628,11 +628,11 @@ open Module.Free
 open scoped nonZeroDivisors
 
 /-- The image of the ring of integers of `K` in the mixed space. -/
-protected abbrev integerLattice : Submodule ℤ (mixedSpace K) :=
+protected noncomputable abbrev integerLattice : Submodule ℤ (mixedSpace K) :=
   LinearMap.range ((mixedEmbedding K).comp (algebraMap (𝓞 K) K)).toIntAlgHom.toLinearMap
 
 /-- A `ℝ`-basis of the mixed space that is also a `ℤ`-basis of the image of `𝓞 K`. -/
-def latticeBasis :
+noncomputable def latticeBasis :
     Basis (ChooseBasisIndex ℤ (𝓞 K)) ℝ (mixedSpace K) := by
   classical
     -- We construct an `ℝ`-linear independent family from the image of
@@ -714,7 +714,7 @@ theorem latticeBasis_repr_apply (x : K) (i : ChooseBasisIndex ℤ (𝓞 K)) :
 variable (I : (FractionalIdeal (𝓞 K)⁰ K)ˣ)
 
 /-- The image of the fractional ideal `I` in the mixed space. -/
-abbrev idealLattice (K : Type*) [Field K] (I : (FractionalIdeal (𝓞 K)⁰ K)ˣ) :
+noncomputable abbrev idealLattice (K : Type*) [Field K] (I : (FractionalIdeal (𝓞 K)⁰ K)ˣ) :
     Submodule ℤ (mixedSpace K) := LinearMap.range <|
   (mixedEmbedding K).toIntAlgHom.toLinearMap ∘ₗ ((I : Submodule (𝓞 K) K).subtype.restrictScalars ℤ)
 
@@ -745,7 +745,7 @@ theorem det_basisOfFractionalIdeal_eq_norm
 
 /-- A `ℝ`-basis of the mixed space of `K` that is also a `ℤ`-basis of the image of the fractional
 ideal `I`. -/
-def fractionalIdealLatticeBasis :
+noncomputable def fractionalIdealLatticeBasis :
     Basis (ChooseBasisIndex ℤ I) ℝ (mixedSpace K) := by
   let e : (ChooseBasisIndex ℤ (𝓞 K)) ≃ (ChooseBasisIndex ℤ I) := by
     refine Fintype.equivOfCardEq ?_
@@ -802,7 +802,7 @@ theorem fundamentalDomain_idealLattice :
 
 end integerLattice
 
-noncomputable section
+section
 
 namespace euclidean
 
@@ -822,7 +822,7 @@ variable [NumberField K]
 
 open scoped Classical in
 /-- The continuous linear equivalence between the Euclidean mixed space and the mixed space. -/
-def toMixed : (euclidean.mixedSpace K) ≃L[ℝ] (mixedSpace K) :=
+noncomputable def toMixed : (euclidean.mixedSpace K) ≃L[ℝ] (mixedSpace K) :=
   (WithLp.linearEquiv _ _ _).trans
     ((WithLp.linearEquiv _ _ _).prodCongr (WithLp.linearEquiv _ _ _)) |>.toContinuousLinearEquiv
 
@@ -834,7 +834,7 @@ protected theorem finrank :
 
 open scoped Classical in
 /-- An orthonormal basis of the Euclidean mixed space. -/
-def stdOrthonormalBasis : OrthonormalBasis (index K) ℝ (euclidean.mixedSpace K) :=
+noncomputable def stdOrthonormalBasis : OrthonormalBasis (index K) ℝ (euclidean.mixedSpace K) :=
   OrthonormalBasis.prod (EuclideanSpace.basisFun _ ℝ)
     ((Pi.orthonormalBasis fun _ ↦ Complex.orthonormalBasisOneI).reindex (Equiv.sigmaEquivProd _ _))
 
@@ -862,7 +862,7 @@ theorem volumePreserving_toMixed_symm :
 
 open scoped Classical in
 /-- The image of ring of integers `𝓞 K` in the Euclidean mixed space. -/
-protected def integerLattice : Submodule ℤ (euclidean.mixedSpace K) :=
+protected noncomputable def integerLattice : Submodule ℤ (euclidean.mixedSpace K) :=
   ZLattice.comap ℝ (mixedEmbedding.integerLattice K) (toMixed K).toLinearMap
 
 instance : DiscreteTopology (euclidean.integerLattice K) := by
@@ -879,7 +879,7 @@ end euclidean
 
 end
 
-noncomputable section plusPart
+section plusPart
 
 open ContinuousLinearEquiv
 
@@ -888,7 +888,7 @@ variable {K} (s : Set {w : InfinitePlace K // IsReal w})
 open scoped Classical in
 /-- Let `s` be a set of real places, define the continuous linear equiv of the mixed space that
 swaps sign at places in `s` and leaves the rest unchanged. -/
-def negAt :
+noncomputable def negAt :
     mixedSpace K ≃L[ℝ] mixedSpace K :=
   (piCongrRight fun w ↦ if w ∈ s then neg ℝ else ContinuousLinearEquiv.refl ℝ ℝ).prodCongr
     (ContinuousLinearEquiv.refl ℝ _)
@@ -1092,7 +1092,7 @@ theorem volume_eq_two_pow_mul_volume_plusPart (hm : MeasurableSet A) :
 
 end plusPart
 
-noncomputable section realSpace
+section realSpace
 
 open MeasureTheory
 
@@ -1116,7 +1116,7 @@ theorem realSpace.volume_eq_zero [NumberField K] (w : InfinitePlace K) :
 The continuous linear map from `realSpace K` to `mixedSpace K` which is the identity at real
 places and the natural map `ℝ → ℂ` at complex places.
 -/
-def mixedSpaceOfRealSpace : realSpace K →L[ℝ] mixedSpace K :=
+noncomputable def mixedSpaceOfRealSpace : realSpace K →L[ℝ] mixedSpace K :=
   .prod (.pi fun w ↦ .proj w.1) (.pi fun w ↦ Complex.ofRealCLM.comp (.proj w.1))
 
 theorem mixedSpaceOfRealSpace_apply (x : realSpace K) :
@@ -1144,7 +1144,7 @@ open scoped Classical in
 The map from the `mixedSpace K` to `realSpace K` that sends the values at complex places
 to their norm.
 -/
-abbrev normAtComplexPlaces (x : mixedSpace K) : realSpace K :=
+noncomputable abbrev normAtComplexPlaces (x : mixedSpace K) : realSpace K :=
     fun w ↦ if hw : w.IsReal then x.1 ⟨w, hw⟩ else normAtPlace w x
 
 @[simp]
@@ -1170,7 +1170,7 @@ theorem normAtComplexPlaces_mixedSpaceOfRealSpace {x : realSpace K}
 /--
 The map from the `mixedSpace K` to `realSpace K` that sends each component to its norm.
 -/
-abbrev normAtAllPlaces (x : mixedSpace K) : realSpace K :=
+noncomputable abbrev normAtAllPlaces (x : mixedSpace K) : realSpace K :=
     fun w ↦ normAtPlace w x
 
 @[simp]

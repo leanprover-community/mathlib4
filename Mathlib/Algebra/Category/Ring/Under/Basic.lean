@@ -19,8 +19,6 @@ algebras, use `AlgCat R` instead.
 
 @[expose] public section
 
-noncomputable section
-
 universe u
 
 open TensorProduct CategoryTheory Limits
@@ -139,7 +137,7 @@ def tensorProd : Under R ⥤ Under S where
 set_option backward.isDefEq.respectTransparency false in
 variable (S) in
 /-- The natural isomorphism `S ⊗[R] A ≅ pushout A.hom (algebraMap R S)` in `Under S`. -/
-def tensorProdObjIsoPushoutObj (A : Under R) :
+noncomputable def tensorProdObjIsoPushoutObj (A : Under R) :
     mkUnder S (S ⊗[R] A) ≅ (Under.pushout (ofHom <| algebraMap R S)).obj A :=
   Under.isoMk (CommRingCat.isPushout_tensorProduct R S A).flip.isoPushout <| by
     simp only [mkUnder_hom, AlgHom.toRingHom_eq_coe, IsPushout.inr_isoPushout_hom]
@@ -164,7 +162,7 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 variable (R S) in
 /-- `A ↦ S ⊗[R] A` is naturally isomorphic to `A ↦ pushout A.hom (algebraMap R S)`. -/
-def tensorProdIsoPushout : tensorProd R S ≅ Under.pushout (ofHom <| algebraMap R S) :=
+noncomputable def tensorProdIsoPushout : tensorProd R S ≅ Under.pushout (ofHom <| algebraMap R S) :=
   NatIso.ofComponents (fun A ↦ tensorProdObjIsoPushoutObj S A) <| by
     intro A B f
     dsimp

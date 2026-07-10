@@ -43,8 +43,6 @@ with additional properties:
 
 @[expose] public section
 
-noncomputable section
-
 open Filter Function Metric TopologicalSpace Set Topology
 open scoped Uniformity
 
@@ -161,7 +159,7 @@ namespace CompleteCopy
 /-- A distance on an open subset `s` of a metric space, designed to make it complete.  It is given
 by `dist' x y = dist x y + |1 / dist x sᶜ - 1 / dist y sᶜ|`, where the second term blows up close to
 the boundary to ensure that Cauchy sequences for `dist'` remain well inside `s`. -/
-instance instDist : Dist (CompleteCopy s) where
+noncomputable instance instDist : Dist (CompleteCopy s) where
   dist x y := dist x.1 y.1 + abs (1 / infDist x.1 sᶜ - 1 / infDist y.1 sᶜ)
 
 theorem dist_eq (x y : CompleteCopy s) :
@@ -185,7 +183,7 @@ inside `s`.
 This definition ensures the `TopologicalSpace` structure on
 `TopologicalSpace.Opens.CompleteCopy s` is definitionally equal to the original one.
 -/
-instance instMetricSpace : MetricSpace (CompleteCopy s) := by
+noncomputable instance instMetricSpace : MetricSpace (CompleteCopy s) := by
   refine @MetricSpace.ofT0PseudoMetricSpace (CompleteCopy s)
     (.ofDistTopology dist (fun _ ↦ ?_) (fun _ _ ↦ ?_) (fun x y z ↦ ?_) fun t ↦ ?_) _
   · simp only [dist_eq, dist_self, one_div, sub_self, abs_zero, add_zero]

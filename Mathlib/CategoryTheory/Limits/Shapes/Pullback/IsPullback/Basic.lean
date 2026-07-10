@@ -19,8 +19,6 @@ among which the pasting lemmas
 
 @[expose] public section
 
-noncomputable section
-
 open CategoryTheory
 
 open CategoryTheory.Limits

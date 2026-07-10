@@ -136,8 +136,6 @@ linearly disjoint, linearly independent, tensor product
 open Module
 open scoped TensorProduct
 
-noncomputable section
-
 universe u v w
 
 namespace Subalgebra
@@ -240,7 +238,7 @@ variable (H : A.LinearDisjoint B)
 /-- If `A` and `B` are subalgebras in a commutative algebra `S` over `R`, and if they are
 linearly disjoint, then there is the natural isomorphism
 `A ⊗[R] B ≃ₐ[R] A ⊔ B` induced by multiplication in `S`. -/
-protected def mulMap :=
+protected noncomputable def mulMap :=
   (AlgEquiv.ofInjective (A.mulMap B) H.injective).trans (equivOfEq _ _ (mulMap_range A B))
 
 @[simp]

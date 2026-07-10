@@ -37,7 +37,7 @@ namespace Mathlib.Tactic.Coherence
 variable {C : Type u} [Category.{v} C]
 open scoped MonoidalCategory
 
-noncomputable section lifting
+section lifting
 
 variable [MonoidalCategory C]
 

@@ -58,8 +58,6 @@ random variables. Let `Yₙ` be the truncation of `Xₙ` up to `n`. We claim tha
 @[expose] public section
 
 
-noncomputable section
-
 open MeasureTheory Filter Finset Asymptotics
 
 open Set (indicator)
@@ -78,7 +76,7 @@ section Truncation
 variable {α : Type*}
 
 /-- Truncating a real-valued function to the interval `(-A, A]`. -/
-def truncation (f : α → ℝ) (A : ℝ) :=
+noncomputable def truncation (f : α → ℝ) (A : ℝ) :=
   indicator (Set.Ioc (-A) A) id ∘ f
 
 variable {m : MeasurableSpace α} {μ : Measure α} {f : α → ℝ}

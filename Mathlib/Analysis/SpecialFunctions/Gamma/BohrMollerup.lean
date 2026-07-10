@@ -41,8 +41,6 @@ formula).
 @[expose] public section
 
 
-noncomputable section
-
 open Filter Set MeasureTheory
 
 open scoped Nat ENNReal Topology Real
@@ -137,7 +135,7 @@ namespace BohrMollerup
 
 /-- The function `n ↦ x log n + log n! - (log x + ... + log (x + n))`, which we will show tends to
 `log (Gamma x)` as `n → ∞`. -/
-def logGammaSeq (x : ℝ) (n : ℕ) : ℝ :=
+noncomputable def logGammaSeq (x : ℝ) (n : ℕ) : ℝ :=
   x * log n + log n ! - ∑ m ∈ Finset.range (n + 1), log (x + m)
 
 variable {f : ℝ → ℝ} {x : ℝ} {n : ℕ}
@@ -384,7 +382,7 @@ multiple of `Gamma`, and we can compute the constant by specialising at `s = 1`.
 
 
 /-- Auxiliary definition for the doubling formula (we'll show this is equal to `Gamma s`) -/
-def doublingGamma (s : ℝ) : ℝ :=
+noncomputable def doublingGamma (s : ℝ) : ℝ :=
   Gamma (s / 2) * Gamma (s / 2 + 1 / 2) * 2 ^ (s - 1) / √π
 
 theorem doublingGamma_add_one (s : ℝ) (hs : s ≠ 0) :

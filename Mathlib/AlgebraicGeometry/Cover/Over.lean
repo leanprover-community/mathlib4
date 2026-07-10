@@ -24,8 +24,6 @@ We provide instances of `𝒰.Over S` for standard constructions on covers.
 
 universe v u
 
-noncomputable section
-
 open CategoryTheory Limits
 
 namespace AlgebraicGeometry.Scheme
@@ -70,7 +68,7 @@ definitionally equal to `AlgebraicGeometry.Scheme.Cover.pullback₁`, as here we
 the pullback in `Over S`, whose underlying scheme is only isomorphic but not equal to the
 pullback in `Scheme`. -/
 @[simps]
-def Cover.pullbackCoverOver : W.Cover (precoverage P) where
+noncomputable def Cover.pullbackCoverOver : W.Cover (precoverage P) where
   I₀ := 𝒰.I₀
   X x := (pullback (f.asOver S) ((𝒰.f x).asOver S)).left
   f x := (pullback.fst (f.asOver S) ((𝒰.f x).asOver S)).left
@@ -86,17 +84,17 @@ def Cover.pullbackCoverOver : W.Cover (precoverage P) where
       rw [← Over.forget_map, ← PreservesPullback.iso_hom_fst, P.cancel_left_of_respectsIso]
       exact P.pullback_fst _ _ (𝒰.map_prop j)
 
-instance (j : 𝒰.I₀) : ((𝒰.pullbackCoverOver S f).X j).Over S where
+noncomputable instance (j : 𝒰.I₀) : ((𝒰.pullbackCoverOver S f).X j).Over S where
   hom := (pullback (f.asOver S) ((𝒰.f j).asOver S)).hom
 
-instance : (𝒰.pullbackCoverOver S f).Over S where
+noncomputable instance : (𝒰.pullbackCoverOver S f).Over S where
   isOver_map j := { comp_over := by exact Over.w (pullback.fst (f.asOver S) ((𝒰.f j).asOver S)) }
 
 set_option backward.isDefEq.respectTransparency false in
 /-- A variant of `AlgebraicGeometry.Scheme.Cover.pullbackCoverOver` with the arguments in the
 fiber products flipped. -/
 @[simps]
-def Cover.pullbackCoverOver' : W.Cover (precoverage P) where
+noncomputable def Cover.pullbackCoverOver' : W.Cover (precoverage P) where
   I₀ := 𝒰.I₀
   X x := (pullback ((𝒰.f x).asOver S) (f.asOver S)).left
   f x := (pullback.snd ((𝒰.f x).asOver S) (f.asOver S)).left
@@ -112,10 +110,10 @@ def Cover.pullbackCoverOver' : W.Cover (precoverage P) where
       rw [← Over.forget_map, ← PreservesPullback.iso_hom_snd, P.cancel_left_of_respectsIso]
       exact P.pullback_snd _ _ (𝒰.map_prop j)
 
-instance (j : 𝒰.I₀) : ((𝒰.pullbackCoverOver' S f).X j).Over S where
+noncomputable instance (j : 𝒰.I₀) : ((𝒰.pullbackCoverOver' S f).X j).Over S where
   hom := (pullback ((𝒰.f j).asOver S) (f.asOver S)).hom
 
-instance : (𝒰.pullbackCoverOver' S f).Over S where
+noncomputable instance : (𝒰.pullbackCoverOver' S f).Over S where
   isOver_map j := { comp_over := by exact Over.w (pullback.snd ((𝒰.f j).asOver S) (f.asOver S)) }
 
 variable {Q : MorphismProperty Scheme.{u}} [Q.HasOfPostcompProperty Q]
@@ -129,7 +127,7 @@ definitionally equal to `AlgebraicGeometry.Scheme.Cover.pullbackCover`, as here 
 the pullback in `Q.Over ⊤ S`, whose underlying scheme is only isomorphic but not equal to the
 pullback in `Scheme`. -/
 @[simps -isSimp]
-def Cover.pullbackCoverOverProp : W.Cover (precoverage P) where
+noncomputable def Cover.pullbackCoverOverProp : W.Cover (precoverage P) where
   I₀ := 𝒰.I₀
   X x := (pullback (f.asOverProp (hX := hW) (hY := hX) S)
     ((𝒰.f x).asOverProp (hX := hQ x) (hY := hX) S)).left
@@ -149,11 +147,11 @@ def Cover.pullbackCoverOverProp : W.Cover (precoverage P) where
       rw [← PreservesPullback.iso_hom_fst, P.cancel_left_of_respectsIso]
       exact P.pullback_fst _ _ (𝒰.map_prop j)
 
-instance (j : 𝒰.I₀) : ((𝒰.pullbackCoverOverProp S f hX hW hQ).X j).Over S where
+noncomputable instance (j : 𝒰.I₀) : ((𝒰.pullbackCoverOverProp S f hX hW hQ).X j).Over S where
   hom := (pullback (f.asOverProp (hX := hW) (hY := hX) S)
     ((𝒰.f j).asOverProp (hX := hQ j) (hY := hX) S)).hom
 
-instance : (𝒰.pullbackCoverOverProp S f hX hW hQ).Over S where
+noncomputable instance : (𝒰.pullbackCoverOverProp S f hX hW hQ).Over S where
   isOver_map j :=
     { comp_over := by exact (pullback.fst (f.asOverProp S) ((𝒰.f j).asOverProp S)).w }
 
@@ -161,7 +159,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- A variant of `AlgebraicGeometry.Scheme.Cover.pullbackCoverOverProp` with the arguments in the
 fiber products flipped. -/
 @[simps -isSimp]
-def Cover.pullbackCoverOverProp' : W.Cover (precoverage P) where
+noncomputable def Cover.pullbackCoverOverProp' : W.Cover (precoverage P) where
   I₀ := 𝒰.I₀
   X x := (pullback ((𝒰.f x).asOverProp (hX := hQ x) (hY := hX) S)
     (f.asOverProp (hX := hW) (hY := hX) S)).left
@@ -181,11 +179,11 @@ def Cover.pullbackCoverOverProp' : W.Cover (precoverage P) where
       rw [← PreservesPullback.iso_hom_snd, P.cancel_left_of_respectsIso]
       exact P.pullback_snd _ _ (𝒰.map_prop j)
 
-instance (j : 𝒰.I₀) : ((𝒰.pullbackCoverOverProp' S f hX hW hQ).X j).Over S where
+noncomputable instance (j : 𝒰.I₀) : ((𝒰.pullbackCoverOverProp' S f hX hW hQ).X j).Over S where
   hom := (pullback ((𝒰.f j).asOverProp (hX := hQ j) (hY := hX) S)
     (f.asOverProp (hX := hW) (hY := hX) S)).hom
 
-instance : (𝒰.pullbackCoverOverProp' S f hX hW hQ).Over S where
+noncomputable instance : (𝒰.pullbackCoverOverProp' S f hX hW hQ).Over S where
   isOver_map j :=
     { comp_over := by exact (pullback.snd ((𝒰.f j).asOverProp S) (f.asOverProp S)).w }
 

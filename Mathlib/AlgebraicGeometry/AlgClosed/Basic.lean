@@ -17,7 +17,7 @@ See `AlgebraicGeometry.pointEquivClosedPoint`.
 
 -/
 
-@[expose] public noncomputable section
+@[expose] public section
 
 open CategoryTheory
 
@@ -30,7 +30,7 @@ variable {X Y : Scheme.{u}} {K : Type u} [Field K] [IsAlgClosed K]
 
 /-- If `X` is a locally of finite type `k`-scheme and `k` is algebraically closed, then
 the residue field of any closed point of `x` is isomorphic to `k`. -/
-def residueFieldIsoBase : X.residueField x ≅ .of K :=
+noncomputable def residueFieldIsoBase : X.residueField x ≅ .of K :=
   letI : IsIso (Spec.preimage (X.fromSpecResidueField x ≫ f)) := by
     have : IsFinite (X.fromSpecResidueField x ≫ f) := by
       rw [isClosed_singleton_iff_isClosedImmersion] at hx
@@ -64,7 +64,7 @@ set_option backward.defeqAttrib.useBackward true in
 /-- If `k` is algebraically closed,
 then the closed points of `X` are in bijection with the `k`-points of `X`. -/
 @[simps]
-def pointEquivClosedPoint :
+noncomputable def pointEquivClosedPoint :
     {p : Spec (.of K) ⟶ X // p ≫ f = 𝟙 _} ≃ closedPoints X where
   toFun p := ⟨p.1 (IsLocalRing.closedPoint K), by
     have := isClosedImmersion_of_comp_eq_id _ _ p.2

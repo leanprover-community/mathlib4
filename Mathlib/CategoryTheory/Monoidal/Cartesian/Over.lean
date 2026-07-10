@@ -21,7 +21,7 @@ for the induced `MonoidalCategory (Over X)` instance.
 
 -/
 
-public noncomputable section
+public section
 
 namespace CategoryTheory.Over
 
@@ -31,7 +31,7 @@ variable {C : Type*} [Category* C] [HasPullbacks C]
 
 set_option backward.defeqAttrib.useBackward true in
 /-- A choice of finite products of `Over X` given by `Limits.pullback`. -/
-abbrev cartesianMonoidalCategory (X : C) : CartesianMonoidalCategory (Over X) :=
+noncomputable abbrev cartesianMonoidalCategory (X : C) : CartesianMonoidalCategory (Over X) :=
   .ofChosenFiniteProducts
     ⟨asEmptyCone (Over.mk (𝟙 X)), IsTerminal.ofUniqueHom (fun Y ↦ Over.homMk Y.hom)
       fun Y m ↦ Over.OverMorphism.ext (by simpa using m.w)⟩
@@ -41,7 +41,7 @@ abbrev cartesianMonoidalCategory (X : C) : CartesianMonoidalCategory (Over X) :=
 attribute [local instance] cartesianMonoidalCategory
 
 /-- `Over X` is braided w.r.t. the Cartesian monoidal structure given by `Limits.pullback`. -/
-abbrev braidedCategory (X : C) : BraidedCategory (Over X) :=
+noncomputable abbrev braidedCategory (X : C) : BraidedCategory (Over X) :=
   .ofCartesianMonoidalCategory
 
 attribute [local instance] braidedCategory
@@ -196,7 +196,7 @@ lemma braiding_inv_left {R S : Over X} :
 
 variable {A B R S Y Z : C} {f : R ⟶ X} {g : S ⟶ X}
 
-instance : (Over.pullback f).Braided := .ofChosenFiniteProducts _
+noncomputable instance : (Over.pullback f).Braided := .ofChosenFiniteProducts _
 
 @[simp]
 lemma η_pullback_left : (OplaxMonoidal.η (Over.pullback f)).left = (pullback.snd (𝟙 _) f) := rfl
@@ -303,6 +303,7 @@ lemma prodComparisonIso_pullback_inv_left_snd' (f : X ⟶ Y) (gA : A ⟶ Y) (gB 
 
 /-- The pullback of a monoid object is a monoid object. -/
 @[simps! -isSimp mul one]
+noncomputable
 abbrev monObjMkPullbackSnd [MonObj (Over.mk f)] : MonObj (Over.mk <| pullback.snd f g) :=
   ((Over.pullback g).mapMon.obj <| .mk <| .mk f).mon
 
@@ -314,6 +315,7 @@ instance isCommMonObj_mk_pullbackSnd [MonObj (Over.mk f)] [IsCommMonObj (Over.mk
 
 /-- The pullback of a monoid object is a monoid object. -/
 @[simps! -isSimp mul one]
+noncomputable
 abbrev grpObjMkPullbackSnd [GrpObj (Over.mk f)] : GrpObj (Over.mk (pullback.snd f g)) :=
   ((Over.pullback g).mapGrp.obj <| .mk <| .mk f).grp
 

@@ -30,7 +30,7 @@ open Limits
 
 variable {C : Type*} [Category* C]
 
-noncomputable section Equivalence
+section Equivalence
 
 variable {D : Type*} [Category* D] (e : C ≌ D) {B : C}
 
@@ -51,6 +51,7 @@ variable [EffectiveEpiFamily X π]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Equivalences preserve effective epimorphic families -/
+noncomputable
 def effectiveEpiFamilyStructOfEquivalence : EffectiveEpiFamilyStruct (fun a ↦ e.functor.obj (X a))
     (fun a ↦ e.functor.map (π a)) where
   desc ε h := (e.toAdjunction.homEquiv _ _).symm

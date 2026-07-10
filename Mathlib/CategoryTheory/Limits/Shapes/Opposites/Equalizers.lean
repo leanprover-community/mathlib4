@@ -20,8 +20,6 @@ We construct equalizers and coequalizers in the opposite categories.
 
 universe v₁ v₂ u₁ u₂
 
-noncomputable section
-
 open CategoryTheory
 
 open CategoryTheory.Functor
@@ -276,6 +274,7 @@ def ofπUnopIsoOfι {X Y P : Cᵒᵖ} {f g : X ⟶ Y} (π π' : Y ⟶ P) (w : f 
 
 /-- `Cofork.ofπ π w` is a colimit cocone if and only if `Fork.ofι π.op w'` in the opposite
 category is a limit cone. -/
+noncomputable
 def isColimitOfπEquivIsLimitOp {X Y P : C} {f g : X ⟶ Y} (π π' : Y ⟶ P) (w : f ≫ π = g ≫ π)
     (w' : π'.op ≫ f.op = π'.op ≫ g.op) (h : π = π') :
     IsColimit (Cofork.ofπ π w) ≃ IsLimit (Fork.ofι π'.op w') :=
@@ -283,6 +282,7 @@ def isColimitOfπEquivIsLimitOp {X Y P : C} {f g : X ⟶ Y} (π π' : Y ⟶ P) (
 
 /-- `Cofork.ofπ π w` is a colimit cocone in `Cᵒᵖ` if and only if `Fork.ofι π'.unop w'` in `C` is
 a limit cone. -/
+noncomputable
 def isColimitOfπEquivIsLimitUnop {X Y P : Cᵒᵖ} {f g : X ⟶ Y} (π π' : Y ⟶ P) (w : f ≫ π = g ≫ π)
     (w' : π'.unop ≫ f.unop = π'.unop ≫ g.unop) (h : π = π') :
     IsColimit (Cofork.ofπ π w) ≃ IsLimit (Fork.ofι π'.unop w') :=
@@ -295,13 +295,13 @@ namespace Fork
 
 /-- A fork is a limit cone if and only if the corresponding cofork in the opposite category is
 a colimit cocone. -/
-def isLimitEquivIsColimitOp {X Y : C} {f g : X ⟶ Y} (c : Fork f g) :
+noncomputable def isLimitEquivIsColimitOp {X Y : C} {f g : X ⟶ Y} (c : Fork f g) :
     IsLimit c ≃ IsColimit c.op :=
   (IsLimit.equivIsoLimit c.opUnopIso).symm.trans c.op.isColimitEquivIsLimitUnop.symm
 
 /-- A fork is a limit cone in `Cᵒᵖ` if and only if the corresponding cofork in `C` is
 a colimit cocone. -/
-def isLimitEquivIsColimitUnop {X Y : Cᵒᵖ} {f g : X ⟶ Y} (c : Fork f g) :
+noncomputable def isLimitEquivIsColimitUnop {X Y : Cᵒᵖ} {f g : X ⟶ Y} (c : Fork f g) :
     IsLimit c ≃ IsColimit c.unop :=
   (IsLimit.equivIsoLimit c.unopOpIso).symm.trans c.unop.isColimitEquivIsLimitOp.symm
 
@@ -321,6 +321,7 @@ def ofιUnopIsoOfπ {X Y P : Cᵒᵖ} {f g : X ⟶ Y} (ι ι' : P ⟶ X) (w : ι
 
 /-- `Fork.ofι ι w` is a limit cone if and only if `Cofork.ofπ ι'.op w'` in the opposite
 category is a colimit cocone. -/
+noncomputable
 def isLimitOfιEquivIsColimitOp {X Y P : C} {f g : X ⟶ Y} (ι ι' : P ⟶ X) (w : ι ≫ f = ι ≫ g)
     (w' : f.op ≫ ι'.op = g.op ≫ ι'.op) (h : ι = ι') :
     IsLimit (Fork.ofι ι w) ≃ IsColimit (Cofork.ofπ ι'.op w') :=
@@ -328,6 +329,7 @@ def isLimitOfιEquivIsColimitOp {X Y P : C} {f g : X ⟶ Y} (ι ι' : P ⟶ X) (
 
 /-- `Fork.ofι ι w` is a limit cone in `Cᵒᵖ` if and only if `Cofork.ofπ ι.unop w.unop` in `C` is
 a colimit cocone. -/
+noncomputable
 def isLimitOfιEquivIsColimitUnop {X Y P : Cᵒᵖ} {f g : X ⟶ Y} (ι ι' : P ⟶ X) (w : ι ≫ f = ι ≫ g)
     (w' : f.unop ≫ ι'.unop = g.unop ≫ ι'.unop) (h : ι = ι') :
     IsLimit (Fork.ofι ι w) ≃ IsColimit (Cofork.ofπ ι'.unop w') :=
@@ -341,7 +343,7 @@ namespace Cofork
 set_option backward.defeqAttrib.useBackward true in
 /-- `Cofork.ofπ f pullback.condition` is a colimit cocone if and only if
 `Fork.ofι f.op pushout.condition` in the opposite category is a limit cone. -/
-def isColimitCoforkPushoutEquivIsColimitForkOpPullback
+noncomputable def isColimitCoforkPushoutEquivIsColimitForkOpPullback
     {X Y : C} {f : X ⟶ Y} [HasPullback f f] :
     IsColimit (Cofork.ofπ f pullback.condition) ≃ IsLimit (Fork.ofι f.op pushout.condition) where
   toFun h := Fork.isLimitOfIsos _ (Cofork.isColimitOfπEquivIsLimitOp f f
@@ -357,7 +359,7 @@ def isColimitCoforkPushoutEquivIsColimitForkOpPullback
 set_option backward.defeqAttrib.useBackward true in
 /-- `Cofork.ofπ f pullback.condition` is a colimit cocone in `Cᵒᵖ` if and only if
 `Fork.ofι f.unop pushout.condition` in `C` is a limit cone. -/
-def isColimitCoforkPushoutEquivIsColimitForkUnopPullback
+noncomputable def isColimitCoforkPushoutEquivIsColimitForkUnopPullback
     {X Y : Cᵒᵖ} {f : X ⟶ Y} [HasPullback f f] :
     IsColimit (Cofork.ofπ f pullback.condition) ≃ IsLimit (Fork.ofι f.unop pushout.condition) where
   toFun h := Fork.isLimitOfIsos _ (Cofork.isColimitOfπEquivIsLimitUnop f f pullback.condition
@@ -378,7 +380,7 @@ namespace Fork
 set_option backward.defeqAttrib.useBackward true in
 /-- `Fork.ofι f pushout.condition` is a limit cone if and only if
 `Cofork.ofπ f.op pullback.condition` in the opposite category is a colimit cocone. -/
-def isLimitForkPushoutEquivIsColimitForkOpPullback
+noncomputable def isLimitForkPushoutEquivIsColimitForkOpPullback
     {X Y : C} {f : X ⟶ Y} [HasPushout f f] :
     IsLimit (Fork.ofι f pushout.condition) ≃ IsColimit (Cofork.ofπ f.op pullback.condition) where
   toFun h := Cofork.isColimitOfIsos _ (Fork.isLimitOfιEquivIsColimitOp f f
@@ -399,7 +401,7 @@ def isLimitForkPushoutEquivIsColimitForkOpPullback
 set_option backward.defeqAttrib.useBackward true in
 /-- `Fork.ofι f pushout.condition` is a limit cone in `Cᵒᵖ` if and only if
 `Cofork.ofπ f.op pullback.condition` in `C` is a colimit cocone. -/
-def isLimitForkPushoutEquivIsColimitForkUnopPullback
+noncomputable def isLimitForkPushoutEquivIsColimitForkUnopPullback
     {X Y : Cᵒᵖ} {f : X ⟶ Y} [HasPushout f f] :
     IsLimit (Fork.ofι f pushout.condition) ≃ IsColimit (Cofork.ofπ f.unop pullback.condition) where
   toFun h := Cofork.isColimitOfIsos _ (Fork.isLimitOfιEquivIsColimitUnop f f pushout.condition

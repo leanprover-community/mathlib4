@@ -23,8 +23,6 @@ objects.
 
 universe w v v₁ v₂ u u₁ u₂
 
-noncomputable section
-
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits
 
 variable {C : Type u₁} [Category.{v₁} C]
@@ -44,18 +42,20 @@ def isLimitMapConeEmptyConeEquiv :
   isLimitEmptyConeEquiv D _ _ (eqToIso rfl)
 
 /-- The property of preserving terminal objects expressed in terms of `IsTerminal`. -/
+noncomputable
 def IsTerminal.isTerminalObj [PreservesLimit (Functor.empty.{0} C) G] (l : IsTerminal X) :
     IsTerminal (G.obj X) :=
   isLimitMapConeEmptyConeEquiv G X (isLimitOfPreserves G l)
 
 /-- The property of reflecting terminal objects expressed in terms of `IsTerminal`. -/
+noncomputable
 def IsTerminal.isTerminalOfObj [ReflectsLimit (Functor.empty.{0} C) G] (l : IsTerminal (G.obj X)) :
     IsTerminal X :=
   isLimitOfReflects G ((isLimitMapConeEmptyConeEquiv G X).symm l)
 
 /-- A functor that preserves and reflects terminal objects induces an equivalence on
 `IsTerminal`. -/
-def IsTerminal.isTerminalIffObj [PreservesLimit (Functor.empty.{0} C) G]
+noncomputable def IsTerminal.isTerminalIffObj [PreservesLimit (Functor.empty.{0} C) G]
     [ReflectsLimit (Functor.empty.{0} C) G] (X : C) :
     IsTerminal X ≃ IsTerminal (G.obj X) where
   toFun := IsTerminal.isTerminalObj G X
@@ -74,7 +74,7 @@ variable [HasTerminal C]
 If `G` preserves the terminal object and `C` has a terminal object, then the image of the terminal
 object is terminal.
 -/
-def isLimitOfHasTerminalOfPreservesLimit [PreservesLimit (Functor.empty.{0} C) G] :
+noncomputable def isLimitOfHasTerminalOfPreservesLimit [PreservesLimit (Functor.empty.{0} C) G] :
     IsTerminal (G.obj (⊤_ C)) :=
   terminalIsTerminal.isTerminalObj G (⊤_ C)
 
@@ -113,7 +113,7 @@ variable [PreservesLimit (Functor.empty.{0} C) G]
 
 /-- If `G` preserves terminal objects, then the terminal comparison map for `G` is an isomorphism.
 -/
-def PreservesTerminal.iso : G.obj (⊤_ C) ≅ ⊤_ D :=
+noncomputable def PreservesTerminal.iso : G.obj (⊤_ C) ≅ ⊤_ D :=
   (isLimitOfHasTerminalOfPreservesLimit G).conePointUniqueUpToIso (limit.isLimit _)
 
 @[simp]
@@ -135,17 +135,19 @@ def isColimitMapCoconeEmptyCoconeEquiv :
   isColimitEmptyCoconeEquiv D _ _ (eqToIso rfl)
 
 /-- The property of preserving initial objects expressed in terms of `IsInitial`. -/
+noncomputable
 def IsInitial.isInitialObj [PreservesColimit (Functor.empty.{0} C) G] (l : IsInitial X) :
     IsInitial (G.obj X) :=
   isColimitMapCoconeEmptyCoconeEquiv G X (isColimitOfPreserves G l)
 
 /-- The property of reflecting initial objects expressed in terms of `IsInitial`. -/
+noncomputable
 def IsInitial.isInitialOfObj [ReflectsColimit (Functor.empty.{0} C) G] (l : IsInitial (G.obj X)) :
     IsInitial X :=
   isColimitOfReflects G ((isColimitMapCoconeEmptyCoconeEquiv G X).symm l)
 
 /-- A functor that preserves and reflects initial objects induces an equivalence on `IsInitial`. -/
-def IsInitial.isInitialIffObj [PreservesColimit (Functor.empty.{0} C) G]
+noncomputable def IsInitial.isInitialIffObj [PreservesColimit (Functor.empty.{0} C) G]
     [ReflectsColimit (Functor.empty.{0} C) G] (X : C) :
     IsInitial X ≃ IsInitial (G.obj X) where
   toFun := IsInitial.isInitialObj G X
@@ -165,6 +167,7 @@ variable [HasInitial C]
 /-- If `G` preserves the initial object and `C` has an initial object, then the image of the initial
 object is initial.
 -/
+noncomputable
 def isColimitOfHasInitialOfPreservesColimit [PreservesColimit (Functor.empty.{0} C) G] :
     IsInitial (G.obj (⊥_ C)) :=
   initialIsInitial.isInitialObj G (⊥_ C)
@@ -205,7 +208,7 @@ lemma preservesInitial_of_iso (f : ⊥_ D ≅ G.obj (⊥_ C)) :
 variable [PreservesColimit (Functor.empty.{0} C) G]
 
 /-- If `G` preserves initial objects, then the initial comparison map for `G` is an isomorphism. -/
-def PreservesInitial.iso : G.obj (⊥_ C) ≅ ⊥_ D :=
+noncomputable def PreservesInitial.iso : G.obj (⊥_ C) ≅ ⊥_ D :=
   (isColimitOfHasInitialOfPreservesColimit G).coconePointUniqueUpToIso (colimit.isColimit _)
 
 @[simp]

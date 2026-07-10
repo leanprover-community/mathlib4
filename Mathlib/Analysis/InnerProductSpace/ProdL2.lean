@@ -49,13 +49,13 @@ theorem prod_inner_apply (x y : WithLp 2 (E × F)) :
 
 end WithLp
 
-noncomputable section
+section
 namespace OrthonormalBasis
 
 variable [Fintype ι₁] [Fintype ι₂]
 
 /-- The product of two orthonormal bases is a basis for the L2-product. -/
-def prod (v : OrthonormalBasis ι₁ 𝕜 E) (w : OrthonormalBasis ι₂ 𝕜 F) :
+noncomputable def prod (v : OrthonormalBasis ι₁ 𝕜 E) (w : OrthonormalBasis ι₂ 𝕜 F) :
     OrthonormalBasis (ι₁ ⊕ ι₂) 𝕜 (WithLp 2 (E × F)) :=
   ((v.toBasis.prod w.toBasis).map (WithLp.linearEquiv 2 𝕜 (E × F)).symm).toOrthonormalBasis
   (by
@@ -86,7 +86,7 @@ variable (K : Submodule 𝕜 E) [K.HasOrthogonalProjection] (x : E)
 /-- If a subspace `K` of an inner product space `E` admits an orthogonal projection, then `E` is
 isometrically isomorphic to the `L²` product of `K` and `Kᗮ`. -/
 @[simps! symm_apply]
-def orthogonalDecomposition : E ≃ₗᵢ[𝕜] WithLp 2 (K × Kᗮ) where
+noncomputable def orthogonalDecomposition : E ≃ₗᵢ[𝕜] WithLp 2 (K × Kᗮ) where
   __ := (K.prodEquivOfIsCompl Kᗮ K.isCompl_orthogonal).symm
     ≪≫ₗ (WithLp.linearEquiv 2 𝕜 (K × Kᗮ)).symm
   norm_map' _ := by
@@ -141,7 +141,7 @@ theorem sndL_comp_coe_orthogonalDecomposition :
 
 /-- If a subspace `K` of an inner product space `E` admits an orthogonal projection, then the
 quotient `E ⧸ K` is isometrically isomorphic to the orthogonal complement `Kᗮ` of `K`. -/
-def quotientEquivOrthogonal : (E ⧸ K) ≃ₗᵢ[𝕜] ↥Kᗮ where
+noncomputable def quotientEquivOrthogonal : (E ⧸ K) ≃ₗᵢ[𝕜] ↥Kᗮ where
   __ := K.quotientEquivOfIsCompl Kᗮ K.isCompl_orthogonal
   norm_map' y := by
     set f := K.quotientEquivOfIsCompl Kᗮ K.isCompl_orthogonal

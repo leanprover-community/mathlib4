@@ -20,8 +20,6 @@ open CategoryTheory CategoryTheory.Limits Opposite
 
 universe w v u
 
-noncomputable section
-
 namespace CategoryTheory.Abelian
 
 variable {C : Type u} [Category.{v} C]
@@ -32,6 +30,7 @@ order-isomorphic via taking kernels and cokernels.
 Implemented here using subobjects in the opposite category,
 since mathlib does not have a notion of quotient objects at the time of writing. -/
 @[simps!]
+noncomputable
 def subobjectIsoSubobjectOp [Abelian C] (X : C) : Subobject X ≃o (Subobject (op X))ᵒᵈ := by
   refine OrderIso.ofHomInv (cokernelOrderHom X) (kernelOrderHom X) ?_ ?_
   · change (cokernelOrderHom X).comp (kernelOrderHom X) = _

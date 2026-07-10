@@ -29,8 +29,6 @@ preserves kernels. The dual result holds for right exact functors and cokernels.
 
 universe v₁ v₂ u₁ u₂
 
-noncomputable section
-
 open CategoryTheory
 
 open CategoryTheory.Limits
@@ -49,7 +47,7 @@ section FiniteLimits
 /-- A functor between preadditive categories which preserves kernels preserves that an
 arbitrary binary fan is a limit.
 -/
-def isLimitMapConeBinaryFanOfPreservesKernels {X Y Z : C} (π₁ : Z ⟶ X) (π₂ : Z ⟶ Y)
+noncomputable def isLimitMapConeBinaryFanOfPreservesKernels {X Y Z : C} (π₁ : Z ⟶ X) (π₂ : Z ⟶ Y)
     [PreservesLimit (parallelPair π₂ 0) F] (i : IsLimit (BinaryFan.mk π₁ π₂)) :
     IsLimit (F.mapCone (BinaryFan.mk π₁ π₂)) := by
   let bc := BinaryBicone.ofLimitCone i
@@ -129,6 +127,7 @@ section FiniteColimits
 
 /-- A functor between preadditive categories which preserves cokernels preserves finite coproducts.
 -/
+noncomputable
 def isColimitMapCoconeBinaryCofanOfPreservesCokernels {X Y Z : C} (ι₁ : X ⟶ Z) (ι₂ : Y ⟶ Z)
     [PreservesColimit (parallelPair ι₂ 0) F] (i : IsColimit (BinaryCofan.mk ι₁ ι₂)) :
     IsColimit (F.mapCocone (BinaryCofan.mk ι₁ ι₂)) := by

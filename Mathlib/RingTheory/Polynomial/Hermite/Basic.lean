@@ -38,8 +38,6 @@ This file defines `Polynomial.hermite n`, the `n`th probabilists' Hermite polyno
 
 @[expose] public section
 
-noncomputable section
-
 open Polynomial
 
 namespace Polynomial

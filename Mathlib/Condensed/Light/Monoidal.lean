@@ -29,8 +29,6 @@ public section
 
 universe u
 
-noncomputable section
-
 open CategoryTheory Monoidal Sheaf MonoidalCategory MonoidalClosed MonoidalClosed.FunctorCategory
 
 namespace LightCondensed
@@ -43,27 +41,30 @@ instance : (coherentTopology LightProfinite.{u}).W (A := ModuleCat.{u} R) |>.IsM
       (coherentTopology LightProfinite.{u}))
     (equivSmallModel.{u} LightProfinite.{u}).inverse
 
-instance : MonoidalCategory (LightCondMod.{u} R) :=
+noncomputable instance : MonoidalCategory (LightCondMod.{u} R) :=
   monoidalCategory _ _
 
+noncomputable
 instance : MonoidalCategory (Sheaf (coherentTopology LightProfinite.{u}) (ModuleCat.{u} R)) :=
   inferInstanceAs (MonoidalCategory (LightCondMod _))
 
-instance : SymmetricCategory (LightCondMod.{u} R) :=
+noncomputable instance : SymmetricCategory (LightCondMod.{u} R) :=
   symmetricCategory _ _
 
-instance : MonoidalClosed (LightProfinite.{u}ᵒᵖ ⥤ ModuleCat.{u} R) :=
+noncomputable instance : MonoidalClosed (LightProfinite.{u}ᵒᵖ ⥤ ModuleCat.{u} R) :=
   .ofEquiv _ (equivSmallModel LightProfinite).op.congrLeft.toAdjunction
 
+noncomputable
 instance : MonoidalClosed (Sheaf (coherentTopology LightProfinite.{u}) (ModuleCat.{u} R)) :=
   Reflective.monoidalClosed (sheafificationAdjunction _ _)
 
-instance : MonoidalClosed (LightCondMod.{u} R) :=
+noncomputable instance : MonoidalClosed (LightCondMod.{u} R) :=
   inferInstanceAs (MonoidalClosed (Sheaf _ _))
 
+noncomputable
 instance : (presheafToSheaf (coherentTopology LightProfinite.{u}) (ModuleCat.{u} R)).Monoidal :=
   inferInstance
 
-instance : (free R).Monoidal := inferInstanceAs (composeAndSheafify _ _).Monoidal
+noncomputable instance : (free R).Monoidal := inferInstanceAs (composeAndSheafify _ _).Monoidal
 
 end LightCondensed

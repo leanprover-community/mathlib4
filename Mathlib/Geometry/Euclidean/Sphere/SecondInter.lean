@@ -25,8 +25,6 @@ through a point on that sphere.
 @[expose] public section
 
 
-noncomputable section
-
 open RealInnerProductSpace
 
 namespace EuclideanGeometry
@@ -40,7 +38,7 @@ variable [NormedAddTorsor V₂ P₂]
 if it is the only point of intersection of the line with the sphere. The intended use of this
 definition is when `p ∈ s`; the definition does not use `s.radius`, so in general it returns
 the second intersection with the sphere through `p` and with center `s.center`. -/
-def Sphere.secondInter (s : Sphere P) (p : P) (v : V) : P :=
+noncomputable def Sphere.secondInter (s : Sphere P) (p : P) (v : V) : P :=
   (-2 * ⟪v, p -ᵥ s.center⟫ / ⟪v, v⟫) • v +ᵥ p
 
 @[simp] lemma Sphere.secondInter_map (s : Sphere P) (p : P) (v : V) (f : P →ᵃⁱ[ℝ] P₂) :

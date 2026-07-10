@@ -13,19 +13,18 @@ public import Mathlib.Analysis.Normed.Module.TransferInstance
 
 public section
 
-noncomputable section
-
 namespace Shrink
 
 universe v
 variable {R 𝕜 α : Type*} [Small.{v} α] [Semiring R] [NormedField 𝕜]
 
-instance [SeminormedAddCommGroup α] : SeminormedAddCommGroup (Shrink.{v} α) :=
+noncomputable instance [SeminormedAddCommGroup α] : SeminormedAddCommGroup (Shrink.{v} α) :=
   (equivShrink α).symm.seminormedAddCommGroup
 
-instance [NormedAddCommGroup α] : NormedAddCommGroup (Shrink.{v} α) :=
+noncomputable instance [NormedAddCommGroup α] : NormedAddCommGroup (Shrink.{v} α) :=
   (equivShrink α).symm.normedAddCommGroup
 
+noncomputable
 instance [SeminormedAddCommGroup α] [NormedSpace 𝕜 α] : NormedSpace 𝕜 (Shrink.{v} α) :=
   (equivShrink α).symm.normedSpace 𝕜
 

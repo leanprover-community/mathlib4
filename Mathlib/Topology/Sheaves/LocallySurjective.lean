@@ -34,8 +34,6 @@ We prove that these are equivalent.
 
 universe v u
 
-noncomputable section
-
 open CategoryTheory
 
 open TopologicalSpace

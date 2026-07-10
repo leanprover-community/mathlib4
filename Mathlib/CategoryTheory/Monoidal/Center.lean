@@ -36,8 +36,6 @@ In this file, we take the second approach using the monoidal composition `⊗≫
 
 universe v v₁ v₂ v₃ u u₁ u₂ u₃
 
-noncomputable section
-
 namespace CategoryTheory
 
 open MonoidalCategory Functor.LaxMonoidal Functor.OplaxMonoidal
@@ -109,7 +107,7 @@ theorem comp_f {X Y Z : Center C} (f : X ⟶ Y) (g : Y ⟶ Z) : (f ≫ g).f = f.
 a morphism whose underlying morphism is an isomorphism.
 -/
 @[simps]
-def isoMk {X Y : Center C} (f : X ⟶ Y) [IsIso f.f] : X ≅ Y where
+noncomputable def isoMk {X Y : Center C} (f : X ⟶ Y) [IsIso f.f] : X ≅ Y where
   hom := f
   inv := ⟨inv f.f,
     fun U => by simp [← cancel_epi (f.f ▷ U), ← comp_whiskerRight_assoc,
@@ -219,17 +217,18 @@ def tensorUnit : Center C :=
 
 set_option backward.defeqAttrib.useBackward true in
 /-- Auxiliary definition for the `MonoidalCategory` instance on `Center C`. -/
+noncomputable
 def associator (X Y Z : Center C) : tensorObj (tensorObj X Y) Z ≅ tensorObj X (tensorObj Y Z) :=
   isoMk ⟨(α_ X.1 Y.1 Z.1).hom, fun U => by simp⟩
 
 set_option backward.defeqAttrib.useBackward true in
 /-- Auxiliary definition for the `MonoidalCategory` instance on `Center C`. -/
-def leftUnitor (X : Center C) : tensorObj tensorUnit X ≅ X :=
+noncomputable def leftUnitor (X : Center C) : tensorObj tensorUnit X ≅ X :=
   isoMk ⟨(λ_ X.1).hom, fun U => by simp⟩
 
 set_option backward.defeqAttrib.useBackward true in
 /-- Auxiliary definition for the `MonoidalCategory` instance on `Center C`. -/
-def rightUnitor (X : Center C) : tensorObj X tensorUnit ≅ X :=
+noncomputable def rightUnitor (X : Center C) : tensorObj X tensorUnit ≅ X :=
   isoMk ⟨(ρ_ X.1).hom, fun U => by simp⟩
 
 end
@@ -243,7 +242,7 @@ attribute [local simp] Center.associator Center.leftUnitor Center.rightUnitor
 attribute [local simp] Center.whiskerLeft Center.whiskerRight Center.tensorHom
 
 set_option backward.defeqAttrib.useBackward true in
-instance : MonoidalCategory (Center C) where
+noncomputable instance : MonoidalCategory (Center C) where
   tensorObj X Y := tensorObj X Y
   tensorHom f g := tensorHom f g
   tensorHom_def := by intros; ext; simp [tensorHom_def]
@@ -322,7 +321,7 @@ def forget : Center C ⥤ C where
   map f := f.f
 
 set_option backward.isDefEq.respectTransparency false in
-instance : (forget C).Monoidal :=
+noncomputable instance : (forget C).Monoidal :=
   Functor.CoreMonoidal.toMonoidal
     { εIso := Iso.refl _
       μIso := fun _ _ ↦ Iso.refl _ }
@@ -344,7 +343,7 @@ end
 set_option backward.defeqAttrib.useBackward true in
 /-- Auxiliary definition for the `BraidedCategory` instance on `Center C`. -/
 @[simps!]
-def braiding (X Y : Center C) : X ⊗ Y ≅ Y ⊗ X :=
+noncomputable def braiding (X Y : Center C) : X ⊗ Y ≅ Y ⊗ X :=
   isoMk
     ⟨(X.2.β Y.1).hom, fun U => by
       dsimp
@@ -353,7 +352,7 @@ def braiding (X Y : Center C) : X ⊗ Y ≅ Y ⊗ X :=
         ← HalfBraiding.naturality_assoc, HalfBraiding.monoidal]
       simp⟩
 
-instance braidedCategoryCenter : BraidedCategory (Center C) where
+noncomputable instance braidedCategoryCenter : BraidedCategory (Center C) where
   braiding := braiding
 
 -- `cat_disch` handles the hexagon axioms
@@ -381,7 +380,7 @@ def ofBraided : C ⥤ Center C where
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
-instance : (ofBraided C).Monoidal :=
+noncomputable instance : (ofBraided C).Monoidal :=
   Functor.CoreMonoidal.toMonoidal
     { εIso :=
         { hom := { f := 𝟙 _ }

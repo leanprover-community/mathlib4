@@ -32,8 +32,6 @@ be an intermediate typeclass for uniform spaces, but the algebraic hierarchy the
 open NNReal Filter Set
 open scoped Topology Uniformity
 
-noncomputable section
-
 variable (α β : Type*) [PseudoMetricSpace α] [PseudoMetricSpace β]
 
 section LipschitzMul
@@ -53,7 +51,7 @@ variable [Monoid β]
 
 /-- The Lipschitz constant of a monoid `β` satisfying `LipschitzMul` -/
 @[to_additive /-- The Lipschitz constant of an `AddMonoid` `β` satisfying `LipschitzAdd` -/]
-def LipschitzMul.C [_i : LipschitzMul β] : ℝ≥0 := Classical.choose _i.lipschitz_mul
+noncomputable def LipschitzMul.C [_i : LipschitzMul β] : ℝ≥0 := Classical.choose _i.lipschitz_mul
 
 variable {β}
 

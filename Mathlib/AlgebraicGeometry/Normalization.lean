@@ -29,7 +29,7 @@ We also show that normalization commutes with disjoint unions and smooth base ch
 
 -/
 
-@[expose] public noncomputable section
+@[expose] public section
 
 open CategoryTheory Limits
 
@@ -117,6 +117,7 @@ lemma coequifibered_normalizationDiagramMap :
 alias preservesLocalization_normalizationDiagramMap := coequifibered_normalizationDiagramMap
 
 /-- The diagram of affine schemes that we glue to form the normalization. -/
+noncomputable
 def normalizationGlueData := relativeGluingData f.coequifibered_normalizationDiagramMap
 
 instance : (f.normalizationGlueData.functor ⋙ Scheme.forget).IsLocallyDirected :=
@@ -124,17 +125,17 @@ instance : (f.normalizationGlueData.functor ⋙ Scheme.forget).IsLocallyDirected
 
 /-- Given `f : X ⟶ Y`, `f.normalization` is the relative normalization of `Y` in `X`. -/
 @[stacks 035H]
-def normalization : Scheme := f.normalizationGlueData.glued
+noncomputable def normalization : Scheme := f.normalizationGlueData.glued
 
 /-- This is the open cover of `f.normalization` by `Spec` of integral closures of `Γ(Y, U)`
 in `Γ(X, f ⁻¹ U)` where `U` ranges over all affine opens. -/
-def normalizationOpenCover : f.normalization.OpenCover :=
+noncomputable def normalizationOpenCover : f.normalization.OpenCover :=
   f.normalizationGlueData.cover
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The dominant morphism into the relative normalization. -/
-def toNormalization : X ⟶ f.normalization :=
+noncomputable def toNormalization : X ⟶ f.normalization :=
   Scheme.OpenCover.glueMorphismsOfLocallyDirected
     ((directedCover Y).pullback₁ f)
     (fun U ↦ letI := (f.app U.1).hom.toAlgebra
@@ -170,7 +171,7 @@ lemma ι_toNormalization (U : Y.affineOpens) :
   exact Scheme.OpenCover.map_glueMorphismsOfLocallyDirected _ _ H _
 
 /-- The morphism from the relative normalization to itself. This map is integral. -/
-def fromNormalization : f.normalization ⟶ Y :=
+noncomputable def fromNormalization : f.normalization ⟶ Y :=
   f.normalizationGlueData.toBase
 
 @[reassoc]

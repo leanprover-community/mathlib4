@@ -36,7 +36,7 @@ local notation "𝕎" => WittVector p -- type as `\bbW`
 
 open MvPolynomial
 
-noncomputable section
+section
 
 variable (p) in
 /-- `wittMulN p n` is the family of polynomials that computes

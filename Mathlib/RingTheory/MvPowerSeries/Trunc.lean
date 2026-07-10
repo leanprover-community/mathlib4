@@ -57,7 +57,7 @@ public import Mathlib.RingTheory.MvPowerSeries.Order
 
 @[expose] public section
 
-noncomputable section
+section
 
 namespace MvPowerSeries
 
@@ -71,7 +71,7 @@ variable [CommSemiring R] {s : Finset (σ →₀ ℕ)}
 
 /-- Restrict the support of a multivariate power series to a finite set of monomials and
 obtain a multivariate polynomial. -/
-def truncFinset (R : Type*) [CommSemiring R] (s : Finset (σ →₀ ℕ)) :
+noncomputable def truncFinset (R : Type*) [CommSemiring R] (s : Finset (σ →₀ ℕ)) :
     MvPowerSeries σ R →ₗ[R] MvPolynomial σ R where
   toFun p := ∑ x ∈ s, MvPolynomial.monomial x (p.coeff x)
   map_add' _ _ := by simp [sum_add_distrib]
@@ -185,7 +185,7 @@ If `f : MvPowerSeries σ R` and `n : σ →₀ ℕ` is a (finitely-supported) fu
 to the naturals, then `trunc R n f` is the multivariable polynomial obtained from `f`
 by keeping only the monomials $c\prod_i X_i^{a_i}$ where `a i ≤ n i` for all `i`
 and `a i < n i` for some `i`. -/
-def trunc (R : Type*) [CommSemiring R] (n : σ →₀ ℕ) :
+noncomputable def trunc (R : Type*) [CommSemiring R] (n : σ →₀ ℕ) :
     MvPowerSeries σ R →ₗ[R] MvPolynomial σ R := truncFinset R (Iio n)
 
 theorem coeff_trunc (m n : σ →₀ ℕ) (φ : MvPowerSeries σ R) :
@@ -236,7 +236,7 @@ The `n`th truncation of a multivariate formal power series to a multivariate pol
 If `f : MvPowerSeries σ R` and `n : σ →₀ ℕ` is a (finitely-supported) function from `σ`
 to the naturals, then `trunc' R n f` is the multivariable polynomial obtained from `f`
 by keeping only the monomials $c\prod_i X_i^{a_i}$ where `a i ≤ n i` for all `i`. -/
-def trunc' (R : Type*) [CommSemiring R] (n : σ →₀ ℕ) :
+noncomputable def trunc' (R : Type*) [CommSemiring R] (n : σ →₀ ℕ) :
     MvPowerSeries σ R →ₗ[R] MvPolynomial σ R := truncFinset R (Iic n)
 
 /-- Coefficients of the truncation of a multivariate power series. -/
@@ -323,6 +323,7 @@ variable {n m : ℕ} [Finite σ] [CommSemiring R] (p q : MvPowerSeries σ R) {x 
 
 /-- The truncation of a multivariate formal power series at a total degree `n`
 when the index `σ` is finite. -/
+noncomputable
 def truncTotal {R : Type*} [CommSemiring R] (n : ℕ) : MvPowerSeries σ R →ₗ[R] MvPolynomial σ R :=
   truncFinset R (finite_of_degree_lt n).toFinset
 

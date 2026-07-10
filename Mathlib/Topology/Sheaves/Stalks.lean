@@ -49,8 +49,6 @@ particular cases of general constructions for points of sites from
 
 assert_not_exists IsOrderedMonoid
 
-noncomputable section
-
 universe v u v' u'
 
 open CategoryTheory
@@ -73,13 +71,13 @@ namespace TopCat.Presheaf
 
 variable (C) in
 /-- Stalks are functorial with respect to morphisms of presheaves over a fixed `X`. -/
-def stalkFunctor (x : X) : X.Presheaf C ⥤ C :=
+noncomputable def stalkFunctor (x : X) : X.Presheaf C ⥤ C :=
   (whiskeringLeft _ _ C).obj (OpenNhds.inclusion x).op ⋙ colim
 
 /-- The stalk of a presheaf `F` at a point `x` is calculated as the colimit of the functor
 nbhds x ⥤ opens F.X ⥤ C
 -/
-def stalk (ℱ : X.Presheaf C) (x : X) : C :=
+noncomputable def stalk (ℱ : X.Presheaf C) (x : X) : C :=
   (stalkFunctor C x).obj ℱ
 
 -- -- colimit ((open_nhds.inclusion x).op ⋙ ℱ)
@@ -89,11 +87,12 @@ theorem stalkFunctor_obj (ℱ : X.Presheaf C) (x : X) : (stalkFunctor C x).obj �
 
 /-- The germ of a section of a presheaf over an open at a point of that open.
 -/
+noncomputable
 def germ (F : X.Presheaf C) (U : Opens X) (x : X) (hx : x ∈ U) : F.obj (op U) ⟶ stalk F x :=
   colimit.ι ((OpenNhds.inclusion x).op ⋙ F) (op ⟨U, hx⟩)
 
 /-- The germ of a global section of a presheaf at a point. -/
-def Γgerm (F : X.Presheaf C) (x : X) : F.obj (op ⊤) ⟶ stalk F x :=
+noncomputable def Γgerm (F : X.Presheaf C) (x : X) : F.obj (op ⊤) ⟶ stalk F x :=
   F.germ ⊤ x True.intro
 
 @[reassoc]
@@ -169,6 +168,7 @@ variable (C)
 /-- For a presheaf `F` on a space `X`, a continuous map `f : X ⟶ Y` induces a morphisms between the
 stalk of `f _ * F` at `f x` and the stalk of `F` at `x`.
 -/
+noncomputable
 def stalkPushforward (f : X ⟶ Y) (F : X.Presheaf C) (x : X) : (f _* F).stalk (f x) ⟶ F.stalk x := by
   -- This is a hack; Lean doesn't like to elaborate the term written directly.
   refine ?_ ≫ colimit.pre _ (OpenNhds.map f x).op
@@ -231,7 +231,7 @@ end stalkPushforward
 section stalkPullback
 
 /-- The morphism `ℱ_{f x} ⟶ (f⁻¹ℱ)ₓ` that factors through `(f_*f⁻¹ℱ)_{f x}`. -/
-def stalkPullbackHom (f : X ⟶ Y) (F : Y.Presheaf C) (x : X) :
+noncomputable def stalkPullbackHom (f : X ⟶ Y) (F : Y.Presheaf C) (x : X) :
     F.stalk (f x) ⟶ ((pullback C f).obj F).stalk x :=
   (stalkFunctor _ (f x)).map ((pullbackPushforwardAdjunction C f).unit.app F) ≫
     stalkPushforward _ _ _ x
@@ -248,6 +248,7 @@ lemma germ_stalkPullbackHom
 
 set_option backward.defeqAttrib.useBackward true in
 /-- The morphism `(f⁻¹ℱ)(U) ⟶ ℱ_{f(x)}` for some `U ∋ x`. -/
+noncomputable
 def germToPullbackStalk (f : X ⟶ Y) (F : Y.Presheaf C) (U : Opens X) (x : X) (hx : x ∈ U) :
     ((pullback C f).obj F).obj (op U) ⟶ F.stalk (f x) :=
   ((Opens.map f).op.isPointwiseLeftKanExtensionLeftKanExtensionUnit F (op U)).desc
@@ -306,7 +307,7 @@ lemma pullbackPushforwardAdjunction_unit_app_app_germToPullbackStalk
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The morphism `(f⁻¹ℱ)ₓ ⟶ ℱ_{f(x)}`. -/
-def stalkPullbackInv (f : X ⟶ Y) (F : Y.Presheaf C) (x : X) :
+noncomputable def stalkPullbackInv (f : X ⟶ Y) (F : Y.Presheaf C) (x : X) :
     ((pullback C f).obj F).stalk x ⟶ F.stalk (f x) :=
   colimit.desc ((OpenNhds.inclusion x).op ⋙ (Presheaf.pullback C f).obj F)
     { pt := F.stalk (f x)
@@ -328,7 +329,7 @@ lemma germ_stalkPullbackInv (f : X ⟶ Y) (F : Y.Presheaf C) (x : X) (V : Opens 
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The isomorphism `ℱ_{f(x)} ≅ (f⁻¹ℱ)ₓ`. -/
-def stalkPullbackIso (f : X ⟶ Y) (F : Y.Presheaf C) (x : X) :
+noncomputable def stalkPullbackIso (f : X ⟶ Y) (F : Y.Presheaf C) (x : X) :
     F.stalk (f x) ≅ ((pullback C f).obj F).stalk x where
   hom := stalkPullbackHom _ _ _ _
   inv := stalkPullbackInv _ _ _ _
@@ -399,7 +400,7 @@ theorem stalkSpecializes_stalkPushforward (f : X ⟶ Y) (F : X.Presheaf C) {x y 
 
 /-- The stalks are isomorphic on inseparable points -/
 @[simps]
-def stalkCongr (F : X.Presheaf C) {x y : X}
+noncomputable def stalkCongr (F : X.Presheaf C) {x y : X}
     (e : Inseparable x y) : F.stalk x ≅ F.stalk y :=
   ⟨F.stalkSpecializes e.ge, F.stalkSpecializes e.le, by simp, by simp⟩
 

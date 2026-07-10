@@ -22,7 +22,6 @@ In this file we construct the relative algebraic closure of a field extension.
 -/
 
 @[expose] public section
-noncomputable section
 
 open Polynomial FiniteDimensional IntermediateField Field
 

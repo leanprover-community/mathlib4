@@ -25,7 +25,6 @@ open CategoryTheory Limits
 universe t v w u
 
 -- `u` is determined by the ring, so can come later
-noncomputable section
 
 namespace ModuleCat
 
@@ -66,22 +65,22 @@ instance : Small.{w} (sectionsSubmodule F) :=
 
 -- Adding the following instance speeds up `limitModule` noticeably,
 -- by preventing a bad unfold of `limitAddCommGroup`.
-instance limitAddCommMonoid :
+noncomputable instance limitAddCommMonoid :
     AddCommMonoid (Types.Small.limitCone.{v, w} (F ⋙ forget (ModuleCat.{w} R))).pt :=
   inferInstanceAs <| AddCommMonoid (Shrink (sectionsSubmodule F))
 
-instance limitAddCommGroup :
+noncomputable instance limitAddCommGroup :
     AddCommGroup (Types.Small.limitCone.{v, w} (F ⋙ forget (ModuleCat.{w} R))).pt :=
   inferInstanceAs <| AddCommGroup (Shrink.{w} (sectionsSubmodule F))
 
-instance limitModule :
+noncomputable instance limitModule :
     Module R (Types.Small.limitCone.{v, w} (F ⋙ forget (ModuleCat.{w} R))).pt :=
   inferInstanceAs <| Module R (Shrink (sectionsSubmodule F))
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- `limit.π (F ⋙ forget (ModuleCat.{w} R)) j` as an `R`-linear map. -/
-def limitπLinearMap (j) :
+noncomputable def limitπLinearMap (j) :
     (Types.Small.limitCone (F ⋙ forget (ModuleCat.{w} R))).pt →ₗ[R]
       (F ⋙ forget (ModuleCat R)).obj j where
   toFun := (Types.Small.limitCone (F ⋙ forget (ModuleCat R))).π.app j
@@ -96,7 +95,7 @@ namespace HasLimits
 /-- Construction of a limit cone in `ModuleCat R`.
 (Internal use only; use the limits API.)
 -/
-def limitCone : Cone F where
+noncomputable def limitCone : Cone F where
   pt := ModuleCat.of R (Types.Small.limitCone.{v, w} (F ⋙ forget _)).pt
   π :=
     { app j := ofHom (limitπLinearMap F j)
@@ -109,7 +108,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- Witness that the limit cone in `ModuleCat R` is a limit cone.
 (Internal use only; use the limits API.)
 -/
-def limitConeIsLimit : IsLimit (limitCone.{t, v, w} F) := by
+noncomputable def limitConeIsLimit : IsLimit (limitCone.{t, v, w} F) := by
   refine IsLimit.ofFaithful (forget (ModuleCat R)) (Types.Small.limitConeIsLimit.{v, w} _)
     (fun s => ofHom ⟨⟨(Types.Small.limitConeIsLimit.{v, w} _).lift
                 ((forget (ModuleCat R)).mapCone s), ?_⟩, ?_⟩)
@@ -146,7 +145,7 @@ instance (priority := high) hasLimits' : HasLimits (ModuleCat.{u} R) :=
 
 /-- An auxiliary declaration to speed up typechecking.
 -/
-def forget₂AddCommGroup_preservesLimitsAux :
+noncomputable def forget₂AddCommGroup_preservesLimitsAux :
     IsLimit ((forget₂ (ModuleCat R) AddCommGrpCat).mapCone (limitCone F)) :=
   letI : Small.{w} (Functor.sections ((F ⋙ forget₂ _ AddCommGrpCat) ⋙ forget _)) :=
     inferInstanceAs <| Small.{w} (Functor.sections (F ⋙ forget (ModuleCat R)))
@@ -226,7 +225,7 @@ the unbundled `directLimit` of modules.
 
 In `directLimitIsColimit` we show that it is a colimit cocone. -/
 @[simps]
-def directLimitCocone : Cocone (directLimitDiagram G f) where
+noncomputable def directLimitCocone : Cocone (directLimitDiagram G f) where
   pt := ModuleCat.of R <| DirectLimit G f
   ι :=
     { app := fun x => ofHom (Module.DirectLimit.of R ι G f x)
@@ -239,7 +238,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- The unbundled `directLimit` of modules is a colimit
 in the sense of `CategoryTheory`. -/
 @[simps]
-def directLimitIsColimit : IsColimit (directLimitCocone G f) where
+noncomputable def directLimitIsColimit : IsColimit (directLimitCocone G f) where
   desc s := ofHom <|
     Module.DirectLimit.lift R ι G f (fun i => (s.ι.app i).hom) fun i j h x => by
       simp only [Functor.const_obj_obj]

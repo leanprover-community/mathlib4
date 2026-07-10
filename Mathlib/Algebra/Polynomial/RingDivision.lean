@@ -21,8 +21,6 @@ We prove basic results about univariate polynomials.
 
 assert_not_exists Ideal.map
 
-noncomputable section
-
 open Polynomial
 
 open Finset
@@ -63,7 +61,7 @@ theorem smul_modByMonic (c : R) (p : R[X]) : c • p %ₘ q = c • (p %ₘ q) :
 
 /-- `_ %ₘ q` as an `R`-linear map. -/
 @[simps]
-def modByMonicHom (q : R[X]) : R[X] →ₗ[R] R[X] where
+noncomputable def modByMonicHom (q : R[X]) : R[X] →ₗ[R] R[X] where
   toFun p := p %ₘ q
   map_add' := add_modByMonic
   map_smul' := smul_modByMonic

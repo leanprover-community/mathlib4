@@ -28,8 +28,6 @@ you should restate it here. You can also use
 
 @[expose] public section
 
-noncomputable section
-
 open NNReal BoundedContinuousFunction Set Metric
 
 namespace ContinuousMap
@@ -76,10 +74,10 @@ def addEquivBoundedOfCompact [AddMonoid β] [LipschitzAdd β] : C(α, β) ≃+ (
   ({ toContinuousMapAddMonoidHom α β, (equivBoundedOfCompact α β).symm with } :
     (α →ᵇ β) ≃+ C(α, β)).symm
 
-instance instPseudoMetricSpace : PseudoMetricSpace C(α, β) :=
+noncomputable instance instPseudoMetricSpace : PseudoMetricSpace C(α, β) :=
   (isUniformEmbedding_equivBoundedOfCompact α β).comapPseudoMetricSpace _
 
-instance instMetricSpace {β : Type*} [MetricSpace β] :
+noncomputable instance instMetricSpace {β : Type*} [MetricSpace β] :
     MetricSpace C(α, β) :=
   (isUniformEmbedding_equivBoundedOfCompact α β).comapMetricSpace _
 
@@ -155,7 +153,7 @@ end
 
 -- TODO at some point we will need lemmas characterising this norm!
 -- At the moment the only way to reason about it is to transfer `f : C(α,E)` back to `α →ᵇ E`.
-instance : Norm C(α, E) where norm x := dist x 0
+noncomputable instance : Norm C(α, E) where norm x := dist x 0
 
 @[simp]
 theorem _root_.BoundedContinuousFunction.norm_mkOfCompact (f : C(α, E)) : ‖mkOfCompact f‖ = ‖f‖ :=
@@ -168,7 +166,7 @@ theorem _root_.BoundedContinuousFunction.norm_toContinuousMap_eq (f : α →ᵇ 
 
 open BoundedContinuousFunction
 
-instance : SeminormedAddCommGroup C(α, E) where
+noncomputable instance : SeminormedAddCommGroup C(α, E) where
   __ := ContinuousMap.instPseudoMetricSpace _ _
   __ := ContinuousMap.instAddCommGroupContinuousMap
   dist_eq x y := by rw [← norm_mkOfCompact, ← dist_mkOfCompact, dist_eq_norm_neg_add,
@@ -176,7 +174,7 @@ instance : SeminormedAddCommGroup C(α, E) where
   dist := dist
   norm := norm
 
-instance {E : Type*} [NormedAddCommGroup E] : NormedAddCommGroup C(α, E) where
+noncomputable instance {E : Type*} [NormedAddCommGroup E] : NormedAddCommGroup C(α, E) where
   __ : SeminormedAddCommGroup C(α, E) := inferInstance
   __ : MetricSpace C(α, E) := inferInstance
 
@@ -256,36 +254,36 @@ section
 
 variable {R : Type*}
 
-instance [NonUnitalSeminormedRing R] : NonUnitalSeminormedRing C(α, R) where
+noncomputable instance [NonUnitalSeminormedRing R] : NonUnitalSeminormedRing C(α, R) where
   __ : SeminormedAddCommGroup C(α, R) := inferInstance
   __ : NonUnitalRing C(α, R) := inferInstance
   norm_mul_le f g := norm_mul_le (mkOfCompact f) (mkOfCompact g)
 
-instance [NonUnitalSeminormedCommRing R] : NonUnitalSeminormedCommRing C(α, R) where
+noncomputable instance [NonUnitalSeminormedCommRing R] : NonUnitalSeminormedCommRing C(α, R) where
   __ : NonUnitalSeminormedRing C(α, R) := inferInstance
   __ : NonUnitalCommRing C(α, R) := inferInstance
 
-instance [SeminormedRing R] : SeminormedRing C(α, R) where
+noncomputable instance [SeminormedRing R] : SeminormedRing C(α, R) where
   __ : NonUnitalSeminormedRing C(α, R) := inferInstance
   __ : Ring C(α, R) := inferInstance
 
-instance [SeminormedCommRing R] : SeminormedCommRing C(α, R) where
+noncomputable instance [SeminormedCommRing R] : SeminormedCommRing C(α, R) where
   __ : SeminormedRing C(α, R) := inferInstance
   __ : CommRing C(α, R) := inferInstance
 
-instance [NonUnitalNormedRing R] : NonUnitalNormedRing C(α, R) where
+noncomputable instance [NonUnitalNormedRing R] : NonUnitalNormedRing C(α, R) where
   __ : NormedAddCommGroup C(α, R) := inferInstance
   __ : NonUnitalSeminormedRing C(α, R) := inferInstance
 
-instance [NonUnitalNormedCommRing R] : NonUnitalNormedCommRing C(α, R) where
+noncomputable instance [NonUnitalNormedCommRing R] : NonUnitalNormedCommRing C(α, R) where
   __ : NonUnitalNormedRing C(α, R) := inferInstance
   __ : NonUnitalCommRing C(α, R) := inferInstance
 
-instance [NormedRing R] : NormedRing C(α, R) where
+noncomputable instance [NormedRing R] : NormedRing C(α, R) where
   __ : NormedAddCommGroup C(α, R) := inferInstance
   __ : SeminormedRing C(α, R) := inferInstance
 
-instance [NormedCommRing R] : NormedCommRing C(α, R) where
+noncomputable instance [NormedCommRing R] : NormedCommRing C(α, R) where
   __ : NormedRing C(α, R) := inferInstance
   __ : CommRing C(α, R) := inferInstance
 
@@ -428,7 +426,7 @@ theorem uniform_continuity (f : C(α, β)) (ε : ℝ) (h : 0 < ε) :
 -- and the corresponding use of `dist a b < δ → dist (f a) (f b) < ε`,
 -- even across different declarations.
 /-- An arbitrarily chosen modulus of uniform continuity for a given function `f` and `ε > 0`. -/
-def modulus (f : C(α, β)) (ε : ℝ) (h : 0 < ε) : ℝ :=
+noncomputable def modulus (f : C(α, β)) (ε : ℝ) (h : 0 < ε) : ℝ :=
   Classical.choose (uniform_continuity f ε h)
 
 theorem modulus_pos (f : C(α, β)) {ε : ℝ} {h : 0 < ε} : 0 < f.modulus ε h :=

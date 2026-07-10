@@ -31,15 +31,13 @@ in particular, the general linear group `(V →L[𝕜] V)ˣ` is a Lie group acti
 
 public section
 
-noncomputable section
-
 open scoped Manifold ContDiff
 
 namespace Units
 
 variable {R : Type*} [NormedRing R] [CompleteSpace R] {n : ℕ∞ω}
 
-instance : ChartedSpace R Rˣ :=
+noncomputable instance : ChartedSpace R Rˣ :=
   isOpenEmbedding_val.singletonChartedSpace
 
 theorem chartAt_apply {a : Rˣ} {b : Rˣ} : chartAt R a b = b :=

@@ -27,8 +27,6 @@ TODO: generalise this to n-angulated categories as in https://arxiv.org/abs/1006
 
 assert_not_exists TwoSidedIdeal
 
-noncomputable section
-
 open CategoryTheory Preadditive Limits
 
 universe v v₀ v₁ v₂ u u₀ u₁ u₂
@@ -604,7 +602,7 @@ lemma binaryProductTriangle_distinguished (X₁ X₂ : C) :
 
 /-- A chosen extension of a commutative square into a morphism of distinguished triangles. -/
 @[simps hom₁ hom₂]
-def completeDistinguishedTriangleMorphism (T₁ T₂ : Triangle C)
+noncomputable def completeDistinguishedTriangleMorphism (T₁ T₂ : Triangle C)
     (hT₁ : T₁ ∈ distTriang C) (hT₂ : T₂ ∈ distTriang C)
     (a : T₁.obj₁ ⟶ T₂.obj₁) (b : T₁.obj₂ ⟶ T₂.obj₂) (comm : T₁.mor₁ ≫ b = a ≫ T₂.mor₁) :
     T₁ ⟶ T₂ :=
@@ -706,7 +704,7 @@ set_option backward.defeqAttrib.useBackward true in
 /-- A choice of isomorphism `T₁ ≅ T₂` between two distinguished triangles
 when we are given two isomorphisms `e₁ : T₁.obj₁ ≅ T₂.obj₁` and `e₂ : T₁.obj₂ ≅ T₂.obj₂`. -/
 @[simps! hom_hom₁ hom_hom₂ inv_hom₁ inv_hom₂]
-def isoTriangleOfIso₁₂ (T₁ T₂ : Triangle C) (hT₁ : T₁ ∈ distTriang C)
+noncomputable def isoTriangleOfIso₁₂ (T₁ T₂ : Triangle C) (hT₁ : T₁ ∈ distTriang C)
     (hT₂ : T₂ ∈ distTriang C) (e₁ : T₁.obj₁ ≅ T₂.obj₁) (e₂ : T₁.obj₂ ≅ T₂.obj₂)
     (comm : T₁.mor₁ ≫ e₂.hom = e₁.hom ≫ T₂.mor₁) : T₁ ≅ T₂ := by
   have h := exists_iso_of_arrow_iso T₁ T₂ hT₁ hT₂ (Arrow.isoMk e₁ e₂ comm.symm)
@@ -723,7 +721,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- A choice of isomorphism `T₁ ≅ T₂` between two distinguished triangles
 when we are given two isomorphisms `e₁ : T₁.obj₁ ≅ T₂.obj₁` and `e₃ : T₁.obj₃ ≅ T₂.obj₃`. -/
 @[simps! hom_hom₁ hom_hom₃ inv_hom₁ inv_hom₃]
-def isoTriangleOfIso₁₃ (T₁ T₂ : Triangle C) (hT₁ : T₁ ∈ distTriang C)
+noncomputable def isoTriangleOfIso₁₃ (T₁ T₂ : Triangle C) (hT₁ : T₁ ∈ distTriang C)
     (hT₂ : T₂ ∈ distTriang C) (e₁ : T₁.obj₁ ≅ T₂.obj₁) (e₃ : T₁.obj₃ ≅ T₂.obj₃)
     (comm : T₁.mor₃ ≫ (shiftFunctor C 1).map e₁.hom = e₃.hom ≫ T₂.mor₃) :
     T₁ ≅ T₂ := by

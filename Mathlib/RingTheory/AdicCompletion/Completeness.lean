@@ -43,8 +43,6 @@ when the ideal `I` is finitely generated.
 
 public section
 
-noncomputable section
-
 open Submodule Finsupp
 
 variable {R : Type*} [CommRing R] (I : Ideal R)
@@ -56,7 +54,7 @@ namespace AdicCompletion
 variable (M) in
 /-- The canonical inclusion from the adic completion of `I ^ n • M` to
 the adic completion of `M`. -/
-abbrev ofPowSMul (n : ℕ) : AdicCompletion I ↥(I ^ n • ⊤ : Submodule R M)
+noncomputable abbrev ofPowSMul (n : ℕ) : AdicCompletion I ↥(I ^ n • ⊤ : Submodule R M)
     →ₗ[AdicCompletion I R] AdicCompletion I M := map I (I ^ n • ⊤ : Submodule R M).subtype
 
 theorem ofPowSMul_val_apply (h : c = b + a) {x : AdicCompletion I ↥(I ^ a • ⊤ : Submodule R M)} :
@@ -87,7 +85,7 @@ private lemma ofValEqZeroAux_exists {x : AdicCompletion I M} (h : c = b + a)
 
 /-- An auxiliary lift function used in the definition of `ofValEqZero`.
 Use `ofValEqZero` instead. -/
-def ofValEqZeroAux {x : AdicCompletion I M} (h : c = b + a) (ha : x.val a = 0) :
+noncomputable def ofValEqZeroAux {x : AdicCompletion I M} (h : c = b + a) (ha : x.val a = 0) :
     ↥(I ^ a • ⊤ : Submodule R M) ⧸ I ^ b • (⊤ : Submodule R ↥(I ^ a • ⊤ : Submodule R M)) :=
   Exists.choose (ofValEqZeroAux_exists I h ha)
 
@@ -97,7 +95,7 @@ private lemma ofValEqZeroAux_prop {x : AdicCompletion I M} (h : c = b + a)
 
 /-- Given an element `x` in the adic completion of `M` whose projection to `M / I ^ n • M` is zero,
 `ofValEqZero` constructs the corresponding element in the adic completion of `I ^ n • M`. -/
-def ofValEqZero {n : ℕ} {x : AdicCompletion I M} (hxn : x.val n = 0) :
+noncomputable def ofValEqZero {n : ℕ} {x : AdicCompletion I M} (hxn : x.val n = 0) :
     AdicCompletion I ↥(I ^ n • (⊤ : Submodule R M)) where
   val i := ofValEqZeroAux I (Eq.refl (i + n)) hxn
   property {i j} h := by

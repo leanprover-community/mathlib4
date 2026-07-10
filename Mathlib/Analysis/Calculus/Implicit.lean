@@ -49,7 +49,7 @@ implicit function, inverse function
 
 public section
 
-noncomputable section
+section
 
 open scoped Topology
 
@@ -147,14 +147,14 @@ theorem isInvertible_fderiv_prodFun : (fderiv 𝕜 φ.prodFun φ.pt).IsInvertibl
 at `a`, their derivatives `f'`, `g'` are surjective, and the kernels of these derivatives are
 complementary subspaces of `E`, then `x ↦ (f x, g x)` defines an open partial homeomorphism between
 `E` and `F × G`. In particular, `{x | f x = f a}` is locally homeomorphic to `G`. -/
-def toOpenPartialHomeomorph : OpenPartialHomeomorph E (F × G) :=
+noncomputable def toOpenPartialHomeomorph : OpenPartialHomeomorph E (F × G) :=
   φ.hasStrictFDerivAt.toOpenPartialHomeomorph _
 
 /-- Implicit function theorem. If `f : E → F` and `g : E → G` are two maps strictly differentiable
 at `a`, their derivatives `f'`, `g'` are surjective, and the kernels of these derivatives are
 complementary subspaces of `E`, then `implicitFunction` is the unique (germ of a) map
 `φ : F → G → E` such that `f (φ y z) = y` and `g (φ y z) = z`. -/
-def implicitFunction : F → G → E :=
+noncomputable def implicitFunction : F → G → E :=
   Function.curry <| φ.toOpenPartialHomeomorph.symm
 
 theorem implicitFunction_def :
@@ -328,6 +328,7 @@ variable (f f')
 /-- Data used to apply the generic implicit function theorem to the case of a strictly
 differentiable map such that its derivative is surjective and has a complemented kernel. -/
 @[simp]
+noncomputable
 def implicitFunctionDataOfComplemented (hf : HasStrictFDerivAt f f' a) (hf' : f'.range = ⊤)
     (hker : f'.ker.ClosedComplemented) : ImplicitFunctionData 𝕜 E F f'.ker where
   leftFun := f
@@ -344,12 +345,13 @@ def implicitFunctionDataOfComplemented (hf : HasStrictFDerivAt f f' a) (hf' : f'
 
 /-- An open partial homeomorphism between `E` and `F × f'.ker` sending level surfaces of `f`
 to vertical subspaces. -/
-def implicitToOpenPartialHomeomorphOfComplemented (hf : HasStrictFDerivAt f f' a)
+noncomputable def implicitToOpenPartialHomeomorphOfComplemented (hf : HasStrictFDerivAt f f' a)
     (hf' : f'.range = ⊤) (hker : f'.ker.ClosedComplemented) :
     OpenPartialHomeomorph E (F × f'.ker) :=
   (implicitFunctionDataOfComplemented f f' hf hf' hker).toOpenPartialHomeomorph
 
 /-- Implicit function `g` defined by `f (g z y) = z`. -/
+noncomputable
 def implicitFunctionOfComplemented (hf : HasStrictFDerivAt f f' a) (hf' : f'.range = ⊤)
     (hker : f'.ker.ClosedComplemented) : F → f'.ker → E :=
   (implicitFunctionDataOfComplemented f f' hf hf' hker).implicitFunction
@@ -464,6 +466,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜] {E :
 
 /-- Given a map `f : E → F` to a finite-dimensional space with a surjective derivative `f'`,
 returns an open partial homeomorphism between `E` and `F × ker f'`. -/
+noncomputable
 def implicitToOpenPartialHomeomorph (hf : HasStrictFDerivAt f f' a) (hf' : f'.range = ⊤) :
     OpenPartialHomeomorph E (F × f'.ker) :=
   have := FiniteDimensional.complete 𝕜 F
@@ -471,6 +474,7 @@ def implicitToOpenPartialHomeomorph (hf : HasStrictFDerivAt f f' a) (hf' : f'.ra
     f'.ker_closedComplemented_of_finiteDimensional_range
 
 /-- Implicit function `g` defined by `f (g z y) = z`. -/
+noncomputable
 def implicitFunction (hf : HasStrictFDerivAt f f' a) (hf' : f'.range = ⊤) : F → f'.ker → E :=
   Function.curry <| (hf.implicitToOpenPartialHomeomorph f f' hf').symm
 

@@ -46,8 +46,6 @@ that lift is a subalgebra. (By `lift_iff` this is true if `R` is commutative.)
 
 open Polynomial
 
-noncomputable section
-
 namespace Polynomial
 
 universe u v w
@@ -57,7 +55,7 @@ section Semiring
 variable {R : Type u} [Semiring R] {S : Type v} [Semiring S] {f : R →+* S}
 
 /-- We define the subsemiring of polynomials that lifts as the image of `RingHom.of (map f)`. -/
-def lifts (f : R →+* S) : Subsemiring S[X] :=
+noncomputable def lifts (f : R →+* S) : Subsemiring S[X] :=
   RingHom.rangeS (mapRingHom f)
 
 theorem mem_lifts (p : S[X]) : p ∈ lifts f ↔ ∃ q : R[X], map f q = p := by
@@ -206,7 +204,7 @@ section Ring
 variable {R : Type u} [Ring R] {S : Type v} [Ring S] (f : R →+* S)
 
 /-- The subring of polynomials that lift. -/
-def liftsRing (f : R →+* S) : Subring S[X] :=
+noncomputable def liftsRing (f : R →+* S) : Subring S[X] :=
   RingHom.range (mapRingHom f)
 
 /-- If `R` and `S` are rings, `p` is in the subring of polynomials that lift if and only if it is in

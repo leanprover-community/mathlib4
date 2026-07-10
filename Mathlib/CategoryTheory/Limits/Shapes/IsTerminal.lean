@@ -27,7 +27,7 @@ objects are defined in `Terminal.lean`.
 
 assert_not_exists CategoryTheory.Limits.HasLimit
 
-noncomputable section
+section
 
 universe w w' v v₁ v₂ u u₁ u₂
 
@@ -365,7 +365,7 @@ set_option backward.isDefEq.respectTransparency false in
 provided that the morphisms in the diagram are isomorphisms.
 In `limitOfDiagramTerminal` we show it is a limit cone. -/
 @[simps]
-def coneOfDiagramTerminal {X : J} (hX : IsTerminal X) (F : J ⥤ C)
+noncomputable def coneOfDiagramTerminal {X : J} (hX : IsTerminal X) (F : J ⥤ C)
     [∀ (i j : J) (f : i ⟶ j), IsIso (F.map f)] : Cone F where
   pt := F.obj X
   π :=
@@ -415,7 +415,7 @@ set_option backward.isDefEq.respectTransparency false in
 provided that the morphisms in the diagram are isomorphisms.
 In `colimitOfDiagramInitial` we show it is a colimit cocone. -/
 @[simps]
-def coconeOfDiagramInitial {X : J} (hX : IsInitial X) (F : J ⥤ C)
+noncomputable def coconeOfDiagramInitial {X : J} (hX : IsInitial X) (F : J ⥤ C)
     [∀ (i j : J) (f : i ⟶ j), IsIso (F.map f)] : Cocone F where
   pt := F.obj X
   ι :=

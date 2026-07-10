@@ -57,8 +57,6 @@ https://gist.github.com/jcommelin/47d94e4af092641017a97f7f02bf9598
 public section
 
 
-noncomputable section
-
 universe u v
 
 open Polynomial IsLocalRing Function List

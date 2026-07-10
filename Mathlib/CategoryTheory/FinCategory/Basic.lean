@@ -27,8 +27,6 @@ public section
 
 universe w v u
 
-noncomputable section
-
 namespace CategoryTheory
 
 instance discreteFintype {α : Type*} [Fintype α] : Fintype (Discrete α) :=
@@ -37,7 +35,7 @@ instance discreteFintype {α : Type*} [Fintype α] : Fintype (Discrete α) :=
 instance {α : Type*} [Finite α] : Finite (Discrete α) :=
   Finite.of_equiv α discreteEquiv.symm
 
-instance discreteHomFintype {α : Type*} (X Y : Discrete α) : Fintype (X ⟶ Y) := by
+noncomputable instance discreteHomFintype {α : Type*} (X Y : Discrete α) : Fintype (X ⟶ Y) := by
   classical
   apply ULift.fintype
 
@@ -48,8 +46,10 @@ class FinCategory (J : Type v) [SmallCategory J] where
 
 attribute [instance_reducible, instance] FinCategory.fintypeObj FinCategory.fintypeHom
 
+noncomputable
 instance finCategoryDiscreteOfFintype (J : Type v) [Fintype J] : FinCategory (Discrete J) where
 
+noncomputable
 instance {J : Type u} [Fintype J] [SmallCategory J] [Quiver.IsThin J] : FinCategory J :=
   FinCategory.mk ‹Fintype J› fun j j' ↦ Fintype.ofFinite (j ⟶ j')
 

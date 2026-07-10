@@ -201,7 +201,7 @@ theorem normAtAllPlaces_normLeOne :
 
 end normLeOne_def
 
-noncomputable section expMap
+section expMap
 
 variable {K}
 
@@ -209,7 +209,7 @@ variable {K}
 The component of `expMap` at the place `w`.
 -/
 @[simps]
-def expMap_single (w : InfinitePlace K) : OpenPartialHomeomorph ℝ ℝ where
+noncomputable def expMap_single (w : InfinitePlace K) : OpenPartialHomeomorph ℝ ℝ where
   toFun := fun x ↦ Real.exp ((w.mult : ℝ)⁻¹ * x)
   invFun := fun x ↦ w.mult * Real.log x
   source := Set.univ
@@ -226,7 +226,7 @@ def expMap_single (w : InfinitePlace K) : OpenPartialHomeomorph ℝ ℝ where
 /--
 The derivative of `expMap_single`, see `hasDerivAt_expMap_single`.
 -/
-abbrev deriv_expMap_single (w : InfinitePlace K) (x : ℝ) : ℝ :=
+noncomputable abbrev deriv_expMap_single (w : InfinitePlace K) (x : ℝ) : ℝ :=
   (expMap_single w x) * (w.mult : ℝ)⁻¹
 
 theorem hasDerivAt_expMap_single (w : InfinitePlace K) (x : ℝ) :
@@ -241,7 +241,7 @@ variable [NumberField K]
 The map from `realSpace K → realSpace K` whose components is given by `expMap_single`. It is, in
 some respect, a right inverse of `logMap`, see `logMap_expMap`.
 -/
-def expMap : OpenPartialHomeomorph (realSpace K) (realSpace K) :=
+noncomputable def expMap : OpenPartialHomeomorph (realSpace K) (realSpace K) :=
   OpenPartialHomeomorph.pi fun w ↦ expMap_single w
 
 variable (K)
@@ -308,7 +308,7 @@ theorem sum_expMap_symm_apply {x : K} (hx : x ≠ 0) :
 /--
 The derivative of `expMap`, see `hasFDerivAt_expMap`.
 -/
-abbrev fderiv_expMap (x : realSpace K) : realSpace K →L[ℝ] realSpace K :=
+noncomputable abbrev fderiv_expMap (x : realSpace K) : realSpace K →L[ℝ] realSpace K :=
   .pi fun w ↦ (ContinuousLinearMap.smulRight (1 : ℝ →L[ℝ] ℝ) (deriv_expMap_single w (x w))).comp
     (.proj w)
 
@@ -319,7 +319,7 @@ theorem hasFDerivAt_expMap (x : realSpace K) : HasFDerivAt expMap (fderiv_expMap
 
 end expMap
 
-noncomputable section completeBasis
+section completeBasis
 
 variable [NumberField K]
 
@@ -330,7 +330,7 @@ open scoped Classical in
 /--
 A fixed equiv between `Fin (rank K)` and `{w : InfinitePlace K // w ≠ w₀}`.
 -/
-def equivFinRank : Fin (rank K) ≃ {w : InfinitePlace K // w ≠ w₀} :=
+noncomputable def equivFinRank : Fin (rank K) ≃ {w : InfinitePlace K // w ≠ w₀} :=
   Fintype.equivOfCardEq <| by
     rw [Fintype.card_subtype_compl, Fintype.card_ofSubsingleton, Fintype.card_fin, rank]
 
@@ -340,7 +340,7 @@ variable (K) in
 A family of elements in the `realSpace K` formed of the image of the fundamental units
 and the vector `(mult w)_w`. This family is in fact a basis of `realSpace K`, see `completeBasis`.
 -/
-def completeFamily : InfinitePlace K → realSpace K :=
+noncomputable def completeFamily : InfinitePlace K → realSpace K :=
   fun i ↦ if hi : i = w₀ then fun w ↦ mult w else
     expMap.symm <| normAtAllPlaces <| mixedEmbedding K <| fundSystem K <| equivFinRank.symm ⟨i, hi⟩
 
@@ -348,7 +348,7 @@ def completeFamily : InfinitePlace K → realSpace K :=
 An auxiliary map from `realSpace K` to `logSpace K` used to prove that `completeFamily` is
 linearly independent, see `linearIndependent_completeFamily`.
 -/
-def realSpaceToLogSpace : realSpace K →ₗ[ℝ] {w : InfinitePlace K // w ≠ w₀} → ℝ where
+noncomputable def realSpaceToLogSpace : realSpace K →ₗ[ℝ] {w : InfinitePlace K // w ≠ w₀} → ℝ where
   toFun := fun x w ↦ x w.1 - w.1.mult * (∑ w', x w') * (Module.finrank ℚ K : ℝ)⁻¹
   map_add' := fun _ _ ↦ funext fun _ ↦ by simp [sum_add_distrib]; ring
   map_smul' := fun _ _ ↦ funext fun _ ↦ by simp [← mul_sum]; ring
@@ -413,7 +413,7 @@ A basis of `realSpace K` formed by the image of the fundamental units
 For `i ≠ w₀`, the image of `completeBasis K i` by the natural restriction map
 `realSpace K → logSpace K` is `basisUnitLattice K`
 -/
-def completeBasis : Basis (InfinitePlace K) ℝ (realSpace K) :=
+noncomputable def completeBasis : Basis (InfinitePlace K) ℝ (realSpace K) :=
   basisOfLinearIndependentOfCardEqFinrank (linearIndependent_completeFamily K)
     (Module.finrank_fintype_fun_eq_card _).symm
 
@@ -452,7 +452,7 @@ theorem abs_det_completeBasis_equivFunL_symm :
 
 end completeBasis
 
-noncomputable section expMapBasis
+section expMapBasis
 
 variable [NumberField K]
 
@@ -463,7 +463,7 @@ The map that sends `x : realSpace K` to
 `Real.exp (x w₀) * ∏_{i ≠ w₀} |ηᵢ| ^ x i` where `|ηᵢ|` denote the vector of `realSpace K` given
 by `w (ηᵢ)` and `ηᵢ` denote the units in `fundSystem K`, see `expMapBasis_apply'`.
 -/
-def expMapBasis : OpenPartialHomeomorph (realSpace K) (realSpace K) :=
+noncomputable def expMapBasis : OpenPartialHomeomorph (realSpace K) (realSpace K) :=
   (completeBasis K).equivFunL.symm.toHomeomorph.transOpenPartialHomeomorph expMap
 
 variable (K)
@@ -573,7 +573,7 @@ variable (K)
 /--
 The derivative of `expMapBasis`, see `hasFDerivAt_expMapBasis`.
 -/
-abbrev fderiv_expMapBasis (x : realSpace K) : realSpace K →L[ℝ] realSpace K :=
+noncomputable abbrev fderiv_expMapBasis (x : realSpace K) : realSpace K →L[ℝ] realSpace K :=
   (fderiv_expMap ((completeBasis K).equivFun.symm x)).comp
     (completeBasis K).equivFunL.symm.toContinuousLinearMap
 

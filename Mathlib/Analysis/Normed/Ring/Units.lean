@@ -32,8 +32,6 @@ properties of `Ring.inverse (x + t)` as `t → 0`.
 
 @[expose] public section
 
-noncomputable section
-
 open Topology
 open scoped Ring
 
@@ -45,7 +43,7 @@ namespace Units
 element `t` of distance less than `‖x⁻¹‖⁻¹` from `x` is a unit.
 Here we construct its `Units` structure. -/
 @[simps! val]
-def add (x : Rˣ) (t : R) (h : ‖t‖ < ‖(↑x⁻¹ : R)‖⁻¹) : Rˣ :=
+noncomputable def add (x : Rˣ) (t : R) (h : ‖t‖ < ‖(↑x⁻¹ : R)‖⁻¹) : Rˣ :=
   Units.copy -- to make `add_val` true definitionally, for convenience
     (x * Units.oneSub (-((x⁻¹).1 * t)) (by
       nontriviality R using zero_lt_one
@@ -60,7 +58,7 @@ def add (x : Rˣ) (t : R) (h : ‖t‖ < ‖(↑x⁻¹ : R)‖⁻¹) : Rˣ :=
 /-- In a normed ring with summable geometric series, an element `y` of distance less
 than `‖x⁻¹‖⁻¹` from `x` is a unit. Here we construct its `Units` structure. -/
 @[simps! val]
-def ofNearby (x : Rˣ) (y : R) (h : ‖y - x‖ < ‖(↑x⁻¹ : R)‖⁻¹) : Rˣ :=
+noncomputable def ofNearby (x : Rˣ) (y : R) (h : ‖y - x‖ < ‖(↑x⁻¹ : R)‖⁻¹) : Rˣ :=
   (x.add (y - x : R) h).copy y (by simp) _ rfl
 
 /-- The group of units of a normed ring with summable geometric series is an open subset

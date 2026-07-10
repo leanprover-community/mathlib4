@@ -57,8 +57,6 @@ Bochner integral, simple function, function space, Lebesgue dominated convergenc
 
 assert_not_exists Differentiable
 
-noncomputable section
-
 open Filter ENNReal Set
 open scoped NNReal ENNReal MeasureTheory
 
@@ -191,7 +189,7 @@ variable [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace ℝ F]
 
 /-- Bochner integral of simple functions whose codomain is a real `NormedSpace`.
 This is equal to `∑ x ∈ f.range, μ.real (f ⁻¹' {x}) • x` (see `integral_eq`). -/
-def integral {_ : MeasurableSpace α} (μ : Measure α) (f : α →ₛ F) : F :=
+noncomputable def integral {_ : MeasurableSpace α} (μ : Measure α) (f : α →ₛ F) : F :=
   f.setToSimpleFunc (weightedSMul μ)
 
 theorem integral_def {_ : MeasurableSpace α} (μ : Measure α) (f : α →ₛ F) :
@@ -415,7 +413,7 @@ variable [NormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E] [NormedSpace �
 attribute [local instance] simpleFunc.isBoundedSMul simpleFunc.module simpleFunc.normedSpace
 
 /-- The Bochner integral over simple functions in L1 space. -/
-def integral (f : α →₁ₛ[μ] E) : E :=
+noncomputable def integral (f : α →₁ₛ[μ] E) : E :=
   (toSimpleFunc f).integral μ
 
 theorem integral_eq_integral (f : α →₁ₛ[μ] E) : integral f = (toSimpleFunc f).integral μ := rfl
@@ -443,12 +441,12 @@ theorem norm_integral_le_norm (f : α →₁ₛ[μ] E) : ‖integral f‖ ≤ �
 variable (α E μ 𝕜)
 
 /-- The Bochner integral over simple functions in L1 space as a continuous linear map. -/
-def integralCLM' : (α →₁ₛ[μ] E) →L[𝕜] E :=
+noncomputable def integralCLM' : (α →₁ₛ[μ] E) →L[𝕜] E :=
   LinearMap.mkContinuous ⟨⟨integral, integral_add⟩, integral_smul⟩ 1 fun f =>
     le_trans (norm_integral_le_norm _) <| by rw [one_mul]
 
 /-- The Bochner integral over simple functions in L1 space as a continuous linear map over ℝ. -/
-def integralCLM : (α →₁ₛ[μ] E) →L[ℝ] E :=
+noncomputable def integralCLM : (α →₁ₛ[μ] E) →L[ℝ] E :=
   integralCLM' α E ℝ μ
 
 variable {α E μ 𝕜}
@@ -526,15 +524,15 @@ open ContinuousLinearMap
 
 variable (𝕜) in
 /-- The Bochner integral in L1 space as a continuous linear map. -/
-nonrec def integralCLM' : (α →₁[μ] E) →L[𝕜] E :=
+noncomputable nonrec def integralCLM' : (α →₁[μ] E) →L[𝕜] E :=
   (integralCLM' α E 𝕜 μ).extend (coeToLp α E 𝕜)
 
 /-- The Bochner integral in L1 space as a continuous linear map over ℝ. -/
-def integralCLM : (α →₁[μ] E) →L[ℝ] E :=
+noncomputable def integralCLM : (α →₁[μ] E) →L[ℝ] E :=
   integralCLM' ℝ
 
 /-- The Bochner integral in L1 space -/
-irreducible_def integral : (α →₁[μ] E) → E :=
+noncomputable irreducible_def integral : (α →₁[μ] E) → E :=
   integralCLM
 
 theorem integral_eq (f : α →₁[μ] E) : integral f = integralCLM f := by

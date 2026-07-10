@@ -33,8 +33,6 @@ Obviously there's more to do:
 
 open CategoryTheory Limits TopologicalSpace Opens
 
-noncomputable section
-
 variable (X : TopCat)
 
 open TopCat

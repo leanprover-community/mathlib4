@@ -32,8 +32,6 @@ presheaves, and the fully faithful functor `Sheaf.forget : TopCat.Sheaf C X ⥤ 
 
 universe w v u
 
-noncomputable section
-
 open CategoryTheory CategoryTheory.Limits TopologicalSpace Opposite TopologicalSpace.Opens
 
 namespace TopCat

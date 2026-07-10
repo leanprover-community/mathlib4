@@ -20,8 +20,6 @@ We define chain homotopies, and prove that homotopic chain maps induce the same 
 
 universe v u
 
-noncomputable section
-
 open CategoryTheory Category Limits HomologicalComplex
 
 variable {ι : Type*}
@@ -32,12 +30,12 @@ variable (f g : C ⟶ D) (h k : D ⟶ E) (i : ι)
 section
 
 /-- The composition of `C.d i (c.next i) ≫ f (c.next i) i`. -/
-def dNext (i : ι) : (∀ i j, C.X i ⟶ D.X j) →+ (C.X i ⟶ D.X i) :=
+noncomputable def dNext (i : ι) : (∀ i j, C.X i ⟶ D.X j) →+ (C.X i ⟶ D.X i) :=
   AddMonoidHom.mk' (fun f => C.d i (c.next i) ≫ f (c.next i) i) fun _ _ =>
     Preadditive.comp_add _ _ _ _ _ _
 
 /-- `f (c.next i) i`. -/
-def fromNext (i : ι) : (∀ i j, C.X i ⟶ D.X j) →+ (C.xNext i ⟶ D.X i) :=
+noncomputable def fromNext (i : ι) : (∀ i j, C.X i ⟶ D.X j) →+ (C.xNext i ⟶ D.X i) :=
   AddMonoidHom.mk' (fun f => f (c.next i) i) fun _ _ => rfl
 
 @[simp]
@@ -67,7 +65,7 @@ theorem dNext_comp_right (f : ∀ i j, C.X i ⟶ D.X j) (g : D ⟶ E) (i : ι) :
   (assoc _ _ _).symm
 
 /-- The composition `f j (c.prev j) ≫ D.d (c.prev j) j`. -/
-def prevD (j : ι) : (∀ i j, C.X i ⟶ D.X j) →+ (C.X j ⟶ D.X j) :=
+noncomputable def prevD (j : ι) : (∀ i j, C.X i ⟶ D.X j) →+ (C.X j ⟶ D.X j) :=
   AddMonoidHom.mk' (fun f => f j (c.prev j) ≫ D.d (c.prev j) j) fun _ _ =>
     Preadditive.add_comp _ _ _ _ _ _
 
@@ -78,7 +76,7 @@ lemma prevD_eq_zero (f : ∀ i j, C.X i ⟶ D.X j) (i : ι) (hi : ¬ c.Rel (c.pr
   rw [shape _ _ _ hi, comp_zero]
 
 /-- `f j (c.prev j)`. -/
-def toPrev (j : ι) : (∀ i j, C.X i ⟶ D.X j) →+ (C.X j ⟶ D.xPrev j) :=
+noncomputable def toPrev (j : ι) : (∀ i j, C.X i ⟶ D.X j) →+ (C.X j ⟶ D.xPrev j) :=
   AddMonoidHom.mk' (fun f => f j (c.prev j)) fun _ _ => rfl
 
 @[simp]
@@ -238,7 +236,7 @@ two differentials going to and from a certain degree, only one, or none.
 This is the same datum as for the field `hom` in the structure `Homotopy`. For
 this definition, we do not need the field `zero` of that structure
 as this definition uses only the maps `C_i ⟶ C_j` when `c.Rel j i`. -/
-def nullHomotopicMap (hom : ∀ i j, C.X i ⟶ D.X j) : C ⟶ D where
+noncomputable def nullHomotopicMap (hom : ∀ i j, C.X i ⟶ D.X j) : C ⟶ D where
   f i := dNext i hom + prevD i hom
   comm' i j hij := by
     have eq1 : prevD i hom ≫ D.d i j = 0 := by
@@ -251,7 +249,7 @@ def nullHomotopicMap (hom : ∀ i j, C.X i ⟶ D.X j) : C ⟶ D where
 open scoped Classical in
 /-- Variant of `nullHomotopicMap` where the input consists only of the
 relevant maps `C_i ⟶ D_j` such that `c.Rel j i`. -/
-def nullHomotopicMap' (h : ∀ i j, c.Rel j i → (C.X i ⟶ D.X j)) : C ⟶ D :=
+noncomputable def nullHomotopicMap' (h : ∀ i j, c.Rel j i → (C.X i ⟶ D.X j)) : C ⟶ D :=
   nullHomotopicMap fun i j => dite (c.Rel j i) (h i j) fun _ => 0
 
 set_option backward.defeqAttrib.useBackward true in
@@ -333,6 +331,7 @@ def nullHomotopy (hom : ∀ i j, C.X i ⟶ D.X j) (zero : ∀ i j, ¬c.Rel j i �
 open scoped Classical in
 /-- Homotopy to zero for maps constructed with `nullHomotopicMap'` -/
 @[simps!]
+noncomputable
 def nullHomotopy' (h : ∀ i j, c.Rel j i → (C.X i ⟶ D.X j)) : Homotopy (nullHomotopicMap' h) 0 := by
   apply nullHomotopy fun i j => dite (c.Rel j i) (h i j) fun _ => 0
   grind
@@ -485,7 +484,7 @@ section
 
 /-- An auxiliary construction for `mkInductive`.
 -/
-def mkInductiveAux₂ :
+noncomputable def mkInductiveAux₂ :
     ∀ n, Σ' (f : P.xNext n ⟶ Q.X n) (f' : P.X n ⟶ Q.xPrev n), e.f n = P.dFrom n ≫ f + f' ≫ Q.dTo n
   | 0 => ⟨0, zero ≫ (Q.xPrevIso rfl).inv, by simpa using! comm_zero⟩
   | n + 1 =>
@@ -520,7 +519,7 @@ and then give a construction of each component,
 and the fact that it satisfies the homotopy condition,
 using as an inductive hypothesis the data and homotopy condition for the previous two components.
 -/
-def mkInductive : Homotopy e 0 where
+noncomputable def mkInductive : Homotopy e 0 where
   hom i j :=
     if h : i + 1 = j then
       (mkInductiveAux₂ e zero comm_zero one comm_one succ i).2.1 ≫ (Q.xPrevIso h).hom
@@ -615,7 +614,7 @@ section
 
 /-- An auxiliary construction for `mkInductive`.
 -/
-def mkCoinductiveAux₂ :
+noncomputable def mkCoinductiveAux₂ :
     ∀ n, Σ' (f : P.X n ⟶ Q.xPrev n) (f' : P.xNext n ⟶ Q.X n), e.f n = f ≫ Q.dTo n + P.dFrom n ≫ f'
   | 0 => ⟨0, (P.xNextIso rfl).hom ≫ zero, by simpa using! comm_zero⟩
   | n + 1 =>
@@ -649,7 +648,7 @@ and then give a construction of each component,
 and the fact that it satisfies the homotopy condition,
 using as an inductive hypothesis the data and homotopy condition for the previous two components.
 -/
-def mkCoinductive : Homotopy e 0 where
+noncomputable def mkCoinductive : Homotopy e 0 where
   hom i j :=
     if h : j + 1 = i then
       (P.xNextIso h).inv ≫ (mkCoinductiveAux₂ e zero comm_zero one comm_one succ j).2.1

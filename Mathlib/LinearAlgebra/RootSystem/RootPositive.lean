@@ -36,8 +36,6 @@ positive semi-definite on weight space and positive-definite on the span of root
 
 @[expose] public section
 
-noncomputable section
-
 open FaithfulSMul Function Set Submodule
 
 variable {ι R S M N : Type*} [CommRing S] [LinearOrder S]
@@ -126,7 +124,7 @@ lemma two_mul_apply_root_root :
 
 /-- Given a root-positive form associated to a root pairing with coefficients in `R` but taking
 values in `S`, this is the associated `S`-bilinear form on the `S`-span of the roots. -/
-def posForm :
+noncomputable def posForm :
     LinearMap.BilinForm S (span S (range P.root)) :=
   LinearMap.restrictScalarsRange₂ (span S (range P.root)).subtype (span S (range P.root)).subtype
   (Algebra.linearMap S R) (FaithfulSMul.algebraMap_injective S R) B.form
@@ -166,7 +164,7 @@ lemma isSymm_posForm :
     simpa using B.symm.eq x y
 
 /-- The length of the `i`-th root w.r.t. a root-positive form taking values in `S`. -/
-def rootLength (i : ι) : S :=
+noncomputable def rootLength (i : ι) : S :=
   B.posForm (P.rootSpanMem S i) (P.rootSpanMem S i)
 
 lemma rootLength_pos (i : ι) : 0 < B.rootLength i := by

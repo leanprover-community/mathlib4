@@ -40,7 +40,7 @@ The following are notations in the `OrderType` namespace:
 order type, order isomorphism, linear order
 -/
 
-public noncomputable section
+public section
 
 open Function Set Equiv Order
 
@@ -69,7 +69,7 @@ def ToType (o : OrderType) : Type u :=
 /-- The instance for some arbitrary linear order on `Type u` , order isomorphic within
 order type `o`. -/
 @[no_expose]
-instance (o : OrderType) : LinearOrder o.ToType :=
+noncomputable instance (o : OrderType) : LinearOrder o.ToType :=
   o.out.str
 
 /-! ### Basic properties of the order type -/

@@ -52,11 +52,11 @@ noncomputable def ExactPairing.ofFullyFaithful [F.Full] [F.Faithful] (X Y : C)
 variable {F}
 variable {G : D ⥤ C} (adj : F ⊣ G) [F.IsEquivalence]
 
-noncomputable section
+section
 
 /-- Pull back a left dual along an equivalence. -/
 @[implicit_reducible]
-def hasLeftDualOfEquivalence (X : C) [HasLeftDual (F.obj X)] :
+noncomputable def hasLeftDualOfEquivalence (X : C) [HasLeftDual (F.obj X)] :
     HasLeftDual X where
   leftDual := G.obj (ᘁ(F.obj X))
   exact := by
@@ -66,7 +66,7 @@ def hasLeftDualOfEquivalence (X : C) [HasLeftDual (F.obj X)] :
 
 /-- Pull back a right dual along an equivalence. -/
 @[implicit_reducible]
-def hasRightDualOfEquivalence (X : C) [HasRightDual (F.obj X)] :
+noncomputable def hasRightDualOfEquivalence (X : C) [HasRightDual (F.obj X)] :
     HasRightDual X where
   rightDual := G.obj ((F.obj X)ᘁ)
   exact := by
@@ -76,17 +76,17 @@ def hasRightDualOfEquivalence (X : C) [HasRightDual (F.obj X)] :
 
 /-- Pull back a left rigid structure along an equivalence. -/
 @[implicit_reducible]
-def leftRigidCategoryOfEquivalence [LeftRigidCategory D] :
+noncomputable def leftRigidCategoryOfEquivalence [LeftRigidCategory D] :
     LeftRigidCategory C where leftDual X := hasLeftDualOfEquivalence adj X
 
 /-- Pull back a right rigid structure along an equivalence. -/
 @[implicit_reducible]
-def rightRigidCategoryOfEquivalence [RightRigidCategory D] :
+noncomputable def rightRigidCategoryOfEquivalence [RightRigidCategory D] :
     RightRigidCategory C where rightDual X := hasRightDualOfEquivalence adj X
 
 /-- Pull back a rigid structure along an equivalence. -/
 @[implicit_reducible]
-def rigidCategoryOfEquivalence [RigidCategory D] : RigidCategory C where
+noncomputable def rigidCategoryOfEquivalence [RigidCategory D] : RigidCategory C where
   leftDual X := hasLeftDualOfEquivalence adj X
   rightDual X := hasRightDualOfEquivalence adj X
 

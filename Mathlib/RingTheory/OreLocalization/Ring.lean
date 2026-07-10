@@ -201,13 +201,13 @@ theorem numeratorHom_inj (hS : S ≤ nonZeroDivisorsLeft R) :
 
 end Ring
 
-noncomputable section DivisionRing
+section DivisionRing
 
 open nonZeroDivisors
 
 variable {R : Type*} [Ring R] [Nontrivial R] [NoZeroDivisors R] [OreSet R⁰]
 
-instance : DivisionRing R[R⁰⁻¹] where
+noncomputable instance : DivisionRing R[R⁰⁻¹] where
   mul_inv_cancel := OreLocalization.mul_inv_cancel
   inv_zero := OreLocalization.inv_zero
   nnqsmul := _

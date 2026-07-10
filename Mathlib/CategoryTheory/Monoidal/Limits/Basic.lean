@@ -30,7 +30,7 @@ open MonoidalCategory
 
 universe v u w
 
-noncomputable section
+section
 
 variable {J : Type w} [SmallCategory J] {C : Type u} [Category.{v} C] [HasLimitsOfShape J C]
   [MonoidalCategory.{v} C]
@@ -39,7 +39,7 @@ open Functor.LaxMonoidal
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
-instance : (lim (J := J) (C := C)).LaxMonoidal :=
+noncomputable instance : (lim (J := J) (C := C)).LaxMonoidal :=
   Functor.LaxMonoidal.ofTensorHom
     (ε :=
       limit.lift _

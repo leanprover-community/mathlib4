@@ -243,7 +243,7 @@ theorem finsuppLequivDFinsupp_symm_apply [DecidableEq ι] [Semiring R] [AddCommM
     ↑(LinearEquiv.symm (finsuppLequivDFinsupp (ι := ι) (M := M) R)) = DFinsupp.toFinsupp :=
   rfl
 
-noncomputable section Sigma
+section Sigma
 
 /-! ### Stronger versions of `Finsupp.split` -/
 
@@ -252,7 +252,7 @@ variable {η : ι → Type*} {N : Type*} [Semiring R]
 open Finsupp
 
 /-- `Finsupp.split` is an equivalence between `(Σ i, η i) →₀ N` and `Π₀ i, (η i →₀ N)`. -/
-def sigmaFinsuppEquivDFinsupp [Zero N] : ((Σ i, η i) →₀ N) ≃ Π₀ i, η i →₀ N where
+noncomputable def sigmaFinsuppEquivDFinsupp [Zero N] : ((Σ i, η i) →₀ N) ≃ Π₀ i, η i →₀ N where
   toFun f := ⟨split f, Trunc.mk ⟨(splitSupport f : Finset ι).val, fun i => by
           rw [← Finset.mem_def, mem_splitSupport_iff_nonzero]
           exact (em _).symm⟩⟩
@@ -313,6 +313,7 @@ theorem sigmaFinsuppEquivDFinsupp_add [AddZeroClass N] (f g : (Σ i, η i) →�
 
 /-- `Finsupp.split` is an additive equivalence between `(Σ i, η i) →₀ N` and `Π₀ i, (η i →₀ N)`. -/
 @[simps]
+noncomputable
 def sigmaFinsuppAddEquivDFinsupp [AddZeroClass N] : ((Σ i, η i) →₀ N) ≃+ Π₀ i, η i →₀ N :=
   { sigmaFinsuppEquivDFinsupp with
     toFun := sigmaFinsuppEquivDFinsupp
@@ -332,7 +333,7 @@ attribute [-instance] Finsupp.instAddMonoid
 
 /-- `Finsupp.split` is a linear equivalence between `(Σ i, η i) →₀ N` and `Π₀ i, (η i →₀ N)`. -/
 @[simps]
-def sigmaFinsuppLequivDFinsupp [AddCommMonoid N] [Module R N] :
+noncomputable def sigmaFinsuppLequivDFinsupp [AddCommMonoid N] [Module R N] :
     ((Σ i, η i) →₀ N) ≃ₗ[R] Π₀ i, η i →₀ N :=
   { sigmaFinsuppAddEquivDFinsupp with
     map_smul' := sigmaFinsuppEquivDFinsupp_smul }

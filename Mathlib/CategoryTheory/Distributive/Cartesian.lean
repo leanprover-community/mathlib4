@@ -46,8 +46,6 @@ public section
 
 universe v v₂ u u₂
 
-noncomputable section
-
 namespace CategoryTheory
 
 open Category Limits MonoidalCategory Distributive CartesianMonoidalCategory

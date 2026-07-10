@@ -38,8 +38,6 @@ product, sum, disjoint union
 
 @[expose] public section
 
-noncomputable section
-
 open Topology TopologicalSpace Set Filter Function
 
 universe u v u' v'

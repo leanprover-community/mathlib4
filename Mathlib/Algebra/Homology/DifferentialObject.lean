@@ -22,8 +22,6 @@ it's here to check that definitions match up as expected.
 
 open CategoryTheory CategoryTheory.Limits
 
-noncomputable section
-
 /-!
 We first prove some results about differential graded objects.
 
@@ -80,7 +78,7 @@ open scoped Classical in
 /-- The functor from differential graded objects to homological complexes.
 -/
 @[simps]
-def dgoToHomologicalComplex :
+noncomputable def dgoToHomologicalComplex :
     DifferentialObject ℤ (GradedObjectWithShift b V) ⥤
       HomologicalComplex V (ComplexShape.up' b) where
   obj X :=
@@ -114,7 +112,7 @@ set_option backward.defeqAttrib.useBackward true in
 /-- The unit isomorphism for `dgoEquivHomologicalComplex`.
 -/
 @[simps!]
-def dgoEquivHomologicalComplexUnitIso :
+noncomputable def dgoEquivHomologicalComplexUnitIso :
     𝟭 (DifferentialObject ℤ (GradedObjectWithShift b V)) ≅
       dgoToHomologicalComplex b V ⋙ homologicalComplexToDGO b V :=
   NatIso.ofComponents (fun X =>
@@ -126,7 +124,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- The counit isomorphism for `dgoEquivHomologicalComplex`.
 -/
 @[simps!]
-def dgoEquivHomologicalComplexCounitIso :
+noncomputable def dgoEquivHomologicalComplexCounitIso :
     homologicalComplexToDGO b V ⋙ dgoToHomologicalComplex b V ≅
       𝟭 (HomologicalComplex V (ComplexShape.up' b)) :=
   NatIso.ofComponents (fun X =>
@@ -138,7 +136,7 @@ set_option backward.defeqAttrib.useBackward true in
 to the category of homological complexes in `V`.
 -/
 @[simps]
-def dgoEquivHomologicalComplex :
+noncomputable def dgoEquivHomologicalComplex :
     DifferentialObject ℤ (GradedObjectWithShift b V) ≌
       HomologicalComplex V (ComplexShape.up' b) where
   functor := dgoToHomologicalComplex b V

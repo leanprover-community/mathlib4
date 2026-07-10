@@ -26,8 +26,6 @@ This file lifts order structures on `α` to `ι →₀ α`.
 
 public section
 
-noncomputable section
-
 open Finset
 
 variable {ι κ α β : Type*}
@@ -257,7 +255,7 @@ variable [Sub α] [OrderedSub α] {f g : ι →₀ α} {i : ι} {a b : α}
 
 /-- This is called `tsub` for truncated subtraction, to distinguish it with subtraction in an
 additive group. -/
-instance tsub : Sub (ι →₀ α) :=
+noncomputable instance tsub : Sub (ι →₀ α) :=
   ⟨zipWith (fun m n => m - n) (tsub_self 0)⟩
 
 instance orderedSub : OrderedSub (ι →₀ α) :=

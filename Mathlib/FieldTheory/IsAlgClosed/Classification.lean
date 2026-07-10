@@ -38,7 +38,7 @@ namespace IsAlgClosed
 
 section Classification
 
-noncomputable section
+section
 
 variable {R L K : Type*} [CommRing R]
 variable [Field K] [Algebra R K]
@@ -58,7 +58,7 @@ variable (hw : AlgebraicIndependent R w)
 /-- setting `R` to be `ZMod (ringChar R)` this result shows that if two algebraically
 closed fields have equipotent transcendence bases and the same characteristic then they are
 isomorphic. -/
-def equivOfTranscendenceBasis [IsAlgClosed K] [IsAlgClosed L] (e : ι ≃ κ)
+noncomputable def equivOfTranscendenceBasis [IsAlgClosed K] [IsAlgClosed L] (e : ι ≃ κ)
     (hv : IsTranscendenceBasis R v) (hw : IsTranscendenceBasis R w) : K ≃+* L := by
   letI := isAlgClosure_of_transcendence_basis v hv
   letI := isAlgClosure_of_transcendence_basis w hw

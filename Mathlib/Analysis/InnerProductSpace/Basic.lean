@@ -31,8 +31,6 @@ inner product space, Hilbert space, norm
 @[expose] public section
 
 
-noncomputable section
-
 open RCLike Real Filter Topology ComplexConjugate Finsupp
 
 open LinearMap (BilinForm)
@@ -141,7 +139,7 @@ theorem innerₛₗ_apply_apply (v w : E) : innerₛₗ 𝕜 v w = ⟪v, w⟫ :=
 
 variable (F)
 /-- The inner product as a bilinear map in the real case. -/
-def innerₗ : F →ₗ[ℝ] F →ₗ[ℝ] ℝ := innerₛₗ ℝ
+noncomputable def innerₗ : F →ₗ[ℝ] F →ₗ[ℝ] ℝ := innerₛₗ ℝ
 
 @[simp] lemma flip_innerₗ : (innerₗ F).flip = innerₗ F := by
   ext v w
@@ -944,7 +942,7 @@ This is not registered as an instance since
 However, it can be used in a proof to obtain a real inner product space structure from a given
 `𝕜`-inner product space structure. -/
 -- See note [reducible non-instances]
-abbrev InnerProductSpace.rclikeToReal : InnerProductSpace ℝ E :=
+noncomputable abbrev InnerProductSpace.rclikeToReal : InnerProductSpace ℝ E :=
   { Inner.rclikeToReal 𝕜 E,
     NormedSpace.restrictScalars ℝ 𝕜 E with
     norm_sq_eq_re_inner := norm_sq_eq_re_inner
@@ -971,11 +969,12 @@ theorem real_inner_I_smul_self (x : E) :
 creates a diamond with `PiLp.innerProductSpace` because `re (sum i, ⟪x i, y i⟫)` and
 `sum i, re ⟪x i, y i⟫` are not defeq. -/
 @[implicit_reducible]
+noncomputable
 def InnerProductSpace.complexToReal [SeminormedAddCommGroup G] [InnerProductSpace ℂ G] :
     InnerProductSpace ℝ G :=
   InnerProductSpace.rclikeToReal ℂ G
 
-instance : InnerProductSpace ℝ ℂ := InnerProductSpace.complexToReal
+noncomputable instance : InnerProductSpace ℝ ℂ := InnerProductSpace.complexToReal
 
 @[simp]
 protected theorem Complex.inner (w z : ℂ) : ⟪w, z⟫_ℝ = (z * conj w).re :=

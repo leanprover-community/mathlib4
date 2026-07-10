@@ -344,7 +344,7 @@ instance : lightProfiniteToLightDiagram.IsEquivalence :=
 instance : lightDiagramToLightProfinite.IsEquivalence :=
   show LightProfinite.equivDiagram.inverse.IsEquivalence from inferInstance
 
-noncomputable section EssentiallySmall
+section EssentiallySmall
 
 open LightDiagram
 
@@ -360,14 +360,14 @@ structure LightDiagram' : Type u where
   diagram : ℕᵒᵖ ⥤ FintypeCat.Skeleton.{u}
 
 /-- A `LightDiagram'` yields a `Profinite`. -/
-def LightDiagram'.toProfinite (S : LightDiagram') : Profinite :=
+noncomputable def LightDiagram'.toProfinite (S : LightDiagram') : Profinite :=
   limit (S.diagram ⋙ FintypeCat.Skeleton.equivalence.functor ⋙ FintypeCat.toProfinite.{u})
 
-instance : Category LightDiagram' :=
+noncomputable instance : Category LightDiagram' :=
   inferInstanceAs (Category (InducedCategory _ LightDiagram'.toProfinite))
 
 /-- The functor part of the equivalence of categories `LightDiagram' ≌ LightDiagram`. -/
-def LightDiagram'.toLightFunctor : LightDiagram'.{u} ⥤ LightDiagram.{u} where
+noncomputable def LightDiagram'.toLightFunctor : LightDiagram'.{u} ⥤ LightDiagram.{u} where
   obj X := ⟨X.diagram ⋙ Skeleton.equivalence.functor, _, limit.isLimit _⟩
   map f := InducedCategory.homMk f.hom
 
@@ -389,7 +389,7 @@ instance : LightDiagram'.toLightFunctor.{u}.EssSurj where
 instance : LightDiagram'.toLightFunctor.IsEquivalence where
 
 /-- The equivalence between `LightDiagram` and a small category. -/
-def LightDiagram.equivSmall : LightDiagram.{u} ≌ LightDiagram'.{u} :=
+noncomputable def LightDiagram.equivSmall : LightDiagram.{u} ≌ LightDiagram'.{u} :=
   LightDiagram'.toLightFunctor.asEquivalence.symm
 
 instance : EssentiallySmall.{u} LightDiagram.{u} where

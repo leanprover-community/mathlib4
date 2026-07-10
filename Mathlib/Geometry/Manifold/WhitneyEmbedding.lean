@@ -37,8 +37,6 @@ variable {ι : Type uι} {E : Type uE} [NormedAddCommGroup E] [NormedSpace ℝ E
   [FiniteDimensional ℝ E] {H : Type uH} [TopologicalSpace H] {I : ModelWithCorners ℝ E H}
   {M : Type uM} [TopologicalSpace M] [ChartedSpace H M] [IsManifold I ∞ M]
 
-noncomputable section
-
 namespace SmoothBumpCovering
 
 /-!
@@ -51,7 +49,7 @@ In this section we prove a version of the Whitney embedding theorem: for any com
 variable [T2Space M] [Fintype ι] {s : Set M} (f : SmoothBumpCovering ι I M s)
 
 /-- Smooth embedding of `M` into `(E × ℝ) ^ ι`. -/
-def embeddingPiTangent : C^∞⟮I, M; 𝓘(ℝ, ι → E × ℝ), ι → E × ℝ⟯ where
+noncomputable def embeddingPiTangent : C^∞⟮I, M; 𝓘(ℝ, ι → E × ℝ), ι → E × ℝ⟯ where
   val x i := (f i x • extChartAt I (f.c i) x, f i x)
   property :=
     contMDiff_pi_space.2 fun i =>

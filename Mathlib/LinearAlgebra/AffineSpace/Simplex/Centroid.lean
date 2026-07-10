@@ -43,8 +43,6 @@ of the simplex.
 
 @[expose] public section
 
-noncomputable section
-
 open Finset AffineSubspace
 
 namespace Affine
@@ -57,7 +55,7 @@ variable {k : Type*} {V : Type*} {P : Type*} [DivisionRing k] [AddCommGroup V] [
 variable {n : ℕ}
 
 /-- The centroid of a simplex is the `Finset.centroid` of the set of all its vertices. -/
-abbrev centroid (t : Affine.Simplex k P n) : P := Finset.univ.centroid k t.points
+noncomputable abbrev centroid (t : Affine.Simplex k P n) : P := Finset.univ.centroid k t.points
 
 theorem univ_centroid_eq (s : Simplex k P n) :
     Finset.univ.centroid k s.points = s.centroid := rfl
@@ -228,7 +226,7 @@ theorem centroid_restrict [CharZero k] {n : ℕ} (s : Simplex k P n) (S : Affine
 variable [NeZero n]
 
 /-- The faceOppositeCentroid is the centroid of the face opposite to the vertex indexed by `i`. -/
-def faceOppositeCentroid (s : Affine.Simplex k P n) (i : Fin (n + 1)) : P :=
+noncomputable def faceOppositeCentroid (s : Affine.Simplex k P n) (i : Fin (n + 1)) : P :=
   (s.faceOpposite i).centroid
 
 /-- The centroid of the face opposite a vertex lies in the affine span of that face. -/
@@ -533,7 +531,7 @@ theorem eq_centroid_of_forall_mem_median [CharZero k] (s : Simplex k P n) {hn : 
 end median
 
 /-- The medial is the simplex formed by centroids on all faces. -/
-def medial [CharZero k] (s : Simplex k P n) : Simplex k P n where
+noncomputable def medial [CharZero k] (s : Simplex k P n) : Simplex k P n where
   points i := s.faceOppositeCentroid i
   independent := by
     obtain h := s.independent

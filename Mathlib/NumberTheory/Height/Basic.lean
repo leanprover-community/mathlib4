@@ -64,7 +64,7 @@ Height, absolute value
 
 -/
 
-@[expose] public noncomputable section
+@[expose] public section
 
 namespace Height
 
@@ -112,7 +112,7 @@ We use the subscript `₁` to denote multiplicative and logarithmic heights of f
 -/
 
 /-- The multiplicative height of an element of `K`. -/
-def mulHeight₁ (x : K) : ℝ :=
+noncomputable def mulHeight₁ (x : K) : ℝ :=
   (archAbsVal.map fun v ↦ max (v x) 1).prod * ∏ᶠ v : nonarchAbsVal, max (v.val x) 1
 
 lemma mulHeight₁_eq (x : K) :
@@ -145,7 +145,7 @@ lemma mulHeight₁_nonneg (x : K) : 0 ≤ mulHeight₁ x :=
   (mulHeight₁_pos x).le
 
 /-- The logarithmic height of an element of `K`. -/
-def logHeight₁ (x : K) : ℝ := log (mulHeight₁ x)
+noncomputable def logHeight₁ (x : K) : ℝ := log (mulHeight₁ x)
 
 lemma logHeight₁_eq_log_mulHeight₁ (x : K) : logHeight₁ x = log (mulHeight₁ x) := rfl
 
@@ -231,7 +231,7 @@ variable {K : Type*} [Field K] [AdmissibleAbsValues K] {ι ι' : Type*}
 
 /-- The multiplicative height of a tuple of elements of `K`.
 For the zero tuple we take the junk value `1`. -/
-def mulHeight (x : ι → K) : ℝ :=
+noncomputable def mulHeight (x : ι → K) : ℝ :=
   have : Decidable (x = 0) := Classical.propDecidable _
   if x = 0 then 1 else
     (archAbsVal.map fun v ↦ ⨆ i, v (x i)).prod * ∏ᶠ v : nonarchAbsVal, ⨆ i, v.val (x i)
@@ -270,7 +270,7 @@ lemma mulHeight_swap (x y : K) : mulHeight ![x, y] = mulHeight ![y, x] := by
   exact mulHeight_comp_equiv e ![y, x]
 
 /-- The logarithmic height of a tuple of elements of `K`. -/
-def logHeight (x : ι → K) : ℝ := log (mulHeight x)
+noncomputable def logHeight (x : ι → K) : ℝ := log (mulHeight x)
 
 lemma logHeight_eq_log_mulHeight (x : ι → K) : logHeight x = log (mulHeight x) := rfl
 
@@ -292,11 +292,11 @@ lemma logHeight_swap (x y : K) : logHeight ![x, y] = logHeight ![y, x] := by
 variable {α : Type*}
 
 /-- The multiplicative height of a finitely supported function. -/
-def _root_.Finsupp.mulHeight (x : α →₀ K) : ℝ :=
+noncomputable def _root_.Finsupp.mulHeight (x : α →₀ K) : ℝ :=
   Height.mulHeight fun i : x.support ↦ x i
 
 /-- The logarithmic height of a finitely supported function. -/
-def _root_.Finsupp.logHeight (x : α →₀ K) : ℝ := log (mulHeight x)
+noncomputable def _root_.Finsupp.logHeight (x : α →₀ K) : ℝ := log (mulHeight x)
 
 lemma _root_.Finsupp.logHeight_eq_log_mulHeight (x : α →₀ K) :
     logHeight x = log (mulHeight x) := rfl

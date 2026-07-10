@@ -27,8 +27,6 @@ implies that `forget (ModuleCat R)` preserves filtered colimits.
 
 universe v u
 
-noncomputable section
-
 open CategoryTheory Limits ConcreteCategory
 
 open CategoryTheory.IsFiltered renaming max → max' -- avoid name collision with `_root_.max`.
@@ -43,7 +41,7 @@ variable (F : J ⥤ ModuleCat.{max v u, u} R)
 /-- The colimit of `F ⋙ forget₂ (ModuleCat R) AddCommGrpCat` in the category `AddCommGrpCat`.
 In the following, we will show that this has the structure of an `R`-module.
 -/
-def M : AddCommGrpCat :=
+noncomputable def M : AddCommGrpCat :=
   AddCommGrpCat.FilteredColimits.colimit.{v, u}
     (F ⋙ forget₂ (ModuleCat R) AddCommGrpCat.{max v u})
 
@@ -139,18 +137,18 @@ instance colimitModule : Module R (M F) :=
     simp [_root_.add_smul, colimit_add_mk_eq'] }
 
 /-- The bundled `R`-module giving the filtered colimit of a diagram. -/
-def colimit : ModuleCat.{max v u, u} R :=
+noncomputable def colimit : ModuleCat.{max v u, u} R :=
   ModuleCat.of R (M F)
 
 /-- The linear map from a given `R`-module in the diagram to the colimit module. -/
-def coconeMorphism (j : J) : F.obj j ⟶ colimit F :=
+noncomputable def coconeMorphism (j : J) : F.obj j ⟶ colimit F :=
   ofHom
     { ((AddCommGrpCat.FilteredColimits.colimitCocone
       (F ⋙ forget₂ (ModuleCat R) AddCommGrpCat.{max v u})).ι.app j).hom with
     map_smul' := by solve_by_elim }
 
 /-- The cocone over the proposed colimit module. -/
-def colimitCocone : Cocone F where
+noncomputable def colimitCocone : Cocone F where
   pt := colimit F
   ι :=
     { app := coconeMorphism F
@@ -164,7 +162,7 @@ set_option backward.isDefEq.respectTransparency false in
 We already know that this is a morphism between additive groups. The only thing left to see is that
 it is a linear map, i.e. preserves scalar multiplication.
 -/
-def colimitDesc (t : Cocone F) : colimit F ⟶ t.pt :=
+noncomputable def colimitDesc (t : Cocone F) : colimit F ⟶ t.pt :=
   let h := (AddCommGrpCat.FilteredColimits.colimitCoconeIsColimit (F ⋙ forget₂ _ _))
   let f : colimit F →+ t.pt := (h.desc ((forget₂ _ _).mapCocone t)).hom
   have hf {j : J} (x : F.obj j) : f (M.mk _ ⟨j, x⟩) = t.ι.app j x :=
@@ -183,7 +181,7 @@ lemma ι_colimitDesc (t : Cocone F) (j : J) :
     ((AddCommGrpCat.FilteredColimits.colimitCoconeIsColimit (F ⋙ forget₂ _ _)).fac _ _)
 
 /-- The proposed colimit cocone is a colimit in `ModuleCat R`. -/
-def colimitCoconeIsColimit : IsColimit (colimitCocone F) where
+noncomputable def colimitCoconeIsColimit : IsColimit (colimitCocone F) where
   desc := colimitDesc F
   fac t j := by simp
   uniq t _ h := by

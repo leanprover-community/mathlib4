@@ -48,7 +48,6 @@ multiples of `1 / s` and `1 / (1 - s)`.
 -/
 
 @[expose] public section
-noncomputable section
 
 open Complex Filter Topology Asymptotics Real Set MeasureTheory
 
@@ -62,7 +61,7 @@ section kernel_defs
 /-- Even Hurwitz zeta kernel (function whose Mellin transform will be the even part of the
 completed Hurwitz zeta function). See `evenKernel_def` for the defining formula, and
 `hasSum_int_evenKernel` for an expression as a sum over `ℤ`. -/
-@[irreducible] def evenKernel (a : UnitAddCircle) (x : ℝ) : ℝ :=
+@[irreducible] noncomputable def evenKernel (a : UnitAddCircle) (x : ℝ) : ℝ :=
   (show Function.Periodic
     (fun ξ : ℝ ↦ rexp (-π * ξ ^ 2 * x) * re (jacobiTheta₂ (ξ * I * x) (I * x))) 1 by
       intro ξ
@@ -86,7 +85,7 @@ lemma evenKernel_undef (a : UnitAddCircle) {x : ℝ} (hx : x ≤ 0) : evenKernel
 
 /-- Cosine Hurwitz zeta kernel. See `cosKernel_def` for the defining formula, and
 `hasSum_int_cosKernel` for expression as a sum. -/
-@[irreducible] def cosKernel (a : UnitAddCircle) (x : ℝ) : ℝ :=
+@[irreducible] noncomputable def cosKernel (a : UnitAddCircle) (x : ℝ) : ℝ :=
   (show Function.Periodic (fun ξ : ℝ ↦ re (jacobiTheta₂ ξ (I * x))) 1 by
     intro ξ; simp [jacobiTheta₂_add_left]).lift a
 
@@ -251,7 +250,7 @@ section FEPair
 -/
 
 /-- A `WeakFEPair` structure with `f = evenKernel a` and `g = cosKernel a`. -/
-def hurwitzEvenFEPair (a : UnitAddCircle) : WeakFEPair ℂ where
+noncomputable def hurwitzEvenFEPair (a : UnitAddCircle) : WeakFEPair ℂ where
   f := ofReal ∘ evenKernel a
   g := ofReal ∘ cosKernel a
   hf_int := (continuous_ofReal.comp_continuousOn (continuousOn_evenKernel a)).locallyIntegrableOn
@@ -294,12 +293,12 @@ lemma hurwitzEvenFEPair_neg (a : UnitAddCircle) : hurwitzEvenFEPair (-a) = hurwi
 The meromorphic function of `s` which agrees with
 `1 / 2 * Gamma (s / 2) * π ^ (-s / 2) * ∑' (n : ℤ), 1 / |n + a| ^ s` for `1 < re s`.
 -/
-def completedHurwitzZetaEven (a : UnitAddCircle) (s : ℂ) : ℂ :=
+noncomputable def completedHurwitzZetaEven (a : UnitAddCircle) (s : ℂ) : ℂ :=
   ((hurwitzEvenFEPair a).Λ (s / 2)) / 2
 
 /-- The entire function differing from `completedHurwitzZetaEven a s` by a linear combination of
 `1 / s` and `1 / (1 - s)`. -/
-def completedHurwitzZetaEven₀ (a : UnitAddCircle) (s : ℂ) : ℂ :=
+noncomputable def completedHurwitzZetaEven₀ (a : UnitAddCircle) (s : ℂ) : ℂ :=
   ((hurwitzEvenFEPair a).Λ₀ (s / 2)) / 2
 
 lemma completedHurwitzZetaEven_eq (a : UnitAddCircle) (s : ℂ) :
@@ -318,12 +317,12 @@ lemma completedHurwitzZetaEven_eq (a : UnitAddCircle) (s : ℂ) :
 The meromorphic function of `s` which agrees with
 `Gamma (s / 2) * π ^ (-s / 2) * ∑' n : ℕ, cos (2 * π * a * n) / n ^ s` for `1 < re s`.
 -/
-def completedCosZeta (a : UnitAddCircle) (s : ℂ) : ℂ :=
+noncomputable def completedCosZeta (a : UnitAddCircle) (s : ℂ) : ℂ :=
   ((hurwitzEvenFEPair a).symm.Λ (s / 2)) / 2
 
 /-- The entire function differing from `completedCosZeta a s` by a linear combination of
 `1 / s` and `1 / (1 - s)`. -/
-def completedCosZeta₀ (a : UnitAddCircle) (s : ℂ) : ℂ :=
+noncomputable def completedCosZeta₀ (a : UnitAddCircle) (s : ℂ) : ℂ :=
   ((hurwitzEvenFEPair a).symm.Λ₀ (s / 2)) / 2
 
 lemma completedCosZeta_eq (a : UnitAddCircle) (s : ℂ) :

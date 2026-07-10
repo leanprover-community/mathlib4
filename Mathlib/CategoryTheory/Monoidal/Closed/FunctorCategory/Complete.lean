@@ -24,8 +24,6 @@ universe v₁ v₂ u₁ u₂
 
 open CategoryTheory MonoidalCategory MonoidalClosed Limits
 
-noncomputable section
-
 namespace CategoryTheory.Functor
 
 section
@@ -56,7 +54,7 @@ instance : Comonad.PreservesLimitOfIsCoreflexivePair ((whiskeringLeft _ _ C).obj
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
-instance : ComonadicLeftAdjoint ((whiskeringLeft _ _ C).obj (incl I)) :=
+noncomputable instance : ComonadicLeftAdjoint ((whiskeringLeft _ _ C).obj (incl I)) :=
   Comonad.comonadicOfHasPreservesCoreflexiveEqualizersOfReflectsIsomorphisms
     ((incl I).ranAdjunction C)
 
@@ -69,7 +67,7 @@ set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- Auxiliary definition for `functorCategoryMonoidalClosed` -/
 @[implicit_reducible]
-def functorCategoryClosed (F : I ⥤ C) : Closed F :=
+noncomputable def functorCategoryClosed (F : I ⥤ C) : Closed F :=
   have := (ihom.adjunction (incl I ⋙ F)).isLeftAdjoint
   have := isLeftAdjoint_square_lift_comonadic (tensorLeft F) ((whiskeringLeft _ _ C).obj (incl I))
     ((whiskeringLeft _ _ C).obj (incl I)) (tensorLeft (incl I ⋙ F)) (Iso.refl _)
@@ -84,7 +82,7 @@ Note: this is defined completely abstractly, and does not have any good definiti
 See the TODO in the module docstring.
 -/
 @[implicit_reducible]
-def functorCategoryMonoidalClosed : MonoidalClosed (I ⥤ C) where
+noncomputable def functorCategoryMonoidalClosed : MonoidalClosed (I ⥤ C) where
   closed F := functorCategoryClosed I C F
 
 end

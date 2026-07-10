@@ -25,8 +25,6 @@ Define a bundled `SubadditiveHom`, use it.
 
 @[expose] public section
 
-noncomputable section
-
 open Set Filter Topology
 
 /-- A real-valued sequence is subadditive if it satisfies the inequality `u (m + n) ≤ u m + u n`
@@ -41,7 +39,7 @@ variable {u : ℕ → ℝ} (h : Subadditive u)
 /-- The limit of a bounded-below subadditive sequence. The fact that the sequence indeed tends to
 this limit is given in `Subadditive.tendsto_lim` -/
 @[nolint unusedArguments, irreducible]
-protected def lim (_h : Subadditive u) :=
+protected noncomputable def lim (_h : Subadditive u) :=
   sInf ((fun n : ℕ => u n / n) '' Ici 1)
 
 theorem lim_le_div (hbdd : BddBelow (range fun n => u n / n)) {n : ℕ} (hn : n ≠ 0) :

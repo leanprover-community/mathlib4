@@ -44,8 +44,6 @@ As in other polynomial files, we typically use the notation:
 @[expose] public section
 
 
-noncomputable section
-
 open Set Function Finsupp AddMonoidAlgebra
 
 universe u v w
@@ -66,7 +64,7 @@ section Vars
 
 
 /-- `vars p` is the set of variables appearing in the polynomial `p` -/
-def vars (p : MvPolynomial σ R) : Finset σ :=
+noncomputable def vars (p : MvPolynomial σ R) : Finset σ :=
   letI := Classical.decEq σ
   p.degrees.toFinset
 

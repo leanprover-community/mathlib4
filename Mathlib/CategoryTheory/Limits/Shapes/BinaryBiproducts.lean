@@ -31,7 +31,7 @@ cocone.
 
 @[expose] public section
 
-noncomputable section
+section
 
 universe w w' v u
 
@@ -398,25 +398,26 @@ theorem HasBinaryBiproduct.mk {P Q : C} (d : BinaryBiproductData P Q) : HasBinar
 /--
 Use the axiom of choice to extract explicit `BinaryBiproductData F` from `HasBinaryBiproduct F`.
 -/
+noncomputable
 def getBinaryBiproductData (P Q : C) [HasBinaryBiproduct P Q] : BinaryBiproductData P Q :=
   Classical.choice HasBinaryBiproduct.exists_binary_biproduct
 
 /-- A bicone for `P Q` which is both a limit cone and a colimit cocone. -/
-def BinaryBiproduct.bicone (P Q : C) [HasBinaryBiproduct P Q] : BinaryBicone P Q :=
+noncomputable def BinaryBiproduct.bicone (P Q : C) [HasBinaryBiproduct P Q] : BinaryBicone P Q :=
   (getBinaryBiproductData P Q).bicone
 
 /-- `BinaryBiproduct.bicone P Q` is a limit bicone. -/
-def BinaryBiproduct.isBilimit (P Q : C) [HasBinaryBiproduct P Q] :
+noncomputable def BinaryBiproduct.isBilimit (P Q : C) [HasBinaryBiproduct P Q] :
     (BinaryBiproduct.bicone P Q).IsBilimit :=
   (getBinaryBiproductData P Q).isBilimit
 
 /-- `BinaryBiproduct.bicone P Q` is a limit cone. -/
-def BinaryBiproduct.isLimit (P Q : C) [HasBinaryBiproduct P Q] :
+noncomputable def BinaryBiproduct.isLimit (P Q : C) [HasBinaryBiproduct P Q] :
     IsLimit (BinaryBiproduct.bicone P Q).toCone :=
   (getBinaryBiproductData P Q).isBilimit.isLimit
 
 /-- `BinaryBiproduct.bicone P Q` is a colimit cocone. -/
-def BinaryBiproduct.isColimit (P Q : C) [HasBinaryBiproduct P Q] :
+noncomputable def BinaryBiproduct.isColimit (P Q : C) [HasBinaryBiproduct P Q] :
     IsColimit (BinaryBiproduct.bicone P Q).toCocone :=
   (getBinaryBiproductData P Q).isBilimit.isColimit
 
@@ -474,31 +475,32 @@ instance (priority := 100) hasBinaryCoproducts_of_hasBinaryBiproducts [HasBinary
 
 /-- The isomorphism between the specified binary product and the specified binary coproduct for
 a pair for a binary biproduct. -/
+noncomputable
 def biprodIso (X Y : C) [HasBinaryBiproduct X Y] : Limits.prod X Y ≅ Limits.coprod X Y :=
   (IsLimit.conePointUniqueUpToIso (limit.isLimit _) (BinaryBiproduct.isLimit X Y)).trans <|
     IsColimit.coconePointUniqueUpToIso (BinaryBiproduct.isColimit X Y) (colimit.isColimit _)
 
 /-- An arbitrary choice of biproduct of a pair of objects. -/
-abbrev biprod (X Y : C) [HasBinaryBiproduct X Y] :=
+noncomputable abbrev biprod (X Y : C) [HasBinaryBiproduct X Y] :=
   (BinaryBiproduct.bicone X Y).pt
 
 @[inherit_doc biprod]
 notation:20 X " ⊞ " Y:20 => biprod X Y
 
 /-- The projection onto the first summand of a binary biproduct. -/
-abbrev biprod.fst {X Y : C} [HasBinaryBiproduct X Y] : X ⊞ Y ⟶ X :=
+noncomputable abbrev biprod.fst {X Y : C} [HasBinaryBiproduct X Y] : X ⊞ Y ⟶ X :=
   (BinaryBiproduct.bicone X Y).fst
 
 /-- The projection onto the second summand of a binary biproduct. -/
-abbrev biprod.snd {X Y : C} [HasBinaryBiproduct X Y] : X ⊞ Y ⟶ Y :=
+noncomputable abbrev biprod.snd {X Y : C} [HasBinaryBiproduct X Y] : X ⊞ Y ⟶ Y :=
   (BinaryBiproduct.bicone X Y).snd
 
 /-- The inclusion into the first summand of a binary biproduct. -/
-abbrev biprod.inl {X Y : C} [HasBinaryBiproduct X Y] : X ⟶ X ⊞ Y :=
+noncomputable abbrev biprod.inl {X Y : C} [HasBinaryBiproduct X Y] : X ⟶ X ⊞ Y :=
   (BinaryBiproduct.bicone X Y).inl
 
 /-- The inclusion into the second summand of a binary biproduct. -/
-abbrev biprod.inr {X Y : C} [HasBinaryBiproduct X Y] : Y ⟶ X ⊞ Y :=
+noncomputable abbrev biprod.inr {X Y : C} [HasBinaryBiproduct X Y] : Y ⟶ X ⊞ Y :=
   (BinaryBiproduct.bicone X Y).inr
 
 section
@@ -537,11 +539,13 @@ theorem biprod.inr_snd {X Y : C} [HasBinaryBiproduct X Y] :
 
 /-- Given a pair of maps into the summands of a binary biproduct,
 we obtain a map into the binary biproduct. -/
+noncomputable
 abbrev biprod.lift {W X Y : C} [HasBinaryBiproduct X Y] (f : W ⟶ X) (g : W ⟶ Y) : W ⟶ X ⊞ Y :=
   BinaryFan.IsLimit.lift (BinaryBiproduct.isLimit X Y) f g
 
 /-- Given a pair of maps out of the summands of a binary biproduct,
 we obtain a map out of the binary biproduct. -/
+noncomputable
 abbrev biprod.desc {W X Y : C} [HasBinaryBiproduct X Y] (f : X ⟶ W) (g : Y ⟶ W) : X ⊞ Y ⟶ W :=
   BinaryCofan.IsColimit.desc (BinaryBiproduct.isColimit X Y) f g
 
@@ -583,6 +587,7 @@ instance biprod.epi_desc_of_epi_right {W X Y : C} [HasBinaryBiproduct X Y] (f : 
 
 /-- Given a pair of maps between the summands of a pair of binary biproducts,
 we obtain a map between the binary biproducts. -/
+noncomputable
 abbrev biprod.map {W X Y Z : C} [HasBinaryBiproduct W X] [HasBinaryBiproduct Y Z] (f : W ⟶ Y)
     (g : X ⟶ Z) : W ⊞ X ⟶ Y ⊞ Z :=
   IsLimit.map (BinaryBiproduct.bicone W X).toCone (BinaryBiproduct.isLimit Y Z)
@@ -590,6 +595,7 @@ abbrev biprod.map {W X Y Z : C} [HasBinaryBiproduct W X] [HasBinaryBiproduct Y Z
 
 /-- An alternative to `biprod.map` constructed via colimits.
 This construction only exists in order to show it is equal to `biprod.map`. -/
+noncomputable
 abbrev biprod.map' {W X Y Z : C} [HasBinaryBiproduct W X] [HasBinaryBiproduct Y Z] (f : W ⟶ Y)
     (g : X ⟶ Z) : W ⊞ X ⟶ Y ⊞ Z :=
   IsColimit.map (BinaryBiproduct.isColimit W X) (BinaryBiproduct.bicone Y Z).toCocone
@@ -606,7 +612,7 @@ theorem biprod.hom_ext' {X Y Z : C} [HasBinaryBiproduct X Y] (f g : X ⊞ Y ⟶ 
   BinaryCofan.IsColimit.hom_ext (BinaryBiproduct.isColimit X Y) h₀ h₁
 
 /-- The canonical isomorphism between the chosen biproduct and the chosen product. -/
-def biprod.isoProd (X Y : C) [HasBinaryBiproduct X Y] : X ⊞ Y ≅ X ⨯ Y :=
+noncomputable def biprod.isoProd (X Y : C) [HasBinaryBiproduct X Y] : X ⊞ Y ≅ X ⨯ Y :=
   IsLimit.conePointUniqueUpToIso (BinaryBiproduct.isLimit X Y) (limit.isLimit _)
 
 set_option backward.isDefEq.respectTransparency false in
@@ -622,7 +628,7 @@ theorem biprod.isoProd_inv {X Y : C} [HasBinaryBiproduct X Y] :
   ext <;> simp [Iso.inv_comp_eq]
 
 /-- The canonical isomorphism between the chosen biproduct and the chosen coproduct. -/
-def biprod.isoCoprod (X Y : C) [HasBinaryBiproduct X Y] : X ⊞ Y ≅ X ⨿ Y :=
+noncomputable def biprod.isoCoprod (X Y : C) [HasBinaryBiproduct X Y] : X ⊞ Y ≅ X ⨿ Y :=
   IsColimit.coconePointUniqueUpToIso (BinaryBiproduct.isColimit X Y) (colimit.isColimit _)
 
 set_option backward.isDefEq.respectTransparency false in
@@ -699,6 +705,7 @@ theorem biprod.inr_map {W X Y Z : C} [HasBinaryBiproduct W X] [HasBinaryBiproduc
 /-- Given a pair of isomorphisms between the summands of a pair of binary biproducts,
 we obtain an isomorphism between the binary biproducts. -/
 @[simps]
+noncomputable
 def biprod.mapIso {W X Y Z : C} [HasBinaryBiproduct W X] [HasBinaryBiproduct Y Z] (f : W ≅ Y)
     (g : X ≅ Z) : W ⊞ X ≅ Y ⊞ Z where
   hom := biprod.map f.hom g.hom
@@ -727,7 +734,7 @@ limits, but in the case of biproducts we can give an isomorphism with particular
 definitional properties, namely that `biprod.lift b.fst b.snd` and `biprod.desc b.inl b.inr`
 are inverses of each other. -/
 @[simps]
-def biprod.uniqueUpToIso (X Y : C) [HasBinaryBiproduct X Y] {b : BinaryBicone X Y}
+noncomputable def biprod.uniqueUpToIso (X Y : C) [HasBinaryBiproduct X Y] {b : BinaryBicone X Y}
     (hb : b.IsBilimit) : b.pt ≅ X ⊞ Y where
   hom := biprod.lift b.fst b.snd
   inv := biprod.desc b.inl b.inr
@@ -852,7 +859,7 @@ variable (X Y : C) [HasBinaryBiproduct X Y]
 
 /-- A kernel fork for the kernel of `biprod.fst`. It consists of the
 morphism `biprod.inr`. -/
-def biprod.fstKernelFork : KernelFork (biprod.fst : X ⊞ Y ⟶ X) :=
+noncomputable def biprod.fstKernelFork : KernelFork (biprod.fst : X ⊞ Y ⟶ X) :=
   BinaryBicone.fstKernelFork _
 
 @[simp]
@@ -860,12 +867,12 @@ theorem biprod.fstKernelFork_ι : Fork.ι (biprod.fstKernelFork X Y) = (biprod.i
   rfl
 
 /-- The fork `biprod.fstKernelFork` is indeed a limit. -/
-def biprod.isKernelFstKernelFork : IsLimit (biprod.fstKernelFork X Y) :=
+noncomputable def biprod.isKernelFstKernelFork : IsLimit (biprod.fstKernelFork X Y) :=
   BinaryBicone.isLimitFstKernelFork (BinaryBiproduct.isLimit _ _)
 
 /-- A kernel fork for the kernel of `biprod.snd`. It consists of the
 morphism `biprod.inl`. -/
-def biprod.sndKernelFork : KernelFork (biprod.snd : X ⊞ Y ⟶ Y) :=
+noncomputable def biprod.sndKernelFork : KernelFork (biprod.snd : X ⊞ Y ⟶ Y) :=
   BinaryBicone.sndKernelFork _
 
 @[simp]
@@ -873,12 +880,12 @@ theorem biprod.sndKernelFork_ι : Fork.ι (biprod.sndKernelFork X Y) = (biprod.i
   rfl
 
 /-- The fork `biprod.sndKernelFork` is indeed a limit. -/
-def biprod.isKernelSndKernelFork : IsLimit (biprod.sndKernelFork X Y) :=
+noncomputable def biprod.isKernelSndKernelFork : IsLimit (biprod.sndKernelFork X Y) :=
   BinaryBicone.isLimitSndKernelFork (BinaryBiproduct.isLimit _ _)
 
 /-- A cokernel cofork for the cokernel of `biprod.inl`. It consists of the
 morphism `biprod.snd`. -/
-def biprod.inlCokernelCofork : CokernelCofork (biprod.inl : X ⟶ X ⊞ Y) :=
+noncomputable def biprod.inlCokernelCofork : CokernelCofork (biprod.inl : X ⟶ X ⊞ Y) :=
   BinaryBicone.inlCokernelCofork _
 
 @[simp]
@@ -886,12 +893,12 @@ theorem biprod.inlCokernelCofork_π : Cofork.π (biprod.inlCokernelCofork X Y) =
   rfl
 
 /-- The cofork `biprod.inlCokernelFork` is indeed a colimit. -/
-def biprod.isCokernelInlCokernelFork : IsColimit (biprod.inlCokernelCofork X Y) :=
+noncomputable def biprod.isCokernelInlCokernelFork : IsColimit (biprod.inlCokernelCofork X Y) :=
   BinaryBicone.isColimitInlCokernelCofork (BinaryBiproduct.isColimit _ _)
 
 /-- A cokernel cofork for the cokernel of `biprod.inr`. It consists of the
 morphism `biprod.fst`. -/
-def biprod.inrCokernelCofork : CokernelCofork (biprod.inr : Y ⟶ X ⊞ Y) :=
+noncomputable def biprod.inrCokernelCofork : CokernelCofork (biprod.inr : Y ⟶ X ⊞ Y) :=
   BinaryBicone.inrCokernelCofork _
 
 @[simp]
@@ -899,7 +906,7 @@ theorem biprod.inrCokernelCofork_π : Cofork.π (biprod.inrCokernelCofork X Y) =
   rfl
 
 /-- The cofork `biprod.inrCokernelFork` is indeed a colimit. -/
-def biprod.isCokernelInrCokernelFork : IsColimit (biprod.inrCokernelCofork X Y) :=
+noncomputable def biprod.isCokernelInrCokernelFork : IsColimit (biprod.inrCokernelCofork X Y) :=
   BinaryBicone.isColimitInrCokernelCofork (BinaryBiproduct.isColimit _ _)
 
 section
@@ -907,7 +914,7 @@ section
 variable (P Q) [HasBinaryBiproduct P Q]
 
 /-- The isomorphism `op (P ⊞ Q) ≅ op P ⊞ op Q`. -/
-def biprod.opIso : op (P ⊞ Q) ≅ op P ⊞ op Q :=
+noncomputable def biprod.opIso : op (P ⊞ Q) ≅ op P ⊞ op Q :=
   biprod.uniqueUpToIso _ _ (getBinaryBiproductData P Q).op.isBilimit
 
 @[reassoc (attr := simp)]
@@ -949,7 +956,7 @@ instance : HasKernel (biprod.fst : X ⊞ Y ⟶ X) :=
 
 /-- The kernel of `biprod.fst : X ⊞ Y ⟶ X` is `Y`. -/
 @[simps!]
-def kernelBiprodFstIso : kernel (biprod.fst : X ⊞ Y ⟶ X) ≅ Y :=
+noncomputable def kernelBiprodFstIso : kernel (biprod.fst : X ⊞ Y ⟶ X) ≅ Y :=
   limit.isoLimitCone ⟨_, biprod.isKernelFstKernelFork X Y⟩
 
 instance : HasKernel (biprod.snd : X ⊞ Y ⟶ Y) :=
@@ -957,7 +964,7 @@ instance : HasKernel (biprod.snd : X ⊞ Y ⟶ Y) :=
 
 /-- The kernel of `biprod.snd : X ⊞ Y ⟶ Y` is `X`. -/
 @[simps!]
-def kernelBiprodSndIso : kernel (biprod.snd : X ⊞ Y ⟶ Y) ≅ X :=
+noncomputable def kernelBiprodSndIso : kernel (biprod.snd : X ⊞ Y ⟶ Y) ≅ X :=
   limit.isoLimitCone ⟨_, biprod.isKernelSndKernelFork X Y⟩
 
 instance : HasCokernel (biprod.inl : X ⟶ X ⊞ Y) :=
@@ -965,7 +972,7 @@ instance : HasCokernel (biprod.inl : X ⟶ X ⊞ Y) :=
 
 /-- The cokernel of `biprod.inl : X ⟶ X ⊞ Y` is `Y`. -/
 @[simps!]
-def cokernelBiprodInlIso : cokernel (biprod.inl : X ⟶ X ⊞ Y) ≅ Y :=
+noncomputable def cokernelBiprodInlIso : cokernel (biprod.inl : X ⟶ X ⊞ Y) ≅ Y :=
   colimit.isoColimitCocone ⟨_, biprod.isCokernelInlCokernelFork X Y⟩
 
 instance : HasCokernel (biprod.inr : Y ⟶ X ⊞ Y) :=
@@ -973,7 +980,7 @@ instance : HasCokernel (biprod.inr : Y ⟶ X ⊞ Y) :=
 
 /-- The cokernel of `biprod.inr : Y ⟶ X ⊞ Y` is `X`. -/
 @[simps!]
-def cokernelBiprodInrIso : cokernel (biprod.inr : Y ⟶ X ⊞ Y) ≅ X :=
+noncomputable def cokernelBiprodInrIso : cokernel (biprod.inr : Y ⟶ X ⊞ Y) ≅ X :=
   colimit.isoColimitCocone ⟨_, biprod.isCokernelInrCokernelFork X Y⟩
 
 end BiprodKernel
@@ -982,7 +989,7 @@ section IsZero
 
 /-- If `Y` is a zero object, `X ≅ X ⊞ Y` for any `X`. -/
 @[simps!]
-def isoBiprodZero {X Y : C} [HasBinaryBiproduct X Y] (hY : IsZero Y) : X ≅ X ⊞ Y where
+noncomputable def isoBiprodZero {X Y : C} [HasBinaryBiproduct X Y] (hY : IsZero Y) : X ≅ X ⊞ Y where
   hom := biprod.inl
   inv := biprod.fst
   inv_hom_id := by
@@ -993,7 +1000,7 @@ def isoBiprodZero {X Y : C} [HasBinaryBiproduct X Y] (hY : IsZero Y) : X ≅ X �
 
 /-- If `X` is a zero object, `Y ≅ X ⊞ Y` for any `Y`. -/
 @[simps]
-def isoZeroBiprod {X Y : C} [HasBinaryBiproduct X Y] (hY : IsZero X) : Y ≅ X ⊞ Y where
+noncomputable def isoZeroBiprod {X Y : C} [HasBinaryBiproduct X Y] (hY : IsZero X) : Y ≅ X ⊞ Y where
   hom := biprod.inr
   inv := biprod.snd
   inv_hom_id := by
@@ -1025,14 +1032,14 @@ variable [HasBinaryBiproducts C]
 
 /-- The braiding isomorphism which swaps a binary biproduct. -/
 @[simps]
-def biprod.braiding (P Q : C) : P ⊞ Q ≅ Q ⊞ P where
+noncomputable def biprod.braiding (P Q : C) : P ⊞ Q ≅ Q ⊞ P where
   hom := biprod.lift biprod.snd biprod.fst
   inv := biprod.lift biprod.snd biprod.fst
 
 /-- An alternative formula for the braiding isomorphism which swaps a binary biproduct,
 using the fact that the biproduct is a coproduct. -/
 @[simps]
-def biprod.braiding' (P Q : C) : P ⊞ Q ≅ Q ⊞ P where
+noncomputable def biprod.braiding' (P Q : C) : P ⊞ Q ≅ Q ⊞ P where
   hom := biprod.desc biprod.inr biprod.inl
   inv := biprod.desc biprod.inr biprod.inl
 
@@ -1062,7 +1069,7 @@ theorem biprod.symmetry (P Q : C) :
 
 /-- The associator isomorphism which associates a binary biproduct. -/
 @[simps]
-def biprod.associator (P Q R : C) : (P ⊞ Q) ⊞ R ≅ P ⊞ (Q ⊞ R) where
+noncomputable def biprod.associator (P Q R : C) : (P ⊞ Q) ⊞ R ≅ P ⊞ (Q ⊞ R) where
   hom := biprod.lift (biprod.fst ≫ biprod.fst) (biprod.lift (biprod.fst ≫ biprod.snd) biprod.snd)
   inv := biprod.lift (biprod.lift biprod.fst (biprod.snd ≫ biprod.fst)) (biprod.snd ≫ biprod.snd)
 

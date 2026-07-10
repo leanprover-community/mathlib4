@@ -25,7 +25,7 @@ open scoped TensorProduct
 
 variable (R n : Type*) [CommSemiring R] [Fintype n] [DecidableEq n]
 
-noncomputable section
+section
 
 open Matrix MulOpposite
 

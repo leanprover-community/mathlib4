@@ -21,8 +21,6 @@ the product of `X` and `Y`.
 @[expose] public section
 
 
-noncomputable section
-
 universe v₁ v₂ u₁ u₂
 
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits
@@ -50,12 +48,13 @@ def isLimitMapConeBinaryFanEquiv :
         (by rintro (_ | _) <;> simp)))
 
 /-- The property of preserving products expressed in terms of binary fans. -/
+noncomputable
 def mapIsLimitOfPreservesOfIsLimit [PreservesLimit (pair X Y) G] (l : IsLimit (BinaryFan.mk f g)) :
     IsLimit (BinaryFan.mk (G.map f) (G.map g)) :=
   isLimitMapConeBinaryFanEquiv G f g (isLimitOfPreserves G l)
 
 /-- The property of reflecting products expressed in terms of binary fans. -/
-def isLimitOfReflectsOfMapIsLimit [ReflectsLimit (pair X Y) G]
+noncomputable def isLimitOfReflectsOfMapIsLimit [ReflectsLimit (pair X Y) G]
     (l : IsLimit (BinaryFan.mk (G.map f) (G.map g))) : IsLimit (BinaryFan.mk f g) :=
   isLimitOfReflects G ((isLimitMapConeBinaryFanEquiv G f g).symm l)
 
@@ -65,7 +64,7 @@ variable [HasBinaryProduct X Y]
 /-- If `G` preserves binary products and `C` has them, then the binary fan constructed of the mapped
 morphisms of the binary product cone is a limit.
 -/
-def isLimitOfHasBinaryProductOfPreservesLimit [PreservesLimit (pair X Y) G] :
+noncomputable def isLimitOfHasBinaryProductOfPreservesLimit [PreservesLimit (pair X Y) G] :
     IsLimit (BinaryFan.mk (G.map (Limits.prod.fst : X ⨯ Y ⟶ X)) (G.map Limits.prod.snd)) :=
   mapIsLimitOfPreservesOfIsLimit G _ _ (prodIsProd X Y)
 
@@ -90,7 +89,7 @@ variable [PreservesLimit (pair X Y) G]
 /-- If `G` preserves the product of `(X,Y)`, then the product comparison map for `G` at `(X,Y)` is
 an isomorphism.
 -/
-def PreservesLimitPair.iso : G.obj (X ⨯ Y) ≅ G.obj X ⨯ G.obj Y :=
+noncomputable def PreservesLimitPair.iso : G.obj (X ⨯ Y) ≅ G.obj X ⨯ G.obj Y :=
   IsLimit.conePointUniqueUpToIso (isLimitOfHasBinaryProductOfPreservesLimit G X Y) (limit.isLimit _)
 
 @[simp]
@@ -145,12 +144,12 @@ def isColimitMapCoconeBinaryCofanEquiv :
         (by rintro (_ | _) <;> simp)))
 
 /-- The property of preserving coproducts expressed in terms of binary cofans. -/
-def mapIsColimitOfPreservesOfIsColimit [PreservesColimit (pair X Y) G]
+noncomputable def mapIsColimitOfPreservesOfIsColimit [PreservesColimit (pair X Y) G]
     (l : IsColimit (BinaryCofan.mk f g)) : IsColimit (BinaryCofan.mk (G.map f) (G.map g)) :=
   isColimitMapCoconeBinaryCofanEquiv G f g (isColimitOfPreserves G l)
 
 /-- The property of reflecting coproducts expressed in terms of binary cofans. -/
-def isColimitOfReflectsOfMapIsColimit [ReflectsColimit (pair X Y) G]
+noncomputable def isColimitOfReflectsOfMapIsColimit [ReflectsColimit (pair X Y) G]
     (l : IsColimit (BinaryCofan.mk (G.map f) (G.map g))) : IsColimit (BinaryCofan.mk f g) :=
   isColimitOfReflects G ((isColimitMapCoconeBinaryCofanEquiv G f g).symm l)
 
@@ -161,7 +160,7 @@ variable [HasBinaryCoproduct X Y]
 If `G` preserves binary coproducts and `C` has them, then the binary cofan constructed of the mapped
 morphisms of the binary product cocone is a colimit.
 -/
-def isColimitOfHasBinaryCoproductOfPreservesColimit [PreservesColimit (pair X Y) G] :
+noncomputable def isColimitOfHasBinaryCoproductOfPreservesColimit [PreservesColimit (pair X Y) G] :
     IsColimit (BinaryCofan.mk (G.map (Limits.coprod.inl : X ⟶ X ⨿ Y)) (G.map Limits.coprod.inr)) :=
   mapIsColimitOfPreservesOfIsColimit G _ _ (coprodIsCoprod X Y)
 
@@ -183,7 +182,7 @@ variable [PreservesColimit (pair X Y) G]
 If `G` preserves the coproduct of `(X,Y)`, then the coproduct comparison map for `G` at `(X,Y)` is
 an isomorphism.
 -/
-def PreservesColimitPair.iso : G.obj X ⨿ G.obj Y ≅ G.obj (X ⨿ Y) :=
+noncomputable def PreservesColimitPair.iso : G.obj X ⨿ G.obj Y ≅ G.obj (X ⨿ Y) :=
   IsColimit.coconePointUniqueUpToIso (colimit.isColimit _)
     (isColimitOfHasBinaryCoproductOfPreservesColimit G X Y)
 

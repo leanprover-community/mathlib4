@@ -28,8 +28,6 @@ opens of a scheme.
 
 universe u
 
-noncomputable section
-
 open CategoryTheory Limits
 
 namespace AlgebraicGeometry.Scheme
@@ -96,6 +94,7 @@ lemma property_trans {i j : 𝒰.I₀} (hij : i ⟶ j) : P (𝒰.trans hij) :=
 /-- If `𝒰` is a directed cover of `X`, this is the cover of `𝒰ᵢ ×[X] 𝒰ⱼ` by `{𝒰ₖ}` where
 `k ≤ i` and `k ≤ j`. -/
 @[simps f]
+noncomputable
 def intersectionOfLocallyDirected [P.IsStableUnderBaseChange] [P.HasOfPostcompProperty P]
     (i j : 𝒰.I₀) : (pullback (𝒰.f i) (𝒰.f j)).Cover (precoverage P) where
   I₀ := Σ (k : 𝒰.I₀), (k ⟶ i) × (k ⟶ j)
@@ -156,7 +155,7 @@ instance : Category (𝒰.pullback₁ f).I₀ := inferInstanceAs <| Category �
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
-instance locallyDirectedPullbackCover : Cover.LocallyDirected (𝒰.pullback₁ f) where
+noncomputable instance locallyDirectedPullbackCover : Cover.LocallyDirected (𝒰.pullback₁ f) where
   trans {i j} hij := pullback.map f (𝒰.f i) f (𝒰.f j) (𝟙 _) (𝒰.trans hij) (𝟙 _)
     (by simp) (by simp)
   trans_id i := by simp
@@ -213,6 +212,7 @@ to check compatibility with the transition maps.
 See `OpenCover.isColimitCoconeOfLocallyDirected` for this result stated in the language of
 colimits.
 -/
+noncomputable
 def glueMorphismsOfLocallyDirected (𝒰 : X.OpenCover) [Category* 𝒰.I₀] [𝒰.LocallyDirected]
     {Y : Scheme.{u}}
     (g : ∀ i, 𝒰.X i ⟶ Y) (h : ∀ {i j : 𝒰.I₀} (hij : i ⟶ j), 𝒰.trans hij ≫ g j = g i) :
@@ -231,13 +231,13 @@ lemma map_glueMorphismsOfLocallyDirected {Y : Scheme.{u}} (g : ∀ i, 𝒰.X i �
 set_option backward.defeqAttrib.useBackward true in
 /-- If `𝒰` is an open cover of `X` that is locally directed, `X` is
 the colimit of the components of `𝒰`. -/
-def isColimitCoconeOfLocallyDirected : IsColimit 𝒰.coconeOfLocallyDirected where
+noncomputable def isColimitCoconeOfLocallyDirected : IsColimit 𝒰.coconeOfLocallyDirected where
   desc s := 𝒰.glueMorphismsOfLocallyDirected s.ι.app fun _ ↦ s.ι.naturality _
   uniq s m hm := 𝒰.hom_ext _ _ fun j ↦ by simpa using hm j
 
 /-- If `𝒰` is a directed open cover of `X`, to glue morphisms `{gᵢ : 𝒰ᵢ ⟶ Y}` over `S` it suffices
 to check compatibility with the transition maps. -/
-def glueMorphismsOverOfLocallyDirected {S : Scheme.{u}} {X : Over S}
+noncomputable def glueMorphismsOverOfLocallyDirected {S : Scheme.{u}} {X : Over S}
     (𝒰 : X.left.OpenCover) [Category* 𝒰.I₀] [𝒰.LocallyDirected] {Y : Over S}
     (g : ∀ i, 𝒰.X i ⟶ Y.left)
     (h : ∀ {i j : 𝒰.I₀} (hij : i ⟶ j), 𝒰.trans hij ≫ g j = g i)
@@ -261,7 +261,7 @@ end OpenCover
 /-- If `𝒰` is an open cover such that the images of the components form a basis of the topology
 of `X`, `𝒰` is directed by the ordering of subset inclusion of the images. -/
 @[implicit_reducible]
-def Cover.LocallyDirected.ofIsBasisOpensRange {𝒰 : X.OpenCover} [Preorder 𝒰.I₀]
+noncomputable def Cover.LocallyDirected.ofIsBasisOpensRange {𝒰 : X.OpenCover} [Preorder 𝒰.I₀]
     (hle : ∀ {i j : 𝒰.I₀}, i ≤ j ↔ (𝒰.f i).opensRange ≤ (𝒰.f j).opensRange)
     (H : TopologicalSpace.Opens.IsBasis (Set.range <| fun i ↦ (𝒰.f i).opensRange)) :
     𝒰.LocallyDirected where
@@ -318,7 +318,7 @@ def directedAffineCover : X.OpenCover where
 instance : Preorder X.directedAffineCover.I₀ := inferInstanceAs <| Preorder X.affineOpens
 
 set_option backward.defeqAttrib.useBackward true in
-instance : Scheme.Cover.LocallyDirected X.directedAffineCover :=
+noncomputable instance : Scheme.Cover.LocallyDirected X.directedAffineCover :=
   .ofIsBasisOpensRange (by intros; simp; rfl) <| by
     convert! X.isBasis_affineOpens
     simp

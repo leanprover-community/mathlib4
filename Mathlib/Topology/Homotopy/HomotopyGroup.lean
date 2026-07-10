@@ -46,8 +46,6 @@ open scoped unitInterval Topology
 
 open Homeomorph
 
-noncomputable section
-
 /-- `I^N` is notation (in the Topology namespace) for `N → I`,
 i.e. the unit cube indexed by a type `N`. -/
 scoped[Topology] notation "I^" N => N → I
@@ -395,7 +393,7 @@ theorem homotopicFrom (i : N) {p q : Ω^ N X x} :
 
 set_option backward.defeqAttrib.useBackward true in
 /-- Concatenation of two `GenLoop`s along the `i`th coordinate. -/
-def transAt (i : N) (f g : Ω^ N X x) : Ω^ N X x :=
+noncomputable def transAt (i : N) (f g : Ω^ N X x) : Ω^ N X x :=
   copy (fromLoop i <| (toLoop i f).trans <| toLoop i g)
     (fun t ↦ if (t i : ℝ) ≤ 1 / 2
       then f (Function.update t i <| Set.projIcc 0 1 zero_le_one (2 * t i))
@@ -540,13 +538,13 @@ lemma HomotopyGroup.genLoopEquivOfUnique_transAt (N) [DecidableEq N] [Unique N] 
 namespace HomotopyGroup
 
 /-- Group structure on `HomotopyGroup N X x` for nonempty `N` (in particular `π_(n+1) X x`). -/
-instance group (N) [DecidableEq N] [Nonempty N] : Group (HomotopyGroup N X x) :=
+noncomputable instance group (N) [DecidableEq N] [Nonempty N] : Group (HomotopyGroup N X x) :=
   (homotopyGroupEquivFundamentalGroup <| Classical.arbitrary N).group
 
 /-- Group structure on `HomotopyGroup` obtained by pulling back path composition along the
   `i`th direction. The group structures for two different `i j : N` distribute over each
   other, and therefore are equal by the Eckmann-Hilton argument. -/
-abbrev auxGroup (i : N) : Group (HomotopyGroup N X x) :=
+noncomputable abbrev auxGroup (i : N) : Group (HomotopyGroup N X x) :=
   (homotopyGroupEquivFundamentalGroup i).group
 
 theorem isUnital_auxGroup (i : N) :
@@ -596,7 +594,7 @@ theorem inv_spec [Nonempty N] {i} {p : Ω^ N X x} :
 
 /-- Multiplication on `HomotopyGroup N X x` is commutative for nontrivial `N`.
   In particular, multiplication on `π_(n+2)` is commutative. -/
-instance commGroup [Nontrivial N] : CommGroup (HomotopyGroup N X x) :=
+noncomputable instance commGroup [Nontrivial N] : CommGroup (HomotopyGroup N X x) :=
   let h := exists_ne (Classical.arbitrary N)
   fast_instance% @EckmannHilton.commGroup (HomotopyGroup N X x) _ 1
     (isUnital_auxGroup <| Classical.choose h) _

@@ -30,7 +30,7 @@ compactly supported) and all basic properties are proved in an abstract setting 
 
 -/
 
-@[expose] public noncomputable section
+@[expose] public section
 
 variable {ι α β 𝕜 E F F₁ F₂ R V : Type*}
 

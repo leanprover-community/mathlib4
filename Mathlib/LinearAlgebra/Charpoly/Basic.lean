@@ -29,8 +29,6 @@ universe u v w
 
 open Matrix Polynomial
 
-noncomputable section
-
 open Module.Free Polynomial Matrix
 
 namespace LinearMap
@@ -41,7 +39,7 @@ variable [AddCommGroup M] [Module R M] [Module.Free R M] [Module.Finite R M] (f 
 section Basic
 
 /-- The characteristic polynomial of `f : M →ₗ[R] M`. -/
-def charpoly : R[X] :=
+noncomputable def charpoly : R[X] :=
   (toMatrix (chooseBasis R M) (chooseBasis R M) f).charpoly
 
 theorem charpoly_def : f.charpoly = (toMatrix (chooseBasis R M) (chooseBasis R M) f).charpoly :=

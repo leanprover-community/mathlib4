@@ -20,8 +20,6 @@ A category is countable in this sense if it has countably many objects and count
 
 universe w v u
 
-noncomputable section
-
 namespace CategoryTheory
 
 instance discreteCountable {α : Type*} [Countable α] : Countable (Discrete α) :=
@@ -67,6 +65,7 @@ def HomAsType := ShrinkHoms (ObjAsType α)
 instance : LocallySmall.{0} (ObjAsType α) where
   hom_small _ _ := inferInstance
 
+noncomputable
 instance : SmallCategory (HomAsType α) := inferInstanceAs <| SmallCategory (ShrinkHoms _)
 
 instance : Countable (HomAsType α) := Countable.of_equiv α (equivShrink.{0} α)

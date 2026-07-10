@@ -35,8 +35,6 @@ satisfying compatibilities involving the faces and degeneracies.
 
 universe v u v' u'
 
-noncomputable section
-
 open SimplexCategory Simplicial Opposite
 
 namespace CategoryTheory.SimplicialObject

@@ -36,7 +36,7 @@ public import Mathlib.LinearAlgebra.Finsupp.SumProd
 @[expose] public section
 
 
-noncomputable section
+section
 
 open DirectSum TensorProduct
 
@@ -217,7 +217,7 @@ variable [Module S M] [IsScalarTower R S M]
 
 open scoped Classical in
 /-- The tensor product of `ι →₀ M` and `κ →₀ N` is linearly equivalent to `(ι × κ) →₀ (M ⊗ N)`. -/
-def finsuppTensorFinsupp : (ι →₀ M) ⊗[R] (κ →₀ N) ≃ₗ[S] ι × κ →₀ M ⊗[R] N :=
+noncomputable def finsuppTensorFinsupp : (ι →₀ M) ⊗[R] (κ →₀ N) ≃ₗ[S] ι × κ →₀ M ⊗[R] N :=
   TensorProduct.AlgebraTensorModule.congr
     (finsuppLEquivDirectSum S M ι) (finsuppLEquivDirectSum R N κ) ≪≫ₗ
     ((TensorProduct.directSum R S (fun _ : ι => M) fun _ : κ => N) ≪≫ₗ
@@ -252,7 +252,7 @@ theorem finsuppTensorFinsupp_symm_single (i : ι × κ) (m : M) (n : N) :
     (LinearEquiv.symm_apply_eq _).2 (finsuppTensorFinsupp_single _ _ _ _ _ _ _ _ _ _).symm
 
 /-- A variant of `finsuppTensorFinsupp` where the first module is the ground ring. -/
-def finsuppTensorFinsuppLid : (ι →₀ R) ⊗[R] (κ →₀ N) ≃ₗ[R] ι × κ →₀ N :=
+noncomputable def finsuppTensorFinsuppLid : (ι →₀ R) ⊗[R] (κ →₀ N) ≃ₗ[R] ι × κ →₀ N :=
   finsuppTensorFinsupp R R R N ι κ ≪≫ₗ Finsupp.lcongr (Equiv.refl _) (TensorProduct.lid R N)
 
 @[simp]
@@ -274,7 +274,7 @@ theorem finsuppTensorFinsuppLid_symm_single_smul (i : ι × κ) (r : R) (n : N) 
     (LinearEquiv.symm_apply_eq _).2 (finsuppTensorFinsuppLid_single_tmul_single ..).symm
 
 /-- A variant of `finsuppTensorFinsupp` where the second module is the ground ring. -/
-def finsuppTensorFinsuppRid : (ι →₀ M) ⊗[R] (κ →₀ R) ≃ₗ[R] ι × κ →₀ M :=
+noncomputable def finsuppTensorFinsuppRid : (ι →₀ M) ⊗[R] (κ →₀ R) ≃ₗ[R] ι × κ →₀ M :=
   finsuppTensorFinsupp R R M R ι κ ≪≫ₗ Finsupp.lcongr (Equiv.refl _) (TensorProduct.rid R M)
 
 @[simp]
@@ -296,7 +296,7 @@ theorem finsuppTensorFinsuppRid_symm_single_smul (i : ι × κ) (m : M) (r : R) 
     (LinearEquiv.symm_apply_eq _).2 (finsuppTensorFinsuppRid_single_tmul_single ..).symm
 
 /-- A variant of `finsuppTensorFinsupp` where both modules are the ground ring. -/
-def finsuppTensorFinsupp' : (ι →₀ R) ⊗[R] (κ →₀ R) ≃ₗ[R] ι × κ →₀ R :=
+noncomputable def finsuppTensorFinsupp' : (ι →₀ R) ⊗[R] (κ →₀ R) ≃ₗ[R] ι × κ →₀ R :=
   finsuppTensorFinsuppLid R R ι κ
 
 @[simp]

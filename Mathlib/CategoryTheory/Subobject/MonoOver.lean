@@ -44,8 +44,6 @@ and was ported to mathlib by Kim Morrison.
 
 universe w' w v₁ v₂ v₃ u₁ u₂ u₃
 
-noncomputable section
-
 namespace CategoryTheory
 
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits CategoryTheory.Functor
@@ -165,16 +163,17 @@ def lift {Y : D} (F : Over Y ⥤ Over X)
 
 /-- Isomorphic functors `Over Y ⥤ Over X` lift to isomorphic functors `MonoOver Y ⥤ MonoOver X`.
 -/
+noncomputable
 def liftIso {Y : D} {F₁ F₂ : Over Y ⥤ Over X} (h₁ h₂) (i : F₁ ≅ F₂) : lift F₁ h₁ ≅ lift F₂ h₂ :=
   Functor.fullyFaithfulCancelRight (MonoOver.forget X) (isoWhiskerLeft (MonoOver.forget Y) i)
 
 /-- `MonoOver.lift` commutes with composition of functors. -/
-def liftComp {X Z : C} {Y : D} (F : Over X ⥤ Over Y) (G : Over Y ⥤ Over Z) (h₁ h₂) :
+noncomputable def liftComp {X Z : C} {Y : D} (F : Over X ⥤ Over Y) (G : Over Y ⥤ Over Z) (h₁ h₂) :
     lift F h₁ ⋙ lift G h₂ ≅ lift (F ⋙ G) fun f => h₂ ⟨_, h₁ f⟩ :=
   Functor.fullyFaithfulCancelRight (MonoOver.forget _) (Iso.refl _)
 
 /-- `MonoOver.lift` preserves the identity functor. -/
-def liftId : (lift (𝟭 (Over X)) fun f => f.2) ≅ 𝟭 _ :=
+noncomputable def liftId : (lift (𝟭 (Over X)) fun f => f.2) ≅ 𝟭 _ :=
   Functor.fullyFaithfulCancelRight (MonoOver.forget _) (Iso.refl _)
 
 @[simp]
@@ -192,7 +191,7 @@ theorem lift_obj_arrow {Y : D} (F : Over Y ⥤ Over X)
 /-- Monomorphisms over an object `f : Over A` in an over category
 are equivalent to monomorphisms over the source of `f`.
 -/
-def slice {A : C} {f : Over A}
+noncomputable def slice {A : C} {f : Over A}
     (h₁ : ∀ (g : MonoOver f),
       Mono ((Over.iteratedSliceEquiv f).functor.obj ((forget f).obj g)).hom)
     (h₂ : ∀ (g : MonoOver f.left),
@@ -239,7 +238,7 @@ section Colimits
 variable [HasCoproducts C] [HasStrongEpiMonoFactorisations C] {J : Type u₂} [Category.{v₂} J]
 
 /-- A helper function, providing the strong epi-mono factorization used construct to colimits. -/
-def strongEpiMonoFactorisationSigmaDesc (F : J ⥤ MonoOver Y) :
+noncomputable def strongEpiMonoFactorisationSigmaDesc (F : J ⥤ MonoOver Y) :
     StrongEpiMonoFactorisation (Sigma.desc fun i ↦ (F.obj i).arrow) :=
   Classical.choice <| HasStrongEpiMonoFactorisations.has_fac (Sigma.desc fun i ↦ (F.obj i).arrow)
 
@@ -247,7 +246,7 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- If a category `C` has strong epi-mono factorization, for any `Y : C` and functor
 `F : J ⥤ MonoOver Y`, there is a cocone under F. -/
-def coconeOfHasStrongEpiMonoFactorisation (F : J ⥤ MonoOver Y) :
+noncomputable def coconeOfHasStrongEpiMonoFactorisation (F : J ⥤ MonoOver Y) :
     Cocone F where
   pt := MonoOver.mk ((strongEpiMonoFactorisationSigmaDesc F).m)
   ι.app j := homMk (Sigma.ι (fun i ↦ (F.obj i : C)) j ≫
@@ -260,14 +259,14 @@ lemma commSqOfHasStrongEpiMonoFactorisation (F : J ⥤ MonoOver Y) (c : Cocone F
       c.pt.arrow (strongEpiMonoFactorisationSigmaDesc F).m where
 
 /-- A helper function, providing the lift structure used to construct colimits. -/
-def liftStructOfHasStrongEpiMonoFactorisation (F : J ⥤ MonoOver Y) (c : Cocone F) :
+noncomputable def liftStructOfHasStrongEpiMonoFactorisation (F : J ⥤ MonoOver Y) (c : Cocone F) :
     (commSqOfHasStrongEpiMonoFactorisation F c).LiftStruct :=
   Classical.choice
     (((strongEpiMonoFactorisationSigmaDesc F).e_strong_epi.llp _).sq_hasLift
       (commSqOfHasStrongEpiMonoFactorisation F c)).exists_lift
 
 /-- The cocone `coconeOfHasStrongEpiMonoFactorisation F` is a colimit -/
-def isColimitCoconeOfHasStrongEpiMonoFactorisation (F : J ⥤ MonoOver Y) :
+noncomputable def isColimitCoconeOfHasStrongEpiMonoFactorisation (F : J ⥤ MonoOver Y) :
     IsColimit (coconeOfHasStrongEpiMonoFactorisation F) where
   desc c := homMk (liftStructOfHasStrongEpiMonoFactorisation F c).l
     (liftStructOfHasStrongEpiMonoFactorisation F c).fac_right
@@ -286,17 +285,18 @@ variable [HasPullbacks C]
 
 /-- When `C` has pullbacks, a morphism `f : X ⟶ Y` induces a functor `MonoOver Y ⥤ MonoOver X`,
 by pulling back a monomorphism along `f`. -/
-def pullback (f : X ⟶ Y) : MonoOver Y ⥤ MonoOver X :=
+noncomputable def pullback (f : X ⟶ Y) : MonoOver Y ⥤ MonoOver X :=
   MonoOver.lift (Over.pullback f) (fun g => by
     haveI : Mono ((forget Y).obj g).hom := (inferInstance : Mono g.arrow)
     apply pullback.snd_of_mono)
 
 /-- pullback commutes with composition (up to a natural isomorphism) -/
+noncomputable
 def pullbackComp (f : X ⟶ Y) (g : Y ⟶ Z) : pullback (f ≫ g) ≅ pullback g ⋙ pullback f :=
   liftIso _ _ (Over.pullbackComp _ _) ≪≫ (liftComp _ _ _ _).symm
 
 /-- pullback preserves the identity (up to a natural isomorphism) -/
-def pullbackId : pullback (𝟙 X) ≅ 𝟭 _ :=
+noncomputable def pullbackId : pullback (𝟙 X) ≅ 𝟭 _ :=
   liftIso _ _ Over.pullbackId ≪≫ liftId
 
 @[simp]
@@ -328,7 +328,7 @@ T.arrow       S.arrow
 
 we get an isomorphism between `T` and the pullback of `S` along `f` through the `pullback` functor.
 -/
-def pullbackObjIsoOfIsPullback [HasPullbacks C] {X Y : C} (f : Y ⟶ X) (S : MonoOver X)
+noncomputable def pullbackObjIsoOfIsPullback [HasPullbacks C] {X Y : C} (f : Y ⟶ X) (S : MonoOver X)
     (T : MonoOver Y) (f' : (T : C) ⟶ (S : C))
     (h : IsPullback f' T.arrow S.arrow f) :
     (pullback f).obj S ≅ T :=
@@ -345,12 +345,12 @@ def map (f : X ⟶ Y) [Mono f] : MonoOver X ⥤ MonoOver Y :=
   lift (Over.map f) fun g => mono_comp g.arrow f
 
 /-- `MonoOver.map` commutes with composition (up to a natural isomorphism). -/
-def mapComp (f : X ⟶ Y) (g : Y ⟶ Z) [Mono f] [Mono g] : map (f ≫ g) ≅ map f ⋙ map g :=
+noncomputable def mapComp (f : X ⟶ Y) (g : Y ⟶ Z) [Mono f] [Mono g] : map (f ≫ g) ≅ map f ⋙ map g :=
   liftIso _ _ (Over.mapComp _ _) ≪≫ (liftComp _ _ _ _).symm
 
 variable (X) in
 /-- `MonoOver.map` preserves the identity (up to a natural isomorphism). -/
-def mapId : map (𝟙 X) ≅ 𝟭 _ :=
+noncomputable def mapId : map (𝟙 X) ≅ 𝟭 _ :=
   liftIso _ _ (Over.mapId X) ≪≫ liftId
 
 @[simp]
@@ -372,7 +372,7 @@ instance faithful_map (f : X ⟶ Y) [Mono f] : Functor.Faithful (map f) where
 /-- Isomorphic objects have equivalent `MonoOver` categories.
 -/
 @[simps]
-def mapIso {A B : C} (e : A ≅ B) : MonoOver A ≌ MonoOver B where
+noncomputable def mapIso {A B : C} (e : A ≅ B) : MonoOver A ≌ MonoOver B where
   functor := map e.hom
   inverse := map e.inv
   unitIso := ((mapComp _ _).symm ≪≫ eqToIso (by simp) ≪≫ (mapId _)).symm
@@ -386,7 +386,7 @@ set_option backward.defeqAttrib.useBackward true in
 /-- An equivalence of categories `e` between `C` and `D` induces an equivalence between
 `MonoOver X` and `MonoOver (e.functor.obj X)` whenever `X` is an object of `C`. -/
 @[simps]
-def congr (e : C ≌ D) : MonoOver X ≌ MonoOver (e.functor.obj X) where
+noncomputable def congr (e : C ≌ D) : MonoOver X ≌ MonoOver (e.functor.obj X) where
   functor :=
     lift (Over.post e.functor) fun f => by
       dsimp
@@ -406,12 +406,12 @@ section
 variable [HasPullbacks C]
 
 /-- `map f` is left adjoint to `pullback f` when `f` is a monomorphism -/
-def mapPullbackAdj (f : X ⟶ Y) [Mono f] : map f ⊣ pullback f :=
+noncomputable def mapPullbackAdj (f : X ⟶ Y) [Mono f] : map f ⊣ pullback f :=
   (Over.mapPullbackAdj f).restrictFullyFaithful (fullyFaithfulForget X) (fullyFaithfulForget Y)
     (Iso.refl _) (Iso.refl _)
 
 /-- `MonoOver.map f` followed by `MonoOver.pullback f` is the identity. -/
-def pullbackMapSelf (f : X ⟶ Y) [Mono f] : map f ⋙ pullback f ≅ 𝟭 _ :=
+noncomputable def pullbackMapSelf (f : X ⟶ Y) [Mono f] : map f ⋙ pullback f ≅ 𝟭 _ :=
   (asIso (MonoOver.mapPullbackAdj f).unit).symm
 
 end
@@ -424,7 +424,7 @@ variable (f : X ⟶ Y) [HasImage f]
 
 /-- The `MonoOver Y` for the image inclusion for a morphism `f : X ⟶ Y`.
 -/
-def imageMonoOver (f : X ⟶ Y) [HasImage f] : MonoOver Y :=
+noncomputable def imageMonoOver (f : X ⟶ Y) [HasImage f] : MonoOver Y :=
   MonoOver.mk (image.ι f)
 
 @[simp]
@@ -440,7 +440,7 @@ variable [HasImages C]
 /-- Taking the image of a morphism gives a functor `Over X ⥤ MonoOver X`.
 -/
 @[simps]
-def image : Over X ⥤ MonoOver X where
+noncomputable def image : Over X ⥤ MonoOver X where
   obj f := imageMonoOver f.hom
   map {f g} k := by
     apply (forget X).preimage _
@@ -456,7 +456,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- `MonoOver.image : Over X ⥤ MonoOver X` is left adjoint to
 `MonoOver.forget : MonoOver X ⥤ Over X`
 -/
-def imageForgetAdj : image ⊣ forget X :=
+noncomputable def imageForgetAdj : image ⊣ forget X :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun f g =>
         { toFun := fun k => by
@@ -476,14 +476,14 @@ def imageForgetAdj : image ⊣ forget X :=
 instance : (forget X).IsRightAdjoint :=
   ⟨_, ⟨imageForgetAdj⟩⟩
 
-instance reflective : Reflective (forget X) where
+noncomputable instance reflective : Reflective (forget X) where
   L := image
   adj := imageForgetAdj
 
 /-- Forgetting that a monomorphism over `X` is a monomorphism, then taking its image,
 is the identity functor.
 -/
-def forgetImage : forget X ⋙ image ≅ 𝟭 (MonoOver X) :=
+noncomputable def forgetImage : forget X ⋙ image ≅ 𝟭 (MonoOver X) :=
   asIso (Adjunction.counit imageForgetAdj)
 
 end Image
@@ -495,7 +495,7 @@ variable [HasImages C]
 /-- In the case where `f` is not a monomorphism but `C` has images,
 we can still take the "forward map" under it, which agrees with `MonoOver.map f`.
 -/
-def «exists» (f : X ⟶ Y) : MonoOver X ⥤ MonoOver Y :=
+noncomputable def «exists» (f : X ⟶ Y) : MonoOver X ⥤ MonoOver Y :=
   forget _ ⋙ Over.map f ⋙ image
 
 instance faithful_exists (f : X ⟶ Y) : Functor.Faithful («exists» f) where
@@ -503,7 +503,7 @@ instance faithful_exists (f : X ⟶ Y) : Functor.Faithful («exists» f) where
 set_option backward.isDefEq.respectTransparency false in
 /-- When `f : X ⟶ Y` is a monomorphism, `exists f` agrees with `map f`.
 -/
-def existsIsoMap (f : X ⟶ Y) [Mono f] : «exists» f ≅ map f :=
+noncomputable def existsIsoMap (f : X ⟶ Y) [Mono f] : «exists» f ≅ map f :=
   NatIso.ofComponents (by
     intro Z
     suffices (forget _).obj ((«exists» f).obj Z) ≅ (forget _).obj ((map f).obj Z) by
@@ -513,7 +513,7 @@ def existsIsoMap (f : X ⟶ Y) [Mono f] : «exists» f ≅ map f :=
     · apply imageMonoIsoSource_hom_self)
 
 /-- `exists` is adjoint to `pullback` when images exist -/
-def existsPullbackAdj (f : X ⟶ Y) [HasPullbacks C] : «exists» f ⊣ pullback f :=
+noncomputable def existsPullbackAdj (f : X ⟶ Y) [HasPullbacks C] : «exists» f ⊣ pullback f :=
   ((Over.mapPullbackAdj f).comp imageForgetAdj).restrictFullyFaithful
     (fullyFaithfulForget X) (Functor.FullyFaithful.id _) (Iso.refl _) (Iso.refl _)
 

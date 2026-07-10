@@ -105,8 +105,6 @@ In this file, we denote `WithTop ℕ∞` with `ℕ∞ω`, `(⊤ : ℕ∞) : ℕ�
 @[expose] public section
 
 
-noncomputable section
-
 open ENat NNReal Topology Filter Set Fin Filter Function
 
 /-- The type of smoothness exponents, consisting of all natural numbers and two special terms `∞`
@@ -400,6 +398,7 @@ noncomputable def iteratedFDerivWithin (n : ℕ) (f : E → F) (s : Set E) : E �
     ContinuousLinearMap.uncurryLeft (fderivWithin 𝕜 rec s x)
 
 /-- Formal Taylor series associated to a function within a set. -/
+noncomputable
 def ftaylorSeriesWithin (f : E → F) (s : Set E) (x : E) : FormalMultilinearSeries 𝕜 E F := fun n =>
   iteratedFDerivWithin 𝕜 n f s x
 
@@ -805,7 +804,7 @@ noncomputable def iteratedFDeriv (n : ℕ) (f : E → F) : E → E [×n]→L[�
     ContinuousLinearMap.uncurryLeft (fderiv 𝕜 rec x)
 
 /-- Formal Taylor series associated to a function. -/
-def ftaylorSeries (f : E → F) (x : E) : FormalMultilinearSeries 𝕜 E F := fun n =>
+noncomputable def ftaylorSeries (f : E → F) (x : E) : FormalMultilinearSeries 𝕜 E F := fun n =>
   iteratedFDeriv 𝕜 n f x
 
 variable {𝕜}

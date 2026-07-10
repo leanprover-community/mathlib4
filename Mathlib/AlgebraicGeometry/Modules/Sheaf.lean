@@ -158,12 +158,12 @@ lemma inv_app [IsIso φ] : (inv φ).app U = inv (φ.app U) := by
 
 end Presheaf
 
-noncomputable section Functorial
+section Functorial
 
 variable (f : X ⟶ Y) (g : Y ⟶ Z) (h : Z ⟶ T)
 
 /-- The pushforward functor for categories of sheaves of modules over schemes. -/
-def pushforward : X.Modules ⥤ Y.Modules :=
+noncomputable def pushforward : X.Modules ⥤ Y.Modules :=
   SheafOfModules.pushforward f.toRingCatSheafHom
 
 @[simp]
@@ -179,12 +179,12 @@ lemma pushforward_map_app (φ : M ⟶ N) (U : Y.Opens) :
     ((pushforward f).map φ).app U = φ.app (f ⁻¹ᵁ U) := rfl
 
 /-- The pullback functor for categories of sheaves of modules over schemes. -/
-def pullback : Y.Modules ⥤ X.Modules :=
+noncomputable def pullback : Y.Modules ⥤ X.Modules :=
   SheafOfModules.pullback f.toRingCatSheafHom
 
 /-- The pullback functor for categories of sheaves of modules over schemes
 is left adjoint to the pushforward functor. -/
-def pullbackPushforwardAdjunction : pullback f ⊣ pushforward f :=
+noncomputable def pullbackPushforwardAdjunction : pullback f ⊣ pushforward f :=
   SheafOfModules.pullbackPushforwardAdjunction _
 
 section
@@ -202,7 +202,7 @@ end
 variable (X) in
 /-- The pushforward of sheaves of modules by the identity morphism identifies
 to the identity functor. -/
-def pushforwardId : pushforward (𝟙 X) ≅ 𝟭 _ :=
+noncomputable def pushforwardId : pushforward (𝟙 X) ≅ 𝟭 _ :=
   SheafOfModules.pushforwardId _
 
 @[simp] lemma pushforwardId_hom_app_app : ((pushforwardId X).hom.app M).app U = 𝟙 _ := rfl
@@ -211,7 +211,7 @@ def pushforwardId : pushforward (𝟙 X) ≅ 𝟭 _ :=
 variable (X) in
 /-- The pullback of sheaves of modules by the identity morphism identifies
 to the identity functor. -/
-def pullbackId : pullback (𝟙 X) ≅ 𝟭 _ :=
+noncomputable def pullbackId : pullback (𝟙 X) ≅ 𝟭 _ :=
   SheafOfModules.pullbackId _
 
 variable (X) in
@@ -222,7 +222,7 @@ lemma conjugateEquiv_pullbackId_hom :
 
 /-- The composition of two pushforward functors for sheaves of modules on schemes
 identify to the pushforward for the composition. -/
-def pushforwardComp :
+noncomputable def pushforwardComp :
     pushforward f ⋙ pushforward g ≅ pushforward (f ≫ g) :=
   SheafOfModules.pushforwardComp _ _
 
@@ -231,12 +231,12 @@ def pushforwardComp :
 
 /-- The composition of two pullback functors for sheaves of modules on schemes
 identify to the pullback for the composition. -/
-def pullbackComp :
+noncomputable def pullbackComp :
     pullback g ⋙ pullback f ≅ pullback (f ≫ g) :=
   SheafOfModules.pullbackComp _ _
 
 /-- Pushforwards along equal morphisms are isomorphic. -/
-def pushforwardCongr {f g : X ⟶ Y} (hf : f = g) : pushforward f ≅ pushforward g :=
+noncomputable def pushforwardCongr {f g : X ⟶ Y} (hf : f = g) : pushforward f ≅ pushforward g :=
     pushforwardNatIso _ (Opens.mapIso _ _ (hf ▸ rfl)) ≪≫
       SheafOfModules.pushforwardCongr (by cat_disch)
 
@@ -247,7 +247,7 @@ def pushforwardCongr {f g : X ⟶ Y} (hf : f = g) : pushforward f ≅ pushforwar
     ((pushforwardCongr hf).inv.app M).app U = M.presheaf.map (eqToHom (hf ▸ rfl)).op := rfl
 
 /-- Inverse images along equal morphisms are isomorphic. -/
-def pullbackCongr {f g : X ⟶ Y} (hf : f = g) : pullback f ≅ pullback g :=
+noncomputable def pullbackCongr {f g : X ⟶ Y} (hf : f = g) : pullback f ≅ pullback g :=
   eqToIso (hf ▸ rfl)
 
 lemma conjugateEquiv_pullbackComp_inv :
@@ -313,7 +313,7 @@ these categories.) -/
 @[simps! obj_obj map_l map_r map_adj
   mapId_hom_τl mapId_hom_τr mapId_inv_τl mapId_inv_τr
   mapComp_hom_τl mapComp_hom_τr mapComp_inv_τl mapComp_inv_τr]
-def pseudofunctor :
+noncomputable def pseudofunctor :
     Pseudofunctor (LocallyDiscrete Scheme.{u}ᵒᵖ) (Adj Cat) :=
   LocallyDiscrete.mkPseudofunctor
     (fun X ↦ Adj.mk (Cat.of X.unop.Modules))
@@ -325,7 +325,7 @@ def pseudofunctor :
 
 end Functorial
 
-noncomputable section Restriction
+section Restriction
 
 variable (f : X ⟶ Y) (g : Y ⟶ Z) [IsOpenImmersion f] [IsOpenImmersion g]
 
@@ -333,16 +333,17 @@ set_option backward.defeqAttrib.useBackward true in
 /-- Restriction of an `𝒪ₓ`-module along an open immersion.
 This is isomorphic to the pullback functor (see `restrictFunctorIsoPullback`)
 but has better defeqs. -/
-def restrictFunctor : Y.Modules ⥤ X.Modules :=
+noncomputable def restrictFunctor : Y.Modules ⥤ X.Modules :=
   letI α : X.presheaf ⟶ f.opensFunctor.op ⋙ Y.presheaf := { app U := (f.appIso U.unop).inv }
   SheafOfModules.pushforward (F := f.opensFunctor)
     ⟨Functor.whiskerRight α (forget₂ CommRingCat RingCat)⟩
 
 /-- The restriction of a module along an open immersion. -/
-abbrev restrict (M : Y.Modules) (f : X ⟶ Y) [IsOpenImmersion f] : X.Modules :=
+noncomputable abbrev restrict (M : Y.Modules) (f : X ⟶ Y) [IsOpenImmersion f] : X.Modules :=
   (restrictFunctor f).obj M
 
 /-- The sections of the restriction of `M` over `U` are isomorphic to `Γ(M, f ''ᵁ U). -/
+noncomputable
 def restrictAppIso (M : Y.Modules) (U : X.Opens) : Γ(M.restrict f, U) ≅ Γ(M, f ''ᵁ U) :=
   Iso.refl _
 
@@ -384,7 +385,7 @@ lemma restrict_map (M : Y.Modules) (f : X ⟶ Y) [IsOpenImmersion f] {U V} (i : 
     (M.restrict f).presheaf.map i.op = M.presheaf.map (f.opensFunctor.map i).op := rfl
 
 /-- `Scheme.Modules.restrict` along an open immersion `X ⟶ Y` sends `𝒪_Y` to `𝒪_X`. -/
-def restrictUnitIso (f : X ⟶ Y) [IsOpenImmersion f] :
+noncomputable def restrictUnitIso (f : X ⟶ Y) [IsOpenImmersion f] :
     restrict (.unit <| Y.ringCatSheaf) f ≅ .unit X.ringCatSheaf := by
   refine (fullyFaithfulForget _).preimageIso <| PresheafOfModules.isoMk (fun U ↦ ?_) ?_
   · refine ModuleCat.isoMk
@@ -401,7 +402,7 @@ def restrictUnitIso (f : X ⟶ Y) [IsOpenImmersion f] :
     exact congr($(this) x)
 
 /-- The restriction of a module along an open immersion. -/
-def restrictFunctorAdjCounitIso : pushforward f ⋙ restrictFunctor f ≅ 𝟭 _ :=
+noncomputable def restrictFunctorAdjCounitIso : pushforward f ⋙ restrictFunctor f ≅ 𝟭 _ :=
   letI := CategoryTheory.Functor.isContinuous_comp.{u} f.opensFunctor (Opens.map f.base)
     (Opens.grothendieckTopology X) (Opens.grothendieckTopology Y) (Opens.grothendieckTopology X)
   (SheafOfModules.pushforwardComp _ _) ≪≫ pushforwardNatIso _ (NatIso.ofComponents
@@ -410,7 +411,7 @@ def restrictFunctorAdjCounitIso : pushforward f ⋙ restrictFunctor f ≅ 𝟭 _
       congr($(f.appIso_inv_app_presheafMap U.unop) x)) ≪≫ SheafOfModules.pushforwardId _
 
 /-- Restriction is right adjoint to pushforward. -/
-def restrictAdjunction : restrictFunctor f ⊣ pushforward f := by
+noncomputable def restrictAdjunction : restrictFunctor f ⊣ pushforward f := by
   refine pushforwardPushforwardAdj (by exact f.isOpenEmbedding.isOpenMap.adjunction) _ _ ?_ ?_
   · ext U x; exact congr($((f.app_appIso_inv _).symm).hom x)
   · ext U x
@@ -437,12 +438,12 @@ lemma restrictAdjunction_counit_app_app (M : X.Modules) (U : X.Opens) :
       M.presheaf.map (eqToHom (f.preimage_image_eq U).symm).op := rfl
 
 /-- Restriction is naturally isomorphic to the inverse image. -/
-def restrictFunctorIsoPullback : restrictFunctor f ≅ pullback f :=
+noncomputable def restrictFunctorIsoPullback : restrictFunctor f ≅ pullback f :=
   (restrictAdjunction f).leftAdjointUniq (pullbackPushforwardAdjunction f)
 
 set_option backward.defeqAttrib.useBackward true in
 /-- Restriction along the identity is isomorphic to the identity. -/
-def restrictFunctorId : restrictFunctor (𝟙 X) ≅ 𝟭 _ :=
+noncomputable def restrictFunctorId : restrictFunctor (𝟙 X) ≅ 𝟭 _ :=
   SheafOfModules.pushforwardNatIso _ (NatIso.ofComponents (fun _ ↦ eqToIso (by simp))) ≪≫
     SheafOfModules.pushforwardCongr
       (by ext : 3; simp [← Functor.map_comp, SheafedSpace.sheaf]) ≪≫
@@ -460,6 +461,7 @@ lemma restrictFunctorId_inv_app_app :
 
 set_option backward.defeqAttrib.useBackward true in
 /-- Restriction along the composition is isomorphic to the composition of restrictions. -/
+noncomputable
 def restrictFunctorComp : restrictFunctor (f ≫ g) ≅ restrictFunctor g ⋙ restrictFunctor f :=
   have : (f.opensFunctor ⋙ g.opensFunctor).IsContinuous
       (Opens.grothendieckTopology X) (Opens.grothendieckTopology Z) :=
@@ -478,6 +480,7 @@ lemma restrictFunctorComp_inv_app_app (M : Z.Modules) :
 
 set_option backward.defeqAttrib.useBackward true in
 /-- Restriction along equal morphisms are isomorphic. -/
+noncomputable
 def restrictFunctorCongr {f g : X ⟶ Y} (hf : f = g) [IsOpenImmersion f] [IsOpenImmersion g] :
     restrictFunctor f ≅ restrictFunctor g :=
   SheafOfModules.pushforwardNatIso _ (NatIso.ofComponents fun _ ↦ eqToIso (by simp [hf])) ≪≫
@@ -494,7 +497,7 @@ lemma restrictFunctorCongr_inv_app_app {f g : X ⟶ Y} (hf : f = g) [IsOpenImmer
     ((restrictFunctorCongr hf).inv.app M).app U = M.presheaf.map (eqToHom (by simp [hf])).op := rfl
 
 /-- Restriction along open immersions commutes with taking stalks. -/
-def restrictStalkNatIso (x : X) :
+noncomputable def restrictStalkNatIso (x : X) :
     restrictFunctor f ⋙ toPresheaf _ ⋙ TopCat.Presheaf.stalkFunctor _ x ≅
     toPresheaf _ ⋙ TopCat.Presheaf.stalkFunctor _ (f x) :=
   haveI := Functor.initial_of_adjunction (f.isOpenEmbedding.adjunctionNhds x)

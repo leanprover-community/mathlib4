@@ -97,8 +97,6 @@ the previous paragraph kicks in.
 @[expose] public section
 
 
-noncomputable section
-
 open Metric Set Topology NNReal
 
 namespace QuotientGroup
@@ -423,10 +421,10 @@ section Submodule
 
 variable {R : Type*} [Ring R] [Module R M] (S T : Submodule R M)
 
-instance Submodule.Quotient.seminormedAddCommGroup : SeminormedAddCommGroup (M ⧸ S) :=
+noncomputable instance Submodule.Quotient.seminormedAddCommGroup : SeminormedAddCommGroup (M ⧸ S) :=
   inferInstanceAs <| SeminormedAddCommGroup (M ⧸ S.toAddSubgroup)
 
-instance Submodule.Quotient.normedAddCommGroup [hS : IsClosed (S : Set M)] :
+noncomputable instance Submodule.Quotient.normedAddCommGroup [hS : IsClosed (S : Set M)] :
     NormedAddCommGroup (M ⧸ S) :=
   inferInstanceAs <| NormedAddCommGroup (M ⧸ S.toAddSubgroup)
 
@@ -477,6 +475,7 @@ def Submodule.quotientQuotientLIEQuotient (h : S ≤ T) : (M ⧸ S) ⧸ map S.mk
         ((Submodule.toAddSubgroup_le S T).mpr h)).isometry
 
 /-- An isometric version of `Submodule.quotientQuotientEquivQuotientSup`. -/
+noncomputable
 def Submodule.quotientQuotientLIEQuotientSup : (M ⧸ S) ⧸ map S.mkQ T ≃ₗᵢ[R] M ⧸ (S ⊔ T) :=
   (quotLIEOfEq _ _ (by simp)).trans (quotientQuotientLIEQuotient _ _ le_sup_left)
 
@@ -492,7 +491,7 @@ nonrec theorem Ideal.Quotient.norm_mk_lt {I : Ideal R} (x : R ⧸ I) {ε : ℝ} 
 
 theorem Ideal.Quotient.norm_mk_le (r : R) : ‖Ideal.Quotient.mk I r‖ ≤ ‖r‖ := norm_mk_le_norm
 
-instance Ideal.Quotient.semiNormedCommRing : SeminormedCommRing (R ⧸ I) where
+noncomputable instance Ideal.Quotient.semiNormedCommRing : SeminormedCommRing (R ⧸ I) where
   dist_eq := dist_eq_norm_neg_add
   mul_comm := _root_.mul_comm
   norm_mul_le x y := le_of_forall_pos_le_add fun ε hε => by
@@ -509,6 +508,7 @@ instance Ideal.Quotient.semiNormedCommRing : SeminormedCommRing (R ⧸ I) where
       _ ≤ ‖a‖ * ‖b‖ := (Ideal.Quotient.norm_mk_le I (a * b)).trans (norm_mul_le a b)
       _ ≤ _ := (sub_lt_iff_lt_add'.mp h.1).le
 
+noncomputable
 instance Ideal.Quotient.normedCommRing [IsClosed (I : Set R)] : NormedCommRing (R ⧸ I) :=
   { Ideal.Quotient.semiNormedCommRing I, Submodule.Quotient.normedAddCommGroup I with }
 

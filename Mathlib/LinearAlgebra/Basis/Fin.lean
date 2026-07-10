@@ -16,8 +16,6 @@ public import Mathlib.LinearAlgebra.Pi
 
 assert_not_exists Ordinal
 
-noncomputable section
-
 universe u
 
 open Function Set Submodule Finsupp
@@ -121,7 +119,7 @@ theorem coe_mkFinSnocOfLE {n : ℕ} {N O : Submodule R M} (b : Basis (Fin n) R N
   coe_mkFinSnoc _ _ _ _
 
 /-- The basis of `R × R` given by the two vectors `(1, 0)` and `(0, 1)`. -/
-protected def finTwoProd (R : Type*) [Semiring R] : Basis (Fin 2) R (R × R) :=
+protected noncomputable def finTwoProd (R : Type*) [Semiring R] : Basis (Fin 2) R (R × R) :=
   Basis.ofEquivFun (LinearEquiv.finTwoArrow R R).symm
 
 @[simp]

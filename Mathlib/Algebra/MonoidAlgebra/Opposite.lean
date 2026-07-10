@@ -15,7 +15,7 @@ public import Mathlib.Data.Finsupp.Basic
 
 assert_not_exists NonUnitalAlgHom AlgEquiv
 
-@[expose] public noncomputable section
+@[expose] public section
 
 open Finsupp MulOpposite
 

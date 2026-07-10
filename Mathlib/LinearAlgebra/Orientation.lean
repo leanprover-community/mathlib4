@@ -35,8 +35,6 @@ that index type is a `Fintype` and there exists a basis of the same cardinality.
 
 @[expose] public section
 
-noncomputable section
-
 open Module
 
 section OrderedCommSemiring
@@ -161,7 +159,7 @@ theorem map_orientation_eq_det_inv_smul [Finite ι] (e : Basis ι R M) (x : Orie
 variable [Fintype ι] [DecidableEq ι] [Fintype ι'] [DecidableEq ι']
 
 /-- The orientation given by a basis. -/
-protected def orientation (e : Basis ι R M) : Orientation R M ι :=
+protected noncomputable def orientation (e : Basis ι R M) : Orientation R M ι :=
   rayOfNeZero R _ e.det_ne_zero
 
 theorem orientation_map (e : Basis ι R M) (f : M ≃ₗ[R] N) :
@@ -274,7 +272,7 @@ theorem orientation_neg_single (e : Basis ι R M) (i : ι) :
 
 /-- Given a basis and an orientation, return a basis giving that orientation: either the original
 basis, or one constructed by negating a single (arbitrary) basis vector. -/
-def adjustToOrientation [Nonempty ι] (e : Basis ι R M) (x : Orientation R M ι) :
+noncomputable def adjustToOrientation [Nonempty ι] (e : Basis ι R M) (x : Orientation R M ι) :
     Basis ι R M :=
   haveI := Classical.decEq (Orientation R M ι)
   if e.orientation = x then e else e.unitsSMul (Function.update 1 (Classical.arbitrary ι) (-1))
@@ -384,6 +382,7 @@ theorem map_eq_neg_iff_det_neg (x : Orientation R M ι) (f : M ≃ₗ[R] M)
 
 /-- If the index type has cardinality equal to the finite dimension, a basis with the given
 orientation. -/
+noncomputable
 def someBasis [Nonempty ι] [DecidableEq ι] [FiniteDimensional R M] (x : Orientation R M ι)
     (h : Fintype.card ι = finrank R M) : Basis ι R M :=
   ((finBasis R M).reindex (Fintype.equivFinOfCardEq h).symm).adjustToOrientation x

@@ -31,14 +31,12 @@ open scoped RealInnerProductSpace
 variable {V P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
 variable [NormedAddTorsor V P]
 
-noncomputable section
-
 namespace AffineSubspace
 
 variable {c p₁ p₂ : P}
 
 /-- Perpendicular bisector of a segment in a Euclidean affine space. -/
-def perpBisector (p₁ p₂ : P) : AffineSubspace ℝ P :=
+noncomputable def perpBisector (p₁ p₂ : P) : AffineSubspace ℝ P :=
   mk' (midpoint ℝ p₁ p₂) (LinearMap.ker (innerₛₗ ℝ (p₂ -ᵥ p₁)))
 
 /-- A point `c` belongs the perpendicular bisector of `[p₁, p₂]` iff `p₂ -ᵥ p₁` is orthogonal to

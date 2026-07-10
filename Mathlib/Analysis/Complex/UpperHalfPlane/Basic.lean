@@ -18,8 +18,6 @@ We define the notation `ℍ` for the upper half plane available in the locale
 
 @[expose] public section
 
-noncomputable section
-
 /-- The open upper half plane, denoted as `ℍ` within the `UpperHalfPlane` namespace -/
 @[ext]
 structure UpperHalfPlane where
@@ -41,7 +39,7 @@ instance : CoeOut ℍ ℂ := ⟨UpperHalfPlane.coe⟩
 def I : ℍ := ⟨Complex.I, by simp⟩
 
 /-- Define the cube root of unity `ρ := (-1 + √-3) / 2` as an element of the upper half plane. -/
-def ρ : ℍ := ⟨⟨-1 / 2, Real.sqrt 3 / 2⟩, by positivity⟩
+noncomputable def ρ : ℍ := ⟨⟨-1 / 2, Real.sqrt 3 / 2⟩, by positivity⟩
 
 lemma ρ_sq : (ρ : ℂ) ^ 2 = -ρ - 1 := by
   simp [Complex.ext_iff, pow_two, ρ]
@@ -196,7 +194,7 @@ lemma ne_natCast (z : ℍ) (n : ℕ) : (z : ℂ) ≠ n := mod_cast ne_intCast z 
 
 section PosRealAction
 
-instance posRealAction : MulAction {x : ℝ // 0 < x} ℍ where
+noncomputable instance posRealAction : MulAction {x : ℝ // 0 < x} ℍ where
   smul x z := mk ((x : ℝ) • (z : ℂ)) <| by simpa using mul_pos x.2 z.im_pos
   one_smul _ := UpperHalfPlane.ext <| one_smul _ _
   mul_smul x y z := UpperHalfPlane.ext <| mul_smul (x : ℝ) y (z : ℂ)

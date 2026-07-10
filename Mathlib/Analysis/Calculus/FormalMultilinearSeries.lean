@@ -27,8 +27,6 @@ multilinear, formal series
 @[expose] public section
 
 
-noncomputable section
-
 open Set Fin Topology
 
 universe u u' v w x y
@@ -199,11 +197,12 @@ as multilinear maps into `E →L[𝕜] F`. If `p` is the Taylor series (`HasFTay
 function, then `p.shift` is the Taylor series of the derivative of the function. Note that the
 `p.sum` of a Taylor series `p` does not give the original function; for a formal multilinear
 series that sums to the derivative of `p.sum`, see `HasFPowerSeriesOnBall.fderiv`. -/
-def shift : FormalMultilinearSeries 𝕜 E (E →L[𝕜] F) := fun n => (p n.succ).curryRight
+noncomputable def shift : FormalMultilinearSeries 𝕜 E (E →L[𝕜] F) := fun n => (p n.succ).curryRight
 
 /-- Adding a zeroth term to a formal multilinear series taking values in `E →L[𝕜] F`. This
 corresponds to starting from a Taylor series (`HasFTaylorSeriesUpTo`) for the derivative of a
 function, and building a Taylor series for the function itself. -/
+noncomputable
 def unshift (q : FormalMultilinearSeries 𝕜 E (E →L[𝕜] F)) (z : F) : FormalMultilinearSeries 𝕜 E F
   | 0 => (continuousMultilinearCurryFin0 𝕜 E F).symm z
   | n + 1 => (continuousMultilinearCurryRightEquiv' 𝕜 n E F).symm (q n)
@@ -364,7 +363,7 @@ section Const
 /-- The formal multilinear series where all terms of positive degree are equal to zero, and the term
 of degree zero is `c`. It is the power series expansion of the constant function equal to `c`
 everywhere. -/
-def constFormalMultilinearSeries (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Type*)
+noncomputable def constFormalMultilinearSeries (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Type*)
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] [ContinuousConstSMul 𝕜 E] [IsTopologicalAddGroup E]
     {F : Type*} [NormedAddCommGroup F] [IsTopologicalAddGroup F] [NormedSpace 𝕜 F]
     [ContinuousConstSMul 𝕜 F] (c : F) : FormalMultilinearSeries 𝕜 E F
@@ -424,7 +423,7 @@ namespace ContinuousLinearMap
 
 /-- Formal power series of a continuous linear map `f : E →L[𝕜] F` at `x : E`:
 `f y = f x + f (y - x)`. -/
-def fpowerSeries (f : E →L[𝕜] F) (x : E) : FormalMultilinearSeries 𝕜 E F
+noncomputable def fpowerSeries (f : E →L[𝕜] F) (x : E) : FormalMultilinearSeries 𝕜 E F
   | 0 => ContinuousMultilinearMap.uncurry0 𝕜 _ (f x)
   | 1 => (continuousMultilinearCurryFin1 𝕜 E F).symm f
   | _ => 0

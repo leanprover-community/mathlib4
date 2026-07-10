@@ -32,8 +32,6 @@ Given a morphism `f : X ⟶ Y`, `CategoryTheory.Projective.left f` is a projecti
 @[expose] public section
 
 
-noncomputable section
-
 open CategoryTheory Limits Opposite
 
 universe v u v' u'
@@ -86,7 +84,7 @@ namespace Projective
 /--
 An arbitrarily chosen factorisation of a morphism out of a projective object through an epimorphism.
 -/
-def factorThru {P X E : C} [Projective P] (f : P ⟶ X) (e : E ⟶ X) [Epi e] : P ⟶ E :=
+noncomputable def factorThru {P X E : C} [Projective P] (f : P ⟶ X) (e : E ⟶ X) [Epi e] : P ⟶ E :=
   (Projective.factors f e).choose
 
 @[reassoc (attr := simp)]
@@ -156,7 +154,7 @@ variable [EnoughProjectives C]
 /-- `Projective.over X` provides an arbitrarily chosen projective object equipped with
 an epimorphism `Projective.π : Projective.over X ⟶ X`.
 -/
-def over (X : C) : C :=
+noncomputable def over (X : C) : C :=
   (EnoughProjectives.presentation X).some.p
 
 instance projective_over (X : C) : Projective (over X) :=
@@ -165,7 +163,7 @@ instance projective_over (X : C) : Projective (over X) :=
 /-- The epimorphism `projective.π : projective.over X ⟶ X`
 from the arbitrarily chosen projective object over `X`.
 -/
-def π (X : C) : over X ⟶ X :=
+noncomputable def π (X : C) : over X ⟶ X :=
   (EnoughProjectives.presentation X).some.f
 
 instance π_epi (X : C) : Epi (π X) :=
@@ -178,7 +176,7 @@ variable [HasZeroMorphisms C] {X Y : C} (f : X ⟶ Y) [HasKernel f]
 /-- When `C` has enough projectives, the object `Projective.syzygies f` is
 an arbitrarily chosen projective object over `kernel f`.
 -/
-def syzygies : C := over (kernel f)
+noncomputable def syzygies : C := over (kernel f)
 
 instance : Projective (syzygies f) := inferInstanceAs (Projective (over _))
 
@@ -188,7 +186,7 @@ instance : Projective (syzygies f) := inferInstanceAs (Projective (over _))
 
 (When `C` is abelian, we have `exact (projective.d f) f`.)
 -/
-abbrev d : syzygies f ⟶ X :=
+noncomputable abbrev d : syzygies f ⟶ X :=
   π (kernel f) ≫ kernel.ι f
 
 end

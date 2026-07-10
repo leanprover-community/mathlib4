@@ -30,8 +30,6 @@ extension of scalars.
 
 @[expose] public section
 
-noncomputable section
-
 open Set Function
 open Submodule (span injective_subtype span subset_span span_setOf_mem_eq_top)
 
@@ -67,7 +65,7 @@ variable [P.IsValuedIn K]
 /-- Restriction of scalars for a root pairing taking values in a subfield.
 
 See also `RootPairing.restrictScalars`. -/
-def restrictScalars' :
+noncomputable def restrictScalars' :
     RootPairing ι K (span K (range P.root)) (span K (range P.coroot)) where
   toLinearMap := .restrictScalarsRange₂ (R := L)
     (span K (range P.root)).subtype (span K (range P.coroot)).subtype (Algebra.linearMap K L)
@@ -120,13 +118,13 @@ instance : (P.restrictScalars' K).IsRootSystem where
 end SubfieldValued
 
 /-- Restriction of scalars for a crystallographic root pairing. -/
-abbrev restrictScalars [P.IsCrystallographic] :
+noncomputable abbrev restrictScalars [P.IsCrystallographic] :
     RootPairing ι K (span K (range P.root)) (span K (range P.coroot)) :=
   have := IsValuedIn.trans P K ℤ
   P.restrictScalars' K
 
 /-- Restriction of scalars to `ℚ` for a crystallographic root pairing in characteristic zero. -/
-abbrev restrictScalarsRat [CharZero L] [P.IsCrystallographic] :=
+noncomputable abbrev restrictScalarsRat [CharZero L] [P.IsCrystallographic] :=
   let _i : Module ℚ M := Module.compHom M (algebraMap ℚ L)
   let _i : Module ℚ N := Module.compHom N (algebraMap ℚ L)
   P.restrictScalars ℚ

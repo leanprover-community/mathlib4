@@ -51,7 +51,7 @@ https://github.com/leanprover-community/mathlib4/pull/25273
 
 assert_not_exists NonUnitalAlgHom AlgEquiv
 
-@[expose] public noncomputable section
+@[expose] public section
 
 open Finsupp hiding single
 
@@ -174,9 +174,10 @@ instance instDecidableEq [DecidableEq R] [DecidableEq M] : DecidableEq R[M] :=
   coeffEquiv.decidableEq
 
 @[to_additive instAddMonoid]
-instance instAddMonoid : AddMonoid R[M] := fast_instance% coeffEquiv.addMonoid
+noncomputable instance instAddMonoid : AddMonoid R[M] := fast_instance% coeffEquiv.addMonoid
 
 @[to_additive instAddCommMonoid]
+noncomputable
 instance instAddCommMonoid : AddCommMonoid R[M] := fast_instance% coeffEquiv.addCommMonoid
 
 @[to_additive]
@@ -186,7 +187,7 @@ instance instIsCancelAdd [IsCancelAdd R] : IsCancelAdd R[M] :=
 /-- `MonoidAlgebra.coeff` as an `AddEquiv`. -/
 @[to_additive (attr := simps! apply symm_apply)
 /-- `AddMonoidAlgebra.coeff` as an `AddEquiv`. -/]
-def coeffAddEquiv : R[M] ≃+ (M →₀ R) := coeffEquiv.addEquiv
+noncomputable def coeffAddEquiv : R[M] ≃+ (M →₀ R) := coeffEquiv.addEquiv
 
 @[to_additive (attr := simp)] lemma coeff_zero : coeff (0 : R[M]) = 0 := rfl
 @[to_additive (attr := simp)] lemma ofCoeff_zero : (ofCoeff 0 : R[M]) = 0 := rfl
@@ -219,7 +220,7 @@ lemma ofCoeff_finsuppSum [AddCommMonoid N] (f : ι →₀ N) (g : ι → N → M
 /-- `MonoidAlgebra.single m r` for `m : M`, `r : R` is the element `rm : R[M]`. -/
 @[to_additive
 /-- `AddMonoidAlgebra.single m r` for `m : M`, `r : R` is the element `rm : R[M]`. -/]
-def single (m : M) (r : R) : R[M] := .ofCoeff <| .single m r
+noncomputable def single (m : M) (r : R) : R[M] := .ofCoeff <| .single m r
 
 @[to_additive (attr := simp)]
 lemma coeff_single (m : M) (r : R) : (single m r).coeff = .single m r := rfl
@@ -256,7 +257,7 @@ lemma single_add_single_inj (hr₁ : r₁ ≠ 0) (hr₂ : r₂ ≠ 0) :
 
 /-- Remove a term from an element of the monoid algebra. -/
 @[to_additive /-- Remove a term from an element of the additive monoid algebra. -/]
-def erase (m : M) (x : R[M]) : R[M] := .ofCoeff <| .erase m x.coeff
+noncomputable def erase (m : M) (x : R[M]) : R[M] := .ofCoeff <| .erase m x.coeff
 
 @[to_additive (attr := simp)]
 lemma coeff_erase (m : M) (x : R[M]) : (x.erase m).coeff = x.coeff.erase m := rfl
@@ -275,7 +276,7 @@ If `r = 0`, this is equal to `x.erase m`. -/
 @[to_additive
 /-- Replace the `m`-th coefficient of an element `x` of the monoid algebra by a given value `r : R`.
 If `r = 0`, this is equal to `x.erase m`. -/]
-def update (m : M) (r : R) (x : R[M]) : R[M] :=
+noncomputable def update (m : M) (r : R) (x : R[M]) : R[M] :=
   ofCoeff (x.coeff.update m r)
 
 @[to_additive (attr := simp)]
@@ -299,6 +300,7 @@ Further results on scalar multiplication can be found in
 variable {A : Type*} [SMulZeroClass A R]
 
 @[to_additive (dont_translate := A) smulZeroClass]
+noncomputable
 instance smulZeroClass : SMulZeroClass A R[M] := fast_instance% coeffEquiv.smulZeroClass _
 
 section
@@ -331,7 +333,7 @@ lemma smul_single (a : A) (m : M) (r : R) : a • single m r = single m (a • r
 lemma smul_single' (r' : R) (m : M) (r : R) : r' • single m r = single m (r' * r) := smul_single ..
 
 @[to_additive (dont_translate := N) distribSMul]
-instance distribSMul [DistribSMul N R] : DistribSMul N R[M] :=
+noncomputable instance distribSMul [DistribSMul N R] : DistribSMul N R[M] :=
   fast_instance% coeffEquiv.distribSMul _
 
 @[to_additive (dont_translate := N) isScalarTower]
@@ -373,7 +375,7 @@ TODO: Rename to `singleAddMonoidHom`. -/
 /-- `AddMonoidAlgebra.single` as an `AddMonoidHom`.
 
 TODO: Rename to `singleAddMonoidHom`. -/]
-def singleAddHom (m : M) : R →+ R[M] where
+noncomputable def singleAddHom (m : M) : R →+ R[M] where
   toFun := single m
   map_zero' := single_zero _
   map_add' := single_add _
@@ -461,7 +463,7 @@ i.e. the function that is `1` at `1` and `0` elsewhere. -/
 @[to_additive (dont_translate := R)
 /-- The unit of the multiplication is `single 1 1`,
 i.e. the function that is `1` at `1` and `0` elsewhere. -/]
-instance one : One R[M] where one := single 1 1
+noncomputable instance one : One R[M] where one := single 1 1
 
 @[to_additive (dont_translate := R) one_def]
 lemma one_def : (1 : R[M]) = single 1 1 := rfl
@@ -478,13 +480,14 @@ variable [Mul M]
 
 We make it irreducible so that Lean doesn't unfold it when trying to unify two different things. -/
 @[no_expose]
+noncomputable
 def _root_.AddMonoidAlgebra.mul' [Add M] (x y : AddMonoidAlgebra R M) : AddMonoidAlgebra R M :=
   x.coeff.sum fun m₁ r₁ ↦ y.coeff.sum fun m₂ r₂ ↦ .single (m₁ + m₂) (r₁ * r₂)
 /-- The multiplication in a monoid algebra.
 
 We make it irreducible so that Lean doesn't unfold it when trying to unify two different things. -/
 @[to_additive existing mul', no_expose]
-def mul' (x y : R[M]) : R[M] :=
+noncomputable def mul' (x y : R[M]) : R[M] :=
   x.coeff.sum fun m₁ r₁ ↦ y.coeff.sum fun m₂ r₂ ↦ single (m₁ * m₂) (r₁ * r₂)
 
 /-- The product of `x y : R[M]` is the finitely supported function whose value at `m`
@@ -492,7 +495,7 @@ is the sum of `x m₁ * y m₂` over all pairs `m₁, m₂` such that `m₁ * m�
 @[to_additive instMul
 /-- The product of `x y : R[M]` is the finitely supported function whose value at `m`
 is the sum of `x m₁ * y m₂` over all pairs `m₁, m₂` such that `m₁ + m₂ = m`. -/]
-instance instMul : Mul R[M] where mul := mul'
+noncomputable instance instMul : Mul R[M] where mul := mul'
 
 @[to_additive (dont_translate := R) mul_def]
 lemma mul_def (x y : R[M]) :
@@ -500,7 +503,7 @@ lemma mul_def (x y : R[M]) :
   with_unfolding_all rfl
 
 @[to_additive (dont_translate := R)]
-instance nonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring R[M] where
+noncomputable instance nonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring R[M] where
   zero_mul := by simp [mul_def]
   mul_zero := by simp [mul_def]
   left_distrib := by classical simp [mul_def, mul_add, sum_add, sum_add_index]
@@ -601,7 +604,7 @@ lemma single_mul_apply_of_not_exists_mul (r : R) {g g' : M} (x : R[M])
 variable (R M : Type*) [Semiring R] [Mul M] in
 /-- The embedding of a magma into its magma algebra. -/
 @[simps]
-def ofMagma : M →ₙ* R[M] where
+noncomputable def ofMagma : M →ₙ* R[M] where
   toFun a := single a 1
   map_mul' a b := by ext; simp [mul_def, Finsupp.sum_single_index]
 
@@ -611,7 +614,7 @@ section Semigroup
 variable [Semigroup M]
 
 @[to_additive (dont_translate := R)]
-instance nonUnitalSemiring : NonUnitalSemiring R[M] where
+noncomputable instance nonUnitalSemiring : NonUnitalSemiring R[M] where
   mul_assoc := by simp [mul_def, sum_sum_index, mul_add, add_mul, mul_assoc]
 
 end Semigroup
@@ -620,7 +623,7 @@ section MulOneClass
 variable [MulOneClass M]
 
 @[to_additive (dont_translate := R)]
-instance nonAssocSemiring : NonAssocSemiring R[M] where
+noncomputable instance nonAssocSemiring : NonAssocSemiring R[M] where
   natCast n := single 1 n
   natCast_zero := by simp
   natCast_succ := by simp [one_def]
@@ -656,7 +659,7 @@ lemma coeff_single_one_mul (x : R[M]) (r : R) (m : M) :
 variable (R M : Type*) [Semiring R] [MulOneClass M] in
 /-- The embedding of a unital magma into its magma algebra. -/
 @[simps! apply]
-def of : M →* R[M] where
+noncomputable def of : M →* R[M] where
   __ := ofMagma R M
   map_one' := rfl
 
@@ -671,7 +674,7 @@ lemma of_commute (h : ∀ m', Commute m m') (f : R[M]) : Commute (of R M m) f :=
 Note the order of the elements of the product are reversed compared to the arguments of
 `MonoidAlgebra.single`. -/
 @[simps]
-def singleHom : R × M →* R[M] where
+noncomputable def singleHom : R × M →* R[M] where
   toFun a := single a.2 a.1
   map_one' := rfl
   map_mul' _a _b := by simp
@@ -679,7 +682,7 @@ def singleHom : R × M →* R[M] where
 /-- `MonoidAlgebra.single 1` as a `RingHom` -/
 @[to_additive (attr := simps) (dont_translate := R)
 /-- `AddMonoidAlgebra.single 1` as a `RingHom` -/]
-def singleOneRingHom : R →+* R[M] where
+noncomputable def singleOneRingHom : R →+* R[M] where
   __ := singleAddHom 1
   map_one' := rfl
   map_mul' := by simp
@@ -712,7 +715,7 @@ section Monoid
 variable [Monoid M] [Monoid N]
 
 @[to_additive]
-instance semiring : Semiring R[M] where
+noncomputable instance semiring : Semiring R[M] where
 
 @[to_additive (attr := simp) (dont_translate := R) single_pow]
 lemma single_pow (m : M) (r : R) : ∀ n : ℕ, single m r ^ n = single (m ^ n) (r ^ n)
@@ -740,7 +743,7 @@ variable (M) in
 /-- The trivial monoid algebra is the base ring. -/
 @[to_additive (dont_translate := R) (attr := simps! apply)
 /-- The trivial additive monoid algebra is the base ring. -/]
-def uniqueRingEquiv [Subsingleton M] : R[M] ≃+* R where
+noncomputable def uniqueRingEquiv [Subsingleton M] : R[M] ≃+* R where
   toAddEquiv := coeffAddEquiv.trans <| Finsupp.uniqueAddEquiv 1
   map_mul' x y := by
     let : Unique M := ⟨⟨1⟩, fun _ ↦ Subsingleton.elim ..⟩
@@ -763,7 +766,7 @@ alias uniqueRingEquiv_symm_apply_apply := coeff_uniqueRingEquiv_symm
 /-- A product monoid algebra is a nested monoid algebra. -/
 @[to_additive (dont_translate := R)
 /-- An additive product monoid algebra is a nested additive monoid algebra. -/]
-def curryAddEquiv : R[M × N] ≃+ R[N][M] :=
+noncomputable def curryAddEquiv : R[M × N] ≃+ R[N][M] :=
   coeffAddEquiv.trans <| .trans Finsupp.curryAddEquiv <| .trans
     (Finsupp.mapRange.addEquiv coeffAddEquiv.symm) coeffAddEquiv.symm
 
@@ -778,7 +781,7 @@ lemma curryAddEquiv_symm_single (m : M) (n : N) (r : R) :
 /-- A product monoid algebra is a nested monoid algebra. -/
 @[to_additive (dont_translate := R)
 /-- An additive product monoid algebra is a nested additive monoid algebra. -/]
-def curryRingEquiv : R[M × N] ≃+* R[N][M] where
+noncomputable def curryRingEquiv : R[M × N] ≃+* R[N][M] where
   toAddEquiv := curryAddEquiv
   map_mul' := curryAddEquiv (M := M) (N := N).toAddMonoidHom.map_mul_iff.2 <| by
     ext ⟨m₁, n₁⟩ r₁ ⟨m₂, n₂⟩ r₂; simp
@@ -844,7 +847,7 @@ section CommSemiring
 variable [CommSemiring R]
 
 @[to_additive (dont_translate := R)]
-instance nonUnitalCommSemiring [CommSemigroup M] : NonUnitalCommSemiring R[M] where
+noncomputable instance nonUnitalCommSemiring [CommSemigroup M] : NonUnitalCommSemiring R[M] where
   mul_comm f g := by simp [mul_def, Finsupp.sum, mul_comm, f.coeff.support.sum_comm]
 
 @[to_additive (dont_translate := R)]
@@ -856,7 +859,7 @@ section CommMonoid
 variable [CommMonoid M]
 
 @[to_additive (dont_translate := R)]
-instance commSemiring : CommSemiring R[M] where
+noncomputable instance commSemiring : CommSemiring R[M] where
 
 open Finset in
 @[to_additive (dont_translate := R) (attr := simp) prod_single]
@@ -877,7 +880,7 @@ section Ring
 variable [Ring R]
 
 @[to_additive (dont_translate := R) addCommGroup]
-instance addCommGroup : AddCommGroup R[M] := fast_instance% coeffEquiv.addCommGroup
+noncomputable instance addCommGroup : AddCommGroup R[M] := fast_instance% coeffEquiv.addCommGroup
 
 @[to_additive (attr := simp)]
 lemma coeff_neg (x : R[M]) : coeff (-x) = -coeff x := rfl
@@ -898,13 +901,13 @@ lemma single_neg (m : M) (r : R) : single m (-r) = -single m r := by ext; simp
 lemma single_sub (m : M) (r s : R) : single m (r - s) = single m r - single m s := by ext; simp
 
 @[to_additive (dont_translate := R)]
-instance nonUnitalNonAssocRing [Mul M] : NonUnitalNonAssocRing R[M] where
+noncomputable instance nonUnitalNonAssocRing [Mul M] : NonUnitalNonAssocRing R[M] where
 
 @[to_additive (dont_translate := R)]
-instance nonUnitalRing [Semigroup M] : NonUnitalRing R[M] where
+noncomputable instance nonUnitalRing [Semigroup M] : NonUnitalRing R[M] where
 
 @[to_additive (dont_translate := R)]
-instance nonAssocRing [MulOneClass M] : NonAssocRing R[M] where
+noncomputable instance nonAssocRing [MulOneClass M] : NonAssocRing R[M] where
   intCast z := single 1 z
   intCast_ofNat n := by simp [natCast_def]
   intCast_negSucc n := by simp [natCast_def, one_def]
@@ -913,7 +916,7 @@ instance nonAssocRing [MulOneClass M] : NonAssocRing R[M] where
 lemma intCast_def [MulOneClass M] (z : ℤ) : (z : R[M]) = single 1 (z : R) := rfl
 
 @[to_additive (dont_translate := R)]
-instance ring [Monoid M] : Ring R[M] where
+noncomputable instance ring [Monoid M] : Ring R[M] where
 
 @[deprecated coeff_neg (since := "2026-06-18")]
 lemma neg_apply (m : M) (x : R[M]) : (-x).coeff m = -x.coeff m := rfl
@@ -924,10 +927,10 @@ section CommRing
 variable [CommRing R]
 
 @[to_additive (dont_translate := R)]
-instance nonUnitalCommRing [CommSemigroup M] : NonUnitalCommRing R[M] where
+noncomputable instance nonUnitalCommRing [CommSemigroup M] : NonUnitalCommRing R[M] where
 
 @[to_additive (dont_translate := R)]
-instance commRing [CommMonoid M] : CommRing R[M] where
+noncomputable instance commRing [CommMonoid M] : CommRing R[M] where
 
 end CommRing
 end MonoidAlgebra
@@ -943,17 +946,17 @@ variable (R M : Type*) [Semiring R]
 
 /-- The embedding of an additive magma into its additive magma algebra. -/
 @[simps]
-def ofMagma [Add M] : Multiplicative M →ₙ* R[M] where
+noncomputable def ofMagma [Add M] : Multiplicative M →ₙ* R[M] where
   toFun a := single a.toAdd 1
   map_mul' := by simp [mul_def]
 
 /-- Embedding of a magma with zero into its magma algebra. -/
-def of [AddZeroClass M] : Multiplicative M →* R[M] where
+noncomputable def of [AddZeroClass M] : Multiplicative M →* R[M] where
   __ := ofMagma R M
   map_one' := rfl
 
 /-- Embedding of a magma with zero `M`, into its magma algebra, having `M` as source. -/
-def of' : M → R[M] := fun m => single m 1
+noncomputable def of' : M → R[M] := fun m => single m 1
 
 end
 
@@ -980,7 +983,7 @@ Note the order of the elements of the product are reversed compared to the argum
 `Finsupp.single`.
 -/
 @[simps]
-def singleHom [AddZeroClass M] : R × Multiplicative M →* R[M] where
+noncomputable def singleHom [AddZeroClass M] : R × Multiplicative M →* R[M] where
   toFun a := single a.2.toAdd a.1
   map_one' := rfl
   map_mul' _a _b := (single_mul_single ..).symm

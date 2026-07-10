@@ -15,8 +15,6 @@ public import Mathlib.Algebra.Polynomial.Basic
 public section
 
 
-noncomputable section
-
 namespace Polynomial
 
 universe u

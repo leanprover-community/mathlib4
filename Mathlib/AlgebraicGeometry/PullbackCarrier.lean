@@ -30,7 +30,7 @@ We also give the ranges of `pullback.fst`, `pullback.snd` and `pullback.map`.
 
 open CategoryTheory Limits TopologicalSpace IsLocalRing TensorProduct
 
-noncomputable section
+section
 
 universe u
 
@@ -66,7 +66,7 @@ def mk' (x : X) (y : Y) (h : f x = g y) : Triplet f g where
   hy := rfl
 
 /-- Given `x : X` and `y : Y` such that `f x = s = g y`, this is `κ(x) ⊗[κ(s)] κ(y)`. -/
-def tensor (T : Triplet f g) : CommRingCat :=
+noncomputable def tensor (T : Triplet f g) : CommRingCat :=
   pushout ((S.residueFieldCongr T.hx).inv ≫ f.residueFieldMap T.x)
     ((S.residueFieldCongr T.hy).inv ≫ g.residueFieldMap T.y)
 
@@ -76,11 +76,11 @@ instance (T : Triplet f g) : Nontrivial T.tensor :=
 
 /-- Given `x : X` and `y : Y` such that `f x = s = g y`, this is the
 canonical map `κ(x) ⟶ κ(x) ⊗[κ(s)] κ(y)`. -/
-def tensorInl (T : Triplet f g) : X.residueField T.x ⟶ T.tensor := pushout.inl _ _
+noncomputable def tensorInl (T : Triplet f g) : X.residueField T.x ⟶ T.tensor := pushout.inl _ _
 
 /-- Given `x : X` and `y : Y` such that `f x = s = g y`, this is the
 canonical map `κ(y) ⟶ κ(x) ⊗[κ(s)] κ(y)`. -/
-def tensorInr (T : Triplet f g) : Y.residueField T.y ⟶ T.tensor := pushout.inr _ _
+noncomputable def tensorInr (T : Triplet f g) : Y.residueField T.y ⟶ T.tensor := pushout.inr _ _
 
 lemma isPullback_SpecMap_tensor (T : Triplet f g) : CategoryTheory.IsPullback
     (Spec.map T.tensorInl) (Spec.map T.tensorInr)
@@ -92,7 +92,7 @@ section Congr
 
 /-- Given propositionally equal triplets `T₁` and `T₂` over `f` and `g`, the corresponding
 `T₁.tensor` and `T₂.tensor` are isomorphic. -/
-def tensorCongr {T₁ T₂ : Triplet f g} (e : T₁ = T₂) :
+noncomputable def tensorCongr {T₁ T₂ : Triplet f g} (e : T₁ = T₂) :
     T₁.tensor ≅ T₂.tensor :=
   eqToIso (by subst e; rfl)
 
@@ -138,7 +138,7 @@ lemma SpecMap_tensorInl_fromSpecResidueField :
 
 /-- Given `x : X`, `y : Y` and `s : S` such that `f x = s = g y`,
 this is `Spec (κ(x) ⊗[κ(s)] κ(y)) ⟶ X ×ₛ Y`. -/
-def SpecTensorTo : Spec T.tensor ⟶ pullback f g :=
+noncomputable def SpecTensorTo : Spec T.tensor ⟶ pullback f g :=
   pullback.lift (Spec.map T.tensorInl ≫ X.fromSpecResidueField T.x)
     (Spec.map T.tensorInr ≫ Y.fromSpecResidueField T.y)
     (SpecMap_tensorInl_fromSpecResidueField _)
@@ -172,7 +172,7 @@ lemma specTensorTo_snd :
 /-- Given `t : X ×[S] Y`, it maps to `X` and `Y` with same image in `S`, yielding a
 `Triplet f g`. -/
 @[simps]
-def ofPoint (t : ↑(pullback f g)) : Triplet f g :=
+noncomputable def ofPoint (t : ↑(pullback f g)) : Triplet f g :=
   ⟨pullback.fst f g t, pullback.snd f g t, _, rfl,
     congr($(pullback.condition (f := f) (g := g)) t).symm⟩
 
@@ -192,7 +192,7 @@ lemma residueFieldCongr_inv_residueFieldMap_ofPoint (t : ↑(pullback f g)) :
 
 /-- Given `t : X ×[S] Y` with projections to `X`, `Y` and `S` denoted by `x`, `y` and `s`
 respectively, this is the canonical map `κ(x) ⊗[κ(s)] κ(y) ⟶ κ(t)`. -/
-def ofPointTensor (t : ↑(pullback f g)) :
+noncomputable def ofPointTensor (t : ↑(pullback f g)) :
     (Triplet.ofPoint t).tensor ⟶ (pullback f g).residueField t :=
   pushout.desc
     ((pullback.fst f g).residueFieldMap t)
@@ -216,7 +216,7 @@ lemma ofPointTensor_SpecTensorTo (t : ↑(pullback f g)) :
 
 /-- If `t` is a point in `X ×[S] Y` above `(x, y, s)`, then this is the image of the unique
 point of `Spec κ(s)` in `Spec κ(x) ⊗[κ(s)] κ(y)`. -/
-def SpecOfPoint (t : ↑(pullback f g)) : Spec (Triplet.ofPoint t).tensor :=
+noncomputable def SpecOfPoint (t : ↑(pullback f g)) : Spec (Triplet.ofPoint t).tensor :=
     Spec.map (ofPointTensor t) (⊥ : PrimeSpectrum _)
 
 @[simp]
@@ -259,7 +259,7 @@ The points of the underlying topological space of `X ×[S] Y` bijectively corres
 pairs of triples `x : X`, `y : Y`, `s : S` with `f x = s = f y` and prime ideals of
 `κ(x) ⊗[κ(s)] κ(y)`.
 -/
-def carrierEquiv : ↑(pullback f g) ≃ Σ T : Triplet f g, Spec T.tensor where
+noncomputable def carrierEquiv : ↑(pullback f g) ≃ Σ T : Triplet f g, Spec T.tensor where
   toFun t := ⟨.ofPoint t, SpecOfPoint t⟩
   invFun T := T.1.SpecTensorTo T.2
   left_inv := SpecTensorTo_SpecOfPoint

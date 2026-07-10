@@ -44,8 +44,6 @@ various versions of the Jacobi theta function.
 
 @[expose] public section
 
-noncomputable section
-
 open Complex
 open CharZero Filter Topology Asymptotics Real Set MeasureTheory
 open scoped ComplexConjugate
@@ -58,7 +56,7 @@ section kernel_defs
 -/
 
 /-- Variant of `jacobiTheta₂'` which we introduce to simplify some formulae. -/
-def jacobiTheta₂'' (z τ : ℂ) : ℂ :=
+noncomputable def jacobiTheta₂'' (z τ : ℂ) : ℂ :=
   cexp (π * I * z ^ 2 * τ) * (jacobiTheta₂' (z * τ) τ / (2 * π * I) + z * jacobiTheta₂ (z * τ) τ)
 
 lemma jacobiTheta₂''_conj (z τ : ℂ) :
@@ -107,7 +105,7 @@ lemma jacobiTheta₂'_functional_equation' (z τ : ℂ) :
 Hurwitz zeta function). See `oddKernel_def` for the defining formula, and `hasSum_int_oddKernel`
 for an expression as a sum over `ℤ`.
 -/
-@[irreducible] def oddKernel (a : UnitAddCircle) (x : ℝ) : ℝ :=
+@[irreducible] noncomputable def oddKernel (a : UnitAddCircle) (x : ℝ) : ℝ :=
   (show Function.Periodic (fun a : ℝ ↦ re (jacobiTheta₂'' a (I * x))) 1 by
     simp [jacobiTheta₂''_add_left]).lift a
 
@@ -128,7 +126,7 @@ lemma oddKernel_undef (a : UnitAddCircle) {x : ℝ} (hx : x ≤ 0) : oddKernel a
 /-- Auxiliary function appearing in the functional equation for the odd Hurwitz zeta kernel, equal
 to `∑ (n : ℕ), 2 * n * sin (2 * π * n * a) * exp (-π * n ^ 2 * x)`. See `hasSum_nat_sinKernel`
 for the defining sum. -/
-@[irreducible] def sinKernel (a : UnitAddCircle) (x : ℝ) : ℝ :=
+@[irreducible] noncomputable def sinKernel (a : UnitAddCircle) (x : ℝ) : ℝ :=
   (show Function.Periodic (fun ξ : ℝ ↦ re (jacobiTheta₂' ξ (I * x) / (-2 * π))) 1 by
     simp [jacobiTheta₂'_add_left]).lift a
 
@@ -299,7 +297,7 @@ section FEPair
 
 /-- A `StrongFEPair` structure with `f = oddKernel a` and `g = sinKernel a`. -/
 @[simps]
-def hurwitzOddFEPair (a : UnitAddCircle) : WeakFEPair ℂ where
+noncomputable def hurwitzOddFEPair (a : UnitAddCircle) : WeakFEPair ℂ where
   f := ofReal ∘ oddKernel a
   g := ofReal ∘ sinKernel a
   hf_int := (continuous_ofReal.comp_continuousOn (continuousOn_oddKernel a)).locallyIntegrableOn
@@ -336,7 +334,7 @@ end FEPair
 `1 / 2 * Gamma ((s + 1) / 2) * π ^ (-(s + 1) / 2) * ∑' (n : ℤ), sgn (n + a) / |n + a| ^ s`
 for `1 < re s`.
 -/
-def completedHurwitzZetaOdd (a : UnitAddCircle) (s : ℂ) : ℂ :=
+noncomputable def completedHurwitzZetaOdd (a : UnitAddCircle) (s : ℂ) : ℂ :=
   ((hurwitzOddFEPair a).Λ ((s + 1) / 2)) / 2
 
 lemma differentiable_completedHurwitzZetaOdd (a : UnitAddCircle) :
@@ -348,7 +346,7 @@ lemma differentiable_completedHurwitzZetaOdd (a : UnitAddCircle) :
 ` Gamma ((s + 1) / 2) * π ^ (-(s + 1) / 2) * ∑' (n : ℕ), sin (2 * π * a * n) / n ^ s`
 for `1 < re s`.
 -/
-def completedSinZeta (a : UnitAddCircle) (s : ℂ) : ℂ :=
+noncomputable def completedSinZeta (a : UnitAddCircle) (s : ℂ) : ℂ :=
   ((hurwitzOddFEPair a).symm.Λ ((s + 1) / 2)) / 2
 
 lemma differentiable_completedSinZeta (a : UnitAddCircle) :

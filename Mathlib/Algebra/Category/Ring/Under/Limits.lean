@@ -22,8 +22,6 @@ flat.
 
 @[expose] public section
 
-noncomputable section
-
 universe v u
 
 open TensorProduct CategoryTheory Limits
@@ -46,7 +44,7 @@ def piFan : Fan P :=
     (fun i ↦ Under.homMk (ofHom <| Pi.evalRingHom _ i))
 
 /-- The canonical fan is limiting. -/
-def piFanIsLimit : IsLimit (piFan P) :=
+noncomputable def piFanIsLimit : IsLimit (piFan P) :=
   isLimitOfReflects (Under.forget R) <|
     (isLimitMapConeFanMkEquiv (Under.forget R) P _).symm <|
       CommRingCat.piFanIsLimit (fun i ↦ (P i).right)
@@ -82,7 +80,7 @@ def tensorProductFanIso [Fintype ι] [DecidableEq ι] :
 
 open scoped Classical in
 /-- The fan on `i ↦ S ⊗[R] P i` given by `S ⊗[R] ∀ i, P i` is limiting if `ι` is finite. -/
-def tensorProductFanIsLimit [Finite ι] : IsLimit (tensorProductFan S P) :=
+noncomputable def tensorProductFanIsLimit [Finite ι] : IsLimit (tensorProductFan S P) :=
   letI : Fintype ι := Fintype.ofFinite ι
   (IsLimit.equivIsoLimit (tensorProductFanIso P)).symm (Under.piFanIsLimit _)
 
@@ -146,7 +144,7 @@ noncomputable def equalizerForkIsLimit {A B : Under R} (f g : A ⟶ B) :
       CommRingCat.equalizerForkIsLimit f.right g.right
 
 /-- Variant of `Under.equalizerForkIsLimit` for algebra maps. -/
-def equalizerFork'IsLimit {A B : Type u} [CommRing A] [CommRing B] [Algebra R A]
+noncomputable def equalizerFork'IsLimit {A B : Type u} [CommRing A] [CommRing B] [Algebra R A]
     [Algebra R B] (f g : A →ₐ[R] B) :
     IsLimit (Under.equalizerFork' f g) :=
   Under.equalizerForkIsLimit f.toUnder g.toUnder

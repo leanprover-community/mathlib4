@@ -32,8 +32,6 @@ of the inverse limit of `ZMod (p^n)`.
 @[expose] public section
 
 
-noncomputable section
-
 variable {p : ℕ} [hp : Fact p.Prime]
 
 local notation "𝕎" => WittVector p
@@ -71,7 +69,7 @@ attribute [local instance] charP_zmod
 This isomorphism exists, because `TruncatedWittVector p n (ZMod p)` is a finite ring
 with characteristic and cardinality `p^n`.
 -/
-def zmodEquivTrunc : ZMod (p ^ n) ≃+* TruncatedWittVector p n (ZMod p) :=
+noncomputable def zmodEquivTrunc : ZMod (p ^ n) ≃+* TruncatedWittVector p n (ZMod p) :=
   ZMod.ringEquiv (TruncatedWittVector p n (ZMod p)) (card_zmod _ _)
 
 theorem zmodEquivTrunc_apply {x : ZMod (p ^ n)} :
@@ -136,7 +134,7 @@ variable (p)
 
 /-- `toZModPow` is a family of compatible ring homs. We get this family by composing
 `TruncatedWittVector.zmodEquivTrunc` (in right-to-left direction) with `WittVector.truncate`. -/
-def toZModPow (k : ℕ) : 𝕎 (ZMod p) →+* ZMod (p ^ k) :=
+noncomputable def toZModPow (k : ℕ) : 𝕎 (ZMod p) →+* ZMod (p ^ k) :=
   (zmodEquivTrunc p k).symm.toRingHom.comp (truncate k)
 
 theorem toZModPow_compat (m n : ℕ) (h : m ≤ n) :
@@ -152,7 +150,7 @@ theorem toZModPow_compat (m n : ℕ) (h : m ≤ n) :
 /-- `toPadicInt` lifts `toZModPow : 𝕎 (ZMod p) →+* ZMod (p ^ k)` to a ring hom to `ℤ_[p]`
 using `PadicInt.lift`, the universal property of `ℤ_[p]`.
 -/
-def toPadicInt : 𝕎 (ZMod p) →+* ℤ_[p] :=
+noncomputable def toPadicInt : 𝕎 (ZMod p) →+* ℤ_[p] :=
   PadicInt.lift <| toZModPow_compat p
 
 theorem zmodEquivTrunc_compat (k₁ k₂ : ℕ) (hk : k₁ ≤ k₂) :
@@ -165,7 +163,7 @@ theorem zmodEquivTrunc_compat (k₁ k₂ : ℕ) (hk : k₁ ≤ k₂) :
 /-- `fromPadicInt` uses `WittVector.lift` to lift `TruncatedWittVector.zmodEquivTrunc`
 composed with `PadicInt.toZModPow` to a ring hom `ℤ_[p] →+* 𝕎 (ZMod p)`.
 -/
-def fromPadicInt : ℤ_[p] →+* 𝕎 (ZMod p) :=
+noncomputable def fromPadicInt : ℤ_[p] →+* 𝕎 (ZMod p) :=
   (WittVector.lift fun k => (zmodEquivTrunc p k).toRingHom.comp (PadicInt.toZModPow k)) <|
     zmodEquivTrunc_compat _
 
@@ -196,7 +194,7 @@ theorem fromPadicInt_comp_toPadicInt_ext (x) :
 /-- The ring of Witt vectors over `ZMod p` is isomorphic to the ring of `p`-adic integers. This
 equivalence is witnessed by `WittVector.toPadicInt` with inverse `WittVector.fromPadicInt`.
 -/
-def equiv : 𝕎 (ZMod p) ≃+* ℤ_[p] where
+noncomputable def equiv : 𝕎 (ZMod p) ≃+* ℤ_[p] where
   toFun := toPadicInt p
   invFun := fromPadicInt p
   left_inv := fromPadicInt_comp_toPadicInt_ext _

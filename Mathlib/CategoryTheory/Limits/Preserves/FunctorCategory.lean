@@ -35,8 +35,6 @@ https://ncatlab.org/nlab/show/commutativity+of+limits+and+colimits#preservation_
 
 universe w w' v v₁ v₂ v₃ u u₁ u₂ u₃
 
-noncomputable section
-
 namespace CategoryTheory
 
 open Category Limits Functor
@@ -147,7 +145,7 @@ instance {C : Type*} [Category* C] {D : Type*}
 
 /-- Whiskering right and then taking a limit is the same as taking the limit and applying the
 functor. -/
-def limitCompWhiskeringRightIsoLimitComp {C : Type*} [Category* C] {D : Type*}
+noncomputable def limitCompWhiskeringRightIsoLimitComp {C : Type*} [Category* C] {D : Type*}
     [Category* D] {E : Type*} [Category* E] {J : Type*} [Category* J]
     [HasLimitsOfShape J D] (F : D ⥤ E) [PreservesLimitsOfShape J F] (G : J ⥤ C ⥤ D) :
     limit (G ⋙ (whiskeringRight _ _ _).obj F) ≅ limit G ⋙ F :=
@@ -184,7 +182,7 @@ instance whiskeringRight_preservesColimitsOfShape {C : Type*} [Category* C] {D :
 
 /-- Whiskering right and then taking a colimit is the same as taking the colimit and applying the
 functor. -/
-def colimitCompWhiskeringRightIsoColimitComp {C : Type*} [Category* C] {D : Type*}
+noncomputable def colimitCompWhiskeringRightIsoColimitComp {C : Type*} [Category* C] {D : Type*}
     [Category* D] {E : Type*} [Category* E] {J : Type*} [Category* J]
     [HasColimitsOfShape J D] (F : D ⥤ E) [PreservesColimitsOfShape J F] (G : J ⥤ C ⥤ D) :
     colimit (G ⋙ (whiskeringRight _ _ _).obj F) ≅ colimit G ⋙ F :=

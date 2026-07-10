@@ -37,7 +37,7 @@ number field, units, regulator
 
 open scoped NumberField
 
-noncomputable section
+section
 
 namespace NumberField.Units
 
@@ -54,7 +54,7 @@ open scoped Classical in
 An `equiv` between `Fin (rank K)`, used to index the family of units, and `{w // w ≠ w₀}`
 the index of the `logSpace`.
 -/
-def equivFinRank : Fin (rank K) ≃ {w : InfinitePlace K // w ≠ w₀} :=
+noncomputable def equivFinRank : Fin (rank K) ≃ {w : InfinitePlace K // w ≠ w₀} :=
   Fintype.equivOfCardEq <| by
     rw [Fintype.card_subtype_compl, Fintype.card_ofSubsingleton, Fintype.card_fin, rank]
 
@@ -75,7 +75,7 @@ open scoped Classical in
 /--
 The images by `logEmbedding` of a family of units of maximal rank form a basis of `logSpace K`.
 -/
-def basisOfIsMaxRank {u : Fin (rank K) → (𝓞 K)ˣ} (hu : IsMaxRank u) :
+noncomputable def basisOfIsMaxRank {u : Fin (rank K) → (𝓞 K)ˣ} (hu : IsMaxRank u) :
     Basis (Fin (rank K)) ℝ (logSpace K) :=
   (basisOfPiSpaceOfLinearIndependent
     ((linearIndependent_equiv (equivFinRank K).symm).mpr hu)).reindex (equivFinRank K).symm
@@ -139,7 +139,7 @@ open scoped Classical in
 /--
 The regulator of a family of units of `K`.
 -/
-def regOfFamily (u : Fin (rank K) → (𝓞 K)ˣ) : ℝ :=
+noncomputable def regOfFamily (u : Fin (rank K) → (𝓞 K)ˣ) : ℝ :=
   if hu : IsMaxRank u then
     ZLattice.covolume (span ℤ (Set.range (basisOfIsMaxRank hu)))
   else 0
@@ -263,7 +263,7 @@ section regulator
 
 open scoped Classical in
 /-- The regulator of a number field `K`. -/
-def regulator : ℝ := ZLattice.covolume (unitLattice K)
+noncomputable def regulator : ℝ := ZLattice.covolume (unitLattice K)
 
 theorem isMaxRank_fundSystem :
     IsMaxRank (fundSystem K) := by

@@ -39,8 +39,6 @@ This file is patterned after `Mathlib/Algebra/MvPolynomial/Rename.lean`.
 
 @[expose] public section
 
-noncomputable section
-
 open Finsupp Filter
 
 variable {σ τ γ R S : Type*} (f : σ → τ) (g : τ → γ) [TendstoCofinite f]
@@ -52,7 +50,7 @@ section Semiring
 variable [Semiring R] [Semiring S]
 
 /-- Implementation detail for `rename`. Use `MvPowerSeries.rename` instead. -/
-def renameFun : MvPowerSeries σ R → MvPowerSeries τ R :=
+noncomputable def renameFun : MvPowerSeries σ R → MvPowerSeries τ R :=
   TendstoCofinite.mapDomain (Finsupp.mapDomain f)
 
 private lemma coeff_renameFun {p : MvPowerSeries σ R} {x : τ →₀ ℕ} : (renameFun f p).coeff x =
@@ -110,7 +108,7 @@ variable [CommSemiring R] [CommSemiring S]
 
 /-- Rename all the variables in a multivariable power series by a map with finite fibers. -/
 @[no_expose]
-def rename : MvPowerSeries σ R →ₐ[R] MvPowerSeries τ R where
+noncomputable def rename : MvPowerSeries σ R →ₐ[R] MvPowerSeries τ R where
   toFun := renameFun f
   map_one' := renameFun_monomial f 0 1
   map_mul' := renameFun_mul f
@@ -190,7 +188,7 @@ theorem rename_coe (p : MvPolynomial σ R) : rename f (p : MvPowerSeries σ R) =
 variable (R) in
 /-- `rename` is an equivalence when the underlying map is an equivalence. -/
 @[simps apply]
-def renameEquiv (e : σ ≃ τ) : MvPowerSeries σ R ≃ₐ[R] MvPowerSeries τ R where
+noncomputable def renameEquiv (e : σ ≃ τ) : MvPowerSeries σ R ≃ₐ[R] MvPowerSeries τ R where
   __ := rename e
   invFun := rename e.symm
   left_inv _ := by simp
@@ -209,7 +207,7 @@ theorem renameEquiv_trans (e : σ ≃ τ) (f : τ ≃ γ) : (renameEquiv R e).tr
 variable {e : σ ↪ τ}
 
 /-- Implementation detail for `killCompl`. Use `MvPowerSeries.killCompl` instead. -/
-def killComplFun (e : σ ↪ τ) (p : MvPowerSeries τ R) : MvPowerSeries σ R :=
+noncomputable def killComplFun (e : σ ↪ τ) (p : MvPowerSeries τ R) : MvPowerSeries σ R :=
   fun x ↦ coeff (embDomain e x) p
 
 private theorem coeff_killComplFun (p : MvPowerSeries τ R) (x : σ →₀ ℕ) :
@@ -238,7 +236,7 @@ private theorem killComplFun_mul (p q : MvPowerSeries τ R) :
 `R⟦τ⟧` to `R⟦σ⟧` that is left inverse to `rename e.injective.fiberFinite : R⟦σ⟧ → R⟦τ⟧`
 and sends the variables in the complement of the range of `e` to `0`. -/
 @[no_expose]
-def killCompl (e : σ ↪ τ) : MvPowerSeries τ R →ₐ[R] MvPowerSeries σ R where
+noncomputable def killCompl (e : σ ↪ τ) : MvPowerSeries τ R →ₐ[R] MvPowerSeries σ R where
   toFun := killComplFun e
   map_one' := by simpa using! killComplFun_monomial_embDomain 0 1
   map_mul' := killComplFun_mul

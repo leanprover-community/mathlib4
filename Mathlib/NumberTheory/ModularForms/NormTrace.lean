@@ -14,7 +14,7 @@ Given two subgroups `𝒢, ℋ` of `GL(2, ℝ)` with `𝒢.relindex ℋ ≠ 0` (
 in `ℋ`), we define a trace map from `ModularForm (𝒢 ⊓ ℋ) k` to `ModularForm ℋ k`.
 -/
 
-@[expose] public noncomputable section
+@[expose] public section
 
 open UpperHalfPlane
 
@@ -33,7 +33,7 @@ variable [SlashInvariantFormClass F 𝒢 k]
 
 /-- For `f` invariant under `𝒢`, this is a function on `(ℋ ⧸ 𝒢 ⊓ ℋ) × ℍ → ℂ` which packages up the
 translates of `f` by `ℋ`. -/
-def quotientFunc (q : 𝒬) (τ : ℍ) : ℂ :=
+noncomputable def quotientFunc (q : 𝒬) (τ : ℍ) : ℂ :=
   q.liftOn (fun g ↦ ((f : ℍ → ℂ) ∣[k] g.val⁻¹) τ) (fun h h' hhh' ↦ by
     obtain ⟨j, hj, hj'⟩ : ∃ g ∈ 𝒢, h' = h * g := by
       rw [← Quotient.eq_iff_equiv, Quotient.eq, QuotientGroup.leftRel_apply] at hhh'
@@ -52,7 +52,7 @@ variable (ℋ) [𝒢.IsFiniteRelIndex ℋ]
 
 /-- The trace of a slash-invariant form, as a slash-invariant form. -/
 @[simps! -fullyApplied]
-protected def trace : SlashInvariantForm ℋ k where
+protected noncomputable def trace : SlashInvariantForm ℋ k where
   toFun := let := Fintype.ofFinite 𝒬; ∑ q : 𝒬, quotientFunc f q
   slash_action_eq' h hh := by
     let := Fintype.ofFinite 𝒬
@@ -61,7 +61,8 @@ protected def trace : SlashInvariantForm ℋ k where
 
 /-- The norm of a slash-invariant form, as a slash-invariant form. -/
 @[simps! -fullyApplied]
-protected def norm [ℋ.HasDetPlusMinusOne] : SlashInvariantForm ℋ (k * Nat.card 𝒬) where
+protected noncomputable
+def norm [ℋ.HasDetPlusMinusOne] : SlashInvariantForm ℋ (k * Nat.card 𝒬) where
   toFun := let := Fintype.ofFinite 𝒬; ∏ q : 𝒬, quotientFunc f q
   slash_action_eq' h hh := by
     let := Fintype.ofFinite 𝒬
@@ -79,7 +80,7 @@ variable (ℋ) [𝒢.IsFiniteRelIndex ℋ]
 
 /-- The trace of a modular form, as a modular form. -/
 @[simps! -fullyApplied]
-protected def ModularForm.trace [ModularFormClass F 𝒢 k] : ModularForm ℋ k where
+protected noncomputable def ModularForm.trace [ModularFormClass F 𝒢 k] : ModularForm ℋ k where
   __ := SlashInvariantForm.trace ℋ f
   holo' := .sum (Quotient.forall.mpr fun ⟨r, hr⟩ _ ↦ (translate f r⁻¹).holo')
   bdd_at_cusps' h γ := by
@@ -91,7 +92,7 @@ protected def ModularForm.trace [ModularFormClass F 𝒢 k] : ModularForm ℋ k 
 
 /-- The trace of a cusp form, as a cusp form. -/
 @[simps! -fullyApplied]
-protected def CuspForm.trace [CuspFormClass F 𝒢 k] : CuspForm ℋ k where
+protected noncomputable def CuspForm.trace [CuspFormClass F 𝒢 k] : CuspForm ℋ k where
   __ := ModularForm.trace ℋ f
   zero_at_cusps' h γ := by
     rintro rfl
@@ -105,7 +106,7 @@ protected def CuspForm.trace [CuspFormClass F 𝒢 k] : CuspForm ℋ k where
 
 /-- The norm of a modular form, as a modular form. -/
 @[simps! -fullyApplied]
-protected def ModularForm.norm [ℋ.HasDetPlusMinusOne] [ModularFormClass F 𝒢 k] :
+protected noncomputable def ModularForm.norm [ℋ.HasDetPlusMinusOne] [ModularFormClass F 𝒢 k] :
     ModularForm ℋ (k * Nat.card 𝒬) where
   __ := SlashInvariantForm.norm ℋ f
   holo' := .prod (Quotient.forall.mpr fun ⟨r, hr⟩ _ ↦ (translate f r⁻¹).holo')

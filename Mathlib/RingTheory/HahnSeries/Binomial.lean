@@ -23,8 +23,6 @@ We introduce binomial expansions using `embDomain`.
 
 @[expose] public section
 
-noncomputable section
-
 namespace HahnSeries
 
 variable {Γ R A : Type*}
@@ -39,7 +37,7 @@ variable [CommRing A] [Algebra R A]
 /-- A summable family of Hahn series, whose `n`th term is `Ring.choose r n • (x - 1) ^ n` when
 `x` is close to `1` (more precisely, when `0 < (x - 1).orderTop`), and `0 ^ n` otherwise. These
 terms give a formal expansion of `x ^ r` as `(1 + (x - 1)) ^ r`. -/
-def binomialFamily (x : A⟦Γ⟧) (r : R) :
+noncomputable def binomialFamily (x : A⟦Γ⟧) (r : R) :
     SummableFamily Γ A ℕ :=
   powerSeriesFamily (x - 1) (PowerSeries.binomialSeries A r)
 
@@ -96,7 +94,7 @@ end SummableFamily
 
 open SummableFamily
 
-instance : Pow (orderTopSubOnePos Γ R) R where
+noncomputable instance : Pow (orderTopSubOnePos Γ R) R where
   pow x r := toOrderTopSubOnePos (orderTop_hsum_binomialFamily_pos x.2 r)
 
 @[simp]

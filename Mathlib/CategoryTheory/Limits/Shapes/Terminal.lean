@@ -18,8 +18,6 @@ public import Mathlib.CategoryTheory.Limits.HasLimits
 @[expose] public section
 
 
-noncomputable section
-
 universe w w' v v₁ v₂ u u₁ u₂
 
 open CategoryTheory
@@ -68,14 +66,14 @@ end Univ
 You can use the notation `⊤_ C`.
 This object is characterized by having a unique morphism from any object.
 -/
-abbrev terminal [HasTerminal C] : C :=
+noncomputable abbrev terminal [HasTerminal C] : C :=
   limit (Functor.empty.{0} C)
 
 /-- An arbitrary choice of initial object, if one exists.
 You can use the notation `⊥_ C`.
 This object is characterized by having a unique morphism to any object.
 -/
-abbrev initial [HasInitial C] : C :=
+noncomputable abbrev initial [HasInitial C] : C :=
   colimit (Functor.empty.{0} C)
 
 /-- Notation for the terminal object in `C` -/
@@ -111,27 +109,27 @@ theorem IsInitial.hasInitial {X : C} (h : IsInitial X) : HasInitial C where
     HasColimit.mk ⟨⟨X, by cat_disch, by simp⟩, isColimitChangeEmptyCocone _ h _ (Iso.refl _)⟩
 
 /-- The map from an object to the terminal object. -/
-abbrev terminal.from [HasTerminal C] (P : C) : P ⟶ ⊤_ C :=
+noncomputable abbrev terminal.from [HasTerminal C] (P : C) : P ⟶ ⊤_ C :=
   limit.lift (Functor.empty C) (asEmptyCone P)
 
 /-- The map to an object from the initial object. -/
-abbrev initial.to [HasInitial C] (P : C) : ⊥_ C ⟶ P :=
+noncomputable abbrev initial.to [HasInitial C] (P : C) : ⊥_ C ⟶ P :=
   colimit.desc (Functor.empty C) (asEmptyCocone P)
 
 set_option backward.defeqAttrib.useBackward true in
 /-- A terminal object is terminal. -/
-def terminalIsTerminal [HasTerminal C] : IsTerminal (⊤_ C) where
+noncomputable def terminalIsTerminal [HasTerminal C] : IsTerminal (⊤_ C) where
   lift _ := terminal.from _
 
 set_option backward.defeqAttrib.useBackward true in
 /-- An initial object is initial. -/
-def initialIsInitial [HasInitial C] : IsInitial (⊥_ C) where
+noncomputable def initialIsInitial [HasInitial C] : IsInitial (⊥_ C) where
   desc _ := initial.to _
 
-instance uniqueToTerminal [HasTerminal C] (P : C) : Unique (P ⟶ ⊤_ C) :=
+noncomputable instance uniqueToTerminal [HasTerminal C] (P : C) : Unique (P ⟶ ⊤_ C) :=
   isTerminalEquivUnique _ (⊤_ C) terminalIsTerminal P
 
-instance uniqueFromInitial [HasInitial C] (P : C) : Unique (⊥_ C ⟶ P) :=
+noncomputable instance uniqueFromInitial [HasInitial C] (P : C) : Unique (⊥_ C ⟶ P) :=
   isInitialEquivUnique _ (⊥_ C) initialIsInitial P
 
 @[ext] theorem terminal.hom_ext [HasTerminal C] {P : C} (f g : P ⟶ ⊤_ C) : f = g := by ext ⟨⟨⟩⟩
@@ -150,12 +148,12 @@ theorem initial.to_comp [HasInitial C] {P Q : C} (f : P ⟶ Q) : initial.to P �
 
 /-- The (unique) isomorphism between the chosen initial object and any other initial object. -/
 @[simps!]
-def initialIsoIsInitial [HasInitial C] {P : C} (t : IsInitial P) : ⊥_ C ≅ P :=
+noncomputable def initialIsoIsInitial [HasInitial C] {P : C} (t : IsInitial P) : ⊥_ C ≅ P :=
   initialIsInitial.uniqueUpToIso t
 
 /-- The (unique) isomorphism between the chosen terminal object and any other terminal object. -/
 @[simps!]
-def terminalIsoIsTerminal [HasTerminal C] {P : C} (t : IsTerminal P) : ⊤_ C ≅ P :=
+noncomputable def terminalIsoIsTerminal [HasTerminal C] {P : C} (t : IsTerminal P) : ⊤_ C ≅ P :=
   terminalIsTerminal.uniqueUpToIso t
 
 /-- Any morphism from a terminal object is split mono. -/
@@ -190,6 +188,7 @@ instance {J : Type*} [Category* J] {C : Type*} [Category* C] [HasTerminal C] :
 set_option backward.defeqAttrib.useBackward true in
 /-- The limit of the constant `⊤_ C` functor is `⊤_ C`. -/
 @[simps hom]
+noncomputable
 def limitConstTerminal {J : Type*} [Category* J] {C : Type*} [Category* C] [HasTerminal C] :
     limit ((CategoryTheory.Functor.const J).obj (⊤_ C)) ≅ ⊤_ C where
   hom := terminal.from _
@@ -217,6 +216,7 @@ instance {J : Type*} [Category* J] {C : Type*} [Category* C] [HasInitial C] :
 set_option backward.defeqAttrib.useBackward true in
 /-- The colimit of the constant `⊥_ C` functor is `⊥_ C`. -/
 @[simps inv]
+noncomputable
 def colimitConstInitial {J : Type*} [Category* J] {C : Type*} [Category* C] [HasInitial C] :
     colimit ((CategoryTheory.Functor.const J).obj (⊥_ C)) ≅ ⊥_ C where
   hom :=
@@ -257,7 +257,7 @@ category.
 This is an isomorphism iff `G` preserves terminal objects, see
 `CategoryTheory.Limits.PreservesTerminal.ofIsoComparison`.
 -/
-def terminalComparison [HasTerminal C] [HasTerminal D] : G.obj (⊤_ C) ⟶ ⊤_ D :=
+noncomputable def terminalComparison [HasTerminal C] [HasTerminal D] : G.obj (⊤_ C) ⟶ ⊤_ D :=
   terminal.from _
 
 -- TODO: Show this is an isomorphism if and only if `G` preserves initial objects.
@@ -265,7 +265,7 @@ def terminalComparison [HasTerminal C] [HasTerminal D] : G.obj (⊤_ C) ⟶ ⊤_
 The comparison morphism from the initial object in the target category to the image of the initial
 object.
 -/
-def initialComparison [HasInitial C] [HasInitial D] : ⊥_ D ⟶ G.obj (⊥_ C) :=
+noncomputable def initialComparison [HasInitial C] [HasInitial D] : ⊥_ D ⟶ G.obj (⊥_ C) :=
   initial.to _
 
 end Comparison
@@ -278,7 +278,7 @@ instance hasLimit_of_domain_hasInitial [HasInitial J] {F : J ⥤ C} : HasLimit F
 -- This is reducible to allow usage of lemmas about `cone_point_unique_up_to_iso`.
 /-- For a functor `F : J ⥤ C`, if `J` has an initial object then the image of it is isomorphic
 to the limit of `F`. -/
-abbrev limitOfInitial (F : J ⥤ C) [HasInitial J] : limit F ≅ F.obj (⊥_ J) :=
+noncomputable abbrev limitOfInitial (F : J ⥤ C) [HasInitial J] : limit F ≅ F.obj (⊥_ J) :=
   IsLimit.conePointUniqueUpToIso (limit.isLimit _) (limitOfDiagramInitial initialIsInitial F)
 
 instance hasLimit_of_domain_hasTerminal [HasTerminal J] {F : J ⥤ C}
@@ -288,6 +288,7 @@ instance hasLimit_of_domain_hasTerminal [HasTerminal J] {F : J ⥤ C}
 -- This is reducible to allow usage of lemmas about `cone_point_unique_up_to_iso`.
 /-- For a functor `F : J ⥤ C`, if `J` has a terminal object and all the morphisms in the diagram
 are isomorphisms, then the image of the terminal object is isomorphic to the limit of `F`. -/
+noncomputable
 abbrev limitOfTerminal (F : J ⥤ C) [HasTerminal J] [∀ (i j : J) (f : i ⟶ j), IsIso (F.map f)] :
     limit F ≅ F.obj (⊤_ J) :=
   IsLimit.conePointUniqueUpToIso (limit.isLimit _) (limitOfDiagramTerminal terminalIsTerminal F)
@@ -298,7 +299,7 @@ instance hasColimit_of_domain_hasTerminal [HasTerminal J] {F : J ⥤ C} : HasCol
 -- This is reducible to allow usage of lemmas about `cocone_point_unique_up_to_iso`.
 /-- For a functor `F : J ⥤ C`, if `J` has a terminal object then the image of it is isomorphic
 to the colimit of `F`. -/
-abbrev colimitOfTerminal (F : J ⥤ C) [HasTerminal J] : colimit F ≅ F.obj (⊤_ J) :=
+noncomputable abbrev colimitOfTerminal (F : J ⥤ C) [HasTerminal J] : colimit F ≅ F.obj (⊤_ J) :=
   IsColimit.coconePointUniqueUpToIso (colimit.isColimit _)
     (colimitOfDiagramTerminal terminalIsTerminal F)
 
@@ -309,6 +310,7 @@ instance hasColimit_of_domain_hasInitial [HasInitial J] {F : J ⥤ C}
 -- This is reducible to allow usage of lemmas about `cocone_point_unique_up_to_iso`.
 /-- For a functor `F : J ⥤ C`, if `J` has an initial object and all the morphisms in the diagram
 are isomorphisms, then the image of the initial object is isomorphic to the colimit of `F`. -/
+noncomputable
 abbrev colimitOfInitial (F : J ⥤ C) [HasInitial J] [∀ (i j : J) (f : i ⟶ j), IsIso (F.map f)] :
     colimit F ≅ F.obj (⊥_ J) :=
   IsColimit.coconePointUniqueUpToIso (colimit.isColimit _)

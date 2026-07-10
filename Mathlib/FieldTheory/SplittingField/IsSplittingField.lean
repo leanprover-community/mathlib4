@@ -32,8 +32,6 @@ if it is the smallest field extension of `K` such that `f` splits.
 
 @[expose] public section
 
-noncomputable section
-
 universe u v w
 
 variable {F : Type u} (K : Type v) (L : Type w)
@@ -108,7 +106,7 @@ end ScalarTower
 
 open scoped Classical in
 /-- Splitting field of `f` embeds into any field that splits `f`. -/
-def lift [Algebra K F] (f : K[X]) [IsSplittingField K L f]
+noncomputable def lift [Algebra K F] (f : K[X]) [IsSplittingField K L f]
     (hf : Splits (f.map (algebraMap K F))) : L →ₐ[K] F :=
   if hf0 : f = 0 then
     (Algebra.ofId K F).comp <|

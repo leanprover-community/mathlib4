@@ -237,12 +237,12 @@ variable {f}
 theorem Semiconj.mapsTo_periodicPts {g : α → β} (h : Semiconj g fa fb) :
     MapsTo g (periodicPts fa) (periodicPts fb) := fun _ ⟨n, hn, hx⟩ => ⟨n, hn, hx.map h⟩
 
-noncomputable section
+section
 
 open scoped Classical in
 /-- Minimal period of a point `x` under an endomorphism `f`. If `x` is not a periodic point of `f`,
 then `minimalPeriod f x = 0`. -/
-def minimalPeriod (f : α → α) (x : α) :=
+noncomputable def minimalPeriod (f : α → α) (x : α) :=
   if h : x ∈ periodicPts f then Nat.find h else 0
 
 theorem isPeriodicPt_minimalPeriod (f : α → α) (x : α) : IsPeriodicPt f (minimalPeriod f x) x := by
@@ -398,7 +398,7 @@ theorem minimalPeriod_iterate_eq_div_gcd' (h : x ∈ periodicPts f) :
 the minimal period of `x`.
 
 If `x` is not a periodic point, then this is the empty (aka nil) cycle. -/
-def periodicOrbit (f : α → α) (x : α) : Cycle α :=
+noncomputable def periodicOrbit (f : α → α) (x : α) : Cycle α :=
   (List.range (minimalPeriod f x)).map fun n => f^[n] x
 
 /-- The definition of a periodic orbit, in terms of `List.map`. -/

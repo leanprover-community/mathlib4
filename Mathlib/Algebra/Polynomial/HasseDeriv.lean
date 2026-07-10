@@ -44,8 +44,6 @@ https://math.fontein.de/2009/08/12/the-hasse-derivative/
 @[expose] public section
 
 
-noncomputable section
-
 namespace Polynomial
 
 open Nat Polynomial
@@ -56,7 +54,7 @@ variable {R : Type*} [Semiring R] (k : ℕ) (f : R[X])
 
 /-- The `k`th Hasse derivative of a polynomial `∑ a_i X^i` is `∑ (i.choose k) a_i X^(i-k)`.
 It satisfies `k! * (hasse_deriv k f) = derivative^[k] f`. -/
-def hasseDeriv (k : ℕ) : R[X] →ₗ[R] R[X] :=
+noncomputable def hasseDeriv (k : ℕ) : R[X] →ₗ[R] R[X] :=
   lsum fun i => monomial (i - k) ∘ₗ DistribSMul.toLinearMap R R (i.choose k)
 
 theorem hasseDeriv_apply :

@@ -35,8 +35,6 @@ fractions of a Dedekind domain with respect to a height-one prime ideal of the d
 
 @[expose] public section
 
-noncomputable section
-
 variable {R Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
 
 /-- Type synonym for a ring equipped with the topology coming from a valuation. -/
@@ -198,7 +196,7 @@ def valuation : Valuation (WithVal v) Γ₀ := v.comap (equiv v)
 
 @[simp] lemma valuation_apply_eq_ofVal (x : WithVal v) : valuation v x = v x.ofVal := rfl
 
-instance : Valued (WithVal v) Γ₀ := Valued.mk' (valuation v)
+noncomputable instance : Valued (WithVal v) Γ₀ := Valued.mk' (valuation v)
 
 theorem apply_ofVal (r : WithVal v) : v r.ofVal = Valued.v r := rfl
 
@@ -446,7 +444,7 @@ theorem strictMono_valueGroupEquiv_symm : StrictMono (valueGroupEquiv v).symm :=
 /-- The order-preserving, multiplicative equivalence between the `ValueGroup₀` of the valuation
 on `WithVal v` and the valuation `v`. -/
 @[simps!]
-def valueGroupOrderIso₀ : ValueGroup₀ (.ofClass (Valued.v (R := WithVal v))) ≃*o
+noncomputable def valueGroupOrderIso₀ : ValueGroup₀ (.ofClass (Valued.v (R := WithVal v))) ≃*o
     ValueGroup₀ (.ofClass v) where
   toFun := WithZero.map' (valueGroupEquiv v)
   invFun := WithZero.map' (valueGroupEquiv v).symm
@@ -501,7 +499,7 @@ variable {R : Type*} [Ring R] (v : Valuation R Γ₀)
 abbrev Completion := UniformSpace.Completion (WithVal v)
 
 -- lower priority so that `Coe (WithVal v) v.Completion` uses `UniformSpace.Completion.instCoe`
-instance (priority := 99) : Coe R v.Completion where
+noncomputable instance (priority := 99) : Coe R v.Completion where
   coe r := (WithVal.equiv v).symm r
 
 section Equivalence
@@ -682,7 +680,7 @@ instance (R : Type*) [CommRing R] [Algebra R K] [IsIntegralClosure R ℤ K] :
 /-- The ring equivalence between `𝓞 (WithVal v)` and an integral closure of
 `ℤ` in `K`. -/
 @[simps!]
-def withValEquiv (R : Type*) [CommRing R] [Algebra R K] [IsIntegralClosure R ℤ K] :
+noncomputable def withValEquiv (R : Type*) [CommRing R] [Algebra R K] [IsIntegralClosure R ℤ K] :
     𝓞 (WithVal v) ≃+* R := NumberField.RingOfIntegers.equiv R
 
 end NumberField.RingOfIntegers
@@ -691,5 +689,5 @@ open scoped NumberField in
 /-- The ring of integers of `WithVal v`, when `v` is a valuation on `ℚ`, is
 equivalent to `ℤ`. -/
 @[simps! apply]
-def Rat.ringOfIntegersWithValEquiv (v : Valuation ℚ Γ₀) : 𝓞 (WithVal v) ≃+* ℤ :=
+noncomputable def Rat.ringOfIntegersWithValEquiv (v : Valuation ℚ Γ₀) : 𝓞 (WithVal v) ≃+* ℤ :=
   NumberField.RingOfIntegers.withValEquiv v ℤ

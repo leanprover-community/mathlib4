@@ -46,8 +46,6 @@ seminormFromBounded, RingSeminorm, Nonarchimedean
 
 @[expose] public section
 
-noncomputable section
-
 open scoped Topology NNReal
 
 variable {R : Type _} [CommRing R] (f : R → ℝ) {c : ℝ}
@@ -56,7 +54,7 @@ section seminormFromBounded
 
 /-- The real-valued function sending `x ∈ R` to the supremum of  `f(x*y)/f(y)`, where `y` runs over
 the elements of `R`. -/
-def seminormFromBounded' : R → ℝ := fun x ↦ iSup fun y : R ↦ f (x * y) / f y
+noncomputable def seminormFromBounded' : R → ℝ := fun x ↦ iSup fun y : R ↦ f (x * y) / f y
 
 variable {f}
 
@@ -250,7 +248,7 @@ theorem seminormFromBounded_add (f_nonneg : 0 ≤ f)
 
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- `seminormFromBounded'` is a ring seminorm on `R`. -/
-def seminormFromBounded (f_zero : f 0 = 0) (f_nonneg : 0 ≤ f)
+noncomputable def seminormFromBounded (f_zero : f 0 = 0) (f_nonneg : 0 ≤ f)
     (f_mul : ∀ x y : R, f (x * y) ≤ c * f x * f y)
     (f_add : ∀ a b, f (a + b) ≤ f a + f b) (f_neg : ∀ x : R, f (-x) = f x) : RingSeminorm R where
   toFun     := seminormFromBounded' f
@@ -366,7 +364,7 @@ theorem seminormFromBounded_is_norm_iff (f_zero : f 0 = 0) (f_nonneg : 0 ≤ f)
 /-- `seminormFromBounded' f` as a `RingNorm` on `R`, provided that `f` is nonnegative,
   multiplicatively bounded and subadditive, that it preserves `0` and negation, and that `f` has
   trivial kernel. -/
-def normFromBounded (f_zero : f 0 = 0) (f_nonneg : 0 ≤ f)
+noncomputable def normFromBounded (f_zero : f 0 = 0) (f_nonneg : 0 ≤ f)
     (f_mul : ∀ x y : R, f (x * y) ≤ c * f x * f y)
     (f_add : ∀ a b, f (a + b) ≤ f a + f b) (f_neg : ∀ x : R, f (-x) = f x)
     (f_ker : f ⁻¹' {0} = {0}) : RingNorm R :=

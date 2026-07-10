@@ -23,12 +23,10 @@ of `MeasureTheory.measurePreserving`).
 
 open MeasureTheory Module
 
-noncomputable section
-
 namespace Complex
 
 /-- Measurable equivalence between `ℂ` and `ℝ² = Fin 2 → ℝ`. -/
-def measurableEquivPi : ℂ ≃ᵐ (Fin 2 → ℝ) :=
+noncomputable def measurableEquivPi : ℂ ≃ᵐ (Fin 2 → ℝ) :=
   basisOneI.equivFun.toContinuousLinearEquiv.toHomeomorph.toMeasurableEquiv
 
 @[simp]
@@ -40,7 +38,7 @@ theorem measurableEquivPi_symm_apply (p : (Fin 2) → ℝ) :
     measurableEquivPi.symm p = (p 0) + (p 1) * I := rfl
 
 /-- Measurable equivalence between `ℂ` and `ℝ × ℝ`. -/
-def measurableEquivRealProd : ℂ ≃ᵐ ℝ × ℝ :=
+noncomputable def measurableEquivRealProd : ℂ ≃ᵐ ℝ × ℝ :=
   equivRealProdCLM.toHomeomorph.toMeasurableEquiv
 
 @[simp]

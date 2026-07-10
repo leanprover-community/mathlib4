@@ -42,8 +42,6 @@ every monomorphism or epimorphism is regular, and deduce that these categories a
 @[expose] public section
 
 
-noncomputable section
-
 namespace CategoryTheory
 
 open CategoryTheory.Limits
@@ -115,7 +113,7 @@ instance MorphismProperty.regularMono.respectsIso :
 lemma isRegularMono_of_regularMono {f : X ⟶ Y} (h : RegularMono f) : IsRegularMono f := ⟨⟨h⟩⟩
 
 /-- Given `IsRegularMono f`, a choice of data for `RegularMono f`. -/
-def IsRegularMono.getStruct (f : X ⟶ Y) [IsRegularMono f] : RegularMono f :=
+noncomputable def IsRegularMono.getStruct (f : X ⟶ Y) [IsRegularMono f] : RegularMono f :=
   IsRegularMono.regularMono.some
 
 @[deprecated (since := "2025-12-01")] noncomputable alias regularMonoOfIsRegularMono :=
@@ -151,22 +149,23 @@ The names `Z`, `left`, and `right` all being in the `IsRegularMono` namespace.
 variable {X Y : C} (f : X ⟶ Y) [IsRegularMono f]
 
 /-- The target of the equalizer diagram for `f`. -/
-def IsRegularMono.Z : C := (IsRegularMono.getStruct f).Z
+noncomputable def IsRegularMono.Z : C := (IsRegularMono.getStruct f).Z
 
 /-- The "left" map `Y ⟶ Z`. -/
-def IsRegularMono.left : Y ⟶ Z f := (IsRegularMono.getStruct f).left
+noncomputable def IsRegularMono.left : Y ⟶ Z f := (IsRegularMono.getStruct f).left
 
 /-- The "right" map `Y ⟶ Z`. -/
-def IsRegularMono.right : Y ⟶ Z f := (IsRegularMono.getStruct f).right
+noncomputable def IsRegularMono.right : Y ⟶ Z f := (IsRegularMono.getStruct f).right
 
 /-- The equalizer condition. -/
 lemma IsRegularMono.w : f ≫ left f = f ≫ right f := (IsRegularMono.getStruct f).w
 
 /-- The fork is in fact an equalizer. -/
+noncomputable
 def IsRegularMono.isLimit : IsLimit <| Fork.ofι _ (w f) := (IsRegularMono.getStruct f).isLimit
 
 /-- Lift a morphism `k : W ⟶ Y`, equalized by the two morphisms `left` and `right`, along `f`. -/
-def IsRegularMono.lift {W : C} (f : X ⟶ Y) [IsRegularMono f] (k : W ⟶ Y)
+noncomputable def IsRegularMono.lift {W : C} (f : X ⟶ Y) [IsRegularMono f] (k : W ⟶ Y)
     (h : k ≫ left f = k ≫ right f) : W ⟶ X :=
   Fork.IsLimit.lift (isLimit f) k h
 
@@ -184,7 +183,7 @@ end IsRegularMono
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The chosen equalizer of a parallel pair is a regular monomorphism. -/
-def RegularMono.equalizer (g h : X ⟶ Y) [HasLimit (parallelPair g h)] :
+noncomputable def RegularMono.equalizer (g h : X ⟶ Y) [HasLimit (parallelPair g h)] :
     RegularMono (equalizer.ι g h) where
   Z := Y
   left := g
@@ -200,7 +199,7 @@ instance (g h : X ⟶ Y) [HasLimit (parallelPair g h)] :
   isRegularMono_of_regularMono <| RegularMono.equalizer g h
 
 /-- Every split monomorphism is a regular monomorphism. -/
-def RegularMono.ofIsSplitMono (f : X ⟶ Y) [IsSplitMono f] :
+noncomputable def RegularMono.ofIsSplitMono (f : X ⟶ Y) [IsSplitMono f] :
     RegularMono f where
   Z := Y
   left := 𝟙 Y
@@ -293,6 +292,7 @@ end
 
 /-- In a category in which every monomorphism is regular, we can express every monomorphism as
 an equalizer. This is not an instance because it would create an instance loop. -/
+noncomputable
 def regularMonoOfMono [IsRegularMonoCategory C] (f : X ⟶ Y) [Mono f] : RegularMono f :=
   have := IsRegularMonoCategory.regularMonoOfMono f
   IsRegularMono.getStruct f
@@ -371,7 +371,7 @@ instance MorphismProperty.regularEpi.respectsIso :
 lemma isRegularEpi_of_regularEpi {f : X ⟶ Y} (h : RegularEpi f) : IsRegularEpi f := ⟨⟨h⟩⟩
 
 /-- Given `IsRegularEpi f`, a choice of data for `RegularEpi f`. -/
-def IsRegularEpi.getStruct (f : X ⟶ Y) [h : IsRegularEpi f] : RegularEpi f :=
+noncomputable def IsRegularEpi.getStruct (f : X ⟶ Y) [h : IsRegularEpi f] : RegularEpi f :=
   h.regularEpi.some
 
 @[deprecated (since := "2025-12-01")] noncomputable alias regularEpiOfIsRegularEpi :=
@@ -407,24 +407,25 @@ The names `W`, `left`, and `right` all being in the `IsRegularEpi` namespace.
 variable {X Y : C} (f : X ⟶ Y) [IsRegularEpi f]
 
 /-- The source of the coequalizer diagram for `f`. -/
-def IsRegularEpi.W : C := (IsRegularEpi.getStruct f).W
+noncomputable def IsRegularEpi.W : C := (IsRegularEpi.getStruct f).W
 
 /-- The "left" map `W ⟶ X`. -/
-def IsRegularEpi.left : W f ⟶ X := (IsRegularEpi.getStruct f).left
+noncomputable def IsRegularEpi.left : W f ⟶ X := (IsRegularEpi.getStruct f).left
 
 /-- The "right" map `W ⟶ X`. -/
-def IsRegularEpi.right : W f ⟶ X := (IsRegularEpi.getStruct f).right
+noncomputable def IsRegularEpi.right : W f ⟶ X := (IsRegularEpi.getStruct f).right
 
 /-- The coequalizer condition. -/
 lemma IsRegularEpi.w : left f ≫ f = right f ≫ f := (IsRegularEpi.getStruct f).w
 
 /-- The cofork is in fact a coequalizer. -/
+noncomputable
 def IsRegularEpi.isColimit : IsColimit <| Cofork.ofπ _ (w f) := (IsRegularEpi.getStruct f).isColimit
 
 /--
 Descend a morphism `k : X ⟶ Z`, coequalized by the two morphisms `left` and `right`, along `f`.
 -/
-def IsRegularEpi.desc {Z : C} (f : X ⟶ Y) [IsRegularEpi f] (k : X ⟶ Z)
+noncomputable def IsRegularEpi.desc {Z : C} (f : X ⟶ Y) [IsRegularEpi f] (k : X ⟶ Z)
     (h : left f ≫ k = right f ≫ k) : Y ⟶ Z :=
   Cofork.IsColimit.desc (isColimit f) k h
 
@@ -442,7 +443,7 @@ end IsRegularEpi
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The chosen coequalizer of a parallel pair is a regular epimorphism. -/
-def coequalizerRegular (g h : X ⟶ Y) [HasColimit (parallelPair g h)] :
+noncomputable def coequalizerRegular (g h : X ⟶ Y) [HasColimit (parallelPair g h)] :
     RegularEpi (coequalizer.π g h) where
   W := X
   left := g
@@ -458,7 +459,7 @@ instance (g h : X ⟶ Y) [HasColimit (parallelPair g h)] :
   ⟨⟨coequalizerRegular g h⟩⟩
 
 /-- A morphism which is a coequalizer for its kernel pair is a regular epi. -/
-def regularEpiOfKernelPair {B X : C} (f : X ⟶ B) [HasPullback f f]
+noncomputable def regularEpiOfKernelPair {B X : C} (f : X ⟶ B) [HasPullback f f]
     (hc : IsColimit (Cofork.ofπ f pullback.condition)) : RegularEpi f where
   W := pullback f f
   left := pullback.fst f f
@@ -501,7 +502,7 @@ set_option backward.isDefEq.respectTransparency false in
 /--
 Given a kernel pair of an effective epimorphism `f : X ⟶ B`, the induced cofork is a coequalizer.
 -/
-def isColimitCoforkOfEffectiveEpi {B X : C} (f : X ⟶ B) [EffectiveEpi f]
+noncomputable def isColimitCoforkOfEffectiveEpi {B X : C} (f : X ⟶ B) [EffectiveEpi f]
     (c : PullbackCone f f) (hc : IsLimit c) :
     IsColimit (Cofork.ofπ f c.condition) where
   desc s := EffectiveEpi.desc f (s.ι.app WalkingParallelPair.one) fun g₁ g₂ hg ↦ (by
@@ -520,7 +521,7 @@ def isColimitCoforkOfEffectiveEpi {B X : C} (f : X ⟶ B) [EffectiveEpi f]
   uniq _ _ h := EffectiveEpi.uniq f _ _ _ (h WalkingParallelPair.one)
 
 /-- An effective epi which has a kernel pair is a regular epi. -/
-def regularEpiOfEffectiveEpi {B X : C} (f : X ⟶ B) [HasPullback f f]
+noncomputable def regularEpiOfEffectiveEpi {B X : C} (f : X ⟶ B) [HasPullback f f]
     [EffectiveEpi f] : RegularEpi f where
   W := pullback f f
   left := pullback.fst f f
@@ -550,7 +551,7 @@ noncomputable def EffectiveEpiStruct.isColimitCoforkOfIsPullback
     (fun s m hm ↦ hp.uniq _ _ _ hm)
 
 /-- Every split epimorphism is a regular epimorphism. -/
-def RegularEpi.ofSplitEpi (f : X ⟶ Y) [IsSplitEpi f] : RegularEpi f where
+noncomputable def RegularEpi.ofSplitEpi (f : X ⟶ Y) [IsSplitEpi f] : RegularEpi f where
   W := X
   left := 𝟙 X
   right := f ≫ section_ f
@@ -702,7 +703,7 @@ end
 
 /-- In a category in which every epimorphism is regular, we can express every epimorphism as
 a coequalizer. This is not an instance because it would create an instance loop. -/
-def regularEpiOfEpi [IsRegularEpiCategory C] (f : X ⟶ Y) [Epi f] : RegularEpi f :=
+noncomputable def regularEpiOfEpi [IsRegularEpiCategory C] (f : X ⟶ Y) [Epi f] : RegularEpi f :=
   have := IsRegularEpiCategory.regularEpiOfEpi f
   IsRegularEpi.getStruct f
 

@@ -25,7 +25,7 @@ variable {R : Type u} [CommRing R]
 
 namespace AlgCat
 
-noncomputable section
+section
 
 namespace instMonoidalCategory
 
@@ -47,7 +47,7 @@ end instMonoidalCategory
 
 open instMonoidalCategory
 
-instance : MonoidalCategoryStruct (AlgCat.{u} R) where
+noncomputable instance : MonoidalCategoryStruct (AlgCat.{u} R) where
   tensorObj := instMonoidalCategory.tensorObj
   whiskerLeft X _ _ f := tensorHom (𝟙 X) f
   whiskerRight {X₁ X₂} (f : X₁ ⟶ X₂) Y := tensorHom f (𝟙 Y)
@@ -104,7 +104,7 @@ noncomputable instance instMonoidalCategory : MonoidalCategory (AlgCat.{u} R) :=
       rightUnitor_eq := fun _ => ModuleCat.hom_ext <| TensorProduct.ext' (fun _ _ => rfl) }
 
 /-- `forget₂ (AlgCat R) (ModuleCat R)` as a monoidal functor. -/
-example : (forget₂ (AlgCat R) (ModuleCat R)).Monoidal := inferInstance
+noncomputable example : (forget₂ (AlgCat R) (ModuleCat R)).Monoidal := inferInstance
 
 end
 

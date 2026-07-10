@@ -34,8 +34,6 @@ Complex measure
 @[expose] public section
 
 
-noncomputable section
-
 open scoped MeasureTheory ENNReal NNReal
 
 variable {α : Type*} {m : MeasurableSpace α}
@@ -52,12 +50,12 @@ namespace ComplexMeasure
 
 /-- The real part of a complex measure is a signed measure. -/
 @[simps! apply]
-def re : ComplexMeasure α →ₗ[ℝ] SignedMeasure α :=
+noncomputable def re : ComplexMeasure α →ₗ[ℝ] SignedMeasure α :=
   mapRangeₗ Complex.reCLM Complex.continuous_re
 
 /-- The imaginary part of a complex measure is a signed measure. -/
 @[simps! apply]
-def im : ComplexMeasure α →ₗ[ℝ] SignedMeasure α :=
+noncomputable def im : ComplexMeasure α →ₗ[ℝ] SignedMeasure α :=
   mapRangeₗ Complex.imCLM Complex.continuous_im
 
 /-- Given `s` and `t` signed measures, `s + it` is a complex measure -/
@@ -83,7 +81,7 @@ theorem _root_.MeasureTheory.SignedMeasure.im_toComplexMeasure (s t : SignedMeas
 
 /-- The complex measures form an equivalence to the type of pairs of signed measures. -/
 @[simps]
-def equivSignedMeasure : ComplexMeasure α ≃ SignedMeasure α × SignedMeasure α where
+noncomputable def equivSignedMeasure : ComplexMeasure α ≃ SignedMeasure α × SignedMeasure α where
   toFun c := ⟨ComplexMeasure.re c, ComplexMeasure.im c⟩
   invFun := fun ⟨s, t⟩ => s.toComplexMeasure t
   left_inv c := c.toComplexMeasure_to_signedMeasure
@@ -96,7 +94,7 @@ variable [ContinuousConstSMul R ℝ] [ContinuousConstSMul R ℂ]
 
 /-- The complex measures form a linear isomorphism to the type of pairs of signed measures. -/
 @[simps]
-def equivSignedMeasureₗ : ComplexMeasure α ≃ₗ[R] SignedMeasure α × SignedMeasure α :=
+noncomputable def equivSignedMeasureₗ : ComplexMeasure α ≃ₗ[R] SignedMeasure α × SignedMeasure α :=
   { equivSignedMeasure with
     map_add' := fun c d => by rfl
     map_smul' := by

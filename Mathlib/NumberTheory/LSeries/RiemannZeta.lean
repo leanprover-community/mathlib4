@@ -54,18 +54,16 @@ open Complex hiding exp continuous_exp
 
 open scoped Topology Real
 
-noncomputable section
-
 /-!
 ## Definition of the completed Riemann zeta
 -/
 
 /-- The completed Riemann zeta function with its poles removed, `Λ(s) + 1 / s - 1 / (s - 1)`. -/
-def completedRiemannZeta₀ (s : ℂ) : ℂ := completedHurwitzZetaEven₀ 0 s
+noncomputable def completedRiemannZeta₀ (s : ℂ) : ℂ := completedHurwitzZetaEven₀ 0 s
 
 /-- The completed Riemann zeta function, `Λ(s)`, which satisfies
 `Λ(s) = π ^ (-s / 2) Γ(s / 2) ζ(s)` (up to a minor correction at `s = 0`). -/
-def completedRiemannZeta (s : ℂ) : ℂ := completedHurwitzZetaEven 0 s
+noncomputable def completedRiemannZeta (s : ℂ) : ℂ := completedHurwitzZetaEven 0 s
 
 lemma HurwitzZeta.completedHurwitzZetaEven_zero (s : ℂ) :
     completedHurwitzZetaEven 0 s = completedRiemannZeta s := rfl
@@ -118,7 +116,7 @@ lemma completedRiemannZeta_residue_one :
 
 /-- The Riemann zeta function `ζ(s)`. -/
 @[wikidata Q187235]
-def riemannZeta := hurwitzZetaEven 0
+noncomputable def riemannZeta := hurwitzZetaEven 0
 
 lemma HurwitzZeta.hurwitzZetaEven_zero : hurwitzZetaEven 0 = riemannZeta := rfl
 

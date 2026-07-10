@@ -35,8 +35,6 @@ We also register continuous linear equiv versions of these correspondences, in
 
 suppress_compilation
 
-noncomputable section
-
 open NNReal Finset Metric ContinuousMultilinearMap Fin Function
 
 /-!

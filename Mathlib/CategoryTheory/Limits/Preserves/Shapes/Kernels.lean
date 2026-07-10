@@ -21,8 +21,6 @@ the limit of the parallel pair `f,0`, as well as the dual result.
 @[expose] public section
 
 
-noncomputable section
-
 universe v₁ v₂ u₁ u₂
 
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits
@@ -60,7 +58,7 @@ def isLimitMapConeEquiv :
 
 /-- A limit kernel fork is mapped to a limit kernel fork by a functor `G` when this functor
 preserves the corresponding limit. -/
-def mapIsLimit (hc : IsLimit c) (G : C ⥤ D)
+noncomputable def mapIsLimit (hc : IsLimit c) (G : C ⥤ D)
     [Functor.PreservesZeroMorphisms G] [PreservesLimit (parallelPair f 0) G] :
     IsLimit (c.map G) :=
   c.isLimitMapConeEquiv G (isLimitOfPreserves G hc)
@@ -91,7 +89,7 @@ def isLimitMapConeForkEquiv' :
 This is a variant of `isLimitForkMapOfIsLimit` for equalizers,
 which we can't use directly between `G.map 0 = 0` does not hold definitionally.
 -/
-def isLimitForkMapOfIsLimit' [PreservesLimit (parallelPair f 0) G]
+noncomputable def isLimitForkMapOfIsLimit' [PreservesLimit (parallelPair f 0) G]
     (l : IsLimit (KernelFork.ofι h w)) :
     IsLimit
       (KernelFork.ofι (G.map h) (by simp only [← G.map_comp, w, Functor.map_zero]) :
@@ -104,7 +102,7 @@ variable [HasKernel f]
 /-- If `G` preserves kernels and `C` has them, then the fork constructed of the mapped morphisms of
 a kernel fork is a limit.
 -/
-def isLimitOfHasKernelOfPreservesLimit [PreservesLimit (parallelPair f 0) G] :
+noncomputable def isLimitOfHasKernelOfPreservesLimit [PreservesLimit (parallelPair f 0) G] :
     IsLimit
       (Fork.ofι (G.map (kernel.ι f))
           (by simp only [← G.map_comp, kernel.condition, comp_zero, Functor.map_zero]) :
@@ -130,7 +128,7 @@ variable [PreservesLimit (parallelPair f 0) G]
 /-- If `G` preserves the kernel of `f`, then the kernel comparison map for `G` at `f` is
 an isomorphism.
 -/
-def PreservesKernel.iso : G.obj (kernel f) ≅ kernel (G.map f) :=
+noncomputable def PreservesKernel.iso : G.obj (kernel f) ≅ kernel (G.map f) :=
   IsLimit.conePointUniqueUpToIso (isLimitOfHasKernelOfPreservesLimit G f) (limit.isLimit _)
 
 @[reassoc (attr := simp)]
@@ -189,7 +187,7 @@ def isColimitMapCoconeEquiv :
 
 /-- A colimit cokernel cofork is mapped to a colimit cokernel cofork by a functor `G`
 when this functor preserves the corresponding colimit. -/
-def mapIsColimit (hc : IsColimit c) (G : C ⥤ D)
+noncomputable def mapIsColimit (hc : IsColimit c) (G : C ⥤ D)
     [Functor.PreservesZeroMorphisms G] [PreservesColimit (parallelPair f 0) G] :
     IsColimit (c.map G) :=
   c.isColimitMapCoconeEquiv G (isColimitOfPreserves G hc)
@@ -220,7 +218,7 @@ def isColimitMapCoconeCoforkEquiv' :
 This is a variant of `isColimitCoforkMapOfIsColimit` for equalizers,
 which we can't use directly between `G.map 0 = 0` does not hold definitionally.
 -/
-def isColimitCoforkMapOfIsColimit' [PreservesColimit (parallelPair f 0) G]
+noncomputable def isColimitCoforkMapOfIsColimit' [PreservesColimit (parallelPair f 0) G]
     (l : IsColimit (CokernelCofork.ofπ h w)) :
     IsColimit
       (CokernelCofork.ofπ (G.map h) (by simp only [← G.map_comp, w, Functor.map_zero]) :
@@ -234,7 +232,7 @@ variable [HasCokernel f]
 If `G` preserves cokernels and `C` has them, then the cofork constructed of the mapped morphisms of
 a cokernel cofork is a colimit.
 -/
-def isColimitOfHasCokernelOfPreservesColimit [PreservesColimit (parallelPair f 0) G] :
+noncomputable def isColimitOfHasCokernelOfPreservesColimit [PreservesColimit (parallelPair f 0) G] :
     IsColimit
       (Cofork.ofπ (G.map (cokernel.π f))
           (by simp only [← G.map_comp, cokernel.condition, zero_comp, Functor.map_zero]) :
@@ -260,7 +258,7 @@ variable [PreservesColimit (parallelPair f 0) G]
 /-- If `G` preserves the cokernel of `f`, then the cokernel comparison map for `G` at `f` is
 an isomorphism.
 -/
-def PreservesCokernel.iso : G.obj (cokernel f) ≅ cokernel (G.map f) :=
+noncomputable def PreservesCokernel.iso : G.obj (cokernel f) ≅ cokernel (G.map f) :=
   IsColimit.coconePointUniqueUpToIso (isColimitOfHasCokernelOfPreservesColimit G f)
     (colimit.isColimit _)
 
@@ -335,14 +333,14 @@ variable {X Y : C} (f : X ⟶ Y)
 
 /-- Mapping a `zeroKernelFork` of `f : X ⟶ Y` along a functor `G` that preserves zero morphisms
 is isomorphic to the `zeroKernelFork` of `G.map f`. -/
-def mapZeroKernelFork :
+noncomputable def mapZeroKernelFork :
     (kernel.zeroKernelFork f).map G ≅ (kernel.zeroKernelFork (G.map f)) :=
   Fork.ext G.mapZeroObject
 
 set_option backward.defeqAttrib.useBackward true in
 /-- Mapping a `zeroCokernelCofork` of `f : X ⟶ Y` along a functor `G` that preserves zero morphisms
 is isomorphic to the `zeroCokernelCofork` of `G.map f`. -/
-def mapZeroCokernelCofork :
+noncomputable def mapZeroCokernelCofork :
     (cokernel.zeroCokernelCofork f).map G ≅ (cokernel.zeroCokernelCofork (G.map f)) :=
   Cofork.ext G.mapZeroObject
 

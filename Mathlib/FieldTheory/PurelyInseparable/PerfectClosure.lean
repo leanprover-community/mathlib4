@@ -45,8 +45,6 @@ separable degree, degree, separable closure, purely inseparable
 
 open IntermediateField Module
 
-noncomputable section
-
 universe u v w
 
 variable (F : Type u) (E : Type v) [Field F] [Field E] [Algebra F E]
@@ -59,7 +57,7 @@ exists a natural number `n` such that `x ^ (ringExpChar F) ^ n` is contained in 
 `ringExpChar F` is the exponential characteristic of `F`. It is also the maximal purely inseparable
 subextension of `E / F` (`le_perfectClosure_iff`). -/
 @[stacks 09HH]
-def perfectClosure : IntermediateField F E where
+noncomputable def perfectClosure : IntermediateField F E where
   __ := have := expChar_of_injective_algebraMap (algebraMap F E).injective (ringExpChar F)
     Subalgebra.perfectClosure F E (ringExpChar F)
   inv_mem' := by
@@ -166,7 +164,7 @@ theorem perfectClosure.map_eq_of_algEquiv (i : E ≃ₐ[F] K) :
 
 /-- If `E` and `K` are isomorphic as `F`-algebras, then `perfectClosure F E` and
 `perfectClosure F K` are also isomorphic as `F`-algebras. -/
-def perfectClosure.algEquivOfAlgEquiv (i : E ≃ₐ[F] K) :
+noncomputable def perfectClosure.algEquivOfAlgEquiv (i : E ≃ₐ[F] K) :
     perfectClosure F E ≃ₐ[F] perfectClosure F K :=
   (intermediateFieldMap i _).trans (equivOfEq (map_eq_of_algEquiv i))
 
@@ -374,6 +372,7 @@ theorem LinearIndependent.map_pow_expChar_pow_of_isSeparable'
 /-- If `E / F` is a separable extension of exponential characteristic `q`, if `{ u_i }` is an
 `F`-basis of `E`, then `{ u_i ^ (q ^ n) }` is also an `F`-basis of `E`
 for any natural number `n`. -/
+noncomputable
 def Module.Basis.mapPowExpCharPowOfIsSeparable [Algebra.IsSeparable F E] (b : Basis ι F E) :
     Basis ι F E :=
   .mk (b.linearIndependent.map_pow_expChar_pow_of_isSeparable q n)

@@ -56,8 +56,6 @@ is its vertices are in `ι → ℤ`, then the corresponding prepartition is actu
 
 @[expose] public section
 
-noncomputable section
-
 variable {ι : Type*}
 
 open scoped Topology
@@ -99,7 +97,7 @@ variable (n : ℕ)
 
 /-- A `BoxIntegral`, indexed by a positive integer `n` and `ν : ι → ℤ`, with corners `ν i / n`
 and of side length `1 / n`. -/
-def box [NeZero n] (ν : ι → ℤ) : Box ι where
+noncomputable def box [NeZero n] (ν : ι → ℤ) : Box ι where
   lower := fun i ↦ ν i / n
   upper := fun i ↦ (ν i + 1) / n
   lower_lt_upper := fun _ ↦ by simp [add_div, n.pos_of_neZero]
@@ -125,7 +123,7 @@ theorem mem_box_iff' [NeZero n] {ν : ι → ℤ} {x : ι → ℝ} :
   simp_rw [mem_box_iff, ← _root_.le_div_iff₀' h, ← div_lt_iff₀' h]
 
 /-- The tag of (the index of) a `unitPartition.box`. -/
-abbrev tag (ν : ι → ℤ) : ι → ℝ := fun i ↦ (ν i + 1) / n
+noncomputable abbrev tag (ν : ι → ℤ) : ι → ℝ := fun i ↦ (ν i + 1) / n
 
 @[simp]
 theorem tag_apply (ν : ι → ℤ) (i : ι) : tag n ν i = (ν i + 1) / n := rfl
@@ -148,7 +146,7 @@ theorem tag_mem (ν : ι → ℤ) :
 
 /-- For `x : ι → ℝ`, its index is the index of the unique `unitPartition.box` to which
 it belongs. -/
-def index (x : ι → ℝ) (i : ι) : ℤ := ⌈n * x i⌉ - 1
+noncomputable def index (x : ι → ℝ) (i : ι) : ℤ := ⌈n * x i⌉ - 1
 
 @[simp]
 theorem index_apply (m : ℕ) {x : ι → ℝ} (i : ι) :
@@ -213,7 +211,7 @@ theorem setFinite_index {s : Set (ι → ℝ)} (hs₁ : NullMeasurableSet s) (hs
 /-- For `B : BoxIntegral.Box`, the set of indices of `unitPartition.box` that are subsets of `B`.
 This is a finite set. These boxes cover `B` if it has integral vertices, see
 `unitPartition.prepartition_isPartition`. -/
-def admissibleIndex (B : Box ι) : Finset (ι → ℤ) := by
+noncomputable def admissibleIndex (B : Box ι) : Finset (ι → ℤ) := by
   refine (setFinite_index n B.measurableSet_coe.nullMeasurableSet ?_).toFinset
   exact lt_top_iff_ne_top.mp (IsBounded.measure_lt_top B.isBounded)
 
@@ -225,7 +223,7 @@ theorem mem_admissibleIndex_iff {B : Box ι} {ν : ι → ℤ} :
 open scoped Classical in
 /-- For `B : BoxIntegral.Box`, the `TaggedPrepartition` formed by the set of all
 `unitPartition.box` whose index is `B`-admissible. -/
-def prepartition (B : Box ι) : TaggedPrepartition B where
+noncomputable def prepartition (B : Box ι) : TaggedPrepartition B where
   boxes := Finset.image (fun ν ↦ box n ν) (admissibleIndex n B)
   le_of_mem' _ hI := by
     obtain ⟨_, hν, rfl⟩ := Finset.mem_image.mp hI
@@ -359,7 +357,7 @@ theorem eq_of_mem_smul_span_of_index_eq_index {x y : ι → ℝ} (hx : x ∈ (n 
     (hy : y ∈ (n : ℝ)⁻¹ • L) (h : index n x = index n y) : x = y := by
   rw [← tag_index_eq_self_of_mem_smul_span n hx, ← tag_index_eq_self_of_mem_smul_span n hy, h]
 
-private def tendsto_card_div_pow₁ {c : ℝ} (hc : c ≠ 0) :
+private noncomputable def tendsto_card_div_pow₁ {c : ℝ} (hc : c ≠ 0) :
     ↑(s ∩ c⁻¹ • L) ≃ ↑(c • s ∩ L) :=
   Equiv.subtypeEquiv (Equiv.smulRight hc) (fun x ↦ by
     simp_rw [Set.mem_inter_iff, Equiv.smulRight_apply, Set.smul_mem_smul_set_iff₀ hc,

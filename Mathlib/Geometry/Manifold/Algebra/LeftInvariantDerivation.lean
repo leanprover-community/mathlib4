@@ -31,8 +31,6 @@ therefore be favored to construct a theory of Lie groups in suitable generality.
 @[expose] public section
 
 
-noncomputable section
-
 open scoped LieGroup Manifold Derivation ContDiff
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : ℕ∞ω} {E : Type*} [NormedAddCommGroup E]

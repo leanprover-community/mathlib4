@@ -15,7 +15,7 @@ public import Mathlib.RingTheory.IsTensorProduct
 In this file we show that monoid algebras are stable under pushout.
 -/
 
-@[expose] public noncomputable section
+@[expose] public section
 
 open Algebra TensorProduct
 
@@ -36,7 +36,7 @@ noncomputable def _root_.AddMonoidAlgebra.rTensorEquivAlgEquiv.invFun [AddCommMo
 
 /-- Implementation detail. -/
 @[to_additive existing (dont_translate := R)]
-def rTensorEquivAlgEquiv.invFun : (A ⊗[R] B)[M] →ₐ[S] A ⊗[R] B[M] :=
+noncomputable def rTensorEquivAlgEquiv.invFun : (A ⊗[R] B)[M] →ₐ[S] A ⊗[R] B[M] :=
   MonoidAlgebra.liftNCAlgHom (Algebra.TensorProduct.map (.id _ _) singleOneAlgHom)
     (Algebra.TensorProduct.includeRight.toMonoidHom.comp (of B M)) fun _ _ ↦ .all ..
 

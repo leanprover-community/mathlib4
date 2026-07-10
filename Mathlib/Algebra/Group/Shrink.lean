@@ -12,18 +12,18 @@ public import Mathlib.Logic.Small.Defs
 # Transfer group structures from `α` to `Shrink α`
 -/
 
-@[expose] public noncomputable section
+@[expose] public section
 
 universe v
 variable {M α : Type*} [Small.{v} α]
 
 namespace Shrink
 
-@[to_additive] instance [One α] : One (Shrink.{v} α) := (equivShrink α).symm.one
-@[to_additive] instance [Mul α] : Mul (Shrink.{v} α) := (equivShrink α).symm.mul
-@[to_additive] instance [Div α] : Div (Shrink.{v} α) := (equivShrink α).symm.div
-@[to_additive] instance [Inv α] : Inv (Shrink.{v} α) := (equivShrink α).symm.Inv
-@[to_additive] instance [Pow α M] : Pow (Shrink.{v} α) M := (equivShrink α).symm.pow M
+@[to_additive] noncomputable instance [One α] : One (Shrink.{v} α) := (equivShrink α).symm.one
+@[to_additive] noncomputable instance [Mul α] : Mul (Shrink.{v} α) := (equivShrink α).symm.mul
+@[to_additive] noncomputable instance [Div α] : Div (Shrink.{v} α) := (equivShrink α).symm.div
+@[to_additive] noncomputable instance [Inv α] : Inv (Shrink.{v} α) := (equivShrink α).symm.Inv
+@[to_additive] noncomputable instance [Pow α M] : Pow (Shrink.{v} α) M := (equivShrink α).symm.pow M
 
 end Shrink
 
@@ -73,12 +73,13 @@ namespace Shrink
 
 /-- Shrink `α` to a smaller universe preserves multiplication. -/
 @[to_additive /-- Shrink `α` to a smaller universe preserves addition. -/]
-def mulEquiv [Mul α] : Shrink.{v} α ≃* α := (equivShrink α).symm.mulEquiv
+noncomputable def mulEquiv [Mul α] : Shrink.{v} α ≃* α := (equivShrink α).symm.mulEquiv
 
 @[to_additive]
-instance [Semigroup α] : Semigroup (Shrink.{v} α) := (equivShrink α).symm.semigroup
+noncomputable instance [Semigroup α] : Semigroup (Shrink.{v} α) := (equivShrink α).symm.semigroup
 
 @[to_additive]
+noncomputable
 instance [CommSemigroup α] : CommSemigroup (Shrink.{v} α) := (equivShrink α).symm.commSemigroup
 
 @[to_additive]
@@ -93,21 +94,23 @@ instance [Mul α] [IsRightCancelMul α] : IsRightCancelMul (Shrink.{v} α) :=
 instance [Mul α] [IsCancelMul α] : IsCancelMul (Shrink.{v} α) := (equivShrink α).symm.isCancelMul
 
 @[to_additive]
+noncomputable
 instance [MulOneClass α] : MulOneClass (Shrink.{v} α) := (equivShrink α).symm.mulOneClass
 
 @[to_additive]
-instance [Monoid α] : Monoid (Shrink.{v} α) := (equivShrink α).symm.monoid
+noncomputable instance [Monoid α] : Monoid (Shrink.{v} α) := (equivShrink α).symm.monoid
 
 @[to_additive]
-instance [CommMonoid α] : CommMonoid (Shrink.{v} α) := (equivShrink α).symm.commMonoid
+noncomputable instance [CommMonoid α] : CommMonoid (Shrink.{v} α) := (equivShrink α).symm.commMonoid
 
 @[to_additive]
-instance [Group α] : Group (Shrink.{v} α) := (equivShrink α).symm.group
+noncomputable instance [Group α] : Group (Shrink.{v} α) := (equivShrink α).symm.group
 
 @[to_additive]
-instance [CommGroup α] : CommGroup (Shrink.{v} α) := (equivShrink α).symm.commGroup
+noncomputable instance [CommGroup α] : CommGroup (Shrink.{v} α) := (equivShrink α).symm.commGroup
 
 @[to_additive]
+noncomputable
 instance [Monoid M] [MulAction M α] : MulAction M (Shrink.{v} α) := (equivShrink α).symm.mulAction M
 
 end Shrink

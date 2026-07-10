@@ -43,8 +43,6 @@ Minkowski functional, gauge
 open NormedField Set
 open scoped Pointwise Topology NNReal
 
-noncomputable section
-
 variable {𝕜 E : Type*}
 
 section AddCommGroup
@@ -53,7 +51,7 @@ variable [AddCommGroup E] [Module ℝ E]
 
 /-- The Minkowski functional. Given a set `s` in a real vector space, `gauge s` is the functional
 which sends `x : E` to the smallest `r : ℝ` such that `x` is in `s` scaled by `r`. -/
-def gauge (s : Set E) (x : E) : ℝ :=
+noncomputable def gauge (s : Set E) (x : E) : ℝ :=
   sInf { r : ℝ | 0 < r ∧ x ∈ r • s }
 
 variable {s t : Set E} {x : E} {a : ℝ}
@@ -492,6 +490,7 @@ variable [RCLike 𝕜] [Module 𝕜 E] [IsScalarTower ℝ 𝕜 E]
 
 /-- `gauge s` as a seminorm when `s` is balanced, convex and absorbent. -/
 @[simps!]
+noncomputable
 def gaugeSeminorm (hs₀ : Balanced 𝕜 s) (hs₁ : Convex ℝ s) (hs₂ : Absorbent ℝ s) : Seminorm 𝕜 E :=
   Seminorm.of (gauge s) (gauge_add_le hs₁ hs₂) (gauge_smul hs₀)
 

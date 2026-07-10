@@ -33,8 +33,6 @@ We also construct the subcategory of subterminal objects.
 
 universe v₁ v₂ u₁ u₂
 
-noncomputable section
-
 namespace CategoryTheory
 
 open Limits Category
@@ -105,6 +103,7 @@ theorem isSubterminal_of_isIso_diag [HasBinaryProduct A A] [IsIso (diag A)] : Is
 
 /-- If `A` is subterminal, it is isomorphic to `A ⨯ A`. -/
 @[simps!]
+noncomputable
 def IsSubterminal.isoDiag (hA : IsSubterminal A) [HasBinaryProduct A A] : A ⨯ A ≅ A := by
   letI := IsSubterminal.isIso_diag hA
   apply (asIso (diag A)).symm
@@ -122,7 +121,7 @@ def Subterminals (C : Type u₁) [Category.{v₁} C] :=
 instance (C : Type u₁) [Category.{v₁} C] : Category (Subterminals C) :=
   ObjectProperty.FullSubcategory.category _
 
-instance [HasTerminal C] : Inhabited (Subterminals C) :=
+noncomputable instance [HasTerminal C] : Inhabited (Subterminals C) :=
   ⟨⟨⊤_ C, isSubterminal_of_terminal⟩⟩
 
 /-- The inclusion of the subterminal objects into the original category. -/
@@ -144,6 +143,7 @@ The category of subterminal objects is equivalent to the category of monomorphis
 object (which is in turn equivalent to the subobjects of the terminal object).
 -/
 @[simps]
+noncomputable
 def subterminalsEquivMonoOverTerminal [HasTerminal C] : Subterminals C ≌ MonoOver (⊤_ C) where
   functor :=
     { obj := fun X => ⟨Over.mk (terminal.from X.1), X.2.mono_terminal_from⟩

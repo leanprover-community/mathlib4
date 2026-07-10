@@ -59,8 +59,6 @@ open scoped Topology NNReal Filter Uniformity BoxIntegral
 
 open Set Finset Function Filter Metric BoxIntegral.IntegrationParams
 
-noncomputable section
-
 namespace BoxIntegral
 
 universe u v w
@@ -167,6 +165,7 @@ def Integrable (I : Box ι) (l : IntegrationParams) (f : ℝⁿ → E) (vol : ι
 open scoped Classical in
 /-- The integral of a function `f` over a box `I` along a filter `l` w.r.t. a volume `vol`.
 Returns zero on non-integrable functions. -/
+noncomputable
 def integral (I : Box ι) (l : IntegrationParams) (f : ℝⁿ → E) (vol : ι →ᵇᵃ E →L[ℝ] F) :=
   if h : Integrable I l f vol then h.choose else 0
 
@@ -399,7 +398,7 @@ corresponding integral sum is `ε`-close to the integral.
 
 If `BoxIntegral.IntegrationParams.bRiemann = true`, then `r c x` does not depend on `x`. If
 `ε ≤ 0`, then we use `r c x = 1`. -/
-def convergenceR (h : Integrable I l f vol) (ε : ℝ) : ℝ≥0 → ℝⁿ → Ioi (0 : ℝ) :=
+noncomputable def convergenceR (h : Integrable I l f vol) (ε : ℝ) : ℝ≥0 → ℝⁿ → Ioi (0 : ℝ) :=
   if hε : 0 < ε then (hasIntegral_iff.1 h.hasIntegral ε hε).choose
   else fun _ _ => ⟨1, Set.mem_Ioi.2 zero_lt_one⟩
 
@@ -607,7 +606,7 @@ of `f` over the boxes of `π₁` is equal to the sum of integrals of `f` over th
 
 See also `BoxIntegral.Integrable.sum_integral_congr` for an unbundled version. -/
 @[simps]
-def toBoxAdditive (h : Integrable I l f vol) : ι →ᵇᵃ[I] F where
+noncomputable def toBoxAdditive (h : Integrable I l f vol) : ι →ᵇᵃ[I] F where
   toFun J := integral J l f vol
   sum_partition_boxes' J hJ π hπ := by
     replace hπ := hπ.iUnion_eq; rw [← Prepartition.iUnion_top] at hπ

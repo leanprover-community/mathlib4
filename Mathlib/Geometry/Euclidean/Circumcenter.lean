@@ -33,8 +33,6 @@ the circumcenter.
 
 @[expose] public section
 
-noncomputable section
-
 open RealInnerProductSpace
 
 namespace EuclideanGeometry
@@ -190,7 +188,7 @@ variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V
   [NormedAddTorsor V P]
 
 /-- The circumsphere of a simplex. -/
-def circumsphere {n : ℕ} (s : Simplex ℝ P n) : Sphere P :=
+noncomputable def circumsphere {n : ℕ} (s : Simplex ℝ P n) : Sphere P :=
   s.independent.existsUnique_dist_eq.choose
 
 /-- The property satisfied by the circumsphere. -/
@@ -203,11 +201,11 @@ theorem circumsphere_unique_dist_eq {n : ℕ} (s : Simplex ℝ P n) :
   s.independent.existsUnique_dist_eq.choose_spec
 
 /-- The circumcenter of a simplex. -/
-def circumcenter {n : ℕ} (s : Simplex ℝ P n) : P :=
+noncomputable def circumcenter {n : ℕ} (s : Simplex ℝ P n) : P :=
   s.circumsphere.center
 
 /-- The circumradius of a simplex. -/
-def circumradius {n : ℕ} (s : Simplex ℝ P n) : ℝ :=
+noncomputable def circumradius {n : ℕ} (s : Simplex ℝ P n) : ℝ :=
   s.circumsphere.radius
 
 /-- The center of the circumsphere is the circumcenter. -/
@@ -459,6 +457,7 @@ theorem sum_pointsWithCircumcenter {α : Type*} [AddCommMonoid α] {n : ℕ}
   injection h
 
 /-- The vertices of a simplex plus its circumcenter. -/
+noncomputable
 def pointsWithCircumcenter {n : ℕ} (s : Simplex ℝ P n) : PointsWithCircumcenterIndex n → P
   | pointIndex i => s.points i
   | circumcenterIndex => s.circumcenter
@@ -511,7 +510,7 @@ theorem point_eq_affineCombination_of_pointsWithCircumcenter {n : ℕ} (s : Simp
 
 /-- The weights for the centroid of some vertices of a simplex, in
 terms of `pointsWithCircumcenter`. -/
-def centroidWeightsWithCircumcenter {n : ℕ} (fs : Finset (Fin (n + 1))) :
+noncomputable def centroidWeightsWithCircumcenter {n : ℕ} (fs : Finset (Fin (n + 1))) :
     PointsWithCircumcenterIndex n → ℝ
   | pointIndex i => if i ∈ fs then (#fs : ℝ)⁻¹ else 0
   | circumcenterIndex => 0

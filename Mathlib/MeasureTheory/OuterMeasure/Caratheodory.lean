@@ -32,8 +32,6 @@ Carathéodory-measurable, Carathéodory's criterion
 
 @[expose] public section
 
-noncomputable section
-
 open Set Function Filter
 open scoped NNReal Topology ENNReal
 

@@ -67,8 +67,6 @@ variable [NormedAddTorsor V P]
 variable {V₂ P₂ : Type*} [NormedAddCommGroup V₂] [InnerProductSpace ℝ V₂] [MetricSpace P₂]
 variable [NormedAddTorsor V₂ P₂]
 
-noncomputable section
-
 namespace Affine
 
 namespace Simplex
@@ -79,7 +77,7 @@ variable {m n : ℕ} [NeZero m] [NeZero n] (s : Simplex ℝ P n)
 signs determined by the given set of indices (for the empty set, this is the incenter; for a
 singleton set, this is the excenter opposite a vertex).  An excenter with those signs exists if
 and only if the sum of these weights is nonzero (so the normalized weights sum to 1). -/
-def excenterWeightsUnnorm (signs : Finset (Fin (n + 1))) (i : Fin (n + 1)) : ℝ :=
+noncomputable def excenterWeightsUnnorm (signs : Finset (Fin (n + 1))) (i : Fin (n + 1)) : ℝ :=
   (if i ∈ signs then -1 else 1) * (s.height i)⁻¹
 
 lemma excenterWeightsUnnorm_reindex (e : Fin (n + 1) ≃ Fin (m + 1)) (signs : Finset (Fin (m + 1))) :
@@ -135,7 +133,7 @@ lemma excenterExists_reindex {e : Fin (n + 1) ≃ Fin (m + 1)} {signs : Finset (
 /-- The normalized weights of the vertices in an affine combination that gives an excenter with
 signs determined by the given set of indices.  An excenter with those signs exists if and only if
 the sum of these weights is 1. -/
-def excenterWeights (signs : Finset (Fin (n + 1))) : Fin (n + 1) → ℝ :=
+noncomputable def excenterWeights (signs : Finset (Fin (n + 1))) : Fin (n + 1) → ℝ :=
   (∑ i, s.excenterWeightsUnnorm signs i)⁻¹ • s.excenterWeightsUnnorm signs
 
 lemma excenterWeights_reindex (e : Fin (n + 1) ≃ Fin (m + 1)) (signs : Finset (Fin (m + 1))) :
@@ -343,7 +341,7 @@ lemma excenterWeights_empty_lt_inv_two [n.AtLeastTwo] (i : Fin (n + 1)) :
 the insphere; for a singleton set, this is the exsphere opposite a vertex).  This is only
 meaningful if `s.ExcenterExists`; otherwise, it is a sphere of radius zero at some arbitrary
 point. -/
-def exsphere (signs : Finset (Fin (n + 1))) : Sphere P where
+noncomputable def exsphere (signs : Finset (Fin (n + 1))) : Sphere P where
   center := Finset.univ.affineCombination ℝ s.points (s.excenterWeights signs)
   radius := |(∑ i, s.excenterWeightsUnnorm signs i)⁻¹|
 
@@ -354,7 +352,7 @@ lemma exsphere_reindex (e : Fin (n + 1) ≃ Fin (m + 1)) (signs : Finset (Fin (m
   simp
 
 /-- The insphere of a simplex. -/
-def insphere : Sphere P :=
+noncomputable def insphere : Sphere P :=
   s.exsphere ∅
 
 @[simp] lemma insphere_reindex (e : Fin (n + 1) ≃ Fin (m + 1)) :
@@ -365,7 +363,7 @@ def insphere : Sphere P :=
 /-- The excenter with signs determined by the given set of indices (for the empty set, this is
 the incenter; for a singleton set, this is the excenter opposite a vertex).  This is only
 meaningful if `s.ExcenterExists signs`; otherwise, it is some arbitrary point. -/
-def excenter (signs : Finset (Fin (n + 1))) : P :=
+noncomputable def excenter (signs : Finset (Fin (n + 1))) : P :=
   (s.exsphere signs).center
 
 lemma excenter_reindex (e : Fin (n + 1) ≃ Fin (m + 1)) (signs : Finset (Fin (m + 1))) :
@@ -390,7 +388,7 @@ variable {s} in
   exact (h.excenter_map S.subtypeₐᵢ).symm
 
 /-- The incenter of a simplex. -/
-def incenter : P :=
+noncomputable def incenter : P :=
   (s.exsphere ∅).center
 
 @[simp] lemma incenter_reindex (e : Fin (n + 1) ≃ Fin (m + 1)) :
@@ -410,7 +408,7 @@ def incenter : P :=
 
 /-- The distance between an excenter and a face of the simplex (zero if no such excenter
 exists). -/
-def exradius (signs : Finset (Fin (n + 1))) : ℝ :=
+noncomputable def exradius (signs : Finset (Fin (n + 1))) : ℝ :=
   (s.exsphere signs).radius
 
 lemma exradius_reindex (e : Fin (n + 1) ≃ Fin (m + 1)) (signs : Finset (Fin (m + 1))) :
@@ -430,7 +428,7 @@ lemma exradius_reindex (e : Fin (n + 1) ≃ Fin (m + 1)) (signs : Finset (Fin (m
   simp [exradius, exsphere]
 
 /-- The distance between the incenter and a face of the simplex. -/
-def inradius : ℝ :=
+noncomputable def inradius : ℝ :=
   (s.exsphere ∅).radius
 
 @[simp] lemma inradius_reindex (e : Fin (n + 1) ≃ Fin (m + 1)) :
@@ -776,7 +774,7 @@ lemma sSameSide_point_excenter_singleton [Nat.AtLeastTwo n] {i j : Fin (n + 1)} 
     s.sign_excenterWeights_singleton_pos h.symm]
 
 /-- A touchpoint is where an exsphere of a simplex is tangent to one of the faces. -/
-def touchpoint (signs : Finset (Fin (n + 1))) (i : Fin (n + 1)) : P :=
+noncomputable def touchpoint (signs : Finset (Fin (n + 1))) (i : Fin (n + 1)) : P :=
   (s.faceOpposite i).orthogonalProjectionSpan (s.excenter signs)
 
 lemma touchpoint_reindex (e : Fin (n + 1) ≃ Fin (m + 1)) (signs : Finset (Fin (m + 1)))
@@ -1089,6 +1087,7 @@ lemma sign_signedInfDist_touchpoint_empty {i j : Fin (n + 1)} (hne : i ≠ j) :
   s.excenterExists_empty.sign_signedInfDist_touchpoint hne
 
 /-- The unique weights of the vertices in an affine combination equal to the given touchpoint. -/
+noncomputable
 def touchpointWeights (signs : Finset (Fin (n + 1))) (i : Fin (n + 1)) : Fin (n + 1) → ℝ :=
   (eq_affineCombination_of_mem_affineSpan_of_fintype
     (s.touchpoint_mem_affineSpan_simplex signs i)).choose

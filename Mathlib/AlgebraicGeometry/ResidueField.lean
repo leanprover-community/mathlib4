@@ -34,7 +34,7 @@ universe u
 
 open CategoryTheory TopologicalSpace Opposite IsLocalRing
 
-noncomputable section
+section
 
 namespace AlgebraicGeometry.Scheme
 
@@ -42,16 +42,17 @@ variable (X : Scheme.{u}) {U : X.Opens}
 
 /-- The residue field of `X` at a point `x` is the residue field of the stalk of `X`
 at `x`. -/
-def residueField (x : X) : CommRingCat :=
+noncomputable def residueField (x : X) : CommRingCat :=
   CommRingCat.of <| IsLocalRing.ResidueField (X.presheaf.stalk x)
 
-instance (x : X) : Field (X.residueField x) :=
+noncomputable instance (x : X) : Field (X.residueField x) :=
   inferInstanceAs <| Field (IsLocalRing.ResidueField (X.presheaf.stalk x))
 
+noncomputable
 instance (x : X) : Unique (Spec (X.residueField x)) := inferInstanceAs (Unique (Spec <| .of _))
 
 /-- The residue map from the stalk to the residue field. -/
-def residue (X : Scheme.{u}) (x) : X.presheaf.stalk x ⟶ X.residueField x :=
+noncomputable def residue (X : Scheme.{u}) (x) : X.presheaf.stalk x ⟶ X.residueField x :=
   CommRingCat.ofHom (IsLocalRing.residue (X.presheaf.stalk x))
 
 /-- See `AlgebraicGeometry.IsClosedImmersion.SpecMap_residue` for the stronger result that
@@ -75,7 +76,7 @@ instance (X : Scheme.{u}) (x) : Epi (X.residue x) :=
 
 /-- If `K` is a field and `f : 𝒪_{X, x} ⟶ K` is a ring map, then this is the induced
 map `κ(x) ⟶ K`. -/
-def descResidueField {K : Type u} [Field K] {X : Scheme.{u}} {x : X}
+noncomputable def descResidueField {K : Type u} [Field K] {X : Scheme.{u}} {x : X}
     (f : X.presheaf.stalk x ⟶ .of K) [IsLocalHom f.hom] :
     X.residueField x ⟶ .of K :=
   CommRingCat.ofHom (IsLocalRing.ResidueField.lift (S := K) f.hom)
@@ -93,14 +94,14 @@ over `U` to the residue field of `x`.
 If we interpret sections over `U` as functions of `X` defined on `U`, then this ring map
 corresponds to evaluation at `x`.
 -/
-def evaluation (U : X.Opens) (x : X) (hx : x ∈ U) : Γ(X, U) ⟶ X.residueField x :=
+noncomputable def evaluation (U : X.Opens) (x : X) (hx : x ∈ U) : Γ(X, U) ⟶ X.residueField x :=
   X.presheaf.germ U x hx ≫ X.residue _
 
 @[reassoc]
 lemma germ_residue (x hx) : X.presheaf.germ U x hx ≫ X.residue x = X.evaluation U x hx := rfl
 
 /-- The global evaluation map from `Γ(X, ⊤)` to the residue field at `x`. -/
-abbrev Γevaluation (x : X) : Γ(X, ⊤) ⟶ X.residueField x :=
+noncomputable abbrev Γevaluation (x : X) : Γ(X, ⊤) ⟶ X.residueField x :=
   X.evaluation ⊤ x trivial
 
 @[simp]
@@ -120,7 +121,7 @@ variable {X Y : Scheme.{u}} (f : X ⟶ Y)
 
 /-- If `X ⟶ Y` is a morphism of locally ringed spaces and `x` a point of `X`, we obtain
 a morphism of residue fields in the other direction. -/
-def Hom.residueFieldMap (f : X ⟶ Y) (x : X) :
+noncomputable def Hom.residueFieldMap (f : X ⟶ Y) (x : X) :
     Y.residueField (f x) ⟶ X.residueField x :=
   CommRingCat.ofHom <| IsLocalRing.ResidueField.map (f.stalkMap x).hom
 
@@ -144,7 +145,7 @@ lemma residueFieldMap_comp {Z : Scheme.{u}} (g : Y ⟶ Z) (x : X) :
 Degree of `f` at a point `x` is defined to be the degree of the associated field extension
 from `κ(f x)` to `κ(x)`. We return a default value of zero when this degree is infinite.
 -/
-def Hom.residueDegree (f : X ⟶ Y) (x : X) : ℕ :=
+noncomputable def Hom.residueDegree (f : X ⟶ Y) (x : X) : ℕ :=
   letI := (f.residueFieldMap x).hom.toAlgebra
   Module.finrank (Y.residueField (f x)) (X.residueField x)
 
@@ -182,7 +183,7 @@ section congr
 
 -- replace this def if hard to work with
 /-- The isomorphism between residue fields of equal points. -/
-def residueFieldCongr {x y : X} (h : x = y) :
+noncomputable def residueFieldCongr {x y : X} (h : x = y) :
     X.residueField x ≅ X.residueField y :=
   eqToIso (by subst h; rfl)
 
@@ -234,7 +235,7 @@ end congr
 section fromResidueField
 
 /-- The canonical map `Spec κ(x) ⟶ X`. -/
-def fromSpecResidueField (X : Scheme) (x : X) :
+noncomputable def fromSpecResidueField (X : Scheme) (x : X) :
     Spec (X.residueField x) ⟶ X :=
   Spec.map (X.residue x) ≫ X.fromSpecStalk x
 
@@ -339,7 +340,7 @@ lemma SpecToEquivOfField_eq_iff {K : Type*} [Field K] {X : Scheme}
 /-- For a field `K` and a scheme `X`, the morphisms `Spec K ⟶ X` bijectively correspond
 to pairs of points `x` of `X` and embeddings `κ(x) ⟶ K`. -/
 @[simps]
-def SpecToEquivOfField (K : Type u) [Field K] (X : Scheme.{u}) :
+noncomputable def SpecToEquivOfField (K : Type u) [Field K] (X : Scheme.{u}) :
     (Spec (.of K) ⟶ X) ≃ Σ x, X.residueField x ⟶ .of K where
   toFun f :=
     ⟨_, X.descResidueField (Scheme.stalkClosedPointTo f)⟩

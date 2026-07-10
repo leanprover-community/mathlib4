@@ -44,8 +44,6 @@ Lebesgue decomposition theorem
 @[expose] public section
 
 
-noncomputable section
-
 open scoped MeasureTheory NNReal ENNReal
 
 open Set
@@ -116,7 +114,7 @@ instance haveLebesgueDecomposition_smul_real (s : SignedMeasure α) (μ : Measur
 /-- Given a signed measure `s` and a measure `μ`, `s.singularPart μ` is the signed measure
 such that `s.singularPart μ + μ.withDensityᵥ (s.rnDeriv μ) = s` and
 `s.singularPart μ` is mutually singular with respect to `μ`. -/
-def singularPart (s : SignedMeasure α) (μ : Measure α) : SignedMeasure α :=
+noncomputable def singularPart (s : SignedMeasure α) (μ : Measure α) : SignedMeasure α :=
   (s.toJordanDecomposition.posPart.singularPart μ).toSignedMeasure -
     (s.toJordanDecomposition.negPart.singularPart μ).toSignedMeasure
 
@@ -153,7 +151,7 @@ end
 if and only if `s` is absolutely continuous with respect to `μ` and this fact is known as
 `MeasureTheory.SignedMeasure.absolutelyContinuous_iff_withDensity_rnDeriv_eq`
 and can be found in `Mathlib/MeasureTheory/Measure/Decomposition/RadonNikodym.lean`. -/
-def rnDeriv (s : SignedMeasure α) (μ : Measure α) : α → ℝ := fun x =>
+noncomputable def rnDeriv (s : SignedMeasure α) (μ : Measure α) : α → ℝ := fun x =>
   (s.toJordanDecomposition.posPart.rnDeriv μ x).toReal -
     (s.toJordanDecomposition.negPart.rnDeriv μ x).toReal
 
@@ -422,11 +420,11 @@ attribute [instance] HaveLebesgueDecomposition.imPart
 /-- The singular part between a complex measure `c` and a positive measure `μ` is the complex
 measure satisfying `c.singularPart μ + μ.withDensityᵥ (c.rnDeriv μ) = c`. This property is given
 by `MeasureTheory.ComplexMeasure.singularPart_add_withDensity_rnDeriv_eq`. -/
-def singularPart (c : ComplexMeasure α) (μ : Measure α) : ComplexMeasure α :=
+noncomputable def singularPart (c : ComplexMeasure α) (μ : Measure α) : ComplexMeasure α :=
   (c.re.singularPart μ).toComplexMeasure (c.im.singularPart μ)
 
 /-- The Radon-Nikodym derivative between a complex measure and a positive measure. -/
-def rnDeriv (c : ComplexMeasure α) (μ : Measure α) : α → ℂ := fun x =>
+noncomputable def rnDeriv (c : ComplexMeasure α) (μ : Measure α) : α → ℂ := fun x =>
   ⟨c.re.rnDeriv μ x, c.im.rnDeriv μ x⟩
 
 variable {c : ComplexMeasure α}

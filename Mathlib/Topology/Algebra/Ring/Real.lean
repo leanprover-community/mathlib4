@@ -29,8 +29,6 @@ public section
 
 assert_not_exists StarRing UniformContinuousConstSMul UniformOnFun
 
-noncomputable section
-
 universe u v w
 
 variable {α : Type u} {β : Type v} {γ : Type w}

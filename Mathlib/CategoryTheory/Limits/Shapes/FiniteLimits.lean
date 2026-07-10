@@ -23,8 +23,6 @@ public section
 
 universe w' w v' u' v u
 
-noncomputable section
-
 open CategoryTheory
 
 namespace CategoryTheory.Limits
@@ -136,7 +134,7 @@ instance fintypeWalkingParallelPair : Fintype WalkingParallelPair where
 
 attribute [local aesop safe cases] WalkingParallelPair WalkingParallelPairHom
 
-instance instFintypeWalkingParallelPairHom (j j' : WalkingParallelPair) :
+noncomputable instance instFintypeWalkingParallelPairHom (j j' : WalkingParallelPair) :
     Fintype (WalkingParallelPairHom j j') where
   elems :=
     WalkingParallelPair.recOn j
@@ -146,7 +144,7 @@ instance instFintypeWalkingParallelPairHom (j j' : WalkingParallelPair) :
   complete := by aesop
 end
 
-instance : FinCategory WalkingParallelPair where
+noncomputable instance : FinCategory WalkingParallelPair where
   fintypeObj := fintypeWalkingParallelPair
   fintypeHom := instFintypeWalkingParallelPairHom
 
@@ -168,7 +166,7 @@ namespace WidePullbackShape
 instance fintypeObj [Fintype J] : Fintype (WidePullbackShape J) :=
   inferInstanceAs <| Fintype (Option _)
 
-instance fintypeHom (j j' : WidePullbackShape J) : Fintype (j ⟶ j') where
+noncomputable instance fintypeHom (j j' : WidePullbackShape J) : Fintype (j ⟶ j') where
   elems := by
     obtain - | j' := j'
     · obtain - | j := j
@@ -190,7 +188,7 @@ namespace WidePushoutShape
 instance fintypeObj [Fintype J] : Fintype (WidePushoutShape J) :=
   inferInstanceAs <| Fintype (Option _)
 
-instance fintypeHom (j j' : WidePushoutShape J) : Fintype (j ⟶ j') where
+noncomputable instance fintypeHom (j j' : WidePushoutShape J) : Fintype (j ⟶ j') where
   elems := by
     obtain - | j := j
     · obtain - | j' := j'
@@ -207,10 +205,10 @@ instance fintypeHom (j j' : WidePushoutShape J) : Fintype (j ⟶ j') where
 
 end WidePushoutShape
 
-instance finCategoryWidePullback [Fintype J] : FinCategory (WidePullbackShape J) where
+noncomputable instance finCategoryWidePullback [Fintype J] : FinCategory (WidePullbackShape J) where
   fintypeHom := WidePullbackShape.fintypeHom
 
-instance finCategoryWidePushout [Fintype J] : FinCategory (WidePushoutShape J) where
+noncomputable instance finCategoryWidePushout [Fintype J] : FinCategory (WidePushoutShape J) where
   fintypeHom := WidePushoutShape.fintypeHom
 
 -- We can't just made this an `abbrev`

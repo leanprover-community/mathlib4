@@ -27,8 +27,6 @@ Most proofs are adapted from the corresponding proofs on `ℝ≥0∞`.
 
 @[expose] public section
 
-noncomputable section
-
 open Set Filter Metric TopologicalSpace Topology
 open scoped ENNReal
 

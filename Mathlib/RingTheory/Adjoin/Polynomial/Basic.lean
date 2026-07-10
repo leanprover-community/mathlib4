@@ -21,8 +21,6 @@ public import Mathlib.Algebra.Polynomial.AlgebraMap
 
 public section
 
-noncomputable section
-
 open Finset
 
 open Polynomial
@@ -57,6 +55,7 @@ theorem adjoin_singleton_eq_range_aeval (x : A) :
 theorem _root_.Polynomial.aeval_mem_adjoin_singleton : aeval x p ∈ adjoin R {x} := by
   simp [adjoin_singleton_eq_range_aeval]
 
+noncomputable
 instance {A B : Type*} [CommSemiring A] [Semiring B] [Algebra A B] (x : B) (p : Polynomial A) :
     CoeDep B (p.aeval x) (Algebra.adjoin A {x}) where
   coe := ⟨p.aeval x, aeval_mem_adjoin_singleton A x⟩

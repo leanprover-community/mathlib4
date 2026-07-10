@@ -25,8 +25,6 @@ is a monadic right adjoint.
 @[expose] public section
 
 
-noncomputable section
-
 universe v u
 
 namespace CategoryTheory
@@ -45,7 +43,7 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- `X ⨯ -` has a comonad structure. This is sometimes called the writer comonad. -/
 @[simps!]
-def prodComonad : Comonad C where
+noncomputable def prodComonad : Comonad C where
   toFunctor := prod.functor.obj X
   ε := { app := fun _ => Limits.prod.snd }
   δ := { app := fun _ => prod.lift Limits.prod.fst (𝟙 _) }
@@ -55,7 +53,7 @@ set_option backward.defeqAttrib.useBackward true in
 category.
 -/
 @[simps]
-def coalgebraToOver : Coalgebra (prodComonad X) ⥤ Over X where
+noncomputable def coalgebraToOver : Coalgebra (prodComonad X) ⥤ Over X where
   obj A := Over.mk (A.a ≫ Limits.prod.fst)
   map f := Over.homMk f.f (by simp [← dsimp% f.h_assoc])
 
@@ -65,7 +63,7 @@ set_option backward.isDefEq.respectTransparency false in
 category.
 -/
 @[simps]
-def overToCoalgebra : Over X ⥤ Coalgebra (prodComonad X) where
+noncomputable def overToCoalgebra : Over X ⥤ Coalgebra (prodComonad X) where
   obj f :=
     { A := f.left
       a := prod.lift f.hom (𝟙 _) }
@@ -75,7 +73,7 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The equivalence from coalgebras for the product comonad to the over category. -/
 @[simps]
-def coalgebraEquivOver : Coalgebra (prodComonad X) ≌ Over X where
+noncomputable def coalgebraEquivOver : Coalgebra (prodComonad X) ≌ Over X where
   functor := coalgebraToOver X
   inverse := overToCoalgebra X
   unitIso := NatIso.ofComponents fun A =>
@@ -93,7 +91,7 @@ variable [HasBinaryCoproducts C]
 set_option backward.isDefEq.respectTransparency false in
 /-- `X ⨿ -` has a monad structure. This is sometimes called the either monad. -/
 @[simps!]
-def coprodMonad : Monad C where
+noncomputable def coprodMonad : Monad C where
   toFunctor := coprod.functor.obj X
   η := { app := fun _ => coprod.inr }
   μ := { app := fun _ => coprod.desc coprod.inl (𝟙 _) }
@@ -103,7 +101,7 @@ set_option backward.defeqAttrib.useBackward true in
 category.
 -/
 @[simps]
-def algebraToUnder : Monad.Algebra (coprodMonad X) ⥤ Under X where
+noncomputable def algebraToUnder : Monad.Algebra (coprodMonad X) ⥤ Under X where
   obj A := Under.mk (coprod.inl ≫ A.a)
   map f := Under.homMk f.f (by simp [← dsimp% f.h])
 
@@ -112,7 +110,7 @@ set_option backward.isDefEq.respectTransparency false in
 category.
 -/
 @[simps]
-def underToAlgebra : Under X ⥤ Monad.Algebra (coprodMonad X) where
+noncomputable def underToAlgebra : Under X ⥤ Monad.Algebra (coprodMonad X) where
   obj f :=
     { A := f.right
       a := coprod.desc f.hom (𝟙 _) }
@@ -123,7 +121,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- The equivalence from algebras for the coproduct monad to the under category.
 -/
 @[simps]
-def algebraEquivUnder : Monad.Algebra (coprodMonad X) ≌ Under X where
+noncomputable def algebraEquivUnder : Monad.Algebra (coprodMonad X) ≌ Under X where
   functor := algebraToUnder X
   inverse := underToAlgebra X
   unitIso := NatIso.ofComponents fun A =>

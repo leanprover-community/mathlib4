@@ -40,8 +40,6 @@ SeminormFromConst, Seminorm, Nonarchimedean
 
 @[expose] public section
 
-noncomputable section
-
 open Filter
 
 open scoped Topology
@@ -51,7 +49,7 @@ section Ring
 variable {R : Type*} [CommRing R] (c : R) (f : RingSeminorm R)
 
 /-- For a ring seminorm `f` on `R` and `c ∈ R`, the sequence given by `(f (x * c^n))/((f c)^n)`. -/
-def seminormFromConst_seq (x : R) : ℕ → ℝ := fun n ↦ f (x * c ^ n) / f c ^ n
+noncomputable def seminormFromConst_seq (x : R) : ℕ → ℝ := fun n ↦ f (x * c ^ n) / f c ^ n
 
 lemma seminormFromConst_seq_def (x : R) :
     seminormFromConst_seq c f x = fun n ↦ f (x * c ^ n) / f c ^ n := rfl
@@ -108,7 +106,7 @@ theorem seminormFromConst_seq_antitone (x : R) : Antitone (seminormFromConst_seq
       ← mul_assoc (f c ^ n), mul_inv_cancel₀ (pow_ne_zero n hc), one_mul, div_eq_mul_inv]
 
 /-- The real-valued function sending `x ∈ R` to the limit of `(f (x * c^n))/((f c)^n)`. -/
-def seminormFromConst' (c : R) (f : RingSeminorm R) (x : R) : ℝ :=
+noncomputable def seminormFromConst' (c : R) (f : RingSeminorm R) (x : R) : ℝ :=
   iInf (seminormFromConst_seq c f x)
 
 /-- We prove that `seminormFromConst' c f x` is the limit of the sequence
@@ -129,7 +127,7 @@ theorem seminormFromConst_one : seminormFromConst' c f 1 = 1 := by
 
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The function `seminormFromConst` is a `RingSeminorm` on `R`. -/
-def seminormFromConst : RingSeminorm R where
+noncomputable def seminormFromConst : RingSeminorm R where
   toFun     := seminormFromConst' c f
   map_zero' := tendsto_nhds_unique (tendsto_seminormFromConst_seq_atTop hf1 hc hpm 0)
     (by simpa [seminormFromConst_seq_zero c (map_zero _)] using! tendsto_const_nhds)
@@ -268,7 +266,7 @@ section Field
 variable {K : Type*} [Field K]
 
 /-- If `K` is a field, the function `seminormFromConst` is a `RingNorm` on `K`. -/
-def normFromConst {k : K} {g : RingSeminorm K} (hg1 : g 1 ≤ 1) (hg_k : g k ≠ 0)
+noncomputable def normFromConst {k : K} {g : RingSeminorm K} (hg1 : g 1 ≤ 1) (hg_k : g k ≠ 0)
     (hg_pm : IsPowMul g) : RingNorm K :=
   (seminormFromConst hg1 hg_k hg_pm).toRingNorm (RingSeminorm.ne_zero_iff.mpr
     ⟨k, by rwa [seminormFromConst_def hg1 hg_k, seminormFromConst_apply_c hg1 hg_k hg_pm]⟩)

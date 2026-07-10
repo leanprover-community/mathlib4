@@ -45,8 +45,6 @@ reals, conditionally complete, ordered field, uniqueness
 
 variable {F α β γ : Type*}
 
-noncomputable section
-
 open Function Rat Set
 
 open scoped Pointwise

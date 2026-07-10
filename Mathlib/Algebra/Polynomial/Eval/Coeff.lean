@@ -16,8 +16,6 @@ This file contains results on the interaction of `Polynomial.eval` and `Polynomi
 
 @[expose] public section
 
-noncomputable section
-
 open Finset AddMonoidAlgebra
 
 open Polynomial
@@ -91,7 +89,7 @@ theorem map_id : p.map (RingHom.id _) = p := by simp [Polynomial.ext_iff, coeff_
 
 /-- The polynomial ring over a finite product of rings is isomorphic to
 the product of polynomial rings over individual rings. -/
-def piEquiv {ι} [Finite ι] (R : ι → Type*) [∀ i, Semiring (R i)] :
+noncomputable def piEquiv {ι} [Finite ι] (R : ι → Type*) [∀ i, Semiring (R i)] :
     (∀ i, R i)[X] ≃+* ∀ i, (R i)[X] :=
   .ofBijective (RingHom.pi fun i ↦ mapRingHom (Pi.evalRingHom R i))
     ⟨fun p q h ↦ by ext n i; simpa using congr_arg (fun p ↦ coeff (p i) n) h,

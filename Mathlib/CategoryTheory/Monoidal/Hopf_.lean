@@ -20,8 +20,6 @@ public import Mathlib.CategoryTheory.Monoidal.Conv
 
 @[expose] public section
 
-noncomputable section
-
 universe v₁ v₂ u₁ u₂ u
 
 open CategoryTheory MonoidalCategory

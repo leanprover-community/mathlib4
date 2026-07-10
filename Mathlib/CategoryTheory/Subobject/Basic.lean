@@ -77,8 +77,6 @@ In fact, in an abelian category (I'm not sure in what generality beyond that),
 
 universe w' w v₁ v₂ v₃ u₁ u₂ u₃
 
-noncomputable section
-
 namespace CategoryTheory
 
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits
@@ -180,7 +178,7 @@ Prefer to use the coercion `P : C` rather than explicitly writing `underlying.ob
 noncomputable def underlying {X : C} : Subobject X ⥤ C :=
   representative ⋙ MonoOver.forget _ ⋙ Over.forget _
 
-instance : CoeOut (Subobject X) C where coe Y := underlying.obj Y
+noncomputable instance : CoeOut (Subobject X) C where coe Y := underlying.obj Y
 
 /-- If we construct a `Subobject Y` from an explicit `f : X ⟶ Y` with `[Mono f]`,
 then pick an arbitrary choice of underlying object `(Subobject.mk f : C)` back in `C`,
@@ -288,7 +286,7 @@ lemma mk_surjective {X : C} (S : Subobject X) :
 -- it is possible to see its source and target
 -- (`h` will just display as `_`, because it is in `Prop`).
 /-- An inequality of subobjects is witnessed by some morphism between the corresponding objects. -/
-def ofLE {B : C} (X Y : Subobject B) (h : X ≤ Y) : (X : C) ⟶ (Y : C) :=
+noncomputable def ofLE {B : C} (X Y : Subobject B) (h : X ≤ Y) : (X : C) ⟶ (Y : C) :=
   underlying.map <| h.hom
 
 @[reassoc (attr := simp)]
@@ -309,6 +307,7 @@ theorem ofLE_mk_le_mk_of_comm {B A₁ A₂ : C} {f₁ : A₁ ⟶ B} {f₂ : A₂
   simp [w]
 
 /-- An inequality of subobjects is witnessed by some morphism between the corresponding objects. -/
+noncomputable
 def ofLEMk {B A : C} (X : Subobject B) (f : A ⟶ B) [Mono f] (h : X ≤ mk f) : (X : C) ⟶ A :=
   ofLE X (mk f) h ≫ (underlyingIso f).hom
 
@@ -322,6 +321,7 @@ theorem ofLEMk_comp {B A : C} {X : Subobject B} {f : A ⟶ B} [Mono f] (h : X �
     ofLEMk X f h ≫ f = X.arrow := by simp [ofLEMk]
 
 /-- An inequality of subobjects is witnessed by some morphism between the corresponding objects. -/
+noncomputable
 def ofMkLE {B A : C} (f : A ⟶ B) [Mono f] (X : Subobject B) (h : mk f ≤ X) : A ⟶ (X : C) :=
   (underlyingIso f).inv ≫ ofLE (mk f) X h
 
@@ -335,6 +335,7 @@ theorem ofMkLE_arrow {B A : C} {f : A ⟶ B} [Mono f] {X : Subobject B} (h : mk 
     ofMkLE f X h ≫ X.arrow = f := by simp [ofMkLE]
 
 /-- An inequality of subobjects is witnessed by some morphism between the corresponding objects. -/
+noncomputable
 def ofMkLEMk {B A₁ A₂ : C} (f : A₁ ⟶ B) (g : A₂ ⟶ B) [Mono f] [Mono g] (h : mk f ≤ mk g) :
     A₁ ⟶ A₂ :=
   (underlyingIso f).inv ≫ ofLE (mk f) (mk g) h ≫ (underlyingIso g).hom
@@ -418,24 +419,27 @@ theorem ofMkLEMk_refl {B A₁ : C} (f : A₁ ⟶ B) [Mono f] : ofMkLEMk f f le_r
 /-- An equality of subobjects gives an isomorphism of the corresponding objects.
 (One could use `underlying.mapIso (eqToIso h))` here, but this is more readable.) -/
 @[simps]
-def isoOfEq {B : C} (X Y : Subobject B) (h : X = Y) : (X : C) ≅ (Y : C) where
+noncomputable def isoOfEq {B : C} (X Y : Subobject B) (h : X = Y) : (X : C) ≅ (Y : C) where
   hom := ofLE _ _ h.le
   inv := ofLE _ _ h.ge
 
 /-- An equality of subobjects gives an isomorphism of the corresponding objects. -/
 @[simps]
+noncomputable
 def isoOfEqMk {B A : C} (X : Subobject B) (f : A ⟶ B) [Mono f] (h : X = mk f) : (X : C) ≅ A where
   hom := ofLEMk X f h.le
   inv := ofMkLE f X h.ge
 
 /-- An equality of subobjects gives an isomorphism of the corresponding objects. -/
 @[simps]
+noncomputable
 def isoOfMkEq {B A : C} (f : A ⟶ B) [Mono f] (X : Subobject B) (h : mk f = X) : A ≅ (X : C) where
   hom := ofMkLE f X h.le
   inv := ofLEMk X f h.ge
 
 /-- An equality of subobjects gives an isomorphism of the corresponding objects. -/
 @[simps]
+noncomputable
 def isoOfMkEqMk {B A₁ A₂ : C} (f : A₁ ⟶ B) (g : A₂ ⟶ B) [Mono f] [Mono g] (h : mk f = mk g) :
     A₁ ≅ A₂ where
   hom := ofMkLEMk f g h.le
@@ -511,7 +515,7 @@ theorem lower_comm (F : MonoOver Y ⥤ MonoOver X) :
 Applying `lower F` and then `representative` is isomorphic to first applying `representative`
 and then applying `F`.
 -/
-def lowerCompRepresentativeIso (F : MonoOver Y ⥤ MonoOver X) :
+noncomputable def lowerCompRepresentativeIso (F : MonoOver Y ⥤ MonoOver X) :
     lower F ⋙ representative ≅ representative ⋙ F :=
   ThinSkeleton.mapCompFromThinSkeletonIso _
 
@@ -570,7 +574,7 @@ variable [HasPullbacks C]
 
 /-- When `C` has pullbacks, a morphism `f : X ⟶ Y` induces a functor `Subobject Y ⥤ Subobject X`,
 by pulling back a monomorphism along `f`. -/
-def pullback (f : X ⟶ Y) : Subobject Y ⥤ Subobject X :=
+noncomputable def pullback (f : X ⟶ Y) : Subobject Y ⥤ Subobject X :=
   lower (MonoOver.pullback f)
 
 theorem pullback_id (x : Subobject X) : (pullback (𝟙 X)).obj x = x := by
@@ -663,7 +667,7 @@ lemma map_obj_injective {X Y : C} (f : X ⟶ Y) [Mono f] :
   exact mk_eq_mk_of_comm _ _ (isoOfMkEqMk _ _ h) (by simp [← cancel_mono f])
 
 /-- Isomorphic objects have equivalent subobject lattices. -/
-def mapIso {A B : C} (e : A ≅ B) : Subobject A ≌ Subobject B :=
+noncomputable def mapIso {A B : C} (e : A ≅ B) : Subobject A ≌ Subobject B :=
   lowerEquivalence (MonoOver.mapIso e)
 
 /-- In fact, there's a type level bijection between the subobjects of isomorphic objects,
@@ -688,7 +692,7 @@ def mapIsoToOrderIso (e : X ≅ Y) : Subobject X ≃o Subobject Y where
 
 /-- `map f : Subobject X ⥤ Subobject Y` is
 the left adjoint of `pullback f : Subobject Y ⥤ Subobject X`. -/
-def mapPullbackAdj [HasPullbacks C] (f : X ⟶ Y) [Mono f] : map f ⊣ pullback f :=
+noncomputable def mapPullbackAdj [HasPullbacks C] (f : X ⟶ Y) [Mono f] : map f ⊣ pullback f :=
   lowerAdjunction (MonoOver.mapPullbackAdj f)
 
 @[simp]
@@ -731,7 +735,7 @@ viewing `Subobject X` as `Set X` this is just `Set.image f`.
 This functor is left adjoint to the `pullback f` functor (shown in `existsPullbackAdj`)
 provided both are defined, and generalises the `map f` functor, again provided it is defined.
 -/
-def «exists» (f : X ⟶ Y) : Subobject X ⥤ Subobject Y :=
+noncomputable def «exists» (f : X ⟶ Y) : Subobject X ⥤ Subobject Y :=
   lower (MonoOver.exists f)
 
 /-- When `f : X ⟶ Y` is a monomorphism, `exists f` agrees with `map f`.
@@ -742,25 +746,25 @@ theorem exists_iso_map (f : X ⟶ Y) [Mono f] : «exists» f = map f :=
 /-- `exists f : Subobject X ⥤ Subobject Y` is
 left adjoint to `pullback f : Subobject Y ⥤ Subobject X`.
 -/
-def existsPullbackAdj (f : X ⟶ Y) [HasPullbacks C] : «exists» f ⊣ pullback f :=
+noncomputable def existsPullbackAdj (f : X ⟶ Y) [HasPullbacks C] : «exists» f ⊣ pullback f :=
   lowerAdjunction (MonoOver.existsPullbackAdj f)
 
 /--
 Taking representatives and then `MonoOver.exists` is isomorphic to taking `Subobject.exists`
 and then taking representatives.
 -/
-def existsCompRepresentativeIso (f : X ⟶ Y) :
+noncomputable def existsCompRepresentativeIso (f : X ⟶ Y) :
     «exists» f ⋙ representative ≅ representative ⋙ MonoOver.exists f :=
   lowerCompRepresentativeIso _
 
 /-- `exists f` applied to a subobject `x` is isomorphic to the image of `x.arrow ≫ f`. -/
-def existsIsoImage (f : X ⟶ Y) (x : Subobject X) :
+noncomputable def existsIsoImage (f : X ⟶ Y) (x : Subobject X) :
     ((«exists» f).obj x : C) ≅ Limits.image (x.arrow ≫ f) :=
   (MonoOver.forget Y ⋙ Over.forget Y).mapIso <| (existsCompRepresentativeIso f).app x
 
 /-- Given a subobject `x`, the `ImageFactorisation` of `x.arrow ≫ f` through `(exists f).obj x`. -/
 @[simps! F_I F_m]
-def imageFactorisation (f : X ⟶ Y) (x : Subobject X) :
+noncomputable def imageFactorisation (f : X ⟶ Y) (x : Subobject X) :
     ImageFactorisation (x.arrow ≫ f) :=
   let :=
     ImageFactorisation.ofIsoI

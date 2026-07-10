@@ -16,8 +16,6 @@ In this file, we define `ContractibleSpace`, a space that is homotopy equivalent
 
 @[expose] public section
 
-noncomputable section
-
 namespace ContinuousMap
 
 variable {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]

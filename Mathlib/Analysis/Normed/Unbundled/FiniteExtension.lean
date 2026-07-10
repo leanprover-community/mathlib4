@@ -42,8 +42,6 @@ Basis.norm, nonarchimedean
 
 @[expose] public section
 
-noncomputable section
-
 open Finset Module
 
 section Ring
@@ -56,7 +54,7 @@ variable {ι : Type*} [Fintype ι] [Nonempty ι] (B : Basis ι K L)
 
 /-- The function sending an element `x : L` to the maximum of the norms of its coefficients
 with respect to the `K`-basis `B` of `L`. -/
-def norm (x : L) : ℝ :=
+noncomputable def norm (x : L) : ℝ :=
   Finset.sup' univ univ_nonempty (fun i : ι ↦ ‖B.repr x i‖)
 
 /-- The norm of a coefficient `x_i` is less than or equal to the norm of `x`. -/

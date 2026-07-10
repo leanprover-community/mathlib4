@@ -35,8 +35,6 @@ public import Mathlib.Topology.GDelta.MetrizableSpace
 @[expose] public section
 
 
-noncomputable section
-
 open Filter MeasureTheory Set Topology
 open scoped NNReal ENNReal MeasureTheory
 
@@ -726,7 +724,7 @@ instance ENNReal.measurableSpace : MeasurableSpace ℝ≥0∞ :=
 instance ENNReal.borelSpace : BorelSpace ℝ≥0∞ :=
   ⟨rfl⟩
 
-instance EReal.measurableSpace : MeasurableSpace EReal :=
+noncomputable instance EReal.measurableSpace : MeasurableSpace EReal :=
   borel EReal
 
 instance EReal.borelSpace : BorelSpace EReal :=

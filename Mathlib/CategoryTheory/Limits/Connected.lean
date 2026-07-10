@@ -31,8 +31,6 @@ preserved by the functor `(X × -)`.
 @[expose] public section
 
 
-noncomputable section
-
 universe v₁ v₂ u₁ u₂
 
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits
@@ -66,7 +64,7 @@ variable [IsConnected J]
 set_option backward.defeqAttrib.useBackward true in
 /-- When `J` is a connected category, the limit of a
 constant functor `J ⥤ C` with value `X : C` identifies to `X`. -/
-def isLimitConstCone : IsLimit (constCone J X) where
+noncomputable def isLimitConstCone : IsLimit (constCone J X) where
   lift s := s.π.app (Classical.arbitrary _)
   fac s j := by
     dsimp
@@ -78,7 +76,7 @@ def isLimitConstCone : IsLimit (constCone J X) where
 set_option backward.defeqAttrib.useBackward true in
 /-- When `J` is a connected category, the colimit of a
 constant functor `J ⥤ C` with value `X : C` identifies to `X`. -/
-def isColimitConstCocone : IsColimit (constCocone J X) where
+noncomputable def isColimitConstCocone : IsColimit (constCocone J X) where
   desc s := s.ι.app (Classical.arbitrary _)
   fac s j := by
     dsimp
@@ -103,7 +101,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- If `J` is connected, `F : J ⥤ C` and `c` is a cone on `F`, then to check that `c` is a
 limit it is sufficient to check that `limMap c.π` is an isomorphism. The converse is also
 true, see `Cone.isLimit_iff_isIso_limMap_π`. -/
-def Cone.isLimitOfIsIsoLimMapπ {F : J ⥤ C} [HasLimit F] (c : Cone F)
+noncomputable def Cone.isLimitOfIsIsoLimMapπ {F : J ⥤ C} [HasLimit F] (c : Cone F)
     [IsIso (limMap c.π)] : IsLimit c := by
   refine IsLimit.ofIsoLimit (limit.isLimit _) (Cone.ext ((asIso (limMap c.π)).symm ≪≫
     (limit.isLimit _).conePointUniqueUpToIso (isLimitConstCone J c.pt)) ?_)
@@ -133,7 +131,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- If `J` is connected, `F : J ⥤ C` and `C` is a cocone on `F`, then to check that `c` is a
 colimit it is sufficient to check that `colimMap c.ι` is an isomorphism. The converse is also
 true, see `Cocone.isColimit_iff_isIso_colimMap_ι`. -/
-def Cocone.isColimitOfIsIsoColimMapι {F : J ⥤ C} [HasColimit F] (c : Cocone F)
+noncomputable def Cocone.isColimitOfIsIsoColimMapι {F : J ⥤ C} [HasColimit F] (c : Cocone F)
     [IsIso (colimMap c.ι)] : IsColimit c :=
   IsColimit.ofIsoColimit (colimit.isColimit _) (Cocone.ext (asIso (colimMap c.ι) ≪≫
     (colimit.isColimit _).coconePointUniqueUpToIso (isColimitConstCocone J c.pt)) (by simp))
@@ -197,18 +195,18 @@ namespace ProdPreservesConnectedLimits
 set_option backward.defeqAttrib.useBackward true in
 /-- (Impl). The obvious natural transformation from (X × K -) to K. -/
 @[simps]
-def γ₂ {K : J ⥤ C} (X : C) : K ⋙ prod.functor.obj X ⟶ K where app _ := Limits.prod.snd
+noncomputable def γ₂ {K : J ⥤ C} (X : C) : K ⋙ prod.functor.obj X ⟶ K where app _ := Limits.prod.snd
 
 set_option backward.defeqAttrib.useBackward true in
 /-- (Impl). The obvious natural transformation from (X × K -) to X -/
 @[simps]
-def γ₁ {K : J ⥤ C} (X : C) : K ⋙ prod.functor.obj X ⟶ (Functor.const J).obj X where
+noncomputable def γ₁ {K : J ⥤ C} (X : C) : K ⋙ prod.functor.obj X ⟶ (Functor.const J).obj X where
   app _ := Limits.prod.fst
 
 /-- (Impl).
 Given a cone for (X × K -), produce a cone for K using the natural transformation `γ₂` -/
 @[simps]
-def forgetCone {X : C} {K : J ⥤ C} (s : Cone (K ⋙ prod.functor.obj X)) : Cone K where
+noncomputable def forgetCone {X : C} {K : J ⥤ C} (s : Cone (K ⋙ prod.functor.obj X)) : Cone K where
   pt := s.pt
   π := s.π ≫ γ₂ X
 

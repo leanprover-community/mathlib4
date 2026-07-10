@@ -40,8 +40,6 @@ The following notation is scoped to the `Ordinal` namespace.
 
 @[expose] public section
 
-noncomputable section
-
 open Order Set
 
 universe u
@@ -62,6 +60,7 @@ defined so that
   `o' < o`.
 -/
 @[pp_nodot]
+noncomputable
 def veblenWith (f : Ordinal.{u} → Ordinal.{u}) (o : Ordinal.{u}) : Ordinal.{u} → Ordinal.{u} :=
   if o = 0 then f else derivFamily fun (⟨x, _⟩ : Iio o) ↦ veblenWith f x
 termination_by o
@@ -285,7 +284,7 @@ section veblen
 - `veblen o` for `o ≠ 0` enumerates the fixed points of `veblen o'` for `o' < o`.
 -/
 @[pp_nodot]
-def veblen : Ordinal.{u} → Ordinal.{u} → Ordinal.{u} :=
+noncomputable def veblen : Ordinal.{u} → Ordinal.{u} → Ordinal.{u} :=
   veblenWith (ω ^ ·)
 
 @[simp]
@@ -432,7 +431,7 @@ end veblen
 respectively. See `veblen_eq_opow_iff` for a proof.
 
 Composing this function with `Ordinal.CNF` yields a predicative ordinal notation up to `Γ₀`. -/
-def invVeblen₁ (x : Ordinal) : Ordinal :=
+noncomputable def invVeblen₁ (x : Ordinal) : Ordinal :=
   sInf {y | veblen y x ≠ x}
 
 theorem veblen_eq_of_lt_invVeblen₁ (h : o < invVeblen₁ x) : veblen o x = x := by
@@ -481,7 +480,7 @@ theorem invVeblen₁_zero : invVeblen₁ 0 = 0 :=
   invVeblen₁_of_lt_opow <| by simp
 
 @[inherit_doc invVeblen₁]
-def invVeblen₂ (x : Ordinal) : Ordinal :=
+noncomputable def invVeblen₂ (x : Ordinal) : Ordinal :=
   Classical.choose ((mem_range_veblen_iff_le_invVeblen₁ (x := x)).2 le_rfl)
 
 @[simp]
@@ -542,7 +541,7 @@ theorem veblen_eq_opow_iff (h : a < veblen o a) :
 
 /-- The epsilon function enumerates the fixed points of `ω ^ ⬝`.
 This is an abbreviation for `veblen 1`. -/
-abbrev epsilon := veblen 1
+noncomputable abbrev epsilon := veblen 1
 
 @[inherit_doc] scoped notation "ε_ " => epsilon
 recommended_spelling "epsilon" for "ε_ " in [epsilon, «termε_»]
@@ -611,7 +610,7 @@ theorem invVeblen₂_epsilon (h : o < ε_ o) : invVeblen₂ (ε_ o) = o :=
 /-- The gamma function enumerates the fixed points of `veblen · 0`.
 
 Of particular importance is `Γ₀ = gamma 0`, the Feferman-Schütte ordinal. -/
-def gamma : Ordinal → Ordinal :=
+noncomputable def gamma : Ordinal → Ordinal :=
   deriv (veblen · 0)
 
 @[inherit_doc] scoped notation "Γ_ " => gamma

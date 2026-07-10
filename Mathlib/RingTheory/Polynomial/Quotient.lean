@@ -72,7 +72,7 @@ end Polynomial
 
 namespace Ideal
 
-noncomputable section
+section
 
 open Polynomial
 
@@ -102,7 +102,7 @@ theorem eval₂_C_mk_eq_zero {I : Ideal R} :
 /-- If `I` is an ideal of `R`, then the ring polynomials over the quotient ring `I.quotient` is
 isomorphic to the quotient of `R[X]` by the ideal `map C I`,
 where `map C I` contains exactly the polynomials whose coefficients all lie in `I`. -/
-def polynomialQuotientEquivQuotientPolynomial (I : Ideal R) :
+noncomputable def polynomialQuotientEquivQuotientPolynomial (I : Ideal R) :
     (R ⧸ I)[X] ≃+* R[X] ⧸ (map C I : Ideal R[X]) where
   toFun :=
     eval₂RingHom

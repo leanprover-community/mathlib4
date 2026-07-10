@@ -56,7 +56,7 @@ variable {p : ℕ} {R : Type*} [hp : Fact p.Prime] [CommRing R]
 
 local notation "𝕎" => WittVector p -- type as `\bbW`
 
-noncomputable section
+section
 
 open MvPolynomial Finset
 
@@ -66,7 +66,7 @@ variable (p)
 in terms of the coefficients of `x`.
 These polynomials actually have integral coefficients,
 see `frobeniusPoly` and `map_frobeniusPoly`. -/
-def frobeniusPolyRat (n : ℕ) : MvPolynomial ℕ ℚ :=
+noncomputable def frobeniusPolyRat (n : ℕ) : MvPolynomial ℕ ℚ :=
   bind₁ (wittPolynomial p ℚ ∘ fun n => n + 1) (xInTermsOfW p ℚ n)
 
 theorem bind₁_frobeniusPolyRat_wittPolynomial (n : ℕ) :
@@ -100,7 +100,7 @@ theorem frobeniusPolyAux_eq (n : ℕ) :
 
 /-- The polynomials that give the coefficients of `frobenius x`,
 in terms of the coefficients of `x`. -/
-def frobeniusPoly (n : ℕ) : MvPolynomial ℕ ℤ :=
+noncomputable def frobeniusPoly (n : ℕ) : MvPolynomial ℕ ℤ :=
   X n ^ p + C (p : ℤ) * frobeniusPolyAux p n
 
 /-
@@ -190,7 +190,7 @@ variable {p}
 
 /-- `frobeniusFun` is the function underlying the ring endomorphism
 `frobenius : 𝕎 R →+* frobenius 𝕎 R`. -/
-def frobeniusFun (x : 𝕎 R) : 𝕎 R :=
+noncomputable def frobeniusFun (x : 𝕎 R) : 𝕎 R :=
   mk p fun n => MvPolynomial.aeval x.coeff (frobeniusPoly p n)
 
 omit hp in
@@ -218,7 +218,7 @@ we obtain a ring endomorphism `frobenius R p : 𝕎 R →+* 𝕎 R`.
 
 The underlying function of this morphism is `WittVector.frobeniusFun`.
 -/
-def frobenius : 𝕎 R →+* 𝕎 R where
+noncomputable def frobenius : 𝕎 R →+* 𝕎 R where
   toFun := frobeniusFun
   map_zero' := by
     refine IsPoly.ext (IsPoly.comp (hg := frobeniusFun_isPoly p) (hf := WittVector.zeroIsPoly))
@@ -283,7 +283,7 @@ variable (R)
 
 /-- `WittVector.frobenius` as an equiv. -/
 @[simps -fullyApplied]
-def frobeniusEquiv [PerfectRing R p] : WittVector p R ≃+* WittVector p R :=
+noncomputable def frobeniusEquiv [PerfectRing R p] : WittVector p R ≃+* WittVector p R :=
   { (WittVector.frobenius : WittVector p R →+* WittVector p R) with
     toFun := WittVector.frobenius
     invFun := map (_root_.frobeniusEquiv R p).symm

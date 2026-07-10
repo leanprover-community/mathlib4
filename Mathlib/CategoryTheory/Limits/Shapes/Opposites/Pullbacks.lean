@@ -19,7 +19,7 @@ We construct pullbacks and pushouts in the opposite categories.
 
 universe v₁ v₂ u₁ u₂
 
-noncomputable section
+section
 
 open CategoryTheory
 
@@ -225,12 +225,14 @@ namespace PullbackCone
 
 /-- A pullback cone is a limit cone if and only if the corresponding pushout cocone
 in the opposite category is a colimit cocone. -/
+noncomputable
 def isLimitEquivIsColimitOp {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} (c : PullbackCone f g) :
     IsLimit c ≃ IsColimit c.op :=
   (IsLimit.equivIsoLimit c.opUnopIso).symm.trans c.op.isColimitEquivIsLimitUnop.symm
 
 /-- A pullback cone is a limit cone in `Cᵒᵖ` if and only if the corresponding pushout cocone
 in `C` is a colimit cocone. -/
+noncomputable
 def isLimitEquivIsColimitUnop {X Y Z : Cᵒᵖ} {f : X ⟶ Z} {g : Y ⟶ Z} (c : PullbackCone f g) :
     IsLimit c ≃ IsColimit c.unop :=
   (IsLimit.equivIsoLimit c.unopOpIso).symm.trans c.unop.isColimitEquivIsLimitOp.symm

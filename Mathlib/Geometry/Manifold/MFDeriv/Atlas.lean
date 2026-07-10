@@ -31,8 +31,6 @@ charts, differentiable, bijective
 
 @[expose] public section
 
-noncomputable section
-
 open scoped Manifold ContDiff
 open Bundle Set Topology
 
@@ -176,7 +174,7 @@ theorem comp_symm_deriv {x : M'} (hx : x ∈ e.target) :
 
 /-- The derivative of a differentiable open partial homeomorphism, as a continuous linear
 equivalence between the tangent spaces at `x` and `e x`. -/
-protected def mfderiv (he : e.MDifferentiable I I') {x : M} (hx : x ∈ e.source) :
+protected noncomputable def mfderiv (he : e.MDifferentiable I I') {x : M} (hx : x ∈ e.source) :
     TangentSpace I x ≃L[𝕜] TangentSpace I' (e x) :=
   { mfderiv% e x with
     invFun := mfderiv% e.symm (e x)

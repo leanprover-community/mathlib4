@@ -40,8 +40,6 @@ TODO: Generalise the results here from the concrete `Completion` to any `Abstrac
 
 @[expose] public section
 
-noncomputable section
-
 universe u
 namespace UniformSpace.Completion
 
@@ -53,7 +51,7 @@ variable (α : Type*) [Ring α] [UniformSpace α]
 instance one : One (Completion α) :=
   ⟨(1 : α)⟩
 
-instance mul : Mul (Completion α) :=
+noncomputable instance mul : Mul (Completion α) :=
   ⟨curry <| (isDenseInducing_coe.prodMap isDenseInducing_coe).extend ((↑) ∘ uncurry (· * ·))⟩
 
 @[norm_cast]
@@ -81,7 +79,7 @@ instance : ContinuousMul (Completion α) where
     have di : IsDenseInducing (toCompl : α → Completion α) := isDenseInducing_coe
     exact (di.extend_Z_bilin di this :)
 
-instance ring : Ring (Completion α) :=
+noncomputable instance ring : Ring (Completion α) :=
   { AddMonoidWithOne.unary, ((inferInstance : AddCommGroup (Completion α))),
       ((inferInstance : Mul (Completion α))), ((inferInstance : One (Completion α))) with
     zero_mul a :=
@@ -126,7 +124,7 @@ variable {β : Type u} [UniformSpace β] [Ring β] [IsUniformAddGroup β] [IsTop
   (f : α →+* β) (hf : Continuous f)
 
 /-- The completion extension as a ring morphism. -/
-def extensionHom [CompleteSpace β] [T0Space β] : Completion α →+* β :=
+noncomputable def extensionHom [CompleteSpace β] [T0Space β] : Completion α →+* β :=
   have hf' : Continuous (f : α →+ β) := hf
   -- helping the elaborator
   have hf : UniformContinuous f := uniformContinuous_addMonoidHom_of_continuous hf'
@@ -152,7 +150,7 @@ instance topologicalRing : IsTopologicalRing (Completion α) where
   continuous_mul := continuous_mul
 
 /-- The completion map as a ring morphism. -/
-def mapRingHom (hf : Continuous f) : Completion α →+* Completion β :=
+noncomputable def mapRingHom (hf : Continuous f) : Completion α →+* Completion β :=
   extensionHom (coeRingHom.comp f) (continuous_coeRingHom.comp hf)
 
 @[simp] theorem mapRingHom_apply {x : Completion α} : mapRingHom f hf x = .map f x := rfl
@@ -177,7 +175,7 @@ theorem mapRingHom_id : mapRingHom (.id α) continuous_id = .id (Completion α) 
 /-- A ring isomorphism `α ≃+* β` between uniform rings, uniformly continuous in both directions,
 lifts to a ring isomorphism between corresponding uniform space completions. -/
 @[simps!]
-def mapRingEquiv (f : α ≃+* β) (hf : Continuous f) (hf' : Continuous f.symm) :
+noncomputable def mapRingEquiv (f : α ≃+* β) (hf : Continuous f) (hf' : Continuous f.symm) :
     Completion α ≃+* Completion β :=
   .ofRingHom (mapRingHom f.toRingHom hf) (mapRingHom f.symm.toRingHom hf')
     (by simp [mapRingHom_comp]) (by simp [mapRingHom_comp])
@@ -195,7 +193,7 @@ theorem map_smul_eq_mul_coe (r : R) :
   · exact isClosed_eq Completion.continuous_map (continuous_const_mul _)
   · simp_rw [map_coe (uniformContinuous_const_smul r) a, Algebra.smul_def, coe_mul]
 
-instance algebra : Algebra R (Completion A) where
+noncomputable instance algebra : Algebra R (Completion A) where
   algebraMap := (UniformSpace.Completion.coeRingHom : A →+* Completion A).comp (algebraMap R A)
   commutes' := fun r x =>
     Completion.induction_on x (isClosed_eq (continuous_const_mul _) (continuous_mul_const _))
@@ -213,7 +211,7 @@ section CommRing
 
 variable (R : Type*) [CommRing R] [UniformSpace R] [IsUniformAddGroup R] [IsTopologicalRing R]
 
-instance commRing : CommRing (Completion R) :=
+noncomputable instance commRing : CommRing (Completion R) :=
   { Completion.ring with
     mul_comm a b :=
       Completion.induction_on₂ a b
@@ -221,7 +219,7 @@ instance commRing : CommRing (Completion R) :=
         fun a b => by rw [← coe_mul, ← coe_mul, mul_comm] }
 
 /-- A shortcut instance for the common case -/
-instance algebra' : Algebra R (Completion R) := by infer_instance
+noncomputable instance algebra' : Algebra R (Completion R) := by infer_instance
 
 end CommRing
 

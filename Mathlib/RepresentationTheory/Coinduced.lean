@@ -203,7 +203,7 @@ noncomputable def coindFunctor' : Rep k G ⥤ Rep k H where
   map f := coindMap' φ f
 
 end Coind'
-noncomputable section CoindIso
+section CoindIso
 
 /-- If `φ : G →* H` and `A : Rep k G` then the `k`-submodule of functions `f : H → A`
 such that for all `g : G`, `h : H`, `f (φ g * h) = A.ρ g (f h)`, is `k`-linearly equivalent
@@ -238,7 +238,7 @@ noncomputable def coindFunctorIso : coindFunctor k φ ≅ coindFunctor' k φ :=
 
 end CoindIso
 
-noncomputable section Adjunction
+section Adjunction
 
 /-- The morphism induced by the adjunction between `res φ` and `coind φ` sending a morphism
   `f : res φ B ⟶ A` to the morphism `B ⟶ coind φ A` given by the underlying linear map sending
@@ -274,7 +274,7 @@ Note `Rep.resCoindHomEquiv.{t, u, v, w}` has the property that
 even with all inputs explicitly given, the first universe cannot be synthesized.
 -/
 @[simps, pp_with_univ]
-def resCoindHomEquiv (B : Rep.{max w t} k H) (A : Rep.{max w t} k G) :
+noncomputable def resCoindHomEquiv (B : Rep.{max w t} k H) (A : Rep.{max w t} k G) :
     (res φ B ⟶ A) ≃ₗ[k] (B ⟶ coind φ A) where
   toFun f := resCoindToHom φ B A f
   map_add' _ _ := rfl

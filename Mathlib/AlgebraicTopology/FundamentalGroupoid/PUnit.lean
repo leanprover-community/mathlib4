@@ -17,8 +17,6 @@ The fundamental groupoid of punit is naturally isomorphic to `CategoryTheory.Dis
 @[expose] public section
 
 
-noncomputable section
-
 open CategoryTheory
 
 universe u v
@@ -38,6 +36,7 @@ instance {x y : FundamentalGroupoid PUnit} : Subsingleton (x ⟶ y) := by
 
 /-- Equivalence of groupoids between fundamental groupoid of punit and punit -/
 @[simps]
+noncomputable
 def punitEquivDiscretePUnit : FundamentalGroupoid PUnit.{u + 1} ≌ Discrete PUnit.{v + 1} where
   functor := Functor.star _
   inverse := (CategoryTheory.Functor.const _).obj ⟨PUnit.unit⟩

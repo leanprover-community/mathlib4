@@ -98,8 +98,6 @@ derivative, differentiability, higher derivative, `C^n`, multilinear, Taylor ser
 
 @[expose] public section
 
-noncomputable section
-
 open Set Fin Filter Function
 open scoped NNReal Topology ContDiff
 

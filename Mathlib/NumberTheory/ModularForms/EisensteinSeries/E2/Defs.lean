@@ -25,12 +25,12 @@ open UpperHalfPlane hiding I
 open ModularForm EisensteinSeries Matrix.SpecialLinearGroup Filter Complex MatrixGroups
   SummationFilter Real
 
-@[expose] public noncomputable section
+@[expose] public section
 
 namespace EisensteinSeries
 
 /-- This is an auxiliary summand used to define the Eisenstein series `G2`. -/
-def e2Summand (m : ℤ) (z : ℍ) : ℂ := ∑' n, eisSummand 2 ![m, n] z
+noncomputable def e2Summand (m : ℤ) (z : ℍ) : ℂ := ∑' n, eisSummand 2 ![m, n] z
 
 lemma e2Summand_summable (m : ℤ) (z : ℍ) : Summable (fun n ↦ eisSummand 2 ![m, n] z) := by
   apply (linear_right_summable z m (k := 2) (by grind)).congr
@@ -53,14 +53,14 @@ lemma e2Summand_even (z : ℍ) : (e2Summand · z).Even := by
 /-- The Eisenstein series of weight `2` and level `1` defined as the conditional sum
 of `m` in `[N,N]` of `e2Summand m`. This sum over symmetric intervals is handy in showing it is
 Summable. -/
-def G2 : ℍ → ℂ := fun z ↦ ∑'[symmetricIcc ℤ] m, e2Summand m z
+noncomputable def G2 : ℍ → ℂ := fun z ↦ ∑'[symmetricIcc ℤ] m, e2Summand m z
 
 /-- The normalised Eisenstein series of weight `2` and level `1`.
 Defined as `(1 / 2 * ζ(2)) * G2 `. -/
-def E2 : ℍ → ℂ := (1 / (2 * riemannZeta 2)) • G2
+noncomputable def E2 : ℍ → ℂ := (1 / (2 * riemannZeta 2)) • G2
 
 /-- This function measures the defect in `G2` being a modular form. -/
-def D2 (γ : SL(2, ℤ)) : ℍ → ℂ := fun z ↦ (2 * π * I * γ 1 0) / (denom γ z)
+noncomputable def D2 (γ : SL(2, ℤ)) : ℍ → ℂ := fun z ↦ (2 * π * I * γ 1 0) / (denom γ z)
 
 @[simp]
 lemma D2_one : D2 1 = 0 := by

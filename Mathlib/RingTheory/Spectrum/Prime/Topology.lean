@@ -108,8 +108,6 @@ In the prime spectrum of a commutative semiring:
 
 open Topology
 
-noncomputable section
-
 universe u v
 
 variable (R : Type u) (S : Type v)
@@ -776,7 +774,7 @@ theorem maximalSpectrumToPiLocalization_surjective_of_discreteTopology :
 canonically isomorphic to the product of its localizations at the (finitely many) maximal ideals. -/
 @[stacks 00JA
 "See also `PrimeSpectrum.discreteTopology_iff_finite_isMaximal_and_sInf_le_nilradical`."]
-def _root_.MaximalSpectrum.toPiLocalizationEquiv :
+noncomputable def _root_.MaximalSpectrum.toPiLocalizationEquiv :
     R ≃ₐ[R] MaximalSpectrum.PiLocalization R :=
   .ofBijective _ ⟨MaximalSpectrum.toPiLocalization_injective R,
     maximalSpectrumToPiLocalization_surjective_of_discreteTopology R⟩
@@ -807,7 +805,7 @@ lemma toPiLocalization_bijective : Function.Bijective (toPiLocalization R) :=
 
 /-- If the prime spectrum of a commutative semiring R has discrete Zariski topology, then R is
 canonically isomorphic to the product of its localizations at the (finitely many) prime ideals. -/
-def toPiLocalizationEquiv : R ≃ₐ[R] PiLocalization R :=
+noncomputable def toPiLocalizationEquiv : R ≃ₐ[R] PiLocalization R :=
   .ofBijective _ toPiLocalization_bijective
 
 @[simp]
@@ -854,7 +852,7 @@ end Order
 
 /-- If `x` specializes to `y`, then there is a natural map from the localization of `y` to the
 localization of `x`. -/
-def localizationMapOfSpecializes {x y : PrimeSpectrum R} (h : x ⤳ y) :
+noncomputable def localizationMapOfSpecializes {x y : PrimeSpectrum R} (h : x ⤳ y) :
     Localization.AtPrime y.asIdeal →+* Localization.AtPrime x.asIdeal :=
   @IsLocalization.lift _ _ _ _ _ _ _ _ Localization.isLocalization
     (algebraMap R (Localization.AtPrime x.asIdeal))
@@ -975,7 +973,7 @@ variable (R) in
 Zero loci of prime ideals are closed irreducible sets in the Zariski topology and any closed
 irreducible set is a zero locus of some prime ideal.
 -/
-protected def pointsEquivIrreducibleCloseds :
+protected noncomputable def pointsEquivIrreducibleCloseds :
     PrimeSpectrum R ≃o (TopologicalSpace.IrreducibleCloseds (PrimeSpectrum R))ᵒᵈ where
   __ := irreducibleSetEquivPoints.toEquiv.symm.trans OrderDual.toDual
   map_rel_iff' {p q} :=
@@ -985,7 +983,7 @@ protected def pointsEquivIrreducibleCloseds :
 Zero loci of prime ideals are closed irreducible sets in the Zariski topology and any closed
 irreducible set is a zero locus of some prime ideal.
 -/
-protected def zeroLocusEquivIrreducibleCloseds (I : Set R) :
+protected noncomputable def zeroLocusEquivIrreducibleCloseds (I : Set R) :
     zeroLocus I ≃o (TopologicalSpace.IrreducibleCloseds (zeroLocus I))ᵒᵈ where
   __ := irreducibleSetEquivPoints.toEquiv.symm.trans OrderDual.toDual
   map_rel_iff' {p q} := (RelIso.symm irreducibleSetEquivPoints).map_rel_iff.trans
@@ -1118,7 +1116,7 @@ bijection with pairs of elements with product 0 and sum 1. (By definition, `(e�
 iff `e₁ * e₂ = e₁`.) Both elements in such pairs must be idempotents, but there may exists
 idempotents that do not form such pairs (does not have a "complement"). For example, in the
 semiring `{0, 0.5, 1}` with `⊔` as `+` and `⊓` as `*`, `0.5` has no complement. -/
-def mulZeroAddOneEquivClopens :
+noncomputable def mulZeroAddOneEquivClopens :
     {e : R × R // e.1 * e.2 = 0 ∧ e.1 + e.2 = 1} ≃o Clopens (PrimeSpectrum R) where
   toEquiv := .ofBijective
     (fun e ↦ ⟨basicOpen e.1.1, isClopen_iff_mul_add.mpr ⟨_, _, e.2.1, e.2.2, rfl⟩⟩) <| by
@@ -1244,7 +1242,7 @@ end IsIntegral
 /-- Zero loci of minimal prime ideals over `I` are irreducible components in `zeroLocus I` and any
 irreducible component is a zero locus of some minimal prime ideal. -/
 @[stacks 00ES]
-protected def _root_.Ideal.minimalPrimes.equivIrreducibleComponents (I : Ideal R) :
+protected noncomputable def _root_.Ideal.minimalPrimes.equivIrreducibleComponents (I : Ideal R) :
     I.minimalPrimes ≃o (irreducibleComponents <| (zeroLocus (I : Set R)))ᵒᵈ := by
   let e : {p : Ideal R | p.IsPrime ∧ I ≤ p} ≃o zeroLocus (I : Set R) :=
     ⟨⟨fun x ↦ ⟨⟨x.1, x.2.1⟩, x.2.2⟩, fun x ↦ ⟨x.1.1, x.1.2, x.2⟩, fun _ ↦ rfl, fun _ ↦ rfl⟩, .rfl⟩
@@ -1258,7 +1256,7 @@ variable (R)
 /-- Zero loci of minimal prime ideals of `R` are irreducible components in `Spec R` and any
 irreducible component is a zero locus of some minimal prime ideal. -/
 @[stacks 00ES]
-protected def _root_.minimalPrimes.equivIrreducibleComponents :
+protected noncomputable def _root_.minimalPrimes.equivIrreducibleComponents :
     minimalPrimes R ≃o (irreducibleComponents <| PrimeSpectrum R)ᵒᵈ := by
   let e : {p : Ideal R | p.IsPrime ∧ ⊥ ≤ p} ≃o PrimeSpectrum R :=
     ⟨⟨fun x ↦ ⟨x.1, x.2.1⟩, fun x ↦ ⟨x.1, x.2, bot_le⟩, fun _ ↦ rfl, fun _ ↦ rfl⟩, Iff.rfl⟩
@@ -1412,7 +1410,7 @@ open TopologicalSpace (Clopens Opens)
 /-- Clopen subsets in the prime spectrum of a commutative ring are in 1-1 correspondence
 with idempotent elements in the ring. -/
 @[stacks 00EE]
-def isIdempotentElemEquivClopens :
+noncomputable def isIdempotentElemEquivClopens :
     {e : R // IsIdempotentElem e} ≃o Clopens (PrimeSpectrum R) :=
   .trans .isIdempotentElemMulZeroAddOne mulZeroAddOneEquivClopens
 

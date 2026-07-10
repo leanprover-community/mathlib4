@@ -37,7 +37,7 @@ variable {p : ℕ} {R : Type*} [hp : Fact p.Prime] [CommRing R]
 -- type as `\bbW`
 local notation "𝕎" => WittVector p
 
-noncomputable section
+section
 
 -- Porting note: `ghost_calc` failure: the manual instances had to be added.
 /-- The composition of Frobenius and Verschiebung is multiplication by `p`. -/

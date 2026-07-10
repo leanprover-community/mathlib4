@@ -58,7 +58,7 @@ e.g. a `@[dualize]` attribute that behaves similarly to `@[to_additive]`.
 @[expose] public section
 
 
-noncomputable section
+section
 
 open CategoryTheory CategoryTheory.Category CategoryTheory.Functor Opposite
 
@@ -89,7 +89,7 @@ theorem HasLimit.mk {F : J ⥤ C} (d : LimitCone F) : HasLimit F :=
   ⟨Nonempty.intro d⟩
 
 /-- Use the axiom of choice to extract explicit `LimitCone F` from `HasLimit F`. -/
-def getLimitCone (F : J ⥤ C) [HasLimit F] : LimitCone F :=
+noncomputable def getLimitCone (F : J ⥤ C) [HasLimit F] : LimitCone F :=
   Classical.choice <| HasLimit.exists_limit
 
 variable (J C)
@@ -133,15 +133,15 @@ instance (priority := 100) hasLimitsOfShapeOfHasLimits {J : Type u₁} [Category
 
 -- Interface to the `HasLimit` class.
 /-- An arbitrary choice of limit cone for a functor. -/
-def limit.cone (F : J ⥤ C) [HasLimit F] : Cone F :=
+noncomputable def limit.cone (F : J ⥤ C) [HasLimit F] : Cone F :=
   (getLimitCone F).cone
 
 /-- An arbitrary choice of limit object of a functor. -/
-def limit (F : J ⥤ C) [HasLimit F] :=
+noncomputable def limit (F : J ⥤ C) [HasLimit F] :=
   (limit.cone F).pt
 
 /-- The projection from the limit object to a value of the functor. -/
-def limit.π (F : J ⥤ C) [HasLimit F] (j : J) : limit F ⟶ F.obj j :=
+noncomputable def limit.π (F : J ⥤ C) [HasLimit F] (j : J) : limit F ⟶ F.obj j :=
   (limit.cone F).π.app j
 
 @[reassoc]
@@ -164,11 +164,11 @@ theorem limit.w (F : J ⥤ C) [HasLimit F] {j j' : J} (f : j ⟶ j') :
   (limit.cone F).w f
 
 /-- Evidence that the arbitrary choice of cone provided by `limit.cone F` is a limit cone. -/
-def limit.isLimit (F : J ⥤ C) [HasLimit F] : IsLimit (limit.cone F) :=
+noncomputable def limit.isLimit (F : J ⥤ C) [HasLimit F] : IsLimit (limit.cone F) :=
   (getLimitCone F).isLimit
 
 /-- The morphism from the cone point of any other cone to the limit object. -/
-def limit.lift (F : J ⥤ C) [HasLimit F] (c : Cone F) : c.pt ⟶ limit F :=
+noncomputable def limit.lift (F : J ⥤ C) [HasLimit F] (c : Cone F) : c.pt ⟶ limit F :=
   (limit.isLimit F).lift c
 
 @[simp]
@@ -187,7 +187,7 @@ Usually this morphism should be accessed through `lim.map`,
 but may be needed separately when you have specified limits for the source and target functors,
 but not necessarily for all functors of shape `J`.
 -/
-def limMap {F G : J ⥤ C} [HasLimit F] [HasLimit G] (α : F ⟶ G) : limit F ⟶ limit G :=
+noncomputable def limMap {F G : J ⥤ C} [HasLimit F] [HasLimit G] (α : F ⟶ G) : limit F ⟶ limit G :=
   IsLimit.map _ (limit.isLimit G) α
 
 @[reassoc (attr := simp)]
@@ -196,7 +196,7 @@ theorem limMap_π {F G : J ⥤ C} [HasLimit F] [HasLimit G] (α : F ⟶ G) (j : 
   limit.lift_π _ j
 
 /-- The cone morphism from any cone to the arbitrary choice of limit cone. -/
-def limit.coneMorphism {F : J ⥤ C} [HasLimit F] (c : Cone F) : c ⟶ limit.cone F :=
+noncomputable def limit.coneMorphism {F : J ⥤ C} [HasLimit F] (c : Cone F) : c ⟶ limit.cone F :=
   (limit.isLimit F).liftConeMorphism c
 
 @[simp]
@@ -223,6 +223,7 @@ theorem limit.existsUnique {F : J ⥤ C} [HasLimit F] (t : Cone F) :
 
 /-- Given any other limit cone for `F`, the chosen `limit F` is isomorphic to the cone point.
 -/
+noncomputable
 def limit.isoLimitCone {F : J ⥤ C} [HasLimit F] (t : LimitCone F) : limit F ≅ t.cone.pt :=
   IsLimit.conePointUniqueUpToIso (limit.isLimit F) t.isLimit
 
@@ -264,7 +265,7 @@ theorem limit.lift_cone {F : J ⥤ C} [HasLimit F] : limit.lift F (limit.cone F)
 morphisms from a specified object `W` to the limit object,
 and cones with cone point `W`.
 -/
-def limit.homIso (F : J ⥤ C) [HasLimit F] (W : C) :
+noncomputable def limit.homIso (F : J ⥤ C) [HasLimit F] (W : C) :
     ULift.{u₁} (W ⟶ limit F : Type v) ≅ F.cones.obj (op W) :=
   (limit.isLimit F).homIso W
 
@@ -277,7 +278,7 @@ theorem limit.homIso_hom (F : J ⥤ C) [HasLimit F] {W : C} :
 morphisms from a specified object `W` to the limit object,
 and an explicit componentwise description of cones with cone point `W`.
 -/
-def limit.homIso' (F : J ⥤ C) [HasLimit F] (W : C) :
+noncomputable def limit.homIso' (F : J ⥤ C) [HasLimit F] (W : C) :
     ULift.{u₁} (W ⟶ limit F : Type v) ≅
       { p : ∀ j, W ⟶ F.obj j // ∀ {j j' : J} (f : j ⟶ j'), p j ≫ F.map f = p j' } :=
   (limit.isLimit F).homIso' W
@@ -307,6 +308,7 @@ theorem HasLimit.ofConesIso {J K : Type u₁} [Category.{v₁} J] [Category.{v�
 /-- The limits of `F : J ⥤ C` and `G : J ⥤ C` are isomorphic,
 if the functors are naturally isomorphic.
 -/
+noncomputable
 def HasLimit.isoOfNatIso {F G : J ⥤ C} [HasLimit F] [HasLimit G] (w : F ≅ G) : limit F ≅ limit G :=
   IsLimit.conePointsIsoOfNatIso (limit.isLimit F) (limit.isLimit G) w
 
@@ -337,6 +339,7 @@ theorem HasLimit.lift_isoOfNatIso_inv {F G : J ⥤ C} [HasLimit F] [HasLimit G] 
 /-- The limits of `F : J ⥤ C` and `G : K ⥤ C` are isomorphic,
 if there is an equivalence `e : J ≌ K` making the triangle commute up to natural isomorphism.
 -/
+noncomputable
 def HasLimit.isoOfEquivalence {F : J ⥤ C} [HasLimit F] {G : K ⥤ C} [HasLimit G] (e : J ≌ K)
     (w : e.functor ⋙ G ≅ F) : limit F ≅ limit G :=
   IsLimit.conePointsIsoOfEquivalence (limit.isLimit F) (limit.isLimit G) e w
@@ -368,7 +371,7 @@ variable [HasLimit F] (E : K ⥤ J) [HasLimit (E ⋙ F)]
 
 /-- The canonical morphism from the limit of `F` to the limit of `E ⋙ F`.
 -/
-def limit.pre : limit F ⟶ limit (E ⋙ F) :=
+noncomputable def limit.pre : limit F ⟶ limit (E ⋙ F) :=
   limit.lift (E ⋙ F) ((limit.cone F).whisker E)
 
 set_option backward.isDefEq.respectTransparency false in
@@ -410,7 +413,7 @@ variable (F : J ⥤ C) [HasLimit F] (G : C ⥤ D) [HasLimit (F ⋙ G)]
 
 /-- The canonical morphism from `G` applied to the limit of `F` to the limit of `F ⋙ G`.
 -/
-def limit.post : G.obj (limit F) ⟶ limit (F ⋙ G) :=
+noncomputable def limit.post : G.obj (limit F) ⟶ limit (F ⋙ G) :=
   limit.lift (F ⋙ G) (G.mapCone (limit.cone F))
 
 set_option backward.isDefEq.respectTransparency false in
@@ -477,7 +480,7 @@ section
 
 /-- `limit F` is functorial in `F`, when `C` has all limits of shape `J`. -/
 @[simps]
-def lim : (J ⥤ C) ⥤ C where
+noncomputable def lim : (J ⥤ C) ⥤ C where
   obj F := limit F
   map α := limMap α
   map_id F := by
@@ -490,7 +493,7 @@ def lim : (J ⥤ C) ⥤ C where
 set_option backward.isDefEq.respectTransparency false in
 /-- The natural transformation induced by `limit.π`. -/
 @[simps]
-def lim.π (j : J) : lim ⟶ (evaluation J C).obj j where
+noncomputable def lim.π (j : J) : lim ⟶ (evaluation J C).obj j where
   app F := limit.π F j
 
 end
@@ -528,14 +531,14 @@ morphisms from `W` to the cone point of the limit cone for `F`
 and cones over `F` with cone point `W`
 is natural in `F`.
 -/
-def limYoneda :
+noncomputable def limYoneda :
     lim ⋙ yoneda ⋙ (whiskeringRight _ _ _).obj uliftFunctor.{u₁} ≅ CategoryTheory.cones J C :=
   NatIso.ofComponents fun F => NatIso.ofComponents fun W => limit.homIso F (unop W)
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The constant functor and limit functor are adjoint to each other -/
-def constLimAdj : (const J : C ⥤ J ⥤ C) ⊣ lim := Adjunction.mk' {
+noncomputable def constLimAdj : (const J : C ⥤ J ⥤ C) ⊣ lim := Adjunction.mk' {
   homEquiv := fun c g ↦
     { toFun := fun f => limit.lift _ ⟨c, f⟩
       invFun := fun f =>
@@ -652,7 +655,7 @@ theorem HasColimit.mk {F : J ⥤ C} (d : ColimitCocone F) : HasColimit F :=
   ⟨Nonempty.intro d⟩
 
 /-- Use the axiom of choice to extract explicit `ColimitCocone F` from `HasColimit F`. -/
-def getColimitCocone (F : J ⥤ C) [HasColimit F] : ColimitCocone F :=
+noncomputable def getColimitCocone (F : J ⥤ C) [HasColimit F] : ColimitCocone F :=
   Classical.choice <| HasColimit.exists_colimit
 
 variable (J C)
@@ -697,15 +700,15 @@ instance (priority := 100) hasColimitsOfShapeOfHasColimitsOfSize {J : Type u₁}
 
 -- Interface to the `HasColimit` class.
 /-- An arbitrary choice of colimit cocone of a functor. -/
-def colimit.cocone (F : J ⥤ C) [HasColimit F] : Cocone F :=
+noncomputable def colimit.cocone (F : J ⥤ C) [HasColimit F] : Cocone F :=
   (getColimitCocone F).cocone
 
 /-- An arbitrary choice of colimit object of a functor. -/
-def colimit (F : J ⥤ C) [HasColimit F] :=
+noncomputable def colimit (F : J ⥤ C) [HasColimit F] :=
   (colimit.cocone F).pt
 
 /-- The coprojection from a value of the functor to the colimit object. -/
-def colimit.ι (F : J ⥤ C) [HasColimit F] (j : J) : F.obj j ⟶ colimit F :=
+noncomputable def colimit.ι (F : J ⥤ C) [HasColimit F] (j : J) : F.obj j ⟶ colimit F :=
   (colimit.cocone F).ι.app j
 
 @[reassoc]
@@ -729,11 +732,11 @@ theorem colimit.w (F : J ⥤ C) [HasColimit F] {j j' : J} (f : j ⟶ j') :
   (colimit.cocone F).w f
 
 /-- Evidence that the arbitrary choice of cocone is a colimit cocone. -/
-def colimit.isColimit (F : J ⥤ C) [HasColimit F] : IsColimit (colimit.cocone F) :=
+noncomputable def colimit.isColimit (F : J ⥤ C) [HasColimit F] : IsColimit (colimit.cocone F) :=
   (getColimitCocone F).isColimit
 
 /-- The morphism from the colimit object to the cone point of any other cocone. -/
-def colimit.desc (F : J ⥤ C) [HasColimit F] (c : Cocone F) : colimit F ⟶ c.pt :=
+noncomputable def colimit.desc (F : J ⥤ C) [HasColimit F] (c : Cocone F) : colimit F ⟶ c.pt :=
   (colimit.isColimit F).desc c
 
 @[simp]
@@ -761,6 +764,7 @@ Usually this morphism should be accessed through `colim.map`,
 but may be needed separately when you have specified colimits for the source and target functors,
 but not necessarily for all functors of shape `J`.
 -/
+noncomputable
 def colimMap {F G : J ⥤ C} [HasColimit F] [HasColimit G] (α : F ⟶ G) : colimit F ⟶ colimit G :=
   IsColimit.map (colimit.isColimit F) _ α
 
@@ -770,6 +774,7 @@ theorem ι_colimMap {F G : J ⥤ C} [HasColimit F] [HasColimit G] (α : F ⟶ G)
   colimit.ι_desc _ j
 
 /-- The cocone morphism from the arbitrary choice of colimit cocone to any cocone. -/
+noncomputable
 def colimit.coconeMorphism {F : J ⥤ C} [HasColimit F] (c : Cocone F) : colimit.cocone F ⟶ c :=
   (colimit.isColimit F).descCoconeMorphism c
 
@@ -800,7 +805,7 @@ theorem colimit.existsUnique {F : J ⥤ C} [HasColimit F] (t : Cocone F) :
 /--
 Given any other colimit cocone for `F`, the chosen `colimit F` is isomorphic to the cocone point.
 -/
-def colimit.isoColimitCocone {F : J ⥤ C} [HasColimit F] (t : ColimitCocone F) :
+noncomputable def colimit.isoColimitCocone {F : J ⥤ C} [HasColimit F] (t : ColimitCocone F) :
     colimit F ≅ t.cocone.pt :=
   IsColimit.coconePointUniqueUpToIso (colimit.isColimit F) t.isColimit
 
@@ -835,7 +840,7 @@ theorem colimit.desc_cocone {F : J ⥤ C} [HasColimit F] :
 morphisms from the colimit object to a specified object `W`,
 and cocones with cone point `W`.
 -/
-def colimit.homIso (F : J ⥤ C) [HasColimit F] (W : C) :
+noncomputable def colimit.homIso (F : J ⥤ C) [HasColimit F] (W : C) :
     ULift.{u₁} (colimit F ⟶ W : Type v) ≅ F.cocones.obj W :=
   (colimit.isColimit F).homIso W
 
@@ -849,7 +854,7 @@ theorem colimit.homIso_hom (F : J ⥤ C) [HasColimit F] {W : C} :
 morphisms from the colimit object to a specified object `W`,
 and an explicit componentwise description of cocones with cone point `W`.
 -/
-def colimit.homIso' (F : J ⥤ C) [HasColimit F] (W : C) :
+noncomputable def colimit.homIso' (F : J ⥤ C) [HasColimit F] (W : C) :
     ULift.{u₁} (colimit F ⟶ W : Type v) ≅
       { p : ∀ j, F.obj j ⟶ W // ∀ {j j'} (f : j ⟶ j'), F.map f ≫ p j' = p j } :=
   (colimit.isColimit F).homIso' W
@@ -879,7 +884,7 @@ theorem HasColimit.ofCoconesIso {K : Type u₁} [Category.{v₂} K] (F : J ⥤ C
 /-- The colimits of `F : J ⥤ C` and `G : J ⥤ C` are isomorphic,
 if the functors are naturally isomorphic.
 -/
-def HasColimit.isoOfNatIso {F G : J ⥤ C} [HasColimit F] [HasColimit G] (w : F ≅ G) :
+noncomputable def HasColimit.isoOfNatIso {F G : J ⥤ C} [HasColimit F] [HasColimit G] (w : F ≅ G) :
     colimit F ≅ colimit G :=
   IsColimit.coconePointsIsoOfNatIso (colimit.isColimit F) (colimit.isColimit G) w
 
@@ -910,6 +915,7 @@ theorem HasColimit.isoOfNatIso_inv_desc {F G : J ⥤ C} [HasColimit F] [HasColim
 /-- The colimits of `F : J ⥤ C` and `G : K ⥤ C` are isomorphic,
 if there is an equivalence `e : J ≌ K` making the triangle commute up to natural isomorphism.
 -/
+noncomputable
 def HasColimit.isoOfEquivalence {F : J ⥤ C} [HasColimit F] {G : K ⥤ C} [HasColimit G] (e : J ≌ K)
     (w : e.functor ⋙ G ≅ F) : colimit F ≅ colimit G :=
   IsColimit.coconePointsIsoOfEquivalence (colimit.isColimit F) (colimit.isColimit G) e w
@@ -945,7 +951,7 @@ variable [HasColimit F] (E : K ⥤ J) [HasColimit (E ⋙ F)]
 
 /-- The canonical morphism from the colimit of `E ⋙ F` to the colimit of `F`.
 -/
-def colimit.pre : colimit (E ⋙ F) ⟶ colimit F :=
+noncomputable def colimit.pre : colimit (E ⋙ F) ⟶ colimit F :=
   colimit.desc (E ⋙ F) ((colimit.cocone F).whisker E)
 
 set_option backward.isDefEq.respectTransparency false in
@@ -1003,7 +1009,7 @@ variable [HasColimit F] (G : C ⥤ D) [HasColimit (F ⋙ G)]
 /-- The canonical morphism from `G` applied to the colimit of `F ⋙ G`
 to `G` applied to the colimit of `F`.
 -/
-def colimit.post : colimit (F ⋙ G) ⟶ G.obj (colimit F) :=
+noncomputable def colimit.post : colimit (F ⋙ G) ⟶ G.obj (colimit F) :=
   colimit.desc (F ⋙ G) (G.mapCocone (colimit.cocone F))
 
 set_option backward.isDefEq.respectTransparency false in
@@ -1075,14 +1081,14 @@ section
 
 /-- `colimit F` is functorial in `F`, when `C` has all colimits of shape `J`. -/
 @[simps]
-def colim : (J ⥤ C) ⥤ C where
+noncomputable def colim : (J ⥤ C) ⥤ C where
   obj F := colimit F
   map α := colimMap α
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The natural transformation induced by `colimit.ι`. -/
 @[simps]
-def colim.ι (j : J) : (evaluation J C).obj j ⟶ colim where
+noncomputable def colim.ι (j : J) : (evaluation J C).obj j ⟶ colim where
   app F := colimit.ι F j
 
 end
@@ -1138,6 +1144,7 @@ morphisms from the cone point of the colimit cocone for `F` to `W`
 and cocones over `F` with cone point `W`
 is natural in `F`.
 -/
+noncomputable
 def colimCoyoneda : colim.op ⋙ coyoneda ⋙ (whiskeringRight _ _ _).obj uliftFunctor.{u₁}
     ≅ CategoryTheory.cocones J C :=
   NatIso.ofComponents fun F => NatIso.ofComponents fun W => colimit.homIso (unop F) W
@@ -1146,7 +1153,7 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The colimit functor and constant functor are adjoint to each other
 -/
-def colimConstAdj : (colim : (J ⥤ C) ⥤ C) ⊣ const J := Adjunction.mk' {
+noncomputable def colimConstAdj : (colim : (J ⥤ C) ⥤ C) ⊣ const J := Adjunction.mk' {
   homEquiv := fun f c ↦
     { toFun := fun g =>
         { app := fun _ => colimit.ι _ _ ≫ g }

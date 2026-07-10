@@ -27,8 +27,6 @@ function with finite support, module, linear algebra
 
 @[expose] public section
 
-noncomputable section
-
 open Set LinearMap Submodule
 
 namespace Finsupp
@@ -93,6 +91,7 @@ theorem span_le_supported_biUnion_support (s : Set (α →₀ M)) :
 variable (M)
 
 /-- Interpret `Finsupp.filter s` as a linear map from `α →₀ M` to `supported M R s`. -/
+noncomputable
 def restrictDom (s : Set α) [DecidablePred (· ∈ s)] : (α →₀ M) →ₗ[R] supported M R s :=
   LinearMap.codRestrict _
     { toFun := filter (· ∈ s)
@@ -192,7 +191,7 @@ lemma codisjoint_supported_supported_iff [Nontrivial M] {s t : Set α} :
 
 /-- Interpret `Finsupp.restrictSupportEquiv` as a linear equivalence between
 `supported M R s` and `s →₀ M`. -/
-@[simps!] def supportedEquivFinsupp (s : Set α) : supported M R s ≃ₗ[R] s →₀ M := by
+@[simps!] noncomputable def supportedEquivFinsupp (s : Set α) : supported M R s ≃ₗ[R] s →₀ M := by
   let F : supported M R s ≃ (s →₀ M) := restrictSupportEquiv s M
   refine F.toLinearEquiv ?_
   have :

@@ -30,8 +30,6 @@ The last part of the file should be generalized to `PiLp`.
 
 @[expose] public section
 
-noncomputable section
-
 open RCLike Real Filter
 
 section DerivInner
@@ -45,7 +43,7 @@ local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 variable (𝕜) [NormedSpace ℝ E]
 
 /-- Derivative of the inner product. -/
-def fderivInnerCLM (p : E × E) : E × E →L[ℝ] 𝕜 :=
+noncomputable def fderivInnerCLM (p : E × E) : E × E →L[ℝ] 𝕜 :=
   isBoundedBilinearMap_inner.deriv p
 
 @[simp]

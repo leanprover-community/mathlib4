@@ -31,8 +31,6 @@ should take this into consideration.
 open scoped Topology uniformity
 open MonoidWithZeroHom MonoidWithZeroHom.ValueGroup₀ Set Valuation
 
-noncomputable section
-
 universe v u
 
 variable {R K : Type u} [Ring R] [DivisionRing K] {Γ₀ : Type v} [LinearOrderedCommGroupWithZero Γ₀]
@@ -134,7 +132,7 @@ namespace Valued
 
 /-- Alternative `Valued` constructor for use when there is no preferred `UniformSpace` structure. -/
 @[implicit_reducible]
-def mk' (v : Valuation R Γ₀) : Valued R Γ₀ :=
+noncomputable def mk' (v : Valuation R Γ₀) : Valued R Γ₀ :=
   { v
     toUniformSpace := @IsTopologicalAddGroup.rightUniformSpace R _ v.subgroups_basis.topology _
     toIsUniformAddGroup := @isUniformAddGroup_of_addCommGroup _ _ v.subgroups_basis.topology _

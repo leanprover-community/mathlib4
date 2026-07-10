@@ -94,8 +94,6 @@ derivatives is the same as the one for differentiability statements, as explaine
 
 universe u v w
 
-noncomputable section
-
 open scoped Topology ENNReal NNReal
 open Filter Asymptotics Set
 
@@ -142,7 +140,7 @@ end
 If the derivative exists (i.e., `∃ f', HasDerivWithinAt f f' s x`), then
 `f x' = f x + (x' - x) • derivWithin f s x + o(x' - x)` where `x'` converges to `x` inside `s`.
 -/
-def derivWithin (f : 𝕜 → F) (s : Set 𝕜) (x : 𝕜) :=
+noncomputable def derivWithin (f : 𝕜 → F) (s : Set 𝕜) (x : 𝕜) :=
   fderivWithin 𝕜 f s x 1
 
 /-- Derivative of `f` at the point `x`, if it exists.  Zero otherwise.
@@ -150,7 +148,7 @@ def derivWithin (f : 𝕜 → F) (s : Set 𝕜) (x : 𝕜) :=
 If the derivative exists (i.e., `∃ f', HasDerivAt f f' x`), then
 `f x' = f x + (x' - x) • deriv f x + o(x' - x)` where `x'` converges to `x`.
 -/
-def deriv (f : 𝕜 → F) (x : 𝕜) :=
+noncomputable def deriv (f : 𝕜 → F) (x : 𝕜) :=
   fderiv 𝕜 f x 1
 
 variable {f f₀ f₁ : 𝕜 → F}

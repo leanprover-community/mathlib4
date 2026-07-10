@@ -67,7 +67,7 @@ The Coq code is available at the following address: <http://www.lri.fr/~sboldo/e
 @[expose] public section
 
 
-noncomputable section
+section
 
 open RCLike Real Filter Topology ComplexConjugate Finsupp Bornology
 
@@ -373,7 +373,7 @@ theorem inner_mul_inner_self_le (x y : F) : ‖⟪x, y⟫‖ * ‖⟪y, x⟫‖ 
 /-- (Semi)norm constructed from a `PreInnerProductSpace.Core` structure, defined to be the square
 root of the scalar product. -/
 @[instance_reducible]
-def toNorm : Norm F where norm x := √(re ⟪x, x⟫)
+noncomputable def toNorm : Norm F where norm x := √(re ⟪x, x⟫)
 
 attribute [local instance] toNorm
 
@@ -394,7 +394,7 @@ theorem norm_inner_le_norm (x y : F) : ‖⟪x, y⟫‖ ≤ ‖x‖ * ‖y‖ :=
 
 /-- Seminormed group structure constructed from a `PreInnerProductSpace.Core` structure -/
 @[instance_reducible]
-def toSeminormedAddCommGroup : SeminormedAddCommGroup F :=
+noncomputable def toSeminormedAddCommGroup : SeminormedAddCommGroup F :=
   AddGroupSeminorm.toSeminormedAddCommGroup
     { toFun := fun x => √(re ⟪x, x⟫)
       map_zero' := by simp only [sqrt_zero, inner_zero_right, map_zero]
@@ -467,7 +467,7 @@ attribute [local instance] toNorm
 
 /-- Normed group structure constructed from an `InnerProductSpace.Core` structure -/
 @[instance_reducible]
-def toNormedAddCommGroup : NormedAddCommGroup F :=
+noncomputable def toNormedAddCommGroup : NormedAddCommGroup F :=
   AddGroupNorm.toNormedAddCommGroup
     { toFun := fun x => √(re ⟪x, x⟫)
       map_zero' := by simp only [sqrt_zero, inner_zero_right, map_zero]
@@ -530,7 +530,7 @@ lemma topology_eq
 
 /-- Normed space structure constructed from an `InnerProductSpace.Core` structure, adjusting the
 topology to make sure it is defeq to an already existing topology. -/
-@[reducible] def toNormedAddCommGroupOfTopology
+@[reducible] noncomputable def toNormedAddCommGroupOfTopology
     [tF : TopologicalSpace F] [IsTopologicalAddGroup F] [ContinuousConstSMul 𝕜 F]
     (h : ContinuousAt (fun (v : F) ↦ cd.inner v v) 0)
     (h' : IsVonNBounded 𝕜 {v : F | re (cd.inner v v) < 1}) :

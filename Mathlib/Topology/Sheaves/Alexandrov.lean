@@ -23,8 +23,6 @@ This file proves that this presheaf is a sheaf.
 
 @[expose] public section
 
-noncomputable section
-
 universe v u
 open CategoryTheory Limits Functor
 open TopCat Presheaf SheafCondition
@@ -70,7 +68,7 @@ lemma exists_le_of_le_sup {ι : Type v} {x : X}
   grind [principalOpen_le_iff, Opens.mem_iSup]
 
 /-- The right Kan extension of `F` along `X ⥤ (Opens X)ᵒᵖ`. -/
-abbrev principalsKanExtension : (Opens X)ᵒᵖ ⥤ C :=
+noncomputable abbrev principalsKanExtension : (Opens X)ᵒᵖ ⥤ C :=
   (principals X).pointwiseRightKanExtension F
 
 /-- Given a structured arrow `f` with domain `U : Opens X` over `principals X`,
@@ -98,7 +96,7 @@ set_option backward.isDefEq.respectTransparency false in
 variable {F} in
 /-- This is an auxiliary definition which is only meant to be used in `isLimit` below. -/
 @[simps]
-def lowerCone
+noncomputable def lowerCone
     {α : Type v} (Us : α → Opens X)
     (S : Cone ((ObjectProperty.ι _ : OpensLeCover (X := .of X) Us ⥤ _).op ⋙
       principalsKanExtension F)) :
@@ -133,7 +131,7 @@ cone is a limit cone.
 
 See `isSheaf_principalsKanExtension` for the main application.
 -/
-def isLimit {X : TopCat.{v}} [Preorder X] [Topology.IsUpperSet X]
+noncomputable def isLimit {X : TopCat.{v}} [Preorder X] [Topology.IsUpperSet X]
     (F : X ⥤ C)
     (α : Type v) (Us : α → Opens X) :
     IsLimit (mapCone (principalsKanExtension F) (opensLeCoverCocone Us).op) where

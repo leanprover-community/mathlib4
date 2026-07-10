@@ -131,8 +131,6 @@ end Polynomial
 
 end PolynomialDetermination
 
-noncomputable section
-
 namespace Lagrange
 
 open Polynomial
@@ -144,7 +142,7 @@ variable {x y : F}
 /-- `basisDivisor x y` is the unique linear or constant polynomial such that
 when evaluated at `x` it gives `1` and `y` it gives `0` (where when `x = y` it is identically `0`).
 Such polynomials are the building blocks for the Lagrange interpolants. -/
-def basisDivisor (x y : F) : F[X] :=
+noncomputable def basisDivisor (x y : F) : F[X] :=
   C (x - y)⁻¹ * (X - C y)
 
 theorem basisDivisor_self : basisDivisor x x = 0 := by
@@ -196,7 +194,7 @@ open Finset
 /-- Lagrange basis polynomials indexed by `s : Finset ι`, defined at nodes `v i` for a
 map `v : ι → F`. For `i, j ∈ s`, `basis s v i` evaluates to 0 at `v j` for `i ≠ j`. When
 `v` is injective on `s`, `basis s v i` evaluates to 1 at `v i`. -/
-protected def basis (s : Finset ι) (v : ι → F) (i : ι) : F[X] :=
+protected noncomputable def basis (s : Finset ι) (v : ι → F) (i : ι) : F[X] :=
   ∏ j ∈ s.erase i, basisDivisor (v i) (v j)
 
 @[simp]
@@ -296,7 +294,7 @@ open Finset
 `s` and a value function `r : ι → F`, `interpolate s v r` is the unique
 polynomial of degree `< #s` that takes value `r i` on `v i` for all `i` in `s`. -/
 @[simps]
-def interpolate (s : Finset ι) (v : ι → F) : (ι → F) →ₗ[F] F[X] where
+noncomputable def interpolate (s : Finset ι) (v : ι → F) : (ι → F) →ₗ[F] F[X] where
   toFun r := ∑ i ∈ s, C (r i) * Lagrange.basis s v i
   map_add' f g := by
     simp_rw [← Finset.sum_add_distrib]
@@ -381,7 +379,7 @@ theorem eq_interpolate_iff {f : F[X]} (hvs : Set.InjOn v s) :
 
 /-- Lagrange interpolation induces isomorphism between functions from `s`
 and polynomials of degree less than `Fintype.card ι`. -/
-def funEquivDegreeLT (hvs : Set.InjOn v s) : degreeLT F #s ≃ₗ[F] s → F where
+noncomputable def funEquivDegreeLT (hvs : Set.InjOn v s) : degreeLT F #s ≃ₗ[F] s → F where
   toFun f i := f.1.eval (v i)
   map_add' _ _ := funext fun _ => eval_add
   map_smul' c f := funext <| by simp
@@ -540,7 +538,7 @@ with appropriate multiplicity.
 
 We can use `nodal` to define the barycentric forms of the evaluated interpolant.
 -/
-def nodal (s : Finset ι) (v : ι → R) : R[X] :=
+noncomputable def nodal (s : Finset ι) (v : ι → R) : R[X] :=
   ∏ i ∈ s, (X - C (v i))
 
 theorem nodal_eq (s : Finset ι) (v : ι → R) : nodal s v = ∏ i ∈ s, (X - C (v i)) :=

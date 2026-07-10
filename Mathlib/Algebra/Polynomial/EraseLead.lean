@@ -24,8 +24,6 @@ and thus works for polynomials over semirings as well as rings.
 @[expose] public section
 
 
-noncomputable section
-
 open Polynomial
 
 open Polynomial Finset
@@ -36,7 +34,7 @@ variable {R : Type*} [Semiring R] {f : R[X]}
 
 /-- `eraseLead f` for a polynomial `f` is the polynomial obtained by
 subtracting from `f` the leading term of `f`. -/
-def eraseLead (f : R[X]) : R[X] :=
+noncomputable def eraseLead (f : R[X]) : R[X] :=
   Polynomial.erase f.natDegree f
 
 section EraseLead

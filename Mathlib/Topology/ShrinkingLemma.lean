@@ -32,8 +32,6 @@ normal space, shrinking lemma
 
 open Set Function
 
-noncomputable section
-
 variable {ι X : Type*} [TopologicalSpace X]
 
 namespace ShrinkingLemma
@@ -105,6 +103,7 @@ def chainSupCarrier (c : Set (PartialRefinement u s p)) : Set ι :=
 open scoped Classical in
 /-- Choice of an element of a nonempty chain of partial refinements. If `i` belongs to one of
 `carrier v`, `v ∈ c`, then `find c ne i` is one of these partial refinements. -/
+noncomputable
 def find (c : Set (PartialRefinement u s p)) (ne : c.Nonempty) (i : ι) : PartialRefinement u s p :=
   if hi : ∃ v ∈ c, i ∈ carrier v then hi.choose else ne.some
 

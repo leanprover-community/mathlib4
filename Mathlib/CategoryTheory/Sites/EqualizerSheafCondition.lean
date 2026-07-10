@@ -46,7 +46,7 @@ namespace Equalizer
 variable {C : Type u} [Category.{v} C] (P : Cᵒᵖ ⥤ Type (max v u)) {X : C} (R : Presieve X)
   (S : Sieve X)
 
-noncomputable section
+section
 
 /--
 The middle object of the fork diagram given in Equation (3) of [MM92], as well as the fork diagram
@@ -70,15 +70,15 @@ variable (P R)
 
 /-- Show that `FirstObj` is isomorphic to `FamilyOfElements`. -/
 @[simps]
-def firstObjEqFamily : FirstObj P R ≅ (R.FamilyOfElements P) where
+noncomputable def firstObjEqFamily : FirstObj P R ≅ (R.FamilyOfElements P) where
   hom := ↾fun t _ _ hf ↦
     Pi.π (fun f : Σ Y, { f : Y ⟶ X // R f } => P.obj (op f.1)) ⟨_, _, hf⟩ t
   inv := Pi.lift fun f => ↾fun x => x _ f.2.2
 
-instance : Inhabited (FirstObj P (⊥ : Presieve X)) :=
+noncomputable instance : Inhabited (FirstObj P (⊥ : Presieve X)) :=
   (firstObjEqFamily P _).toEquiv.inhabited
 
-instance : Inhabited (FirstObj P ((⊥ : Sieve X) : Presieve X)) :=
+noncomputable instance : Inhabited (FirstObj P ((⊥ : Sieve X) : Presieve X)) :=
   inferInstanceAs <| Inhabited (FirstObj P (⊥ : Presieve X))
 
 /--
@@ -86,7 +86,7 @@ The left morphism of the fork diagram given in Equation (3) of [MM92], as well a
 of the Stacks entry.
 -/
 @[stacks 00VM "This is the left morphism of the fork diagram there."]
-def forkMap : P.obj (op X) ⟶ FirstObj P R :=
+noncomputable def forkMap : P.obj (op X) ⟶ FirstObj P R :=
   Pi.lift fun f => P.map f.2.1.op
 
 /-!
@@ -116,15 +116,15 @@ lemma SecondObj.ext (z₁ z₂ : SecondObj P S) (h : ∀ (Y Z : C) (g : Z ⟶ Y)
 variable (P S)
 
 /-- The map `p` of Equations (3,4) [MM92]. -/
-def firstMap : FirstObj P (S : Presieve X) ⟶ SecondObj P S :=
+noncomputable def firstMap : FirstObj P (S : Presieve X) ⟶ SecondObj P S :=
   Pi.lift fun fg =>
     Pi.π _ (⟨_, _, S.downward_closed fg.2.2.2.2 fg.2.2.1⟩ : Σ Y, { f : Y ⟶ X // S f })
 
-instance : Inhabited (SecondObj P (⊥ : Sieve X)) :=
+noncomputable instance : Inhabited (SecondObj P (⊥ : Sieve X)) :=
   ⟨firstMap _ _ default⟩
 
 /-- The map `a` of Equations (3,4) [MM92]. -/
-def secondMap : FirstObj P (S : Presieve X) ⟶ SecondObj P S :=
+noncomputable def secondMap : FirstObj P (S : Presieve X) ⟶ SecondObj P S :=
   Pi.lift fun fg => Pi.π _ ⟨_, fg.2.2.2⟩ ≫ P.map fg.2.2.1.op
 
 theorem w : forkMap P (S : Presieve X) ≫ firstMap P S = forkMap P S ≫ secondMap P S := by
@@ -193,17 +193,17 @@ def SecondObj : Type (max v u) :=
 
 /-- The map `pr₀*` of the Stacks entry. -/
 @[stacks 00VM "This is the map `pr₀*` there."]
-def firstMap : FirstObj P R ⟶ SecondObj P R :=
+noncomputable def firstMap : FirstObj P R ⟶ SecondObj P R :=
   Pi.lift fun fg =>
     haveI := Presieve.HasPairwisePullbacks.has_pullbacks fg.1.2.2 fg.2.2.2
     Pi.π _ _ ≫ P.map (pullback.fst _ _).op
 
-instance [HasPullbacks C] : Inhabited (SecondObj P (⊥ : Presieve X)) :=
+noncomputable instance [HasPullbacks C] : Inhabited (SecondObj P (⊥ : Presieve X)) :=
   ⟨firstMap _ _ default⟩
 
 /-- The map `pr₁*` of the Stacks entry. -/
 @[stacks 00VM "This is the map `pr₁*` there."]
-def secondMap : FirstObj P R ⟶ SecondObj P R :=
+noncomputable def secondMap : FirstObj P R ⟶ SecondObj P R :=
   Pi.lift fun fg =>
     haveI := Presieve.HasPairwisePullbacks.has_pullbacks fg.1.2.2 fg.2.2.2
     Pi.π _ _ ≫ P.map (pullback.snd _ _).op
@@ -299,20 +299,20 @@ lemma SecondObj.ext (z₁ z₂ : SecondObj P X π) (h : ∀ ij, (Pi.π _ ij : Se
 /--
 The left morphism of the fork diagram.
 -/
-def forkMap : P.obj (op B) ⟶ FirstObj P X := Pi.lift (fun i ↦ P.map (π i).op)
+noncomputable def forkMap : P.obj (op B) ⟶ FirstObj P X := Pi.lift (fun i ↦ P.map (π i).op)
 
 /--
 The first of the two parallel morphisms of the fork diagram, induced by the first projection in
 each pullback.
 -/
-def firstMap : FirstObj P X ⟶ SecondObj P X π :=
+noncomputable def firstMap : FirstObj P X ⟶ SecondObj P X π :=
   Pi.lift fun _ => Pi.π _ _ ≫ P.map (pullback.fst _ _).op
 
 /--
 The second of the two parallel morphisms of the fork diagram, induced by the second projection in
 each pullback.
 -/
-def secondMap : FirstObj P X ⟶ SecondObj P X π :=
+noncomputable def secondMap : FirstObj P X ⟶ SecondObj P X π :=
   Pi.lift fun _ => Pi.π _ _ ≫ P.map (pullback.snd _ _).op
 
 set_option backward.isDefEq.respectTransparency false in

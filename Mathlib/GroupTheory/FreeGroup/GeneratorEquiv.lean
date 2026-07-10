@@ -16,8 +16,6 @@ public import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
 
 @[expose] public section
 
-noncomputable section
-
 variable {α β G H : Type*}
 
 open IsFreeGroup Module
@@ -27,19 +25,22 @@ noncomputable def FreeAbelianGroup.basis (α : Type*) : Basis α ℤ (FreeAbelia
   ⟨(FreeAbelianGroup.equivFinsupp α).toIntLinearEquiv⟩
 
 /-- Isomorphic free abelian groups (as modules) have equivalent bases. -/
+noncomputable
 def Equiv.ofFreeAbelianGroupLinearEquiv (e : FreeAbelianGroup α ≃ₗ[ℤ] FreeAbelianGroup β) : α ≃ β :=
   let t : Basis α ℤ (FreeAbelianGroup β) := (FreeAbelianGroup.basis α).map e
   t.indexEquiv <| FreeAbelianGroup.basis _
 
 /-- Isomorphic free abelian groups (as additive groups) have equivalent bases. -/
+noncomputable
 def Equiv.ofFreeAbelianGroupEquiv (e : FreeAbelianGroup α ≃+ FreeAbelianGroup β) : α ≃ β :=
   .ofFreeAbelianGroupLinearEquiv e.toIntLinearEquiv
 
 /-- Isomorphic free groups have equivalent bases. -/
-def Equiv.ofFreeGroupEquiv (e : FreeGroup α ≃* FreeGroup β) : α ≃ β :=
+noncomputable def Equiv.ofFreeGroupEquiv (e : FreeGroup α ≃* FreeGroup β) : α ≃ β :=
   .ofFreeAbelianGroupEquiv (MulEquiv.toAdditive e.abelianizationCongr)
 
 /-- Isomorphic free groups have equivalent bases (`IsFreeGroup` variant). -/
+noncomputable
 def Equiv.ofIsFreeGroupEquiv [Group G] [Group H] [IsFreeGroup G] [IsFreeGroup H] (e : G ≃* H) :
     Generators G ≃ Generators H :=
   .ofFreeGroupEquiv <| (toFreeGroup G).symm.trans <| e.trans <| toFreeGroup H

@@ -46,8 +46,6 @@ uniformly integrable, uniformly absolutely continuous integral, Vitali convergen
 @[expose] public section
 
 
-noncomputable section
-
 open scoped MeasureTheory NNReal ENNReal Topology
 
 namespace MeasureTheory

@@ -49,8 +49,6 @@ is too strong.
 
 @[expose] public section
 
-noncomputable section
-
 open Function Set Submodule
 open FaithfulSMul (algebraMap_injective)
 open Module
@@ -295,7 +293,7 @@ section RootSystem
 variable {P : RootPairing ι R M N} (b : P.Base) [P.IsRootSystem]
 
 /-- A base of a root system yields a basis of the root space. -/
-def toWeightBasis :
+noncomputable def toWeightBasis :
     Basis b.support R M :=
   Basis.mk b.linearIndepOn_root <| by
     change ⊤ ≤ span R (range <| P.root ∘ ((↑) : b.support → ι))
@@ -310,7 +308,7 @@ def toWeightBasis :
   simp [← LinearEquiv.eq_symm_apply]
 
 /-- A base of a root system yields a basis of the coroot space. -/
-def toCoweightBasis :
+noncomputable def toCoweightBasis :
     Basis b.support R N :=
   Base.toWeightBasis (P := P.flip) b.flip
 
@@ -342,7 +340,7 @@ lemma linearIndependentInt [CharZero R] :
     b.linearIndepOn_root.restrict_scalars' ℤ
 
 /-- A base for a root system gives a `ℤ`-basis for the `ℤ`-span of the roots. -/
-def toWeightBasisInt [CharZero R] :
+noncomputable def toWeightBasisInt [CharZero R] :
     Basis b.support ℤ (P.rootSpan ℤ) :=
   Basis.mk b.linearIndependentInt <| by
     have : (fun i : b.support ↦ P.rootSpanMem ℤ i) = P.rootSpanMem ℤ ∘ ((↑) : b.support → ι) := rfl
@@ -394,7 +392,7 @@ section PositiveRoots
 variable {P : RootPairing ι R M N} (b : P.Base) [CharZero R]
 
 /-- Given a base `α₁, α₂, …`, the height of a root `∑ zᵢαᵢ` relative to this base is `∑ zᵢ`. -/
-def height (i : ι) : ℤ :=
+noncomputable def height (i : ι) : ℤ :=
   ∑ j ∈ b.support, (b.exists_root_eq_sum_int i).choose j
 
 variable {b} in

@@ -33,8 +33,6 @@ function with finite support, module, linear algebra
 
 @[expose] public section
 
-noncomputable section
-
 open Set LinearMap Submodule
 
 namespace Finsupp
@@ -51,7 +49,7 @@ variable {α' : Type*} {M' : Type*} [AddCommMonoid M'] [Module R M'] (v : α →
 
 /-- Interprets (l : α →₀ R) as a linear combination of the elements in the family (v : α → M) and
     evaluates this linear combination. -/
-def linearCombination : (α →₀ R) →ₗ[R] M :=
+noncomputable def linearCombination : (α →₀ R) →ₗ[R] M :=
   Finsupp.lsum ℕ fun i => LinearMap.id.smulRight (v i)
 
 variable {v}
@@ -237,7 +235,7 @@ subset of the vectors in `v`, mapping it to the span of those vectors.
 
 The subset is indicated by a set `s : Set α` of indices.
 -/
-def linearCombinationOn (s : Set α) : supported R R s →ₗ[R] span R (v '' s) :=
+noncomputable def linearCombinationOn (s : Set α) : supported R R s →ₗ[R] span R (v '' s) :=
   LinearMap.codRestrict _ ((linearCombination _ v).comp (Submodule.subtype (supported R R s)))
     fun ⟨l, hl⟩ => (mem_span_image_iff_linearCombination _).2 ⟨l, hl, rfl⟩
 
@@ -284,7 +282,7 @@ In the absence of `SMulCommClass R S M`, use `Finsupp.linearCombination`.
 
 See note [bundled maps over different rings] for why separate `R` and `S` semirings are used.
 -/
-def bilinearCombination : (α → M) →ₗ[S] (α →₀ R) →ₗ[R] M where
+noncomputable def bilinearCombination : (α → M) →ₗ[S] (α →₀ R) →ₗ[R] M where
   toFun v := linearCombination R v
   map_add' u v := by ext; simp [Pi.add_apply, smul_add]
   map_smul' r v := by ext; simp [smul_comm]
@@ -440,7 +438,7 @@ variable (R)
 /-- Pick some representation of `x : span R w` as a linear combination in `w`,
 `((Finsupp.mem_span_iff_linearCombination _ _ _).mp x.2).choose`
 -/
-irreducible_def Span.repr (w : Set M) (x : span R w) : w →₀ R :=
+noncomputable irreducible_def Span.repr (w : Set M) (x : span R w) : w →₀ R :=
   ((Finsupp.mem_span_iff_linearCombination _ _ _).mp x.2).choose
 
 @[simp]
@@ -528,7 +526,7 @@ variable {R M ι : Type*} [Ring R] [AddCommGroup M] [Module R M] (i : ι) (c : �
 /-- Given `c : ι → R` and an index `i` such that `c i = 0`, this is the linear isomorphism sending
 the `j`-th standard basis vector to itself plus `c j` multiplied with the `i`-th standard basis
 vector (in particular, the `i`-th standard basis vector is kept invariant). -/
-def Finsupp.addSingleEquiv : (ι →₀ R) ≃ₗ[R] (ι →₀ R) := by
+noncomputable def Finsupp.addSingleEquiv : (ι →₀ R) ≃ₗ[R] (ι →₀ R) := by
   refine .ofLinear (linearCombination _ fun j ↦ single j 1 + single i (c j))
     (linearCombination _ fun j ↦ single j 1 - single i (c j)) ?_ ?_ <;>
   ext j k <;> obtain rfl | hk := eq_or_ne i k

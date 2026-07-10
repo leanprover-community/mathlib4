@@ -65,8 +65,6 @@ the file `Mathlib/MeasureTheory/Measure/Haar/Unique.lean`.
 @[expose] public section
 
 
-noncomputable section
-
 open Set Inv Function TopologicalSpace MeasurableSpace
 
 open scoped NNReal ENNReal Pointwise Topology

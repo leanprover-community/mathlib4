@@ -19,8 +19,6 @@ positive-determinant subgroup, so that `!![-1, 0; 0, 1]` acts as `z ↦ -conj z`
 
 @[expose] public section
 
-noncomputable section
-
 open Matrix Matrix.SpecialLinearGroup UpperHalfPlane
 open scoped MatrixGroups ComplexConjugate
 
@@ -138,7 +136,7 @@ lemma σ_mul_comm (g h : GL (Fin 2) ℝ) (z : ℂ) : σ g (σ h z) = σ h (σ g 
   split_ifs <;> simp
 
 /-- Fractional linear transformation, also known as the Moebius transformation -/
-def smulAux' (g : GL (Fin 2) ℝ) (z : ℂ) : ℂ := σ g (num g z / denom g z)
+noncomputable def smulAux' (g : GL (Fin 2) ℝ) (z : ℂ) : ℂ := σ g (num g z / denom g z)
 
 lemma smulAux'_im (g : GL (Fin 2) ℝ) (z : ℂ) :
     (smulAux' g z).im = |g.det.val| * z.im / Complex.normSq (denom g z) := by
@@ -149,7 +147,7 @@ lemma smulAux'_im (g : GL (Fin 2) ℝ) (z : ℂ) :
     neg_mul, neg_div, neg_inj] using! moebius_im g z
 
 /-- Fractional linear transformation, also known as the Moebius transformation -/
-def smulAux (g : GL (Fin 2) ℝ) (z : ℍ) : ℍ :=
+noncomputable def smulAux (g : GL (Fin 2) ℝ) (z : ℍ) : ℍ :=
   mk (smulAux' g z) <| by
     rw [smulAux'_im]
     exact div_pos (mul_pos (abs_pos.mpr g.det.ne_zero) z.im_pos) (normSq_denom_pos _ z.im_ne_zero)
@@ -179,7 +177,7 @@ theorem mul_smul' (g h : GL (Fin 2) ℝ) (z : ℍ) :
 
 /-- Action of `GL (Fin 2) ℝ` on the upper half-plane, with `GL(2, ℝ)⁺` acting by Moebius
 transformations in the usual way, extended to all of `GL (Fin 2) ℝ` using complex conjugation. -/
-instance glAction : MulAction (GL (Fin 2) ℝ) ℍ where
+noncomputable instance glAction : MulAction (GL (Fin 2) ℝ) ℍ where
   smul := smulAux
   one_smul z := by
     change smulAux 1 z = z
@@ -265,7 +263,7 @@ end GLAction
 
 section PGLAction
 
-instance : MulAction PGL(2, ℝ) ℍ :=
+noncomputable instance : MulAction PGL(2, ℝ) ℍ :=
   Matrix.ProjGenLinGroup.mulActionOfGL glScalar_smul
 
 @[simp]
@@ -376,7 +374,7 @@ section J
 
 /-- The matrix `[-1, 0; 0, 1]`, which defines an anti-holomorphic involution of `ℍ` via
 `τ ↦ -conj τ`. -/
-def J : GL (Fin 2) ℝ := .mkOfDetNeZero !![-1, 0; 0, 1] (by simp)
+noncomputable def J : GL (Fin 2) ℝ := .mkOfDetNeZero !![-1, 0; 0, 1] (by simp)
 
 lemma coe_J_smul (τ : ℍ) : (↑(J • τ) : ℂ) = -conj ↑τ := by
   simp [UpperHalfPlane.coe_smul, σ, J, show ¬(1 : ℝ) < 0 by simp, num, denom]
@@ -406,7 +404,7 @@ section ModularScalarTowers
 
 /-- Canonical embedding of `SL(2, ℤ)` into `GL(2, ℝ)⁺`. -/
 @[deprecated "use GL(2, ℝ)" (since := "2026-04-29")]
-def coe (g : SL(2, ℤ)) : GL(2, ℝ)⁺ := ((g : SL(2, ℝ)) : GL(2, ℝ)⁺)
+noncomputable def coe (g : SL(2, ℤ)) : GL(2, ℝ)⁺ := ((g : SL(2, ℝ)) : GL(2, ℝ)⁺)
 
 @[deprecated "use GL(2, ℝ)" (since := "2026-04-29")]
 lemma coe_inj (a b : SL(2, ℤ)) : coe a = coe b ↔ a = b := by
@@ -416,7 +414,7 @@ lemma coe_inj (a b : SL(2, ℤ)) : coe a = coe b ↔ a = b := by
 
 /-- Canonical embedding of `SL(2, ℤ)` into `GL(2, ℝ)⁺`, bundled as a group hom. -/
 @[deprecated "use GL(2, ℝ)" (since := "2026-04-29")]
-def coeHom : SL(2, ℤ) →* GL(2, ℝ)⁺ := toGLPos.comp <| map <| Int.castRingHom _
+noncomputable def coeHom : SL(2, ℤ) →* GL(2, ℝ)⁺ := toGLPos.comp <| map <| Int.castRingHom _
 
 @[deprecated "use GL(2, ℝ)" (since := "2026-04-29")]
 lemma coeHom_apply (g : SL(2, ℤ)) : coeHom g = coe g := rfl
@@ -436,7 +434,7 @@ lemma coe_one : coe 1 = 1 := by
 
 /-- Multiplication action of `SL(2, ℤ)` on `GL(2, ℝ)⁺`. -/
 @[reducible, deprecated "use GL(2, ℝ)" (since := "2026-04-29")]
-def SLOnGLPos : SMul SL(2, ℤ) GL(2, ℝ)⁺ :=
+noncomputable def SLOnGLPos : SMul SL(2, ℤ) GL(2, ℝ)⁺ :=
   ⟨fun s g => s * g⟩
 
 attribute [local instance] SLOnGLPos

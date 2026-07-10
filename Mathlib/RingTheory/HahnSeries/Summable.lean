@@ -52,8 +52,6 @@ open Finset Function
 
 open scoped Pointwise
 
-noncomputable section
-
 variable {Γ Γ' R V α β : Type*}
 
 namespace HahnSeries
@@ -170,7 +168,7 @@ instance : AddCommMonoid (SummableFamily Γ R α) := fast_instance%
 
 /-- The coefficient function of a summable family, as a finsupp on the parameter type. -/
 @[simps]
-def coeff (s : SummableFamily Γ R α) (g : Γ) : α →₀ R where
+noncomputable def coeff (s : SummableFamily Γ R α) (g : Γ) : α →₀ R where
   support := (s.finite_co_support g).toFinset
   toFun a := (s a).coeff g
   mem_support_toFun a := by simp
@@ -180,7 +178,7 @@ theorem coeff_def (s : SummableFamily Γ R α) (a : α) (g : Γ) : s.coeff g a =
   rfl
 
 /-- The infinite sum of a `SummableFamily` of Hahn series. -/
-def hsum (s : SummableFamily Γ R α) : R⟦Γ⟧ where
+noncomputable def hsum (s : SummableFamily Γ R α) : R⟦Γ⟧ where
   coeff g := ∑ᶠ i, (s i).coeff g
   isPWO_support' :=
     s.isPWO_iUnion_support.mono fun g => by
@@ -426,6 +424,7 @@ theorem finite_co_support_prod_smul (s : SummableFamily Γ R α)
 
 /-- An elementwise scalar multiplication of one summable family on another. -/
 @[simps]
+noncomputable
 def smul (s : SummableFamily Γ R α) (t : SummableFamily Γ' V β) : SummableFamily Γ' V (α × β) where
   toFun ab := (of R).symm (s (ab.1) • ((of R) (t (ab.2))))
   isPWO_iUnion_support' :=
@@ -483,7 +482,7 @@ theorem smul_hsum {R} {V} [Semiring R] [AddCommMonoid V] [Module R V]
     · exact smul_eq_zero_of_left h (t.hsum.coeff gh.2)
     · simp_all
 
-instance : SMul R⟦Γ⟧ (SummableFamily Γ' V β) where
+noncomputable instance : SMul R⟦Γ⟧ (SummableFamily Γ' V β) where
   smul x t := Equiv (Equiv.punitProd β) <| smul (const Unit x) t
 
 theorem smul_eq {x : R⟦Γ⟧} {t : SummableFamily Γ' V β} :
@@ -508,7 +507,7 @@ section Semiring
 variable [AddCommMonoid Γ] [PartialOrder Γ] [IsOrderedCancelAddMonoid Γ]
   [PartialOrder Γ'] [AddAction Γ Γ'] [IsOrderedCancelVAdd Γ Γ'] [Semiring R]
 
-instance [AddCommMonoid V] [Module R V] : Module R⟦Γ⟧ (SummableFamily Γ' V α) where
+noncomputable instance [AddCommMonoid V] [Module R V] : Module R⟦Γ⟧ (SummableFamily Γ' V α) where
   smul_zero _ := ext fun _ => by simp
   zero_smul _ := ext fun _ => by simp
   one_smul _ := ext fun _ => by rw [smul_apply, HahnModule.one_smul', Equiv.symm_apply_apply]
@@ -522,7 +521,7 @@ theorem hsum_smul {x : R⟦Γ⟧} {s : SummableFamily Γ R α} :
 
 /-- The summation of a `summable_family` as a `LinearMap`. -/
 @[simps]
-def lsum : SummableFamily Γ R α →ₗ[R⟦Γ⟧] R⟦Γ⟧ where
+noncomputable def lsum : SummableFamily Γ R α →ₗ[R⟦Γ⟧] R⟦Γ⟧ where
   toFun := hsum
   map_add' _ _ := hsum_add
   map_smul' _ _ := hsum_smul
@@ -544,7 +543,7 @@ theorem finite_co_support_prod_mul (s : SummableFamily Γ R α)
 
 /-- A summable family given by pointwise multiplication of a pair of summable families. -/
 @[simps]
-def mul (s : SummableFamily Γ R α) (t : SummableFamily Γ R β) :
+noncomputable def mul (s : SummableFamily Γ R α) (t : SummableFamily Γ R β) :
     (SummableFamily Γ R (α × β)) where
   toFun a := s (a.1) * t (a.2)
   isPWO_iUnion_support' :=
@@ -611,7 +610,7 @@ variable [PartialOrder Γ] [AddCommMonoid R]
 
 open scoped Classical in
 /-- A summable family can be reindexed by an embedding without changing its sum. -/
-def embDomain (s : SummableFamily Γ R α) (f : α ↪ β) : SummableFamily Γ R β where
+noncomputable def embDomain (s : SummableFamily Γ R α) (f : α ↪ β) : SummableFamily Γ R β where
   toFun b := if h : b ∈ Set.range f then s (Classical.choose h) else 0
   isPWO_iUnion_support' := by
     refine s.isPWO_iUnion_support.mono (Set.iUnion_subset fun b g h => ?_)
@@ -711,7 +710,7 @@ theorem pow_finite_co_support {x : R⟦Γ⟧} (hx : 0 < x.orderTop) (g : Γ) :
 /-- A summable family of powers of a Hahn series `x`. If `x` has non-positive `orderTop`, then
 return a junk value given by pretending `x = 0`. -/
 @[simps]
-def powers (x : R⟦Γ⟧) : SummableFamily Γ R ℕ where
+noncomputable def powers (x : R⟦Γ⟧) : SummableFamily Γ R ℕ where
   toFun n := (if 0 < x.orderTop then x else 0) ^ n
   isPWO_iUnion_support' := by
     by_cases h : 0 < x.orderTop
@@ -825,7 +824,7 @@ theorem isUnit_of_orderTop_pos {x : R⟦Γ⟧} (h : 0 < (x - 1).orderTop) :
 
 /-- Make an element of `orderTopSubOnePos` -/
 @[simps]
-def toOrderTopSubOnePos {x : R⟦Γ⟧} (h : 0 < (x - 1).orderTop) :
+noncomputable def toOrderTopSubOnePos {x : R⟦Γ⟧} (h : 0 < (x - 1).orderTop) :
     orderTopSubOnePos Γ R where
   val := ⟨x, (isUnit_of_orderTop_pos h).unit.inv, IsUnit.mul_val_inv (isUnit_of_orderTop_pos h),
     IsUnit.val_inv_mul (isUnit_of_orderTop_pos h)⟩
@@ -860,7 +859,7 @@ section Field
 variable [AddCommGroup Γ] [LinearOrder Γ] [IsOrderedAddMonoid Γ] [Field R]
 
 @[simps -isSimp inv]
-instance : DivInvMonoid R⟦Γ⟧ where
+noncomputable instance : DivInvMonoid R⟦Γ⟧ where
   inv x :=
     single (-x.order) (x.leadingCoeff)⁻¹ *
       (SummableFamily.powers <| 1 - single (-x.order) (x.leadingCoeff)⁻¹ * x).hsum
@@ -876,7 +875,7 @@ theorem single_div_single (a b : Γ) (r s : R) :
     single a r / single b s = single (a - b) (r / s) := by
   rw [div_eq_mul_inv, sub_eq_add_neg, div_eq_mul_inv, inv_single, single_mul_single]
 
-instance instField : Field R⟦Γ⟧ where
+noncomputable instance instField : Field R⟦Γ⟧ where
   inv_zero := by simp [inv_def]
   mul_inv_cancel x x0 := by
     have h :=

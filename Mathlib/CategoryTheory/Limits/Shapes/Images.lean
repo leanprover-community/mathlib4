@@ -57,8 +57,6 @@ so that `m` factors through the `m'` in any other such factorisation.
 @[expose] public section
 
 
-noncomputable section
-
 universe w v u
 
 open CategoryTheory
@@ -123,7 +121,7 @@ def compMono (F : MonoFactorisation f) {Y' : C} (g : Y ⟶ Y') [Mono g] :
 /-- A mono factorisation of `f ≫ g`, where `g` is an isomorphism,
 gives a mono factorisation of `f`. -/
 @[simps]
-def ofCompIso {Y' : C} {g : Y ⟶ Y'} [IsIso g] (F : MonoFactorisation (f ≫ g)) :
+noncomputable def ofCompIso {Y' : C} {g : Y ⟶ Y'} [IsIso g] (F : MonoFactorisation (f ≫ g)) :
     MonoFactorisation f where
   I := F.I
   m := F.m ≫ inv g
@@ -140,7 +138,7 @@ def isoComp (F : MonoFactorisation f) {X' : C} (g : X' ⟶ X) : MonoFactorisatio
 /-- A mono factorisation of `g ≫ f`, where `g` is an isomorphism,
 gives a mono factorisation of `f`. -/
 @[simps]
-def ofIsoComp {X' : C} (g : X' ⟶ X) [IsIso g] (F : MonoFactorisation (g ≫ f)) :
+noncomputable def ofIsoComp {X' : C} (g : X' ⟶ X) [IsIso g] (F : MonoFactorisation (g ≫ f)) :
     MonoFactorisation f where
   I := F.I
   m := F.m
@@ -149,7 +147,7 @@ def ofIsoComp {X' : C} (g : X' ⟶ X) [IsIso g] (F : MonoFactorisation (g ≫ f)
 /-- If `f` and `g` are isomorphic arrows, then a mono factorisation of `f`
 gives a mono factorisation of `g` -/
 @[simps]
-def ofArrowIso {f g : Arrow C} (F : MonoFactorisation f.hom) (sq : f ⟶ g) [IsIso sq] :
+noncomputable def ofArrowIso {f g : Arrow C} (F : MonoFactorisation f.hom) (sq : f ⟶ g) [IsIso sq] :
     MonoFactorisation g.hom where
   I := F.I
   m := F.m ≫ sq.right
@@ -242,6 +240,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- If `f` and `g` are isomorphic arrows, then a mono factorisation of `f` that is an image
 gives a mono factorisation of `g` that is an image -/
 @[simps]
+noncomputable
 def ofArrowIso {f g : Arrow C} {F : MonoFactorisation f.hom} (hF : IsImage F) (sq : f ⟶ g)
     [IsIso sq] : IsImage (F.ofArrowIso sq) where
   lift F' := hF.lift (F'.ofArrowIso (inv sq))
@@ -289,6 +288,7 @@ instance [Mono f] : Inhabited (ImageFactorisation f) :=
 /-- If `f` and `g` are isomorphic arrows, then an image factorisation of `f`
 gives an image factorisation of `g` -/
 @[simps]
+noncomputable
 def ofArrowIso {f g : Arrow C} (F : ImageFactorisation f.hom) (sq : f ⟶ g) [IsIso sq] :
     ImageFactorisation g.hom where
   F := F.F.ofArrowIso sq
@@ -338,24 +338,24 @@ section
 variable [HasImage f]
 
 /-- Some image factorisation of `f` through a monomorphism (selected with choice). -/
-def Image.imageFactorisation : ImageFactorisation f :=
+noncomputable def Image.imageFactorisation : ImageFactorisation f :=
   Classical.choice HasImage.exists_image
 
 /-- Some factorisation of `f` through a monomorphism (selected with choice). -/
-def Image.monoFactorisation : MonoFactorisation f :=
+noncomputable def Image.monoFactorisation : MonoFactorisation f :=
   (Image.imageFactorisation f).F
 
 /-- The witness of the universal property for the chosen factorisation of `f` through
 a monomorphism. -/
-def Image.isImage : IsImage (Image.monoFactorisation f) :=
+noncomputable def Image.isImage : IsImage (Image.monoFactorisation f) :=
   (Image.imageFactorisation f).isImage
 
 /-- The categorical image of a morphism. -/
-def image : C :=
+noncomputable def image : C :=
   (Image.monoFactorisation f).I
 
 /-- The inclusion of the image of a morphism into the target. -/
-def image.ι : image f ⟶ Y :=
+noncomputable def image.ι : image f ⟶ Y :=
   (Image.monoFactorisation f).m
 
 @[simp]
@@ -365,7 +365,7 @@ instance : Mono (image.ι f) :=
   (Image.monoFactorisation f).m_mono
 
 /-- The map from the source to the image of a morphism. -/
-def factorThruImage : X ⟶ image f :=
+noncomputable def factorThruImage : X ⟶ image f :=
   (Image.monoFactorisation f).e
 
 /-- Rewrite in terms of the `factorThruImage` interface. -/
@@ -381,7 +381,7 @@ variable {f}
 
 /-- Any other factorisation of the morphism `f` through a monomorphism receives a map from the
 image. -/
-def image.lift (F' : MonoFactorisation f) : image f ⟶ F'.I :=
+noncomputable def image.lift (F' : MonoFactorisation f) : image f ⟶ F'.I :=
   (Image.isImage f).lift F'
 
 @[reassoc (attr := simp)]
@@ -458,7 +458,7 @@ end
 section
 
 /-- The image of a monomorphism is isomorphic to the source. -/
-def imageMonoIsoSource [Mono f] : image f ≅ X :=
+noncomputable def imageMonoIsoSource [Mono f] : image f ≅ X :=
   IsImage.isoExt (Image.isImage f) (IsImage.self f)
 
 @[reassoc (attr := simp)]
@@ -524,7 +524,7 @@ variable {f' : X ⟶ Y} [HasImage f] [HasImage f']
 /-- An equation between morphisms gives a comparison map between the images
 (which momentarily we prove is an iso).
 -/
-def image.eqToHom (h : f = f') : image f ⟶ image f' :=
+noncomputable def image.eqToHom (h : f = f') : image f ⟶ image f' :=
   image.lift
     { I := image f'
       m := image.ι f'
@@ -541,7 +541,7 @@ instance (h : f = f') : IsIso (image.eqToHom h) :=
           simp [image.eqToHom])⟩⟩⟩
 
 /-- An equation between morphisms gives an isomorphism between the images. -/
-def image.eqToIso (h : f = f') : image f ≅ image f' :=
+noncomputable def image.eqToIso (h : f = f') : image f ≅ image f' :=
   asIso (image.eqToHom h)
 
 /-- As long as the category has equalizers,
@@ -560,7 +560,7 @@ section
 variable {Z : C} (g : Y ⟶ Z)
 
 /-- The comparison map `image (f ≫ g) ⟶ image g`. -/
-def image.preComp [HasImage g] [HasImage (f ≫ g)] : image (f ≫ g) ⟶ image g :=
+noncomputable def image.preComp [HasImage g] [HasImage (f ≫ g)] : image (f ≫ g) ⟶ image g :=
   image.lift
     { I := image g
       m := image.ι g
@@ -651,7 +651,7 @@ instance hasImage_comp_iso [HasImage f] [IsIso g] : HasImage (f ≫ g) :=
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Postcomposing by an isomorphism induces an isomorphism on the image. -/
-def image.compIso [HasImage f] [IsIso g] : image f ≅ image (f ≫ g) where
+noncomputable def image.compIso [HasImage f] [IsIso g] : image f ≅ image (f ≫ g) where
   hom := image.lift (Image.monoFactorisation (f ≫ g)).ofCompIso
   inv := image.lift ((Image.monoFactorisation f).compMono g)
 
@@ -694,6 +694,7 @@ structure ImageMap {f g : Arrow C} [HasImage f.hom] [HasImage g.hom] (sq : f ⟶
 
 attribute [inherit_doc ImageMap] ImageMap.map ImageMap.map_ι
 
+noncomputable
 instance inhabitedImageMap {f : Arrow C} [HasImage f.hom] : Inhabited (ImageMap (𝟙 f)) :=
   ⟨⟨𝟙 _, by simp⟩⟩
 
@@ -707,7 +708,7 @@ theorem ImageMap.factor_map {f g : Arrow C} [HasImage f.hom] [HasImage g.hom] (s
 set_option backward.isDefEq.respectTransparency false in
 /-- To give an image map for a commutative square with `f` at the top and `g` at the bottom, it
 suffices to give a map between any mono factorisation of `f` and any image factorisation of `g`. -/
-def ImageMap.transport {f g : Arrow C} [HasImage f.hom] [HasImage g.hom] (sq : f ⟶ g)
+noncomputable def ImageMap.transport {f g : Arrow C} [HasImage f.hom] [HasImage g.hom] (sq : f ⟶ g)
     (F : MonoFactorisation f.hom) {F' : MonoFactorisation g.hom} (hF' : IsImage F')
     {map : F.I ⟶ F'.I} (map_ι : map ≫ F'.m = F.m ≫ sq.right) : ImageMap sq where
   map := image.lift F ≫ map ≫ hF'.lift (Image.monoFactorisation g.hom)
@@ -730,6 +731,7 @@ theorem HasImageMap.transport {f g : Arrow C} [HasImage f.hom] [HasImage g.hom] 
   HasImageMap.mk <| ImageMap.transport sq F hF' map_ι
 
 /-- Obtain an `ImageMap` from a `HasImageMap` instance. -/
+noncomputable
 def HasImageMap.imageMap {f g : Arrow C} [HasImage f.hom] [HasImage g.hom] (sq : f ⟶ g)
     [HasImageMap sq] : ImageMap sq :=
   Classical.choice <| @HasImageMap.has_image_map _ _ _ _ _ _ sq _
@@ -781,7 +783,7 @@ end
 variable [HasImageMap sq]
 
 /-- The map on images induced by a commutative square. -/
-abbrev image.map : image f.hom ⟶ image g.hom :=
+noncomputable abbrev image.map : image f.hom ⟶ image g.hom :=
   (HasImageMap.imageMap sq).map
 
 theorem image.factor_map :
@@ -800,7 +802,7 @@ variable {h : Arrow C} [HasImage h.hom] (sq' : g ⟶ h)
 variable [HasImageMap sq']
 
 /-- Image maps for composable commutative squares induce an image map in the composite square. -/
-def imageMapComp : ImageMap (sq ≫ sq') where map := image.map sq ≫ image.map sq'
+noncomputable def imageMapComp : ImageMap (sq ≫ sq') where map := image.map sq ≫ image.map sq'
 
 @[simp]
 theorem image.map_comp [HasImageMap (sq ≫ sq')] :
@@ -816,7 +818,7 @@ variable (f)
 
 /-- The identity `image f ⟶ image f` fits into the commutative square represented by the identity
 morphism `𝟙 f` in the arrow category. -/
-def imageMapId : ImageMap (𝟙 f) where map := 𝟙 (image f.hom)
+noncomputable def imageMapId : ImageMap (𝟙 f) where map := 𝟙 (image f.hom)
 
 @[simp]
 theorem image.map_id [HasImageMap (𝟙 f)] : image.map (𝟙 f) = 𝟙 (image f.hom) :=
@@ -846,7 +848,7 @@ variable [HasImages C] [HasImageMaps C]
 /-- The functor from the arrow category of `C` to `C` itself that maps a morphism to its image
 and a commutative square to the induced morphism on images. -/
 @[simps]
-def im : Arrow C ⥤ C where
+noncomputable def im : Arrow C ⥤ C where
   obj f := image f.hom
   map st := image.map st
 
@@ -870,7 +872,7 @@ instance strongEpiMonoFactorisationInhabited {X Y : C} (f : X ⟶ Y) [StrongEpi 
 
 /-- A mono factorisation coming from a strong epi-mono factorisation always has the universal
 property of the image. -/
-def StrongEpiMonoFactorisation.toMonoIsImage {X Y : C} {f : X ⟶ Y}
+noncomputable def StrongEpiMonoFactorisation.toMonoIsImage {X Y : C} {f : X ⟶ Y}
     (F : StrongEpiMonoFactorisation f) : IsImage F.toMonoFactorisation where
   lift G :=
     (CommSq.mk (show G.e ≫ G.m = F.e ≫ F.m by rw [F.toMonoFactorisation.fac, G.fac])).lift
@@ -984,6 +986,7 @@ If `C` has strong epi mono factorisations, then the image is unique up to isomor
 `f` factors as a strong epi followed by a mono, this factorisation is essentially the image
 factorisation.
 -/
+noncomputable
 def image.isoStrongEpiMono {I' : C} (e : X ⟶ I') (m : I' ⟶ Y) (comm : e ≫ m = f) [StrongEpi e]
     [Mono m] : I' ≅ image f :=
   let F : StrongEpiMonoFactorisation f := { I := I', m := m, e := e }

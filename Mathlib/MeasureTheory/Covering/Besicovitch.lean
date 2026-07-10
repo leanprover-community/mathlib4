@@ -94,8 +94,6 @@ balls is the desired almost everywhere covering.
 @[expose] public section
 
 
-noncomputable section
-
 universe u
 
 open Metric Set Filter Fin MeasureTheory TopologicalSpace
@@ -258,7 +256,7 @@ theorem monotone_iUnionUpTo : Monotone p.iUnionUpTo := by
   exact iUnion_mono' fun r => ⟨⟨r, r.2.trans_le hij⟩, Subset.rfl⟩
 
 /-- Supremum of the radii of balls whose centers are not yet covered at step `i`. -/
-def R (i : Ordinal.{u}) : ℝ :=
+noncomputable def R (i : Ordinal.{u}) : ℝ :=
   iSup fun b : { b : β // p.c b ∉ p.iUnionUpTo i } => p.r b
 
 /-- Group the balls into disjoint families, by assigning to a ball the smallest color for which
@@ -275,7 +273,7 @@ noncomputable def color : Ordinal.{u} → ℕ
 
 /-- `p.lastStep` is the first ordinal where the construction stops making sense, i.e., `f` returns
 garbage since there is no point left to be chosen. We will only use ordinals before this step. -/
-def lastStep : Ordinal.{u} :=
+noncomputable def lastStep : Ordinal.{u} :=
   sInf {i | ¬∃ b : β, p.c b ∉ p.iUnionUpTo i ∧ p.R i ≤ p.τ * p.r b}
 
 theorem lastStep_nonempty :

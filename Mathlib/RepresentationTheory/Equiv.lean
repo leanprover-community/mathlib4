@@ -30,12 +30,12 @@ variable {k : Type u} [Semiring k] {G : Type v} [Monoid G] {V : Type v'} [AddCom
 
 namespace Representation
 
-noncomputable section
+section
 
 variable (k G) in
 /-- If there exists `G`-action on a trivial monoid `H` then the induced representation
   on `k[H]` is equivalent to the trivial representation. -/
-def ofMulActionSubsingletonEquivTrivial : (ofMulAction k G H).Equiv (trivial k G k) :=
+noncomputable def ofMulActionSubsingletonEquivTrivial : (ofMulAction k G H).Equiv (trivial k G k) :=
   .mk (MonoidAlgebra.uniqueLinearEquiv k H) fun g ↦ by ext a; simp [Subsingleton.elim (g • a) a]
 
 @[simp]
@@ -49,7 +49,7 @@ lemma ofMulActionSubsingletonEquivTrivial_symm_apply (r : k) :
 
 variable (k G) in
 /-- The equivalence of representations between `(Fin 1 → G) →₀ k` and `G →₀ k`. -/
-def diagonalOneEquivLeftRegular : (diagonal k G 1).Equiv (leftRegular k G) :=
+noncomputable def diagonalOneEquivLeftRegular : (diagonal k G 1).Equiv (leftRegular k G) :=
   .mk (MonoidAlgebra.mapDomainLinearEquiv _ _ <| .funUnique _ _) fun g ↦ by ext; simp
 
 @[simp]
@@ -73,7 +73,7 @@ open Finsupp
 
 /-- Every `f : α → V` can induce an intertwining map between `(α →₀ k[G])` and `V`. -/
 @[simps! toLinearMap]
-def freeLift {α : Type w'} (f : α → V) : (free k G α).IntertwiningMap σ where
+noncomputable def freeLift {α : Type w'} (f : α → V) : (free k G α).IntertwiningMap σ where
   toLinearMap := linearCombination k (fun x => σ x.2 (f x.1)) ∘ₗ
     (curryLinearEquiv k).symm.toLinearMap ∘ₗ
     Finsupp.mapRange.linearMap (MonoidAlgebra.coeffLinearEquiv _).toLinearMap
@@ -88,6 +88,7 @@ open IntertwiningMap
 
 /-- Equiv between the intertwining map module `(α →₀ G →₀ k) → V` and the function space `α → V`. -/
 @[simps]
+noncomputable
 def freeLiftLEquiv (α : Type w') : ((free k G α).IntertwiningMap σ) ≃ₗ[k] (α → V) where
   toFun f i := f (single i (.single 1 1))
   map_add' _ _ := rfl
@@ -98,7 +99,7 @@ def freeLiftLEquiv (α : Type w') : ((free k G α).IntertwiningMap σ) ≃ₗ[k]
 
 /-- Equiv between representations induced by linear equiv between `(α →₀ V) ⊗[k] W` and
   `α →₀ (V ⊗[k] W)`. -/
-def finsuppTensorLeft (α : Type w') [DecidableEq α] :
+noncomputable def finsuppTensorLeft (α : Type w') [DecidableEq α] :
     ((σ.finsupp α).tprod ρ).Equiv ((σ.tprod ρ).finsupp α) :=
   .mk (TensorProduct.finsuppLeft _ _ _ _ _) fun g ↦ by
     ext; simp [TensorProduct.finsuppLeft_apply_tmul]
@@ -119,7 +120,7 @@ lemma finsuppTensorLeft_symm_apply_single {α : Type w'} [DecidableEq α] (i : �
 
 /-- Equiv between representations induced by linear equiv between `V ⊗[k] (α →₀ W)` and
   `α →₀ (V ⊗[k] W)`. -/
-def finsuppTensorRight (α : Type w') [DecidableEq α] :
+noncomputable def finsuppTensorRight (α : Type w') [DecidableEq α] :
     (σ.tprod (ρ.finsupp α)).Equiv ((σ.tprod ρ).finsupp α) :=
   .mk (TensorProduct.finsuppRight _ _ _ _ _) fun g ↦ by
     ext; simp [TensorProduct.finsuppRight_apply_tmul]
@@ -140,7 +141,7 @@ lemma finsuppTensorRight_symm_apply_single {α : Type w'} [DecidableEq α] (i : 
 
 /-- Equiv between representations induced by linear equiv between `(G →₀ k) ⊗[k] (α →₀ k)` and
   `α →₀ G →₀ k`. -/
-def leftRegularTensorTrivialIsoFree (α : Type w') :
+noncomputable def leftRegularTensorTrivialIsoFree (α : Type w') :
     ((leftRegular k G).tprod (trivial k G k[α])).Equiv (free k G α) :=
   .mk (TensorProduct.congr (MonoidAlgebra.coeffLinearEquiv _) (MonoidAlgebra.coeffLinearEquiv _) ≪≫ₗ
     finsuppTensorFinsupp' k G α ≪≫ₗ Finsupp.domLCongr (Equiv.prodComm G α) ≪≫ₗ curryLinearEquiv k
@@ -163,7 +164,7 @@ end finsupp
 
 /-- The linear equiv between the hom module `k[G] ⟶ᵍ V` and `V` itself. -/
 @[simps!]
-def leftRegularMapEquiv : (leftRegular k G).IntertwiningMap σ ≃ₗ[k] V where
+noncomputable def leftRegularMapEquiv : (leftRegular k G).IntertwiningMap σ ≃ₗ[k] V where
   toFun f := (Finsupp.llift V k k G).symm
     (f.toLinearMap ∘ₗ (MonoidAlgebra.coeffLinearEquiv _).symm.toLinearMap) (1 : G)
   map_add' _ _ := rfl

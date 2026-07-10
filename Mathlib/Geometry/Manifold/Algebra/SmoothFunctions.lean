@@ -17,8 +17,6 @@ In this file, we define instances of algebraic structures over `C^n` functions.
 @[expose] public section
 
 
-noncomputable section
-
 open scoped Manifold ContDiff
 
 open TopologicalSpace
@@ -120,7 +118,7 @@ variable (I') {N}
 `C^n⟮I, V; I', G⟯` to `C^n⟮I, U; I', G⟯`. -/
 @[to_additive /-- For an additive Lie group `G` and open sets `U ⊆ V` in `N`, the 'restriction'
 group homomorphism from `C^n⟮I, V; I', G⟯` to `C^n⟮I, U; I', G⟯`. -/]
-def restrictMonoidHom (G : Type*) [Monoid G] [TopologicalSpace G] [ChartedSpace H' G]
+noncomputable def restrictMonoidHom (G : Type*) [Monoid G] [TopologicalSpace G] [ChartedSpace H' G]
     [ContMDiffMul I' n G] {U V : Opens N} (h : U ≤ V) : C^n⟮I, V; I', G⟯ →* C^n⟮I, U; I', G⟯ where
   toFun f := ⟨f ∘ Set.inclusion h, f.contMDiff.comp (contMDiff_inclusion h)⟩
   map_one' := rfl
@@ -202,7 +200,7 @@ variable (I') {N}
 
 /-- For a "`C^n` ring" `R` and open sets `U ⊆ V` in `N`, the "restriction" ring homomorphism from
 `C^n⟮I, V; I', R⟯` to `C^n⟮I, U; I', R⟯`. -/
-def restrictRingHom (R : Type*) [Ring R] [TopologicalSpace R] [ChartedSpace H' R]
+noncomputable def restrictRingHom (R : Type*) [Ring R] [TopologicalSpace R] [ChartedSpace H' R]
     [ContMDiffRing I' n R] {U V : Opens N} (h : U ≤ V) :
     C^n⟮I, V; I', R⟯ →+* C^n⟮I, U; I', R⟯ :=
   { ContMDiffMap.restrictMonoidHom I I' R h, ContMDiffMap.restrictAddMonoidHom I I' R h with

@@ -28,7 +28,7 @@ distributions. The multiplier function is throughout assumed to have temperate g
 
 -/
 
-@[expose] public noncomputable section
+@[expose] public section
 
 variable {ι 𝕜 E F F₁ F₂ : Type*}
 
@@ -47,7 +47,7 @@ open FourierTransform
 
 variable (F) in
 /-- Fourier multiplier on Schwartz functions. -/
-def fourierMultiplierCLM (g : E → 𝕜) : 𝓢(E, F) →L[𝕜] 𝓢(E, F) :=
+noncomputable def fourierMultiplierCLM (g : E → 𝕜) : 𝓢(E, F) →L[𝕜] 𝓢(E, F) :=
   fourierInvCLM 𝕜 𝓢(E, F) ∘L (smulLeftCLM F g) ∘L fourierCLM 𝕜 𝓢(E, F)
 
 theorem fourierMultiplierCLM_apply (g : E → 𝕜) (f : 𝓢(E, F)) :
@@ -140,7 +140,7 @@ open FourierTransform
 
 variable (F) in
 /-- Fourier multiplier on tempered distributions. -/
-def fourierMultiplierCLM (g : E → ℂ) : 𝓢'(E, F) →L[ℂ] 𝓢'(E, F) :=
+noncomputable def fourierMultiplierCLM (g : E → ℂ) : 𝓢'(E, F) →L[ℂ] 𝓢'(E, F) :=
   fourierInvCLM ℂ 𝓢'(E, F) ∘L (smulLeftCLM F g) ∘L fourierCLM ℂ 𝓢'(E, F)
 
 theorem fourierMultiplierCLM_apply (g : E → ℂ) (f : 𝓢'(E, F)) :

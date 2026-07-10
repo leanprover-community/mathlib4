@@ -360,7 +360,7 @@ set_option backward.defeqAttrib.useBackward true in
 
 end
 
-noncomputable section
+section
 
 @[reassoc]
 lemma XIsoOfEq_hom_naturality {K L : HomologicalComplex V c} (φ : K ⟶ L) {n n' : ι} (h : n = n') :
@@ -401,15 +401,15 @@ theorem image_eq_image [HasImages V] [HasEqualizers V] {i i' j : ι} (r : c.Rel 
 section
 
 /-- Either `C.X i`, if there is some `i` with `c.Rel i j`, or `C.X j`. -/
-abbrev xPrev (j : ι) : V :=
+noncomputable abbrev xPrev (j : ι) : V :=
   C.X (c.prev j)
 
 /-- If `c.Rel i j`, then `C.xPrev j` is isomorphic to `C.X i`. -/
-def xPrevIso {i j : ι} (r : c.Rel i j) : C.xPrev j ≅ C.X i :=
+noncomputable def xPrevIso {i j : ι} (r : c.Rel i j) : C.xPrev j ≅ C.X i :=
   eqToIso <| by rw [← c.prev_eq' r]
 
 /-- If there is no `i` so `c.Rel i j`, then `C.xPrev j` is isomorphic to `C.X j`. -/
-def xPrevIsoSelf {j : ι} (h : ¬c.Rel (c.prev j) j) : C.xPrev j ≅ C.X j :=
+noncomputable def xPrevIsoSelf {j : ι} (h : ¬c.Rel (c.prev j) j) : C.xPrev j ≅ C.X j :=
   eqToIso <|
     congr_arg C.X
       (by
@@ -420,15 +420,15 @@ def xPrevIsoSelf {j : ι} (h : ¬c.Rel (c.prev j) j) : C.xPrev j ≅ C.X j :=
         rw [this] at h; contradiction)
 
 /-- Either `C.X j`, if there is some `j` with `c.rel i j`, or `C.X i`. -/
-abbrev xNext (i : ι) : V :=
+noncomputable abbrev xNext (i : ι) : V :=
   C.X (c.next i)
 
 /-- If `c.Rel i j`, then `C.xNext i` is isomorphic to `C.X j`. -/
-def xNextIso {i j : ι} (r : c.Rel i j) : C.xNext i ≅ C.X j :=
+noncomputable def xNextIso {i j : ι} (r : c.Rel i j) : C.xNext i ≅ C.X j :=
   eqToIso <| by rw [← c.next_eq' r]
 
 /-- If there is no `j` so `c.Rel i j`, then `C.xNext i` is isomorphic to `C.X i`. -/
-def xNextIsoSelf {i : ι} (h : ¬c.Rel i (c.next i)) : C.xNext i ≅ C.X i :=
+noncomputable def xNextIsoSelf {i : ι} (h : ¬c.Rel i (c.next i)) : C.xNext i ≅ C.X i :=
   eqToIso <|
     congr_arg C.X
       (by
@@ -439,12 +439,12 @@ def xNextIsoSelf {i : ι} (h : ¬c.Rel i (c.next i)) : C.xNext i ≅ C.X i :=
 
 /-- The differential mapping into `C.X j`, or zero if there isn't one.
 -/
-abbrev dTo (j : ι) : C.xPrev j ⟶ C.X j :=
+noncomputable abbrev dTo (j : ι) : C.xPrev j ⟶ C.X j :=
   C.d (c.prev j) j
 
 /-- The differential mapping out of `C.X i`, or zero if there isn't one.
 -/
-abbrev dFrom (i : ι) : C.X i ⟶ C.xNext i :=
+noncomputable abbrev dFrom (i : ι) : C.X i ⟶ C.xNext i :=
   C.d i (c.next i)
 
 theorem dTo_eq {i j : ι} (r : c.Rel i j) : C.dTo j = (C.xPrevIso r).hom ≫ C.d i j := by
@@ -540,7 +540,7 @@ theorem isIso_of_components (f : C₁ ⟶ C₂) [∀ n : ι, IsIso (f.f n)] : Is
 
 
 /-- `f.prev j` is `f.f i` if there is some `r i j`, and `f.f j` otherwise. -/
-abbrev prev (f : Hom C₁ C₂) (j : ι) : C₁.xPrev j ⟶ C₂.xPrev j :=
+noncomputable abbrev prev (f : Hom C₁ C₂) (j : ι) : C₁.xPrev j ⟶ C₂.xPrev j :=
   f.f _
 
 theorem prev_eq (f : Hom C₁ C₂) {i j : ι} (w : c.Rel i j) :
@@ -549,7 +549,7 @@ theorem prev_eq (f : Hom C₁ C₂) {i j : ι} (w : c.Rel i j) :
   simp only [xPrevIso, eqToIso_refl, Iso.refl_hom, Iso.refl_inv, comp_id, id_comp]
 
 /-- `f.next i` is `f.f j` if there is some `r i j`, and `f.f j` otherwise. -/
-abbrev next (f : Hom C₁ C₂) (i : ι) : C₁.xNext i ⟶ C₂.xNext i :=
+noncomputable abbrev next (f : Hom C₁ C₂) (i : ι) : C₁.xNext i ⟶ C₂.xNext i :=
   f.f _
 
 theorem next_eq (f : Hom C₁ C₂) {i j : ι} (w : c.Rel i j) :
@@ -572,7 +572,7 @@ attribute [simp] comm_to_apply
 /-- A morphism of chain complexes
 induces a morphism of arrows of the differentials out of each object.
 -/
-def sqFrom (f : Hom C₁ C₂) (i : ι) : Arrow.mk (C₁.dFrom i) ⟶ Arrow.mk (C₂.dFrom i) :=
+noncomputable def sqFrom (f : Hom C₁ C₂) (i : ι) : Arrow.mk (C₁.dFrom i) ⟶ Arrow.mk (C₂.dFrom i) :=
   Arrow.homMk _ _ (f.comm_from i)
 
 @[simp]
@@ -595,7 +595,7 @@ theorem sqFrom_comp (f : C₁ ⟶ C₂) (g : C₂ ⟶ C₃) (i : ι) :
 /-- A morphism of chain complexes
 induces a morphism of arrows of the differentials into each object.
 -/
-def sqTo (f : Hom C₁ C₂) (j : ι) : Arrow.mk (C₁.dTo j) ⟶ Arrow.mk (C₂.dTo j) :=
+noncomputable def sqTo (f : Hom C₁ C₂) (j : ι) : Arrow.mk (C₁.dTo j) ⟶ Arrow.mk (C₂.dTo j) :=
   Arrow.homMk _ _ (f.comm_to j)
 
 @[simp]

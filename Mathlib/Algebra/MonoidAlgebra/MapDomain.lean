@@ -15,7 +15,7 @@ This file defines maps of monoid algebras along both the ring and monoid argumen
 
 assert_not_exists NonUnitalAlgHom AlgEquiv
 
-@[expose] public noncomputable section
+@[expose] public section
 
 open Function
 open Finsupp hiding single mapDomain
@@ -31,7 +31,7 @@ by summing the coefficients along each fiber of `f`. -/
 @[to_additive (attr := simps)
 /-- Given a function `f : M → N` between magmas, return the corresponding map `R[M] → R[N]` obtained
 by summing the coefficients along each fiber of `f`. -/]
-def mapDomain (f : M → N) (x : R[M]) : R[N] := .ofCoeff <| Finsupp.mapDomain f x.coeff
+noncomputable def mapDomain (f : M → N) (x : R[M]) : R[N] := .ofCoeff <| Finsupp.mapDomain f x.coeff
 
 @[to_additive (attr := simp)]
 lemma mapDomain_zero (f : M → N) : mapDomain f (0 : R[M]) = 0 := by ext; simp
@@ -63,7 +63,7 @@ each coefficient along `f`. -/
 @[to_additive
 /-- Given a map `f : R →+ S`, return the corresponding map `R[M] → S[M]` obtained by mapping
 each coefficient along `f`. -/]
-def map (f : R →+ S) (x : R[M]) : S[M] := .ofCoeff <| x.coeff.mapRange f f.map_zero
+noncomputable def map (f : R →+ S) (x : R[M]) : S[M] := .ofCoeff <| x.coeff.mapRange f f.map_zero
 
 @[to_additive (attr := simp)]
 lemma coeff_map (f : R →+ S) (x : R[M]) :
@@ -124,7 +124,7 @@ Coefficients not in the range of `f` are dropped. -/
 /-- Pullback the coefficients of an element of `R[N]` under an injective `f : M → N`.
 
 Coefficients not in the range of `f` are dropped. -/]
-def comapDomain (f : M → N) (hf : Injective f) (x : R[N]) : R[M] :=
+noncomputable def comapDomain (f : M → N) (hf : Injective f) (x : R[N]) : R[M] :=
   .ofCoeff <| x.coeff.comapDomain f hf.injOn
 
 @[to_additive (attr := simp)]
@@ -145,7 +145,7 @@ lemma comapDomain_single_of_not_mem_range {r : R} {n : N} (hn : n ∉ Set.range 
 
 /-- `comapDomain` as an `AddMonoidHom`. -/
 @[to_additive (attr := simps) comapDomainAddMonoidHom /-- `comapDomain` as an `AddMonoidHom`. -/]
-def comapDomainAddMonoidHom (f : M → N) (hf : Injective f) : R[N] →+ R[M] where
+noncomputable def comapDomainAddMonoidHom (f : M → N) (hf : Injective f) : R[N] →+ R[M] where
   toFun := comapDomain f hf
   map_zero' := by simp
   map_add' := by simp
@@ -172,7 +172,7 @@ variable (R) in
 @[to_additive (attr := simps) /--
 If `f : G → H` is a multiplicative homomorphism between two additive monoids, then
 `AddMonoidAlgebra.mapDomain f` is a ring homomorphism between their additive monoid algebras. -/]
-def mapDomainNonUnitalRingHom (f : M →ₙ* N) : R[M] →ₙ+* R[N] where
+noncomputable def mapDomainNonUnitalRingHom (f : M →ₙ* N) : R[M] →ₙ+* R[N] where
   toFun := mapDomain f
   map_zero' := mapDomain_zero _
   map_add' := mapDomain_add _
@@ -195,7 +195,7 @@ variable (R) in
 /-- Equivalent additive monoids have additively isomorphic additive monoid algebras.
 
 `AddMonoidAlgebra.mapDomain` as an `AddEquiv`. -/]
-def mapDomainAddEquiv (e : M ≃ N) : R[M] ≃+ R[N] where
+noncomputable def mapDomainAddEquiv (e : M ≃ N) : R[M] ≃+ R[N] where
   toFun x := x.mapDomain e
   invFun x := x.mapDomain e.symm
   left_inv x := by ext; simp
@@ -229,7 +229,7 @@ variable (M) in
 /-- Additively isomorphic rings have additively isomorphic additive monoid algebras.
 
 `AddMonoidAlgebra.map` as an `AddEquiv`. -/]
-def mapAddEquiv (e : R ≃+ S) : R[M] ≃+ S[M] where
+noncomputable def mapAddEquiv (e : R ≃+ S) : R[M] ≃+ S[M] where
   toFun := .map e
   invFun := .map e.symm
   left_inv x := by ext; simp
@@ -282,7 +282,7 @@ variable (R) in
 @[to_additive (attr := simps) /--
 If `f : G → H` is a multiplicative homomorphism between two additive monoids, then
 `AddMonoidAlgebra.mapDomain f` is a ring homomorphism between their additive monoid algebras. -/]
-def mapDomainRingHom (f : M →* N) : R[M] →+* R[N] where
+noncomputable def mapDomainRingHom (f : M →* N) : R[M] →+* R[N] where
   toFun := mapDomain f
   map_zero' := mapDomain_zero _
   map_add' := mapDomain_add _
@@ -359,7 +359,7 @@ variable (R) in
 /-- Isomorphic monoids have isomorphic monoid algebras. -/
 @[to_additive (dont_translate := R)
 /-- Isomorphic monoids have isomorphic additive monoid algebras. -/]
-def mapDomainRingEquiv (e : M ≃* N) : R[M] ≃+* R[N] :=
+noncomputable def mapDomainRingEquiv (e : M ≃* N) : R[M] ≃+* R[N] :=
   .ofRingHom (MonoidAlgebra.mapDomainRingHom R e) (MonoidAlgebra.mapDomainRingHom R e.symm)
     (by apply MonoidAlgebra.ringHom_ext <;> simp) (by apply MonoidAlgebra.ringHom_ext <;> simp)
 
@@ -390,7 +390,7 @@ variable (M) in
 /-- Isomorphic rings have isomorphic monoid algebras. -/
 @[to_additive (dont_translate := R S)
 /-- Isomorphic rings have isomorphic additive monoid algebras. -/]
-def mapRingEquiv (e : R ≃+* S) : R[M] ≃+* S[M] :=
+noncomputable def mapRingEquiv (e : R ≃+* S) : R[M] ≃+* S[M] :=
   .ofRingHom (MonoidAlgebra.mapRingHom M e) (MonoidAlgebra.mapRingHom M e.symm)
     (by apply MonoidAlgebra.ringHom_ext <;> simp) (by apply MonoidAlgebra.ringHom_ext <;> simp)
 
@@ -433,7 +433,7 @@ lemma mapRingEquiv_trans (e₁ : R ≃+* S) (e₂ : S ≃+* T) :
 /-- Nested monoid algebras can be taken in an arbitrary order. -/
 @[to_additive (dont_translate := R)
 /-- Nested additive monoid algebras can be taken in an arbitrary order. -/]
-def commRingEquiv : R[M][N] ≃+* R[N][M] :=
+noncomputable def commRingEquiv : R[M][N] ≃+* R[N][M] :=
   curryRingEquiv.symm.trans <| .trans (mapDomainRingEquiv _ <| .prodComm ..) curryRingEquiv
 
 @[to_additive (attr := simp)]
@@ -475,7 +475,7 @@ set_option backward.isDefEq.respectTransparency false in
 variable (k G) in
 /-- The equivalence between `AddMonoidAlgebra` and `MonoidAlgebra` in terms of
 `Multiplicative` -/
-protected def AddMonoidAlgebra.toMultiplicative [Semiring k] [Add G] :
+protected noncomputable def AddMonoidAlgebra.toMultiplicative [Semiring k] [Add G] :
     AddMonoidAlgebra k G ≃+* MonoidAlgebra k (Multiplicative G) where
   toFun x := .ofCoeff <| x.coeff.mapDomain .ofAdd
   invFun x := .ofCoeff <| x.coeff.mapDomain Multiplicative.toAdd
@@ -491,7 +491,7 @@ protected def AddMonoidAlgebra.toMultiplicative [Semiring k] [Add G] :
 set_option backward.isDefEq.respectTransparency false in
 variable (k G) in
 /-- The equivalence between `MonoidAlgebra` and `AddMonoidAlgebra` in terms of `Additive` -/
-protected def MonoidAlgebra.toAdditive [Semiring k] [Mul G] :
+protected noncomputable def MonoidAlgebra.toAdditive [Semiring k] [Mul G] :
     MonoidAlgebra k G ≃+* AddMonoidAlgebra k (Additive G) where
   toFun x := .ofCoeff <| x.coeff.mapDomain .ofMul
   invFun x := .ofCoeff <| x.coeff.mapDomain Additive.toMul

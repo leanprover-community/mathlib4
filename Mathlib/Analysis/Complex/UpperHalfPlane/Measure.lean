@@ -26,11 +26,11 @@ the action of `GL(2, ℝ)`.
 open MeasureTheory
 open scoped NNReal
 
-public noncomputable section
+public section
 
 namespace UpperHalfPlane
 
-instance : MeasurableSpace ℍ := .comap UpperHalfPlane.coe inferInstance
+noncomputable instance : MeasurableSpace ℍ := .comap UpperHalfPlane.coe inferInstance
 
 instance : BorelSpace ℍ := ⟨borel_comap.symm⟩
 
@@ -42,7 +42,7 @@ lemma measurable_coe : Measurable UpperHalfPlane.coe :=
   measurableEmbedding_coe.measurable
 
 /-- The invariant measure on the upper half-plane, defined by `dx dy / y ^ 2`. -/
-instance : MeasureSpace ℍ :=
+noncomputable instance : MeasureSpace ℍ :=
   ⟨(volume.comap UpperHalfPlane.coe).withDensity
     fun z ↦ ↑((1 / NNReal.mk z.im z.im_pos.le : ℝ≥0) ^ 2)⟩
 

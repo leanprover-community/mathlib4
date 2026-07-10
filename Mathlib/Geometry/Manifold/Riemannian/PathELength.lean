@@ -41,8 +41,6 @@ manifolds are studied in mathlib.
 open Set MeasureTheory
 open scoped Manifold ENNReal ContDiff Topology
 
-noncomputable section
-
 variable
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
   {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℝ E H} {n : ℕ∞ω}
@@ -63,7 +61,7 @@ considering functions on the manifold with boundary `Icc a b`, see
 We use `mfderiv` instead of `mfderivWithin` in the definition as these coincide (apart from the two
 endpoints which have zero measure) and `mfderiv` is easier to manipulate. However, we give
 a lemma `pathELength_eq_integral_mfderivWithin_Icc` to rewrite with the `mfderivWithin` form. -/
-irreducible_def pathELength (γ : ℝ → M) (a b : ℝ) : ℝ≥0∞ :=
+noncomputable irreducible_def pathELength (γ : ℝ → M) (a b : ℝ) : ℝ≥0∞ :=
   ∫⁻ t in Icc a b, ‖mfderiv% γ t 1‖ₑ
 
 lemma pathELength_eq_lintegral_mfderiv_Icc :

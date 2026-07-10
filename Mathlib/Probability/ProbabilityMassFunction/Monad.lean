@@ -23,8 +23,6 @@ so that the second argument only needs to be defined on the support of the first
 @[expose] public section
 
 
-noncomputable section
-
 variable {α β γ : Type*}
 
 open NNReal ENNReal
@@ -38,7 +36,7 @@ section Pure
 open scoped Classical in
 /-- The pure `PMF` is the `PMF` where all the mass lies in one point.
   The value of `pure a` is `1` at `a` and `0` elsewhere. -/
-def pure (a : α) : PMF α :=
+noncomputable def pure (a : α) : PMF α :=
   ⟨fun a' => if a' = a then 1 else 0, hasSum_ite_eq _ _⟩
 
 variable (a a' : α)
@@ -59,7 +57,7 @@ theorem pure_apply_self : pure a a = 1 :=
 theorem pure_apply_of_ne (h : a' ≠ a) : pure a a' = 0 :=
   if_neg h
 
-instance [Inhabited α] : Inhabited (PMF α) :=
+noncomputable instance [Inhabited α] : Inhabited (PMF α) :=
   ⟨pure default⟩
 
 section Measure
@@ -102,7 +100,7 @@ end Pure
 section Bind
 
 /-- The monadic bind operation for `PMF`. -/
-def bind (p : PMF α) (f : α → PMF β) : PMF β :=
+noncomputable def bind (p : PMF α) (f : α → PMF β) : PMF β :=
   ⟨fun b => ∑' a, p a * f a b,
     ENNReal.summable.hasSum_iff.2
       (ENNReal.tsum_comm.trans <| by simp only [ENNReal.tsum_mul_left, tsum_coe, mul_one])⟩
@@ -180,7 +178,7 @@ end Measure
 
 end Bind
 
-instance : Monad PMF where
+noncomputable instance : Monad PMF where
   pure a := pure a
   bind pa pb := pa.bind pb
 
@@ -188,7 +186,7 @@ section BindOnSupport
 
 /-- Generalized version of `bind` allowing `f` to only be defined on the support of `p`.
   `p.bind f` is equivalent to `p.bindOnSupport (fun a _ ↦ f a)`, see `bindOnSupport_eq_bind`. -/
-def bindOnSupport (p : PMF α) (f : ∀ a ∈ p.support, PMF β) : PMF β :=
+noncomputable def bindOnSupport (p : PMF α) (f : ∀ a ∈ p.support, PMF β) : PMF β :=
   ⟨fun b => ∑' a, p a * if h : p a = 0 then 0 else f a h b, ENNReal.summable.hasSum_iff.2 (by
     refine ENNReal.tsum_comm.trans (_root_.trans (tsum_congr fun a => ?_) p.tsum_coe)
     simp_rw [ENNReal.tsum_mul_left]

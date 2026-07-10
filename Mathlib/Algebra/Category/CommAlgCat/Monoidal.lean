@@ -21,8 +21,6 @@ open CategoryTheory MonoidalCategory CartesianMonoidalCategory Limits TensorProd
 open Algebra.TensorProduct
 open Algebra.TensorProduct (lid rid assoc comm)
 
-noncomputable section
-
 namespace CommAlgCat
 universe u v
 variable {R : Type u} [CommRing R] {A B C D : CommAlgCat.{u} R}

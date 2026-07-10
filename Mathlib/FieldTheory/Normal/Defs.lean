@@ -22,8 +22,6 @@ In this file we define normal field extensions.
 
 @[expose] public section
 
-noncomputable section
-
 open Polynomial IsScalarTower
 
 variable (F K : Type*) [Field F] [Field K] [Algebra F K]
@@ -148,13 +146,13 @@ def AlgHom.restrictNormalAux [h : Normal F E] :
 
 /-- Restrict algebra homomorphism to normal subfield. -/
 @[stacks 0BME "Part 1"]
-def AlgHom.restrictNormal [Normal F E] : E →ₐ[F] E :=
+noncomputable def AlgHom.restrictNormal [Normal F E] : E →ₐ[F] E :=
   ((AlgEquiv.ofInjectiveField (IsScalarTower.toAlgHom F E K₂)).symm.toAlgHom.comp
         (ϕ.restrictNormalAux E)).comp
     (AlgEquiv.ofInjectiveField (IsScalarTower.toAlgHom F E K₁)).toAlgHom
 
 /-- Restrict algebra homomorphism to normal subfield (`AlgEquiv` version) -/
-def AlgHom.restrictNormal' [Normal F E] : Gal(E/F) :=
+noncomputable def AlgHom.restrictNormal' [Normal F E] : Gal(E/F) :=
   AlgEquiv.ofBijective (AlgHom.restrictNormal ϕ E) (AlgHom.normal_bijective F E E _)
 
 @[simp]
@@ -170,7 +168,7 @@ theorem AlgHom.restrictNormal_comp [Normal F E] :
     (algebraMap E K₃).injective (by simp only [AlgHom.comp_apply, AlgHom.restrictNormal_commutes])
 
 /-- Restrict algebra isomorphism to a normal subfield -/
-def AlgEquiv.restrictNormal [Normal F E] : Gal(E/F) :=
+noncomputable def AlgEquiv.restrictNormal [Normal F E] : Gal(E/F) :=
   AlgHom.restrictNormal' χ.toAlgHom E
 
 @[simp]
@@ -193,7 +191,7 @@ theorem AlgEquiv.restrictNormal_trans [Normal F E] :
       (by simp only [AlgEquiv.trans_apply, AlgEquiv.restrictNormal_commutes])
 
 /-- Restriction to a normal subfield as a group homomorphism -/
-def AlgEquiv.restrictNormalHom [Normal F E] : Gal(K₁/F) →* Gal(E/F) :=
+noncomputable def AlgEquiv.restrictNormalHom [Normal F E] : Gal(K₁/F) →* Gal(E/F) :=
   MonoidHom.mk' (fun χ => χ.restrictNormal E) fun ω χ => χ.restrictNormal_trans ω E
 
 lemma AlgEquiv.restrictNormalHom_apply (L : IntermediateField F K₁) [Normal F L]
@@ -205,7 +203,7 @@ variable (F K₁)
 /-- If `K₁/E/F` is a tower of fields with `E/F` normal then `AlgHom.restrictNormal'` is an
 equivalence. -/
 @[simps, stacks 0BR4]
-def Normal.algHomEquivAut [Normal F E] : (E →ₐ[F] K₁) ≃ Gal(E/F) where
+noncomputable def Normal.algHomEquivAut [Normal F E] : (E →ₐ[F] K₁) ≃ Gal(E/F) where
   toFun σ := AlgHom.restrictNormal' σ E
   invFun σ := (IsScalarTower.toAlgHom F E K₁).comp σ.toAlgHom
   left_inv σ := by

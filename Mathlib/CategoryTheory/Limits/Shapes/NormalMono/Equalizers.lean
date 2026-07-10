@@ -18,8 +18,6 @@ This, and the dual result, are used in the development of abelian categories.
 public section
 
 
-noncomputable section
-
 open CategoryTheory
 
 open CategoryTheory.Limits
@@ -94,7 +92,8 @@ section
 attribute [local instance] pullback_of_mono
 
 /-- The pullback of `(𝟙 X, f)` and `(𝟙 X, g)` -/
-private abbrev P {X Y : C} (f g : X ⟶ Y) [Mono (prod.lift (𝟙 X) f)] [Mono (prod.lift (𝟙 X) g)] :
+private noncomputable
+abbrev P {X Y : C} (f g : X ⟶ Y) [Mono (prod.lift (𝟙 X) f)] [Mono (prod.lift (𝟙 X) g)] :
     C :=
   pullback (prod.lift (𝟙 X) f) (prod.lift (𝟙 X) g)
 
@@ -254,7 +253,8 @@ section
 attribute [local instance] pushout_of_epi
 
 /-- The pushout of `(𝟙 Y, f)` and `(𝟙 Y, g)`. -/
-private abbrev Q {X Y : C} (f g : X ⟶ Y) [Epi (coprod.desc (𝟙 Y) f)] [Epi (coprod.desc (𝟙 Y) g)] :
+private noncomputable
+abbrev Q {X Y : C} (f g : X ⟶ Y) [Epi (coprod.desc (𝟙 Y) f)] [Epi (coprod.desc (𝟙 Y) g)] :
     C :=
   pushout (coprod.desc (𝟙 Y) f) (coprod.desc (𝟙 Y) g)
 

@@ -31,8 +31,6 @@ open CategoryTheory Limits
 
 variable {C : Type u₁} [Category.{v₁} C] {J : GrothendieckTopology C} {R : Sheaf J RingCat.{u}}
 
-noncomputable section
-
 namespace SheafOfModules
 
 section
@@ -72,7 +70,7 @@ variable [HasWeakSheafify J AddCommGrpCat.{u}] [J.WEqualsLocallyBijective AddCom
 
 /-- The generating sections of the free sheaf of modules. -/
 @[expose, simps]
-def free.generatingSections (I : Type u) : (free (R := R) I).GeneratingSections where
+noncomputable def free.generatingSections (I : Type u) : (free (R := R) I).GeneratingSections where
   I := I
   s (i) := freeSection i
   epi := by

@@ -52,8 +52,6 @@ When `a=0` they are just the family of monomials `X ^ n`.
 @[expose] public section
 
 
-noncomputable section
-
 namespace Polynomial
 
 variable {R S : Type*} [CommRing R] [CommRing S] (k : ℕ) (a : R)

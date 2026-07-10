@@ -20,8 +20,6 @@ natural inclusion into the prime spectrum to avoid API duplication for zero loci
 public section
 
 
-noncomputable section
-
 universe u v
 
 variable (R : Type u) [CommRing R]

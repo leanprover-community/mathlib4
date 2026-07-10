@@ -145,7 +145,7 @@ class IsFiniteType (M : SheafOfModules.{u} R) : Prop where
 
 end
 
-noncomputable section
+section
 
 variable {C' : Type u₁} [Category.{v₁} C'] {J' : GrothendieckTopology C'} {S : Sheaf J' RingCat.{u}}
   [HasSheafify J' AddCommGrpCat] [J'.WEqualsLocallyBijective AddCommGrpCat]
@@ -161,14 +161,14 @@ local instance : PreservesColimitsOfSize.{0, 0} F := preservesColimitsOfSize_shr
 /-- Let `F` be a functor from sheaf of `R`-module to sheaf of `S`-module, if `F` preserves
 colimits and `F.obj (unit R) ≅ unit S`, given generating sections `G : M.GeneratingSections`,
 then we obtain a morphism `free G.I ⟶ F.obj M`. -/
-def GeneratingSections.mapFreeHom : free G.I ⟶ F.obj M :=
+noncomputable def GeneratingSections.mapFreeHom : free G.I ⟶ F.obj M :=
   (mapFreeIso F G.I η).hom ≫ F.map G.π
 
 /-- Let `F` be a functor from sheaf of `R`-module to sheaf of `S`-module, if `F` preserves
 colimits and `F.obj (unit R) ≅ unit S`, given generating sections `G : M.GeneratingSections`,
 then we obtain generating sections of `F.obj M`. -/
 @[simps]
-def GeneratingSections.map : (F.obj M).GeneratingSections where
+noncomputable def GeneratingSections.map : (F.obj M).GeneratingSections where
   I := G.I
   s := freeHomEquiv (F.obj M) (G.mapFreeHom F η)
   epi := by
@@ -192,6 +192,7 @@ variable [∀ X, HasSheafify (J.over X) AddCommGrpCat.{u}] [HasBinaryProducts C]
 /-- Given `G : M.GeneratingSections`, we naturally obtain `M.LocalGeneratorsData` using the
 trivial cover of `C`. -/
 @[simps]
+noncomputable
 def GeneratingSections.localGeneratorsData {M : SheafOfModules.{u} R} (G : M.GeneratingSections) :
     M.LocalGeneratorsData where
   I := C

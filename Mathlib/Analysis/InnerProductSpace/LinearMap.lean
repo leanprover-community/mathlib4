@@ -28,8 +28,6 @@ inner product space, Hilbert space, norm
 
 @[expose] public section
 
-noncomputable section
-
 open RCLike Real Filter Topology ComplexConjugate Finsupp
 
 open LinearMap (BilinForm)
@@ -161,7 +159,7 @@ variable (𝕜)
 /-- The inner product as a continuous sesquilinear map. Note that `toDualMap` (resp. `toDual`)
 in `InnerProductSpace.Dual` is a version of this given as a linear isometry (resp. linear
 isometric equivalence). -/
-def innerSL : E →L⋆[𝕜] E →L[𝕜] 𝕜 :=
+noncomputable def innerSL : E →L⋆[𝕜] E →L[𝕜] 𝕜 :=
   LinearMap.mkContinuous₂ (innerₛₗ 𝕜) 1 fun x y => by
     simp only [norm_inner_le_norm, one_mul, innerₛₗ_apply_apply]
 
@@ -176,7 +174,7 @@ theorem innerSL_apply_apply (v w : E) : innerSL 𝕜 v w = ⟪v, w⟫ :=
     (innerSL 𝕜 v).toLinearMap = innerₛₗ 𝕜 v := rfl
 
 /-- The inner product as a continuous sesquilinear map, with the two arguments flipped. -/
-def innerSLFlip : E →L[𝕜] E →L⋆[𝕜] 𝕜 :=
+noncomputable def innerSLFlip : E →L[𝕜] E →L⋆[𝕜] 𝕜 :=
   @ContinuousLinearMap.flipₗᵢ' 𝕜 𝕜 𝕜 E E 𝕜 _ _ _ _ _ _ _ _ _ (RingHom.id 𝕜) (starRingEnd 𝕜) _ _
     (innerSL 𝕜)
 

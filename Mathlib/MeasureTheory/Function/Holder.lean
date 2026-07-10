@@ -29,8 +29,6 @@ is the natural map `Lp (StrongDual 𝕜 E) p μ →L[𝕜] StrongDual 𝕜 (Lp E
 open ENNReal MeasureTheory Lp
 open scoped NNReal
 
-noncomputable section
-
 /-! ### Induced bilinear maps -/
 
 section Bilinear
@@ -63,7 +61,7 @@ theorem integrable_of_bilin_of_bdd_right {f : α → E} {g : α → F} (C : ℝ)
 variable (r) in
 /-- The map between `MeasureTheory.Lp` spaces satisfying `ENNReal.HolderTriple`
 induced by a continuous bilinear map on the underlying spaces. -/
-def holder (f : Lp E p μ) (g : Lp F q μ) : Lp G r μ :=
+noncomputable def holder (f : Lp E p μ) (g : Lp F q μ) : Lp G r μ :=
   (B.memLp_of_bilin r (Lp.memLp f) (Lp.memLp g)).toLp
 
 lemma coeFn_holder (f : Lp E p μ) (g : Lp F q μ) :
@@ -113,7 +111,7 @@ lemma holder_smul_right (c : 𝕜) (f : Lp E p μ) (g : Lp F q μ) :
 variable (μ p q r) in
 /-- `MeasureTheory.Lp.holder` as a bilinear map. -/
 @[simps! apply_apply]
-def holderₗ : Lp E p μ →ₗ[𝕜] Lp F q μ →ₗ[𝕜] Lp G r μ :=
+noncomputable def holderₗ : Lp E p μ →ₗ[𝕜] Lp F q μ →ₗ[𝕜] Lp G r μ :=
   .mk₂ 𝕜 (B.holder r) B.holder_add_left B.holder_smul_left
     B.holder_add_right B.holder_smul_right
 
@@ -122,7 +120,7 @@ variable [Fact (1 ≤ p)] [Fact (1 ≤ q)] [Fact (1 ≤ r)]
 variable (μ p q r) in
 /-- `MeasureTheory.Lp.holder` as a continuous bilinear map. -/
 @[simps! apply_apply]
-def holderL : Lp E p μ →L[𝕜] Lp F q μ →L[𝕜] Lp G r μ :=
+noncomputable def holderL : Lp E p μ →L[𝕜] Lp F q μ →L[𝕜] Lp G r μ :=
   LinearMap.mkContinuous₂ (B.holderₗ μ p q r) ‖B‖ (norm_holder_apply_apply_le B)
 
 lemma norm_holderL_le : ‖(B.holderL μ p q r)‖ ≤ ‖B‖ :=
@@ -139,7 +137,7 @@ This is given by `∫ x, B (f x) (g x) ∂μ`.
 In the special case when `B := (NormedSpace.inclusionInDoubleDual 𝕜 E).flip`, which is
 definitionally the same as `B := ContinuousLinearMap.id 𝕜 (E →L[𝕜] 𝕜)`, this is the
 natural map `Lp (StrongDual 𝕜 E) p μ →L[𝕜] StrongDual 𝕜 (Lp E q μ)`. -/
-def lpPairing (B : E →L[𝕜] F →L[𝕜] G) : Lp E p μ →L[𝕜] Lp F q μ →L[𝕜] G :=
+noncomputable def lpPairing (B : E →L[𝕜] F →L[𝕜] G) : Lp E p μ →L[𝕜] Lp F q μ →L[𝕜] G :=
   (L1.integralCLM' 𝕜 |>.postcomp <| Lp F q μ) ∘L (B.holderL μ p q 1)
 
 lemma lpPairing_eq_integral (f : Lp E p μ) (g : Lp F q μ) :
@@ -173,7 +171,7 @@ variable [NormedRing 𝕜] [NormedAddCommGroup E] [MulActionWithZero 𝕜 E] [Is
 
 /-- Heterogeneous scalar multiplication of `MeasureTheory.Lp` functions by `MeasureTheory.Lp`
 functions when the exponents satisfy `ENNReal.HolderTriple p q r`. -/
-instance : HSMul (Lp 𝕜 p μ) (Lp E q μ) (Lp E r μ) where
+noncomputable instance : HSMul (Lp 𝕜 p μ) (Lp E q μ) (Lp E r μ) where
   hSMul f g := (Lp.memLp g).smul (Lp.memLp f) |>.toLp (⇑f • ⇑g)
 
 lemma smul_def {f : Lp 𝕜 p μ} {g : Lp E q μ} :

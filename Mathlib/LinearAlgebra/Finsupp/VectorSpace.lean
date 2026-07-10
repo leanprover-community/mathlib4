@@ -25,8 +25,6 @@ This file contains results on the `R`-module structure on functions of finite su
 @[expose] public section
 
 
-noncomputable section
-
 open Set LinearMap Module Submodule
 
 universe u v w
@@ -93,7 +91,8 @@ open LinearMap Submodule
 
 open scoped Classical in
 /-- The basis on `ι →₀ M` with basis vectors `fun ⟨i, x⟩ ↦ single i (b i x)`. -/
-protected def basis {φ : ι → Type*} (b : ∀ i, Basis (φ i) R M) : Basis (Σ i, φ i) R (ι →₀ M) :=
+protected noncomputable
+def basis {φ : ι → Type*} (b : ∀ i, Basis (φ i) R M) : Basis (Σ i, φ i) R (ι →₀ M) :=
   .ofRepr <| (finsuppLequivDFinsupp R).trans <|
     (DFinsupp.mapRange.linearEquiv fun i ↦ (b i).repr).trans (sigmaFinsuppLequivDFinsupp R).symm
 
@@ -119,7 +118,7 @@ instance _root_.Module.Free.finsupp [Module.Free R M] : Module.Free R (ι →₀
 
 /-- The basis on `ι →₀ R` with basis vectors `fun i ↦ single i 1`. -/
 @[simps]
-protected def basisSingleOne : Basis ι R (ι →₀ R) :=
+protected noncomputable def basisSingleOne : Basis ι R (ι →₀ R) :=
   Basis.ofRepr (LinearEquiv.refl _ _)
 
 @[simp]

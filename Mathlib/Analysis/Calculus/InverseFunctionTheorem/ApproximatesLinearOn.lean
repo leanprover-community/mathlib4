@@ -52,8 +52,6 @@ open Function Set Filter Metric
 
 open scoped Topology NNReal
 
-noncomputable section
-
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
@@ -345,7 +343,7 @@ Should not be used outside of this file, because it is superseded by `toOpenPart
 below.
 
 This is a first step towards the inverse function. -/
-def toPartialEquiv (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c)
+noncomputable def toPartialEquiv (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c)
     (hc : Subsingleton E ∨ c < N⁻¹) : PartialEquiv E F :=
   (hf.injOn hc).toPartialEquiv _ _
 
@@ -389,7 +387,7 @@ variable (f s)
 
 /-- Given a function `f` that approximates a linear equivalence on an open set `s`,
 returns an open partial homeomorphism with `toFun = f` and `source = s`. -/
-def toOpenPartialHomeomorph (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c)
+noncomputable def toOpenPartialHomeomorph (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c)
     (hc : Subsingleton E ∨ c < N⁻¹) (hs : IsOpen s) : OpenPartialHomeomorph E F where
   toPartialEquiv := hf.toPartialEquiv hc
   open_source := hs
@@ -417,7 +415,7 @@ theorem toOpenPartialHomeomorph_target (hf : ApproximatesLinearOn f (f' : E →L
   rfl
 
 /-- A function `f` that approximates a linear equivalence on the whole space is a homeomorphism. -/
-def toHomeomorph (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) univ c)
+noncomputable def toHomeomorph (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) univ c)
     (hc : Subsingleton E ∨ c < N⁻¹) : E ≃ₜ F := by
   refine
     (hf.toOpenPartialHomeomorph _ _ hc isOpen_univ).toHomeomorphOfSourceEqUnivTargetEqUniv rfl ?_

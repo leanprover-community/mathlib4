@@ -36,8 +36,6 @@ matrix, basis
 @[expose] public section
 
 
-noncomputable section
-
 open Function LinearMap Matrix Module Set Submodule
 
 variable {ι ι' κ κ' : Type*}
@@ -48,6 +46,7 @@ namespace Module.Basis
 
 /-- From a basis `e : ι → M` and a family of vectors `v : ι' → M`, make the matrix whose columns
 are the vectors `v i` written in the basis `e`. -/
+noncomputable
 def toMatrix (e : Basis ι R M) (v : ι' → M) : Matrix ι ι' R := fun i j ↦ e.repr (v j) i
 
 variable (e : Basis ι R M) (v : ι' → M) (i : ι) (j : ι')
@@ -124,7 +123,7 @@ theorem toLin_toMatrix [Finite ι] [Fintype ι'] [DecidableEq ι'] (v : Basis ι
 
 /-- From a basis `e : ι → M`, build a linear equivalence between families of vectors `v : ι → M`,
 and matrices, making the matrix whose columns are the vectors `v i` written in the basis `e`. -/
-def toMatrixEquiv [Fintype ι] (e : Basis ι R M) : (ι → M) ≃ₗ[R] Matrix ι ι R where
+noncomputable def toMatrixEquiv [Fintype ι] (e : Basis ι R M) : (ι → M) ≃ₗ[R] Matrix ι ι R where
   toFun := e.toMatrix
   map_add' v w := by
     ext i j
@@ -256,7 +255,7 @@ theorem toMatrix_mul_toMatrix_flip [DecidableEq ι] [Fintype ι'] :
 
 /-- A matrix whose columns form a basis `b'`, expressed w.r.t. a basis `b`, is invertible. -/
 @[implicit_reducible]
-def invertibleToMatrix [DecidableEq ι] [Fintype ι] (b b' : Basis ι R₂ M₂) :
+noncomputable def invertibleToMatrix [DecidableEq ι] [Fintype ι] (b b' : Basis ι R₂ M₂) :
     Invertible (b.toMatrix b') :=
   ⟨b'.toMatrix b, toMatrix_mul_toMatrix_flip _ _, toMatrix_mul_toMatrix_flip _ _⟩
 

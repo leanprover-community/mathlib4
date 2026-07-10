@@ -49,8 +49,6 @@ on the direction would make them barely usable:
 
 @[expose] public section
 
-noncomputable section
-
 open scoped Topology Filter ENNReal NNReal
 
 open Filter Asymptotics Set
@@ -97,7 +95,7 @@ Zero otherwise.
 If the line derivative exists (i.e., `∃ f', HasLineDerivWithinAt 𝕜 f f' s x v`), then
 `f (x + t v) = f x + t lineDerivWithin 𝕜 f s x v + o (t)` when `t` tends to `0` and `x + t v ∈ s`.
 -/
-def lineDerivWithin (f : E → F) (s : Set E) (x : E) (v : E) : F :=
+noncomputable def lineDerivWithin (f : E → F) (s : Set E) (x : E) (v : E) : F :=
   derivWithin (fun t ↦ f (x + t • v)) ((fun t ↦ x + t • v) ⁻¹' s) (0 : 𝕜)
 
 /-- Line derivative of `f` at the point `x` in the direction `v`, if it exists.  Zero otherwise.
@@ -105,7 +103,7 @@ def lineDerivWithin (f : E → F) (s : Set E) (x : E) (v : E) : F :=
 If the line derivative exists (i.e., `∃ f', HasLineDerivAt 𝕜 f f' x v`), then
 `f (x + t v) = f x + t lineDeriv 𝕜 f x v + o (t)` when `t` tends to `0`.
 -/
-def lineDeriv (f : E → F) (x : E) (v : E) : F :=
+noncomputable def lineDeriv (f : E → F) (x : E) (v : E) : F :=
   deriv (fun t ↦ f (x + t • v)) (0 : 𝕜)
 
 variable {𝕜}

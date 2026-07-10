@@ -45,8 +45,6 @@ a function from `M` to its tangent bundle through a coercion, as in:
 open Set Function Filter
 open scoped Topology Manifold ContDiff
 
-noncomputable section
-
 /- We work in the `VectorField` namespace because pullbacks, Lie brackets, and so on, are notions
 that make sense in a variety of contexts. We also prefix the notions with `m` to distinguish the
 manifold notions from the vector space notions. For instance, the Lie bracket of two vector
@@ -97,6 +95,7 @@ variable {c : 𝕜} {m n : ℕ∞ω} {t : Set M'} {y₀ : M'}
 variable (I I') in
 /-- The pullback of a vector field under a map between manifolds, within a set `s`. If the
 derivative of the map within `s` is not invertible, then pullback is given the junk value zero. -/
+noncomputable
 def mpullbackWithin (f : M → M') (V : Π (x : M'), TangentSpace I' x) (s : Set M) (x : M) :
     TangentSpace I x :=
   (mfderiv[s] f x).inverse (V (f x))
@@ -104,7 +103,7 @@ def mpullbackWithin (f : M → M') (V : Π (x : M'), TangentSpace I' x) (s : Set
 variable (I I') in
 /-- The pullback of a vector field under a map between manifolds. If the derivative of the map is
 not invertible, then pullback is given the junk value zero. -/
-def mpullback (f : M → M') (V : Π (x : M'), TangentSpace I' x) (x : M) :
+noncomputable def mpullback (f : M → M') (V : Π (x : M'), TangentSpace I' x) (x : M) :
     TangentSpace I x :=
   (mfderiv% f x).inverse (V (f x))
 

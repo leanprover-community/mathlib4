@@ -822,10 +822,10 @@ variable {f : Filter α} (hf : Cauchy f) {U : ℕ → SetRel α α} (U_mem : ∀
 
 open Set Finset
 
-noncomputable section
+section
 
 /-- An auxiliary sequence of sets approximating a Cauchy filter. -/
-def setSeqAux (n : ℕ) : { s : Set α // s ∈ f ∧ s ×ˢ s ⊆ U n } :=
+noncomputable def setSeqAux (n : ℕ) : { s : Set α // s ∈ f ∧ s ×ˢ s ⊆ U n } :=
   Classical.indefiniteDescription _ <| (cauchy_iff.1 hf).2 (U n) (U_mem n)
 
 /-- Given a Cauchy filter `f` and a sequence `U` of entourages, `set_seq` provides
@@ -851,7 +851,7 @@ theorem setSeq_prod_subset {N m n} (hm : N ≤ m) (hn : N ≤ n) :
 /-- A sequence of points such that `seq n ∈ setSeq n`. Here `setSeq` is an antitone
 sequence of sets `setSeq n ∈ f` with diameters controlled by a given sequence
 of entourages. -/
-def seq (n : ℕ) : α :=
+noncomputable def seq (n : ℕ) : α :=
   (hf.1.nonempty_of_mem (setSeq_mem hf U_mem n)).choose
 
 theorem seq_mem (n : ℕ) : seq hf U_mem n ∈ setSeq hf U_mem n :=

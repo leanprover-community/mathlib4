@@ -47,8 +47,6 @@ and Chris Hughes (on an earlier repository).
 -- that we should not depend on the Zariski topology here
 assert_not_exists TopologicalSpace
 
-noncomputable section
-
 open scoped Pointwise
 
 universe u v

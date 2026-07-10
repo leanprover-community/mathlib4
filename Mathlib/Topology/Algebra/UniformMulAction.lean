@@ -31,8 +31,6 @@ universe u v w x y
 
 open scoped Uniformity
 
-noncomputable section
-
 variable (R : Type u) (M : Type v) (N : Type w) (X : Type x) (Y : Type y) [UniformSpace X]
   [UniformSpace Y]
 

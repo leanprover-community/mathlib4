@@ -24,8 +24,6 @@ public section
 
 assert_not_exists IsTopologicalRing UniformContinuousConstSMul UniformOnFun
 
-noncomputable section
-
 open Set Topology TopologicalSpace
 
 namespace EReal

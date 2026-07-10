@@ -27,8 +27,6 @@ it suffices that `f` converges within `A` at any point of `B`, provided that
 @[expose] public section
 
 
-noncomputable section
-
 open Topology
 
 open Filter Set
@@ -38,7 +36,7 @@ variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
 /-- Extend a function from a set `A`. The resulting function `g` is such that
 at any `x₀`, if `f` converges to some `y` as `x` tends to `x₀` within `A`,
 then `g x₀` is defined to be one of these `y`. Else, `g x₀` could be anything. -/
-def extendFrom (A : Set X) (f : X → Y) : X → Y :=
+noncomputable def extendFrom (A : Set X) (f : X → Y) : X → Y :=
   fun x ↦ @limUnder _ _ _ ⟨f x⟩ (𝓝[A] x) f
 
 /-- If `f` converges to some `y` as `x` tends to `x₀` within `A`,

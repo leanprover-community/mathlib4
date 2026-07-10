@@ -42,7 +42,7 @@ the quotient of `G` by the relation that makes the inclusion prefunctor `C ⥤q 
 
 @[expose] public section
 
-noncomputable section
+section
 
 namespace CategoryTheory
 
@@ -157,7 +157,7 @@ instance : (of C).IsLocalization ⊤ :=
 
 /-- In order to define a natural isomorphism `F ≅ G` with `F G : FreeGroupoid ⥤ D`,
 it suffices to do so after precomposing with `FreeGroupoid.of C`. -/
-def liftNatIso (F₁ F₂ : FreeGroupoid C ⥤ G) (τ : of C ⋙ F₁ ≅ of C ⋙ F₂) : F₁ ≅ F₂ :=
+noncomputable def liftNatIso (F₁ F₂ : FreeGroupoid C ⥤ G) (τ : of C ⋙ F₁ ≅ of C ⋙ F₂) : F₁ ≅ F₂ :=
   Localization.liftNatIso (of C) ⊤ (of C ⋙ F₁) (of C ⋙ F₂) _ _ τ
 
 @[simp]
@@ -187,7 +187,7 @@ def ofCompMapIso (F : C ⥤ D) : of C ⋙ map F ≅ F ⋙ of D := Iso.refl _
 
 variable (C) in
 /-- The functor induced by the identity is the identity. -/
-def mapId : map (𝟭 C) ≅ 𝟭 (FreeGroupoid C) :=
+noncomputable def mapId : map (𝟭 C) ≅ 𝟭 (FreeGroupoid C) :=
   liftNatIso _ _ (Iso.refl _)
 
 @[simp]
@@ -203,7 +203,7 @@ theorem map_id : map (𝟭 C) = 𝟭 (FreeGroupoid C) := by
   symm; apply lift_unique; rfl
 
 /-- The functor induced by a composition is the composition of the functors they induce. -/
-def mapComp (φ : C ⥤ D) (φ' : D ⥤ E) : map (φ ⋙ φ') ≅ map φ ⋙ map φ' :=
+noncomputable def mapComp (φ : C ⥤ D) (φ' : D ⥤ E) : map (φ ⋙ φ') ≅ map φ ⋙ map φ' :=
   liftNatIso _ _ (Iso.refl _)
 
 @[simp]
@@ -231,7 +231,7 @@ lemma map_comp_lift (F : C ⥤ D) (G : D ⥤ E) : map F ⋙ lift G = lift (F ⋙
   rw [← Functor.assoc, of_comp_map, Functor.assoc, lift_spec G]
 
 /-- The operation `lift` is natural. -/
-def mapCompLift (F : C ⥤ D) (G : D ⥤ E) : map F ⋙ lift G ≅ lift (F ⋙ G) :=
+noncomputable def mapCompLift (F : C ⥤ D) (G : D ⥤ E) : map F ⋙ lift G ≅ lift (F ⋙ G) :=
   liftNatIso _ _ (Iso.refl _)
 
 @[simp]

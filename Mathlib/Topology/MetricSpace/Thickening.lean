@@ -33,7 +33,6 @@ public import Mathlib.Topology.MetricSpace.HausdorffDistance
 
 @[expose] public section
 
-noncomputable section
 open NNReal ENNReal Topology Set Filter Bornology
 
 universe u v w

@@ -508,14 +508,14 @@ instance HomogeneousSubmodule.gcommSemiring : SetLike.GradedMonoid (homogeneousS
 
 end IsHomogeneous
 
-noncomputable section
+section
 
 open Finset
 
 /-- `homogeneousComponent n φ` is the part of `φ` that is homogeneous of degree `n`.
 See `sum_homogeneousComponent` for the statement that `φ` is equal to the sum
 of all its homogeneous components. -/
-def homogeneousComponent (n : ℕ) : MvPolynomial σ R →ₗ[R] MvPolynomial σ R :=
+noncomputable def homogeneousComponent (n : ℕ) : MvPolynomial σ R →ₗ[R] MvPolynomial σ R :=
   weightedHomogeneousComponent 1 n
 
 section HomogeneousComponent
@@ -597,7 +597,7 @@ end HomogeneousComponent
 
 end
 
-noncomputable section GradedAlgebra
+section GradedAlgebra
 
 /-- The homogeneous submodules form a graded ring.
 This instance is used by `DirectSum.commSemiring` and `DirectSum.algebra`. -/
@@ -606,7 +606,7 @@ lemma HomogeneousSubmodule.gradedMonoid :
   WeightedHomogeneousSubmodule.gradedMonoid
 
 /-- The decomposition of `MvPolynomial σ R` into homogeneous submodules. -/
-abbrev decomposition :
+noncomputable abbrev decomposition :
     DirectSum.Decomposition (homogeneousSubmodule σ R) :=
   fast_instance% weightedDecomposition R (1 : σ → ℕ)
 
@@ -616,7 +616,7 @@ graded algebra structure on `MvPolynomial σ R`, induced by another weight funct
 To make it a local instance, you may use
 `attribute [local instance] MvPolynomial.gradedAlgebra`.
 -/
-abbrev gradedAlgebra : GradedAlgebra (homogeneousSubmodule σ R) :=
+noncomputable abbrev gradedAlgebra : GradedAlgebra (homogeneousSubmodule σ R) :=
   fast_instance% weightedGradedAlgebra R (1 : σ → ℕ)
 
 theorem decomposition.decompose'_apply (φ : MvPolynomial σ R) (i : ℕ) :

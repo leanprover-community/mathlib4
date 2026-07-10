@@ -20,8 +20,6 @@ preserves kernels and equalizers.
 
 universe t u
 
-noncomputable section
-
 open TensorProduct
 
 variable {R : Type*} (S : Type*) [CommRing R] [CommRing S] [Algebra R S]
@@ -102,7 +100,7 @@ lemma LinearMap.tensorEqLocus_coe (x : M ⊗[R] (LinearMap.eqLocus f g)) :
   induction x <;> simp_all
 
 /-- (Implementation): Inverse for `LinearMap.tensorKerEquiv`. -/
-def LinearMap.tensorKerInv [Module.Flat R M] :
+noncomputable def LinearMap.tensorKerInv [Module.Flat R M] :
     ker (AlgebraTensorModule.lTensor S M f) →ₗ[S] M ⊗[R] (ker f) :=
   LinearMap.codRestrictOfInjective (LinearMap.ker (AlgebraTensorModule.lTensor S M f)).subtype
     (AlgebraTensorModule.lTensor S M (ker f).subtype)
@@ -117,7 +115,7 @@ private lemma LinearMap.lTensor_ker_subtype_tensorKerInv [Module.Flat R M]
   simp [LinearMap.tensorKerInv]
 
 /-- (Implementation): Inverse for `LinearMap.tensorEqLocusEquiv`. -/
-def LinearMap.tensorEqLocusInv [Module.Flat R M] :
+noncomputable def LinearMap.tensorEqLocusInv [Module.Flat R M] :
     eqLocus (AlgebraTensorModule.lTensor S M f) (AlgebraTensorModule.lTensor S M g) →ₗ[S]
       M ⊗[R] (eqLocus f g) :=
   LinearMap.codRestrictOfInjective
@@ -135,7 +133,7 @@ private lemma LinearMap.lTensor_eqLocus_subtype_tensorEqLocusInv [Module.Flat R 
   simp [LinearMap.tensorEqLocusInv]
 
 /-- If `M` is `R`-flat, the canonical map `M ⊗[R] ker f →ₗ[R] ker (𝟙 ⊗ f)` is an isomorphism. -/
-def LinearMap.tensorKerEquiv [Module.Flat R M] :
+noncomputable def LinearMap.tensorKerEquiv [Module.Flat R M] :
     M ⊗[R] LinearMap.ker f ≃ₗ[S] LinearMap.ker (AlgebraTensorModule.lTensor S M f) :=
   LinearEquiv.ofLinear (LinearMap.tensorKer S M f) (LinearMap.tensorKerInv S M f)
     (by ext x; simp)
@@ -158,7 +156,7 @@ lemma LinearMap.lTensor_ker_subtype_tensorKerEquiv_symm [Module.Flat R M]
 
 /-- If `M` is `R`-flat, the canonical map `M ⊗[R] eq(f, g) →ₗ[S] eq (𝟙 ⊗ f, 𝟙 ⊗ g)` is an
 isomorphism. -/
-def LinearMap.tensorEqLocusEquiv [Module.Flat R M] :
+noncomputable def LinearMap.tensorEqLocusEquiv [Module.Flat R M] :
     M ⊗[R] eqLocus f g ≃ₗ[S]
       eqLocus (AlgebraTensorModule.lTensor S M f)
         (AlgebraTensorModule.lTensor S M g) :=
@@ -224,7 +222,7 @@ to get `0 → A ⊗ K → A ⊗ M` exact.
 
 /-- Given surjection `f : N → P` with `P` flat, then `A ⊗ ker f ≃ ker (A ⊗ f)`.
 Also see `LinearMap.tensorKerEquiv` for the version with `A` flat instead. -/
-def LinearMap.kerLTensorEquivOfSurjective [Module.Flat R P]
+noncomputable def LinearMap.kerLTensorEquivOfSurjective [Module.Flat R P]
     (f : N →ₗ[R] P) (hf : Function.Surjective f) (A : Type*) [AddCommGroup A] [Module R A] :
     LinearMap.ker (f.lTensor A) ≃ₗ[R] A ⊗[R] LinearMap.ker f := by
   refine .ofEq _ _ ?_ ≪≫ₗ (LinearEquiv.ofInjective _ (LinearMap.lTensor_injective_of_exact_of_flat
@@ -286,7 +284,7 @@ lemma AlgHom.coe_tensorEqualizer (x : T ⊗[R] AlgHom.equalizer f g) :
 
 /-- If `T` is `R`-flat, the canonical map
 `T ⊗[R] eq(f, g) →ₐ[S] eq (𝟙 ⊗ f, 𝟙 ⊗ g)` is an isomorphism. -/
-def AlgHom.tensorEqualizerEquiv [Module.Flat R T] :
+noncomputable def AlgHom.tensorEqualizerEquiv [Module.Flat R T] :
     T ⊗[R] AlgHom.equalizer f g ≃ₐ[S]
       AlgHom.equalizer (Algebra.TensorProduct.map (AlgHom.id S T) f)
         (Algebra.TensorProduct.map (AlgHom.id S T) g) :=
@@ -305,7 +303,7 @@ attribute [local instance] Algebra.TensorProduct.rightAlgebra in
 Given a surjection of `R`-algebras `S → T` with kernel `I`, such that `T` is flat,
 the kernel of the map `A ⊗ S → A ⊗ T` is the base change of `I` along `S → A ⊗ S`.
 -/
-def Algebra.kerTensorProductMapIdToAlgHomEquiv
+noncomputable def Algebra.kerTensorProductMapIdToAlgHomEquiv
     [Module.Flat R T] (h₁ : Function.Surjective (algebraMap S T)) :
     RingHom.ker (Algebra.TensorProduct.map (.id A A) (IsScalarTower.toAlgHom R S T)) ≃ₗ[A ⊗[R] S]
       (A ⊗[R] S) ⊗[S] (RingHom.ker (algebraMap S T)) := by

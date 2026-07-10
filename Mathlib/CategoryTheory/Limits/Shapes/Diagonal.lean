@@ -22,8 +22,6 @@ of a morphism `f : X ⟶ Y`.
 
 open CategoryTheory
 
-noncomputable section
-
 namespace CategoryTheory.Limits
 
 variable {C : Type*} [Category* C] {X Y Z : C}
@@ -35,11 +33,11 @@ section Diagonal
 variable (f : X ⟶ Y) [HasPullback f f]
 
 /-- The diagonal object of a morphism `f : X ⟶ Y` is `Δ_{X/Y} := pullback f f`. -/
-abbrev diagonalObj : C :=
+noncomputable abbrev diagonalObj : C :=
   pullback f f
 
 /-- The diagonal morphism `X ⟶ Δ_{X/Y}` for a morphism `f : X ⟶ Y`. -/
-def diagonal : X ⟶ diagonalObj f :=
+noncomputable def diagonal : X ⟶ diagonalObj f :=
   pullback.lift (𝟙 _) (𝟙 _) rfl
 
 @[reassoc (attr := simp)]
@@ -109,7 +107,7 @@ theorem pullback_diagonal_map_snd_snd_fst :
 variable [HasPullback i₁ i₂]
 
 /-- The underlying map of `pullbackDiagonalIso` -/
-abbrev pullbackDiagonalMapIso.hom :
+noncomputable abbrev pullbackDiagonalMapIso.hom :
     pullback (diagonal f)
         (map (i₁ ≫ snd _ _) (i₂ ≫ snd _ _) f f (i₁ ≫ fst _ _) (i₂ ≫ fst _ _) i
           (by simp only [Category.assoc, condition])
@@ -123,7 +121,7 @@ abbrev pullbackDiagonalMapIso.hom :
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The underlying inverse of `pullbackDiagonalIso` -/
-abbrev pullbackDiagonalMapIso.inv : pullback i₁ i₂ ⟶
+noncomputable abbrev pullbackDiagonalMapIso.inv : pullback i₁ i₂ ⟶
     pullback (diagonal f)
         (map (i₁ ≫ snd _ _) (i₂ ≫ snd _ _) f f (i₁ ≫ fst _ _) (i₂ ≫ fst _ _) i
           (by simp only [Category.assoc, condition])
@@ -152,7 +150,7 @@ V₁ ×[X ×[Y] U] V₂ ⟶ V₁ ×[U] V₂
 is a pullback square.
 Also see `pullback_fst_map_snd_isPullback`.
 -/
-def pullbackDiagonalMapIso :
+noncomputable def pullbackDiagonalMapIso :
     pullback (diagonal f)
         (map (i₁ ≫ snd _ _) (i₂ ≫ snd _ _) f f (i₁ ≫ fst _ _) (i₂ ≫ fst _ _) i
           (by simp only [Category.assoc, condition])
@@ -238,7 +236,7 @@ X ×ₜ Y ⟶ X ×ₛ Y
 is a pullback square.
 Also see `pullback_map_diagonal_isPullback`.
 -/
-def pullbackDiagonalMapIdIso :
+noncomputable def pullbackDiagonalMapIdIso :
     pullback (diagonal i)
         (pullback.map (f ≫ i) (g ≫ i) i i f g (𝟙 _) (Category.comp_id _) (Category.comp_id _)) ≅
       pullback f g := by
@@ -318,7 +316,7 @@ theorem pullback_map_diagonal_isPullback :
     ext <;> simp [condition]
 
 /-- The diagonal object of `X ×[Z] Y ⟶ X` is isomorphic to `Δ_{Y/Z} ×[Z] X`. -/
-def diagonalObjPullbackFstIso {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) :
+noncomputable def diagonalObjPullbackFstIso {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) :
     diagonalObj (pullback.fst f g) ≅
       pullback (pullback.snd _ _ ≫ g : diagonalObj g ⟶ Z) f :=
   pullbackRightPullbackFstIso _ _ _ ≪≫
@@ -434,6 +432,7 @@ is a pullback square. The diagonal map of this square is `pullback.map`.
 Also see `pullback_lift_map_is_pullback`.
 -/
 @[simps]
+noncomputable
 def pullbackFstFstIso {X Y S X' Y' S' : C} (f : X ⟶ S) (g : Y ⟶ S) (f' : X' ⟶ S') (g' : Y' ⟶ S')
     (i₁ : X ⟶ X') (i₂ : Y ⟶ Y') (i₃ : S ⟶ S') (e₁ : f ≫ i₃ = i₁ ≫ f') (e₂ : g ≫ i₃ = i₂ ≫ g')
     [Mono i₃] :

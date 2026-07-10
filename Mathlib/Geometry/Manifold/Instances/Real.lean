@@ -46,8 +46,6 @@ typeclass. We provide it as `[Fact (x < y)]`.
 
 @[expose] public section
 
-noncomputable section
-
 open Set Function WithLp
 
 open scoped Manifold ContDiff ENNReal
@@ -379,7 +377,7 @@ lemma IccRightChart_extend_top_mem_frontier :
 /-- Charted space structure on `[x, y]`, using only two charts taking values in
 `EuclideanHalfSpace 1`.
 -/
-instance instIccChartedSpace (x y : ℝ) [h : Fact (x < y)] :
+noncomputable instance instIccChartedSpace (x y : ℝ) [h : Fact (x < y)] :
     ChartedSpace (EuclideanHalfSpace 1) (Icc x y) where
   atlas := {IccLeftChart x y, IccRightChart x y}
   chartAt z := if z.val < y then IccLeftChart x y else IccRightChart x y
@@ -487,7 +485,7 @@ instance instIsManifoldIcc (x y : ℝ) [Fact (x < y)] {n : ℕ∞ω} :
 
 section
 
-instance : ChartedSpace (EuclideanHalfSpace 1) (Icc (0 : ℝ) 1) := by infer_instance
+noncomputable instance : ChartedSpace (EuclideanHalfSpace 1) (Icc (0 : ℝ) 1) := by infer_instance
 
 instance {n : ℕ∞ω} : IsManifold (𝓡∂ 1) n (Icc (0 : ℝ) 1) := by infer_instance
 

@@ -32,7 +32,7 @@ projection, complement subspace
 
 @[expose] public section
 
-noncomputable section Ring
+section Ring
 
 variable {R : Type*} [Ring R] {E : Type*} [AddCommGroup E] [Module R E]
 variable {F : Type*} [AddCommGroup F] [Module R F] {G : Type*} [AddCommGroup G] [Module R G]
@@ -73,7 +73,7 @@ namespace Submodule
 open LinearMap
 
 /-- If `q` is a complement of `p`, then `p × q` is isomorphic to `E`. -/
-def prodEquivOfIsCompl (h : IsCompl p q) : (p × q) ≃ₗ[R] E := by
+noncomputable def prodEquivOfIsCompl (h : IsCompl p q) : (p × q) ≃ₗ[R] E := by
   apply LinearEquiv.ofBijective (p.subtype.coprod q.subtype)
   constructor
   · rw [← ker_eq_bot, ker_coprod_of_disjoint_range, ker_subtype, ker_subtype, prod_bot]
@@ -123,7 +123,7 @@ For the projection from `E` to `E`, see `Submodule.projection`. See also:
   along the orthogonal subspace.
 
 See also `LinearMap.linearProjOfIsCompl`. -/
-def projectionOnto (h : IsCompl p q) : E →ₗ[R] p :=
+noncomputable def projectionOnto (h : IsCompl p q) : E →ₗ[R] p :=
   LinearMap.fst R p q ∘ₗ ↑(prodEquivOfIsCompl p q h).symm
 
 /-- The linear projection onto a subspace along its complement
@@ -285,7 +285,7 @@ variable (p q) in
 to its projection onto `q` along `p`; the backward direction sends an element of `q` to its class
 in `M ⧸ p`. -/
 @[simps! symm_apply]
-def quotientEquivOfIsCompl (h : IsCompl p q) : (E ⧸ p) ≃ₗ[R] q :=
+noncomputable def quotientEquivOfIsCompl (h : IsCompl p q) : (E ⧸ p) ≃ₗ[R] q :=
   .ofLinear
     (p.liftQ (q.projectionOnto p h.symm) (by simp))
     (p.mkQ ∘ₗ q.subtype)
@@ -335,7 +335,7 @@ section
 
 This has an advantage over `Submodule.projectionOnto` in that it allows the user better
 definitional control over the type. -/
-def linearProjOfIsCompl {F : Type*} [AddCommGroup F] [Module R F]
+noncomputable def linearProjOfIsCompl {F : Type*} [AddCommGroup F] [Module R F]
     (i : F →ₗ[R] E) (hi : Function.Injective i)
     (h : IsCompl (LinearMap.range i) q) : E →ₗ[R] F :=
   (LinearEquiv.ofInjective i hi).symm ∘ₗ (LinearMap.range i).projectionOnto q h
@@ -364,6 +364,7 @@ end
 
 /-- Given linear maps `φ` and `ψ` from complement submodules, `LinearMap.ofIsCompl` is
 the induced linear map over the entire module. -/
+noncomputable
 def ofIsCompl {p q : Submodule R E} (h : IsCompl p q) (φ : p →ₗ[R] F) (ψ : q →ₗ[R] F) : E →ₗ[R] F :=
   LinearMap.coprod φ ψ ∘ₗ ↑(Submodule.prodEquivOfIsCompl _ _ h).symm
 
@@ -440,7 +441,7 @@ section
 variable {R₁ : Type*} [CommRing R₁] [Module R₁ E] [Module R₁ F]
 
 /-- The linear map from `(p →ₗ[R₁] F) × (q →ₗ[R₁] F)` to `E →ₗ[R₁] F`. -/
-def ofIsComplProd {p q : Submodule R₁ E} (h : IsCompl p q) :
+noncomputable def ofIsComplProd {p q : Submodule R₁ E} (h : IsCompl p q) :
     (p →ₗ[R₁] F) × (q →ₗ[R₁] F) →ₗ[R₁] E →ₗ[R₁] F where
   toFun φ := ofIsCompl h φ.1 φ.2
   map_add' := by intro φ ψ; rw [Prod.snd_add, Prod.fst_add, ofIsCompl_add]
@@ -452,7 +453,7 @@ theorem ofIsComplProd_apply {p q : Submodule R₁ E} (h : IsCompl p q)
   rfl
 
 /-- The natural linear equivalence between `(p →ₗ[R₁] F) × (q →ₗ[R₁] F)` and `E →ₗ[R₁] F`. -/
-def ofIsComplProdEquiv {p q : Submodule R₁ E} (h : IsCompl p q) :
+noncomputable def ofIsComplProdEquiv {p q : Submodule R₁ E} (h : IsCompl p q) :
     ((p →ₗ[R₁] F) × (q →ₗ[R₁] F)) ≃ₗ[R₁] E →ₗ[R₁] F :=
   { ofIsComplProd h with
     invFun := fun φ => ⟨φ.domRestrict p, φ.domRestrict q⟩
@@ -478,7 +479,7 @@ theorem projectionOnto_of_proj (f : E →ₗ[R] p) (hf : ∀ x : p, f x = x) :
 /-- If `f : E →ₗ[R] F` and `g : E →ₗ[R] G` are two surjective linear maps and
 their kernels are complement of each other, then `x ↦ (f x, g x)` defines
 a linear equivalence `E ≃ₗ[R] F × G`. -/
-def equivProdOfSurjectiveOfIsCompl (f : E →ₗ[R] F) (g : E →ₗ[R] G) (hf : range f = ⊤)
+noncomputable def equivProdOfSurjectiveOfIsCompl (f : E →ₗ[R] F) (g : E →ₗ[R] G) (hf : range f = ⊤)
     (hg : range g = ⊤) (hfg : IsCompl (ker f) (ker g)) : E ≃ₗ[R] F × G :=
   LinearEquiv.ofBijective (f.prod g)
     ⟨by simp [← ker_eq_bot, hfg.inf_eq_bot], by
@@ -503,6 +504,7 @@ open LinearMap
 
 /-- Equivalence between submodules `q` such that `IsCompl p q` and linear maps `f : E →ₗ[R] p`
 such that `∀ x : p, f x = x`. -/
+noncomputable
 def isComplEquivProj : { q // IsCompl p q } ≃ { f : E →ₗ[R] p // ∀ x : p, f x = x } where
   toFun q := ⟨projectionOnto p q q.2, projectionOnto_apply_left q.2⟩
   invFun f := ⟨ker (f : E →ₗ[R] p), isCompl_of_proj f.2⟩

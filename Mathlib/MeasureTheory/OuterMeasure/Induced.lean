@@ -29,8 +29,6 @@ outer measure
 
 @[expose] public section
 
-noncomputable section
-
 open Set Function Filter
 open scoped NNReal Topology ENNReal
 
@@ -46,7 +44,7 @@ variable (m : ∀ s : α, P s → ℝ≥0∞)
 
 /-- We can trivially extend a function defined on a subclass of objects (with codomain `ℝ≥0∞`)
   to all objects by defining it to be `∞` on the objects not in the class. -/
-def extend (s : α) : ℝ≥0∞ :=
+noncomputable def extend (s : α) : ℝ≥0∞ :=
   ⨅ h : P s, m s h
 
 theorem extend_eq {s : α} (h : P s) : extend m s = m s h := by simp [extend, h]
@@ -157,7 +155,7 @@ variable (m)
 
 /-- Given an arbitrary function on a subset of sets, we can define the outer measure corresponding
   to it (this is the unique maximal outer measure that is at most `m` on the domain of `m`). -/
-def inducedOuterMeasure : OuterMeasure α :=
+noncomputable def inducedOuterMeasure : OuterMeasure α :=
   OuterMeasure.ofFunction (extend m) (extend_empty P0 m0)
 
 variable {m P0 m0}
@@ -308,7 +306,7 @@ variable {α : Type*} [MeasurableSpace α] (m : OuterMeasure α)
 
 /-- Given an outer measure `m` we can forget its value on non-measurable sets, and then consider
   `m.trim`, the unique maximal outer measure less than that function. -/
-def trim : OuterMeasure α :=
+noncomputable def trim : OuterMeasure α :=
   inducedOuterMeasure (P := MeasurableSet) (fun s _ => m s) .empty m.empty
 
 theorem le_trim_iff {m₁ m₂ : OuterMeasure α} :

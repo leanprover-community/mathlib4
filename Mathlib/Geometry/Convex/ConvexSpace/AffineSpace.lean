@@ -22,7 +22,7 @@ This file shows that every affine space is a convex space.
 * `AddTorsor.convexCombPair_eq_lineMap`: Binary convex combinations are given by `lineMap`.
 -/
 
-public noncomputable section
+public section
 
 open scoped Affine
 
@@ -36,7 +36,7 @@ namespace AddTorsor
 
 /-- The convex combination of points in an affine space, given a probability distribution. -/
 @[expose]
-def convexCombination (s : StdSimplex R P) : P :=
+noncomputable def convexCombination (s : StdSimplex R P) : P :=
   s.weights.support.affineCombination R id s.weights
 
 theorem convexCombination_single (x : P) :
@@ -103,7 +103,7 @@ theorem convexCombination_assoc (f : StdSimplex R (StdSimplex R P)) :
 This is not an instance because its convex combination operation is defined through the choice of an
 arbitrary basepoint, which makes it very diamond-prone. -/
 @[implicit_reducible]
-def toConvexSpace : ConvexSpace R P where
+noncomputable def toConvexSpace : ConvexSpace R P where
   sConvexComb := convexCombination
   sConvexComb_single := convexCombination_single
   assoc := convexCombination_assoc

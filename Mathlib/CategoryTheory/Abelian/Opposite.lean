@@ -16,7 +16,7 @@ public import Mathlib.CategoryTheory.Limits.Opposites
 @[expose] public section
 
 
-noncomputable section
+section
 
 namespace CategoryTheory
 
@@ -37,7 +37,7 @@ variable {X Y : C} (f : X ⟶ Y) {A B : Cᵒᵖ} (g : A ⟶ B)
 -- (The abelian case is probably sufficient for most applications.)
 /-- The kernel of `f.op` is the opposite of `cokernel f`. -/
 @[simps]
-def kernelOpUnop : (kernel f.op).unop ≅ cokernel f where
+noncomputable def kernelOpUnop : (kernel f.op).unop ≅ cokernel f where
   hom := (kernel.lift f.op (cokernel.π f).op <| by simp [← op_comp]).unop
   inv :=
     cokernel.desc f (kernel.ι f.op).unop <| by
@@ -56,7 +56,7 @@ def kernelOpUnop : (kernel f.op).unop ≅ cokernel f where
 -- (The abelian case is probably sufficient for most applications.)
 /-- The cokernel of `f.op` is the opposite of `kernel f`. -/
 @[simps]
-def cokernelOpUnop : (cokernel f.op).unop ≅ kernel f where
+noncomputable def cokernelOpUnop : (cokernel f.op).unop ≅ kernel f where
   hom :=
     kernel.lift f (cokernel.π f.op).unop <| by
       rw [← f.unop_op, ← unop_comp, f.unop_op]
@@ -73,12 +73,12 @@ def cokernelOpUnop : (cokernel f.op).unop ≅ kernel f where
 
 /-- The kernel of `g.unop` is the opposite of `cokernel g`. -/
 @[simps!]
-def kernelUnopOp : Opposite.op (kernel g.unop) ≅ cokernel g :=
+noncomputable def kernelUnopOp : Opposite.op (kernel g.unop) ≅ cokernel g :=
   (cokernelOpUnop g.unop).op
 
 /-- The cokernel of `g.unop` is the opposite of `kernel g`. -/
 @[simps!]
-def cokernelUnopOp : Opposite.op (cokernel g.unop) ≅ kernel g :=
+noncomputable def cokernelUnopOp : Opposite.op (cokernel g.unop) ≅ kernel g :=
   (kernelOpUnop g.unop).op
 
 theorem cokernel.π_op :
@@ -92,17 +92,17 @@ theorem kernel.ι_op :
 
 /-- The kernel of `f.op` is the opposite of `cokernel f`. -/
 @[simps!]
-def kernelOpOp : kernel f.op ≅ Opposite.op (cokernel f) :=
+noncomputable def kernelOpOp : kernel f.op ≅ Opposite.op (cokernel f) :=
   (kernelOpUnop f).op.symm
 
 /-- The cokernel of `f.op` is the opposite of `kernel f`. -/
 @[simps!]
-def cokernelOpOp : cokernel f.op ≅ Opposite.op (kernel f) :=
+noncomputable def cokernelOpOp : cokernel f.op ≅ Opposite.op (kernel f) :=
   (cokernelOpUnop f).op.symm
 
 /-- The kernel of `g.unop` is the opposite of `cokernel g`. -/
 @[simps!]
-def kernelUnopUnop : kernel g.unop ≅ (cokernel g).unop :=
+noncomputable def kernelUnopUnop : kernel g.unop ≅ (cokernel g).unop :=
   (kernelUnopOp g).unop.symm
 
 theorem kernel.ι_unop :
@@ -116,26 +116,26 @@ theorem cokernel.π_unop :
 
 /-- The cokernel of `g.unop` is the opposite of `kernel g`. -/
 @[simps!]
-def cokernelUnopUnop : cokernel g.unop ≅ (kernel g).unop :=
+noncomputable def cokernelUnopUnop : cokernel g.unop ≅ (kernel g).unop :=
   (cokernelUnopOp g).unop.symm
 
 /-- The opposite of the image of `g.unop` is the image of `g`. -/
-def imageUnopOp : Opposite.op (image g.unop) ≅ image g :=
+noncomputable def imageUnopOp : Opposite.op (image g.unop) ≅ image g :=
   (Abelian.imageIsoImage _).op ≪≫
     (cokernelOpOp _).symm ≪≫
       cokernelIsoOfEq (cokernel.π_unop _) ≪≫
         cokernelEpiComp _ _ ≪≫ cokernelCompIsIso _ _ ≪≫ Abelian.coimageIsoImage' _
 
 /-- The opposite of the image of `f` is the image of `f.op`. -/
-def imageOpOp : Opposite.op (image f) ≅ image f.op :=
+noncomputable def imageOpOp : Opposite.op (image f) ≅ image f.op :=
   imageUnopOp f.op
 
 /-- The image of `f.op` is the opposite of the image of `f`. -/
-def imageOpUnop : (image f.op).unop ≅ image f :=
+noncomputable def imageOpUnop : (image f.op).unop ≅ image f :=
   (imageUnopOp f.op).unop
 
 /-- The image of `g` is the opposite of the image of `g.unop.` -/
-def imageUnopUnop : (image g).unop ≅ image g.unop :=
+noncomputable def imageUnopUnop : (image g).unop ≅ image g.unop :=
   (imageUnopOp g).unop
 
 theorem image_ι_op_comp_imageUnopOp_hom :

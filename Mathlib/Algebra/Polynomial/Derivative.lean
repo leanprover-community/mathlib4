@@ -22,8 +22,6 @@ public import Mathlib.GroupTheory.GroupAction.Ring
 @[expose] public section
 
 
-noncomputable section
-
 open Finset
 
 open Polynomial
@@ -43,7 +41,7 @@ section Semiring
 variable [Semiring R] {p : R[X]}
 
 /-- `derivative p` is the formal derivative of the polynomial `p` -/
-def derivative : R[X] →ₗ[R] R[X] where
+noncomputable def derivative : R[X] →ₗ[R] R[X] where
   toFun p := p.sum fun n a => C (a * n) * X ^ (n - 1)
   map_add' p q := by
     rw [sum_add_index] <;>

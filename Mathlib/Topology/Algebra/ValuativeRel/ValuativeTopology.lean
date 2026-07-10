@@ -37,8 +37,6 @@ public section
 open scoped Topology Uniformity
 open Set Filter Valuation ValuativeRel MonoidWithZeroHom ValueGroup₀ ValueGroupWithZero
 
-noncomputable section
-
 variable (R : Type*) [Ring R] [ValuativeRel R]
 
 variable {R} in
@@ -62,6 +60,7 @@ namespace ValuativeRel
 to avoid diamonds. If desired, one can equip a ring with a topological space from a valuative
 relation by hand. But as long as they do so, the fact that the topology is valuative and
 nonarchemidean can be automatically inferred. -/
+noncomputable
 local instance topologicalSpace : TopologicalSpace R := (valuation R).subgroups_basis.topology
 
 instance nonarchimedeanRing : NonarchimedeanRing R :=
@@ -78,6 +77,7 @@ global instance to avoid diamonds. If desired, one can equip a ring with a unifo
 from a valuative relation by hand. But as long as they do so, the fact that the topology is
 valuative and nonarchimedean, and the addition is uniformly continuous,
 can be automatically inferred. -/
+noncomputable
 local instance uniformSpace : UniformSpace R := IsTopologicalAddGroup.rightUniformSpace R
 
 /-- This is not made into a global instance to avoid diamonds. -/

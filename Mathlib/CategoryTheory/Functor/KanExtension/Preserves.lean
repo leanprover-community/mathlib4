@@ -29,7 +29,7 @@ namespace CategoryTheory.Functor
 variable {A B C D : Type*} [Category* A] [Category* B] [Category* C] [Category* D]
   (G : B ⥤ D) (F : A ⥤ B) (L : A ⥤ C)
 
-noncomputable section
+section
 
 section LeftKanExtension
 
@@ -91,7 +91,7 @@ variable {F L} in
 /-- Given a pointwise left Kan extension of `F` along `L` at `c`, exhibits
 `(LeftExtension.whiskerRight L F G).obj E` as a pointwise left Kan extension of `F ⋙ G` along
 `L` at `c`. -/
-def LeftExtension.IsPointwiseLeftKanExtensionAt.postcompose {c : C}
+noncomputable def LeftExtension.IsPointwiseLeftKanExtensionAt.postcompose {c : C}
     [PreservesPointwiseLeftKanExtensionAt G F L c]
     {E : LeftExtension L F} (hE : E.IsPointwiseLeftKanExtensionAt c) :
     LeftExtension.postcompose₂ L F G |>.obj E |>.IsPointwiseLeftKanExtensionAt c :=
@@ -101,7 +101,7 @@ variable {F L} in
 /-- Given a pointwise left Kan extension of `F` along `L`, exhibits
 `(LeftExtension.whiskerRight L F G).obj E` as a pointwise left Kan extension of `F ⋙ G` along
 `L`. -/
-def LeftExtension.IsPointwiseLeftKanExtension.postcompose
+noncomputable def LeftExtension.IsPointwiseLeftKanExtension.postcompose
     [PreservesPointwiseLeftKanExtension G F L]
     {E : LeftExtension L F} (hE : E.IsPointwiseLeftKanExtension) :
     LeftExtension.postcompose₂ L F G |>.obj E |>.IsPointwiseLeftKanExtension := fun c ↦
@@ -141,7 +141,7 @@ instance hasPointwiseLeftKanExtension_of_preserves [L.HasPointwiseLeftKanExtensi
 
 /-- Extract an isomorphism `(leftKanExtension L F) ⋙ G ≅ leftKanExtension L (F ⋙ G)` when `G`
 preserves left Kan extensions. -/
-def leftKanExtensionCompIsoOfPreserves [PreservesLeftKanExtension G F L]
+noncomputable def leftKanExtensionCompIsoOfPreserves [PreservesLeftKanExtension G F L]
     [L.HasLeftKanExtension F] :
     L.leftKanExtension F ⋙ G ≅ L.leftKanExtension (F ⋙ G) :=
   leftKanExtensionUnique
@@ -213,7 +213,7 @@ instance preservesPointwiseLKEOfHasPointwiseAndPreservesPointwise
 /-- Extract an isomorphism
 `(pointwiseLeftKanExtension L F) ⋙ G ≅ pointwiseLeftKanExtension L (F ⋙ G)` when `G` preserves
 left Kan extensions. -/
-def pointwiseLeftKanExtensionCompIsoOfPreserves
+noncomputable def pointwiseLeftKanExtensionCompIsoOfPreserves
     [PreservesPointwiseLeftKanExtension G F L]
     [L.HasPointwiseLeftKanExtension F] :
     L.pointwiseLeftKanExtension F ⋙ G ≅ L.pointwiseLeftKanExtension (F ⋙ G) :=
@@ -277,7 +277,7 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Commuting a functor that preserves left Kan extensions with the `lan` functor. -/
 @[simps!]
-def lanCompIsoOfPreserves [G.PreservesLeftKanExtensions L]
+noncomputable def lanCompIsoOfPreserves [G.PreservesLeftKanExtensions L]
     [∀ F : A ⥤ B, HasLeftKanExtension L F]
     [∀ F : A ⥤ D, HasLeftKanExtension L F] :
     L.lan ⋙ (whiskeringRight _ _ _).obj G ≅ (whiskeringRight _ _ _).obj G ⋙ L.lan :=
@@ -352,7 +352,7 @@ variable {F L} in
 /-- Given a pointwise right Kan extension of `F` along `L` at `c`, exhibits
 `(RightExtension.whiskerRight L F G).obj E` as a pointwise right Kan extension of `F ⋙ G` along
 `L` at `c`. -/
-def RightExtension.IsPointwiseRightKanExtensionAt.postcompose {c : C}
+noncomputable def RightExtension.IsPointwiseRightKanExtensionAt.postcompose {c : C}
     [PreservesPointwiseRightKanExtensionAt G F L c]
     {E : RightExtension L F} (hE : E.IsPointwiseRightKanExtensionAt c) :
     RightExtension.postcompose₂ L F G |>.obj E |>.IsPointwiseRightKanExtensionAt c :=
@@ -361,7 +361,7 @@ def RightExtension.IsPointwiseRightKanExtensionAt.postcompose {c : C}
 variable {F L} in
 /-- Given a pointwise right Kan extension of `F` along `L`, exhibits
 `(RightExtension.whiskerRight L F G).obj E` as a pointwise right Kan extension of `F ⋙ G` at `L`. -/
-def RightExtension.IsPointwiseRightKanExtension.postcompose
+noncomputable def RightExtension.IsPointwiseRightKanExtension.postcompose
     [PreservesPointwiseRightKanExtension G F L]
     {E : RightExtension L F} (hE : E.IsPointwiseRightKanExtension) :
     RightExtension.postcompose₂ L F G |>.obj E |>.IsPointwiseRightKanExtension := fun c ↦
@@ -401,7 +401,7 @@ instance hasPointwiseRightKanExtension_of_preserves [L.HasPointwiseRightKanExten
 
 /-- Extract an isomorphism `rightKanExtension L F ⋙ G ≅ rightKanExtension L (F ⋙ G)` when `G`
 preserves right Kan extensions. -/
-def rightKanExtensionCompIsoOfPreserves [PreservesRightKanExtension G F L]
+noncomputable def rightKanExtensionCompIsoOfPreserves [PreservesRightKanExtension G F L]
     [L.HasRightKanExtension F] :
     L.rightKanExtension F ⋙ G ≅ L.rightKanExtension (F ⋙ G) :=
   rightKanExtensionUnique
@@ -470,7 +470,7 @@ instance preservesPointwiseRKEOfHasPointwiseAndPreservesPointwise
 /-- Extract an isomorphism
 `L.pointwiseRightKanExtension F ⋙ G ≅ L.pointwiseRightKanExtension (F ⋙ G)` when `G` preserves
 right Kan extensions. -/
-def pointwiseRightKanExtensionCompIsoOfPreserves
+noncomputable def pointwiseRightKanExtensionCompIsoOfPreserves
     [PreservesPointwiseRightKanExtension G F L]
     [L.HasPointwiseRightKanExtension F] :
     L.pointwiseRightKanExtension F ⋙ G ≅ L.pointwiseRightKanExtension (F ⋙ G) :=
@@ -531,7 +531,7 @@ abbrev PreservesPointwiseRightKanExtensions :=
 set_option backward.defeqAttrib.useBackward true in
 /-- Commuting a functor that preserves right Kan extensions with the `ran` functor. -/
 @[simps!]
-def ranCompIsoOfPreserves [G.PreservesRightKanExtensions L]
+noncomputable def ranCompIsoOfPreserves [G.PreservesRightKanExtensions L]
     [∀ F : A ⥤ B, HasRightKanExtension L F] [∀ F : A ⥤ D, HasRightKanExtension L F] :
     L.ran ⋙ (whiskeringRight _ _ _).obj G ≅ (whiskeringRight _ _ _).obj G ⋙ L.ran :=
   NatIso.ofComponents (fun F ↦ rightKanExtensionCompIsoOfPreserves _ _ _)

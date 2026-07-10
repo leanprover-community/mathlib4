@@ -41,8 +41,6 @@ Gamma
 public section
 
 
-noncomputable section
-
 
 open Filter intervalIntegral Set Real MeasureTheory Asymptotics
 
@@ -107,7 +105,7 @@ theorem GammaIntegral_convergent {s : ℂ} (hs : 0 < s.re) :
 
 See `Complex.GammaIntegral_convergent` for a proof of the convergence of the integral for
 `0 < re s`. -/
-@[expose] def GammaIntegral (s : ℂ) : ℂ :=
+@[expose] noncomputable def GammaIntegral (s : ℂ) : ℂ :=
   ∫ x in Ioi (0 : ℝ), ↑(-x).exp * ↑x ^ (s - 1)
 
 theorem GammaIntegral_conj (s : ℂ) : GammaIntegral (conj s) = conj (GammaIntegral s) := by
@@ -143,7 +141,7 @@ namespace Complex
 section GammaRecurrence
 
 /-- The indefinite version of the `Γ` function, `Γ(s, X) = ∫ x ∈ 0..X, exp(-x) x ^ (s - 1)`. -/
-@[expose] def partialGamma (s : ℂ) (X : ℝ) : ℂ :=
+@[expose] noncomputable def partialGamma (s : ℂ) (X : ℝ) : ℂ :=
   ∫ x in 0..X, (-x).exp * x ^ (s - 1)
 
 theorem tendsto_partialGamma {s : ℂ} (hs : 0 < s.re) :
@@ -284,7 +282,7 @@ private theorem GammaAux_recurrence2 (s : ℂ) (n : ℕ) (h1 : -s.re < ↑n) :
 /- This definition is deliberately not @[expose]'d, since `GammaAux` is not mathematically
 interesting. -/
 /-- The `Γ` function (of a complex variable `s`). -/
-@[irreducible, pp_nodot] def Gamma (s : ℂ) : ℂ :=
+@[irreducible, pp_nodot] noncomputable def Gamma (s : ℂ) : ℂ :=
   GammaAux ⌊1 - s.re⌋₊ s
 
 private theorem Gamma_eq_GammaAux (s : ℂ) (n : ℕ) (h1 : -s.re < ↑n) : Gamma s = GammaAux n s := by
@@ -398,7 +396,7 @@ end Complex
 namespace Real
 
 /-- The `Γ` function (of a real variable `s`). -/
-@[pp_nodot, expose] def Gamma (s : ℝ) : ℝ :=
+@[pp_nodot, expose] noncomputable def Gamma (s : ℝ) : ℝ :=
   (Complex.Gamma s).re
 
 theorem Gamma_eq_integral {s : ℝ} (hs : 0 < s) :

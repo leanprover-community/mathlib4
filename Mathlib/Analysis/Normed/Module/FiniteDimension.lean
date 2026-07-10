@@ -55,8 +55,6 @@ then the identities from `E` to `E'` and from `E'` to `E` are continuous thanks 
 
 universe u v w x
 
-noncomputable section
-
 open Asymptotics Filter Module Metric Module NNReal Set TopologicalSpace Topology
 
 namespace LinearIsometry
@@ -69,7 +67,7 @@ variable {R₁ : Type*} [Field R₁] [Module R₁ E₁] [Module R₁ F] [FiniteD
 
 /-- A linear isometry between finite-dimensional spaces of equal dimension can be upgraded
 to a linear isometry equivalence. -/
-def toLinearIsometryEquiv (li : E₁ →ₗᵢ[R₁] F) (h : finrank R₁ E₁ = finrank R₁ F) :
+noncomputable def toLinearIsometryEquiv (li : E₁ →ₗᵢ[R₁] F) (h : finrank R₁ E₁ = finrank R₁ F) :
     E₁ ≃ₗᵢ[R₁] F where
   toLinearEquiv := li.toLinearMap.linearEquivOfInjective li.injective h
   norm_map' := li.norm_map'
@@ -98,6 +96,7 @@ variable [FiniteDimensional 𝕜 V₁] [FiniteDimensional 𝕜 V₂]
 
 /-- An affine isometry between finite-dimensional spaces of equal dimension can be upgraded
 to an affine isometry equivalence. -/
+noncomputable
 def toAffineIsometryEquiv [Inhabited P₁] (li : P₁ →ᵃⁱ[𝕜] P₂) (h : finrank 𝕜 V₁ = finrank 𝕜 V₂) :
     P₁ ≃ᵃⁱ[𝕜] P₂ :=
   AffineIsometryEquiv.mk' li (li.linearIsometry.toLinearIsometryEquiv h)
@@ -198,6 +197,7 @@ theorem ContinuousLinearMap.continuous_det : Continuous fun f : E →L[𝕜] E =
 vector space `E'` can be extended to a Lipschitz map on the whole space `α`, with a slightly worse
 constant `C * K` where `C` only depends on `E'`. We record a working value for this constant `C`
 as `lipschitzExtensionConstant E'`. -/
+noncomputable
 irreducible_def lipschitzExtensionConstant (E' : Type*) [NormedAddCommGroup E'] [NormedSpace ℝ E']
   [FiniteDimensional ℝ E'] : ℝ≥0 :=
   let A := (Basis.ofVectorSpace ℝ E').equivFun.toContinuousLinearEquiv

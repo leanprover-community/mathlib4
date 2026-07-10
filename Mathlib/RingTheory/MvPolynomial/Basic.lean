@@ -40,8 +40,6 @@ Generalise to noncommutative (semi)rings
 @[expose] public section
 
 
-noncomputable section
-
 open Set LinearMap Module Submodule
 
 universe u v
@@ -90,11 +88,11 @@ section Degree
 variable {σ}
 
 /-- The submodule of polynomials that are sum of monomials in the set `s`. -/
-def restrictSupport (s : Set (σ →₀ ℕ)) : Submodule R (MvPolynomial σ R) :=
+noncomputable def restrictSupport (s : Set (σ →₀ ℕ)) : Submodule R (MvPolynomial σ R) :=
   AddMonoidAlgebra.supported R R s
 
 /-- `restrictSupport R s` has a canonical `R`-basis indexed by `s`. -/
-def basisRestrictSupport (s : Set (σ →₀ ℕ)) : Basis s R (restrictSupport R s) where
+noncomputable def basisRestrictSupport (s : Set (σ →₀ ℕ)) : Basis s R (restrictSupport R s) where
   repr := AddMonoidAlgebra.supportedEquivFinsupp s
 
 theorem restrictSupport_mono {s t : Set (σ →₀ ℕ)} (h : s ⊆ t) :
@@ -147,7 +145,7 @@ lemma restrictSupport_nsmul (n : ℕ) (s : Set (σ →₀ ℕ)) :
   induction n <;> simp [add_smul, restrictSupport_add, *, pow_succ]
 
 /-- The ideal defined by `restrictSupport R s` when `s` is an upper set. -/
-def restrictSupportIdeal (s : Set (σ →₀ ℕ)) (hs : IsUpperSet s) :
+noncomputable def restrictSupportIdeal (s : Set (σ →₀ ℕ)) (hs : IsUpperSet s) :
     Ideal (MvPolynomial σ R) where
   __ := restrictSupport R s
   smul_mem' x y hy m (hm : m ∈ (x * y).support) := by
@@ -165,12 +163,12 @@ lemma restrictScalars_restrictSupportIdeal (s : Set (σ →₀ ℕ)) (hs) :
 variable (σ)
 
 /-- The submodule of polynomials of total degree less than or equal to `m`. -/
-def restrictTotalDegree (m : ℕ) : Submodule R (MvPolynomial σ R) :=
+noncomputable def restrictTotalDegree (m : ℕ) : Submodule R (MvPolynomial σ R) :=
   restrictSupport R { n | (n.sum fun _ e => e) ≤ m }
 
 /-- The submodule of polynomials such that the degree with respect to each individual variable is
 less than or equal to `m`. -/
-def restrictDegree (m : ℕ) : Submodule R (MvPolynomial σ R) :=
+noncomputable def restrictDegree (m : ℕ) : Submodule R (MvPolynomial σ R) :=
   restrictSupport R { n | ∀ i, n i ≤ m }
 
 variable {R}
@@ -200,7 +198,7 @@ theorem restrictTotalDegree_le_restrictDegree (m : ℕ) :
     (degreeOf_le_totalDegree p i) s hs).trans ((mem_restrictTotalDegree _ _ _).mp hp)
 
 /-- The monomials form a basis on `MvPolynomial σ R`. -/
-def basisMonomials : Basis (σ →₀ ℕ) R (MvPolynomial σ R) where
+noncomputable def basisMonomials : Basis (σ →₀ ℕ) R (MvPolynomial σ R) where
   repr := AddMonoidAlgebra.coeffLinearEquiv _
 
 @[simp]

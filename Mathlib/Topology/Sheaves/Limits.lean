@@ -16,8 +16,6 @@ public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 public section
 
 
-noncomputable section
-
 universe v u w t
 
 open CategoryTheory
@@ -38,13 +36,14 @@ instance [HasColimitsOfShape J C] (X : TopCat) : HasColimitsOfShape J (Presheaf 
 
 instance [HasColimits.{v, u} C] (X : TopCat.{t}) : HasColimitsOfSize.{v, v} (Presheaf C X) where
 
+noncomputable
 instance [HasLimitsOfShape J C] (X : TopCat.{t}) : CreatesLimitsOfShape J (Sheaf.forget C X) :=
   inferInstanceAs <| CreatesLimitsOfShape J (sheafToPresheaf _ _)
 
 instance [HasLimitsOfShape J C] (X : TopCat.{t}) : HasLimitsOfShape J (Sheaf C X) :=
   hasLimitsOfShape_of_hasLimitsOfShape_createsLimitsOfShape (Sheaf.forget C X)
 
-instance [HasLimits C] (X : TopCat) : CreatesLimits.{v, v} (Sheaf.forget C X) where
+noncomputable instance [HasLimits C] (X : TopCat) : CreatesLimits.{v, v} (Sheaf.forget C X) where
 
 instance [HasLimits C] (X : TopCat.{v}) : HasLimitsOfSize.{v, v} (Sheaf.{v} C X) where
 

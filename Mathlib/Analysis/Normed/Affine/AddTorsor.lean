@@ -22,7 +22,7 @@ This file contains lemmas about normed additive torsors over normed spaces.
 @[expose] public section
 
 
-noncomputable section
+section
 
 open NNReal Topology
 
@@ -226,6 +226,7 @@ theorem nndist_midpoint_midpoint_le (p₁ p₂ p₃ p₄ : V) :
 
 /-- A continuous map between two normed affine spaces is an affine map provided that
 it sends midpoints to midpoints. -/
+noncomputable
 def AffineMap.ofMapMidpoint (f : P → Q) (h : ∀ x y, f (midpoint ℝ x y) = midpoint ℝ (f x) (f y))
     (hfc : Continuous f) : P →ᵃ[ℝ] Q :=
   let c := Classical.arbitrary P

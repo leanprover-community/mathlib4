@@ -44,8 +44,6 @@ The constructions of the ring homomorphisms go through an auxiliary constructor
 @[expose] public section
 
 
-noncomputable section
-
 open Nat IsLocalRing Padic
 
 namespace PadicInt
@@ -172,7 +170,7 @@ theorem existsUnique_mem_range : ∃! n : ℕ, n < p ∧ x - n ∈ maximalIdeal 
 /-- `zmodRepr x` is the unique natural number smaller than `p`
 satisfying `‖(x - zmodRepr x : ℤ_[p])‖ < 1`.
 -/
-def zmodRepr : ℕ :=
+noncomputable def zmodRepr : ℕ :=
   Classical.choose (existsUnique_mem_range x).exists
 
 theorem zmodRepr_spec : zmodRepr x < p ∧ x - zmodRepr x ∈ maximalIdeal ℤ_[p] :=
@@ -295,7 +293,7 @@ def toZModHom (v : ℕ) (f : ℤ_[p] → ℕ) (f_spec : ∀ x, x - f x ∈ (Idea
 /-- `toZMod` is a ring hom from `ℤ_[p]` to `ZMod p`,
 with the equality `toZMod x = (zmodRepr x : ZMod p)`.
 -/
-def toZMod : ℤ_[p] →+* ZMod p :=
+noncomputable def toZMod : ℤ_[p] →+* ZMod p :=
   toZModHom p zmodRepr
     (by
       rw [← maximalIdeal_eq_span_p]
@@ -344,7 +342,7 @@ lemma zmodRepr_mul (x y : ℤ_[p]) : (x * y).zmodRepr = x.zmodRepr * y.zmodRepr 
   simp [← val_toZMod_eq_zmodRepr, ZMod.val_mul]
 
 /-- The equivalence between the residue field of the `p`-adic integers and `ℤ/pℤ` -/
-def residueField : IsLocalRing.ResidueField ℤ_[p] ≃+* ZMod p :=
+noncomputable def residueField : IsLocalRing.ResidueField ℤ_[p] ≃+* ZMod p :=
   (Ideal.quotEquivOfEq PadicInt.ker_toZMod.symm).trans <|
     RingHom.quotientKerEquivOfSurjective (ZMod.ringHom_surjective PadicInt.toZMod)
 
@@ -442,7 +440,7 @@ lemma toZMod_eq_residueField_comp_residue :
   rfl
 
 /-- A ring hom from `ℤ_[p]` to `ZMod (p^n)`, with underlying function `PadicInt.appr n`. -/
-def toZModPow (n : ℕ) : ℤ_[p] →+* ZMod (p ^ n) :=
+noncomputable def toZModPow (n : ℕ) : ℤ_[p] →+* ZMod (p ^ n) :=
   toZModHom (p ^ n) (fun x => appr x n)
     (by
       intros

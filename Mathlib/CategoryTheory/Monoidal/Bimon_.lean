@@ -29,8 +29,6 @@ set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 
-noncomputable section
-
 universe v₁ v₂ u₁ u₂ u
 
 open CategoryTheory MonoidalCategory

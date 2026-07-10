@@ -22,8 +22,6 @@ homotopy category functor `SSet ⥤ Cat`.
 public section
 
 
-noncomputable section
-
 universe v
 
 open CategoryTheory.Limits

@@ -49,8 +49,6 @@ weak-star, weak dual, duality
 @[expose] public section
 
 
-noncomputable section
-
 open Filter
 
 open Topology

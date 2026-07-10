@@ -23,8 +23,6 @@ We define the degree of a rational function, with values in `ℤ`:
 @[expose] public section
 
 
-noncomputable section
-
 universe u
 
 variable {K : Type u}
@@ -40,7 +38,7 @@ variable [Field K]
 /-- `intDegree x` is the degree of the rational function `x`, defined as the difference between
 the `natDegree` of its numerator and the `natDegree` of its denominator. In particular,
 `intDegree 0 = 0`. -/
-def intDegree (x : K⟮X⟯) : ℤ :=
+noncomputable def intDegree (x : K⟮X⟯) : ℤ :=
   natDegree x.num - natDegree x.denom
 
 @[simp]

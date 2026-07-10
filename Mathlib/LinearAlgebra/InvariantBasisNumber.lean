@@ -105,8 +105,6 @@ free module, rank, Orzech property, (strong) rank condition, invariant basis num
 
 @[expose] public section
 
-noncomputable section
-
 open Function
 
 universe u v w

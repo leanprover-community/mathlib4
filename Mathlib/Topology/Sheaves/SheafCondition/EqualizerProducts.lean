@@ -27,8 +27,6 @@ condition.
 
 universe v' v u
 
-noncomputable section
-
 open CategoryTheory CategoryTheory.Limits TopologicalSpace Opposite TopologicalSpace.Opens
 
 namespace TopCat
@@ -41,31 +39,31 @@ namespace Presheaf
 namespace SheafConditionEqualizerProducts
 
 /-- The product of the sections of a presheaf over a family of open sets. -/
-def piOpens : C :=
+noncomputable def piOpens : C :=
   ∏ᶜ fun i : ι => F.obj (op (U i))
 
 /-- The product of the sections of a presheaf over the pairwise intersections of
 a family of open sets.
 -/
-def piInters : C :=
+noncomputable def piInters : C :=
   ∏ᶜ fun p : ι × ι => F.obj (op (U p.1 ⊓ U p.2))
 
 /-- The morphism `Π F.obj (U i) ⟶ Π F.obj (U i) ⊓ (U j)` whose components
 are given by the restriction maps from `U i` to `U i ⊓ U j`.
 -/
-def leftRes : piOpens F U ⟶ piInters.{v'} F U :=
+noncomputable def leftRes : piOpens F U ⟶ piInters.{v'} F U :=
   Pi.lift fun p : ι × ι => Pi.π _ p.1 ≫ F.map (infLELeft (U p.1) (U p.2)).op
 
 /-- The morphism `Π F.obj (U i) ⟶ Π F.obj (U i) ⊓ (U j)` whose components
 are given by the restriction maps from `U j` to `U i ⊓ U j`.
 -/
-def rightRes : piOpens F U ⟶ piInters.{v'} F U :=
+noncomputable def rightRes : piOpens F U ⟶ piInters.{v'} F U :=
   Pi.lift fun p : ι × ι => Pi.π _ p.2 ≫ F.map (infLERight (U p.1) (U p.2)).op
 
 /-- The morphism `F.obj U ⟶ Π F.obj (U i)` whose components
 are given by the restriction maps from `U j` to `U i ⊓ U j`.
 -/
-def res : F.obj (op (iSup U)) ⟶ piOpens.{v'} F U :=
+noncomputable def res : F.obj (op (iSup U)) ⟶ piOpens.{v'} F U :=
   Pi.lift fun i : ι => F.map (TopologicalSpace.Opens.leSupr U i).op
 
 set_option backward.isDefEq.respectTransparency false in
@@ -95,13 +93,13 @@ theorem w : res F U ≫ leftRes F U = res F U ≫ rightRes F U := by
 
 /-- The equalizer diagram for the sheaf condition.
 -/
-abbrev diagram : WalkingParallelPair ⥤ C :=
+noncomputable abbrev diagram : WalkingParallelPair ⥤ C :=
   parallelPair (leftRes.{v'} F U) (rightRes F U)
 
 /-- The restriction map `F.obj U ⟶ Π F.obj (U i)` gives a cone over the equalizer diagram
 for the sheaf condition. The sheaf condition asserts this cone is a limit cone.
 -/
-def fork : Fork.{v} (leftRes F U) (rightRes F U) :=
+noncomputable def fork : Fork.{v} (leftRes F U) (rightRes F U) :=
   Fork.ofι _ (w F U)
 
 @[simp]
@@ -125,18 +123,18 @@ variable {F} {G : Presheaf C X}
 
 /-- Isomorphic presheaves have isomorphic `piOpens` for any cover `U`. -/
 @[simp]
-def piOpens.isoOfIso (α : F ≅ G) : piOpens F U ≅ piOpens.{v'} G U :=
+noncomputable def piOpens.isoOfIso (α : F ≅ G) : piOpens F U ≅ piOpens.{v'} G U :=
   Pi.mapIso fun _ => α.app _
 
 /-- Isomorphic presheaves have isomorphic `piInters` for any cover `U`. -/
 @[simp]
-def piInters.isoOfIso (α : F ≅ G) : piInters F U ≅ piInters.{v'} G U :=
+noncomputable def piInters.isoOfIso (α : F ≅ G) : piInters F U ≅ piInters.{v'} G U :=
   Pi.mapIso fun _ => α.app _
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Isomorphic presheaves have isomorphic sheaf condition diagrams. -/
-def diagram.isoOfIso (α : F ≅ G) : diagram F U ≅ diagram.{v'} G U :=
+noncomputable def diagram.isoOfIso (α : F ≅ G) : diagram F U ≅ diagram.{v'} G U :=
   NatIso.ofComponents (by
     rintro ⟨⟩
     · exact piOpens.isoOfIso U α
@@ -159,7 +157,7 @@ then the `fork F U`, the canonical cone of the sheaf condition diagram for `F`,
 is isomorphic to `fork F G` postcomposed with the corresponding isomorphism between
 sheaf condition diagrams.
 -/
-def fork.isoOfIso (α : F ≅ G) :
+noncomputable def fork.isoOfIso (α : F ≅ G) :
     fork F U ≅ (Cone.postcompose (diagram.isoOfIso U α).inv).obj (fork G U) := by
   fapply Fork.ext
   · apply α.app
@@ -192,7 +190,7 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Implementation of `SheafConditionPairwiseIntersections.coneEquiv`. -/
 @[simps]
-def coneEquivFunctorObj (c : Cone ((diagram U).op ⋙ F)) :
+noncomputable def coneEquivFunctorObj (c : Cone ((diagram U).op ⋙ F)) :
     Cone (SheafConditionEqualizerProducts.diagram F U) where
   pt := c.pt
   π :=
@@ -224,7 +222,7 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Implementation of `SheafConditionPairwiseIntersections.coneEquiv`. -/
 @[simps!]
-def coneEquivFunctor :
+noncomputable def coneEquivFunctor :
     Limits.Cone ((diagram U).op ⋙ F) ⥤
       Limits.Cone (SheafConditionEqualizerProducts.diagram F U) where
   obj c := coneEquivFunctorObj F U c
@@ -242,6 +240,7 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Implementation of `SheafConditionPairwiseIntersections.coneEquiv`. -/
 @[simps]
+noncomputable
 def coneEquivInverseObj (c : Limits.Cone (SheafConditionEqualizerProducts.diagram F U)) :
     Limits.Cone ((diagram U).op ⋙ F) where
   pt := c.pt
@@ -290,7 +289,7 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Implementation of `SheafConditionPairwiseIntersections.coneEquiv`. -/
 @[simps!]
-def coneEquivInverse :
+noncomputable def coneEquivInverse :
     Limits.Cone (SheafConditionEqualizerProducts.diagram F U) ⥤
       Limits.Cone ((diagram U).op ⋙ F) where
   obj c := coneEquivInverseObj F U c
@@ -310,7 +309,7 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Implementation of `SheafConditionPairwiseIntersections.coneEquiv`. -/
 @[simps]
-def coneEquivUnitIsoApp (c : Cone ((diagram U).op ⋙ F)) :
+noncomputable def coneEquivUnitIsoApp (c : Cone ((diagram U).op ⋙ F)) :
     (𝟭 (Cone ((diagram U).op ⋙ F))).obj c ≅
       (coneEquivFunctor F U ⋙ coneEquivInverse F U).obj c where
   hom :=
@@ -331,7 +330,7 @@ def coneEquivUnitIsoApp (c : Cone ((diagram U).op ⋙ F)) :
 set_option backward.defeqAttrib.useBackward true in
 /-- Implementation of `SheafConditionPairwiseIntersections.coneEquiv`. -/
 @[simps!]
-def coneEquivUnitIso :
+noncomputable def coneEquivUnitIso :
     𝟭 (Limits.Cone ((diagram U).op ⋙ F)) ≅ coneEquivFunctor F U ⋙ coneEquivInverse F U :=
   NatIso.ofComponents (coneEquivUnitIsoApp F U)
 
@@ -339,7 +338,7 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Implementation of `SheafConditionPairwiseIntersections.coneEquiv`. -/
 @[simps!]
-def coneEquivCounitIso :
+noncomputable def coneEquivCounitIso :
     coneEquivInverse F U ⋙ coneEquivFunctor F U ≅
       𝟭 (Limits.Cone (SheafConditionEqualizerProducts.diagram F U)) :=
   NatIso.ofComponents
@@ -374,7 +373,7 @@ set_option backward.defeqAttrib.useBackward true in
 Cones over `diagram U ⋙ F` are the same as a cones over the usual sheaf condition equalizer diagram.
 -/
 @[simps]
-def coneEquiv :
+noncomputable def coneEquiv :
     Limits.Cone ((diagram U).op ⋙ F) ≌
       Limits.Cone (SheafConditionEqualizerProducts.diagram F U) where
   functor := coneEquivFunctor F U
@@ -387,7 +386,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- If `SheafConditionEqualizerProducts.fork` is an equalizer,
 then `F.mapCone (cone U)` is a limit cone.
 -/
-def isLimitMapConeOfIsLimitSheafConditionFork
+noncomputable def isLimitMapConeOfIsLimitSheafConditionFork
     (P : IsLimit (SheafConditionEqualizerProducts.fork F U)) : IsLimit (F.mapCone (cocone U).op) :=
   IsLimit.ofIsoLimit ((IsLimit.ofConeEquiv (coneEquiv F U).symm).symm P)
     { hom :=
@@ -424,6 +423,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- If `F.mapCone (cone U)` is a limit cone,
 then `SheafConditionEqualizerProducts.fork` is an equalizer.
 -/
+noncomputable
 def isLimitSheafConditionForkOfIsLimitMapCone (Q : IsLimit (F.mapCone (cocone U).op)) :
     IsLimit (SheafConditionEqualizerProducts.fork F U) :=
   IsLimit.ofIsoLimit ((IsLimit.ofConeEquiv (coneEquiv F U)).symm Q)

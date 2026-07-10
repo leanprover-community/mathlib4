@@ -44,8 +44,6 @@ i.e., it is complete and second countable. We also prove the Gromov compactness 
 
 @[expose] public section
 
-noncomputable section
-
 open scoped Topology ENNReal Cardinal
 open Set Function TopologicalSpace Filter Metric Quotient Bornology
 open BoundedContinuousFunction Nat Int kuratowskiEmbedding
@@ -120,7 +118,7 @@ theorem eq_toGHSpace {p : NonemptyCompacts ℓ_infty_ℝ} : ⟦p⟧ = toGHSpace 
 
 section
 
-instance repGHSpaceMetricSpace {p : GHSpace} : MetricSpace p.Rep :=
+noncomputable instance repGHSpaceMetricSpace {p : GHSpace} : MetricSpace p.Rep :=
   inferInstanceAs <| MetricSpace p.out
 
 instance rep_gHSpace_compactSpace {p : GHSpace} : CompactSpace p.Rep :=
@@ -167,12 +165,13 @@ theorem toGHSpace_eq_toGHSpace_iff_isometryEquiv {X : Type u} [MetricSpace X] [C
 /-- Distance on `GHSpace`: the distance between two nonempty compact spaces is the infimum
 Hausdorff distance between isometric copies of the two spaces in a metric space. For the definition,
 we only consider embeddings in `ℓ^∞(ℝ)`, but we will prove below that it works for all spaces. -/
-instance : Dist GHSpace where
+noncomputable instance : Dist GHSpace where
   dist x y := sInf <| (fun p : NonemptyCompacts ℓ_infty_ℝ × NonemptyCompacts ℓ_infty_ℝ =>
     hausdorffDist (p.1 : Set ℓ_infty_ℝ) p.2) '' { a | ⟦a⟧ = x } ×ˢ { b | ⟦b⟧ = y }
 
 /-- The Gromov-Hausdorff distance between two nonempty compact metric spaces, equal by definition to
 the distance of the equivalence classes of these spaces in the Gromov-Hausdorff space. -/
+noncomputable
 def ghDist (X : Type u) (Y : Type v) [MetricSpace X] [Nonempty X] [CompactSpace X] [MetricSpace Y]
     [Nonempty Y] [CompactSpace Y] : ℝ :=
   dist (toGHSpace X) (toGHSpace Y)
@@ -391,7 +390,7 @@ theorem ghDist_eq_hausdorffDist (X : Type u) [MetricSpace X] [CompactSpace X] [N
     exact (hausdorffDist_image (kuratowskiEmbedding.isometry _)).symm
 
 /-- The Gromov-Hausdorff distance defines a genuine distance on the Gromov-Hausdorff space. -/
-instance : MetricSpace GHSpace where
+noncomputable instance : MetricSpace GHSpace where
   dist := dist
   dist_self x := by
     rcases exists_rep x with ⟨y, hy⟩
@@ -925,7 +924,7 @@ instance (A : Type) [MetricSpace A] : Inhabited (AuxGluingStruct A) :=
 /-- Auxiliary sequence of metric spaces, containing copies of `X 0`, ..., `X n`, where each
 `X i` is glued to `X (i+1)` in an optimal way. The space at step `n+1` is obtained from the space
 at step `n` by adding `X (n+1)`, glued in an optimal way to the `X n` already sitting there. -/
-def auxGluing (n : ℕ) : AuxGluingStruct (X n) :=
+noncomputable def auxGluing (n : ℕ) : AuxGluingStruct (X n) :=
   Nat.recOn n default fun n Y =>
     { Space := GlueSpace Y.isom (isometry_optimalGHInjl (X n) (X (n + 1)))
       metric := by infer_instance

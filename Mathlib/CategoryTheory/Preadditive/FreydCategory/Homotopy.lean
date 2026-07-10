@@ -23,8 +23,6 @@ category obtained by freely adjoining kernels (resp. cokernels) to `V`.
 
 @[expose] public section
 
-noncomputable section
-
 open CategoryTheory Category
 
 variable {V : Type*} [Category* V] [Preadditive V]

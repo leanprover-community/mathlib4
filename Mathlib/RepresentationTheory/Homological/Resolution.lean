@@ -64,7 +64,7 @@ TODO: There's bad DefEq abuses in `Action` and the way we do `Rep.standardComple
   would remove all the unification hints in this file.
 -/
 
-@[expose] public noncomputable section
+@[expose] public section
 
 suppress_compilation
 

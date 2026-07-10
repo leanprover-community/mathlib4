@@ -24,8 +24,6 @@ This file defines unoriented angles in Euclidean affine spaces.
 @[expose] public section
 
 
-noncomputable section
-
 open Real RealInnerProductSpace
 
 namespace EuclideanGeometry
@@ -39,7 +37,7 @@ variable {V P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricS
 `p₃`. If either of those points equals `p₂`, this is π/2. Use
 `open scoped EuclideanGeometry` to access the `∠ p₁ p₂ p₃`
 notation. -/
-nonrec def angle (p₁ p₂ p₃ : P) : ℝ :=
+noncomputable nonrec def angle (p₁ p₂ p₃ : P) : ℝ :=
   angle (p₁ -ᵥ p₂ : V) (p₃ -ᵥ p₂)
 
 @[inherit_doc] scoped notation "∠" => EuclideanGeometry.angle

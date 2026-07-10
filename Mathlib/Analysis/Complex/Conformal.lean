@@ -57,8 +57,6 @@ this file.
 @[expose] public section
 
 
-noncomputable section
-
 open Complex ContinuousLinearMap ComplexConjugate
 
 theorem isConformalMap_conj : IsConformalMap (conjLIE : ℂ →L[ℝ] ℂ) :=

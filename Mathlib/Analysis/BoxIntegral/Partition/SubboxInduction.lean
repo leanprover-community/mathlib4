@@ -37,14 +37,14 @@ open Set Metric
 
 open Topology
 
-noncomputable section
+section
 
 variable {ι : Type*} [Fintype ι] {I J : Box ι}
 
 namespace Prepartition
 
 /-- Split a box in `ℝⁿ` into `2 ^ n` boxes by hyperplanes passing through its center. -/
-def splitCenter (I : Box ι) : Prepartition I where
+noncomputable def splitCenter (I : Box ι) : Prepartition I where
   boxes := Finset.univ.map (Box.splitCenterBoxEmb I)
   le_of_mem' := by simp [I.splitCenterBox_le]
   pairwiseDisjoint := by
@@ -165,6 +165,7 @@ is a tagged partition `π'` such that
 * `π'` covers exactly the same part of `I` as `π`;
 * the distortion of `π'` is equal to the distortion of `π`.
 -/
+noncomputable
 def toSubordinate (π : Prepartition I) (r : (ι → ℝ) → Ioi (0 : ℝ)) : TaggedPrepartition I :=
   (π.exists_tagged_le_isHenstock_isSubordinate_iUnion_eq r).choose
 
@@ -205,7 +206,7 @@ a function `r : ℝⁿ → (0, ∞)`, returns the union of `π₁` and `π₂.to
 * `π` is subordinate to `r` outside of `π₁`;
 * the distortion of `π` is equal to the maximum of the distortions of `π₁` and `π₂`.
 -/
-def unionComplToSubordinate (π₁ : TaggedPrepartition I) (π₂ : Prepartition I)
+noncomputable def unionComplToSubordinate (π₁ : TaggedPrepartition I) (π₂ : Prepartition I)
     (hU : π₂.iUnion = ↑I \ π₁.iUnion) (r : (ι → ℝ) → Ioi (0 : ℝ)) : TaggedPrepartition I :=
   π₁.disjUnion (π₂.toSubordinate r)
     (((π₂.iUnion_toSubordinate r).trans hU).symm ▸ disjoint_sdiff_self_right)

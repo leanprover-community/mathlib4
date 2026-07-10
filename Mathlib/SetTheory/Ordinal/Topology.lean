@@ -30,7 +30,7 @@ Most things in this file should be generalized to other well-orders, or to Scott
 topologies.
 -/
 
-@[expose] public noncomputable section
+@[expose] public section
 
 universe u v
 

@@ -24,8 +24,6 @@ public import Mathlib.RingTheory.UniqueFactorizationDomain.GCDMonoid
 
 @[expose] public section
 
-noncomputable section
-
 open Polynomial
 
 universe u v

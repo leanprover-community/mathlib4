@@ -22,8 +22,6 @@ This file defines `liftNC`. For the definition of `MonoidAlgebra.lift`, see
 
 assert_not_exists NonUnitalAlgHom AlgEquiv
 
-noncomputable section
-
 open Finsupp hiding single
 
 universe u₁ u₂ u₃ u₄
@@ -46,7 +44,7 @@ and a homomorphism `g : G → R`, returns the additive homomorphism from
 and the range of either `f` or `g` is in center of `R`, then the result is a ring homomorphism.  If
 `R` is a `k`-algebra and `f = algebraMap k R`, then the result is an algebra homomorphism called
 `MonoidAlgebra.lift`. -/
-def liftNC (f : k →+ R) (g : G → R) : k[G] →+ R :=
+noncomputable def liftNC (f : k →+ R) (g : G → R) : k[G] →+ R :=
   (liftAddHom fun x ↦ .comp (.mulRight (g x)) f).comp coeffAddEquiv.toAddMonoidHom
 
 @[simp]
@@ -88,6 +86,7 @@ section Semiring
 variable [Semiring k] [Monoid G] [Semiring R] [Semiring S] [Semiring T] [Monoid M]
 
 /-- `liftNC` as a `RingHom`, for when `f x` and `g y` commute -/
+noncomputable
 def liftNCRingHom (f : k →+* R) (g : G →* R) (h_comm : ∀ x y, Commute (f x) (g y)) : k[G] →+* R :=
   { liftNC (f : k →+ R) g with
     map_one' := liftNC_one _ _
@@ -118,7 +117,7 @@ homomorphism from `k[G]` such that `liftNC f g (single a b) = f b * g a`. If `f`
 is a ring homomorphism and the range of either `f` or `g` is in center of `R`, then the result is a
 ring homomorphism.  If `R` is a `k`-algebra and `f = algebraMap k R`, then the result is an algebra
 homomorphism called `AddMonoidAlgebra.lift`. -/
-def liftNC (f : k →+ R) (g : Multiplicative G → R) : k[G] →+ R :=
+noncomputable def liftNC (f : k →+ R) (g : Multiplicative G → R) : k[G] →+ R :=
   (liftAddHom fun x ↦ .comp (.mulRight (g <| .ofAdd x)) f).comp coeffAddEquiv.toAddMonoidHom
 
 @[simp]
@@ -162,6 +161,7 @@ section Semiring
 variable [Semiring k] [AddMonoid G] [Semiring R] [Semiring S] [Semiring T] [AddMonoid M]
 
 /-- `liftNC` as a `RingHom`, for when `f` and `g` commute -/
+noncomputable
 def liftNCRingHom (f : k →+* R) (g : Multiplicative G →* R) (h_comm : ∀ x y, Commute (f x) (g y)) :
     k[G] →+* R :=
   { liftNC (f : k →+ R) g with

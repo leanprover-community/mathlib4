@@ -24,8 +24,6 @@ and `N₂Γ₂ : Γ₂ ⋙ N₂ ≅ 𝟭 (Karoubi (ChainComplex C ℕ))`.
 
 suppress_compilation
 
-noncomputable section
-
 open CategoryTheory CategoryTheory.Category CategoryTheory.Functor CategoryTheory.Limits
   CategoryTheory.Idempotents Opposite SimplicialObject Simplicial
 

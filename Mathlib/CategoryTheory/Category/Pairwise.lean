@@ -31,8 +31,6 @@ and show that `iSup U` provides a colimit cocone over this functor.
 @[expose] public section
 
 
-noncomputable section
-
 universe v u
 
 open CategoryTheory

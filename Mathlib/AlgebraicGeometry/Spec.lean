@@ -39,8 +39,6 @@ The adjunction `Γ ⊣ Spec` is constructed in `Mathlib/AlgebraicGeometry/GammaS
 
 -- Explicit universe annotations were used in this file to improve performance https://github.com/leanprover-community/mathlib4/issues/12737
 
-noncomputable section
-
 universe u v
 
 namespace AlgebraicGeometry
@@ -87,7 +85,7 @@ def Spec.toTop : CommRingCat.{u}ᵒᵖ ⥤ TopCat where
 /-- The spectrum of a commutative ring, as a `SheafedSpace`.
 -/
 @[simps]
-def Spec.sheafedSpaceObj (R : CommRingCat.{u}) : SheafedSpace CommRingCat where
+noncomputable def Spec.sheafedSpaceObj (R : CommRingCat.{u}) : SheafedSpace CommRingCat where
   carrier := Spec.topObj R
   presheaf := (structureSheaf R).1
   IsSheaf := (structureSheaf R).2
@@ -95,7 +93,7 @@ def Spec.sheafedSpaceObj (R : CommRingCat.{u}) : SheafedSpace CommRingCat where
 /-- The induced map of a ring homomorphism on the ring spectra, as a morphism of sheafed spaces.
 -/
 @[simps hom_base hom_c_app]
-def Spec.sheafedSpaceMap {R S : CommRingCat.{u}} (f : R ⟶ S) :
+noncomputable def Spec.sheafedSpaceMap {R S : CommRingCat.{u}} (f : R ⟶ S) :
     Spec.sheafedSpaceObj S ⟶ Spec.sheafedSpaceObj R where
   hom.base := Spec.topMap f
   hom.c :=
@@ -133,14 +131,14 @@ theorem Spec.sheafedSpaceMap_comp {R S T : CommRingCat.{u}} (f : R ⟶ S) (g : S
 /-- Spec, as a contravariant functor from commutative rings to sheafed spaces.
 -/
 @[simps]
-def Spec.toSheafedSpace : CommRingCat.{u}ᵒᵖ ⥤ SheafedSpace CommRingCat where
+noncomputable def Spec.toSheafedSpace : CommRingCat.{u}ᵒᵖ ⥤ SheafedSpace CommRingCat where
   obj R := Spec.sheafedSpaceObj (unop R)
   map f := Spec.sheafedSpaceMap f.unop
   map_comp f g := by simp [Spec.sheafedSpaceMap_comp]
 
 /-- Spec, as a contravariant functor from commutative rings to presheafed spaces.
 -/
-def Spec.toPresheafedSpace : CommRingCat.{u}ᵒᵖ ⥤ PresheafedSpace CommRingCat :=
+noncomputable def Spec.toPresheafedSpace : CommRingCat.{u}ᵒᵖ ⥤ PresheafedSpace CommRingCat :=
   Spec.toSheafedSpace ⋙ SheafedSpace.forgetToPresheafedSpace
 
 @[simp]
@@ -181,7 +179,7 @@ theorem Spec.basicOpen_hom_ext {X : RingedSpace.{u}} {R : CommRingCat.{u}}
 -- if more is needed, add them here
 /-- The spectrum of a commutative ring, as a `LocallyRingedSpace`. -/
 @[simps! toSheafedSpace presheaf]
-def Spec.locallyRingedSpaceObj (R : CommRingCat.{u}) : LocallyRingedSpace where
+noncomputable def Spec.locallyRingedSpaceObj (R : CommRingCat.{u}) : LocallyRingedSpace where
   __ := Spec.sheafedSpaceObj R
   isLocalRing x := (stalkIso R x).toRingEquiv.isLocalRing
 
@@ -237,7 +235,7 @@ set_option backward.isDefEq.respectTransparency false in
 The induced map of a ring homomorphism on the prime spectra, as a morphism of locally ringed spaces.
 -/
 @[simps! toHom]
-def Spec.locallyRingedSpaceMap {R S : CommRingCat.{u}} (f : R ⟶ S) :
+noncomputable def Spec.locallyRingedSpaceMap {R S : CommRingCat.{u}} (f : R ⟶ S) :
     Spec.locallyRingedSpaceObj S ⟶ Spec.locallyRingedSpaceObj R :=
   LocallyRingedSpace.Hom.mk (Spec.sheafedSpaceMap f).hom fun p =>
     IsLocalHom.mk fun a ha => by
@@ -262,7 +260,7 @@ theorem Spec.locallyRingedSpaceMap_comp {R S T : CommRingCat.{u}} (f : R ⟶ S) 
 /-- Spec, as a contravariant functor from commutative rings to locally ringed spaces.
 -/
 @[simps]
-def Spec.toLocallyRingedSpace : CommRingCat.{u}ᵒᵖ ⥤ LocallyRingedSpace where
+noncomputable def Spec.toLocallyRingedSpace : CommRingCat.{u}ᵒᵖ ⥤ LocallyRingedSpace where
   obj R := Spec.locallyRingedSpaceObj (unop R)
   map f := Spec.locallyRingedSpaceMap f.unop
   map_id R := by dsimp; rw [Spec.locallyRingedSpaceMap_id]
@@ -273,6 +271,7 @@ section SpecΓ
 open AlgebraicGeometry.LocallyRingedSpace
 
 /-- The counit morphism `R ⟶ Γ(Spec R)` given by `AlgebraicGeometry.StructureSheaf.toOpen`. -/
+noncomputable
 def toSpecΓ (R : CommRingCat.{u}) : R ⟶ Γ.obj (op (Spec.toLocallyRingedSpace.obj (op R))) :=
   CommRingCat.ofHom (algebraMap _ _)
 
@@ -290,7 +289,7 @@ theorem Spec_Γ_naturality {R S : CommRingCat.{u}} (f : R ⟶ S) :
 
 /-- The counit (`SpecΓIdentity.inv.op`) of the adjunction `Γ ⊣ Spec` is an isomorphism. -/
 @[simps! hom_app inv_app]
-def LocallyRingedSpace.SpecΓIdentity : Spec.toLocallyRingedSpace.rightOp ⋙ Γ ≅ 𝟭 _ :=
+noncomputable def LocallyRingedSpace.SpecΓIdentity : Spec.toLocallyRingedSpace.rightOp ⋙ Γ ≅ 𝟭 _ :=
   Iso.symm <| NatIso.ofComponents.{u, u, u + 1, u + 1} (fun R ↦ asIso (toSpecΓ R) :)
     fun {X Y} f => by convert! Spec_Γ_naturality (R := X) (S := Y) f
 
@@ -321,7 +320,7 @@ variable {R S : CommRingCat.{u}} (f : R ⟶ S) (p : PrimeSpectrum R)
 /-- For an algebra `f : R →+* S`, this is the ring homomorphism `S →+* (f∗ 𝒪ₛ)ₚ` for a `p : Spec R`.
 This is shown to be the localization at `p` in `isLocalizedModule_toPushforwardStalkAlgHom`.
 -/
-def toPushforwardStalk : S ⟶ (Spec.topMap f _* (structureSheaf S).1).stalk p :=
+noncomputable def toPushforwardStalk : S ⟶ (Spec.topMap f _* (structureSheaf S).1).stalk p :=
   CommRingCat.ofHom (algebraMap _ _) ≫
     @TopCat.Presheaf.germ _ _ _ _ (Spec.topMap f _* (structureSheaf S).1) ⊤ p trivial
 
@@ -334,7 +333,7 @@ theorem toPushforwardStalk_comp :
   rw [StructureSheaf.toStalk, Category.assoc, TopCat.Presheaf.stalkFunctor_map_germ]
   exact Spec_Γ_naturality_assoc f _
 
-instance : Algebra R ((Spec.topMap f _* (structureSheaf S).1).stalk p) :=
+noncomputable instance : Algebra R ((Spec.topMap f _* (structureSheaf S).1).stalk p) :=
   (f ≫ StructureSheaf.toPushforwardStalk f p).hom.toAlgebra
 
 theorem algebraMap_pushforward_stalk :
@@ -350,7 +349,7 @@ This is the `AlgHom` version of `toPushforwardStalk`, which is the map `S ⟶ (f
 algebra `R ⟶ S` and some `p : Spec R`.
 -/
 @[simps!]
-def toPushforwardStalkAlgHom :
+noncomputable def toPushforwardStalkAlgHom :
     S →ₐ[R] (Spec.topMap (CommRingCat.ofHom (algebraMap R S)) _* (structureSheaf S).1).stalk p :=
   { (StructureSheaf.toPushforwardStalk (CommRingCat.ofHom (algebraMap R S)) p).hom with
     commutes' := fun _ => rfl }

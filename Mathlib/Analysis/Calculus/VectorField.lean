@@ -35,8 +35,6 @@ In addition to comprehensive API on these two notions, the main results are the 
 open Set
 open scoped Topology ContDiff
 
-noncomputable section
-
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : ℕ∞ω}
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
@@ -56,13 +54,13 @@ namespace VectorField
 variable (𝕜) in
 /-- The Lie bracket `[V, W] (x)` of two vector fields at a point, defined as
 `DW(x) (V x) - DV(x) (W x)`. -/
-def lieBracket (V W : E → E) (x : E) : E :=
+noncomputable def lieBracket (V W : E → E) (x : E) : E :=
   fderiv 𝕜 W x (V x) - fderiv 𝕜 V x (W x)
 
 variable (𝕜) in
 /-- The Lie bracket `[V, W] (x)` of two vector fields within a set at a point, defined as
 `DW(x) (V x) - DV(x) (W x)` where the derivatives are taken inside `s`. -/
-def lieBracketWithin (V W : E → E) (s : Set E) (x : E) : E :=
+noncomputable def lieBracketWithin (V W : E → E) (s : Set E) (x : E) : E :=
   fderivWithin 𝕜 W s x (V x) - fderivWithin 𝕜 V s x (W x)
 
 lemma lieBracket_eq :
@@ -473,14 +471,14 @@ variable (𝕜) in
 /-- The pullback of a vector field under a function, defined
 as `(f^* V) (x) = Df(x)^{-1} (V (f x))`. If `Df(x)` is not invertible, we use the junk value `0`.
 -/
-def pullback (f : E → F) (V : F → F) (x : E) : E := (fderiv 𝕜 f x).inverse (V (f x))
+noncomputable def pullback (f : E → F) (V : F → F) (x : E) : E := (fderiv 𝕜 f x).inverse (V (f x))
 
 variable (𝕜) in
 /-- The pullback within a set of a vector field under a function, defined
 as `(f^* V) (x) = Df(x)^{-1} (V (f x))` where `Df(x)` is the derivative of `f` within `s`.
 If `Df(x)` is not invertible, we use the junk value `0`.
 -/
-def pullbackWithin (f : E → F) (V : F → F) (s : Set E) (x : E) : E :=
+noncomputable def pullbackWithin (f : E → F) (V : F → F) (s : Set E) (x : E) : E :=
   (fderivWithin 𝕜 f s x).inverse (V (f x))
 
 lemma pullbackWithin_eq {f : E → F} {V : F → F} {s : Set E} :

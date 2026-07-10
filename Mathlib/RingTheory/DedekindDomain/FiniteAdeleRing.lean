@@ -69,8 +69,6 @@ lemma HeightOneSpectrum.Support.finite (k : K) : (Support R k).Finite := by
 
 end IsDedekindDomain
 
-noncomputable section
-
 open Function Set IsDedekindDomain.HeightOneSpectrum
 
 namespace IsDedekindDomain
@@ -94,10 +92,10 @@ are in `R_v` for all but finitely many `v`.
 def FiniteAdeleRing : Type _ :=
   Πʳ v : HeightOneSpectrum R, [v.adicCompletion K, v.adicCompletionIntegers K]
 
-instance : CommRing (FiniteAdeleRing R K) := inferInstanceAs <|
+noncomputable instance : CommRing (FiniteAdeleRing R K) := inferInstanceAs <|
   CommRing <| Πʳ v : HeightOneSpectrum R, [v.adicCompletion K, v.adicCompletionIntegers K]
 
-instance : TopologicalSpace (FiniteAdeleRing R K) := inferInstanceAs <|
+noncomputable instance : TopologicalSpace (FiniteAdeleRing R K) := inferInstanceAs <|
   TopologicalSpace <| Πʳ v : HeightOneSpectrum R, [v.adicCompletion K, v.adicCompletionIntegers K]
 
 instance : DFunLike (FiniteAdeleRing R K) (HeightOneSpectrum R) (adicCompletion K) where
@@ -112,7 +110,7 @@ The canonical map from `K` to the finite adeles of `K`.
 The content of the existence of this map is the fact that an element `k` of `K` is integral at
 all but finitely many places, which is `IsDedekindDomain.HeightOneSpectrum.Support.finite R k`.
 -/
-protected def algebraMap : K →+* FiniteAdeleRing R K where
+protected noncomputable def algebraMap : K →+* FiniteAdeleRing R K where
   toFun k := ⟨fun i ↦ k, by
     simp only [Filter.eventually_cofinite, SetLike.mem_coe, mem_adicCompletionIntegers R K,
      valuedAdicCompletion_eq_valuation', not_le]
@@ -122,13 +120,14 @@ protected def algebraMap : K →+* FiniteAdeleRing R K where
   map_zero' := Subtype.ext <| funext fun _ ↦ adicCompletion.coe_zero ..
   map_add' x y := Subtype.ext <| funext fun _ ↦ adicCompletion.coe_add ..
 
+noncomputable
 instance : Algebra K (FiniteAdeleRing R K) := (FiniteAdeleRing.algebraMap R K).toAlgebra
 
 @[simp]
 theorem algebraMap_apply (k : K) (v : HeightOneSpectrum R) :
     algebraMap K (FiniteAdeleRing R K) k v = k := rfl
 
-instance : Algebra R (FiniteAdeleRing R K) := Algebra.compHom _ (algebraMap R K)
+noncomputable instance : Algebra R (FiniteAdeleRing R K) := Algebra.compHom _ (algebraMap R K)
 
 instance : IsScalarTower R K (FiniteAdeleRing R K) :=
   IsScalarTower.of_algebraMap_eq' rfl
@@ -175,6 +174,7 @@ variable (R)
 
 variable (K) in
 /-- The global embedding of the units of `K` into the units of `FiniteAdeleRing R K`. -/
+noncomputable
 def unitEmbedding : Kˣ →* (FiniteAdeleRing R K)ˣ := Units.map (algebraMap K (FiniteAdeleRing R K))
 
 @[simp]

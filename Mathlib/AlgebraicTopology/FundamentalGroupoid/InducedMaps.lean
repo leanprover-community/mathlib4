@@ -24,8 +24,6 @@ public import Mathlib.AlgebraicTopology.FundamentalGroupoid.Product
 
 @[expose] public section
 
-noncomputable section
-
 universe u v
 
 open FundamentalGroupoid CategoryTheory FundamentalGroupoidFunctor
@@ -82,6 +80,7 @@ instance (H : ContinuousMap.Homotopy f g) : IsIso (homotopicMapsNatIso H) :=
 open scoped ContinuousMap
 
 /-- Homotopy equivalent topological spaces have equivalent fundamental groupoids. -/
+noncomputable
 def equivOfHomotopyEquiv {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] (hequiv : X ≃ₕ Y) :
     πₓ (.of X) ≌ πₓ (.of Y) := by
   apply CategoryTheory.Equivalence.mk (map hequiv.toFun) (map hequiv.invFun)
@@ -134,7 +133,7 @@ open unitInterval (uhpath01)
 section Casts
 
 /-- Abbreviation for `eqToHom` that accepts points in a topological space -/
-abbrev hcast {X : TopCat.{u}} {x₀ x₁ : X} (hx : x₀ = x₁) : fromTop x₀ ⟶ fromTop x₁ :=
+noncomputable abbrev hcast {X : TopCat.{u}} {x₀ x₁ : X} (hx : x₀ = x₁) : fromTop x₀ ⟶ fromTop x₁ :=
   eqToHom <| FundamentalGroupoid.ext hx
 
 @[simp]
@@ -218,11 +217,11 @@ abbrev prodToProdTopI {a₁ a₂ : TopCat.of (ULift I)} {b₁ b₂ : X} (p₁ : 
   (prodToProdTop (TopCat.of <| ULift I) X).map (X := (⟨a₁⟩, ⟨b₁⟩)) (Y := (⟨a₂⟩, ⟨b₂⟩)) (p₁, p₂)
 
 /-- The diagonal path `d` of a homotopy `H` on a path `p` -/
-def diagonalPath : fromTop (H (0, x₀)) ⟶ fromTop (H (1, x₁)) :=
+noncomputable def diagonalPath : fromTop (H (0, x₀)) ⟶ fromTop (H (1, x₁)) :=
   (πₘ (TopCat.ofHom H.uliftMap)).map (prodToProdTopI uhpath01 p)
 
 /-- The diagonal path, but starting from `f x₀` and going to `g x₁` -/
-def diagonalPath' : fromTop (f x₀) ⟶ fromTop (g x₁) :=
+noncomputable def diagonalPath' : fromTop (f x₀) ⟶ fromTop (g x₁) :=
   hcast (H.apply_zero x₀).symm ≫ H.diagonalPath p ≫ hcast (H.apply_one x₁)
 
 /-- Proof that `f(p) = H(0 ⟶ 0, p)`, with the appropriate casts -/

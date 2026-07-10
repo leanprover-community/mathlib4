@@ -170,7 +170,7 @@ end Composition
 
 end Adjunction
 
-noncomputable section
+section
 
 variable (η : 𝟙 a ≅ f ≫ g) (ε : g ≫ f ≅ 𝟙 b)
 

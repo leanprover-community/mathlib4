@@ -28,8 +28,6 @@ universe w v v' u u'
 
 open CategoryTheory Opposite
 
-noncomputable section
-
 namespace CategoryTheory
 
 /-- A `MorphismProperty C` is a class of morphisms between objects in `C`. -/

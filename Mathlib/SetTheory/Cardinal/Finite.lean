@@ -28,8 +28,6 @@ assert_not_exists Field
 
 open Cardinal Function
 
-noncomputable section
-
 variable {α β : Type*}
 
 universe u v
@@ -38,7 +36,7 @@ namespace Nat
 
 /-- `Nat.card α` is the cardinality of `α` as a natural number.
   If `α` is infinite, `Nat.card α = 0`. -/
-protected def card (α : Type*) : ℕ :=
+protected noncomputable def card (α : Type*) : ℕ :=
   toNat (mk α)
 
 @[simp]
@@ -185,7 +183,7 @@ end Set
 
 /-- If the cardinality is positive, that means it is a finite type, so there is
 an equivalence between `α` and `Fin (Nat.card α)`. See also `Finite.equivFin`. -/
-def equivFinOfCardPos {α : Type*} (h : Nat.card α ≠ 0) : α ≃ Fin (Nat.card α) := by
+noncomputable def equivFinOfCardPos {α : Type*} (h : Nat.card α ≠ 0) : α ≃ Fin (Nat.card α) := by
   cases fintypeOrInfinite α
   · simpa only [card_eq_fintype_card] using Fintype.equivFin α
   · simp only [card_eq_zero_of_infinite, ne_eq, not_true_eq_false] at h
@@ -277,7 +275,7 @@ namespace ENat
 
 /-- `ENat.card α` is the cardinality of `α` as an extended natural number.
   If `α` is infinite, `ENat.card α = ⊤`. -/
-def card (α : Type*) : ℕ∞ :=
+noncomputable def card (α : Type*) : ℕ∞ :=
   toENat (mk α)
 
 @[simp]

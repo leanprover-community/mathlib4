@@ -641,17 +641,17 @@ def subschemeFunctor (Y : Scheme.{u}) : (IdealSheafData Y)ᵒᵖ ⥤ Over Y wher
 
 end IdealSheafData
 
-noncomputable section image
+section image
 
 open Limits
 
 variable {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.affineOpens)
 
 /-- The scheme-theoretic image of a morphism. -/
-abbrev Hom.image : Scheme.{u} := f.ker.subscheme
+noncomputable abbrev Hom.image : Scheme.{u} := f.ker.subscheme
 
 /-- The embedding from the scheme-theoretic image to the codomain. -/
-abbrev Hom.imageι : f.image ⟶ Y := f.ker.subschemeι
+noncomputable abbrev Hom.imageι : f.image ⟶ Y := f.ker.subschemeι
 
 set_option backward.isDefEq.respectTransparency false in
 lemma ideal_ker_le_ker_ΓSpecIso_inv_comp :

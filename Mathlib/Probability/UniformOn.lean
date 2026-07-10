@@ -41,8 +41,6 @@ predicates.
 @[expose] public section
 
 
-noncomputable section
-
 open ProbabilityTheory
 
 open MeasureTheory MeasurableSpace Finset
@@ -57,7 +55,7 @@ in `t`.
 
 This is a probability measure when `s` is finite and nonempty and is given by
 `ProbabilityTheory.uniformOn_isProbabilityMeasure`. -/
-def uniformOn (s : Set Ω) : Measure Ω :=
+noncomputable def uniformOn (s : Set Ω) : Measure Ω :=
   Measure.count[|s]
 deriving IsZeroOrProbabilityMeasure
 

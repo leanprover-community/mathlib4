@@ -35,8 +35,6 @@ with finite measure. Its value on other sets is ignored.
 @[expose] public section
 
 
-noncomputable section
-
 open Set Filter ENNReal Finset
 
 namespace MeasureTheory
@@ -292,6 +290,7 @@ end FinMeasAdditive
 namespace SimpleFunc
 
 /-- Extend `Set α → (F →L[ℝ] F')` to `(α →ₛ F) → F'`. -/
+noncomputable
 def setToSimpleFunc {_ : MeasurableSpace α} (T : Set α → F →L[ℝ] F') (f : α →ₛ F) : F' :=
   ∑ x ∈ f.range, T (f ⁻¹' {x}) x
 

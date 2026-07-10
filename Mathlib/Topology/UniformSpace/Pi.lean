@@ -14,8 +14,6 @@ public import Mathlib.Topology.UniformSpace.UniformEmbedding
 public section
 
 
-noncomputable section
-
 open scoped Uniformity Topology
 open Filter UniformSpace Function Set
 

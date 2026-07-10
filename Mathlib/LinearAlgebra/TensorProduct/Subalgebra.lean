@@ -40,8 +40,6 @@ open scoped TensorProduct
 
 open Module
 
-noncomputable section
-
 variable {R S T : Type*}
 
 section Semiring

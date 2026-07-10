@@ -20,8 +20,6 @@ assert_not_exists Finset
 
 open NNReal ENNReal
 
-noncomputable section
-
 namespace ENat
 
 variable {m n : ℕ∞}
@@ -42,7 +40,7 @@ def toENNRealOrderEmbedding : ℕ∞ ↪o ℝ≥0∞ :=
 
 /-- Coercion `ℕ∞ → ℝ≥0∞` as a ring homomorphism. -/
 @[simps! -fullyApplied]
-def toENNRealRingHom : ℕ∞ →+* ℝ≥0∞ :=
+noncomputable def toENNRealRingHom : ℕ∞ →+* ℝ≥0∞ :=
   .ENatMap (Nat.castRingHom ℝ≥0) Nat.cast_injective
 
 @[simp, norm_cast]

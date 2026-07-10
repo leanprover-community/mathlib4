@@ -14,8 +14,6 @@ public import Mathlib.Algebra.Homology.Single
 @[expose] public section
 
 
-noncomputable section
-
 open CategoryTheory Limits HomologicalComplex
 
 universe v u
@@ -40,7 +38,7 @@ set_option backward.isDefEq.respectTransparency false in
 the "single object" chain complex consisting of the truncated object `C.X 0` in degree 0.
 The components of this chain map are `C.d 1 0` in degree 0, and zero otherwise.
 -/
-def truncateTo [HasZeroObject V] [HasZeroMorphisms V] (C : ChainComplex V ℕ) :
+noncomputable def truncateTo [HasZeroObject V] [HasZeroMorphisms V] (C : ChainComplex V ℕ) :
     truncate.obj C ⟶ (single₀ V).obj (C.X 0) :=
   (toSingle₀Equiv (truncate.obj C) (C.X 0)).symm ⟨C.d 1 0, by simp⟩
 
@@ -171,7 +169,7 @@ can be reinterpreted as a chain complex.
 
 This is the inverse construction of `truncateTo`.
 -/
-def toSingle₀AsComplex [HasZeroObject V] (C : ChainComplex V ℕ) (X : V)
+noncomputable def toSingle₀AsComplex [HasZeroObject V] (C : ChainComplex V ℕ) (X : V)
     (f : C ⟶ (single₀ V).obj X) : ChainComplex V ℕ :=
   let ⟨f, w⟩ := toSingle₀Equiv C X f
   augment C f w
@@ -198,7 +196,7 @@ set_option backward.isDefEq.respectTransparency false in
 the "single object" cochain complex consisting of the truncated object `C.X 0` in degree 0.
 The components of this chain map are `C.d 0 1` in degree 0, and zero otherwise.
 -/
-def toTruncate [HasZeroObject V] [HasZeroMorphisms V] (C : CochainComplex V ℕ) :
+noncomputable def toTruncate [HasZeroObject V] [HasZeroMorphisms V] (C : CochainComplex V ℕ) :
     (single₀ V).obj (C.X 0) ⟶ truncate.obj C :=
   (fromSingle₀Equiv (truncate.obj C) (C.X 0)).symm ⟨C.d 0 1, by simp⟩
 
@@ -320,7 +318,7 @@ can be reinterpreted as a cochain complex.
 
 This is the inverse construction of `toTruncate`.
 -/
-def fromSingle₀AsComplex [HasZeroObject V] (C : CochainComplex V ℕ) (X : V)
+noncomputable def fromSingle₀AsComplex [HasZeroObject V] (C : CochainComplex V ℕ) (X : V)
     (f : (single₀ V).obj X ⟶ C) : CochainComplex V ℕ :=
   let ⟨f, w⟩ := fromSingle₀Equiv C X f
   augment C f w

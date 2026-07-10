@@ -26,8 +26,6 @@ object and one morphism.
 
 universe w v u
 
-noncomputable section
-
 namespace CategoryTheory
 
 open Category Limits MonoidalCategory
@@ -41,6 +39,7 @@ open scoped CartesianClosed
 then each homset has exactly one element.
 -/
 @[implicit_reducible]
+noncomputable
 def uniqueHomsetOfInitialIsoUnit [HasInitial C] (i : ⊥_ C ≅ 𝟙_ C) (X Y : C) : Unique (X ⟶ Y) :=
   Equiv.unique <|
     calc
@@ -52,7 +51,7 @@ open scoped ZeroObject
 
 /-- If a Cartesian closed category has a zero object, each homset has exactly one element. -/
 @[instance_reducible]
-def uniqueHomsetOfZero [HasZeroObject C] (X Y : C) : Unique (X ⟶ Y) := by
+noncomputable def uniqueHomsetOfZero [HasZeroObject C] (X Y : C) : Unique (X ⟶ Y) := by
   haveI : HasInitial C := HasZeroObject.hasInitial
   apply uniqueHomsetOfInitialIsoUnit _ X Y
   refine ⟨default, (default : 𝟙_ C ⟶ 0) ≫ default, ?_, ?_⟩ <;> simp [eq_iff_true_of_subsingleton]
@@ -62,7 +61,7 @@ attribute [local instance] uniqueHomsetOfZero
 /-- A Cartesian closed category with a zero object is equivalent to the category with one object and
 one morphism.
 -/
-def equivPUnit [HasZeroObject C] : C ≌ Discrete PUnit.{w + 1} where
+noncomputable def equivPUnit [HasZeroObject C] : C ≌ Discrete PUnit.{w + 1} where
   functor := Functor.star C
   inverse := Functor.fromPUnit 0
   unitIso := NatIso.ofComponents

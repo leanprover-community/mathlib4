@@ -32,7 +32,7 @@ Let `K/k` be a finitely generated field extension with characteristic `p > 0`, t
 
 -/
 
-@[expose] public noncomputable section
+@[expose] public section
 
 section
 
@@ -50,7 +50,7 @@ namespace MvPolynomial
 
 /-- View a multivariate polynomial `F(x₁,...,xₙ)` as a polynomial in `xᵢ` with coefficients
 in `F(x₁,...,xᵢ₋₁,xᵢ₊₁,...,xₙ)`. -/
-def toPolynomialAdjoinImageCompl (F : MvPolynomial ι k) (a : ι → K) (i : ι) :
+noncomputable def toPolynomialAdjoinImageCompl (F : MvPolynomial ι k) (a : ι → K) (i : ι) :
     Polynomial (Algebra.adjoin k (a '' {i}ᶜ)) :=
   letI := Classical.typeDecidableEq ι
   (optionEquivLeft k _ (renameEquiv k (Equiv.optionSubtypeNe i).symm F)).mapAlgHom

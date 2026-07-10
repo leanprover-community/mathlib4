@@ -23,40 +23,40 @@ open scoped ComplexConjugate
 
 namespace Complex
 
-noncomputable section
+section
 
 /-- The complex sine function, defined via `exp` -/
 @[pp_nodot]
-def sin (z : ℂ) : ℂ :=
+noncomputable def sin (z : ℂ) : ℂ :=
   (exp (-z * I) - exp (z * I)) * I / 2
 
 /-- The complex cosine function, defined via `exp` -/
 @[pp_nodot]
-def cos (z : ℂ) : ℂ :=
+noncomputable def cos (z : ℂ) : ℂ :=
   (exp (z * I) + exp (-z * I)) / 2
 
 /-- The complex tangent function, defined as `sin z / cos z` -/
 @[pp_nodot]
-def tan (z : ℂ) : ℂ :=
+noncomputable def tan (z : ℂ) : ℂ :=
   sin z / cos z
 
 /-- The complex cotangent function, defined as `cos z / sin z` -/
-def cot (z : ℂ) : ℂ :=
+noncomputable def cot (z : ℂ) : ℂ :=
   cos z / sin z
 
 /-- The complex hyperbolic sine function, defined via `exp` -/
 @[pp_nodot]
-def sinh (z : ℂ) : ℂ :=
+noncomputable def sinh (z : ℂ) : ℂ :=
   (exp z - exp (-z)) / 2
 
 /-- The complex hyperbolic cosine function, defined via `exp` -/
 @[pp_nodot]
-def cosh (z : ℂ) : ℂ :=
+noncomputable def cosh (z : ℂ) : ℂ :=
   (exp z + exp (-z)) / 2
 
 /-- The complex hyperbolic tangent function, defined as `sinh z / cosh z` -/
 @[pp_nodot]
-def tanh (z : ℂ) : ℂ :=
+noncomputable def tanh (z : ℂ) : ℂ :=
   sinh z / cosh z
 
 end
@@ -67,42 +67,42 @@ namespace Real
 
 open Complex
 
-noncomputable section
+section
 
 /-- The real sine function, defined as the real part of the complex sine -/
 @[pp_nodot]
-nonrec def sin (x : ℝ) : ℝ :=
+noncomputable nonrec def sin (x : ℝ) : ℝ :=
   (sin x).re
 
 /-- The real cosine function, defined as the real part of the complex cosine -/
 @[pp_nodot]
-nonrec def cos (x : ℝ) : ℝ :=
+noncomputable nonrec def cos (x : ℝ) : ℝ :=
   (cos x).re
 
 /-- The real tangent function, defined as the real part of the complex tangent -/
 @[pp_nodot]
-nonrec def tan (x : ℝ) : ℝ :=
+noncomputable nonrec def tan (x : ℝ) : ℝ :=
   (tan x).re
 
 /-- The real cotangent function, defined as the real part of the complex cotangent -/
-nonrec def cot (x : ℝ) : ℝ :=
+noncomputable nonrec def cot (x : ℝ) : ℝ :=
   (cot x).re
 
 /-- The real hyperbolic sine function, defined as the real part of the complex hyperbolic sine -/
 @[pp_nodot]
-nonrec def sinh (x : ℝ) : ℝ :=
+noncomputable nonrec def sinh (x : ℝ) : ℝ :=
   (sinh x).re
 
 /-- The real hyperbolic cosine function, defined as the real part of the complex hyperbolic cosine
 -/
 @[pp_nodot]
-nonrec def cosh (x : ℝ) : ℝ :=
+noncomputable nonrec def cosh (x : ℝ) : ℝ :=
   (cosh x).re
 
 /-- The real hyperbolic tangent function, defined as the real part of
 the complex hyperbolic tangent -/
 @[pp_nodot]
-nonrec def tanh (x : ℝ) : ℝ :=
+noncomputable nonrec def tanh (x : ℝ) : ℝ :=
   (tanh x).re
 
 end

@@ -170,8 +170,6 @@ integral, rectangular box, partition, filter
 open Set Function Filter Metric Finset Bool
 open scoped Topology Filter NNReal
 
-noncomputable section
-
 namespace BoxIntegral
 
 variable {ι : Type*} [Fintype ι] {I J : Box ι} {c c₁ c₂ : ℝ≥0}

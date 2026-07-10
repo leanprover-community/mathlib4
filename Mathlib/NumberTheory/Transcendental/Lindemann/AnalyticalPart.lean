@@ -20,7 +20,7 @@ public section
 
 namespace LindemannWeierstrass
 
-noncomputable section
+section
 
 open scoped Nat
 open Complex Polynomial
@@ -50,7 +50,7 @@ theorem integral_exp_mul_eval (p : ℂ[X]) (s : ℂ) :
 [the wikipedia proof](https://en.wikipedia.org/wiki/Lindemann%E2%80%93Weierstrass_theorem):
 `Iᵢ(s) = P(fᵢ, s)`.
 -/
-private def P (f : ℂ[X]) (s : ℂ) :=
+private noncomputable def P (f : ℂ[X]) (s : ℂ) :=
   exp s * f.sumIDeriv.eval 0 - f.sumIDeriv.eval s
 
 private theorem P_eq_integral_exp_mul_eval (f : ℂ[X]) (s : ℂ) :

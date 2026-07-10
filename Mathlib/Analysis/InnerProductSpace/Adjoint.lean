@@ -47,8 +47,6 @@ adjoint
 
 -/
 
-noncomputable section
-
 open Module RCLike
 
 open scoped ComplexConjugate
@@ -73,7 +71,7 @@ variable [CompleteSpace E] [CompleteSpace G]
 /-- The adjoint, as a continuous conjugate-linear map. This is only meant as an auxiliary
 definition for the main definition `adjoint`, where this is bundled as a conjugate-linear isometric
 equivalence. -/
-def adjointAux : (E →L[𝕜] F) →L⋆[𝕜] F →L[𝕜] E :=
+noncomputable def adjointAux : (E →L[𝕜] F) →L⋆[𝕜] F →L[𝕜] E :=
   (ContinuousLinearMap.compSL _ _ _ _ _ ((toDual 𝕜 E).symm : StrongDual 𝕜 E →L⋆[𝕜] E)).comp
     (toSesqForm : (E →L[𝕜] F) →L[𝕜] F →L⋆[𝕜] StrongDual 𝕜 E)
 
@@ -111,7 +109,7 @@ public section
 
 /-- The adjoint of a bounded operator `A` from a Hilbert space `E` to another Hilbert space `F`,
   denoted as `A†`. -/
-def adjoint : (E →L[𝕜] F) ≃ₗᵢ⋆[𝕜] F →L[𝕜] E :=
+noncomputable def adjoint : (E →L[𝕜] F) ≃ₗᵢ⋆[𝕜] F →L[𝕜] E :=
   LinearIsometryEquiv.ofSurjective { adjointAux with norm_map' := adjointAux_norm } fun A =>
     ⟨adjointAux A, adjointAux_adjointAux A⟩
 
@@ -236,16 +234,16 @@ lemma self_comp_adjoint_injective_iff (T : E →L[𝕜] F) :
   simpa using T†.adjoint_comp_self_injective_iff
 
 /-- `E →L[𝕜] E` is a star algebra with the adjoint as the star operation. -/
-instance : Star (E →L[𝕜] E) :=
+noncomputable instance : Star (E →L[𝕜] E) :=
   ⟨adjoint⟩
 
-instance : InvolutiveStar (E →L[𝕜] E) :=
+noncomputable instance : InvolutiveStar (E →L[𝕜] E) :=
   ⟨adjoint_adjoint⟩
 
-instance : StarMul (E →L[𝕜] E) :=
+noncomputable instance : StarMul (E →L[𝕜] E) :=
   ⟨adjoint_comp⟩
 
-instance : StarRing (E →L[𝕜] E) :=
+noncomputable instance : StarRing (E →L[𝕜] E) :=
   ⟨map_add adjoint⟩
 
 instance : StarModule 𝕜 (E →L[𝕜] E) :=
@@ -522,7 +520,7 @@ variable [FiniteDimensional 𝕜 E] [FiniteDimensional 𝕜 F] [FiniteDimensiona
 
 /-- The adjoint of an operator from the finite-dimensional inner product space `E` to the
 finite-dimensional inner product space `F`. -/
-def adjoint : (E →ₗ[𝕜] F) ≃ₗ⋆[𝕜] F →ₗ[𝕜] E :=
+noncomputable def adjoint : (E →ₗ[𝕜] F) ≃ₗ⋆[𝕜] F →ₗ[𝕜] E :=
   haveI := FiniteDimensional.complete 𝕜 E
   haveI := FiniteDimensional.complete 𝕜 F
   /- Note: Instead of the two instances above, the following works:
@@ -681,16 +679,16 @@ theorem eq_adjoint_iff_basis_right {ι : Type*} (b : Basis ι 𝕜 F) (A : E →
   exact ext_inner_right_basis b fun i => by simp only [h i, adjoint_inner_left]
 
 /-- `E →ₗ[𝕜] E` is a star algebra with the adjoint as the star operation. -/
-instance : Star (E →ₗ[𝕜] E) :=
+noncomputable instance : Star (E →ₗ[𝕜] E) :=
   ⟨adjoint⟩
 
-instance : InvolutiveStar (E →ₗ[𝕜] E) :=
+noncomputable instance : InvolutiveStar (E →ₗ[𝕜] E) :=
   ⟨adjoint_adjoint⟩
 
-instance : StarMul (E →ₗ[𝕜] E) :=
+noncomputable instance : StarMul (E →ₗ[𝕜] E) :=
   ⟨adjoint_comp⟩
 
-instance : StarRing (E →ₗ[𝕜] E) :=
+noncomputable instance : StarRing (E →ₗ[𝕜] E) :=
   ⟨map_add adjoint⟩
 
 instance : StarModule 𝕜 (E →ₗ[𝕜] E) :=
@@ -878,7 +876,7 @@ open ContinuousLinearMap ContinuousLinearEquiv in
 When `H = K`, this is exactly `Unitary.conjStarAlgAut`
 (see `Unitary.conjStarAlgEquiv_unitaryLinearIsometryEquiv` and
 `Unitary.conjStarAlgAut_symm_unitaryLinearIsometryEquiv`). -/
-def conjStarAlgEquiv (e : H ≃ₗᵢ[𝕜] K) : (H →L[𝕜] H) ≃⋆ₐ[𝕜] (K →L[𝕜] K) :=
+noncomputable def conjStarAlgEquiv (e : H ≃ₗᵢ[𝕜] K) : (H →L[𝕜] H) ≃⋆ₐ[𝕜] (K →L[𝕜] K) :=
   .ofAlgEquiv e.toContinuousLinearEquiv.conjContinuousAlgEquiv fun x ↦ by
     simp [star_eq_adjoint, conjContinuousAlgEquiv_apply, ← toContinuousLinearEquiv_symm, comp_assoc]
 
@@ -1013,7 +1011,7 @@ lemma LinearMap.toMatrix_adjoint (f : E →ₗ[𝕜] F) :
 /-- The star algebra equivalence between the linear endomorphisms of finite-dimensional inner
 product space and square matrices induced by the choice of an orthonormal basis. -/
 @[simps]
-def LinearMap.toMatrixOrthonormal : (E →ₗ[𝕜] E) ≃⋆ₐ[𝕜] Matrix n n 𝕜 :=
+noncomputable def LinearMap.toMatrixOrthonormal : (E →ₗ[𝕜] E) ≃⋆ₐ[𝕜] Matrix n n 𝕜 :=
   { LinearMap.toMatrix v₁.toBasis v₁.toBasis with
     map_mul' := LinearMap.toMatrix_mul v₁.toBasis
     map_star' := LinearMap.toMatrix_adjoint v₁ v₁ }

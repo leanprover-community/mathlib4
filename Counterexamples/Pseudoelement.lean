@@ -34,16 +34,16 @@ open CategoryTheory.Abelian CategoryTheory CategoryTheory.Limits ModuleCat Linea
 
 namespace Counterexample
 
-noncomputable section
+section
 
 open CategoryTheory.Abelian.Pseudoelement
 
 /-- `x` is given by `t ↦ (t, 2 * t)`. -/
-def x : Over (of ℤ ℚ ⊞ of ℤ ℚ) :=
+noncomputable def x : Over (of ℤ ℚ ⊞ of ℤ ℚ) :=
   Over.mk (biprod.lift (𝟙 _) (2 • 𝟙 _))
 
 /-- `y` is given by `t ↦ (t, t)`. -/
-def y : Over (of ℤ ℚ ⊞ of ℤ ℚ) :=
+noncomputable def y : Over (of ℤ ℚ ⊞ of ℤ ℚ) :=
   Over.mk (biprod.lift (𝟙 _) (𝟙 _))
 
 set_option backward.isDefEq.respectTransparency false in

@@ -37,8 +37,6 @@ composition of partial equivs with `≫`.
 
 @[expose] public section
 
-noncomputable section
-
 open TopologicalSpace Topology
 
 variable {H : Type*}

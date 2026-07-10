@@ -49,8 +49,6 @@ open Nat Set
 
 open Cardinal
 
-noncomputable section
-
 namespace Cardinal
 
 variable {c : ℝ} {f g : ℕ → Bool} {n : ℕ}
@@ -93,7 +91,7 @@ theorem summable_cantor_function (f : ℕ → Bool) (h1 : 0 ≤ c) (h2 : c < 1) 
 
 /-- `cantorFunction c (f : ℕ → Bool)` is `Σ n, f n * c ^ n`, where `true` is interpreted as `1` and
 `false` is interpreted as `0`. It is implemented using `cantorFunctionAux`. -/
-def cantorFunction (c : ℝ) (f : ℕ → Bool) : ℝ :=
+noncomputable def cantorFunction (c : ℝ) (f : ℕ → Bool) : ℝ :=
   ∑' n, cantorFunctionAux c f n
 
 theorem cantorFunction_le (h1 : 0 ≤ c) (h2 : c < 1) (h3 : ∀ n, f n → g n) :

@@ -774,7 +774,7 @@ end IsDedekindDomain
 
 end
 
-noncomputable section ChineseRemainder
+section ChineseRemainder
 
 open Ideal UniqueFactorizationMonoid
 
@@ -906,7 +906,7 @@ theorem inf_pow_eq_prod_of_prime (s : Finset ι) (f : ι → Ideal R)
 /-- **Chinese remainder theorem** for a Dedekind domain: if the ideal `I` factors as
 `∏ i, P i ^ e i`, then `R ⧸ I` factors as `Π i, R ⧸ (P i ^ e i)`.
 See `IsDedekindDomain.quotientEquivPiOfProdEq` for the version in terms of `Ideal R`. -/
-def HeightOneSpectrum.quotientEquivPiOfProdEq [Fintype ι] (I : Ideal R)
+noncomputable def HeightOneSpectrum.quotientEquivPiOfProdEq [Fintype ι] (I : Ideal R)
     (P : ι → HeightOneSpectrum R) (e : ι → ℕ) (coprime : Pairwise fun i j => P i ≠ P j)
     (prod_eq : ∏ i, (P i).asIdeal ^ e i = I) : R ⧸ I ≃+* ∀ i, R ⧸ (P i).asIdeal ^ e i :=
   (Ideal.quotEquivOfEq
@@ -917,7 +917,7 @@ def HeightOneSpectrum.quotientEquivPiOfProdEq [Fintype ι] (I : Ideal R)
 
 /-- **Chinese remainder theorem** for a Dedekind domain: if the ideal `I` factors as
 `∏ i, P i ^ e i`, then `R ⧸ I` factors as `Π i, R ⧸ (P i ^ e i)`. -/
-def quotientEquivPiOfProdEq {ι : Type*} [Fintype ι] (I : Ideal R) (P : ι → Ideal R)
+noncomputable def quotientEquivPiOfProdEq {ι : Type*} [Fintype ι] (I : Ideal R) (P : ι → Ideal R)
     (e : ι → ℕ) (prime : ∀ i, Prime (P i)) (coprime : Pairwise fun i j => P i ≠ P j)
     (prod_eq : ∏ i, P i ^ e i = I) : R ⧸ I ≃+* ∀ i, R ⧸ P i ^ e i :=
   HeightOneSpectrum.quotientEquivPiOfProdEq I
@@ -925,7 +925,7 @@ def quotientEquivPiOfProdEq {ι : Type*} [Fintype ι] (I : Ideal R) (P : ι → 
 
 /-- **Chinese remainder theorem** for a Dedekind domain: `R ⧸ I` factors as `Π i, R ⧸ (P i ^ e i)`,
 where `P i` ranges over the prime factors of `I` and `e i` over the multiplicities. -/
-def quotientEquivPiFactors {I : Ideal R} (hI : I ≠ ⊥) :
+noncomputable def quotientEquivPiFactors {I : Ideal R} (hI : I ≠ ⊥) :
     R ⧸ I ≃+* ∀ P : (factors I).toFinset, R ⧸ (P : Ideal R) ^ (Multiset.count ↑P (factors I)) :=
   quotientEquivPiOfProdEq _ _ _
     (fun P : (factors I).toFinset => prime_of_factor _ (Multiset.mem_toFinset.mp P.prop))
@@ -949,7 +949,7 @@ theorem quotientEquivPiFactors_mk {I : Ideal R} (hI : I ≠ ⊥) (x : R) :
 This is a version of `IsDedekindDomain.quotientEquivPiOfProdEq` where we restrict
 the product to a finite subset `s` of a potentially infinite indexing type `ι`.
 -/
-def quotientEquivPiOfFinsetProdEq {ι : Type*} {s : Finset ι}
+noncomputable def quotientEquivPiOfFinsetProdEq {ι : Type*} {s : Finset ι}
     (I : Ideal R) (P : ι → Ideal R) (e : ι → ℕ) (prime : ∀ i ∈ s, Prime (P i))
     (coprime : ∀ᵉ (i ∈ s) (j ∈ s), i ≠ j → P i ≠ P j)
     (prod_eq : ∏ i ∈ s, P i ^ e i = I) : R ⧸ I ≃+* ∀ i : s, R ⧸ P i ^ e i :=

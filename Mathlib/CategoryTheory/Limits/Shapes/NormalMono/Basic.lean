@@ -28,8 +28,6 @@ every monomorphism or epimorphism is normal, and deduce that these categories ar
 @[expose] public section
 
 
-noncomputable section
-
 namespace CategoryTheory
 
 open CategoryTheory.Limits
@@ -57,6 +55,7 @@ section
 set_option backward.defeqAttrib.useBackward true in
 /-- If `F` is an equivalence and `F.map f` is a normal mono, then `f` is a normal mono. -/
 @[implicit_reducible]
+noncomputable
 def equivalenceReflectsNormalMono {D : Type u₂} [Category.{v₁} D] [HasZeroMorphisms D] (F : C ⥤ D)
     [F.IsEquivalence] {X Y : C} {f : X ⟶ Y} (hf : NormalMono (F.map f)) : NormalMono f where
   Z := F.objPreimage hf.Z
@@ -152,7 +151,7 @@ end
 /-- In a category in which every monomorphism is normal, we can express every monomorphism as
 a kernel. This is not an instance because it would create an instance loop. -/
 @[implicit_reducible]
-def normalMonoOfMono [IsNormalMonoCategory C] (f : X ⟶ Y) [Mono f] : NormalMono f :=
+noncomputable def normalMonoOfMono [IsNormalMonoCategory C] (f : X ⟶ Y) [Mono f] : NormalMono f :=
   (IsNormalMonoCategory.normalMonoOfMono _).some
 
 instance (priority := 100) regularMonoCategoryOfNormalMonoCategory [IsNormalMonoCategory C] :
@@ -181,6 +180,7 @@ section
 set_option backward.defeqAttrib.useBackward true in
 /-- If `F` is an equivalence and `F.map f` is a normal epi, then `f` is a normal epi. -/
 @[implicit_reducible]
+noncomputable
 def equivalenceReflectsNormalEpi {D : Type u₂} [Category.{v₁} D] [HasZeroMorphisms D] (F : C ⥤ D)
     [F.IsEquivalence] {X Y : C} {f : X ⟶ Y} (hf : NormalEpi (F.map f)) : NormalEpi f where
   W := F.objPreimage hf.W
@@ -320,7 +320,7 @@ end
 /-- In a category in which every epimorphism is normal, we can express every epimorphism as
 a kernel. This is not an instance because it would create an instance loop. -/
 @[implicit_reducible]
-def normalEpiOfEpi [IsNormalEpiCategory C] (f : X ⟶ Y) [Epi f] : NormalEpi f :=
+noncomputable def normalEpiOfEpi [IsNormalEpiCategory C] (f : X ⟶ Y) [Epi f] : NormalEpi f :=
   (IsNormalEpiCategory.normalEpiOfEpi _).some
 
 instance (priority := 100) regularEpiCategoryOfNormalEpiCategory [IsNormalEpiCategory C] :

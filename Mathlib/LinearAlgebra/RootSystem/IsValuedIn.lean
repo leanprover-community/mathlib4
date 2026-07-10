@@ -38,8 +38,6 @@ open Set Function
 open Submodule (span)
 open Module
 
-noncomputable section
-
 namespace RootPairing
 
 variable {ι R S M N : Type*} [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N]
@@ -78,7 +76,7 @@ coefficients.
 
 Note that it is uniquely-defined only when the map `S → R` is injective, i.e., when we have
 `[FaithfulSMul S R]`. -/
-def pairingIn [P.IsValuedIn S] (i j : ι) : S :=
+noncomputable def pairingIn [P.IsValuedIn S] (i j : ι) : S :=
   (P.exists_value i j).choose
 
 @[simp]
@@ -195,6 +193,7 @@ lemma corootSpanMem_reflectionPerm_self [Module S N] (i : ι) :
   ext; simp
 
 /-- The `S`-linear map on the span of coroots given by evaluating at a root. -/
+noncomputable
 def root'In [Module S N] [IsScalarTower S R N] [FaithfulSMul S R] [P.IsValuedIn S] (i : ι) :
     Dual S (P.corootSpan S) :=
   LinearMap.restrictScalarsRange (P.corootSpan S).subtype (Algebra.linearMap S R)
@@ -215,6 +214,7 @@ lemma root'In_corootSpanMem_eq_pairingIn [Module S N] [IsScalarTower S R N] [Fai
   rfl
 
 /-- The `S`-linear map on the span of roots given by evaluating at a coroot. -/
+noncomputable
 def coroot'In [Module S M] [IsScalarTower S R M] [FaithfulSMul S R] [P.IsValuedIn S] (i : ι) :
     Dual S (P.rootSpan S) :=
   P.flip.root'In S i
@@ -321,6 +321,7 @@ coefficients.
 
 Note that it is uniquely-defined only when the map `S → R` is injective, i.e., when we have
 `[FaithfulSMul S R]`. -/
+noncomputable
 def coxeterWeightIn (S : Type*) [CommRing S] [Algebra S R] [P.IsValuedIn S] (i j : ι) : S :=
   P.pairingIn S i j * P.pairingIn S j i
 

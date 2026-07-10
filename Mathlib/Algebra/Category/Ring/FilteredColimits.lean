@@ -29,8 +29,6 @@ Similarly for `CommSemiRingCat`, `RingCat` and `CommRingCat`.
 
 universe v u
 
-noncomputable section
-
 open CategoryTheory Limits
 
 open IsFiltered renaming max → max' -- avoid name collision with `_root_.max`.
@@ -58,11 +56,11 @@ variable [IsFiltered J]
 /-- The colimit of `F ⋙ forget₂ SemiRingCat MonCat` in the category `MonCat`.
 In the following, we will show that this has the structure of a semiring.
 -/
-abbrev R : MonCat.{max v u} :=
+noncomputable abbrev R : MonCat.{max v u} :=
   MonCat.FilteredColimits.colimit.{v, u} (F ⋙ forget₂ SemiRingCat.{max v u} MonCat)
 
 set_option backward.isDefEq.respectTransparency false in
-instance colimitSemiring : Semiring.{max v u} <| R.{v, u} F :=
+noncomputable instance colimitSemiring : Semiring.{max v u} <| R.{v, u} F :=
   { (R.{v, u} F).str,
     AddCommMonCat.FilteredColimits.colimitAddCommMonoid.{v, u}
       (F ⋙ forget₂ SemiRingCat AddCommMonCat.{max v u}) with
@@ -110,11 +108,11 @@ instance colimitSemiring : Semiring.{max v u} <| R.{v, u} F :=
       rfl }
 
 /-- The bundled semiring giving the filtered colimit of a diagram. -/
-def colimit : SemiRingCat.{max v u} :=
+noncomputable def colimit : SemiRingCat.{max v u} :=
   SemiRingCat.of <| R.{v, u} F
 
 /-- The cocone over the proposed colimit semiring. -/
-def colimitCocone : Cocone F where
+noncomputable def colimitCocone : Cocone F where
   pt := colimit.{v, u} F
   ι :=
     { app := fun j => ofHom
@@ -131,7 +129,7 @@ namespace colimitCoconeIsColimit
 variable {F} (t : Cocone F)
 
 /-- Auxiliary definition for `colimitCoconeIsColimit`. -/
-def descAddMonoidHom : R F →+ t.1 :=
+noncomputable def descAddMonoidHom : R F →+ t.1 :=
   ((AddCommMonCat.FilteredColimits.colimitCoconeIsColimit.{v, u}
     (F ⋙ forget₂ SemiRingCat AddCommMonCat)).desc
       ((forget₂ SemiRingCat AddCommMonCat).mapCocone t)).hom
@@ -144,7 +142,7 @@ lemma descAddMonoidHom_quotMk {j : J} (x : F.obj j) :
         ((forget₂ SemiRingCat AddCommMonCat).mapCocone t) j)) x
 
 /-- Auxiliary definition for `colimitCoconeIsColimit`. -/
-def descMonoidHom : R F →* t.1 :=
+noncomputable def descMonoidHom : R F →* t.1 :=
   ((MonCat.FilteredColimits.colimitCoconeIsColimit.{v, u}
     (F ⋙ forget₂ _ _)).desc ((forget₂ _ _).mapCocone t)).hom
 
@@ -163,7 +161,7 @@ end colimitCoconeIsColimit
 
 open colimitCoconeIsColimit in
 /-- The proposed colimit cocone is a colimit in `SemiRingCat`. -/
-def colimitCoconeIsColimit : IsColimit <| colimitCocone.{v, u} F where
+noncomputable def colimitCoconeIsColimit : IsColimit <| colimitCocone.{v, u} F where
   desc t := ofHom
     { descAddMonoidHom t with
       map_one' := (descMonoidHom_apply_eq t 1).symm.trans (by simp)
@@ -203,20 +201,20 @@ variable {J : Type v} [SmallCategory J] [IsFiltered J] (F : J ⥤ CommSemiRingCa
 /-- The colimit of `F ⋙ forget₂ CommSemiRingCat SemiRingCat` in the category `SemiRingCat`.
 In the following, we will show that this has the structure of a _commutative_ semiring.
 -/
-abbrev R : SemiRingCat.{max v u} :=
+noncomputable abbrev R : SemiRingCat.{max v u} :=
   SemiRingCat.FilteredColimits.colimit (F ⋙ forget₂ CommSemiRingCat SemiRingCat.{max v u})
 
-instance colimitCommSemiring : CommSemiring.{max v u} <| R.{v, u} F :=
+noncomputable instance colimitCommSemiring : CommSemiring.{max v u} <| R.{v, u} F :=
   { (R F).semiring,
     CommMonCat.FilteredColimits.colimitCommMonoid
       (F ⋙ forget₂ CommSemiRingCat CommMonCat.{max v u}) with }
 
 /-- The bundled commutative semiring giving the filtered colimit of a diagram. -/
-def colimit : CommSemiRingCat.{max v u} :=
+noncomputable def colimit : CommSemiRingCat.{max v u} :=
   CommSemiRingCat.of <| R.{v, u} F
 
 /-- The cocone over the proposed colimit commutative semiring. -/
-def colimitCocone : Cocone F where
+noncomputable def colimitCocone : Cocone F where
   pt := colimit.{v, u} F
   ι :=
     { app := fun X ↦ ofHom <| ((SemiRingCat.FilteredColimits.colimitCocone
@@ -227,7 +225,7 @@ def colimitCocone : Cocone F where
           (F ⋙ forget CommSemiRingCat)).ι.naturality_apply f _ }
 
 /-- The proposed colimit cocone is a colimit in `CommSemiRingCat`. -/
-def colimitCoconeIsColimit : IsColimit <| colimitCocone.{v, u} F :=
+noncomputable def colimitCoconeIsColimit : IsColimit <| colimitCocone.{v, u} F :=
   isColimitOfReflects (forget₂ _ SemiRingCat)
     (SemiRingCat.FilteredColimits.colimitCoconeIsColimit
       (F ⋙ forget₂ CommSemiRingCat SemiRingCat))
@@ -261,20 +259,20 @@ variable {J : Type v} [SmallCategory J] [IsFiltered J] (F : J ⥤ RingCat.{max v
 /-- The colimit of `F ⋙ forget₂ RingCat SemiRingCat` in the category `SemiRingCat`.
 In the following, we will show that this has the structure of a ring.
 -/
-abbrev R : SemiRingCat.{max v u} :=
+noncomputable abbrev R : SemiRingCat.{max v u} :=
   SemiRingCat.FilteredColimits.colimit.{v, u} (F ⋙ forget₂ RingCat SemiRingCat.{max v u})
 
-instance colimitRing : Ring.{max v u} <| R.{v, u} F :=
+noncomputable instance colimitRing : Ring.{max v u} <| R.{v, u} F :=
   { (R F).semiring,
     AddCommGrpCat.FilteredColimits.colimitAddCommGroup.{v, u}
       (F ⋙ forget₂ RingCat AddCommGrpCat.{max v u}) with }
 
 /-- The bundled ring giving the filtered colimit of a diagram. -/
-def colimit : RingCat.{max v u} :=
+noncomputable def colimit : RingCat.{max v u} :=
   RingCat.of <| R.{v, u} F
 
 /-- The cocone over the proposed colimit ring. -/
-def colimitCocone : Cocone F where
+noncomputable def colimitCocone : Cocone F where
   pt := colimit.{v, u} F
   ι :=
     { app := fun X ↦ ofHom <| ((SemiRingCat.FilteredColimits.colimitCocone
@@ -284,7 +282,7 @@ def colimitCocone : Cocone F where
         simpa using! (Types.TypeMax.colimitCocone (F ⋙ forget RingCat)).ι.naturality_apply f _ }
 
 /-- The proposed colimit cocone is a colimit in `Ring`. -/
-def colimitCoconeIsColimit : IsColimit <| colimitCocone.{v, u} F :=
+noncomputable def colimitCoconeIsColimit : IsColimit <| colimitCocone.{v, u} F :=
   isColimitOfReflects (forget₂ _ _)
     (SemiRingCat.FilteredColimits.colimitCoconeIsColimit
       (F ⋙ forget₂ RingCat SemiRingCat))
@@ -324,20 +322,20 @@ variable {J : Type v} [SmallCategory J] [IsFiltered J] (F : J ⥤ CommRingCat.{m
 /-- The colimit of `F ⋙ forget₂ CommRingCat RingCat` in the category `RingCat`.
 In the following, we will show that this has the structure of a _commutative_ ring.
 -/
-abbrev R : RingCat.{max v u} :=
+noncomputable abbrev R : RingCat.{max v u} :=
   RingCat.FilteredColimits.colimit.{v, u} (F ⋙ forget₂ CommRingCat RingCat.{max v u})
 
-instance colimitCommRing : CommRing.{max v u} <| R.{v, u} F :=
+noncomputable instance colimitCommRing : CommRing.{max v u} <| R.{v, u} F :=
   { (R.{v, u} F).ring,
     CommSemiRingCat.FilteredColimits.colimitCommSemiring
       (F ⋙ forget₂ CommRingCat CommSemiRingCat.{max v u}) with }
 
 /-- The bundled commutative ring giving the filtered colimit of a diagram. -/
-def colimit : CommRingCat.{max v u} :=
+noncomputable def colimit : CommRingCat.{max v u} :=
   CommRingCat.of <| R.{v, u} F
 
 /-- The cocone over the proposed colimit commutative ring. -/
-def colimitCocone : Cocone F where
+noncomputable def colimitCocone : Cocone F where
   pt := colimit.{v, u} F
   ι :=
     { app := fun X ↦ ofHom <| ((RingCat.FilteredColimits.colimitCocone
@@ -347,7 +345,7 @@ def colimitCocone : Cocone F where
         simpa using! (Types.TypeMax.colimitCocone (F ⋙ forget CommRingCat)).ι.naturality_apply f _ }
 
 /-- The proposed colimit cocone is a colimit in `CommRingCat`. -/
-def colimitCoconeIsColimit : IsColimit <| colimitCocone.{v, u} F :=
+noncomputable def colimitCoconeIsColimit : IsColimit <| colimitCocone.{v, u} F :=
   isColimitOfReflects (forget₂ _ _)
     (RingCat.FilteredColimits.colimitCoconeIsColimit
       (F ⋙ forget₂ CommRingCat RingCat))

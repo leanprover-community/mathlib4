@@ -49,7 +49,7 @@ variable {K : Type z} [Category.{z'} K]
 
 section Limits
 
-noncomputable section
+section
 
 section
 
@@ -62,6 +62,7 @@ shape `K` of objects in `D`, with cone point `S.X`.
 
 See `isLimitMultiforkOfIsLimit` for more on how this definition is used.
 -/
+noncomputable
 def multiforkEvaluationCone (F : K ⥤ Sheaf J D) (E : Cone (F ⋙ sheafToPresheaf J D)) (X : C)
     (W : J.Cover X) (S : Multifork (W.index E.pt)) :
     Cone (F ⋙ sheafToPresheaf J D ⋙ (evaluation Cᵒᵖ D).obj (op X)) where
@@ -98,7 +99,7 @@ condition, at a given covering `W`.
 
 This is used below in `isSheaf_of_isLimit` to show that the limit presheaf is indeed a sheaf.
 -/
-def isLimitMultiforkOfIsLimit (F : K ⥤ Sheaf J D) (E : Cone (F ⋙ sheafToPresheaf J D))
+noncomputable def isLimitMultiforkOfIsLimit (F : K ⥤ Sheaf J D) (E : Cone (F ⋙ sheafToPresheaf J D))
     (hE : IsLimit E) (X : C) (W : J.Cover X) : IsLimit (W.multifork E.pt) :=
   Multifork.IsLimit.mk _
     (fun S => (isLimitOfPreserves ((evaluation Cᵒᵖ D).obj (op X)) hE).lift <|
@@ -147,7 +148,7 @@ instance : ObjectProperty.IsClosedUnderLimitsOfShape (Presheaf.IsSheaf J (A := D
     let F : K ⥤ Sheaf J D := ObjectProperty.lift _ h.diag h.prop_diag_obj
     exact isSheaf_of_isLimit F _ h.isLimit
 
-instance createsLimitsOfShape : CreatesLimitsOfShape K (sheafToPresheaf J D) where
+noncomputable instance createsLimitsOfShape : CreatesLimitsOfShape K (sheafToPresheaf J D) where
 
 instance : HasLimitsOfShape K (Sheaf J D) :=
   hasLimitsOfShape_of_hasLimitsOfShape_createsLimitsOfShape (sheafToPresheaf J D)
@@ -160,7 +161,7 @@ instance [HasFiniteLimits D] : HasFiniteLimits (Sheaf J D) :=
 
 end
 
-instance createsLimits [HasLimitsOfSize.{u₁, u₂} D] :
+noncomputable instance createsLimits [HasLimitsOfSize.{u₁, u₂} D] :
     CreatesLimitsOfSize.{u₁, u₂} (sheafToPresheaf J D) :=
   ⟨createsLimitsOfShape⟩
 

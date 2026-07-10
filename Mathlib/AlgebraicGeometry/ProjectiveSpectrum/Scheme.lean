@@ -93,8 +93,6 @@ Finally,
 
 @[expose] public section
 
-noncomputable section
-
 
 namespace AlgebraicGeometry
 
@@ -650,7 +648,7 @@ lemma awayToΓ_ΓToStalk (f) (x) :
 The morphism of locally ringed space from `Proj|D(f)` to `Spec A⁰_f` induced by the ring map
 `A⁰_ f → Γ(Proj, D(f))` under the gamma spec adjunction.
 -/
-def toSpec (f) : (Proj| pbo f) ⟶ Spec (A⁰_ f) :=
+noncomputable def toSpec (f) : (Proj| pbo f) ⟶ Spec (A⁰_ f) :=
   ΓSpec.locallyRingedSpaceAdjunction.homEquiv (Proj| pbo f) (op (CommRingCat.of <| A⁰_ f))
     (awayToΓ 𝒜 f).op
 
@@ -779,7 +777,7 @@ For an element `f ∈ A` with positive degree and a homogeneous ideal in `D(f)`,
 stalk of `Spec A⁰_ f` at `y` is isomorphic to `A⁰ₓ` where `y` is the point in `Proj` corresponding
 to `x`.
 -/
-def specStalkEquiv (f) (x : pbo f) {m} (f_deg : f ∈ 𝒜 m) (hm : 0 < m) :
+noncomputable def specStalkEquiv (f) (x : pbo f) {m} (f_deg : f ∈ 𝒜 m) (hm : 0 < m) :
     (Spec.structureSheaf (A⁰_ f)).presheaf.stalk ((toSpec 𝒜 f).base x) ≅
       CommRingCat.of (AtPrime 𝒜 x.1.asHomogeneousIdeal.toIdeal) :=
   letI : Algebra (Away 𝒜 f) (AtPrime 𝒜 x.1.asHomogeneousIdeal.toIdeal) :=
@@ -832,7 +830,7 @@ open ProjectiveSpectrum.Proj in
 If `f ∈ A` is a homogeneous element of positive degree, then the projective spectrum restricted to
 `D(f)` as a locally ringed space is isomorphic to `Spec A⁰_f`.
 -/
-def projIsoSpec (f) {m} (f_deg : f ∈ 𝒜 m) (hm : 0 < m) :
+noncomputable def projIsoSpec (f) {m} (f_deg : f ∈ 𝒜 m) (hm : 0 < m) :
     (Proj| pbo f) ≅ (Spec (A⁰_ f)) :=
   @asIso _ _ _ _ (f := toSpec 𝒜 f) (isIso_toSpec 𝒜 f f_deg hm)
 

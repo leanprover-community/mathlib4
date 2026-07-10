@@ -735,10 +735,10 @@ end IntertwiningMap
 
 namespace TensorProduct
 
-noncomputable section
+section
 
 /-- Equivalence between representations induced from `TensorProduct.comm`. -/
-def comm : (tprod ρ σ).Equiv (tprod σ ρ) :=
+noncomputable def comm : (tprod ρ σ).Equiv (tprod σ ρ) :=
   .mk (_root_.TensorProduct.comm A V W) <| fun g ↦ by ext; simp
 
 @[simp]
@@ -756,7 +756,7 @@ lemma comm_comp_rTensor (f : IntertwiningMap σ τ) :
 lemma comm_symm : (comm σ ρ).symm = comm ρ σ := by rfl
 
 /-- The `Equiv` between representations induced from `TensorProduct.assoc`. -/
-def assoc : (tprod (tprod ρ σ) τ).Equiv (tprod ρ (tprod σ τ)) :=
+noncomputable def assoc : (tprod (tprod ρ σ) τ).Equiv (tprod ρ (tprod σ τ)) :=
   .mk (_root_.TensorProduct.assoc A V W U) <| fun g ↦ by ext; simp
 
 @[simp]
@@ -771,7 +771,7 @@ lemma assoc_apply (v : V) (w : W) (u : U) : assoc ρ σ τ ((v ⊗ₜ w) ⊗ₜ 
 
 variable (A) in
 /-- The `Equiv` between representations induced from `TensorProduct.rid`. -/
-def rid : (σ.tprod (trivial A G A)).Equiv σ :=
+noncomputable def rid : (σ.tprod (trivial A G A)).Equiv σ :=
   .mk (_root_.TensorProduct.rid A W) <| fun g ↦ by ext; simp
 
 @[simp]
@@ -785,7 +785,7 @@ lemma rid_symm_apply (w : W) : (rid A σ).symm w = w ⊗ₜ 1 := rfl
 
 variable (A) in
 /-- The `Equiv` between representations induced from `TensorProduct.lid`. -/
-def lid : ((trivial A G A).tprod σ).Equiv σ :=
+noncomputable def lid : ((trivial A G A).tprod σ).Equiv σ :=
   .mk (_root_.TensorProduct.lid A W) <| fun g ↦ by ext; simp
 
 @[simp]

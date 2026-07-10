@@ -36,8 +36,6 @@ isomorphism-reflecting functor leaves the sheaf condition invariant, as shown in
 
 @[expose] public section
 
-noncomputable section
-
 open TopCat TopCat.Presheaf CategoryTheory CategoryTheory.Limits
   TopologicalSpace TopologicalSpace.Opens Opposite
 
@@ -86,14 +84,14 @@ variable {X : TopCat.{x}} {F : Presheaf Type* X} {ι : Type*} {U : ι → Opens 
 
 /-- Given sections over a family of open sets, extend it to include
   sections over pairwise intersections of the open sets. -/
-def objPairwiseOfFamily (sf : ∀ i, F.obj (op (U i))) :
+noncomputable def objPairwiseOfFamily (sf : ∀ i, F.obj (op (U i))) :
     ∀ i, ((Pairwise.diagram U).op ⋙ F).obj i
   | ⟨Pairwise.single i⟩ => sf i
   | ⟨Pairwise.pair i j⟩ => F.map (infLELeft (U i) (U j)).op (sf i)
 
 /-- Given a compatible family of sections over open sets, extend it to a
   section of the functor `(Pairwise.diagram U).op ⋙ F`. -/
-def IsCompatible.sectionPairwise {sf} (h : IsCompatible F U sf) :
+noncomputable def IsCompatible.sectionPairwise {sf} (h : IsCompatible F U sf) :
     ((Pairwise.diagram U).op ⋙ F).sections := by
   refine ⟨objPairwiseOfFamily sf, ?_⟩
   let G := (Pairwise.diagram U).op ⋙ F

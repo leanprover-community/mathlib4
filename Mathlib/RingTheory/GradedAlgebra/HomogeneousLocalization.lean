@@ -75,8 +75,6 @@ circumvent this, we quotient `NumDenSameDeg 𝒜 x` by the kernel of `c ↦ c.nu
 @[expose] public section
 
 
-noncomputable section
-
 open DirectSum Pointwise
 
 open DirectSum SetLike
@@ -524,16 +522,16 @@ section
 variable {𝒜 : ι → σ} {x : Submonoid A}
 
 /-- Numerator of an element in `HomogeneousLocalization x`. -/
-def num (f : HomogeneousLocalization 𝒜 x) : A :=
+noncomputable def num (f : HomogeneousLocalization 𝒜 x) : A :=
   (Quotient.out f).num
 
 /-- Denominator of an element in `HomogeneousLocalization x`. -/
-def den (f : HomogeneousLocalization 𝒜 x) : A :=
+noncomputable def den (f : HomogeneousLocalization 𝒜 x) : A :=
   (Quotient.out f).den
 
 /-- For an element in `HomogeneousLocalization x`, degree is the natural number `i` such that
   `𝒜 i` contains both numerator and denominator. -/
-def deg (f : HomogeneousLocalization 𝒜 x) : ι :=
+noncomputable def deg (f : HomogeneousLocalization 𝒜 x) : ι :=
   (Quotient.out f).deg
 
 theorem den_mem (f : HomogeneousLocalization 𝒜 x) : f.den ∈ x :=
@@ -778,7 +776,7 @@ variable {e : ι} {f : A} {g : A} (hg : g ∈ 𝒜 e) {x : A} (hx : x = f * g)
 set_option backward.privateInPublic true in
 /-- Given `f ∣ x`, this is the map `A_{(f)} → A_f → A_x`. We will lift this to a map
 `A_{(f)} → A_{(x)}` in `awayMap`. -/
-private def awayMapAux (hx : f ∣ x) : Away 𝒜 f →+* Localization.Away x :=
+private noncomputable def awayMapAux (hx : f ∣ x) : Away 𝒜 f →+* Localization.Away x :=
   (Localization.awayLift (algebraMap A _) _
     (isUnit_of_dvd_unit (map_dvd _ hx) (IsLocalization.Away.algebraMap_isUnit x))).comp
       (algebraMap (Away 𝒜 f) (Localization.Away f))
@@ -817,7 +815,7 @@ set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- Given `x = f * g` with `g` homogeneous of positive degree,
 this is the map `A_{(f)} → A_{(x)}` taking `a/f^i` to `ag^i/(fg)^i`. -/
-def awayMap : Away 𝒜 f →+* Away 𝒜 x := by
+noncomputable def awayMap : Away 𝒜 f →+* Away 𝒜 x := by
   let e := RingEquiv.ofLeftInverse (f := algebraMap (Away 𝒜 x) (Localization.Away x))
     (h := (val_injective _).hasLeftInverse.choose_spec)
   refine RingHom.comp (e.symm.toRingHom.comp (Subring.inclusion ?_))
@@ -852,7 +850,7 @@ lemma val_awayMap_mk (n a i hi) : (awayMap 𝒜 hg hx (mk ⟨n, a, ⟨f ^ i, hi�
 
 /-- Given `x = f * g` with `g` homogeneous of positive degree,
 this is the map `A_{(f)} → A_{(x)}` taking `a/f^i` to `ag^i/(fg)^i`. -/
-def awayMapₐ : Away 𝒜 f →ₐ[𝒜 0] Away 𝒜 x where
+noncomputable def awayMapₐ : Away 𝒜 f →ₐ[𝒜 0] Away 𝒜 x where
   __ := awayMap 𝒜 hg hx
   commutes' _ := awayMap_fromZeroRingHom ..
 

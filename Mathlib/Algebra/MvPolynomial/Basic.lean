@@ -68,8 +68,6 @@ polynomial, multivariate polynomial, multivariable polynomial
 
 @[expose] public section
 
-noncomputable section
-
 open Set Function Finsupp AddMonoidAlgebra
 open scoped Pointwise
 
@@ -90,7 +88,7 @@ section CommSemiring
 variable [CommSemiring R] [CommSemiring S₁] {p q : MvPolynomial σ R}
 
 /-- `monomial s a` is the monomial with coefficient `a` and exponents given by `s` -/
-def monomial (s : σ →₀ ℕ) : R →ₗ[R] MvPolynomial σ R :=
+noncomputable def monomial (s : σ →₀ ℕ) : R →ₗ[R] MvPolynomial σ R :=
   AddMonoidAlgebra.lsingle s
 
 theorem one_def : (1 : MvPolynomial σ R) = monomial 0 1 := rfl
@@ -102,7 +100,7 @@ theorem mul_def : p * q = p.coeff.sum fun m a => q.coeff.sum fun n b => monomial
   AddMonoidAlgebra.mul_def ..
 
 /-- `C a` is the constant polynomial with value `a` -/
-def C : R →+* MvPolynomial σ R :=
+noncomputable def C : R →+* MvPolynomial σ R :=
   { singleZeroRingHom with toFun := monomial 0 }
 
 variable (R σ)
@@ -123,7 +121,7 @@ theorem algebraMap_apply [Algebra R S₁] (r : R) :
   rfl
 
 /-- `X n` is the degree `1` monomial $X_n$. -/
-def X (n : σ) : MvPolynomial σ R :=
+noncomputable def X (n : σ) : MvPolynomial σ R :=
   monomial (Finsupp.single n 1) 1
 
 theorem monomial_left_injective {r : R} (hr : r ≠ 0) :
@@ -236,7 +234,7 @@ theorem monomial_mul {s s' : σ →₀ ℕ} {a b : R} :
 variable (σ R)
 
 /-- `fun s ↦ monomial s 1` as a homomorphism. -/
-def monomialOneHom : Multiplicative (σ →₀ ℕ) →* MvPolynomial σ R :=
+noncomputable def monomialOneHom : Multiplicative (σ →₀ ℕ) →* MvPolynomial σ R :=
   AddMonoidAlgebra.of _ _
 
 variable {σ R}
@@ -834,7 +832,7 @@ theorem C_dvd_iff_dvd_coeff (r : R) (φ : MvPolynomial σ R) : C r ∣ φ ↔ �
   IsRegular.prod fun _ _ ↦ isRegular_X
 
 /-- The finset of nonzero coefficients of a multivariate polynomial. -/
-def coeffs (p : MvPolynomial σ R) : Finset R :=
+noncomputable def coeffs (p : MvPolynomial σ R) : Finset R :=
   letI := Classical.decEq R
   Finset.image p.coeff p.support
 

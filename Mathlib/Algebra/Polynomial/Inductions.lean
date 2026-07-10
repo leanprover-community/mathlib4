@@ -19,8 +19,6 @@ This file contains lemmas dealing with different flavours of induction on polyno
 @[expose] public section
 
 
-noncomputable section
-
 open Polynomial
 
 open Finset
@@ -37,7 +35,7 @@ variable [Semiring R] {p q : R[X]}
 
 /-- `divX p` returns a polynomial `q` such that `q * X + C (p.coeff 0) = p`.
   It can be used in a semiring where the usual division algorithm is not possible -/
-def divX (p : R[X]) : R[X] :=
+noncomputable def divX (p : R[X]) : R[X] :=
   ⟨AddMonoidAlgebra.divOf p.toFinsupp 1⟩
 
 @[simp]

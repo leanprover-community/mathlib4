@@ -69,13 +69,13 @@ instance {n : ℤ} [NeZero n] : Finite (ℤ ⧸ Ideal.span {n}) :=
 
 end Int
 
-noncomputable section ChineseRemainder
+section ChineseRemainder
 open Ideal
 
 open scoped Function in -- required for scoped `on` notation
 /-- The **Chinese remainder theorem**, elementary version for `ZMod`. See also
 `Mathlib/Data/ZMod/Basic.lean` for versions involving only two numbers. -/
-def ZMod.prodEquivPi {ι : Type*} [Fintype ι] (a : ι → ℕ)
+noncomputable def ZMod.prodEquivPi {ι : Type*} [Fintype ι] (a : ι → ℕ)
     (coprime : Pairwise (Nat.Coprime on a)) : ZMod (∏ i, a i) ≃+* Π i, ZMod (a i) :=
   have : Pairwise fun i j => IsCoprime (span {(a i : ℤ)}) (span {(a j : ℤ)}) :=
     fun _i _j h ↦ (isCoprime_span_singleton_iff _ _).mpr ((coprime h).cast (R := ℤ))
@@ -93,7 +93,7 @@ theorem ZMod.prodEquivPi_apply {ι : Type*} [Fintype ι] (a : ι → ℕ)
     (prodEquivPi a coprime).toRingHom) _) b
 
 /-- The **Chinese remainder theorem**, version for `ZMod n`. -/
-def ZMod.equivPi (hn : n ≠ 0) :
+noncomputable def ZMod.equivPi (hn : n ≠ 0) :
     ZMod n ≃+* Π (p : n.primeFactors), ZMod (p ^ (n.factorization p)) :=
   (ringEquivCongr <| Nat.prod_primeFactors_coe_pow_factorization hn).trans
     <| prodEquivPi (fun (p : n.primeFactors) ↦ (p : ℕ) ^ (n.factorization p))

@@ -41,8 +41,6 @@ properties of eigenvalues and eigenvectors.
 
 @[expose] public section
 
-noncomputable section
-
 open Finset
 
 open Polynomial
@@ -144,7 +142,7 @@ theorem mkSol_injective : E.mkSol.Injective :=
 
 /-- A basis of the solution space given by solutions whose initial conditions are the standard basis
 vectors -/
-def basis : Module.Basis (Fin E.order) R E.solSpace :=
+noncomputable def basis : Module.Basis (Fin E.order) R E.solSpace :=
   .ofEquivFun E.toInit
 
 /-- The coordinates of a solution in the basis are its first `E.order` values -/
@@ -206,7 +204,7 @@ variable {R : Type*} [CommRing R] (E : LinearRecurrence R)
 
 /-- The characteristic polynomial of `E` is
 `X ^ E.order - ∑ i : Fin E.order, (E.coeffs i) * X ^ i`. -/
-def charPoly : R[X] :=
+noncomputable def charPoly : R[X] :=
   Polynomial.monomial E.order 1 - ∑ i : Fin E.order, Polynomial.monomial i (E.coeffs i)
 
 @[simp]

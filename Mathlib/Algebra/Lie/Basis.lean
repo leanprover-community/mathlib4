@@ -44,8 +44,6 @@ See e.g., [serre1965](Ch. V, §4, §6).
 
 open Function LieSubalgebra Module Set
 
-noncomputable section
-
 namespace LieAlgebra
 
 /-- A basis for a semisimple Lie algebra distinguishes a natural Cartan subalgebra and a base
@@ -260,7 +258,7 @@ variable [Fintype ι]
 
 /-- These elements constitute a base for the root system of the Lie algebra relative to the
 associated Cartan subalgebra. -/
-def baseSupp (i : ι) : Dual R b.cartan :=
+noncomputable def baseSupp (i : ι) : Dual R b.cartan :=
   ∑ j, b.A i j •
     ((Basis.span b.linInd).map (LinearEquiv.ofEq _ _ b.coe_cartan_eq_span).symm).coord j
 
@@ -488,7 +486,7 @@ variable {ι K L : Type*} [Fintype ι] [Field K] [CharZero K] [LieRing L] [LieAl
   [FiniteDimensional K L] (b : Basis ι K L)
 
 /-- The elements `LieAlgebra.Basis.baseSupp` as roots in the sense of `LieSubalgebra.root`. -/
-def baseSupp' (i : ι) : b.cartan.root := by
+noncomputable def baseSupp' (i : ι) : b.cartan.root := by
   refine ⟨⟨b.baseSupp i, ?_⟩, ?_⟩
   · simp only [LieSubmodule.eq_bot_iff, ne_eq, not_forall]
     exact ⟨b.e i, (mem_genWeightSpace _ _ _).mpr fun x ↦ ⟨1, by simp⟩, (b.sl2 i).e_ne_zero⟩
@@ -533,12 +531,12 @@ lemma root_mem_or_mem_neg (χ : b.cartan.root) :
   refine hs.symm.imp (fun ⟨n, hn₀, hn⟩ ↦ ?_) (fun ⟨n, hn₀, hn⟩ ↦ ?_) <;> simpa [hn] using this n
 
 /-- The distinguished root system base associated to a basis. -/
-def base : RootPairing.Base (rootSystem b.cartan) :=
+noncomputable def base : RootPairing.Base (rootSystem b.cartan) :=
   .mk' (rootSystem b.cartan) (range b.baseSupp') b.linearIndepOn_root_baseSupp b.root_mem_or_mem_neg
 
 /-- The support of `LieAlgebra.Basis.base` is in one-to-one correspondence with the indexing
 set of the basis. -/
-def baseSupportEquiv : ι ≃ b.base.support :=
+noncomputable def baseSupportEquiv : ι ≃ b.base.support :=
   have : Injective b.baseSupp' :=
     fun i j hij ↦ b.linearIndependent_baseSupp.injective <| by simpa [baseSupp'] using hij
   (Equiv.ofInjective _ this).trans (Set.Finite.subtypeEquivToFinset _)

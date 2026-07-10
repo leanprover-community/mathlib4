@@ -43,8 +43,6 @@ open Bundle Set IsManifold OpenPartialHomeomorph ContinuousLinearMap
 
 open scoped Manifold Topology Bundle ContDiff
 
-noncomputable section
-
 section General
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : ℕ∞ω} {E : Type*} [NormedAddCommGroup E]
@@ -84,7 +82,7 @@ E -----> H -----> M --> H --> E
 ```
 within the set `range I ⊆ E` at `I (i x) : E`. -/
 @[simps indexAt coordChange]
-def tangentBundleCore : VectorBundleCore 𝕜 M E (atlas H M) where
+noncomputable def tangentBundleCore : VectorBundleCore 𝕜 M E (atlas H M) where
   baseSet i := i.1.source
   isOpen_baseSet i := i.1.open_source
   indexAt := achart H
@@ -140,7 +138,7 @@ outside the intersection of the sources of the two charts.
 
 Note that this definition takes advantage of the fact that `tangentBundleCore` has the same base
 sets as the preferred charts of the base manifold. -/
-abbrev tangentCoordChange (x y : M) : M → E →L[𝕜] E :=
+noncomputable abbrev tangentCoordChange (x y : M) : M → E →L[𝕜] E :=
   (tangentBundleCore I M).coordChange (achart H x) (achart H y)
 
 lemma tangentCoordChange_def {x y z : M} : tangentCoordChange I x y z =
@@ -182,7 +180,7 @@ section TangentBundleInstances
 instance : TopologicalSpace TM :=
   inferInstanceAs <| TopologicalSpace (tangentBundleCore I M).TotalSpace
 
-instance TangentSpace.fiberBundle : FiberBundle E (TangentSpace I : M → Type _) :=
+noncomputable instance TangentSpace.fiberBundle : FiberBundle E (TangentSpace I : M → Type _) :=
   inferInstanceAs <| FiberBundle E (tangentBundleCore I M).Fiber
 
 instance TangentSpace.vectorBundle : VectorBundle 𝕜 E (TangentSpace I : M → Type _) :=
@@ -515,6 +513,7 @@ actually depend on `f` or `g`.
 
 This is the underlying function of the trivializations of the hom of (pullbacks of) tangent spaces.
 -/
+noncomputable
 def inTangentCoordinates (f : N → M) (g : N → M') (ϕ : N → E →L[𝕜] E') : N → N → E →L[𝕜] E' :=
   fun x₀ x => inCoordinates E (TangentSpace I) E' (TangentSpace I') (f x₀) (f x) (g x₀) (g x) (ϕ x)
 

@@ -43,8 +43,6 @@ algNormOfAlgEquiv, invariantExtension, norm, nonarchimedean
 
 open scoped NNReal
 
-noncomputable section
-
 variable {K : Type*} [NormedField K] {L : Type*} [Field L] [Algebra K L]
   [h_fin : FiniteDimensional K L] [hu : IsUltrametricDist K]
 
@@ -55,7 +53,7 @@ set_option linter.style.whitespace false in -- manual alignment is not recognise
 /-- Given a normed field `K`, a finite algebraic extension `L/K` and `σ : L ≃ₐ[K] L`, the function
 `L → ℝ` sending `x : L` to `‖ σ x ‖`, where `‖ ⬝ ‖` is any power-multiplicative algebra norm on `L`
 extending the norm on `K`, is an algebra norm on `K`. -/
-def algNormOfAlgEquiv (σ : L ≃ₐ[K] L) :
+noncomputable def algNormOfAlgEquiv (σ : L ≃ₐ[K] L) :
     AlgebraNorm K L where
   toFun x     := Classical.choose (exists_nonarchimedean_pow_mul_seminorm_of_finiteDimensional
     h_fin hu.isNonarchimedean_norm) (σ x)
@@ -102,7 +100,7 @@ variable (K L)
 
 /-- The function `L → ℝ` sending `x : L` to the maximum of `algNormOfAlgEquiv hna σ` over
   all `σ : L ≃ₐ[K] L` is an algebra norm on `L`. -/
-def invariantExtension : AlgebraNorm K L where
+noncomputable def invariantExtension : AlgebraNorm K L where
   toFun x := iSup fun σ : L ≃ₐ[K] L ↦ algNormOfAlgEquiv σ x
   map_zero' := by simp only [map_zero, ciSup_const]
   add_le' x y := ciSup_le fun σ ↦ le_trans (map_add_le_add (algNormOfAlgEquiv σ) x y)

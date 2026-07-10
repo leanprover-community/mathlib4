@@ -59,8 +59,6 @@ conditional, conditioned, bayes
 
 @[expose] public section
 
-noncomputable section
-
 open ENNReal MeasureTheory MeasureTheory.Measure MeasurableSpace Set
 
 variable {Ω Ω' α : Type*} {m : MeasurableSpace Ω} {m' : MeasurableSpace Ω'} {μ : Measure Ω}
@@ -73,7 +71,7 @@ variable (μ) in
 and scaled by the inverse of `μ s` (to make it a probability measure):
 `(μ s)⁻¹ • μ.restrict s`. -/
 @[wikidata Q327069]
-def cond (s : Set Ω) : Measure Ω :=
+noncomputable def cond (s : Set Ω) : Measure Ω :=
   (μ s)⁻¹ • μ.restrict s
 
 @[inherit_doc ProbabilityTheory.cond]

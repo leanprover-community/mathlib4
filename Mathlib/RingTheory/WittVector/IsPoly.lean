@@ -107,7 +107,7 @@ open Function (uncurry)
 
 variable (p)
 
-noncomputable section
+section
 
 /-!
 ### The `IsPoly` predicate
@@ -279,7 +279,7 @@ theorem bind₁_zero_wittPolynomial [Fact p.Prime] (n : ℕ) :
   rw [← aeval_eq_bind₁, aeval_zero, constantCoeff_wittPolynomial, map_zero]
 
 /-- The coefficients of `1 : 𝕎 R` as polynomials. -/
-def onePoly (n : ℕ) : MvPolynomial ℕ ℤ :=
+noncomputable def onePoly (n : ℕ) : MvPolynomial ℕ ℤ :=
   if n = 0 then 1 else 0
 
 @[simp]

@@ -30,8 +30,6 @@ algebras.
 
 @[expose] public section
 
-noncomputable section
-
 namespace RootPairing.GeckConstruction
 
 open Function Submodule

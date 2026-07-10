@@ -52,8 +52,6 @@ free group, free groupoid, Nielsen-Schreier
 @[expose] public section
 
 
-noncomputable section
-
 universe v u
 
 open CategoryTheory CategoryTheory.ActionCategory CategoryTheory.SingleObj Quiver FreeGroup
@@ -102,6 +100,7 @@ purposes.
 
 Analogous to the fact that a covering space of a graph is a graph. (A free groupoid is like a graph,
 and a groupoid of elements is like a covering space.) -/
+noncomputable
 instance actionGroupoidIsFree {G A : Type u} [Group G] [IsFreeGroup G] [MulAction G A] :
     IsFreeGroupoid (ActionCategory G A) where
   quiverGenerators :=
@@ -158,14 +157,14 @@ private def root' : G :=
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- A path in the tree gives a hom, by composition. -/
-def homOfPath : ∀ {a : G}, Path (root T) a → (root' T ⟶ a)
+noncomputable def homOfPath : ∀ {a : G}, Path (root T) a → (root' T ⟶ a)
   | _, Path.nil => 𝟙 _
   | _, Path.cons p f => homOfPath p ≫ Sum.recOn f.val (fun e => of e) fun e => inv (of e)
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- For every vertex `a`, there is a canonical hom from the root, given by the path in the tree. -/
-def treeHom (a : G) : root' T ⟶ a :=
+noncomputable def treeHom (a : G) : root' T ⟶ a :=
   homOfPath T default
 
 /-- Any path to `a` gives `treeHom T a`, since paths in the tree are unique. -/
@@ -183,7 +182,7 @@ theorem treeHom_root : treeHom T (root' T) = 𝟙 _ :=
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- Any hom in `G` can be made into a loop, by conjugating with `treeHom`s. -/
-def loopOfHom {a b : G} (p : a ⟶ b) : End (root' T) :=
+noncomputable def loopOfHom {a b : G} (p : a ⟶ b) : End (root' T) :=
   treeHom T a ≫ p ≫ inv (treeHom T b)
 
 set_option backward.isDefEq.respectTransparency false in
@@ -204,7 +203,7 @@ set_option backward.privateInPublic.warn false in
 /-- Since a hom gives a loop, any homomorphism from the vertex group at the root
 extends to a functor on the whole groupoid. -/
 @[simps]
-def functorOfMonoidHom {X} [Monoid X] (f : End (root' T) →* X) :
+noncomputable def functorOfMonoidHom {X} [Monoid X] (f : End (root' T) →* X) :
     G ⥤ CategoryTheory.SingleObj X where
   obj _ := ()
   map p := f (loopOfHom T p)

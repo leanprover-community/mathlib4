@@ -38,15 +38,13 @@ open scoped Real Topology FourierTransform RealInnerProductSpace
 
 open Complex hiding exp continuous_exp
 
-noncomputable section
-
 namespace GaussianFourier
 
 variable {b : ℂ}
 
 /-- The integral of the Gaussian function over the vertical edges of a rectangle
 with vertices at `(±T, 0)` and `(±T, c)`. -/
-def verticalIntegral (b : ℂ) (c T : ℝ) : ℂ :=
+noncomputable def verticalIntegral (b : ℂ) (c T : ℝ) : ℂ :=
   ∫ y : ℝ in (0 : ℝ)..c, I * (cexp (-b * (T + y * I) ^ 2) - cexp (-b * (T - y * I) ^ 2))
 
 /-- Explicit formula for the norm of the Gaussian function along the vertical

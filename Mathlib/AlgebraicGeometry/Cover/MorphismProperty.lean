@@ -28,8 +28,6 @@ immersions can be used to deduce these assumptions in the general case.
 @[expose] public section
 
 
-noncomputable section
-
 open TopologicalSpace CategoryTheory Opposite CategoryTheory.Limits
 
 universe v v₁ v₂ u
@@ -60,7 +58,7 @@ lemma Cover.exists_eq [JointlySurjective K] (𝒰 : X.Cover K) (x : X) :
   use i, y
 
 /-- A choice of an index `i` such that `x` is in the range of `𝒰.f i`. -/
-def Cover.idx [JointlySurjective K] (𝒰 : X.Cover K) (x : X) : 𝒰.I₀ :=
+noncomputable def Cover.idx [JointlySurjective K] (𝒰 : X.Cover K) (x : X) : 𝒰.I₀ :=
   (𝒰.exists_eq x).choose
 
 lemma Cover.covers [JointlySurjective K] (𝒰 : X.Cover K) (x : X) :
@@ -171,7 +169,7 @@ nonrec def Cover.add {X Y : Scheme.{u}} (𝒰 : X.Cover (precoverage P)) (f : Y 
     rintro (i | i) <;> simp [hf, 𝒰.map_prop]
 
 /-- The family of morphisms from the pullback cover to the original cover. -/
-def Cover.pullbackHom [P.IsStableUnderBaseChange] [IsJointlySurjectivePreserving P]
+noncomputable def Cover.pullbackHom [P.IsStableUnderBaseChange] [IsJointlySurjectivePreserving P]
     {X W : Scheme.{u}} (𝒰 : X.Cover (precoverage P)) (f : W ⟶ X) (i) [∀ x, HasPullback f (𝒰.f x)] :
     (𝒰.pullback₁ f).X i ⟶ 𝒰.X i :=
   pullback.snd f (𝒰.f i)
@@ -205,7 +203,7 @@ structure AffineCover (P : MorphismProperty Scheme.{u}) (S : Scheme.{u}) where
 
 /-- The cover associated to an affine cover. -/
 @[simps]
-def AffineCover.cover {X : Scheme.{u}} (𝒰 : X.AffineCover P) :
+noncomputable def AffineCover.cover {X : Scheme.{u}} (𝒰 : X.AffineCover P) :
     X.Cover (precoverage P) where
   I₀ := 𝒰.I₀
   X j := Spec (𝒰.X j)
@@ -218,7 +216,7 @@ def AffineCover.cover {X : Scheme.{u}} (𝒰 : X.AffineCover P) :
 
 /-- Any `v`-cover `𝒰` induces a `u`-cover indexed by the points of `X`. -/
 @[simps!]
-def Cover.ulift (𝒰 : Cover.{v} (precoverage P) X) : Cover.{u} (precoverage P) X where
+noncomputable def Cover.ulift (𝒰 : Cover.{v} (precoverage P) X) : Cover.{u} (precoverage P) X where
   I₀ := X
   X x := 𝒰.X (𝒰.idx x)
   f x := 𝒰.f _

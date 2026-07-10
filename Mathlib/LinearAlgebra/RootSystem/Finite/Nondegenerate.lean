@@ -49,8 +49,6 @@ Weyl group.
 
 @[expose] public section
 
-noncomputable section
-
 open Set Function
 open Module hiding reflection
 open Submodule (span)
@@ -353,7 +351,7 @@ section IsRootSystem
 variable [P.IsRootSystem]
 
 /-- The polarization map from weight space to coweight space as an equivalence. -/
-def PolarizationEquiv : M ≃ₗ[R] N :=
+noncomputable def PolarizationEquiv : M ≃ₗ[R] N :=
   have : IsReflexive R M := Module.IsReflexive.of_isPerfPair P.toLinearMap
   (P.toInvariantForm.form.toDual P.rootForm_nondegenerate).trans P.flip.toPerfPair.symm
 

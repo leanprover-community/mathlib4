@@ -52,8 +52,6 @@ needed.
 
 @[expose] public section
 
-noncomputable section
-
 open Bornology Function Set Topology Metric
 open scoped ENNReal NNReal
 
@@ -131,7 +129,7 @@ variable [FunLike F α β]
 open scoped Classical in
 /-- The ratio of a dilation `f`. If the ratio is undefined (i.e., the distance between any two
 points in `α` is either zero or infinity), then we choose one as the ratio. -/
-def ratio [DilationClass F α β] (f : F) : ℝ≥0 :=
+noncomputable def ratio [DilationClass F α β] (f : F) : ℝ≥0 :=
   if ∀ x y : α, edist x y = 0 ∨ edist x y = ⊤ then 1 else (DilationClass.edist_eq' f).choose
 
 theorem ratio_of_trivial [DilationClass F α β] (f : F)
@@ -353,7 +351,7 @@ theorem ratio_mul (f g : α →ᵈ α) : ratio (f * g) = ratio f * ratio g := by
 
 /-- `Dilation.ratio` as a monoid homomorphism from `α →ᵈ α` to `ℝ≥0`. -/
 @[simps]
-def ratioHom : (α →ᵈ α) →* ℝ≥0 := ⟨⟨ratio, ratio_one⟩, ratio_mul⟩
+noncomputable def ratioHom : (α →ᵈ α) →* ℝ≥0 := ⟨⟨ratio, ratio_one⟩, ratio_mul⟩
 
 @[simp]
 theorem ratio_pow (f : α →ᵈ α) (n : ℕ) : ratio (f ^ n) = ratio f ^ n :=

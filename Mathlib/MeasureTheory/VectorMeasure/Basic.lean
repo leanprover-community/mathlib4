@@ -46,8 +46,6 @@ vector measure, signed measure, complex measure
 @[expose] public section
 
 
-noncomputable section
-
 open NNReal ENNReal Filter
 
 open scoped Topology Function -- required for scoped `on` notation
@@ -406,7 +404,7 @@ variable {M : Type*} [AddCommMonoid M] [TopologicalSpace M] [MeasurableSpace β]
 open scoped Classical in
 /-- The Dirac vector measure with mass `v` at a point `x`. It gives mass `v` to measurable sets
 containing `x`, and `0` otherwise. -/
-def dirac (x : β) (v : M) : VectorMeasure β M where
+noncomputable def dirac (x : β) (v : M) : VectorMeasure β M where
   measureOf' s := if MeasurableSet s ∧ x ∈ s then v else 0
   empty' := by simp
   not_measurable' := by simp +contextual
@@ -442,7 +440,7 @@ namespace Measure
 
 open scoped Classical in
 /-- A finite measure coerced into a real function is a signed measure. -/
-def toSignedMeasure (μ : Measure α) [hμ : IsFiniteMeasure μ] : SignedMeasure α where
+noncomputable def toSignedMeasure (μ : Measure α) [hμ : IsFiniteMeasure μ] : SignedMeasure α where
   measureOf' s := if MeasurableSet s then μ.real s else 0
   empty' := by simp
   not_measurable' _ hi := if_neg hi
@@ -498,7 +496,7 @@ theorem toSignedMeasure_smul (μ : Measure α) [IsFiniteMeasure μ] (r : ℝ≥0
 
 open scoped Classical in
 /-- A measure is a vector measure over `ℝ≥0∞`. -/
-def toENNRealVectorMeasure (μ : Measure α) : VectorMeasure α ℝ≥0∞ where
+noncomputable def toENNRealVectorMeasure (μ : Measure α) : VectorMeasure α ℝ≥0∞ where
   measureOf' i := if MeasurableSet i then μ i else 0
   empty' := by simp
   not_measurable' _ hi := if_neg hi
@@ -543,7 +541,7 @@ open Measure
 section
 
 /-- A vector measure over `ℝ≥0∞` is a measure. -/
-def ennrealToMeasure {_ : MeasurableSpace α} (v : VectorMeasure α ℝ≥0∞) : Measure α :=
+noncomputable def ennrealToMeasure {_ : MeasurableSpace α} (v : VectorMeasure α ℝ≥0∞) : Measure α :=
   ofMeasurable (fun s _ => v s) v.empty fun _ hf₁ hf₂ => v.of_disjoint_iUnion hf₁ hf₂
 
 theorem ennrealToMeasure_apply {m : MeasurableSpace α} {v : VectorMeasure α ℝ≥0∞} {s : Set α}
@@ -569,7 +567,7 @@ theorem ennrealToMeasure_toENNRealVectorMeasure (μ : Measure α) :
 `MeasureTheory.VectorMeasure.ennrealToMeasure` and
 `MeasureTheory.Measure.toENNRealVectorMeasure`. -/
 @[simps]
-def equivMeasure [MeasurableSpace α] : VectorMeasure α ℝ≥0∞ ≃ Measure α where
+noncomputable def equivMeasure [MeasurableSpace α] : VectorMeasure α ℝ≥0∞ ≃ Measure α where
   toFun := ennrealToMeasure
   invFun := toENNRealVectorMeasure
   left_inv := toENNRealVectorMeasure_ennrealToMeasure
@@ -585,7 +583,7 @@ variable (v : VectorMeasure α M)
 
 open scoped Classical in
 /-- The pushforward of a vector measure along a function. -/
-def map (v : VectorMeasure α M) (f : α → β) : VectorMeasure β M :=
+noncomputable def map (v : VectorMeasure α M) (f : α → β) : VectorMeasure β M :=
   if hf : Measurable f then
     { measureOf' := fun s => if MeasurableSet s then v (f ⁻¹' s) else 0
       empty' := by simp
@@ -690,7 +688,7 @@ end
 
 open scoped Classical in
 /-- The restriction of a vector measure on some set. -/
-@[no_expose] def restrict (v : VectorMeasure α M) (i : Set α) : VectorMeasure α M :=
+@[no_expose] noncomputable def restrict (v : VectorMeasure α M) (i : Set α) : VectorMeasure α M :=
   if hi : MeasurableSet i then
     { measureOf' := fun s => if MeasurableSet s then v (s ∩ i) else 0
       empty' := by simp
@@ -789,6 +787,7 @@ theorem map_add (v w : VectorMeasure α M) (f : α → β) : (v + w).map f = v.m
 
 /-- `VectorMeasure.map` as an additive monoid homomorphism. -/
 @[simps]
+noncomputable
 def mapGm {α : Type*} [MeasurableSpace α] (f : α → β) : VectorMeasure α M →+ VectorMeasure β M where
   toFun v := v.map f
   map_zero' := map_zero f
@@ -804,7 +803,7 @@ theorem restrict_add (v w : VectorMeasure α M) (i : Set α) :
 
 /-- `VectorMeasure.restrict` as an additive monoid homomorphism. -/
 @[simps]
-def restrictGm {α : Type*} [MeasurableSpace α] (i : Set α) :
+noncomputable def restrictGm {α : Type*} [MeasurableSpace α] (i : Set α) :
     VectorMeasure α M →+ VectorMeasure α M where
   toFun v := v.restrict i
   map_zero' := restrict_zero
@@ -904,14 +903,14 @@ variable {R : Type*} [Semiring R] [Module R M] [ContinuousConstSMul R M] [Contin
 
 /-- `VectorMeasure.map` as a linear map. -/
 @[simps]
-def mapₗ (f : α → β) : VectorMeasure α M →ₗ[R] VectorMeasure β M where
+noncomputable def mapₗ (f : α → β) : VectorMeasure α M →ₗ[R] VectorMeasure β M where
   toFun v := v.map f
   map_add' _ _ := map_add _ _ f
   map_smul' _ _ := map_smul _
 
 /-- `VectorMeasure.restrict` as an additive monoid homomorphism. -/
 @[simps]
-def restrictₗ (i : Set α) : VectorMeasure α M →ₗ[R] VectorMeasure α M where
+noncomputable def restrictₗ (i : Set α) : VectorMeasure α M →ₗ[R] VectorMeasure α M where
   toFun v := v.restrict i
   map_add' _ _ := restrict_add _ _ i
   map_smul' _ _ := restrict_smul _
@@ -1297,7 +1296,7 @@ section Trim
 open scoped Classical in
 /-- Restriction of a vector measure onto a sub-σ-algebra. -/
 @[simps]
-def trim {m n : MeasurableSpace α} (v : VectorMeasure α M) (hle : m ≤ n) :
+noncomputable def trim {m n : MeasurableSpace α} (v : VectorMeasure α M) (hle : m ≤ n) :
     @VectorMeasure α m M _ _ :=
   @VectorMeasure.mk α m M _ _
     (fun i => if MeasurableSet[m] i then v i else 0)
@@ -1344,12 +1343,13 @@ open VectorMeasure
 open MeasureTheory
 
 /-- The underlying function for `SignedMeasure.toMeasureOfZeroLE`. -/
-def toMeasureOfZeroLE' (s : SignedMeasure α) (i : Set α) (hi : 0 ≤[i] s) (j : Set α)
+noncomputable def toMeasureOfZeroLE' (s : SignedMeasure α) (i : Set α) (hi : 0 ≤[i] s) (j : Set α)
     (hj : MeasurableSet j) : ℝ≥0∞ :=
   ((↑) : ℝ≥0 → ℝ≥0∞) (.mk (s.restrict i j) (le_trans (by simp) (hi j hj)))
 
 /-- Given a signed measure `s` and a positive measurable set `i`, `toMeasureOfZeroLE`
 provides the measure, mapping measurable sets `j` to `s (i ∩ j)`. -/
+noncomputable
 def toMeasureOfZeroLE (s : SignedMeasure α) (i : Set α) (hi₁ : MeasurableSet i) (hi₂ : 0 ≤[i] s) :
     Measure α := by
   refine Measure.ofMeasurable (s.toMeasureOfZeroLE' i hi₂) ?_ ?_
@@ -1385,6 +1385,7 @@ theorem toMeasureOfZeroLE_real_apply (hi : 0 ≤[i] s) (hi₁ : MeasurableSet i)
 
 /-- Given a signed measure `s` and a negative measurable set `i`, `toMeasureOfLEZero`
 provides the measure, mapping measurable sets `j` to `-s (i ∩ j)`. -/
+noncomputable
 def toMeasureOfLEZero (s : SignedMeasure α) (i : Set α) (hi₁ : MeasurableSet i) (hi₂ : s ≤[i] 0) :
     Measure α :=
   toMeasureOfZeroLE (-s) i hi₁ <| @neg_zero (VectorMeasure α ℝ) _ ▸ neg_le_neg _ _ hi₁ hi₂

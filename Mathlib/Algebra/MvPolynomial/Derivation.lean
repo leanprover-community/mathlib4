@@ -22,7 +22,7 @@ builds a derivation from its values on `X i`s and a linear equivalence
 
 namespace MvPolynomial
 
-noncomputable section
+section
 
 variable {σ R A : Type*} [CommSemiring R] [AddCommMonoid A] [Module R A]
   [Module (MvPolynomial σ R) A]
@@ -33,7 +33,7 @@ variable (R)
 
 /-- The derivation on `MvPolynomial σ R` that takes value `f i` on `X i`, as a linear map.
 Use `MvPolynomial.mkDerivation` instead. -/
-def mkDerivationₗ (f : σ → A) : MvPolynomial σ R →ₗ[R] A :=
+noncomputable def mkDerivationₗ (f : σ → A) : MvPolynomial σ R →ₗ[R] A :=
   Finsupp.lsum R (fun xs : σ →₀ ℕ =>
     (LinearMap.ringLmapEquivSelf R R A).symm <|
       xs.sum fun i k => monomial (xs - Finsupp.single i 1) (k : R) • f i)
@@ -109,7 +109,7 @@ theorem leibniz_iff_X (D : MvPolynomial σ R →ₗ[R] A) (h₁ : D 1 = 0) :
 variable (R)
 
 /-- The derivation on `MvPolynomial σ R` that takes value `f i` on `X i`. -/
-def mkDerivation (f : σ → A) : Derivation R (MvPolynomial σ R) A where
+noncomputable def mkDerivation (f : σ → A) : Derivation R (MvPolynomial σ R) A where
   toLinearMap := mkDerivationₗ R f
   map_one_eq_zero' := mkDerivationₗ_C _ 1
   leibniz' :=
@@ -134,7 +134,7 @@ theorem mkDerivation_monomial (f : σ → A) (s : σ →₀ ℕ) (r : R) :
   mkDerivationₗ_monomial f s r
 
 /-- `MvPolynomial.mkDerivation` as a linear equivalence. -/
-def mkDerivationEquiv : (σ → A) ≃ₗ[R] Derivation R (MvPolynomial σ R) A :=
+noncomputable def mkDerivationEquiv : (σ → A) ≃ₗ[R] Derivation R (MvPolynomial σ R) A :=
   LinearEquiv.symm <|
     { invFun := mkDerivation R
       toFun := fun D i => D (X i)

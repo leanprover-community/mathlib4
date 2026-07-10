@@ -18,8 +18,6 @@ and pullbacks/pushouts over a zero object are products/coproducts.
 @[expose] public section
 
 
-noncomputable section
-
 open CategoryTheory
 
 variable {C : Type*} [Category* C]
@@ -31,11 +29,11 @@ variable [HasZeroObject C] [HasZeroMorphisms C]
 open ZeroObject
 
 /-- The limit cone for the product with a zero object. -/
-def binaryFanZeroLeft (X : C) : BinaryFan (0 : C) X :=
+noncomputable def binaryFanZeroLeft (X : C) : BinaryFan (0 : C) X :=
   BinaryFan.mk 0 (𝟙 X)
 
 /-- The limit cone for the product with a zero object is limiting. -/
-def binaryFanZeroLeftIsLimit (X : C) : IsLimit (binaryFanZeroLeft X) :=
+noncomputable def binaryFanZeroLeftIsLimit (X : C) : IsLimit (binaryFanZeroLeft X) :=
   BinaryFan.isLimitMk (fun s => BinaryFan.snd s) (by cat_disch) (by simp)
     (fun s m _ h₂ => by simpa using h₂)
 
@@ -43,7 +41,7 @@ instance hasBinaryProduct_zero_left (X : C) : HasBinaryProduct (0 : C) X :=
   HasLimit.mk ⟨_, binaryFanZeroLeftIsLimit X⟩
 
 /-- A zero object is a left unit for categorical product. -/
-def zeroProdIso (X : C) : (0 : C) ⨯ X ≅ X :=
+noncomputable def zeroProdIso (X : C) : (0 : C) ⨯ X ≅ X :=
   limit.isoLimitCone ⟨_, binaryFanZeroLeftIsLimit X⟩
 
 @[simp]
@@ -57,11 +55,11 @@ theorem zeroProdIso_inv_snd (X : C) : (zeroProdIso X).inv ≫ prod.snd = 𝟙 X 
   simp
 
 /-- The limit cone for the product with a zero object. -/
-def binaryFanZeroRight (X : C) : BinaryFan X (0 : C) :=
+noncomputable def binaryFanZeroRight (X : C) : BinaryFan X (0 : C) :=
   BinaryFan.mk (𝟙 X) 0
 
 /-- The limit cone for the product with a zero object is limiting. -/
-def binaryFanZeroRightIsLimit (X : C) : IsLimit (binaryFanZeroRight X) :=
+noncomputable def binaryFanZeroRightIsLimit (X : C) : IsLimit (binaryFanZeroRight X) :=
   BinaryFan.isLimitMk (fun s => BinaryFan.fst s) (by simp) (by cat_disch)
     (fun s m h₁ _ => by simpa using h₁)
 
@@ -69,7 +67,7 @@ instance hasBinaryProduct_zero_right (X : C) : HasBinaryProduct X (0 : C) :=
   HasLimit.mk ⟨_, binaryFanZeroRightIsLimit X⟩
 
 /-- A zero object is a right unit for categorical product. -/
-def prodZeroIso (X : C) : X ⨯ (0 : C) ≅ X :=
+noncomputable def prodZeroIso (X : C) : X ⨯ (0 : C) ≅ X :=
   limit.isoLimitCone ⟨_, binaryFanZeroRightIsLimit X⟩
 
 @[simp]
@@ -83,11 +81,11 @@ theorem prodZeroIso_iso_inv_snd (X : C) : (prodZeroIso X).inv ≫ prod.fst = �
   simp
 
 /-- The colimit cocone for the coproduct with a zero object. -/
-def binaryCofanZeroLeft (X : C) : BinaryCofan (0 : C) X :=
+noncomputable def binaryCofanZeroLeft (X : C) : BinaryCofan (0 : C) X :=
   BinaryCofan.mk 0 (𝟙 X)
 
 /-- The colimit cocone for the coproduct with a zero object is colimiting. -/
-def binaryCofanZeroLeftIsColimit (X : C) : IsColimit (binaryCofanZeroLeft X) :=
+noncomputable def binaryCofanZeroLeftIsColimit (X : C) : IsColimit (binaryCofanZeroLeft X) :=
   BinaryCofan.isColimitMk (fun s => BinaryCofan.inr s) (by cat_disch) (by simp)
     (fun s m _ h₂ => by simpa using h₂)
 
@@ -95,7 +93,7 @@ instance hasBinaryCoproduct_zero_left (X : C) : HasBinaryCoproduct (0 : C) X :=
   HasColimit.mk ⟨_, binaryCofanZeroLeftIsColimit X⟩
 
 /-- A zero object is a left unit for categorical coproduct. -/
-def zeroCoprodIso (X : C) : (0 : C) ⨿ X ≅ X :=
+noncomputable def zeroCoprodIso (X : C) : (0 : C) ⨿ X ≅ X :=
   colimit.isoColimitCocone ⟨_, binaryCofanZeroLeftIsColimit X⟩
 
 set_option backward.isDefEq.respectTransparency false in
@@ -109,11 +107,11 @@ theorem zeroCoprodIso_inv (X : C) : (zeroCoprodIso X).inv = coprod.inr :=
   rfl
 
 /-- The colimit cocone for the coproduct with a zero object. -/
-def binaryCofanZeroRight (X : C) : BinaryCofan X (0 : C) :=
+noncomputable def binaryCofanZeroRight (X : C) : BinaryCofan X (0 : C) :=
   BinaryCofan.mk (𝟙 X) 0
 
 /-- The colimit cocone for the coproduct with a zero object is colimiting. -/
-def binaryCofanZeroRightIsColimit (X : C) : IsColimit (binaryCofanZeroRight X) :=
+noncomputable def binaryCofanZeroRightIsColimit (X : C) : IsColimit (binaryCofanZeroRight X) :=
   BinaryCofan.isColimitMk (fun s => BinaryCofan.inl s) (by simp) (by cat_disch)
     (fun s m h₁ _ => by simpa using h₁)
 
@@ -121,7 +119,7 @@ instance hasBinaryCoproduct_zero_right (X : C) : HasBinaryCoproduct X (0 : C) :=
   HasColimit.mk ⟨_, binaryCofanZeroRightIsColimit X⟩
 
 /-- A zero object is a right unit for categorical coproduct. -/
-def coprodZeroIso (X : C) : X ⨿ (0 : C) ≅ X :=
+noncomputable def coprodZeroIso (X : C) : X ⨿ (0 : C) ≅ X :=
   colimit.isoColimitCocone ⟨_, binaryCofanZeroRightIsColimit X⟩
 
 set_option backward.isDefEq.respectTransparency false in
@@ -140,7 +138,7 @@ instance hasPullback_over_zero (X Y : C) [HasBinaryProduct X Y] :
     ⟨_, isPullbackOfIsTerminalIsProduct _ _ _ _ HasZeroObject.zeroIsTerminal (prodIsProd X Y)⟩
 
 /-- The pullback over the zero object is the product. -/
-def pullbackZeroZeroIso (X Y : C) [HasBinaryProduct X Y] :
+noncomputable def pullbackZeroZeroIso (X Y : C) [HasBinaryProduct X Y] :
     pullback (0 : X ⟶ 0) (0 : Y ⟶ 0) ≅ X ⨯ Y :=
   limit.isoLimitCone
     ⟨_, isPullbackOfIsTerminalIsProduct _ _ _ _ HasZeroObject.zeroIsTerminal (prodIsProd X Y)⟩
@@ -173,7 +171,7 @@ instance hasPushout_over_zero (X Y : C) [HasBinaryCoproduct X Y] :
     ⟨_, isPushoutOfIsInitialIsCoproduct _ _ _ _ HasZeroObject.zeroIsInitial (coprodIsCoprod X Y)⟩
 
 /-- The pushout over the zero object is the coproduct. -/
-def pushoutZeroZeroIso (X Y : C) [HasBinaryCoproduct X Y] :
+noncomputable def pushoutZeroZeroIso (X Y : C) [HasBinaryCoproduct X Y] :
     pushout (0 : 0 ⟶ X) (0 : 0 ⟶ Y) ≅ X ⨿ Y :=
   colimit.isoColimitCocone
     ⟨_, isPushoutOfIsInitialIsCoproduct _ _ _ _ HasZeroObject.zeroIsInitial (coprodIsCoprod X Y)⟩

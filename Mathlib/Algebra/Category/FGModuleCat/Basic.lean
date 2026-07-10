@@ -35,8 +35,6 @@ and then as a right-rigid monoidal category.
 @[expose] public section
 
 
-noncomputable section
-
 open CategoryTheory Module
 
 universe v w u
@@ -211,7 +209,7 @@ def FGModuleCatDual : FGModuleCat K :=
 open CategoryTheory.MonoidalCategory
 
 /-- The coevaluation map is defined in `LinearAlgebra.coevaluation`. -/
-def FGModuleCatCoevaluation : 𝟙_ (FGModuleCat K) ⟶ V ⊗ FGModuleCatDual K V :=
+noncomputable def FGModuleCatCoevaluation : 𝟙_ (FGModuleCat K) ⟶ V ⊗ FGModuleCatDual K V :=
   ConcreteCategory.ofHom <| coevaluation K V
 
 theorem FGModuleCatCoevaluation_apply_one :
@@ -256,16 +254,16 @@ private theorem evaluation_coevaluation :
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
-instance exactPairing : ExactPairing V (FGModuleCatDual K V) where
+noncomputable instance exactPairing : ExactPairing V (FGModuleCatDual K V) where
   coevaluation' := FGModuleCatCoevaluation K V
   evaluation' := FGModuleCatEvaluation K V
   coevaluation_evaluation' := coevaluation_evaluation K V
   evaluation_coevaluation' := evaluation_coevaluation K V
 
-instance rightDual : HasRightDual V :=
+noncomputable instance rightDual : HasRightDual V :=
   ⟨FGModuleCatDual K V⟩
 
-instance rightRigidCategory : RightRigidCategory (FGModuleCat K) where
+noncomputable instance rightRigidCategory : RightRigidCategory (FGModuleCat K) where
 
 end Field
 

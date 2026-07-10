@@ -80,7 +80,7 @@ variable {R : Type*} [Semiring R] {E E' F F' G : Type*}
   [TopologicalSpace F] [AddCommMonoid F] [Module R F]
   [TopologicalSpace F'] [AddCommMonoid F'] [Module R F']
 
-noncomputable section
+section
 
 /-- A continuous linear map admits a left inverse which is a continuous linear map itself. -/
 @[expose] protected def ContinuousLinearMap.HasLeftInverse (f : E →L[R] F) : Prop :=
@@ -97,7 +97,7 @@ namespace HasLeftInverse
 variable {f : E →L[R] F}
 
 /-- Choice of continuous left inverse for `f : F →L[R] E`, given that such an inverse exists. -/
-def leftInverse (h : f.HasLeftInverse) : F →L[R] E := Classical.choose h
+noncomputable def leftInverse (h : f.HasLeftInverse) : F →L[R] E := Classical.choose h
 
 lemma leftInverse_leftInverse (h : f.HasLeftInverse) : LeftInverse h.leftInverse f :=
   Classical.choose_spec h
@@ -227,7 +227,7 @@ lemma isClosed_range (hf : f.HasLeftInverse) [IsTopologicalAddGroup F] :
   exact ((f.comp hf.leftInverse) - (ContinuousLinearMap.id R F)).isClosed_ker
 
 /-- Choice of a closed complement of `range f` -/
-def complement (h : f.HasLeftInverse) : Submodule R F :=
+noncomputable def complement (h : f.HasLeftInverse) : Submodule R F :=
   h.closedComplemented_range.complement
 
 lemma isClosed_complement (h : f.HasLeftInverse) : IsClosed (X := F) h.complement :=
@@ -268,7 +268,7 @@ namespace HasRightInverse
 variable {f : E →L[R] F}
 
 /-- Choice of continuous right inverse for `f : F →L[R] E`, given that such an inverse exists. -/
-def rightInverse (h : f.HasRightInverse) : F →L[R] E := Classical.choose h
+noncomputable def rightInverse (h : f.HasRightInverse) : F →L[R] E := Classical.choose h
 
 lemma rightInverse_rightInverse (h : f.HasRightInverse) : RightInverse h.rightInverse f :=
   Classical.choose_spec h

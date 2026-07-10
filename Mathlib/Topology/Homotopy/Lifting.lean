@@ -26,8 +26,6 @@ public import Mathlib.Topology.UnitInterval
   arbitrary point).
 -/
 
-noncomputable section
-
 @[expose] public section
 
 open Function Topology unitInterval
@@ -256,7 +254,7 @@ theorem exists_path_lifts : ∃ Γ : C(I, E), p ∘ Γ = γ ∧ Γ 0 = e := by
   · dsimp only; rwa [if_pos (t_0 ▸ t_mono n.zero_le)]
 
 /-- The lift of a path to a covering space given a lift of the left endpoint. -/
-def liftPath : C(I, E) := (cov.exists_path_lifts γ e γ_0).choose
+noncomputable def liftPath : C(I, E) := (cov.exists_path_lifts γ e γ_0).choose
 
 lemma liftPath_lifts : p ∘ cov.liftPath γ e γ_0 = γ := (cov.exists_path_lifts γ e γ_0).choose_spec.1
 lemma liftPath_zero : cov.liftPath γ e γ_0 0 = e := (cov.exists_path_lifts γ e γ_0).choose_spec.2
@@ -296,7 +294,7 @@ variable (H : C(I × A, X)) (f : C(A, E)) (H_0 : ∀ a, H (0, a) = p (f a))
   the homotopy lifting property for covering maps.
   In other words, a covering map is a Hurewicz fibration.
   Proposition 1.30 of [hatcher02]. -/
-@[simps] def liftHomotopy : C(I × A, E) where
+@[simps] noncomputable def liftHomotopy : C(I × A, E) where
   toFun ta := cov.liftPath (H.comp <| (ContinuousMap.id I).prodMk <| .const I ta.2)
     (f ta.2) (H_0 ta.2) ta.1
   continuous_toFun := cov.isLocalHomeomorph.continuous_lift cov.isSeparatedMap H
@@ -328,7 +326,7 @@ variable {f₀ f₁ : C(A, X)} {S : Set A} (F : f₀.HomotopyRel f₁ S)
 open ContinuousMap in
 /-- The lift to a covering space of a homotopy between two continuous maps relative to a set
 given compatible lifts of the continuous maps. -/
-def liftHomotopyRel [PreconnectedSpace A]
+noncomputable def liftHomotopyRel [PreconnectedSpace A]
     {f₀' f₁' : C(A, E)} (he : ∃ a ∈ S, f₀' a = f₁' a)
     (h₀ : p ∘ f₀' = f₀) (h₁ : p ∘ f₁' = f₁) : f₀'.HomotopyRel f₁' S :=
   have F_0 : ∀ a, F (0, a) = p (f₀' a) := fun a ↦ (F.apply_zero a).trans (congr_fun h₀ a).symm
@@ -373,14 +371,14 @@ theorem liftPath_apply_one_eq_of_homotopicRel {γ₀ γ₁ : C(I, X)}
 /-- The monodromy of a covering map `p : E → X`, which sends a lift of the starting point of a
   path in `X` to the endpoint of the lifted path in `E`. It only depends on the homotopy class
   of the path. -/
-def monodromy {x y : X} (γ : Path.Homotopic.Quotient x y) :
+noncomputable def monodromy {x y : X} (γ : Path.Homotopic.Quotient x y) :
     p ⁻¹' {x} → p ⁻¹' {y} :=
   fun e ↦ γ.lift (fun γ : Path x y ↦ ⟨cov.liftPath γ e (γ.source.trans e.2.symm) 1,
       congr($(cov.liftPath_lifts ..) 1).trans γ.target⟩)
     fun _ _ h ↦ Subtype.ext (cov.liftPath_apply_one_eq_of_homotopicRel h ..)
 
 /-- Lift a homotopy class of paths to a covering space. -/
-def liftPathQuotient {x y : X} (γ : Path.Homotopic.Quotient x y) (e : p ⁻¹' {x}) :
+noncomputable def liftPathQuotient {x y : X} (γ : Path.Homotopic.Quotient x y) (e : p ⁻¹' {x}) :
     Path.Homotopic.Quotient e.1 (cov.monodromy γ e) :=
   have he (γ : Path x y) : γ 0 = p (e : E) := by aesop
   let g (γ : Path x y) : Path.Homotopic.Quotient (e : E) (cov.liftPath γ (e : E) (he γ) 1) :=
@@ -422,14 +420,14 @@ theorem monodromy_trans_apply {x y z : X}
   exact Subtype.ext (congr($(cov.liftPath_trans e.2.symm ..) 1).trans (Path.target _))
 
 /-- The monodromy action of the fundamental group at `x` on the fiber over `x`. -/
-@[reducible] def fundamentalGroupMulAction (x : X) :
+@[reducible] noncomputable def fundamentalGroupMulAction (x : X) :
     MulAction (FundamentalGroup X x) (p ⁻¹' {x}) :=
   { smul := cov.monodromy (x := x) (y := x)
     mul_smul _ _ _ := cov.monodromy_trans_apply ..
     one_smul := congr_fun cov.monodromy_refl }
 
 /-- The monodromy action of the fundamental group at `x` on the fiber over `x`. -/
-def monodromyPerm (x : X) : FundamentalGroup X x →* Equiv.Perm (p ⁻¹' {x}) :=
+noncomputable def monodromyPerm (x : X) : FundamentalGroup X x →* Equiv.Perm (p ⁻¹' {x}) :=
   letI := cov.fundamentalGroupMulAction x
   MulAction.toPermHom _ _
 
@@ -439,7 +437,7 @@ open CategoryTheory
 
 /-- Monodromy of a covering map as a functor. Definition 2.1 in
 https://ncatlab.org/nlab/show/monodromy. -/
-@[simps] def monodromyFunctor : FundamentalGroupoid X ⥤ Type _ where
+@[simps] noncomputable def monodromyFunctor : FundamentalGroupoid X ⥤ Type _ where
   obj x := p ⁻¹' {x.as}
   map f := ↾(cov.monodromy f)
   map_id _ := by ext x : 3; simpa using! congr_fun cov.monodromy_refl x
@@ -614,7 +612,7 @@ open MulOpposite in
 `G`-action on `f ⁻¹' {x}` corresponds to left multiplication. The monodromy action commutes
 with the `G`-action, so each monodromy must corresponds must correspond to a right multiplication.
 -/
-def fundamentalGroupToMulOpposite : FundamentalGroup X x →* Gᵐᵒᵖ where
+noncomputable def fundamentalGroupToMulOpposite : FundamentalGroup X x →* Gᵐᵒᵖ where
   toFun γ := op <| hp.fiberEquivGroup e (hp.isCoveringMap.monodromy γ e)
   map_one' := by rw [FundamentalGroup.one_def, IsCoveringMap.monodromy_refl]; simp
   map_mul' γ γ' := by
@@ -674,7 +672,7 @@ lemma fundamentalGroupToMulOpposite_injective [SimplyConnectedSpace E] :
 
 /-- The fundamental group of the base of simply-connected covering map is contravariantly
 equivalent to the group of the covering map. -/
-def fundamentalGroupEquiv [SimplyConnectedSpace E] :
+noncomputable def fundamentalGroupEquiv [SimplyConnectedSpace E] :
     FundamentalGroup X x ≃* Gᵐᵒᵖ :=
   MulEquiv.ofBijective (hp.fundamentalGroupToMulOpposite e)
     ⟨hp.fundamentalGroupToMulOpposite_injective e,
@@ -724,7 +722,7 @@ theorem monodromyPerm_injective [SimplyConnectedSpace E] :
 `G`-action on `f ⁻¹' {x}` corresponds to left multiplication. The monodromy action commutes
 with the `G`-action, so each monodromy must corresponds must correspond to a right multiplication.
 -/
-def fundamentalGroupToMulOpposite : FundamentalGroup X x →* (Multiplicative G)ᵐᵒᵖ :=
+noncomputable def fundamentalGroupToMulOpposite : FundamentalGroup X x →* (Multiplicative G)ᵐᵒᵖ :=
   hp.toMultiplicative.fundamentalGroupToMulOpposite e
 
 variable {e} in
@@ -756,7 +754,7 @@ lemma fundamentalGroupToMulOpposite_injective [SimplyConnectedSpace E] :
 
 /-- The fundamental group of the base of simply-connected covering map is contravariantly
 equivalent to the group of the covering map. -/
-def fundamentalGroupEquiv [SimplyConnectedSpace E] :
+noncomputable def fundamentalGroupEquiv [SimplyConnectedSpace E] :
     FundamentalGroup X x ≃* (Multiplicative G)ᵐᵒᵖ :=
   hp.toMultiplicative.fundamentalGroupEquiv e
 

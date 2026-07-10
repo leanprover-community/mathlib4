@@ -25,8 +25,6 @@ In this file, we define the Karoubi envelope `Karoubi C` of a category `C`.
 
 @[expose] public section
 
-noncomputable section
-
 open CategoryTheory.Category CategoryTheory.Preadditive CategoryTheory.Limits
 
 namespace CategoryTheory
@@ -233,7 +231,7 @@ instance [IsIdempotentComplete C] : (toKaroubi C).EssSurj :=
 instance toKaroubi_isEquivalence [IsIdempotentComplete C] : (toKaroubi C).IsEquivalence where
 
 /-- The equivalence `C ≅ Karoubi C` when `C` is idempotent complete. -/
-def toKaroubiEquivalence [IsIdempotentComplete C] : C ≌ Karoubi C :=
+noncomputable def toKaroubiEquivalence [IsIdempotentComplete C] : C ≌ Karoubi C :=
   (toKaroubi C).asEquivalence
 
 instance toKaroubiEquivalence_functor_additive [Preadditive C] [IsIdempotentComplete C] :

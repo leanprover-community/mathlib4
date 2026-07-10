@@ -31,8 +31,6 @@ given by substitution of the generating variable to an element of strictly posit
 
 open Finset Function
 
-noncomputable section
-
 variable {Γ Γ' R V α β σ : Type*}
 
 namespace HahnSeries
@@ -48,7 +46,7 @@ variable [CommRing V] [Algebra R V]
 /-- A summable family given by scalar multiples of powers of a positive order Hahn series.
 
 The scalar multiples are given by the coefficients of a power series. -/
-abbrev powerSeriesFamily (x : V⟦Γ⟧) (f : PowerSeries R) : SummableFamily Γ V ℕ :=
+noncomputable abbrev powerSeriesFamily (x : V⟦Γ⟧) (f : PowerSeries R) : SummableFamily Γ V ℕ :=
   smulFamily (fun n => f.coeff n) (powers x)
 
 theorem powerSeriesFamily_of_not_orderTop_pos {x : V⟦Γ⟧} (hx : ¬ 0 < x.orderTop)
@@ -163,7 +161,7 @@ variable [AddCommMonoid Γ] [LinearOrder Γ] [IsOrderedCancelAddMonoid Γ]
 /-- The `R`-algebra homomorphism from `R⟦X⟧` to `R⟦Γ⟧` given by sending the power series
 variable `X` to a positive order element `x` and extending to infinite sums. -/
 @[simps]
-def heval : PowerSeries R →ₐ[R] R⟦Γ⟧ where
+noncomputable def heval : PowerSeries R →ₐ[R] R⟦Γ⟧ where
   toFun f := (powerSeriesFamily x f).hsum
   map_one' := by
     simp only [hsum, smulFamily_toFun, coeff_one, powers_toFun, ite_smul, one_smul, zero_smul]

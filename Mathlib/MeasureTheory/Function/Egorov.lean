@@ -25,8 +25,6 @@ convergence in measure.
 @[expose] public section
 
 
-noncomputable section
-
 open MeasureTheory NNReal ENNReal Topology
 
 namespace MeasureTheory
@@ -106,7 +104,7 @@ theorem exists_notConvergentSeq_lt (hε : 0 < ε)
 `ε * 2⁻¹ ^ n`.
 
 This definition is useful for Egorov's theorem. -/
-def notConvergentSeqLTIndex (hε : 0 < ε)
+noncomputable def notConvergentSeqLTIndex (hε : 0 < ε)
     (hf : ∀ n, Measurable (fun a ↦ edist (f n a) (g a)))
     (hsm : MeasurableSet s) (hs : μ s ≠ ∞)
     (hfg : ∀ᵐ x ∂μ, x ∈ s → Tendsto (fun n => f n x) atTop (𝓝 (g x))) (n : ℕ) : ι :=

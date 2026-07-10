@@ -37,8 +37,6 @@ true in more general settings.
 
 universe v₁ v₂ u₁ u₂
 
-noncomputable section
-
 open CategoryTheory Limits Preadditive
 
 variable {C : Type u₁} [Category.{v₁} C] [Abelian C]
@@ -116,7 +114,7 @@ theorem exact_iff_of_forks {cg : KernelFork S.g} (hg : IsLimit cg) {cf : Cokerne
 variable {S}
 
 /-- If `(f, g)` is exact, then `Abelian.image.ι S.f` is a kernel of `S.g`. -/
-def Exact.isLimitImage (h : S.Exact) :
+noncomputable def Exact.isLimitImage (h : S.Exact) :
     IsLimit (KernelFork.ofι (Abelian.image.ι S.f)
       (Abelian.image_ι_comp_eq_zero S.zero) : KernelFork S.g) := by
   rw [exact_iff_kernel_ι_comp_cokernel_π_zero] at h
@@ -126,13 +124,13 @@ def Exact.isLimitImage (h : S.Exact) :
     (fun _ _ _ hm => by rw [← cancel_mono (Abelian.image.ι S.f), hm, kernel.lift_ι])
 
 /-- If `(f, g)` is exact, then `image.ι f` is a kernel of `g`. -/
-def Exact.isLimitImage' (h : S.Exact) :
+noncomputable def Exact.isLimitImage' (h : S.Exact) :
     IsLimit (KernelFork.ofι (Limits.image.ι S.f)
       (image_ι_comp_eq_zero S.zero) : KernelFork S.g) :=
   IsKernel.isoKernel _ _ h.isLimitImage (Abelian.imageIsoImage S.f).symm <| IsImage.lift_fac _ _
 
 /-- If `(f, g)` is exact, then `Abelian.coimage.π g` is a cokernel of `f`. -/
-def Exact.isColimitCoimage (h : S.Exact) :
+noncomputable def Exact.isColimitCoimage (h : S.Exact) :
     IsColimit
       (CokernelCofork.ofπ (Abelian.coimage.π S.g) (Abelian.comp_coimage_π_eq_zero S.zero) :
         CokernelCofork S.f) := by
@@ -147,7 +145,7 @@ def Exact.isColimitCoimage (h : S.Exact) :
 
 set_option backward.isDefEq.respectTransparency false in
 /-- If `(f, g)` is exact, then `factorThruImage g` is a cokernel of `f`. -/
-def Exact.isColimitImage (h : S.Exact) :
+noncomputable def Exact.isColimitImage (h : S.Exact) :
     IsColimit (CokernelCofork.ofπ (Limits.factorThruImage S.g)
         (comp_factorThruImage_eq_zero S.zero)) :=
   IsCokernel.cokernelIso _ _ h.isColimitCoimage (Abelian.coimageIsoImage' S.g) <|

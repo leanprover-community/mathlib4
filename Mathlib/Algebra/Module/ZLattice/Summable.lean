@@ -25,8 +25,6 @@ We show that `∑ z ∈ L, ‖z - x‖ʳ` is convergent for `r < -d`.
 
 @[expose] public section
 
-noncomputable section
-
 open Module
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
@@ -70,7 +68,7 @@ Given a basis of a (possibly not full rank) `ℤ`-lattice, there exists a `ε > 
 `|b.repr x i| < n` for all `‖x‖ < n * ε` (i.e. `b.repr x i = O(x)` depending only on `b`).
 This is an arbitrary choice of such an `ε`.
 -/
-def normBound {ι : Type*} (b : Basis ι ℤ L) : ℝ :=
+noncomputable def normBound {ι : Type*} (b : Basis ι ℤ L) : ℝ :=
   (exists_forall_abs_repr_le_norm b).choose
 
 lemma normBound_pos {ι : Type*} (b : Basis ι ℤ L) : 0 < normBound b :=
@@ -211,7 +209,7 @@ Let `L` be a lattice with (possibly non-full) rank `d`, and `r : ℝ` such that 
 Then `∑ z ∈ L, ‖z‖⁻ʳ ≤ A⁻ʳ * ∑ k : ℕ, kᵈ⁻ʳ⁻¹` for some `A > 0` depending only on `L`.
 This is an arbitrary choice of `A`. See `ZLattice.tsum_norm_rpow_le`.
 -/
-def tsumNormRPowBound : ℝ :=
+noncomputable def tsumNormRPowBound : ℝ :=
   (exists_finsetSum_norm_rpow_le_tsum L).choose
 
 lemma tsumNormRPowBound_pos : 0 < tsumNormRPowBound L :=

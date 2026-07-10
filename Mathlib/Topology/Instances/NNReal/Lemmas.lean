@@ -37,8 +37,6 @@ a few of which rely on the fact that subtraction is continuous.
 
 @[expose] public section
 
-noncomputable section
-
 open Filter Metric Set TopologicalSpace Topology
 
 variable {ι : Sort*} {n : ℕ}
@@ -220,7 +218,7 @@ nonrec theorem tendsto_tsum_compl_atTop_zero {α : Type*} (f : α → ℝ≥0) :
   exact tendsto_tsum_compl_atTop_zero fun a : α => (f a : ℝ)
 
 /-- `x ↦ x ^ n` as an order isomorphism of `ℝ≥0`. -/
-def powOrderIso (n : ℕ) (hn : n ≠ 0) : ℝ≥0 ≃o ℝ≥0 :=
+noncomputable def powOrderIso (n : ℕ) (hn : n ≠ 0) : ℝ≥0 ≃o ℝ≥0 :=
   StrictMono.orderIsoOfSurjective (fun x ↦ x ^ n) (fun x y h =>
       pow_left_strictMonoOn₀ hn (zero_le (a := x)) (zero_le (a := y)) h) <|
     (continuous_id.pow _).surjective (tendsto_pow_atTop hn) <| by
@@ -266,7 +264,7 @@ attribute [simp] ENNReal.top_pow
 /-- `x ↦ x ^ n` as an order isomorphism of `ℝ≥0∞`.
 
 See also `ENNReal.orderIsoRpow`. -/
-def powOrderIso (n : ℕ) (hn : n ≠ 0) : ℝ≥0∞ ≃o ℝ≥0∞ :=
+noncomputable def powOrderIso (n : ℕ) (hn : n ≠ 0) : ℝ≥0∞ ≃o ℝ≥0∞ :=
   (NNReal.powOrderIso n hn).withTopCongr.copy (· ^ n) _
     (by cases n; (· cases hn rfl); · ext (_ | _) <;> rfl) rfl
 

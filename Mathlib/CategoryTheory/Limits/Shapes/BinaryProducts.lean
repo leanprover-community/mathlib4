@@ -667,7 +667,7 @@ noncomputable def coprod.map {W X Y Z : C} [HasBinaryCoproduct W X] [HasBinaryCo
     (f : W ⟶ Y) (g : X ⟶ Z) : W ⨿ X ⟶ Y ⨿ Z :=
   colimMap (mapPair f g)
 
-noncomputable section ProdLemmas
+section ProdLemmas
 
 set_option backward.isDefEq.respectTransparency false in
 -- Making the reassoc version of this a simp lemma seems to be more harmful than helpful.
@@ -736,6 +736,7 @@ theorem prod.map_id_comp {X Y Z W : C} (f : X ⟶ Y) (g : Y ⟶ Z) [HasBinaryPro
 /-- If the products `W ⨯ X` and `Y ⨯ Z` exist, then every pair of isomorphisms `f : W ≅ Y` and
 `g : X ≅ Z` induces an isomorphism `prod.mapIso f g : W ⨯ X ≅ Y ⨯ Z`. -/
 @[simps]
+noncomputable
 def prod.mapIso {W X Y Z : C} [HasBinaryProduct W X] [HasBinaryProduct Y Z] (f : W ≅ Y)
     (g : X ≅ Z) : W ⨯ X ≅ Y ⨯ Z where
   hom := prod.map f.hom g.hom
@@ -773,7 +774,7 @@ instance {X : C} [HasBinaryProduct X X] : IsSplitMono (diag X) :=
 
 end ProdLemmas
 
-noncomputable section CoprodLemmas
+section CoprodLemmas
 
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc, simp]
@@ -845,6 +846,7 @@ theorem coprod.map_id_comp {X Y Z W : C} (f : X ⟶ Y) (g : Y ⟶ Z) [HasBinaryC
 /-- If the coproducts `W ⨿ X` and `Y ⨿ Z` exist, then every pair of isomorphisms `f : W ≅ Y` and
 `g : W ≅ Z` induces an isomorphism `coprod.mapIso f g : W ⨿ X ≅ Y ⨿ Z`. -/
 @[simps]
+noncomputable
 def coprod.mapIso {W X Y Z : C} [HasBinaryCoproduct W X] [HasBinaryCoproduct Y Z] (f : W ≅ Y)
     (g : X ≅ Z) : W ⨿ X ≅ Y ⨿ Z where
   hom := coprod.map f.hom g.hom
@@ -903,13 +905,14 @@ theorem hasBinaryCoproducts_of_hasColimit_pair [∀ {X Y : C}, HasColimit (pair 
     HasBinaryCoproducts C :=
   { has_colimit := fun F => hasColimit_of_iso (diagramIsoPair F) }
 
-noncomputable section
+section
 
 variable {C}
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The braiding isomorphism which swaps a binary product. -/
 @[simps]
+noncomputable
 def prod.braiding (P Q : C) [HasBinaryProduct P Q] [HasBinaryProduct Q P] : P ⨯ Q ≅ Q ⨯ P where
   hom := prod.lift prod.snd prod.fst
   inv := prod.lift prod.snd prod.fst
@@ -933,7 +936,7 @@ theorem prod.symmetry (P Q : C) [HasBinaryProduct P Q] [HasBinaryProduct Q P] :
 set_option backward.isDefEq.respectTransparency false in
 /-- The associator isomorphism for binary products. -/
 @[simps]
-def prod.associator [HasBinaryProducts C] (P Q R : C) : (P ⨯ Q) ⨯ R ≅ P ⨯ Q ⨯ R where
+noncomputable def prod.associator [HasBinaryProducts C] (P Q R : C) : (P ⨯ Q) ⨯ R ≅ P ⨯ Q ⨯ R where
   hom := prod.lift (prod.fst ≫ prod.fst) (prod.lift (prod.fst ≫ prod.snd) prod.snd)
   inv := prod.lift (prod.lift prod.fst (prod.snd ≫ prod.fst)) (prod.snd ≫ prod.snd)
 
@@ -957,7 +960,7 @@ variable [HasTerminal C]
 set_option backward.isDefEq.respectTransparency false in
 /-- The left unitor isomorphism for binary products with the terminal object. -/
 @[simps]
-def prod.leftUnitor (P : C) [HasBinaryProduct (⊤_ C) P] : (⊤_ C) ⨯ P ≅ P where
+noncomputable def prod.leftUnitor (P : C) [HasBinaryProduct (⊤_ C) P] : (⊤_ C) ⨯ P ≅ P where
   hom := prod.snd
   inv := prod.lift (terminal.from P) (𝟙 _)
   hom_inv_id := by apply prod.hom_ext <;> simp [eq_iff_true_of_subsingleton]
@@ -966,7 +969,7 @@ def prod.leftUnitor (P : C) [HasBinaryProduct (⊤_ C) P] : (⊤_ C) ⨯ P ≅ P
 set_option backward.isDefEq.respectTransparency false in
 /-- The right unitor isomorphism for binary products with the terminal object. -/
 @[simps]
-def prod.rightUnitor (P : C) [HasBinaryProduct P (⊤_ C)] : P ⨯ ⊤_ C ≅ P where
+noncomputable def prod.rightUnitor (P : C) [HasBinaryProduct P (⊤_ C)] : P ⨯ ⊤_ C ≅ P where
   hom := prod.fst
   inv := prod.lift (𝟙 _) (terminal.from P)
   hom_inv_id := by apply prod.hom_ext <;> simp [eq_iff_true_of_subsingleton]
@@ -1000,7 +1003,7 @@ theorem prod.triangle [HasBinaryProducts C] (X Y : C) :
 
 end
 
-noncomputable section
+section
 
 variable {C}
 variable [HasBinaryCoproducts C]
@@ -1008,7 +1011,7 @@ variable [HasBinaryCoproducts C]
 set_option backward.isDefEq.respectTransparency false in
 /-- The braiding isomorphism which swaps a binary coproduct. -/
 @[simps]
-def coprod.braiding (P Q : C) : P ⨿ Q ≅ Q ⨿ P where
+noncomputable def coprod.braiding (P Q : C) : P ⨿ Q ≅ Q ⨿ P where
   hom := coprod.desc coprod.inr coprod.inl
   inv := coprod.desc coprod.inr coprod.inl
 
@@ -1024,7 +1027,7 @@ theorem coprod.symmetry (P Q : C) : (coprod.braiding P Q).hom ≫ (coprod.braidi
 set_option backward.isDefEq.respectTransparency false in
 /-- The associator isomorphism for binary coproducts. -/
 @[simps]
-def coprod.associator (P Q R : C) : (P ⨿ Q) ⨿ R ≅ P ⨿ Q ⨿ R where
+noncomputable def coprod.associator (P Q R : C) : (P ⨿ Q) ⨿ R ≅ P ⨿ Q ⨿ R where
   hom := coprod.desc (coprod.desc coprod.inl (coprod.inl ≫ coprod.inr)) (coprod.inr ≫ coprod.inr)
   inv := coprod.desc (coprod.inl ≫ coprod.inl) (coprod.desc (coprod.inr ≫ coprod.inl) coprod.inr)
 
@@ -1046,7 +1049,7 @@ variable [HasInitial C]
 set_option backward.isDefEq.respectTransparency false in
 /-- The left unitor isomorphism for binary coproducts with the initial object. -/
 @[simps]
-def coprod.leftUnitor (P : C) : (⊥_ C) ⨿ P ≅ P where
+noncomputable def coprod.leftUnitor (P : C) : (⊥_ C) ⨿ P ≅ P where
   hom := coprod.desc (initial.to P) (𝟙 _)
   inv := coprod.inr
   hom_inv_id := by apply coprod.hom_ext <;> simp [eq_iff_true_of_subsingleton]
@@ -1059,7 +1062,7 @@ theorem coprod.leftUnitor_naturality (f : X ⟶ Y) :
 set_option backward.isDefEq.respectTransparency false in
 /-- The right unitor isomorphism for binary coproducts with the initial object. -/
 @[simps]
-def coprod.rightUnitor (P : C) : P ⨿ ⊥_ C ≅ P where
+noncomputable def coprod.rightUnitor (P : C) : P ⨿ ⊥_ C ≅ P where
   hom := coprod.desc (𝟙 _) (initial.to P)
   inv := coprod.inl
   hom_inv_id := by apply coprod.hom_ext <;> simp [eq_iff_true_of_subsingleton]
@@ -1077,13 +1080,13 @@ theorem coprod.triangle (X Y : C) :
 
 end
 
-noncomputable section ProdFunctor
+section ProdFunctor
 
 variable {C} [HasBinaryProducts C]
 
 /-- The binary product functor. -/
 @[simps]
-def prod.functor : C ⥤ C ⥤ C where
+noncomputable def prod.functor : C ⥤ C ⥤ C where
   obj X :=
     { obj := fun Y => X ⨯ Y
       map := fun {_ _} => prod.map (𝟙 X) }
@@ -1092,19 +1095,19 @@ def prod.functor : C ⥤ C ⥤ C where
 
 set_option backward.defeqAttrib.useBackward true in
 /-- The product functor can be decomposed. -/
-def prod.functorLeftComp (X Y : C) :
+noncomputable def prod.functorLeftComp (X Y : C) :
     prod.functor.obj (X ⨯ Y) ≅ prod.functor.obj Y ⋙ prod.functor.obj X :=
   NatIso.ofComponents (prod.associator _ _)
 
 end ProdFunctor
 
-noncomputable section CoprodFunctor
+section CoprodFunctor
 
 variable {C} [HasBinaryCoproducts C]
 
 /-- The binary coproduct functor. -/
 @[simps]
-def coprod.functor : C ⥤ C ⥤ C where
+noncomputable def coprod.functor : C ⥤ C ⥤ C where
   obj X :=
     { obj := fun Y => X ⨿ Y
       map := fun {_ _} => coprod.map (𝟙 X) }
@@ -1112,7 +1115,7 @@ def coprod.functor : C ⥤ C ⥤ C where
 
 set_option backward.defeqAttrib.useBackward true in
 /-- The coproduct functor can be decomposed. -/
-def coprod.functorLeftComp (X Y : C) :
+noncomputable def coprod.functorLeftComp (X Y : C) :
     coprod.functor.obj (X ⨿ Y) ≅ coprod.functor.obj Y ⋙ coprod.functor.obj X :=
   NatIso.ofComponents (coprod.associator _ _)
 
@@ -1160,7 +1163,7 @@ def BinaryCofan.isColimitMapConeEquiv {X Y : C} {s : BinaryCofan X Y} :
 
 end
 
-noncomputable section ProdComparison
+section ProdComparison
 
 universe w w' u₃
 
@@ -1176,7 +1179,7 @@ variable [HasBinaryProduct ((F ⋙ G).obj A) ((F ⋙ G).obj B)]
 
 In `CategoryTheory/Limits/Preserves` we show this is always an iso iff F preserves binary products.
 -/
-def prodComparison (F : C ⥤ D) (A B : C) [HasBinaryProduct A B]
+noncomputable def prodComparison (F : C ⥤ D) (A B : C) [HasBinaryProduct A B]
     [HasBinaryProduct (F.obj A) (F.obj B)] : F.obj (A ⨯ B) ⟶ F.obj A ⨯ F.obj B :=
   prod.lift (F.map prod.fst) (F.map prod.snd)
 
@@ -1217,6 +1220,7 @@ set_option backward.defeqAttrib.useBackward true in
 `prodComparison`.
 -/
 @[simps]
+noncomputable
 def prodComparisonNatTrans [HasBinaryProducts C] [HasBinaryProducts D] (F : C ⥤ D) (A : C) :
     prod.functor.obj A ⋙ F ⟶ F ⋙ prod.functor.obj (F.obj A) where
   app B := prodComparison F A B
@@ -1243,7 +1247,7 @@ set_option backward.isDefEq.respectTransparency false in
 isomorphism (as `B` changes).
 -/
 @[simps]
-def prodComparisonNatIso [HasBinaryProducts C] [HasBinaryProducts D] (A : C)
+noncomputable def prodComparisonNatIso [HasBinaryProducts C] [HasBinaryProducts D] (A : C)
     [∀ B, IsIso (prodComparison F A B)] :
     prod.functor.obj A ⋙ F ≅ F ⋙ prod.functor.obj (F.obj A) := by
   refine { @asIso _ _ _ _ _ (?_) with hom := prodComparisonNatTrans F A }
@@ -1259,7 +1263,7 @@ theorem prodComparison_comp :
 
 end ProdComparison
 
-noncomputable section CoprodComparison
+section CoprodComparison
 
 universe w
 
@@ -1273,7 +1277,7 @@ variable [HasBinaryCoproduct (F.obj A) (F.obj B)] [HasBinaryCoproduct (F.obj A')
 In `Mathlib/CategoryTheory/Limits/Preserves/` we show
 this is always an iso iff F preserves binary coproducts.
 -/
-def coprodComparison (F : C ⥤ D) (A B : C) [HasBinaryCoproduct A B]
+noncomputable def coprodComparison (F : C ⥤ D) (A B : C) [HasBinaryCoproduct A B]
     [HasBinaryCoproduct (F.obj A) (F.obj B)] : F.obj A ⨿ F.obj B ⟶ F.obj (A ⨿ B) :=
   coprod.desc (F.map coprod.inl) (F.map coprod.inr)
 
@@ -1298,6 +1302,7 @@ set_option backward.defeqAttrib.useBackward true in
 `coprodComparison`.
 -/
 @[simps]
+noncomputable
 def coprodComparisonNatTrans [HasBinaryCoproducts C] [HasBinaryCoproducts D] (F : C ⥤ D) (A : C) :
     F ⋙ coprod.functor.obj (F.obj A) ⟶ coprod.functor.obj A ⋙ F where
   app B := coprodComparison F A B
@@ -1324,7 +1329,7 @@ set_option backward.isDefEq.respectTransparency false in
 isomorphism (as `B` changes).
 -/
 @[simps]
-def coprodComparisonNatIso [HasBinaryCoproducts C] [HasBinaryCoproducts D] (A : C)
+noncomputable def coprodComparisonNatIso [HasBinaryCoproducts C] [HasBinaryCoproducts D] (A : C)
     [∀ B, IsIso (coprodComparison F A B)] :
     F ⋙ coprod.functor.obj (F.obj A) ≅ coprod.functor.obj A ⋙ F :=
   { @asIso _ _ _ _ _ (NatIso.isIso_of_isIso_app ..) with hom := coprodComparisonNatTrans F A }

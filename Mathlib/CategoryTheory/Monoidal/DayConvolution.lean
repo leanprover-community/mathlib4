@@ -54,7 +54,7 @@ universe v₁ v₂ v₃ v₄ v₅ u₁ u₂ u₃ u₄ u₅
 namespace CategoryTheory.MonoidalCategory
 open scoped ExternalProduct
 
-noncomputable section
+section
 
 variable {C : Type u₁} [Category.{v₁} C] {V : Type u₂} [Category.{v₂} V]
   [MonoidalCategory C] [MonoidalCategory V]
@@ -92,7 +92,7 @@ instance leftKanExtension [DayConvolution F G] :
 variable {F G}
 
 /-- Two Day convolution structures on the same functors gives an isomorphic functor. -/
-def uniqueUpToIso (h : DayConvolution F G) (h' : DayConvolution F G) :
+noncomputable def uniqueUpToIso (h : DayConvolution F G) (h' : DayConvolution F G) :
     h.convolution ≅ h'.convolution :=
   Functor.leftKanExtensionUnique h.convolution h.unit h'.convolution h'.unit
 
@@ -145,7 +145,7 @@ section map
 variable {F' G' : C ⥤ V} [DayConvolution F' G']
 
 /-- The morphism between Day convolutions (provided they exist) induced by a pair of morphisms. -/
-def map (f : F ⟶ F') (g : G ⟶ G') : F ⊛ G ⟶ F' ⊛ G' :=
+noncomputable def map (f : F ⟶ F') (g : G ⟶ G') : F ⊛ G ⟶ F' ⊛ G' :=
   Functor.descOfIsLeftKanExtension (F ⊛ G) (unit F G) (F' ⊛ G') <|
     (externalProductBifunctor C C V).map (f ×ₘ g) ≫ unit F' G'
 
@@ -170,7 +170,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- The universal property of left Kan extensions characterizes the functor
 corepresented by `F ⊛ G`. -/
 @[simps!]
-def corepresentableBy :
+noncomputable def corepresentableBy :
     (Functor.whiskeringLeft _ _ _).obj (tensor C) ⋙ coyoneda.obj (.op <| F ⊠ G) |>.CorepresentableBy
       (F ⊛ G) where
   homEquiv := Functor.homEquivOfIsLeftKanExtension _ (unit F G) _
@@ -213,7 +213,7 @@ set_option backward.isDefEq.respectTransparency false in
 `Y ↦ (F ⊠ G ⊠ H ⟶ (𝟭 C).prod (tensor C) ⋙ tensor C ⋙ Y)` is corepresented by
 `F ⊛ G ⊛ H`. -/
 @[simps]
-def corepresentableBy₂ :
+noncomputable def corepresentableBy₂ :
     (whiskeringLeft _ _ _).obj (tensor C) ⋙
       (whiskeringLeft _ _ _).obj ((𝟭 C).prod (tensor C)) ⋙
       coyoneda.obj (.op <| F ⊠ G ⊠ H) |>.CorepresentableBy (F ⊛ G ⊛ H) where
@@ -228,7 +228,7 @@ set_option backward.isDefEq.respectTransparency false in
 `Y ↦ ((F ⊠ G) ⊠ H ⟶ (tensor C).prod (𝟭 C) ⋙ tensor C ⋙ Y)` is corepresented by
 `(F ⊛ G) ⊛ H`. -/
 @[simps]
-def corepresentableBy₂' :
+noncomputable def corepresentableBy₂' :
     (whiskeringLeft _ _ _).obj (tensor C) ⋙
       (whiskeringLeft _ _ _).obj ((tensor C).prod (𝟭 C)) ⋙
       coyoneda.obj (.op <| (F ⊠ G) ⊠ H) |>.CorepresentableBy ((F ⊛ G) ⊛ H) where
@@ -271,7 +271,7 @@ def associatorCorepresentingIso :
         coyoneda.mapIso <| Iso.op <| NatIso.ofComponents (fun _ ↦ α_ _ _ _ |>.symm)
 
 /-- The associator isomorphism for Day convolution -/
-def associator : (F ⊛ G) ⊛ H ≅ F ⊛ G ⊛ H :=
+noncomputable def associator : (F ⊛ G) ⊛ H ≅ F ⊛ G ⊛ H :=
   corepresentableBy₂' F G H |>.ofIso (associatorCorepresentingIso F G H) |>.uniqueUpToIso <|
     corepresentableBy₂ F G H
 
@@ -468,7 +468,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- A `CorepresentableBy` structure that characterizes maps out of `U ⊛ F`
 by leveraging the fact that `U ⊠ F` is a left Kan extension of `(fromPUnit 𝟙_ V) ⊠ F`. -/
 @[simps]
-def corepresentableByLeft [DayConvolution U F] :
+noncomputable def corepresentableByLeft [DayConvolution U F] :
     (whiskeringLeft _ _ _).obj (tensor C) ⋙
       (whiskeringLeft _ _ _).obj ((Functor.fromPUnit.{0} (𝟙_ C)).prod (𝟭 C)) ⋙
       coyoneda.obj (.op <| Functor.fromPUnit.{0} (𝟙_ V) ⊠ F) |>.CorepresentableBy (U ⊛ F) where
@@ -481,7 +481,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- A `CorepresentableBy` structure that characterizes maps out of `F ⊛ U` by
 leveraging the fact that `F ⊠ U` is a left Kan extension of `F ⊠ (fromPUnit 𝟙_ V)`. -/
 @[simps]
-def corepresentableByRight [DayConvolution F U] :
+noncomputable def corepresentableByRight [DayConvolution F U] :
     (whiskeringLeft _ _ _).obj (tensor C) ⋙
       (whiskeringLeft _ _ _).obj ((𝟭 C).prod (Functor.fromPUnit.{0} (𝟙_ C))) ⋙
       coyoneda.obj (.op <| F ⊠ Functor.fromPUnit.{0} (𝟙_ V)) |>.CorepresentableBy (F ⊛ U) where
@@ -547,12 +547,12 @@ def rightUnitorCorepresentingIso :
     _ ≅ _ := coyoneda.mapIso <| Iso.op <| NatIso.ofComponents fun _ ↦ (ρ_ _).symm
 
 /-- The left unitor isomorphism for Day convolution. -/
-def leftUnitor [DayConvolution U F] : U ⊛ F ≅ F :=
+noncomputable def leftUnitor [DayConvolution U F] : U ⊛ F ≅ F :=
   corepresentableByLeft U F |>.ofIso (leftUnitorCorepresentingIso F) |>.uniqueUpToIso
     <| Functor.corepresentableByEquiv.symm (.refl _)
 
 /-- The right unitor isomorphism for Day convolution. -/
-def rightUnitor [DayConvolution F U] : F ⊛ U ≅ F :=
+noncomputable def rightUnitor [DayConvolution F U] : F ⊛ U ≅ F :=
   corepresentableByRight U F |>.ofIso (rightUnitorCorepresentingIso F) |>.uniqueUpToIso
     <| Functor.corepresentableByEquiv.symm (.refl _)
 
@@ -1154,7 +1154,7 @@ suitable isomorphisms
 `ι.obj (tensorObj d d') ≅ ι.obj (tensorObj d) ⊛ ι.obj (tensorObj d')`
 that behave in a lawful way with respect to the chosen Day convolutions, we can
 construct a `MonoidalCategoryStruct` on `D`. -/
-abbrev mkMonoidalCategoryStruct : MonoidalCategoryStruct D where
+noncomputable abbrev mkMonoidalCategoryStruct : MonoidalCategoryStruct D where
   tensorObj := tensorObj C V
   tensorHom := tensorHom
   tensorUnit := tensorUnit C V D

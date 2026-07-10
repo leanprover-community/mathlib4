@@ -17,8 +17,6 @@ public section
 
 assert_not_exists IsTopologicalRing UniformContinuousConstSMul UniformOnFun
 
-noncomputable section
-
 instance : ContinuousStar ℝ := ⟨continuous_id⟩
 
 namespace NNReal

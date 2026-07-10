@@ -33,15 +33,13 @@ public section
 
 assert_not_exists Module
 
-noncomputable section
-
 open Finset Function
 
 variable {α β γ ι M M' N P G H R S : Type*}
 
 namespace Finsupp
 
-instance smulZeroClass [Zero M] [SMulZeroClass R M] : SMulZeroClass R (α →₀ M) where
+noncomputable instance smulZeroClass [Zero M] [SMulZeroClass R M] : SMulZeroClass R (α →₀ M) where
   smul a v := v.mapRange (a • ·) (smul_zero _)
   smul_zero a := by
     ext
@@ -60,12 +58,13 @@ theorem smul_apply [Zero M] [SMulZeroClass R M] (b : R) (v : α →₀ M) (a : �
     (b • v) a = b • v a :=
   rfl
 
+noncomputable
 instance instSMulWithZero [Zero R] [Zero M] [SMulWithZero R M] : SMulWithZero R (α →₀ M) where
   zero_smul f := by ext i; exact zero_smul _ _
 
 variable (α M)
 
-instance distribSMul [AddZeroClass M] [DistribSMul R M] : DistribSMul R (α →₀ M) where
+noncomputable instance distribSMul [AddZeroClass M] [DistribSMul R M] : DistribSMul R (α →₀ M) where
   smul_add _ _ _ := ext fun _ => smul_add _ _ _
   smul_zero _ := ext fun _ => smul_zero _
 

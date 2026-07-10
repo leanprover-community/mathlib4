@@ -31,8 +31,6 @@ This file defines n-dimensional simplices in affine space.
 
 @[expose] public section
 
-noncomputable section
-
 open Finset Function Module
 open scoped Affine
 

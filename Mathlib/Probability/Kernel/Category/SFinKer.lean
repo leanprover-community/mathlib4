@@ -59,10 +59,10 @@ structure Hom (X Y : SFinKer.{u}) where
 
 instance {X Y : SFinKer} {κ : Hom X Y} : IsSFiniteKernel κ.hom := κ.property
 
-noncomputable section
+section
 
 @[simps (attr := scoped simp) -isSimp]
-instance : LargeCategory SFinKer where
+noncomputable instance : LargeCategory SFinKer where
   Hom X Y := Hom X Y
   id X := ⟨Kernel.id, inferInstance⟩
   comp κ η := ⟨η.1 ∘ₖ κ.1, inferInstance⟩
@@ -74,7 +74,7 @@ lemma hom_ext {X Y : SFinKer.{u}} {κ η : X ⟶ Y} (h : κ.hom = η.hom) :
 
 open MeasurableEquiv in
 @[simps (attr := scoped simp) -isSimp]
-instance : MonoidalCategory SFinKer.{u} where
+noncomputable instance : MonoidalCategory SFinKer.{u} where
   tensorObj X Y := SFinKer.of (X × Y)
   whiskerLeft X Y₁ Y₂ κ := ⟨Kernel.id ∥ₖ κ.1, inferInstance⟩
   whiskerRight κ Y := ⟨κ.1 ∥ₖ Kernel.id, inferInstance⟩
@@ -173,7 +173,7 @@ instance : MonoidalCategory SFinKer.{u} where
     rfl
 
 @[simps (attr := scoped simp) -isSimp]
-instance : SymmetricCategory SFinKer.{u} where
+noncomputable instance : SymmetricCategory SFinKer.{u} where
   braiding X Y := by
     refine ⟨⟨Kernel.swap _ _, by rw [Kernel.swap]; infer_instance⟩,
       ⟨Kernel.swap _ _, by rw [Kernel.swap]; infer_instance⟩, ?_, ?_⟩
@@ -201,7 +201,7 @@ instance : SymmetricCategory SFinKer.{u} where
     ext : 1; simp
 
 @[simps (attr := scoped simp) -isSimp]
-instance {X : SFinKer} : ComonObj X where
+noncomputable instance {X : SFinKer} : ComonObj X where
   counit := ⟨Kernel.discard X, by rw [Kernel.discard]; infer_instance⟩
   comul := ⟨Kernel.copy X, by rw [Kernel.copy]; infer_instance⟩
   counit_comul := by
@@ -222,7 +222,7 @@ instance {X : SFinKer} : ComonObj X where
       Kernel.deterministic_parallelComp_deterministic]
     rfl
 
-instance : CopyDiscardCategory SFinKer.{u} where
+noncomputable instance : CopyDiscardCategory SFinKer.{u} where
   isCommComonObj X := ⟨by ext : 1; dsimp; exact Kernel.swap_copy⟩
   copy_tensor X Y := by
     ext : 1; dsimp [MonoidalCategory.tensorμ]

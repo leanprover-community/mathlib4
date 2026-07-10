@@ -44,8 +44,6 @@ June 2024.
 
 @[expose] public section
 
-noncomputable section
-
 open CategoryTheory Limits
 
 universe t w v u

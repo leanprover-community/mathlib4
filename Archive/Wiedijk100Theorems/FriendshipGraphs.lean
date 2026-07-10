@@ -37,7 +37,7 @@ be phrased in terms of counting walks.
 
 namespace Theorems100
 
-noncomputable section
+section
 
 open Finset SimpleGraph Matrix
 

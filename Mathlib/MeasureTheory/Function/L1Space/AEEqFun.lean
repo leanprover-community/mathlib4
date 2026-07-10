@@ -29,8 +29,6 @@ function space, l1
 
 @[expose] public section
 
-noncomputable section
-
 open EMetric ENNReal Filter MeasureTheory NNReal Set
 
 variable {α β ε ε' : Type*} {m : MeasurableSpace α} {μ ν : Measure α}

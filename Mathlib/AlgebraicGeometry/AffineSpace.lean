@@ -29,8 +29,6 @@ public import Mathlib.AlgebraicGeometry.Morphisms.Finite
 
 open CategoryTheory Limits MvPolynomial
 
-noncomputable section
-
 namespace AlgebraicGeometry
 
 universe u
@@ -41,7 +39,7 @@ local notation3 "ℤ[" n "]" => CommRingCat.of (MvPolynomial n (ULift ℤ))
 
 /-- `𝔸(n; S)` is the affine `n`-space over `S`.
 Note that `n : Type u` is an arbitrary index type (e.g. `ULift.{u} (Fin m)`). -/
-def AffineSpace (n : Type u) (S : Scheme.{u}) : Scheme.{u} :=
+noncomputable def AffineSpace (n : Type u) (S : Scheme.{u}) : Scheme.{u} :=
   pullback (terminal.from S) (terminal.from (Spec ℤ[n]))
 
 namespace AffineSpace
@@ -63,11 +61,11 @@ lemma of_mvPolynomial_int_ext {R} {f g : ℤ[n] ⟶ R} (h : ∀ i, f (.X i) = g 
 
 
 @[simps -isSimp]
-instance over : 𝔸(n; S).CanonicallyOver S where
+noncomputable instance over : 𝔸(n; S).CanonicallyOver S where
   hom := pullback.fst _ _
 
 /-- The map from the affine `n`-space over `S` to the integral model `Spec ℤ[n]`. -/
-def toSpecMvPoly : 𝔸(n; S) ⟶ Spec ℤ[n] := pullback.snd _ _
+noncomputable def toSpecMvPoly : 𝔸(n; S) ⟶ Spec ℤ[n] := pullback.snd _ _
 
 set_option backward.defeqAttrib.useBackward true in
 /--
@@ -75,7 +73,7 @@ Morphisms into `Spec ℤ[n]` are equivalent the choice of `n` global sections.
 Use `homOverEquiv` instead.
 -/
 @[simps]
-def toSpecMvPolyIntEquiv {X : Scheme.{u}} : (X ⟶ Spec ℤ[n]) ≃ (n → Γ(X, ⊤)) where
+noncomputable def toSpecMvPolyIntEquiv {X : Scheme.{u}} : (X ⟶ Spec ℤ[n]) ≃ (n → Γ(X, ⊤)) where
   toFun f i := f.appTop ((Scheme.ΓSpecIso ℤ[n]).inv (.X i))
   invFun v := X.toSpecΓ ≫ Spec.map
     (CommRingCat.ofHom (MvPolynomial.eval₂Hom ((algebraMap ℤ _).comp ULift.ringEquiv.toRingHom) v))
@@ -96,14 +94,14 @@ lemma toSpecMvPolyIntEquiv_comp {X Y : Scheme} (f : X ⟶ Y) (g : Y ⟶ Spec ℤ
 
 variable {n} in
 /-- The standard coordinates of `𝔸(n; S)`. -/
-def coord (i : n) : Γ(𝔸(n; S), ⊤) := toSpecMvPolyIntEquiv _ (toSpecMvPoly n S) i
+noncomputable def coord (i : n) : Γ(𝔸(n; S), ⊤) := toSpecMvPolyIntEquiv _ (toSpecMvPoly n S) i
 
 section homOfVector
 
 variable {n S}
 
 /-- The morphism `X ⟶ 𝔸(n; S)` given by a `X ⟶ S` and a choice of `n`-coordinate functions. -/
-def homOfVector {X : Scheme.{u}} (f : X ⟶ S) (v : n → Γ(X, ⊤)) : X ⟶ 𝔸(n; S) :=
+noncomputable def homOfVector {X : Scheme.{u}} (f : X ⟶ S) (v : n → Γ(X, ⊤)) : X ⟶ 𝔸(n; S) :=
   pullback.lift f ((toSpecMvPolyIntEquiv n).symm v) (by simp)
 
 variable {X : Scheme.{u}} (f : X ⟶ S) (v : n → Γ(X, ⊤))
@@ -148,7 +146,7 @@ instance {X : Scheme.{u}} [X.Over S] (v : n → Γ(X, ⊤)) :
 
 /-- `S`-morphisms into `Spec 𝔸(n; S)` are equivalent to the choice of `n` global sections. -/
 @[simps]
-def homOverEquiv {X : Scheme.{u}} [X.Over S] :
+noncomputable def homOverEquiv {X : Scheme.{u}} [X.Over S] :
     { f : X ⟶ 𝔸(n; S) // f.IsOver S } ≃ (n → Γ(X, ⊤)) where
   toFun f i := f.1.appTop (coord S i)
   invFun v := ⟨homOfVector (X ↘ S) v, inferInstance⟩
@@ -164,7 +162,7 @@ The affine space over an affine base is isomorphic to the spectrum of the polyno
 Also see `AffineSpace.SpecIso`.
 -/
 @[simps -isSimp hom inv]
-def isoOfIsAffine [IsAffine S] :
+noncomputable def isoOfIsAffine [IsAffine S] :
     𝔸(n; S) ≅ Spec <| .of <| MvPolynomial n Γ(S, ⊤) where
       hom := 𝔸(n; S).toSpecΓ ≫ Spec.map (CommRingCat.ofHom
         (eval₂Hom ((𝔸(n; S) ↘ S).appTop).hom (coord S)))
@@ -220,7 +218,7 @@ instance [IsAffine S] : IsAffine 𝔸(n; S) := .of_isIso (isoOfIsAffine n S).hom
 
 variable (n) in
 /-- The affine space over an affine base is isomorphic to the spectrum of the polynomial ring. -/
-def SpecIso (R : CommRingCat.{u}) :
+noncomputable def SpecIso (R : CommRingCat.{u}) :
     𝔸(n; Spec R) ≅ Spec <| .of <| MvPolynomial n R :=
   isoOfIsAffine _ _ ≪≫ Scheme.Spec.mapIso (MvPolynomial.mapEquiv _
     (Scheme.ΓSpecIso R).symm.commRingCatIsoToRingEquiv).toCommRingCatIso.op
@@ -258,7 +256,7 @@ section functorial
 
 variable (n) in
 /-- `𝔸(n; S)` is functorial w.r.t. `S`. -/
-def map {S T : Scheme.{u}} (f : S ⟶ T) : 𝔸(n; S) ⟶ 𝔸(n; T) :=
+noncomputable def map {S T : Scheme.{u}} (f : S ⟶ T) : 𝔸(n; S) ⟶ 𝔸(n; T) :=
   homOfVector (𝔸(n; S) ↘ S ≫ f) (coord S)
 
 @[reassoc (attr := simp)]
@@ -306,7 +304,7 @@ lemma map_SpecMap {R S : CommRingCat.{u}} (φ : R ⟶ S) :
 set_option backward.defeqAttrib.useBackward true in
 /-- The map between affine spaces over affine bases is
 isomorphic to the natural map between polynomial rings. -/
-def mapSpecMap {R S : CommRingCat.{u}} (φ : R ⟶ S) :
+noncomputable def mapSpecMap {R S : CommRingCat.{u}} (φ : R ⟶ S) :
     Arrow.mk (map n (Spec.map φ)) ≅
       Arrow.mk (Spec.map (CommRingCat.ofHom (MvPolynomial.map (σ := n) φ.hom))) :=
   Arrow.isoMk (SpecIso n S) (SpecIso n R) (by have := (SpecIso n R).inv_hom_id; simp [map_SpecMap])
@@ -320,7 +318,7 @@ lemma isPullback_map {S T : Scheme.{u}} (f : S ⟶ T) :
   rw [← toSpecMvPoly, ← toSpecMvPoly, map_toSpecMvPoly]
 
 /-- `𝔸(n; S)` is functorial w.r.t. `n`. -/
-def reindex {n m : Type u} (i : m → n) (S : Scheme.{u}) : 𝔸(n; S) ⟶ 𝔸(m; S) :=
+noncomputable def reindex {n m : Type u} (i : m → n) (S : Scheme.{u}) : 𝔸(n; S) ⟶ 𝔸(m; S) :=
   homOfVector (𝔸(n; S) ↘ S) (coord S ∘ i)
 
 @[simp, reassoc]
@@ -349,7 +347,7 @@ lemma map_reindex {n₁ n₂ : Type u} (i : n₁ → n₂) {S T : Scheme.{u}} (f
 
 /-- The affine space as a functor. -/
 @[simps]
-def functor : (Type u)ᵒᵖ ⥤ Scheme.{u} ⥤ Scheme.{u} where
+noncomputable def functor : (Type u)ᵒᵖ ⥤ Scheme.{u} ⥤ Scheme.{u} where
   obj n := { obj := AffineSpace n.unop, map := map n.unop, map_id := map_id, map_comp := map_comp }
   map {n m} i := { app := reindex i.unop, naturality := fun _ _ ↦ map_reindex i.unop }
   map_id n := by ext : 2; exact reindex_id _

@@ -17,8 +17,6 @@ is linear in both factors.
 
 @[expose] public section
 
-noncomputable section
-
 namespace CategoryTheory
 
 open CategoryTheory.Limits
@@ -147,6 +145,7 @@ instance (X : C) : PreservesFiniteBiproducts (tensorRight X) where
 variable [HasFiniteBiproducts C]
 
 /-- The isomorphism showing how tensor product on the left distributes over direct sums. -/
+noncomputable
 def leftDistributor {J : Type} [Finite J] (X : C) (f : J → C) : X ⊗ ⨁ f ≅ ⨁ fun j => X ⊗ f j :=
   (tensorLeft X).mapBiproduct f
 
@@ -218,6 +217,7 @@ theorem leftDistributor_assoc {J : Type} [Finite J] (X Y : C) (f : J → C) :
   simp
 
 /-- The isomorphism showing how tensor product on the right distributes over direct sums. -/
+noncomputable
 def rightDistributor {J : Type} [Finite J] (f : J → C) (X : C) : (⨁ f) ⊗ X ≅ ⨁ fun j => f j ⊗ X :=
   (tensorRight X).mapBiproduct f
 

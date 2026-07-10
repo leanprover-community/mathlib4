@@ -26,7 +26,7 @@ Prove that `Path.truncateOfLE` and `Path.subpath` are reparameterizations of eac
 `t₁`, and is convenient for concrete manipulations.)
 -/
 
-@[expose] public noncomputable section
+@[expose] public section
 
 open Fin Function Set unitInterval
 
@@ -112,7 +112,7 @@ namespace Homotopy
 
 /-- Auxiliary homotopy for `Path.Homotopy.subpathTransSubpath` which includes an unnecessary
 copy of `Path.refl`. -/
-def subpathTransSubpathRefl (γ : Path a b) (t₀ t₁ t₂ : I) : Homotopy
+noncomputable def subpathTransSubpathRefl (γ : Path a b) (t₀ t₁ t₂ : I) : Homotopy
     ((γ.subpath t₀ t₁).trans (γ.subpath t₁ t₂)) ((γ.subpath t₀ t₂).trans (Path.refl _)) where
   toFun x := ((γ.subpath t₀ (Icc.convexComb t₁ t₂ x.1)).trans (γ.subpath _ t₂)) x.2
   continuous_toFun := by
@@ -129,7 +129,7 @@ def subpathTransSubpathRefl (γ : Path a b) (t₀ t₁ t₂ : I) : Homotopy
 
 /-- Following the subpath of `γ` from `t₀` to `t₁`, and then that from `t₁` to `t₂`,
 is in natural homotopy with following the subpath of `γ` from `t₀` to `t₂`. -/
-def subpathTransSubpath (γ : Path a b) (t₀ t₁ t₂ : I) : Homotopy
+noncomputable def subpathTransSubpath (γ : Path a b) (t₀ t₁ t₂ : I) : Homotopy
     ((γ.subpath t₀ t₁).trans (γ.subpath t₁ t₂)) (γ.subpath t₀ t₂) :=
   trans (subpathTransSubpathRefl γ t₀ t₁ t₂) (transRefl _)
 
@@ -142,7 +142,7 @@ end Homotopy
 variable {n : ℕ}
 
 /-- Concatenation of a sequence of paths with compatible endpoints. -/
-def concat (p : Fin (n + 1) → X) (F : (k : Fin n) → Path (p k.castSucc) (p k.succ)) :
+noncomputable def concat (p : Fin (n + 1) → X) (F : (k : Fin n) → Path (p k.castSucc) (p k.succ)) :
     Path (p 0) (p (last n)) :=
   dfoldl n (fun i => Path (p 0) (p i)) (fun i ih => ih.trans (F i)) (refl (p 0))
 
@@ -172,7 +172,8 @@ namespace Homotopy
 
 /-- Given two sequences of paths `F` and `G`, and a sequence `H` of homotopies between them,
 there is a natural homotopy between `concat _ F` and `concat _ G`. -/
-protected def concat (p : Fin (n + 1) → X) (F G : (k : Fin n) → Path (p k.castSucc) (p k.succ))
+protected noncomputable
+def concat (p : Fin (n + 1) → X) (F G : (k : Fin n) → Path (p k.castSucc) (p k.succ))
     (H : (k : Fin n) → (F k).Homotopy (G k)) : Homotopy (concat p F) (concat p G) := by
   induction n with
   | zero =>
@@ -184,7 +185,7 @@ protected def concat (p : Fin (n + 1) → X) (F G : (k : Fin n) → Path (p k.ca
 
 /-- Given a path `γ` and a sequence `t` of `n + 1` points in `[0, 1]`, there is a natural homotopy
 between the concatenation of paths `γ.subpath (t k) (t (k + 1))`, and `γ.subpath (t 0) (t n)`. -/
-def concatSubpath (γ : Path a b) (t : Fin (n + 1) → I) :
+noncomputable def concatSubpath (γ : Path a b) (t : Fin (n + 1) → I) :
     Homotopy
       (concat (γ ∘ t) (fun k ↦ γ.subpath (t k.castSucc) (t k.succ)))
       (γ.subpath (t 0) (t (last n))) := by

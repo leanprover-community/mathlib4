@@ -49,8 +49,6 @@ We show that when the representation on `A` is trivial, `H₁(G, A) ≃+ Gᵃᵇ
 
 universe v u
 
-noncomputable section
-
 open CategoryTheory Limits Representation Rep Finsupp
 
 variable {k G : Type u} [CommRing k] [Group G] (A : Rep.{u} k G)
@@ -61,22 +59,22 @@ section Chains
 
 /-- The 0th object in the complex of inhomogeneous chains of `A : Rep k G` is isomorphic
 to `A` as a `k`-module. -/
-def chainsIso₀ : (inhomogeneousChains A).X 0 ≅ ModuleCat.of k A.V :=
+noncomputable def chainsIso₀ : (inhomogeneousChains A).X 0 ≅ ModuleCat.of k A.V :=
   (uniqueLinearEquiv _ _ default).toModuleIso
 
 /-- The 1st object in the complex of inhomogeneous chains of `A : Rep k G` is isomorphic
 to `G →₀ A` as a `k`-module. -/
-def chainsIso₁ : (inhomogeneousChains A).X 1 ≅ ModuleCat.of k (G →₀ A) :=
+noncomputable def chainsIso₁ : (inhomogeneousChains A).X 1 ≅ ModuleCat.of k (G →₀ A) :=
   (Finsupp.domLCongr (Equiv.funUnique (Fin 1) G)).toModuleIso
 
 /-- The 2nd object in the complex of inhomogeneous chains of `A : Rep k G` is isomorphic
 to `G² →₀ A` as a `k`-module. -/
-def chainsIso₂ : (inhomogeneousChains A).X 2 ≅ ModuleCat.of k (G × G →₀ A) :=
+noncomputable def chainsIso₂ : (inhomogeneousChains A).X 2 ≅ ModuleCat.of k (G × G →₀ A) :=
   (Finsupp.domLCongr (piFinTwoEquiv fun _ => G)).toModuleIso
 
 /-- The 3rd object in the complex of inhomogeneous chains of `A : Rep k G` is isomorphic
 to `G³ → A` as a `k`-module. -/
-def chainsIso₃ : (inhomogeneousChains A).X 3 ≅ ModuleCat.of k (G × G × G →₀ A) :=
+noncomputable def chainsIso₃ : (inhomogeneousChains A).X 3 ≅ ModuleCat.of k (G × G × G →₀ A) :=
   (Finsupp.domLCongr ((Fin.consEquiv _).symm.trans
     ((Equiv.refl G).prodCongr (piFinTwoEquiv fun _ => G)))).toModuleIso
 
@@ -86,7 +84,7 @@ section Differentials
 
 /-- The 0th differential in the complex of inhomogeneous chains of `A : Rep k G`, as a
 `k`-linear map `(G →₀ A) → A`. It is defined by `single g a ↦ ρ_A(g⁻¹)(a) - a.` -/
-def d₁₀ : ModuleCat.of k (G →₀ A) ⟶ ModuleCat.of k A.V :=
+noncomputable def d₁₀ : ModuleCat.of k (G →₀ A) ⟶ ModuleCat.of k A.V :=
   ModuleCat.ofHom <| lsum k fun g => A.ρ g⁻¹ - LinearMap.id
 
 @[simp]
@@ -124,7 +122,7 @@ lemma d₁₀_comp_coinvariantsMk : d₁₀ A ≫ (coinvariantsMk k G).app A = 0
 /-- The 0th differential in the complex of inhomogeneous chains of a `G`-representation `A` as a
 linear map into the `k`-submodule of `A` spanned by elements of the form
 `ρ(g)(x) - x, g ∈ G, x ∈ A`. -/
-def chains₁ToCoinvariantsKer :
+noncomputable def chains₁ToCoinvariantsKer :
     ModuleCat.of k (G →₀ A) ⟶ ModuleCat.of k (Coinvariants.ker A.ρ) :=
   ModuleCat.ofHom <| (d₁₀ A).hom.codRestrict _ <|
     range_d₁₀_eq_coinvariantsKer A ▸ LinearMap.mem_range_self _
@@ -143,7 +141,7 @@ theorem d₁₀_eq_zero_of_isTrivial [A.IsTrivial] : d₁₀ A = 0 := by
 /-- The 1st differential in the complex of inhomogeneous chains of `A : Rep k G`, as a
 `k`-linear map `(G² →₀ A) → (G →₀ A)`. It is defined by
 `a·(g₁, g₂) ↦ ρ_A(g₁⁻¹)(a)·g₂ - a·g₁g₂ + a·g₁`. -/
-def d₂₁ : ModuleCat.of k (G × G →₀ A) ⟶ ModuleCat.of k (G →₀ A) :=
+noncomputable def d₂₁ : ModuleCat.of k (G × G →₀ A) ⟶ ModuleCat.of k (G →₀ A) :=
   ModuleCat.ofHom <| lsum k fun g => lsingle g.2 ∘ₗ A.ρ g.1⁻¹ - lsingle (g.1 * g.2) + lsingle g.1
 
 variable {A}
@@ -191,7 +189,7 @@ variable (A) in
 /-- The 2nd differential in the complex of inhomogeneous chains of `A : Rep k G`, as a
 `k`-linear map `(G³ →₀ A) → (G² →₀ A)`. It is defined by
 `a·(g₁, g₂, g₃) ↦ ρ_A(g₁⁻¹)(a)·(g₂, g₃) - a·(g₁g₂, g₃) + a·(g₁, g₂g₃) - a·(g₁, g₂)`. -/
-def d₃₂ : ModuleCat.of k (G × G × G →₀ A) ⟶ ModuleCat.of k (G × G →₀ A) :=
+noncomputable def d₃₂ : ModuleCat.of k (G × G × G →₀ A) ⟶ ModuleCat.of k (G × G →₀ A) :=
   ModuleCat.ofHom <| lsum k fun g =>
     lsingle (g.2.1, g.2.2) ∘ₗ A.ρ g.1⁻¹ - lsingle (g.1 * g.2.1, g.2.2) +
     lsingle (g.1, g.2.1 * g.2.2) - lsingle (g.1, g.2.1)
@@ -307,17 +305,17 @@ open ShortComplex
 
 /-- The (exact) short complex `(G →₀ A) ⟶ A ⟶ A.ρ.coinvariants`. -/
 @[simps! -isSimp f g]
-def shortComplexH0 : ShortComplex (ModuleCat k) :=
+noncomputable def shortComplexH0 : ShortComplex (ModuleCat k) :=
   mk _ _ (d₁₀_comp_coinvariantsMk A)
 
 /-- The short complex `(G² →₀ A) --d₂₁--> (G →₀ A) --d₁₀--> A`. -/
 @[simps! -isSimp f g]
-def shortComplexH1 : ShortComplex (ModuleCat k) :=
+noncomputable def shortComplexH1 : ShortComplex (ModuleCat k) :=
   mk _ _ (d₂₁_comp_d₁₀ A)
 
 /-- The short complex `(G³ →₀ A) --d₃₂--> (G² →₀ A) --d₂₁--> (G →₀ A)`. -/
 @[simps! -isSimp f g]
-def shortComplexH2 : ShortComplex (ModuleCat k) :=
+noncomputable def shortComplexH2 : ShortComplex (ModuleCat k) :=
   mk _ _ (d₃₂_comp_d₂₁ A)
 
 end Differentials
@@ -326,11 +324,11 @@ section Cycles
 
 /-- The 1-cycles `Z₁(G, A)` of `A : Rep k G`, defined as the kernel of the map
 `(G →₀ A) → A` defined by `single g a ↦ ρ_A(g⁻¹)(a) - a`. -/
-def cycles₁ : Submodule k (G →₀ A) := LinearMap.ker (d₁₀ A).hom
+noncomputable def cycles₁ : Submodule k (G →₀ A) := LinearMap.ker (d₁₀ A).hom
 
 /-- The 2-cycles `Z₂(G, A)` of `A : Rep k G`, defined as the kernel of the map
 `(G² →₀ A) → (G →₀ A)` defined by `a·(g₁, g₂) ↦ ρ_A(g₁⁻¹)(a)·g₂ - a·g₁g₂ + a·g₁`. -/
-def cycles₂ : Submodule k (G × G →₀ A) := LinearMap.ker (d₂₁ A).hom
+noncomputable def cycles₂ : Submodule k (G × G →₀ A) := LinearMap.ker (d₂₁ A).hom
 
 variable {A}
 
@@ -358,7 +356,7 @@ theorem cycles₁_eq_top_of_isTrivial [A.IsTrivial] : cycles₁ A = ⊤ := by
 variable (A) in
 /-- The natural inclusion `Z₁(G, A) ⟶ C₁(G, A)` is an isomorphism when the representation
 on `A` is trivial. -/
-def cycles₁IsoOfIsTrivial [A.IsTrivial] :
+noncomputable def cycles₁IsoOfIsTrivial [A.IsTrivial] :
     ModuleCat.of k (cycles₁ A) ≅ ModuleCat.of k (G →₀ A) :=
   (LinearEquiv.ofTop _ (cycles₁_eq_top_of_isTrivial A)).toModuleIso
 
@@ -396,13 +394,13 @@ section Boundaries
 
 /-- The 1-boundaries `B₁(G, A)` of `A : Rep k G`, defined as the image of the map
 `(G² →₀ A) → (G →₀ A)` defined by `a·(g₁, g₂) ↦ ρ_A(g₁⁻¹)(a)·g₂ - a·g₁g₂ + a·g₁`. -/
-def boundaries₁ : Submodule k (G →₀ A) :=
+noncomputable def boundaries₁ : Submodule k (G →₀ A) :=
   LinearMap.range (d₂₁ A).hom
 
 /-- The 2-boundaries `B₂(G, A)` of `A : Rep k G`, defined as the image of the map
 `(G³ →₀ A) → (G² →₀ A)` defined by
 `a·(g₁, g₂, g₃) ↦ ρ_A(g₁⁻¹)(a)·(g₂, g₃) - a·(g₁g₂, g₃) + a·(g₁, g₂g₃) - a·(g₁, g₂)`. -/
-def boundaries₂ : Submodule k (G × G →₀ A) :=
+noncomputable def boundaries₂ : Submodule k (G × G →₀ A) :=
   LinearMap.range (d₃₂ A).hom
 
 variable {A}
@@ -420,7 +418,7 @@ lemma boundaries₁_le_cycles₁ : boundaries₁ A ≤ cycles₁ A :=
 
 variable (A) in
 /-- The natural inclusion `B₁(G, A) →ₗ[k] Z₁(G, A)`. -/
-abbrev boundariesToCycles₁ : boundaries₁ A →ₗ[k] cycles₁ A :=
+noncomputable abbrev boundariesToCycles₁ : boundaries₁ A →ₗ[k] cycles₁ A :=
   Submodule.inclusion (boundaries₁_le_cycles₁ A)
 
 @[simp]
@@ -457,7 +455,7 @@ lemma boundaries₂_le_cycles₂ : boundaries₂ A ≤ cycles₂ A :=
 
 variable (A) in
 /-- The natural inclusion `B₂(G, A) →ₗ[k] Z₂(G, A)`. -/
-abbrev boundariesToCycles₂ : boundaries₂ A →ₗ[k] cycles₂ A :=
+noncomputable abbrev boundariesToCycles₂ : boundaries₂ A →ₗ[k] cycles₂ A :=
   Submodule.inclusion (boundaries₂_le_cycles₂ A)
 
 @[simp]
@@ -695,7 +693,7 @@ lemma shortComplexH0_exact : (shortComplexH0 A).Exact := by
   rfl
 
 /-- The 0-cycles of the complex of inhomogeneous chains of `A` are isomorphic to `A`. -/
-def cyclesIso₀ : cycles A 0 ≅ ModuleCat.of k A.V :=
+noncomputable def cyclesIso₀ : cycles A 0 ≅ ModuleCat.of k A.V :=
   (inhomogeneousChains A).iCyclesIso _ 0 (by simp) (by simp [ChainComplex.of.d]) ≪≫ chainsIso₀ A
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
@@ -706,12 +704,13 @@ lemma cyclesIso₀_inv_comp_iCycles :
 /-- The arrow `(G →₀ A) --d₁₀--> A` is isomorphic to the differential
 `(inhomogeneousChains A).d 1 0` of the complex of inhomogeneous chains of `A`. -/
 @[simps! hom_left hom_right inv_left inv_right]
-def d₁₀ArrowIso :
+noncomputable def d₁₀ArrowIso :
     Arrow.mk ((inhomogeneousChains A).d 1 0) ≅ Arrow.mk (d₁₀ A) :=
   Arrow.isoMk (chainsIso₁ A) (chainsIso₀ A) (comp_d₁₀_eq A)
 
 /-- The 0-cycles of the complex of inhomogeneous chains of `A` are isomorphic to
 `A.ρ.coinvariants`, which is a simpler type. -/
+noncomputable
 def opcyclesIso₀ : (inhomogeneousChains A).opcycles 0 ≅ (coinvariantsFunctor k G).obj A :=
   CokernelCofork.mapIsoOfIsColimit
     ((inhomogeneousChains A).opcyclesIsCokernel 1 0 (by simp)) (shortComplexH0_exact A).gIsCokernel
@@ -741,13 +740,13 @@ section isoCycles₁
 /-- The short complex `(G² →₀ A) --d₂₁--> (G →₀ A) --d₁₀--> A` is isomorphic to the 1st
 short complex associated to the complex of inhomogeneous chains of `A`. -/
 @[simps! hom inv]
-def isoShortComplexH1 : (inhomogeneousChains A).sc 1 ≅ shortComplexH1 A :=
+noncomputable def isoShortComplexH1 : (inhomogeneousChains A).sc 1 ≅ shortComplexH1 A :=
   (inhomogeneousChains A).isoSc' 2 1 0 (by simp) (by simp) ≪≫
     isoMk (chainsIso₂ A) (chainsIso₁ A) (chainsIso₀ A) (comp_d₂₁_eq A) (comp_d₁₀_eq A)
 
 /-- The 1-cycles of the complex of inhomogeneous chains of `A` are isomorphic to
 `cycles₁ A`, which is a simpler type. -/
-def isoCycles₁ : cycles A 1 ≅ ModuleCat.of k (cycles₁ A) :=
+noncomputable def isoCycles₁ : cycles A 1 ≅ ModuleCat.of k (cycles₁ A) :=
     cyclesMapIso' (isoShortComplexH1 A) ((inhomogeneousChains A).sc 1).leftHomologyData
       (shortComplexH1 A).moduleCatLeftHomologyData
 
@@ -789,13 +788,13 @@ section isoCycles₂
 /-- The short complex `(G³ →₀ A) --d₃₂--> (G² →₀ A) --d₂₁--> (G →₀ A)` is isomorphic to the 2nd
 short complex associated to the complex of inhomogeneous chains of `A`. -/
 @[simps! hom inv]
-def isoShortComplexH2 : (inhomogeneousChains A).sc 2 ≅ shortComplexH2 A :=
+noncomputable def isoShortComplexH2 : (inhomogeneousChains A).sc 2 ≅ shortComplexH2 A :=
   (inhomogeneousChains A).isoSc' 3 2 1 (by simp) (by simp) ≪≫
     isoMk (chainsIso₃ A) (chainsIso₂ A) (chainsIso₁ A) (comp_d₃₂_eq A) (comp_d₂₁_eq A)
 
 /-- The 2-cycles of the complex of inhomogeneous chains of `A` are isomorphic to
 `cycles₂ A`, which is a simpler type. -/
-def isoCycles₂ : cycles A 2 ≅ ModuleCat.of k (cycles₂ A) :=
+noncomputable def isoCycles₂ : cycles A 2 ≅ ModuleCat.of k (cycles₂ A) :=
     cyclesMapIso' (isoShortComplexH2 A) ((inhomogeneousChains A).sc 2).leftHomologyData
       (shortComplexH2 A).moduleCatLeftHomologyData
 
@@ -838,15 +837,15 @@ section H0
 
 /-- Shorthand for the 0th group homology of a `k`-linear `G`-representation `A`, `H₀(G, A)`,
 defined as the 0th homology of the complex of inhomogeneous chains of `A`. -/
-abbrev H0 := groupHomology A 0
+noncomputable abbrev H0 := groupHomology A 0
 
 /-- The 0th group homology of `A`, defined as the 0th homology of the complex of inhomogeneous
 chains, is isomorphic to the invariants of the representation on `A`. -/
-def H0Iso : H0 A ≅ (coinvariantsFunctor k G).obj A :=
+noncomputable def H0Iso : H0 A ≅ (coinvariantsFunctor k G).obj A :=
   (ChainComplex.isoHomologyι₀ _) ≪≫ opcyclesIso₀ A
 
 /-- The quotient map from `A` to `H₀(G, A)`. -/
-def H0π : ModuleCat.of k A.V ⟶ H0 A := (cyclesIso₀ A).inv ≫ π A 0
+noncomputable def H0π : ModuleCat.of k A.V ⟶ H0 A := (cyclesIso₀ A).inv ≫ π A 0
 
 set_option backward.isDefEq.respectTransparency false in
 instance : Epi (H0π A) := inferInstanceAs <| Epi (_ ≫ _)
@@ -882,7 +881,7 @@ section IsTrivial
 variable [A.IsTrivial]
 
 /-- When the representation on `A` is trivial, then `H₀(G, A)` is all of `A.` -/
-def H0IsoOfIsTrivial :
+noncomputable def H0IsoOfIsTrivial :
     H0 A ≅ ModuleCat.of k A.V :=
   ((inhomogeneousChains A).isoHomologyπ 1 0 (by simp) <| by
     ext; simp [inhomogeneousChains.d_single (G := G), ChainComplex.of.d,
@@ -906,10 +905,10 @@ section H1
 
 /-- Shorthand for the 1st group homology of a `k`-linear `G`-representation `A`, `H₁(G, A)`,
 defined as the 1st homology of the complex of inhomogeneous chains of `A`. -/
-abbrev H1 := groupHomology A 1
+noncomputable abbrev H1 := groupHomology A 1
 
 /-- The quotient map from the 1-cycles of `A`, as a submodule of `G →₀ A`, to `H₁(G, A)`. -/
-def H1π : ModuleCat.of k (cycles₁ A) ⟶ H1 A :=
+noncomputable def H1π : ModuleCat.of k (cycles₁ A) ⟶ H1 A :=
   (isoCycles₁ A).inv ≫ π A 1
 
 set_option backward.isDefEq.respectTransparency false in
@@ -943,7 +942,7 @@ variable (A)
 
 /-- The 1st group homology of `A`, defined as the 1st homology of the complex of inhomogeneous
 chains, is isomorphic to `cycles₁ A ⧸ boundaries₁ A`, which is a simpler type. -/
-def H1Iso : H1 A ≅ (shortComplexH1 A).moduleCatLeftHomologyData.H :=
+noncomputable def H1Iso : H1 A ≅ (shortComplexH1 A).moduleCatLeftHomologyData.H :=
   (leftHomologyIso _).symm ≪≫ (leftHomologyMapIso' (isoShortComplexH1 A) _ _)
 
 set_option backward.defeqAttrib.useBackward true in
@@ -968,7 +967,7 @@ open TensorProduct
 
 /-- If a `G`-representation on `A` is trivial, this is the natural map `Gᵃᵇ → A → H₁(G, A)`
 sending `⟦g⟧, a` to `⟦single g a⟧`. -/
-def mkH1OfIsTrivial : Additive (Abelianization G) →ₗ[ℤ] A →ₗ[ℤ] H1 A :=
+noncomputable def mkH1OfIsTrivial : Additive (Abelianization G) →ₗ[ℤ] A →ₗ[ℤ] H1 A :=
   AddMonoidHom.toIntLinearMap <| AddMonoidHom.toMultiplicativeRight.symm <| Abelianization.lift {
     toFun g := Multiplicative.ofAdd (AddMonoidHom.toIntLinearMap (AddMonoidHomClass.toAddMonoidHom
       ((H1π A).hom ∘ₗ (cycles₁IsoOfIsTrivial A).inv.hom ∘ₗ lsingle g)))
@@ -988,7 +987,7 @@ lemma mkH1OfIsTrivial_apply (g : G) (a : A) :
 set_option backward.isDefEq.respectTransparency false in
 /-- If a `G`-representation on `A` is trivial, this is the natural map `H₁(G, A) → Gᵃᵇ ⊗[ℤ] A`
 sending `⟦single g a⟧` to `⟦g⟧ ⊗ₜ a`. -/
-def H1ToTensorOfIsTrivial : H1 A →ₗ[ℤ] (Additive <| Abelianization G) ⊗[ℤ] A :=
+noncomputable def H1ToTensorOfIsTrivial : H1 A →ₗ[ℤ] (Additive <| Abelianization G) ⊗[ℤ] A :=
   ((QuotientAddGroup.lift _ ((Finsupp.liftAddHom fun g => AddMonoidHomClass.toAddMonoidHom
     (TensorProduct.mk ℤ _ _ (Additive.ofMul (Abelianization.of g)))).comp
       (cycles₁ A).toAddSubgroup.subtype) fun ⟨y, hy⟩ ⟨z, hz⟩ => AddMonoidHom.mem_ker.2 <| by
@@ -1012,7 +1011,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- If a `G`-representation on `A` is trivial, this is the group isomorphism between
 `H₁(G, A) ≃+ Gᵃᵇ ⊗[ℤ] A` defined by `⟦single g a⟧ ↦ ⟦g⟧ ⊗ a`. -/
 @[simps! -isSimp]
-def H1AddEquivOfIsTrivial :
+noncomputable def H1AddEquivOfIsTrivial :
     H1 A ≃+ (Additive <| Abelianization G) ⊗[ℤ] A :=
   LinearEquiv.toAddEquiv <| LinearEquiv.ofLinear
     (H1ToTensorOfIsTrivial A) (lift <| mkH1OfIsTrivial A)
@@ -1052,10 +1051,10 @@ section H2
 
 /-- Shorthand for the 2nd group homology of a `k`-linear `G`-representation `A`, `H₂(G, A)`,
 defined as the 2nd homology of the complex of inhomogeneous chains of `A`. -/
-abbrev H2 := groupHomology A 2
+noncomputable abbrev H2 := groupHomology A 2
 
 /-- The quotient map from the 2-cycles of `A`, as a submodule of `G × G →₀ A`, to `H₂(G, A)`. -/
-def H2π : ModuleCat.of k (cycles₂ A) ⟶ H2 A :=
+noncomputable def H2π : ModuleCat.of k (cycles₂ A) ⟶ H2 A :=
   (isoCycles₂ A).inv ≫ π A 2
 
 set_option backward.isDefEq.respectTransparency false in
@@ -1089,7 +1088,7 @@ variable (A)
 
 /-- The 2nd group homology of `A`, defined as the 2nd homology of the complex of inhomogeneous
 chains, is isomorphic to `cycles₂ A ⧸ boundaries₂ A`, which is a simpler type. -/
-def H2Iso : H2 A ≅ (shortComplexH2 A).moduleCatLeftHomologyData.H :=
+noncomputable def H2Iso : H2 A ≅ (shortComplexH2 A).moduleCatLeftHomologyData.H :=
   (leftHomologyIso _).symm ≪≫ (leftHomologyMapIso' (isoShortComplexH2 A) _ _)
 
 set_option backward.isDefEq.respectTransparency false in

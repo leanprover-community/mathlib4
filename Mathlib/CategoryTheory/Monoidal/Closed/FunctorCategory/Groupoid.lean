@@ -21,8 +21,6 @@ set_option backward.defeqAttrib.useBackward true
 
 universe v u
 
-noncomputable section
-
 open CategoryTheory CategoryTheory.MonoidalCategory CategoryTheory.MonoidalClosed
 
 namespace CategoryTheory.Functor

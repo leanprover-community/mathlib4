@@ -35,10 +35,11 @@ attribute [local simp] PushoutObjObj.ι ofHasPushout_pt ofHasPushout_inl ofHasPu
 
 namespace MonoidalCategory.Arrow.PushoutProduct
 
-noncomputable section
+section
 
 /-- The monoidal category instance induced by the pushout-product. -/
 @[simps]
+noncomputable
 scoped instance [HasPushouts C] [HasInitial C] [CartesianMonoidalCategory C] [MonoidalClosed C]
     [BraidedCategory C] : MonoidalCategoryStruct (Arrow C) where
   tensorObj X Y := X □ Y
@@ -115,7 +116,7 @@ lemma triangle (X Y : Arrow C) :
   · simp [← comp_whiskerRight_assoc]
 
 /-- The monoidal category instance induced by the pushout-product. -/
-scoped instance : MonoidalCategory (Arrow C) where
+noncomputable scoped instance : MonoidalCategory (Arrow C) where
   tensorHom_comp_tensorHom := tensorHom_comp_tensorHom
   associator_naturality := associator_naturality
   leftUnitor_naturality := leftUnitor_naturality
@@ -143,7 +144,7 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The braided category instance induced by the pushout-product. -/
 @[simps -isSimp]
-scoped instance braidedCategory : BraidedCategory (Arrow C) where
+noncomputable scoped instance braidedCategory : BraidedCategory (Arrow C) where
   braiding := braiding
   hexagon_forward := hexagon_forward
   hexagon_reverse := hexagon_reverse
@@ -153,10 +154,10 @@ set_option backward.isDefEq.respectTransparency false in
 attribute [local simp] braidedCategory_braiding in
 /-- The symmetric category instance induced by the pushout-product. -/
 @[simps! -isSimp]
-scoped instance symmetricCategory : SymmetricCategory (Arrow C) where
+noncomputable scoped instance symmetricCategory : SymmetricCategory (Arrow C) where
 
 /-- The monoidal closed instance induced by the pushout-product and pullback-hom. -/
-scoped instance [HasPullbacks C] : MonoidalClosed (Arrow C) where
+noncomputable scoped instance [HasPullbacks C] : MonoidalClosed (Arrow C) where
   closed X := {
     rightAdj := pullbackHom.obj (Opposite.op X)
     adj := LeibnizAdjunction.adj _ _ (MonoidalClosed.internalHomAdjunction₂) X }

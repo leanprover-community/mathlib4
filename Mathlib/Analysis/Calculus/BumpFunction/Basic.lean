@@ -50,7 +50,6 @@ smooth function, smooth bump function
 -/
 
 @[expose] public section
-noncomputable section
 
 open Function Set Filter
 open scoped Topology Filter ContDiff
@@ -95,7 +94,7 @@ class HasContDiffBump (E : Type*) [NormedAddCommGroup E] [NormedSpace ℝ E] : P
 
 /-- In a space with `C^∞` bump functions, register some function that will be used as a basis
 to construct bump functions of arbitrary size around any point. -/
-def someContDiffBumpBase (E : Type*) [NormedAddCommGroup E] [NormedSpace ℝ E]
+noncomputable def someContDiffBumpBase (E : Type*) [NormedAddCommGroup E] [NormedSpace ℝ E]
     [hb : HasContDiffBump E] : ContDiffBumpBase E :=
   Nonempty.some hb.out
 
@@ -116,10 +115,10 @@ variable [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddCommGroup X] [Norm
 
 /-- The function defined by `f : ContDiffBump c`. Use automatic coercion to
 function instead. -/
-@[coe] def toFun {c : E} (f : ContDiffBump c) : E → ℝ :=
+@[coe] noncomputable def toFun {c : E} (f : ContDiffBump c) : E → ℝ :=
   (someContDiffBumpBase E).toFun (f.rOut / f.rIn) ∘ fun x ↦ (f.rIn⁻¹ • (x - c))
 
-instance : CoeFun (ContDiffBump c) fun _ => E → ℝ :=
+noncomputable instance : CoeFun (ContDiffBump c) fun _ => E → ℝ :=
   ⟨toFun⟩
 
 protected theorem apply (x : E) :

@@ -28,8 +28,6 @@ This is used in `CategoryTheory.Functor.Flat`.
 
 universe v₁ u₁
 
-noncomputable section
-
 open CategoryTheory.Limits
 
 namespace CategoryTheory
@@ -49,7 +47,7 @@ instance : Inhabited (Bicone J) :=
   ⟨Bicone.left⟩
 
 open scoped Classical in
-instance finBicone [Fintype J] : Fintype (Bicone J) where
+noncomputable instance finBicone [Fintype J] : Fintype (Bicone J) where
   elems := [Bicone.left, Bicone.right].toFinset ∪ Finset.image Bicone.diagram Fintype.elems
   complete j := by
     cases j <;> simp [Fintype.complete]
@@ -67,6 +65,7 @@ inductive BiconeHom : Bicone J → Bicone J → Type max u₁ v₁
 instance : Inhabited (BiconeHom J Bicone.left Bicone.left) :=
   ⟨BiconeHom.left_id⟩
 
+noncomputable
 instance BiconeHom.decidableEq {j k : Bicone J} : DecidableEq (BiconeHom J j k) := fun f g => by
   classical cases f <;> cases g <;> simp only [diagram.injEq] <;> infer_instance
 
@@ -121,7 +120,7 @@ def biconeMk {C : Type u₁} [Category.{v₁} C] {F : J ⥤ C} (c₁ c₂ : Cone
       apply F.map_comp
 
 open scoped Classical in
-instance finBiconeHom [FinCategory J] (j k : Bicone J) : Fintype (j ⟶ k) := by
+noncomputable instance finBiconeHom [FinCategory J] (j k : Bicone J) : Fintype (j ⟶ k) := by
   cases j <;> cases k
   · exact
       { elems := {BiconeHom.left_id}
@@ -158,7 +157,7 @@ instance finBiconeHom [FinCategory J] (j k : Bicone J) : Fintype (j ⟶ k) := by
 instance biconeSmallCategory : SmallCategory (Bicone J) :=
   CategoryTheory.biconeCategory J
 
-instance biconeFinCategory [FinCategory J] : FinCategory (Bicone J) where
+noncomputable instance biconeFinCategory [FinCategory J] : FinCategory (Bicone J) where
 
 end SmallCategory
 

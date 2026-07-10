@@ -24,8 +24,6 @@ end of a polynomial
 @[expose] public section
 
 
-noncomputable section
-
 open Function Polynomial Finsupp Finset
 
 open scoped Polynomial

@@ -32,8 +32,6 @@ rectangular box, induction
 
 open Set Function Filter Topology
 
-noncomputable section
-
 namespace BoxIntegral
 
 namespace Box
@@ -44,7 +42,7 @@ open scoped Classical in
 /-- For a box `I`, the hyperplanes passing through its center split `I` into `2 ^ card ι` boxes.
 `BoxIntegral.Box.splitCenterBox I s` is one of these boxes. See also
 `BoxIntegral.Partition.splitCenter` for the corresponding `BoxIntegral.Partition`. -/
-def splitCenterBox (I : Box ι) (s : Set ι) : Box ι where
+noncomputable def splitCenterBox (I : Box ι) (s : Set ι) : Box ι where
   lower := s.piecewise (fun i ↦ (I.lower i + I.upper i) / 2) I.lower
   upper := s.piecewise I.upper fun i ↦ (I.lower i + I.upper i) / 2
   lower_lt_upper i := by
@@ -83,7 +81,7 @@ theorem exists_mem_splitCenterBox {I : Box ι} {x : ι → ℝ} : (∃ s, x ∈ 
 
 /-- `BoxIntegral.Box.splitCenterBox` bundled as a `Function.Embedding`. -/
 @[simps]
-def splitCenterBoxEmb (I : Box ι) : Set ι ↪ Box ι :=
+noncomputable def splitCenterBoxEmb (I : Box ι) : Set ι ↪ Box ι :=
   ⟨splitCenterBox I, injective_splitCenterBox I⟩
 
 @[simp]

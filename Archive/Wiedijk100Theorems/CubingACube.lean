@@ -24,7 +24,7 @@ open Real Set Function Fin
 
 namespace Theorems100
 
-noncomputable section
+section
 
 namespace «82»
 
@@ -310,7 +310,7 @@ theorem exists_mi : ∃ i ∈ bcubes cs c, ∀ i' ∈ bcubes cs c, (cs i).w ≤ 
   (bcubes cs c).exists_min_image (fun i => (cs i).w) (Set.toFinite _) (nonempty_bcubes h v)
 
 /-- We let `mi` be the (index for the) smallest cube in the valley `c` -/
-def mi : ι :=
+noncomputable def mi : ι :=
   Classical.choose <| exists_mi h v
 
 variable {h v}
@@ -511,7 +511,7 @@ noncomputable def sequenceOfCubes : ℕ → { i : ι // Valley cs (cs i).shiftUp
     let v := (sequenceOfCubes k).2
     ⟨mi h v, valley_mi⟩
 
-def decreasingSequence (k : ℕ) : ℝ :=
+noncomputable def decreasingSequence (k : ℕ) : ℝ :=
   (cs (sequenceOfCubes h k).1).w
 
 end

@@ -25,8 +25,6 @@ open Polynomial TensorProduct
 
 open Algebra.TensorProduct (algHomOfLinearMapTensorProduct includeLeft)
 
-noncomputable section
-
 variable (R S A : Type*)
 variable [CommSemiring R] [CommSemiring S]
 variable [Semiring A] [Algebra R A] [Algebra R S] [Algebra S A] [IsScalarTower R S A]
@@ -37,7 +35,7 @@ namespace PolyEquivTensor
 The function underlying `A ⊗[R] R[X] →ₐ[R] A[X]`,
 as a bilinear function of two arguments.
 -/
-def toFunBilinear : A →ₗ[A] R[X] →ₗ[R] A[X] :=
+noncomputable def toFunBilinear : A →ₗ[A] R[X] →ₗ[R] A[X] :=
   LinearMap.toSpanSingleton A _ (aeval (Polynomial.X : A[X])).toLinearMap
 
 theorem toFunBilinear_apply_apply (a : A) (p : R[X]) :
@@ -55,7 +53,7 @@ theorem toFunBilinear_apply_eq_sum (a : A) (p : R[X]) :
 The function underlying `A ⊗[R] R[X] →ₐ[R] A[X]`,
 as a linear map.
 -/
-def toFunLinear : A ⊗[R] R[X] →ₗ[R] A[X] :=
+noncomputable def toFunLinear : A ⊗[R] R[X] →ₗ[R] A[X] :=
   TensorProduct.lift (toFunBilinear R A)
 
 @[simp]
@@ -98,7 +96,7 @@ theorem toFunLinear_one_tmul_one :
 /-- (Implementation detail).
 The algebra homomorphism `A ⊗[R] R[X] →ₐ[R] A[X]`.
 -/
-def toFunAlgHom : A ⊗[R] R[X] →ₐ[R] A[X] :=
+noncomputable def toFunAlgHom : A ⊗[R] R[X] →ₐ[R] A[X] :=
   algHomOfLinearMapTensorProduct (toFunLinear R A) (toFunLinear_mul_tmul_mul R A)
     (toFunLinear_one_tmul_one R A)
 
@@ -114,7 +112,7 @@ theorem toFunAlgHom_apply_tmul (a : A) (p : R[X]) :
 The bare function `A[X] → A ⊗[R] R[X]`.
 (We don't need to show that it's an algebra map, thankfully --- just that it's an inverse.)
 -/
-def invFun (p : A[X]) : A ⊗[R] R[X] :=
+noncomputable def invFun (p : A[X]) : A ⊗[R] R[X] :=
   p.eval₂ (includeLeft : A →ₐ[R] A ⊗[R] R[X]) ((1 : A) ⊗ₜ[R] (X : R[X]))
 
 @[simp]
@@ -154,7 +152,7 @@ theorem right_inv (x : A[X]) : (toFunAlgHom R A) (invFun R A x) = x := by
 
 The equivalence, ignoring the algebra structure, `(A ⊗[R] R[X]) ≃ A[X]`.
 -/
-def equiv : A ⊗[R] R[X] ≃ A[X] where
+noncomputable def equiv : A ⊗[R] R[X] ≃ A[X] where
   toFun := toFunAlgHom R A
   invFun := invFun R A
   left_inv := left_inv R A
@@ -166,7 +164,7 @@ open PolyEquivTensor
 
 /-- The `R`-algebra isomorphism `A[X] ≃ₐ[R] (A ⊗[R] R[X])`.
 -/
-def polyEquivTensor : A[X] ≃ₐ[R] A ⊗[R] R[X] :=
+noncomputable def polyEquivTensor : A[X] ≃ₐ[R] A ⊗[R] R[X] :=
   AlgEquiv.symm { PolyEquivTensor.toFunAlgHom R A, PolyEquivTensor.equiv R A with }
 
 @[simp]
@@ -188,7 +186,7 @@ section
 variable (A : Type*) [CommSemiring A] [Algebra R A]
 
 /-- The `A`-algebra isomorphism `A[X] ≃ₐ[A] A ⊗[R] R[X]` (when `A` is commutative). -/
-def polyEquivTensor' : A[X] ≃ₐ[A] A ⊗[R] R[X] where
+noncomputable def polyEquivTensor' : A[X] ≃ₐ[A] A ⊗[R] R[X] where
   __ := polyEquivTensor R A
   commutes' a := by simp
 
@@ -202,7 +200,7 @@ end
 
 /-- If `A` is an `R`-algebra, then `A[X]` is an `R[X]` algebra.
 This gives a diamond for `Algebra R[X] R[X][X]`, so this is not a global instance. -/
-@[reducible] def Polynomial.algebra : Algebra R[X] A[X] :=
+@[reducible] noncomputable def Polynomial.algebra : Algebra R[X] A[X] :=
   (mapRingHom (algebraMap R A)).toAlgebra' fun _ _ ↦ by
     ext; rw [coeff_mul, ← Finset.Nat.sum_antidiagonal_swap, coeff_mul]; simp [Algebra.commutes]
 

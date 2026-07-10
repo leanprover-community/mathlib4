@@ -49,8 +49,6 @@ since it is not a monad in `Type` but in `CommRingCat` (or rather `CommSemiRingC
 @[expose] public section
 
 
-noncomputable section
-
 namespace MvPolynomial
 
 open Finsupp
@@ -65,7 +63,7 @@ in `p` to polynomials in the variable type `τ`, `bind₁ f p` replaces each var
 its value under `f`, producing a new polynomial in `τ`. The coefficient type remains the same.
 This operation is an algebra hom.
 -/
-def bind₁ (f : σ → MvPolynomial τ R) : MvPolynomial σ R →ₐ[R] MvPolynomial τ R :=
+noncomputable def bind₁ (f : σ → MvPolynomial τ R) : MvPolynomial σ R →ₐ[R] MvPolynomial τ R :=
   aeval f
 
 /-- `bind₂` is the "right-hand side" bind operation on `MvPolynomial`,
@@ -76,7 +74,7 @@ a map `f : R → MvPolynomial σ S` taking coefficients in `p` to polynomials ov
 producing a new polynomial over `S`.
 The variable type remains the same. This operation is a ring hom.
 -/
-def bind₂ (f : R →+* MvPolynomial σ S) : MvPolynomial σ R →+* MvPolynomial σ S :=
+noncomputable def bind₂ (f : R →+* MvPolynomial σ S) : MvPolynomial σ R →+* MvPolynomial σ S :=
   eval₂Hom f X
 
 /--
@@ -85,7 +83,7 @@ with coefficients in `R` whose variables are polynomials in `σ` with coefficien
 `join₁ p` collapses `p` to a polynomial with variables in `σ` and coefficients in `R`.
 This operation is an algebra hom.
 -/
-def join₁ : MvPolynomial (MvPolynomial σ R) R →ₐ[R] MvPolynomial σ R :=
+noncomputable def join₁ : MvPolynomial (MvPolynomial σ R) R →ₐ[R] MvPolynomial σ R :=
   aeval id
 
 /--
@@ -94,7 +92,7 @@ with variables in `σ` whose coefficients are polynomials in `σ` with coefficie
 `join₂ p` collapses `p` to a polynomial with variables in `σ` and coefficients in `R`.
 This operation is a ring hom.
 -/
-def join₂ : MvPolynomial σ (MvPolynomial σ R) →+* MvPolynomial σ R :=
+noncomputable def join₂ : MvPolynomial σ (MvPolynomial σ R) →+* MvPolynomial σ R :=
   eval₂Hom (RingHom.id _) X
 
 @[simp]
@@ -328,7 +326,7 @@ theorem mem_vars_bind₁ (f : σ → MvPolynomial τ R) (φ : MvPolynomial σ R)
   classical
   simpa only [exists_prop, Finset.mem_biUnion, mem_support_iff, Ne] using vars_bind₁ f φ h
 
-instance monad : Monad fun σ => MvPolynomial σ R where
+noncomputable instance monad : Monad fun σ => MvPolynomial σ R where
   map f p := rename f p
   pure := X
   bind p f := bind₁ f p

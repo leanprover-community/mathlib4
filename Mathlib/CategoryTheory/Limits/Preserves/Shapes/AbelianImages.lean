@@ -17,8 +17,6 @@ and coimage-image comparisons.
 
 @[expose] public section
 
-noncomputable section
-
 universe v₁ v₂ u₁ u₂
 
 open CategoryTheory Limits
@@ -37,7 +35,7 @@ variable [HasCokernel f] [HasKernel (cokernel.π f)] [PreservesColimit (parallel
   [HasKernel (cokernel.π (F.map f))]
 
 /-- If a functor preserves kernels and cokernels, it preserves abelian images. -/
-def PreservesImage.iso : F.obj (Abelian.image f) ≅ Abelian.image (F.map f) :=
+noncomputable def PreservesImage.iso : F.obj (Abelian.image f) ≅ Abelian.image (F.map f) :=
   PreservesKernel.iso F _ ≪≫ kernel.mapIso _ _ (Iso.refl _) (PreservesCokernel.iso F _) (by simp)
 
 @[reassoc (attr := simp)]
@@ -71,7 +69,7 @@ variable [HasKernel f] [HasCokernel (kernel.ι f)] [PreservesLimit (parallelPair
   [HasCokernel (kernel.ι (F.map f))]
 
 /-- If a functor preserves kernels and cokernels, it preserves abelian coimages. -/
-def PreservesCoimage.iso : F.obj (Abelian.coimage f) ≅ Abelian.coimage (F.map f) :=
+noncomputable def PreservesCoimage.iso : F.obj (Abelian.coimage f) ≅ Abelian.coimage (F.map f) :=
   PreservesCokernel.iso F _ ≪≫ cokernel.mapIso _ _ (PreservesKernel.iso F _) (Iso.refl _) (by simp)
 
 @[reassoc (attr := simp)]
@@ -112,7 +110,7 @@ theorem PreservesCoimage.hom_coimageImageComparison :
 
 /-- If a functor preserves kernels and cokernels, it preserves coimage-image comparisons. -/
 @[simps!]
-def PreservesCoimageImageComparison.iso :
+noncomputable def PreservesCoimageImageComparison.iso :
     Arrow.mk (F.map (coimageImageComparison f)) ≅ Arrow.mk (coimageImageComparison (F.map f)) :=
   Arrow.isoMk' _ _ (PreservesCoimage.iso F f) (PreservesImage.iso F f)
     (PreservesCoimage.hom_coimageImageComparison F f)

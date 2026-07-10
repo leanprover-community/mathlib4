@@ -46,8 +46,6 @@ arcosh, arccosh, argcosh, acosh
 @[expose] public section
 
 
-noncomputable section
-
 open Function Filter Set
 
 open scoped Topology
@@ -58,7 +56,7 @@ variable {x y : ℝ}
 
 /-- `arcosh` is defined using a logarithm, `arcosh x = log (x + √(x ^ 2 - 1))`. -/
 @[pp_nodot]
-def arcosh (x : ℝ) :=
+noncomputable def arcosh (x : ℝ) :=
   log (x + √(x ^ 2 - 1))
 
 theorem exp_arcosh {x : ℝ} (hx : 1 ≤ x) : exp (arcosh x) = x + √(x ^ 2 - 1) := by
@@ -120,7 +118,7 @@ theorem arcosh_lt_arcosh {x y : ℝ} (hx : 0 < x) (hy : 0 < y) : arcosh x < arco
   strictMonoOn_arcosh.lt_iff_lt hx hy
 
 /-- `Real.cosh` as a `PartialEquiv` from $[0, ∞)$ to $[1, ∞)$. -/
-def coshPartialEquiv : PartialEquiv ℝ ℝ where
+noncomputable def coshPartialEquiv : PartialEquiv ℝ ℝ where
   toFun := cosh
   invFun := arcosh
   source := Ici 0
@@ -136,7 +134,7 @@ theorem continuousOn_arcosh : ContinuousOn arcosh (Ici 1) :=
   continuousOn_log.comp (by fun_prop) (by grind [MapsTo])
 
 /-- `Real.cosh` as an `OpenPartialHomeomorph` from $(0, ∞)$ to $(1, ∞)$. -/
-def coshOpenPartialHomeomorph : OpenPartialHomeomorph ℝ ℝ where
+noncomputable def coshOpenPartialHomeomorph : OpenPartialHomeomorph ℝ ℝ where
   toFun := cosh
   invFun := arcosh
   source := Ioi 0

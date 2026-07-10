@@ -39,8 +39,6 @@ assert_not_exists Ideal
 
 open Multiset Finset
 
-noncomputable section
-
 namespace Polynomial
 
 universe u v w z
@@ -350,7 +348,7 @@ theorem roots_eq_of_natDegree_le_card_of_ne_zero {S : Finset R}
 section NthRoots
 
 /-- `nthRoots n a` noncomputably returns the solutions to `x ^ n = a`. -/
-def nthRoots (n : ℕ) (a : R) : Multiset R :=
+noncomputable def nthRoots (n : ℕ) (a : R) : Multiset R :=
   roots ((X : R[X]) ^ n - C a)
 
 @[simp]
@@ -390,7 +388,7 @@ theorem nthRoots_two_eq_zero_iff {r : R} : nthRoots 2 r = 0 ↔ ¬IsSquare r := 
 
 /-- The multiset `nthRoots ↑n a` as a Finset. Previously `nthRootsFinset n` was defined to be
 `nthRoots n (1 : R)` as a Finset. That situation can be recovered by setting `a` to be `(1 : R)` -/
-def nthRootsFinset (n : ℕ) {R : Type*} (a : R) [CommRing R] [IsDomain R] : Finset R :=
+noncomputable def nthRootsFinset (n : ℕ) {R : Type*} (a : R) [CommRing R] [IsDomain R] : Finset R :=
   haveI := Classical.decEq R
   Multiset.toFinset (nthRoots n a)
 
@@ -593,6 +591,7 @@ theorem rootSet_neg (p : T[X]) (S) [CommRing S] [IsDomain S] [Algebra T S] :
     (-p).rootSet S = p.rootSet S := by
   rw [rootSet, aroots_neg, rootSet]
 
+noncomputable
 instance rootSetFintype (p : T[X]) (S : Type*) [CommRing S] [IsDomain S] [Algebra T S] :
     Fintype (p.rootSet S) :=
   FinsetCoe.fintype _

@@ -86,7 +86,7 @@ theorem entrywise_sup_norm_bound_of_unitary {U : Matrix n n 𝕜} (hU : U ∈ Ma
 
 end EntrywiseSupNorm
 
-noncomputable section L2OpNorm
+section L2OpNorm
 
 namespace Matrix
 open LinearMap
@@ -99,7 +99,7 @@ of Euclidean space induced by the orthonormal basis `EuclideanSpace.basisFun`.
 
 This is a more-bundled version of `Matrix.toEuclideanLin`, for the special case of square matrices,
 followed by a more-bundled version of `LinearMap.toContinuousLinearMap`. -/
-def toEuclideanCLM :
+noncomputable def toEuclideanCLM :
     Matrix n n 𝕜 ≃⋆ₐ[𝕜] (EuclideanSpace 𝕜 n →L[𝕜] EuclideanSpace 𝕜 n) :=
   toMatrixOrthonormal (EuclideanSpace.basisFun n 𝕜) |>.symm.trans <|
     { toContinuousLinearMap with
@@ -136,7 +136,7 @@ lemma inner_toEuclideanCLM (A : Matrix n n ℝ) (x y : EuclideanSpace ℝ n) :
 /-- An auxiliary definition used only to construct the true `NormedAddCommGroup` (and `Metric`)
 structure provided by `Matrix.instMetricSpaceL2Op` and `Matrix.instNormedAddCommGroupL2Op`. -/
 @[implicit_reducible]
-def l2OpNormedAddCommGroupAux : NormedAddCommGroup (Matrix m n 𝕜) :=
+noncomputable def l2OpNormedAddCommGroupAux : NormedAddCommGroup (Matrix m n 𝕜) :=
   @NormedAddCommGroup.induced ((Matrix m n 𝕜) ≃ₗ[𝕜] (EuclideanSpace 𝕜 n →L[𝕜] EuclideanSpace 𝕜 m)) _
     _ _ _ ContinuousLinearMap.toNormedAddCommGroup.toNormedAddGroup _ _ <|
     (toEuclideanLin.trans toContinuousLinearMap).injective
@@ -144,7 +144,7 @@ def l2OpNormedAddCommGroupAux : NormedAddCommGroup (Matrix m n 𝕜) :=
 /-- An auxiliary definition used only to construct the true `NormedRing` (and `Metric`) structure
 provided by `Matrix.instMetricSpaceL2Op` and `Matrix.instNormedRingL2Op`. -/
 @[implicit_reducible]
-def l2OpNormedRingAux : NormedRing (Matrix n n 𝕜) :=
+noncomputable def l2OpNormedRingAux : NormedRing (Matrix n n 𝕜) :=
   @NormedRing.induced ((Matrix n n 𝕜) ≃⋆ₐ[𝕜] (EuclideanSpace 𝕜 n →L[𝕜] EuclideanSpace 𝕜 n)) _
     _ _ _ ContinuousLinearMap.toNormedRing _ _ toEuclideanCLM.injective
 
@@ -154,7 +154,7 @@ open scoped Topology Uniformity
 /-- The metric on `Matrix m n 𝕜` arising from the operator norm given by the identification with
 (continuous) linear maps of `EuclideanSpace`. -/
 @[instance_reducible]
-def instL2OpMetricSpace : MetricSpace (Matrix m n 𝕜) := by
+noncomputable def instL2OpMetricSpace : MetricSpace (Matrix m n 𝕜) := by
   /- We first replace the topology so that we can automatically replace the uniformity using
   `IsUniformAddGroup.toUniformSpace_eq`. -/
   letI normed_add_comm_group : NormedAddCommGroup (Matrix m n 𝕜) :=
@@ -175,7 +175,7 @@ open scoped Matrix.Norms.L2Operator
 /-- The norm structure on `Matrix m n 𝕜` arising from the operator norm given by the identification
 with (continuous) linear maps of `EuclideanSpace`. -/
 @[instance_reducible]
-def instL2OpNormedAddCommGroup : NormedAddCommGroup (Matrix m n 𝕜) where
+noncomputable def instL2OpNormedAddCommGroup : NormedAddCommGroup (Matrix m n 𝕜) where
   norm := l2OpNormedAddCommGroupAux.norm
   dist_eq := l2OpNormedAddCommGroupAux.dist_eq
 
@@ -261,7 +261,7 @@ scoped[Matrix.Norms.L2Operator] attribute [instance] Matrix.instL2OpNormedSpace
 /-- The normed ring structure on `Matrix n n 𝕜` arising from the operator norm given by the
 identification with (continuous) linear endomorphisms of `EuclideanSpace 𝕜 n`. -/
 @[instance_reducible]
-def instL2OpNormedRing : NormedRing (Matrix n n 𝕜) where
+noncomputable def instL2OpNormedRing : NormedRing (Matrix n n 𝕜) where
   dist_eq := l2OpNormedRingAux.dist_eq
   norm_mul_le := l2OpNormedRingAux.norm_mul_le
 

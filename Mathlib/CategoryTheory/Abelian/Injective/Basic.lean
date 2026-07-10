@@ -21,8 +21,6 @@ public import Mathlib.Algebra.Homology.ShortComplex.ExactFunctor
 public section
 
 
-noncomputable section
-
 open CategoryTheory Limits Injective Opposite
 
 universe v u

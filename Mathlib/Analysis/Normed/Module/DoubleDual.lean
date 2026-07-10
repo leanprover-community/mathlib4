@@ -40,8 +40,6 @@ double dual, inclusion, isometry, embedding, weak-star topology
 
 @[expose] public section
 
-noncomputable section
-
 open Topology Bornology WeakDual
 
 universe u v
@@ -55,7 +53,7 @@ variable (E : Type*) [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
 
 /-- The inclusion of a normed space in its double (topological) strong dual, considered
 as a bounded linear map. -/
-def inclusionInDoubleDual : E →L[𝕜] StrongDual 𝕜 (StrongDual 𝕜 E) :=
+noncomputable def inclusionInDoubleDual : E →L[𝕜] StrongDual 𝕜 (StrongDual 𝕜 E) :=
   ContinuousLinearMap.apply 𝕜 𝕜
 
 @[simp]
@@ -84,7 +82,7 @@ section Seminormed
 variable [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
 
 /-- The inclusion of a normed space in its double strong dual is an isometry onto its image. -/
-def inclusionInDoubleDualLi : E →ₗᵢ[𝕜] StrongDual 𝕜 (StrongDual 𝕜 E) :=
+noncomputable def inclusionInDoubleDualLi : E →ₗᵢ[𝕜] StrongDual 𝕜 (StrongDual 𝕜 E) :=
   { inclusionInDoubleDual 𝕜 E with
     norm_map' x := by
       apply le_antisymm (double_dual_bound 𝕜 E x)
@@ -112,7 +110,7 @@ variable (X : Type*) [SeminormedAddCommGroup X] [NormedSpace 𝕜 X]
 linear map. Built using `LinearEquiv.arrowCongr` to properly bundle the topology changes via
 `toWeakSpace` and `StrongDual.toWeakDual`. -/
 @[simps! -isSimp apply apply_apply]
-def inclusionInDoubleDualWeak : WeakSpace 𝕜 X →L[𝕜] WeakDual 𝕜 (StrongDual 𝕜 X) where
+noncomputable def inclusionInDoubleDualWeak : WeakSpace 𝕜 X →L[𝕜] WeakDual 𝕜 (StrongDual 𝕜 X) where
   toLinearMap := (toWeakSpace 𝕜 X).arrowCongr StrongDual.toWeakDual
     (inclusionInDoubleDual 𝕜 X).toLinearMap
   cont := Topology.IsInducing.continuous ⟨Eq.symm induced_compose⟩

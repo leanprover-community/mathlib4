@@ -33,8 +33,6 @@ and is stable under compositions and base-changes.
 
 public section
 
-noncomputable section
-
 open CategoryTheory CategoryTheory.Limits Opposite TopologicalSpace
 
 universe u

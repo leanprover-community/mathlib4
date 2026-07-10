@@ -39,8 +39,6 @@ case the unit and the counit would switch to each other.
 -- Explicit universe annotations were used in this file to improve performance https://github.com/leanprover-community/mathlib4/issues/12737
 
 
-noncomputable section
-
 universe u
 
 open PrimeSpectrum
@@ -68,7 +66,7 @@ namespace LocallyRingedSpace
 variable (X : LocallyRingedSpace.{u})
 
 /-- The canonical map from the underlying set to the prime spectrum of `Γ(X)`. -/
-def toΓSpecFun : X → PrimeSpectrum (Γ.obj (op X)) := fun x =>
+noncomputable def toΓSpecFun : X → PrimeSpectrum (Γ.obj (op X)) := fun x =>
   comap (X.presheaf.Γgerm x).hom (IsLocalRing.closedPoint (X.presheaf.stalk x))
 
 set_option backward.isDefEq.respectTransparency false in
@@ -96,7 +94,7 @@ theorem toΓSpec_continuous : Continuous X.toΓSpecFun := by
 
 /-- The canonical (bundled) continuous map from the underlying topological
 space of `X` to the prime spectrum of its global sections. -/
-def toΓSpecBase : X.toTopCat ⟶ Spec.topObj (Γ.obj (op X)) :=
+noncomputable def toΓSpecBase : X.toTopCat ⟶ Spec.topObj (Γ.obj (op X)) :=
   TopCat.ofHom
   { toFun := X.toΓSpecFun
     continuous_toFun := X.toΓSpec_continuous }
@@ -104,7 +102,7 @@ def toΓSpecBase : X.toTopCat ⟶ Spec.topObj (Γ.obj (op X)) :=
 variable (r : Γ.obj (op X))
 
 /-- The preimage in `X` of a basic open in `Spec Γ(X)` (as an open set). -/
-abbrev toΓSpecMapBasicOpen : Opens X :=
+noncomputable abbrev toΓSpecMapBasicOpen : Opens X :=
   (Opens.map X.toΓSpecBase).obj (basicOpen r)
 
 /-- The preimage is the basic open in `X` defined by the same element `r`. -/
@@ -112,7 +110,7 @@ theorem toΓSpecMapBasicOpen_eq : X.toΓSpecMapBasicOpen r = X.toRingedSpace.bas
   Opens.ext (X.toΓSpec_preimage_basicOpen_eq r)
 
 /-- The map from the global sections `Γ(X)` to the sections on the (preimage of) a basic open. -/
-abbrev toToΓSpecMapBasicOpen :
+noncomputable abbrev toToΓSpecMapBasicOpen :
     X.presheaf.obj (op ⊤) ⟶ X.presheaf.obj (op <| X.toΓSpecMapBasicOpen r) :=
   X.presheaf.map (X.toΓSpecMapBasicOpen r).leTop.op
 
@@ -126,7 +124,7 @@ theorem isUnit_res_toΓSpecMapBasicOpen : IsUnit (X.toToΓSpecMapBasicOpen r r) 
   congr
 
 /-- Define the sheaf hom on individual basic opens for the unit. -/
-def toΓSpecCApp :
+noncomputable def toΓSpecCApp :
     (structureSheaf <| Γ.obj <| op X).obj.obj (op <| basicOpen r) ⟶
       X.presheaf.obj (op <| X.toΓSpecMapBasicOpen r) :=
   -- note: the explicit type annotations were not needed before
@@ -164,7 +162,7 @@ theorem toΓSpecCApp_spec :
 set_option backward.isDefEq.respectTransparency false in
 /-- The sheaf hom on all basic opens, commuting with restrictions. -/
 @[simps app]
-def toΓSpecCBasicOpens :
+noncomputable def toΓSpecCBasicOpens :
     (inducedFunctor basicOpen).op ⋙ (structureSheaf (Γ.obj (op X))).1 ⟶
       (inducedFunctor basicOpen).op ⋙ ((TopCat.Sheaf.pushforward _ X.toΓSpecBase).obj X.𝒪).1 where
   app r := X.toΓSpecCApp r.unop
@@ -180,6 +178,7 @@ def toΓSpecCBasicOpens :
 
 /-- The canonical morphism of sheafed spaces from `X` to the spectrum of its global sections. -/
 @[simps! -isSimp]
+noncomputable
 def toΓSpecSheafedSpace : X.toSheafedSpace ⟶ Spec.toSheafedSpace.obj (op (Γ.obj (op X))) :=
   InducedCategory.homMk
     { base := X.toΓSpecBase
@@ -213,7 +212,7 @@ theorem toStalk_stalkMap_toΓSpec (x : X) :
 set_option backward.isDefEq.respectTransparency false in
 /-- The canonical morphism from `X` to the spectrum of its global sections. -/
 @[simps! base]
-def toΓSpec : X ⟶ Spec.locallyRingedSpaceObj (Γ.obj (op X)) :=
+noncomputable def toΓSpec : X ⟶ Spec.locallyRingedSpaceObj (Γ.obj (op X)) :=
   LocallyRingedSpace.homMk (X.toΓSpecSheafedSpace) (fun x ↦ by
     let p : PrimeSpectrum (Γ.obj (op X)) := X.toΓSpecFun x
     constructor
@@ -282,6 +281,7 @@ end LocallyRingedSpace
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The unit as a natural transformation. -/
+noncomputable
 def identityToΓSpec : 𝟭 LocallyRingedSpace.{u} ⟶ Γ.rightOp ⋙ Spec.toLocallyRingedSpace where
   app := LocallyRingedSpace.toΓSpec
   naturality X Y f := by
@@ -325,7 +325,7 @@ theorem right_triangle (R : CommRingCat) :
 
 /-- The adjunction `Γ ⊣ Spec` from `CommRingᵒᵖ` to `LocallyRingedSpace`. -/
 @[simps]
-def locallyRingedSpaceAdjunction : Γ.rightOp ⊣ Spec.toLocallyRingedSpace.{u} where
+noncomputable def locallyRingedSpaceAdjunction : Γ.rightOp ⊣ Spec.toLocallyRingedSpace.{u} where
   unit := identityToΓSpec
   counit := (NatIso.op SpecΓIdentity).inv
   left_triangle_components X := by
@@ -387,7 +387,7 @@ lemma toOpen_comp_locallyRingedSpaceAdjunction_homEquiv_app
   rfl
 
 /-- The adjunction `Γ ⊣ Spec` from `CommRingᵒᵖ` to `Scheme`. -/
-def adjunction : Scheme.Γ.rightOp ⊣ Scheme.Spec.{u} where
+noncomputable def adjunction : Scheme.Γ.rightOp ⊣ Scheme.Spec.{u} where
   unit :=
   { app := fun X ↦ ⟨locallyRingedSpaceAdjunction.{u}.unit.app X.toLocallyRingedSpace⟩
     naturality := fun _ _ f ↦
@@ -423,7 +423,7 @@ theorem adjunction_counit_app {R : CommRingCatᵒᵖ} :
     ΓSpec.adjunction.counit.app R = (Scheme.ΓSpecIso (unop R)).inv.op := rfl
 
 /-- The canonical map `X ⟶ Spec Γ(X, ⊤)`. This is the unit of the `Γ-Spec` adjunction. -/
-def _root_.AlgebraicGeometry.Scheme.toSpecΓ (X : Scheme.{u}) : X ⟶ Spec Γ(X, ⊤) :=
+noncomputable def _root_.AlgebraicGeometry.Scheme.toSpecΓ (X : Scheme.{u}) : X ⟶ Spec Γ(X, ⊤) :=
   ΓSpec.adjunction.unit.app X
 
 @[simp]
@@ -507,6 +507,7 @@ theorem ΓSpecIso_obj_hom {X : Scheme.{u}} (U : X.Opens) :
 
 /-- The functor `Spec.toLocallyRingedSpace : CommRingCatᵒᵖ ⥤ LocallyRingedSpace`
 is fully faithful. -/
+noncomputable
 def Spec.fullyFaithfulToLocallyRingedSpace : Spec.toLocallyRingedSpace.FullyFaithful :=
   ΓSpec.locallyRingedSpaceAdjunction.fullyFaithfulROfIsIsoCounit
 
@@ -519,7 +520,7 @@ instance : Spec.toLocallyRingedSpace.Faithful :=
   Spec.fullyFaithfulToLocallyRingedSpace.faithful
 
 /-- The functor `Spec : CommRingCatᵒᵖ ⥤ Scheme` is fully faithful. -/
-def Spec.fullyFaithful : Scheme.Spec.FullyFaithful :=
+noncomputable def Spec.fullyFaithful : Scheme.Spec.FullyFaithful :=
   ΓSpec.adjunction.fullyFaithfulROfIsIsoCounit
 
 /-- Spec is a full functor. -/
@@ -546,7 +547,7 @@ lemma Spec.map_eq_id {R : CommRingCat} {ϕ : R ⟶ R} : Spec.map ϕ = 𝟙 (Spec
   simp [← map_inj]
 
 /-- The preimage under Spec. -/
-def Spec.preimage : R ⟶ S := (Scheme.Spec.preimage f).unop
+noncomputable def Spec.preimage : R ⟶ S := (Scheme.Spec.preimage f).unop
 
 @[simp] lemma Spec.map_preimage : Spec.map (Spec.preimage f) = f := Scheme.Spec.map_preimage f
 
@@ -566,7 +567,7 @@ lemma Spec.map_surjective {R S : CommRingCat} :
 
 /-- Spec is fully faithful -/
 @[simps]
-def Spec.homEquiv {R S : CommRingCat} : (Spec S ⟶ Spec R) ≃ (R ⟶ S) where
+noncomputable def Spec.homEquiv {R S : CommRingCat} : (Spec S ⟶ Spec R) ≃ (R ⟶ S) where
   toFun := Spec.preimage
   invFun := Spec.map
   left_inv := Spec.map_preimage
@@ -583,11 +584,11 @@ lemma Spec.preimage_comp {R S T : CommRingCat} (f : Spec R ⟶ Spec S) (g : Spec
 
 end
 
-instance : Reflective Spec.toLocallyRingedSpace where
+noncomputable instance : Reflective Spec.toLocallyRingedSpace where
   L := Γ.rightOp
   adj := ΓSpec.locallyRingedSpaceAdjunction
 
-instance Spec.reflective : Reflective Scheme.Spec where
+noncomputable instance Spec.reflective : Reflective Scheme.Spec where
   L := Scheme.Γ.rightOp
   adj := ΓSpec.adjunction
 

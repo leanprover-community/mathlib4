@@ -27,7 +27,7 @@ norm-topology on the model fiber `F₁ [⋀^ι]→L[𝕜] F₂` using the `Vecto
 @[expose] public section
 
 
-noncomputable section
+section
 
 open Bundle Set Topology
 open scoped Bundle
@@ -73,7 +73,7 @@ defined even when `x` and `y` live in different base sets.
 Therefore, it is also convenient when working with the bundle of continuous alternating maps
 between pulled back bundles.
 -/
-def inCoordinates (x₀ x : B₁) (y₀ y : B₂) (ϕ : E₁ x [⋀^ι]→L[𝕜] E₂ y) :
+noncomputable def inCoordinates (x₀ x : B₁) (y₀ y : B₂) (ϕ : E₁ x [⋀^ι]→L[𝕜] E₂ y) :
     F₁ [⋀^ι]→L[𝕜] F₂ :=
   trivializationAt F₂ E₂ y₀ |>.continuousLinearMapAt 𝕜 y |>.compContinuousAlternatingMap
     ϕ |>.compContinuousLinearMap <| (trivializationAt F₁ E₁ x₀).symmL 𝕜 x
@@ -116,7 +116,7 @@ is the coordinate change function between the two induced (pre)trivializations
 `Pretrivialization.continuousAlternatingMap 𝕜 ι e₁ e₂`
 and `Pretrivialization.continuousAlternatingMap 𝕜 ι e₁' e₂'`
 of the bundle of continuous alternating maps. -/
-def continuousAlternatingMapCoordChange (e₁ e₁' : Trivialization F₁ (π F₁ E₁))
+noncomputable def continuousAlternatingMapCoordChange (e₁ e₁' : Trivialization F₁ (π F₁ E₁))
     (e₂ e₂' : Trivialization F₂ (π F₂ E₂))
     [e₁.IsLinear 𝕜] [e₁'.IsLinear 𝕜] [e₂.IsLinear 𝕜] [e₂'.IsLinear 𝕜] (b : B) :
     (F₁ [⋀^ι]→L[𝕜] F₂) →L[𝕜] (F₁ [⋀^ι]→L[𝕜] F₂) :=
@@ -151,7 +151,7 @@ variable (𝕜 ι e₁ e₁' e₂ e₂') in
 continuous `σ`-semilinear maps from `E₁` to `E₂`. That is, the map which will later become a
 trivialization, after the bundle of continuous semilinear maps is equipped with the right
 topological vector bundle structure. -/
-def continuousAlternatingMap :
+noncomputable def continuousAlternatingMap :
     Pretrivialization (F₁ [⋀^ι]→L[𝕜] F₂) (π (F₁ [⋀^ι]→L[𝕜] F₂) (fun x ↦ E₁ x [⋀^ι]→L[𝕜] E₂ x)) where
   toFun p := ⟨p.1, (e₂.continuousLinearMapAt 𝕜 p.1).compContinuousAlternatingMap <|
     p.2.compContinuousLinearMap <| e₁.symmL 𝕜 p.1⟩
@@ -247,7 +247,7 @@ variable (𝕜 ι F₁ E₁ F₂ E₂) in
 `VectorPrebundle` (this is an auxiliary construction for the
 `VectorBundle` instance, in which the pretrivializations are collated but no topology
 on the total space is yet provided). -/
-def vectorPrebundle :
+noncomputable def vectorPrebundle :
     VectorPrebundle 𝕜 (F₁ [⋀^ι]→L[𝕜] F₂) (fun x ↦ E₁ x [⋀^ι]→L[𝕜] E₂ x) where
   pretrivializationAtlas :=
     {e | ∃ (e₁ : Trivialization F₁ (π F₁ E₁)) (e₂ : Trivialization F₂ (π F₂ E₂))
@@ -282,12 +282,12 @@ def vectorPrebundle :
 
 /-- Topology on the total space of the continuous `σ`-semilinear maps between two "normable" vector
 bundles over the same base. -/
-instance instTopologicalSpaceTotalSpace :
+noncomputable instance instTopologicalSpaceTotalSpace :
     TopologicalSpace (TotalSpace (F₁ [⋀^ι]→L[𝕜] F₂) (fun x ↦ E₁ x [⋀^ι]→L[𝕜] E₂ x)) :=
   (vectorPrebundle 𝕜 ι F₁ E₁ F₂ E₂).totalSpaceTopology
 
 /-- The continuous `σ`-semilinear maps between two vector bundles form a fiber bundle. -/
-instance instFiberBundle :
+noncomputable instance instFiberBundle :
     FiberBundle (F₁ [⋀^ι]→L[𝕜] F₂) fun x ↦ E₁ x [⋀^ι]→L[𝕜] E₂ x :=
   (vectorPrebundle 𝕜 ι F₁ E₁ F₂ E₂).toFiberBundle
 
@@ -324,7 +324,7 @@ variable (𝕜 ι e₁ e₂) in
 /-- Given trivializations `e₁`, `e₂` in the atlas for vector bundles `E₁`, `E₂` over a base `B`,
 the induced trivialization for the continuous `σ`-semilinear maps from `E₁` to `E₂`,
 whose base set is `e₁.baseSet ∩ e₂.baseSet`. -/
-def continuousAlternatingMap :
+noncomputable def continuousAlternatingMap :
     Trivialization (F₁ [⋀^ι]→L[𝕜] F₂) (π (F₁ [⋀^ι]→L[𝕜] F₂) (fun x ↦ E₁ x [⋀^ι]→L[𝕜] E₂ x)) :=
   VectorPrebundle.trivializationOfMemPretrivializationAtlas _ ⟨e₁, e₂, he₁, he₂, rfl⟩
 
