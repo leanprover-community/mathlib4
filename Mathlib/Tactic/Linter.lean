@@ -9,6 +9,7 @@ This file is ignored by `shake`:
 -/
 module
 
+public import Mathlib.Tactic.Linter.HaveILetI
 public import Mathlib.Tactic.Linter.HaveLetLinter
 public import Mathlib.Tactic.Linter.MinImports
 public import Mathlib.Tactic.Linter.PPRoundtrip
