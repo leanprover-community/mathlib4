@@ -15,15 +15,15 @@ import Mathlib.AlgebraicGeometry.AlgebraicCycle.StructureSheafIso
 In this file we show a conditional form of the algebraic Riemann-Roch theorem for curves
 (`riemann_roch`): if `X` is an integral Noetherian scheme which is regular in codimension one,
 has Krull dimension at most one and is locally of finite type over a field `k`, and the
-structure sheaf `𝒪ₓ` has a well-defined Euler characteristic
+structure sheaf `𝒪ₓ` has a well-defined finite Euler characteristic
 (`Scheme.Modules.HasFiniteEulerCharacteristic`: finite-dimensional cohomology which vanishes in all
 sufficiently large degrees), then for every Weil divisor `D` we have
 `χ(𝒪ₓ(D)) = deg(D) + χ(𝒪ₓ)`.
 
-For `X` proper over `k` the cohomological hypothesis holds by the finiteness theorem for
-coherent cohomology (EGA III 3.2.1) together with Grothendieck vanishing, neither of which is
-yet available in Mathlib; we therefore take it as a hypothesis (hence the "conditional" in the
-title).
+For `X` proper over `k` the finiteness of the Euler characteristic holds by the finiteness
+theorem for coherent cohomology (EGA III 3.2.1) together with Grothendieck vanishing,
+neither of which is yet available in Mathlib; we therefore take it as a hypothesis
+(hence the "conditional" in the title).
 
 Notes: The work here is reliant on WIP work by Brian Nugent (on the long exact sequence for sheaf
 cohomology) and by Jesse Alama (on the Euler-Poincare formula). Notably, we needed a slightly
