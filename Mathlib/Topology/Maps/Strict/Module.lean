@@ -40,7 +40,7 @@ protected lemma isStrictMap_iff_isEmbedding_liftQ_ker :
 /-- A linear map `f : E → F` is strict if and only if the canonical isomorphism
 `E ⧸ f.ker ≃ f.range` is a homeomorphism. -/
 protected lemma isStrictMap_iff_isHomeomorph_quotKerEquivRange :
-    IsStrictMap fₗ ↔ IsHomeomorph (fₗ.quotKerEquivRange) := by
+    IsStrictMap fₗ ↔ IsHomeomorph fₗ.quotKerEquivRange := by
   simp_rw [isHomeomorph_iff_isStrictMap_bijective, EquivLike.bijective, and_true,
     fₗ.ker.isQuotientMap_mkQ.isStrictMap_iff, IsEmbedding.subtypeVal.isStrictMap_iff]
   rfl
