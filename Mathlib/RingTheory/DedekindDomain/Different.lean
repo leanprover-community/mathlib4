@@ -112,7 +112,6 @@ open scoped Classical in
 lemma traceDual_top' :
     (⊤ : Submodule B L)ᵛ =
       if ((LinearMap.range (Algebra.trace K L)).restrictScalars A ≤ 1) then ⊤ else ⊥ := by
-  classical
   split_ifs with h
   · rw [_root_.eq_top_iff]
     exact fun _ _ _ _ ↦ h ⟨_, rfl⟩
@@ -224,11 +223,11 @@ variable [IsDomain A] [IsFractionRing B L] [Nontrivial B] [NoZeroDivisors B]
 
 namespace FractionalIdeal
 
-open scoped Classical in
 /-- The dual of a non-zero fractional ideal is the dual of the submodule under the trace form. -/
 noncomputable
 def dual (I : FractionalIdeal B⁰ L) :
     FractionalIdeal B⁰ L :=
+  open scoped Classical in
   if hI : I = 0 then 0 else
   ⟨Iᵛ, by
     classical
@@ -938,8 +937,8 @@ theorem not_dvd_differentIdeal_iff
       · suffices Algebra.IsSeparable (A ⧸ P.under A) (B ⧸ P) by infer_instance
         contrapose H
         exact dvd_differentIdeal_of_not_isSeparable A hp P H
-      · rw [← Ideal.IsDedekindDomain.ramificationIdx_eq_one_iff hPbot Ideal.map_comap_le]
-        apply Ideal.ramificationIdx_spec
+      · rw [← Ideal.IsDedekindDomain.ramificationIdx'_eq_one_iff hPbot Ideal.map_comap_le]
+        apply Ideal.ramificationIdx'_spec
         · simp [Ideal.map_le_iff_le_comap]
         · contrapose H
           rw [← pow_one P, show 1 = 2 - 1 by simp]
@@ -947,7 +946,7 @@ theorem not_dvd_differentIdeal_iff
           simpa [Ideal.dvd_iff_le] using H
   · intro H
     obtain ⟨Q, h₁, h₂⟩ := Ideal.eq_prime_pow_mul_coprime hp' P
-    rw [← Ideal.IsDedekindDomain.ramificationIdx'_eq_normalizedFactors_count _ _ hp',
+    rw [← Ideal.IsDedekindDomain.ramificationIdx_eq_normalizedFactors_count _ _ hp',
       Ideal.ramificationIdx_eq_one_of_isUnramifiedAt, pow_one] at h₂
     obtain ⟨h₃, h₄⟩ := (Algebra.isUnramifiedAt_iff_map_eq (p := P.under A) _ _).mp H
     exact not_dvd_differentIdeal_of_isCoprime_of_isSeparable

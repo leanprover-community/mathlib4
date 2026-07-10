@@ -335,7 +335,7 @@ theorem nonneg (i : ι) (x : X) : 0 ≤ f i x :=
 theorem le_one (i : ι) (x : X) : f i x ≤ 1 :=
   f.le_one' i x
 
-open Classical in
+open scoped Classical in
 /-- A `BumpCovering` that consists of a single function, uniformly equal to one, defined as an
 example for `Inhabited` instance. -/
 protected def single (i : ι) (s : Set X) : BumpCovering ι X s where
@@ -350,7 +350,7 @@ protected def single (i : ι) (s : Set X) : BumpCovering ι X s where
   le_one' := update_le_iff.2 ⟨le_rfl, fun _ _ _ => zero_le_one⟩
   eventuallyEq_one' x _ := ⟨i, by rw [Pi.single_eq_same, ContinuousMap.coe_one]⟩
 
-open Classical in
+open scoped Classical in
 @[simp]
 theorem coe_single (i : ι) (s : Set X) : ⇑(BumpCovering.single i s) = Pi.single i 1 := by
   rfl
@@ -503,7 +503,7 @@ theorem toPOUFun_zero_of_zero {i : ι} {x : X} (h : f i x = 0) : f.toPOUFun i x 
 theorem support_toPOUFun_subset (i : ι) : support (f.toPOUFun i) ⊆ support (f i) :=
   fun _ => mt <| f.toPOUFun_zero_of_zero
 
-open Classical in
+open scoped Classical in
 theorem toPOUFun_eq_mul_prod (i : ι) (x : X) (t : Finset ι)
     (ht : ∀ j, WellOrderingRel j i → f j x ≠ 0 → j ∈ t) :
     f.toPOUFun i x = f i x * ∏ j ∈ t with WellOrderingRel j i, (1 - f j x) := by
@@ -529,7 +529,7 @@ theorem sum_toPOUFun_eq (x : X) : ∑ᶠ i, f.toPOUFun i x = 1 - ∏ᶠ i, (1 - 
   convert! f.toPOUFun_eq_mul_prod _ _ _ fun j _ hj => _
   rwa [Finite.mem_toFinset]
 
-open Classical in
+open scoped Classical in
 theorem exists_finset_toPOUFun_eventuallyEq (i : ι) (x : X) : ∃ t : Finset ι,
     f.toPOUFun i =ᶠ[𝓝 x] f i * ∏ j ∈ t with WellOrderingRel j i, (1 - f j) := by
   rcases f.locallyFinite x with ⟨U, hU, hf⟩
@@ -571,13 +571,13 @@ def toPartitionOfUnity : PartitionOfUnity ι X s where
 theorem toPartitionOfUnity_apply (i : ι) (x : X) :
     f.toPartitionOfUnity i x = f i x * ∏ᶠ (j) (_ : WellOrderingRel j i), (1 - f j x) := rfl
 
-open Classical in
+open scoped Classical in
 theorem toPartitionOfUnity_eq_mul_prod (i : ι) (x : X) (t : Finset ι)
     (ht : ∀ j, WellOrderingRel j i → f j x ≠ 0 → j ∈ t) :
     f.toPartitionOfUnity i x = f i x * ∏ j ∈ t with WellOrderingRel j i, (1 - f j x) :=
   f.toPOUFun_eq_mul_prod i x t ht
 
-open Classical in
+open scoped Classical in
 theorem exists_finset_toPartitionOfUnity_eventuallyEq (i : ι) (x : X) : ∃ t : Finset ι,
     f.toPartitionOfUnity i =ᶠ[𝓝 x] f i * ∏ j ∈ t with WellOrderingRel j i, (1 - f j) :=
   f.exists_finset_toPOUFun_eventuallyEq i x

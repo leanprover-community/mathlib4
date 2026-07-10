@@ -100,6 +100,6 @@ protected lemma isStrictMap_prodMap (hf : IsStrictMap f)
     (hg : IsStrictMap g) : IsStrictMap (f.prodMap g) :=
   MonoidHom.isStrictMap_prodMap_iff.mpr ⟨hf, hg⟩
 
--- TODO Add the lemma `isStrictMap_piMap` once `MonoidHom.piMap` has been defined.
+-- TODO: Add the lemma `isStrictMap_piMap` once `MonoidHom.piMap` has been defined.
 
 end MonoidHom
