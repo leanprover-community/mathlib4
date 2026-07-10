@@ -102,7 +102,7 @@ lemma DetpBalanced.trans [IsCancelAdd R] (hab : A.DetpBalanced a b) (hbc : A.Det
   apply add_left_cancel (a := b * detp 1 A + b * detp (-1) A)
   convert congr($hab + $hbc) using 1 <;> abel
 
-lemma DetpBalanced.mul_add_mul_eq {a b : R} (h : A.DetpBalanced a b) (s t : ℤˣ) :
+lemma DetpBalanced.mul_add_mul_eq (h : A.DetpBalanced a b) (s t : ℤˣ) :
     a * A.detp s + b * A.detp t = b * A.detp s + a * A.detp t := by
   obtain rfl | rfl := Int.units_eq_one_or s <;> obtain rfl | rfl := Int.units_eq_one_or t
   · rw [add_comm]
@@ -110,10 +110,16 @@ lemma DetpBalanced.mul_add_mul_eq {a b : R} (h : A.DetpBalanced a b) (s t : ℤ�
   · rw [add_comm, ← h, add_comm]
   · rw [add_comm]
 
-@[simp] lemma detpBalanced_transpose_iff {a b : R} : Aᵀ.DetpBalanced a b ↔ A.DetpBalanced a b := by
+@[simp] lemma detpBalanced_transpose_iff : Aᵀ.DetpBalanced a b ↔ A.DetpBalanced a b := by
   simp [DetpBalanced]
 
 alias ⟨DetpBalanced.of_transpose, DetpBalanced.transpose⟩ := detpBalanced_transpose_iff
+
+@[simp] lemma detpBalanced_submatrix_equiv_iff {e : m ≃ n} :
+    (A.submatrix e e).DetpBalanced a b ↔ A.DetpBalanced a b := by
+  simp [DetpBalanced]
+
+alias ⟨_, DetpBalanced.submatrix_equiv⟩ := detpBalanced_submatrix_equiv_iff
 
 variable (A) in
 /-- A square matrix `A` over a commutative semiring `R` is called nonsingular if it is
@@ -130,6 +136,11 @@ variable (A) in
 @[simp] lemma nonsingular_transpose_iff : Aᵀ.Nonsingular ↔ A.Nonsingular := by simp [Nonsingular]
 
 alias ⟨Nonsingular.of_transpose, Nonsingular.transpose⟩ := nonsingular_transpose_iff
+
+@[simp] lemma nonsingular_submatrix_equiv_iff {e : m ≃ n} :
+    (A.submatrix e e).Nonsingular ↔ A.Nonsingular := by simp [Nonsingular]
+
+alias ⟨_, Nonsingular.submatrix_equiv⟩ := nonsingular_submatrix_equiv_iff
 
 lemma detp_eq_of_row_eq {p q : n} (hpq : p ≠ q) (hrow : A.row p = A.row q)
     (s : ℤˣ := 1) (t : ℤˣ := -1) : A.detp s = A.detp t := by
