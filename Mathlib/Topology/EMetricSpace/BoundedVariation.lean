@@ -459,10 +459,10 @@ theorem image_range_of_monotone (f : α → E) {u : ℕ → α} (hu : Monotone u
   induction n with
   | zero => simp [Iic]
   | succ n ih =>
-      rw [(by grind : u '' Iic (n + 1) = u '' Iic n ∪ {u n, u (n + 1)}), union f (x := u n)]
-      · simp [Finset.sum_range_succ, ih]
-      · simpa [IsGreatest, upperBounds] using ⟨⟨n, by simp⟩, fun a ha ↦ hu ha⟩
-      · simp [IsLeast, hu n.le_succ]
+    rw [(by grind : u '' Iic (n + 1) = u '' Iic n ∪ {u n, u (n + 1)}), union f]
+    · simp [Finset.sum_range_succ, ih]
+    · simpa [IsGreatest, upperBounds] using ⟨⟨n, by simp⟩, fun a ha ↦ hu ha⟩
+    · simp [IsLeast, hu n.le_succ]
 
 private theorem _root_.BoundedVariationOn.of_finset {E} [PseudoMetricSpace E] (f : α → E)
     (s : Finset α) : BoundedVariationOn f s := by
