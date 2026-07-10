@@ -282,7 +282,12 @@ noncomputable abbrev ofAntipodeOfAdjoin
               ((MulOpposite.opLinearEquiv R).symm.toLinearMap ∘ₗ S.toLinearMap)
                 ((ℛ R x).left i * (ℛ R y).left j) *
               ((ℛ R x).right i * (ℛ R y).right j) := by
-              sorry
+              simp only [Finset.mul_sum, Finset.sum_mul]
+              rw [Finset.sum_comm]
+              refine Finset.sum_congr rfl fun i _ ↦ Finset.sum_congr rfl fun j _ ↦ ?_
+              simp only [LinearMap.coe_comp, Function.comp_apply, AlgHom.coe_toLinearMap,
+                map_mul, LinearEquiv.coe_coe, MulOpposite.coe_opLinearEquiv_symm,
+                MulOpposite.unop_mul, mul_assoc]
           -- `comul (x * y) = comul x * comul y` (`map_mul` of `Bialgebra.comulAlgHom`),
           -- then `Coalgebra.Repr.eq` for `x` and `y`, `Finset.sum_mul_sum`,
           -- `Algebra.TensorProduct.tmul_mul_tmul`, and push through `map_sum`,
