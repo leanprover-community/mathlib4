@@ -387,8 +387,8 @@ theorem _root_.ContinuousLinearEquiv.isFredholm (e : E ≃L[𝕜] F) :
     IsFredholm (e : E →L[𝕜] F) where
   isStrictMap := e.isHomeomorph.isStrictMap
   isClosed_range := by simp
-  finite_ker := by --show FiniteDimensional 𝕜 e.toLinearEquiv.toLinearMap.ker by
-    rw [LinearMap.ker_eq_bot.2 (by exact EquivLike.injective e)]
+  finite_ker := by
+    rw [LinearMap.ker_eq_bot.2 (by exact e.injective)]
     infer_instance
   finite_coker := by simp
   closedComplemented_ker := by simp
