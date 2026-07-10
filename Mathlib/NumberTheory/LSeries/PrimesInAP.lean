@@ -112,6 +112,16 @@ lemma tprod_eq_tprod_primes_mul_tprod_primes_of_mulSupport_subset_prime_powers {
     Nat.Primes.prodNatEquiv.injective |>.comp <|
     Function.Injective.prodMap (fun ⦃_ _⦄ a ↦ a) <| add_left_injective 1
 
+theorem tsum_primes_pow_eq {α : Type*} [AddCommGroup α] [UniformSpace α] [IsUniformAddGroup α]
+    [CompleteSpace α] [T0Space α] {f : ℕ → α}
+    (hf : Summable (fun n : {n // IsPrimePow n} ↦ f n.1)) :
+    ∑' (p : Primes) (n : ℕ), f (p ^ (n + 1)) = ∑' n : {n : ℕ // IsPrimePow n}, f n := by
+  calc
+    _ = ∑' p : Primes × ℕ, f (prodNatEquiv p) := by
+      simpa using (Summable.tsum_prod (hf.comp_injective prodNatEquiv.injective)).symm
+    _ = _ := by
+      rw [← Equiv.tsum_eq prodNatEquiv]
+
 end auxiliary
 
 /-!
