@@ -55,6 +55,8 @@ in order to conveniently use the full strength of Fredholmness.
 
 ## Main statements
 
+### Equivalent criterions
+
 * `ContinuousLinearMap.isFredholm_tfae`: the equivalence between conditions 1, 2, 3 and 4 above.
   In practice, most of the interesting directions should be covered by specific API lemmas.
 * `ContinuousLinearMap.FredholmPackage.isQuasiInverse`: given a `FredholmPackage` for `u`,
@@ -66,6 +68,29 @@ in order to conveniently use the full strength of Fredholmness.
   subspaces, then the original map is Fredholm as well.
 * `IsFredholm.nonempty_fredholmPackage`: every Fredholm operator admits a Fredholm package.
   This is the primary way to obtain Fredholm packages.
+
+## Implementation details
+
+We largely follow [N. Bourbaki, *Théories Spectrales*, Chapitre III, § 3, n° 2][bourbaki2023],
+in particular for the proof of equivalence of the four conditions above.
+Here are some notable changes :
+
+* Bourbaki restricts itself to locally convex spaces over `ℝ` or `ℂ`. Yet, under close inspection,
+  this assumption plays very little role in the theory. In fact, at the very mild cost of assuming
+  that the kernel is complemented in the definition of `IsFredholm` (which follows from the
+  finiteness of its dimension if Hahn-Banach is available), we generalize the beginning of the
+  theory to topological vector spaces over any complete nontrivially normed field. In particular,
+  our theory naturally captures p-adic Fredholm operators.
+* Bourbaki choses the existence of a continuous quasi-inverse as the definition of being Fredholm.
+  Our choice differs for a very practical reason: it is much simpler to spell out formally
+  "`u` has a continuous quasi-inverse" than "`u` is strict, its range is closed and has finite
+  codimension, and its kernel is complemented and has finite dimension". Hence we prefer to give
+  a name to the latter.
+
+
+## References
+
+* [N. Bourbaki, *Théories Spectrales*, Chapitre III, § 3, n° 2][bourbaki2023]
 
 -/
 
@@ -338,6 +363,7 @@ theorem isFredholm_tfae (u : E →L[𝕜] F) : List.TFAE
     exact .of_isInvertible_restrict E₁_closed F₁_closed u_mapsto u_invertible
   tfae_finish
 
+/-- If `u` has a Fredholm package, it is Fredholm. -/
 theorem FredholmPackage.isFredholm {u : E →L[𝕜] F} (pkg : FredholmPackage u) :
     IsFredholm u :=
   isFredholm_tfae u |>.out 3 0 |>.mp (Nonempty.intro pkg)
