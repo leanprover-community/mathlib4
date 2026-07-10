@@ -185,7 +185,7 @@ instance : Pow UnitDisc ℕ+ where
 theorem coe_ppow (z : 𝔻) (n : ℕ+) : ((z ^ n : 𝔻) : ℂ) = z ^ (n : ℕ) := by
   induction n using Semigroup.ppow_induction z with
   | h1 => simp
-  | hsucc n IH => simp [pow_succ _ (n + 1), IH]
+  | hsucc n IH => simp [pow_succ, IH]
 
 @[fun_prop]
 theorem continuous_ppow (n : ℕ+) : Continuous (· ^ n : 𝔻 → 𝔻) := by
