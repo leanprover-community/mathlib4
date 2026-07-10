@@ -218,25 +218,29 @@ noncomputable abbrev ofAntipodeOfAdjoin
   mul_antipode_rTensor_comul := by
     ext t
     let P : A → Prop := fun y ↦ (LinearMap.mul' R A ∘ₗ
-      LinearMap.rTensor A ((MulOpposite.opLinearEquiv (M := A) R).symm ∘ₗ S.toLinearMap) ∘ₗ CoalgebraStruct.comul) y = (Algebra.linearMap R A ∘ₗ CoalgebraStruct.counit) y
+      LinearMap.rTensor A ((MulOpposite.opLinearEquiv (M := A) R).symm ∘ₗ S.toLinearMap) ∘ₗ
+      CoalgebraStruct.comul) y = (Algebra.linearMap R A ∘ₗ CoalgebraStruct.counit) y
     have hgood : ∀ y ∈ Algebra.adjoin R X, P y := by
       intro y hy
       apply Algebra.adjoin_induction (R := R) (s := X) (p := fun y _ => P y)
       · exact hxr
       · intro r
-        simp_all only [Algebra.mem_top, LinearMap.coe_comp, Function.comp_apply, Algebra.linearMap_apply,
-          comul_algebraMap, Algebra.TensorProduct.algebraMap_apply, LinearMap.rTensor_tmul, LinearEquiv.coe_coe,
-          MulOpposite.coe_opLinearEquiv_symm, AlgHom.coe_toLinearMap, AlgHom.commutes, MulOpposite.algebraMap_apply,
-          MulOpposite.unop_op, LinearMap.mul'_apply, mul_one, counit_algebraMap, P]
+        simp_all only [Algebra.mem_top, LinearMap.coe_comp, Function.comp_apply,
+        Algebra.linearMap_apply, comul_algebraMap, Algebra.TensorProduct.algebraMap_apply,
+        LinearMap.rTensor_tmul, LinearEquiv.coe_coe, MulOpposite.coe_opLinearEquiv_symm,
+        AlgHom.coe_toLinearMap, AlgHom.commutes, MulOpposite.algebraMap_apply, MulOpposite.unop_op,
+        LinearMap.mul'_apply, mul_one, counit_algebraMap, P]
       · intro x y_1 hx hy_1 a a_1
-        simp_all only [Algebra.mem_top, LinearMap.coe_comp, Function.comp_apply, Algebra.linearMap_apply, map_add, P]
+        simp_all only [Algebra.mem_top, LinearMap.coe_comp, Function.comp_apply,
+        Algebra.linearMap_apply, map_add, P]
       · -- this is the harder one, likely reducing to a calc and repr
         intro x y hx hy hxP hyP
         unfold P
         symm
         calc
           _ = (Algebra.linearMap R A ∘ₗ ε) x * (Algebra.linearMap R A ∘ₗ ε) y := by
-              simp only [LinearMap.coe_comp, Function.comp_apply, counit_mul, linearMap_apply, map_mul]
+              simp only [LinearMap.coe_comp, Function.comp_apply, counit_mul,
+                        linearMap_apply, map_mul]
           -- replace `ε(y)•1` using `hyP` (the outer sum must be over `y`, not `x`)
           _ = (Algebra.linearMap R A ∘ₗ ε) x * ∑ j ∈ (ℛ R y).index,
               ((MulOpposite.opLinearEquiv R).symm.toLinearMap ∘ₗ S.toLinearMap) ((ℛ R y).left j) *
