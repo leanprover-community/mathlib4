@@ -8,6 +8,7 @@ module
 
 public import Mathlib.Topology.Covering.Quotient
 public import Mathlib.Geometry.Manifold.Algebra.SMul
+public import Mathlib.Geometry.Manifold.LocalDiffeomorph
 
 /-!
 # Quotients of manifolds
@@ -65,15 +66,56 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   (I : ModelWithCorners 𝕜 E H) {n : ℕ∞} [IsManifold I n M]
 
-omit [T2Space M] [LocallyCompactSpace M] in
-lemma mem_contDiffGroupoid_of_contMDiff_chartAt {x y : M} {h : OpenPartialHomeomorph M M}
-    (hh : ContMDiff I I n h) (hhsymm : ContMDiff I I n h.symm) :
-    (chartAt H x).symm.trans (h.trans (chartAt H y)) ∈ (contDiffGroupoid (↑n) I) := by
-  refine mem_groupoid_of_pregroupoid.mpr ⟨?_, ?_⟩
-  · refine ((contMDiff_iff.mp hh).2 x y).mono (fun v hv ↦ ?_)
-    simpa using ⟨⟨hv.2, hv.1.1⟩, hv.1.2.2⟩
-  · refine ((contMDiff_iff.mp hhsymm).2 y x).mono (fun v hv ↦ ?_)
-    simpa using ⟨⟨hv.2, hv.1.1.1⟩, hv.1.2⟩
+variable {I} in
+omit [T2Space M] [LocallyCompactSpace M] [IsManifold I n M] in
+open IsManifold in
+lemma mem_maximalAtlas_of_contMDiffOn {e e' : OpenPartialHomeomorph M H}
+    (he : e ∈ maximalAtlas I n M) (he' : e' ∈ maximalAtlas I n M)
+    {h : OpenPartialHomeomorph M M}
+    (hh : ContMDiffOn I I n h h.source) (hhsymm : ContMDiffOn I I n h.symm h.target) :
+    e.symm.trans (h.trans e') ∈ maximalAtlas I n H := by
+  refine (e.symm.trans (h.trans e')).mem_maximalAtlas_of_contMDiffOn ?_ ?_
+  · exact (contMDiffOn_of_mem_maximalAtlas he').comp
+      (hh.comp ((contMDiffOn_symm_of_mem_maximalAtlas he).mono fun z hz ↦ hz.1)
+        fun z hz ↦ hz.2.1)
+      fun z hz ↦ hz.2.2
+  · exact (contMDiffOn_of_mem_maximalAtlas he).comp
+      (hhsymm.comp ((contMDiffOn_symm_of_mem_maximalAtlas he').mono fun z hz ↦ hz.1.1)
+        fun z hz ↦ hz.1.2)
+      fun z hz ↦ hz.2
+
+variable {I} in
+omit [T2Space M] [LocallyCompactSpace M] [IsManifold I n M] in
+open IsManifold in
+lemma mem_maximalAtlas_of_partialDiffeomorph {e e' : OpenPartialHomeomorph M H}
+    (he : e ∈ maximalAtlas I n M) (he' : e' ∈ maximalAtlas I n M)
+    {h : PartialDiffeomorph I I M M n} :
+    e.symm.trans (h.toOpenPartialHomeomorph.trans e') ∈ maximalAtlas I n H :=
+  mem_maximalAtlas_of_contMDiffOn he he' h.contMDiffOn_toFun h.contMDiffOn_invFun
+
+variable {I} in
+omit [T2Space M] [LocallyCompactSpace M] [IsManifold I n M] in
+open IsManifold in
+/-- If `h` is an open partial homeomorphism of `M` that is `C^n` on its source, with `C^n`
+inverse on its target, then reading `h` through two members of the maximal atlas yields an
+element of `contDiffGroupoid n I`. -/
+lemma mem_contDiffGroupoid_of_contMDiffOn {e e' : OpenPartialHomeomorph M H}
+    (he : e ∈ maximalAtlas I n M) (he' : e' ∈ maximalAtlas I n M)
+    {h : OpenPartialHomeomorph M M}
+    (hh : ContMDiffOn I I n h h.source) (hhsymm : ContMDiffOn I I n h.symm h.target) :
+    e.symm.trans (h.trans e') ∈ contDiffGroupoid n I := by
+  simpa [OpenPartialHomeomorph.refl_trans, OpenPartialHomeomorph.refl_symm] using
+    compatible_of_mem_maximalAtlas (subset_maximalAtlas (chartedSpaceSelf_atlas.mpr rfl))
+    (mem_maximalAtlas_of_contMDiffOn he he' hh hhsymm)
+
+variable {I} in
+omit [T2Space M] [LocallyCompactSpace M] [IsManifold I n M] in
+open IsManifold in
+lemma mem_contDiffGroupoid_of_partialDiffeomorph {e e' : OpenPartialHomeomorph M H}
+    (he : e ∈ maximalAtlas I n M) (he' : e' ∈ maximalAtlas I n M)
+    {h : PartialDiffeomorph I I M M n} :
+    e.symm.trans (h.toOpenPartialHomeomorph.trans e') ∈ contDiffGroupoid n I :=
+  mem_contDiffGroupoid_of_contMDiffOn he he' h.contMDiffOn_toFun h.contMDiffOn_invFun
 
 open Set
 
@@ -194,12 +236,13 @@ instance : IsManifold I n (orbitRel.Quotient G M) where
       (chartAt H x.out).symm.isOpen_inter_preimage
         ((πinv y).open_target.preimage (continuous_const_smul g0))
     refine ⟨_, hto, ⟨hh.1, hg0⟩, ?_⟩
-    refine StructureGroupoid.restr_mem_of_eqOn (mem_contDiffGroupoid_of_contMDiff_chartAt I ?_ ?_)
+    refine StructureGroupoid.restr_mem_of_eqOn (mem_contDiffGroupoid_of_contMDiffOn
+      (IsManifold.chart_mem_maximalAtlas x.out) (IsManifold.chart_mem_maximalAtlas y.out) ?_ ?_)
       hto (hg0'.mono inter_subset_right) ?_
     · rw [Homeomorph.toOpenPartialHomeomorph_apply]
-      exact ContMDiffSMul.contMDiff_const_smul (I := I) g0
+      exact (ContMDiffSMul.contMDiff_const_smul (I := I) g0).contMDiffOn
     · rw [Homeomorph.toOpenPartialHomeomorph_symm_apply]
-      exact ContMDiffSMul.contMDiff_const_smul (I := I) g0⁻¹
+      exact (ContMDiffSMul.contMDiff_const_smul (I := I) g0⁻¹).contMDiffOn
     · rintro h' ⟨⟨hQ1, _, hQ4⟩, _, hcert⟩
       exact ⟨hQ1, mem_univ _, by simpa [← smul_eqOn x y g0 hcert] using hQ4⟩
 
