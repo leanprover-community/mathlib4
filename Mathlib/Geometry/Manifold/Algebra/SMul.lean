@@ -197,16 +197,14 @@ variable (I I' n) in
 /-- The diffeomorphism given by scalar multiplication by an element of a group `G` acting
 Cⁿ-differentiably on a manifold `M` is a diffeomorphism from `M` to itself. Its inverse is scalar
 multiplication by `g⁻¹`. -/
-@[expose, to_additive]
+@[expose, to_additive
+/-- The diffeomorphism given by affine-addition by an element of an additive group `G` acting
+Cⁿ-differentiably on a manifold `M` is a diffeomorphism from `M` to itself. Its inverse is
+addition by `-g`. -/]
 def Diffeomorph.smul (g : G) : M ≃ₘ^n⟮I', I'⟯ M where
   toEquiv := MulAction.toPerm g
   contMDiff_toFun := ContMDiffSMul.contMDiff_const_smul (I := I) g
   contMDiff_invFun := ContMDiffSMul.contMDiff_const_smul (I := I) g⁻¹
-
-/-- The diffeomorphism given by affine-addition by an element of an additive group `G` acting
-Cⁿ-differentiably on a manifold `M` is a diffeomorphism from `M` to itself. Its inverse is
-addition by `-g`. -/
-add_decl_doc Diffeomorph.vadd
 
 @[to_additive (attr := simp)]
 lemma Diffeomorph.smul_apply (g : G) (x : M) : Diffeomorph.smul I I' n g x = g • x := rfl
