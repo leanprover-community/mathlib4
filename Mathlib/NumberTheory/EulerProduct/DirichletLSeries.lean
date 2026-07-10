@@ -213,15 +213,6 @@ open ArithmeticFunction Primes Summable
 
 variable {N : ℕ} (χ : DirichletCharacter ℂ N) {s : ℂ}
 
-@[to_additive tsum_primes_pow_eq]
-theorem tprod_primes_pow_eq {α : Type*} [CommGroup α] [UniformSpace α] [IsUniformGroup α]
-    [CompleteSpace α] [T0Space α] {f : ℕ → α}
-    (hf : Multipliable fun n : {n // IsPrimePow n} ↦ f n.1) :
-    ∏' (p : Primes) (n : ℕ), f (p ^ (n + 1)) = ∏' n : {n : ℕ // IsPrimePow n}, f n := calc
-    _ = ∏' p : Primes × ℕ, f (prodNatEquiv p) := by
-      simpa using (hf.comp_injective prodNatEquiv.injective).tprod_prod.symm
-    _ = _ := by rw [← Equiv.tprod_eq prodNatEquiv]
-
 /-- For `1 < s.re`, the sum over primes of `-log (1 - χ p * p ^ (-s))` — the logarithm of the Euler
 product — equals the `L`-series of `n ↦ χ n * Λ n / Real.log n`.
 -/
@@ -231,15 +222,15 @@ theorem DirichletCharacter.eulerProduct_log_eq_LSeries (hs : 1 < s.re) :
   have hpow_le (p : Primes) : ‖χ p * (p : ℂ) ^ (-s)‖ < 1 := by
     grw [norm_mul, norm_le_one, norm_natCast_cpow_of_pos (mod_cast p.prop.pos), neg_re, one_mul]
     apply rpow_lt_one_of_one_lt_of_neg (mod_cast p.prop.one_lt) (by linarith)
-  have htaylor (p : Primes) := hasSum_taylorSeries_succ_neg_log (hpow_le p)
-  rw [tsum_congr (fun p ↦ (htaylor p).tsum_eq.symm), LSeries_def₀ (by simp)]
+  rw [tsum_congr (fun p ↦ (hasSum_taylorSeries_succ_neg_log (hpow_le p)).tsum_eq.symm),
+    LSeries_def₀ (by simp)]
   calc
     _ = ∑' (p : Primes) (k : ℕ), (χ (p ^ (k + 1)) * ((p ^ (k + 1) : ℕ) : ℂ) ^ (-s)) *
           Λ (p ^ (k + 1)) / Real.log (p ^ (k + 1)) := by
       congr! 4 with p k
-      have : (Real.log p : ℂ) ≠ 0 := mod_cast p.prop.log_ne_zero
-      simp [mul_pow, ← cpow_nat_mul, map_pow, ← natCast_cpow_natCast_mul, vonMangoldt_apply_pow,
-        vonMangoldt_apply_prime p.2, -natCast_log]
+      have : Complex.log p ≠ 0 := mod_cast p.prop.log_ne_zero
+      simp [mul_pow, ← cpow_nat_mul, ← natCast_cpow_natCast_mul, vonMangoldt_apply_pow,
+        vonMangoldt_apply_prime p.2]
       field_simp
     _ = ∑' n : {n : ℕ // IsPrimePow n}, χ n * Λ n / Real.log n * ((n : ℂ) ^ (-s)) := by
       rw [← tsum_primes_pow_eq (f := fun n ↦ χ n * Λ n / Real.log n * (n : ℂ)^(-s))]
