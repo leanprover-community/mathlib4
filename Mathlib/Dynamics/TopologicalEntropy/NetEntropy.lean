@@ -188,7 +188,6 @@ lemma netMaxcard_univ (T : X → X) (h : F.Nonempty) (n : ℕ) : netMaxcard T F 
   refine Finset.card_le_one.2 fun x x_s y y_s ↦ ?_
   exact PairwiseDisjoint.elim_set s_net x_s y_s x (mem_univ x) (mem_univ x)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma netMaxcard_infinite_iff (T : X → X) (F : Set X) (U : SetRel X X) (n : ℕ) :
     netMaxcard T F U n = ⊤ ↔ ∀ k : ℕ, ∃ s : Finset X, IsDynNetIn T F U n s ∧ k ≤ s.card := by
   apply Iff.intro <;> intro h
@@ -198,11 +197,11 @@ lemma netMaxcard_infinite_iff (T : X → X) (F : Set X) (U : SetRel X X) (n : �
     simp only [Nat.cast_lt, Subtype.exists, exists_prop] at h
     obtain ⟨s, s_net, s_k⟩ := h
     exact ⟨s, s_net, s_k.le⟩
-  · refine WithTop.eq_top_iff_forall_gt.2 fun k ↦ ?_
+  · refine ENat.eq_top_iff_forall_gt.mpr fun k ↦ ?_
     specialize h (k + 1)
     obtain ⟨s, s_net, s_card⟩ := h
     apply s_net.card_le_netMaxcard.trans_lt'
-    rw [ENat.some_eq_coe, Nat.cast_lt]
+    rw [ENat.coe_lt_coe]
     exact (lt_add_one k).trans_le s_card
 
 lemma netMaxcard_le_coverMincard (T : X → X) (F : Set X) (n : ℕ) :
