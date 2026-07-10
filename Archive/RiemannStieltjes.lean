@@ -59,13 +59,15 @@ was conducted.
 
 Some very basic API is provided in this file.  More extensive API may be found at
 https://github.com/leanprover-community/mathlib-at-ICERM26/tree/stieltjes .  However, unless
-one is specifically interested in the Riemann aspect of integration theory, it is recommended
-that one use the Bochner integral API in `MeasureTheory.Integral.Bochner` or the vector-valued
-integral API in `MeasureTheory.VectorMeasure` instead, which is more general and
+one is specifically interested in the Riemann aspect of integration theory, it is recommended that
+one instead use the more general integration API already in
+Mathlib, specifically `MeasureTheory.Integral.Bochner` (for
+integration against non-negative measures) or `MeasureTheory.VectorMeasure` (to handle
+Lebesgue--Stieltjes) type integrals.
 
 ## Tags
 
-Stieltjes integral, Riemann–Stieltjes, Riemann integral
+Stieltjes integral, Riemann–-Stieltjes, Riemann integral
 -/
 
 @[expose] public section
