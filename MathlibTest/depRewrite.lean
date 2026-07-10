@@ -525,3 +525,18 @@ example {ι : Type*} {X : ι → Sort*} (f : ∀ i, X i) (i : ι) (y : X i) :
   conv => lhs; rw! [h]; trace_state
   trace_state
   exact test_sorry
+
+def PropOrBool (x : Bool) : Type :=
+  bif x then Prop else Bool
+
+def boolToPropOrBool (x y : Bool) : PropOrBool x :=
+  match x with
+  | true => y = true
+  | false => y
+
+theorem foo : let t := true; boolToPropOrBool t t := by
+  intro t
+  have h : t = true := rfl
+  rw! [h]
+  guard_target =ₛ boolToPropOrBool true true
+  rfl
