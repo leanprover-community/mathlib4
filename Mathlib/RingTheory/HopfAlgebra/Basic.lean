@@ -191,7 +191,10 @@ namespace HopfAlgebra
 
 variable {R A : Type*} [CommSemiring R] [Semiring A] [Bialgebra R A]
 
-#check Algebra.adjoin_induction
+open Algebra Coalgebra Bialgebra HopfAlgebra TensorProduct WithConv
+open scoped RingTheory.LinearMap
+#check Coalgebra.Repr.arbitrary
+#check Repr.eq
 /--
 If `A` is generated as an `R`-algebra by `X`, and `S : A →ₐ[R] Aᵐᵒᵖ` satisfies the two
 antipode identities on `X`, then the underlying linear map gives a Hopf algebra structure on `A`.
@@ -227,14 +230,47 @@ noncomputable abbrev ofAntipodeOfAdjoin
           MulOpposite.unop_op, LinearMap.mul'_apply, mul_one, counit_algebraMap, P]
       · intro x y_1 hx hy_1 a a_1
         simp_all only [Algebra.mem_top, LinearMap.coe_comp, Function.comp_apply, Algebra.linearMap_apply, map_add, P]
-      · -- this is the harder one, likely reducing to a calc
+      · -- this is the harder one, likely reducing to a calc and repr
         intro x y hx hy hxP hyP
+        unfold P
+        set α := ℛ R (x * y) with hα
+        symm
+        calc
+          _ = (Algebra.linearMap R A ∘ₗ ε) x * (Algebra.linearMap R A ∘ₗ ε) y := by
+              simp only [LinearMap.coe_comp, Function.comp_apply, counit_mul, linearMap_apply, map_mul]
+          _ = (∑ i ∈ (ℛ R x).index, (ℛ R x).left i * ((MulOpposite.opLinearEquiv R).symm.toLinearMap
+              ∘ₗ S.toLinearMap) ((ℛ R x).right i)) * (Algebra.linearMap R A ∘ₗ ε) y := by
+              congr 1
+              unfold P at hxP
+              rw [← hxP]
+              simp only [LinearMap.coe_comp, Function.comp_apply]
+              -- rw [Coalgebra.Repr.eq (R := R) x]
+              -- simp only [map_sum, LinearMap.rTensor_tmul, LinearMap.mul'_apply]
+              sorry
+              -- congr
+              -- simp only [LinearMap.coe_comp, Function.comp_apply, linearMap_apply,
+              --   LinearEquiv.coe_coe, MulOpposite.coe_opLinearEquiv_symm, AlgHom.coe_toLinearMap]
+              -- unfold P at hxP
+              -- rw [← show (algebraMap R A) (ε x) = (Algebra.linearMap R A ∘ₗ ε) x by exact DFunLike.congr_fun rfl (ε x)] at hxP
+              -- rw [← hxP]
+              -- sorry
+          _ = ∑ i ∈ (ℛ R x).index, (ℛ R x).left i * (∑ j ∈ (ℛ R y).index, (ℛ R y).left j *
+              (((MulOpposite.opLinearEquiv R).symm.toLinearMap ∘ₗ S.toLinearMap) ((ℛ R y).right j)))
+              * (((MulOpposite.opLinearEquiv R).symm.toLinearMap ∘ₗ S.toLinearMap) ((ℛ R x).right i)) := by
 
-        sorry
+              sorry
+
+          _ = ∑ i ∈ (ℛ R x).index, ∑ j ∈ (ℛ R y).index, ((ℛ R x).left i) * ((ℛ R y).right j) *
+              (((MulOpposite.opLinearEquiv R).symm.toLinearMap ∘ₗ S.toLinearMap) ((ℛ R x).right i) * ((ℛ R y).right j)) := by sorry
+          _ = ∑ k ∈ (ℛ R (x * y)).index, (ℛ R (x * y)).left k * (((MulOpposite.opLinearEquiv R).symm.toLinearMap ∘ₗ S.toLinearMap) ((ℛ R (x * y)).right k)) := by sorry
+          _ = _ := by
+            have : x * y ∈ adjoin R X := by sorry
+
+            sorry
       · exact hy
     specialize hgood t (by rw [hX]; exact Algebra.mem_top)
     exact hgood
-  mul_antipode_lTensor_comul := by sorry
+  mul_antipode_lTensor_comul := sorry
 
 
 
