@@ -92,8 +92,16 @@ theorem find?_eq_none_iff {s : Multiset α} (hp) :
     dsimp [Set.Subsingleton] at hp
     grind
 
-theorem find?_eq_choose {s : Multiset α} (hp' : ∃! x, x ∈ s ∧ p x) :
-    s.find? p hp'.setSubsingleton = some (s.choose p hp') := by
+/-- If two predicates agree on all the elements, so does `find?`. -/
+@[congr]
+theorem find?_congr {p₁ p₂ : α → Prop} [DecidablePred p₁] [DecidablePred p₂] {s : Multiset α}
+    (hp₁ : {x ∈ s | p₁ x}.Subsingleton) (h : ∀ x ∈ s, p₁ x ↔ p₂ x) :
+    s.find? p₁ hp₁ = s.find? p₂
+      (by simp_rw +contextual [← exists_prop, ← h, exists_prop, hp₁]) := by
+  induction s using Quotient.ind with simp +contextual [h]
+
+theorem find?_eq_choose {s : Multiset α} (hp : ∃! x, x ∈ s ∧ p x) :
+    s.find? p hp.setSubsingleton = some (s.choose p hp) := by
   ext a
   refine find?_eq_some_iff _ |>.trans ?_
   simp only [Option.some.injEq, choose_eq_iff]
