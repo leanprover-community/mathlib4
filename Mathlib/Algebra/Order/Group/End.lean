@@ -6,10 +6,21 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Algebra.Group.Defs
+public import Mathlib.Order.Hom.Basic
 public import Mathlib.Order.RelIso.Basic
+public import Mathlib.Data.FunLike.IsApply
 
 /-!
 # Relation isomorphisms form a group
+
+This file contains `Monoid` instances for `RelHom` and `OrderHom`, where multiplication is
+given by composition. Likewise there is a `Group` instance for `RelIso`. Because `OrderIso`
+is an abbreviation for `RelIso`, there is no need for an additional instance.
+
+## TODO
+
++ Rename the `mul_def`/`one_def` lemmas to `mul_eq_comp`/`one_eq_id`.
++ Use the `IsMulApplyEqComp` and `IsOneApplyEqSelf` classes for `RelHom` and `RelIso`.
 -/
 
 @[expose] public section
@@ -87,3 +98,22 @@ theorem apply_inv_self (e : r ≃r r) (x) : e (e⁻¹ x) = x :=
   e.apply_symm_apply x
 
 end RelIso
+
+namespace OrderHom
+
+variable [Preorder α]
+
+instance : Mul (α →o α) where mul f g := f.comp g
+instance : One (α →o α) where one := .id
+instance : IsMulApplyEqComp (α →o α) α where mul_apply_eq_comp _ _ _ := rfl
+instance : IsOneApplyEqSelf (α →o α) α where one_apply_eq_self _ := rfl
+
+lemma mul_eq_comp (f g : α →o α) : (f * g : α →o α) = f.comp g := rfl
+lemma one_eq_id : (1 : α →o α) = .id := rfl
+
+instance : Monoid (α →o α) where
+  mul_assoc f g h := by simp [DFunLike.ext_iff]
+  one_mul f := by simp [DFunLike.ext_iff]
+  mul_one f := by simp [DFunLike.ext_iff]
+
+end OrderHom

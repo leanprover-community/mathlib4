@@ -97,7 +97,7 @@ instance : IsLocalization.Away D.gbar S := by
     rw [← map_one (algebraMap P.Ring S), ← sub_eq_zero, ← map_sub, ← RingHom.mem_ker]
     exact D.hgmem
 
-open Classical in
+open scoped Classical in
 /-- The "naive" presentation of `T = R[X₁, ..., Xₙ] / (b₁, ..., bᵣ)` over `R`.
 We make sure the section `T → R[X₁, ..., Xₙ]` maps `-1` to `-1` and `0` to `0`. -/
 def presLeft : Presentation R D.T ι σ :=
@@ -260,6 +260,9 @@ lemma basis_apply [Nontrivial S] (r : Unit ⊕ σ) :
   · rw [basis_inr, cotangentEquivProd_symm_apply, cotangentCompLocalizationAwayEquiv_symm_inl,
       basisLeft, Module.Basis.map_apply, tensorCotangentEquiv_symm_apply,
       LinearMap.liftBaseChange_tmul, one_smul, Extension.Cotangent.map_mk]
+    simp only [Extension.Hom.toAlgHom_apply, Hom.toExtensionHom_toRingHom, AlgHom.toRingHom_eq_coe]
+    congr! 2 with x
+    simp [pres, Presentation.comp_relation_inr, kerGen, presLeft, Generators.toComp_toAlgHom]
     rfl
 
 end PresentationOfFreeCotangent.Aux
