@@ -115,9 +115,12 @@ lemma DetpBalanced.mul_add_mul_eq (h : A.DetpBalanced a b) (s t : ℤˣ) :
 
 alias ⟨DetpBalanced.of_transpose, DetpBalanced.transpose⟩ := detpBalanced_transpose_iff
 
-@[simp] lemma detpBalanced_submatrix_equiv_iff {e : m ≃ n} :
-    (A.submatrix e e).DetpBalanced a b ↔ A.DetpBalanced a b := by
-  simp [DetpBalanced]
+@[simp] lemma detpBalanced_submatrix_equiv_iff {e₁ e₂ : m ≃ n} :
+    (A.submatrix e₁ e₂).DetpBalanced a b ↔ A.DetpBalanced a b := by
+  simp_rw [DetpBalanced, detp_submatrix_equiv_equiv]
+  obtain eq | eq := Int.units_eq_one_or (sign (e₁.symm.trans e₂)) <;> rw [eq]
+  on_goal 2 => rw [add_comm, eq_comm, add_comm]
+  all_goals rfl
 
 alias ⟨_, DetpBalanced.submatrix_equiv⟩ := detpBalanced_submatrix_equiv_iff
 
@@ -137,8 +140,8 @@ variable (A) in
 
 alias ⟨Nonsingular.of_transpose, Nonsingular.transpose⟩ := nonsingular_transpose_iff
 
-@[simp] lemma nonsingular_submatrix_equiv_iff {e : m ≃ n} :
-    (A.submatrix e e).Nonsingular ↔ A.Nonsingular := by simp [Nonsingular]
+@[simp] lemma nonsingular_submatrix_equiv_iff {e₁ e₂ : m ≃ n} :
+    (A.submatrix e₁ e₂).Nonsingular ↔ A.Nonsingular := by simp [Nonsingular]
 
 alias ⟨_, Nonsingular.submatrix_equiv⟩ := nonsingular_submatrix_equiv_iff
 
@@ -175,10 +178,7 @@ lemma DetpBalanced.submatrix_of_card_le {a b : R} (h : A.DetpBalanced a b)
     ⟨hf, (Fintype.card_le_of_injective f hf).antisymm le⟩
   let g' := Equiv.ofBijective g <| (Fintype.bijective_iff_injective_and_card _).mpr
     ⟨hg, (Fintype.card_le_of_injective g hg).antisymm le⟩
-  simp_rw [show f = f' by rfl, show g = g' by rfl, DetpBalanced, detp_submatrix_equiv_equiv]
-  obtain eq | eq := Int.units_eq_one_or (sign (f'.symm.trans g')) <;> rw [eq]
-  on_goal 2 => rw [add_comm, eq_comm, add_comm]
-  exacts [h, h]
+  rwa [show f = f' by rfl, show g = g' by rfl, detpBalanced_submatrix_equiv_iff]
 
 variable (A)
 
