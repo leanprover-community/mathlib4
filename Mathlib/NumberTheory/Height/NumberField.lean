@@ -170,47 +170,48 @@ theorem finprod_fiberwise_univ {ι κ M : Type*} [CommMonoid M]
     ∏ᶠ j, ∏ᶠ i ∈ {i | g i = j}, f i = ∏ᶠ i, f i := by
   simpa using finprod_fiberwise Set.univ g f hf
 
-theorem finprod_mem_pow_eq_pow_finsum {ι M : Type*} [CommMonoid M] (s : Set ι) (f : ι → ℕ)
-    (hf : (s ∩ f.support).Finite) (a : M) :
-    ∏ᶠ i ∈ s, a ^ f i = a ^ ∑ᶠ i ∈ s, f i := by
-  classical
-  rw [finprod_mem_eq_prod_of_subset (t := hf.toFinset.filter (· ∈ s)), Finset.prod_pow_eq_pow_sum,
-    finsum_mem_eq_sum_of_subset (t := hf.toFinset.filter (· ∈ s))]
-  · simp [Function.support]
-    grind
-  · simp
-    grind
-  · simp [Function.mulSupport]
-    intro x ⟨hx1, hx2⟩
-    refine ⟨?_, hx1⟩
-    contrapose! hx2
-    simp [hx2]
-    rw [hx2 hx1, pow_zero]
-  · simp
-    grind
-
 open IsDedekindDomain in
 theorem foo {f : Ideal (𝓞 L) → ℝ} (v : HeightOneSpectrum (𝓞 K)) :
     ∏ᶠ (w : HeightOneSpectrum (𝓞 L)) (_ : w.under (𝓞 K) = v), f w.1 =
-      ∏ w ∈ IsDedekindDomain.primesOverFinset v.1 (𝓞 L), f w := by
-  sorry
+      ∏ w : v.1.primesOver (𝓞 L), f w := by
+  let s : Set (HeightOneSpectrum (𝓞 L)) := {w | w.under (𝓞 K) = v}
+  change ∏ᶠ w ∈ s, f w.1 = ∏ w : v.1.primesOver (𝓞 L), f w
+  have h1 : s.Finite := by
+    sorry
+  let ι : HeightOneSpectrum (𝓞 L) ↪ Ideal (𝓞 L) :=
+    ⟨HeightOneSpectrum.asIdeal, HeightOneSpectrum.asIdeal_injective⟩
+  have h2 : h1.toFinset.map ι = IsDedekindDomain.primesOverFinset v.1 (𝓞 L) := by
+    sorry
+  rw [finprod_mem_eq_finite_toFinset_prod _ h1]
+  transitivity ∏ i ∈ h2, f i
+
+  apply Finset.prod_of_injOn _ HeightOneSpectrum.asIdeal_injective.injOn
+  · intro p hp
+    rw [SetLike.mem_coe, IsDedekindDomain.mem_primesOverFinset_iff]
+    rw [Ideal.primesOver]
+    simp [s, HeightOneSpectrum.ext_iff] at hp
+    refine ⟨p.isPrime, ?_⟩
+    exact ⟨hp.symm⟩
+    exact v.ne_bot
+  · intro i hi h
+    contrapose! h
+    rw [IsDedekindDomain.mem_primesOverFinset_iff] at hi
+    sorry
+  · intro i hi
+    rfl
 
 open scoped NumberField.LiesOver
 
 theorem mult_mul_finrank (v : InfinitePlace K) (w : InfinitePlace L) [hh : w.1.LiesOver v.1] :
     v.mult * Module.finrank v.Completion w.Completion = w.mult := by
-  have : v = w.comap (algebraMap K L) := by
-    have h1 := hh.comp_eq.symm
-    rw [InfinitePlace.ext_iff]
-    rwa [AbsoluteValue.ext_iff] at h1
-  by_cases h : w.IsUnramified K
-  · rw [NumberField.InfinitePlace.Completion.finrank_eq_one_of_isUnramified v h, mul_one]
-    convert NumberField.InfinitePlace.IsUnramified.eq h
-  · rw [NumberField.InfinitePlace.Completion.finrank_eq_two_of_isRamified v h]
-    have := InfinitePlace.isRamified_iff.mp h
-    rw [InfinitePlace.mult, if_pos, InfinitePlace.mult, if_neg, one_mul]
-    simpa using this.1
-    convert this.2
+  have : v = w.comap (algebraMap K L) := Subtype.ext hh.comp_eq.symm
+  by_cases h : w.IsUnramified K -- add IsUnramified or IsRamified (for dot notation)
+  · rw [NumberField.InfinitePlace.Completion.finrank_eq_one_of_isUnramified v h, mul_one,
+      this, h.eq]
+  · rw [NumberField.InfinitePlace.Completion.finrank_eq_two_of_isRamified v h, this,
+      InfinitePlace.mult, if_pos (InfinitePlace.IsRamified.isReal h), InfinitePlace.mult, if_neg] -- add mult_isReal and mult_isComplex
+    rw [InfinitePlace.not_isReal_iff_isComplex]
+    exact InfinitePlace.IsRamified.isComplex h
 
 open IsDedekindDomain in
 theorem mulHeight_pow_finrank_aux {ι : Type*} [Nonempty ι] [Finite ι]
@@ -289,11 +290,6 @@ theorem mulHeight_pow_finrank_aux {ι : Type*} [Nonempty ι] [Finite ι]
       congr
       rw [Algebra.IsAlgebraic.finrank_of_isFractionRing (𝓞 K) K (𝓞 L) L]
       rw [← Ideal.sum_ramification_inertia_eq_finrank v.1 (𝓞 L)]
-      symm
-      apply Finset.sum_subtype
-      intro I
-      rw [IsDedekindDomain.mem_primesOverFinset_iff]
-      exact v.ne_bot
     · apply Function.HasFiniteMulSupport.comp_of_injective
         FinitePlace.equivHeightOneSpectrum.symm.injective
           (Function.HasFiniteMulSupport.iSup fun i ↦ FinitePlace.hasFiniteMulSupport (hx i))
