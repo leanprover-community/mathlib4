@@ -191,8 +191,9 @@ theorem finprod_fiberwise_univ {ι κ M : Type*} [CommMonoid M]
     ∏ᶠ j, ∏ᶠ i ∈ {i | g i = j}, f i = ∏ᶠ i, f i := by
   simpa using finprod_fiberwise Set.univ g f hf
 
+variable {L} in
 open IsDedekindDomain in
-theorem foo {f : Ideal (𝓞 L) → ℝ} (v : HeightOneSpectrum (𝓞 K)) :
+theorem foo (f : Ideal (𝓞 L) → ℝ) (v : HeightOneSpectrum (𝓞 K)) :
     ∏ᶠ (w : HeightOneSpectrum (𝓞 L)) (_ : w.under (𝓞 K) = v), f w.1 =
       ∏ w : v.1.primesOver (𝓞 L), f w := by
   let s : Set (HeightOneSpectrum (𝓞 L)) := {w | w.under (𝓞 K) = v}
@@ -259,38 +260,26 @@ private theorem mulHeight_pow_finrank_aux {ι : Type*} [Nonempty ι] [Finite ι]
       simp [InfinitePlace.placesOver, liesOver_iff_comap_eq, s]
     simp +contextual only [Finset.prod_pow_eq_pow_sum, Finset.mul_sum,
       ← v.sum_inertiaDeg_eq_finrank K L, key1, key2, key3]
-  · simp_rw [Function.comp_apply]
-    simp_rw [← finprod_comp_equiv equivHeightOneSpectrum.symm]
-    let g : HeightOneSpectrum (𝓞 L) → HeightOneSpectrum (𝓞 K) := fun v ↦ v.under (𝓞 K)
-    rw [← finprod_fiberwise_univ g, finprod_pow]
+  · simp_rw [Function.comp_apply, ← finprod_comp_equiv equivHeightOneSpectrum.symm]
+    rw [← finprod_fiberwise_univ fun v : HeightOneSpectrum (𝓞 L) ↦ v.under (𝓞 K), finprod_pow]
     · refine finprod_congr fun v ↦ ?_
-      have key w (hw : w ∈ ({w | g w = v})) x :
+      have key w (hw : w ∈ ({w | w.under (𝓞 K) = v})) x :
         equivHeightOneSpectrum.symm w (algebraMap K L x) =
           equivHeightOneSpectrum.symm v x ^ (w.1.ramificationIdx (𝓞 K) * w.1.inertiaDeg (𝓞 K)) := by
         have : w.1.LiesOver v.1 := by
           rw [Set.mem_setOf_eq, HeightOneSpectrum.ext_iff] at hw
           exact ⟨hw.symm⟩
         apply FinitePlace.equivHeightOneSpectrum_symm_apply_algebraMap
-      simp +contextual only [key]
-      simp [g]
-      let f : Ideal (𝓞 L) → ℝ :=
-        fun w ↦ ⨆ i : ι, FinitePlace.equivHeightOneSpectrum.symm v (x i) ^ (w.ramificationIdx (𝓞 K) * w.inertiaDeg (𝓞 K))
-      rw [foo L v (f := f)]
-      have key i : 0 ≤ FinitePlace.equivHeightOneSpectrum.symm v (x i) := by positivity
-      simp_rw [f]
-      simp_rw [← Real.iSup_pow key]
-      rw [Finset.prod_pow_eq_pow_sum]
-      congr
-      rw [Algebra.IsAlgebraic.finrank_of_isFractionRing (𝓞 K) K (𝓞 L) L]
-      rw [← Ideal.sum_ramification_inertia_eq_finrank v.1 (𝓞 L)]
-    · apply Function.HasFiniteMulSupport.comp_of_injective
-        FinitePlace.equivHeightOneSpectrum.symm.injective
-          (Function.HasFiniteMulSupport.iSup fun i ↦ FinitePlace.hasFiniteMulSupport (hx i))
-    · apply Function.HasFiniteMulSupport.comp_of_injective
-        FinitePlace.equivHeightOneSpectrum.symm.injective
-          (f := fun v ↦ ⨆ i, v (algebraMap K L (x i)))
-      exact (Function.HasFiniteMulSupport.iSup fun i ↦ FinitePlace.hasFiniteMulSupport
-        ((map_ne_zero _).mpr (hx i)))
+      simp +contextual only [key, Set.mem_setOf_eq]
+      have pos i : 0 ≤ equivHeightOneSpectrum.symm v (x i) := by positivity
+      simp_rw [foo fun w ↦ ⨆ i, equivHeightOneSpectrum.symm v (x i) ^
+        (w.ramificationIdx (𝓞 K) * w.inertiaDeg (𝓞 K)), ← Real.iSup_pow pos,
+        Finset.prod_pow_eq_pow_sum, Ideal.sum_ramification_inertia_eq_finrank v.1 (𝓞 L),
+        Algebra.IsAlgebraic.finrank_of_isFractionRing (𝓞 K) K (𝓞 L) L]
+    · apply Function.HasFiniteMulSupport.comp_of_injective equivHeightOneSpectrum.symm.injective
+        (Function.HasFiniteMulSupport.iSup fun i ↦ FinitePlace.hasFiniteMulSupport (hx i))
+    · apply Function.HasFiniteMulSupport.comp_of_injective equivHeightOneSpectrum.symm.injective
+        (Function.HasFiniteMulSupport.iSup fun i ↦ FinitePlace.hasFiniteMulSupport (by simp [hx]))
 
 open IsDedekindDomain in
 theorem mulHeight_pow_finrank {ι : Type*} (x : ι → K) [Finite ι] :
@@ -309,20 +298,35 @@ theorem mulHeight_pow_finrank {ι : Type*} (x : ι → K) [Finite ι] :
   apply mulHeight_pow_finrank_aux
   simp
 
-#exit
-
 theorem mulHeight₁_pow_finrank (x : K) :
     mulHeight₁ x ^ Module.finrank K L = mulHeight₁ (algebraMap K L x) := by
   rw [mulHeight₁_eq_mulHeight, mulHeight₁_eq_mulHeight, mulHeight_pow_finrank]
   congr; ext i; fin_cases i <;> simp
 
-theorem finrank_nsmul_logHeight {ι : Type*} (x : ι → K) :
+theorem finrank_nsmul_logHeight {ι : Type*} [Finite ι] (x : ι → K) :
     Module.finrank K L • logHeight x = logHeight (algebraMap K L ∘ x) := by
   simp [logHeight_eq_log_mulHeight, ← mulHeight_pow_finrank]
 
 theorem finrank_nsmul_logHeight₁ (x : K) :
     Module.finrank K L • logHeight₁ x = logHeight₁ (algebraMap K L x) := by
   simp [logHeight₁_eq_log_mulHeight₁, ← mulHeight₁_pow_finrank]
+
+open Classical IntermediateField in
+/-- The absolute multiplicative height of an algebraic number. -/
+noncomputable def absMulHeight₁ {K : Type*} [Field K] [CharZero K] (x : K) : ℝ :=
+  if hx : IsIntegral ℚ x then
+    haveI : FiniteDimensional ℚ ℚ⟮x⟯ := adjoin.finiteDimensional hx
+    haveI : NumberField ℚ⟮x⟯ := {}
+    (Height.mulHeight₁ (AdjoinSimple.gen ℚ x)) ^ (Module.finrank ℚ ℚ⟮x⟯ : ℝ)⁻¹
+  else 0
+
+open IntermediateField in
+theorem absMulHeight₁_eq {K : Type*} [Field K] [NumberField K] (x : K) :
+    absMulHeight₁ x = Height.mulHeight₁ x ^ (Module.finrank ℚ K : ℝ)⁻¹ := by
+  rw [absMulHeight₁, dif_pos (Algebra.IsIntegral.isIntegral x), ← AdjoinSimple.algebraMap_gen ℚ x,
+    ← mulHeight₁_pow_finrank, AdjoinSimple.algebraMap_gen, ← Real.rpow_natCast,
+    ← Real.rpow_mul (by positivity), ← Module.finrank_mul_finrank ℚ ℚ⟮x⟯ K, Nat.cast_mul,
+    mul_inv_rev, mul_inv_cancel_left₀ (by simpa using Module.finrank_pos.ne')]
 
 end extension
 
