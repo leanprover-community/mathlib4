@@ -1162,23 +1162,23 @@ variable {f : α → ℝ} {s : Set α} {C : ℝ} {a b : α}
 `f b - f a`. -/
 theorem MonotoneOn.eVariationOn_eq (hf : MonotoneOn f s) (as : a ∈ s) (bs : b ∈ s) :
     eVariationOn f (s ∩ Icc a b) = .ofReal (f b - f a) := by
-  have hle : eVariationOn f (s ∩ Icc a b) ≤ .ofReal (f b - f a) := by
-    apply iSup_le _
-    rintro ⟨n, ⟨u, hu, us⟩⟩
-    calc
-      _ = ∑ i ∈ range n, .ofReal (f (u (i + 1)) - f (u i)) := by
-        refine sum_congr rfl fun i hi => ?_
-        simp only [Finset.mem_range] at hi
-        rw [edist_dist, Real.dist_eq, abs_of_nonneg]
-        exact sub_nonneg_of_le (hf (us i).1 (us (i + 1)).1 (hu (Nat.le_succ _)))
-      _ = .ofReal (∑ i ∈ range n, (f (u (i + 1)) - f (u i))) := by
-        rw [ofReal_sum_of_nonneg]
-        exact fun i _ ↦ sub_nonneg_of_le (hf (us i).1 (us (i + 1)).1 (hu (Nat.le_succ _)))
-      _ = .ofReal (f (u n) - f (u 0)) := by rw [sum_range_sub (f <| u ·)]
-      _ ≤ _ :=
-        ofReal_le_ofReal (sub_le_sub (hf (us n).1 bs (us n).2.2) (hf as (us 0).1 (us 0).2.1))
   rcases le_or_gt a b with hab | hab
-  · have h : BoundedVariationOn f (s ∩ Icc a b) := (hle.trans_lt ofReal_lt_top).ne
+  · have hle : eVariationOn f (s ∩ Icc a b) ≤ .ofReal (f b - f a) := by
+      apply iSup_le _
+      rintro ⟨n, ⟨u, hu, us⟩⟩
+      calc
+        _ = ∑ i ∈ range n, .ofReal (f (u (i + 1)) - f (u i)) := by
+          refine sum_congr rfl fun i hi => ?_
+          simp only [Finset.mem_range] at hi
+          rw [edist_dist, Real.dist_eq, abs_of_nonneg]
+          exact sub_nonneg_of_le (hf (us i).1 (us (i + 1)).1 (hu (Nat.le_succ _)))
+        _ = .ofReal (∑ i ∈ range n, (f (u (i + 1)) - f (u i))) := by
+          rw [ofReal_sum_of_nonneg]
+          exact fun i _ ↦ sub_nonneg_of_le (hf (us i).1 (us (i + 1)).1 (hu (Nat.le_succ _)))
+        _ = .ofReal (f (u n) - f (u 0)) := by rw [sum_range_sub (f <| u ·)]
+        _ ≤ _ :=
+          ofReal_le_ofReal (sub_le_sub (hf (us n).1 bs (us n).2.2) (hf as (us 0).1 (us 0).2.1))
+    have h : BoundedVariationOn f (s ∩ Icc a b) := (hle.trans_lt ofReal_lt_top).ne
     apply eq_of_le_of_ge hle (ofReal_le_of_le_toReal _)
     grw [← h.dist_le (x := a) (y := b)] <;> grind [Real.dist_eq]
   · simp [hab, hf bs as hab.le]
