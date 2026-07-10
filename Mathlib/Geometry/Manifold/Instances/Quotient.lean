@@ -83,6 +83,7 @@ lemma quotient_IsLocalHomeomorph : IsLocalHomeomorph (Quotient.mk (orbitRel G M)
 variable (x y : orbitRel.Quotient G M)
 
 -- should this be deleted??
+/-- A choice of local section of the quotient map `M → orbitRel.Quotient G M` around `x`. -/
 abbrev πinv : OpenPartialHomeomorph (orbitRel.Quotient G M) M :=
   quotient_IsLocalHomeomorph.localInverseAt (Y := orbitRel.Quotient G M) x.out
 
