@@ -43,14 +43,13 @@ open Function Set Topology Setoid
 namespace Topology
 
 variable {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
-  (f : X → Y) {g : Y → Z}
+  {f : X → Y} {g : Y → Z}
 
+variable (f) in
 /-- A map is a strict map in the sense of Bourbaki if the natural map to its image
 is a quotient map. -/
 def IsStrictMap : Prop :=
   IsQuotientMap (Set.rangeFactorization f)
-
-variable {f}
 
 lemma isStrictMap_iff_isQuotientMap_rangeFactorization :
     IsStrictMap f ↔ IsQuotientMap (Set.rangeFactorization f) :=
