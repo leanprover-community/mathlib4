@@ -494,7 +494,7 @@ alias PseudoEmetricSpace.ofEdistOfTopology := PseudoEMetricSpace.ofEDistOfTopolo
 
 end
 
-variable {α β : Type*} [PseudoEMetricSpace α]
+variable {α : Type*} [PseudoEMetricSpace α]
 
 section ULift
 
@@ -511,7 +511,7 @@ end ULift
 /-- The product of two pseudoemetric spaces, with the max distance, is an extended
 pseudometric spaces. We make sure that the uniform structure thus constructed is the one
 corresponding to the product of uniform spaces, to avoid diamond problems. -/
-instance Prod.pseudoEMetricSpaceMax {α : Type*} [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
+instance Prod.pseudoEMetricSpaceMax [PseudoEMetricSpace β] :
     PseudoEMetricSpace (α × β) where
   edist x y := edist x.1 y.1 ⊔ edist x.2 y.2
   edist_self x := by simp
