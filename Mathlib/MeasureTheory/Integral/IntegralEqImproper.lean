@@ -5,9 +5,7 @@ Authors: Anatole Dedecker, Bhavik Mehta
 -/
 module
 
-public import Mathlib.Analysis.Calculus.Deriv.Support
 public import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
-public import Mathlib.MeasureTheory.Function.JacobianOneDim
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.IntegrationByParts
 public import Mathlib.MeasureTheory.Measure.Haar.NormedSpace
 public import Mathlib.MeasureTheory.Measure.Haar.Unique
@@ -247,7 +245,7 @@ include ha hb in
 theorem aecover_Ioo_of_Ioc : AECover (μ.restrict <| Ioo A B) l fun i => Ioc (a i) (b i) :=
   (aecover_Ioo_of_Ioo ha hb).superset (fun _ ↦ Ioo_subset_Ioc_self) fun _ ↦ measurableSet_Ioc
 
-variable [NoAtoms μ]
+variable [NullSingletonClass μ]
 
 theorem aecover_Ioc_of_Icc (ha : Tendsto a l (𝓝 A)) (hb : Tendsto b l (𝓝 B)) :
     AECover (μ.restrict <| Ioc A B) l fun i => Icc (a i) (b i) :=
@@ -373,7 +371,7 @@ private theorem lintegral_tendsto_of_monotone_of_nat {φ : ℕ → Set α} (hφ 
   let F n := (φ n).indicator f
   have key₁ : ∀ n, AEMeasurable (F n) μ := fun n => hfm.indicator (hφ.measurableSet n)
   have key₂ : ∀ᵐ x : α ∂μ, Monotone fun n => F n x := ae_of_all _ fun x _i _j hij => by
-    dsimp [F]; grw [(hmono hij).subset]
+    dsimp [F]; grw [hmono hij]
   have key₃ : ∀ᵐ x : α ∂μ, Tendsto (fun n => F n x) atTop (𝓝 (f x)) := hφ.ae_tendsto_indicator f
   (lintegral_tendsto_of_tendsto_of_monotone key₁ key₂ key₃).congr fun n =>
     lintegral_indicator (hφ.measurableSet n) _
@@ -1333,7 +1331,7 @@ theorem integral_Ioi_deriv_mul_eq_sub
     (huv : IntegrableOn (u' * v + u * v') (Ioi a))
     (h_zero : Tendsto (u * v) (𝓝[>] a) (𝓝 a')) (h_infty : Tendsto (u * v) atTop (𝓝 b')) :
     ∫ (x : ℝ) in Ioi a, u' x * v x + u x * v' x = b' - a' := by
-  rw [← Ici_diff_left] at h_zero
+  rw [← Ici_sdiff_left] at h_zero
   let f := Function.update (u * v) a a'
   have hderiv : ∀ x ∈ Ioi a, HasDerivAt f (u' x * v x + u x * v' x) x := by
     intro x (hx : a < x)
@@ -1364,7 +1362,7 @@ theorem integral_Iic_deriv_mul_eq_sub
     (huv : IntegrableOn (u' * v + u * v') (Iic a))
     (h_zero : Tendsto (u * v) (𝓝[<] a) (𝓝 a')) (h_infty : Tendsto (u * v) atBot (𝓝 b')) :
     ∫ (x : ℝ) in Iic a, u' x * v x + u x * v' x = a' - b' := by
-  rw [← Iic_diff_right] at h_zero
+  rw [← Iic_sdiff_right] at h_zero
   let f := Function.update (u * v) a a'
   have hderiv : ∀ x ∈ Iio a, HasDerivAt f (u' x * v x + u x * v' x) x := by
     intro x hx

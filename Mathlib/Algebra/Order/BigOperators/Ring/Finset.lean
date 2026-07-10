@@ -52,7 +52,7 @@ lemma prod_add_prod_le {i : ι} {f g h : ι → R} (hi : i ∈ s) (h2i : g i + h
     (hgf : ∀ j ∈ s, j ≠ i → g j ≤ f j) (hhf : ∀ j ∈ s, j ≠ i → h j ≤ f j) (hg : ∀ i ∈ s, 0 ≤ g i)
     (hh : ∀ i ∈ s, 0 ≤ h i) : ((∏ i ∈ s, g i) + ∏ i ∈ s, h i) ≤ ∏ i ∈ s, f i := by
   classical
-  simp_rw [prod_eq_mul_prod_diff_singleton_of_mem hi]
+  simp_rw [prod_eq_mul_prod_sdiff_singleton_of_mem hi]
   refine le_trans ?_ (mul_le_mul_of_nonneg_right h2i ?_)
   · rw [right_distrib]
     gcongr with j hj <;> aesop
@@ -110,7 +110,7 @@ variable [CommSemiring R] [PartialOrder R] [CanonicallyOrderedAdd R]
 lemma prod_add_prod_le' (hi : i ∈ s) (h2i : g i + h i ≤ f i) (hgf : ∀ j ∈ s, j ≠ i → g j ≤ f j)
     (hhf : ∀ j ∈ s, j ≠ i → h j ≤ f j) : ((∏ i ∈ s, g i) + ∏ i ∈ s, h i) ≤ ∏ i ∈ s, f i := by
   classical
-  simp_rw [prod_eq_mul_prod_diff_singleton_of_mem hi]
+  simp_rw [prod_eq_mul_prod_sdiff_singleton_of_mem hi]
   grw [← h2i, right_distrib]
   gcongr with j hj j hj <;> simp_all
 
@@ -225,7 +225,8 @@ example (s : Finset ℕ) (f : ℕ → ℤ) (hf : ∀ n, 0 ≤ f n) : 0 ≤ s.pro
 because `compareHyp` can't look for assumptions behind binders.
 -/
 @[positivity Finset.prod _ _]
-meta def evalFinsetProd : PositivityExt where eval {u α} zα pα e := do
+meta def evalFinsetProd : PositivityExt where eval {u α} zα pα? e :=
+  match pα? with | none => pure .none | some pα => do
   match e with
   | ~q(@Finset.prod $ι _ $instα $s $f) =>
     let i : Q($ι) ← mkFreshExprMVarQ q($ι) .syntheticOpaque
@@ -233,7 +234,7 @@ meta def evalFinsetProd : PositivityExt where eval {u α} zα pα e := do
     let rbody ← core zα pα body
     let _instαmon ← synthInstanceQ q(CommMonoidWithZero $α)
     -- Try to show that the product is positive
-    let p_pos : Option Q(0 < $e) := ← do
+    let p_pos : Option Q(0 < $e) ← do
       let .positive pbody := rbody | pure none -- Fail if the body is not provably positive
       -- TODO(https://github.com/leanprover-community/quote4/issues/38):
       -- We must name the following, else `assertInstancesCommute` loops.
@@ -242,19 +243,19 @@ meta def evalFinsetProd : PositivityExt where eval {u α} zα pα e := do
       let .some _instαnontriv ← trySynthInstanceQ q(Nontrivial $α) | pure none
       assertInstancesCommute
       let pr : Q(∀ i, 0 < $f i) ← mkLambdaFVars #[i] pbody (binderInfoForMVars := .default)
-      return some q(prod_pos fun i _ ↦ $pr i)
+      pure <| some q(prod_pos fun i _ ↦ $pr i)
     if let some p_pos := p_pos then return .positive p_pos
     -- Try to show that the product is nonnegative
-    let p_nonneg : Option Q(0 ≤ $e) := ← do
+    let p_nonneg : Option Q(0 ≤ $e) ← do
       let some pbody := rbody.toNonneg
-        | return none -- Fail if the body is not provably nonnegative
+        | pure none -- Fail if the body is not provably nonnegative
       let pr : Q(∀ i, 0 ≤ $f i) ← mkLambdaFVars #[i] pbody (binderInfoForMVars := .default)
       -- TODO(https://github.com/leanprover-community/quote4/issues/38):
       -- We must name the following, else `assertInstancesCommute` loops.
       let .some _instαzeroone ← trySynthInstanceQ q(ZeroLEOneClass $α) | pure none
       let .some _instαposmul ← trySynthInstanceQ q(PosMulMono $α) | pure none
       assertInstancesCommute
-      return some q(prod_nonneg fun i _ ↦ $pr i)
+      pure <| some q(prod_nonneg fun i _ ↦ $pr i)
     if let some p_nonneg := p_nonneg then return .nonnegative p_nonneg
     -- Fall back to showing that the product is nonzero
     let pbody ← rbody.toNonzero

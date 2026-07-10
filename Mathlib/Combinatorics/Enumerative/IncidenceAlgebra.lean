@@ -90,7 +90,7 @@ variable [Zero 𝕜] [LE α] {a b : α}
 
 instance instFunLike : FunLike (IncidenceAlgebra 𝕜 α) α (α → 𝕜) where
   coe := toFun
-  coe_injective' f g h := by cases f; cases g; congr
+  coe_injective f g h := by cases f; cases g; congr
 
 lemma apply_eq_zero_of_not_le (h : ¬a ≤ b) (f : IncidenceAlgebra 𝕜 α) : f a b = 0 :=
   eq_zero_of_not_le' _ h
@@ -111,7 +111,7 @@ lemma coe_inj {f g : IncidenceAlgebra 𝕜 α} : (f : α → α → 𝕜) = g �
 
 @[ext]
 lemma ext ⦃f g : IncidenceAlgebra 𝕜 α⦄ (h : ∀ a b, a ≤ b → f a b = g a b) : f = g := by
-  refine DFunLike.coe_injective' (funext₂ fun a b ↦ ?_)
+  refine DFunLike.coe_injective (funext₂ fun a b ↦ ?_)
   by_cases hab : a ≤ b
   · exact h _ _ hab
   · rw [apply_eq_zero_of_not_le hab, apply_eq_zero_of_not_le hab]
@@ -377,8 +377,6 @@ def mu : IncidenceAlgebra 𝕜 α :=
 
 variable {𝕜} {a b : α}
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 lemma mu_apply (a b : α) : mu 𝕜 a b = if a = b then 1 else -∑ x ∈ Ico a b, mu 𝕜 a x := by
   rw [mu, coe_mk, muFun_apply, sum_attach]
 
