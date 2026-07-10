@@ -5,7 +5,6 @@ Authors: Yongle Hu
 -/
 module
 
-public import Mathlib.RingTheory.PicardGroup
 public import Mathlib.RingTheory.Spectrum.Prime.FreeLocus
 
 /-!
@@ -27,16 +26,17 @@ lemma bijective_of_surjective_of_rankAtStalk_eq {φ : M →ₗ[R] N} (hs : Funct
     (h : ∀ (m : Ideal R) [m.IsMaximal],
       rankAtStalk M ⟨m, inferInstance⟩ = rankAtStalk N ⟨m, inferInstance⟩) :
     Function.Bijective φ :=
-  bijective_of_localized_maximal φ <| fun m _ ↦
-    bijective_of_surjective_of_finite_of_free_of_finrank_eq (h m) (map_surjective m.primeCompl φ hs)
+  bijective_of_localized_maximal φ fun m _ ↦
+    OrzechProperty.bijective_of_surjective_of_finrank_le (map m.primeCompl φ)
+      (map_surjective m.primeCompl φ hs) (h m).le
 
 variable (M) in
 /-- Let `M` be a finite flat `R`-module, `p` be a prime ideal of `R`. If `rankAtStalk M` is
-constant, then there exists `a ∉ p` such that the `M` is free after localization away from `a`. -/
+constant, then there exists `a ∉ p` such that `M` is free after localization away from `a`. -/
 theorem Free.away_of_finite_of_flat_of_rankAtStalk_constant (p : Ideal R) [p.IsPrime]
     (h : ∀ (m : Ideal R) [m.IsMaximal],
       rankAtStalk M ⟨m, inferInstance⟩ = rankAtStalk M ⟨p, inferInstance⟩) :
-    ∃ (a : R) (_ : a ∉ p), Module.Free (Localization.Away a) (LocalizedModule.Away a M) := by
+    ∃ a ∉ p, Module.Free (Localization.Away a) (LocalizedModule.Away a M) := by
   rcases subsingleton_or_nontrivial R with _ | _
   · use 1, Ideal.IsPrime.one_notMem ‹_›
     exact Module.Free.of_subsingleton' (Localization.Away 1) (LocalizedModule.Away 1 M)
@@ -44,7 +44,7 @@ theorem Free.away_of_finite_of_flat_of_rankAtStalk_constant (p : Ideal R) [p.IsP
     let n := rankAtStalk M ⟨p, inferInstance⟩
     let f : (Fin n →₀ R) →ₗ[R] Fin n →₀ Rₚ := Finsupp.mapRange.linearMap (Algebra.linearMap R Rₚ)
     let g : M →ₗ[R] LocalizedModule.AtPrime p M := LocalizedModule.mkLinearMap p.primeCompl M
-    obtain ⟨φ, hφps⟩ := exists_localizedMap_surjective_of_surjective p.primeCompl f g
+    obtain ⟨φ, -, -, hφps⟩ := exists_localizedMap_surjective_of_surjective p.primeCompl f g
       ((finBasis Rₚ (LocalizedModule.AtPrime p M)).repr.restrictScalars R).symm.surjective
     obtain ⟨a, hap, hφas⟩ := by
       refine exists_localizedMap_away_surjective_of_localizedMap_atPrime_surjective p φ ?_

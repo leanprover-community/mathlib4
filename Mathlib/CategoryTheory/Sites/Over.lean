@@ -361,6 +361,12 @@ instance {D : Type*} [Category* D] {J : GrothendieckTopology C} {K : Grothendiec
       ← PreOneHypercover.map_comp, Over.post_forget_eq_forget_comp, PreOneHypercover.map_comp]
     exact E'.mem₁ _ _ _ _ congr($(w).left)
 
+instance {D : Type*} [Category* D] {J : GrothendieckTopology C} {K : GrothendieckTopology D}
+    {F : C ⥤ D} (X : C) (Y : D) (f : F.obj X ⟶ Y)
+    [(Over.post F).IsContinuous (J.over X) (K.over _)] :
+    (Over.post F ⋙ Over.map f).IsContinuous (J.over X) (K.over Y) :=
+  Functor.isContinuous_comp _ _ _ (K.over _) _
+
 open Limits
 
 lemma coverPreserving_overPullback [HasPullbacks C] {X Y : C} (f : X ⟶ Y) :
@@ -486,6 +492,28 @@ variable {J}
 /-- Given `F : Sheaf J A` and `X : C`, this is the pullback of `F` on `J.over X`. -/
 abbrev Sheaf.over {A : Type u'} [Category.{v'} A] (F : Sheaf J A) (X : C) :
     Sheaf (J.over X) A := (J.overPullback A X).obj F
+
+variable {A : Type u'} [Category.{v'} A]
+
+set_option backward.defeqAttrib.useBackward true in
+/-- For `f : X ⟶ Y`, `F.over Y` viewed as a sheaf on `Over X` is isomorphic to `F.Over X`. -/
+@[simps! +dsimpLhs]
+def Sheaf.pushforwardOverMapIso (F : Sheaf J A) {X Y : C} (f : X ⟶ Y) :
+    ((Over.map f).sheafPushforwardContinuous A (J.over X) (J.over Y)).obj (F.over Y) ≅
+      F.over X :=
+  ObjectProperty.isoMk _ (NatIso.ofComponents (fun _ ↦ Iso.refl _) (by simp))
+
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
+/-- For `f : X ⟶ Y`, this is the morphism from `F.over Y` to the pushforward of `F.over X`
+along `Over.pullback f` induced by `Limits.pullback.fst`. -/
+@[simps]
+noncomputable
+def Sheaf.toPushforwardOverPullback [Limits.HasPullbacks C] (F : Sheaf J A)
+    {X Y : C} (f : X ⟶ Y) :
+    F.over Y ⟶ ((Over.pullback f).sheafPushforwardContinuous A _ _).obj (F.over X) where
+  hom.app U := F.obj.map (.op <| Limits.pullback.fst _ _)
+  hom.naturality := by simp [← Functor.map_comp, ← op_comp]
 
 section
 

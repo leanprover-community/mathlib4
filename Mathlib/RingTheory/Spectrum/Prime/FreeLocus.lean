@@ -68,11 +68,7 @@ lemma mem_freeLocus_of_isLocalization (p : PrimeSpectrum R)
   intro r x
   obtain ⟨r, s, rfl⟩ := IsLocalization.exists_mk'_eq p.asIdeal.primeCompl r
   apply ((Module.End.isUnit_iff _).mp (IsLocalizedModule.map_units f s)).1
-  simp only [e, AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, LinearEquiv.coe_coe,
-    algebraMap_end_apply,
-    AlgEquiv.toRingEquiv_toRingHom, RingHom.coe_coe, IsLocalization.algEquiv_apply,
-    IsLocalization.map_id_mk']
-  simp only [← map_smul, ← smul_assoc, IsLocalization.smul_mk'_self, algebraMap_smul]
+  simp [e, ← map_smul, ← smul_assoc]
 
 attribute [local instance] RingHomInvPair.of_ringEquiv in
 lemma mem_freeLocus_iff_tensor (p : PrimeSpectrum R)
@@ -347,12 +343,11 @@ variable (M) in
 lemma rankAtStalk_eq_of_le_of_finite_of_flat {p q : PrimeSpectrum R} (hpq : p ≤ q) :
     rankAtStalk M p = rankAtStalk M q := by
   let S := Localization.AtPrime q.asIdeal
-  have hpr : p ∈ Set.range (PrimeSpectrum.comap (algebraMap R S)) := by
+  obtain ⟨P, rfl⟩ : p ∈ Set.range (PrimeSpectrum.comap (algebraMap R S)) := by
     rw [PrimeSpectrum.localization_comap_range S q.asIdeal.primeCompl]
     exact disjoint_compl_left_iff.mpr hpq
-  have : Module.Free S (LocalizedModule q.asIdeal.primeCompl M) := free_of_flat_of_isLocalRing
-  rw [← hpr.choose_spec, ← rankAtStalk_isBaseChange
-    (LocalizedModule.isBaseChange q.asIdeal.primeCompl M), rankAtStalk_eq_finrank_of_free]
+  rw [← rankAtStalk_isBaseChange (LocalizedModule.isBaseChange q.asIdeal.primeCompl M),
+    rankAtStalk_eq_finrank_of_free]
   simp [rankAtStalk]
 
 variable (M) in
@@ -387,9 +382,7 @@ lemma rankAtStalk_eq (p : PrimeSpectrum R) :
   let e : k ⊗[Localization.AtPrime p.asIdeal] (Localization.AtPrime p.asIdeal ⊗[R] M) ≃ₗ[k]
       k ⊗[R] M :=
     AlgebraTensorModule.cancelBaseChange _ _ _ _ _
-  rw [← e.finrank_eq]
-  erw [finrank_baseChange]
-  rw [rankAtStalk_eq_finrank_tensorProduct]
+  rw [← e.finrank_eq, finrank_baseChange, rankAtStalk_eq_finrank_tensorProduct]
 
 /-- Variant of `Module.rankAtStalk_eq` for better rewriting. -/
 lemma _root_.Ideal.finrank_fiber_eq_rankAtStalk (p : Ideal R) [hp : p.IsPrime] :
