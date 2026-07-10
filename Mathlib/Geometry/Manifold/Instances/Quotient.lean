@@ -8,6 +8,7 @@ module
 
 public import Mathlib.Topology.Covering.Quotient
 public import Mathlib.Geometry.Manifold.ContMDiff.Defs
+public import Mathlib.Geometry.Manifold.Algebra.SMul
 
 /-!
 # Quotients of manifolds
@@ -64,6 +65,13 @@ TO-DO:
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   (I : ModelWithCorners 𝕜 E H) {n : ℕ∞} [IsManifold I n M]
+
+-- the action is smooth
+variable {H' : Type*} [TopologicalSpace H']
+  {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
+  {I' : ModelWithCorners 𝕜 E' H'}
+  [TopologicalSpace G] [ChartedSpace H' G]
+  [ContMDiffSMul I' I n G M]
 
 omit [T2Space M] [LocallyCompactSpace M] in
 lemma mem_contDiffGroupoid_of_contMDiff_chartAt {x y : M} {h : OpenPartialHomeomorph M M}
@@ -177,6 +185,8 @@ lemma StructureGroupoid.restr_mem_of_eqOn {G : StructureGroupoid X}
 
 end
 
+#check ContMDiffSMul.contMDiff_const_smul
+
 instance : IsManifold I n (orbitRel.Quotient G M) where
   compatible := by
     rintro _ _ ⟨x, rfl⟩ ⟨y, rfl⟩
@@ -192,7 +202,9 @@ instance : IsManifold I n (orbitRel.Quotient G M) where
     refine ⟨_, hto, ⟨hh.1, hg0⟩, ?_⟩
     refine StructureGroupoid.restr_mem_of_eqOn (mem_contDiffGroupoid_of_contMDiff_chartAt I ?_ ?_)
       hto (hg0'.mono inter_subset_right) ?_
-    · sorry
+    · rw [Homeomorph.toOpenPartialHomeomorph_apply]
+      change ContMDiff I I n (fun x ↦ g0 • x)
+      exact ContMDiffSMul.contMDiff_const_smul (I := I') g0
     · rw [Homeomorph.toOpenPartialHomeomorph_symm_apply]
       sorry
     · rintro h' ⟨⟨hQ1, -, hQ4⟩, -, hcert⟩
