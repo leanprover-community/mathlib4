@@ -778,8 +778,11 @@ open RCLike
 lemma IsSelfAdjoint.I_smul_mem_skewAdjoint (h : IsSelfAdjoint a) :
     (I : K) • a ∈ skewAdjoint A := h.smul_mem_skewAdjoint I_mem_skewAdjoint
 
-lemma IsSelfAdjoint.I_smul_of_mem_skewAdjoint (h : a ∈ skewAdjoint A) :
+lemma isSelfAdjoint_I_smul_of_mem_skewAdjoint (h : a ∈ skewAdjoint A) :
     IsSelfAdjoint ((I : K) • a) := isSelfAdjoint_smul_of_mem_skewAdjoint I_mem_skewAdjoint h
+
+@[deprecated (since := "2026-07-10")]
+alias IsSelfAdjoint.I_smul_of_mem_skewAdjoint := isSelfAdjoint_I_smul_of_mem_skewAdjoint
 
 end
 
