@@ -131,6 +131,8 @@ section Span
 theorem mem_span_support_coeff (f : k[G]) : f ∈ Submodule.span k (of' k G '' f.coeff.support) := by
   simp [of', ← supported_eq_span_single, mem_supported]
 
+@[deprecated (since := "2026-06-18")] alias mem_span_support := mem_span_support_coeff
+
 end Span
 
 end AddMonoidAlgebra
