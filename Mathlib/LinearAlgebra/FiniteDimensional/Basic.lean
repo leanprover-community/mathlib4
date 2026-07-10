@@ -361,7 +361,7 @@ theorem _root_.Module.End.injective_of_surjective {f : Module.End R M} (hf : Sur
 
 variable {R M} in
 theorem _root_.Module.bijective_of_surjective_of_finite_of_free_of_finrank_eq
-    [StrongRankCondition R] {N : Type*} [AddCommGroup N] [Module R N] [Free R N]
+    [StrongRankCondition R] {N : Type*} [AddCommMonoid N] [Module R N] [Free R N]
     (h : finrank R M = finrank R N) {f : M →ₗ[R] N} (hf : Function.Surjective f) :
     Function.Bijective f := by
   have : Module.Finite R N := Module.Finite.of_surjective f hf

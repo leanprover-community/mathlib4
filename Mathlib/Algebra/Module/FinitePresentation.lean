@@ -405,7 +405,7 @@ lemma Module.FinitePresentation.exists_lift_of_isLocalizedModule
     ← LinearMap.comp_smul, LinearMap.comp_assoc, LinearMap.comp_assoc]
   simp
 
-/-- Let `M` be a finitely presented `R`-module, `N` be a `R`-module, `S` be a submonoid of `R`,
+/-- Let `M` be a finitely presented `R`-module, `N` be an `R`-module, `S` be a submonoid of `R`,
 `Mₚ` be the localization of `M` at `S`, `Nₚ` be the localization of `N` at `S`. Then any surjective
 linear map `ϕ : Mₚ →ₗ[R] Nₚ` lifts to a linear map `φ : M →ₗ[R] N` that is surjective after
 localization at `S`. -/
