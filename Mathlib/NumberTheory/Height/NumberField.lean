@@ -163,34 +163,6 @@ theorem _root_.NumberField.InfinitePlace.liesOver_iff_comap_eq {K L : Type*} [Fi
   rw [AbsoluteValue.liesOver_iff, AbsoluteValue.ext_iff, InfinitePlace.ext_iff]
   rfl
 
-@[to_additive]
-theorem finprod_fiberwise {ι κ M : Type*} [CommMonoid M]
-    (s : Set ι) (g : ι → κ) (f : ι → M) (hf : f.HasFiniteMulSupport) :
-    ∏ᶠ j, ∏ᶠ i ∈ {i ∈ s | g i = j}, f i = ∏ᶠ i ∈ s, f i := by
-  classical
-  let t := hf.toFinset
-  have : ∀ i, f i ≠ 1 → i ∈ t := by simp [t]
-  have : ∀ i ∈ (hf.toFinset.filter (· ∈ s)), g i ∈ t.image g := by grind
-  rw [finprod_mem_eq_prod_filter f s hf, ← Finset.prod_fiberwise_of_maps_to this,
-    finprod_eq_prod_of_mulSupport_subset]
-  · apply Finset.prod_congr rfl
-    intro k hk
-    apply finprod_mem_eq_prod_of_subset
-    · grind [Function.mem_mulSupport]
-    · grind
-  · rw [Function.mulSupport_subset_iff]
-    intro x
-    contrapose!
-    intro h
-    apply finprod_mem_eq_one_of_forall_eq_one
-    grind
-
-@[to_additive]
-theorem finprod_fiberwise_univ {ι κ M : Type*} [CommMonoid M]
-    (g : ι → κ) (f : ι → M) (hf : f.HasFiniteMulSupport) :
-    ∏ᶠ j, ∏ᶠ i ∈ {i | g i = j}, f i = ∏ᶠ i, f i := by
-  simpa using finprod_fiberwise Set.univ g f hf
-
 variable {L} in
 open IsDedekindDomain in
 -- @[to_additive]
