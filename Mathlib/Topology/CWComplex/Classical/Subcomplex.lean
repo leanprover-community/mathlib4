@@ -75,7 +75,7 @@ lemma RelCWComplex.Subcomplex.disjoint_openCell_subcomplex_of_not_mem [RelCWComp
   simp_rw [← union, disjoint_union_right, disjoint_iUnion_right]
   exact ⟨disjointBase n i , fun _ _ ↦ disjoint_openCell_of_ne (by lia)⟩
 
-open Classical in
+open scoped Classical in
 /-- A subcomplex is again a CW complex. -/
 @[simps]
 instance RelCWComplex.Subcomplex.instRelCWComplex [T2Space X] [RelCWComplex C D]
