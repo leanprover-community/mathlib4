@@ -97,15 +97,14 @@ namespace IsValuativeTopology
 
 /-- If the neighborhoods of every point for a given topology are defined by a valuation `v`
 compatible with the valuative relation, then the topology is a valuative topology. -/
-theorem of_mem_nhds_iff_vle
-    (H : ∀ {s : Set R} {x : R}, s ∈ 𝓝 x ↔ ∃ (γ : (ValueGroup₀ (.ofClass v))ˣ),
-    (fun (x₁ : R) ↦ x + x₁) '' {z : R | v.restrict z < γ} ⊆ s) :
+theorem of_mem_nhds_iff_vle (H : ∀ {s : Set R} {x : R}, s ∈ 𝓝 x ↔
+    ∃ (γ : (ValueGroup₀ (.ofClass v))ˣ), {z : R | v.restrict (z - x) < γ} ⊆ s) :
     IsValuativeTopology R := by
   constructor
   refine fun {s x} ↦ ⟨fun h_mem ↦ ?_, fun ⟨γ, hγ⟩ ↦
-    H.mpr ⟨Units.mk0 ((orderMonoidIso v) γ) (by simp), subset_trans (by simp) hγ⟩⟩
+    H.mpr ⟨.mk0 ((orderMonoidIso v) γ) (by simp), subset_trans (by simp [neg_add_eq_sub]) hγ⟩⟩
   obtain ⟨γ, hγ⟩ := H.mp h_mem
-  exact ⟨Units.mk0 ((orderMonoidIso v).symm γ) (by simp), subset_trans (by simp) hγ⟩
+  exact ⟨.mk0 ((orderMonoidIso v).symm γ) (by simp), subset_trans (by simp [neg_add_eq_sub]) hγ⟩
 
 open scoped Pointwise in
 /-- In a topological group, if the neighborhoods of zero are defined by a valuation `v` compatible
