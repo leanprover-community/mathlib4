@@ -415,10 +415,9 @@ lemma tprod_eq_tprod_primes_mul_tprod_primes_of_mulSupport_subset_prime_powers
   conv_lhs =>
     enter [1, p]; rw [(hfs' p).tprod_eq_zero_mul, zero_add, pow_one]
     enter [2, 1, k]; rw [add_assoc, one_add_one_eq_two]
-  exact (Multipliable.subtype hfm _).tprod_mul <|
-    .prod (f := fun (pk : Nat.Primes × ℕ) ↦ f (pk.1 ^ (pk.2 + 2))) <|
-    hfm.comp_injective <| Subtype.val_injective |>.comp
-    prodNatEquiv.injective |>.comp <|
+  apply (Multipliable.subtype hfm _).tprod_mul
+  refine (hfm.comp_injective ?_).prod (f := fun (pk : Nat.Primes × ℕ) ↦ f (pk.1 ^ (pk.2 + 2)))
+  exact Subtype.val_injective.comp prodNatEquiv.injective |>.comp <|
     Function.Injective.prodMap (fun ⦃_ _⦄ ↦ id) <| add_left_injective 1
 
 end PrimePow
