@@ -9,7 +9,6 @@ public import Mathlib.Algebra.BigOperators.Finsupp.Basic
 public import Mathlib.Algebra.GroupWithZero.Action.Pi
 public import Mathlib.Algebra.GroupWithZero.Action.TransferInstance
 public import Mathlib.Algebra.Order.Antidiag.Prod
-public import Mathlib.Order.Filter.TendstoCofinite
 
 /-! # Total Monoid Algebras
 
@@ -670,32 +669,6 @@ lemma coeff_single_mul_mul [IsCancelMul M] [DecidableEq M] (x : R⟦M⟧) (r : R
   x.coeff_single_mul_eq_mul_coeff _ (by simp)
 
 end Monoid
-
-section Group
-variable [Group G] [Finite G]
-
-attribute [local instance] Filter.TendstoCofinite.hasAntidiagonal
-  Filter.TendstoCofinite.hasMulAntidiagonal
-
-@[to_additive (attr := simp) (dont_translate := R) coeff_mul_single_apply]
-lemma coeff_mul_single_apply [DecidableEq G] (x : R⟦G⟧) (r : R) (g h : G) :
-    (x * single g r).coeff h = x.coeff (h * g⁻¹) * r :=
-  coeff_mul_single_eq_coeff_mul _ <| by simp [eq_mul_inv_iff_mul_eq]
-
-@[to_additive (attr := simp) (dont_translate := R) coeff_single_mul_apply]
-lemma coeff_single_mul_apply [DecidableEq G] (x : R⟦G⟧) (r : R) (g h : G) :
-    (single g r * x).coeff h = r * x.coeff (g⁻¹ * h) :=
-  coeff_single_mul_eq_mul_coeff _ <| by simp [eq_inv_mul_iff_mul_eq]
-
-@[to_additive (dont_translate := R) coeff_mul_apply_right]
-lemma coeff_mul_apply_right (x y : R⟦G⟧) (g : G) : (x * y).coeff g =
-    ∑ p ∈ mulAntidiagonal g, x.coeff (g * p.2⁻¹) * y.coeff p.2 := by
-  rw [coeff_mul]
-  refine sum_congr rfl fun ⟨_, _⟩ h ↦ ?_
-  congr; simp only [HasMulAntidiagonal.mem_mulAntidiagonal] at h
-  simp [← h]
-
-end Group
 
 end Semiring
 
