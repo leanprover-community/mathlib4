@@ -49,7 +49,7 @@ lemma subpath_range_subset {X : Type*} [TopologicalSpace X] {x y : X} (γ : Path
   exact h t ht.1 ht.2
 
 /-- Adding a single point to an adapted subdivision does not change the morphism.
-    
+
     Proof sketch:
     1. Use the universal property to get explicit ts, covers for both S and S'
     2. Show that ts' is ts with t inserted at position k
