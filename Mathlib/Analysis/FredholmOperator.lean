@@ -47,7 +47,8 @@ has finite dimension.
 
 See also `isFredholm_tfae` for other equivalent characterizations.
 We will also prove later (not in Mathlib yet) that for maps between Banach (or even Fréchet)
-spaces, all the conditions follow from the kernel and cokernel having finite dimension.
+spaces over `ℝ` or `ℂ`, all the conditions follow from the kernel and cokernel having finite
+dimension.
 -/
 structure IsFredholm (u : E →L[𝕜] F) : Prop where
   isStrictMap : IsStrictMap u
