@@ -205,5 +205,3 @@ instance : IsManifold I n (orbitRel.Quotient G M) where
 end MulAction
 
 end
-
-#min_imports
