@@ -6,6 +6,7 @@ Authors: Kenny Lau
 module
 
 public import Mathlib.Data.DFinsupp.Module
+public import Mathlib.Order.KrullDimension
 public import Mathlib.RingTheory.Ideal.Operations
 
 /-!
@@ -62,6 +63,7 @@ lemma map_coe [RingHomClass F R S] (I : Ideal R) : I.map (f : R →+* S) = I.map
 
 variable {f}
 
+@[gcongr]
 theorem map_mono (h : I ≤ J) : map f I ≤ map f J :=
   span_mono <| Set.image_mono h
 
@@ -78,6 +80,7 @@ theorem map_le_iff_le_comap [RingHomClass F R S] : map f I ≤ K ↔ I ≤ comap
 theorem mem_comap [RingHomClass F R S] {x} : x ∈ comap f K ↔ f x ∈ K :=
   Iff.rfl
 
+@[gcongr]
 theorem comap_mono [RingHomClass F R S] (h : K ≤ L) : comap f K ≤ comap f L :=
   Set.preimage_mono fun _ hx => h hx
 
@@ -390,6 +393,7 @@ theorem comap_le_comap_iff_of_surjective (hf : Function.Surjective f) (I J : Ide
     le_comap_of_map_le ((map_comap_of_surjective f hf I).le.trans h)⟩
 
 /-- The map on ideals induced by a surjective map preserves inclusion. -/
+@[simps]
 def orderEmbeddingOfSurjective (hf : Function.Surjective f) : Ideal S ↪o Ideal R where
   toFun := comap f
   inj' _ _ eq := SetLike.ext' (Set.preimage_injective.mpr hf <| SetLike.ext'_iff.mp eq)
@@ -585,6 +589,15 @@ theorem comap_map_of_surjective (hf : Function.Surjective f) (I : Ideal R) :
         ⟨s, hsi, r - s, (Submodule.mem_bot S).2 <| by rw [map_sub, hfsr, sub_self],
           add_sub_cancel s r⟩)
     (sup_le (map_le_iff_le_comap.1 le_rfl) (comap_mono bot_le))
+
+theorem coheight_comap_of_surjective (hf : Function.Surjective f) (I : Ideal S) :
+    Order.coheight (I.comap f) = Order.coheight I := by
+  let φ := orderEmbeddingOfSurjective f hf
+  refine (Order.coheight_eq_of_strictMono φ φ.strictMono (fun J K h ↦ ⟨K.map f, ?_, ?_⟩) I).symm
+  · rw [← J.map_comap_of_surjective f hf]
+    apply lt_of_le_not_ge (map_mono h.le)
+    simpa [map_le_iff_le_comap, φ] using h.not_ge
+  · exact (K.comap_map_of_surjective f hf).trans (sup_of_le_left ((comap_mono bot_le).trans h.le))
 
 /-- Correspondence theorem -/
 def relIsoOfSurjective (hf : Function.Surjective f) :

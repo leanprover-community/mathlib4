@@ -609,19 +609,25 @@ theorem tprod_range {g : γ → β} (f : β → α) (hg : Injective g) :
 product of `f a` with `a ∈ s ∖ t`. -/
 @[to_additive /-- If `f b = 0` for all `b ∈ t`, then the sum of `f a` with `a ∈ s` is the same as
 the sum of `f a` with `a ∈ s ∖ t`. -/]
-lemma tprod_setElem_eq_tprod_setElem_diff {f : β → α} (s t : Set β)
+lemma tprod_setElem_eq_tprod_setElem_sdiff {f : β → α} (s t : Set β)
     (hf₀ : ∀ b ∈ t, f b = 1) :
     ∏' a : s, f a = ∏' a : (s \ t : Set β), f a :=
-  .symm <| (Set.inclusion_injective (t := s) Set.diff_subset).tprod_eq (f := f ∘ (↑)) <|
+  .symm <| (Set.inclusion_injective (t := s) Set.sdiff_subset).tprod_eq (f := f ∘ (↑)) <|
     mulSupport_subset_iff'.2 fun b hb ↦ hf₀ b <| by simpa using hb
+
+@[deprecated (since := "2026-06-03")]
+alias tprod_setElem_eq_tprod_setElem_diff := tprod_setElem_eq_tprod_setElem_sdiff
 
 /-- If `f b = 1`, then the product of `f a` with `a ∈ s` is the same as the product of `f a` for
 `a ∈ s ∖ {b}`. -/
 @[to_additive /-- If `f b = 0`, then the sum of `f a` with `a ∈ s` is the same as the sum of `f a`
 for `a ∈ s ∖ {b}`. -/]
-lemma tprod_eq_tprod_diff_singleton {f : β → α} (s : Set β) {b : β} (hf₀ : f b = 1) :
+lemma tprod_eq_tprod_sdiff_singleton {f : β → α} (s : Set β) {b : β} (hf₀ : f b = 1) :
     ∏' a : s, f a = ∏' a : (s \ {b} : Set β), f a :=
-  tprod_setElem_eq_tprod_setElem_diff s {b} fun _ ha ↦ ha ▸ hf₀
+  tprod_setElem_eq_tprod_setElem_sdiff s {b} fun _ ha ↦ ha ▸ hf₀
+
+@[deprecated (since := "2026-06-03")]
+alias tprod_eq_tprod_diff_singleton := tprod_eq_tprod_sdiff_singleton
 
 @[to_additive]
 theorem tprod_eq_tprod_of_ne_one_bij {g : γ → α} (i : mulSupport g → β) (hi : Injective i)
@@ -773,11 +779,24 @@ lemma hasProd_zero_of_exists_eq_zero (hf : ∃ b, f b = 0) [L.LeAtTop] : HasProd
   filter_upwards [(eventually_ge_atTop {b}).filter_mono L.le_atTop] with s hs
   exact (Finset.prod_eq_zero (Finset.singleton_subset_iff.mp hs) hb).symm
 
+lemma hasProd_zero_zero [Nonempty β] [L.LeAtTop] : HasProd (fun _ ↦ 0 : β → α) 0 L := by
+  obtain ⟨b⟩ := ‹Nonempty β›
+  exact hasProd_zero_of_exists_eq_zero ⟨b, by simp⟩
+
 lemma multipliable_of_exists_eq_zero (hf : ∃ b, f b = 0) [L.LeAtTop] : Multipliable f L :=
   ⟨0, hasProd_zero_of_exists_eq_zero hf⟩
+
+lemma multipliable_zero [L.LeAtTop] : Multipliable (fun _ ↦ 0 : β → α) L := by
+  obtain hβ | hβ := isEmpty_or_nonempty β
+  · simp
+  · exact ⟨0, hasProd_zero_zero⟩
 
 lemma tprod_of_exists_eq_zero [T2Space α] [L.NeBot] [L.LeAtTop] (hf : ∃ b, f b = 0) :
     ∏'[L] b, f b = 0 :=
   (hasProd_zero_of_exists_eq_zero hf).tprod_eq
+
+@[simp] lemma tprod_zero [T2Space α] [Nonempty β] [L.NeBot] [L.LeAtTop] :
+    ∏'[L] _, (0 : α) = 0 :=
+  hasProd_zero_zero.tprod_eq
 
 end CommMonoidWithZero

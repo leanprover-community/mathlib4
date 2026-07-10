@@ -74,7 +74,6 @@ def spanFinBasis (x : π C (· ∈ s)) : LocallyConstant (π C (· ∈ s)) ℤ w
     haveI : DiscreteTopology (π C (· ∈ s)) := Finite.instDiscreteTopology
     IsLocallyConstant.of_discrete _
 
-open scoped Classical in
 theorem spanFinBasis.span : ⊤ ≤ Submodule.span ℤ (Set.range (spanFinBasis C s)) := by
   intro f _
   rw [Finsupp.mem_span_range_iff_exists_finsupp]

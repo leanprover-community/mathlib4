@@ -44,9 +44,10 @@ def fixedPointsEquiv : { σx : α × Perm α // σx.2 σx.1 = σx.1 } ≃ Σ x :
 theorem card_fixed_points :
     card { σx : α × Perm α // σx.2 σx.1 = σx.1 } = card α * (card α - 1)! := by
   simp only [card_congr (fixedPointsEquiv α), card_sigma, card_perm]
-  have (x : _) : ({x}ᶜ : Set α) = Finset.filter (· ≠ x) Finset.univ := by
+  have h (x : α) : ({x}ᶜ : Set α) = Finset.univ.erase x := by
     ext; simp
-  simp [this]
+  simp_rw [h, Fintype.card_subtype, SetLike.mem_coe, Finset.filter_univ_mem]
+  simp
 
 /-- Given `α : Type*` and `k : ℕ`, `fiber α k` is the set of permutations of `α` with exactly `k`
 fixed points. -/

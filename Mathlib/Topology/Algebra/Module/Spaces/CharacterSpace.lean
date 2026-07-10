@@ -58,7 +58,7 @@ variable [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜] [Conti
 
 noncomputable instance instFunLike : FunLike (characterSpace 𝕜 A) A 𝕜 where
   coe φ := ((φ : WeakDual 𝕜 A) : A → 𝕜)
-  coe_injective' φ ψ h := by ext1; apply DFunLike.ext; exact congr_fun h
+  coe_injective φ ψ h := by ext1; apply DFunLike.ext; exact congr_fun h
 
 /-- Elements of the character space are continuous linear maps. -/
 instance instContinuousLinearMapClass : ContinuousLinearMapClass (characterSpace 𝕜 A) 𝕜 A 𝕜 where
