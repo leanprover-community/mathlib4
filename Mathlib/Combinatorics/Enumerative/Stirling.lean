@@ -5,6 +5,7 @@ Authors: Beibei Xiong, Yu Shao, Weijie Jiang, Zhengfeng Yang
 -/
 module
 
+public import Mathlib.Algebra.BigOperators.Ring.Finset
 public import Mathlib.Data.Nat.Factorial.Basic
 public import Mathlib.Data.Nat.Choose.Basic
 public import Mathlib.Tactic.NormNum.Inv
@@ -168,5 +169,27 @@ theorem stirlingSecond_succ_self_left (n : ℕ) :
   | succ n ih =>
     rw [stirlingSecond_succ_succ, ih, stirlingSecond_self, mul_one,
       Nat.choose_succ_succ (n + 1), Nat.choose_one_right]
+
+theorem descFactorial_mul_self (n j : ℕ) :
+    n.descFactorial j * n = n.descFactorial (j + 1) + j * n.descFactorial j := by
+  rcases le_or_gt j n with h | h <;>
+    grind [descFactorial_succ, add_mul, descFactorial_eq_zero_iff_lt]
+
+theorem pow_eq_sum_stirlingSecond_mul_descFactorial (n k : ℕ) :
+    n ^ k = ∑ j ∈ Finset.range (k + 1), stirlingSecond k j * n.descFactorial j := by
+  induction k with
+  | zero => simp
+  | succ k ih =>
+    have : ∑ j ∈ Finset.range (k + 1), stirlingSecond k j * (j * n.descFactorial j)
+        = ∑ j ∈ Finset.range (k + 1),
+            (j + 1) * (stirlingSecond k (j + 1) * n.descFactorial (j + 1)) := by
+      grind [Finset.sum_range_succ' (fun j ↦ stirlingSecond k j * (j * n.descFactorial j)) k,
+        Finset.sum_range_succ (fun j ↦ (j + 1) * (stirlingSecond k (j + 1) *
+        n.descFactorial (j + 1))) k, stirlingSecond_eq_zero_of_lt k.lt_add_one]
+    rw [pow_succ, ih, Finset.sum_mul,
+      Finset.sum_range_succ' (fun j ↦ stirlingSecond (k + 1) j * n.descFactorial j) (k + 1)]
+    simp only [mul_assoc, descFactorial_mul_self, mul_add, Finset.sum_add_distrib, this,
+      stirlingSecond_succ_succ, add_mul, stirlingSecond_succ_zero, zero_mul, add_zero]
+    grind
 
 end Nat
