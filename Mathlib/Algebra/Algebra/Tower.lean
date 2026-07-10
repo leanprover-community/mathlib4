@@ -290,23 +290,6 @@ theorem restrictScalarsHom_injective :
     Function.Injective (restrictScalarsHom R : (A ≃ₐ[S] A) →* (A ≃ₐ[R] A)) :=
   restrictScalars_injective R
 
-/-- `AlgEquiv.restrictScalars` as a homomorphism. -/
-def restrictScalarsHom : (A ≃ₐ[S] A) →* (A ≃ₐ[R] A) :=
-  MulSemiringAction.toAlgAut (A ≃ₐ[S] A) R A
-
-@[simp]
-theorem restrictScalarsHom_apply (f : A ≃ₐ[S] A) : f.restrictScalarsHom R = f.restrictScalars R :=
-  rfl
-
-@[simp]
-theorem restrictScalarsHom_apply_symm (f : A ≃ₐ[S] A) :
-    f.symm.restrictScalarsHom R = (f.restrictScalars R).symm :=
-  rfl
-
-theorem restrictScalarsHom_injective :
-    Function.Injective (restrictScalarsHom R : (A ≃ₐ[S] A) →* (A ≃ₐ[R] A)) :=
-  restrictScalars_injective R
-
 section
 
 variable {R}
