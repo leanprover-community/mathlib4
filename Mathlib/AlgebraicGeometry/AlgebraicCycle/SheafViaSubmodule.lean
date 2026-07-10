@@ -10,33 +10,9 @@ import Mathlib.Algebra.Category.ModuleCat.Presheaf.Submodule
 /-!
 # `𝒪ₓ(D)` as a submodule of the sheaf of rational functions
 
-This file is a parallel implementation of the divisorial sheaf `𝒪ₓ(D)` of
-`Mathlib.AlgebraicGeometry.AlgebraicCycle.Sheaf`, for design comparison. Instead of building the
-presheaf of modules from scratch, we:
-
-1. define the sheaf of rational functions `functionFieldSheaf X` as the skyscraper sheaf of
-   modules at the generic point valued in the function field, using the topos-point skyscraper
-   of `Mathlib.AlgebraicGeometry.AlgebraicCycle.SkyscraperTopos`. Since `X` is irreducible, the
-   generic point lies in every nonempty open, so this has sections `k(X)` over nonempty opens
-   and `0` over `∅`; being a skyscraper, it is a sheaf (and flasque) with no further work;
-2. carve out `𝒪ₓ(D)` as a `PresheafOfModules.Submodule` of the ambient sheaf
-   (`divisorSubmodule`), whose membership predicate is the pointwise order bound
-   `Sheaf.carrier` of the original construction, imposed on the value `eval x s` of a section
-   at a witness `x` that the generic point lies in the open. All the algebraic content
-   (closure under addition, scalar multiplication, restriction, monotonicity in `D`) is
-   inherited verbatim from the lemmas of `Mathlib.AlgebraicGeometry.AlgebraicCycle.Sheaf`;
-   this file contains no new mathematics, only structure;
-3. prove the sheaf property intrinsically (`isSheaf`): a compatible family glues in the ambient
-   sheaf, and the glued section satisfies the divisor bound because the bound is pointwise,
-   hence local. This is the argument that a `J`-closed submodule of a sheaf is a sheaf,
-   specialized to `𝒪ₓ(D)`; compare the from-scratch gluing argument in
-   `AlgebraicCycle.Sheaf.isSheaf`, which in addition has to glue the underlying rational
-   functions by hand (via irreducibility of `X`).
-
-The payoffs visible in this file: no case split on `Nonempty U` anywhere, no hand-rolled
-`AddCommGroup`/`Module` transport onto sections, and the inclusion `𝒪ₓ(D₁) ⟶ 𝒪ₓ(D₂)` for
-`D₁ ≤ D₂` is `PresheafOfModules.Submodule.homOfLE` of a one-line monotonicity lemma, with its
-`Mono` instance found by instance search.
+This file is a WIP constructing `𝒪ₓ(D)` in a different way to that constructed in Sheaf.lean. I
+think this construction is a bit better (using `PresheafOfModules.submodule`), but a lot of the
+lemmas are shared and so we have kept Sheaf.lean around for now.
 
 ## TODO
 
@@ -284,7 +260,10 @@ lemma isSheaf (D : AlgebraicCycle X ℤ) :
   exact huniq t.1 fun i => congrArg Subtype.val (ht i)
 
 /-- `𝒪ₓ(D)` as a sheaf of modules, via the submodule construction.
-Compare `AlgebraicCycle.sheaf`. -/
+Compare `AlgebraicCycle.sheaf`.
+
+TODO: Rename this to `AlgebraicCycle.sheaf` once this new version is finalised
+-/
 noncomputable def sheaf (D : AlgebraicCycle X ℤ) : X.Modules where
   val := presheaf D
   isSheaf := isSheaf D
