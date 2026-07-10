@@ -280,7 +280,7 @@ noncomputable def leviCivitaAux₁ [FiniteDimensional ℝ E]
       (fun _Z hZ ↦ leviCivitaAux₀_tensorial₁ _ _ hY hZ)
       (fun _X hX ↦ leviCivitaAux_tensorial₂ _ _ hY hX))
 
-theorem leviCivitaAux₁_apply [FiniteDimensional ℝ E] {x : M}
+theorem leviCivitaAux₁_apply_inner [FiniteDimensional ℝ E] {x : M}
     {X : Π x : M, TangentSpace I x} (hX : MDiffAt (T% X) x)
     {Y : Π x : M, TangentSpace I x} (hY : MDiffAt (T% Y) x)
     {Z : Π x : M, TangentSpace I x} (hZ : MDiffAt (T% Z) x) :
@@ -295,12 +295,12 @@ noncomputable def leviCivitaConnectionAux [FiniteDimensional ℝ E]
     TangentSpace I x →L[ℝ] TangentSpace I x :=
   if hY : MDiffAt (T% Y) x then leviCivitaAux₁ I x hY else 0
 
-theorem leviCivitaConnectionAux_apply [FiniteDimensional ℝ E] {x : M}
+theorem leviCivitaConnectionAux_apply_inner [FiniteDimensional ℝ E] {x : M}
     {X : Π x : M, TangentSpace I x} (hX : MDiffAt (T% X) x)
     {Y : Π x : M, TangentSpace I x} (hY : MDiffAt (T% Y) x)
     {Z : Π x : M, TangentSpace I x} (hZ : MDiffAt (T% Z) x) :
     ⟪leviCivitaConnectionAux I Y x (X x), Z x⟫ = leviCivitaAux₀ I X Y Z x := by
-  simpa [leviCivitaConnectionAux, dif_pos hY] using leviCivitaAux₁_apply I hX hY hZ
+  simpa [leviCivitaConnectionAux, dif_pos hY] using leviCivitaAux₁_apply_inner I hX hY hZ
 
 lemma isCovariantDerivativeOn_leviCivitaConnectionAux [FiniteDimensional ℝ E] :
     IsCovariantDerivativeOn E (leviCivitaConnectionAux I (M := M)) where
@@ -330,7 +330,7 @@ public noncomputable def leviCivitaConnection [FiniteDimensional ℝ E] :
   toFun := leviCivitaConnectionAux I
   isCovariantDerivativeOnUniv := isCovariantDerivativeOn_leviCivitaConnectionAux I
 
-public theorem leviCivitaConnection_apply [FiniteDimensional ℝ E] {x : M}
+public theorem leviCivitaConnection_apply_inner [FiniteDimensional ℝ E] {x : M}
     {X : Π x : M, TangentSpace I x} (hX : MDiffAt (T% X) x)
     {Y : Π x : M, TangentSpace I x} (hY : MDiffAt (T% Y) x)
     {Z : Π x : M, TangentSpace I x} (hZ : MDiffAt (T% Z) x) :
@@ -339,9 +339,9 @@ public theorem leviCivitaConnection_apply [FiniteDimensional ℝ E] {x : M}
       - ⟪Y, VectorField.mlieBracket I X Z⟫ x
       - ⟪Z, VectorField.mlieBracket I Y X⟫ x
       + ⟪X, VectorField.mlieBracket I Z Y⟫ x) / 2 :=
-  leviCivitaConnectionAux_apply _ hX hY hZ
+  leviCivitaConnectionAux_apply_inner _ hX hY hZ
 
-public theorem leviCivitaConnection_apply_right [FiniteDimensional ℝ E] {x : M}
+public theorem leviCivitaConnection_apply_inner_right [FiniteDimensional ℝ E] {x : M}
     {X : Π x : M, TangentSpace I x} (hX : MDiffAt (T% X) x)
     {Y : Π x : M, TangentSpace I x} (hY : MDiffAt (T% Y) x)
     {Z : Π x : M, TangentSpace I x} (hZ : MDiffAt (T% Z) x) :
@@ -351,7 +351,7 @@ public theorem leviCivitaConnection_apply_right [FiniteDimensional ℝ E] {x : M
       - ⟪X, VectorField.mlieBracket I Y Z⟫ x
       + ⟪Z, VectorField.mlieBracket I X Y⟫ x) / 2 := by
   rw [real_inner_comm]
-  exact leviCivitaConnectionAux_apply _ hZ hY hX
+  exact leviCivitaConnectionAux_apply_inner _ hZ hY hX
 
 public lemma isMetricCompatible_leviCivitaConnection [FiniteDimensional ℝ E] :
     (leviCivitaConnection I M).IsMetricCompatible (M := M) (V := TangentSpace I) := by
@@ -359,7 +359,7 @@ public lemma isMetricCompatible_leviCivitaConnection [FiniteDimensional ℝ E] :
   intro x X Y Z hX hY hZ
   -- Normalise the expressions by swapping arguments for inner product and mlieBracket,
   -- until the swappable arguments are in order X < Y < Z.
-  simp (disch := fun_prop) [leviCivitaConnection_apply_right,
+  simp (disch := fun_prop) [leviCivitaConnection_apply_inner_right,
     fun x ↦ real_inner_comm (Z x),
     fun x ↦ real_inner_comm (Y x) (X x),
     mlieBracket_swap (V := Z),
@@ -371,7 +371,7 @@ public lemma leviCivitaConnection_torsion_eq_zero [FiniteDimensional ℝ E] :
   rw [CovariantDerivative.torsion_eq_zero_iff]
   intro X Y x hX hY
   apply injective_inner_mdifferentiableAt_vectorField; ext Z hZ
-  simp (disch := fun_prop) [leviCivitaConnection_apply I,
+  simp (disch := fun_prop) [leviCivitaConnection_apply_inner I,
     mlieBracket_swap (V := Y) (W := X), mlieBracket_swap (V := Z) (W := X),
     mlieBracket_swap (V := Z) (W := Y),
     real_inner_comm, inner_sub_left]
