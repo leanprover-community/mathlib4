@@ -20,7 +20,6 @@ is an abbreviation for `RelIso`, there is no need for an additional instance.
 ## TODO
 
 + Rename the `mul_def`/`one_def` lemmas to `mul_eq_comp`/`one_eq_id`.
-+ Use the `IsMulApplyEqComp` and `IsOneApplyEqSelf` classes for `RelHom` and `RelIso`.
 -/
 
 @[expose] public section
@@ -37,6 +36,9 @@ instance : Monoid (r →r r) where
   mul_assoc _ _ _ := rfl
   one_mul _ := rfl
   mul_one _ := rfl
+
+instance : IsMulApplyEqComp (r →r r) α where mul_apply_eq_comp _ _ _ := rfl
+instance : IsOneApplyEqSelf (r →r r) α where one_apply_eq_self _ := rfl
 
 lemma one_def : (1 : r →r r) = .id r := rfl
 lemma mul_def (f g : r →r r) : (f * g) = f.comp g := rfl
@@ -57,6 +59,9 @@ instance : Monoid (r ↪r r) where
   mul_assoc _ _ _ := rfl
   one_mul _ := rfl
   mul_one _ := rfl
+
+instance : IsMulApplyEqComp (r ↪r r) α where mul_apply_eq_comp _ _ _ := rfl
+instance : IsOneApplyEqSelf (r ↪r r) α where one_apply_eq_self _ := rfl
 
 lemma one_def : (1 : r ↪r r) = .refl r := rfl
 lemma mul_def (f g : r ↪r r) : (f * g) = g.trans f := rfl
@@ -79,6 +84,9 @@ instance : Group (r ≃r r) where
   one_mul _ := ext fun _ => rfl
   mul_one _ := ext fun _ => rfl
   inv_mul_cancel f := ext f.symm_apply_apply
+
+instance : IsMulApplyEqComp (r ≃r r) α where mul_apply_eq_comp _ _ _ := rfl
+instance : IsOneApplyEqSelf (r ≃r r) α where one_apply_eq_self _ := rfl
 
 lemma one_def : (1 : r ≃r r) = .refl r := rfl
 lemma mul_def (f g : r ≃r r) : (f * g) = g.trans f := rfl
