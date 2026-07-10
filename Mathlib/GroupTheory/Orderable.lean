@@ -31,6 +31,9 @@ strictly monotone (`MulLeftStrictMono`).
 * `IsBiOrderable G`: `G` admits some strict total `LinearOrder` for which both left and right
 multiplication are strictly monotone.
 * `isLeftOrderable_iff_isRightOrderable`: a group is left-orderable iff it is right-orderable.
+* `isLeftOrderable_mulOpposite_iff_isRightOrderable`,
+  `isRightOrderable_mulOpposite_iff_isLeftOrderable`, `isBiOrderable_mulOpposite_iff`:
+  orderability of `G` transfers to the opposite group `Gᵐᵒᵖ`, with left and right swapped.
 * `IsLeftOrderable.of_mulEquiv`, `MulEquiv.isLeftOrderable_congr`: left-orderability transports
   along, and is invariant under, group isomorphism.
 * `Prod.instIsLeftOrderable`, `Pi.instIsLeftOrderable`: left-orderability is closed under direct and
@@ -47,13 +50,15 @@ group the two are equivalent, but the strict version is the standard mathematica
 Although `IsLeftOrderable` and `IsRightOrderable` are equivalent, neither direction of
 `isLeftOrderable_iff_isRightOrderable` is an instance, since the two together would loop. The
 right-handed results are therefore proved separately, by transporting along the bridge.
+
+To state that `G` is right-orderable, one can also use `IsLeftOrderable Gᵐᵒᵖ`, as right
+multiplication on `G` is left multiplication on the opposite group `Gᵐᵒᵖ`; the two are exchanged by
+`isLeftOrderable_mulOpposite_iff_isRightOrderable`.
 -/
 
 @[expose] public section
 
 variable {G H : Type*} [Group G] [Group H]
-
-/-! ### Definitions -/
 
 /-- A group is left-orderable if it admits a linear order invariant under left multiplication,
 i.e. `a < b → c * a < c * b`. -/
@@ -156,6 +161,58 @@ theorem isLeftOrderable_iff_isRightOrderable : IsLeftOrderable G ↔ IsRightOrde
     rw [mul_inv_rev, mul_inv_rev]
     gcongr
     exact hab
+
+/-- Right-orderability of `G` is the same as left-orderability of the opposite group `Gᵐᵒᵖ`, since
+right multiplication on `G` is left multiplication on `Gᵐᵒᵖ`. -/
+theorem isLeftOrderable_mulOpposite_iff_isRightOrderable :
+    IsLeftOrderable Gᵐᵒᵖ ↔ IsRightOrderable G := by
+  refine ⟨fun _ ↦ ?_, fun _ ↦ ?_⟩
+  · obtain ⟨_, _⟩ := exists_linearOrder_mulLeftStrictMono Gᵐᵒᵖ
+    refine ⟨LinearOrder.lift' MulOpposite.op MulOpposite.op_injective, ⟨fun c a b hab ↦ ?_⟩⟩
+    change MulOpposite.op (a * c) < MulOpposite.op (b * c)
+    rw [MulOpposite.op_mul, MulOpposite.op_mul]
+    gcongr
+    exact hab
+  · obtain ⟨_, _⟩ := exists_linearOrder_mulRightStrictMono G
+    refine ⟨LinearOrder.lift' MulOpposite.unop MulOpposite.unop_injective, ⟨fun c a b hab ↦ ?_⟩⟩
+    change (c * a).unop < (c * b).unop
+    rw [MulOpposite.unop_mul, MulOpposite.unop_mul]
+    gcongr
+    exact hab
+
+/-- Left-orderability of `G` is the same as right-orderability of the opposite group `Gᵐᵒᵖ`, since
+left multiplication on `G` is right multiplication on `Gᵐᵒᵖ`. -/
+theorem isRightOrderable_mulOpposite_iff_isLeftOrderable :
+    IsRightOrderable Gᵐᵒᵖ ↔ IsLeftOrderable G := by
+  rw [← isLeftOrderable_iff_isRightOrderable, isLeftOrderable_mulOpposite_iff_isRightOrderable,
+    ← isLeftOrderable_iff_isRightOrderable]
+
+/-- Bi-orderability transfers to the opposite group `Gᵐᵒᵖ`, since left and right multiplication on
+`G` are respectively right and left multiplication on `Gᵐᵒᵖ`. -/
+theorem isBiOrderable_mulOpposite_iff : IsBiOrderable Gᵐᵒᵖ ↔ IsBiOrderable G := by
+  refine ⟨fun _ ↦ ?_, fun _ ↦ ?_⟩
+  · obtain ⟨_, _, _⟩ := exists_linearOrder_mulLeftStrictMono_mulRightStrictMono Gᵐᵒᵖ
+    refine ⟨LinearOrder.lift' MulOpposite.op MulOpposite.op_injective,
+      ⟨fun c a b hab ↦ ?_⟩, ⟨fun c a b hab ↦ ?_⟩⟩
+    · change MulOpposite.op (c * a) < MulOpposite.op (c * b)
+      rw [MulOpposite.op_mul, MulOpposite.op_mul]
+      gcongr
+      exact hab
+    · change MulOpposite.op (a * c) < MulOpposite.op (b * c)
+      rw [MulOpposite.op_mul, MulOpposite.op_mul]
+      gcongr
+      exact hab
+  · obtain ⟨_, _, _⟩ := exists_linearOrder_mulLeftStrictMono_mulRightStrictMono G
+    refine ⟨LinearOrder.lift' MulOpposite.unop MulOpposite.unop_injective,
+      ⟨fun c a b hab ↦ ?_⟩, ⟨fun c a b hab ↦ ?_⟩⟩
+    · change (c * a).unop < (c * b).unop
+      rw [MulOpposite.unop_mul, MulOpposite.unop_mul]
+      gcongr
+      exact hab
+    · change (a * c).unop < (b * c).unop
+      rw [MulOpposite.unop_mul, MulOpposite.unop_mul]
+      gcongr
+      exact hab
 
 /-- Left-orderability transports along a group isomorphism `e : G ≃* H`. -/
 theorem IsLeftOrderable.of_mulEquiv [IsLeftOrderable G] (e : G ≃* H) : IsLeftOrderable H := by
