@@ -17,25 +17,6 @@ This module provides `Multiset.find? s p ⋯`, which lifts `List.find?` to multi
 
 public section
 
-namespace List
-
-/-- If there is at most one element satisfying `p`, then `find?` agrees on permuted lists. -/
-theorem find?_eq_find?_of_perm {α : Type*} {p : α → Bool} {l₁ l₂ : List α}
-    (h : l₁.Perm l₂) (hp : {x ∈ l₁ | p x}.Subsingleton) :
-    l₁.find? p = l₂.find? p := by
-  induction h with
-  | nil => rfl
-  | cons x _ ih =>
-    grind
-  | swap x y l =>
-    dsimp [Set.Subsingleton] at hp
-    by_cases p x <;> by_cases p y <;> grind
-  | trans _ _ ih1 ih2 =>
-    refine (ih1 ?_).trans (ih2 ?_) <;> grind
-#find_home find?_eq_find?_of_perm
-#exit
-end List
-
 namespace Multiset
 variable {α : Type*} (p : α → Prop) [DecidablePred p]
 
