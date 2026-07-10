@@ -98,7 +98,7 @@ theorem add_coe (m n : ℕ+) : ((m + n : ℕ+) : ℕ) = m + n :=
   rfl
 
 /-- Strong induction on `ℕ+`. -/
-def strongInductionOn {p : ℕ+ → Sort*} (n : ℕ+) : (∀ k, (∀ m, m < k → p m) → p k) → p n
+def strongInductionOn {p : ℕ+ → Sort*} (n : ℕ+) : (ind : ∀ k, (∀ m, m < k → p m) → p k) → p n
   | IH => IH _ fun a _ => strongInductionOn a IH
 termination_by n.1
 
