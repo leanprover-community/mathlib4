@@ -155,7 +155,7 @@ lemma hasLeftKanExtension [w.GuitartExact]
 
 section
 
-open Functor
+open CategoryTheory.Functor
 
 section
 

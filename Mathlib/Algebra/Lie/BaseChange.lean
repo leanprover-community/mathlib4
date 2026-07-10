@@ -149,7 +149,6 @@ end ExtendScalars
 
 namespace RestrictScalars
 
-open RestrictScalars
 
 variable [h : LieRing L]
 

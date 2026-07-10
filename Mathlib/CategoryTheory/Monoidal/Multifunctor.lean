@@ -29,7 +29,7 @@ variable {C : Type*} [Category* C] [MonoidalCategory C]
 
 namespace MonoidalCategory
 
-open Functor
+open CategoryTheory.Functor
 
 /-- The bifunctor `(F -) ⊗ -`. -/
 abbrev curriedTensorInsertFunctor₁ (F : C ⥤ D) : C ⥤ D ⥤ D :=

@@ -19,7 +19,7 @@ In this file we define the bicategorical Yoneda embedding.
 
 namespace CategoryTheory
 
-open Bicategory Bicategory.Opposite Opposite Pseudofunctor StrongTrans
+open Bicategory.Opposite Opposite Pseudofunctor StrongTrans
 
 universe w v u
 

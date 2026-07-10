@@ -197,7 +197,7 @@ end
 
 section
 
-open Functor
+open CategoryTheory.Functor
 
 variable (X : Type u₄) [Category.{v₄} X]
 
@@ -457,7 +457,7 @@ end
 section Bifunctoriality
 
 namespace CatCommSqOver
-open Functor
+open CategoryTheory.Functor
 
 section transform
 

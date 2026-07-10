@@ -595,8 +595,6 @@ end Function
 
 section ncard
 
-open Nat
-
 /-- A tactic (for use in default params) that applies `Set.toFinite` to synthesize a `Set.Finite`
   term. -/
 syntax "toFinite_tac" : tactic

@@ -31,7 +31,7 @@ set_option backward.defeqAttrib.useBackward true
 
 namespace CategoryTheory
 
-open Opposite Functor
+open Opposite CategoryTheory.Functor
 
 universe w v v₁ v₂ u₁ u₂
 

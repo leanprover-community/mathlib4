@@ -20,7 +20,7 @@ public section
 
 namespace CategoryTheory.NatTrans
 
-open Limits Functor ObjectProperty
+open Limits CategoryTheory.Functor ObjectProperty
 
 variable {J K C D ι : Type*} [Category* J] [Category* C] [Category* K] [Category* D]
 

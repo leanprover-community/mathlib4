@@ -260,7 +260,6 @@ def structurePresheafCompForget :
 
 open TopCat.Presheaf
 
-open PrimeSpectrum
 
 open TopCat.Presheaf
 

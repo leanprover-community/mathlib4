@@ -20,7 +20,7 @@ that `C` has zero morphisms), then there is an equivalence of categories
 
 namespace CategoryTheory
 
-open Limits Functor
+open Limits CategoryTheory.Functor
 
 variable (J C : Type*) [Category* J] [Category* C] [HasZeroMorphisms C]
 

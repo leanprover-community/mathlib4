@@ -305,7 +305,7 @@ scoped instance instSMulRealComplex {R : Type*} [SMul R ℝ] : SMul R ℂ where
 
 end SMul
 
-open scoped SMul
+open scoped Complex.SMul
 
 section SMul
 

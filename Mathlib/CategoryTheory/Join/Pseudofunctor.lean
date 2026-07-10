@@ -23,7 +23,7 @@ universe v₁ v₂ u₁ u₂
 
 namespace CategoryTheory.Join
 
-open Bicategory Functor
+open Bicategory CategoryTheory.Functor
 
 -- The proof gets too slow if we put it in a single `pseudofunctor` constructor,
 -- so we break down the component proofs for the pseudofunctors over several lemmas.

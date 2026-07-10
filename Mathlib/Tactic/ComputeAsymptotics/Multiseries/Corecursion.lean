@@ -65,7 +65,7 @@ Then `f` is friendly iff it is `1`-Lipschitz.
 
 namespace Tactic.ComputeAsymptotics.Seq
 
-open Stream' Seq
+open Stream' Stream'.Seq
 
 open scoped UniformConvergence
 

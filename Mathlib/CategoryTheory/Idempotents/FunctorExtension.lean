@@ -28,7 +28,7 @@ namespace CategoryTheory
 
 namespace Idempotents
 
-open Category Karoubi Functor
+open Category Karoubi CategoryTheory.Functor
 
 variable {C D E : Type*} [Category* C] [Category* D] [Category* E]
 

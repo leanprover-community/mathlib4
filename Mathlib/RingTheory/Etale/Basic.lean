@@ -149,7 +149,6 @@ alias Algebra.FormallyEtale.iff_of_surjective := iff_of_surjective
 
 section BaseChange
 
-open scoped TensorProduct
 
 instance [FormallyEtale R A] : FormallyEtale B (B ⊗[R] A) :=
   .of_formallyUnramified_and_formallySmooth

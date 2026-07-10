@@ -39,7 +39,7 @@ end Nat
 
 namespace Nat.Partrec'
 
-open List.Vector Partrec Computable
+open List.Vector Computable
 
 open Nat.Partrec'
 

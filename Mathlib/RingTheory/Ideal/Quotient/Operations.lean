@@ -193,7 +193,7 @@ theorem mem_quotient_iff_mem {I J : Ideal R} [I.IsTwoSided] (hIJ : I ≤ J) {x :
   rw [mem_quotient_iff_mem_sup, sup_eq_left.mpr hIJ]
 
 section ChineseRemainder
-open Function Quotient Finset
+open Function Ideal.Quotient Finset
 
 variable {ι : Type*}
 

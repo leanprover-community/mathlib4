@@ -189,9 +189,6 @@ theorem List.applyId_cons [DecidableEq α] (xs : List (α × α)) (x y z : α) :
   split_ifs <;> rfl
 
 open Function
-open List
-
-open Nat
 
 theorem List.applyId_zip_eq [DecidableEq α] {xs ys : List α} (h₀ : List.Nodup xs)
     (h₁ : xs.length = ys.length) (x y : α) (i : ℕ) (h₂ : xs[i]? = some x) :
