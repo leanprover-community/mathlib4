@@ -80,7 +80,7 @@ instance equiv (e : α ≃ β) : TendstoCofinite e := ⟨e.injective.tendsto_cof
 
 open Finset in
 @[to_additive]
-noncomputable instance hasMulAntidiagonal {N : Type*} [Monoid N]
+noncomputable abbrev hasMulAntidiagonal {N : Type*} [Monoid N]
     [TendstoCofinite fun (p : N × N) ↦ p.1 * p.2] : HasMulAntidiagonal N where
   mulAntidiagonal a := (finite_preimage_singleton (fun (p : N × N) ↦ p.1 * p.2) a).toFinset
   mem_mulAntidiagonal := by simp
