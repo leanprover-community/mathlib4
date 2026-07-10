@@ -226,40 +226,40 @@ section existence
 variable (X Y Z) in
 /-- Auxiliary quantity for the construction of the Levi-Civita connection:
 If `∇` is the Levi-Civita connection on `TM`, this formula will express `⟨∇ X Y, Z⟩`. -/
-noncomputable def leviCivitaAux (x : M) : ℝ :=
+noncomputable def leviCivitaAux₀ (x : M) : ℝ :=
   (d% ⟪Y, Z⟫ x (X x) + d% ⟪Z, X⟫ x (Y x) - d% ⟪X, Y⟫ x (Z x)
   - ⟪Y, VectorField.mlieBracket I X Z⟫ x
   - ⟪Z, VectorField.mlieBracket I Y X⟫ x
   + ⟪X, VectorField.mlieBracket I Z Y⟫ x) / 2
 
-/-- `leviCivitaAux` is tensorial with respect to its first argument. -/
-theorem leviCivitaAux_tensorial₁ [FiniteDimensional ℝ E]
+/-- `leviCivitaAux₀` is tensorial with respect to its first argument. -/
+theorem leviCivitaAux₀_tensorial₁ [FiniteDimensional ℝ E]
     {Y : Π x : M, TangentSpace I x} (x : M) (hY : MDiffAt (T% Y) x) {Z : Π x, TangentSpace I x}
     (hZ : MDiffAt (T% Z) x) :
-    TensorialAt I E (leviCivitaAux I · Y Z x) x where
+    TensorialAt I E (leviCivitaAux₀ I · Y Z x) x where
   smul hf hX := by
-    simp (disch := fun_prop) [leviCivitaAux, mvfderiv_fun_mul,
+    simp (disch := fun_prop) [leviCivitaAux₀, mvfderiv_fun_mul,
       mlieBracket_smul_left, mlieBracket_smul_right,
       inner_add_right, inner_smul_left, inner_smul_right, real_inner_comm]
     ring
   add hX₁ hX₂ := by
-    simp (disch := fun_prop) [leviCivitaAux, mlieBracket_add_right, mlieBracket_add_left,
+    simp (disch := fun_prop) [leviCivitaAux₀, mlieBracket_add_right, mlieBracket_add_left,
       mvfderiv_fun_add, inner_add_left, inner_add_right]
     ring
 
-/-- `leviCivitaAux` is tensorial with respect to its second argument. -/
+/-- `leviCivitaAux₀` is tensorial with respect to its second argument. -/
 theorem leviCivitaAux_tensorial₂ [FiniteDimensional ℝ E]
     {Y : Π x : M, TangentSpace I x} (x : M) (hY : MDiffAt (T% Y) x) {X : Π x, TangentSpace I x}
     (hX : MDiffAt (T% X) x) :
-    TensorialAt I E (leviCivitaAux I X Y · x) x where
+    TensorialAt I E (leviCivitaAux₀ I X Y · x) x where
   smul hf hZ := by
-    simp (disch := fun_prop) [leviCivitaAux,
+    simp (disch := fun_prop) [leviCivitaAux₀,
       mlieBracket_smul_right, mlieBracket_smul_left,
       mvfderiv_fun_mul,
       inner_smul_left, inner_smul_right, inner_add_right, real_inner_comm]
     ring
   add hZ₁ hZ₂ := by
-    simp (disch := fun_prop) [leviCivitaAux,
+    simp (disch := fun_prop) [leviCivitaAux₀,
       mlieBracket_add_right, mlieBracket_add_left,
       mvfderiv_fun_add,
       inner_add_left, inner_add_right]
@@ -268,7 +268,7 @@ theorem leviCivitaAux_tensorial₂ [FiniteDimensional ℝ E]
 /-- Almost the function underlying our construction of the Levi-Civita connection:
 this is the desired `(1,1)`-tensor, but without considerations to the junk value when
 applied to non-differentiable vector fields. -/
-noncomputable def lcAux₁ [FiniteDimensional ℝ E]
+noncomputable def leviCivitaAux₁ [FiniteDimensional ℝ E]
     {Y : Π x : M, TangentSpace I x} (x : M) (hY : MDiffAt (T% Y) x) :
     TangentSpace I x →L[ℝ] TangentSpace I x :=
   -- Use the musical isomorphism to produce a candidate `∇ Y` as a `(1,1)`-tensor
@@ -277,46 +277,46 @@ noncomputable def lcAux₁ [FiniteDimensional ℝ E]
   have : CompleteSpace (TangentSpace I x) := FiniteDimensional.complete ℝ _
   (InnerProductSpace.toDual ℝ _).symm.toContinuousLinearEquiv.toContinuousLinearMap ∘L
     (TensorialAt.mkHom₂ _ (x := x)
-      (fun _Z hZ ↦ leviCivitaAux_tensorial₁ _ _ hY hZ)
+      (fun _Z hZ ↦ leviCivitaAux₀_tensorial₁ _ _ hY hZ)
       (fun _X hX ↦ leviCivitaAux_tensorial₂ _ _ hY hX))
 
-theorem lcAux₁_apply [FiniteDimensional ℝ E] {x : M}
+theorem leviCivitaAux₁_apply [FiniteDimensional ℝ E] {x : M}
     {X : Π x : M, TangentSpace I x} (hX : MDiffAt (T% X) x)
     {Y : Π x : M, TangentSpace I x} (hY : MDiffAt (T% Y) x)
     {Z : Π x : M, TangentSpace I x} (hZ : MDiffAt (T% Z) x) :
-    ⟪lcAux₁ I x hY (X x), Z x⟫ = leviCivitaAux I X Y Z x := by
-  unfold lcAux₁
+    ⟪leviCivitaAux₁ I x hY (X x), Z x⟫ = leviCivitaAux₀ I X Y Z x := by
+  unfold leviCivitaAux₁
   simp [TensorialAt.mkHom₂_apply _ _ hX hZ]
 
 open scoped Classical in
 /-- The function underlying our construction of the Levi-Civita connection on `(M,g)` -/
-noncomputable def lcAux [FiniteDimensional ℝ E]
+noncomputable def leviCivitaConnectionAux [FiniteDimensional ℝ E]
     (Y : Π x : M, TangentSpace I x) (x : M) :
     TangentSpace I x →L[ℝ] TangentSpace I x :=
-  if hY : MDiffAt (T% Y) x then lcAux₁ I x hY else 0
+  if hY : MDiffAt (T% Y) x then leviCivitaAux₁ I x hY else 0
 
-theorem lcAux_apply [FiniteDimensional ℝ E] {x : M}
+theorem leviCivitaConnectionAux_apply [FiniteDimensional ℝ E] {x : M}
     {X : Π x : M, TangentSpace I x} (hX : MDiffAt (T% X) x)
     {Y : Π x : M, TangentSpace I x} (hY : MDiffAt (T% Y) x)
     {Z : Π x : M, TangentSpace I x} (hZ : MDiffAt (T% Z) x) :
-    ⟪lcAux I Y x (X x), Z x⟫ = leviCivitaAux I X Y Z x := by
-  simpa [lcAux, dif_pos hY] using lcAux₁_apply I hX hY hZ
+    ⟪leviCivitaConnectionAux I Y x (X x), Z x⟫ = leviCivitaAux₀ I X Y Z x := by
+  simpa [leviCivitaConnectionAux, dif_pos hY] using leviCivitaAux₁_apply I hX hY hZ
 
-lemma isCovariantDerivativeOn_lcAux [FiniteDimensional ℝ E] :
-    IsCovariantDerivativeOn E (lcAux I (M := M)) where
+lemma isCovariantDerivativeOn_leviCivitaConnectionAux [FiniteDimensional ℝ E] :
+    IsCovariantDerivativeOn E (leviCivitaConnectionAux I (M := M)) where
   add {Y Y'} x hY hY' _ := by
     apply injective_eval_mdifferentiableAt_vectorField; ext X hX
     apply injective_inner_mdifferentiableAt_vectorField; ext Z hZ
-    simp (disch := fun_prop) [lcAux, dif_pos, TensorialAt.mkHom₂_apply, lcAux₁,
-      leviCivitaAux, mvfderiv_fun_add,
+    simp (disch := fun_prop) [leviCivitaConnectionAux, dif_pos, TensorialAt.mkHom₂_apply,
+      leviCivitaAux₁, leviCivitaAux₀, mvfderiv_fun_add,
       mlieBracket_add_left, mlieBracket_add_right,
       inner_add_left, inner_add_right]
     ring
   leibniz {Y f x} hY hf _ := by
     apply injective_eval_mdifferentiableAt_vectorField; ext X hX
     apply injective_inner_mdifferentiableAt_vectorField; ext Z hZ
-    simp (disch := fun_prop) [lcAux, dif_pos, lcAux₁, TensorialAt.mkHom₂_apply,
-      leviCivitaAux, mvfderiv_fun_mul,
+    simp (disch := fun_prop) [leviCivitaConnectionAux, dif_pos, leviCivitaAux₁,
+      TensorialAt.mkHom₂_apply, leviCivitaAux₀, mvfderiv_fun_mul,
       mlieBracket_smul_left, mlieBracket_smul_right,
       inner_add_left, inner_add_right, inner_smul_left, inner_smul_right, real_inner_comm]
     ring
@@ -327,8 +327,8 @@ this is unique up to the value on non-differentiable vector fields.
 If you know the Levi-Civita connection already, you can use `IsLeviCivitaConnection` instead. -/
 public noncomputable def leviCivitaConnection [FiniteDimensional ℝ E] :
     CovariantDerivative I E (TangentSpace I : M → Type _) where
-  toFun := lcAux I
-  isCovariantDerivativeOnUniv := isCovariantDerivativeOn_lcAux I
+  toFun := leviCivitaConnectionAux I
+  isCovariantDerivativeOnUniv := isCovariantDerivativeOn_leviCivitaConnectionAux I
 
 public theorem leviCivitaConnection_apply [FiniteDimensional ℝ E] {x : M}
     {X : Π x : M, TangentSpace I x} (hX : MDiffAt (T% X) x)
@@ -339,7 +339,7 @@ public theorem leviCivitaConnection_apply [FiniteDimensional ℝ E] {x : M}
       - ⟪Y, VectorField.mlieBracket I X Z⟫ x
       - ⟪Z, VectorField.mlieBracket I Y X⟫ x
       + ⟪X, VectorField.mlieBracket I Z Y⟫ x) / 2 :=
-  lcAux_apply _ hX hY hZ
+  leviCivitaConnectionAux_apply _ hX hY hZ
 
 public theorem leviCivitaConnection_apply_right [FiniteDimensional ℝ E] {x : M}
     {X : Π x : M, TangentSpace I x} (hX : MDiffAt (T% X) x)
@@ -351,7 +351,7 @@ public theorem leviCivitaConnection_apply_right [FiniteDimensional ℝ E] {x : M
       - ⟪X, VectorField.mlieBracket I Y Z⟫ x
       + ⟪Z, VectorField.mlieBracket I X Y⟫ x) / 2 := by
   rw [real_inner_comm]
-  exact lcAux_apply _ hZ hY hX
+  exact leviCivitaConnectionAux_apply _ hZ hY hX
 
 public lemma isMetricCompatible_leviCivitaConnection [FiniteDimensional ℝ E] :
     (leviCivitaConnection I M).IsMetricCompatible (M := M) (V := TangentSpace I) := by
