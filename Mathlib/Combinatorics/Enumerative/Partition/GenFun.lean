@@ -182,9 +182,9 @@ theorem hasProd_genFun (f : ℕ → ℕ → R) :
   rw [coeff_genFun, coeff_prod]
   refine (sum_of_injOn toFinsuppAntidiag (toFinsuppAntidiag_injective d).injOn ?_ ?_ ?_).symm
   · intro p _
-    exact mem_of_subset (finsuppAntidiag_mono hs.le _) p.toFinsuppAntidiag_mem_finsuppAntidiag
+    exact mem_of_subset (finsuppAntidiag_mono hs _) p.toFinsuppAntidiag_mem_finsuppAntidiag
   · exact fun g hg hg' ↦ aux_prod_coeff_eq_zero_of_notMem_range f (by simp) hg (by simpa using hg')
-  · exact fun p _ ↦ aux_prod_f_eq_prod_coeff f p hs.le (by simp)
+  · exact fun p _ ↦ aux_prod_f_eq_prod_coeff f p hs (by simp)
 
 theorem multipliable_genFun (f : ℕ → ℕ → R) :
     Multipliable fun i ↦ (1 : R⟦X⟧) + ∑' j, f (i + 1) (j + 1) • X ^ ((i + 1) * (j + 1)) :=

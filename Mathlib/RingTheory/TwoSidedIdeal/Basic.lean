@@ -36,7 +36,9 @@ A two-sided ideal of a ring `R` is a subset of `R` that contains `0` and is clos
 negation, and absorbs multiplication on both sides.
 -/
 structure TwoSidedIdeal (R : Type*) [NonUnitalNonAssocRing R] where
-  /-- every two-sided-ideal is induced by a congruence relation on the ring. -/
+  /-- In a ring, every two-sided ideal is induced by a ring congruence relation. -/
+  ofRingCon ::
+  /-- The congruence relation induced by this ideal. -/
   ringCon : RingCon R
 
 end definitions
@@ -69,9 +71,19 @@ instance : PartialOrder (TwoSidedIdeal R) := .ofSetLike (TwoSidedIdeal R) R
 lemma mem_iff (x : R) : x ∈ I ↔ I.ringCon x 0 := Iff.rfl
 
 @[simp]
-lemma mem_mk {x : R} {c : RingCon R} : x ∈ mk c ↔ c x 0 := Iff.rfl
+lemma mem_ofRingCon {x : R} {c : RingCon R} : x ∈ ofRingCon c ↔ c x 0 := Iff.rfl
 
 @[simp, norm_cast]
+lemma coe_ofRingCon {c : RingCon R} : (ofRingCon c : Set R) = {x | c x 0} := rfl
+
+/-- A deprecated alias for `ofRingCon`. -/
+@[deprecated mk (since := "2026-06-18")]
+abbrev mk (c : RingCon R) : TwoSidedIdeal R := ofRingCon c
+
+@[deprecated mem_ofRingCon (since := "2026-06-18")]
+lemma mem_mk {x : R} {c : RingCon R} : x ∈ mk c ↔ c x 0 := Iff.rfl
+
+@[deprecated coe_ofRingCon (since := "2026-06-18")]
 lemma coe_mk {c : RingCon R} : (mk c : Set R) = {x | c x 0} := rfl
 
 lemma rel_iff (x y : R) : I.ringCon x y ↔ x - y ∈ I := by
@@ -95,7 +107,7 @@ lemma le_iff {I J : TwoSidedIdeal R} : I ≤ J ↔ (I : Set R) ⊆ (J : Set R) :
 @[simps apply symm_apply]
 def orderIsoRingCon : TwoSidedIdeal R ≃o RingCon R where
   toFun := TwoSidedIdeal.ringCon
-  invFun := .mk
+  invFun := ofRingCon
   map_rel_iff' {I J} := Iff.symm <| le_iff.trans ⟨fun h x y r => by rw [rel_iff] at r ⊢; exact h r,
     fun h x hx => by rw [SetLike.mem_coe, mem_iff] at hx ⊢; exact h hx⟩
 
@@ -180,7 +192,10 @@ lemma coe_mk' (carrier : Set R) (zero_mem add_mem neg_mem mul_mem_left mul_mem_r
 instance : SMulMemClass (TwoSidedIdeal R) R R where
   smul_mem _ _ h := TwoSidedIdeal.mul_mem_left _ _ _ h
 
-instance : SMulMemClass (TwoSidedIdeal R) Rᵐᵒᵖ R where
+-- This is not an instance, because together with the instance above,
+-- it violates the `outParam` of `SMulMemClass`.
+-- See: https://github.com/leanprover-community/mathlib4/pull/40718
+theorem instSMulMemClassMulOpposite : SMulMemClass (TwoSidedIdeal R) Rᵐᵒᵖ R where
   smul_mem _ _ h := TwoSidedIdeal.mul_mem_right _ _ _ h
 
 instance : Add I where add x y := ⟨x.1 + y.1, I.add_mem x.2 y.2⟩
