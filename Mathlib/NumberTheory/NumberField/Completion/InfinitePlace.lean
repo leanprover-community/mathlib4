@@ -188,6 +188,8 @@ lemma norm_coe (x : WithAbs v.1) :
     ‖(x : v.Completion)‖ = v (WithAbs.equiv v.1 x) :=
   UniformSpace.Completion.norm_coe x
 
+example : NormedField v.Completion := inferInstance
+example : Algebra K v.Completion := inferInstance
 example : IsTopologicalRing v.Completion := inferInstance
 
 /-- The coercion from the rationals to its completion along an infinite place is `Rat.cast`. -/
