@@ -133,7 +133,7 @@ lemma isSmoothVector_apply {ρ : Representation k G V} {v : V} (g : G) (hv : IsS
     : IsSmoothVector ρ (ρ g v) := by
   rw [IsSmoothVector, stabilizer_conj]
   convert isOpenMap_mul_right g⁻¹ (g • (ρ.stabilizer v)) (isOpenMap_mul_left g (ρ.stabilizer v) hv)
-  ext x; rw[Set.mem_image]; simp [Set.mem_smul_set]
+  ext x; rw [Set.mem_image]; simp [Set.mem_smul_set]
 
 /-- `IntertwiningMap` sends smooth vectors to smooth vectors. -/
 lemma IntertwiningMap.isSmoothVector {ρ : Representation k G V} {ρ' : Representation k G V'}
