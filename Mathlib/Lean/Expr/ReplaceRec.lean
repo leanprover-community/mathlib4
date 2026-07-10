@@ -18,8 +18,6 @@ replacing a subexpression. We completely mimic the implementation of `Expr.repla
 
 deprecated_module (since := "2026-01-26")
 
-set_option linter.deprecated false
-
 @[expose] public section
 
 namespace Lean.Expr
