@@ -13,11 +13,6 @@ public import Mathlib.Combinatorics.SimpleGraph.Diam
 
 This file defines the girth and the extended girth of a simple graph as the length of its smallest
 cycle, they give `0` or `∞` respectively if the graph is acyclic.
-
-## TODO
-
-- Prove that `G.girth ≤ 2 * G.diam + 1` when the diameter is non-zero
-
 -/
 
 @[expose] public section
@@ -161,6 +156,13 @@ lemma exists_girth_eq_length :
 
 theorem girth_top (h : 3 ≤ ENat.card α) : girth (⊤ : SimpleGraph α) = 3 := by
   simp [girth, egirth_top h]
+
+lemma girth_le_two_mul_diam_add_one (h : G.diam ≠ 0) : G.girth ≤ 2 * G.diam + 1 := by
+  by_cases hG : G.IsAcyclic
+  · simp [hG.girth_eq_zero]
+  · refine ENat.toNat_le_of_le_coe ?_
+    push_cast [diam, ENat.coe_toNat (ediam_ne_top_of_diam_ne_zero h)]
+    exact egirth_le_two_mul_ediam_add_one hG
 
 lemma IsContained.girth_le (h : G ⊑ G') (hG : ¬G.IsAcyclic) : G'.girth ≤ G.girth :=
   ENat.toNat_le_toNat h.egirth_le <| egirth_eq_top.not.mpr hG
