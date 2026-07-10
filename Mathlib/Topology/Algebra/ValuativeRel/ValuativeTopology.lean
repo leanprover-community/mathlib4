@@ -112,10 +112,10 @@ open scoped Pointwise in
 with the valuative relation, then the underlying topology is valuative. -/
 theorem of_mem_nhds_zero_iff_vle [IsTopologicalAddGroup R]
     (H : ∀ {s : Set R}, s ∈ 𝓝 0 ↔ ∃ (γ : (ValueGroup₀ (.ofClass v))ˣ),
-    (·) '' {z : R | v.restrict z < γ} ⊆ s) : IsValuativeTopology R := by
+    {z : R | v.restrict z < γ} ⊆ s) : IsValuativeTopology R := by
   apply of_mem_nhds_iff_vle v (fun {s x} ↦ ?_)
   rw [← vadd_mem_nhds_vadd_iff (g := -x)]
-  simp only [vadd_eq_add, neg_add_cancel, H, image_id', subset_vadd_set_iff, neg_neg,
+  simp only [vadd_eq_add, neg_add_cancel, H, subset_vadd_set_iff, neg_neg,
     image_add_left, preimage_setOf_eq]
   suffices ∀ (γ : (ValueGroup₀ (.ofClass v))ˣ), (x +ᵥ {z | v.restrict z < ↑γ}) =
     {a | v.restrict (-x + a) < ↑γ} by simp_all only
