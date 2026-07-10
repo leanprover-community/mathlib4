@@ -686,6 +686,18 @@ theorem convolution_neg_of_neg_eq (h1 : ∀ᵐ x ∂μ, f (-x) = f x) (h2 : ∀�
       rw [← integral_neg_eq_self]
       simp only [neg_neg, ← sub_eq_add_neg]
 
+omit [NormedSpace ℝ F] in
+lemma lintegral_enorm_convolution_integrand_le_eLpNorm_mul_eLpNorm
+    [MeasurableAdd₂ G] [SFinite μ]
+    {p q : ENNReal} (hpq : p.HolderConjugate q)
+    (hL : ∀ (x y : G), ‖L (f x) (g y)‖ ≤ ‖f x‖ * ‖g y‖)
+    (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ) (x₀ : G) :
+    ∫⁻ a, ‖L (f a) (g (x₀ - a))‖ₑ ∂μ ≤ eLpNorm f p μ * eLpNorm g q μ := by
+  rw [← eLpNorm_comp_measurePreserving (p := q) hg (μ.measurePreserving_sub_left x₀)]
+  simpa [eLpNorm, eLpNorm'] using eLpNorm_le_eLpNorm_mul_eLpNorm'_of_norm hf
+    (hg.comp_quasiMeasurePreserving (quasiMeasurePreserving_sub_left μ x₀)) (L ·) 1
+    (by simpa using Filter.Eventually.of_forall (fun x ↦ hL x (x₀ - x))) (hpqr := hpq)
+
 end Measurable
 
 variable [TopologicalSpace G]
