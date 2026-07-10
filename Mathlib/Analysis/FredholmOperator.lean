@@ -76,9 +76,9 @@ in particular for the proof of equivalence of the four conditions above.
 Here are some notable changes :
 
 * Bourbaki restricts itself to locally convex spaces over `ℝ` or `ℂ`. Yet, under close inspection,
-  this assumption plays very little role in the theory. In fact, at the very mild cost of assuming
-  that the kernel is complemented in the definition of `IsFredholm` (which follows from the
-  finiteness of its dimension if Hahn-Banach is available), we generalize the beginning of the
+  this assumption plays very little role in the beginning of the theory. In fact, at the very mild
+  cost of assuming that the kernel is complemented in the definition of `IsFredholm` (which follows
+  from the finiteness assumption if Hahn-Banach is available), we generalize the beginning of the
   theory to topological vector spaces over any complete nontrivially normed field. In particular,
   our theory naturally captures p-adic Fredholm operators.
 * Bourbaki choses the existence of a continuous quasi-inverse as the definition of being Fredholm.
