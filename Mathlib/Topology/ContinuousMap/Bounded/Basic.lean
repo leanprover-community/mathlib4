@@ -64,7 +64,7 @@ variable {f g : α →ᵇ β} {x : α} {C : ℝ}
 
 instance instFunLike : FunLike (α →ᵇ β) α β where
   coe f := f.toFun
-  coe_injective' f g h := by
+  coe_injective f g h := by
     obtain ⟨⟨_, _⟩, _⟩ := f
     obtain ⟨⟨_, _⟩, _⟩ := g
     congr
@@ -280,6 +280,7 @@ theorem lipschitz_eval_const (x : α) : LipschitzWith 1 fun f : α →ᵇ β => 
 @[deprecated (since := "2025-11-29")]
 alias lipschitz_evalx := lipschitz_eval_const
 
+@[fun_prop]
 theorem uniformContinuous_coe : @UniformContinuous (α →ᵇ β) (α → β) _ _ (⇑) :=
   uniformContinuous_pi.2 fun x => (lipschitz_eval_const x).uniformContinuous
 
@@ -392,6 +393,7 @@ theorem lipschitz_comp {G : β → γ} {C : ℝ≥0} (H : LipschitzWith C G) :
         _ ≤ C * dist f g := by gcongr; apply dist_coe_le_dist
 
 /-- The composition operator (in the target) with a Lipschitz map is uniformly continuous. -/
+@[fun_prop]
 theorem uniformContinuous_comp {G : β → γ} {C : ℝ≥0} (H : LipschitzWith C G) :
     UniformContinuous (comp G H : (α →ᵇ β) → α →ᵇ γ) :=
   (lipschitz_comp H).uniformContinuous
@@ -537,12 +539,12 @@ theorem pow_apply [Monoid R] [BoundedMul R] [ContinuousMul R] (n : ℕ) (f : α 
 @[to_additive]
 instance instMonoid [Monoid R] [BoundedMul R] [ContinuousMul R] :
     Monoid (α →ᵇ R) := fast_instance%
-  Injective.monoid _ DFunLike.coe_injective' rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+  Injective.monoid _ DFunLike.coe_injective rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
 @[to_additive]
 instance instCommMonoid [CommMonoid R] [BoundedMul R] [ContinuousMul R] :
     CommMonoid (α →ᵇ R) := fast_instance%
-  Injective.commMonoid _ DFunLike.coe_injective' rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+  Injective.commMonoid _ DFunLike.coe_injective rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
 /-- Coercion of a `BoundedContinuousFunction` is a `MonoidHom`. Similar to `MonoidHom.coeFn`. -/
 @[to_additive (attr := simps) /-- Coercion of a `BoundedContinuousFunction` is an `AddMonoidHom`.
@@ -677,7 +679,7 @@ end casts
 instance instSemiring {R : Type*} [TopologicalSpace α] [PseudoMetricSpace R]
     [Semiring R] [BoundedMul R] [ContinuousMul R] [BoundedAdd R] [ContinuousAdd R] :
     Semiring (α →ᵇ R) := fast_instance%
-  Injective.semiring _ DFunLike.coe_injective'
+  Injective.semiring _ DFunLike.coe_injective
     rfl rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl)
 
 section IsBoundedSMul
