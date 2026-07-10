@@ -444,7 +444,7 @@ grind_pattern card_le_card_of_injective => f.Injective, #t
 lemma card_le_card_of_surjOn (f : α → β) (hf : Set.SurjOn f s t) : #t ≤ #s := by
   classical unfold Set.SurjOn at hf; exact (card_le_card (mod_cast hf)).trans card_image_le
 
-lemma card_le_card_of_surjective {f : ↥s → ↥t} (hf : f.Surjective) : #t ≤ #s := by
+lemma card_le_card_of_surjective {f : s → t} (hf : f.Surjective) : #t ≤ #s := by
   rcases t.eq_empty_or_nonempty with rfl | ⟨b₀, hb₀⟩
   · simp
   · classical
