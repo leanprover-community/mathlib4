@@ -15,7 +15,7 @@ public import Mathlib.Data.Nat.Notation
   and the VM representation of `ℕ+` is the same as `ℕ` because the proof
   is not stored. -/
 @[instance_reducible]
-def PNat := { n : ℕ // 0 < n } deriving DecidableEq
+def PNat := { n : ℕ // 0 < n } deriving DecidableEq, LE, LT
 
 @[inherit_doc]
 notation "ℕ+" => PNat
@@ -96,5 +96,67 @@ theorem recOn_succ (n : ℕ+) {p : ℕ+ → Sort*} (one succ) :
 @[simp, norm_cast]
 theorem add_coe (m n : ℕ+) : ((m + n : ℕ+) : ℕ) = m + n :=
   rfl
+
+/-- Strong induction on `ℕ+`. -/
+def strongInductionOn {p : ℕ+ → Sort*} (n : ℕ+) : (∀ k, (∀ m, m < k → p m) → p k) → p n
+  | IH => IH _ fun a _ => strongInductionOn a IH
+termination_by n.1
+
+/-- We now define a long list of structures on ℕ+ induced by
+similar structures on ℕ. Most of these behave in a completely
+obvious way, but there are a few things to be said about
+subtraction, division and powers.
+-/
+theorem mk_le_mk (n k : ℕ) (hn : 0 < n) (hk : 0 < k) : (⟨n, hn⟩ : ℕ+) ≤ ⟨k, hk⟩ ↔ n ≤ k := Iff.rfl
+
+theorem mk_lt_mk (n k : ℕ) (hn : 0 < n) (hk : 0 < k) : (⟨n, hn⟩ : ℕ+) < ⟨k, hk⟩ ↔ n < k := Iff.rfl
+
+@[simp, norm_cast]
+theorem coe_le_coe (n k : ℕ+) : (n : ℕ) ≤ k ↔ n ≤ k :=
+  Iff.rfl
+
+@[simp, norm_cast]
+theorem coe_lt_coe (n k : ℕ+) : (n : ℕ) < k ↔ n < k :=
+  Iff.rfl
+
+@[simp]
+theorem pos (n : ℕ+) : 0 < (n : ℕ) :=
+  n.2
+
+theorem eq {m n : ℕ+} : (m : ℕ) = n → m = n :=
+  Subtype.ext
+
+theorem coe_injective : Function.Injective PNat.val :=
+  fun _ _ ↦ eq
+
+@[simp]
+theorem ne_zero (n : ℕ+) : (n : ℕ) ≠ 0 :=
+  Nat.ne_of_gt n.2
+
+instance _root_.NeZero.pnat {a : ℕ+} : NeZero (a : ℕ) :=
+  ⟨a.ne_zero⟩
+
+@[deprecated "use `one_le`" (since := "2026-05-07")]
+protected theorem one_le (n : ℕ+) : (1 : ℕ+) ≤ n :=
+  n.2
+
+@[deprecated "use `not_lt_one`" (since := "2026-05-07")]
+protected theorem not_lt_one (n : ℕ+) : ¬n < 1 :=
+  Nat.not_lt_of_ge n.2
+
+instance : Inhabited ℕ+ :=
+  ⟨1⟩
+
+-- Some lemmas that rewrite `PNat.mk n h`, for `n` an explicit numeral, into explicit numerals.
+@[norm_cast]
+theorem one_coe : ((1 : ℕ+) : ℕ) = 1 :=
+  rfl
+
+@[simp, norm_cast]
+theorem coe_eq_one_iff {m : ℕ+} : (m : ℕ) = 1 ↔ m = 1 :=
+  coe_injective.eq_iff' one_coe
+
+instance : WellFoundedRelation ℕ+ :=
+  measure (fun (a : ℕ+) => (a : ℕ))
 
 end PNat
