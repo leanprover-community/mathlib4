@@ -30,7 +30,7 @@ The `ModelCategory` instance is scoped in the namespace
 
 -/
 
-@[expose] public section
+public section
 
 open CategoryTheory HomotopicalAlgebra Limits
 

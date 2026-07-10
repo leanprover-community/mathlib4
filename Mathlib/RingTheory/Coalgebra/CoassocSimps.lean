@@ -38,7 +38,7 @@ The simp set makes the following choice of normal form
   so we wrap it inside a rudimentary simproc that only fires when `g ≠ id`.
 -/
 
-@[expose] public section
+public section
 
 open TensorProduct
 

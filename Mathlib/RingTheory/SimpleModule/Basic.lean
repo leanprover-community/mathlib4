@@ -52,7 +52,7 @@ public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 
 -/
 
-@[expose] public section
+public section
 
 
 variable {ι : Type*} (R S : Type*) [Ring R] [Ring S] (M : Type*) [AddCommGroup M] [Module R M]

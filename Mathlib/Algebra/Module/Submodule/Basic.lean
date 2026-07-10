@@ -22,7 +22,7 @@ As such it is a good target for organizing and splitting further.
 submodule, subspace, linear map
 -/
 
-@[expose] public section
+public section
 
 open Function
 

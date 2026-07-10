@@ -18,7 +18,7 @@ instances defined by `Pi.mulAction`.
 Note that unlike the `Pi` instance, this requires `G` to be a group.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists MonoidWithZero
 

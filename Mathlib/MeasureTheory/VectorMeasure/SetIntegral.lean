@@ -17,7 +17,7 @@ is defined as `∫ᵛ x, f x ∂[B; μ.restrict s]`.
 The API in this file is modelled on the API for the Bochner integral.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists InnerProductSpace
 

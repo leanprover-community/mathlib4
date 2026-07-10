@@ -22,7 +22,7 @@ normed typeclasses.
 
 -/
 
-@[expose] public section
+public section
 
 library_note «the algebraic hierarchy» /-- # The algebraic hierarchy
 

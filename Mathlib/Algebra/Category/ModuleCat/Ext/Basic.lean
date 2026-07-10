@@ -17,7 +17,7 @@ public import Mathlib.RingTheory.Ideal.Maps
 
 -/
 
-@[expose] public section
+public section
 
 universe v u
 
