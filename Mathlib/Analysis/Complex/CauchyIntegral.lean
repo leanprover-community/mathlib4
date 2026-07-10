@@ -783,10 +783,10 @@ lemma integral_boundary_rect_eq_zero_eventually_atTop_of_differentiable_on_off_c
     (hcont : ContinuousOn f ([[x₁, x₂]] ×ℂ (Ici y))) (s : Set ℂ) (hs : s.Countable)
     (hdiff : ∀ x ∈ ((Ioo (min x₁ x₂) (max x₁ x₂)) ×ℂ (Ioi y)) \ s, DifferentiableAt ℂ f x) :
     (fun (m : ℝ) ↦
-      (∫ (x : ℝ) in x₁..x₂, f (x + y * I))
-        - (∫ (x : ℝ) in x₁..x₂, f (x + m * I))
-        + (I • ∫ (t : ℝ) in y..m, f (x₂ + t * I))
-        - (I • ∫ (t : ℝ) in y..m, f (x₁ + t * I))) =ᶠ[atTop] (fun (_ : ℝ) ↦ 0) := by
+      (∫ (x : ℝ) in x₁..x₂, f (x + y * I)) -
+      (∫ (x : ℝ) in x₁..x₂, f (x + m * I)) +
+      (I • ∫ (t : ℝ) in y..m, f (x₂ + t * I)) -
+      (I • ∫ (t : ℝ) in y..m, f (x₁ + t * I))) =ᶠ[atTop] (fun (_ : ℝ) ↦ 0) := by
   filter_upwards [eventually_ge_atTop y] with m hm using hzero y hcont s hs hdiff m hm
 
 end eventually_eq_zero
@@ -806,9 +806,9 @@ theorem tendsto_integral_boundary_unbounded_rect_one_side_atTop_nhds_sum_other_t
     Tendsto (fun m ↦ I • ∫ (t : ℝ) in y..m, f (x₁ + t * I)) atTop <|
       𝓝 ((∫ (t : ℝ) in x₁..x₂, f (t + y * I)) + C₂) := by
   have heventually : (fun (m : ℝ) ↦
-      (∫ (x : ℝ) in x₁..x₂, f (x + y * I))
-        - (∫ (x : ℝ) in x₁..x₂, f (x + m * I))
-        + (I • ∫ (t : ℝ) in y..m, f (x₂ + t * I))) =ᶠ[atTop]
+      (∫ (x : ℝ) in x₁..x₂, f (x + y * I)) -
+      (∫ (x : ℝ) in x₁..x₂, f (x + m * I)) +
+      (I • ∫ (t : ℝ) in y..m, f (x₂ + t * I))) =ᶠ[atTop]
       (fun m ↦ I • ∫ (t : ℝ) in y..m, f (x₁ + t * I)) := by
     filter_upwards [eventually_ge_atTop y] with m hm
     rw [← sub_eq_zero, ← (hzero y hcont s hs hdiff m hm)]
