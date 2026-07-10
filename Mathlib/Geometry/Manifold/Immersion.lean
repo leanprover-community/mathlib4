@@ -60,8 +60,8 @@ This shortens the overall argument, as the definition of submersions has the sam
 * `IsImmersion.contMDiff`: if f is a `C^n` immersion, it is automatically `C^n`
   in the sense of `ContMDiff`.
 * `ContMDiffAt.iff_comp_isImmersionAt` and `ContMDiff.iff_comp_isImmersion`: a function `f : M → N`
-  between `C^n` manifolds is `C^n` (at `x`) if and only if it is continuous (at `x`)
-  and its composition `φ ∘ f` with a `C^n` immersion `φ : N → P` (at `f x`) is `C^n`.
+  is `C^n` (at `x`) if and only if it is continuous (at `x`) and its composition `φ ∘ f` with a
+  `C^n` immersion `φ : N → P` (at `f x`) is `C^n`.
 
 ## Implementation notes
 
@@ -674,7 +674,7 @@ theorem contMDiffAt (h : IsImmersionAt I J n f x) : CMDiffAt n f x :=
 
 /-- A function `f : M → N` between `C^n` manifolds is `C^n` at `x` if and only if it is continuous
 at `x` and its composition `φ ∘ f` with a `C^n` immersion `φ : N → P` at `f x` is `C^n` at `x`. -/
-lemma _root_.ContMDiffAt.iff_comp_isImmersionAt [IsManifold I n M] {f : M → N} {φ : N → N'}
+lemma _root_.ContMDiffAt.iff_comp_isImmersionAt {f : M → N} {φ : N → N'}
     (hφ : IsImmersionAt J J' n φ (f x)) :
     -- Note: `φ` need not be inducing, so continuity of `φ ∘ f` at `x`
     -- generally does not imply continuity of `f`
@@ -809,7 +809,7 @@ theorem contMDiff (h : IsImmersionOfComplement F I J n f) : CMDiff n f :=
 
 /-- A function `f : M → N` between `C^n` manifolds is `C^n` if and only if it is continuous
 and its composition `φ ∘ f` with a `C^n` immersion `φ : N → P` is `C^n`. -/
-lemma _root_.ContMDiff.iff_comp_isImmersionOfComplement [IsManifold I n M] {f : M → N} {φ : N → N'}
+lemma _root_.ContMDiff.iff_comp_isImmersionOfComplement {f : M → N} {φ : N → N'}
     (hφ : IsImmersionOfComplement F J J' n φ) :
     CMDiff n f ↔ Continuous f ∧ CMDiff n (φ ∘ f) := by
   refine ⟨fun h ↦ ⟨h.continuous, hφ.contMDiff.comp h⟩, fun ⟨h, h'⟩ x ↦ ?_⟩
@@ -885,8 +885,7 @@ theorem contMDiff
 
 /-- A function `f : M → N` between `C^n` manifolds is `C^n` if and only if it is continuous
 and its composition `φ ∘ f` with a `C^n` immersion `φ : N → P` is `C^n`. -/
-lemma _root_.ContMDiff.iff_comp_isImmersion [IsManifold I n M] {f : M → N} {φ : N → N'}
-    (hφ : IsImmersion J J' n φ) :
+lemma _root_.ContMDiff.iff_comp_isImmersion {f : M → N} {φ : N → N'} (hφ : IsImmersion J J' n φ) :
     CMDiff n f ↔ Continuous f ∧ CMDiff n (φ ∘ f) := by
   rw [ContMDiff.iff_comp_isImmersionOfComplement hφ.isImmersionOfComplement_complement]
 
