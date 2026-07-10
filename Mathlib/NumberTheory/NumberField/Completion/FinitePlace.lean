@@ -469,6 +469,7 @@ alias IsDedekindDomain.HeightOneSpectrum.equivHeightOneSpectrum_symm_apply :=
 @[deprecated (since := "2026-03-11")]
 alias IsDedekindDomain.HeightOneSpectrum.embedding_mul_absNorm := embedding_mul_absNorm
 
+-- todo: restate in terms of finite places once we get ramification theory for finite places
 lemma equivHeightOneSpectrum_symm_apply_algebraMap
     (v : HeightOneSpectrum (𝓞 K)) (w : HeightOneSpectrum (𝓞 L)) [w.1.LiesOver v.1] (x : K) :
     FinitePlace.equivHeightOneSpectrum.symm w (algebraMap K L x) =
