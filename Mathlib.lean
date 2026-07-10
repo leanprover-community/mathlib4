@@ -1350,6 +1350,7 @@ public import Mathlib.AlgebraicGeometry.AlgClosed.Basic
 public import Mathlib.AlgebraicGeometry.AlgebraicCycle.Basic
 public import Mathlib.AlgebraicGeometry.Artinian
 public import Mathlib.AlgebraicGeometry.Birational.Birational
+public import Mathlib.AlgebraicGeometry.Birational.Composition
 public import Mathlib.AlgebraicGeometry.Birational.Dominant
 public import Mathlib.AlgebraicGeometry.Birational.RationalMap
 public import Mathlib.AlgebraicGeometry.ColimitsOver
@@ -6595,6 +6596,7 @@ public import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
 public import Mathlib.RingTheory.Flat.FaithfullyFlat.Descent
 public import Mathlib.RingTheory.Flat.IsBaseChange
 public import Mathlib.RingTheory.Flat.Localization
+public import Mathlib.RingTheory.Flat.LocallyFree
 public import Mathlib.RingTheory.Flat.Rank
 public import Mathlib.RingTheory.Flat.Stability
 public import Mathlib.RingTheory.Flat.Tensor
