@@ -451,7 +451,7 @@ noncomputable def mulIndicator (hU : IsClopen U) : LocallyConstant X R where
 
 variable (a : X)
 
-open Classical in
+open scoped Classical in
 @[to_additive]
 theorem mulIndicator_apply_eq_if (hU : IsClopen U) :
     mulIndicator f hU a = if a ∈ U then f a else 1 :=

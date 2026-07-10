@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Lie.Cochain
 
 /-!
 # Extensions of Lie algebras
+
 This file defines extensions of Lie algebras, given by short exact sequences of Lie algebra
 homomorphisms. They are implemented in two ways: `IsExtension` is a `Prop`-valued class taking two
 homomorphisms as parameters, and `Extension` is a structure that includes the middle Lie algebra.

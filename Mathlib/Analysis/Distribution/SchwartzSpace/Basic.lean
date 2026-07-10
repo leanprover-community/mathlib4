@@ -732,7 +732,7 @@ end bilin
 section smul
 
 variable (F) in
-open Classical in
+open scoped Classical in
 /-- The map `f ↦ (x ↦ g x • f x)` as a continuous `𝕜`-linear map on Schwartz space,
 where `g` is a function of temperate growth. -/
 def smulLeftCLM (g : E → 𝕜) : 𝓢(E, F) →L[𝕜] 𝓢(E, F) :=

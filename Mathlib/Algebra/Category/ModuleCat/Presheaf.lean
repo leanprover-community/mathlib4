@@ -77,6 +77,19 @@ lemma map_comp_apply {U V W : Cᵒᵖ} (i : U ⟶ V) (j : V ⟶ W) (x) :
     M.map (i ≫ j) x = M.map j (M.map i x) := by
   rw [M.map_comp]; rfl
 
+set_option backward.isDefEq.respectTransparency false in
+/-- The restriction map `M.map f` of a presheaf of modules `M`, bundled as a semilinear map
+along the ring map `R.map f`. -/
+noncomputable def restrictₛₗ {X Y : Cᵒᵖ} (f : X ⟶ Y) :
+    M.obj X →ₛₗ[(R.map f).hom] M.obj Y where
+  toFun m := M.map f m
+  map_add' := map_add (M.map f).hom
+  map_smul' r m := M.map_smul f r m
+
+@[simp]
+lemma restrictₛₗ_apply {X Y : Cᵒᵖ} (f : X ⟶ Y) (m : M.obj X) :
+    M.restrictₛₗ f m = M.map f m := rfl
+
 /-- A morphism of presheaves of modules consists of a family of linear maps which
 satisfy the naturality condition. -/
 @[ext]

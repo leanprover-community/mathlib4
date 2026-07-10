@@ -106,6 +106,7 @@ abbrev ofHom {X Y : Type u} [Monoid X] [Monoid Y] (f : X →* Y) : of X ⟶ of Y
   ConcreteCategory.ofHom (C := MonCat) f
 
 /-- Use the `ConcreteCategory.hom` projection for `@[simps]` lemmas. -/
+@[to_additive /-- Use the `ConcreteCategory.hom` projection for `@[simps]` lemmas. -/]
 def Hom.Simps.hom (X Y : MonCat.{u}) (f : Hom X Y) :=
   f.hom
 
