@@ -29,7 +29,7 @@ strict maps. Namely, we provide:
 
 @[expose] public section
 
-open Function Set Topology QuotientGroup
+open Topology QuotientGroup
 
 namespace MonoidHom
 
