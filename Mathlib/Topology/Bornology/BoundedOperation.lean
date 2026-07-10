@@ -107,8 +107,7 @@ lemma isBounded_ppow {R : Type*} [Bornology R] [Semigroup R] [BoundedMul R] {s :
   induction n using Semigroup.ppow_induction s with
   | h1 => simp [s_bdd]
   | hsucc n IH =>
-    have obs : (fun x ↦ x ^ (PNat.mk (n + 2) Nat.succ_pos')) '' s ⊆
-      (fun x ↦ x ^ (PNat.mk (n + 1) Nat.succ_pos')) '' s * s := by
+    have obs : (fun x ↦ x ^ (n + 1)) '' s ⊆ (fun x ↦ x ^ n) '' s * s := by
       intro x hx
       simp only [mem_image] at hx
       obtain ⟨y, y_in_s, ypow_eq_x⟩ := hx

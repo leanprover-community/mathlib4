@@ -575,18 +575,14 @@ instance AddSemigroup.measurableSMul_pnat₂ (M : Type*) [AddSemigroup M] [Measu
     suffices Measurable fun p : M × ℕ+ => p.2 • p.1 by apply this.comp measurable_swap
     refine measurable_from_prod_countable_left fun n => ?_
     simp only
-    rcases n with ⟨_|n, hn⟩
-    · contradiction
-    change Measurable fun x ↦ (PNat.mk _ _) • x
     induction n with
-    | zero =>
-      simp only [zero_add, PNat.mk_ofNat, one_psmul]
+    | one =>
+      simp only [one_psmul]
       convert measurable_id
       rfl
     | succ n IH =>
-      simp only [ne_eq, Nat.add_eq_zero_iff, one_ne_zero, and_false, not_false_eq_true,
-        succ_psmul]
-      exact (IH Nat.succ_pos').add measurable_id⟩
+      simp only [succ_psmul]
+      exact IH.add measurable_id⟩
 
 /-- `AddMonoid.SMul` is measurable. -/
 instance AddMonoid.measurableSMul_nat₂ (M : Type*) [AddMonoid M] [MeasurableSpace M]

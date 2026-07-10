@@ -270,8 +270,7 @@ instance hasPPow : Pow (CentroidHom α) ℕ+ :=
         | h1 => exact f.map_mul_left' _ _
         | hsucc n IH =>
           have : f.toEnd (a * b) = a * f.toEnd b := f.map_mul_left' a b
-          refine (congr_fun (AddMonoid.End.coe_mul _
-            (f.toEnd ^ PNat.mk (n + 1) (Nat.succ_pos n)) f.toEnd) (a * b)).trans ?_
+          refine (congr_fun (AddMonoid.End.coe_mul _ (f.toEnd ^ n) f.toEnd) (a * b)).trans ?_
           simp only [Function.comp_apply, this]
           exact IH (f.toEnd b)
       map_mul_right' := fun a b ↦ by
@@ -279,8 +278,7 @@ instance hasPPow : Pow (CentroidHom α) ℕ+ :=
         | h1 => exact f.map_mul_right' _ _
         | hsucc n IH =>
           have h a b : f.toEnd (a * b) = f.toEnd a * b := f.map_mul_right' a b
-          refine (congr_fun (AddMonoid.End.coe_mul _
-            (f.toEnd ^ PNat.mk (n + 1) (Nat.succ_pos n)) f.toEnd) (a * b)).trans ?_
+          refine (congr_fun (AddMonoid.End.coe_mul _ (f.toEnd ^ n) f.toEnd) (a * b)).trans ?_
           simp only [Function.comp_apply, h]
           exact IH (f.toEnd a)}⟩
 
