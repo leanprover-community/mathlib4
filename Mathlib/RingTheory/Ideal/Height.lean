@@ -93,15 +93,13 @@ private lemma Ideal.primeHeight_lt_top (I : Ideal R) [I.FiniteHeight] [I.IsPrime
   rw [← I.height_eq_primeHeight]
   exact Ideal.height_lt_top ‹I.IsPrime›.ne_top
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Ideal.exists_ltSeries_length_eq_height (p : Ideal R) [p.IsPrime] [p.FiniteHeight] :
     ∃ (l : LTSeries (PrimeSpectrum R)),
       RelSeries.last l = ⟨p, inferInstance⟩ ∧ l.length = p.height := by
-  obtain ⟨n, hn⟩ := Option.ne_none_iff_exists'.mp (p.height_ne_top (IsPrime.ne_top ‹_›))
+  obtain ⟨n, hn⟩ := ENat.ne_top_iff_exists.mp (p.height_ne_top (IsPrime.ne_top ‹_›))
   rw [Ideal.height_eq_primeHeight, Ideal.primeHeight] at hn ⊢
-  obtain ⟨l, last, len⟩ := Order.exists_series_of_height_eq_coe (⟨p, ‹_›⟩ : PrimeSpectrum R) hn
-  rw [hn]
-  exact ⟨l, last, by rw [len, WithTop.some_eq_coe, ENat.some_eq_coe]⟩
+  obtain ⟨l, last, len⟩ := Order.exists_series_of_height_eq_coe (⟨p, ‹_›⟩ : PrimeSpectrum R) hn.symm
+  exact ⟨l, last, len ▸ hn⟩
 
 private lemma Ideal.height_mono_of_isPrime {I J : Ideal R} [I.IsPrime] [J.IsPrime] (h : I ≤ J) :
     I.height ≤ J.height := by

@@ -154,13 +154,13 @@ instance : (functor R).Full := (fullyFaithfulFunctor R).full
 instance : (discrete (ModuleCat R)).Faithful :=
   Functor.Faithful.of_iso (functorIsoDiscrete R)
 
-instance : (constantSheaf (coherentTopology CompHaus) (ModuleCat R)).Faithful :=
+instance : (constantSheaf (coherentTopology CompHaus) (ModuleCat.{u + 1} R)).Faithful :=
   inferInstanceAs (discrete (ModuleCat R)).Faithful
 
 instance : (discrete (ModuleCat R)).Full :=
   Functor.Full.of_iso (functorIsoDiscrete R)
 
-instance : (constantSheaf (coherentTopology CompHaus) (ModuleCat R)).Full :=
+instance : (constantSheaf (coherentTopology CompHaus) (ModuleCat.{u + 1} R)).Full :=
   inferInstanceAs (discrete (ModuleCat R)).Full
 
 instance : (constantSheaf (coherentTopology CompHaus) (Type (u + 1))).Faithful :=

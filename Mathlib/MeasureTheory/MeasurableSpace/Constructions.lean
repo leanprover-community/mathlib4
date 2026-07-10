@@ -279,6 +279,11 @@ theorem measurable_of_measurable_on_compl_finite [MeasurableSingletonClass α] {
   have := hs.to_subtype
   measurable_of_restrict_of_restrict_compl hs.measurableSet (measurable_of_finite _) hf
 
+theorem measurable_of_measurable_on_compl_countable [MeasurableSingletonClass α] {f : α → β}
+    (s : Set α) (hs : s.Countable) (hf : Measurable (sᶜ.restrict f)) : Measurable f :=
+  have := hs.to_subtype
+  measurable_of_restrict_of_restrict_compl hs.measurableSet (measurable_of_countable _) hf
+
 theorem measurable_of_measurable_on_compl_singleton [MeasurableSingletonClass α] {f : α → β} (a : α)
     (hf : Measurable ({ x | x ≠ a }.restrict f)) : Measurable f :=
   measurable_of_measurable_on_compl_finite {a} (finite_singleton a) hf

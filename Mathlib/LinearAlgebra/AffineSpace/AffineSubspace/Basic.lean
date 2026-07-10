@@ -815,8 +815,77 @@ namespace AffineSubspace
 
 open AffineEquiv
 
-variable {k : Type*} {V : Type*} {P : Type*} [Ring k] [AddCommGroup V] [Module k V]
-variable [AffineSpace V P]
+variable {k V W P Q : Type*} [Ring k] [AddCommGroup V] [Module k V] [AffineSpace V P]
+  [AddCommGroup W] [Module k W] [AffineSpace W Q]
+
+/-- The product of two affine subspaces as an affine subspace. -/
+def prod (s : AffineSubspace k P) (t : AffineSubspace k Q) : AffineSubspace k (P × Q) where
+  carrier := (s : Set P) ×ˢ (t : Set Q)
+  smul_vsub_vadd_mem' c _ _ _ hp₁ hp₂ hp₃ :=
+    ⟨s.smul_vsub_vadd_mem' c hp₁.1 hp₂.1 hp₃.1, t.smul_vsub_vadd_mem' c hp₁.2 hp₂.2 hp₃.2⟩
+
+@[simp]
+theorem coe_prod (s : AffineSubspace k P) (t : AffineSubspace k Q) :
+    (s.prod t : Set (P × Q)) = (s : Set P) ×ˢ (t : Set Q) :=
+  rfl
+
+@[simp]
+theorem mem_prod (s : AffineSubspace k P) (t : AffineSubspace k Q) (x : P × Q) :
+    x ∈ s.prod t ↔ x.1 ∈ s ∧ x.2 ∈ t :=
+  Set.mem_prod
+
+@[gcongr]
+theorem prod_mono {s₁ s₂ : AffineSubspace k P} {t₁ t₂ : AffineSubspace k Q}
+    (hs : s₁ ≤ s₂) (ht : t₁ ≤ t₂) : s₁.prod t₁ ≤ s₂.prod t₂ :=
+  Set.prod_mono hs ht
+
+@[simp]
+theorem prod_top_top : (⊤ : AffineSubspace k P).prod (⊤ : AffineSubspace k Q) = ⊤ := by
+  ext; simp
+
+@[simp]
+theorem prod_bot_right (s : AffineSubspace k P) : s.prod (⊥ : AffineSubspace k Q) = ⊥ := by
+  simp [AffineSubspace.ext_iff]
+
+@[simp]
+theorem prod_bot_left (t : AffineSubspace k P) : (⊥ : AffineSubspace k Q).prod t = ⊥ := by
+  simp [AffineSubspace.ext_iff]
+
+theorem prod_inf_prod (s₁ s₂ : AffineSubspace k P) (t₁ t₂ : AffineSubspace k Q) :
+    s₁.prod t₁ ⊓ s₂.prod t₂ = (s₁ ⊓ s₂).prod (t₁ ⊓ t₂) :=
+  SetLike.coe_injective Set.prod_inter_prod
+
+theorem _root_.vectorSpan_prod_le (s : Set P) (t : Set Q) :
+    vectorSpan k (s ×ˢ t) ≤ (vectorSpan k s).prod (vectorSpan k t) := by
+  simpa [vectorSpan_def, Set.prod_vsub_prod_comm] using Submodule.span_prod_le (s -ᵥ s) (t -ᵥ t)
+
+theorem direction_prod_le (s : AffineSubspace k P) (t : AffineSubspace k Q) :
+    (s.prod t).direction ≤ s.direction.prod t.direction := by
+  simpa [direction_eq_vectorSpan, coe_prod] using vectorSpan_prod_le (s : Set P) (t : Set Q)
+
+theorem _root_.vectorSpan_prod_eq {s : Set P} {t : Set Q} (hs : s.Nonempty) (ht : t.Nonempty) :
+    vectorSpan k (s ×ˢ t) = (vectorSpan k s).prod (vectorSpan k t) := by
+  rw [vectorSpan_def, Set.prod_vsub_prod_comm]
+  exact Submodule.span_prod_eq k hs.zero_mem_vsub_self ht.zero_mem_vsub_self
+
+theorem direction_prod_eq {s : AffineSubspace k P} {t : AffineSubspace k Q}
+    (hs : s ≠ ⊥) (ht : t ≠ ⊥) :
+    (s.prod t).direction = s.direction.prod t.direction := by
+  simp [direction_eq_vectorSpan, vectorSpan_prod_eq, nonempty_iff_ne_bot, ht, hs]
+
+theorem _root_.affineSpan_prod_eq (s : Set P) (t : Set Q) :
+    affineSpan k (s ×ˢ t) = (affineSpan k s).prod (affineSpan k t) := by
+  rcases s.eq_empty_or_nonempty with rfl | hs
+  · simp
+  rcases t.eq_empty_or_nonempty with rfl | ht
+  · simp
+  apply AffineSubspace.ext_of_direction_eq
+  · simp [direction_prod_eq, Set.nonempty_iff_ne_empty.mp, hs, ht, direction_affineSpan,
+      vectorSpan_prod_eq]
+  · obtain ⟨x, hx⟩ := hs
+    obtain ⟨y, hy⟩ := ht
+    use ⟨x, y⟩
+    simp [mem_affineSpan, hx, hy]
 
 /-- Two affine subspaces are parallel if one is related to the other by adding the same vector
 to all points. -/

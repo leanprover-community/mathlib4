@@ -29,13 +29,11 @@ section LexOrder
 open Finsupp
 variable [LinearOrder σ] [WellFoundedGT σ]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The lex order on multivariate power series. -/
 noncomputable def lexOrder (φ : MvPowerSeries σ R) : (WithTop (Lex (σ →₀ ℕ))) := by
   classical
   exact if h : φ = 0 then ⊤ else by
-    have ne : Set.Nonempty (toLex '' φ.support) := by
-      simp only [Set.image_nonempty, Function.support_nonempty_iff, ne_eq, h, not_false_eq_true]
+    have ne : Set.Nonempty (toLex '' φ.support) := by simpa
     apply WithTop.some
     apply WellFounded.min _ (toLex '' φ.support) ne
     · exact Finsupp.instLTLex.lt

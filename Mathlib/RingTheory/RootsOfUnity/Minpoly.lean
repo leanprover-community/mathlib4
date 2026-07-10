@@ -122,8 +122,7 @@ theorem minpoly_eq_pow {p : ℕ} [hprime : Fact p.Prime] (hdiv : ¬p ∣ n) :
   have Qirr : Irreducible Q := minpoly.irreducible ((h.pow_of_prime hprime.1 hdiv).isIntegral hpos)
   have PQprim : IsPrimitive (P * Q) := Pmonic.isPrimitive.mul Qmonic.isPrimitive
   have prod : P * Q ∣ X ^ n - 1 := by
-    rw [IsPrimitive.Int.dvd_iff_map_cast_dvd_map_cast (P * Q) (X ^ n - 1) PQprim
-        (monic_X_pow_sub_C (1 : ℤ) (ne_of_gt hpos)).isPrimitive,
+    rw [IsPrimitive.Int.dvd_iff_map_cast_dvd_map_cast (P * Q) (X ^ n - 1) PQprim,
       Polynomial.map_mul]
     refine IsCoprime.mul_dvd ?_ ?_ ?_
     · have aux := IsPrimitive.Int.irreducible_iff_irreducible_map_cast Pmonic.isPrimitive

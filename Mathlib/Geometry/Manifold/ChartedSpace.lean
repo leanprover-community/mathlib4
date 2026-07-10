@@ -523,7 +523,6 @@ def ChartedSpace.sum_of_nonempty [Nonempty H] : ChartedSpace H (M ⊕ M') where
       right
       use ChartedSpace.chartAt x, cm'.chart_mem_atlas x
 
-open scoped Classical in
 instance ChartedSpace.sum : ChartedSpace H (M ⊕ M') := by
   by_cases! h : Nonempty H
   · exact ChartedSpace.sum_of_nonempty

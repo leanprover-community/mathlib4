@@ -202,12 +202,12 @@ variable [UniformSpace α] [Group α] [IsUniformGroup α]
 theorem uniformContinuous_div : UniformContinuous fun p : α × α => p.1 / p.2 :=
   IsUniformGroup.uniformContinuous_div
 
-@[to_additive]
+@[to_additive (attr := fun_prop)]
 theorem UniformContinuous.div [UniformSpace β] {f : β → α} {g : β → α} (hf : UniformContinuous f)
     (hg : UniformContinuous g) : UniformContinuous fun x => f x / g x :=
   uniformContinuous_div.comp (hf.prodMk hg)
 
-@[to_additive]
+@[to_additive (attr := fun_prop)]
 theorem UniformContinuous.inv [UniformSpace β] {f : β → α} (hf : UniformContinuous f) :
     UniformContinuous fun x => (f x)⁻¹ := by
   have : UniformContinuous fun x => 1 / f x := uniformContinuous_const.div hf
@@ -217,7 +217,7 @@ theorem UniformContinuous.inv [UniformSpace β] {f : β → α} (hf : UniformCon
 theorem uniformContinuous_inv : UniformContinuous fun x : α => x⁻¹ :=
   uniformContinuous_id.inv
 
-@[to_additive]
+@[to_additive (attr := fun_prop)]
 theorem UniformContinuous.mul [UniformSpace β] {f : β → α} {g : β → α} (hf : UniformContinuous f)
     (hg : UniformContinuous g) : UniformContinuous fun x => f x * g x := by
   have : UniformContinuous fun x => f x / (g x)⁻¹ := hf.div hg.inv
@@ -314,7 +314,7 @@ theorem Filter.Tendsto.uniformity_mul_iff_left {ι : Type*} {f g : ι → α × 
     Tendsto (f * g) l (𝓤 α) ↔ Tendsto f l (𝓤 α) :=
   ⟨fun hfg ↦ by simpa using hfg.uniformity_mul hg.uniformity_inv, fun hf ↦ hf.uniformity_mul hg⟩
 
-@[to_additive UniformContinuous.const_nsmul]
+@[to_additive (attr := fun_prop) UniformContinuous.const_nsmul]
 theorem UniformContinuous.pow_const [UniformSpace β] {f : β → α} (hf : UniformContinuous f) :
     ∀ n : ℕ, UniformContinuous fun x => f x ^ n
   | 0 => by
@@ -328,7 +328,7 @@ theorem UniformContinuous.pow_const [UniformSpace β] {f : β → α} (hf : Unif
 theorem uniformContinuous_pow_const (n : ℕ) : UniformContinuous fun x : α => x ^ n :=
   uniformContinuous_id.pow_const n
 
-@[to_additive UniformContinuous.const_zsmul]
+@[to_additive (attr := fun_prop) UniformContinuous.const_zsmul]
 theorem UniformContinuous.zpow_const [UniformSpace β] {f : β → α} (hf : UniformContinuous f) :
     ∀ n : ℤ, UniformContinuous fun x => f x ^ n
   | (n : ℕ) => by

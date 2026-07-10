@@ -533,7 +533,6 @@ theorem logMap_expMapBasis (x : realSpace K) :
     logMap (mixedSpaceOfRealSpace (expMapBasis x)) ∈
         ZSpan.fundamentalDomain ((basisUnitLattice K).ofZLatticeBasis ℝ (unitLattice K))
       ↔ ∀ w, w ≠ w₀ → x w ∈ Set.Ico 0 1 := by
-  classical
   simp_rw [ZSpan.mem_fundamentalDomain, equivFinRank.forall_congr_left, Subtype.forall]
   refine forall₂_congr fun w hw ↦ ?_
   rw [expMapBasis_apply'', map_smul, logMap_real_smul (norm_expMapBasis_ne_zero _)

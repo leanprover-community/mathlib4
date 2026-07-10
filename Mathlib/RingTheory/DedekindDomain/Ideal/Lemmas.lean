@@ -323,8 +323,8 @@ theorem sup_mul_inf (I J : Ideal A) : (I ⊔ J) * (I ⊓ J) = I * J := by
 
 /-- Ideals in a Dedekind domain have gcd and lcm operators that (trivially) are compatible with
 the normalization operator. -/
-noncomputable instance : NormalizedGCDMonoid (Ideal A) :=
-  { normalizationMonoid with
+noncomputable instance : StrongNormalizedGCDMonoid (Ideal A) :=
+  { strongNormalizationMonoid with
     gcd := (· ⊔ ·)
     gcd_dvd_left := fun _ _ => by simpa only [dvd_iff_le] using le_sup_left
     gcd_dvd_right := fun _ _ => by simpa only [dvd_iff_le] using le_sup_right
@@ -923,7 +923,6 @@ def quotientEquivPiOfProdEq {ι : Type*} [Fintype ι] (I : Ideal R) (P : ι → 
   HeightOneSpectrum.quotientEquivPiOfProdEq I
     (fun i ↦ ⟨P i, (isPrime_of_prime (prime i)), (prime i).ne_zero⟩) e (by grind) prod_eq
 
-open scoped Classical in
 /-- **Chinese remainder theorem** for a Dedekind domain: `R ⧸ I` factors as `Π i, R ⧸ (P i ^ e i)`,
 where `P i` ranges over the prime factors of `I` and `e i` over the multiplicities. -/
 def quotientEquivPiFactors {I : Ideal R} (hI : I ≠ ⊥) :
@@ -1162,7 +1161,6 @@ variable {A : Type*} [CommRing A] {p : Ideal A} (hpb : p ≠ ⊥) [hpm : p.IsMax
 
 namespace IsDedekindDomain
 
-open scoped Classical in
 variable (p) in
 /-- The finite set of all prime factors of the pushforward of `p`. -/
 noncomputable abbrev primesOverFinset : Finset (Ideal B) :=

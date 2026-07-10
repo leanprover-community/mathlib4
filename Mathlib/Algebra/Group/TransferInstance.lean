@@ -25,12 +25,25 @@ When adding new definitions that transfer type-classes across an equivalence, pl
 
 assert_not_exists MonoidWithZero MulAction
 
+library_note «instance transfer via equivalence» /--
+For many type classes, we have a definition that lets us transfer instances from one type to another
+using an equivalence, such as `Equiv.mul` for `Mul`.
+Constructing data instances in this way is discouraged because the resulting data is inefficient
+to unfold. To somewhat mitigate this problem, in these definitions we don't write the
+projections on `Equiv` in the usual way using `Equiv.symm` and `DFunLike.coe`, and instead use
+`Equiv.toFun` and `Equiv.invFun` directly. As a result, unification has to do less unfolding.
+
+Note also that when constructing data instances in this way, it usually helps to use
+`fast_instance%` to get a faster instance.
+-/
+
 namespace Equiv
 variable {M α β : Type*} (e : α ≃ β)
 
+-- See note [instance transfer via equivalence]
 /-- Transfer `One` across an `Equiv` -/
 @[to_additive /-- Transfer `Zero` across an `Equiv` -/]
-protected abbrev one [One β] : One α where one := e.symm 1
+protected abbrev one [One β] : One α where one := e.invFun 1
 
 @[to_additive]
 lemma one_def [One β] :
@@ -39,7 +52,7 @@ lemma one_def [One β] :
 
 /-- Transfer `Mul` across an `Equiv` -/
 @[to_additive /-- Transfer `Add` across an `Equiv` -/]
-protected abbrev mul [Mul β] : Mul α where mul x y := e.symm (e x * e y)
+protected abbrev mul [Mul β] : Mul α where mul x y := e.invFun (e.toFun x * e.toFun y)
 
 @[to_additive]
 lemma mul_def [Mul β] (x y : α) :
@@ -49,7 +62,7 @@ lemma mul_def [Mul β] (x y : α) :
 /-- Transfer `Div` across an `Equiv` -/
 @[to_additive /-- Transfer `Sub` across an `Equiv` -/]
 protected abbrev div [Div β] : Div α :=
-  ⟨fun x y => e.symm (e x / e y)⟩
+  ⟨fun x y => e.invFun (e.toFun x / e.toFun y)⟩
 
 @[to_additive]
 lemma div_def [Div β] (x y : α) :
@@ -60,7 +73,7 @@ lemma div_def [Div β] (x y : α) :
 -- but we already have an `Equiv.inv` (which perhaps should move to `Perm.inv`?)
 /-- Transfer `Inv` across an `Equiv` -/
 @[to_additive /-- Transfer `Neg` across an `Equiv` -/]
-protected abbrev Inv [Inv β] : Inv α where inv x := e.symm (e x)⁻¹
+protected abbrev Inv [Inv β] : Inv α where inv x := e.invFun (e.toFun x)⁻¹
 
 @[to_additive]
 lemma inv_def [Inv β] (x : α) :
@@ -71,7 +84,7 @@ variable (M) in
 /-- Transfer `Pow` across an `Equiv` -/
 @[to_additive (attr := to_additive /-- Transfer `VAdd` across an `Equiv` -/) smul
 /-- Transfer `SMul` across an `Equiv` -/]
-protected abbrev pow [Pow β M] : Pow α M where pow x n := e.symm (e x ^ n)
+protected abbrev pow [Pow β M] : Pow α M where pow x n := e.invFun (e.toFun x ^ n)
 
 @[to_additive (attr := to_additive) smul_def]
 lemma pow_def [Pow β M] (n : M) (x : α) :

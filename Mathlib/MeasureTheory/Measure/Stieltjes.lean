@@ -76,7 +76,6 @@ lemma isOpen_Iotop [TopologicalSpace R] [OrderTopology R] (a b : R) : IsOpen (Io
     simp [this, isOpen_Ioi]
   · simp [isOpen_Ioo]
 
-open scoped Classical in
 /-- `botSet` is the set of all bottom elements. -/
 def botSet : Set R := {x | IsBot x}
 

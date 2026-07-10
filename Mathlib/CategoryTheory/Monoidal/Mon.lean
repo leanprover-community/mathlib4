@@ -102,6 +102,7 @@ variable {M X Y : C} [MonObj M]
 @[inherit_doc] scoped notation "η" => MonObj.one
 @[inherit_doc] scoped notation "η[" M "]" => MonObj.one (X := M)
 
+set_option linter.translateOverwrite false in
 attribute [to_additive existing (attr := reassoc (attr := simp))] one_mul mul_one mul_assoc
 
 /-- Transfer `MonObj` along an isomorphism. -/
@@ -213,6 +214,7 @@ class IsMonHom (f : M ⟶ N) : Prop where
   one_hom (f) : η ≫ f = η := by cat_disch
   mul_hom (f) : μ ≫ f = (f ⊗ₘ f) ≫ μ := by cat_disch
 
+set_option linter.translateOverwrite false in
 attribute [to_additive existing (attr := reassoc (attr := simp))] IsMonHom.one_hom IsMonHom.mul_hom
 
 @[to_additive]
@@ -521,7 +523,7 @@ structure Hom (M N : Mon C) where
   hom : M.X ⟶ N.X
   [isMonHom_hom : IsMonHom hom]
 
-attribute [to_additive existing (attr := instance)] Hom.isMonHom_hom
+attribute [instance] Hom.isMonHom_hom
 
 /-- Construct a morphism `M ⟶ N` of `Mon C` from a map `f : M ⟶ N` and
 compatibilities with the unit and the multiplication. -/

@@ -217,6 +217,16 @@ theorem intrinsicClosure_eq_closure_inter_affineSpan (s : Set P) :
   rw [Subtype.range_coe]
   apply subset_affineSpan
 
+theorem intrinsicInterior_prod_eq [AddCommGroup W] [Module 𝕜 W] [TopologicalSpace Q]
+    [AddTorsor W Q] (s : Set P) (t : Set Q) :
+    intrinsicInterior 𝕜 (s ×ˢ t) = intrinsicInterior 𝕜 s ×ˢ intrinsicInterior 𝕜 t := by
+  let e : affineSpan 𝕜 (s ×ˢ t) ≃ₜ affineSpan 𝕜 s × affineSpan 𝕜 t :=
+    (Homeomorph.setCongr (by simp [affineSpan_prod_eq])).trans (Homeomorph.Set.prod _ _)
+  have : Subtype.val ∘ e.symm = fun p ↦ (p.1, p.2) := rfl
+  have h : ((↑) ⁻¹' (s ×ˢ t) : Set _) = e ⁻¹' (((↑) ⁻¹' s) ×ˢ ((↑) ⁻¹' t)) := rfl
+  simp_rw [intrinsicInterior, h, ← e.preimage_interior, interior_prod_eq, ← e.image_symm,
+    ← image_comp, prod_image_image_eq, this]
+
 section ImageOfHomeomorphAffineSpan
 
 variable [AddCommGroup W] [Module 𝕜 W] [TopologicalSpace Q] [AddTorsor W Q]

@@ -94,8 +94,8 @@ abbrev OrderEmbedding (α β : Type*) [LE α] [LE β] :=
   @RelEmbedding α β (· ≤ ·) (· ≤ ·)
 
 to_dual_insert_cast_fun OrderEmbedding :=
-  fun ⟨iso, h⟩ ↦ ⟨iso, by rwa [forall_comm]⟩,
-  fun ⟨iso, h⟩ ↦ ⟨iso, by rwa [forall_comm]⟩
+  fun i ↦ ⟨i.1, by rw [forall_comm]; exact @i.2⟩,
+  fun i ↦ ⟨i.1, by rw [forall_comm]; exact @i.2⟩
 
 /-- Notation for an `OrderEmbedding`. -/
 infixl:25 " ↪o " => OrderEmbedding
@@ -106,8 +106,8 @@ abbrev OrderIso (α β : Type*) [LE α] [LE β] :=
   @RelIso α β (· ≤ ·) (· ≤ ·)
 
 to_dual_insert_cast_fun OrderIso :=
-  fun ⟨iso, h⟩ ↦ ⟨iso, by rwa [forall_comm]⟩,
-  fun ⟨iso, h⟩ ↦ ⟨iso, by rwa [forall_comm]⟩
+  fun i ↦ ⟨i.1, by rw [forall_comm]; exact @i.2⟩,
+  fun i ↦ ⟨i.1, by rw [forall_comm]; exact @i.2⟩
 
 /-- Notation for an `OrderIso`. -/
 infixl:25 " ≃o " => OrderIso

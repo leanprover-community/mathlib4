@@ -215,11 +215,21 @@ theorem piecewise_univ (f g : α →ₛ β) : piecewise univ MeasurableSet.univ 
 theorem piecewise_empty (f g : α →ₛ β) : piecewise ∅ MeasurableSet.empty f g = g :=
   coe_injective <| by simp
 
-open scoped Classical in
 @[simp]
 theorem piecewise_same (f : α →ₛ β) {s : Set α} (hs : MeasurableSet s) :
-    piecewise s hs f f = f :=
-  coe_injective <| Set.piecewise_same _ _
+    piecewise s hs f f = f := by
+  classical
+  exact coe_injective <| Set.piecewise_same _ _
+
+/-- Dependent If-then-else as a `SimpleFunc`. -/
+@[simps]
+def dite (s : Set α) (hs : MeasurableSet s) (f : s →ₛ β) (g : (sᶜ : Set α) →ₛ β) : α →ₛ β where
+  toFun x := open scoped Classical in if hx : x ∈ s then f ⟨x, hx⟩ else g ⟨x, hx⟩
+  measurableSet_fiber' x := by
+    classical
+    letI : MeasurableSpace β := ⊤
+    exact Measurable.dite f.measurable g.measurable hs trivial
+  finite_range' := (f.finite_range.union g.finite_range).subset (by grind)
 
 theorem support_indicator [Zero β] {s : Set α} (hs : MeasurableSet s) (f : α →ₛ β) :
     Function.support (f.piecewise s hs (SimpleFunc.const α 0)) = s ∩ Function.support f :=
@@ -674,10 +684,11 @@ lemma mk_le_mk {f g : α → β} {hf hg hf' hg'} : mk f hf hf' ≤ mk g hg hg' �
 @[simp, gcongr]
 lemma mk_lt_mk {f g : α → β} {hf hg hf' hg'} : mk f hf hf' < mk g hg hg' ↔ f < g := Iff.rfl
 
-open scoped Classical in
 @[gcongr only]
 lemma piecewise_mono (hf : ∀ a ∈ s, f₁ a ≤ f₂ a) (hg : ∀ a ∉ s, g₁ a ≤ g₂ a) :
-    piecewise s hs f₁ g₁ ≤ piecewise s hs f₂ g₂ := Set.piecewise_mono hf hg
+    piecewise s hs f₁ g₁ ≤ piecewise s hs f₂ g₂ := by
+  classical
+  exact Set.piecewise_mono hf hg
 
 end Preorder
 
@@ -751,10 +762,10 @@ theorem restrict_univ (f : α →ₛ β) : restrict f univ = f := by simp [restr
 @[simp]
 theorem restrict_empty (f : α →ₛ β) : restrict f ∅ = 0 := by simp [restrict]
 
-open scoped Classical in
 theorem map_restrict_of_zero [Zero γ] {g : β → γ} (hg : g 0 = 0) (f : α →ₛ β) (s : Set α) :
-    (f.restrict s).map g = (f.map g).restrict s :=
-  ext fun x =>
+    (f.restrict s).map g = (f.map g).restrict s := by
+  classical
+  exact ext fun x =>
     if hs : MeasurableSet s then by simp [hs, Set.indicator_comp_of_zero hg]
     else by simp [restrict_of_not_measurable hs, hg]
 
@@ -781,19 +792,19 @@ theorem mem_restrict_range {r : β} {s : Set α} {f : α →ₛ β} (hs : Measur
     r ∈ (restrict f s).range ↔ r = 0 ∧ s ≠ univ ∨ r ∈ f '' s := by
   rw [← Finset.mem_coe, coe_range, coe_restrict _ hs, mem_range_indicator]
 
-open scoped Classical in
 theorem mem_image_of_mem_range_restrict {r : β} {s : Set α} {f : α →ₛ β}
-    (hr : r ∈ (restrict f s).range) (h0 : r ≠ 0) : r ∈ f '' s :=
-  if hs : MeasurableSet s then by simpa [mem_restrict_range hs, h0, -mem_range] using hr
+    (hr : r ∈ (restrict f s).range) (h0 : r ≠ 0) : r ∈ f '' s := by
+  classical
+  exact if hs : MeasurableSet s then by simpa [mem_restrict_range hs, h0, -mem_range] using hr
   else by
     rw [restrict_of_not_measurable hs] at hr
     exact (h0 <| eq_zero_of_mem_range_zero hr).elim
 
-open scoped Classical in
 @[gcongr, mono]
 theorem restrict_mono [Preorder β] (s : Set α) {f g : α →ₛ β} (H : f ≤ g) :
-    f.restrict s ≤ g.restrict s :=
-  if hs : MeasurableSet s then fun x => by
+    f.restrict s ≤ g.restrict s := by
+  classical
+  exact if hs : MeasurableSet s then fun x => by
     simp only [coe_restrict _ hs, indicator_le_indicator (H x)]
   else by simp only [restrict_of_not_measurable hs, le_refl]
 
@@ -866,10 +877,9 @@ theorem ennrealRatEmbed_encode (q : ℚ) :
 def eapprox : (α → ℝ≥0∞) → ℕ → α →ₛ ℝ≥0∞ :=
   approx ennrealRatEmbed
 
-set_option backward.isDefEq.respectTransparency false in
 theorem eapprox_lt_top (f : α → ℝ≥0∞) (n : ℕ) (a : α) : eapprox f n a < ∞ := by
   simp only [eapprox, approx, finset_sup_apply, restrict]
-  rw [Finset.sup_lt_iff (α := ℝ≥0∞) WithTop.top_pos]
+  rw [Finset.sup_lt_iff (α := ℝ≥0∞) bot_lt_top]
   intro b _
   split_ifs
   · simp only [coe_zero, coe_piecewise, piecewise_eq_indicator, coe_const]
@@ -1030,10 +1040,10 @@ theorem lintegral_sum {m : MeasurableSpace α} {ι} (f : α →ₛ ℝ≥0∞) (
     ENNReal.tsum_mul_left]
   apply ENNReal.tsum_comm
 
-open scoped Classical in
 theorem restrict_lintegral (f : α →ₛ ℝ≥0∞) {s : Set α} (hs : MeasurableSet s) :
-    (restrict f s).lintegral μ = ∑ r ∈ f.range, r * μ (f ⁻¹' {r} ∩ s) :=
-  calc
+    (restrict f s).lintegral μ = ∑ r ∈ f.range, r * μ (f ⁻¹' {r} ∩ s) := by
+  classical
+  exact calc
     (restrict f s).lintegral μ = ∑ r ∈ f.range, r * μ (restrict f s ⁻¹' {r}) :=
       lintegral_eq_of_subset _ fun x hx =>
         if hxs : x ∈ s then fun _ => by

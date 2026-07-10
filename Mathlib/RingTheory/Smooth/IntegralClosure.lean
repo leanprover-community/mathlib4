@@ -177,7 +177,7 @@ lemma TensorProduct.toIntegralClosure_bijective_of_isLocalization
   convert!
     (IsLocalization.algEquiv (Algebra.algebraMapSubmonoid (integralClosure R B) M)
         (S ⊗[R] integralClosure R B) (integralClosure S (S ⊗[R] B))).bijective
-  rw [← AlgHom.coe_restrictScalars' R, ← AlgEquiv.coe_restrictScalars' R, ← AlgEquiv.coe_toAlgHom]
+  rw [← AlgHom.coe_restrictScalars' R, ← AlgEquiv.coe_restrictScalars R, ← AlgEquiv.coe_toAlgHom]
   congr 1
   ext1
   · apply IsLocalization.algHom_ext M; ext

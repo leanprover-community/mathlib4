@@ -91,7 +91,6 @@ lemma ringKrullDim_add_natCard_le_ringKrullDim_mvPolynomial (σ : Type*) [Finite
     grw [IH, ringKrullDim_succ_le_ringKrullDim_polynomial]
     exact (ringKrullDim_eq_of_ringEquiv (MvPolynomial.optionEquivLeft _ _).toRingEquiv).ge
 
-set_option backward.isDefEq.respectTransparency false in
 open MvPolynomial in
 lemma ringKrullDim_add_enatCard_le_ringKrullDim_mvPolynomial (σ : Type*) :
     ringKrullDim R + ENat.card σ ≤ ringKrullDim (MvPolynomial σ R) := by
@@ -102,15 +101,14 @@ lemma ringKrullDim_add_enatCard_le_ringKrullDim_mvPolynomial (σ : Type*) :
     exact ringKrullDim_add_natCard_le_ringKrullDim_mvPolynomial _
   · simp only [ENat.card_eq_top_of_infinite, WithBot.coe_top]
     suffices ringKrullDim (MvPolynomial σ R) = ⊤ by simp_all
-    rw [WithBot.eq_top_iff_forall_ge]
+    rw [ENat.WithBot.eq_top_iff_forall_ge]
     intro n
     let ι := Infinite.natEmbedding σ ∘ Fin.val (n := n + 1)
     have := Function.invFun_surjective (f := ι) ((Infinite.natEmbedding σ).2.comp Fin.val_injective)
     refine le_trans ?_ (ringKrullDim_le_of_surjective
       (rename (R := R) _).toRingHom (rename_surjective _ this))
     refine le_trans ?_ (ringKrullDim_add_natCard_le_ringKrullDim_mvPolynomial _)
-    simp only [ENat.some_eq_coe, Nat.card_eq_fintype_card, Fintype.card_fin, Nat.cast_add,
-      Nat.cast_one]
+    simp only [Nat.card_eq_fintype_card, Fintype.card_fin, Nat.cast_add, Nat.cast_one]
     trans n + 1
     · norm_cast
       simp

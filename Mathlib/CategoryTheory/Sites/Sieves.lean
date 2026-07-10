@@ -757,8 +757,11 @@ theorem le_generate (R : Presieve X) : R ≤ generate R :=
 theorem generate_sieve (S : Sieve X) : generate S = S :=
   giGenerate.l_u_eq S
 
-lemma generate_mono : Monotone (generate : Presieve X → _) :=
-  (giGenerate (X := X)).gc.monotone_l
+@[gcongr]
+theorem generate_mono : Monotone (generate : Presieve X → Sieve X) := giGenerate.gc.monotone_l
+
+@[gcongr]
+theorem arrows_mono : Monotone (arrows : Sieve X → Presieve X) := giGenerate.gc.monotone_u
 
 /-- If the identity arrow is in a sieve, the sieve is maximal. -/
 theorem id_mem_iff_eq_top : S (𝟙 X) ↔ S = ⊤ :=
@@ -1468,6 +1471,9 @@ end Sieve
 lemma Presieve.functorPullback_arrows {X : C} (S : Sieve (F.obj X)) :
     Presieve.functorPullback F S.arrows = Sieve.functorPullback F S :=
   rfl
+
+theorem Presieve.map_le_functorPushforward (S : Presieve X) : S.map F ≤ S.functorPushforward F := by
+  grw [← Sieve.arrows_generate_map_eq_functorPushforward, ← Sieve.le_generate]
 
 lemma Presieve.bind_ofArrows_le_bindOfArrows {ι : Type*} {X : C} (Z : ι → C)
     (f : ∀ i, Z i ⟶ X) (R : ∀ i, Presieve (Z i)) :

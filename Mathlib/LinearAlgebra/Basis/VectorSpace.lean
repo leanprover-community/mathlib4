@@ -257,7 +257,6 @@ theorem LinearMap.exists_leftInverse_of_injective (f : V →ₗ[K] V') (hf_inj :
   rw [Basis.ofVectorSpace_apply_self, fb_eq, hC.constr_basis]
   exact leftInverse_invFun (LinearMap.ker_eq_bot.1 hf_inj) _
 
-open scoped Classical in
 /-- The left inverse of `f : E →ₗ[𝕜] F`.
 
 If `f` is not injective, then we use the junk value `0`. -/

@@ -47,8 +47,7 @@ theorem cyclotomic_expand_eq_cyclotomic_mul {p n : ℕ} (hp : Nat.Prime p) (hdiv
   refine eq_of_monic_of_dvd_of_natDegree_le ((cyclotomic.monic _ ℤ).mul (cyclotomic.monic _ ℤ))
     ((cyclotomic.monic n ℤ).expand hp.pos) ?_ ?_
   · refine (IsPrimitive.Int.dvd_iff_map_cast_dvd_map_cast _ _
-      (IsPrimitive.mul (cyclotomic.isPrimitive (n * p) ℤ) (cyclotomic.isPrimitive n ℤ))
-      ((cyclotomic.monic n ℤ).expand hp.pos).isPrimitive).2 ?_
+      ((cyclotomic.isPrimitive (n * p) ℤ).mul (cyclotomic.isPrimitive n ℤ))).2 ?_
     rw [Polynomial.map_mul, map_cyclotomic_int, map_cyclotomic_int, map_expand, map_cyclotomic_int]
     refine IsCoprime.mul_dvd (cyclotomic.isCoprime_rat fun h => ?_) ?_ ?_
     · replace h : n * p = n * 1 := by simp [h]

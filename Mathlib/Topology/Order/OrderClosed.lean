@@ -130,12 +130,12 @@ theorem le_of_tendsto_of_frequently {x : Filter β} (lim : Tendsto f x (𝓝 a))
   isClosed_Iic.mem_of_frequently_of_tendsto h lim
 
 @[to_dual ge_of_tendsto]
-theorem le_of_tendsto {x : Filter β} [NeBot x] (lim : Tendsto f x (𝓝 a))
+theorem le_of_tendsto {x : Filter β} [hx : NeBot x] (lim : Tendsto f x (𝓝 a))
     (h : ∀ᶠ c in x, f c ≤ b) : a ≤ b :=
   isClosed_Iic.mem_of_tendsto lim h
 
 @[to_dual ge_of_tendsto']
-theorem le_of_tendsto' {x : Filter β} [NeBot x] (lim : Tendsto f x (𝓝 a))
+theorem le_of_tendsto' {x : Filter β} [hx : NeBot x] (lim : Tendsto f x (𝓝 a))
     (h : ∀ c, f c ≤ b) : a ≤ b :=
   le_of_tendsto lim (Eventually.of_forall h)
 
@@ -468,7 +468,7 @@ theorem le_of_tendsto_of_tendsto_of_frequently {f g : β → α} {b : Filter β}
   t.isClosed_le'.mem_of_frequently_of_tendsto h (hf.prodMk_nhds hg)
 
 @[to_dual self (reorder := f g, a₁ a₂, hf hg)]
-theorem le_of_tendsto_of_tendsto {f g : β → α} {b : Filter β} {a₁ a₂ : α} [NeBot b]
+theorem le_of_tendsto_of_tendsto {f g : β → α} {b : Filter β} {a₁ a₂ : α} [hb : NeBot b]
     (hf : Tendsto f b (𝓝 a₁)) (hg : Tendsto g b (𝓝 a₂)) (h : f ≤ᶠ[b] g) : a₁ ≤ a₂ :=
   le_of_tendsto_of_tendsto_of_frequently hf hg <| Eventually.frequently h
 
@@ -476,7 +476,7 @@ theorem le_of_tendsto_of_tendsto {f g : β → α} {b : Filter β} {a₁ a₂ : 
 alias tendsto_le_of_eventuallyLE := le_of_tendsto_of_tendsto
 
 @[to_dual self (reorder := f g, a₁ a₂, hf hg)]
-theorem le_of_tendsto_of_tendsto' {f g : β → α} {b : Filter β} {a₁ a₂ : α} [NeBot b]
+theorem le_of_tendsto_of_tendsto' {f g : β → α} {b : Filter β} {a₁ a₂ : α} [hb : NeBot b]
     (hf : Tendsto f b (𝓝 a₁)) (hg : Tendsto g b (𝓝 a₂)) (h : ∀ x, f x ≤ g x) : a₁ ≤ a₂ :=
   le_of_tendsto_of_tendsto hf hg (Eventually.of_forall h)
 

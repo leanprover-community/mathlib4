@@ -121,10 +121,13 @@ lemma i_w : h.i.left ≫ g = f ≫ h.i.right := h.i.w
 @[to_dual none, reassoc]
 lemma r_w : h.r.left ≫ f = g ≫ h.r.right := h.r.w
 
+set_option linter.translate.warnInvalid false in
 /-- The top of a retract diagram of morphisms determines a retract of objects. -/
 @[to_dual (attr := simps!)
 /-- The bottom of a retract diagram of morphisms determines a retract of objects. -/]
 def left : Retract X Z := h.map Arrow.leftFunc
+
+attribute [to_dual existing] left_i left_r
 
 @[to_dual (attr := reassoc (attr := simp))]
 lemma retract_left : h.i.left ≫ h.r.left = 𝟙 X := h.left.retract

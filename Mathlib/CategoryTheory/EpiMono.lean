@@ -174,8 +174,6 @@ class SplitEpiCategory : Prop where
   /-- All epis are split -/
   isSplitEpi_of_epi : ∀ {X Y : C} (f : X ⟶ Y) [Epi f], IsSplitEpi f
 
-attribute [to_dual existing] SplitEpiCategory.isSplitEpi_of_epi SplitEpiCategory.mk
-
 end
 
 /-- In a category in which every epimorphism is split, every epimorphism splits. This is not an

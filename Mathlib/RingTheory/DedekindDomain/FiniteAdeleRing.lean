@@ -115,12 +115,12 @@ all but finitely many places, which is `IsDedekindDomain.HeightOneSpectrum.Suppo
 protected def algebraMap : K →+* FiniteAdeleRing R K where
   toFun k := ⟨fun i ↦ k, by
     simp only [Filter.eventually_cofinite, SetLike.mem_coe, mem_adicCompletionIntegers R K,
-     adicCompletion, Valued.valuedCompletion_apply, not_le]
+     valuedAdicCompletion_eq_valuation', not_le]
     exact HeightOneSpectrum.Support.finite R k⟩
-  map_one' := rfl
-  map_mul' x y := Subtype.ext <| funext fun _ ↦ UniformSpace.Completion.coe_mul _ _
-  map_zero' := rfl
-  map_add' x y := Subtype.ext <| funext fun _ ↦ UniformSpace.Completion.coe_add _ _
+  map_one' := Subtype.ext <| funext fun _ ↦ adicCompletion.coe_one ..
+  map_mul' x y := Subtype.ext <| funext fun _ ↦ adicCompletion.coe_mul ..
+  map_zero' := Subtype.ext <| funext fun _ ↦ adicCompletion.coe_zero ..
+  map_add' x y := Subtype.ext <| funext fun _ ↦ adicCompletion.coe_add ..
 
 instance : Algebra K (FiniteAdeleRing R K) := (FiniteAdeleRing.algebraMap R K).toAlgebra
 

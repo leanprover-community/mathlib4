@@ -817,6 +817,42 @@ protected theorem ite {_ : MeasurableSpace α} [TopologicalSpace β] {p : α →
     (hg : StronglyMeasurable g) : StronglyMeasurable fun x => ite (p x) (f x) (g x) :=
   StronglyMeasurable.piecewise hp hf hg
 
+protected theorem dite {s : Set α} {m : MeasurableSpace α} [TopologicalSpace β]
+    [(x : α) → Decidable (x ∈ s)] {f : ↑s → β} (hf : StronglyMeasurable f)
+    {g : ↑sᶜ → β} (hg : StronglyMeasurable g) (hs : MeasurableSet s) :
+    StronglyMeasurable fun x ↦ if hx : x ∈ s then f ⟨x, hx⟩ else g ⟨x, hx⟩ := by
+  refine ⟨fun n ↦ SimpleFunc.dite s hs (hf.approx n) (hg.approx n), fun x ↦ ?_⟩
+  by_cases hx : x ∈ s
+  · simpa [hx] using hf.tendsto_approx ⟨x, hx⟩
+  · simpa [hx] using hg.tendsto_approx ⟨x, hx⟩
+
+/-- If a function is continuous outside of a countable set, then it is strongly measurable. -/
+theorem _root_.ContinuousOn.stronglyMeasurable_of_countable_compl [MeasurableSpace α]
+    [TopologicalSpace α] [OpensMeasurableSpace α] [MeasurableSingletonClass α]
+    [TopologicalSpace β] [PseudoMetrizableSpace β]
+    [h : SecondCountableTopologyEither α β] {f : α → β} {s : Set α} (hf : ContinuousOn f s)
+    (hs : (sᶜ).Countable) : StronglyMeasurable f := by
+  classical
+  have h's : MeasurableSet s := by simpa using hs.measurableSet.compl
+  have : f = fun x ↦ if hx : x ∈ s then f (⟨x, hx⟩ : s) else f (⟨x, hx⟩ : (sᶜ : Set α)) := by simp
+  rw [this]
+  apply StronglyMeasurable.dite (f := fun x ↦ f x) (g := fun x ↦ f x) ?_ ?_ h's
+  · have : SecondCountableTopologyEither s β := by cases h.out <;> infer_instance
+    exact (continuousOn_iff_continuous_restrict.1 hf).stronglyMeasurable
+  · have := hs.to_subtype
+    exact MeasureTheory.StronglyMeasurable.of_discrete
+
+/-- If a function is continuous outside of a countable set, then it is strongly measurable. -/
+theorem of_countable_not_continuousAt [MeasurableSpace α] [TopologicalSpace α]
+    [OpensMeasurableSpace α] [MeasurableSingletonClass α]
+    [TopologicalSpace β] [PseudoMetrizableSpace β]
+    [h : SecondCountableTopologyEither α β] {f : α → β}
+    (hf : Set.Countable {x | ¬ ContinuousAt f x}) : StronglyMeasurable f := by
+  have : ContinuousOn f {x | ContinuousAt f x} := fun x hx ↦ hx.continuousWithinAt
+  apply this.stronglyMeasurable_of_countable_compl
+  convert hf
+  grind
+
 @[fun_prop]
 theorem _root_.MeasurableEmbedding.stronglyMeasurable_extend {f : α → β} {g : α → γ} {g' : γ → β}
     {mα : MeasurableSpace α} {mγ : MeasurableSpace γ} [TopologicalSpace β]

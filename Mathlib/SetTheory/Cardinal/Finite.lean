@@ -352,14 +352,15 @@ theorem card_eq_zero_iff_empty (α : Type*) : card α = 0 ↔ IsEmpty α := by
 theorem card_ne_zero_iff_nonempty (α : Type*) : card α ≠ 0 ↔ Nonempty α := by
   simp [card_eq_zero_iff_empty]
 
+@[simp] lemma card_ne_zero [Nonempty α] : card α ≠ 0 := (card_ne_zero_iff_nonempty _).2 ‹_›
+
 theorem card_pos_iff_nonempty (α : Type*) : 0 < card α ↔ Nonempty α := by
   rw [pos_iff_ne_zero, card_ne_zero_iff_nonempty]
 
 theorem one_le_card_iff_nonempty (α : Type*) : 1 ≤ card α ↔ Nonempty α := by
   simp [Order.one_le_iff_ne_zero, card_eq_zero_iff_empty]
 
-@[simp] lemma card_pos [Nonempty α] : 0 < card α := by
-  simpa [pos_iff_ne_zero, card_ne_zero_iff_nonempty]
+@[simp] lemma card_pos [Nonempty α] : 0 < card α := by simp [pos_iff_ne_zero]
 
 theorem card_le_one_iff_subsingleton (α : Type*) : card α ≤ 1 ↔ Subsingleton α := by
   rw [← le_one_iff_subsingleton]

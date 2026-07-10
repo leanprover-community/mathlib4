@@ -1311,7 +1311,6 @@ section AddCommMonoid
 
 variable [AddCommMonoid β]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem stoppedValue_eq {N : ℕ} (hbdd : ∀ ω, τ ω ≤ N) : stoppedValue u τ = fun x =>
     (∑ i ∈ Finset.range (N + 1), Set.indicator {ω | τ ω = i} (u i)) x := by
   refine stoppedValue_eq_of_mem_finset fun ω ↦ ?_
@@ -1319,9 +1318,8 @@ theorem stoppedValue_eq {N : ℕ} (hbdd : ∀ ω, τ ω ≤ N) : stoppedValue u 
   have h_top : τ ω ≠ ⊤ := fun h_contra ↦ by simp [h_contra] at hbdd
   lift τ ω to ℕ using h_top with t ht
   simp only [Nat.cast_le] at hbdd
-  simp only [ENat.some_eq_coe, Finset.coe_range, Set.mem_image, Set.mem_Iio, Nat.cast_inj,
-    exists_eq_right, gt_iff_lt]
-  grind
+  simp only [ENat.some_eq_coe, Finset.coe_range, Set.mem_image, Set.mem_Iio]
+  exact ⟨t, by simpa, Nat.cast_inj.mpr rfl⟩
 
 theorem stoppedProcess_eq (n : ℕ) : stoppedProcess u τ n = Set.indicator {a | n ≤ τ a} (u n) +
     ∑ i ∈ Finset.range n, Set.indicator {ω | τ ω = i} (u i) := by

@@ -37,7 +37,7 @@ theorem ne_zero [Nontrivial M₀] (u : M₀ˣ) : (u : M₀) ≠ 0 :=
   left_ne_zero_of_mul_eq_one u.mul_inv
 
 -- We can't use `mul_eq_zero` + `Units.ne_zero` in the next two lemmas because we don't assume
--- `Nonzero M₀`.
+-- `Nontrivial M₀`.
 @[simp]
 theorem mul_left_eq_zero (u : M₀ˣ) {a : M₀} : a * u = 0 ↔ a = 0 :=
   ⟨fun h => by simpa using mul_eq_zero_of_left h ↑u⁻¹, fun h => mul_eq_zero_of_left h u⟩

@@ -455,7 +455,6 @@ noncomputable def rootsExpandToRoots : (expand R p f).roots.toFinset ↪ f.roots
 @[simp]
 theorem rootsExpandToRoots_apply (x) : (rootsExpandToRoots p f x : R) = x ^ p := rfl
 
-open scoped Classical in
 /-- If `f` is a polynomial over an integral domain `R` of characteristic `p`, then there is
 a map from the set of roots of `Polynomial.expand R (p ^ n) f` to the set of roots of `f`.
 It's given by `x ↦ x ^ (p ^ n)`, see `rootsExpandPowToRoots_apply`. -/

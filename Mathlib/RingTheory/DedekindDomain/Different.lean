@@ -112,7 +112,6 @@ open scoped Classical in
 lemma traceDual_top' :
     (⊤ : Submodule B L)ᵛ =
       if ((LinearMap.range (Algebra.trace K L)).restrictScalars A ≤ 1) then ⊤ else ⊥ := by
-  classical
   split_ifs with h
   · rw [_root_.eq_top_iff]
     exact fun _ _ _ _ ↦ h ⟨_, rfl⟩
@@ -224,11 +223,11 @@ variable [IsDomain A] [IsFractionRing B L] [Nontrivial B] [NoZeroDivisors B]
 
 namespace FractionalIdeal
 
-open scoped Classical in
 /-- The dual of a non-zero fractional ideal is the dual of the submodule under the trace form. -/
 noncomputable
 def dual (I : FractionalIdeal B⁰ L) :
     FractionalIdeal B⁰ L :=
+  open scoped Classical in
   if hI : I = 0 then 0 else
   ⟨Iᵛ, by
     classical

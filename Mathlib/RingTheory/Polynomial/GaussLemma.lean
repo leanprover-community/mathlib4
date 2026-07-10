@@ -213,7 +213,7 @@ end IsIntegrallyClosed
 
 open IsLocalization
 
-section NormalizedGCDMonoid
+section GCDMonoid
 
 variable [IsDomain R]
 
@@ -233,27 +233,23 @@ theorem isUnit_or_eq_zero_of_isUnit_integerNormalization_primPart [NormalizedGCD
   · apply h0 con
   · apply Units.ne_zero _ con
 
-variable [Nonempty (NormalizedGCDMonoid R)]
+variable [IsGCDMonoid R]
 
 lemma IsPrimitive.mul_map_mem_lifts_iff {f : R[X]} (hf : IsPrimitive f) {g : K[X]} :
     g * f.map (algebraMap R K) ∈ lifts (algebraMap R K) ↔ g ∈ lifts (algebraMap R K) := by
   let : NormalizedGCDMonoid R := Nonempty.some inferInstance
-  refine ⟨?_, fun h ↦ Subsemiring.mul_mem _ h ⟨_, rfl⟩⟩
-  intro ⟨k, (hk : Polynomial.map _ _ = _)⟩
-  let g' := integerNormalization (nonZeroDivisors R) g
-  obtain ⟨b, hb₁, (hb₂ : Polynomial.map _ g' = _)⟩ :=
-    integerNormalization_spec (nonZeroDivisors R) g
+  refine ⟨fun ⟨k, (hk : k.map _ = _)⟩ ↦ ?_, fun h ↦ mul_mem h ⟨_, rfl⟩⟩
+  let g' := integerNormalization R⁰ g
+  obtain ⟨b, hb₁, (hb₂ : g'.map _ = _)⟩ := integerNormalization_spec R⁰ g
   have g'_mul_f : g' * f = b • k := by
-    apply Polynomial.map_injective (algebraMap R K) (FaithfulSMul.algebraMap_injective R K)
+    apply map_injective (algebraMap R K) (FaithfulSMul.algebraMap_injective R K)
     rw [Polynomial.map_smul, algebraMap_smul, hk, ← smul_mul_assoc, ← hb₂, Polynomial.map_mul]
-  use C (normUnit b : R) * C k.content * g'.primPart
-  have := congr($(g'_mul_f).content)
-  simp only [content_mul, hf.content_eq_one, mul_one, smul_eq_C_mul, content_C,
-    normalize_apply] at this
-  rw [← smul_right_inj (nonZeroDivisors.ne_zero hb₁), ← hb₂]
-  rw (occs := [2]) [eq_C_content_mul_primPart g']
-  simp [this, Polynomial.map_mul, map_C, Algebra.smul_def, algebraMap_apply,
-    mul_assoc]
+  apply_fun content at g'_mul_f
+  have h := Associated.of_eq g'_mul_f
+  grw [← C_mul', associated_content_mul, associated_content_C_mul, hf.content_eq_one, mul_one] at h
+  obtain ⟨g'', hg⟩ : C b ∣ g' := dvd_content_iff_C_dvd.mp <| (dvd_mul_right ..).trans h.dvd'
+  use g''
+  simp [← smul_right_inj (nonZeroDivisors.ne_zero hb₁), ← hb₂, hg, C_mul']
 
 lemma IsPrimitive.map_mul_mem_lifts_iff {f : R[X]} (hf : IsPrimitive f) {g : K[X]} :
     f.map (algebraMap R K) * g ∈ lifts (algebraMap R K) ↔ g ∈ lifts (algebraMap R K) := by
@@ -280,10 +276,9 @@ theorem IsPrimitive.irreducible_iff_irreducible_map_fraction_map {p : R[X]} (hp 
   obtain ⟨u, hu⟩ :
     Associated (c * d)
       (content (integerNormalization R⁰ a) * content (integerNormalization R⁰ b)) := by
-    rw [← dvd_dvd_iff_associated, ← normalize_eq_normalize_iff, normalize.map_mul,
-      normalize.map_mul, normalize_content, normalize_content, ←
-      mul_one (normalize c * normalize d), ← hp.content_eq_one, ← content_C, ← content_C, ←
-      content_mul, ← content_mul, ← content_mul, h1]
+    grw [← associated_content_mul, ← h1, associated_content_mul, ← C_mul, content_C,
+      hp.content_eq_one, mul_one]
+    apply associated_normalize
   rw [← map_mul, eq_comm, (integerNormalization R⁰ a).eq_C_content_mul_primPart,
     (integerNormalization R⁰ b).eq_C_content_mul_primPart, mul_assoc, mul_comm _ (C _ * _), ←
     mul_assoc, ← mul_assoc, ← map_mul, ← hu, map_mul, mul_assoc, mul_assoc, ←
@@ -303,36 +298,21 @@ theorem IsPrimitive.irreducible_iff_irreducible_map_fraction_map {p : R[X]} (hp 
     apply isUnit_or_eq_zero_of_isUnit_integerNormalization_primPart h0.1 h
 
 theorem IsPrimitive.dvd_of_fraction_map_dvd_fraction_map {p q : R[X]} (hp : p.IsPrimitive)
-    (hq : q.IsPrimitive) (h_dvd : p.map (algebraMap R K) ∣ q.map (algebraMap R K)) : p ∣ q := by
+    (h_dvd : p.map (algebraMap R K) ∣ q.map (algebraMap R K)) : p ∣ q := by
   rcases h_dvd with ⟨r, hr⟩
-  obtain ⟨s, s0, hs⟩ := integerNormalization_spec R⁰ r
-  rw [Algebra.smul_def, algebraMap_apply] at hs
-  have h : p ∣ q * C s := by
-    use integerNormalization R⁰ r
-    apply map_injective (algebraMap R K) (IsFractionRing.injective _ _)
-    rw [Polynomial.map_mul, Polynomial.map_mul, hs, hr, mul_assoc, mul_comm r]
-    simp
-  have := Classical.arbitrary (NormalizedGCDMonoid R)
-  rw [← hp.dvd_primPart_iff_dvd, primPart_mul, hq.primPart_eq, Associated.dvd_iff_dvd_right] at h
-  · exact h
-  · symm
-    rcases isUnit_primPart_C s with ⟨u, hu⟩
-    use u
-    rw [hu]
-  iterate 2
-    apply mul_ne_zero hq.ne_zero
-    rw [Ne, C_eq_zero]
-    contrapose s0
-    simp [s0, mem_nonZeroDivisors_iff_ne_zero]
+  obtain ⟨r, rfl⟩ := (mul_map_mem_lifts_iff hp).mp ⟨q, mul_comm _ r ▸ hr⟩
+  use r
+  simpa [← Polynomial.map_mul, (map_injective _ (FaithfulSMul.algebraMap_injective R K)).eq_iff]
+    using hr
 
 variable (K)
 
-theorem IsPrimitive.dvd_iff_fraction_map_dvd_fraction_map {p q : R[X]} (hp : p.IsPrimitive)
-    (hq : q.IsPrimitive) : p ∣ q ↔ p.map (algebraMap R K) ∣ q.map (algebraMap R K) :=
+theorem IsPrimitive.dvd_iff_fraction_map_dvd_fraction_map {p q : R[X]} (hp : p.IsPrimitive) :
+    p ∣ q ↔ p.map (algebraMap R K) ∣ q.map (algebraMap R K) :=
   ⟨fun ⟨a, b⟩ => ⟨a.map (algebraMap R K), b.symm ▸ Polynomial.map_mul (algebraMap R K)⟩, fun h =>
-    hp.dvd_of_fraction_map_dvd_fraction_map hq h⟩
+    hp.dvd_of_fraction_map_dvd_fraction_map h⟩
 
-end NormalizedGCDMonoid
+end GCDMonoid
 
 end FractionMap
 
@@ -342,8 +322,8 @@ theorem IsPrimitive.Int.irreducible_iff_irreducible_map_cast {p : ℤ[X]} (hp : 
     Irreducible p ↔ Irreducible (p.map (Int.castRingHom ℚ)) :=
   hp.irreducible_iff_irreducible_map_fraction_map
 
-theorem IsPrimitive.Int.dvd_iff_map_cast_dvd_map_cast (p q : ℤ[X]) (hp : p.IsPrimitive)
-    (hq : q.IsPrimitive) : p ∣ q ↔ p.map (Int.castRingHom ℚ) ∣ q.map (Int.castRingHom ℚ) :=
-  hp.dvd_iff_fraction_map_dvd_fraction_map ℚ hq
+theorem IsPrimitive.Int.dvd_iff_map_cast_dvd_map_cast (p q : ℤ[X]) (hp : p.IsPrimitive) :
+    p ∣ q ↔ p.map (Int.castRingHom ℚ) ∣ q.map (Int.castRingHom ℚ) :=
+  hp.dvd_iff_fraction_map_dvd_fraction_map ℚ
 
 end Polynomial

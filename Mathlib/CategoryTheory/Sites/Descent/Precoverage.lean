@@ -64,7 +64,7 @@ public lemma faithful_pullFunctor :
     refine F.presheafHomObjHomEquiv.injective ?_i
     have : (Sieve.overEquiv (Over.mk (𝟙 (X i)))).symm
       (Sieve.pullback (f i) (Sieve.ofArrows X' f')) ∈ J.over (X i) _ := by
-      simpa only [J.mem_over_iff, Equiv.apply_symm_apply] using! J.pullback_stable (f i) hf'
+      simpa only [J.mem_over_iff, OrderIso.apply_symm_apply] using! J.pullback_stable (f i) hf'
     refine (((isSheaf_iff_isSheaf_of_type _ _).1
       (IsPrestack.isSheaf _ _ _)).isSeparated _ this).ext ?_
     rintro Z g ⟨Y, p, c, ⟨j⟩, hp⟩
@@ -104,7 +104,7 @@ abbrev sieve (i : ι) : Sieve (Over.mk (𝟙 (X i))) :=
 include hf' in
 variable (f) in
 lemma sieve_mem (i : ι) : sieve f f' i ∈ J.over _ _ := by
-  simpa only [J.mem_over_iff, Equiv.apply_symm_apply] using! J.pullback_stable (f i) hf'
+  simpa only [J.mem_over_iff, OrderIso.apply_symm_apply] using! J.pullback_stable (f i) hf'
 
 set_option backward.defeqAttrib.useBackward true in
 lemma mem_sieve {i : ι} {Z : C} (q : Z ⟶ X i) ⦃j : ι'⦄ (a : Z ⟶ X' j)
@@ -275,7 +275,7 @@ lemma comm ⦃W : C⦄ (q : W ⟶ S) ⦃i₁ i₂ : ι⦄
     Category.assoc, DescentData.hom_comp, D₂.hom_self _ _ hf₁, Category.comp_id]
   have H : (Sieve.overEquiv (Over.mk f₁)).symm
       (Sieve.pullback q (Sieve.ofArrows X' f')) ∈ J.over _ _ := by
-    rw [J.mem_over_iff, Equiv.apply_symm_apply]
+    rw [J.mem_over_iff, OrderIso.apply_symm_apply]
     exact J.pullback_stable _ hf'
   refine ((isSheaf_iff_isSheaf_of_type _ _).1
     (IsPrestack.isSheaf J (D₁.obj i₁) (D₂.obj i₁)) _ H).isSeparatedFor.ext ?_

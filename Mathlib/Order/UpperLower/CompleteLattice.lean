@@ -326,7 +326,7 @@ variable [Preorder α] [Preorder β] [Preorder γ]
 variable {f : α ≃o β} {s t : UpperSet α} {a : α} {b : β}
 
 /-- An order isomorphism of Preorders induces an order isomorphism of their upper sets. -/
-@[to_dual (attr := simps)
+@[to_dual
 /-- An order isomorphism of Preorders induces an order isomorphism of their lower sets. -/]
 def map (f : α ≃o β) : UpperSet α ≃o UpperSet β where
   toFun s := ⟨f '' s, s.upper.image f⟩
@@ -334,6 +334,12 @@ def map (f : α ≃o β) : UpperSet α ≃o UpperSet β where
   left_inv _ := ext <| f.preimage_image _
   right_inv _ := ext <| f.image_preimage _
   map_rel_iff' := image_subset_image_iff f.injective
+
+-- `simps` could generate these theorems, but `to_dual` is not happy with those versions.
+@[to_dual (attr := simp)]
+theorem coe_map_apply (f : α ≃o β) (s : UpperSet α) : map f s = f '' s := rfl
+@[to_dual (attr := simp)]
+theorem coe_map_symm_apply (f : α ≃o β) (s : UpperSet β) : (map f).symm s = f ⁻¹' s := rfl
 
 @[to_dual (attr := simp)]
 theorem symm_map (f : α ≃o β) : (map f).symm = map f.symm := by

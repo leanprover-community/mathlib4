@@ -267,9 +267,8 @@ instance {P : Type*} [Ring S] [SMul P R] [SMul S R] [SMul P S]
   smul_assoc := by simp [smul_right_def, smul_left_def, -toVal_smul]
 
 instance [AddCommMonoid S] [Module R S] : Module (WithVal v) S :=
-  .compHom S (equiv v).toRingHom
+  fast_instance% .compHom S (equiv v).toRingHom
 
-set_option backward.isDefEq.respectTransparency false in
 instance [AddCommMonoid S] [Module R S] [Module.Finite R S] :
     Module.Finite (WithVal v) S := .of_restrictScalars_finite R (WithVal v) S
 
@@ -300,7 +299,7 @@ section left
 variable [CommRing R] (v : Valuation R Γ₀) [Semiring S] [Algebra R S]
 
 instance : Algebra (WithVal v) S := fast_instance% {
-  __ := (inferInstance : Module (WithVal v) S)
+  algebraMap.toFun r := algebraMap R S (ofVal r)
   __ := Algebra.compHom S (equiv v).toRingHom }
 
 theorem algebraMap_left_apply (s : WithVal v) :
@@ -318,7 +317,9 @@ section right
 
 variable [CommSemiring R] [Ring S] [Algebra R S] (v : Valuation S Γ₀)
 
-instance : Algebra R (WithVal v) := fast_instance% (equiv v).algebra R
+instance : Algebra R (WithVal v) := fast_instance% {
+  (equiv v).algebra R with
+  algebraMap.toFun r := toVal v (algebraMap R S r) }
 
 theorem algebraMap_right_apply (r : R) :
     algebraMap R (WithVal v) r = toVal v (algebraMap R S r) := rfl
@@ -344,12 +345,9 @@ instance {S : Type*} [CommRing S] [Algebra R S] (M : Submonoid R) [IsLocalizatio
 
 end Algebra
 
-section Field
+section DivisionRing
 
-instance [DivisionRing R] (v : Valuation R Γ₀) : DivisionRing (WithVal v) := fast_instance%
-  (equiv v).divisionRing
-
-variable [Field R] (v : Valuation R Γ₀)
+variable [DivisionRing R] (v : Valuation R Γ₀)
 
 instance : Div (WithVal v) where div x y := toVal _ (x.ofVal / y.ofVal)
 instance : Inv (WithVal v) where inv x := toVal _ x.ofVal⁻¹
@@ -376,6 +374,14 @@ instance : RatCast (WithVal v) where ratCast q := toVal _ q
 @[simp] lemma toVal_ratCast (q : ℚ) : toVal v q = q := rfl
 
 @[simp] lemma ofVal_ratCast (q : ℚ) : ofVal (q : WithVal v) = q := rfl
+
+instance : DivisionRing (WithVal v) := fast_instance% (equiv v).divisionRing
+
+end DivisionRing
+
+section Field
+
+variable [Field R] (v : Valuation R Γ₀)
 
 instance : Field (WithVal v) := fast_instance% ofVal_injective v |>.field _
   (ofVal_zero _) (ofVal_one _) (ofVal_add _) (ofVal_mul _) (ofVal_neg _) (ofVal_sub _)
@@ -673,7 +679,6 @@ instance : CoeHead (𝓞 (WithVal v)) (WithVal v) where
 instance (R : Type*) [CommRing R] [Algebra R K] [IsIntegralClosure R ℤ K] :
     IsIntegralClosure R ℤ (WithVal v) := .of_algEquiv _ (WithVal.algEquiv ℤ v).symm (fun _ ↦ rfl)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The ring equivalence between `𝓞 (WithVal v)` and an integral closure of
 `ℤ` in `K`. -/
 @[simps!]

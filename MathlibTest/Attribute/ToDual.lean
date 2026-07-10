@@ -12,12 +12,10 @@ variable {α : Type} [PartialOrder α] (a b c : α)
 class SemilatticeInf (α : Type) extends PartialOrder α, Min α where
   le_inf : ∀ a b c : α, a ≤ b → a ≤ c → a ≤ b ⊓ c
 
+-- The `reorder` arguments are automatically inferred here:
+@[to_dual]
 class SemilatticeSup (α : Type) extends PartialOrder α, Max α where
   protected sup_le : ∀ a b c : α, a ≤ c → b ≤ c → a ⊔ b ≤ c
-
-attribute [to_dual] SemilatticeInf
--- The `reorder` argument is automatically inferred here:
-attribute [to_dual existing] SemilatticeSup.sup_le SemilatticeInf.mk
 
 @[to_dual]
 lemma SemilatticeInf.le_inf' {α : Type} [SemilatticeInf α] (a b c : α) : a ≤ b → a ≤ c → a ≤ b ⊓ c :=
@@ -209,13 +207,12 @@ def lt_sum_eq_of_le [DecidableLE α] {a b : α} (hab : a ≤ b) :
     a < b ⊕' a = b :=
   if hba : b ≤ a then PSum.inr (le_antisymm hab hba) else PSum.inl (lt_of_le_not_ge hab hba)
 
-set_option warn.classDefReducibility false in
+set_option linter.translate.warnInvalid false in
 @[to_dual DecidableLE1_dual]
-def DecidableLE1 (h : ∀ a b : α, Decidable (a ≤ b)) : DecidableLE α := fun a b ↦ h a b
+abbrev DecidableLE1 (h : ∀ a b : α, Decidable (a ≤ b)) : DecidableLE α := fun a b ↦ h a b
 
-set_option warn.classDefReducibility false in
 @[to_dual DecidableLE2_dual]
-def DecidableLE2 (h : ∀ a b : α, Decidable (a ≤ b)) : DecidableLE α := id h
+abbrev DecidableLE2 (h : ∀ a b : α, Decidable (a ≤ b)) : DecidableLE α := id h
 
 -- Not yet supported because it probably won't show up in practice
 -- (though it wouldn't be too hard to fix `unfoldConsts` to support this)
@@ -339,12 +336,13 @@ inductive WithBot.LE : WithBot α → WithBot α → Prop where
   | bot_le (x : WithBot α) : WithBot.LE .bot x
   | coe_le_coe {a b : α} : a ≤ b → WithBot.LE (.coe a) (.coe b)
 
+set_option linter.translate.warnInvalid false in
 @[to_dual existing (reorder := 3 4)]
 inductive WithTop.LE : WithTop α → WithTop α → Prop where
   | le_top (x : WithTop α) : WithTop.LE x .top
   | coe_le_coe {a b : α} : a ≤ b → WithTop.LE (.coe a) (.coe b)
 
-attribute [to_dual existing] WithTop.LE.le_top
+attribute [to_dual existing bot_le] WithTop.LE.le_top
 
 @[to_dual]
 instance WithBot.instLE : _root_.LE (WithBot α) := ⟨WithBot.LE⟩
@@ -397,6 +395,20 @@ theorem le_of_lt_and_le_of_lt {β} [Preorder β] (a b : α) (c d : β) : (a < b 
 def universeTest1.{u,v,w} (α : Type u) (β : Type v) (γ : Type w) := α × β × γ
 @[to_dual existing (reorder := α β γ) universeTest1]
 def universeTest1'.{v,w,u} (α : Type u) (β : Type v) (γ : Type w) := α × β × γ
+
+-- Due to the reordering of arguments, the equation theorem of the dual has a different shape,
+-- so we get this warning.
+/--
+warning: @[to_dual] failed to add a translation from `universeTest1''.eq_1` to `universeTest1''._to_dual_1.eq_1`. Please silence this warning and add a translation manually. Error:
+
+`to_dual` validation failed: expected
+  universeTest1''._to_dual_1 = fun α β γ => universeTest1' β γ α
+but 'universeTest1''._to_dual_1.eq_1' has type
+  ∀ (α : Type u) (β : Type v) (γ : Type w), universeTest1''._to_dual_1 α β γ = universeTest1' β γ α
+
+Note: This linter can be disabled with `set_option linter.translate.warnInvalid false`
+-/
+#guard_msgs in
 @[to_dual none] alias universeTest1'' := universeTest1
 
 @[to_dual (reorder := u₁ u₂) universeTest2']
