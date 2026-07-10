@@ -203,9 +203,11 @@ lemma StructureGroupoid.restr_mem_of_eqOn {G : StructureGroupoid X}
 end
 
 -- the action is smooth
-variable [TopologicalSpace G] [ChartedSpace H G] [ContMDiffSMul I I n G M]
+variable {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*}
+  [TopologicalSpace H'] (J : ModelWithCorners 𝕜 E' H') [TopologicalSpace G] [ChartedSpace H' G]
 
-instance : IsManifold I n (orbitRel.Quotient G M) where
+theorem isManifold_quotient_of_contMDiffSMul [ContMDiffSMul J I n G M] :
+    IsManifold  I n (orbitRel.Quotient G M) where
   compatible := by
     rintro _ _ ⟨x, rfl⟩ ⟨y, rfl⟩
     rw [(πinv x).trans_symm_eq_symm_trans_symm, (chartAt H x.out).symm.trans_assoc,
@@ -222,11 +224,17 @@ instance : IsManifold I n (orbitRel.Quotient G M) where
       (IsManifold.chart_mem_maximalAtlas x.out) (IsManifold.chart_mem_maximalAtlas y.out) ?_ ?_)
       hto (hg0'.mono inter_subset_right) ?_
     · rw [Homeomorph.toOpenPartialHomeomorph_apply]
-      exact (ContMDiffSMul.contMDiff_const_smul (I := I) g0).contMDiffOn
+      exact (ContMDiffSMul.contMDiff_const_smul (I := J) g0).contMDiffOn
     · rw [Homeomorph.toOpenPartialHomeomorph_symm_apply]
-      exact (ContMDiffSMul.contMDiff_const_smul (I := I) g0⁻¹).contMDiffOn
+      exact (ContMDiffSMul.contMDiff_const_smul (I := J) g0⁻¹).contMDiffOn
     · rintro h' ⟨⟨hQ1, _, hQ4⟩, _, hcert⟩
       exact ⟨hQ1, mem_univ _, by simpa [← smul_eqOn x y g0 hcert] using hQ4⟩
+
+open scoped Manifold
+
+attribute [local instance] ChartedSpace.of_discreteTopology
+instance [DiscreteTopology G] [ContMDiffSMul 𝓘(𝕜, PUnit) I n G M] :
+    IsManifold I n (orbitRel.Quotient G M) := isManifold_quotient_of_contMDiffSMul I 𝓘(𝕜, PUnit)
 
 end MulAction
 
