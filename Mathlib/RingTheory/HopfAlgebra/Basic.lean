@@ -233,7 +233,6 @@ abbrev ofAntipodeOfAdjoin
         simp_all only [Algebra.mem_top, LinearMap.coe_comp, Function.comp_apply,
         Algebra.linearMap_apply, map_add, P]
       · intro x y hx hy hxP hyP
-        -- `P z` in Sweedler-sum form: `∑ S'(z₍₁₎) * z₍₂₎ = ε(z)•1`
         have key : ∀ z : A, P z → (∑ i ∈ (ℛ R z).index,
             ((MulOpposite.opLinearEquiv R).symm.toLinearMap ∘ₗ S.toLinearMap) ((ℛ R z).left i) *
             (ℛ R z).right i) = algebraMap R A (ε z) := fun z hz ↦ by
@@ -252,7 +251,6 @@ abbrev ofAntipodeOfAdjoin
               rw [key y hyP]
               simp only [LinearMap.coe_comp, Function.comp_apply, counit_mul,
                 linearMap_apply, map_mul]
-          -- `ε(x)•1` is central, so it slides between `S'(y₍₁₎)` and `y₍₂₎`
           _ = ∑ j ∈ (ℛ R y).index,
               ((MulOpposite.opLinearEquiv R).symm.toLinearMap ∘ₗ S.toLinearMap) ((ℛ R y).left j) *
               (∑ i ∈ (ℛ R x).index,
@@ -261,7 +259,6 @@ abbrev ofAntipodeOfAdjoin
               (ℛ R y).right j := by
               rw [key x hxP, Finset.mul_sum]
               exact Finset.sum_congr rfl fun j _ ↦ by rw [← mul_assoc, Algebra.commutes]
-          -- recombine: `comul (x*y) = comul x * comul y` and `S` is an anti-hom
           _ = _ := by
               simp only [LinearMap.coe_comp, Function.comp_apply]
               rw [comul_mul, ← Coalgebra.Repr.eq (ℛ R x), ← Coalgebra.Repr.eq (ℛ R y),
@@ -292,7 +289,6 @@ abbrev ofAntipodeOfAdjoin
         simp_all only [Algebra.mem_top, LinearMap.coe_comp, Function.comp_apply,
           Algebra.linearMap_apply, map_add, P]
       · intro x y hx hy hxP hyP
-        -- `P z` in Sweedler-sum form: `∑ z₍₁₎ * S'(z₍₂₎) = ε(z)•1`
         have key : ∀ z : A, P z → (∑ i ∈ (ℛ R z).index, (ℛ R z).left i *
             ((MulOpposite.opLinearEquiv R).symm.toLinearMap ∘ₗ S.toLinearMap) ((ℛ R z).right i))
             = algebraMap R A (ε z) := fun z hz ↦ by
@@ -312,7 +308,6 @@ abbrev ofAntipodeOfAdjoin
               rw [key x hxP]
               simp only [LinearMap.coe_comp, Function.comp_apply, counit_mul,
                 linearMap_apply, map_mul]
-          -- `ε(y)•1` is central, so it slides between `x₍₁₎` and `S'(x₍₂₎)`
           _ = ∑ i ∈ (ℛ R x).index, (ℛ R x).left i *
               (∑ j ∈ (ℛ R y).index, (ℛ R y).left j *
                 ((MulOpposite.opLinearEquiv R).symm.toLinearMap ∘ₗ S.toLinearMap)
@@ -322,7 +317,6 @@ abbrev ofAntipodeOfAdjoin
               rw [key y hyP, Finset.sum_mul]
               exact Finset.sum_congr rfl fun i _ ↦ by
                 rw [mul_assoc, ← Algebra.commutes, ← mul_assoc]
-          -- recombine: `comul (x*y) = comul x * comul y` and `S` is an anti-hom
           _ = _ := by
               simp only [LinearMap.coe_comp, Function.comp_apply]
               rw [comul_mul, ← Coalgebra.Repr.eq (ℛ R x), ← Coalgebra.Repr.eq (ℛ R y),
