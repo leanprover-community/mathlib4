@@ -15,8 +15,7 @@ public import Mathlib.Topology.Maps.Strict.Group
 
 In this file, we study continuous linear maps which are *strict* in the sense of
 `Topology.IsStrictMap`. So far, all the results in this file are direct
-adaptations from the theory of strict homomorphisms of topological additive groups,
-but this may change in the future.
+adaptations from the theory of strict homomorphisms of topological additive groups.
 -/
 
 
@@ -29,7 +28,7 @@ namespace LinearMap
 variable {R S M N Nₗ M' Nₗ' : Type*} [Ring R] [Ring S] {σ : R →+* S}
   [AddCommGroup M] [AddCommGroup N] [AddCommGroup Nₗ] [AddCommGroup M'] [AddCommGroup Nₗ']
   [Module R M] [Module S N] [Module R Nₗ] [Module R M'] [Module R Nₗ']
-  (f : M →ₛₗ[σ] N) (fₗ : M →ₗ[R] Nₗ) (gₗ : M' →ₗ[R] Nₗ')
+  {f : M →ₛₗ[σ] N} {fₗ : M →ₗ[R] Nₗ} {gₗ : M' →ₗ[R] Nₗ'}
   [TopologicalSpace M] [TopologicalSpace N] [TopologicalSpace Nₗ]
 
 /-- A linear map `f : E → F` is strict if and only the induced map `E ⧸ f.ker → F` is an
@@ -46,7 +45,6 @@ protected lemma isStrictMap_iff_isHomeomorph_quotKerEquivRange :
     fₗ.ker.isQuotientMap_mkQ.isStrictMap_iff, IsEmbedding.subtypeVal.isStrictMap_iff]
   rfl
 
-variable {f} in
 /-- The isomorphism of topological modules `E ⧸ f.ker ≃ f.range` given by a strict linear
 map `f : E → F`. This is an avatar of the first isomorphism theorem. -/
 noncomputable def _root_.ContinuousLinearEquiv.quotKerEquivRange
@@ -60,7 +58,7 @@ protected lemma isStrictMap_iff_isOpenQuotientMap_rangeRestrict [RingHomSurjecti
     IsStrictMap f ↔ IsOpenQuotientMap f.rangeRestrict :=
   f.toAddMonoidHom.isStrictMap_iff_isOpenQuotientMap_rangeRestrict
 
-variable {f fₗ gₗ} [TopologicalSpace M'] [IsTopologicalAddGroup M'] [TopologicalSpace Nₗ']
+variable [TopologicalSpace M'] [IsTopologicalAddGroup M'] [TopologicalSpace Nₗ']
 
 /-- The product (in the sense of `LinearMap.prodMap`) of linear maps is strict if and only if each
 of the maps is strict. -/
