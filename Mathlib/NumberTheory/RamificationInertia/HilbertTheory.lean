@@ -127,8 +127,9 @@ variable (A K L : Type*) [CommRing A] [Field K] [Field L] [Algebra B L] [IsFract
   [Algebra A B] [Algebra A L] [IsScalarTower A B L] [Algebra K L]
   [MulSemiringAction Gal(L/K) B] [SMulDistribClass Gal(L/K) B L]
 
-/-- If `D` is the decomposition field of `P` and `C` is an integrally closed subring of `D` whose
-fraction field is `D`, over which `B` is integral, then `C` is a decomposition ring of `P`. -/
+/-- If `L` is Galois over the field `D` with the decomposition group of `P` (so `D` is the
+decomposition field of `P`), and `C` is an integrally closed subring of `D` with fraction field `D`
+such that `B` is integral over `C`, then `C` is a decomposition ring of `P`. -/
 theorem IsDecompositionRing.of_isFractionRing (C D : Type*) [CommRing C] [Algebra C B] [Field D]
     [Algebra C D] [Algebra C L] [Algebra D L] [IsScalarTower C D L] [IsScalarTower C B L]
     [IsFractionRing C D] [IsIntegrallyClosed C] [Algebra.IsIntegral C B]
@@ -136,14 +137,15 @@ theorem IsDecompositionRing.of_isFractionRing (C D : Type*) [CommRing C] [Algebr
     IsDecompositionRing Gal(L/K) P C :=
   {toIsGaloisGroup := .of_isFractionRing (stabilizer Gal(L/K) P) C B D L}
 
-/-- If `E` is the inertia field of `P` and `C` is an integrally closed subring of `E` whose
-fraction field is `E`, over which `B` is integral, then `C` is an inertia ring of `P`. -/
-theorem IsInertiaRing.of_isFractionRing (C D : Type*) [CommRing C] [Algebra C B] [Field D]
-    [Algebra C D] [Algebra C L] [Algebra D L] [IsScalarTower C D L] [IsScalarTower C B L]
-    [IsFractionRing C D] [IsIntegrallyClosed C] [Algebra.IsIntegral C B]
-    [IsGaloisGroup (inertia Gal(L/K) P) D L] :
+/-- If `L` is Galois over the field `E` with the inertia group of `P` (so `E` is the inertia field
+of `P`), and `C` is an integrally closed subring of `E` with fraction field `E` such that `B` is
+integral over `C`, then `C` is an inertia ring of `P`. -/
+theorem IsInertiaRing.of_isFractionRing (C E : Type*) [CommRing C] [Algebra C B] [Field E]
+    [Algebra C E] [Algebra C L] [Algebra E L] [IsScalarTower C E L] [IsScalarTower C B L]
+    [IsFractionRing C E] [IsIntegrallyClosed C] [Algebra.IsIntegral C B]
+    [IsGaloisGroup (inertia Gal(L/K) P) E L] :
     IsInertiaRing Gal(L/K) P C :=
-  {toIsGaloisGroup := .of_isFractionRing (inertia Gal(L/K) P) C B D L}
+  {toIsGaloisGroup := .of_isFractionRing (inertia Gal(L/K) P) C B E L}
 
 end basic
 
