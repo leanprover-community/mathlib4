@@ -139,7 +139,7 @@ theorem _root_.SimpleGraph.exists_isEulerian_of_mem_support
   exact ⟨_, hp.rotate <| p.fst_mem_support_of_mem_edges <| hp.mem_edges_iff.mpr hadj⟩
 
 /-- In a preconnected Eulerian graph there exists an Eulerian circuit from any vertex. -/
-theorem _root_.SimpleGraph.Preconnected.exists_isEulerian_iff (h : G.Preconnected)
+theorem _root_.SimpleGraph.Preconnected.exists_isEulerian (h : G.Preconnected)
     (hp : ∃ (v' : V) (p : G.Walk v' v'), p.IsEulerian) (v : V) :
     ∃ p : G.Walk v v, p.IsEulerian := by
   cases subsingleton_or_nontrivial V
