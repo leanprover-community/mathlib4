@@ -38,7 +38,9 @@ variable (A : Matrix n n R)
 
 namespace Matrix
 
-public lemma nonsingular_iff_det_mem_nonZeroDivisors {R : Type*} [CommRing R]
+public section
+
+lemma nonsingular_iff_det_mem_nonZeroDivisors {R : Type*} [CommRing R]
     {A : Matrix n n R} : A.Nonsingular ↔ A.det ∈ nonZeroDivisors R := by
   rw [Nonsingular, det_eq_detp_sub_detp, ← nonZeroDivisorsRight_eq_nonZeroDivisors,
     mem_nonZeroDivisorsRight_iff]
@@ -50,8 +52,8 @@ public lemma nonsingular_iff_det_mem_nonZeroDivisors {R : Type*} [CommRing R]
 variable {A}
 
 /-- If the columns of a square matrix are linearly independent, then the matrix is nonsingular. -/
-public theorem Nonsingular.of_linearIndependent_col (ind : LinearIndependent R A.col) :
-    A.Nonsingular := fun a b bal ↦ by
+theorem Nonsingular.of_linearIndependent_col (ind : LinearIndependent R A.col) : A.Nonsingular := by
+  intro a b bal
   let P (r : ℕ) : Prop := ∀ (m : Type) [Fintype m] [DecidableEq m] (le : Fintype.card m = r)
     (f g : m → n), (A.submatrix f g).DetpBalanced a b
   classical
@@ -86,10 +88,20 @@ public theorem Nonsingular.of_linearIndependent_col (ind : LinearIndependent R A
   rw [this, this]
   exact hr (Option m) (by rw [Fintype.card_option, eq]; exact Nat.succ_pred h0) ..
 
+theorem Nonsingular.of_linearIndependent_row (ind : LinearIndependent R A.row) : A.Nonsingular := by
+  rw [← nonsingular_transpose_iff]; exact .of_linearIndependent_col ind
+
+theorem Nonsingular.of_leftRegular (h : IsLeftRegular A) : A.Nonsingular :=
+  .of_linearIndependent_col (by rwa [← mulVec_injective_iff, ← isLeftRegular_iff_mulVec_injective])
+
+theorem Nonsingular.of_rightRegular (h : IsRightRegular A) : A.Nonsingular :=
+  .of_linearIndependent_row (by rwa [← vecMul_injective_iff, ← isRightRegular_iff_vecMul_injective])
+
+variable [IsCancelAdd R]
+
 /-- If a matrix over a commutative semiring with cancellative addition is nonsingular, then its
 columns are linearly independent. Generalizes `Matrix.linearIndependent_cols_of_det_ne_zero`. -/
-public theorem Nonsingular.linearIndependent_col [IsCancelAdd R]
-    (hA : A.Nonsingular) : LinearIndependent R A.col :=
+theorem Nonsingular.linearIndependent_col (hA : A.Nonsingular) : LinearIndependent R A.col :=
   mulVec_injective_iff.mp fun x y eq ↦ funext fun k ↦ hA _ _ <| show _ = _ by
     have hp := congr((A.adjp 1 *ᵥ $eq) k)
     have hm := congr((A.adjp (-1) *ᵥ $eq) k)
@@ -99,16 +111,37 @@ public theorem Nonsingular.linearIndependent_col [IsCancelAdd R]
       adjp_mul_apply_ne _ _ _ (Finset.mem_filter.mp h).2] at hp
     grind
 
-public theorem linearIndependent_col_iff [IsCancelAdd R] :
-    LinearIndependent R A.col ↔ A.Nonsingular :=
+theorem Nonsingular.linearIndependent_row (hA : A.Nonsingular) : LinearIndependent R A.row :=
+  hA.transpose.linearIndependent_col
+
+theorem linearIndependent_col_iff : LinearIndependent R A.col ↔ A.Nonsingular :=
   ⟨.of_linearIndependent_col, (·.linearIndependent_col)⟩
 
-omit [DecidableEq n] [Fintype n] in
-public theorem linearIndependent_col_iff_row [Finite n] [IsCancelAdd R] :
+theorem linearIndependent_row_iff : LinearIndependent R A.row ↔ A.Nonsingular :=
+  ⟨.of_linearIndependent_row, (·.linearIndependent_row)⟩
+
+theorem isLeftRegular_iff_nonsingular : IsLeftRegular A ↔ A.Nonsingular := by
+  rw [isLeftRegular_iff_mulVec_injective, mulVec_injective_iff, linearIndependent_col_iff]
+
+theorem isRightRegular_iff_nonsingular : IsRightRegular A ↔ A.Nonsingular := by
+  rw [isRightRegular_iff_vecMul_injective, vecMul_injective_iff, linearIndependent_row_iff]
+
+omit [DecidableEq n]
+
+theorem isLeftRegular_iff_isRightRegular : IsLeftRegular A ↔ IsRightRegular A := by
+  classical rw [isLeftRegular_iff_nonsingular, isRightRegular_iff_nonsingular]
+
+omit [Fintype n]
+
+/-- https://mathoverflow.net/questions/511862/transpose-symmetry-of-injectivity-of-linear-maps-over-semirings
+asks whether this is still true without `IsCancelAdd R`. -/
+theorem linearIndependent_col_iff_row [Finite n] :
     LinearIndependent R A.col ↔ LinearIndependent R A.row := by
   have := Fintype.ofFinite
   classical rw [linearIndependent_col_iff, ← nonsingular_transpose_iff, ← linearIndependent_col_iff]
   rfl
+
+end
 
 end Matrix
 
