@@ -16,14 +16,13 @@ public import Mathlib.Tactic.MkIffOfInductiveProp
 # Left-orderable groups
 
 A group `G` is *left-orderable* if it admits a linear order invariant under left multiplication,
-i.e. `a ≤ b → c * a ≤ c * b`. This file defines the `Prop`-valued class `IsLeftOrderable G`,
+i.e. `a < b → c * a < c * b`. This file defines the `Prop`-valued class `IsLeftOrderable G`,
 asserting the existence of such an order.
 
 ## Main declarations
 
-* `IsLeftOrderable G`: `G` admits some `LinearOrder` for which left multiplication is monotone
-  (`MulLeftMono`).
-* `isLeftOrderable_iff_exists_linearOrder_mulLeftStrictMono`: the same with *strict* monotonicity.
+* `IsLeftOrderable G`: `G` admits some strict total `LinearOrder` for which left multiplication is
+strictly monotone (`MulLeftStrictMono`).
 * `IsLeftOrderable.of_mulEquiv`, `MulEquiv.isLeftOrderable_congr`: left-orderability transports
   along, and is invariant under, group isomorphism.
 * `IsLeftOrderable.prod`, `IsLeftOrderable.pi`: left-orderability is closed under direct and
@@ -32,44 +31,48 @@ asserting the existence of such an order.
 ## Implementation notes
 
 `IsLeftOrderable` erases the witnessing order into `Prop`. Recover a (noncomputable) `LinearOrder`
-instance from `IsLeftOrderable.exists_linearOrder_mulLeftMono`.
+instance from `IsLeftOrderable.exists_linearOrder_mulLeftStrictMono`.
+
+The class is stated with `MulLeftStrictMono` rather than `MulLeftMono`: over a linearly ordered
+group the two are equivalent, but only the strict form is a typeclass assumption of the
+lexicographic order instances on `Prod.Lex` and `Pi.Lex` used below.
 -/
 
 @[expose] public section
 
 variable {G H : Type*} [Group G] [Group H]
 
-/-- A group is left-orderable if it admits a linear order invariant under left multiplication. -/
+/-- A group is left-orderable if it admits a linear order invariant under left multiplication,
+i.e. `a < b → c * a < c * b`. -/
 @[mk_iff]
 class IsLeftOrderable (G : Type*) [Group G] : Prop where
-  exists_linearOrder_mulLeftMono (G) : ∃ _ : LinearOrder G, MulLeftMono G
+  exists_linearOrder_mulLeftStrictMono (G) : ∃ _ : LinearOrder G, MulLeftStrictMono G
 
-export IsLeftOrderable (exists_linearOrder_mulLeftMono)
+export IsLeftOrderable (exists_linearOrder_mulLeftStrictMono)
 
-/-- A group with a linear order and monotone left multiplication (`MulLeftMono`) is
+/-- A group with a linear order and strictly monotone left multiplication (`MulLeftStrictMono`) is
 left-orderable. -/
-instance MulLeftMono.to_isLeftOrderable [LinearOrder G] [MulLeftMono G] : IsLeftOrderable G
-  := ⟨⟨‹_›, ‹_›⟩⟩
+instance MulLeftStrictMono.to_isLeftOrderable [LinearOrder G] [MulLeftStrictMono G] :
+    IsLeftOrderable G := ⟨⟨‹_›, ‹_›⟩⟩
 
-/-- `IsLeftOrderable G` holds iff `G` admits a linear order with strictly monotone left
-multiplication. -/
-theorem isLeftOrderable_iff_exists_linearOrder_mulLeftStrictMono :
-    IsLeftOrderable G ↔ ∃ _ : LinearOrder G, MulLeftStrictMono G := by
+/-- `IsLeftOrderable G` holds iff `G` admits a linear order with monotone left multiplication. -/
+theorem isLeftOrderable_iff_exists_linearOrder_mulLeftMono :
+    IsLeftOrderable G ↔ ∃ _ : LinearOrder G, MulLeftMono G := by
   rw [isLeftOrderable_iff]
-  refine ⟨fun ⟨_, _⟩ ↦ ⟨‹LinearOrder G›, inferInstance⟩,
-    fun ⟨_, _⟩ ↦ ⟨‹LinearOrder G›, mulLeftMono_of_mulLeftStrictMono G⟩⟩
+  refine ⟨fun ⟨_, _⟩ ↦ ⟨‹LinearOrder G›, mulLeftMono_of_mulLeftStrictMono G⟩,
+    fun ⟨_, _⟩ ↦ ⟨‹LinearOrder G›, inferInstance⟩⟩
 
 variable (G) in
-theorem exists_linearOrder_mulLeftStrictMono [IsLeftOrderable G] :
-    ∃ _ : LinearOrder G, MulLeftStrictMono G :=
-  isLeftOrderable_iff_exists_linearOrder_mulLeftStrictMono.mp ‹_›
+theorem exists_linearOrder_mulLeftMono [IsLeftOrderable G] :
+    ∃ _ : LinearOrder G, MulLeftMono G :=
+  isLeftOrderable_iff_exists_linearOrder_mulLeftMono.mp ‹_›
 
 /-- Left-orderability transports along a group isomorphism `e : G ≃* H`. -/
 theorem IsLeftOrderable.of_mulEquiv [IsLeftOrderable G] (e : G ≃* H) : IsLeftOrderable H := by
-  obtain ⟨_, _⟩ := exists_linearOrder_mulLeftMono G
+  obtain ⟨_, _⟩ := exists_linearOrder_mulLeftStrictMono G
   letI : LinearOrder H := LinearOrder.lift' e.symm e.symm.injective
   refine ⟨‹LinearOrder H›, ⟨fun c a b hab ↦ ?_⟩⟩
-  change e.symm (c * a) ≤ e.symm (c * b)
+  change e.symm (c * a) < e.symm (c * b)
   rw [map_mul, map_mul]
   gcongr
   exact hab
