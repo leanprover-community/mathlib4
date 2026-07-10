@@ -110,6 +110,11 @@ lemma DetpBalanced.mul_add_mul_eq {a b : R} (h : A.DetpBalanced a b) (s t : ℤ�
   · rw [add_comm, ← h, add_comm]
   · rw [add_comm]
 
+@[simp] lemma detpBalanced_transpose_iff {a b : R} : Aᵀ.DetpBalanced a b ↔ A.DetpBalanced a b := by
+  simp [DetpBalanced]
+
+alias ⟨DetpBalanced.of_transpose, DetpBalanced.transpose⟩ := detpBalanced_transpose_iff
+
 variable (A) in
 /-- A square matrix `A` over a commutative semiring `R` is called nonsingular if it is
 only determinant balanced with respect to equal elements. -/
@@ -122,8 +127,7 @@ variable (A) in
 @[simp] lemma Nonsingular.of_isEmpty [IsEmpty n] : A.Nonsingular := by
   simp [Nonsingular, DetpBalanced]
 
-@[simp] lemma nonsingular_transpose_iff : Aᵀ.Nonsingular ↔ A.Nonsingular := by
-  simp_rw [Nonsingular, DetpBalanced, detp_transpose]
+@[simp] lemma nonsingular_transpose_iff : Aᵀ.Nonsingular ↔ A.Nonsingular := by simp [Nonsingular]
 
 alias ⟨Nonsingular.of_transpose, Nonsingular.transpose⟩ := nonsingular_transpose_iff
 
