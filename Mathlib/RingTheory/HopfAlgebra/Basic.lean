@@ -257,7 +257,21 @@ noncomputable abbrev ofAntipodeOfAdjoin
                 ((MulOpposite.opLinearEquiv R).symm.toLinearMap ∘ₗ S.toLinearMap) ((ℛ R x).left i) *
                 (ℛ R x).right i) *
               (ℛ R y).right j := by
-              sorry
+              have hx' : (∑ i ∈ (ℛ R x).index,
+                  ((MulOpposite.opLinearEquiv R).symm.toLinearMap ∘ₗ S.toLinearMap)
+                    ((ℛ R x).left i) *
+                  (ℛ R x).right i) = (Algebra.linearMap R A ∘ₗ ε) x := by
+                unfold P at hxP
+                rw [← hxP]
+                simp only [LinearMap.coe_comp, Function.comp_apply]
+                rw [← Coalgebra.Repr.eq (ℛ R x)]
+                simp only [map_sum, LinearMap.rTensor_tmul, LinearMap.mul'_apply,
+                  LinearMap.coe_comp, Function.comp_apply, LinearEquiv.coe_coe,
+                  MulOpposite.coe_opLinearEquiv_symm, AlgHom.coe_toLinearMap]
+              rw [hx', Finset.mul_sum]
+              refine Finset.sum_congr rfl fun j _ ↦ ?_
+              simp only [LinearMap.coe_comp, Function.comp_apply, Algebra.linearMap_apply]
+              rw [← mul_assoc, Algebra.commutes]
           -- distribute (`Finset.mul_sum`/`Finset.sum_mul`), swap sums (`Finset.sum_comm`),
           -- and use that `S` is an anti-hom: `S'(x₍₁₎ * y₍₁₎) = S'(y₍₁₎) * S'(x₍₁₎)`
           _ = ∑ i ∈ (ℛ R x).index, ∑ j ∈ (ℛ R y).index,
