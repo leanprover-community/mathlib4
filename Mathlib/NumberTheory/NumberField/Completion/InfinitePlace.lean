@@ -22,8 +22,7 @@ systematic way of assigning and inferring instances of the semiring that also de
 value. The completion of a field at multiple absolute values is defined in
 `Mathlib/Analysis/Normed/Field/WithAbs.lean` as `AbsoluteValue.Completion`. The completion of a
 number field at an infinite place is then derived in this file, as `InfinitePlace` is a subtype of
-`AbsoluteValue`. It is a one-field structure wrapping `AbsoluteValue.Completion`, so that the
-elaborator does not unfold it.
+`AbsoluteValue`.
 
 ## Main definitions
 - `NumberField.InfinitePlace.Completion` : the completion of a number field `K` at an infinite
