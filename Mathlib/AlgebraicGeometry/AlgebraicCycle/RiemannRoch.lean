@@ -16,7 +16,7 @@ In this file we show a conditional form of the algebraic Riemann-Roch theorem fo
 (`riemann_roch`): if `X` is an integral Noetherian scheme which is regular in codimension one,
 has Krull dimension at most one and is locally of finite type over a field `k`, and the
 structure sheaf `𝒪ₓ` has a well-defined Euler characteristic
-(`Scheme.Modules.HasEulerCharacteristic`: finite-dimensional cohomology which vanishes in all
+(`Scheme.Modules.HasFiniteEulerCharacteristic`: finite-dimensional cohomology which vanishes in all
 sufficiently large degrees), then for every Weil divisor `D` we have
 `χ(𝒪ₓ(D)) = deg(D) + χ(𝒪ₓ)`.
 
@@ -48,8 +48,9 @@ variable {X : Scheme.{u}} (k : Type u) [Field k] [X.Over (Spec (CommRingCat.of k
 first by `dim_k κ(p)`. -/
 lemma eulerChar_step {p : X} (hp : coheight p = 1)
     (E : AlgebraicCycle X ℤ) (o : ShortComplex X.Modules) (ho : o.ShortExact)
-    (hχ₁ : o.X₁.HasEulerCharacteristic k) (hχ₂ : o.X₂.HasEulerCharacteristic k)
-    (hχ₃ : (residueLineSheaf hp E).HasEulerCharacteristic k)
+    (hχ₁ : o.X₁.HasFiniteEulerCharacteristic k)
+    (hχ₂ : o.X₂.HasFiniteEulerCharacteristic k)
+    (hχ₃ : (residueLineSheaf hp E).HasFiniteEulerCharacteristic k)
     (hC : o.X₃ = residueLineSheaf hp E) :
     o.X₂.eulerChar k = o.X₁.eulerChar k + Module.finrank k (X.residueField p) := by
   obtain ⟨N₁, hb₁⟩ := hχ₁.vanishing
@@ -69,7 +70,7 @@ open Classical in
 `finrank k κ(p)`. -/
 lemma eulerChar_add_step [Order.KrullDimLE 1 X]
     [LocallyOfFiniteType (X ↘ Spec (CommRingCat.of k))]
-    (hχ₀ : (structureSheafModule X).HasEulerCharacteristic k)
+    (hχ₀ : (structureSheafModule X).HasFiniteEulerCharacteristic k)
     (E : AlgebraicCycle X ℤ) (hE : IsWeilDivisor E) {p : X} (hp : coheight p = 1) :
     (sheaf (E + single p 1)).eulerChar k =
       (sheaf E).eulerChar k + Module.finrank k (X.residueField p) :=
@@ -88,7 +89,7 @@ open Classical in
 `finrank k κ(p)`. -/
 lemma eulerChar_sub_step [Order.KrullDimLE 1 X]
     [LocallyOfFiniteType (X ↘ Spec (CommRingCat.of k))]
-    (hχ₀ : (structureSheafModule X).HasEulerCharacteristic k)
+    (hχ₀ : (structureSheafModule X).HasFiniteEulerCharacteristic k)
     (E : AlgebraicCycle X ℤ) (hE : IsWeilDivisor E) {p : X} (hp : coheight p = 1) :
     (sheaf (E - single p 1)).eulerChar k =
       (sheaf E).eulerChar k - Module.finrank k (X.residueField p) := by
@@ -115,7 +116,7 @@ every Weil divisor `D`, `χ(𝒪ₓ(D)) = deg D + χ(𝒪ₓ)`.
 -/
 theorem riemann_roch [Order.KrullDimLE 1 X]
     [LocallyOfFiniteType (X ↘ Spec (CommRingCat.of k))]
-    (hχ₀ : (structureSheafModule X).HasEulerCharacteristic k)
+    (hχ₀ : (structureSheafModule X).HasFiniteEulerCharacteristic k)
     (hD : IsWeilDivisor D) :
     (sheaf D).eulerChar k = D.degree k + (structureSheafModule X).eulerChar k := by
   rw [eulerChar_eq_of_iso k (unitIsoSheafZero (X := X))]

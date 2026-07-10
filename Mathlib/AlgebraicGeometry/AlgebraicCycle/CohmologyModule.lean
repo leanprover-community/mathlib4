@@ -168,13 +168,14 @@ all sufficiently large degrees. By Grothendieck's vanishing theorem this holds (
 def AlgebraicGeometry.Scheme.Modules.HasFiniteCohomologicalDimension (F : X.Modules) : Prop :=
   ∃ N : ℕ, ∀ n, N < n → Subsingleton (F.H n)
 
-/-- A sheaf of modules has a (well-defined) Euler characteristic over `k` if its cohomology is
-finite dimensional in every degree and vanishes in all sufficiently large degrees. This is
-precisely the condition under which `Scheme.Modules.eulerChar` computes the honest alternating
-sum `∑ₙ (-1)ⁿ hⁿ(F)` rather than the junk value `0` of an infinite `finsum`. For a coherent
-sheaf on a scheme proper over a field `k` this holds by the finiteness theorem for coherent
-cohomology (EGA III 3.2.1) and Grothendieck vanishing. -/
-structure AlgebraicGeometry.Scheme.Modules.HasEulerCharacteristic (k : Type u) [CommRing k]
+/-- A sheaf of modules has a (well-defined, finite) Euler characteristic over `k` if its
+cohomology is finite dimensional in every degree and vanishes in all sufficiently large degrees.
+
+Note: this condition is satisfied by every coherent sheaf on a scheme which is proper over a
+field `k`, and this structure has limited use outside of this context. So after we show this result
+for coherent sheaves on schemes proper over fields, we will most likely get rid of this structure.
+-/
+structure AlgebraicGeometry.Scheme.Modules.HasFiniteEulerCharacteristic (k : Type u) [CommRing k]
     [X.Over (Spec (CommRingCat.of k))] (F : X.Modules) : Prop where
   /-- Every cohomology module of `F` is a finite `k`-module. -/
   finite : F.HasFiniteCohomology k

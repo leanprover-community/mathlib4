@@ -90,7 +90,7 @@ lemma eulerChar_eq_of_iso (e : F ≅ G) :
 /-- A well-defined Euler characteristic transports along an isomorphism of sheaves of
 modules. -/
 lemma hasEulerCharacteristic_of_iso (e : F ≅ G)
-    (hF : F.HasEulerCharacteristic k) : G.HasEulerCharacteristic k := by
+    (hF : F.HasFiniteEulerCharacteristic k) : G.HasFiniteEulerCharacteristic k := by
   obtain ⟨N, hb⟩ := hF.vanishing
   refine ⟨fun n => ?_, N, fun n hn => ?_⟩
   · haveI := hF.finite n

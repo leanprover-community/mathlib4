@@ -207,7 +207,7 @@ lemma subsingleton_H_sheaf_of_structureSheaf {N : ℕ}
 On a curve locally of finite type over `k`, the closedness and residue-field hypotheses of the
 reduction lemmas above are automatic (`eq_of_le_of_coheight_eq_one` and
 `finite_residueField_of_coheight_eq_one`), so we can package finiteness and vanishing into
-`Scheme.Modules.HasEulerCharacteristic`.
+`Scheme.Modules.HasFiniteEulerCharacteristic`.
 -/
 
 /-- The canonical cokernel `Q_p(E)` has a well-defined Euler characteristic: its cohomology
@@ -216,7 +216,7 @@ positive-degree cohomology vanishes by flasqueness. -/
 lemma hasEulerCharacteristic_residueLineSheaf [Order.KrullDimLE 1 X]
     [LocallyOfFiniteType (X ↘ Spec (CommRingCat.of k))] {p : X} (hp : coheight p = 1)
     (E : AlgebraicCycle X ℤ) :
-    (residueLineSheaf hp E).HasEulerCharacteristic k :=
+    (residueLineSheaf hp E).HasFiniteEulerCharacteristic k :=
   ⟨fun n => finite_H_residueLineSheaf_of_finite_residueField k hp E
       (finite_residueField_of_coheight_eq_one k hp) n,
     0, fun _ hn => subsingleton_H_residueLineSheaf_of_pos hp E hn⟩
@@ -226,10 +226,10 @@ characteristic from the structure sheaf: transport `χ(𝒪ₓ)` along `𝒪ₓ 
 transfer finiteness and vanishing through the twisting short exact sequences. -/
 lemma hasEulerCharacteristic_sheaf [Order.KrullDimLE 1 X]
     [LocallyOfFiniteType (X ↘ Spec (CommRingCat.of k))]
-    (hχ₀ : (structureSheafModule X).HasEulerCharacteristic k)
+    (hχ₀ : (structureSheafModule X).HasFiniteEulerCharacteristic k)
     {E : AlgebraicCycle X ℤ} (hE : IsWeilDivisor E) :
-    (sheaf E).HasEulerCharacteristic k := by
-  have hχ₀' : (sheaf (0 : AlgebraicCycle X ℤ)).HasEulerCharacteristic k :=
+    (sheaf E).HasFiniteEulerCharacteristic k := by
+  have hχ₀' : (sheaf (0 : AlgebraicCycle X ℤ)).HasFiniteEulerCharacteristic k :=
     hasEulerCharacteristic_of_iso k (unitIsoSheafZero (X := X)) hχ₀
   obtain ⟨N, hb₀⟩ := hχ₀'.vanishing
   exact ⟨finite_H_sheaf_of_structureSheaf k
