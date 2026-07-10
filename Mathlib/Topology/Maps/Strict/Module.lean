@@ -18,7 +18,6 @@ In this file, we study continuous linear maps which are *strict* in the sense of
 adaptations from the theory of strict homomorphisms of topological additive groups.
 -/
 
-
 @[expose] public section
 
 open Topology
