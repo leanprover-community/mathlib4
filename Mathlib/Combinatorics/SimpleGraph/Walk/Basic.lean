@@ -338,8 +338,8 @@ theorem coe_edges_toFinset [DecidableEq V] {u v : V} (p : G.Walk u v) :
     (p.edges.toFinset : Set (Sym2 V)) = p.edgeSet := by
   simp [edgeSet]
 
-theorem finite_edgeSet (p : G.Walk v w) : p.edgeSet.Finite := by
-  simp [edgeSet]
+theorem finite_edgeSet (p : G.Walk v w) : p.edgeSet.Finite :=
+  p.edges.finite_toSet
 
 /-- Predicate for the empty walk.
 
