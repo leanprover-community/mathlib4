@@ -87,15 +87,6 @@ lemma mem_maximalAtlas_of_contMDiffOn {e e' : OpenPartialHomeomorph M H}
 variable {I} in
 omit [T2Space M] [LocallyCompactSpace M] [IsManifold I n M] in
 open IsManifold in
-lemma mem_maximalAtlas_of_partialDiffeomorph {e e' : OpenPartialHomeomorph M H}
-    (he : e ∈ maximalAtlas I n M) (he' : e' ∈ maximalAtlas I n M)
-    {h : PartialDiffeomorph I I M M n} :
-    e.symm.trans (h.toOpenPartialHomeomorph.trans e') ∈ maximalAtlas I n H :=
-  mem_maximalAtlas_of_contMDiffOn he he' h.contMDiffOn_toFun h.contMDiffOn_invFun
-
-variable {I} in
-omit [T2Space M] [LocallyCompactSpace M] [IsManifold I n M] in
-open IsManifold in
 /-- If `h` is an open partial homeomorphism of `M` that is `C^n` on its source, with `C^n`
 inverse on its target, then reading `h` through two members of the maximal atlas yields an
 element of `contDiffGroupoid n I`. -/
@@ -107,15 +98,6 @@ lemma mem_contDiffGroupoid_of_contMDiffOn {e e' : OpenPartialHomeomorph M H}
   simpa [OpenPartialHomeomorph.refl_trans, OpenPartialHomeomorph.refl_symm] using
     compatible_of_mem_maximalAtlas (subset_maximalAtlas (chartedSpaceSelf_atlas.mpr rfl))
     (mem_maximalAtlas_of_contMDiffOn he he' hh hhsymm)
-
-variable {I} in
-omit [T2Space M] [LocallyCompactSpace M] [IsManifold I n M] in
-open IsManifold in
-lemma mem_contDiffGroupoid_of_partialDiffeomorph {e e' : OpenPartialHomeomorph M H}
-    (he : e ∈ maximalAtlas I n M) (he' : e' ∈ maximalAtlas I n M)
-    {h : PartialDiffeomorph I I M M n} :
-    e.symm.trans (h.toOpenPartialHomeomorph.trans e') ∈ contDiffGroupoid n I :=
-  mem_contDiffGroupoid_of_contMDiffOn he he' h.contMDiffOn_toFun h.contMDiffOn_invFun
 
 open Set
 
