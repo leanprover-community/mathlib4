@@ -157,6 +157,7 @@ theorem isClosed_zeroLocus (s : Set R) : IsClosed (zeroLocus s) := by
   rw [isClosed_iff_zeroLocus]
   exact ⟨s, rfl⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem zeroLocus_vanishingIdeal_eq_closure (t : Set (PrimeSpectrum R)) :
     zeroLocus (vanishingIdeal t : Set R) = closure t := by
   rcases isClosed_iff_zeroLocus (closure t) |>.mp isClosed_closure with ⟨I, hI⟩
@@ -738,6 +739,7 @@ section DiscreteTopology
 
 variable (R) [DiscreteTopology (PrimeSpectrum R)]
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem toPiLocalization_surjective_of_discreteTopology :
     Function.Surjective (toPiLocalization R) := fun x ↦ by
   have (p : PrimeSpectrum R) : ∃ f, (basicOpen f : Set _) = {p} :=

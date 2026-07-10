@@ -37,6 +37,7 @@ theorem length'_of_not_terminates {s : Seq α} (h : ¬ s.Terminates) :
     s.length' = ⊤ := by
   simp [length', h]
 
+set_option backward.isDefEq.respectTransparency false in
 set_option linter.flexible false in -- simp followed by exact rfl
 @[simp]
 theorem length_nil : length (nil : Seq α) terminates_nil = 0 := by simp [length]; exact rfl
@@ -57,6 +58,7 @@ theorem length'_cons (x : α) (s : Seq α) :
   · simp [length'_of_terminates h, length'_of_terminates h', length_cons h']
   · simp [length'_of_not_terminates h, length'_of_not_terminates h']
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem length_eq_zero {s : Seq α} {h : s.Terminates} :
     s.length h = 0 ↔ s = nil := by
@@ -71,6 +73,7 @@ theorem length'_ne_zero_iff_cons (s : Seq α) :
     s.length' ≠ 0 ↔ ∃ x s', s = cons x s' := by
   cases s <;> simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The statement of `length_le_iff'` does not assume that the sequence terminates. For a
 simpler statement of the theorem where the sequence is known to terminate see `length_le_iff`. -/
 theorem length_le_iff' {s : Seq α} {n : ℕ} :
@@ -94,6 +97,7 @@ theorem length'_le_iff {s : Seq α} {n : ℕ} :
   · simpa [length'_of_terminates h] using length_le_iff
   · simpa [length'_of_not_terminates h] using forall_not_of_not_exists h n
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The statement of `lt_length_iff'` does not assume that the sequence terminates. For a
 simpler statement of the theorem where the sequence is known to terminate see `lt_length_iff`. -/
 theorem lt_length_iff' {s : Seq α} {n : ℕ} :
@@ -133,6 +137,7 @@ end OfStream
 
 section OfList
 
+set_option backward.isDefEq.respectTransparency false in
 theorem terminatedAt_ofList (l : List α) :
     (ofList l).TerminatedAt l.length := by
   simp [ofList, TerminatedAt]
@@ -204,6 +209,7 @@ theorem length_take_le {s : Seq α} {n : ℕ} : (s.take n).length ≤ n := by
       obtain ⟨x, r⟩ := v
       simpa using ih
 
+set_option backward.isDefEq.respectTransparency false in
 theorem length_take_of_le_length {s : Seq α} {n : ℕ}
     (hle : ∀ h : s.Terminates, n ≤ s.length h) : (s.take n).length = n := by
   induction n generalizing s with
@@ -231,6 +237,7 @@ theorem length_toList (s : Seq α) (h : s.Terminates) : (toList s h).length = le
   intro _
   exact le_rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem getElem?_toList (s : Seq α) (h : s.Terminates) (n : ℕ) : (toList s h)[n]? = s.get? n := by
   ext k
@@ -240,6 +247,7 @@ theorem getElem?_toList (s : Seq α) (h : s.Terminates) (n : ℕ) : (toList s h)
   let ⟨a, ha⟩ := ge_stable s hmn h
   simp [ha]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem ofList_toList (s : Seq α) (h : s.Terminates) :
     ofList (toList s h) = s := by
@@ -249,6 +257,7 @@ theorem ofList_toList (s : Seq α) (h : s.Terminates) :
 theorem toList_ofList (l : List α) : toList (ofList l) (terminates_ofList l) = l :=
   ofList_injective (by simp)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem toList_nil : toList (nil : Seq α) ⟨0, terminatedAt_zero_iff.2 rfl⟩ = [] := by
   ext; simp [nil, toList, const]
@@ -432,10 +441,12 @@ section Join
 theorem join_nil : join nil = (nil : Seq α) :=
   destruct_eq_none rfl
 
+set_option backward.isDefEq.respectTransparency false in
 -- Not a simp lemmas as `join_cons` is more general
 theorem join_cons_nil (a : α) (S) : join (cons (a, nil) S) = cons a (join S) :=
   destruct_eq_cons <| by simp [join]
 
+set_option backward.isDefEq.respectTransparency false in
 -- Not a simp lemmas as `join_cons` is more general
 theorem join_cons_cons (a b : α) (s S) :
     join (cons (a, cons b s) S) = cons a (join (cons (b, s) S)) :=
@@ -650,6 +661,7 @@ end ZipWith
 
 section Fold
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem fold_nil (init : β) (f : β → α → β) :
     nil.fold init f = cons init nil := by
@@ -676,6 +688,7 @@ section Update
 
 variable (hd x : α) (tl : Seq α) (f : α → α)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem get?_update (s : Seq α) (n : ℕ) (m : ℕ) :
     (s.update n f).get? m = if m = n then (s.get? m).map f else s.get? m := by
   simp [update, Function.update]
@@ -709,6 +722,7 @@ theorem update_cons_succ (n : ℕ) : (cons hd tl).update (n + 1) f = cons hd (tl
 theorem set_cons_succ (n : ℕ) : (cons hd tl).set (n + 1) x = cons hd (tl.set n x) :=
   update_cons_succ _ _ _ _
 
+set_option backward.isDefEq.respectTransparency false in
 theorem get?_set_of_not_terminatedAt {s : Seq α} {n : ℕ} (h_not_terminated : ¬ s.TerminatedAt n) :
     (s.set n x).get? n = x := by
   simpa [set, update, ← Option.ne_none_iff_exists'] using! h_not_terminated
@@ -970,6 +984,7 @@ def map (f : α → β) : Seq1 α → Seq1 β
 
 theorem map_pair {f : α → β} {a s} : map f (a, s) = (f a, Seq.map f s) := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem map_id : ∀ s : Seq1 α, map id s = s
   | ⟨a, s⟩ => by simp [map]
 
@@ -1008,10 +1023,12 @@ def bind (s : Seq1 α) (f : α → Seq1 β) : Seq1 β :=
 theorem join_map_ret (s : Seq α) : Seq.join (Seq.map ret s) = s := by
   apply coinduction2 s; intro s; cases s <;> simp [ret]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem bind_ret (f : α → β) : ∀ s, bind s (ret ∘ f) = map f s
   | ⟨a, s⟩ => by simp [bind, map, map_comp, ret]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem ret_bind (a : α) (f : α → Seq1 β) : bind (ret a) f = f a := by
   simp only [bind, map, ret.eq_1, map_nil]
@@ -1038,10 +1055,12 @@ theorem map_join' (f : α → β) (S) : Seq.map f (Seq.join S) = Seq.join (Seq.m
         case cons _ s => exact ⟨s, S, rfl, rfl⟩
   · refine ⟨nil, S, ?_, ?_⟩ <;> simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_join (f : α → β) : ∀ S, map f (join S) = join (map (map f) S)
   | ((a, s), S) => by cases s <;> simp [map]
 
+set_option backward.isDefEq.respectTransparency false in
 set_option linter.flexible false in -- TODO: fix non-terminal simp
 @[simp]
 theorem join_join (SS : Seq (Seq1 (Seq1 α))) :
@@ -1066,6 +1085,7 @@ theorem join_join (SS : Seq (Seq1 (Seq1 α))) :
         case cons _ s => exact ⟨s, SS, rfl, rfl⟩
   · refine ⟨nil, SS, ?_, ?_⟩ <;> simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem bind_assoc (s : Seq1 α) (f : α → Seq1 β) (g : β → Seq1 γ) :
     bind (bind s f) g = bind s fun x : α => bind (f x) g := by

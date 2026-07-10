@@ -726,6 +726,7 @@ theorem mul_right_eq_one (x : tsze R M) (r : R) (h : x.fst * r = 1) :
 
 variable [SMulCommClass R Rᵐᵒᵖ M]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `x : tzre R M` is invertible when `x.fst : R` is. -/
 abbrev invertibleOfInvertibleFst (x : tsze R M) [Invertible x.fst] : Invertible x where
   invOf := (⅟x.fst, -(⅟x.fst •> x.snd <• ⅟x.fst))

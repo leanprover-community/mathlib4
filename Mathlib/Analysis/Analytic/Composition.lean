@@ -401,6 +401,7 @@ theorem comp_id (p : FormalMultilinearSeries 𝕜 E F) (x : E) : p.comp (id 𝕜
     rw [id_apply_of_one_lt _ _ _ A, _root_.zero_apply]
   · simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem id_comp (p : FormalMultilinearSeries 𝕜 E F) (v0 : Fin 0 → E) :
     (id 𝕜 F (p 0 v0)).comp p = p := by
@@ -1083,6 +1084,7 @@ theorem length_gather (a : Composition n) (b : Composition a.length) :
   show (map List.sum (a.blocks.splitWrtComposition b)).length = b.blocks.length by
     rw [length_map, length_splitWrtComposition]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An auxiliary function used in the definition of `sigmaEquivSigmaPi` below, associating to
 two compositions `a` of `n` and `b` of `a.length`, and an index `i` bounded by the length of
 `a.gather b`, the subcomposition of `a` made of those blocks belonging to the `i`-th block of

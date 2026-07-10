@@ -42,6 +42,7 @@ this is the functor `P.Over Q X ⥤ P.Over Q Y` given by composing with `f`. -/
 def Over.map {f : X ⟶ Y} (hPf : P f) : P.Over Q X ⥤ P.Over Q Y :=
   Comma.mapRight _ (Discrete.natTrans fun _ ↦ f) <| fun X ↦ P.comp_mem _ _ X.prop hPf
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma Over.map_comp {f : X ⟶ Y} (hf : P f) {g : Y ⟶ Z} (hg : P g) :
     map Q (P.comp_mem f g hf hg) = map Q hf ⋙ map Q hg := by
@@ -51,12 +52,14 @@ lemma Over.map_comp {f : X ⟶ Y} (hf : P f) {g : Y ⟶ Z} (hg : P g) :
     ext
     simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Promote an equality to an isomorphism of `Over.map` functors. -/
 @[simps!]
 def Over.mapCongr [Q.RespectsIso] {X Y : T} {f g : X ⟶ Y} (hfg : f = g) (hf : P f) :
     Over.map Q hf ≅ Over.map (f := g) Q (by cat_disch) :=
   NatIso.ofComponents (fun Y ↦ Over.isoMk (Iso.refl _))
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 set_option linter.overlappingInstances false in
 /-- `Over.map` preserves identities. -/
@@ -66,6 +69,7 @@ def Over.mapId [P.IsMultiplicative] [Q.RespectsIso] (X : T) (f : X ⟶ X := 𝟙
     Over.map (f := f) (P := P) Q (by subst hf; exact P.id_mem X) ≅ 𝟭 _ :=
   NatIso.ofComponents (fun Y ↦ Over.isoMk (Iso.refl _))
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- `Over.map` commutes with composition. -/
 @[simps! hom_app_left inv_app_left]
@@ -142,6 +146,7 @@ noncomputable def Over.pullbackCongr {f : X ⟶ Y} [P.HasPullbacksAlong f]
     haveI : HasPullback X.hom g := HasPullbacksAlong.hasPullback _ X.prop
     Over.isoMk (pullback.congrHom rfl h)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma Over.pullbackCongr_hom_app_left_fst {f : X ⟶ Y} [P.HasPullbacksAlong f] {g : X ⟶ Y}
@@ -222,6 +227,7 @@ this is the functor `P.Under Q Y ⥤ P.Under Q X` given by composing with `f`. -
 def Under.map {f : X ⟶ Y} (hPf : P f) : P.Under Q Y ⥤ P.Under Q X :=
   Comma.mapLeft _ (Discrete.natTrans fun _ ↦ f) <| fun X ↦ P.comp_mem _ _ hPf X.prop
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma Under.map_comp {f : X ⟶ Y} (hf : P f) {g : Y ⟶ Z} (hg : P g) :
     map Q (P.comp_mem f g hf hg) = map Q hg ⋙ map Q hf := by
@@ -231,12 +237,14 @@ lemma Under.map_comp {f : X ⟶ Y} (hf : P f) {g : Y ⟶ Z} (hg : P g) :
     ext
     simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Promote an equality to an isomorphism of `Under.map` functors. -/
 @[simps!]
 def Under.mapCongr [Q.RespectsIso] {X Y : T} {f g : X ⟶ Y} (hfg : f = g) (hf : P f) :
     Under.map Q hf ≅ Under.map (f := g) Q (by cat_disch) :=
   NatIso.ofComponents (fun Y ↦ Under.isoMk (Iso.refl _))
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 set_option linter.overlappingInstances false in
 /-- `Under.map` preserves identities. -/
@@ -246,6 +254,7 @@ def Under.mapId [P.IsMultiplicative] [Q.RespectsIso] (X : T) (f : X ⟶ X := �
     Under.map (f := f) (P := P) Q (by subst hf; exact P.id_mem X) ≅ 𝟭 _ :=
   NatIso.ofComponents (fun Y ↦ Under.isoMk (Iso.refl _))
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- `Under.map` commutes with composition. -/
 @[simps! hom_app_left]
@@ -314,6 +323,7 @@ noncomputable def Under.pushoutCongr {f : X ⟶ Y} [P.HasPushoutsAlong f]
     haveI : HasPushout X.hom g := HasPushoutsAlong.hasPushout _ X.prop
     Under.isoMk (pushout.congrHom rfl h)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma Under.pushoutCongr_hom_app_left_fst {f : X ⟶ Y} [P.HasPushoutsAlong f] {g : X ⟶ Y}

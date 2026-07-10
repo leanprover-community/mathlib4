@@ -119,6 +119,7 @@ instance (priority := 100) lawfulMvFunctor : LawfulMvFunctor F where
   id_map := @MvQPF.id_map n F _
   comp_map := @comp_map n F _
 
+set_option backward.isDefEq.respectTransparency false in
 -- Lifting predicates and relations
 theorem liftP_iff {α : TypeVec n} (p : ∀ ⦃i⦄, α i → Prop) (x : F α) :
     LiftP p x ↔ ∃ a f, x = abs ⟨a, f⟩ ∧ ∀ i j, p (f i j) := by
@@ -134,6 +135,7 @@ theorem liftP_iff {α : TypeVec n} (p : ∀ ⦃i⦄, α i → Prop) (x : F α) :
   use abs ⟨a, fun i j => ⟨f i j, h₁ i j⟩⟩
   rw [← abs_map, h₀]; rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem liftR_iff {α : TypeVec n} (r : ∀ ⦃i⦄, α i → α i → Prop) (x y : F α) :
     LiftR r x y ↔ ∃ a f₀ f₁, x = abs ⟨a, f₀⟩ ∧ y = abs ⟨a, f₁⟩ ∧ ∀ i j, r (f₀ i j) (f₁ i j) := by
   constructor
@@ -169,6 +171,7 @@ theorem mem_supp {α : TypeVec n} (x : F α) (i) (u : α i) :
 theorem supp_eq {α : TypeVec n} {i} (x : F α) :
     supp x i = { u | ∀ a f, abs ⟨a, f⟩ = x → u ∈ f i '' univ } := by ext; apply mem_supp
 
+set_option backward.isDefEq.respectTransparency false in
 theorem has_good_supp_iff {α : TypeVec n} (x : F α) :
     (∀ p, LiftP p x ↔ ∀ (i), ∀ u ∈ supp x i, p i u) ↔
       ∃ a f, abs ⟨a, f⟩ = x ∧ ∀ i a' f', abs ⟨a', f'⟩ = x → f i '' univ ⊆ f' i '' univ := by
@@ -230,12 +233,14 @@ theorem liftP_iff_of_isUniform (h : q.IsUniform) {α : TypeVec n} (x : F α) (p 
   rw [supp_eq_of_isUniform h]
   exact ⟨i, mem_univ i, rfl⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem supp_map (h : q.IsUniform) {α β : TypeVec n} (g : α ⟹ β) (x : F α) (i) :
     supp (g <$$> x) i = g i '' supp x i := by
   rw [← abs_repr x]; obtain ⟨a, f⟩ := repr x; rw [← abs_map, MvPFunctor.map_eq]
   rw [supp_eq_of_isUniform h, supp_eq_of_isUniform h, ← image_comp]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem suppPreservation_iff_isUniform : q.SuppPreservation ↔ q.IsUniform := by
   constructor
   · intro h α a a' f f' h' i
@@ -244,6 +249,7 @@ theorem suppPreservation_iff_isUniform : q.SuppPreservation ↔ q.IsUniform := b
     ext
     rwa [supp_eq_of_isUniform, MvPFunctor.supp_eq]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem suppPreservation_iff_liftpPreservation : q.SuppPreservation ↔ q.LiftPPreservation := by
   constructor <;> intro h
   · rintro α p ⟨a, f⟩

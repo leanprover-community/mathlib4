@@ -329,6 +329,7 @@ def inverse : W.FunctorsInverting D ⥤ W.Localization ⥤ D where
           natTransExtension_app, NatTransExtension.app_eq]
         rfl)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The unit isomorphism of the equivalence of categories `whiskeringLeftEquivalence W D`. -/
 @[simps!]
 def unitIso : 𝟭 (W.Localization ⥤ D) ≅ functor W D ⋙ inverse W D :=

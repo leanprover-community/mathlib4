@@ -351,6 +351,7 @@ theorem map_one_sub_of_lt (h : v x < 1) : v (1 - x) = 1 := by
   rw [sub_eq_add_neg 1 x]
   simpa only [v.map_one, v.map_neg] using v.map_add_eq_of_lt_left h
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An ordered monoid isomorphism `Γ₀ ≃ Γ'₀` induces an equivalence
 `Valuation R Γ₀ ≃ Valuation R Γ'₀`. -/
 def congr (f : Γ₀ ≃*o Γ'₀) : Valuation R Γ₀ ≃ Valuation R Γ'₀ where
@@ -456,6 +457,7 @@ lemma leAddSubgroup_monotone (v : Valuation R Γ₀) : Monotone v.leAddSubgroup 
 
 open MonoidWithZeroHom MonoidWithZeroHom.ValueGroup₀
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The restriction of a valuation so that it takes values in its `valueGroup₀`. -/
 def restrict : Valuation R (ValueGroup₀ (.ofClass v)) where
   __ := restrict₀ (.ofClass v)
@@ -476,6 +478,7 @@ lemma restrict_def (x : R) : v.restrict x = restrict₀ (.ofClass v) x := rfl
 lemma embedding_restrict (x : R) : embedding (v.restrict x) = v x :=
   embedding_restrict₀ x
 
+set_option backward.isDefEq.respectTransparency false in
 lemma restrict_eq_mk {x : R} (hx : v x ≠ 0) : v.restrict x =
     (valueGroup.mk (.ofClass v) 1 x (by simp) hx : ValueGroup₀ (.ofClass v)) := by
   classical
@@ -486,11 +489,13 @@ lemma restrict_pos_iff (x : R) : 0 < v.restrict x ↔ 0 < v x := by
   simp only [restrict_def, restrict₀_apply]
   split_ifs with h <;> simpa [zero_lt_iff]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma restrict_lt_iff {x y : R} : v.restrict x < v.restrict y ↔ v x < v y := by
   simp [restrict_def, restrict₀_apply]
   split_ifs with hx hy <;> simp_all [zero_lt_iff.mpr, ← Units.val_lt_val]
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem isEquiv_restrict : v.IsEquiv v.restrict := by
   intro x y
   aesop (add norm [restrict_def, restrict₀_apply])
@@ -519,11 +524,13 @@ lemma restrict_eq_zero_iff {x : R} : v.restrict x = 0 ↔ v x = 0 := by
 lemma restrict_eq_one_iff {x : R} : v.restrict x = 1 ↔ v x = 1 := by
   simp [restrict_def, restrict₀_eq_one_iff]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma restrict_le_iff {x y : R} : v.restrict x ≤ v.restrict y ↔ v x ≤ v y := by
   simp only [restrict_def, restrict₀_apply, MonoidWithZeroHom.coe_ofClass]
   split_ifs with hx hy <;> simp_all [← Units.val_le_val]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma restrict_inj {x y : R} : v.restrict x = v.restrict y ↔ v x = v y := by
   simp only [restrict_def, restrict₀_apply, MonoidWithZeroHom.coe_ofClass]
@@ -808,6 +815,7 @@ noncomputable def valueGroup₀Fun (h : v.IsEquiv w) (x : ValueGroup₀ (.ofClas
     haveI c := (x.zero_or_exists_mk'.resolve_left hx).choose
     valueGroup.mk (.ofClass w) c.1.1 c.1.2 (h.eq_zero.ne.mp c.2.1) (h.eq_zero.ne.mp c.2.2)
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem valueGroup₀Fun_spec (h : v.IsEquiv w) {r s : R} (hr : v r ≠ 0) (hs : v s ≠ 0) :
     valueGroup₀Fun h (valueGroup.mk (.ofClass v) r s hr hs) =
       valueGroup.mk (.ofClass w) r s (h.eq_zero.ne.mp hr) (h.eq_zero.ne.mp hs) := by
@@ -819,6 +827,7 @@ theorem valueGroup₀Fun_spec (h : v.IsEquiv w) {r s : R} (hr : v r ≠ 0) (hs :
 
 theorem valueGroup₀Fun_zero (h : v.IsEquiv w) : valueGroup₀Fun h 0 = 0 := by simp [valueGroup₀Fun]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The isomorphism between the `ValueGroup₀`'s of two equivalent valuations. -/
 noncomputable def orderMonoidIso (h : v.IsEquiv w) :
     ValueGroup₀ (.ofClass v) ≃*o ValueGroup₀ (.ofClass w) where
@@ -879,6 +888,7 @@ theorem orderMonoidIso_symm (h : v.IsEquiv w) (h' : w.IsEquiv v) :
     h.orderMonoidIso.symm = h'.orderMonoidIso := by
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem orderMonoidIso_eq_refl (h : v.IsEquiv v) :
     h.orderMonoidIso = .refl _ := by
@@ -887,6 +897,7 @@ theorem orderMonoidIso_eq_refl (h : v.IsEquiv v) :
   · simp
   · simp [orderMonoidIso, valueGroup₀Fun_spec]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem orderMonoidIso_trans (h : v.IsEquiv w) (h' : w.IsEquiv u) :
     h.orderMonoidIso.trans h'.orderMonoidIso = (h.trans h').orderMonoidIso := by

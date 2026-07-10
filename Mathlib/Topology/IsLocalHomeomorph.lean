@@ -63,6 +63,7 @@ namespace IsLocalHomeomorphOn
 
 variable {f s}
 
+set_option backward.isDefEq.respectTransparency false in
 theorem discreteTopology_of_image (h : IsLocalHomeomorphOn f s)
     [DiscreteTopology (f '' s)] : DiscreteTopology s :=
   discreteTopology_iff_isOpen_singleton.mpr fun x ↦ by

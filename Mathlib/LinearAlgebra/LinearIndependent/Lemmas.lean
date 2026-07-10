@@ -478,6 +478,7 @@ lemma linearIndependent_algHom_toLinearMap' (K M L) [CommRing K] [IsDomain K]
     LinearIndependent K (AlgHom.toLinearMap : (M →ₐ[K] L) → M →ₗ[K] L) :=
   (linearIndependent_algHom_toLinearMap K M L).restrict_scalars' K
 
+set_option backward.isDefEq.respectTransparency false in
 lemma LinearMap.injective_of_linearIndependent {N : Type*} [AddCommGroup N] [Module R N]
     {f : M →ₗ[R] N} {ι : Type*} {v : ι → M}
     (hv : Submodule.span R (.range v) = ⊤) (hli : LinearIndependent R (f ∘ v)) :

@@ -526,6 +526,7 @@ theorem colimitUncurryIsoColimitCompColim_ι_ι_inv {j} {k} :
     IsColimit.uniqueUpToIso]
   simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[simp, reassoc]
 theorem colimitUncurryIsoColimitCompColim_ι_hom {j} {k} :

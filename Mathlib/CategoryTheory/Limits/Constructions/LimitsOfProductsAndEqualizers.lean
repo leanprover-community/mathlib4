@@ -401,6 +401,7 @@ noncomputable def colimitQuotientCoproduct [HasColimitsOfSize.{w, w} C] (F : J �
   have := hasFiniteColimits_of_hasColimitsOfSize C
   coequalizer.π _ _ ≫ (colimit.isoColimitCocone (colimitCoconeOfCoequalizerAndCoproduct F)).inv
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance colimitQuotientCoproduct_epi [HasColimitsOfSize.{w, w} C] (F : J ⥤ C) :
     Epi (colimitQuotientCoproduct F) :=
   epi_comp _ _

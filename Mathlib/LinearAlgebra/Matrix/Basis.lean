@@ -83,6 +83,7 @@ theorem toMatrix_update [DecidableEq ι'] (x : M) :
   · rw [h, update_self j x v]
   · rw [update_of_ne h]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The basis constructed by `unitsSMul` has vectors given by a diagonal matrix. -/
 @[simp]
 theorem toMatrix_unitsSMul [DecidableEq ι] (e : Basis ι R₂ M₂) (w : ι → R₂ˣ) :

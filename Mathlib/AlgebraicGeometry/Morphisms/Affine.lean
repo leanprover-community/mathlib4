@@ -168,6 +168,7 @@ instance : HasAffineProperty @IsAffineHom fun X _ _ _ ↦ IsAffine X where
       Subtype.forall, isAffineHom_iff]
     rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance isAffineHom_isStableUnderBaseChange :
     MorphismProperty.IsStableUnderBaseChange @IsAffineHom := by
   apply HasAffineProperty.isStableUnderBaseChange
@@ -176,12 +177,15 @@ instance isAffineHom_isStableUnderBaseChange :
   introv X hX H
   infer_instance
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance (priority := 100) isAffineHom_of_isAffine [IsAffine X] [IsAffine Y] : IsAffineHom f :=
   (HasAffineProperty.iff_of_isAffine (P := @IsAffineHom)).mpr inferInstance
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma isAffine_of_isAffineHom [IsAffineHom f] [IsAffine Y] : IsAffine X :=
   (HasAffineProperty.iff_of_isAffine (P := @IsAffineHom) (f := f)).mp inferInstance
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma isAffineHom_of_forall_exists_isAffineOpen
     (H : ∀ x : Y, ∃ U : Y.Opens, x ∈ U ∧ IsAffineOpen U ∧ IsAffineOpen (f ⁻¹ᵁ U)) :
     IsAffineHom f := by
@@ -190,11 +194,13 @@ lemma isAffineHom_of_forall_exists_isAffineOpen
   · exact hfU
   · exact top_le_iff.mp (fun x _ ↦ by simpa using ⟨x, hxU x⟩)
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance {X Y S : Scheme} (f : X ⟶ S) (g : Y ⟶ S) [IsAffineHom f] [IsAffine Y] :
     IsAffine (pullback f g) :=
   letI : IsAffineHom (pullback.snd f g) := MorphismProperty.pullback_snd _ _ ‹_›
   isAffine_of_isAffineHom (pullback.snd f g)
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance {X Y S : Scheme} (f : X ⟶ S) (g : Y ⟶ S) [IsAffineHom g] [IsAffine X] :
     IsAffine (pullback f g) :=
   letI : IsAffineHom (pullback.fst f g) := MorphismProperty.pullback_fst _ _ ‹_›
@@ -288,6 +294,7 @@ lemma isIso_morphismRestrict_iff_isIso_app [IsAffineHom f] {U : Y.Opens} (hU : I
   simp only [morphismRestrict_app', TopologicalSpace.Opens.map_top]
   congr! <;> simp [Scheme.Opens.toScheme_presheaf_obj]
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem diagonal_isAffine_iff_forall_isAffineOpen_inf [IsAffine Y] (f : X ⟶ Y) :
     AffineTargetMorphismProperty.diagonal (fun X _ _ _ ↦ IsAffine X) f ↔
       ∀ (U V : X.Opens), IsAffineOpen U → IsAffineOpen V → IsAffineOpen (U ⊓ V) := by
@@ -308,6 +315,7 @@ theorem diagonal_isAffine_iff_forall_isAffineOpen_inf [IsAffine Y] (f : X ⟶ Y)
     change IsAffine _ at this
     exact .of_isIso (pullback.fst f₁ f₂ ≫ f₁).isoOpensRange.hom
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem isAffineHom_diagonal_iff {f : X ⟶ Y} :
     IsAffineHom (pullback.diagonal f) ↔
       ∀ (U : Y.Opens), IsAffineOpen U → ∀ V₁ ≤ f ⁻¹ᵁ U, ∀ V₂ ≤ f ⁻¹ᵁ U,

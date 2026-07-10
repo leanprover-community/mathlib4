@@ -47,6 +47,7 @@ variable {R}
 
 theorem expand_eq_comp_X_pow {f : R[X]} : expand R p f = f.comp (X ^ p) := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem expand_eq_sum {f : R[X]} : expand R p f = f.sum fun e a => C a * (X ^ p) ^ e := by
   simp [expand, eval₂_eq_sum]
 
@@ -58,6 +59,7 @@ theorem expand_C (r : R) : expand R p (C r) = C r :=
 theorem expand_X : expand R p X = X ^ p :=
   eval₂_X _ _
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem expand_monomial (r : R) : expand R p (monomial q r) = monomial (q * p) r := by
   simp_rw [← smul_X_eq_monomial, map_smul, map_pow, expand_X, mul_comm, pow_mul]

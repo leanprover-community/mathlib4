@@ -95,6 +95,7 @@ def smallCategoryOfSet : SmallCategoryOfSet Ω where
   id X := h.homEquiv.symm (𝟙 _)
   comp f g := h.homEquiv.symm (h.homEquiv f ≫ h.homEquiv g)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Given `h : CoreSmallCategoryOfSet Ω C`, this is the
 obvious functor `h.smallCategoryOfSet.obj ⥤ C`. -/
 @[simps!]
@@ -104,11 +105,13 @@ def functor : h.smallCategoryOfSet.obj ⥤ C where
   map_id _ := by rw [SmallCategoryOfSet.id_def]; simp
   map_comp _ _ := by rw [SmallCategoryOfSet.comp_def]; simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Given `h : CoreSmallCategoryOfSet Ω C`,
 the obvious functor `h.smallCategoryOfSet.obj ⥤ C` is fully faithful. -/
 def fullyFaithfulFunctor : h.functor.FullyFaithful where
   preimage := h.homEquiv.symm
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : h.functor.IsEquivalence where
   faithful := h.fullyFaithfulFunctor.faithful
   full := h.fullyFaithfulFunctor.full
@@ -121,6 +124,7 @@ the obvious functor `h.smallCategoryOfSet.obj ⥤ C` is an equivalence. -/
 noncomputable def equivalence : h.smallCategoryOfSet.obj ≌ C :=
   h.functor.asEquivalence
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Given `h : CoreSmallCategoryOfSet Ω C`, the equivalence of categories
 `h.smallCategoryOfSet.obj ≌ C` is actually an isomorphism: it induces

@@ -204,6 +204,7 @@ theorem complexConj_eq_self_iff (x : K) :
   · rw [IsGalois.fixedField_top, IntermediateField.mem_bot]
     aesop
 
+set_option backward.isDefEq.respectTransparency.types false in
 protected theorem RingOfIntegers.complexConj_eq_self_iff (x : 𝓞 K) :
     complexConj K x = x ↔ ∃ y : 𝓞 K⁺, algebraMap (𝓞 K⁺) K y = x := by
   rw [complexConj_eq_self_iff]

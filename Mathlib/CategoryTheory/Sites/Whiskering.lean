@@ -87,6 +87,7 @@ instance [F.ReflectsIsomorphisms] : (sheafCompose J F).ReflectsIsomorphisms wher
 
 variable {F G}
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /--
 If `η : F ⟶ G` is a natural transformation then we obtain a morphism of functors
@@ -107,6 +108,7 @@ namespace GrothendieckTopology.Cover
 variable (F G) {J}
 variable (P : Cᵒᵖ ⥤ A) {X : C} (S : J.Cover X)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The multicospan associated to a cover `S : J.Cover X` and a presheaf of the form `P ⋙ F`
 is isomorphic to the composition of the multicospan associated to `S` and `P`,
@@ -122,6 +124,7 @@ def multicospanComp : (S.index (P ⋙ F)).multicospan ≅ (S.index P).multicospa
       rintro (a | b) (a | b) (f | f | f)
       all_goals cat_disch)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Mapping the multifork associated to a cover `S : J.Cover X` and a presheaf `P` with
 respect to a functor `F` is isomorphic (upto a natural isomorphism of the underlying functors)

@@ -416,6 +416,7 @@ theorem lintegral_zero_measure {m : MeasurableSpace α} (f : α → ℝ≥0∞) 
     ∫⁻ a, f a ∂(0 : Measure α) = 0 := by
   simp [lintegral]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem lintegral_add_measure (f : α → ℝ≥0∞) (μ ν : Measure α) :
     ∫⁻ a, f a ∂(μ + ν) = ∫⁻ a, f a ∂μ + ∫⁻ a, f a ∂ν := by

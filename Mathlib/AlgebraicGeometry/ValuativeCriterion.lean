@@ -110,6 +110,7 @@ namespace ValuativeCriterion.Existence
 
 open IsLocalRing
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[stacks 01KE]
 lemma specializingMap (H : ValuativeCriterion.Existence f) :
     SpecializingMap f := by
@@ -323,6 +324,7 @@ lemma IsSeparated.eq_valuativeCriterion :
 
 end Uniqueness
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The **valuative criterion** for proper morphisms. -/
 @[stacks 0BX5]
 lemma IsProper.eq_valuativeCriterion :
