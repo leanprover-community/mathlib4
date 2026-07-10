@@ -40,7 +40,7 @@ def commaMapEquivalenceFunctor [IsIso β] (X : Comma L' R') :
       simpa using congrFun (congrArg CategoryStruct.comp Y.hom.w) (inv (β.app Y.right.right) :))⟩
   map {Y Z} f := ⟨homMk f.right.left (congrArg CommaMorphism.left (StructuredArrow.w f)),
     homMk f.right.right (congrArg CommaMorphism.right (StructuredArrow.w f)),
-     by simp ⟩
+    by simp⟩
 
 set_option backward.defeqAttrib.useBackward true in
 /-- The inverse functor establishing the equivalence `StructuredArrow.commaMapEquivalence`. -/

@@ -31,7 +31,7 @@ universe v₁ v₂ v₃ v₄ v₅ v₆ u₁ u₂ u₃ u₄ u₅ u₆
 
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 
-to_dual_name_hint StructuredArrow CostructuredArrow, Left Right, Precomp Postcomp, Mono Epi, S T
+to_dual_name_hint Left Right, Mono Epi, S T
 
 /-- The category of `T`-structured arrows with domain `S : D` (here `T : C ⥤ D`),
 has as its objects `D`-morphisms of the form `S ⟶ T Y`, for some `Y : C`,
@@ -100,13 +100,15 @@ attribute [to_dual existing] proj_map
 variable {S S' S'' : D} {Y Y' Y'' : C} {T T' : C ⥤ D}
 
 @[to_dual (attr := ext)]
-lemma ext {X Y : StructuredArrow S T} (f g : X ⟶ Y) (h : f.right = g.right) : f = g :=
+lemma hom_ext {X Y : StructuredArrow S T} (f g : X ⟶ Y) (h : f.right = g.right) : f = g :=
   CommaMorphism.ext (Subsingleton.elim _ _) h
 
-attribute [simp] StructuredArrow.ext_iff CostructuredArrow.ext_iff
+attribute [simp] StructuredArrow.hom_ext_iff CostructuredArrow.hom_ext_iff
 
-@[to_dual (attr := deprecated (since := "2026-06-23"))] alias hom_ext := ext
-@[to_dual (attr := deprecated (since := "2026-06-23"))] alias hom_eq_iff := StructuredArrow.ext_iff
+@[to_dual] alias ext := hom_ext
+@[to_dual] alias ext_iff := StructuredArrow.hom_ext_iff
+
+@[to_dual (attr := deprecated (since := "2026-07-10"))] alias hom_eq_iff := StructuredArrow.ext_iff
 
 /-- Construct a structured arrow from a morphism. -/
 @[to_dual /-- Construct a costructured arrow from a morphism. -/]
