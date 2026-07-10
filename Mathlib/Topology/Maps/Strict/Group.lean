@@ -33,7 +33,7 @@ open Function Set Topology QuotientGroup
 
 namespace MonoidHom
 
-variable {G H G' H' : Type*} [Group G'] [Group H'] [Group G] [Group H] (f : G →* H) (g : G' →* H')
+variable {G H G' H' : Type*} [Group G'] [Group H'] [Group G] [Group H] {f : G →* H} {g : G' →* H'}
   [TopologicalSpace G] [TopologicalSpace H]
 
 /-- A group homomorphism is strict if and only if its `QuotientGroup.kerLift` is an embedding. -/
@@ -59,7 +59,6 @@ protected lemma isStrictMap_iff_isHomeomorph_quotientKerEquivRange :
     (isQuotientMap_mk _).isStrictMap_iff, IsEmbedding.subtypeVal.isStrictMap_iff]
   rfl
 
-variable {f} in
 /-- The isomorphism of topological groups `G ⧸ f.ker ≃ f.range` given by a strict group
 homomorphism `f`. This is an avatar of the first isomorphism theorem. -/
 @[to_additive /-- The isomorphism of topological additive groups `G ⧸ f.ker ≃ f.range` given by a
@@ -79,7 +78,7 @@ protected lemma isStrictMap_iff_isOpenQuotientMap_rangeRestrict :
   rw [isOpenQuotientMap_iff_isQuotientMap]
   rfl
 
-variable {f g} [TopologicalSpace G'] [IsTopologicalGroup G'] [TopologicalSpace H']
+variable [TopologicalSpace G'] [IsTopologicalGroup G'] [TopologicalSpace H']
 
 /-- The product (in the sense of `Prod.map`) of group homomorphisms is strict if and only if each
 of the homomorphisms is strict. -/
