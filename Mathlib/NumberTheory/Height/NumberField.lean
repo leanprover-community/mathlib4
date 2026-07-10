@@ -193,34 +193,34 @@ theorem finprod_fiberwise_univ {ι κ M : Type*} [CommMonoid M]
 
 variable {L} in
 open IsDedekindDomain in
-theorem foo (f : Ideal (𝓞 L) → ℝ) (v : HeightOneSpectrum (𝓞 K)) :
-    ∏ᶠ (w : HeightOneSpectrum (𝓞 L)) (_ : w.under (𝓞 K) = v), f w.1 =
-      ∏ w : v.1.primesOver (𝓞 L), f w := by
-  let s : Set (HeightOneSpectrum (𝓞 L)) := {w | w.under (𝓞 K) = v}
-  change ∏ᶠ w ∈ s, f w.1 = ∏ w : v.1.primesOver (𝓞 L), f w
-  have h1 : s.Finite := by
+-- @[to_additive]
+theorem foobar_mul (f : HeightOneSpectrum (𝓞 L) → ℝ) (hf : f.HasFiniteMulSupport) :
+    ∏ᶠ w : HeightOneSpectrum (𝓞 L), f w =
+      ∏ᶠ v : HeightOneSpectrum (𝓞 K), ∏ w : v.1.primesOver (𝓞 L),
+        f ((HeightOneSpectrum.equivPrimesOver (𝓞 L) v.ne_bot).symm w) := by
+  classical
+  let g : HeightOneSpectrum (𝓞 L) → HeightOneSpectrum (𝓞 K) := HeightOneSpectrum.under (𝓞 K)
+  let s : Finset (HeightOneSpectrum (𝓞 K)) := hf.toFinset.image g
+  rw [finprod_eq_prod f hf, finprod_eq_prod_of_mulSupport_subset (s := s)]
+  · rw [← Finset.prod_fiberwise_of_maps_to (fun w ↦ Finset.mem_image_of_mem g)]
+    apply Finset.prod_congr rfl
+    intro v hv
+    let e := HeightOneSpectrum.equivPrimesOver (𝓞 L) v.ne_bot
+    have := Fintype.ofEquiv _ e.symm
+    rw [e.symm.prod_comp (f ·)]
     sorry
-  let ι : HeightOneSpectrum (𝓞 L) ↪ Ideal (𝓞 L) :=
-    ⟨HeightOneSpectrum.asIdeal, HeightOneSpectrum.asIdeal_injective⟩
-  have h2 : h1.toFinset.map ι = IsDedekindDomain.primesOverFinset v.1 (𝓞 L) := by
-    sorry
-  rw [finprod_mem_eq_finite_toFinset_prod _ h1]
-  transitivity ∏ i ∈ h2, f i
-
-  apply Finset.prod_of_injOn _ HeightOneSpectrum.asIdeal_injective.injOn
-  · intro p hp
-    rw [SetLike.mem_coe, IsDedekindDomain.mem_primesOverFinset_iff]
-    rw [Ideal.primesOver]
-    simp [s, HeightOneSpectrum.ext_iff] at hp
-    refine ⟨p.isPrime, ?_⟩
-    exact ⟨hp.symm⟩
-    exact v.ne_bot
-  · intro i hi h
-    contrapose! h
-    rw [IsDedekindDomain.mem_primesOverFinset_iff] at hi
-    sorry
-  · intro i hi
-    rfl
+  · intro v
+    let e := HeightOneSpectrum.equivPrimesOver (𝓞 L) v.ne_bot
+    rw [Function.mem_mulSupport, Finset.mem_coe, Finset.mem_image]
+    contrapose!
+    intro hv
+    apply Finset.prod_eq_one
+    intro w hw
+    contrapose! hv
+    refine ⟨e.symm w, hf.mem_toFinset.mpr hv, ?_⟩
+    have := (e.symm w).2
+    rw [← Ideal.liesOver_iff_dvd_map (e.symm w).1.2.ne_top, Ideal.liesOver_iff] at this
+    exact HeightOneSpectrum.asIdeal_injective this.symm
 
 open scoped NumberField.LiesOver
 
@@ -261,25 +261,31 @@ private theorem mulHeight_pow_finrank_aux {ι : Type*} [Nonempty ι] [Finite ι]
     simp +contextual only [Finset.prod_pow_eq_pow_sum, Finset.mul_sum,
       ← v.sum_inertiaDeg_eq_finrank K L, key1, key2, key3]
   · simp_rw [Function.comp_apply, ← finprod_comp_equiv equivHeightOneSpectrum.symm]
-    rw [← finprod_fiberwise_univ fun v : HeightOneSpectrum (𝓞 L) ↦ v.under (𝓞 K), finprod_pow]
+    rw [foobar_mul (K := K) (L := L), finprod_pow]
     · refine finprod_congr fun v ↦ ?_
-      have key w (hw : w ∈ ({w | w.under (𝓞 K) = v})) x :
-        equivHeightOneSpectrum.symm w (algebraMap K L x) =
+      let e := HeightOneSpectrum.equivPrimesOver (𝓞 L) v.ne_bot
+      have key (w : v.asIdeal.primesOver (𝓞 L)) x :
+          equivHeightOneSpectrum.symm (e.symm w) (algebraMap K L x) =
           equivHeightOneSpectrum.symm v x ^ (w.1.ramificationIdx (𝓞 K) * w.1.inertiaDeg (𝓞 K)) := by
-        have : w.1.LiesOver v.1 := by
-          rw [Set.mem_setOf_eq, HeightOneSpectrum.ext_iff] at hw
-          exact ⟨hw.symm⟩
-        apply FinitePlace.equivHeightOneSpectrum_symm_apply_algebraMap
-      simp +contextual only [key, Set.mem_setOf_eq]
+        have : (e.symm w).1.asIdeal.LiesOver v.asIdeal := by
+          rw [Ideal.liesOver_iff_dvd_map]
+          exact (e.symm w).2
+          exact (e.symm w).1.2.ne_top
+        have : w.1 = (e.symm w).1 := by
+          conv_lhs => rw [← e.apply_symm_apply w]
+          rfl
+        have := FinitePlace.equivHeightOneSpectrum_symm_apply_algebraMap v (e.symm w).1 x
+        convert this
+      simp only [e] at key
+      simp only [key]
       have pos i : 0 ≤ equivHeightOneSpectrum.symm v (x i) := by positivity
-      simp_rw [foo fun w ↦ ⨆ i, equivHeightOneSpectrum.symm v (x i) ^
-        (w.ramificationIdx (𝓞 K) * w.inertiaDeg (𝓞 K)), ← Real.iSup_pow pos,
-        Finset.prod_pow_eq_pow_sum, Ideal.sum_ramification_inertia_eq_finrank v.1 (𝓞 L),
+      simp_rw [← Real.iSup_pow pos, Finset.prod_pow_eq_pow_sum,
+        Ideal.sum_ramification_inertia_eq_finrank v.1 (𝓞 L),
         Algebra.IsAlgebraic.finrank_of_isFractionRing (𝓞 K) K (𝓞 L) L]
-    · apply Function.HasFiniteMulSupport.comp_of_injective equivHeightOneSpectrum.symm.injective
-        (Function.HasFiniteMulSupport.iSup fun i ↦ FinitePlace.hasFiniteMulSupport (hx i))
-    · apply Function.HasFiniteMulSupport.comp_of_injective equivHeightOneSpectrum.symm.injective
-        (Function.HasFiniteMulSupport.iSup fun i ↦ FinitePlace.hasFiniteMulSupport (by simp [hx]))
+    · exact Function.HasFiniteMulSupport.iSup fun i ↦ Function.HasFiniteMulSupport.comp_of_injective
+        equivHeightOneSpectrum.symm.injective (FinitePlace.hasFiniteMulSupport (by simp [hx]))
+    · exact Function.HasFiniteMulSupport.iSup fun i ↦ Function.HasFiniteMulSupport.comp_of_injective
+        equivHeightOneSpectrum.symm.injective (FinitePlace.hasFiniteMulSupport (by simp [hx]))
 
 open IsDedekindDomain in
 theorem mulHeight_pow_finrank {ι : Type*} (x : ι → K) [Finite ι] :
