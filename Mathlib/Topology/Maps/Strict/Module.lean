@@ -15,8 +15,7 @@ public import Mathlib.Topology.Maps.Strict.Group
 
 In this file, we study continuous linear maps which are *strict* in the sense of
 `Topology.IsStrictMap`. So far, all the results in this file are direct
-adaptations from the theory of strict homomorphisms of topological additive groups,
-but this may change in the future.
+adaptations from the theory of strict homomorphisms of topological additive groups.
 -/
 
 
