@@ -161,9 +161,15 @@ def resolveQueryRepo (repoExplicit? : Option String) : IO String := do
 Boolean probe for a single commit: prints `cached` or `not cached` and exits
 with status 0 / 1 respectively. Intended for scripting.
 
-Probes the `forks` container's per-SHA marker, the only SHA-scoped container.
+Probes the `forks` per-SHA marker, the only SHA-scoped container. Canonical repos
+have no per-commit namespace, so it exits non-zero with a note instead of a
+misleading `not cached`.
 -/
 def cacheQuerySingle (repo sha : String) : IO Unit := do
+  if isCanonicalRepo repo then
+    IO.eprintln s!"{repo} caches by file hash, not per commit, so there is no per-commit build to query."
+    (← IO.getStderr).flush
+    IO.Process.exit 1
   let cached ← probeContainerForSHA Container.forks repo sha
   if cached then
     IO.println s!"cached: {sha}"
@@ -183,6 +189,10 @@ This is a diagnostic-only command: it prints the SHA to stdout but does not
 auto-apply it. The user manually passes the result to `cache get` if desired.
 -/
 def cacheQuery (repo : String) (cap : Nat := 50) (cwd : FilePath := ".") : IO Unit := do
+  if isCanonicalRepo repo then
+    IO.println s!"`cache query` locates a fork PR's per-commit cache. {repo} reads \
+      its own cache container directly, so there is nothing to query for it."
+    return
   -- Determine merge base with master. If not reachable, use cap-only walk.
   let mergeBase? ← gitMergeBase "master" cwd
   let stopRef := mergeBase?.getD ""
