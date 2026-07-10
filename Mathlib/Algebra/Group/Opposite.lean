@@ -142,6 +142,7 @@ instance instDivInvMonoid [DivInvMonoid α] : DivInvMonoid αᵐᵒᵖ where
   zpow n a := op <| a.unop ^ n
   zpow_zero' _ := unop_injective <| zpow_zero _
   zpow_succ' _ _ := unop_injective <| by
+    simp_rw [HPow.hPow, Pow.pow]
     rw [unop_op, zpow_natCast, pow_succ', unop_mul, unop_op, zpow_natCast]
   zpow_neg' _ _ := unop_injective <| DivInvMonoid.zpow_neg' _ _
 
