@@ -221,10 +221,8 @@ abbrev ofAntipodeOfAdjoin
       CoalgebraStruct.comul) y = (Algebra.linearMap R A ∘ₗ CoalgebraStruct.counit) y
     have hgood : ∀ y ∈ Algebra.adjoin R X, P y := by
       intro y hy
-      apply Algebra.adjoin_induction (R := R) (s := X) (p := fun y _ => P y)
-      · exact hxr
-      · intro r
-        simp_all only [Algebra.mem_top, LinearMap.coe_comp, Function.comp_apply,
+      refine Algebra.adjoin_induction (R := R) (s := X) (p := fun y _ => P y) hxr (fun r ↦ ?_) ?_ ?_ hy
+      · simp_all only [Algebra.mem_top, LinearMap.coe_comp, Function.comp_apply,
         Algebra.linearMap_apply, comul_algebraMap, Algebra.TensorProduct.algebraMap_apply,
         LinearMap.rTensor_tmul, LinearEquiv.coe_coe, MulOpposite.coe_opLinearEquiv_symm,
         AlgHom.coe_toLinearMap, AlgHom.commutes, MulOpposite.algebraMap_apply, MulOpposite.unop_op,
@@ -267,9 +265,7 @@ abbrev ofAntipodeOfAdjoin
                 LinearMap.mul'_apply, LinearMap.coe_comp, Function.comp_apply,
                 LinearEquiv.coe_coe, MulOpposite.coe_opLinearEquiv_symm, AlgHom.coe_toLinearMap,
                 map_mul, MulOpposite.unop_mul, Finset.mul_sum, Finset.sum_mul, mul_assoc]
-      · exact hy
-    specialize hgood t (by rw [hX]; exact Algebra.mem_top)
-    exact hgood
+    exact hgood t (by rw [hX]; exact Algebra.mem_top)
   mul_antipode_lTensor_comul := by
     ext t
     let P : A → Prop := fun y ↦ (LinearMap.mul' R A ∘ₗ
@@ -277,10 +273,8 @@ abbrev ofAntipodeOfAdjoin
       CoalgebraStruct.comul) y = (Algebra.linearMap R A ∘ₗ CoalgebraStruct.counit) y
     have hgood : ∀ y ∈ Algebra.adjoin R X, P y := by
       intro y hy
-      apply Algebra.adjoin_induction (R := R) (s := X) (p := fun y _ => P y)
-      · exact hxl
-      · intro r
-        simp_all only [Algebra.mem_top, LinearMap.coe_comp, Function.comp_apply,
+      refine Algebra.adjoin_induction (R := R) (s := X) (p := fun y _ => P y) hxl (fun r ↦ ?_) ?_ ?_ hy
+      · simp_all only [Algebra.mem_top, LinearMap.coe_comp, Function.comp_apply,
           Algebra.linearMap_apply, comul_algebraMap, Algebra.TensorProduct.algebraMap_apply,
           LinearMap.lTensor_tmul, LinearEquiv.coe_coe, MulOpposite.coe_opLinearEquiv_symm,
           AlgHom.coe_toLinearMap, map_one, MulOpposite.unop_one, LinearMap.mul'_apply,
@@ -325,9 +319,7 @@ abbrev ofAntipodeOfAdjoin
                 LinearMap.mul'_apply, LinearMap.coe_comp, Function.comp_apply,
                 LinearEquiv.coe_coe, MulOpposite.coe_opLinearEquiv_symm, AlgHom.coe_toLinearMap,
                 map_mul, MulOpposite.unop_mul, Finset.mul_sum, Finset.sum_mul, mul_assoc]
-      · exact hy
-    specialize hgood t (by rw [hX]; exact Algebra.mem_top)
-    exact hgood
+    exact hgood t (by rw [hX]; exact Algebra.mem_top)
 
 
 
