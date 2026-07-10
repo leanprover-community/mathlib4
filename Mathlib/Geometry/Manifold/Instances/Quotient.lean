@@ -69,7 +69,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 variable {I} in
 omit [T2Space M] [LocallyCompactSpace M] [IsManifold I n M] in
 open IsManifold in
-lemma mem_maximalAtlas_of_contMDiffOn {e e' : OpenPartialHomeomorph M H}
+lemma symm_trans_trans_mem_maximalAtlas_of_contMDiffOn {e e' : OpenPartialHomeomorph M H}
     (he : e ∈ maximalAtlas I n M) (he' : e' ∈ maximalAtlas I n M)
     {h : OpenPartialHomeomorph M M}
     (hh : ContMDiffOn I I n h h.source) (hhsymm : ContMDiffOn I I n h.symm h.target) :
@@ -90,14 +90,14 @@ open IsManifold in
 /-- If `h` is an open partial homeomorphism of `M` that is `C^n` on its source, with `C^n`
 inverse on its target, then reading `h` through two members of the maximal atlas yields an
 element of `contDiffGroupoid n I`. -/
-lemma mem_contDiffGroupoid_of_contMDiffOn {e e' : OpenPartialHomeomorph M H}
+lemma symm_trans_trans_mem_contDiffGroupoid_of_contMDiffOn {e e' : OpenPartialHomeomorph M H}
     (he : e ∈ maximalAtlas I n M) (he' : e' ∈ maximalAtlas I n M)
     {h : OpenPartialHomeomorph M M}
     (hh : ContMDiffOn I I n h h.source) (hhsymm : ContMDiffOn I I n h.symm h.target) :
     e.symm.trans (h.trans e') ∈ contDiffGroupoid n I := by
   simpa [OpenPartialHomeomorph.refl_trans, OpenPartialHomeomorph.refl_symm] using
     compatible_of_mem_maximalAtlas (subset_maximalAtlas (chartedSpaceSelf_atlas.mpr rfl))
-    (mem_maximalAtlas_of_contMDiffOn he he' hh hhsymm)
+    (symm_trans_trans_mem_maximalAtlas_of_contMDiffOn he he' hh hhsymm)
 
 open Set
 
@@ -218,7 +218,7 @@ instance : IsManifold I n (orbitRel.Quotient G M) where
       (chartAt H x.out).symm.isOpen_inter_preimage
         ((πinv y).open_target.preimage (continuous_const_smul g0))
     refine ⟨_, hto, ⟨hh.1, hg0⟩, ?_⟩
-    refine StructureGroupoid.restr_mem_of_eqOn (mem_contDiffGroupoid_of_contMDiffOn
+    refine StructureGroupoid.restr_mem_of_eqOn (symm_trans_trans_mem_contDiffGroupoid_of_contMDiffOn
       (IsManifold.chart_mem_maximalAtlas x.out) (IsManifold.chart_mem_maximalAtlas y.out) ?_ ?_)
       hto (hg0'.mono inter_subset_right) ?_
     · rw [Homeomorph.toOpenPartialHomeomorph_apply]
