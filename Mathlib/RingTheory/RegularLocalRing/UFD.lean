@@ -103,6 +103,6 @@ instance (priority := low) uniqueFactorizationMonoid [IsRegularLocalRing R] :
         refine ih k ?_ _ hk
         rw [← Nat.cast_lt (α := WithBot ℕ∞), ← hk, ← hn]
         exact IsLocalization.AtPrime.ringKrullDim_lt_of_lt_maximalIdeal hPl
-      rwa [UniqueFactorizationMonoid.iff_localization_away_of_prime hxp]
+      rwa [UniqueFactorizationMonoid.iff_localizationAway_of_prime hxp]
 
 end IsRegularLocalRing
