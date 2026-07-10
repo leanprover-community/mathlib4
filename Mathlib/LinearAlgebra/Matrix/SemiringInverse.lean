@@ -11,6 +11,7 @@ public import Mathlib.GroupTheory.Perm.Sign
 
 import Mathlib.Algebra.Module.End
 import Mathlib.GroupTheory.Perm.Option
+import Mathlib.Tactic.Abel
 
 /-!
 # Nonsingular inverses over semirings
@@ -84,16 +85,22 @@ with respect to `a b : R` if `a|A|⁺ + b|A|⁻ = b|A|⁺ + a|A|⁻`. -/
 def DetpBalanced (a b : R) : Prop :=
   a * A.detp 1 + b * A.detp (-1) = b * A.detp 1 + a * A.detp (-1)
 
-lemma DetpBalanced.refl (a : R) : A.DetpBalanced a a := by rw [DetpBalanced, add_comm]
+lemma DetpBalanced.refl (a : R) : A.DetpBalanced a a := rfl
 
-variable {A}
+variable {A} {a b c : R}
 
-lemma DetpBalanced.of_eq {a b : R} (eq : A.detp 1 = A.detp (-1)) : A.DetpBalanced a b := by
+lemma DetpBalanced.of_eq (eq : A.detp 1 = A.detp (-1)) : A.DetpBalanced a b := by
   rw [DetpBalanced, eq, add_comm]
 
-lemma DetpBalanced.symm {a b : R} : A.DetpBalanced a b → A.DetpBalanced b a := Eq.symm
+lemma DetpBalanced.symm : A.DetpBalanced a b → A.DetpBalanced b a := Eq.symm
 
-lemma detpBalanced_comm {a b : R} : A.DetpBalanced a b ↔ A.DetpBalanced b a := Eq.comm
+lemma detpBalanced_comm : A.DetpBalanced a b ↔ A.DetpBalanced b a := Eq.comm
+
+lemma DetpBalanced.trans [IsCancelAdd R] (hab : A.DetpBalanced a b) (hbc : A.DetpBalanced b c) :
+    A.DetpBalanced a c := by
+  rw [DetpBalanced] at *
+  apply add_left_cancel (a := b * detp 1 A + b * detp (-1) A)
+  convert congr($hab + $hbc) using 1 <;> abel
 
 lemma DetpBalanced.mul_add_mul_eq {a b : R} (h : A.DetpBalanced a b) (s t : ℤˣ) :
     a * A.detp s + b * A.detp t = b * A.detp s + a * A.detp t := by
@@ -117,6 +124,8 @@ variable (A) in
 
 @[simp] lemma nonsingular_transpose_iff : Aᵀ.Nonsingular ↔ A.Nonsingular := by
   simp_rw [Nonsingular, DetpBalanced, detp_transpose]
+
+alias ⟨Nonsingular.of_transpose, Nonsingular.transpose⟩ := nonsingular_transpose_iff
 
 lemma detp_eq_of_row_eq {p q : n} (hpq : p ≠ q) (hrow : A.row p = A.row q)
     (s : ℤˣ := 1) (t : ℤˣ := -1) : A.detp s = A.detp t := by
