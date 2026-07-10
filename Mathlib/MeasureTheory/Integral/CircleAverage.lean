@@ -7,7 +7,6 @@ module
 
 public import Mathlib.MeasureTheory.Integral.CircleIntegral
 public import Mathlib.MeasureTheory.Integral.IntervalAverage
-public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Periodic
 
 /-!
 # Circle Averages

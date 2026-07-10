@@ -202,7 +202,7 @@ variable [MetricSpace X] [EMetricSpace Y]
 lemma eHolderNorm_eq_zero {r : ℝ≥0} {f : X → Y} :
     eHolderNorm r f = 0 ↔ ∀ x₁ x₂, f x₁ = f x₂ := by
   constructor
-  · refine fun h x₁ x₂ => ?_
+  · intro h x₁ x₂
     by_cases hx : x₁ = x₂
     · rw [hx]
     · rw [eHolderNorm, ← ENNReal.bot_eq_zero, iInf₂_eq_bot] at h

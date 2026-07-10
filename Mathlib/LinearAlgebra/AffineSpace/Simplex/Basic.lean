@@ -509,6 +509,10 @@ lemma point_mem_closedInterior [ZeroLEOneClass k] {n : ℕ} (s : Simplex k P n) 
   intro j
   obtain rfl | hj := eq_or_ne j i <;> simp_all
 
+lemma nonempty_closedInterior [ZeroLEOneClass k] {n : ℕ} (s : Simplex k P n) :
+    s.closedInterior.Nonempty :=
+  ⟨s.points 0, s.point_mem_closedInterior 0⟩
+
 lemma interior_ssubset_closedInterior [ZeroLEOneClass k] {n : ℕ} (s : Simplex k P n) :
     s.interior ⊂ s.closedInterior := by
   rw [Set.ssubset_iff_exists]
@@ -571,7 +575,7 @@ lemma affineCombination_mem_setInterior_face_iff_mem (I : Set k) {n : ℕ} (s : 
     convert! Finset.univ.affineCombination_map (fs.orderEmbOfFin h).toEmbedding w s.points using 1
     simp only [map_orderEmbOfFin_univ, Finset.affineCombination_indicator_subset _ _ fs.subset_univ]
     congr
-    grind [Set.indicator_eq_self, support_subset_iff]
+    grind [Set.indicator_eq_self, mem_support]
 
 lemma affineCombination_mem_interior_face_iff_mem_Ioo {n : ℕ} (s : Simplex k P n)
     {fs : Finset (Fin (n + 1))} {m : ℕ} (h : #fs = m + 1) {w : Fin (n + 1) → k}
@@ -659,7 +663,7 @@ theorem closedInterior_face_ssubset_closedInterior [Nontrivial k] [ZeroLEOneClas
   apply (Set.ssubset_iff_of_subset (s.closedInterior_face_subset_closedInterior h)).mpr
   exact ⟨s.points a, s.point_mem_closedInterior a, fun hs ↦ ha (by simpa using hs)⟩
 
-theorem disjoint_interior_closedInterior_face [Nontrivial k] [ZeroLEOneClass k] {n : ℕ}
+theorem disjoint_interior_closedInterior_face {n : ℕ}
     (s : Simplex k P n) {fs : Finset (Fin (n + 1))} (hfs : fs ≠ .univ) {m : ℕ} (h : #fs = m + 1) :
     Disjoint s.interior (s.face h).closedInterior := by
   refine Set.disjoint_left.mpr fun p hleft hright ↦ ?_
@@ -693,8 +697,8 @@ theorem closedInterior_faceOpposite_ssubset_closedInterior [Nontrivial k] [ZeroL
     (s.faceOpposite i).closedInterior ⊂ s.closedInterior :=
   s.closedInterior_face_ssubset_closedInterior (by simp) _
 
-theorem disjoint_interior_closedInterior_faceOpposite [Nontrivial k] [ZeroLEOneClass k] {n : ℕ}
-    [NeZero n] (s : Simplex k P n) (i : Fin (n + 1)) :
+theorem disjoint_interior_closedInterior_faceOpposite {n : ℕ} [NeZero n]
+    (s : Simplex k P n) (i : Fin (n + 1)) :
     Disjoint s.interior (s.faceOpposite i).closedInterior :=
   s.disjoint_interior_closedInterior_face (by simp) _
 
@@ -795,19 +799,11 @@ theorem closedInterior_eq_interior_union_surface [IsOrderedAddMonoid k] [ZeroLEO
   · refine Set.union_subset s.interior_subset_closedInterior (Set.iUnion_subset fun i ↦ ?_)
     exact s.closedInterior_faceOpposite_subset_closedInterior i
 
-@[deprecated "use `closedInterior_eq_interior_union_surface` instead" (since := "2026-06-08")]
-alias closedInterior_eq_interior_union := closedInterior_eq_interior_union_surface
-
-/-- The closed interior with the open interior removed gives the surface. -/
-theorem closedInterior_sdiff_interior_eq_surface [Nontrivial k] [IsOrderedAddMonoid k]
-    [ZeroLEOneClass k] {n : ℕ} [NeZero n] (s : Simplex k P n) :
-    s.closedInterior \ s.interior = s.surface := by
-  simpa [s.surface_eq_iUnion_closedInterior_faceOpposite,
-    closedInterior_eq_interior_union_surface] using
-      fun i ↦ (s.disjoint_interior_closedInterior_faceOpposite i).symm
-
-@[deprecated "use `closedInterior_sdiff_interior_eq_surface` instead" (since := "2026-06-03")]
-alias closedInterior_sdiff_interior := closedInterior_sdiff_interior_eq_surface
+theorem closedInterior_sdiff_interior [IsOrderedAddMonoid k] [ZeroLEOneClass k]
+    {n : ℕ} [NeZero n] (s : Simplex k P n) :
+    s.closedInterior \ s.interior = ⋃ i : Fin (n + 1), (s.faceOpposite i).closedInterior := by
+  simpa [closedInterior_eq_interior_union] using
+    fun i ↦ (s.disjoint_interior_closedInterior_faceOpposite i).symm
 
 end LinearOrder
 
