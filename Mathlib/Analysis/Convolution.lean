@@ -713,6 +713,16 @@ theorem ConvolutionExists.of_memLp_memLp
     hfp.aestronglyMeasurable hgq.aestronglyMeasurable x)
   finiteness
 
+/-- If `p` and `q` are Hölder conjugates, then the convolution of `f` and `g` is bounded everywhere
+by `eLpNorm f p μ * eLpNorm g q μ`. -/
+theorem enorm_convolution_le_eLpNorm_mul_eLpNorm
+    [MeasurableAdd₂ G] [SFinite μ] {p q : ENNReal} (hpq : p.HolderConjugate q)
+    (hL : ∀ (x y : G), ‖L (f x) (g y)‖ ≤ ‖f x‖ * ‖g y‖)
+    (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ) (x₀ : G) :
+    ‖(f ⋆[L, μ] g) x₀‖ₑ ≤ eLpNorm f p μ * eLpNorm g q μ :=
+  (enorm_integral_le_lintegral_enorm _).trans <|
+    lintegral_enorm_convolution_integrand_le_eLpNorm_mul_eLpNorm L hpq hL hf hg x₀
+
 end Measurable
 
 variable [TopologicalSpace G]
