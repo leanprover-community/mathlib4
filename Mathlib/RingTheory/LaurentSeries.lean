@@ -1100,6 +1100,7 @@ theorem tendsto_valuation (a : (idealX K).adicCompletion K⟮X⟯) :
     rw [← valuedAdicCompletion_eq_valuation']
     exact (Valuation.restrict_inj _).mp <| Valuation.map_eq_of_sub_lt Valued.v.restrict val_y
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The extension of the `X`-adic valuation from `K⟮X⟯` up to its abstract completion coincides,
 modulo the isomorphism with `K⸨X⸩`, with the `X`-adic valuation on `K⸨X⸩`. -/
 theorem valuation_compare (f : K⸨X⸩) :
