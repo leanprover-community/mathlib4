@@ -9,6 +9,7 @@ public import Mathlib.Algebra.BigOperators.Finsupp.Basic
 public import Mathlib.Algebra.GroupWithZero.Action.Pi
 public import Mathlib.Algebra.GroupWithZero.Action.TransferInstance
 public import Mathlib.Algebra.Order.Antidiag.Prod
+public import Mathlib.Order.Filter.TendstoCofinite
 
 /-! # Total Monoid Algebras
 
