@@ -222,41 +222,37 @@ theorem DirichletCharacter.eulerProduct_log_eq_LSeries (hs : 1 < s.re) :
   have hpow_le (p : Primes) : ‖χ p * (p : ℂ) ^ (-s)‖ < 1 := by
     grw [norm_mul, norm_le_one, norm_natCast_cpow_of_pos (mod_cast p.prop.pos), neg_re, one_mul]
     apply rpow_lt_one_of_one_lt_of_neg (mod_cast p.prop.one_lt) (by linarith)
-  have htaylor (p : Primes) := hasSum_taylorSeries_neg_log' (hpow_le p)
+  have htaylor (p : Primes) := hasSum_taylorSeries_succ_neg_log (hpow_le p)
   rw [tsum_congr (fun p ↦ (htaylor p).tsum_eq.symm), LSeries_def₀ (by simp)]
   calc
-    _ = ∑' (p : Primes × ℕ), (χ p.1 * (p.1 : ℂ) ^ (-s)) ^ (p.2 + 1) / (↑p.2 + 1) := by
-      symm
-      refine Summable.tsum_prod' (.of_norm ?_) (fun p ↦ (htaylor p).summable)
-      have : Summable fun p : Primes ↦ ‖χ p * (p : ℂ) ^ (-s)‖ :=
-        ((summable_dirichletSummand χ hs).comp_injective Subtype.coe_injective).congr (by
-          simp [dirichletSummandHom])
-      replace : Summable fun p : Primes × ℕ ↦ ‖χ p.1 * (p.1 : ℂ) ^ (-s)‖ ^ (p.2 + 1) := by
-        rw [summable_prod_of_nonneg fun _ ↦ by positivity]
-        refine ⟨fun p ↦ ?_, (this.mul_left 2).of_nonneg_of_le
-            (fun _ ↦ tsum_nonneg fun _ ↦ by positivity) fun p ↦ ?_⟩
-        · simp_rw [pow_succ]
-          exact (summable_geometric_of_lt_one (norm_nonneg _) (hpow_le p)).mul_right _
-        · simp_rw [pow_succ, tsum_mul_right, tsum_geometric_of_lt_one (norm_nonneg _) (hpow_le p)]
-          have : ‖χ p * (p : ℂ) ^ (-s)‖ ≤ 1/2 := by
-            grw [norm_mul, norm_le_one, norm_prime_cpow_le_one_half p hs]; norm_num
-          rw [inv_mul_le_iff₀ (by linarith)]
-          nlinarith [norm_nonneg (χ p * (p : ℂ) ^ (-s))]
-      refine this.of_nonneg_of_le (fun _ ↦ norm_nonneg _) (fun p ↦ ?_)
-      grw [norm_div, norm_pow, (by norm_cast; linarith : ‖(p.2:ℂ) + 1‖ ≥ 1)]
-      field_simp; rfl
-    _ = ∑' n : {n : ℕ // IsPrimePow n}, χ n * Λ n / Real.log n / ((n : ℂ) ^ s) := by
-      rw [← Equiv.tsum_eq prodNatEquiv (fun n ↦ χ n * Λ n / Real.log n / ((n : ℂ) ^ s))]
-      apply tsum_congr; rintro ⟨p, n⟩
-      have : (Real.log (p : ℝ) : ℂ) ≠ 0 := mod_cast p.prop.log_ne_zero
-      rw [coe_prodNatEquiv_apply, vonMangoldt_apply_pow n.succ_ne_zero,
-        vonMangoldt_apply_prime p.prop, cpow_def_of_ne_zero, cpow_def_of_ne_zero, mul_pow,
-        ← exp_nat_mul, ← natCast_log, ← natCast_log, cast_pow, cast_pow, Real.log_pow, map_pow]
-      · simp only [cast_add, cast_one, ofReal_mul, ofReal_add, ofReal_natCast, ofReal_one]
-        field_simp
-        simp [← exp_add, mul_assoc]
-      all_goals simp [p.prop.ne_zero]
+    _ = ∑' (p : Primes) (k : ℕ), (χ (p ^ (k+1)) * ((p ^ (k+1) : ℕ) : ℂ) ^ (-s)) *
+          Λ (p ^ (k+1)) / Real.log (p ^ (k+1)) := by
+      congr! 4 with p k
+      simp only [mul_pow, ← cpow_nat_mul, cast_add, cast_one, mul_neg, map_pow, cast_pow,
+        ← natCast_cpow_natCast_mul, ne_eq, Nat.add_eq_zero_iff, one_ne_zero, and_false,
+        not_false_eq_true, vonMangoldt_apply_pow, ArithmeticFunction.vonMangoldt_apply_prime p.2,
+        Real.log_pow, ofReal_mul, ofReal_add, ofReal_natCast, ofReal_one]
+      have : (Real.log p : ℂ) ≠ 0 := by
+        exact_mod_cast p.prop.log_ne_zero
+      field_simp
+    _ = ∑' n : {n : ℕ // IsPrimePow n}, χ n * Λ n / Real.log n * ((n : ℂ) ^ (-s)) := by
+      rw [← tsum_primes_pow_eq (f := fun n ↦ χ n * Λ n / Real.log n * (n : ℂ)^(-s))]
+      · congr! 4
+        simp
+        ring
+      · apply Summable.comp_injective _ Subtype.coe_injective
+          (f := fun n : ℕ ↦ χ n * Λ n / Real.log n * (n : ℂ)^(-s))
+        apply Summable.of_norm_bounded_eventually_nat (g := fun n : ℕ ↦ (n:ℝ) ^ (-s.re))
+        · simp [hs]
+        · filter_upwards [eventually_gt_atTop 1] with n hn
+          simp only [norm_mul, norm_div, norm_real, norm_eq_abs]
+          grw [norm_le_one, ArithmeticFunction.vonMangoldt_le_log]
+          have := Real.log_pos (x := n) (mod_cast hn)
+          field_simp
+          rw [show (n : ℂ) = (n : ℝ) by norm_cast, norm_cpow_eq_rpow_re_of_nonneg] <;> simp
+          grind
     _ = _ := by
+      simp only [cpow_neg]
       suffices (Function.support fun (n : ℕ) ↦ χ n * Λ n / Real.log n / ((n : ℂ) ^ s))
           ⊆ {n | IsPrimePow n} from tsum_subtype_eq_of_support_subset this
       intro n hn
