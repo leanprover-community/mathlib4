@@ -31,7 +31,7 @@ The Riemann integral is the special case `F = ℝ`, `B = (.lsmul ℝ ℝ).flip` 
 
 ## Key definitions
 
-* `Interval hab`: the one-dimensional interval `(a, b]` as a `Box (Fin 1)`, given a proof of
+* `interval hab`: the one-dimensional interval `(a, b]` as a `Box (Fin 1)`, given a proof of
 `hab : a < b`.
 * `BoxAdditiveMap.ofDiff g`: the box-additive map on `Box (Fin 1)` defined by
 `J ↦ g J.upper₁ - g J.lower₁`, where `g : ℝ → M` is a function to an additive commutative
@@ -49,8 +49,8 @@ exists, or the junk value of `0` otherwise.
 * `BoxIntegral.riemannIntegral a b f`: the value of `∫ʳ x in a..b, f x` if it exists, or the
 junk value of `0` otherwise.
 
-These notions are named in analogy with `BoxInterval.Integrable`, `BoxInterval.HasIntegral`, and
-`BoxInterval.integral`.
+These notions are named in analogy with `BoxIntegral.Integrable`, `BoxIntegral.HasIntegral`, and
+`BoxIntegral.integral`.
 
 Thanks to ICERM for hosting the workshop "Formalization of Analysis" where most of this work
 was conducted.
@@ -95,21 +95,21 @@ def Box.upper₁ : ℝ := J.upper 0
 lemma Box.lower_lt_upper₁ : J.lower₁ < J.upper₁ := J.lower_lt_upper 0
 
 @[simp]
-lemma Box.le_iff₁ : J ≤ J' ↔ J'.lower₁ ≤ J.lower₁ ∧ J.upper₁ ≤ J'.upper₁ :=
-  by simp [Box.le_iff_bounds, Pi.le_def, lower₁, upper₁]
+lemma Box.le_iff₁ : J ≤ J' ↔ J'.lower₁ ≤ J.lower₁ ∧ J.upper₁ ≤ J'.upper₁ := by
+  simp [Box.le_iff_bounds, Pi.le_def, lower₁, upper₁]
 
 /-- One-dimensional `Ioc` interval as a `Box (Fin 1)` -/
-noncomputable def Interval (hab : a < b) : Box (Fin 1) := ⟨ ![a], ![b], by simp [hab] ⟩
+noncomputable def interval (hab : a < b) : Box (Fin 1) := ⟨![a], ![b], by simp [hab]⟩
 
 @[simp]
-lemma interval_lower (hab : a < b) : (Interval hab).lower₁ = a := rfl
+lemma interval_lower (hab : a < b) : (interval hab).lower₁ = a := rfl
 
 @[simp]
-lemma interval_upper (hab : a < b) : (Interval hab).upper₁ = b := rfl
+lemma interval_upper (hab : a < b) : (interval hab).upper₁ = b := rfl
 
 @[simp]
-lemma interval_Icc (hab : a < b) : Box.Icc (Interval hab) = {x | x 0 ∈ Set.Icc a b} := by
-  ext; simp [Box.Icc_def, Interval, Pi.le_def]
+lemma interval_Icc (hab : a < b) : Box.Icc (interval hab) = {x | x 0 ∈ Set.Icc a b} := by
+  ext; simp [Box.Icc_def, interval, Pi.le_def]
 
 end Interval
 
@@ -177,21 +177,21 @@ variable (a b : ℝ) (B : E →L[ℝ] F →L[ℝ] G) (f : ℝ → E) (g : ℝ �
 its Riemann--Stieltjes sums converge to a limit `L : G`, given a bilinear map `B : E → F → G` and
 endpoints `a`, `b` takes values in `G`. Initially defined under the implicit assumption that
 `a < b`, with junk values otherwise. -/
-def HasStieltjesIntegral_ordered (hab : a < b) : Prop := HasIntegral (Interval hab)
+def HasStieltjesIntegralOrdered (hab : a < b) : Prop := HasIntegral (interval hab)
     IntegrationParams.Riemann (f <| · 0) (BoxAdditiveMap.ofDiff (B.flip <| g ·)) L
 
-/-- Extension of `HasStieltjesIntegral_ordered` to cover the cases `a = b` and `a > b`. -/
+/-- Extension of `HasStieltjesIntegralOrdered` to cover the cases `a = b` and `a > b`. -/
 def HasStieltjesIntegral : Prop :=
   if heq : a = b then L = 0 else
-    if hab : a < b then HasStieltjesIntegral_ordered a b B f g L hab else
-      HasStieltjesIntegral_ordered b a B f g (-L) (by order)
+    if hab : a < b then HasStieltjesIntegralOrdered a b B f g L hab else
+      HasStieltjesIntegralOrdered b a B f g (-L) (by order)
 
-/-- `StieltjesIntegrable_ordered a b B f g hab` asserts that the ordered Riemann–Stieltjes integral
+/-- `StieltjesIntegrableOrdered a b B f g hab` asserts that the ordered Riemann–Stieltjes integral
 of `f` against `g` paired by `B` from `a` to `b` exists, i.e. some `L` satisfies
-`HasStieltjesIntegral_ordered a b B f g L hab`.
+`HasStieltjesIntegralOrdered a b B f g L hab`.
 -/
-def StieltjesIntegrable_ordered (hab : a < b) : Prop :=
-  ∃ L, HasStieltjesIntegral_ordered a b B f g L hab
+def StieltjesIntegrableOrdered (hab : a < b) : Prop :=
+  ∃ L, HasStieltjesIntegralOrdered a b B f g L hab
 
 /-- `StieltjesIntegrable a b B f g` asserts that the Riemann–Stieltjes integral of `f` against `g`
 paired by `B` from `a` to `b` exists, i.e. some `L` satisfies `HasStieltjesIntegral a b B f g L`.
@@ -261,29 +261,29 @@ lemma HasStieltjesIntegral.of_eq_iff_zero : HasStieltjesIntegral a a B f g L ↔
   simp [HasStieltjesIntegral]
 
 lemma HasStieltjesIntegral.of_lt (hab : a < b) :
-    HasStieltjesIntegral a b B f g L ↔ HasStieltjesIntegral_ordered a b B f g L hab := by
+    HasStieltjesIntegral a b B f g L ↔ HasStieltjesIntegralOrdered a b B f g L hab := by
   simp [HasStieltjesIntegral, hab, hab.ne]
 
 @[simp]
 lemma HasStieltjesIntegral.of_gt (hba : b < a) :
-    HasStieltjesIntegral a b B f g L ↔ HasStieltjesIntegral_ordered b a B f g (-L) hba := by
-  simp [HasStieltjesIntegral, Std.not_gt_of_lt hba, hba.ne.symm]
+    HasStieltjesIntegral a b B f g L ↔ HasStieltjesIntegralOrdered b a B f g (-L) hba := by
+  simp [HasStieltjesIntegral, hba.asymm, hba.ne.symm]
 
 lemma HasStieltjesIntegral.symm_iff :
     HasStieltjesIntegral a b B f g L ↔ HasStieltjesIntegral b a B f g (-L) := by
   unfold HasStieltjesIntegral
   rcases lt_trichotomy a b with h | rfl | h
-  · simp [h, Std.not_gt_of_lt h, h.ne, h.ne.symm]
+  · simp [h, h.asymm, h.ne, h.ne.symm]
   · simp
-  simp [h, Std.not_gt_of_lt h, h.ne, h.ne.symm]
+  simp [h, h.asymm, h.ne, h.ne.symm]
 
 @[symm]
 lemma HasStieltjesIntegral.symm (h : HasStieltjesIntegral a b B f g L) :
     HasStieltjesIntegral b a B f g (-L) := by rwa [← symm_iff]
 
 theorem stieltjesIntegrable_ordered_iff_integrable (hab : a < b) :
-    StieltjesIntegrable_ordered a b B f g hab ↔
-    Integrable (Interval hab) IntegrationParams.Riemann (f <| · 0) (.ofDiff (B.flip <| g ·)) :=
+    StieltjesIntegrableOrdered a b B f g hab ↔
+    Integrable (interval hab) IntegrationParams.Riemann (f <| · 0) (.ofDiff (B.flip <| g ·)) :=
   ⟨fun ⟨_, hL⟩ ↦ HasIntegral.integrable hL, fun h ↦ ⟨_, h.hasIntegral⟩⟩
 
 @[simp]
@@ -291,8 +291,8 @@ lemma StieltjesIntegrable.of_eq : StieltjesIntegrable a a B f g := by
   simp [StieltjesIntegrable, HasStieltjesIntegral]
 
 lemma StieltjesIntegrable.of_lt (hab : a < b) :
-    StieltjesIntegrable a b B f g ↔ StieltjesIntegrable_ordered a b B f g hab := by
-  simp [StieltjesIntegrable, StieltjesIntegrable_ordered, HasStieltjesIntegral.of_lt, hab]
+    StieltjesIntegrable a b B f g ↔ StieltjesIntegrableOrdered a b B f g hab := by
+  simp [StieltjesIntegrable, StieltjesIntegrableOrdered, HasStieltjesIntegral.of_lt, hab]
 
 lemma StieltjesIntegrable.symm_iff :
     StieltjesIntegrable a b B f g ↔ StieltjesIntegrable b a B f g := by
@@ -304,7 +304,7 @@ lemma StieltjesIntegrable.symm (h : StieltjesIntegrable a b B f g) :
     StieltjesIntegrable b a B f g := by rwa [← symm_iff]
 
 lemma StieltjesIntegrable.of_gt (hba : b < a) :
-    StieltjesIntegrable a b B f g ↔ StieltjesIntegrable_ordered b a B f g hba := by
+    StieltjesIntegrable a b B f g ↔ StieltjesIntegrableOrdered b a B f g hba := by
   rw [symm_iff]; exact of_lt hba
 
 lemma StieltjesIntegrable.iff_min_max :
@@ -360,9 +360,9 @@ theorem stieltjesIntegral.integral_symm :
 
 theorem hasStieltjesIntegral'_congr (hab : a < b)
     (hf : Set.EqOn f₁ f₂ (.Icc a b)) (hg : Set.EqOn g₁ g₂ (.Icc a b)) :
-    HasStieltjesIntegral_ordered a b B f₁ g₁ L hab ↔
-    HasStieltjesIntegral_ordered a b B f₂ g₂ L hab := by
-  unfold HasStieltjesIntegral_ordered
+    HasStieltjesIntegralOrdered a b B f₁ g₁ L hab ↔
+    HasStieltjesIntegralOrdered a b B f₂ g₂ L hab := by
+  unfold HasStieltjesIntegralOrdered
   apply BoxIntegral.hasIntegral_congr
   · intro x hx; exact hf (by simpa [hab] using hx)
   intro J hJ
@@ -405,8 +405,8 @@ section Riemann
 variable {a b : ℝ} {f f₁ f₂ : ℝ → E} {L L₁ L₂ : E}
 
 theorem HasRiemannIntegral.iff_hasIntegral (hab : a < b) : HasRiemannIntegral a b f L ↔
-    HasIntegral (Interval hab) IntegrationParams.Riemann (f <| · 0) BoxAdditiveMap.volume L := by
-  simp [HasRiemannIntegral, hab, HasStieltjesIntegral.of_lt, HasStieltjesIntegral_ordered,
+    HasIntegral (interval hab) IntegrationParams.Riemann (f <| · 0) BoxAdditiveMap.volume L := by
+  simp [HasRiemannIntegral, hab, HasStieltjesIntegral.of_lt, HasStieltjesIntegralOrdered,
     BoxAdditiveMap.ofDiff_lsmul_eq_volume]
 
 lemma RiemannIntegrable_def : RiemannIntegrable a b f ↔ ∃ L, HasRiemannIntegral a b f L := Iff.rfl
@@ -433,7 +433,7 @@ lemma RiemannIntegrable.of_eq : RiemannIntegrable a a f := StieltjesIntegrable.o
 theorem riemannIntegral.integral_same : ∫ʳ x in a..a, f x = 0 := stieltjesIntegral.integral_same
 
 theorem RiemannIntegrable.iff_integrable (hab : a < b) : RiemannIntegrable a b f ↔
-    Integrable (Interval hab) IntegrationParams.Riemann (f <| · 0) BoxAdditiveMap.volume := by
+    Integrable (interval hab) IntegrationParams.Riemann (f <| · 0) BoxAdditiveMap.volume := by
   simp [RiemannIntegrable_def, Integrable, HasRiemannIntegral.iff_hasIntegral, hab]
 
 theorem HasRiemannIntegral.unique
