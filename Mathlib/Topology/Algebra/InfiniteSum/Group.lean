@@ -417,9 +417,10 @@ theorem tprod_const [T2Space G] (a : G) : ∏' _ : β, a = a ^ (Nat.card β) := 
 end IsTopologicalGroup
 
 section CommGroupWithZero
+
 variable {K : Type*} [CommGroupWithZero K] [TopologicalSpace K] [SeparatelyContinuousMul K]
-  {f g : α → K}
-  {L : SummationFilter α}
+  {f g : α → K} {L : SummationFilter α}
+
 /-!
 ## Groups with a zero
 
