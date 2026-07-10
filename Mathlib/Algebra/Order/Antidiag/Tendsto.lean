@@ -49,9 +49,13 @@ namespace Finset.HasMulAntidiagonal
 variable {N : Type*} [Mul N] [HasMulAntidiagonal N]
 
 /-- When a magma satisfies the `HasMulAntidiagonal` property, its multiplication map has
-finite fibers. -/
+finite fibers.
+
+For the reverse implication, see `Filter.TendstoCofinite.hasMulAntidiagonal`. -/
 @[to_additive /-- When an additive magma satisfies the `HasMulAntidiagonal` property,
-its addition map has finite fibers. -/]
+its addition map has finite fibers.
+
+For the reverse implication, see `Filter.TendstoCofinite.hasAntidiagonal`-/]
 instance tendstoCofinite_mul : TendstoCofinite fun (p : N × N) ↦ p.1 * p.2 := by
   simp [tendstoCofinite_iff_finite_preimage_singleton, ← coe_mulAntidiagonal_eq_preimage_singleton]
 
