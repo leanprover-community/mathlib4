@@ -40,16 +40,16 @@ variable {M : Type*} [Monoid M]
 @[to_additive (attr := ext)]
 theorem Semigroup.ext {M : Type u} ⦃m₁ m₂ : Semigroup M⦄ (h_mul : m₁.mul = m₂.mul) : m₁ = m₂ := by
   have : m₁.ppow = m₂.ppow := by
-    ext n hn x
-    induction n using Nat.strongRecOn with
+    ext n x
+    rw [@ppow_eq_pow _ m₁, @ppow_eq_pow _ m₂]
+    induction n using PNat.strongInductionOn with
     | ind n ih =>
-      match n with
-      | 1 => rw [m₁.ppow_one, m₂.ppow_one]
-      | n + 2 =>
-        rw [m₁.ppow_succ, m₂.ppow_succ, ih _ (n + 1).lt_succ_self n.succ_pos]
+      induction n
+      · rw [m₁.ppow_one, m₂.ppow_one]
+      · rw [m₁.ppow_succ, m₂.ppow_succ, ih _ (Nat.lt_succ_self _)]
         exact congr_fun (congr_fun h_mul _) _
-  rcases m₁ with @⟨@⟨_⟩, _⟩
-  rcases m₂ with @⟨@⟨_⟩, _⟩
+  rcases m₁ with @⟨@⟨_⟩, @⟨_⟩⟩
+  rcases m₂ with @⟨@⟨_⟩, @⟨_⟩⟩
   congr
 
 @[to_additive]
