@@ -34,8 +34,7 @@ strictly monotone (`MulLeftStrictMono`).
 instance from `IsLeftOrderable.exists_linearOrder_mulLeftStrictMono`.
 
 The class is stated with `MulLeftStrictMono` rather than `MulLeftMono`: over a linearly ordered
-group the two are equivalent, but only the strict form is a typeclass assumption of the
-lexicographic order instances on `Prod.Lex` and `Pi.Lex` used below.
+group the two are equivalent, but the strict version is the standard mathematical notation.
 -/
 
 @[expose] public section
