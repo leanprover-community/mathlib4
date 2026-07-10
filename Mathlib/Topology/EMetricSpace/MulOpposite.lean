@@ -12,7 +12,7 @@ public import Mathlib.Topology.EMetricSpace.Defs
 # Extended metric spaces on multiplicative opposites
 
 This file proves that if `α` is some (weak) pseudo extended metric space, so it `αᵐᵒᵖ`.
-We do this in this file instead of Mathlib.Topology.EMetricSpace.MulOpposite to avoid imports.
+We do this in this file instead of `Mathlib/Topology/EMetricSpace/Defs.lean` to avoid imports.
 -/
 
 public section
