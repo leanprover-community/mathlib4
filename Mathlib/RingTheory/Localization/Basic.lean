@@ -201,8 +201,7 @@ include hf
 /-- `AlgHom` version of `IsLocalization.lift`. -/
 noncomputable def liftAlgHom : S →ₐ[A] P where
   __ := lift hf
-  commutes' r := show lift hf (algebraMap A S r) = _ by
-    simp [IsScalarTower.algebraMap_apply A R S]
+  commutes' r := by simp [IsScalarTower.algebraMap_apply A R S]
 
 theorem liftAlgHom_toRingHom : (liftAlgHom hf : S →ₐ[A] P).toRingHom = lift hf := rfl
 
@@ -687,8 +686,8 @@ theorem IsLocalization.algHom_ext {R A L B : Type*}
 
 section extend
 
-variable {R A B : Type*} [CommRing R] [CommRing A] [CommRing B]
-  (S : Type*) [CommRing S] [Algebra R S] (M : Submonoid R) [IsLocalization M S]
+variable {R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B]
+  (S : Type*) [CommSemiring S] [Algebra R S] (M : Submonoid R) [IsLocalization M S]
   [Algebra R A] [Algebra S A] [IsScalarTower R S A]
   [Algebra R B] [Algebra S B] [IsScalarTower R S B]
 
