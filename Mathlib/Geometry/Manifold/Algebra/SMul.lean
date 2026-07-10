@@ -216,8 +216,12 @@ end ContMDiffSMul
 section ContMDiffConstSMul
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H]
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {I : ModelWithCorners 𝕜 E H}
+  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  {I : ModelWithCorners 𝕜 E H}
+  {H' : Type*} [TopologicalSpace H'] {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
+  {I' : ModelWithCorners 𝕜 E' H'}
   {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
+  {N : Type*} [TopologicalSpace N] [ChartedSpace H' N]
   {Γ : Type*} [SMul Γ M]
 
 @[to_additive]
@@ -248,30 +252,29 @@ lemma ContMDiffConstSMul.continuousConstSMul (n : ℕ∞ω) [ContMDiffConstSMul 
 
 section
 
-variable [SMul G M] {n : ℕ∞ω} [ContMDiffConstSMul I n Γ M]
-  {f : N → G} {g : N → M} {s : Set N} {x : N}
+variable {n : ℕ∞ω} [ContMDiffConstSMul I n Γ M] {f : N → M} {s : Set N} {x : N}
+
+/- Let `M` be a charted space being acted on by `Γ : Type*`. Given another charted space `N`, a
+differentiable map `f : N → M`, and `γ : Γ` , then the map `γ • f : N → M` is also differentiable -/
+@[to_additive]
+theorem ContMDiffWithinAt.const_smul (hf : CMDiffAt[s] n f x) (γ : Γ) :
+    CMDiffAt[s] n (γ • f) x :=
+  (contMDiff_const_smul γ).contMDiffAt.comp_contMDiffWithinAt x hf
 
 @[to_additive]
-theorem ContMDiffConstWithinAt.smul (hf : CMDiffAt[s] n f x) (hg : CMDiffAt[s] n g x) :
-    CMDiffAt[s] n (f • g) x :=
-  (contMDiff_smul (I := I) (I' := I')).contMDiffAt.comp_contMDiffWithinAt x (hf.prodMk hg)
+nonrec theorem ContMDiffAt.const_smul (hf : CMDiffAt n f x) (γ : Γ) :
+    CMDiffAt n (γ • f) x :=
+  hf.const_smul γ
 
 @[to_additive]
-nonrec theorem ContMDiffAt.smul (hf : CMDiffAt n f x) (hg : CMDiffAt n g x) :
-    CMDiffAt n (f • g) x :=
-  hf.smul hg
-
-@[to_additive]
-theorem ContMDiffOn.smul (hf : CMDiff[s] n f) (hg : CMDiff[s] n g) :
-    CMDiff[s] n (f • g) := fun x hx ↦ (hf x hx).smul (hg x hx)
+theorem ContMDiffOn.const_smul (hf : CMDiff[s] n f) (γ : Γ) :
+    CMDiff[s] n (γ • f) := fun x hx ↦ (hf x hx).const_smul γ
 
 @[to_additive]
 theorem ContMDiff.smul (hf : CMDiff n f) (hg : CMDiff n g) :
     CMDiff n (f • g) := fun x ↦ (hf x).smul (hg x)
 
 end
-
-
 
 
 end ContMDiffConstSMul
