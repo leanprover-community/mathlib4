@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Analysis.BoxIntegral.Basic
 
-/-! # Riemann–Stieltjes integral
+/-! # Riemann–Stieltjes and Riemann integrals
 
 In this file we give some API for intervals (using the type `BoxIntegral.Box (Fin 1)`), and
 use this to define the (one-dimensional) Riemann–Stieltjes integral `∫ˢ x in a..b, f x ∂[B; g]`
@@ -27,7 +27,8 @@ Stieltjes integration that appear in practice:
 
 The `.` here can be removed if `ContinuousLinearMap` is open.
 
-The Riemann integral is the special case `F = ℝ`, `B = (.lsmul ℝ ℝ).flip` and `g = id`.
+The Riemann integral is the special case `F = ℝ`, `B = (.lsmul ℝ ℝ).flip` and `g = id`, and
+is denoted `∫ʳ x in a..b, f x`.
 
 ## Key definitions
 
@@ -67,7 +68,7 @@ Lebesgue--Stieltjes) type integrals.
 
 ## Tags
 
-Stieltjes integral, Riemann–-Stieltjes, Riemann integral
+Stieltjes integral, Riemann–Stieltjes, Riemann integral
 -/
 
 @[expose] public section
@@ -127,7 +128,7 @@ variable {M : Type*} [AddCommGroup M]
 `Box (Fin 1)` defined by `J ↦ g J.upper₁ - g J.lower₁`. -/
 def ofDiffAux (g : ℝ → M) : (Fin 1) →ᵇᵃ M :=
   ofMapSplitAdd (fun J : Box (Fin 1) ↦ g J.upper₁ - g J.lower₁) ⊤
-    (fun I _ i x hx ↦ by
+    (fun _ _ i x hx ↦ by
       fin_cases i
       rw [splitLower_def hx, splitUpper_def hx]
       simp [Option.elim', upper₁, lower₁])
@@ -156,9 +157,7 @@ equals the Lebesgue volume box-additive map on `Box (Fin 1)`. -/
 lemma ofDiff_lsmul_eq_volume {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] :
     ofDiff (fun x : ℝ ↦ (ContinuousLinearMap.lsmul ℝ ℝ : ℝ →L[ℝ] E →L[ℝ] E) x) =
       (BoxAdditiveMap.volume : (Fin 1) →ᵇᵃ E →L[ℝ] E) := by
-  ext
-  simp [volume_apply, Box.upper₁, Box.lower₁]
-  module
+  ext; simp [volume_apply, Box.upper₁, Box.lower₁]; module
 
 end BoxAdditiveMap
 
