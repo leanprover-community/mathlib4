@@ -84,25 +84,47 @@ with respect to `a b : R` if `a|A|⁺ + b|A|⁻ = b|A|⁺ + a|A|⁻`. -/
 def DetpBalanced (a b : R) : Prop :=
   a * A.detp 1 + b * A.detp (-1) = b * A.detp 1 + a * A.detp (-1)
 
-variable {A} in
+lemma DetpBalanced.refl (a : R) : A.DetpBalanced a a := by rw [DetpBalanced, add_comm]
+
+variable {A}
+
 lemma DetpBalanced.of_eq {a b : R} (eq : A.detp 1 = A.detp (-1)) : A.DetpBalanced a b := by
   rw [DetpBalanced, eq, add_comm]
 
+lemma DetpBalanced.symm {a b : R} : A.DetpBalanced a b → A.DetpBalanced b a := Eq.symm
+
+lemma detpBalanced_comm {a b : R} : A.DetpBalanced a b ↔ A.DetpBalanced b a := Eq.comm
+
+lemma DetpBalanced.mul_add_mul_eq {a b : R} (h : A.DetpBalanced a b) (s t : ℤˣ) :
+    a * A.detp s + b * A.detp t = b * A.detp s + a * A.detp t := by
+  obtain rfl | rfl := Int.units_eq_one_or s <;> obtain rfl | rfl := Int.units_eq_one_or t
+  · rw [add_comm]
+  · rw [h]
+  · rw [add_comm, ← h, add_comm]
+  · rw [add_comm]
+
+variable (A) in
 /-- A square matrix `A` over a commutative semiring `R` is called nonsingular if it is
 only determinant balanced with respect to equal elements. -/
 def Nonsingular : Prop := ∀ a b : R, A.DetpBalanced a b → a = b
 
-variable {A}
+@[simp] lemma nonsingular_one : (1 : Matrix n n R).Nonsingular :=
+  fun a b h ↦ by simpa [DetpBalanced] using h
 
-lemma nonsingular_transpose_iff : Aᵀ.Nonsingular ↔ A.Nonsingular := by
+variable (A) in
+@[simp] lemma Nonsingular.of_isEmpty [IsEmpty n] : A.Nonsingular := by
+  simp [Nonsingular, DetpBalanced]
+
+@[simp] lemma nonsingular_transpose_iff : Aᵀ.Nonsingular ↔ A.Nonsingular := by
   simp_rw [Nonsingular, DetpBalanced, detp_transpose]
 
 lemma detp_eq_of_row_eq {p q : n} (hpq : p ≠ q) (hrow : A.row p = A.row q)
     (s : ℤˣ := 1) (t : ℤˣ := -1) : A.detp s = A.detp t := by
   have : A.detp 1 = A.detp (-1) := sum_equiv (.mulRight <| swap p q) (by simp [hpq])
     fun _ _ ↦ prod_equiv (swap p q) (by simp) (by aesop (add simp row))
-  obtain rfl | rfl := Int.units_eq_one_or s <;> obtain rfl | rfl := Int.units_eq_one_or t <;>
-    first | rfl | rw [this]
+  obtain rfl | rfl := Int.units_eq_one_or s <;>
+  obtain rfl | rfl := Int.units_eq_one_or t <;>
+  first | rfl | rw [this]
 
 lemma detp_eq_of_col_eq {p q : n} (hpq : p ≠ q) (hcol : A.col p = A.col q)
     (s : ℤˣ := 1) (t : ℤˣ := -1) : A.detp s = A.detp t := by

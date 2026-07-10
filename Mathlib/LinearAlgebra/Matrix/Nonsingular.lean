@@ -104,7 +104,7 @@ public theorem linearIndependent_col_iff [IsCancelAdd R] :
   ⟨.of_linearIndependent_col, (·.linearIndependent_col)⟩
 
 omit [DecidableEq n] [Fintype n] in
-theorem linearIndependent_col_iff_row [Finite n] [IsCancelAdd R] :
+public theorem linearIndependent_col_iff_row [Finite n] [IsCancelAdd R] :
     LinearIndependent R A.col ↔ LinearIndependent R A.row := by
   have := Fintype.ofFinite
   classical rw [linearIndependent_col_iff, ← nonsingular_transpose_iff, ← linearIndependent_col_iff]
