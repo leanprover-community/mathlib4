@@ -306,7 +306,7 @@ def IsFredholm.fredholmPackage {u : E →L[𝕜] F}
     finite_X₀ := .of_fg <| u_fred.finite_coker.fg_of_isCompl h_codom.isCompl  }
   equiv :=
     letI Φ : dom₁ ≃L[𝕜] E ⧸ u.ker := u.ker.quotientEquivOfIsTopCompl dom₁ h_dom |>.symm
-    letI Ψ : (E ⧸ u.ker) ≃L[𝕜] u.range := .quotKerEquivRange u.toLinearMap u_fred.isStrictMap
+    letI Ψ : (E ⧸ u.ker) ≃L[𝕜] u.range := .quotKerEquivRange u_fred.isStrictMap
     Φ.trans Ψ
   eq_equiv := by
     refine LinearMap.ext_on_codisjoint h_dom.isCompl.codisjoint ?_ ?_
