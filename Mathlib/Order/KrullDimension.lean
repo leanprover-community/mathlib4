@@ -705,7 +705,6 @@ lemma krullDim_eq_length_of_finiteDimensionalOrder [FiniteDimensionalOrder α] :
       RelSeries.length_le_length_longestOf _ _) <|
     le_iSup (fun (i : LTSeries _) ↦ (i.length : WithBot (WithTop ℕ))) <| LTSeries.longestOf _
 
-set_option backward.isDefEq.respectTransparency false in
 lemma krullDim_eq_top [InfiniteDimensionalOrder α] :
     krullDim α = ⊤ :=
   le_antisymm le_top <| le_iSup_iff.mpr <| fun m hm ↦ match m, hm with
@@ -715,9 +714,8 @@ lemma krullDim_eq_top [InfiniteDimensionalOrder α] :
   | some ⊤, _ => le_refl _
   | some (some m), hm => by
     refine (not_lt_of_ge (hm (LTSeries.withLength _ (m + 1))) ?_).elim
-    rw [WithBot.some_eq_coe, ← WithBot.coe_natCast, WithBot.coe_lt_coe,
-      WithTop.some_eq_coe, ← WithTop.coe_natCast, WithTop.coe_lt_coe]
-    simp
+    simp [ENat.WithBot.lt_add_one_iff]
+    norm_cast
 
 lemma krullDim_eq_top_iff : krullDim α = ⊤ ↔ InfiniteDimensionalOrder α := by
   refine ⟨fun h ↦ ?_, fun _ ↦ krullDim_eq_top⟩

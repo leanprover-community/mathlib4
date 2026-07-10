@@ -99,7 +99,7 @@ theorem Module.FinitePresentation.exists_fin [fp : Module.FinitePresentation R M
 sequence. -/
 theorem Module.FinitePresentation.exists_fin' [fp : Module.FinitePresentation R M] :
     ∃ (n m : ℕ) (f : (Fin n → R) →ₗ[R] M) (g : (Fin m → R) →ₗ[R] (Fin n → R)),
-    Function.Surjective f ∧ Function.Exact g f := by
+      Function.Surjective f ∧ Function.Exact g f := by
   obtain ⟨n, K, e, h⟩ := exists_fin R M
   obtain ⟨m, g', hg'⟩ := K.fg_iff_exists_fin_linearMap.mp h
   refine ⟨n, m, e.symm ∘ₗ K.mkQ, g', by simpa using K.mkQ_surjective,
@@ -665,10 +665,11 @@ lemma Module.FinitePresentation.linearEquivMapExtendScalars_symm_apply
     (LocalizedModule.mkLinearMap S (M →ₗ[R] N)) f :=
   IsLocalizedModule.linearEquiv_symm_apply S _ _ f
 
+open TensorProduct LinearMap
+
 variable (N) in
-open TensorProduct in
-lemma Module.isBaseChange_map_of_finite_free (S : Type*) [CommRing S] [Algebra R S]
-    [Module.Flat R S] (n : ℕ) : IsBaseChange S (LinearMap.baseChangeHom R S (Fin n → R) N) := by
+lemma Module.isBaseChange_map_of_finite_free (S : Type*) [CommRing S] [Algebra R S] (n : ℕ) :
+    IsBaseChange S (LinearMap.baseChangeHom R S (Fin n → R) N) := by
   let e₁ := TensorProduct.piRight R S S (fun _ : Fin n ↦ R)
   let e₂ := (LinearEquiv.piCongrRight (fun _ ↦ (LinearMap.ringLmapEquivSelf S S _).symm ≪≫ₗ
     (LinearEquiv.congrLeft (S ⊗[R] N) S (AlgebraTensorModule.rid R S S).symm))) ≪≫ₗ
@@ -678,11 +679,9 @@ lemma Module.isBaseChange_map_of_finite_free (S : Type*) [CommRing S] [Algebra R
   refine IsBaseChange.of_equiv ((e₃.baseChange R S) ≪≫ₗ (TensorProduct.piRight R S S _) ≪≫ₗ e₂)
     (fun f ↦ TensorProduct.AlgebraTensorModule.curry_injective (LinearMap.ext fun s ↦ ?_))
   ext i
-  simpa [e₃, e₂, e₁, LinearEquiv.congrLeft, LinearEquiv.baseChange] using
-    (tmul_eq_smul_one_tmul s (f (Pi.single i 1))).symm
+  simpa [e₃, e₂, e₁] using (tmul_eq_smul_one_tmul s (f (Pi.single i 1))).symm
 
 variable (R M N) in
-open TensorProduct LinearMap in
 theorem Module.FinitePresentation.isBaseChange_map (S : Type*) [CommRing S] [Algebra R S]
     [Module.Flat R S] [Module.FinitePresentation R M] :
     IsBaseChange S (LinearMap.baseChangeHom R S M N) := by
@@ -696,7 +695,7 @@ theorem Module.FinitePresentation.isBaseChange_map (S : Type*) [CommRing S] [Alg
   · exact LinearMap.ext fun φ ↦ TensorProduct.AlgebraTensorModule.curry_injective
       (LinearMap.ext fun s ↦ (LinearMap.ext fun m ↦ (by simp)))
   · apply exact_lcomp_of_exact_of_surjective
-    · exact (lTensor_exact S hfg hf)
+    · exact lTensor_exact S hfg hf
     · exact LinearMap.lTensor_surjective S hf
   · apply lcomp_injective_of_surjective
     exact LinearMap.lTensor_surjective S hf
