@@ -41,12 +41,7 @@ key departures from `MonoidAlgebra`:
 3. To ensure the convolution product is well-defined (i.e., the coefficient sum is finite),
   we require the underlying monoid to satisfy the `Finset.HasMulAntidiagonal M` condition.
   Because of this, proofs concerning multiplication rely heavily on the `Finset.sum`
-  rather than `Finsupp` sums.
-
-4. When the underlying domain `M` is a group, the antidiagonal condition is
-  essentially equivalent to the group being finite. In this context, we rely on
-  the more natural `[Finite G]` typeclass, coupled with a noncomputable local instance,
-  to automatically provide the required `HasMulAntidiagonal` property.
+  rather than `Finsupp.sums`.
 
 -/
 
@@ -356,8 +351,8 @@ variable [One M]
 /-- The unit of the multiplication is `single 1 1`,
 i.e. the function that is `1` at `1` and `0` elsewhere. -/
 @[to_additive (dont_translate := R)
-/-- The unit of the multiplication is `single 1 1`,
-i.e. the function that is `1` at `1` and `0` elsewhere. -/]
+/-- The unit of the multiplication is `single 0 1`,
+i.e. the function that is `1` at `0` and `0` elsewhere. -/]
 instance one [DecidableEq M] : One R⟦M⟧ where one := single 1 1
 
 @[to_additive (dont_translate := R) one_def]
