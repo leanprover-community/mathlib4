@@ -115,14 +115,15 @@ lemma DetpBalanced.mul_add_mul_eq (h : A.DetpBalanced a b) (s t : ℤˣ) :
 
 alias ⟨DetpBalanced.of_transpose, DetpBalanced.transpose⟩ := detpBalanced_transpose_iff
 
-@[simp] lemma detpBalanced_submatrix_equiv_iff {e₁ e₂ : m ≃ n} :
-    (A.submatrix e₁ e₂).DetpBalanced a b ↔ A.DetpBalanced a b := by
+lemma DetpBalanced.submatrix_equiv (e₁ e₂ : m ≃ n) (h : A.DetpBalanced a b) :
+    (A.submatrix e₁ e₂).DetpBalanced a b := by
   simp_rw [DetpBalanced, detp_submatrix_equiv_equiv]
-  obtain eq | eq := Int.units_eq_one_or (sign (e₁.symm.trans e₂)) <;> rw [eq]
-  on_goal 2 => rw [add_comm, eq_comm, add_comm]
-  all_goals rfl
+  apply h.mul_add_mul_eq
 
-alias ⟨_, DetpBalanced.submatrix_equiv⟩ := detpBalanced_submatrix_equiv_iff
+@[simp] lemma detpBalanced_submatrix_equiv_iff {e₁ e₂ : m ≃ n} :
+    (A.submatrix e₁ e₂).DetpBalanced a b ↔ A.DetpBalanced a b where
+  mp h := by simpa using h.submatrix_equiv e₁.symm e₂.symm
+  mpr := (·.submatrix_equiv ..)
 
 variable (A) in
 /-- A square matrix `A` over a commutative semiring `R` is called nonsingular if it is
