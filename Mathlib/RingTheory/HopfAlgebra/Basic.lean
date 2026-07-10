@@ -193,13 +193,12 @@ variable {R A : Type*} [CommSemiring R] [Semiring A] [Bialgebra R A]
 
 open Algebra Coalgebra Bialgebra HopfAlgebra TensorProduct WithConv
 open scoped RingTheory.LinearMap
-#check Coalgebra.Repr.arbitrary
-#check Repr.eq
+
 /--
 If `A` is generated as an `R`-algebra by `X`, and `S : A →ₐ[R] Aᵐᵒᵖ` satisfies the two
 antipode identities on `X`, then the underlying linear map gives a Hopf algebra structure on `A`.
 -/
-noncomputable abbrev ofAntipodeOfAdjoin
+abbrev ofAntipodeOfAdjoin
     {R A : Type*} [CommSemiring R] [Semiring A] [Bialgebra R A]
     {X : Set A} (S : A →ₐ[R] Aᵐᵒᵖ)
     (hX : Algebra.adjoin R X = ⊤)
