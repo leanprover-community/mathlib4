@@ -52,74 +52,46 @@ end IsFredholm
 
 section FredholmDecomposition
 
-variable [ContinuousSub E]
-
 variable (𝕜 E) in
 structure FredholmDecomposition where
+  X₀ : Submodule 𝕜 E
   X₁ : Submodule 𝕜 E
-  X₂ : Submodule 𝕜 E
-  topCompl : IsTopCompl X₁ X₂
-  fin_dim : FiniteDimensional 𝕜 X₂
+  isTopCompl : IsTopCompl X₁ X₀
+  fin_dim_X₀ : FiniteDimensional 𝕜 X₀
+
+abbrev FredholmDecomposition.proj (dec : FredholmDecomposition 𝕜 E) :
+    E →L[𝕜] dec.X₁ := dec.X₁.projectionOntoL dec.X₀ dec.isTopCompl
 
 structure FredholmPackage (u : E →L[𝕜] F) where
-  -- dom₀ : Submodule 𝕜 E
-  -- dom₁ : Submodule 𝕜 E
-  -- finite_dom₀ : FiniteDimensional 𝕜 dom₀
-  -- isTopCompl_dom : IsTopCompl dom₀ dom₁
-  -- codom₀ : Submodule 𝕜 F
-  -- codom₁ : Submodule 𝕜 F
-  FD_E : FredholmDecomposition 𝕜 E
-  FD_F : FredholmDecomposition 𝕜 F
-  -- finite_codom₀ : FiniteDimensional 𝕜 codom₀
-  -- isTopCompl_codom : IsTopCompl codom₀ codom₁
-  -- equiv : dom₁ ≃L[𝕜] codom₁
-  equiv : FD_E.X₁ ≃L[𝕜] FD_F.X₁
-  -- eq_equiv' : u = codom₁.subtypeL ∘L equiv ∘L (dom₁.projectionOntoL dom₀ isTopCompl_dom.symm)
-  eq_equiv' : u = FD_F.X₁.subtypeL ∘L equiv ∘L (FD_E.X₁.projectionOntoL FD_E.X₂ FD_E.topCompl)
--- **FAE** J'ai laissé ton `'` mais je ne comprends pas pourquoi tu ne veux pas un `eq_equiv` (je m'en fous en vrai)
-
-abbrev FredholmPackage.domProj {u : E →L[𝕜] F} (pkg : FredholmPackage u) :
-    E →L[𝕜] pkg.FD_E.X₁ := pkg.FD_E.X₁.projectionOntoL pkg.FD_E.X₂ pkg.FD_E.topCompl
-    -- E →L[𝕜] dec.dom₁ := dec.dom₁.projectionOntoL dec.dom₀ dec.isTopCompl_dom.symm
-
--- variable [ContinuousSub F] in
-abbrev FredholmPackage.codomProj {u : E →L[𝕜] F} (pkg : FredholmPackage u) :
-    -- F →L[𝕜] dec.codom₁ := dec.codom₁.projectionOntoL dec.codom₀ dec.isTopCompl_codom.symm
-    F →L[𝕜] pkg.FD_F.X₁ := pkg.FD_F.X₁.projectionOntoL pkg.FD_F.X₂ pkg.FD_F.topCompl
-
-
-lemma FredholmPackage.eq_equiv {u : E →L[𝕜] F} (pkg : FredholmPackage u) :
-    -- u = dec.codom₁.subtypeL ∘L dec.equiv ∘L dec.domProj := dec.eq_equiv'
-    u = pkg.FD_F.X₁.subtypeL ∘L pkg.equiv ∘L pkg.domProj := pkg.eq_equiv'
+  dec_dom : FredholmDecomposition 𝕜 E
+  dec_codom : FredholmDecomposition 𝕜 F
+  equiv : dec_dom.X₁ ≃L[𝕜] dec_codom.X₁
+  eq_equiv : u = dec_codom.X₁.subtypeL ∘L equiv ∘L dec_dom.proj
 
 lemma FredholmPackage.ker_eq {u : E →L[𝕜] F} (pkg : FredholmPackage u) :
-    u.ker = pkg.FD_E.X₂ := by simp [pkg.eq_equiv, ker_comp]
+    u.ker = pkg.dec_dom.X₀ := by simp [pkg.eq_equiv, ker_comp]
 
 lemma FredholmPackage.range_eq {u : E →L[𝕜] F} (pkg : FredholmPackage u) :
-    u.range = pkg.FD_F.X₁ := by
+    u.range = pkg.dec_codom.X₁ := by
   simp [pkg.eq_equiv, range_comp]
 
-variable [ContinuousSub F] in
 def FredholmPackage.quasiInverse {u : E →L[𝕜] F} (pkg : FredholmPackage u) :
     F →L[𝕜] E :=
-  -- dec.dom₁.subtypeL ∘L dec.equiv.symm ∘L dec.codomProj
-  pkg.FD_E.X₁.subtypeL ∘L pkg.equiv.symm ∘L pkg.codomProj
+  pkg.dec_dom.X₁.subtypeL ∘L pkg.equiv.symm ∘L pkg.dec_codom.proj
 
--- variable [ContinuousSub F] in
 lemma FredholmPackage.isQuasiInverse {u : E →L[𝕜] F} (pkg : FredholmPackage u) :
     u.IsQuasiInverse pkg.quasiInverse := by
   nth_rw 1 [pkg.eq_equiv, quasiInverse]
-  -- have hdom : IsQuasiInverse dec.dom₁.subtype dec.domProj :=
-  have hdom : IsQuasiInverse pkg.FD_E.X₁.subtype pkg.domProj :=
-    have := pkg.FD_E.fin_dim
+  have hdom : IsQuasiInverse pkg.dec_dom.X₁.subtype pkg.dec_dom.proj :=
+    have := pkg.dec_dom.fin_dim_X₀
     isQuasiInverse_subtype_projectionOnto _
-  have hcodom : IsQuasiInverse pkg.FD_F.X₁.subtype pkg.codomProj :=
-    have := pkg.FD_F.fin_dim
+  have hcodom : IsQuasiInverse pkg.dec_codom.X₁.subtype pkg.dec_codom.proj :=
+    have := pkg.dec_codom.fin_dim_X₀
     isQuasiInverse_subtype_projectionOnto _
   refine .of_comp_left hcodom.symm <| .of_comp_right hdom ?_
-  simp_rw [domProj, codomProj, toLinearMap_comp, toLinearMap_subtypeL, toLinearMap_projectionOntoL,
-    LinearMap.comp_assoc, projectionOnto_comp_subtype, LinearMap.comp_id,
-    ← LinearMap.comp_assoc, projectionOnto_comp_subtype, LinearMap.id_comp]
+  simp_rw [FredholmDecomposition.proj, toLinearMap_comp, toLinearMap_subtypeL,
+    toLinearMap_projectionOntoL, LinearMap.comp_assoc, projectionOnto_comp_subtype,
+    LinearMap.comp_id, ← LinearMap.comp_assoc, projectionOnto_comp_subtype, LinearMap.id_comp]
   simp [IsQuasiInverse, IsLeftQuasiInverse, IsRightQuasiInverse]
 
 end FredholmDecomposition
@@ -183,55 +155,36 @@ theorem IsFredholm.of_isInvertible_restrict {u : E →L[𝕜] F}
 
 omit [ContinuousSMul 𝕜 E] in
 def IsFredholm.fredholmPackage {u : E →L[𝕜] F}
-    (u_fred : IsFredholm u) {dom₁ : Submodule 𝕜 E} {codom₂ : Submodule 𝕜 F}
-    (h_dom : IsTopCompl dom₁ u.ker) (h_codom : IsTopCompl u.range codom₂) :
+    (u_fred : IsFredholm u) {dom₁ : Submodule 𝕜 E} {codom₀ : Submodule 𝕜 F}
+    (h_dom : IsTopCompl u.ker dom₁) (h_codom : IsTopCompl u.range codom₀) :
     FredholmPackage u where
-  FD_E := {
+  dec_dom := {
+    X₀ := u.ker
     X₁ := dom₁
-    X₂ := u.ker
-    topCompl := h_dom
-    fin_dim := u_fred.finite_ker  }
-  FD_F := {
+    isTopCompl := h_dom.symm
+    fin_dim_X₀ := u_fred.finite_ker  }
+  dec_codom := {
+    X₀ := codom₀
     X₁ := u.range
-    X₂ := codom₂
-    topCompl := h_codom
-    fin_dim := Module.Finite.of_fg <| u_fred.finite_coker.fg_of_isCompl h_codom.isCompl  }
+    isTopCompl := h_codom
+    fin_dim_X₀ := .of_fg <| u_fred.finite_coker.fg_of_isCompl h_codom.isCompl  }
   equiv :=
-    letI Φ : dom₁ ≃L[𝕜] E ⧸ u.ker := u.ker.quotientEquivOfIsTopCompl dom₁ h_dom.symm |>.symm
+    letI Φ : dom₁ ≃L[𝕜] E ⧸ u.ker := u.ker.quotientEquivOfIsTopCompl dom₁ h_dom |>.symm
     letI Ψ : (E ⧸ u.ker) ≃L[𝕜] u.range := .quotKerEquivRange u.toLinearMap u_fred.isStrictMap
     Φ.trans Ψ
-  eq_equiv' := by
+  eq_equiv := by
     refine LinearMap.ext_on_codisjoint h_dom.isCompl.codisjoint ?_ ?_
-    · intro x (hx : x ∈ dom₁)
-      simp [hx, projection_apply_of_mem_left, ContinuousLinearEquiv.quotKerEquivRange]
     · intro x (hx : u x = 0)
       simp [hx, projection_apply_of_mem_right]
-
-  -- { dom₀ := u.ker
-  --   dom₁ := dom₁
-  --   finite_dom₀ := u_fred.finite_ker
-  --   isTopCompl_dom := h_dom
-  --   codom₀ := codom₀
-  --   codom₁ := u.range
-  --   finite_codom₀ := Module.Finite.of_fg <| u_fred.finite_coker.fg_of_isCompl h_codom.isCompl.symm
-  --   isTopCompl_codom := h_codom
-  --   equiv :=
-  --     letI Φ : dom₁ ≃L[𝕜] E ⧸ u.ker := u.ker.quotientEquivOfIsTopCompl dom₁ h_dom |>.symm
-  --     letI Ψ : (E ⧸ u.ker) ≃L[𝕜] u.range := .quotKerEquivRange u.toLinearMap u_fred.isStrictMap
-  --     Φ.trans Ψ
-  --   eq_equiv' := by
-  --     refine LinearMap.ext_on_codisjoint h_dom.isCompl.codisjoint ?_ ?_
-  --     · intro x (hx : u x = 0)
-  --       simp [hx, projection_apply_of_mem_right]
-  --     · intro x (hx : x ∈ dom₁)
-  --       simp [hx, projection_apply_of_mem_left, ContinuousLinearEquiv.quotKerEquivRange] }
+    · intro x (hx : x ∈ dom₁)
+      simp [hx, projection_apply_of_mem_left, ContinuousLinearEquiv.quotKerEquivRange]
 
 omit [ContinuousSMul 𝕜 E] in
 theorem IsFredholm.nonempty_fredholmDecomposition {u : E →L[𝕜] F}
     (u_fred : IsFredholm u) : Nonempty (FredholmPackage u) := by
   obtain ⟨codom₂, h_codom⟩ := u_fred.closedComplemented_range.exists_isTopCompl
   obtain ⟨dom₁, h_dom⟩ := u_fred.closedComplemented_ker.exists_isTopCompl
-  exact ⟨u_fred.fredholmPackage h_dom.symm h_codom⟩
+  exact ⟨u_fred.fredholmPackage h_dom h_codom⟩
 
 variable [T2Space E] [T2Space F]
 
