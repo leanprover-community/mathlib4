@@ -209,19 +209,18 @@ lemma DirichletCharacter.LSeries_changeLevel {M N : ℕ} [NeZero N]
 section LogDirichlet
 
 open Real hiding log exp_nat_mul exp_add
-open ArithmeticFunction Primes
+open ArithmeticFunction Primes Summable
 
 variable {N : ℕ} (χ : DirichletCharacter ℂ N) {s : ℂ}
 
 @[to_additive tsum_primes_pow_eq]
 theorem tprod_primes_pow_eq {α : Type*} [CommGroup α] [UniformSpace α] [IsUniformGroup α]
     [CompleteSpace α] [T0Space α] {f : ℕ → α}
-    (hf : Multipliable (fun n : {n // IsPrimePow n} ↦ f n.1)) :
+    (hf : Multipliable fun n : {n // IsPrimePow n} ↦ f n.1) :
     ∏' (p : Primes) (n : ℕ), f (p ^ (n + 1)) = ∏' n : {n : ℕ // IsPrimePow n}, f n := calc
     _ = ∏' p : Primes × ℕ, f (prodNatEquiv p) := by
-      simpa using (Multipliable.tprod_prod (hf.comp_injective prodNatEquiv.injective)).symm
-    _ = _ := by
-      rw [← Equiv.tprod_eq prodNatEquiv]
+      simpa using (hf.comp_injective prodNatEquiv.injective).tprod_prod.symm
+    _ = _ := by rw [← Equiv.tprod_eq prodNatEquiv]
 
 /-- For `1 < s.re`, the sum over primes of `-log (1 - χ p * p ^ (-s))` — the logarithm of the Euler
 product — equals the `L`-series of `n ↦ χ n * Λ n / Real.log n`.
@@ -245,9 +244,9 @@ theorem DirichletCharacter.eulerProduct_log_eq_LSeries (hs : 1 < s.re) :
     _ = ∑' n : {n : ℕ // IsPrimePow n}, χ n * Λ n / Real.log n * ((n : ℂ) ^ (-s)) := by
       rw [← tsum_primes_pow_eq (f := fun n ↦ χ n * Λ n / Real.log n * (n : ℂ)^(-s))]
       · congr! 4; simp; ring
-      · apply Summable.comp_injective _ Subtype.coe_injective
+      · apply comp_injective _ Subtype.coe_injective
           (f := fun n : ℕ ↦ χ n * Λ n / Real.log n * (n : ℂ)^(-s))
-        apply Summable.of_norm_bounded_eventually_nat (g := fun n : ℕ ↦ (n : ℝ) ^ (-s.re))
+        apply of_norm_bounded_eventually_nat (g := (↑· ^ (-s.re)))
         · simp [hs]
         · filter_upwards [eventually_gt_atTop 1] with n hn
           simp only [norm_mul, norm_div, norm_real, norm_eq_abs]
@@ -284,10 +283,10 @@ theorem log_riemannZeta_eq {s : ℝ} (hs : 1 < s) :
     Real.log (riemannZeta (s : ℂ)).re = ∑' n, Λ n / (n ^ s * Real.log n) := by
   rw [← riemannZeta_eq_exp_LSeries (by simpa using hs), LSeries_def₀ (by simp)]
   convert Real.log_exp _
-  convert Complex.exp_ofReal_re _
+  convert exp_ofReal_re _
   push_cast
   congr! 2 with p
-  rw [Complex.ofReal_cpow (by positivity)]
+  rw [ofReal_cpow (by positivity)]
   simp [field]
 
 end LogDirichlet
