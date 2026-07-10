@@ -338,7 +338,7 @@ def _root_.MulAut.characteristic (H : Subgroup G) [H.Characteristic] : MulAut G 
   subgroup of `H`, then `K` is a characteristic additive subgroup of `G`. -/]
 instance characteristic_of_characteristic_of_characteristic [H.Characteristic]
     {K : Subgroup H} [hK : K.Characteristic] : (K.map H.subtype).Characteristic := by
-  refine characteristic_iff_map_eq.2 fun φ => ?_
+  refine characteristic_iff_map_eq.2 fun φ ↦ ?_
   have := congr_arg (map H.subtype) <| characteristic_iff_map_eq.1 hK (MulAut.characteristic H φ)
   simpa [Subgroup.map_map, MulAut.characteristic]
 
