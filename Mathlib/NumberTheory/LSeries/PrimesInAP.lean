@@ -87,13 +87,8 @@ open Nat.Primes in
 lemma tprod_eq_tprod_primes_of_mulSupport_subset_prime_powers {f : ℕ → α}
     (hfm : Multipliable f) (hf : Function.mulSupport f ⊆ {n | IsPrimePow n}) :
     ∏' n : ℕ, f n = ∏' (p : Nat.Primes) (k : ℕ), f (p ^ (k + 1)) := by
-  have hfm' : Multipliable fun pk : Nat.Primes × ℕ ↦ f (pk.fst ^ (pk.snd + 1)) :=
-    prodNatEquiv.symm.multipliable_iff.mp <| by
-      simpa only [← coe_prodNatEquiv_apply, Prod.eta, Function.comp_def, Equiv.apply_symm_apply]
-        using! hfm.subtype _
-  simp only [← tprod_subtype_eq_of_mulSupport_subset hf, Set.coe_setOf, ← prodNatEquiv.tprod_eq,
-    ← hfm'.tprod_prod]
-  refine tprod_congr fun (p, k) ↦ congrArg f <| coe_prodNatEquiv_apply ..
+  rw [tprod_primes_pow_eq (hfm.subtype _)]
+  exact (tprod_subtype_eq_of_mulSupport_subset hf).symm
 
 @[to_additive tsum_eq_tsum_primes_add_tsum_primes_of_support_subset_prime_powers]
 lemma tprod_eq_tprod_primes_mul_tprod_primes_of_mulSupport_subset_prime_powers {f : ℕ → α}
@@ -111,16 +106,6 @@ lemma tprod_eq_tprod_primes_mul_tprod_primes_of_mulSupport_subset_prime_powers {
     hfm.comp_injective <| Subtype.val_injective |>.comp
     Nat.Primes.prodNatEquiv.injective |>.comp <|
     Function.Injective.prodMap (fun ⦃_ _⦄ a ↦ a) <| add_left_injective 1
-
-theorem tsum_primes_pow_eq {α : Type*} [AddCommGroup α] [UniformSpace α] [IsUniformAddGroup α]
-    [CompleteSpace α] [T0Space α] {f : ℕ → α}
-    (hf : Summable (fun n : {n // IsPrimePow n} ↦ f n.1)) :
-    ∑' (p : Primes) (n : ℕ), f (p ^ (n + 1)) = ∑' n : {n : ℕ // IsPrimePow n}, f n := by
-  calc
-    _ = ∑' p : Primes × ℕ, f (prodNatEquiv p) := by
-      simpa using (Summable.tsum_prod (hf.comp_injective prodNatEquiv.injective)).symm
-    _ = _ := by
-      rw [← Equiv.tsum_eq prodNatEquiv]
 
 end auxiliary
 

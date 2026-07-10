@@ -213,6 +213,16 @@ open ArithmeticFunction Primes
 
 variable {N : ℕ} (χ : DirichletCharacter ℂ N) {s : ℂ}
 
+@[to_additive tsum_primes_pow_eq]
+theorem tprod_primes_pow_eq {α : Type*} [CommGroup α] [UniformSpace α] [IsUniformGroup α]
+    [CompleteSpace α] [T0Space α] {f : ℕ → α}
+    (hf : Multipliable (fun n : {n // IsPrimePow n} ↦ f n.1)) :
+    ∏' (p : Primes) (n : ℕ), f (p ^ (n + 1)) = ∏' n : {n : ℕ // IsPrimePow n}, f n := calc
+    _ = ∏' p : Primes × ℕ, f (prodNatEquiv p) := by
+      simpa using (Multipliable.tprod_prod (hf.comp_injective prodNatEquiv.injective)).symm
+    _ = _ := by
+      rw [← Equiv.tprod_eq prodNatEquiv]
+
 /-- For `1 < s.re`, the sum over primes of `-log (1 - χ p * p ^ (-s))` — the logarithm of the Euler
 product — equals the `L`-series of `n ↦ χ n * Λ n / Real.log n`.
 -/
@@ -225,31 +235,26 @@ theorem DirichletCharacter.eulerProduct_log_eq_LSeries (hs : 1 < s.re) :
   have htaylor (p : Primes) := hasSum_taylorSeries_succ_neg_log (hpow_le p)
   rw [tsum_congr (fun p ↦ (htaylor p).tsum_eq.symm), LSeries_def₀ (by simp)]
   calc
-    _ = ∑' (p : Primes) (k : ℕ), (χ (p ^ (k+1)) * ((p ^ (k+1) : ℕ) : ℂ) ^ (-s)) *
-          Λ (p ^ (k+1)) / Real.log (p ^ (k+1)) := by
+    _ = ∑' (p : Primes) (k : ℕ), (χ (p ^ (k + 1)) * ((p ^ (k + 1) : ℕ) : ℂ) ^ (-s)) *
+          Λ (p ^ (k + 1)) / Real.log (p ^ (k + 1)) := by
       congr! 4 with p k
-      simp only [mul_pow, ← cpow_nat_mul, cast_add, cast_one, mul_neg, map_pow, cast_pow,
-        ← natCast_cpow_natCast_mul, ne_eq, Nat.add_eq_zero_iff, one_ne_zero, and_false,
-        not_false_eq_true, vonMangoldt_apply_pow, ArithmeticFunction.vonMangoldt_apply_prime p.2,
-        Real.log_pow, ofReal_mul, ofReal_add, ofReal_natCast, ofReal_one]
-      have : (Real.log p : ℂ) ≠ 0 := by
-        exact_mod_cast p.prop.log_ne_zero
+      have : (Real.log p : ℂ) ≠ 0 := mod_cast p.prop.log_ne_zero
+      simp [mul_pow, ← cpow_nat_mul, map_pow, ← natCast_cpow_natCast_mul, vonMangoldt_apply_pow,
+        vonMangoldt_apply_prime p.2, -natCast_log]
       field_simp
     _ = ∑' n : {n : ℕ // IsPrimePow n}, χ n * Λ n / Real.log n * ((n : ℂ) ^ (-s)) := by
       rw [← tsum_primes_pow_eq (f := fun n ↦ χ n * Λ n / Real.log n * (n : ℂ)^(-s))]
-      · congr! 4
-        simp
-        ring
+      · congr! 4; simp; ring
       · apply Summable.comp_injective _ Subtype.coe_injective
           (f := fun n : ℕ ↦ χ n * Λ n / Real.log n * (n : ℂ)^(-s))
-        apply Summable.of_norm_bounded_eventually_nat (g := fun n : ℕ ↦ (n:ℝ) ^ (-s.re))
+        apply Summable.of_norm_bounded_eventually_nat (g := fun n : ℕ ↦ (n : ℝ) ^ (-s.re))
         · simp [hs]
         · filter_upwards [eventually_gt_atTop 1] with n hn
           simp only [norm_mul, norm_div, norm_real, norm_eq_abs]
-          grw [norm_le_one, ArithmeticFunction.vonMangoldt_le_log]
-          have := Real.log_pos (x := n) (mod_cast hn)
+          grw [norm_le_one, vonMangoldt_le_log]
+          have := log_pos (x := n) (mod_cast hn)
           field_simp
-          rw [show (n : ℂ) = (n : ℝ) by norm_cast, norm_cpow_eq_rpow_re_of_nonneg] <;> simp
+          rw [(by norm_cast : (n : ℂ) = (n : ℝ)), norm_cpow_eq_rpow_re_of_nonneg] <;> simp
           grind
     _ = _ := by
       simp only [cpow_neg]
