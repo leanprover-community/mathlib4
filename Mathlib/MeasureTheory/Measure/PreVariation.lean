@@ -47,13 +47,22 @@ section
 
 variable (f : Set X → ℝ≥0∞)
 
-open Classical in
+open scoped Classical in
 /-- If `s` is measurable then `preVariationFun f s` is the supremum over partitions `P` of `s` of
 the quantity `∑ p ∈ P.parts, f p`. If `s` is not measurable then it is set to `0`. -/
 noncomputable def preVariationFun (s : Set X) : ℝ≥0∞ :=
   if h : MeasurableSet s then
     ⨆ (P : Finpartition (⟨s, h⟩ : Subtype MeasurableSet)), ∑ p ∈ P.parts, f p
   else 0
+
+lemma preVariationFun_apply {s : Set X} (h : MeasurableSet s) :
+    preVariationFun f s =
+      ⨆ (P : Finpartition (⟨s, h⟩ : Subtype MeasurableSet)), ∑ p ∈ P.parts, f p := by
+  simp [preVariationFun, h]
+
+lemma preVariationFun_of_not_measurableSet {s : Set X} (h : ¬ MeasurableSet s) :
+    preVariationFun f s = 0 := by
+  simp [preVariationFun, h]
 
 end
 

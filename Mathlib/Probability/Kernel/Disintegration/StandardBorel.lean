@@ -173,7 +173,7 @@ section BorelSnd
 Since every standard Borel space embeds measurably into `ℝ`, we can generalize a disintegration
 property on `ℝ` to all these spaces. -/
 
-open Classical in
+open scoped Classical in
 /-- Auxiliary definition for `ProbabilityTheory.Kernel.condKernel`.
 A Borel space `Ω` embeds measurably into `ℝ` (with embedding `e`), hence we can get a `Kernel α Ω`
 from a `Kernel α ℝ` by taking the comap by `e`.
@@ -396,7 +396,7 @@ end Measure
 section CountableOrCountablyGenerated
 variable [h : CountableOrCountablyGenerated α β] (κ : Kernel α (β × Ω)) [IsFiniteKernel κ]
 
-open Classical in
+open scoped Classical in
 /-- Conditional kernel of a kernel `κ : Kernel α (β × Ω)`: a Markov kernel such that
 `fst κ ⊗ₖ condKernel κ = κ` (see `MeasureTheory.Measure.compProd_fst_condKernel`).
 It exists whenever `Ω` is standard Borel and either `α` is countable

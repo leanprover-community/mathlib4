@@ -29,7 +29,7 @@ open scoped Topology
 
 variable {𝕜 𝕜' : Type*} [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜']
   [NormedAlgebra 𝕜 𝕜'] {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-variable {R : Type*} [NormedRing R] [Module R E] [IsBoundedSMul R E] [SMulCommClass 𝕜 R E]
+variable {R : Type*} [NormedRing R] [Module R E] [IsBoundedSMul R E]
 
 /-- Meromorphy of `f` at `x` (more precisely, on a punctured neighbourhood of `x`; the value at
 `x` itself is irrelevant). -/
@@ -86,17 +86,17 @@ lemma add {f g : 𝕜 → E} (hf : MeromorphicAt f x) (hg : MeromorphicAt g x) :
     (((analyticAt_id.sub analyticAt_const).pow _).smul hg)
 
 @[to_fun (attr := fun_prop)]
-lemma smul {f : 𝕜 → 𝕜} {g : 𝕜 → E} (hf : MeromorphicAt f x) (hg : MeromorphicAt g x) :
+lemma smul [NormedAlgebra 𝕜 R] [IsScalarTower 𝕜 R E]
+    {f : 𝕜 → R} {g : 𝕜 → E} (hf : MeromorphicAt f x) (hg : MeromorphicAt g x) :
     MeromorphicAt (f • g) x := by
   rcases hf with ⟨m, hf⟩
   rcases hg with ⟨n, hg⟩
   refine ⟨m + n, ?_⟩
   convert hf.smul hg with z
-  simp
-  module
+  rw [Pi.smul_apply', Pi.smul_apply', smul_smul_smul_comm, smul_eq_mul, pow_add]
 
 @[to_fun (attr := fun_prop)]
-lemma const_smul {x : 𝕜} {f : 𝕜 → E} (hf : MeromorphicAt f x) (c : R) :
+lemma const_smul [SMulCommClass 𝕜 R E] {x : 𝕜} {f : 𝕜 → E} (hf : MeromorphicAt f x) (c : R) :
     MeromorphicAt (c • f) x := by
   rcases hf with ⟨m, hf⟩
   exact ⟨m, by simpa [smul_comm _ c _] using hf.fun_const_smul⟩
@@ -104,12 +104,7 @@ lemma const_smul {x : 𝕜} {f : 𝕜 → E} (hf : MeromorphicAt f x) (c : R) :
 @[to_fun (attr := fun_prop)]
 lemma mul {f g : 𝕜 → 𝕜'} (hf : MeromorphicAt f x) (hg : MeromorphicAt g x) :
     MeromorphicAt (f * g) x := by
-  rcases hf with ⟨m, hf⟩
-  rcases hg with ⟨n, hg⟩
-  refine ⟨m + n, ?_⟩
-  convert hf.mul hg with z
-  simp
-  module
+  simpa using hf.smul hg
 
 /-- Finite products of meromorphic functions are meromorphic. -/
 @[fun_prop] -- TODO: to_fun generates an unreadable statement, see #32866
@@ -553,12 +548,15 @@ include hf in
 @[simp] lemma neg_iff : MeromorphicOn (-f) U ↔ MeromorphicOn f U :=
   ⟨fun h ↦ by simpa only [neg_neg] using h.neg, neg⟩
 
-@[to_fun] lemma smul {s : 𝕜 → 𝕜} (hs : MeromorphicOn s U) {f : 𝕜 → E} (hf : MeromorphicOn f U) :
+@[to_fun]
+lemma smul [NormedAlgebra 𝕜 R] [IsScalarTower 𝕜 R E] {s : 𝕜 → R} (hs : MeromorphicOn s U)
+    {f : 𝕜 → E} (hf : MeromorphicOn f U) :
     MeromorphicOn (s • f) U :=
   fun x hx ↦ (hs x hx).smul (hf x hx)
 
 include hf in
-@[to_fun] lemma const_smul (c : R) : MeromorphicOn (c • f) U := fun x hx ↦ (hf x hx).const_smul c
+@[to_fun] lemma const_smul [SMulCommClass 𝕜 R E] (c : R) : MeromorphicOn (c • f) U :=
+  fun x hx ↦ (hf x hx).const_smul c
 
 include hs ht in
 @[to_fun] lemma mul : MeromorphicOn (s * t) U := fun x hx ↦ (hs x hx).mul (ht x hx)
@@ -702,11 +700,12 @@ lemma sub (hf : Meromorphic f) (hg : Meromorphic g) :
     Meromorphic (f - g) := fun x ↦ (hf x).sub (hg x)
 
 @[to_fun (attr := fun_prop)]
-lemma smul {f : 𝕜 → 𝕜} (hf : Meromorphic f) (hg : Meromorphic g) :
+lemma smul [NormedAlgebra 𝕜 R] [IsScalarTower 𝕜 R E] {f : 𝕜 → R} (hf : Meromorphic f)
+    (hg : Meromorphic g) :
     Meromorphic (f • g) := fun x ↦ (hf x).smul (hg x)
 
 @[to_fun (attr := fun_prop)]
-lemma const_smul (hf : Meromorphic f) (c : R) :
+lemma const_smul [SMulCommClass 𝕜 R E] (hf : Meromorphic f) (c : R) :
     Meromorphic (c • f) := fun x ↦ (hf x).const_smul c
 
 @[to_fun (attr := fun_prop)]

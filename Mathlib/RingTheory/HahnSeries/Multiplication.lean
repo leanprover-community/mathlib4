@@ -15,6 +15,7 @@ public import Mathlib.RingTheory.HahnSeries.Addition
 
 /-!
 # Multiplicative properties of Hahn series
+
 If `Γ` is ordered and `R` has zero, then `R⟦Γ⟧` consists of formal series over `Γ` with
 coefficients in `R`, whose supports are partially well-ordered. This module introduces
 multiplication and scalar multiplication on Hahn series. If `Γ` is an ordered cancellative
@@ -67,7 +68,7 @@ instance [Zero R] [IntCast R] : IntCast R⟦Γ⟧ where intCast z := single 0 z
 instance [Zero R] [NNRatCast R] : NNRatCast R⟦Γ⟧ where nnratCast q := single 0 q
 instance [Zero R] [RatCast R] : RatCast R⟦Γ⟧ where ratCast q := single 0 q
 
-open Classical in
+open scoped Classical in
 @[simp]
 theorem coeff_one [Zero R] [One R] {a : Γ} : (1 : R⟦Γ⟧).coeff a = if a = 0 then 1 else 0 :=
   coeff_single
