@@ -355,12 +355,12 @@ theorem coe_neg (s : Cₛ^n⟮I; F, V⟯) : ⇑(-s : Cₛ^n⟮I; F, V⟯) = -s :
   rfl
 
 instance instPSMul : SMul ℕ+ Cₛ^n⟮I; F, V⟯ :=
-  ⟨fun n f ↦ psmulRec n n.property f⟩
+  ⟨psmulRec⟩
 
 theorem coe_psmul (s : Cₛ^n⟮I; F, V⟯) (k : ℕ+) : ⇑(k • s : Cₛ^n⟮I; F, V⟯) = k • ⇑s := by
   induction k using AddSemigroup.psmul_induction ⇑s with
   | h1 => rfl
-  | hsucc n IH => rw [← IH, ←coe_add]; rfl
+  | hsucc n IH => rw [← IH, ←coe_add]; exact congr_arg _ (psmulRec_succ n s)
 
 instance instNSMul : SMul ℕ Cₛ^n⟮I; F, V⟯ :=
   ⟨nsmulRec⟩
