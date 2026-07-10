@@ -148,7 +148,6 @@ theorem isSetRing_supClosure (hC : IsSetSemiring C) : IsSetRing (supClosure C) w
 
 section disjointOfDiff
 
-open scoped Classical in
 /-- In a semi-ring of sets `C`, for all sets `s, t ∈ C`, `s \ t` is equal to a disjoint union of
 finitely many sets in `C`. The finite set of sets in the union is not unique, but this definition
 gives an arbitrary `Finset (Set α)` that satisfies the equality.
@@ -291,7 +290,6 @@ lemma exists_disjoint_finset_sdiff_eq (hC : IsSetSemiring C) (hs : s ∈ C) (hI 
 @[deprecated (since := "2026-06-03")]
 alias exists_disjoint_finset_diff_eq := exists_disjoint_finset_sdiff_eq
 
-open scoped Classical in
 /-- In a semiring of sets `C`, for all set `s ∈ C` and finite set of sets `I ⊆ C`,
 `disjointOfDiffUnion` is a finite set of sets in `C` such that
 `s \ ⋃₀ I = ⋃₀ (hC.disjointOfDiffUnion hs I hI)`.

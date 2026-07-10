@@ -70,12 +70,12 @@ theorem traceAux_eq : traceAux R b = traceAux R c :=
       _ = Matrix.trace (LinearMap.toMatrix c c f) := by rw [LinearMap.comp_id, LinearMap.comp_id]
 
 variable (M) in
-open Classical in
+open scoped Classical in
 /-- Trace of an endomorphism independent of basis. -/
 def trace : (M →ₗ[R] M) →ₗ[R] R :=
   if H : ∃ s : Finset M, Nonempty (Basis s R M) then traceAux R H.choose_spec.some else 0
 
-open Classical in
+open scoped Classical in
 /-- Auxiliary lemma for `trace_eq_matrix_trace`. -/
 theorem trace_eq_matrix_trace_of_finset {s : Finset M} (b : Basis s R M) (f : M →ₗ[R] M) :
     trace R M f = Matrix.trace (LinearMap.toMatrix b b f) := by
