@@ -77,15 +77,8 @@ theorem WfDvdMonoid.eq_zero_iff_forall_prime_pow_dvd [CommMonoidWithZero α] [Is
 /-- A nonzero element of a `WfDvdMonoid` has finite multiplicity at every prime. -/
 theorem WfDvdMonoid.ne_zero_iff_finiteMultiplicity [CommMonoidWithZero α] [IsCancelMulZero α]
     [WfDvdMonoid α] {a p : α} (hp : Prime p) : a ≠ 0 ↔ FiniteMultiplicity p a := by
-  convert (WfDvdMonoid.eq_zero_iff_forall_prime_pow_dvd hp).not
-  rw [FiniteMultiplicity, not_forall]
-  constructor
-  · grind
-  · intro ⟨n, hn⟩
-    have hn' : 1 ≤ n := by
-      contrapose! hn
-      simp [Nat.lt_one_iff.mp hn, pow_zero]
-    refine ⟨n - 1, by rwa [Nat.sub_add_cancel hn']⟩
+  rw [ne_eq, WfDvdMonoid.eq_zero_iff_forall_prime_pow_dvd hp,
+    ← FiniteMultiplicity.not_iff_forall, not_not]
 
 namespace UniqueFactorizationMonoid
 
@@ -228,22 +221,18 @@ lemma associated_iff_emultiplicity_eq' {a b : R} {q : R} (hq : Prime q) :
     have h := h q hq
     rwa [emultiplicity_zero, eq_comm, emultiplicity_eq_top, FiniteMultiplicity.not_iff_forall] at h
 
-/-- A `UniqueFactorizationMonoid` with finitely many units but infinitely many elements has a
-prime element. -/
-lemma exists_prime [Finite Rˣ] [Infinite R] : ∃ p : R, Prime p := by
-  rw [exists_prime_iff]
-  obtain ⟨x, hx⟩ := Set.Finite.exists_notMem ((Set.finite_range ((↑·) : Rˣ → R)).insert 0)
-  refine ⟨x, ?_, ?_⟩
-  · rintro rfl
-    exact hx (Set.mem_insert 0 _)
-  · rintro ⟨u, rfl⟩
-    exact hx (Set.mem_insert_of_mem 0 (Set.mem_range_self u))
-
 /-- In a `UniqueFactorizationMonoid` with a unique unit and infinitely many elements, two
 elements are equal iff they have the same `emultiplicity` at every prime. -/
 lemma eq_iff_emultiplicity_eq [Subsingleton Rˣ] [Infinite R] {a b : R} :
     a = b ↔ ∀ p : R, Prime p → emultiplicity p a = emultiplicity p b := by
-  obtain ⟨p, hp⟩ : ∃ p : R, Prime p := exists_prime
+  obtain ⟨p, hp⟩ : ∃ p : R, Prime p := by
+    rw [exists_prime_iff]
+    obtain ⟨x, hx⟩ := Set.Finite.exists_notMem ((Set.finite_range ((↑·) : Rˣ → R)).insert 0)
+    refine ⟨x, ?_, ?_⟩
+    · rintro rfl
+      exact hx (Set.mem_insert 0 _)
+    · rintro ⟨u, rfl⟩
+      exact hx (Set.mem_insert_of_mem 0 (Set.mem_range_self u))
   rw [← associated_iff_eq, associated_iff_emultiplicity_eq' hp]
 
 lemma pow_dvd_pow_iff_dvd {a b : R} {n : ℕ} (hn : n ≠ 0) : a ^ n ∣ b ^ n ↔ a ∣ b := by
