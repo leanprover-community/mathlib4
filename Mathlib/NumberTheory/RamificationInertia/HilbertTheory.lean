@@ -176,83 +176,70 @@ theorem IsInertiaRing.finrank_eq [FaithfulSMul C B] [P.IsMaximal] [P.IsInertiaRi
   have : Finite (A ⧸ p) := Ring.HasFiniteQuotients.finiteQuotient hp
   rw [← IsGaloisGroup.card_eq_finrank' (inertia G P) C B, card_inertia_eq_ramificationIdxIn p]
 
-/-! ### Fraction-field degree formulas -/
+variable [Algebra A C] [IsScalarTower A C B]
 
-variable [FaithfulSMul C B] (K L : Type*) [Field K] [Field L] [Algebra A C] [IsScalarTower A C B]
-  [Algebra B L] [IsFractionRing B L] [Algebra C L] [IsScalarTower C B L]
+/-- The degree `[C : A]` of the decomposition ring `C` over `A` equals the number of prime ideals
+of `B` lying over `p`.
 
-/-- The degree `[L : D]` of `L` over the decomposition field `D` equals the product of the
-ramification index and the inertia degree of `p` in `B`. -/
-theorem IsDecompositionRing.rank_left (D : Type*) [Field D] [Algebra C D]
-    [IsFractionRing C D] [Algebra D L] [IsScalarTower C D L] [P.IsMaximal]
-    [P.IsDecompositionRing G C] (hp : p ≠ ⊥) :
-    Module.finrank D L = p.ramificationIdxIn B * p.inertiaDegIn B := by
-  have : Module.Finite C B := Module.Finite.right A C B
-  have : IsDomain C := (FaithfulSMul.algebraMap_injective C B).isDomain
-  rw [Algebra.IsAlgebraic.finrank_of_isFractionRing C D B L, finrank_eq G P C hp]
-
-/-- The degree `[L : E]` of `L` over the inertia field `E` equals the ramification index of `p`
-in `B`. -/
-theorem IsInertiaRing.rank_left (E : Type*) [Field E] [Algebra C E]
-    [IsFractionRing C E] [Algebra E L] [IsScalarTower C E L] [P.IsMaximal] [P.IsInertiaRing G C]
-    (hp : p ≠ ⊥) :
-    Module.finrank E L = p.ramificationIdxIn B := by
-  have : Module.Finite C B := Module.Finite.right A C B
-  have : IsDomain C := (FaithfulSMul.algebraMap_injective C B).isDomain
-  rw [Algebra.IsAlgebraic.finrank_of_isFractionRing C E B L, finrank_eq G P C hp]
-
-variable [Algebra A K] [IsFractionRing A K] [Algebra A L] [Algebra K L] [IsScalarTower A K L]
-  [IsScalarTower A B L] [MulSemiringAction G L] [SMulDistribClass G B L]
-
-/-- The degree `[D : K]` of the decomposition field `D` over `K` equals the number of prime ideals
-of `B` lying over `p`. -/
-theorem IsDecompositionRing.rank_right (D : Type*) [Field D]
-    [Algebra C D] [IsFractionRing C D] [Algebra K D] [Algebra D L] [IsScalarTower C D L]
-    [IsScalarTower K D L] [P.IsMaximal] [P.IsDecompositionRing G C] (hp : p ≠ ⊥) :
-    Module.finrank K D = (p.primesOver B).ncard := by
-  have : IsGaloisGroup (stabilizer G P) D L := .to_isFractionRing (stabilizer G P) C B D L
-  have : IsGaloisGroup G K L := IsGaloisGroup.to_isFractionRing G A B K L
+Passing to the fraction fields via `Algebra.IsAlgebraic.finrank_of_isFractionRing`, which gives
+`Module.finrank (FractionRing A) (FractionRing C) = Module.finrank A C`, recovers the classical
+formula for the degree of the decomposition field over `FractionRing A`. -/
+theorem IsDecompositionRing.finrank_bot_eq [FaithfulSMul A C] [Module.Finite A C] [FaithfulSMul C B]
+    [P.IsMaximal] [P.IsDecompositionRing G C] (hp : p ≠ ⊥) :
+    Module.finrank A C = (p.primesOver B).ncard := by
   have : p.IsMaximal := over_def P p ▸ Ideal.IsMaximal.under A P
-  have : Finite (A ⧸ p) := Ring.HasFiniteQuotients.finiteQuotient hp
-  have : FiniteDimensional K L := IsGaloisGroup.finiteDimensional G K L
-  have : FiniteDimensional D L := FiniteDimensional.right K D L
-  rw [← mul_left_inj' (c := Module.finrank D L) Module.finrank_pos.ne', Module.finrank_mul_finrank,
-    IsDecompositionRing.rank_left G P C L D hp, ← IsGaloisGroup.card_eq_finrank G,
-    ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn p B G]
+  have : IsDomain C := (FaithfulSMul.algebraMap_injective C B).isDomain
+  have : Module.Finite C B := Module.Finite.right A C B
+  have : FaithfulSMul A B := by
+    rw [faithfulSMul_iff_algebraMap_injective, IsScalarTower.algebraMap_eq A C B, RingHom.coe_comp]
+    exact (FaithfulSMul.algebraMap_injective C B).comp (FaithfulSMul.algebraMap_injective A C)
+  rw [← mul_left_inj' (c := Module.finrank C B) Module.finrank_pos.ne',
+    Module.finrank_mul_finrank' A C B, IsDecompositionRing.finrank_eq G P C hp,
+    ← IsGaloisGroup.card_eq_finrank' G A B,
+    ← ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn p B G]
 
-/-- The degree `[E : K]` of the inertia field `E` over `K` equals the product of the number of
-prime ideals of `B` lying over `p` and the inertia degree of `p` in `B`. -/
-theorem IsInertiaRing.rank_right (E : Type*) [Field E] [Algebra C E]
-    [IsFractionRing C E] [Algebra K E] [Algebra E L] [IsScalarTower C E L] [IsScalarTower K E L]
+/-- The degree `[C : A]` of the inertia ring `C` over `A` equals the product of the number of
+prime ideals of `B` lying over `p` and the inertia degree of `p` in `B`.
+
+Passing to the fraction fields via `Algebra.IsAlgebraic.finrank_of_isFractionRing`, which gives
+`Module.finrank (FractionRing A) (FractionRing C) = Module.finrank A C`, recovers the classical
+formula for the degree of the inertia field over `FractionRing A`. -/
+theorem IsInertiaRing.finrank_bot_eq [FaithfulSMul A C] [Module.Finite A C] [FaithfulSMul C B]
     [P.IsMaximal] [P.IsInertiaRing G C] (hp : p ≠ ⊥) :
-    Module.finrank K E = (p.primesOver B).ncard * p.inertiaDegIn B := by
-  have : IsGaloisGroup (inertia G P) E L := .to_isFractionRing (inertia G P) C B E L
-  have : IsGaloisGroup G K L := IsGaloisGroup.to_isFractionRing G A B K L
+    Module.finrank A C = (p.primesOver B).ncard * p.inertiaDegIn B := by
   have : p.IsMaximal := over_def P p ▸ Ideal.IsMaximal.under A P
-  have : FiniteDimensional K L := IsGaloisGroup.finiteDimensional G K L
-  have : FiniteDimensional E L := FiniteDimensional.right K E L
-  rw [← mul_left_inj' (c := Module.finrank E L) Module.finrank_pos.ne', Module.finrank_mul_finrank,
-    IsInertiaRing.rank_left G P C L E hp, ← IsGaloisGroup.card_eq_finrank G, mul_assoc,
-    mul_comm (p.inertiaDegIn B), ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn p B G]
+  have : IsDomain C := (FaithfulSMul.algebraMap_injective C B).isDomain
+  have : Module.Finite C B := Module.Finite.right A C B
+  have : FaithfulSMul A B := by
+    rw [faithfulSMul_iff_algebraMap_injective, IsScalarTower.algebraMap_eq A C B, RingHom.coe_comp]
+    exact (FaithfulSMul.algebraMap_injective C B).comp (FaithfulSMul.algebraMap_injective A C)
+  rw [← mul_left_inj' (c := Module.finrank C B) Module.finrank_pos.ne',
+    Module.finrank_mul_finrank' A C B, IsInertiaRing.finrank_eq G P C hp,
+    ← IsGaloisGroup.card_eq_finrank' G A B, mul_assoc, mul_comm (p.inertiaDegIn B),
+    ← ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn p B G]
 
-/-- The degree `[E : D]` of the inertia field `E` over the decomposition field `D` equals the
-inertia degree of `p` in `B`. Here `C` is a decomposition ring (fraction field `D`) and `C'` an
-inertia ring (fraction field `E`). -/
-theorem IsInertiaRing.rank_decompositionRing (C' D E : Type*)
-    [CommRing C'] [Algebra C' B] [Field D] [Field E]
-    [Algebra A C'] [Algebra C D] [Algebra C' E] [Algebra C' L] [Algebra K D] [Algebra K E]
-    [Algebra D L] [Algebra E L] [Algebra D E]
-    [IsFractionRing C D] [IsFractionRing C' E]
-    [IsScalarTower A C' B] [IsScalarTower C D L] [IsScalarTower C' B L] [IsScalarTower C' E L]
-    [IsScalarTower K D L] [IsScalarTower K E L] [IsScalarTower K D E]
-    [FaithfulSMul C' B] [IsDedekindRing B] [P.IsMaximal]
-    [P.IsDecompositionRing G C] [P.IsInertiaRing G C'] (hp : p ≠ ⊥) :
-    Module.finrank D E = p.inertiaDegIn B := by
-  have : p.IsMaximal := over_def P p ▸ Ideal.IsMaximal.under A P
-  have := Module.finrank_mul_finrank K D E
-  rwa [IsInertiaRing.rank_right G P C' K L E hp, IsDecompositionRing.rank_right G P C K L D hp,
-    mul_right_inj'] at this
-  exact IsDedekindDomain.primesOver_ncard_ne_zero _ _
+/-- The degree `[C' : C]` of the inertia ring `C'` over the decomposition ring `C` equals the
+inertia degree of `p` in `B`.
+
+Passing to the fraction fields via `Algebra.IsAlgebraic.finrank_of_isFractionRing`, which gives
+`Module.finrank (FractionRing C) (FractionRing C') = Module.finrank C C'`, recovers the classical
+formula for the degree of the inertia field over the decomposition field. -/
+theorem IsInertiaRing.finrank_decompositionRing (C' : Type*) [CommRing C'] [Algebra C' B]
+    [FaithfulSMul C B] [FaithfulSMul C' B] [Algebra C C'] [IsScalarTower C C' B] [Module.Finite C C']
+    [P.IsMaximal] [P.IsDecompositionRing G C] [P.IsInertiaRing G C'] (hp : p ≠ ⊥) :
+    Module.finrank C C' = p.inertiaDegIn B := by
+  have : IsDomain C := (FaithfulSMul.algebraMap_injective C B).isDomain
+  have : IsDomain C' := (FaithfulSMul.algebraMap_injective C' B).isDomain
+  have : Module.Finite C B := Module.Finite.right A C B
+  have : Module.Finite C' B := Module.Finite.right C C' B
+  have : FaithfulSMul C C' := by
+    rw [faithfulSMul_iff_algebraMap_injective]
+    have h := FaithfulSMul.algebraMap_injective C B
+    rw [IsScalarTower.algebraMap_eq C C' B, RingHom.coe_comp] at h
+    exact h.of_comp
+  rw [← mul_left_inj' (c := Module.finrank C' B) Module.finrank_pos.ne',
+    Module.finrank_mul_finrank' C C' B, IsInertiaRing.finrank_eq G P C' hp,
+    IsDecompositionRing.finrank_eq G P C hp, mul_comm (p.ramificationIdxIn B)]
 
 end rank
 

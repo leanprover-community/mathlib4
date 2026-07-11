@@ -561,6 +561,25 @@ theorem rank_fractionRing [IsDomain S] :
     Module.rank (FractionRing R) (FractionRing S) = Module.rank R S :=
   rank_of_isFractionRing ..
 
+attribute [local instance] FractionRing.liftAlgebra in
+/-- Tower law for `Module.finrank` in a tower of domains `A → C → B` that is module-finite at each
+step. This is a variant of `Module.finrank_mul_finrank` that assumes the rings are domains (and
+module-finite) instead of the modules being free; the proof passes to the fraction fields, where
+the tower law is unconditional. -/
+theorem _root_.Module.finrank_mul_finrank' (A C B : Type*)
+    [CommRing A] [CommRing C] [CommRing B] [IsDomain A] [IsDomain C] [IsDomain B]
+    [Algebra A C] [Algebra C B] [Algebra A B] [IsScalarTower A C B]
+    [FaithfulSMul A C] [FaithfulSMul C B] [Module.Finite A C] [Module.Finite C B] :
+    Module.finrank A C * Module.finrank C B = Module.finrank A B := by
+  have : FaithfulSMul A B := (faithfulSMul_iff_algebraMap_injective A B).mpr <| by
+    rw [IsScalarTower.algebraMap_eq A C B]
+    exact (FaithfulSMul.algebraMap_injective C B).comp (FaithfulSMul.algebraMap_injective A C)
+  have : Module.Finite A B := Module.Finite.trans C B
+  rw [← finrank_of_isFractionRing A (FractionRing A) C (FractionRing C),
+    ← finrank_of_isFractionRing C (FractionRing C) B (FractionRing B),
+    ← finrank_of_isFractionRing A (FractionRing A) B (FractionRing B),
+    Module.finrank_mul_finrank (FractionRing A) (FractionRing C) (FractionRing B)]
+
 end Algebra.IsAlgebraic
 
 section Polynomial
