@@ -522,6 +522,8 @@ given that it distributes over multiplication and the identity
 @[simps! apply]
 def ofLinearEquiv : A ≃ₛₐ[φ] B where
   __ := l
+  toFun := l
+  invFun := l.symm
   map_mul' := map_mul
   commutes' := by simp [Algebra.algebraMap_eq_smul_one, map_smulₛₗ, map_one]
 
