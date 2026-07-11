@@ -151,29 +151,6 @@ noncomputable def equivLocallyConstant (o₀ : Orientation I M) :
     rw [if_pos (mem_chart_source H z)]
     exact (by decide : ∀ a b : ℤˣ, a * b * b = a) _ _
 
-variable (I)
-
-/-- The positive orientation of a subsingleton manifold. -/
-def point [Subsingleton M] : Orientation I M where
-  chartSign _ _ := 1
-  continuousOn_chartSign _ := continuousOn_const
-  chartSign_eq_one_of_notMem x z hz :=
-    absurd (by rw [Subsingleton.elim z x]; exact mem_chart_source H x) hz
-  compatible x y z hx _ := by
-    rw [Subsingleton.elim y x]
-    simp only
-    constructor
-    · intro _
-      trivial
-    · intro _
-      rw [show (tangentCoordChange I x x z).toLinearMap = LinearMap.id by
-        ext v
-        exact tangentCoordChange_self (I := I) (by simpa only [extChartAt_source] using hx),
-        LinearMap.det_id]
-      exact one_pos
-
-variable {I}
-
 /-- The opposite of an orientation. -/
 def opposite (o : Orientation I M) : Orientation I M :=
   twist o (LocallyConstant.const M (-1))
