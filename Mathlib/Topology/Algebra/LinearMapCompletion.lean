@@ -69,7 +69,7 @@ variable {R₁ R₂ E F : Type*} [Semiring R₁] [Semiring R₂] {σ₁₂ : R�
 
 /-- Extension of a linear function to a linear function over the completion. This is the continuous
 linear version of `UniformSpace.Completion.extension`. -/
-noncomputable def fromCompletion {f : E →ₛₗ[σ₁₂] F} (hf : UniformContinuous f) :
+noncomputable def fromCompletion {f : E →SL[σ₁₂] F} (hf : UniformContinuous f) :
     Completion E →SL[σ₁₂] F where
   toFun := Completion.extension f
   map_add' a b := induction_on₂ a b (isClosed_eq (by fun_prop) (by fun_prop)) <| by
@@ -78,18 +78,18 @@ noncomputable def fromCompletion {f : E →ₛₗ[σ₁₂] F} (hf : UniformCont
       (isClosed_eq (continuous_extension.comp (continuous_const_smul c)) (by fun_prop)) <| by
     simp [← Completion.coe_smul, hf, extension_coe]
 
-lemma coe_fromCompletion {f : E →ₛₗ[σ₁₂] F} (hf : UniformContinuous f) :
+lemma coe_fromCompletion {f : E →SL[σ₁₂] F} (hf : UniformContinuous f) :
     fromCompletion hf = Completion.extension f := rfl
 
 @[simp]
-lemma fromCompletion_apply {f : E →ₛₗ[σ₁₂] F} (hf : UniformContinuous f) (e : Completion E) :
+lemma fromCompletion_apply {f : E →SL[σ₁₂] F} (hf : UniformContinuous f) (e : Completion E) :
     fromCompletion hf e = Completion.extension f e := rfl
 
-lemma uniformContinuous_fromCompletion {f : E →ₛₗ[σ₁₂] F} (hf : UniformContinuous f) :
+lemma uniformContinuous_fromCompletion {f : E →SL[σ₁₂] F} (hf : UniformContinuous f) :
     UniformContinuous (fromCompletion hf) :=
   uniformContinuous_def.mpr (uniformContinuous_extension)
 
-lemma fromCompletion_unique {f : E →ₛₗ[σ₁₂] F} (hf : UniformContinuous f)
+lemma fromCompletion_unique {f : E →SL[σ₁₂] F} (hf : UniformContinuous f)
     {g : Completion E →SL[σ₁₂] F} (hg : UniformContinuous g) (h : ∀ (e : E), f e = g e) :
     fromCompletion hf = g := by
   ext; simp [extension_unique hf hg h]
