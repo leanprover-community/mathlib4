@@ -124,9 +124,7 @@ theorem G_eq_sum_E [NeZero N] {k : ℤ} (hk : 3 ≤ k) (z : ℍ) :
     eisensteinSeriesG a k z = ∑ n : (ZMod N)ˣ,
       ZMod.LFunction (Pi.single n.val 1) k * eisensteinSeries (n⁻¹ • a) k z := by
   have hk0 : k ≠ 0 := by omega
-  have hσ : Summable fun p : Σ r : {r : ℕ // r.Coprime N}, gammaSet N r.1 a ↦ eisSummand k p.2 z :=
-    (gammaSetCoprimeSigmaEquiv a).symm.summable_iff.mpr
-      ((summable_norm_eisSummand hk z).of_norm.subtype _)
+  have hσ := summable_coprime_eisSummand a hk z
   have h1 : eisensteinSeriesG a k z =
       ∑' p : Σ r : {r : ℕ // r.Coprime N}, gammaSet N r.1 a, eisSummand k p.2 z :=
     ((gammaSetCoprimeSigmaEquiv a).symm.tsum_eq (eisSummand k · z)).symm
@@ -139,12 +137,14 @@ theorem G_eq_sum_E [NeZero N] {k : ℤ} (hk : 3 ≤ k) (z : ℍ) :
     rw [tsum_gammaSet_eisSummand_of_coprime a hk0 z r.2]
     congr
   rw [tsum_congr h3, tsum_mul_right, ← tsum_zpow_eq_LFunction n (by omega)]
-  congr 1
+  congr! 1
   refine (Function.Injective.tsum_eq (g := toCoprimeUnitFiber n)
     (fun _ _ hm ↦ Subtype.ext (congrArg (fun x ↦ x.1.1) hm)) fun x hx ↦ ?_).symm
   have hx0 : x.1.1 ≠ 0 := fun h0 ↦ hx (by simp [h0, _root_.zero_zpow _ hk0])
-  exact ⟨⟨x.1.1, Nat.pos_of_ne_zero hx0, (ZMod.coe_unitOfCoprime x.1.1 x.1.2).symm.trans
-    (congrArg Units.val x.2)⟩, Subtype.ext (Subtype.ext rfl)⟩
+  simp only [Set.mem_range, Subtype.exists]
+  use x.1.1, ⟨Nat.pos_of_ne_zero hx0, (ZMod.coe_unitOfCoprime _ _).symm.trans
+    (congrArg Units.val x.2)⟩
+  rfl
 
 end G_eq_sum_E
 

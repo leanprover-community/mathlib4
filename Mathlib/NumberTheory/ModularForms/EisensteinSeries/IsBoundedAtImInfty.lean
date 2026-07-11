@@ -45,6 +45,11 @@ lemma summable_norm_eisSummand {k : ℤ} (hk : 3 ≤ k) (z : ℍ) :
   simp only [eisSummand, norm_zpow]
   exact_mod_cast summand_bound z (show 0 ≤ (k : ℝ) by positivity) b
 
+lemma summable_coprime_eisSummand {N : ℕ} {k : ℤ} (a : Fin 2 → ZMod N) (hk : 3 ≤ k) (z : ℍ) :
+    Summable fun p : Σ r : {r : ℕ // r.Coprime N}, gammaSet N r.1 a ↦ eisSummand k p.2 z := by
+  rw [← Equiv.summable_iff (gammaSetCoprimeSigmaEquiv a)]
+  exact ((summable_norm_eisSummand hk z).of_norm.subtype _)
+
 /-- The norm of the restricted sum is less than the full sum of the norms. -/
 lemma norm_le_tsum_norm (N : ℕ) (a : Fin 2 → ZMod N) (k : ℤ) (hk : 3 ≤ k) (z : ℍ) :
     ‖eisensteinSeries a k z‖ ≤ ∑' (x : Fin 2 → ℤ), ‖eisSummand k x z‖ := by
