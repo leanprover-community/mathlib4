@@ -953,7 +953,7 @@ variable (G f) in
 (non-unital) star R-algebra that respect the directed system structure
 (i.e. make some diagram commute) give rise to a unique map out of the direct limit.
 -/
-def lift (g : ∀ i, (G i) →⋆ₙₐ[R] P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x) :
+def lift (g : Π i, (G i) →⋆ₙₐ[R] P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x) :
     DirectLimit G f →⋆ₙₐ[R] P where
   toFun := _root_.DirectLimit.lift _ (g · ·) fun i j h x ↦ (Hg i j h x).symm
   __ := DirectLimit.NonUnitalAlgebra.lift G f P (g := fun i ↦ (g i).toNonUnitalAlgHom) Hg
@@ -1002,7 +1002,7 @@ variable (G f) in
 that respect the directed system structure (i.e. make some diagram commute) give rise
 to a unique map out of the direct limit.
 -/
-def lift (g : ∀ i, (G i) →⋆ₐ[R] P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x) :
+def lift (g : Π i, (G i) →⋆ₐ[R] P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x) :
     DirectLimit G f →⋆ₐ[R] P where
   toFun := _root_.DirectLimit.lift _ (g · ·) fun i j h x ↦ (Hg i j h x).symm
   __ := DirectLimit.Algebra.lift G f P (g := fun i ↦ (g i).toAlgHom) Hg
