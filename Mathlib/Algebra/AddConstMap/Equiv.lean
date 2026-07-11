@@ -84,11 +84,11 @@ theorem eq_symm_apply (e : G ≃+c[a, b] H) {a b} :
     b = e.symm a ↔ e b = a :=
   e.toEquiv.eq_symm_apply
 
-theorem apply_symm_apply (e : G ≃+c[a, b] H) {a} :
+@[simp] theorem apply_symm_apply (e : G ≃+c[a, b] H) (a) :
     e (e.symm a) = a :=
   e.toEquiv.apply_symm_apply _
 
-theorem symm_apply_apply (e : G ≃+c[a, b] H) {a} :
+@[simp] theorem symm_apply_apply (e : G ≃+c[a, b] H) (a) :
     e.symm (e a) = a :=
   e.toEquiv.symm_apply_apply _
 
