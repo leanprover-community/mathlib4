@@ -23,7 +23,7 @@ public lemma prod_zero_zero_lt_iff (i : Fin (p + 1) × Fin (q + 1)) :
   grind
 
 public lemma prod_lt_last_last_iff (i : Fin (p + 1) × Fin (q + 1)) :
-    i < (Fin.last _, Fin.last _) ↔ i.1.1 + i.2.1 < p + q := by
+    i < (Fin.last _, Fin.last _) ↔ i.1.val + i.2.val < p + q := by
   simp only [Prod.lt_iff, Fin.lt_def]
   grind
 
