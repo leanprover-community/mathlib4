@@ -333,11 +333,11 @@ In other words, it rotates elements in `[i, j]` one step to the right.
 -/
 /- `cycleIcc` is defined in two steps:
 1. The first part is `cycleRange ((j - i).castLT (sub_val_lt_sub hij))`, which is an element of
-`Perm (Fin (n - i))`. It rotates the sequence `(0 1 ... j-i)` while leaving `(j-i+1 ... n-i)`
-unchanged.
+   `Perm (Fin (n - i))`. It rotates the sequence `(0 1 ... j-i)` while leaving `(j-i+1 ... n-i)`
+   unchanged.
 2. Since `natAdd_castLEEmb (Nat.sub_le n i) : Fin (n - i) ↪ Fin n` maps each `x` to `x + i`, we can
-embed the first part into `Fin n` using `extendDomain` to obtain an element of `Perm (Fin n)`.
-This yields the cycle `(i i+1 ... j)` while leaving `(0 ... i-1)` and `(j+1 ... n-1)` unchanged.
+   embed the first part into `Fin n` using `extendDomain` to obtain an element of `Perm (Fin n)`.
+   This yields the cycle `(i i+1 ... j)` while leaving `(0 ... i-1)` and `(j+1 ... n-1)` unchanged.
 -/
 def cycleIcc (i j : Fin n) : Perm (Fin n) := if hij : i ≤ j then (cycleRange ((j - i).castLT
   (sub_val_lt_sub hij))).extendDomain (natAdd_castLEEmb (Nat.sub_le n i)).toEquivRange else 1

@@ -28,6 +28,7 @@ The following variables generalize the setting where:
 - `L` is a Lie algebra over `R`,
 - `V` is a Lie algebra module over `L`
 - `A` is a Lie ideal of `L`.
+
 Besides generalizing, it also make the proof of `lie_stable` syntactically smoother.
 -/
 variable {R L A V : Type*} [CommRing R]
