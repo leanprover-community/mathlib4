@@ -6595,6 +6595,7 @@ public import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
 public import Mathlib.RingTheory.Flat.FaithfullyFlat.Descent
 public import Mathlib.RingTheory.Flat.IsBaseChange
 public import Mathlib.RingTheory.Flat.Localization
+public import Mathlib.RingTheory.Flat.LocallyFree
 public import Mathlib.RingTheory.Flat.Rank
 public import Mathlib.RingTheory.Flat.Stability
 public import Mathlib.RingTheory.Flat.Tensor
@@ -7986,6 +7987,7 @@ public import Mathlib.Topology.Maps.Proper.Basic
 public import Mathlib.Topology.Maps.Proper.CompactlyGenerated
 public import Mathlib.Topology.Maps.Proper.UniversallyClosed
 public import Mathlib.Topology.Maps.Strict.Basic
+public import Mathlib.Topology.Maps.Strict.Group
 public import Mathlib.Topology.MetricSpace.Algebra
 public import Mathlib.Topology.MetricSpace.Antilipschitz
 public import Mathlib.Topology.MetricSpace.Basic
