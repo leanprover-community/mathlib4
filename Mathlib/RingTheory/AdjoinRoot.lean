@@ -1035,7 +1035,7 @@ noncomputable def quotientEquivQuotientMinpolyMap (pb : PowerBasis R S) (I : Ide
                         (by rw [AdjoinRoot.aeval_eq, AdjoinRoot.mk_self])
                         (minpoly.aeval _ _)).symm.toRingEquiv
                   (by rw [Ideal.map_map,
-                      ← AlgEquiv.coe_toRingHom_commutes, ← AdjoinRoot.algebraMap_eq,
+                      ← AlgEquiv.toRingHom_toAlgHom, ← AdjoinRoot.algebraMap_eq,
                       AlgHom.comp_algebraMap]))
                 (algebraMap R (S ⧸ I.map (algebraMap R S)) x) = algebraMap R _ x from fun x => by
                   rw [← Ideal.Quotient.mk_algebraMap, Ideal.quotientEquiv_apply,
