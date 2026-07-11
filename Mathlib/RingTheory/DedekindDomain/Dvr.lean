@@ -56,7 +56,7 @@ localization at every nonzero prime is a discrete valuation ring.
 
 This is equivalent to `IsDedekindDomain`.
 -/
-class IsDedekindDomainDvr : Prop extends IsNoetherian A A where
+class IsDedekindDomainDvr : Prop extends IsNoetherianRing A where
   is_dvr_at_nonzero_prime : ∀ P ≠ (⊥ : Ideal A), ∀ _ : P.IsPrime,
     IsDiscreteValuationRing (Localization.AtPrime P)
 
