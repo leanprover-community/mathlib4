@@ -522,6 +522,8 @@ given that it distributes over multiplication and the identity
 @[simps! apply]
 def ofLinearEquiv : A ≃ₛₐ[φ] B where
   __ := l
+  -- `__ := l` alone would unfold `toFun` to `l`'s raw fields instead of `⇑l`, making defeq
+  -- checks on the resulting equivalence very slow.
   toFun := l
   invFun := l.symm
   map_mul' := map_mul

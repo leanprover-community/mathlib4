@@ -342,6 +342,9 @@ theorem toLinearMap_id : toLinearMap (AlgHom.id R A) = LinearMap.id :=
 def ofLinearMap (f : A →ₛₗ[φ] B) (map_one : f 1 = 1) (map_mul : ∀ x y, f (x * y) = f x * f y) :
     A →ₛₐ[φ] B where
   __ := f
+  -- `__ := f` alone would unfold `toFun` to `f`'s raw fields instead of `⇑f`, making defeq
+  -- checks on the resulting hom very slow.
+  toFun := f
   map_one' := map_one
   map_mul' := map_mul
   map_zero' := by simp
