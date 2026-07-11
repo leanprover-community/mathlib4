@@ -375,7 +375,7 @@ lemma mem_codiscrete {S : Set X} :
     S ∈ codiscrete X ↔ ∀ x, Disjoint (𝓝[≠] x) (𝓟 Sᶜ) := by
   simp [codiscrete, mem_codiscreteWithin, compl_eq_univ_sdiff]
 
-lemma Disjoint.eventualy_nhdsWithin_specializes
+lemma Disjoint.eventually_nhdsWithin_specializes
     {p : X} {s : Set X} (hs : Disjoint (𝓝[s] p) cofinite) :
     ∀ᶠ x in 𝓝[s] p, x ⤳ p := by
   obtain ⟨t, h₁t, h₂t⟩ := disjoint_cofinite_right.mp hs
@@ -393,7 +393,7 @@ lemma Disjoint.nhdsWithin_eq_of_cofinite
     {p : X} {s : Set X} (hs : Disjoint (𝓝[s] p) cofinite) :
     𝓝[s] p = 𝓟 ({x | x ⤳ p} ∩ s) := by
   apply le_antisymm
-  · simpa using ⟨hs.eventualy_nhdsWithin_specializes, self_mem_nhdsWithin⟩
+  · simpa using ⟨hs.eventually_nhdsWithin_specializes, self_mem_nhdsWithin⟩
   · rw [← inf_principal, nhdsWithin]
     gcongr
     rw [Filter.principal_le_iff]
