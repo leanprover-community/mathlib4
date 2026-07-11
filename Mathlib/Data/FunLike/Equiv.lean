@@ -160,7 +160,7 @@ theorem inv_injective : Function.Injective (EquivLike.inv : E → β → α) := 
 
 instance (priority := 100) toFunLike : FunLike E α β where
   coe := (coe : E → α → β)
-  coe_injective' e g h :=
+  coe_injective e g h :=
     coe_injective' e g h ((left_inv e).eq_rightInverse (h.symm ▸ right_inv g))
 
 @[simp] theorem coe_apply {e : E} {a : α} : coe e a = e a := rfl

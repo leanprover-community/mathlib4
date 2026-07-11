@@ -122,7 +122,7 @@ protected theorem measurableSet_eq_of_countable_range (hτ : IsStoppingTime f τ
   have : {ω | τ ω = i} = {ω | τ ω ≤ i} \ ⋃ (j ∈ Set.range τ) (_ : j < i), {ω | τ ω ≤ j} := by
     ext1 a
     simp only [Set.mem_setOf_eq, Set.mem_range, Set.iUnion_exists, Set.iUnion_iUnion_eq',
-      Set.mem_diff, Set.mem_iUnion, exists_prop, not_exists, not_and]
+      Set.mem_sdiff, Set.mem_iUnion, exists_prop, not_exists, not_and]
     constructor <;> intro h
     · simp only [h, lt_iff_le_not_ge, le_refl, and_imp, imp_self, imp_true_iff, and_self_iff]
     · exact h.1.eq_or_lt.resolve_right fun h_lt => h.2 a h_lt le_rfl
@@ -588,7 +588,7 @@ protected theorem measurableSet_lt' [TopologicalSpace ι] [OrderTopology ι]
     MeasurableSet[hτ.measurableSpace] {ω | τ ω < i} := by
   have : {ω | τ ω < i} = {ω | τ ω ≤ i} \ {ω | τ ω = i} := by
     ext1 ω
-    simp only [lt_iff_le_and_ne, Set.mem_setOf_eq, Set.mem_diff]
+    simp only [lt_iff_le_and_ne, Set.mem_setOf_eq, Set.mem_sdiff]
   rw [this]
   exact (hτ.measurableSet_le' i).diff (hτ.measurableSet_eq' i)
 
@@ -627,7 +627,7 @@ protected theorem measurableSet_lt_of_countable_range' (hτ : IsStoppingTime f �
     MeasurableSet[hτ.measurableSpace] {ω | τ ω < i} := by
   have : {ω | τ ω < i} = {ω | τ ω ≤ i} \ {ω | τ ω = i} := by
     ext1 ω
-    simp only [lt_iff_le_and_ne, Set.mem_setOf_eq, Set.mem_diff]
+    simp only [lt_iff_le_and_ne, Set.mem_setOf_eq, Set.mem_sdiff]
   rw [this]
   exact (hτ.measurableSet_le' i).diff (hτ.measurableSet_eq_of_countable_range' h_countable i)
 
@@ -1311,7 +1311,6 @@ section AddCommMonoid
 
 variable [AddCommMonoid β]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem stoppedValue_eq {N : ℕ} (hbdd : ∀ ω, τ ω ≤ N) : stoppedValue u τ = fun x =>
     (∑ i ∈ Finset.range (N + 1), Set.indicator {ω | τ ω = i} (u i)) x := by
   refine stoppedValue_eq_of_mem_finset fun ω ↦ ?_
@@ -1319,9 +1318,8 @@ theorem stoppedValue_eq {N : ℕ} (hbdd : ∀ ω, τ ω ≤ N) : stoppedValue u 
   have h_top : τ ω ≠ ⊤ := fun h_contra ↦ by simp [h_contra] at hbdd
   lift τ ω to ℕ using h_top with t ht
   simp only [Nat.cast_le] at hbdd
-  simp only [ENat.some_eq_coe, Finset.coe_range, Set.mem_image, Set.mem_Iio, Nat.cast_inj,
-    exists_eq_right, gt_iff_lt]
-  grind
+  simp only [ENat.some_eq_coe, Finset.coe_range, Set.mem_image, Set.mem_Iio]
+  exact ⟨t, by simpa, Nat.cast_inj.mpr rfl⟩
 
 theorem stoppedProcess_eq (n : ℕ) : stoppedProcess u τ n = Set.indicator {a | n ≤ τ a} (u n) +
     ∑ i ∈ Finset.range n, Set.indicator {ω | τ ω = i} (u i) := by

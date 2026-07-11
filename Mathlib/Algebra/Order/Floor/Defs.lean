@@ -39,8 +39,7 @@ for `nnnorm`.
 
 ## TODO
 
-`LinearOrderedRing`/`LinearOrderedSemiring` can be relaxed to `OrderedRing`/`OrderedSemiring` in
-many lemmas.
+`LinearOrder` can be relaxed to `PartialOrder` in many lemmas.
 
 ## Tags
 
@@ -208,7 +207,7 @@ def FloorRing.ofCeil (α) [Ring α] [LinearOrder α] [IsOrderedRing α] (ceil : 
     gc_coe_floor := fun a z => by rw [le_neg, gc_ceil_coe, Int.cast_neg, neg_le_neg_iff]
     gc_ceil_coe }
 
-open Classical in
+open scoped Classical in
 private noncomputable def floorAux
     {α} [Ring α] [PartialOrder α] [IsOrderedRing α] [Nontrivial α] {x : α}
     (below : ∃ n : ℤ, n ≤ x) (above : ∃ n : ℤ, x ≤ n) :

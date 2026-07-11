@@ -505,8 +505,10 @@ theorem closure_union_one (s : Set G) : closure (s ∪ {1}) = closure s := by
   rw [union_singleton, closure_insert_one]
 
 @[to_additive (attr := simp)]
-theorem closure_diff_one (s : Set G) : closure (s \ {1}) = closure s := by
-  rw [← closure_union_one (s \ {1}), diff_union_self, closure_union_one]
+theorem closure_sdiff_one (s : Set G) : closure (s \ {1}) = closure s := by
+  rw [← closure_union_one (s \ {1}), sdiff_union_self, closure_union_one]
+
+@[deprecated (since := "2026-06-03")] alias closure_diff_one := closure_sdiff_one
 
 theorem toAddSubgroup_closure (S : Set G) :
     (Subgroup.closure S).toAddSubgroup = AddSubgroup.closure (Additive.toMul ⁻¹' S) :=
