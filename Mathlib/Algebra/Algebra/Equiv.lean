@@ -204,10 +204,10 @@ lemma toAlgHom_toRingHom : ((e : A₁ →ₐ[R] A₂) : A₁ →+* A₂) = e :=
   rfl
 
 /-- The two paths coercion can take to a `RingHom` are equivalent -/
-theorem coe_toRingHom_commutes : ((e : A₁ →ₐ[R] A₂) : A₁ →+* A₂) = ((e : A₁ ≃+* A₂) : A₁ →+* A₂) :=
+theorem toRingHom_toAlgHom : ((e : A₁ →ₐ[R] A₂) : A₁ →+* A₂) = ((e : A₁ ≃+* A₂) : A₁ →+* A₂) :=
   rfl
 
-@[deprecated (since := "2026-05-05")] alias coe_ringHom_commutes := coe_toRingHom_commutes
+@[deprecated (since := "2026-05-05")] alias coe_ringHom_commutes := toRingHom_toAlgHom
 
 @[simp]
 theorem commutes : ∀ r : R, e (algebraMap R A₁ r) = algebraMap R A₂ r :=
