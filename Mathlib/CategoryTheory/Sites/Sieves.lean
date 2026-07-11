@@ -271,7 +271,7 @@ lemma ofArrows_of_unique {X : C} {ι : Type*} [Unique ι] {Y : ι → C} (f : �
   obtain rfl : i = default := Subsingleton.elim _ _
   simp
 
-theorem ofArrows_pUnit : (ofArrows _ fun _ : PUnit => f) = singleton f := by
+theorem ofArrows_pUnit : (ofArrows _ fun _ : PUnit.{w + 1} => f) = singleton f := by
   rw [ofArrows_of_unique]
 
 @[grind =]
@@ -316,7 +316,7 @@ lemma pushforward_ofArrows {ι : Type*} {U : ι → C} {X Y : C} (g : ∀ i, U i
 
 lemma pushforward_singleton {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (singleton f).pushforward g = .singleton (f ≫ g) := by
-  rw [← ofArrows_pUnit.{_, _, 0}, pushforward_ofArrows, ofArrows_pUnit.{_, _, 0}]
+  rw [← ofArrows_pUnit.{0}, pushforward_ofArrows, ofArrows_pUnit.{0}]
 
 /-- The pullback of a presieve `R` on `Y` along a morphism `f : X ⟶ Y` is the presieve on `X`
 given by all morphisms `g : Z ⟶ X` such that `f ≫ g` is in `R`. -/
@@ -475,7 +475,7 @@ lemma map_ofArrows {X : C} {ι : Type*} {Y : ι → C} (f : ∀ i, Y i ⟶ X) :
 
 @[simp]
 lemma map_singleton {X Y : C} (f : X ⟶ Y) : (singleton f).map F = singleton (F.map f) := by
-  rw [← ofArrows_pUnit.{_, _, 0}, map_ofArrows, ofArrows_pUnit]
+  rw [← ofArrows_pUnit.{0}, map_ofArrows, ofArrows_pUnit]
 
 lemma map_le_iff_le_functorPullback {R : Presieve X} {S : Presieve (F.obj X)} :
     R.map F ≤ S ↔ R ≤ S.functorPullback F :=
@@ -757,8 +757,11 @@ theorem le_generate (R : Presieve X) : R ≤ generate R :=
 theorem generate_sieve (S : Sieve X) : generate S = S :=
   giGenerate.l_u_eq S
 
-lemma generate_mono : Monotone (generate : Presieve X → _) :=
-  (giGenerate (X := X)).gc.monotone_l
+@[gcongr]
+theorem generate_mono : Monotone (generate : Presieve X → Sieve X) := giGenerate.gc.monotone_l
+
+@[gcongr]
+theorem arrows_mono : Monotone (arrows : Sieve X → Presieve X) := giGenerate.gc.monotone_u
 
 /-- If the identity arrow is in a sieve, the sieve is maximal. -/
 theorem id_mem_iff_eq_top : S (𝟙 X) ↔ S = ⊤ :=
@@ -1440,7 +1443,7 @@ def shrinkFunctorUliftFunctorIso [LocallySmall.{w} C] [LocallySmall.{max w' w} C
     fun {U V} f ↦ by
       dsimp
       ext
-      dsimp [Equiv.subtypeEquiv]
+      dsimp [Equiv.subtypeEquiv_apply]
       rw [shrinkYonedaObjObjEquiv_obj_map, shrinkYonedaObjObjEquiv_symm_comp]
       simp
 
@@ -1459,7 +1462,7 @@ variable (S) in
 noncomputable def shrinkFunctorIsoFunctor : (shrinkFunctor.{v₁} S).toFunctor ≅ S.functor :=
   NatIso.ofComponents (fun Y ↦ Equiv.toIso <| Equiv.subtypeEquiv shrinkYonedaObjObjEquiv (by simp))
     fun {U V} f ↦ by
-      dsimp [Equiv.subtypeEquiv]
+      dsimp [Equiv.subtypeEquiv_apply]
       ext
       simp [shrinkYonedaObjObjEquiv_obj_map]
 
@@ -1468,6 +1471,9 @@ end Sieve
 lemma Presieve.functorPullback_arrows {X : C} (S : Sieve (F.obj X)) :
     Presieve.functorPullback F S.arrows = Sieve.functorPullback F S :=
   rfl
+
+theorem Presieve.map_le_functorPushforward (S : Presieve X) : S.map F ≤ S.functorPushforward F := by
+  grw [← Sieve.arrows_generate_map_eq_functorPushforward, ← Sieve.le_generate]
 
 lemma Presieve.bind_ofArrows_le_bindOfArrows {ι : Type*} {X : C} (Z : ι → C)
     (f : ∀ i, Z i ⟶ X) (R : ∀ i, Presieve (Z i)) :
@@ -1479,6 +1485,7 @@ lemma Presieve.bind_ofArrows_le_bindOfArrows {ι : Type*} {X : C} (Z : ι → C)
   rw [← Sieve.ofArrows.fac hv', ← reassoc_of% hu]
   exact ⟨S, u, u' ≫ f _, ⟨_, _, h⟩, rfl⟩
 
+@[deprecated "Use Sieve.arrows_generate_map_eq_functorPushforward instead." (since := "2026-07-09")]
 lemma Presieve.functorPushforward_overForget
     {S : C} {X : Over S} (R : Presieve X) :
     Presieve.functorPushforward (Over.forget S) R =
