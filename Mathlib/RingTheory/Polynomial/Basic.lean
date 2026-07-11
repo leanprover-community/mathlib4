@@ -772,7 +772,6 @@ end MvPolynomial
 
 end Prime
 
-set_option backward.isDefEq.respectTransparency false in
 /-- **Hilbert basis theorem**: a polynomial ring over a Noetherian ring is a Noetherian ring. -/
 protected theorem Polynomial.isNoetherianRing [inst : IsNoetherianRing R] : IsNoetherianRing R[X] :=
   isNoetherianRing_iff.2
