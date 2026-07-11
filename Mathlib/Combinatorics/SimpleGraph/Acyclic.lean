@@ -523,7 +523,7 @@ lemma isTree_iff_connected_and_card [Finite V] :
     ← edgeFinset_card, add_lt_add_iff_right]
   exact Finset.card_lt_card <| by simpa [deleteEdges, edgeFinset]
 
-/-- An acyclic graph on `n` vertices with `c` connected components has exactly `n - c` edges -/
+/-- An acyclic graph on `n` vertices with `c` connected components has exactly `n - c` edges. -/
 theorem IsAcyclic.ncard_edgeSet_add_card_connectedComponent [Finite V] (h : G.IsAcyclic) :
     G.edgeSet.ncard + Nat.card G.ConnectedComponent = Nat.card V := by
   have := Fintype.ofFinite G.ConnectedComponent
@@ -534,19 +534,19 @@ theorem IsAcyclic.ncard_edgeSet_add_card_connectedComponent [Finite V] (h : G.Is
   ext
   exact (isTree_iff_connected_and_card.mp <| h.isTree_connectedComponent _).right
 
-/-- An acyclic graph on `n` vertices has at most `n - 1` edges -/
+/-- An acyclic graph on `n` vertices has at most `n - 1` edges. -/
 theorem IsAcyclic.ncard_edgeSet_add_one_le_card [Finite V] [Nonempty V] (h : G.IsAcyclic) :
     G.edgeSet.ncard + 1 ≤ Nat.card V := by
   grind [h.ncard_edgeSet_add_card_connectedComponent, Nat.card_pos]
 
-/-- A graph on `n` vertices with at least `n` edges has a cycle -/
+/-- A graph on `n` vertices with at least `n` edges has a cycle. -/
 theorem exists_isCycle_of_card_le [Finite V] [Nonempty V]
     (h : Nat.card V ≤ G.edgeSet.ncard) : ∃ (v : V) (c : G.Walk v v), c.IsCycle := by
   suffices ¬G.IsAcyclic by grind [IsAcyclic]
   apply mt IsAcyclic.ncard_edgeSet_add_one_le_card
   lia
 
-/-- A graph on `n` vertices is a tree iff it is acyclic and has exactly `n - 1` edges -/
+/-- A graph on `n` vertices is a tree iff it is acyclic and has exactly `n - 1` edges. -/
 theorem isTree_iff_isAcyclic_and_ncard_edgeSet_add_one_eq_card [Finite V] :
     G.IsTree ↔ G.IsAcyclic ∧ G.edgeSet.ncard + 1 = Nat.card V := by
   refine ⟨fun h ↦ ⟨h.isAcyclic, h.ncard_edgeSet_add_one⟩, fun ⟨h, _⟩ ↦ ⟨?_, h⟩⟩
