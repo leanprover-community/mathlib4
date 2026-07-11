@@ -106,7 +106,7 @@ theorem mul (f g : F[X]) (hf : f ≠ 0) (hg : g ≠ 0) [IsSplittingField F K f]
 
 end ScalarTower
 
-open Classical in
+open scoped Classical in
 /-- Splitting field of `f` embeds into any field that splits `f`. -/
 def lift [Algebra K F] (f : K[X]) [IsSplittingField K L f]
     (hf : Splits (f.map (algebraMap K F))) : L →ₐ[K] F :=
