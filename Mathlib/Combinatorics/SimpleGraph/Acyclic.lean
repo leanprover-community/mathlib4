@@ -478,6 +478,17 @@ theorem connected_iff_card_connectedComponent_eq_one :
   simp_rw [connected_iff, preconnected_iff_reachable_eq_top, Nat.card_eq_one_iff_unique, this,
     nonempty_quotient_iff, Quotient.subsingleton_iff, reachableSetoid, Setoid.mk_eq_top]
 
+variable (G) in
+theorem sum_connectedComponent_ncard_supp [Finite V] [Fintype G.ConnectedComponent] :
+    ∑ c : G.ConnectedComponent, c.supp.ncard = Nat.card V := by
+  rw [Nat.card_congr G.verticesEquivSigmaConnectedComponent, Nat.card_sigma]
+  rfl
+
+variable (G) in
+theorem sum_connectedComponent_ncard_edgeSet [Finite V] [Fintype G.ConnectedComponent] :
+    ∑ c : G.ConnectedComponent, c.toSimpleGraph.edgeSet.ncard = G.edgeSet.ncard := by
+  simpa [Nat.card_sigma] using Nat.card_congr G.edgeSetEquivSigmaConnectedComponent.symm
+
 /-- Every connected graph on `n` vertices has at least `n-1` edges. -/
 lemma Connected.card_vert_le_card_edgeSet_add_one (h : G.Connected) :
     Nat.card V ≤ Nat.card G.edgeSet + 1 := by
@@ -505,11 +516,10 @@ lemma isTree_iff_connected_and_card [Finite V] :
 theorem IsAcyclic.ncard_edgeSet_add_card_connectedComponent [Finite V] (h : G.IsAcyclic) :
     G.edgeSet.ncard + Nat.card G.ConnectedComponent = Nat.card V := by
   have := Fintype.ofFinite G.ConnectedComponent
-  rw [Nat.card_congr G.verticesEquivSigmaConnectedComponent, Nat.card_sigma, ← Nat.card_coe_set_eq,
-    Nat.card_congr G.edgeSetEquivSigmaConnectedComponent, Nat.card_sigma,
+  rw [← sum_connectedComponent_ncard_edgeSet, ← G.sum_connectedComponent_ncard_supp,
     ← Fintype.card_eq_nat_card, Fintype.card_eq_sum_ones, ← Finset.sum_add_distrib]
-  congr!
-  exact h.isTree_connectedComponent _ |>.ncard_edgeSet_add_one
+  simp_rw [h.isTree_connectedComponent _ |>.ncard_edgeSet_add_one]
+  rfl
 
 /-- An acyclic graph on `n` vertices has at most `n - 1` edges. -/
 theorem IsAcyclic.ncard_edgeSet_add_one_le_card [Finite V] [Nonempty V] (h : G.IsAcyclic) :
