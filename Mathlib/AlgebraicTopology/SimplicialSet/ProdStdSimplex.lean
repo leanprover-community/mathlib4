@@ -190,7 +190,7 @@ private lemma exists_nonDegenerate_max_dim_aux {d : ℕ}
         (objEquiv x.val)) by
     obtain ⟨i, u, hf⟩ := this
     simp only [stdSimplex.mem_ofSimplex_obj_iff]
-    refine ⟨⟨objEquiv.{u}.symm ⟨_, hf.monotone⟩,
+    refine ⟨⟨objEquiv.symm ⟨_, hf.monotone⟩,
       (nonDegenerate_iff_strictMono_objEquiv _).2 hf⟩,
       stdSimplex.objEquiv.symm (SimplexCategory.δ i),
       objEquiv.injective ?_⟩
