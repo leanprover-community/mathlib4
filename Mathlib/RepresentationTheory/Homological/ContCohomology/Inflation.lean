@@ -3,8 +3,10 @@ Copyright (c) 2026 Richard Hill. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Richard Hill
 -/
-import Mathlib.RepresentationTheory.Homological.ContCohomology.Functoriality
-import Mathlib.Topology.Algebra.Group.Quotient
+module
+
+public import Mathlib.RepresentationTheory.Homological.ContCohomology.Functoriality
+public import Mathlib.Topology.Algebra.Group.Quotient
 
 /-!
 # Inflation maps in continuous cohomology
@@ -25,6 +27,8 @@ composing with the map induced by the inclusion `π^N → π`.
 * `ContinuousCohomology.inflNatTrans R N n`: the inflation maps in degree `n`, as a natural
   transformation `relInvariantsFunctor R N ⋙ HₜFunct R (G ⧸ N) n ⟶ HₜFunct R G n`.
 -/
+
+@[expose] public section
 
 universe u₁ u₂ u₃
 open CategoryTheory
@@ -181,3 +185,5 @@ noncomputable abbrev inflNatTrans (n : ℕ) :
 
 end ContinuousCohomology
 end
+end
+
