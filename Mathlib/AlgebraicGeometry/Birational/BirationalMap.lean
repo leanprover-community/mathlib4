@@ -218,8 +218,7 @@ lemma PartialIso.toPartialMap_comp_symm (f : X.PartialIso Y) :
       (f.iso.hom ≫ f.target.ι) ∣_ f.target ≫ f.iso.inv ≫ f.source.ι = _
     simp_rw [morphismRestrict_comp, Opens.morphismRestrict_ι, homOfLE_ι,
       morphismRestrict_ι, Category.assoc, Iso.hom_inv_id_assoc, Hom.isoImage_inv_ι, isoOfEq_hom,
-      PartialMap.restrict_hom, PartialMap.id_domain, Hom.toPartialMap_hom, topIso_hom,
-      Category.comp_id, homOfLE_ι]
+      PartialMap.restrict_hom, PartialMap.id_domain, PartialMap.id_hom, topIso_hom, homOfLE_ι]
     exact (X.homOfLE_ι _).symm
 
 lemma PartialIso.symm_toPartialMap_comp (f : X.PartialIso Y) :
@@ -234,8 +233,7 @@ lemma PartialIso.symm_toPartialMap_comp (f : X.PartialIso Y) :
       (f.iso.inv ≫ f.source.ι) ∣_ f.source ≫ f.iso.hom ≫ f.target.ι = _
     simp_rw [morphismRestrict_comp, Opens.morphismRestrict_ι, homOfLE_ι,
       morphismRestrict_ι, Category.assoc, Iso.inv_hom_id_assoc, Hom.isoImage_inv_ι, isoOfEq_hom,
-      PartialMap.restrict_hom, PartialMap.id_domain, Hom.toPartialMap_hom, topIso_hom,
-      Category.comp_id, homOfLE_ι]
+      PartialMap.restrict_hom, PartialMap.id_domain, PartialMap.id_hom, topIso_hom, homOfLE_ι]
     exact (Y.homOfLE_ι _).symm
 
 /-- A partial isomorphism gives rise to a birational map. -/

@@ -147,6 +147,11 @@ variable (X) in
 /-- The identity partial map. -/
 protected abbrev id : X.PartialMap X := (𝟙 X : X ⟶ X).toPartialMap
 
+lemma id_domain : (PartialMap.id X).domain = ⊤ := rfl
+
+lemma id_hom : (PartialMap.id X).hom = X.topIso.hom := by
+  rw [Hom.toPartialMap_hom, Category.comp_id]
+
 @[simp]
 lemma id_compHom (f : X ⟶ Y) : (PartialMap.id X).compHom f = f.toPartialMap := by
   apply PartialMap.ext _ _ rfl
