@@ -153,8 +153,7 @@ theorem card_support_eq_zero {a : FreeAbelianGroup X} : a.support.card = 0 ↔ a
 
 theorem sum_support_coeff_smul_of (a : FreeAbelianGroup X) :
     ∑ x ∈ a.support, (coeff x a) • of x = a := by
-  conv_lhs => rw [← Finsupp.toFreeAbelianGroup_toFinsupp a]
-  simp [Finsupp.toFreeAbelianGroup, Finsupp.sum, FreeAbelianGroup.support,
-    FreeAbelianGroup.coeff, AddMonoidHom.flip_apply, smulAddHom_apply]
+  conv_rhs => rw [← toFreeAbelianGroup_toFinsupp a]
+  simp [toFreeAbelianGroup, sum, support, coeff]
 
 end FreeAbelianGroup
