@@ -30,7 +30,6 @@ theorem charP_zero_or_prime_power (R : Type*) [CommRing R] [IsLocalRing R] (q : 
   apply or_iff_not_imp_left.2
   intro q_pos
   let K := IsLocalRing.ResidueField R
-  haveI RM_char := ringChar.charP K
   let r := ringChar K
   let n := q.factorization r
   -- `r := char(R/m)` is either prime or zero:

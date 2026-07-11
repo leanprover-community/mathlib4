@@ -204,7 +204,6 @@ theorem eq_bot_of_comap_eq_bot [Nontrivial R] [IsDomain S] [Algebra.IsIntegral R
 theorem isMaximal_comap_of_isIntegral_of_isMaximal [Algebra.IsIntegral R S] (I : Ideal S)
     [hI : I.IsMaximal] : IsMaximal (I.comap (algebraMap R S)) := by
   refine Ideal.Quotient.maximal_of_isField _ ?_
-  haveI : IsPrime (I.comap (algebraMap R S)) := comap_isPrime _ _
   exact isField_of_isIntegral_of_isField
     algebraMap_quotient_injective (by rwa [← Quotient.maximal_ideal_iff_isField_quotient])
 

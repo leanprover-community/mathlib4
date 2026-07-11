@@ -252,7 +252,6 @@ theorem finStronglyMeasurable_of_set_sigmaFinite [TopologicalSpace β] [Zero β]
     {m : MeasurableSpace α} {μ : Measure α} (hf_meas : StronglyMeasurable f) {t : Set α}
     (ht : MeasurableSet t) (hft_zero : ∀ x ∈ tᶜ, f x = 0) (htμ : SigmaFinite (μ.restrict t)) :
     FinStronglyMeasurable f μ := by
-  haveI : SigmaFinite (μ.restrict t) := htμ
   let S := spanningSets (μ.restrict t)
   have hS_meas : ∀ n, MeasurableSet (S n) := measurableSet_spanningSets (μ.restrict t)
   let f_approx := hf_meas.approx
@@ -673,7 +672,6 @@ protected theorem isSeparable_range {m : MeasurableSpace α} [TopologicalSpace �
 theorem separableSpace_range_union_singleton {_ : MeasurableSpace α} [TopologicalSpace β]
     [PseudoMetrizableSpace β] (hf : StronglyMeasurable f) {b : β} :
     SeparableSpace (range f ∪ {b} : Set β) :=
-  letI := pseudoMetrizableSpacePseudoMetric β
   (hf.isSeparable_range.union (finite_singleton _).isSeparable).separableSpace
 
 section SecondCountableStronglyMeasurable
@@ -732,7 +730,6 @@ theorem _root_.Continuous.stronglyMeasurable_of_mulSupport_subset_isCompact
     [PseudoMetrizableSpace β] [One β] {f : α → β} (hf : Continuous f) {k : Set α}
     (hk : IsCompact k) (h'f : mulSupport f ⊆ k) : StronglyMeasurable f := by
   borelize β
-  letI : PseudoMetricSpace β := pseudoMetrizableSpacePseudoMetric β
   rw [stronglyMeasurable_iff_measurable_separable]
   exact ⟨hf.measurable, (isCompact_range_of_mulSupport_subset_isCompact hf hk h'f).isSeparable⟩
 
@@ -755,14 +752,12 @@ lemma _root_.HasCompactSupport.stronglyMeasurable_of_prod {X Y : Type*} [Zero α
     StronglyMeasurable f := by
   borelize α
   apply stronglyMeasurable_iff_measurable_separable.2 ⟨h'f.measurable_of_prod hf, ?_⟩
-  letI : PseudoMetricSpace α := pseudoMetrizableSpacePseudoMetric α
   exact IsCompact.isSeparable (s := range f) (h'f.isCompact_range hf)
 
 /-- If `g` is a topological embedding, then `f` is strongly measurable iff `g ∘ f` is. -/
 theorem _root_.Embedding.comp_stronglyMeasurable_iff {m : MeasurableSpace α} [TopologicalSpace β]
     [PseudoMetrizableSpace β] [TopologicalSpace γ] [PseudoMetrizableSpace γ] {g : β → γ} {f : α → β}
     (hg : IsEmbedding g) : (StronglyMeasurable fun x => g (f x)) ↔ StronglyMeasurable f := by
-  letI := pseudoMetrizableSpacePseudoMetric γ
   borelize β γ
   refine
     ⟨fun H => stronglyMeasurable_iff_measurable_separable.2 ⟨?_, ?_⟩, fun H =>

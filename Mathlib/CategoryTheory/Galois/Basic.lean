@@ -220,12 +220,6 @@ variable [PreGaloisCategory C] [FiberFunctor F]
 /-- An object is initial if and only if its fiber is empty. -/
 lemma initial_iff_fiber_empty (X : C) : Nonempty (IsInitial X) ↔ IsEmpty (F.obj X) := by
   rw [(IsInitial.isInitialIffObj F X).nonempty_congr]
-  haveI : PreservesFiniteColimits (forget FintypeCat) := by
-    change PreservesFiniteColimits FintypeCat.incl
-    infer_instance
-  haveI : ReflectsColimit (Functor.empty.{0} _) (forget FintypeCat) := by
-    change ReflectsColimit (Functor.empty.{0} _) FintypeCat.incl
-    infer_instance
   exact Concrete.initial_iff_empty_of_preserves_of_reflects (F.obj X)
 
 /-- An object is not initial if and only if its fiber is nonempty. -/

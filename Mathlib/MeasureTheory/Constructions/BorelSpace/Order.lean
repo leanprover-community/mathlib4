@@ -296,7 +296,6 @@ theorem Dense.borel_eq_generateFrom_Icc_mem_aux {α : Type*} [TopologicalSpace �
     borel α = .generateFrom {S : Set α | ∃ l ∈ s, ∃ u ∈ s, l ≤ u ∧ Icc l u = S} := by
   set S : Set (Set α) := { S | ∃ l ∈ s, ∃ u ∈ s, l ≤ u ∧ Icc l u = S }
   refine le_antisymm ?_ (generateFrom_Icc_mem_le_borel _ _)
-  letI : MeasurableSpace α := generateFrom S
   rw [borel_eq_generateFrom_Iio]
   refine generateFrom_le (forall_mem_range.2 fun a => ?_)
   rcases hd.exists_countable_dense_subset_bot_top with ⟨t, hts, hc, htd, htb, -⟩
@@ -357,7 +356,6 @@ theorem Dense.borel_eq_generateFrom_Ico_mem_aux {α : Type*} [TopologicalSpace �
     borel α = .generateFrom { S : Set α | ∃ l ∈ s, ∃ u ∈ s, l < u ∧ Ico l u = S } := by
   set S : Set (Set α) := { S | ∃ l ∈ s, ∃ u ∈ s, l < u ∧ Ico l u = S }
   refine le_antisymm ?_ (generateFrom_Ico_mem_le_borel _ _)
-  letI : MeasurableSpace α := generateFrom S
   rw [borel_eq_generateFrom_Iio]
   refine generateFrom_le (forall_mem_range.2 fun a => ?_)
   rcases hd.exists_countable_dense_subset_bot_top with ⟨t, hts, hc, htd, htb, -⟩

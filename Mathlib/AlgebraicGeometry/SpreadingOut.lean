@@ -250,7 +250,6 @@ lemma exists_lift_of_germInjective_aux {U : X.Opens} {x : X} (hxU)
     rw [← SetLike.mem_coe, TopologicalSpace.Opens.coe_inf, TopologicalSpace.Opens.coe_finset_inf]
     exact ⟨by simpa using fun x _ ↦ hxW x, hxU⟩
   refine ⟨s.inf W ⊓ U, H, inf_le_right, ?_⟩
-  letI := φRX.hom.toAlgebra
   letI := (φRX ≫ X.presheaf.germ U x hxU).hom.toAlgebra
   letI := (φRX ≫ X.presheaf.map (homOfLE (inf_le_right (a := s.inf W))).op).hom.toAlgebra
   let φ' : A →ₐ[R] X.presheaf.stalk x :=

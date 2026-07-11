@@ -149,7 +149,6 @@ lemma inrX_fstX (i j : ι) (hij : c.Rel i j) :
 lemma inlX_XIsoBiprod_hom (i j : ι) (hij : c.Rel j i) :
     haveI := HasHomotopyCofiber.hasBinaryBiproduct φ _ _ hij
     inlX φ i j hij ≫ (XIsoBiprod φ j i hij).hom = biprod.inl := by
-  haveI := HasHomotopyCofiber.hasBinaryBiproduct φ _ _ hij
   simp [inlX]
 
 @[reassoc (attr := simp)]
@@ -163,7 +162,6 @@ lemma inrX_XIsoBiprod_hom (i j : ι) (hij : c.Rel j i) :
     haveI := HasHomotopyCofiber.hasBinaryBiproduct φ _ _ hij
     inrX φ j ≫ (XIsoBiprod φ j i hij).hom = biprod.inr := by
   obtain rfl := c.next_eq' hij
-  haveI := HasHomotopyCofiber.hasBinaryBiproduct φ _ _ hij
   simp [inrX, XIsoBiprod, dif_pos hij]
 
 @[reassoc (attr := simp)]

@@ -81,9 +81,6 @@ theorem MvPolynomial.sum_eval_eq_zero (f : MvPolynomial σ K)
     _ = 0 := by rw [sum_pow_lt_card_sub_one K _ hi, mul_zero]
   intro a
   let e' : { j // j = i } ⊕ { j // j ≠ i } ≃ σ := Equiv.sumCompl _
-  letI : Unique { j // j = i } :=
-    { default := ⟨i, rfl⟩
-      uniq := fun ⟨j, h⟩ => Subtype.val_injective h }
   calc
     (∏ j : σ, (e a : σ → K) j ^ d j) =
         (e a : σ → K) i ^ d i * ∏ j : { j // j ≠ i }, (e a : σ → K) j ^ d j := by

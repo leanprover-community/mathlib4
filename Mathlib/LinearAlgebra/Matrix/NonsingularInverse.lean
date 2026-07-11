@@ -188,7 +188,6 @@ theorem invOf_eq_nonsing_inv [Invertible A] : ⅟A = A⁻¹ := by
 nonsingular inverse. -/
 @[simp, norm_cast]
 theorem coe_units_inv (A : (Matrix n n α)ˣ) : ↑A⁻¹ = (A⁻¹ : Matrix n n α) := by
-  letI := A.invertible
   rw [← invOf_eq_nonsing_inv, invOf_units]
 
 /-- The nonsingular inverse is the same as the general `Ring.inverse`. -/

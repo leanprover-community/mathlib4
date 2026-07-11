@@ -287,7 +287,6 @@ theorem isIntegral_of_irreducibleSpace_of_isReduced [IsReduced X] [H : Irreducib
     IsIntegral X := by
   constructor; · infer_instance
   intro U hU
-  haveI := (@LocallyRingedSpace.component_nontrivial X.toLocallyRingedSpace U hU).1
   have : NoZeroDivisors
       (X.toLocallyRingedSpace.toSheafedSpace.toPresheafedSpace.presheaf.obj (op U)) := by
     refine ⟨fun {a b} e => ?_⟩

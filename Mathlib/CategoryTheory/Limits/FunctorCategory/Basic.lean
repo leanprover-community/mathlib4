@@ -406,7 +406,6 @@ lemma preservesLimit_of_evaluation (F : D ⥤ K ⥤ C) (G : J ⥤ D)
   ⟨fun {c} hc => ⟨by
     apply evaluationJointlyReflectsLimits
     intro X
-    haveI := H X
     change IsLimit ((F ⋙ (evaluation K C).obj X).mapCone c)
     exact isLimitOfPreserves _ hc⟩⟩
 
@@ -438,7 +437,6 @@ lemma preservesColimit_of_evaluation (F : D ⥤ K ⥤ C) (G : J ⥤ D)
   ⟨fun {c} hc => ⟨by
     apply evaluationJointlyReflectsColimits
     intro X
-    haveI := H X
     change IsColimit ((F ⋙ (evaluation K C).obj X).mapCocone c)
     exact isColimitOfPreserves _ hc⟩⟩
 

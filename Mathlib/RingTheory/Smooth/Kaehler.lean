@@ -116,8 +116,6 @@ def retractionOfSectionOfKerSqZero : S ⊗[P] Ω[P⁄R] →ₗ[P] RingHom.ker (a
 lemma retractionOfSectionOfKerSqZero_tmul_D (s : S) (t : P) :
     retractionOfSectionOfKerSqZero g hf' hg (s ⊗ₜ .D _ _ t) =
       g s * t - g s * g (algebraMap _ _ t) := by
-  letI := g.toRingHom.toAlgebra
-  haveI := isScalarTower_of_section_of_ker_sqZero g hf' hg
   simp only [retractionOfSectionOfKerSqZero, LinearMap.coe_restrictScalars,
     LinearMap.liftBaseChange_tmul, SetLike.val_smul_of_tower]
   -- The issue is a mismatch between `RingHom.ker (algebraMap P S)` and

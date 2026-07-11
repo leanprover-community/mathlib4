@@ -228,7 +228,6 @@ theorem IntermediateField.sepDegree_adjoin_eq_of_isAlgebraic_of_isPurelyInsepara
     exact adjoin.mono _ _ _ Set.subset_union_right
   let i : M →+* L := Subsemiring.inclusion hi
   letI : Algebra M L := i.toAlgebra
-  letI : SMul M L := Algebra.toSMul
   haveI : IsScalarTower F M L := IsScalarTower.of_algebraMap_eq (congrFun rfl)
   haveI : IsPurelyInseparable M L := by
     change IsPurelyInseparable M (extendScalars hi)

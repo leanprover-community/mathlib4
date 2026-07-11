@@ -54,7 +54,6 @@ Any sequence of `2 * p - 1` elements of `ZMod p` contains a subsequence of `p` e
 zero. -/
 private theorem ZMod.erdos_ginzburg_ziv_prime (a : ι → ZMod p) (hs : #s = 2 * p - 1) :
     ∃ t ⊆ s, #t = p ∧ ∑ i ∈ t, a i = 0 := by
-  haveI : NeZero p := inferInstance
   classical
   -- Let `N` be the number of common roots of our polynomials `f₁` and `f₂` (`f s ff` and `f s tt`).
   set N := Fintype.card {x // eval x (f₁ s a) = 0 ∧ eval x (f₂ s a) = 0}

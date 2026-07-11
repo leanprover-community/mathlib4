@@ -235,7 +235,6 @@ lemma preservesFiniteColimits_of_preservesFiniteColimitsOfSize (F : C ⥤ D)
       ∀ (J : Type w) {𝒥 : SmallCategory J} (_ : @FinCategory J 𝒥), PreservesColimitsOfShape J F) :
     PreservesFiniteColimits F where
       preservesFiniteColimits J (_ : SmallCategory J) _ := by
-        letI : Category (ULiftHom (ULift J)) := ULiftHom.category
         haveI := h (ULiftHom (ULift J)) CategoryTheory.finCategoryUlift
         exact preservesColimitsOfShape_of_equiv (ULiftHomULiftCategory.equiv J).symm F
 

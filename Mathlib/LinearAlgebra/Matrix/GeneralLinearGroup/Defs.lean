@@ -150,7 +150,6 @@ theorem coe_one : ↑(1 : GL n R) = (1 : Matrix n n R) :=
   rfl
 
 theorem coe_inv : ↑A⁻¹ = (↑A : Matrix n n R)⁻¹ :=
-  letI := A.invertible
   invOf_eq_nonsing_inv (↑A : Matrix n n R)
 
 @[simp]

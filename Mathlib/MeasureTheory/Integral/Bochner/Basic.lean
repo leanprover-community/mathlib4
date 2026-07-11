@@ -1325,7 +1325,6 @@ theorem eLpNorm_one_le_of_le {r : ℝ≥0} (hfint : Integrable f μ) (hfint' : 0
     · exact le_top
     · simp [hr]
     · simp
-  haveI := hμ
   rw [integral_eq_integral_pos_part_sub_integral_neg_part hfint, sub_nonneg] at hfint'
   have hposbdd : ∫ ω, max (f ω) 0 ∂μ ≤ μ.real Set.univ • (r : ℝ) := by
     rw [← integral_const]

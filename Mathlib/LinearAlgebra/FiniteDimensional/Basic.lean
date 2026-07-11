@@ -270,7 +270,6 @@ variable {K L : Type*} [Field K] [Ring L] [Algebra K L] {F E : Subalgebra K L}
 /-- If a subalgebra is contained in a finite-dimensional
 subalgebra with the same or smaller dimension, they are equal. -/
 theorem eq_of_le_of_finrank_le (h_le : F ≤ E) (h_finrank : finrank K E ≤ finrank K F) : F = E :=
-  haveI : Module.Finite K (Subalgebra.toSubmodule E) := hfin
   toSubmodule_injective <| Submodule.eq_of_le_of_finrank_le h_le h_finrank
 
 /-- If a subalgebra is contained in a finite-dimensional

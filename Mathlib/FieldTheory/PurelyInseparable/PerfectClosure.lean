@@ -104,7 +104,6 @@ instance perfectClosure.isAlgebraic : Algebra.IsAlgebraic F (perfectClosure F E)
   the converse is not necessarily true (see https://math.stackexchange.com/a/3009197)
   even when `E / F` is algebraic. -/
 theorem perfectClosure.eq_bot_of_isSeparable [Algebra.IsSeparable F E] : perfectClosure F E = ⊥ :=
-  haveI := Algebra.isSeparable_tower_bot_of_isSeparable F (perfectClosure F E) E
   eq_bot_of_isPurelyInseparable_of_isSeparable _
 
 /-- An intermediate field of `E / F` is contained in the relative perfect closure of `F` in `E`
@@ -253,7 +252,6 @@ theorem adjoin_eq_adjoin_pow_expChar_pow_of_isSeparable (S : Set E)
 `F(S) = F(S ^ (q ^ n))` for any subset `S` of `E` and any natural number `n`. -/
 theorem adjoin_eq_adjoin_pow_expChar_pow_of_isSeparable' [Algebra.IsSeparable F E] (S : Set E)
     (q : ℕ) [ExpChar F q] (n : ℕ) : adjoin F S = adjoin F ((· ^ q ^ n) '' S) :=
-  haveI := Algebra.isSeparable_tower_bot_of_isSeparable F (adjoin F S) E
   adjoin_eq_adjoin_pow_expChar_pow_of_isSeparable F E S q n
 
 -- TODO: prove the converse when `F(S) / F` is finite
@@ -332,7 +330,6 @@ private theorem LinearIndependent.map_pow_expChar_pow_of_fd_isSeparable
   have h' := h.linearIndepOn_id
   let ι' := h'.extend (Set.range v).subset_univ
   let b : Basis ι' F E := Basis.extend h'
-  letI : Fintype ι' := FiniteDimensional.fintypeBasisIndex b
   have H := linearIndependent_of_top_le_span_of_card_eq_finrank
     (Field.span_map_pow_expChar_pow_eq_top_of_isSeparable q n b.span_eq).ge
     (Module.finrank_eq_card_basis b).symm

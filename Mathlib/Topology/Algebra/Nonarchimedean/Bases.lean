@@ -378,7 +378,6 @@ theorem RingFilterBasis.submodulesBasisIsBasis (BR : RingFilterBasis R) {B : ι 
   let _ := BR.topology
   { inter := hB.inter
     smul := by
-      letI := BR.topology
       intro m i
       rcases hB.smul m i with ⟨V, V_in, hV⟩
       exact mem_of_superset (BR.toAddGroupFilterBasis.mem_nhds_zero V_in) hV }

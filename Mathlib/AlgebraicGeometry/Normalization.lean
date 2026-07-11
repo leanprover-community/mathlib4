@@ -256,7 +256,6 @@ set_option backward.isDefEq.respectTransparency false in
 lemma fromNormalization_app {U : Y.Opens} (hU : IsAffineOpen U) :
     f.fromNormalization.app U = CommRingCat.ofHom (algebraMap _ _) ≫
       (f.normalizationObjIso hU).inv := by
-  letI := (f.app U).hom.toAlgebra
   have : IsIso (((normalizationOpenCover f).f ⟨U, hU⟩).app (f.fromNormalization ⁻¹ᵁ U)) :=
     Scheme.Hom.isIso_app _ _ (by simp [← fromNormalization_preimage])
   have H : ⊤ = ((normalizationOpenCover f).f ⟨U, hU⟩ ≫ fromNormalization f) ⁻¹ᵁ U := by
@@ -400,7 +399,6 @@ lemma toNormalization_normalizationDesc (H : f = f₁ ≫ f₂) :
     f.toNormalization ≫ f.normalizationDesc f₁ f₂ H = f₁ := by
   refine Scheme.Cover.hom_ext (X.openCoverOfIsOpenCover _
     (.comap (iSup_affineOpens_eq_top Y) f.base.hom)) _ _ fun U ↦ ?_
-  letI := (f.app U.1).hom.toAlgebra
   refine (Scheme.Hom.ι_toNormalization_assoc ..).trans ?_
   dsimp [normalizationOpenCover, normalizationDesc]
   simp only [colimit.ι_desc, ← Spec.map_comp_assoc]

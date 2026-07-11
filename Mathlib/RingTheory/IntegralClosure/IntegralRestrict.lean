@@ -272,14 +272,7 @@ variable {A B}
 
 lemma Algebra.algebraMap_intTrace (x : B) :
     algebraMap A K (Algebra.intTrace A B x) = Algebra.trace K L (algebraMap B L x) := by
-  haveI : IsIntegralClosure B A (FractionRing B) :=
-    IsIntegralClosure.of_isIntegrallyClosed _ _ _
   -- TODO: How is this even supposed to fire? `R` and `S` cannot be inferred.
-  haveI : Algebra.IsAlgebraic (FractionRing A) (FractionRing B) :=
-    isAlgebraic_of_isFractionRing A B ..
-  haveI : IsLocalization (algebraMapSubmonoid B A⁰) (FractionRing B) :=
-    IsIntegralClosure.isLocalization _ (FractionRing A) _ _
-  haveI : FiniteDimensional (FractionRing A) (FractionRing B) := .of_isLocalization A B A⁰
   haveI := IsIntegralClosure.isFractionRing_of_finite_extension A K L B
   apply (FractionRing.algEquiv A K).symm.injective
   rw [AlgEquiv.commutes, Algebra.intTrace, Algebra.map_intTraceAux,
@@ -292,27 +285,14 @@ lemma Algebra.algebraMap_intTrace (x : B) :
 lemma Algebra.algebraMap_intTrace_fractionRing (x : B) :
     algebraMap A (FractionRing A) (Algebra.intTrace A B x) =
       Algebra.trace (FractionRing A) (FractionRing B) (algebraMap B _ x) := by
-  haveI : IsIntegralClosure B A (FractionRing B) :=
-    IsIntegralClosure.of_isIntegrallyClosed _ _ _
   -- TODO: How is this even supposed to fire? `R` and `S` cannot be inferred.
-  haveI : Algebra.IsAlgebraic (FractionRing A) (FractionRing B) :=
-    isAlgebraic_of_isFractionRing A B ..
-  haveI : IsLocalization (algebraMapSubmonoid B A⁰) (FractionRing B) :=
-    IsIntegralClosure.isLocalization _ (FractionRing A) _ _
-  haveI : FiniteDimensional (FractionRing A) (FractionRing B) := .of_isLocalization A B A⁰
   exact Algebra.map_intTraceAux x
 
 variable (A B)
 
 lemma Algebra.intTrace_eq_trace [Module.Free A B] : Algebra.intTrace A B = Algebra.trace A B := by
   ext x
-  haveI : IsIntegralClosure B A (FractionRing B) :=
-    IsIntegralClosure.of_isIntegrallyClosed _ _ _
   -- TODO: How is this even supposed to fire? `R` and `S` cannot be inferred.
-  haveI : Algebra.IsAlgebraic (FractionRing A) (FractionRing B) :=
-    isAlgebraic_of_isFractionRing A B ..
-  haveI : IsLocalization (algebraMapSubmonoid B A⁰) (FractionRing B) :=
-    IsIntegralClosure.isLocalization _ (FractionRing A) _ _
   apply IsFractionRing.injective A (FractionRing A)
   rw [Algebra.algebraMap_intTrace_fractionRing, Algebra.trace_localization A A⁰]
 
@@ -333,8 +313,6 @@ lemma Algebra.intTrace_eq_of_isLocalization
   have : IsIntegralClosure B A L :=
     IsIntegralClosure.of_isIntegrallyClosed _ _ _
   -- TODO: How is this even supposed to fire? `R` and `S` cannot be inferred.
-  haveI : Algebra.IsAlgebraic (FractionRing A) (FractionRing B) :=
-    isAlgebraic_of_isFractionRing A B ..
   have : IsLocalization (algebraMapSubmonoid B A⁰) L :=
     IsIntegralClosure.isLocalization _ (FractionRing A) _ _
   let f : Aₘ →+* K := IsLocalization.map _ (T := A⁰) (RingHom.id A) hM
@@ -432,16 +410,12 @@ theorem Algebra.intNorm_intNorm {C : Type*} [CommRing C] [IsDomain C] [IsIntegra
 lemma Algebra.intNorm_eq_norm [Module.Free A B] [Module.Finite A B] :
     Algebra.intNorm A B = Algebra.norm A := by
   ext x
-  haveI : IsIntegralClosure B A (FractionRing B) :=
-    IsIntegralClosure.of_isIntegrallyClosed _ _ _
   apply IsFractionRing.injective A (FractionRing A)
   rw [Algebra.algebraMap_intNorm_fractionRing, Algebra.norm_localization A A⁰]
 
 @[simp]
 lemma Algebra.intNorm_zero [FiniteDimensional (FractionRing A) (FractionRing B)] :
     Algebra.intNorm A B 0 = 0 := by
-  haveI : IsIntegralClosure B A (FractionRing B) :=
-    IsIntegralClosure.of_isIntegrallyClosed _ _ _
   apply IsFractionRing.injective A (FractionRing A)
   simp
 
@@ -516,7 +490,6 @@ variable [IsDomain A] [IsIntegrallyClosed A] [IsDomain B] [IsIntegrallyClosed B]
 
 lemma Algebra.algebraMap_intNorm_of_isGalois [IsGalois (FractionRing A) (FractionRing B)] {x : B} :
     algebraMap A B (Algebra.intNorm A B x) = ∏ σ : B ≃ₐ[A] B, σ x := by
-  haveI : FiniteDimensional (FractionRing A) (FractionRing B) := .of_isLocalization A B A⁰
   rw [← (galRestrict A (FractionRing A) (FractionRing B) B).toEquiv.prod_comp]
   simp only [MulEquiv.toEquiv_eq_coe, EquivLike.coe_coe]
   convert! (prod_galRestrict_eq_norm A (FractionRing A) (FractionRing B) B x).symm
@@ -524,7 +497,6 @@ lemma Algebra.algebraMap_intNorm_of_isGalois [IsGalois (FractionRing A) (Fractio
 open Polynomial IsScalarTower in
 theorem Algebra.dvd_algebraMap_intNorm_self (x : B) : x ∣ algebraMap A B (intNorm A B x) := by
   classical
-  haveI : FiniteDimensional (FractionRing A) (FractionRing B) := .of_isLocalization A B A⁰
   by_cases hx : x = 0
   · exact ⟨1, by simp [hx]⟩
   let K := FractionRing A

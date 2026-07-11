@@ -347,7 +347,6 @@ theorem isOpen_setOf_affineIndependent {ι : Type*} [Finite ι] :
   · simp_rw [affineIndependent_iff_linearIndependent_vsub 𝕜 _ i₀]
     let ι' := { x // x ≠ i₀ }
     cases nonempty_fintype ι
-    haveI : Fintype ι' := Subtype.fintype _
     convert_to!
       IsOpen ((fun (p : ι → E) (i : ι') ↦ p i -ᵥ p i₀) ⁻¹' {p : ι' → E | LinearIndependent 𝕜 p})
     exact isOpen_setOf_linearIndependent.preimage (by fun_prop)
@@ -418,7 +417,6 @@ theorem exists_norm_le_le_norm_sub_of_finset {c : 𝕜} (hc : 1 < ‖c‖) {R : 
     (h : ¬FiniteDimensional 𝕜 E) (s : Finset E) : ∃ x : E, ‖x‖ ≤ R ∧ ∀ y ∈ s, 1 ≤ ‖y - x‖ := by
   let F := Submodule.span 𝕜 (s : Set E)
   have hF : F.FG := ⟨s, rfl⟩
-  haveI : FiniteDimensional 𝕜 F := .of_fg hF
   have Fclosed : IsClosed (F : Set E) := Submodule.closed_of_finiteDimensional _
   have : ∃ x, x ∉ F := by
     contrapose! h

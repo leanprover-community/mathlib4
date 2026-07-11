@@ -248,7 +248,6 @@ theorem lmapDomain_disjoint_ker (f : α → α') {s : Set α}
   rintro l ⟨h₁, h₂⟩
   rw [SetLike.mem_coe, mem_ker, lmapDomain_apply, mapDomain] at h₂
   simp only [mem_bot]; ext x
-  haveI := Classical.decPred fun x => x ∈ s
   by_cases xs : x ∈ s
   · have : Finsupp.sum l (fun a => Finsupp.single (f a)) (f x) = 0 := by
       rw [h₂]

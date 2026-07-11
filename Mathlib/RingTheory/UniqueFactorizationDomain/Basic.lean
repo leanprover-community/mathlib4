@@ -88,7 +88,6 @@ theorem prime_factors_unique [CommMonoidWithZero α] [IsCancelMulZero α] :
     let ⟨b, hbg, hb⟩ :=
       (exists_associated_mem_of_dvd_prod (hf p (by simp)) fun q hq => hg _ hq) <|
         hfg.dvd_iff_dvd_right.1 (show p ∣ (p ::ₘ f).prod by simp)
-    haveI := Classical.decEq α
     rw [← Multiset.cons_erase hbg]
     exact
       Multiset.Rel.cons hb

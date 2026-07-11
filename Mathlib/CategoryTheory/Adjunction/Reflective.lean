@@ -94,8 +94,6 @@ set_option backward.isDefEq.respectTransparency false in
 theorem mem_essImage_of_unit_isSplitMono [Reflective i] {A : C}
     [IsSplitMono ((reflectorAdjunction i).unit.app A)] : i.essImage A := by
   let η : 𝟭 C ⟶ reflector i ⋙ i := (reflectorAdjunction i).unit
-  haveI : IsIso (η.app (i.obj ((reflector i).obj A))) :=
-    Functor.essImage.unit_isIso ((i.obj_mem_essImage _))
   have : Epi (η.app A) := by
     refine @epi_of_epi _ _ _ _ _ (retraction (η.app A)) (η.app A) ?_
     rw [show retraction _ ≫ η.app A = _ from η.naturality (retraction (η.app A))]
@@ -225,8 +223,6 @@ set_option backward.isDefEq.respectTransparency false in
 lemma mem_essImage_of_counit_isSplitEpi [Coreflective j] {A : D}
     [IsSplitEpi ((coreflectorAdjunction j).counit.app A)] : j.essImage A := by
   let ε : coreflector j ⋙ j ⟶ 𝟭 D := (coreflectorAdjunction j).counit
-  haveI : IsIso (ε.app (j.obj ((coreflector j).obj A))) :=
-    Functor.essImage.counit_isIso ((j.obj_mem_essImage _))
   have : Mono (ε.app A) := by
     refine @mono_of_mono _ _ _ _ _ (ε.app A) (section_ (ε.app A)) ?_
     rw [show ε.app A ≫ section_ _ = _ from (ε.naturality (section_ (ε.app A))).symm]

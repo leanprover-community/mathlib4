@@ -94,7 +94,6 @@ theorem FractionalIdeal.isPrincipal.of_finite_maximals_of_inv {A : Type*} [CommR
   have hinv' := hinv
   rw [coe_ext_iff, coe_mul] at hinv
   let s := hf.toFinset
-  haveI := Classical.decEq (Ideal R)
   have coprime : ∀ M ∈ s, ∀ M' ∈ s.erase M, M ⊔ M' = ⊤ := by
     simp_rw [s, Finset.mem_erase, hf.mem_toFinset]
     rintro M hM M' ⟨hne, hM'⟩
@@ -226,7 +225,6 @@ theorem IsLocalization.OverPrime.mem_normalizedFactors_of_isPrime [IsDomain S]
 then the localization `Sₚ` of `S` at `p` is a PID. -/
 theorem IsDedekindDomain.isPrincipalIdealRing_localization_over_prime [IsDomain S] :
     IsPrincipalIdealRing Sₚ := by
-  letI := Classical.decEq (Ideal Sₚ)
   letI := Classical.decPred fun P : Ideal Sₚ => P.IsPrime
   refine
     IsPrincipalIdealRing.of_finite_primes

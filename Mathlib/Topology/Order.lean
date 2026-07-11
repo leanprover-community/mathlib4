@@ -408,7 +408,6 @@ theorem isOpen_induced_iff [t : TopologicalSpace β] {s : Set α} {f : α → β
 
 theorem isClosed_induced_iff [t : TopologicalSpace β] {s : Set α} {f : α → β} :
     IsClosed[t.induced f] s ↔ ∃ t, IsClosed t ∧ f ⁻¹' t = s := by
-  letI := t.induced f
   simp only [← isOpen_compl_iff, isOpen_induced_iff]
   exact compl_surjective.exists.trans (by simp only [preimage_compl, compl_inj_iff])
 
@@ -882,7 +881,6 @@ theorem continuous_id_of_le {t t' : TopologicalSpace α} (h : t ≤ t') : Contin
 -- 𝓝 in the induced topology
 theorem mem_nhds_induced [T : TopologicalSpace α] (f : β → α) (a : β) (s : Set β) :
     s ∈ @nhds β (TopologicalSpace.induced f T) a ↔ ∃ u ∈ 𝓝 (f a), f ⁻¹' u ⊆ s := by
-  letI := T.induced f
   simp_rw [mem_nhds_iff, isOpen_induced_iff]
   constructor
   · rintro ⟨u, usub, ⟨v, openv, rfl⟩, au⟩

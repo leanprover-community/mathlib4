@@ -702,7 +702,6 @@ include f
 variable {F} in
 theorem IsSeparable.of_algHom {x : E} (h : IsSeparable F (f x)) : IsSeparable F x := by
   let _ : Algebra E E' := RingHom.toAlgebra f.toRingHom
-  haveI : IsScalarTower F E E' := IsScalarTower.of_algebraMap_eq fun x => (f.commutes x).symm
   exact h.tower_bot
 
 

@@ -749,7 +749,6 @@ theorem ContinuousOn.aestronglyMeasurable_of_isSeparable [TopologicalSpace α]
     [PseudoMetrizableSpace β] {f : α → β} {s : Set α} {μ : Measure α} (hf : ContinuousOn f s)
     (hs : MeasurableSet s) (h's : TopologicalSpace.IsSeparable s) :
     AEStronglyMeasurable f (μ.restrict s) := by
-  letI := pseudoMetrizableSpacePseudoMetric α
   borelize β
   rw [aestronglyMeasurable_iff_aemeasurable_separable]
   refine ⟨hf.aemeasurable hs, f '' s, hf.isSeparable_image h's, ?_⟩

@@ -214,7 +214,6 @@ theorem IsIrreducible.transpose (hA : IsIrreducible A) : IsIrreducible Aᵀ := b
     simp at hp_pos
   | @cons b _ q e =>
     let qT := transposePath (A := A) (q.cons e)
-    letI : Quiver n := toQuiver Aᵀ
     use qT
     simp [qT, transposePath, Quiver.Path.length_comp, Quiver.Path.length_toPath]
 

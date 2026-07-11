@@ -180,7 +180,6 @@ include hζ H in
 /-- Also see `Polynomial.separable_X_pow_sub_C_unit` -/
 theorem Polynomial.separable_X_pow_sub_C_of_irreducible : (X ^ n - C a).Separable := by
   letI := Fact.mk H
-  letI : Algebra K K[n√a] := inferInstance
   have hn := Nat.pos_iff_ne_zero.mpr (ne_zero_of_irreducible_X_pow_sub_C H)
   by_cases hn' : n = 1
   · rw [hn', pow_one]; exact separable_X_sub_C
@@ -311,7 +310,6 @@ lemma isSplittingField_AdjoinRoot_X_pow_sub_C :
     letI : Algebra K K[n√a] := inferInstance
     IsSplittingField K K[n√a] (X ^ n - C a) := by
   have := Fact.mk H
-  letI : Algebra K K[n√a] := inferInstance
   constructor
   · rw [Polynomial.map_sub, Polynomial.map_pow, Polynomial.map_C,
       Polynomial.map_X]

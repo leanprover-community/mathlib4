@@ -365,8 +365,6 @@ lemma hasExactColimitsOfShape_of_final [HasFiniteLimits C]
     (F : J ⥤ J') [F.Final] [HasColimitsOfShape J' C] [HasColimitsOfShape J C]
     [HasExactColimitsOfShape J C] : HasExactColimitsOfShape J' C where
   preservesFiniteLimits :=
-    letI : PreservesFiniteLimits ((whiskeringLeft J J' C).obj F) := ⟨fun _ ↦ inferInstance⟩
-    letI := comp_preservesFiniteLimits ((whiskeringLeft J J' C).obj F) colim
     preservesFiniteLimits_of_natIso (Functor.Final.colimIso F)
 
 /-- `HasExactLimitsOfShape` can be "pushed forward" along initial functors -/
@@ -374,8 +372,6 @@ lemma hasExactLimitsOfShape_of_initial [HasFiniteColimits C] {J J' : Type*} [Cat
     [Category* J'] (F : J ⥤ J') [F.Initial] [HasLimitsOfShape J' C] [HasLimitsOfShape J C]
     [HasExactLimitsOfShape J C] : HasExactLimitsOfShape J' C where
   preservesFiniteColimits :=
-    letI : PreservesFiniteColimits ((whiskeringLeft J J' C).obj F) := ⟨fun _ ↦ inferInstance⟩
-    letI := comp_preservesFiniteColimits ((whiskeringLeft J J' C).obj F) lim
     preservesFiniteColimits_of_natIso (Functor.Initial.limIso F)
 
 section AB4OfAB5
@@ -405,8 +401,6 @@ lemma hasExactColimitsOfShape_discrete_of_hasExactColimitsOfShape_finset_discret
     [HasColimitsOfShape (Discrete J) C] [HasColimitsOfShape (Finset (Discrete J)) C]
     [HasExactColimitsOfShape (Finset (Discrete J)) C] : HasExactColimitsOfShape (Discrete J) C where
   preservesFiniteLimits :=
-    letI : PreservesFiniteLimits (liftToFinset C J ⋙ colim) :=
-      comp_preservesFiniteLimits _ _
     preservesFiniteLimits_of_natIso (liftToFinsetColimIso)
 
 attribute [local instance] hasCoproducts_of_finite_and_filtered in
@@ -457,8 +451,6 @@ lemma hasExactLimitsOfShape_discrete_of_hasExactLimitsOfShape_finset_discrete_op
     [HasExactLimitsOfShape (Finset (Discrete J))ᵒᵖ C] :
     HasExactLimitsOfShape (Discrete J) C where
   preservesFiniteColimits :=
-    letI : PreservesFiniteColimits (ProductsFromFiniteCofiltered.liftToFinset C J ⋙ lim) :=
-      comp_preservesFiniteColimits _ _
     preservesFiniteColimits_of_natIso (ProductsFromFiniteCofiltered.liftToFinsetLimIso _ _)
 
 attribute [local instance] hasProducts_of_finite_and_cofiltered in

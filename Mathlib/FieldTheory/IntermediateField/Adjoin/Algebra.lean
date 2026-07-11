@@ -318,7 +318,6 @@ theorem fg_of_noetherian (S : IntermediateField F E) [IsNoetherian F E] : S.FG :
 theorem induction_on_adjoin [FiniteDimensional F E] (P : IntermediateField F E → Prop)
     (base : P ⊥) (ih : ∀ (K : IntermediateField F E) (x : E), P K → P (K⟮x⟯.restrictScalars F))
     (K : IntermediateField F E) : P K :=
-  letI : IsNoetherian F E := IsNoetherian.iff_fg.2 inferInstance
   induction_on_adjoin_fg P base ih K K.fg_of_noetherian
 
 end Induction

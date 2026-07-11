@@ -495,7 +495,6 @@ lemma _root_.ModuleTopology.eq_coinduced_of_surjectiveₛₗ
     {σ : R →+* S} (hσ : IsOpenQuotientMap σ) (φ : A →ₛₗ[σ] B') (hφ : Function.Surjective φ) :
     moduleTopology S B' = TopologicalSpace.coinduced φ inferInstance := by
   letI : TopologicalSpace B' := moduleTopology S B'
-  haveI : IsModuleTopology S B' := ⟨rfl⟩
   exact (isQuotientMap_of_surjectiveₛₗ hσ φ hφ).eq_coinduced
 
 lemma _root_.ModuleTopology.eq_coinduced_of_surjective

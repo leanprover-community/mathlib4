@@ -122,7 +122,6 @@ theorem coe_inv (x : K) : (x : hat K)⁻¹ = ((x⁻¹ : K) : hat K) := by
 variable [IsUniformAddGroup K]
 
 theorem mul_hatInv_cancel {x : hat K} (x_ne : x ≠ 0) : x * hatInv x = 1 := by
-  haveI : T1Space (hat K) := T2Space.t1Space
   let f := fun x : hat K => x * hatInv x
   let c := (fun (x : K) => (x : hat K))
   change f x = 1

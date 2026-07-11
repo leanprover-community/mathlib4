@@ -239,7 +239,6 @@ private theorem exists_algHom_adjoin_of_splits'' {L : IntermediateField F E}
   refine ⟨φ.emb.comp (inclusion <| (le_extendScalars_iff hfφ.1 <| adjoin L S).mp <|
     adjoin_le_iff.mpr fun s h ↦ ?_), AlgHom.ext hfφ.2⟩
   letI := (inclusion hfφ.1).toAlgebra
-  letI : SMul L φ.carrier := Algebra.toSMul
   have : IsScalarTower L φ.carrier E := ⟨fun x y ↦ smul_assoc x (y : E)⟩
   have := φ.exists_lift_of_splits' (hK s h).1.tower_top ((hK s h).1.minpoly_splits_tower_top' ?_)
   · obtain ⟨y, h1, h2⟩ := this

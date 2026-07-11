@@ -323,7 +323,6 @@ theorem BlockTriangular.det_fintype [DecidableEq α] [Fintype α] [LinearOrder �
 
 theorem det_of_upperTriangular [LinearOrder m] (h : M.BlockTriangular id) :
     M.det = ∏ i : m, M i i := by
-  haveI : DecidableEq R := Classical.decEq _
   simp_rw [h.det, image_id, det_toSquareBlock_id]
 
 theorem det_of_lowerTriangular [LinearOrder m] (M : Matrix m m R) (h : M.BlockTriangular toDual) :
