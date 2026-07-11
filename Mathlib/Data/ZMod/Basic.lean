@@ -794,7 +794,7 @@ theorem coe_unitOfCoprime {n : ℕ} (x : ℕ) (h : Nat.Coprime x n) :
     (unitOfCoprime x h : ZMod n) = x :=
   rfl
 
-/-- A variants of `ZMod.unitOfCoprime`, sending a natural number `r` coprime to `N` to the unit
+/-- Variant of `ZMod.unitOfCoprime`, sending a natural number `r` coprime to `N` to the unit
 of `ZMod N` it represents. -/
 def coprimeUnitMap (r : {r : ℕ // r.Coprime n}) : (ZMod n)ˣ :=
   ZMod.unitOfCoprime r.1 r.2

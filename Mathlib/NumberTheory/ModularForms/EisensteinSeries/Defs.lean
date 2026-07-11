@@ -140,9 +140,8 @@ lemma gammaSetDivGcdSigmaEquiv_symm_eq (v : Σ r : ℕ, gammaSet 1 r 0) :
     (gammaSetDivGcdSigmaEquiv.symm v) = v.2 := rfl
 
 variable {N} in
-/-- The equivalence between the index set of `eisensteinSeriesG` (vectors congruent to `a`
-mod `N` whose gcd is coprime to `N`) and the disjoint union of the `gammaSet N r a` over
-`r` coprime to `N`, given by sending `v` to `⟨finGcdMap v, v⟩`. -/
+/-- The equivalence between the index set of `eisensteinSeriesG` and the disjoint union of
+the `gammaSet N r a` over `r` coprime to `N`. -/
 def gammaSetCoprimeSigmaEquiv : {v : Fin 2 → ℤ | (↑) ∘ v = a ∧ (finGcdMap v).gcd N = 1} ≃
     Σ r : {r : ℕ // r.Coprime N}, gammaSet N r a where
   toFun v := ⟨⟨finGcdMap v.1, v.2.2⟩, v.1, v.2.1, rfl⟩
