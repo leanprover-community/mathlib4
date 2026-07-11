@@ -86,10 +86,10 @@ theorem orthogonalBilin_antitone : Antitone (orthogonalBilin B) :=
   fun _ _ h => orthogonalBilin_le h
 
 theorem ker_flip_le_orthogonalBilin (S) : ker B.flip ≤ orthogonalBilin B S := by
-  simp [← orthogonalBilin_univ_eq_ker, orthogonalBilin_anti]
+  simp [← orthogonalBilin_top_eq_ker, orthogonalBilin_anti]
 
 theorem ker_le_orthogonalBilin_flip (S) : ker B ≤ orthogonalBilin B.flip S := by
-  rw [← flip_flip B]; exact ker_le_orthogonalBilin S
+  rw [← flip_flip B]; exact ker_flip_le_orthogonalBilin S
 
 theorem orthogonalBilin_span_singleton (x : M₁) : orthogonalBilin B (R₁ ∙ x) = ker (B x) := by
   ext x; simp
