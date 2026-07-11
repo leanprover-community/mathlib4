@@ -169,16 +169,49 @@ lemma exists_coeffs_sub_mem (n : ℕ) (J : Ideal R) (ι : Type u) [Fintype ι] (
     · simp [degle, coeff']
   · simp [coeff', hi]
 
+lemma exists_coeffs_isAdicCauchy (J : Ideal R) (ι : Type u) [Fintype ι] (f : ι → reesAlgebra I)
+    (deg : ι → ℕ) (coeff : ι → R) (memJ : ∀ i, coeff i ∈ J)
+    (eq : ∀ i : ι, (f i).1 = monomial (deg i) (coeff i))
+    (span_eq : (Ideal.span (Set.range f)).map (reesAlgebraToAssociatedGraded I) =
+      J.toAssociatedGraded I) (r : R) (hr : r ∈ J) :
+    ∃ (g : ι → ℕ → R), (∀ i, AdicCompletion.IsAdicCauchy I R (g i)) ∧
+      ∀ n, r - ∑ x : ι, g x n * coeff x ∈ I ^ (n + 1) := by
+  have exist (n : ℕ) := exists_coeffs_sub_mem I n J ι f deg coeff eq span_eq
+  have memJ' (g' : ι → R) : r - ∑ x, g' x * coeff x ∈ J :=
+    sub_mem hr (sum_mem (fun i _ ↦ (Ideal.mul_mem_left _ _ (memJ i))))
+  let coeffs' (n : ℕ) : {f : (ι → R) // r - ∑ x, f x * coeff x ∈ I ^ (n + 1)} := by
+    induction n with
+    | zero =>
+      exact ⟨Classical.choose (exist 0 r hr (by simp)),
+        (Classical.choose_spec (exist 0 r hr (by simp))).2.2⟩
+    | succ n coeffs'n =>
+      refine ⟨coeffs'n + Classical.choose (exist (n + 1) _ (memJ' coeffs'n.1) coeffs'n.2), ?_⟩
+      simp only [gt_iff_lt, Pi.add_apply, add_mul, Finset.sum_add_distrib, ← sub_sub]
+      exact (Classical.choose_spec (exist (n + 1) _ (memJ' coeffs'n.1) coeffs'n.2)).2.2
+  have coeffs'_spec_aux (n : ℕ) : (coeffs' (n + 1)).1 = (coeffs' n).1 +
+      Classical.choose (exist (n + 1) _ (memJ' (coeffs' n).1) (coeffs' n).2) := rfl
+  have coeffs'_spec (n : ℕ) :
+    ∀ i, (coeffs' (n + 1)).1 i - (coeffs' n).1 i ∈ I ^ (n + 1 - deg i) := by
+    simp only [coeffs'_spec_aux, Pi.add_apply, add_sub_cancel_left]
+    exact (Classical.choose_spec (exist (n + 1) _ (memJ' (coeffs' n).1) (coeffs' n).2)).1
+  let d := ∑ i, deg i
+  use fun i n ↦ (coeffs' (d + n)).1 i
+  refine ⟨fun i ↦ ?_, fun n ↦ Ideal.pow_le_pow_right (by omega) (coeffs' (d + n)).2⟩
+  rw [AdicCompletion.isAdicCauchy_iff]
+  intro n
+  simp only [smul_eq_mul, Ideal.mul_top]
+  rw [SModEq.comm, SModEq.sub_mem, ← add_assoc d n 1]
+  have led : deg i ≤ d := Finset.single_le_sum (fun i _ ↦ Nat.zero_le _) (Finset.mem_univ i)
+  have : n ≤ d + n + 1 - deg i := by omega
+  exact Ideal.pow_le_pow_right this (coeffs'_spec (d + n) i)
+
 lemma isNoetherianRing_of_isAdicComplete_of_fg [IsNoetherianRing (R ⧸ I)] (fg : I.FG)
     [IsAdicComplete I R] : IsNoetherianRing R := by
   apply (isNoetherianRing_iff_ideal_fg R).mpr (fun J ↦ ?_)
   have := isNoetherianRing_reesAlgebra_quotient fg
-  obtain ⟨ι, f, deg, coeff, fin, eq, memJ, map_eq⟩ :=
+  obtain ⟨ι, f, deg, coeff, fin, eq, memJ, span_eq⟩ :=
     exists_monomial_span_of_fg I J (Ideal.fg_of_isNoetherianRing _)
   have : Fintype ι := Fintype.ofFinite ι
-  let d := ∑ i, deg i
-  have led (i : ι) : deg i ≤ d :=
-    Finset.single_le_sum (fun i _ ↦ Nat.zero_le _) (Finset.mem_univ i)
   have : Fintype (Set.range coeff) := Fintype.ofFinite _
   use (Set.range coeff).toFinset
   simp only [Set.coe_toFinset]
@@ -187,61 +220,21 @@ lemma isNoetherianRing_of_isAdicComplete_of_fg [IsNoetherianRing (R ⧸ I)] (fg 
     intro x ⟨i, hi⟩
     simpa [← hi] using memJ i
   · intro j hj
-    have exist (n : ℕ) := exists_coeffs_sub_mem I n J ι f deg coeff eq map_eq
-    have memJ' (g : ι → R) : j - ∑ x, g x * coeff x ∈ J :=
-      sub_mem hj (sum_mem (fun i _ ↦ (Ideal.mul_mem_left _ _ (memJ i))))
-    let coeffs' (n : ℕ) : {f : (ι → R) // j - ∑ x, f x * coeff x ∈ I ^ (n + 1)} := by
-      induction n with
-      | zero =>
-        exact ⟨Classical.choose (exist 0 j hj (by simp)),
-          (Classical.choose_spec (exist 0 j hj (by simp))).2.2⟩
-      | succ n coeffs'n =>
-        refine ⟨coeffs'n + Classical.choose (exist (n + 1) _ (memJ' coeffs'n.1) coeffs'n.2), ?_⟩
-        simp only [gt_iff_lt, Pi.add_apply, add_mul, Finset.sum_add_distrib, ← sub_sub]
-        exact (Classical.choose_spec (exist (n + 1) _ (memJ' coeffs'n.1) coeffs'n.2)).2.2
-    have coeffs'_spec_aux (n : ℕ) : (coeffs' (n + 1)).1 = (coeffs' n).1 +
-      Classical.choose (exist (n + 1) _ (memJ' (coeffs' n).1) (coeffs' n).2) := rfl
-    have coeffs'_spec (n : ℕ) :
-      ∀ i, (coeffs' (n + 1)).1 i - (coeffs' n).1 i ∈ I ^ (n + 1 - deg i) := by
-      simp only [coeffs'_spec_aux, Pi.add_apply, add_sub_cancel_left]
-      exact (Classical.choose_spec (exist (n + 1) _ (memJ' (coeffs' n).1) (coeffs' n).2)).1
-    have coeffs'_eq (n : ℕ) : ∀ i, deg i > n + 1 → (coeffs' n).1 i = (coeffs' (n + 1)).1 i := by
-      simp only [coeffs'_spec_aux, Pi.add_apply, left_eq_add]
-      intro i gt
-      exact (Classical.choose_spec (exist (n + 1) _ (memJ' (coeffs' n).1) (coeffs' n).2)).2.1 i gt
-    let coeffs'_seq (i : ι) : ℕ → R := fun n ↦ (coeffs' (n + d)).1 i
-    have coeffs'_seq_cauchy (i : ι) : AdicCompletion.IsAdicCauchy I R (coeffs'_seq i) := by
-      rw [AdicCompletion.isAdicCauchy_iff]
-      intro n
-      rw [smul_eq_mul, Ideal.mul_top, SModEq.comm, SModEq.sub_mem]
-      simp only [coeffs'_seq]
-      rw [add_assoc n 1 d, add_comm 1 d, ← add_assoc n d 1]
-      have : n ≤ n + d + 1 - deg i := by
-        have := led i
-        omega
-      exact Ideal.pow_le_pow_right this (coeffs'_spec (n + d) i)
-    let coeffs'_lim (i : ι) : R :=
-      Classical.choose (‹IsAdicComplete I R›.prec' (coeffs'_seq i) (coeffs'_seq_cauchy i))
-    have coeffs'_lim_spec (i : ι) : ∀ (n : ℕ), coeffs'_seq i n ≡
-      coeffs'_lim i [SMOD I ^ n • (⊤ : Ideal R)] :=
-      Classical.choose_spec (‹IsAdicComplete I R›.prec' (coeffs'_seq i) (coeffs'_seq_cauchy i))
-    have sum_mod_eq (n : ℕ) : ∑ i, coeffs'_lim i * coeff i ≡
-      ∑ i, (coeffs'_seq i n) * coeff i [SMOD I ^ n • (⊤ : Ideal R)] := by
-      rw [smul_eq_mul, Ideal.mul_top, SModEq.comm, SModEq.sub_mem, ← Finset.sum_sub_distrib]
-      apply sum_mem
-      intro i hi
-      rw [← sub_mul]
-      apply Ideal.mul_mem_right
-      simpa [SModEq.sub_mem] using coeffs'_lim_spec i n
-    have mod_eqj (n : ℕ) : ∑ i, (coeffs'_seq i n) * coeff i ≡ j [SMOD I ^ n • (⊤ : Ideal R)] := by
-      rw [smul_eq_mul, Ideal.mul_top, SModEq.comm, SModEq.sub_mem]
-      have : n ≤ n + d + 1 := by omega
-      exact Ideal.pow_le_pow_right this (coeffs' (n + d)).2
+    rcases exists_coeffs_isAdicCauchy I J ι f deg coeff memJ eq span_eq j hj with ⟨c, cauchy, hc⟩
+    let c_lim (i : ι) : R := Classical.choose (‹IsAdicComplete I R›.prec' (c i) (cauchy i))
+    have c_lim_spec (i : ι) : ∀ (n : ℕ), c i n ≡ c_lim i [SMOD I ^ n • (⊤ : Ideal R)] :=
+      Classical.choose_spec (‹IsAdicComplete I R›.prec' (c i) (cauchy i))
     rw [Ideal.mem_span_range_iff_exists_fun]
-    use coeffs'_lim
+    use c_lim
     rw [IsHausdorff.eq_iff_smodEq (I := I)]
     intro n
-    exact (sum_mod_eq n).trans (mod_eqj n)
+    trans ∑ i, (c i n) * coeff i
+    · apply SModEq.sum (fun i _ ↦ ?_)
+      rw [SModEq.comm, SModEq.sub_mem, ← sub_mul]
+      apply Ideal.mul_mem_right
+      simpa [SModEq.sub_mem] using c_lim_spec i n
+    · rw [smul_eq_mul, Ideal.mul_top, SModEq.comm, SModEq.sub_mem]
+      exact Ideal.pow_le_pow_right (Nat.le_succ n) (hc n)
 
 lemma AdicCompletion.isNoetherianRing_of_fg [IsNoetherianRing (R ⧸ I)] (fg : I.FG) :
     IsNoetherianRing (AdicCompletion I R) := by
