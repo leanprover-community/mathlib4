@@ -22,26 +22,23 @@ monomials are permitted.
 
 ## Implementation notes
 
-The algebraic hierarchy in this file is designed to be completely identical to
-that of`MonoidAlgebra/Defs.lean`. It systematically builds up the algebraic structure from
+The algebraic hierarchy in this file is completely identical to that of
+`MonoidAlgebra/Defs.lean`. It builds up the algebraic structure from
 basic typeclasses like `One` and `SMul`, through `Mul`, `NonUnitalNonAssocSemiring`,
-and ultimately to `Ring` and `CommRing`.
-
-Despite the identical hierarchy, the underlying implementation requires several
-key departures from `MonoidAlgebra`:
+and ultimately to `Ring` and `CommRing`. Despite the identical hierarchy,
+the underlying implementation requires several key departures from `MonoidAlgebra`:
 
 1. Coefficients are represented using standard functions (`M → R`) rather than
   finitely supported functions (`M →₀ R`). Because of this, this file provides no
   induction principles or lemmas related to induction principles of `Finsupp`.
 
 2. The construction uses `Pi.single` instead of `Finsupp.single` to represent individual terms.
-  Because of how `Pi.single` is defined, this imposes a `[DecidableEq M]` requirement on many
+  Because of how `Pi.single` is defined, this imposes a `DecidableEq M` requirement on many
   declarations, particularly whenever the identity element is required.
 
 3. To ensure the convolution product is well-defined (i.e., the coefficient sum is finite),
   we require the underlying monoid to satisfy the `Finset.HasMulAntidiagonal M` condition.
-  Because of this, proofs concerning multiplication rely heavily on the `Finset.sum`
-  rather than `Finsupp.sums`.
+  Because of this, proofs concerning multiplication rely heavily on the `Finset.sum`.
 
 -/
 
