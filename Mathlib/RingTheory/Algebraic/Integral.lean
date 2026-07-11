@@ -5,12 +5,11 @@ Authors: Johan Commelin
 -/
 module
 
+public import Mathlib.Algebra.Ring.Hom.InjSurj
 public import Mathlib.LinearAlgebra.Dimension.Localization
 public import Mathlib.RingTheory.Algebraic.Basic
 public import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Basic
-public import Mathlib.RingTheory.Localization.BaseChange
-
-import Mathlib.RingTheory.Polynomial.Subring
+public import Mathlib.RingTheory.Polynomial.Subring
 
 /-!
 # Algebraic elements and integral elements
@@ -560,6 +559,23 @@ attribute [local instance] FractionRing.liftAlgebra in
 theorem rank_fractionRing [IsDomain S] :
     Module.rank (FractionRing R) (FractionRing S) = Module.rank R S :=
   rank_of_isFractionRing ..
+
+attribute [local instance] FractionRing.liftAlgebra in
+/-- Tower law for `Module.finrank` in a tower of domains `R → S → B` that is module-finite at each
+step. This is a variant of `Module.finrank_mul_finrank` that assumes the rings are domains (and
+module-finite) instead of the modules being free. -/
+theorem _root_.Module.finrank_mul_finrank' (T : Type*) [CommRing T] [IsDomain T] [Algebra S T]
+    [Algebra R T] [IsScalarTower R S T]
+    [FaithfulSMul S T] [Module.Finite R S] [Module.Finite S T] :
+    Module.finrank R S * Module.finrank S T = Module.finrank R T := by
+  have : FaithfulSMul R T := .trans R S T
+  have : IsDomain R := (FaithfulSMul.algebraMap_injective R T).isDomain
+  have : IsDomain S := (FaithfulSMul.algebraMap_injective S T).isDomain
+  have : Module.Finite R T := Module.Finite.trans S T
+  rw [← finrank_of_isFractionRing R (FractionRing R) S (FractionRing S),
+    ← finrank_of_isFractionRing S (FractionRing S) T (FractionRing T),
+    ← finrank_of_isFractionRing R (FractionRing R) T (FractionRing T),
+    Module.finrank_mul_finrank (FractionRing R) (FractionRing S) (FractionRing T)]
 
 end Algebra.IsAlgebraic
 
