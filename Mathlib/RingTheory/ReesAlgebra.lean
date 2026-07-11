@@ -144,13 +144,13 @@ lemma mem_map_algebraMap_reesAlgebra_iff (f : reesAlgebra I) :
     | smul r hr m hm =>
       simpa [pow_succ'] using Ideal.mul_mem_mul hr ((mem_reesAlgebra_iff I _).mp m.2 n)
     | add x hx y hy memx memy => simpa using add_mem memx memy
-  · have mem' (i : ℕ) {r : R} : r ∈ I ^ i → _ := fun mem ↦ reesAlgebra.monomial_mem.mpr mem
+  · have mem' (i : ℕ) {r : R} : r ∈ I ^ i → _ := reesAlgebra.monomial_mem.mpr
     have mem (i : ℕ) := reesAlgebra.monomial_mem.mpr ((mem_reesAlgebra_iff I _).mp f.2 i)
-    have : f = ∑ i ∈ f.1.support, ⟨(Polynomial.monomial i) (f.1.coeff i), mem i⟩ :=
+    have : f = ∑ i ∈ f.1.support, ⟨monomial i (f.1.coeff i), mem i⟩ :=
       SetCoe.ext (by simpa using f.1.as_sum_support)
     rw [this]
     apply sum_mem (fun i hi ↦ ?_)
-    have {r : R} (h' : r ∈ I * I ^ i) : ⟨(Polynomial.monomial i) r, mem' i (Ideal.mul_le_left h')⟩
+    have {r : R} (h' : r ∈ I * I ^ i) : ⟨monomial i r, mem' i (Ideal.mul_le_left h')⟩
       ∈ I.map (algebraMap R (reesAlgebra I)) := by
       induction h' using Submodule.mul_induction_on' with
       | mem_mul_mem s hs t ht =>
