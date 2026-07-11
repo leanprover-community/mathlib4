@@ -84,6 +84,8 @@ variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M] [IsManifold I 1 M]
 
 namespace Orientation
 
+variable {I}
+
 /-- The pointwise sign difference (in `ℤˣ`) between two manifold orientations, read off the
 chart at each point. -/
 def deltaFn (o₀ o : Orientation I M) (z : M) : ℤˣ :=
@@ -91,24 +93,24 @@ def deltaFn (o₀ o : Orientation I M) (z : M) : ℤˣ :=
 
 /-- The sign difference can be computed from any chart whose domain contains the point. -/
 theorem deltaFn_eq (o₀ o : Orientation I M) {x z : M} (hz : z ∈ (chartAt H x).source) :
-    deltaFn I o₀ o z = o.chartSign x z * o₀.chartSign x z := by
+    deltaFn o₀ o z = o.chartSign x z * o₀.chartSign x z := by
   have key : ∀ a b c d : ℤˣ, (a = b ↔ c = d) → a * c = b * d := by decide
   exact key _ _ _ _ ((o.compatible z x z (mem_chart_source H z) hz).symm.trans
     (o₀.compatible z x z (mem_chart_source H z) hz))
 
 theorem isLocallyConstant_deltaFn (o₀ o : Orientation I M) :
-    IsLocallyConstant (deltaFn I o₀ o) := by
+    IsLocallyConstant (deltaFn o₀ o) := by
   rw [IsLocallyConstant.iff_continuous, continuous_iff_continuousAt]
   intro p
   refine ContinuousOn.continuousAt ?_
     ((chartAt H p).open_source.mem_nhds (mem_chart_source H p))
   exact ((o.continuousOn_chartSign p).mul (o₀.continuousOn_chartSign p)).congr
-    (fun z hz ↦ deltaFn_eq I o₀ o hz)
+    (fun z hz ↦ deltaFn_eq o₀ o hz)
 
 /-- The sign difference between two manifold orientations, as a `LocallyConstant` function
 `M → ℤˣ`. -/
 def deltaLC (o₀ o : Orientation I M) : LocallyConstant M ℤˣ :=
-  ⟨deltaFn I o₀ o, isLocallyConstant_deltaFn I o₀ o⟩
+  ⟨deltaFn o₀ o, isLocallyConstant_deltaFn o₀ o⟩
 
 /-- Modify a manifold orientation by flipping every chart-sign according to a locally constant
 `ℤˣ`-valued function. -/
@@ -127,19 +129,19 @@ def twist (o₀ : Orientation I M) (δ : LocallyConstant M ℤˣ) : Orientation 
 locally constant `ℤˣ`-valued functions on `M`. -/
 noncomputable def equivLocallyConstant (o₀ : Orientation I M) :
     Orientation I M ≃ LocallyConstant M ℤˣ where
-  toFun o := deltaLC I o₀ o
-  invFun δ := twist I o₀ δ
+  toFun o := deltaLC o₀ o
+  invFun δ := twist o₀ δ
   left_inv o := by
     classical
     ext x z : 3
     by_cases hz : z ∈ (chartAt H x).source
-    · change (if z ∈ (chartAt H x).source then (deltaLC I o₀ o) z * o₀.chartSign x z else 1)
+    · change (if z ∈ (chartAt H x).source then (deltaLC o₀ o) z * o₀.chartSign x z else 1)
           = o.chartSign x z
       rw [if_pos hz]
-      change deltaFn I o₀ o z * o₀.chartSign x z = o.chartSign x z
-      rw [deltaFn_eq I o₀ o hz]
+      change deltaFn o₀ o z * o₀.chartSign x z = o.chartSign x z
+      rw [deltaFn_eq o₀ o hz]
       exact (by decide : ∀ a b : ℤˣ, a * b * b = a) _ _
-    · change (if z ∈ (chartAt H x).source then (deltaLC I o₀ o) z * o₀.chartSign x z else 1)
+    · change (if z ∈ (chartAt H x).source then (deltaLC o₀ o) z * o₀.chartSign x z else 1)
           = o.chartSign x z
       rw [if_neg hz, o.chartSign_eq_one_of_notMem x z hz]
   right_inv δ := by
@@ -148,6 +150,8 @@ noncomputable def equivLocallyConstant (o₀ : Orientation I M) :
     change (if z ∈ (chartAt H z).source then δ z * o₀.chartSign z z else 1) * o₀.chartSign z z = δ z
     rw [if_pos (mem_chart_source H z)]
     exact (by decide : ∀ a b : ℤˣ, a * b * b = a) _ _
+
+variable (I)
 
 /-- The positive orientation of a subsingleton manifold. -/
 def point [Subsingleton M] : Orientation I M where
@@ -168,12 +172,14 @@ def point [Subsingleton M] : Orientation I M where
         LinearMap.det_id]
       exact one_pos
 
+variable {I}
+
 /-- The opposite of an orientation. -/
 def opposite (o : Orientation I M) : Orientation I M :=
-  twist I o (LocallyConstant.const M (-1))
+  twist o (LocallyConstant.const M (-1))
 
 /-- An orientation on a nonempty manifold differs from its opposite. -/
-theorem ne_opposite [Nonempty M] (o : Orientation I M) : o ≠ opposite I o := by
+theorem ne_opposite [Nonempty M] (o : Orientation I M) : o ≠ opposite o := by
   intro h
   obtain ⟨x⟩ := ‹Nonempty M›
   apply (by decide : (1 : ℤˣ) ≠ -1)
@@ -182,16 +188,23 @@ theorem ne_opposite [Nonempty M] (o : Orientation I M) : o ≠ opposite I o := b
     Function.const_apply, one_mul] using
     congrFun (congrFun (congrArg Orientation.chartSign h) x) x
 
-/-- Every orientation of a nonempty subsingleton manifold is its positive orientation or the
-opposite of its positive orientation. -/
-theorem eq_point_or_eq_opposite_point [Nonempty M] [Subsingleton M] (o : Orientation I M) :
-    o = point I ∨ o = opposite I (point I) := by
-  let x : M := Classical.choice inferInstance
-  refine (Int.units_eq_one_or (o.chartSign x x)).imp (fun h ↦ ?_) (fun h ↦ ?_) <;>
-    ext y z : 3
-  · simpa only [point, Subsingleton.elim y x, Subsingleton.elim z x] using h
-  · simpa [opposite, twist, point, Subsingleton.elim y x, Subsingleton.elim z x,
-      mem_chart_source] using h
+/-- Two orientations of a preconnected manifold are equal or opposite. -/
+theorem eq_or_eq_opposite [PreconnectedSpace M] (o o₀ : Orientation I M) :
+    o = o₀ ∨ o = opposite o₀ := by
+  let e := equivLocallyConstant o₀
+  obtain ⟨δ, hδ⟩ := (deltaLC o₀ o).exists_eq_const
+  change e o = _ at hδ
+  rcases Int.units_eq_one_or δ with rfl | rfl
+  · left
+    apply e.injective
+    exact hδ.trans (by ext z; simp [e, equivLocallyConstant, deltaLC, deltaFn])
+  · right
+    apply e.injective
+    exact hδ.trans (by
+      ext z
+      simp [e, equivLocallyConstant, deltaLC, deltaFn, opposite, twist, mem_chart_source])
+
+variable (I)
 
 theorem natCard_eq_two_pow_of_natCard_connectedComponents_eq [Orientable I M]
     [Finite (ConnectedComponents M)] {n : ℕ}
@@ -205,7 +218,7 @@ theorem natCard_eq_two_pow_of_natCard_connectedComponents_eq [Orientable I M]
   calc
     Nat.card (Orientation I M)
         = Nat.card (LocallyConstant M ℤˣ) :=
-          Nat.card_congr (equivLocallyConstant I o₀)
+          Nat.card_congr (equivLocallyConstant o₀)
     _ = Nat.card (ConnectedComponents M → ℤˣ) :=
           Nat.card_congr LocallyConstant.equivConnectedComponents
     _ = Nat.card ℤˣ ^ Nat.card (ConnectedComponents M) := by
