@@ -941,7 +941,7 @@ variable (G f) in
 /-- The canonical map from a component to the direct limit. -/
 def of (i) : G i →⋆ₙₐ[R] DirectLimit G f where
   toFun x := ⟦⟨i, x⟩⟧
-  __ := (NonUnitalAlgebra.of G f i)
+  __ := NonUnitalAlgebra.of G f i
   map_star' _ := (star_def ..).symm
 
 lemma of_f {i j} (hij) (x) : of G f j (f i j hij x) = of G f i x := .symm <| eq_of_le ..
