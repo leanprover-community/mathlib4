@@ -205,8 +205,8 @@ theorem symm_apply_eq {x : α} {y : β} (hx : x ∈ e.source) (hy : y ∈ e.targ
   ⟨fun h => by rw [← e.right_inv hy, h], fun h => by rw [← e.left_inv hx, h]⟩
 
 theorem eq_symm_apply {x : α} {y : β} (hx : x ∈ e.source) (hy : y ∈ e.target) :
-    x = e.symm y ↔ e x = y :=
-  ⟨fun h => by rw [← e.right_inv hy, h], fun h => by rw [← e.left_inv hx, h]⟩
+    x = e.symm y ↔ e x = y := by
+  simp [eq_comm, ← symm_apply_eq e hx hy]
 
 protected theorem mapsTo : MapsTo e e.source e.target := fun _ => e.map_source
 
