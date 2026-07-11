@@ -6,9 +6,10 @@ Authors: Kim Morrison, Johan Commelin
 module
 
 public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
+public import Mathlib.Algebra.MonoidAlgebra.Module
+public import Mathlib.CategoryTheory.Linear.LinearFunctor
 public import Mathlib.CategoryTheory.Monoidal.Types.Basic
 public import Mathlib.LinearAlgebra.DirectSum.Finsupp
-public import Mathlib.CategoryTheory.Linear.LinearFunctor
 
 /-!
 The functor of forming finitely supported functions on a type with values in a `[Ring R]`
@@ -16,14 +17,12 @@ is the left adjoint of
 the forgetful functor from `R`-modules to types.
 -/
 
-@[expose] public section
-
+@[expose] public noncomputable section
 
 assert_not_exists Cardinal
 
-noncomputable section
-
 open CategoryTheory
+open scoped MonoidAlgebra
 
 namespace ModuleCat
 
@@ -41,6 +40,14 @@ free `R`-module with generators `x : X`, implemented as the type `X →₀ R`.
 def free : Type u ⥤ ModuleCat R where
   obj X := ModuleCat.of R (X →₀ R)
   map {_ _} f := ofHom <| Finsupp.lmapDomain _ _ (f : _ → _)
+
+/-- The free functor `Type u ⥤ ModuleCat R` sending a type `X` to the
+free `R`-module with generators `x : X`, implemented as the monoid algebra `R[X]`.
+-/
+@[simps]
+def monoidAlgebraFree : Type u ⥤ ModuleCat.{u} R where
+  obj X := .of R R[X]
+  map f := ofHom (MonoidAlgebra.mapDomainLinearMap R R f)
 
 variable {R}
 
