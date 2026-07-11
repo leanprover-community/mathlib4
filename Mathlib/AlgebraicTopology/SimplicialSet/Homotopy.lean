@@ -60,6 +60,7 @@ lemma h₀ (H : Homotopy f g) : ι₀ ≫ H.h = f :=
 lemma h₁ (H : Homotopy f g) : ι₁ ≫ H.h = g :=
   RelativeMorphism.Homotopy.h₁ H
 
+--set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- If `H : Homotopy f g` is a homotopy between morphisms of simplicial sets
 `f : X ⟶ Y` and `g : X ⟶ Y` (i.e. `H.h` is a morphism `X ⊗ Δ[1] ⟶ Y` inducing
@@ -76,7 +77,8 @@ noncomputable def toSimplicialObjectHomotopy (H : Homotopy f g) :
     dsimp
     apply congr_arg
     ext k : 2
-    · simp [dsimp% SimplexCategory.δ_comp_σ_self (i := (0 : Fin (n + 1)))]
+    · simp [stdSimplex.δ_objEquiv_symm_apply.{u},
+        dsimp% SimplexCategory.δ_comp_σ_self (i := (0 : Fin (n + 1)))]
     · rw [stdSimplex.δ_objMk₁_of_lt _ _ (by tauto)]
       rfl
   h_last_comp_δ_last n := by
@@ -86,7 +88,8 @@ noncomputable def toSimplicialObjectHomotopy (H : Homotopy f g) :
     dsimp
     apply congr_arg
     ext k
-    · simp [dsimp% SimplexCategory.δ_comp_σ_succ (i := Fin.last n)]
+    · simp [stdSimplex.δ_objEquiv_symm_apply.{u},
+        dsimp% SimplexCategory.δ_comp_σ_succ (i := Fin.last n)]
     · simp [stdSimplex.δ_objMk₁_of_le, stdSimplex.objMk₁_apply_eq_zero_iff, ← Fin.castSucc_succ]
   h_succ_comp_δ_castSucc_of_lt {n} i j hij := by
     ext x
@@ -95,7 +98,7 @@ noncomputable def toSimplicialObjectHomotopy (H : Homotopy f g) :
     dsimp
     apply congr_arg
     ext k : 2
-    · simpa [stdSimplex.δ_objEquiv_symm_apply,
+    · simpa [stdSimplex.δ_objEquiv_symm_apply.{u},
         SSet.yonedaEquiv_symm_app_objEquiv_symm.{u}] using!
           ConcreteCategory.congr_hom (X.δ_comp_σ_of_le hij) x
     · rw [stdSimplex.δ_objMk₁_of_lt, Fin.pred_succ]
@@ -120,8 +123,7 @@ noncomputable def toSimplicialObjectHomotopy (H : Homotopy f g) :
     dsimp
     apply congr_arg
     ext k : 2
-    · simp [SimplexCategory.δ_comp_σ_of_gt hij, SSet.yonedaEquiv_symm_app_objEquiv_symm.{u}]
-      rfl
+    · simp [stdSimplex.δ_objEquiv_symm_apply.{u}, SimplexCategory.δ_comp_σ_of_gt hij, ← δ_def]
     · rw [stdSimplex.δ_objMk₁_of_le _ _ (by simpa using! Fin.le_of_lt hij)]
       rfl
   h_comp_σ_castSucc_of_le {n} i j hij := by
@@ -131,7 +133,7 @@ noncomputable def toSimplicialObjectHomotopy (H : Homotopy f g) :
     dsimp
     apply congr_arg
     ext k : 2
-    · simp [SimplexCategory.σ_comp_σ hij, SSet.yonedaEquiv_symm_app_objEquiv_symm.{u}]
+    · simp [SimplexCategory.σ_comp_σ hij, stdSimplex.σ_objEquiv_symm_apply.{u}]
       rfl
     · rw [stdSimplex.σ_objMk₁_of_lt _ _ (by simpa)]
   h_comp_σ_succ_of_lt {n} i j hij := by
@@ -141,7 +143,7 @@ noncomputable def toSimplicialObjectHomotopy (H : Homotopy f g) :
     dsimp
     apply congr_arg
     ext k : 2
-    · simp [← SimplexCategory.σ_comp_σ hij, SSet.yonedaEquiv_symm_app_objEquiv_symm.{u}]
+    · simp [← SimplexCategory.σ_comp_σ hij, stdSimplex.σ_objEquiv_symm_apply.{u}]
       rfl
     · rw [stdSimplex.σ_objMk₁_of_le _ _ (by simpa)]
       rfl

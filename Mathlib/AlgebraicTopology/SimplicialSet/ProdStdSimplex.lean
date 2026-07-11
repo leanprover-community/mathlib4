@@ -187,23 +187,6 @@ lemma nonDegenerate_ext₂ {n : ℕ} {z₁ z₂ : (Δ[p] ⊗ Δ[q] : SSet.{u}).n
     z₁ = z₂ :=
   (nonDegenerateEquivOfIso (β_ _ _)).injective (nonDegenerate_ext₁ h)
 
--- to be moved
-lemma _root_.Fin.prod_zero_zero_lt_iff (i : Fin (p + 1) × Fin (q + 1)) :
-    (0, 0) < i ↔ 0 < i.1.1 + i.2.1 := by
-  rw [Prod.lt_iff]
-  aesop
-
--- to be moved
-lemma _root_.Fin.prod_lt_last_last_iff (i : Fin (p + 1) × Fin (q + 1)) :
-    i < (Fin.last _, Fin.last _) ↔ i.1.1 + i.2.1 < p + q := by
-  sorry
-
--- to be moved
-lemma _root_.SSet.yonedaEquiv_symm_app_apply {X : SSet.{u}} {n : SimplexCategoryᵒᵖ}
-    (x : X.obj n) {m : SimplexCategoryᵒᵖ} (y : (stdSimplex.obj n.unop).obj m) :
-    (yonedaEquiv.symm x).app m y = X.map (stdSimplex.objEquiv y).op x :=
-  rfl
-
 --set_option backward.isDefEq.respectTransparency false in
 --set_option backward.defeqAttrib.useBackward true in
 private lemma exists_nonDegenerate_max_dim_aux {d : ℕ}
@@ -220,7 +203,7 @@ private lemma exists_nonDegenerate_max_dim_aux {d : ℕ}
       stdSimplex.objEquiv.symm (SimplexCategory.δ i),
       objEquiv.injective ?_⟩
     ext k : 2
-    rw [yonedaEquiv_symm_app_apply, Equiv.apply_symm_apply,
+    rw [yonedaEquiv_symm_app, Equiv.apply_symm_apply,
       ← SimplicialObject.δ_def]
     simp [objEquiv_δ_apply]
   let S : Finset (Fin (d + 1)) :=

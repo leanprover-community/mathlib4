@@ -110,16 +110,14 @@ lemma objEquiv_symm_apply {n m : ℕ} (f : ⦋m⦌ ⟶ ⦋n⦌) (i : Fin (m + 1)
 @[simp]
 lemma δ_objEquiv_symm_apply
     {n : ℕ} {m : SimplexCategory} (f : .mk (n + 1) ⟶ m) (i : Fin (n + 2)) :
-    dsimp% (stdSimplex.obj _).δ i (objEquiv.symm f) =
-      (objEquiv (n := m) (m := op ⦋n⦌)).symm (SimplexCategory.δ i ≫ f) := by
-  rfl
+    (stdSimplex.{u}.obj _).δ i (objEquiv.symm f) =
+      (objEquiv (n := m) (m := op ⦋n⦌)).symm (SimplexCategory.δ i ≫ f) := rfl
 
 @[simp]
 lemma σ_objEquiv_symm_apply
     {n : ℕ} {m : SimplexCategory} (f : .mk n ⟶ m) (i : Fin (n + 1)) :
-    dsimp% (stdSimplex.obj _).σ i (objEquiv.symm f) =
-      (objEquiv (n := m) (m := op ⦋n + 1⦌)).symm (SimplexCategory.σ i ≫ f) := by
-  rfl
+    (stdSimplex.{u}.obj _).σ i (objEquiv.symm f) =
+      (objEquiv (n := m) (m := op ⦋n + 1⦌)).symm (SimplexCategory.σ i ≫ f) := rfl
 
 /-- Constructor for simplices of the standard simplex which takes a `OrderHom` as an input. -/
 abbrev objMk {n : SimplexCategory} {m : SimplexCategoryᵒᵖ}
@@ -185,9 +183,9 @@ lemma yonedaEquiv_map {n m : SimplexCategory} (f : n ⟶ m) :
 @[deprecated (since := "2026-03-21")] alias stdSimplex.yonedaEquiv_map := yonedaEquiv_map
 
 @[simp]
-lemma yonedaEquiv_symm_app {S : SSet} (n : SimplexCategory) (x : S.obj (op n))
-    (α : (stdSimplex.obj n).obj (op n)) :
-    (yonedaEquiv.symm x).app (op n) α = S.map (SSet.stdSimplex.objEquiv α).op x := rfl
+lemma yonedaEquiv_symm_app {S : SSet} {n m : SimplexCategory} (x : S.obj (op n))
+    (α : (stdSimplex.obj n).obj (op m)) :
+    dsimp% (yonedaEquiv.symm x).app (op m) α = S.map (SSet.stdSimplex.objEquiv α).op x := rfl
 
 @[simp]
 lemma yonedaEquiv_symm_stdSimplex_id (n : SimplexCategory) :
@@ -196,6 +194,7 @@ lemma yonedaEquiv_symm_stdSimplex_id (n : SimplexCategory) :
 
 open Finset Opposite SimplexCategory
 
+@[simp]
 lemma yonedaEquiv_symm_app_objEquiv_symm {X : SSet.{u}} {n : SimplexCategory}
     (x : X.obj (op n)) {m : SimplexCategoryᵒᵖ} (f : unop m ⟶ n) :
     dsimp% (yonedaEquiv.symm x).app _ (stdSimplex.objEquiv.symm f) =

@@ -1,4 +1,3 @@
-
 /-
 Copyright (c) 2026 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
@@ -12,16 +11,24 @@ public import Mathlib.Order.Fin.Basic
 /-!
 # Property of the order on a binary product of `Fin` types
 
-If elements `(x₀, y₀)` and `(x₂, y₂)` in `Fin p × Fin q` satisfy
-`(x₀, y₀) ≤ (x₂, y₂)` and `x₀ + y₀ + 2 ≤ x₂ + y₂`, then
-there exists `(x₁, y₁)` such that `(x₀, y₀) < (x₁, y₁) < (x₂, y₂)`.
-
-(This is used in `Mathlib/AlgebraicTopology/SimplicialSet/ProdStdSimplex.lean`.)
-
 -/
 
-public lemma Fin.prod_exists_lt_lt_of_le_of_le
-    {p q : ℕ} (k₀ k₂ : Fin p × Fin q) (h₀₂ : k₀ ≤ k₂)
+namespace Fin
+
+variable {p q : ℕ}
+
+public lemma prod_zero_zero_lt_iff (i : Fin (p + 1) × Fin (q + 1)) :
+    (0, 0) < i ↔ 0 < i.1.val + i.2.val := by
+  rw [Prod.lt_iff]
+  grind
+
+public lemma prod_lt_last_last_iff (i : Fin (p + 1) × Fin (q + 1)) :
+    i < (Fin.last _, Fin.last _) ↔ i.1.1 + i.2.1 < p + q := by
+  simp only [Prod.lt_iff, Fin.lt_def]
+  grind
+
+public lemma prod_exists_lt_lt_of_le_of_le
+    (k₀ k₂ : Fin p × Fin q) (h₀₂ : k₀ ≤ k₂)
     (h : k₀.1.val + k₀.2.val + 2 ≤ k₂.1.val + k₂.2.val) :
     ∃ k₁, k₀ < k₁ ∧ k₁ < k₂ := by
   obtain ⟨p, rfl⟩ := Nat.exists_eq_succ_of_ne_zero (n := p) (by grind)
@@ -43,3 +50,5 @@ public lemma Fin.prod_exists_lt_lt_of_le_of_le
     rw [Fin.val_succ] at h
     simp [Fin.lt_def]
     lia
+
+end Fin
