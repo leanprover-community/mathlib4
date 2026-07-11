@@ -327,7 +327,7 @@ variable {F E}
 
 theorem cardinal_eq_two_pow_rank [Algebra.IsSeparable F E]
     (rank_inf : ℵ₀ ≤ Module.rank F E) : #(Field.Emb F E) = 2 ^ Module.rank F E := by
-  haveI := Fact.mk rank_inf
+  have := Fact.mk rank_inf
   rw [Emb.Cardinal.embEquivPi.cardinal_eq, mk_pi]
   apply le_antisymm
   · rw [← power_eq_two_power rank_inf natCast_le_aleph0 rank_inf]

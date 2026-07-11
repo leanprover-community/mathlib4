@@ -412,7 +412,7 @@ theorem Module.finrank_zero_iff [IsDomain R] [IsTorsionFree R M] :
 /-- Similar to `rank_quotient_add_rank_le` but for `finrank` and a finite `M`. -/
 lemma Module.finrank_quotient_add_finrank_le (N : Submodule R M) :
     finrank R (M ⧸ N) + finrank R N ≤ finrank R M := by
-  haveI := nontrivial_of_invariantBasisNumber R
+  have := nontrivial_of_invariantBasisNumber R
   have := rank_quotient_add_rank_le N
   rw [← finrank_eq_rank R M, ← finrank_eq_rank R, ← N.finrank_eq_rank] at this
   exact mod_cast this
@@ -502,7 +502,7 @@ variable [IsDomain R] [IsTorsionFree R M] [StrongRankCondition R]
 then the module has dimension one. -/
 theorem rank_eq_one (v : M) (n : v ≠ 0) (h : ∀ w : M, ∃ c : R, c • v = w) :
     Module.rank R M = 1 := by
-  haveI := nontrivial_of_invariantBasisNumber R
+  have := nontrivial_of_invariantBasisNumber R
   obtain ⟨b⟩ := (Basis.basis_singleton_iff.{_, _, u} PUnit).mpr ⟨v, n, h⟩
   rw [rank_eq_card_basis b, Fintype.card_punit, Nat.cast_one]
 

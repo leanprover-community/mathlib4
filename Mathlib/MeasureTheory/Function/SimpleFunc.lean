@@ -308,7 +308,7 @@ def extend [MeasurableSpace β] (f₁ : α →ₛ γ) (g : α → β) (hg : Meas
     (f₁.finite_range.union <| f₂.finite_range.subset (image_subset_range _ _)).subset
       (range_extend_subset _ _ _)
   measurableSet_fiber' := by
-    letI : MeasurableSpace γ := ⊤; haveI : MeasurableSingletonClass γ := ⟨fun _ => trivial⟩
+    let : MeasurableSpace γ := ⊤; have : MeasurableSingletonClass γ := ⟨fun _ => trivial⟩
     exact fun x => hg.measurable_extend f₁.measurable f₂.measurable (measurableSet_singleton _)
 
 @[simp]

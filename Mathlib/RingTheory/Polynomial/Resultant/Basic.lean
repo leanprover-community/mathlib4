@@ -490,7 +490,7 @@ nonrec lemma resultant_eq_prod_eval [IsDomain R]
   by_cases hf0 : f = 0
   · simp [hf0]
   wlog hfm : f.Monic
-  · letI inst := hR.toField
+  · let inst := hR.toField
     have H : (C f.leadingCoeff⁻¹ * f).Monic := by
       rw [Monic, ← coeff_natDegree, natDegree_C_mul (by simp [hf0]), coeff_C_mul]; simp [hf0]
     have := this (C f.leadingCoeff⁻¹ * f) g n hg (.mul (.C _) hf) hR (by simpa) H
@@ -504,12 +504,12 @@ nonrec lemma resultant_eq_prod_eval [IsDomain R]
     · obtain ⟨r, rfl⟩ := hfm.natDegree_eq_zero.mp hf'; simp
     simp [← hf.natDegree_eq_card_roots, hf']
   wlog hgm : g.Monic
-  · letI inst := hR.toField
+  · let inst := hR.toField
     have := this f (C g.leadingCoeff⁻¹ * g) n (by simpa [hg0, natDegree_C_mul]) hf hR hfm (by simpa)
       (by rw [Monic, ← coeff_natDegree, natDegree_C_mul (by simp [hg0]), coeff_C_mul]; simp [hg0])
     rw [resultant_C_mul_right, inv_pow, inv_mul_eq_iff_eq_mul₀ (by simp [hg0])] at this
     simpa [← hf.natDegree_eq_card_roots, inv_pow, mul_left_comm (_ ^ g.natDegree), hg0] using this
-  letI inst := hR.toField
+  let inst := hR.toField
   let L := g.SplittingField
   apply (algebraMap R L).injective
   have := resultant_eq_prod_roots_sub (f.map (algebraMap R L))
@@ -545,10 +545,10 @@ nonrec lemma induction_of_Splits_of_injective_of_surjective.{u}
   · exact injective _ _ _ (FaithfulSMul.algebraMap_injective R (FractionRing R)) _
       (this _ inferInstance (Field.toIsField _))
   wlog hp : p.Splits generalizing R
-  · letI inst := hR.toField
+  · let inst := hR.toField
     exact injective _ _ _ (algebraMap R p.SplittingField).injective _
       (this _ inferInstance (Field.toIsField _) (SplittingField.splits _))
-  letI inst := hR.toField
+  let inst := hR.toField
   exact Splits _ _ hp
 
 /-- `Res(f, g₁ * g₂) = Res(f, g₁) * Res(f, g₂)`. -/

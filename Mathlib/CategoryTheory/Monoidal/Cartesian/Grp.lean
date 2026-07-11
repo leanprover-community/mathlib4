@@ -148,7 +148,7 @@ lemma essImage_yonedaGrp :
   · rintro ⟨G, ⟨α⟩⟩
     exact ⟨G.X, ⟨Functor.representableByEquiv.symm (Functor.isoWhiskerRight α (forget _))⟩⟩
   · rintro ⟨X, ⟨e⟩⟩
-    letI := GrpObj.ofRepresentableBy X F e
+    let := GrpObj.ofRepresentableBy X F e
     exact ⟨⟨X⟩, ⟨yonedaGrpObjIsoOfRepresentableBy X F e⟩⟩
 
 @[to_additive (attr := reassoc)]

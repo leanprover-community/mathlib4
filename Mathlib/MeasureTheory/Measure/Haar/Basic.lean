@@ -536,7 +536,7 @@ instance isMulLeftInvariant_haarMeasure (K₀ : PositiveCompacts G) :
 
 @[to_additive]
 theorem haarMeasure_self {K₀ : PositiveCompacts G} : haarMeasure K₀ K₀ = 1 := by
-  haveI : LocallyCompactSpace G := K₀.locallyCompactSpace_of_group
+  have : LocallyCompactSpace G := K₀.locallyCompactSpace_of_group
   simp only [haarMeasure, coe_smul, Pi.smul_apply, smul_eq_mul]
   rw [← K₀.isCompact.measure_closure,
     Content.measure_apply _ isClosed_closure.measurableSet, ENNReal.inv_mul_cancel]
@@ -546,7 +546,7 @@ theorem haarMeasure_self {K₀ : PositiveCompacts G} : haarMeasure K₀ K₀ = 1
 /-- The Haar measure is regular. -/
 @[to_additive /-- The additive Haar measure is regular. -/]
 instance regular_haarMeasure {K₀ : PositiveCompacts G} : (haarMeasure K₀).Regular := by
-  haveI : LocallyCompactSpace G := K₀.locallyCompactSpace_of_group
+  have : LocallyCompactSpace G := K₀.locallyCompactSpace_of_group
   apply Regular.smul
   rw [← K₀.isCompact.measure_closure,
     Content.measure_apply _ isClosed_closure.measurableSet, ENNReal.inv_ne_top]
@@ -560,7 +560,7 @@ theorem haarMeasure_closure_self {K₀ : PositiveCompacts G} : haarMeasure K₀ 
 @[to_additive /-- The additive Haar measure is sigma-finite in a second countable group. -/]
 instance sigmaFinite_haarMeasure [SecondCountableTopology G] {K₀ : PositiveCompacts G} :
     SigmaFinite (haarMeasure K₀) := by
-  haveI : LocallyCompactSpace G := K₀.locallyCompactSpace_of_group; infer_instance
+  have : LocallyCompactSpace G := K₀.locallyCompactSpace_of_group; infer_instance
 
 /-- The Haar measure is a Haar measure, i.e., it is invariant and gives finite mass to compact
 sets and positive mass to nonempty open sets. -/

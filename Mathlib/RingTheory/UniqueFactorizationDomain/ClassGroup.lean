@@ -35,7 +35,7 @@ namespace NormalizedGCDMonoid
 lemma isPrincipal_of_exists_mul_ne_zero_isPrincipal
     {J : Ideal R} (hJ : ∃ K : Ideal R, J * K ≠ 0 ∧ (J * K).IsPrincipal) :
     J.IsPrincipal := by
-  letI : NormalizedGCDMonoid R :=
+  let : NormalizedGCDMonoid R :=
     Classical.choice (inferInstance : Nonempty (NormalizedGCDMonoid R))
   obtain ⟨K, hJK0, hK⟩ := hJ
   rcases hK.principal with ⟨x, hJK⟩

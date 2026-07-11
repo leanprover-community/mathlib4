@@ -540,10 +540,10 @@ theorem tendsto_mul_cocompact_nhds_zero [TopologicalSpace α] [TopologicalSpace 
 theorem tendsto_mul_cofinite_nhds_zero {f : α → M} {g : β → M}
     (hf : Tendsto f cofinite (𝓝 0)) (hg : Tendsto g cofinite (𝓝 0)) :
     Tendsto (fun i : α × β ↦ f i.1 * g i.2) cofinite (𝓝 0) := by
-  letI : TopologicalSpace α := ⊥
-  haveI : DiscreteTopology α := discreteTopology_bot α
-  letI : TopologicalSpace β := ⊥
-  haveI : DiscreteTopology β := discreteTopology_bot β
+  let : TopologicalSpace α := ⊥
+  have : DiscreteTopology α := discreteTopology_bot α
+  let : TopologicalSpace β := ⊥
+  have : DiscreteTopology β := discreteTopology_bot β
   rw [← cocompact_eq_cofinite] at *
   exact tendsto_mul_cocompact_nhds_zero
     continuous_of_discreteTopology continuous_of_discreteTopology hf hg

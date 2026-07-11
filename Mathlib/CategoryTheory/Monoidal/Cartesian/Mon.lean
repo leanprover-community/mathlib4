@@ -417,7 +417,7 @@ lemma essImage_yonedaMon :
   · rintro ⟨M, ⟨α⟩⟩
     exact ⟨M.X, ⟨Functor.representableByEquiv.symm (Functor.isoWhiskerRight α (forget _))⟩⟩
   · rintro ⟨X, ⟨e⟩⟩
-    letI := MonObj.ofRepresentableBy X F e
+    let := MonObj.ofRepresentableBy X F e
     exact ⟨Mon.mk X, ⟨yonedaMonObjIsoOfRepresentableBy X F e⟩⟩
 
 @[to_additive (attr := reassoc (attr := simp))]

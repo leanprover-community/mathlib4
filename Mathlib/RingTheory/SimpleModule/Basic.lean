@@ -445,7 +445,7 @@ open LinearMap in
 /-- A finite product of semisimple rings is semisimple. -/
 instance {ι} [Finite ι] (R : ι → Type*) [Π i, Ring (R i)] [∀ i, IsSemisimpleRing (R i)] :
     IsSemisimpleRing (Π i, R i) := by
-  letI _ (i) : Module (Π i, R i) (R i) := Module.compHom _ (Pi.evalRingHom R i)
+  let _ (i) : Module (Π i, R i) (R i) := Module.compHom _ (Pi.evalRingHom R i)
   let e (i) : R i →ₛₗ[Pi.evalRingHom R i] R i :=
     { AddMonoidHom.id (R i) with map_smul' := fun _ _ ↦ rfl }
   have (i : _) : IsSemisimpleModule (Π i, R i) (R i) :=
@@ -455,8 +455,8 @@ instance {ι} [Finite ι] (R : ι → Type*) [Π i, Ring (R i)] [∀ i, IsSemisi
 set_option backward.isDefEq.respectTransparency false in
 /-- A binary product of semisimple rings is semisimple. -/
 instance [hR : IsSemisimpleRing R] [hS : IsSemisimpleRing S] : IsSemisimpleRing (R × S) := by
-  letI : Module (R × S) R := Module.compHom _ (.fst R S)
-  letI : Module (R × S) S := Module.compHom _ (.snd R S)
+  let : Module (R × S) R := Module.compHom _ (.fst R S)
+  let : Module (R × S) S := Module.compHom _ (.snd R S)
   -- e₁, e₂ got falsely flagged by the unused argument linter
   let _e₁ : R →ₛₗ[.fst R S] R := { AddMonoidHom.id R with map_smul' := fun _ _ ↦ rfl }
   let _e₂ : S →ₛₗ[.snd R S] S := { AddMonoidHom.id S with map_smul' := fun _ _ ↦ rfl }
@@ -468,8 +468,8 @@ instance [hR : IsSemisimpleRing R] [hS : IsSemisimpleRing S] : IsSemisimpleRing 
 
 theorem RingHom.isSemisimpleRing_of_surjective (f : R →+* S) (hf : Function.Surjective f)
     [IsSemisimpleRing R] : IsSemisimpleRing S := by
-  letI : Module R S := Module.compHom _ f
-  haveI : RingHomSurjective f := ⟨hf⟩
+  let : Module R S := Module.compHom _ f
+  have : RingHomSurjective f := ⟨hf⟩
   let e : S →ₛₗ[f] S := { AddMonoidHom.id S with map_smul' := fun _ _ ↦ rfl }
   rw [IsSemisimpleRing, ← e.isSemisimpleModule_iff_of_bijective Function.bijective_id]
   infer_instance

@@ -332,7 +332,7 @@ noncomputable instance lan_preservesFiniteLimits_of_flat (F : C ⥤ D) [Represen
   intro J _ _
   apply preservesLimitsOfShape_of_evaluation (F.op.lan : (Cᵒᵖ ⥤ E) ⥤ Dᵒᵖ ⥤ E) J
   intro K
-  haveI : IsFiltered (CostructuredArrow F.op K) :=
+  have : IsFiltered (CostructuredArrow F.op K) :=
     IsFiltered.of_equivalence (structuredArrowOpEquivalence F (unop K))
   exact preservesLimitsOfShape_of_natIso (lanEvaluationIsoColim _ _ _).symm
 
@@ -344,14 +344,14 @@ variable [HasFiniteLimits C]
 
 instance lan_preservesFiniteLimits_of_preservesFiniteLimits (F : C ⥤ D)
     [PreservesFiniteLimits F] : PreservesFiniteLimits (F.op.lan : _ ⥤ Dᵒᵖ ⥤ E) := by
-  haveI := flat_of_preservesFiniteLimits F
+  have := flat_of_preservesFiniteLimits F
   infer_instance
 
 theorem flat_iff_lan_flat (F : C ⥤ D) :
     RepresentablyFlat F ↔ RepresentablyFlat (F.op.lan : _ ⥤ Dᵒᵖ ⥤ Type u₁) :=
   ⟨fun _ => inferInstance, fun H => by
-    haveI := preservesFiniteLimits_of_flat (F.op.lan : _ ⥤ Dᵒᵖ ⥤ Type u₁)
-    haveI : PreservesFiniteLimits F := by
+    have := preservesFiniteLimits_of_flat (F.op.lan : _ ⥤ Dᵒᵖ ⥤ Type u₁)
+    have : PreservesFiniteLimits F := by
       apply preservesFiniteLimits_of_preservesFiniteLimitsOfSize.{u₁}
       intros; apply preservesLimit_of_lan_preservesLimit
     apply flat_of_preservesFiniteLimits⟩

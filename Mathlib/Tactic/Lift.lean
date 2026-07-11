@@ -52,7 +52,7 @@ instance Prod.instCanLift {α β γ δ : Type*} {coeβα condβα coeδγ condδ
 theorem Subtype.exists_pi_extension {ι : Sort*} {α : ι → Sort*} [ne : ∀ i, Nonempty (α i)]
     {p : ι → Prop} (f : ∀ i : Subtype p, α i) :
     ∃ g : ∀ i : ι, α i, (fun i : Subtype p => g i) = f := by
-  haveI : DecidablePred p := fun i ↦ Classical.propDecidable (p i)
+  have : DecidablePred p := fun i ↦ Classical.propDecidable (p i)
   exact ⟨fun i => if hi : p i then f ⟨i, hi⟩ else Classical.choice (ne i),
     funext fun i ↦ dif_pos i.2⟩
 

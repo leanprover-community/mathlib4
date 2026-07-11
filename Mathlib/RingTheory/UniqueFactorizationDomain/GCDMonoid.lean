@@ -73,7 +73,7 @@ noncomputable def UniqueFactorizationMonoid.toNormalizedGCDMonoid (α : Type*)
 
 instance (α) [CommMonoidWithZero α] [UniqueFactorizationMonoid α] :
     Nonempty (NormalizedGCDMonoid α) := by
-  letI := UniqueFactorizationMonoid.normalizationMonoid (α := α)
+  let := UniqueFactorizationMonoid.normalizationMonoid (α := α)
   classical exact ⟨UniqueFactorizationMonoid.toNormalizedGCDMonoid α⟩
 
 end

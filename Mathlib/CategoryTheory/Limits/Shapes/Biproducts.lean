@@ -391,7 +391,7 @@ theorem hasBiproductsOfShape_of_equiv {K : Type w'} [HasBiproductsOfShape K C] (
 instance (priority := 100) hasBiproductsOfShape_finite [HasFiniteBiproducts C] [Finite J] :
     HasBiproductsOfShape J C := by
   rcases Finite.exists_equiv_fin J with ⟨n, ⟨e⟩⟩
-  haveI : HasBiproductsOfShape (Fin n) C := HasFiniteBiproducts.out n
+  have : HasBiproductsOfShape (Fin n) C := HasFiniteBiproducts.out n
   exact hasBiproductsOfShape_of_equiv C e
 
 instance (priority := 100) hasFiniteProducts_of_hasFiniteBiproducts [HasFiniteBiproducts C] :

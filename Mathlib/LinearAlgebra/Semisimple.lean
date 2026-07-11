@@ -228,7 +228,7 @@ theorem isSemisimple_of_squarefree_aeval_eq_zero {p : K[X]}
   have : FiniteDimensional K R := (AdjoinRoot.powerBasis hp.ne_zero).finite
   have : IsArtinianRing R := .of_finite K R
   have : IsSemisimpleRing R := IsArtinianRing.isSemisimpleRing_of_isReduced R
-  letI : Module R (AEval' f) := Module.IsTorsionBySet.module hpf
+  let : Module R (AEval' f) := Module.IsTorsionBySet.module hpf
   let e : AEval' f →ₛₗ[Ideal.Quotient.mk (Ideal.span {p})] AEval' f :=
     { AddMonoidHom.id _ with map_smul' := fun _ _ ↦ rfl }
   exact (e.isSemisimpleModule_iff_of_bijective bijective_id).mpr inferInstance

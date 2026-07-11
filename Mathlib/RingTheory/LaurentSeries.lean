@@ -1103,7 +1103,7 @@ theorem valuation_compare (f : K⸨X⸩) :
     (Valued.v : (RatFuncAdicCompl K) → ℤᵐ⁰)
         (AbstractCompletion.compare (LaurentSeriesPkg K) ratfuncAdicComplPkg f) =
       Valued.v f := by
-  letI : UniformSpace (ratfuncAdicComplPkg (K := K).space) :=
+  let : UniformSpace (ratfuncAdicComplPkg (K := K).space) :=
       ratfuncAdicComplPkg.uniformStruct
   rw [← valuation_LaurentSeries_equal_extension, ← compare_comp_eq_compare ratfuncAdicComplPkg _]
   · exact congr_fun (ratfuncAdicComplPkg.isDenseInducing.extend_unique
