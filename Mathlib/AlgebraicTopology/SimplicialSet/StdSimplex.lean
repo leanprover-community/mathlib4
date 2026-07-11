@@ -110,13 +110,13 @@ lemma objEquiv_symm_apply {n m : ℕ} (f : ⦋m⦌ ⟶ ⦋n⦌) (i : Fin (m + 1)
 @[simp]
 lemma δ_objEquiv_symm_apply
     {n : ℕ} {m : SimplexCategory} (f : .mk (n + 1) ⟶ m) (i : Fin (n + 2)) :
-    (stdSimplex.{u}.obj _).δ i (objEquiv.symm f) =
+    dsimp% (stdSimplex.{u}.obj _).δ i (objEquiv.symm f) =
       (objEquiv (n := m) (m := op ⦋n⦌)).symm (SimplexCategory.δ i ≫ f) := rfl
 
 @[simp]
 lemma σ_objEquiv_symm_apply
     {n : ℕ} {m : SimplexCategory} (f : .mk n ⟶ m) (i : Fin (n + 1)) :
-    (stdSimplex.{u}.obj _).σ i (objEquiv.symm f) =
+    dsimp% (stdSimplex.{u}.obj _).σ i (objEquiv.symm f) =
       (objEquiv (n := m) (m := op ⦋n + 1⦌)).symm (SimplexCategory.σ i ≫ f) := rfl
 
 /-- Constructor for simplices of the standard simplex which takes a `OrderHom` as an input. -/
