@@ -227,13 +227,13 @@ lemma exists_nonDegenerate_max_dim {d : ℕ}
   obtain ⟨i, hi⟩ := Nat.le.dest (Nat.le_of_lt_succ (dim_lt_of_nonDegenerate _ x (p + q + 1)))
   induction i generalizing d with
   | zero =>
-      obtain rfl : d = p + q := by lia
-      exact ⟨x, Subcomplex.mem_ofSimplex_obj _⟩
+    obtain rfl : d = p + q := by lia
+    exact ⟨x, Subcomplex.mem_ofSimplex_obj _⟩
   | succ d' hd' =>
-      obtain ⟨y, hy⟩ := exists_nonDegenerate_max_dim_aux x (by lia)
-      obtain ⟨z, hz⟩ := hd' y (by lia)
-      rw [← Subcomplex.ofSimplex_le_iff] at hz
-      exact ⟨z, hz _ hy⟩
+    obtain ⟨y, hy⟩ := exists_nonDegenerate_max_dim_aux x (by lia)
+    obtain ⟨z, hz⟩ := hd' y (by lia)
+    rw [← Subcomplex.ofSimplex_le_iff] at hz
+    exact ⟨z, hz _ hy⟩
 
 end prodStdSimplex
 
