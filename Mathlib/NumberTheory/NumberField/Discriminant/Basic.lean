@@ -501,7 +501,6 @@ theorem _root_.NumberField.finite_of_discr_bdd :
   refine Set.Finite.subset (Set.Finite.union (finite_of_discr_bdd_of_isReal A N)
     (finite_of_discr_bdd_of_isComplex A N)) ?_
   rintro ⟨K, hK₀⟩ hK₁
-  -- this is purely an optimization
   have : CharZero K := SubsemiringClass.instCharZero K
   obtain ⟨w₀⟩ := (inferInstance : Nonempty (InfinitePlace K))
   by_cases hw₀ : IsReal w₀
