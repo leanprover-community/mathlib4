@@ -627,7 +627,7 @@ section ofContinuousLinearMap
 variable (f₁ : M₁ →SL[σ₁₂] M₂) (f₂ : M₂ →SL[σ₂₁] M₁)
 
 /-- If a continuous linear map has a continuous inverse, then it is a continuous linear equivalence.
-This is the continuous version of `LinearEquiv.ofLinear`.
+This is the continuous version of `LinearEquiv.ofLinearMap`.
 See also `ofContinuousLinearMap'`. -/
 def ofContinuousLinearMap (h₁ : Function.RightInverse f₂ f₁) (h₂ : Function.LeftInverse f₂ f₁) :
     M₁ ≃SL[σ₁₂] M₂ where
@@ -670,8 +670,8 @@ theorem symm_equivOfInverse (f₁ : M₁ →SL[σ₁₂] M₂) (f₂ h₁ h₂) 
   rfl
 
 /-- If a continuous linear map has a continuous inverse, then it is a continuous linear equivalence.
-This is the continuous version of `LinearEquiv.ofLinear`.
-See also `ofContinuousLinearMap'`. -/
+This is the continuous version of `LinearEquiv.ofLinearMap`.
+See also `ofContinuousLinearMap`. -/
 def ofContinuousLinearMap' (h₁ : f₁ ∘SL f₂ = .id R₂ M₂) (h₂ : f₂ ∘SL f₁ = .id R₁ M₁) :
     M₁ ≃SL[σ₁₂] M₂ :=
   ofContinuousLinearMap f₁ f₂
