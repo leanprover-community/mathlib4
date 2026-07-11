@@ -1228,14 +1228,11 @@ lemma subset_iUnion_iff_mem_of_isMaximal_of_finite
     {R : Type*} [CommRing R] {M : Ideal R} [M.IsMaximal] {S : Set (Ideal R)}
     (hs : S.Finite) (a b : Ideal R) (hp : ∀ I ∈ S, I ≠ a → I ≠ b → I.IsPrime)
     (ha : a ≠ ⊤) (hb : b ≠ ⊤) : ((M : Set R) ⊆ ⋃ I ∈ S, I) ↔ M ∈ S := by
-  rw [Ideal.subset_union_prime_finite hs a b hp]
-  apply Iff.trans _ exists_eq_right'
-  refine exists_congr fun I ↦ and_congr_right fun hI ↦ ⟨‹M.IsMaximal›.eq_of_le ?_, le_of_eq⟩
-  by_cases hia : I = a
-  · exact hia.trans_ne ha
-  · by_cases hib : I = b
-    · exact hib.trans_ne hb
-    · exact (hp _ hI hia hib).ne_top
+  refine (subset_union_prime_finite hs a b hp).trans ⟨fun ⟨I, mem, le⟩ ↦ ?_, (⟨M, ·, le_rfl⟩)⟩
+  rwa [‹M.IsMaximal›.eq_of_le _ le]
+  simp_rw [← or_iff_not_imp_left] at hp
+  obtain rfl | rfl | hp := hp I mem
+  exacts [ha, hb, hp.ne_top]
 
 /-- Generalize `Ideal.IsMaximal.exists_inv` to power of maximal ideals. -/
 theorem IsMaximal.exists_inv_pow (I : Ideal R) [I.IsMaximal]
