@@ -9,7 +9,6 @@ public import Mathlib.MeasureTheory.Covering.VitaliFamily
 public import Mathlib.MeasureTheory.Function.AEMeasurableOrder
 public import Mathlib.MeasureTheory.Integral.Average
 public import Mathlib.MeasureTheory.Measure.Decomposition.Lebesgue
-public import Mathlib.MeasureTheory.Measure.Regular
 
 /-!
 # Differentiation of measures
@@ -201,9 +200,7 @@ theorem ae_eventually_measure_zero_of_singular (hρ : ρ ⟂ₘ μ) :
   obtain ⟨n, hn⟩ : ∃ n, u n < w := ((tendsto_order.1 u_lim).2 w (ENNReal.coe_pos.1 w_pos)).exists
   filter_upwards [hx n, h'x, v.eventually_measure_lt_top x]
   intro a ha μa_pos μa_lt_top
-  grw [ENNReal.div_lt_iff (.inl μa_pos.ne') (.inl μa_lt_top.ne), ha, hn]
-  gcongr
-  exact μa_lt_top.ne
+  grw [ENNReal.div_lt_iff (.inl μa_pos.ne') (.inl μa_lt_top.ne), ha, hn, w_lt]
 
 section AbsolutelyContinuous
 
@@ -696,7 +693,7 @@ theorem ae_tendsto_rnDeriv :
   have C : ∀ᵐ x ∂μ, Tendsto (fun a => t a / μ a) (v.filterAt x) (𝓝 (t.rnDeriv μ x)) :=
     v.ae_tendsto_rnDeriv_of_absolutelyContinuous (withDensity_absolutelyContinuous _ _)
   filter_upwards [A, B, C] with _ Ax Bx Cx
-  convert Ax.add Cx using 1
+  convert! Ax.add Cx using 1
   · ext1 a
     conv_lhs => rw [eq_add]
     simp only [Pi.add_apply, coe_add, ENNReal.add_div]
@@ -756,12 +753,12 @@ theorem ae_tendsto_lintegral_div' {f : α → ℝ≥0∞} (hf : Measurable f) (h
 theorem ae_tendsto_lintegral_div {f : α → ℝ≥0∞} (hf : AEMeasurable f μ) (h'f : (∫⁻ y, f y ∂μ) ≠ ∞) :
     ∀ᵐ x ∂μ, Tendsto (fun a => (∫⁻ y in a, f y ∂μ) / μ a) (v.filterAt x) (𝓝 (f x)) := by
   have A : (∫⁻ y, hf.mk f y ∂μ) ≠ ∞ := by
-    convert h'f using 1
+    convert! h'f using 1
     apply lintegral_congr_ae
     exact hf.ae_eq_mk.symm
   filter_upwards [v.ae_tendsto_lintegral_div' hf.measurable_mk A, hf.ae_eq_mk] with x hx h'x
   rw [h'x]
-  convert hx using 1
+  convert! hx using 1
   ext1 a
   congr 1
   apply lintegral_congr_ae

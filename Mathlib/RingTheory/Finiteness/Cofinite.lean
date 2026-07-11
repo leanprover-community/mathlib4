@@ -49,15 +49,28 @@ theorem _root_.Module.Finite.iff_cofg_bot : (⊥ : Submodule R M).CoFG ↔ Modul
 theorem CoFG.fg_of_isCompl {S T : Submodule R M} (hST : IsCompl S T) (hS : S.CoFG) : T.FG :=
   Module.Finite.iff_fg.mp <| Module.Finite.equiv <| quotientEquivOfIsCompl S T hST
 
+/-- Over a noetherian ring, if `S` and `T` are disjoint and `T` is CoFG, then `S` is FG. -/
+theorem CoFG.fg_of_disjoint [IsNoetherianRing R] {S T : Submodule R M} (hST : Disjoint S T)
+    (hT : T.CoFG) : S.FG :=
+  .of_disjoint_of_isNoetherian_quotient hST
+
+/-- If `S` and `T` are co-disjoint and `S` is FG, then `T` is CoFG. -/
+theorem FG.cofg_of_codisjoint {S T : Submodule R M} (hST : Codisjoint S T) (hS : S.FG) :
+    T.CoFG :=
+  have := Module.Finite.iff_fg.mpr hS
+  .of_surjective (T.mkQ.domRestrict S) (by simp [← LinearMap.range_eq_top, hST.symm.eq_top])
+
 /-- A complement of an FG submodule is CoFG. -/
-theorem FG.cofg_of_isCompl {S T : Submodule R M} (hST : IsCompl S T) (hS : S.FG) : T.CoFG := by
-  haveI := Module.Finite.iff_fg.mpr hS
-  exact Module.Finite.equiv (quotientEquivOfIsCompl T S hST.symm).symm
+theorem FG.cofg_of_isCompl {S T : Submodule R M} (hST : IsCompl S T) (hS : S.FG) : T.CoFG :=
+  hS.cofg_of_codisjoint hST.codisjoint
 
 /-- A submodule that contains a CoFG submodule is CoFG. -/
-theorem CoFG.of_cofg_le {S T : Submodule R M} (hT : S ≤ T) (hS : S.CoFG) : T.CoFG := by
+theorem CoFG.of_le {S T : Submodule R M} (hT : S ≤ T) (hS : S.CoFG) : T.CoFG := by
   rw [← sup_eq_right.mpr hT]
   exact Module.Finite.equiv (quotientQuotientEquivQuotientSup S T)
+
+@[deprecated (since := "2026-05-13")]
+alias CoFG.cofg_of_le := CoFG.of_le
 
 section LinearMap
 

@@ -92,7 +92,7 @@ theorem continuous_hatInv [CompletableTopField K] {x : hat K} (h : x ≠ 0) :
     rw [eq_bot]
     exact comap_bot
 
-open Classical in
+open scoped Classical in
 /--
 The value of `hat_inv` at zero is not really specified, although it's probably zero.
 Here we explicitly enforce the `inv_zero` axiom.
@@ -126,8 +126,7 @@ theorem mul_hatInv_cancel {x : hat K} (x_ne : x ≠ 0) : x * hatInv x = 1 := by
   let f := fun x : hat K => x * hatInv x
   let c := (fun (x : K) => (x : hat K))
   change f x = 1
-  have cont : ContinuousAt f x := by
-    fun_prop (disch := assumption)
+  have cont : ContinuousAt f x := by fun_prop
   have clo : x ∈ closure (c '' {0}ᶜ) := by
     have := isDenseInducing_coe.dense x
     rw [← image_univ, show (univ : Set K) = {0} ∪ {0}ᶜ from (union_compl_self _).symm,

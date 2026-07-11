@@ -38,6 +38,11 @@ theorem IsLocalizedModule.isBaseChange [IsLocalizedModule S f] : IsBaseChange A 
     refine ⟨ℓ.extendScalarsOfIsLocalization S A, by simp, fun g'' h ↦ ?_⟩
     cases h₂ (LinearMap.restrictScalars R g'') h; rfl
 
+variable (M) in
+lemma LocalizedModule.isBaseChange :
+    IsBaseChange (Localization S) (LocalizedModule.mkLinearMap S M) :=
+  IsLocalizedModule.isBaseChange S (Localization S) (LocalizedModule.mkLinearMap S M)
+
 /-- The map `(f : M →ₗ[R] M')` is a localization of modules iff the map
 `(Localization S) × M → N, (s, m) ↦ s • f m` is the tensor product (insomuch as it is the universal
 bilinear map).
@@ -49,7 +54,7 @@ theorem isLocalizedModule_iff_isBaseChange : IsLocalizedModule S f ↔ IsBaseCha
   letI : Module A (LocalizedModule S M) := LocalizedModule.moduleOfIsLocalization ..
   have : IsBaseChange A (LocalizedModule.mkLinearMap S M) := IsLocalizedModule.isBaseChange S A _
   let e := (this.equiv.symm.trans h.equiv).restrictScalars R
-  convert IsLocalizedModule.of_linearEquiv S (LocalizedModule.mkLinearMap S M) e
+  convert! IsLocalizedModule.of_linearEquiv S (LocalizedModule.mkLinearMap S M) e
   ext
   rw [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
     LinearEquiv.restrictScalars_apply, LinearEquiv.trans_apply, IsBaseChange.equiv_symm_apply,
@@ -62,8 +67,7 @@ variable (M) in
 an `S⁻¹R`-module. -/
 noncomputable def LocalizedModule.equivTensorProduct :
     LocalizedModule S M ≃ₗ[Localization S] Localization S ⊗[R] M :=
-  IsLocalizedModule.isBaseChange S (Localization S)
-    (LocalizedModule.mkLinearMap S M) |>.equiv.symm
+  (LocalizedModule.isBaseChange S M).equiv.symm
 
 @[simp]
 lemma LocalizedModule.equivTensorProduct_symm_apply_tmul (x : M) (r : R) (s : S) :
@@ -117,9 +121,10 @@ instance (N N') [AddCommMonoid N] [Module R N] [AddCommMonoid N'] [Module R N'] 
     IsLocalizedModule S (TensorProduct.map f g) := by
   let eM := IsLocalizedModule.linearEquiv S f (TensorProduct.mk R (Localization S) M 1)
   let eN := IsLocalizedModule.linearEquiv S g (TensorProduct.mk R (Localization S) N 1)
-  convert IsLocalizedModule.of_linearEquiv S (TensorProduct.mk R (Localization S) (M ⊗[R] N) 1) <|
-    (AlgebraTensorModule.distribBaseChange R (Localization S) ..).restrictScalars R ≪≫ₗ
-    (congr eM eN ≪≫ₗ TensorProduct.equivOfCompatibleSMul ..).symm
+  convert!
+    IsLocalizedModule.of_linearEquiv S (TensorProduct.mk R (Localization S) (M ⊗[R] N) 1) <|
+      (AlgebraTensorModule.distribBaseChange R (Localization S) ..).restrictScalars R ≪≫ₗ
+        (congr eM eN ≪≫ₗ TensorProduct.equivOfCompatibleSMul ..).symm
   ext; congrm (?_ ⊗ₜ ?_) <;> simp [LinearEquiv.eq_symm_apply, eM, eN]
 
 /-- If `A` is a localization of `R`, tensoring two `A`-modules over `A` is the same as
@@ -206,11 +211,11 @@ instance {α} [IsLocalizedModule S f] :
   let e' : Localization S ⊗[R] (α →₀ M) ≃ₗ[R] (α →₀ M') :=
     finsuppRight R R (Localization S) M α ≪≫ₗ Finsupp.mapRange.linearEquiv e
   suffices IsLocalizedModule S (e'.symm.toLinearMap ∘ₗ Finsupp.mapRange.linearMap f) by
-    convert this.of_linearEquiv (e := e')
+    convert! this.of_linearEquiv (e := e')
     ext
     simp
   rw [isLocalizedModule_iff_isBaseChange S (Localization S)]
-  convert TensorProduct.isBaseChange R (α →₀ M) (Localization S) using 1
+  convert! TensorProduct.isBaseChange R (α →₀ M) (Localization S) using 1
   ext a m
   apply (finsuppRight R R (Localization S) M α).injective
   ext b

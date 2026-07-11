@@ -231,7 +231,7 @@ instance commSemiring : CommSemiring Cardinal.{u} where
   nsmul := nsmulRec
   npow n c := c ^ (n : Cardinal)
   npow_zero := power_zero
-  npow_succ n c := by rw [cast_succ, power_add, power_one]
+  npow_succ n c := by simp_rw [HPow.hPow, Pow.pow]; rw [cast_succ, power_add, power_one]
   natCast n := lift #(Fin n)
   natCast_zero := rfl
   natCast_succ n := cast_succ n
@@ -330,7 +330,7 @@ theorem power_le_power_left : ∀ {a b c : Cardinal}, a ≠ 0 → b ≤ c → a 
 theorem self_le_power (a : Cardinal) {b : Cardinal} (hb : 1 ≤ b) : a ≤ a ^ b := by
   rcases eq_or_ne a 0 with (rfl | ha)
   · exact zero_le
-  · convert power_le_power_left ha hb
+  · convert! power_le_power_left ha hb
     exact (power_one a).symm
 
 /-- **Cantor's theorem** -/
@@ -431,19 +431,41 @@ protected theorem isSuccLimit_iff {c : Cardinal} : IsSuccLimit c ↔ c ≠ 0 ∧
 protected theorem not_isSuccLimit_zero : ¬ IsSuccLimit (0 : Cardinal) :=
   not_isSuccLimit_bot
 
+/-- A cardinal is a strong pre-limit if it's closed under powersets.
+
+See `IsStrongLimit` for a version excluding `0`. -/
+def IsStrongPrelimit (c : Cardinal) : Prop :=
+  ∀ ⦃x⦄, x < c → 2 ^ x < c
+
 /-- A cardinal is a strong limit if it is not zero and it is closed under powersets.
-Note that `ℵ₀` is a strong limit by this definition. -/
+Note that `ℵ₀` is a strong limit by this definition.
+
+See `IsStrongPrelimit` for a version including `0`. -/
+@[mk_iff]
 structure IsStrongLimit (c : Cardinal) : Prop where
   ne_zero : c ≠ 0
-  two_power_lt ⦃x⦄ : x < c → 2 ^ x < c
+  protected isStrongPrelimit : IsStrongPrelimit c
 
-protected theorem IsStrongLimit.isSuccLimit {c} (H : IsStrongLimit c) : IsSuccLimit c := by
+@[deprecated (since := "2026-03-31")]
+alias IsStrongLimit.two_power_lt := IsStrongLimit.isStrongPrelimit
+
+protected theorem IsStrongPrelimit.isSuccPrelimit {c} (hc : IsStrongPrelimit c) :
+    IsSuccPrelimit c :=
+  isSuccPrelimit_of_succ_lt fun x hx ↦ (succ_le_of_lt <| cantor x).trans_lt (hc hx)
+
+protected theorem IsStrongLimit.isSuccLimit {c} (hc : IsStrongLimit c) : IsSuccLimit c := by
   rw [Cardinal.isSuccLimit_iff]
-  exact ⟨H.ne_zero, isSuccPrelimit_of_succ_lt fun x h ↦
-    (succ_le_of_lt <| cantor x).trans_lt (H.two_power_lt h)⟩
+  exact ⟨hc.ne_zero, hc.isStrongPrelimit.isSuccPrelimit⟩
 
 protected theorem IsStrongLimit.isSuccPrelimit {c} (H : IsStrongLimit c) : IsSuccPrelimit c :=
   H.isSuccLimit.isSuccPrelimit
+
+theorem not_isStrongPrelimit_iff {c} : ¬ IsStrongPrelimit c ↔ ∃ x < c, c ≤ 2 ^ x := by
+  simp [IsStrongPrelimit]
+
+@[simp]
+theorem IsStrongPrelimit.zero : IsStrongPrelimit 0 := by
+  simp [IsStrongPrelimit]
 
 @[simp]
 theorem not_isStrongLimit_zero : ¬ IsStrongLimit (0 : Cardinal) :=
@@ -479,7 +501,7 @@ theorem sum_le_sum {ι} (f g : ι → Cardinal) (H : ∀ i, f i ≤ g i) : sum f
 
 theorem mk_le_mk_mul_of_mk_preimage_le {c : Cardinal} (f : α → β) (hf : ∀ b : β, #(f ⁻¹' {b}) ≤ c) :
     #α ≤ #β * c := by
-  simpa only [← mk_congr (@Equiv.sigmaFiberEquiv α β f), mk_sigma, ← sum_const'] using
+  simpa only [← mk_congr (@Equiv.sigmaFiberEquiv α β f), mk_sigma, ← sum_const'] using!
     sum_le_sum _ _ hf
 
 theorem lift_mk_le_lift_mk_mul_of_lift_mk_preimage_le {α : Type u} {β : Type v} {c : Cardinal}
@@ -529,7 +551,7 @@ every type has a linear order which satisfies `WellFoundedGT` -/
 lemma exists_wellFoundedGT : ∃ (_ : LinearOrder α), WellFoundedGT α := by
   classical
   exact ⟨linearOrderOfSTO (Function.swap WellOrderingRel),
-    by simpa [isWellFounded_iff] using WellOrderingRel.isWellOrder.wf⟩
+    by simpa [isWellFounded_iff] using! WellOrderingRel.isWellOrder.wf⟩
 
 variable (α) in
 /-- The **well-ordering theorem** (or **Zermelo's theorem**): every type has a well-order -/
@@ -542,13 +564,13 @@ theorem exists_wellFoundedLT : ∃ (_ : LinearOrder α), WellFoundedLT α := by
 
 namespace Cardinal
 
-@[deprecated exists_eq_ciSup_of_not_isSuccPrelimit' (since := "2026-04-13")]
+@[deprecated exists_eq_ciSup_of_not_isSuccPrelimit (since := "2026-04-13")]
 lemma exists_eq_of_iSup_eq_of_not_isSuccPrelimit
     {ι : Type u} (f : ι → Cardinal.{v}) (ω : Cardinal.{v})
     (hω : ¬ IsSuccPrelimit ω)
     (h : ⨆ i : ι, f i = ω) : ∃ i, f i = ω := by
   subst h
-  exact exists_eq_ciSup_of_not_isSuccPrelimit' hω
+  exact exists_eq_ciSup_of_not_isSuccPrelimit hω
 
 @[deprecated exists_eq_ciSup_of_not_isSuccLimit (since := "2026-04-13")]
 lemma exists_eq_of_iSup_eq_of_not_isSuccLimit
@@ -610,7 +632,7 @@ theorem aleph0_eq_lift {c : Cardinal.{u}} : ℵ₀ = lift.{v} c ↔ ℵ₀ = c :
 
 @[simp]
 theorem lift_eq_aleph0 {c : Cardinal.{u}} : lift.{v} c = ℵ₀ ↔ c = ℵ₀ := by
-  simpa using lift_inj (b := ℵ₀)
+  simp [eqComm]
 
 /-! ### Properties about the cast from `ℕ` -/
 
@@ -641,12 +663,12 @@ theorem nat_eq_lift_iff {n : ℕ} {a : Cardinal.{u}} :
 @[simp]
 theorem zero_eq_lift_iff {a : Cardinal.{u}} :
     (0 : Cardinal) = lift.{v} a ↔ 0 = a := by
-  simpa using nat_eq_lift_iff (n := 0)
+  simp [eqComm]
 
 @[simp]
 theorem one_eq_lift_iff {a : Cardinal.{u}} :
     (1 : Cardinal) = lift.{v} a ↔ 1 = a := by
-  simpa using nat_eq_lift_iff (n := 1)
+  simp [eqComm]
 
 @[simp]
 theorem ofNat_eq_lift_iff {a : Cardinal.{u}} {n : ℕ} [n.AtLeastTwo] :
