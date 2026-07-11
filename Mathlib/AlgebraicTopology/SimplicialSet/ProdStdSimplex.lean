@@ -187,8 +187,6 @@ lemma nonDegenerate_ext₂ {n : ℕ} {z₁ z₂ : (Δ[p] ⊗ Δ[q] : SSet.{u}).n
     z₁ = z₂ :=
   (nonDegenerateEquivOfIso (β_ _ _)).injective (nonDegenerate_ext₁ h)
 
---set_option backward.isDefEq.respectTransparency false in
---set_option backward.defeqAttrib.useBackward true in
 private lemma exists_nonDegenerate_max_dim_aux {d : ℕ}
     (x : (Δ[p] ⊗ Δ[q] : SSet.{u}).nonDegenerate d) (hd : d < p + q) :
     ∃ (y : (Δ[p] ⊗ Δ[q] : SSet.{u}).nonDegenerate (d + 1)),
