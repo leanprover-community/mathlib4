@@ -54,10 +54,12 @@ theorem prod_normalizedFactors {a : α} (ane0 : a ≠ 0) :
   ext
   rw [Function.comp_apply, Associates.mk_normalize]
 
-theorem prod_normalizedFactors_eq {a : α} (ane0 : a ≠ 0) :
+theorem prod_normalizedFactors_eq {α} [CommMonoidWithZero α] [StrongNormalizationMonoid α]
+    [UniqueFactorizationMonoid α] {a : α} (ane0 : a ≠ 0) :
     (normalizedFactors a).prod = normalize a := by
   trans normalize (normalizedFactors a).prod
-  · rw [normalizedFactors, ← map_multiset_prod, normalize_idem]
+  · rw [normalizedFactors, ← coe_normalizeHom, ← map_multiset_prod, coe_normalizeHom,
+      normalize_idem]
   · exact normalize_eq_normalize_iff.mpr (dvd_dvd_iff_associated.mpr (prod_normalizedFactors ane0))
 
 theorem prime_of_normalized_factor {a : α} : ∀ x : α, x ∈ normalizedFactors a → Prime x := by
@@ -201,7 +203,7 @@ theorem dvd_iff_normalizedFactors_le_normalizedFactors {x y : α} (hx : x ≠ 0)
 theorem _root_.Associated.normalizedFactors_eq {a b : α} (h : Associated a b) :
     normalizedFactors a = normalizedFactors b := by
   unfold normalizedFactors
-  have h' : ⇑(normalize (α := α)) = Associates.out ∘ Associates.mk := funext Associates.out_mk
+  have h' : normalize (α := α) = Associates.out ∘ Associates.mk := funext Associates.out_mk
   rw [h', ← Multiset.map_map, ← Multiset.map_map,
     Associates.rel_associated_iff_map_eq_map.mp (factors_rel_of_associated h)]
 
@@ -371,10 +373,11 @@ open Multiset Associates
 variable [CommMonoidWithZero α] [UniqueFactorizationMonoid α]
 
 open scoped Classical in
-/-- Noncomputably defines a `normalizationMonoid` structure on a `UniqueFactorizationMonoid`. -/
+/-- Noncomputably defines a `StrongNormalizationMonoid` structure on a `UniqueFactorizationMonoid`.
+-/
 @[implicit_reducible]
-protected noncomputable def normalizationMonoid : NormalizationMonoid α :=
-  normalizationMonoidOfMonoidHomRightInverse
+protected noncomputable def strongNormalizationMonoid : StrongNormalizationMonoid α :=
+  strongNormalizationMonoidOfMonoidHomRightInverse
     { toFun := fun a : Associates α =>
         if a = 0 then 0
         else
@@ -401,6 +404,12 @@ protected noncomputable def normalizationMonoid : NormalizationMonoid α :=
       rw [if_neg hx, ← mkMonoidHom_apply, MonoidHom.map_multiset_prod, map_map, h, map_id, ←
         associated_iff_eq]
       apply prod_normalizedFactors hx)
+
+@[deprecated (since := "2026-07-08")]
+protected alias normalizationMonoid := UniqueFactorizationMonoid.strongNormalizationMonoid
+
+instance (priority := 100) : Nonempty (StrongNormalizationMonoid α) :=
+  ⟨UniqueFactorizationMonoid.strongNormalizationMonoid⟩
 
 end UniqueFactorizationMonoid
 

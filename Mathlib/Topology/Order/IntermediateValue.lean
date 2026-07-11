@@ -587,6 +587,25 @@ theorem exists_mem_Icc_isFixedPt_of_mapsTo {a b : α} {f : α → α} (hf : Cont
     (hle : a ≤ b) (hmaps : MapsTo f (Icc a b) (Icc a b)) : ∃ c ∈ Icc a b, IsFixedPt f c :=
   exists_mem_Icc_isFixedPt hf hle (hmaps <| left_mem_Icc.2 hle).1 (hmaps <| right_mem_Icc.2 hle).2
 
+/-- Version of `exists_mem_Icc_isFixedPt_of_mapsTo` using `Set.uIcc` -/
+theorem exists_mem_uIcc_isFixedPt_of_mapsTo {a b : α} {f : α → α} (hf : ContinuousOn f (uIcc a b))
+    (hmaps : MapsTo f (uIcc a b) (uIcc a b)) : ∃ c ∈ uIcc a b, IsFixedPt f c :=
+  exists_mem_Icc_isFixedPt_of_mapsTo hf inf_left_le_sup_left hmaps
+
+/-- If a closed interval is contained in its own image under a continuous map `f : α → α`,
+then this map has a fixed point on this interval. -/
+theorem exists_mem_Icc_isFixedPt_of_surjOn {a b : α} {f : α → α} (hf : ContinuousOn f (Icc a b))
+    (hle : a ≤ b) (h_surj : SurjOn f (Icc a b) (Icc a b)) : ∃ c ∈ Icc a b, IsFixedPt f c :=
+  have ⟨x₀, hx₀⟩ := h_surj (left_mem_Icc.mpr hle)
+  have ⟨x₁, hx₁⟩ := h_surj (right_mem_Icc.mpr hle)
+  isPreconnected_Icc.intermediate_value₂
+    hx₀.1 hx₁.1 hf continuousOn_id (by grind) (by grind)
+
+/-- Version of `exists_mem_Icc_isFixedPt_of_surjOn` using `Set.uIcc` -/
+theorem exists_mem_uIcc_isFixedPt_of_surjOn {a b : α} {f : α → α} (hf : ContinuousOn f (uIcc a b))
+    (h_surj : SurjOn f (uIcc a b) (uIcc a b)) : ∃ c ∈ uIcc a b, IsFixedPt f c :=
+  exists_mem_Icc_isFixedPt_of_surjOn hf inf_left_le_sup_left h_surj
+
 theorem intermediate_value_Ico {a b : α} (hab : a ≤ b) {f : α → δ} (hf : ContinuousOn f (Icc a b)) :
     Ico (f a) (f b) ⊆ f '' Ico a b :=
   Or.elim (eq_or_lt_of_le hab) (fun he _ h => absurd h.2 (not_lt_of_ge (he ▸ h.1))) fun hlt =>
