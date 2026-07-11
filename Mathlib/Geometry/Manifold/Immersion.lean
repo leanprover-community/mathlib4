@@ -437,7 +437,7 @@ theorem contMDiffOn (h : IsImmersionAtOfComplement F I J n f x) :
 theorem contMDiffAt (h : IsImmersionAtOfComplement F I J n f x) : CMDiffAt n f x :=
   h.contMDiffOn.contMDiffAt (h.domChart.open_source.mem_nhds (mem_domChart_source h))
 
-/-- Let `f : M → N` be a function, and suppose `φ : N → P` is a `C^n` immersion at `f x`, such
+/-- Let `f : M → N` be a function, and suppose `φ : N → N'` is a `C^n` immersion at `f x`, such
 that `φ ∘ f` is `C^n` at `x`. Let `x ∈ t ⊆ M` be contained in the slice chart at `f x`.
 Then `f` seen in the slice chart at `φ (f x)` and the preferred chart at `x`
 is `C^n` at (the image of) `x` within (the image of) `t`. -/
@@ -482,7 +482,7 @@ private lemma aux {f : M → N} {φ : N → N'}
   exact h''''.congr_of_mem (fun y hy ↦ by simp [f'']) hx'
 
 /-- A function `f : M → N` between `C^n` manifolds is `C^n` at `x` if and only if it is continuous
-at `x` and its composition `φ ∘ f` with a `C^n` immersion `φ : N → P` at `f x` is `C^n` at `x`. -/
+at `x` and its composition `φ ∘ f` with a `C^n` immersion `φ : N → N'` at `f x` is `C^n` at `x`. -/
 lemma _root_.ContMDiffAt.iff_comp_isImmersionAtOfComplement
     {f : M → N} {φ : N → N'} (hφ : IsImmersionAtOfComplement F J J' n φ (f x)) :
     -- Note: `φ` need not be inducing, so continuity of `φ ∘ f` at `x`
@@ -688,7 +688,7 @@ theorem contMDiffAt (h : IsImmersionAt I J n f x) : CMDiffAt n f x :=
   h.isImmersionAtOfComplement_complement.contMDiffAt
 
 /-- A function `f : M → N` between `C^n` manifolds is `C^n` at `x` if and only if it is continuous
-at `x` and its composition `φ ∘ f` with a `C^n` immersion `φ : N → P` at `f x` is `C^n` at `x`. -/
+at `x` and its composition `φ ∘ f` with a `C^n` immersion `φ : N → N'` at `f x` is `C^n` at `x`. -/
 lemma _root_.ContMDiffAt.iff_comp_isImmersionAt {f : M → N} {φ : N → N'}
     (hφ : IsImmersionAt J J' n φ (f x)) :
     -- Note: `φ` need not be inducing, so continuity of `φ ∘ f` at `x`
@@ -828,7 +828,7 @@ theorem contMDiff (h : IsImmersionOfComplement F I J n f) : CMDiff n f :=
   fun x ↦ (h x).contMDiffAt
 
 /-- A function `f : M → N` between `C^n` manifolds is `C^n` if and only if it is continuous
-and its composition `φ ∘ f` with a `C^n` immersion `φ : N → P` is `C^n`. -/
+and its composition `φ ∘ f` with a `C^n` immersion `φ : N → N'` is `C^n`. -/
 lemma _root_.ContMDiff.iff_comp_isImmersionOfComplement {f : M → N} {φ : N → N'}
     (hφ : IsImmersionOfComplement F J J' n φ) :
     CMDiff n f ↔ Continuous f ∧ CMDiff n (φ ∘ f) := by
@@ -910,7 +910,7 @@ theorem contMDiff
   h.isImmersionOfComplement_complement.contMDiff
 
 /-- A function `f : M → N` between `C^n` manifolds is `C^n` if and only if it is continuous
-and its composition `φ ∘ f` with a `C^n` immersion `φ : N → P` is `C^n`. -/
+and its composition `φ ∘ f` with a `C^n` immersion `φ : N → N'` is `C^n`. -/
 lemma _root_.ContMDiff.iff_comp_isImmersion {f : M → N} {φ : N → N'} (hφ : IsImmersion J J' n φ) :
     CMDiff n f ↔ Continuous f ∧ CMDiff n (φ ∘ f) := by
   rw [ContMDiff.iff_comp_isImmersionOfComplement hφ.isImmersionOfComplement_complement]
