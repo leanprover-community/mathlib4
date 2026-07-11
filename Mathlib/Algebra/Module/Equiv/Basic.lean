@@ -514,7 +514,7 @@ theorem ofLinear_symm_apply {h₁ h₂} (x : M₂) :
 theorem ofLinear_symm_toLinearMap {h₁ h₂} : (ofLinear f g h₁ h₂ : M ≃ₛₗ[σ₁₂] M₂).symm = g := rfl
 
 @[simp]
-theorem ofLinear_toLinearMap {h₁ h₂} : (ofLinearMap f g h₁ h₂ : M ≃ₛₗ[σ₁₂] M₂) = f := rfl
+theorem ofLinear_toLinearMap (h₁ h₂) : (ofLinearMap f g h₁ h₂ : M ≃ₛₗ[σ₁₂] M₂) = f := rfl
 
 end
 
