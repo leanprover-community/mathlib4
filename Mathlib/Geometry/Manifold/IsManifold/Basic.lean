@@ -455,17 +455,20 @@ protected theorem locallyCompactSpace [LocallyCompactSpace E] (I : ModelWithCorn
   rintro x s ⟨-, hsc⟩
   exact (hsc.inter_right I.isClosed_range).image I.continuous_symm
 
+/-- If the target of a `ModelWithCorners` contains an open subset of the model vector space, it can
+be restricted an `OpenPartialHomeomorph` mapping onto that subset -/
 def toOpenPartialHomeomorph (I : ModelWithCorners 𝕜 E H) {s : Set E} (hs₁ : IsOpen s)
     (hs₂ : s ⊆ I.target) :
     OpenPartialHomeomorph H E where
   toFun := I.toFun
   invFun := I.invFun
   source := I.toFun ⁻¹' s
-  target := I.target ∩ s
+  target := s
   map_source' := by simp
-  map_target' := by simp
+  map_target' := fun x hx ↦
+    mem_preimage.mpr (mem_of_eq_of_mem (hx |> hs₂ |> I.target_subset_range |> I.right_inv) hx)
   left_inv' := by simp
-  right_inv' := by simp
+  right_inv' := fun x hx ↦ hx |> hs₂ |> I.target_subset_range |> I.right_inv
   open_source := I.continuous_toFun.isOpen_preimage _ hs₁
   open_target := (right_eq_inter.mpr hs₂) ▸ hs₁
   continuousOn_toFun := I.continuous_toFun.continuousOn

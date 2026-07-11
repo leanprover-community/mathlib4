@@ -64,28 +64,22 @@ def diffeoExtChartAt [IsManifold I n M] {p : M} (hp : I.IsInteriorPoint p) :
       -- this is just the identity in coordinates
       have h₁: homeo.source ⊆ (chartAt H p).source := by simp [homeo]
       have h₂ : MapsTo homeo homeo.source (chartAt E (homeo p)).source := by simp [MapsTo]
-      refine (contMDiffOn_iff_of_subset_source h₁ h₂).mpr ⟨homeo.continuousOn_toFun, ?_⟩
-      let f := homeo ∘ (chartAt H p).symm ∘ I.symm
-      let s := (fun a ↦ I ((chartAt H p) a)) '' homeo.source
-      change ContDiffOn 𝕜 n f s
-      have : ∀ e ∈ s, f e = e := by
-        rintro e ⟨w, ⟨hw, _⟩, rfl⟩
-        simp [f, homeo, ModelWithCorners.toOpenPartialHomeomorph,
-          (chartAt H p).right_inv ((chartAt H p).map_source hw)]
-      exact contDiffOn_id.congr this
+      refine (contMDiffOn_iff_of_subset_source h₁ h₂).mpr
+        ⟨homeo.continuousOn_toFun, contDiffOn_id.congr ?_⟩
+      rintro x ⟨m, ⟨hm, _⟩, rfl⟩
+      simp [homeo, ModelWithCorners.toOpenPartialHomeomorph,
+        (chartAt H p).right_inv ((chartAt H p).map_source hm)]
     contMDiffOn_invFun := by
       -- this is also just the identity in coordinates
       have h₁ : homeo.target ⊆ (chartAt E (homeo p)).source := by simp [homeo]
       have h₂ : MapsTo homeo.invFun homeo.target  (chartAt H p).source :=
         fun _ he ↦ (homeo.map_target he).1
-      refine (contMDiffOn_iff_of_subset_source h₁ h₂).mpr ⟨homeo.continuousOn_invFun, ?_⟩
-      let f := I ∘ (chartAt H p) ∘ homeo.symm
-      suffices ContDiffOn 𝕜 n f homeo.target by simpa
-      have : ∀ e ∈ homeo.target, f e = e := by
-        intro e he
-        simp [f, homeo, ModelWithCorners.toOpenPartialHomeomorph] at he ⊢
-        simp [(chartAt H p).right_inv he.2, I.right_inv he.1.1]
-      exact contDiffOn_id.congr this
+      refine (contMDiffOn_iff_of_subset_source h₁ h₂).mpr
+        ⟨homeo.continuousOn_invFun, contDiffOn_id.congr ?_⟩
+      rintro x ⟨e, ⟨he₁, he₂⟩, rfl⟩
+      change I.symm e ∈ (chartAt H p).target at he₂
+      simp [homeo, ModelWithCorners.toOpenPartialHomeomorph, (chartAt H p).right_inv he₂,
+        I.right_inv (I.target_subset_range (hs₂ he₁))]
   }
 
 lemma eqOn_diffeoExtChartAt_extChartAt [IsManifold I n M] {p : M} (hp : I.IsInteriorPoint p) :
@@ -231,12 +225,11 @@ theorem isLocalDiffeomorphAt_of_bijective_mfderiv {p : M₁} (hp : I₁.IsInteri
   · refine ⟨⟨mem_diffeoExtChartAt_source n hp,
       (hg.toPartialDiffeomorph_mem_source U_open φ₀p_mem_U hg' hn)⟩, ?_⟩
     change (ψ₁ ∘ f ∘ φ₀.symm) (φ₀ p) ∈ ψ₁.target
-    suffices ψ₁ (f p) ∈ ψ₁.target by simpa [φ₀.left_inv (mem_extChartAt_source p)]
-    exact ψ₁.map_source (mem_diffeoExtChartAt_source n hfp)
-  · intro m hm
+    simp [φ₀.left_inv (mem_extChartAt_source p), ψ₁.map_source (mem_diffeoExtChartAt_source n hfp)]
+  · rintro m ⟨⟨hm₁, _, hm₂, _⟩, _⟩
     change f m = ψ₀.symm (ψ₀ (f (φ₀.symm (φ₀ m))))
-    rw[φ₀.left_inv ((diffeoExtChartAt_source_subset n hp) hm.1.1), ψ₀.left_inv ?_]
+    rw[φ₀.left_inv ((diffeoExtChartAt_source_subset n hp) hm₁), ψ₀.left_inv ?_]
     exact (diffeoExtChartAt_source_subset n hfp)
-      (φ₁.injOn.mem_of_mem_image inter_subset_left hm.1.1 hm.1.2.2.1).2.2
+      (φ₁.injOn.mem_of_mem_image inter_subset_left hm₁ hm₂).2.2
 
 end ManifoldInverseFunctionTheorem
