@@ -46,7 +46,11 @@ attribute [nolint docBlame] AlgEquiv.toMulEquiv
 notation:50 A " ≃ₛₐ[" φ "] " B => AlgEquiv φ A B
 
 /-- The type of `R`-algebra isomorphisms between `A` and `B`. -/
-notation:50 A " ≃ₐ[" R "] " B => AlgEquiv (RingHom.id R) A B
+-- The instance for `RingHom.id R` is given, not synthesised: for a subobject `R` the two routes to
+-- `NonAssocSemiring R` agree but are not syntactically equal, and reconciling them is slow.
+notation:50 A " ≃ₐ[" R "] " B =>
+  AlgEquiv (@RingHom.id R
+    (@Semiring.toNonAssocSemiring R (@CommSemiring.toSemiring R inferInstance))) A B
 
 /-- `SemialgEquivClass F R A B` states that `F` is a type of semialgebra structure preserving
   equivalences. You should extend this class when you extend `AlgEquiv`. -/

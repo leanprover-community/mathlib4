@@ -50,7 +50,11 @@ notation:25 A " →ₛₐ[" φ:25 "] " B:0 => AlgHom φ A B
 infixr:25 " →ₐ " => AlgHom (RingHom.id _)
 
 /-- `A →ₐ[R] B` is the type of `R`-algebra maps from `A` to `B`. -/
-notation:25 A " →ₐ[" R "] " B => AlgHom (RingHom.id R) A B
+-- The instance for `RingHom.id R` is given, not synthesised: for a subobject `R` the two routes to
+-- `NonAssocSemiring R` agree but are not syntactically equal, and reconciling them is slow.
+notation:25 A " →ₐ[" R "] " B =>
+  AlgHom (@RingHom.id R
+    (@Semiring.toNonAssocSemiring R (@CommSemiring.toSemiring R inferInstance))) A B
 
 /-- `SemialgHomClass F R A B` asserts `F` is a type of bundled semialgebra homomorphisms
 from `A` to `B`. -/
