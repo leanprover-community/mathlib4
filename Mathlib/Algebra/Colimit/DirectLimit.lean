@@ -930,9 +930,9 @@ end NonUnitalAlgebra
 namespace NonUnitalStarAlgebra
 
 variable [Monoid R]
-variable [∀ i, NonUnitalNonAssocSemiring (G i)]
-variable [∀ i, Star (G i)]
-variable [∀ i, DistribMulAction R (G i)]
+variable [Π i, NonUnitalNonAssocSemiring (G i)]
+variable [Π i, Star (G i)]
+variable [Π i, DistribMulAction R (G i)]
 variable [∀ i j h, StarHomClass (T h) (G i) (G j)]
 variable [∀ i j h, NonUnitalAlgHomClass (T h) R (G i) (G j)]
 variable [Nonempty ι]
@@ -959,7 +959,7 @@ def lift (g : ∀ i, (G i) →⋆ₙₐ[R] P) (Hg : ∀ i j hij x, g j (f i j hi
   __ := DirectLimit.NonUnitalAlgebra.lift G f P (g := fun i ↦ (g i).toNonUnitalAlgHom) Hg
   map_star' := lift_star _ _
 
-variable (g : ∀ i, G i →⋆ₙₐ[R] P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x)
+variable (g : Π i, G i →⋆ₙₐ[R] P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x)
 
 @[simp]
 theorem lift_comp_of {i} : (lift G f P g Hg).comp (of G f i) = g i := rfl
@@ -979,9 +979,9 @@ end NonUnitalStarAlgebra
 namespace StarAlgebra
 
 variable [CommSemiring R]
-variable [∀ i, Semiring (G i)]
-variable [∀ i, Star (G i)]
-variable [∀ i, Algebra R (G i)]
+variable [Π i, Semiring (G i)]
+variable [Π i, Star (G i)]
+variable [Π i, Algebra R (G i)]
 variable [∀ i j h, StarHomClass (T h) (G i) (G j)]
 variable [∀ i j h, AlgHomClass (T h) R (G i) (G j)]
 variable [Nonempty ι]
@@ -1008,7 +1008,7 @@ def lift (g : ∀ i, (G i) →⋆ₐ[R] P) (Hg : ∀ i j hij x, g j (f i j hij x
   __ := DirectLimit.Algebra.lift G f P (g := fun i ↦ (g i).toAlgHom) Hg
   map_star' := lift_star _ _
 
-variable (g : ∀ i, G i →⋆ₐ[R] P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x)
+variable (g : Π i, G i →⋆ₐ[R] P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x)
 
 @[simp]
 theorem lift_comp_of {i} : (lift G f P g Hg).comp (of G f i) = g i := rfl
