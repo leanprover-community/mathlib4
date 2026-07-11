@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Analysis.Calculus.ContDiff.WithLp
 public import Mathlib.Analysis.InnerProductSpace.PiL2
-public import Mathlib.Geometry.Manifold.Orientation
 public import Mathlib.Geometry.Manifold.IsManifold.InteriorBoundary
+public import Mathlib.Geometry.Manifold.Orientation
 
 /-!
 # Constructing examples of manifolds over ℝ
@@ -566,16 +566,15 @@ private theorem Icc_zero_lt_det_tangentCoordChange_iff (p q r : Set.Icc x y)
     rw [hmap, LinearMap.det_smul, LinearMap.det_id, finrank_euclideanSpace, Fintype.card_fin]
     norm_num
 
-open Classical in
 instance instOrientedManifoldIcc : Manifold.OrientedManifold (𝓡∂ 1) (Set.Icc x y) where
   manifoldOrientation :=
-    { chartSign p z :=
+    { chartSign p z := open scoped Classical in
         if z ∈ (chartAt (EuclideanHalfSpace 1) p).source then (if (p : ℝ) < y then 1 else -1) else 1
-      continuousOn_chartSign p :=
+      continuousOn_chartSign p := open scoped Classical in
         ContinuousOn.congr (continuousOn_const (c := if (p : ℝ) < y then (1 : ℤˣ) else -1))
-          (fun z hz => by simp only [if_pos hz])
-      chartSign_eq_one_of_not_mem p z hz := if_neg hz
-      compatible p q z hzp hzq := by
+          (fun z hz ↦ by simp only [if_pos hz])
+      chartSign_eq_one_of_notMem p z hz := open scoped Classical in if_neg hz
+      compatible p q z hzp hzq := open scoped Classical in by
         simp only [if_pos hzp, if_pos hzq, Icc_zero_lt_det_tangentCoordChange_iff p q z ⟨hzp, hzq⟩]
         by_cases hp : (p : ℝ) < y <;> by_cases hq : (q : ℝ) < y <;> simp [hp, hq] }
 

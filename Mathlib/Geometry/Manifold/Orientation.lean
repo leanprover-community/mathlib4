@@ -6,12 +6,8 @@ Authors: Michael Lee
 module
 
 public import Mathlib.Analysis.InnerProductSpace.PiL2
-public import Mathlib.Geometry.Manifold.IsManifold.InteriorBoundary
-public import Mathlib.Geometry.Manifold.IsManifold.Basic
 public import Mathlib.Geometry.Manifold.VectorBundle.Tangent
 public import Mathlib.LinearAlgebra.Determinant
-public import Mathlib.LinearAlgebra.Dimension.Finite
-public import Mathlib.SetTheory.Cardinal.NatCard
 public import Mathlib.Topology.LocallyConstant.Algebra
 
 /-!
@@ -22,7 +18,7 @@ This file defines orientation structures for manifolds.
 ## Main definitions
 
 * `Manifold.Orientable`: manifold-level orientability predicate.
-* `Manifold.ManifoldOrientation`: orientation data, encoded by a `ℤˣ`-valued sign for the chart
+* `Manifold.Orientation`: orientation data, encoded by a `ℤˣ`-valued sign for the chart
   at each point, locally constant on the chart domain, with the compatibility that a coordinate
   change is orientation-preserving (positive Jacobian determinant) exactly when the two chart signs
   agree.
@@ -50,15 +46,13 @@ open Set
 
 namespace Manifold
 
-section Orientable
-
 variable {E H : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
   [TopologicalSpace H] (I : ModelWithCorners ℝ E H)
 
 /-- Data of a chosen orientation on a manifold: a `ℤˣ`-valued sign for the chart at each point,
 locally constant on the chart domain, compatible with the tangent coordinate changes. -/
 @[ext]
-structure ManifoldOrientation (M : Type*) [TopologicalSpace M] [ChartedSpace H M]
+structure Orientation (M : Type*) [TopologicalSpace M] [ChartedSpace H M]
     [IsManifold I 1 M] where
   /-- The sign of the chart at `x`, evaluated at each point; only meaningful on
   `(chartAt H x).source`. -/
@@ -66,7 +60,7 @@ structure ManifoldOrientation (M : Type*) [TopologicalSpace M] [ChartedSpace H M
   /-- Each chart-sign is continuous (hence locally constant) on its chart domain. -/
   continuousOn_chartSign : ∀ x, ContinuousOn (chartSign x) (chartAt H x).source
   /-- The chart-sign is `1` outside the chart domain. -/
-  chartSign_eq_one_of_not_mem : ∀ x z, z ∉ (chartAt H x).source → chartSign x z = 1
+  chartSign_eq_one_of_notMem : ∀ x z, z ∉ (chartAt H x).source → chartSign x z = 1
   /-- The coordinate change from the chart at `x` to the chart at `y`, evaluated at `z`, has
   positive Jacobian determinant exactly when the two chart signs agree at `z`. -/
   compatible : ∀ x y z, z ∈ (chartAt H x).source → z ∈ (chartAt H y).source →
@@ -75,94 +69,64 @@ structure ManifoldOrientation (M : Type*) [TopologicalSpace M] [ChartedSpace H M
 
 /-- A manifold is orientable if it admits a manifold orientation. -/
 abbrev Orientable (M : Type*) [TopologicalSpace M] [ChartedSpace H M] [IsManifold I 1 M] : Prop :=
-  Nonempty (ManifoldOrientation I M)
+  Nonempty (Orientation I M)
 
 /-- Typeclass choosing a specific orientation on a manifold. -/
 class OrientedManifold (M : Type*) [TopologicalSpace M] [ChartedSpace H M] [IsManifold I 1 M] where
   /-- The chosen orientation of the manifold. -/
-  manifoldOrientation : ManifoldOrientation I M
+  manifoldOrientation : Orientation I M
 
 /-- An oriented manifold is orientable. -/
 instance (M : Type*) [TopologicalSpace M] [ChartedSpace H M] [IsManifold I 1 M]
     [o : OrientedManifold I M] : Orientable I M := ⟨o.manifoldOrientation⟩
 
-theorem point_has_two_manifoldOrientations :
-    ∃ oPos oNeg : ManifoldOrientation (𝓘(ℝ, EuclideanSpace ℝ (Fin 0)))
-      (EuclideanSpace ℝ (Fin 0)),
-      oPos ≠ oNeg ∧
-      ∀ o : ManifoldOrientation (𝓘(ℝ, EuclideanSpace ℝ (Fin 0)))
-        (EuclideanSpace ℝ (Fin 0)), o = oPos ∨ o = oNeg := by
-  refine ⟨{ chartSign _ _ := 1
-            continuousOn_chartSign _ := continuousOn_const
-            chartSign_eq_one_of_not_mem x z hz :=
-              absurd (by rw [Subsingleton.elim z x]; exact mem_chart_source _ x) hz
-            compatible _ _ _ _ _ := iff_of_true
-              (by rw [LinearMap.det_eq_one_of_finrank_eq_zero (by simp [finrank_euclideanSpace])]
-                  exact one_pos) rfl },
-          { chartSign _ _ := -1
-            continuousOn_chartSign _ := continuousOn_const
-            chartSign_eq_one_of_not_mem x z hz :=
-              absurd (by rw [Subsingleton.elim z x]; exact mem_chart_source _ x) hz
-            compatible _ _ _ _ _ := iff_of_true
-              (by rw [LinearMap.det_eq_one_of_finrank_eq_zero (by simp [finrank_euclideanSpace])]
-                  exact one_pos) rfl },
-          ?_, ?_⟩
-  · intro h
-    exact absurd (congrFun (congrFun (congrArg ManifoldOrientation.chartSign h) default) default)
-      (by decide)
-  · intro o
-    refine (Int.units_eq_one_or (o.chartSign default default)).imp (fun h => ?_) (fun h => ?_) <;>
-      exact ManifoldOrientation.ext (funext fun x => funext fun z => by
-        rw [Subsingleton.elim x default, Subsingleton.elim z default]; exact h)
-
-section Cardinality
-
 variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M] [IsManifold I 1 M]
+
+namespace Orientation
 
 /-- The pointwise sign difference (in `ℤˣ`) between two manifold orientations, read off the
 chart at each point. -/
-def deltaFn (o₀ o : ManifoldOrientation I M) (z : M) : ℤˣ :=
+def deltaFn (o₀ o : Orientation I M) (z : M) : ℤˣ :=
   o.chartSign z z * o₀.chartSign z z
 
 /-- The sign difference can be computed from any chart whose domain contains the point. -/
-theorem deltaFn_eq (o₀ o : ManifoldOrientation I M) {x z : M} (hz : z ∈ (chartAt H x).source) :
+theorem deltaFn_eq (o₀ o : Orientation I M) {x z : M} (hz : z ∈ (chartAt H x).source) :
     deltaFn I o₀ o z = o.chartSign x z * o₀.chartSign x z := by
   have key : ∀ a b c d : ℤˣ, (a = b ↔ c = d) → a * c = b * d := by decide
   exact key _ _ _ _ ((o.compatible z x z (mem_chart_source H z) hz).symm.trans
     (o₀.compatible z x z (mem_chart_source H z) hz))
 
-theorem deltaFn_isLocallyConstant (o₀ o : ManifoldOrientation I M) :
+theorem isLocallyConstant_deltaFn (o₀ o : Orientation I M) :
     IsLocallyConstant (deltaFn I o₀ o) := by
   rw [IsLocallyConstant.iff_continuous, continuous_iff_continuousAt]
   intro p
   refine ContinuousOn.continuousAt ?_
     ((chartAt H p).open_source.mem_nhds (mem_chart_source H p))
   exact ((o.continuousOn_chartSign p).mul (o₀.continuousOn_chartSign p)).congr
-    (fun z hz => deltaFn_eq I o₀ o hz)
+    (fun z hz ↦ deltaFn_eq I o₀ o hz)
 
 /-- The sign difference between two manifold orientations, as a `LocallyConstant` function
 `M → ℤˣ`. -/
-def deltaLC (o₀ o : ManifoldOrientation I M) : LocallyConstant M ℤˣ :=
-  ⟨deltaFn I o₀ o, deltaFn_isLocallyConstant I o₀ o⟩
+def deltaLC (o₀ o : Orientation I M) : LocallyConstant M ℤˣ :=
+  ⟨deltaFn I o₀ o, isLocallyConstant_deltaFn I o₀ o⟩
 
-open Classical in
 /-- Modify a manifold orientation by flipping every chart-sign according to a locally constant
 `ℤˣ`-valued function. -/
-def twist (o₀ : ManifoldOrientation I M) (δ : LocallyConstant M ℤˣ) :
-    ManifoldOrientation I M where
-  chartSign x z := if z ∈ (chartAt H x).source then δ z * o₀.chartSign x z else 1
-  continuousOn_chartSign x :=
+def twist (o₀ : Orientation I M) (δ : LocallyConstant M ℤˣ) : Orientation I M where
+  chartSign x z := open scoped Classical in
+    if z ∈ (chartAt H x).source then δ z * o₀.chartSign x z else 1
+  continuousOn_chartSign x := open scoped Classical in
     (δ.continuous.continuousOn.mul (o₀.continuousOn_chartSign x)).congr
-      (fun z hz => by simp only [if_pos hz, Pi.mul_apply])
-  chartSign_eq_one_of_not_mem x z hz := if_neg hz
-  compatible x y z hzx hzy := by
+      (fun z hz ↦ by simp only [if_pos hz, Pi.mul_apply])
+  chartSign_eq_one_of_notMem x z hz := open scoped Classical in if_neg hz
+  compatible x y z hzx hzy := open scoped Classical in by
     simp only [if_pos hzx, if_pos hzy, mul_right_inj]
     exact o₀.compatible x y z hzx hzy
 
 /-- Relative to a fixed base orientation `o₀`, the manifold orientations are in bijection with
 locally constant `ℤˣ`-valued functions on `M`. -/
-noncomputable def manifoldOrientationEquivLocallyConstant (o₀ : ManifoldOrientation I M) :
-    ManifoldOrientation I M ≃ LocallyConstant M ℤˣ where
+noncomputable def equivLocallyConstant (o₀ : Orientation I M) :
+    Orientation I M ≃ LocallyConstant M ℤˣ where
   toFun o := deltaLC I o₀ o
   invFun δ := twist I o₀ δ
   left_inv o := by
@@ -177,7 +141,7 @@ noncomputable def manifoldOrientationEquivLocallyConstant (o₀ : ManifoldOrient
       exact (by decide : ∀ a b : ℤˣ, a * b * b = a) _ _
     · change (if z ∈ (chartAt H x).source then (deltaLC I o₀ o) z * o₀.chartSign x z else 1)
           = o.chartSign x z
-      rw [if_neg hz, o.chartSign_eq_one_of_not_mem x z hz]
+      rw [if_neg hz, o.chartSign_eq_one_of_notMem x z hz]
   right_inv δ := by
     classical
     ext z : 1
@@ -185,50 +149,76 @@ noncomputable def manifoldOrientationEquivLocallyConstant (o₀ : ManifoldOrient
     rw [if_pos (mem_chart_source H z)]
     exact (by decide : ∀ a b : ℤˣ, a * b * b = a) _ _
 
-/-- On a locally connected space, locally constant `ℤˣ`-valued functions correspond to
-arbitrary functions on the connected components. -/
-noncomputable def locallyConstantEquivConnectedComponents [LocallyConnectedSpace M] :
-    LocallyConstant M ℤˣ ≃ (ConnectedComponents M → ℤˣ) where
-  toFun f := Quotient.lift (fun x : M => f x) (by
-    intro x y hxy
-    have hyx : y ∈ connectedComponent x := by
-      simpa [hxy.symm] using (mem_connectedComponent : y ∈ connectedComponent y)
-    exact f.apply_eq_of_isPreconnected isConnected_connectedComponent.isPreconnected
-      mem_connectedComponent hyx)
-  invFun g :=
-    ⟨fun x => g x,
-      IsLocallyConstant.of_constant_on_connected_components (fun x y hy => by
-        exact congrArg g (ConnectedComponents.coe_eq_coe'.2 hy))⟩
-  left_inv f := by
-    ext x
-    rfl
-  right_inv g := by
-    funext c
-    obtain ⟨x, rfl⟩ := ConnectedComponents.surjective_coe c
-    rfl
+/-- The positive orientation of a subsingleton manifold. -/
+def point [Subsingleton M] : Orientation I M where
+  chartSign _ _ := 1
+  continuousOn_chartSign _ := continuousOn_const
+  chartSign_eq_one_of_notMem x z hz :=
+    absurd (by rw [Subsingleton.elim z x]; exact mem_chart_source H x) hz
+  compatible x y z hx _ := by
+    rw [Subsingleton.elim y x]
+    simp only
+    constructor
+    · intro _
+      trivial
+    · intro _
+      rw [show (tangentCoordChange I x x z).toLinearMap = LinearMap.id by
+        ext v
+        exact tangentCoordChange_self (I := I) (by simpa only [extChartAt_source] using hx),
+        LinearMap.det_id]
+      exact one_pos
 
-theorem natCard_manifoldOrientation_eq_two_pow_of_natCard_connectedComponents_eq
-    [LocallyConnectedSpace H] {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
-    [IsManifold I 1 M] [Orientable I M]
+/-- The opposite of an orientation. -/
+def opposite (o : Orientation I M) : Orientation I M :=
+  twist I o (LocallyConstant.const M (-1))
+
+/-- An orientation on a nonempty manifold differs from its opposite. -/
+theorem ne_opposite [Nonempty M] (o : Orientation I M) : o ≠ opposite I o := by
+  intro h
+  let x : M := Classical.choice inferInstance
+  have hsign := congrFun (congrFun (congrArg Orientation.chartSign h) x) x
+  simp only [opposite, twist, mem_chart_source, if_pos, LocallyConstant.coe_const,
+    Function.const_apply] at hsign
+  have : (1 : ℤˣ) = -1 := by
+    apply mul_right_cancel (b := o.chartSign x x)
+    simpa only [one_mul] using hsign
+  exact (by decide : (1 : ℤˣ) ≠ -1) this
+
+/-- Every orientation of a nonempty subsingleton manifold is its positive orientation or the
+opposite of its positive orientation. -/
+theorem eq_point_or_eq_opposite_point [Nonempty M] [Subsingleton M] (o : Orientation I M) :
+    o = point I ∨ o = opposite I (point I) := by
+  let x : M := Classical.choice inferInstance
+  refine (Int.units_eq_one_or (o.chartSign x x)).imp (fun h ↦ ?_) (fun h ↦ ?_)
+  · apply Orientation.ext
+    funext y z
+    rw [Subsingleton.elim y x, Subsingleton.elim z x]
+    exact h
+  · apply Orientation.ext
+    funext y z
+    rw [Subsingleton.elim y x, Subsingleton.elim z x]
+    simpa [opposite, twist, point, mem_chart_source] using h
+
+theorem natCard_eq_two_pow_of_natCard_connectedComponents_eq [Orientable I M]
     [Finite (ConnectedComponents M)] {n : ℕ}
     (hn : Nat.card (ConnectedComponents M) = n) :
-    Nat.card (ManifoldOrientation I M) = 2 ^ n := by
-  haveI : LocallyConnectedSpace M := ChartedSpace.locallyConnectedSpace H M
+    Nat.card (Orientation I M) = 2 ^ n := by
+  letI : LocallyPathConnectedSpace (range I) := I.convex_range.locallyPathConnectedSpace
+  letI : LocallyConnectedSpace H :=
+    (I.leftInverse.isEmbedding I.continuous_symm I.continuous).toHomeomorph.locallyConnectedSpace
+  letI : LocallyConnectedSpace M := ChartedSpace.locallyConnectedSpace H M
   classical
-  let o₀ : ManifoldOrientation I M :=
-    Classical.choice (show Nonempty (ManifoldOrientation I M) from ‹Orientable I M›)
+  let o₀ : Orientation I M := Classical.choice (show Nonempty (Orientation I M) from inferInstance)
   calc
-    Nat.card (ManifoldOrientation I M)
+    Nat.card (Orientation I M)
         = Nat.card (LocallyConstant M ℤˣ) :=
-          Nat.card_congr (manifoldOrientationEquivLocallyConstant I o₀)
+          Nat.card_congr (equivLocallyConstant I o₀)
     _ = Nat.card (ConnectedComponents M → ℤˣ) :=
-          Nat.card_congr (locallyConstantEquivConnectedComponents)
+          Nat.card_congr LocallyConstant.equivConnectedComponents
     _ = Nat.card ℤˣ ^ Nat.card (ConnectedComponents M) := by
           simpa using (Nat.card_fun (α := ConnectedComponents M) (β := ℤˣ))
     _ = 2 ^ n := by rw [show Nat.card ℤˣ = 2 from by simp [Nat.card_eq_fintype_card], hn]
 
-end Cardinality
-
-end Orientable
+end Orientation
 
 end Manifold
