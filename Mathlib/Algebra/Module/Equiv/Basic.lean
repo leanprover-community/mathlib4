@@ -487,10 +487,10 @@ def ofLinearMap (h₁ : f.comp g = .id) (h₂ : g.comp f = .id) : M ≃ₛₗ[σ
   left_inv := LinearMap.ext_iff.1 h₂
   right_inv := LinearMap.ext_iff.1 h₁
 
-@[simp]
+@[simp low]
 theorem coe_ofLinearMap (h₁ h₂) : ⇑(ofLinearMap f g h₁ h₂ : M ≃ₛₗ[σ₁₂] M₂) = f := rfl
 
-@[simp]
+@[simp low]
 theorem symm_ofLinearMap (h₁ h₂) :
     (ofLinearMap f g h₁ h₂ : M ≃ₛₗ[σ₁₂] M₂).symm = (ofLinearMap g f h₂ h₁) :=
   rfl
