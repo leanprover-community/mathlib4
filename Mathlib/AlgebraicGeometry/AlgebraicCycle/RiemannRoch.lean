@@ -8,7 +8,6 @@ import Mathlib.AlgebraicGeometry.AlgebraicCycle.Degree
 import Mathlib.AlgebraicGeometry.AlgebraicCycle.ResidueFieldFinite
 import Mathlib.AlgebraicGeometry.AlgebraicCycle.StructureSheafIso
 
-
 /-!
 # Conditional Riemann-Roch
 
