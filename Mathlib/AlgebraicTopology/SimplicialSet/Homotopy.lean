@@ -96,7 +96,7 @@ noncomputable def toSimplicialObjectHomotopy (H : Homotopy f g) :
     dsimp
     apply congr_arg
     ext k : 2
-    · simpa [stdSimplex.δ_objEquiv_symm_apply.{u},
+    · simpa [stdSimplex.δ_objEquiv_symm_apply,
         SSet.yonedaEquiv_symm_app_objEquiv_symm.{u}] using!
           ConcreteCategory.congr_hom (X.δ_comp_σ_of_le hij) x
     · rw [stdSimplex.δ_objMk₁_of_lt, Fin.pred_succ]
