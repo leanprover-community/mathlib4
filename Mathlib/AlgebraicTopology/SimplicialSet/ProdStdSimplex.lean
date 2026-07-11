@@ -209,8 +209,7 @@ private lemma exists_nonDegenerate_max_dim_aux {d : ℕ}
         Fin.prod_exists_lt_lt_of_le_of_le (objEquiv x.val i₀.castSucc)
           (objEquiv x.val i₀.succ) ((objEquiv x.val).monotone i₀.castSucc_le_succ) (by
             have h₀ : i₀.castSucc ∉ S := fun h ↦ by simpa [hi₀] using S.min'_le _ h
-            have h₁ : i₀.succ ∈ S := by
-              simpa only [hi₀] using S.min'_mem hS
+            have h₁ : i₀.succ ∈ S := by simpa only [hi₀] using S.min'_mem hS
             simp [S, Fin.lt_def] at h₀ h₁ ⊢
             lia)
       exact ⟨_, _, Fin.strictMono_insertNth hx i₀ u hu₁ hu₂⟩
