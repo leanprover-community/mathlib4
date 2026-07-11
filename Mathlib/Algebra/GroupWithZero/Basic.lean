@@ -327,16 +327,16 @@ theorem eq_zero_of_mul_eq_self_left [IsRightCancelMulZero M₀] (h₁ : b ≠ 1)
 
 variable {M₀ : Type*} [MonoidWithZero M₀]
 
-instance [IsLeftCancelMulZero M₀] : IsDedekindFiniteMonoid M₀ where
+instance (priority := 100) [IsLeftCancelMulZero M₀] : IsDedekindFiniteMonoid M₀ where
   mul_eq_one_symm h := by
-    rcases subsingleton_or_nontrivial M₀ with hM | hM
+    cases subsingleton_or_nontrivial M₀
     · exact Subsingleton.elim _ _
     exact (IsLeftCancelMulZero.mul_left_cancel_of_ne_zero
       (left_ne_zero_of_mul_eq_one h)).mul_eq_one_symm h
 
-instance [IsRightCancelMulZero M₀] : IsDedekindFiniteMonoid M₀ where
+instance (priority := 100) [IsRightCancelMulZero M₀] : IsDedekindFiniteMonoid M₀ where
   mul_eq_one_symm h := by
-    rcases subsingleton_or_nontrivial M₀ with hM | hM
+    cases subsingleton_or_nontrivial M₀
     · exact Subsingleton.elim _ _
     exact (IsRightCancelMulZero.mul_right_cancel_of_ne_zero
       (right_ne_zero_of_mul_eq_one h)).mul_eq_one_symm h
