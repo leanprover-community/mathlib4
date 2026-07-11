@@ -343,12 +343,11 @@ variable (M) in
 lemma rankAtStalk_eq_of_le_of_finite_of_flat {p q : PrimeSpectrum R} (hpq : p ≤ q) :
     rankAtStalk M p = rankAtStalk M q := by
   let S := Localization.AtPrime q.asIdeal
-  have hpr : p ∈ Set.range (PrimeSpectrum.comap (algebraMap R S)) := by
+  obtain ⟨P, rfl⟩ : p ∈ Set.range (PrimeSpectrum.comap (algebraMap R S)) := by
     rw [PrimeSpectrum.localization_comap_range S q.asIdeal.primeCompl]
     exact disjoint_compl_left_iff.mpr hpq
-  have : Module.Free S (LocalizedModule q.asIdeal.primeCompl M) := free_of_flat_of_isLocalRing
-  rw [← hpr.choose_spec, ← rankAtStalk_isBaseChange
-    (LocalizedModule.isBaseChange q.asIdeal.primeCompl M), rankAtStalk_eq_finrank_of_free]
+  rw [← rankAtStalk_isBaseChange (LocalizedModule.isBaseChange q.asIdeal.primeCompl M),
+    rankAtStalk_eq_finrank_of_free]
   simp [rankAtStalk]
 
 variable (M) in

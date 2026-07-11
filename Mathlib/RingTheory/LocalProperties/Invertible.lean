@@ -8,6 +8,7 @@ module
 public import Mathlib.RingTheory.Flat.Localization
 public import Mathlib.RingTheory.Flat.LocallyFree
 public import Mathlib.RingTheory.LocalProperties.FinitePresentation
+public import Mathlib.RingTheory.PicardGroup
 
 /-!
 # `Module.Invertible` is a local property
