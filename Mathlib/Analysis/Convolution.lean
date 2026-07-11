@@ -511,7 +511,7 @@ theorem support_convolution_subset_swap : support (f ⋆[L, μ] g) ⊆ support g
   · rw [h, L.map_zero₂]
   · exact (h <| sub_add_cancel x t).elim
 
-section
+section IsAddRightInvariant
 
 variable [MeasurableAdd₂ G] [MeasurableNeg G] [SFinite μ] [IsAddRightInvariant μ]
 
@@ -527,7 +527,45 @@ theorem Integrable.integrable_convolution (hf : Integrable f μ)
     (hg : Integrable g μ) : Integrable (f ⋆[L, μ] g) μ :=
   (hf.convolution_integrand L hg).integral_prod_left
 
-end
+end IsAddRightInvariant
+
+section IsAddLeftInvariant
+
+variable [MeasurableAdd₂ G] [MeasurableNeg G] [SFinite μ] [IsNegInvariant μ] [IsAddLeftInvariant μ]
+
+omit [NormedSpace ℝ F] in
+lemma lintegral_enorm_convolution_integrand_le_eLpNorm_mul_eLpNorm {p q : ENNReal}
+    (hpq : p.HolderConjugate q) (hL : ∀ (x y : G), ‖L (f x) (g y)‖ ≤ ‖f x‖ * ‖g y‖)
+    (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ) (x₀ : G) :
+    ∫⁻ a, ‖L (f a) (g (x₀ - a))‖ₑ ∂μ ≤ eLpNorm f p μ * eLpNorm g q μ := by
+  rw [← eLpNorm_comp_measurePreserving (p := q) hg (μ.measurePreserving_sub_left x₀)]
+  simpa [eLpNorm, eLpNorm'] using eLpNorm_le_eLpNorm_mul_eLpNorm'_of_norm hf
+    (hg.comp_quasiMeasurePreserving (quasiMeasurePreserving_sub_left μ x₀)) (L ·) 1
+    (by simpa using Filter.Eventually.of_forall (fun x ↦ hL x (x₀ - x))) (hpqr := hpq)
+
+omit [NormedSpace ℝ F] in
+/-- If `MemLp f p μ` and `MemLp g q μ`, where `p` and `q` are Hölder conjugates, then the
+convolution of `f` and `g` exists everywhere. -/
+theorem ConvolutionExists.of_memLp_memLp [IsAddRightInvariant μ] {p q : ENNReal}
+    (hpq : p.HolderConjugate q) (hL : ∀ (x y : G), ‖L (f x) (g y)‖ ≤ ‖f x‖ * ‖g y‖)
+    (hfp : MemLp f p μ) (hgq : MemLp g q μ) :
+    ConvolutionExists f g L μ := by
+  refine fun x ↦
+    ⟨hfp.aestronglyMeasurable.convolution_integrand_snd L hgq.aestronglyMeasurable x, ?_⟩
+  apply lt_of_le_of_lt (lintegral_enorm_convolution_integrand_le_eLpNorm_mul_eLpNorm L hpq hL
+    hfp.aestronglyMeasurable hgq.aestronglyMeasurable x)
+  finiteness
+
+/-- If `p` and `q` are Hölder conjugates, then the convolution of `f` and `g` is bounded everywhere
+by `eLpNorm f p μ * eLpNorm g q μ`. -/
+theorem enorm_convolution_le_eLpNorm_mul_eLpNorm {p q : ENNReal} (hpq : p.HolderConjugate q)
+    (hL : ∀ (x y : G), ‖L (f x) (g y)‖ ≤ ‖f x‖ * ‖g y‖) (hf : AEStronglyMeasurable f μ)
+    (hg : AEStronglyMeasurable g μ) (x₀ : G) :
+    ‖(f ⋆[L, μ] g) x₀‖ₑ ≤ eLpNorm f p μ * eLpNorm g q μ :=
+  (enorm_integral_le_lintegral_enorm _).trans <|
+    lintegral_enorm_convolution_integrand_le_eLpNorm_mul_eLpNorm L hpq hL hf hg x₀
+
+end IsAddLeftInvariant
 
 variable [TopologicalSpace G]
 variable [IsTopologicalAddGroup G]
@@ -682,43 +720,6 @@ theorem convolution_neg_of_neg_eq (h1 : ∀ᵐ x ∂μ, f (-x) = f x) (h2 : ∀�
     _ = ∫ t : G, (L (f t)) (g (x - t)) ∂μ := by
       rw [← integral_neg_eq_self]
       simp only [neg_neg, ← sub_eq_add_neg]
-
-omit [NormedSpace ℝ F] in
-lemma lintegral_enorm_convolution_integrand_le_eLpNorm_mul_eLpNorm
-    [MeasurableAdd₂ G] [SFinite μ]
-    {p q : ENNReal} (hpq : p.HolderConjugate q)
-    (hL : ∀ (x y : G), ‖L (f x) (g y)‖ ≤ ‖f x‖ * ‖g y‖)
-    (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ) (x₀ : G) :
-    ∫⁻ a, ‖L (f a) (g (x₀ - a))‖ₑ ∂μ ≤ eLpNorm f p μ * eLpNorm g q μ := by
-  rw [← eLpNorm_comp_measurePreserving (p := q) hg (μ.measurePreserving_sub_left x₀)]
-  simpa [eLpNorm, eLpNorm'] using eLpNorm_le_eLpNorm_mul_eLpNorm'_of_norm hf
-    (hg.comp_quasiMeasurePreserving (quasiMeasurePreserving_sub_left μ x₀)) (L ·) 1
-    (by simpa using Filter.Eventually.of_forall (fun x ↦ hL x (x₀ - x))) (hpqr := hpq)
-
-omit [NormedSpace ℝ F] in
-/-- If `MemLp f p μ` and `MemLp g q μ`, where `p` and `q` are Hölder conjugates, then the
-convolution of `f` and `g` exists everywhere. -/
-theorem ConvolutionExists.of_memLp_memLp
-    [μ.IsAddRightInvariant] [MeasurableAdd₂ G] [SFinite μ]
-    {p q : ENNReal} (hpq : p.HolderConjugate q)
-    (hL : ∀ (x y : G), ‖L (f x) (g y)‖ ≤ ‖f x‖ * ‖g y‖)
-    (hfp : MemLp f p μ) (hgq : MemLp g q μ) :
-    ConvolutionExists f g L μ := by
-  refine fun x ↦
-    ⟨hfp.aestronglyMeasurable.convolution_integrand_snd L hgq.aestronglyMeasurable x, ?_⟩
-  apply lt_of_le_of_lt (lintegral_enorm_convolution_integrand_le_eLpNorm_mul_eLpNorm L hpq hL
-    hfp.aestronglyMeasurable hgq.aestronglyMeasurable x)
-  finiteness
-
-/-- If `p` and `q` are Hölder conjugates, then the convolution of `f` and `g` is bounded everywhere
-by `eLpNorm f p μ * eLpNorm g q μ`. -/
-theorem enorm_convolution_le_eLpNorm_mul_eLpNorm
-    [MeasurableAdd₂ G] [SFinite μ] {p q : ENNReal} (hpq : p.HolderConjugate q)
-    (hL : ∀ (x y : G), ‖L (f x) (g y)‖ ≤ ‖f x‖ * ‖g y‖)
-    (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ) (x₀ : G) :
-    ‖(f ⋆[L, μ] g) x₀‖ₑ ≤ eLpNorm f p μ * eLpNorm g q μ :=
-  (enorm_integral_le_lintegral_enorm _).trans <|
-    lintegral_enorm_convolution_integrand_le_eLpNorm_mul_eLpNorm L hpq hL hf hg x₀
 
 end Measurable
 
