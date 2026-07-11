@@ -9,7 +9,7 @@ public import Mathlib.Algebra.Order.Group.Nat
 public import Mathlib.Order.Fin.Basic
 
 /-!
-# Property of the order on a binary product of `Fin` types
+# Properties of the order on a binary product of `Fin` types
 
 -/
 
