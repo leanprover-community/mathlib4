@@ -6080,6 +6080,7 @@ public import Mathlib.Order.Fin.Basic
 public import Mathlib.Order.Fin.Clamp
 public import Mathlib.Order.Fin.Finset
 public import Mathlib.Order.Fin.InsertNth
+public import Mathlib.Order.Fin.Prod
 public import Mathlib.Order.Fin.SuccAboveOrderIso
 public import Mathlib.Order.Fin.Tuple
 public import Mathlib.Order.FixedPoints

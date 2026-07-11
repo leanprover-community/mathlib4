@@ -770,6 +770,15 @@ def opIso (n : SimplexCategory) :
     rw [map_rev_map_op_apply]
     aesop)
 
+lemma mem_ofSimplex_obj_iff {X : SSet.{u}} {n m : ℕ} (x : X _⦋n⦌) (y : X _⦋m⦌) :
+    y ∈ (Subcomplex.ofSimplex x).obj _ ↔
+      ∃ (z : Δ[n] _⦋m⦌), y = (yonedaEquiv.symm x).app _ z := by
+  constructor
+  · rintro ⟨⟨f⟩, rfl⟩
+    exact ⟨stdSimplex.objEquiv.symm f, rfl⟩
+  · rintro ⟨x, rfl⟩
+    exact ⟨(stdSimplex.objEquiv x).op, rfl⟩
+
 end stdSimplex
 
 section Examples
