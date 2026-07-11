@@ -195,7 +195,6 @@ theorem card_commutator_dvd_index_center_pow [Finite (commutatorSet G)] :
   have h1 := relIndex_dvd_index_of_normal (center G) (_root_.commutator G)
   -- So we can reduce to proving `|Z(G) ∩ G'| ∣ [G : Z(G)] ^ ([G : Z(G)] * n)`
   refine mul_dvd_mul ?_ h1
-  -- We know that `[G' : Z(G) ∩ G'] < ∞` by `h1` and `hG`
   -- We have `h2 : rank (Z(G) ∩ G') ≤ [G' : Z(G) ∩ G'] * rank G'` by Schreier's lemma
   have h2 := rank_le_index_mul_rank ((center G).subgroupOf (_root_.commutator G))
   -- We have `h3 : [G' : Z(G) ∩ G'] * rank G' ≤ [G : Z(G)] * n` by `h1` and `rank G' ≤ n`
