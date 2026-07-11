@@ -508,9 +508,8 @@ theorem IsAcyclic.ncard_edgeSet_add_card_connectedComponent [Finite V] (h : G.Is
   rw [Nat.card_congr G.verticesEquivSigmaConnectedComponent, Nat.card_sigma, ← Nat.card_coe_set_eq,
     Nat.card_congr G.edgeSetEquivSigmaConnectedComponent, Nat.card_sigma,
     ← Fintype.card_eq_nat_card, Fintype.card_eq_sum_ones, ← Finset.sum_add_distrib]
-  congr
-  ext
-  exact (isTree_iff_connected_and_card.mp <| h.isTree_connectedComponent _).right
+  congr!
+  exact h.isTree_connectedComponent _ |>.ncard_edgeSet_add_one
 
 /-- An acyclic graph on `n` vertices has at most `n - 1` edges. -/
 theorem IsAcyclic.ncard_edgeSet_add_one_le_card [Finite V] [Nonempty V] (h : G.IsAcyclic) :
