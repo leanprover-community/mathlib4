@@ -154,10 +154,8 @@ lemma mem_map_algebraMap_reesAlgebra_iff (f : reesAlgebra I) :
       ∈ I.map (algebraMap R (reesAlgebra I)) := by
       induction h' using Submodule.mul_induction_on' with
       | mem_mul_mem s hs t ht =>
-        have : ⟨(Polynomial.monomial i) (s * t), mem' i (Ideal.mul_mem_left _ s ht)⟩ =
-          s • (⟨(Polynomial.monomial i) t, mem' i ht⟩: reesAlgebra I) := by
-          simp [Polynomial.smul_monomial]
-        rw [this, Algebra.smul_def]
+        simp_rw [← smul_eq_mul, ← smul_monomial]
+        rw [← SetLike.mk_smul_mk (hx := mem' i ht), Algebra.smul_def]
         exact Ideal.mul_mem_right _ _ (Ideal.mem_map_of_mem _ hs)
       | add s1 hs1 s2 hs2 mem1 mem2 => simpa using add_mem mem1 mem2
     apply this
