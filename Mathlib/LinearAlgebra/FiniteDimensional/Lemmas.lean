@@ -302,7 +302,7 @@ noncomputable def basisOfPiSpaceOfLinearIndependent
     have : IsEmpty ι := not_nonempty_iff.mp hι
     Basis.empty _
 
-open Classical in
+open scoped Classical in
 @[simp]
 theorem coe_basisOfPiSpaceOfLinearIndependent
     {b : ι → (ι → K)} (hb : LinearIndependent K b) :
