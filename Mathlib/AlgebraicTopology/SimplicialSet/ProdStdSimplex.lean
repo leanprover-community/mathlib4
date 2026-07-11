@@ -97,13 +97,6 @@ lemma nonDegenerate_iff_strictMono_objEquiv {n : ℕ} (z : (Δ[p] ⊗ Δ[q] : SS
     PartialOrder.mem_nerve_nonDegenerate_iff_strictMono]
   rfl
 
-/-- Constructor for nondegenerate simplices of `Δ[p] ⊗ Δ[q]` which takes as
-an in put a strictly monotone map `Fin (n + 1) → Fin (p + 1) × Fin (q + 1)`. -/
-abbrev nonDegenerateOfStrictMono {n : ℕ} {f : Fin (n + 1) → Fin (p + 1) × Fin (q + 1)}
-    (hf : StrictMono f) :
-    (Δ[p] ⊗ Δ[q] : SSet.{u}).nonDegenerate n :=
-  ⟨objEquiv.{u}.symm ⟨_, hf.monotone⟩, (nonDegenerate_iff_strictMono_objEquiv _).2 hf⟩
-
 /-- Given a `n`-simplex `x` in `Δ[p] ⊗ Δ[q]`, this is the order preserving
 map `Fin (n + 1) →o Fin (m + 1)` (with `p + q = m`) which corresponds to the
 sum of the two components of `objEquiv x : Fin (n + 1) →o Fin (p + 1) × Fin (q + 1)`. -/
@@ -197,12 +190,12 @@ private lemma exists_nonDegenerate_max_dim_aux {d : ℕ}
         (objEquiv x.val)) by
     obtain ⟨i, u, hf⟩ := this
     simp only [stdSimplex.mem_ofSimplex_obj_iff]
-    refine ⟨nonDegenerateOfStrictMono hf,
+    refine ⟨⟨objEquiv.{u}.symm ⟨_, hf.monotone⟩,
+      (nonDegenerate_iff_strictMono_objEquiv _).2 hf⟩,
       stdSimplex.objEquiv.symm (SimplexCategory.δ i),
       objEquiv.injective ?_⟩
     ext k : 2
-    rw [yonedaEquiv_symm_app, Equiv.apply_symm_apply,
-      ← SimplicialObject.δ_def]
+    rw [yonedaEquiv_symm_app, Equiv.apply_symm_apply, ← SimplicialObject.δ_def]
     simp [objEquiv_δ_apply]
   let S : Finset (Fin (d + 1)) :=
     { i | i.castLE (by lia) < orderHomOfSimplex x.1 rfl i }
