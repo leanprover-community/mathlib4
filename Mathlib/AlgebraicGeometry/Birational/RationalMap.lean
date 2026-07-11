@@ -134,24 +134,6 @@ instance [X.Over S] [Y.Over S] [Z.Over S] (f : X.PartialMap Y) (g : Y ⟶ Z)
 def _root_.AlgebraicGeometry.Scheme.Hom.toPartialMap (f : X ⟶ Y) :
     X.PartialMap Y := ⟨⊤, dense_univ, X.topIso.hom ≫ f⟩
 
-lemma _root_.AlgebraicGeometry.Scheme.Hom.toPartialMap_compHom (f : X ⟶ Y) (g : Y ⟶ Z) :
-    f.toPartialMap.compHom g = (f ≫ g).toPartialMap := rfl
-
-variable (X) in
-protected abbrev id : X.PartialMap X := (𝟙 X : X ⟶ X).toPartialMap
-
-@[simp]
-lemma id_domain : (PartialMap.id X).domain = ⊤ := rfl
-
-@[simp]
-lemma id_compHom (f : X ⟶ Y) : (PartialMap.id X).compHom f = f.toPartialMap := rfl
-
-set_option backward.defeqAttrib.useBackward true in
-instance (f : X ⟶ Y) [IsDominant f] : IsDominant f.toPartialMap.hom := by
-  dsimp
-  have := Opens.isDominant_ι (X := X) (U := ⊤) dense_univ
-  infer_instance
-
 set_option backward.defeqAttrib.useBackward true in
 instance (f : X ⟶ Y) [IsDominant f] : IsDominant f.toPartialMap.hom := by
   dsimp
@@ -310,10 +292,10 @@ lemma equiv_id_iff (f : X.PartialMap X) :
     f.equiv (PartialMap.id X) ↔ ∃ (U : Opens X) (hU₁ : Dense (U : Set X)) (hU₂ : U ≤ f.domain),
       (f.restrict U hU₁ hU₂).hom = U.ι := by
   constructor
-  · intro ⟨U, hU₁, hU₂, _, e⟩
-    exact ⟨U, hU₁, hU₂, by simpa using e⟩
+  · intro ⟨U, hU₁, hU₂, w, e⟩
+    exact ⟨U, hU₁, hU₂, by simpa using homOfLE_ι X w ▸ e⟩
   · intro ⟨U, hU₁, hU₂, e⟩
-    refine ⟨U, hU₁, hU₂, le_top, by simpa using e⟩
+    refine ⟨U, hU₁, hU₂, le_top, by simpa using (homOfLE_ι X le_top).symm ▸ e⟩
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
