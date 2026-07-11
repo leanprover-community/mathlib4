@@ -74,7 +74,7 @@ theorem mem_orthogonalBilin_iff_le_ker_flip {y : M₂} :
 
 @[simp] theorem orthogonalBilin_ker : orthogonalBilin B (ker B) = ⊤ := by ext; simp +contextual
 
-theorem orthogonalBilin_univ_eq_ker : orthogonalBilin B ⊤ = ker B.flip := by
+theorem orthogonalBilin_top_eq_ker : orthogonalBilin B ⊤ = ker B.flip := by
   ext x; simp [LinearMap.ext_iff]
 
 @[gcongr] theorem orthogonalBilin_le (h : S ≤ T) :
@@ -85,7 +85,7 @@ alias orthogonalBilin_anti := orthogonalBilin_le
 theorem orthogonalBilin_antitone : Antitone (orthogonalBilin B) :=
   fun _ _ h => orthogonalBilin_le h
 
-theorem ker_le_orthogonalBilin (S) : ker B.flip ≤ orthogonalBilin B S := by
+theorem ker_flip_le_orthogonalBilin (S) : ker B.flip ≤ orthogonalBilin B S := by
   simp [← orthogonalBilin_univ_eq_ker, orthogonalBilin_anti]
 
 theorem ker_le_orthogonalBilin_flip (S) : ker B ≤ orthogonalBilin B.flip S := by
@@ -124,7 +124,7 @@ section IsRefl
 
 variable {I₂ : R₁ →+* R} {B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₂] M}
 
-theorem IsRefl.le_orthogonalBilin_orthogonalBilin (b : B.IsRefl) :
+theorem _root_.LinearMap.IsRefl.le_orthogonalBilin_orthogonalBilin (b : B.IsRefl) :
     S ≤ (S.orthogonalBilin B).orthogonalBilin B := fun n hn _m hm ↦ b _ _ (hm n hn)
 
 end IsRefl
@@ -246,7 +246,7 @@ theorem span_singleton_inf_orthogonal_eq_bot (B : V₁ →ₛₗ[J₁] V₁ →�
 -- todo: Generalize this to sesquilinear maps
 theorem span_singleton_sup_orthogonal_eq_top {B : V →ₗ[K] V →ₗ[K] K} {x : V} (hx : B x x ≠ 0) :
     (K ∙ x) ⊔ (K ∙ x).orthogonalBilin B = ⊤ := by
-  simpa only [Submodule.orthogonalBilin_span_singleton] using (B x).span_singleton_sup_ker_eq_top hx
+  simp only [Submodule.orthogonalBilin_span_singleton, span_singleton_sup_ker_eq_top _ hx]
 
 -- todo: Generalize this to sesquilinear maps
 /-- Given a bilinear form `B` and some `x` such that `B x x ≠ 0`, the span of the singleton of `x`
