@@ -99,9 +99,10 @@ alias _root_.LinearMap.orthogonal_span_singleton_eq_to_lin_ker := orthogonalBili
 
 theorem orthogonalBilin_sSup (s : Set (Submodule R₁ M₁)) :
     orthogonalBilin B (sSup s) = sInf (orthogonalBilin B '' s) := by
-  ext y; simpa using ⟨
-    fun h _ hS _ hx => h _ (le_sSup hS hx),
-    fun h _ hx => (mem_sSup.mp hx) (B.flip y).ker h⟩
+  ext y
+  simp only [mem_orthogonalBilin, mem_sInf, Set.mem_image, forall_exists_index, and_imp,
+    forall_apply_eq_imp_iff₂]
+  exact ⟨fun h _ ha _ hn ↦ h _ (le_sSup ha hn), fun h _ hn ↦ mem_sSup.mp hn (B.flip y).ker h⟩
 
 theorem orthogonalBilin_iSup {ι : Sort*} (f : ι → Submodule R₁ M₁) :
     orthogonalBilin B (⨆ i, f i) = ⨅ i, orthogonalBilin B (f i) := by
