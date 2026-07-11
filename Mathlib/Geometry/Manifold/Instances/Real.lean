@@ -570,11 +570,11 @@ instance instOrientedManifoldIcc : Manifold.OrientedManifold (𝓡∂ 1) (Set.Ic
   manifoldOrientation :=
     { chartSign p z := open scoped Classical in
         if z ∈ (chartAt (EuclideanHalfSpace 1) p).source then (if (p : ℝ) < y then 1 else -1) else 1
-      continuousOn_chartSign p := open scoped Classical in
+      continuousOn_chartSign p :=
         ContinuousOn.congr (continuousOn_const (c := if (p : ℝ) < y then (1 : ℤˣ) else -1))
           (fun z hz ↦ by simp only [if_pos hz])
-      chartSign_eq_one_of_notMem p z hz := open scoped Classical in if_neg hz
-      compatible p q z hzp hzq := open scoped Classical in by
+      chartSign_eq_one_of_notMem p z hz := if_neg hz
+      compatible p q z hzp hzq := by
         simp only [if_pos hzp, if_pos hzq, Icc_zero_lt_det_tangentCoordChange_iff p q z ⟨hzp, hzq⟩]
         by_cases hp : (p : ℝ) < y <;> by_cases hq : (q : ℝ) < y <;> simp [hp, hq] }
 

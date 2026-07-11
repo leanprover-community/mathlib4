@@ -115,11 +115,11 @@ def deltaLC (o₀ o : Orientation I M) : LocallyConstant M ℤˣ :=
 def twist (o₀ : Orientation I M) (δ : LocallyConstant M ℤˣ) : Orientation I M where
   chartSign x z := open scoped Classical in
     if z ∈ (chartAt H x).source then δ z * o₀.chartSign x z else 1
-  continuousOn_chartSign x := open scoped Classical in
+  continuousOn_chartSign x :=
     (δ.continuous.continuousOn.mul (o₀.continuousOn_chartSign x)).congr
       (fun z hz ↦ by simp only [if_pos hz, Pi.mul_apply])
-  chartSign_eq_one_of_notMem x z hz := open scoped Classical in if_neg hz
-  compatible x y z hzx hzy := open scoped Classical in by
+  chartSign_eq_one_of_notMem x z hz := if_neg hz
+  compatible x y z hzx hzy := by
     simp only [if_pos hzx, if_pos hzy, mul_right_inj]
     exact o₀.compatible x y z hzx hzy
 
@@ -175,29 +175,23 @@ def opposite (o : Orientation I M) : Orientation I M :=
 /-- An orientation on a nonempty manifold differs from its opposite. -/
 theorem ne_opposite [Nonempty M] (o : Orientation I M) : o ≠ opposite I o := by
   intro h
-  let x : M := Classical.choice inferInstance
-  have hsign := congrFun (congrFun (congrArg Orientation.chartSign h) x) x
-  simp only [opposite, twist, mem_chart_source, if_pos, LocallyConstant.coe_const,
-    Function.const_apply] at hsign
-  have : (1 : ℤˣ) = -1 := by
-    apply mul_right_cancel (b := o.chartSign x x)
-    simpa only [one_mul] using hsign
-  exact (by decide : (1 : ℤˣ) ≠ -1) this
+  obtain ⟨x⟩ := ‹Nonempty M›
+  apply (by decide : (1 : ℤˣ) ≠ -1)
+  apply mul_right_cancel (b := o.chartSign x x)
+  simpa only [opposite, twist, mem_chart_source, if_pos, LocallyConstant.coe_const,
+    Function.const_apply, one_mul] using
+    congrFun (congrFun (congrArg Orientation.chartSign h) x) x
 
 /-- Every orientation of a nonempty subsingleton manifold is its positive orientation or the
 opposite of its positive orientation. -/
 theorem eq_point_or_eq_opposite_point [Nonempty M] [Subsingleton M] (o : Orientation I M) :
     o = point I ∨ o = opposite I (point I) := by
   let x : M := Classical.choice inferInstance
-  refine (Int.units_eq_one_or (o.chartSign x x)).imp (fun h ↦ ?_) (fun h ↦ ?_)
-  · apply Orientation.ext
-    funext y z
-    rw [Subsingleton.elim y x, Subsingleton.elim z x]
-    exact h
-  · apply Orientation.ext
-    funext y z
-    rw [Subsingleton.elim y x, Subsingleton.elim z x]
-    simpa [opposite, twist, point, mem_chart_source] using h
+  refine (Int.units_eq_one_or (o.chartSign x x)).imp (fun h ↦ ?_) (fun h ↦ ?_) <;>
+    ext y z : 3
+  · simpa only [point, Subsingleton.elim y x, Subsingleton.elim z x] using h
+  · simpa [opposite, twist, point, Subsingleton.elim y x, Subsingleton.elim z x,
+      mem_chart_source] using h
 
 theorem natCard_eq_two_pow_of_natCard_connectedComponents_eq [Orientable I M]
     [Finite (ConnectedComponents M)] {n : ℕ}
@@ -207,7 +201,6 @@ theorem natCard_eq_two_pow_of_natCard_connectedComponents_eq [Orientable I M]
   letI : LocallyConnectedSpace H :=
     (I.leftInverse.isEmbedding I.continuous_symm I.continuous).toHomeomorph.locallyConnectedSpace
   letI : LocallyConnectedSpace M := ChartedSpace.locallyConnectedSpace H M
-  classical
   let o₀ : Orientation I M := Classical.choice (show Nonempty (Orientation I M) from inferInstance)
   calc
     Nat.card (Orientation I M)
