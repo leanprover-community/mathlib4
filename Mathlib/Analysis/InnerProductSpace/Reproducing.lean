@@ -320,13 +320,13 @@ theorem kernel_ofKernel : kernel (OfKernel K) = K := by
 
 section Equiv
 
-variable {H₁ : Type*} [NormedAddCommGroup H₁] [InnerProductSpace 𝕜 H₁] [CompleteSpace H₁]
-variable [RKHS 𝕜 H₁ X V]
+variable {H' : Type*} [NormedAddCommGroup H'] [InnerProductSpace 𝕜 H'] [CompleteSpace H']
+variable [RKHS 𝕜 H' X V]
 
 variable (H) in
-/-- Helper function that maps the kernel functions of `H` into the RKHS `H₁` isometrically. -/
-private def toH₁ (h : kernel H = kernel H₁) : H₀ (kernel H) →ₗᵢ[𝕜] H₁ := {
-  Finsupp.linearCombination 𝕜 (fun (xv : X × V) => RKHS.kerFun H₁ xv.1 xv.2) with
+/-- Helper function that maps the kernel functions of `H` into the RKHS `H'` isometrically. -/
+private def toH' (h : kernel H = kernel H') : H₀ (kernel H) →ₗᵢ[𝕜] H' := {
+  Finsupp.linearCombination 𝕜 (fun (xv : X × V) => RKHS.kerFun H' xv.1 xv.2) with
   norm_map' f := by
     simp_rw [norm_eq_sqrt_re_inner (𝕜 := 𝕜), inner_H₀_def, Finsupp.linearCombination_apply,
       Finsupp.sum, sum_inner, inner_sum, h, inner_smul_left, inner_smul_right, kernel_inner,
@@ -334,26 +334,26 @@ private def toH₁ (h : kernel H = kernel H₁) : H₀ (kernel H) →ₗᵢ[𝕜
     simp
 }
 
-private def equivAux (h : kernel H = kernel H₁) : OfKernel (kernel H) ≃ₗᵢ[𝕜] H₁ := by
+private def equivAux (h : kernel H = kernel H') : OfKernel (kernel H) ≃ₗᵢ[𝕜] H' := by
   have h_lin := UniformSpace.Completion.isLinearMap_extension
-    (toH₁ H h).isometry.uniformContinuous
-  let ofOfKernel : OfKernel (kernel H) →ₗᵢ[𝕜] H₁ := {
-    toFun := UniformSpace.Completion.extension (toH₁ H h)
+    (toH' H h).isometry.uniformContinuous
+  let ofOfKernel : OfKernel (kernel H) →ₗᵢ[𝕜] H' := {
+    toFun := UniformSpace.Completion.extension (toH' H h)
     map_add' := h_lin.map_add
     map_smul' := h_lin.map_smul
     norm_map' x := by
-      have h := (toH₁ H h).isometry.completion_extension.dist_eq x 0
+      have h := (toH' H h).isometry.completion_extension.dist_eq x 0
       have h' := h_lin.map_zero
       simp_all
   }
   have h_surj : Function.Surjective ofOfKernel := by
     apply Set.range_eq_univ.mp
-    have h_sub : Set.range (toH₁ H h) ⊆ Set.range ⇑ofOfKernel := by
+    have h_sub : Set.range (toH' H h) ⊆ Set.range ⇑ofOfKernel := by
       rintro _ ⟨f, rfl⟩
-      exact ⟨f, UniformSpace.Completion.extension_coe (toH₁ H h).isometry.uniformContinuous f⟩
-    have h_dense : Dense (Set.range (toH₁ H h)) := by
-      convert dense_iff_topologicalClosure_eq_top.mpr (kerFun_dense H₁)
-      simp only [LinearIsometry.coe_mk, toH₁]
+      exact ⟨f, UniformSpace.Completion.extension_coe (toH' H h).isometry.uniformContinuous f⟩
+    have h_dense : Dense (Set.range (toH' H h)) := by
+      convert dense_iff_topologicalClosure_eq_top.mpr (kerFun_dense H')
+      simp only [LinearIsometry.coe_mk, toH']
       rw [← LinearMap.coe_range, Finsupp.range_linearCombination, SetLike.coe_set_eq]
       congr 1
       ext
@@ -383,7 +383,7 @@ lemma equivOfKernel_kerFun_eq_coe'_single (x : X) (v : V) : equivOfKernel H (ker
   apply ((equivOfKernel H).eq_symm_apply).mp
   have h_uni : UniformContinuous
       (Finsupp.linearCombination 𝕜 fun (xv : X × V) => RKHS.kerFun H xv.1 xv.2) :=
-    (toH₁ H rfl).isometry.uniformContinuous
+    (toH' H rfl).isometry.uniformContinuous
   simp [equivOfKernel_symm, UniformSpace.Completion.extension_coe h_uni _]
 
 @[simp]
@@ -403,8 +403,8 @@ private theorem equiv_eq :
     (isClosed_eq (equivAux _).toLinearIsometry.continuous continuous_id) fun f ↦ ?_
   nth_rw 2 [← Finsupp.sum_single f]
   simp [equivAux, -Finsupp.sum_single,
-    UniformSpace.Completion.extension_coe (toH₁ H _).isometry.uniformContinuous f]
-  simp [toH₁, Finsupp.linearCombination_apply, kerFun_eq_coe'_single,
+    UniformSpace.Completion.extension_coe (toH' H _).isometry.uniformContinuous f]
+  simp [toH', Finsupp.linearCombination_apply, kerFun_eq_coe'_single,
     ← UniformSpace.Completion.coe_smul, Finsupp.sum, ← UniformSpace.Completion.coe_sum, Finsupp.sum]
 
 @[simp]
@@ -419,20 +419,20 @@ end OfKernel
 
 section Equiv
 
-variable {H₁ : Type*} [NormedAddCommGroup H₁] [InnerProductSpace 𝕜 H₁] [CompleteSpace H₁]
-variable [RKHS 𝕜 H₁ X V]
+variable {H' : Type*} [NormedAddCommGroup H'] [InnerProductSpace 𝕜 H'] [CompleteSpace H']
+variable [RKHS 𝕜 H' X V]
 
 /-- If the two RKHS have the same kernel, then they are isometrically isomorphic. -/
-def equiv (h : kernel H = kernel H₁) : H ≃ₗᵢ[𝕜] H₁ :=
+def equiv (h : kernel H = kernel H') : H ≃ₗᵢ[𝕜] H' :=
   (OfKernel.equivOfKernel H).trans (OfKernel.equivAux h)
 
 @[simp]
-theorem equiv_kerFun_eq_kerFun (h : kernel H = kernel H₁) (x : X) (v : V) :
-    equiv h (kerFun H x v) = kerFun H₁ x v := by
+theorem equiv_kerFun_eq_kerFun (h : kernel H = kernel H') (x : X) (v : V) :
+    equiv h (kerFun H x v) = kerFun H' x v := by
   simp [equiv, -OfKernel.equivOfKernel_kerFun_eq, OfKernel.equivOfKernel_kerFun_eq_coe'_single,
     OfKernel.equivAux,
-    UniformSpace.Completion.extension_coe (OfKernel.toH₁ H h).isometry.uniformContinuous]
-  simp [OfKernel.toH₁]
+    UniformSpace.Completion.extension_coe (OfKernel.toH' H h).isometry.uniformContinuous]
+  simp [OfKernel.toH']
 
 theorem equiv_eq_equivOfKernel :
     equiv OfKernel.kernel_ofKernel.symm = OfKernel.equivOfKernel H := by
@@ -441,7 +441,7 @@ theorem equiv_eq_equivOfKernel :
 /-- If the two RKHS have the same kernel, then the functions in the RKHSs agree as functions on
 `X → V`. -/
 @[simp]
-theorem coe_equiv (h : kernel H = kernel H₁) (f : H) : ⇑(equiv h f) = f := by
+theorem coe_equiv (h : kernel H = kernel H') (f : H) : ⇑(equiv h f) = f := by
   ext
   refine ext_inner_left 𝕜 fun v ↦ ?_
   simp_rw [← kerFun_inner, ← LinearIsometryEquiv.inner_map_map (equiv h), equiv_kerFun_eq_kerFun]
