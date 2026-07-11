@@ -189,7 +189,7 @@ theorem smulLeftCLM (hf : IsVanishingOn f s) {g : E → ℂ} (hg : g.HasTemperat
   rw [SchwartzMap.smulLeftCLM_apply hg]
   exact (tsupport_smul_subset_right g u).trans hu
 
-@[deprecated (since := "2026-06-27")] alias Distribution.IsVanishingOn.smulLeftCLM :=
+@[deprecated (since := "2026-07-01")] alias _root_.Distribution.IsVanishingOn.smulLeftCLM :=
   Distribution.TemperedDistribution.IsVanishingOn.smulLeftCLM
 
 open LineDeriv
@@ -225,7 +225,7 @@ theorem dsupport_smulLeftCLM_subset {g : E → ℂ} (hg : g.HasTemperateGrowth) 
     dsupport (smulLeftCLM F g f) ⊆ dsupport f := by
   gcongr; fun_prop
 
-@[deprecated (since := "2026-06-27")] alias Distribution.dsupport_smulLeftCLM_subset :=
+@[deprecated (since := "2026-07-01")] alias _root_.Distribution.dsupport_smulLeftCLM_subset :=
   Distribution.TemperedDistribution.dsupport_smulLeftCLM_subset
 
 open LineDeriv
