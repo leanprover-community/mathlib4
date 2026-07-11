@@ -792,7 +792,7 @@ theorem mul_inv_eventuallyEq {f : 𝕜 → 𝕜'} (hf : MeromorphicOn f U) (hU :
   simp_rw [EventuallyEq, Filter.Eventually, mem_codiscreteWithin_iff_forall_mem_nhdsNE,
     union_comm _ Uᶜ, ← mem_inf_principal'] at ⊢ h0
   intro x hx
-  refine mem_inf_of_left <| (meromorphicOrderAt_ne_top_iff_mul_inv_evnetuallyEq (hf x hx)).mp ?_
+  refine mem_inf_of_left <| (meromorphicOrderAt_ne_top_iff_mul_inv_eventuallyEq (hf x hx)).mp ?_
   contrapose h0
   intro y hy
   refine mem_inf_of_left <| meromorphicOrderAt_eq_top_iff.mp ?_
