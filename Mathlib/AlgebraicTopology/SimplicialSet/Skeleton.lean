@@ -256,7 +256,7 @@ lemma preimage_map : (skeletonOfMono i d).preimage c.map = ∂Δ[d] := by
       ⟨⟨y, hy₂⟩, by simpa [Subcomplex.mem_nonDegenerate_iff]⟩ d
     simp [skeletonOfMono_obj_eq_top i this]
   · have := h.symm.le _ (show stdSimplex.objEquiv.symm (𝟙 ⦋d⦌) ∈ _ by simp)
-    simpa [mem_skeletonOfMono_obj_iff] using this
+    simpa [mem_skeletonOfMono_obj_iff]
 
 end Cell
 
