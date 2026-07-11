@@ -20,7 +20,7 @@ We introduce the notation typeclass `Star` for algebraic structures with a star 
 accommodate diverse notational preferences, no default notation is provided for `Star.star`.
 
 `SMul` is typically, but not exclusively, used for scalar multiplication-like operators.
-See the module `Algebra.AddTorsor` for a motivating example for the name `VAdd` (vector addition).
+See the module `Algebra.Torsor.Defs` for a motivating example for the name `VAdd` (vector addition).
 
 Note `Zero` has already been defined in core Lean.
 
@@ -50,6 +50,7 @@ class HVAdd (α : Type u) (β : Type v) (γ : outParam (Type w)) where
 attribute [notation_class smul Simps.copySecond] HSMul
 attribute [notation_class nsmul Simps.nsmulArgs] HSMul
 attribute [notation_class zsmul Simps.zsmulArgs] HSMul
+attribute [notation_class vadd Simps.copySecond] HVAdd
 
 /-- Type class for the `+ᵥ` notation. -/
 class VAdd (G : Type u) (P : Type v) where
@@ -137,6 +138,9 @@ lemma ite_mul_ite (a b c d : α) :
     ((if P then a else b) * if P then c else d) = if P then a * c else b * d := by split <;> rfl
 
 end Mul
+
+lemma neg_ite {α : Type*} (P : Prop) [Decidable P] [Neg α] (b : α) (c : α) :
+    -(if P then b else c) = if P then -b else -c := by split <;> rfl
 
 section Div
 variable [Div α]

@@ -456,12 +456,12 @@ variable (x : Π i, A i) (p : R[X])
 /-- Polynomial evaluation on an indexed tuple is the indexed product of the evaluations
 on the components.
 Generalizes `Polynomial.aeval_prod` to indexed products. -/
-theorem aeval_pi (x : Π i, A i) : aeval (R := R) x = Pi.algHom R A (fun i ↦ aeval (x i)) :=
+theorem aeval_pi (x : Π i, A i) : aeval (R := R) x = AlgHom.pi (fun i ↦ aeval (x i)) :=
   (funext fun i ↦ aeval_algHom (Pi.evalAlgHom R A i) x) ▸
-    (Pi.algHom_comp R A (Pi.evalAlgHom R A) (aeval x))
+    (AlgHom.pi_comp (Pi.evalAlgHom R A) (aeval x))
 
 theorem aeval_pi_apply₂ (j : I) : p.aeval x j = p.aeval (x j) :=
-  aeval_pi (R := R) x ▸ Pi.algHom_apply R A (fun i ↦ aeval (x i)) p j
+  aeval_pi (R := R) x ▸ AlgHom.pi_apply (fun i ↦ aeval (x i)) p j
 
 /-- Polynomial evaluation on an indexed tuple is the indexed tuple of the evaluations
 on the components.
