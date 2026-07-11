@@ -517,7 +517,7 @@ variable [MeasurableAdd₂ G] [MeasurableNeg G] [SFinite μ] [IsAddRightInvarian
 
 /-- The convolution of two a.e. strongly measurable functions is a.e. strongly measurable. -/
 @[fun_prop]
-theorem AEStronglyMeasurable.convolution (hf : AEStronglyMeasurable f μ)
+protected theorem AEStronglyMeasurable.convolution (hf : AEStronglyMeasurable f μ)
     (hg : AEStronglyMeasurable g μ) : AEStronglyMeasurable (f ⋆[L, μ] g) μ := by
   suffices AEStronglyMeasurable (fun ⟨x, t⟩ ↦ g (x - t)) (μ.prod μ) from
     (L.aestronglyMeasurable_comp₂ hf.comp_snd this).integral_prod_right'
