@@ -766,7 +766,6 @@ lemma eq_symm_apply (e : A ≃⋆ₐ[R] B) {x y} :
     y = e.symm x ↔ e y = x :=
   e.toEquiv.eq_symm_apply
 
-
 theorem symm_bijective : Function.Bijective (symm : (A ≃⋆ₐ[R] B) → B ≃⋆ₐ[R] A) :=
   Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
 
