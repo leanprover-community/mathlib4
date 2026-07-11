@@ -112,7 +112,7 @@ lemma tsum_gammaSet_eisSummand_of_coprime {k : ℤ} (hk : k ≠ 0) (z : ℍ) (h 
 
 /-- Mapping a positive natural number `m` congruent to `n`
 mod `N` to the corresponding element of the fiber of `coprimeUnitMap` over `n`. -/
-def toCoprimeUnitFiber [NeZero N] (n : (ZMod N)ˣ)
+def toCoprimeUnitFiber (n : (ZMod N)ˣ)
     (m : {m : ℕ // 0 < m ∧ (m : ZMod N) = n}) : ZMod.coprimeUnitMap ⁻¹' {n} :=
   ⟨⟨m.1, (ZMod.isUnit_iff_coprime m.1 N).mp (by simp [m.2.2])⟩,
     Units.ext (by simp [ZMod.coprimeUnitMap, m.2.2])⟩
