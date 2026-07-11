@@ -244,9 +244,19 @@ theorem card_le_natCard [Finite α] : s.card ≤ Nat.card α := by
 
 end Finset
 
-namespace Multiset.Nodup
+namespace Multiset
 
-variable {m : Multiset α} (hm : m.Nodup) {s : Set α}
+variable {m : Multiset α} {s : Set α}
+
+theorem ncard_setOf_mem [DecidableEq α] : {a | a ∈ m}.ncard = m.dedup.card := by
+  rw [← coe_toFinset, Set.ncard_coe_finset, card_toFinset]
+
+theorem encard_setOf_mem [DecidableEq α] : {a | a ∈ m}.encard = m.dedup.card := by
+  rw [← m.finite_toSet.cast_ncard_eq, ncard_setOf_mem]
+
+namespace Nodup
+
+variable (hm : m.Nodup)
 include hm
 
 theorem card_le_encard (h : ∀ a ∈ m, a ∈ s) : m.card ≤ s.encard := by
@@ -262,11 +272,23 @@ theorem card_le_enatCard : m.card ≤ ENat.card α := by
 theorem card_le_natCard [Finite α] : m.card ≤ Nat.card α := by
   simp [← Set.ncard_univ, hm.card_le_ncard]
 
-end Multiset.Nodup
+end Nodup
 
-namespace List.Nodup
+end Multiset
 
-variable {l : List α} (hl : l.Nodup) {s : Set α}
+namespace List
+
+variable {l : List α} {s : Set α}
+
+theorem ncard_setOf_mem [DecidableEq α] : {a | a ∈ l}.ncard = l.dedup.length := by
+  rw [← coe_toFinset, Set.ncard_coe_finset, card_toFinset]
+
+theorem encard_setOf_mem [DecidableEq α] : {a | a ∈ l}.encard = l.dedup.length := by
+  rw [← l.finite_toSet.cast_ncard_eq, ncard_setOf_mem]
+
+namespace Nodup
+
+variable (hl : l.Nodup)
 include hl
 
 theorem length_le_encard (h : ∀ a ∈ l, a ∈ s) : l.length ≤ s.encard := by
@@ -281,4 +303,6 @@ theorem length_le_enatCard : l.length ≤ ENat.card α := by
 theorem length_le_natCard [Finite α] : l.length ≤ Nat.card α := by
   simp [← Set.ncard_univ, hl.length_le_ncard]
 
-end List.Nodup
+end Nodup
+
+end List
