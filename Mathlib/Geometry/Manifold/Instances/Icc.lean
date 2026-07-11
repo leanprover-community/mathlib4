@@ -80,7 +80,7 @@ lemma isImmersionOfComplement_subtype_coe_Icc :
   letI φ₀ := ContinuousLinearEquiv.prodUnique ℝ
     (EuclideanSpace ℝ (Fin 1)) (EuclideanSpace ℝ (Fin 0))
   let φ : (EuclideanSpace ℝ (Fin 1) × EuclideanSpace ℝ (Fin 0)) ≃L[ℝ] ℝ :=
-    φ₀.trans (EuclideanSpace.equivOfUnique (Fin 1))
+    φ₀.trans (PiLp.equivOfUnique 2 ℝ (fun (_ : Fin 1) ↦ ℝ))
   by_cases hz : ↑z < y
   · -- At all points but `y`, the correct codomain chart maps `a` to `a + x`.
     apply IsImmersionAtOfComplement.mk_of_continuousAt (by fun_prop) φ
@@ -109,7 +109,8 @@ lemma isImmersionOfComplement_subtype_coe_Icc :
       (by simp [Homeomorph.pointReflection]) (chart_mem_maximalAtlas _) ?_; swap
     · apply OpenPartialHomeomorph.mem_maximalAtlas_of_contMDiffOn
       all_goals
-        simp [Homeomorph.pointReflection, contMDiffOn_iff_contDiffOn, Equiv.pointReflection]
+        simp [contMDiffOn_iff_contDiffOn,
+          Homeomorph.pointReflection, Homeomorph.vaddConst, Homeomorph.constVSub]
         fun_prop
     intro z' hz'
     simp [hz, IccRightChart, modelWithCornersEuclideanHalfSpace]
