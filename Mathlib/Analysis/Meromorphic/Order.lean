@@ -149,7 +149,7 @@ theorem meromorphicOrderAt_ne_top_iff_eventually_ne_zero {f : 𝕜 → E} (hf : 
 
 /-- The order of a meromorphic function `f` at `z₀` is finite iff `f` has multiplicative inverse
 in a sufficiently small neighborhood of `z₀`. -/
-theorem meromorphicOrderAt_ne_top_iff_mul_inv_evnetuallyEq {f : 𝕜 → 𝕜'} (hf : MeromorphicAt f x) :
+theorem meromorphicOrderAt_ne_top_iff_mul_inv_eventuallyEq {f : 𝕜 → 𝕜'} (hf : MeromorphicAt f x) :
     meromorphicOrderAt f x ≠ ⊤ ↔ f * f⁻¹ =ᶠ[𝓝[≠] x] 1 := by
   rw [meromorphicOrderAt_ne_top_iff_eventually_ne_zero hf]
   exact eventually_congr (.of_forall (by aesop))
