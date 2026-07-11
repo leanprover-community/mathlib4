@@ -743,7 +743,7 @@ lemma point_mem_surface [Nontrivial k] [ZeroLEOneClass k] {n : ℕ} [NeZero n] (
   obtain ⟨j, hj⟩ := exists_ne i
   exact mem_surface_iff.mpr ⟨j, s.point_mem_closedInterior_faceOpposite_iff.mpr hj.symm⟩
 
-lemma disjoint_interior_surface [Nontrivial k] [ZeroLEOneClass k] {n : ℕ} [NeZero n]
+lemma disjoint_interior_surface {n : ℕ} [NeZero n]
     (s : Simplex k P n) : Disjoint s.interior s.surface :=
   Set.disjoint_iUnion_right.mpr s.disjoint_interior_closedInterior_faceOpposite
 
@@ -802,8 +802,7 @@ theorem closedInterior_eq_interior_union_surface [IsOrderedAddMonoid k] [ZeroLEO
 theorem closedInterior_sdiff_interior [IsOrderedAddMonoid k] [ZeroLEOneClass k]
     {n : ℕ} [NeZero n] (s : Simplex k P n) :
     s.closedInterior \ s.interior = s.surface := by
-  simpa [closedInterior_eq_interior_union] using
-    fun i ↦ (s.disjoint_interior_closedInterior_faceOpposite i).symm
+  simpa [closedInterior_eq_interior_union_surface] using s.disjoint_interior_surface.symm
 
 end LinearOrder
 
