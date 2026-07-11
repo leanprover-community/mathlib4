@@ -13,7 +13,7 @@ public import Mathlib.GroupTheory.Finiteness
 ## Main definitions
 
 * `Group.Generators G ι`: The generators of a group are given by a generating family indexed by `ι`
-and an assignment `val : ι → G` such that `Subgroup.closure (Set.range val) = ⊤`.
+  and an assignment `val : ι → G` such that `Subgroup.closure (Set.range val) = ⊤`.
 
 ## Main results
 
