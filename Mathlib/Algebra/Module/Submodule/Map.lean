@@ -452,8 +452,7 @@ end OrderIso
 --TODO(Mario): is there a way to prove this from order properties?
 theorem map_inf_eq_map_inf_comap [RingHomSurjective σ₁₂] {f : M →ₛₗ[σ₁₂] M₂} {p : Submodule R M}
     {p' : Submodule R₂ M₂} : map f p ⊓ p' = map f (p ⊓ comap f p') :=
-  le_antisymm (by rintro _ ⟨⟨x, h₁, rfl⟩, h₂⟩; exact ⟨_, ⟨h₁, h₂⟩, rfl⟩)
-    (le_inf (map_mono inf_le_left) (map_le_iff_le_comap.2 inf_le_right))
+  .symm <| SetLike.coe_injective <| image_inter_preimage _ _ _
 
 @[simp]
 theorem map_comap_subtype : map p.subtype (comap p.subtype p') = p ⊓ p' :=

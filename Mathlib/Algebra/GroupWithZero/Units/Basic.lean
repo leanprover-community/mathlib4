@@ -37,7 +37,7 @@ theorem ne_zero [Nontrivial M₀] (u : M₀ˣ) : (u : M₀) ≠ 0 :=
   left_ne_zero_of_mul_eq_one u.mul_inv
 
 -- We can't use `mul_eq_zero` + `Units.ne_zero` in the next two lemmas because we don't assume
--- `Nonzero M₀`.
+-- `Nontrivial M₀`.
 @[simp]
 theorem mul_left_eq_zero (u : M₀ˣ) {a : M₀} : a * u = 0 ↔ a = 0 :=
   ⟨fun h => by simpa using mul_eq_zero_of_left h ↑u⁻¹, fun h => mul_eq_zero_of_left h u⟩
@@ -74,7 +74,7 @@ theorem not_isUnit_zero [Nontrivial M₀] : ¬IsUnit (0 : M₀) :=
 
 namespace Ring
 
-open Classical in
+open scoped Classical in
 /-- Introduce a function `inverse` on a monoid with zero `M₀`, which sends `x` to `x⁻¹` if `x` is
 invertible and to `0` otherwise.  This definition is somewhat ad hoc, but one needs a fully (rather
 than partially) defined inverse function for some purposes, including for calculus.
@@ -508,7 +508,7 @@ section NoncomputableDefs
 
 variable {M : Type*} [Nontrivial M]
 
-open Classical in
+open scoped Classical in
 /-- Constructs a `GroupWithZero` structure on a `MonoidWithZero`
   consisting only of units and 0. -/
 @[implicit_reducible]
