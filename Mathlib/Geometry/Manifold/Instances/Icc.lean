@@ -93,16 +93,11 @@ lemma isImmersionOfComplement_subtype_coe_Icc :
           simpa [contMDiffOn_iff_contDiffOn, Homeomorph.addLeft]
         fun_prop
     intro z' hz'
+    have : 0 ≤ z' 0 := by simp_all [IccLeftChart, modelWithCornersEuclideanHalfSpace]
     simp [hz, IccLeftChart, modelWithCornersEuclideanHalfSpace]
-    simp [hz, IccLeftChart] at hz'
-    have : 0 ≤ z' 0 := by
-      obtain ⟨⟨y', hy'⟩, rfl⟩ := hz'.1
-      simpa [modelWithCornersEuclideanHalfSpace]
     rw [min_eq_left, max_eq_left this]
     · simp [φ, φ₀, add_comm]
-    · replace hz' := hz'.2
-      simp [modelWithCornersEuclideanHalfSpace] at hz'
-      rw [max_eq_left this]
+    · simp_all [IccLeftChart, modelWithCornersEuclideanHalfSpace]
       linarith
   · -- At the right boundary point, the correct codomain chart is mapping `a` to `y - a`.
     apply IsImmersionAtOfComplement.mk_of_continuousAt (by fun_prop) φ
@@ -115,15 +110,13 @@ lemma isImmersionOfComplement_subtype_coe_Icc :
           Homeomorph.pointReflection, Homeomorph.vaddConst, Homeomorph.constVSub]
         fun_prop
     intro z' hz'
+    have : 0 ≤ z' 0 := by simp_all [IccLeftChart, modelWithCornersEuclideanHalfSpace]
     simp [hz, IccRightChart, modelWithCornersEuclideanHalfSpace]
-    simp [hz, IccRightChart] at hz'
-    have : 0 ≤ z' 0 := by
-      obtain ⟨⟨y', hy'⟩, rfl⟩ := hz'.1
-      simpa [modelWithCornersEuclideanHalfSpace]
     rw [max_eq_left, max_eq_left this]
     · simp [φ, φ₀, Equiv.pointReflection]
       ring_nf
-    · replace hz' := hz'.2
+    · simp [hz, IccRightChart] at hz'
+      replace hz' := hz'.2
       simp [modelWithCornersEuclideanHalfSpace] at hz'
       rw [max_eq_left this]
       linarith
