@@ -8,7 +8,7 @@ module
 public import Mathlib.Analysis.Calculus.FDeriv.Equiv
 public import Mathlib.Analysis.Calculus.FDeriv.Prod
 public import Mathlib.Analysis.Calculus.Monotone
-public import Mathlib.Topology.EMetricSpace.BoundedVariation
+public import Mathlib.Topology.EMetricSpace.VariationOnFromTo
 
 /-!
 # Almost everywhere differentiability of functions with locally bounded variation
