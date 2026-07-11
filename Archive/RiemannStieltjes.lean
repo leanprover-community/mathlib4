@@ -83,6 +83,9 @@ section Interval
 
 `Ioc` intervals can be represented within the `BoxIntegral` API as objects of type `Box (Fin 1)`.
 We provide some minimal API for manipulating such intervals.
+
+Note: one could use `Equiv.funUnique (Fin 1) ℝ` instead of using the maps `x ↦ x 0` and
+`x ↦ ![x]` to identify `Fin 1 → ℝ` and `ℝ`, but this does not seem to gain very much.
 -/
 
 variable {a b : ℝ} (J J' : Box (Fin 1))
