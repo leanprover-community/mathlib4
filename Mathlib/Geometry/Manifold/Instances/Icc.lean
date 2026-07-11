@@ -87,9 +87,9 @@ lemma isImmersionOfComplement_subtype_coe_Icc :
       (chartAt (EuclideanHalfSpace 1) z) (Homeomorph.addLeft (-x)).toOpenPartialHomeomorph
       (mem_chart_source _ z) (by simp [Homeomorph.addLeft]) (chart_mem_maximalAtlas _) ?_; swap
     · apply OpenPartialHomeomorph.mem_maximalAtlas_of_contMDiffOn
-      · suffices ContDiffOn ℝ n (fun x_1 ↦ -x + x_1) univ by simpa [contMDiffOn_iff_contDiffOn]
+      · suffices ContDiffOn ℝ n (fun y ↦ -x + y) univ by simpa [contMDiffOn_iff_contDiffOn]
         fun_prop
-      · suffices ContDiffOn ℝ n (fun x_1 ↦ x + x_1) univ by
+      · suffices ContDiffOn ℝ n (fun y ↦ x + y) univ by
           simpa [contMDiffOn_iff_contDiffOn, Homeomorph.addLeft]
         fun_prop
     intro z' hz'
