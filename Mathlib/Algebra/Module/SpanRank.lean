@@ -285,18 +285,11 @@ lemma spanFinrank_singleton {m : M} (hm : m ≠ 0) : (span R {m}).spanFinrank = 
     simp [Submodule.spanFinrank_eq_zero_iff_eq_bot (fg_span_singleton m), hm] at this
 
 lemma spanFinrank_eq_one_iff (p : Submodule R M) : p.spanFinrank = 1 ↔ p.IsPrincipal ∧ p ≠ ⊥ := by
-  refine ⟨fun h ↦ ⟨?_, ?_⟩, fun ⟨prin, ne⟩ ↦ ?_⟩
-  · have fg : p.FG := by
-      contrapose h
-      simp [Submodule.spanFinrank_of_not_fg h]
-    obtain ⟨a, ha⟩ : ∃ a, p.generators = {a} := by simpa [← fg.generators_ncard] using h
-    exact ⟨a, ha ▸ (p.span_generators).symm⟩
-  · contrapose h
-    simp [h]
-  · rcases prin with ⟨a, rfl⟩
-    apply Submodule.spanFinrank_singleton
-    contrapose ne
-    simp [ne]
+  refine ⟨fun h ↦ ⟨?_, (by grind [spanFinrank_bot])⟩, 
+    fun ⟨⟨a, ha⟩, _⟩ ↦ ha ▸ spanFinrank_singleton (by simp_all)⟩
+  have fg : p.FG := spanRank_finite_iff_fg.1 (by simp_all [spanFinrank])
+  obtain ⟨a, ha⟩ : ∃ a, p.generators = {a} := by simpa [← fg.generators_ncard] using h
+  exact ⟨a, ha ▸ (p.span_generators).symm⟩
 
 end Defs
 
