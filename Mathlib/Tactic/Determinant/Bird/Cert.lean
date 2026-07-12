@@ -230,7 +230,7 @@ def certEntry (i j : ℕ) : CertM rα (Cert rα) := do
   let {dimension := dim, dimensionLit := dimLit, arrayExpr := A, arrayEntries, ..} := ctx
   let lhs : Q($α) := q(BirdDet.get $dimLit $A $i $j)
   -- The index of the matrix entry (i, j) in arrayEntries
-  let idx := i * dim + j
+  let idx := dim * i + j
   let entry := arrayEntries.getD idx q(0)
   let ce ← certEval entry
   have : $lhs =Q $entry := ⟨⟩
