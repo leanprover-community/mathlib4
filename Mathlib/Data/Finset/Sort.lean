@@ -391,3 +391,13 @@ lemma OrderHom.eq_id_of_injective {α : Type*} [LinearOrder α] [Finite α] (f :
     f = .id :=
   (range_eq_iff hf Function.injective_id).1 (by
     simpa [Set.range_eq_univ] using Finite.surjective_of_injective hf)
+
+/-- A strictly monotone self-map of a finite linear order is the identity. -/
+theorem StrictMono.eq_id {α : Type*} [LinearOrder α] [Finite α] {f : α → α}
+    (hf : StrictMono f) : f = id :=
+  le_antisymm hf.le_id hf.id_le
+
+/-- A strictly monotone self-map of a finite linear order fixes every point. -/
+theorem StrictMono.apply_eq {α : Type*} [LinearOrder α] [Finite α] {f : α → α}
+    {x : α} (hf : StrictMono f) : f x = x :=
+  congrFun hf.eq_id x

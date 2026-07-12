@@ -21,6 +21,10 @@ defines the limit value of an eventually-constant sequence.
 
 * `natLT`/`natGT`: Make an order embedding `Nat ↪ α` from
   an increasing/decreasing function `Nat → α`.
+* `Infinite.exists_strictMono_or_strictAnti`: Every infinite linear order contains a strictly
+  increasing or strictly decreasing sequence indexed by `ℕ`.
+* `Finite.of_wellFoundedLT_wellFoundedGT`: A linear order that is well-founded in both directions
+  is finite.
 * `monotonicSequenceLimit`: The limit of an eventually-constant monotone sequence `Nat →o α`.
 * `monotonicSequenceLimitIndex`: The index of the first occurrence of `monotonicSequenceLimit`
   in the sequence.
@@ -188,6 +192,31 @@ theorem exists_increasing_or_nonincreasing_subseq (r : α → α → Prop) [IsTr
       apply IsTrans.trans _ _ _ _ (hr _)
       exact ih (lt_of_lt_of_le m.lt_succ_self (Nat.le_add_right _ _))
   · exact ⟨g, Or.intro_right _ hnr⟩
+
+/-- Every infinite linear order contains either a strictly increasing or a strictly decreasing
+sequence indexed by `ℕ`. -/
+theorem Infinite.exists_strictMono_or_strictAnti (α : Type*) [LinearOrder α] [Infinite α] :
+    ∃ f : ℕ → α, StrictMono f ∨ StrictAnti f := by
+  let f := Infinite.natEmbedding α
+  obtain ⟨g, hIncreasing | hNonincreasing⟩ :=
+    exists_increasing_or_nonincreasing_subseq (· < ·) f
+  · exact ⟨f ∘ g, Or.inl hIncreasing⟩
+  · exists f ∘ g
+    right
+    intro m n hmn
+    refine lt_of_le_of_ne ?_ ?_
+    · exact not_lt.mp (hNonincreasing m n hmn)
+    · apply (f.injective.comp g.injective).ne
+      exact Nat.ne_of_lt' hmn
+
+/-- A linear order that is well-founded in both directions is finite. -/
+theorem Finite.of_wellFoundedLT_wellFoundedGT (α : Type*) [LinearOrder α]
+    [WellFoundedLT α] [WellFoundedGT α] : Finite α := by
+  apply Finite.of_not_infinite
+  intro
+  obtain ⟨f, hStrictMono | hStrictAnti⟩ := Infinite.exists_strictMono_or_strictAnti α
+  · exact not_strictMono_of_wellFoundedGT f hStrictMono
+  · exact not_strictAnti_of_wellFoundedLT f hStrictAnti
 
 /-- The **monotone chain condition**: a preorder is co-well-founded iff every increasing sequence
 contains two non-increasing indices.
