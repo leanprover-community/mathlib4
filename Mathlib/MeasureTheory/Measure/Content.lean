@@ -5,7 +5,6 @@ Authors: Floris van Doorn
 -/
 module
 
-public import Mathlib.MeasureTheory.Measure.MeasureSpace
 public import Mathlib.MeasureTheory.Measure.Regular
 public import Mathlib.Topology.Sets.Compacts
 

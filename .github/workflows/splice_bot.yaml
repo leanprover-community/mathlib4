@@ -9,7 +9,7 @@ permissions: {}
 jobs:
   call-splice-bot:
     if: ${{ contains(github.event.comment.body, 'splice-bot') }}
-    uses: leanprover-community/SpliceBot/.github/workflows/splice.yaml@542c9be99bdc0cda9bfecfb3ddd4e10317383c01 # master
+    uses: leanprover-community/SpliceBot/.github/workflows/splice.yaml@d86d20efffbd18f839199fdd5ec126570f7eceda # master
     with:
       # Optional override; omit to use the reusable workflow's default "master"
       base_ref: master

@@ -84,6 +84,8 @@ lemma card_pos_iff : 0 < Nat.card α ↔ Nonempty α ∧ Finite α := by
 
 @[simp] lemma card_pos [Nonempty α] [Finite α] : 0 < Nat.card α := card_pos_iff.2 ⟨‹_›, ‹_›⟩
 
+instance [Nonempty α] [Finite α] : NeZero (Nat.card α) := ⟨card_pos.ne'⟩
+
 theorem finite_of_card_ne_zero (h : Nat.card α ≠ 0) : Finite α := (card_ne_zero.1 h).2
 
 theorem card_congr (f : α ≃ β) : Nat.card α = Nat.card β :=
@@ -350,14 +352,15 @@ theorem card_eq_zero_iff_empty (α : Type*) : card α = 0 ↔ IsEmpty α := by
 theorem card_ne_zero_iff_nonempty (α : Type*) : card α ≠ 0 ↔ Nonempty α := by
   simp [card_eq_zero_iff_empty]
 
+@[simp] lemma card_ne_zero [Nonempty α] : card α ≠ 0 := (card_ne_zero_iff_nonempty _).2 ‹_›
+
 theorem card_pos_iff_nonempty (α : Type*) : 0 < card α ↔ Nonempty α := by
   rw [pos_iff_ne_zero, card_ne_zero_iff_nonempty]
 
 theorem one_le_card_iff_nonempty (α : Type*) : 1 ≤ card α ↔ Nonempty α := by
   simp [Order.one_le_iff_ne_zero, card_eq_zero_iff_empty]
 
-@[simp] lemma card_pos [Nonempty α] : 0 < card α := by
-  simpa [pos_iff_ne_zero, card_ne_zero_iff_nonempty]
+@[simp] lemma card_pos [Nonempty α] : 0 < card α := by simp [pos_iff_ne_zero]
 
 theorem card_le_one_iff_subsingleton (α : Type*) : card α ≤ 1 ↔ Subsingleton α := by
   rw [← le_one_iff_subsingleton]

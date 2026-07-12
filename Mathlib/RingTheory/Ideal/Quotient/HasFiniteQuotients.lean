@@ -166,7 +166,7 @@ instance : HasFiniteQuotients ℤ where
     exact inferInstanceAs <| Finite (ℤ ⧸ Ideal.span {n})
 
 /-- A domain that is finitely generated has finite quotients. -/
-instance [IsDomain R] [AddGroup.FG R] : HasFiniteQuotients R :=
-  of_module_finite ℤ R
+instance [IsDomain R] [Module.Finite ℤ R] : HasFiniteQuotients R :=
+  .of_module_finite ℤ R
 
 end Ring.HasFiniteQuotients
