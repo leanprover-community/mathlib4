@@ -4,7 +4,7 @@ public import Mathlib.Algebra.Group.Commutator
 
 variable {G : Type} [AddGroup G]
 
-attribute [instance] addCommutatorElement
+open scoped addCommutatorElement
 
 example (a b c : G) : c + (a + b) + (-b + -a) + c = c + c := by add_group
 
@@ -34,6 +34,14 @@ example (n : ℕ) (a : G) : (n - n) • a = 0 := by add_group
 
 example (n : ℤ) (a : G) : (n - n) • a = 0 := by add_group
 
+example (b : G) {n : ℤ} : (-b) + n • b = (n - 1) • b := by add_group
+
+example (b : G) : (-b) + (-b) = (-2) • b := by add_group
+
+example (b : G) {n : ℤ} : n • b + (-b) = (n - 1) • b := by add_group
+
+example (b : G) : -b = (-1) • b := by add_group
+
 example (n : ℤ) (a : G) (h : (n * (n + 1) - n - n ^ 2) • a = a) : a = 0 := by
   add_group at h
   exact h.symm
@@ -56,7 +64,14 @@ example (n : ℤ) (a b : G) :
 
 example (x y : G) : -((-x) + (x + y) + (-y)) = 0 := by add_group
 
-set_option linter.unusedTactic false in
+/--
+error: `add_group` made no progress
+G : Type
+inst✝ : AddGroup G
+x : G
+h : x = 0
+⊢ x = 0
+-/
+#guard_msgs in
 example (x : G) (h : x = 0) : x = 0 := by
   add_group
-  exact h

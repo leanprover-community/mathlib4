@@ -1,14 +1,11 @@
 /-
 Copyright (c) 2026 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Thomas Browning, Patrick Massot, Kevin Buzzard
+Authors: Kevin Buzzard
 -/
 module
 
-public import Mathlib.Algebra.Order.Sub.Basic
-public meta import Mathlib.Tactic.FailIfNoProgress
 public import Mathlib.Tactic.Group
-public import Mathlib.Tactic.Ring
 
 /-!
 # `add_group` tactic
@@ -25,10 +22,21 @@ Note: Unlike the multiplicative `group` tactic which uses `← zpow_neg_one` to 
 `(-1 : ℤ) • a` because `(-1 : ℤ)` is itself `-(1 : ℤ)`, causing simp to loop (since `ℤ` is also
 an `AddGroup`). Instead, we handle negation via `neg_add_rev` to distribute negation over sums,
 `zsmul_neg`/`neg_zsmul` for `n • (-a)`, and custom trick lemmas for combining `-b` with adjacent
-`zsmul` terms.
+`zsmul` terms. We also use `neg_one_zsmul` in the forward direction to normalize `(-1) • b` to `-b`.
 
-Other than this issue, this is a direct port from Thomas Browning and Patrick Massot's `group`
+Other than this issue, the strategy parallels Thomas Browning and Patrick Massot's `group`
 tactic.
+
+## TODO
+
+- Allow `add_group` to take a config which can control the behavior when the goal is unchanged 
+  (`ifUnchanged`), and possibly allow passing other config options to the underlying `simp` and 
+  `ring_nf` tactics.
+- Surface errors from `simp` and `ring_nf` instead of swallowing them in `repeat1`. (This likely 
+  needs a new `repeat_until_no_progress` combinator.)
+- Allow `add_group` to take extra simp lemmas.
+- Allow `add_group` to take a `using h` clause like `simpa`, which normalizes `h` with `add_group` 
+  and then uses it to simplify the goal.
 
 ## Tags
 
@@ -39,82 +47,50 @@ public meta section
 
 namespace Mathlib.Tactic.AddGroup
 
-open Lean
-open Lean.Meta
-open Lean.Parser.Tactic
-open Lean.Elab.Tactic
+open Lean Meta Parser Elab Tactic
 
--- The next three lemmas are not general purpose lemmas, they are intended for use only by
--- the `add_group` tactic.
+-- The next six lemmas are not general purpose lemmas; they are intended for use only by
+-- the `add_group` tactic, and so are prefixed with `_` to keep them out of autocomplete.
 -- They handle the case where a negated element `-b` appears adjacent to a `zsmul` of the same
 -- element, or adjacent to another negated copy.
-theorem zsmul_neg_trick {G : Type*} [AddGroup G] (a b : G) (n : ℤ) :
-    a + n • b + (-b) = a + (n + (-1)) • b := by
-  rw [add_assoc, ← neg_one_zsmul b, ← add_zsmul]
+-- This means we also want to convert `(-1) • b` to `-b` in order to apply these lemmas.
+theorem _zsmul_neg_trick {G : Type*} [AddGroup G] (b : G) (n : ℤ) :
+    n • b + (-b) = (n + (-1)) • b := by
+  rw [← neg_one_zsmul b, ← add_zsmul]
 
-theorem zsmul_neg_trick' {G : Type*} [AddGroup G] (a b : G) (n : ℤ) :
-    a + (-b) + n • b = a + ((-1) + n) • b := by
-  rw [add_assoc, ← neg_one_zsmul b, ← add_zsmul]
+theorem _neg_zsmul_trick {G : Type*} [AddGroup G] (b : G) (n : ℤ) :
+    (-b) + n • b = ((-1) + n) • b := by
+  rw [← neg_one_zsmul b, ← add_zsmul]
 
-theorem neg_neg_trick {G : Type*} [AddGroup G] (a b : G) :
-    a + (-b) + (-b) = a + (-2 : ℤ) • b := by
+theorem _neg_neg_trick {G : Type*} [AddGroup G] (b : G) :
+    (-b) + (-b) = (-2 : ℤ) • b := by
   have h : -b = (-1 : ℤ) • b := (neg_one_zsmul b).symm
-  rw [h, add_assoc, ← add_zsmul]; norm_num
+  rw [h, ← add_zsmul]; norm_num
 
-/-- Auxiliary tactic for the `add_group` tactic. Calls the simplifier only. -/
-syntax (name := aux_add_group₁) "aux_add_group₁" (location)? : tactic
+theorem _add_zsmul_neg_trick {G : Type*} [AddGroup G] (a b : G) (n : ℤ) :
+    a + n • b + (-b) = a + (n + (-1)) • b := by
+  rw [add_assoc, _zsmul_neg_trick]
 
-macro_rules
-| `(tactic| aux_add_group₁ $[at $location]?) =>
-  `(tactic| simp -decide -failIfUnchanged only
-    [addCommutatorElement_def, neg_add_rev, neg_zero, zsmul_neg, ← neg_zsmul,
-      add_zero, zero_add,
-      ← natCast_zsmul, ← mul_zsmul',
-      Int.natCast_add, Int.natCast_mul, neg_neg,
-      zsmul_zero, zero_zsmul, one_zsmul,
-      ← add_assoc,
-      ← add_zsmul, ← add_one_zsmul, ← one_add_zsmul,
-      Mathlib.Tactic.Group.zsmul_trick,
-      Mathlib.Tactic.Group.zsmul_trick_zero,
-      Mathlib.Tactic.Group.zsmul_trick_zero',
-      zsmul_neg_trick, zsmul_neg_trick',
-      add_neg_cancel_right, neg_add_cancel_right,
-      neg_neg_trick,
-      sub_eq_add_neg,
-      tsub_self, sub_self, add_neg_cancel, neg_add_cancel]
-  $[at $location]?)
+theorem _add_neg_zsmul_trick {G : Type*} [AddGroup G] (a b : G) (n : ℤ) :
+    a + (-b) + n • b = a + ((-1) + n) • b := by
+  rw [add_assoc, _neg_zsmul_trick]
 
-/-- Auxiliary tactic for the `add_group` tactic. Calls `ring_nf` to normalize scalars. -/
-syntax (name := aux_add_group₂) "aux_add_group₂" (location)? : tactic
+theorem _add_neg_neg_trick {G : Type*} [AddGroup G] (a b : G) :
+    a + (-b) + (-b) = a + (-2 : ℤ) • b := by
+  rw [add_assoc, _neg_neg_trick]
 
-macro_rules
-| `(tactic| aux_add_group₂ $[at $location]?) =>
-  `(tactic| ring_nf (ifUnchanged := .silent) $[at $location]?)
+/--
+`add_group` normalizes expressions in additive groups without assuming commutativity. Unlike 
+`abel`, which does take advantage of commutativity, `add_group` instead only uses the additive 
+group axioms without any information about which group is manipulated. If the goal is an equality, 
+and after normalization the two sides are equal, `add_group` closes the goal.
 
-/-- `add_group` normalizes expressions in additive groups that occur in the goal. `add_group` does
-not assume commutativity, instead using only the additive group axioms without any information about
-which group is manipulated. If the goal is an equality, and after normalization the two sides are
-equal, `add_group` closes the goal.
+`add_group at l1 l2 ...` normalizes at the given locations.
 
-For multiplicative groups, use the `group` tactic instead.
 For additive commutative groups, use the `abel` tactic instead.
-
-* `add_group at l1 l2 ...` normalizes at the given locations.
+For multiplicative groups, use the `group` tactic instead.
 
 Example:
-```lean
-example {G : Type} [AddGroup G] (a b c d : G) (h : c = (a + 2 • b) + (-(b + b) + (-a)) + d) :
-    a + c + (-d) = a := by
-  add_group at h -- normalizes `h` which becomes `h : c = d`
-  rw [h]         -- the goal is now `a + d + (-d) = a`
-  add_group      -- which is then normalized and closed
-```
--/
-syntax (name := add_group) "add_group" (location)? : tactic
-
-macro_rules
-| `(tactic| add_group $[$loc]?) =>
-  `(tactic| repeat (fail_if_no_progress (aux_add_group₁ $[$loc]? <;> aux_add_group₂ $[$loc]?)))
 
 end Mathlib.Tactic.AddGroup
 
