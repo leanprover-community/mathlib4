@@ -260,7 +260,6 @@ noncomputable def Scheme.Modules.fromTildeΓ (M : (Spec (.of R)).Modules) :
         simp only [inducedFunctor_obj, Submonoid.powers_le, Submonoid.mem_comap]
         exact M.isUnit_algebraMap_end_of_le_basicOpen f.unop le_rfl
       naturality {f g : Rᵒᵖ} i := by
-        letI N := (modulesSpecToSheaf.obj M).presheaf.obj (.op ⊤)
         ext1
         apply IsLocalizedModule.ext (.powers (M := R) f.unop)
           (tilde.toOpen _ (PrimeSpectrum.basicOpen (R := R) f.unop)).hom

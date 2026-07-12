@@ -313,8 +313,6 @@ the statement of `compare_comp_eq_compare` is the commutativity of the right tri
 -/
 theorem compare_comp_eq_compare (γ : Type uγ) [TopologicalSpace γ]
     [T3Space γ] {f : α → γ} (cont_f : Continuous f) :
-    letI := pkg.uniformStruct.toTopologicalSpace
-    letI := pkg'.uniformStruct.toTopologicalSpace
     (∀ a : pkg.space,
       Filter.Tendsto f (Filter.comap pkg.coe (𝓝 a)) (𝓝 ((pkg.isDenseInducing.extend f) a))) →
       pkg.isDenseInducing.extend f ∘ pkg'.compare pkg = pkg'.isDenseInducing.extend f := by

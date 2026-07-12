@@ -71,7 +71,6 @@ noncomputable
 def spanFinBasis (x : π C (· ∈ s)) : LocallyConstant (π C (· ∈ s)) ℤ where
   toFun := fun y ↦ if y = x then 1 else 0
   isLocallyConstant :=
-    haveI : DiscreteTopology (π C (· ∈ s)) := Finite.instDiscreteTopology
     IsLocallyConstant.of_discrete _
 
 theorem spanFinBasis.span : ⊤ ≤ Submodule.span ℤ (Set.range (spanFinBasis C s)) := by

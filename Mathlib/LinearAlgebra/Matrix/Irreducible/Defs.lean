@@ -191,7 +191,6 @@ theorem IsPrimitive.isIrreducible
 /-- Reverse a path in `toQuiver A` to a path in `toQuiver Aᵀ`, swapping endpoints. -/
 def transposePath {i j : n} (p : @Quiver.Path n A.toQuiver i j) :
     @Quiver.Path n Aᵀ.toQuiver j i := by
-  letI : Quiver n := toQuiver A
   induction p with
   | nil =>
     exact (@Quiver.Path.nil _ (toQuiver Aᵀ) _)

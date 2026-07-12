@@ -65,7 +65,6 @@ section Profinite
 `L : FiniteGaloisIntermediateField k K` `L`. -/
 def FiniteGaloisIntermediateField.finGaloisGroup (L : FiniteGaloisIntermediateField k K) :
     FiniteGrp :=
-  letI := AlgEquiv.fintype k L
   FiniteGrp.of Gal(L/k)
 
 /-- For `FiniteGaloisIntermediateField` s `L₁` and `L₂` with `L₂ ≤ L₁`

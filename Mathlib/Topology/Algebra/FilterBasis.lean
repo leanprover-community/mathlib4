@@ -267,7 +267,6 @@ instance (priority := 100) isTopologicalRing {R : Type u} [Ring R] (B : RingFilt
   letI := B'.topology
   have basis := B'.nhds_zero_hasBasis
   have basis' := basis.prod basis
-  haveI := B'.isTopologicalAddGroup
   apply IsTopologicalRing.of_addGroup_of_nhds_zero
   · rw [basis'.tendsto_iff basis]
     suffices ∀ U ∈ B', ∃ V W, (V ∈ B' ∧ W ∈ B') ∧ ∀ a b, a ∈ V → b ∈ W → a * b ∈ U by simpa

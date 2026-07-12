@@ -292,7 +292,6 @@ noncomputable def imageFactorization {F F' : Sheaf J (Type (max v u))} (f : F �
   F := imageMonoFactorization f
   isImage :=
     { lift := fun I => by
-        haveI M := (Sheaf.Hom.mono_iff_presheaf_mono J (Type (max v u)) _).mp I.m_mono
         refine ⟨Subfunctor.homOfLe ?_ ≫ inv (Subfunctor.toRange I.m.1)⟩
         apply Subfunctor.sheafify_le
         · conv_lhs => rw [← I.fac]

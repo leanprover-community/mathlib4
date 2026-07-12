@@ -1119,8 +1119,6 @@ variable [MeasurableSpace α] [MeasurableSpace β] [StandardBorelSpace α] [Stan
 then they are Borel isomorphic. -/
 noncomputable def borelSchroederBernstein {f : α → β} {g : β → α} (fmeas : Measurable f)
     (finj : Function.Injective f) (gmeas : Measurable g) (ginj : Function.Injective g) : α ≃ᵐ β :=
-  letI := upgradeStandardBorel α
-  letI := upgradeStandardBorel β
   (fmeas.measurableEmbedding finj).schroederBernstein (gmeas.measurableEmbedding ginj)
 
 /-- Any uncountable standard Borel space is Borel isomorphic to the Cantor space `ℕ → Bool`. -/

@@ -232,7 +232,6 @@ instance mono_r {A : C} : Mono (r A) := by
   have hyy : y = 0 := by
     erw [← Category.comp_id y, ← Limits.prod.lift_snd (𝟙 A) (𝟙 A), ← Category.assoc, hy,
       Category.assoc, prod.lift_snd, HasZeroMorphisms.comp_zero]
-  haveI : Mono (prod.lift (𝟙 A) (0 : A ⟶ A)) := mono_of_mono_fac (prod.lift_fst _ _)
   apply (cancel_mono (prod.lift (𝟙 A) (0 : A ⟶ A))).1
   rw [← hy, hyy, zero_comp, zero_comp]
 
@@ -245,7 +244,6 @@ instance epi_r {A : C} : Epi (r A) := by
     · intro s
       apply Limits.prod.hom_ext <;> simp
     · intro s m h
-      haveI : Mono (prod.lift (𝟙 A) (0 : A ⟶ A)) := mono_of_mono_fac (prod.lift_fst _ _)
       apply (cancel_mono (prod.lift (𝟙 A) (0 : A ⟶ A))).1
       convert! h
       apply Limits.prod.hom_ext <;> simp

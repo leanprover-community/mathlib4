@@ -83,7 +83,6 @@ def Submodule.inductionOnRankAux (b : Basis ι R M) (P : Submodule R M → Sort*
     (n : ℕ) (N : Submodule R M)
     (rank_le : ∀ {m : ℕ} (v : Fin m → N), LinearIndependent R ((↑) ∘ v : Fin m → M) → m ≤ n) :
     P N := by
-  haveI : DecidableEq M := Classical.decEq M
   have Pbot : P ⊥ := by
     apply ih
     intro N _ x x_mem x_ortho

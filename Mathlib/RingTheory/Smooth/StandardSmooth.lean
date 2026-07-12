@@ -78,7 +78,6 @@ equal to the `S`-rank of `Ω[S/R]`
 (see `IsStandardSmoothOfRelativeDimension.rank_kaehlerDifferential`).
 -/
 noncomputable def IsStandardSmooth.relativeDimension [IsStandardSmooth R S] : ℕ :=
-  letI := ‹IsStandardSmooth R S›.out.choose_spec.choose_spec.choose
   ‹IsStandardSmooth R S›.out.choose_spec.choose_spec.choose_spec.2.some.dimension
 
 /--

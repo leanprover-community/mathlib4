@@ -180,7 +180,6 @@ def colimitCoconeIsColimit : IsColimit <| colimitCocone.{v, u} F where
 instance forget₂Mon_preservesFilteredColimits :
     PreservesFilteredColimits (forget₂ SemiRingCat MonCat.{u}) where
   preserves_filtered_colimits {J hJ1 _} :=
-    letI : Category J := hJ1
     { preservesColimit := fun {F} =>
         preservesColimit_of_preserves_colimit_cocone (colimitCoconeIsColimit.{u, u} F)
           (MonCat.FilteredColimits.colimitCoconeIsColimit (F ⋙ forget₂ SemiRingCat MonCat.{u})) }
@@ -235,7 +234,6 @@ def colimitCoconeIsColimit : IsColimit <| colimitCocone.{v, u} F :=
 instance forget₂SemiRing_preservesFilteredColimits :
     PreservesFilteredColimits (forget₂ CommSemiRingCat SemiRingCat.{u}) where
   preserves_filtered_colimits {J hJ1 _} :=
-    letI : Category J := hJ1
     { preservesColimit := fun {F} =>
         preservesColimit_of_preserves_colimit_cocone (colimitCoconeIsColimit.{u, u} F)
           (SemiRingCat.FilteredColimits.colimitCoconeIsColimit
@@ -292,7 +290,6 @@ def colimitCoconeIsColimit : IsColimit <| colimitCocone.{v, u} F :=
 instance forget₂SemiRing_preservesFilteredColimits :
     PreservesFilteredColimits (forget₂ RingCat SemiRingCat.{u}) where
   preserves_filtered_colimits {J hJ1 _} :=
-    letI : Category J := hJ1
     { preservesColimit := fun {F} =>
         preservesColimit_of_preserves_colimit_cocone (colimitCoconeIsColimit.{u, u} F)
           (SemiRingCat.FilteredColimits.colimitCoconeIsColimit
@@ -355,7 +352,6 @@ def colimitCoconeIsColimit : IsColimit <| colimitCocone.{v, u} F :=
 instance forget₂Ring_preservesFilteredColimits :
     PreservesFilteredColimits (forget₂ CommRingCat RingCat.{u}) where
   preserves_filtered_colimits {J hJ1 _} :=
-    letI : Category J := hJ1
     { preservesColimit := fun {F} =>
         preservesColimit_of_preserves_colimit_cocone (colimitCoconeIsColimit.{u, u} F)
           (RingCat.FilteredColimits.colimitCoconeIsColimit (F ⋙ forget₂ CommRingCat RingCat.{u})) }

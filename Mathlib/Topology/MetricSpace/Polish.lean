@@ -65,7 +65,6 @@ class PolishSpace (α : Type*) [h : TopologicalSpace α] : Prop
 instance [TopologicalSpace α] [SeparableSpace α] [IsCompletelyMetrizableSpace α] :
     PolishSpace α := by
   letI := upgradeIsCompletelyMetrizable α
-  haveI := UniformSpace.secondCountable_of_separable α
   constructor
 
 namespace PolishSpace

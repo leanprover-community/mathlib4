@@ -513,8 +513,6 @@ def radical (I : IdealSheafData X) : IdealSheafData X :=
   mkOfMemSupportIff
   (fun U ↦ (I.ideal U).radical)
   (fun U f ↦
-    letI : Algebra Γ(X, U) Γ(X, X.affineBasicOpen f) :=
-      (X.presheaf.map (homOfLE (X.basicOpen_le f)).op).hom.toAlgebra
     have : IsLocalization.Away f Γ(X, X.basicOpen f) := U.2.isLocalization_of_eq_basicOpen _ _ rfl
     (IsLocalization.map_radical (.powers f) Γ(X, X.basicOpen f) (I.ideal U)).trans
       congr($(I.map_ideal_basicOpen U f).radical))

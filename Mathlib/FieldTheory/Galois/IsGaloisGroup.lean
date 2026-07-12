@@ -490,7 +490,6 @@ variable (N : Subgroup G) [N.Normal] [IsGaloisGroup N F L]
 Galois group for `L/F`, then the quotient group `G ⧸ N` is a Galois group for `F/K`. -/
 instance [Finite G] [IsGaloisGroup G K L] : IsGaloisGroup (G ⧸ N) K F :=
   letI := smulOfNormal G F L N
-  haveI := smulDistribClass_smulOfNormal G F L N
   letI := mulSemiringActionOfSmulDistribClass F L G
   quotient G K F L N
 

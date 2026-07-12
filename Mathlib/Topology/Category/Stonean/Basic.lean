@@ -180,7 +180,6 @@ instance (X : Stonean) : Projective (toProfinite.obj X) where
 instance (X : Stonean) : Projective X where
   factors := by
     intro B C φ f _
-    haveI : ExtremallyDisconnected X.toTop := X.prop
     have hf : Function.Surjective f := by rwa [← Stonean.epi_iff_surjective]
     obtain ⟨f', h⟩ := CompactT2.ExtremallyDisconnected.projective φ.hom.hom.continuous
       f.hom.hom.continuous

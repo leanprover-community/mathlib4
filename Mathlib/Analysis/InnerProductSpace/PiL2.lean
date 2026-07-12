@@ -1192,8 +1192,6 @@ noncomputable def LinearIsometry.extend (L : S →ₗᵢ[𝕜] V) : V →ₗᵢ[
         ((stdOrthonormalBasis 𝕜 LSᗮ).reindex <| finCongr dim_LS_perp).repr.symm
   let L3 := LSᗮ.subtypeₗᵢ.comp E.toLinearIsometry
   -- Project onto S and Sᗮ
-  haveI : CompleteSpace S := FiniteDimensional.complete 𝕜 S
-  haveI : CompleteSpace V := FiniteDimensional.complete 𝕜 V
   let p1 := S.orthogonalProjectionOnto.toLinearMap
   let p2 := Sᗮ.orthogonalProjectionOnto.toLinearMap
   -- Build a linear map from the isometries on S and Sᗮ

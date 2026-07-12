@@ -103,7 +103,6 @@ instance Module.Finite.addMonoidHom [Module.Finite ℤ N] : Module.Finite ℤ (M
   Module.Finite.equiv (addMonoidHomLequivInt ℤ).symm
 
 instance Module.Free.addMonoidHom [Module.Free ℤ N] : Module.Free ℤ (M →+ N) :=
-  letI : Module.Free ℤ (M →ₗ[ℤ] N) := Module.Free.linearMap _ _ _ _
   Module.Free.of_equiv (addMonoidHomLequivInt ℤ).symm
 
 end Integer

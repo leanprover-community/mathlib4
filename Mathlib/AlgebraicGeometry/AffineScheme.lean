@@ -421,7 +421,6 @@ lemma isoSpec_inv_appTop :
 /-- The open immersion `Spec Γ(X, U) ⟶ X` for an affine `U`. -/
 def fromSpec :
     Spec Γ(X, U) ⟶ X :=
-  haveI : IsAffine U := hU
   hU.isoSpec.inv ≫ U.ι
 
 instance isOpenImmersion_fromSpec :

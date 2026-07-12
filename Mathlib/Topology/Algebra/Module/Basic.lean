@@ -338,7 +338,6 @@ instance continuousSMul_quotient [TopologicalSpace R] [IsTopologicalAddGroup M]
 
 instance t3_quotient_of_isClosed [IsTopologicalAddGroup M] [IsClosed (S : Set M)] :
     T3Space (M ⧸ S) :=
-  letI : IsClosed (S.toAddSubgroup : Set M) := ‹_›
   QuotientAddGroup.instT3Space S.toAddSubgroup
 
 end Submodule

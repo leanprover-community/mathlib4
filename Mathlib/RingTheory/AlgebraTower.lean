@@ -52,7 +52,6 @@ def Invertible.algebraTower (r : R) [Invertible (algebraMap R S r)] :
 when coerced to any `R`-algebra. -/
 @[implicit_reducible]
 def invertibleAlgebraCoeNat (n : ℕ) [inv : Invertible (n : R)] : Invertible (n : A) :=
-  haveI : Invertible (algebraMap ℕ R n) := inv
   fast_instance% Invertible.algebraTower ℕ R A n
 
 end Semiring

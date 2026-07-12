@@ -656,7 +656,6 @@ protected def openPartialHomeomorph (e : PartialEquiv M H) (he : e ∈ c.atlas) 
     open_source := by convert! c.open_source' he
     open_target := by convert! c.open_target he
     continuousOn_toFun := by
-      letI : TopologicalSpace M := c.toTopologicalSpace
       rw [continuousOn_open_iff (c.open_source' he)]
       intro s s_open
       rw [inter_comm]
@@ -664,7 +663,6 @@ protected def openPartialHomeomorph (e : PartialEquiv M H) (he : e ∈ c.atlas) 
       simp only [exists_prop, mem_iUnion, mem_singleton_iff]
       exact ⟨e, he, ⟨s, s_open, rfl⟩⟩
     continuousOn_invFun := by
-      letI : TopologicalSpace M := c.toTopologicalSpace
       apply continuousOn_isOpen_of_generateFrom
       intro t ht
       simp only [exists_prop, mem_iUnion, mem_singleton_iff] at ht
