@@ -779,7 +779,7 @@ section smul
 variable (F n Ω) in
 open scoped Classical in
 /-- The map `f ↦ (x ↦ g x • f x)` as a continuous `𝕜`-linear map on Schwartz space,
-where `g` is a function of temperate growth. -/
+where `g` is a C^n function. -/
 def smulLeftCLM (n := ⊤) (g : E → 𝕜) : 𝓓^{n}(Ω, F) →L[𝕜] 𝓓^{n}(Ω, F) :=
   if hg : ContDiff ℝ n g then
     bilinLeftCLM (ContinuousLinearMap.lsmul 𝕜 𝕜).flip hg
