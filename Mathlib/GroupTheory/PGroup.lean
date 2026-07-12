@@ -7,7 +7,7 @@ module
 
 public import Mathlib.GroupTheory.Perm.Cycle.Type
 public import Mathlib.GroupTheory.SpecificGroups.Cyclic
-public import Mathlib.Order.CompactlyGenerated.Basic
+public import Mathlib.Order.Atoms.Finite
 
 /-!
 # p-groups
