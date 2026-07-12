@@ -144,7 +144,7 @@ theorem StrictMono.pow_const (hf : StrictMono f) : ∀ {n : ℕ}, n ≠ 0 → St
     simpa only [pow_succ] using (hf.pow_const n.succ_ne_zero).mul' hf
 
 /-- See also `pow_left_strictMonoOn₀`. -/
-@[to_additive nsmul_right_strictMono /-- See also `pow_left_strictMonoOn₀`. -/]
+@[to_additive nsmul_right_strictMono /-- For `n ≠ 0`, the map `a ↦ n • a` is strictly monotone. -/]
 theorem pow_left_strictMono (hn : n ≠ 0) : StrictMono (· ^ n : M → M) := strictMono_id.pow_const hn
 
 @[to_additive (attr := mono, gcongr) nsmul_lt_nsmul_right]
