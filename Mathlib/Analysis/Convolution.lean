@@ -535,7 +535,7 @@ variable [MeasurableAdd₂ G] [MeasurableNeg G] [SFinite μ] [IsNegInvariant μ]
 
 omit [NormedSpace ℝ F] in
 lemma lintegral_enorm_convolution_integrand_le_eLpNorm_mul_eLpNorm {p q : ENNReal}
-    (hpq : p.HolderConjugate q) (hL : ∀ (x y : G), ‖L (f x) (g y)‖ ≤ ‖f x‖ * ‖g y‖)
+    [hpq : p.HolderConjugate q] (hL : ∀ (x y : G), ‖L (f x) (g y)‖ ≤ ‖f x‖ * ‖g y‖)
     (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ) (x₀ : G) :
     ∫⁻ a, ‖L (f a) (g (x₀ - a))‖ₑ ∂μ ≤ eLpNorm f p μ * eLpNorm g q μ := by
   rw [← eLpNorm_comp_measurePreserving (p := q) hg (μ.measurePreserving_sub_left x₀)]
@@ -547,23 +547,23 @@ omit [NormedSpace ℝ F] in
 /-- If `MemLp f p μ` and `MemLp g q μ`, where `p` and `q` are Hölder conjugates, then the
 convolution of `f` and `g` exists everywhere. -/
 theorem ConvolutionExists.of_memLp_memLp [IsAddRightInvariant μ] {p q : ENNReal}
-    (hpq : p.HolderConjugate q) (hL : ∀ (x y : G), ‖L (f x) (g y)‖ ≤ ‖f x‖ * ‖g y‖)
+    [hpq : p.HolderConjugate q] (hL : ∀ (x y : G), ‖L (f x) (g y)‖ ≤ ‖f x‖ * ‖g y‖)
     (hfp : MemLp f p μ) (hgq : MemLp g q μ) :
     ConvolutionExists f g L μ := by
   refine fun x ↦
     ⟨hfp.aestronglyMeasurable.convolution_integrand_snd L hgq.aestronglyMeasurable x, ?_⟩
-  apply lt_of_le_of_lt (lintegral_enorm_convolution_integrand_le_eLpNorm_mul_eLpNorm L hpq hL
-    hfp.aestronglyMeasurable hgq.aestronglyMeasurable x)
+  apply lt_of_le_of_lt (lintegral_enorm_convolution_integrand_le_eLpNorm_mul_eLpNorm L hL
+    hfp.aestronglyMeasurable hgq.aestronglyMeasurable x (hpq := hpq))
   finiteness
 
 /-- If `p` and `q` are Hölder conjugates, then the convolution of `f` and `g` is bounded everywhere
 by `eLpNorm f p μ * eLpNorm g q μ`. -/
-theorem enorm_convolution_le_eLpNorm_mul_eLpNorm {p q : ENNReal} (hpq : p.HolderConjugate q)
+theorem enorm_convolution_le_eLpNorm_mul_eLpNorm {p q : ENNReal} [hpq : p.HolderConjugate q]
     (hL : ∀ (x y : G), ‖L (f x) (g y)‖ ≤ ‖f x‖ * ‖g y‖) (hf : AEStronglyMeasurable f μ)
     (hg : AEStronglyMeasurable g μ) (x₀ : G) :
     ‖(f ⋆[L, μ] g) x₀‖ₑ ≤ eLpNorm f p μ * eLpNorm g q μ :=
   (enorm_integral_le_lintegral_enorm _).trans <|
-    lintegral_enorm_convolution_integrand_le_eLpNorm_mul_eLpNorm L hpq hL hf hg x₀
+    lintegral_enorm_convolution_integrand_le_eLpNorm_mul_eLpNorm L hL hf hg x₀
 
 end IsAddLeftInvariant
 
