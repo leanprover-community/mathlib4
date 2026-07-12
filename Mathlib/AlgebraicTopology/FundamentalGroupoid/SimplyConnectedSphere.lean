@@ -216,8 +216,8 @@ theorem isPathConnected_compl_singleton (v : S (n + 1)) : IsPathConnected ({v}á¶
   infer_instance
 
 lemma stereographic'_symm_zero (v : S n) : (stereographic' n v).toPartialEquiv.symm 0 = -v := by
+  ext
   simp [stereographic', stereographic, stereoInvFun]
-  rfl
 
 /-- The Euclidean `n`-sphere minus two antipodal points is path connected for `n â‰¥ 2`. -/
 theorem isPathConnected_compl_singleton_inter_neg (v : S (n + 2)) :
