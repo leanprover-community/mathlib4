@@ -27,7 +27,7 @@ open IsLocalRing
 
 variable (R : Type u) [CommRing R]
 
-lemma IsRegularLocalRing.epsilon1_eq_zero [IsRegularLocalRing R] : Epsilon1 R = 0 := by
+lemma IsRegularLocalRing.epsilon1_eq_zero [IsRegularLocalRing R] : epsilon1 R = 0 := by
   let l := (Submodule.FG.finite_generators (maximalIdeal R).fg_of_isNoetherianRing).toFinset.toList
   have eq : Ideal.ofList l = maximalIdeal R := by
     simp [l, Ideal.ofList, Submodule.span_generators]
@@ -38,7 +38,7 @@ lemma IsRegularLocalRing.epsilon1_eq_zero [IsRegularLocalRing R] : Epsilon1 R = 
   have : (koszulAlgebra R).ExactAt 1 :=
     koszulComplex.exactAt_of_isRegular l regl 1 Nat.one_ne_zero
   rw [HomologicalComplex.exactAt_iff_isZero_homology, ModuleCat.isZero_iff_subsingleton] at this
-  simpa [Epsilon1, Module.finrank_eq_zero_iff_of_free]
+  simpa [epsilon1, Module.finrank_eq_zero_iff_of_free]
 
 theorem IsRegularLocalRing.isCompleteIntersectionLocalRing [IsRegularLocalRing R] :
     IsCompleteIntersectionLocalRing R := by
