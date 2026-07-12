@@ -397,7 +397,7 @@ def insertNth (p : RelSeries r) (i : Fin p.length) (a : α)
     · obtain ⟨m, rfl⟩ := m.eq_castSucc_of_ne_last (Fin.ne_last_of_lt hm)
       simp only [Fin.castSucc_lt_castSucc_iff] at hm
       rw [Fin.insertNth_apply_below (by simpa using hm.le), Fin.insertNth_apply_below (by simpa)]
-      simpa using! p.step m
+      simpa [← Fin.castSucc_succ] using p.step m
     · rw [Fin.insertNth_apply_below (by simp)]
       simpa
     · obtain ⟨m, rfl⟩ := m.eq_succ_of_ne_zero (Fin.ne_zero_of_lt hm)
