@@ -12,31 +12,26 @@ public import Mathlib.Tactic.Group
 
 Normalizes expressions in the language of additive groups. The basic idea is to use the simplifier
 to put everything into a sum of integer scalar multiples (`zsmul` which takes an integer and an
-additive group element), then simplify the scalars using the `ring` tactic. The process needs to be
-repeated since `ring` can normalize a scalar to zero, leading to a summand that can be removed
-before collecting scalars again. The simplifier step also uses some extra lemmas to avoid
-some `ring` invocations.
+additive group element), then simplify the scalars using the `ring_nf` tactic. The process needs
+to be repeated since `ring_nf` can normalize a scalar to zero, leading to a summand that can be
+removed before collecting scalars again. The simplifier step also uses some extra lemmas to avoid
+some `ring_nf` invocations.
 
 Note: Unlike the multiplicative `group` tactic which uses `← zpow_neg_one` to convert `a⁻¹` to
 `a ^ (-1 : ℤ)`, the additive version cannot use `← neg_one_zsmul` to convert `-a` to
 `(-1 : ℤ) • a` because `(-1 : ℤ)` is itself `-(1 : ℤ)`, causing simp to loop (since `ℤ` is also
 an `AddGroup`). Instead, we handle negation via `neg_add_rev` to distribute negation over sums,
 `zsmul_neg`/`neg_zsmul` for `n • (-a)`, and custom trick lemmas for combining `-b` with adjacent
-`zsmul` terms. We also use `neg_one_zsmul` in the forward direction to normalize `(-1) • b` to `-b`.
+`zsmul` terms. We also use `neg_one_zsmul` in the forward direction to normalize `(-1) • b`
+to `-b`.
 
 Other than this issue, the strategy parallels Thomas Browning and Patrick Massot's `group`
 tactic.
 
 ## TODO
 
-- Allow `add_group` to take a config which can control the behavior when the goal is unchanged 
-  (`ifUnchanged`), and possibly allow passing other config options to the underlying `simp` and 
-  `ring_nf` tactics.
-- Surface errors from `simp` and `ring_nf` instead of swallowing them in `repeat1`. (This likely 
-  needs a new `repeat_until_no_progress` combinator.)
-- Allow `add_group` to take extra simp lemmas.
-- Allow `add_group` to take a `using h` clause like `simpa`, which normalizes `h` with `add_group` 
-  and then uses it to simplify the goal.
+- Surface non-progress-related errors from `repeat`.
+- Allow `add_group`s `ifUnchanged` behavior to be configurable.
 
 ## Tags
 
@@ -47,7 +42,7 @@ public meta section
 
 namespace Mathlib.Tactic.AddGroup
 
-open Lean Meta Parser Elab Tactic
+open Lean Meta Parser Tactic
 
 -- The next six lemmas are not general purpose lemmas; they are intended for use only by
 -- the `add_group` tactic, and so are prefixed with `_` to keep them out of autocomplete.
@@ -80,9 +75,9 @@ theorem _add_neg_neg_trick {G : Type*} [AddGroup G] (a b : G) :
   rw [add_assoc, _neg_neg_trick]
 
 /--
-`add_group` normalizes expressions in additive groups without assuming commutativity. Unlike 
-`abel`, which does take advantage of commutativity, `add_group` instead only uses the additive 
-group axioms without any information about which group is manipulated. If the goal is an equality, 
+`add_group` normalizes expressions in additive groups without assuming commutativity. Unlike
+`abel`, which does take advantage of commutativity, `add_group` instead only uses the additive
+group axioms without any information about which group is manipulated. If the goal is an equality,
 and after normalization the two sides are equal, `add_group` closes the goal.
 
 `add_group at l1 l2 ...` normalizes at the given locations.
@@ -91,6 +86,39 @@ For additive commutative groups, use the `abel` tactic instead.
 For multiplicative groups, use the `group` tactic instead.
 
 Example:
+```lean
+example {G : Type} [AddGroup G] (a b c d : G) (h : c = (a + 2 • b) + (-(b + b) + (-a)) + d) :
+    a + c + (-d) = a := by
+  add_group at h -- normalizes `h` which becomes `h : c = d`
+  rw [h]         -- the goal is now `a + d + (-d) = a`
+  add_group      -- which is then normalized and closed
+```
+-/
+syntax (name := addGroup) "add_group" (location)? : tactic
+
+macro_rules
+| `(tactic| add_group $[$loc]?) =>
+  `(tactic| first
+    | repeat1 fail_if_no_progress
+        (simp -decide -failIfUnchanged only
+          [addCommutatorElement_def, add_zero, zero_add,
+            neg_add_rev, neg_zero, zsmul_neg, ← neg_zsmul,
+            ← natCast_zsmul, ← mul_zsmul',
+            Int.natCast_add, Int.natCast_mul, neg_neg,
+            zsmul_zero, zero_zsmul, one_zsmul, neg_one_zsmul,
+            ← add_assoc,
+            ← add_zsmul, ← add_one_zsmul, ← one_add_zsmul,
+            Mathlib.Tactic.Group._zsmul_trick,
+            Mathlib.Tactic.Group._zsmul_trick_one,
+            Mathlib.Tactic.Group._zsmul_trick_one',
+            _zsmul_neg_trick, _neg_zsmul_trick, _neg_neg_trick,
+            _add_zsmul_neg_trick, _add_neg_zsmul_trick, _add_neg_neg_trick,
+            add_neg_cancel_right, neg_add_cancel_right,
+            sub_eq_add_neg,
+            tsub_self, sub_self, add_neg_cancel, neg_add_cancel]
+          $[$loc]?
+        <;> ring_nf (ifUnchanged := .silent) $[$loc]?)
+    | fail "`add_group` made no progress")
 
 end Mathlib.Tactic.AddGroup
 
