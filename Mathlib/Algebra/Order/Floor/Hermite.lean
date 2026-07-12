@@ -61,13 +61,6 @@ theorem sum_range_add_ediv (m : ℤ) {n : ℕ} (hn : 0 < n) :
       have : m % n < n := Int.emod_lt_of_pos _ hn
       grind [Int.mul_ediv_add_emod, Nat.card_Ico]
 
-/-- Reduction of a real floor to an integer (Euclidean) division:
-`⌊x + i / n⌋ = (⌊n * x⌋ + i) / n`. -/
-private theorem floor_add_natCast_div (x : α) {n : ℕ} (hn : 0 < n) (i : ℕ) :
-    ⌊x + i / n⌋ = (⌊n * x⌋ + i) / n := by
-  rw [← Int.floor_add_natCast, ← Int.floor_div_natCast]
-  field_simp
-
 /-- **Hermite's identity** for the floor function: for every `x` in a linearly ordered
 floor field and every `n : ℕ`, `∑ i ∈ Finset.range n, ⌊x + i / n⌋ = ⌊n * x⌋`. -/
 theorem sum_floor_add_div (x : α) (n : ℕ) : ∑ i ∈ Finset.range n, ⌊x + i / n⌋ = ⌊n * x⌋ := by
@@ -75,7 +68,8 @@ theorem sum_floor_add_div (x : α) (n : ℕ) : ∑ i ∈ Finset.range n, ⌊x + 
   · simp [hn]
   · calc
       _ = ∑ i ∈ Finset.range n, (⌊(n : α) * x⌋ + (i : ℤ)) / (n : ℤ) :=
-          Finset.sum_congr rfl fun i _ ↦ floor_add_natCast_div x hn i
+          Finset.sum_congr rfl fun i _ ↦
+            (by rw [← Int.floor_add_natCast, ← Int.floor_div_natCast]; field_simp)
       _ = ⌊(n : α) * x⌋ := sum_range_add_ediv _ hn
 
 end Int
