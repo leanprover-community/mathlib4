@@ -45,24 +45,24 @@ public register_option linter.style.haveILetI : Bool := {
   descr := "enable the `haveILetI` linter"
 }
 
-/-- Run the `letI` tactic, with a try this suggestion when the goal is a `Prop`. -/
-def runLetI (c : TSyntax ``letConfig) (d : TSyntax ``letDecl) : TacticM Unit := do
-  evalTactic (← `(tactic| letI $c:letConfig $d:letDecl))
-  if getLinterValue linter.style.haveILetI (← getLinterOptions) then
-    if ← isProp (← getMainTarget) then
-      TryThis.addSuggestion (← getRef) (← `(tactic| let $c:letConfig $d:letDecl))
-
 /-- Run the `haveI` tactic, with a try this suggestion when the goal is a `Prop`. -/
-def runHaveI (c : TSyntax ``letConfig) (d : TSyntax ``letDecl) : TacticM Unit := do
+def runHaveI (tk : Syntax) (c : TSyntax ``letConfig) (d : TSyntax ``letDecl) : TacticM Unit := do
   evalTactic (← `(tactic| haveI $c:letConfig $d:letDecl))
   if getLinterValue linter.style.haveILetI (← getLinterOptions) then
     if ← isProp (← getMainTarget) then
-      TryThis.addSuggestion (← getRef) (← `(tactic| have $c:letConfig $d:letDecl))
+      TryThis.addSuggestion tk "have"
 
 /-- `haveI` behaves like `have`, but inlines the value instead of producing a `have` term. -/
-elab "haveI" c:letConfig d:letDecl : tactic => runHaveI c d
+elab tk:"haveI" c:letConfig d:letDecl : tactic => runHaveI tk c d
+
+/-- Run the `letI` tactic, with a try this suggestion when the goal is a `Prop`. -/
+def runLetI (tk : Syntax) (c : TSyntax ``letConfig) (d : TSyntax ``letDecl) : TacticM Unit := do
+  evalTactic (← `(tactic| letI $c:letConfig $d:letDecl))
+  if getLinterValue linter.style.haveILetI (← getLinterOptions) then
+    if ← isProp (← getMainTarget) then
+      TryThis.addSuggestion tk "let"
 
 /-- `letI` behaves like `let`, but inlines the value instead of producing a `let` term. -/
-elab "letI" c:letConfig d:letDecl : tactic => runLetI c d
+elab tk:"letI" c:letConfig d:letDecl : tactic => runLetI tk c d
 
 end Mathlib.Linter.HaveLetI
