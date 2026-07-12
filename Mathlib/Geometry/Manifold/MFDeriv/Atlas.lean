@@ -267,18 +267,18 @@ variable {e : OpenPartialHomeomorph M H} (he : e ∈ IsManifold.maximalAtlas I 1
 lemma mfderiv_extend_comp_mfderivWithin_extend_symm {y : E} (hy : y ∈ (e.extend I).target) :
     (mfderiv% (e.extend I) ((e.extend I).symm y)) ∘L
       (mfderiv[range I] (e.extend I).symm y) = ContinuousLinearMap.id _ _ := by
-  have U : UniqueMDiffWithinAt 𝓘(𝕜, E) (range I) y := I.uniqueMDiffOn _ (by simp_all)
+  have U : UniqueMDiffAt[range I] y := I.uniqueMDiffOn _ (by simp_all)
   have h'y : (e.extend I).symm y ∈ (e.extend I).source := (e.extend I).map_target hy
   have h''y : (e.extend I).symm y ∈ e.source := by simp_all
   rw [← mfderiv_comp_mfderivWithin]; rotate_left
   · dsimp
-    apply (contMDiff_model.mdifferentiableAt two_ne_zero).comp
+    apply (I.contMDiff.mdifferentiableAt two_ne_zero).comp
     sorry -- e is in the maximal atlas, hence CMDiff 2, thus mdifferentiable
   · --exact mdifferentiableWithinAt_extChartAt_symm hy
     dsimp
     -- u is too strong here... want something weaker. but what?
     apply MDifferentiableWithinAt.comp (I' := I) (u := e.target); swap
-    · exact (contMDiffOn_model_symm (I := I)).mdifferentiableOn two_ne_zero _ (by simp_all)
+    · exact I.contMDiffOn_symm.mdifferentiableOn two_ne_zero _ (by simp_all)
     · sorry -- follows from more atlas work
     · sorry
   · exact U

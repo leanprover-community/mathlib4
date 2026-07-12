@@ -502,6 +502,7 @@ lemma _root_.ContMDiffAt.iff_comp_isImmersionAtOfComplement
   refine ⟨hf.continuousWithinAt, ?_⟩
   exact aux hφ h' ht hxt
 
+-- this should be true without boundary!
 lemma isImmersedPoint (h : IsImmersionAtOfComplement F I J n f x) (hn : n ≠ 0) :
     IsImmersedPoint I J f x := by
   -- The local representative of f in the nice charts at x, as a continuous linear map.
@@ -518,7 +519,7 @@ lemma isImmersedPoint (h : IsImmersionAtOfComplement F I J n f x) (hn : n ≠ 0)
         · convert h.contMDiffAt.mdifferentiableAt hn
           simp [h.domChart.left_inv (mem_domChart_source h)]
         apply ContMDiffAt.mdifferentiableAt ?_ hn
-        have aux2 := contMDiffAt_extend h.domChart_mem_maximalAtlas h.mem_domChart_source
+        have aux2 := h.domChart.contMDiffAt_extend h.domChart_mem_maximalAtlas h.mem_domChart_source
         have aux3 := contMDiffOn_extend_symm h.domChart_mem_maximalAtlas --h.mem_domChart_source
         apply aux3.contMDiffAt
         simp
