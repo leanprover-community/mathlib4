@@ -109,7 +109,7 @@ end non_comm
 
 section quotient
 
-variable {A G W : Type*} [Ring A] [Group G] [AddCommGroup W] [Module A W]
+variable {A G W : Type*} [Ring A] [Monoid G] [AddCommGroup W] [Module A W]
 
 /-- The quotient representation associated to a subrepresentation. -/
 def quotient {ρ : Representation A G W} (ρ' : Subrepresentation ρ) :
