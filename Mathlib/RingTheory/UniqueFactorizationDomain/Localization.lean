@@ -1,6 +1,5 @@
 module
 
-public import Mathlib.RingTheory.Localization.Ideal
-public import Mathlib.RingTheory.UniqueFactorizationDomain.Kaplansky
+public import Mathlib.GroupTheory.MonoidLocalization.UniqueFactorization
 
 deprecated_module (since := "2026-07-12")
