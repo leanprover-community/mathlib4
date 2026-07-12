@@ -396,19 +396,16 @@ def insertNth (p : RelSeries r) (i : Fin p.length) (a : α)
     obtain hm | rfl | hm := lt_trichotomy m i.castSucc
     · obtain ⟨m, rfl⟩ := m.eq_castSucc_of_ne_last (Fin.ne_last_of_lt hm)
       simp only [Fin.castSucc_lt_castSucc_iff] at hm
-      rw [Fin.insertNth_apply_below (by simpa using hm.le),
-        Fin.insertNth_apply_below (by simpa)]
+      rw [Fin.insertNth_apply_below (by simpa using hm.le), Fin.insertNth_apply_below (by simpa)]
       simpa using! p.step m
     · rw [Fin.insertNth_apply_below (by simp)]
       simpa
     · obtain ⟨m, rfl⟩ := m.eq_succ_of_ne_zero (Fin.ne_zero_of_lt hm)
       simp only [Fin.castSucc_lt_succ_iff] at hm
       obtain rfl | hm := hm.eq_or_lt
-      · rw [Fin.castSucc_succ, Fin.insertNth_apply_same,
-          Fin.insertNth_apply_above (by simp)]
+      · rw [Fin.castSucc_succ, Fin.insertNth_apply_same, Fin.insertNth_apply_above (by simp)]
         simpa
-      · rw [Fin.insertNth_apply_above (by simpa),
-          Fin.insertNth_apply_above (by simpa)]
+      · rw [Fin.insertNth_apply_above (by simpa), Fin.insertNth_apply_above (by simpa)]
         simpa using p.step m
 
 /--
