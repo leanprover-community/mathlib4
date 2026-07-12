@@ -131,10 +131,9 @@ theorem exists_loops_homotopic_concat_of_open_cover (hc₁ : ∀ i, IsOpen (c i)
   have hG'_range₀ k : Set.range (G' k.castSucc) ⊆ c (τ k) := by
     unfold G'
     rw [snoc_castSucc]
-    rcases k.eq_zero_or_eq_succ with rfl | ⟨j, rfl⟩
-    · simp only [cons_zero, cast_coe, refl_range, singleton_subset_iff]
-      exact ha _
-    · exact (subset_inter_iff.mp (hG j)).right
+    cases k using Fin.cases with
+    | zero => simpa [cons_zero, cast_coe, refl_range, singleton_subset_iff] using ha _
+    | succ j => exact (subset_inter_iff.mp (hG j)).right
   have hG'_range₁ k : Set.range (G' k.succ) ⊆ c (τ k) := by
     unfold G'
     rcases k.eq_castSucc_or_eq_last with ⟨j, rfl⟩ | rfl
