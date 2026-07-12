@@ -256,7 +256,7 @@ theorem exists_finset_of_mem_adjoin {S : Set E} {x : E} (hx : x ∈ adjoin F S) 
 
 /-- Adjoining `x + algebraMap F E y`, where `y` lies in the base field, yields the same simple
 extension as adjoining `x`. -/
-theorem adjoin_simple_add (x : E) (y : F) : F⟮x + algebraMap F E y⟯ = F⟮x⟯ := by
+theorem adjoin_simple_add_algebraMap (x : E) (y : F) : F⟮x + algebraMap F E y⟯ = F⟮x⟯ := by
   apply le_antisymm
   · rw [adjoin_le_iff, Set.singleton_subset_iff, SetLike.mem_coe]
     exact add_mem (mem_adjoin_simple_self F x) (algebraMap_mem _ y)
@@ -266,7 +266,8 @@ theorem adjoin_simple_add (x : E) (y : F) : F⟮x + algebraMap F E y⟯ = F⟮x�
 
 /-- Adjoining `x * algebraMap F E y`, where `y` is a nonzero element of the base field, yields the
 same simple extension as adjoining `x`. -/
-theorem adjoin_simple_mul (x : E) (y : F) (hy : y ≠ 0) : F⟮x * algebraMap F E y⟯ = F⟮x⟯ := by
+theorem adjoin_simple_mul_algebraMap (x : E) (y : F) (hy : y ≠ 0) :
+    F⟮x * algebraMap F E y⟯ = F⟮x⟯ := by
   apply le_antisymm
   · rw [adjoin_le_iff, Set.singleton_subset_iff, SetLike.mem_coe]
     exact mul_mem (mem_adjoin_simple_self F x) (algebraMap_mem _ y)
