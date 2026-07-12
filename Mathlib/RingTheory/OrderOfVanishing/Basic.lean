@@ -225,7 +225,7 @@ end IsPrincipalIdealRing
 
 variable (R)
 
-open Classical in
+open scoped Classical in
 /--
 Zero-preserving monoid homomorphism from a nontrivial commutative ring `R` to `ℤᵐ⁰`.
 

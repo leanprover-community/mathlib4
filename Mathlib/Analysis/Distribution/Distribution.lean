@@ -259,6 +259,11 @@ lemma lineDerivOp_eq_lineDerivCLM {v : E} {T : 𝓓'(Ω, F)} :
     ∂_{v} T = lineDerivCLM v T :=
   rfl
 
+@[simp]
+theorem lineDerivOp_apply_apply (f : 𝓓'(Ω, F)) (g : 𝓓(Ω, ℝ)) (m : E) :
+    ∂_{m} f g = f (- ∂_{m} g) := by
+  rw [map_neg]; rfl
+
 noncomputable instance : LineDerivAdd E 𝓓'(Ω, F) 𝓓'(Ω, F) where
   lineDerivOp_add v := map_add (lineDerivCLM v)
   lineDerivOp_left_add _ _ T := congr($lineDerivCLM_add T)
