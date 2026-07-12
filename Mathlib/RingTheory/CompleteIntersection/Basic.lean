@@ -247,7 +247,7 @@ lemma epsilon1_eq_of_ringEquiv_aux {R : Type u} [CommRing R] [IsNoetherianRing R
   let eh : h1R' ≅ F.obj h1R :=
     (HomologicalComplex.homologyMapIso e' 1).trans (((koszulAlgebra R).sc 1).mapHomologyIso F)
   let _ := (RingHomClass.toRingHom e).toAlgebra
-  let eh' : ↑h1R' ≃ₗ[R'] TensorProduct R R' ↑h1R := eh.toLinearEquiv
+  let eh' : h1R' ≃ₗ[R'] TensorProduct R R' h1R := eh.toLinearEquiv
   simp only [Epsilon1]
   let I := Module.Free.ChooseBasisIndex (ResidueField R) h1R
   let _ : Fintype I := Module.Free.ChooseBasisIndex.fintype _ _
@@ -569,7 +569,7 @@ lemma AdicCompletion.epsilon1_eq : Epsilon1 (AdicCompletion (maximalIdeal R) R) 
   have : F.PreservesHomology := preservesHomology_of_flat R R' (algebraMap R R') flat
   let eh : h1R' ≅ F.obj h1R :=
     (HomologicalComplex.homologyMapIso e 1).trans (((koszulAlgebra R).sc 1).mapHomologyIso F)
-  let eh' : ↑h1R' ≃ₗ[R'] TensorProduct R R' ↑h1R := eh.toLinearEquiv
+  let eh' : h1R' ≃ₗ[R'] TensorProduct R R' h1R := eh.toLinearEquiv
   simp only [Epsilon1]
   let I := Module.Free.ChooseBasisIndex (ResidueField R) h1R
   let _ : Fintype I := Module.Free.ChooseBasisIndex.fintype _ _
