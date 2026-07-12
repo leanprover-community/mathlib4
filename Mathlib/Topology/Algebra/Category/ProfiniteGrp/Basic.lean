@@ -340,8 +340,7 @@ abbrev limitCone : Limits.Cone F where
       toFun := fun x => x.1 j
       map_one' := rfl
       map_mul' := fun x y => rfl
-      continuous_toFun := by
-        exact (continuous_apply j).comp (continuous_iff_le_induced.mpr fun U a => a) }⟩
+      continuous_toFun := (continuous_apply j).comp (continuous_iff_le_induced.mpr fun U a => a) }⟩
     naturality := fun i j f => by
       simp only [Functor.const_obj_obj, Functor.comp_obj,
         Functor.const_obj_map, Category.id_comp, Functor.comp_map]

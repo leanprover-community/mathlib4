@@ -275,8 +275,7 @@ theorem orthonormal_fourier : Orthonormal ℂ (@fourierLp T _ 2 _) := by
   simp_rw [← fourier_neg, ← fourier_add]
   split_ifs with h
   · simp [h]
-  have hij : j + -i ≠ 0 := by
-    exact sub_ne_zero.mpr (Ne.symm h)
+  have hij : j + -i ≠ 0 := sub_ne_zero.mpr (Ne.symm h)
   convert!
     integral_eq_zero_of_add_right_eq_neg (μ := haarAddCircle)
       (fourier_add_half_inv_index hij hT.elim)

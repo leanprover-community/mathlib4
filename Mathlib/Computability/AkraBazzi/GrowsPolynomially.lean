@@ -621,7 +621,7 @@ lemma growsPolynomially_log : GrowsPolynomially Real.log := by
     rw [one_mul]
     gcongr
     · calc 0 < b * x := by positivity
-         _ ≤ u := by exact hu.1
+         _ ≤ u := hu.1
     · exact hu.2
 
 lemma GrowsPolynomially.of_isTheta {f g : ℝ → ℝ} (hg : GrowsPolynomially g) (hf : f =Θ[atTop] g)

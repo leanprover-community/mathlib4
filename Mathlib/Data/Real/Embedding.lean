@@ -170,8 +170,8 @@ theorem embedRealFun_zero : embedRealFun (0 : M) = 0 := by
     rw [mem_upperBounds]
     suffices (∀ (y : ℚ), y.num • (1 : M) < 0 → y ≤ x) → 0 ≤ x by simpa using this
     intro h
-    have h' (y : ℚ) (hy : y < 0) : y ≤ x := by
-      exact h _ <| (smul_neg_iff_of_neg_left (by simpa using hy)).mpr zero_lt_one
+    have h' (y : ℚ) (hy : y < 0) : y ≤ x :=
+      h _ <| (smul_neg_iff_of_neg_left (by simpa using hy)).mpr zero_lt_one
     contrapose! h'
     obtain ⟨y, hxy, hy⟩ := exists_rat_btwn h'
     exact ⟨y, by simpa using hy, hxy⟩

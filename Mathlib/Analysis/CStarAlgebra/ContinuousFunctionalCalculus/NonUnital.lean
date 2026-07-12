@@ -471,7 +471,7 @@ lemma cfcₙ_comp (g f : R → R) (a : A)
   have := hg.comp hf <| (σₙ R a).mapsTo_image f
   have sp_eq :
       σₙ R (cfcₙHom (show p a from ha) ⟨ContinuousMap.mk _ hf.restrict, hf0⟩) = f '' (σₙ R a) := by
-    rw [cfcₙHom_map_quasispectrum (by exact ha) _]
+    rw [cfcₙHom_map_quasispectrum ha _]
     ext
     simp
   rw [cfcₙ_apply .., cfcₙ_apply f a,

@@ -447,7 +447,7 @@ instance : T2Space (T2Quotient X) := by
   rintro ⟨x⟩ ⟨y⟩ (h : ¬ T2Quotient.mk x = T2Quotient.mk y)
   obtain ⟨s, hs, hsxy⟩ : ∃ s, T2Space (Quotient s) ∧ Quotient.mk s x ≠ Quotient.mk s y := by
     simpa [T2Quotient.mk_eq, Quotient.eq] using h
-  exact separated_by_continuous (continuous_map_sInf (by exact hs)) hsxy
+  exact separated_by_continuous (continuous_map_sInf hs) hsxy
 
 lemma compatible {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] [T2Space Y]
     {f : X → Y} (hf : Continuous f) : letI _ := t2Setoid X
@@ -660,7 +660,7 @@ theorem ContinuousAt.eventuallyEq_nhds_iff_eventuallyEq_nhdsNE [T2Space Y] {x : 
     obtain ⟨a, ha⟩ : {x | f x ≠ g x ∧ f x = g x}.Nonempty := by
       have h₁ := (eventually_nhdsWithin_of_eventually_nhds
         ((hf.ne_iff_eventually_ne hg).1 hCon)).and hfg
-      have h₂ : ∅ ∉ 𝓝[≠] x := by exact empty_notMem (𝓝[≠] x)
+      have h₂ : ∅ ∉ 𝓝[≠] x := empty_notMem (𝓝[≠] x)
       simp_all
     simp at ha
   · exact hfg.filter_mono nhdsWithin_le_nhds

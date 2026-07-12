@@ -110,8 +110,7 @@ lemma mk_right (x : Derivation R A' A') (y : Derivation R A A)
     (h : x ∘ (Algebra.ofId A A') = (Algebra.ofId A A') ∘ y) : (mk x y h).1.2 = y := rfl
 
 lemma apply (x : couple R A A') (a : A) :
-    x.1.1 (Algebra.ofId A A' a) = (Algebra.ofId A A') (x.1.2 a) := by
-  exact congrArg (· a) x.2
+    x.1.1 (Algebra.ofId A A' a) = (Algebra.ofId A A') (x.1.2 a) := congrArg (· a) x.2
 
 end Compatible
 

@@ -92,8 +92,7 @@ protected lemma Connected.mono {H H' : G.Subgraph} (hle : H ≤ H') (hv : H.vert
 
 protected lemma Connected.mono' {H H' : G.Subgraph}
     (hle : ∀ v w, H.Adj v w → H'.Adj v w) (hv : H.verts = H'.verts)
-    (h : H.Connected) : H'.Connected := by
-  exact h.mono ⟨hv.le, hle⟩ hv
+    (h : H.Connected) : H'.Connected := h.mono ⟨hv.le, hle⟩ hv
 
 lemma connected_sup {H K : G.Subgraph}
     (hH : H.Preconnected) (hK : K.Preconnected) (hn : (H ⊓ K).verts.Nonempty) :
@@ -599,7 +598,7 @@ lemma induce_pair_connected_of_adj {u v : V} (huv : G.Adj u v) :
 lemma Subgraph.Connected.induce_verts {H : G.Subgraph} (h : H.Connected) :
     (G.induce H.verts).Connected := by
   rw [connected_induce_iff]
-  exact h.mono le_induce_top_verts (by exact rfl)
+  exact h.mono le_induce_top_verts rfl
 
 lemma Walk.connected_induce_support {u v : V} (p : G.Walk u v) :
     (G.induce {v | v ∈ p.support}).Connected := by

@@ -819,11 +819,9 @@ variable {R : Type*} [Ring R] {R₂ : Type*} [Ring R₂] {R₃ : Type*} [Ring R�
 
 section
 
-protected theorem map_neg (f : M →SL[σ₁₂] M₂) (x : M) : f (-x) = -f x := by
-  exact map_neg f x
+protected theorem map_neg (f : M →SL[σ₁₂] M₂) (x : M) : f (-x) = -f x := map_neg f x
 
-protected theorem map_sub (f : M →SL[σ₁₂] M₂) (x y : M) : f (x - y) = f x - f y := by
-  exact map_sub f x y
+protected theorem map_sub (f : M →SL[σ₁₂] M₂) (x y : M) : f (x - y) = f x - f y := map_sub f x y
 
 @[simp]
 theorem sub_apply' (f g : M →SL[σ₁₂] M₂) (x : M) : ((f : M →ₛₗ[σ₁₂] M₂) - g) x = f x - g x :=

@@ -312,8 +312,8 @@ lemma PreservesLocalization.isLocallyDirected (F : X.AffineZariskiSiteᵒᵖ ⥤
 lemma PreservesLocalization.isOpenImmersion (F : X.AffineZariskiSiteᵒᵖ ⥤ CommRingCat)
     (α : (AffineZariskiSite.toOpensFunctor X).op ⋙ X.presheaf ⟶ F)
     (H : α.Coequifibered) :
-    ∀ ⦃U V⦄ (f : U ⟶ V), IsOpenImmersion ((F.rightOp ⋙ Scheme.Spec).map f) := by
-  exact fun U V ↦ (relativeGluingData H).instIsOpenImmersionMapI₀Functor
+    ∀ ⦃U V⦄ (f : U ⟶ V), IsOpenImmersion ((F.rightOp ⋙ Scheme.Spec).map f) :=
+  fun _ _ ↦ (relativeGluingData H).instIsOpenImmersionMapI₀Functor
 
 lemma opensRange_relativeGluingData_map (F : X.AffineZariskiSiteᵒᵖ ⥤ CommRingCat)
     (α : (AffineZariskiSite.toOpensFunctor X).op ⋙ X.presheaf ⟶ F)

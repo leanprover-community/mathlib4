@@ -550,8 +550,7 @@ lemma monsterData12_apply_row2 (hN : 2 ≤ N) {c₁ c₂ : Fin (N + 1)} (h : c�
     exact h.symm
 
 lemma row1_mem_monsterCells_monsterData12 (hN : 2 ≤ N) (c₁ c₂ : Fin (N + 1)) :
-    (1, c₁) ∈ (monsterData12 hN c₁ c₂).monsterCells := by
-  exact Set.mem_range_self (row1 hN)
+    (1, c₁) ∈ (monsterData12 hN c₁ c₂).monsterCells := Set.mem_range_self (row1 hN)
 
 lemma row2_mem_monsterCells_monsterData12 (hN : 2 ≤ N) {c₁ c₂ : Fin (N + 1)} (h : c₁ ≠ c₂) :
     (⟨2, by lia⟩, c₂) ∈ (monsterData12 hN c₁ c₂).monsterCells := by

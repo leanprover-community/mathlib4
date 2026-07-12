@@ -344,8 +344,8 @@ lemma _root_.AlgebraicGeometry.IsOpenImmersion.of_isLocalization {R S} [CommRing
     (Localization.Away f)).symm.toAlgHom.comp_algebraMap
   rw [← e, CommRingCat.ofHom_comp, Spec.map_comp]
   have H : IsIso (CommRingCat.ofHom (IsLocalization.algEquiv
-    (Submonoid.powers f) S (Localization.Away f)).symm.toAlgHom.toRingHom) := by
-    exact inferInstanceAs (IsIso <| (IsLocalization.algEquiv
+    (Submonoid.powers f) S (Localization.Away f)).symm.toAlgHom.toRingHom) :=
+    inferInstanceAs (IsIso <| (IsLocalization.algEquiv
       (Submonoid.powers f) S (Localization.Away f)).toRingEquiv.toCommRingCatIso.inv)
   simp only [AlgHom.toRingHom_eq_coe, AlgEquiv.toAlgHom_toRingHom] at H ⊢
   infer_instance

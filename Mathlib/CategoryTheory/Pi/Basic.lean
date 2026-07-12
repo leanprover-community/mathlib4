@@ -347,7 +347,7 @@ def Pi.optionEquivalence (C' : Option J → Type u₁) [∀ i, Category.{v₁} (
   unitIso := NatIso.pi' (fun i => match i with
     | none => Iso.refl _
     | some _ => Iso.refl _)
-  counitIso := by exact Iso.refl _
+  counitIso := Iso.refl _
 
 namespace Equivalence
 

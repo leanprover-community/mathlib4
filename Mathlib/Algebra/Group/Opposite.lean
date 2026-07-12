@@ -43,20 +43,20 @@ instance instAddCommSemigroup [AddCommSemigroup α] : AddCommSemigroup αᵐᵒ�
   unop_injective.addCommSemigroup _ fun _ _ => rfl
 
 instance instAddZeroClass [AddZeroClass α] : AddZeroClass αᵐᵒᵖ :=
-  unop_injective.addZeroClass _ (by exact rfl) fun _ _ => rfl
+  unop_injective.addZeroClass _ rfl fun _ _ => rfl
 
 instance instAddMonoid [AddMonoid α] : AddMonoid αᵐᵒᵖ :=
-  unop_injective.addMonoid _ (by exact rfl) (fun _ _ => rfl) fun _ _ => rfl
+  unop_injective.addMonoid _ rfl (fun _ _ => rfl) fun _ _ => rfl
 
 instance instAddCommMonoid [AddCommMonoid α] : AddCommMonoid αᵐᵒᵖ :=
   unop_injective.addCommMonoid _ rfl (fun _ _ => rfl) fun _ _ => rfl
 
 instance instSubNegMonoid [SubNegMonoid α] : SubNegMonoid αᵐᵒᵖ :=
-  unop_injective.subNegMonoid _ (by exact rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
+  unop_injective.subNegMonoid _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ _ => rfl
 
 instance instAddGroup [AddGroup α] : AddGroup αᵐᵒᵖ :=
-  unop_injective.addGroup _ (by exact rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
+  unop_injective.addGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
   (fun _ _ => rfl) fun _ _ => rfl
 
 instance instAddCommGroup [AddCommGroup α] : AddCommGroup αᵐᵒᵖ :=
@@ -262,7 +262,7 @@ instance instCommSemigroup [CommSemigroup α] : CommSemigroup αᵃᵒᵖ :=
   unop_injective.commSemigroup _ fun _ _ => rfl
 
 instance instMulOneClass [MulOneClass α] : MulOneClass αᵃᵒᵖ :=
-  unop_injective.mulOneClass _ (by exact rfl) fun _ _ => rfl
+  unop_injective.mulOneClass _ rfl fun _ _ => rfl
 
 instance pow {β} [Pow α β] : Pow αᵃᵒᵖ β where pow a b := op (unop a ^ b)
 
@@ -275,21 +275,21 @@ theorem unop_pow {β} [Pow α β] (a : αᵃᵒᵖ) (b : β) : unop (a ^ b) = un
   rfl
 
 instance instMonoid [Monoid α] : Monoid αᵃᵒᵖ :=
-  unop_injective.monoid _ (by exact rfl) (fun _ _ => rfl) fun _ _ => rfl
+  unop_injective.monoid _ rfl (fun _ _ => rfl) fun _ _ => rfl
 
 instance instCommMonoid [CommMonoid α] : CommMonoid αᵃᵒᵖ :=
-  unop_injective.commMonoid _ (by exact rfl) (fun _ _ => rfl) fun _ _ => rfl
+  unop_injective.commMonoid _ rfl (fun _ _ => rfl) fun _ _ => rfl
 
 instance instDivInvMonoid [DivInvMonoid α] : DivInvMonoid αᵃᵒᵖ :=
-  unop_injective.divInvMonoid _ (by exact rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
+  unop_injective.divInvMonoid _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ _ => rfl
 
 instance instGroup [Group α] : Group αᵃᵒᵖ :=
-  unop_injective.group _ (by exact rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
+  unop_injective.group _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ _ => rfl
 
 instance instCommGroup [CommGroup α] : CommGroup αᵃᵒᵖ :=
-  unop_injective.commGroup _ (by exact rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
+  unop_injective.commGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ _ => rfl
 
 @[to_additive]

@@ -213,8 +213,7 @@ abbrev iCycles (n : ℕ) : cycles A n ⟶ (inhomogeneousChains A).X n :=
 variable {A} in
 theorem iCycles_mk {m n : ℕ} (h : (ComplexShape.down ℕ).next m = n) (f : (Fin m → G) →₀ A)
     (hf : (inhomogeneousChains A).d m n f = 0) :
-    iCycles A m (cyclesMk m n h f hf) = f := by
-  exact (inhomogeneousChains A).i_cyclesMk f n h hf
+    iCycles A m (cyclesMk m n h f hf) = f := (inhomogeneousChains A).i_cyclesMk f n h hf
 
 /-- This is the map from `i`-chains to `j`-cycles induced by the differential in the complex of
 inhomogeneous chains. -/

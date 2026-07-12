@@ -357,7 +357,7 @@ See also `Submodule.mapIic`. -/
 def MapSubtype.orderIso : Submodule R p ≃o { p' : Submodule R M // p' ≤ p } where
   toFun p' := ⟨map p.subtype p', map_subtype_le p _⟩
   invFun q := comap p.subtype q
-  left_inv p' := comap_map_eq_of_injective (by exact Subtype.val_injective) p'
+  left_inv p' := comap_map_eq_of_injective Subtype.val_injective p'
   right_inv := fun ⟨q, hq⟩ => Subtype.ext <| by simp [map_comap_subtype p, inf_of_le_right hq]
   map_rel_iff' {p₁ p₂} := Subtype.coe_le_coe.symm.trans <| by
     dsimp

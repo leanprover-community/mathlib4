@@ -627,8 +627,7 @@ theorem adjoin_one : F⟮(1 : E)⟯ = ⊥ :=
   adjoin_simple_eq_bot_iff.mpr (one_mem ⊥)
 
 @[simp]
-theorem adjoin_intCast (n : ℤ) : F⟮(n : E)⟯ = ⊥ := by
-  exact adjoin_simple_eq_bot_iff.mpr (intCast_mem ⊥ n)
+theorem adjoin_intCast (n : ℤ) : F⟮(n : E)⟯ = ⊥ := adjoin_simple_eq_bot_iff.mpr (intCast_mem ⊥ n)
 
 @[simp]
 theorem adjoin_natCast (n : ℕ) : F⟮(n : E)⟯ = ⊥ :=

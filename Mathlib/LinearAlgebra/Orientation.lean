@@ -106,7 +106,7 @@ end Reindex
 instance (priority := 100) IsEmpty.oriented [IsEmpty ι] : Module.Oriented R M ι where
   positiveOrientation :=
     rayOfNeZero R (AlternatingMap.constLinearEquivOfIsEmpty 1) <|
-      AlternatingMap.constLinearEquivOfIsEmpty.injective.ne (by exact one_ne_zero)
+      AlternatingMap.constLinearEquivOfIsEmpty.injective.ne one_ne_zero
 
 @[simp]
 theorem Orientation.map_positiveOrientation_of_isEmpty [IsEmpty ι] (f : M ≃ₗ[R] N) :

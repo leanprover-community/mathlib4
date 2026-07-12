@@ -96,8 +96,7 @@ image of `mulI` and `orthogonal`. The proof that this is the symplectic compleme
 `mem_symplComp_iff`. -/
 noncomputable abbrev symplComp (S : ClosedSubmodule ℝ H) := (S.mulI)ᗮ
 
-lemma mem_iff (S : ClosedSubmodule ℝ H) {x : H} : x ∈ S ↔ x ∈ S.toSubmodule.carrier := by
-  exact Eq.to_iff rfl
+lemma mem_iff (S : ClosedSubmodule ℝ H) {x : H} : x ∈ S ↔ x ∈ S.toSubmodule.carrier := Eq.to_iff rfl
 
 lemma mem_symplComp_iff {x : H} {S : ClosedSubmodule ℝ H} :
     x ∈ S.symplComp ↔ ∀ y ∈ S, ⟪y, x⟫.im = 0 := by

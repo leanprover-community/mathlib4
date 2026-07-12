@@ -297,8 +297,8 @@ lemma integral_zero_to_arcsin_min :
     intro θ ⟨hθ₁, hθ₂⟩
     have : 0 ≤ (d / l).arcsin := Real.arcsin_nonneg.mpr (div_nonneg hd.le hl.le)
     simp only [min_eq_left this, max_eq_right this] at hθ₁ hθ₂
-    have hθ_mem : θ ∈ Set.Ioc (-(π / 2)) (π / 2) := by
-      exact ⟨lt_of_lt_of_le (neg_lt_zero.mpr (div_pos Real.pi_pos two_pos)) hθ₁,
+    have hθ_mem : θ ∈ Set.Ioc (-(π / 2)) (π / 2) :=
+      ⟨lt_of_lt_of_le (neg_lt_zero.mpr (div_pos Real.pi_pos two_pos)) hθ₁,
         le_trans hθ₂ (d / l).arcsin_mem_Icc.right⟩
     simp_rw [min_eq_right ((le_div_iff₀ hl).mp ((Real.le_arcsin_iff_sin_le' hθ_mem).mp hθ₂))]
   rw [intervalIntegral.integral_congr this, intervalIntegral.integral_mul_const, integral_sin,
@@ -318,8 +318,8 @@ lemma integral_arcsin_to_pi_div_two_min (h : d ≤ l) :
       simp only [hθ_ne_pi_div_two, Real.sin_pi_div_two, one_mul, min_eq_left h]
     simp only [min_eq_left (d / l).arcsin_le_pi_div_two,
       max_eq_right (d / l).arcsin_le_pi_div_two] at hθ₁ hθ₂
-    have hθ_mem : θ ∈ Set.Ico (-(π / 2)) (π / 2) := by
-      exact ⟨le_trans (Real.arcsin_mem_Icc (d / l)).left hθ₁, lt_of_le_of_ne hθ₂ hθ_ne_pi_div_two⟩
+    have hθ_mem : θ ∈ Set.Ico (-(π / 2)) (π / 2) :=
+      ⟨le_trans (Real.arcsin_mem_Icc (d / l)).left hθ₁, lt_of_le_of_ne hθ₂ hθ_ne_pi_div_two⟩
     simp_rw [min_eq_left ((div_le_iff₀ hl).mp ((Real.arcsin_le_iff_le_sin' hθ_mem).mp hθ₁))]
   rw [intervalIntegral.integral_congr this, intervalIntegral.integral_const, smul_eq_mul]
 

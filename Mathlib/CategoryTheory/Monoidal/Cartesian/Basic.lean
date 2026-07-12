@@ -765,7 +765,7 @@ lemma preservesLimit_pair_of_isIso_prodComparison (A B : C)
   apply preservesLimit_of_preserves_limit_cone (tensorProductIsBinaryProduct A B)
   refine IsLimit.equivOfNatIsoOfIso (pairComp A B F) _
     ((BinaryFan.mk (fst (F.obj A) (F.obj B)) (snd _ _)).extend (prodComparison F A B))
-      (BinaryFan.ext (by exact Iso.refl _) ?_ ?_) |>.invFun
+      (BinaryFan.ext (Iso.refl _) ?_ ?_) |>.invFun
       (IsLimit.extendIso _ (tensorProductIsBinaryProduct (F.obj A) (F.obj B)))
   · dsimp only [BinaryFan.fst]
     simp [pairComp]

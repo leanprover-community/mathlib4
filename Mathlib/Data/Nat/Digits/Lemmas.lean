@@ -536,6 +536,6 @@ The formula for the sum of the sum of the digits in base `b` over the natural in
 theorem Nat.sum_sum_digits_eq {b : ℕ} (hb : 1 < b) (l : ℕ) :
     ∑ x ∈ Finset.range (b ^ l), (b.digits x).sum = l * b ^ (l - 1) * b.choose 2 := by
   rw [← List.sum_fixedLengthDigits_sum hb]
-  refine (Finset.sum_nbij (ofDigits b) (by exact (bijOn_ofDigits' hb l).1)
+  refine (Finset.sum_nbij (ofDigits b) (bijOn_ofDigits' hb l).1
     (bijOn_ofDigits' hb l).2.1 (bijOn_ofDigits' hb l).2.2 fun L hL ↦ ?_).symm
   rw [sum_digits_ofDigits_eq_sum hb ((List.mem_fixedLengthDigits_iff hb).mp hL)]

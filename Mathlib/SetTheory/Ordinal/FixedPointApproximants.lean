@@ -211,8 +211,7 @@ termination_by a
 -- by definitional equality
 unseal gfpApprox lfpApprox
 
-theorem gfpApprox_zero : gfpApprox f x 0 = x := by
-  exact lfpApprox_zero f.dual
+theorem gfpApprox_zero : gfpApprox f x 0 = x := lfpApprox_zero f.dual
 
 theorem gfpApprox_anti_right : Antitone (gfpApprox f x) :=
   lfpApprox_mono_right f.dual

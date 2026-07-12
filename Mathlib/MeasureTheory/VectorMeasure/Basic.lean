@@ -264,7 +264,7 @@ def smul (r : R) (v : VectorMeasure α M) : VectorMeasure α M where
   measureOf' := r • ⇑v
   empty' := by rw [Pi.smul_apply, empty, smul_zero]
   not_measurable' _ hi := by rw [Pi.smul_apply, v.not_measurable hi, smul_zero]
-  m_iUnion' _ hf₁ hf₂ := by exact HasSum.const_smul _ (v.m_iUnion hf₁ hf₂)
+  m_iUnion' _ hf₁ hf₂ := HasSum.const_smul _ (v.m_iUnion hf₁ hf₂)
 
 instance instSMul : SMul R (VectorMeasure α M) :=
   ⟨smul⟩

@@ -99,8 +99,8 @@ lemma reflective_reflection (hSB : LinearMap.IsSymm B) {y : M}
     exact hy.1
   · intro z
     have hz : Module.reflection (coroot_apply_self B hx)
-        (Module.reflection (coroot_apply_self B hx) z) = z := by
-      exact (LinearEquiv.eq_symm_apply (Module.reflection (coroot_apply_self B hx))).mp rfl
+        (Module.reflection (coroot_apply_self B hx) z) = z :=
+      (LinearEquiv.eq_symm_apply (Module.reflection (coroot_apply_self B hx))).mp rfl
     rw [← hz, isOrthogonal_reflection B hx hSB,
       isOrthogonal_reflection B hx hSB]
     exact hy.2 _

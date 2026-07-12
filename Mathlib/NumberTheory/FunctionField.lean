@@ -217,8 +217,7 @@ theorem FiniteDimensional.adjoin_algebraMap_X :
   .of_restrictScalars_finite F⟮(X : F⟮X⟯)⟯ _ _
 
 theorem Algebra.IsAlgebraic.adjoin_algebraMap_X :
-    Algebra.IsAlgebraic F⟮algebraMap _ K (X : F⟮X⟯)⟯ K := by
-  exact .tower_top (K := F⟮(X : F⟮X⟯)⟯) _
+    Algebra.IsAlgebraic F⟮algebraMap _ K (X : F⟮X⟯)⟯ K := .tower_top (K := F⟮(X : F⟮X⟯)⟯) _
 
 variable {y : K}
 

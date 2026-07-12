@@ -1031,7 +1031,7 @@ theorem pullbackArrows_comm {X Y : C} (f : Y ⟶ X) (R : Presieve X) [R.HasPullb
   · rintro ⟨_, h, k, ⟨W, g, hg⟩, rfl⟩
     have := R.hasPullback f hg
     rw [Sieve.pullback_apply, assoc, ← pullback.condition, ← assoc]
-    exact Sieve.downward_closed _ (by exact Sieve.le_generate R W _ hg) (h ≫ pullback.fst g f)
+    exact Sieve.downward_closed _ (Sieve.le_generate R W _ hg) (h ≫ pullback.fst g f)
   · rintro ⟨W, h, k, hk, comm⟩
     have := R.hasPullback f hk
     exact ⟨_, _, _, Presieve.pullbackArrows.mk _ _ hk, pullback.lift_snd _ _ comm⟩

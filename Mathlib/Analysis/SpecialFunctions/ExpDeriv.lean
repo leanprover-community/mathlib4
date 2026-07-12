@@ -54,8 +54,7 @@ theorem analyticAt_cexp : AnalyticAt ℂ exp z :=
 
 /-- The function `Complex.exp` is complex analytic. -/
 lemma analyticWithinAt_cexp {s : Set ℂ} {x : ℂ} :
-    AnalyticWithinAt ℂ Complex.exp s x := by
-  exact analyticAt_cexp.analyticWithinAt
+    AnalyticWithinAt ℂ Complex.exp s x := analyticAt_cexp.analyticWithinAt
 
 /-- `exp ∘ f` is analytic -/
 @[fun_prop]

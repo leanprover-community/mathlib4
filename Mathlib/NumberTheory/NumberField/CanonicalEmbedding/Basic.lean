@@ -217,8 +217,7 @@ protected theorem finrank [NumberField K] : finrank ℝ (mixedSpace K) = finrank
     Fintype.card_subtype_compl, Nat.add_sub_of_le (Fintype.card_subtype_le _)]
 
 theorem _root_.NumberField.mixedEmbedding_injective [NumberField K] :
-    Function.Injective (NumberField.mixedEmbedding K) := by
-  exact RingHom.injective _
+    Function.Injective (NumberField.mixedEmbedding K) := RingHom.injective _
 
 section Measure
 

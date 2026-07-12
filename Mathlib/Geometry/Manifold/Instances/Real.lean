@@ -196,8 +196,7 @@ def modelWithCornersEuclideanHalfSpace (n : ℕ) [NeZero n] :
     rw [range_euclideanHalfSpace, interior_halfSpace]
     exact ⟨toLp 2 fun i ↦ 1, by simp⟩
   continuous_toFun := continuous_subtype_val
-  continuous_invFun := by
-    exact ((PiLp.continuous_toLp 2 _).comp <| (PiLp.continuous_ofLp 2 _).update 0 <|
+  continuous_invFun := ((PiLp.continuous_toLp 2 _).comp <| (PiLp.continuous_ofLp 2 _).update 0 <|
       (PiLp.continuous_apply 2 _ 0).max continuous_const).subtype_mk _
 
 set_option backward.isDefEq.respectTransparency false in

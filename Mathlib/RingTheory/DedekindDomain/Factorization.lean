@@ -347,8 +347,7 @@ theorem count_well_defined {I : FractionalIdeal R⁰ K} (hI : I ≠ 0) {a : R}
       Injective.eq_iff (IsLocalization.injective K (le_refl R⁰))]
     rw [ne_eq, Ideal.zero_eq_bot, Ideal.span_singleton_eq_bot] at h_a_ne_zero
     exact h_a_ne_zero
-  have hv : Irreducible (Associates.mk v.asIdeal) := by
-    exact Associates.irreducible_mk.mpr v.irreducible
+  have hv : Irreducible (Associates.mk v.asIdeal) := Associates.irreducible_mk.mpr v.irreducible
   rw [h_a₁J₁, ← div_spanSingleton, ← div_spanSingleton, div_eq_div_iff h_a₁' h_a',
     ← coeIdeal_span_singleton, ← coeIdeal_span_singleton, ← coeIdeal_mul, ← coeIdeal_mul] at h_aJ
   rw [count, dif_neg hI, sub_eq_sub_iff_add_eq_add, ← natCast_add, ← natCast_add, natCast_inj,

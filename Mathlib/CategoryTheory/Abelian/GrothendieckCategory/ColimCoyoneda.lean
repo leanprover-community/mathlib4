@@ -89,8 +89,8 @@ lemma hf (j : Under j₀) :
 set_option backward.defeqAttrib.useBackward true in
 variable {y} in
 include hc hy in
-lemma epi_f [IsFiltered J] : Epi (f y) := by
-  exact (colim.exact_mapShortComplex
+lemma epi_f [IsFiltered J] : Epi (f y) :=
+    (colim.exact_mapShortComplex
     ((ShortComplex.mk _ _ (kernel.condition (g y))).exact_of_f_is_kernel
       (kernelIsKernel (g y)))
     (colimit.isColimit _) (isColimitConstCocone _ _)

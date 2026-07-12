@@ -439,7 +439,7 @@ instance : Module.Finite ℤ (Additive (𝓞 K)ˣ) := by
   refine Submodule.fg_of_fg_map_of_fg_inf_ker
     (MonoidHom.toAdditive (QuotientGroup.mk' (torsion K))).toIntLinearMap ?_ ?_
   · rw [Submodule.map_top, LinearMap.range_eq_top.mpr
-      (by exact QuotientGroup.mk'_surjective (torsion K)), ← Module.finite_def]
+      (QuotientGroup.mk'_surjective (torsion K)), ← Module.finite_def]
     infer_instance
   · rw [inf_of_le_right le_top, AddMonoidHom.coe_toIntLinearMap_ker, MonoidHom.coe_toAdditive_ker,
       QuotientGroup.ker_mk', Submodule.fg_iff_addSubgroup_fg,

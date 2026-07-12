@@ -202,8 +202,8 @@ def esymmPart {n : ℕ} (μ : n.Partition) : MvPolynomial σ R := (μ.parts.map 
 
 /-- The `n`th elementary symmetric `MvPolynomial σ R` is obtained by evaluating the
 `n`th elementary symmetric at the `Multiset` of the monomials -/
-theorem esymm_eq_multiset_esymm : esymm σ R = (univ.val.map X).esymm := by
-  exact funext fun n => (esymm_map_val X _ n).symm
+theorem esymm_eq_multiset_esymm : esymm σ R = (univ.val.map X).esymm :=
+  funext fun n => (esymm_map_val X _ n).symm
 
 theorem aeval_esymm_eq_multiset_esymm [Algebra R S] (n : ℕ) (f : σ → S) :
     aeval f (esymm σ R n) = (univ.val.map f).esymm n := by

@@ -603,8 +603,8 @@ abbrev Lattice.toLinearOrder (α : Type u) [Lattice α] [DecidableEq α]
   toDecidableEq := ‹_›
   toDecidableLT := ‹_›
   le_total := total_of (· ≤ ·)
-  max_def := by exact congr_fun₂ sup_eq_maxDefault
-  min_def := by exact congr_fun₂ inf_eq_minDefault
+  max_def := congr_fun₂ sup_eq_maxDefault
+  min_def := congr_fun₂ inf_eq_minDefault
 
 -- see Note [lower instance priority]
 instance (priority := 100) {α : Type u} [LinearOrder α] : DistribLattice α where

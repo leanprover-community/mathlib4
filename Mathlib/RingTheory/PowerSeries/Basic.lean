@@ -643,7 +643,7 @@ lemma coeff_pow (k n : ℕ) (φ : R⟦X⟧) :
 /-- First coefficient of the product of two power series. -/
 lemma coeff_one_mul (φ ψ : R⟦X⟧) : coeff 1 (φ * ψ) =
     coeff 1 φ * constantCoeff ψ + coeff 1 ψ * constantCoeff φ := by
-  have : Finset.antidiagonal 1 = {(0, 1), (1, 0)} := by exact rfl
+  have : Finset.antidiagonal 1 = {(0, 1), (1, 0)} := rfl
   rw [coeff_mul, this, Finset.sum_insert, Finset.sum_singleton, coeff_zero_eq_constantCoeff,
     mul_comm, add_comm]
   simp
@@ -656,8 +656,8 @@ lemma coeff_one_pow (n : ℕ) (φ : R⟦X⟧) :
   induction n with
   | zero => lia
   | succ n' ih =>
-      have h₁ (m : ℕ) : φ ^ (m + 1) = φ ^ m * φ := by exact rfl
-      have h₂ : Finset.antidiagonal 1 = {(0, 1), (1, 0)} := by exact rfl
+      have h₁ (m : ℕ) : φ ^ (m + 1) = φ ^ m * φ := rfl
+      have h₂ : Finset.antidiagonal 1 = {(0, 1), (1, 0)} := rfl
       rw [h₁, coeff_mul, h₂, Finset.sum_insert, Finset.sum_singleton]
       · simp only [coeff_zero_eq_constantCoeff, map_pow, Nat.cast_add, Nat.cast_one,
           add_tsub_cancel_right]
