@@ -408,9 +408,7 @@ theorem tendsto_norm_inv_mul_self_nhdsNE (a : E) :
 variable (E)
 
 /-- A version of `comap_norm_nhdsGT_zero` for a multiplicative normed group. -/
-@[to_additive comap_norm_nhdsGT_zero
-/-- The pullback of the punctured neighborhood of `0` in `ℝ` under the norm, in a normed additive
-group, is the punctured neighborhood of `0`. -/]
+@[to_additive comap_norm_nhdsGT_zero]
 lemma comap_norm_nhdsGT_zero' : comap norm (𝓝[>] 0) = 𝓝[≠] (1 : E) := by
   simp [nhdsWithin, comap_norm_nhds_one, Set.preimage, Set.compl_def]
 

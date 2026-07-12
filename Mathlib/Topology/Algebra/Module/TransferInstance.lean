@@ -68,9 +68,7 @@ variable [Semiring R]
 
 /-- Given a continuous additive equivalence `e : α ≃ₜ+ β`, if `β` is a topological additive group,
 then so is `α`. -/
-@[to_additive
-/-- Given a continuous additive equivalence `e : α ≃ₜ+ β`, if `β` is a topological additive group,
-then so is `α`. -/]
+@[to_additive]
 lemma ContinuousMulEquiv.isTopologicalGroup
     [TopologicalSpace β] [Group β] [IsTopologicalGroup β] [TopologicalSpace α] [Group α]
     (e : α ≃ₜ* β) : IsTopologicalGroup α where

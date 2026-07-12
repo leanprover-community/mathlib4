@@ -256,12 +256,11 @@ instance Prod.seminormedGroup : SeminormedGroup (E × F) where
 
 /-- Multiplicative version of `Prod.nnnorm_def`.
 Earlier, this name was used for the additive version. -/
-@[to_additive Prod.nnnorm_def /-- Additive version of `Prod.nnnorm_def'`.
-Earlier, this name was used for the multiplicative version. -/]
+@[to_additive Prod.nnnorm_def]
 lemma Prod.nnnorm_def' (x : E × F) : ‖x‖₊ = max ‖x.1‖₊ ‖x.2‖₊ := rfl
 
 /-- Multiplicative version of `Prod.nnnorm_mk`. -/
-@[to_additive (attr := simp) Prod.nnnorm_mk /-- Additive version of `Prod.nnnorm_mk'`. -/]
+@[to_additive (attr := simp) Prod.nnnorm_mk]
 lemma Prod.nnnorm_mk' (x : E) (y : F) : ‖(x, y)‖₊ = max ‖x‖₊ ‖y‖₊ := rfl
 
 end SeminormedGroup
