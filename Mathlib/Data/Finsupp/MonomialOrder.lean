@@ -77,6 +77,10 @@ structure MonomialOrder (σ : Type*) where
 attribute [instance] MonomialOrder.addCommMonoidSyn MonomialOrder.linearOrderSyn
   MonomialOrder.isOrderedCancelAddMonoid_syn MonomialOrder.wellFoundedLT_syn
 
+namespace MonomialOrder
+
+variable {σ : Type*} (m : MonomialOrder σ)
+
 @[deprecated (since := "2026-07-07")] alias acm := MonomialOrder.addCommMonoidSyn
 
 @[deprecated (since := "2026-07-07")] alias lo := MonomialOrder.linearOrderSyn
@@ -84,10 +88,6 @@ attribute [instance] MonomialOrder.addCommMonoidSyn MonomialOrder.linearOrderSyn
 @[deprecated (since := "2026-07-07")] alias iocam := MonomialOrder.isOrderedCancelAddMonoid_syn
 
 @[deprecated (since := "2026-07-07")] alias wf := MonomialOrder.wellFoundedLT_syn
-
-namespace MonomialOrder
-
-variable {σ : Type*} (m : MonomialOrder σ)
 
 lemma le_add_right (a b : σ →₀ ℕ) :
     m.toSyn a ≤ m.toSyn a + m.toSyn b := by
