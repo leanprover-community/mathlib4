@@ -34,15 +34,10 @@ noncomputable def Algebra.Generators.HomOfComm [Algebra S T] (f : ιS → ιT)
   val s := MvPolynomial.X (f s)
   aeval_val s := by simpa using congr_fun comm s
 
-lemma Algebra.Generators.homOfComm_toAlgHom [Algebra S T] [IsScalarTower R S T]
-    (f : ιS → ιT) (comm : GT.val ∘ f = algebraMap S T ∘ GS.val) :
-    (GS.HomOfComm GT f comm).toExtensionHom.toAlgHom = MvPolynomial.rename f := by
-  rfl
-
 lemma Algebra.Generators.homOfComm_toExtensionHom_toAlgHom [Algebra S T] [IsScalarTower R S T]
     (f : ιS → ιT) (comm : GT.val ∘ f = algebraMap S T ∘ GS.val) :
     (GS.HomOfComm GT f comm).toExtensionHom.toAlgHom = MvPolynomial.rename f :=
-  Algebra.Generators.homOfComm_toAlgHom GS GT f comm
+  (MvPolynomial.rename_eq_aeval _).symm
 
 variable (R S T) in
 /-- AlgebraMap as hom of generators. -/

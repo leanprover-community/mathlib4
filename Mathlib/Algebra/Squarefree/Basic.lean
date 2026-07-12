@@ -12,6 +12,7 @@ public import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicity
 
 /-!
 # Squarefree elements of monoids
+
 An element of a monoid is squarefree when it is not divisible by any squares
 except the squares of units.
 
