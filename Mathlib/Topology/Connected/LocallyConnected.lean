@@ -168,9 +168,10 @@ instance Prod.locallyConnectedSpace [TopologicalSpace β] [LocallyConnectedSpace
   rw [locallyConnectedSpace_iff_connected_subsets]
   rintro ⟨x, y⟩ U hU
   obtain ⟨u, hu, v, hv, huv⟩ := mem_nhds_prod_iff.mp hU
-  obtain ⟨u', hu', hu'c, hu'u⟩ := locallyConnectedSpace_iff_connected_subsets.mp ‹_› x u hu
-  obtain ⟨v', hv', hv'c, hv'v⟩ := locallyConnectedSpace_iff_connected_subsets.mp ‹_› y v hv
-  exact ⟨u' ×ˢ v', prod_mem_nhds hu' hv', hu'c.prod hv'c, (prod_mono hu'u hv'v).trans huv⟩
+  exact ⟨connectedComponentIn u x ×ˢ connectedComponentIn v y,
+    prod_mem_nhds (connectedComponentIn_mem_nhds hu) (connectedComponentIn_mem_nhds hv),
+    isPreconnected_connectedComponentIn.prod isPreconnected_connectedComponentIn,
+    (prod_mono (connectedComponentIn_subset _ _) (connectedComponentIn_subset _ _)).trans huv⟩
 
 /-- A finite product of locally connected spaces is locally connected. -/
 instance Pi.locallyConnectedSpace_of_finite [Finite ι] [∀ i, TopologicalSpace (X i)]
@@ -178,11 +179,11 @@ instance Pi.locallyConnectedSpace_of_finite [Finite ι] [∀ i, TopologicalSpace
   rw [locallyConnectedSpace_iff_connected_subsets]
   intro x U hU
   rw [nhds_pi, Filter.mem_pi] at hU
-  obtain ⟨I, hI, t, ht, htU⟩ := hU
-  choose V hV hVc hVt using fun i ↦
-    locallyConnectedSpace_iff_connected_subsets.mp inferInstance (x i) (t i) (ht i)
-  exact ⟨univ.pi V, set_pi_mem_nhds finite_univ fun i _ ↦ hV i, isPreconnected_univ_pi hVc,
-    fun f hf ↦ htU fun i hiI ↦ hVt i (hf i trivial)⟩
+  obtain ⟨J, hJ, t, ht, htU⟩ := hU
+  exact ⟨univ.pi fun i ↦ connectedComponentIn (t i) (x i),
+    set_pi_mem_nhds finite_univ fun i _ ↦ connectedComponentIn_mem_nhds (ht i),
+    isPreconnected_univ_pi fun i ↦ isPreconnected_connectedComponentIn,
+    fun f hf ↦ htU fun i hiJ ↦ connectedComponentIn_subset _ _ (hf i trivial)⟩
 
 /-- A product of connected, locally connected spaces is locally connected. Note that an arbitrary
 product of locally connected spaces need not be locally connected, so the connectedness assumption
@@ -194,17 +195,16 @@ instance Pi.locallyConnectedSpace [∀ i, TopologicalSpace (X i)]
   rw [locallyConnectedSpace_iff_connected_subsets]
   intro x U hU
   rw [nhds_pi, Filter.mem_pi] at hU
-  obtain ⟨I, hI, t, ht, htU⟩ := hU
-  choose V hV hVc hVt using fun i ↦
-    locallyConnectedSpace_iff_connected_subsets.mp inferInstance (x i) (t i) (ht i)
+  obtain ⟨J, hJ, t, ht, htU⟩ := hU
   classical
-  refine ⟨I.pi V, set_pi_mem_nhds hI fun i _ ↦ hV i, ?_,
-    fun f hf ↦ htU fun i hiI ↦ hVt i (hf i hiI)⟩
+  refine ⟨J.pi fun i ↦ connectedComponentIn (t i) (x i),
+    set_pi_mem_nhds hJ fun i _ ↦ connectedComponentIn_mem_nhds (ht i), ?_,
+    fun f hf ↦ htU fun i hiJ ↦ connectedComponentIn_subset _ _ (hf i hiJ)⟩
   rw [← univ_pi_piecewise_univ]
   refine isPreconnected_univ_pi fun i ↦ ?_
-  by_cases hi : i ∈ I
+  by_cases hi : i ∈ J
   · rw [piecewise_eq_of_mem _ _ _ hi]
-    exact hVc i
+    exact isPreconnected_connectedComponentIn
   · rw [piecewise_eq_of_notMem _ _ _ hi]
     exact isPreconnected_univ
 
