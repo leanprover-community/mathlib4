@@ -88,7 +88,9 @@ lemma concat_trans_trans_symm {n : ℕ} (p q : Fin (n + 1) → X)
       (hn (p ∘ castSucc) (q ∘ castSucc) (fun k ↦ F (k.castSucc)) (fun k ↦ G (k.castSucc)))
     simp at this
     apply Quotient.exact
-    simp [concat_succ, this]
+    simp only [concat_succ, Function.comp_apply, castSucc_zero, succ_last,
+      Nat.succ_eq_add_one, Quotient.mk_trans, this, Quotient.trans_assoc,
+      Quotient.mk_symm]
     grind
 
 /-- Technical lemma to prove homotopy in `exists_loops_homotopic_concat_of_open_cover`. -/
