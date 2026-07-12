@@ -400,11 +400,19 @@ variable (K L : Type*) [Field K] [Field L] [Algebra K L] {B : Type*} [CommRing B
 /-- The decomposition field of `P` in `L/K`: the subfield of `L` fixed by the decomposition
 subgroup of `P`. -/
 def decompositionField : IntermediateField K L :=
-    fixedField (stabilizer Gal(L/K) P)
+  fixedField (stabilizer Gal(L/K) P)
 
 /-- The inertia field of `P` in `L/K`: the subfield of `L` fixed by the inertia subgroup of `P`. -/
 def inertiaField : IntermediateField K L :=
-    fixedField (inertia Gal(L/K) P)
+  fixedField (inertia Gal(L/K) P)
+
+theorem decompositionField_def :
+    P.decompositionField K L = fixedField (stabilizer Gal(L/K) P) :=
+  rfl
+
+theorem inertiaField_def :
+    P.inertiaField K L = fixedField (inertia Gal(L/K) P) :=
+  rfl
 
 theorem decompositionField_le_inertiaField :
     P.decompositionField K L ≤ P.inertiaField K L :=
@@ -421,15 +429,23 @@ theorem fixingSubgroup_inertiaField [FiniteDimensional K L] :
     (P.inertiaField K L).fixingSubgroup = inertia Gal(L/K) P :=
   fixingSubgroup_fixedField _
 
+instance [IsGalois K L] :
+    IsGaloisGroup (stabilizer Gal(L/K) P) (P.decompositionField K L) L :=
+  IsGaloisGroup.subgroup_iff.mpr rfl
+
+instance [IsGalois K L] :
+    IsGaloisGroup (inertia Gal(L/K) P) (P.inertiaField K L) L :=
+  IsGaloisGroup.subgroup_iff.mpr rfl
+
 theorem eq_decompositionField_iff [FiniteDimensional K L] [IsGalois K L]
     {D : IntermediateField K L} :
     D = P.decompositionField K L ↔ D.fixingSubgroup = stabilizer Gal(L/K) P := by
-  rw [decompositionField, eq_comm, IsGalois.fixedField_eq_iff_fixingSubgroup_eq]
+  rw [decompositionField_def, eq_comm, IsGalois.fixedField_eq_iff_fixingSubgroup_eq]
 
 theorem eq_inertiaField_iff [FiniteDimensional K L] [IsGalois K L]
     {E : IntermediateField K L} :
     E = P.inertiaField K L ↔ E.fixingSubgroup = inertia Gal(L/K) P := by
-  rw [inertiaField, eq_comm, IsGalois.fixedField_eq_iff_fixingSubgroup_eq]
+  rw [inertiaField_def, eq_comm, IsGalois.fixedField_eq_iff_fixingSubgroup_eq]
 
 theorem le_decompositionField_iff {F : IntermediateField K L} :
     F ≤ P.decompositionField K L ↔ stabilizer Gal(L/K) P ≤ F.fixingSubgroup :=
@@ -454,7 +470,7 @@ theorem inertiaField_le_iff {F : IntermediateField K L} [FiniteDimensional K L] 
     ← IntermediateField.fixingSubgroup, ← IntermediateField.fixingSubgroup,
     fixingSubgroup_inertiaField]
 
-variable (F : IntermediateField K L) [Algebra B L] [IsFractionRing B L]
+variable (F : IntermediateField K L) [Algebra B L] [FaithfulSMul B L]
   [SMulDistribClass Gal(L/K) B L] [MulSemiringAction Gal(L/F) B] [SMulDistribClass Gal(L/F) B L]
 
 /-- Let `F` be an intermediate field of `L/K`. The decomposition field of `P` for `L/F` is the
@@ -473,7 +489,7 @@ theorem decompositionField_restrictScalars [FiniteDimensional K L] [IsGalois K L
     simp [algebraMap.smul', fixingSubgroupEquiv_symm_apply_apply]
   have h : IsGaloisGroup (stabilizer Gal(L/F) P) ↑(F ⊔ P.decompositionField K L) L :=
     IsGaloisGroup.of_mulEquiv e fun _ _ ↦ rfl
-  rw [decompositionField, fixedField,
+  rw [decompositionField_def, fixedField,
     (IsGaloisGroup.subgroup_iff (F := extendScalars le_sup_left)).mp h,
     extendScalars_restrictScalars]
 
@@ -493,7 +509,8 @@ theorem inertiaField_restrictScalars [FiniteDimensional K L] [IsGalois K L] :
     simp [algebraMap.smul', fixingSubgroupEquiv_symm_apply_apply]
   have h : IsGaloisGroup (inertia Gal(L/F) P) ↑(F ⊔ P.inertiaField K L) L :=
     IsGaloisGroup.of_mulEquiv e fun _ _ ↦ rfl
-  rw [inertiaField, fixedField, (IsGaloisGroup.subgroup_iff (F := extendScalars le_sup_left)).mp h,
+  rw [inertiaField_def, fixedField,
+    (IsGaloisGroup.subgroup_iff (F := extendScalars le_sup_left)).mp h,
     extendScalars_restrictScalars]
 
 end IntermediateField
