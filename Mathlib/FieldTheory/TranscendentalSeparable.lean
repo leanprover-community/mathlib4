@@ -275,7 +275,8 @@ lemma tensorProduct_isReduced_of_isTranscendentalBasis_of_isDomain [IsDomain S]
   let kx := Algebra.adjoin k (Set.range f)
   let e : TensorProduct k kx S ≃ₐ[k] MvPolynomial ι S :=
     (Algebra.TensorProduct.congr (AlgebraicIndependent.aevalEquiv isT.1).symm AlgEquiv.refl).trans
-      MvPolynomial.scalarRTensorAlgEquiv
+      ((Algebra.TensorProduct.comm k _ _).trans
+        (MvPolynomial.scalarRTensorAlgEquiv.restrictScalars k))
   have isd1 : IsDomain (TensorProduct k kx S) := e.injective.isDomain
   let nz := nonZeroDivisors kx
   have : IsLocalization nz K' := inferInstanceAs (IsFractionRing _ K')
