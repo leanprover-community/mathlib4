@@ -538,10 +538,13 @@ lemma lintegral_enorm_convolution_integrand_le_eLpNorm_mul_eLpNorm {p q : ENNRea
     [hpq : p.HolderConjugate q] (hL : ∀ (x y : G), ‖L (f x) (g y)‖ ≤ ‖f x‖ * ‖g y‖)
     (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ) (x₀ : G) :
     ∫⁻ a, ‖L (f a) (g (x₀ - a))‖ₑ ∂μ ≤ eLpNorm f p μ * eLpNorm g q μ := by
-  rw [← eLpNorm_comp_measurePreserving (p := q) hg (μ.measurePreserving_sub_left x₀)]
-  simpa [eLpNorm, eLpNorm'] using eLpNorm_le_eLpNorm_mul_eLpNorm'_of_norm hf
-    (hg.comp_quasiMeasurePreserving (quasiMeasurePreserving_sub_left μ x₀)) (L ·) 1
-    (by simpa using Filter.Eventually.of_forall (fun x ↦ hL x (x₀ - x))) (hpqr := hpq)
+  rw [← eLpNorm_comp_measurePreserving hg (μ.measurePreserving_sub_left x₀)]
+  have hg' : AEStronglyMeasurable (g ∘ fun h ↦ x₀ - h) μ :=
+    (hg.comp_quasiMeasurePreserving (quasiMeasurePreserving_sub_left μ x₀))
+  have hL' : ∀ᵐ (x : G) ∂μ, ‖L (f x) (g (x₀ - x))‖ ≤ (1 : NNReal) * ‖f x‖ * ‖g (x₀ - x)‖ := by
+    simpa using Eventually.of_forall (fun x ↦ hL x (x₀ - x))
+  simpa [eLpNorm, eLpNorm']
+    using eLpNorm_le_eLpNorm_mul_eLpNorm'_of_norm hf hg' (L ·) 1 hL' (hpqr := hpq)
 
 omit [NormedSpace ℝ F] in
 /-- If `MemLp f p μ` and `MemLp g q μ`, where `p` and `q` are Hölder conjugates, then the
