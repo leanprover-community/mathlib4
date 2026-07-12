@@ -95,7 +95,7 @@ lemma concat_trans_trans_symm {n : ℕ} (p q : Fin (n + 1) → X)
 lemma cast_trans_trans_homotopic_of_homotopic_cast {x x₀ x₁ : X} {h₀ : x₀ = x} {h₁ : x₁ = x}
     {p : Path x₀ x₁} {q : Path x x} (h : p.Homotopic (q.cast h₀ h₁)) :
     ((((Path.refl x).cast rfl h₀).trans p).trans ((Path.refl x).cast h₁ rfl)).Homotopic q := by
-  cases h₀; cases h₁
+  subst_vars
   exact trans (trans ⟨Homotopy.transRefl _⟩ ⟨Homotopy.reflTrans _⟩) h
 
 /-- If a topological space `X` can be covered by open sets `c i` whose pairwise intersections
