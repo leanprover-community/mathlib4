@@ -248,6 +248,25 @@ lemma test_case_11 :
   simp only [norm_det]
   ring
 
+example (a b c d : R) :
+    Matrix.det (Matrix.ofArray (m := 2) (n := 2) #[a, b, c, d] rfl) =
+      a * d - b * c := by
+  simp only [norm_matrix_det]
+  ring
+
+example :
+  Matrix.det (R := ℤ) (
+    Matrix.ofArray (m := 8) (n := 8)
+    #[ 2,  0, -1,  0,  0,  0,  0,  0,
+       0,  2,  0, -1,  0,  0,  0,  0,
+      -1,  0,  2, -1,  0,  0,  0,  0,
+       0, -1, -1,  2, -1,  0,  0,  0,
+       0,  0,  0, -1,  2, -1,  0,  0,
+       0,  0,  0,  0, -1,  2, -1,  0,
+       0,  0,  0,  0,  0, -1,  2, -1,
+       0,  0,  0,  0,  0,  0, -1,  2] rfl) = 1 := by
+  simp only [norm_matrix_det]
+
 end BirdDet
 
 end Matrix
