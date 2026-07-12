@@ -82,6 +82,7 @@ theorem inf_sSup_eq {α : Type*} [Order.Frame α] {s : Set α} {a : α} :
     a ⊓ sSup s = ⨆ b ∈ s, a ⊓ b :=
   gc_inf_himp.l_sSup
 
+set_option linter.translate.warnInvalid false in
 /-- A coframe, aka complete Brouwer algebra or complete co-Heyting algebra, is a complete lattice
 whose `⊔` distributes over `⨅`. -/
 @[to_dual]
@@ -520,6 +521,7 @@ theorem iSup_sdiff_eq {f : ι → α} : (⨆ x, f x) \ a = ⨆ x, f x \ a :=
 theorem sdiff_iSup_eq {f : ι → α} : a \ ⨅ x, f x = ⨆ x, a \ f x :=
   eq_of_forall_ge_iff fun _ => by simp [iInf_sup_eq]
 
+@[to_dual existing]
 theorem iInf_sup_iInf {ι ι' : Type*} {f : ι → α} {g : ι' → α} :
     ((⨅ i, f i) ⊔ ⨅ i, g i) = ⨅ i : ι × ι', f i.1 ⊔ g i.2 :=
   @iSup_inf_iSup αᵒᵈ _ _ _ _ _
@@ -657,19 +659,44 @@ theorem compl_sInf' : (sInf s)ᶜ = sSup (Compl.compl '' s) :=
 theorem compl_sSup' : (sSup s)ᶜ = sInf (Compl.compl '' s) :=
   compl_sSup.trans sInf_image.symm
 
-open scoped symmDiff in
+section symmDiff
+
+open scoped symmDiff
+
 /-- The symmetric difference of two `iSup`s is at most the `iSup` of the symmetric differences. -/
 theorem iSup_symmDiff_iSup_le {g : ι → α} : (⨆ i, f i) ∆ (⨆ i, g i) ≤ ⨆ i, ((f i) ∆ (g i)) := by
   simp_rw [symmDiff_le_iff, ← iSup_sup_eq]
   exact ⟨iSup_mono fun i ↦ sup_comm (g i) _ ▸ le_symmDiff_sup_right ..,
     iSup_mono fun i ↦ sup_comm (f i) _ ▸ symmDiff_comm (f i) _ ▸ le_symmDiff_sup_right ..⟩
 
-open scoped symmDiff in
+theorem iSup_symmDiff_le [Nonempty ι] {a : α} : (⨆ i, f i) ∆ a ≤ ⨆ i, f i ∆ a := by
+  simpa [iSup_const] using iSup_symmDiff_iSup_le (g := fun _ : ι ↦ a)
+
+theorem symmDiff_iSup_le [Nonempty ι] {a : α} : a ∆ (⨆ i, f i) ≤ ⨆ i, a ∆ f i := by
+  simpa [symmDiff_comm] using iSup_symmDiff_le (a := a)
+
+theorem sSup_symmDiff_le (hs : s.Nonempty) {a : α} : sSup s ∆ a ≤ sSup ((· ∆ a) '' s) := by
+  rw [sSup_image', sSup_eq_iSup']
+  have : Nonempty s := Set.nonempty_coe_sort.mpr hs
+  exact iSup_symmDiff_le
+
+theorem symmDiff_sSup_le (hs : s.Nonempty) {a : α} : a ∆ sSup s ≤ sSup ((a ∆ ·) '' s) := by
+  simpa [symmDiff_comm] using sSup_symmDiff_le (a := a) hs
+
+theorem sSup_symmDiff_sSup_le {s t : Set α} (hs : s.Nonempty) (ht : t.Nonempty) :
+    sSup s ∆ sSup t ≤ sSup (image2 (· ∆ ·) s t) := by
+  rw [sSup_image2]
+  calc
+  _ ≤ ⨆ a ∈ s, a ∆ sSup t := by simpa [sSup_image] using sSup_symmDiff_le hs
+  _ ≤ _ := iSup_mono fun a ↦ iSup_mono fun _ ↦ by simpa [sSup_image] using symmDiff_sSup_le ht
+
 /-- A `biSup` version of `iSup_symmDiff_iSup_le`. -/
 theorem biSup_symmDiff_biSup_le {p : ι → Prop} {f g : (i : ι) → p i → α} :
     (⨆ i, ⨆ (h : p i), f i h) ∆ (⨆ i, ⨆ (h : p i), g i h) ≤
     ⨆ i, ⨆ (h : p i), ((f i h) ∆ (g i h)) :=
   le_trans iSup_symmDiff_iSup_le <| iSup_mono fun _ ↦ iSup_symmDiff_iSup_le
+
+end symmDiff
 
 end CompleteBooleanAlgebra
 

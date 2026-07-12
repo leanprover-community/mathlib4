@@ -102,7 +102,8 @@ end restrict
 
 section stabilizer
 
-open Pointwise MulAction Ideal
+open scoped Pointwise
+open MulAction Ideal
 
 variable (p : ℕ) [hp : Fact (Nat.Prime p)] (P : Ideal (𝓞 K)) [P.IsMaximal]
   [P.LiesOver (Ideal.span {(p : ℤ)})] (hn : p.Coprime n)
@@ -121,7 +122,7 @@ theorem mem_zpowers_galEquivZMod_of_mem_stabilizer {σ : Gal(K/ℚ)} (hσ : σ �
   have h₀ : IsPrimitiveRoot (Ideal.Quotient.mk P hζ.toInteger) n := by
     refine hζ.toInteger_isPrimitiveRoot.idealQuotient_mk
       (by simpa using IsMaximal.ne_top inferInstance) ?_
-    rw [Ideal.absNorm_eq_pow_inertiaDeg' _ hp.out]
+    rw [← pow_inertiaDeg p]
     exact Nat.Coprime.pow_left _ hn
   have h₁ := IsFractionRing.stabilizerHom_apply_apply_mk Gal(K/ℚ) (Ideal.span {(p : ℤ)}) P
       (ℤ ⧸ span {(p : ℤ)}) (𝓞 K ⧸ P) ⟨σ, hσ⟩ hζ.toInteger
@@ -145,10 +146,9 @@ theorem galEquivZMod_stabilizer :
     rw [Fintype.card_eq_nat_card, Fintype.card_eq_nat_card, SetLike.coe_sort_coe, Nat.card_zpowers,
       MulEquiv.mapSubgroup_apply, Subgroup.coe_map]
     change _ ≤ Nat.card ((galEquivZMod n K).toEquiv '' _)
-    rw [Nat.card_image_equiv, SetLike.coe_sort_coe, Ideal.card_stabilizer_eq (span {(p : ℤ)})
-      (by simp [hp.out.ne_zero]), inertiaDegIn_eq_of_not_dvd p K hn,
+    rw [Nat.card_image_equiv, SetLike.coe_sort_coe, Ideal.card_stabilizer_eq (span {(p : ℤ)}),
       ramificationIdxIn_eq_of_not_dvd p K hn, one_mul, ← orderOf_injective _ Units.coeHom_injective,
-      Units.coeHom_apply, ZMod.coe_unitOfCoprime]
+      Units.coeHom_apply, ZMod.coe_unitOfCoprime, inertiaDegIn_eq_of_not_dvd p K hn]
 
 end stabilizer
 
@@ -179,7 +179,12 @@ theorem mem_subgroupGalEquivSubgroupChar_symm_iff (σ : Gal(K/ℚ))
     MulEquiv.coe_mapSubgroup, Subgroup.mem_map_equiv, MulEquiv.symm_symm,
     mem_subgroupOrderIsoSubgroupMulChar_symm_iff]
 
-variable [IsGalois ℚ K]
+theorem card_subgroupGalEquivSubgroupChar [IsMulCommutative Gal(K/ℚ)] (H : Subgroup Gal(K/ℚ)) :
+    Nat.card (subgroupGalEquivSubgroupChar n K R H).ofDual = Nat.card (Gal(K/ℚ) ⧸ H) := by
+  rw [subgroupGalEquivSubgroupChar, OrderIso.trans_apply, card_subgroupOrderIsoSubgroupMulChar]
+  exact Nat.card_congr (QuotientGroup.congr _ _ (galEquivZMod n K) rfl).symm.toEquiv
+
+variable [IsAbelianGalois ℚ K]
 
 /--
 The bijection between the intermediate fields of `ℚ(ζₙ)/ℚ` and the subgroups of the group
@@ -189,6 +194,16 @@ noncomputable def intermediateFieldEquivSubgroupChar :
     IntermediateField ℚ K ≃o Subgroup (DirichletCharacter R n) :=
   IsGalois.intermediateFieldEquivSubgroup.trans <|
       (subgroupGalEquivSubgroupChar n K R).dual.trans (OrderIso.dualDual _).symm
+
+/-- The cardinality of the subgroup of Dirichlet characters of level `n` associated to an
+intermediate field `F` of `ℚ(ζₙ)/ℚ` equals the degree `[F : ℚ]`. -/
+theorem card_intermediateFieldEquivSubgroupChar (F : IntermediateField ℚ K) :
+    Nat.card (intermediateFieldEquivSubgroupChar n K R F) = Module.finrank ℚ F := by
+  unfold intermediateFieldEquivSubgroupChar
+  rw [OrderIso.trans_apply, OrderIso.trans_apply, OrderIso.dualDual_symm_apply,
+    IsGalois.intermediateFieldEquivSubgroup_apply, OrderIso.dual_apply, OrderDual.ofDual_toDual,
+    OrderDual.ofDual_toDual, card_subgroupGalEquivSubgroupChar, finrank_eq_fixingSubgroup_index,
+    ← Subgroup.index_eq_card]
 
 @[simp]
 theorem mem_intermediateFieldEquivSubgroupChar_iff (F : IntermediateField ℚ K)
