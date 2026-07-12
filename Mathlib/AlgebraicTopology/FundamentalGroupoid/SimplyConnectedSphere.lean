@@ -157,12 +157,7 @@ theorem exists_loops_homotopic_concat_of_open_cover (hc₁ : ∀ i, IsOpen (c i)
     rfl
   · intro k
     use τ k
-    simp_rw [trans_range, symm_range]
-    apply union_subset
-    · apply union_subset (hG'_range₀ k)
-      rw [range_subpath]
-      exact hτ k
-    · exact hG'_range₁ k
+    grind [trans_range, symm_range, union_subset, range_subpath]
 
 end Path.Homotopic
 
