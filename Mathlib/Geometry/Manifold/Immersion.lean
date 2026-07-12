@@ -896,6 +896,18 @@ lemma of_opens [IsManifold I n M] (s : TopologicalSpace.Opens M) :
   use PUnit, by infer_instance, by infer_instance
   exact IsImmersionOfComplement.of_opens s
 
+/-- Given `C^n` manifolds `M` and `N` over the same model `I`,
+`Sum.inl : M → M ⊕ N` is a `C^n` immersion -/
+lemma sumInl {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M']
+    [IsManifold I n M] [IsManifold I n M'] : IsImmersion I I n (@Sum.inl M M') :=
+  IsImmersionOfComplement.sumInl.isImmersion
+
+/-- Given `C^n` manifolds `M` and `N` over the same model `I`,
+`Sum.inr : N → M ⊕ N` is a `C^n` immersion -/
+lemma sumInr {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M']
+    [IsManifold I n M] [IsManifold I n M'] : IsImmersion I I n (@Sum.inr M M') :=
+  IsImmersionOfComplement.sumInr.isImmersion
+
 @[deprecated (since := "2025-12-16")] alias ofOpen := of_opens
 
 /-- Every `ModelWithCorners 𝕜 E H` is an immersion when viewed as a map `H → E`. -/

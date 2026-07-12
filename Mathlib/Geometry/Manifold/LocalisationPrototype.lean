@@ -1,0 +1,347 @@
+module
+
+public import Mathlib.Geometry.Manifold.MFDeriv.NormedSpace
+public import Mathlib.Geometry.Manifold.Diffeomorph
+public import Mathlib.Geometry.Manifold.OpenSmoothEmbedding
+public import Mathlib.Topology.Sets.OpenCover
+import Mathlib.Tactic.ClickSuggestions
+
+-- Experiments: localisation arguments in differential geometry
+-- in Utrecht (June 11), Christian Merten, Edward van de Meent, Michael Rothgang
+-- version support manifolds with boundary: seems promising,
+-- requires further clean-up and exploration
+
+@[expose] section
+
+open NormedSpace ContinuousLinearMap
+open scoped Manifold
+
+set_option warn.sorry false
+set_option linter.style.longLine false
+
+inductive ImBad {𝕜 : Type} [NontriviallyNormedField 𝕜] :
+  ∀ {E : Type} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+    {H : Type} [TopologicalSpace H]
+    (M : Type) [TopologicalSpace M] [ChartedSpace H M]
+    (I : ModelWithCorners 𝕜 E H)
+    {F : Type} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+    {H' : Type} [TopologicalSpace H']
+    (N : Type) [TopologicalSpace N] [ChartedSpace H' N]
+    (J : ModelWithCorners 𝕜 F H'), Prop where
+  | refl {E : Type} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+      {H : Type} [TopologicalSpace H]
+      {M : Type} [TopologicalSpace M] [ChartedSpace H M]
+      {I : ModelWithCorners 𝕜 E H} : ImBad M I M I
+
+lemma _root_.Set.restrict_surjective {α β : Type*} (s : Set α) [Nonempty β] :
+    (s.restrict (π := fun _ ↦ β)).Surjective := by
+  sorry
+
+variable {𝕜 : Type} [NontriviallyNormedField 𝕜]
+  {E : Type} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type} [TopologicalSpace H]
+  {I : ModelWithCorners 𝕜 E H} {M : Type} [TopologicalSpace M] [ChartedSpace H M]
+  {E' : Type} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type} [TopologicalSpace H']
+  {J : ModelWithCorners 𝕜 E' H'} {N : Type} [TopologicalSpace N] [ChartedSpace H' N]
+  {F : Type} [NormedAddCommGroup F] [NormedSpace 𝕜 F] {H'' : Type} [TopologicalSpace H'']
+  {I₀ : ModelWithCorners 𝕜 F H''} {M₀ : Type} [TopologicalSpace M₀] [ChartedSpace H'' M₀]
+
+@[ext]
+structure NiceSubset (I : ModelWithCorners 𝕜 E H) : Type _  where
+  carrier : Set E
+  isOpen_preimage_carrier : IsOpen <| I ⁻¹' carrier
+  foo : carrier ⊆ Set.range I
+
+-- should we have a predicate ModelWithCorners.isNiceSubset, with the two properties of nice subsets
+-- (preimage under I is open and is contained in the range of I)?
+
+/-- A subset of `E` is *nice* with respect to a model with corners on `(E, H)`
+if it is an open subset of its range. -/
+def ModelWithCorners.IsNiceSubset (s : Set E) : Prop := IsOpen (I ⁻¹' s) ∧ s ⊆ Set.range I
+
+lemma NiceSubset.IsNiceSubset (s : NiceSubset I) : I.IsNiceSubset s.carrier := ⟨s.2, s.3⟩
+
+-- should IsOpenMap be namespaced? was this just missed when `IsEmbedding` got namespaced?
+
+open TopologicalSpace Set
+
+-- copied from #41045; review and merge that one!
+/-- A partial homeomorphism whose source is all of `X` defines an embedding of `X` into
+`Y`. The converse is also true; see `IsEmbedding.toPartialHomeomorph`. -/
+theorem PartialHomeomorph.isEmbedding {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
+    {e : PartialHomeomorph X Y} (h : e.source = Set.univ) :
+    Topology.IsEmbedding e :=
+  sorry
+
+-- TODO: redefine ModelWithCorners instead; this is a temporary solution only
+-- not necessary, so only keeping for reference
+@[simps toPartialEquiv]
+def ModelWithCorners.toPartialHomeomorph (I : ModelWithCorners 𝕜 E H) : PartialHomeomorph H E where
+  toPartialEquiv := I.toPartialEquiv
+  continuousOn_toFun := I.continuous_toFun.continuousOn
+  continuousOn_invFun := I.continuous_invFun.continuousOn
+
+-- xxx: should we have this lemma?
+--lemma ModelWithCorners.isEmbedding : Topology.IsEmbedding I := I.isClosedEmbedding.isEmbedding
+
+-- missing lemma, TODO clean up!
+lemma ModelWithCorners.image_preimage (I : ModelWithCorners 𝕜 E H)
+    (s : Set E) (hs : s ⊆ I.target) : I '' (I ⁻¹' s) = s := by
+  rw [I.image_eq]
+  rw [← Set.preimage_comp, Set.inter_comm,
+    I.rightInvOn.eqOn.inter_preimage_eq]
+  simp only [preimage_id_eq, id_eq, inter_eq_right]
+  erw [I.range_eq_target]; exact hs
+
+lemma ModelWithCorners.IsNiceSubset.uniqueDiffOn {s : Set E} (hs : I.IsNiceSubset s) :
+    UniqueDiffOn 𝕜 s := by
+  have : ∃ t, IsOpen t ∧ s = (range I) ∩ t := by
+    obtain ⟨c, hc, hc'⟩ := I.isClosedEmbedding.isEmbedding.image_eq_isOpen_inter_range hs.1
+    use c, hc
+    rw [inter_comm, ← hc', I.image_preimage]
+    simpa using hs.2
+  obtain ⟨t, ht, ht'⟩ := this
+  rw [ht']
+  exact I.uniqueDiffOn.inter ht
+
+lemma NiceSubset.uniqueDiffOn (s : NiceSubset I) : UniqueDiffOn 𝕜 s.carrier :=
+  s.IsNiceSubset.uniqueDiffOn
+
+def NiceSubset.open (s : NiceSubset I) : Opens H := ⟨I ⁻¹' s.carrier, s.isOpen_preimage_carrier⟩
+
+def niceSubsetEquiv : NiceSubset I ≃ Opens H where
+  toFun s := s.open
+  invFun t := {
+    carrier := I '' t.1
+    isOpen_preimage_carrier := by simp [I.preimage_image, t.isOpen] -- why are these lemmas not simp?
+    foo := by simp
+  }
+  left_inv t := by
+    ext1
+    dsimp [NiceSubset.open]
+    rw [I.image_preimage]
+    simpa [I.image_preimage] using t.foo
+  right_inv s := by ext; simp [NiceSubset.open, I.preimage_image]
+
+lemma restrict_smul {X Y R : Type*} [SMul R Y] {f : X → R} {g : X → Y} (U : Set X) :
+    (Set.restrict U f • Set.restrict U g) = U.restrict (f • g) := by
+  ext x
+  simp
+
+lemma restrict_smul_apply {X Y R : Type*} [SMul R Y] {f : X → R} {g : X → Y} (U : Set X) {x : U} :
+    (Set.restrict U f • Set.restrict U g) x = U.restrict (f • g) x := by simp
+
+open scoped ContDiff
+variable {n : ℕ∞ω}
+
+-- Now, this lemma is true!
+variable (I n) in
+lemma baz (z : M) :
+    ∃ (U : Opens H) (f : U → M) (hf : IsOpenSmoothEmbedding I I n f),
+    z ∈ Set.range f := by
+  let φ := chartAt H z
+  use ⟨φ.target, φ.open_target⟩, Set.restrict φ.target φ.symm
+  refine ⟨?_ /- charts are open smooth embeddings -/, ?_⟩
+  · sorry
+  simpa using ⟨φ z, mem_chart_target H z, φ.left_inv <| mem_chart_source H z⟩
+
+lemma mvfderiv_comp_left {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] {f : M → V}
+    {z : M₀} (φ : M₀ → M) (hf : MDiffAt f (φ z)) (hφ : MDiffAt φ z) :
+    d% (f ∘ φ) z = d% f (φ z) ∘SL (mfderiv% φ z) := by
+  simp only [mvfderiv, Function.comp_apply, mfderiv_comp _ hf hφ]
+  rfl
+
+lemma mychainrule {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V]
+    {f : M → V} {φ : M₀ → M} {z : M₀} (hf : MDiffAt f (φ z)) (hφ : MDiffAt φ z) (v : TangentSpace I₀ z) :
+    d% f (φ z) (mfderiv% φ z v) = d% (f ∘ φ) z v := by
+  simp [mvfderiv_comp_left (I := I) _ hf hφ]
+
+-- another missing lemma, I think!
+lemma mvfderiv_restrict_apply {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V]
+    {f' : M → V} {U : Opens M} {x : M} (hx : x ∈ U) :
+    d% (Set.restrict U f' : U → V) ⟨x, hx⟩ =
+      d% f' x ∘SL (mfderiv% (Subtype.val : U → _) ⟨x, hx⟩):= by
+  by_cases hf : MDiffAt f' x; swap
+  · simp only [mvfderiv]
+    rw [mfderiv_zero_of_not_mdifferentiableAt hf]
+    simp
+    sorry
+  simp only [mvfderiv, Set.restrict_apply]
+  have aux : U.carrier.restrict f' = f' ∘ (Subtype.val : U → M) := by ext; simp
+  erw [aux]
+  rw [mfderiv_comp (I' := I)]
+  · simp
+    rfl
+  · simpa
+  · apply contMDiff_subtype_val.mdifferentiableAt one_ne_zero -- XXX: mdifferentiable_subtype_val
+
+variable {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V]
+
+-- This is true, but may not be what we want in general!
+lemma mvfderiv_eq_fderiv {f : E → V} {x : E} :
+    d% f x = (fderiv 𝕜 f x) ∘L (NormedSpace.fromTangentSpace x).toContinuousLinearMap := by
+  simp only [mvfderiv, mfderiv_eq_fderiv]
+  rfl
+
+-- TODO: investigate why these are missing!
+attribute [simp] mdifferentiableWithinAt_univ differentiableWithinAt_univ continuousWithinAt_univ
+  mdifferentiableWithinAt_iff_differentiableWithinAt
+
+lemma mvfderivWithin_of_isOpen {f : M → V} {s : Set M} (hs : IsOpen s) {x : M} (hx : x ∈ s) :
+    d[s] f x = d% f x := by
+  simp [mvfderiv, mvfderivWithin, mfderivWithin_of_isOpen hs hx]
+
+-- we want automation to compute d% (f ∘ I), so we want a specialized version of mfderivWithin_comp
+lemma mvfderiv_comp_modelWithCorners (s : NiceSubset I) {f : E → V} {x : H} (hx : I x ∈ s.carrier)
+    (hf : DifferentiableWithinAt 𝕜 f s.carrier (I x)) :
+    d% (f ∘ I) x = (fderivWithin 𝕜 f s.carrier (I x)) ∘L (d% I x) := by
+  -- TODO fix elaborator bug in the following statement
+  have unused : mvfderiv I (f ∘ I) x = mvfderivWithin I (f ∘ I) (I ⁻¹' s.carrier) x := by
+    simp [mvfderiv, mvfderivWithin, mfderivWithin_of_isOpen s.2 hx]
+  rw [← mfderivWithin_eq_fderivWithin, ← mvfderivWithin_of_isOpen s.2 hx]
+  simp only [mvfderiv, mvfderivWithin]
+  rw [mfderivWithin_comp (I' := (𝓘(𝕜, E))) (u := s.carrier) (s := I ⁻¹' s.carrier)]
+  rotate_left
+  · simpa
+  · apply I.contMDiff.mdifferentiableWithinAt one_ne_zero
+    -- apply I.contMDiff.mdifferentiableAt one_ne_zero -- missing API lemma?
+  · simp
+  · exact s.2.uniqueMDiffWithinAt hx
+  simp only [Function.comp_apply, mfderivWithin_eq_fderivWithin]
+  rw [mfderivWithin_of_isOpen s.2 hx]
+  rfl
+
+-- don't want, also false in general
+-- lemma mvfderiv_eq_fderivWithin' (s : NiceSubset I) {f : E → V} {x : E} (hx : x ∈ s.carrier) :
+--     d% f x = (fderivWithin 𝕜 f s.carrier x) ∘L (NormedSpace.fromTangentSpace x).toContinuousLinearMap := by
+--   -- note!
+--   have : fderivWithin 𝕜 f s.carrier x = fderivWithin 𝕜 f (range I) x := by
+--     apply fderivWithin_subset s.3 (s.uniqueDiffOn _ hx) ?_
+--     sorry -- easy or missing lemma
+--   rw [mvfderiv_eq_fderiv]
+--   rw [fderivWithin_eq_fderiv]
+--   · apply s.uniqueDiffOn.uniqueDiffWithinAt hx
+--   sorry -- TODO: not true in general!
+
+theorem Function.smul_comp {𝕜 X Y Z : Type*} [SMul 𝕜 Z] (f : Y → 𝕜) (g : Y → Z) (φ : X → Y) :
+  (f • g) ∘ φ = f ∘ φ • g ∘ φ := rfl
+
+open Function
+lemma mvfderiv_smul' {f : M → 𝕜} {g : M → V} {x : M}
+    (hf : MDiffAt f x) (hg : MDiffAt g x) :
+    d% (f • g) x = f x • d% g x + (d% f x).smulRight (g x) := by
+  wlog h : ∃ (s : NiceSubset I), ImBad M I (niceSubsetEquiv s) I
+  · -- TODO: think about which regularity I can assume. For now, will C¹ do?
+    obtain ⟨U, φ, hφ, hz⟩ := baz I (M := M) 1 x
+    obtain ⟨s, rfl⟩ := (niceSubsetEquiv (I := I)).surjective U
+    obtain ⟨z, rfl⟩ := hz
+    ext v
+    obtain ⟨v, rfl⟩ := hφ.surjective_mfderiv z v
+    have hφ' := hφ.contMDiff.mdifferentiableAt (x := z) (by simp)
+    rw [mychainrule (hf.smul hg) hφ']
+    simp only [add_apply, smul_apply, smulRight_apply]
+    rw [mychainrule hf hφ', mychainrule hg hφ']
+    rw [Function.smul_comp, ← Function.comp_apply (f := f) (g := φ),
+      ← Function.comp_apply (f := g) (g := φ)]
+    have hf' : MDiffAt (f ∘ φ) z := hf.comp _ hφ'
+    have hg' : MDiffAt (g ∘ φ) z := hg.comp _ hφ'
+    specialize this hf' hg' ⟨_, .refl⟩
+    exact congr($this v)
+  -- "unmanifoldify" tactic
+  -- given data one something that's equivalent to E, pull back all the data on M to E,
+  -- and turn statements about manifolds into statements about analysis
+  -- the scope is pure translation; no locality arguments using any mathematics are in scope
+  -- (for instance, using M being boundaryless and simplifying accordingly is out of scope)
+  obtain ⟨s, ⟨⟩⟩ := h
+  clear! M
+  -- first version of unmanifoldify just takes M f g x and looks for such lemmas
+  -- unmanifoldify, step 1: do all the `obtain`
+  -- TODO: cleanup: make this a lemma, and save another four or five lines
+  have : ∃ f' : E → 𝕜, Set.restrict (niceSubsetEquiv s) (f' ∘ I) = f := by
+    obtain ⟨f₀, rfl⟩ := Set.restrict_surjective (niceSubsetEquiv s).carrier f
+    use f₀ ∘ I.symm
+    ext
+    simp
+  obtain ⟨f', rfl⟩ := this
+  have : ∃ g' : E → V, Set.restrict (niceSubsetEquiv s) (g' ∘ I) = g := by
+    obtain ⟨g₀, rfl⟩ := Set.restrict_surjective (niceSubsetEquiv s).carrier g
+    use g₀ ∘ I.symm
+    ext
+    simp
+  obtain ⟨g', rfl⟩ := this
+  obtain ⟨x, hx⟩ := x
+  have : ∃ x' : E, x' ∈ s.carrier ∧ I.symm x' = x :=
+    ⟨I x, by simpa [NiceSubset.open, niceSubsetEquiv] using hx, I.left_inv' (by simp)⟩
+  obtain ⟨x', hx', rfl⟩ := this
+  -- missing mathlib lemmas: relate MDiff terms to normed space world
+  -- should be global simp lemmas or a simp set
+  replace hf : DifferentiableWithinAt 𝕜 f' s.carrier x' := sorry
+  replace hg : DifferentiableWithinAt 𝕜 g' s.carrier x' := sorry
+  -- Ideally, a lot of the next steps are by `simp` now.
+  -- Should use a custom simp set, with `fun_prop` (upgraded to manifolds) as discharger.
+  -- step 2: push every form into an atomic form `f ∘ I`, where `I` is a model with corners
+  -- that step would also apply `Function.smul_comp`
+  rw [restrict_smul]
+  simp_rw [mvfderiv_restrict_apply, ← Function.smul_comp]
+  -- step 3: apply lemmas to turn the manifold things into fderiv things
+  rw [mvfderiv_comp_modelWithCorners s (by simpa) (by simpa [s.3 hx'] using hf.smul hg),
+    mvfderiv_comp_modelWithCorners s (by simpa) (by simpa [s.3 hx']),
+    mvfderiv_comp_modelWithCorners s (by simpa) (by simpa [s.3 hx'])]
+  --set A := mfderiv I (𝓘(𝕜, E)) I (I.symm x') -- TODO: elaborators failure, fix!
+  -- The remaining argument is domain-specific. Looks a bit ugly, though.
+  simp only [Set.restrict_apply, Function.comp_apply]
+  -- After the simp, there is no niceSubsetEquiv remaining.
+  -- TODO: X is in the tangent space to s... ideally, would like to generalise proofs accordingly
+  ext X
+  simp only [ContinuousLinearMap.comp_apply, add_apply, smul_apply, smulRight_apply]
+  simp only [s.3 hx', ModelWithCorners.right_inv]
+  generalize mvfderiv I I (I.symm x') (mfderiv I I Subtype.val ⟨I.symm x', hx⟩ X) = Y
+  clear! X
+  -- Final step: eliminate s being a special set, and just turn it into a bare set.
+  -- XXX: can we eliminate this "bundle a niceSubsetEquiv and remove it again" dance?
+  -- Putting a manifold structure on the subset requires producing a term of type `Opens`.
+  -- `niceSubsetEquiv` could become a function taking a set s and proofs of its various properties,
+  -- producing an `Opens`. This would avoid the final obtain step.
+
+  -- Just hard-code (or tag with an attribute) a list of lemmas about s that are useful;
+  -- we will produce all of these. `unmanifoldify` can take config options to disable the
+  -- different stages. If it's doing too much, just disable that.
+  have := s.uniqueDiffOn.uniqueDiffWithinAt hx' -- missing API lemma!
+  obtain ⟨s, s1, s2⟩ := s
+  simp_all only
+  -- This is the mathematics: just two lines.
+  rw [fderivWithin_smul] <;> try assumption
+  simp
+
+  /- old proof was
+  -- guess: specialized to I should be simp?
+  rw [mvfderiv_comp_left (I₀ := I) I I.mdifferentiableAt (z := I.symm x') (I := 𝓘(𝕜, E))]
+  rw [mvfderiv_comp_left (I₀ := I) I I.mdifferentiableAt (z := I.symm x') (I := 𝓘(𝕜, E))]
+  rw [mvfderiv_comp_left (I₀ := I) I I.mdifferentiableAt (z := I.symm x') (I := 𝓘(𝕜, E))]
+  have : I (I.symm x') = x' := by
+    rw [← Function.comp_apply (f := I) (g := I.symm)]
+    apply I.right_inv'
+    grw [s.foo] at hx'
+    rw [← I.range_eq_target]
+    simpa
+  dsimp [this]
+  simp only [this]
+  -- Trouble: if we rewrite by this, we cannot apply the chain rule to the fderiv
+  -- as f' and g' are only differentiable on s.
+  -- simp_rw [mvfderiv_eq_fderiv]
+  rw [mvfderiv_comp_modelWithCorners]
+  simp_rw [mvfderiv_eq_fderivWithin' s (I := I) hx]
+  simp only [this]
+  set A := mfderiv I (𝓘(𝕜, E)) I (I.symm x') -- TODO: elaborators failure, fix!
+  set B := mfderiv I I Subtype.val ⟨I.symm x', hx⟩
+  ext X
+  simp only [ContinuousLinearMap.comp_apply, ContinuousLinearEquiv.coe_coe, add_apply, smul_apply,
+    smulRight_apply]
+  -- This is the mathematics
+  rw [fderivWithin_smul]
+  · simp
+  · exact s.uniqueDiffOn.uniqueDiffWithinAt hx' -- missing API lemma!
+  · exact hf
+  · exact hg
+  -/
+
+end
