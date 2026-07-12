@@ -566,16 +566,31 @@ private theorem Icc_zero_lt_det_tangentCoordChange_iff (p q r : Set.Icc x y)
     rw [hmap, LinearMap.det_smul, LinearMap.det_id, finrank_euclideanSpace, Fintype.card_fin]
     norm_num
 
-instance instOrientedManifoldIcc : Manifold.OrientedManifold (𝓡∂ 1) (Set.Icc x y) where
-  manifoldOrientation :=
-    { chartSign p z := open scoped Classical in
+public instance instIccOrientationIndexCard :
+    Fact (Fintype.card (Fin 1) =
+      Module.finrank ℝ (EuclideanSpace ℝ (Fin 1))) :=
+  ⟨by simp only [finrank_euclideanSpace]⟩
+
+/-- The standard orientation of the model space for the interval. -/
+def iccModelOrientation :
+    _root_.Orientation ℝ (EuclideanSpace ℝ (Fin 1)) (Fin 1) :=
+  (EuclideanSpace.basisFun (Fin 1) ℝ).toBasis.orientation
+
+instance instOrientedManifoldIcc :
+    Manifold.OrientedManifold (𝓡∂ 1) (Set.Icc x y) (Fin 1) where
+  manifoldOrientation := Manifold.Orientation.mk
+    { modelOrientation := iccModelOrientation
+      chartSign p z := open scoped Classical in
         if z ∈ (chartAt (EuclideanHalfSpace 1) p).source then (if (p : ℝ) < y then 1 else -1) else 1
       continuousOn_chartSign p :=
         ContinuousOn.congr (continuousOn_const (c := if (p : ℝ) < y then (1 : ℤˣ) else -1))
           (fun z hz ↦ by simp only [if_pos hz])
       chartSign_eq_one_of_notMem p z hz := if_neg hz
       compatible p q z hzp hzq := by
-        simp only [if_pos hzp, if_pos hzq, Icc_zero_lt_det_tangentCoordChange_iff p q z ⟨hzp, hzq⟩]
+        simp only [if_pos hzp, if_pos hzq]
+        apply Manifold.OrientationLift.compatible_of_det
+        rw [tangentCoordChangeEquiv_toLinearMap hzp hzq,
+          Icc_zero_lt_det_tangentCoordChange_iff p q z ⟨hzp, hzq⟩]
         by_cases hp : (p : ℝ) < y <;> by_cases hq : (q : ℝ) < y <;> simp [hp, hq] }
 
 /-! Register the manifold structure on `Icc 0 1`. These are merely special cases of
