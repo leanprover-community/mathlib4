@@ -182,7 +182,8 @@ theorem isLocalHom_desc (hc : IsColimit c) : IsLocalHom (hc.desc s).hom := by
   obtain ⟨j, x, hx', rfl⟩ := Set.mem_iUnion.mp <|
     (le_of_eq <| maximalIdeal_eq_iUnion_of_isColimit F hc) hx
   change ((c.ι.app j) ≫ (hc.desc s)) x ∈ _
-  rw [hc.fac s, ← Ideal.mem_comap]
+  simp only [Functor.const]
+  rw [hc.fac s j, ← Ideal.mem_comap]
   have : IsLocalRing (((Functor.const J).obj s.pt).obj j) := s_pt
   have : _ ≤ Ideal.comap _ (maximalIdeal s.pt) :=
     ((IsLocalRing.local_hom_TFAE _).out 0 3 |>.mp (s_ι j))
