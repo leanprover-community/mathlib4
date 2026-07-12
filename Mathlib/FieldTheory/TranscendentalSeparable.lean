@@ -40,12 +40,6 @@ Let `K/k` be arbitrary field extension with characteristic `p > 0`, then TFAE
 * `tensorProduct_isReduced_of_isSeparablyGenerated_of_isReduced` : Tensor product of
   a separably generated  field extension with a reduced algebra is reduced.
 
-* `adjoinPthRoots`: Adjoining all `p`-th root to a field of characteristic `p`.
-  It is defined as the field itself with algebra map being the frobenius map.
-
-* `adjoinPthRootsPthRoot` : The map `k → adjoinPthRoots k p` for taking `p`-th root
-  with underlying map `RingHom.id`.
-
 * `Algebra.isTranscendentalSeparable_tfae` : The equivalent characterization of
   transcendental separable field extension mentioned above.
 
@@ -282,7 +276,8 @@ lemma tensorProduct_isReduced_of_isTranscendentalBasis_of_isDomain [IsDomain S]
   let kx := Algebra.adjoin k (Set.range f)
   let e : TensorProduct k kx S ≃ₐ[k] MvPolynomial ι S :=
     (Algebra.TensorProduct.congr (AlgebraicIndependent.aevalEquiv isT.1).symm AlgEquiv.refl).trans
-      MvPolynomial.scalarRTensorAlgEquiv
+      ((Algebra.TensorProduct.comm k _ _).trans
+        (MvPolynomial.scalarRTensorAlgEquiv.restrictScalars k))
   have isd1 : IsDomain (TensorProduct k kx S) := e.injective.isDomain
   let nz := nonZeroDivisors kx
   have : IsLocalization nz K' := inferInstanceAs (IsFractionRing _ K')
