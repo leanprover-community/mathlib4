@@ -40,7 +40,9 @@ def Commute [Mul S] (a b : S) : Prop :=
 /--
 Two elements `a` and `b` commute if `a * b = b * a`.
 -/
-@[to_additive]
+@[to_additive /--
+Two elements `a` and `b` additively commute if `a + b = b + a`.
+-/]
 theorem commute_iff_eq [Mul S] (a b : S) : Commute a b ↔ a * b = b * a := Iff.rfl
 
 namespace Commute

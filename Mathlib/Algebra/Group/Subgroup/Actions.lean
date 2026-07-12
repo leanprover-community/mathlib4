@@ -50,7 +50,8 @@ instance smulCommClass_right [SMul α β] [MulAction G β] [SMulCommClass α G �
   S.toSubmonoid.smulCommClass_right
 
 /-- Note that this provides `IsScalarTower S G G` which is needed by `smul_mul_assoc`. -/
-@[to_additive]
+@[to_additive
+/-- Note that this provides `VAddAssocClass S G G` which is needed by `vadd_add_assoc`. -/]
 instance [SMul α β] [MulAction G α] [MulAction G β] [IsScalarTower G α β] (S : Subgroup G) :
     IsScalarTower S α β :=
   inferInstanceAs (IsScalarTower S.toSubmonoid α β)
