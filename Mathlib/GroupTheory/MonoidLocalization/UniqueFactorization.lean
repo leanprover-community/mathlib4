@@ -1,14 +1,21 @@
 /-
 Copyright (c) 2026 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Junyan Xu
+Authors: Yongle Hu, Junyan Xu
 -/
 module
 
 public import Mathlib.RingTheory.Localization.Defs
 public import Mathlib.RingTheory.UniqueFactorizationDomain.Basic
 
-/-! # Localization preserves unique factorization -/
+/-! # Localization preserves unique factorization
+
+## Main results
+
+* `IsLocalization.uniqueFactorizationMonoid`: a localization of a unique factorization monoid is
+  still a unique factorization monoid. In particular, a localization of a UFD is a UFD provided
+  it is nontrivial.
+-/
 
 @[expose] public section
 
@@ -66,15 +73,12 @@ theorem uniqueFactorizationMonoid (f : S.LocalizationMap N)
 
 end Submonoid.LocalizationMap
 
-namespace IsLocalization
-
 variable (N) [CommSemiring M] (S : Submonoid M)
 
-theorem uniqueFactorizationMonoid [CommSemiring N] [Algebra M N] [IsLocalization S N]
+/-- A localization of a unique factorization monoid is still a unique factorization monoid. -/
+theorem IsLocalization.uniqueFactorizationMonoid [CommSemiring N] [Algebra M N] [IsLocalization S N]
     [UniqueFactorizationMonoid M] : UniqueFactorizationMonoid N :=
   (toLocalizationMap S N).uniqueFactorizationMonoid
 
 instance [UniqueFactorizationMonoid M] : UniqueFactorizationMonoid (Localization S) :=
   (Localization.monoidOf S).uniqueFactorizationMonoid
-
-end IsLocalization
