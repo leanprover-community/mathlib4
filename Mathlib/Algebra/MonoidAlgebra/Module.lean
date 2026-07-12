@@ -242,7 +242,7 @@ lemma lsingle_apply [Semiring R] [Module R S] (a : M) (b : S) :
   rfl
 
 /-- A copy of `Finsupp.lhom_ext'` for `MonoidAlgebra`. -/
-@[to_additive (attr := ext high)]
+@[to_additive (attr := ext high) /-- A copy of `Finsupp.lhom_ext'` for `AddMonoidAlgebra`. -/]
 lemma lhom_ext' {N : Type*} [Semiring R] [AddCommMonoid N] [Module R N] [Module R S]
     ⦃f g : S[M] →ₗ[R] N⦄
     (H : ∀ (x : M), LinearMap.comp f (lsingle x) = LinearMap.comp g (lsingle x)) : f = g :=
@@ -290,7 +290,10 @@ instance isScalarTower_self [IsScalarTower R S S] : IsScalarTower R S[M] S[M] wh
 /-- Note that if `S` is a `CommSemiring` then we have `SMulCommClass S S S` and so we can take
 `R = S` in the below. In other words, if the coefficients are commutative amongst themselves, they
 also commute with the algebra multiplication. -/
-@[to_additive (dont_translate := R S) smulCommClass_self]
+@[to_additive (dont_translate := R S) smulCommClass_self /-- Note that if `S` is a `CommSemiring`
+then we have `SMulCommClass S S S` and so we can take `R = S` in the below. In other words, if the
+coefficients are commutative amongst themselves, they also commute with the algebra
+multiplication. -/]
 instance smulCommClass_self [SMulCommClass R S S] : SMulCommClass R S[M] S[M] where
   smul_comm t a b := by
     classical ext; simp [coeff_mul, sum_smul_index', Finsupp.smul_sum, mul_smul_comm]

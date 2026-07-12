@@ -411,7 +411,9 @@ theorem map_apply_map_symm_eq {x : FreeMonoid β} (e : α ≃ β) :
     (map ⇑e) ((map ⇑e.symm) x) = x := by simp [map_map]
 
 /-- The only invertible element of the free monoid is 1; this instance enables `units_eq_one`. -/
-@[to_additive]
+@[to_additive
+  /-- The only invertible element of the free additive monoid is 0; this instance enables
+  `addUnits_eq_zero`. -/]
 instance uniqueUnits : Unique (FreeMonoid α)ˣ where
   uniq u := Units.ext <| toList.injective <|
     have : toList u.val ++ toList u.inv = [] := DFunLike.congr_arg toList u.val_inv

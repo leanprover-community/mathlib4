@@ -360,7 +360,7 @@ theorem prod_empty : ∏ x ∈ ∅, f x = 1 :=
   rfl
 
 /-- Variant of `prod_empty` not applied to a function. -/
-@[to_additive (attr := grind =)]
+@[to_additive (attr := grind =) /-- Variant of `sum_empty` not applied to a function. -/]
 theorem prod_empty' : Finset.prod (∅ : Finset ι) = fun (_ : ι → M) => 1 :=
   rfl
 
@@ -378,7 +378,7 @@ theorem prod_map (s : Finset ι) (e : ι ↪ κ) (f : κ → M) :
   rw [Finset.prod, Finset.map_val, Multiset.map_map]; rfl
 
 /-- Variant of `prod_map` not applied to a function. -/
-@[to_additive (attr := grind =)]
+@[to_additive (attr := grind =) /-- Variant of `sum_map` not applied to a function. -/]
 theorem prod_map' (s : Finset ι) (e : ι ↪ κ) :
     Finset.prod (s.map e) = fun (f : κ → M) => ∏ x ∈ s, f (e x) := by
   funext f
@@ -702,7 +702,11 @@ lemma prod_bijective (e : ι → κ) (he : e.Bijective) (f : ι → M) (g : κ �
     (h : ∀ x, f x = g (e x)) : ∏ x, f x = ∏ x, g x :=
   prod_equiv (.ofBijective e he) (by simp) (by simp [h])
 
-@[to_additive] alias _root_.Function.Bijective.finsetProd := prod_bijective
+@[to_additive /-- `Fintype.sum_bijective` is a variant of `Finset.sum_bij` that accepts
+`Function.Bijective`.
+
+See `Function.Bijective.sum_comp` for a version without `h`. -/]
+alias _root_.Function.Bijective.finsetProd := prod_bijective
 
 @[deprecated (since := "2026-04-08")]
 alias _root_.Function.Bijective.finset_sum := _root_.Function.Bijective.finsetSum
