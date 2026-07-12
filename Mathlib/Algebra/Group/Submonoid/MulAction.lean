@@ -88,9 +88,9 @@ instance smulCommClass_right [SMul α β] [SMul M' β] [SMulCommClass α M' β]
     (S : Submonoid M') : SMulCommClass α S β :=
   inferInstance
 
-/-- Note that this provides `IsScalarTower S M' M'` which is needed by `SMulMulAssoc`. -/
+/-- Note that this provides `IsScalarTower S M' M'` which is needed by `smul_mul_assoc`. -/
 @[to_additive /-- Note that this provides `VAddAssocClass S M' M'` which is needed by
-`VAddAddAssoc`. -/]
+`vadd_add_assoc`. -/]
 instance isScalarTower [SMul α β] [SMul M' α] [SMul M' β] [IsScalarTower M' α β]
       (S : Submonoid M') :
     IsScalarTower S α β :=
