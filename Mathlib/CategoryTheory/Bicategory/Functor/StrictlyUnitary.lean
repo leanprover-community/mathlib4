@@ -142,7 +142,7 @@ instance mapId_isIso (F : StrictlyUnitaryLaxFunctor B C) (x : B) :
 to an isomorphism when `F` is strictly unitary. -/
 @[simps]
 def mapIdIso (F : StrictlyUnitaryLaxFunctor B C) (x : B) :
-   𝟙 (F.obj x) ≅ F.map (𝟙 x) where
+    𝟙 (F.obj x) ≅ F.map (𝟙 x) where
   hom := F.mapId x
   inv := eqToHom (F.map_id x)
   hom_inv_id := by simp [F.mapId_eq_eqToHom]
