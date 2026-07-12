@@ -25,8 +25,8 @@ This file defines the Lie algebra structure the Product of two Lie algebras
   - `LieHom.prodMap` the `Prod.map` of two Lie algebra homomorphisms is a Lie algebra homomorphism.
 
 ## Todo: Extend to further functionality from LinearMap.prod e.g.
- - Lie Equivalences related to products
- - Lie Submodule statements
+- Lie Equivalences related to products
+- Lie Submodule statements
 
 -/
 
@@ -99,7 +99,7 @@ def prod (f : L →ₗ⁅R⁆ L₁) (g : L →ₗ⁅R⁆ L₂) : L →ₗ⁅R⁆
   toLinearMap := LinearMap.prod f g
   map_lie' := by simp
 
-theorem coe_prod (f : L →ₗ⁅R⁆ L₁) (g : L →ₗ⁅R⁆ L₂) : ⇑(f.prod g) = Pi.prod f g :=
+theorem coe_prod (f : L →ₗ⁅R⁆ L₁) (g : L →ₗ⁅R⁆ L₂) : ⇑(f.prod g) = Function.prod f g :=
   rfl
 
 @[simp]
@@ -132,7 +132,7 @@ variable (R L₁ L₂)
 
 theorem range_inl : range (inl R L₁ L₂) = ker (snd R L₁ L₂) := by
   rw [← LieSubalgebra.toSubmodule_inj, range_toSubmodule, LieIdeal.toLieSubalgebra_toSubmodule,
-   ker_toSubmodule]
+    ker_toSubmodule]
   exact LinearMap.range_inl R L₁ L₂
 
 theorem ker_snd : ker (snd R L₁ L₂) = range (inl R L₁ L₂) :=
@@ -140,7 +140,7 @@ theorem ker_snd : ker (snd R L₁ L₂) = range (inl R L₁ L₂) :=
 
 theorem range_inr : range (inr R L₁ L₂) = ker (fst R L₁ L₂) := by
   rw [← LieSubalgebra.toSubmodule_inj, range_toSubmodule, LieIdeal.toLieSubalgebra_toSubmodule,
-   ker_toSubmodule]
+    ker_toSubmodule]
   exact LinearMap.range_inr R L₁ L₂
 
 theorem ker_fst : ker (fst R L₁ L₂) = range (inr R L₁ L₂) :=
@@ -163,7 +163,7 @@ theorem inr_eq_prod : inr R L₁ L₂ = prod 0 LieHom.id :=
 theorem prod_ext_iff {f g : L₁ × L₂ →ₗ⁅R⁆ L} :
     f = g ↔ f.comp (inl _ _ _) = g.comp (inl _ _ _) ∧ f.comp (inr _ _ _) = g.comp (inr _ _ _) := by
   simp_rw [LieHom.ext_iff]
-  have h := LinearMap.prod_ext_iff (f:=f.toLinearMap) (g:= g.toLinearMap)
+  have h := LinearMap.prod_ext_iff (f := f.toLinearMap) (g := g.toLinearMap)
   simp_rw [LinearMap.ext_iff] at h
   exact h
 

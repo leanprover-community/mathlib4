@@ -95,8 +95,8 @@ theorem tendsto_concat {ι : Type*} {p : Filter ι} {F : ι → C(Icc a b, E)} {
   rw [tendsto_nhds_compactOpen] at hf hg ⊢
   rintro K hK U hU hfgU
   have h : b ∈ Icc a c := ⟨Fact.out, Fact.out⟩
-  let K₁ : Set (Icc a b) := projIccCM '' (Subtype.val '' (K ∩ Iic ⟨b, h⟩))
-  let K₂ : Set (Icc b c) := projIccCM '' (Subtype.val '' (K ∩ Ici ⟨b, h⟩))
+  let K₁ : Set (Icc a b) := projIccCM '' Subtype.val '' (K ∩ Iic ⟨b, h⟩)
+  let K₂ : Set (Icc b c) := projIccCM '' Subtype.val '' (K ∩ Ici ⟨b, h⟩)
   have hK₁ : IsCompact K₁ :=
     hK.inter_right isClosed_Iic |>.image continuous_subtype_val |>.image projIccCM.continuous
   have hK₂ : IsCompact K₂ :=
@@ -105,12 +105,12 @@ theorem tendsto_concat {ι : Type*} {p : Filter ι} {F : ι → C(Icc a b, E)} {
     rw [← concat_comp_IccInclusionLeft hfg']
     apply hfgU.comp
     rintro x ⟨y, ⟨⟨z, hz⟩, ⟨h1, (h2 : z ≤ b)⟩, rfl⟩, rfl⟩
-    simpa [projIccCM, projIcc, h2, hz.1] using h1
+    simpa [projIccCM, projIcc, h2, hz.1] using! h1
   have hgU : MapsTo g K₂ U := by
     rw [← concat_comp_IccInclusionRight hfg']
     apply hfgU.comp
     rintro x ⟨y, ⟨⟨z, hz⟩, ⟨h1, (h2 : b ≤ z)⟩, rfl⟩, rfl⟩
-    simpa [projIccCM, projIcc, h2, hz.2] using h1
+    simpa [projIccCM, projIcc, h2, hz.2] using! h1
   filter_upwards [hf K₁ hK₁ U hU hfU, hg K₂ hK₂ U hU hgU, hfg] with i hf hg hfg x hx
   by_cases! hxb : x ≤ b
   · rw [concat_left hfg hxb]

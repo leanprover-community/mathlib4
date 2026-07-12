@@ -33,6 +33,7 @@ Often the above theory is set up in the case where:
 * `S` is the integral closure of `R` in `L`,
 * `p` and `P` are maximal ideals,
 * `P` is an ideal lying over `p`
+
 We will try to relax the above hypotheses as much as possible.
 
 ## Notation
@@ -188,7 +189,7 @@ theorem FinrankQuotientMap.linearIndependent_of_nontrivial [IsDedekindDomain R]
     (hRS : RingHom.ker (algebraMap R S) ≠ ⊤) (F : V'' →ₗ[R] V) (hf : Function.Injective F)
     (f' : V'' →ₗ[R] V') {ι : Type*} {b : ι → V''} (hb' : LinearIndependent S (f' ∘ b)) :
     LinearIndependent K (F ∘ b) := by
-  contrapose! hb' with hb
+  contrapose hb' with hb
   -- Informally, if we have a nontrivial linear dependence with coefficients `g` in `K`,
   -- then we can find a linear dependence with coefficients `I.Quotient.mk g'` in `R/I`,
   -- where `I = ker (algebraMap R S)`.
@@ -259,7 +260,8 @@ theorem finrank_quotient_map [IsDomain S] [IsDedekindDomain R] [Algebra K L]
         Submodule.Quotient.eq] at y_eq
       exact add_mem (Submodule.mem_sup_left y_mem) (neg_mem <| Submodule.mem_sup_right y_eq)
   · have := b.linearIndependent; rw [b_eq_b'] at this
-    convert FinrankQuotientMap.linearIndependent_of_nontrivial K _
+    convert!
+      FinrankQuotientMap.linearIndependent_of_nontrivial K _
         ((Algebra.linearMap S L).restrictScalars R) _ ((Submodule.mkQ _).restrictScalars R) this
     · rw [Quotient.algebraMap_eq, Ideal.mk_ker]
       exact hp.ne_top
@@ -269,12 +271,12 @@ end FinrankQuotientMap
 
 section FactLeComap
 
-local notation "e" => ramificationIdx p P
+local notation "e" => ramificationIdx' p P
 
 /-- `R / p` has a canonical map to `S / (P ^ e)`, where `e` is the ramification index
 of `P` over `p`. -/
 noncomputable instance Quotient.algebraQuotientPowRamificationIdx : Algebra (R ⧸ p) (S ⧸ P ^ e) :=
-  Quotient.algebraQuotientOfLEComap (Ideal.map_le_iff_le_comap.mp le_pow_ramificationIdx)
+  Quotient.algebraQuotientOfLEComap (Ideal.map_le_iff_le_comap.mp le_pow_ramificationIdx')
 
 @[simp]
 theorem Quotient.algebraMap_quotient_pow_ramificationIdx (x : R) :
@@ -287,7 +289,7 @@ This can't be an instance since the map `f : R → S` is generally not inferable
 @[instance_reducible]
 def Quotient.algebraQuotientOfRamificationIdxNeZero [hfp : NeZero e] :
     Algebra (R ⧸ p) (S ⧸ P) :=
-  Quotient.algebraQuotientOfLEComap (le_comap_of_ramificationIdx_ne_zero hfp.out)
+  Quotient.algebraQuotientOfLEComap (le_comap_of_ramificationIdx'_ne_zero hfp.out)
 
 attribute [local instance] Ideal.Quotient.algebraQuotientOfRamificationIdxNeZero
 
@@ -334,7 +336,7 @@ theorem quotientToQuotientRangePowQuotSuccAux_mk {i : ℕ} {a : S} (a_mem : a �
   apply Quotient.map'_mk''
 
 section
-variable [hfp : NeZero (ramificationIdx p P)]
+variable [hfp : NeZero (ramificationIdx' p P)]
 
 /-- `S ⧸ P` embeds into the quotient by `P^(i+1) ⧸ P^e` as a subspace of `P^i ⧸ P^e`. -/
 noncomputable def quotientToQuotientRangePowQuotSucc
@@ -398,16 +400,10 @@ theorem quotientToQuotientRangePowQuotSucc_surjective [IsDedekindDomain S]
     refine ⟨⟨_, Ideal.mem_map_of_mem _ (Submodule.neg_mem _ hz)⟩, ?_⟩
     rw [powQuotSuccInclusion_apply_coe, Subtype.coe_mk, Ideal.Quotient.mk_eq_mk, map_add,
       sub_add_cancel_left, map_neg]
-  letI := Classical.decEq (Ideal S)
-  rw [sup_eq_prod_inf_factors _ (pow_ne_zero _ hP0), normalizedFactors_pow,
-    normalizedFactors_irreducible ((Ideal.prime_iff_isPrime hP0).mpr hP).irreducible, normalize_eq,
-    Multiset.nsmul_singleton, Multiset.inter_replicate, Multiset.prod_replicate]
-  · rw [← Submodule.span_singleton_le_iff_mem, Ideal.submodule_span_eq] at a_mem a_notMem
-    rwa [Ideal.count_normalizedFactors_eq a_mem a_notMem, min_eq_left i.le_succ]
-  · intro ha
-    rw [Ideal.span_singleton_eq_bot.mp ha] at a_notMem
-    have := (P ^ (i + 1)).zero_mem
-    contradiction
+  rw [← Submodule.span_singleton_le_iff_mem, submodule_span_eq] at a_mem a_notMem
+  have hspan0 : span {a} ≠ ⊥ := fun ha ↦ a_notMem (ha ▸ bot_le)
+  rwa [sup_comm, irreducible_pow_sup hspan0 ((prime_iff_isPrime hP0).mpr hP).irreducible,
+    count_normalizedFactors_eq a_mem a_notMem, min_eq_left i.le_succ]
 
 /-- Quotienting `P^i / P^e` by its subspace `P^(i+1) ⧸ P^e` is
 `R ⧸ p`-linearly isomorphic to `S ⧸ P`. -/
@@ -495,70 +491,61 @@ section FactorsMap
 
 variable [IsDedekindDomain S]
 
-open scoped Classical in
 theorem Factors.ne_bot (P : (factors (map (algebraMap R S) p)).toFinset) : (P : Ideal S) ≠ ⊥ :=
   (prime_of_factor _ (Multiset.mem_toFinset.mp P.2)).ne_zero
 
-open scoped Classical in
 instance Factors.isPrime (P : (factors (map (algebraMap R S) p)).toFinset) :
     IsPrime (P : Ideal S) :=
   Ideal.isPrime_of_prime (prime_of_factor _ (Multiset.mem_toFinset.mp P.2))
 
-open scoped Classical in
 theorem Factors.ramificationIdx_ne_zero (P : (factors (map (algebraMap R S) p)).toFinset) :
-    ramificationIdx p P.1 ≠ 0 :=
-  IsDedekindDomain.ramificationIdx_ne_zero (ne_zero_of_mem_factors (Multiset.mem_toFinset.mp P.2))
+    ramificationIdx' p P.1 ≠ 0 :=
+  IsDedekindDomain.ramificationIdx'_ne_zero (ne_zero_of_mem_factors (Multiset.mem_toFinset.mp P.2))
     (Factors.isPrime p P) (Ideal.le_of_dvd (dvd_of_mem_factors (Multiset.mem_toFinset.mp P.2)))
 
-open scoped Classical in
 instance Factors.fact_ramificationIdx_neZero (P : (factors (map (algebraMap R S) p)).toFinset) :
-    NeZero (ramificationIdx p P.1) :=
+    NeZero (ramificationIdx' p P.1) :=
   ⟨Factors.ramificationIdx_ne_zero p P⟩
 
 attribute [local instance] Quotient.algebraQuotientOfRamificationIdxNeZero
 
-open scoped Classical in
 instance Factors.isScalarTower (P : (factors (map (algebraMap R S) p)).toFinset) :
     IsScalarTower R (R ⧸ p) (S ⧸ (P : Ideal S)) :=
   IsScalarTower.of_algebraMap_eq' rfl
 
-open scoped Classical in
 instance Factors.liesOver [p.IsMaximal] (P : (factors (map (algebraMap R S) p)).toFinset) :
     P.1.LiesOver p :=
   ⟨(comap_eq_of_scalar_tower_quotient (algebraMap (R ⧸ p) (S ⧸ P.1)).injective).symm⟩
 
-open scoped Classical in
 theorem Factors.finrank_pow_ramificationIdx [p.IsMaximal]
     (P : (factors (map (algebraMap R S) p)).toFinset) :
-    finrank (R ⧸ p) (S ⧸ (P : Ideal S) ^ ramificationIdx p P.1) =
-      ramificationIdx p P.1 * inertiaDeg p (P : Ideal S) := by
-  rw [finrank_prime_pow_ramificationIdx, inertiaDeg_algebraMap]
+    finrank (R ⧸ p) (S ⧸ (P : Ideal S) ^ ramificationIdx' p P.1) =
+      ramificationIdx' p P.1 * inertiaDeg' p (P : Ideal S) := by
+  rw [finrank_prime_pow_ramificationIdx, inertiaDeg'_algebraMap]
   exacts [Factors.ne_bot p P, NeZero.ne _]
 
-open scoped Classical in
 instance Factors.finiteDimensional_quotient_pow [Module.Finite R S] [p.IsMaximal]
     (P : (factors (map (algebraMap R S) p)).toFinset) :
-    FiniteDimensional (R ⧸ p) (S ⧸ (P : Ideal S) ^ ramificationIdx p P.1) := by
+    FiniteDimensional (R ⧸ p) (S ⧸ (P : Ideal S) ^ ramificationIdx' p P.1) := by
   refine .of_finrank_pos ?_
   rw [pos_iff_ne_zero, Factors.finrank_pow_ramificationIdx]
-  exact mul_ne_zero (Factors.ramificationIdx_ne_zero p P) (inertiaDeg_pos p P.1).ne'
+  exact mul_ne_zero (Factors.ramificationIdx_ne_zero p P) (inertiaDeg'_pos p P.1).ne'
 
 universe w
 
-open scoped Classical in
 /-- **Chinese remainder theorem** for a ring of integers: if the prime ideal `p : Ideal R`
 factors in `S` as `∏ i, P i ^ e i`, then `S ⧸ I` factors as `Π i, R ⧸ (P i ^ e i)`. -/
 noncomputable def Factors.piQuotientEquiv (p : Ideal R) (hp : map (algebraMap R S) p ≠ ⊥) :
     S ⧸ map (algebraMap R S) p ≃+*
       ∀ P : (factors (map (algebraMap R S) p)).toFinset,
-        S ⧸ (P : Ideal S) ^ ramificationIdx p P.1 :=
+        S ⧸ (P : Ideal S) ^ ramificationIdx' p P.1 :=
   (IsDedekindDomain.quotientEquivPiFactors hp).trans <|
     @RingEquiv.piCongrRight (factors (map (algebraMap R S) p)).toFinset
       (fun P => S ⧸ (P : Ideal S) ^ (factors (map (algebraMap R S) p)).count (P : Ideal S))
-      (fun P => S ⧸ (P : Ideal S) ^ ramificationIdx p P.1) _ _
+      (fun P => S ⧸ (P : Ideal S) ^ ramificationIdx' p P.1) _ _
       fun P : (factors (map (algebraMap R S) p)).toFinset =>
       Ideal.quotEquivOfEq <| by
-        rw [IsDedekindDomain.ramificationIdx_eq_factors_count hp (Factors.isPrime p P)
+        rw [IsDedekindDomain.ramificationIdx'_eq_factors_count hp (Factors.isPrime p P)
             (Factors.ne_bot p P)]
 
 @[simp]
@@ -572,14 +559,13 @@ theorem Factors.piQuotientEquiv_map (p : Ideal R) (hp : map (algebraMap R S) p �
 
 variable (S)
 
-open scoped Classical in
 /-- **Chinese remainder theorem** for a ring of integers: if the prime ideal `p : Ideal R`
 factors in `S` as `∏ i, P i ^ e i`,
 then `S ⧸ I` factors `R ⧸ I`-linearly as `Π i, R ⧸ (P i ^ e i)`. -/
 noncomputable def Factors.piQuotientLinearEquiv (p : Ideal R) (hp : map (algebraMap R S) p ≠ ⊥) :
     (S ⧸ map (algebraMap R S) p) ≃ₗ[R ⧸ p]
       ∀ P : (factors (map (algebraMap R S) p)).toFinset,
-        S ⧸ (P : Ideal S) ^ ramificationIdx p P.1 :=
+        S ⧸ (P : Ideal S) ^ ramificationIdx' p P.1 :=
   { Factors.piQuotientEquiv p hp with
     map_smul' := by
       rintro ⟨c⟩ ⟨x⟩; ext P
@@ -592,17 +578,16 @@ variable (K L : Type*) [Field K] [Field L] [IsDedekindDomain R] [Algebra R K] [I
   [Algebra S L] [IsFractionRing S L] [Algebra K L] [Algebra R L] [IsScalarTower R S L]
   [IsScalarTower R K L] [Module.Finite R S]
 
-open scoped Classical in
 /-- The **fundamental identity** of ramification index `e` and inertia degree `f`:
 for `P` ranging over the primes lying over `p`, `∑ P, e P * f P = [Frac(S) : Frac(R)]`;
 here `S` is a finite `R`-module (and thus `Frac(S) : Frac(R)` is a finite extension) and `p`
 is maximal. -/
 theorem sum_ramification_inertia {p : Ideal R} [p.IsMaximal] (hp0 : p ≠ ⊥) :
-    ∑ P ∈ primesOverFinset p S,
-        ramificationIdx p P * inertiaDeg p P = finrank K L := by
-  set e := ramificationIdx p (S := S)
+    ∑ P ∈ IsDedekindDomain.primesOverFinset p S,
+        ramificationIdx' p P * inertiaDeg' p P = finrank K L := by
+  set e := ramificationIdx' p (S := S)
   calc
-    ∑ P ∈ (factors (map (algebraMap R S) p)).toFinset, e P * inertiaDeg p P =
+    ∑ P ∈ (factors (map (algebraMap R S) p)).toFinset, e P * inertiaDeg' p P =
         ∑ P ∈ (factors (map (algebraMap R S) p)).toFinset.attach,
           finrank (R ⧸ p) (S ⧸ (P : Ideal S) ^ e P) := ?_
     _ = finrank (R ⧸ p)
@@ -620,39 +605,41 @@ theorem sum_ramification_inertia {p : Ideal R} [p.IsMaximal] (hp0 : p ≠ ⊥) :
 
 theorem inertiaDeg_le_finrank [NoZeroSMulDivisors R S] {p : Ideal R} [p.IsMaximal]
     (P : Ideal S) [hP₁ : P.IsPrime] [hP₂ : P.LiesOver p] (hp0 : p ≠ ⊥) :
-    p.inertiaDeg P ≤ Module.finrank K L := by
+    p.inertiaDeg' P ≤ Module.finrank K L := by
   classical
-  have hP : P ∈ primesOverFinset p S := (mem_primesOverFinset_iff hp0 _).mpr ⟨hP₁, hP₂⟩
+  have hP : P ∈ IsDedekindDomain.primesOverFinset p S :=
+    (IsDedekindDomain.mem_primesOverFinset_iff hp0 _).mpr ⟨hP₁, hP₂⟩
   rw [← sum_ramification_inertia S K L hp0, ← Finset.add_sum_erase _ _ hP]
   refine le_trans (Nat.le_mul_of_pos_left _ ?_) (Nat.le_add_right _ _)
-  exact Nat.pos_iff_ne_zero.mpr <| IsDedekindDomain.ramificationIdx_ne_zero_of_liesOver _ hp0
+  exact Nat.pos_iff_ne_zero.mpr <| IsDedekindDomain.ramificationIdx'_ne_zero_of_liesOver _ hp0
 
 theorem ramificationIdx_le_finrank [NoZeroSMulDivisors R S] {p : Ideal R} [p.IsMaximal]
     (P : Ideal S) [hP₁ : P.IsPrime] [hP₂ : P.LiesOver p] :
-    p.ramificationIdx P ≤ Module.finrank K L := by
+    p.ramificationIdx' P ≤ Module.finrank K L := by
   classical
   by_cases hp0 : p = ⊥
   · simp [hp0]
-  have hP : P ∈ primesOverFinset p S := (mem_primesOverFinset_iff hp0 _).mpr ⟨hP₁, hP₂⟩
+  have hP : P ∈ IsDedekindDomain.primesOverFinset p S :=
+    (IsDedekindDomain.mem_primesOverFinset_iff hp0 _).mpr ⟨hP₁, hP₂⟩
   rw [← sum_ramification_inertia S K L hp0, ← Finset.add_sum_erase _ _ hP]
   refine le_trans (Nat.le_mul_of_pos_right _ ?_) (Nat.le_add_right _ _)
-  exact Nat.pos_iff_ne_zero.mpr <| inertiaDeg_ne_zero p P
+  exact Nat.pos_iff_ne_zero.mpr <| inertiaDeg'_ne_zero p P
 
 theorem card_primesOverFinset_le_finrank [NoZeroSMulDivisors R S] {p : Ideal R} [p.IsMaximal]
-    (hp0 : p ≠ ⊥) : Finset.card (primesOverFinset p S) ≤ Module.finrank K L := by
+    (hp0 : p ≠ ⊥) : Finset.card (IsDedekindDomain.primesOverFinset p S) ≤ Module.finrank K L := by
   rw [← sum_ramification_inertia S K L hp0, Finset.card_eq_sum_ones]
   refine Finset.sum_le_sum fun P hP ↦ ?_
-  have : P.IsPrime := ((mem_primesOverFinset_iff hp0 _).mp hP).1
-  have : P.LiesOver p := ((mem_primesOverFinset_iff hp0 _).mp hP).2
+  have : P.IsPrime := ((IsDedekindDomain.mem_primesOverFinset_iff hp0 _).mp hP).1
+  have : P.LiesOver p := ((IsDedekindDomain.mem_primesOverFinset_iff hp0 _).mp hP).2
   refine Right.one_le_mul ?_ ?_
-  · exact Nat.pos_iff_ne_zero.mpr <| IsDedekindDomain.ramificationIdx_ne_zero_of_liesOver _ hp0
-  · exact Nat.pos_iff_ne_zero.mpr <| inertiaDeg_ne_zero p P
+  · exact Nat.pos_iff_ne_zero.mpr <| IsDedekindDomain.ramificationIdx'_ne_zero_of_liesOver _ hp0
+  · exact Nat.pos_iff_ne_zero.mpr <| inertiaDeg'_ne_zero p P
 
 /-- `Ideal.sum_ramification_inertia`, in the local (DVR) case. -/
 lemma ramificationIdx_mul_inertiaDeg_of_isLocalRing [IsLocalRing S] {p : Ideal R} [p.IsMaximal]
     (hp0 : p ≠ ⊥) :
-    ramificationIdx p (IsLocalRing.maximalIdeal S) *
-      p.inertiaDeg (IsLocalRing.maximalIdeal S) = Module.finrank K L := by
+    ramificationIdx' p (IsLocalRing.maximalIdeal S) *
+      p.inertiaDeg' (IsLocalRing.maximalIdeal S) = Module.finrank K L := by
   have := FaithfulSMul.of_field_isFractionRing R S K L
   simp_rw [← sum_ramification_inertia S K L hp0, IsLocalRing.primesOverFinset_eq S hp0,
     Finset.sum_singleton]

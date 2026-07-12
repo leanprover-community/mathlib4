@@ -141,8 +141,12 @@ instance instZero [Zero A] : Zero (CStarMatrix m n A) :=
 instance instAddZeroClass [AddZeroClass A] : AddZeroClass (CStarMatrix m n A) :=
   inferInstanceAs <| AddZeroClass (Matrix m n A)
 
-instance instAddMonoid [AddMonoid A] : AddMonoid (CStarMatrix m n A) :=
-  inferInstanceAs <| AddMonoid (Matrix m n A)
+instance instSMul [SMul R A] : SMul R (CStarMatrix m n A) :=
+  inferInstanceAs <| SMul R (Matrix m n A)
+
+instance instAddMonoid [AddMonoid A] : AddMonoid (CStarMatrix m n A) where
+  nsmul := letI := instSMul (R := ℕ) (A := A) (m := m) (n := n); (· • · )
+  __ : AddMonoid (CStarMatrix m n A) := inferInstanceAs <| AddMonoid (Matrix m n A)
 
 instance instAddCommMonoid [AddCommMonoid A] : AddCommMonoid (CStarMatrix m n A) :=
   inferInstanceAs <| AddCommMonoid (Matrix m n A)
@@ -153,8 +157,9 @@ instance instNeg [Neg A] : Neg (CStarMatrix m n A) :=
 instance instSub [Sub A] : Sub (CStarMatrix m n A) :=
   inferInstanceAs <| Sub (Matrix m n A)
 
-instance instAddGroup [AddGroup A] : AddGroup (CStarMatrix m n A) :=
-  inferInstanceAs <| AddGroup (Matrix m n A)
+instance instAddGroup [AddGroup A] : AddGroup (CStarMatrix m n A) where
+  zsmul := letI := instSMul (R := ℤ) (A := A) (m := m) (n := n); (· • · )
+  __ : AddGroup (CStarMatrix m n A) := inferInstanceAs <| AddGroup (Matrix m n A)
 
 instance instAddCommGroup [AddCommGroup A] : AddCommGroup (CStarMatrix m n A) :=
   inferInstanceAs <| AddCommGroup (Matrix m n A)
@@ -167,9 +172,6 @@ instance instSubsingleton [Subsingleton A] : Subsingleton (CStarMatrix m n A) :=
 
 instance instNontrivial [Nonempty m] [Nonempty n] [Nontrivial A] : Nontrivial (CStarMatrix m n A) :=
   inferInstanceAs <| Nontrivial (Matrix m n A)
-
-instance instSMul [SMul R A] : SMul R (CStarMatrix m n A) :=
-  inferInstanceAs <| SMul R (Matrix m n A)
 
 instance instSMulCommClass [SMul R A] [SMul S A] [SMulCommClass R S A] :
     SMulCommClass R S (CStarMatrix m n A) :=
@@ -401,7 +403,6 @@ lemma reindexₗ_apply {l o : Type*} [Semiring R] [AddCommMonoid A] [Module R A]
     {eₘ : m ≃ l} {eₙ : n ≃ o} {M : CStarMatrix m n A} {i : l} {j : o} :
     reindexₗ R A eₘ eₙ M i j = Matrix.reindex eₘ eₙ M i j := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The natural map that reindexes a matrix's rows and columns with equivalent types is an
 equivalence. -/
 def reindexₐ (R) (A) [Fintype m] [Fintype n] [Semiring R] [AddCommMonoid A] [Mul A] [Module R A]
@@ -418,7 +419,7 @@ def reindexₐ (R) (A) [Fintype m] [Fintype n] [Semiring R] [AddCommMonoid A] [M
       unfold reindexₗ
       dsimp only [Equiv.toFun_as_coe, Equiv.invFun_as_coe, Matrix.reindex_symm, AddHom.toFun_eq_coe,
         AddHom.coe_mk, Matrix.reindex_apply, Matrix.submatrix_apply]
-      rw [Matrix.star_apply, Matrix.star_apply]
+      rw [star_apply, star_apply]
       simp [Matrix.submatrix_apply] }
 
 @[simp]
@@ -474,26 +475,25 @@ def toOneByOne [Unique n] [Semiring R] [AddCommMonoid A] [Mul A] [Star A] [Modul
 
 end basic
 
-variable [Fintype m] [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
+variable [Fintype m] [NonUnitalCStarAlgebra A]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Interpret a `CStarMatrix m n A` as a continuous linear map acting on `C⋆ᵐᵒᵈ (n → A)`. -/
 noncomputable def toCLM : CStarMatrix m n A →ₗ[ℂ] C⋆ᵐᵒᵈ(A, m → A) →L[ℂ] C⋆ᵐᵒᵈ(A, n → A) where
   toFun M := { toFun := (WithCStarModule.equivL ℂ).symm ∘ M.vecMul ∘ WithCStarModule.equivL ℂ
                map_add' := M.add_vecMul
-               map_smul' := M.smul_vecMul
-               cont := Continuous.comp (by fun_prop) (by fun_prop) }
+               map_smul' := M.smul_vecMul }
   map_add' M₁ M₂ := by
     ext
     simp only [ContinuousLinearMap.coe_mk', LinearMap.coe_mk, AddHom.coe_mk, Function.comp_apply,
       WithCStarModule.equivL_apply, WithCStarModule.equivL_symm_apply,
-      WithCStarModule.equiv_symm_pi_apply, ContinuousLinearMap.add_apply, WithCStarModule.add_apply]
+      WithCStarModule.equiv_symm_pi_apply, _root_.add_apply, WithCStarModule.add_apply]
     rw [Matrix.vecMul_add, Pi.add_apply]
   map_smul' c M := by
     ext x i
     simp only [ContinuousLinearMap.coe_mk', LinearMap.coe_mk, AddHom.coe_mk, Function.comp_apply,
       WithCStarModule.equivL_apply, WithCStarModule.equivL_symm_apply,
-      WithCStarModule.equiv_symm_pi_apply, ContinuousLinearMap.smul_apply,
+      WithCStarModule.equiv_symm_pi_apply, _root_.smul_apply,
       WithCStarModule.smul_apply, RingHom.id_apply]
     rw [Matrix.vecMul_smul, Pi.smul_apply]
 
@@ -537,22 +537,23 @@ open WithCStarModule in
 lemma toCLM_apply_single_apply [DecidableEq m] {M : CStarMatrix m n A} {i : m} {j : n} (a : A) :
     (toCLM M) (equiv _ _ |>.symm <| Pi.single i a) j = a * M i j := by simp
 
+lemma toCLM_injective : Function.Injective (toCLM (A := A) (m := m) (n := n)) := by
+  classical
+  rw [injective_iff_map_eq_zero]
+  intro M h
+  ext i j
+  rw [zero_apply, ← norm_eq_zero, ← sq_eq_zero_iff, sq, ← CStarRing.norm_star_mul_self,
+    ← toCLM_apply_single_apply]
+  simp [h]
+
+variable [PartialOrder A] [StarOrderedRing A]
+
 open WithCStarModule in
 lemma mul_entry_mul_eq_inner_toCLM [Fintype n] [DecidableEq m] [DecidableEq n]
     {M : CStarMatrix m n A} {i : m} {j : n} (a b : A) :
     a * M i j * star b
       = ⟪equiv _ _ |>.symm (Pi.single j b), toCLM M (equiv _ _ |>.symm <| Pi.single i a)⟫_A := by
   simp [mul_assoc, inner_def]
-
-set_option backward.isDefEq.respectTransparency false in
-lemma toCLM_injective : Function.Injective (toCLM (A := A) (m := m) (n := n)) := by
-  classical
-  rw [injective_iff_map_eq_zero]
-  intro M h
-  ext i j
-  rw [Matrix.zero_apply, ← norm_eq_zero, ← sq_eq_zero_iff, sq, ← CStarRing.norm_star_mul_self,
-    ← toCLM_apply_single_apply]
-  simp [h]
 
 variable [Fintype n]
 
@@ -580,9 +581,9 @@ lemma norm_def' {M : CStarMatrix n n A} : ‖M‖ = ‖toCLMNonUnitalAlgHom (A :
 lemma normedSpaceCore : NormedSpace.Core ℂ (CStarMatrix m n A) where
   norm_nonneg M := (toCLM M).opNorm_nonneg
   norm_smul c M := by rw [norm_def, norm_def, map_smul, norm_smul _ (toCLM M)]
-  norm_triangle M₁ M₂ := by simpa [← map_add] using norm_add_le (toCLM M₁) (toCLM M₂)
+  norm_triangle M₁ M₂ := by simpa [← map_add] using! norm_add_le (toCLM M₁) (toCLM M₂)
   norm_eq_zero_iff := by
-    simpa only [norm_def, norm_eq_zero, ← injective_iff_map_eq_zero'] using toCLM_injective
+    simpa only [norm_def, norm_eq_zero, ← injective_iff_map_eq_zero'] using! toCLM_injective
 
 open WithCStarModule in
 lemma norm_entry_le_norm {M : CStarMatrix m n A} {i : m} {j : n} :
@@ -631,7 +632,6 @@ namespace CStarMatrix
 variable {m n A : Type*} [Fintype m] [Fintype n]
   [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
-set_option backward.privateInPublic true in
 private noncomputable local instance normedAddCommGroupAux :
     NormedAddCommGroup (CStarMatrix m n A) :=
   .ofCore CStarMatrix.normedSpaceCore
@@ -685,7 +685,6 @@ private lemma uniformInducing_toMatrixAux :
     lipschitzWith_toMatrixAux.uniformContinuous
 
 set_option backward.isDefEq.respectTransparency false in
-set_option backward.privateInPublic true in
 private lemma uniformity_eq_aux :
     𝓤 (CStarMatrix m n A) = (𝓤[Pi.uniformSpace _] :
       Filter (CStarMatrix m n A × CStarMatrix m n A)) := by
@@ -697,7 +696,6 @@ private lemma uniformity_eq_aux :
   rfl
 
 open Bornology in
-set_option backward.privateInPublic true in
 private lemma cobounded_eq_aux :
     cobounded (CStarMatrix m n A) = @cobounded _ Pi.instBornology := by
   have : cobounded (CStarMatrix m n A) = Filter.comap ofMatrix.symm (cobounded _) := by
@@ -745,22 +743,19 @@ instance instContinuousSMul {R : Type*} [SMul R A] [TopologicalSpace R] [Continu
     ContinuousSMul R (CStarMatrix m n A) :=
   inferInstanceAs <| ContinuousSMul R (Matrix m n A)
 
-
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 noncomputable instance instNormedAddCommGroup :
     NormedAddCommGroup (CStarMatrix m n A) :=
-  .ofCoreReplaceAll CStarMatrix.normedSpaceCore
-    CStarMatrix.uniformity_eq_aux.symm
-      fun _ => Filter.ext_iff.1 CStarMatrix.cobounded_eq_aux.symm _
+  fast_instance% .ofCoreReplaceAll CStarMatrix.normedSpaceCore ?_ (fun _ ↦ ?_)
+where finally
+  exacts [CStarMatrix.uniformity_eq_aux.symm, Filter.ext_iff.1 CStarMatrix.cobounded_eq_aux.symm _]
 
 noncomputable instance instNormedSpace : NormedSpace ℂ (CStarMatrix m n A) :=
   .ofCore CStarMatrix.normedSpaceCore
 
 noncomputable instance instNonUnitalNormedRing :
     NonUnitalNormedRing (CStarMatrix n n A) where
-  __ : NormedAddCommGroup (CStarMatrix n n A) := inferInstance
   __ : NonUnitalRing (CStarMatrix n n A) := inferInstance
+  __ : NormedAddCommGroup (CStarMatrix n n A) := inferInstance
   norm_mul_le _ _ := by simpa only [norm_def', map_mul] using norm_mul_le _ _
 
 open ContinuousLinearMap CStarModule in
@@ -792,7 +787,6 @@ instance instCStarRing : CStarRing (CStarMatrix n n A) :=
     rw [← Real.sqrt_le_sqrt_iff (by positivity)]
     simp [hmain]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Matrices with entries in a non-unital C⋆-algebra form a non-unital C⋆-algebra. -/
 noncomputable instance instNonUnitalCStarAlgebra :
     NonUnitalCStarAlgebra (CStarMatrix n n A) where
@@ -819,7 +813,6 @@ noncomputable instance instNormedRing : NormedRing (CStarMatrix n n A) where
 noncomputable instance instNormedAlgebra : NormedAlgebra ℂ (CStarMatrix n n A) where
   norm_smul_le r M := by simpa only [norm_def, map_smul] using (toCLM M).opNorm_smul_le r
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Matrices with entries in a unital C⋆-algebra form a unital C⋆-algebra. -/
 noncomputable instance instCStarAlgebra : CStarAlgebra (CStarMatrix n n A) where
 

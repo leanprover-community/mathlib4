@@ -128,7 +128,7 @@ theorem eq_pow (a : ℤ) : (legendreSym p a : ZMod p) = (a : ZMod p) ^ (p / 2) :
       generalize (a : ZMod 2) = b; fin_cases b
       · tauto
       · simp
-  · convert quadraticChar_eq_pow_of_char_ne_two' hc (a : ZMod p)
+  · convert! quadraticChar_eq_pow_of_char_ne_two' hc (a : ZMod p)
     exact (card p).symm
 
 /-- If `p ∤ a`, then `legendreSym p a` is `1` or `-1`. -/
@@ -274,6 +274,10 @@ open ZMod
 theorem legendreSym.at_neg_one (hp : p ≠ 2) : legendreSym p (-1) = χ₄ p := by
   simp only [legendreSym, card p, quadraticChar_neg_one ((ringChar_zmod_n p).substr hp),
     Int.cast_neg, Int.cast_one]
+
+/-- The value of the Legendre symbol at `-a` is `χ₄ p` times the value at `a`. -/
+theorem legendreSym.at_neg (hp : p ≠ 2) (a : ℤ) : legendreSym p (-a) = χ₄ p * legendreSym p a := by
+  rw [neg_eq_neg_one_mul, legendreSym.mul p (-1) a, legendreSym.at_neg_one hp]
 
 namespace ZMod
 

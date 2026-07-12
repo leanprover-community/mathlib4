@@ -74,7 +74,7 @@ theorem eval_iterate_derivative_rootMultiplicity {p : R[X]} {t : R} :
       (p.rootMultiplicity t).factorial • (p /ₘ (X - C t) ^ p.rootMultiplicity t).eval t := by
   set m := p.rootMultiplicity t with hm
   conv_lhs => rw [← p.pow_mul_divByMonic_rootMultiplicity_eq t, ← hm]
-  rw [iterate_derivative_mul, eval_finset_sum, sum_eq_single_of_mem _ (mem_range.mpr m.succ_pos)]
+  rw [iterate_derivative_mul, eval_finsetSum, sum_eq_single_of_mem _ (mem_range.mpr m.succ_pos)]
   · rw [m.choose_zero_right, one_smul, eval_mul, m.sub_zero, iterate_derivative_X_sub_pow_self,
       eval_natCast, nsmul_eq_mul]; rfl
   · intro b hb hb0
@@ -162,8 +162,7 @@ theorem rootMultiplicity_sub_one_le_derivative_rootMultiplicity [CharZero R] (p 
     p.rootMultiplicity t - 1 ≤ p.derivative.rootMultiplicity t := by
   by_cases h : p.IsRoot t
   · exact (derivative_rootMultiplicity_of_root h).symm.le
-  · rw [rootMultiplicity_eq_zero h, zero_tsub]
-    exact zero_le _
+  · simp [rootMultiplicity_eq_zero h]
 
 theorem lt_rootMultiplicity_of_isRoot_iterate_derivative
     [CharZero R] {p : R[X]} {t : R} {n : ℕ} (h : p ≠ 0)
@@ -186,7 +185,7 @@ theorem isRoot_of_isRoot_of_dvd_derivative_mul [CharZero R] {f g : R[X]} (hf0 : 
     (hfd : f ∣ f.derivative * g) {a : R} (haf : f.IsRoot a) : g.IsRoot a := by
   rcases hfd with ⟨r, hr⟩
   have hdf0 : derivative f ≠ 0 := by
-    contrapose! haf
+    contrapose haf
     rw [eq_C_of_derivative_eq_zero haf] at hf0 ⊢
     exact not_isRoot_C _ _ <| C_ne_zero.mp hf0
   by_contra hg
@@ -198,29 +197,32 @@ theorem isRoot_of_isRoot_of_dvd_derivative_mul [CharZero R] {f g : R[X]} (hf0 : 
     Nat.sub_eq_iff_eq_add (Nat.succ_le_iff.2 ((rootMultiplicity_pos hf0).2 haf))] at hr'
   lia
 
-section NormalizationMonoid
 
-variable [NormalizationMonoid R]
-
-instance instNormalizationMonoid : NormalizationMonoid R[X] where
+instance instNormalizationMonoid [NormalizationMonoid R] : NormalizationMonoid R[X] where
   normUnit p :=
     ⟨C ↑(normUnit p.leadingCoeff), C ↑(normUnit p.leadingCoeff)⁻¹, by
       rw [← map_mul, Units.mul_inv, C_1], by rw [← map_mul, Units.inv_mul, C_1]⟩
   normUnit_zero := Units.ext (by simp)
+  normUnit_one := Units.ext (by simp)
+  normUnit_mul_units u h := Units.ext <| by
+    dsimp only [Units.val_mul]
+    obtain ⟨_, ⟨w, rfl⟩, h2⟩ := isUnit_iff.1 ⟨u, rfl⟩
+    rw [leadingCoeff_mul, ← h2, leadingCoeff_C, normUnit_mul_units _ (leadingCoeff_ne_zero.2 h),
+      Units.eq_inv_mul_iff_mul_eq, Units.val_mul, C_mul, ← mul_assoc, ← h2, ← C_mul]
+    simp
+
+instance [StrongNormalizationMonoid R] : StrongNormalizationMonoid R[X] where
   normUnit_mul hp0 hq0 :=
     Units.ext
       (by
         dsimp
         rw [Ne, ← leadingCoeff_eq_zero] at *
-        rw [leadingCoeff_mul, normUnit_mul hp0 hq0, Units.val_mul, C_mul])
-  normUnit_coe_units u :=
-    Units.ext
-      (by
-        dsimp
-        rw [← mul_one u⁻¹, Units.val_mul, Units.eq_inv_mul_iff_mul_eq]
-        rcases Polynomial.isUnit_iff.1 ⟨u, rfl⟩ with ⟨_, ⟨w, rfl⟩, h2⟩
-        rw [← h2, leadingCoeff_C, normUnit_coe_units, ← C_mul, Units.mul_inv, C_1]
-        rfl)
+        simp_rw [normUnit, leadingCoeff_mul, normUnit_mul hp0 hq0, Units.val_mul, C_mul])
+  normUnit_coe_units := normUnit_coe_units
+
+section NormalizationMonoid
+
+variable [NormalizationMonoid R]
 
 @[simp]
 theorem coe_normUnit {p : R[X]} : (normUnit p : R[X]) = C ↑(normUnit p.leadingCoeff) := by
@@ -238,11 +240,11 @@ theorem roots_normalize {R} [CommRing R] [IsDomain R] [NormalizationMonoid R] {p
     (normalize p).roots = p.roots := by
   rw [normalize_apply, mul_comm, coe_normUnit, roots_C_mul _ (normUnit (leadingCoeff p)).ne_zero]
 
-theorem normUnit_X : normUnit (X : Polynomial R) = 1 := by
+theorem normUnit_X : normUnit (X : R[X]) = 1 := by
   have := coe_normUnit (R := R) (p := X)
   rwa [leadingCoeff_X, normUnit_one, Units.val_one, map_one, Units.val_eq_one] at this
 
-theorem X_eq_normalize : (X : Polynomial R) = normalize X := by
+theorem X_eq_normalize : X = normalize (X : R[X]) := by
   simp only [normalize_apply, normUnit_X, Units.val_one, mul_one]
 
 end NormalizationMonoid
@@ -423,13 +425,13 @@ lemma natDegree_mod_lt [Field k] (p : k[X]) {q : k[X]} (hq : q.natDegree ≠ 0) 
     (p % q).natDegree < q.natDegree := by
   have hq' : q.leadingCoeff ≠ 0 := by
     rw [leadingCoeff_ne_zero]
-    contrapose! hq
+    contrapose hq
     simp [hq]
   rw [mod_def]
   refine (natDegree_modByMonic_lt p ?_ ?_).trans_le ?_
   · refine monic_mul_C_of_leadingCoeff_mul_eq_one ?_
     rw [mul_inv_eq_one₀ hq']
-  · contrapose! hq
+  · contrapose hq
     rw [← natDegree_mul_C_eq_of_mul_eq_one ((inv_mul_eq_one₀ hq').mpr rfl)]
     simp [hq]
   · exact natDegree_mul_C_le q q.leadingCoeff⁻¹
@@ -549,7 +551,7 @@ theorem monic_normalize [DecidableEq R] (hp0 : p ≠ 0) : Monic (normalize p) :=
   rw [Monic, leadingCoeff_normalize, normalize_eq_one]
   apply hp0
 
-theorem normalize_eq_self_iff_monic [DecidableEq R] {p : Polynomial R} (hp : p ≠ 0) :
+theorem normalize_eq_self_iff_monic [DecidableEq R] {p : R[X]} (hp : p ≠ 0) :
     normalize p = p ↔ p.Monic :=
   ⟨fun h ↦ h ▸ monic_normalize hp, fun h ↦ Monic.normalize_eq_self h⟩
 
@@ -654,7 +656,7 @@ theorem isCoprime_of_is_root_of_eval_derivative_ne_zero {K : Type*} [Field K] (f
   refine Or.resolve_left
       (EuclideanDomain.dvd_or_coprime (X - C a) (f /ₘ (X - C a))
         (irreducible_of_degree_eq_one (Polynomial.degree_X_sub_C a))) ?_
-  contrapose! hf' with h
+  contrapose hf' with h
   have : X - C a ∣ derivative f := X_sub_C_dvd_derivative_of_X_sub_C_dvd_divByMonic f h
   rw [← modByMonic_eq_zero_iff_dvd (monic_X_sub_C _), modByMonic_X_sub_C_eq_C_eval] at this
   rwa [← C_inj, C_0]
@@ -669,7 +671,7 @@ theorem irreducible_iff_degree_lt (p : R[X]) (hp0 : p ≠ 0) (hpu : ¬ IsUnit p)
   rw [← irreducible_mul_leadingCoeff_inv,
       (monic_mul_leadingCoeff_inv hp0).irreducible_iff_degree_lt]
   · simp [hp0, natDegree_mul_leadingCoeff_inv]
-  · contrapose! hpu
+  · contrapose hpu
     exact .of_mul_eq_one _ hpu
 
 /-- To check a polynomial `p` over a field is irreducible, it suffices to check there are no
@@ -680,7 +682,7 @@ See also: `Polynomial.Monic.irreducible_iff_natDegree'`.
 theorem irreducible_iff_lt_natDegree_lt {p : R[X]} (hp0 : p ≠ 0) (hpu : ¬ IsUnit p) :
     Irreducible p ↔ ∀ q, Monic q → natDegree q ∈ Finset.Ioc 0 (natDegree p / 2) → ¬ q ∣ p := by
   have : p * C (leadingCoeff p)⁻¹ ≠ 1 := by
-    contrapose! hpu
+    contrapose hpu
     exact .of_mul_eq_one _ hpu
   rw [← irreducible_mul_leadingCoeff_inv,
       (monic_mul_leadingCoeff_inv hp0).irreducible_iff_lt_natDegree_lt this,

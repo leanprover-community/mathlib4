@@ -24,6 +24,7 @@ module as `A.V` and the representation on it as `A.ρ`.
 universe w w' u u' v v'
 
 open CategoryTheory
+open scoped MonoidAlgebra
 
 set_option backward.privateInPublic true in
 /-- The category of representations of monoid `G` and their morphisms. -/
@@ -149,6 +150,7 @@ lemma forget_map (f : A ⟶ B) : (forget (Rep.{w} k G)).map f = (f : _ → _) :=
 
 /-- An equiv between the underlying representations induce isomorphism between objects in
   `Rep k G`. -/
+@[simps]
 def mkIso (e : ρ.Equiv σ) : of ρ ≅ of σ where
   hom := ofHom e.toIntertwiningMap
   inv := ofHom e.symm.toIntertwiningMap
@@ -403,17 +405,13 @@ variable {k G}
 /-- Given an element `x : A`, there is a natural morphism of representations `k[G] ⟶ A` sending
 `g ↦ A.ρ(g)(x).` -/
 abbrev leftRegularHom (A : Rep k G) (x : A) : leftRegular k G ⟶ A :=
-  Rep.ofHom ⟨Finsupp.lift A k G fun g ↦ A.ρ g x, fun g ↦ by ext; simp⟩
+  Rep.ofHom ⟨Finsupp.lift A k G (fun g ↦ A.ρ g x) ∘ₗ (MonoidAlgebra.coeffLinearEquiv _).toLinearMap,
+    fun g ↦ by ext; simp⟩
 
 theorem leftRegularHom_hom_single {A : Rep k G} (g : G) (x : A) (r : k) :
     (leftRegularHom A x).hom (.single g r) = r • A.ρ g x := by
   simp [leftRegularHom]
 
-end setup
-
-section Commutative
-
-variable {G : Type v} [CommMonoid G]
 variable (A : Rep k G)
 
 /-- Given a `k`-linear `G`-representation `(V, ρ)`, this is the representation defined by
@@ -436,11 +434,11 @@ abbrev quotient (W : Submodule k A) (le_comap : ∀ g, W ≤ W.comap (A.ρ g)) :
 def mkQ (W : Submodule k A) (le_comap : ∀ g, W ≤ W.comap (A.ρ g)) :
     A ⟶ quotient A W le_comap := Rep.ofHom ⟨W.mkQ, fun _ ↦ rfl⟩
 
-end Commutative
+end setup
 
 variable (k G) in
 /-- The functor equipping a module with the trivial representation. -/
-@[simps! obj_V map_hom]
+@[implicit_reducible, simps! obj_V map_hom]
 def trivialFunctor : ModuleCat.{w} k ⥤ Rep.{w} k G where
   obj V := trivial k G V
   map f := ofHom ⟨f.hom, fun _ ↦ rfl⟩
@@ -521,10 +519,10 @@ def repIsoAction : Rep.{w} k G ≌ Action (ModuleCat.{w} k) G where
   counitIso := NatIso.ofComponents (RepToAction_ActionToRep k G)
 
 instance : (RepToAction k G).IsEquivalence :=
-  repIsoAction k G|>.isEquivalence_functor
+  repIsoAction k G |>.isEquivalence_functor
 
 instance : (ActionToRep k G).IsEquivalence :=
-  repIsoAction k G|>.isEquivalence_inverse
+  repIsoAction k G |>.isEquivalence_inverse
 
 instance : (forget₂ (Rep.{w} k G) (ModuleCat.{w} k)).Additive where
   map_add {X Y} f g := by ext1; simp [add_hom]
@@ -541,6 +539,37 @@ instance preservesLimits_forget :
 instance preservesColimits_forget :
     Limits.PreservesColimitsOfSize.{w, w} (forget₂ (Rep.{w} k G) (ModuleCat k)) :=
   Limits.preservesColimits_of_natIso (forgetNatIsoActionForget k G).symm
+
+instance : Limits.HasBinaryBiproducts (Rep.{w} k G) where
+  has_binary_biproduct A B := Limits.hasBinaryBiproduct_of_total
+    ⟨Rep.of (X := A.V × B.V) (A.ρ.prod B.ρ), Rep.ofHom (.fst k A.ρ B.ρ), Rep.ofHom (.snd k A.ρ B.ρ),
+      Rep.ofHom (.inl k A.ρ B.ρ), Rep.ofHom (.inr k A.ρ B.ρ), by ext1; simp,
+      by ext1; simp [zero_hom], by ext1; simp [zero_hom], by ext1; simp⟩ <| by
+    ext1; simp [Rep.add_hom]
+
+instance : Limits.HasZeroObject (Rep.{w} k G) where
+  zero := ⟨Rep.trivial k G PUnit, {
+    unique_to X := Nonempty.intro ⟨⟨0⟩, fun f ↦ by
+      ext x; have : x = 0 := Subsingleton.elim _ _; subst this; simp⟩
+    unique_from X := Nonempty.intro ⟨⟨0⟩, fun f ↦ by ext⟩
+  }⟩
+
+/-- An object of `Rep k G` is zero iff the underlying `k`-module is zero. -/
+lemma isZero_iff (M : Rep k G) : Limits.IsZero M ↔ Subsingleton M.V := by
+  simp [Limits.IsZero.iff_id_eq_zero, Rep.hom_ext_iff, Representation.IntertwiningMap.ext_iff,
+    ← ModuleCat.isZero_of_iff_subsingleton (R := k), ModuleCat.hom_ext_iff]
+
+instance : Limits.HasLimits (Rep.{w} k G) :=
+  Adjunction.has_limits_of_equivalence (repIsoAction k G).functor
+
+instance : Limits.HasColimits (Rep.{w} k G) :=
+  Adjunction.has_colimits_of_equivalence (repIsoAction k G).functor
+
+instance : Limits.ReflectsLimitsOfSize.{w, w} (forget₂ (Rep.{w} k G) (ModuleCat k)) :=
+  Limits.reflectsLimits_of_reflectsIsomorphisms
+
+instance : Limits.ReflectsColimitsOfSize.{w, w} (forget₂ (Rep.{w} k G) (ModuleCat k)) :=
+  Limits.reflectsColimits_of_reflectsIsomorphisms
 
 variable {k G} in
 theorem epi_iff_surjective (f : A ⟶ B) : Epi f ↔ Function.Surjective f.hom :=
@@ -564,7 +593,9 @@ end Action
 
 end ring
 
-variable {k : Type u} {G : Type v} [CommRing k] [Monoid G]
+section CommSemiring
+
+variable {k : Type u} {G : Type v} [CommSemiring k] [Monoid G]
 
 instance {M N : Rep k G} : SMul k (M ⟶ N) where
   smul r f := ofHom (r • f.hom)
@@ -592,7 +623,10 @@ instance : Linear k (Rep k G) where
   smul_comp _ _ _ := smul_comp
   comp_smul _ _ _ := comp_smul
 
-set_option backward.isDefEq.respectTransparency false in
+end CommSemiring
+
+variable {k : Type u} {G : Type v} [CommRing k] [Monoid G]
+
 instance : Functor.Linear k (forget₂ (Rep.{w} k G) (ModuleCat.{w} k)) where
   map_smul {X Y} f r := by
     ext
@@ -738,6 +772,7 @@ protected noncomputable def ihom : Rep k G ⥤ Rep k G where
     ((Rep.ihom A).obj B).ρ g x = B.ρ g ∘ₗ x ∘ₗ A.ρ g⁻¹ :=
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Given a `k`-linear `G`-representation `A`, this is the Hom-set bijection in the adjunction
 `A ⊗ - ⊣ ihom(A, -)`. It sends `f : A ⊗ B ⟶ C` to a `Rep k G` morphism defined by currying the
@@ -766,8 +801,9 @@ noncomputable instance : MonoidalClosed (Rep k G) where
         homEquiv := Rep.tensorHomEquiv A
         homEquiv_naturality_left_symm := fun _ _ => Rep.hom_ext <|
           Representation.IntertwiningMap.ext <| TensorProduct.ext' fun _ _ => rfl
-        homEquiv_naturality_right := fun _ _ => Rep.hom_ext <|
-          Representation.IntertwiningMap.ext <| LinearMap.ext fun _ => LinearMap.ext fun _ => rfl})}
+        homEquiv_naturality_right _ _ := Rep.hom_ext <|
+          Representation.IntertwiningMap.ext <|
+            LinearMap.ext fun _ ↦ LinearMap.ext fun _ => rfl }) }
 
 @[simp]
 theorem ihom_obj_ρ_def (A B : Rep k G) : ((ihom A).obj B).ρ = ((Rep.ihom A).obj B).ρ :=
@@ -829,7 +865,7 @@ end MonoidalClosed
 
 section
 
-variable {G : Type v} [Group G] [Fintype G] (A : Rep.{w} k G)
+variable {k : Type u} [Semiring k] {G : Type v} [Group G] [Fintype G] (A : Rep.{w} k G)
 
 /-- Given a representation `A` of a finite group `G`, `norm A` is the representation morphism
 `A ⟶ A` defined by `x ↦ ∑ A.ρ g x` for `g` in `G`. -/
@@ -888,7 +924,7 @@ abbrev freeLiftLEquiv :
   homLinearEquiv _ _ ≪≫ₗ Representation.freeLiftLEquiv A.ρ α
 
 lemma free_ext (f g : free k G α ⟶ A)
-    (h : ∀ i : α, f.hom (single i (single 1 1)) = g.hom (single i (single 1 1))) : f = g := by
+    (h : ∀ i : α, f.hom (single i (.single 1 1)) = g.hom (single i (.single 1 1))) : f = g := by
   classical exact (freeLiftLEquiv k G α A).injective (funext_iff.2 h)
 
 variable {A}
@@ -914,11 +950,8 @@ section
 variable (k G α : Type u) [DecidableEq α] [CommRing k] [Monoid G]
 
 /-- The natural isomorphism sending `single g r₁ ⊗ single a r₂ ↦ single a (single g r₁r₂)`. -/
-abbrev leftRegularTensorTrivialIsoFree :
-    leftRegular k G ⊗ trivial k G (α →₀ k) ≅ free k G α :=
+abbrev leftRegularTensorTrivialIsoFree : leftRegular k G ⊗ trivial k G k[α] ≅ free k G α :=
   mkIso (Representation.leftRegularTensorTrivialIsoFree α)
-
-variable {α}
 
 end
 end
@@ -927,12 +960,12 @@ end Finsupp
 /-- The monoidal functor sending a type `H` with a `G`-action to the induced `k`-linear
 `G`-representation on `k[H].` -/
 @[simps]
-abbrev linearization : (Action (Type w) G) ⥤ (Rep.{max w u} k G) where
-  obj X := Rep.of (X := X.V →₀ k) <| Representation.linearize k G X
+abbrev linearization : Action (Type w) G ⥤ Rep.{max w u} k G where
+  obj X := .of <| .linearize k G X
   map f := Rep.ofHom <| Representation.linearizeMap f
 
 open MonoidalCategory Representation.LinearizeMonoidal in
-instance : (linearization k G).Monoidal where
+instance : (linearization k G).LaxMonoidal where
   ε := ofHom (ε k G)
   μ X Y := ofHom (μ X Y)
   μ_natural_left f Z := hom_ext <| μ_comp_rTensor f Z
@@ -940,13 +973,19 @@ instance : (linearization k G).Monoidal where
   associativity X Y Z := by ext1; simp [μ_comp_assoc _]
   left_unitality X := hom_ext <| μ_leftUnitor X
   right_unitality X := hom_ext <| μ_rightUnitor X
+
+open MonoidalCategory Representation.LinearizeMonoidal in
+instance : (linearization k G).OplaxMonoidal where
   η := ofHom (η k G)
   δ X Y := ofHom (δ X Y)
   δ_natural_left f Z := hom_ext <| rTensor_comp_δ Z f
   δ_natural_right Z f := hom_ext <| lTensor_comp_δ Z f
-  oplax_associativity X Y Z := hom_ext <| assoc_comp_δ X Y Z
+  oplax_associativity X Y Z := hom_ext <| by simpa using assoc_comp_δ X Y Z (k := k)
   oplax_left_unitality X := hom_ext <| leftUnitor_δ X
   oplax_right_unitality X := hom_ext <| rightUnitor_δ X
+
+open MonoidalCategory Representation.LinearizeMonoidal in
+instance : (linearization k G).Monoidal where
   ε_η := hom_ext <| η_ε k G
   η_ε := hom_ext <| ε_η k G
   μ_δ X Y := hom_ext <| δ_μ (k := k) X Y
@@ -988,7 +1027,7 @@ variable (k G) in
 /-- The linearization of a type `X` on which `G` acts trivially is the trivial `G`-representation
 on `k[X]`. -/
 abbrev linearizationTrivialIso (X : Type u) :
-    (linearization k G).obj (Action.trivial _ X) ≅ trivial k G (X →₀ k) :=
+    (linearization k G).obj (Action.trivial _ X) ≅ trivial k G k[X] :=
   Rep.mkIso (Representation.linearizeTrivialIso k G X)
 
 variable (k G) in

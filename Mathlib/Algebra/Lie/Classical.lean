@@ -73,10 +73,8 @@ namespace LieAlgebra
 
 open Matrix
 
-open scoped Matrix
-
 variable (n p q l : Type*) (R : Type u₂)
-variable [DecidableEq n] [DecidableEq p] [DecidableEq q] [DecidableEq l]
+variable [DecidableEq p] [DecidableEq q] [DecidableEq l]
 variable [CommRing R]
 
 @[simp]
@@ -86,6 +84,9 @@ theorem matrix_trace_commutator_zero [Fintype n] (X Y : Matrix n n R) : Matrix.t
     _ = Matrix.trace (X * Y) - Matrix.trace (X * Y) :=
       (congr_arg (fun x => _ - x) (Matrix.trace_mul_comm Y X))
     _ = 0 := sub_self _
+
+variable [DecidableEq n]
+attribute [local instance 100] LieRing.ofAssociativeRing
 
 namespace SpecialLinear
 
@@ -234,14 +235,16 @@ theorem soIndefiniteEquiv_apply {i : R} (hi : i * i = -1) (A : so' p q R) :
     (soIndefiniteEquiv p q R hi A : Matrix (p ⊕ q) (p ⊕ q) R) =
       (Pso p q R i)⁻¹ * (A : Matrix (p ⊕ q) (p ⊕ q) R) * Pso p q R i := by
   rw [soIndefiniteEquiv, LieEquiv.trans_apply, LieEquiv.ofEq_apply]
-  grind [skewAdjointMatricesLieSubalgebraEquiv_apply]
+  simp only [so', skewAdjointMatricesLieSubalgebraEquiv_apply]
 
 /-- A matrix defining a canonical even-rank symmetric bilinear form.
 
 It looks like this as a `2l x 2l` matrix of `l x l` blocks:
 
-   [ 0 1 ]
-   [ 1 0 ]
+```
+[ 0 1 ]
+[ 1 0 ]
+```
 -/
 def JD : Matrix (l ⊕ l) (l ⊕ l) R :=
   Matrix.fromBlocks 0 1 1 0
@@ -256,9 +259,10 @@ diagonal matrix.
 
 It looks like this as a `2l x 2l` matrix of `l x l` blocks:
 
-   [ 1 -1 ]
-   [ 1  1 ]
--/
+```
+[ 1 -1 ]
+[ 1  1 ]
+``` -/
 def PD : Matrix (l ⊕ l) (l ⊕ l) R :=
   Matrix.fromBlocks 1 (-1) 1 1
 
@@ -276,7 +280,6 @@ theorem jd_transform [Fintype l] : (PD l R)ᵀ * JD l R * PD l R = (2 : R) • S
   rw [h, PD, s_as_blocks, Matrix.fromBlocks_multiply, Matrix.fromBlocks_smul]
   simp [two_smul]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem pd_inv [Fintype l] [Invertible (2 : R)] : PD l R * ⅟(2 : R) • (PD l R)ᵀ = 1 := by
   rw [PD, Matrix.fromBlocks_transpose, Matrix.fromBlocks_smul,
     Matrix.fromBlocks_multiply]
@@ -298,15 +301,19 @@ noncomputable def typeDEquivSo' [Fintype l] [Invertible (2 : R)] : typeD l R ≃
 
 It looks like this as a `(2l+1) x (2l+1)` matrix of blocks:
 
-   [ 2 0 0 ]
-   [ 0 0 1 ]
-   [ 0 1 0 ]
+```
+[ 2 0 0 ]
+[ 0 0 1 ]
+[ 0 1 0 ]
+```
 
 where sizes of the blocks are:
 
-   [`1 x 1` `1 x l` `1 x l`]
-   [`l x 1` `l x l` `l x l`]
-   [`l x 1` `l x l` `l x l`]
+```
+[`1 x 1` `1 x l` `1 x l`]
+[`l x 1` `l x l` `l x l`]
+[`l x 1` `l x l` `l x l`]
+```
 -/
 def JB :=
   Matrix.fromBlocks ((2 : R) • (1 : Matrix Unit Unit R)) 0 0 (JD l R)
@@ -321,16 +328,19 @@ almost-split-signature diagonal matrix.
 
 It looks like this as a `(2l+1) x (2l+1)` matrix of blocks:
 
-   [ 1 0  0 ]
-   [ 0 1 -1 ]
-   [ 0 1  1 ]
+```
+[ 1 0  0 ]
+[ 0 1 -1 ]
+[ 0 1  1 ]
+```
 
 where sizes of the blocks are:
 
-   [`1 x 1` `1 x l` `1 x l`]
-   [`l x 1` `l x l` `l x l`]
-   [`l x 1` `l x l` `l x l`]
--/
+```
+[`1 x 1` `1 x l` `1 x l`]
+[`l x 1` `l x l` `l x l`]
+[`l x 1` `l x l` `l x l`]
+``` -/
 def PB :=
   Matrix.fromBlocks (1 : Matrix Unit Unit R) 0 0 (PD l R)
 

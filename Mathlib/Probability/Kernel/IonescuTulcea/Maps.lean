@@ -167,7 +167,7 @@ lemma _root_.IocProdIoc_preimage {a b c : ι} (hab : a ≤ b) (hbc : b ≤ c)
       (Set.univ.pi <| restrict₂ (π := (fun n ↦ Set (X n))) (Ioc_subset_Ioc_right hbc) s) ×ˢ
         (Set.univ.pi <| restrict₂ (π := (fun n ↦ Set (X n))) (Ioc_subset_Ioc_left hab) s) := by
   ext x
-  simp only [Set.mem_preimage, Set.mem_pi, Subtype.forall, mem_Ioc]
+  simp
   grind [IocProdIoc]
 
 variable [LocallyFiniteOrderBot ι]
@@ -180,9 +180,9 @@ lemma _root_.IicProdIoc_preimage {a b : ι} (hab : a ≤ b) (s : (i : Iic b) →
   simp only [Set.mem_preimage, Set.mem_pi, Set.mem_univ, IicProdIoc_def, forall_const,
     Subtype.forall, mem_Iic, Set.mem_prod, frestrictLe₂_apply, restrict₂, mem_Ioc]
   refine ⟨fun h ↦ ⟨fun i hi ↦ ?_, fun i ⟨hi1, hi2⟩ ↦ ?_⟩, fun ⟨h1, h2⟩ i hi ↦ ?_⟩
-  · convert h i (hi.trans hab)
+  · convert! h i (hi.trans hab)
     rw [dif_pos hi]
-  · convert h i hi2
+  · convert! h i hi2
     rw [dif_neg (not_le.2 hi1)]
   · split_ifs with hi3
     · exact h1 i hi3

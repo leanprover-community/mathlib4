@@ -79,8 +79,9 @@ theorem linearIndependent_single {φ : ι → Type*} (f : ∀ i, φ i → M)
     (hf : ∀ i, LinearIndependent R (f i)) :
     LinearIndependent R fun ix : Σ i, φ i ↦ single ix.1 (f ix.1 ix.2) := by
   classical
-  convert (DFinsupp.linearIndependent_single _ hf).map_injOn
-    _ (finsuppLequivDFinsupp R).symm.injective.injOn
+  convert!
+    (DFinsupp.linearIndependent_single _ hf).map_injOn _
+      (finsuppLequivDFinsupp R).symm.injective.injOn
   simp
 
 lemma linearIndependent_single_iff {φ : ι → Type*} {f : ∀ i, φ i → M} :
@@ -223,14 +224,14 @@ end FreeAbelianGroup
 namespace AddMonoidAlgebra
 variable {M R S : Type*} [Semiring R] [Semiring S] [Module R S] [Module.Free R S]
 
-instance : Module.Free R S[M] := .finsupp ..
+instance : Module.Free R S[M] := .of_equiv (coeffLinearEquiv _).symm
 
 end AddMonoidAlgebra
 
 namespace MonoidAlgebra
 variable {M R S : Type*} [Semiring R] [Semiring S] [Module R S] [Module.Free R S]
 
-instance : Module.Free R S[M] := .finsupp ..
+instance : Module.Free R S[M] := .of_equiv (coeffLinearEquiv _).symm
 
 end MonoidAlgebra
 

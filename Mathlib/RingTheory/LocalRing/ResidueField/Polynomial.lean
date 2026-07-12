@@ -24,12 +24,14 @@ namespace Polynomial
 open scoped nonZeroDivisors TensorProduct
 
 variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
-variable (I : Ideal R) [I.IsPrime] (J : Ideal R[X]) [J.IsPrime]
+variable (I : Ideal R) [I.IsPrime] (J : Ideal R[X]) [J.IsPrime] [J.LiesOver I]
+  [Algebra (Localization.AtPrime I) (Localization.AtPrime J)]
+  [Localization.AtPrime.IsLiesOverAlgebra I J]
 
-set_option backward.isDefEq.respectTransparency false in
+
 /-- `κ(I[X]) ≃ₐ[κ(I)] κ(I)(X)`. -/
 noncomputable
-def residueFieldMapCAlgEquiv [J.LiesOver I] (hJ : J = I.map C) :
+def residueFieldMapCAlgEquiv (hJ : J = I.map C) :
     J.ResidueField ≃ₐ[I.ResidueField] RatFunc I.ResidueField := by
   letI f : J.ResidueField →+* RatFunc I.ResidueField := by
     refine Ideal.ResidueField.lift _
@@ -55,14 +57,16 @@ def residueFieldMapCAlgEquiv [J.LiesOver I] (hJ : J = I.map C) :
     obtain ⟨s, hs, hr⟩ : ∃ s ∉ I, r.map (algebraMap _ _) = s • x := by
       obtain ⟨b, hb0, hb⟩ := IsLocalization.integerNormalization_spec (R ⧸ I)⁰ x
       obtain ⟨s, rfl⟩ := Ideal.Quotient.mk_surjective b
-      refine ⟨s, by simpa [Ideal.Quotient.eq_zero_iff_mem] using hb0, ?_⟩
-      simpa [← hr, map_map, ← Ideal.Quotient.algebraMap_eq] using hb
+      refine ⟨s, by simpa [Ideal.Quotient.eq_zero_iff_mem] using! hb0, ?_⟩
+      simpa [← hr, map_map, ← Ideal.Quotient.algebraMap_eq] using! hb
     replace hx : r ∈ J := by
       apply_fun aeval (algebraMap R[X] J.ResidueField X) at hr
-      simpa [hx, aeval_map_algebraMap, aeval_algebraMap_apply, Algebra.smul_def] using hr
+      simpa [hx, aeval_map_algebraMap, aeval_algebraMap_apply, Algebra.smul_def] using! hr
     refine ((IsUnit.mk0 (algebraMap R I.ResidueField s) (by simpa)).map C).mul_right_injective ?_
-    simp only [← algebraMap_eq, ← Algebra.smul_def, algebraMap_smul, ← hr]
-    simpa [Polynomial.ext_iff, Ideal.mem_map_C_iff] using hJ.le hx
+    simp only [← algebraMap_eq, ← Algebra.smul_def]
+    rw [algebraMap_smul]
+    simp only [← hr]
+    simpa [Polynomial.ext_iff, Ideal.mem_map_C_iff] using! hJ.le hx
   · apply AlgHom.coe_ringHom_injective
     apply IsFractionRing.injective_comp_algebraMap (A := I.ResidueField[X])
     dsimp [RatFunc.liftAlgHom]
@@ -76,18 +80,18 @@ def residueFieldMapCAlgEquiv [J.LiesOver I] (hJ : J = I.map C) :
     · simp [f, RatFunc.liftAlgHom]
 
 @[simp]
-lemma residueFieldMapCAlgEquiv_algebraMap [J.LiesOver I] (hJ : J = I.map C) (p : R[X]) :
+lemma residueFieldMapCAlgEquiv_algebraMap (hJ : J = I.map C) (p : R[X]) :
     residueFieldMapCAlgEquiv I J hJ (algebraMap _ _ p) =
       algebraMap _ _ (p.map (algebraMap R I.ResidueField)) := by
   simp [residueFieldMapCAlgEquiv]
 
 @[simp]
-lemma residueFieldMapCAlgEquiv_symm_C [J.LiesOver I] (hJ : J = I.map C) (r) :
+lemma residueFieldMapCAlgEquiv_symm_C (hJ : J = I.map C) (r) :
     (residueFieldMapCAlgEquiv I J hJ).symm (.C r) = algebraMap _ _ r :=
   (residueFieldMapCAlgEquiv I J hJ).symm.commutes r
 
 @[simp]
-lemma residueFieldMapCAlgEquiv_symm_X [J.LiesOver I] (hJ : J = I.map C) :
+lemma residueFieldMapCAlgEquiv_symm_X (hJ : J = I.map C) :
     (residueFieldMapCAlgEquiv I J hJ).symm .X = algebraMap R[X] _ .X :=
   (residueFieldMapCAlgEquiv I J hJ).injective (by simp)
 
@@ -139,7 +143,7 @@ theorem _root_.Ideal.exists_mem_span_singleton_map_residueField_eq
   simp only [algebraMap_def, coe_mapRingHom,
     Polynomial.map_map, ← IsScalarTower.algebraMap_eq] at e
   refine ⟨r, hr', le_antisymm ?_ ?_⟩
-  · simpa [-le_of_subsingleton, Ideal.span_le] using Ideal.mem_map_of_mem _ hr'
+  · simpa [-le_of_subsingleton, Ideal.span_le] using! Ideal.mem_map_of_mem _ hr'
   · simp only [hp, Ideal.span_le, Set.singleton_subset_iff, SetLike.mem_coe]
     rw [(IsLocalization.map_units P.ResidueField[X] s).unit.eq_mul_inv_iff_mul_eq.mpr e]
     exact Ideal.mul_mem_right _ _ (Ideal.mem_span_singleton_self _)

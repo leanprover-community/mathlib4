@@ -54,7 +54,7 @@ variable {R S : Type*} [Semiring R] [Semiring S] [PartialOrder S] (abv : Absolut
 
 instance funLike : FunLike (AbsoluteValue R S) R S where
   coe f := f.toFun
-  coe_injective' f g h := by obtain ⟨⟨_, _⟩, _⟩ := f; obtain ⟨⟨_, _⟩, _⟩ := g; congr
+  coe_injective f g h := by obtain ⟨⟨_, _⟩, _⟩ := f; obtain ⟨⟨_, _⟩, _⟩ := g; congr
 
 instance zeroHomClass : ZeroHomClass (AbsoluteValue R S) R S where
   map_zero f := (f.eq_zero' _).2 rfl
@@ -163,7 +163,7 @@ instance monoidWithZeroHomClass : MonoidWithZeroHomClass (AbsoluteValue R S) R S
 
 /-- Absolute values from a nontrivial `R` to a linear ordered ring preserve `*`, `0` and `1`. -/
 def toMonoidWithZeroHom : R →*₀ S :=
-  abv
+  .ofClass abv
 
 @[simp]
 theorem coe_toMonoidWithZeroHom : ⇑abv.toMonoidWithZeroHom = abv :=
@@ -350,7 +350,7 @@ omit [IsOrderedRing S] in
 lemma not_isNontrivial_iff (v : AbsoluteValue R S) :
     ¬ v.IsNontrivial ↔ ∀ x ≠ 0, v x = 1 := by
   simp only [IsNontrivial]
-  push_neg
+  push Not
   rfl
 
 omit [IsOrderedRing S] in
@@ -416,7 +416,8 @@ open Lean Meta Mathlib Meta Positivity Qq in
 For performance reasons, we only attempt to apply this when `abv` is a variable.
 If it is an explicit function, e.g. `|_|` or `‖_‖`, another extension should apply. -/
 @[positivity _]
-meta def Mathlib.Meta.Positivity.evalAbv : PositivityExt where eval {_ _α} _zα _pα e := do
+meta def Mathlib.Meta.Positivity.evalAbv : PositivityExt where eval {_ _α} _zα pα? e :=
+  match pα? with | none => pure .none | some _ => do
   let (.app f a) ← whnfR e | throwError "not abv ·"
   if !f.getAppFn.isFVar then
     throwError "abv: function is not a variable"

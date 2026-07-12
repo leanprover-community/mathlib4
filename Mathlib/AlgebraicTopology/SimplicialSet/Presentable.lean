@@ -19,7 +19,7 @@ which will allow the use of the small object argument in `SSet`.
 
 -/
 
-@[expose] public section
+public section
 
 universe u
 
@@ -45,7 +45,7 @@ lemma exists_epi_from_isCardinalPresentable (X : SSet.{u}) [X.Finite] :
       dsimp
       infer_instance
   · simp only [← Subcomplex.range_eq_top_iff, range_eq_iSup_sigma_ι,
-        colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app, ← N.iSup_subcomplex_eq_top,
+        colimit.ι_desc, Cofan.mk_ι_app, ← N.iSup_subcomplex_eq_top,
         Subcomplex.range_eq_ofSimplex, Equiv.apply_symm_apply]
 
 instance (X : SSet.{u}) [X.Finite] : IsFinitelyPresentable.{u} X := by
