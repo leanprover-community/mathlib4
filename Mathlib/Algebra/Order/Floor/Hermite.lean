@@ -30,10 +30,9 @@ $$ \sum_{i=0}^{n-1} \left\lfloor x + \frac{i}{n} \right\rfloor = \lfloor n x \rf
 ## Implementation notes
 
 The proof reduces the real statement to a purely integer one.  Writing `m = ⌊n * x⌋`,
-each summand satisfies `⌊x + i / n⌋ = (m + i) / n` (integer/Euclidean division), see
-`Int.floor_add_natCast_div`.  The integer identity `∑ i ∈ range n, (m + i) / n = m`
-(`Int.sum_range_add_ediv`) is then proven by induction on `m`, the key step being that
-shifting `m` by one shifts the sum by one.
+each summand satisfies `⌊x + i / n⌋ = (m + i) / n` (integer/Euclidean division).
+The integer identity `∑ i ∈ range n, (m + i) / n = m` (`Int.sum_range_add_ediv`) is then proven and
+used in the main statement.
 -/
 
 public section
