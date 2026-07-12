@@ -461,7 +461,8 @@ theorem descending_central_series_ge_lower (H : ℕ → Subgroup G) (hH : IsDesc
       hH.2 x n (descending_central_series_ge_lower H hH n hx) q
 
 /-- The lower central series commutes with images under a group homomorphism. -/
-@[to_additive]
+@[to_additive
+/-- The lower central series commutes with images under an additive group homomorphism. -/]
 theorem map_lowerCentralSeries {K : Type*} [Group K] (f : G →* K) (n : ℕ) :
     (S.lowerCentralSeries n).map f = (S.map f).lowerCentralSeries n := by
   induction n with
@@ -471,7 +472,10 @@ theorem map_lowerCentralSeries {K : Type*} [Group K] (f : G →* K) (n : ℕ) :
 
 /-- The lower central series of `H : Subgroup G` computed in the ambient group `G` coincides with
 the lower central series of `H` viewed as its own group, mapped back to `G`. -/
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp)
+/-- The lower central series of `H : AddSubgroup G` computed in the ambient additive group `G`
+coincides with the lower central series of `H` viewed as its own additive group, mapped back
+to `G`. -/]
 theorem top_subtype_lowerCentralSeries (H : Subgroup G) (n : ℕ) :
     (lowerCentralSeries ⊤ n).map H.subtype = H.lowerCentralSeries n := by
   rw [map_lowerCentralSeries, ← MonoidHom.range_eq_map, subtype_range]
@@ -1044,7 +1048,7 @@ theorem Subgroup.lowerCentralSeries_prod (S₁ : Subgroup G₁) (S₂ : Subgroup
   | succ n ih => simp_rw [lowerCentralSeries_succ, ih, commutator_prod_prod]
 
 /-- The ⊤-specialization of `lowerCentralSeries_prod`. -/
-@[to_additive]
+@[to_additive /-- The ⊤-specialization of `lowerCentralSeries_sum`. -/]
 theorem Subgroup.top_lowerCentralSeries_prod (n : ℕ) :
     (⊤ : Subgroup (G₁ × G₂)).lowerCentralSeries n =
       ((⊤ : Subgroup G₁).lowerCentralSeries n).prod ((⊤ : Subgroup G₂).lowerCentralSeries n) := by
@@ -1087,7 +1091,7 @@ theorem Subgroup.lowerCentralSeries_pi_le (Ss : ∀ i, Subgroup (Gs i)) (n : ℕ
     grw [commutator_mono ih le_rfl, commutator_pi_pi_le]
 
 /-- The ⊤-specialization of `lowerCentralSeries_pi_le`. -/
-@[to_additive]
+@[to_additive /-- The ⊤-specialization of `lowerCentralSeries_pi_le`. -/]
 theorem Subgroup.top_lowerCentralSeries_pi_le (n : ℕ) :
     (⊤ : Subgroup (∀ i, Gs i)).lowerCentralSeries n ≤ Subgroup.pi Set.univ
       fun i => (⊤ : Subgroup (Gs i)).lowerCentralSeries n := by
@@ -1120,7 +1124,7 @@ theorem Subgroup.lowerCentralSeries_pi_of_finite [Finite η] (Ss : ∀ i, Subgro
   | succ n ih => simp_rw [lowerCentralSeries_succ, ih, commutator_pi_pi_of_finite]
 
 /-- The ⊤-specialization of `lowerCentralSeries_pi_of_finite`. -/
-@[to_additive]
+@[to_additive /-- The ⊤-specialization of `lowerCentralSeries_pi_of_finite`. -/]
 theorem Subgroup.top_lowerCentralSeries_pi_of_finite [Finite η] (n : ℕ) :
     (⊤ : Subgroup (∀ i, Gs i)).lowerCentralSeries n = Subgroup.pi Set.univ
       fun i => (⊤ : Subgroup (Gs i)).lowerCentralSeries n := by

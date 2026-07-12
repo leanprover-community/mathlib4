@@ -135,7 +135,11 @@ then pretransitivity descends from `n ↪ α` to `n ↪ β`.
 
 The subtlety is that if it is not injective, this map does not induce
 an equivariant map from `n ↪ α` to `n ↪ β`. -/
-@[to_additive]
+@[to_additive /-- If there exists a surjective equivariant map `α →ₑ[σ] β`
+then pretransitivity descends from `n ↪ α` to `n ↪ β`.
+
+The subtlety is that if it is not injective, this map does not induce
+an equivariant map from `n ↪ α` to `n ↪ β`. -/]
 theorem IsPretransitive.of_embedding {n : Type*}
     (hf : Function.Surjective f) [IsPretransitive G (n ↪ α)] :
     IsPretransitive H (n ↪ β) where
@@ -161,12 +165,12 @@ theorem IsPretransitive.of_embedding_congr {n : Type*}
 section Zero
 
 /-- Any action is 0-pretransitive. -/
-@[to_additive]
+@[to_additive /-- Any additive action is 0-pretransitive. -/]
 theorem is_zero_pretransitive {n : Type*} [IsEmpty n] :
     IsPretransitive G (n ↪ α) := inferInstance
 
 /-- Any action is 0-pretransitive. -/
-@[to_additive]
+@[to_additive /-- Any additive action is 0-pretransitive. -/]
 theorem is_zero_pretransitive' :
     IsMultiplyPretransitive G α 0 := inferInstance
 

@@ -604,7 +604,8 @@ instance {A B : Mon C} (f : A ⟶ B) [e : IsIso ((forget C).map f)] : IsIso f.ho
   e
 
 /-- The forgetful functor from monoid objects to the ambient category reflects isomorphisms. -/
-@[to_additive]
+@[to_additive /-- The forgetful functor from additive monoid objects to the ambient category reflects
+isomorphisms. -/]
 instance : (forget C).ReflectsIsomorphisms where
   reflects f e := ⟨⟨.mk' (inv f.hom), by cat_disch⟩⟩
 
@@ -724,7 +725,7 @@ variable (C)
 
 set_option backward.defeqAttrib.useBackward true in
 /-- The forgetful functor from `Mon C` to `C` is monoidal when `C` is monoidal. -/
-@[to_additive]
+@[to_additive /-- The forgetful functor from `AddMon C` to `C` is monoidal when `C` is monoidal. -/]
 instance : (forget C).Monoidal :=
   Functor.CoreMonoidal.toMonoidal
     { εIso := Iso.refl _

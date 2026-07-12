@@ -344,17 +344,23 @@ end SMul
 section
 
 /-- Note that the `SMulCommClass α β β` typeclass argument is usually satisfied by `Algebra α β`. -/
-@[to_additive]
+@[to_additive
+/-- Note that the `VAddCommClass α β β` typeclass argument is usually satisfied by `Algebra α β`.
+-/]
 lemma mul_smul_comm [Mul β] [SMul α β] [SMulCommClass α β β] (s : α) (x y : β) :
     x * s • y = s • (x * y) := (smul_comm s x y).symm
 
 /-- Note that the `IsScalarTower α β β` typeclass argument is usually satisfied by `Algebra α β`. -/
-@[to_additive]
+@[to_additive
+/-- Note that the `VAddAssocClass α β β` typeclass argument is usually satisfied by `Algebra α β`.
+-/]
 lemma smul_mul_assoc [Mul β] [SMul α β] [IsScalarTower α β β] (r : α) (x y : β) :
     r • x * y = r • (x * y) := smul_assoc r x y
 
 /-- Note that the `IsScalarTower α β β` typeclass argument is usually satisfied by `Algebra α β`. -/
-@[to_additive]
+@[to_additive
+/-- Note that the `VAddAssocClass α β β` typeclass argument is usually satisfied by `Algebra α β`.
+-/]
 lemma smul_div_assoc [DivInvMonoid β] [SMul α β] [IsScalarTower α β β] (r : α) (x y : β) :
     r • x / y = r • (x / y) := by simp [div_eq_mul_inv, smul_mul_assoc]
 
@@ -365,7 +371,9 @@ lemma smul_smul_smul_comm [SMul α β] [SMul α γ] [SMul β δ] [SMul α δ] [S
 
 /-- Note that the `IsScalarTower α β β` and `SMulCommClass α β β` typeclass arguments are usually
 satisfied by `Algebra α β`. -/
-@[to_additive]
+@[to_additive
+/-- Note that the `VAddAssocClass α β β` and `VAddCommClass α β β` typeclass arguments are usually
+satisfied by `Algebra α β`. -/]
 lemma smul_mul_smul_comm [Mul α] [Mul β] [SMul α β] [IsScalarTower α β β]
     [IsScalarTower α α β] [SMulCommClass α β β] (a : α) (b : β) (c : α) (d : β) :
     (a • b) * (c • d) = (a * c) • (b * d) := by
@@ -376,7 +384,9 @@ alias smul_mul_smul := smul_mul_smul_comm
 
 /-- Note that the `IsScalarTower α β β` and `SMulCommClass α β β` typeclass arguments are usually
 satisfied by `Algebra α β`. -/
-@[to_additive]
+@[to_additive
+/-- Note that the `VAddAssocClass α β β` and `VAddCommClass α β β` typeclass arguments are usually
+satisfied by `Algebra α β`. -/]
 lemma mul_smul_mul_comm [Mul α] [Mul β] [SMul α β] [IsScalarTower α β β]
     [IsScalarTower α α β] [SMulCommClass α β β] (a b : α) (c d : β) :
     (a * b) • (c * d) = (a • c) * (b • d) := smul_smul_smul_comm a b c d
@@ -588,7 +598,12 @@ lemma SMulCommClass.of_mul_smul_one {M N} [Monoid N] [SMul M N]
 Let `Q / P / N / M` be a tower. If `P / N / M`, `Q / P / M` and `Q / P / N` are
 scalar towers, then `Q / N / M` is also a scalar tower.
 -/
-@[to_additive] lemma IsScalarTower.to₁₂₄ (M N P Q)
+@[to_additive
+/--
+Let `Q / P / N / M` be a tower. If `P / N / M`, `Q / P / M` and `Q / P / N` are
+vector addition towers, then `Q / N / M` is also a vector addition tower.
+-/]
+lemma IsScalarTower.to₁₂₄ (M N P Q)
     [SMul M N] [SMul M P] [SMul M Q] [SMul N P] [SMul N Q] [Monoid P] [MulAction P Q]
     [IsScalarTower M N P] [IsScalarTower M P Q] [IsScalarTower N P Q] : IsScalarTower M N Q where
   smul_assoc m n q := by rw [← smul_one_smul P, smul_assoc m, smul_assoc, smul_one_smul]
@@ -597,7 +612,12 @@ scalar towers, then `Q / N / M` is also a scalar tower.
 Let `Q / P / N / M` be a tower. If `P / N / M`, `Q / N / M` and `Q / P / N` are
 scalar towers, then `Q / P / M` is also a scalar tower.
 -/
-@[to_additive] lemma IsScalarTower.to₁₃₄ (M N P Q)
+@[to_additive
+/--
+Let `Q / P / N / M` be a tower. If `P / N / M`, `Q / N / M` and `Q / P / N` are
+vector addition towers, then `Q / P / M` is also a vector addition tower.
+-/]
+lemma IsScalarTower.to₁₃₄ (M N P Q)
     [SMul M N] [SMul M P] [SMul M Q] [SMul P Q] [Monoid N] [MulAction N P] [MulAction N Q]
     [IsScalarTower M N P] [IsScalarTower M N Q] [IsScalarTower N P Q] : IsScalarTower M P Q where
   smul_assoc m p q := by rw [← smul_one_smul N m, smul_assoc, smul_one_smul]
@@ -606,7 +626,12 @@ scalar towers, then `Q / P / M` is also a scalar tower.
 Let `Q / P / N / M` be a tower. If `P / N / M`, `Q / N / M` and `Q / P / M` are
 scalar towers, then `Q / P / N` is also a scalar tower.
 -/
-@[to_additive] lemma IsScalarTower.to₂₃₄ (M N P Q)
+@[to_additive
+/--
+Let `Q / P / N / M` be a tower. If `P / N / M`, `Q / N / M` and `Q / P / M` are
+vector addition towers, then `Q / P / N` is also a vector addition tower.
+-/]
+lemma IsScalarTower.to₂₃₄ (M N P Q)
     [SMul M N] [SMul M P] [SMul M Q] [SMul P Q] [Monoid N] [MulAction N P] [MulAction N Q]
     [IsScalarTower M N P] [IsScalarTower M N Q] [IsScalarTower M P Q]
     (h : Function.Surjective fun m : M ↦ m • (1 : N)) : IsScalarTower N P Q where

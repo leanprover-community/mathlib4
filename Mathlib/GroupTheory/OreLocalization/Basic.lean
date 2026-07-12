@@ -243,7 +243,7 @@ private theorem smul'_char (r₁ : R) (r₂ : X) (s₁ s₂ : S) (u : S) (v : R)
 
 set_option backward.privateInPublic true in
 /-- The multiplication on the Ore localization of monoids. -/
-@[to_additive]
+@[to_additive /-- The addition on the Ore localization of additive monoids. -/]
 private abbrev smul'' (r : R) (s : S) : X[S⁻¹] → X[S⁻¹] :=
   liftExpand (smul' r s) fun r₁ r₂ s' hs => by
     rcases oreCondition r s' with ⟨r₁', s₁', h₁⟩
@@ -561,7 +561,9 @@ set_option linter.overlappingInstances false in
 at the same monoid twice. -/
 /- Although the definition does not require `IsScalarTower R M X`,
 it does not make sense without it. -/
-@[to_additive (attr := nolint unusedArguments)]
+@[to_additive (attr := nolint unusedArguments)
+/-- Warning: This gives a diamond on `VAdd R[S⁻¹] M[S⁻¹][S⁻¹]`, but we will almost never localize
+at the same additive monoid twice. -/]
 instance [IsScalarTower R M X] [IsScalarTower R M M] : SMul R (X[S⁻¹]) where
   smul := OreLocalization.hsmul
 

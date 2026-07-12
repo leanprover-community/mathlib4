@@ -62,7 +62,9 @@ theorem mem_fixingSubmonoid_iff {s : Set α} {m : M} :
 variable (α)
 
 /-- The Galois connection between fixing submonoids and fixed points of a monoid action -/
-@[to_additive]
+@[to_additive
+  /-- The Galois connection between fixing additive submonoids and fixed points of an additive
+  monoid action -/]
 theorem fixingSubmonoid_fixedPoints_gc :
     GaloisConnection (OrderDual.toDual ∘ fixingSubmonoid M)
       ((fun P : Submonoid M => fixedPoints P α) ∘ OrderDual.ofDual) :=
@@ -77,25 +79,25 @@ theorem fixedPoints_antitone : Antitone fun P : Submonoid M => fixedPoints P α 
   (fixingSubmonoid_fixedPoints_gc M α).monotone_u.dual_left
 
 /-- Fixing submonoid of union is intersection -/
-@[to_additive]
+@[to_additive /-- Fixing additive submonoid of union is intersection -/]
 theorem fixingSubmonoid_union {s t : Set α} :
     fixingSubmonoid M (s ∪ t) = fixingSubmonoid M s ⊓ fixingSubmonoid M t :=
   (fixingSubmonoid_fixedPoints_gc M α).l_sup
 
 /-- Fixing submonoid of iUnion is intersection -/
-@[to_additive]
+@[to_additive /-- Fixing additive submonoid of iUnion is intersection -/]
 theorem fixingSubmonoid_iUnion {ι : Sort*} {s : ι → Set α} :
     fixingSubmonoid M (⋃ i, s i) = ⨅ i, fixingSubmonoid M (s i) :=
   (fixingSubmonoid_fixedPoints_gc M α).l_iSup
 
 /-- Fixed points of sup of submonoids is intersection -/
-@[to_additive]
+@[to_additive /-- Fixed points of sup of additive submonoids is intersection -/]
 theorem fixedPoints_submonoid_sup {P Q : Submonoid M} :
     fixedPoints (↥(P ⊔ Q)) α = fixedPoints P α ∩ fixedPoints Q α :=
   (fixingSubmonoid_fixedPoints_gc M α).u_inf
 
 /-- Fixed points of iSup of submonoids is intersection -/
-@[to_additive]
+@[to_additive /-- Fixed points of iSup of additive submonoids is intersection -/]
 theorem fixedPoints_submonoid_iSup {ι : Sort*} {P : ι → Submonoid M} :
     fixedPoints (↥(iSup P)) α = ⋂ i, fixedPoints (P i) α :=
   (fixingSubmonoid_fixedPoints_gc M α).u_iInf
@@ -130,7 +132,9 @@ theorem mem_fixingSubgroup_compl_iff_movedBy_subset {s : Set α} {m : M} :
 variable (α)
 
 /-- The Galois connection between fixing subgroups and fixed points of a group action -/
-@[to_additive]
+@[to_additive
+  /-- The Galois connection between fixing additive subgroups and fixed points of an additive
+  group action -/]
 theorem fixingSubgroup_fixedPoints_gc :
     GaloisConnection (OrderDual.toDual ∘ fixingSubgroup M)
       ((fun P : Subgroup M => fixedPoints P α) ∘ OrderDual.ofDual) :=
@@ -149,31 +153,33 @@ theorem fixedPoints_subgroup_antitone : Antitone fun P : Subgroup M => fixedPoin
   (fixingSubgroup_fixedPoints_gc M α).monotone_u.dual_left
 
 /-- Fixing subgroup of union is intersection -/
-@[to_additive]
+@[to_additive /-- Fixing additive subgroup of union is intersection -/]
 theorem fixingSubgroup_union {s t : Set α} :
     fixingSubgroup M (s ∪ t) = fixingSubgroup M s ⊓ fixingSubgroup M t :=
   (fixingSubgroup_fixedPoints_gc M α).l_sup
 
 /-- Fixing subgroup of iUnion is intersection -/
-@[to_additive]
+@[to_additive /-- Fixing additive subgroup of iUnion is intersection -/]
 theorem fixingSubgroup_iUnion {ι : Sort*} {s : ι → Set α} :
     fixingSubgroup M (⋃ i, s i) = ⨅ i, fixingSubgroup M (s i) :=
   (fixingSubgroup_fixedPoints_gc M α).l_iSup
 
 /-- Fixed points of sup of subgroups is intersection -/
-@[to_additive]
+@[to_additive /-- Fixed points of sup of additive subgroups is intersection -/]
 theorem fixedPoints_subgroup_sup {P Q : Subgroup M} :
     fixedPoints (↥(P ⊔ Q)) α = fixedPoints P α ∩ fixedPoints Q α :=
   (fixingSubgroup_fixedPoints_gc M α).u_inf
 
 /-- Fixed points of iSup of subgroups is intersection -/
-@[to_additive]
+@[to_additive /-- Fixed points of iSup of additive subgroups is intersection -/]
 theorem fixedPoints_subgroup_iSup {ι : Sort*} {P : ι → Subgroup M} :
     fixedPoints (↥(iSup P)) α = ⋂ i, fixedPoints (P i) α :=
   (fixingSubgroup_fixedPoints_gc M α).u_iInf
 
 /-- The orbit of the fixing subgroup of `sᶜ` (i.e. the moving subgroup of `s`) is a subset of `s` -/
-@[to_additive]
+@[to_additive
+  /-- The orbit of the fixing additive subgroup of `sᶜ` (i.e. the moving additive subgroup of `s`)
+  is a subset of `s` -/]
 theorem orbit_fixingSubgroup_compl_subset {s : Set α} {a : α} (a_in_s : a ∈ s) :
     MulAction.orbit (fixingSubgroup M sᶜ) a ⊆ s := by
   intro b b_in_orbit

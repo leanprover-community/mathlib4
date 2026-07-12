@@ -177,7 +177,7 @@ lemma lsingle_apply [Semiring R] [Module R k] (a : G) (b : k) :
   rfl
 
 /-- A copy of `Finsupp.lhom_ext'` for `MonoidAlgebra`. -/
-@[to_additive (attr := ext high)]
+@[to_additive (attr := ext high) /-- A copy of `Finsupp.lhom_ext'` for `AddMonoidAlgebra`. -/]
 lemma lhom_ext' {N : Type*} [Semiring R] [AddCommMonoid N] [Module R N] [Module R k]
     ⦃f g : k[G] →ₗ[R] N⦄
     (H : ∀ (x : G), LinearMap.comp f (lsingle x) = LinearMap.comp g (lsingle x)) :
@@ -229,7 +229,10 @@ set_option backward.isDefEq.respectTransparency false in
 /-- Note that if `k` is a `CommSemiring` then we have `SMulCommClass k k k` and so we can take
 `R = k` in the below. In other words, if the coefficients are commutative amongst themselves, they
 also commute with the algebra multiplication. -/
-@[to_additive (dont_translate := R k) smulCommClass_self]
+@[to_additive (dont_translate := R k) smulCommClass_self /-- Note that if `k` is a `CommSemiring`
+then we have `SMulCommClass k k k` and so we can take `R = k` in the below. In other words, if the
+coefficients are commutative amongst themselves, they also commute with the algebra
+multiplication. -/]
 instance smulCommClass_self [SMulCommClass R k k] : SMulCommClass R k[G] k[G] where
   smul_comm t a b := by
     ext

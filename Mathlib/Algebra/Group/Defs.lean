@@ -700,7 +700,8 @@ lemma pow_one (a : M) : a ^ 1 = a := by rw [pow_succ, pow_zero, one_mul]
 lemma pow_mul_comm' (a : M) (n : ℕ) : a ^ n * a = a * a ^ n := by rw [← pow_succ, pow_succ']
 
 /-- Note that most of the lemmas about powers of two refer to it as `sq`. -/
-@[to_additive two_nsmul] lemma pow_two (a : M) : a ^ 2 = a * a := by rw [pow_succ, pow_one]
+@[to_additive two_nsmul /-- Note that most of the lemmas about multiples of two refer to it as
+`two_nsmul`. -/] lemma pow_two (a : M) : a ^ 2 = a * a := by rw [pow_succ, pow_one]
 
 -- TODO: Should `alias` automatically transfer `to_additive` statements?
 @[to_additive existing two_nsmul] alias sq := pow_two
@@ -754,14 +755,18 @@ variable (M)
 namespace IsDedekindFiniteMonoid
 
 /-- A monoid is Dedekind-finite if every element with a left inverse also has a right inverse. -/
-@[to_additive] lemma of_exists_self_mul_eq_one (ex : ∀ x y : M, x * y = 1 → ∃ z, y * z = 1) :
+@[to_additive /-- An additive monoid is Dedekind-finite if every element with a left negation also
+has a right negation. -/]
+lemma of_exists_self_mul_eq_one (ex : ∀ x y : M, x * y = 1 → ∃ z, y * z = 1) :
     IsDedekindFiniteMonoid M where
   mul_eq_one_symm {x y} h := by
     have ⟨z, hz⟩ := ex x y h
     rwa [show x = z by simpa [← mul_assoc, h] using congr_arg (x * ·) hz.symm]
 
 /-- A monoid is Dedekind-finite if every element with a right inverse also has a left inverse. -/
-@[to_additive] lemma of_exists_mul_self_eq_one (ex : ∀ x y : M, x * y = 1 → ∃ z, z * x = 1) :
+@[to_additive /-- An additive monoid is Dedekind-finite if every element with a right negation also
+has a left negation. -/]
+lemma of_exists_mul_self_eq_one (ex : ∀ x y : M, x * y = 1 → ∃ z, z * x = 1) :
     IsDedekindFiniteMonoid M where
   mul_eq_one_symm {x y} h := by
     have ⟨z, hz⟩ := ex x y h
@@ -796,7 +801,12 @@ class CommMonoid (M : Type u) extends Monoid M, CommSemigroup M
 This is assigned default rather than low priority because it gives the most common examples
 of Dedekind-finite monoids and is used the most often. Benchmark results indicate default
 priority performs better than low or high priority. -/
-@[to_additive] instance (M) [CommMonoid M] : IsDedekindFiniteMonoid M := inferInstance
+@[to_additive /-- Shortcut instance for `IsCommutativeHAdd M → IsDedekindFiniteAddMonoid M`.
+
+This is assigned default rather than low priority because it gives the most common examples
+of Dedekind-finite additive monoids and is used the most often. Benchmark results indicate default
+priority performs better than low or high priority. -/]
+instance (M) [CommMonoid M] : IsDedekindFiniteMonoid M := inferInstance
 
 section LeftCancelMonoid
 
@@ -1003,14 +1013,18 @@ explanations on this.
 -/
 class SubNegMonoid (G : Type u) extends AddMonoid G, Neg G, Sub G where
   protected sub := SubNegMonoid.sub'
+  /-- `a - b := a + -b` -/
   protected sub_eq_add_neg : ∀ a b : G, a - b = a + -b := by intros; rfl
   /-- Multiplication by an integer.
   Set this to `zsmulRec` unless `Module` diamonds are possible. -/
   protected zsmul : ℤ → G → G
+  /-- `0 • a = 0` -/
   protected zsmul_zero' : ∀ a : G, zsmul 0 a = 0 := by intros; rfl
+  /-- `(n + 1) • a = n • a + a` -/
   protected zsmul_succ' (n : ℕ) (a : G) :
       zsmul n.succ a = zsmul n a + a := by
     intros; rfl
+  /-- `-(n + 1) • a = -((n + 1) • a)` -/
   protected zsmul_neg' (n : ℕ) (a : G) : zsmul (Int.negSucc n) a = -zsmul n.succ a := by
     intros; rfl
 

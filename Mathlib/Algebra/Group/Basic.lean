@@ -642,12 +642,12 @@ theorem mul_eq_one_iff_inv_eq : a * b = 1 ↔ a⁻¹ = b := by
   rw [mul_eq_one_iff_eq_inv, inv_eq_iff_eq_inv]
 
 /-- Variant of `mul_eq_one_iff_eq_inv` with swapped equality. -/
-@[to_additive]
+@[to_additive /-- Variant of `add_eq_zero_iff_eq_neg` with swapped equality. -/]
 theorem mul_eq_one_iff_eq_inv' : a * b = 1 ↔ b = a⁻¹ := by
   rw [mul_eq_one_iff_inv_eq, eq_comm]
 
 /-- Variant of `mul_eq_one_iff_inv_eq` with swapped equality. -/
-@[to_additive]
+@[to_additive /-- Variant of `add_eq_zero_iff_neg_eq` with swapped equality. -/]
 theorem mul_eq_one_iff_inv_eq' : a * b = 1 ↔ b⁻¹ = a := by
   rw [mul_eq_one_iff_eq_inv, eq_comm]
 
@@ -1055,7 +1055,7 @@ alias multiplicative_of_isTotal := multiplicative_of_total
 end multiplicative
 
 /-- An auxiliary lemma that can be used to prove `⇑(f ^ n) = ⇑f^[n]`. -/
-@[to_additive]
+@[to_additive /-- An auxiliary lemma that can be used to prove `⇑(n • f) = ⇑f^[n]`. -/]
 lemma hom_coe_pow {F : Type*} [Monoid F] (c : F → M → M) (h1 : c 1 = id)
     (hmul : ∀ f g, c (f * g) = c f ∘ c g) (f : F) : ∀ n, c (f ^ n) = (c f)^[n]
   | 0 => by

@@ -47,7 +47,8 @@ namespace IsQuotientCoveringMap
     IsQuotientCoveringMap f S ↔ IsQuotientCoveringMap f S' := by rw [eq]
 
 /-- The group action on the domain of a quotient covering map is free. -/
-@[to_additive] theorem isCancelSMul (h : IsQuotientCoveringMap f G) : IsCancelSMul G E where
+@[to_additive /-- The additive group action on the domain of a quotient covering map is free. -/]
+theorem isCancelSMul (h : IsQuotientCoveringMap f G) : IsCancelSMul G E where
   right_cancel' g g' e eq := by
     have ⟨U, heU, hU⟩ := h.disjoint e
     simpa [inv_mul_eq_one, eq_comm] using hU (g'⁻¹ * g)

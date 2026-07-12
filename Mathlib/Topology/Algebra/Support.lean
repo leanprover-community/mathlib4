@@ -368,7 +368,7 @@ section Compact
 variable [CompactSpace α]
 
 /-- In a compact space `α`, any function has compact support. -/
-@[to_additive]
+@[to_additive /-- In a compact space `α`, any function has compact support. -/]
 theorem HasCompactMulSupport.of_compactSpace (f : α → γ) :
     HasCompactMulSupport f :=
   IsCompact.of_isClosed_subset isCompact_univ (isClosed_mulTSupport f)

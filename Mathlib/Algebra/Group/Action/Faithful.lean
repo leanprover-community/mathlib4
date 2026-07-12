@@ -131,7 +131,10 @@ lemma FaithfulSMul.trans (R S T : Type*) [Monoid S] [MulOneClass T]
 Let `Q / P / N / M` be a tower. If `Q / N / M`, `Q / P / M` and `Q / P / N` are
 scalar towers, then `P / N / M` is also a scalar tower.
 -/
-@[to_additive] lemma IsScalarTower.to₁₂₃ (M N P Q)
+@[to_additive /--
+Let `Q / P / N / M` be a tower. If `Q / N / M`, `Q / P / M` and `Q / P / N` are
+vadd towers, then `P / N / M` is also a vadd tower.
+-/] lemma IsScalarTower.to₁₂₃ (M N P Q)
     [SMul M N] [SMul M P] [SMul M Q] [SMul N P] [SMul N Q] [SMul P Q] [FaithfulSMul P Q]
     [IsScalarTower M N Q] [IsScalarTower M P Q] [IsScalarTower N P Q] : IsScalarTower M N P where
   smul_assoc m n p := by simp_rw [← (smul_left_injective' (α := Q)).eq_iff, smul_assoc]
