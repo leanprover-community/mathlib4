@@ -232,7 +232,7 @@ variable [Monoid β] [Monoid γ]
 open scoped Function -- required for scoped `on` notation
 
 /-- Proof used in definition of `Finset.noncommProd` -/
-@[to_additive]
+@[to_additive /-- Proof used in definition of `Finset.noncommSum` -/]
 theorem noncommProd_lemma (s : Finset α) (f : α → β)
     (comm : (s : Set α).Pairwise (Commute on f)) :
     Set.Pairwise { x | x ∈ Multiset.map f s.val } Commute := Multiset.map_set_pairwise comm
