@@ -389,7 +389,7 @@ inductive GithubInteraction where
 /-- use `curl` with an access token -/
 | curl (pr : Nat) (token : String)
 
-open IO IO.FS IO.Process Name in
+open IO in
 def autoLabelCli (args : Cli.Parsed) : IO UInt32 := do
   let force := args.hasFlag "force"
   let tool: GithubInteraction :=
@@ -469,7 +469,6 @@ def autoLabelCli (args : Cli.Parsed) : IO UInt32 := do
                   were already present"
     | .curl prNr token =>
       -- TODO: take existing labels on the PR into account
-      println args
       let _ ← IO.Process.run {
         cmd := "curl",
         args :=  #[
