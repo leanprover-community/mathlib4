@@ -69,16 +69,17 @@ def addRelatedDecl (src tgt : Name) (ref : Syntax)
   -- If `tgt` already exists in an imported module, the `addDeclarationRangesFromSyntax` call
   -- below panics (and if it exists in the current module, `addDecl` would fail with a less
   -- helpful message), so we check for a pre-existing declaration up front.
-  let env := (← getEnv).setExporting false
-  if env.contains tgt then
-    match env.getModuleIdxFor? tgt with
-    | some idx =>
-      throwError "cannot create related declaration `{tgt}`: \
-        it has already been declared in the imported module \
-        `{env.header.moduleNames[idx.toNat]!}`"
-    | none =>
-      throwError "cannot create related declaration `{tgt}`: \
-        it has already been declared in the current module"
+  withoutExporting do
+    let env ← getEnv
+    if env.contains tgt then
+      match env.getModuleIdxFor? tgt with
+      | some idx =>
+        throwError "cannot create related declaration `{tgt}`: \
+          it has already been declared in the imported module \
+          `{env.header.moduleNames[idx.toNat]!}`"
+      | none =>
+        throwError "cannot create related declaration `{tgt}`: \
+          it has already been declared in the current module"
   addDeclarationRangesFromSyntax tgt (← getRef) ref
   let info ← withoutExporting <| getConstInfo src
   let value := .const src (info.levelParams.map mkLevelParam)
