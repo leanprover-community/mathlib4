@@ -536,6 +536,18 @@ of `G` isomorphic to `H`. See `SimpleGraph.labelledCopyCount` for the number of 
 noncomputable def copyCount (G : SimpleGraph V) (H : SimpleGraph W) : ℕ := by
   classical exact Fintype.card (H.UnlabeledCopy G)
 
+@[deprecated "`copyCount` is now defined directly as `Fintype.card (H.UnlabeledCopy G)`; there is \
+no longer a need to bridge through the image of `Copy.toSubgraph`" (since := "2026-07-12")]
+lemma copyCount_eq_card_image_copyToSubgraph [Fintype {f : H →g G // Injective f}]
+    [DecidableEq G.Subgraph] :
+    copyCount G H = #((Finset.univ : Finset (H.Copy G)).image Copy.toSubgraph) := by
+  classical
+  rw [copyCount, Fintype.card_subtype]
+  congr 1
+  ext G'
+  simp only [Finset.mem_filter, Finset.mem_univ, true_and, Finset.mem_image]
+  rw [← Set.mem_range, Copy.range_toSubgraph, Set.mem_setOf_eq]
+
 @[simp] lemma copyCount_eq_zero : G.copyCount H = 0 ↔ H.Free G := by
   classical
   rw [copyCount, Fintype.card_eq_zero_iff, isEmpty_subtype]
