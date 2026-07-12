@@ -216,6 +216,17 @@ lemma mk_of_continuousAt {f : M → N} {x : M} (hf : ContinuousAt f x) (equiv : 
   LiftSourceTargetPropertyAt.mk_of_continuousAt hf isLocalSourceTargetProperty_immersionAtProp
     _ _ hx hfx hdomChart hcodChart ⟨equiv, hwrittenInExtend⟩
 
+/-- `f : M → N` is a `C^n` immersion at `x` if `f` is continuous at `x` and `f` looks like
+`u ↦ (u, 0)` in the preferred charts at `x` and `f x`.
+Special case of `mk_of_continuousAt` specialized to the preferred charts. -/
+lemma mk_of_continuousAt' [IsManifold I n M] [IsManifold J n N]
+    {f : M → N} {x : M} (hf : ContinuousAt f x) (equiv : (E × F) ≃L[𝕜] E'')
+    (hwrittenInExtend : EqOn ((extChartAt J (f x)) ∘ f ∘ (extChartAt I x).symm) (equiv ∘ (·, 0))
+      (extChartAt I x).target) : IsImmersionAtOfComplement F I J n f x :=
+  mk_of_continuousAt hf equiv (chartAt H x) (chartAt G (f x))
+    (mem_chart_source H x) (mem_chart_source G (f x))
+    (IsManifold.chart_mem_maximalAtlas x) (IsManifold.chart_mem_maximalAtlas (f x)) hwrittenInExtend
+
 /-- A choice of chart on the domain `M` of an immersion `f` at `x`:
 w.r.t. this chart and the data `h.codChart` and `h.equiv`,
 `f` will look like an inclusion `u ↦ (u, 0)` in these extended charts.
@@ -389,9 +400,7 @@ open IsManifold in
 /- The inclusion of an open subset `s` of a smooth manifold `M` is an immersion at every point. -/
 lemma of_opens [IsManifold I n M] (s : TopologicalSpace.Opens M) (y : s) :
     IsImmersionAtOfComplement PUnit I I n (Subtype.val : s → M) y := by
-  apply IsImmersionAtOfComplement.mk_of_continuousAt (by fun_prop) (.prodUnique 𝕜 E _)
-    (chartAt H y) (chartAt H y.val) (mem_chart_source H y) (mem_chart_source H y.val)
-    (chart_mem_maximalAtlas y) (chart_mem_maximalAtlas y.val)
+  apply IsImmersionAtOfComplement.mk_of_continuousAt' (by fun_prop) (.prodUnique 𝕜 E _)
   intro x hx
   suffices I ((chartAt H ↑y) ((chartAt H y).symm (I.symm x))) = x by simpa +contextual
   simp_all
@@ -399,10 +408,7 @@ lemma of_opens [IsManifold I n M] (s : TopologicalSpace.Opens M) (y : s) :
 /-- Every `ModelWithCorners 𝕜 E H` is an immersion when viewed as a map `H → E`. -/
 protected lemma _root_.ModelWithCorners.isImmersionAtOfComplement {n : ℕ} {x : H} :
     IsImmersionAtOfComplement PUnit I 𝓘(𝕜, E) n I x :=
-  Manifold.IsImmersionAtOfComplement.mk_of_continuousAt I.continuousAt
-    (.prodUnique _ _ _) (.refl _) (.refl _) (by simp) (by simp)
-    (IsManifold.subset_maximalAtlas (by simp)) (IsManifold.subset_maximalAtlas (by simp))
-    (by simp [Function.comp_def])
+  mk_of_continuousAt' I.continuousAt (.prodUnique _ _ _) (by simp [Function.comp_def])
 
 @[deprecated (since := "2025-12-16")] alias ofOpen := of_opens
 
@@ -806,9 +812,7 @@ open IsManifold in
 /-- The identity map is an immersion with complement `PUnit`. -/
 protected lemma id [IsManifold I n M] : IsImmersionOfComplement PUnit I I n (@id M) := by
   intro x
-  apply IsImmersionAtOfComplement.mk_of_continuousAt (continuousAt_id) (.prodUnique 𝕜 E _)
-    (chartAt H x) (chartAt H x) (mem_chart_source H x) (mem_chart_source H x)
-    (chart_mem_maximalAtlas x) (chart_mem_maximalAtlas x)
+  apply IsImmersionAtOfComplement.mk_of_continuousAt' (continuousAt_id) (.prodUnique 𝕜 E _)
   intro y hy
   have : I ((chartAt H x) ((chartAt H x).symm (I.symm y))) = y := by
     rw [(chartAt H x).right_inv (by simp_all), I.right_inv (by simp_all)]
@@ -837,9 +841,7 @@ lemma sumInl {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M']
     [IsManifold I n M] [IsManifold I n M'] :
     IsImmersionOfComplement Unit I I n (@Sum.inl M M') := by
   intro x
-  apply IsImmersionAtOfComplement.mk_of_continuousAt (equiv := (.prodUnique 𝕜 E _))
-    (by fun_prop) _ _ (mem_chart_source H x) (mem_chart_source H (Sum.inl x))
-    (IsManifold.chart_mem_maximalAtlas x) (IsManifold.chart_mem_maximalAtlas (Sum.inl x))
+  apply IsImmersionAtOfComplement.mk_of_continuousAt' (by fun_prop) (.prodUnique 𝕜 E _)
   intro y hy
   have : I ((chartAt H x) ((chartAt H x).symm (I.symm y))) = y := by
     rw [(chartAt H x).right_inv (by simp_all), I.right_inv (by simp_all)]
