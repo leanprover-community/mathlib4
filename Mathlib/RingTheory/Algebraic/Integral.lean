@@ -103,7 +103,7 @@ theorem Cardinal.toNat_eq_of_forall_le_iff (c d : Cardinal)
     apply eq_of_forall_le_iff
     simp_all
 
-open IsLocalization nonZeroDivisors in
+open IsLocalization nonZeroDivisors Pointwise in
 theorem foo' (R R' S S' : Type*) [DecidableEq S]
     [CommRing R] [CommRing R'] [CommRing S] [CommRing S']
     [Algebra R S] [Algebra R R'] [Algebra S S'] [Algebra R' S'] [Algebra R S']
@@ -111,6 +111,22 @@ theorem foo' (R R' S S' : Type*) [DecidableEq S]
     [IsFractionRing R R'] [IsFractionRing S S']
     {s : Finset S'} (hs : LinearIndepOn R' id (s : Set S')) :
     LinearIndepOn R id (finsetIntegerMultiple S⁰ s : Set S) := by
+  classical
+  have key := finsetIntegerMultiple_image S⁰ s
+  replace hs : LinearIndepOn R' (id : S' → S') (commonDenomOfFinset S⁰ s • s) := by
+    rw [← Finset.coe_smul_finset]
+    rw [linearIndepOn_finset_iff] at hs ⊢
+    intro f h
+    rw [Finset.smul_finset_def, Finset.forall_mem_image]
+    apply hs
+    rw [Finset.smul_finset_def, Finset.sum_image] at h
+    simp_rw [id_eq, smul_comm (f _), ← Finset.smul_sum] at h
+    rwa [← smul_zero (commonDenomOfFinset S⁰ s),
+      (IsLocalization.smul_bijective S' (commonDenomOfFinset S⁰ s)).injective.eq_iff] at h
+    exact (IsLocalization.smul_bijective S' (commonDenomOfFinset S⁰ s)).injective.injOn
+  rw [← key] at hs
+
+  -- rw [LinearIndepOn, Fintype.linearIndependent_iff] at *
   sorry
 
 open IsLocalization nonZeroDivisors in
