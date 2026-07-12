@@ -6,7 +6,7 @@ Authors: Kyle Miller
 module
 
 public import Mathlib.Algebra.Ring.Parity
-public import Mathlib.Combinatorics.SimpleGraph.Paths
+public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Subgraph
 
 /-!
 
@@ -154,6 +154,111 @@ theorem IsEulerian.card_odd_degree [Fintype V] [DecidableRel G.Adj] {u v : V} {p
   rw [← Set.toFinset_card]
   apply IsEulerian.card_filter_odd_degree ht
   simp
+
+-- #40624
+set_option warn.sorry false in
+set_option linter.style.longLine false in
+omit [DecidableEq V] in @[simp] theorem ncard_neighborSet (v) [Fintype <| G.neighborSet v] : (G.neighborSet v).ncard = G.degree v := sorry
+
+-- #41524
+set_option warn.sorry false in
+set_option linter.style.longLine false in
+theorem _root_.SimpleGraph.Preconnected.exists_isEulerian (h : G.Preconnected) (hp : ∃ (v' : V) (p : G.Walk v' v'), p.IsEulerian) (v : V) : ∃ p : G.Walk v v, p.IsEulerian := sorry
+
+-- TODO: golf `Subgraph.degree_of_notMem_verts` with this
+omit [DecidableEq V] in
+theorem _root_.SimpleGraph.Subgraph.neighborSet_eq_empty_of_notMem_verts {G' : G.Subgraph} {v : V}
+    (hv : v ∉ G'.verts) : G'.neighborSet v = ∅ := by
+  grind [Subgraph.mem_neighborSet, Subgraph.Adj.fst_mem]
+
+omit [DecidableEq V] in
+theorem _root_.SimpleGraph.Subgraph.mem_verts_of_nonempty_neighborSet {G' : G.Subgraph} {v : V}
+    (hv : (G'.neighborSet v).Nonempty) : v ∈ G'.verts := by
+  contrapose! hv
+  exact G'.neighborSet_eq_empty_of_notMem_verts hv
+
+omit [DecidableEq V] in
+theorem image_edgeSet_mapToSubgraph {u v} {p : G.Walk u v} :
+    Sym2.map (↑) '' p.mapToSubgraph.edgeSet = p.edgeSet := by
+  simpa [map_mapToSubgraph_hom] using p.mapToSubgraph.edgeSet_map p.toSubgraph.hom |>.symm
+
+omit [DecidableEq V] in
+theorem edgeSet_mapToSubgraph {u v} {p : G.Walk u v} :
+    p.mapToSubgraph.edgeSet = Sym2.map (↑) ⁻¹' p.edgeSet := by
+  simp [← p.image_edgeSet_mapToSubgraph, Sym2.map.injective]
+
+omit [DecidableEq V] in
+theorem isTrail_mapToSubgraph {u v} {p : G.Walk u v} : p.mapToSubgraph.IsTrail ↔ p.IsTrail := by
+  simp [p.map_mapToSubgraph_hom, ← isTrail_map_iff_of_injective Subgraph.hom_injective]
+
+theorem isEulerian_mapToSubgraph {u v} {p : G.Walk u v} :
+    p.mapToSubgraph.IsEulerian ↔ p.IsTrail := by
+  rw [isEulerian_iff, isTrail_mapToSubgraph]
+  refine ⟨And.left, fun h ↦ ⟨h, fun e he ↦ ?_⟩⟩
+  simpa [← edgeSet_mapToSubgraph] using he
+
+omit [DecidableEq V] in
+@[simp]
+theorem _root_.SimpleGraph.Subgraph.ncard_neighborSet (G' : G.Subgraph) (v)
+    [Fintype <| G'.neighborSet v] : (G'.neighborSet v).ncard = G'.degree v := by
+  simp_rw [Set.ncard_eq_toFinset_card', Subgraph.finset_card_neighborSet_eq_degree]
+
+omit [DecidableEq V] in
+theorem IsTrail.even_ncard_neighborSet_toSubgraph_iff {u v} {p : G.Walk u v}
+    (hp : p.IsTrail) (w : V) : Even (p.toSubgraph.neighborSet w).ncard ↔ u ≠ v → w ≠ u ∧ w ≠ v := by
+  by_cases! hw : w ∉ p.toSubgraph.verts
+  · grind [Subgraph.neighborSet_eq_empty_of_notMem_verts, Set.ncard_empty,
+      start_mem_verts_toSubgraph, end_mem_verts_toSubgraph]
+  have : Fintype p.toSubgraph.verts := Set.Finite.fintype <| by simp
+  classical
+  simpa using p.isEulerian_mapToSubgraph.mpr hp |>.even_degree_iff (x := ⟨w, hw⟩)
+
+omit [DecidableEq V] in
+theorem IsTrail.even_ncard_neighborSet_toSubgraph {u} {p : G.Walk u u}
+    (hp : p.IsTrail) (v : V) : Even (p.toSubgraph.neighborSet v).ncard :=
+  hp.even_ncard_neighborSet_toSubgraph_iff v |>.mpr <| by simp
+
+theorem _root_.SimpleGraph.Preconnected.exists_isEulerian_of_even_degree [Fintype V]
+    [DecidableRel G.Adj] (hcon : G.Preconnected) (h : ∀ v, Even (G.degree v)) :
+    ∀ v, ∃ p : G.Walk v v, p.IsEulerian := by
+  -- It suffices to show that there exists an Eulerian trail from some vertex.
+  suffices Nonempty V → ∃ (v : V) (p : G.Walk v v), p.IsEulerian from
+    fun v ↦ hcon.exists_isEulerian (this ⟨v⟩) v
+  intro
+  -- Take a longest trail `p` in `G` from `u` to `v`.
+  have ⟨u, v, p, hp, hmax⟩ := Walk.exists_isTrail_forall_isTrail_length_le_length G
+  -- Since `p` is a trail, it is Eulerian in its own subgraph.
+  -- So if the endpoints of `p` differ, then the degree of `u` in `p.toSubgraph` must be odd,
+  -- but we know that `u` has even degree so there must be some edge adjacent to `u` in `G` but not
+  -- in `p` and so we can extend `p` contradicting its maximality.
+  have : u ≠ v → p.toSubgraph.neighborSet u ⊂ G.neighborSet u := by
+    grind [hp.even_ncard_neighborSet_toSubgraph_iff, ncard_neighborSet, Subgraph.neighborSet_subset]
+  have : u ≠ v → ∃ w, G.Adj u w ∧ s(w, u) ∉ p.edges := by
+    grind [adj_toSubgraph_iff_mem_edges, Subgraph.mem_neighborSet, mem_neighborSet]
+  have huv : u = v := by
+    by_contra! hne
+    have ⟨w, hadj, hmem⟩ := this hne
+    grind [hp.cons hadj.symm hmem, length_cons]
+  subst huv
+  -- Now that we've shown that `p` is a closed trail, to show it is Eulerian it suffices to show it
+  -- contains every edge. Suppose for the sake of contradiction that `p` misses an edge `(u', v')`.
+  refine ⟨u, p, p.isEulerian_iff.mpr ⟨hp, Sym2.ind fun u' v' he ↦ ?_⟩⟩
+  by_contra hep
+  -- We can assume without loss of generality that this missed edge is incident to `p`:
+  wlog hv' : v' ∈ p.support
+  · -- Otherwise, since the graph is preconnected there must be a walk from `u` to `v'`.
+    have ⟨p'⟩ := hcon u v'
+    -- This walk starts with a vertex in `p` and ends at a vertex not in `p`,
+    -- so there must exist a boundary dart `d` with one endpoint in `p` and the other not in `p`.
+    have ⟨d, hd, hd₁, hd₂⟩ := p'.exists_boundary_dart {v | v ∈ p.support} p.start_mem_support hv'
+    -- Thus the edge it represents is also not in `p`, so we can work with it instead of `(u', v')`.
+    have hd : s(d.snd, d.fst) ∉ p.edges := fun hmem ↦ hd₂ <| p.fst_mem_support_of_mem_edges hmem
+    grind [this (he := d.adj.symm)]
+  -- We now have an edge `(u', v')` not in `p` such that `v'` is in `p`, so we can rotate `p` and
+  -- extend it with that edge, contradicting the maximality of `p`.
+  let p' := p.rotate v' hv' |>.cons he
+  have : p'.IsTrail := hp.rotate hv' |>.cons he <| by simpa [p.rotate_edges v' hv' |>.mem_iff]
+  grind [length_cons, length_rotate]
 
 end Walk
 
