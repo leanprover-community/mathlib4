@@ -5,7 +5,6 @@ Authors: Junyan Xu
 -/
 module
 
-public import Mathlib.Algebra.Ring.Regular
 public import Mathlib.RingTheory.Localization.Defs
 public import Mathlib.RingTheory.UniqueFactorizationDomain.Basic
 

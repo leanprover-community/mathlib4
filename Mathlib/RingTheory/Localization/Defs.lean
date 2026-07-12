@@ -12,7 +12,6 @@ public import Mathlib.Data.Fintype.Prod
 public import Mathlib.GroupTheory.MonoidLocalization.Divisibility
 public import Mathlib.GroupTheory.MonoidLocalization.MonoidWithZero
 public import Mathlib.RingTheory.OreLocalization.Ring
-public import Mathlib.Tactic.ApplyFun
 public import Mathlib.Tactic.Ring
 
 /-!
