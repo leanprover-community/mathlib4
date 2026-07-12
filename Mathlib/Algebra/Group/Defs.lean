@@ -714,7 +714,8 @@ lemma pow_mul_comm' (a : M) (n : ℕ) : a ^ n * a = a * a ^ n := by rw [← pow_
 
 /-- Note that most of the lemmas about powers of two refer to it as `sq`. -/
 @[to_additive two_nsmul /-- Note that most of the lemmas about multiples of two refer to it as
-`two_nsmul`. -/] lemma pow_two (a : M) : a ^ 2 = a * a := by rw [pow_succ, pow_one]
+`two_nsmul`. -/]
+lemma pow_two (a : M) : a ^ 2 = a * a := by rw [pow_succ, pow_one]
 
 -- TODO: Should `alias` automatically transfer `to_additive` statements?
 @[to_additive existing two_nsmul] alias sq := pow_two
