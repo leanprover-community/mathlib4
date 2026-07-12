@@ -103,7 +103,9 @@ instance [SMul G M] [ContMDiffSMul I I' 2 G M] : ContMDiffSMul I I' 1 G M :=
 /-- If an action is Cⁿ for some `n`, it is also continuous. This has to be a theorem instead of an
 instance because `ContMDiffSMul` depends on parameters `I`, `I'` and `n` that `ContinuousSMul`
 doesn't. -/
-@[to_additive]
+@[to_additive /-- If an action is Cⁿ for some `n`, it is also continuous. This has to be a theorem
+instead of an instance because `ContMDiffVAdd` depends on parameters `I`, `I'` and `n` that
+`ContinuousVAdd` doesn't. -/]
 lemma ContMDiffSMul.continuousSMul [SMul G M] (n : ℕ∞ω) [ContMDiffSMul I I' n G M] :
     ContinuousSMul G M :=
   ⟨(contMDiff_smul (I := I) (I' := I') (n := n)).continuous⟩
@@ -156,7 +158,8 @@ lemma IsScalarTower.contMDiffSMul (G' : Type*) [TopologicalSpace G'] [ChartedSpa
 
 /-- If an action is continuously differentiable, then post-composing this action with a continuously
 differentiable homomorphism gives again a continuously differentiable action. -/
-@[to_additive]
+@[to_additive /-- If an action is continuously differentiable, then post-composing this action with
+a continuously differentiable homomorphism gives again a continuously differentiable action. -/]
 theorem MulAction.contMDiffSMul_compHom [Monoid G] [MulAction G M] {n : ℕ∞ω}
     [ContMDiffSMul I I' n G M] {G' : Type*} [TopologicalSpace G'] [ChartedSpace H'' G'] [Monoid G']
     {f : G' →* G} (hf : CMDiff n f) :

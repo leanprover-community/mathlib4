@@ -87,7 +87,10 @@ lemma MulAction.properSMul_iff_isCompact_setOf_inter_nonempty [ContinuousSMul G 
 generated, and if the action is continuous in the second variable, then the action is properly
 discontinuous if and only if it is proper. This is in particular true if `X` is first-countable or
 weakly locally compact. -/
-@[to_additive]
+@[to_additive /-- If a discrete additive group acts on a T2 space `X` such that `X × X` is compactly
+generated, and if the action is continuous in the second variable, then the action is properly
+discontinuous if and only if it is proper. This is in particular true if `X` is first-countable or
+weakly locally compact. -/]
 theorem properlyDiscontinuousSMul_iff_properSMul [DiscreteTopology G] [ContinuousConstSMul G X] :
     ProperlyDiscontinuousSMul G X ↔ ProperSMul G X := by
   have : ContinuousSMul G X := ⟨continuous_prod_of_discrete_left.mpr continuous_const_smul⟩
