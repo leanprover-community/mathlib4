@@ -57,8 +57,7 @@ theorem exists_partition_unitInterval_of_open_cover (hc₁ : ∀ i, IsOpen (c i)
   intro k
   have ⟨i, hi⟩ := ht_sub k
   use i
-  rwa [uIcc_of_le]
-  exact ht_mono (Nat.le_add_right _ _)
+  rwa [uIcc_of_le (ht_mono (Nat.le_add_right _ _))]
 
 /-- If we have a cover with pairwise path connected intersections, then we can extract a sequence
 of paths whose range lie in such intersections. -/
