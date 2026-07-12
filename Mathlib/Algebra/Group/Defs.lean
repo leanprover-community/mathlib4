@@ -1048,10 +1048,13 @@ class SubNegMonoid (G : Type u) extends AddMonoid G, Neg G, Sub G, ZSMul G where
   protected sub := SubNegMonoid.sub'
   /-- `a - b := a + -b` -/
   protected sub_eq_add_neg : ∀ a b : G, a - b = a + -b := by intros; rfl
+  /-- `0 • a = 0` -/
   protected zsmul_zero' (a : G) : (0 : ℤ) • a = 0 := by intros; rfl
+  /-- `(n + 1) • a = n • a + a` -/
   protected zsmul_succ' (n : ℕ) (a : G) :
       (n.succ : ℤ) • a = (n : ℤ) • a + a := by
     intros; rfl
+  /-- `-(n + 1) • a = -((n + 1) • a)` -/
   protected zsmul_neg' (n : ℕ) (a : G) : (Int.negSucc n) • a = -((n.succ : ℤ) • a) := by
     intros; rfl
 
