@@ -78,8 +78,8 @@ theorem pi_iff :
       · intro r s; simp [Pi.single_mul]
     suffices f₁' = f₂' by
       have := AlgHom.congr_fun this (g x)
-      simp only [AlgHom.comp_toLinearMap, AlgHom.ofLinearMap_apply, AddHom.toFun_eq_coe,
-        LinearMap.coe_toAddHom, LinearMap.coe_comp, AlgHom.coe_toLinearMap,
+      simp only [AlgHom.comp_toLinearMap, AlgHom.ofLinearMap_apply,
+        LinearMap.coe_comp, AlgHom.coe_toLinearMap,
         Ideal.Quotient.mkₐ_eq_mk, LinearMap.coe_single, Function.comp_apply,
         ← sub_eq_zero (b := Ideal.Quotient.mk J' _), ← map_sub, Ideal.Quotient.eq_zero_iff_mem,
         Ideal.mem_span_singleton, J', f₁', f₂'] at this
