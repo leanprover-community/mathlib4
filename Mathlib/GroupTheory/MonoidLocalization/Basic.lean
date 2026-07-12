@@ -879,6 +879,9 @@ variable {M N : Type*} [CommMonoid M] {S : Submonoid M} [CommMonoid N]
   have ⟨ms, eq⟩ := f.surj n
   exact (eq ▸ f.map_isRegular (isCancelMul_iff_forall_isRegular.mp ‹_› ms.1)).2.of_mul
 
+@[to_additive] instance [IsCancelMul M] : IsCancelMul (Localization S) :=
+  (Localization.monoidOf S).isCancelMul
+
 @[to_additive] instance [IsCancelMul M] [Nontrivial M] : Nontrivial (Localization S) :=
   (injective_iff <| Localization.monoidOf S).mpr (fun _ _ ↦ .all _) |>.nontrivial
 
