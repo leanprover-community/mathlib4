@@ -51,6 +51,13 @@ by all continuous maps `X i → Y`. -/
 def generatedBy : TopologicalSpace Y :=
   ⨆ (i : ι) (f : C(X i, Y)), coinduced f inferInstance
 
+/-- The `X`-generated topology is also coinduced by a single map out of a sigma type. -/
+lemma generatedBy_eq_coinduced :
+    generatedBy X (Y := Y) =
+      coinduced (fun (x : (f : (i : ι) × C(X i, Y)) × X f.1) ↦ x.1.2 x.2) inferInstance := by
+  rw [generatedBy, instTopologicalSpaceSigma, coinduced_iSup, iSup_sigma]
+  rfl
+
 end TopologicalSpace
 
 variable {X}
@@ -211,7 +218,7 @@ instance : IsGeneratedBy X (WithGeneratedByTopology X Y) where
     rw [continuous_iff X]
     intro j g
     rw [Function.comp_assoc, equiv_symm_comp_continuous_iff]
-    continuity
+    fun_prop
 
 instance : IsGeneratedBy X (PUnit.{v + 1}) := by
   rw [iff_le_generatedBy]
@@ -265,3 +272,7 @@ instance Sum.isGeneratedBy [IsGeneratedBy X Y] [IsGeneratedBy X Z] :
 instance Sigma.isGeneratedBy {κ : Type*} {Y : κ → Type*} [∀ k, TopologicalSpace (Y k)]
     [∀ k, IsGeneratedBy X (Y k)] : IsGeneratedBy X (Σ k, Y k) :=
   .iSup fun _ ↦ .coinduced _
+
+lemma TopologicalSpace.generatedBy_generatedBy (Y : Type*) [TopologicalSpace Y] :
+    generatedBy X (tY := generatedBy X) = generatedBy X (Y := Y):=
+  IsGeneratedBy.generatedBy_eq (X := X) (Y := WithGeneratedByTopology X Y)

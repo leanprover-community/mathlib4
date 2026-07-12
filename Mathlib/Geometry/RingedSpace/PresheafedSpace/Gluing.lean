@@ -130,6 +130,7 @@ theorem ι_isOpenEmbedding [HasLimits C] (i : D.J) : IsOpenEmbedding (𝖣.ι i)
   exact (TopCat.homeoOfIso (𝖣.gluedIso (PresheafedSpace.forget _)).symm).isOpenEmbedding.comp
       (D.toTopGlueData.ι_isOpenEmbedding i)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 theorem pullback_base (i j k : D.J) (S : Set (D.V (i, j)).carrier) :
     (π₂ i, j, k) '' (π₁ i, j, k) ⁻¹' S = D.f i k ⁻¹' D.f i j '' S := by
@@ -163,10 +164,11 @@ theorem f_invApp_f_app (i j k : D.J) (U : Opens (D.V (i, j)).carrier) :
   erw [(π₁ i, j, k).c.naturality_assoc, reassoc_of% this, ← Functor.map_comp_assoc,
     IsOpenImmersion.inv_naturality_assoc, IsOpenImmersion.app_invApp_assoc, ←
     (D.V (i, k)).presheaf.map_comp, ← (D.V (i, k)).presheaf.map_comp]
-  convert (Category.comp_id _).symm
+  convert! (Category.comp_id _).symm
   erw [(D.V (i, k)).presheaf.map_id]
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- We can prove the `eq` along with the lemma. Thus this is bundled together here, and the
 lemma itself is separated below.
@@ -178,7 +180,7 @@ theorem snd_invApp_t_app' (i j k : D.J) (U : Opens (pullback (D.f i j) (D.f i k)
   fconstructor
   -- Porting note: I don't know what the magic was in Lean3 proof, it just skipped the proof of `eq`
   · delta IsOpenImmersion.opensFunctor IsOpenEmbedding.functor
-    dsimp only [Functor.op, Opens.map, IsOpenMap.functor, unop_op, Opens.coe_mk]
+    dsimp only [Functor.op, Opens.map_def, IsOpenMap.functor, unop_op, Opens.coe_mk]
     congr 2
     have := (𝖣.t_fac k i j).symm
     rw [← IsIso.inv_comp_eq] at this
@@ -234,6 +236,7 @@ theorem snd_invApp_t_app (i j k : D.J) (U : Opens (pullback (D.f i j) (D.f i k))
 
 variable [HasLimits C]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 theorem ι_image_preimage_eq (i j : D.J) (U : Opens (D.U i).carrier) :
     (Opens.map (𝖣.ι j).base).obj ((D.ι_isOpenEmbedding i).functor.obj U) =
@@ -332,6 +335,7 @@ def ιInvAppπApp {i : D.J} (U : Opens (D.U i).carrier) (j) :
     exact colimit.w 𝖣.diagram.multispan (WalkingMultispan.Hom.fst (j, k))
   · exact D.opensImagePreimageMap i j U
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- (Implementation) The natural map `Γ(𝒪_{U_i}, U) ⟶ Γ(𝒪_X, 𝖣.ι i '' U)`.
 This forms the inverse of `(𝖣.ι i).c.app (op U)`. -/
@@ -385,6 +389,7 @@ def ιInvApp {i : D.J} (U : Opens (D.U i).carrier) :
             repeat rw [← (D.V (j, k)).presheaf.map_comp]
             rfl } }
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- `ιInvApp` is the left inverse of `D.ι i` on `U`. -/
 theorem ιInvApp_π {i : D.J} (U : Opens (D.U i).carrier) :
@@ -395,7 +400,7 @@ theorem ιInvApp_π {i : D.J} (U : Opens (D.U i).carrier) :
     simp only [SetLike.mem_coe, unop_op, Set.mem_preimage, Set.mem_image]
     refine ⟨fun h => ⟨_, h, rfl⟩, ?_⟩
     rintro ⟨y, h1, h2⟩
-    convert h1 using 1
+    convert! h1 using 1
     delta ι Multicoequalizer.π at h2
     apply_fun (D.ι _).base
     · exact h2.symm
@@ -444,7 +449,7 @@ theorem π_ιInvApp_π (i j : D.J) (U : Opens (D.U i).carrier) :
     iterate 3 rw [← Functor.map_comp_assoc]
     rw [NatTrans.naturality_assoc]
     erw [← (D.V (i, j)).presheaf.map_comp]
-    convert
+    convert!
       limit.w (componentwiseDiagram 𝖣.diagram.multispan _)
         (Quiver.Hom.op (WalkingMultispan.Hom.fst (i, j)))
   · rw [Category.comp_id]
@@ -486,13 +491,16 @@ instance ιIsOpenImmersion (i : D.J) : IsOpenImmersion (𝖣.ι i) where
   base_open := D.ι_isOpenEmbedding i
   c_iso U := by erw [← colimitPresheafObjIsoComponentwiseLimit_hom_π]; infer_instance
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The following diagram is a pullback, i.e. `Vᵢⱼ` is the intersection of `Uᵢ` and `Uⱼ` in `X`.
 
+```
 Vᵢⱼ ⟶ Uᵢ
  |      |
  ↓      ↓
  Uⱼ ⟶ X
+```
 -/
 def vPullbackConeIsLimit (i j : D.J) : IsLimit (𝖣.vPullbackCone i j) :=
   PullbackCone.isLimitAux' _ fun s => by
@@ -589,10 +597,12 @@ theorem ι_jointly_surjective (x : 𝖣.glued) : ∃ (i : D.J) (y : D.U i), (�
 
 /-- The following diagram is a pullback, i.e. `Vᵢⱼ` is the intersection of `Uᵢ` and `Uⱼ` in `X`.
 
+```
 Vᵢⱼ ⟶ Uᵢ
  |      |
  ↓      ↓
  Uⱼ ⟶ X
+```
 -/
 def vPullbackConeIsLimit (i j : D.J) : IsLimit (𝖣.vPullbackCone i j) :=
   𝖣.vPullbackConeIsLimitOfMap forgetToPresheafedSpace i j

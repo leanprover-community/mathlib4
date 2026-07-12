@@ -96,7 +96,7 @@ private lemma Fintype.sum_div_mul_card_choose_card :
     rw [div_mul_cancel_right₀]
     exact cast_ne_zero.2 (choose_pos <| mem_range_succ_iff.1 hn).ne'
   simp only [Finset.sum_congr rfl this, mul_eq_mul_left_iff, cast_eq_zero]
-  convert Or.inl <| sum_range_reflect _ _ with a ha
+  convert! Or.inl <| sum_range_reflect _ _ with a ha
   rw [add_tsub_cancel_right, cast_sub (mem_range_succ_iff.mp ha)]
 
 end
@@ -387,7 +387,7 @@ variable [Nonempty α]
     (card α - #(truncatedSup {s} t) : ℚ) / ((card α - #t) * (card α).choose #t) =
     if t ⊆ s then (card α - #s : ℚ) / ((card α - #t) * (card α).choose #t) else 0 := by
     rintro t
-    simp_rw [truncatedSup_singleton, le_iff_subset]
+    simp_rw [truncatedSup_singleton]
     split_ifs <;> simp
   simp_rw [← sub_eq_of_eq_add (Fintype.sum_div_mul_card_choose_card α), eq_sub_iff_add_eq,
     ← eq_sub_iff_add_eq', supSum, ← sum_sub_distrib, ← sub_div]

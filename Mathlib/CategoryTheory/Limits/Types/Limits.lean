@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Logic.UnivLE
 public import Mathlib.CategoryTheory.Limits.HasLimits
+public import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 
 /-!
 # Limits in the category of types.
@@ -116,6 +117,7 @@ lemma limitCone_pt_ext {x y : (limitCone F).pt}
     (w : (equivShrink F.sections).symm x = (equivShrink F.sections).symm y) : x = y := by
   simp_all
 
+set_option backward.defeqAttrib.useBackward true in
 /-- (internal implementation) the fact that the proposed limit cone is the limit -/
 @[simps]
 noncomputable def limitConeIsLimit : IsLimit (limitCone.{v, u} F) where
@@ -124,7 +126,7 @@ noncomputable def limitConeIsLimit : IsLimit (limitCone.{v, u} F) where
       property := fun f => congr_hom (Cone.w s f) _ }
   uniq := fun _ _ w => by
     ext x j
-    simpa using congr_hom (w j) x
+    simpa using! congr_hom (w j) x
 
 end
 
@@ -240,8 +242,10 @@ theorem limit_ext_iff' (F' : J ⥤ Type v) (x y : limit F') :
     x = y ↔ ∀ j, limit.π F' j x = limit.π F' j y :=
   ⟨fun t _ => t ▸ rfl, limit_ext' _ _ _⟩
 
-attribute [elementwise] limit.lift_π limMap_π limit.w
-attribute [simp] limit.lift_π_apply limMap_π_apply limit.w_apply
+-- `limit.lift_π_apply` and `limit.w_apply` are generated (and tagged `simp`)
+-- in `Mathlib/CategoryTheory/ConcreteCategory/Elementwise.lean`.
+attribute [elementwise] limMap_π
+attribute [simp] limMap_π_apply
 
 variable {F} in
 @[deprecated limit.w_apply (since := "2026-02-17")]
