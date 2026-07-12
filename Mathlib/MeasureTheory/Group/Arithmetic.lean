@@ -522,7 +522,8 @@ instance Pi.instMeasurableConstSMul {ι : Type*} {α : ι → Type*} [∀ i, SMu
   measurable_const_smul _ := measurable_pi_iff.2 fun i ↦ (measurable_pi_apply i).const_smul _
 
 /-- If a scalar is central, then its right action is measurable when its left action is. -/
-@[to_additive]
+@[to_additive
+  /-- If a vector is central, then its right action is measurable when its left action is. -/]
 nonrec instance MulOpposite.instMeasurableConstSMul [SMul M α] [SMul Mᵐᵒᵖ α] [IsCentralScalar M α]
     [MeasurableConstSMul M α] : MeasurableConstSMul Mᵐᵒᵖ α where
   measurable_const_smul := by simpa using measurable_const_smul
@@ -723,7 +724,8 @@ instance MulOpposite.instMeasurableMul₂ {M : Type*} [Mul M] [MeasurableSpace M
       ((measurable_mul_unop.comp measurable_snd).mul (measurable_mul_unop.comp measurable_fst))⟩
 
 /-- If a scalar is central, then its right action is measurable when its left action is. -/
-@[to_additive]
+@[to_additive
+  /-- If a vector is central, then its right action is measurable when its left action is. -/]
 nonrec instance MeasurableSMul.op {M α} [MeasurableSpace M] [MeasurableSpace α] [SMul M α]
     [SMul Mᵐᵒᵖ α] [IsCentralScalar M α] [MeasurableSMul M α] : MeasurableSMul Mᵐᵒᵖ α where
   measurable_smul_const x :=
