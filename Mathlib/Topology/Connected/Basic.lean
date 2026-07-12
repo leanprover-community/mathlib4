@@ -627,6 +627,24 @@ theorem Continuous.mapsTo_connectedComponentIn [TopologicalSpace β] {f : α →
     MapsTo f (connectedComponentIn s a) (connectedComponentIn (f '' s) (f a)) :=
   mapsTo_iff_image_subset.2 <| image_connectedComponentIn_subset h hx
 
+/-- The connected component of `(x, y)` in the product space is the product of the connected
+components of `x` and `y`. -/
+theorem connectedComponent_prod [TopologicalSpace β] (x : α) (y : β) :
+    connectedComponent (x, y) = connectedComponent x ×ˢ connectedComponent y :=
+  subset_antisymm
+    (fun _ hp ↦ ⟨continuous_fst.mapsTo_connectedComponent (x, y) hp,
+      continuous_snd.mapsTo_connectedComponent (x, y) hp⟩)
+    (isPreconnected_connectedComponent.prod isPreconnected_connectedComponent
+      |>.subset_connectedComponent ⟨mem_connectedComponent, mem_connectedComponent⟩)
+
+/-- The connected component of `x` in a product space is the product of the connected components
+of its coordinates. -/
+theorem connectedComponent_pi [∀ i, TopologicalSpace (X i)] (x : ∀ i, X i) :
+    connectedComponent x = univ.pi fun i ↦ connectedComponent (x i) :=
+  subset_antisymm (fun _ hy i _ ↦ (continuous_apply i).mapsTo_connectedComponent x hy)
+    (isPreconnected_univ_pi (fun _ ↦ isPreconnected_connectedComponent)
+      |>.subset_connectedComponent fun _ _ ↦ mem_connectedComponent)
+
 theorem irreducibleComponent_subset_connectedComponent {x : α} :
     irreducibleComponent x ⊆ connectedComponent x :=
   isIrreducible_irreducibleComponent.isConnected.subset_connectedComponent mem_irreducibleComponent
