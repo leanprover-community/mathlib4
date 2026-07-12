@@ -502,40 +502,32 @@ lemma _root_.ContMDiffAt.iff_comp_isImmersionAtOfComplement
   refine ⟨hf.continuousWithinAt, ?_⟩
   exact aux hφ h' ht hxt
 
--- this should be true without boundary!
-lemma isImmersedPoint (h : IsImmersionAtOfComplement F I J n f x) (hn : n ≠ 0) :
+lemma isImmersedPoint [IsManifold I 1 M] [IsManifold J 1 N]
+    (h : IsImmersionAtOfComplement F I J n f x) (hn : n ≠ 0) :
     IsImmersedPoint I J f x := by
+  suffices IsImmersedPoint I 𝓘(𝕜, E'') ((h.codChart.extend J) ∘ f) x by
+    apply IsImmersedPoint.of_comp (h.contMDiffAt.mdifferentiableAt hn) ?_ this
+    -- should this be an API lemma, `mdifferentiableAt_extend`?
+    apply ContMDiffAt.mdifferentiableAt ?_ hn
+    exact h.codChart.contMDiffAt_extend h.codChart_mem_maximalAtlas h.mem_codChart_source
   -- The local representative of f in the nice charts at x, as a continuous linear map.
   let rhs : E →L[𝕜] E'' := h.equiv.toContinuousLinearMap.comp ((ContinuousLinearMap.id _ _).prod 0)
-
-  -- issue 1: reducing to the local representative having an immersed point also assumes
-  -- no boundary in other places...
-  suffices hx : IsImmersedPoint 𝓘(𝕜, E) 𝓘(𝕜, E'')
-      ((h.codChart.extend J) ∘ f ∘ (h.domChart.extend I).symm) ((h.domChart.extend I) x) by
-    have aux :
-        IsImmersedPoint 𝓘(𝕜, E) J (f ∘ (h.domChart.extend I).symm) (h.domChart.extend I x) := by
-      apply IsImmersedPoint.of_comp _ _ hx
-      · apply MDifferentiableAt.comp (I' := I)
-        · convert h.contMDiffAt.mdifferentiableAt hn
-          simp [h.domChart.left_inv (mem_domChart_source h)]
-        apply ContMDiffAt.mdifferentiableAt ?_ hn
-        have aux2 := h.domChart.contMDiffAt_extend h.domChart_mem_maximalAtlas h.mem_domChart_source
-        have aux3 := contMDiffOn_extend_symm h.domChart_mem_maximalAtlas --h.mem_domChart_source
-        apply aux3.contMDiffAt
-        simp
-        sorry -- true if boundaryless...
-      · have : MDiffAt rhs ((h.domChart.extend I) x) := sorry
-        sorry -- apply this.congr_of_eventuallyEq
-    --apply IsImmersedPoint.comp_isInvertible_mfderiv_left (hf := aux)
-    sorry
-  have : IsImmersedPoint 𝓘(𝕜, E) 𝓘(𝕜, E'') rhs (h.domChart.extend I x) := by
-    -- Maybe extract as lemma: a CLE has immersed points everywhere (would be the first term).
+  have heq : EqOn ((h.codChart.extend J) ∘ f) (rhs ∘ (h.domChart.extend I)) h.domChart.source := by
+    intro x' hx'
+    trans ((h.codChart.extend J) ∘ f ∘ (h.domChart.extend I).symm ∘ (h.domChart.extend I)) x'
+    · simp [h.domChart.left_inv hx']
+    · exact h.writtenInCharts ((h.domChart.extend I).map_source' (by simpa))
+  suffices IsImmersedPoint I 𝓘(𝕜, E'') (rhs ∘ (h.domChart.extend I)) x from
+    this.congr
+      (Filter.eventually_of_mem (h.domChart.open_source.mem_nhds h.mem_domChart_source) heq)
+  apply IsImmersedPoint.comp (I' := 𝓘(𝕜, E))
+  · -- Maybe extract as lemma: a CLE has immersed points everywhere (would be the first term).
     apply ((h.equiv.toDiffeomorph.isLocalDiffeomorph _).isImmersedPoint (by simp)).comp
     dsimp
     rw [isImmersedPoint_iff, mfderiv_eq_fderiv, ContinuousLinearMap.fderiv]
     apply ContinuousLinearMap.HasLeftInverse.inl
-  -- now, argue rhs and φ have the same fderiv: needs a small detour, see my voice message
-  sorry
+  · exact IsImmersedPoint.of_mfderiv_isInvertible
+      <| isInvertible_mfderiv_extend (by simp [h.mem_domChart_source])
 
 -- The hard direction, using the inverse function theorem.
 -- TODO: will this use boundaryless-ness, or something about the boundary?
