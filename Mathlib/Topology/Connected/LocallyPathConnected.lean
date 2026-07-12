@@ -29,6 +29,9 @@ path-connected, in that each point has a basis of path-connected neighborhoods.
   path-connected spaces are locally path-connected.
 * `Sum.locallyPathConnectedSpace` / `Sigma.locallyPathConnectedSpace`: disjoint unions of locally
   path-connected spaces are locally path-connected.
+* `Prod.locallyPathConnectedSpace` / `Pi.locallyPathConnectedSpace`: binary products of locally
+  path-connected spaces are locally path-connected; likewise for pi types when the index type is
+  finite or all factors are path-connected.
 
 Abstractly, this also shows that locally path-connected spaces form a coreflective subcategory of
 the category of topological spaces, although we do not prove that in this form here.
@@ -298,6 +301,55 @@ instance Sigma.locallyPathConnectedSpace {X : ι → Type*}
 
 @[deprecated (since := "2026-06-21")]
 alias Sigma.locPathConnectedSpace := Sigma.locallyPathConnectedSpace
+
+/-- The product of two locally path-connected spaces is locally path-connected. -/
+instance Prod.locallyPathConnectedSpace [LocallyPathConnectedSpace Y] :
+    LocallyPathConnectedSpace (X × Y) where
+  path_connected_basis := by
+    rintro ⟨x, y⟩
+    rw [hasBasis_self]
+    intro U hU
+    obtain ⟨u, hu, v, hv, huv⟩ := mem_nhds_prod_iff.mp hU
+    obtain ⟨u', ⟨hu', hu'c⟩, hu'u⟩ := (path_connected_basis x).mem_iff.mp hu
+    obtain ⟨v', ⟨hv', hv'c⟩, hv'v⟩ := (path_connected_basis y).mem_iff.mp hv
+    exact ⟨u' ×ˢ v', prod_mem_nhds hu' hv', hu'c.prod hv'c, (prod_mono hu'u hv'v).trans huv⟩
+
+/-- A finite product of locally path-connected spaces is locally path-connected. -/
+instance Pi.locallyPathConnectedSpace_of_finite [Finite ι] {Z : ι → Type*}
+    [∀ i, TopologicalSpace (Z i)] [∀ i, LocallyPathConnectedSpace (Z i)] :
+    LocallyPathConnectedSpace (∀ i, Z i) where
+  path_connected_basis x := by
+    rw [hasBasis_self]
+    intro U hU
+    rw [nhds_pi, Filter.mem_pi] at hU
+    obtain ⟨J, hJ, t, ht, htU⟩ := hU
+    choose V hV hVt using fun i ↦ (path_connected_basis (x i)).mem_iff.mp (ht i)
+    exact ⟨univ.pi V, set_pi_mem_nhds finite_univ fun i _ ↦ (hV i).1,
+      .pi fun i ↦ (hV i).2, fun f hf ↦ htU fun i hiJ ↦ hVt i (hf i trivial)⟩
+
+/-- A product of path-connected, locally path-connected spaces is locally path-connected. Note
+that an arbitrary product of locally path-connected spaces need not be locally path-connected, so
+the path-connectedness assumption cannot be dropped (it can when the index type is finite, see
+`Pi.locallyPathConnectedSpace_of_finite`). -/
+instance Pi.locallyPathConnectedSpace {Z : ι → Type*} [∀ i, TopologicalSpace (Z i)]
+    [∀ i, LocallyPathConnectedSpace (Z i)] [∀ i, PathConnectedSpace (Z i)] :
+    LocallyPathConnectedSpace (∀ i, Z i) where
+  path_connected_basis x := by
+    rw [hasBasis_self]
+    intro U hU
+    rw [nhds_pi, Filter.mem_pi] at hU
+    obtain ⟨J, hJ, t, ht, htU⟩ := hU
+    choose V hV hVt using fun i ↦ (path_connected_basis (x i)).mem_iff.mp (ht i)
+    classical
+    refine ⟨J.pi V, set_pi_mem_nhds hJ fun i _ ↦ (hV i).1, ?_,
+      fun f hf ↦ htU fun i hiJ ↦ hVt i (hf i hiJ)⟩
+    rw [← univ_pi_piecewise_univ]
+    refine .pi fun i ↦ ?_
+    by_cases hi : i ∈ J
+    · rw [piecewise_eq_of_mem _ _ _ hi]
+      exact (hV i).2
+    · rw [piecewise_eq_of_notMem _ _ _ hi]
+      exact isPathConnected_univ
 
 instance AlexandrovDiscrete.locallyPathConnectedSpace [AlexandrovDiscrete X] :
     LocallyPathConnectedSpace X := by
