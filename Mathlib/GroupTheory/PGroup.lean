@@ -7,6 +7,7 @@ module
 
 public import Mathlib.GroupTheory.Perm.Cycle.Type
 public import Mathlib.GroupTheory.SpecificGroups.Cyclic
+public import Mathlib.Order.CompactlyGenerated.Basic
 
 /-!
 # p-groups
@@ -391,6 +392,40 @@ theorem commutative_of_card_eq_prime_sq (hG : Nat.card G = p ^ 2) : ∀ a b : G,
 end P2comm
 
 end IsPGroup
+
+open Subgroup in
+/-- In an abelian `p`-group (finite or infinite), the maximal subgroups are exactly the subgroups
+of index `p`. Finiteness is unnecessary: for a maximal `M`, the quotient `G ⧸ M` is simple *and
+abelian*, hence `≅ ℤ/q` for a prime `q` (a simple abelian group is automatically finite), and being
+a quotient of a `p`-group forces `q = p`; thus `[G : M] = p`. (This fails for non-abelian infinite
+`p`-groups, e.g. Tarski monsters, whose maximal subgroups have order `p` and infinite index.)
+
+The proof goes `IsCoatom M ↔ IsSimpleGroup (G ⧸ M)` (`CommGroup.isSimpleGroup_iff_isCoatom`), then
+`CommGroup.is_simple_iff_prime_card` turns that into `(Nat.card (G ⧸ M)).Prime`, and
+`IsPGroup.card_eq_or_dvd` (for the `p`-group quotient) forces that prime to be `p`;
+`Subgroup.index_eq_card` converts card to index. -/
+theorem CommGroup.isCoatom_iff_index_eq_prime {G : Type*} [CommGroup G] {p : ℕ} [hp : Fact p.Prime]
+    (hG : IsPGroup p G) (M : Subgroup G) : IsCoatom M ↔ M.index = p := by
+  rw [← CommGroup.isSimpleGroup_iff_isCoatom, CommGroup.is_simple_iff_prime_card,
+    Subgroup.index_eq_card]
+  refine ⟨fun h ↦ ?_, fun h ↦ h ▸ hp.out⟩
+  have h_dvd := (IsPGroup.card_eq_or_dvd (hG.to_quotient M)).resolve_left h.ne_one
+  exact ((Nat.prime_dvd_prime_iff_eq hp.out h).mp h_dvd).symm
+
+open Subgroup in
+/-- A finite non-cyclic abelian `p`-group has two distinct subgroups of index `p`. Contrapositive
+route: if there is at most one index-`p` subgroup then, since maximal subgroups are exactly the
+index-`p` subgroups (`CommGroup.isCoatom_iff_index_eq_prime`), there is at most one maximal
+subgroup, so `G` is cyclic (`isCyclic_of_isCoatom_subsingleton`), contradicting `hnc`. -/
+theorem IsPGroup.exists_index_eq_prime_ne_of_not_isCyclic {G : Type*} [CommGroup G] [Finite G]
+    {p : ℕ} [Fact p.Prime] (hG : IsPGroup p G) (hnc : ¬ IsCyclic G) :
+    ∃ H₁ H₂ : Subgroup G, H₁.index = p ∧ H₂.index = p ∧ H₁ ≠ H₂ := by
+  haveI : Finite (Subgroup G) := Finite.of_injective _ (SetLike.coe_injective (A := Subgroup G))
+  by_contra hcon
+  push Not at hcon
+  refine hnc (isCyclic_of_isCoatom_subsingleton fun M₁ M₂ hM₁ hM₂ => ?_)
+  exact hcon M₁ M₂ ((CommGroup.isCoatom_iff_index_eq_prime hG M₁).mp hM₁)
+    ((CommGroup.isCoatom_iff_index_eq_prime hG M₂).mp hM₂)
 
 namespace ZModModule
 variable {n : ℕ} {G : Type*} [AddCommGroup G] [Module (ZMod n) G]
