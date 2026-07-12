@@ -5,8 +5,9 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Analysis.Normed.Field.Basic
 public import Mathlib.Order.Filter.Pointwise
+public import Mathlib.Analysis.Normed.Group.Basic
+public import Mathlib.LinearAlgebra.Span.Defs
 
 /-!
 # Tangent cone

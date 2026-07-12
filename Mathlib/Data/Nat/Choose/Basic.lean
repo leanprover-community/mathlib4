@@ -1,7 +1,8 @@
 /-
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Chris Hughes, Bhavik Mehta, Stuart Presnell, Antoine Chambert-Loir, María-Inés de Frutos—Fernández
+Authors: Chris Hughes, Bhavik Mehta, Stuart Presnell, Antoine Chambert-Loir,
+  María-Inés de Frutos—Fernández
 -/
 module
 
@@ -51,13 +52,14 @@ def choose : ℕ → ℕ → ℕ
   | 0, _ + 1 => 0
   | n + 1, k + 1 => choose n k + choose n (k + 1)
 
-@[simp]
+@[simp, grind =]
 theorem choose_zero_right (n : ℕ) : choose n 0 = 1 := by cases n <;> rfl
 
-@[simp]
+@[simp, grind =]
 theorem choose_zero_succ (k : ℕ) : choose 0 (succ k) = 0 :=
   rfl
 
+@[grind =]
 theorem choose_succ_succ (n k : ℕ) : choose (succ n) (succ k) = choose n k + choose n (succ k) :=
   rfl
 
@@ -79,6 +81,7 @@ theorem choose_eq_choose_pred_add {n k : ℕ} (hn : 0 < n) (hk : 0 < k) :
   obtain ⟨l, rfl⟩ : ∃ l, k = l + 1 := Nat.exists_eq_add_of_le' hk
   rw [choose_succ_right _ _ hn, Nat.add_one_sub_one]
 
+@[grind <=]
 theorem choose_eq_zero_of_lt : ∀ {n k}, n < k → choose n k = 0
   | _, 0, hk => absurd hk (Nat.not_lt_zero _)
   | 0, _ + 1, _ => choose_zero_succ _
@@ -89,7 +92,7 @@ theorem choose_eq_zero_of_lt : ∀ {n k}, n < k → choose n k = 0
 
 @[simp]
 theorem choose_self (n : ℕ) : choose n n = 1 := by
-  induction n <;> simp [*, choose, choose_eq_zero_of_lt (lt_succ_self _)]
+  induction n <;> grind
 
 @[simp]
 theorem choose_succ_self (n : ℕ) : choose n (succ n) = 0 :=
@@ -160,7 +163,7 @@ theorem choose_mul_factorial_mul_factorial : ∀ {n k}, k ≤ n → choose n k *
 theorem choose_mul {n k s : ℕ} (hsk : s ≤ k) :
     n.choose k * k.choose s = n.choose s * (n - s).choose (k - s) := by
   obtain hnk | hkn := lt_or_ge n k
-  · grind [Nat.choose_eq_zero_of_lt]
+  · grind
   have h : 0 < (n - k)! * (k - s)! * s ! := by apply_rules [factorial_pos, Nat.mul_pos]
   apply Nat.mul_right_cancel h
   calc
@@ -213,7 +216,7 @@ theorem choose_succ_right_eq (n k : ℕ) : choose n (k + 1) * (k + 1) = choose n
     rw [← Nat.add_mul, Nat.add_comm (choose _ _), ← choose_succ_succ, add_one_mul_choose_eq]
   rw [← Nat.sub_eq_of_eq_add e, Nat.mul_comm, ← Nat.mul_sub_left_distrib, Nat.add_sub_add_right]
 
-@[simp]
+@[simp, grind =]
 theorem choose_succ_self_right : ∀ n : ℕ, (n + 1).choose n = n + 1
   | 0 => rfl
   | n + 1 => by rw [choose_succ_succ, choose_succ_self_right n, choose_self]
@@ -341,7 +344,7 @@ theorem choose_le_middle (r n : ℕ) : choose n r ≤ choose n (n / 2) := by
 
 
 theorem choose_le_succ (a c : ℕ) : choose a c ≤ choose a.succ c := by
-  cases c <;> simp [Nat.choose_succ_succ]
+  cases c <;> grind
 
 theorem choose_le_add (a b c : ℕ) : choose a c ≤ choose (a + b) c := by
   induction b with
@@ -356,11 +359,9 @@ theorem choose_mono (b : ℕ) : Monotone fun a => choose a b := fun _ _ => choos
 
 theorem choose_eq_one_iff {n k : ℕ} : n.choose k = 1 ↔ k = 0 ∨ n = k := by
   rcases lt_trichotomy k n with hk | rfl | hk
-  · have := k.choose_succ_self_right.symm.trans_le (k.choose_mono hk)
-    have := n.choose_zero_right
-    grind
+  · grind [k.choose_mono hk]
   · simp
-  · simp [choose_eq_zero_of_lt hk, hk.ne, Nat.ne_zero_of_lt hk]
+  · grind
 
 /-! #### Multichoose
 

@@ -14,12 +14,12 @@ public import Mathlib.Tactic.Module
 # Inner product space derived from a norm
 
 This file defines an `InnerProductSpace` instance from a norm that respects the
-parallellogram identity. The parallelogram identity is a way to express the inner product of `x` and
+parallelogram identity. The parallelogram identity is a way to express the inner product of `x` and
 `y` in terms of the norms of `x`, `y`, `x + y`, `x - y`.
 
 ## Main results
 
-- `InnerProductSpace.ofNorm`: a normed space whose norm respects the parallellogram identity,
+- `InnerProductSpace.ofNorm`: a normed space whose norm respects the parallelogram identity,
   can be seen as an inner product space.
 
 ## Implementation notes
@@ -75,12 +75,12 @@ variable (𝕜) {E}
 
 theorem InnerProductSpace.toInnerProductSpaceable [InnerProductSpace 𝕜 E] :
     InnerProductSpaceable E :=
-  ⟨parallelogram_law_with_norm 𝕜⟩
+  ⟨parallelogram_law_with_norm_mul 𝕜⟩
 
 -- See note [lower instance priority]
 instance (priority := 100) InnerProductSpace.toInnerProductSpaceable_ofReal
     [InnerProductSpace ℝ E] : InnerProductSpaceable E :=
-  ⟨parallelogram_law_with_norm ℝ⟩
+  ⟨parallelogram_law_with_norm_mul ℝ⟩
 
 variable [NormedSpace 𝕜 E]
 
@@ -118,7 +118,7 @@ theorem inner_.norm_sq (x : E) : ‖x‖ ^ 2 = re (inner_ 𝕜 x x) := by
   simp only [inner_, normSq_apply, ofNat_re, ofNat_im, map_sub, map_add,
     ofReal_re, ofReal_im, mul_re, inv_re, mul_im, I_re, inv_im]
   have h₁ : ‖x - x‖ = 0 := by simp
-  have h₂ : ‖x + x‖ = 2 • ‖x‖ := by convert norm_nsmul 𝕜 2 x using 2; module
+  have h₂ : ‖x + x‖ = 2 • ‖x‖ := by convert norm_nsmul 𝕜 2 x; module
   rw [h₁, h₂]
   ring
 
@@ -132,10 +132,10 @@ theorem inner_.conj_symm (x y : E) : conj (inner_ 𝕜 y x) = inner_ 𝕜 x y :=
   have hI' := I_mul_I_of_nonzero hI
   have I_smul (v : E) : ‖(I : 𝕜) • v‖ = ‖v‖ := by rw [norm_smul, norm_I_of_ne_zero hI, one_mul]
   have h₁ : ‖(I : 𝕜) • y - x‖ = ‖(I : 𝕜) • x + y‖ := by
-    convert I_smul ((I : 𝕜) • x + y) using 2
+    convert I_smul ((I : 𝕜) • x + y)
     linear_combination (norm := module) -hI' • x
   have h₂ : ‖(I : 𝕜) • y + x‖ = ‖(I : 𝕜) • x - y‖ := by
-    convert (I_smul ((I : 𝕜) • y + x)).symm using 2
+    convert (I_smul ((I : 𝕜) • y + x)).symm
     linear_combination (norm := module) -hI' • y
   rw [h₁, h₂]
   ring
@@ -203,6 +203,7 @@ set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- **Fréchet–von Neumann–Jordan Theorem**. A normed space `E` whose norm satisfies the
 parallelogram identity can be given a compatible inner product. -/
+@[implicit_reducible]
 noncomputable def InnerProductSpace.ofNorm
     (h : ∀ x y : E, ‖x + y‖ * ‖x + y‖ + ‖x - y‖ * ‖x - y‖ = 2 * (‖x‖ * ‖x‖ + ‖y‖ * ‖y‖)) :
     InnerProductSpace 𝕜 E :=

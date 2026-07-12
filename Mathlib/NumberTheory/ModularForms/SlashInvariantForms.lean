@@ -46,7 +46,7 @@ class SlashInvariantFormClass [FunLike F ℍ ℂ] : Prop where
 instance (priority := 100) SlashInvariantForm.funLike :
     FunLike (SlashInvariantForm Γ k) ℍ ℂ where
   coe := SlashInvariantForm.toFun
-  coe_injective' f g h := by cases f; cases g; congr
+  coe_injective f g h := by cases f; cases g; congr
 
 /-- See note [custom simps projection]. -/
 def SlashInvariantForm.Simps.coe (f : SlashInvariantForm Γ k) : ℍ → ℂ := f
@@ -308,6 +308,4 @@ lemma coe_translate [SlashInvariantFormClass F Γ k] (f : F) (g : GL (Fin 2) ℝ
     translate f g = ⇑f ∣[k] g :=
   rfl
 
-@[deprecated (since := "2025-08-15")] alias translateGL := translate
-@[deprecated (since := "2025-08-15")] alias coe_translateGL := coe_translate
 end SlashInvariantForm

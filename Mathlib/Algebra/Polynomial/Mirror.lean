@@ -76,7 +76,7 @@ theorem coeff_mirror (n : ℕ) :
   · rw [coeff_eq_zero_of_natDegree_lt (by rwa [mirror_natDegree])]
     by_cases h1 : n ≤ p.natDegree + p.natTrailingDegree
     · rw [revAt_le h1, coeff_eq_zero_of_lt_natTrailingDegree]
-      exact (tsub_lt_iff_left h1).mpr (Nat.add_lt_add_right h2 _)
+      grw [h2, add_tsub_cancel_left]
     · rw [← revAtFun_eq, revAtFun, if_neg h1, coeff_eq_zero_of_natDegree_lt h2]
   rw [not_lt] at h2
   rw [revAt_le (h2.trans (Nat.le_add_right _ _))]
@@ -163,17 +163,6 @@ theorem natTrailingDegree_mul_mirror :
   · rw [hp, zero_mul, natTrailingDegree_zero, mul_zero]
   rw [natTrailingDegree_mul hp (mt mirror_eq_zero.mp hp), mirror_natTrailingDegree, two_mul]
 
-end Semiring
-
-section Ring
-
-variable {R : Type*} [Ring R] (p q : R[X])
-
-theorem mirror_neg : (-p).mirror = -p.mirror := by
-  rw [mirror, mirror, reverse_neg, natTrailingDegree_neg, neg_mul_eq_neg_mul]
-
-variable [NoZeroDivisors R]
-
 theorem mirror_mul_of_domain : (p * q).mirror = p.mirror * q.mirror := by
   by_cases hp : p = 0
   · rw [hp, zero_mul, mirror_zero, zero_mul]
@@ -185,6 +174,15 @@ theorem mirror_mul_of_domain : (p * q).mirror = p.mirror * q.mirror := by
 
 theorem mirror_smul (a : R) : (a • p).mirror = a • p.mirror := by
   rw [← C_mul', ← C_mul', mirror_mul_of_domain, mirror_C]
+
+end Semiring
+
+section Ring
+
+variable {R : Type*} [Ring R] (p q : R[X])
+
+theorem mirror_neg : (-p).mirror = -p.mirror := by
+  rw [mirror, mirror, reverse_neg, natTrailingDegree_neg, neg_mul_eq_neg_mul]
 
 end Ring
 

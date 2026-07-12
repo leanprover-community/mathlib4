@@ -34,7 +34,7 @@ def atImInfty :=
 instance : atImInfty.NeBot := by
   refine comap_neBot_iff_frequently.mpr (Eventually.frequently ?_)
   filter_upwards [eventually_gt_atTop 0] with t ht
-    using ⟨⟨I * t, by simp [ht]⟩, by simp [← coe_im]⟩
+    using ⟨⟨I * t, by simp [ht]⟩, by simp⟩
 
 theorem atImInfty_basis : atImInfty.HasBasis (fun _ => True) fun i : ℝ => im ⁻¹' Set.Ici i :=
   Filter.HasBasis.comap UpperHalfPlane.im Filter.atTop_basis
@@ -80,7 +80,7 @@ lemma tendsto_comap_im_ofComplex :
   simp only [atImInfty, tendsto_comap_iff, Function.comp_def]
   refine tendsto_comap.congr' ?_
   filter_upwards [preimage_mem_comap (Ioi_mem_atTop 0)] with z hz
-  simp only [ofComplex_apply_of_im_pos hz, ← UpperHalfPlane.coe_im, coe_mk_subtype]
+  simp [ofComplex_apply_of_im_pos hz]
 
 lemma tendsto_coe_atImInfty :
     Tendsto UpperHalfPlane.coe atImInfty (comap Complex.im atTop) := by
