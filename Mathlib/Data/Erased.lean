@@ -30,7 +30,7 @@ def Erased (α : Sort u) : Sort max 1 u :=
 namespace Erased
 
 /-- Erase a value. -/
-@[inline]
+@[macro_inline]
 def mk {α} (a : α) : Erased α :=
   ⟨fun b => a = b, a, rfl⟩
 

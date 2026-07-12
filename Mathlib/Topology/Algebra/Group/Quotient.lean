@@ -17,7 +17,7 @@ In this file we define topology on `G ⧸ N`, where `N` is a subgroup of `G`,
 and prove basic properties of this topology.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Cardinal
 
@@ -46,7 +46,7 @@ theorem continuous_mk {N : Subgroup G} : Continuous (mk : G → G ⧸ N) :=
 
 section ContinuousMul
 
-variable [ContinuousMul G] {N : Subgroup G}
+variable [SeparatelyContinuousMul G] {N : Subgroup G}
 
 @[to_additive]
 theorem isOpenMap_coe : IsOpenMap ((↑) : G → G ⧸ N) := isOpenMap_quotient_mk'_mul
@@ -65,13 +65,17 @@ theorem dense_image_mk {s : Set G} :
   rw [← dense_preimage_mk, preimage_image_mk_eq_mul]
 
 @[to_additive]
-instance instContinuousSMul : ContinuousSMul G (G ⧸ N) where
+instance instContinuousSMul {G : Type*} [Group G] [TopologicalSpace G] [ContinuousMul G]
+    {N : Subgroup G} : ContinuousSMul G (G ⧸ N) where
   continuous_smul := by
     rw [← (IsOpenQuotientMap.id.prodMap isOpenQuotientMap_mk).continuous_comp_iff]
     exact continuous_mk.comp continuous_mul
 
 @[to_additive]
-instance instContinuousConstSMul : ContinuousConstSMul G (G ⧸ N) := inferInstance
+instance instContinuousConstSMul : ContinuousConstSMul G (G ⧸ N) where
+  continuous_const_smul γ := by
+    rw [← isOpenQuotientMap_mk.continuous_comp_iff]
+    exact continuous_mk.comp <| continuous_const_smul γ
 
 @[to_additive]
 theorem t1Space_iff :

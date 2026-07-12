@@ -25,7 +25,7 @@ This file introduces the notion of Oka predicates and standard results about the
 - [lam_reyes_2009]: *Oka and Ako ideal families in commutative rings*, 2009
 -/
 
-@[expose] public section
+public section
 
 namespace Ideal
 

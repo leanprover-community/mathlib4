@@ -36,8 +36,8 @@ section
 
 open Complex
 
-variable {E : Type} [NormedAddCommGroup E] [NormedSpace ℂ E]
-variable {f g : E → ℂ} {z : ℂ} {x : E} {s : Set E}
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
+  {f g : E → ℂ} {z : ℂ} {x : E} {s : Set E}
 
 /-- The function `Complex.exp` is complex analytic. -/
 theorem analyticOnNhd_cexp : AnalyticOnNhd ℂ exp univ := by

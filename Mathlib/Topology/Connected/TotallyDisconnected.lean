@@ -52,6 +52,11 @@ theorem IsPreconnected.subsingleton [TotallyDisconnectedSpace α] {s : Set α}
     (h : IsPreconnected s) : s.Subsingleton :=
   TotallyDisconnectedSpace.isTotallyDisconnected_univ s (subset_univ s) h
 
+-- note: making this an instance breaks downstream files
+theorem subsingleton_of_preconnected_totallyDisconnected
+    [PreconnectedSpace α] [TotallyDisconnectedSpace α] : Subsingleton α :=
+  Set.subsingleton_of_univ_subsingleton isPreconnected_univ.subsingleton
+
 instance Pi.totallyDisconnectedSpace {α : Type*} {β : α → Type*}
     [∀ a, TopologicalSpace (β a)] [∀ a, TotallyDisconnectedSpace (β a)] :
     TotallyDisconnectedSpace (∀ a : α, β a) :=
@@ -134,7 +139,7 @@ noncomputable def TotallyDisconnectedSpace.continuousMapEquivOfConnectedSpace
     [TopologicalSpace Y] [TotallyDisconnectedSpace Y] [ConnectedSpace X] :
     C(X, Y) ≃ Y where
   toFun f := f (Classical.arbitrary _)
-  invFun y := ⟨fun _ ↦ y, by continuity⟩
+  invFun y := ⟨fun _ ↦ y, by fun_prop⟩
   left_inv f := ContinuousMap.ext (TotallyDisconnectedSpace.eq_of_continuous _ f.2 _)
   right_inv _ := rfl
 
@@ -168,6 +173,12 @@ lemma totallyDisconnectedSpace_subtype_iff {s : Set α} :
 instance Subtype.totallyDisconnectedSpace {α : Type*} {p : α → Prop} [TopologicalSpace α]
     [TotallyDisconnectedSpace α] : TotallyDisconnectedSpace (Subtype p) :=
   totallyDisconnectedSpace_subtype_iff.2 (isTotallyDisconnected_of_totallyDisconnectedSpace _)
+
+instance [TotallyDisconnectedSpace α] : TotallyDisconnectedSpace (Additive α) :=
+  ‹TotallyDisconnectedSpace α›
+
+instance [TotallyDisconnectedSpace α] : TotallyDisconnectedSpace (Multiplicative α) :=
+  ‹TotallyDisconnectedSpace α›
 
 end TotallyDisconnected
 
@@ -247,7 +258,7 @@ def Continuous.connectedComponentsLift (h : Continuous f) : ConnectedComponents 
 @[continuity]
 theorem Continuous.connectedComponentsLift_continuous (h : Continuous f) :
     Continuous h.connectedComponentsLift :=
-  h.quotient_liftOn' <| by convert h.image_eq_of_connectedComponent_eq
+  h.quotient_liftOn' <| by convert! h.image_eq_of_connectedComponent_eq
 
 @[simp]
 theorem Continuous.connectedComponentsLift_apply_coe (h : Continuous f) (x : α) :
@@ -282,9 +293,35 @@ def Continuous.connectedComponentsMap {β : Type*} [TopologicalSpace β] {f : α
     (h : Continuous f) : ConnectedComponents α → ConnectedComponents β :=
   Continuous.connectedComponentsLift (ConnectedComponents.continuous_coe.comp h)
 
+@[simp]
+lemma Continuous.connectedComponentsMap_mk {β : Type*} [TopologicalSpace β] {f : α → β}
+    (hf : Continuous f) (x : α) :
+    hf.connectedComponentsMap (.mk x) = .mk (f x) :=
+  rfl
+
 theorem Continuous.connectedComponentsMap_continuous {β : Type*} [TopologicalSpace β] {f : α → β}
     (h : Continuous f) : Continuous h.connectedComponentsMap :=
   Continuous.connectedComponentsLift_continuous (ConnectedComponents.continuous_coe.comp h)
+
+lemma Topology.IsCoinducing.connectedComponentsMap {β : Type*} [TopologicalSpace β] {f : α → β}
+    (hf : IsCoinducing f) :
+    IsCoinducing hf.continuous.connectedComponentsMap := by
+  rw [← ConnectedComponents.isQuotientMap_coe.isCoinducing.of_comp_iff]
+  exact ConnectedComponents.isQuotientMap_coe.isCoinducing.comp hf
+
+@[simp]
+lemma Continuous.connectedComponentsMap_surjective {β : Type*} [TopologicalSpace β] {f : α → β}
+    (hf : Continuous f) (h : Surjective f) :
+    Surjective hf.connectedComponentsMap :=
+  Quotient.lift_surjective _ _ <| ConnectedComponents.surjective_coe.comp h
+
+lemma Topology.IsCoinducing.connectedComponentsMap_bijective {β : Type*} [TopologicalSpace β]
+    {f : α → β} (hf : IsCoinducing f) (hf' : ∀ y, IsConnected (f ⁻¹' {y})) :
+    hf.continuous.connectedComponentsMap.Bijective := by
+  refine ⟨fun x y h ↦ ?_, Continuous.connectedComponentsMap_surjective _ fun y ↦ (hf' y).nonempty⟩
+  obtain ⟨x, rfl⟩ := ConnectedComponents.surjective_coe x
+  obtain ⟨y, rfl⟩ := ConnectedComponents.surjective_coe y
+  simp_all [← hf.preimage_connectedComponent hf']
 
 /-- A preconnected set `s` has the property that every map to a
 discrete space that is continuous on `s` is constant on `s` -/
@@ -316,3 +353,12 @@ theorem IsPreconnected.eqOn_const_of_mapsTo {S : Set α} (hS : IsPreconnected S)
   rcases S.eq_empty_or_nonempty with (rfl | ⟨x, hx⟩)
   · exact hne.imp fun _ hy => ⟨hy, eqOn_empty _ _⟩
   · exact ⟨f x, hTm hx, fun x' hx' => hS.constant_of_mapsTo hT hc hTm hx' hx⟩
+
+theorem IsPreconnected.isDiscrete_iff_subsingleton {S : Set α} (hS : IsPreconnected S) :
+    IsDiscrete S ↔ S.Subsingleton where
+  mp h := by
+    have : DiscreteTopology S := isDiscrete_iff_discreteTopology.mp h
+    have : PreconnectedSpace S := isPreconnected_iff_preconnectedSpace.mp hS
+    have : Subsingleton S := subsingleton_of_preconnected_totallyDisconnected
+    simpa using this
+  mpr h := h.isDiscrete

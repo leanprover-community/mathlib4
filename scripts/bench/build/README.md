@@ -9,7 +9,7 @@ The following metrics are collected by a wrapper around the entire build process
 - `build//task-clock`
 - `build//wall-clock`
 
-The following metrics are collected from `leanc --profile` and summed across all modules:
+The following metrics are collected from `lean --profile` and summed across all modules:
 
 - `build/profile/<name>//wall-clock`
 
@@ -17,6 +17,11 @@ The following metrics are collected from `lakeprof report`:
 
 - `build/lakeprof/longest build path//wall-clock`
 - `build/lakeprof/longest rebuild path//wall-clock`
+
+The following metrics are collected from a combination of `lakeprof report` and the per-module instructions:
+
+- `build/lakeprof/longest build path//instructions`
+- `build/lakeprof/longest rebuild path//instructions`
 
 The following metrics are collected individually for each module:
 

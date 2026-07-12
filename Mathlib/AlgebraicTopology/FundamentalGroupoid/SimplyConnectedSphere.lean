@@ -58,8 +58,7 @@ theorem exists_partition_unitInterval_of_open_cover (hc₁ : ∀ i, IsOpen (c i)
   intro k
   have ⟨i, hi⟩ := ht_sub k
   use i
-  rwa [uIcc_of_le]
-  exact ht_mono (Nat.le_add_right _ _)
+  rwa [uIcc_of_le (ht_mono (Nat.le_add_right _ _))]
 
 /-- If we have a cover with pairwise path connected intersections, then we can extract a sequence
 of paths whose range lie in such intersections. -/
@@ -90,14 +89,16 @@ lemma concat_trans_trans_symm {n : ℕ} (p q : Fin (n + 1) → X)
       (hn (p ∘ castSucc) (q ∘ castSucc) (fun k ↦ F k.castSucc) (fun k ↦ G k.castSucc))
     simp at this
     apply Quotient.exact
-    simp [concat_succ, this]
+    simp only [concat_succ, Function.comp_apply, castSucc_zero, succ_last,
+      Nat.succ_eq_add_one, Quotient.mk_trans, this, Quotient.trans_assoc,
+      Quotient.mk_symm]
     grind
 
 /-- Technical lemma to prove homotopy in `exists_loops_homotopic_concat_of_open_cover`. -/
 private lemma cast_trans_trans_homotopic_of_homotopic_cast {x x₀ x₁ : X} {h₀ : x₀ = x} {h₁ : x₁ = x}
     {p : Path x₀ x₁} {q : Path x x} (h : p.Homotopic (q.cast h₀ h₁)) :
     ((((Path.refl x).cast rfl h₀).trans p).trans ((Path.refl x).cast h₁ rfl)).Homotopic q := by
-  cases h₀; cases h₁
+  subst_vars
   exact trans (trans ⟨Homotopy.transRefl _⟩ ⟨Homotopy.reflTrans _⟩) h
 
 /-- If a topological space `X` can be covered by open sets `c i` whose pairwise intersections
@@ -154,12 +155,7 @@ theorem exists_loops_homotopic_concat_of_open_cover (hc₁ : ∀ i, IsOpen (c i)
     rfl
   · intro k
     use τ k
-    simp only [trans_range, symm_range]
-    apply union_subset
-    · apply union_subset (hG'_range₀ k)
-      rw [range_subpath]
-      exact hτ k
-    · exact hG'_range₁ k
+    grind [trans_range, symm_range, union_subset, range_subpath]
 
 end Path.Homotopic
 
@@ -206,8 +202,8 @@ instance (v : S n) : ContractibleSpace ({v}ᶜ : Set (S n)) := by
   have : ContractibleSpace proj.target := by
     rw [stereographic'_target]
     exact Homeomorph.contractibleSpace (Homeomorph.Set.univ (EuclideanSpace ℝ (Fin n)))
-  convert Homeomorph.contractibleSpace proj.toHomeomorphSourceTarget
-  repeat exact (stereographic'_source v).symm
+  convert Homeomorph.contractibleSpace proj.toHomeomorphSourceTarget <;>
+    exact (stereographic'_source v).symm
 
 /-- The Euclidean `n`-sphere minus a point is path connected for `n ≥ 1`. -/
 theorem isPathConnected_compl_singleton (v : S (n + 1)) : IsPathConnected ({v}ᶜ) := by
@@ -215,8 +211,8 @@ theorem isPathConnected_compl_singleton (v : S (n + 1)) : IsPathConnected ({v}�
   infer_instance
 
 lemma stereographic'_symm_zero (v : S n) : (stereographic' n v).toPartialEquiv.symm 0 = -v := by
+  ext
   simp [stereographic', stereographic, stereoInvFun]
-  rfl
 
 /-- The Euclidean `n`-sphere minus two antipodal points is path connected for `n ≥ 2`. -/
 theorem isPathConnected_compl_singleton_inter_neg (v : S (n + 2)) :

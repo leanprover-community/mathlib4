@@ -18,7 +18,7 @@ Gδ set.
 
 -/
 
-@[expose] public section
+public section
 
 variable {X : Type*} [TopologicalSpace X]
 open TopologicalSpace Set
