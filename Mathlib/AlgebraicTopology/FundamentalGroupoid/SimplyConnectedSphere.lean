@@ -18,7 +18,8 @@ This file follows the proof from [hatcher02] that the `n`-sphere is simply conne
 
 ## Main results
 
-- `exists_loops_homotopic_concat_of_open_cover`: lemma 1.15 from [hatcher02].
+- `exists_loops_homotopic_concat_of_open_cover`: decompose path into loops subordinate to open cover
+  (lemma 1.15 from [hatcher02]).
 - `EuclideanSphere.simplyConnectedSpace`: the `n`-sphere is simply connected for `n ≥ 2`.
 
 ## Notations
@@ -78,22 +79,22 @@ namespace Homotopic
 /-- This lemma looks complicated but amounts to cancelling out each path `G k` with its reverse. -/
 lemma concat_trans_trans_symm {n : ℕ} (p q : Fin (n + 1) → X)
     (F : ∀ k : Fin n, Path (p k.castSucc) (p k.succ)) (G : ∀ k : Fin (n + 1), Path (q k) (p k)) :
-    (concat q (fun k ↦ ((G (k.castSucc)).trans (F k)).trans (G (k.succ)).symm)).Homotopic
+    (concat q (fun k ↦ ((G k.castSucc).trans (F k)).trans (G k.succ).symm)).Homotopic
       (((G 0).trans (concat p F)).trans (G (last n)).symm) := by
   induction n with
   | zero =>
-    simp_rw [concat_zero, ← fromPath_eq_iff_homotopic]
+    simp only [concat_zero, ← fromPath_eq_iff_homotopic]
     aesop_cat
   | succ n hn =>
     have := Quotient.eq.mpr
-      (hn (p ∘ castSucc) (q ∘ castSucc) (fun k ↦ F (k.castSucc)) (fun k ↦ G (k.castSucc)))
+      (hn (p ∘ castSucc) (q ∘ castSucc) (fun k ↦ F k.castSucc) (fun k ↦ G k.castSucc))
     simp at this
     apply Quotient.exact
     simp [concat_succ, this]
     grind
 
 /-- Technical lemma to prove homotopy in `exists_loops_homotopic_concat_of_open_cover`. -/
-lemma cast_trans_trans_homotopic_of_homotopic_cast {x x₀ x₁ : X} {h₀ : x₀ = x} {h₁ : x₁ = x}
+private lemma cast_trans_trans_homotopic_of_homotopic_cast {x x₀ x₁ : X} {h₀ : x₀ = x} {h₁ : x₁ = x}
     {p : Path x₀ x₁} {q : Path x x} (h : p.Homotopic (q.cast h₀ h₁)) :
     ((((Path.refl x).cast rfl h₀).trans p).trans ((Path.refl x).cast h₁ rfl)).Homotopic q := by
   cases h₀; cases h₁
@@ -130,24 +131,21 @@ theorem exists_loops_homotopic_concat_of_open_cover (hc₁ : ∀ i, IsOpen (c i)
   have hG'_range₀ k : Set.range (G' k.castSucc) ⊆ c (τ k) := by
     unfold G'
     rw [snoc_castSucc]
-    rcases k.eq_zero_or_eq_succ with rfl | ⟨j, rfl⟩
-    · simp only [cons_zero, cast_coe, refl_range, singleton_subset_iff]
-      exact ha _
-    · exact (subset_inter_iff.mp (hG j)).right
+    cases k using Fin.cases with
+    | zero => simpa [cons_zero, cast_coe, refl_range, singleton_subset_iff] using ha _
+    | succ j => exact (subset_inter_iff.mp (hG j)).right
   have hG'_range₁ k : Set.range (G' k.succ) ⊆ c (τ k) := by
     unfold G'
-    rcases k.eq_castSucc_or_eq_last with ⟨j, rfl⟩ | rfl
-    · rw [succ_castSucc, snoc_castSucc]
-      exact (subset_inter_iff.mp (hG j)).left
-    · simp only [succ_last, snoc_last, cast_coe, refl_range, singleton_subset_iff]
-      exact ha _
+    cases k using Fin.lastCases with
+    | cast => rw [succ_castSucc, snoc_castSucc]; exact (subset_inter_iff.mp (hG _)).left
+    | last => simpa using ha _
   /- Our desired sequence of loops is obtained by concatenating each subpath of `γ` lying in some
   element `c (τ k)` of our open cover with the paths `G' (k.castSucc)` and `(G' (k. succ)).symm`.
   Intuitively, we are attaching both ends of our subpath to our basepoint by leveraging `G'`.
   Our previously established results then make it relatively easy to prove that the concatenation
   of these loops is homotopic to `γ`, and that each loop has the appropriate range. -/
   use n, fun k ↦
-    ((G' (k.castSucc)).trans (γ.subpath (t k.castSucc) (t k.succ))).trans (G' (k.succ)).symm
+    ((G' k.castSucc).trans (γ.subpath (t k.castSucc) (t k.succ))).trans (G' k.succ).symm
   constructor
   · apply trans (concat_trans_trans_symm _ _ _ _)
     rw [hG'₀, hG'₁, ← cast_symm, refl_symm]
@@ -156,7 +154,7 @@ theorem exists_loops_homotopic_concat_of_open_cover (hc₁ : ∀ i, IsOpen (c i)
     rfl
   · intro k
     use τ k
-    simp_rw [trans_range, symm_range]
+    simp only [trans_range, symm_range]
     apply union_subset
     · apply union_subset (hG'_range₀ k)
       rw [range_subpath]
@@ -265,29 +263,29 @@ private lemma hc₂ (v : S n) : univ ⊆ ⋃ i, c v i := by
 private lemma hc₃ (v : S (n + 2)) : ∀ i j, IsPathConnected (c v i ∩ c v j) := by
   apply cases
   · apply cases
-    · simp_rw [cases_zero, inter_self]
+    · simp only [cases_zero, inter_self]
       exact isPathConnected_compl_singleton v
     · intro _
-      simp_rw [cases_zero, cases_succ]
+      simp only [cases_zero, cases_succ]
       exact isPathConnected_compl_singleton_inter_neg v
   · intro _
     apply cases
-    · simp_rw [cases_succ, cases_zero, inter_comm]
+    · simp only [cases_succ, cases_zero, inter_comm]
       exact isPathConnected_compl_singleton_inter_neg v
     · intro _
-      simp_rw [cases_succ, inter_self]
+      simp only [cases_succ, inter_self]
       exact isPathConnected_compl_singleton (-v)
 
 private lemma hx (x : S (n + 1)) : ∃ v, ∀ i : Fin 2, x ∈ c v i := by
   have ⟨v, hv⟩ := Infinite.exists_notMem_finset {x, -x}
   use v
   apply cases
-  · simp_rw [cases_zero, mem_compl_singleton_iff]
+  · simp only [cases_zero, mem_compl_singleton_iff]
     intro h
     apply hv
     rw [Finset.mem_insert]
     exact Or.inl h.symm
-  · simp_rw [cases_succ, mem_compl_singleton_iff]
+  · simp only [cases_succ, mem_compl_singleton_iff]
     intro _ h
     apply hv
     rw [Finset.mem_insert, Finset.mem_singleton, h]
@@ -329,11 +327,11 @@ protected theorem simplyConnectedSpace (n : ℕ) : SimplyConnectedSpace (S (n + 
     intro k
     have ⟨i, hi⟩ := hDr k
     fin_cases i
-    · simp_rw [zero_eta, cases_zero] at hi
+    · simp only [zero_eta, cases_zero] at hi
       apply homotopic_refl_of_not_surjective
       exact fun h ↦ hi (h v) rfl
     · have : (1 : Fin 2) = succ 0 := rfl
-      simp_rw [mk_one, this, cases_succ] at hi
+      simp only [mk_one, this, cases_succ] at hi
       apply homotopic_refl_of_not_surjective
       exact fun a ↦ hi (a (-v)) rfl
 
