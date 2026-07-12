@@ -34,19 +34,17 @@ variable (R : Type u) [CommRing R]
 section preliminaries
 
 set_option backward.isDefEq.respectTransparency false in
-set_option maxHeartbeats 250000 in
---the equiv is a bit complicated
 lemma spanFinrank_comap [IsNoetherianRing R] [IsLocalRing R] (x : R)
     (I : Ideal (R ⧸ Ideal.span {x})) (J : Ideal R)
     (eq : J = I.comap (Ideal.Quotient.mk (Ideal.span {x})))
     (mem : x ∈ maximalIdeal R) (nmem : x ∉ maximalIdeal R * J) :
     J.spanFinrank = I.spanFinrank + 1 := by
   have le := (Ideal.span_singleton_le_iff_mem (maximalIdeal R)).mpr mem
-  let _ : Field (R ⧸ maximalIdeal R) := Ideal.Quotient.field (maximalIdeal R)
-  let _ := Submodule.Quotient.nontrivial_iff.mpr (Ideal.span_singleton_ne_top mem)
-  let _ : IsLocalHom (Ideal.Quotient.mk (Ideal.span {x})) :=
+  let : Field (R ⧸ maximalIdeal R) := Ideal.Quotient.field (maximalIdeal R)
+  have := Submodule.Quotient.nontrivial_iff.mpr (Ideal.span_singleton_ne_top mem)
+  have : IsLocalHom (Ideal.Quotient.mk (Ideal.span {x})) :=
     IsLocalHom.of_surjective _ Ideal.Quotient.mk_surjective
-  let _ : IsLocalRing (R ⧸ Ideal.span {x}) :=
+  have : IsLocalRing (R ⧸ Ideal.span {x}) :=
     IsLocalRing.of_surjective (Ideal.Quotient.mk (Ideal.span {x})) Ideal.Quotient.mk_surjective
   let S := R ⧸ Ideal.span {x}
   have comapeq : (maximalIdeal S).comap (Ideal.Quotient.mk (Ideal.span {x})) = maximalIdeal R :=
@@ -145,8 +143,8 @@ set_option backward.isDefEq.respectTransparency false in
 lemma preservesHomology_of_flat (S : Type*) [CommRing S] (f : R →+* S) (flat : f.Flat) :
     (ModuleCat.extendScalars f).PreservesHomology := by
   apply ((CategoryTheory.Functor.exact_tfae _).out 1 2).mp (fun T hT ↦ ?_)
-  let _ : Module R S := Module.compHom S f
-  let _ : Module.Flat R S := flat
+  let : Module R S := Module.compHom S f
+  have : Module.Flat R S := flat
   have : Function.Exact (ModuleCat.ExtendScalars.map' f T.f) (ModuleCat.ExtendScalars.map' f T.g) :=
     Module.Flat.lTensor_exact S
       ((CategoryTheory.ShortComplex.ShortExact.moduleCat_exact_iff_function_exact T).mp hT)
