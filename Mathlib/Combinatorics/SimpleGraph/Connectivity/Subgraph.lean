@@ -449,11 +449,9 @@ lemma neighborSet_toSubgraph_internal {u} {i : ℕ} {p : G.Walk u u} (hpc : p.Is
     Prod.swap_prod_mk]
   refine ⟨?_, by aesop⟩
   rintro ⟨i', ⟨hl1, hl2⟩ | ⟨hr1, hr2⟩⟩
-  · apply hpc.getVert_injOn' (by rw [Set.mem_setOf_eq]; lia)
-      (by rw [Set.mem_setOf_eq]; lia) at hl1
+  · apply hpc.getVert_injOn' (by grind) (by grind) at hl1
     simp_all
-  · apply hpc.getVert_injOn (by rw [Set.mem_setOf_eq]; lia)
-      (by rw [Set.mem_setOf_eq]; lia) at hr2
+  · apply hpc.getVert_injOn (by grind) (by grind) at hr2
     aesop
 
 lemma ncard_neighborSet_toSubgraph_eq_two {u v} {p : G.Walk u u} (hpc : p.IsCycle)
