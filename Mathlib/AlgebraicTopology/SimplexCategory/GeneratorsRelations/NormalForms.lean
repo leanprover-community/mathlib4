@@ -124,8 +124,8 @@ lemma head_lt {m a L} (hL : IsAdmissible m (a :: L)) :
     ∀ a' ∈ L, a < a' := fun _ => L.rel_of_pairwise_cons hL.sortedLT.pairwise
 
 @[grind →] lemma getElem_lt {m L} (hL : IsAdmissible m L)
-    {k : ℕ} {hk : k < L.length} : L[k] < m + L.length :=
-  (hL.le k hk).trans_lt (Nat.add_lt_add_left hk _)
+    {k : ℕ} {hk : k < L.length} : L[k] < m + L.length := by
+  grw [hL.le, hk]
 
 /-- An element of an `m`-admissible list, as an element of the appropriate `Fin` -/
 @[simps]
@@ -278,7 +278,7 @@ lemma standardσ_simplicialInsert (hL : IsAdmissible (m + 1) L) (j : ℕ) (hj : 
     · have : ∀ (j k : ℕ) (h : j < (k + 1)), Fin.ofNat (k + 1) j = j := by simp -- helps grind below
       have : a < m + 2 := by grind -- helps grind below
       have : σ (Fin.ofNat (m + 2) a) ≫ σ (.ofNat _ j) = σ (.ofNat _ (j + 1)) ≫ σ (.ofNat _ a) := by
-        convert σ_comp_σ_nat (n := m) a j (by grind) (by grind) (by grind) <;> grind
+        convert! σ_comp_σ_nat (n := m) a j (by grind) (by grind) (by grind) <;> grind
       grind [standardσ_cons]
 
 set_option backward.isDefEq.respectTransparency false in

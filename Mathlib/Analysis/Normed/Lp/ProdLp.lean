@@ -10,6 +10,7 @@ public import Mathlib.Analysis.Normed.Lp.WithLp
 
 /-!
 # `L^p` distance on products of two metric spaces
+
 Given two metric spaces, one can put the max distance on their product, but there is also
 a whole family of natural distances, indexed by a parameter `p : ℝ≥0∞`, that also induce
 the product topology. We define them in this file. For `0 < p < ∞`, the distance on `α × β`
@@ -161,7 +162,6 @@ section EDist
 
 variable [EDist α] [EDist β]
 
-open scoped Classical in
 /-- Endowing the space `WithLp p (α × β)` with the `L^p` edistance. We register this instance
 separate from `WithLp.instProdPseudoEMetric` since the latter requires the type class hypothesis
 `[Fact (1 ≤ p)]` in order to prove the triangle inequality.
@@ -184,7 +184,7 @@ variable {p α β}
 theorem prod_edist_eq_card (f g : WithLp 0 (α × β)) :
     edist f g =
       (if edist f.fst g.fst = 0 then 0 else 1) + (if edist f.snd g.snd = 0 then 0 else 1) := by
-  convert if_pos rfl
+  convert! if_pos rfl
 
 theorem prod_edist_eq_add (hp : 0 < p.toReal) (f g : WithLp p (α × β)) :
     edist f g = (edist f.fst g.fst ^ p.toReal + edist f.snd g.snd ^ p.toReal) ^ (1 / p.toReal) :=
@@ -230,7 +230,6 @@ section Dist
 
 variable [Dist α] [Dist β]
 
-open scoped Classical in
 /-- Endowing the space `WithLp p (α × β)` with the `L^p` distance. We register this instance
 separate from `WithLp.instProdPseudoMetricSpace` since the latter requires the type class hypothesis
 `[Fact (1 ≤ p)]` in order to prove the triangle inequality.
@@ -251,7 +250,7 @@ variable {p α β}
 
 theorem prod_dist_eq_card (f g : WithLp 0 (α × β)) : dist f g =
     (if dist f.fst g.fst = 0 then 0 else 1) + (if dist f.snd g.snd = 0 then 0 else 1) := by
-  convert if_pos rfl
+  convert! if_pos rfl
 
 theorem prod_dist_eq_add (hp : 0 < p.toReal) (f g : WithLp p (α × β)) :
     dist f g = (dist f.fst g.fst ^ p.toReal + dist f.snd g.snd ^ p.toReal) ^ (1 / p.toReal) :=
@@ -267,7 +266,6 @@ section Norm
 
 variable [Norm α] [Norm β]
 
-open scoped Classical in
 /-- Endowing the space `WithLp p (α × β)` with the `L^p` norm. We register this instance
 separate from `WithLp.instProdSeminormedAddCommGroup` since the latter requires the type class
 hypothesis `[Fact (1 ≤ p)]` in order to prove the triangle inequality.
@@ -288,7 +286,7 @@ variable {p α β}
 @[simp]
 theorem prod_norm_eq_card (f : WithLp 0 (α × β)) :
     ‖f‖ = (if ‖f.fst‖ = 0 then 0 else 1) + (if ‖f.snd‖ = 0 then 0 else 1) := by
-  convert if_pos rfl
+  convert! if_pos rfl
 
 theorem prod_norm_eq_sup (f : WithLp ∞ (α × β)) : ‖f‖ = ‖f.fst‖ ⊔ ‖f.snd‖ := rfl
 
@@ -517,9 +515,11 @@ variable [UniformSpace α] [UniformSpace β]
 instance instProdUniformSpace : UniformSpace (WithLp p (α × β)) :=
   instUniformSpaceProd.comap ofLp
 
+@[fun_prop]
 lemma prod_uniformContinuous_toLp : UniformContinuous (@toLp p (α × β)) :=
   uniformContinuous_comap' uniformContinuous_id
 
+@[fun_prop]
 lemma prod_uniformContinuous_ofLp : UniformContinuous (@ofLp p (α × β)) :=
   uniformContinuous_comap
 
@@ -681,6 +681,7 @@ instance instProdSeminormedAddCommGroup [SeminormedAddCommGroup α] [SeminormedA
         prod_norm_eq_add (zero_lt_one.trans_le h), dist_eq_norm, ← norm_neg_add]
       rfl
 
+@[fun_prop]
 lemma isUniformInducing_toLp [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
     IsUniformInducing (@toLp p (α × β)) :=
   (prod_antilipschitzWith_toLp p α β).isUniformInducing
@@ -810,7 +811,7 @@ theorem prod_nnnorm_eq_of_L2 (x : WithLp 2 (α × β)) :
 
 theorem prod_norm_sq_eq_of_L2 (x : WithLp 2 (α × β)) : ‖x‖ ^ 2 = ‖x.fst‖ ^ 2 + ‖x.snd‖ ^ 2 := by
   suffices ‖x‖₊ ^ 2 = ‖x.fst‖₊ ^ 2 + ‖x.snd‖₊ ^ 2 by
-    simpa only [NNReal.coe_sum] using congr_arg ((↑) : ℝ≥0 → ℝ) this
+    simpa only [NNReal.coe_sum] using! congr_arg ((↑) : ℝ≥0 → ℝ) this
   rw [prod_nnnorm_eq_of_L2, NNReal.sq_sqrt]
 
 theorem prod_dist_eq_of_L2 (x y : WithLp 2 (α × β)) :

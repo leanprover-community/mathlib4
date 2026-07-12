@@ -71,7 +71,7 @@ namespace PiNat
 
 /-! ### The firstDiff function -/
 
-open Classical in
+open scoped Classical in
 /-- In a product space `Π n, E n`, then `firstDiff x y` is the first index at which `x` and `y`
 differ. If `x = y`, then by convention we set `firstDiff x x = 0`. -/
 irreducible_def firstDiff (x y : ∀ n, E n) : ℕ :=
@@ -249,7 +249,7 @@ a `MetricSpace` instance, as other distances may be used on these spaces, but we
 local instances in this section.
 -/
 
-open Classical in
+open scoped Classical in
 /-- The distance function on a product space `Π n, E n`, given by `dist x y = (1/2)^n` where `n` is
 the first index at which `x` and `y` differ. -/
 @[instance_reducible]
@@ -482,7 +482,7 @@ theorem exists_disjoint_cylinder {s : Set (∀ n, E n)} (hs : IsClosed s) {x : �
       exact mem_cylinder_iff_dist_le.1 hy
     _ < infDist x s := hn
 
-open Classical in
+open scoped Classical in
 /-- Given a point `x` in a product space `Π (n : ℕ), E n`, and `s` a subset of this space, then
 `shortestPrefixDiff x s` if the smallest `n` for which there is no element of `s` having the same
 prefix of length `n` as `x`. If there is no such `n`, then use `0` by convention. -/
@@ -594,7 +594,7 @@ theorem exists_lipschitz_retraction_of_isClosed {s : Set (∀ n, E n)} (hs : IsC
     · rintro x ⟨y, rfl⟩
       by_cases hy : y ∈ s
       · rwa [fs y hy]
-      simpa [f, if_neg hy] using (inter_cylinder_longestPrefix_nonempty hs hne y).choose_spec.1
+      simpa [f, if_neg hy] using! (inter_cylinder_longestPrefix_nonempty hs hne y).choose_spec.1
     · intro x hx
       rw [← fs x hx]
       exact mem_range_self _
@@ -933,21 +933,18 @@ lemma min_dist_le_dist_pi (x y : ∀ i, F i) (i : ι) :
 lemma dist_le_dist_pi_of_dist_lt (h : dist x y < 2⁻¹ ^ encode i) : dist (x i) (y i) ≤ dist x y := by
   simpa only [not_le.2 h, false_or] using min_le_iff.1 (min_dist_le_dist_pi x y i)
 
--- TODO: fix two non-terminal simps below; second one uses a long lemma list
-set_option linter.flexible false in
 /-- Given a countable family of metric spaces, one may put a distance on their product `Π i, E i`.
 
 It is highly non-canonical, though, and therefore not registered as a global instance.
 The distance we use here is `dist x y = ∑' i, min (1/2)^(encode i) (dist (x i) (y i))`. -/
 @[instance_reducible]
 protected def pseudoMetricSpace : PseudoMetricSpace (∀ i, F i) :=
-  PseudoEMetricSpace.toPseudoMetricSpaceOfDist dist
-    (fun x y ↦ by simp [dist_eq_tsum]; positivity) fun x y ↦ by
-      rw [edist_eq_tsum, dist_eq_tsum,
-        ENNReal.ofReal_tsum_of_nonneg (fun _ ↦ by positivity) (dist_summable ..)]
-      simp [edist, ENNReal.inv_pow]
-      congr! with a
-      exact PseudoMetricSpace.edist_dist (x a) (y a)
+  PseudoEMetricSpace.toPseudoMetricSpaceOfDist dist (fun x y ↦ by rw [dist_eq_tsum]; positivity)
+  fun x y ↦ by
+    rw [edist_eq_tsum, dist_eq_tsum,
+      ENNReal.ofReal_tsum_of_nonneg (fun _ ↦ by positivity) (dist_summable ..)]
+    congr! with a
+    simp [edist, ENNReal.inv_pow, PseudoMetricSpace.edist_dist (x a) (y a)]
 
 end PseudoMetricSpace
 
@@ -1011,7 +1008,7 @@ noncomputable def embed : PiNatEmbed X Y f → ∀ i, Y i := fun x i ↦ f i x.o
 
 lemma embed_injective (separating_f : Pairwise fun x y ↦ ∃ i, f i x ≠ f i y) :
     Injective (embed X Y f) := by
-  simpa [Pairwise, not_imp_comm (a := _ = _), funext_iff, Function.Injective] using separating_f
+  simpa [Pairwise, not_imp_comm (a := _ = _), funext_iff, Function.Injective] using! separating_f
 
 variable [Encodable ι]
 
@@ -1121,7 +1118,7 @@ lemma continuous_distDenseSeq (n : ℕ) : Continuous (distDenseSeq X n) := by
   cases isEmpty_or_nonempty X
   · exact continuous_of_discreteTopology
   refine continuous_projIcc.comp <| Continuous.dist continuous_id' ?_
-  convert continuous_const (y := denseSeq X n)
+  convert! continuous_const (y := denseSeq X n)
 
 lemma separation {x : X} {C : Set X} (hxC : C ∈ 𝓝 x) :
     ∃ (n : ℕ), C ∈ (𝓝 (distDenseSeq X n x)).comap (distDenseSeq X n) := by

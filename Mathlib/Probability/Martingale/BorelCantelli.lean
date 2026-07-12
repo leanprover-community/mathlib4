@@ -155,7 +155,7 @@ theorem Submartingale.bddAbove_iff_exists_tendsto [IsFiniteMeasure μ] (hf : Sub
   have hgbdd : ∀ᵐ ω ∂μ, ∀ i : ℕ, |g (i + 1) ω - g i ω| ≤ ↑R := by
     simpa only [g, sub_sub_sub_cancel_right]
   filter_upwards [hg.bddAbove_iff_exists_tendsto_aux hg0 hgbdd] with ω hω
-  convert hω using 1
+  convert! hω using 1
   · refine ⟨fun h => ?_, fun h => ?_⟩ <;> obtain ⟨b, hb⟩ := h <;>
     refine ⟨b + |f 0 ω|, fun y hy => ?_⟩ <;> obtain ⟨n, rfl⟩ := hy
     · simp_rw [g, sub_eq_add_neg]
@@ -205,7 +205,7 @@ theorem Martingale.bddAbove_range_iff_bddBelow_range [IsFiniteMeasure μ] (hf : 
     constructor <;> rintro ⟨c, hc⟩
     · exact ⟨-c, hc.neg⟩
     · refine ⟨-c, ?_⟩
-      convert hc.neg
+      convert! hc.neg
       simp only [neg_neg, Pi.neg_apply]
   rw [hω₁, this, ← hω₂]
   constructor <;> rintro ⟨c, hc⟩ <;> refine ⟨-c, fun ω hω => ?_⟩
@@ -283,10 +283,11 @@ theorem tendsto_sum_indicator_atTop_iff [IsFiniteMeasure μ]
     (hint : ∀ n, Integrable (f n) μ) (hbdd : ∀ᵐ ω ∂μ, ∀ n, |f (n + 1) ω - f n ω| ≤ R) :
     ∀ᵐ ω ∂μ, Tendsto (fun n => f n ω) atTop atTop ↔
       Tendsto (fun n => predictablePart f ℱ μ n ω) atTop atTop := by
-  have h₁ := (martingale_martingalePart hf hint).ae_not_tendsto_atTop_atTop
-    (martingalePart_bdd_difference ℱ hbdd)
-  have h₂ := (martingale_martingalePart hf hint).ae_not_tendsto_atTop_atBot
-    (martingalePart_bdd_difference ℱ hbdd)
+  simp only [← Real.norm_eq_abs] at hbdd
+  have h₀ := martingalePart_bdd_difference ℱ hbdd
+  simp only [Real.norm_eq_abs, ← NNReal.coe_ofNat, ← NNReal.coe_mul 2 R] at h₀
+  have h₁ := (martingale_martingalePart hf hint).ae_not_tendsto_atTop_atTop h₀
+  have h₂ := (martingale_martingalePart hf hint).ae_not_tendsto_atTop_atBot h₀
   have h₃ : ∀ᵐ ω ∂μ, ∀ n, 0 ≤ (μ[f (n + 1) - f n | ℱ n]) ω := by
     refine ae_all_iff.2 fun n => condExp_nonneg ?_
     filter_upwards [ae_all_iff.1 hfmono n] with ω hω using sub_nonneg.2 hω

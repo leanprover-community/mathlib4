@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Topology.Homotopy.Contractible
 public import Mathlib.Topology.Homotopy.Basic
-public import Mathlib.Topology.Connected.LocPathConnected
+public import Mathlib.Topology.Connected.LocallyPathConnected
 public import Mathlib.Topology.Homeomorph.Lemmas
 
 /-!
@@ -24,7 +24,7 @@ This file defines `LocallyContractibleSpace` and `StronglyLocallyContractibleSpa
 ## Main results
 
 * `StronglyLocallyContractibleSpace.locallyContractible`: SLC implies classical LC
-* `instLocPathConnectedSpace`: strongly locally contractible spaces are locally path-connected
+* `instLocallyPathConnectedSpace`: strongly locally contractible spaces are locally path-connected
 * `StronglyLocallyContractibleSpace.of_bases`: a helper to construct strongly locally contractible
   spaces from a neighborhood basis
 * `contractible_subset_basis`: basis of contractible neighborhoods contained in an open set
@@ -122,7 +122,7 @@ theorem contractible_subset_basis {U : Set X} (h : IsOpen U) (hx : x ∈ U) :
   (contractible_basis x).hasBasis_self_subset (IsOpen.mem_nhds h hx)
 
 /-- Strongly locally contractible spaces are locally path-connected. -/
-instance (priority := 100) instLocPathConnectedSpace : LocPathConnectedSpace X where
+instance (priority := 100) instLocallyPathConnectedSpace : LocallyPathConnectedSpace X where
   path_connected_basis x := by
     refine contractible_basis x |>.to_hasBasis'
       (fun s ⟨hs, hs'⟩ ↦ ⟨s, ⟨hs, ?_⟩, le_rfl⟩) (fun s hs ↦ hs.1)
@@ -179,7 +179,7 @@ theorem StronglyLocallyContractibleSpace.locallyContractible [StronglyLocallyCon
   obtain ⟨v₀, hid⟩ := id_nullhomotopic V
   -- The inclusion V ↪ U is homotopic to the constant map at (inclusion v₀)
   refine ⟨ContinuousMap.inclusion hVU v₀, ?_⟩
-  convert Homotopic.comp (.refl _) hid
+  convert! Homotopic.comp (.refl _) hid
   ext
   simp
 

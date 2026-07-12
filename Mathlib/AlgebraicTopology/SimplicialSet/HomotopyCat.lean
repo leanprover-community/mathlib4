@@ -298,7 +298,7 @@ lemma homMk_id (x : V _⦋0⦌₂) :
 lemma homMk_comp_homMk {x₀ x₁ x₂ : V _⦋0⦌₂} {e₀₁ : Edge x₀ x₁} {e₁₂ : Edge x₁ x₂}
     {e₀₂ : Edge x₀ x₂} (h : Edge.CompStruct e₀₁ e₁₂ e₀₂) :
     homMk e₀₁ ≫ homMk e₁₂ = homMk e₀₂ := by
-  simpa [homMk] using CategoryTheory.Quotient.sound _
+  simpa [homMk] using! CategoryTheory.Quotient.sound _
     (OneTruncation₂.HoRel₂.of_compStruct h)
 
 variable (V) in
@@ -363,7 +363,7 @@ def lift : V.HomotopyCategory ⥤ D :=
     (Cat.FreeRefl.lift' obj (fun f ↦ map f) map_id) (by
       rintro _ _ _ _ ⟨h⟩
       simp only [Functor.map_comp]
-      convert map_comp h <;> apply Cat.FreeRefl.lift'_map)
+      convert! map_comp h <;> apply Cat.FreeRefl.lift'_map)
 
 @[simp]
 lemma lift_obj_mk (x : V _⦋0⦌₂) : (lift obj map map_id map_comp).obj (mk x) = obj x := rfl
@@ -384,7 +384,6 @@ variable (φ : ∀ (x : V _⦋0⦌₂), F.obj (mk x) ⟶ G.obj (mk x))
     F.map (homMk e) ≫ φ y = φ x ≫ G.map (homMk e) := by cat_disch)
 
 set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- Constructor for natural transformations between functors from `V.HomotopyCategory`. -/
 def mkNatTrans : F ⟶ G where
   app _ := φ _
@@ -394,7 +393,6 @@ def mkNatTrans : F ⟶ G where
     exact this.symm.le f (by simp)
 
 set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 @[simp]
 lemma mkNatTrans_app_mk (v : V _⦋0⦌₂) :
     (mkNatTrans φ hφ).app (mk v) = φ v := rfl
@@ -408,19 +406,16 @@ variable (iso : ∀ (x : V _⦋0⦌₂), F.obj (mk x) ≅ G.obj (mk x))
     (iso x).hom ≫ G.map (homMk e) := by cat_disch)
 
 set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- Constructor for natural isomorphisms between functors from `V.HomotopyCategory`. -/
 def mkNatIso : F ≅ G :=
   NatIso.ofComponents (fun _ ↦ iso _) (fun f ↦ (mkNatTrans _ hiso).naturality f)
 
 set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 @[simp]
 lemma mkNatIso_hom_app_mk (v : V _⦋0⦌₂) :
     (mkNatIso iso hiso).hom.app (mk v) = (iso v).hom := rfl
 
 set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 @[simp]
 lemma mkNatIso_inv_app_mk (v : V _⦋0⦌₂) :
     (mkNatIso iso hiso).inv.app (mk v) = (iso v).inv := rfl

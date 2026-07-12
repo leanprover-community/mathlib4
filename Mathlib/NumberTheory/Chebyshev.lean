@@ -36,8 +36,12 @@ These give logarithmically weighted sums of primes and prime powers.
 - `Chebyshev.theta_eq_log_primorial` shows that `θ x` is the log of the product of primes up to x
 - `Chebyshev.theta_le_log4_mul_x` gives Chebyshev's upper bound on `θ`
 - `Chebyshev.theta_ge` gives Chebyshev's lower bound on `θ`.
-- `Chebyshev.psi_eq_log_lcmUpto` shows that `ψ n` is the log of the lcm of `{1,...,n}`
-- `Chebyshev.psi_eq_sum_theta` and `Chebyshev.psi_eq_theta_add_sum_theta` relate `psi` to `theta`.
+- `Chebyshev.psi_eq_log_lcmUpto` shows that `ψ n` is the log of the lcm of `{1,...,n}`.
+- `Chebyshev.psi_eq_sum_theta` and `Chebyshev.psi_eq_theta_add_sum_theta` relate `ψ` to `θ`.
+- `Chebyshev.psi_sub_theta_le_mul_sqrt` gives an upper bound on `ψ - θ`.
+- `Chebyshev.psi_sub_theta_le_psi_add_psi_add_psi` and
+   `Chebyshev.psi_sub_theta_ge_psi_add_psi_add_psi` establish the Costa-Pereira inequalities
+   for `ψ - θ`.
 - `Chebyshev.psi_le_const_mul_self` gives Chebyshev's upper bound on `ψ`.
 - `Chebyshev.psi_ge` gives Chebyshev's lower bound on `ψ`.
 - `Chebyshev.primeCounting_eq_theta_div_log_add_integral` relates the prime counting function to `θ`
@@ -56,6 +60,7 @@ functions.
 Parts of this file were upstreamed from the PrimeNumberTheoremAnd project by Kontorovich et al, https://github.com/alexKontorovich/PrimeNumberTheoremAnd.
 
 -/
+
 @[expose] public section
 
 open Nat hiding log
@@ -107,10 +112,22 @@ theorem theta_eq_sum_primesLE_log (n : ℕ) : θ n = ∑ p ∈ primesLE n, log p
 theorem psi_eq_zero_of_lt_two {x : ℝ} (hx : x < 2) : ψ x = 0 := by
   apply sum_eq_zero fun n hn ↦ ?_
   simp only [mem_Ioc] at hn
-  convert vonMangoldt_apply_one
+  convert! vonMangoldt_apply_one
   have := lt_of_le_of_lt (le_floor_iff' hn.1.ne' |>.mp hn.2) hx
   norm_cast at this
   linarith
+
+@[simp]
+theorem psi_eq_zero_iff {x : ℝ} : ψ x = 0 ↔ x < 2 := by
+  refine ⟨fun h₀ ↦ ?_, psi_eq_zero_of_lt_two⟩
+  by_contra! contra
+  replace contra : 2 ∈ Ioc 0 ⌊x⌋₊ := by rw [mem_Ioc, le_floor_iff (by grind)]; grind
+  have : Λ 2 ≤ ψ x := single_le_sum (fun n _ ↦ vonMangoldt_nonneg (n := n)) contra
+  have := vonMangoldt_pos_iff.mpr prime_two.isPrimePow
+  linarith
+
+theorem psi_eq_zero_of_le_one {x : ℝ} (hx : x ≤ 1) : ψ x = 0 :=
+  psi_eq_zero_of_lt_two (by linarith)
 
 @[simp]
 theorem psi_zero : ψ 0 = 0 := psi_eq_zero_of_lt_two zero_lt_two
@@ -120,11 +137,24 @@ theorem psi_one : ψ 1 = 0 := psi_eq_zero_of_lt_two one_lt_two
 
 theorem theta_eq_zero_of_lt_two {x : ℝ} (hx : x < 2) : θ x = 0 := by
   apply sum_eq_zero fun n hn ↦ ?_
-  convert log_one
+  convert! log_one
   simp only [mem_filter, mem_Ioc] at hn
   have := lt_of_le_of_lt (le_floor_iff' hn.1.1.ne' |>.mp hn.1.2) hx
   norm_cast at ⊢ this
   linarith
+
+@[simp]
+theorem theta_eq_zero_iff {x : ℝ} : θ x = 0 ↔ x < 2 := by
+  refine ⟨fun h₀ ↦ ?_, theta_eq_zero_of_lt_two⟩
+  by_contra! contra
+  replace contra : 2 ∈ Ioc 0 ⌊x⌋₊ := by rw [mem_Ioc, le_floor_iff (by grind)]; grind
+  have h₁ : log (↑(2 : ℕ) : ℝ) ≤ θ x :=
+    single_le_sum (fun p hp ↦ log_nonneg (by aesop)) (by aesop (add simp prime_two))
+  have := Real.log_pos one_lt_two
+  grind
+
+theorem theta_eq_zero_of_le_one {x : ℝ} (hx : x ≤ 1) : θ x = 0 :=
+  theta_eq_zero_of_lt_two (by linarith)
 
 @[simp]
 theorem theta_zero : θ 0 = 0 := theta_eq_zero_of_lt_two zero_lt_two
@@ -304,10 +334,11 @@ are close.
 -/
 
 /-- A sum over prime powers may be written as a double sum over exponents and then primes. -/
-theorem sum_PrimePow_eq_sum_sum {R : Type*} [AddCommMonoid R] (f : ℕ → R) {x : ℝ} (hx : 0 ≤ x) :
+theorem sum_PrimePow_eq_sum_sum' {R : Type*} [AddCommMonoid R] (f : ℕ → R) {x : ℝ} (hx : 0 ≤ x)
+  {N : ℕ} (hN : ⌊log x / log 2⌋₊ ≤ N) :
     ∑ n ∈ Ioc 0 ⌊x⌋₊ with IsPrimePow n, f n
-      = ∑ k ∈ Icc 1 ⌊log x / log 2⌋₊, ∑ p ∈ Ioc 0 ⌊x ^ ((1 : ℝ) / k)⌋₊ with p.Prime, f (p ^ k) := by
-  trans ∑ ⟨k, p⟩ ∈ Icc 1 ⌊log x / log 2⌋₊ ×ˢ (Ioc 0 ⌊x⌋₊).filter Nat.Prime
+      = ∑ k ∈ Icc 1 N, ∑ p ∈ Ioc 0 ⌊x ^ ((1 : ℝ) / k)⌋₊ with p.Prime, f (p ^ k) := by
+  trans ∑ ⟨k, p⟩ ∈ Icc 1 N ×ˢ (Ioc 0 ⌊x⌋₊).filter Nat.Prime
     with p ≤ ⌊x ^ (k : ℝ)⁻¹⌋₊, f (p ^ k)
   · refine (sum_bij (i := fun ⟨k, p⟩ _ ↦ p ^ k) ?_ ?_ ?_ ?_).symm
     · simp +contextual [hx, rpow_nonneg, le_floor_iff, ← pos_iff_ne_zero, Prime.isPrimePow,
@@ -320,7 +351,7 @@ theorem sum_PrimePow_eq_sum_sum {R : Type*} [AddCommMonoid R] (f : ℕ → R) {x
         mem_product, mem_Icc, succ_le_iff, exists_prop, Prod.exists, exists_and_left, and_imp]
       rintro b _ hbx ⟨p, k, hp, hk₀, rfl⟩
       rw [cast_pow] at hbx
-      refine ⟨k, hk₀, le_floor ?_, p, hp.nat_prime.pos, ?_, hp.nat_prime, ?_, rfl⟩
+      refine ⟨k, hk₀, (le_floor ?_).trans hN, p, hp.nat_prime.pos, ?_, hp.nat_prime, ?_, rfl⟩
       · rw [le_div_iff₀ (log_pos (by norm_num)), ← Real.log_pow]
         gcongr
         apply (LE.le.trans ?_ hbx)
@@ -342,20 +373,34 @@ theorem sum_PrimePow_eq_sum_sum {R : Type*} [AddCommMonoid R] (f : ℕ → R) {x
     contrapose! this
     apply rpow_lt_one hx this (by bound)
 
-theorem psi_eq_sum_theta {x : ℝ} (hx : 0 ≤ x) :
-    ψ x = ∑ n ∈ Icc 1 ⌊log x / log 2⌋₊, θ (x ^ ((1 : ℝ) / n)) := by
-  simp_rw [psi, vonMangoldt_apply, ← sum_filter, sum_PrimePow_eq_sum_sum _ hx]
+theorem sum_PrimePow_eq_sum_sum {R : Type*} [AddCommMonoid R] (f : ℕ → R) {x : ℝ} (hx : 0 ≤ x) :
+    ∑ n ∈ Ioc 0 ⌊x⌋₊ with IsPrimePow n, f n
+      = ∑ k ∈ Icc 1 ⌊log x / log 2⌋₊, ∑ p ∈ Ioc 0 ⌊x ^ ((1 : ℝ) / k)⌋₊ with p.Prime, f (p ^ k) :=
+  sum_PrimePow_eq_sum_sum' f hx (le_refl _)
+
+theorem psi_eq_sum_theta' {x : ℝ} (hx : 0 ≤ x) {N : ℕ} (hN : ⌊log x / log 2⌋₊ ≤ N) :
+    ψ x = ∑ n ∈ Icc 1 N, θ (x ^ ((1 : ℝ) / n)) := by
+  simp_rw [psi, vonMangoldt_apply, ← sum_filter, sum_PrimePow_eq_sum_sum' _ hx hN]
   apply sum_congr rfl fun _ hk ↦ sum_congr rfl fun _ _ ↦ ?_
   rw [Prime.pow_minFac _ (by linarith [mem_Icc.mp hk])]
   simp_all
 
-theorem psi_eq_theta_add_sum_theta {x : ℝ} (hx : 2 ≤ x) :
-    ψ x = θ x + ∑ n ∈ Icc 2 ⌊log x / log 2⌋₊, θ (x ^ ((1 : ℝ) / n)) := by
-  rw [psi_eq_sum_theta (by linarith), ← add_sum_Ioc_eq_sum_Icc]
+theorem psi_eq_sum_theta {x : ℝ} (hx : 0 ≤ x) :
+    ψ x = ∑ n ∈ Icc 1 ⌊log x / log 2⌋₊, θ (x ^ ((1 : ℝ) / n)) :=
+  psi_eq_sum_theta' hx (le_refl _)
+
+theorem psi_eq_theta_add_sum_theta' {x : ℝ} (hx : 2 ≤ x) {N : ℕ} (hN : ⌊log x / log 2⌋₊ ≤ N) :
+    ψ x = θ x + ∑ n ∈ Icc 2 N, θ (x ^ ((1 : ℝ) / n)) := by
+  rw [psi_eq_sum_theta' (by linarith) hN, ← add_sum_Ioc_eq_sum_Icc]
   · congr
     simp
-  · rw [le_floor_iff' one_ne_zero, le_div_iff₀ (by positivity), cast_one, one_mul]
+  · apply le_trans _ hN
+    rw [le_floor_iff' one_ne_zero, le_div_iff₀ (by positivity), cast_one, one_mul]
     gcongr
+
+theorem psi_eq_theta_add_sum_theta {x : ℝ} (hx : 2 ≤ x) :
+    ψ x = θ x + ∑ n ∈ Icc 2 ⌊log x / log 2⌋₊, θ (x ^ ((1 : ℝ) / n)) :=
+  psi_eq_theta_add_sum_theta' hx (le_refl _)
 
 theorem theta_le_psi (x : ℝ) : θ x ≤ ψ x := by
   by_cases! h : x < 2
@@ -364,8 +409,8 @@ theorem theta_le_psi (x : ℝ) : θ x ≤ ψ x := by
   simp only [le_add_iff_nonneg_right]
   exact sum_nonneg fun _ _ ↦ theta_nonneg _
 
---Note that a more careful argument could remove the log x in the following with a worse constant.
-/-- `|ψ x - θ x| ≤ c √ x log x` with an explicit constant c. -/
+/-- `|ψ x - θ x| ≤ c √ x log x` with an explicit constant c.  To remove the log, see
+`psi_sub_theta_le_mul_sqrt`. -/
 theorem abs_psi_sub_theta_le_sqrt_mul_log {x : ℝ} (hx : 1 ≤ x) :
     |ψ x - θ x| ≤ 2 * x.sqrt * x.log := by
   by_cases! hx : x < 2
@@ -461,6 +506,114 @@ theorem theta_ge' {x : ℝ} (hx : 1 ≤ x) :
   grw [psi_ge' (by linarith)]
   linarith [psi_sub_theta_le hx]
 
+section CostaPereira
+
+/-! ## The Costa-Pereira inequalities
+
+The Costa-Pereira inequalities give explicit upper and lower bounds on the difference
+`ψ x - θ x`, namely that they lie between `ψ x^(1/2) + ψ x^(1/3) + ψ x^(1/7)` and
+`ψ x^(1/2) + ψ x^(1/3) + ψ x^(1/5)`.  These are useful for applications in explicit
+analytic number theory. -/
+
+variable (x : ℝ) (n : ℕ)
+
+private noncomputable def b := θ (x ^ (n : ℝ)⁻¹)
+
+private noncomputable def c := b x (6 * n - 1) - b x (6 * n) + b x (6 * n + 1)
+
+private theorem b_antitone (hx : 0 ≤ x) : AntitoneOn (b x) (.Ici 1) := by
+  intro n hn m hm hnm; unfold b
+  simp only [Set.mem_Ici] at hn hm
+  rcases le_or_gt x 1 with h | h
+  · repeat rw [theta_eq_zero_of_le_one (rpow_le_one hx h (by positivity))]
+  apply theta_mono (monotone_rpow_of_base_ge_one h.le _)
+  field_simp
+  norm_num [hnm]
+
+private theorem psi_pow_eq_sum_b (hx : 0 ≤ x) : ∃ M, ∀ N ≥ M,
+    ψ (x ^ (n : ℝ)⁻¹) = ∑ k ∈ Icc 1 N, b x (n * k) := by
+  have : 0 ≤ x ^ ((n : ℝ)⁻¹) := by positivity
+  use ⌊log (x ^ (n : ℝ)⁻¹) / log 2⌋₊
+  intro N hN
+  simp_rw [psi_eq_sum_theta' this hN, one_div, b, cast_mul, mul_inv_rev, mul_comm,
+    ← rpow_mul (by positivity)]
+
+private theorem sum_b_eq_b_add_sum_add_sum_add_sum (N : ℕ) :
+    ∑ n ∈ Icc 1 (1 + 6 * N), b x n =
+      b x 1 +
+      ∑ n ∈ Icc 1 (3 * N), b x (2 * n) +
+      ∑ n ∈ Icc 1 (2 * N), b x (3 * n) +
+      ∑ n ∈ Icc 1 N, c x n := by
+  induction N with
+  | zero => simp
+  | succ N ih =>
+    rw [show 1 + 6 * (N + 1) = (1 + 6 * N) + 1 + 1 + 1 + 1 + 1 + 1 by ring,
+      show 3 * (N + 1) = 3 * N + 1 + 1 + 1 by ring,
+      show 2 * (N + 1) = 2 * N + 1 + 1 by ring]
+    simp only [le_add_iff_nonneg_left, _root_.zero_le, sum_Icc_succ_top, ih, c]
+    rw [show 6 * (N + 1) - 1 = 6 * N + 5 by lia]
+    ring_nf
+
+private theorem psi_sub_theta_bounds {x : ℝ} (hx : 0 ≤ x) :
+    ψ x - θ x ≤ ψ (x ^ (2 : ℝ)⁻¹) + ψ (x ^ (3 : ℝ)⁻¹) + ψ (x ^ (5 : ℝ)⁻¹) ∧
+    ψ (x ^ (2 : ℝ)⁻¹) + ψ (x ^ (3 : ℝ)⁻¹) + ψ (x ^ (7 : ℝ)⁻¹) ≤ ψ x - θ x := by
+  obtain ⟨N₁, h1⟩ := psi_pow_eq_sum_b x 1 hx
+  obtain ⟨N₂, h2⟩ := psi_pow_eq_sum_b x 2 hx
+  obtain ⟨N₃, h3⟩ := psi_pow_eq_sum_b x 3 hx
+  obtain ⟨N₅, h5⟩ := psi_pow_eq_sum_b x 5 hx
+  obtain ⟨N₇, h7⟩ := psi_pow_eq_sum_b x 7 hx
+  let N := N₁ + N₂ + N₃ + N₅ + N₇
+  specialize h1 (1 + 6 * N) (by lia)
+  specialize h2 (3 * N) (by lia)
+  specialize h3 (2 * N) (by lia)
+  specialize h5 N (by lia)
+  specialize h7 N (by lia)
+  have : ∑ n ∈ Icc 1 N, c x n ≤ ∑ n ∈ Icc 1 N, b x (5 * n) := by
+    apply sum_le_sum
+    intro n hn
+    unfold c
+    linarith [(b_antitone x hx (by grind) (by grind) (by lia) : b x (6 * n + 1) ≤ b x (6 * n)),
+      (b_antitone x hx (by grind) (by grind) (by lia) : b x (6 * n - 1) ≤ b x (5 * n))]
+  have : ∑ n ∈ Icc 1 N, b x (7 * n) ≤ ∑ n ∈ Icc 1 N, c x n := by
+    apply sum_le_sum; intro n hn; simp only [mem_Icc, c] at hn ⊢
+    linarith [(b_antitone x hx (by grind) (by grind) (by lia) : b x (6 * n) ≤ b x (6 * n - 1)),
+      (b_antitone x hx (by grind) (by grind) (by lia) : b x (7 * n) ≤ b x (6 * n + 1))]
+  have : b x 1 = θ x := by simp [b]
+  simp only [cast_one, one_mul, sum_b_eq_b_add_sum_add_sum_add_sum, inv_one, rpow_one] at h1
+  grind
+
+theorem psi_sub_theta_le_psi_add_psi_add_psi (x : ℝ) :
+    ψ x - θ x ≤ ψ (x ^ (2 : ℝ)⁻¹) + ψ (x ^ (3 : ℝ)⁻¹) + ψ (x ^ (5 : ℝ)⁻¹) := by
+  rcases le_total x 0 with hx | hx
+  · grind [theta_eq_zero_iff, psi_eq_zero_iff, psi_nonneg]
+  · exact (psi_sub_theta_bounds hx).1
+
+theorem psi_sub_theta_ge_psi_add_psi_add_psi {x : ℝ} (hx : 0 ≤ x) :
+    ψ (x ^ (2 : ℝ)⁻¹) + ψ (x ^ (3 : ℝ)⁻¹) + ψ (x ^ (7 : ℝ)⁻¹) ≤ ψ x - θ x :=
+  (psi_sub_theta_bounds hx).2
+
+/-- `ψ x = θ x + O( √x )`. -/
+theorem psi_sub_theta_le_mul_sqrt : ∃ C, ∀ x, ψ x - θ x ≤ C * x.sqrt := by
+  use (log 4 + 4) * 3
+  intro x
+  rcases le_total x 1 with h | h
+  · rw [theta_eq_zero_of_le_one h, psi_eq_zero_of_le_one h, sub_self]; positivity
+  have (n : ℕ) (hn : 2 ≤ n) : ψ (x ^ (1 / (n : ℝ))) ≤ (log 4 + 4) * x.sqrt := by
+    grw [psi_le_const_mul_self (by positivity), sqrt_eq_rpow x]; gcongr; norm_cast
+  linarith [psi_sub_theta_le_psi_add_psi_add_psi x, this 2 (le_refl _), this 3 (by norm_num),
+    this 5 (by norm_num)]
+
+open Asymptotics Filter in
+theorem isBigO_psi_sub_theta_sqrt : IsBigO atTop (ψ - θ) sqrt := by
+  simp_rw [isBigO_iff, Pi.sub_apply, norm_eq_abs, eventually_atTop]
+  obtain ⟨C, hC⟩ := psi_sub_theta_le_mul_sqrt
+  refine ⟨C, 0, fun x _ ↦ ?_⟩
+  have := theta_le_psi x
+  rw [abs_of_nonneg (by positivity), abs_of_nonneg (by positivity)]
+  exact hC x
+
+end CostaPereira
+
 section PrimeCounting
 
 /-! ## Relation to prime counting
@@ -499,8 +652,9 @@ theorem primeCounting_eq_theta_div_log_add_integral {x : ℝ} (hx : 2 ≤ x) :
     have int_deriv (f : ℝ → ℝ) :
         ∫ u in 2..x, deriv (fun x ↦ (log x)⁻¹) u * f u =
         ∫ u in 2..x, f u * -(u * log u ^ 2)⁻¹ :=
-      intervalIntegral.integral_congr fun u _ ↦ by simp [deriv_inv_log, field]
-    simp [int_deriv, a, Set.indicator_apply, sum_filter, theta_eq_sum_Icc]
+      intervalIntegral.integral_congr fun u _ ↦ by simp [field]
+    rw [int_deriv]
+    simp [a, Set.indicator_apply, sum_filter, theta_eq_sum_Icc]
     grind
   · -- Differentiability
     intro z ⟨_, _⟩
@@ -509,7 +663,7 @@ theorem primeCounting_eq_theta_div_log_add_integral {x : ℝ} (hx : 2 ≤ x) :
     fun_prop
   · -- Integrability of the derivative
     refine ContinuousOn.integrableOn_Icc fun z ⟨_, _⟩ ↦ ContinuousWithinAt.congr ?_
-      (fun _ _ ↦ deriv_inv_log) deriv_inv_log
+      (fun _ _ ↦ deriv_inv_log_apply) deriv_inv_log_apply
     have : z ≠ 0 := by linarith
     have : log z ^ 2 ≠ 0 := by
       refine pow_ne_zero 2 <| log_ne_zero_of_pos_of_ne_one ?_ ?_ <;> linarith
@@ -548,7 +702,7 @@ theorem intervalIntegrable_one_div_log_sq {a b : ℝ} (one_lt_a : 1 < a) (one_lt
   have : log x ^ 2 ≠ 0 := pow_ne_zero _ (log_ne_zero.mpr (by grind))
   fun_prop
 
-/- Simple bound on the integral from monotonicity.
+/-- Simple bound on the integral from monotonicity.
 We will bound the integral on 2..x by splitting into two intervals and using this result on both. -/
 private theorem integral_1_div_log_sq_le {a b : ℝ} (hab : a ≤ b) (one_lt : 1 < a) :
     ∫ x in a..b, 1 / log x ^ 2 ≤ (b - a) / log a ^ 2 := by
@@ -558,7 +712,7 @@ private theorem integral_1_div_log_sq_le {a b : ℝ} (hab : a ≤ b) (one_lt : 1
       apply intervalIntegrable_one_div_log_sq <;> linarith
   _ ≤ _ := by simp [field]
 
-/- Explicit integral bound, we expose a BigO version below since the constants and lower order term
+/-- Explicit integral bound, we expose a BigO version below since the constants and lower order term
 aren't very convenient. -/
 private theorem integral_one_div_log_sq_le_explicit {x : ℝ} (hx : 4 ≤ x) :
     ∫ t in 2..x, 1 / log t ^ 2 ≤ 4 * x / (log x) ^ 2 + x.sqrt / log 2 ^ 2 := by
@@ -572,7 +726,7 @@ private theorem integral_one_div_log_sq_le_explicit {x : ℝ} (hx : 4 ≤ x) :
     gcongr <;> linarith
   all_goals apply intervalIntegrable_one_div_log_sq <;> linarith
 
--- Somewhat arbitrary bound which we use to estimate the second term.
+/-- Somewhat arbitrary bound which we use to estimate the second term. -/
 private theorem sqrt_isLittleO :
     Real.sqrt =o[atTop] (fun x ↦ x / log x ^ 2) := by
   apply isLittleO_mul_iff_isLittleO_div _ |>.mp
@@ -700,3 +854,29 @@ theorem pi_le_log4_mul_div {x : ℝ} (hx : 1 < x) : π ⌊x⌋₊ ≤ log 4 * x 
 
 end PrimeCounting
 end Chebyshev
+
+namespace Mathlib.Meta.Positivity
+
+open Lean Meta Qq
+
+/-- Extension for the `positivity` tactic: the first Chebyshev function is nonnegative. -/
+@[positivity Chebyshev.theta _]
+meta def evalTheta : PositivityExt where eval {u α} _zα pα? e :=
+  match pα? with | none => pure .none | some _ => do
+  match u, α, e with
+  | 0, ~q(ℝ), ~q(@Chebyshev.theta $a) =>
+    assertInstancesCommute
+    pure (.nonnegative q(Chebyshev.theta_nonneg $a))
+  | _, _, _ => throwError "not theta"
+
+/-- Extension for the `positivity` tactic: the second Chebyshev function is nonnegative. -/
+@[positivity Chebyshev.psi _]
+meta def evalPsi : PositivityExt where eval {u α} _zα pα? e :=
+  match pα? with | none => pure .none | some _ => do
+  match u, α, e with
+  | 0, ~q(ℝ), ~q(@Chebyshev.psi $a) =>
+    assertInstancesCommute
+    pure (.nonnegative q(Chebyshev.psi_nonneg $a))
+  | _, _, _ => throwError "not psi"
+
+end Mathlib.Meta.Positivity
