@@ -867,10 +867,10 @@ lemma ContinuousOn.union_continuousAt {f : α → β} (s_op : IsOpen s)
   (fun h => ContinuousWithinAt.continuousAt (continuousWithinAt hs h) <| IsOpen.mem_nhds s_op h)
   (ht _)
 
-open Classical in
 /-- If a function is continuous on two closed sets, it is also continuous on their union. -/
 theorem ContinuousOn.union_of_isClosed {f : α → β} (hfs : ContinuousOn f s) (hft : ContinuousOn f t)
     (hs : IsClosed s) (ht : IsClosed t) : ContinuousOn f (s ∪ t) := by
+  classical
   refine fun x hx ↦ .union ?_ ?_
   · refine if hx : x ∈ s then hfs x hx else continuousWithinAt_of_notMem_closure ?_
     rwa [hs.closure_eq]
