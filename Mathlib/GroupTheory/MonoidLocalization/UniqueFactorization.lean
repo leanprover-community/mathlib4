@@ -12,8 +12,8 @@ public import Mathlib.RingTheory.UniqueFactorizationDomain.Basic
 
 ## Main results
 
-* `IsLocalization.uniqueFactorizationMonoid`: a localization of a unique factorization monoid is
-  still a unique factorization monoid. In particular, a localization of a UFD is a UFD provided
+* `UniqueFactorizationMonoid.of_isLocalization`: a localization of a unique factorization monoid
+  is still a unique factorization monoid. In particular, a localization of a UFD is a UFD provided
   it is nontrivial.
 -/
 
@@ -76,8 +76,8 @@ end Submonoid.LocalizationMap
 variable (N) [CommSemiring M] (S : Submonoid M)
 
 /-- A localization of a unique factorization monoid is still a unique factorization monoid. -/
-theorem IsLocalization.uniqueFactorizationMonoid [CommSemiring N] [Algebra M N] [IsLocalization S N]
-    [UniqueFactorizationMonoid M] : UniqueFactorizationMonoid N :=
+theorem UniqueFactorizationMonoid.of_isLocalization [CommSemiring N] [Algebra M N]
+    [IsLocalization S N] [UniqueFactorizationMonoid M] : UniqueFactorizationMonoid N :=
   (toLocalizationMap S N).uniqueFactorizationMonoid
 
 instance [UniqueFactorizationMonoid M] : UniqueFactorizationMonoid (Localization S) :=
