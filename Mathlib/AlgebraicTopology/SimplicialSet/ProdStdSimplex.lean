@@ -235,6 +235,15 @@ lemma exists_nonDegenerate_max_dim {d : ℕ}
     rw [← Subcomplex.ofSimplex_le_iff] at hz
     exact ⟨z, hz _ hy⟩
 
+lemma subcomplex_eq_top_iff (A : (Δ[p] ⊗ Δ[q] : SSet.{u}).Subcomplex)
+    {n : ℕ} (hn : p + q = n) :
+    A = ⊤ ↔ (Δ[p] ⊗ Δ[q]).nonDegenerate n ⊆ A.obj _ := by
+  refine ⟨by rintro rfl; tauto, fun hA ↦ ?_⟩
+  rw [Subcomplex.eq_top_iff_contains_nonDegenerate]
+  intro d x hx
+  obtain ⟨y, hy⟩ := exists_nonDegenerate_max_dim (x := ⟨x, hx⟩) hn
+  exact (Subcomplex.ofSimplex_le_iff ..).2 (hA y.prop) _ hy
+
 end prodStdSimplex
 
 end SSet
