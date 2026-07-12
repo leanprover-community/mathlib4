@@ -114,6 +114,11 @@ theorem deltaLC_eq (o₀ o : Orientation I M) {x z : M} (hz : z ∈ (chartAt H x
     deltaLC o₀ o z = o.chartSign x z * o₀.chartSign x z :=
   chartSign_mul_chartSign_eq o₀ o hz
 
+@[simp]
+theorem deltaLC_self (o : Orientation I M) : deltaLC o o = LocallyConstant.const M 1 := by
+  ext z
+  simp [deltaLC]
+
 /-- Modify a manifold orientation by flipping every chart-sign according to a locally constant
 `ℤˣ`-valued function. -/
 def twist (o₀ : Orientation I M) (δ : LocallyConstant M ℤˣ) : Orientation I M where
@@ -169,6 +174,11 @@ theorem neg_chartSign (o : Orientation I M) {x z : M} (hz : z ∈ (chartAt H x).
     twist_chartSign _ _ hz]
   exact neg_one_mul _
 
+@[simp]
+theorem deltaLC_neg (o : Orientation I M) : deltaLC o (-o) = LocallyConstant.const M (-1) := by
+  ext z
+  simp [deltaLC, mem_chart_source]
+
 /-- An orientation on a nonempty manifold differs from its negation. -/
 theorem ne_neg [Nonempty M] (o : Orientation I M) : o ≠ -o := by
   intro h
@@ -179,16 +189,11 @@ theorem ne_neg [Nonempty M] (o : Orientation I M) : o ≠ -o := by
 /-- Two orientations of a preconnected manifold are equal or negatives of each other. -/
 theorem eq_or_eq_neg [PreconnectedSpace M] (o o₀ : Orientation I M) :
     o = o₀ ∨ o = -o₀ := by
+  let e := equivLocallyConstant o₀
+  rw [← e.injective.eq_iff, ← e.injective.eq_iff]
   obtain ⟨δ, hδ⟩ := (deltaLC o₀ o).exists_eq_const
-  rcases Int.units_eq_one_or δ with rfl | rfl
-  · left
-    apply (equivLocallyConstant o₀).injective
-    exact hδ.trans (by ext z; simp [equivLocallyConstant, deltaLC])
-  · right
-    apply (equivLocallyConstant o₀).injective
-    exact hδ.trans (by
-      ext z
-      simp [equivLocallyConstant, deltaLC, twist, mem_chart_source])
+  rcases Int.units_eq_one_or δ with rfl | rfl <;>
+    simp_all [e, equivLocallyConstant]
 
 variable (I) in
 theorem natCard_eq_two_pow_of_natCard_connectedComponents_eq [Orientable I M]
