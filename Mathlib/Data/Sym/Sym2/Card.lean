@@ -25,9 +25,11 @@ open scoped Cardinal
 
 variable {α : Type*}
 
+@[simp]
 theorem finite_sym2_iff : Finite (Sym2 α) ↔ Finite α :=
   ⟨fun _ ↦ diagElemEquiv.finite_iff.mp Subtype.finite, fun _ ↦ inferInstance⟩
 
+@[simp]
 theorem infinite_sym2_iff : Infinite (Sym2 α) ↔ Infinite α := by
   contrapose!
   exact finite_sym2_iff
@@ -63,6 +65,7 @@ theorem encard_mk_fiber_le (z : Sym2 α) : (Sym2.mk.uncurry ⁻¹' {z}).encard �
   split_ifs <;> norm_cast
 
 variable (α) in
+@[simp]
 theorem cardinalMk_diagSet : #(@diagSet α) = #α :=
   Sym2.diagElemEquiv.cardinal_eq
 
@@ -83,6 +86,7 @@ theorem two_mul_cardinalMk_diagSet_compl_add_cardinalMk :
   simpa using this.cardinal_eq
 
 variable (α) in
+@[simp]
 theorem encard_diagSet : (@diagSet α).encard = ENat.card α :=
   congrArg _ <| cardinalMk_diagSet α
 
