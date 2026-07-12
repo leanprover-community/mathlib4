@@ -115,7 +115,7 @@ noncomputable def pageXIso (r : ℤ) (hr : r₀ ≤ r) (pq : κ)
     subst h hn₂ h₀ h₁ h₂ h₃
     rfl)
 
-open Classical in
+open scoped Classical in
 /-- The differential on the `r`th page of the spectral sequence. -/
 noncomputable def pageD (r : ℤ) (pq pq' : κ) (hr : r₀ ≤ r := by lia) :
     pageX X data r pq hr ⟶ pageX X data r pq' hr :=
