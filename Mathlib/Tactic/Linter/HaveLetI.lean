@@ -59,6 +59,7 @@ elab tk:"haveI" c:letConfig d:letDecl : tactic => runHaveI tk c d
 def runLetI (tk : Syntax) (c : TSyntax ``letConfig) (d : TSyntax ``letDecl) : TacticM Unit := do
   evalTactic (← `(tactic| letI $c:letConfig $d:letDecl))
   if getLinterValue linter.style.haveILetI (← getLinterOptions) then
+    withMainContext do
     if ← isProp (← getMainTarget) then
       TryThis.addSuggestion tk "let"
 
