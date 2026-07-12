@@ -729,6 +729,11 @@ lemma ker_snd : ker (snd G G') = .prod ⊤ ⊥ := SetLike.ext fun _ => (iff_of_e
 
 end Ker
 
+@[to_additive (attr := simp) range_prodMap]
+lemma range_prodMap {G' N' : Type*} [Group G'] [Group N'] (f : G →* N) (g : G' →* N') :
+    (f.prodMap g).range = f.range.prod g.range :=
+  SetLike.coe_injective Set.range_prodMap
+
 end MonoidHom
 
 namespace Subgroup
@@ -939,6 +944,15 @@ theorem Normal.of_map_subtype {K : Subgroup G} {L : Subgroup K}
     (n : (Subgroup.map K.subtype L).Normal) : L.Normal :=
   n.of_map_injective K.subtype_injective
 
+theorem normal_comap_iff_of_surjective {f : G →* N} (hf : Function.Surjective f) {H : Subgroup N} :
+    (H.comap f).Normal ↔ H.Normal := by
+  rw [← normalizer_eq_top_iff, ← comap_normalizer_eq_of_surjective H hf, ← comap_top f,
+    (comap_injective hf).eq_iff, normalizer_eq_top_iff]
+
+theorem _root_.MulEquiv.normal_map_iff {f : G ≃* G'} {H : Subgroup G} :
+    (H.map (f : G →* G')).Normal ↔ H.Normal := by
+  rw [map_equiv_eq_comap_symm, normal_comap_iff_of_surjective f.symm.surjective]
+
 section SubgroupNormal
 
 @[to_additive]
@@ -1074,26 +1088,34 @@ def noncenter (G : Type*) [Monoid G] : Set (ConjClasses G) :=
 
 end ConjClasses
 
+namespace AddSubgroup
+
+variable {M : Type*} [AddGroup M] (I : AddSubgroup M) (G : Type*)
+    [Group G] [MulAction G M]
+
 /-- Suppose `G` acts on `M` and `I` is a subgroup of `M`.
 The inertia subgroup of `I` is the subgroup of `G` whose action is trivial mod `I`. -/
-def AddSubgroup.inertia {M : Type*} [AddGroup M] (I : AddSubgroup M) (G : Type*)
-    [Group G] [MulAction G M] : Subgroup G where
+def inertia : Subgroup G where
   carrier := { σ | ∀ x, σ • x - x ∈ I }
   mul_mem' {a b} ha hb x := by simpa [mul_smul] using add_mem (ha (b • x)) (hb x)
   one_mem' := by simp [zero_mem]
   inv_mem' {a} ha x := by simpa using sub_mem_comm_iff.mp (ha (a⁻¹ • x))
 
-@[simp] lemma AddSubgroup.mem_inertia {M : Type*} [AddGroup M] {I : AddSubgroup M} {G : Type*}
-    [Group G] [MulAction G M] {σ : G} : σ ∈ I.inertia G ↔ ∀ x, σ • x - x ∈ I := .rfl
-
+variable {I G} in
 @[simp]
-lemma AddSubgroup.subgroupOf_inertia {M : Type*} [AddGroup M] (I : AddSubgroup M)
-    {G : Type*} [Group G] [MulAction G M] (H : Subgroup G) :
-    (I.inertia G).subgroupOf H = I.inertia H :=
+lemma mem_inertia {σ : G} : σ ∈ I.inertia G ↔ ∀ x, σ • x - x ∈ I := .rfl
+
+variable {G} in
+@[simp]
+lemma subgroupOf_inertia (H : Subgroup G) : (I.inertia G).subgroupOf H = I.inertia H :=
   rfl
 
+variable {I G} in
+lemma coe_mem_inertia {H : Subgroup G} {σ : H} : ↑σ ∈ I.inertia G ↔ σ ∈ I.inertia H := .rfl
+
+variable {G} in
 @[simp]
-lemma AddSubgroup.inertia_map_subtype {M : Type*} [AddGroup M] (I : AddSubgroup M)
-    {G : Type*} [Group G] [MulAction G M] (H : Subgroup G) :
-    (I.inertia H).map H.subtype = I.inertia G ⊓ H := by
+lemma inertia_map_subtype (H : Subgroup G) : (I.inertia H).map H.subtype = I.inertia G ⊓ H := by
   rw [← AddSubgroup.subgroupOf_inertia, Subgroup.subgroupOf_map_subtype]
+
+end AddSubgroup
