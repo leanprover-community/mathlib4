@@ -33,8 +33,8 @@ theorem map_prime (f : S.LocalizationMap N) {m : M} (prime : Prime m)
     exact .inl this
   · rw [← eq₂, (f.map_units s₂).dvd_mul_right] at this; exact .inr this
 
-theorem irreducible_of_map_wfDvdMonoid [WfDvdMonoid M] (f : S.LocalizationMap N) {m : M}
-    (hm : Irreducible (f m)) : ∃ u m' : M, IsUnit (f u) ∧ Irreducible m' ∧ m = u * m' := by
+theorem eq_isUnit_map_mul_irreducible_of_irreducible_map [WfDvdMonoid M] (f : S.LocalizationMap N) 
+    {m : M} (hm : Irreducible (f m)) : ∃ u m' : M, IsUnit (f u) ∧ Irreducible m' ∧ m = u * m' := by
   induction m using WfDvdMonoid.induction_on_irreducible with
   | zero => exact (hm.ne_zero f.map_zero).elim
   | unit u hu => exact (hm.not_isUnit (hu.map f)).elim
