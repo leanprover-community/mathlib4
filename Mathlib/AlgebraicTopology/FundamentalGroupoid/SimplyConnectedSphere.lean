@@ -207,8 +207,8 @@ instance (v : S n) : ContractibleSpace ({v}ᶜ : Set (S n)) := by
   have : ContractibleSpace proj.target := by
     rw [stereographic'_target]
     exact Homeomorph.contractibleSpace (Homeomorph.Set.univ (EuclideanSpace ℝ (Fin n)))
-  convert Homeomorph.contractibleSpace proj.toHomeomorphSourceTarget
-  repeat exact (stereographic'_source v).symm
+  convert Homeomorph.contractibleSpace proj.toHomeomorphSourceTarget <;>
+    exact (stereographic'_source v).symm
 
 /-- The Euclidean `n`-sphere minus a point is path connected for `n ≥ 1`. -/
 theorem isPathConnected_compl_singleton (v : S (n + 1)) : IsPathConnected ({v}ᶜ) := by
