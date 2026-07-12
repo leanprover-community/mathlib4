@@ -256,6 +256,7 @@ theorem _root_.Filter.Tendsto.congr_germ {f g : β → γ} {l : Filter α} {l' :
     (h : f =ᶠ[l'] g) {φ : α → β} (hφ : Tendsto φ l l') : (f ∘ φ : Germ l γ) = g ∘ φ :=
   EventuallyEq.germ_eq (h.comp_tendsto hφ)
 
+set_option linter.dupNamespace false in
 @[deprecated (since := "2026-05-24")] alias Filter.Tendsto.congr_germ := Filter.Tendsto.congr_germ
 
 lemma isConstant_comp_tendsto {lc : Filter γ} {g : γ → α}
@@ -406,7 +407,7 @@ theorem const_pow [Pow G M] (a : G) (n : M) : (↑(a ^ n) : Germ l G) = (↑a : 
 -- TODO: https://github.com/leanprover-community/mathlib4/pull/7432
 @[to_additive]
 instance instMonoid [Monoid M] : Monoid (Germ l M) :=
-  { Function.Surjective.monoid ofFun Quot.mk_surjective (by rfl)
+  { Function.Surjective.monoid ofFun Quot.mk_surjective rfl
       (fun _ _ => by rfl) fun _ _ => by rfl with
     toSemigroup := instSemigroup
     toOne := instOne

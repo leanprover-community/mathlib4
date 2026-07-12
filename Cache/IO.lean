@@ -3,7 +3,6 @@ Copyright (c) 2023 Arthur Paulino. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino, Jon Eugster
 -/
-import Std.Data.TreeSet
 import Cache.Lean
 import Lake.Load.Toml
 import Batteries.Tactic.OpenPrivate
@@ -82,6 +81,10 @@ def CURLBIN :=
   IO.CACHEDIR / s!"curl-{CURLVERSION}"
 
 def EXE := if System.Platform.isWindows then ".exe" else ""
+
+/-- The platform's null device, for discarding a command's output: `NUL` on
+Windows, `/dev/null` elsewhere. -/
+def nullDevice : String := if System.Platform.isWindows then "NUL" else "/dev/null"
 
 def LAKEPACKAGESDIR : FilePath :=
   ".lake" / "packages"
