@@ -87,35 +87,32 @@ variable {I} {M : Type*} [TopologicalSpace M] [ChartedSpace H M] [IsManifold I 1
 
 namespace Orientation
 
-/-- The pointwise sign difference (in `ℤˣ`) between two manifold orientations, read off the
-chart at each point. -/
-def deltaFn (o₀ o : Orientation I M) (z : M) : ℤˣ :=
-  o.chartSign z z * o₀.chartSign z z
-
-/-- The sign difference can be computed from any chart whose domain contains the point. -/
-theorem deltaFn_eq (o₀ o : Orientation I M) {x z : M} (hz : z ∈ (chartAt H x).source) :
-    deltaFn o₀ o z = o.chartSign x z * o₀.chartSign x z := by
-  exact (by decide : ∀ a b c d : ℤˣ, (a = b ↔ c = d) → a * c = b * d) _ _ _ _
+private theorem chartSign_mul_chartSign_eq (o₀ o : Orientation I M) {x z : M}
+    (hz : z ∈ (chartAt H x).source) :
+    o.chartSign z z * o₀.chartSign z z = o.chartSign x z * o₀.chartSign x z :=
+  (by decide : ∀ a b c d : ℤˣ, (a = b ↔ c = d) → a * c = b * d) _ _ _ _
     ((o.compatible z x z (mem_chart_source H z) hz).symm.trans
       (o₀.compatible z x z (mem_chart_source H z) hz))
-
-theorem isLocallyConstant_deltaFn (o₀ o : Orientation I M) :
-    IsLocallyConstant (deltaFn o₀ o) := by
-  rw [IsLocallyConstant.iff_continuous, continuous_iff_continuousAt]
-  intro p
-  refine ContinuousOn.continuousAt ?_
-    ((chartAt H p).open_source.mem_nhds (mem_chart_source H p))
-  exact ((o.continuousOn_chartSign p).mul (o₀.continuousOn_chartSign p)).congr
-    (fun z hz ↦ deltaFn_eq o₀ o hz)
 
 /-- The sign difference between two manifold orientations, as a `LocallyConstant` function
 `M → ℤˣ`. -/
 def deltaLC (o₀ o : Orientation I M) : LocallyConstant M ℤˣ :=
-  ⟨deltaFn o₀ o, isLocallyConstant_deltaFn o₀ o⟩
+  ⟨fun z ↦ o.chartSign z z * o₀.chartSign z z, by
+    rw [IsLocallyConstant.iff_continuous, continuous_iff_continuousAt]
+    intro p
+    refine ContinuousOn.continuousAt ?_
+      ((chartAt H p).open_source.mem_nhds (mem_chart_source H p))
+    exact ((o.continuousOn_chartSign p).mul (o₀.continuousOn_chartSign p)).congr
+      (fun z hz ↦ chartSign_mul_chartSign_eq o₀ o hz)⟩
 
 @[simp]
-theorem deltaLC_apply (o₀ o : Orientation I M) (z : M) : deltaLC o₀ o z = deltaFn o₀ o z :=
-  rfl
+theorem deltaLC_apply (o₀ o : Orientation I M) (z : M) :
+    deltaLC o₀ o z = o.chartSign z z * o₀.chartSign z z := rfl
+
+/-- The sign difference can be computed from any chart whose domain contains the point. -/
+theorem deltaLC_eq (o₀ o : Orientation I M) {x z : M} (hz : z ∈ (chartAt H x).source) :
+    deltaLC o₀ o z = o.chartSign x z * o₀.chartSign x z :=
+  chartSign_mul_chartSign_eq o₀ o hz
 
 /-- Modify a manifold orientation by flipping every chart-sign according to a locally constant
 `ℤˣ`-valued function. -/
@@ -145,13 +142,13 @@ noncomputable def equivLocallyConstant (o₀ : Orientation I M) :
   left_inv o := by
     ext x z : 3
     by_cases hz : z ∈ (chartAt H x).source
-    · rw [twist_chartSign _ _ hz, deltaLC_apply, deltaFn_eq o₀ o hz]
+    · rw [twist_chartSign _ _ hz, deltaLC_eq o₀ o hz]
       exact (by decide : ∀ a b : ℤˣ, a * b * b = a) _ _
     · rw [(twist o₀ (deltaLC o₀ o)).chartSign_eq_one_of_notMem x z hz,
         o.chartSign_eq_one_of_notMem x z hz]
   right_inv δ := by
     ext z : 1
-    rw [deltaLC_apply, deltaFn, twist_chartSign _ _ (mem_chart_source H z)]
+    rw [deltaLC_apply, twist_chartSign _ _ (mem_chart_source H z)]
     exact (by decide : ∀ a b : ℤˣ, a * b * b = a) _ _
 
 /-- Negating an orientation reverses all of its chart signs. -/
@@ -186,12 +183,12 @@ theorem eq_or_eq_neg [PreconnectedSpace M] (o o₀ : Orientation I M) :
   rcases Int.units_eq_one_or δ with rfl | rfl
   · left
     apply (equivLocallyConstant o₀).injective
-    exact hδ.trans (by ext z; simp [equivLocallyConstant, deltaLC, deltaFn])
+    exact hδ.trans (by ext z; simp [equivLocallyConstant, deltaLC])
   · right
     apply (equivLocallyConstant o₀).injective
     exact hδ.trans (by
       ext z
-      simp [equivLocallyConstant, deltaLC, deltaFn, twist, mem_chart_source])
+      simp [equivLocallyConstant, deltaLC, twist, mem_chart_source])
 
 variable (I) in
 theorem natCard_eq_two_pow_of_natCard_connectedComponents_eq [Orientable I M]
