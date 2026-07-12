@@ -606,8 +606,8 @@ instance {A B : Mon C} (f : A ⟶ B) [e : IsIso ((forget C).map f)] : IsIso f.ho
   e
 
 /-- The forgetful functor from monoid objects to the ambient category reflects isomorphisms. -/
-@[to_additive /-- The forgetful functor from additive monoid objects to the ambient category reflects
-isomorphisms. -/]
+@[to_additive /-- The forgetful functor from additive monoid objects to the ambient category
+reflects isomorphisms. -/]
 instance : (forget C).ReflectsIsomorphisms where
   reflects f e := ⟨⟨.mk' (inv f.hom), by cat_disch⟩⟩
 
