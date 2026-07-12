@@ -194,20 +194,15 @@ theorem compatible_of_det (ω : _root_.Orientation ℝ E ι) (ε η : ℤˣ) (e 
   · subst η
     exact (_root_.Orientation.map_eq_iff_det_pos
       (signedOrientation ε ω) e Fact.out).2 (h.mpr rfl)
-  · have hnpos : ¬0 < LinearMap.det (e : E →ₗ[ℝ] E) := fun hp ↦ hεη (h.mp hp)
-    have hne : _root_.Orientation.map ι e (signedOrientation ε ω) ≠
-        signedOrientation ε ω := fun he ↦
-      hnpos ((_root_.Orientation.map_eq_iff_det_pos
-        (signedOrientation ε ω) e Fact.out).1 he)
-    have hneg := (_root_.Orientation.ne_iff_eq_neg
-      (_root_.Orientation.map ι e (signedOrientation ε ω))
-      (signedOrientation ε ω) Fact.out).mp hne
-    have hsign : signedOrientation η ω = -signedOrientation ε ω := by
+  · rw [show signedOrientation η ω = -signedOrientation ε ω by
       rcases Int.units_eq_one_or ε with rfl | rfl <;>
         rcases Int.units_eq_one_or η with rfl | rfl
       all_goals simp only [signedOrientation_one, signedOrientation_neg_one] at hεη ⊢
-      all_goals first | contradiction | rfl | exact (neg_neg ω).symm
-    exact hneg.trans hsign.symm
+      all_goals first | contradiction | rfl | exact (neg_neg ω).symm,
+      _root_.Orientation.map_eq_neg_iff_det_neg _ _ Fact.out]
+    exact lt_of_le_of_ne (not_lt.mp fun hp ↦ hεη (h.mp hp)) <| by
+      rw [← LinearEquiv.coe_det]
+      exact Units.ne_zero _
 
 private theorem chartSign_mul_chartSign_eq (o₀ o : OrientationLift I M ι) {x z : M}
     (hz : z ∈ (chartAt H x).source) :
