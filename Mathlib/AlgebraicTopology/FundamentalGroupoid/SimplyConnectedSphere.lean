@@ -129,17 +129,17 @@ theorem exists_loops_homotopic_concat_of_open_cover (hc₁ : ∀ i, IsOpen (c i)
   have hG'₀ : G' 0 = (Path.refl a).cast rfl (ht₀ ▸ γ.source) :=
     (snoc_apply_zero _ _).trans (cons_zero _ _)
   have hG'₁ : G' (last (n + 1)) = (Path.refl a).cast rfl (ht₁ ▸ γ.target) := snoc_last _ _
-  have hG'_range₀ k : Set.range (G' k.castSucc) ⊆ c (τ k) := by
+  have hG'_range₀ k : range (G' k.castSucc) ⊆ c (τ k) := by
     unfold G'
     rw [snoc_castSucc]
     cases k using Fin.cases with
-    | zero => simpa [cons_zero, cast_coe, refl_range, singleton_subset_iff] using ha _
+    | zero => rw [cons_zero, cast_coe, refl_range, singleton_subset_iff]; exact ha _
     | succ j => exact (subset_inter_iff.mp (hG j)).right
-  have hG'_range₁ k : Set.range (G' k.succ) ⊆ c (τ k) := by
+  have hG'_range₁ k : range (G' k.succ) ⊆ c (τ k) := by
     unfold G'
     cases k using Fin.lastCases with
     | cast => rw [succ_castSucc, snoc_castSucc]; exact (subset_inter_iff.mp (hG _)).left
-    | last => simpa using ha _
+    | last => rw [succ_last, snoc_last, cast_coe, refl_range, singleton_subset_iff]; exact ha _
   /- Our desired sequence of loops is obtained by concatenating each subpath of `γ` lying in some
   element `c (τ k)` of our open cover with the paths `G' (k.castSucc)` and `(G' (k. succ)).symm`.
   Intuitively, we are attaching both ends of our subpath to our basepoint by leveraging `G'`.
@@ -164,7 +164,7 @@ end
 /-- Technical lemma to prove `isPathConnected_compl_singleton_inter_neg`. -/
 lemma PartialEquiv.symm_image_target_minus_singleton_eq {α β : Type*} (e : PartialEquiv α β)
     {b : β} (h : b ∈ e.target) : e.symm '' (e.target \ {b}) = e.source \ {e.symm b} := by
-  rw [image_diff_of_injOn, symm_image_target_eq_source, image_singleton]
+  rw [image_sdiff_of_injOn, symm_image_target_eq_source, image_singleton]
   · exact e.symm.injOn
   · exact singleton_subset_iff.mpr h
 
@@ -220,15 +220,15 @@ theorem isPathConnected_compl_singleton_inter_neg (v : S (n + 2)) :
   let proj := stereographic' (n + 2) v
   have : proj.toPartialEquiv.symm '' (proj.target \ {0}) = {v}ᶜ ∩ {-v}ᶜ := by
     rw [symm_image_target_minus_singleton_eq, stereographic'_source, stereographic'_symm_zero,
-      diff_eq]
+      sdiff_eq]
     rw [stereographic'_target]
     exact mem_univ 0
   rw [← this]
   apply IsPathConnected.image'
-  · rw [stereographic'_target, ← compl_eq_univ_diff]
+  · rw [stereographic'_target, ← compl_eq_univ_sdiff]
     exact isPathConnected_compl_singleton_of_one_lt_rank
       (by rw [← Module.finrank_eq_rank, finrank_euclideanSpace_fin]; exact Nat.one_lt_ofNat) 0
-  · exact ContinuousOn.mono proj.continuousOn_invFun diff_subset
+  · exact ContinuousOn.mono proj.continuousOn_invFun sdiff_subset
 
 -- We now define the cover of `S n` to be used in `exists_loops_homotopic_concat_of_open_cover`.
 variable {n : ℕ}
@@ -287,11 +287,12 @@ private lemma hx (x : S (n + 1)) : ∃ v, ∀ i : Fin 2, x ∈ c v i := by
     rw [Finset.mem_insert, Finset.mem_singleton, h]
     exact Or.inr (neg_neg v).symm
 
+set_option linter.tacticCheckInstances true
 /-- A non-surjective path in the Euclidean sphere is homotopic to a constant path. -/
 theorem homotopic_refl_of_not_surjective {n : ℕ} {v : S n} (γ : Path v v)
     (h : ¬(Surjective γ)) : γ.Homotopic (refl v) := by
   unfold Surjective at h
-  push_neg at h
+  push Not at h
   obtain ⟨w, hw⟩ := h
   let w_compl : Set (S n) := {w}ᶜ
   let v' : w_compl := ⟨v, by
@@ -301,8 +302,8 @@ theorem homotopic_refl_of_not_surjective {n : ℕ} {v : S n} (γ : Path v v)
   let f : I → γ⁻¹' {w}ᶜ := fun x ↦ ⟨x, hw x⟩
   let γ' : Path v' v' := {
     toFun := γ.restrictPreimage {w}ᶜ ∘ f
-    source' := by simp [f, ContinuousMap.restrictPreimage, v']
-    target' := by simp [f, ContinuousMap.restrictPreimage, v']
+    source' := by rw [comp_apply, ContinuousMap.restrictPreimage_apply]; ext; simp [f, v']
+    target' := by rw [comp_apply, ContinuousMap.restrictPreimage_apply]; ext; simp [f, v']
   }
   have h : SimplyConnectedSpace w_compl := inferInstance
   let incl : C(w_compl, S n) := ⟨Subtype.val, continuous_subtype_val⟩
