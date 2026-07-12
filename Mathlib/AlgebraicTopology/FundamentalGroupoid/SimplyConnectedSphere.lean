@@ -82,7 +82,7 @@ lemma concat_trans_trans_symm {n : ℕ} (p q : Fin (n + 1) → X)
   induction n with
   | zero =>
     simp_rw [concat_zero, ← fromPath_eq_iff_homotopic]
-    aesop_cat
+    aesop
   | succ n hn =>
     have := Quotient.eq.mpr
       (hn (p ∘ castSucc) (q ∘ castSucc) (fun k ↦ F (k.castSucc)) (fun k ↦ G (k.castSucc)))
