@@ -77,7 +77,7 @@ variable [TopologicalSpace β] [Zero β] [FunLike F α β] [ZeroAtInftyContinuou
 
 instance instFunLike : FunLike C₀(α, β) α β where
   coe f := f.toFun
-  coe_injective' f g h := by
+  coe_injective f g h := by
     obtain ⟨⟨_, _⟩, _⟩ := f
     obtain ⟨⟨_, _⟩, _⟩ := g
     congr

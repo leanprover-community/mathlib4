@@ -11,6 +11,7 @@ public import Mathlib.Algebra.GroupWithZero.Associated
 public import Mathlib.Algebra.Ring.Divisibility.Basic
 public import Mathlib.Algebra.Ring.Hom.Defs
 public import Mathlib.Logic.Basic
+public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Tactic.Ring
 
 /-!
@@ -40,6 +41,7 @@ variable {R : Type u} [CommSemiring R] (x y z w : R)
 /-- The proposition that `x` and `y` are coprime, defined to be the existence of `a` and `b` such
 that `a * x + b * y = 1`. Note that elements with no common divisors are not necessarily coprime,
 e.g., the multivariate polynomials `x₁` and `x₂` are not coprime. -/
+@[wikidata Q104752]
 def IsCoprime : Prop :=
   ∃ a b, a * x + b * y = 1
 

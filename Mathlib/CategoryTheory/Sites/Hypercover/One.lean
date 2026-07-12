@@ -1110,7 +1110,6 @@ lemma sieve₁'_toPreOneHypercover_eq_top {S : C} (E : PreZeroHypercover S) [E.H
   refine Presieve.ofArrows.mk' ⟨⟩ rfl ?_
   apply pullback.hom_ext <;> simp [PreOneHypercover.toPullback]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If the pairwise pullbacks exist, this is the pre-`1`-hypercover where the covers
 by the pullbacks are given by the pullbacks themselves. -/
 @[simps! toPreOneHypercover]

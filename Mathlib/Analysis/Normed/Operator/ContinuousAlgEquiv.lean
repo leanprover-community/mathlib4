@@ -68,7 +68,7 @@ public theorem ContinuousAlgEquiv.eq_continuousLinearEquivConjContinuousAlgEquiv
   set T := apply' _ (.id 𝕜) z ∘L f.toContinuousAlgHom.toContinuousLinearMap ∘L smulRightL 𝕜 _ _ v
   have hT x : T x = f (smulRight v x) z := rfl
   have this A x : T (A x) = f A (T x) := by
-    simp only [hT, ← mul_apply, ← map_mul]
+    simp only [hT, ← mul_apply_eq_comp, ← map_mul]
     congr; ext; simp
   have ⟨d, hd⟩ := SeparatingDual.exists_eq_one (R := 𝕜) hz
   have surj : Function.Surjective T := fun w ↦ ⟨f.symm (smulRight d w) u, by simp [T, this, hd]⟩

@@ -320,7 +320,7 @@ lemma Ideal.exists_finset_card_eq_height_of_isNoetherianRing (p : Ideal R) [p.Is
   refine le_antisymm ?_ ?_
   · rw [Submodule.fg_iff_spanRank_eq_spanFinrank.mpr (IsNoetherian.noetherian I)] at hr
     exact Cardinal.nat_le_ofENat.mp hr
-  · convert_to p.height ≤ I.spanRank.toENat
+  · convert_to! p.height ≤ I.spanRank.toENat
     · symm
       simpa [Submodule.fg_iff_spanRank_eq_spanFinrank] using (IsNoetherian.noetherian I)
     · exact I.height_le_spanRank_toENat_of_mem_minimalPrimes _ hI
