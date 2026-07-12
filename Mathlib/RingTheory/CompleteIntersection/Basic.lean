@@ -222,11 +222,8 @@ lemma epsilon1_eq_of_ringEquiv_aux {R : Type u} [CommRing R] [IsNoetherianRing R
   let l' := l.map (RingHomClass.toRingHom e)
   have eq1 : Ideal.ofList l = maximalIdeal R := by
     simpa [l, Ideal.ofList] using (maximalIdeal R).span_generators
-  have eqmap : Ideal.map (RingHomClass.toRingHom e) (maximalIdeal R) = maximalIdeal R' := by
-    have : (maximalIdeal R').comap e = maximalIdeal R := by
-      ext
-      simp
-    simpa [← this] using! Ideal.map_comap_eq_self_of_equiv e (maximalIdeal R')
+  have eqmap : Ideal.map (RingHomClass.toRingHom e) (maximalIdeal R) = maximalIdeal R' :=
+    IsLocalRing.map_ringEquiv_maximalIdeal e
   have eq2 : Ideal.ofList l' = maximalIdeal R' := by
     simp only [l', ← Ideal.map_ofList, eq1, eqmap]
   have len1 : l.length = (maximalIdeal R).spanFinrank := by
@@ -242,15 +239,15 @@ lemma epsilon1_eq_of_ringEquiv_aux {R : Type u} [CommRing R] [IsNoetherianRing R
     e2.trans e1.symm
   let h1R := (koszulAlgebra R).homology 1
   let h1R' := (koszulAlgebra R').homology 1
-  let _ : F.PreservesHomology := preservesHomology_of_flat R R' (RingHomClass.toRingHom e)
+  let : F.PreservesHomology := preservesHomology_of_flat R R' (RingHomClass.toRingHom e)
     (RingHom.Flat.of_bijective e.bijective)
   let eh : h1R' ≅ F.obj h1R :=
     (HomologicalComplex.homologyMapIso e' 1).trans (((koszulAlgebra R).sc 1).mapHomologyIso F)
-  let _ := (RingHomClass.toRingHom e).toAlgebra
+  let := (RingHomClass.toRingHom e).toAlgebra
   let eh' : h1R' ≃ₗ[R'] TensorProduct R R' h1R := eh.toLinearEquiv
   simp only [epsilon1]
   let I := Module.Free.ChooseBasisIndex (ResidueField R) h1R
-  let _ : Fintype I := Module.Free.ChooseBasisIndex.fintype _ _
+  let : Fintype I := Module.Free.ChooseBasisIndex.fintype _ _
   let B : h1R ≃ₗ[ResidueField R] I →₀ ResidueField R :=
     (Module.Free.chooseBasis (ResidueField R) h1R).repr
   rw [B.finrank_eq, Module.finrank_finsupp_self]
@@ -379,22 +376,18 @@ lemma epsilon1_eq_spanFinrank (S : Type u) [CommRing S] [IsRegularLocalRing S] (
       (koszulAlgebra S) :=
     e2.trans e1.symm
   let F := (ModuleCat.extendScalars.{u, u, u} (Ideal.Quotient.mk I))
-  have preveq : (ComplexShape.down ℕ).prev 1 = 2 := by simp
-  have nexteq : (ComplexShape.down ℕ).next 1 = 0 := by simp
-  have preveq' : (ComplexShape.down ℕ).prev 0 = 1 := by simp
-  have nexteq' : (ComplexShape.down ℕ).next 0 = 0 := by simp
   let h1 := (koszulAlgebra (S ⧸ I)).homology 1
   change Module.finrank (ResidueField (S ⧸ I)) h1 = _
   let eh := HomologicalComplex.homologyMapIso e 1
   let T := (koszulAlgebra S).sc' 2 1 0
   have T_exact : T.Exact := by
-    rw [← (koszulAlgebra S).exactAt_iff' 2 1 0 preveq nexteq]
+    rw [← (koszulAlgebra S).exactAt_iff' 2 1 0 (by simp) (by simp)]
     apply koszulComplex.exactAt_of_isRegular _ _ 1 Nat.one_ne_zero
     apply isRegular_of_span_eq_maximalIdeal
     · simpa [Ideal.ofList] using (maximalIdeal S).span_generators
     · simp [l, len, IsRegularLocalRing.spanFinrank_maximalIdeal]
   let eh' : h1 ≃ₗ[S⧸ I] (T.map F).homology :=
-    (eh.trans (HomologicalComplex.homologyIsoSc' _ 2 1 0 preveq nexteq)).toLinearEquiv
+    (eh.trans (HomologicalComplex.homologyIsoSc' _ 2 1 0 (by simp) (by simp))).toLinearEquiv
   let e3 : T.X₃ ≃ₗ[S] S := koszulComplex.XZeroLinearEquivRing (Fintype.linearCombination S l.get)
   let f : T.X₁ →ₗ[S] T.X₂ := T.f.hom
   let g : T.X₂ →ₗ[S] T.X₃ := T.g.hom
@@ -406,7 +399,7 @@ lemma epsilon1_eq_spanFinrank (S : Type u) [CommRing S] [IsRegularLocalRing S] (
   have rangeg' : g'.range = maximalIdeal S := by
     let eh0 : (koszulAlgebra S).homology 0 ≃ₗ[S] T.X₃ ⧸ g.range :=
       (((koszulAlgebra S).isoHomologyι₀.trans
-      ((koszulAlgebra S).opcyclesIsoSc' 1 0 0 preveq' nexteq')).trans
+      ((koszulAlgebra S).opcyclesIsoSc' 1 0 0 (by simp) (by simp))).trans
       ((koszulAlgebra S).sc' 1 0 0).moduleCatOpcyclesIso).toLinearEquiv
     let eqr : (T.X₃ ⧸ g.range) ≃ₗ[S] S ⧸ g'.range :=
       Submodule.Quotient.equiv _ _ e3 (g.range_comp _).symm
@@ -572,7 +565,7 @@ lemma AdicCompletion.epsilon1_eq : epsilon1 (AdicCompletion (maximalIdeal R) R) 
   let eh' : h1R' ≃ₗ[R'] TensorProduct R R' h1R := eh.toLinearEquiv
   simp only [epsilon1]
   let I := Module.Free.ChooseBasisIndex (ResidueField R) h1R
-  let _ : Fintype I := Module.Free.ChooseBasisIndex.fintype _ _
+  let : Fintype I := Module.Free.ChooseBasisIndex.fintype _ _
   let B : h1R ≃ₗ[ResidueField R] I →₀ ResidueField R :=
     (Module.Free.chooseBasis (ResidueField R) h1R).repr
   rw [B.finrank_eq, Module.finrank_finsupp_self]
@@ -672,7 +665,6 @@ lemma quotient_isCompleteIntersectionLocalRing_iff (S : Type u) [CommRing S] [Is
     change ((I.spanFinrank : ℕ∞) : WithBot ℕ∞) = _
     classical
     apply WithBot.coe_inj.mpr (le_antisymm _ (Ideal.height_le_spanFinrank _ ne))
-    let : CharZero ℕ∞ := instCharZeroENat
     have : Ideal.span (rs.toFinset : Set S) = I := by simp [hrs]
     nth_rw 2 [hrs]
     rw [Ideal.ofList_height_eq_length_of_isWeaklyRegular rs reg.1 (by simpa using reg.2.symm),
@@ -705,7 +697,7 @@ theorem isCompleteIntersectionLocalRing_iff :
     have : Nontrivial (S ⧸ RingHom.ker f) := e.nontrivial
     have : IsLocalRing (S ⧸ RingHom.ker f) :=
       IsLocalRing.of_surjective' (Ideal.Quotient.mk (RingHom.ker f)) Ideal.Quotient.mk_surjective
-    let _ := isCompleteIntersectionLocalRing_of_ringEquiv e.symm
+    let := isCompleteIntersectionLocalRing_of_ringEquiv e.symm
     rcases quotient_isCompleteIntersectionLocalRing S (RingHom.ker f) with ⟨rs, hrs⟩
     use S, inferInstance, inferInstance, f, rs
   · let e := RingHom.quotientKerEquivOfSurjective surj
