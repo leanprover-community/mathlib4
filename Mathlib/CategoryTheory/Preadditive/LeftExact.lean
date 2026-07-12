@@ -17,9 +17,9 @@ preserves kernels. The dual result holds for right exact functors and cokernels.
 
 ## Main results
 
-* We first derive preservation of binary product in the lemma
-  `preservesBinaryProductsOfPreservesKernels`,
-* then show the preservation of equalizers in `preservesEqualizerOfPreservesKernels`,
+* We first derive preservation of binary products in the lemma
+  `preservesBinaryProducts_of_preservesKernels`,
+* then show the preservation of equalizers in `preservesEqualizer_of_preservesKernels`,
 * and then derive the preservation of all finite limits with the usual construction.
 
 -/
@@ -187,8 +187,8 @@ lemma preservesCoequalizer_of_preservesCokernels
       (isColimitCoforkOfCokernelCofork ((IsColimit.precomposeHomEquiv p.symm _).symm iFc))
       (Cofork.ext (Iso.refl _) (by simp [p]))
 
-/-- A functor between preadditive categories preserves all coequalizers if it preserves all kernels.
--/
+/-- A functor between preadditive categories preserves all coequalizers if it preserves all
+cokernels. -/
 lemma preservesCoequalizers_of_preservesCokernels
     [∀ {X Y} (f : X ⟶ Y), PreservesColimit (parallelPair f 0) F] :
     PreservesColimitsOfShape WalkingParallelPair F where
@@ -197,8 +197,8 @@ lemma preservesCoequalizers_of_preservesCokernels
         (K.map Limits.WalkingParallelPairHom.right)
     apply preservesColimit_of_iso_diagram F (diagramIsoParallelPair K).symm
 
-/-- A functor between preadditive categories which preserves kernels preserves all finite limits.
--/
+/-- A functor between preadditive categories which preserves cokernels preserves all finite
+colimits. -/
 lemma preservesFiniteColimits_of_preservesCokernels [HasFiniteCoproducts C] [HasCoequalizers C]
     [HasZeroObject C] [HasZeroObject D]
     [∀ {X Y} (f : X ⟶ Y), PreservesColimit (parallelPair f 0) F] : PreservesFiniteColimits F := by

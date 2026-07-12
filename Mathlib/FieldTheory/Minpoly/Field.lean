@@ -333,7 +333,7 @@ lemma minpoly_algEquiv_toLinearMap (σ : L ≃ₐ[K] L) (hσ : IsOfFinOrder σ) 
     simp_rw [← AlgEquiv.pow_toLinearMap] at hs
     apply hq.ne_zero
     simpa using Fintype.linearIndependent_iff.mp
-      (((linearIndependent_algHom_toLinearMap' K L L).comp _ AlgEquiv.coe_algHom_injective).comp _
+      (((linearIndependent_algHom_toLinearMap' K L L).comp _ AlgEquiv.coe_toAlgHom_injective).comp _
         (Subtype.val_injective.comp ((finEquivPowers hσ).injective)))
       (q.coeff ∘ (↑)) hs ⟨_, H⟩
 

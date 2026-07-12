@@ -127,6 +127,13 @@ instance : IsFractionRing (R ⧸ I) I.ResidueField where
     use 1
     simp [e]
 
+instance [IsDomain R] : IsFractionRing R (⊥ : Ideal R).ResidueField :=
+  IsLocalization.of_ringEquiv_left (RingEquiv.quotientBot R).symm
+    (MulEquivClass.map_nonZeroDivisors (RingEquiv.quotientBot R).symm) (by simp)
+
+instance [Finite (R ⧸ I)] : Finite I.ResidueField :=
+  IsLocalization.finite (R ⧸ I) (nonZeroDivisors (R ⧸ I))
+
 lemma Ideal.bijective_algebraMap_quotient_residueField (I : Ideal R) [I.IsMaximal] :
     Function.Bijective (algebraMap (R ⧸ I) I.ResidueField) :=
   ⟨I.injective_algebraMap_quotient_residueField, IsFractionRing.surjective_iff_isField.mpr
@@ -239,3 +246,6 @@ lemma Ideal.ResidueField.ringHom_ext {I : Ideal R} [I.IsPrime]
 lemma Ideal.ResidueField.algHom_ext {I : Ideal A} [I.IsPrime] {f g : I.ResidueField →ₐ[R] B}
     (H : f.comp (IsScalarTower.toAlgHom R A _) = g.comp (IsScalarTower.toAlgHom R A _)) : f = g :=
   AlgHom.coe_ringHom_injective (ringHom_ext congr($H))
+
+@[simp] lemma Ideal.ResidueField.mapₐ_id (I : Ideal A) [I.IsPrime] :
+    Ideal.ResidueField.mapₐ I I (.id R A) rfl = .id _ _ := by ext; simp
