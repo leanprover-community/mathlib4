@@ -96,7 +96,7 @@ def subgraphOfAdj (G : SimpleGraph V) {v w : V} (hvw : G.Adj v w) : G.Subgraph w
 
 namespace Subgraph
 
-variable {G : SimpleGraph V} {G₁ G₂ : G.Subgraph} {a b : V}
+variable {G : SimpleGraph V} {G' G₁ G₂ : G.Subgraph} {a b : V}
 
 protected theorem loopless (G' : Subgraph G) : Std.Irrefl G'.Adj where
   irrefl _ hadj := G.irrefl <| G'.adj_sub hadj
@@ -242,6 +242,19 @@ def coeNeighborSetEquiv {G' : Subgraph G} (v : G'.verts) :
     G'.coe.neighborSet v ≃ G'.neighborSet v where
   toFun w := ⟨w, w.2⟩
   invFun w := ⟨⟨w, G'.edge_vert (G'.adj_symm w.2)⟩, w.2⟩
+
+theorem image_neighborSet_coe (v : G'.verts) : (↑) '' G'.coe.neighborSet v = G'.neighborSet v := by
+  ext
+  simpa using Adj.snd_mem
+
+@[simp]
+theorem neighborSet_coe (v : G'.verts) : G'.coe.neighborSet v = (↑) ⁻¹' G'.neighborSet v := by
+  simp [← image_neighborSet_coe]
+
+variable (G') in
+@[simp]
+theorem neighborSet_spanningCoe (v : V) : G'.spanningCoe.neighborSet v = G'.neighborSet v := by
+  congr!
 
 /-- The edge set of `G'` consists of a subset of edges of `G`. -/
 def edgeSet (G' : Subgraph G) : Set (Sym2 V) := Sym2.fromRel G'.symm
@@ -823,8 +836,7 @@ theorem coe_degree (G' : Subgraph G) (v : G'.verts) [Fintype (G'.coe.neighborSet
 @[simp]
 theorem degree_spanningCoe {G' : G.Subgraph} (v : V) [Fintype (G'.neighborSet v)]
     [Fintype (G'.spanningCoe.neighborSet v)] : G'.spanningCoe.degree v = G'.degree v := by
-  rw [← card_neighborSet_eq_degree, Subgraph.degree]
-  congr!
+  simp [← card_neighborSet_eq_degree, degree]
 
 theorem degree_pos_iff_exists_adj {G' : Subgraph G} {v : V} [Fintype (G'.neighborSet v)] :
     0 < G'.degree v ↔ ∃ w, G'.Adj v w := by
