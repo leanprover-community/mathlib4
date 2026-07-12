@@ -578,8 +578,6 @@ instance instOrientedManifoldIcc : Manifold.OrientedManifold (𝓡∂ 1) (Set.Ic
         simp only [if_pos hzp, if_pos hzq, Icc_zero_lt_det_tangentCoordChange_iff p q z ⟨hzp, hzq⟩]
         by_cases hp : (p : ℝ) < y <;> by_cases hq : (q : ℝ) < y <;> simp [hp, hq] }
 
-instance instOrientableIcc : Manifold.Orientable (𝓡∂ 1) (Set.Icc x y) := by infer_instance
-
 /-! Register the manifold structure on `Icc 0 1`. These are merely special cases of
 `instIccChartedSpace` and `instIsManifoldIcc`. -/
 

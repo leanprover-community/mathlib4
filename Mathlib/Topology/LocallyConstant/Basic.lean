@@ -257,8 +257,8 @@ noncomputable def equivConnectedComponents [LocallyConnectedSpace X] :
         simpa [hxy.symm] using (mem_connectedComponent : y ∈ connectedComponent y)))
   invFun g :=
     ⟨fun x ↦ g x,
-      IsLocallyConstant.of_constant_on_connected_components (fun x y hy ↦ by
-        exact congrArg g (ConnectedComponents.coe_eq_coe'.2 hy))⟩
+      IsLocallyConstant.of_constant_on_connected_components fun x y hy ↦
+        congrArg g (ConnectedComponents.coe_eq_coe'.2 hy)⟩
   left_inv f := by
     ext x
     rfl
