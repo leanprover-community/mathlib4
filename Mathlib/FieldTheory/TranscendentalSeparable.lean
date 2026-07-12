@@ -49,6 +49,9 @@ Let `K/k` be arbitrary field extension with characteristic `p > 0`, then TFAE
 * `Algebra.isTranscendentalSeparable_of_perfectField` :
   All extension over perfect field is transcendental separable.
 
+* `tensorProduct_isReduced_of_isGeometricallyReduced` : Tensor product of algebra that is a field
+  with geometrically reduced algebra is reduced.
+
 # TODO
 Prove that "`k` and `Kᵖ` are linearly disjoint over `kᵖ` in `K`" is also equivalent to the
 four equivalent characterization of being transcendental seprarable for
