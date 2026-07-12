@@ -184,7 +184,7 @@ theorem of_subsingleton [Subsingleton α] : UniqueFactorizationMonoid α where
 
 variable [UniqueFactorizationMonoid α]
 
-open Classical in
+open scoped Classical in
 /-- Noncomputably determines the multiset of prime factors. -/
 noncomputable def factors (a : α) : Multiset α :=
   if h : a = 0 then 0 else Classical.choose (UniqueFactorizationMonoid.exists_prime_factors a h)

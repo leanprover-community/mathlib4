@@ -70,7 +70,7 @@ def loopAlgebraEquivLaurent :
 
 namespace LoopAlgebra
 
-open Classical in
+open scoped Classical in
 /-- A linear isomorphism to finitely supported functions. -/
 def toFinsupp : loopAlgebra R A L ≃ₗ[R] A →₀ L :=
   TensorProduct.equivFinsuppOfBasisLeft (AddMonoidAlgebra.basis A R)
