@@ -17,6 +17,7 @@ public import Mathlib.RingTheory.Finiteness.Cardinality
 public import Mathlib.Tactic.FieldSimp
 
 import Mathlib.LinearAlgebra.GeneralLinearGroup.AlgEquiv
+import Mathlib.RingTheory.SimpleRing.Matrix
 
 /-!
 # Determinant of families of vectors
@@ -268,7 +269,7 @@ theorem det_zero' {ι : Type*} [Finite ι] [Nonempty ι] (b : Basis ι A M) :
     LinearMap.det (0 : M →ₗ[A] M) = 0 := by
   haveI := Classical.decEq ι
   cases nonempty_fintype ι
-  rwa [← det_toMatrix b, map_zero, det_zero]
+  rw [← det_toMatrix b, map_zero, det_zero]
 
 /-- In a finite-dimensional vector space, the zero map has determinant `1` in dimension `0`,
 and `0` otherwise. We give a formula that also works in infinite dimension, where we define
@@ -474,11 +475,12 @@ end LinearEquiv
     LinearMap.det_map ((Matrix.toLinAlgEquiv'.symm.trans
       (AlgEquivClass.toAlgEquiv f)).trans Matrix.toLinAlgEquiv') x.toLin'
 
--- TODO: show `(f x).det = x.det` for when `f : Matrix m m K →ₐ[K] Matrix m m K`
--- (using Skolem-Noether)
-proof_wanted Matrix.det_map' {K m F : Type*} [Field K] [Fintype m] [DecidableEq m]
+@[simp] theorem Matrix.det_map' {K m F : Type*} [Field K] [Fintype m] [DecidableEq m]
     [FunLike F (Matrix m m K) (Matrix m m K)] [AlgHomClass F K _ _] (f : F) (x : Matrix m m K) :
-    (f x).det = x.det
+    (f x).det = x.det := by
+  by_cases! Nonempty m
+  · exact det_map (AlgEquiv.ofBijective _ (AlgHomClass.toAlgHom f).bijective) x
+  · simp
 
 /-- The determinants of a `LinearEquiv` and its inverse multiply to 1. -/
 @[simp]
