@@ -64,6 +64,7 @@ theorem ker_coeMulHom (f : F) : ker (f : MulHom M N) = ker f := rfl
 theorem ker_rel (f : F) {x y} : ker f x y ↔ f x = f y :=
   Iff.rfl
 
+/-- The kernel of the quotient map induced by a congruence relation `c` equals `c`. -/
 @[to_additive (attr := simp) /-- The kernel of the quotient map induced by an additive congruence
 relation `c` equals `c`. -/]
 theorem ker_mkMulHom_eq (c : Con M) : ker (mkMulHom c) = c :=
