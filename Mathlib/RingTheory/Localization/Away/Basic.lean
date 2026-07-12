@@ -5,8 +5,8 @@ Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baan
 -/
 module
 
-public import Mathlib.GroupTheory.MonoidLocalization.Away
 public import Mathlib.Algebra.Algebra.Pi
+public import Mathlib.GroupTheory.MonoidLocalization.Away
 public import Mathlib.RingTheory.Ideal.Maps
 public import Mathlib.RingTheory.Localization.Basic
 public import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicity
@@ -159,6 +159,26 @@ theorem lift_eq (hg : IsUnit (g x)) (a : R) : lift x hg (algebraMap R S a) = g a
 theorem lift_comp (hg : IsUnit (g x)) : (lift x hg).comp (algebraMap R S) = g :=
   IsLocalization.lift_comp _
 
+section liftAlgHom
+
+variable {A : Type*} [CommSemiring A] [Algebra A R] [Algebra A S] [Algebra A P]
+  [IsScalarTower A R S] {f : R →ₐ[A] P} (hf : IsUnit (f x))
+include hf
+
+/-- `AlgHom` version of `IsLocalization.Away.lift`. -/
+noncomputable def liftAlgHom : S →ₐ[A] P where
+  __ := lift x hf
+  commutes' r := by simp [IsScalarTower.algebraMap_apply A R S]
+
+theorem liftAlgHom_toRingHom : (liftAlgHom x hf : S →ₐ[A] P).toRingHom = lift x hf := rfl
+
+@[simp]
+theorem coe_liftAlgHom : ⇑(liftAlgHom x hf : S →ₐ[A] P) = lift x hf := rfl
+
+theorem liftAlgHom_apply (s : S) : liftAlgHom x hf s = lift x hf s := rfl
+
+end liftAlgHom
+
 /-- Given `x y : R` and localizations `S`, `P` away from `x` and `y * x`
 respectively, the homomorphism induced from `S` to `P`. -/
 noncomputable def awayToAwayLeft (y : R) [Algebra R P] [IsLocalization.Away (y * x) P] : S →+* P :=
@@ -309,6 +329,10 @@ lemma commutes {R : Type*} [CommSemiring R] (S₁ S₂ T : Type*) [CommSemiring 
   convert! IsLocalization.commutes S₁ S₂ T (Submonoid.powers x) (Submonoid.powers y)
   ext x
   simp
+
+theorem isDomain [IsDomain R] {x : R} (hx : x ≠ 0) [IsLocalization.Away x S] : IsDomain S :=
+  IsLocalization.isDomain_of_le_nonZeroDivisors S
+    (powers_le_nonZeroDivisors_of_noZeroDivisors hx)
 
 end Away
 
@@ -589,6 +613,10 @@ theorem existsUnique_algebraMap_eq_of_span_eq_top (s : Set R) (span_eq : Ideal.s
   refine ⟨∑ b, c b * r b, fun a ↦ ((Away.algebraMap_isUnit a.1).pow N).mul_left_inj.mp ?_⟩
   simp_rw [← map_pow, eq, ← map_mul, Finset.sum_mul, mul_assoc, eq2 _ a, mul_left_comm (c _),
     ← Finset.mul_sum, ← smul_eq_mul (a := c _), eq1, mul_one]
+
+/-- If `x ≠ 0`, then the localization of a domain away from `x` is again a domain. -/
+theorem Away.isDomain [IsDomain R] {x : R} (hx : x ≠ 0) : IsDomain (Localization.Away x) :=
+  IsLocalization.Away.isDomain (Localization.Away x) hx
 
 end Localization
 
