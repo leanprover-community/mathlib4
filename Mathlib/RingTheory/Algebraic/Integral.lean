@@ -40,6 +40,30 @@ is algebraic and that every algebraic element over a field is integral.
 @[expose] public section
 
 -- PRed
+theorem LinearIndepOn.iff_fractionRing (R K : Type*) [CommRing R] [CommRing K]
+    [Algebra R K] [IsFractionRing R K] {V : Type*} [AddCommGroup V] [Module R V] [Module K V]
+    [IsScalarTower R K V] {ι : Type*} {s : Set ι} {f : ι → V} :
+    LinearIndepOn R f s ↔ LinearIndepOn K f s :=
+  LinearIndependent.iff_fractionRing R K
+
+-- PRed
+theorem IsFractionRing.rank_eq (R R' S : Type*)
+    [CommRing R] [CommRing R'] [CommRing S]
+    [Algebra R R'] [Module R' S] [Module R S]
+    [IsScalarTower R R' S] [IsFractionRing R R'] :
+    Module.rank R S = Module.rank R' S := by
+  simp_rw [Module.rank, ciSup_subtype Cardinal.bddAbove_of_small (by simp),
+    LinearIndepOn.iff_fractionRing R R']
+
+-- PRed
+theorem IsFractionRing.finrank_eq' (R R' S : Type*)
+    [CommRing R] [CommRing R'] [CommRing S]
+    [Algebra R R'] [Module R' S] [Module R S]
+    [IsScalarTower R R' S] [IsFractionRing R R'] :
+    Module.finrank R S = Module.finrank R' S := by
+  simp_rw [Module.finrank, IsFractionRing.rank_eq R R']
+
+-- PRed
 theorem LinearIndependent.comp_algebraMap_iff
     {R S A : Type*} [CommRing R] [CommRing S] [CommRing A]
     [Algebra R S] [Algebra S A] [Algebra R A] [IsScalarTower R S A] [FaithfulSMul S A]
@@ -101,27 +125,6 @@ theorem Cardinal.toNat_eq_of_forall_le_iff (c d : Cardinal)
     obtain ⟨n2, h2⟩ := h2
     apply eq_of_forall_le_iff
     simp_all
-
-theorem LinearIndepOn.iff_fractionRing (R K : Type*) [CommRing R] [CommRing K]
-    [Algebra R K] [IsFractionRing R K] {V : Type*} [AddCommGroup V] [Module R V] [Module K V]
-    [IsScalarTower R K V] {ι : Type*} {s : Set ι} {f : ι → V} :
-    LinearIndepOn R f s ↔ LinearIndepOn K f s :=
-  LinearIndependent.iff_fractionRing R K
-
-theorem IsFractionRing.rank_eq (R R' S : Type*)
-    [CommRing R] [CommRing R'] [CommRing S]
-    [Algebra R R'] [Module R' S] [Module R S]
-    [IsScalarTower R R' S] [IsFractionRing R R'] :
-    Module.rank R S = Module.rank R' S := by
-  simp_rw [Module.rank, ciSup_subtype Cardinal.bddAbove_of_small (by simp),
-    LinearIndepOn.iff_fractionRing R R']
-
-theorem IsFractionRing.finrank_eq' (R R' S : Type*)
-    [CommRing R] [CommRing R'] [CommRing S]
-    [Algebra R R'] [Module R' S] [Module R S]
-    [IsScalarTower R R' S] [IsFractionRing R R'] :
-    Module.finrank R S = Module.finrank R' S := by
-  simp_rw [Module.finrank, IsFractionRing.rank_eq R R']
 
 open IsLocalization nonZeroDivisors Pointwise in
 theorem foo' (R S A : Type*) [DecidableEq S]
