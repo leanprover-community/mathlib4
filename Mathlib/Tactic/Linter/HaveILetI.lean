@@ -74,11 +74,8 @@ structure Candidate where
   kwStr : String
   /-- The replacement keyword, as a string: `"have"` or `"let"`. -/
   replStr : String
-  /-- The start of the source range of `node`. -/
-  start : String.Pos.Raw
-  /-- The end of the source range of `node`. -/
-  stop : String.Pos.Raw
-  deriving Inhabited
+  /-- The source range of `node`. -/
+  range : Syntax.Range
 
 /-- If `kind` is one of the four `haveI`/`letI` syntax kinds, return
 `(is it the tactic?, its keyword, the suggested replacement keyword)`.
@@ -103,8 +100,8 @@ where
     if let some (isTactic, kwStr, replStr) := replacement? kind then
       if let some kw := args[0]? then
         if kw.getHeadInfo matches .original .. then
-          if let (some start, some stop) := (stx.getPos?, stx.getTailPos?) then
-            acc := acc.push { node := stx, kw, isTactic, kwStr, replStr, start, stop }
+          if let some range := stx.getRange? then
+            acc := acc.push { node := stx, kw, isTactic, kwStr, replStr, range }
     for arg in args do
       acc := go arg acc
     return acc
@@ -194,9 +191,9 @@ def haveILetILinter : Linter where run := withSetOptionIn fun stx => do
   -- Index the candidates by their source range, in order to look up the elaboration
   -- information recorded for them. (Distinct candidates have distinct ranges: they would
   -- otherwise be distinct syntax nodes starting with the same keyword token.)
-  let mut keyOf : Std.HashMap (String.Pos.Raw × String.Pos.Raw) Nat := {}
+  let mut keyOf : Std.HashMap Syntax.Range (Nat × Candidate) := {}
   for h : idx in [0:cands.size] do
-    keyOf := keyOf.insert (cands[idx].start, cands[idx].stop) idx
+    keyOf := keyOf.insert cands[idx].range (idx, cands[idx])
   -- For each candidate, collect all `TacticInfo`s (for the tactic) or
   -- `TermInfo`/`PartialTermInfo`s (for the term) recorded for its syntax. The same
   -- user-written `haveI`/`letI` can be recorded several times, for instance when it is run
@@ -213,9 +210,8 @@ def haveILetILinter : Linter where run := withSetOptionIn fun stx => do
         | .ofTermInfo i => some (i.stx, false)
         | .ofPartialTermInfo i => some (i.stx, false)
         | _ => none) | return acc
-      let (some s, some e) := (istx.getPos?, istx.getTailPos?) | return acc
-      let some idx := keyOf[(s, e)]? | return acc
-      let cand := cands[idx]!
+      let some range := istx.getRange? | return acc
+      let some (idx, cand) := keyOf[range]? | return acc
       unless cand.isTactic == isTacticInfo && istx.getKind == cand.node.getKind do
         return acc
       return acc.modify idx (·.push (ctx, info))
