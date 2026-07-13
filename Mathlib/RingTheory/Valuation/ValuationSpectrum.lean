@@ -199,14 +199,6 @@ lemma ofValuation_valuation (v : Spv A) : ofValuation v.valuation = v := by
   let := v.toValuativeRel
   exact ext' fun x y ↦ (ValuativeRel.valuation A).vle_iff_le.symm
 
-/-- If `f` is a unit, then its canonical valuation `v.valuation f` is nonzero,
-for every point `v : Spv A`. -/
-lemma valuation_ne_zero_of_isUnit {f : A} (hf : IsUnit f) (v : Spv A) :
-    v.valuation f ≠ 0 := fun h ↦
-  let : ValuativeRel A := v.toValuativeRel
-  ValuativeRel.not_vle_zero_of_isUnit hf <|
-    (mem_supp_iff v f).mp <| v.supp_eq_valuation_supp ▸ (Valuation.mem_supp_iff _ f).mpr h
-
 section Quotient
 
 variable (𝔞 : Ideal A)
@@ -289,9 +281,9 @@ lemma comap_localizationComapSection (v : Spv A) (hS : S ≤ v.supp.primeCompl) 
 lemma submonoid_le_supp_primeCompl_comap_algebraMap (w : Spv B) :
     S ≤ (comap (algebraMap A B) w).supp.primeCompl := by
   intro s hs hmem
-  refine valuation_ne_zero_of_isUnit (IsLocalization.map_units B ⟨s, hs⟩) w ?_
-  rw [← Valuation.mem_supp_iff, ← w.supp_eq_valuation_supp, mem_supp_iff]
-  simpa using hmem
+  rw [SetLike.mem_coe, mem_supp_iff, comap_vle, map_zero] at hmem
+  let := w.toValuativeRel
+  exact ValuativeRel.not_vle_zero_of_isUnit (IsLocalization.map_units B ⟨s, hs⟩) hmem
 
 /-- The range of `comap (algebraMap A B)` is `{v | S ≤ supp(v).primeCompl}`. -/
 lemma comap_localization_range :
