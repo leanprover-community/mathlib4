@@ -295,8 +295,8 @@ alias ⟨_, nonempty_linearEquiv_of_finrank_eq_one⟩ := nonempty_linearEquiv_if
 
 theorem nonempty_algEquiv_iff_finrank_eq_one
     {R S : Type*} [CommSemiring R] [StrongRankCondition R] [Semiring S] [Algebra R S]
-    [Module.Free R S] : Nonempty (R ≃ₐ[R] S) ↔ Module.finrank R S = 1 := by
-  rw [← Module.nonempty_linearEquiv_iff_finrank_eq_one]
+    [Module.Free R S] : Nonempty (R ≃ₐ[R] S) ↔ finrank R S = 1 := by
+  rw [← nonempty_linearEquiv_iff_finrank_eq_one]
   exact ⟨fun ⟨e⟩ ↦ ⟨e⟩, fun ⟨e⟩ ↦
     ⟨AlgEquiv.ofBijective (Algebra.ofId R S) (bijective_algebraMap_of_linearEquiv e)⟩⟩
 
