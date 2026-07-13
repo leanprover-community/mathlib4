@@ -64,6 +64,10 @@ def copyFirst : findArgType := fun _ _ args ↦ return (args.push <| args[0]?.ge
 /-- Find arguments by duplicating the first argument. Used for `smul`. -/
 def copySecond : findArgType := fun _ _ args ↦ return (args.push <| args[1]?.getD default).map some
 
+/-- Find arguments by prepending `ℕ+` and duplicating the first argument. Used for `psmul`. -/
+def psmulArgs : findArgType := fun _ _ args ↦
+  return #[Expr.const `PNat [], args[0]?.getD default] ++ args |>.map some
+
 /-- Find arguments by prepending `ℕ` and duplicating the first argument. Used for `nsmul`. -/
 def nsmulArgs : findArgType := fun _ _ args ↦
   return #[Expr.const `Nat [], args[0]?.getD default] ++ args |>.map some

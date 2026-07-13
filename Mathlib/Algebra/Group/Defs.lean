@@ -1552,9 +1552,9 @@ end IsMulCommutative
 /-! We initialize all projections for `@[simps]` here, so that we don't have to do it in later
 files.
 
-Note: the lemmas generated for the `npow`/`zpow` projections will *not* apply to `x ^ y`, since the
-argument order of these projections doesn't match the argument order of `^`.
-The `nsmul`/`zsmul` lemmas will be correct. -/
+Note: the lemmas generated for the `ppow`/`npow`/`zpow` projections will *not* apply to `x ^ y`,
+since the argument order of these projections doesn't match the argument order of `^`.
+The `psmul`/`nsmul`/`zsmul` lemmas will be correct. -/
 initialize_simps_projections Semigroup
 initialize_simps_projections AddSemigroup
 initialize_simps_projections CommSemigroup
