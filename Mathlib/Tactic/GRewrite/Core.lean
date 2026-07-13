@@ -176,11 +176,20 @@ def GRewriteLemma.apply (lem : GRewriteLemma) (goal : MVarId) (symm : Bool)
 /-- Create the `gcongr` goal corresponding to rewriting `e` by relation `rel?`,
 so that we can apply `gcongr` lemmas to it. -/
 def makeGCongrGoal (rel? : Option Expr) (e : Expr) (forward : Bool) : MetaM (Expr × Expr) := do
-  let mkRel := if let some rel := rel? then mkApp2 rel else (.forallE `_a · · .default)
-  -- Assume that the two arguments of `rel` have the same type.
-  let mvar ← mkFreshExprMVar (← inferType e)
-  let target := if forward then mkRel e mvar else mkRel mvar e
-  return (mvar, ← mkFreshExprMVar target)
+  if let some rel := rel? then
+    let .forallE _ d₁ (.forallE _ d₂ _ _) _ ← whnf (← inferType rel) | throwFunctionExpected rel
+    -- note that `@[gcongr]`'s checks should prevent this happening
+    if d₂.hasLooseBVars then throwError "grw: {rel} is a dependent relation"
+    if forward then
+      let mvar ← mkFreshExprMVar d₂
+      return (mvar, ← mkFreshExprMVar <| mkApp2 rel e mvar)
+    else
+      let mvar ← mkFreshExprMVar d₁
+      return (mvar, ← mkFreshExprMVar <| mkApp2 rel mvar e)
+  else
+    let mvar ← mkFreshTypeMVar
+    let target := if forward then .forallE `_a e mvar .default else .forallE `_a mvar e .default
+    return (mvar, ← mkFreshExprMVar (some target))
 
 /-- Version of `getRel` that also returns the expression of the relation. -/
 def getRel' (e : Expr) : Option (Name × Option Expr × Expr × Expr) :=
