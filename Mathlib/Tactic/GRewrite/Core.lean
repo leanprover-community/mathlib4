@@ -332,7 +332,10 @@ partial def grewriteCore (relName : Name) (rel? : Option Expr) (e : Expr) (forwa
     for gcongrLem in lemmas do
       if gcongrLem.forGrw then
         if ← processGCongrLemma goal.mvarId! gcongrLem forward config then
-          return (← instantiateMVars mvar, goal)
+          -- Preserve the binder name/info in a forall.
+          match e, ← instantiateMVars mvar with
+          | .forallE n _ _ bi, .forallE _ d b _ => return some (.forallE n d b bi, goal)
+          | _, result => return some (result, goal)
         setMCtx mctx
   -- Cache the fact that there was nothing to rewrite.
   modify fun s ↦ { s with cache := s.cache.insert cacheKey }

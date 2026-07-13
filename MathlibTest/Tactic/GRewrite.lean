@@ -129,6 +129,17 @@ example {a b : Nat} (h : a < b) (f : Nat → Nat) (hf : ∀ i, 0 ≤ f i) :
   trace_state
   rfl
 
+/--
+trace: α : Type ?u.3
+X Y Z W : Set α
+⊢ ∀ {α : Type u_1} [inst : LinearOrder α] (a b : α), max a b ≤ max a b
+-/
+#guard_msgs in
+example : ∀ {α : Type*} [LinearOrder α] (a b : α), min a b ≤ max a b := by
+  grw [@inf_le_sup]
+  trace_state
+  intros; rfl
+
 end subsets
 
 section rationals
