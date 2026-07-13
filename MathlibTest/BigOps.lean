@@ -126,7 +126,7 @@ set_option pp.analyze true in
 
 /-! ### Big operators over ordered sets -/
 
-variable {g : ℕ → M} {q : ℕ → Prop} [DecidablePred q] {n : ℕ} {i₀ : ι}
+variable {g : ℕ → M} {q q' : ℕ → Prop} [DecidablePred q] [DecidablePred q'] {n : ℕ} {i₀ : ι}
 
 /-- info: ∏ i < n, g i : M -/
 #guard_msgs in
@@ -140,9 +140,9 @@ variable {g : ℕ → M} {q : ℕ → Prop} [DecidablePred q] {n : ℕ} {i₀ : 
 #guard_msgs in
 #check Finset.prod ((Finset.Iio n).filter q) fun i ↦ g i
 
-/-- info: ∏ i ≤ n with q i, g i : M -/
+/-- info: ∏ i ≤ n with q i ∧ q' i, g i : M -/
 #guard_msgs in
-#check Finset.prod ((Finset.Iic n).filter q) fun i ↦ g i
+#check Finset.prod ((Finset.Iic n).filter fun j ↦ q j ∧ q' j) fun i ↦ g i
 
 section Bot
 variable [Preorder ι] [LocallyFiniteOrderBot ι]
