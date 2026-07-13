@@ -11,24 +11,22 @@ public import Mathlib.Data.Multiset.Find
 # Miscellaneous definitions, lemmas, and constructions using dfinsupp
 
 This should be kept in sync with Finsupp where possible.
+
+## Main definitions
+
+* `DFinsupp.embDomain`
+* `DFinsupp.mapDomain`
 -/
 
 @[expose] public section
 
-theorem Function.Injective.subsingleton_fiber {α β} {f : α → β} (h : f.Injective) (b : β) :
-    {a | f a = b}.Subsingleton := by
-  unfold Set.Subsingleton; grind
-
-namespace DFinsupp
 
 variable {ι α β γ : Type*} {M : β → Type*} {N : Type*}
 
-
 section EmbDomain
-
 variable [∀ b, Zero (M b)] [DecidableEq β]
 
-/-- Given `f : α ↪ β` and `v : α →₀ M`, `Finsupp.embDomain f v : β →₀ M`
+/-- Given `f : α ↪ β` and `v : α →₀ M`, `DFinsupp.embDomain f v : β →₀ M`
 is the finitely supported function whose value at `f a : β` is `v a`.
 For a `b : β` outside the range of `f`, it is zero. -/
 def embDomain (f : α ↪ β) (v : Π₀ a, M (f a)) : Π₀ b, M b where
@@ -115,7 +113,6 @@ lemma prod_embDomain [DecidableEq α] [∀ i (x : M i), Decidable (x ≠ 0)] [Co
 end EmbDomain
 
 section MapDomain
-
 variable [∀ b, AddCommMonoid (M b)] [AddCommMonoid N]
 variable [DecidableEq α] [DecidableEq β] [DecidableEq γ]
 
@@ -199,7 +196,7 @@ theorem mapDomain_equiv_apply {f : α ≃ β} (x : Π₀ a, M (f a)) (a : β) :
   conv_lhs => rw! (castMode := .all) [← f.apply_symm_apply a]
   rw [mapDomain_apply f.injective]
 
-/-- `Finsupp.mapDomain` is an `AddMonoidHom`. -/
+/-- `DFinsupp.mapDomain` is an `AddMonoidHom`. -/
 def mapDomain.addMonoidHom (f : α → β) : (Π₀ a, M (f a)) →+ (Π₀ b, M b) :=
   sumAddHom fun i => singleAddHom M (f i)
 
