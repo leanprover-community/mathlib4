@@ -553,23 +553,16 @@ theorem tsum_coe_mul_geometric_of_norm_lt_one {r : 𝕜} (hr : ‖r‖ < 1) :
 theorem hasSum_descFactorial_mul_geometric_of_norm_lt_one' (j : ℕ) {x : R} (h : ‖x‖ < 1) :
     HasSum (fun n : ℕ ↦ (n.descFactorial j : R) * x ^ n)
       ((j.factorial : R) * x ^ j * ((1 - x)⁻¹ʳ) ^ (j + 1)) := by
-  have hx : Commute (x ^ j) (((1 - x)⁻¹ʳ) ^ (j + 1)) := by
-    obtain ⟨u, hu⟩ := isUnit_one_sub_of_norm_lt_one h
-    have hxu : Commute x (u : R) := hu.symm ▸ (Commute.one_right x).sub_right (Commute.refl x)
-    simp [← hu, hxu.units_inv_right.pow_pow]
-  have A := ((hasSum_choose_mul_geometric_of_norm_lt_one' j h).mul_left
-    (j.factorial : R)).mul_right (x ^ j)
-  have Afun : (fun m : ℕ ↦ (j.factorial : R) * (((m + j).choose j : R) * x ^ m) * x ^ j)
-      = fun m : ℕ ↦ ((m + j).descFactorial j : R) * x ^ (m + j) := by
-    funext m
+  rw [← hasSum_nat_add_iff' j]
+  convert! (hasSum_choose_mul_geometric_of_norm_lt_one' j h).mul_left
+    ((j.factorial : R) * x ^ j) using 1
+  · funext n
+    symm
     push_cast [Nat.descFactorial_eq_factorial_mul_choose]
-    simp only [pow_add, mul_assoc]
-  rw [Afun] at A
-  have B := (hasSum_nat_add_iff (f := fun n : ℕ ↦ (n.descFactorial j : R) * x ^ n) j).mp A
-  have hzero : ∑ i ∈ Finset.range j, (i.descFactorial j : R) * x ^ i = 0 :=
-    Finset.sum_eq_zero fun i hi ↦ by
+    rw [mul_assoc, ((Nat.cast_commute ((n + j).choose j) (x ^ j)).symm).left_comm, ← pow_add,
+      add_comm j n, mul_assoc]
+  · exact sub_eq_self.2 <| Finset.sum_eq_zero fun i hi ↦ by
       simp [descFactorial_eq_zero_iff_lt.2 (Finset.mem_range.1 hi)]
-  simpa only [hzero, add_zero, mul_assoc, hx.symm.eq] using B
 
 /-- If `‖x‖ < 1`, then `∑' n : ℕ, n ^ k * x ^ n` is given by the finite sum
 `∑ j ∈ range (k + 1), S(k, j) * j ! * x ^ j * ((1 - x)⁻¹ʳ) ^ (j + 1)`,
@@ -581,16 +574,10 @@ theorem hasSum_pow_mul_geometric_of_norm_lt_one' (k : ℕ) {x : R} (h : ‖x‖ 
   have hfun : (fun n : ℕ ↦ (n : R) ^ k * x ^ n) = fun n : ℕ ↦ ∑ j ∈ Finset.range (k + 1),
       (stirlingSecond k j : R) * ((n.descFactorial j : R) * x ^ n) := by
     funext n
-    rw [← Nat.cast_pow, Nat.pow_eq_sum_stirlingSecond_mul_descFactorial n k, Nat.cast_sum,
-      Finset.sum_mul]
-    simp only [Nat.cast_mul, mul_assoc]
-  have hval : (∑ j ∈ Finset.range (k + 1),
-        (stirlingSecond k j : R) * j.factorial * x ^ j * ((1 - x)⁻¹ʳ) ^ (j + 1))
-      = ∑ j ∈ Finset.range (k + 1), (stirlingSecond k j : R)
-        * ((j.factorial : R) * x ^ j * ((1 - x)⁻¹ʳ) ^ (j + 1)) := by
-    simp only [mul_assoc]
-  rw [hfun, hval]
-  exact hasSum_sum fun j _ ↦
+    rw [← Nat.cast_pow, Nat.pow_eq_sum_stirlingSecond_mul_descFactorial n k]
+    push_cast [Finset.sum_mul, mul_assoc]
+    rfl
+  simpa only [hfun, mul_assoc] using hasSum_sum fun j _ ↦
     (hasSum_descFactorial_mul_geometric_of_norm_lt_one' j h).mul_left _
 
 theorem tsum_pow_mul_geometric_of_norm_lt_one' (k : ℕ) {x : R} (h : ‖x‖ < 1) :
@@ -612,17 +599,12 @@ theorem tsum_pow_mul_geometric_of_norm_lt_one (k : ℕ) {r : 𝕜} (hr : ‖r‖
 
 theorem hasSum_sq_mul_geometric_of_norm_lt_one' {x : R} (h : ‖x‖ < 1) :
     HasSum (fun n : ℕ ↦ (n : R) ^ 2 * x ^ n) (x * (1 + x) * ((1 - x)⁻¹ʳ) ^ 3) := by
-  have h1 : (∑ j ∈ Finset.range (2 + 1),
-        (stirlingSecond 2 j : R) * j.factorial * x ^ j * ((1 - x)⁻¹ʳ) ^ (j + 1))
-      = x * ((1 - x)⁻¹ʳ) ^ 2 + 2 * (x ^ 2 * ((1 - x)⁻¹ʳ) ^ 3) := by
-    simp [Finset.sum_range_succ, stirlingSecond, Nat.factorial, mul_assoc]
-  have h2 : x * ((1 - x)⁻¹ʳ) ^ 2 + 2 * (x ^ 2 * ((1 - x)⁻¹ʳ) ^ 3)
-      = x * (1 + x) * ((1 - x)⁻¹ʳ) ^ 3 := by
-    calc x * ((1 - x)⁻¹ʳ) ^ 2 + 2 * (x ^ 2 * ((1 - x)⁻¹ʳ) ^ 3)
-        = x * (((1 - x) * (1 - x)⁻¹ʳ) * ((1 - x)⁻¹ʳ) ^ 2) + 2 * (x ^ 2 * ((1 - x)⁻¹ʳ) ^ 3) := by
-          grind [Ring.mul_inverse_cancel, isUnit_one_sub_of_norm_lt_one]
-      _ = x * (1 + x) * ((1 - x)⁻¹ʳ) ^ 3 := by grind
-  grind [hasSum_pow_mul_geometric_of_norm_lt_one']
+  have h1 : ((1 - x)⁻¹ʳ) ^ 2 = (1 - x) * ((1 - x)⁻¹ʳ) ^ 3 := by
+    rw [pow_succ' _ 2, ← mul_assoc,
+      Ring.mul_inverse_cancel _ (isUnit_one_sub_of_norm_lt_one h), one_mul]
+  convert! hasSum_pow_mul_geometric_of_norm_lt_one' 2 h using 1
+  simp [Finset.sum_range_succ, stirlingSecond, Nat.factorial, h1]
+  grind
 
 end MulGeometric
 
