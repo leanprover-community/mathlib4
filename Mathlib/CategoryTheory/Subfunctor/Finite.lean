@@ -180,7 +180,7 @@ lemma yoneda_obj_isGeneratedBy (X : C) :
   simp only [Subfunctor.isGeneratedBy_iff]
   ext U u
   simp only [Subfunctor.iSup_obj, Set.mem_iUnion,
-    exists_const, Subfunctor.top_obj, Set.top_eq_univ, Set.mem_univ, iff_true]
+    exists_const, Subfunctor.top_obj, Set.mem_univ, iff_true]
   exact ⟨u.op, by simp⟩
 
 instance (X : C) : PresheafIsFinite (yoneda.obj X) :=

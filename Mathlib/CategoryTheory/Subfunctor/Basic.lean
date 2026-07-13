@@ -98,8 +98,8 @@ lemma le_def (S T : Subfunctor F) : S ≤ T ↔ ∀ U, S.obj U ≤ T.obj U := If
 
 variable (F)
 
-@[simp] lemma top_obj (i : C) : (⊤ : Subfunctor F).obj i = ⊤ := rfl
-@[simp] lemma bot_obj (i : C) : (⊥ : Subfunctor F).obj i = ⊥ := rfl
+@[simp] lemma top_obj (i : C) : (⊤ : Subfunctor F).obj i = .univ := rfl
+@[simp] lemma bot_obj (i : C) : (⊥ : Subfunctor F).obj i = ∅ := rfl
 
 variable {F}
 
