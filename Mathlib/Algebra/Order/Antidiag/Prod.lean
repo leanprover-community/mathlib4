@@ -34,7 +34,8 @@ For computational reasons it is better to manually provide instances for `ℕ`
 and `σ →₀ ℕ`, to avoid quadratic runtime performance.
 These instances are provided as `Finset.Nat.instHasAntidiagonal` and
 `Finsupp.instHasAntidiagonal`.
-This is why `Finset.HasMulAntidiagonal.mulAntidiagonalOfLocallyFinite` is an `abbrev` and not an `instance`.
+This is why `Finset.HasMulAntidiagonal.mulAntidiagonalOfLocallyFinite` is an `abbrev`
+and not an `instance`.
 
 This definition does not exactly match with that of `Multiset.antidiagonal`
 defined in `Mathlib/Data/Multiset/Antidiagonal.lean`, because of the multiplicities.
