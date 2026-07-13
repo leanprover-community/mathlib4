@@ -105,9 +105,15 @@ def equiv : v.Completion ≃+* v.1.Completion where
 
 @[simp] lemma toCompletion_ofCompletion (x : v.1.Completion) :
     toCompletion (ofCompletion x : v.Completion) = x := rfl
-
 @[simp] lemma ofCompletion_toCompletion (x : v.Completion) :
     ofCompletion x.toCompletion = x := rfl
+
+@[simp] lemma toCompletion_zero : (0 : v.Completion).toCompletion = 0 := rfl
+@[simp] lemma toCompletion_one : (1 : v.Completion).toCompletion = 1 := rfl
+@[simp] lemma toCompletion_add (x y : v.Completion) :
+    (x + y).toCompletion = x.toCompletion + y.toCompletion := rfl
+@[simp] lemma toCompletion_mul (x y : v.Completion) :
+    (x * y).toCompletion = x.toCompletion * y.toCompletion := rfl
 
 @[ext] theorem ext {v : InfinitePlace K} {x y : v.Completion}
     (h : x.toCompletion = y.toCompletion) : x = y := by
@@ -153,7 +159,14 @@ instance : Coe K v.Completion where
   coe k := ofCompletion (k : v.1.Completion)
 
 @[simp] lemma coe_toCompletion (x : WithAbs v.1) :
-    (↑x : v.Completion).toCompletion = (x : v.1.Completion) := rfl
+    (x : v.Completion).toCompletion = (x : v.1.Completion) := rfl
+
+@[norm_cast] lemma coe_zero : ((0 : K) : v.Completion) = 0 := by ext; simp
+@[norm_cast] lemma coe_one : ((1 : K) : v.Completion) = 1 := by ext; simp
+@[norm_cast] lemma coe_add (x y : K) : ((x + y : K) : v.Completion) = ↑x + ↑y := by
+  ext; simp [UniformSpace.Completion.coe_add]
+@[norm_cast] lemma coe_mul (x y : K) : ((x * y : K) : v.Completion) = ↑x * ↑y := by
+  ext; simp [UniformSpace.Completion.coe_mul]
 
 theorem continuous_coe : Continuous ((↑) : WithAbs v.1 → v.Completion) :=
   (continuous_ofCompletion v).comp (UniformSpace.Completion.continuous_coe _)
@@ -316,20 +329,20 @@ def isometryEquivRealOfIsReal {v : InfinitePlace K} (hv : IsReal v) : v.Completi
   isometry_toFun := isometry_extensionEmbeddingOfIsReal hv
 
 variable {L : Type*} [Field L] [Algebra K L] (w : InfinitePlace L) {v}
-  [Algebra v.Completion w.Completion] [IsScalarTower K v.Completion w.Completion]
 
-omit [Algebra v.Completion w.Completion] [IsScalarTower K v.Completion w.Completion] in
-theorem coe_algebraMap (x : WithAbs v.1) :
-    algebraMap (WithAbs v.1) w.Completion x = ↑(algebraMap (WithAbs v.1) (WithAbs w.1) x) := by
+theorem algebraMap_eq_coe (x : WithAbs v.1) :
+    algebraMap (WithAbs v.1) w.Completion x = (algebraMap (WithAbs v.1) (WithAbs w.1) x) := by
   apply ext
   rw [algebraMap_toCompletion]
   exact UniformSpace.Completion.algebraMap_def (WithAbs w.1) (WithAbs v.1) x
+
+variable [Algebra v.Completion w.Completion] [IsScalarTower K v.Completion w.Completion]
 
 @[simp]
 theorem algebraMap_coe (x : WithAbs v.1) :
     algebraMap v.Completion w.Completion x = algebraMap (WithAbs v.1) (WithAbs w.1) x :=
   (IsScalarTower.algebraMap_apply (WithAbs v.1) v.Completion w.Completion x).symm.trans
-    (coe_algebraMap w x)
+    (algebraMap_eq_coe w x)
 
 end Completion
 
