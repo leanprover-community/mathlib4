@@ -198,16 +198,13 @@ sequence indexed by `ℕ`. -/
 theorem Infinite.exists_strictMono_or_strictAnti (α : Type*) [LinearOrder α] [Infinite α] :
     ∃ f : ℕ → α, StrictMono f ∨ StrictAnti f := by
   let f := Infinite.natEmbedding α
-  obtain ⟨g, hIncreasing | hNonincreasing⟩ :=
-    exists_increasing_or_nonincreasing_subseq (· < ·) f
-  · exact ⟨f ∘ g, Or.inl hIncreasing⟩
-  · exists f ∘ g
-    right
-    intro m n hmn
-    refine lt_of_le_of_ne ?_ ?_
-    · exact not_lt.mp (hNonincreasing m n hmn)
-    · apply (f.injective.comp g.injective).ne
-      exact Nat.ne_of_lt' hmn
+  obtain ⟨g, hg⟩ := exists_increasing_or_nonincreasing_subseq (· < ·) f
+  refine ⟨f ∘ g, ?_⟩
+  rcases hg with hIncreasing | hNonincreasing
+  · exact Or.inl hIncreasing
+  · refine Or.inr <| fun m n hmn ↦ lt_of_le_of_ne ?_ ((f.injective.comp g.injective).ne ?_)
+    · grind
+    · grind
 
 /-- A linear order that is well-founded in both directions is finite. -/
 theorem Finite.of_wellFoundedLT_wellFoundedGT (α : Type*) [LinearOrder α]
