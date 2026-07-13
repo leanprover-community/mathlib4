@@ -7,6 +7,7 @@ module
 
 public import Mathlib.MeasureTheory.Function.StronglyMeasurable.AEStronglyMeasurable
 public import Mathlib.MeasureTheory.Measure.Regular
+public import Mathlib.Order.Filter.CardinalInter
 public import Mathlib.Topology.DiscreteFamily
 
 import Mathlib.Data.Set.Card
@@ -15,7 +16,6 @@ import Mathlib.Analysis.Real.Cardinality
 import Mathlib.MeasureTheory.Function.LusinContinuous
 import Mathlib.MeasureTheory.Integral.Lebesgue.Add
 import Mathlib.MeasureTheory.Measure.Real
-import Mathlib.Order.Filter.CardinalInter
 import Mathlib.Order.Filter.Ultrafilter.Basic
 import Mathlib.SetTheory.Cardinal.Arithmetic
 import Mathlib.SetTheory.Ordinal.Basic
@@ -412,7 +412,9 @@ private theorem largeColor_image_eq_empty_aux {O R C : Type*} [LinearOrder O]
       _ = largeColor (m - G.card) (G.image selected) := by rw [hsub_succ]
       _ = largeColor m ∅ := ih (by omega)
 
-private theorem ultrafilter_exists_cardinal_homogeneous_set {R C : Type u} {κ : Cardinal.{u}}
+/-- A cardinal-complete free ultrafilter admits a set that is simultaneously homogeneous for a
+coloring of finite subsets at every finite cardinality. -/
+theorem _root_.Ultrafilter.exists_cardinal_homogeneous_set {R C : Type u} {κ : Cardinal.{u}}
     (U : Ultrafilter R) (hfree : (U : Filter R) ≤ cofinite)
     [CardinalInterFilter (U : Filter R) κ] (hκ : ℵ₀ < κ) (hC : Cardinal.mk C < κ)
     (color : Finset R → C) :
@@ -1061,8 +1063,7 @@ private theorem exists_large_compact_fip_aux [IsFiniteMeasure μ] {R : Type u}
   have hBool : Cardinal.mk (ULift.{u} Bool) < Cardinal.mk R :=
     (by simp : Cardinal.mk (ULift.{u} Bool) < ℵ₀).trans hR
   obtain ⟨Q, hQcard, hhom⟩ :=
-    ultrafilter_exists_cardinal_homogeneous_set U hfree hR hBool
-      (compactIntersectionColor K)
+    U.exists_cardinal_homogeneous_set hfree hR hBool (compactIntersectionColor K)
   have hQuncount : Uncountable Q := Cardinal.aleph0_lt_mk_iff.1 (by simpa [hQcard] using hR)
   letI : Uncountable Q := hQuncount
   refine ⟨Q, hQcard, fun F ↦ ?_⟩
