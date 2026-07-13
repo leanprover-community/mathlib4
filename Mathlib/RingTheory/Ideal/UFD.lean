@@ -92,7 +92,7 @@ theorem iff_of_isLocalizationAway_of_prime {x : R} (hx : Prime x)
     (S : Type*) [CommRing S] [Algebra R S] [IsLocalization.Away x S] :
     UniqueFactorizationMonoid R ↔ UniqueFactorizationMonoid S := by
   have : IsDomain S := IsLocalization.Away.isDomain S hx.ne_zero
-  refine ⟨fun _ ↦ of_isLocalization (Submonoid.powers x) S, fun _ ↦ ?_⟩
+  refine ⟨fun _ ↦ of_isLocalization S (Submonoid.powers x), fun _ ↦ ?_⟩
   rw [iff_forall_isPrincipal_of_height_eq_one]
   intro p hp h1
   by_cases hxp : x ∈ p
