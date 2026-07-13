@@ -485,16 +485,17 @@ lemma summable_descFactorial_mul_geometric_of_norm_lt_one (k : ℕ) {r : R} (hr 
   simp [← mul_assoc, descFactorial_eq_factorial_mul_choose (n + k) k]
 
 -- To-do: how to fix the fact that this has similar name to lemma above but diff summand
-theorem hasSum_descFactorial_mul_geometric_of_norm_lt_one' (j : ℕ) {x : R} (h : ‖x‖ < 1) :
-    HasSum (fun n : ℕ ↦ (n.descFactorial j : R) * x ^ n)
-      ((j.factorial : R) * x ^ j * ((1 - x)⁻¹ʳ) ^ (j + 1)) := by
+-- To-do: generate tsum and un-primed statements
+theorem hasSum_descFactorial_mul_geometric_of_norm_lt_one' (j : ℕ) {r : R} (h : ‖r‖ < 1) :
+    HasSum (fun n : ℕ ↦ (n.descFactorial j : R) * r ^ n)
+      ((j.factorial : R) * r ^ j * ((1 - r)⁻¹ʳ) ^ (j + 1)) := by
   rw [← hasSum_nat_add_iff' j]
   convert! (hasSum_choose_mul_geometric_of_norm_lt_one' j h).mul_left
-    ((j.factorial : R) * x ^ j) using 1
+    ((j.factorial : R) * r ^ j) using 1
   · funext n
     symm
     push_cast [Nat.descFactorial_eq_factorial_mul_choose]
-    rw [mul_assoc, ((Nat.cast_commute ((n + j).choose j) (x ^ j)).symm).left_comm, ← pow_add,
+    rw [mul_assoc, ((Nat.cast_commute ((n + j).choose j) (r ^ j)).symm).left_comm, ← pow_add,
       add_comm j n, mul_assoc]
   · exact sub_eq_self.2 <| Finset.sum_eq_zero fun i hi ↦ by
       simp [descFactorial_eq_zero_iff_lt.2 (Finset.mem_range.1 hi)]
@@ -526,18 +527,18 @@ theorem summable_pow_mul_geometric_of_norm_lt_one (k : ℕ) {r : R} (hr : ‖r�
   ext n
   simp [ha n, add_mul, sum_mul]
 
-/-- If `‖x‖ < 1`, then `∑' n : ℕ, n ^ k * x ^ n` is given by the finite sum
-`∑ j ∈ range (k + 1), S(k, j) * j ! * x ^ j * ((1 - x)⁻¹ʳ) ^ (j + 1)`,
+/-- If `‖r‖ < 1`, then `∑' n : ℕ, n ^ k * r ^ n` is given by the finite sum
+`∑ j ∈ range (k + 1), S(k, j) * j ! * r ^ j * ((1 - r)⁻¹ʳ) ^ (j + 1)`,
 where `S(k, j)` denotes the Stirling numbers of the second kind.
 To-do: add here the note about genereal ring vs. field with division.
 -/
-theorem hasSum_pow_mul_geometric_of_norm_lt_one' (k : ℕ) {x : R} (h : ‖x‖ < 1) :
-    HasSum (fun n : ℕ ↦ (n : R) ^ k * x ^ n)
+theorem hasSum_pow_mul_geometric_of_norm_lt_one' (k : ℕ) {r : R} (h : ‖r‖ < 1) :
+    HasSum (fun n : ℕ ↦ (n : R) ^ k * r ^ n)
       (∑ j ∈ Finset.range (k + 1),
-        (stirlingSecond k j : R) * j.factorial * x ^ j * ((1 - x)⁻¹ʳ) ^ (j + 1)) := by
+        (stirlingSecond k j : R) * j.factorial * r ^ j * ((1 - r)⁻¹ʳ) ^ (j + 1)) := by
   -- Question: shouldn't this hfun be extracted as another lemma
-  have hfun : (fun n : ℕ ↦ (n : R) ^ k * x ^ n) = fun n : ℕ ↦ ∑ j ∈ Finset.range (k + 1),
-      (stirlingSecond k j : R) * ((n.descFactorial j : R) * x ^ n) := by
+  have hfun : (fun n : ℕ ↦ (n : R) ^ k * r ^ n) = fun n : ℕ ↦ ∑ j ∈ Finset.range (k + 1),
+      (stirlingSecond k j : R) * ((n.descFactorial j : R) * r ^ n) := by
     funext n
     rw [← Nat.cast_pow, Nat.pow_eq_sum_stirlingSecond_mul_descFactorial n k]
     push_cast [Finset.sum_mul, mul_assoc]
@@ -546,9 +547,9 @@ theorem hasSum_pow_mul_geometric_of_norm_lt_one' (k : ℕ) {x : R} (h : ‖x‖ 
     (hasSum_descFactorial_mul_geometric_of_norm_lt_one' j h).mul_left _
 
 -- To-do: missing docstrings
-theorem tsum_pow_mul_geometric_of_norm_lt_one' (k : ℕ) {x : R} (h : ‖x‖ < 1) :
-    ∑' n : ℕ, (n : R) ^ k * x ^ n = (∑ j ∈ Finset.range (k + 1),
-      (stirlingSecond k j : R) * j.factorial * x ^ j * ((1 - x)⁻¹ʳ) ^ (j + 1)) :=
+theorem tsum_pow_mul_geometric_of_norm_lt_one' (k : ℕ) {r : R} (h : ‖r‖ < 1) :
+    ∑' n : ℕ, (n : R) ^ k * r ^ n = (∑ j ∈ Finset.range (k + 1),
+      (stirlingSecond k j : R) * j.factorial * r ^ j * ((1 - r)⁻¹ʳ) ^ (j + 1)) :=
   (hasSum_pow_mul_geometric_of_norm_lt_one' k h).tsum_eq
 
 -- To-do: missing docstrings
