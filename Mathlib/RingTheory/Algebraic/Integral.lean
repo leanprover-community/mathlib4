@@ -684,22 +684,6 @@ theorem rank_of_isFractionRing (S' : Type u) [CommRing S'] [Algebra R S'] [Algeb
 
 end
 
-theorem _root_.Module.rank_eq_zero_of_not_faithfulSMul
-    {R S : Type*} [Semiring R] [AddCommMonoid S] [Module R S]
-    (h : ¬ FaithfulSMul R S) : Module.rank R S = 0 := by
-  contrapose! h
-  rw [← Cardinal.one_le_iff_ne_zero, Module.one_le_rank_iff] at h
-  obtain ⟨f, hf⟩ := h
-  refine ⟨fun {x y} h ↦ hf ?_⟩
-  have := f.map_smul x 1
-  have := f.map_smul y 1
-  simp_all
-
-theorem _root_.Module.finrank_eq_zero_of_not_faithfulSMul
-    {R S : Type*} [Semiring R] [AddCommMonoid S] [Module R S]
-    (h : ¬ FaithfulSMul R S) : Module.finrank R S = 0 :=
-  Module.finrank_eq_zero_of_rank_eq_zero (Module.rank_eq_zero_of_not_faithfulSMul h)
-
 attribute [local instance] FractionRing.liftAlgebra in
 theorem rank_fractionRing [IsDomain S] :
     Module.rank (FractionRing R) (FractionRing S) = Module.rank R S :=
