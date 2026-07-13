@@ -11,17 +11,16 @@ public import Mathlib.Topology.Algebra.Module.Equiv
 public import Mathlib.Topology.Maps.Strict.Group
 
 /-!
-# Strict Group Homomorphisms
+# Strict linear maps
 
 In this file, we study continuous linear maps which are *strict* in the sense of
 `Topology.IsStrictMap`. So far, all the results in this file are direct
 adaptations from the theory of strict homomorphisms of topological additive groups.
 -/
 
-
 @[expose] public section
 
-open Function Set Topology QuotientGroup
+open Topology
 
 namespace LinearMap
 
@@ -31,22 +30,26 @@ variable {R S M N Nₗ M' Nₗ' : Type*} [Ring R] [Ring S] {σ : R →+* S}
   {f : M →ₛₗ[σ] N} {fₗ : M →ₗ[R] Nₗ} {gₗ : M' →ₗ[R] Nₗ'}
   [TopologicalSpace M] [TopologicalSpace N] [TopologicalSpace Nₗ]
 
-/-- A linear map `f : E → F` is strict if and only the induced map `E ⧸ f.ker → F` is an
+/-- A linear map `f : M → N` is strict if and only if the induced map `M ⧸ f.ker → N` is an
 embedding. -/
 protected lemma isStrictMap_iff_isEmbedding_liftQ_ker :
     IsStrictMap f ↔ IsEmbedding (f.ker.liftQ f le_rfl) :=
   f.toAddMonoidHom.isStrictMap_iff_isEmbedding_kerLift
 
-/-- A linear map `f : E → F` is strict if and only if the canonical isomorphism
-`E ⧸ f.ker ≃ f.range` is a homeomorphism. -/
+/-- A linear map `f : M → N` is strict if and only if the canonical isomorphism
+`M ⧸ f.ker ≃ f.range` is a homeomorphism. -/
 protected lemma isStrictMap_iff_isHomeomorph_quotKerEquivRange :
-    IsStrictMap fₗ ↔ IsHomeomorph (fₗ.quotKerEquivRange) := by
+    IsStrictMap fₗ ↔ IsHomeomorph fₗ.quotKerEquivRange := by
+  -- Note: right now, this cannot easily be deduced from the `AddMonoidHom` statement, because
+  -- `fₗ.quotKerEquivRange.toAddEquiv` is not def-eq to
+  -- `QuotientAddGroup.quotientKerEquivRange fₗ.toAddMonoidHom`. This would require
+  -- fixing the definition of `LinearMap.quotKerEquivRange`.
   simp_rw [isHomeomorph_iff_isStrictMap_bijective, EquivLike.bijective, and_true,
     fₗ.ker.isQuotientMap_mkQ.isStrictMap_iff, IsEmbedding.subtypeVal.isStrictMap_iff]
   rfl
 
-/-- The isomorphism of topological modules `E ⧸ f.ker ≃ f.range` given by a strict linear
-map `f : E → F`. This is an avatar of the first isomorphism theorem. -/
+/-- The isomorphism of topological modules `M ⧸ f.ker ≃ f.range` given by a strict linear
+map `f : M → N`. This is an avatar of the first isomorphism theorem. -/
 noncomputable def _root_.ContinuousLinearEquiv.quotKerEquivRange
     (hf : IsStrictMap fₗ) : (M ⧸ fₗ.ker) ≃L[R] fₗ.range :=
   .ofIsHomeomorph fₗ.quotKerEquivRange (fₗ.isStrictMap_iff_isHomeomorph_quotKerEquivRange.mp hf)
@@ -60,8 +63,8 @@ protected lemma isStrictMap_iff_isOpenQuotientMap_rangeRestrict [RingHomSurjecti
 
 variable [TopologicalSpace M'] [IsTopologicalAddGroup M'] [TopologicalSpace Nₗ']
 
-/-- The product (in the sense of `LinearMap.prodMap`) of linear maps is strict if and only if each
-of the maps is strict. -/
+/-- The product (in the sense of `LinearMap.prodMap`) of linear maps is strict if and only if both
+maps are strict. -/
 protected lemma isStrictMap_prodMap_iff :
     IsStrictMap (fₗ.prodMap gₗ) ↔ IsStrictMap fₗ ∧ IsStrictMap gₗ :=
   AddMonoidHom.isStrictMap_prodMap_iff (f := fₗ.toAddMonoidHom) (g := gₗ.toAddMonoidHom)
