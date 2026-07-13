@@ -50,8 +50,7 @@ theorem IsFractionRing.rank_eq (R R' S : Type*)
     [Algebra R R'] [Module R' S] [Module R S]
     [IsScalarTower R R' S] [IsFractionRing R R'] :
     Module.rank R S = Module.rank R' S := by
-  simp_rw [Module.rank, ciSup_subtype Cardinal.bddAbove_of_small (by simp),
-    LinearIndepOn.iff_fractionRing R R']
+  exact (IsLocalization.rank_eq R' (nonZeroDivisors R) le_rfl (N := S)).symm
 
 theorem IsFractionRing.finrank_eq' (R R' S : Type*)
     [CommRing R] [CommRing R'] [CommRing S]
@@ -133,16 +132,13 @@ theorem IsLocalization.linearIndepOn_finsetIntegerMultiple
   exact s.sum_congr rfl fun x hx ↦ smul_comm ..
 
 open IsLocalization nonZeroDivisors in
-theorem IsFractionRing.finrank_eq (R R' S S' : Type*)
-    [CommRing R] [CommRing R'] [CommRing S] [CommRing S']
-    [Algebra R S] [Algebra R R'] [Algebra S S'] [Module R' S'] [Algebra R S']
-    [IsScalarTower R R' S'] [IsScalarTower R S S']
-    [IsFractionRing R R'] [IsFractionRing S S'] :
-    Module.finrank R' S' = Module.finrank R S := by
-  rw [← IsFractionRing.finrank_eq' R R' S']
+theorem IsFractionRing.finrank_eq'' (R S S' : Type*)
+    [CommRing R] [CommRing S] [CommRing S']
+    [Algebra R S] [Algebra S S'] [Algebra R S']
+    [IsScalarTower R S S'] [IsFractionRing S S'] :
+    Module.finrank R S' = Module.finrank R S := by
+  nontriviality R
   classical
-  rcases iff_iff_and_or_not_and_not.mp (nontrivial_iff_nontrivial R R') with ⟨_, _⟩ | ⟨_, _⟩; swap
-  · simp_all [not_nontrivial_iff_subsingleton]
   apply Cardinal.toNat_eq_of_forall_le_iff
   intro n
   simp_rw [Module.le_rank_iff_exists_finset, LinearIndepOn]
@@ -154,6 +150,16 @@ theorem IsFractionRing.finrank_eq (R R' S S' : Type*)
     let f : S ↪ S' := ⟨algebraMap S S', FaithfulSMul.algebraMap_injective S S'⟩
     exact ⟨s.map f, s.card_map f,
       (linearIndependent_equiv (s.equivMap f)).mp (LinearIndependent.comp_algebraMap_iff.mpr hs)⟩
+
+open IsLocalization nonZeroDivisors in
+theorem IsFractionRing.finrank_eq (R R' S S' : Type*)
+    [CommRing R] [CommRing R'] [CommRing S] [CommRing S']
+    [Algebra R S] [Algebra R R'] [Algebra S S'] [Module R' S'] [Algebra R S']
+    [IsScalarTower R R' S'] [IsScalarTower R S S']
+    [IsFractionRing R R'] [IsFractionRing S S'] :
+    Module.finrank R' S' = Module.finrank R S := by
+  rw [← IsFractionRing.finrank_eq' R R' S']
+  rw [IsFractionRing.finrank_eq'' R S S']
 
 assert_not_exists IsLocalRing
 
