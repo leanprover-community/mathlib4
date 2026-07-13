@@ -237,8 +237,6 @@ For the classification of Pythagorean triples, we will use a parametrization of 
 
 variable {K : Type*} [Field K]
 
--- Non-terminal simp, used to be field_simp
-set_option linter.flexible false in
 -- see https://github.com/leanprover-community/mathlib4/issues/29041
 set_option linter.unusedSimpArgs false in
 /-- A parameterization of the unit circle that is useful for classifying Pythagorean triples.
@@ -269,9 +267,7 @@ def circleEquivGen (hk : ∀ x : K, 1 + x ^ 2 ≠ 0) :
     simp only [Prod.mk_inj, Subtype.mk_eq_mk]
     constructor
     · simp [field, h3]
-    · simp [field, h3]
-      rw [← add_neg_eq_iff_eq_add.mpr hxy.symm]
-      ring
+    · grind
 
 @[simp]
 theorem circleEquivGen_apply (hk : ∀ x : K, 1 + x ^ 2 ≠ 0) (x : K) :
