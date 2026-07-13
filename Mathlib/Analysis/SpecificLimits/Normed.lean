@@ -574,19 +574,9 @@ see `hasSum_coe_mul_geometric_of_norm_lt_one`. -/
 theorem hasSum_coe_mul_geometric_of_norm_lt_one'
     {x : R} (h : ‖x‖ < 1) :
     HasSum (fun n ↦ n * x ^ n : ℕ → R) (x * ((1 - x)⁻¹ʳ) ^ 2) := by
-  -- To-do: prove this using only generalization
-  have A : HasSum (fun (n : ℕ) ↦ (n + 1) * x ^ n) ((1 - x)⁻¹ʳ ^ 2) := by
-    convert! hasSum_choose_mul_geometric_of_norm_lt_one' 1 h with n
-    simp
-  have B : HasSum (fun (n : ℕ) ↦ x ^ n) ((1 - x)⁻¹ʳ) := hasSum_geom_series_inverse x h
-  convert! A.sub B using 1
-  · ext n
-    simp [add_mul]
-  · symm
-    calc (1 - x)⁻¹ʳ ^ 2 - (1 - x)⁻¹ʳ
-    _ = (1 - x)⁻¹ʳ ^ 2 - ((1 - x) * (1 - x)⁻¹ʳ) * (1 - x)⁻¹ʳ := by
-      simp [Ring.mul_inverse_cancel (1 - x) (isUnit_one_sub_of_norm_lt_one h)]
-    _ = x * (1 - x)⁻¹ʳ ^ 2 := by noncomm_ring
+  convert! hasSum_pow_mul_geometric_of_norm_lt_one' 1 h using 1
+  · simp
+  · simp [Finset.sum_range_succ, stirlingSecond_self]
 
 /-- If `‖r‖ < 1`, then `∑' n : ℕ, n * r ^ n = r / (1 - r) ^ 2`, version in a general ring with
 summable geometric series. For a version in a field, using division instead of `Ring.inverse`,
