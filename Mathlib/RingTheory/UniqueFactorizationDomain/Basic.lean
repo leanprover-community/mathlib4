@@ -57,10 +57,7 @@ end WfDvdMonoid
 theorem WfDvdMonoid.of_wellFoundedLT_associates [CommMonoidWithZero α] [IsCancelMulZero α]
     (h : WellFoundedLT (Associates α)) : WfDvdMonoid α :=
   WfDvdMonoid.of_wfDvdMonoid_associates
-    ⟨by
-      convert! h.wf
-      ext
-      exact Associates.dvdNotUnit_iff_lt⟩
+    ⟨by convert h.wf; exact Associates.dvdNotUnit_iff_lt⟩
 
 theorem WfDvdMonoid.iff_wellFounded_associates [CommMonoidWithZero α] [IsCancelMulZero α] :
     WfDvdMonoid α ↔ WellFoundedLT (Associates α) :=
@@ -224,9 +221,9 @@ theorem factors_eq_singleton_of_irreducible {a : α} (ha : Irreducible a) :
   exact ⟨b, hab, .symm <| Multiset.eq_of_le_of_card_le (Multiset.singleton_le.mpr hbmem)
     (by rw [card_factors_of_irreducible ha, Multiset.card_singleton])⟩
 
-open Classical in
 theorem factors_mul {x y : α} (hx : x ≠ 0) (hy : y ≠ 0) :
     Rel Associated (factors (x * y)) (factors x + factors y) := by
+  classical
   refine
     factors_unique irreducible_of_factor
       (fun a ha =>

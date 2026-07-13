@@ -9,6 +9,7 @@ public import Mathlib.Logic.Equiv.Fin.Basic
 public import Mathlib.Topology.Connected.LocallyConnected
 public import Mathlib.Topology.DenseEmbedding
 public import Mathlib.Topology.Connected.TotallyDisconnected
+public import Mathlib.Topology.Baire.Lemmas
 
 /-!
 # Further properties of homeomorphisms
