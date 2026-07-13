@@ -1050,6 +1050,23 @@ theorem iSup_map_mulSingle_le [DecidableEq ι] {I : Set ι} {S : ∀ i, Submonoi
     ⨆ i, map (MonoidHom.mulSingle M i) (S i) ≤ pi I S :=
   iSup_le fun _ => map_le_iff_le_comap.mpr (le_comap_mulSingle_pi _)
 
+@[to_additive (attr := simp)]
+lemma comap_piMap_pi {N : ι → Type*} [∀ i, MulOneClass (N i)] {J : Set ι} {S : ∀ i, Submonoid (N i)}
+    (f : ∀ i, M i →* N i) :
+    comap (piMap f) (pi J S) = pi J (fun i ↦ comap (f i) (S i)) := by
+  ext; simp [mem_pi]
+
+@[to_additive]
+lemma map_piMap_univ_pi {N : ι → Type*} [∀ i, MulOneClass (N i)] {S : ∀ i, Submonoid (M i)}
+    (f : ∀ i, M i →* N i) :
+    map (piMap f) (pi Set.univ S) = pi Set.univ (fun i ↦ map (f i) (S i)) :=
+  SetLike.coe_injective <| Set.piMap_image_univ_pi _ _
+
+@[to_additive (attr := simp)]
+lemma _root_.MonoidHom.mrange_piMap {N : ι → Type*} [∀ i, MulOneClass (N i)] (f : ∀ i, M i →* N i) :
+    mrange (piMap f) = .pi Set.univ (fun i ↦ mrange (f i)) :=
+  SetLike.coe_injective <| Set.range_piMap _
+
 end Pi
 
 end Submonoid
