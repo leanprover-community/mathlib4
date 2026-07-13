@@ -381,6 +381,7 @@ lemma toContinuousLinearMap_symm_lidIsometry :
 
 @[simp] lemma lidIsometry_apply (x : 𝕜 ⊗[𝕜] E) : lidIsometry 𝕜 E x = TensorProduct.lid 𝕜 E x := rfl
 @[simp] lemma lidIsometry_symm_apply (x : E) : (lidIsometry 𝕜 E).symm x = 1 ⊗ₜ x := rfl
+
 @[simp] lemma norm_lid (x) : ‖TensorProduct.lid 𝕜 E x‖ = ‖x‖ := (lidIsometry 𝕜 E).norm_map x
 @[simp] lemma nnnorm_lid (x) : ‖TensorProduct.lid 𝕜 E x‖₊ = ‖x‖₊ := lidIsometry 𝕜 E |>.nnnorm_map x
 
@@ -404,7 +405,9 @@ lemma toContinuousLinearMap_symm_ridIsometry :
 
 @[simp] lemma ridIsometry_apply (x) : ridIsometry 𝕜 E x = TensorProduct.rid 𝕜 E x := rfl
 @[simp] lemma symm_ridIsometry_apply (x) : (ridIsometry 𝕜 E).symm x = x ⊗ₜ 1 := rfl
+
 lemma lidIsometry_eq_ridIsometry : lidIsometry 𝕜 𝕜 = ridIsometry 𝕜 𝕜 := by ext; simp [lid_eq_rid]
+
 @[simp] lemma norm_rid (x) : ‖TensorProduct.rid 𝕜 E x‖ = ‖x‖ := (ridIsometry 𝕜 E).norm_map x
 @[simp] lemma nnnorm_rid (x) : ‖TensorProduct.rid 𝕜 E x‖₊ = ‖x‖₊ := by simp [← NNReal.coe_inj]
 
