@@ -180,7 +180,7 @@ theorem Module.rank_eq_zero_of_not_faithfulSMul (h : ¬ FaithfulSMul R M) : Modu
   contrapose! h
   rw [← Cardinal.one_le_iff_ne_zero, one_le_rank_iff] at h
   obtain ⟨f, hf⟩ := h
-  exact ⟨fun {x y} ↦ by grind [smul_eq_mul, f.map_smul x 1, f.map_smul y 1]⟩
+  exact ⟨fun {x y} hxy ↦ hf (by simpa [← map_smul] using hxy (f 1))⟩
 
 section
 variable [AddCommMonoid M'] [Module R' M']
