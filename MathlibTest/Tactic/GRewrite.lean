@@ -112,7 +112,7 @@ example (h₁ : W ⊂ Y) (h₂ : X ⊂ (W ∪ Z)) : X ⊂ (Y ∪ Z) := by
   guard_target =ₛ X ⊂ (W ∪ Z)
   exact h₂
 
--- binder names are not preserved:
+-- Binder names are preserved:
 /--
 trace: α : Type ?u.3
 X Y Z W : Set α
@@ -120,11 +120,11 @@ a b : ℕ
 h : a < b
 f : ℕ → ℕ
 hf : ∀ (i : ℕ), 0 ≤ f i
-⊢ ∑ i ∈ {a | a < b}.toFinset, f i ≤ ∑ i ∈ {x | x < b}.toFinset, f i
+⊢ ∑ j ∈ {z | z < b}.toFinset, f j ≤ ∑ i ∈ {x | x < b}.toFinset, f i
 -/
 #guard_msgs in
 example {a b : Nat} (h : a < b) (f : Nat → Nat) (hf : ∀ i, 0 ≤ f i) :
-   ∑ j ∈ ({z | z ≤ a} : Set Nat), f j ≤ ∑ i ∈ ({x | x < b} : Set Nat), f i := by
+    ∑ j ∈ ({z | z ≤ a} : Set Nat), f j ≤ ∑ i ∈ ({x | x < b} : Set Nat), f i := by
   grewrite [h]
   trace_state
   rfl

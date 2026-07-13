@@ -284,7 +284,6 @@ If `x` is not a non zero divisor, `ordMonoidWithZeroHom` is equal to `0`.
 theorem ordMonoidWithZeroHom_eq_zero [Nontrivial R] {x : R} (h : x ∉ nonZeroDivisors R) :
     ordMonoidWithZeroHom R x = 0 := dif_neg h
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 The quotient of a Noetherian ring of krull dimension less than or equal to `1` by a principal ideal
 is of finite length.
@@ -297,8 +296,7 @@ theorem _root_.isFiniteLength_quotient_span_singleton [IsNoetherianRing R]
     ⟨isNoetherian_quotient (Ideal.span {x}),
       isArtinian_of_surjective_algebraMap (Ideal.Quotient.mk_surjective (I := .span {x}))⟩
   rw [isArtinianRing_iff_krullDimLE_zero, Ring.KrullDimLE, Order.krullDimLE_iff,
-    ← WithBot.add_le_add_iff_right' (c := 1) (by simp) (WithBot.coe_eq_coe.not.mpr (by simp)),
-    Nat.cast_zero, zero_add]
+    ← ENat.WithBot.add_le_add_one_right_iff, Nat.cast_zero, zero_add]
   exact (ringKrullDim_quotient_succ_le_of_nonZeroDivisor hx).trans (Order.KrullDimLE.krullDim_le)
 
 variable [IsNoetherianRing R] [Ring.KrullDimLE 1 R]
