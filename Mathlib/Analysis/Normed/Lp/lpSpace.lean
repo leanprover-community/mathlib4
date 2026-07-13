@@ -283,7 +283,7 @@ theorem sub {f g : ∀ i, E i} (hf : Memℓp f p) (hg : Memℓp g p) : Memℓp (
 
 theorem finsetSum {ι} (s : Finset ι) {f : ι → ∀ i, E i} (hf : ∀ i ∈ s, Memℓp (f i) p) :
     Memℓp (fun a => ∑ i ∈ s, f i a) p := by
-  haveI : DecidableEq ι := Classical.decEq _
+  have : DecidableEq ι := Classical.decEq _
   revert hf
   refine Finset.induction_on s ?_ ?_
   · simp only [zero_mem_ℓp', Finset.sum_empty, imp_true_iff]
@@ -599,7 +599,7 @@ section ComparePointwise
 
 theorem norm_apply_le_norm (hp : p ≠ 0) (f : lp E p) (i : α) : ‖f i‖ ≤ ‖f‖ := by
   rcases eq_or_ne p ∞ with (rfl | hp')
-  · haveI : Nonempty α := ⟨i⟩
+  · have : Nonempty α := ⟨i⟩
     exact (isLUB_norm f).1 ⟨i, rfl⟩
   have hp'' : 0 < p.toReal := ENNReal.toReal_pos hp hp'
   have : ∀ i, 0 ≤ ‖f i‖ ^ p.toReal := fun i ↦ by positivity
@@ -712,7 +712,7 @@ theorem norm_const_smul_le (hp : p ≠ 0) (c : 𝕜) (f : lp E p) : ‖c • f�
     simp_rw [← Set.range_comp, Function.comp_def] at hfc
     exact norm_le_of_forall_le (by positivity)
       fun i ↦ norm_smul_le c (f i) |>.trans <| hfc.1 ⟨i, rfl⟩
-  · letI inst : NNNorm (lp E p) := ⟨fun f => ⟨‖f‖, norm_nonneg' _⟩⟩
+  · let inst : NNNorm (lp E p) := ⟨fun f => ⟨‖f‖, norm_nonneg' _⟩⟩
     have coe_nnnorm : ∀ f : lp E p, ↑‖f‖₊ = ‖f‖ := fun _ => rfl
     suffices ‖c • f‖₊ ^ p.toReal ≤ (‖c‖₊ * ‖f‖₊) ^ p.toReal by
       rwa [NNReal.rpow_le_rpow_iff hp] at this
@@ -1095,7 +1095,7 @@ protected theorem norm_sum_single (hp : 0 < p.toReal) (f : ∀ i, E i) (s : Fins
 
 @[simp]
 protected theorem norm_single (hp : 0 < p) (i : α) (x : E i) : ‖lp.single p i x‖ = ‖x‖ := by
-  haveI : Nonempty α := ⟨i⟩
+  have : Nonempty α := ⟨i⟩
   induction p with
   | top =>
     simp only [norm_eq_ciSup, lp.coeFn_single]

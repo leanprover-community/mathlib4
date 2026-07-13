@@ -573,9 +573,9 @@ theorem differentIdeal_eq_differentIdeal_mul_differentIdeal (C : Type*) [IsDomai
     isSeparable_tower_top_of_isSeparable (FractionRing A) _ _
   have : Algebra.IsSeparable (FractionRing A) (FractionRing B) :=
     isSeparable_tower_bot_of_isSeparable _ _ (FractionRing C)
-  haveI : FiniteDimensional (FractionRing A) (FractionRing B) := .of_isLocalization A B A⁰
-  haveI : FiniteDimensional (FractionRing A) (FractionRing C) := .of_isLocalization A C A⁰
-  haveI : FiniteDimensional (FractionRing B) (FractionRing C) := .of_isLocalization B C B⁰
+  have : FiniteDimensional (FractionRing A) (FractionRing B) := .of_isLocalization A B A⁰
+  have : FiniteDimensional (FractionRing A) (FractionRing C) := .of_isLocalization A C A⁰
+  have : FiniteDimensional (FractionRing B) (FractionRing C) := .of_isLocalization B C B⁰
   rw [← coeIdeal_inj (K := FractionRing C), coeIdeal_mul, coeIdeal_differentIdeal A
     (FractionRing A), coeIdeal_differentIdeal B (FractionRing B)]
   rw [← extendedHom_coeIdeal_eq_map (K := FractionRing B), coeIdeal_differentIdeal A
@@ -635,7 +635,7 @@ lemma conductor_mul_differentIdeal
     (conductor A x) * differentIdeal A B = Ideal.span {aeval x (derivative (minpoly A x))} := by
   classical
   have hAx : IsIntegral A x := IsIntegralClosure.isIntegral A L x
-  haveI := IsIntegralClosure.isFractionRing_of_finite_extension A K L B
+  have := IsIntegralClosure.isFractionRing_of_finite_extension A K L B
   apply FractionalIdeal.coeIdeal_injective (K := L)
   simp only [FractionalIdeal.coeIdeal_mul, FractionalIdeal.coeIdeal_span_singleton]
   rw [coeIdeal_differentIdeal A K L B, mul_inv_eq_iff_eq_mul₀]
@@ -759,7 +759,7 @@ theorem not_dvd_differentIdeal_of_intTrace_not_mem
       exact differentIdeal_ne_bot
     · obtain rfl := hxQ
       simp at hx
-  letI : Algebra (A ⧸ p) (B ⧸ Q) := Ideal.Quotient.algebraQuotientOfLEComap (by
+  let : Algebra (A ⧸ p) (B ⧸ Q) := Ideal.Quotient.algebraQuotientOfLEComap (by
       rw [← Ideal.map_le_iff_le_comap, ← hP]
       exact Ideal.mul_le_left)
   let K := FractionRing A
@@ -812,13 +812,13 @@ theorem not_dvd_differentIdeal_of_isCoprime_of_isSeparable
     (hPQ : IsCoprime P Q) (hP : P * Q = Ideal.map (algebraMap A B) p)
     [Algebra.IsSeparable (A ⧸ p) (B ⧸ P)] :
     ¬ P ∣ differentIdeal A B := by
-  letI : Algebra (A ⧸ p) (B ⧸ Q) := Ideal.Quotient.algebraQuotientOfLEComap (by
+  let : Algebra (A ⧸ p) (B ⧸ Q) := Ideal.Quotient.algebraQuotientOfLEComap (by
       rw [← Ideal.map_le_iff_le_comap, ← hP]
       exact Ideal.mul_le_left)
   have : IsScalarTower A (A ⧸ p) (B ⧸ Q) := .of_algebraMap_eq' rfl
   have : Module.Finite (A ⧸ p) (B ⧸ Q) :=
     Module.Finite.of_restrictScalars_finite A (A ⧸ p) (B ⧸ Q)
-  letI e : (B ⧸ p.map (algebraMap A B)) ≃ₐ[A ⧸ p] ((B ⧸ P) × B ⧸ Q) :=
+  let e : (B ⧸ p.map (algebraMap A B)) ≃ₐ[A ⧸ p] ((B ⧸ P) × B ⧸ Q) :=
     { __ := (Ideal.quotEquivOfEq hP.symm).trans (Ideal.quotientMulEquivQuotientProd P Q hPQ),
       commutes' := Quotient.ind fun _ ↦ rfl }
   obtain ⟨x, hx⟩ : ∃ x, Algebra.trace (A ⧸ p) (B ⧸ P) x ≠ 0 := by
@@ -888,14 +888,14 @@ lemma dvd_differentIdeal_of_not_isSeparable
       ← IsScalarTower.algebraMap_apply, IsScalarTower.algebraMap_apply A B L, ← hz']
   intro x hx
   rw [← Ideal.Quotient.eq_zero_iff_mem, ← Algebra.trace_quotient_eq_of_isDedekindDomain]
-  letI : Algebra (A ⧸ p) (B ⧸ a) :=
+  let : Algebra (A ⧸ p) (B ⧸ a) :=
     Ideal.Quotient.algebraQuotientOfLEComap (Ideal.map_le_iff_le_comap.mp
       (Ideal.dvd_iff_le.mp ⟨_, ha.trans (mul_comm _ _)⟩))
   have : IsScalarTower A (A ⧸ p) (B ⧸ a) := .of_algebraMap_eq' rfl
   have : Module.Finite (A ⧸ p) (B ⧸ a) := .of_restrictScalars_finite A _ _
   have := ((Ideal.prime_iff_isPrime hPbot).mpr inferInstance)
   rw [← this.irreducible.gcd_eq_one_iff, ← Ideal.isCoprime_iff_gcd] at hPa
-  letI e : (B ⧸ p.map (algebraMap A B)) ≃ₐ[A ⧸ p] ((B ⧸ P) × B ⧸ a) :=
+  let e : (B ⧸ p.map (algebraMap A B)) ≃ₐ[A ⧸ p] ((B ⧸ P) × B ⧸ a) :=
     { __ := (Ideal.quotEquivOfEq ha).trans (Ideal.quotientMulEquivQuotientProd P a hPa),
       commutes' := Quotient.ind fun _ ↦ rfl }
   have hx' : (e (Ideal.Quotient.mk _ x)).2 = 0 := by
