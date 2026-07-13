@@ -672,8 +672,7 @@ theorem isCoseparator_iff_mono (G : C) [∀ A : C, HasProduct fun _ : A ⟶ G =>
   rw [isCoseparator_def]
   refine ⟨fun h A => ⟨fun u v huv => h _ _ fun i => ?_⟩, fun h X Y f g hh => ?_⟩
   · simpa using huv =≫ Pi.π _ i
-  ·
-    refine (cancel_mono (Pi.lift fun f : Y ⟶ G => f)).1 (limit.hom_ext fun j => ?_)
+  · refine (cancel_mono (Pi.lift fun f : Y ⟶ G => f)).1 (limit.hom_ext fun j => ?_)
     simpa using hh j.as
 
 section ZeroMorphisms
