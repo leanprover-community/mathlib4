@@ -5,15 +5,13 @@ Authors: Yaël Dillies, Patrick Luo
 -/
 module
 
+public import Mathlib.Algebra.Group.WithOne.Basic
 public import Mathlib.GroupTheory.Finiteness
 public import Mathlib.GroupTheory.MonoidLocalization.GrothendieckGroup
 
 /-!
 # Localization of a finitely generated submonoid
 
-## TODO
-
-If `Mathlib/GroupTheory/Finiteness.lean` wasn't so heavy, this could move earlier.
 -/
 
 public section
