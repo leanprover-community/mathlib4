@@ -605,9 +605,9 @@ theorem tsum_coe_mul_geometric_of_norm_lt_one {r : 𝕜} (hr : ‖r‖ < 1) :
   (hasSum_coe_mul_geometric_of_norm_lt_one hr).tsum_eq
 
 -- To-do: add docstrings
-theorem hasSum_sq_mul_geometric_of_norm_lt_one' {x : R} (h : ‖x‖ < 1) :
-    HasSum (fun n : ℕ ↦ (n : R) ^ 2 * x ^ n) (x * (1 + x) * ((1 - x)⁻¹ʳ) ^ 3) := by
-  have h1 : ((1 - x)⁻¹ʳ) ^ 2 = (1 - x) * ((1 - x)⁻¹ʳ) ^ 3 := by
+theorem hasSum_sq_mul_geometric_of_norm_lt_one' {r : R} (h : ‖r‖ < 1) :
+    HasSum (fun n : ℕ ↦ (n : R) ^ 2 * r ^ n) (r * (1 + r) * ((1 - r)⁻¹ʳ) ^ 3) := by
+  have h1 : ((1 - r)⁻¹ʳ) ^ 2 = (1 - r) * ((1 - r)⁻¹ʳ) ^ 3 := by
     rw [pow_succ' _ 2, ← mul_assoc,
       Ring.mul_inverse_cancel _ (isUnit_one_sub_of_norm_lt_one h), one_mul]
   convert! hasSum_pow_mul_geometric_of_norm_lt_one' 2 h using 1
