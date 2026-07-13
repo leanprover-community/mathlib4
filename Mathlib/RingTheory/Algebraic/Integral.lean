@@ -50,6 +50,7 @@ theorem IsLocalization.integerMultiple_eq_zero_iff {R : Type*} [CommSemiring R] 
   rw [← smul_zero (commonDenom M s f),
     (IsLocalization.smul_bijective S (commonDenom M s f)).injective.eq_iff, smul_zero]
 
+-- todo: generalize further (remove R')
 open IsLocalization nonZeroDivisors in
 theorem foo (R R' S S' : Type*)
     [CommRing R] [CommRing R'] [CommRing S] [CommRing S']
@@ -106,7 +107,6 @@ theorem foo' (R R' S S' : Type*) [DecidableEq S]
     {s : Finset S'} (hs : LinearIndepOn R' id (s : Set S')) :
     LinearIndepOn R id (finsetIntegerMultiple S⁰ s : Set S) := by
   classical
-  have key := finsetIntegerMultiple_image S⁰ s
   replace hs : LinearIndepOn R' (id : S' → S') (commonDenomOfFinset S⁰ s • s) := by
     rw [← Finset.coe_smul_finset]
     rw [linearIndepOn_finset_iff] at hs ⊢
@@ -118,7 +118,7 @@ theorem foo' (R R' S S' : Type*) [DecidableEq S]
     rwa [← smul_zero (commonDenomOfFinset S⁰ s),
       (IsLocalization.smul_bijective S' (commonDenomOfFinset S⁰ s)).injective.eq_iff] at h
     exact (IsLocalization.smul_bijective S' (commonDenomOfFinset S⁰ s)).injective.injOn
-  rw [← key] at hs
+  rw [← finsetIntegerMultiple_image S⁰ s] at hs
 
   -- rw [LinearIndepOn, Fintype.linearIndependent_iff] at *
   sorry
@@ -129,19 +129,23 @@ theorem IsFractionRing.finrank_eq (R R' S S' : Type*)
     [Algebra R S] [Algebra R R'] [Algebra S S'] [Algebra R' S'] [Algebra R S']
     [IsScalarTower R R' S'] [IsScalarTower R S S']
     [IsFractionRing R R'] [IsFractionRing S S'] :
-    Module.finrank R' S' = Module.finrank R S := by
+    Module.finrank R' S' = Module.finrank R S := by -- maybe go via Module.finrank R S'?
   classical
   rcases iff_iff_and_or_not_and_not.mp (nontrivial_iff_nontrivial R R') with ⟨_, _⟩ | ⟨_, _⟩; swap
   · simp_all [not_nontrivial_iff_subsingleton]
   apply Cardinal.toNat_eq_of_forall_le_iff
   intro n
-  simp_rw [Module.le_rank_iff_exists_finset]
+  simp_rw [Module.le_rank_iff_exists_finset, LinearIndepOn] -- maybe rw with fractionring here?
   constructor
   · rintro ⟨s, rfl, hs⟩
-    exact ⟨finsetIntegerMultiple S⁰ s, card_finsetIntegerMultiple S⁰ s, foo' R R' S S' hs⟩
+    use finsetIntegerMultiple S⁰ s, card_finsetIntegerMultiple S⁰ s
+    exact foo' R R' S S' hs
   · rintro ⟨s, rfl, hs⟩
     let f : S ↪ S' := ⟨algebraMap S S', FaithfulSMul.algebraMap_injective S S'⟩
-    exact ⟨s.map f, s.card_map f, (linearIndependent_equiv (s.equivMap f)).mp ((foo R R' S S').mpr hs)⟩
+    use s.map f, s.card_map f
+    rw [← linearIndependent_equiv (s.equivMap f)]
+    rw [← foo R R' S S'] at hs
+    exact hs
 
 #exit
 
