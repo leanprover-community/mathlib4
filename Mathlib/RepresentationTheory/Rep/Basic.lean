@@ -543,6 +543,7 @@ instance preservesColimits_forget :
 variable {k G}
 
 /-- The concrete bicone of `A.ρ.prod B.ρ`. -/
+@[implicit_reducible]
 def binaryBicone (A B : Rep.{w} k G) :
     Limits.BinaryBicone A B :=
   ⟨Rep.of (X := A.V × B.V) (A.ρ.prod B.ρ), Rep.ofHom (.fst k A.ρ B.ρ), Rep.ofHom (.snd k A.ρ B.ρ),
