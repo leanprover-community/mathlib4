@@ -48,11 +48,11 @@ theorem comap_prime (hinv : ∀ a, g (f a : N) = a) (hp : Prime (f p)) : Prime p
   ⟨fun h => hp.1 <| by simp [h], fun h => hp.2.1 <| h.map f, fun a b h => by
     refine
         (hp.2.2 (f a) (f b) <| by
-              convert map_dvd f h
+              convert! map_dvd f h
               simp).imp
           ?_ ?_ <;>
       · intro h
-        convert ← map_dvd g h <;> apply hinv⟩
+        convert! ← map_dvd g h <;> apply hinv⟩
 
 theorem MulEquiv.prime_iff {E : Type*} [EquivLike E M N] [MulEquivClass E M N] (e : E) :
     Prime (e p) ↔ Prime p := by
@@ -61,6 +61,21 @@ theorem MulEquiv.prime_iff {E : Type*} [EquivLike E M N] [MulEquivClass E M N] (
     fun h => (comap_prime e.symm e fun a => by simp) <| (e.symm_apply_apply p).substr h⟩
 
 end Map
+
+variable {x y : M}
+
+theorem prime_units_mul (u : Mˣ) : Prime (↑u * y) ↔ Prime y := by simp [Prime]
+
+theorem prime_isUnit_mul (h : IsUnit x) : Prime (x * y) ↔ Prime y :=
+  let ⟨u, hu⟩ := h
+  hu ▸ prime_units_mul u
+
+theorem prime_mul_units (u : Mˣ) : Prime (y * ↑u) ↔ Prime y := by
+  rw [mul_comm, prime_units_mul]
+
+theorem prime_mul_isUnit (h : IsUnit x) : Prime (y * x) ↔ Prime y :=
+  let ⟨u, hu⟩ := h
+  hu ▸ prime_mul_units u
 
 end Prime
 

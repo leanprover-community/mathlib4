@@ -20,7 +20,9 @@ be satisfied by itself and all stricter types.
 
 * `sSupHom`: Maps which preserve `⨆`.
 * `sInfHom`: Maps which preserve `⨅`.
-* `FrameHom`: Frame homomorphisms. Maps which preserve `⨆`, `⊓` and `⊤`.
+* `FrameHom`: Frame homomorphisms. Maps which preserve `⨆`, `⊓` and `⊤`. Note that while a frame
+  is a Heyting algebra, frame homs need not preserve `⇨`. For instance,
+  `TopologicalSpace.Opens.frameHom` does not in general preserve complementation.
 * `CompleteLatticeHom`: Complete lattice homomorphisms. Maps which preserve `⨆` and `⨅`.
 
 ## Typeclasses
@@ -33,10 +35,6 @@ be satisfied by itself and all stricter types.
 ## Concrete homs
 
 * `CompleteLatticeHom.setPreimage`: `Set.preimage` as a complete lattice homomorphism.
-
-## TODO
-
-Frame homs are Heyting homs.
 -/
 
 @[expose] public section
@@ -185,13 +183,6 @@ end Equiv
 
 variable [FunLike F α β]
 
-/-- Reinterpret an order isomorphism as a morphism of complete lattices. -/
-@[simps] def OrderIso.toCompleteLatticeHom [CompleteLattice α] [CompleteLattice β]
-    (f : OrderIso α β) : CompleteLatticeHom α β where
-  toFun := f
-  map_sInf' := sInfHomClass.map_sInf f
-  map_sSup' := sSupHomClass.map_sSup f
-
 @[to_dual]
 instance [SupSet α] [SupSet β] [sSupHomClass F α β] : CoeTC F (sSupHom α β) :=
   ⟨fun f => ⟨f, map_sSup f⟩⟩
@@ -217,7 +208,7 @@ variable [SupSet β] [SupSet γ] [SupSet δ]
 @[to_dual]
 instance : FunLike (sSupHom α β) α β where
   coe := sSupHom.toFun
-  coe_injective' f g h := by cases f; cases g; congr
+  coe_injective f g h := by cases f; cases g; congr
 
 @[to_dual]
 instance : sSupHomClass (sSupHom α β) α β where
@@ -346,7 +337,7 @@ variable [CompleteLattice α] [CompleteLattice β] [CompleteLattice γ] [Complet
 
 instance : FunLike (FrameHom α β) α β where
   coe f := f.toFun
-  coe_injective' f g h := by
+  coe_injective f g h := by
     obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := f
     obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := g
     congr
@@ -450,12 +441,17 @@ variable [CompleteLattice α] [CompleteLattice β] [CompleteLattice γ] [Complet
 
 instance : FunLike (CompleteLatticeHom α β) α β where
   coe f := f.toFun
-  coe_injective' f g h := by obtain ⟨⟨_, _⟩, _⟩ := f; obtain ⟨⟨_, _⟩, _⟩ := g; congr
+  coe_injective f g h := by obtain ⟨⟨_, _⟩, _⟩ := f; obtain ⟨⟨_, _⟩, _⟩ := g; congr
 
 instance : CompleteLatticeHomClass (CompleteLatticeHom α β) α β where
   map_sSup f := f.map_sSup'
   map_sInf f := f.map_sInf'
 
+/-- Reinterpret an order isomorphism as a morphism of complete lattices. -/
+@[simps] def OrderIso.toCompleteLatticeHom (f : OrderIso α β) : CompleteLatticeHom α β where
+  toFun := f
+  map_sInf' := sInfHomClass.map_sInf f
+  map_sSup' := sSupHomClass.map_sSup f
 
 /-- Reinterpret a `CompleteLatticeHom` as a `BoundedLatticeHom`. -/
 def toBoundedLatticeHom (f : CompleteLatticeHom α β) : BoundedLatticeHom α β :=

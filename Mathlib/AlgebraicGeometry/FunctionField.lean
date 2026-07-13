@@ -70,10 +70,10 @@ theorem genericPoint_eq_of_isOpenImmersion {X Y : Scheme} (f : X ⟶ Y) [IsOpenI
     [hX : IrreducibleSpace X] [IrreducibleSpace Y] :
     f (genericPoint X) = genericPoint Y := by
   apply ((genericPoint_spec Y).eq _).symm
-  convert (genericPoint_spec X).image f.continuous
+  convert! (genericPoint_spec X).image f.continuous
   symm
   rw [← Set.univ_subset_iff]
-  convert subset_closure_inter_of_isPreirreducible_of_isOpen _ f.isOpenEmbedding.isOpen_range _
+  convert! subset_closure_inter_of_isPreirreducible_of_isOpen _ f.isOpenEmbedding.isOpen_range _
   · rw [Set.univ_inter, Set.image_univ]
   · apply PreirreducibleSpace.isPreirreducible_univ (X := Y)
   · exact ⟨_, trivial, Set.mem_range_self hX.2.some⟩
@@ -90,6 +90,13 @@ instance functionField_isScalarTower [IrreducibleSpace X] (U : X.Opens) (x : U)
   simp_rw [RingHom.algebraMap_toAlgebra]
   change _ = (X.presheaf.germ U x x.2 ≫ _).hom
   rw [X.presheaf.germ_stalkSpecializes]
+
+@[simp]
+lemma Scheme.algebraMap_germ_eq_germToFunctionField [IrreducibleSpace X]
+    {U : X.Opens} [Nonempty U] {x : X} (hx : x ∈ U) (f : Γ(X, U)) :
+    algebraMap (X.presheaf.stalk x) X.functionField (X.presheaf.germ U x hx f) =
+      X.germToFunctionField U f := by
+  simp [RingHom.algebraMap_toAlgebra, ← ConcreteCategory.comp_apply]
 
 noncomputable instance (R : CommRingCat.{u}) [IsDomain R] :
     Algebra R (Spec R).functionField :=
@@ -108,7 +115,7 @@ theorem genericPoint_eq_bot_of_affine (R : CommRingCat) [IsDomain R] :
 
 instance functionField_isFractionRing_of_affine (R : CommRingCat.{u}) [IsDomain R] :
     IsFractionRing R (Spec R).functionField := by
-  convert StructureSheaf.IsLocalization.to_stalk R (genericPoint (Spec R))
+  convert! StructureSheaf.IsLocalization.to_stalk R (genericPoint (Spec R))
   delta IsFractionRing IsLocalization.AtPrime
   -- Porting note: `congr` does not work for `Iff`
   apply Eq.to_iff
@@ -129,9 +136,11 @@ theorem IsAffineOpen.primeIdealOf_genericPoint {X : Scheme} [IsIntegral X] {U : 
           ((genericPoint_spec X).mem_open_set_iff U.isOpen).mpr (by simpa using h)⟩ =
       genericPoint (Spec Γ(X, U)) := by
   delta IsAffineOpen.primeIdealOf
-  convert
+  convert!
     genericPoint_eq_of_isOpenImmersion
       (U.toScheme.isoSpec.hom ≫ Spec.map (X.presheaf.map (eqToHom U.isOpenEmbedding_obj_top).op))
+        -- Porting note: this was `ext1`
+
   -- Porting note: this was `ext1`
   apply Subtype.ext
   exact (genericPoint_eq_of_isOpenImmersion U.ι).symm
@@ -140,8 +149,11 @@ theorem functionField_isFractionRing_of_isAffineOpen [IsIntegral X] (U : X.Opens
     (hU : IsAffineOpen U) [Nonempty U] :
     IsFractionRing Γ(X, U) X.functionField := by
   delta IsFractionRing Scheme.functionField
-  convert hU.isLocalization_stalk ⟨genericPoint X,
-    (((genericPoint_spec X).mem_open_set_iff U.isOpen).mpr (by simpa using ‹Nonempty U›))⟩ using 1
+  convert!
+    hU.isLocalization_stalk
+      ⟨genericPoint X,
+        (((genericPoint_spec X).mem_open_set_iff U.isOpen).mpr (by simpa using ‹Nonempty U›))⟩
+    using 1
   rw [hU.primeIdealOf_genericPoint, genericPoint_eq_bot_of_affine]
   ext; exact mem_nonZeroDivisors_iff_ne_zero
 
@@ -165,5 +177,28 @@ instance [IsIntegral X] (x : X) :
 
 instance [IsIntegral X] {x : X} : IsDomain (X.presheaf.stalk x) :=
   Function.Injective.isDomain _ (IsFractionRing.injective (X.presheaf.stalk x) (X.functionField))
+
+/--
+For `f` an element of the function field of `X`, there exists some open set `U ⊆ X` such that
+`f` is a unit in `Γ(X, U)`.
+-/
+lemma exists_isUnit_germ_eq [IsIntegral X] (f : X.functionField) (hf : f ≠ 0) :
+    ∃ U ∈ X.affineOpens, ∃ f' : Γ(X, U), ∃ _ : Nonempty U,
+      X.germToFunctionField U f' = f ∧ IsUnit f' := by
+  obtain ⟨U, hU, g, hg⟩ := X.presheaf.exists_germ_eq f
+  obtain ⟨_, ⟨A, hA, rfl⟩, hxA, hAU⟩ :=
+    X.isBasis_affineOpens.exists_subset_of_mem_open hU U.isOpen
+  have : Nonempty A := ⟨_, hxA⟩
+  let gA : Γ(X, A) := X.presheaf.map (homOfLE hAU).op g
+  have h_germ_gA : X.presheaf.germ A (genericPoint X) hxA gA = f := by
+    simp only [← hg, ← X.presheaf.germ_res_apply (homOfLE hAU) (genericPoint X) hxA g, gA]
+    rfl
+  have hxV : genericPoint X ∈ X.basicOpen gA := by
+    rwa [Scheme.mem_basicOpen X gA (genericPoint X) hxA, h_germ_gA, isUnit_iff_ne_zero]
+  have : Nonempty (X.basicOpen gA) := ⟨⟨_, hxV⟩⟩
+  refine ⟨X.basicOpen gA, hA.basicOpen gA,
+    X.presheaf.map (X.basicOpen_le gA).hom.op gA, ‹_›, ?_,
+    X.toRingedSpace.isUnit_res_basicOpen gA⟩
+  simpa using h_germ_gA
 
 end AlgebraicGeometry

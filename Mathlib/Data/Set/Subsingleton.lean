@@ -121,7 +121,7 @@ theorem eq_empty_or_singleton_of_unique [Unique α] (s : Set α) :
 @[simp, norm_cast]
 theorem subsingleton_coe (s : Set α) : Subsingleton s ↔ s.Subsingleton := by
   constructor
-  · refine fun h => fun a ha b hb => ?_
+  · intro h a ha b hb
     exact SetCoe.ext_iff.2 (@Subsingleton.elim s h ⟨a, ha⟩ ⟨b, hb⟩)
   · exact fun h => Subsingleton.intro fun a b => SetCoe.ext (h a.property b.property)
 
@@ -138,6 +138,10 @@ lemma Subsingleton.denselyOrdered {s : Set α} [LT α] (hs : s.Subsingleton) :
     DenselyOrdered s :=
   have := (subsingleton_coe _).mpr hs
   ⟨fun _ _ h ↦ ⟨_, h.trans_eq (Subsingleton.elim _ _), h⟩⟩
+
+theorem _root_.ExistsUnique.setSubsingleton {α : Type*} {p : α → Prop} (h : ExistsUnique p) :
+    {x | p x}.Subsingleton :=
+  fun _ hx _ hy => h.unique hx hy
 
 end Subsingleton
 

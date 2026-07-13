@@ -28,15 +28,17 @@ section AddCommMonoid
 
 variable [AddCommMonoid k] {a : G} {b : k}
 
-theorem support_single_ne_zero (a : G) (h : b ≠ 0) : (single a b).support = {a} :=
-  Finsupp.support_single_ne_zero _ h
+@[simp] lemma support_single (a : G) (h : b ≠ 0) : (single a b).support = {a} :=
+  Finsupp.support_single _ h
+
+@[deprecated (since := "2026-05-05")] alias support_single_ne_zero := support_single
 
 theorem support_single_subset : (single a b).support ⊆ {a} := Finsupp.support_single_subset
 
 theorem support_sum {k' G' : Type*} [DecidableEq G'] [AddCommMonoid k'] {f : SkewMonoidAlgebra k G}
     {g : G → k → SkewMonoidAlgebra k' G'} :
     (f.sum g).support ⊆ f.support.biUnion fun a ↦ (g a (f.coeff a)).support := by
-  simp_rw [support, toFinsupp_sum']
+  simp_rw [support, coeff_sum']
   apply Finsupp.support_sum
 
 end AddCommMonoid
@@ -46,7 +48,7 @@ section AddCommGroup
 variable [AddCommGroup k]
 
 theorem support_neg (p : SkewMonoidAlgebra k G) : (-p).support = p.support := by
-  rw [support, toFinsupp_neg, Finsupp.support_neg, support_toFinsupp]
+  rw [support, coeff_neg, Finsupp.support_neg, support_coeff]
 
 end AddCommGroup
 
@@ -59,7 +61,7 @@ lemma support_one_subset : (1 : SkewMonoidAlgebra k G).support ⊆ 1 :=
 
 @[simp]
 lemma support_one [NeZero (1 : k)] : (1 : SkewMonoidAlgebra k G).support = 1 :=
-  Finsupp.support_single_ne_zero _ one_ne_zero
+  Finsupp.support_single _ one_ne_zero
 
 end AddCommMonoidWithOne
 
@@ -108,7 +110,7 @@ theorem support_mul_single_eq_image {r : k} {x : G} (rx : IsRightRegular x)
 end DecidableEq
 
 theorem support_mul_single [IsRightCancelMul G] (r : k) (x : G)
-   (hrx : ∀ g : G, ∀ y, y * g • r = 0 ↔ y = 0) :
+    (hrx : ∀ g : G, ∀ y, y * g • r = 0 ↔ y = 0) :
     (f * single x r).support = f.support.map (mulRightEmbedding x) := by
   classical
   ext a
