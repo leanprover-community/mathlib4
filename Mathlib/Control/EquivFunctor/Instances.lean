@@ -29,9 +29,6 @@ instance EquivFunctorPerm : EquivFunctor Perm where
   map_refl' α := by ext; simp
   map_trans' _ _ := by ext; simp
 
--- TODO: find a good way to fix the linter
--- squeezing the simp makes the second subgoal fail
-set_option linter.flexible false in
 -- There is a classical instance of `LawfulFunctor Finset` available,
 -- but we provide this computable alternative separately.
 instance EquivFunctorFinset : EquivFunctor Finset where
@@ -39,12 +36,7 @@ instance EquivFunctorFinset : EquivFunctor Finset where
   map_refl' α := by ext; simp
   map_trans' k h := by
     ext _ a
-    simp
-    constructor <;> intro h'
-    · let ⟨a, ha₁, ha₂⟩ := h'
-      rw [← ha₂]; simpa
-    · exists (Equiv.symm k) ((Equiv.symm h) a)
-      simp [h']
+    simp [-trans_toEmbedding]
 
 instance EquivFunctorFintype : EquivFunctor Fintype where
   map e _ := Fintype.ofBijective e e.bijective
