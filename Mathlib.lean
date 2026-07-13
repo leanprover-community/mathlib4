@@ -8041,6 +8041,7 @@ public import Mathlib.Topology.MetricSpace.UniformConvergence
 public import Mathlib.Topology.Metrizable.Basic
 public import Mathlib.Topology.Metrizable.CompletelyMetrizable
 public import Mathlib.Topology.Metrizable.ContinuousMap
+public import Mathlib.Topology.Metrizable.Paracompact
 public import Mathlib.Topology.Metrizable.Real
 public import Mathlib.Topology.Metrizable.Uniformity
 public import Mathlib.Topology.Metrizable.Urysohn
