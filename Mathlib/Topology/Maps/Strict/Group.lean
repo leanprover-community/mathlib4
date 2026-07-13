@@ -113,11 +113,11 @@ homomorphisms is strict if and only if each of the homomorphisms is strict. -/]
 protected lemma isStrictMap_piMap_iff :
     IsStrictMap (piMap f) ↔ ∀ i, IsStrictMap (f i) := by
   simp_rw [MonoidHom.isStrictMap_iff_isOpenQuotientMap_rangeRestrict]
-  have : (piMap f).range =
   let Φ : (piMap f).range ≃ₜ Π i, (f i).range :=
-    (Homeomorph.setCongr (by simp [Subgroup.coe_pi])).trans (Homeomorph.Set.pi _ _)
-  have eq : Φ ∘ (f.prodMap g).rangeRestrict = f.rangeRestrict.prodMap g.rangeRestrict := rfl
-  rw [← Φ.comp_isOpenQuotientMap_iff, eq, MonoidHom.coe_prodMap, isOpenQuotientMap_prodMap_iff]
+    (Homeomorph.setCongr (by simp [Subgroup.coe_pi])).trans (Homeomorph.Set.univPi _)
+  have eq : Φ ∘ (piMap f).rangeRestrict = piMap (fun i ↦ (f i).rangeRestrict) := rfl
+  rw [← Φ.comp_isOpenQuotientMap_iff, eq, MonoidHom.piMap]
+  sorry
 
 end Pi
 
