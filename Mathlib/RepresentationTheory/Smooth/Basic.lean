@@ -68,7 +68,8 @@ lemma isSmooth_trivial : IsSmooth (trivial k G V) := by
 
 /-- Any subrepresentation of a smooth representation is smooth. -/
 lemma isSmooth_subrepresentation {ρ : Representation k G V} (φ : Subrepresentation ρ)
-    [h : IsSmooth ρ] : IsSmooth φ.toRepresentation := by
+    [h : IsSmooth ρ] :
+    IsSmooth φ.toRepresentation := by
   simpa [isSmooth_iff, isSmoothVector_iff] using fun v _ => h.smooth v
 
 /-- An arbitrary direct sum of smooth representations is smooth. -/
@@ -91,30 +92,24 @@ lemma isSmooth_directSum {I : Type*} {V : I → Type*} [(i : I) → AddCommMonoi
   rw [heq]
   exact isOpen_biInter_finset fun i _ => (h i).smooth (v i)
 
+variable {V' : Type*} [AddCommMonoid V'] [Module k V'] in
+/-- Any biproduct of two smooth representations is smooth. -/
+lemma isSmooth_prod {ρ : Representation k G V} {ρ' : Representation k G V'} (h1 : IsSmooth ρ)
+    (h2 : IsSmooth ρ') :
+    IsSmooth (ρ.prod ρ') := by
+  rw [isSmooth_iff]
+  rintro ⟨v, v'⟩
+  convert (h1.smooth v).inter (h2.smooth v')
+  ext
+  simp
+
 end basic
-
-section quotient
-
-variable {G : Type*} [TopologicalSpace G] [Group G] [IsTopologicalGroup G]
-variable {k : Type*} [Ring k]
-variable {V : Type*} [AddCommGroup V] [Module k V]
-
-/-- Any quotient representation of a smooth representation is smooth. -/
-lemma isSmooth_quotient {ρ : Representation k G V} {φ : Subrepresentation ρ} [h : IsSmooth ρ] :
-    IsSmooth φ.quotient := by
-  refine ⟨fun w => Quotient.inductionOn' w fun v => ?_⟩
-  have h_sub : stabilizer ρ v ≤ stabilizer φ.quotient ⟦v⟧ := by
-    simp +contextual [SetLike.le_def, Subrepresentation.quotient_apply_mk]
-  exact Subgroup.isOpen_mono h_sub (h.smooth v)
-
-end quotient
 
 section smoothVectors
 
 variable {G : Type*} [TopologicalSpace G] [Group G] [IsTopologicalGroup G]
 variable {k : Type*} [Semiring k]
-variable {V : Type*} [AddCommMonoid V] [Module k V]
-variable {V' : Type*} [AddCommMonoid V'] [Module k V']
+variable {V V' : Type*} [AddCommMonoid V] [Module k V] [AddCommMonoid V'] [Module k V']
 
 omit [IsTopologicalGroup G] in
 lemma isSmoothVector_zero (ρ : Representation k G V) : IsSmoothVector ρ 0 := by
@@ -179,21 +174,47 @@ def IntertwiningMap.smoothVectors {ρ : Representation k G V} {ρ' : Representat
   map_smul' := by simp [Subtype.ext_iff]
   isIntertwining' g := by ext; apply IntertwiningMap.isIntertwining
 
+omit [IsTopologicalGroup G] in
+lemma IntertwiningMap.isSmooth_injective {ρ : Representation k G V} {ρ' : Representation k G V'}
+    {f : ρ.IntertwiningMap ρ'} (hf : Function.Injective f) [h : IsSmooth ρ'] : IsSmooth ρ := by
+  rw [isSmooth_iff]
+  intro v
+  convert isSmoothVector_iff.mp (h.smooth (f v))
+  rw [← IntertwiningMap.isIntertwining, hf.eq_iff]
+
+lemma IntertwiningMap.isSmooth_surjective {ρ : Representation k G V} {ρ' : Representation k G V'}
+    {f : ρ.IntertwiningMap ρ'} (hf : Function.Surjective f) [h : IsSmooth ρ] : IsSmooth ρ' := by
+  rw [isSmooth_iff]
+  intro v'
+  rcases hf v' with ⟨v, rfl⟩
+  exact IntertwiningMap.isSmoothVector f (h.smooth v)
+
 end smoothVectors
+
+section quotient
+
+variable {G : Type*} [TopologicalSpace G] [Group G] [IsTopologicalGroup G]
+variable {k : Type*} [Ring k]
+variable {V : Type*} [AddCommGroup V] [Module k V]
+
+/-- Any quotient representation of a smooth representation is smooth. -/
+lemma isSmooth_quotient {ρ : Representation k G V} {φ : Subrepresentation ρ} [h : IsSmooth ρ] :
+    IsSmooth φ.quotient := by
+  refine IntertwiningMap.isSmooth_surjective (f := ⟨φ.1.mkQ, fun _ ↦ rfl⟩) ?_
+  simp [Submodule.mkQ_surjective]
+
+end quotient
 
 section tensorHomContragredient
 
 variable {G : Type*} [TopologicalSpace G] [Group G] [IsTopologicalGroup G]
 variable {k : Type*} [CommSemiring k]
-variable {V : Type*} [AddCommMonoid V] [Module k V]
-variable {V' : Type*} [AddCommMonoid V'] [Module k V']
+variable {V V' : Type*} [AddCommMonoid V] [Module k V] [AddCommMonoid V'] [Module k V']
 
 lemma isSmoothVector_tmul {ρ : Representation k G V} {ρ' : Representation k G V'} {v : V} {v' : V'}
     (h : IsSmoothVector ρ v) (h' : IsSmoothVector ρ' v') :
-    IsSmoothVector (ρ.tprod ρ') (v ⊗ₜ[k] v') := by
-  have h_sub : ρ.stabilizer v ⊓ ρ'.stabilizer v' ≤ (ρ.tprod ρ').stabilizer (v ⊗ₜ[k] v') := by
-    simp +contextual [SetLike.le_def]
-  exact Subgroup.isOpen_mono h_sub (h.inter h')
+    IsSmoothVector (ρ.tprod ρ') (v ⊗ₜ[k] v') :=
+  Subgroup.isOpen_mono (le_stabilizer_tmul ρ ρ' v v') (h.inter h')
 
 /-- The tensor product of two smooth representations is smooth. -/
 lemma isSmooth_tprod {ρ : Representation k G V} {ρ' : Representation k G V'}
