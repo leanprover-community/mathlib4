@@ -526,15 +526,10 @@ def augmentOfIsTerminal (X : SimplicialObject C) {T : C} (hT : IsTerminal T) :
 end SimplicialObject
 
 /-- Cosimplicial objects. -/
-def CosimplicialObject :=
+abbrev CosimplicialObject :=
   SimplexCategory ⥤ C
 
 namespace CosimplicialObject
-
-@[simps!]
-instance : Category (CosimplicialObject C) := by
-  dsimp only [CosimplicialObject]
-  infer_instance
 
 /-- `X ^⦋n⦌` denotes the `n`th-term of the cosimplicial object X -/
 scoped[Simplicial]

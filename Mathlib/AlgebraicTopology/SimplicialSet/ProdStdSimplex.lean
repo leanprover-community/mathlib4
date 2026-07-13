@@ -7,6 +7,8 @@ module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.Monoidal
 public import Mathlib.AlgebraicTopology.SimplicialSet.NerveNondegenerate
+public import Mathlib.Order.Fin.InsertNth
+public import Mathlib.Order.Fin.Prod
 
 /-!
 # Binary product of standard simplices
@@ -49,6 +51,10 @@ def objEquiv {n : ℕ} :
   left_inv := fun ⟨x, y⟩ ↦ by simp
 
 @[simp]
+lemma objEquiv_apply_symm_apply {n : ℕ} (f : (Fin (n + 1) →o Fin (p + 1) × Fin (q + 1))) :
+    dsimp% objEquiv (objEquiv.{u}.symm f) = f := rfl
+
+@[simp]
 lemma objEquiv_apply_fst {n : ℕ} (x : (Δ[p] ⊗ Δ[q] : SSet.{u}) _⦋n⦌) (i : Fin (n + 1)) :
     dsimp% (objEquiv x i).1 = x.1 i := rfl
 
@@ -68,7 +74,7 @@ lemma objEquiv_map_apply {n m : ℕ}
 
 lemma objEquiv_δ_apply {n : ℕ} (x : (Δ[p] ⊗ Δ[q] : SSet.{u}) _⦋n + 1⦌) (i : Fin (n + 2))
     (j : Fin (n + 1)) :
-    objEquiv ((Δ[p] ⊗ Δ[q]).δ i x) j = objEquiv x (i.succAbove j) := rfl
+    dsimp% objEquiv ((Δ[p] ⊗ Δ[q]).δ i x) j = objEquiv x (i.succAbove j) := rfl
 
 variable (p q) in
 /-- The binary product `Δ[p] ⊗ Δ[q]` identifies to the nerve
@@ -173,6 +179,61 @@ lemma nonDegenerate_ext₂ {n : ℕ} {z₁ z₂ : (Δ[p] ⊗ Δ[q] : SSet.{u}).n
     (h : z₁.1.2 = z₂.1.2) (hn : p + q = n := by lia) :
     z₁ = z₂ :=
   (nonDegenerateEquivOfIso (β_ _ _)).injective (nonDegenerate_ext₁ h)
+
+private lemma exists_nonDegenerate_max_dim_aux {d : ℕ}
+    (x : (Δ[p] ⊗ Δ[q] : SSet.{u}).nonDegenerate d) (hd : d < p + q) :
+    ∃ (y : (Δ[p] ⊗ Δ[q] : SSet.{u}).nonDegenerate (d + 1)),
+      x.1 ∈ (Subcomplex.ofSimplex y.1).obj _ := by
+  have hx := (nonDegenerate_iff_strictMono_objEquiv _).1 x.2
+  suffices ∃ (i : Fin (d + 2)) (u : Fin (p + 1) × Fin (q + 1)),
+      StrictMono (Fin.insertNth (α := fun _ ↦ Fin (p + 1) × Fin (q + 1)) i u
+        (objEquiv x.val)) by
+    obtain ⟨i, u, hf⟩ := this
+    simp only [stdSimplex.mem_ofSimplex_obj_iff]
+    refine ⟨⟨objEquiv.symm ⟨_, hf.monotone⟩,
+      (nonDegenerate_iff_strictMono_objEquiv _).2 hf⟩,
+      stdSimplex.objEquiv.symm (SimplexCategory.δ i),
+      objEquiv.injective ?_⟩
+    ext k : 2
+    rw [yonedaEquiv_symm_app, Equiv.apply_symm_apply, ← SimplicialObject.δ_def]
+    simp [objEquiv_δ_apply]
+  let S : Finset (Fin (d + 1)) :=
+    { i | i.castLE (by lia) < orderHomOfSimplex x.1 rfl i }
+  by_cases hS : S.Nonempty
+  · generalize hi₀ : S.min' hS = i₀
+    obtain rfl | ⟨i₀, rfl⟩ := Fin.eq_zero_or_eq_succ i₀
+    · refine ⟨_, _, Fin.strictMono_insertNth_zero hx (0, 0) ?_⟩
+      have : 0 ∈ S := by simpa [← hi₀] using S.min'_mem hS
+      simpa [-Fin.val_pos_iff, S, Fin.lt_def, Fin.prod_zero_zero_lt_iff] using this
+    · obtain ⟨u, hu₁, hu₂⟩ :=
+        Fin.prod_exists_lt_lt_of_le_of_le (objEquiv x.val i₀.castSucc)
+          (objEquiv x.val i₀.succ) ((objEquiv x.val).monotone i₀.castSucc_le_succ) (by
+            have h₀ : i₀.castSucc ∉ S := fun h ↦ by simpa [hi₀] using S.min'_le _ h
+            have h₁ : i₀.succ ∈ S := by simpa only [hi₀] using S.min'_mem hS
+            simp [S, Fin.lt_def] at h₀ h₁ ⊢
+            lia)
+      exact ⟨_, _, Fin.strictMono_insertNth hx i₀ u hu₁ hu₂⟩
+  · simp only [Finset.not_nonempty_iff_eq_empty] at hS
+    refine ⟨_, _, Fin.strictMono_insertNth_last hx (Fin.last _, Fin.last _) ?_⟩
+    rw [Fin.prod_lt_last_last_iff]
+    refine lt_of_le_of_lt ?_ hd
+    simpa [← hS, S, Fin.le_def] using Finset.notMem_empty (Fin.last d)
+
+lemma exists_nonDegenerate_max_dim {d : ℕ}
+    (x : (Δ[p] ⊗ Δ[q] : SSet.{u}).nonDegenerate d) {n : ℕ} (hn : p + q = n) :
+    ∃ (y : (Δ[p] ⊗ Δ[q] : SSet.{u}).nonDegenerate n),
+      x.val ∈ (Subcomplex.ofSimplex y.val).obj _ := by
+  subst hn
+  obtain ⟨i, hi⟩ := Nat.le.dest (Nat.le_of_lt_succ (dim_lt_of_nonDegenerate _ x (p + q + 1)))
+  induction i generalizing d with
+  | zero =>
+    obtain rfl : d = p + q := by lia
+    exact ⟨x, Subcomplex.mem_ofSimplex_obj _⟩
+  | succ d' hd' =>
+    obtain ⟨y, hy⟩ := exists_nonDegenerate_max_dim_aux x (by lia)
+    obtain ⟨z, hz⟩ := hd' y (by lia)
+    rw [← Subcomplex.ofSimplex_le_iff] at hz
+    exact ⟨z, hz _ hy⟩
 
 end prodStdSimplex
 
