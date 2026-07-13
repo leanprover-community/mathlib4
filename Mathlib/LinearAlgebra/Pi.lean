@@ -431,15 +431,15 @@ theorem iSup_map_single [DecidableEq ι] [Finite ι] :
   exact sum_mem_iSup fun i => mem_map_of_mem (hx i trivial)
 
 @[simp]
-lemma comap_piMap_pi {φ ψ : ι → Type*} [∀ i, AddCommMonoid (φ i)] [∀ i, AddCommMonoid (ψ i)]
-    [∀ i, Module R (φ i)] [∀ i, Module R (ψ i)] {J : Set ι} {S : ∀ i, Submodule R (ψ i)}
-    (f : ∀ i, φ i →ₗ[R] ψ i) :
+lemma comap_piMap_pi {φ ψ : ι → Type*} [Π i, AddCommMonoid (φ i)] [Π i, AddCommMonoid (ψ i)]
+    [Π i, Module R (φ i)] [Π i, Module R (ψ i)] {J : Set ι} {S : Π i, Submodule R (ψ i)}
+    (f : Π i, φ i →ₗ[R] ψ i) :
     comap (piMap f) (pi J S) = pi J (fun i ↦ comap (f i) (S i)) := by
   ext; simp [mem_pi]
 
-lemma map_piMap_univ_pi {φ ψ : ι → Type*} [∀ i, AddCommMonoid (φ i)] [∀ i, AddCommMonoid (ψ i)]
-    [∀ i, Module R (φ i)] [∀ i, Module R (ψ i)] {S : ∀ i, Submodule R (φ i)}
-    (f : ∀ i, φ i →ₗ[R] ψ i) :
+lemma map_piMap_univ_pi {φ ψ : ι → Type*} [Π i, AddCommMonoid (φ i)] [Π i, AddCommMonoid (ψ i)]
+    [Π i, Module R (φ i)] [Π i, Module R (ψ i)] {S : Π i, Submodule R (φ i)}
+    (f : Π i, φ i →ₗ[R] ψ i) :
     map (piMap f) (pi Set.univ S) = pi Set.univ (fun i ↦ map (f i) (S i)) :=
   SetLike.coe_injective <| Set.piMap_image_univ_pi _ _
 
@@ -450,14 +450,14 @@ namespace LinearMap
 variable [Semiring R]
 
 @[simp]
-theorem ker_piMap {φ ψ : ι → Type*} [∀ i, AddCommMonoid (φ i)] [∀ i, AddCommMonoid (ψ i)]
-    [∀ i, Module R (φ i)] [∀ i, Module R (ψ i)] (f : ∀ i, φ i →ₗ[R] ψ i) :
+theorem ker_piMap {φ ψ : ι → Type*} [Π i, AddCommMonoid (φ i)] [Π i, AddCommMonoid (ψ i)]
+    [Π i, Module R (φ i)] [Π i, Module R (ψ i)] (f : Π i, φ i →ₗ[R] ψ i) :
     (piMap f).ker = .pi Set.univ (fun i ↦ (f i).ker) := by
   ext; simp [funext_iff]
 
 @[simp]
-theorem range_piMap {φ ψ : ι → Type*} [∀ i, AddCommMonoid (φ i)] [∀ i, AddCommMonoid (ψ i)]
-    [∀ i, Module R (φ i)] [∀ i, Module R (ψ i)] (f : ∀ i, φ i →ₗ[R] ψ i) :
+theorem range_piMap {φ ψ : ι → Type*} [Π i, AddCommMonoid (φ i)] [Π i, AddCommMonoid (ψ i)]
+    [Π i, Module R (φ i)] [Π i, Module R (ψ i)] (f : Π i, φ i →ₗ[R] ψ i) :
     (piMap f).range = .pi Set.univ (fun i ↦ (f i).range) :=
   SetLike.coe_injective <| Set.range_piMap _
 

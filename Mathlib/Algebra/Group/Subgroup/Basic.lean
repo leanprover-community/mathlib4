@@ -215,14 +215,14 @@ theorem pi_eq_bot_iff (H : ∀ i, Subgroup (G i)) : pi Set.univ H = ⊥ ↔ ∀ 
   exact Set.univ_pi_eq_singleton_iff
 
 @[to_additive (attr := simp)]
-lemma comap_piMap_pi {H : ι → Type*} [∀ i, Group (H i)] {J : Set ι}
-    {S : ∀ i, Subgroup (H i)} (f : ∀ i, G i →* H i) :
+lemma comap_piMap_pi {H : ι → Type*} [Π i, Group (H i)] {J : Set ι}
+    {S : Π i, Subgroup (H i)} (f : Π i, G i →* H i) :
     comap (MonoidHom.piMap f) (pi J S) = pi J (fun i ↦ comap (f i) (S i)) := by
   ext; simp [mem_pi]
 
 @[to_additive]
-lemma map_piMap_univ_pi {H : ι → Type*} [∀ i, Group (H i)] {S : ∀ i, Subgroup (G i)}
-    (f : ∀ i, G i →* H i) :
+lemma map_piMap_univ_pi {H : ι → Type*} [Π i, Group (H i)] {S : Π i, Subgroup (G i)}
+    (f : Π i, G i →* H i) :
     map (MonoidHom.piMap f) (pi Set.univ S) = pi Set.univ (fun i ↦ map (f i) (S i)) :=
   SetLike.coe_injective <| Set.piMap_image_univ_pi _ _
 
@@ -766,14 +766,14 @@ lemma range_prodMap {G' N' : Type*} [Group G'] [Group N'] (f : G →* N) (g : G'
   SetLike.coe_injective Set.range_prodMap
 
 @[to_additive (attr := simp)]
-lemma ker_piMap {ι : Type*} {G H : ι → Type*} [∀ i, Group (G i)] [∀ i, Group (H i)]
-    (f : ∀ i, G i →* H i) :
+lemma ker_piMap {ι : Type*} {G H : ι → Type*} [Π i, Group (G i)] [Π i, Group (H i)]
+    (f : Π i, G i →* H i) :
     (piMap f).ker = .pi Set.univ (fun i ↦ (f i).ker) := by
   ext; simp [funext_iff, mem_pi]
 
 @[to_additive (attr := simp)]
-lemma range_piMap {ι : Type*} {G H : ι → Type*} [∀ i, Group (G i)] [∀ i, Group (H i)]
-    (f : ∀ i, G i →* H i) :
+lemma range_piMap {ι : Type*} {G H : ι → Type*} [Π i, Group (G i)] [Π i, Group (H i)]
+    (f : Π i, G i →* H i) :
     (piMap f).range = .pi Set.univ (fun i ↦ (f i).range) :=
   SetLike.coe_injective <| Set.range_piMap _
 
