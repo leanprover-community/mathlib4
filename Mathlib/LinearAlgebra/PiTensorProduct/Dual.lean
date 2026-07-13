@@ -57,7 +57,7 @@ section Ring
 variable {R : Type*} {κ : ι → Type*} {M : ι → Type*} [CommRing R] [Π i, AddCommGroup (M i)]
   [Π i, Module R (M i)]
 
-open Classical in
+open scoped Classical in
 /-- An inverse to `PiTensorProduct.dualDistrib` given bases. -/
 noncomputable def dualDistribInvOfBasis [Finite ι] [∀ i, Finite (κ i)]
     (b : Π i, Basis (κ i) R (M i)) :
@@ -67,7 +67,7 @@ noncomputable def dualDistribInvOfBasis [Finite ι] [∀ i, Finite (κ i)]
   ∑ p : (Π i, κ i), (ringLmapEquivSelf R ℕ _).symm (⨂ₜ[R] i, (b i).dualBasis (p i)) ∘ₗ
     (applyₗ (⨂ₜ[R] i, b i (p i)))
 
-open Classical in
+open scoped Classical in
 @[simp]
 theorem dualDistribInvOfBasis_apply [Fintype ι] [∀ i, Fintype (κ i)] (b : Π i, Basis (κ i) R (M i))
     (f : Dual R (⨂[R] i, M i)) : dualDistribInvOfBasis b f =
@@ -75,7 +75,7 @@ theorem dualDistribInvOfBasis_apply [Fintype ι] [∀ i, Fintype (κ i)] (b : Π
   simp only [dualDistribInvOfBasis, Basis.coe_dualBasis, ringLmapEquivSelf_symm_apply, coe_sum,
     coe_comp, coe_smulRight, End.one_apply, Finset.sum_apply, Function.comp_apply,
     applyₗ_apply_apply]
-  convert rfl
+  convert! rfl
 
 theorem dualDistrib_dualDistribInvOfBasis_left_inverse [Finite ι] [∀ i, Finite (κ i)]
     (b : Π i, Basis (κ i) R (M i)) :

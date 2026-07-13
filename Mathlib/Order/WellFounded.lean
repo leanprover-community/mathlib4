@@ -95,6 +95,21 @@ theorem has_min {α} {r : α → α → Prop} (H : WellFounded r) (s : Set α) :
         not_imp_not.1 fun hne hx => hne <| ⟨x, hx, fun y hy hyx => hne <| IH y hyx hy⟩)
       ha
 
+theorem not_rightTotal (wf : WellFounded r) [Nonempty α] : ¬ Relator.RightTotal r := by
+  intro h
+  obtain ⟨a, -, ha⟩ := wf.has_min Set.univ Set.univ_nonempty
+  obtain ⟨b, hba⟩ := h a
+  specialize ha b (Set.mem_univ b)
+  contradiction
+
+theorem not_leftTotal (wf : WellFounded (Function.swap r)) [Nonempty α] :
+    ¬ Relator.LeftTotal r := by
+  intro h
+  obtain ⟨a, -, ha⟩ := wf.has_min Set.univ Set.univ_nonempty
+  obtain ⟨b, hab⟩ := h a
+  specialize ha b (Set.mem_univ b)
+  contradiction
+
 /-- A minimal element of a nonempty set in a well-founded order.
 
 If you're working with a nonempty linear order, consider defining a
@@ -147,12 +162,25 @@ theorem wellFoundedLT_iff_exists_minimal [Preorder α] :
 @[to_dual]
 alias ⟨_root_.WellFoundedLT.exists_minimal, _⟩ := wellFoundedLT_iff_exists_minimal
 
+@[to_dual]
+theorem minimal_wellFounded_lt_min [Preorder α] [WellFoundedLT α] {s : Set α} (h : s.Nonempty) :
+    Minimal (· ∈ s) (wellFounded_lt.min s h) := by
+  grind [Minimal, lt_iff_le_not_ge, WellFounded.min]
+
 theorem isWellOrder_iff_exists_not_lt_and_eq_or_gt :
     IsWellOrder α r ↔ ∀ s : Set α, s.Nonempty → ∃ m ∈ s, ∀ x ∈ s, ¬r x m ∧ (m = x ∨ r m x) := by
   refine ⟨fun h s hs ↦ ?_, fun h ↦ { wf := ?_, trichotomous a b := ?_ }⟩
   · grind [h.wf.has_min, trichotomous_of r]
   · grind [wellFounded_iff_has_min]
   · grind [h {a, b} <| by simp]
+
+/-- The minimum of `f '' s` is `f` applied to the minimum of `s`. -/
+theorem min_image {r : β → β → Prop} [Std.Trichotomous r] (wf : WellFounded r) (f : α → β)
+    {s : Set α} (hne : s.Nonempty) :
+    wf.min (f '' s) (hne.image f) = f (wf.onFun (f := f) |>.min s hne) := by
+  apply min_eq_of_forall_not_lt wf <| Set.mem_image_of_mem f <| min_mem wf.onFun s hne
+  rintro _ ⟨a, has, rfl⟩
+  exact wf.onFun.not_lt_min s has
 
 theorem not_rel_apply_succ [h : IsWellFounded α r] (f : ℕ → α) : ∃ n, ¬ r (f (n + 1)) (f n) := by
   by_contra! hf

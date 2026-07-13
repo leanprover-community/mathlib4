@@ -7,11 +7,11 @@ module
 
 public import Mathlib.Analysis.Asymptotics.ExpGrowth
 public import Mathlib.Data.ENat.Lattice
-public import Mathlib.Data.Real.ENatENNReal
 public import Mathlib.Dynamics.TopologicalEntropy.DynamicalEntourage
 
 /-!
 # Topological entropy via covers
+
 We implement Bowen-Dinaburg's definitions of the topological entropy, via covers.
 
 All is stated in the vocabulary of uniform spaces. For compact spaces, the uniform structure
@@ -218,25 +218,24 @@ lemma coverMincard_antitone (T : X → X) (F : Set X) (n : ℕ) :
     Antitone fun U : SetRel X X ↦ coverMincard T F U n :=
   fun _ _ U_V ↦ biInf_mono fun _ h ↦ h.of_entourage_subset U_V
 
-set_option backward.isDefEq.respectTransparency false in
 lemma coverMincard_finite_iff (T : X → X) (F : Set X) (U : SetRel X X) (n : ℕ) :
     coverMincard T F U n < ⊤ ↔
     ∃ s : Finset X, IsDynCoverOf T F U n s ∧ s.card = coverMincard T F U n := by
   refine ⟨fun h_fin ↦ ?_, fun ⟨s, _, s_coverMincard⟩ ↦ s_coverMincard ▸ WithTop.coe_lt_top s.card⟩
-  obtain ⟨k, k_min⟩ := WithTop.ne_top_iff_exists.1 h_fin.ne
+  obtain ⟨k, k_min⟩ := ENat.ne_top_iff_exists.mp h_fin.ne
   rw [← k_min]
-  simp only [ENat.some_eq_coe, Nat.cast_inj]
+  simp only [Nat.cast_inj]
   have : Nonempty {s : Finset X // IsDynCoverOf T F U n s} := by
     by_contra h
     apply ENat.coe_ne_top k
-    rw [← ENat.some_eq_coe, k_min, coverMincard, iInf₂_eq_top]
+    rw [k_min, coverMincard, iInf₂_eq_top]
     simp only [ENat.coe_ne_top, imp_false]
     rw [nonempty_subtype, not_exists] at h
     exact h
   have key := ciInf_mem fun s : {s : Finset X // IsDynCoverOf T F U n s} ↦ (s.val.card : ℕ∞)
   rw [coverMincard, iInf_subtype'] at k_min
   rw [← k_min, mem_range, Subtype.exists] at key
-  simp only [ENat.some_eq_coe, Nat.cast_inj, exists_prop] at key
+  simp only [Nat.cast_inj, exists_prop] at key
   exact key
 
 @[simp]
@@ -250,7 +249,7 @@ lemma coverMincard_eq_zero_iff (T : X → X) (F : Set X) (U : SetRel X X) (n : �
 
 lemma one_le_coverMincard_iff (T : X → X) (F : Set X) (U : SetRel X X) (n : ℕ) :
     1 ≤ coverMincard T F U n ↔ F.Nonempty := by
-  rw [ENat.one_le_iff_ne_zero, nonempty_iff_ne_empty, not_iff_not]
+  rw [Order.one_le_iff_ne_zero, nonempty_iff_ne_empty, not_iff_not]
   exact coverMincard_eq_zero_iff T F U n
 
 lemma coverMincard_zero (T : X → X) (h : F.Nonempty) (U : SetRel X X) :
@@ -313,7 +312,7 @@ lemma nonempty_inter_of_coverMincard [U.IsSymm] {s : Finset X} (h : IsDynCoverOf
     intro y y_F
     specialize h y_F
     simp only [s.mem_coe] at h
-    simp only [s.coe_erase, mem_diff, s.mem_coe, mem_singleton_iff]
+    simp only [s.coe_erase, mem_sdiff, s.mem_coe, mem_singleton_iff]
     obtain ⟨z, z_s, hz⟩ := h
     refine ⟨z, ⟨z_s, fun z_x ↦ notMem_empty y ?_⟩, hz⟩
     rw [← ball_empt]

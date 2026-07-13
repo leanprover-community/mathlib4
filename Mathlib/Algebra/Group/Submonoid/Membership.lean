@@ -97,6 +97,23 @@ theorem coe_sSup_of_directedOn {S : Set (Submonoid M)} (Sne : S.Nonempty)
   Set.ext fun x => by simp [mem_sSup_of_directedOn Sne hS]
 
 @[to_additive]
+theorem isMulCommutative_iSup {ι : Sort*} [Nonempty ι]
+    {S : ι → Submonoid M} [hS : ∀ i, IsMulCommutative (S i)]
+    (dir : Directed (· ≤ ·) S) : IsMulCommutative (⨆ i, S i : Submonoid M) := by
+  refine .of_setLike_mul_comm ?_
+  simp_rw [← SetLike.mem_coe, coe_iSup_of_directed dir, Set.mem_iUnion,
+    SetLike.mem_coe, forall_exists_index]
+  intro a i ha b j hb
+  obtain ⟨k, hik, hjk⟩ := dir i j
+  exact setLike_mul_comm (hik ha) (hjk hb)
+
+@[to_additive]
+instance instIsMulCommutative_iSup {ι : Type*} [Nonempty ι] [Preorder ι]
+    [IsDirectedOrder ι] {S : ι →o Submonoid M} [hS : ∀ i, IsMulCommutative (S i)] :
+    IsMulCommutative (⨆ i, S i : Submonoid M) :=
+  Submonoid.isMulCommutative_iSup S.monotone.directed_le
+
+@[to_additive]
 theorem mem_sup_left {S T : Submonoid M} : ∀ {x : M}, x ∈ S → x ∈ S ⊔ T := by
   rw [← SetLike.le_def]
   exact le_sup_left
@@ -194,8 +211,8 @@ section Submonoid
 variable {S : Submonoid M} [Fintype S]
 open Fintype
 
-/- curly brackets `{}` are used here instead of instance brackets `[]` because
-  the instance in a goal is often not the same as the one inferred by type class inference. -/
+/-- curly brackets `{}` are used here instead of instance brackets `[]` because
+the instance in a goal is often not the same as the one inferred by type class inference. -/
 @[to_additive]
 theorem card_bot {_ : Fintype (⊥ : Submonoid M)} : card (⊥ : Submonoid M) = 1 :=
   card_eq_one_iff.2
@@ -344,8 +361,12 @@ abbrev groupPowers {x : M} {n : ℕ} (hpos : 0 < n) (hx : x ^ n = 1) : Group (po
     simp only [coe_one, coe_mul, SubmonoidClass.coe_pow]
     rw [← pow_succ, Nat.sub_add_cancel hpos, ← pow_mul, mul_comm, pow_mul, hx, one_pow]
   zpow z x := x ^ z.natMod n
-  zpow_zero' z := by simp only [Int.natMod, Int.zero_emod, Int.toNat_zero, pow_zero]
-  zpow_neg' m x := Subtype.ext <| by
+  zpow_zero' z := by
+    simp_rw [HPow.hPow, Pow.pow]
+    simp only [Int.natMod, Int.zero_emod, Int.toNat_zero, pow_zero]
+  zpow_neg' m x := by
+    change x ^ (Int.natMod _ n) = (x ^ (Int.natMod _ n)) ^ (n - 1)
+    ext
     obtain ⟨_, k, rfl⟩ := x
     simp only [← pow_mul, Int.natMod, SubmonoidClass.coe_pow]
     rw [Int.negSucc_eq, ← Int.natCast_succ, ← Int.add_mul_emod_self_right (b := (m + 1 : ℕ))]
@@ -355,6 +376,7 @@ abbrev groupPowers {x : M} {n : ℕ} (hpos : 0 < n) (hx : x ^ n = 1) : Group (po
     rw [mul_comm, pow_mul, ← pow_eq_pow_mod _ hx, mul_comm k, mul_assoc, pow_mul _ (_ % _),
       ← pow_eq_pow_mod _ hx, pow_mul, pow_mul]
   zpow_succ' m x := Subtype.ext <| by
+    simp_rw [HPow.hPow, Pow.pow]
     obtain ⟨_, k, rfl⟩ := x
     simp only [← pow_mul, Int.natMod, SubmonoidClass.coe_pow, coe_mul]
     norm_cast

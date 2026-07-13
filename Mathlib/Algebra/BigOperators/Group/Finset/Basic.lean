@@ -596,7 +596,7 @@ theorem prod_multiset_map_count [DecidableEq ι] (s : Multiset ι) {M : Type*} [
 @[to_additive]
 theorem prod_multiset_count [DecidableEq M] (s : Multiset M) :
     s.prod = ∏ m ∈ s.toFinset, m ^ s.count m := by
-  convert prod_multiset_map_count s id
+  convert! prod_multiset_map_count s id
   rw [Multiset.map_id]
 
 @[to_additive]
@@ -1107,6 +1107,13 @@ theorem prod_sum {ι : Type*} [CommMonoid M] (f : ι → Multiset M) (s : Finset
   induction s using Finset.cons_induction with grind
 
 end Multiset
+
+@[to_additive (attr := simp)]
+lemma IsUnit.multisetProd_iff [CommMonoid M] {s : Multiset M} :
+    IsUnit s.prod ↔ ∀ a ∈ s, IsUnit a := by
+  induction s using Multiset.induction with
+  | empty => simp
+  | cons a s ih => simpa using fun _ ↦ ih
 
 @[to_additive (attr := simp)]
 lemma IsUnit.prod_iff [CommMonoid M] {f : ι → M} :

@@ -68,11 +68,7 @@ lemma mem_freeLocus_of_isLocalization (p : PrimeSpectrum R)
   intro r x
   obtain ⟨r, s, rfl⟩ := IsLocalization.exists_mk'_eq p.asIdeal.primeCompl r
   apply ((Module.End.isUnit_iff _).mp (IsLocalizedModule.map_units f s)).1
-  simp only [e, AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, LinearEquiv.coe_coe,
-    algebraMap_end_apply,
-    AlgEquiv.toRingEquiv_toRingHom, RingHom.coe_coe, IsLocalization.algEquiv_apply,
-    IsLocalization.map_id_mk']
-  simp only [← map_smul, ← smul_assoc, IsLocalization.smul_mk'_self, algebraMap_smul]
+  simp [e, ← map_smul, ← smul_assoc]
 
 attribute [local instance] RingHomInvPair.of_ringEquiv in
 lemma mem_freeLocus_iff_tensor (p : PrimeSpectrum R)
@@ -168,7 +164,7 @@ lemma freeLocus_eq_univ [Module.Finite R M] [Module.Flat R M] :
 
 lemma basicOpen_subset_freeLocus_iff [Module.FinitePresentation R M] {f : R} :
     (basicOpen f : Set (PrimeSpectrum R)) ⊆ freeLocus R M ↔
-      Module.Projective (Localization.Away f) (LocalizedModule (.powers f) M) := by
+      Module.Projective (Localization.Away f) (LocalizedModule.Away f M) := by
   rw [← freeLocus_eq_univ_iff, freeLocus_localization,
     Set.preimage_eq_univ_iff, localization_away_comap_range _ f]
 
@@ -229,7 +225,7 @@ lemma isLocallyConstant_rankAtStalk [Module.FinitePresentation R M] [Module.Flat
     IsLocallyConstant (rankAtStalk (R := R) M) := by
   let e : freeLocus R M ≃ₜ PrimeSpectrum R :=
     (Homeomorph.setCongr freeLocus_eq_univ).trans (Homeomorph.Set.univ (PrimeSpectrum R))
-  convert isLocallyConstant_rankAtStalk_freeLocus.comp_continuous e.symm.continuous
+  convert! isLocallyConstant_rankAtStalk_freeLocus.comp_continuous e.symm.continuous
 
 @[simp]
 lemma rankAtStalk_eq_zero_of_subsingleton [Subsingleton M] :
@@ -338,6 +334,27 @@ lemma rankAtStalk_baseChange {S : Type*} [CommRing S] [Algebra R S] (p : PrimeSp
   rw [rankAtStalk, e.finrank_eq]
   apply Module.finrank_baseChange
 
+lemma rankAtStalk_isBaseChange {S Mₛ : Type*} [CommRing S] [Algebra R S] [AddCommGroup Mₛ]
+    [Module R Mₛ] [Module S Mₛ] [IsScalarTower R S Mₛ] {f : M →ₗ[R] Mₛ} (hf : IsBaseChange S f)
+    (p : PrimeSpectrum S) : rankAtStalk Mₛ p = rankAtStalk M (p.comap (algebraMap R S)) := by
+  simp [rankAtStalk_eq_of_equiv hf.equiv.symm, rankAtStalk_baseChange]
+
+variable (M) in
+lemma rankAtStalk_eq_of_le_of_finite_of_flat {p q : PrimeSpectrum R} (hpq : p ≤ q) :
+    rankAtStalk M p = rankAtStalk M q := by
+  let S := Localization.AtPrime q.asIdeal
+  obtain ⟨P, rfl⟩ : p ∈ Set.range (PrimeSpectrum.comap (algebraMap R S)) := by
+    rw [PrimeSpectrum.localization_comap_range S q.asIdeal.primeCompl]
+    exact disjoint_compl_left_iff.mpr hpq
+  rw [← rankAtStalk_isBaseChange (LocalizedModule.isBaseChange q.asIdeal.primeCompl M),
+    rankAtStalk_eq_finrank_of_free]
+  simp [rankAtStalk]
+
+variable (M) in
+lemma rankAtStalk_eq_of_le_of_finite_of_flat' {p q : Ideal R} [hp : p.IsPrime] [hq : q.IsPrime]
+    (hpq : p ≤ q) : rankAtStalk M ⟨p, hp⟩ = rankAtStalk M ⟨q, hq⟩ :=
+  rankAtStalk_eq_of_le_of_finite_of_flat M hpq
+
 /-- See `rankAtStalk_tensorProduct_of_isScalarTower` for a hetero-basic version. -/
 lemma rankAtStalk_tensorProduct (N : Type*) [AddCommGroup N] [Module R N] [Module.Finite R N]
     [Module.Flat R N] : rankAtStalk (M ⊗[R] N) = rankAtStalk M * rankAtStalk (R := R) N := by
@@ -371,5 +388,14 @@ lemma rankAtStalk_eq (p : PrimeSpectrum R) :
 lemma _root_.Ideal.finrank_fiber_eq_rankAtStalk (p : Ideal R) [hp : p.IsPrime] :
     finrank p.ResidueField (p.Fiber M) = rankAtStalk M ⟨p, hp⟩ :=
   (rankAtStalk_eq ⟨p, hp⟩).symm
+
+lemma _root_.Ideal.finrank_fiber_eq_finrank [IsDomain R] (p : Ideal R) [p.IsPrime] :
+    finrank p.ResidueField (p.Fiber M) = finrank R M := by
+  let K := FractionRing R
+  let Rp := Localization.AtPrime p
+  let Mp := LocalizedModule.AtPrime p M
+  rw [p.finrank_fiber_eq_rankAtStalk, rankAtStalk, ← (isBaseChange Rp Mp K).finrank_eq,
+    (((LocalizedModule.equivTensorProduct p.primeCompl M).baseChange Rp K Mp _)).finrank_eq,
+    (AlgebraTensorModule.cancelBaseChange R Rp K K M).finrank_eq, (isBaseChange R M K).finrank_eq]
 
 end Module

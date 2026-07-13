@@ -102,9 +102,8 @@ theorem mixedEmbedding_eq_algebraMap_comp {x : K} :
 The number field $K$ is dense in the infinite adele ring $\prod_v K_v$.
 -/
 theorem denseRange_algebraMap [NumberField K] : DenseRange <| algebraMap K (InfiniteAdeleRing K) :=
-  (DenseRange.piMap fun _ => UniformSpace.Completion.denseRange_coe).comp
-    (InfinitePlace.denseRange_algebraMap_pi K)
-      (.piMap fun _ => UniformSpace.Completion.continuous_coe _)
+  (DenseRange.piMap fun v => Completion.denseRange_coe v).comp
+    (InfinitePlace.denseRange_algebraMap_pi K) (.piMap fun v => Completion.continuous_coe v)
 
 /-- The norm on the infinite adele ring is given by the product of the normalized norms
 across infinite places. The normalized norm is the real norm at real places and the
@@ -128,7 +127,7 @@ theorem norm_eq_zero_of_not_isUnit [NumberField K] {x : InfiniteAdeleRing K} (hx
 `NumberField.InfinitePlace.prod_eq_abs_norm`. -/
 theorem coe_norm_eq_abs_norm [NumberField K] (x : K) :
     ‖algebraMap K (InfiniteAdeleRing K) x‖ = |Algebra.norm ℚ x| := by
-  simpa [-Rat.cast_abs, norm_def] using InfinitePlace.prod_eq_abs_norm x
+  simpa [-Rat.cast_abs, norm_def] using! InfinitePlace.prod_eq_abs_norm x
 
 end InfiniteAdeleRing
 

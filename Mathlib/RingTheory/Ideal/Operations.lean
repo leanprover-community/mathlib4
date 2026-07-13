@@ -48,10 +48,10 @@ lemma coe_span_smul {R' M' : Type*} [CommSemiring R'] [AddCommMonoid M'] [Module
           exact mem_set_smul_of_mem_mem (hc hi) <| Submodule.smul_mem _ _ hn) <|
     set_smul_mono_left _ Submodule.subset_span
 
-lemma span_singleton_toAddSubgroup_eq_zmultiples (a : ℤ) :
-    (span ℤ {a}).toAddSubgroup = AddSubgroup.zmultiples a := by
+lemma span_singleton_toAddSubgroup_eq_zmultiples {M : Type*} [AddCommGroup M] (a : M) :
+    (span ℤ ({a} : Set M)).toAddSubgroup = AddSubgroup.zmultiples a := by
   ext i
-  simp [Ideal.mem_span_singleton', AddSubgroup.mem_zmultiples_iff]
+  simp [Submodule.mem_span_singleton, AddSubgroup.mem_zmultiples_iff]
 
 @[simp] lemma _root_.Ideal.span_singleton_toAddSubgroup_eq_zmultiples (a : ℤ) :
     (Ideal.span {a}).toAddSubgroup = AddSubgroup.zmultiples a :=
@@ -397,6 +397,9 @@ end IsTwoSided
 
 theorem mul_eq_bot [NoZeroDivisors R] : I * J = ⊥ ↔ I = ⊥ ∨ J = ⊥ := Submodule.mul_eq_bot
 
+theorem pow_eq_bot [IsReduced R] {n : ℕ} (hn : n ≠ 0) : I ^ n = ⊥ ↔ I = ⊥ :=
+  Submodule.pow_eq_bot hn
+
 instance {S A : Type*} [Semiring S] [SMul R S] [AddCommMonoid A] [Module R A] [Module S A]
     [IsScalarTower R S A] [IsTorsionFree R A] {I : Submodule S A} : IsTorsionFree R I :=
   (I.restrictScalars R).instIsTorsionFree
@@ -434,6 +437,12 @@ theorem span_singleton_mul_left_inj [IsDomain R] [I.IsTwoSided] [J.IsTwoSided]
 
 theorem mul_le_inf [I.IsTwoSided] : I * J ≤ I ⊓ J :=
   mul_le.2 fun r hri s hsj => ⟨I.mul_mem_right s hri, J.mul_mem_left r hsj⟩
+
+lemma inf_ne_bot_of_ne_bot [NoZeroDivisors R] {I J : Ideal R} [I.IsTwoSided]
+    (hI : I ≠ ⊥) (hJ : J ≠ ⊥) :
+    I ⊓ J ≠ ⊥ := by
+  grw [← bot_lt_iff_ne_bot, ← mul_le_inf, bot_lt_iff_ne_bot, Ne, mul_eq_bot]
+  exact not_or_intro hI hJ
 
 theorem sup_mul_eq_of_coprime_left [I.IsTwoSided] (h : I ⊔ J = ⊤) : I ⊔ J * K = I ⊔ K :=
   le_antisymm (sup_le_sup_left mul_le_left _) fun i hi => by
@@ -880,12 +889,11 @@ variable {I J} in
 theorem IsRadical.inf (hI : IsRadical I) (hJ : IsRadical J) : IsRadical (I ⊓ J) := by
   rw [IsRadical, radical_inf]; exact inf_le_inf hI hJ
 
-lemma isRadical_bot_iff :
-    (⊥ : Ideal R).IsRadical ↔ IsReduced R := by
+lemma isRadical_bot_iff : (⊥ : Ideal R).IsRadical ↔ IsReduced R := by
   simp only [IsRadical, SetLike.le_def, Ideal.mem_radical_iff, Ideal.mem_bot,
     forall_exists_index, isReduced_iff, IsNilpotent]
 
-lemma isRadical_bot [IsReduced R] : (⊥ : Ideal R).IsRadical := by rwa [Ideal.isRadical_bot_iff]
+lemma isRadical_bot [IsReduced R] : (⊥ : Ideal R).IsRadical := by rwa [isRadical_bot_iff]
 
 /-- `Ideal.radical` as an `InfTopHom`, bundling in that it distributes over `inf`. -/
 def radicalInfTopHom : InfTopHom (Ideal R) (Ideal R) where
@@ -1216,6 +1224,16 @@ lemma subset_union_prime_finite {R ι : Type*} [CommRing R] {s : Set ι}
   rw [hmem_union, Ideal.subset_union_prime a b (fun i hin ↦ hp i ((ht i).mp hin))]
   exact exists_congr (fun i ↦ and_congr_left fun _ ↦ ht i)
 
+lemma subset_iUnion_iff_mem_of_isMaximal_of_finite
+    {R : Type*} [CommRing R] {M : Ideal R} [M.IsMaximal] {S : Set (Ideal R)}
+    (hs : S.Finite) (a b : Ideal R) (hp : ∀ I ∈ S, I ≠ a → I ≠ b → I.IsPrime)
+    (ha : a ≠ ⊤) (hb : b ≠ ⊤) : ((M : Set R) ⊆ ⋃ I ∈ S, I) ↔ M ∈ S := by
+  refine (subset_union_prime_finite hs a b hp).trans ⟨fun ⟨I, mem, le⟩ ↦ ?_, (⟨M, ·, le_rfl⟩)⟩
+  rwa [‹M.IsMaximal›.eq_of_le _ le]
+  simp_rw [← or_iff_not_imp_left] at hp
+  obtain rfl | rfl | hp := hp I mem
+  exacts [ha, hb, hp.ne_top]
+
 /-- Generalize `Ideal.IsMaximal.exists_inv` to power of maximal ideals. -/
 theorem IsMaximal.exists_inv_pow (I : Ideal R) [I.IsMaximal]
     {x : R} (hx : x ∉ I) (n : ℕ) : ∃ (y : R), ∃ i ∈ I ^ n, y * x + i = 1 := by
@@ -1292,6 +1310,7 @@ noncomputable def finsuppTotal : (ι →₀ I) →ₗ[R] M :=
 
 variable {ι M v}
 
+set_option backward.defeqAttrib.useBackward true in
 theorem finsuppTotal_apply (f : ι →₀ I) :
     finsuppTotal ι M I v f = f.sum fun i x => (x : R) • v i := by
   dsimp [finsuppTotal]
