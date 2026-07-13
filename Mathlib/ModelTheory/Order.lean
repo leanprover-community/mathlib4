@@ -11,7 +11,6 @@ public import Mathlib.Data.Finset.Sort
 public import Mathlib.ModelTheory.Complexity
 public import Mathlib.ModelTheory.Fraisse
 public import Mathlib.Order.CountableDenseLinearOrder
-import Mathlib.Order.Preorder.Finite
 
 /-!
 # Ordered First-Ordered Structures
