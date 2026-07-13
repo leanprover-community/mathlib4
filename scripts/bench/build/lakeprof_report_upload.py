@@ -1,16 +1,24 @@
 #!/usr/bin/env python3
 
 import json
+import os
 import subprocess
 import sys
 from pathlib import Path
 
+upload_url = os.environ.get("LAKEPROF_UPLOAD_URL")
+if not upload_url:
+    sys.exit(0)
+if upload_url.endswith("/"):
+    upload_url = upload_url[:-1]
 
-def run(*args: str) -> None:
-    subprocess.run(args, check=True)
+# Determine paths relative to the current file.
+script_file = Path(__file__)
+template_file = script_file.parent / "lakeprof_report_template.html"
+root_dir = script_file.parent.parent.parent.parent
 
 
-def run_stdout(*command: str, cwd: str | None = None) -> str:
+def run_stdout(*command: str, cwd: Path | None = None) -> str:
     result = subprocess.run(command, capture_output=True, encoding="utf-8", cwd=cwd)
     if result.returncode != 0:
         print(result.stdout, end="", file=sys.stdout)
@@ -19,26 +27,20 @@ def run_stdout(*command: str, cwd: str | None = None) -> str:
     return result.stdout
 
 
-def main() -> None:
-    script_file = Path(__file__)
-    template_file = script_file.parent / "lakeprof_report_template.html"
+sha = run_stdout("git", "rev-parse", "@", cwd=root_dir).strip()
+base_url = f"{upload_url}/{sha}"
+report = run_stdout("lakeprof", "report", "-prc", cwd=root_dir)
 
-    sha = run_stdout("git", "rev-parse", "@").strip()
-    base_url = f"https://speed.lean-lang.org/mathlib4-out/{sha}"
-    report = run_stdout("lakeprof", "report", "-prc")
-    with open(template_file) as f:
-        template = f.read()
-
-    template = template.replace("__BASE_URL__", json.dumps(base_url))
-    template = template.replace("__LAKEPROF_REPORT__", report)
-
-    with open("index.html", "w") as f:
-        f.write(template)
-
-    run("curl", "-T", "index.html", f"{base_url}/index.html")
-    run("curl", "-T", "lakeprof.log", f"{base_url}/lakeprof.log")
-    run("curl", "-T", "lakeprof.trace_event", f"{base_url}/lakeprof.trace_event")
+template = template_file.read_text()
+template = template.replace("__BASE_URL__", json.dumps(base_url))
+template = template.replace("__LAKEPROF_REPORT__", report)
+(root_dir / "index.html").write_text(template)
 
 
-if __name__ == "__main__":
-    main()
+def upload(file: Path) -> None:
+    subprocess.run(["curl", "-fT", file, f"{base_url}/{file.name}"], check=True)
+
+
+upload(root_dir / "index.html")
+upload(root_dir / "lakeprof.log")
+upload(root_dir / "lakeprof.trace_event")
