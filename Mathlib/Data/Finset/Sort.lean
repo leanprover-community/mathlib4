@@ -345,3 +345,11 @@ def Fintype.orderIsoFinOfCardEq
     Fin k ≃o α :=
   (Finset.univ.orderIsoOfFin h).trans
     ((OrderIso.setCongr _ _ Finset.coe_univ).trans OrderIso.Set.univ)
+
+/-- Any finite linear order order-embeds into any infinite linear order. -/
+lemma nonempty_orderEmbedding_of_finite_infinite
+    (α : Type*) [LinearOrder α] [hα : Finite α]
+    (β : Type*) [LinearOrder β] [hβ : Infinite β] : Nonempty (α ↪o β) := by
+  haveI := Fintype.ofFinite α
+  obtain ⟨s, hs⟩ := Infinite.exists_subset_card_eq β (Fintype.card α)
+  exact ⟨((Fintype.orderIsoFinOfCardEq α rfl).symm.toOrderEmbedding).trans (s.orderEmbOfFin hs)⟩

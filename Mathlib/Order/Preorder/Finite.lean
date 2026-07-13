@@ -6,8 +6,8 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Data.Set.Finite.Basic
+public import Mathlib.Order.Hom.Set
 public import Mathlib.Order.Minimal
-import Mathlib.Data.Finset.Sort
 
 /-!
 # Finite preorders and finite sets in a preorder
@@ -149,14 +149,6 @@ lemma Finite.exists_le_maximal (h : p a) : ∃ b, a ≤ b ∧ Maximal p b :=
   {x | p x}.toFinite.exists_le_maximal h
 
 end Preorder
-
-/-- Any finite linear order order-embeds into any infinite linear order. -/
-lemma nonempty_orderEmbedding_of_finite_infinite
-    (α : Type*) [LinearOrder α] [hα : Finite α]
-    (β : Type*) [LinearOrder β] [hβ : Infinite β] : Nonempty (α ↪o β) := by
-  haveI := Fintype.ofFinite α
-  obtain ⟨s, hs⟩ := Infinite.exists_subset_card_eq β (Fintype.card α)
-  exact ⟨((Fintype.orderIsoFinOfCardEq α rfl).symm.toOrderEmbedding).trans (s.orderEmbOfFin hs)⟩
 
 @[elab_as_elim, deprecated "Use `WellFoundedLT.induction _ h` instead." (since := "2026-04-10")]
 lemma LinearOrder.strong_induction_of_finite
