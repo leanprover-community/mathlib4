@@ -484,6 +484,21 @@ lemma summable_descFactorial_mul_geometric_of_norm_lt_one (k : ℕ) {r : R} (hr 
     2 with n
   simp [← mul_assoc, descFactorial_eq_factorial_mul_choose (n + k) k]
 
+-- To-do: how to fix the fact that this has similar name to lemma above but diff summand
+theorem hasSum_descFactorial_mul_geometric_of_norm_lt_one' (j : ℕ) {x : R} (h : ‖x‖ < 1) :
+    HasSum (fun n : ℕ ↦ (n.descFactorial j : R) * x ^ n)
+      ((j.factorial : R) * x ^ j * ((1 - x)⁻¹ʳ) ^ (j + 1)) := by
+  rw [← hasSum_nat_add_iff' j]
+  convert! (hasSum_choose_mul_geometric_of_norm_lt_one' j h).mul_left
+    ((j.factorial : R) * x ^ j) using 1
+  · funext n
+    symm
+    push_cast [Nat.descFactorial_eq_factorial_mul_choose]
+    rw [mul_assoc, ((Nat.cast_commute ((n + j).choose j) (x ^ j)).symm).left_comm, ← pow_add,
+      add_comm j n, mul_assoc]
+  · exact sub_eq_self.2 <| Finset.sum_eq_zero fun i hi ↦ by
+      simp [descFactorial_eq_zero_iff_lt.2 (Finset.mem_range.1 hi)]
+
 open Polynomial in
 theorem summable_pow_mul_geometric_of_norm_lt_one (k : ℕ) {r : R} (hr : ‖r‖ < 1) :
     Summable (fun n ↦ (n : R) ^ k * r ^ n : ℕ → R) := by
@@ -511,70 +526,10 @@ theorem summable_pow_mul_geometric_of_norm_lt_one (k : ℕ) {r : R} (hr : ‖r�
   ext n
   simp [ha n, add_mul, sum_mul]
 
-
--- Question: can't this be now proven more simply using the following generalization?
--- in that case, is this result even needed?
-/-- If `‖r‖ < 1`, then `∑' n : ℕ, n * r ^ n = r / (1 - r) ^ 2`, `HasSum` version in a general ring
-with summable geometric series. For a version in a field, using division instead of `Ring.inverse`,
-see `hasSum_coe_mul_geometric_of_norm_lt_one`. -/
-theorem hasSum_coe_mul_geometric_of_norm_lt_one'
-    {x : R} (h : ‖x‖ < 1) :
-    HasSum (fun n ↦ n * x ^ n : ℕ → R) (x * ((1 - x)⁻¹ʳ) ^ 2) := by
-  have A : HasSum (fun (n : ℕ) ↦ (n + 1) * x ^ n) ((1 - x)⁻¹ʳ ^ 2) := by
-    convert! hasSum_choose_mul_geometric_of_norm_lt_one' 1 h with n
-    simp
-  have B : HasSum (fun (n : ℕ) ↦ x ^ n) ((1 - x)⁻¹ʳ) := hasSum_geom_series_inverse x h
-  convert! A.sub B using 1
-  · ext n
-    simp [add_mul]
-  · symm
-    calc (1 - x)⁻¹ʳ ^ 2 - (1 - x)⁻¹ʳ
-    _ = (1 - x)⁻¹ʳ ^ 2 - ((1 - x) * (1 - x)⁻¹ʳ) * (1 - x)⁻¹ʳ := by
-      simp [Ring.mul_inverse_cancel (1 - x) (isUnit_one_sub_of_norm_lt_one h)]
-    _ = x * (1 - x)⁻¹ʳ ^ 2 := by noncomm_ring
-
-/-- If `‖r‖ < 1`, then `∑' n : ℕ, n * r ^ n = r / (1 - r) ^ 2`, version in a general ring with
-summable geometric series. For a version in a field, using division instead of `Ring.inverse`,
-see `tsum_coe_mul_geometric_of_norm_lt_one`. -/
-theorem tsum_coe_mul_geometric_of_norm_lt_one'
-    {r : 𝕜} (hr : ‖r‖ < 1) : (∑' n : ℕ, n * r ^ n : 𝕜) = r * (1 - r)⁻¹ʳ ^ 2 :=
-  (hasSum_coe_mul_geometric_of_norm_lt_one' hr).tsum_eq
-
-/-- If `‖r‖ < 1`, then `∑' n : ℕ, n * r ^ n = r / (1 - r) ^ 2`, `HasSum` version. -/
-theorem hasSum_coe_mul_geometric_of_norm_lt_one {r : 𝕜} (hr : ‖r‖ < 1) :
-    HasSum (fun n ↦ n * r ^ n : ℕ → 𝕜) (r / (1 - r) ^ 2) := by
-  convert! hasSum_coe_mul_geometric_of_norm_lt_one' hr using 1
-  simp [div_eq_mul_inv]
-
-/-- If `‖r‖ < 1`, then `∑' n : ℕ, n * r ^ n = r / (1 - r) ^ 2`. -/
-theorem tsum_coe_mul_geometric_of_norm_lt_one {r : 𝕜} (hr : ‖r‖ < 1) :
-    (∑' n : ℕ, n * r ^ n : 𝕜) = r / (1 - r) ^ 2 :=
-  (hasSum_coe_mul_geometric_of_norm_lt_one hr).tsum_eq
-
---- new
-
--- Question: does this belong here? is this the right name?
-theorem hasSum_descFactorial_mul_geometric_of_norm_lt_one' (j : ℕ) {x : R} (h : ‖x‖ < 1) :
-    HasSum (fun n : ℕ ↦ (n.descFactorial j : R) * x ^ n)
-      ((j.factorial : R) * x ^ j * ((1 - x)⁻¹ʳ) ^ (j + 1)) := by
-  rw [← hasSum_nat_add_iff' j]
-  convert! (hasSum_choose_mul_geometric_of_norm_lt_one' j h).mul_left
-    ((j.factorial : R) * x ^ j) using 1
-  · funext n
-    symm
-    push_cast [Nat.descFactorial_eq_factorial_mul_choose]
-    rw [mul_assoc, ((Nat.cast_commute ((n + j).choose j) (x ^ j)).symm).left_comm, ← pow_add,
-      add_comm j n, mul_assoc]
-  · exact sub_eq_self.2 <| Finset.sum_eq_zero fun i hi ↦ by
-      simp [descFactorial_eq_zero_iff_lt.2 (Finset.mem_range.1 hi)]
-
 /-- If `‖x‖ < 1`, then `∑' n : ℕ, n ^ k * x ^ n` is given by the finite sum
 `∑ j ∈ range (k + 1), S(k, j) * j ! * x ^ j * ((1 - x)⁻¹ʳ) ^ (j + 1)`,
 where `S(k, j)` denotes the Stirling numbers of the second kind.
-
-Question: should you add here the note about genereal ring vs. field with division.
-Question: why isnt this named "coe" (hasSum_coe_pow_mul_geometric_of_norm_lt_one')
-as hasSum_coe_mul_geometric_of_norm_lt_one'
+To-do: add here the note about genereal ring vs. field with division.
 -/
 theorem hasSum_pow_mul_geometric_of_norm_lt_one' (k : ℕ) {x : R} (h : ‖x‖ < 1) :
     HasSum (fun n : ℕ ↦ (n : R) ^ k * x ^ n)
@@ -610,7 +565,45 @@ theorem tsum_pow_mul_geometric_of_norm_lt_one (k : ℕ) {r : 𝕜} (hr : ‖r‖
       stirlingSecond k j * j.factorial * r ^ j / (1 - r) ^ (j + 1)) :=
   (hasSum_pow_mul_geometric_of_norm_lt_one k hr).tsum_eq
 
--- should this be deleted?
+/-- If `‖r‖ < 1`, then `∑' n : ℕ, n * r ^ n = r / (1 - r) ^ 2`, `HasSum` version in a general ring
+with summable geometric series. For a version in a field, using division instead of `Ring.inverse`,
+see `hasSum_coe_mul_geometric_of_norm_lt_one`. -/
+theorem hasSum_coe_mul_geometric_of_norm_lt_one'
+    {x : R} (h : ‖x‖ < 1) :
+    HasSum (fun n ↦ n * x ^ n : ℕ → R) (x * ((1 - x)⁻¹ʳ) ^ 2) := by
+  -- To-do: prove this using only generalization
+  have A : HasSum (fun (n : ℕ) ↦ (n + 1) * x ^ n) ((1 - x)⁻¹ʳ ^ 2) := by
+    convert! hasSum_choose_mul_geometric_of_norm_lt_one' 1 h with n
+    simp
+  have B : HasSum (fun (n : ℕ) ↦ x ^ n) ((1 - x)⁻¹ʳ) := hasSum_geom_series_inverse x h
+  convert! A.sub B using 1
+  · ext n
+    simp [add_mul]
+  · symm
+    calc (1 - x)⁻¹ʳ ^ 2 - (1 - x)⁻¹ʳ
+    _ = (1 - x)⁻¹ʳ ^ 2 - ((1 - x) * (1 - x)⁻¹ʳ) * (1 - x)⁻¹ʳ := by
+      simp [Ring.mul_inverse_cancel (1 - x) (isUnit_one_sub_of_norm_lt_one h)]
+    _ = x * (1 - x)⁻¹ʳ ^ 2 := by noncomm_ring
+
+/-- If `‖r‖ < 1`, then `∑' n : ℕ, n * r ^ n = r / (1 - r) ^ 2`, version in a general ring with
+summable geometric series. For a version in a field, using division instead of `Ring.inverse`,
+see `tsum_coe_mul_geometric_of_norm_lt_one`. -/
+theorem tsum_coe_mul_geometric_of_norm_lt_one'
+    {r : 𝕜} (hr : ‖r‖ < 1) : (∑' n : ℕ, n * r ^ n : 𝕜) = r * (1 - r)⁻¹ʳ ^ 2 :=
+  (hasSum_coe_mul_geometric_of_norm_lt_one' hr).tsum_eq
+
+/-- If `‖r‖ < 1`, then `∑' n : ℕ, n * r ^ n = r / (1 - r) ^ 2`, `HasSum` version. -/
+theorem hasSum_coe_mul_geometric_of_norm_lt_one {r : 𝕜} (hr : ‖r‖ < 1) :
+    HasSum (fun n ↦ n * r ^ n : ℕ → 𝕜) (r / (1 - r) ^ 2) := by
+  convert! hasSum_coe_mul_geometric_of_norm_lt_one' hr using 1
+  simp [div_eq_mul_inv]
+
+/-- If `‖r‖ < 1`, then `∑' n : ℕ, n * r ^ n = r / (1 - r) ^ 2`. -/
+theorem tsum_coe_mul_geometric_of_norm_lt_one {r : 𝕜} (hr : ‖r‖ < 1) :
+    (∑' n : ℕ, n * r ^ n : 𝕜) = r / (1 - r) ^ 2 :=
+  (hasSum_coe_mul_geometric_of_norm_lt_one hr).tsum_eq
+
+-- To-do: add docstrings
 theorem hasSum_sq_mul_geometric_of_norm_lt_one' {x : R} (h : ‖x‖ < 1) :
     HasSum (fun n : ℕ ↦ (n : R) ^ 2 * x ^ n) (x * (1 + x) * ((1 - x)⁻¹ʳ) ^ 3) := by
   have h1 : ((1 - x)⁻¹ʳ) ^ 2 = (1 - x) * ((1 - x)⁻¹ʳ) ^ 3 := by
@@ -620,7 +613,7 @@ theorem hasSum_sq_mul_geometric_of_norm_lt_one' {x : R} (h : ‖x‖ < 1) :
   simp [Finset.sum_range_succ, stirlingSecond, Nat.factorial, h1]
   grind
 
------
+-- To-do: add missing 3 statements
 
 end MulGeometric
 
