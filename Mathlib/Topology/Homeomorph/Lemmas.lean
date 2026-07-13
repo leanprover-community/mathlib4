@@ -365,7 +365,7 @@ protected def Set.prod (s : Set X) (t : Set Y) : ↥(s ×ˢ t) ≃ₜ s × t whe
 /-- `Set.pi univ s` is homeomorphic to `Π i, s i`. -/
 @[simps!]
 protected def Set.univPi {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)]
-    (s : Π i, Set (X i)) : ↥(Set.pi _root_.Set.univ s) ≃ₜ Π i, s i where
+    (s : Π i, Set (X i)) : univ.pi s ≃ₜ Π i, s i where
   toEquiv := Equiv.Set.univPi s
   continuous_toFun := continuous_pi fun i ↦
     continuous_apply i |>.comp continuous_subtype_val |>.subtype_mk _
