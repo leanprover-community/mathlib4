@@ -124,7 +124,7 @@ theorem diag_def : Function.diag = fun a : α ↦ (a, a) := rfl
 
 @[simp] theorem map_comp_diag : Prod.map f g ∘ Function.diag = Function.prod f g := rfl
 
-theorem injective_diag : Injective (α := α) Function.diag := fun _ _ => congrArg Prod.fst
+theorem diag_injective : Injective (α := α) Function.diag := fun _ _ ↦ congrArg Prod.fst
 
 @[simp] theorem swap_comp_diag : Prod.swap ∘ Function.diag = Function.diag (α := α) := rfl
 
