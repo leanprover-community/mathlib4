@@ -140,8 +140,8 @@ to `f` on `B`, then `g` is a Freiman isomorphism from `B` to `A`.
 -/
 @[to_additive
 /--
-Given a Freiman isomorphism `f` from `A` to `B`, if `g` maps `B` into `A`, and is a right inverse
-to `f` on `B`, then `g` is a Freiman isomorphism from `B` to `A`.
+Given an additive Freiman isomorphism `f` from `A` to `B`, if `g` maps `B` into `A`, and is a right inverse
+to `f` on `B`, then `g` is an additive Freiman isomorphism from `B` to `A`.
 -/]
 lemma IsMulFreimanIso.symm {g : β → α} (hg₁ : MapsTo g B A) (hg₂ : RightInvOn g f B)
     (hf : IsMulFreimanIso n A B f) :
