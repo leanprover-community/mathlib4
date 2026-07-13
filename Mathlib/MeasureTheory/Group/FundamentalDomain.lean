@@ -900,10 +900,10 @@ local notation "α_mod_G" => MulAction.orbitRel G α
 
 local notation "π" => @Quotient.mk _ α_mod_G
 
-/-- If a measure `μ` on a quotient satisfies `QuotientVolumeEqVolumePreimage` with respect to a
+/-- If a measure `μ` on a quotient satisfies `QuotientMeasureEqMeasurePreimage` with respect to a
 sigma-finite measure, then it is itself `SigmaFinite`. -/
 @[to_additive MeasureTheory.instSigmaFiniteAddQuotientOrbitRelInstMeasurableSpaceToMeasurableSpace
-/-- If a measure `μ` on a quotient satisfies `AddQuotientVolumeEqVolumePreimage` with respect to a
+/-- If a measure `μ` on a quotient satisfies `AddQuotientMeasureEqMeasurePreimage` with respect to a
 sigma-finite measure, then it is itself `SigmaFinite`. -/]
 instance [SigmaFinite (volume : Measure α)] [HasFundamentalDomain G α]
     (μ : Measure (Quotient α_mod_G)) [QuotientMeasureEqMeasurePreimage volume μ] :
