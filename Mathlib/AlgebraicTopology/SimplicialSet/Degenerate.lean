@@ -337,6 +337,11 @@ lemma degenerate_app_apply {n : ℕ} {x : X _⦋n⦌} (hx : x ∈ X.degenerate n
   obtain ⟨m, hm, g, y, rfl⟩ := hx
   exact ⟨m, hm, g, f.app _ y, by rw [NatTrans.naturality_apply]⟩
 
+lemma nonDegenerate_of_app_apply {n : ℕ} {x : X _⦋n⦌} (f : X ⟶ Y)
+    (hx : f.app _ x ∈ Y.nonDegenerate n) :
+    x ∈ X.nonDegenerate n :=
+  fun h ↦ hx (degenerate_app_apply h f)
+
 lemma degenerate_le_preimage (f : X ⟶ Y) (n : ℕ) :
     X.degenerate n ⊆ (f.app _) ⁻¹' (Y.degenerate n) :=
   fun _ hx ↦ degenerate_app_apply hx f

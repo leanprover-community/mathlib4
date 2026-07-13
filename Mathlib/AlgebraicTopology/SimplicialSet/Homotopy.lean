@@ -68,7 +68,7 @@ morphisms of simplicial objects between `f` and `g`. -/
 noncomputable def toSimplicialObjectHomotopy (H : Homotopy f g) :
     SimplicialObject.Homotopy f g where
   h i := ↾fun x ↦
-    (yonedaEquiv.symm x ▷ Δ[1] ≫ H.h).app _ (prodStdSimplex.nonDegenerateEquiv₁ i).1
+    (yonedaEquiv.symm x ▷ Δ[1] ≫ H.h).app _ (prodStdSimplex₁.nonDegenerateEquiv i).1
   h_zero_comp_δ_zero n := by
     ext x
     simp only [TypeCat.Fun.toFun_apply, types_comp_apply, TypeCat.hom_ofHom, TypeCat.Fun.coe_mk,
@@ -109,8 +109,7 @@ noncomputable def toSimplicialObjectHomotopy (H : Homotopy f g) :
     dsimp
     apply congr_arg
     ext k : 2
-    · rw [stdSimplex.δ_objEquiv_symm_apply, stdSimplex.δ_objEquiv_symm_apply,
-        SimplexCategory.δ_comp_σ_succ, ← Fin.castSucc_succ, SimplexCategory.δ_comp_σ_self]
+    · rw [SimplexCategory.δ_comp_σ_succ, ← Fin.castSucc_succ, SimplexCategory.δ_comp_σ_self]
     · rw [stdSimplex.δ_objMk₁_of_lt _ _ (by simp), stdSimplex.δ_objMk₁_of_le _ _ (by simp)]
       rfl
   h_castSucc_comp_δ_succ_of_lt {n} i j hij := by
@@ -120,8 +119,7 @@ noncomputable def toSimplicialObjectHomotopy (H : Homotopy f g) :
     dsimp
     apply congr_arg
     ext k : 2
-    · simp [SimplexCategory.δ_comp_σ_of_gt hij, SSet.yonedaEquiv_symm_app_objEquiv_symm.{u}]
-      rfl
+    · simp [SimplexCategory.δ_comp_σ_of_gt hij, ← δ_def]
     · rw [stdSimplex.δ_objMk₁_of_le _ _ (by simpa using! Fin.le_of_lt hij)]
       rfl
   h_comp_σ_castSucc_of_le {n} i j hij := by
@@ -131,7 +129,7 @@ noncomputable def toSimplicialObjectHomotopy (H : Homotopy f g) :
     dsimp
     apply congr_arg
     ext k : 2
-    · simp [SimplexCategory.σ_comp_σ hij, SSet.yonedaEquiv_symm_app_objEquiv_symm.{u}]
+    · simp [SimplexCategory.σ_comp_σ hij]
       rfl
     · rw [stdSimplex.σ_objMk₁_of_lt _ _ (by simpa)]
   h_comp_σ_succ_of_lt {n} i j hij := by
@@ -141,7 +139,7 @@ noncomputable def toSimplicialObjectHomotopy (H : Homotopy f g) :
     dsimp
     apply congr_arg
     ext k : 2
-    · simp [← SimplexCategory.σ_comp_σ hij, SSet.yonedaEquiv_symm_app_objEquiv_symm.{u}]
+    · simp [← SimplexCategory.σ_comp_σ hij]
       rfl
     · rw [stdSimplex.σ_objMk₁_of_le _ _ (by simpa)]
       rfl
