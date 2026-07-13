@@ -106,13 +106,13 @@ end Prod
 /- ### The diagonal map -/
 
 /-- The diagonal map into `Prod`. -/
-@[inline] protected def diag {α} : α → α × α := fun a : α => (a, a)
+@[inline] protected def diag {α} : α → α × α := fun a : α ↦ (a, a)
 
 section Diag
 
 variable {α β γ : Type*} (f : α → β) (g : α → γ) (a b : α)
 
-theorem diag_def : Function.diag = fun a : α => (a, a) := rfl
+theorem diag_def : Function.diag = fun a : α ↦ (a, a) := rfl
 
 @[simp, grind =] theorem diag_apply : Function.diag a = (a, a) := rfl
 
