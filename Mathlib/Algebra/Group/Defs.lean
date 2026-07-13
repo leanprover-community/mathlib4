@@ -174,14 +174,14 @@ end IsRightCancelMul
 end Mul
 
 /-- `PSMul` is an implementation detail of `AddSemigroup`. It is needed because it is
-impossible to extend `SMul ℕ M+` and `SMul ℤ M` at the same time. -/
+impossible to extend `SMul ℕ+ M` and `SMul ℕ M` at the same time. -/
 class PSMul (M : Type u) where
   /-- Multiplication by a positive natural number.
   Set this to `psmulRec` unless `Module` diamonds are possible. -/
   protected psmul : ℕ+ → M → M
 
 /-- `PPow` is an implementation detail of `Semigroup`. It is needed because it is
-impossible to extend `Pow M ℕ+` and `Pow M ℕ+` at the same time. -/
+impossible to extend `Pow M ℕ+` and `Pow M ℕ` at the same time. -/
 @[to_additive]
 class PPow (M : Type u) where
   /-- Raising to the power of a positive natural number. -/
