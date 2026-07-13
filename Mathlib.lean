@@ -6147,6 +6147,7 @@ public import Mathlib.Order.JordanHolder
 public import Mathlib.Order.KonigLemma
 public import Mathlib.Order.KrullDimension
 public import Mathlib.Order.Lattice
+public import Mathlib.Order.Lattice.Constructor
 public import Mathlib.Order.Lattice.Congruence
 public import Mathlib.Order.Lattice.Nat
 public import Mathlib.Order.LatticeIntervals
