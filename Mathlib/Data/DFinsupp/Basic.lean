@@ -230,9 +230,6 @@ theorem mapDomain_support [∀ i (x : M i), Decidable (x ≠ 0)]
   Finset.Subset.trans support_sum <|
     Finset.Subset.trans (Finset.biUnion_mono fun _ _ => support_single_subset) <| by
       rw [Finset.biUnion_singleton]
--- /-
--- TODO: everything else
-
 
 theorem mapDomain_apply' [∀ i (x : M i), Decidable (x ≠ 0)]
     (S : Set α) {f : α → β} (x : Π₀ a, M (f a)) (hS : (x.support : Set α) ⊆ S)
