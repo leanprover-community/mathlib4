@@ -97,7 +97,7 @@ theorem Rel.subLeft (a : lib R X) {b c : lib R X} (h : Rel R X b c) : Rel R X (a
 theorem Rel.subRight {a b : lib R X} (c : lib R X) (h : Rel R X a b) : Rel R X (a - c) (b - c) := by
   simpa only [sub_eq_add_neg] using h.add_right (-c)
 
-theorem Rel.smulOfTower {S : Type*} [Monoid S] [SMulZeroClass S R] [IsScalarTower S R R] (t : S)
+theorem Rel.smulOfTower {S : Type*} [SMulZeroClass S R] [IsScalarTower S R R] (t : S)
     (a b : lib R X) (h : Rel R X a b) : Rel R X (t • a) (t • b) := by
   rw [← smul_one_smul R t a, ← smul_one_smul R t b]
   exact h.smul _
