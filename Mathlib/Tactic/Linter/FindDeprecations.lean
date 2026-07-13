@@ -241,8 +241,8 @@ def rewriteOneFile (fname : String) (rgs : Array (Name × Lean.Syntax.Range)) :
   let commandPositions ←
     IO.Process.output {cmd := "lake", args := #["build", fname_with_option]}
   -- `stringPositions` consists of lists of the form `[p₁, p₂, p₃]`, where
-  -- * `p₁` is the start of a command
-  -- * `p₂` is the end of the command, excluding trailing whitespace and comments
+  -- * `p₁` is the start of a command;
+  -- * `p₂` is the end of the command, excluding trailing whitespace and comments;
   -- * `p₁` is the end of the command, including trailing whitespace and comments.
   let stringPositions := (commandPositions.stdout.splitOn "\n").map parseLine |>.reduceOption
   let mut removals : Std.HashSet (List String.Pos.Raw) := ∅

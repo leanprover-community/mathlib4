@@ -20,7 +20,7 @@ variable [Fintype α]
 example : ({x | p x} : Finset α) = univ.filter p := rfl
 example : ({x : α | p x} : Finset α) = univ.filter p := rfl
 
--- If the type of `s` (or the entire expression) is `Finset ?α`, elaborate as `Finset`
+-- If the type of `s` (or the entire expression) is `Finset ?α`, elaborate as `Finset`;
 -- otherwise as `Set`
 example (s : Finset α) : {x ∈ s | p x} = s.filter p := rfl
 example (s : Finset α) : ({x ∈ s | p x} : Set α) = setOf fun x => x ∈ s ∧ p x := rfl

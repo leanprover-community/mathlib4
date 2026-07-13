@@ -114,7 +114,7 @@ def maybeProveInjective (ginj : Expr) (using? : Option Expr) : MetaM Bool := do
   if ← ginj.mvarId!.assumptionCore then
     return true
   -- Try using that this is an equivalence
-  -- Note: if `f` is itself a metavariable, this can cause it to become an equivalence
+  -- Note: if `f` is itself a metavariable, this can cause it to become an equivalence;
   -- perhaps making sure `f` is an equivalence would be correct, but maybe users
   -- shouldn't do `apply_fun _`.
   let ok ← observing? do

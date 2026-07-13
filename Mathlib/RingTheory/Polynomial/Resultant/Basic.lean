@@ -989,7 +989,7 @@ private lemma sylvesterDeriv_of_natDegree_eq_three {f : R[X]} (hf : f.natDegree 
                 0,         1,             0,             0,             3] := by
   ext ⟨i, hi⟩ ⟨j, hj⟩
   -- In this proof we do as much as possible of the `simp` work before drilling down into the
-  -- `fin_cases` constructs. This means the simps are not terminal, so they are not squeezed
+  -- `fin_cases` constructs. This means the simps are not terminal, so they are not squeezed;
   -- but the proof runs much faster this way.
   simp only [sylvesterDeriv, hf, OfNat.ofNat_ne_zero, ↓reduceDIte, sylvester, Fin.addCases,
     Nat.add_one_sub_one, Fin.val_castLT, mem_Icc, Fin.val_fin_le, Fin.val_subNat, Fin.val_cast,

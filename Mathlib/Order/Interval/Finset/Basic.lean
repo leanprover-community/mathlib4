@@ -76,7 +76,7 @@ theorem nonempty_Ioc : (Ioc a b).Nonempty ↔ a < b := by
 @[aesop safe apply (rule_sets := [finsetNonempty])]
 alias ⟨_, Aesop.nonempty_Ioc_of_lt⟩ := nonempty_Ioc
 
--- TODO: This is nonsense. A locally finite order is never densely ordered
+-- TODO: This is nonsense. A locally finite order is never densely ordered;
 -- See `not_lt_of_denselyOrdered_of_locallyFinite`
 @[simp]
 theorem nonempty_Ioo [DenselyOrdered α] : (Ioo a b).Nonempty ↔ a < b := by

@@ -60,7 +60,7 @@ namespace Mathlib.Linter.Style
 
 /-- Whether a syntax element is an `obtain` tactic call without a provided proof. -/
 def isObtainWithoutProof : Syntax → Bool
-  -- Using the `obtain` tactic without a proof requires proving a type
+  -- Using the `obtain` tactic without a proof requires proving a type;
   -- a pattern is optional.
   | `(tactic|obtain : $_type) | `(tactic|obtain $_pat : $_type) => true
   | _ => false

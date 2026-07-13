@@ -111,7 +111,7 @@ private lemma kraft_mcmillan_inequality_aux {S : Finset (List α)} [Fintype α] 
     exact concatFn_length_mem_Icc
       (fun c hnil => h.epsilon_not_mem (by simpa [hnil] using c.prop))
   let D := (Fintype.card α : ℝ)
-  -- Expand the `r`-th power as a sum over `r`-tuples of codewords
+  -- Expand the `r`-th power as a sum over `r`-tuples of codewords;
   -- each tuple contributes the weight `(1/D)^{|concatFn w|}`.
   calc (∑ w ∈ S, (1 / (Fintype.card α) : ℝ) ^ w.length) ^ r
     _ = ∑ w : Fin r → S, ∏ i : Fin r, (1 / D) ^ (w i).val.length := by
@@ -122,7 +122,7 @@ private lemma kraft_mcmillan_inequality_aux {S : Finset (List α)} [Fintype α] 
       apply Fintype.sum_congr
       intro w
       simpa [concatFn_length] using Finset.prod_pow_eq_pow_sum Finset.univ _ _
-    -- Unique decodability makes `concatFn` injective, so these concatenations are distinct
+    -- Unique decodability makes `concatFn` injective, so these concatenations are distinct;
     -- we can reindex the sum by the set `T` of words.
     _ = ∑ x ∈ T, (1 / D) ^ x.length :=
       (Finset.sum_image (f := fun x => (1 / D) ^ x.length)

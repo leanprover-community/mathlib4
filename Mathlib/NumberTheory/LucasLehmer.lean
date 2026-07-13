@@ -224,7 +224,7 @@ def q (p : ℕ) : ℕ+ :=
 
 -- It would be nice to define this as (ℤ/qℤ)[x] / (x^2 - 3),
 -- obtaining the ring structure for free,
--- but that seems to be more trouble than it's worth
+-- but that seems to be more trouble than it's worth;
 -- if it were easy to make the definition,
 -- cardinality calculations would be somewhat more involved, too.
 /-- We construct the ring `X q` as ℤ/qℤ + √3 ℤ/qℤ. -/

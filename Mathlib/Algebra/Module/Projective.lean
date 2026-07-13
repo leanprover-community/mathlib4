@@ -100,7 +100,7 @@ theorem projective_lifting_property [h : Projective R P] (f : M →ₗ[R] N) (g 
     a map `φ : (P →₀ R) →ₗ M`.
     -/
   let φ : (P →₀ R) →ₗ[R] M := Finsupp.linearCombination _ fun p => Function.surjInv hf (g p)
-  -- By projectivity we have a map `P →ₗ (P →₀ R)`
+  -- By projectivity we have a map `P →ₗ (P →₀ R)`;
   obtain ⟨s, hs⟩ := h.out
   -- Compose to get `P →ₗ M`. This works.
   use φ.comp s

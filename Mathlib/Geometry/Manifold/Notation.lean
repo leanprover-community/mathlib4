@@ -206,7 +206,7 @@ def totalSpaceMk (e : Expr) : MetaM Expr := do
               let body ← mkAppM ``Bundle.TotalSpace.mk' #[F, x, (e.app x).headBeta]
               return (← mkLambdaFVars #[x] body).headBeta
         | none =>
-          -- future: special-case `Bundle.TotalSpace` for V
+          -- future: special-case `Bundle.TotalSpace` for V;
           -- if so, say "there is no need to apply T% twice"
           throwError "could not find a `FiberBundle` instance on `{V}`:\n\
           `{e}` is a function into `{V}`\n\n\

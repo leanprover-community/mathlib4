@@ -83,7 +83,7 @@ example : foo x = 1 ↔ ∃ k : ℤ, x = k := by
 
 lemma six_eq_seven : 6 = 7 := test_sorry
 
--- This test also verifies that we are removing duplicate results
+-- This test also verifies that we are removing duplicate results;
 -- it previously also reported `Nat.cast_ofNat`
 #guard_msgs(drop info) in
 example : ∀ (x : ℕ), x ≤ 6 := by

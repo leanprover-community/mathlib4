@@ -122,7 +122,7 @@ def StyleError.errorMessage (err : StyleError) : String := match err with
         Consider deleting it."
 
 /-- The error code for a given style error. Keep this in sync with `parse?_errorContext` below! -/
--- FUTURE: we're matching the old codes in `lint-style.py` for compatibility
+-- FUTURE: we're matching the old codes in `lint-style.py` for compatibility;
 -- in principle, we could also print something more readable.
 def StyleError.errorCode (err : StyleError) : String := match err with
   | StyleError.adaptationNote => "ERR_ADN"
