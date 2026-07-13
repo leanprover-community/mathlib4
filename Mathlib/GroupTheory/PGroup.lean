@@ -5,9 +5,9 @@ Authors: Chris Hughes, Thomas Browning
 -/
 module
 
+public import Mathlib.Data.SetLike.Fintype
 public import Mathlib.GroupTheory.Perm.Cycle.Type
 public import Mathlib.GroupTheory.SpecificGroups.Cyclic
-public import Mathlib.Order.Atoms.Finite
 
 /-!
 # p-groups

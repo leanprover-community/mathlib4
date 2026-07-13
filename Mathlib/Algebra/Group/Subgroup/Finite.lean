@@ -37,10 +37,6 @@ instance (K : Subgroup G) [DecidablePred (· ∈ K)] [Fintype G] : Fintype K :=
 instance (K : Subgroup G) [Finite G] : Finite K :=
   Subtype.finite
 
-@[to_additive]
-instance [Finite G] : Finite (Subgroup G) :=
-  Finite.of_injective _ SetLike.coe_injective
-
 end Subgroup
 
 /-!
