@@ -310,7 +310,7 @@ set_option backward.defeqAttrib.useBackward true in
 def prod {F G : A ⥤ B} {H I : C ⥤ D} (α : F ⟶ G) (β : H ⟶ I) : F.prod H ⟶ G.prod I where
   app X := α.app X.1 ×ₘ β.app X.2
 
-/- Again, it is inadvisable in Lean 3 to setup a notation `α × β`
+/- Again, it is inadvisable in Lean 3 to setup a notation `α × β`;
 use instead `α.prod β` or `NatTrans.prod α β`. -/
 
 set_option backward.defeqAttrib.useBackward true in
