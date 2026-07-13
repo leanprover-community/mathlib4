@@ -594,7 +594,7 @@ variable {R S A : Type*} [CommRing R] [CommRing S] [CommRing A]
 @[simp]
 theorem LinearIndependent.comp_algebraMap_iff {ι : Type*} {v : ι → S} :
     LinearIndependent R (algebraMap S A ∘ v) ↔ LinearIndependent R v :=
-  (IsScalarTower.toAlgHom R S A).toLinearMap.linearIndependent_iff (by simp [LinearMap.ker_eq_bot'])
+  (IsScalarTower.toAlgHom R S A).toLinearMap.linearIndependent_iff_of_injOn (by simp)
 
 @[simp]
 theorem LinearIndepOn.comp_algebraMap_iff {ι : Type*} {v : ι → S} {s : Set ι} :
