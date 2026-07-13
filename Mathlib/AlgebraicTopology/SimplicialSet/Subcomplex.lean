@@ -65,6 +65,10 @@ abbrev ι (A : Subcomplex X) : Quiver.Hom (V := SSet) A X := Subfunctor.ι A
 instance (A : X.Subcomplex) : Mono A.ι :=
   inferInstanceAs (Mono (Subfunctor.ι A))
 
+@[ext]
+lemma hom_ext {A : X.Subcomplex} {f g : Y ⟶ A} (h : f ≫ A.ι = g ≫ A.ι) : f = g := by
+  simpa only [cancel_mono] using h
+
 section
 
 variable {S₁ S₂ : X.Subcomplex} (h : S₁ ≤ S₂)
