@@ -27,7 +27,7 @@ import Mathlib.Topology.MetricSpace.Perfect
 This file proves that measurable maps into pseudometrizable Borel spaces have an almost everywhere
 separable range under the uncountable disjoint-union property. This is the topological reduction in
 the proof that almost everywhere measurability and almost everywhere strong measurability agree for
-finite inner regular measures.
+finite inner regular measures. We also derive the corresponding sigma-finite results.
 -/
 
 @[expose] public section
@@ -1448,5 +1448,49 @@ theorem aestronglyMeasurable_iff_aemeasurable_of_innerRegular
     AEStronglyMeasurable f μ ↔ AEMeasurable f μ :=
   ⟨AEStronglyMeasurable.aemeasurable,
     AEMeasurable.aestronglyMeasurable_of_innerRegular⟩
+
+/-- An almost everywhere measurable map into a pseudometrizable Borel space has an almost
+everywhere separable range with respect to a sigma-finite compact-inner-regular measure. -/
+theorem AEMeasurable.exists_isSeparable_ae_mem_of_sigmaFinite_innerRegular
+    [TopologicalSpace X] [OpensMeasurableSpace X] [T2Space X]
+    [SigmaFinite μ] [μ.InnerRegularCompactLTTop] (hf : AEMeasurable f μ) :
+    ∃ s : Set Y, IsSeparable s ∧ ∀ᵐ x ∂μ, f x ∈ s := by
+  let E := spanningSets μ
+  letI (n : ℕ) : IsFiniteMeasure (μ.restrict (E n)) :=
+    isFiniteMeasure_restrict.2 (measure_spanningSets_lt_top μ n).ne
+  have h (n : ℕ) :=
+    AEMeasurable.exists_isClosed_isSeparable_ae_mem (Y := Y) (hf.restrict (s := E n))
+  choose s _hs_closed hs_sep hfs using h
+  refine ⟨⋃ n, s n, IsSeparable.iUnion hs_sep, ?_⟩
+  have hfs' : ∀ n, ∀ᵐ x ∂μ.restrict (E n), f x ∈ ⋃ n, s n := fun n ↦
+    (hfs n).mono fun _ hx ↦ mem_iUnion_of_mem n hx
+  have := (ae_restrict_iUnion_iff E fun x ↦ f x ∈ ⋃ n, s n).2 hfs'
+  simpa only [E, iUnion_spanningSets, Measure.restrict_univ] using this
+
+/-- A measurable map into a pseudometrizable Borel space has an almost everywhere separable
+range with respect to a sigma-finite compact-inner-regular measure. -/
+theorem Measurable.exists_isSeparable_ae_mem_of_sigmaFinite_innerRegular
+    [TopologicalSpace X] [OpensMeasurableSpace X] [T2Space X]
+    [SigmaFinite μ] [μ.InnerRegularCompactLTTop] (hf : Measurable f) :
+    ∃ s : Set Y, IsSeparable s ∧ ∀ᵐ x ∂μ, f x ∈ s :=
+  AEMeasurable.exists_isSeparable_ae_mem_of_sigmaFinite_innerRegular hf.aemeasurable
+
+/-- Almost everywhere measurable maps into pseudometrizable Borel spaces are almost everywhere
+strongly measurable with respect to sigma-finite compact-inner-regular measures. -/
+theorem AEMeasurable.aestronglyMeasurable_of_sigmaFinite_innerRegular
+    [TopologicalSpace X] [OpensMeasurableSpace X] [T2Space X]
+    [SigmaFinite μ] [μ.InnerRegularCompactLTTop] (hf : AEMeasurable f μ) :
+    AEStronglyMeasurable f μ := by
+  refine aestronglyMeasurable_iff_aemeasurable_separable.2 ⟨hf, ?_⟩
+  exact AEMeasurable.exists_isSeparable_ae_mem_of_sigmaFinite_innerRegular hf
+
+/-- Almost everywhere strong measurability and almost everywhere measurability agree for maps into
+pseudometrizable Borel spaces with respect to sigma-finite compact-inner-regular measures. -/
+theorem aestronglyMeasurable_iff_aemeasurable_of_sigmaFinite_innerRegular
+    [TopologicalSpace X] [OpensMeasurableSpace X] [T2Space X]
+    [SigmaFinite μ] [μ.InnerRegularCompactLTTop] :
+    AEStronglyMeasurable f μ ↔ AEMeasurable f μ :=
+  ⟨AEStronglyMeasurable.aemeasurable,
+    AEMeasurable.aestronglyMeasurable_of_sigmaFinite_innerRegular⟩
 
 end MeasureTheory
