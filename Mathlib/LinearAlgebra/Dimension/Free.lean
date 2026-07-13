@@ -288,7 +288,7 @@ theorem nonempty_linearEquiv_iff_rank_eq_one :
   simp [nonempty_linearEquiv_iff_lift_rank_eq, eq_comm]
 
 theorem nonempty_linearEquiv_iff_finrank_eq_one :
-    Nonempty (R ≃ₗ[R] M) ↔ Module.finrank R M = 1 := by
+    Nonempty (R ≃ₗ[R] M) ↔ finrank R M = 1 := by
   simp [nonempty_linearEquiv_iff_rank_eq_one, finrank]
 
 alias ⟨_, nonempty_linearEquiv_of_finrank_eq_one⟩ := nonempty_linearEquiv_iff_finrank_eq_one
