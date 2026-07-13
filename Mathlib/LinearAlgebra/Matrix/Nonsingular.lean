@@ -46,8 +46,7 @@ lemma detpBalanced_iff_sub_mul_det_eq_zero {R : Type*} [CommRing R] {A : Matrix 
 
 lemma nonsingular_iff_det_mem_nonZeroDivisors {R : Type*} [CommRing R]
     {A : Matrix n n R} : A.Nonsingular ↔ A.det ∈ nonZeroDivisors R := by
-  simp_rw [Nonsingular, detpBalanced_iff_sub_mul_det_eq_zero,
-    ← nonZeroDivisorsRight_eq_nonZeroDivisors, mem_nonZeroDivisorsRight_iff]
+  simp_rw [Nonsingular, detpBalanced_iff_sub_mul_det_eq_zero, mem_nonZeroDivisors_iff_right]
   exact ⟨fun h x eq ↦ h x 0 (by simpa), fun h a b eq ↦ sub_eq_zero.mp <| h _ (by simpa)⟩
 
 /-- If the columns of a square matrix are linearly independent, then the matrix is nonsingular. -/
