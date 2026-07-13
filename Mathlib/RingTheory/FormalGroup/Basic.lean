@@ -260,6 +260,8 @@ lemma zeroX_eq_X : F.zeroX = PowerSeries.X := by
     _ = _ := by
       rw [zeroX_subst_zeroX, F.zeroX.subst_substInv_left F.constantCoeff_zeroX]
 
+section
+
 variable {S : Type*} [CommRing S] [UniformSpace S] [IsUniformAddGroup S] [IsLinearTopology S S]
   [CompleteSpace S] [T2Space S] [IsTopologicalRing S]
   [UniformSpace R] [DiscreteUniformity R] [Algebra R S]
@@ -317,10 +319,7 @@ theorem add_comm [F.IsComm] {a b : S} (ha : IsTopologicallyNilpotent a)
   congr! 2 with i
   fin_cases i <;> simp
 
-end FormalGroup
-section
-
-namespace FormalGroup
+end
 
 variable (F : FormalGroup R) (S : Type*) [CommRing S] [UniformSpace S]
 
