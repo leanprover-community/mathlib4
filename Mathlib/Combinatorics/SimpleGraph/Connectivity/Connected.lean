@@ -9,8 +9,6 @@ public import Mathlib.Combinatorics.SimpleGraph.Paths
 public import Mathlib.Combinatorics.SimpleGraph.Subgraph
 public import Mathlib.Combinatorics.SimpleGraph.Operations
 
-import Mathlib.Data.Set.Finite.Lattice
-
 /-!
 ## Main definitions
 
