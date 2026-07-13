@@ -40,6 +40,7 @@ is algebraic and that every algebraic element over a field is integral.
 
 @[expose] public section
 
+-- PRed
 theorem LinearIndependent.comp_algebraMap_iff
     {R S A : Type*} [CommRing R] [CommRing S] [CommRing A]
     [Algebra R S] [Algebra S A] [Algebra R A] [IsScalarTower R S A] [FaithfulSMul S A]
@@ -49,12 +50,14 @@ theorem LinearIndependent.comp_algebraMap_iff
   simp_rw [linearIndependent_iff, Finsupp.linearCombination_linear_comp]
   simp
 
+-- PRed
 theorem LinearIndepOn.comp_algebraMap_iff {R S A : Type*} [CommRing R] [CommRing S] [CommRing A]
     [Algebra R S] [Algebra S A] [Algebra R A] [IsScalarTower R S A] [FaithfulSMul S A]
     {ι : Type*} {v : ι → S} {s : Set ι} :
     LinearIndepOn R (algebraMap S A ∘ v) s ↔ LinearIndepOn R v s :=
   LinearIndependent.comp_algebraMap_iff
 
+-- PRed
 theorem LinearIndepOn.image_algebraMap_iff (R S A : Type*) [CommRing R] [CommRing S] [CommRing A]
     [Algebra R S] [Algebra S A] [Algebra R A] [IsScalarTower R S A] [FaithfulSMul S A]
     {s : Set S} :
@@ -62,11 +65,13 @@ theorem LinearIndepOn.image_algebraMap_iff (R S A : Type*) [CommRing R] [CommRin
   rw [← linearIndepOn_iff_image (FaithfulSMul.algebraMap_injective S A).injOn]
   exact LinearIndepOn.comp_algebraMap_iff
 
+-- PRed
 noncomputable def Finset.equivMap {α β : Type*} (s : Finset α) (f : α ↪ β) : s ≃ s.map f :=
   .ofBijective (fun x ↦ ⟨f x, s.mem_map_of_mem f x.2⟩) (⟨fun x y ↦ by simp, fun ⟨x, hx⟩ ↦ by
     obtain ⟨x, hxs, rfl⟩ := Finset.mem_map.mp hx
     exact ⟨⟨x, hxs⟩, rfl⟩⟩)
 
+-- PRed
 theorem IsLocalization.integerMultipleMultiple_injective {R : Type*} [CommSemiring R]
     (M : Submonoid R) {S : Type*} [CommSemiring S] [Algebra R S] [IsLocalization M S]
     {ι : Type*} (s : Finset ι) (f : ι → S) (hf : Function.Injective f) :
@@ -77,6 +82,7 @@ theorem IsLocalization.integerMultipleMultiple_injective {R : Type*} [CommSemiri
   rwa [← h, hi, (IsLocalization.smul_bijective S (commonDenom M s f)).injective.eq_iff,
     hf.eq_iff, SetLike.coe_eq_coe] at hj
 
+-- PRed
 theorem IsLocalization.card_finsetIntegerMultiple {R : Type*} [CommSemiring R] (M : Submonoid R)
     {S : Type*} [CommSemiring S] [Algebra R S] [IsLocalization M S] [DecidableEq R] (s : Finset S) :
     (finsetIntegerMultiple M s).card = s.card := by
@@ -84,6 +90,7 @@ theorem IsLocalization.card_finsetIntegerMultiple {R : Type*} [CommSemiring R] (
   apply integerMultipleMultiple_injective
   exact Function.injective_id
 
+-- PRed
 theorem Cardinal.toNat_eq_of_forall_le_iff (c d : Cardinal)
     (h : ∀ n : ℕ, n ≤ c ↔ n ≤ d) : c.toNat = d.toNat := by
   have h' := forall_congr' h
@@ -96,15 +103,23 @@ theorem Cardinal.toNat_eq_of_forall_le_iff (c d : Cardinal)
     apply eq_of_forall_le_iff
     simp_all
 
+theorem IsFractionRing.rank_eq (R R' S : Type*)
+    [CommRing R] [CommRing R'] [CommRing S]
+    [Algebra R R'] [Module R' S] [Module R S]
+    [IsScalarTower R R' S] [IsFractionRing R R'] :
+    Module.rank R S = Module.rank R' S := by
+  simp_rw [Module.rank, ciSup_subtype Cardinal.bddAbove_of_small (by simp),
+    LinearIndepOn, LinearIndependent.iff_fractionRing R R'] -- add LinearIndepOn.iff_fractionRing
+
 open IsLocalization nonZeroDivisors Pointwise in
-theorem foo' (R S S' : Type*) [DecidableEq S]
-    [CommRing R] [CommRing S] [CommRing S']
-    [Algebra R S] [Algebra S S'] [Algebra R S']
-    [IsScalarTower R S S'] [IsFractionRing S S']
-    {s : Finset S'} (hs : LinearIndepOn R id (s : Set S')) :
+theorem foo' (R S A : Type*) [DecidableEq S]
+    [CommRing R] [CommRing S] [CommRing A]
+    [Algebra R S] [Algebra S A] [Algebra R A]
+    [IsScalarTower R S A] [IsFractionRing S A]
+    {s : Finset A} (hs : LinearIndepOn R id (s : Set A)) :
     LinearIndepOn R id (finsetIntegerMultiple S⁰ s : Set S) := by
   classical
-  replace hs : LinearIndepOn R (id : S' → S') (commonDenomOfFinset S⁰ s • s) := by
+  replace hs : LinearIndepOn R (id : A → A) (commonDenomOfFinset S⁰ s • s) := by
     rw [← Finset.coe_smul_finset]
     rw [linearIndepOn_finset_iff] at hs ⊢
     intro f h
@@ -113,8 +128,8 @@ theorem foo' (R S S' : Type*) [DecidableEq S]
     rw [Finset.smul_finset_def, Finset.sum_image] at h
     simp_rw [id_eq, smul_comm (f _), ← Finset.smul_sum] at h
     rwa [← smul_zero (commonDenomOfFinset S⁰ s),
-      (IsLocalization.smul_bijective S' (commonDenomOfFinset S⁰ s)).injective.eq_iff] at h
-    exact (IsLocalization.smul_bijective S' (commonDenomOfFinset S⁰ s)).injective.injOn
+      (IsLocalization.smul_bijective A (commonDenomOfFinset S⁰ s)).injective.eq_iff] at h
+    exact (IsLocalization.smul_bijective A (commonDenomOfFinset S⁰ s)).injective.injOn
   rw [← finsetIntegerMultiple_image S⁰ s] at hs
   rwa [LinearIndepOn.image_algebraMap_iff] at hs
 
