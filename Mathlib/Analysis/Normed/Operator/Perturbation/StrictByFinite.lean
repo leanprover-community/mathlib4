@@ -132,8 +132,8 @@ theorem step1 [T2Space F] (u : E →L[𝕜] F) (A : Submodule 𝕜 E)
     rwa [u_restr_eq, u_eq, ← (isEmbedding_subtypeL _).isStrictMap_iff,
       ← Ψ.isHomeomorph.isEmbedding.isStrictMap_iff,
       ← Φ.symm.isHomeomorph.isQuotientMap.isStrictMap_iff]
-  simp_rw [← coe_coe, ContinuousLinearMap.coe_prodMap, LinearMap.isStrictMap_prodMap_iff,
-    coe_coe, uₛ.isStrictMap_of_finiteDimensional, true_and]
+  simp_rw [← coe_coe, ContinuousLinearMap.coe_prodMap, LinearMap.isStrictMap_prodMap_iff, coe_coe,
+    uₛ.isStrictMap_of_finiteDimensional, true_and]
 
 /-!
 ### Step 2
