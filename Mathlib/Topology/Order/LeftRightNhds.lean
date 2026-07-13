@@ -78,6 +78,18 @@ theorem nhdsGT_basis_of_exists_gt {a : α} (h : ∃ b, a < b) : (𝓝[>] a).HasB
 lemma nhdsGT_basis [NoMaxOrder α] (a : α) : (𝓝[>] a).HasBasis (a < ·) (Ioo a) :=
   nhdsGT_basis_of_exists_gt <| exists_gt a
 
+lemma nhdsGT_basis_Ioc_of_exists_gt [DenselyOrdered α] {a : α} (h : ∃ b, a < b) :
+    (𝓝[>] a).HasBasis (fun x ↦ a < x) (Ioc a) :=
+  nhdsGT_basis_of_exists_gt h |>.to_hasBasis'
+    (fun _ hac ↦
+      have ⟨b, hab, hbc⟩ := exists_between hac
+      ⟨b, hab, Ioc_subset_Ioo_right hbc⟩)
+    fun _ hac ↦ mem_of_superset ((nhdsGT_basis_of_exists_gt h).mem_of_mem hac) Ioo_subset_Ioc_self
+
+lemma nhdsGT_basis_Ioc [DenselyOrdered α] [NoMaxOrder α] (a : α) :
+    (𝓝[>] a).HasBasis (fun x ↦ a < x) (Ioc a) :=
+  nhdsGT_basis_Ioc_of_exists_gt <| exists_gt a
+
 theorem nhdsGT_eq_bot_iff {a : α} : 𝓝[>] a = ⊥ ↔ IsTop a ∨ ∃ b, a ⋖ b := by
   by_cases ha : IsTop a
   · simp [ha, ha.isMax.Ioi_eq]
@@ -209,6 +221,18 @@ theorem nhdsLT_basis_of_exists_lt {a : α} (h : ∃ b, b < a) : (𝓝[<] a).HasB
 
 theorem nhdsLT_basis [NoMinOrder α] (a : α) : (𝓝[<] a).HasBasis (· < a) (Ioo · a) :=
   nhdsLT_basis_of_exists_lt <| exists_lt a
+
+lemma nhdsLT_basis_Ico_of_exists_lt [DenselyOrdered α] {a : α} (h : ∃ b, b < a) :
+    (𝓝[<] a).HasBasis (· < a) (Ico · a) :=
+  nhdsLT_basis_of_exists_lt h |>.to_hasBasis'
+    (fun _ hac ↦
+      have ⟨b, hab, hbc⟩ := exists_between hac
+      ⟨b, hbc, Ico_subset_Ioo_left hab⟩)
+      fun _ hac ↦ mem_of_superset ((nhdsLT_basis_of_exists_lt h).mem_of_mem hac) Ioo_subset_Ico_self
+
+lemma nhdsLT_basis_Ico [DenselyOrdered α] [NoMinOrder α] (a : α) :
+    (𝓝[<] a).HasBasis (· < a) (Ico · a) :=
+  nhdsLT_basis_Ico_of_exists_lt <| exists_lt a
 
 theorem nhdsLT_eq_bot_iff {a : α} : 𝓝[<] a = ⊥ ↔ IsBot a ∨ ∃ b, b ⋖ a := by
   convert! (config := { preTransparency := .default })
