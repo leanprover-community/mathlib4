@@ -21,13 +21,13 @@ namespace Function
 
 variable {α : Sort u₁} {β : Sort u₂} {φ : Sort u₃} {δ : Sort u₄} {ζ : Sort u₅}
 
-lemma flip_def {f : α → β → φ} : flip f = fun b a => f a b := rfl
+lemma flip_def {f : α → β → φ} : flip f = fun b a ↦ f a b := rfl
 
 /-- Composition of dependent functions: `(f ∘' g) x = f (g x)`, where type of `g x` depends on `x`
 and type of `f (g x)` depends on `x` and `g x`. -/
 @[inline, reducible]
 def dcomp {β : α → Sort u₂} {φ : ∀ {x : α}, β x → Sort u₃} (f : ∀ {x : α} (y : β x), φ y)
-    (g : ∀ x, β x) : ∀ x, φ (g x) := fun x => f (g x)
+    (g : ∀ x, β x) : ∀ x, φ (g x) := fun x ↦ f (g x)
 
 @[inherit_doc] infixr:80 " ∘' " => Function.dcomp
 
@@ -36,7 +36,7 @@ section DComp
 variable {ι} {β : ι → Sort*} {φ : ∀ {i : ι}, β i → Sort*} (f : ∀ {i : ι} (y : β i), φ y)
     (g : ∀ i, β i) (i : ι)
 
-theorem dcomp_def : @f ∘' g = fun i => f (g i) := rfl
+theorem dcomp_def : @f ∘' g = fun i ↦ f (g i) := rfl
 
 theorem dcomp_apply : dcomp @f g i = f (g i) := rfl
 
@@ -55,7 +55,7 @@ section DProd
 
 variable {ι} {α β : ι → Type*} (f f' : ∀ i, α i) (g g' : ∀ i, β i)
 
-theorem prod_def : Function.prod f g = fun i : ι => (f i, g i) := rfl
+theorem prod_def : Function.prod f g = fun i : ι ↦ (f i, g i) := rfl
 
 @[simp, grind =] lemma prod_apply (i : ι) : Function.prod f g i = (f i, g i) := rfl
 
@@ -106,13 +106,13 @@ end Prod
 /- ### The diagonal map -/
 
 /-- The diagonal map into `Prod`. -/
-@[inline] protected def diag {α} : α → α × α := fun a : α => (a, a)
+@[inline] protected def diag {α} : α → α × α := fun a ↦ (a, a)
 
 section Diag
 
 variable {α β γ : Type*} (f : α → β) (g : α → γ) (a b : α)
 
-theorem diag_def : Function.diag = fun a : α => (a, a) := rfl
+theorem diag_def : Function.diag = fun a : α ↦ (a, a) := rfl
 
 @[simp, grind =] theorem diag_apply : Function.diag a = (a, a) := rfl
 
@@ -133,16 +133,16 @@ end Diag
 /-- Given functions `f : β → β → φ` and `g : α → β`, produce a function `α → α → φ` that evaluates
 `g` on each argument, then applies `f` to the results. Can be used, e.g., to transfer a relation
 from `β` to `α`. -/
-abbrev onFun (f : β → β → φ) (g : α → β) : α → α → φ := fun x y => f (g x) (g y)
+abbrev onFun (f : β → β → φ) (g : α → β) : α → α → φ := fun x y ↦ f (g x) (g y)
 
 @[inherit_doc onFun]
 scoped infixl:2 " on " => onFun
 
 /-- For a two-argument function `f`, `swap f` is the same function but taking the arguments
 in the reverse order. `swap f y x = f x y`. -/
-abbrev swap {φ : α → β → Sort u₃} (f : ∀ x y, φ x y) : ∀ y x, φ x y := fun y x => f x y
+abbrev swap {φ : α → β → Sort u₃} (f : ∀ x y, φ x y) : ∀ y x, φ x y := fun y x ↦ f x y
 
-theorem swap_def {φ : α → β → Sort u₃} (f : ∀ x y, φ x y) : swap f = fun y x => f x y := rfl
+theorem swap_def {φ : α → β → Sort u₃} (f : ∀ x y, φ x y) : swap f = fun y x ↦ f x y := rfl
 
 theorem onFun_swap_comm (f : β → β → φ) (g : α → β) : (swap f on g) = swap (f on g) := rfl
 
