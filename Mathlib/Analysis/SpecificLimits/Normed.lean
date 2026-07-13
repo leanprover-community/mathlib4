@@ -597,7 +597,8 @@ theorem tsum_coe_mul_geometric_of_norm_lt_one {r : 𝕜} (hr : ‖r‖ < 1) :
   (hasSum_coe_mul_geometric_of_norm_lt_one hr).tsum_eq
 
 /-- If `‖r‖ < 1`, then `∑' n : ℕ, n ^ 2 * r ^ n = r * (1 + r) / (1 - r) ^ 3`, `HasSum` version
-in a general ring with summable geometric series, using `Ring.inverse` instead of division. -/
+in a general ring with summable geometric series. For a version in a field, using division
+instead of `Ring.inverse`, see `hasSum_sq_mul_geometric_of_norm_lt_one`. -/
 theorem hasSum_sq_mul_geometric_of_norm_lt_one' {r : R} (h : ‖r‖ < 1) :
     HasSum (fun n : ℕ ↦ (n : R) ^ 2 * r ^ n) (r * (1 + r) * ((1 - r)⁻¹ʳ) ^ 3) := by
   have h1 : ((1 - r)⁻¹ʳ) ^ 2 = (1 - r) * ((1 - r)⁻¹ʳ) ^ 3 := by
@@ -607,7 +608,24 @@ theorem hasSum_sq_mul_geometric_of_norm_lt_one' {r : R} (h : ‖r‖ < 1) :
   simp [Finset.sum_range_succ, stirlingSecond, Nat.factorial, h1]
   grind
 
--- To-do: add missing 3 statements
+/-- If `‖r‖ < 1`, then `∑' n : ℕ, n ^ 2 * r ^ n = r * (1 + r) / (1 - r) ^ 3`, version in a
+general ring with summable geometric series. For a version in a field, using division instead
+of `Ring.inverse`, see `tsum_sq_mul_geometric_of_norm_lt_one`. -/
+theorem tsum_sq_mul_geometric_of_norm_lt_one' {r : R} (h : ‖r‖ < 1) :
+    ∑' n : ℕ, (n : R) ^ 2 * r ^ n = r * (1 + r) * ((1 - r)⁻¹ʳ) ^ 3 :=
+  (hasSum_sq_mul_geometric_of_norm_lt_one' h).tsum_eq
+
+/-- If `‖r‖ < 1`, then `∑' n : ℕ, n ^ 2 * r ^ n = r * (1 + r) / (1 - r) ^ 3`,
+`HasSum` version. -/
+theorem hasSum_sq_mul_geometric_of_norm_lt_one {r : 𝕜} (hr : ‖r‖ < 1) :
+    HasSum (fun n : ℕ ↦ (n : 𝕜) ^ 2 * r ^ n) (r * (1 + r) / (1 - r) ^ 3) := by
+  convert! hasSum_sq_mul_geometric_of_norm_lt_one' hr using 1
+  simp [div_eq_mul_inv]
+
+/-- If `‖r‖ < 1`, then `∑' n : ℕ, n ^ 2 * r ^ n = r * (1 + r) / (1 - r) ^ 3`. -/
+theorem tsum_sq_mul_geometric_of_norm_lt_one {r : 𝕜} (hr : ‖r‖ < 1) :
+    ∑' n : ℕ, (n : 𝕜) ^ 2 * r ^ n = r * (1 + r) / (1 - r) ^ 3 :=
+  (hasSum_sq_mul_geometric_of_norm_lt_one hr).tsum_eq
 
 end MulGeometric
 
