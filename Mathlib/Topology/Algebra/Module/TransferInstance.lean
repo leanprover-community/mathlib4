@@ -66,7 +66,7 @@ section ContinuousLinearEquiv
 
 variable [Semiring R]
 
-/-- Given a continuous additive equivalence `e : α ≃ₜ+ β`, if `β` is a topological additive group,
+/-- Given a continuous multiplicative equivalence `e : α ≃ₜ* β`, if `β` is a topological group,
 then so is `α`. -/
 @[to_additive
 /-- Given a continuous additive equivalence `e : α ≃ₜ+ β`, if `β` is a topological additive group,
