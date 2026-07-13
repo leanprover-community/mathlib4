@@ -438,7 +438,7 @@ theorem span_singleton_mul_left_inj [IsDomain R] [I.IsTwoSided] [J.IsTwoSided]
 theorem mul_le_inf [I.IsTwoSided] : I * J ≤ I ⊓ J :=
   mul_le.2 fun r hri s hsj => ⟨I.mul_mem_right s hri, J.mul_mem_left r hsj⟩
 
-lemma inf_ne_bot_of_ne_bot [NoZeroDivisors R] {I J : Ideal R} [I.IsTwoSided] [J.IsTwoSided]
+lemma inf_ne_bot_of_ne_bot [NoZeroDivisors R] {I J : Ideal R} [I.IsTwoSided]
     (hI : I ≠ ⊥) (hJ : J ≠ ⊥) :
     I ⊓ J ≠ ⊥ := by
   grw [← bot_lt_iff_ne_bot, ← mul_le_inf, bot_lt_iff_ne_bot, Ne, mul_eq_bot]
@@ -1223,6 +1223,16 @@ lemma subset_union_prime_finite {R ι : Type*} [CommRing R] {s : Set ι}
     (congrArg _ heq).to_iff
   rw [hmem_union, Ideal.subset_union_prime a b (fun i hin ↦ hp i ((ht i).mp hin))]
   exact exists_congr (fun i ↦ and_congr_left fun _ ↦ ht i)
+
+lemma subset_iUnion_iff_mem_of_isMaximal_of_finite
+    {R : Type*} [CommRing R] {M : Ideal R} [M.IsMaximal] {S : Set (Ideal R)}
+    (hs : S.Finite) (a b : Ideal R) (hp : ∀ I ∈ S, I ≠ a → I ≠ b → I.IsPrime)
+    (ha : a ≠ ⊤) (hb : b ≠ ⊤) : ((M : Set R) ⊆ ⋃ I ∈ S, I) ↔ M ∈ S := by
+  refine (subset_union_prime_finite hs a b hp).trans ⟨fun ⟨I, mem, le⟩ ↦ ?_, (⟨M, ·, le_rfl⟩)⟩
+  rwa [‹M.IsMaximal›.eq_of_le _ le]
+  simp_rw [← or_iff_not_imp_left] at hp
+  obtain rfl | rfl | hp := hp I mem
+  exacts [ha, hb, hp.ne_top]
 
 /-- Generalize `Ideal.IsMaximal.exists_inv` to power of maximal ideals. -/
 theorem IsMaximal.exists_inv_pow (I : Ideal R) [I.IsMaximal]

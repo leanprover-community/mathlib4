@@ -365,15 +365,13 @@ lemma addX_eq_addX_negY_sub {x₁ x₂ : F} (y₁ y₂ : F) (hx : x₁ ≠ x₂)
 
 -- Non-terminal simp, used to be field_simp
 set_option linter.flexible false in
--- see https://github.com/leanprover-community/mathlib4/issues/29041
-set_option linter.unusedSimpArgs false in
 /-- The formula `y(P₁)(x(P₂) - x(P₃)) + y(P₂)(x(P₃) - x(P₁)) + y(P₃)(x(P₁) - x(P₂)) = 0`,
 assuming that `P₁ + P₂ + P₃ = O`. -/
 lemma cyclic_sum_Y_mul_X_sub_X {x₁ x₂ : F} (y₁ y₂ : F) (hx : x₁ ≠ x₂) :
     let x₃ := W.addX x₁ x₂ (W.slope x₁ x₂ y₁ y₂)
     y₁ * (x₂ - x₃) + y₂ * (x₃ - x₁) + W.negAddY x₁ x₂ y₁ (W.slope x₁ x₂ y₁ y₂) * (x₁ - x₂) = 0 := by
   simp_rw [slope_of_X_ne hx, negAddY, addX]
-  simp [field, sub_ne_zero.mpr hx]
+  simp [field]
   ring1
 
 /-- The formula `ψ(P₁ + P₂) = (ψ(P₂)(x(P₁) - x(P₃)) - ψ(P₁)(x(P₂) - x(P₃))) / (x(P₂) - x(P₁))`,

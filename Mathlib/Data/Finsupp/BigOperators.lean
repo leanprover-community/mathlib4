@@ -10,8 +10,8 @@ public import Mathlib.Algebra.Group.Finsupp
 public import Mathlib.Data.Finset.Pairwise
 
 /-!
-
 # Sums of collections of Finsupp, and their support
+
 This file provides results about the `Finsupp.support` of sums of collections of `Finsupp`,
 including sums of `List`, `Multiset`, and `Finset`.
 

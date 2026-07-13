@@ -5,7 +5,6 @@ Authors: Mario Carneiro, Johannes Hölzl
 -/
 module
 
-public import Mathlib.MeasureTheory.Integral.Lebesgue.Countable
 public import Mathlib.MeasureTheory.Measure.Decomposition.Exhaustion
 public import Mathlib.MeasureTheory.Group.Convolution
 public import Mathlib.Analysis.LConvolution
@@ -208,7 +207,7 @@ theorem withDensity_ofReal_mutuallySingular {f : α → ℝ} (hf : Measurable f)
   refine ⟨S, hS, ?_, ?_⟩
   · rw [withDensity_apply _ hS, lintegral_eq_zero_iff hf.ennreal_ofReal, EventuallyEq]
     exact (ae_restrict_mem hS).mono fun x hx => ENNReal.ofReal_eq_zero.2 (le_of_lt hx)
-  · rw [withDensity_apply _ hS.compl, lintegral_eq_zero_iff hf.neg.ennreal_ofReal, EventuallyEq]
+  · rw [withDensity_apply _ hS.compl, lintegral_eq_zero_iff hf.fun_neg.ennreal_ofReal, EventuallyEq]
     exact
       (ae_restrict_mem hS.compl).mono fun x hx =>
         ENNReal.ofReal_eq_zero.2 (not_lt.1 <| mt neg_pos.1 hx)
@@ -403,10 +402,10 @@ theorem lintegral_withDensity_eq_lintegral_mul (μ : Measure α) {f : α → ℝ
   · intro c s h_ms
     simp [*, mul_comm _ c, ← indicator_mul_right]
   · intro g h _ h_mea_g _ h_ind_g h_ind_h
-    simp [mul_add, *, Measurable.mul]
+    simp [mul_add, *, Measurable.fun_mul]
   · intro g h_mea_g h_mono_g h_ind
     have : Monotone fun n a => f a * g n a := fun m n hmn x => by dsimp; grw [h_mono_g hmn x]
-    simp [lintegral_iSup, ENNReal.mul_iSup, h_mf.mul (h_mea_g _), *]
+    simp [lintegral_iSup, ENNReal.mul_iSup, h_mf.fun_mul (h_mea_g _), *]
 
 theorem setLIntegral_withDensity_eq_setLIntegral_mul (μ : Measure α) {f g : α → ℝ≥0∞}
     (hf : Measurable f) (hg : Measurable g) {s : Set α} (hs : MeasurableSet s) :
@@ -486,9 +485,9 @@ theorem lintegral_withDensity_eq_lintegral_mul_non_measurable (μ : Measure α) 
     dsimp
     rw [mul_comm, ← div_eq_mul_inv]
     exact div_le_of_le_mul' (hi x)
-  refine le_iSup_of_le (fun x => (f x)⁻¹ * i x) (le_iSup_of_le (f_meas.inv.mul i_meas) ?_)
+  refine le_iSup_of_le (fun x => (f x)⁻¹ * i x) (le_iSup_of_le (f_meas.fun_inv.mul i_meas) ?_)
   refine le_iSup_of_le A ?_
-  rw [lintegral_withDensity_eq_lintegral_mul _ f_meas (f_meas.inv.mul i_meas)]
+  rw [lintegral_withDensity_eq_lintegral_mul _ f_meas (f_meas.fun_inv.fun_mul i_meas)]
   apply lintegral_mono_ae
   filter_upwards [hf]
   intro x h'x
@@ -550,7 +549,7 @@ theorem withDensity_mul (μ : Measure α) {f g : α → ℝ≥0∞} (hf : Measur
 lemma withDensity_inv_same_le {μ : Measure α} {f : α → ℝ≥0∞} (hf : AEMeasurable f μ) :
     (μ.withDensity f).withDensity f⁻¹ ≤ μ := by
   change (μ.withDensity f).withDensity (fun x ↦ (f x)⁻¹) ≤ μ
-  rw [← withDensity_mul₀ hf hf.inv]
+  rw [← withDensity_mul₀ hf hf.fun_inv]
   suffices (f * fun x ↦ (f x)⁻¹) ≤ᵐ[μ] 1 by
     refine (withDensity_mono this).trans ?_
     rw [withDensity_one]
@@ -560,7 +559,7 @@ lemma withDensity_inv_same_le {μ : Measure α} {f : α → ℝ≥0∞} (hf : AE
 lemma withDensity_inv_same₀ {μ : Measure α} {f : α → ℝ≥0∞}
     (hf : AEMeasurable f μ) (hf_ne_zero : ∀ᵐ x ∂μ, f x ≠ 0) (hf_ne_top : ∀ᵐ x ∂μ, f x ≠ ∞) :
     (μ.withDensity f).withDensity (fun x ↦ (f x)⁻¹) = μ := by
-  rw [← withDensity_mul₀ hf hf.inv]
+  rw [← withDensity_mul₀ hf hf.fun_inv]
   suffices (f * fun x ↦ (f x)⁻¹) =ᵐ[μ] 1 by
     rw [withDensity_congr_ae this, withDensity_one]
   filter_upwards [hf_ne_zero, hf_ne_top] with x hf_ne_zero hf_ne_top
@@ -664,8 +663,10 @@ instance Measure.withDensity.instSFinite [SFinite μ] {f : α → ℝ≥0∞} :
   rw [key]
   infer_instance
 
-instance [SFinite μ] (c : ℝ≥0∞) : SFinite (c • μ) := by
-  rw [← withDensity_const]
+instance [SFinite μ] {R : Type*} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] (c : R) :
+    SFinite (c • μ) := by
+  have : c • μ = c • ((1 : ℝ≥0∞) • μ) := by simp
+  rw [this, ← smul_assoc, ← withDensity_const]
   infer_instance
 
 /-- If `μ ≪ ν` and `ν` is s-finite, then `μ` is s-finite. -/
@@ -728,10 +729,12 @@ theorem prod_withDensity {f : α → ℝ≥0∞} {g : β → ℝ≥0∞} (hf : M
 
 -- `prod_smul_left` is in the `Prod` file. This lemma is here because this is the file in which
 -- we prove the instance that gives `SFinite (c • ν)`.
-lemma Measure.prod_smul_right (c : ℝ≥0∞) : μ.prod (c • ν) = c • (μ.prod ν) := by
+lemma Measure.prod_smul_right {R : Type*} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] (c : R) :
+    μ.prod (c • ν) = c • (μ.prod ν) := by
   ext s hs
-  simp_rw [Measure.prod_apply hs, Measure.smul_apply, Measure.prod_apply hs, smul_eq_mul]
-  rw [lintegral_const_mul]
+  have A (s : Set β) : c • ν s = (c • 1) * ν s := by simp
+  simp_rw [Measure.prod_apply hs, Measure.smul_apply, Measure.prod_apply hs, A]
+  rw [lintegral_const_mul, smul_one_mul]
   exact measurable_measure_prodMk_left hs
 
 end Prod

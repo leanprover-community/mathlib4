@@ -72,7 +72,7 @@ lemma Cover.toPresieveOver_le_arrows_iff {X : Over S} (R : Sieve X)
     (𝒰 : Cover.{u} (precoverage P) X.left) [𝒰.Over S] :
     𝒰.toPresieveOver ≤ R.arrows ↔
       Presieve.ofArrows 𝒰.X 𝒰.f ≤ (Sieve.overEquiv X R).arrows := by
-  simp_rw [← Sieve.giGenerate.gc.le_iff_le, ← Sieve.overEquiv_le_overEquiv_iff]
+  simp_rw [← Sieve.giGenerate.gc.le_iff_le, ← (Sieve.overEquiv X).map_rel_iff]
   rw [overEquiv_generate_toPresieveOver_eq_ofArrows]
 
 variable [P.IsMultiplicative] [P.RespectsIso]
