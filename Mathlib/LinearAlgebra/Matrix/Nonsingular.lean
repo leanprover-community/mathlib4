@@ -34,22 +34,21 @@ a matrix is nonsingular if and only if its determinant is not a zero divisor).
 -/
 
 variable {R m n : Type*} [CommSemiring R] [Fintype m] [Fintype n] [DecidableEq m] [DecidableEq n]
-variable (A : Matrix n n R)
+variable {A : Matrix n n R}
 
 namespace Matrix
 
 public section
 
+lemma detpBalanced_iff_sub_mul_det_eq_zero {R : Type*} [CommRing R] {A : Matrix n n R} {a b : R} :
+    A.DetpBalanced a b ↔ (a - b) * A.det = 0 := by
+  grind [DetpBalanced, det_eq_detp_sub_detp]
+
 lemma nonsingular_iff_det_mem_nonZeroDivisors {R : Type*} [CommRing R]
     {A : Matrix n n R} : A.Nonsingular ↔ A.det ∈ nonZeroDivisors R := by
-  rw [Nonsingular, det_eq_detp_sub_detp, ← nonZeroDivisorsRight_eq_nonZeroDivisors,
-    mem_nonZeroDivisorsRight_iff]
-  refine ⟨fun h x eq ↦ h x 0 (by simpa [mul_sub, sub_eq_zero, DetpBalanced] using eq),
-    fun h a b eq ↦ sub_eq_zero.mp <| h _ ?_⟩
-  convert sub_eq_zero.mpr eq using 1
-  ring
-
-variable {A}
+  simp_rw [Nonsingular, detpBalanced_iff_sub_mul_det_eq_zero,
+    ← nonZeroDivisorsRight_eq_nonZeroDivisors, mem_nonZeroDivisorsRight_iff]
+  exact ⟨fun h x eq ↦ h x 0 (by simpa), fun h a b eq ↦ sub_eq_zero.mp <| h _ (by simpa)⟩
 
 /-- If the columns of a square matrix are linearly independent, then the matrix is nonsingular. -/
 theorem Nonsingular.of_linearIndependent_col (ind : LinearIndependent R A.col) : A.Nonsingular := by
@@ -126,13 +125,16 @@ theorem isLeftRegular_iff_nonsingular : IsLeftRegular A ↔ A.Nonsingular := by
 theorem isRightRegular_iff_nonsingular : IsRightRegular A ↔ A.Nonsingular := by
   rw [isRightRegular_iff_vecMul_injective, vecMul_injective_iff, linearIndependent_row_iff]
 
-omit [DecidableEq n]
+lemma Nonsingular.mul {B : Matrix n n R} (hA : A.Nonsingular) (hB : B.Nonsingular) :
+    (A * B).Nonsingular := by
+  rw [← isLeftRegular_iff_nonsingular] at *
+  exact hA.mul hB
 
+omit [DecidableEq n] in
 theorem isLeftRegular_iff_isRightRegular : IsLeftRegular A ↔ IsRightRegular A := by
   classical rw [isLeftRegular_iff_nonsingular, isRightRegular_iff_nonsingular]
 
-omit [Fintype n]
-
+omit [DecidableEq n] [Fintype n] in
 /-- https://mathoverflow.net/questions/511862/transpose-symmetry-of-injectivity-of-linear-maps-over-semirings
 asks whether this is still true without `IsCancelAdd R`. -/
 theorem linearIndependent_col_iff_row [Finite n] :
