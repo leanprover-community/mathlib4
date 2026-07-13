@@ -16,7 +16,6 @@ public import Mathlib.Analysis.SpecificLimits.Basic
 public import Mathlib.Combinatorics.Enumerative.Stirling
 public import Mathlib.Data.Nat.Choose.Bounds
 public import Mathlib.Order.Filter.AtTopBot.ModEq
-public import Mathlib.RingTheory.Polynomial.Pochhammer
 public import Mathlib.Tactic.NoncommRing
 
 /-!
@@ -478,13 +477,6 @@ lemma tsum_choose_mul_geometric_of_norm_lt_one (k : ℕ) {r : 𝕜} (hr : ‖r�
     ∑' n, (n + k).choose k * r ^ n = 1 / (1 - r) ^ (k + 1) :=
   (hasSum_choose_mul_geometric_of_norm_lt_one k hr).tsum_eq
 
-lemma summable_descFactorial_mul_geometric_of_norm_lt_one (k : ℕ) {r : R} (hr : ‖r‖ < 1) :
-    Summable (fun n ↦ (n + k).descFactorial k * r ^ n) := by
-  convert! (summable_choose_mul_geometric_of_norm_lt_one k hr).mul_left (k.factorial : R) using
-    2 with n
-  simp [← mul_assoc, descFactorial_eq_factorial_mul_choose (n + k) k]
-
--- To-do: how to fix the fact that this has similar name to lemma above but diff summand
 -- To-do: generate tsum and un-primed statements
 theorem hasSum_descFactorial_mul_geometric_of_norm_lt_one' (j : ℕ) {r : R} (h : ‖r‖ < 1) :
     HasSum (fun n : ℕ ↦ (n.descFactorial j : R) * r ^ n)
@@ -500,32 +492,9 @@ theorem hasSum_descFactorial_mul_geometric_of_norm_lt_one' (j : ℕ) {r : R} (h 
   · exact sub_eq_self.2 <| Finset.sum_eq_zero fun i hi ↦ by
       simp [descFactorial_eq_zero_iff_lt.2 (Finset.mem_range.1 hi)]
 
-open Polynomial in
-theorem summable_pow_mul_geometric_of_norm_lt_one (k : ℕ) {r : R} (hr : ‖r‖ < 1) :
-    Summable (fun n ↦ (n : R) ^ k * r ^ n : ℕ → R) := by
-  refine Nat.strong_induction_on k fun k hk => ?_
-  obtain ⟨a, ha⟩ : ∃ (a : ℕ → ℕ), ∀ n, (n + k).descFactorial k
-      = n ^ k + ∑ i ∈ range k, a i * n ^ i := by
-    let P : Polynomial ℕ := (ascPochhammer ℕ k).comp (Polynomial.X + C 1)
-    refine ⟨fun i ↦ P.coeff i, fun n ↦ ?_⟩
-    have mP : Monic P := Monic.comp_X_add_C (monic_ascPochhammer ℕ k) _
-    have dP : P.natDegree = k := by
-      simp only [P, natDegree_comp, ascPochhammer_natDegree, mul_one, natDegree_X_add_C]
-    have A : (n + k).descFactorial k = P.eval n := by
-      have : n + 1 + k - 1 = n + k := by lia
-      simp [P, ascPochhammer_nat_eq_descFactorial, this]
-    conv_lhs => rw [A, mP.as_sum, dP]
-    simp [eval_finsetSum]
-  have : Summable (fun n ↦ (n + k).descFactorial k * r ^ n
-      - ∑ i ∈ range k, a i * n ^ (i : ℕ) * r ^ n) := by
-    apply (summable_descFactorial_mul_geometric_of_norm_lt_one k hr).sub
-    apply summable_sum (fun i hi ↦ ?_)
-    simp_rw [mul_assoc]
-    simp only [Finset.mem_range] at hi
-    exact (hk _ hi).mul_left _
-  convert! this using 1
-  ext n
-  simp [ha n, add_mul, sum_mul]
+lemma summable_descFactorial_mul_geometric_of_norm_lt_one (j : ℕ) {r : R} (hr : ‖r‖ < 1) :
+    Summable (fun n : ℕ ↦ (n.descFactorial j : R) * r ^ n) :=
+  (hasSum_descFactorial_mul_geometric_of_norm_lt_one' j hr).summable
 
 /-- If `‖r‖ < 1`, then `∑' n : ℕ, n ^ k * r ^ n` is given by the finite sum
 `∑ j ∈ range (k + 1), S(k, j) * j ! * r ^ j * ((1 - r)⁻¹ʳ) ^ (j + 1)`, where `S(k, j)` denotes the
@@ -549,6 +518,10 @@ theorem tsum_pow_mul_geometric_of_norm_lt_one' (k : ℕ) {r : R} (h : ‖r‖ < 
     ∑' n : ℕ, (n : R) ^ k * r ^ n = (∑ j ∈ Finset.range (k + 1),
       (stirlingSecond k j : R) * j.factorial * r ^ j * ((1 - r)⁻¹ʳ) ^ (j + 1)) :=
   (hasSum_pow_mul_geometric_of_norm_lt_one' k h).tsum_eq
+
+theorem summable_pow_mul_geometric_of_norm_lt_one (k : ℕ) {r : R} (hr : ‖r‖ < 1) :
+    Summable (fun n ↦ (n : R) ^ k * r ^ n : ℕ → R) :=
+  (hasSum_pow_mul_geometric_of_norm_lt_one' k hr).summable
 
 /-- If `‖r‖ < 1`, then `∑' n : ℕ, n ^ k * r ^ n` is given by the finite sum
 `∑ j ∈ range (k + 1), S(k, j) * j ! * r ^ j / (1 - r) ^ (j + 1)`, where `S(k, j)` denotes the
