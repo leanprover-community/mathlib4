@@ -96,7 +96,7 @@ isomorphic to `E`. -/
 @[deprecated prodEquivOfIsTopCompl (since := "2026-06-07")]
 def prodEquivOfClosedCompl (h : IsCompl p q) (hp : IsClosed (p : Set E))
     (hq : IsClosed (q : Set E)) : (p × q) ≃L[𝕜] E := by
-  haveI := hp.completeSpace_coe;
+  haveI := hp.completeSpace_coe
   refine (p.prodEquivOfIsCompl q h).toContinuousLinearEquivOfContinuous ?_
   exact (p.subtypeL.coprod q.subtypeL).continuous
 

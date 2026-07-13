@@ -282,7 +282,7 @@ lemma of_isIso {X Y : D} (f : X ⟶ Y) [IsIso f] : F.relativelyRepresentable f :
   fun a g ↦ ⟨a, 𝟙 a, g ≫ CategoryTheory.inv f, IsPullback.of_vert_isIso ⟨by simp⟩⟩
 
 lemma isomorphisms_le : MorphismProperty.isomorphisms D ≤ F.relativelyRepresentable :=
-  fun _ _ f hf ↦ of_isIso F f
+  fun _ _ f hf ↦ letI : IsIso f := hf; of_isIso F f
 
 instance isMultiplicative : IsMultiplicative F.relativelyRepresentable where
   id_mem _ := of_isIso F _
