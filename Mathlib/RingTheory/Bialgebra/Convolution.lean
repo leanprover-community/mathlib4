@@ -157,7 +157,8 @@ lemma toAlgHom_convMul (f g : WithConv <| C →ₐc[R] A) :
     toConv (f * g).ofConv.toAlgHom = toConv f.ofConv.toAlgHom * toConv g.ofConv.toAlgHom :=
   rfl
 
-@[simp]
+-- TODO: Make simp once `SemilinearMapClass.semilinearMap` is not simp nf anymore.
+-- @[simp]
 lemma toLinearMap_convPPow (f : WithConv <| C →ₐc[R] A) (n : ℕ+) :
     toConv (f ^ n).ofConv.toLinearMap = toConv f.ofConv.toLinearMap ^ n := by
   induction n with
