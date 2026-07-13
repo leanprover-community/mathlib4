@@ -133,7 +133,7 @@ scalar towers, then `P / N / M` is also a scalar tower.
 -/
 @[to_additive /--
 Let `Q / P / N / M` be a tower. If `Q / N / M`, `Q / P / M` and `Q / P / N` are
-vadd towers, then `P / N / M` is also a vadd tower.
+vector addition towers, then `P / N / M` is also a vector addition tower.
 -/]
 lemma IsScalarTower.to₁₂₃ (M N P Q)
     [SMul M N] [SMul M P] [SMul M Q] [SMul N P] [SMul N Q] [SMul P Q] [FaithfulSMul P Q]
