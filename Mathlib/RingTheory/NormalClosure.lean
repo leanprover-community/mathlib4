@@ -111,10 +111,22 @@ local instance : IsFractionRing T E :=
 instance : IsIntegrallyClosed T :=
   integralClosure.isIntegrallyClosedOfFiniteExtension L
 
-variable [PerfectField (FractionRing R)]
+variable [Algebra.IsSeparable (FractionRing R) (FractionRing S)]
+
+local instance : Algebra.IsSeparable K E := by
+  rw [← le_separableClosure_iff]
+  apply normalClosure_le_iff.mpr
+  intro i
+  haveI : Algebra.IsSeparable K i.fieldRange :=
+    AlgEquiv.Algebra.isSeparable (AlgEquiv.ofInjectiveField i)
+  exact le_separableClosure K (AlgebraicClosure L) i.fieldRange
 
 local instance : Algebra.IsSeparable L E :=
   Algebra.isSeparable_tower_top_of_isSeparable K L E
+
+local instance : IsGalois K E where
+  to_normal := inferInstance
+  to_isSeparable := inferInstance
 
 instance : IsGalois K (FractionRing T) := by
   refine IsGalois.of_equiv_equiv (F := K) («E» := E)

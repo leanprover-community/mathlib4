@@ -433,7 +433,11 @@ theorem relNorm_eq_pow_of_isPrime_isGalois [p.IsMaximal] [P.IsPrime]
   rw [one_eq_top]
   exact IsMaximal.ne_top inferInstance
 
-theorem relNorm_eq_pow_of_isMaximal [PerfectField (FractionRing R)] [P.IsMaximal] [p.IsMaximal] :
+/-- The relative norm of a maximal ideal is the prime below it raised to the inertia degree,
+whenever the extension of fraction fields is separable. This generalizes the previous statement,
+which required `FractionRing R` to be a perfect field. -/
+theorem relNorm_eq_pow_of_isMaximal [Algebra.IsSeparable (FractionRing R) (FractionRing S)]
+    [P.IsMaximal] [p.IsMaximal] :
     relNorm R P = p ^ P.inertiaDeg R := by
   let T := Ring.NormalClosure R S
   obtain ⟨Q, hQ₁, hQ₂⟩ : ∃ Q : Ideal T, Q.IsMaximal ∧ Q.LiesOver P :=
