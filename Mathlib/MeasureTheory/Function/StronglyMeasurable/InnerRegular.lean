@@ -30,6 +30,8 @@ the proof that almost everywhere measurability and almost everywhere strong meas
 finite inner regular measures. We also derive the corresponding sigma-finite results.
 -/
 
+set_option linter.style.longFile 1600
+
 @[expose] public section
 
 open scoped Cardinal ENNReal Topology
@@ -51,7 +53,11 @@ private noncomputable def Measure.inducedIndexMeasure {i : Type*} [MeasurableSpa
   rw [show (⋃ j ∈ ⋃ n, s n, A j) = ⋃ n, ⋃ j ∈ s n, A j by
     ext x
     simp only [mem_iUnion]
-    aesop]
+    constructor
+    · rintro ⟨j, ⟨n, hjn⟩, hxj⟩
+      exact ⟨n, j, hjn, hxj⟩
+    · rintro ⟨n, j, hjn, hxj⟩
+      exact ⟨j, ⟨n, hjn⟩, hxj⟩]
   apply measure_iUnion
   · intro m n hmn
     change Disjoint (⋃ j ∈ s m, A j) (⋃ j ∈ s n, A j)
@@ -614,7 +620,7 @@ private theorem Measure.exists_nullFiber_map_of_splits_aux {i : Type*} [Measurab
   have pref_succ (b : ℕ → Bool) (n : ℕ) : pref b (n + 1) = b n :: pref b n := by
     simp [pref]
   have pref_length (b : ℕ → Bool) (n : ℕ) : (pref b n).length = n := by
-    induction n <;> simp_all [pref]
+    induction n <;> simp [pref, *]
   have path_eq_pref (x : i) (n : ℕ) : path x n = pref (code x) n := by
     induction n with
     | zero => simp [path, pref]
@@ -797,6 +803,32 @@ private theorem exists_bernstein_unitInterval :
   obtain ⟨J, hJ⟩ := hKB (hS_mem K')
   exact hSR K' J hJ.symm
 
+omit [MeasurableSpace X] in
+private theorem preimage_eq_of_eqOn_pairwiseDisjoint_aux {i : Type*} (A : i → Set X)
+    (hindex : ∀ {x j k}, x ∈ A j → x ∈ A k → j = k) (label : i → ℝ) (g : X → ℝ)
+    (hgA : ∀ j, Set.EqOn g (fun _ ↦ label j) (A j))
+    (hg0 : ∀ x, (¬ ∃ j, x ∈ A j) → g x = 0) (t : Set ℝ) [Decidable (0 ∈ t)] :
+    g ⁻¹' t = (if (0 : ℝ) ∈ t then (⋃ j, A j)ᶜ else ∅) ∪
+      ⋃ j ∈ {j | label j ∈ t}, A j := by
+  classical
+  ext x
+  by_cases hx : ∃ j, x ∈ A j
+  · obtain ⟨j, hxj⟩ := hx
+    have hg : g x = label j := hgA j hxj
+    simp only [mem_preimage, mem_union, mem_iUnion, mem_setOf_eq]
+    rw [hg]
+    constructor
+    · exact fun h ↦ Or.inr ⟨j, h, hxj⟩
+    · rintro (h | ⟨k, hkt, hxk⟩)
+      · by_cases h0 : 0 ∈ t
+        · have hnot : x ∈ (⋃ j, A j)ᶜ := by simpa only [if_pos h0] using h
+          exact hnot (mem_iUnion.2 ⟨j, hxj⟩) |>.elim
+        · have hempty : x ∈ (∅ : Set X) := by simpa only [if_neg h0] using h
+          exact hempty.elim
+      · simpa [hindex hxk hxj] using hkt
+  · have hnoA (j : i) : x ∉ A j := fun hxj ↦ hx ⟨j, hxj⟩
+    simp [hg0 x hx, hnoA]
+
 private theorem exists_measurable_eqOn_pairwiseDisjoint {i : Type*} (A : i → Set X)
     (hA : Pairwise (Disjoint on A)) (hAmeas : ∀ s : Set i, MeasurableSet (⋃ j ∈ s, A j))
     (label : i → ℝ) :
@@ -804,9 +836,8 @@ private theorem exists_measurable_eqOn_pairwiseDisjoint {i : Type*} (A : i → S
   classical
   let U : Set X := ⋃ j, A j
   let g : X → ℝ := fun x ↦ if hx : ∃ j, x ∈ A j then label (Classical.choose hx) else 0
-  have hindex {x : X} {j k : i} (hxj : x ∈ A j) (hxk : x ∈ A k) : j = k := by
-    by_contra hjk
-    exact Set.disjoint_left.1 (hA hjk) hxj hxk
+  have hindex {x : X} {j k : i} (hxj : x ∈ A j) (hxk : x ∈ A k) : j = k :=
+    Classical.byContradiction fun hjk ↦ Set.disjoint_left.1 (hA hjk) hxj hxk
   have hgA (j : i) : Set.EqOn g (fun _ ↦ label j) (A j) := by
     intro x hx
     have hex : ∃ k, x ∈ A k := ⟨j, hx⟩
@@ -814,31 +845,16 @@ private theorem exists_measurable_eqOn_pairwiseDisjoint {i : Type*} (A : i → S
     exact congr_arg label (hindex (Classical.choose_spec hex) hx)
   refine ⟨g, ?_, hgA⟩
   intro t ht
-  have hpreimage : g ⁻¹' t =
-      (if (0 : ℝ) ∈ t then Uᶜ else ∅) ∪ ⋃ j ∈ {j | label j ∈ t}, A j := by
-    ext x
-    by_cases hx : ∃ j, x ∈ A j
-    · obtain ⟨j, hxj⟩ := hx
-      have hxU : x ∈ U := mem_iUnion.2 ⟨j, hxj⟩
-      have hg : g x = label j := hgA j hxj
-      simp only [mem_preimage, mem_union, mem_iUnion, mem_setOf_eq]
-      rw [hg]
-      constructor
-      · exact fun h ↦ Or.inr ⟨j, h, hxj⟩
-      · rintro (h | ⟨k, hkt, hxk⟩)
-        · split at h <;> simp_all
-        · simpa [hindex hxk hxj] using hkt
-    · have hxU : x ∉ U := by
-        intro hx'
-        exact hx (by simpa only [U, mem_iUnion] using hx')
-      have hnoA (j : i) : x ∉ A j := fun hxj ↦ hx ⟨j, hxj⟩
-      simp [g, hxU, hnoA]
-  rw [hpreimage]
+  rw [preimage_eq_of_eqOn_pairwiseDisjoint_aux A hindex label g hgA
+    (fun x hx ↦ by simp [g, hx]) t]
   apply MeasurableSet.union
   · have hUmeas : MeasurableSet U := by
       convert hAmeas univ using 1
       simp [U]
-    split <;> simp_all
+    change MeasurableSet (if 0 ∈ t then Uᶜ else ∅)
+    by_cases h0 : 0 ∈ t
+    · simpa [h0] using hUmeas.compl
+    · simp [h0]
   · exact hAmeas {j | label j ∈ t}
 
 private theorem measure_setOf_embedding_eq_zero_aux {i : Type*} [MeasurableSpace i]
@@ -1234,8 +1250,13 @@ theorem Measure.measure_iUnion_eq_tsum_of_pairwiseDisjoint
   intro I
   convert hmeas ((↑) '' I) using 1
   ext x
-  simp only [mem_iUnion, mem_image, Subtype.exists, exists_and_right, exists_eq_right]
-  aesop
+  constructor
+  · intro hx
+    obtain ⟨j, hjI, hxj⟩ := mem_iUnion₂.1 hx
+    exact mem_iUnion₂.2 ⟨j.1, ⟨j, hjI, rfl⟩, hxj⟩
+  · intro hx
+    obtain ⟨j, ⟨k, hkI, rfl⟩, hxj⟩ := mem_iUnion₂.1 hx
+    exact mem_iUnion₂.2 ⟨k, hkI, hxj⟩
 
 omit [PseudoMetrizableSpace Y] in
 private theorem measure_preimage_iUnion_null_of_discreteFamily_aux [SFinite μ]
@@ -1306,8 +1327,12 @@ private theorem countable_setOf_pos_preimage_of_sigmaDiscreteFamily_aux [SFinite
   rw [show {U | ∃ n, U ∈ b n ∧ 0 < μ (f ⁻¹' U)} =
       ⋃ n, ((↑) : b n → Set Y) '' {U | 0 < μ (f ⁻¹' (U : Set Y))} by
     ext U
-    simp only [mem_setOf_eq, mem_iUnion, mem_image, Subtype.exists, exists_and_left]
-    aesop]
+    constructor
+    · rintro ⟨n, hUn, hUpos⟩
+      exact mem_iUnion_of_mem n ⟨⟨U, hUn⟩, hUpos, rfl⟩
+    · intro hU
+      obtain ⟨n, V, hVpos, rfl⟩ := mem_iUnion.1 hU
+      exact ⟨n, V.2, hVpos⟩]
   exact countable_iUnion fun n ↦ (hn_count n).image _
 
 omit [TopologicalSpace Y] [PseudoMetrizableSpace Y] [MeasurableSpace Y] [BorelSpace Y] in
