@@ -276,7 +276,7 @@ variable [ConditionallyCompleteLinearOrderBot α]
 theorem sup_eq_ciSup (s : Finset ι) (f : ι → α) : s.sup f = ⨆ x ∈ s, f x := by
   apply le_antisymm
   · refine Finset.sup_le fun a ha => le_ciSup_of_le ?_ a ?_
-    · exact ⟨s.sup f, fun _ ⟨x, hx⟩ => hx ▸ ciSup_le' fun h => Finset.le_sup h⟩
+    · exact ⟨s.sup f, fun _ ⟨_, hx⟩ => hx ▸ ciSup_le' fun h => Finset.le_sup h⟩
     · exact le_ciSup ⟨f a, fun b ⟨_, h⟩ => h ▸ le_rfl⟩ ha
   · exact ciSup_le' fun a => ciSup_le' fun ha => Finset.le_sup ha
 
