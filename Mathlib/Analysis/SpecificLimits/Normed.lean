@@ -477,7 +477,10 @@ lemma tsum_choose_mul_geometric_of_norm_lt_one (k : ℕ) {r : 𝕜} (hr : ‖r�
     ∑' n, (n + k).choose k * r ^ n = 1 / (1 - r) ^ (k + 1) :=
   (hasSum_choose_mul_geometric_of_norm_lt_one k hr).tsum_eq
 
--- To-do: generate tsum and un-primed statements
+/-- If `‖r‖ < 1`, then `∑' n : ℕ, n.descFactorial j * r ^ n = j ! * r ^ j / (1 - r) ^ (j + 1)`,
+`HasSum` version in a general ring with summable geometric series. For a version in a field,
+using division instead of `Ring.inverse`, see
+`hasSum_descFactorial_mul_geometric_of_norm_lt_one`. -/
 theorem hasSum_descFactorial_mul_geometric_of_norm_lt_one' (j : ℕ) {r : R} (h : ‖r‖ < 1) :
     HasSum (fun n : ℕ ↦ (n.descFactorial j : R) * r ^ n)
       ((j.factorial : R) * r ^ j * ((1 - r)⁻¹ʳ) ^ (j + 1)) := by
@@ -492,9 +495,30 @@ theorem hasSum_descFactorial_mul_geometric_of_norm_lt_one' (j : ℕ) {r : R} (h 
   · exact sub_eq_self.2 <| Finset.sum_eq_zero fun i hi ↦ by
       simp [descFactorial_eq_zero_iff_lt.2 (Finset.mem_range.1 hi)]
 
+/-- If `‖r‖ < 1`, then `∑' n : ℕ, n.descFactorial j * r ^ n = j ! * r ^ j / (1 - r) ^ (j + 1)`,
+version in a general ring with summable geometric series. For a version in a field, using
+division instead of `Ring.inverse`, see `tsum_descFactorial_mul_geometric_of_norm_lt_one`. -/
+theorem tsum_descFactorial_mul_geometric_of_norm_lt_one' (j : ℕ) {r : R} (h : ‖r‖ < 1) :
+    ∑' n : ℕ, (n.descFactorial j : R) * r ^ n
+      = (j.factorial : R) * r ^ j * ((1 - r)⁻¹ʳ) ^ (j + 1) :=
+  (hasSum_descFactorial_mul_geometric_of_norm_lt_one' j h).tsum_eq
+
 lemma summable_descFactorial_mul_geometric_of_norm_lt_one (j : ℕ) {r : R} (hr : ‖r‖ < 1) :
     Summable (fun n : ℕ ↦ (n.descFactorial j : R) * r ^ n) :=
   (hasSum_descFactorial_mul_geometric_of_norm_lt_one' j hr).summable
+
+/-- If `‖r‖ < 1`, then `∑' n : ℕ, n.descFactorial j * r ^ n = j ! * r ^ j / (1 - r) ^ (j + 1)`,
+`HasSum` version. -/
+theorem hasSum_descFactorial_mul_geometric_of_norm_lt_one (j : ℕ) {r : 𝕜} (hr : ‖r‖ < 1) :
+    HasSum (fun n : ℕ ↦ (n.descFactorial j : 𝕜) * r ^ n)
+      (j.factorial * r ^ j / (1 - r) ^ (j + 1)) := by
+  convert! hasSum_descFactorial_mul_geometric_of_norm_lt_one' j hr using 1
+  simp [div_eq_mul_inv]
+
+/-- If `‖r‖ < 1`, then `∑' n : ℕ, n.descFactorial j * r ^ n = j ! * r ^ j / (1 - r) ^ (j + 1)`. -/
+theorem tsum_descFactorial_mul_geometric_of_norm_lt_one (j : ℕ) {r : 𝕜} (hr : ‖r‖ < 1) :
+    ∑' n : ℕ, (n.descFactorial j : 𝕜) * r ^ n = j.factorial * r ^ j / (1 - r) ^ (j + 1) :=
+  (hasSum_descFactorial_mul_geometric_of_norm_lt_one j hr).tsum_eq
 
 /-- If `‖r‖ < 1`, then `∑' n : ℕ, n ^ k * r ^ n` is given by the finite sum
 `∑ j ∈ range (k + 1), S(k, j) * j ! * r ^ j * ((1 - r)⁻¹ʳ) ^ (j + 1)`, where `S(k, j)` denotes the
