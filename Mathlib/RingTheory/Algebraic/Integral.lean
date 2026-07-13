@@ -134,19 +134,15 @@ theorem foo' (R S A : Type*) [DecidableEq S]
     {s : Finset A} (hs : LinearIndepOn R id (s : Set A)) :
     LinearIndepOn R id (finsetIntegerMultiple S⁰ s : Set S) := by
   classical
-  replace hs : LinearIndepOn R (id : A → A) (commonDenomOfFinset S⁰ s • s) := by
-    rw [← Finset.coe_smul_finset]
-    rw [linearIndepOn_finset_iff] at hs ⊢
-    intro f h
-    rw [Finset.smul_finset_def, Finset.forall_mem_image]
-    apply hs
-    rw [Finset.smul_finset_def, Finset.sum_image] at h
-    simp_rw [id_eq, smul_comm (f _), ← Finset.smul_sum] at h
-    rwa [← smul_zero (commonDenomOfFinset S⁰ s),
-      (IsLocalization.smul_bijective A (commonDenomOfFinset S⁰ s)).injective.eq_iff] at h
-    exact (IsLocalization.smul_bijective A (commonDenomOfFinset S⁰ s)).injective.injOn
-  rw [← finsetIntegerMultiple_image S⁰ s] at hs
-  rwa [LinearIndepOn.image_algebraMap_iff] at hs
+  rw [← LinearIndepOn.image_algebraMap_iff R S A, finsetIntegerMultiple_image, ← s.coe_smul_finset]
+  rw [linearIndepOn_finset_iff] at hs ⊢
+  intro f h
+  rw [Finset.smul_finset_def, Finset.forall_mem_image]
+  apply hs
+  let inj := (IsLocalization.smul_bijective A (commonDenomOfFinset S⁰ s)).injective
+  rw [Finset.smul_finset_def, Finset.sum_image inj.injOn] at h
+  simp_rw [id_eq, smul_comm (f _), ← Finset.smul_sum] at h
+  rwa [← smul_zero (commonDenomOfFinset S⁰ s), inj.eq_iff] at h
 
 open IsLocalization nonZeroDivisors in
 theorem IsFractionRing.finrank_eq (R R' S S' : Type*)
