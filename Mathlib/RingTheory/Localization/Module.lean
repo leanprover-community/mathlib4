@@ -197,17 +197,6 @@ theorem LinearIndependent.iff_fractionRing {ι : Type*} {b : ι → V} :
   ⟨.localization K R⁰,
     .restrict_scalars <| (faithfulSMul_iff_injective_smul_one ..).mp inferInstance⟩
 
-theorem LinearIndepOn.iff_fractionRing {ι : Type*} {s : Set ι} {f : ι → V} :
-    LinearIndepOn R f s ↔ LinearIndepOn K f s :=
-  LinearIndependent.iff_fractionRing R K
-
-theorem IsFractionRing.rank_eq : Module.rank R V = Module.rank K V := by
-  simp_rw [Module.rank, ciSup_subtype Cardinal.bddAbove_of_small (by simp),
-    LinearIndepOn.iff_fractionRing R K]
-
-theorem IsFractionRing.finrank_eq : Module.finrank R V = Module.finrank K V := by
-  simp_rw [Module.finrank, IsFractionRing.rank_eq R K]
-
 end FractionRing
 
 section

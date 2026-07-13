@@ -72,7 +72,16 @@ lemma IsLocalization.rank_eq : Module.rank S N = Module.rank R N := by
   · have := inj.nontrivial
     exact (hs.localization S p).cardinal_le_rank
 
+theorem IsLocalization.finrank_eq : Module.finrank S N = Module.finrank R N := by
+  simp_rw [Module.finrank, IsLocalization.rank_eq S p hp]
+
 end
+
+theorem IsFractionRing.rank_eq [IsFractionRing R S] : Module.rank S N = Module.rank R N :=
+  IsLocalization.rank_eq S R⁰ le_rfl
+
+theorem IsFractionRing.finrank_eq [IsFractionRing R S] : Module.finrank S N = Module.finrank R N :=
+  IsLocalization.finrank_eq S R⁰ le_rfl
 
 variable (R M) in
 theorem exists_set_linearIndependent_of_isDomain [IsDomain R] :
