@@ -532,42 +532,121 @@ lemma isImmersedPoint [IsManifold I 1 M] [IsManifold J 1 N]
       <| isInvertible_mfderiv_extend (by simp [h.mem_domChart_source])
 
 -- The hard direction, using the inverse function theorem.
--- TODO: will this use boundaryless-ness, or something about the boundary?
-lemma of_isImmersedPoint [IsManifold I n M] (hf : IsImmersedPoint I J f x) :
+lemma of_isImmersedPoint [IsManifold I n M] [IsManifold J 1 N]
+    -- TODO: think about the case with boundary next
+    (hf : IsImmersedPoint I J f x) (hx : I.IsInteriorPoint x) :
     IsImmersionAt I J n f x := by
-  have hfx : ContinuousAt f x := hf.mdifferentiableAt.continuousAt
-  rw [isImmersedPoint_iff] at hf
-  have : NormedSpace 𝕜 hf.complement :=
+  -- Consider f' = (extChartAt J (f x)) ∘ f : M → E''.
+  let f' := (extChartAt J (f x)) ∘ f
+  have hf' : IsImmersedPoint I 𝓘(𝕜, E'') f' x := by
+    apply IsImmersedPoint.comp (I' := J) ?_ hf
+    exact IsImmersedPoint.of_mfderiv_isInvertible
+      <| isInvertible_mfderiv_extChartAt (by simp)
+  -- Choose a complement for df'_x.
+  let F₁ := LinearMap.range (mfderiv% f' x).toLinearMap
+  rw [isImmersedPoint_iff] at hf'
+  let F₂ := hf'.complement
+  have : NormedSpace 𝕜 hf'.complement :=
     sorry -- TODO: need to ensure this is actually a normed space...
-  let a : hf.complement →L[𝕜] E'' := hf.complement.subtypeL -- canonical inclusion
-  -- the equivalence we want.
-  let φ : (E × hf.complement) →L[𝕜] E'' := by refine {
-    -- TODO: bad defeq abuse going on here, E'' versus the tangent space
-    toFun z :=
-      letI v : E'' := mfderiv% f x z.1
-      v + a z.2
-    map_add' z z' := by simp; sorry
-    map_smul' := sorry
-  }
-  let φ : (E × hf.complement) ≃L[𝕜] E'' := by
-    refine {
-      toLinearMap := φ
-      invFun z := by
-        -- second factor is just the projection we get from the complement
-        -- first factor is the left inverse, up to lots of defeq abuse `hf.leftInverse`
-        sorry
-      continuous_invFun := sorry
-      left_inv := sorry
-      right_inv := sorry
-    }
-  use hf.complement, by infer_instance, this
-  apply IsImmersionAtOfComplement.mk_of_continuousAt hfx (chartAt H x) sorry /- codChart -/
-      (equiv := sorry /- φ-/)
-  · apply (mem_chart_source H x)
-  · sorry -- codChart source
-  · apply IsManifold.chart_mem_maximalAtlas
-  · sorry -- codChart in maximal atlas
-  · sorry -- eqon
+  -- The map θ from the proof, or the equivalence we want to use.
+  let θ : (F₁ × F₂) ≃L[𝕜] E'' :=
+    sorry -- natural map, should be a general fact about maps with a left inverse
+
+  -- continue from here with the actual proof!
+  let h := θ.symm ∘ (mfderiv% f' x)
+
+
+
+
+
+
+
+
+  -- old attempt: should use a map from M instead, that's probably better!
+  -- have hfx : ContinuousAt f x := hf.mdifferentiableAt.continuousAt
+  -- -- XXX: will we need this? if untrue, restrict to some small set where this is true
+  -- have : IsOpen (f ⁻¹' (chartAt G (f x)).source) := sorry
+  -- -- step 1 for the chart on M: just choose a naive chart, restricted enough
+  -- let φ := (chartAt H x).restr (f ⁻¹' (chartAt G (f x)).source)
+  -- -- Consider the map f'
+  -- -- XXX: should we compose by φ instead? probably, doesn't matter much either way
+  -- let f' := writtenInExtChartAt I J x f
+  -- let x' := extChartAt I x x
+  -- replace hf : IsImmersedPoint 𝓘(𝕜, E) 𝓘(𝕜, E'') f' x' := by
+  --   unfold f' writtenInExtChartAt
+  --   apply IsImmersedPoint.comp (I' := J)
+  --   · apply IsImmersedPoint.of_mfderiv_isInvertible
+  --     apply isInvertible_mfderiv_extChartAt
+  --     sorry -- true if the set-up above is right
+  --   apply IsImmersedPoint.comp (I' := I)
+  --   · convert hf
+  --     simp [x']
+  --   · apply IsImmersedPoint.of_mfderiv_isInvertible
+  --     sorry -- almost true: isInvertible_mfderivWithin_extChartAt_symm, TODO think more!
+
+  -- let F₁ := LinearMap.range (mfderiv% f' x').toLinearMap
+  -- rw [isImmersedPoint_iff] at hf
+  -- let F₂ := hf.complement
+  -- have : NormedSpace 𝕜 hf.complement :=
+  --   sorry -- TODO: need to ensure this is actually a normed space...
+
+  -- -- next, Θ
+  -- let θ : (F₁ × F₂) ≃L[𝕜] E'' := sorry -- natural map
+  -- let h := θ.symm ∘ (mfderiv% f' x')
+
+  -- now, apply the Lemma to this map h
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  -- oldest attempt
+  -- let a : hf.complement →L[𝕜] E'' := hf.complement.subtypeL -- canonical inclusion
+  -- -- the equivalence we want.
+  -- let φ : (E × hf.complement) →L[𝕜] E'' := by refine {
+  --   -- TODO: bad defeq abuse going on here, E'' versus the tangent space
+  --   toFun z :=
+  --     letI v : E'' := mfderiv% f x z.1
+  --     letI vnew  := mfderiv% f x z.1
+  --     --letI v : E'' := mvfderiv I f x z.1
+  --     v + a z.2
+  --   map_add' z z' := by simp; sorry
+  --   map_smul' := sorry
+  -- }
+  -- let φ : (E × hf.complement) ≃L[𝕜] E'' := by
+  --   refine {
+  --     toLinearMap := φ
+  --     invFun z := by
+  --       -- second factor is just the projection we get from the complement
+  --       -- first factor is the left inverse, up to lots of defeq abuse `hf.leftInverse`
+  --       sorry
+  --     continuous_invFun := sorry
+  --     left_inv := sorry
+  --     right_inv := sorry
+  --   }
+  use hf'.complement, by infer_instance, this
+  apply IsImmersionAtOfComplement.mk_of_continuousAt --hfx (chartAt H x) sorry /- codChart -/
+      --(equiv := θ)
+  --· apply (mem_chart_source H x)
+  --· sorry -- codChart source
+  --· apply IsManifold.chart_mem_maximalAtlas
+  --· sorry -- codChart in maximal atlas
+  --· sorry -- eqon
+  all_goals sorry
+
 /-
 the complement F := hf.complement gives us a projection P : TangentSpace% I x → (range df x),
 thus P ∘ mfderiv% f x is invertible
