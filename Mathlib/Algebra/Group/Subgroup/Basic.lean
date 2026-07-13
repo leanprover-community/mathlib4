@@ -221,7 +221,7 @@ lemma comap_piMap_pi {H : ι → Type*} [Π i, Group (H i)] {J : Set ι}
   ext; simp [mem_pi]
 
 @[to_additive]
-lemma map_piMap_univ_pi {H : ι → Type*} [Π i, Group (H i)] {S : Π i, Subgroup (G i)}
+lemma map_piMap_pi_univ {H : ι → Type*} [Π i, Group (H i)] {S : Π i, Subgroup (G i)}
     (f : Π i, G i →* H i) :
     map (MonoidHom.piMap f) (pi Set.univ S) = pi Set.univ (fun i ↦ map (f i) (S i)) :=
   SetLike.coe_injective <| Set.piMap_image_univ_pi _ _

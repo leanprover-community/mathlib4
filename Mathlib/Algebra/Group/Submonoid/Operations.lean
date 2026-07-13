@@ -1057,7 +1057,7 @@ lemma comap_piMap_pi {N : ι → Type*} [Π i, MulOneClass (N i)] {J : Set ι} {
   ext; simp [mem_pi]
 
 @[to_additive]
-lemma map_piMap_univ_pi {N : ι → Type*} [Π i, MulOneClass (N i)] {S : Π i, Submonoid (M i)}
+lemma map_piMap_pi_univ {N : ι → Type*} [Π i, MulOneClass (N i)] {S : Π i, Submonoid (M i)}
     (f : Π i, M i →* N i) :
     map (piMap f) (pi Set.univ S) = pi Set.univ (fun i ↦ map (f i) (S i)) :=
   SetLike.coe_injective <| Set.piMap_image_univ_pi _ _

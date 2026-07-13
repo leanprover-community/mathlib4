@@ -437,7 +437,7 @@ lemma comap_piMap_pi {φ ψ : ι → Type*} [Π i, AddCommMonoid (φ i)] [Π i, 
     comap (piMap f) (pi J S) = pi J (fun i ↦ comap (f i) (S i)) := by
   ext; simp [mem_pi]
 
-lemma map_piMap_univ_pi {φ ψ : ι → Type*} [Π i, AddCommMonoid (φ i)] [Π i, AddCommMonoid (ψ i)]
+lemma map_piMap_pi_univ {φ ψ : ι → Type*} [Π i, AddCommMonoid (φ i)] [Π i, AddCommMonoid (ψ i)]
     [Π i, Module R (φ i)] [Π i, Module R (ψ i)] {S : Π i, Submodule R (φ i)}
     (f : Π i, φ i →ₗ[R] ψ i) :
     map (piMap f) (pi Set.univ S) = pi Set.univ (fun i ↦ map (f i) (S i)) :=
