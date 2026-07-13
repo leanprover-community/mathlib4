@@ -54,7 +54,7 @@ Options:
                      instead of the default, the checked-out HEAD. Use the SHA
                      reported by `cache query`. Wins over the
                      MATHLIB_CACHE_REPO_SCOPE env var. Reading another commit's
-                     scope means trusting the artifacts produced at that commit
+                     scope means trusting the artifacts produced at that commit;
                      `cache get` prints a security notice when the scope differs
                      from HEAD.
   --unsafe           (get only) Instead of pinning one --scope, automatically walk
