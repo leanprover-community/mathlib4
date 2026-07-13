@@ -6,7 +6,6 @@ Authors: Johan Commelin
 module
 
 public import Mathlib.LinearAlgebra.Dimension.Localization
-public import Mathlib.LinearAlgebra.InvariantBasisNumber
 public import Mathlib.RingTheory.Algebraic.Basic
 public import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Basic
 public import Mathlib.RingTheory.Localization.BaseChange
@@ -103,13 +102,26 @@ theorem Cardinal.toNat_eq_of_forall_le_iff (c d : Cardinal)
     apply eq_of_forall_le_iff
     simp_all
 
+theorem LinearIndepOn.iff_fractionRing (R K : Type*) [CommRing R] [CommRing K]
+    [Algebra R K] [IsFractionRing R K] {V : Type*} [AddCommGroup V] [Module R V] [Module K V]
+    [IsScalarTower R K V] {ι : Type*} {s : Set ι} {f : ι → V} :
+    LinearIndepOn R f s ↔ LinearIndepOn K f s :=
+  LinearIndependent.iff_fractionRing R K
+
 theorem IsFractionRing.rank_eq (R R' S : Type*)
     [CommRing R] [CommRing R'] [CommRing S]
     [Algebra R R'] [Module R' S] [Module R S]
     [IsScalarTower R R' S] [IsFractionRing R R'] :
     Module.rank R S = Module.rank R' S := by
   simp_rw [Module.rank, ciSup_subtype Cardinal.bddAbove_of_small (by simp),
-    LinearIndepOn, LinearIndependent.iff_fractionRing R R'] -- add LinearIndepOn.iff_fractionRing
+    LinearIndepOn.iff_fractionRing R R']
+
+theorem IsFractionRing.finrank_eq' (R R' S : Type*)
+    [CommRing R] [CommRing R'] [CommRing S]
+    [Algebra R R'] [Module R' S] [Module R S]
+    [IsScalarTower R R' S] [IsFractionRing R R'] :
+    Module.finrank R S = Module.finrank R' S := by
+  simp_rw [Module.finrank, IsFractionRing.rank_eq R R']
 
 open IsLocalization nonZeroDivisors Pointwise in
 theorem foo' (R S A : Type*) [DecidableEq S]
@@ -132,18 +144,6 @@ theorem foo' (R S A : Type*) [DecidableEq S]
     exact (IsLocalization.smul_bijective A (commonDenomOfFinset S⁰ s)).injective.injOn
   rw [← finsetIntegerMultiple_image S⁰ s] at hs
   rwa [LinearIndepOn.image_algebraMap_iff] at hs
-
--- todo: generalize to rank
-theorem IsFractionRing.finrank_eq' (R R' S : Type*)
-    [CommRing R] [CommRing R'] [CommRing S]
-    [Algebra R R'] [Module R' S] [Module R S]
-    [IsScalarTower R R' S] [IsFractionRing R R'] :
-    Module.finrank R S = Module.finrank R' S := by
-  rcases iff_iff_and_or_not_and_not.mp (nontrivial_iff_nontrivial R R') with ⟨_, _⟩ | ⟨_, _⟩; swap
-  · simp_all [not_nontrivial_iff_subsingleton]
-  apply Cardinal.toNat_eq_of_forall_le_iff
-  intro n
-  simp_rw [Module.le_rank_iff_exists_finset, LinearIndepOn, LinearIndependent.iff_fractionRing R R']
 
 open IsLocalization nonZeroDivisors in
 theorem IsFractionRing.finrank_eq (R R' S S' : Type*)
