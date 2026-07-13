@@ -370,24 +370,6 @@ or fourth isomorphism theorem for multiplicative groups -/
 @[to_additive /-- The **correspondence theorem**, or lattice theorem,
   or fourth isomorphism theorem for additive groups -/]
 def comapMk'OrderIso (N : Subgroup G) [hn : N.Normal] :
-    Subgroup (G ⧸ N) ≃o { H : Subgroup G // N ≤ H } where
-  toFun H' := ⟨Subgroup.comap (mk' N) H', le_comap_mk' N _⟩
-  invFun H := Subgroup.map (mk' N) H
-  left_inv H' := Subgroup.map_comap_eq_self <| by simp
-  right_inv := fun ⟨H, hH⟩ => Subtype.ext <| by simpa
-  map_rel_iff' := Subgroup.comap_le_comap_of_surjective <| mk'_surjective _
-
-/-- The **correspondence theorem** as an order isomorphism onto the interval `Set.Ici N`.
-
-Compared to `comapMk'OrderIso`, whose codomain is the bare subtype `{H : Subgroup G // N ≤ H}`,
-landing in `Set.Ici N` makes the interval order API available (e.g.
-`Set.isSimpleOrder_Ici_iff_isCoatom`), mirroring the submodule side `Submodule.comapMkQRelIso`. -/
-@[to_additive (attr := simps apply_coe) /-- The **correspondence theorem** as an order isomorphism
-onto the interval `Set.Ici N`.
-
-Compared to `comapMk'AddOrderIso`, whose codomain is the bare subtype
-`{H : AddSubgroup G // N ≤ H}`, landing in `Set.Ici N` makes the interval order API available. -/]
-def comapMk'OrderIso' (N : Subgroup G) [hn : N.Normal] :
     Subgroup (G ⧸ N) ≃o Set.Ici N where
   toFun H' := ⟨Subgroup.comap (mk' N) H', le_comap_mk' N _⟩
   invFun H := Subgroup.map (mk' N) H
