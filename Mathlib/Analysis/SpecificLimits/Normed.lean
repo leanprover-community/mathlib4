@@ -604,9 +604,12 @@ theorem hasSum_sq_mul_geometric_of_norm_lt_one' {r : R} (h : ‖r‖ < 1) :
   have h1 : ((1 - r)⁻¹ʳ) ^ 2 = (1 - r) * ((1 - r)⁻¹ʳ) ^ 3 := by
     rw [pow_succ' _ 2, ← mul_assoc,
       Ring.mul_inverse_cancel _ (isUnit_one_sub_of_norm_lt_one h), one_mul]
-  convert! hasSum_pow_mul_geometric_of_norm_lt_one' 2 h using 1
-  simp [Finset.sum_range_succ, stirlingSecond, Nat.factorial, h1]
-  grind
+  have h2 : r * (1 + r) * ((1 - r)⁻¹ʳ) ^ 3
+      = r * ((1 - r)⁻¹ʳ) ^ 2 + 2 * r ^ 2 * ((1 - r)⁻¹ʳ) ^ 3 := by
+    rw [h1]
+    noncomm_ring
+  simpa [h2, Finset.sum_range_succ, stirlingSecond_one_right, stirlingSecond_self] using
+    hasSum_pow_mul_geometric_of_norm_lt_one' 2 h
 
 /-- If `‖r‖ < 1`, then `∑' n : ℕ, n ^ 2 * r ^ n = r * (1 + r) / (1 - r) ^ 3`, version in a
 general ring with summable geometric series. For a version in a field, using division instead
