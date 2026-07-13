@@ -52,45 +52,45 @@ open Matrix
 
 /-- The Cartan matrix of type E₆. See [bourbaki1968] plate V, page 277. -/
 def E₆ : Matrix (Fin 6) (Fin 6) ℤ :=
-  !![ 2,  0, -1,  0,  0,  0
-      0,  2,  0, -1,  0,  0
-     -1,  0,  2, -1,  0,  0
-      0, -1, -1,  2, -1,  0
-      0,  0,  0, -1,  2, -1
+  !![ 2,  0, -1,  0,  0,  0;
+      0,  2,  0, -1,  0,  0;
+     -1,  0,  2, -1,  0,  0;
+      0, -1, -1,  2, -1,  0;
+      0,  0,  0, -1,  2, -1;
       0,  0,  0,  0, -1,  2]
 
 /-- The Cartan matrix of type E₇. See [bourbaki1968] plate VI, page 281. -/
 def E₇ : Matrix (Fin 7) (Fin 7) ℤ :=
-  !![ 2,  0, -1,  0,  0,  0,  0
-      0,  2,  0, -1,  0,  0,  0
-     -1,  0,  2, -1,  0,  0,  0
-      0, -1, -1,  2, -1,  0,  0
-      0,  0,  0, -1,  2, -1,  0
-      0,  0,  0,  0, -1,  2, -1
+  !![ 2,  0, -1,  0,  0,  0,  0;
+      0,  2,  0, -1,  0,  0,  0;
+     -1,  0,  2, -1,  0,  0,  0;
+      0, -1, -1,  2, -1,  0,  0;
+      0,  0,  0, -1,  2, -1,  0;
+      0,  0,  0,  0, -1,  2, -1;
       0,  0,  0,  0,  0, -1,  2]
 
 /-- The Cartan matrix of type E₈. See [bourbaki1968] plate VII, page 285. -/
 def E₈ : Matrix (Fin 8) (Fin 8) ℤ :=
-  !![ 2,  0, -1,  0,  0,  0,  0,  0
-      0,  2,  0, -1,  0,  0,  0,  0
-     -1,  0,  2, -1,  0,  0,  0,  0
-      0, -1, -1,  2, -1,  0,  0,  0
-      0,  0,  0, -1,  2, -1,  0,  0
-      0,  0,  0,  0, -1,  2, -1,  0
-      0,  0,  0,  0,  0, -1,  2, -1
+  !![ 2,  0, -1,  0,  0,  0,  0,  0;
+      0,  2,  0, -1,  0,  0,  0,  0;
+     -1,  0,  2, -1,  0,  0,  0,  0;
+      0, -1, -1,  2, -1,  0,  0,  0;
+      0,  0,  0, -1,  2, -1,  0,  0;
+      0,  0,  0,  0, -1,  2, -1,  0;
+      0,  0,  0,  0,  0, -1,  2, -1;
       0,  0,  0,  0,  0,  0, -1,  2]
 
 /-- The Cartan matrix of type F₄. See [bourbaki1968] plate VIII, page 288. -/
 def F₄ : Matrix (Fin 4) (Fin 4) ℤ :=
-  !![ 2, -1,  0,  0
-     -1,  2, -2,  0
-      0, -1,  2, -1
+  !![ 2, -1,  0,  0;
+     -1,  2, -2,  0;
+      0, -1,  2, -1;
       0,  0, -1,  2]
 
 /-- The Cartan matrix of type G₂. See [bourbaki1968] plate IX, page 290.
 We use the transpose of Bourbaki's matrix for consistency with F₄. -/
 def G₂ : Matrix (Fin 2) (Fin 2) ℤ :=
-  !![ 2, -3
+  !![ 2, -3;
      -1,  2]
 
 /-! ### Classical Cartan matrices -/
@@ -176,11 +176,11 @@ theorem D_isSymm : (D n).IsSymm := D_transpose n
 
 theorem A_one : A 1 = !![2] := by decide
 
-theorem A_two : A 2 = !![ 2, -1
+theorem A_two : A 2 = !![ 2, -1;
                          -1,  2] := by decide
 
-theorem A_three : A 3 = !![ 2, -1,  0
-                           -1,  2, -1
+theorem A_three : A 3 = !![ 2, -1,  0;
+                           -1,  2, -1;
                             0, -1,  2] := by decide
 
 theorem B_one : B 1 = A 1 := by decide
@@ -189,24 +189,24 @@ theorem C_one : C 1 = A 1 := by decide
 
 theorem D_one : D 1 = A 1 := by decide
 
-theorem D_two : D 2 = !![2, 0
+theorem D_two : D 2 = !![2, 0;
                          0, 2] := by decide
 
-theorem B_two : B 2 = !![ 2, -2
+theorem B_two : B 2 = !![ 2, -2;
                          -1,  2] := by decide
 
-theorem C_two : C 2 = !![ 2, -1
+theorem C_two : C 2 = !![ 2, -1;
                          -2,  2] := by decide
 
-theorem D_three : D 3 = !![ 2, -1, -1
-                           -1,  2,  0
+theorem D_three : D 3 = !![ 2, -1, -1;
+                           -1,  2,  0;
                            -1,  0,  2] := by decide
 
 theorem D_three' : (D 3).reindex c[0, 1] c[0, 1] = A 3 := by decide
 
-theorem D_four : D 4 = !![ 2, -1,  0,  0
-                          -1,  2, -1, -1
-                           0, -1,  2,  0
+theorem D_four : D 4 = !![ 2, -1,  0,  0;
+                          -1,  2, -1, -1;
+                           0, -1,  2,  0;
                            0, -1,  0,  2] := by decide
 
 
