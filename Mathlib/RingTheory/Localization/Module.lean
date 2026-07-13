@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Module.LocalizedModule.IsLocalization
 public import Mathlib.LinearAlgebra.Basis.Basic
-public import Mathlib.LinearAlgebra.Dimension.Finrank
 public import Mathlib.RingTheory.Localization.FractionRing
 public import Mathlib.RingTheory.Localization.Integer
 
