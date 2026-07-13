@@ -80,6 +80,11 @@ lemma map_id : E.map (𝟭 _) = E :=
 lemma map_comp {D' : Type*} [Category* D'] (G : D ⥤ D') : E.map (F ⋙ G) = (E.map F).map G :=
   rfl
 
+lemma sieve₀_map : (E.map F).sieve₀ = Sieve.functorPushforward _ E.sieve₀ := by
+  rw [PreZeroHypercover.sieve₀, Sieve.ofArrows, ← PreZeroHypercover.presieve₀,
+    PreOneHypercover.map_toPreZeroHypercover, PreZeroHypercover.presieve₀_map,
+    Sieve.generate_map_eq_functorPushforward]
+
 /-- If `F : C ⥤ D`, `P : Dᵒᵖ ⥤ A` and `E` is a 1-pre-hypercover of an object of `X`,
 then `(E.map F).multifork P` is a limit iff `E.multifork (F.op ⋙ P)` is a limit. -/
 def isLimitMapMultiforkEquiv {A : Type u} [Category.{t} A] (P : Dᵒᵖ ⥤ A) :

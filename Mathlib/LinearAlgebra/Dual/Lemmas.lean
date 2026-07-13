@@ -577,7 +577,7 @@ def dualCopairing (W : Submodule R M) : W.dualAnnihilator →ₗ[R] M ⧸ W →�
 
 instance (W : Submodule R M) : FunLike (W.dualAnnihilator) M R where
   coe φ := φ.val
-  coe_injective' φ ψ h := by
+  coe_injective φ ψ h := by
     ext
     simp only [funext_iff] at h
     exact h _
@@ -1125,71 +1125,5 @@ theorem dualDistrib_apply (f : Dual A M) (g : Dual R N) (m : M) (n : N) :
   rfl
 
 end AlgebraTensorModule
-
-variable {R M N}
-variable [CommSemiring R] [AddCommMonoid M] [AddCommMonoid N]
-variable [Module R M] [Module R N]
-
-/-- An inverse to `TensorProduct.dualDistrib` given bases.
--/
-noncomputable def dualDistribInvOfBasis (b : Basis ι R M) (c : Basis κ R N) :
-    Dual R (M ⊗[R] N) →ₗ[R] Dual R M ⊗[R] Dual R N :=
-  ∑ i, ∑ j,
-    (ringLmapEquivSelf R ℕ _).symm (b.dualBasis i ⊗ₜ c.dualBasis j) ∘ₗ
-      applyₗ (c j) ∘ₗ applyₗ (b i) ∘ₗ lcurry (.id R) M N R
-
-@[simp]
-theorem dualDistribInvOfBasis_apply (b : Basis ι R M) (c : Basis κ R N) (f : Dual R (M ⊗[R] N)) :
-    dualDistribInvOfBasis b c f = ∑ i, ∑ j, f (b i ⊗ₜ c j) • b.dualBasis i ⊗ₜ c.dualBasis j := by
-  simp [dualDistribInvOfBasis]
-
-theorem dualDistrib_dualDistribInvOfBasis_left_inverse (b : Basis ι R M) (c : Basis κ R N) :
-    comp (dualDistrib R M N) (dualDistribInvOfBasis b c) = LinearMap.id := by
-  apply (b.tensorProduct c).dualBasis.ext
-  rintro ⟨i, j⟩
-  apply (b.tensorProduct c).ext
-  rintro ⟨i', j'⟩
-  simp only [dualDistrib, Basis.coe_dualBasis, coe_comp, Function.comp_apply,
-    dualDistribInvOfBasis_apply, Basis.coord_apply, Basis.tensorProduct_repr_tmul_apply,
-    Basis.repr_self, _root_.map_sum, map_smul, homTensorHomMap_apply, compRight_apply,
-    Basis.tensorProduct_apply, LinearMap.coe_sum, Finset.sum_apply, smul_apply, LinearEquiv.coe_coe,
-    map_tmul, lid_tmul, smul_eq_mul, id_coe, id_eq]
-  rw [Finset.sum_eq_single i, Finset.sum_eq_single j]
-  · simpa using mul_comm _ _
-  all_goals { intros; simp [*] at * }
-
-theorem dualDistrib_dualDistribInvOfBasis_right_inverse (b : Basis ι R M) (c : Basis κ R N) :
-    comp (dualDistribInvOfBasis b c) (dualDistrib R M N) = LinearMap.id := by
-  apply (b.dualBasis.tensorProduct c.dualBasis).ext
-  rintro ⟨i, j⟩
-  simp only [Basis.tensorProduct_apply, Basis.coe_dualBasis, coe_comp, Function.comp_apply,
-    dualDistribInvOfBasis_apply, dualDistrib_apply, Basis.coord_apply, Basis.repr_self,
-    id_coe, id_eq]
-  rw [Finset.sum_eq_single i, Finset.sum_eq_single j]
-  · simp
-  all_goals { intros; simp [*] at * }
-
-/-- A linear equivalence between `Dual M ⊗ Dual N` and `Dual (M ⊗ N)` given bases for `M` and `N`.
-It sends `f ⊗ g` to the composition of `TensorProduct.map f g` with the natural
-isomorphism `R ⊗ R ≃ R`.
--/
-@[simps!]
-noncomputable def dualDistribEquivOfBasis (b : Basis ι R M) (c : Basis κ R N) :
-    Dual R M ⊗[R] Dual R N ≃ₗ[R] Dual R (M ⊗[R] N) := by
-  refine LinearEquiv.ofLinear (dualDistrib R M N) (dualDistribInvOfBasis b c) ?_ ?_
-  · exact dualDistrib_dualDistribInvOfBasis_left_inverse _ _
-  · exact dualDistrib_dualDistribInvOfBasis_right_inverse _ _
-
-variable (R M N)
-variable [Module.Finite R M] [Module.Finite R N] [Module.Free R M] [Module.Free R N]
-
-/--
-A linear equivalence between `Dual M ⊗ Dual N` and `Dual (M ⊗ N)` when `M` and `N` are finite free
-modules. It sends `f ⊗ g` to the composition of `TensorProduct.map f g` with the natural
-isomorphism `R ⊗ R ≃ R`.
--/
-@[simp]
-noncomputable def dualDistribEquiv : Dual R M ⊗[R] Dual R N ≃ₗ[R] Dual R (M ⊗[R] N) :=
-  dualDistribEquivOfBasis (Module.Free.chooseBasis R M) (Module.Free.chooseBasis R N)
 
 end TensorProduct

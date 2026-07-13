@@ -143,7 +143,7 @@ abbrev MulActionHomClass (F : Type*) (M : outParam Type*)
 
 @[to_additive] instance : FunLike (MulActionHom φ X Y) X Y where
   coe := MulActionHom.toFun
-  coe_injective' f g h := by cases f; cases g; congr
+  coe_injective f g h := by cases f; cases g; congr
 
 @[to_additive (attr := simp)]
 theorem map_smul {F M X Y : Type*} [SMul M X] [SMul M Y]
@@ -413,8 +413,6 @@ end MulActionHom
 
 namespace MulActionHom
 
-section
-
 variable {R M N X Y : Type*} {σ : M → N}
 
 attribute [local simp] map_smulₛₗ smul_sub
@@ -448,7 +446,6 @@ lemma coe_add [SMul M X] [AddZeroClass Y] [DistribSMul N Y] (f g : X →ₑ[σ] 
 instance [SMul M X] [AddMonoid Y] [DistribSMul N Y] :
     AddMonoid (X →ₑ[σ] Y) where
   add_assoc _ _ _ := ext fun _ ↦ add_assoc _ _ _
-  nsmul n f := n • f
   nsmul_zero f := ext fun x ↦ AddMonoid.nsmul_zero (f x)
   nsmul_succ n f := ext fun x ↦ AddMonoid.nsmul_succ n (f x)
 
@@ -484,7 +481,6 @@ instance [SMul M X] [AddGroup Y] [DistribSMul N Y] : AddGroup (X →ₑ[σ] Y) w
   neg f := ⟨-f, by simp⟩
   neg_add_cancel f := ext fun _ ↦ neg_add_cancel _
   sub_eq_add_neg _ _ := ext fun _ ↦ sub_eq_add_neg _ _
-  zsmul z f := z • f
   zsmul_zero' f := ext fun x ↦ SubNegMonoid.zsmul_zero' _
   zsmul_neg' _ _ := ext fun x ↦ SubNegMonoid.zsmul_neg' _ _
   zsmul_succ' _ _ := ext fun x ↦ SubNegMonoid.zsmul_succ' _ _
@@ -537,7 +533,47 @@ instance [SMul M X] [Monoid N] [Ring Y] [MulSemiringAction N Y] :
 instance [SMul M X] [Monoid N] [CommRing Y] [MulSemiringAction N Y] :
     CommRing (X →ₑ[σ] Y) where
 
-end
+namespace End
+
+/-- For a monoid `M` acting on a type `X`, the `M`-equivariant functions from `X` to itself
+form a monoid under composition. -/
+@[to_additive /-- For an additive monoid `M` acting on a type `X`, the `M`-equivariant functions
+from `X` to itself form an additive monoid under composition. -/]
+local instance [SMul M X] : Monoid (X →[M] X) where
+  mul f g := f.comp g
+  mul_assoc _ _ _ := rfl
+  one := .id _
+  one_mul _ := rfl
+  mul_one _ := rfl
+
+@[to_additive (attr := simp)] theorem mul_def [SMul M X] {f g : X →[M] X} : f * g = f.comp g := rfl
+
+/-- The `M`-equivariant functions from a monoid `M` to itself are exactly
+right multiplications by elements of `M`. See also `RingEquiv.moduleEndSelf`. -/
+@[to_additive (attr := simps)
+/-- The `M`-equivariant functions from an additive monoid `M` to itself are exactly
+right additions by elements of `M`. -/]
+def equivMulOpposite [Monoid M] : (M →[M] M) ≃* Mᵐᵒᵖ where
+  toFun f := .op (f 1)
+  invFun m := .mk (· * m.unop) fun _ _ ↦ mul_assoc ..
+  left_inv f := by ext m; change m • f 1 = _; rw [← map_smul, smul_eq_mul, mul_one]
+  right_inv := mul_one
+  map_mul' f g := congr_arg MulOpposite.op <| by
+    dsimp [← smul_eq_mul]; simp_rw [← map_smul, smul_eq_mul, mul_one]; rfl
+
+/-- The functions from a monoid `M` to itself equivariant with respect to the right `M`-action
+are exactly left multiplications by elements of `M`. See also `RingEquiv.moduleEndSelfOp`. -/
+@[to_additive (attr := simps)
+/-- The functions from an additive monoid `M` to itself equivariant with respect to
+the right `M`-action are exactly left additions by elements of `M`. -/]
+def mulOppositeEquiv [Monoid M] : (M →[Mᵐᵒᵖ] M) ≃* M where
+  toFun f := f 1
+  invFun m := .mk (m * ·) fun _ _ ↦ (mul_assoc ..).symm
+  left_inv f := by ext m; change MulOpposite.op m • f 1 = _; simp [← map_smul]
+  right_inv := mul_one
+  map_mul' f g := show _ = MulOpposite.op (g 1) • f 1 by simp [← map_smul]
+
+end End
 
 end MulActionHom
 
@@ -639,7 +675,7 @@ namespace MulDistribMulActionHom
 @[to_additive (dont_translate := M N)]
 instance : FunLike (A →ₑ*[φ] B) A B where
   coe m := m.toFun
-  coe_injective' f g h := by
+  coe_injective f g h := by
     rcases f with ⟨tF, _, _⟩; rcases g with ⟨tG, _, _⟩
     cases tF; cases tG; congr
 
@@ -879,7 +915,7 @@ namespace MulSemiringActionHom
 
 instance : FunLike (R →ₑ+*[φ] S) R S where
   coe m := m.toFun
-  coe_injective' f g h := by
+  coe_injective f g h := by
     rcases f with ⟨⟨tF, _, _⟩, _, _⟩; rcases g with ⟨⟨tG, _, _⟩, _, _⟩
     cases tF; cases tG; congr
 

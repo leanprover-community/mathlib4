@@ -602,7 +602,8 @@ private lemma steinhaus_mul_aux (μ : Measure G) [IsHaarMeasure μ] [μ.InnerReg
     obtain ⟨K, hKE, hK_comp, hK_meas⟩ := hEapprox
     exact ⟨closure K, hK_comp.closure_subset_measurableSet hE hKE, hK_comp.closure,
       isClosed_closure, by rwa [hK_comp.measure_closure]⟩
-  filter_upwards [eventually_nhds_one_measure_smul_diff_lt hK K_closed hKpos.ne' (μ := μ)] with g hg
+  filter_upwards [eventually_nhds_one_measure_smul_sdiff_lt hK K_closed hKpos.ne' (μ := μ)]
+    with g hg
   obtain ⟨_, ⟨x, hxK, rfl⟩, hgxK⟩ : ∃ x ∈ g • K, x ∈ K :=
      not_disjoint_iff.1 fun hd ↦ by simp [hd.symm.sdiff_eq_right, measure_smul] at hg
   simpa using div_mem_div (hKE hgxK) (hKE hxK)
@@ -672,7 +673,8 @@ theorem haarMeasure_unique (μ : Measure G) [SigmaFinite μ] [IsMulLeftInvariant
 
 /-- Let `μ` be a σ-finite left invariant measure on `G`. Then `μ` is equal to the Haar measure
 defined by `K₀` iff `μ K₀ = 1`. -/
-@[to_additive]
+@[to_additive /-- Let `μ` be a σ-finite left invariant measure on `G`. Then `μ` is equal to the
+additive Haar measure defined by `K₀` iff `μ K₀ = 1`. -/]
 theorem haarMeasure_eq_iff (K₀ : PositiveCompacts G) (μ : Measure G) [SigmaFinite μ]
     [IsMulLeftInvariant μ] :
     haarMeasure K₀ = μ ↔ μ K₀ = 1 :=

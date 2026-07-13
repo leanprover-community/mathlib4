@@ -342,10 +342,15 @@ instance Algebra.IsAlgebraic.isSeparable_of_perfectField {K L : Type*} [Field K]
     minpoly.irreducible (Algebra.IsIntegral.isIntegral x)⟩
 
 /-- If `L / K` is an algebraic extension, `K` is a perfect field, then so is `L`. -/
-theorem Algebra.IsAlgebraic.perfectField {K L : Type*} [Field K] [Field L] [Algebra K L]
+theorem Algebra.IsAlgebraic.perfectField (K : Type*) {L : Type*} [Field K] [Field L] [Algebra K L]
     [Algebra.IsAlgebraic K L] [PerfectField K] : PerfectField L := ⟨fun {f} hf ↦ by
   obtain ⟨_, _, hi, h⟩ := hf.exists_dvd_monic_irreducible_of_isIntegral (K := K)
   exact (PerfectField.separable_of_irreducible hi).map |>.of_dvd h⟩
+
+theorem PerfectField.of_ringEquiv {K L : Type*} [Field K] [Field L] (h : K ≃+* L) [PerfectField K] :
+    PerfectField L :=
+  let := h.toRingHom.toAlgebra
+  Algebra.IsAlgebraic.perfectField K
 
 namespace Polynomial
 
@@ -450,7 +455,6 @@ noncomputable def rootsExpandToRoots : (expand R p f).roots.toFinset ↪ f.roots
 @[simp]
 theorem rootsExpandToRoots_apply (x) : (rootsExpandToRoots p f x : R) = x ^ p := rfl
 
-open scoped Classical in
 /-- If `f` is a polynomial over an integral domain `R` of characteristic `p`, then there is
 a map from the set of roots of `Polynomial.expand R (p ^ n) f` to the set of roots of `f`.
 It's given by `x ↦ x ^ (p ^ n)`, see `rootsExpandPowToRoots_apply`. -/
