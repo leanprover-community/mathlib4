@@ -126,6 +126,20 @@ protected lemma finite [Finite R] : Finite S := by
     simpa using IsLocalization.exists_mk'_eq M x
   exact .of_surjective _ this
 
+theorem algebraMap_dvd_algebraMap_iff_of_prime (M : Submonoid R) [IsLocalization M S]
+    {x y : R} (hx : Prime x)
+    (hxu : ¬ IsUnit (algebraMap R S x)) :
+    algebraMap R S x ∣ algebraMap R S y ↔ x ∣ y := by
+  simpa using
+    (IsLocalization.toLocalizationMap M S).map_dvd_map_iff_of_prime hx hxu
+
+theorem prime_algebraMap_of_prime (M : Submonoid R) [IsLocalization M S]
+    {x : R} (hx : Prime x)
+    (hx0 : algebraMap R S x ≠ 0) (hxu : ¬ IsUnit (algebraMap R S x)) :
+    Prime (algebraMap R S x) := by
+  simpa using
+    (IsLocalization.toLocalizationMap M S).map_prime_of_ne_zero hx hx0 hxu
+
 section CompatibleSMul
 
 variable (N₁ N₂ : Type*) [AddCommMonoid N₁] [AddCommMonoid N₂] [Module R N₁] [Module R N₂]

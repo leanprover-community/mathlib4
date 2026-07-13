@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.GroupWithZero.Hom
 public import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
+public import Mathlib.Algebra.GroupWithZero.Associated
 public import Mathlib.Algebra.GroupWithZero.Units.Basic
 public import Mathlib.GroupTheory.MonoidLocalization.Maps
 public import Mathlib.RingTheory.OreLocalization.Basic
@@ -125,6 +126,62 @@ theorem mk'_eq_zero_iff (f : LocalizationMap S N) (m : M) (s : S) :
 
 @[simp] theorem mk'_zero (f : LocalizationMap S N) (s : S) : f.mk' 0 s = 0 := by
   rw [eq_comm, eq_mk'_iff_mul_eq, zero_mul, f.map_zero]
+
+theorem associated_mk' (f : LocalizationMap S N) (x : M) (y : S) :
+    Associated (f x) (f.mk' x y) := by
+  rw [← f.mk'_spec' x y]
+  exact associated_unit_mul_left _ _ (f.map_units y)
+
+theorem map_isUnit_iff (f : LocalizationMap S N) (x : M) :
+    IsUnit (f x) ↔ ∃ y : S, x ∣ (y : M) := by
+  refine ⟨fun h ↦ ?_, fun ⟨y, hxy⟩ ↦ isUnit_of_dvd_unit (map_dvd f.toMonoidHom hxy) (f.map_units y)⟩
+  let ⟨z, hz⟩ := isUnit_iff_dvd_one.mp h
+  let ⟨⟨r, s⟩, hrs⟩ := f.surj z
+  have hmap : f s = f (x * r) := by grind
+  let ⟨t, ht⟩ := f.eq_iff_exists.mp hmap
+  exact ⟨t * s, ⟨t * r, show (t : S) * (s : S) = x * (t * r) by grind⟩⟩
+
+theorem not_dvd_submonoid_of_not_isUnit (f : LocalizationMap S N) {x : M}
+    (hxu : ¬ IsUnit (f x)) (y : S) : ¬ x ∣ (y : M) :=
+  fun hxy ↦ hxu <| (f.map_isUnit_iff x).2 ⟨y, hxy⟩
+
+theorem map_dvd_mk'_iff_of_prime (f : LocalizationMap S N) {p x : M} (s : S) (hp : Prime p)
+    (hpu : ¬ IsUnit (f p)) : f p ∣ f.mk' x s ↔ p ∣ x := by
+  constructor
+  · rintro ⟨c, hc⟩
+    let ⟨⟨r, t⟩, ht⟩ := f.surj c
+    have hmk := calc
+      f.mk' x s = f p * c := hc
+      _ = f p * f.mk' r t := by simp [(f.eq_mk'_iff_mul_eq).2 ht]
+      _ = f.mk' (p * r) t := by rw [f.mul_mk'_eq_mk'_of_mul]
+    have hmap : f (t * x) = f (s * (p * r)) := (f.mk'_eq_iff_eq).mp hmk
+    let ⟨u, hu⟩ := f.eq_iff_exists.mp hmap
+    have hdiv : p ∣ u * (t * x) := ⟨u * (s * r), by grind⟩
+    exact (hp.dvd_or_dvd <| (hp.dvd_or_dvd hdiv).resolve_left <|
+      f.not_dvd_submonoid_of_not_isUnit hpu u).resolve_left <|
+        f.not_dvd_submonoid_of_not_isUnit hpu t
+  · rintro ⟨r, rfl⟩
+    exact ⟨f.mk' r s, by rw [f.mul_mk'_eq_mk'_of_mul]⟩
+
+theorem map_dvd_map_iff_of_prime (f : LocalizationMap S N) {p q : M} (hp : Prime p)
+    (hpu : ¬ IsUnit (f p)) : f p ∣ f q ↔ p ∣ q := by
+  simpa [f.mk'_one] using f.map_dvd_mk'_iff_of_prime 1 hp hpu
+
+theorem map_prime_of_ne_zero (f : LocalizationMap S N) {p : M} (hp : Prime p)
+    (hp0 : f p ≠ 0) (hpu : ¬ IsUnit (f p)) : Prime (f p) := by
+  refine ⟨hp0, hpu, ?_⟩
+  intro a b hab
+  obtain ⟨a', s, rfl⟩ := f.mk'_surjective a
+  obtain ⟨b', t, rfl⟩ := f.mk'_surjective b
+  have hdiv : p ∣ a' * b' := by
+    have hmk : f p ∣ f.mk' (a' * b') (s * t) := by
+      simpa [f.mk'_mul] using hab
+    exact (f.map_dvd_mk'_iff_of_prime (s * t) hp hpu).mp hmk
+  rcases hp.dvd_or_dvd hdiv with hdiv | hdiv
+  · left
+    exact (f.associated_mk' a' s).dvd_iff_dvd_right.mp (map_dvd f.toMonoidHom hdiv)
+  · right
+    exact (f.associated_mk' b' t).dvd_iff_dvd_right.mp (map_dvd f.toMonoidHom hdiv)
 
 theorem nonZeroDivisors_le_comap (f : LocalizationMap S N) :
     nonZeroDivisors M ≤ (nonZeroDivisors N).comap f := by
