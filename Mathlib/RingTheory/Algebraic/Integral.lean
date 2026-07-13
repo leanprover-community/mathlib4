@@ -40,36 +40,26 @@ is algebraic and that every algebraic element over a field is integral.
 
 @[expose] public section
 
-@[simp]
-theorem IsLocalization.integerMultiple_eq_zero_iff {R : Type*} [CommSemiring R] (M : Submonoid R)
-    {S : Type*} [CommSemiring S] [Algebra R S] [IsLocalization M S] [FaithfulSMul R S]
-    {ι : Type*} (s : Finset ι) (f : ι → S) (i : s) :
-    integerMultiple M s f i = 0 ↔ f i = 0 := by
-  rw [← FaithfulSMul.algebraMap_eq_zero_iff R S, map_integerMultiple]
-  have := IsLocalization.smul_bijective S (commonDenom M s f)
-  rw [← smul_zero (commonDenom M s f),
-    (IsLocalization.smul_bijective S (commonDenom M s f)).injective.eq_iff, smul_zero]
-
 theorem LinearIndependent.comp_algebraMap_iff
-    {R S S' : Type*} [CommRing R] [CommRing S] [CommRing S']
-    [Algebra R S] [Algebra S S'] [Algebra R S'] [IsScalarTower R S S'] [FaithfulSMul S S']
+    {R S A : Type*} [CommRing R] [CommRing S] [CommRing A]
+    [Algebra R S] [Algebra S A] [Algebra R A] [IsScalarTower R S A] [FaithfulSMul S A]
     {ι : Type*} {s : ι → S} :
-    LinearIndependent R (algebraMap S S' ∘ s) ↔ LinearIndependent R s := by
-  rw [← IsScalarTower.coe_toAlgHom' R S S', ← AlgHom.coe_toLinearMap]
+    LinearIndependent R (algebraMap S A ∘ s) ↔ LinearIndependent R s := by
+  rw [← IsScalarTower.coe_toAlgHom' R S A, ← AlgHom.coe_toLinearMap]
   simp_rw [linearIndependent_iff, Finsupp.linearCombination_linear_comp]
   simp
 
-theorem LinearIndepOn.comp_algebraMap_iff {R S S' : Type*} [CommRing R] [CommRing S] [CommRing S']
-    [Algebra R S] [Algebra S S'] [Algebra R S'] [IsScalarTower R S S'] [FaithfulSMul S S']
+theorem LinearIndepOn.comp_algebraMap_iff {R S A : Type*} [CommRing R] [CommRing S] [CommRing A]
+    [Algebra R S] [Algebra S A] [Algebra R A] [IsScalarTower R S A] [FaithfulSMul S A]
     {ι : Type*} {v : ι → S} {s : Set ι} :
-    LinearIndepOn R (algebraMap S S' ∘ v) s ↔ LinearIndepOn R v s :=
+    LinearIndepOn R (algebraMap S A ∘ v) s ↔ LinearIndepOn R v s :=
   LinearIndependent.comp_algebraMap_iff
 
-theorem LinearIndepOn.image_algebraMap_iff (R S S' : Type*) [CommRing R] [CommRing S] [CommRing S']
-    [Algebra R S] [Algebra S S'] [Algebra R S'] [IsScalarTower R S S'] [FaithfulSMul S S']
+theorem LinearIndepOn.image_algebraMap_iff (R S A : Type*) [CommRing R] [CommRing S] [CommRing A]
+    [Algebra R S] [Algebra S A] [Algebra R A] [IsScalarTower R S A] [FaithfulSMul S A]
     {s : Set S} :
-    LinearIndepOn R id (algebraMap S S' '' s) ↔ LinearIndepOn R id s := by
-  rw [← linearIndepOn_iff_image (FaithfulSMul.algebraMap_injective S S').injOn]
+    LinearIndepOn R id (algebraMap S A '' s) ↔ LinearIndepOn R id s := by
+  rw [← linearIndepOn_iff_image (FaithfulSMul.algebraMap_injective S A).injOn]
   exact LinearIndepOn.comp_algebraMap_iff
 
 noncomputable def Finset.equivMap {α β : Type*} (s : Finset α) (f : α ↪ β) : s ≃ s.map f :=
@@ -131,7 +121,7 @@ theorem foo' (R S S' : Type*) [DecidableEq S]
 -- todo: generalize to rank
 theorem IsFractionRing.finrank_eq' (R R' S : Type*)
     [CommRing R] [CommRing R'] [CommRing S]
-    [Algebra R R'] [Algebra R' S] [Algebra R S]
+    [Algebra R R'] [Module R' S] [Module R S]
     [IsScalarTower R R' S] [IsFractionRing R R'] :
     Module.finrank R S = Module.finrank R' S := by
   rcases iff_iff_and_or_not_and_not.mp (nontrivial_iff_nontrivial R R') with ⟨_, _⟩ | ⟨_, _⟩; swap
@@ -143,7 +133,7 @@ theorem IsFractionRing.finrank_eq' (R R' S : Type*)
 open IsLocalization nonZeroDivisors in
 theorem IsFractionRing.finrank_eq (R R' S S' : Type*)
     [CommRing R] [CommRing R'] [CommRing S] [CommRing S']
-    [Algebra R S] [Algebra R R'] [Algebra S S'] [Algebra R' S'] [Algebra R S']
+    [Algebra R S] [Algebra R R'] [Algebra S S'] [Module R' S'] [Algebra R S']
     [IsScalarTower R R' S'] [IsScalarTower R S S']
     [IsFractionRing R R'] [IsFractionRing S S'] :
     Module.finrank R' S' = Module.finrank R S := by
@@ -162,8 +152,6 @@ theorem IsFractionRing.finrank_eq (R R' S S' : Type*)
     let f : S ↪ S' := ⟨algebraMap S S', FaithfulSMul.algebraMap_injective S S'⟩
     exact ⟨s.map f, s.card_map f,
       (linearIndependent_equiv (s.equivMap f)).mp (LinearIndependent.comp_algebraMap_iff.mpr hs)⟩
-
-#exit
 
 assert_not_exists IsLocalRing
 
@@ -672,8 +660,7 @@ theorem lift_rank_of_isFractionRing :
   rw [IsLocalization.rank_eq R' R⁰ le_rfl,
     IsLocalizedModule.lift_rank_eq R⁰ (IsScalarTower.toAlgHom R S S').toLinearMap le_rfl]
 
-theorem finrank_of_isFractionRing : Module.finrank R' S' = Module.finrank R S := by
-  simpa using! congr_arg Cardinal.toNat (lift_rank_of_isFractionRing ..)
+@[deprecated (since := "2026-07-13")] alias finrank_of_isFractionRing := IsFractionRing.finrank_eq
 
 theorem rank_of_isFractionRing (S' : Type u) [CommRing S'] [Algebra R S'] [Algebra S S']
     [Module R' S'] [IsScalarTower R R' S'] [IsScalarTower R S S'] [IsFractionRing S S'] :
@@ -681,20 +668,6 @@ theorem rank_of_isFractionRing (S' : Type u) [CommRing S'] [Algebra R S'] [Algeb
   simpa using lift_rank_of_isFractionRing R R' S S'
 
 end
-theorem _root_.rank_of_isFractionRing (R R' : Type*) (S : Type u) (S' : Type v)
-    [CommRing R] [CommRing R'] [CommRing S] [CommRing S']
-    [Algebra R S] [Algebra R R'] [Algebra S S'] [Algebra R' S'] [Algebra R S']
-    [IsScalarTower R R' S'] [IsScalarTower R S S']
-    [IsFractionRing R R'] [IsFractionRing S S'] :
-    (Module.rank R' S').lift.{u} = (Module.rank R S).lift.{v} := by
-  -- cardinal_lift_le_rank
-  -- exists_set_linearIndependent_of_lt_lift_rank
-  simp_rw [le_antisymm_iff, Module.rank, Cardinal.lift_iSup Cardinal.bddAbove_of_small]
-  refine ⟨ciSup_le fun ⟨s, hs⟩ ↦ ?_, ciSup_le fun ⟨s, hs⟩ ↦ ?_⟩
-  ·
-    sorry
-  · sorry
-
 
 theorem _root_.Module.rank_eq_zero_of_not_faithfulSMul
     {R S : Type*} [Semiring R] [AddCommMonoid S] [Module R S]
@@ -711,53 +684,6 @@ theorem _root_.Module.finrank_eq_zero_of_not_faithfulSMul
     {R S : Type*} [Semiring R] [AddCommMonoid S] [Module R S]
     (h : ¬ FaithfulSMul R S) : Module.finrank R S = 0 :=
   Module.finrank_eq_zero_of_rank_eq_zero (Module.rank_eq_zero_of_not_faithfulSMul h)
-
-theorem _root_.Transcendental.linearIndependent_pow
-    {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] {x : S}
-    (h : Transcendental R x) : LinearIndependent R (x ^ ·) := by
-  sorry
-
-theorem _root_.Module.finrank_eq_zero_of_not_isAlgebraic
-    {R S : Type*} [CommRing R] [Nontrivial R] [CommRing S] [Algebra R S]
-    (h : ¬ Algebra.IsAlgebraic R S) : Module.finrank R S = 0 := by
-  rw [Algebra.isAlgebraic_def, not_forall] at h
-  obtain ⟨x, hx : Transcendental R x⟩ := h
-  exact Cardinal.toNat_apply_of_aleph0_le hx.linearIndependent_pow.aleph0_le_rank
-
-theorem _root_.Algebra.IsAlgebraic.finrank_of_isFractionRing' (R R' S S' : Type*)
-    [CommRing R] [CommRing R'] [CommRing S] [CommRing S']
-    [Algebra R S] [Algebra R R'] [Algebra S S'] [Algebra R' S'] [Algebra R S']
-    [IsScalarTower R R' S'] [IsScalarTower R S S']
-    [IsFractionRing R R'] [IsFractionRing S S']
-    [NoZeroDivisors S] : Module.finrank R' S' = Module.finrank R S := by
-  rcases iff_iff_and_or_not_and_not.mp (IsFractionRing.nontrivial_iff_nontrivial R R')
-    with ⟨_, _⟩ | ⟨_, _⟩; swap
-  · rw [not_nontrivial_iff_subsingleton] at *
-    simp
-  by_cases hfs : FaithfulSMul R S; swap
-  · rw [Module.finrank_eq_zero_of_not_faithfulSMul hfs]
-    replace hfs : ¬ FaithfulSMul R' S' := by
-      contrapose! hfs
-      rw [faithfulSMul_iff_algebraMap_injective] at *
-      have : Function.Injective (algebraMap S S') := FaithfulSMul.algebraMap_injective S S'
-      apply Function.Injective.of_comp (f := algebraMap S S')
-      rw [← RingHom.coe_comp, ← IsScalarTower.algebraMap_eq,
-        IsScalarTower.algebraMap_eq R R' S']
-      apply hfs.comp
-      exact FaithfulSMul.algebraMap_injective R R'
-    rw [Module.finrank_eq_zero_of_not_faithfulSMul hfs]
-  · have : NoZeroDivisors R := NoZeroDivisors.of_faithfulSMul R S
-    have : NoZeroDivisors R' := IsLocalization.noZeroDivisors R⁰
-    by_cases halg : Algebra.IsAlgebraic R S
-    · apply finrank_of_isFractionRing
-    · rw [Module.finrank_eq_zero_of_not_isAlgebraic halg]
-      replace halg : ¬ Algebra.IsAlgebraic R' S' := by
-        contrapose! halg
-        have : Algebra.IsAlgebraic R R' := IsLocalization.isAlgebraic R' R⁰
-        have : Algebra.IsAlgebraic R S' := Algebra.IsAlgebraic.trans R R' S'
-        apply Algebra.IsAlgebraic.tower_bot_of_injective (R := R) (S := S) (A := S')
-        exact FaithfulSMul.algebraMap_injective S S'
-      rw [Module.finrank_eq_zero_of_not_isAlgebraic halg]
 
 attribute [local instance] FractionRing.liftAlgebra in
 theorem rank_fractionRing [IsDomain S] :
