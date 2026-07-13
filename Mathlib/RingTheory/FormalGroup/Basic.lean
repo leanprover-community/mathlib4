@@ -63,8 +63,8 @@ structure FormalGroup where
   /-- The coefficient of $Y$ in $F(X, Y)$ is 1. -/
   lin_coeff_Y : toPowerSeries.coeff (single 1 1) = 1
   /-- Associativity condition: $F(F(X, Y), Z) = F(X, F(Y, Z))$. -/
-  assoc : toPowerSeries.subst ![toPowerSeries.subst ![Y₀, Y₁], Y₂]
-    = toPowerSeries.subst ![Y₀, toPowerSeries.subst ![Y₁, Y₂]] (S := R)
+  assoc : toPowerSeries.subst ![toPowerSeries.subst ![Y₀, Y₁], Y₂] =
+    toPowerSeries.subst ![Y₀, toPowerSeries.subst ![Y₁, Y₂]] (S := R)
 
 /-- The natural inclusion from formal group law into formal power series. -/
 instance FormalGroup.coeToPowerSeries : Coe (FormalGroup R) (MvPowerSeries (Fin 2) R) :=
@@ -104,7 +104,7 @@ lemma FormalGroup.assoc' (F : FormalGroup R) {f₀ f₁ f₂ : MvPowerSeries σ 
 
 namespace FormalGroup
 
-variable (F : FormalGroup R) (S : Type*) [CommRing S] [UniformSpace S]
+variable (F : FormalGroup R)
 
 /-- Additive formal group law `𝔾ₐ(X,Y) = X + Y`. -/
 @[simps]
@@ -158,14 +158,6 @@ def map (f : R →+* S) : FormalGroup S where
     simp_rw [(map_X f _).symm, this, ← map_subst .X_X, this, ← map_subst
       (HasSubst.cons_subst_zero_left (0 : Fin 3) 1 2 F.zero_constantCoeff), F.assoc,
       ← map_subst (HasSubst.cons_subst_zero_right (0 : Fin 3) 1 2 F.zero_constantCoeff)]
-
-end FormalGroup
-
-section
-
-namespace FormalGroup
-
-variable (F : FormalGroup R)
 
 /-- An abbreviation of $F(X,0)$ for a formal group $F$. -/
 abbrev Xzero : PowerSeries R := subst ![PowerSeries.X, 0] F.toPowerSeries
@@ -275,21 +267,21 @@ variable {S : Type*} [CommRing S] [UniformSpace S] [IsUniformAddGroup S] [IsLine
 theorem add_zero {a : S} (ha : IsTopologicallyNilpotent a) :
     F.toPowerSeries.eval₂ (algebraMap R S) ![a, 0] = a := by
   have hb : HasEval (fun _ : Unit ↦ a) := ⟨fun _ ↦ ha, by simp⟩
-  calc F.toPowerSeries.eval₂ (algebraMap R S) ![a, 0]
-      = eval₂ (algebraMap R S) (fun _ : Unit ↦ a) F.Xzero := by
-        rw [eval₂_subst (a := ![PowerSeries.X, 0]) HasSubst.X_zero hb]
-        congr! 2 with i
-        fin_cases i <;> simp [PowerSeries.X, ← MvPolynomial.coe_zero]
+  calc
+    _ = eval₂ (algebraMap R S) (fun _ : Unit ↦ a) F.Xzero := by
+      rw [eval₂_subst (a := ![PowerSeries.X, 0]) HasSubst.X_zero hb]
+      congr! 2 with i
+      fin_cases i <;> simp [PowerSeries.X, ← MvPolynomial.coe_zero]
     _ = a := by simp [Xzero_eq_X, PowerSeries.X]
 
 theorem zero_add {a : S} (ha : IsTopologicallyNilpotent a) :
     F.toPowerSeries.eval₂ (algebraMap R S) ![0, a] = a := by
   have hb : HasEval (fun _ : Unit ↦ a) := ⟨fun _ ↦ ha, by simp⟩
-  calc F.toPowerSeries.eval₂ (algebraMap R S) ![0, a]
-      = eval₂ (algebraMap R S) (fun _ : Unit ↦ a) F.zeroX := by
-        rw [eval₂_subst (a := ![0, PowerSeries.X]) HasSubst.zero_X hb]
-        congr! 2 with i
-        fin_cases i <;> simp [PowerSeries.X, ← MvPolynomial.coe_zero]
+  calc
+    _  = eval₂ (algebraMap R S) (fun _ : Unit ↦ a) F.zeroX := by
+      rw [eval₂_subst (a := ![0, PowerSeries.X]) HasSubst.zero_X hb]
+      congr! 2 with i
+      fin_cases i <;> simp [PowerSeries.X, ← MvPolynomial.coe_zero]
     _ = a := by simp [zeroX_eq_X, PowerSeries.X]
 
 theorem add_assoc {a b c : S} (ha : IsTopologicallyNilpotent a) (hb : IsTopologicallyNilpotent b)
@@ -298,24 +290,22 @@ theorem add_assoc {a b c : S} (ha : IsTopologicallyNilpotent a) (hb : IsTopologi
       F.toPowerSeries.eval₂ (algebraMap R S)
         ![a, F.toPowerSeries.eval₂ (algebraMap R S) ![b, c]] := by
   have he : HasEval ![a, b, c] := ⟨fun s ↦ by fin_cases s <;> assumption, by simp⟩
-  have key : ∀ i j : Fin 3, eval₂ (algebraMap R S) ![a, b, c] (F.toPowerSeries.subst ![X i, X j])
-      = F.toPowerSeries.eval₂ (algebraMap R S) ![![a, b, c] i, ![a, b, c] j] := fun i j ↦ by
+  have {i j : Fin 3} : eval₂ (algebraMap R S) ![a, b, c] (F.toPowerSeries.subst ![X i, X j]) =
+      F.toPowerSeries.eval₂ (algebraMap R S) ![![a, b, c] i, ![a, b, c] j] := by
     rw [eval₂_subst HasSubst.X_X he]
     congr! 2 with s
     fin_cases s <;> simp
-  calc F.toPowerSeries.eval₂ (algebraMap R S) ![F.toPowerSeries.eval₂ (algebraMap R S) ![a, b], c]
-      = (F.toPowerSeries.subst ![F.toPowerSeries.subst ![Y₀, Y₁], Y₂]).eval₂
+  calc
+    _  = (F.toPowerSeries.subst ![F.toPowerSeries.subst ![Y₀, Y₁], Y₂]).eval₂
           (algebraMap R S) ![a, b, c] := by
-        rw [eval₂_subst (HasSubst.cons_subst_zero_left (0 : Fin 3) 1 2 F.zero_constantCoeff) he]
-        congr! 2 with i
-        fin_cases i <;> simp [key]
-    _ = (F.toPowerSeries.subst ![Y₀, F.toPowerSeries.subst ![Y₁, Y₂]]).eval₂
-          (algebraMap R S) ![a, b, c] := by rw [F.assoc]
+      rw [eval₂_subst (HasSubst.cons_subst_zero_left 0 1 2 F.zero_constantCoeff) he]
+      congr! 2 with i
+      fin_cases i <;> simp [this]
     _ = F.toPowerSeries.eval₂ (algebraMap R S)
           ![a, F.toPowerSeries.eval₂ (algebraMap R S) ![b, c]] := by
-        rw [eval₂_subst (HasSubst.cons_subst_zero_right (0 : Fin 3) 1 2 F.zero_constantCoeff) he]
-        congr! 2 with i
-        fin_cases i <;> simp [key]
+      rw [F.assoc, eval₂_subst (HasSubst.cons_subst_zero_right 0 1 2 F.zero_constantCoeff) he]
+      congr! 2 with i
+      fin_cases i <;> simp [this]
 
 theorem add_comm [F.IsComm] {a b : S} (ha : IsTopologicallyNilpotent a)
     (hb : IsTopologicallyNilpotent b) :
@@ -328,9 +318,6 @@ theorem add_comm [F.IsComm] {a b : S} (ha : IsTopologicallyNilpotent a)
   fin_cases i <;> simp
 
 end FormalGroup
-
-end
-
 section
 
 namespace FormalGroup
@@ -339,7 +326,7 @@ variable (F : FormalGroup R) (S : Type*) [CommRing S] [UniformSpace S]
 
 /-- `F.Point S` is the space of points of a formal group `F` with values in a topological
 ring `S`: its elements are the topologically nilpotent elements of `S`. When `S` is a complete
-linearly topologized `R`-algebra, the substitution operation `x + y = F(x, y)` makes it an
+linearly topologized `R`-algebra, the substitution operation `x + y := F(x, y)` makes it an
 additive monoid.
 
 This is a type synonym for the subtype of topologically nilpotent elements, so that the
@@ -381,10 +368,10 @@ lemma add_eq_eval₂ [UniformSpace R] [DiscreteUniformity R] {x y : F.Point S} :
 instance : AddMonoid (F.Point S) where
   zero_add x := Subtype.ext <| by
     letI : UniformSpace R := ⊥
-    rw [add_eq_eval₂, zero_apply]; exact F.zero_add x.prop
+    rw [add_eq_eval₂, zero_apply, F.zero_add x.prop]
   add_zero x := Subtype.ext <| by
     letI : UniformSpace R := ⊥
-    rw [add_eq_eval₂, zero_apply]; exact F.add_zero x.prop
+    rw [add_eq_eval₂, zero_apply, F.add_zero x.prop]
   nsmul := nsmulRec
   add_assoc x y z := Subtype.ext <| by
     letI : UniformSpace R := ⊥
@@ -394,8 +381,7 @@ instance : AddMonoid (F.Point S) where
 instance [F.IsComm] : AddCommMonoid (F.Point S) where
   add_comm x y := Subtype.ext <| by
     letI : UniformSpace R := ⊥
-    simp only [add_eq_eval₂]
-    exact F.add_comm x.prop y.prop
+    simp [add_eq_eval₂, F.add_comm x.prop y.prop]
 
 end FormalGroup
 
