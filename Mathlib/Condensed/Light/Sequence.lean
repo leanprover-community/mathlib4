@@ -220,27 +220,39 @@ noncomputable def cocone {X : LightCondMod R} {S T : LightProfinite} (π : T ⟶
   rw [← cancel_epi ((lightProfiniteToLightCondSet ⋙ free R).map <| cover π)]
   apply (isColimitOfPreserves (lightProfiniteToLightCondSet ⋙ free R)
       (coproductIsColimit _ _)).hom_ext
+  -- Decompose `cover π` through the coproduct, so that the two components can be computed
+  -- using the API of the coproduct and the pullback rather than by definitional unfolding
+  -- (the latter is very expensive for the kernel).
+  have hcover : cover π = (BinaryCofan.IsColimit.desc' (coproductIsColimit _ _)
+      (CompHausLike.pullback.lift _ _ (𝟙 T) (𝟙 T) (by simp))
+      (CompHausLike.pullback.lift _ _
+        ((CompHausLike.pullback.fst _ _) ≫ LightProfinite.fibreIncl _ _)
+        ((pullback.snd _ _) ≫ LightProfinite.fibreIncl _ _)
+        (by simp [pullback.condition]))).val := by
+    ext (t | p) <;> rfl
   rintro ⟨⟨⟩⟩
-  · simp [← map_comp_assoc, -Functor.map_comp]
-    rfl
-  · -- simp? [← map_comp_assoc, -Functor.map_comp] says:
-    simp only [pair_obj_right, mapCocone_ι_app,
+  · simp -implicitDefEqProofs only [pair_obj_left, mapCocone_ι_app,
       Functor.comp_map, parallelPair_obj_zero, parallelPair_obj_one, parallelPair_map_left,
       Preadditive.comp_add, Preadditive.comp_sub, ← map_comp_assoc, parallelPair_map_right]
-    have : cover π = (BinaryCofan.IsColimit.desc' (coproductIsColimit _ _)
-        (CompHausLike.pullback.lift _ _ (𝟙 T) (𝟙 T) (by simp))
-        (CompHausLike.pullback.lift _ _
-          ((CompHausLike.pullback.fst _ _) ≫ LightProfinite.fibreIncl _ _)
-          ((pullback.snd _ _) ≫ LightProfinite.fibreIncl _ _)
-          (by simp [pullback.condition]))).val := rfl
-    -- simp? [this, ← Functor.map_comp] says:
-    simp only [this, pair_obj_left, pair_obj_right, BinaryCofan.IsColimit.desc'_coe,
-      IsColimit.fac, BinaryCofan.mk_inr, ← Functor.map_comp,
-      pullback.lift_fst, IsColimit.fac_assoc, assoc,
-      pullback.lift_snd]
-    -- simp? [-Functor.map_comp, ← assoc, hr] says:
-    simp only [← assoc, hr, id_comp, sub_self, zero_add]
-    simp [pullback.condition]
+    simp -implicitDefEqProofs only [hcover, pair_obj_left, pair_obj_right,
+      BinaryCofan.IsColimit.desc'_coe, IsColimit.fac, BinaryCofan.mk_inl, ← Functor.map_comp,
+      pullback.lift_fst, IsColimit.fac_assoc, pullback.lift_snd]
+  · -- simp? [← map_comp_assoc, -Functor.map_comp] says:
+    simp -implicitDefEqProofs only [pair_obj_right, mapCocone_ι_app,
+      Functor.comp_map, parallelPair_obj_zero, parallelPair_obj_one, parallelPair_map_left,
+      Preadditive.comp_add, Preadditive.comp_sub, ← map_comp_assoc, parallelPair_map_right]
+    -- simp? [hcover, ← Functor.map_comp] says:
+    simp -implicitDefEqProofs only [hcover, pair_obj_left, pair_obj_right,
+      BinaryCofan.IsColimit.desc'_coe, IsColimit.fac, BinaryCofan.mk_inr, ← Functor.map_comp,
+      pullback.lift_fst, IsColimit.fac_assoc, assoc, pullback.lift_snd]
+    -- The goal now only involves morphisms of light profinite sets under
+    -- `lightProfiniteToLightCondSet ⋙ free R`; finish with the reassociated forms of `hr` and
+    -- of the pullback condition, which keeps the number of rewrites (and hence the size of the
+    -- proof term the kernel has to check) small.
+    have hcond := CompHausLike.pullback.condition
+      (LightProfinite.fibreIncl ∞ (π ≫ snd S ℕ∪{∞}) ≫ π)
+      (LightProfinite.fibreIncl ∞ (π ≫ snd S ℕ∪{∞}) ≫ π)
+    simp -implicitDefEqProofs only [reassoc_of% hr, reassoc_of% hcond, sub_self, zero_add]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Given a surjective map of light profinite spaces `T ⟶ S ⊗ ℕ∪{∞}`,

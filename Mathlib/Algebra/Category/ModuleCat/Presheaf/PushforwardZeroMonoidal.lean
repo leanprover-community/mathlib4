@@ -29,12 +29,29 @@ namespace PresheafOfModules
 variable {C D : Type*} [Category* C] [Category* D]
   (F : C ⥤ D) (R : Dᵒᵖ ⥤ CommRingCat.{u})
 
+-- All the fields below are checked on elements of the tensor products, which keeps the
+-- proof terms small. Discharging them with `cat_disch` instead produces proofs which the
+-- kernel can only verify through gigantic definitional unfoldings.
+open ModuleCat.MonoidalCategory in
 set_option backward.isDefEq.respectTransparency false in
 noncomputable instance : (pushforward₀OfCommRingCat F R).Monoidal :=
   Functor.CoreMonoidal.toMonoidal
     { εIso := Iso.refl _
       μIso _ _ := Iso.refl _
-      left_unitality _ := by rw [← cancel_epi (λ_ _).inv]; cat_disch
-      right_unitality _ := by rw [← cancel_epi (ρ_ _).inv]; cat_disch }
+      μIso_hom_natural_left _ _ := by
+        ext1 x
+        exact tensor_ext fun m₁ m₂ ↦ rfl
+      μIso_hom_natural_right _ _ := by
+        ext1 x
+        exact tensor_ext fun m₁ m₂ ↦ rfl
+      associativity _ _ _ := by
+        ext1 x
+        exact tensor_ext₃' fun m₁ m₂ m₃ ↦ rfl
+      left_unitality _ := by
+        ext1 x
+        exact tensor_ext fun m₁ m₂ ↦ rfl
+      right_unitality _ := by
+        ext1 x
+        exact tensor_ext fun m₁ m₂ ↦ rfl }
 
 end PresheafOfModules

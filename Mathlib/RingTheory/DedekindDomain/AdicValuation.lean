@@ -672,10 +672,15 @@ def valueGroupEquiv :
     valueGroup (.ofClass (valuation K v)) ≃*
       valueGroup (.ofClass (Valued.v : Valuation (v.valuation K).Completion ℤᵐ⁰)) where
   __ := Equiv.setCongr (by rw [valueGroup_eq K v])
-  map_mul' _ _ := rfl
+  -- Note: proving this by `rfl` makes the kernel re-check a huge definitional unfolding.
+  map_mul' := by simp [Equiv.setCongr, Equiv.subtypeEquivProp]
 
 @[simp] theorem coe_valueGroupEquiv (a : valueGroup (.ofClass (valuation K v))) :
-    ((valueGroupEquiv K v a : _) : ℤᵐ⁰ˣ) = a := rfl
+    ((valueGroupEquiv K v a : _) : ℤᵐ⁰ˣ) = a := by
+  simp [valueGroupEquiv, Equiv.setCongr, Equiv.subtypeEquivProp]
+
+theorem strictMono_valueGroupEquiv : StrictMono (valueGroupEquiv K v) :=
+  Equiv.strictMono_setCongr (by rw [valueGroup_eq K v])
 
 /-- The order-preserving multiplicative equivalence between the `ValueGroup₀` of the completion's
 valuation, pulled back along `equiv`, and that of the completion. -/
@@ -687,12 +692,7 @@ noncomputable def valueGroupOrderIso :
   left_inv x := by match x with | 0 => simp | .coe a => simp
   right_inv y := by match y with | 0 => simp | .coe b => simp
   map_mul' := by simp
-  map_le_map_iff' {a b} := by
-    match a, b with
-    | 0, 0 => simp
-    | 0, .coe _ => simp
-    | .coe _, 0 => simp
-    | .coe a, .coe b => simp [← Subtype.coe_le_coe]
+  map_le_map_iff' := (WithZero.map'_strictMono (strictMono_valueGroupEquiv K v)).le_iff_le
 
 @[simp] theorem coe_valueGroupOrderIso_coe (a : valueGroup (.ofClass (valuation K v))) :
     valueGroupOrderIso K v (a : ValueGroup₀ _) = (valueGroupEquiv K v a : ValueGroup₀ _) := by

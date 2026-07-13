@@ -185,13 +185,24 @@ def succEquiv (i : ι) : (E⟮<i⁺⟯ →ₐ[F] Ē) ≃ (E⟮<i⟯ →ₐ[F] Ē
       (@Field.embEquivOfIsAlgClosed _ _ _ _ _ _ _ (_) <|
         (Algebra.IsAlgebraic.tower_top (K := F) _).of_injective (val _) Subtype.val_injective).symm
 
+omit rank_inf [Algebra.IsAlgebraic F E] in
+variable (F E) in
+/-- Auxiliary defeq lemma for `succEquiv_coherence`, stated for general intermediate fields so
+that the kernel only has to check the `rfl` at variables rather than at the (huge) terms
+`E⟮<i⟯` and `E⟮<i⁺⟯`. -/
+private theorem restrictDomain_arrowCongr_apply (K : IntermediateField F E)
+    (S : IntermediateField K E) (T : IntermediateField F E) (h : T = S.restrictScalars F)
+    (hle : K ≤ T) (g : T →ₐ[F] Ē) (x : K) :
+    (algHomEquivSigma (B := K)
+        (((show _ ≃ₐ[F] S from equivOfEq h).arrowCongr (.refl : Ē ≃ₐ[F] Ē)) g)).1 x =
+      g (Subalgebra.inclusion hle x) := rfl
+
 set_option backward.isDefEq.respectTransparency false in
 theorem succEquiv_coherence (i : ι) (f) : (succEquiv i f).1 =
     f.comp (Subalgebra.inclusion <| strictMono_filtration.monotone <| le_succ i) := by
-  ext
-  simp [succEquiv, embEquivOfIsAlgClosed, embEquivOfAdjoinSplits, Equiv.sigmaEquivProdOfEquiv,
-    algHomEquivSigma, AlgHom.restrictDomain, Subalgebra.inclusion, Set.inclusion, equivOfEq,
-    Subalgebra.equivOfEq]
+  ext x
+  exact restrictDomain_arrowCongr_apply F E _ _ _ (filtration_succ i)
+    (strictMono_filtration.monotone (le_succ i)) f x
 
 instance (i : ι) : FiniteDimensional (E⟮<i⟯) (E⟮<i⟯⟮b (φ i)⟯) :=
   adjoin.finiteDimensional ((Algebra.IsAlgebraic.tower_top (K := F) _).isAlgebraic _).isIntegral
@@ -214,10 +225,8 @@ def factor (i : WithTop ι) : Type _ := i.recTopCoe PUnit (X ·)
 
 variable [Algebra.IsSeparable F E]
 
--- slow (typeclass inference reasonable, type checking takes ~4s)
 instance (i : ι) : Algebra.IsSeparable (E⟮<i⟯) (E⟮<i⟯⟮b (φ i)⟯) :=
   have := Algebra.isSeparable_tower_top_of_isSeparable F (E⟮<i⟯) E
-  have : IsScalarTower (E⟮<i⟯) (E⟮<i⟯⟮b (φ i)⟯) E := .of_algebraMap_eq' rfl
   Algebra.isSeparable_tower_bot_of_isSeparable _ _ E
 
 open Field in

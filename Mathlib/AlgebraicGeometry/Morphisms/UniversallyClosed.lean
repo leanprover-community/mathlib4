@@ -118,6 +118,13 @@ lemma compactSpace_of_universallyClosed
   let T : Scheme := Spec (.of <| MvPolynomial 𝒰.I₀ K)
   let q : T ⟶ Spec (.of K) := Spec.map (CommRingCat.ofHom MvPolynomial.C)
   let Ti (i : 𝒰.I₀) : T.Opens := basicOpen (MvPolynomial.X i)
+  -- `hmem` and `hTi` spell out, as explicit rewrites, the definitional unfoldings that the proof
+  -- below would otherwise leave for the kernel to redo the hard way: the carrier of `Spec (.of R)`
+  -- is `PrimeSpectrum R` only up to a very expensive unfolding.
+  have hmem (r : MvPolynomial 𝒰.I₀ K) (s : T) : s ∈ PrimeSpectrum.basicOpen r ↔
+      r ∉ (s : PrimeSpectrum (MvPolynomial 𝒰.I₀ K)).asIdeal := mem_basicOpen _ _
+  have hTi (i : 𝒰.I₀) (s : T) : s ∈ Ti i ↔ (MvPolynomial.X i : MvPolynomial 𝒰.I₀ K) ∉
+      (s : PrimeSpectrum (MvPolynomial 𝒰.I₀ K)).asIdeal := mem_basicOpen _ _
   let fT : pullback f q ⟶ T := pullback.snd f q
   let p : pullback f q ⟶ X := pullback.fst f q
   let Z : Set (pullback f q :) := (⨆ i, fT ⁻¹ᵁ (Ti i) ⊓ p ⁻¹ᵁ (U i) : (pullback f q).Opens)ᶜ
@@ -137,8 +144,12 @@ lemma compactSpace_of_universallyClosed
   let φ : MvPolynomial 𝒰.I₀ K →+* MvPolynomial 𝒰.I₀ K :=
     (MvPolynomial.aeval fun i : 𝒰.I₀ ↦ if i ∈ σ then MvPolynomial.X i else 0).toRingHom
   let t' : T := Spec.map (CommRingCat.ofHom φ) t
-  have ht'g : t' ∈ PrimeSpectrum.basicOpen g :=
-    show φ g ∉ t.asIdeal from (show φ g = g from aeval_ite_mem_eq_self g subset_rfl).symm ▸ htU'
+  have ht'e : (t' : PrimeSpectrum (MvPolynomial 𝒰.I₀ K)) = comap φ t :=
+    Spec.map_apply (CommRingCat.ofHom φ) t
+  have ht'g : t' ∈ PrimeSpectrum.basicOpen g := by
+    rw [hmem, ht'e, comap_asIdeal, Ideal.mem_comap,
+      show φ g = g from aeval_ite_mem_eq_self g subset_rfl]
+    exact (hmem g t).mp htU'
   have h : t' ∉ fT '' Z := hU'le ht'g
   suffices ⋃ i ∈ σ, (U i).1 = Set.univ from
     ⟨this ▸ Finset.isCompact_biUnion _ fun i _ ↦ isCompact_range (𝒰.f i).continuous⟩
@@ -146,11 +157,11 @@ lemma compactSpace_of_universallyClosed
   contrapose! h
   obtain ⟨x, hx⟩ := h
   obtain ⟨z, rfl, hzr⟩ := exists_preimage_pullback x t' (Subsingleton.elim (f x) (q t'))
-  suffices ∀ i, t ∈ (Ti i).comap ⟨_, continuous_comap φ⟩ → p z ∉ U i from
-    ⟨z, by simpa [Z, p, fT, hzr], hzr⟩
+  suffices ∀ i, t' ∈ Ti i → p z ∉ U i from ⟨z, by simpa [Z, p, fT, hzr], hzr⟩
   intro i hi₁ hi₂
-  rw [comap_basicOpen, show φ (.X i) = 0 by simpa [φ] using (hx i · hi₂), basicOpen_zero] at hi₁
-  cases hi₁
+  rw [hTi, ht'e, comap_asIdeal, Ideal.mem_comap,
+    show φ (.X i) = 0 by simpa [φ] using (hx i · hi₂)] at hi₁
+  exact hi₁ (zero_mem _)
 
 set_option backward.isDefEq.respectTransparency false in
 @[stacks 04XU]

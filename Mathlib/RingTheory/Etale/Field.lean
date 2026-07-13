@@ -123,7 +123,9 @@ lemma of_isSeparable [Algebra.IsSeparable K L] : FormallyEtale K L := by
     · rfl
     apply AlgHom.ext
     rw [← AlgHom.comp_assoc, hg₁, AlgHom.comp_assoc]
-    simp
+    -- `-implicitDefEqProofs` is needed here: otherwise `simp` closes the remaining
+    -- goal with an implicit `rfl` that costs the kernel ~14M heartbeats to recheck.
+    simp -implicitDefEqProofs
   have H : ∀ x y : L, ∃ α : L, x ∈ K⟮α⟯ ∧ y ∈ K⟮α⟯ := by
     intro x y
     have : FiniteDimensional K K⟮x, y⟯ := by
