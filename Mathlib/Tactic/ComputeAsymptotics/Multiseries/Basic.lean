@@ -29,7 +29,7 @@ constructions are `Sorted` and `Approximates` their attached functions.
 
 @[expose] public section
 
-namespace Tactic.ComputeAsymptotics
+namespace Mathlib.Tactic.ComputeAsymptotics
 
 namespace MultiseriesExpansion
 
@@ -282,6 +282,286 @@ theorem monomial_approximates {basis : Basis} {n : Fin (List.length basis)}
     (h_basis : WellFormedBasis basis) : (monomial basis n).Approximates :=
   monomialRpow_approximates h_basis
 
+section BasisOperations
+
+mutual
+
+/-- `Multiseries`-part of `MultiseriesExpansion.updateBasis`. -/
+def Multiseries.updateBasis {basis_hd : ℝ → ℝ} {basis_tl : Basis} (ex : BasisExtension basis_tl)
+    (ms : Multiseries basis_hd basis_tl) : Multiseries basis_hd ex.getBasis :=
+  ms.map id (updateBasis ex ·)
+
+/-- Given a basis extension `ex`, and a multiseries `ms`, immerses `ms` into the
+basis `ex.getBasis`. -/
+def updateBasis {basis : Basis} (ex : BasisExtension basis) (ms : MultiseriesExpansion basis) :
+    MultiseriesExpansion ex.getBasis :=
+  match ex with
+  | .nil => ms
+  | .keep basis_hd ex_tl => mk (ms.seq.updateBasis ex_tl) ms.toFun
+  | .insert _ ex_tl => mk (.cons 0 (ms.updateBasis ex_tl) .nil) ms.toFun
+
+end
+
+/-- Extends basis with `f` in the middle. -/
+def extendBasisMiddle {left right : Basis} (f : ℝ → ℝ) (ms : MultiseriesExpansion (left ++ right)) :
+    MultiseriesExpansion (left ++ f :: right) :=
+  match left with
+  | [] => mk (.cons 0 ms .nil) ms.toFun
+  | List.cons _ _ => mk (ms.seq.map id (fun coef => extendBasisMiddle f coef)) ms.toFun
+
+mutual
+
+/-- `Multiseries`-part of `MultiseriesExpansion.extendBasisEnd`. -/
+def Multiseries.extendBasisEnd {basis_hd : ℝ → ℝ} {basis_tl : Basis} (f : ℝ → ℝ)
+    (ms : Multiseries basis_hd basis_tl) :
+    Multiseries basis_hd (basis_tl ++ [f]) :=
+  ms.map id (extendBasisEnd f ·)
+
+/-- Extends basis with `f` at right end. -/
+-- TODO: it's just extendMiddle with right = [].
+def extendBasisEnd {basis : Basis} (f : ℝ → ℝ) (ms : MultiseriesExpansion basis) :
+    MultiseriesExpansion (basis ++ [f]) :=
+  match basis with
+  | [] => const [f] ms.toReal
+  | List.cons _ _ => mk (ms.seq.extendBasisEnd f) ms.toFun
+
+end
+
+@[simp]
+lemma Multiseries.map_leadingExp {basis_hd basis_hd' basis_tl basis_tl'}
+    {ms : Multiseries basis_hd basis_tl} {f : ℝ → ℝ}
+    {g : MultiseriesExpansion basis_tl → MultiseriesExpansion basis_tl'} :
+    (ms.map (basis_hd' := basis_hd') f g).leadingExp = ms.leadingExp.map f := by
+  cases ms <;> simp
+
+lemma Multiseries.map_id_sorted {basis_hd basis_hd' basis_tl basis_tl'}
+    {f : MultiseriesExpansion basis_tl → MultiseriesExpansion basis_tl'}
+    {ms : Multiseries basis_hd basis_tl}
+    (h_sorted : ms.Sorted)
+    (hf : ∀ coef, coef.Sorted → (f coef).Sorted) :
+    (ms.map (basis_hd' := basis_hd') id f).Sorted := by
+  let motive (ms : Multiseries basis_hd' basis_tl') : Prop :=
+    ∃ (ms' : Multiseries basis_hd basis_tl), ms = ms'.map id f ∧ ms'.Sorted
+  apply Multiseries.Sorted.coind motive
+  · use ms
+  intro exp coef tl ⟨ms, h_eq, h_sorted⟩
+  cases ms with
+  | nil => simp at h_eq
+  | cons exp' coef' tl' =>
+  simp at h_eq
+  obtain ⟨h_coef, h_comp, h_tl⟩ := h_sorted.elim_cons
+  simp [h_eq, h_comp, motive]
+  grind
+
+lemma map_id_approximates {basis_hd basis_tl basis_tl'}
+    {f : MultiseriesExpansion basis_tl → MultiseriesExpansion basis_tl'}
+    {ms : MultiseriesExpansion (basis_hd :: basis_tl)}
+    (h_approx : ms.Approximates)
+    (hf_approx : ∀ coef, coef.Approximates → (f coef).Approximates)
+    (hf_toFun : ∀ coef, (f coef).toFun = coef.toFun) :
+    (mk (ms.seq.map (basis_hd' := basis_hd) id f) ms.toFun).Approximates := by
+  let motive (ms' : MultiseriesExpansion (basis_hd :: basis_tl')) : Prop :=
+    ∃ (ms : MultiseriesExpansion (basis_hd :: basis_tl)),
+      ms' = mk (ms.seq.map (basis_hd' := basis_hd) id f) ms.toFun ∧ ms.Approximates
+  apply Approximates.coind motive
+  · use ms
+  rintro _ ⟨ms, rfl, h_approx⟩
+  cases ms with
+  | nil f => simpa using h_approx
+  | cons exp coef tl g =>
+  right
+  obtain ⟨h_coef, h_maj, h_tl⟩ := h_approx.elim_cons
+  simp only [mk_seq, Multiseries.map_cons, id_eq, mk_toFun, Multiseries.cons_eq_cons, ms_eq_mk_iff,
+    ↓existsAndEq, and_true, hf_approx _ h_coef, hf_toFun, true_and, exists_eq_left', h_maj, motive]
+  use mk tl (g - basis_hd ^ exp * coef.toFun)
+  simp [h_tl]
+
+@[simp]
+theorem updateBasis_keep_seq {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ex : BasisExtension basis_tl}
+    {ms : MultiseriesExpansion (basis_hd :: basis_tl)} :
+    (ms.updateBasis (.keep _ ex)).seq = ms.seq.updateBasis ex := by
+  simp [MultiseriesExpansion.updateBasis]
+
+@[simp]
+theorem updateBasis_insert_seq {basis : Basis} {ex : BasisExtension basis}
+    {ms : MultiseriesExpansion basis} {f : ℝ → ℝ} :
+    (ms.updateBasis (.insert f ex)).seq = Multiseries.cons 0 (ms.updateBasis ex) .nil := by
+  simp [MultiseriesExpansion.updateBasis]
+
+set_option backward.isDefEq.respectTransparency false in
+@[simp]
+theorem updateBasis_toFun {basis : Basis} {ex : BasisExtension basis}
+    {ms : MultiseriesExpansion basis} :
+    (ms.updateBasis ex).toFun = ms.toFun := by
+  fun_cases updateBasis <;> simp [updateBasis]
+
+theorem Multiseries.updateBasis_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+    {ex : BasisExtension basis_tl} :
+    (Multiseries.updateBasis (basis_hd := basis_hd) ex (.nil)) = .nil := by
+  simp [Multiseries.updateBasis]
+
+theorem Multiseries.updateBasis_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+    {ex : BasisExtension basis_tl}
+    {exp : ℝ} {coef : MultiseriesExpansion basis_tl} {tl : Multiseries basis_hd basis_tl} :
+    (Multiseries.updateBasis ex (.cons exp coef tl)) =
+    .cons exp (coef.updateBasis ex) (tl.updateBasis ex) := by
+  simp [Multiseries.updateBasis]
+
+set_option backward.isDefEq.respectTransparency false in
+mutual
+
+theorem Multiseries.updateBasis_sorted {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+    (ex : BasisExtension basis_tl) {ms : Multiseries basis_hd basis_tl} (h_sorted : ms.Sorted) :
+    (ms.updateBasis ex).Sorted := by
+  simp only [Multiseries.updateBasis]
+  apply Multiseries.map_id_sorted h_sorted
+  apply updateBasis_sorted
+
+theorem updateBasis_sorted {basis : Basis} {ex : BasisExtension basis}
+    {ms : MultiseriesExpansion basis}
+    (h_sorted : ms.Sorted) :
+    (ms.updateBasis ex).Sorted := by
+  cases ex with
+  | nil => simpa [updateBasis]
+  | insert f ex_tl =>
+    simp only [updateBasis]
+    apply Sorted.cons_nil
+    exact updateBasis_sorted h_sorted
+  | @keep basis_hd basis_tl ex_tl =>
+    simp only [sorted_iff_seq_sorted, updateBasis, mk_seq] at h_sorted ⊢
+    apply Multiseries.updateBasis_sorted ex_tl h_sorted
+
+end
+
+set_option backward.isDefEq.respectTransparency false in
+theorem updateBasis_approximates {basis : Basis} {ex : BasisExtension basis}
+    {ms : MultiseriesExpansion basis}
+    (h_basis : WellFormedBasis ex.getBasis)
+    (h_approx : ms.Approximates) :
+    (ms.updateBasis ex).Approximates := by
+  cases ex with
+  | nil => simp
+  | keep basis_hd ex_tl =>
+    simp only [updateBasis, Multiseries.updateBasis]
+    apply map_id_approximates h_approx
+    · intro coef h_coef
+      apply updateBasis_approximates h_basis.tail h_coef
+    · simp
+  | insert g ex_tl =>
+    simp only [updateBasis]
+    apply Approximates.cons
+    · apply updateBasis_approximates _ h_approx
+      exact BasisExtension.insert_tail_wellFormedBasis h_basis
+    · simp only [BasisExtension.getBasis] at h_basis
+      apply h_approx.coef_majorized_head
+      apply WellFormedBasis.of_sublist _ h_basis
+      simp only [List.cons_sublist_cons]
+      apply BasisExtension.sublist_getBasis
+    · apply Approximates.nil
+      simp
+
+@[simp]
+theorem extendBasisMiddle_toFun {left right : Basis} {b : ℝ → ℝ}
+    {ms : MultiseriesExpansion (left ++ right)} :
+    (ms.extendBasisMiddle b).toFun = ms.toFun := by
+  fun_cases extendBasisMiddle <;> rfl
+
+theorem extendBasisMiddle_sorted {left right : Basis} {b : ℝ → ℝ}
+    {ms : MultiseriesExpansion (left ++ right)}
+    (h_sorted : ms.Sorted) : (ms.extendBasisMiddle b).Sorted := by
+  cases left with
+  | nil =>
+    simp only [List.nil_append, extendBasisMiddle]
+    apply Sorted.cons_nil
+    assumption
+  | cons left_hd left_tl =>
+  simp only [List.cons_append, extendBasisMiddle, List.append_eq, sorted_iff_seq_sorted,
+    mk_seq]
+  apply Multiseries.map_id_sorted
+  · simpa using h_sorted
+  · apply extendBasisMiddle_sorted
+
+theorem extendBasisMiddle_approximates {left right : Basis} {b : ℝ → ℝ}
+    {ms : MultiseriesExpansion (left ++ right)}
+    (h_basis : WellFormedBasis (left ++ b :: right))
+    (h_approx : ms.Approximates) :
+    (ms.extendBasisMiddle b).Approximates := by
+  cases left with
+  | nil =>
+    simp only [List.nil_append, extendBasisMiddle]
+    apply Approximates.cons h_approx
+    · exact h_approx.coef_majorized_head h_basis
+    · apply Approximates.nil
+      simp
+  | cons left_hd left_tl =>
+  simp only [List.cons_append, extendBasisMiddle, List.append_eq]
+  apply map_id_approximates h_approx
+  · intro coef h_coef
+    apply extendBasisMiddle_approximates h_basis.tail h_coef
+  · simp
+
+@[simp]
+theorem extendBasisEnd_toFun {basis : Basis} {b : ℝ → ℝ} {ms : MultiseriesExpansion basis} :
+    (ms.extendBasisEnd b).toFun = ms.toFun := by
+  cases basis with
+  | nil => simp [extendBasisEnd, toReal]
+  | cons => simp [extendBasisEnd]
+
+@[simp]
+theorem extendBasisEnd_seq {basis_hd basis_tl} {b : ℝ → ℝ}
+    {ms : MultiseriesExpansion (basis_hd :: basis_tl)} :
+    (ms.extendBasisEnd b).seq = Multiseries.extendBasisEnd b ms.seq := by
+  simp [extendBasisEnd]
+
+theorem Multiseries.extendBasisEnd_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {f : ℝ → ℝ} :
+    (Multiseries.extendBasisEnd (basis_hd := basis_hd) (basis_tl := basis_tl) f (.nil)) = .nil := by
+  simp [Multiseries.extendBasisEnd]
+
+theorem Multiseries.extendBasisEnd_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {f : ℝ → ℝ}
+    {exp : ℝ} {coef : MultiseriesExpansion basis_tl} {tl : Multiseries basis_hd basis_tl} :
+    (Multiseries.extendBasisEnd f (.cons exp coef tl)) =
+    .cons exp (coef.extendBasisEnd f) (tl.extendBasisEnd f) := by
+  simp [Multiseries.extendBasisEnd]
+
+mutual
+
+theorem Multiseries.extendBasisEnd_sorted {basis_hd : ℝ → ℝ} {basis_tl : Basis} {f : ℝ → ℝ}
+    {ms : Multiseries basis_hd basis_tl} (h_sorted : ms.Sorted) :
+    (ms.extendBasisEnd f).Sorted := by
+  simp only [Multiseries.extendBasisEnd]
+  apply Multiseries.map_id_sorted h_sorted
+  apply extendBasisEnd_sorted
+
+theorem extendBasisEnd_sorted {basis : Basis} {b : ℝ → ℝ} {ms : MultiseriesExpansion basis}
+    (h_sorted : ms.Sorted) : (ms.extendBasisEnd b).Sorted := by
+  cases basis with
+  | nil =>
+    simp only [extendBasisEnd]
+    exact const_sorted
+  | cons basis_hd basis_tl =>
+    simp only [sorted_iff_seq_sorted, List.cons_append, List.append_eq,
+      extendBasisEnd_seq] at *
+    exact Multiseries.extendBasisEnd_sorted h_sorted
+
+end
+
+theorem extendBasisEnd_approximates {basis : Basis} {b : ℝ → ℝ} {ms : MultiseriesExpansion basis}
+    (h_basis : WellFormedBasis (basis ++ [b]))
+    (h_approx : ms.Approximates) :
+    (ms.extendBasisEnd b).Approximates := by
+  cases basis with
+  | nil =>
+    simp only [List.nil_append, extendBasisEnd]
+    apply const_approximates h_basis
+  | cons basis_hd basis_tl =>
+  simp only [List.cons_append, extendBasisEnd, Multiseries.extendBasisEnd, List.append_eq]
+  apply map_id_approximates h_approx
+  · intro coef h_coef
+    apply extendBasisEnd_approximates h_basis.tail h_coef
+  · simp
+
+end BasisOperations
+
 end MultiseriesExpansion
 
-end Tactic.ComputeAsymptotics
+end Mathlib.Tactic.ComputeAsymptotics

@@ -34,7 +34,7 @@ In this file we show how to find a limit of `Monomial` and how to asymptotically
 
 @[expose] public section
 
-namespace Tactic.ComputeAsymptotics
+namespace Mathlib.Tactic.ComputeAsymptotics
 
 open Asymptotics Filter Topology Real
 
@@ -110,8 +110,7 @@ theorem inv_length (m : UnitMonomial) :
 theorem mul_toFun {m1 m2 : UnitMonomial} {basis : Basis} (h_basis : WellFormedBasis basis)
     (h_length : m1.length = m2.length) :
     (m1.mul m2).toFun basis =ᶠ[atTop] m1.toFun basis * m2.toFun basis := by
-  apply h_basis.eventually_pos.mono
-  intro x h_pos
+  filter_upwards [h_basis.eventually_pos] with x h_pos
   simp only [toFun, mul, Pi.mul_apply]
   induction m1 generalizing m2 basis with
   | nil =>
@@ -141,8 +140,7 @@ theorem inv_toFun {m : UnitMonomial} {basis : Basis} (h_basis : WellFormedBasis 
     cases basis with
     | nil => simp
     | cons basis_hd basis_tl =>
-      apply ((h_basis.head_eventually_pos).and (ih (h_basis.tail))).mono
-      intro x ⟨h_pos, ih⟩
+      filter_upwards [h_basis.head_eventually_pos, ih h_basis.tail] with x h_pos ih
       simp only [List.map_cons, List.zipWith_cons_cons, List.prod_cons, mul_inv_rev]
       grind [Real.rpow_neg h_pos.le]
 
@@ -576,4 +574,4 @@ theorem isLittleO_of_lt_exps_right {left right : Basis} {t1 t2 : Monomial}
 
 end Monomial
 
-end Tactic.ComputeAsymptotics
+end Mathlib.Tactic.ComputeAsymptotics

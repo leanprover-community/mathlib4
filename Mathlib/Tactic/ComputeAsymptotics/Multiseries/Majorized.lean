@@ -21,7 +21,7 @@ This file defines the `Majorized` predicate, along with a few basic lemmas.
 
 @[expose] public section
 
-namespace Tactic.ComputeAsymptotics
+namespace Mathlib.Tactic.ComputeAsymptotics
 
 open Topology Filter Asymptotics
 
@@ -56,8 +56,7 @@ theorem self (h : Tendsto f atTop atTop) :
       arg 1
       rw [show (fun t ↦ f t ^ (exp - exp')) = ((fun t ↦ t ^ (-(exp' - exp))) ∘ f) by ext; simp]
     exact (tendsto_rpow_neg_atTop (by linarith)).comp h
-  · apply (Tendsto.eventually_gt_atTop h 0).mono
-    intro t h1 h2
+  · filter_upwards [Tendsto.eventually_gt_atTop h 0] with t h1 h2
     absurd h2
     exact (Real.rpow_pos_of_pos h1 _).ne.symm
 
@@ -110,8 +109,7 @@ theorem mul {f_exp g_exp : ℝ} (hf : Majorized f b f_exp)
   specialize hf (f_exp + ε) (by dsimp [ε]; linarith)
   specialize hg (g_exp + ε) (by dsimp [ε]; linarith)
   apply (hf.mul hg).trans_eventuallyEq (g₁ := fun t ↦ b t ^ (f_exp + ε) * b t ^ (g_exp + ε))
-  apply h_pos.mono
-  intro t hx
+  filter_upwards [h_pos] with t hx
   simp only [Pi.pow_apply]
   conv_rhs => rw [show exp = (f_exp + ε) + (g_exp + ε) by dsimp [ε]; ring_nf, Real.rpow_add hx]
 
@@ -125,4 +123,4 @@ theorem mul_bounded {f g basis_hd : ℝ → ℝ} {exp : ℝ} (hf : Majorized f b
 
 end Majorized
 
-end Tactic.ComputeAsymptotics
+end Mathlib.Tactic.ComputeAsymptotics
