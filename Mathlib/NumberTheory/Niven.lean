@@ -150,13 +150,13 @@ theorem niven_angle_eq (hθ : ∃ r : ℚ, θ = r * π) (hcos : ∃ q : ℚ, cos
   rcases niven hθ hcos with h | h | h | h | h <;>
   -- define `h₂` appropriately for each proof branch
   [have h₂ := cos_pi
-    ;have h₂ : cos (π * (2 / 3)) = -1 / 2 := by
+    have h₂ : cos (π * (2 / 3)) = -1 / 2 := by
       have := cos_pi_sub (π / 3)
       have := cos_pi_div_three
       grind
-    ;;have h₂ := cos_pi_div_two
-    ;have h₂ := cos_pi_div_three
-    ;have h₂ := cos_zero] <;>
+    have h₂ := cos_pi_div_two
+    have h₂ := cos_pi_div_three
+    have h₂ := cos_zero] <;>
   simp [injOn_cos h_bnd ⟨by positivity, by linarith [pi_nonneg]⟩ (h₂ ▸ h)]
 
 theorem niven_angle_div_pi_eq {r : ℚ} (hcos : ∃ q : ℚ, cos (r * π) = q)

@@ -294,7 +294,7 @@ elab_rules : tactic
       MonoidalCategory.comp_whiskerRight, MonoidalCategory.id_whiskerRight,
       MonoidalCategory.whisker_assoc,
       MonoidalCategory.id_tensorHom, MonoidalCategory.tensorHom_id]
-    ;-- I'm not sure if `tensorHom` should be expanded.
+    -- I'm not sure if `tensorHom` should be expanded.
     try simp only [MonoidalCategory.tensorHom_def]
     ))
 
@@ -324,8 +324,8 @@ elab_rules : tactic
     `Mathlib.Tactic.CategoryTheory.Bicategory.Basic.lean` respectively."
   evalTactic (← `(tactic|
     (simp -failIfUnchanged only [bicategoricalComp, monoidalComp])
-    ;whisker_simps -failIfUnchanged
-    ;monoidal_simps -failIfUnchanged))
+    whisker_simps -failIfUnchanged
+    monoidal_simps -failIfUnchanged))
   coherenceLoop
 
 end Coherence

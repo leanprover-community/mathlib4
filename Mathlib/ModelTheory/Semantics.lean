@@ -952,7 +952,7 @@ theorem exists_realize_equivSentence_iff_realize_exClosure
     [DecidableEq α] [Nonempty M] {φ : L.Formula α} :
     (∃ v : α → M,
       letI := (constantsOn.structure v)
-      ;(Formula.equivSentence φ).Realize M) ↔ (φ.exClosure.Realize M) := by
+      (Formula.equivSentence φ).Realize M) ↔ (φ.exClosure.Realize M) := by
   constructor
   · rintro ⟨v, hv⟩
     exact (Formula.realize_exClosure φ).mpr ⟨fun a => v a,

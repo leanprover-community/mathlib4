@@ -191,7 +191,7 @@ theorem finite_ACF_prime_not_realize_of_ACF_zero_realize
       intro q _
       exact Theory.models_sentence_of_mem
         (by rw [Theory.ACF, Theory.fieldOfChar, Set.union_right_comm]
-            ;exact Set.mem_union_left _ h)
+            exact Set.mem_union_left _ h)
     · refine ⟨⟨{⟨p, hp⟩}, ?_⟩⟩
       rintro ⟨q, _⟩ hq ⟨K⟩ _ _
       have hqp : q ≠ p := by simpa [← Nat.Primes.coe_nat_inj] using hq

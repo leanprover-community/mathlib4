@@ -15,7 +15,7 @@ example (a b : ℕ) (foo : False) : a < b := by
 example (a b : ℕ) (h : False) : a < b := by
   by_contra! foo
   revert foo; change b ≤ a → False; intro
-  ;exact h
+  exact h
 
 example (a b : ℕ) (h : False) : a < b := by
   by_contra! foo : ¬ a < b -- can avoid push Not

@@ -93,7 +93,7 @@ lemma eq_induced : haveI := F.reflects_precoherent
   rw [← coherentTopology.mem_sieves_iff_hasEffectiveEpiFamily S]
 
 instance : haveI := F.reflects_precoherent
-    ;F.IsDenseSubsite (coherentTopology C) (coherentTopology D) where
+    F.IsDenseSubsite (coherentTopology C) (coherentTopology D) where
   functorPushforward_mem_iff := by simp [eq_induced F]
 
 lemma coverPreserving : haveI := F.reflects_precoherent
@@ -193,7 +193,7 @@ lemma eq_induced : haveI := F.reflects_preregular
   rw [← mem_sieves_iff_hasEffectiveEpi S]
 
 instance : haveI := F.reflects_preregular
-    ;F.IsDenseSubsite (regularTopology C) (regularTopology D) where
+    F.IsDenseSubsite (regularTopology C) (regularTopology D) where
   functorPushforward_mem_iff := by simp [eq_induced F]
 
 lemma coverPreserving : haveI := F.reflects_preregular

@@ -364,7 +364,7 @@ instance NNReal.instContinuousMapZero.UniqueHom
     have (ξ : C(s, ℝ≥0)₀ →⋆ₙₐ[ℝ≥0] A) (hξ : Continuous ξ) :
         (let ξ' := ξ.realContinuousMapZeroOfNNReal.comp <|
           ContinuousMapZero.nonUnitalStarAlgHom_precomp ℝ ⟨e, e0⟩
-          ;Continuous ξ' ∧ ξ' (.id s') = ξ (.id s)) := by
+          Continuous ξ' ∧ ξ' (.id s') = ξ (.id s)) := by
       intro ξ'
       refine ⟨ξ.continuous_realContinuousMapZeroOfNNReal hξ |>.comp <| ?_, ?_⟩
       · rw [continuous_induced_rng]

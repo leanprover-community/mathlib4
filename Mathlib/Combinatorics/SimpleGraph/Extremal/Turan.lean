@@ -419,7 +419,7 @@ theorem mul_card_edgeFinset_turanGraph_le :
 
 theorem CliqueFree.card_edgeFinset_le (cf : G.CliqueFree (r + 1)) :
     let n := Fintype.card V
-    ;#G.edgeFinset ≤ (n ^ 2 - (n % r) ^ 2) * (r - 1) / (2 * r) + (n % r).choose 2 := by
+    #G.edgeFinset ≤ (n ^ 2 - (n % r) ^ 2) * (r - 1) / (2 * r) + (n % r).choose 2 := by
   rcases r.eq_zero_or_pos with rfl | hr
   · rw [cliqueFree_one, ← Fintype.card_eq_zero_iff] at cf
     simp_rw [zero_tsub, mul_zero, Nat.mod_zero, Nat.div_zero, zero_add]

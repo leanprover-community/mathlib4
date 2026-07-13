@@ -237,7 +237,7 @@ noncomputable instance : PseudoEMetricSpace (α →ᵤ[𝔖] β) where
   toUniformSpace := inferInstance
   uniformity_edist := by
     let _ := Fintype.ofFinite 𝔖
-    ;simp_rw [← isUniformInducing_pi_restrict.comap_uniformity,
+    simp_rw [← isUniformInducing_pi_restrict.comap_uniformity,
       PseudoEMetricSpace.uniformity_edist, comap_iInf, comap_principal, edist_eq_pi_restrict,
       Set.preimage_setOf_eq]
 

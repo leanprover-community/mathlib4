@@ -67,7 +67,7 @@ macro_rules
   -- because if `$pat` is a variable, `obtain $pat := h` doesn't do anything.
   `(tactic| (
     by_contra h
-    ;try_push_neg_at $cfg h; $replaceTac
-    ;revert h; rintro ($pat:rcasesPatMed)))
+    try_push_neg_at $cfg h; $replaceTac
+    revert h; rintro ($pat:rcasesPatMed)))
 
 end Mathlib.Tactic.ByContra

@@ -956,8 +956,8 @@ lemma discr_of_degree_eq_two {f : R[X]} (hf : f.degree = 2) :
   rw [discr, ← Matrix.det_reindex_self e]
   have : f.sylvesterDeriv.reindex e e =
     !![f.coeff 0,     f.coeff 1,         0
-        ;f.coeff 1, 2 * f.coeff 2, f.coeff 1
-        ;1,                     0,         2] := by
+        f.coeff 1, 2 * f.coeff 2, f.coeff 1
+        1,                     0,         2] := by
     ext i j
     fin_cases i <;> fin_cases j <;>
       simp [e, sylvesterDeriv, sylvester, coeff_derivative, mul_comm, Fin.addCases,
@@ -983,10 +983,10 @@ set_option linter.style.whitespace false in -- manual alignment is not recognise
 private lemma sylvesterDeriv_of_natDegree_eq_three {f : R[X]} (hf : f.natDegree = 3) :
     f.sylvesterDeriv.reindex (finCongr <| by rw [hf]) (finCongr <| by rw [hf]) =
     !![ f.coeff 0,         0, 1 * f.coeff 1,             0,             0
-        ;f.coeff 1, f.coeff 0, 2 * f.coeff 2, 1 * f.coeff 1,             0
-        ;f.coeff 2, f.coeff 1, 3 * f.coeff 3, 2 * f.coeff 2, 1 * f.coeff 1
-        ;f.coeff 3, f.coeff 2,             0, 3 * f.coeff 3, 2 * f.coeff 2
-                ;0,         1,             0,             0,             3] := by
+        f.coeff 1, f.coeff 0, 2 * f.coeff 2, 1 * f.coeff 1,             0
+        f.coeff 2, f.coeff 1, 3 * f.coeff 3, 2 * f.coeff 2, 1 * f.coeff 1
+        f.coeff 3, f.coeff 2,             0, 3 * f.coeff 3, 2 * f.coeff 2
+                0,         1,             0,             0,             3] := by
   ext ⟨i, hi⟩ ⟨j, hj⟩
   -- In this proof we do as much as possible of the `simp` work before drilling down into the
   -- `fin_cases` constructs. This means the simps are not terminal, so they are not squeezed

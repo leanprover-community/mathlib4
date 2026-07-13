@@ -638,7 +638,7 @@ theorem cont_eval_fix {f k v} (fok : Code.Ok f) :
         refine ⟨_, PFun.mem_fix_iff.2 ?_, h₃⟩
         simp only [Part.eq_some_iff.2 hv₁, Part.map_some, Part.mem_some_iff]
         split_ifs at hv₂ ⊢ <;> [exact Or.inl (congr_arg Sum.inl (Part.mem_some_iff.1 hv₂))
-          ;exact Or.inr ⟨_, rfl, hv₂⟩]
+          exact Or.inr ⟨_, rfl, hv₂⟩]
     · exact IH _ rfl _ _ stepRet_then (ReflTransGen.tail hr rfl)
   · rintro ⟨v', he, hr⟩
     rw [reaches_eval] at hr

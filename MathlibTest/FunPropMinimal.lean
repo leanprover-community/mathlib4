@@ -415,7 +415,7 @@ example : Con fun ((_, _, x) : α × α × α) => x := by fun_prop
 
 example [Add α] : let f := (by exact (fun x : α => x+x)); Con f := by
   intro f
-  ;let F := fun x : α => x+x
+  let F := fun x : α => x+x
   have : Con F := by fun_prop -- this used to be problematic
   fun_prop
 

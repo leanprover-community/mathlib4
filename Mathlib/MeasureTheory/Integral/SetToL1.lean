@@ -1406,7 +1406,7 @@ theorem StronglyMeasurable.setToFun_prod_right {β : Type*} {mβ : MeasurableSpa
     StronglyMeasurable fun x => setToFun μ T hT (f x) := by
   classical
   by_cases hF : CompleteSpace F; swap
-  ;· simp [setToFun, hF, stronglyMeasurable_const]
+  · simp [setToFun, hF, stronglyMeasurable_const]
   borelize E
   haveI : SeparableSpace (range (Function.uncurry f) ∪ {0} : Set E) :=
     hf.separableSpace_range_union_singleton

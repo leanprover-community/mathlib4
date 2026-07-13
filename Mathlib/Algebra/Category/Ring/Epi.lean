@@ -31,7 +31,7 @@ lemma CommRingCat.epi_iff_epi {R S : Type u} [CommRing R] [CommRing S] [Algebra 
     have := H.1 (CommRingCat.ofHom <| Algebra.TensorProduct.includeLeftRingHom)
       (CommRingCat.ofHom <| (Algebra.TensorProduct.includeRight (R := R) (A := S)).toRingHom)
       (by ext r; change algebraMap R S r ⊗ₜ 1 = 1 ⊗ₜ algebraMap R S r
-          ;simp only [Algebra.algebraMap_eq_smul_one, smul_tmul])
+          simp only [Algebra.algebraMap_eq_smul_one, smul_tmul])
     exact RingHom.congr_fun (congrArg Hom.hom this)
   · refine fun H ↦ ⟨fun {T} f g e ↦ ?_⟩
     letI : Algebra R T := (ofHom (algebraMap R S) ≫ g).hom.toAlgebra

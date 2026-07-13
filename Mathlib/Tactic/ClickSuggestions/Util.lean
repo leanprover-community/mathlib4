@@ -232,7 +232,7 @@ where
       else
         -- TODO: use a fancier throbber instead of `⏳️`?
         let title := "ongoing computations: " ++ String.intercalate ", " status.keys
-        ;<span title={title}> {.text "⏳️"} </span>
+        <span title={title}> {.text "⏳️"} </span>
 
 section Meta
 
@@ -368,7 +368,7 @@ def mkSuggestion (tac : TSyntax `tactic) (html : Html) (isClosing := false) :
     <span style={json% { "white-space" : "pre"}} className="font-code">
     { .ofComponent MakeEditLink (.ofReplaceRange (← read).meta range newText) #[.text buttonText] }
     </span>
-  ;return <div display="flex"
+  return <div display="flex"
     style={json% { "display" : "flex", "align-items" : "flex-start", "margin-bottom" : "1em" }}>
     {button} {html}
     </div>

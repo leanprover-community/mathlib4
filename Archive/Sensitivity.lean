@@ -214,7 +214,7 @@ theorem epsilon_total {v : V n} (h : ∀ p : Q n, (ε p) v = 0) : v = 0 := by
     obtain ⟨v₁, v₂⟩ := v
     ext <;> change _ = (0 : V n) <;> simp only <;> apply ih <;> intro p <;>
       [let q : Q n.succ := fun i => if h : i = 0 then true else p (i.pred h)
-      ;let q : Q n.succ := fun i => if h : i = 0 then false else p (i.pred h)]
+      let q : Q n.succ := fun i => if h : i = 0 then false else p (i.pred h)]
     all_goals
       specialize h q
       first

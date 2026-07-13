@@ -93,7 +93,7 @@ def range (p : Permutation) : Nat :=
 def beq (p₁ p₂ : Permutation) : Bool :=
   p₁.range == p₂.range &&
     let rangeArr := (0...p₁.range).toArray
-    ;p₁.permute! rangeArr == p₂.permute! rangeArr
+    p₁.permute! rangeArr == p₂.permute! rangeArr
 
 end Permutation
 

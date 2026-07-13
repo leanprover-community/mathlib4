@@ -287,7 +287,7 @@ private def mkInjThms (ctx : Deriving.Context) (toSFunNames fromSFunNames : Arra
     let tactic : Term ← `(by
         cases $t:ident
         <;> (unfold $(mkIdent toSFunName):ident $(mkIdent fromSFunName):ident
-              ;simp only [Encodable.encodek, $lemmas,*]; try rfl)
+              simp only [Encodable.encodek, $lemmas,*]; try rfl)
       )
     res := res.push <| ← `(
       private theorem $(mkIdent injThmName):ident $header.binders:bracketedBinder* :

@@ -68,7 +68,7 @@ lemma sub_coe (a b : PNat) : ((a - b : PNat) : Nat) = a.val - 1 - b.val + 1 := b
 A typical use case is `pnat_to_nat; lia`. -/
 macro "pnat_to_nat" : tactic => `(tactic| focus (
   pnat_positivity
-  ;simp only [pnat_to_nat_coe] at *)
+  simp only [pnat_to_nat_coe] at *)
 )
 
 end Mathlib.Tactic.PNatToNat

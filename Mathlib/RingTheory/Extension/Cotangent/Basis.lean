@@ -205,7 +205,7 @@ lemma map_ofComp_mk [Nontrivial S] :
   rw [pres, presLeft, presRight, Presentation.relation_comp_localizationAway_inl]
   · exact Generators.toAlgHom_ofComp_localizationAway _ _
   · rw [Presentation.naive, Generators.naive_σ]
-    ;simp
+    simp
   · rw [Presentation.naive, Generators.naive_σ]
     simp
 

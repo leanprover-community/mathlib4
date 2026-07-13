@@ -465,7 +465,7 @@ elab_rules : tactic
           let sR ← exprToSyntax R
           evalTactic <| ← `(tactic|
             refine MvQPF.Cofix.bisim₂ $sR ?_ _ _ ⟨_, rfl, rfl⟩
-            ;rintro $(← idss 1) $(← idss 2) ⟨$(← idss 3), $(← idss 4), $(← idss 5)⟩)
+            rintro $(← idss 1) $(← idss 2) ⟨$(← idss 3), $(← idss 4), $(← idss 5)⟩)
           liftMetaTactic fun g => return [← g.clear f.fvarId!]
     for h : n in [6 : ids.size] do
       let name := ids[n]

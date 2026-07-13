@@ -188,7 +188,7 @@ theorem symm_eq {f : Dual R V} {v : V}
     (hv : f v = 0) (hv' : f (-v) = 0 := by simp [hv]) :
     (transvection hv).symm = transvection hv' := by
   ext
-  ;simp [symm_apply_eq, comp_of_left_eq_apply hv']
+  simp [symm_apply_eq, comp_of_left_eq_apply hv']
 
 theorem inv_eq {f : Dual R V} {v : V}
     (hv : f v = 0) (hv' : f (-v) = 0 := by simp [hv]) :

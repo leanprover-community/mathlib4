@@ -55,7 +55,7 @@ Options:
                      reported by `cache query`. Wins over the
                      MATHLIB_CACHE_REPO_SCOPE env var. Reading another commit's
                      scope means trusting the artifacts produced at that commit
-                     ;`cache get` prints a security notice when the scope differs
+                     `cache get` prints a security notice when the scope differs
                      from HEAD.
   --unsafe           (get only) Instead of pinning one --scope, automatically walk
                      this branch's history and try the most recent cached fork

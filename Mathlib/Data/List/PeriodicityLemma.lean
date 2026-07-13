@@ -157,7 +157,7 @@ lemma HasPeriod.take_append (p n : ℕ) (w : List α) (dvd : p ∣ n)
     · -- larger indices are indices of `w` decreased by `n`
       have j_minus : j - n < w.length := by lia
       have n_le_j : n ≤ j := le_of_not_gt j_lt_n; clear j_lt_n
-      ;have j_mod : (j - n) % p = j % p := by
+      have j_mod : (j - n) % p = j % p := by
         calc
           (j - n) % p = (j - p * (n / p)) % p := by rw [Nat.mul_div_cancel' dvd]
           _ = j % p := sub_mul_mod ((Nat.mul_div_cancel' dvd).symm ▸ n_le_j)

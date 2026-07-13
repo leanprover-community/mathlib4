@@ -372,7 +372,7 @@ example : True := by
   have : 0 = 0 ∧ 0 = 0 ∧ 1 + 3 = 4 := by
     refine ⟨by trivial, by
       let _f := λ n : ℕ ↦ 0
-      ;have : ℕ := by
+      have : ℕ := by
         · -- comment
           · have := λ k : ℕ ↦ -5
             · exact 0

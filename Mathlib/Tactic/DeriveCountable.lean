@@ -188,13 +188,13 @@ where
                 if let some recName := recName? then
                   `(tactic| (
                     refine $(mkCIdent ``cons_eq_imp) ?_
-                    ;intro h
-                    ;cases $(mkIdent recName) _ _ h
+                    intro h
+                    cases $(mkIdent recName) _ _ h
                   ))
                 else
                   `(tactic| (
                     refine $(mkCIdent ``pair_encode_step) ?_
-                    ;rintro ⟨⟩
+                    rintro ⟨⟩
                   ))
             tactics := tactics.push (← `(tactic| (intro; rfl)))
             `(matchAltExpr| | $[$patterns:term],* => cons_eq_imp_init (by $tactics:tactic*))

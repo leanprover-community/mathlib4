@@ -242,7 +242,7 @@ instance ofIso {X Y : PresheafedSpace C} (H : X ≅ Y) : IsOpenImmersion H.hom w
   base_open := (TopCat.homeoOfIso ((forget C).mapIso H)).isOpenEmbedding
   -- Porting note: `inferInstance` will fail if Lean is not told that `H.hom.c` is iso
   c_iso _ := letI : IsIso H.hom.c := inferInstance
-    ;inferInstance
+    inferInstance
 
 instance (priority := 100) ofIsIso {X Y : PresheafedSpace C} (f : X ⟶ Y) [IsIso f] :
     IsOpenImmersion f :=
