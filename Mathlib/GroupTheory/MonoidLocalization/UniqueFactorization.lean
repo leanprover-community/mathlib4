@@ -73,10 +73,10 @@ theorem uniqueFactorizationMonoid (f : S.LocalizationMap N)
 
 end Submonoid.LocalizationMap
 
-variable (N) [CommSemiring M] (S : Submonoid M)
+variable [CommSemiring M] (S : Submonoid M)
 
 /-- A localization of a unique factorization monoid is still a unique factorization monoid. -/
-theorem UniqueFactorizationMonoid.of_isLocalization [CommSemiring N] [Algebra M N]
+theorem UniqueFactorizationMonoid.of_isLocalization (N : Type*) [CommSemiring N] [Algebra M N]
     [IsLocalization S N] [UniqueFactorizationMonoid M] : UniqueFactorizationMonoid N :=
   (IsLocalization.toLocalizationMap S N).uniqueFactorizationMonoid
 
