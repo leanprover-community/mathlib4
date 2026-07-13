@@ -160,22 +160,22 @@ theorem euler_h : (euler h ρ).h = h := by rfl
 theorem toEuler_h : g.toEuler.h = g.h := by rfl
 
 @[simp]
-theorem partNums_euler_zero : (euler h ρ).partNums.get? 0 = ρ.get? 0 := by
+theorem partNum_euler_zero : (euler h ρ).partNums.get? 0 = ρ.get? 0 := by
   rw [partNums, @Stream'.Seq.map_get?, euler_s_zero]
   rcases ρ.get? 0 with _ | _ <;> simp
 
 @[simp]
-theorem partDens_euler_zero : (euler h ρ).partDens.get? 0 = (ρ.get? 0).map (fun _ => 1) := by
+theorem partDen_euler_zero : (euler h ρ).partDens.get? 0 = (ρ.get? 0).map (fun _ => 1) := by
   rw [partDens, @Stream'.Seq.map_get?, euler_s_zero]
   rcases ρ.get? 0 with _ | _ <;> simp
 
 @[simp]
-theorem partNums_euler_succ : (euler h ρ).partNums.get? (n + 1) = (ρ.get? (n + 1)).map (- ·) := by
+theorem partNum_euler_succ : (euler h ρ).partNums.get? (n + 1) = (ρ.get? (n + 1)).map (- ·) := by
   rw [partNums, @Stream'.Seq.map_get?, euler_s_succ]
   rcases ρ.get? (n + 1) with _ | _ <;> simp
 
 @[simp]
-theorem partDens_euler_succ : (euler h ρ).partDens.get? (n + 1) = (ρ.get? (n + 1)).map (1 + ·) := by
+theorem partDen_euler_succ : (euler h ρ).partDens.get? (n + 1) = (ρ.get? (n + 1)).map (1 + ·) := by
   rw [partDens, @Stream'.Seq.map_get?, euler_s_succ]
   rcases ρ.get? (n + 1) with _ | _ <;> simp
 
@@ -212,7 +212,7 @@ private theorem nums_euler_aux : (euler h ρ).nums (n + 1) - (euler h ρ).nums n
   have det := determinant (g := euler h ρ) (n := n)
   simp only [isEuler_euler, IsEuler.dens_eq_one, mul_one, one_mul] at det
   rw [← neg_sub, det, Finset.prod_range_succ', Finset.prod_range_succ']
-  simp only [partNums_euler_succ, partNums_euler_zero, mul_neg, neg_neg]
+  simp only [partNum_euler_succ, partNum_euler_zero, mul_neg, neg_neg]
   congr; ext n'
   rcases ρ.get? (n' + 1) with _ | _ <;> simp
 
