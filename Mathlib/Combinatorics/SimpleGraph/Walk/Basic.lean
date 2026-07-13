@@ -341,6 +341,11 @@ theorem coe_edges_toFinset [DecidableEq V] {u v : V} (p : G.Walk u v) :
 theorem finite_edgeSet (p : G.Walk v w) : p.edgeSet.Finite :=
   p.edges.finite_toSet
 
+/-- The edge set of a walk is a `Fintype`. -/
+@[implicit_reducible]
+def fintypeEdgeSet [DecidableEq V] (p : G.Walk v w) : Fintype p.edgeSet :=
+  List.Subtype.fintype p.edges
+
 /-- Predicate for the empty walk.
 
 Solves the dependent type problem where `p = G.Walk.nil` typechecks
