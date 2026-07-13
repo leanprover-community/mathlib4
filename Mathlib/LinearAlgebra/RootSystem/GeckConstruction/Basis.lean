@@ -91,9 +91,6 @@ def basis :
 instance : (cartanSubalgebra' b).IsCartanSubalgebra :=
   inferInstanceAs (basis b).cartan.IsCartanSubalgebra
 
--- TODO drop this after: https://github.com/leanprover-community/mathlib4/issues/28713
-variable [Fact ((4 - b.cartanMatrix).det ≠ 0)]
-
 open LieAlgebra.IsKilling in
 /-- Up to equivalence, `LieAlgebra.IsKilling.rootSystem` is left inverse to
 `RootPairing.GeckConstruction.lieAlgebra`. -/

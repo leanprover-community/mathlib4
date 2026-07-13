@@ -293,7 +293,6 @@ theorem mahlerMeasure_le_sum_norm_coeff (p : ℂ[X]) : p.mahlerMeasure ≤ p.sum
     apply norm_sum_le_of_le p.support
     simp
 
-set_option linter.style.emptyLine false in
 open MeasureTheory Set in
 /-- **Landau's inequality**: the Mahler measure of a polynomial is at most the ℓ² norm
 of its coefficient vector, `√(∑ ‖coeff i‖²)`.
@@ -353,7 +352,7 @@ root of its degree plus one. -/
 theorem mahlerMeasure_le_sqrt_natDegree_add_one_mul_supNorm (p : Polynomial ℂ) :
     p.mahlerMeasure ≤ √(p.natDegree + 1) * p.supNorm :=
   (p.mahlerMeasure_le_sqrt_sum_sq_norm_coeff).trans <| by
-    rw [show √(↑(p.natDegree) + 1) * p.supNorm = √((p.natDegree + 1) * p.supNorm ^ 2) from by
+    rw [show √(↑(p.natDegree) + 1) * p.supNorm = √((p.natDegree + 1) * p.supNorm ^ 2) by
       rw [Real.sqrt_mul (by positivity), Real.sqrt_sq p.supNorm_nonneg]]
     gcongr
     refine (p.support.sum_le_card_nsmul _ (p.supNorm ^ 2) fun i _ ↦ ?_).trans ?_
