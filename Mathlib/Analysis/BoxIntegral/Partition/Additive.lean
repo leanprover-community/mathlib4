@@ -204,7 +204,7 @@ instance : Sub (ι →ᵇᵃ[I₀] M) :=
 instance : AddCommGroup (ι →ᵇᵃ[I₀] M) :=
   Function.Injective.addCommGroup _ DFunLike.coe_injective
     rfl (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl)
-    (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+    (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
 @[simp]
 lemma neg_apply (f : ι →ᵇᵃ[I₀] M) (J : Box ι) : (-f) J = -(f J) := rfl
