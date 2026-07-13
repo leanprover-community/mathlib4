@@ -39,14 +39,12 @@ is algebraic and that every algebraic element over a field is integral.
 
 @[expose] public section
 
--- PRed
 theorem LinearIndepOn.iff_fractionRing (R K : Type*) [CommRing R] [CommRing K]
     [Algebra R K] [IsFractionRing R K] {V : Type*} [AddCommGroup V] [Module R V] [Module K V]
     [IsScalarTower R K V] {ι : Type*} {s : Set ι} {f : ι → V} :
     LinearIndepOn R f s ↔ LinearIndepOn K f s :=
   LinearIndependent.iff_fractionRing R K
 
--- PRed
 theorem IsFractionRing.rank_eq (R R' S : Type*)
     [CommRing R] [CommRing R'] [CommRing S]
     [Algebra R R'] [Module R' S] [Module R S]
@@ -55,7 +53,6 @@ theorem IsFractionRing.rank_eq (R R' S : Type*)
   simp_rw [Module.rank, ciSup_subtype Cardinal.bddAbove_of_small (by simp),
     LinearIndepOn.iff_fractionRing R R']
 
--- PRed
 theorem IsFractionRing.finrank_eq' (R R' S : Type*)
     [CommRing R] [CommRing R'] [CommRing S]
     [Algebra R R'] [Module R' S] [Module R S]
@@ -63,7 +60,6 @@ theorem IsFractionRing.finrank_eq' (R R' S : Type*)
     Module.finrank R S = Module.finrank R' S := by
   simp_rw [Module.finrank, IsFractionRing.rank_eq R R']
 
--- PRed
 theorem LinearIndependent.comp_algebraMap_iff
     {R S A : Type*} [CommRing R] [CommRing S] [CommRing A]
     [Algebra R S] [Algebra S A] [Algebra R A] [IsScalarTower R S A] [FaithfulSMul S A]
@@ -73,14 +69,12 @@ theorem LinearIndependent.comp_algebraMap_iff
   simp_rw [linearIndependent_iff, Finsupp.linearCombination_linear_comp]
   simp
 
--- PRed
 theorem LinearIndepOn.comp_algebraMap_iff {R S A : Type*} [CommRing R] [CommRing S] [CommRing A]
     [Algebra R S] [Algebra S A] [Algebra R A] [IsScalarTower R S A] [FaithfulSMul S A]
     {ι : Type*} {v : ι → S} {s : Set ι} :
     LinearIndepOn R (algebraMap S A ∘ v) s ↔ LinearIndepOn R v s :=
   LinearIndependent.comp_algebraMap_iff
 
--- PRed
 theorem LinearIndepOn.image_algebraMap_iff (R S A : Type*) [CommRing R] [CommRing S] [CommRing A]
     [Algebra R S] [Algebra S A] [Algebra R A] [IsScalarTower R S A] [FaithfulSMul S A]
     {s : Set S} :
@@ -88,13 +82,11 @@ theorem LinearIndepOn.image_algebraMap_iff (R S A : Type*) [CommRing R] [CommRin
   rw [← linearIndepOn_iff_image (FaithfulSMul.algebraMap_injective S A).injOn]
   exact LinearIndepOn.comp_algebraMap_iff
 
--- PRed
 noncomputable def Finset.equivMap {α β : Type*} (s : Finset α) (f : α ↪ β) : s ≃ s.map f :=
   .ofBijective (fun x ↦ ⟨f x, s.mem_map_of_mem f x.2⟩) (⟨fun x y ↦ by simp, fun ⟨x, hx⟩ ↦ by
     obtain ⟨x, hxs, rfl⟩ := Finset.mem_map.mp hx
     exact ⟨⟨x, hxs⟩, rfl⟩⟩)
 
--- PRed
 theorem IsLocalization.integerMultipleMultiple_injective {R : Type*} [CommSemiring R]
     (M : Submonoid R) {S : Type*} [CommSemiring S] [Algebra R S] [IsLocalization M S]
     {ι : Type*} (s : Finset ι) (f : ι → S) (hf : Function.Injective f) :
@@ -105,7 +97,6 @@ theorem IsLocalization.integerMultipleMultiple_injective {R : Type*} [CommSemiri
   rwa [← h, hi, (IsLocalization.smul_bijective S (commonDenom M s f)).injective.eq_iff,
     hf.eq_iff, SetLike.coe_eq_coe] at hj
 
--- PRed
 theorem IsLocalization.card_finsetIntegerMultiple {R : Type*} [CommSemiring R] (M : Submonoid R)
     {S : Type*} [CommSemiring S] [Algebra R S] [IsLocalization M S] [DecidableEq R] (s : Finset S) :
     (finsetIntegerMultiple M s).card = s.card := by
@@ -113,7 +104,6 @@ theorem IsLocalization.card_finsetIntegerMultiple {R : Type*} [CommSemiring R] (
   apply integerMultipleMultiple_injective
   exact Function.injective_id
 
--- PRed
 theorem Cardinal.toNat_eq_of_forall_le_iff (c d : Cardinal)
     (h : ∀ n : ℕ, n ≤ c ↔ n ≤ d) : c.toNat = d.toNat := by
   have h' := forall_congr' h
@@ -126,23 +116,21 @@ theorem Cardinal.toNat_eq_of_forall_le_iff (c d : Cardinal)
     apply eq_of_forall_le_iff
     simp_all
 
-open IsLocalization nonZeroDivisors Pointwise in
-theorem foo' (R S A : Type*) [DecidableEq S]
-    [CommRing R] [CommRing S] [CommRing A]
-    [Algebra R S] [Algebra S A] [Algebra R A]
-    [IsScalarTower R S A] [IsFractionRing S A]
+theorem IsLocalization.linearIndepOn_finsetIntegerMultiple
+    (R : Type*) {S A : Type*} [DecidableEq S]
+    [CommRing R] [CommRing S] [CommRing A] [Algebra R S] [Algebra S A] [Algebra R A]
+    [IsScalarTower R S A] (M : Submonoid S) [IsLocalization M A] [FaithfulSMul S A]
     {s : Finset A} (hs : LinearIndepOn R id (s : Set A)) :
-    LinearIndepOn R id (finsetIntegerMultiple S⁰ s : Set S) := by
+    LinearIndepOn R id (finsetIntegerMultiple M s : Set S) := by
   classical
   rw [← LinearIndepOn.image_algebraMap_iff R S A, finsetIntegerMultiple_image, ← s.coe_smul_finset]
   rw [linearIndepOn_finset_iff] at hs ⊢
   intro f h
   rw [Finset.smul_finset_def, Finset.forall_mem_image]
   apply hs
-  let inj := (IsLocalization.smul_bijective A (commonDenomOfFinset S⁰ s)).injective
-  rw [Finset.smul_finset_def, Finset.sum_image inj.injOn] at h
-  simp_rw [id_eq, smul_comm (f _), ← Finset.smul_sum] at h
-  rwa [← smul_zero (commonDenomOfFinset S⁰ s), inj.eq_iff] at h
+  have inj := (IsLocalization.smul_bijective A (commonDenomOfFinset M s)).injective
+  rw [← inj.eq_iff, smul_zero, s.smul_sum, ← h, s.smul_finset_def, s.sum_image inj.injOn]
+  exact s.sum_congr rfl fun x hx ↦ smul_comm ..
 
 open IsLocalization nonZeroDivisors in
 theorem IsFractionRing.finrank_eq (R R' S S' : Type*)
@@ -160,8 +148,8 @@ theorem IsFractionRing.finrank_eq (R R' S S' : Type*)
   simp_rw [Module.le_rank_iff_exists_finset, LinearIndepOn]
   constructor
   · rintro ⟨s, rfl, hs⟩
-    use finsetIntegerMultiple S⁰ s, card_finsetIntegerMultiple S⁰ s
-    exact foo' R S S' hs
+    exact ⟨finsetIntegerMultiple S⁰ s, card_finsetIntegerMultiple S⁰ s,
+      linearIndepOn_finsetIntegerMultiple R S⁰ hs⟩
   · rintro ⟨s, rfl, hs⟩
     let f : S ↪ S' := ⟨algebraMap S S', FaithfulSMul.algebraMap_injective S S'⟩
     exact ⟨s.map f, s.card_map f,
