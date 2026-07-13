@@ -539,6 +539,14 @@ abbrev DistribLattice.ofInfSupLe
   le_sup_inf := (@OrderDual.instDistribLattice αᵒᵈ { (inferInstance : Lattice αᵒᵈ) with
       le_sup_inf := inf_sup_le }).le_sup_inf
 
+/-- A lattice satisfying the (self-dual, ostensibly weaker) law `(x ⊔ y) ⊓ z ≤ x ⊔ (y ⊓ z)`
+is distributive. -/
+abbrev DistribLattice.ofSupInfLeAssoc [Lattice α] (h : ∀ x y z : α, (x ⊔ y) ⊓ z ≤ x ⊔ y ⊓ z) :
+    DistribLattice α where
+  le_sup_inf x y z := (h x y (x ⊔ z)).trans <|
+    (sup_le_sup_left ((inf_comm ..).trans_le (h x z y)) _).trans <| by
+    rw [inf_comm, ← sup_assoc, sup_idem]
+
 /-!
 ### Lattices derived from linear orders
 -/
