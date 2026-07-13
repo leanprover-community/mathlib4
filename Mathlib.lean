@@ -5446,6 +5446,7 @@ public import Mathlib.MeasureTheory.Function.StronglyMeasurable.AEStronglyMeasur
 public import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
 public import Mathlib.MeasureTheory.Function.StronglyMeasurable.ENNReal
 public import Mathlib.MeasureTheory.Function.StronglyMeasurable.Inner
+public import Mathlib.MeasureTheory.Function.StronglyMeasurable.InnerRegular
 public import Mathlib.MeasureTheory.Function.StronglyMeasurable.Lemmas
 public import Mathlib.MeasureTheory.Function.StronglyMeasurable.Lp
 public import Mathlib.MeasureTheory.Function.UnifTight
