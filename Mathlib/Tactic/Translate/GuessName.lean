@@ -72,8 +72,8 @@ partial def String.splitCase (s : String) (i₀ : Pos.Raw := 0) (r : List String
     let r := s::r
     return r.reverse
   /- We split the string in three cases
-  * We split on both sides of `_` to keep them there when rejoining the string;
-  * We split after a name in `endCapitalNames`;
+  * We split on both sides of `_` to keep them there when rejoining the string
+  * We split after a name in `endCapitalNames`
   * We split after a lower-case letter that is followed by an upper-case letter
     (unless it is part of a name in `endCapitalNames`). -/
   if i₀.get s == '_' || i₁.get s == '_' then

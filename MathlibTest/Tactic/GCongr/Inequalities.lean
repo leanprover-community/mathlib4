@@ -157,8 +157,8 @@ example {n' : ℕ} (hn' : 6 ≤ n') : 2 ^ ((n' + 1) * (n' + 1)) ≤ 2 ^ (n' * n'
   · linarith
 
 example {F : ℕ → ℕ} (le_sum : ∀ {N : ℕ}, 6 ≤ N → 15 ≤ F N) {n' : ℕ} (hn' : 6 ≤ n') :
-    let A := F n';
-    A ! * (15 + 1) ^ n' ≤ A ! * (A + 1) ^ n' := by
+    let A := F n'
+    ;A ! * (15 + 1) ^ n' ≤ A ! * (A + 1) ^ n' := by
   intro A
   gcongr
   exact le_sum hn'

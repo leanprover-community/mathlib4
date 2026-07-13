@@ -63,8 +63,8 @@ theorem isCommMonObj_of_isProper_of_isIntegral_tensorObj_of_isAlgClosed [IsAlgCl
     rw [Set.image_subset_iff, ← Set.sdiff_eq_empty, ← Set.not_nonempty_iff_eq_empty]
     intro H
     obtain ⟨c₀, ⟨hc₁, hc₂⟩, hc₃⟩ := nonempty_inter_closedPoints H <| by
-      rw [Set.sdiff_eq_compl_inter, ← Set.image_singleton, ← Set.image_singleton];
-      refine (IsOpen.isLocallyClosed ?_).inter (IsClosed.isLocallyClosed ?_)
+      rw [Set.sdiff_eq_compl_inter, ← Set.image_singleton, ← Set.image_singleton]
+      ;refine (IsOpen.isLocallyClosed ?_).inter (IsClosed.isLocallyClosed ?_)
       · exact (((lift η[G] η[G]).left.isClosedMap _ hpoint).preimage γ.left.continuous).isOpen_compl
       · exact (η[G].left.isClosedMap _ hpoint).preimage (fst G G).left.continuous
     obtain ⟨⟨c, hc⟩, e⟩ := (pointEquivClosedPoint (G ⊗ G).hom).surjective ⟨c₀, hc₃⟩

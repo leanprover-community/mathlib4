@@ -527,7 +527,7 @@ protected theorem map_mul : (p * q).map f = p.map f * q.map f := by
 -- `map` is a ring-hom unconditionally, and theoretically the definition could be replaced,
 -- but this turns out not to be easy because `p.map f` does not resolve to `Polynomial.map`
 -- if `map` is a `RingHom` instead of a plain function; the elaborator does not try to coerce
--- to a function before trying field (dot) notation (this may be technically infeasible);
+-- to a function before trying field (dot) notation (this may be technically infeasible)
 -- the relevant code is (both lines): https://github.com/leanprover-community/
 -- lean/blob/487ac5d7e9b34800502e1ddf3c7c806c01cf9d51/src/frontends/lean/elaborator.cpp#L1876-L1913
 /-- `Polynomial.map` as a `RingHom`. -/

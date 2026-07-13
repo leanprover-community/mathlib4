@@ -320,8 +320,8 @@ def meqOfSep (P : Cᵒᵖ ⥤ D)
     erw [toPlus_apply (T II.fst.fromMiddle) (t II.fst.fromMiddle) II.fst.toMiddle,
       toPlus_apply (T II.snd.fromMiddle) (t II.snd.fromMiddle) II.snd.toMiddle]
     rw [← ht, ← ht]
-    erw [← ConcreteCategory.comp_apply, ← ConcreteCategory.comp_apply];
-    rw [← (J.plusObj P).map_comp, ← (J.plusObj P).map_comp, ← op_comp, ← op_comp]
+    erw [← ConcreteCategory.comp_apply, ← ConcreteCategory.comp_apply]
+    ;rw [← (J.plusObj P).map_comp, ← (J.plusObj P).map_comp, ← op_comp, ← op_comp]
     exact s.condition
       { fst.hf := II.fst.from_middle_condition
         snd.hf := II.snd.from_middle_condition

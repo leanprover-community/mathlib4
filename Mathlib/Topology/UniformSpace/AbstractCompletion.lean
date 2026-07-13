@@ -299,7 +299,7 @@ if for every point `a : pkg` the filter `f.map (coe⁻¹ (𝓝 a))` obtained by 
 the preimage in `α` of `𝓝 a` tends to `𝓝 (f.extend a : β)`, then the comparison map
 between `pkg` and `pkg'` composed with the extension of `f` to `pkg`` coincides with the
 extension of `f` to `pkg'`. The situation is described in the following diagram, where the
-two diagonal arrows are the extensions of `f` to the two different completions `pkg` and `pkg'`;
+two diagonal arrows are the extensions of `f` to the two different completions `pkg` and `pkg'`
 the statement of `compare_comp_eq_compare` is the commutativity of the right triangle.
 
 ```

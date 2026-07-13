@@ -186,7 +186,7 @@ lemma signVariations_eraseLead_mul_X_sub_C (hη : 0 < η) (hP₀ : 0 < leadingCo
   have hndexP0 : natDegree (eraseLead ((X - C η) * P)) = P.natDegree := by
     apply Nat.add_right_cancel (m := 1)
     rw [← hndxP, natDegree_eraseLead_add_one hQ₁.ne]
-  --the theorem is true mainly because all the signs are the same;
+  --the theorem is true mainly because all the signs are the same
   --in fact, the coefficients are all the same except the first.
   suffices eraseLead (eraseLead ((X - C η) * P)) = eraseLead ((X - C η) * P.eraseLead) by
     suffices (coeffList (eraseLead ((X - C η) * P))).map SignType.sign =

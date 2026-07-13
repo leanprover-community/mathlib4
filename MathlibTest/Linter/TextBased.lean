@@ -371,8 +371,8 @@ Note: This linter can be disabled with `set_option linter.style.lambdaSyntax fal
 example : True := by
   have : 0 = 0 ∧ 0 = 0 ∧ 1 + 3 = 4 := by
     refine ⟨by trivial, by
-      let _f := λ n : ℕ ↦ 0;
-      have : ℕ := by
+      let _f := λ n : ℕ ↦ 0
+      ;have : ℕ := by
         · -- comment
           · have := λ k : ℕ ↦ -5
             · exact 0

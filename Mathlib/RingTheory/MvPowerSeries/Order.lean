@@ -198,8 +198,8 @@ theorem le_weightedOrder {n : ℕ∞} (h : ∀ d : σ →₀ ℕ, weight w d < n
   cases n
   · rw [top_le_iff, weightedOrder_eq_top_iff]
     ext d; exact h d (ENat.coe_lt_top _)
-  · apply nat_le_weightedOrder;
-    simpa only [ENat.some_eq_coe, Nat.cast_lt] using h
+  · apply nat_le_weightedOrder
+    ;simpa only [ENat.some_eq_coe, Nat.cast_lt] using h
 
 /-- The order of a formal power series is exactly `n` if and only if some coefficient of weight `n`
 is nonzero, and the `d`th coefficient is `0` for all `d` such that `weight w d < n`. -/

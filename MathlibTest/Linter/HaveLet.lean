@@ -122,8 +122,8 @@ Note: This linter can be disabled with `set_option linter.haveLet 0`
 -/
 #guard_msgs in
 example : True := by
-  have := Nat.succ ?_;
-  noise
+  have := Nat.succ ?_
+  ;noise
   exact .intro
   exact 0
 
@@ -154,5 +154,5 @@ Note: This linter can be disabled with `set_option linter.haveLet 0`
 #guard_msgs in
 theorem ghi : True := by
   noise
-  have : Nat := Nat.succ 1;
-  exact .intro
+  have : Nat := Nat.succ 1
+  ;exact .intro

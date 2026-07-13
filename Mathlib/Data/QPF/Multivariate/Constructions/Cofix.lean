@@ -464,8 +464,8 @@ elab_rules : tactic
           ids[0]?.forM fun s => addLocalVarInfoForBinderIdent R s
           let sR ← exprToSyntax R
           evalTactic <| ← `(tactic|
-            refine MvQPF.Cofix.bisim₂ $sR ?_ _ _ ⟨_, rfl, rfl⟩;
-            rintro $(← idss 1) $(← idss 2) ⟨$(← idss 3), $(← idss 4), $(← idss 5)⟩)
+            refine MvQPF.Cofix.bisim₂ $sR ?_ _ _ ⟨_, rfl, rfl⟩
+            ;rintro $(← idss 1) $(← idss 2) ⟨$(← idss 3), $(← idss 4), $(← idss 5)⟩)
           liftMetaTactic fun g => return [← g.clear f.fvarId!]
     for h : n in [6 : ids.size] do
       let name := ids[n]

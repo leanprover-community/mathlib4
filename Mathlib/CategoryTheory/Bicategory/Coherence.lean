@@ -117,7 +117,7 @@ typecheck.
 ```
 example {a b c : B} (p : Path a b) (f : Hom b c) :
     normalizeAux p f = p.comp (normalizeAux' f) := by
-  induction f; rfl; rfl;
+  induction f; rfl; rfl
   case comp _ _ _ _ _ ihf ihg => rw [normalizeAux, ihf, ihg]; apply comp_assoc
 ```
 -/

@@ -61,9 +61,9 @@ instance (priority := 100) instParacompactSpace [PseudoEMetricSpace α] : Paraco
   /- The refinement `D : ℕ → ι → Set α` is defined recursively. For each `n` and `i`, `D n i`
     is the union of balls `ball x (1 / 2 ^ n)` over all points `x` such that
 
-    * `ind x = i`;
-    * `x` does not belong to any `D m j`, `m < n`;
-    * `ball x (3 / 2 ^ n) ⊆ s i`;
+    * `ind x = i`
+    * `x` does not belong to any `D m j`, `m < n`
+    * `ball x (3 / 2 ^ n) ⊆ s i`
 
     We define this sequence using `Nat.strongRec`, then restate it as `Dn` and `memD`.
   -/

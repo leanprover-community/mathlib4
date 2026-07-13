@@ -250,7 +250,7 @@ namespace IsPrime
 
 open Submodule.IsPrincipal Ideal
 
--- TODO -- for a non-ID one could perhaps prove that if p < q are prime then q maximal;
+-- TODO -- for a non-ID one could perhaps prove that if p < q are prime then q maximal
 -- 0 isn't prime in a non-ID PIR but the Krull dimension is still <= 1.
 -- The below result follows from this, but we could also use the below result to
 -- prove this (quotient out by p).

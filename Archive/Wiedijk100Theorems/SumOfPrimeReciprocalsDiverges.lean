@@ -204,7 +204,7 @@ theorem Real.tendsto_sum_one_div_prime_atTop :
   let x := 2 ^ (k + 1) * 2 ^ (k + 1)
   -- We will partition `range x` into two subsets:
   -- * `M`, the subset of those `e` for which `e + 1` is a product of powers of primes smaller
-  --   than or equal to `k`;
+  --   than or equal to `k`
   set M' := M x k with hM'
   -- * `U`, the subset of those `e` for which there is a prime `p > k` that divides `e + 1`.
   let P := {p ∈ range (x + 1) | k < p ∧ p.Prime}

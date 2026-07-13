@@ -293,8 +293,8 @@ private lemma summable_cotTermUpperBound (A B : ℝ) (hB : 0 < B) {k : ℕ} (hk 
     Summable fun a : ℕ ↦ cotTermUpperBound k A B hB a := by
   simp_rw [← mul_assoc]
   apply Summable.mul_left
-  conv => enter [1, n]; rw [show (-1 - k : ℤ) = -(1 + k :) by lia, zpow_neg, zpow_natCast];
-          enter [1, 1, 1]; norm_cast
+  conv => enter [1, n]; rw [show (-1 - k : ℤ) = -(1 + k :) by lia, zpow_neg, zpow_natCast]
+          ;enter [1, 1, 1]; norm_cast
   rw [summable_norm_iff, summable_nat_add_iff (f := fun n : ℕ ↦ ((n : ℝ) ^ (1 + k))⁻¹)]
   exact summable_nat_pow_inv.mpr <| by lia
 

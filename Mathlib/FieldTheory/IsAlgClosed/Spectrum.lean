@@ -103,7 +103,7 @@ theorem map_polynomial_aeval_of_degree_pos [IsAlgClosed 𝕜] (a : A) (p : 𝕜[
     rwa [degree_sub_eq_right_of_degree_lt (lt_of_le_of_lt degree_C_le hdeg)]
   have lead_ne := leadingCoeff_ne_zero.mpr h_ne
   have lead_unit := (Units.map ↑ₐ.toMonoidHom (Units.mk0 _ lead_ne)).isUnit
-  /- leading coefficient is a unit so product of linear factors is not a unit;
+  /- leading coefficient is a unit so product of linear factors is not a unit
     apply `exists_mem_of_not_is_unit_aeval_prod`. -/
   have p_a_eq : aeval a (C k - p) = ↑ₐ k - aeval a p := by
     simp only [aeval_C, map_sub]

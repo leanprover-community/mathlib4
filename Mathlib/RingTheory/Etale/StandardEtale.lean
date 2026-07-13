@@ -398,8 +398,8 @@ lemma IsStandardEtale.of_isLocalizationAway [IsStandardEtale R S]
     IsStandardEtale R Sₛ := by
   have P : StandardEtalePresentation R S := IsStandardEtale.nonempty_standardEtalePresentation.some
   obtain ⟨p, n, hp⟩ := P.exists_mul_aeval_x_g_pow_eq_aeval_x s
-  let P' : StandardEtalePair R := ⟨P.f, P.monic_f, p * P.g, have ⟨p₁, p₂, m, e⟩ := P.cond;
-    ⟨p₁ * p ^ m, p₂ * p ^ m, m, by linear_combination e * p ^ m⟩⟩
+  let P' : StandardEtalePair R := ⟨P.f, P.monic_f, p * P.g, have ⟨p₁, p₂, m, e⟩ := P.cond
+    ;⟨p₁ * p ^ m, p₂ * p ^ m, m, by linear_combination e * p ^ m⟩⟩
   let S' := Localization.Away (AdjoinRoot.mk P.f P.g)
   let e : S ≃ₐ[R] S' := P.equivRing.trans P.P.equivAwayAdjoinRoot
   have := IsLocalization.Away.mul S' (Localization.Away (algebraMap _ S' (AdjoinRoot.mk P.f p)))

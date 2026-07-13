@@ -181,12 +181,12 @@ The corresponding Coxeter-Dynkin diagram is:
 ```
 -/
 def E₆ : CoxeterMatrix (Fin 6) where
-  M := !![1, 2, 3, 2, 2, 2;
-          2, 1, 2, 3, 2, 2;
-          3, 2, 1, 3, 2, 2;
-          2, 3, 3, 1, 3, 2;
-          2, 2, 2, 3, 1, 3;
-          2, 2, 2, 2, 3, 1]
+  M := !![1, 2, 3, 2, 2, 2
+          ;2, 1, 2, 3, 2, 2
+          ;3, 2, 1, 3, 2, 2
+          ;2, 3, 3, 1, 3, 2
+          ;2, 2, 2, 3, 1, 3
+          ;2, 2, 2, 2, 3, 1]
 
 /-- The Coxeter matrix of type E₇.
 
@@ -198,13 +198,13 @@ The corresponding Coxeter-Dynkin diagram is:
 ```
 -/
 def E₇ : CoxeterMatrix (Fin 7) where
-  M := !![1, 2, 3, 2, 2, 2, 2;
-          2, 1, 2, 3, 2, 2, 2;
-          3, 2, 1, 3, 2, 2, 2;
-          2, 3, 3, 1, 3, 2, 2;
-          2, 2, 2, 3, 1, 3, 2;
-          2, 2, 2, 2, 3, 1, 3;
-          2, 2, 2, 2, 2, 3, 1]
+  M := !![1, 2, 3, 2, 2, 2, 2
+          ;2, 1, 2, 3, 2, 2, 2
+          ;3, 2, 1, 3, 2, 2, 2
+          ;2, 3, 3, 1, 3, 2, 2
+          ;2, 2, 2, 3, 1, 3, 2
+          ;2, 2, 2, 2, 3, 1, 3
+          ;2, 2, 2, 2, 2, 3, 1]
 
 /-- The Coxeter matrix of type E₈.
 
@@ -216,14 +216,14 @@ The corresponding Coxeter-Dynkin diagram is:
 ```
 -/
 def E₈ : CoxeterMatrix (Fin 8) where
-  M := !![1, 2, 3, 2, 2, 2, 2, 2;
-          2, 1, 2, 3, 2, 2, 2, 2;
-          3, 2, 1, 3, 2, 2, 2, 2;
-          2, 3, 3, 1, 3, 2, 2, 2;
-          2, 2, 2, 3, 1, 3, 2, 2;
-          2, 2, 2, 2, 3, 1, 3, 2;
-          2, 2, 2, 2, 2, 3, 1, 3;
-          2, 2, 2, 2, 2, 2, 3, 1]
+  M := !![1, 2, 3, 2, 2, 2, 2, 2
+          ;2, 1, 2, 3, 2, 2, 2, 2
+          ;3, 2, 1, 3, 2, 2, 2, 2
+          ;2, 3, 3, 1, 3, 2, 2, 2
+          ;2, 2, 2, 3, 1, 3, 2, 2
+          ;2, 2, 2, 2, 3, 1, 3, 2
+          ;2, 2, 2, 2, 2, 3, 1, 3
+          ;2, 2, 2, 2, 2, 2, 3, 1]
 
 /-- The Coxeter matrix of type F₄.
 
@@ -234,10 +234,10 @@ The corresponding Coxeter-Dynkin diagram is:
 ```
 -/
 def F₄ : CoxeterMatrix (Fin 4) where
-  M := !![1, 3, 2, 2;
-          3, 1, 4, 2;
-          2, 4, 1, 3;
-          2, 2, 3, 1]
+  M := !![1, 3, 2, 2
+          ;3, 1, 4, 2
+          ;2, 4, 1, 3
+          ;2, 2, 3, 1]
 
 /-- The Coxeter matrix of type G₂.
 
@@ -248,8 +248,8 @@ The corresponding Coxeter-Dynkin diagram is:
 ```
 -/
 def G₂ : CoxeterMatrix (Fin 2) where
-  M := !![1, 6;
-          6, 1]
+  M := !![1, 6
+          ;6, 1]
 
 /-- The Coxeter matrix of type H₃.
 
@@ -260,9 +260,9 @@ The corresponding Coxeter-Dynkin diagram is:
 ```
 -/
 def H₃ : CoxeterMatrix (Fin 3) where
-  M := !![1, 3, 2;
-          3, 1, 5;
-          2, 5, 1]
+  M := !![1, 3, 2
+          ;3, 1, 5
+          ;2, 5, 1]
 
 /-- The Coxeter matrix of type H₄.
 
@@ -273,9 +273,9 @@ The corresponding Coxeter-Dynkin diagram is:
 ```
 -/
 def H₄ : CoxeterMatrix (Fin 4) where
-  M := !![1, 3, 2, 2;
-          3, 1, 3, 2;
-          2, 3, 1, 5;
-          2, 2, 5, 1]
+  M := !![1, 3, 2, 2
+          ;3, 1, 3, 2
+          ;2, 3, 1, 5
+          ;2, 2, 5, 1]
 
 end CoxeterMatrix

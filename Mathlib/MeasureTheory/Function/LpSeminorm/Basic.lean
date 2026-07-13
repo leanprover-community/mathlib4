@@ -772,7 +772,7 @@ variable {ε : Type*} [ENorm ε] in
 theorem ae_le_eLpNormEssSup {f : α → ε} : ∀ᵐ y ∂μ, ‖f y‖ₑ ≤ eLpNormEssSup f μ :=
   ae_le_essSup
 
--- NB. Changing this lemma to use ‖‖ₑ makes it false (only => still holds);
+-- NB. Changing this lemma to use ‖‖ₑ makes it false (only => still holds)
 -- unlike a nnnorm, the enorm can be ∞.
 lemma eLpNormEssSup_lt_top_iff_isBoundedUnder :
     eLpNormEssSup f μ < ⊤ ↔ IsBoundedUnder (· ≤ ·) (ae μ) fun x ↦ ‖f x‖₊ where

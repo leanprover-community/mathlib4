@@ -204,8 +204,8 @@ lemma map_ofComp_mk [Nontrivial S] :
   dsimp only [T, Generators.toExtension_Ring, Generators.toExtension_commRing] at this
   rw [pres, presLeft, presRight, Presentation.relation_comp_localizationAway_inl]
   · exact Generators.toAlgHom_ofComp_localizationAway _ _
-  · rw [Presentation.naive, Generators.naive_σ];
-    simp
+  · rw [Presentation.naive, Generators.naive_σ]
+    ;simp
   · rw [Presentation.naive, Generators.naive_σ]
     simp
 

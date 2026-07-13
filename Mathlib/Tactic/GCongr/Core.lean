@@ -761,7 +761,7 @@ partial def _root_.Lean.MVarId.gcongr
   if let some mdataLhs := mdataLhs? then
     let mdataExpr := if mdataLhs then lhs else rhs
     -- if the annotation is at the head of the annotated expression,
-    -- then try to resolve the goal by the provided tactic `mainGoalDischarger`;
+    -- then try to resolve the goal by the provided tactic `mainGoalDischarger`
     -- if this fails, stop and report the existing goal.
     if hasHoleAnnotation mdataExpr then
       if ← dischargeMain g then

@@ -76,7 +76,7 @@ private partial def evalPrimeFactorsListAux
     MetaM ((l : Q(List ℕ)) × Q(FactorsHelper $en $ea $l)) := do
   /-
   In this function we will use the convention that all `e` prefixed variables (proofs or otherwise)
-  contain `Expr`s. The variables starting with `h` are proofs about the _meta_ code;
+  contain `Expr`s. The variables starting with `h` are proofs about the _meta_ code
   these will not actually be used in the construction of the proof, and are simply used to help the
   reader reason about why the proof construction is correct.
   -/

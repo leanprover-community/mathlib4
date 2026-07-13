@@ -543,8 +543,8 @@ topology to make sure it is defeq to an already existing topology. -/
     [tF : TopologicalSpace F] [IsTopologicalAddGroup F] [ContinuousConstSMul 𝕜 F]
     (h : ContinuousAt (fun (v : F) ↦ cd.inner v v) 0)
     (h' : IsVonNBounded 𝕜 {v : F | re (cd.inner v v) < 1}) :
-    letI : NormedAddCommGroup F := cd.toNormedAddCommGroupOfTopology h h';
-    NormedSpace 𝕜 F :=
+    letI : NormedAddCommGroup F := cd.toNormedAddCommGroupOfTopology h h'
+    ;NormedSpace 𝕜 F :=
   letI : NormedAddCommGroup F := cd.toNormedAddCommGroupOfTopology h h'
   { norm_smul_le r x := by
       rw [norm_eq_sqrt_re_inner, inner_smul_left, inner_smul_right, ← mul_assoc]
@@ -586,8 +586,8 @@ def InnerProductSpace.ofCoreOfTopology [AddCommGroup F] [hF : Module 𝕜 F] [To
     (cd : InnerProductSpace.Core 𝕜 F)
     (h : ContinuousAt (fun (v : F) ↦ cd.inner v v) 0)
     (h' : IsVonNBounded 𝕜 {v : F | re (cd.inner v v) < 1}) :
-    letI : NormedAddCommGroup F := cd.toNormedAddCommGroupOfTopology h h';
-    InnerProductSpace 𝕜 F :=
+    letI : NormedAddCommGroup F := cd.toNormedAddCommGroupOfTopology h h'
+    ;InnerProductSpace 𝕜 F :=
   letI : NormedAddCommGroup F := cd.toNormedAddCommGroupOfTopology h h'
   letI : NormedSpace 𝕜 F := cd.toNormedSpaceOfTopology h h'
   { cd with

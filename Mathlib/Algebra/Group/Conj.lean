@@ -114,7 +114,7 @@ end Group
 
 namespace IsConj
 
-/- This small quotient API is largely copied from the API of `Associates`;
+/- This small quotient API is largely copied from the API of `Associates`
 where possible, try to keep them in sync -/
 /-- The setoid of the relation `IsConj` iff there is a unit `u` such that `u * x = y * u` -/
 @[to_additive (attr := instance_reducible) /-- The setoid of the relation `IsAddConj` iff there

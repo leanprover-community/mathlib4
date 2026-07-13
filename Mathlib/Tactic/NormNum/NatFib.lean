@@ -47,11 +47,11 @@ theorem isFibAux_two_mul_add_one {n a b n' a' b' : ℕ} (H : IsFibAux n a b)
 partial def proveNatFibAux (en' : Q(ℕ)) : (ea' eb' : Q(ℕ)) × Q(IsFibAux $en' $ea' $eb') :=
   match en'.natLit! with
   | 0 =>
-    have : $en' =Q nat_lit 0 := ⟨⟩;
-    ⟨q(nat_lit 0), q(nat_lit 1), q(isFibAux_zero)⟩
+    have : $en' =Q nat_lit 0 := ⟨⟩
+    ;⟨q(nat_lit 0), q(nat_lit 1), q(isFibAux_zero)⟩
   | 1 =>
-    have : $en' =Q nat_lit 1 := ⟨⟩;
-    ⟨q(nat_lit 1), q(nat_lit 1), q(isFibAux_one)⟩
+    have : $en' =Q nat_lit 1 := ⟨⟩
+    ;⟨q(nat_lit 1), q(nat_lit 1), q(isFibAux_one)⟩
   | n' =>
     have en : Q(ℕ) := mkRawNatLit <| n' / 2
     let ⟨ea, eb, H⟩ := proveNatFibAux en

@@ -293,8 +293,8 @@ elab_rules : tactic
       MonoidalCategory.whiskerLeft_comp, MonoidalCategory.whiskerLeft_id,
       MonoidalCategory.comp_whiskerRight, MonoidalCategory.id_whiskerRight,
       MonoidalCategory.whisker_assoc,
-      MonoidalCategory.id_tensorHom, MonoidalCategory.tensorHom_id];
-    -- I'm not sure if `tensorHom` should be expanded.
+      MonoidalCategory.id_tensorHom, MonoidalCategory.tensorHom_id]
+    ;-- I'm not sure if `tensorHom` should be expanded.
     try simp only [MonoidalCategory.tensorHom_def]
     ))
 
@@ -323,9 +323,9 @@ elab_rules : tactic
     They are given in `Mathlib.Tactic.CategoryTheory.Monoidal.Basic` and \
     `Mathlib.Tactic.CategoryTheory.Bicategory.Basic.lean` respectively."
   evalTactic (← `(tactic|
-    (simp -failIfUnchanged only [bicategoricalComp, monoidalComp]);
-    whisker_simps -failIfUnchanged;
-    monoidal_simps -failIfUnchanged))
+    (simp -failIfUnchanged only [bicategoricalComp, monoidalComp])
+    ;whisker_simps -failIfUnchanged
+    ;monoidal_simps -failIfUnchanged))
   coherenceLoop
 
 end Coherence

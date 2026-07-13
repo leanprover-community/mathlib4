@@ -91,6 +91,6 @@ end Int
 
 end
 
---  this example tests that the `Lattice ℤ` instance is computable;
+--  this example tests that the `Lattice ℤ` instance is computable
 -- i.e., that it is not found via the noncomputable instance in this file.
 example : Lattice ℤ := inferInstance

@@ -463,15 +463,15 @@ theorem toFun_pos {t : Monomial} {basis : Basis}
   positivity
 
 theorem zeros_append_toFun (coef : ℝ) {exps : UnitMonomial} {left right : Basis} :
-    let t : Monomial := ⟨coef, List.replicate left.length 0 ++ exps⟩;
-    t.toFun (left ++ right) = (mk coef exps).toFun right := by
+    let t : Monomial := ⟨coef, List.replicate left.length 0 ++ exps⟩
+    ;t.toFun (left ++ right) = (mk coef exps).toFun right := by
   exact congrArg (coef • ·) UnitMonomial.zeros_append_toFun
 
 /-- `t.toFun` tends to `𝓝 0` when `t.coef = 0`. -/
 theorem tendsto_zero_of_coef_zero {coef : ℝ} {exps : UnitMonomial} (basis : Basis)
     (h_coef : coef = 0) :
-    let t : Monomial := ⟨coef, exps⟩;
-    Tendsto (t.toFun basis) atTop (𝓝 0) := by
+    let t : Monomial := ⟨coef, exps⟩
+    ;Tendsto (t.toFun basis) atTop (𝓝 0) := by
   intro t
   rw [zero_coef_toFun _ (by simpa [t])]
   exact tendsto_const_nhds

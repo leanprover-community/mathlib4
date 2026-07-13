@@ -97,7 +97,7 @@ def objD : ∀ n : ℕ, (objX X (n + 1) : C) ⟶ (objX X n : C)
 
 set_option backward.isDefEq.respectTransparency false in
 theorem d_squared (n : ℕ) : objD X (n + 1) ≫ objD X n = 0 := by
-  -- It's a pity we need to do a case split here;
+  -- It's a pity we need to do a case split here
     -- after the first rw the proofs are almost identical
   rcases n with _ | n <;> dsimp [objD]
   · rw [Subobject.factorThru_arrow_assoc, Category.assoc, ← Fin.castSucc_zero,

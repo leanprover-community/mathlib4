@@ -63,7 +63,7 @@ structure PowerBasis (R S : Type*) [CommRing R] [Ring S] [Algebra R S] where
   basis : Basis (Fin dim) R S
   basis_eq_pow : ∀ (i), basis i = gen ^ (i : ℕ)
 
--- this is usually not needed because of `basis_eq_pow` but can be needed in some cases;
+-- this is usually not needed because of `basis_eq_pow` but can be needed in some cases
 -- in such circumstances, add it manually using `@[simps dim gen basis]`.
 initialize_simps_projections PowerBasis (-basis)
 

@@ -54,7 +54,7 @@ noncomputable def levyProkhorovEDist (μ ν : Measure Ω) : ℝ≥0∞ :=
   sInf {ε | ∀ B, MeasurableSet B →
             μ B ≤ ν (thickening ε.toReal B) + ε ∧ ν B ≤ μ (thickening ε.toReal B) + ε}
 
-/- This result is not placed in earlier more generic files, since it is rather specialized;
+/- This result is not placed in earlier more generic files, since it is rather specialized
 it mixes measure and metric in a very particular way. -/
 lemma meas_le_of_le_of_forall_le_meas_thickening_add {ε₁ ε₂ : ℝ≥0∞} (μ ν : Measure Ω)
     (h_le : ε₁ ≤ ε₂) {B : Set Ω} (hε₁ : μ B ≤ ν (thickening ε₁.toReal B) + ε₁) :

@@ -190,7 +190,7 @@ theorem isClosed_setOf_sublevelLeft_subset
   set J := setOf_sublevelLeft_subset X Y f b b' y y'
   -- Write `J` for `setOf_sublevelLeft_subset X Y f b b' y y'`.
   rw [isClosed_iff_clusterPt]
-  /- Let `z in segment ℝ y y'` be a cluster point of `J`;
+  /- Let `z in segment ℝ y y'` be a cluster point of `J`
      we have to show that `z ∈ J`, i.e `sublevelLeft t z ⊆ sublevelLeft t' y1`.
      Let `x ∈ sublevelLeft t z` and let us prove that `x ∈ sublevelLeft X f b' y`. -/
   intro z hz x hx

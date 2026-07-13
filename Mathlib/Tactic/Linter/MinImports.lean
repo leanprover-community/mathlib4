@@ -116,7 +116,7 @@ def minImportsLinter : Linter where run := withSetOptionIn fun stx ↦ do
               also sets the `Elab.async` option to `false`."
       return
     let env ← getEnv
-    -- the first time `minImportsRef` is read, it has `transClosure = none`;
+    -- the first time `minImportsRef` is read, it has `transClosure = none`
     -- in this case, we set it to be the `transClosure` for the file.
     if (← minImportsRef.get).transClosure.isNone then
       minImportsRef.modify ({· with transClosure := env.importGraph.transitiveClosure})

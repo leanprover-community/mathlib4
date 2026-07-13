@@ -54,8 +54,8 @@ Options:
                      instead of the default, the checked-out HEAD. Use the SHA
                      reported by `cache query`. Wins over the
                      MATHLIB_CACHE_REPO_SCOPE env var. Reading another commit's
-                     scope means trusting the artifacts produced at that commit;
-                     `cache get` prints a security notice when the scope differs
+                     scope means trusting the artifacts produced at that commit
+                     ;`cache get` prints a security notice when the scope differs
                      from HEAD.
   --unsafe           (get only) Instead of pinning one --scope, automatically walk
                      this branch's history and try the most recent cached fork
@@ -96,7 +96,7 @@ Valid arguments are:
 * MATHLIB_CACHE_GET_URL   Download from this single URL, bypassing the containers
 * MATHLIB_CACHE_PUT_URL   Upload to this single URL, bypassing the containers
 * MATHLIB_CACHE_FROM      Comma-separated container list for reads, same shape as
-                          --cache-from. Used by CI to widen reads per job;
+                          --cache-from. Used by CI to widen reads per job
                           --cache-from takes precedence when both are set.
 
 See Cache/README.md for more details.
@@ -158,7 +158,7 @@ def main (args : List String) : IO Unit := do
     Process.exit 1
 
   -- Apply `--scope=` to the process-wide override read by `getRepoScope`.
-  -- Accepts any git ref `git rev-parse` resolves (HEAD, branch, tag, SHA);
+  -- Accepts any git ref `git rev-parse` resolves (HEAD, branch, tag, SHA)
   -- falls through to the literal value if `git rev-parse` is unavailable
   -- (e.g. invoked outside a git checkout with a bare SHA).
   if let some s := scopeStr? then

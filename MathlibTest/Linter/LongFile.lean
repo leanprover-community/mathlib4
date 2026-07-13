@@ -6,7 +6,7 @@ import Mathlib.Tactic.Linter.Style
 Things to note:
 * `set_option linter.style.longFile 0` disables the linter, allowing us to set a value smaller than
   `linter.style.longFileDefValue` without triggering the warning for setting a small value
-  for the option;
+  for the option
 * `guard_msgs ... in #exit` and `set_option ... in #exit` allow processing of the file *beyond*
   `#exit`, since they wrap `#exit` inside an anonymous section,
   making Lean active again *after* that anonymous section.

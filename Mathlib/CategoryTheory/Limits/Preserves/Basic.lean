@@ -156,8 +156,8 @@ instance id_preservesLimitsOfSize : PreservesLimitsOfSize.{w', w} (𝟭 C) where
         ⟨fun {c} h =>
           ⟨fun s => h.lift ⟨s.pt, fun j => s.π.app j, fun _ _ f => s.π.naturality f⟩, by
             cases K; rcases c with ⟨_, _, _⟩; intro s j; cases s; exact h.fac _ j, by
-            cases K; rcases c with ⟨_, _, _⟩; intro s m w; rcases s with ⟨_, _, _⟩;
-              exact h.uniq _ m w⟩⟩ }
+            cases K; rcases c with ⟨_, _, _⟩; intro s m w; rcases s with ⟨_, _, _⟩
+              ;exact h.uniq _ m w⟩⟩ }
 
 instance id_preservesColimitsOfSize : PreservesColimitsOfSize.{w', w} (𝟭 C) where
   preservesColimitsOfShape {J} 𝒥 :=
@@ -166,8 +166,8 @@ instance id_preservesColimitsOfSize : PreservesColimitsOfSize.{w', w} (𝟭 C) w
         ⟨fun {c} h =>
           ⟨fun s => h.desc ⟨s.pt, fun j => s.ι.app j, fun _ _ f => s.ι.naturality f⟩, by
             cases K; rcases c with ⟨_, _, _⟩; intro s j; cases s; exact h.fac _ j, by
-            cases K; rcases c with ⟨_, _, _⟩; intro s m w; rcases s with ⟨_, _, _⟩;
-              exact h.uniq _ m w⟩⟩ }
+            cases K; rcases c with ⟨_, _, _⟩; intro s m w; rcases s with ⟨_, _, _⟩
+              ;exact h.uniq _ m w⟩⟩ }
 
 instance [HasLimit K] {F : C ⥤ D} [PreservesLimit K F] : HasLimit (K ⋙ F) where
   exists_limit := ⟨_, isLimitOfPreserves F (limit.isLimit K)⟩
@@ -512,8 +512,8 @@ instance id_reflectsLimits : ReflectsLimitsOfSize.{w, w'} (𝟭 C) where
         ⟨fun {c} h =>
           ⟨fun s => h.lift ⟨s.pt, fun j => s.π.app j, fun _ _ f => s.π.naturality f⟩, by
             cases K; rcases c with ⟨_, _, _⟩; intro s j; cases s; exact h.fac _ j, by
-            cases K; rcases c with ⟨_, _, _⟩; intro s m w; rcases s with ⟨_, _, _⟩;
-              exact h.uniq _ m w⟩⟩ }
+            cases K; rcases c with ⟨_, _, _⟩; intro s m w; rcases s with ⟨_, _, _⟩
+              ;exact h.uniq _ m w⟩⟩ }
 
 instance id_reflectsColimits : ReflectsColimitsOfSize.{w, w'} (𝟭 C) where
   reflectsColimitsOfShape {J} 𝒥 :=
@@ -521,8 +521,8 @@ instance id_reflectsColimits : ReflectsColimitsOfSize.{w, w'} (𝟭 C) where
         ⟨fun {c} h =>
           ⟨fun s => h.desc ⟨s.pt, fun j => s.ι.app j, fun _ _ f => s.ι.naturality f⟩, by
             cases K; rcases c with ⟨_, _, _⟩; intro s j; cases s; exact h.fac _ j, by
-            cases K; rcases c with ⟨_, _, _⟩; intro s m w; rcases s with ⟨_, _, _⟩;
-              exact h.uniq _ m w⟩⟩ }
+            cases K; rcases c with ⟨_, _, _⟩; intro s m w; rcases s with ⟨_, _, _⟩
+              ;exact h.uniq _ m w⟩⟩ }
 
 section
 
