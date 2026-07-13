@@ -317,7 +317,7 @@ theorem maximal_linearIndependent_eq_infinite_basis {ι : Type w} (b : Basis ι 
     {κ : Type w} (v : κ → M) (i : LinearIndependent R v) (m : i.Maximal) : #κ = #ι := by
   apply le_antisymm
   · exact linearIndependent_le_basis b v i
-  · haveI : Nontrivial R := nontrivial_of_invariantBasisNumber R
+  ·
     exact infinite_basis_le_maximal_linearIndependent b v i m
 
 theorem Module.Basis.mk_eq_rank'' {ι : Type v} (v : Basis ι R M) : #ι = Module.rank R M := by
