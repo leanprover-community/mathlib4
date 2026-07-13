@@ -52,22 +52,24 @@ variable {n : Type u} [DecidableEq n] [Fintype n] {R : Type v}
 
 variable (n) in
 /-- Scalar matrix as an element of `GL n R`. -/
-@[simps!]
 def scalar [Semiring R] : Rˣ →* GL n R :=
   Units.map (Matrix.scalar n).toMonoidHom
-
-#adaptation_note /-- As of nightly-2026-04-29, the simpNF linter is failing here.
-Assistance investigating this would be appreciated. -/
-attribute [nolint simpNF] _root_.Matrix.GeneralLinearGroup.val_inv_scalar_apply
 
 section CoeFnInstance
 
 instance instCoeFun [Semiring R] : CoeFun (GL n R) fun _ => n → n → R where
   coe A := (A : Matrix n n R)
 
+@[simp]
+lemma coe_scalar [Semiring R] (u : Rˣ) : ↑(scalar n u) = Matrix.scalar n u.1 := rfl
+
 end CoeFnInstance
 
 variable [CommRing R]
+
+lemma scalar_commute (u : Rˣ) (A : GL n R) : scalar n u * A = A * scalar n u := by
+  ext : 1
+  rw [Units.val_mul, Units.val_mul, coe_scalar, Matrix.scalar_comm _ (Commute.all _)]
 
 /-- The determinant of a unit matrix is itself a unit. -/
 @[simps]
@@ -219,6 +221,11 @@ lemma coe_map_mul_map_inv (g : GL n R) : g.val.map f * g.val⁻¹.map f = 1 := b
 lemma coe_map_inv_mul_map (g : GL n R) : g.val⁻¹.map f * g.val.map f = 1 := by
   rw [← Matrix.map_mul]
   simp only [isUnits_det_units, nonsing_inv_mul, map_zero, map_one, Matrix.map_one]
+
+lemma map_scalar (u : Rˣ) : map f (scalar n u) = scalar n (Units.map f u) := by
+  ext
+  simp [Matrix.diagonal_apply]
+  split <;> simp
 
 section kronecker
 variable {R m : Type*} [CommSemiring R] [Fintype m] [DecidableEq m]

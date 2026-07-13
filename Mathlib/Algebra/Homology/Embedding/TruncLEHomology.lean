@@ -84,6 +84,11 @@ lemma acyclic_truncLE_iff_isSupportedOutside :
 
 variable {K L}
 
+lemma Acyclic.truncLE (hK : K.Acyclic) (e : c.Embedding c') [e.IsTruncLE] :
+    (K.truncLE e).Acyclic := by
+  rw [acyclic_truncLE_iff_isSupportedOutside]
+  exact ⟨fun _ ↦ hK _⟩
+
 lemma quasiIso_truncLEMap_iff :
     QuasiIso (truncLEMap φ e) ↔ ∀ (i : ι) (i' : ι') (_ : e.f i = i'), QuasiIsoAt φ i' := by
   rw [← quasiIso_opFunctor_map_iff]

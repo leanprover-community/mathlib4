@@ -11,7 +11,7 @@ public import Mathlib.LinearAlgebra.Projectivization.Basic
 public import Mathlib.LinearAlgebra.SpecialLinearGroup
 public import Mathlib.LinearAlgebra.Transvection.Basic
 public import Mathlib.LinearAlgebra.Matrix.IsDiag
-public import Mathlib.LinearAlgebra.Matrix.ProjectiveSpecialLinearGroup
+public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Projective
 public import Mathlib.LinearAlgebra.Center
 
 /-!
@@ -146,7 +146,7 @@ instance specialLinearGroup_is_two_pretransitive :
       suffices (b.repr D.rep) ⟨D.rep, hD_mem⟩ = 1 by
         rw [this, Module.Basis.extend_apply_self, Units.smul_def]
         module
-      nth_rewrite 1 [show D.rep = (⟨D.rep, hD_mem⟩ : s) from by rfl]
+      nth_rewrite 1 [show D.rep = (⟨D.rep, hD_mem⟩ : s) by rfl]
       rw [← Module.Basis.extend_apply_self, Module.Basis.repr_self]
       simp
     · rw [smul_mk, mk_eq_mk_iff, LinearEquiv.smul_def]
@@ -156,7 +156,7 @@ instance specialLinearGroup_is_two_pretransitive :
       suffices (b.repr D'.rep) ⟨D.rep, hD_mem⟩ = 0 by
         rw [Module.Basis.extend_apply_self]
         simp [this]
-      nth_rewrite 1 [show D'.rep = (⟨D'.rep, hD'_mem⟩ : s) from by rfl]
+      nth_rewrite 1 [show D'.rep = (⟨D'.rep, hD'_mem⟩ : s) by rfl]
       rw [← Module.Basis.extend_apply_self, Module.Basis.repr_self]
       apply Finsupp.single_eq_of_ne
       simp only [ne_eq, ← Subtype.coe_inj]
@@ -239,6 +239,17 @@ instance : IsPreprimitive (Matrix.ProjectiveSpecialLinearGroup ι K) (ℙ K (ι 
   @MulAction.IsPreprimitive.of_surjective _ _ _ _ _ _ _ _ (QuotientGroup.mk' _)
     {toFun := id, map_smul' := by intros; simp; rfl} (prePrimitive_SL (ι := ι) (K := K))
     Function.surjective_id
+
+open MatrixGroups Matrix.ProjGenLinGroup
+
+instance : MulAction PGL(ι, K) (ℙ K (ι → K)) :=
+  mulActionOfGL fun u ↦ ind fun v hv ↦ by
+    simp only [smul_mk, mk_eq_mk_iff]
+    exact ⟨u, by simp [Units.smul_def]⟩
+
+@[simp]
+lemma PGL.mk_smul_mk (g : GL ι K) {v : ι → K} (hv : v ≠ 0) :
+    (.mk g : PGL(ι, K)) • mk K v hv = mk K (g • v) (smul_ne_zero_iff_ne g|>.2 hv) := rfl
 
 end Field
 
