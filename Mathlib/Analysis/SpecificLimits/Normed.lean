@@ -530,8 +530,8 @@ theorem summable_pow_mul_geometric_of_norm_lt_one (k : ℕ) {r : R} (hr : ‖r�
 /-- If `‖r‖ < 1`, then `∑' n : ℕ, n ^ k * r ^ n` is given by the finite sum
 `∑ j ∈ range (k + 1), S(k, j) * j ! * r ^ j * ((1 - r)⁻¹ʳ) ^ (j + 1)`,
 where `S(k, j)` denotes the Stirling numbers of the second kind.
-To-do: add here the note about genereal ring vs. field with division.
--/
+`HasSum` version in a general ring with summable geometric series. For a version in a field,
+using division instead of `Ring.inverse`, see `hasSum_pow_mul_geometric_of_norm_lt_one`. -/
 theorem hasSum_pow_mul_geometric_of_norm_lt_one' (k : ℕ) {r : R} (h : ‖r‖ < 1) :
     HasSum (fun n : ℕ ↦ (n : R) ^ k * r ^ n)
       (∑ j ∈ Finset.range (k + 1),
