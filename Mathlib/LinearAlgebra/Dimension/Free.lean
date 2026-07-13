@@ -284,7 +284,7 @@ lemma finrank_bot_le_finrank_of_isScalarTower_of_free (S T : Type*) [Semiring S]
     · rwa [← not_lt, Module.rank_lt_aleph0_iff]
 
 theorem nonempty_linearEquiv_iff_rank_eq_one :
-    Nonempty (R ≃ₗ[R] M) ↔ Module.rank R M = 1 := by
+    Nonempty (R ≃ₗ[R] M) ↔ rank R M = 1 := by
   simp [nonempty_linearEquiv_iff_lift_rank_eq, eq_comm]
 
 theorem nonempty_linearEquiv_iff_finrank_eq_one :
@@ -295,7 +295,7 @@ alias ⟨_, nonempty_linearEquiv_of_finrank_eq_one⟩ := nonempty_linearEquiv_if
 
 theorem nonempty_algEquiv_iff_finrank_eq_one
     {R S : Type*} [CommSemiring R] [StrongRankCondition R] [Semiring S] [Algebra R S]
-    [Module.Free R S] : Nonempty (R ≃ₐ[R] S) ↔ finrank R S = 1 := by
+    [Free R S] : Nonempty (R ≃ₐ[R] S) ↔ finrank R S = 1 := by
   rw [← nonempty_linearEquiv_iff_finrank_eq_one]
   exact ⟨fun ⟨e⟩ ↦ ⟨e⟩, fun ⟨e⟩ ↦
     ⟨.ofBijective (Algebra.ofId R S) (bijective_algebraMap_of_linearEquiv e)⟩⟩
