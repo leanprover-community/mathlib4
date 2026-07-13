@@ -181,6 +181,17 @@ theorem closure_subset_of_mem_nhds_one_of_inv_mul_right_subset {s s' t : Set G}
 
 end SeparatelyContinuousMul
 
+section ContinuousMul
+
+variable {G : Type*} [TopologicalSpace G] [Mul G] [ContinuousMul G]
+
+@[to_additive]
+theorem subset_closure_mul
+    {s t : Set G} : closure s * closure t ⊆ closure (s * t) := by
+  simpa [closure_prod_eq] using image_closure_subset_closure_image (s := s ×ˢ t) continuous_mul
+
+end ContinuousMul
+
 section IsTopologicalGroup
 
 variable [TopologicalSpace G] [Group G] [IsTopologicalGroup G] {s t : Set G}
@@ -299,6 +310,23 @@ theorem closure_subset_mul_self_of_mem_nhds_one {U : Set G} (hU : U ∈ 𝓝 1) 
     ContinuousAt.preimage_mem_nhds (by fun_prop) (by simpa)
   obtain ⟨a, ha_mem, ha_s⟩ := hx _ hkey
   exact Set.mem_mul.mpr ⟨x / a, ha_mem, a, ha_s, div_mul_cancel x a⟩
+
+@[to_additive]
+theorem Filter.HasAntitoneBasis.exists_subbasis_mul_closure_subset {v : ℕ → Set G}
+    (hv : (𝓝 (1 : G)).HasAntitoneBasis v) :
+    ∃ φ : ℕ → ℕ, (𝓝 (1 : G)).HasAntitoneBasis (v ∘ φ) ∧
+      ∀ n, (v ∘ φ) (n + 1) * (v ∘ φ) (n + 1) ⊆ (v ∘ φ) n ∧
+        closure ((v ∘ φ) (n + 1)) ⊆ (v ∘ φ) n := by
+  obtain ⟨φ, -, hφ_mul, hφ_basis⟩ := hv.subbasis_with_rel
+    (r := fun i j ↦ v j * v j ⊆ v i) fun m ↦ by
+      obtain ⟨W, hW_open, hW_one, hW_mul⟩ :=
+        exists_open_nhds_one_mul_subset (hv.mem_of_mem (i := m) trivial)
+      obtain ⟨N, hN⟩ := hv.mem_iff.mp (hW_open.mem_nhds hW_one)
+      filter_upwards [Filter.eventually_ge_atTop N] with M hM
+      exact (mul_subset_mul ((hv.antitone hM).trans hN) ((hv.antitone hM).trans hN)).trans hW_mul
+  exact ⟨φ, hφ_basis, fun n ↦ ⟨hφ_mul n.lt_succ_self,
+    (closure_subset_mul_self_of_mem_nhds_one (hφ_basis.mem_of_mem (i := n + 1) trivial)).trans
+      (hφ_mul n.lt_succ_self)⟩⟩
 
 end IsTopologicalGroup
 

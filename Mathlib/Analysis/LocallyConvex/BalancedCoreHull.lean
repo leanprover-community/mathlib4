@@ -284,4 +284,31 @@ theorem nhds_basis_closed_balanced [RegularSpace E] :
   refine ⟨balancedCore 𝕜 s, ⟨balancedCore_mem_nhds_zero hs.1, ?_⟩, balancedCore_subset s⟩
   exact ⟨hs.2.balancedCore, balancedCore_balanced s⟩
 
+variable [IsTopologicalAddGroup E] [FirstCountableTopology E]
+
+theorem exists_nhds_hasAntitoneBasis_balanced_open_add_closure_subset :
+    ∃ x : ℕ → Set E, (𝓝 (0 : E)).HasAntitoneBasis x ∧
+      ∀ n, IsOpen (x n) ∧ Balanced 𝕜 (x n) ∧ x (n + 1) + x (n + 1) ⊆ x n ∧
+        closure (x (n + 1)) ⊆ x n := by
+  obtain ⟨u, hu_basis, -⟩ := IsTopologicalAddGroup.exists_antitone_basis_nhds_zero E
+  have hu_zero (n : ℕ) : 0 ∈ interior (u n) :=
+    mem_interior_iff_mem_nhds.mpr (hu_basis.mem_of_mem trivial)
+  let v (n : ℕ) := balancedHull 𝕜 (interior (u n))
+  have hv_open (n : ℕ) : IsOpen (v n) := isOpen_interior.balancedHull (hu_zero n)
+  have hv_basis : (𝓝 0).HasAntitoneBasis v := by
+    refine ⟨hu_basis.to_hasBasis ?_ ?_,
+      fun _ _ hij ↦ balancedHull_mono (interior_mono (hu_basis.antitone hij))⟩
+    · intro n _
+      obtain ⟨W, ⟨hW_nhds, hW_bal⟩, hWn⟩ :=
+        (nhds_basis_balanced 𝕜 E).mem_iff.mp (hu_basis.mem_of_mem trivial)
+      obtain ⟨m, hm⟩ := hu_basis.mem_iff.mp hW_nhds
+      exact ⟨m, trivial,
+        (hW_bal.balancedHull_subset_of_subset (interior_subset.trans hm)).trans hWn⟩
+    · intro n _
+      obtain ⟨m, hm⟩ := hu_basis.mem_iff.mp (isOpen_interior.mem_nhds (hu_zero n))
+      exact ⟨m, trivial, hm.trans (subset_balancedHull 𝕜)⟩
+  obtain ⟨φ, hφ_basis, hφ⟩ := hv_basis.exists_subbasis_add_closure_subset
+  exact ⟨v ∘ φ, hφ_basis,
+    fun n ↦ ⟨hv_open (φ n), balancedHull.balanced _, (hφ n).1, (hφ n).2⟩⟩
+
 end Topology

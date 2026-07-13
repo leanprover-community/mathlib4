@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Algebra.Spectrum.Basic
 public import Mathlib.Topology.Baire.Lemmas
 public import Mathlib.Topology.Baire.CompleteMetrizable
 public import Mathlib.Analysis.Normed.Operator.NormedSpace
+public import Mathlib.Analysis.Normed.Operator.OpenMapping
 public import Mathlib.Analysis.Normed.Group.InfiniteSum
 public import Mathlib.Analysis.Normed.Group.AddTorsor
 
@@ -224,32 +225,6 @@ theorem exists_preimage_norm_le (surj : Surjective f) :
   rw [sub_zero] at feq
   exact ⟨x, feq, x_ineq⟩
 
-/-- The Banach open mapping theorem: a surjective bounded linear map between Banach spaces is
-open. -/
-protected theorem isOpenMap (surj : Surjective f) : IsOpenMap f := by
-  intro s hs
-  rcases exists_preimage_norm_le f surj with ⟨C, Cpos, hC⟩
-  refine isOpen_iff.2 fun y yfs => ?_
-  rcases yfs with ⟨x, xs, fxy⟩
-  rcases isOpen_iff.1 hs x xs with ⟨ε, εpos, hε⟩
-  refine ⟨ε / C, div_pos εpos Cpos, fun z hz => ?_⟩
-  rcases hC (z - y) with ⟨w, wim, wnorm⟩
-  have : f (x + w) = z := by rw [f.map_add, wim, fxy, add_sub_cancel]
-  rw [← this]
-  have : x + w ∈ ball x ε :=
-    calc
-      dist (x + w) x = ‖w‖ := by
-        simp
-      _ ≤ C * ‖z - y‖ := wnorm
-      _ < C * (ε / C) := by
-        apply mul_lt_mul_of_pos_left _ Cpos
-        rwa [mem_ball, dist_eq_norm] at hz
-      _ = ε := mul_div_cancel₀ _ (ne_of_gt Cpos)
-  exact Set.mem_image_of_mem _ (hε this)
-
-theorem isQuotientMap (surj : Surjective f) : IsQuotientMap f :=
-  (f.isOpenMap surj).isQuotientMap f.continuous surj
-
 end
 
 theorem _root_.AffineMap.isOpenMap {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
@@ -264,17 +239,6 @@ theorem _root_.AffineMap.isOpenMap {F : Type*} [NormedAddCommGroup F] [NormedSpa
 
 section
 include σ'
-
-theorem interior_preimage (hsurj : Surjective f) (s : Set F) :
-    interior (f ⁻¹' s) = f ⁻¹' interior s :=
-  ((f.isOpenMap hsurj).preimage_interior_eq_interior_preimage f.continuous s).symm
-
-theorem closure_preimage (hsurj : Surjective f) (s : Set F) : closure (f ⁻¹' s) = f ⁻¹' closure s :=
-  ((f.isOpenMap hsurj).preimage_closure_eq_closure_preimage f.continuous s).symm
-
-theorem frontier_preimage (hsurj : Surjective f) (s : Set F) :
-    frontier (f ⁻¹' s) = f ⁻¹' frontier s :=
-  ((f.isOpenMap hsurj).preimage_frontier_eq_frontier_preimage f.continuous s).symm
 
 theorem exists_nonlinearRightInverse_of_surjective (f : E →SL[σ] F) (hsurj : f.range = ⊤) :
     ∃ fsymm : NonlinearRightInverse f, 0 < fsymm.nnnorm := by
@@ -304,70 +268,7 @@ theorem nonlinearRightInverseOfSurjective_nnnorm_pos (f : E →SL[σ] F) (hsurj 
 
 end ContinuousLinearMap
 
-namespace LinearEquiv
-
-variable [CompleteSpace E] [RingHomInvPair σ' σ]
-
-/-- If a bounded linear map is a bijection, then its inverse is also a bounded linear map. -/
-@[continuity]
-theorem continuous_symm (e : E ≃ₛₗ[σ] F) (h : Continuous e) : Continuous e.symm := by
-  rw [continuous_def]
-  intro s hs
-  rw [← e.image_eq_preimage_symm]
-  rw [← e.coe_coe] at h ⊢
-  exact ContinuousLinearMap.isOpenMap (σ := σ) ⟨_, h⟩ e.surjective s hs
-
-/-- Associating to a linear equivalence between Banach spaces a continuous linear equivalence when
-the direct map is continuous, thanks to the Banach open mapping theorem that ensures that the
-inverse map is also continuous. -/
-def toContinuousLinearEquivOfContinuous (e : E ≃ₛₗ[σ] F) (h : Continuous e) : E ≃SL[σ] F :=
-  { e with
-    continuous_toFun := h
-    continuous_invFun := e.continuous_symm h }
-
-@[simp]
-theorem coeFn_toContinuousLinearEquivOfContinuous (e : E ≃ₛₗ[σ] F) (h : Continuous e) :
-    ⇑(e.toContinuousLinearEquivOfContinuous h) = e :=
-  rfl
-
-@[simp]
-theorem coeFn_toContinuousLinearEquivOfContinuous_symm (e : E ≃ₛₗ[σ] F) (h : Continuous e) :
-    ⇑(e.toContinuousLinearEquivOfContinuous h).symm = e.symm :=
-  rfl
-
-end LinearEquiv
-
 namespace ContinuousLinearMap
-
-variable [CompleteSpace E] [RingHomInvPair σ' σ] {f : E →SL[σ] F}
-
-/-- An injective continuous linear map with a closed range defines a continuous linear equivalence
-between its domain and its range. -/
-noncomputable def equivRange (hinj : Injective f) (hclo : IsClosed (range f)) :
-    E ≃SL[σ] f.range :=
-  have : CompleteSpace f.range := hclo.completeSpace_coe
-  LinearEquiv.toContinuousLinearEquivOfContinuous (LinearEquiv.ofInjective f.toLinearMap hinj) <|
-    (f.continuous.codRestrict fun x ↦ f.mem_range_self x).congr fun _ ↦ rfl
-
-@[simp]
-theorem coe_linearMap_equivRange (hinj : Injective f) (hclo : IsClosed (range f)) :
-    f.equivRange hinj hclo = f.rangeRestrict :=
-  rfl
-
-@[simp]
-theorem coe_equivRange (hinj : Injective f) (hclo : IsClosed (range f)) :
-    (f.equivRange hinj hclo : E → f.range) = f.rangeRestrict :=
-  rfl
-
-@[simp]
-lemma equivRange_symm_toLinearEquiv (hinj : Injective f) (hclo : IsClosed (range f)) :
-    (f.equivRange hinj hclo).toLinearEquiv.symm =
-      (LinearEquiv.ofInjective f.toLinearMap hinj).symm := rfl
-
-@[simp]
-lemma equivRange_symm_apply (hinj : Injective f) (hclo : IsClosed (range f))
-    (x : E) : (f.equivRange hinj hclo).symm ⟨f x, by simp⟩ = x := by
-  simp [ContinuousLinearEquiv.symm_apply_eq, Subtype.ext_iff]
 
 section
 
@@ -425,36 +326,6 @@ end ContinuousLinearMap
 namespace ContinuousLinearEquiv
 
 variable [CompleteSpace E] [RingHomInvPair σ' σ]
-
-/-- Convert a bijective continuous linear map `f : E →SL[σ] F` from a Banach space to a normed space
-to a continuous linear equivalence. -/
-noncomputable def ofBijective (f : E →SL[σ] F) (hinj : f.ker = ⊥) (hsurj : f.range = ⊤) :
-    E ≃SL[σ] F :=
-  (LinearEquiv.ofBijective f
-        ⟨LinearMap.ker_eq_bot.mp hinj,
-          LinearMap.range_eq_top.mp hsurj⟩).toContinuousLinearEquivOfContinuous
-    -- Porting note: `by exact` was not previously needed. Why is it needed now?
-    (by exact f.continuous)
-
-@[simp]
-theorem coeFn_ofBijective (f : E →SL[σ] F) (hinj : f.ker = ⊥) (hsurj : f.range = ⊤) :
-    ⇑(ofBijective f hinj hsurj) = f :=
-  rfl
-
-theorem coe_ofBijective (f : E →SL[σ] F) (hinj : f.ker = ⊥) (hsurj : f.range = ⊤) :
-    ↑(ofBijective f hinj hsurj) = f := by
-  ext
-  rfl
-
-@[simp]
-theorem ofBijective_symm_apply_apply (f : E →SL[σ] F) (hinj : f.ker = ⊥) (hsurj : f.range = ⊤)
-    (x : E) : (ofBijective f hinj hsurj).symm (f x) = x :=
-  (ofBijective f hinj hsurj).symm_apply_apply x
-
-@[simp]
-theorem ofBijective_apply_symm_apply (f : E →SL[σ] F) (hinj : f.ker = ⊥)
-    (hsurj : f.range = ⊤) (y : F) : f ((ofBijective f hinj hsurj).symm y) = y :=
-  (ofBijective f hinj hsurj).apply_symm_apply y
 
 lemma _root_.ContinuousLinearMap.isUnit_iff_bijective {f : E →L[𝕜] E} :
     IsUnit f ↔ Bijective f := by
@@ -525,82 +396,6 @@ theorem closed_complemented_range_of_isCompl_of_ker_eq_bot {F : Type*} [NormedAd
   exact isClosed_univ.prod isClosed_singleton
 
 end ContinuousLinearMap
-
-section ClosedGraphThm
-
-variable [CompleteSpace E]
-variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] [CompleteSpace F] (g : E →ₗ[𝕜] F)
-
-/-- The **closed graph theorem** : a linear map between two Banach spaces whose graph is closed
-is continuous. -/
-theorem LinearMap.continuous_of_isClosed_graph (hg : IsClosed (g.graph : Set <| E × F)) :
-    Continuous g := by
-  letI : CompleteSpace g.graph := completeSpace_coe_iff_isComplete.mpr hg.isComplete
-  let φ₀ : E →ₗ[𝕜] E × F := LinearMap.id.prod g
-  have : Function.LeftInverse Prod.fst φ₀ := fun x => rfl
-  let φ : E ≃ₗ[𝕜] g.graph :=
-    (LinearEquiv.ofLeftInverse this).trans (LinearEquiv.ofEq _ _ g.graph_eq_range_prod.symm)
-  let ψ : g.graph ≃L[𝕜] E :=
-    φ.symm.toContinuousLinearEquivOfContinuous continuous_subtype_val.fst
-  exact (continuous_subtype_val.comp ψ.symm.continuous).snd
-
-/-- A useful form of the **closed graph theorem** : let `f` be a linear map between two Banach
-spaces. To show that `f` is continuous, it suffices to show that for any convergent sequence
-`uₙ ⟶ x`, if `f(uₙ) ⟶ y` then `y = f(x)`. -/
-theorem LinearMap.continuous_of_seq_closed_graph
-    (hg : ∀ (u : ℕ → E) (x y), Tendsto u atTop (𝓝 x) → Tendsto (g ∘ u) atTop (𝓝 y) → y = g x) :
-    Continuous g := by
-  refine g.continuous_of_isClosed_graph (IsSeqClosed.isClosed ?_)
-  rintro φ ⟨x, y⟩ hφg hφ
-  refine hg (Prod.fst ∘ φ) x y ((continuous_fst.tendsto _).comp hφ) ?_
-  have : g ∘ Prod.fst ∘ φ = Prod.snd ∘ φ := by
-    ext n
-    exact (hφg n).symm
-  rw [this]
-  exact (continuous_snd.tendsto _).comp hφ
-
-variable {g}
-
-namespace ContinuousLinearMap
-
-/-- Upgrade a `LinearMap` to a `ContinuousLinearMap` using the **closed graph theorem**. -/
-def ofIsClosedGraph (hg : IsClosed (g.graph : Set <| E × F)) : E →L[𝕜] F where
-  toLinearMap := g
-  cont := g.continuous_of_isClosed_graph hg
-
-@[simp]
-theorem coeFn_ofIsClosedGraph (hg : IsClosed (g.graph : Set <| E × F)) :
-    ⇑(ContinuousLinearMap.ofIsClosedGraph hg) = g :=
-  rfl
-
-theorem coe_ofIsClosedGraph (hg : IsClosed (g.graph : Set <| E × F)) :
-    ↑(ContinuousLinearMap.ofIsClosedGraph hg) = g := by
-  ext
-  rfl
-
-/-- Upgrade a `LinearMap` to a `ContinuousLinearMap` using a variation on the
-**closed graph theorem**. -/
-def ofSeqClosedGraph
-    (hg : ∀ (u : ℕ → E) (x y), Tendsto u atTop (𝓝 x) → Tendsto (g ∘ u) atTop (𝓝 y) → y = g x) :
-    E →L[𝕜] F where
-  toLinearMap := g
-  cont := g.continuous_of_seq_closed_graph hg
-
-@[simp]
-theorem coeFn_ofSeqClosedGraph
-    (hg : ∀ (u : ℕ → E) (x y), Tendsto u atTop (𝓝 x) → Tendsto (g ∘ u) atTop (𝓝 y) → y = g x) :
-    ⇑(ContinuousLinearMap.ofSeqClosedGraph hg) = g :=
-  rfl
-
-theorem coe_ofSeqClosedGraph
-    (hg : ∀ (u : ℕ → E) (x y), Tendsto u atTop (𝓝 x) → Tendsto (g ∘ u) atTop (𝓝 y) → y = g x) :
-    ↑(ContinuousLinearMap.ofSeqClosedGraph hg) = g := by
-  ext
-  rfl
-
-end ContinuousLinearMap
-
-end ClosedGraphThm
 
 section BijectivityCriteria
 

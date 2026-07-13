@@ -148,6 +148,14 @@ theorem Balanced.sub (hs : Balanced 𝕜 s) (ht : Balanced 𝕜 t) : Balanced �
 
 theorem balanced_zero : Balanced 𝕜 (0 : Set E) := fun _a _ha => (smul_zero _).subset
 
+theorem Balanced.linear_image {𝕜₂ : Type*} [SeminormedRing 𝕜₂] {σ : 𝕜 →+* 𝕜₂}
+    [RingHomSurjective σ] [RingHomIsometric σ] [AddCommGroup F] [Module 𝕜₂ F]
+    (hs : Balanced 𝕜 s) (f : E →ₛₗ[σ] F) : Balanced 𝕜₂ (f '' s) := by
+  rintro b hb _ ⟨_, ⟨x, hx, rfl⟩, rfl⟩
+  obtain ⟨a, rfl⟩ := RingHomSurjective.is_surjective (σ := σ) b
+  rw [RingHomIsometric.norm_map] at hb
+  exact ⟨a • x, hs a hb (smul_mem_smul_set hx), by rw [map_smulₛₗ]⟩
+
 end Module
 
 end SeminormedRing

@@ -11,6 +11,7 @@ public import Mathlib.Topology.MetricSpace.ProperSpace
 public import Mathlib.Topology.MetricSpace.Cauchy
 public import Mathlib.Topology.MetricSpace.Defs
 public import Mathlib.Topology.EMetricSpace.Diam
+public import Mathlib.Order.Filter.CountablyGenerated
 
 /-!
 ## Boundedness in (pseudo)-metric spaces
@@ -163,6 +164,11 @@ theorem comap_dist_right_atTop (c : α) : comap (dist · c) atTop = cobounded α
 @[simp]
 theorem comap_dist_left_atTop (c : α) : comap (dist c) atTop = cobounded α := by
   simpa only [dist_comm _ c] using comap_dist_right_atTop c
+
+instance : (cobounded α).IsCountablyGenerated := by
+  rcases isEmpty_or_nonempty α with h | h
+  · rw [Subsingleton.elim (cobounded α) ⊥]; infer_instance
+  · rw [← comap_dist_right_atTop (Classical.arbitrary α)]; infer_instance
 
 @[simp]
 theorem tendsto_dist_right_atTop_iff (c : α) {f : β → α} {l : Filter β} :

@@ -117,6 +117,14 @@ lemma _root_.absorbs_biUnion_finset {ι : Type*} {t : ι → Set α} {I : Finset
 
 protected alias ⟨_, biUnion_finset⟩ := absorbs_biUnion_finset
 
+protected theorem image {β : Type*} [SMul M β] {f : α → β}
+    (h : Absorbs M s t) (hf_smul : ∀ (a : M) (x : α), f (a • x) = a • f x) :
+    Absorbs M (f '' s) (f '' t) := by
+  refine h.eventually.mono fun a (ha : t ⊆ a • s) => ?_
+  rintro _ ⟨y, hy, rfl⟩
+  obtain ⟨x, hx, rfl⟩ := ha hy
+  exact ⟨f x, ⟨x, hx, rfl⟩, (hf_smul a x).symm⟩
+
 end SMul
 
 section AddZero
@@ -227,6 +235,13 @@ protected theorem absorbs (hs : Absorbent M s) {x : α} : Absorbs M s {x} := hs 
 theorem absorbs_finite (hs : Absorbent M s) (ht : t.Finite) : Absorbs M s t := by
   rw [← Set.biUnion_of_singleton t]
   exact .biUnion ht fun _ _ => hs.absorbs
+
+theorem image_of_surjective {β : Type*} [SMul M β] {f : α → β} (hf : Function.Surjective f)
+    (hf_smul : ∀ (a : M) (x : α), f (a • x) = a • f x) (hs : Absorbent M s) :
+    Absorbent M (f '' s) := by
+  intro y
+  obtain ⟨x, rfl⟩ := hf y
+  simpa using (hs x).image hf_smul
 
 end SMul
 
