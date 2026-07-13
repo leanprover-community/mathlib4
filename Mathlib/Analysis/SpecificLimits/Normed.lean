@@ -511,6 +511,9 @@ theorem summable_pow_mul_geometric_of_norm_lt_one (k : ℕ) {r : R} (hr : ‖r�
   ext n
   simp [ha n, add_mul, sum_mul]
 
+
+-- Question: can't this be now proven more simply using the following generalization?
+-- in that case, is this result even needed?
 /-- If `‖r‖ < 1`, then `∑' n : ℕ, n * r ^ n = r / (1 - r) ^ 2`, `HasSum` version in a general ring
 with summable geometric series. For a version in a field, using division instead of `Ring.inverse`,
 see `hasSum_coe_mul_geometric_of_norm_lt_one`. -/
@@ -548,6 +551,9 @@ theorem tsum_coe_mul_geometric_of_norm_lt_one {r : 𝕜} (hr : ‖r‖ < 1) :
     (∑' n : ℕ, n * r ^ n : 𝕜) = r / (1 - r) ^ 2 :=
   (hasSum_coe_mul_geometric_of_norm_lt_one hr).tsum_eq
 
+--- new
+
+-- Question: does this belong here? is this the right name?
 theorem hasSum_descFactorial_mul_geometric_of_norm_lt_one' (j : ℕ) {x : R} (h : ‖x‖ < 1) :
     HasSum (fun n : ℕ ↦ (n.descFactorial j : R) * x ^ n)
       ((j.factorial : R) * x ^ j * ((1 - x)⁻¹ʳ) ^ (j + 1)) := by
@@ -564,11 +570,17 @@ theorem hasSum_descFactorial_mul_geometric_of_norm_lt_one' (j : ℕ) {x : R} (h 
 
 /-- If `‖x‖ < 1`, then `∑' n : ℕ, n ^ k * x ^ n` is given by the finite sum
 `∑ j ∈ range (k + 1), S(k, j) * j ! * x ^ j * ((1 - x)⁻¹ʳ) ^ (j + 1)`,
-where `S(k, j)` denotes the Stirling numbers of the second kind. -/
+where `S(k, j)` denotes the Stirling numbers of the second kind.
+
+Question: should you add here the note about genereal ring vs. field with division.
+Question: why isnt this named "coe" (hasSum_coe_pow_mul_geometric_of_norm_lt_one')
+as hasSum_coe_mul_geometric_of_norm_lt_one'
+-/
 theorem hasSum_pow_mul_geometric_of_norm_lt_one' (k : ℕ) {x : R} (h : ‖x‖ < 1) :
     HasSum (fun n : ℕ ↦ (n : R) ^ k * x ^ n)
       (∑ j ∈ Finset.range (k + 1),
         (stirlingSecond k j : R) * j.factorial * x ^ j * ((1 - x)⁻¹ʳ) ^ (j + 1)) := by
+  -- Question: shouldn't this hfun be extracted as another lemma
   have hfun : (fun n : ℕ ↦ (n : R) ^ k * x ^ n) = fun n : ℕ ↦ ∑ j ∈ Finset.range (k + 1),
       (stirlingSecond k j : R) * ((n.descFactorial j : R) * x ^ n) := by
     funext n
@@ -578,11 +590,13 @@ theorem hasSum_pow_mul_geometric_of_norm_lt_one' (k : ℕ) {x : R} (h : ‖x‖ 
   simpa only [hfun, mul_assoc] using hasSum_sum fun j _ ↦
     (hasSum_descFactorial_mul_geometric_of_norm_lt_one' j h).mul_left _
 
+-- To-do: missing docstrings
 theorem tsum_pow_mul_geometric_of_norm_lt_one' (k : ℕ) {x : R} (h : ‖x‖ < 1) :
     ∑' n : ℕ, (n : R) ^ k * x ^ n = (∑ j ∈ Finset.range (k + 1),
       (stirlingSecond k j : R) * j.factorial * x ^ j * ((1 - x)⁻¹ʳ) ^ (j + 1)) :=
   (hasSum_pow_mul_geometric_of_norm_lt_one' k h).tsum_eq
 
+-- To-do: missing docstrings
 theorem hasSum_pow_mul_geometric_of_norm_lt_one (k : ℕ) {r : 𝕜} (hr : ‖r‖ < 1) :
     HasSum (fun n : ℕ ↦ (n : 𝕜) ^ k * r ^ n)
       (∑ j ∈ Finset.range (k + 1),
@@ -590,11 +604,13 @@ theorem hasSum_pow_mul_geometric_of_norm_lt_one (k : ℕ) {r : 𝕜} (hr : ‖r�
   convert! hasSum_pow_mul_geometric_of_norm_lt_one' k hr using 1
   simp [div_eq_mul_inv]
 
+-- To-do: missing docstrings
 theorem tsum_pow_mul_geometric_of_norm_lt_one (k : ℕ) {r : 𝕜} (hr : ‖r‖ < 1) :
     ∑' n : ℕ, (n : 𝕜) ^ k * r ^ n = (∑ j ∈ Finset.range (k + 1),
       stirlingSecond k j * j.factorial * r ^ j / (1 - r) ^ (j + 1)) :=
   (hasSum_pow_mul_geometric_of_norm_lt_one k hr).tsum_eq
 
+-- should this be deleted?
 theorem hasSum_sq_mul_geometric_of_norm_lt_one' {x : R} (h : ‖x‖ < 1) :
     HasSum (fun n : ℕ ↦ (n : R) ^ 2 * x ^ n) (x * (1 + x) * ((1 - x)⁻¹ʳ) ^ 3) := by
   have h1 : ((1 - x)⁻¹ʳ) ^ 2 = (1 - x) * ((1 - x)⁻¹ʳ) ^ 3 := by
@@ -603,6 +619,8 @@ theorem hasSum_sq_mul_geometric_of_norm_lt_one' {x : R} (h : ‖x‖ < 1) :
   convert! hasSum_pow_mul_geometric_of_norm_lt_one' 2 h using 1
   simp [Finset.sum_range_succ, stirlingSecond, Nat.factorial, h1]
   grind
+
+-----
 
 end MulGeometric
 
