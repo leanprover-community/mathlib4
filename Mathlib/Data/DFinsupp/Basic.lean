@@ -20,8 +20,9 @@ This should be kept in sync with Finsupp where possible.
 
 @[expose] public section
 
-
 variable {ι α β γ : Type*} {M : β → Type*} {N : Type*}
+
+namespace DFinsupp
 
 section EmbDomain
 variable [∀ b, Zero (M b)] [DecidableEq β]
@@ -32,21 +33,20 @@ For a `b : β` outside the range of `f`, it is zero. -/
 def embDomain (f : α ↪ β) (v : Π₀ a, M (f a)) : Π₀ b, M b where
   toFun b :=
     let eval (s : Multiset α) :=
-      match h : s.find? (fun a => f a = b) (f.injective.subsingleton_fiber _) with
-      | some a => s.find?_some _ _ h ▸ v a
+      match h :
+        s.find? (fun a => f a = b) (f.injective.subsingleton_fiber b |>.anti <| by grind) with
+      | some a => s.find?_some _ h ▸ v a
       | none => 0
     v.support'.lift
       (eval ·.1)
       (fun ⟨s₁, hs₁⟩ ⟨s₂, hs₂⟩ => by
-        let p := fun a => f a = b
-        have hp : {x | p x}.Subsingleton := f.injective.subsingleton_fiber _
-        dsimp only
+        generalize_proofs hp at eval
         by_cases h : ∃ a, f a = b
         · rcases h with ⟨a, rfl⟩
           have h_eq (s) (hs : ∀ i, i ∈ s ∨ v i = 0) : eval s = v a := by
             dsimp [eval]
             by_cases ha : a ∈ s
-            · have h_find : s.find? p hp = some a := by grind
+            · have h_find : s.find? _ (hp _) = some a := by grind
               grind
             · grind
           rw [h_eq s₁ hs₁, h_eq s₂ hs₂]
@@ -57,7 +57,7 @@ def embDomain (f : α ↪ β) (v : Π₀ a, M (f a)) : Π₀ b, M b where
     v.support'.map <| Subtype.map (Multiset.map f) fun s_outer h i => by
       induction v.support' using Trunc.induction_on with | _ s =>
       cases s with | _ s hs =>
-      simp only [Multiset.mem_map, toFun_eq_coe, Trunc.lift_mk]
+      simp only [Multiset.mem_map, Trunc.lift_mk]
       by_cases hi : ∃ a, f a = i
       · rcases hi with ⟨a, rfl⟩
         by_cases ha : a ∈ s_outer
@@ -75,7 +75,7 @@ lemma embDomain_apply_self (f : α ↪ β) (v : Π₀ a, M (f a)) (a : α) :
   induction v.support' using Trunc.induction_on with | _ s_inner
   dsimp [Trunc.lift_mk]
   cases s_inner with | _ s hs =>
-  have hp : {x | f x = f a}.Subsingleton := fun _ _ hx hy => by grind
+  generalize_proofs hp
   by_cases ha : a ∈ s
   · have h_find : s.find? _ hp = some a := by grind
     grind
