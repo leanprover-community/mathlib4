@@ -50,13 +50,27 @@ theorem IsLocalization.integerMultiple_eq_zero_iff {R : Type*} [CommSemiring R] 
   rw [← smul_zero (commonDenom M s f),
     (IsLocalization.smul_bijective S (commonDenom M s f)).injective.eq_iff, smul_zero]
 
-theorem foo (R S S' : Type*) [CommRing R] [CommRing S] [CommRing S']
+theorem LinearIndependent.comp_algebraMap_iff
+    {R S S' : Type*} [CommRing R] [CommRing S] [CommRing S']
     [Algebra R S] [Algebra S S'] [Algebra R S'] [IsScalarTower R S S'] [FaithfulSMul S S']
     {ι : Type*} {s : ι → S} :
     LinearIndependent R (algebraMap S S' ∘ s) ↔ LinearIndependent R s := by
   rw [← IsScalarTower.coe_toAlgHom' R S S', ← AlgHom.coe_toLinearMap]
   simp_rw [linearIndependent_iff, Finsupp.linearCombination_linear_comp]
   simp
+
+theorem LinearIndepOn.comp_algebraMap_iff {R S S' : Type*} [CommRing R] [CommRing S] [CommRing S']
+    [Algebra R S] [Algebra S S'] [Algebra R S'] [IsScalarTower R S S'] [FaithfulSMul S S']
+    {ι : Type*} {v : ι → S} {s : Set ι} :
+    LinearIndepOn R (algebraMap S S' ∘ v) s ↔ LinearIndepOn R v s :=
+  LinearIndependent.comp_algebraMap_iff
+
+theorem LinearIndepOn.image_algebraMap_iff (R S S' : Type*) [CommRing R] [CommRing S] [CommRing S']
+    [Algebra R S] [Algebra S S'] [Algebra R S'] [IsScalarTower R S S'] [FaithfulSMul S S']
+    {s : Set S} :
+    LinearIndepOn R id (algebraMap S S' '' s) ↔ LinearIndepOn R id s := by
+  rw [← linearIndepOn_iff_image (FaithfulSMul.algebraMap_injective S S').injOn]
+  exact LinearIndepOn.comp_algebraMap_iff
 
 noncomputable def Finset.equivMap {α β : Type*} (s : Finset α) (f : α ↪ β) : s ≃ s.map f :=
   .ofBijective (fun x ↦ ⟨f x, s.mem_map_of_mem f x.2⟩) (⟨fun x y ↦ by simp, fun ⟨x, hx⟩ ↦ by
@@ -93,11 +107,10 @@ theorem Cardinal.toNat_eq_of_forall_le_iff (c d : Cardinal)
     simp_all
 
 open IsLocalization nonZeroDivisors Pointwise in
-theorem foo' (R R' S S' : Type*) [DecidableEq S]
-    [CommRing R] [CommRing R'] [CommRing S] [CommRing S']
-    [Algebra R S] [Algebra R R'] [Algebra S S'] [Algebra R' S'] [Algebra R S']
-    [IsScalarTower R R' S'] [IsScalarTower R S S']
-    [IsFractionRing R R'] [IsFractionRing S S']
+theorem foo' (R S S' : Type*) [DecidableEq S]
+    [CommRing R] [CommRing S] [CommRing S']
+    [Algebra R S] [Algebra S S'] [Algebra R S']
+    [IsScalarTower R S S'] [IsFractionRing S S']
     {s : Finset S'} (hs : LinearIndepOn R id (s : Set S')) :
     LinearIndepOn R id (finsetIntegerMultiple S⁰ s : Set S) := by
   classical
@@ -113,17 +126,14 @@ theorem foo' (R R' S S' : Type*) [DecidableEq S]
       (IsLocalization.smul_bijective S' (commonDenomOfFinset S⁰ s)).injective.eq_iff] at h
     exact (IsLocalization.smul_bijective S' (commonDenomOfFinset S⁰ s)).injective.injOn
   rw [← finsetIntegerMultiple_image S⁰ s] at hs
-
-  -- rw [LinearIndepOn, Fintype.linearIndependent_iff] at *
-  sorry
+  rwa [LinearIndepOn.image_algebraMap_iff] at hs
 
 -- todo: generalize to rank
-theorem IsFractionRing.finrank_eq' (R R' S S' : Type*)
-    [CommRing R] [CommRing R'] [CommRing S] [CommRing S']
-    [Algebra R S] [Algebra R R'] [Algebra S S'] [Algebra R' S'] [Algebra R S']
-    [IsScalarTower R R' S'] [IsScalarTower R S S']
-    [IsFractionRing R R'] [IsFractionRing S S'] :
-    Module.finrank R S' = Module.finrank R' S' := by
+theorem IsFractionRing.finrank_eq' (R R' S : Type*)
+    [CommRing R] [CommRing R'] [CommRing S]
+    [Algebra R R'] [Algebra R' S] [Algebra R S]
+    [IsScalarTower R R' S] [IsFractionRing R R'] :
+    Module.finrank R S = Module.finrank R' S := by
   rcases iff_iff_and_or_not_and_not.mp (nontrivial_iff_nontrivial R R') with ⟨_, _⟩ | ⟨_, _⟩; swap
   · simp_all [not_nontrivial_iff_subsingleton]
   apply Cardinal.toNat_eq_of_forall_le_iff
@@ -136,24 +146,22 @@ theorem IsFractionRing.finrank_eq (R R' S S' : Type*)
     [Algebra R S] [Algebra R R'] [Algebra S S'] [Algebra R' S'] [Algebra R S']
     [IsScalarTower R R' S'] [IsScalarTower R S S']
     [IsFractionRing R R'] [IsFractionRing S S'] :
-    Module.finrank R' S' = Module.finrank R S := by -- maybe go via Module.finrank R S'?
-  rw [← IsFractionRing.finrank_eq' R R' S S']
+    Module.finrank R' S' = Module.finrank R S := by
+  rw [← IsFractionRing.finrank_eq' R R' S']
   classical
   rcases iff_iff_and_or_not_and_not.mp (nontrivial_iff_nontrivial R R') with ⟨_, _⟩ | ⟨_, _⟩; swap
   · simp_all [not_nontrivial_iff_subsingleton]
   apply Cardinal.toNat_eq_of_forall_le_iff
   intro n
-  simp_rw [Module.le_rank_iff_exists_finset, LinearIndepOn] -- maybe rw with fractionring here?
+  simp_rw [Module.le_rank_iff_exists_finset, LinearIndepOn]
   constructor
   · rintro ⟨s, rfl, hs⟩
     use finsetIntegerMultiple S⁰ s, card_finsetIntegerMultiple S⁰ s
-    exact foo' R R' S S' hs
+    exact foo' R S S' hs
   · rintro ⟨s, rfl, hs⟩
     let f : S ↪ S' := ⟨algebraMap S S', FaithfulSMul.algebraMap_injective S S'⟩
-    use s.map f, s.card_map f
-    rw [← linearIndependent_equiv (s.equivMap f)]
-    rw [← foo R S S'] at hs
-    exact hs
+    exact ⟨s.map f, s.card_map f,
+      (linearIndependent_equiv (s.equivMap f)).mp (LinearIndependent.comp_algebraMap_iff.mpr hs)⟩
 
 #exit
 
