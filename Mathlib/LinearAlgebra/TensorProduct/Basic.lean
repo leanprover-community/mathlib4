@@ -82,6 +82,76 @@ theorem liftAddHom_tmul (f : M →+ N →+ P)
     liftAddHom f hf (m ⊗ₜ n) = f m n :=
   rfl
 
+/-- The image of an element `p` of `FreeAddMonoid (M × N)` in the `TensorProduct` is
+equal to the sum of `x ⊗ₜ y` over all the entries `(x, y)` of `p`.
+-/
+lemma _root_.FreeAddMonoid.toTensorProduct (p : FreeAddMonoid (M × N)) :
+    AddCon.toQuotient (c := addConGen (TensorProduct.Eqv R M N)) p =
+    (p.toList.map (fun x ↦ x.1 ⊗ₜ[R] x.2)).sum := by
+  induction p using FreeAddMonoid.inductionOn' with
+  | zero => rfl
+  | add_of b a ih =>
+    rw [FreeAddMonoid.toList_of_add, List.map_cons, List.sum_cons, ← ih]
+    rfl
+
+/-- The set of lifts of an element `x` of `M ⊗[R] N` in `FreeAddMonoid (M × N)`. -/
+def lifts (x : M ⊗[R] N) : Set (FreeAddMonoid (M × N)) :=
+  {p | AddCon.toQuotient (c := addConGen (TensorProduct.Eqv R M N)) p = x}
+
+lemma mem_lifts_iff (x : M ⊗[R] N) (p : FreeAddMonoid (M × N)) :
+    p ∈ lifts x ↔ List.sum (List.map (fun x ↦ x.1 ⊗ₜ[R] x.2) p.toList) = x := by
+  simp only [lifts, Set.mem_setOf_eq, FreeAddMonoid.toTensorProduct]
+  rfl
+
+/-- Every element of `M ⊗[R] N` has a lift in `FreeAddMonoid (M × N)`.
+-/
+lemma nonempty_lifts (x : M ⊗[R] N) : Set.Nonempty (lifts x) := by
+  existsi Quot.out x
+  simp [lifts, ← AddCon.quot_mk_eq_coe]
+
+instance (x : M ⊗[R] N) : Nonempty ↑x.lifts := nonempty_subtype.mpr (nonempty_lifts x)
+
+/-- The empty list lifts the element `0` of `M ⊗[R] N`.
+-/
+lemma lifts_zero : 0 ∈ lifts (0 : M ⊗[R] N) := by
+  rw [mem_lifts_iff, FreeAddMonoid.toList_zero, List.map_nil, List.sum_nil]
+
+set_option backward.isDefEq.respectTransparency false in
+/-- If elements `p, q` of `FreeAddMonoid (M × N)` lift elements `x, y` of `M ⊗[R] N`
+respectively, then `p + q` lifts `x + y`.
+-/
+lemma lifts_add {x y : M ⊗[R] N} {p q : FreeAddMonoid (M × N)}
+    (hp : p ∈ lifts x) (hq : q ∈ lifts y) : p + q ∈ lifts (x + y) := by
+  simp only [lifts, Set.mem_setOf_eq, AddCon.coe_add]
+  rw [hp, hq]
+
+/-- If an element `p` of `FreeAddMonoid (M × N)` lifts an element `x` of `M ⊗[R] N`,
+and if `a` is an element of `R`, then the list obtained by multiplying the first entry of each
+element of `p` by `a` lifts `a • x`.
+-/
+lemma lifts_smul_left {x : M ⊗[R] N} {p : FreeAddMonoid (M × N)} (h : p ∈ lifts x) (a : R) :
+    p.map (fun (y : M × N) ↦ (a • y.1, y.2)) ∈ lifts (a • x) := by
+  rw [mem_lifts_iff] at h ⊢
+  rw [← h]
+  simp only [FreeAddMonoid.toList_map, List.map_map]
+  induction p.toList with
+  | nil => simp
+  | cons hd tl ih => simp [ih, smul_add, smul_tmul]
+
+
+/-- If an element `p` of `FreeAddMonoid (M × N)` lifts an element `x` of `M ⊗[R] N`,
+and if `a` is an element of `R`, then the list obtained by multiplying the second entry of each
+element of `p` by `a` lifts `a • x`.
+-/
+lemma lifts_smul_right {x : M ⊗[R] N} {p : FreeAddMonoid (M × N)} (h : p ∈ lifts x) (a : R) :
+    p.map (fun (y : M × N) ↦ (y.1, a • y.2)) ∈ lifts (a • x) := by
+  rw [mem_lifts_iff] at h ⊢
+  rw [← h]
+  simp only [FreeAddMonoid.toList_map, List.map_map]
+  induction p.toList with
+  | nil => simp
+  | cons hd tl ih => simp [ih, smul_add]
+
 end Module
 
 variable [Module R P] [Module R Q]
