@@ -253,15 +253,16 @@ theorem degree_compl [Fintype (Gᶜ.neighborSet v)] [Fintype V] :
     simp [card_union_of_disjoint (Set.disjoint_toFinset.mpr (compl_neighborSet_disjoint G v)),
       card_neighborSet_eq_degree]
 
-instance incidenceSetFintype [DecidableEq V] : Fintype (G.incidenceSet v) :=
-  Fintype.ofEquiv (G.neighborSet v) (G.incidenceSetEquivNeighborSet v).symm
+instance incidenceSetFintype : Fintype (G.incidenceSet v) :=
+  .ofBijective (α := G.neighborSet v) (⟨_, G.mem_incidence_iff_neighbor.mpr ·.prop⟩) <| by
+    classical exact G.incidenceSetEquivNeighborSet v |>.symm.bijective
 
 /-- This is the `Finset` version of `incidenceSet`. -/
 def incidenceFinset [DecidableEq V] : Finset (Sym2 V) :=
   (G.incidenceSet v).toFinset
 
-theorem card_incidenceSet_eq_degree [DecidableEq V] :
-    Fintype.card (G.incidenceSet v) = G.degree v := by
+theorem card_incidenceSet_eq_degree : Fintype.card (G.incidenceSet v) = G.degree v := by
+  classical
   rw [Fintype.card_congr (G.incidenceSetEquivNeighborSet v), card_neighborSet_eq_degree]
 
 @[simp, norm_cast]
