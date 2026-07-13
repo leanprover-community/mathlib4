@@ -21,9 +21,14 @@ We define the valuation spectrum `Spv A` following [Wedhorn][wedhorn_adic], Defi
 * `ValuationSpectrum A` : The valuation spectrum, the type of `ValuativeRel` instances on `A`.
 * `ValuationSpectrum.basicOpen f s` : The basic open set `{v ∈ Spv A | v(f) ≤ v(s) ≠ 0}`.
 * `ValuationSpectrum.comap φ` : The continuous map `Spv B → Spv A` induced by `φ : A →+* B`.
-* `ValuationSpectrum.supp v` : The support prime ideal `{a ∈ A | v(a) = 0}`.
+* `ValuationSpectrum.supp v` : The support ideal `{a ∈ A | v(a) = 0}`.
 * `ValuationSpectrum.quotientLift 𝔞 v h` : Lift `v` with `𝔞 ≤ supp v` to `Spv (A ⧸ 𝔞)`.
-* `ValuationSpectrum.localizationLift S B v hS` : Lift `v` to a localization `Spv B`.
+* `ValuationSpectrum.localizationComapSection S B v hS` : Lift `v` to a localization `Spv B`.
+* `ValuationSpectrum.suppFun` : The continuous support map `Spv A → Spec A`.
+
+## TODO
+
+* Add Wedhorn Remark 4.5 (the valuation spectrum of a field) and Remark 4.6.
 
 ## References
 
@@ -48,6 +53,11 @@ namespace ValuationSpectrum
 
 variable {A : Type*} [CommRing A]
 
+/-- Two points of `Spv A` are equal as soon as their underlying `vle` relations agree. -/
+lemma ext' {v₁ v₂ : Spv A}
+    (h : ∀ x y, v₁.toValuativeRel.vle x y ↔ v₂.toValuativeRel.vle x y) : v₁ = v₂ :=
+  ValuationSpectrum.ext (ValuativeRel.ext (funext₂ fun x y ↦ propext (h x y)))
+
 /-- Construct a point of `Spv A` from a valuation `v : Valuation A Γ₀`. -/
 @[expose]
 def ofValuation {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀] (v : Valuation A Γ₀) : Spv A :=
@@ -58,7 +68,7 @@ lemma ofValuation_eq_of_isEquiv {Γ₀ : Type*} [LinearOrderedCommGroupWithZero 
     {Γ'₀ : Type*} [LinearOrderedCommGroupWithZero Γ'₀]
     {v₁ : Valuation A Γ₀} {v₂ : Valuation A Γ'₀} (h : v₁.IsEquiv v₂) :
     ofValuation v₁ = ofValuation v₂ :=
-  ValuationSpectrum.ext (ValuativeRel.ext (funext₂ fun x y ↦ propext (h x y)))
+  ext' fun x y ↦ h x y
 
 /-- The basic open subset `Spv(A)(f/s) = {v ∈ Spv A | v(f) ≤ v(s) ∧ v(s) ≠ 0}`. -/
 @[expose]
@@ -141,28 +151,26 @@ lemma comap_comp (φ : A →+* B) (ψ : B →+* C) :
 lemma comap_injective {φ : A →+* B} (hφ : Function.Surjective φ) :
     Function.Injective (comap φ) := by
   intro v₁ v₂ h
-  apply ValuationSpectrum.ext
-  apply ValuativeRel.ext
-  funext b₁ b₂
+  refine ext' fun b₁ b₂ ↦ ?_
   obtain ⟨a₁, rfl⟩ := hφ b₁; obtain ⟨a₂, rfl⟩ := hφ b₂
-  simpa only [comap_vle] using congr_arg (fun v ↦ v.toValuativeRel.vle a₁ a₂) h
+  exact iff_of_eq (by simpa only [comap_vle] using congr_arg (fun v ↦ v.toValuativeRel.vle a₁ a₂) h)
 
 end Functoriality
 
-/-- The support prime ideal `{a ∈ A | v(a) = 0}` of a point `v : Spv A`. -/
+/-- The support ideal `{a ∈ A | v(a) = 0}` of a point `v : Spv A`. -/
 @[expose]
 def supp (v : Spv A) : Ideal A :=
-  letI := v.toValuativeRel
+  let := v.toValuativeRel
   ValuativeRel.supp A
 
 @[simp]
 lemma mem_supp_iff (v : Spv A) (x : A) : x ∈ v.supp ↔ v.toValuativeRel.vle x 0 :=
-  letI := v.toValuativeRel
+  let := v.toValuativeRel
   ValuativeRel.supp_def x
 
 /-- The support of a point `v : Spv A` is a prime ideal. -/
 instance instIsPrimeSupp (v : Spv A) : v.supp.IsPrime :=
-  letI := v.toValuativeRel
+  let := v.toValuativeRel
   inferInstanceAs (ValuativeRel.supp A).IsPrime
 
 /-- `(ofValuation v).vle x y ↔ v x ≤ v y`. -/
@@ -188,11 +196,16 @@ lemma supp_eq_valuation_supp (v : Spv A) : v.supp = v.valuation.supp :=
 
 /-- The canonical valuation gives back the same point of `Spv`. -/
 lemma ofValuation_valuation (v : Spv A) : ofValuation v.valuation = v := by
-  letI := v.toValuativeRel
-  apply ValuationSpectrum.ext
-  apply ValuativeRel.ext
-  funext x y
-  exact propext (ValuativeRel.valuation A).vle_iff_le.symm
+  let := v.toValuativeRel
+  exact ext' fun x y ↦ (ValuativeRel.valuation A).vle_iff_le.symm
+
+/-- If `f` is a unit, then its canonical valuation `v.valuation f` is nonzero,
+for every point `v : Spv A`. -/
+lemma valuation_ne_zero_of_isUnit {f : A} (hf : IsUnit f) (v : Spv A) :
+    v.valuation f ≠ 0 := fun h ↦
+  let : ValuativeRel A := v.toValuativeRel
+  ValuativeRel.not_vle_zero_of_isUnit hf <|
+    (mem_supp_iff v f).mp <| v.supp_eq_valuation_supp ▸ (Valuation.mem_supp_iff _ f).mpr h
 
 section Quotient
 
@@ -205,32 +218,30 @@ lemma ideal_le_supp_comap_mk (w : Spv (A ⧸ 𝔞)) :
 
 /-- Lift a point `v ∈ Spv A` with `𝔞 ≤ supp v` to `Spv (A ⧸ 𝔞)`. -/
 @[expose]
-noncomputable def quotientLift (v : Spv A) (h : 𝔞 ≤ v.supp) : Spv (A ⧸ 𝔞) :=
+noncomputable def quotientLift ⦃v : Spv A⦄ (h : 𝔞 ≤ v.supp) : Spv (A ⧸ 𝔞) :=
   ofValuation (v.valuation.onQuot (v.supp_eq_valuation_supp ▸ h))
 
-/-- `comap (mk 𝔞) (quotientLift 𝔞 v h) = v`. -/
-lemma comap_quotientLift (v : Spv A) (h : 𝔞 ≤ v.supp) :
-    comap (Ideal.Quotient.mk 𝔞) (quotientLift 𝔞 v h) = v := by
+/-- `comap (mk 𝔞) (quotientLift 𝔞 h) = v`. -/
+lemma comap_quotientLift ⦃v : Spv A⦄ (h : 𝔞 ≤ v.supp) :
+    comap (Ideal.Quotient.mk 𝔞) (quotientLift 𝔞 h) = v := by
   rw [quotientLift, comap_ofValuation,
     Valuation.onQuot_comap_eq v.valuation (v.supp_eq_valuation_supp ▸ h)]
   exact ofValuation_valuation v
 
-/-- `quotientLift 𝔞 (comap (mk 𝔞) w) _ = w`. -/
+/-- `quotientLift 𝔞 (ideal_le_supp_comap_mk 𝔞 w) = w`. -/
 lemma quotientLift_comap (w : Spv (A ⧸ 𝔞)) :
-    quotientLift 𝔞 (comap (Ideal.Quotient.mk 𝔞) w) (ideal_le_supp_comap_mk 𝔞 w) = w := by
-  apply ValuationSpectrum.ext
-  apply ValuativeRel.ext
-  funext x y
+    quotientLift 𝔞 (ideal_le_supp_comap_mk 𝔞 w) = w := by
+  refine ext' fun x y ↦ ?_
   obtain ⟨a₁, rfl⟩ := Ideal.Quotient.mk_surjective x
   obtain ⟨a₂, rfl⟩ := Ideal.Quotient.mk_surjective y
-  letI : ValuativeRel A := ValuativeRel.comap (Ideal.Quotient.mk 𝔞) w.toValuativeRel
-  exact propext (ValuativeRel.valuation A).vle_iff_le.symm
+  let : ValuativeRel A := ValuativeRel.comap (Ideal.Quotient.mk 𝔞) w.toValuativeRel
+  exact (ValuativeRel.valuation A).vle_iff_le.symm
 
 /-- The range of `comap (mk 𝔞)` is `{v ∈ Spv A | 𝔞 ≤ supp v}`. -/
 lemma comap_quotient_range :
     Set.range (comap (Ideal.Quotient.mk 𝔞)) = {v : Spv A | 𝔞 ≤ v.supp} :=
   Set.ext fun _ ↦ ⟨fun ⟨w, hw⟩ ↦ hw ▸ ideal_le_supp_comap_mk 𝔞 w,
-    fun h ↦ ⟨quotientLift 𝔞 _ h, comap_quotientLift 𝔞 _ h⟩⟩
+    fun h ↦ ⟨quotientLift 𝔞 h, comap_quotientLift 𝔞 h⟩⟩
 
 /-- `comap (mk 𝔞) : Spv (A ⧸ 𝔞) → Spv A` is a topological embedding. -/
 lemma comap_quotient_isEmbedding :
@@ -250,27 +261,21 @@ lemma comap_quotient_isEmbedding :
 
 end Quotient
 
-/-- If `f` is a unit, then `v(f) ≠ 0` for every point `v : Spv A`. -/
-lemma valuation_ne_zero_of_isUnit {f : A} (hf : IsUnit f) (v : Spv A) :
-    v.valuation f ≠ 0 := fun h ↦
-  letI : ValuativeRel A := v.toValuativeRel
-  ValuativeRel.not_vle_zero_of_isUnit hf <|
-    (mem_supp_iff v f).mp <| v.supp_eq_valuation_supp ▸ (Valuation.mem_supp_iff _ f).mpr h
-
 section Localization
 
 variable (S : Submonoid A) (B : Type*) [CommRing B] [Algebra A B] [IsLocalization S B]
 
-/-- Lift `v ∈ Spv A` with `S ≤ (supp v).primeCompl` to `Spv B` (localization at `S`). -/
-noncomputable def localizationLift (v : Spv A) (hS : S ≤ v.supp.primeCompl) : Spv B :=
+/-- Send `v ∈ Spv A` with `S ≤ (supp v).primeCompl` to the localization `Spv B`, where `B` is a
+localization of `A` at the submonoid `S`. -/
+noncomputable def localizationComapSection (v : Spv A) (hS : S ≤ v.supp.primeCompl) : Spv B :=
   have hS' : S ≤ v.valuation.supp.primeCompl := by
     intro s hs; change s ∉ _
     rw [← v.supp_eq_valuation_supp]; exact hS hs
   ofValuation (v.valuation.extendToLocalization hS' B)
 
-/-- `comap (algebraMap A B) (localizationLift S B v hS) = v`. -/
-lemma comap_localizationLift (v : Spv A) (hS : S ≤ v.supp.primeCompl) :
-    comap (algebraMap A B) (localizationLift S B v hS) = v := by
+/-- `comap (algebraMap A B) (localizationComapSection S B v hS) = v`. -/
+lemma comap_localizationComapSection (v : Spv A) (hS : S ≤ v.supp.primeCompl) :
+    comap (algebraMap A B) (localizationComapSection S B v hS) = v := by
   have hS' : S ≤ v.valuation.supp.primeCompl := by
     intro s hs; change s ∉ _
     rw [← v.supp_eq_valuation_supp]; exact hS hs
@@ -293,9 +298,13 @@ lemma comap_localization_range :
     Set.range (comap (algebraMap A B)) = {v : Spv A | S ≤ v.supp.primeCompl} := by
   ext v
   simpa using ⟨fun ⟨w, hw⟩ ↦ hw ▸ submonoid_le_supp_primeCompl_comap_algebraMap S B w,
-    fun h ↦ ⟨localizationLift S B v h, comap_localizationLift S B v h⟩⟩
+    fun h ↦ ⟨localizationComapSection S B v h, comap_localizationComapSection S B v h⟩⟩
 
 end Localization
+
+section PrimeSpectrum
+
+/-! ### The support map to the prime spectrum -/
 
 /-- The support map `Spv A → Spec A`. -/
 @[expose]
@@ -320,6 +329,8 @@ theorem suppFun_continuous : Continuous (suppFun : Spv A → PrimeSpectrum A) :=
 theorem suppFun_comap {B : Type*} [CommRing B] (φ : A →+* B) (v : Spv B) :
     suppFun (comap φ v) = PrimeSpectrum.comap φ (suppFun v) := by
   ext; simp [mem_supp_iff, comap_vle]
+
+end PrimeSpectrum
 
 end ValuationSpectrum
 
