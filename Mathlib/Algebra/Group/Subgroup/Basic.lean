@@ -164,7 +164,7 @@ section Pi
 
 variable {ι : Type*} {G : ι → Type*}
 
-variable [∀ i, Group (G i)]
+variable [Π i, Group (G i)]
 
 /-- A version of `Set.pi` for subgroups. Given an index set `I` and a family of submodules
 `s : Π i, Subgroup f i`, `pi I s` is the subgroup of dependent functions `f : Π i, f i` such that
@@ -173,17 +173,17 @@ variable [∀ i, Group (G i)]
       /-- A version of `Set.pi` for `AddSubgroup`s. Given an index set `I` and a family
       of submodules `s : Π i, AddSubgroup f i`, `pi I s` is the `AddSubgroup` of dependent functions
       `f : Π i, f i` such that `f i` belongs to `pi I s` whenever `i ∈ I`. -/]
-def pi (I : Set ι) (H : ∀ i, Subgroup (G i)) : Subgroup (∀ i, G i) :=
+def pi (I : Set ι) (H : Π i, Subgroup (G i)) : Subgroup (Π i, G i) :=
   { Submonoid.pi I fun i => (H i).toSubmonoid with
     inv_mem' := fun hp i hI => (H i).inv_mem (hp i hI) }
 
 @[to_additive]
-theorem coe_pi (I : Set ι) (H : ∀ i, Subgroup (G i)) :
+theorem coe_pi (I : Set ι) (H : Π i, Subgroup (G i)) :
     (pi I H : Set (∀ i, G i)) = Set.pi I fun i => (H i : Set (G i)) :=
   rfl
 
 @[to_additive]
-theorem mem_pi (I : Set ι) {H : ∀ i, Subgroup (G i)} {p : ∀ i, G i} :
+theorem mem_pi (I : Set ι) {H : Π i, Subgroup (G i)} {p : Π i, G i} :
     p ∈ pi I H ↔ ∀ i : ι, i ∈ I → p i ∈ H i :=
   Iff.rfl
 
@@ -192,7 +192,7 @@ theorem pi_top (I : Set ι) : (pi I fun i => (⊤ : Subgroup (G i))) = ⊤ :=
   ext fun x => by simp [mem_pi]
 
 @[to_additive]
-theorem pi_empty (H : ∀ i, Subgroup (G i)) : pi ∅ H = ⊤ :=
+theorem pi_empty (H : Π i, Subgroup (G i)) : pi ∅ H = ⊤ :=
   ext fun x => by simp [mem_pi]
 
 @[to_additive]
@@ -200,17 +200,17 @@ theorem pi_bot : (pi Set.univ fun i => (⊥ : Subgroup (G i))) = ⊥ :=
   ext fun x => by simp [mem_pi, funext_iff]
 
 @[to_additive]
-theorem le_pi_iff {I : Set ι} {H : ∀ i, Subgroup (G i)} {J : Subgroup (∀ i, G i)} :
+theorem le_pi_iff {I : Set ι} {H : Π i, Subgroup (G i)} {J : Subgroup (Π i, G i)} :
     J ≤ pi I H ↔ ∀ i ∈ I, J ≤ comap (Pi.evalMonoidHom G i) (H i) :=
   Set.subset_pi_iff
 
 @[to_additive (attr := simp)]
-theorem mulSingle_mem_pi [DecidableEq ι] {I : Set ι} {H : ∀ i, Subgroup (G i)} (i : ι) (x : G i) :
+theorem mulSingle_mem_pi [DecidableEq ι] {I : Set ι} {H : Π i, Subgroup (G i)} (i : ι) (x : G i) :
     Pi.mulSingle i x ∈ pi I H ↔ i ∈ I → x ∈ H i :=
   Set.update_mem_pi_iff_of_mem (one_mem (pi I H))
 
 @[to_additive]
-theorem pi_eq_bot_iff (H : ∀ i, Subgroup (G i)) : pi Set.univ H = ⊥ ↔ ∀ i, H i = ⊥ := by
+theorem pi_eq_bot_iff (H : Π i, Subgroup (G i)) : pi Set.univ H = ⊥ ↔ ∀ i, H i = ⊥ := by
   simp_rw [SetLike.ext'_iff]
   exact Set.univ_pi_eq_singleton_iff
 
