@@ -176,9 +176,9 @@ def _root_.MulActionSemiHomClass.toMulActionHom [MulActionSemiHomClass F φ X Y]
   map_smul' := map_smulₛₗ f
 
 /-- Any type satisfying `MulActionSemiHomClass` can be cast into `MulActionHom` via
-  `MulActionHomSemiClass.toMulActionHom`. -/
+  `MulActionSemiHomClass.toMulActionHom`. -/
 @[to_additive /-- Any type satisfying `AddActionSemiHomClass` can be cast into `AddActionHom` via
-  `AddActionHomSemiClass.toAddActionHom`. -/]
+  `AddActionSemiHomClass.toAddActionHom`. -/]
 instance [MulActionSemiHomClass F φ X Y] : CoeTC F (X →ₑ[φ] Y) :=
   ⟨MulActionSemiHomClass.toMulActionHom⟩
 
