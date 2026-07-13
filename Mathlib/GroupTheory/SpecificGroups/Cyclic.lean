@@ -303,7 +303,7 @@ lattice) iff the quotient by it is simple. Additive group analogue of
 theorem CommGroup.isSimpleGroup_iff_isCoatom {G : Type*} [CommGroup G] {M : Subgroup G} :
     IsSimpleGroup (G ⧸ M) ↔ IsCoatom M := by
   rw [← Set.isSimpleOrder_Ici_iff_isCoatom,
-    ← (QuotientGroup.comapMk'OrderIso' M).isSimpleOrder_iff, isSimpleGroup_iff, isSimpleOrder_iff]
+    ← (QuotientGroup.comapMk'OrderIso M).isSimpleOrder_iff, isSimpleGroup_iff, isSimpleOrder_iff]
   by_cases hG : Nontrivial (G ⧸ M)
   · simp [hG, Subgroup.normal_of_isMulCommutative]
   · simp [hG]
