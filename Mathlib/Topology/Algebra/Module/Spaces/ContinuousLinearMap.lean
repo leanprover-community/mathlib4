@@ -313,6 +313,18 @@ lemma toLinearMap₁₂_inj (L₁ L₂ : E →SL[σ₁₃] F →SL[σ₂₃] G) 
     L₁.toLinearMap₁₂ = L₂.toLinearMap₁₂ ↔ L₁ = L₂ :=
   toLinearMap₁₂_injective.eq_iff
 
+@[simp]
+lemma toLinearMap₁₂_add (L₁ L₂ : E →SL[σ₁₃] F →SL[σ₂₃] G) :
+    (L₁ + L₂).toLinearMap₁₂ = L₁.toLinearMap₁₂ + L₂.toLinearMap₁₂ := by
+  ext x y
+  rfl
+
+@[simp]
+lemma toLinearMap₁₂_smul (c : 𝕜₃) (L : E →SL[σ₁₃] F →SL[σ₂₃] G) :
+    (c • L).toLinearMap₁₂ = c • L.toLinearMap₁₂ := by
+  ext x y
+  rfl
+
 end AddCommMonoid
 
 section Nonsemilinear
