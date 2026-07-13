@@ -307,40 +307,39 @@ theorem Preconnected.exists_isPath {G : SimpleGraph V} (h : G.Preconnected) (u v
     ∃ p : G.Walk u v, p.IsPath :=
   (h u v).exists_isPath
 
+variable {G} in
 theorem Preconnected.finite_dart_iff_finite (h : G.Preconnected) : Finite G.Dart ↔ Finite V := by
-  refine ⟨fun _ ↦ ?_, fun _ ↦ .of_injective Dart.toProd Dart.toProd_injective⟩
+  refine ⟨fun hfin ↦ ?_, fun _ ↦ inferInstance⟩
   nontriviality V
-  have (v : V) : ∃ u, G.Adj v u := by simp [← mem_support, h.support_eq_univ]
-  let f (v : V) : G.Dart := { fst := v, snd := (this v).choose, adj := (this v).choose_spec }
-  exact .of_injective f fun u v huv ↦ congrArg (·.fst) huv
+  exact finite_dart_iff_finite_of_support_eq_univ h.support_eq_univ |>.mp hfin
 
+variable {G} in
 theorem Preconnected.infinite_dart_iff_infinite (h : G.Preconnected) :
     Infinite G.Dart ↔ Infinite V := by
   contrapose!
   exact h.finite_dart_iff_finite
 
+variable {G} in
 theorem Preconnected.finite_support_iff_finite (h : G.Preconnected) :
     G.support.Finite ↔ Finite V := by
   refine ⟨fun hfin ↦ ?_, fun _ ↦ Subtype.finite⟩
   nontriviality V
   rwa [h.support_eq_univ, Set.finite_univ_iff] at hfin
 
+variable {G} in
 theorem Preconnected.infinite_support_iff_infinite (h : G.Preconnected) :
     G.support.Infinite ↔ Infinite V := by
   contrapose!
   exact h.finite_support_iff_finite
 
+variable {G} in
 theorem Preconnected.finite_edgeSet_iff_finite (h : G.Preconnected) :
     G.edgeSet.Finite ↔ Finite V := by
   refine ⟨fun hfin ↦ ?_, fun _ ↦ Subtype.finite⟩
   nontriviality V
-  rw [← Set.finite_univ_iff, ← h.support_eq_univ]
-  classical
-  have : Finite G.edgeSet := hfin
-  suffices G.support = ⋃ e : G.edgeSet, e.val.toFinset by rw [this]; apply Set.finite_iUnion; simp
-  ext
-  simp [mem_support, Sym2.mem_iff_exists]
+  exact finite_edgeSet_iff_finite_of_support_eq_univ h.support_eq_univ |>.mp hfin
 
+variable {G} in
 theorem Preconnected.infinite_edgeSet_iff_infinite (h : G.Preconnected) :
     G.edgeSet.Infinite ↔ Infinite V := by
   contrapose!
