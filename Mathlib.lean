@@ -4005,6 +4005,7 @@ public import Mathlib.Data.Fintype.Sum
 public import Mathlib.Data.Fintype.Units
 public import Mathlib.Data.Fintype.Vector
 public import Mathlib.Data.Fintype.WithTopBot
+public import Mathlib.Data.FreeModLatThree
 public import Mathlib.Data.FunLike.Basic
 public import Mathlib.Data.FunLike.Embedding
 public import Mathlib.Data.FunLike.Equiv
