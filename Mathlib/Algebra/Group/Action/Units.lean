@@ -103,6 +103,7 @@ lemma smul_eq_mul {M} [CommMonoid M] (u₁ u₂ : Mˣ) :
 lemma val_smul [Group G] [Monoid M] [MulAction G M] [SMulCommClass G M M] [IsScalarTower G M M]
     (g : G) (m : Mˣ) : ↑(g • m) = g • (m : M) := rfl
 
+/-- Note that this lemma exists more generally as the global `smul_inv` -/
 @[to_additive (attr := simp)]
 lemma smul_inv [Group G] [Monoid M] [MulAction G M] [SMulCommClass G M M] [IsScalarTower G M M]
     (g : G) (m : Mˣ) : (g • m)⁻¹ = g⁻¹ • m⁻¹ := ext rfl
