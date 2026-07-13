@@ -335,6 +335,7 @@ section lift
 /-- Given elements `i`, `j`, `k` in a modular lattice `α`, construct the unique lattice homomorphism
 sending the three generators of `FreeModLatThree` to `i`, `j`, and `k`. Prefer using
 `liftEquiv` instead. -/
+@[nolint unusedArguments] -- this definition is not meaningful if the codomain is not modular
 def liftFun {α : Type*} [Lattice α] [IsModularLattice α] (i j k : α) (x : FreeModLatThree) : α :=
   match x with
   | .top true true true => i ⊔ j ⊔ k
