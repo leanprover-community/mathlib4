@@ -109,7 +109,7 @@ section orthogonalProjection
 
 variable [K.HasOrthogonalProjection]
 
-/-- The orthogonal projection onto a complete subspace. -/
+/-- The orthogonal projection onto a subspace. -/
 def orthogonalProjectionOnto : E →L[𝕜] K := K.projectionOntoL Kᗮ K.isTopCompl_orthogonal
 
 /-- The orthogonal projection onto a subspace. -/
