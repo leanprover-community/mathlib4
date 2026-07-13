@@ -111,11 +111,13 @@ theorem mk_le_mk (n k : ℕ) (hn : 0 < n) (hk : 0 < k) : (⟨n, hn⟩ : ℕ+) �
 
 theorem mk_lt_mk (n k : ℕ) (hn : 0 < n) (hk : 0 < k) : (⟨n, hn⟩ : ℕ+) < ⟨k, hk⟩ ↔ n < k := Iff.rfl
 
-@[simp low, norm_cast]
+-- This lemma is higher priority than later `Subtype.coe_le_coe` so that the `simpNF` is happy
+@[simp high, norm_cast]
 theorem coe_le_coe (n k : ℕ+) : (n : ℕ) ≤ k ↔ n ≤ k :=
   Iff.rfl
 
-@[simp low, norm_cast]
+-- This lemma is higher priority than later `Subtype.coe_lt_coe` so that the `simpNF` is happy
+@[simp high, norm_cast]
 theorem coe_lt_coe (n k : ℕ+) : (n : ℕ) < k ↔ n < k :=
   Iff.rfl
 

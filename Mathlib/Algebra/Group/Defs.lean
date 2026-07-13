@@ -246,7 +246,8 @@ theorem mul_assoc : ∀ a b c : G, a * b * c = a * (b * c) :=
 theorem ppow_eq_pow (n : ℕ+) (x : G) : PPow.ppow n x = x ^ n :=
   rfl
 
-@[to_additive (attr := simp low) one_psmul]
+-- This lemma is higher priority than later `one_psmul` so that the `simpNF` is happy
+@[to_additive (attr := simp high) one_psmul]
 theorem ppow_one (a : G) : a ^ (1 : ℕ+) = a :=
   Semigroup.ppow_one _
 
