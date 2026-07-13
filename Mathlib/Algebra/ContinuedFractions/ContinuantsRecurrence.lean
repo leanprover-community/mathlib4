@@ -52,6 +52,7 @@ theorem conts_recurrence {gp ppred pred : Pair K} (succ_nth_s_eq : g.s.get? (n +
     g.conts (n + 2) = ⟨gp.b * pred.a + gp.a * ppred.a, gp.b * pred.b + gp.a * ppred.b⟩ :=
   contsAux_recurrence succ_nth_s_eq nth_conts_eq succ_nth_conts_eq
 
+/-- Shows that `Aₙ = bₙ * Aₙ₋₁ + aₙ * Aₙ₋₂` and `Bₙ = bₙ * Bₙ₋₁ + aₙ * Bₙ₋₂`. -/
 theorem conts_recurrence! :
     g.conts (n + 2) = ⟨
       g.partDens! (n + 1) * (g.conts (n + 1)).a + g.partNums! (n + 1) * (g.conts n).a,
@@ -72,6 +73,7 @@ theorem nums_recurrence {gp : Pair K} {ppredA predA : K}
     exists_conts_a_of_num succ_nth_num_eq
   rw [num_eq_conts_a, conts_recurrence succ_nth_s_eq nth_conts_eq succ_nth_conts_eq]
 
+/-- Shows that `Aₙ = bₙ * Aₙ₋₁ + aₙ * Aₙ₋₂`. -/
 theorem nums_recurrence! :
     g.nums (n + 2) =
       g.partDens! (n + 1) * g.nums (n + 1) + g.partNums! (n + 1) * g.nums n := by
@@ -90,6 +92,7 @@ theorem dens_recurrence {gp : Pair K} {ppredB predB : K}
     exists_conts_b_of_den succ_nth_den_eq
   rw [den_eq_conts_b, conts_recurrence succ_nth_s_eq nth_conts_eq succ_nth_conts_eq]
 
+/-- Shows that `Bₙ = bₙ * Bₙ₋₁ + aₙ * Bₙ₋₂`. -/
 theorem dens_recurrence! :
     g.dens (n + 2) =
       g.partDens! (n + 1) * g.dens (n + 1) + g.partNums! (n + 1) * g.dens n := by

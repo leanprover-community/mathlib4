@@ -57,6 +57,22 @@ theorem partNum_eq_s_a {gp : Pair α} (s_nth_eq : g.s.get? n = some gp) :
 theorem partDen_eq_s_b {gp : Pair α} (s_nth_eq : g.s.get? n = some gp) :
     g.partDens.get? n = some gp.b := by simp [partDens, s_nth_eq]
 
+theorem partNum!_eq_s_a [Zero α] {gp : Pair α} (s_nth_eq : g.s.get? n = some gp) :
+    g.partNums! n = gp.a :=
+  show (g.partNums.get? n).getD 0 = gp.a from partNum_eq_s_a s_nth_eq ▸ Option.getD_some
+
+theorem partDen!_eq_s_b [One α] {gp : Pair α} (s_nth_eq : g.s.get? n = some gp) :
+    g.partDens! n = gp.b :=
+  show (g.partDens.get? n).getD 1 = gp.b from partDen_eq_s_b s_nth_eq ▸ Option.getD_some
+
+theorem partNum!_of_terminatedAt [Zero α] (hg : g.TerminatedAt n) :
+    g.partNums! n = 0 :=
+  show (g.partNums.get? n).getD 0 = 0 from terminatedAt_iff_partNum_none.mp hg ▸ Option.getD_none
+
+theorem partDen!_of_terminatedAt [One α] (hg : g.TerminatedAt n) :
+    g.partDens! n = 1 :=
+  show (g.partDens.get? n).getD 1 = 1 from terminatedAt_iff_partDen_none.mp hg ▸ Option.getD_none
+
 theorem exists_s_a_of_partNum {a : α} (nth_partNum_eq : g.partNums.get? n = some a) :
     ∃ gp, g.s.get? n = some gp ∧ gp.a = a := by
   simpa [partNums, Stream'.Seq.map_get?] using nth_partNum_eq
