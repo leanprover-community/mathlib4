@@ -11,7 +11,6 @@ public import Mathlib.Data.Multiset.Lattice
 public import Mathlib.Data.Set.BooleanAlgebra
 public import Mathlib.Order.Hom.BoundedLattice
 public import Mathlib.Order.Nat
-public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 
 /-!
 # Lattice operations on finsets
@@ -294,14 +293,6 @@ theorem sup_eq_iSup [CompleteLattice β] (s : Finset α) (f : α → β) : s.sup
   le_antisymm
     (Finset.sup_le (fun a ha => le_iSup_of_le a <| le_iSup (fun _ => f a) ha))
     (iSup_le fun _ => iSup_le fun ha => le_sup ha)
-
-theorem sup_eq_iSup' [ConditionallyCompleteLinearOrderBot β] (s : Finset α) (f : α → β) :
-    s.sup f = ⨆ a ∈ s, f a := by
-  apply le_antisymm
-  · refine Finset.sup_le fun a ha => le_ciSup_of_le ?_ a ?_
-    · exact ⟨s.sup f, fun _ ⟨x, hx⟩ => hx ▸ ciSup_le' fun h => Finset.le_sup h⟩
-    · exact le_ciSup ⟨f a, fun b ⟨_, h⟩ => h ▸ le_rfl⟩ ha
-  · exact ciSup_le' fun a => ciSup_le' fun ha => Finset.le_sup ha
 
 @[to_dual]
 theorem sup_id_eq_sSup [CompleteLattice α] (s : Finset α) : s.sup id = sSup s := by
