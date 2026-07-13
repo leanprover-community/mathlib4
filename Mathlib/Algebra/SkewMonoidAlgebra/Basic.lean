@@ -279,6 +279,7 @@ alias toFinsuppAddEquiv_symm_apply := coeffAddEquiv_symm_apply
 theorem smul_single {S} [SMulZeroClass S k] (s : S) (a : G) (b : k) :
     s • single a b = single a (s • b) :=
   coeff_injective <| by simp
+
 theorem single_injective (a : G) : Function.Injective (single a : k → SkewMonoidAlgebra k G) :=
   coeffAddEquiv.symm.injective.comp (Finsupp.single_injective a)
 
