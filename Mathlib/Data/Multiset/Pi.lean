@@ -148,7 +148,7 @@ protected theorem Nodup.pi {s : Multiset α} {t : ∀ a, Multiset (β a)} :
       refine
         ⟨fun b _ => ((ih hs) fun a' h' => ht a' <| mem_cons_of_mem h').map (Pi.cons_injective has),
           ?_⟩
-      apply Nodup.pairwise
+      refine (ht a <| mem_cons_self _ _).pairwise ?_
       exact fun b₁ _ b₂ _ neb =>
         disjoint_map_map.2 fun f _ g _ eq =>
           have : Pi.cons s a b₁ f a (mem_cons_self _ _) =
