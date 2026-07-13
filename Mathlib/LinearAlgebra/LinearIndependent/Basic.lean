@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Alexander Bentkamp, Anne Baanen
 -/
 module
 
+public import Mathlib.Algebra.Algebra.Hom
 public import Mathlib.Algebra.BigOperators.Fin
 public import Mathlib.LinearAlgebra.LinearIndependent.Defs
 public import Mathlib.Logic.Equiv.Fin.Rotate
@@ -584,3 +585,25 @@ theorem linearIndependent_subsingleton_index_iff [Subsingleton ι] (f : ι → M
   exact ⟨fun h i ↦ by rwa [Unique.eq_default i], fun h ↦ h _⟩
 
 end IsDomain
+
+section Algebra
+
+variable {R S A : Type*} [CommRing R] [CommRing S] [CommRing A]
+  [Algebra R S] [Algebra S A] [Algebra R A] [IsScalarTower R S A] [FaithfulSMul S A]
+
+@[simp]
+theorem LinearIndependent.comp_algebraMap_iff {ι : Type*} {v : ι → S} :
+    LinearIndependent R (algebraMap S A ∘ v) ↔ LinearIndependent R v :=
+  (IsScalarTower.toAlgHom R S A).toLinearMap.linearIndependent_iff (by simp [LinearMap.ker_eq_bot'])
+
+@[simp]
+theorem LinearIndepOn.comp_algebraMap_iff {ι : Type*} {v : ι → S} {s : Set ι} :
+    LinearIndepOn R (algebraMap S A ∘ v) s ↔ LinearIndepOn R v s :=
+  LinearIndependent.comp_algebraMap_iff
+
+@[simp]
+theorem LinearIndepOn.image_algebraMap_iff {s : Set S} :
+    LinearIndepOn R id (algebraMap S A '' s) ↔ LinearIndepOn R id s :=
+  (linearIndepOn_iff_image (by simp)).symm.trans LinearIndepOn.comp_algebraMap_iff
+
+end Algebra
