@@ -61,22 +61,6 @@ open MeasureTheory NNReal ENNReal Topology Set Filter TopologicalSpace
 
 variable {α β ι : Type*} {m : MeasurableSpace α} {μ : Measure α} {p : Set α → Prop}
 
-section prereq
-
-variable [TopologicalSpace α] [TopologicalSpace β]
-
-theorem _root_.Set.iInter_eq_empty_of_eq_empty {i : ι} {f : ι → Set β} (h : f i = ∅) :
-    ⋂ j, f j = ∅ :=
-  subset_eq_empty (iInter_subset _ i) h
-
-theorem _root_.Set.iUnion_symmDiff_iUnion_subset {f g : ι → Set β} :
-    (⋃ n, f n) ∆ ⋃ n, g n ⊆ ⋃ n, f n ∆ g n := by
-  intro
-  simp_all [symmDiff]
-  grind
-
-end prereq
-
 namespace MeasureTheory
 
 namespace Measure
@@ -390,8 +374,10 @@ instance [μ.OuterRegular] [SigmaFinite μ] : μ.Smooth where
     refine ⟨⋃ n, U n, isOpen_iUnion ho, ?_⟩
     calc
     _ = μ ((⋃ n, U n) \ A) := by
-      suffices ⋃ i, (spanningSets μ i) ∩ A ⊆ ⋃ i, U i from by simp_all [← iUnion_inter, symmDiff]
-      exact iUnion_mono'' hsub
+      have hAU : A ⊆ ⋃ i, U i := by
+        have h : ⋃ i, spanningSets μ i ∩ A ⊆ ⋃ i, U i := iUnion_mono'' hsub
+        simpa only [← iUnion_inter, iUnion_spanningSets, univ_inter] using h
+      simp [symmDiff_def, sdiff_eq_empty.2 hAU]
     _ ≤ ∑' n, μ (U n \ A) := by simp [iUnion_diff, measure_iUnion_le]
     _ ≤ ∑' n, μ (U n \ (((spanningSets μ n) ∩ A))) := by gcongr; exact inter_subset_right
     _ ≤ ∑' (n : ℕ), r * 2 ^ (-1 - n : ℤ) := by gcongr; apply hle
@@ -484,29 +470,6 @@ theorem _root_.PerfectlyNormalSpace.smooth_of_finiteSpanningSetsInOpen [Perfectl
     _ ≤ ∑' n, μ (U n ∆ (hs.set n ∩ A)):= by grw [iUnion_symmDiff_iUnion_subset, measure_iUnion_le]
     _ ≤ ∑' (n : ℕ), r * 2 ^ (-1 - n : ℤ) := by gcongr; apply hle
     _ = _ := by simp [ENNReal.tsum_mul_left, ENNReal.tsum_two_zpow_neg_add_one]
-
-@[simp]
-lemma isTopologicalBasis_empty : IsTopologicalBasis {(∅ : Set α)} ↔ IsEmpty α where
-  mp h := by simpa using h.diff_empty
-  mpr h := ⟨by simp, by simp [Set.univ_eq_empty_iff.2], Subsingleton.elim ..⟩
-
-theorem _root_.TopologicalSpace.exists_seq_basis (β) [TopologicalSpace β]
-    [SecondCountableTopology β] :
-    ∃ b : ℕ → Set β, IsTopologicalBasis (range b) := by
-  obtain ⟨t, ht⟩ :=  TopologicalSpace.exists_countable_basis β
-  by_cases! hn : t.Nonempty
-  · obtain ⟨b, rfl⟩ := ht.1.exists_eq_range hn
-    exact ⟨b, ht.2.2⟩
-  · exact ⟨fun n => ∅, by simp_all⟩
-
-theorem _root_.TopologicalSpace.IsTopologicalBasis.continuousOn_iff {b : Set (Set β)}
-    (hb : IsTopologicalBasis b) (f : α → β) (s : Set α) :
-    ContinuousOn f s ↔ ∀ t ∈ b, ∃ u, IsOpen u ∧ f ⁻¹' t ∩ s = u ∩ s := by
-  rw [continuousOn_iff']
-  refine ⟨fun h t ht => h t (hb.isOpen ht), fun h t ht => ?_⟩
-  obtain ⟨ι, g, rfl, hg⟩ := hb.open_eq_iUnion ht
-  choose v hv he using (fun i => h (g i) (hg i))
-  exact ⟨⋃ i, v i, isOpen_iUnion hv, by simp_all [iUnion_inter]⟩
 
 /-- **Lusin's theorem**: if `f : α → β` is a measurable function, `μ` is smooth, and `β` is second
 countable, then for all `ε > 0`, there exists a measurable set `s` such that `μ sᶜ ≤ ε` and the
