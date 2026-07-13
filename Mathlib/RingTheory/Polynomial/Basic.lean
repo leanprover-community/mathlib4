@@ -44,7 +44,7 @@ instance instCharP (p : ℕ) [h : CharP R p] : CharP R[X] p :=
   ⟨fun n => by rw [← map_natCast C, ← C_0, C_inj, h]⟩
 
 instance instExpChar (p : ℕ) [h : ExpChar R p] : ExpChar R[X] p := by
-  cases h; exacts [ExpChar.zero, ExpChar.prime ‹_›]
+  cases h; exacts [ExpChar.subsingleton p, ExpChar.zero, ExpChar.prime ‹_›]
 
 variable (R)
 

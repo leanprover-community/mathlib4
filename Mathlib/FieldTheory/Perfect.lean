@@ -294,7 +294,8 @@ class PerfectField (K : Type*) [Field K] : Prop where
 
 lemma PerfectRing.toPerfectField (K : Type*) (p : ℕ)
     [Field K] [ExpChar K p] [PerfectRing K p] : PerfectField K := by
-  obtain hp | ⟨hp⟩ := ‹ExpChar K p›
+  obtain _ | hp | ⟨hp⟩ := ‹ExpChar K p›
+  · exact (false_of_nontrivial_of_subsingleton K).elim
   · exact ⟨Irreducible.separable⟩
   refine PerfectField.mk fun hf ↦ ?_
   rcases separable_or p hf with h | ⟨-, g, -, rfl⟩
@@ -317,7 +318,8 @@ variable [PerfectField K]
 /-- A perfect field of characteristic `p` (prime) is a perfect ring. -/
 instance toPerfectRing (p : ℕ) [hp : ExpChar K p] : PerfectRing K p := by
   refine PerfectRing.ofSurjective _ _ fun y ↦ ?_
-  rcases hp with _ | hp
+  rcases hp with _ | _ | hp
+  · exact (false_of_nontrivial_of_subsingleton K).elim
   · simp [frobenius]
   rw [← not_forall_not]
   apply mt (X_pow_sub_C_irreducible_of_prime hp)
