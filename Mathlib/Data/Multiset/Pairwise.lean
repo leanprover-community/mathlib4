@@ -6,7 +6,7 @@ Authors: Chris Hughes
 module
 
 public import Mathlib.Data.List.Pairwise
-public import Mathlib.Data.Multiset.Defs
+public import Mathlib.Data.Multiset.Basic
 
 /-!
 # Pairwise relations on a multiset
@@ -21,9 +21,10 @@ namespace Multiset
 
 variable {α : Type*} {r : α → α → Prop} {s : Multiset α}
 
-theorem Pairwise.forall [Std.Symm r] (hs : Pairwise r s) :
+theorem Pairwise.forall [Std.Symm r] (hs : s.Pairwise r) :
     ∀ ⦃a⦄, a ∈ s → ∀ ⦃b⦄, b ∈ s → a ≠ b → r a b :=
-  let ⟨_, hl₁, hl₂⟩ := hs
-  hl₁.symm ▸ hl₂.forall
+  have h : List.Pairwise r s.toList := by grind [pairwise_coe_iff_pairwise, coe_toList]
+  fun a ha b hb => List.Pairwise.forall h (by simp [ha]) (by simp [hb])
+
 
 end Multiset
