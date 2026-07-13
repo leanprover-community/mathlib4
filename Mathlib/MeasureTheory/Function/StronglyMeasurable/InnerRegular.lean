@@ -6,13 +6,14 @@ Authors: Yongxi Lin
 module
 
 public import Mathlib.MeasureTheory.Function.StronglyMeasurable.AEStronglyMeasurable
+public import Mathlib.MeasureTheory.Measure.Regular
 public import Mathlib.Topology.DiscreteFamily
 
 import Mathlib.Data.Set.Card
 import Mathlib.Data.Finset.Max
 import Mathlib.Analysis.Real.Cardinality
+import Mathlib.MeasureTheory.Function.LusinContinuous
 import Mathlib.MeasureTheory.Integral.Lebesgue.Add
-import Mathlib.MeasureTheory.Measure.Regular
 import Mathlib.MeasureTheory.Measure.Real
 import Mathlib.Order.Filter.CardinalInter
 import Mathlib.Order.Filter.Ultrafilter.Basic
@@ -1194,6 +1195,42 @@ private theorem Measure.measure_iUnion_eq_zero_of_pairwiseDisjoint_of_lusin_aux
   · exact μ.measure_iUnion_eq_zero_of_pairwiseDisjoint_of_splits_aux A hA hAmeas hLusin hsplit
   · exact μ.measure_iUnion_eq_zero_of_pairwiseDisjoint_of_atom_aux A hA hnull hAmeas hatom
 
+/-- An arbitrary union of a pairwise disjoint family of null sets is null if every subunion is
+measurable and the finite measure is compact-inner-regular. -/
+theorem Measure.measure_iUnion_eq_zero_of_pairwiseDisjoint
+    [TopologicalSpace X] [OpensMeasurableSpace X] [T2Space X]
+    [IsFiniteMeasure μ] [μ.InnerRegularCompactLTTop] {i : Type u} (A : i → Set X)
+    (hA : Pairwise (Disjoint on A)) (hnull : ∀ j, μ (A j) = 0)
+    (hAmeas : ∀ s : Set i, MeasurableSet (⋃ j ∈ s, A j)) :
+    μ (⋃ j, A j) = 0 := by
+  apply μ.measure_iUnion_eq_zero_of_pairwiseDisjoint_of_lusin_aux A hA hnull hAmeas
+  intro g hg U hUmeas hUpos
+  obtain ⟨K, hKU, hKcompact, hgK, hUK⟩ :=
+    Measurable.exists_isCompact_continuousOn μ hg hUmeas (measure_ne_top μ U) hUpos
+  refine ⟨K, hKU, hKcompact, hgK, ?_⟩
+  rw [pos_iff_ne_zero]
+  intro hKzero
+  rw [measure_sdiff_null hKzero] at hUK
+  exact hUK.false
+
+/-- The measure of an arbitrary measurable union of pairwise disjoint sets is the sum of their
+measures for a finite compact-inner-regular measure. -/
+theorem Measure.measure_iUnion_eq_tsum_of_pairwiseDisjoint
+    [TopologicalSpace X] [OpensMeasurableSpace X] [T2Space X]
+    [IsFiniteMeasure μ] [μ.InnerRegularCompactLTTop] {i : Type u} (s : i → Set X)
+    (hdisj : Pairwise (Disjoint on s))
+    (hmeas : ∀ I : Set i, MeasurableSet (⋃ j ∈ I, s j)) :
+    μ (⋃ j, s j) = ∑' j, μ (s j) := by
+  refine μ.measure_iUnion_eq_tsum_of_pairwiseDisjoint_of_null s hdisj hmeas ?_
+  let i₀ := {j | μ (s j) = 0}
+  refine μ.measure_iUnion_eq_zero_of_pairwiseDisjoint (fun j : i₀ ↦ s j)
+    (fun j k hjk ↦ hdisj fun hjk' ↦ hjk (Subtype.ext hjk')) (fun j ↦ j.2) ?_
+  intro I
+  convert hmeas ((↑) '' I) using 1
+  ext x
+  simp only [mem_iUnion, mem_image, Subtype.exists, exists_and_right, exists_eq_right]
+  aesop
+
 omit [PseudoMetrizableSpace Y] in
 private theorem measure_preimage_iUnion_null_of_discreteFamily_aux [SFinite μ]
     (hf : Measurable f) {b : Set (Set Y)} (hb_open : ∀ U ∈ b, IsOpen U)
@@ -1356,5 +1393,42 @@ theorem aestronglyMeasurable_iff_aemeasurable_of_iUnion_null [SFinite μ]
     AEStronglyMeasurable f μ ↔ AEMeasurable f μ :=
   ⟨AEStronglyMeasurable.aemeasurable,
     fun hf ↦ AEMeasurable.aestronglyMeasurable_of_iUnion_null hf hnull⟩
+
+/-- A measurable map into a pseudometrizable Borel space has an almost everywhere closed separable
+range with respect to a finite compact-inner-regular measure. -/
+theorem Measurable.exists_isClosed_isSeparable_ae_mem
+    [TopologicalSpace X] [OpensMeasurableSpace X] [T2Space X]
+    [IsFiniteMeasure μ] [μ.InnerRegularCompactLTTop] (hf : Measurable f) :
+    ∃ s : Set Y, IsClosed s ∧ IsSeparable s ∧ ∀ᵐ x ∂μ, f x ∈ s :=
+  Measurable.exists_isClosed_isSeparable_ae_mem_of_iUnion_null hf fun s hdisj hnull hmeas ↦
+    μ.measure_iUnion_eq_zero_of_pairwiseDisjoint s hdisj hnull hmeas
+
+/-- An almost everywhere measurable map into a pseudometrizable Borel space has an almost
+everywhere closed separable range with respect to a finite compact-inner-regular measure. -/
+theorem AEMeasurable.exists_isClosed_isSeparable_ae_mem
+    [TopologicalSpace X] [OpensMeasurableSpace X] [T2Space X]
+    [IsFiniteMeasure μ] [μ.InnerRegularCompactLTTop] (hf : AEMeasurable f μ) :
+    ∃ s : Set Y, IsClosed s ∧ IsSeparable s ∧ ∀ᵐ x ∂μ, f x ∈ s :=
+  AEMeasurable.exists_isClosed_isSeparable_ae_mem_of_iUnion_null hf fun s hdisj hnull hmeas ↦
+    μ.measure_iUnion_eq_zero_of_pairwiseDisjoint s hdisj hnull hmeas
+
+/-- Almost everywhere measurable maps into pseudometrizable Borel spaces are almost everywhere
+strongly measurable with respect to finite compact-inner-regular measures. -/
+theorem AEMeasurable.aestronglyMeasurable_of_innerRegular
+    [TopologicalSpace X] [OpensMeasurableSpace X] [T2Space X]
+    [IsFiniteMeasure μ] [μ.InnerRegularCompactLTTop] (hf : AEMeasurable f μ) :
+    AEStronglyMeasurable f μ := by
+  refine aestronglyMeasurable_iff_aemeasurable_separable.2 ⟨hf, ?_⟩
+  obtain ⟨s, -, hs, hfs⟩ := AEMeasurable.exists_isClosed_isSeparable_ae_mem hf
+  exact ⟨s, hs, hfs⟩
+
+/-- Almost everywhere strong measurability and almost everywhere measurability agree for maps into
+pseudometrizable Borel spaces with respect to finite compact-inner-regular measures. -/
+theorem aestronglyMeasurable_iff_aemeasurable_of_innerRegular
+    [TopologicalSpace X] [OpensMeasurableSpace X] [T2Space X]
+    [IsFiniteMeasure μ] [μ.InnerRegularCompactLTTop] :
+    AEStronglyMeasurable f μ ↔ AEMeasurable f μ :=
+  ⟨AEStronglyMeasurable.aemeasurable,
+    AEMeasurable.aestronglyMeasurable_of_innerRegular⟩
 
 end MeasureTheory
