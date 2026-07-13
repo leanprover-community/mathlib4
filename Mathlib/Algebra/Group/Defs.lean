@@ -650,18 +650,18 @@ theorem ppowRec_eq {M : Type*} [Mul M] (k : ℕ+) (m : M) :
 /-- Exponentiation by repeated squaring against a starting element. -/
 @[to_additive /-- Scalar multiplication by repeated self-addition,
 the additive version of exponentiation by repeated squaring, against a starting element. -/]
-def npowBinRec_aux {M : Type*} [Mul M] (base : M) (k : ℕ) : M → M :=
-  npowBinRec_aux.go k base
+def npowBinRecAux {M : Type*} [Mul M] (base : M) (k : ℕ) : M → M :=
+  npowBinRecAux.go k base
 where
-  /-- Auxiliary tail-recursive implementation for `npowBinRec_aux`. -/
+  /-- Auxiliary tail-recursive implementation for `npowBinRecAux`. -/
   @[to_additive nsmulBinRec.go
-    /-- Auxiliary tail-recursive implementation for `nsmulBinRec_aux`. -/]
+    /-- Auxiliary tail-recursive implementation for `nsmulBinRecAux`. -/]
   go (k : ℕ) : M → M → M :=
     k.binaryRec (fun y _ ↦ y) fun bn _n fn y x ↦ fn (cond bn (y * x) y) (x * x)
 
 @[to_additive]
-theorem npowBinRec_aux.go_spec {M : Type*} [Semigroup M] (base : M) (k : ℕ) (m n : M) :
-    npowBinRec_aux.go (k + 1) m n = m * npowRec' base (k + 1) n := by
+theorem npowBinRecAux.go_spec {M : Type*} [Semigroup M] (base : M) (k : ℕ) (m n : M) :
+    npowBinRecAux.go (k + 1) m n = m * npowRec' base (k + 1) n := by
   unfold go
   generalize hk : k + 1 = k'
   replace hk : k' ≠ 0 := by lia
@@ -684,7 +684,7 @@ so that we can use it in `@[csimp]` for more performant code generation
 as an automatic parameter. -/]
 abbrev ppowBinRec {M : Type*} [Mul M] (_h : ∀ a b c : M, a * b * c = a * (b * c)) (k : ℕ+) (m : M) :
     M :=
-  npowBinRec_aux m (k.val - 1) m
+  npowBinRecAux m (k.val - 1) m
 
 @[to_additive (attr := csimp)]
 theorem ppowRec_eq_ppowBinRec : @ppowRecAuto = @ppowBinRec := by
@@ -692,14 +692,14 @@ theorem ppowRec_eq_ppowBinRec : @ppowRecAuto = @ppowBinRec := by
   let S : Semigroup M := {
     mul_assoc := h
   }
-  rw [ppowBinRec, ppowRecAuto, npowBinRec_aux, ppowRec_eq]
+  rw [ppowBinRec, ppowRecAuto, npowBinRecAux, ppowRec_eq]
   rcases k with ⟨_|k, hk⟩
   · contradiction
   simp only [PNat.mk_coe, Nat.add_one_sub_one]
   clear hk
   cases k
   · rfl
-  · rw [npowBinRec_aux.go_spec m, npowRec'_succ _ (by grind), npowRec'_mul_comm _ (by grind)]
+  · rw [npowBinRecAux.go_spec m, npowRec'_succ _ (by grind), npowRec'_mul_comm _ (by grind)]
 
 @[to_additive] theorem ppowBinRec_one {M : Type*} [Semigroup M] (m : M) :
     ppowBinRec mul_assoc 1 m = m := rfl
@@ -712,7 +712,7 @@ theorem ppowRec_eq_ppowBinRec : @ppowRecAuto = @ppowBinRec := by
 @[to_additive /-- Scalar multiplication by repeated self-addition,
 the additive version of exponentiation by repeated squaring. -/]
 def npowBinRec {M : Type*} [One M] [Mul M] (k : ℕ) : M → M :=
-  npowBinRec_aux 1 k
+  npowBinRecAux 1 k
 
 /--
 An abbreviation for `npowRec` with an additional typeclass assumption on associativity
@@ -740,10 +740,10 @@ abbrev npowBinRecAuto {M : Type*} [Semigroup M] [One M] (k : ℕ) (m : M) : M :=
 @[to_additive (attr := csimp)]
 theorem npowRec_eq_npowBinRec : @npowRecAuto = @npowBinRecAuto := by
   funext M _ _ k m
-  rw [npowBinRecAuto, npowRecAuto, npowBinRec, npowBinRec_aux]
+  rw [npowBinRecAuto, npowRecAuto, npowBinRec, npowBinRecAux]
   match k with
-  | 0 => rw [npowRec, npowBinRec_aux.go, Nat.binaryRec_zero]
-  | k + 1 => rw [npowBinRec_aux.go_spec, npowRec_eq]
+  | 0 => rw [npowRec, npowBinRecAux.go, Nat.binaryRec_zero]
+  | k + 1 => rw [npowBinRecAux.go_spec, npowRec_eq]
 
 @[to_additive] theorem npowBinRec_zero {M : Type*} [Mul M] [One M] (m : M) :
     npowBinRec 0 m = 1 := rfl
