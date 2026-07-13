@@ -350,17 +350,26 @@ def image (e : X ≃ₜ Y) (s : Set X) : s ≃ₜ e '' s where
 
 /-- `Set.univ X` is homeomorphic to `X`. -/
 @[simps! -fullyApplied]
-def Set.univ (X : Type*) [TopologicalSpace X] : (univ : Set X) ≃ₜ X where
+protected def Set.univ (X : Type*) [TopologicalSpace X] : (univ : Set X) ≃ₜ X where
   toEquiv := Equiv.Set.univ X
 
 /-- `s ×ˢ t` is homeomorphic to `s × t`. -/
 @[simps!]
-def Set.prod (s : Set X) (t : Set Y) : ↥(s ×ˢ t) ≃ₜ s × t where
+protected def Set.prod (s : Set X) (t : Set Y) : ↥(s ×ˢ t) ≃ₜ s × t where
   toEquiv := Equiv.Set.prod s t
   continuous_toFun :=
     (continuous_subtype_val.fst.subtype_mk _).prodMk (continuous_subtype_val.snd.subtype_mk _)
   continuous_invFun :=
     (continuous_subtype_val.fst'.prodMk continuous_subtype_val.snd').subtype_mk _
+
+/-- `Set.pi univ s` is homeomorphic to `Π i, s i`. -/
+@[simps!]
+protected def Set.univPi {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)]
+    (s : Π i, Set (X i)) : ↥(Set.pi _root_.Set.univ s) ≃ₜ Π i, s i where
+  toEquiv := Equiv.Set.univPi s
+  continuous_toFun := continuous_pi fun i ↦
+    continuous_apply i |>.comp continuous_subtype_val |>.subtype_mk _
+  continuous_invFun := by fun_prop
 
 section
 
