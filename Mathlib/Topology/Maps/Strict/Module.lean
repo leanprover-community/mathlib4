@@ -40,6 +40,10 @@ protected lemma isStrictMap_iff_isEmbedding_liftQ_ker :
 `M ⧸ f.ker ≃ f.range` is a homeomorphism. -/
 protected lemma isStrictMap_iff_isHomeomorph_quotKerEquivRange :
     IsStrictMap fₗ ↔ IsHomeomorph fₗ.quotKerEquivRange := by
+  -- Note: right now, this cannot easily be deduced from the `AddMonoidHom` statement, because
+  -- `fₗ.quotKerEquivRange.toAddEquiv` is not def-eq to
+  -- `QuotientAddGroup.quotientKerEquivRange fₗ.toAddMonoidHom`. This would require
+  -- fixing the definition of `LinearMap.quotKerEquivRange`.
   simp_rw [isHomeomorph_iff_isStrictMap_bijective, EquivLike.bijective, and_true,
     fₗ.ker.isQuotientMap_mkQ.isStrictMap_iff, IsEmbedding.subtypeVal.isStrictMap_iff]
   rfl
