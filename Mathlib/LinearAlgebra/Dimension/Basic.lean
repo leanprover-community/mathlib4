@@ -178,8 +178,7 @@ theorem Module.one_le_rank_iff : 1 ≤ Module.rank R M ↔ ∃ f : R →ₗ[R] M
 
 theorem Module.rank_eq_zero_of_not_faithfulSMul (h : ¬ FaithfulSMul R M) : Module.rank R M = 0 := by
   contrapose! h
-  rw [← Cardinal.one_le_iff_ne_zero, one_le_rank_iff] at h
-  obtain ⟨f, hf⟩ := h
+  obtain ⟨f, hf⟩ := by rwa [← Cardinal.one_le_iff_ne_zero, one_le_rank_iff] at h
   exact ⟨fun {x y} hxy ↦ hf (by simpa [← map_smul] using hxy (f 1))⟩
 
 section
