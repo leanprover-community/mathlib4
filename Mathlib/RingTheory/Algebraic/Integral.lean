@@ -56,18 +56,12 @@ theorem foo (R R' S S' : Type*)
     [Algebra R S] [Algebra R R'] [Algebra S S'] [Algebra R' S'] [Algebra R S']
     [IsScalarTower R R' S'] [IsScalarTower R S S']
     [IsFractionRing R R'] [IsFractionRing S S']
-    {ι : Type*} [Finite ι] {s : ι → S} (hs : LinearIndependent R s) :
-    LinearIndependent R' (algebraMap S S' ∘ s) := by
-  cases nonempty_fintype ι
-  rw [Fintype.linearIndependent_iff] at hs ⊢
-  intro g hg i
-  simp_rw [Function.comp_apply] at hg
-  specialize hs (fun i ↦ integerMultiple R⁰ Finset.univ g ⟨i, Finset.mem_univ i⟩) ?_ i
-  · apply FaithfulSMul.algebraMap_injective S S'
-    simp_rw [map_sum, map_zero, Algebra.smul_def, map_mul, ← IsScalarTower.algebraMap_apply,
-      IsScalarTower.algebraMap_apply R R' S', map_integerMultiple, Submonoid.smul_def,
-      Algebra.smul_def, map_mul, mul_assoc, ← Finset.mul_sum, ← Algebra.smul_def, hg, smul_zero]
-  · rwa [integerMultiple_eq_zero_iff] at hs
+    {ι : Type*} {s : ι → S} :
+    LinearIndependent R' (algebraMap S S' ∘ s) ↔ LinearIndependent R s := by
+  rw [← IsScalarTower.coe_toAlgHom' R S S', ← AlgHom.coe_toLinearMap,
+    ← LinearIndependent.iff_fractionRing R R']
+  simp_rw [linearIndependent_iff, Finsupp.linearCombination_linear_comp]
+  simp
 
 noncomputable def Finset.equivMap {α β : Type*} (s : Finset α) (f : α ↪ β) : s ≃ s.map f :=
   .ofBijective (fun x ↦ ⟨f x, s.mem_map_of_mem f x.2⟩) (⟨fun x y ↦ by simp, fun ⟨x, hx⟩ ↦ by
@@ -147,7 +141,7 @@ theorem IsFractionRing.finrank_eq (R R' S S' : Type*)
     exact ⟨finsetIntegerMultiple S⁰ s, card_finsetIntegerMultiple S⁰ s, foo' R R' S S' hs⟩
   · rintro ⟨s, rfl, hs⟩
     let f : S ↪ S' := ⟨algebraMap S S', FaithfulSMul.algebraMap_injective S S'⟩
-    exact ⟨s.map f, s.card_map f, (linearIndependent_equiv (s.equivMap f)).mp (foo R R' S S' hs)⟩
+    exact ⟨s.map f, s.card_map f, (linearIndependent_equiv (s.equivMap f)).mp ((foo R R' S S').mpr hs)⟩
 
 #exit
 
