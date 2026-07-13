@@ -7895,6 +7895,7 @@ public import Mathlib.Topology.Defs.Sequences
 public import Mathlib.Topology.Defs.Ultrafilter
 public import Mathlib.Topology.DenseEmbedding
 public import Mathlib.Topology.DerivedSet
+public import Mathlib.Topology.DiscreteFamily
 public import Mathlib.Topology.DiscreteQuotient
 public import Mathlib.Topology.DiscreteSubset
 public import Mathlib.Topology.EMetricSpace.Basic
