@@ -150,11 +150,17 @@ theorem mapDomain_notin_range {f : α → β} (x : Π₀ a, M (f a)) (a : β) (h
   exact Finset.sum_eq_zero fun a' _ => single_eq_of_ne fun eq => h <| eq ▸ Set.mem_range_self _
 
 @[simp]
-theorem mapDomain_id (x : Π₀ b, M b) : mapDomain id x = x :=
+theorem mapDomain_fun_id (x : Π₀ b, M b) : mapDomain (·) x = x :=
   congr($(sumAddHom_singleAddHom) x)
 
+/-- Note that `x` the RHS is mildly type-incorrect. -/
+@[simp]
+theorem mapDomain_id (x : Π₀ b, M (id b)) :
+    mapDomain id x = x :=
+  mapDomain_fun_id x
+
 theorem mapDomain_comp (g : α → β) (f : γ → α) (x : Π₀ c, M (g (f c))) :
-    mapDomain (g ∘ f) x = mapDomain g (mapDomain f x) := by
+    mapDomain (fun x => g (f x)) x = mapDomain g (mapDomain f x) := by
   classical
   simp_rw [mapDomain_eq_sum]
   refine ((sum_sum_index ?_ ?_).trans ?_).symm
@@ -180,6 +186,12 @@ theorem mapDomain_congr {f g : α → β} [(x : N) → Decidable (x ≠ 0)]
   simp_rw [mapDomain_eq_sum]
   apply sum_congr
   simp +contextual [h]
+
+/-- Since `f` and `g` affect the input types, we need to insert a cast in the dependent case. -/
+theorem mapDomain_dcongr {f g : α → β} (v : Π₀ x : α, M (f x)) (h : f = g) :
+    v.mapDomain f = (mapDomain g (mapRange (fun i x => h ▸ x) (by grind) v)) := by
+  cases h
+  erw [mapRange_fun_id]
 
 theorem mapDomain_add {f : α → β} (v₁ v₂ : Π₀ a, M (f a)) :
     mapDomain f (v₁ + v₂) = mapDomain f v₁ + mapDomain f v₂ :=
@@ -209,7 +221,7 @@ theorem mapDomain.addMonoidHom_id : mapDomain.addMonoidHom id = AddMonoidHom.id 
   AddMonoidHom.ext fun _ => mapDomain_id _
 
 theorem mapDomain.addMonoidHom_comp (g : α → β) (f : γ → α) :
-    (mapDomain.addMonoidHom (g ∘ f) : (Π₀ b, M (g (f b))) →+ (Π₀ b, M b)) =
+    (mapDomain.addMonoidHom (g <| f ·) : (Π₀ b, M (g (f b))) →+ (Π₀ b, M b)) =
       (mapDomain.addMonoidHom g).comp (mapDomain.addMonoidHom f) :=
   AddMonoidHom.ext fun _ => mapDomain_comp _ _ _
 
@@ -316,18 +328,11 @@ theorem mapDomain_rightInverse {f : α → β} {g : β → α} (hf : RightInvers
       (mapDomain g ∘ mapRange (fun b x => hf b |>.symm ▸ x) (by grind))
       (mapDomain (M := M) f) := by
   intro x
-  have mapDomain_congr {F : β → β} (hF : F = id) (v : Π₀ b, M (F b)) :
-      mapDomain F v =
-        mapDomain id
-          (mapRange (fun b x => (show F b = b from congrFun hF b) ▸ x) (by grind) v) := by
-    cases hF
-    congr
-    erw [mapRange_id]
-  rw [Function.comp_apply, ← mapDomain_comp]
-  rw [mapDomain_congr hf.id, mapDomain_id]
-  convert mapRange_comp _ _ _ _ _ x |>.symm
-  · simp only [Function.comp_def]
-    convert mapRange_id _ _ |>.symm <;> grind
+  rw! (castMode := .all) [Function.comp_apply, ← mapDomain_comp,
+    mapDomain_dcongr _ (show (f <| g ·) = (·) from hf.id),
+    mapDomain_fun_id, ← mapRange_fun_comp]
+  · convert mapRange_fun_id _
+    grind
   · grind
 
 theorem mapDomain_surjective {f : α → β} (hf : f.Surjective) :
