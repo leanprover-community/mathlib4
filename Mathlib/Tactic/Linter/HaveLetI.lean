@@ -49,6 +49,7 @@ public register_option linter.style.haveILetI : Bool := {
 def runHaveI (tk : Syntax) (c : TSyntax ``letConfig) (d : TSyntax ``letDecl) : TacticM Unit := do
   evalTactic (← `(tactic| haveI $c:letConfig $d:letDecl))
   if getLinterValue linter.style.haveILetI (← getLinterOptions) then
+    withMainContext do
     if ← isProp (← getMainTarget) then
       TryThis.addSuggestion tk "have"
 
