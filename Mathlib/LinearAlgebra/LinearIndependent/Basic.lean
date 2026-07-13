@@ -588,7 +588,7 @@ end IsDomain
 
 section Algebra
 
-variable {R S A : Type*} [CommRing R] [CommRing S] [CommRing A]
+variable {R S A : Type*} [CommSemiring R] [CommSemiring S] [Semiring A]
   [Algebra R S] [Algebra S A] [Algebra R A] [IsScalarTower R S A] [FaithfulSMul S A]
 
 @[simp]
