@@ -151,7 +151,8 @@ private theorem exists_pairwiseDisjoint_iUnion_eq_aux {R α : Type*} (B : R → 
     · change Disjoint (M r) (M t)
       rw [disjoint_comm, Set.disjoint_left]
       exact fun x hxt hxr ↦ hxr.2 (mem_iUnion.2 ⟨⟨t, htr⟩, hxt.1⟩)
-  refine ⟨M, hMdisj, fun _ ↦ sdiff_subset, Subset.antisymm (iUnion_mono fun _ ↦ sdiff_subset) ?_⟩
+  refine ⟨M, hMdisj, fun _ ↦ sdiff_subset,
+    Subset.antisymm (iUnion_mono fun _ ↦ sdiff_subset) ?_⟩
   intro x hx
   obtain ⟨r, hxr⟩ := mem_iUnion.1 hx
   let r₀ : R := wellFounded_lt.min {r : R | x ∈ B r} ⟨r, hxr⟩
@@ -629,7 +630,8 @@ private theorem Measure.exists_nullFiber_map_of_splits_aux {i : Type*} [Measurab
     rw [← hxb]
     rw [← path_eq_pref x n]
     exact hxnode hx.1 n
-  exact ⟨code, fun b ↦ bot_unique (ge_of_tendsto' (hlim b) fun n ↦ measure_mono (hfiber b n))⟩
+  exact ⟨code, fun b ↦
+    bot_unique (ge_of_tendsto' (hlim b) fun n ↦ measure_mono (hfiber b n))⟩
 
 private def UncountableCompactUnitInterval :=
   {K : Set ℝ // IsCompact K ∧ K ⊆ Icc 0 1 ∧ ¬K.Countable}
@@ -795,7 +797,8 @@ private theorem exists_bernstein_unitInterval :
 
 private theorem exists_measurable_eqOn_pairwiseDisjoint {i : Type*} (A : i → Set X)
     (hA : Pairwise (Disjoint on A)) (hAmeas : ∀ s : Set i, MeasurableSet (⋃ j ∈ s, A j))
-    (label : i → ℝ) : ∃ g : X → ℝ, Measurable g ∧ ∀ j, Set.EqOn g (fun _ ↦ label j) (A j) := by
+    (label : i → ℝ) :
+    ∃ g : X → ℝ, Measurable g ∧ ∀ j, Set.EqOn g (fun _ ↦ label j) (A j) := by
   classical
   let U : Set X := ⋃ j, A j
   let g : X → ℝ := fun x ↦ if hx : ∃ j, x ∈ A j then label (Classical.choose hx) else 0
@@ -873,7 +876,8 @@ private theorem measure_eq_zero_of_countable_image_aux (g : X → ℝ) {U K : Se
   rw [show K = ⋃ r : g '' K, K ∩ g ⁻¹' {(r : ℝ)} by
     ext x
     simp only [mem_iUnion, mem_inter_iff, mem_preimage, mem_singleton_iff]
-    exact ⟨fun hx ↦ ⟨⟨g x, mem_image_of_mem g hx⟩, hx, rfl⟩, fun ⟨_, hx, _⟩ ↦ hx⟩]
+    exact ⟨fun hx ↦ ⟨⟨g x, mem_image_of_mem g hx⟩, hx, rfl⟩,
+      fun ⟨_, hx, _⟩ ↦ hx⟩]
   apply measure_iUnion_null
   intro r
   have hsub : K ∩ g ⁻¹' {(r : ℝ)} ⊆ g ⁻¹' {(r : ℝ)} ∩ U := fun _ hx ↦
@@ -905,7 +909,8 @@ private theorem Measure.measure_iUnion_eq_zero_of_pairwiseDisjoint_of_splits_aux
   have hbranch : Cardinal.mk (ℕ → Bool) = 𝔠 := by
     rw [← Cardinal.power_def, Cardinal.mk_bool, Cardinal.mk_nat, Cardinal.two_power_aleph0]
   have hbranchB : Cardinal.mk (ℕ → Bool) ≤ Cardinal.mk B := by rw [hbranch, hBcard]
-  obtain ⟨e⟩ : Nonempty ((ℕ → Bool) ↪ B) := Cardinal.lift_mk_le'.1 (by simpa using hbranchB)
+  obtain ⟨e⟩ : Nonempty ((ℕ → Bool) ↪ B) :=
+    Cardinal.lift_mk_le'.1 (by simpa using hbranchB)
   let label : i → ℝ := fun j ↦ e (code j)
   obtain ⟨g, hg, hgA⟩ := exists_measurable_eqOn_pairwiseDisjoint A hA hAmeas label
   let U : Set X := ⋃ j, A j
@@ -1271,8 +1276,21 @@ private theorem measure_preimage_iUnion_null_of_discreteFamily_aux [SFinite μ]
   rw [show f ⁻¹' ⋃ U : {U : b | μ (f ⁻¹' (U : Set Y)) = 0}, (U : Set Y) =
       ⋃ U, A U by
     ext x
-    simp only [A, q, mem_preimage, mem_iUnion, Subtype.exists, mem_setOf_eq, exists_prop]
-    aesop]
+    constructor
+    · intro hx
+      change f x ∈ ⋃ U : {U : b | μ (f ⁻¹' (U : Set Y)) = 0}, (U : Set Y) at hx
+      obtain ⟨U, hxU⟩ := mem_iUnion.1 hx
+      apply mem_iUnion.2
+      refine ⟨(U : Set Y), ?_⟩
+      have hUq : (U : Set Y) ∈ q := ⟨U.1.2, U.2⟩
+      simpa [A, hUq] using hxU
+    · intro hx
+      obtain ⟨U, hxU⟩ := mem_iUnion.1 hx
+      by_cases hU : U ∈ q
+      · change f x ∈ ⋃ U : {U : b | μ (f ⁻¹' (U : Set Y)) = 0}, (U : Set Y)
+        exact mem_iUnion_of_mem ⟨⟨U, hU.1⟩, hU.2⟩ (by simpa [A, hU] using hxU)
+      · exfalso
+        simp [A, hU] at hxU]
   exact hnull A hA_disj hA_null hA_union
 
 omit [PseudoMetrizableSpace Y] in
