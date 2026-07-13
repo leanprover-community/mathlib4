@@ -298,7 +298,7 @@ theorem nonempty_algEquiv_iff_finrank_eq_one
     [Module.Free R S] : Nonempty (R ≃ₐ[R] S) ↔ finrank R S = 1 := by
   rw [← nonempty_linearEquiv_iff_finrank_eq_one]
   exact ⟨fun ⟨e⟩ ↦ ⟨e⟩, fun ⟨e⟩ ↦
-    ⟨AlgEquiv.ofBijective (Algebra.ofId R S) (bijective_algebraMap_of_linearEquiv e)⟩⟩
+    ⟨.ofBijective (Algebra.ofId R S) (bijective_algebraMap_of_linearEquiv e)⟩⟩
 
 variable (R M)
 
