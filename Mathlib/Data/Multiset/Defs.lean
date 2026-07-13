@@ -331,18 +331,15 @@ instance decidableDexistsMultiset {p : ∀ a ∈ m, Prop} [_hp : ∀ (a) (h : a 
 
 end Decidable
 
-/-- `Pairwise r m` states that there exists a list of the elements s.t. `r` holds pairwise on this
-list. -/
-def Pairwise (r : α → α → Prop) (m : Multiset α) : Prop :=
-  ∃ l : List α, m = l ∧ l.Pairwise r
 
-theorem pairwise_coe_iff {r : α → α → Prop} {l : List α} :
-    Multiset.Pairwise r l ↔ ∃ l' : List α, l ~ l' ∧ l'.Pairwise r :=
-  exists_congr <| by simp
+/-- `Pairwise r m` inherited from `List.Pairwise` -/
+def Pairwise (r : α → α → Prop) (m : Multiset α) [inst : Std.Symm r] : Prop := Quotient.lift
+  (List.Pairwise r ·) (fun _ _ h ↦ propext <| List.Perm.pairwise_iff (inst.symm _ _) h) m
 
 theorem pairwise_coe_iff_pairwise {r : α → α → Prop} [Std.Symm r] {l : List α} :
-    Multiset.Pairwise r l ↔ l.Pairwise r :=
-  ⟨fun ⟨_l', Eq, h⟩ ↦ Quotient.exact Eq |>.pairwise_iff symm |>.mpr h, fun h ↦ ⟨l, rfl, h⟩⟩
+    Multiset.Pairwise r l ↔ l.Pairwise r := by
+  rfl
+
 
 section Nodup
 
