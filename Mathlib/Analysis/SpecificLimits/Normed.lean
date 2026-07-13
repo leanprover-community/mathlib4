@@ -536,14 +536,9 @@ theorem hasSum_pow_mul_geometric_of_norm_lt_one' (k : ℕ) {r : R} (h : ‖r‖ 
     HasSum (fun n : ℕ ↦ (n : R) ^ k * r ^ n)
       (∑ j ∈ Finset.range (k + 1),
         (stirlingSecond k j : R) * j.factorial * r ^ j * ((1 - r)⁻¹ʳ) ^ (j + 1)) := by
-  have hfun : (fun n : ℕ ↦ (n : R) ^ k * r ^ n) = fun n : ℕ ↦ ∑ j ∈ Finset.range (k + 1),
-      (stirlingSecond k j : R) * ((n.descFactorial j : R) * r ^ n) := by
-    funext n
-    rw [← Nat.cast_pow, Nat.pow_eq_sum_stirlingSecond_mul_descFactorial n k]
-    push_cast [Finset.sum_mul, mul_assoc]
-    rfl
-  simpa only [hfun, mul_assoc] using hasSum_sum fun j _ ↦
-    (hasSum_descFactorial_mul_geometric_of_norm_lt_one' j h).mul_left _
+  simpa only [← Nat.cast_pow, Nat.pow_eq_sum_stirlingSecond_mul_descFactorial, Nat.cast_sum,
+    Nat.cast_mul, Finset.sum_mul, mul_assoc] using
+    hasSum_sum fun j _ ↦ (hasSum_descFactorial_mul_geometric_of_norm_lt_one' j h).mul_left _
 
 /-- If `‖r‖ < 1`, then `∑' n : ℕ, n ^ k * r ^ n` is given by the finite sum
 `∑ j ∈ range (k + 1), S(k, j) * j ! * r ^ j * ((1 - r)⁻¹ʳ) ^ (j + 1)`, where `S(k, j)` denotes the
