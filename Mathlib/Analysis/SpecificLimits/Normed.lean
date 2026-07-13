@@ -536,7 +536,6 @@ theorem hasSum_pow_mul_geometric_of_norm_lt_one' (k : ℕ) {r : R} (h : ‖r‖ 
     HasSum (fun n : ℕ ↦ (n : R) ^ k * r ^ n)
       (∑ j ∈ Finset.range (k + 1),
         (stirlingSecond k j : R) * j.factorial * r ^ j * ((1 - r)⁻¹ʳ) ^ (j + 1)) := by
-  -- Question: shouldn't this hfun be extracted as another lemma
   have hfun : (fun n : ℕ ↦ (n : R) ^ k * r ^ n) = fun n : ℕ ↦ ∑ j ∈ Finset.range (k + 1),
       (stirlingSecond k j : R) * ((n.descFactorial j : R) * r ^ n) := by
     funext n
