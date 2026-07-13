@@ -32,44 +32,22 @@ namespace GenContFract
 
 variable {g : GenContFract K} {n : ℕ}
 
-private theorem determinant_aux (hyp : n = 0 ∨ ¬g.TerminatedAt (n - 1)) :
-    (g.contsAux n).a * (g.contsAux (n + 1)).b -
-      (g.contsAux n).b * (g.contsAux (n + 1)).a =
-        ∏ i ∈ Finset.range n, - (g.partNums.get? i).getD 0 := by
-  induction n with
-  | zero => simp [contsAux]
-  | succ n IH =>
-    -- set up some shorthand notation
-    let conts := contsAux g (n + 2)
-    set pred_conts := contsAux g (n + 1) with pred_conts_eq
-    set ppred_conts := contsAux g n with ppred_conts_eq
-    let pA := pred_conts.a
-    let pB := pred_conts.b
-    let ppA := ppred_conts.a
-    let ppB := ppred_conts.b
-    -- let's change the goal to something more readable
-    change pA * conts.b - pB * conts.a = ∏ i ∈ Finset.range (n + 1), -(g.partNums.get? i).getD 0
-    have not_terminated_at_n : ¬TerminatedAt g n := Or.resolve_left hyp n.succ_ne_zero
-    obtain ⟨gp, s_nth_eq⟩ : ∃ gp, g.s.get? n = some gp :=
-      Option.ne_none_iff_exists'.1 not_terminated_at_n
-    -- unfold the recurrence relation for `conts` once and simplify to derive the following
-    suffices ppA * pB - ppB * pA = ∏ i ∈ Finset.range n, - (g.partNums.get? i).getD 0 by
-      rw [Finset.prod_range_succ, ← this, partNum_eq_s_a s_nth_eq, Option.getD_some]
-      subst conts
-      rw [contsAux_recurrence s_nth_eq ppred_conts_eq pred_conts_eq]
-      ring
-    exact IH <| Or.inr <| mt (terminated_stable <| n.sub_le 1) not_terminated_at_n
-
 /-- The determinant formula `Aₙ * Bₙ₊₁ - Bₙ * Aₙ₊₁ = (-a₀) * (-a₁) * .. * (-aₙ)`. -/
 theorem determinant :
     g.nums n * g.dens (n + 1) - g.dens n * g.nums (n + 1) =
-      ∏ i ∈ Finset.range (n + 1), - (g.partNums.get? i).getD 0 := by
-  rcases em <| TerminatedAt g n with terminatedAt_n | not_terminatedAt_n
-  · rw [dens_stable_of_terminated n.le_succ terminatedAt_n,
-      nums_stable_of_terminated n.le_succ terminatedAt_n, Finset.prod_range_succ,
-      partNum_none_iff_s_none.mpr terminatedAt_n]
-    grind
-  · exact determinant_aux <| Or.inr <| not_terminatedAt_n
+      ∏ i ∈ Finset.range (n + 1), - g.partNums! i := by
+  induction n with
+  | zero =>
+    suffices g.h * g.dens 1 - g.nums 1 = -g.partNums! 0 by simpa
+    rcases Decidable.em <| g.TerminatedAt 0 with hg | hg
+    · simp [dens_stable_of_terminated zero_le_one, nums_stable_of_terminated zero_le_one,
+        partNum!_of_terminatedAt, hg]
+    · obtain ⟨gp, s_eq⟩ : ∃ gp, g.s.get? 0 = some gp := Option.ne_none_iff_exists'.mp hg
+      rw [partNum!_eq_s_a s_eq, first_den_eq s_eq, first_num_eq s_eq,
+        mul_comm, sub_add_cancel_left]
+  | succ n' ih =>
+    rw [Finset.prod_range_succ_comm, ← ih, dens_recurrence!, nums_recurrence!]
+    ring
 
 end GenContFract
 
