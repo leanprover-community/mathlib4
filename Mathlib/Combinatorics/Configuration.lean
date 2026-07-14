@@ -11,6 +11,7 @@ public import Mathlib.LinearAlgebra.Projectivization.Constructions
 
 /-!
 # Configurations of Points and lines
+
 This file introduces abstract configurations of points and lines, and proves some basic properties.
 
 ## Main definitions
@@ -229,7 +230,7 @@ theorem HasLines.card_le [HasLines P L] [Fintype P] [Fintype L] :
         · rw [lineCount, Nat.card_eq_fintype_card, Fintype.card_pos_iff]
           obtain ⟨l, _⟩ := @exists_line P L _ _ p
           exact
-            let this := not_exists.mp hp l
+            let := not_exists.mp hp l
             ⟨⟨mkLine this, (mkLine_ax this).2⟩⟩
   exact lt_irrefl _ this
 
@@ -285,7 +286,7 @@ theorem HasPoints.lineCount_eq_pointCount [HasPoints P L] [Fintype P] [Fintype L
 @[implicit_reducible]
 noncomputable def HasLines.hasPoints [HasLines P L] [Fintype P] [Fintype L]
     (h : Fintype.card P = Fintype.card L) : HasPoints P L :=
-  let this : ∀ l₁ l₂ : L, l₁ ≠ l₂ → ∃ p : P, p ∈ l₁ ∧ p ∈ l₂ := fun l₁ l₂ hl => by
+  let : ∀ l₁ l₂ : L, l₁ ≠ l₂ → ∃ p : P, p ∈ l₁ ∧ p ∈ l₂ := fun l₁ l₂ hl => by
     classical
       obtain ⟨f, _, hf2⟩ := HasLines.exists_bijective_of_card_eq h
       haveI : Nontrivial L := ⟨⟨l₁, l₂, hl⟩⟩
@@ -320,7 +321,7 @@ noncomputable def HasLines.hasPoints [HasLines P L] [Fintype P] [Fintype L]
 @[implicit_reducible]
 noncomputable def HasPoints.hasLines [HasPoints P L] [Fintype P] [Fintype L]
     (h : Fintype.card P = Fintype.card L) : HasLines P L :=
-  let this := @HasLines.hasPoints (Dual L) (Dual P) _ _ _ _ h.symm
+  let := @HasLines.hasPoints (Dual L) (Dual P) _ _ _ _ h.symm
   { ‹HasPoints P L› with
     mkLine := @fun _ _ => this.mkPoint
     mkLine_ax := @fun _ _ => this.mkPoint_ax }
@@ -450,7 +451,7 @@ theorem card_points [Fintype P] [Finite L] : Fintype.card P = order P L ^ 2 + or
   classical
     have h1 : Fintype.card { q // q ≠ p } + 1 = Fintype.card P := by
       apply (eq_tsub_iff_add_eq_of_le (Nat.succ_le_of_lt (Fintype.card_pos_iff.mpr ⟨p⟩))).mp
-      convert (Fintype.card_subtype_compl _).trans (congr_arg _ (Fintype.card_subtype_eq p))
+      convert! (Fintype.card_subtype_compl _).trans (congr_arg _ (Fintype.card_subtype_eq p))
     have h2 : ∀ l : { l : L // p ∈ l }, Fintype.card { q // q ∈ l.1 ∧ q ≠ p } = order P L := by
       intro l
       rw [← Fintype.card_congr (Equiv.subtypeSubtypeEquivSubtypeInter (· ∈ l.val) (· ≠ p)),

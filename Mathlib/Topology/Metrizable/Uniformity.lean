@@ -5,8 +5,8 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Data.Nat.Lattice
 public import Mathlib.Data.NNReal.Basic
+public import Mathlib.Order.Lattice.Nat
 public import Mathlib.Topology.MetricSpace.Basic
 public import Mathlib.Topology.Metrizable.Basic
 
@@ -121,7 +121,6 @@ theorem le_two_mul_dist_ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x
   suffices ∀ n, length l = n → d x y ≤ 2 * (zipWith d (x :: l) (l ++ [y])).sum by exact this _ rfl
   intro n hn
   induction n using Nat.strong_induction_on generalizing x y l with | h n ihn =>
-  simp only at ihn
   subst n
   set L := zipWith d (x::l) (l ++ [y])
   have hL_len : length L = length l + 1 := by simp [L]
@@ -156,7 +155,7 @@ theorem le_two_mul_dist_ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x
       rw [Nat.succ_le_iff] at hMl
       have hMl' : length (take M l) = M := length_take.trans (min_eq_left hMl.le)
       refine (ihn _ hMl _ _ _ hMl').trans ?_
-      convert hMs.1.out
+      convert! hMs.1.out
       rw [take_zipWith, take, take_add_one, getElem?_append_left hMl, getElem?_eq_getElem hMl,
         ← Option.coe_def, Option.toList_some, take_append_of_le_length hMl.le, getElem_cons_succ]
   · exact single_le_sum (fun x _ => zero_le) _ (mem_iff_get.2 ⟨⟨M, hM_lt⟩, getElem_zipWith⟩)
@@ -171,7 +170,7 @@ theorem le_two_mul_dist_ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x
       not_lt.1 fun h => (hMs.2 h.le).not_gt M.lt_succ_self
     rw [← sum_take_add_sum_drop L (M + 1), two_mul, add_le_add_iff_left, ← add_le_add_iff_right,
       sum_take_add_sum_drop, ← two_mul] at hMs'
-    convert hMs'
+    convert! hMs'
     rwa [drop_zipWith, drop, drop_append_of_le_length]
 
 end PseudoMetricSpace

@@ -22,6 +22,7 @@ universe w w' u u' v v'
 namespace Rep
 
 open CategoryTheory
+open scoped MonoidAlgebra
 
 suppress_compilation
 
@@ -36,7 +37,7 @@ which `G` acts by `ρ(g₁)(g₂ ⊗ x) = (g₁ * g₂) ⊗ x`) sending `(g₀, 
 `g₀ ⊗ (g₀⁻¹g₁, g₁⁻¹g₂, ..., gₙ₋₁⁻¹gₙ)`. The inverse sends `g₀ ⊗ (g₁, ..., gₙ)` to
 `(g₀, g₀g₁, ..., g₀g₁...gₙ)`. -/
 abbrev diagonalSuccIsoTensorTrivial :
-    diagonal k G (n + 1) ≅ leftRegular k G ⊗ trivial k G ((Fin n → G) →₀ k) :=
+    diagonal k G (n + 1) ≅ leftRegular k G ⊗ trivial k G k[Fin n → G] :=
   linearizationOfMulActionIso k G (Fin (n + 1) → G) ≪≫ (linearization k G).mapIso
     (Action.diagonalSuccIsoTensorTrivial G n) ≪≫
     (Functor.Monoidal.μIso (linearization k G) _ _).symm ≪≫
@@ -83,7 +84,6 @@ theorem to_Module_monoidAlgebra_map_aux {k G : Type*} [CommRing k] [Monoid G] (V
   · intro r g w
     simp only [map_smul, w, LinearMap.smul_apply]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `toModuleMonoidAlgebra`. -/
 def toModuleMonoidAlgebraMap {V W : Rep.{w} k G} (f : V ⟶ W) :
     ModuleCat.of k[G] V.ρ.asModule ⟶ ModuleCat.of k[G] W.ρ.asModule :=
@@ -92,7 +92,6 @@ def toModuleMonoidAlgebraMap {V W : Rep.{w} k G} (f : V ⟶ W) :
       map_smul' := fun r x => to_Module_monoidAlgebra_map_aux V.V W.V V.ρ W.ρ
         f.hom.toLinearMap f.hom.2 r x }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Functorially convert a representation of `G` into a module over `k[G]`. -/
 def toModuleMonoidAlgebra : Rep.{w} k G ⥤ ModuleCat k[G] where
   obj V := ModuleCat.of _ V.ρ.asModule
@@ -123,6 +122,7 @@ def counitIsoAddEquiv {M : ModuleCat.{w} k[G]} :
   exact (Representation.ofModule M).asModuleEquiv.toAddEquiv.trans
     (RestrictScalars.addEquiv k k[G] _)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Auxiliary definition for `equivalenceModuleMonoidAlgebra`. -/
 def unitIsoAddEquiv {V : Rep.{w} k G} : V ≃+ (toModuleMonoidAlgebra ⋙
     ofModuleMonoidAlgebra).obj V := by
@@ -138,6 +138,7 @@ def counitIso (M : ModuleCat.{w} k[G]) :
       map_smul' := fun r x => by
         simp [counitIsoAddEquiv] }
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 theorem unit_iso_comm (V : Rep.{w} k G) (g : G) (x : V) :
     unitIsoAddEquiv ((V.ρ g).toFun x) = ((ofModuleMonoidAlgebra.obj
@@ -167,25 +168,6 @@ instance : (toModuleMonoidAlgebra.{w} (k := k) (G := G)).IsEquivalence :=
 instance : (ofModuleMonoidAlgebra (k := k) (G := G)).IsEquivalence :=
   (equivalenceModuleMonoidAlgebra (k := k) (G := G)).isEquivalence_inverse
 
-open MonoidalCategory in
-instance : Limits.HasBinaryBiproducts (Rep.{w} k G) where
-  has_binary_biproduct A B := Limits.hasBinaryBiproduct_of_total
-    ⟨Rep.of (X := A.V × B.V) (Representation.prod A.ρ B.ρ), Rep.ofHom ⟨LinearMap.fst k _ _, by
-      simp [LinearMap.ext_iff]⟩, Rep.ofHom ⟨LinearMap.snd k _ _, by simp [LinearMap.ext_iff]⟩,
-      Rep.ofHom ⟨LinearMap.inl _ _ _, by simp [LinearMap.ext_iff]⟩, Rep.ofHom ⟨LinearMap.inr _ _ _,
-      by simp [LinearMap.ext_iff]⟩, by ext : 2; simp, by ext : 2; simp [zero_hom], by
-      ext : 2; simp [zero_hom], by ext : 2; simp⟩ <| by
-    ext : 2; simp [← ofHom_comp, ← ofHom_add, LinearMap.ext_iff]
-
-instance : Limits.HasZeroObject (Rep.{w} k G) where
-  zero := ⟨Rep.trivial k G PUnit, {
-    unique_to X := Nonempty.intro ⟨⟨0⟩, fun f ↦ by
-      ext x; have : x = 0 := Subsingleton.elim _ _; subst this; simp⟩
-    unique_from X := Nonempty.intro ⟨⟨0⟩, fun f ↦ by ext⟩
-  }⟩
-
-instance : Limits.HasFiniteProducts (Rep.{w} k G) := hasFiniteProducts_of_has_binary_and_terminal
-
 instance : Abelian (Rep.{w} k G) := abelianOfEquivalence toModuleMonoidAlgebra
 
 -- TODO Verify that the equivalence with `ModuleCat k[G]` is a monoidal functor.
@@ -194,7 +176,6 @@ variable {k G : Type u} [CommRing k] [Monoid G] in
 instance : CategoryTheory.EnoughProjectives (Rep.{max w u} k G) :=
   equivalenceModuleMonoidAlgebra.enoughProjectives_iff.2 ModuleCat.enoughProjectives.{max w u}
 
-set_option backward.isDefEq.respectTransparency false in
 instance free_projective {α : Type (max w u)} :
     Projective (free k G α) :=
   equivalenceModuleMonoidAlgebra.toAdjunction.projective_of_map_projective _ <|

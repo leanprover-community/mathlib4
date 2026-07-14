@@ -125,7 +125,6 @@ theorem perm_mapsTo_inl_iff_mapsTo_inr {m n : Type*} [Finite m] [Finite n] (σ :
     obtain ⟨y, hy⟩ := h ⟨r, rfl⟩
     grind
 
-set_option backward.isDefEq.respectTransparency false in
 theorem mem_sumCongrHom_range_of_perm_mapsTo_inl {m n : Type*} [Finite m] [Finite n]
     {σ : Perm (m ⊕ n)} (h : Set.MapsTo σ (Set.range Sum.inl) (Set.range Sum.inl)) :
     σ ∈ (sumCongrHom m n).range := by
@@ -143,14 +142,11 @@ theorem mem_sumCongrHom_range_of_perm_mapsTo_inl {m n : Type*} [Finite m] [Finit
   rw [Perm.sumCongrHom_apply]
   ext (a | b)
   · rw [Equiv.sumCongr_apply, Sum.map_inl, permCongr_apply, Equiv.symm_symm,
-      apply_ofInjective_symm Sum.inl_injective]
-    rw [ofInjective_apply, Subtype.coe_mk, Subtype.coe_mk]
-    dsimp [Set.range]
-    rw [subtypePerm_apply]
+      apply_ofInjective_symm Sum.inl_injective, ofInjective_apply]
+    rfl
   · rw [Equiv.sumCongr_apply, Sum.map_inr, permCongr_apply, Equiv.symm_symm,
       apply_ofInjective_symm Sum.inr_injective, ofInjective_apply]
-    dsimp [Set.range]
-    rw [subtypePerm_apply]
+    rfl
 
 nonrec theorem Disjoint.orderOf {σ τ : Perm α} (hστ : Disjoint σ τ) :
     orderOf (σ * τ) = Nat.lcm (orderOf σ) (orderOf τ) :=
@@ -266,7 +262,7 @@ lemma support_closure_subset_union (S : Set (Perm α)) :
     ∀ a ∈ closure S, (a.support : Set α) ⊆ ⋃ b ∈ S, b.support := by
   apply closure_induction
   · exact fun x hx ↦ Set.subset_iUnion₂_of_subset x hx subset_rfl
-  · simp only [support_one, Finset.coe_empty, Set.empty_subset]
+  · simp
   · intro a b ha hb hc hd
     refine (Finset.coe_subset.mpr (support_mul_le a b)).trans ?_
     rw [Finset.sup_eq_union, Finset.coe_union, Set.union_subset_iff]

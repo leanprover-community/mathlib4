@@ -93,8 +93,11 @@ theorem subset_insert_iff_of_notMem (ha : a ∉ s) : s ⊆ insert a t ↔ s ⊆ 
 
 theorem ssubset_iff_insert {s t : Set α} : s ⊂ t ↔ ∃ a ∉ s, insert a s ⊆ t := by grind
 
-theorem _root_.HasSubset.Subset.ssubset_of_mem_notMem (hst : s ⊆ t) (hat : a ∈ t) (has : a ∉ s) :
+theorem _root_.LE.le.ssubset_of_mem_notMem (hst : s ⊆ t) (hat : a ∈ t) (has : a ∉ s) :
     s ⊂ t := by grind
+
+@[deprecated (since := "2026-06-05")]
+alias _root_.HasSubset.Subset.ssubset_of_mem_notMem := LE.le.ssubset_of_mem_notMem
 
 theorem ssubset_insert {s : Set α} {a : α} (h : a ∉ s) : s ⊂ insert a s := by grind
 
@@ -336,7 +339,9 @@ theorem insert_inj (ha : a ∉ s) : insert a s = insert b s ↔ a = b :=
     congr_arg (fun x => insert x s)⟩
 
 @[simp]
-theorem insert_diff_eq_singleton {a : α} {s : Set α} (h : a ∉ s) : insert a s \ s = {a} := by grind
+theorem insert_sdiff_eq_singleton {a : α} {s : Set α} (h : a ∉ s) : insert a s \ s = {a} := by grind
+
+@[deprecated (since := "2026-06-03")] alias insert_diff_eq_singleton := insert_sdiff_eq_singleton
 
 theorem inter_insert_of_mem (h : a ∈ s) : s ∩ insert a t = insert a (s ∩ t) := by grind
 

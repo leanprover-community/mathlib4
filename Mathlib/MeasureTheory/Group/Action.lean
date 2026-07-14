@@ -7,11 +7,8 @@ module
 
 public import Mathlib.Dynamics.Ergodic.MeasurePreserving
 public import Mathlib.Dynamics.Minimal
-public import Mathlib.GroupTheory.GroupAction.Hom
-public import Mathlib.MeasureTheory.Group.MeasurableEquiv
 public import Mathlib.MeasureTheory.Measure.Regular
 public import Mathlib.MeasureTheory.Group.Defs
-public import Mathlib.Order.Filter.EventuallyConst
 
 /-!
 # Measures invariant under group actions
@@ -240,19 +237,20 @@ variable (G) {m : MeasurableSpace α} [Group G] [MulAction G α] (μ : Measure �
 variable [MeasurableConstSMul G α] in
 /-- Equivalent definitions of a measure invariant under a multiplicative action of a group.
 
-- 0: `SMulInvariantMeasure G α μ`;
+0. `SMulInvariantMeasure G α μ`;
 
-- 1: for every `c : G` and a measurable set `s`, the measure of the preimage of `s` under scalar
-     multiplication by `c` is equal to the measure of `s`;
+1. for every `c : G` and a measurable set `s`, the measure of the preimage of `s` under scalar
+  multiplication by `c` is equal to the measure of `s`;
 
-- 2: for every `c : G` and a measurable set `s`, the measure of the image `c • s` of `s` under
-     scalar multiplication by `c` is equal to the measure of `s`;
+2. for every `c : G` and a measurable set `s`, the measure of the image `c • s` of `s` under
+  scalar multiplication by `c` is equal to the measure of `s`;
 
-- 3, 4: properties 2, 3 for any set, including non-measurable ones;
+3. property 1 for any set, including non-measurable ones;
+4. property 2 for any set, including non-measurable ones;
 
-- 5: for any `c : G`, scalar multiplication by `c` maps `μ` to `μ`;
+5. for any `c : G`, scalar multiplication by `c` maps `μ` to `μ`;
 
-- 6: for any `c : G`, scalar multiplication by `c` is a measure-preserving map. -/
+6. for any `c : G`, scalar multiplication by `c` is a measure-preserving map. -/
 @[to_additive]
 theorem smulInvariantMeasure_tfae :
     List.TFAE
