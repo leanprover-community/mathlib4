@@ -6,7 +6,6 @@ Authors: Joël Riou
 module
 
 public import Mathlib.AlgebraicTopology.ModelCategory.Basic
-public import Mathlib.AlgebraicTopology.ModelCategory.Instances
 public import Mathlib.AlgebraicTopology.ModelCategory.Proper
 
 /-!
@@ -53,7 +52,6 @@ namespace HoCartSq
 variable [CategoryWithWeakEquivalences C] [CategoryWithFibrations C]
   [(fibrations C).IsStableUnderBaseChange]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma key_lemma (sq : CommSq t l r b)
     {X₂' : C} (r' : X₂ ⟶ X₂') (r'' : X₂' ⟶ X₄) [WeakEquivalence r'] [Fibration r'']
     {X₃' : C} (b' : X₃ ⟶ X₃') (b'' : X₃' ⟶ X₄) [WeakEquivalence b'] [Fibration b'']
@@ -129,7 +127,6 @@ lemma weakEquivalence_of_fac_bottom
   rw [← key_lemma sq.toCommSq Φ.i Φ.p b' b'']
   exact sq.weakEquivalence_of_fac_right _ _ Φ.fac
 
-set_option backward.isDefEq.respectTransparency false in
 lemma weakEquivalence_of_fac_bottom'
     (sq : HoCartSq t l r b) {X₃' P : C} {b'' : X₃' ⟶ X₄}
     {fst : P ⟶ X₂} {snd : P ⟶ X₃'} (sq' : IsPullback fst snd r b'')
@@ -147,7 +144,6 @@ lemma weakEquivalence_of_fac_bottom'
   rw [this]
   infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 lemma of_fac_bottom'
     (sq : CommSq t l r b)
     {X₃' P : C} {b'' : X₃' ⟶ X₄}
@@ -181,7 +177,6 @@ lemma iff_of_fac_bottom'
   ⟨fun sq'' ↦ sq''.weakEquivalence_of_fac_bottom' sq' _ _ hb,
     fun _ ↦ of_fac_bottom' sq sq' _ _ hb⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma iff_of_fac_bottom
     (sq : CommSq t l r b)
     {X₃' : C} (b' : X₃ ⟶ X₃') (b'' : X₃' ⟶ X₄)
@@ -192,7 +187,6 @@ lemma iff_of_fac_bottom
       WeakEquivalence (pullback.lift t (l ≫ b') (by simp [hb, sq.w]) : X₁ ⟶ pullback r b'') :=
   iff_of_fac_bottom' sq (.of_hasPullback _ _) _ _ hb
 
-set_option backward.isDefEq.respectTransparency false in
 lemma flip (sq : HoCartSq t l r b) : HoCartSq l t b r where
   w := sq.w.symm
   weakEquivalence_of_fac_right b' b'' _ _ hb :=
@@ -239,7 +233,6 @@ lemma iff_of_fac_right'
   ⟨fun sq'' ↦ sq''.weakEquivalence_of_fac_right' sq' _ _ hr,
     fun _ ↦ of_fac_right' sq sq' _ _ hr⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma iff_of_fac_right
     (sq : CommSq t l r b)
     {X₂' : C} (r' : X₂ ⟶ X₂') (r'' : X₂' ⟶ X₄)
@@ -270,7 +263,6 @@ lemma of_horiz_weakEquivalence
     HoCartSq t l r b :=
   (of_vert_weakEquivalence sq.flip).flip
 
-set_option backward.isDefEq.respectTransparency false in
 lemma paste_vert_iff (sq : CommSq t l r b)
     {X₅ X₆ : C} {l' : X₃ ⟶ X₅} {r' : X₄ ⟶ X₆} {b' : X₅ ⟶ X₆}
     (sq' : HoCartSq b l' r' b') :
@@ -300,7 +292,6 @@ lemma paste_horiz (sq : HoCartSq t l r b)
     HoCartSq (t ≫ t') l r' (b ≫ b') :=
   (sq.flip.paste_vert sq'.flip).flip
 
-set_option backward.isDefEq.respectTransparency false in
 lemma iff_of_weakEquivalence (sq : CommSq t l r b)
     {Y₁ Y₂ Y₃ Y₄ : C} {t' : Y₁ ⟶ Y₂} {l' : Y₁ ⟶ Y₃} {r' : Y₂ ⟶ Y₄}
     {b' : Y₃ ⟶ Y₄} (sq' : CommSq t' l' r' b')
@@ -359,7 +350,6 @@ lemma of_weakEquivalence' (sq : CommSq t l r b)
     HoCartSq t l r b := by
   rwa [iff_of_weakEquivalence sq sq'.toCommSq e₁ e₂ e₃ e₄]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma weakEquivalence (sq : HoCartSq t l r b)
     {Y₁ Y₂ Y₃ Y₄ : C} {t' : Y₁ ⟶ Y₂} {l' : Y₁ ⟶ Y₃} {r' : Y₂ ⟶ Y₄}
     {b' : Y₃ ⟶ Y₄} (sq' : HoCartSq t' l' r' b')
@@ -380,7 +370,6 @@ lemma weakEquivalence (sq : HoCartSq t l r b)
   have := sq''.weakEquivalence_of_fac_bottom' (sq' := .of_hasPullback r' Φ.p) Φ.i (e₁ ≫ α)
   exact weakEquivalence_of_postcomp _ α
 
-set_option backward.isDefEq.respectTransparency false in
 instance {Y₂ Y₃ Y₄ : C} (r' : Y₂ ⟶ Y₄) (b' : Y₃ ⟶ Y₄)
     (e₂ : X₂ ⟶ Y₂) (e₃ : X₃ ⟶ Y₃) (e₄ : X₄ ⟶ Y₄)
     (hr : r ≫ e₄ = e₂ ≫ r') (hb : b ≫ e₄ = e₃ ≫ b')
@@ -390,7 +379,6 @@ instance {Y₂ Y₃ Y₄ : C} (r' : Y₂ ⟶ Y₄) (b' : Y₃ ⟶ Y₄)
   weakEquivalence (.of_hasPullback_of_fibration r b)
     (.of_hasPullback_of_fibration r' b') _ e₂ e₃ e₄
 
-set_option backward.isDefEq.respectTransparency false in
 instance {Y₂ Y₃ Y₄ : C} (r' : Y₂ ⟶ Y₄) (b' : Y₃ ⟶ Y₄)
     (e₂ : X₂ ⟶ Y₂) (e₃ : X₃ ⟶ Y₃) (e₄ : X₄ ⟶ Y₄)
     (hr : r ≫ e₄ = e₂ ≫ r') (hb : b ≫ e₄ = e₃ ≫ b')
