@@ -88,9 +88,7 @@ theorem isDiscrete_tfae (X : CondensedSet.{u}) :
   tfae_have 1 ↔ 2 := Sheaf.isConstant_iff_isIso_counit_app _ _ _
   tfae_have 1 ↔ 3 := ⟨fun ⟨h⟩ ↦ h, fun h ↦ ⟨h⟩⟩
   tfae_have 1 ↔ 4 := Sheaf.isConstant_iff_mem_essImage _ CompHaus.isTerminalPUnit adjunction _
-  tfae_have 1 ↔ 5 :=
-    -- These `have` statements above shouldn't be needed, but they are.
-    Sheaf.isConstant_iff_isIso_counit_app' _ CompHaus.isTerminalPUnit adjunction _
+  tfae_have 1 ↔ 5 := Sheaf.isConstant_iff_isIso_counit_app' _ CompHaus.isTerminalPUnit adjunction _
   tfae_have 1 ↔ 6 :=
     (Sheaf.isConstant_iff_of_equivalence (coherentTopology Profinite)
       (coherentTopology CompHaus) profiniteToCompHaus Profinite.isTerminalPUnit
