@@ -369,6 +369,19 @@ theorem isClopen_singleton_bot : IsClopen {(⊥ : Compacts α)} := by
   convert! vietoris.isClopen_singleton_empty.preimage continuous_coe
   rw [← coe_bot, ← image_singleton (f := SetLike.coe), SetLike.coe_injective.preimage_image]
 
+theorem isOpen_setOf_disjoint_coe [T2Space α] :
+    IsOpen {p : Compacts α × Compacts α | Disjoint (p.1 : Set α) p.2} := by
+  rw [isOpen_iff_forall_mem_open]
+  intro ⟨K, L⟩ hKL
+  obtain ⟨U, V, hU, hV, hKU, hLV, hUV⟩ :=
+    SeparatedNhds.of_isCompact_isCompact K.isCompact L.isCompact hKL
+  exact ⟨{K' : Compacts α | ↑K' ⊆ U} ×ˢ {L' : Compacts α | ↑L' ⊆ V}, by grind,
+    (isOpen_subsets_of_isOpen hU).prod (isOpen_subsets_of_isOpen hV), hKU, hLV⟩
+
+theorem isOpen_setOf_disjoint [T2Space α] :
+    IsOpen {p : Compacts α × Compacts α | Disjoint p.1 p.2} := by
+  simpa only [disjoint_coe_iff] using isOpen_setOf_disjoint_coe
+
 theorem closure_finite_subsets (s : Set α) :
     closure {K : Compacts α | (K : Set α).Finite ∧ ↑K ⊆ s} = {K : Compacts α | ↑K ⊆ closure s} := by
   change closure (SetLike.coe ⁻¹' {K : Set α | K.Finite ∧ K ⊆ s}) =
@@ -560,6 +573,15 @@ theorem regularSpace_iff : RegularSpace (Compacts α) ↔ RegularSpace α :=
 theorem t3Space_iff : T3Space (Compacts α) ↔ T3Space α :=
   ⟨fun _ => isEmbedding_singleton.t3Space, fun _ => inferInstance⟩
 
+instance [SecondCountableTopology α] : SecondCountableTopology (Compacts α) := by
+  obtain ⟨b, hb₁, -, hb₂⟩ := exists_countable_basis α
+  exact hb₂.compacts.secondCountableTopology <| (countable_setOf_finite_subset hb₁).image _
+
+@[simp]
+theorem secondCountableTopology_iff :
+    SecondCountableTopology (Compacts α) ↔ SecondCountableTopology α :=
+  ⟨fun _ => isEmbedding_singleton.secondCountableTopology, fun _ => inferInstance⟩
+
 theorem isCompact_subsets_of_isCompact {K : Set α} (hK : IsCompact K) :
     IsCompact {L : Compacts α | ↑L ⊆ K} := by
   rw [isEmbedding_coe.isCompact_iff]
@@ -693,6 +715,10 @@ theorem isClosed_inter_nonempty_of_isClosed {F : Set α} (h : IsClosed F) :
     IsClosed {K : NonemptyCompacts α | (↑K ∩ F).Nonempty} :=
   (vietoris.isClosed_inter_nonempty_of_isClosed h).preimage continuous_coe
 
+theorem isOpen_setOf_disjoint_coe [T2Space α] :
+    IsOpen {p : NonemptyCompacts α × NonemptyCompacts α | Disjoint (p.1 : Set α) p.2} :=
+  Compacts.isOpen_setOf_disjoint_coe.preimage <| continuous_toCompacts.prodMap continuous_toCompacts
+
 theorem closure_finite_subsets (s : Set α) :
     closure {K : NonemptyCompacts α | (K : Set α).Finite ∧ ↑K ⊆ s} =
       {K : NonemptyCompacts α | ↑K ⊆ closure s} := by
@@ -818,6 +844,14 @@ theorem regularSpace_iff : RegularSpace (NonemptyCompacts α) ↔ RegularSpace �
 @[simp]
 theorem t3Space_iff : T3Space (NonemptyCompacts α) ↔ T3Space α :=
   ⟨fun _ => isEmbedding_singleton.t3Space, fun _ => inferInstance⟩
+
+instance [SecondCountableTopology α] : SecondCountableTopology (NonemptyCompacts α) :=
+  isEmbedding_toCompacts.secondCountableTopology
+
+@[simp]
+theorem secondCountableTopology_iff :
+    SecondCountableTopology (NonemptyCompacts α) ↔ SecondCountableTopology α :=
+  ⟨fun _ => isEmbedding_singleton.secondCountableTopology, fun _ => inferInstance⟩
 
 instance [CompactSpace α] : CompactSpace (NonemptyCompacts α) :=
   isClosedEmbedding_toCompacts.compactSpace

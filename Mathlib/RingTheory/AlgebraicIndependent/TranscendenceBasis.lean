@@ -142,8 +142,8 @@ lemma IsTranscendenceBasis.algebraMap_comp
   rw [Set.range_comp, ← AlgHom.map_adjoin]
   set Rx := adjoin R (range x)
   let e := Rx.equivMapOfInjective f (FaithfulSMul.algebraMap_injective S A)
-  letI := e.toRingHom.toAlgebra
-  haveI : IsScalarTower Rx (Rx.map f) A := .of_algebraMap_eq fun x ↦ rfl
+  let := e.toRingHom.toAlgebra
+  have : IsScalarTower Rx (Rx.map f) A := .of_algebraMap_eq fun x ↦ rfl
   have : Algebra.IsAlgebraic Rx S := hx.isAlgebraic
   have : Algebra.IsAlgebraic Rx A := .trans _ S _
   exact .extendScalars e.injective
@@ -158,7 +158,7 @@ lemma IsTranscendenceBasis.isAlgebraic_iff [IsDomain S] [NoZeroDivisors A]
     simpa [Sv, ← Subalgebra.isAlgebraic_iff, isAlgebraic_adjoin_iff]
   have le : Rv ≤ Sv.restrictScalars R := by
     rw [Subalgebra.restrictScalars_adjoin]; exact le_sup_right
-  letI : Algebra Rv Sv := (Subalgebra.inclusion le).toAlgebra
+  let : Algebra Rv Sv := (Subalgebra.inclusion le).toAlgebra
   have : IsScalarTower Rv Sv A := .of_algebraMap_eq fun x ↦ rfl
   have := (algebraMap R S).domain_nontrivial
   have := hv.isAlgebraic
@@ -237,11 +237,11 @@ theorem IsTranscendenceBasis.nonempty_iff_transcendental [Nontrivial R]
 theorem IsTranscendenceBasis.isAlgebraic_field {F E : Type*} {x : ι → E}
     [Field F] [Field E] [Algebra F E] (hx : IsTranscendenceBasis F x) :
     Algebra.IsAlgebraic (IntermediateField.adjoin F (range x)) E := by
-  haveI := hx.isAlgebraic
+  have := hx.isAlgebraic
   set S := range x
-  letI : Algebra (adjoin F S) (IntermediateField.adjoin F S) :=
+  let : Algebra (adjoin F S) (IntermediateField.adjoin F S) :=
     (Subalgebra.inclusion (IntermediateField.algebra_adjoin_le_adjoin F S)).toRingHom.toAlgebra
-  haveI : IsScalarTower (adjoin F S) (IntermediateField.adjoin F S) E :=
+  have : IsScalarTower (adjoin F S) (IntermediateField.adjoin F S) E :=
     IsScalarTower.of_algebraMap_eq (congrFun rfl)
   exact Algebra.IsAlgebraic.extendScalars (R := adjoin F S) (Subalgebra.inclusion_injective _)
 
@@ -320,7 +320,7 @@ theorem matroid_isBasis_iff_of_subsingleton [Subsingleton A] {s t : Set A} :
     (matroid R A).IsBasis s t ↔ s = t := by
   have := (FaithfulSMul.algebraMap_injective R A).subsingleton
   simp_rw [Matroid.IsBasis, matroid_indep_iff, of_subsingleton, true_and,
-    matroid_e, subset_univ, and_true, ← le_iff_subset, maximal_le_iff]
+    matroid_e, subset_univ, and_true, maximal_le_iff]
 
 theorem isAlgebraic_adjoin_iff_of_matroid_isBasis [NoZeroDivisors A] {s t : Set A} {a : A}
     (h : (matroid R A).IsBasis s t) : IsAlgebraic (adjoin R s) a ↔ IsAlgebraic (adjoin R t) a := by
@@ -406,7 +406,7 @@ theorem exists_isTranscendenceBasis_subset [NoZeroDivisors A] [FaithfulSMul R A]
 theorem isAlgebraic_iff_exists_isTranscendenceBasis_subset
     [IsDomain A] [FaithfulSMul R A] {s : Set A} :
     Algebra.IsAlgebraic (adjoin R s) A ↔ ∃ t, t ⊆ s ∧ IsTranscendenceBasis R ((↑) : t → A) := by
-  simp_rw [← matroid_spanning_iff, ← matroid_isBase_iff, and_comm (a := _ ⊆ _)]
+  simp_rw [← matroid_spanning_iff, ← matroid_isBase_iff, and_comm (a := _ ⊆ s)]
   exact Matroid.spanning_iff_exists_isBase_subset (subset_univ _)
 
 open Cardinal AlgebraicIndependent
