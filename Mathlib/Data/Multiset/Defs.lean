@@ -331,11 +331,11 @@ instance decidableDexistsMultiset {p : ∀ a ∈ m, Prop} [_hp : ∀ (a) (h : a 
 
 end Decidable
 
-
 /-- `Pairwise r m` inherited from `List.Pairwise` -/
 def Pairwise (r : α → α → Prop) (m : Multiset α) [inst : Std.Symm r] : Prop := Quotient.lift
   (List.Pairwise r ·) (fun _ _ h ↦ propext <| List.Perm.pairwise_iff (inst.symm _ _) h) m
 
+@[simp]
 theorem pairwise_coe_iff {r : α → α → Prop} [Std.Symm r] {l : List α} :
     Multiset.Pairwise r l ↔ l.Pairwise r := by
   rfl
