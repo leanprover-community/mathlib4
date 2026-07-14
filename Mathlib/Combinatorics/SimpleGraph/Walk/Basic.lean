@@ -125,6 +125,9 @@ def darts {u v : V} : G.Walk u v → List G.Dart
 This is defined to be the list of edges underlying `SimpleGraph.Walk.darts`. -/
 def edges {u v : V} (p : G.Walk u v) : List (Sym2 V) := p.darts.map Dart.edge
 
+theorem edges_eq_map_darts (p : G.Walk u v) : p.edges = p.darts.map Dart.edge :=
+  rfl
+
 @[simp]
 theorem support_nil {u : V} : (nil : G.Walk u u).support = [u] := rfl
 
@@ -252,6 +255,16 @@ theorem length_darts {u v : V} (p : G.Walk u v) : p.darts.length = p.length := b
 
 @[simp, grind =]
 theorem length_edges {u v : V} (p : G.Walk u v) : p.edges.length = p.length := by simp [edges]
+
+/-- Use `edge_getElem_darts` to rewrite in the reverse direction. -/
+theorem getElem_edges_eq_edge_getElem_darts {p : G.Walk u v} {i : ℕ} (h : i < p.edges.length) :
+    p.edges[i] = (p.darts[i]'(by grind)).edge :=
+  List.getElem_map ..
+
+/-- Use `getElem_edges_eq_edge_getElem_darts` to rewrite in the reverse direction. -/
+theorem edge_getElem_darts {p : G.Walk u v} {i : ℕ} (h : i < p.darts.length) :
+    p.darts[i].edge = p.edges[i]'(by grind) := by
+  rw [getElem_edges_eq_edge_getElem_darts]
 
 @[simp]
 theorem fst_darts_getElem {p : G.Walk u v} {i : ℕ} (hi : i < p.darts.length) :
