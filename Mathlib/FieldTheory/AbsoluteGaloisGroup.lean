@@ -51,10 +51,8 @@ local notation "G_K" => absoluteGaloisGroup
 section
 
 variable [Algebra K L] [Algebra (AlgebraicClosure K) (AlgebraicClosure L)]
-  [Algebra K (AlgebraicClosure L)] [IsScalarTower K L (AlgebraicClosure L)]
   [IsScalarTower K (AlgebraicClosure K) (AlgebraicClosure L)]
 
-attribute [-instance] AlgebraicClosure.instSMulOfIsScalarTower in
 /-- A commuting square of two fields and their algebraic closures induces a homomorphism of their
 absolute Galois groups. See `absoluteGaloisGroup.mapOfAlgebraAux` for the continuous version. -/
 @[simps!]
@@ -62,7 +60,6 @@ noncomputable def absoluteGaloisGroup.mapOfAlgebraAux : G_K L →* G_K K :=
   (AlgEquiv.restrictNormalHom (AlgebraicClosure K)).comp (AlgEquiv.restrictScalarsHom K)
 
 open IntermediateField in
-attribute [-instance] AlgebraicClosure.instSMulOfIsScalarTower in
 /-- A commuting square of two fields and their algebraic closures induces a continuous homomorphism
 of their absolute Galois groups. -/
 @[simps!]
