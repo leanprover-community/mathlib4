@@ -403,7 +403,7 @@ theorem ramificationIdx'_algebra_tower [IsDedekindDomain S] [IsDedekindDomain T]
     exact ne_bot_of_map_ne_bot hfg
   have hp0 : P ≠ ⊥ := ne_bot_of_map_ne_bot hg0
   have hq0 : Q ≠ ⊥ := ne_bot_of_le_ne_bot hg0 hg
-  letI : P.IsMaximal := Ring.DimensionLEOne.maximalOfPrime hp0 hpm
+  let : P.IsMaximal := Ring.DimensionLEOne.maximalOfPrime hp0 hpm
   rw [IsDedekindDomain.ramificationIdx'_eq_normalizedFactors_count hf0 hpm hp0,
     IsDedekindDomain.ramificationIdx'_eq_normalizedFactors_count hg0 hqm hq0,
     IsDedekindDomain.ramificationIdx'_eq_normalizedFactors_count hfg hqm hq0,

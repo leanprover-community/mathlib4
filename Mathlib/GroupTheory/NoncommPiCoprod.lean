@@ -157,7 +157,7 @@ def noncommPiCoprodEquiv [DecidableEq ι] :
 @[to_additive]
 theorem noncommPiCoprod_mrange :
     MonoidHom.mrange (noncommPiCoprod ϕ hcomm) = ⨆ i : ι, MonoidHom.mrange (ϕ i) := by
-  letI := Classical.decEq ι
+  let := Classical.decEq ι
   apply le_antisymm
   · rintro x ⟨f, rfl⟩
     refine Submonoid.noncommProd_mem _ _ _ (fun _ _ _ _ h => hcomm h _ _) (fun i _ => ?_)
@@ -215,7 +215,7 @@ namespace MonoidHom
 theorem noncommPiCoprod_range [Fintype ι]
     {hcomm : Pairwise fun i j : ι => ∀ (x : H i) (y : H j), Commute (ϕ i x) (ϕ j y)} :
     (noncommPiCoprod ϕ hcomm).range = ⨆ i : ι, (ϕ i).range := by
-  letI := Classical.decEq ι
+  let := Classical.decEq ι
   apply le_antisymm
   · rintro x ⟨f, rfl⟩
     refine Subgroup.noncommProd_mem _ (fun _ _ _ _ h => hcomm h _ _) ?_
@@ -250,7 +250,7 @@ theorem independent_range_of_coprime_order
     (hcoprime : Pairwise fun i j => Nat.Coprime (Fintype.card (H i)) (Fintype.card (H j))) :
     iSupIndep fun i => (ϕ i).range := by
   cases nonempty_fintype ι
-  letI := Classical.decEq ι
+  let := Classical.decEq ι
   rintro i
   rw [disjoint_iff_inf_le]
   rintro f ⟨hxi, hxp⟩

@@ -230,7 +230,7 @@ instance instIsMonHomComp (f : M ⟶ N) (g : N ⟶ O) [IsMonHom f] [IsMonHom g] 
 attribute [local simp] MonObj.ofIso_one MonObj.ofIso_mul in
 @[to_additive]
 instance isMonHom_ofIso (e : M ≅ X) : letI := MonObj.ofIso e; IsMonHom e.hom := by
-  letI := MonObj.ofIso e; exact { }
+  let := MonObj.ofIso e; exact { }
 
 @[to_additive]
 instance (f : M ≅ N) [IsMonHom f.hom] : IsMonHom f.inv where
