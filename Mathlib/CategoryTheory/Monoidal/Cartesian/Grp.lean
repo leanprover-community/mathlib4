@@ -187,7 +187,8 @@ lemma GrpObj.one_inv : η[G] ≫ ι = η := by simp [GrpObj.inv_eq_inv, GrpObj.c
 open scoped _root_.CategoryTheory.Obj in
 /-- If `G` is a group object and `F` is monoidal,
 then `Hom(X, G) → Hom(F X, F G)` preserves inverses. -/
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp) /-- If `G` is an additive group object and `F` is monoidal,
+then `Hom(X, G) → Hom(F X, F G)` preserves negation. -/]
 lemma Functor.map_inv' {D : Type*} [Category* D] [CartesianMonoidalCategory D] (F : C ⥤ D)
     [F.Monoidal] {X G : C} (f : X ⟶ G) [GrpObj G] :
     F.map (f⁻¹) = (F.map f)⁻¹ := by
@@ -270,7 +271,8 @@ lemma hom_pow (f : G ⟶ H) (n : ℕ) : (f ^ n).hom = f.hom ^ n := by
 end Hom
 
 /-- A commutative group object is a group object in the category of group objects. -/
-@[to_additive]
+@[to_additive /-- A commutative additive group object is an additive group object in the category of
+additive group objects. -/]
 instance : GrpObj H where inv := Grp.homMk' { hom := ι[H.X] }
 
 namespace Hom
@@ -291,7 +293,8 @@ end Hom
 
 attribute [local simp] mul_eq_mul comp_mul mul_comm mul_div_mul_comm in
 /-- A commutative group object is a commutative group object in the category of group objects. -/
-@[to_additive]
+@[to_additive /-- A commutative additive group object is a commutative additive group object in the
+category of additive group objects. -/]
 instance : IsCommMonObj H where
 
 @[to_additive]
@@ -317,7 +320,8 @@ lemma GrpObj.conj_eq_snd_of_isCommMonObj [IsCommMonObj G] : conj G = snd G G := 
 open scoped IsMulCommutative in
 /-- `G` is a commutative group object if and only if the commutator map `(x, y) ↦ x * y * x⁻¹ * y⁻¹`
 is constant. -/
-@[to_additive]
+@[to_additive /-- `G` is a commutative additive group object if and only if the commutator map
+`(x, y) ↦ x + y + (-x) + (-y)` is constant. -/]
 lemma isCommMonObj_iff_commutator_eq_toUnit_η :
     IsCommMonObj G ↔ GrpObj.commutator G = toUnit _ ≫ η := by
   rw [isCommMonObj_iff_isMulCommutative]
