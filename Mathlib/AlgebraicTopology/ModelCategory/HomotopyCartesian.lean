@@ -23,7 +23,7 @@ X₃ ⟶ X₄
 ```
 Given a factorization `r' ≫ r'' = r` of `r` as a weak equivalence `r' : X₂ ⟶ X₂'`
 followed by a fibration `r'' : X₂' ⟶ X₄`, the commutative square is homotopy
-cartesian iff the morphism `X₁ ⟶ pullback r'' b` intduces by `t ≫ r'` and `l`
+cartesian iff the morphism `X₁ ⟶ pullback r'' b` induced by `t ≫ r'` and `l`
 is a weak equivalence (see the lemma `HoCartSq.iff_of_fac_right`,
 and the transposed version `HoCartSq.iff_of_fac_bottom`).
 
