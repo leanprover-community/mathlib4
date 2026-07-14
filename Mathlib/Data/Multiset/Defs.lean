@@ -347,7 +347,8 @@ theorem pairwise_coe_iff_of_symm {r : α → α → Prop} [Std.Symm r] {l : List
     Multiset.Pairwise r l ↔ l.Pairwise r := by
   simp [pairwise_coe_iff]
 
-@[deprecated (since := "2027-07-14")] alias pairwise_coe_iff_pairwise := pairwise_coe_iff_of_symm
+@[deprecated (since := "2026-07-14")] alias pairwise_coe_iff_pairwise := pairwise_coe_iff_of_symm
+
 section Nodup
 
 /-- `Nodup s` means that `s` has no duplicates, i.e. the multiplicity of
