@@ -182,8 +182,8 @@ noncomputable instance Bool.completeAtomicBooleanAlgebra : CompleteAtomicBoolean
 
 section DirectedOrders
 
-variable {α : Type*} {r : α → α → Prop} [IsTrans α r] {β γ : Type*} [Nonempty γ] {f : γ → α}
-  [Finite β]
+variable {α : Type*} {r : α → α → Prop} [IsTrans α r] {β : Sort*} {γ : Type*} [Nonempty γ]
+  {f : γ → α} [Finite β]
 
 theorem Directed.finite_set_le (D : Directed r f) {s : Set γ} (hs : s.Finite) :
     ∃ z, ∀ i ∈ s, r (f i) (f z) := by
