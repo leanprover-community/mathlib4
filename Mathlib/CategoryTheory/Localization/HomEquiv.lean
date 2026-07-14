@@ -77,18 +77,20 @@ lemma homMap_apply (G : D₁ ⥤ D₂) (e : Φ.functor ⋙ L₂ ≅ L₁ ⋙ G) 
   let G' := Φ.localizedFunctor L₁ L₂
   let e' := CatCommSq.iso Φ.functor L₁ L₂ G'
   change e'.hom.app X ≫ G'.map f ≫ e'.inv.app Y = _
-  letI : Localization.Lifting L₁ W₁ (Φ.functor ⋙ L₂) G := ⟨e.symm⟩
+  let : Localization.Lifting L₁ W₁ (Φ.functor ⋙ L₂) G := ⟨e.symm⟩
   let α : G' ≅ G := Localization.liftNatIso L₁ W₁ (L₁ ⋙ G') (Φ.functor ⋙ L₂) _ _ e'.symm
   have : e = e' ≪≫ Functor.isoWhiskerLeft _ α := by
     ext
     simp [α, this]
   simp [this]
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma id_homMap (f : L₁.obj X ⟶ L₁.obj Y) :
     (id W₁).homMap L₁ L₁ f = f := by
   simpa using (id W₁).homMap_apply L₁ L₁ (𝟭 D₁) (Iso.refl _) f
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma homMap_homMap (f : L₁.obj X ⟶ L₁.obj Y) :
     Ψ.homMap L₂ L₃ (Φ.homMap L₁ L₂ f) = (Φ.comp Ψ).homMap L₁ L₃ f := by
@@ -142,6 +144,7 @@ lemma homEquiv_refl (f : L₁.obj X ⟶ L₁.obj Y) :
     homEquiv W L₁ L₁ f = f := by
   apply LocalizerMorphism.id_homMap
 
+set_option backward.defeqAttrib.useBackward true in
 lemma homEquiv_trans (f : L₁.obj X ⟶ L₁.obj Y) :
     homEquiv W L₂ L₃ (homEquiv W L₁ L₂ f) = homEquiv W L₁ L₃ f := by
   dsimp only [homEquiv_apply]
@@ -151,10 +154,12 @@ lemma homEquiv_comp (f : L₁.obj X ⟶ L₁.obj Y) (g : L₁.obj Y ⟶ L₁.obj
     homEquiv W L₁ L₂ (f ≫ g) = homEquiv W L₁ L₂ f ≫ homEquiv W L₁ L₂ g := by
   apply LocalizerMorphism.homMap_comp
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma homEquiv_map (f : X ⟶ Y) : homEquiv W L₁ L₂ (L₁.map f) = L₂.map f := by
   simp [homEquiv_apply]
 
+set_option backward.defeqAttrib.useBackward true in
 variable (X) in
 @[simp]
 lemma homEquiv_id : homEquiv W L₁ L₂ (𝟙 (L₁.obj X)) = 𝟙 (L₂.obj X) := by

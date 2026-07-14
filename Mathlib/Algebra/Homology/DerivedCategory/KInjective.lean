@@ -56,8 +56,8 @@ lemma quasiIso_iff {K L : CochainComplex C ℤ} [K.IsKInjective] [L.IsKInjective
   obtain ⟨g, hg⟩ := (Qh_map_bijective _ _).surjective
     ((quotientCompQhIso C).hom.app L ≫ inv (Q.map f) ≫ (quotientCompQhIso C).inv.app K)
   refine ⟨g, (Qh_map_bijective _ _).injective ?_, (Qh_map_bijective _ _).injective ?_⟩
-  · simp [hg]
-  · simp [hg, ← quotientCompQhIso_inv_naturality, -NatTrans.naturality]
+  · simp [hg]; rfl
+  · simp [hg, ← quotientCompQhIso_inv_naturality, -NatTrans.naturality]; rfl
 
 end IsKInjective
 
@@ -69,7 +69,7 @@ variable (K L : CochainComplex C ℤ) (n : ℤ)
 set_option backward.isDefEq.respectTransparency false in
 lemma bijective_toSmallShiftedHom_of_isKInjective [L.IsKInjective] :
     Function.Bijective (toSmallShiftedHom.{w} (K := K) (L := L) (n := n)) := by
-  letI := HasDerivedCategory.standard C
+  let := HasDerivedCategory.standard C
   rw [← Function.Bijective.of_comp_iff'
       (SmallShiftedHom.equiv _ DerivedCategory.Q).bijective,
     ← Function.Bijective.of_comp_iff' (Iso.homCongr ((quotientCompQhIso C).symm.app K)

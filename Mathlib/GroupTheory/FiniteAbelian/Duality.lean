@@ -29,8 +29,7 @@ namespace CommGroup
 
 open MonoidHom
 
-private
-lemma dvd_exponent {ι G : Type*} [Finite ι] [Monoid G] {n : ι → ℕ}
+private lemma dvd_exponent {ι G : Type*} [Monoid G] {n : ι → ℕ}
     (e : G ≃* ((i : ι) → Multiplicative (ZMod (n i)))) (i : ι) :
     n i ∣ Monoid.exponent G := by
   classical -- to get `DecidableEq ι`
@@ -54,7 +53,7 @@ lemma exists_apply_ne_one_aux
     exact (MulEquiv.map_eq_one_iff e).mp <| funext ha
   obtain ⟨φi, hφi⟩ := H (n i) (dvd_exponent e i) ((e a i).toAdd) hi
   use (φi.comp (Pi.evalMonoidHom (fun (i : ι) ↦ Multiplicative (ZMod (n i))) i)).comp e
-  simpa only [coe_comp, coe_coe, Function.comp_apply, Pi.evalMonoidHom_apply, ne_eq] using hφi
+  simpa only [coe_comp, coe_coe, Function.comp_apply, Pi.evalMonoidHom_apply, ne_eq] using! hφi
 
 variable [hM : HasEnoughRootsOfUnity M (Monoid.exponent G)]
 
@@ -70,7 +69,7 @@ theorem exists_apply_ne_one_of_hasEnoughRootsOfUnity {a : G} (ha : a ≠ 1) :
 
 variable {M} in
 @[simp]
- theorem forall_apply_eq_apply_iff {g g' : G} :
+theorem forall_apply_eq_apply_iff {g g' : G} :
     (∀ φ : G →* Mˣ, φ g = φ g') ↔ g = g' := by
   refine ⟨fun h ↦ ?_, fun h ↦ by simp [h]⟩
   simpa [← not_forall, not_imp_not, mul_inv_eq_one, h] using

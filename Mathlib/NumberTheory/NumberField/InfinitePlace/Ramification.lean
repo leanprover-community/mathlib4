@@ -188,6 +188,9 @@ An infinite place is ramified in a field extension if it is not unramified.
 -/
 abbrev IsRamified : Prop := ¬w.IsUnramified k
 
+lemma isUnramified_or_isRamified : w.IsUnramified k ∨ w.IsRamified k :=
+  or_not
+
 variable {k}
 
 lemma isUnramified_self : IsUnramified K w := rfl
@@ -331,10 +334,11 @@ lemma isUnramified_mk_iff_forall_isConj [IsGalois k K] {φ : K →+* ℂ} :
   rw [not_isUnramified_iff] at hφ
   rw [comap_mk, isReal_mk_iff, ← not_isReal_iff_isComplex, isReal_mk_iff,
     ← ComplexEmbedding.isConj_one_iff (k := k)] at hφ
-  letI := (φ.comp (algebraMap k K)).toAlgebra
-  letI := φ.toAlgebra
+  let := (φ.comp (algebraMap k K)).toAlgebra
+  let := φ.toAlgebra
   have : IsScalarTower k K ℂ := IsScalarTower.of_algebraMap_eq' rfl
-  let φ' : K →ₐ[k] ℂ := { star φ with commutes' := fun r ↦ by simpa using RingHom.congr_fun hφ.2 r }
+  let φ' : K →ₐ[k] ℂ := { star φ with
+    commutes' := fun r ↦ by simpa using! RingHom.congr_fun hφ.2 r }
   have : ComplexEmbedding.IsConj φ (AlgHom.restrictNormal' φ' K) :=
     (RingHom.ext <| AlgHom.restrictNormal_commutes φ' K).symm
   exact hφ.1 (H _ this ▸ this)
@@ -602,7 +606,7 @@ instance {φ : K →+* ℂ} {ψ : L →+* ℂ} [ComplexEmbedding.LiesOver ψ φ]
 
 theorem comap_eq : w.comap (algebraMap K L) = v := by
   ext
-  simpa only [coe_apply] using AbsoluteValue.ext_iff.1 (LiesOver.comp_eq w.1 v.1) _
+  simpa only [coe_apply] using! AbsoluteValue.ext_iff.1 (LiesOver.comp_eq w.1 v.1) _
 
 theorem mk_embedding_comp : InfinitePlace.mk (w.embedding.comp (algebraMap K L)) = v := by
   rw [← comap_mk, w.mk_embedding, comap_eq w v]

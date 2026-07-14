@@ -345,11 +345,11 @@ theorem separable_or {f : F[X]} (hf : Irreducible f) :
   classical
   exact if H : derivative f = 0 then by
     rcases p.eq_zero_or_pos with (rfl | hp)
-    · haveI := CharP.charP_to_charZero F
-      have := natDegree_eq_zero_of_derivative_eq_zero H
+    · have := CharP.charP_to_charZero F
+      have := derivative_eq_zero.1 H
       have := (natDegree_pos_iff_degree_pos.mpr <| degree_pos_of_irreducible hf).ne'
       contradiction
-    haveI := isLocalHom_expand F hp
+    have := isLocalHom_expand F hp
     exact
       Or.inr
         ⟨by rw [separable_iff_derivative_ne_zero hf, Classical.not_not, H], contract p f,
@@ -515,9 +515,9 @@ end Splits
 
 theorem _root_.Irreducible.separable [CharZero F] {f : F[X]} (hf : Irreducible f) :
     f.Separable := by
-  rw [separable_iff_derivative_ne_zero hf, Ne, ← degree_eq_bot, degree_derivative_eq]
+  rw [separable_iff_derivative_ne_zero hf, Ne, ← degree_eq_bot, degree_derivative]
   · rintro ⟨⟩
-  exact Irreducible.natDegree_pos hf
+  exact hf.natDegree_pos.ne'
 
 end Field
 
@@ -565,7 +565,7 @@ variable {F} in
 because the minimal polynomial of a non-integral element is `0`, which is not separable. -/
 theorem IsSeparable.isIntegral {x : K} (h : IsSeparable F x) : IsIntegral F x := by
   cases subsingleton_or_nontrivial F
-  · haveI := Module.subsingleton F K
+  · have := Module.subsingleton F K
     exact ⟨1, monic_one, Subsingleton.elim _ _⟩
   · exact of_not_not (h.ne_zero <| minpoly.eq_zero ·)
 
@@ -702,7 +702,7 @@ include f
 variable {F} in
 theorem IsSeparable.of_algHom {x : E} (h : IsSeparable F (f x)) : IsSeparable F x := by
   let _ : Algebra E E' := RingHom.toAlgebra f.toRingHom
-  haveI : IsScalarTower F E E' := IsScalarTower.of_algebraMap_eq fun x => (f.commutes x).symm
+  have : IsScalarTower F E E' := IsScalarTower.of_algebraMap_eq fun x => (f.commutes x).symm
   exact h.tower_bot
 
 
@@ -748,12 +748,19 @@ lemma IsSeparable.of_equiv_equiv {x : B₁} (h : IsSeparable A₁ x) : IsSeparab
   let e : B₁ ≃ₐ[A₂] B₂ :=
     { e₂ with
       commutes' := fun x ↦ by
-        simpa [RingHom.algebraMap_toAlgebra] using DFunLike.congr_fun he.symm (e₁.symm x) }
+        simpa [RingHom.algebraMap_toAlgebra] using! DFunLike.congr_fun he.symm (e₁.symm x) }
   (AlgEquiv.isSeparable_iff e).mpr <| IsSeparable.tower_top A₂ h
 
 lemma Algebra.IsSeparable.of_equiv_equiv [Algebra.IsSeparable A₁ B₁] : Algebra.IsSeparable A₂ B₂ :=
   ⟨fun x ↦ (e₂.apply_symm_apply x) ▸ _root_.IsSeparable.of_equiv_equiv e₁ e₂ he
     (Algebra.IsSeparable.isSeparable _ _)⟩
+
+lemma Algebra.IsSeparable.iff_of_equiv_equiv :
+    Algebra.IsSeparable A₁ B₁ ↔ Algebra.IsSeparable A₂ B₂ :=
+  ⟨fun _ ↦ Algebra.IsSeparable.of_equiv_equiv e₁ e₂ he,
+    fun _ ↦ Algebra.IsSeparable.of_equiv_equiv e₁.symm e₂.symm (by
+      ext x
+      simpa [RingEquiv.eq_symm_apply] using (RingHom.ext_iff.mp he (e₁.symm x)).symm)⟩
 
 end AlgEquiv
 

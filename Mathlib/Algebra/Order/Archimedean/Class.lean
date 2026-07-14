@@ -262,7 +262,7 @@ instance [Subsingleton M] : Subsingleton (MulArchimedeanClass M) :=
 @[to_additive]
 noncomputable
 instance : LinearOrder (MulArchimedeanClass M) :=
-  open Classical in
+  open scoped Classical in
   -- TODO: why does `inferInstanceAs` not work here?
   fast_instance% (inferInstance : LinearOrder (Antisymmetrization (MulArchimedeanOrder M) (· ≤ ·)))
 
@@ -605,7 +605,6 @@ s = ⊤ with a junk value ⊥. -/
 s = ⊤ with a junk value ⊥. -/]
 noncomputable
 def subgroup (s : UpperSet (MulArchimedeanClass M)) : Subgroup M :=
-  open Classical in
   if hs : s = ⊤ then
     ⊥
   else {
@@ -764,8 +763,7 @@ def lift {α : Type*} (f : {a : M // a ≠ 1} → α)
     FiniteMulArchimedeanClass M → α := fun ⟨A, hA⟩ ↦ by
   refine (MulArchimedeanClass.lift
     (fun b ↦ if h : b = 1 then ⊤ else WithTop.some (f ⟨b, h⟩)) (fun a b h' ↦ ?_) A).untop ?_
-  · simp only
-    split_ifs with ha hb hb
+  · split_ifs with ha hb hb
     · rfl
     · exact (hb (MulArchimedeanClass.mk_eq_top_iff.mp (ha ▸ h').symm)).elim
     · exact (ha (MulArchimedeanClass.mk_eq_top_iff.mp (by apply hb ▸ h'))).elim

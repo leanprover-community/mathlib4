@@ -5,11 +5,12 @@ Authors: Scott Carnahan
 -/
 module
 
-public import Mathlib.Algebra.Exact
+public import Mathlib.Algebra.Exact.Basic
 public import Mathlib.Algebra.Lie.Cochain
 
 /-!
 # Extensions of Lie algebras
+
 This file defines extensions of Lie algebras, given by short exact sequences of Lie algebra
 homomorphisms. They are implemented in two ways: `IsExtension` is a `Prop`-valued class taking two
 homomorphisms as parameters, and `Extension` is a structure that includes the middle Lie algebra.
@@ -309,7 +310,7 @@ noncomputable def toKer (E : Extension R M L) :
   left_inv _ := by
     simp [IsExtension.kerEquivRange, Equiv.symm_apply_eq]
     rfl
-  right_inv x := by simpa [Subtype.ext_iff] using Equiv.apply_ofInjective_symm E.incl_injective _
+  right_inv x := by simpa [Subtype.ext_iff] using! Equiv.apply_ofInjective_symm E.incl_injective _
 
 @[simp] lemma lie_toKer_apply (E : Extension R M L) (x : M) (y : E.L) :
     ⁅y, (E.toKer x : E.L)⁆ = ⁅y, E.incl x⁆ := by
@@ -354,7 +355,7 @@ one extension. -/
 lemma lieModuleOf [IsLieAbelian M] (E : Extension R M L) :
     letI := E.ringModuleOf
     LieModule R L M := by
-  letI := E.ringModuleOf
+  let := E.ringModuleOf
   set h := E.proj_surjective.hasRightInverse
   exact
     { smul_lie r x m := by

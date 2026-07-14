@@ -5,10 +5,10 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Data.Finite.Card
 public import Mathlib.Analysis.Analytic.Within
 public import Mathlib.Analysis.Calculus.FDeriv.Analytic
 public import Mathlib.Analysis.Calculus.ContDiff.FTaylorSeries
+public import Mathlib.SetTheory.Cardinal.NatCard
 
 /-!
 # Faa di Bruno formula
@@ -159,7 +159,7 @@ lemma injective_embSigma (n : ℕ) : Injective (embSigma n) := by
   ext i
   exact mk.inj_iff.mp (congr_fun hpq.1 i)
 
-/- The best proof would probably to establish the bijection with Finpartitions, but we opt
+/-- The best proof would probably to establish the bijection with Finpartitions, but we opt
 for a direct argument, embedding `OrderedPartition n` in a type which is obviously finite. -/
 noncomputable instance : Fintype (OrderedFinpartition n) :=
   Fintype.ofInjective _ (injective_embSigma n)
@@ -224,6 +224,7 @@ lemma neZero_partSize (c : OrderedFinpartition n) (i : Fin c.length) : NeZero (c
 
 attribute [local instance] neZero_length neZero_partSize
 
+set_option backward.defeqAttrib.useBackward true in
 instance instUniqueOne : Unique (OrderedFinpartition 1) where
   uniq c := by
     have h₁ : c.length = 1 := le_antisymm c.length_le (c.length_pos Nat.zero_lt_one)
@@ -630,7 +631,6 @@ def eraseMiddle (c : OrderedFinpartition (n + 1)) (hc : range (c.emb 0) ≠ {0})
       exact ⟨i, Fin.cast A.symm j, by simp [hi, hij]⟩
 
 set_option backward.isDefEq.respectTransparency false in
-open Classical in
 /-- Extending the ordered partitions of `Fin n` bijects with the ordered partitions
 of `Fin (n+1)`. -/
 @[simps apply]
@@ -942,7 +942,7 @@ theorem taylorComp_sub_taylorComp_isBigO
       hqf _ <| c.partSize_le _
     rw [← Asymptotics.isBigO_pi] at H₂ H₃ H₄
     have H₅ := ((H₂.prod_left H₃).norm_left.pow (c.length - 1)).mul H₄.norm_norm
-    simpa [mul_assoc] using H₁.norm_left.mul <| H₅.const_mul_left c.length
+    simpa [mul_assoc] using! H₁.norm_left.mul <| H₅.const_mul_left c.length
   · have H₁ : (fun a ↦ p₁ a c.length - p₂ a c.length) =O[l] f := hpf _ c.length_le
     have H₂ : ∀ i, (q₂ · (c.partSize i)) =O[l] (1 : α → ℝ) := fun i ↦
       (hq₂_bdd _ <| c.partSize_le i).isBigO_one ℝ
@@ -1010,7 +1010,7 @@ private lemma faaDiBruno_aux1 {m : ℕ} (q : FormalMultilinearSeries 𝕜 F G)
   simp only [Nat.succ_eq_add_one, OrderedFinpartition.extend, extendLeft,
     ContinuousMultilinearMap.curryLeft_apply,
     FormalMultilinearSeries.compAlongOrderedFinpartition_apply, applyOrderedFinpartition_apply,
-    ContinuousLinearMap.coe_comp', comp_apply, continuousMultilinearCurryFin1_apply,
+    ContinuousLinearMap.comp_apply, continuousMultilinearCurryFin1_apply,
     Matrix.zero_empty, ContinuousLinearMap.flipMultilinear_apply_apply,
     compAlongOrderedFinpartitionL_apply, compAlongOrderFinpartition_apply]
   congr
@@ -1031,7 +1031,7 @@ private lemma faaDiBruno_aux2 {m : ℕ} (q : FormalMultilinearSeries 𝕜 F G)
   simp? [OrderedFinpartition.extend, extendMiddle, applyOrderedFinpartition_apply] says
     simp only [OrderedFinpartition.extend, extendMiddle, ContinuousMultilinearMap.curryLeft_apply,
       Nat.succ_eq_add_one, FormalMultilinearSeries.compAlongOrderedFinpartition_apply,
-      applyOrderedFinpartition_apply, ContinuousLinearMap.coe_comp', comp_apply,
+      applyOrderedFinpartition_apply, ContinuousLinearMap.comp_apply,
       ContinuousMultilinearMap.toContinuousLinearMap_apply, compAlongOrderedFinpartitionL_apply,
       compAlongOrderFinpartition_apply]
   congr
@@ -1048,6 +1048,7 @@ private lemma faaDiBruno_aux2 {m : ℕ} (q : FormalMultilinearSeries 𝕜 F G)
     apply FormalMultilinearSeries.congr _ (by simp [hij])
     simp
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- *Faa di Bruno* formula: If two functions `g` and `f` have Taylor series up to `n` given by
 `q` and `p`, then `g ∘ f` also has a Taylor series, given by `q.taylorComp p`. -/
@@ -1098,9 +1099,7 @@ theorem HasFTaylorSeriesUpToOn.comp {n : WithTop ℕ∞} {g : F → G} {f : E �
       convert! B
       ext v
       simp only [Nat.succ_eq_add_one, Fintype.sum_option, ContinuousMultilinearMap.curryLeft_apply,
-        ContinuousMultilinearMap.sum_apply, ContinuousMultilinearMap.add_apply,
-        FormalMultilinearSeries.compAlongOrderedFinpartition_apply, ContinuousLinearMap.coe_sum',
-        Finset.sum_apply, ContinuousLinearMap.add_apply]
+        FormalMultilinearSeries.compAlongOrderedFinpartition_apply, sum_apply, add_apply]
     rw [Finset.sum_sigma']
     exact Fintype.sum_equiv (OrderedFinpartition.extendEquiv m) _ _ (fun p ↦ rfl)
   · intro m hm

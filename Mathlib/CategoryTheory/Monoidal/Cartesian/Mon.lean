@@ -44,6 +44,7 @@ instance (M : D) [MonObj M] : Mono η[M] := Limits.IsTerminal.mono_from isTermin
 
 end MonObj
 
+set_option backward.defeqAttrib.useBackward true in
 @[to_additive (attr := simps)]
 instance Mon.uniqueHomToTrivial (A : Mon D) : Unique (A ⟶ Mon.trivial D) where
   default.hom := toUnit A.X
@@ -273,7 +274,7 @@ variable [BraidedCategory C]
 /-- If `M` is a commutative additive monoid object, then `Hom(X, M)` has a commutative additive
 monoid structure. -/]
 abbrev Hom.commMonoid [IsCommMonObj M] : CommMonoid (X ⟶ M) where
-  mul_comm f g := by simpa [-IsCommMonObj.mul_comm] using lift g f ≫= IsCommMonObj.mul_comm M
+  mul_comm f g := by simpa [-IsCommMonObj.mul_comm] using! lift g f ≫= IsCommMonObj.mul_comm M
 
 namespace Mon.Hom
 variable {M N : Mon C} [IsCommMonObj N.X]
@@ -377,6 +378,7 @@ lemma MonObj.ofRepresentableBy_yonedaMonObjRepresentableBy :
     ofRepresentableBy M _ (yonedaMonObjRepresentableBy M) = ‹_› := by
   ext; change lift (fst M M) (snd M M) ≫ μ = μ; rw [lift_fst_snd, Category.id_comp]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The yoneda embedding for `Mon C` is fully faithful. -/
 @[to_additive /-- The yoneda embedding for `AddMon C` is fully faithful. -/]
@@ -415,7 +417,7 @@ lemma essImage_yonedaMon :
   · rintro ⟨M, ⟨α⟩⟩
     exact ⟨M.X, ⟨Functor.representableByEquiv.symm (Functor.isoWhiskerRight α (forget _))⟩⟩
   · rintro ⟨X, ⟨e⟩⟩
-    letI := MonObj.ofRepresentableBy X F e
+    let := MonObj.ofRepresentableBy X F e
     exact ⟨Mon.mk X, ⟨yonedaMonObjIsoOfRepresentableBy X F e⟩⟩
 
 @[to_additive (attr := reassoc (attr := simp))]
@@ -466,7 +468,9 @@ end Hom
 
 open scoped IsMulCommutative in
 /-- A monoid object `M` is commutative if and only if `X ⟶ M` is commutative for all `X`. -/
-@[to_additive]
+@[to_additive
+/-- An additive monoid object `M` is commutative if and only if `X ⟶ M` is commutative for all
+`X`. -/]
 lemma isCommMonObj_iff_isMulCommutative (M : C) [MonObj M] [BraidedCategory C] :
     IsCommMonObj M ↔ ∀ (X : C), IsMulCommutative (X ⟶ M) := by
   exact ⟨fun h X ↦ ⟨⟨by simp [mul_comm]⟩⟩, fun h ↦ ⟨by simp [mul_eq_mul, comp_mul, mul_comm]⟩⟩

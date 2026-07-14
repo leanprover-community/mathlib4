@@ -9,7 +9,6 @@ public import Mathlib.Algebra.Order.Field.Pointwise
 public import Mathlib.Analysis.Calculus.ContDiff.Deriv
 public import Mathlib.Analysis.Calculus.Deriv.AffineMap
 public import Mathlib.Analysis.Calculus.Deriv.Shift
-public import Mathlib.Analysis.Normed.Module.Convex
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 
 /-!
@@ -204,7 +203,7 @@ theorem curveIntegralFun_symm (ω : E → E →L[𝕜] F) (γ : Path a b) :
   funext <| curveIntegralFun_symm_apply ω γ
 
 protected theorem CurveIntegrable.symm (h : CurveIntegrable ω γ) : CurveIntegrable ω γ.symm := by
-  simpa [CurveIntegrable] using (h.comp_sub_left 1).neg.symm
+  simpa [CurveIntegrable] using! (h.comp_sub_left 1).neg.symm
 
 @[simp]
 theorem curveIntegrable_symm : CurveIntegrable ω γ.symm ↔ CurveIntegrable ω γ :=
@@ -258,13 +257,13 @@ theorem CurveIntegrable.intervalIntegrable_curveIntegralFun_trans_left
     (h : CurveIntegrable ω γab) (γbc : Path b c) :
     IntervalIntegrable (curveIntegralFun ω (γab.trans γbc)) volume 0 (1 / 2) := by
   refine .congr_ae ?_ (curveIntegralFun_trans_aeeq_left _ _ _).symm
-  simpa [ofNat_smul_eq_nsmul] using h.comp_mul_left.smul (2 : 𝕜)
+  simpa [ofNat_smul_eq_nsmul] using! h.comp_mul_left.smul (2 : 𝕜)
 
 theorem CurveIntegrable.intervalIntegrable_curveIntegralFun_trans_right
     (γab : Path a b) (h : CurveIntegrable ω γbc) :
     IntervalIntegrable (curveIntegralFun ω (γab.trans γbc)) volume (1 / 2) 1 := by
   refine .congr_ae ?_ (curveIntegralFun_trans_aeeq_right _ _ _).symm
-  simpa [ofNat_smul_eq_nsmul] using h.comp_sub_right 1 |>.comp_mul_left (c := 2) |>.smul (2 : 𝕜)
+  simpa [ofNat_smul_eq_nsmul] using! h.comp_sub_right 1 |>.comp_mul_left (c := 2) |>.smul (2 : 𝕜)
 
 protected theorem CurveIntegrable.trans (h₁ : CurveIntegrable ω γab) (h₂ : CurveIntegrable ω γbc) :
     CurveIntegrable ω (γab.trans γbc) :=
@@ -310,7 +309,7 @@ theorem curveIntegral_segment [NormedSpace ℝ E] [NormedSpace ℝ F] (ω : E �
 @[simp]
 theorem curveIntegral_segment_const [NormedSpace ℝ E] [CompleteSpace F] (ω : E →L[𝕜] F) (a b : E) :
     ∫ᶜ _ in .segment a b, ω = ω (b - a) := by
-  letI : NormedSpace ℝ F := .restrictScalars ℝ 𝕜 F
+  let : NormedSpace ℝ F := .restrictScalars ℝ 𝕜 F
   simp [curveIntegral_segment]
 
 /-- If `‖ω z‖ ≤ C` at all points of the segment `[a -[ℝ] b]`,
@@ -318,7 +317,7 @@ then the curve integral `∫ᶜ x in .segment a b, ω x` has norm at most `C * �
 theorem norm_curveIntegral_segment_le [NormedSpace ℝ E] {C : ℝ} (h : ∀ z ∈ [a -[ℝ] b], ‖ω z‖ ≤ C) :
     ‖∫ᶜ x in .segment a b, ω x‖ ≤ C * ‖b - a‖ := calc
   ‖∫ᶜ x in .segment a b, ω x‖ ≤ C * ‖b - a‖ * |1 - 0| := by
-    letI : NormedSpace ℝ F := .restrictScalars ℝ 𝕜 F
+    let : NormedSpace ℝ F := .restrictScalars ℝ 𝕜 F
     rw [curveIntegral_segment]
     refine intervalIntegral.norm_integral_le_of_norm_le_const fun t ht ↦ ?_
     rw [segment_eq_image_lineMap] at h
@@ -356,12 +355,12 @@ theorem curveIntegralFun_add :
 
 protected theorem CurveIntegrable.add (h₁ : CurveIntegrable ω₁ γ) (h₂ : CurveIntegrable ω₂ γ) :
     CurveIntegrable (ω₁ + ω₂) γ := by
-  simpa [CurveIntegrable] using IntervalIntegrable.add h₁ h₂
+  simpa [CurveIntegrable] using! IntervalIntegrable.add h₁ h₂
 
 -- TODO: `to_fun` generates wrong lemma name
 theorem curveIntegral_add (h₁ : CurveIntegrable ω₁ γ) (h₂ : CurveIntegrable ω₂ γ) :
     curveIntegral (ω₁ + ω₂) γ = ∫ᶜ x in γ, ω₁ x + ∫ᶜ x in γ, ω₂ x := by
-  letI : NormedSpace ℝ F := .restrictScalars ℝ 𝕜 F
+  let : NormedSpace ℝ F := .restrictScalars ℝ 𝕜 F
   simp only [curveIntegral, curveIntegralFun_add]
   exact intervalIntegral.integral_add h₁ h₂
 
@@ -437,7 +436,7 @@ variable {𝕝 : Type*} [RCLike 𝕝] [NormedSpace 𝕝 F] [NormedSpace 𝕝 E]
 theorem curveIntegralFun_restrictScalars :
     curveIntegralFun (fun t ↦ (ω t).restrictScalars 𝕝) γ = curveIntegralFun ω γ := by
   ext
-  letI : NormedSpace ℝ E := .restrictScalars ℝ 𝕜 E
+  let : NormedSpace ℝ E := .restrictScalars ℝ 𝕜 E
   simp [curveIntegralFun_def]
 
 @[simp]
@@ -448,7 +447,7 @@ theorem curveIntegrable_restrictScalars_iff :
 @[simp]
 theorem curveIntegral_restrictScalars :
     ∫ᶜ x in γ, (ω x).restrictScalars 𝕝 = ∫ᶜ x in γ, ω x := by
-  letI : NormedSpace ℝ F := .restrictScalars ℝ 𝕜 F
+  let : NormedSpace ℝ F := .restrictScalars ℝ 𝕜 F
   simp [curveIntegral_def]
 
 end RestrictScalars
@@ -474,7 +473,7 @@ theorem curveIntegrable_smul_iff : CurveIntegrable (c • ω) γ ↔ c = 0 ∨ C
 
 @[simp]
 theorem curveIntegral_smul : curveIntegral (c • ω) γ = c • curveIntegral ω γ := by
-  letI : NormedSpace ℝ F := .restrictScalars ℝ 𝕜 F
+  let : NormedSpace ℝ F := .restrictScalars ℝ 𝕜 F
   simp [curveIntegral_def, intervalIntegral.integral_smul]
 
 @[simp]

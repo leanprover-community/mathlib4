@@ -72,6 +72,25 @@ def op {X Y : C} {f : X ⟶ Y} (hf : MapFactorizationData W₁ W₂ f) :
   hi := hf.hp
   hp := hf.hi
 
+/-- The factorization obtained from a factorization in the opposite category. -/
+@[simps]
+protected def unop {W₁ W₂ : MorphismProperty Cᵒᵖ} {X Y : Cᵒᵖ} {f : X ⟶ Y}
+    (φ : MapFactorizationData W₁ W₂ f) :
+    MapFactorizationData W₂.unop W₁.unop f.unop where
+  Z := φ.Z.unop
+  i := φ.p.unop
+  p := φ.i.unop
+  hi := φ.hp
+  hp := φ.hi
+  fac := by simp [← unop_comp]
+
+/-- The bijection between factorizations in `C` and factorizations in `Cᵒᵖ`. -/
+@[simps]
+def opEquiv {W₁ W₂ : MorphismProperty C} {X Y : C} {f : X ⟶ Y} :
+    MapFactorizationData W₁ W₂ f ≃ MapFactorizationData W₂.op W₁.op f.op where
+  toFun φ := φ.op
+  invFun φ := φ.unop
+
 end MapFactorizationData
 
 /-- The data of a term in `MapFactorizationData W₁ W₂ f` for any morphism `f`. -/
@@ -183,6 +202,7 @@ section
 
 variable (J : Type*) [Category* J]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Auxiliary definition for `FunctorialFactorizationData.functorCategory`. -/
 @[simps]
 def functorCategory.Z : Arrow (J ⥤ C) ⥤ J ⥤ C where
@@ -213,6 +233,7 @@ def functorCategory.Z : Arrow (J ⥤ C) ⥤ J ⥤ C where
     rw [← data.mapZ_comp]
     congr 1
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A functorial factorization in the category `C` extends to the functor category `J ⥤ C`. -/
 def functorCategory :
     FunctorialFactorizationData (W₁.functorCategory J) (W₂.functorCategory J) where
@@ -245,6 +266,7 @@ instance [HasFunctorialFactorization W₁ W₂] (J : Type*) [Category* J] :
     HasFunctorialFactorization (W₁.functorCategory J) (W₂.functorCategory J) :=
   ⟨⟨(functorialFactorizationData W₁ W₂).functorCategory J⟩⟩
 
+set_option backward.defeqAttrib.useBackward true in
 variable {W₁ W₂} in
 /-- The term in `MapFactorizationData (W₁.inverseImage F) (W₂.inverseImage F) f`
 deduced from `h : MapFactorizationData W₁ W₂ (F.map f)` when `F` is an equivalence
@@ -258,10 +280,12 @@ noncomputable def MapFactorizationData.ofIsEquivalence {F : D ⥤ C}
   p := F.preimage ((F.objObjPreimageIso h.Z).hom ≫ h.p)
   hi := by
     refine (W₁.arrow_mk_iso_iff ?_).1 h.hi
-    exact Arrow.isoMk (Iso.refl _) (F.objObjPreimageIso h.Z).symm
+    refine Arrow.isoMk (Iso.refl _) (F.objObjPreimageIso h.Z).symm ?_
+    simp [F.map_preimage]
   hp := by
     refine (W₂.arrow_mk_iso_iff ?_).1 h.hp
-    exact Arrow.isoMk (F.objObjPreimageIso h.Z).symm (Iso.refl _)
+    refine Arrow.isoMk (F.objObjPreimageIso h.Z).symm (Iso.refl _) ?_
+    simp [F.map_preimage]
   fac := F.map_injective (by simp)
 
 instance (F : D ⥤ C) [F.IsEquivalence]

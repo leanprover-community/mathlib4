@@ -191,6 +191,7 @@ open CategoryTheory.Functor
 variable {D : Type u₂} [Category.{v₂} D]
 variable {L : C ⥤ D} {R : D ⥤ C} [PreservesMonomorphisms L]
 
+set_option backward.defeqAttrib.useBackward true in
 theorem injective_of_adjoint (adj : L ⊣ R) (J : D) [Injective J] : Injective <| R.obj J :=
   ⟨fun {A} {_} g f im =>
     ⟨adj.homEquiv _ _ (factorThru ((adj.homEquiv A J).symm g) (L.map f)),
@@ -290,7 +291,7 @@ theorem injective_of_map_injective (adj : F ⊣ G) [G.Full] [G.Faithful] (I : D)
     (hI : Injective (G.obj I)) : Injective I :=
   ⟨fun {X} {Y} f g => by
     intro
-    haveI : PreservesLimitsOfSize.{0, 0} G := adj.rightAdjoint_preservesLimits
+    have : PreservesLimitsOfSize.{0, 0} G := adj.rightAdjoint_preservesLimits
     rcases hI.factors (G.map f) (G.map g) with ⟨w,h⟩
     use inv (adj.counit.app _) ≫ F.map w ≫ adj.counit.app _
     exact G.map_injective (by simpa)⟩
@@ -303,7 +304,7 @@ def mapInjectivePresentation (adj : F ⊣ G) [F.PreservesMonomorphisms] (X : D)
   injective := adj.map_injective _ I.injective
   f := G.map I.f
   mono := by
-    haveI : PreservesLimitsOfSize.{0, 0} G := adj.rightAdjoint_preservesLimits; infer_instance
+    have : PreservesLimitsOfSize.{0, 0} G := adj.rightAdjoint_preservesLimits; infer_instance
 
 /-- Given an adjunction `F ⊣ G` such that `F` preserves monomorphisms and is faithful,
   then any injective presentation of `F(X)` can be pulled back to an injective presentation of `X`.

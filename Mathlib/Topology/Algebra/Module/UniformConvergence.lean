@@ -81,7 +81,7 @@ lemma UniformFun.continuousSMul_induced_of_range_bounded (φ : hom)
     have : Tendsto (c • · : E → E) (𝓝 0) (𝓝 0) :=
       (continuous_const_smul c).tendsto' _ _ (smul_zero _)
     refine ⟨_, this hU, fun u hu x ↦ ?_⟩
-    simpa only [map_smul] using hu x
+    simpa only [map_smul] using! hu x
   · intro u U hU
     simp only [Set.mem_setOf_eq, map_smul, Pi.smul_apply]
     simpa only [Set.mapsTo_range_iff] using (h u hU).eventually_nhds_zero (mem_of_mem_nhds hU)
@@ -100,14 +100,14 @@ lemma UniformOnFun.continuousSMul_induced_of_image_bounded (φ : hom) (hφ : IsI
   obtain rfl := hφ.eq_induced; clear hφ
   simp +instances only [induced_iInf, UniformOnFun.topologicalSpace_eq, induced_compose]
   refine continuousSMul_iInf fun s ↦ continuousSMul_iInf fun hs ↦ ?_
-  letI : TopologicalSpace H :=
+  let : TopologicalSpace H :=
     .induced (UniformFun.ofFun ∘ s.restrict ∘ φ) (UniformFun.topologicalSpace s E)
   set φ' : H →ₗ[𝕜] (s → E) :=
     { toFun := s.restrict ∘ φ,
       map_smul' := fun c x ↦ by exact congr_arg s.restrict (map_smul φ c x),
       map_add' := fun x y ↦ by exact congr_arg s.restrict (map_add φ x y) }
   refine UniformFun.continuousSMul_induced_of_range_bounded 𝕜 s E H φ' ⟨rfl⟩ fun u ↦ ?_
-  simpa only [Set.image_eq_range] using h u s hs
+  simpa only [Set.image_eq_range] using! h u s hs
 
 /-- Let `E` be a TVS, `𝔖 : Set (Set α)` and `H` a submodule of `α →ᵤ[𝔖] E`. If the image of any
 `S ∈ 𝔖` by any `u ∈ H` is bounded (in the sense of `Bornology.IsVonNBounded`), then `H`,

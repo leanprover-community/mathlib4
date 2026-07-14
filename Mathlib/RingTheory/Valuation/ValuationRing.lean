@@ -86,7 +86,7 @@ instance : LE (ValueGroup A K) :=
         constructor
         · rintro ⟨e, he⟩; use (c⁻¹ : Aˣ) * e * d
           apply_fun fun t => c⁻¹ • t at he
-          simpa [mul_smul] using he
+          simpa [mul_smul] using! he
         · rintro ⟨e, he⟩; dsimp
           use c * e * (d⁻¹ : Aˣ)
           simp_rw [Units.smul_def, ← he, mul_smul]
@@ -286,7 +286,7 @@ instance le_total_ideal : @Std.Total (Ideal A) (· ≤ ·) := by
   · exfalso; apply h₂; rw [← h]
     apply Ideal.mul_mem_right _ _ hb
 
-open Classical in
+open scoped Classical in
 /- Todo: get rid of the `DecidableLE` argument.
 Currently, this argument causes this instance to not be called often,
 which hides a loop in simp-lemmas. See
@@ -468,7 +468,7 @@ is a valuation ring. -/
 theorem of_integers (v : Valuation K Γ) (hh : v.Integers 𝒪) :
     haveI := hh.hom_inj.isDomain
     ValuationRing 𝒪 := by
-  haveI := hh.hom_inj.isDomain
+  have := hh.hom_inj.isDomain
   suffices PreValuationRing 𝒪 from .mk
   constructor
   intro a b

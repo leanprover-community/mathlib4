@@ -107,7 +107,7 @@ section TendstoLemmas
 
 open Filter ContinuousLinearMap
 
-attribute [local simp] ContinuousLinearMap.coe_smul
+attribute [local simp] FunLike.coe_smul
 
 /-- The function `(c,d) → |cz+d|^2` is proper, that is, preimages of bounded-above sets are finite.
 -/
@@ -115,7 +115,7 @@ theorem tendsto_normSq_coprime_pair :
     Filter.Tendsto (fun p : Fin 2 → ℤ => normSq ((p 0 : ℂ) * z + p 1)) cofinite atTop := by
   -- using this instance rather than the automatic `Function.module` makes unification issues in
   -- `LinearEquiv.isClosedEmbedding_of_injective` less bad later in the proof.
-  letI : Module ℝ (Fin 2 → ℝ) := NormedSpace.toModule
+  let : Module ℝ (Fin 2 → ℝ) := NormedSpace.toModule
   let π₀ : (Fin 2 → ℝ) →ₗ[ℝ] ℝ := LinearMap.proj 0
   let π₁ : (Fin 2 → ℝ) →ₗ[ℝ] ℝ := LinearMap.proj 1
   let f : (Fin 2 → ℝ) →ₗ[ℝ] ℂ := π₀.smulRight (z : ℂ) + π₁.smulRight 1
@@ -200,7 +200,7 @@ theorem tendsto_lcRow0 {cd : Fin 2 → ℤ} (hcd : IsCoprime (cd 0) (cd 1)) :
   have cocompact_ℝ_to_cofinite_ℤ_matrix :
     Tendsto (fun m : Matrix (Fin 2) (Fin 2) ℤ => Matrix.map m ((↑) : ℤ → ℝ)) cofinite
       (cocompact _) := by
-    simpa only [coprodᵢ_cofinite, coprodᵢ_cocompact] using
+    simpa only [coprodᵢ_cofinite, coprodᵢ_cocompact] using!
       Tendsto.pi_map_coprodᵢ fun _ : Fin 2 =>
         Tendsto.pi_map_coprodᵢ fun _ : Fin 2 => Int.tendsto_coe_cofinite
   have hf₁ : Tendsto f₁ cofinite (cocompact _) :=
@@ -284,7 +284,7 @@ theorem exists_max_im : ∃ g : SL(2, ℤ), ∀ g' : SL(2, ℤ), (g' • z).im �
   refine ⟨g, fun g' => ?_⟩
   rw [ModularGroup.im_smul_eq_div_normSq, ModularGroup.im_smul_eq_div_normSq,
     div_le_div_iff_of_pos_left]
-  · simpa [← hg] using hp (g' 1) (bottom_row_coprime g')
+  · simpa [← hg] using! hp (g' 1) (bottom_row_coprime g')
   · exact z.im_pos
   · exact normSq_denom_pos g' z.im_ne_zero
   · exact normSq_denom_pos g z.im_ne_zero
@@ -294,7 +294,7 @@ theorem exists_max_im : ∃ g : SL(2, ℤ), ∀ g' : SL(2, ℤ), (g' • z).im �
 theorem exists_row_one_eq_and_min_re {cd : Fin 2 → ℤ} (hcd : IsCoprime (cd 0) (cd 1)) :
     ∃ g : SL(2, ℤ), g 1 = cd ∧ ∀ g' : SL(2, ℤ), g 1 = g' 1 →
       |(g • z).re| ≤ |(g' • z).re| := by
-  haveI : Nonempty { g : SL(2, ℤ) // g 1 = cd } :=
+  have : Nonempty { g : SL(2, ℤ) // g 1 = cd } :=
     let ⟨x, hx⟩ := bottom_row_surj hcd
     ⟨⟨x, hx.2⟩⟩
   obtain ⟨g, hg⟩ := Filter.Tendsto.exists_forall_le (tendsto_abs_re_smul z hcd)
@@ -319,7 +319,7 @@ theorem re_T_smul : (T • z).re = z.re + 1 := by simpa using re_T_zpow_smul z 1
 
 theorem im_T_smul : (T • z).im = z.im := by simpa using im_T_zpow_smul z 1
 
-theorem re_T_inv_smul : (T⁻¹ • z).re = z.re - 1 := by simpa using re_T_zpow_smul z (-1)
+theorem re_T_inv_smul : (T⁻¹ • z).re = z.re - 1 := by simpa using! re_T_zpow_smul z (-1)
 
 theorem im_T_inv_smul : (T⁻¹ • z).im = z.im := by simpa using im_T_zpow_smul z (-1)
 
@@ -890,10 +890,10 @@ private lemma mem_closure_of_arc {x : ℍ} (hxnorm : ‖(x : ℂ)‖ = 1) (hxre 
   -- Consider a vertical line going upwards from `x` (parametrized by `ℝ≥0`)
   apply mem_closure_of_frequently_of_tendsto (b := 𝓝[>] 0)
     (f := fun t : ℝ≥0 ↦ ⟨x + t * Complex.I, by
-      simpa using add_pos_of_pos_of_nonneg x.coe_im_pos t.property⟩)
+      simpa using! add_pos_of_pos_of_nonneg x.coe_im_pos t.property⟩)
   · apply Filter.Eventually.frequently
     filter_upwards [self_mem_nhdsWithin] with a (ha : 0 < a)
-    refine mem_closure_of_one_lt_norm ?_ (by simpa using hxre)
+    refine mem_closure_of_one_lt_norm ?_ (by simpa using! hxre)
     suffices 1 < ‖(x : ℂ)‖ ^ 2 + a ^ 2 + 2 * a * x.im by
       rw [← one_lt_normSq_iff]
       convert! this
@@ -903,7 +903,7 @@ private lemma mem_closure_of_arc {x : ℍ} (hxnorm : ‖(x : ℂ)‖ = 1) (hxre 
     positivity
   · refine .mono_left ?_ nhdsWithin_le_nhds
     simpa [show 𝓝 (x : ℂ) = 𝓝 (x + (((0 : ℝ≥0) : ℝ) : ℂ) * Complex.I) by simp,
-      isOpenEmbedding_coe.tendsto_nhds_iff] using Continuous.tendsto (by fun_prop) _
+      isOpenEmbedding_coe.tendsto_nhds_iff] using! Continuous.tendsto (by fun_prop) _
 
 lemma fd_eq_closure_fdo : 𝒟 = closure 𝒟ᵒ := by
   refine subset_antisymm ?_ (isClosed_fd.closure_subset_iff.mpr fdo_subset_fd)

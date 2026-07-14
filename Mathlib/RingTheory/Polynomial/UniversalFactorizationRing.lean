@@ -124,6 +124,7 @@ lemma mapEquivMonic_symm_map_algebraMap
       (IsScalarTower.toAlgHom R S T).comp ((mapEquivMonic R S n).symm p) := by
   rw [← mapEquivMonic_symm_map, IsScalarTower.coe_toAlgHom]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- In light of the fact that `MonicDegreeEq · n` is representable by `R[X₁,...,Xₙ]`,
 this is the map `R[X₁,...,Xₘ₊ₖ] → R[X₁,...,Xₘ] ⊗ R[X₁,...,Xₖ]` corresponding to the multiplication
 `MonicDegreeEq · m × MonicDegreeEq · k → MonicDegreeEq · (m + k)`. -/
@@ -148,6 +149,7 @@ lemma universalFactorizationMap_freeMonic :
   simp [universalFactorizationMap]
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 lemma universalFactorizationMap_comp_map :
     (universalFactorizationMap S n m k hn).toRingHom.comp (map (algebraMap R S)) =
     .comp (Algebra.TensorProduct.lift (S := R)
@@ -290,7 +292,7 @@ lemma universalFactorizationMapPresentation_jacobiMatrix :
       ((freeMonic R m).map (((mapAlgHom (Algebra.ofId _ _)).comp (rename Sum.inl)).toRingHom))
       ((freeMonic R k).map (((mapAlgHom (Algebra.ofId _ _)).comp (rename Sum.inr)).toRingHom))
       m k).reindex (finCongr (by lia)) (finCongr (by lia))).transpose := by
-  letI := (universalFactorizationMap R n m k hn).toAlgebra
+  let := (universalFactorizationMap R n m k hn).toAlgebra
   subst hn
   ext i j : 1
   dsimp [Polynomial.sylvester]
@@ -308,7 +310,7 @@ lemma universalFactorizationMapPresentation_jacobian :
       ((freeMonic R k).map Algebra.TensorProduct.includeRight.toRingHom)) := by
   cases subsingleton_or_nontrivial R
   · exact Subsingleton.elim _ _
-  letI := (universalFactorizationMap R n m k hn).toAlgebra
+  let := (universalFactorizationMap R n m k hn).toAlgebra
   rw [Algebra.PreSubmersivePresentation.jacobian_eq_jacobiMatrix_det,
     MvPolynomial.universalFactorizationMapPresentation_jacobiMatrix]
   simp only [AlgHom.toRingHom_eq_coe, Matrix.det_neg, Matrix.det_transpose, Matrix.det_reindex_self,
@@ -333,10 +335,10 @@ lemma finite_universalFactorizationMap :
     (universalFactorizationMap R n m k hn).Finite := by
   refine RingHom.IsIntegral.to_finite ?_
     (.of_finitePresentation (finitePresentation_universalFactorizationMap R n m k hn))
-  letI := (universalFactorizationMap R n m k hn).toAlgebra
+  let := (universalFactorizationMap R n m k hn).toAlgebra
   have : IsDomain (MvPolynomial (Fin m) ℤ ⊗[ℤ] MvPolynomial (Fin k) ℤ) :=
     (MvPolynomial.tensorEquivSum ℤ (Fin m) (Fin k) ℤ).toRingEquiv.isDomain_iff.mpr inferInstance
-  letI := (universalFactorizationMap ℤ n m k hn).toAlgebra
+  let := (universalFactorizationMap ℤ n m k hn).toAlgebra
   let F : MvPolynomial (Fin m) ℤ ⊗[ℤ] MvPolynomial (Fin k) ℤ →ₐ[ℤ]
       MvPolynomial (Fin m) R ⊗[R] MvPolynomial (Fin k) R :=
     Algebra.TensorProduct.lift
@@ -345,21 +347,21 @@ lemma finite_universalFactorizationMap :
       fun _ _ ↦ .all _ _
   have H₁ (i : _) : (universalFactorizationMap R n m k hn).IsIntegralElem (.X i ⊗ₜ 1) := by
     obtain ⟨p, hp, hp'⟩ : (universalFactorizationMap ℤ n m k hn).IsIntegralElem (.X i ⊗ₜ 1) := by
-      simpa [coeff_freeMonic] using Polynomial.isIntegral_coeff_of_dvd _ _ (monic_freeMonic _ _)
+      simpa [coeff_freeMonic] using! Polynomial.isIntegral_coeff_of_dvd _ _ (monic_freeMonic _ _)
         ((monic_freeMonic _ _).map _) ⟨_, universalFactorizationMap_freeMonic ℤ n m k hn⟩ i
     refine ⟨p.map (MvPolynomial.map (algebraMap ℤ R)), hp.map _, ?_⟩
     apply_fun F.toRingHom at hp'
     rw [Polynomial.hom_eval₂, ← MvPolynomial.universalFactorizationMap_comp_map] at hp'
-    simpa [← Polynomial.eval₂_map, F] using hp'
+    simpa [← Polynomial.eval₂_map, F] using! hp'
   have H₂ (i : _) : (universalFactorizationMap R n m k hn).IsIntegralElem (1 ⊗ₜ .X i) := by
     obtain ⟨p, hp, hp'⟩ : (universalFactorizationMap ℤ n m k hn).IsIntegralElem (1 ⊗ₜ .X i) := by
-      simpa [coeff_freeMonic] using Polynomial.isIntegral_coeff_of_dvd _ _ (monic_freeMonic _ _)
+      simpa [coeff_freeMonic] using! Polynomial.isIntegral_coeff_of_dvd _ _ (monic_freeMonic _ _)
         ((monic_freeMonic _ _).map _)
         ⟨_, (universalFactorizationMap_freeMonic ℤ n m k hn).trans (mul_comm _ _)⟩ i
     refine ⟨p.map (MvPolynomial.map (algebraMap ℤ R)), hp.map _, ?_⟩
     apply_fun F.toRingHom at hp'
     rw [Polynomial.hom_eval₂, ← MvPolynomial.universalFactorizationMap_comp_map] at hp'
-    simpa [← Polynomial.eval₂_map, F] using hp'
+    simpa [← Polynomial.eval₂_map, F] using! hp'
   intro x
   induction x with
   | zero => exact RingHom.isIntegralElem_zero _
@@ -368,14 +370,14 @@ lemma finite_universalFactorizationMap :
     suffices (universalFactorizationMap R n m k hn).IsIntegralElem (x ⊗ₜ 1 * 1 ⊗ₜ y) by simpa
     refine RingHom.IsIntegralElem.mul _ ?_ ?_
     · induction x using MvPolynomial.induction_on with
-      | C a => simpa using (universalFactorizationMap R n m k hn).isIntegralElem_map (x := .C a)
+      | C a => simpa using! (universalFactorizationMap R n m k hn).isIntegralElem_map (x := .C a)
       | add p q _ _ => simp only [TensorProduct.add_tmul, RingHom.IsIntegralElem.add, *]
-      | mul_X p i IH => simpa [← map_mul] using IH.mul _ (H₁ i)
+      | mul_X p i IH => simpa [← map_mul] using! IH.mul _ (H₁ i)
     · induction y using MvPolynomial.induction_on with
-      | C a => simpa [← algebraMap_eq, ← algebraMap_apply, Algebra.algebraMap_eq_smul_one] using
+      | C a => simpa [← algebraMap_eq, ← algebraMap_apply, Algebra.algebraMap_eq_smul_one] using!
           (universalFactorizationMap R n m k hn).isIntegralElem_map (x := .C a)
       | add p q _ _ => simp only [TensorProduct.tmul_add, RingHom.IsIntegralElem.add, *]
-      | mul_X p i IH => simpa [← map_mul] using IH.mul _ (H₂ i)
+      | mul_X p i IH => simpa [← map_mul] using! IH.mul _ (H₂ i)
 
 end MvPolynomial
 
@@ -415,8 +417,8 @@ def UniversalFactorizationRing.fromTensor :
 lemma UniversalFactorizationRing.fromTensor_comp_universalFactorizationMap :
   (fromTensor m k hn p).comp (MvPolynomial.universalFactorizationMap R n m k hn) =
     (Algebra.ofId R _).comp ((MvPolynomial.mapEquivMonic R _ n).symm p) := by
-  letI := (MvPolynomial.universalFactorizationMap R n m k hn).toAlgebra
-  letI := ((MvPolynomial.mapEquivMonic R _ n).symm p).toAlgebra
+  let := (MvPolynomial.universalFactorizationMap R n m k hn).toAlgebra
+  let := ((MvPolynomial.mapEquivMonic R _ n).symm p).toAlgebra
   exact AlgHom.ext fun x ↦ (Algebra.TensorProduct.tmul_one_eq_one_tmul x).symm
 
 lemma UniversalFactorizationRing.fromTensor_comp_universalFactorizationMap' :
@@ -463,10 +465,10 @@ def UniversalFactorizationRing.homEquiv :
         commutes' r := congr($(f.2) r).trans
           (by simp [MvPolynomial.mapEquivMonic_symm_map_algebraMap]; rfl) } fun _ _ ↦ .all _ _
   left_inv f := by
-    letI := (MvPolynomial.universalFactorizationMap R n m k hn).toAlgebra
-    letI := ((MvPolynomial.mapEquivMonic R _ n).symm p).toAlgebra
-    letI := Algebra.compHom S ((MvPolynomial.mapEquivMonic R _ n).symm p).toRingHom
-    haveI : IsScalarTower (MvPolynomial (Fin n) R) R S := .of_algebraMap_eq' rfl
+    let := (MvPolynomial.universalFactorizationMap R n m k hn).toAlgebra
+    let := ((MvPolynomial.mapEquivMonic R _ n).symm p).toAlgebra
+    let := Algebra.compHom S ((MvPolynomial.mapEquivMonic R _ n).symm p).toRingHom
+    have : IsScalarTower (MvPolynomial (Fin n) R) R S := .of_algebraMap_eq' rfl
     have : IsScalarTower R (MvPolynomial (Fin n) R) S := .of_algebraMap_eq fun r ↦ by
       simp [Algebra.compHom_algebraMap_apply]
     refine Algebra.TensorProduct.ext (by ext) ?_
@@ -476,12 +478,11 @@ def UniversalFactorizationRing.homEquiv :
     · ext; simp [MvPolynomial.universalFactorizationMapLiftEquiv, MvPolynomial.mapEquivMonic,
         UniversalFactorizationRing.factor₂, coeff_freeMonic]; rfl
   right_inv q := by
-    letI := (MvPolynomial.universalFactorizationMap R n m k hn).toAlgebra
-    letI := ((MvPolynomial.mapEquivMonic R _ n).symm p).toAlgebra
+    let := (MvPolynomial.universalFactorizationMap R n m k hn).toAlgebra
+    let := ((MvPolynomial.mapEquivMonic R _ n).symm p).toAlgebra
     simp only [UniversalFactorizationRing, MvPolynomial.mapEquivMonic, AlgHom.toRingHom_eq_coe,
-      Equiv.coe_fn_symm_mk, MvPolynomial.coe_aeval_eq_eval, factor₁, monicDegreeEq_coe,
-      MvPolynomial.universalFactorizationMapLiftEquiv, Equiv.coe_fn_mk, fromTensor,
-      MonicDegreeEq.map_coe, factor₂]
+      Equiv.coe_fn_symm_mk, MvPolynomial.coe_aeval_eq_eval, factor₁,
+      MvPolynomial.universalFactorizationMapLiftEquiv, Equiv.coe_fn_mk, fromTensor, factor₂]
     ext <;> simp +contextual [coeff_freeMonic, apply_dite, MonicDegreeEq.coeff_of_ge]
 
 attribute [-instance] leftModule in
@@ -517,8 +518,8 @@ lemma UniversalFactorizationRing.jacobian_resentation :
   · dsimp [UniversalFactorizationRing]; exact Subsingleton.elim _ _
   cases subsingleton_or_nontrivial R
   · dsimp [UniversalFactorizationRing]; exact Subsingleton.elim _ _
-  letI := (MvPolynomial.universalFactorizationMap R n m k hn).toAlgebra
-  letI := ((MvPolynomial.mapEquivMonic R _ n).symm p).toAlgebra
+  let := (MvPolynomial.universalFactorizationMap R n m k hn).toAlgebra
+  let := ((MvPolynomial.mapEquivMonic R _ n).symm p).toAlgebra
   refine (Algebra.PreSubmersivePresentation.baseChange_jacobian _ _).trans ?_
   change fromTensor _ _ _ _ _ = _
   rw [MvPolynomial.universalFactorizationMapPresentation_jacobian]
@@ -592,12 +593,9 @@ def UniversalCoprimeFactorizationRing.homEquiv :
           AlgHom.comp_toRingHom, ← Polynomial.map_map] <;> rfl⟩
   invFun q := by
     letI f := (UniversalFactorizationRing.homEquiv S m k hn p).symm ⟨q.1, q.2.1⟩
-    refine IsLocalization.liftAlgHom (f := f)
-      (M := .powers (UniversalFactorizationRing.presentation m k hn p).jacobian) ?_
+    apply IsLocalization.Away.liftAlgHom (f := f)
+      (UniversalFactorizationRing.presentation m k hn p).jacobian
     nontriviality S
-    rw [Subtype.forall]
-    change Submonoid.powers _ ≤ (IsUnit.submonoid _).comap f
-    simp only [Submonoid.powers_le, Submonoid.mem_comap, IsUnit.mem_submonoid_iff]
     rw [← AlgHom.coe_toRingHom, UniversalFactorizationRing.jacobian_resentation, map_mul,
       ← Polynomial.resultant_map_map, IsUnit.mul_iff]
     refine ⟨by cases n <;> simp, ?_⟩
@@ -611,7 +609,7 @@ def UniversalCoprimeFactorizationRing.homEquiv :
   left_inv f := by
     apply IsLocalization.algHom_ext
       (.powers (UniversalFactorizationRing.presentation m k hn p).jacobian)
-    ext; simp
+    ext; simp [Algebra.algHom]
   right_inv q := by
     apply Subtype.ext
     convert! congr($((UniversalFactorizationRing.homEquiv S m k hn p).apply_symm_apply
@@ -678,7 +676,6 @@ lemma UniversalCoprimeFactorizationRing.exists_liesOver_residueFieldMap_bijectiv
         MonicDegreeEq.map, Polynomial.map_map]
       rfl
 
-set_option maxHeartbeats 400000 in -- Needed after nightly-2026-03-04
 open UniversalCoprimeFactorizationRing in
 /-- If a monic polynomial `p : R[X]` factors into a product of coprime monic polynomials `p = f * g`
 in the residue field `κ(P)` of some `P : Spec R`,

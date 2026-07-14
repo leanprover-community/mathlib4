@@ -106,7 +106,7 @@ instance : Inhabited (AffineBasis PUnit k PUnit) :=
 
 instance instFunLike : FunLike (AffineBasis ι k P) ι P where
   coe := AffineBasis.toFun
-  coe_injective' f g h := by cases f; cases g; congr
+  coe_injective f g h := by cases f; cases g; congr
 
 @[ext]
 theorem ext {b₁ b₂ : AffineBasis ι k P} (h : (b₁ : ι → P) = b₂) : b₁ = b₂ :=
@@ -253,7 +253,7 @@ theorem coe_coord_of_subsingleton_eq_one [Subsingleton ι] (i : ι) : (b.coord i
     rw [← image_univ]
     apply Subsingleton.image
     apply subsingleton_of_subsingleton
-  haveI := AffineSubspace.subsingleton_of_subsingleton_span_eq_top hp b.tot
+  have := AffineSubspace.subsingleton_of_subsingleton_span_eq_top hp b.tot
   let s : Finset ι := {i}
   have hi : i ∈ s := by simp [s]
   have hw : s.sum (Function.const ι (1 : k)) = 1 := by simp [s]

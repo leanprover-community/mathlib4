@@ -182,7 +182,7 @@ lemma lipschitzOnWith_cfc_fun_of_subset (a : A) {s : Set R} (hs : spectrum R a �
   have h₁ := lipschitzOnWith_cfc_fun R a
   have h₂ := lipschitzWith_one_ofFun_toFun' (𝔖 := {spectrum R a}) (𝔗 := {s}) (β := R) (by simpa)
   have h₃ := h₂.lipschitzOnWith (s := {f | ContinuousOn (toFun {s} f) (s)})
-  simpa using h₁.comp h₃ (fun f hf ↦ hf.mono hs)
+  simpa using! h₁.comp h₃ (fun f hf ↦ hf.mono hs)
 
 end Isometric
 
@@ -207,15 +207,15 @@ theorem continuous_cfcHomSuperset_left
   induction f using ContinuousMap.induction_on_of_compact with
   | const r =>
     have : ContinuousMap.const s r = algebraMap 𝕜 C(s, 𝕜) r := rfl
-    simpa only [this, AlgHomClass.commutes] using continuous_const
+    simpa only [this, AlgHomClass.commutes] using! continuous_const
   | id =>
     simp only [cfcHomSuperset_id]
     fun_prop
   | star_id =>
     simp only [map_star, cfcHomSuperset_id]
     fun_prop
-  | add f g hf hg => simpa using hf.add hg
-  | mul f g hf hg => simpa using hf.mul hg
+  | add f g hf hg => simpa using! hf.add hg
+  | mul f g hf hg => simpa using! hf.mul hg
   | frequently f hf =>
     apply continuous_of_uniform_approx_of_continuous
     rw [Metric.uniformity_basis_dist_le.forall_iff (by aesop)]
@@ -256,6 +256,23 @@ theorem continuousOn_cfc_setProd {s : Set 𝕜} (hs : IsCompact s) :
   continuousOn_prod_of_continuousOn_lipschitzOnWith _ 1
     (fun f hf ↦ continuousOn_cfc A hs ((toFun {s}) f) hf)
     (fun a ⟨_, ha'⟩ ↦ lipschitzOnWith_cfc_fun_of_subset a ha')
+
+open UniformOnFun in
+theorem continuousOn_cfc_setProd_nhdsSet [CompleteSpace A] {s : Set 𝕜} :
+    ContinuousOn (fun fa : (𝕜 →ᵤ[{t | IsCompact t ∧ t ⊆ s}] 𝕜) × A ↦ cfc (toFun {s} fa.1) fa.2)
+      ({f | ContinuousOn (toFun {t | IsCompact t ∧ t ⊆ s} f) s} ×ˢ
+        {a | p a ∧ s ∈ 𝓝ˢ (spectrum 𝕜 a)}) := by
+  refine continuousOn_of_locally_continuousOn fun (f, a) ⟨hf, ha, has⟩ ↦ ?_
+  have hs := ContinuousFunctionalCalculus.isCompact_spectrum (R := 𝕜) a
+  obtain ⟨k, ⟨hka, hk⟩, hks⟩ := hs.nhdsSet_basis_isCompact.mem_iff.mp has
+  have := (upperHemicontinuous_spectrum 𝕜 A).isOpen k
+  refine ⟨Set.univ ×ˢ {x | k ∈ 𝓝ˢ (spectrum 𝕜 x)}, isOpen_univ.prod this, by simpa, ?_⟩
+  conv in cfc _ => equals cfc (toFun {k} (ofFun {k} (toFun {t | IsCompact t ∧ t ⊆ s} fa.1))) => rfl
+  refine continuousOn_cfc_setProd hk |>.comp'
+    (uniformContinuous_ofFun_toFun_of_mem 𝕜 {t | IsCompact t ∧ t ⊆ s} _ ⟨hk, hks⟩ |>.prodMap
+      uniformContinuous_id).continuous.continuousOn ?_
+  intro (f, a) ⟨⟨hf, ha⟩, ⟨_, ha'⟩⟩
+  exact ⟨hf.mono hks, ha.1, subset_of_mem_nhdsSet ha'⟩
 
 /-- If `f : 𝕜 → 𝕜` is continuous on a compact set `s` and `a : X → A` tends to `a₀ : A` along a
 filter `l` (such that eventually `a x` satisfies the predicate `p` associated to `𝕜` and has
@@ -423,6 +440,23 @@ theorem continuousOn_cfc_nnreal_setProd {s : Set ℝ≥0} (hs : IsCompact s) :
   continuousOn_prod_of_continuousOn_lipschitzOnWith _ 1
     (fun f hf ↦ continuousOn_cfc_nnreal A hs ((toFun {s}) f) hf)
     (fun a ⟨_, ha'⟩ ↦ lipschitzOnWith_cfc_fun_of_subset a ha')
+
+open UniformOnFun in
+theorem continuousOn_cfc_nnreal_setProd_nhdsSet [CompleteSpace A] {s : Set ℝ≥0} :
+    ContinuousOn (fun fa : (ℝ≥0 →ᵤ[{t | IsCompact t ∧ t ⊆ s}] ℝ≥0) × A ↦ cfc (toFun {s} fa.1) fa.2)
+      ({f | ContinuousOn (toFun {t | IsCompact t ∧ t ⊆ s} f) s} ×ˢ
+        {a | 0 ≤ a ∧ s ∈ 𝓝ˢ (spectrum ℝ≥0 a)}) := by
+  refine continuousOn_of_locally_continuousOn fun (f, a) ⟨hf, ha, has⟩ ↦ ?_
+  have hs := ContinuousFunctionalCalculus.isCompact_spectrum (R := ℝ≥0) a
+  obtain ⟨k, ⟨hka, hk⟩, hks⟩ := hs.nhdsSet_basis_isCompact.mem_iff.mp has
+  have := (upperHemicontinuous_spectrum_nnreal A).isOpen k
+  refine ⟨Set.univ ×ˢ {x | k ∈ 𝓝ˢ (spectrum ℝ≥0 x)}, isOpen_univ.prod this, by simpa, ?_⟩
+  conv in cfc _ => equals cfc (toFun {k} (ofFun {k} (toFun {t | IsCompact t ∧ t ⊆ s} fa.1))) => rfl
+  refine continuousOn_cfc_nnreal_setProd hk |>.comp'
+    (uniformContinuous_ofFun_toFun_of_mem _ {t | IsCompact t ∧ t ⊆ s} _ ⟨hk, hks⟩ |>.prodMap
+      uniformContinuous_id).continuous.continuousOn ?_
+  intro (f, a) ⟨⟨hf, ha⟩, ⟨_, ha'⟩⟩
+  exact ⟨hf.mono hks, ha.1, subset_of_mem_nhdsSet ha'⟩
 
 /-- If `f : ℝ≥0 → ℝ≥0` is continuous on a compact set `s` and `a : X → A` tends to `a₀ : A` along a
 filter `l` (such that eventually `0 ≤ a x` and has spectrum contained in `s`, as does `a₀`), then
@@ -687,7 +721,7 @@ lemma lipschitzOnWith_cfcₙ_fun_of_subset (a : A) {s : Set R} (hs : quasispectr
   have h₂ := lipschitzWith_one_ofFun_toFun' (𝔖 := {quasispectrum R a}) (𝔗 := {s}) (β := R)
     (by simpa)
   have h₃ := h₂.lipschitzOnWith (s := {f | ContinuousOn (toFun {s} f) (s) ∧ f 0 = 0})
-  simpa using lipschitzOnWith_cfcₙ_fun R a |>.comp h₃ (fun f ↦ .imp_left fun hf ↦ hf.mono hs)
+  simpa using! lipschitzOnWith_cfcₙ_fun R a |>.comp h₃ (fun f ↦ .imp_left fun hf ↦ hf.mono hs)
 
 end Isometric
 
@@ -710,12 +744,12 @@ theorem continuous_cfcₙHomSuperset_left
     Continuous (fun x ↦ cfcₙHomSuperset (ha' x) (ha x) f) := by
   have : CompactSpace s := by rwa [isCompact_iff_compactSpace] at hs
   induction f using ContinuousMapZero.induction_on_of_compact with
-  | zero => simpa [map_zero] using continuous_const
+  | zero => simpa [map_zero] using! continuous_const
   | id => simpa only [cfcₙHomSuperset_id]
   | star_id => simp only [map_star, cfcₙHomSuperset_id]; fun_prop
-  | add f g hf hg => simpa only [map_add] using hf.add hg
-  | mul f g hf hg => simpa only [map_mul] using hf.mul hg
-  | smul r f hf => simpa only [map_smul] using hf.const_smul r
+  | add f g hf hg => simpa only [map_add] using! hf.add hg
+  | mul f g hf hg => simpa only [map_mul] using! hf.mul hg
+  | smul r f hf => simpa only [map_smul] using! hf.const_smul r
   | frequently f hf =>
     apply continuous_of_uniform_approx_of_continuous
     rw [Metric.uniformity_basis_dist_le.forall_iff (by aesop)]
@@ -761,6 +795,24 @@ theorem continuousOn_cfcₙ_setProd {s : Set 𝕜} (hs : IsCompact s) :
   continuousOn_prod_of_continuousOn_lipschitzOnWith _ 1
     (fun f hf ↦ continuousOn_cfcₙ A hs ((toFun {s}) f) hf.1 hf.2)
     (fun a ⟨_, ha'⟩ ↦ lipschitzOnWith_cfcₙ_fun_of_subset a ha')
+
+open UniformOnFun in
+theorem continuousOn_cfcₙ_setProd_nhdsSet [CompleteSpace A] {s : Set 𝕜} :
+    ContinuousOn (fun fa : (𝕜 →ᵤ[{t | IsCompact t ∧ t ⊆ s}] 𝕜) × A ↦ cfcₙ (toFun {s} fa.1) fa.2)
+      ({f | ContinuousOn (toFun {t | IsCompact t ∧ t ⊆ s} f) s ∧ f 0 = 0} ×ˢ
+        {a | p a ∧ s ∈ 𝓝ˢ (quasispectrum 𝕜 a)}) := by
+  refine continuousOn_of_locally_continuousOn fun (f, a) ⟨hf, ha, has⟩ ↦ ?_
+  have hs := NonUnitalContinuousFunctionalCalculus.isCompact_quasispectrum (R := 𝕜) a
+  obtain ⟨k, ⟨hka, hk⟩, hks⟩ := hs.nhdsSet_basis_isCompact.mem_iff.mp has
+  have := (upperHemicontinuous_quasispectrum 𝕜 A).isOpen k
+  refine ⟨Set.univ ×ˢ {x | k ∈ 𝓝ˢ (quasispectrum 𝕜 x)}, isOpen_univ.prod this, by simpa, ?_⟩
+  conv in cfcₙ _ =>
+    equals cfcₙ (toFun {k} (ofFun {k} (toFun {t | IsCompact t ∧ t ⊆ s} fa.1))) => rfl
+  refine continuousOn_cfcₙ_setProd hk |>.comp'
+    (uniformContinuous_ofFun_toFun_of_mem _ {t | IsCompact t ∧ t ⊆ s} _ ⟨hk, hks⟩ |>.prodMap
+      uniformContinuous_id).continuous.continuousOn ?_
+  intro (f, a) ⟨⟨hf, ha⟩, ⟨_, ha'⟩⟩
+  exact ⟨⟨hf.1.mono hks, hf.2⟩, ha.1, subset_of_mem_nhdsSet ha'⟩
 
 /-- If `f : 𝕜 → 𝕜` is continuous on a compact set `s` and `f 0 = 0` and `a : X → A` tends to
 `a₀ : A` along a filter `l` (such that eventually `a x` satisfies the predicate `p` associated to
@@ -938,6 +990,24 @@ theorem continuousOn_cfcₙ_nnreal_setProd {s : Set ℝ≥0} (hs : IsCompact s) 
   continuousOn_prod_of_continuousOn_lipschitzOnWith _ 1
     (fun f hf ↦ continuousOn_cfcₙ_nnreal A hs ((toFun {s}) f) hf.1 hf.2)
     (fun a ⟨_, ha'⟩ ↦ lipschitzOnWith_cfcₙ_fun_of_subset a ha')
+
+open UniformOnFun in
+theorem continuousOn_cfcₙ_nnreal_setProd_nhdsSet [CompleteSpace A] {s : Set ℝ≥0} :
+    ContinuousOn (fun fa : (ℝ≥0 →ᵤ[{t | IsCompact t ∧ t ⊆ s}] ℝ≥0) × A ↦ cfcₙ (toFun {s} fa.1) fa.2)
+      ({f | ContinuousOn (toFun {t | IsCompact t ∧ t ⊆ s} f) s ∧ f 0 = 0} ×ˢ
+        {a | 0 ≤ a ∧ s ∈ 𝓝ˢ (quasispectrum ℝ≥0 a)}) := by
+  refine continuousOn_of_locally_continuousOn fun (f, a) ⟨hf, ha, has⟩ ↦ ?_
+  have hs := NonUnitalContinuousFunctionalCalculus.isCompact_quasispectrum (R := ℝ≥0) a
+  obtain ⟨k, ⟨hka, hk⟩, hks⟩ := hs.nhdsSet_basis_isCompact.mem_iff.mp has
+  have := (upperHemicontinuous_quasispectrum_nnreal A).isOpen k
+  refine ⟨Set.univ ×ˢ {x | k ∈ 𝓝ˢ (quasispectrum ℝ≥0 x)}, isOpen_univ.prod this, by simpa, ?_⟩
+  conv in cfcₙ _ =>
+    equals cfcₙ (toFun {k} (ofFun {k} (toFun {t | IsCompact t ∧ t ⊆ s} fa.1))) => rfl
+  refine continuousOn_cfcₙ_nnreal_setProd hk |>.comp'
+    (uniformContinuous_ofFun_toFun_of_mem _ {t | IsCompact t ∧ t ⊆ s} _ ⟨hk, hks⟩ |>.prodMap
+      uniformContinuous_id).continuous.continuousOn ?_
+  intro (f, a) ⟨⟨hf, ha⟩, ⟨_, ha'⟩⟩
+  exact ⟨⟨hf.1.mono hks, hf.2⟩, ha.1, subset_of_mem_nhdsSet ha'⟩
 
 /-- If `f : ℝ≥0 → ℝ≥0` is continuous on a compact set `s` and `f 0 = 0` and `a : X → A` tends to
 `a₀ : A` along a filter `l` (such that eventually `0 ≤ a x` and has quasispectrum contained in `s`,
