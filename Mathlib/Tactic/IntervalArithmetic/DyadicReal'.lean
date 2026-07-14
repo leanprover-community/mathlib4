@@ -44,9 +44,9 @@ def DyadicInterval : Tactic
       if let some settings := settings? then
         let (opConfig, n?) ← intervalSettingParser `DyadicReal settings.getElems
         let approxParam := if let some n := n? then n else default
-        return (opConfig, approxParam)
+        pure (opConfig, approxParam)
       else
-        return ({}, default)
+        pure ({}, default)
     intervalTactic Dyadic `DyadicReal opConfig approxParam
   | _ => throwUnsupportedSyntax
 

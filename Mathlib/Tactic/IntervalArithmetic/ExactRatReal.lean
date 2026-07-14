@@ -45,9 +45,9 @@ def ExactInterval : Tactic
       if let some settings := settings? then
         let (opConfig, n?) ← intervalSettingParser `ExactRatReal settings.getElems
         let approxParam := if let some n := n? then n else default
-        return (opConfig, approxParam)
+        pure (opConfig, approxParam)
       else
-        return ({}, default)
+        pure ({}, default)
     intervalTactic Rat `ExactRatReal opConfig approxParam
   | _ => throwUnsupportedSyntax
 
