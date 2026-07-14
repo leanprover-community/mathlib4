@@ -468,7 +468,9 @@ end Hom
 
 open scoped IsMulCommutative in
 /-- A monoid object `M` is commutative if and only if `X ⟶ M` is commutative for all `X`. -/
-@[to_additive]
+@[to_additive
+/-- An additive monoid object `M` is commutative if and only if `X ⟶ M` is commutative for all
+`X`. -/]
 lemma isCommMonObj_iff_isMulCommutative (M : C) [MonObj M] [BraidedCategory C] :
     IsCommMonObj M ↔ ∀ (X : C), IsMulCommutative (X ⟶ M) := by
   exact ⟨fun h X ↦ ⟨⟨by simp [mul_comm]⟩⟩, fun h ↦ ⟨by simp [mul_eq_mul, comp_mul, mul_comm]⟩⟩
