@@ -41,6 +41,26 @@ structure IsQuotientCoveringMap : Prop extends IsQuotientMap f, ContinuousConstS
 
 attribute [to_additive] isQuotientCoveringMap_iff
 
+lemma IsAddQuotientCoveringMap.toMultiplicative (G) [AddGroup G] [AddAction G E]
+    (hf : IsAddQuotientCoveringMap f G) :
+    IsQuotientCoveringMap f (Multiplicative G) where
+  __ := hf.toIsQuotientMap
+  continuous_const_smul g := by simpa using hf.continuous_const_vadd (Multiplicative.ofAdd.symm g)
+  apply_eq_iff_mem_orbit {e₁ e₂} := by simp [hf.apply_eq_iff_mem_orbit]
+  disjoint e := by
+    obtain ⟨U, hU, hU'⟩ := hf.disjoint e
+    exact ⟨U, hU, fun g ↦ by simpa using hU' (Multiplicative.ofAdd.symm g)⟩
+
+lemma IsQuotientCoveringMap.toAdditive (G) [Group G] [MulAction G E]
+    (hf : IsQuotientCoveringMap f G) :
+    IsAddQuotientCoveringMap f (Additive G) where
+  __ := hf.toIsQuotientMap
+  continuous_const_vadd g := by simpa using hf.continuous_const_smul (Additive.ofMul.symm g)
+  apply_eq_iff_mem_orbit {e₁ e₂} := by simp [hf.apply_eq_iff_mem_orbit]
+  disjoint e := by
+    obtain ⟨U, hU, hU'⟩ := hf.disjoint e
+    exact ⟨U, hU, fun g ↦ by simpa using hU' (Additive.ofMul.symm g)⟩
+
 namespace IsQuotientCoveringMap
 
 @[to_additive] theorem subgroup_congr (S S' : Subgroup G) (eq : S = S') :

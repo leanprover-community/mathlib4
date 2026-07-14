@@ -363,7 +363,7 @@ lemma eventually_riemannianEDist_le_edist_extChartAt (x : M) :
   have : mfderiv[Icc 0 1] γ t 1 =
       (mfderiv[range I] (extChartAt I x).symm (η t)) (mfderiv[Icc 0 1] η t 1) := congr($this 1)
   rw [this]
-  apply (ContinuousLinearMap.le_opNorm_enorm _ _).trans
+  apply (ContinuousLinearMap.le_opENorm _ _).trans
   gcongr
   · exact (hη.2 ht).le
   · simp only [mfderivWithin_eq_fderivWithin]
@@ -474,7 +474,7 @@ lemma setOf_riemannianEDist_lt_subset_nhds [RegularSpace M] {x : M} {s : Set M} 
           (mfderiv% (extChartAt I x) (γ t')) (mfderiv[Icc 0 t₁] γ t' 1) :=
         congr($this 1)
       rw [this]
-      apply (ContinuousLinearMap.le_opNorm_enorm _ _).trans
+      apply (ContinuousLinearMap.le_opENorm _ _).trans
       gcongr
       refine (hu ?_).le
       apply t₁_mem ht'
