@@ -390,7 +390,7 @@ theorem isQuotientMap_of_surjectiveₛₗ [τB : TopologicalSpace B'] [IsModuleT
     haveI := IsModuleTopology.toContinuousAdd R A
     haveI := IsModuleTopology.toContinuousAdd S B'
     -- Because φ is linear, it's continuous for the module topologies (by a previous result).
-    have this : Continuous φ := continuous_of_linearMapₛₗ hσ.continuous φ
+    have : Continuous φ := continuous_of_linearMapₛₗ hσ.continuous φ
     -- So the coinduced topology is finer than the module topology on B.
     rw [continuous_iff_coinduced_le] at this
     -- So STP the module topology on B is ≤ the topology coinduced from A

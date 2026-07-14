@@ -10,6 +10,7 @@ public import Mathlib.Analysis.Normed.Lp.WithLp
 
 /-!
 # `L^p` distance on products of two metric spaces
+
 Given two metric spaces, one can put the max distance on their product, but there is also
 a whole family of natural distances, indexed by a parameter `p : ℝ≥0∞`, that also induce
 the product topology. We define them in this file. For `0 < p < ∞`, the distance on `α × β`
@@ -161,7 +162,6 @@ section EDist
 
 variable [EDist α] [EDist β]
 
-open scoped Classical in
 /-- Endowing the space `WithLp p (α × β)` with the `L^p` edistance. We register this instance
 separate from `WithLp.instProdPseudoEMetric` since the latter requires the type class hypothesis
 `[Fact (1 ≤ p)]` in order to prove the triangle inequality.
@@ -230,7 +230,6 @@ section Dist
 
 variable [Dist α] [Dist β]
 
-open scoped Classical in
 /-- Endowing the space `WithLp p (α × β)` with the `L^p` distance. We register this instance
 separate from `WithLp.instProdPseudoMetricSpace` since the latter requires the type class hypothesis
 `[Fact (1 ≤ p)]` in order to prove the triangle inequality.
@@ -267,7 +266,6 @@ section Norm
 
 variable [Norm α] [Norm β]
 
-open scoped Classical in
 /-- Endowing the space `WithLp p (α × β)` with the `L^p` norm. We register this instance
 separate from `WithLp.instProdSeminormedAddCommGroup` since the latter requires the type class
 hypothesis `[Fact (1 ≤ p)]` in order to prove the triangle inequality.
@@ -517,9 +515,11 @@ variable [UniformSpace α] [UniformSpace β]
 instance instProdUniformSpace : UniformSpace (WithLp p (α × β)) :=
   instUniformSpaceProd.comap ofLp
 
+@[fun_prop]
 lemma prod_uniformContinuous_toLp : UniformContinuous (@toLp p (α × β)) :=
   uniformContinuous_comap' uniformContinuous_id
 
+@[fun_prop]
 lemma prod_uniformContinuous_ofLp : UniformContinuous (@ofLp p (α × β)) :=
   uniformContinuous_comap
 
@@ -681,6 +681,7 @@ instance instProdSeminormedAddCommGroup [SeminormedAddCommGroup α] [SeminormedA
         prod_norm_eq_add (zero_lt_one.trans_le h), dist_eq_norm, ← norm_neg_add]
       rfl
 
+@[fun_prop]
 lemma isUniformInducing_toLp [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
     IsUniformInducing (@toLp p (α × β)) :=
   (prod_antilipschitzWith_toLp p α β).isUniformInducing

@@ -136,7 +136,7 @@ lemma preservesFinOfPreservesBinaryAndTerminal :
       preservesLimit_of_preserves_limit_cone
         (extendFanIsLimit f (limit.isLimit _) (limit.isLimit _)) _
     apply (isLimitMapConeFanMkEquiv _ _ _).symm _
-    let this :=
+    let :=
       extendFanIsLimit (fun i => F.obj (f i)) (isLimitOfHasProductOfPreservesLimit F _)
         (isLimitOfHasBinaryProductOfPreservesLimit F _ _)
     refine IsLimit.ofIsoLimit this ?_
@@ -261,7 +261,7 @@ lemma preserves_fin_of_preserves_binary_and_initial :
       preservesColimit_of_preserves_colimit_cocone
         (extendCofanIsColimit f (colimit.isColimit _) (colimit.isColimit _)) _
     apply (isColimitMapCoconeCofanMkEquiv _ _ _).symm _
-    let this :=
+    let :=
       extendCofanIsColimit (fun i => F.obj (f i))
         (isColimitOfHasCoproductOfPreservesColimit F _)
         (isColimitOfHasBinaryCoproductOfPreservesColimit F _ _)
