@@ -94,47 +94,6 @@ lemma map_quotAddSubmonoidMap_apply (i : ι) (m : ⨁ i, ℳ i) :
       r.toQuotient (decompose ℳ (DirectSum.coeAddMonoidHom ℳ m) i) := by
   simp [← Decomposition.decompose'_eq, Decomposition.right_inv m]
 
-lemma quotAddSubmonoid_bijective (hrel : Rel.IsHomogeneous ℳ r) :
-    Function.Bijective (DirectSum.coeAddMonoidHom (quotAddSubmonoid ℳ r)) := by
-  refine ⟨fun x y hxy ↦ ?_, fun x ↦ ?_⟩
-  · have surj : Surjective (DirectSum.map (quotAddSubmonoidMap ℳ r)) := by
-      rw [map_surjective]
-      exact fun _ ↦ AddMonoidHom.addSubmonoidMap_surjective _ _
-    obtain ⟨a, ha, rfl⟩ := surj x
-    obtain ⟨b, hb, rfl⟩ := surj y
-    replace hxy : r (DirectSum.coeAddMonoidHom ℳ a) (DirectSum.coeAddMonoidHom ℳ b) := by
-      simpa using hxy
-    ext i
-    suffices r.mk' (decompose ℳ (DirectSum.coeAddMonoidHom ℳ a) i) =
-        r.mk' (decompose ℳ (DirectSum.coeAddMonoidHom ℳ b) i) by
-      simpa [← map_quotAddSubmonoidMap_apply] using this
-    simpa using hrel hxy i
-  · obtain ⟨a, rfl⟩ := r.mk'_surjective x
-    have : (DirectSum.coeAddMonoidHom ℳ) ((decompose ℳ) a) = a := DirectSum.Decomposition.left_inv a
-    exact ⟨DirectSum.map (quotAddSubmonoidMap ℳ r) (decompose ℳ a), by simp [this]⟩
-
-variable {ℳ r} in
-/-- For a homogeneous `AddCon` `r` on an additive monoid with `Decomposition 𝒜`,
-the graded monoid structure on `AddCon.Quotient r`. -/
-@[implicit_reducible]
-noncomputable def quotGradedAlgebra (hrel : Rel.IsHomogeneous ℳ r) :
-    Decomposition (quotAddSubmonoid ℳ r) where
-  decompose' := Function.invFun (DirectSum.coeAddMonoidHom (quotAddSubmonoid ℳ r))
-  left_inv := rightInverse_invFun (quotAddSubmonoid_bijective ℳ r hrel).surjective
-  right_inv := leftInverse_invFun (quotAddSubmonoid_bijective ℳ r hrel).injective
-
-/- We give a formula for the decomposition of a quotient.
-   There are two possible proofs, both show that `DirectSum` lacks some API.
-   Which one is preferable? -/
-
-/-- The projections given by `DirectSum.Decomposition`. -/
-def _root_.DirectSum.decomposeProj (i : ι) : M →+ ℳ i :=
-  (DFinsupp.evalAddMonoidHom i).comp (decomposeAddEquiv ℳ).toAddMonoidHom
-
-theorem _root_.DirectSum.decomposeProj_apply (i : ι) (m : M) :
-    decomposeProj ℳ i m = decompose ℳ m i := by
-  rfl
-
 theorem decomposeProj_quotAddSubmonoid_comp_mk' (i : ι) [Decomposition (quotAddSubmonoid ℳ r)] :
     (decomposeProj (quotAddSubmonoid ℳ r) i).comp r.mk' =
       (quotAddSubmonoidMap ℳ r i).comp (decomposeProj ℳ i) := by
@@ -159,76 +118,49 @@ theorem decomposeProj_quotAddSubmonoid_comp_mk' (i : ι) [Decomposition (quotAdd
 
 theorem decompose_quotAddSubmonoid_mk'_apply [Decomposition (quotAddSubmonoid ℳ r)]
     (m : M) (i : ι) :
-    decompose (quotAddSubmonoid ℳ r) (r.mk' m) i =
-      quotAddSubmonoidMap ℳ r i (decompose ℳ m i) := by
-  simp only [← decomposeProj_apply, ← AddMonoidHom.comp_apply,
+    decompose (quotAddSubmonoid ℳ r) m i = quotAddSubmonoidMap ℳ r i (decompose ℳ m i) := by
+  simp only [← coe_mk', ← decomposeProj_apply, ← AddMonoidHom.comp_apply,
     decomposeProj_quotAddSubmonoid_comp_mk']
 
-/- The second proof, I find it more less clear. -/
+theorem isHomogeneous_of_decomposition [Decomposition (quotAddSubmonoid ℳ r)] :
+    Rel.IsHomogeneous ℳ r := by
+  intro x y h i
+  rw [← r.eq] at h ⊢
+  have this (x) := decompose_quotAddSubmonoid_mk'_apply ℳ r x i
+  simp only [← coe_quotAddSubmonoidMap, ← this, h]
 
-theorem _root_.DirectSum.decompose_symm_eq :
-    ⇑(decompose ℳ).symm = DirectSum.coeAddMonoidHom ℳ  := by
-  rfl
+variable {ℳ r} in
+/-- For a homogeneous `r : AddCon M` on an additive monoid with `Decomposition ℳ`,
+the graded monoid structure on `AddCon.Quotient r`. -/
+@[implicit_reducible]
+def quotGradedAlgebra (hrel : Rel.IsHomogeneous ℳ r) :
+    Decomposition (quotAddSubmonoid ℳ r) where
+  decompose' := r.lift
+    ((DirectSum.map (quotAddSubmonoidMap ℳ r)).comp (decomposeAddEquiv ℳ).toAddMonoidHom)
+    (fun _ _ hxy ↦ by ext; simp [hrel hxy])
+  left_inv := by
+    intro x
+    obtain ⟨m, rfl⟩ := r.mk'_surjective x
+    have : DirectSum.coeAddMonoidHom ℳ (decompose ℳ m) = m := DirectSum.Decomposition.left_inv m
+    simp [this]
+  right_inv := by
+    have surj : Surjective (DirectSum.map (quotAddSubmonoidMap ℳ r)) := by
+      rw [map_surjective]
+      exact fun _ ↦ AddMonoidHom.addSubmonoidMap_surjective _ _
+    intro y
+    obtain ⟨x, rfl⟩ := surj y
+    ext i
+    simp [← map_quotAddSubmonoidMap_apply]
 
-omit [Decomposition ℳ] in
-theorem quotAddSubmonoid_decompose_apply_of
-    [Decomposition (quotAddSubmonoid ℳ r)] (i : ι) (m : ℳ i) :
-    decompose (quotAddSubmonoid ℳ r) m =
-      of (fun i ↦ quotAddSubmonoid ℳ r i) i (quotAddSubmonoidMap ℳ r i m)  := by
-  simp [← Equiv.eq_symm_apply]
-
-theorem _root_.DirectSum.mk_apply {ι : Type*} {β : ι → Type*} [(i : ι) → AddCommMonoid (β i)]
-  [DecidableEq ι] {s : Finset ι} {f : (i : ↑↑s) → β ↑i} {n : ι} :
-    ((DirectSum.mk β s) f) n = if hn : n ∈ s then f ⟨n, hn⟩ else 0 := by
-  split_ifs with h
-  · rw [DirectSum.mk_apply_of_mem h]
-  · rw [DirectSum.mk_apply_of_notMem h]
-
-theorem quotAddSubmonoid_decompose_apply
-    [∀ i (x : ℳ i), Decidable (x ≠ 0)]
-    [Decomposition (quotAddSubmonoid ℳ r)] (m : M) :
-    decompose (quotAddSubmonoid ℳ r) m =
-      DirectSum.mk (fun i ↦ quotAddSubmonoid ℳ r i) (decompose ℳ m).support
-        (fun i ↦ quotAddSubmonoidMap ℳ r i (decompose ℳ m i)) := by
-  classical
-  conv_lhs => rw [← DirectSum.sum_support_decompose ℳ m,
-    ← AddCon.coe_mk', ← DirectSum.decomposeAddEquiv_apply]
-  simp only [map_sum]
-  ext i
-  simp only [coe_mk', decomposeAddEquiv_apply, DirectSum.sum_apply, AddSubmonoidClass.coe_finsetSum,
-    SetLike.coe_sort_coe]
-  rw [Finset.sum_eq_single i]
-  · simp only [quotAddSubmonoid_decompose_apply_of, of_eq_same, coe_quotAddSubmonoidMap]
-    by_cases hi : i ∈ (decompose ℳ m).support
-    · simp [DirectSum.mk_apply_of_mem hi]
-    · rw [DirectSum.mk_apply_of_notMem hi]
-      simp only [DFinsupp.mem_support_toFun, ne_eq, Decidable.not_not] at hi
-      simp [hi]
-  · intro j hj hji
-    simp only [ZeroMemClass.coe_eq_zero]
-    rw [decompose_of_mem_ne _ _ hji]
-    rw [mem_quotAddSubmonoid_iff]
-    refine ⟨decompose ℳ m j, by simp⟩
-  · simp only [DFinsupp.mem_support_toFun, ne_eq, Decidable.not_not, ZeroMemClass.coe_eq_zero]
-    intro hi
-    simp [hi]
-
-theorem quotAddSubmonoid_decompose_apply_apply
-    [Decomposition (quotAddSubmonoid ℳ r)] (m : M) (i : ι) :
-    decompose (quotAddSubmonoid ℳ r) m i = r.mk' (decompose ℳ m i) := by
-  classical
-  rw [quotAddSubmonoid_decompose_apply]
-  simp only [SetLike.coe_sort_coe, coe_mk']
-  -- Duplication
-  by_cases hi : i ∈ (decompose ℳ m).support
-  · simp [DirectSum.mk_apply_of_mem hi]
-  · rw [DirectSum.mk_apply_of_notMem hi]
-    simp only [DFinsupp.mem_support_toFun, ne_eq, not_not] at hi
-    simp [hi]
-
+variable {ℳ r} in
+lemma quotAddSubmonoid_bijective (hrel : Rel.IsHomogeneous ℳ r) :
+    Function.Bijective (DirectSum.coeAddMonoidHom (quotAddSubmonoid ℳ r)) := by
+  let _ := quotGradedAlgebra hrel
+  exact Decomposition.isInternal (quotAddSubmonoid ℳ r)
 
 end AddCon
 
+-- REVIEW FROM HERE, ADJUSTING SIMILARLY TO WHAT IS DONE ABOVE
 namespace ModuleCon
 
 open DirectSum LinearMap Submodule DirectSum

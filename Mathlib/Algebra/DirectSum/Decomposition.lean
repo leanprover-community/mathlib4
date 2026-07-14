@@ -194,6 +194,15 @@ an additive monoid to a direct sum of components. -/
 def decomposeAddEquiv : M ≃+ ⨁ i, ℳ i :=
   AddEquiv.symm { (decompose ℳ).symm with map_add' := map_add (DirectSum.coeAddMonoidHom ℳ) }
 
+/-- If `M` is graded by `ι` with degree `i` component `ℳ i`,
+the projection from `M` to `ℳ i`. -/
+def decomposeProj (i : ι) : M →+ ℳ i :=
+  (DFinsupp.evalAddMonoidHom i).comp (decomposeAddEquiv ℳ).toAddMonoidHom
+
+theorem decomposeProj_apply (i : ι) (m : M) :
+    decomposeProj ℳ i m = decompose ℳ m i := by
+  rfl
+
 @[simp]
 theorem decompose_zero : decompose ℳ (0 : M) = 0 :=
   map_zero (decomposeAddEquiv ℳ)
