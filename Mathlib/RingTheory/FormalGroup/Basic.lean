@@ -242,7 +242,7 @@ lemma Xzero_subst_Xzero : F.Xzero.subst F.Xzero = F.Xzero := by
         PowerSeries.HasSubst.X', PowerSeries.HasSubst]
 
 lemma Xzero_eq_X : F.Xzero = PowerSeries.X := by
-  haveI : Invertible (F.Xzero.coeff 1) := (coeff_one_Xzero F) ▸ invertibleOne
+  have : Invertible (F.Xzero.coeff 1) := (coeff_one_Xzero F) ▸ invertibleOne
   calc
     _ = F.Xzero.substInv.subst (F.Xzero.subst F.Xzero) := by
       have aux₀ : PowerSeries.HasSubst F.Xzero :=
@@ -292,7 +292,7 @@ lemma zeroX_subst_zeroX : F.zeroX.subst F.zeroX = F.zeroX := by
         PowerSeries.HasSubst.X', PowerSeries.HasSubst]
 
 lemma zeroX_eq_X : F.zeroX = PowerSeries.X := by
-  haveI : Invertible (F.zeroX.coeff 1) := (coeff_one_zeroX F) ▸ invertibleOne
+  have : Invertible (F.zeroX.coeff 1) := (coeff_one_zeroX F) ▸ invertibleOne
   calc
     _ = F.zeroX.substInv.subst (F.zeroX.subst F.zeroX) := by
       have aux₀ : PowerSeries.HasSubst F.zeroX :=

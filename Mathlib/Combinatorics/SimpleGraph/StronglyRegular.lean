@@ -173,7 +173,7 @@ theorem IsSRGWith.param_eq
     {V : Type u} [Fintype V] (G : SimpleGraph V) [DecidableRel G.Adj]
     (h : G.IsSRGWith n k ℓ μ) (hn : 0 < n) :
     k * (k - ℓ - 1) = (n - k - 1) * μ := by
-  letI := Classical.decEq V
+  let := Classical.decEq V
   rw [← h.card, Fintype.card_pos_iff] at hn
   obtain ⟨v⟩ := hn
   convert! card_mul_eq_card_mul G.Adj (s := G.neighborFinset v) (t := Gᶜ.neighborFinset v) _ _

@@ -239,8 +239,8 @@ variable {α : Type*} [MulAction G α]
 
 theorem card_orbit (a : α) [Finite (orbit G a)] : ∃ n : ℕ, Nat.card (orbit G a) = p ^ n := by
   let ϕ := orbitEquivQuotientStabilizer G a
-  haveI := Finite.of_equiv (orbit G a) ϕ
-  haveI := (stabilizer G a).finiteIndex_of_finite_quotient
+  have := Finite.of_equiv (orbit G a) ϕ
+  have := (stabilizer G a).finiteIndex_of_finite_quotient
   rw [Nat.card_congr ϕ]
   exact hG.index (stabilizer G a)
 
@@ -317,7 +317,7 @@ theorem center_nontrivial [Nontrivial G] [Finite G] : Nontrivial (Subgroup.cente
     exact ⟨⟨1, ⟨g, hg.1⟩, mt Subtype.ext_iff.mp hg.2⟩⟩
 
 theorem bot_lt_center [Nontrivial G] [Finite G] : ⊥ < Subgroup.center G := by
-  haveI := center_nontrivial hG
+  have := center_nontrivial hG
   classical exact
       bot_lt_iff_ne_bot.mpr ((Subgroup.center G).one_lt_card_iff_ne_bot.mp Finite.one_lt_card)
 
@@ -445,7 +445,7 @@ theorem card_center_eq_prime_pow (hGpn : Nat.card G = p ^ n) (hn : 0 < n) :
   have : Finite G := Nat.finite_of_card_ne_zero (hGpn ▸ pow_ne_zero n (NeZero.ne p))
   have hcG := to_subgroup (of_card hGpn) (center G)
   rcases iff_card.1 hcG with _
-  haveI : Nontrivial G := (nontrivial_iff_card <| of_card hGpn).2 ⟨n, hn, hGpn⟩
+  have : Nontrivial G := (nontrivial_iff_card <| of_card hGpn).2 ⟨n, hn, hGpn⟩
   exact (nontrivial_iff_card hcG).mp (center_nontrivial (of_card hGpn))
 
 /-- The quotient by the center of a group of cardinality `p ^ 2` is cyclic. -/
