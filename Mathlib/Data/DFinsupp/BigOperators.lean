@@ -575,35 +575,31 @@ section ConGen
 
 variable {M} {r : M → M → Prop}
 
-@[to_additive] theorem ConGen.Rel.prod [CommMonoid M]
-    {α : Type*} {s : Finset α} {f g : α → M} (hf : ∀ x ∈ s, ConGen.Rel r (f x) (g x)) :
-    ConGen.Rel r (∏ x ∈ s, f x) (∏ x ∈ s, g x) := by
+@[to_additive] theorem Con.prod [CommMonoid M] (r : Con M)
+    {α : Type*} {s : Finset α} {f g : α → M} (hf : ∀ x ∈ s, r (f x) (g x)) :
+    r (∏ x ∈ s, f x) (∏ x ∈ s, g x) := by
   classical
   induction s using Finset.induction generalizing f g with
-  | empty => simp [ConGen.Rel.refl]
+  | empty => simp [Con.refl]
   | insert a s has ih =>
     simp only [Finset.prod_insert has]
-    exact ConGen.Rel.mul (hf a (by simp)) (ih (fun x hx ↦ hf x (by simp [hx])))
+    exact r.mul (hf a (s.mem_insert_self a))
+      (ih fun x hx ↦ hf x (Finset.mem_insert_of_mem hx))
+
+@[to_additive] theorem ConGen.Rel.prod [CommMonoid M]
+    {α : Type*} {s : Finset α} {f g : α → M} (hf : ∀ x ∈ s, r (f x) (g x)) :
+    ConGen.Rel r (∏ x ∈ s, f x) (∏ x ∈ s, g x) :=
+  Con.prod (conGen r) fun x hx ↦ of (f x) (g x) (hf x hx)
 
 theorem RingConGen.Rel.sum [Semiring M]
-    {α : Type*} {s : Finset α} {f g : α → M} (hf : ∀ x ∈ s, RingConGen.Rel r (f x) (g x)) :
-    RingConGen.Rel r (∑ x ∈ s, f x) (∑ x ∈ s, g x) := by
-  classical
-  induction s using Finset.induction generalizing f g with
-  | empty => simp [RingConGen.Rel.refl]
-  | insert a s has ih =>
-    simp only [Finset.sum_insert has]
-    exact RingConGen.Rel.add (hf a (by simp)) (ih (fun x hx ↦ hf x (by simp [hx])))
+    {α : Type*} {s : Finset α} {f g : α → M} (hf : ∀ x ∈ s, r (f x) (g x)) :
+    RingConGen.Rel r (∑ x ∈ s, f x) (∑ x ∈ s, g x) :=
+  AddCon.sum (ringConGen r).toAddCon fun x hx ↦ of (f x) (g x) (hf x hx)
 
 theorem RingConGen.Rel.prod [CommSemiring M]
-    {α : Type*} {s : Finset α} {f g : α → M} (hf : ∀ x ∈ s, RingConGen.Rel r (f x) (g x)) :
-    RingConGen.Rel r (∏ x ∈ s, f x) (∏ x ∈ s, g x) := by
-  classical
-  induction s using Finset.induction generalizing f g with
-  | empty => simp [RingConGen.Rel.refl]
-  | insert a s has ih =>
-    simp only [Finset.prod_insert has]
-    exact RingConGen.Rel.mul (hf a (by simp)) (ih (fun x hx ↦ hf x (by simp [hx])))
+    {α : Type*} {s : Finset α} {f g : α → M} (hf : ∀ x ∈ s, r (f x) (g x)) :
+    RingConGen.Rel r (∏ x ∈ s, f x) (∏ x ∈ s, g x) :=
+  Con.prod (ringConGen r).toCon fun x hx ↦ of (f x) (g x) (hf x hx)
 
 end ConGen
 
