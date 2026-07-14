@@ -320,7 +320,6 @@ noncomputable def Base.mk' (s : Set ι)
 
 lemma nonempty_base : Nonempty P.Base := by
   let _i : Module ℚ M := Module.compHom M (algebraMap ℚ R)
-  let _i : Module ℚ N := Module.compHom N (algebraMap ℚ R)
   obtain ⟨f, hf⟩ : ∃ f : Dual ℚ M, ∀ i, f (P.root i) ≠ 0 :=
     exists_dual_forall_apply_ne_zero P.root <| by simp [P.ne_zero]
   letI := P.indexNeg
