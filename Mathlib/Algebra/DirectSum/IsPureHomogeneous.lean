@@ -73,13 +73,13 @@ open RingConGen in
 theorem Rel.IsPureHomogeneous.ringConGenIsHomogeneous (hr : Rel.IsPureHomogeneous ℳ r) :
     Rel.IsHomogeneous ℳ (RingConGen.Rel r) := by
   let r' : M → M → Prop := fun a b ↦ r a b ∨ (a = 0 ∧ b = 0)
-  have : RingConGen.Rel r = RingConGen.Rel r' := by
-    apply le_antisymm
-    · exact RingCon.ringConGen_mono (fun _ _ h ↦ Or.inl h)
-    · intro _ _ h
-      induction h with
-      | of _ _ h' => rcases h' <;> grind [Rel.of, Rel.refl]
-      | _ => grind [Rel.refl, Rel.symm, Rel.trans, Rel.add, Rel.mul]
+  have : ringConGen r = ringConGen r' := by
+  apply le_antisymm
+  · exact RingCon.ringConGen_mono (fun _ _ => Or.inl)
+  · rw [RingCon.ringConGen_le]
+    rintro _ _ (h | ⟨rfl, rfl⟩)
+    · exact RingCon.le_ringConGen _ _ h
+    · exact RingCon.refl _ _
   rw [this]
   apply RingConGen.Rel.isHomogeneous_of
   refine Rel.IsPureHomogeneous.isHomogeneous ?_ ?_
