@@ -60,7 +60,7 @@ noncomputable def quotientSpanCXSubCAlgEquiv (x y : R) :
 /-- For a commutative ring $R$, evaluating a polynomial at elements $y(X) \in R[X]$ and $x \in R$
 induces an isomorphism of $R$-algebras $R[X, Y] / \langle X - x, Y - y(X) \rangle \cong R$. -/
 noncomputable def quotientSpanCXSubCXSubCAlgEquiv {x : R} {y : R[X]} :
-    @AlgEquiv R (R[X][X] ⧸ (Ideal.span {C (X - C x), X - C y} : Ideal <| R[X][X])) R _ _ _
+    @AlgEquiv R _ (R[X][X] ⧸ (Ideal.span {C (X - C x), X - C y} : Ideal <| R[X][X])) R _ _
       (Ideal.Quotient.algebra R) _ :=
 ((quotientSpanCXSubCAlgEquiv (X - C x) y).restrictScalars R).trans <| quotientSpanXSubCAlgEquiv x
 
