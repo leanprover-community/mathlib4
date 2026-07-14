@@ -182,8 +182,8 @@ noncomputable instance Bool.completeAtomicBooleanAlgebra : CompleteAtomicBoolean
 
 section DirectedOrders
 
-variable {α : Type*} {r : α → α → Prop} [IsTrans α r] {β γ : Type*} [Nonempty γ] {f : γ → α}
-  [Finite β]
+variable {ι : Sort*} {α : Type*} {r : α → α → Prop} [IsTrans α r] {γ : Type*} [Nonempty γ]
+  {f : γ → α} [Finite ι]
 
 theorem Directed.finite_set_le (D : Directed r f) {s : Set γ} (hs : s.Finite) :
     ∃ z, ∀ i ∈ s, r (f i) (f z) := by
@@ -197,10 +197,10 @@ lemma Directed.finite_le {ι κ : Sort*} [Nonempty ι] [Finite κ] {f : ι → �
 
 variable [Nonempty α] [Preorder α]
 
-theorem Finite.exists_le [IsDirectedOrder α] (f : β → α) : ∃ M, ∀ i, f i ≤ M :=
+theorem Finite.exists_le [IsDirectedOrder α] (f : ι → α) : ∃ M, ∀ i, f i ≤ M :=
   directed_id.finite_le _
 
-theorem Finite.exists_ge [IsCodirectedOrder α] (f : β → α) : ∃ M, ∀ i, M ≤ f i :=
+theorem Finite.exists_ge [IsCodirectedOrder α] (f : ι → α) : ∃ M, ∀ i, M ≤ f i :=
   directed_id.finite_le (r := (· ≥ ·)) _
 
 theorem Set.Finite.exists_le [IsDirectedOrder α] {s : Set α} (hs : s.Finite) :
@@ -212,14 +212,14 @@ theorem Set.Finite.exists_ge [IsCodirectedOrder α] {s : Set α} (hs : s.Finite)
   directed_id.finite_set_le (r := (· ≥ ·)) hs
 
 @[simp]
-theorem Finite.bddAbove_range [IsDirectedOrder α] (f : β → α) : BddAbove (Set.range f) := by
+theorem Finite.bddAbove_range [IsDirectedOrder α] (f : ι → α) : BddAbove (Set.range f) := by
   obtain ⟨M, hM⟩ := Finite.exists_le f
   refine ⟨M, fun a ha => ?_⟩
   obtain ⟨b, rfl⟩ := ha
   exact hM b
 
 @[simp]
-theorem Finite.bddBelow_range [IsCodirectedOrder α] (f : β → α) : BddBelow (Set.range f) := by
+theorem Finite.bddBelow_range [IsCodirectedOrder α] (f : ι → α) : BddBelow (Set.range f) := by
   obtain ⟨M, hM⟩ := Finite.exists_ge f
   refine ⟨M, fun a ha => ?_⟩
   obtain ⟨b, rfl⟩ := ha

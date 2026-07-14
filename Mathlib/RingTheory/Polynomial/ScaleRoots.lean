@@ -66,7 +66,7 @@ theorem support_scaleRoots_eq (p : R[X]) {s : R} (hs : s ∈ nonZeroDivisors R) 
 
 @[simp]
 theorem degree_scaleRoots (p : R[X]) {s : R} : degree (scaleRoots p s) = degree p := by
-  haveI := Classical.propDecidable
+  have := Classical.propDecidable
   by_cases hp : p = 0
   · rw [hp, zero_scaleRoots]
   refine le_antisymm (Finset.sup_mono (support_scaleRoots_le p s)) (degree_le_degree ?_)

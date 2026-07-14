@@ -702,7 +702,7 @@ theorem exists_nat_nat_continuous_surjective_of_completeSpace (α : Type*) [Metr
     balls `closedBall (u xₙ) (1/2^n)` have a nonempty intersection. This set is closed,
     and we define `f x` there to be the unique point in the intersection.
     This function is continuous and surjective by design. -/
-  letI : MetricSpace (ℕ → ℕ) := PiNat.metricSpaceNatNat
+  let : MetricSpace (ℕ → ℕ) := PiNat.metricSpaceNatNat
   have I0 : (0 : ℝ) < 1 / 2 := by simp
   have I1 : (1 / 2 : ℝ) < 1 := by norm_num
   rcases exists_dense_seq α with ⟨u, hu⟩
@@ -1075,7 +1075,7 @@ variable [TopologicalSpace X] [CompactSpace X]
 lemma isHomeomorph_toPiNat (continuous_f : ∀ i, Continuous (f i))
     (separating_f : Pairwise fun x y ↦ ∃ i, f i x ≠ f i y) :
     IsHomeomorph (toPiNat : X → PiNatEmbed X Y f) := by
-  letI := emetricSpace separating_f
+  let := emetricSpace separating_f
   rw [isHomeomorph_iff_continuous_bijective]
   exact ⟨continuous_toPiNat continuous_f, (toPiNatEquiv X Y f).bijective⟩
 
