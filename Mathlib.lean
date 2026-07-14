@@ -4775,6 +4775,7 @@ public import Mathlib.GroupTheory.GroupAction.ConjAct
 public import Mathlib.GroupTheory.GroupAction.Defs
 public import Mathlib.GroupTheory.GroupAction.DomAct.ActionHom
 public import Mathlib.GroupTheory.GroupAction.DomAct.Basic
+public import Mathlib.GroupTheory.GroupAction.DomAct.Invariant
 public import Mathlib.GroupTheory.GroupAction.Embedding
 public import Mathlib.GroupTheory.GroupAction.FixedPoints
 public import Mathlib.GroupTheory.GroupAction.FixingSubgroup
