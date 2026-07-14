@@ -434,7 +434,7 @@ lemma height_ne_zero (i : ι) :
 lemma height_reflectionPerm_self (i : ι) :
     letI := P.indexNeg
     b.height (-i) = -b.height i := by
-  letI := P.indexNeg
+  let := P.indexNeg
   obtain ⟨f, hf₀, hf₁, hf₂⟩ := b.exists_root_eq_sum_int i
   have hf₃ : P.root (-i) = ∑ j ∈ b.support, (-f) j • P.root j := by simpa
   simp only [height_eq_sum hf₂, height_eq_sum hf₃, Pi.neg_apply, Finset.sum_neg_distrib]
@@ -458,7 +458,7 @@ lemma height_add {i j k : ι} (hk : P.root k = P.root i + P.root j) :
 
 lemma height_sub {i j k : ι} (hk : P.root k = P.root i - P.root j) :
     b.height k = b.height i - b.height j := by
-  letI := P.indexNeg
+  let := P.indexNeg
   replace hk : P.root k = P.root i + P.root (-j) := by simpa [← sub_eq_add_neg]
   rw [sub_eq_add_neg, ← b.height_reflectionPerm_self, b.height_add hk]
 
@@ -553,7 +553,7 @@ lemma IsPos.add_zsmul {i j k : ι} {z : ℤ} (hij : i ≠ j)
     b.IsPos k := by
   replace hij : LinearIndependent R ![P.root j, P.root i] := by
     refine IsReduced.linearIndependent P hij.symm fun contra ↦ ?_
-    letI := P.indexNeg
+    let := P.indexNeg
     replace contra : i = -j := by rw [eq_comm, neg_eq_iff_eq_neg]; simpa using contra
     rw [contra, isPos_iff, height_reflectionPerm_self, height_one_of_mem_support hj] at hi
     lia
@@ -630,7 +630,7 @@ lemma induction_add (i : ι) {p : ι → Prop}
     (h₁ : ∀ i ∈ b.support, p i)
     (h₂ : ∀ i j k, P.root k = P.root i + P.root j → p i → j ∈ b.support → p k) :
     p i := by
-  letI := P.indexNeg
+  let := P.indexNeg
   rcases IsPos.or_neg b i with hi | hi
   · exact hi.induction_on_add h₁ h₂
   · suffices p (-i) by rw [← neg_neg i]; exact h₀ (-i) this
@@ -667,7 +667,7 @@ lemma induction_reflect (i : ι) {p : ι → Prop}
     (h₁ : ∀ i ∈ b.support, p i)
     (h₂ : ∀ i j, p i → j ∈ b.support → p (P.reflectionPerm j i)) :
     p i := by
-  letI := P.indexNeg
+  let := P.indexNeg
   rcases IsPos.or_neg b i with hi | hi
   · exact hi.induction_on_reflect h₁ h₂
   · suffices p (-i) by rw [← neg_neg i]; exact h₀ (-i) this
@@ -677,7 +677,7 @@ lemma forall_mem_support_invtSubmodule_iff (q : Submodule R M) :
     (∀ i ∈ b.support, q ∈ invtSubmodule (P.reflection i)) ↔
       (∀ i, q ∈ invtSubmodule (P.reflection i)) := by
   refine ⟨fun hq i ↦ ?_, fun hq i _ ↦ hq i⟩
-  letI := P.indexNeg
+  let := P.indexNeg
   have (j : ι) : P.reflection (-j) = P.reflection j := by ext x; simp [reflection_apply, two_smul]
   refine b.induction_reflect i (by simp_all) hq ?_
   clear i

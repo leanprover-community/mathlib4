@@ -557,7 +557,7 @@ theorem mk_bounded_subset {α : Type*} (h : IsStrongPrelimit #α) {r : α → α
     [IsWellOrder α r] (hr : (#α).ord = type r) : #{ s : Set α // Bounded r s } = #α := by
   rcases eq_or_ne #α 0 with (ha | ha)
   · rw [ha]
-    haveI := mk_eq_zero_iff.1 ha
+    have := mk_eq_zero_iff.1 ha
     rw [mk_eq_zero_iff]
     constructor
     rintro ⟨s, hs⟩
@@ -588,7 +588,7 @@ theorem mk_subset_mk_lt_cof {α : Type*} (h : IsStrongPrelimit #α) :
   have h' : IsStrongLimit #α := ⟨ha, @h⟩
   rcases exists_ord_eq α with ⟨r, wo, hr⟩
   classical
-  letI := linearOrderOfSTO r
+  let := linearOrderOfSTO r
   apply le_antisymm
   · conv_rhs => rw [← mk_bounded_subset h hr]
     apply mk_subtype_le_of_subset

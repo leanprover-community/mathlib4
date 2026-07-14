@@ -214,7 +214,7 @@ theorem hasFDerivAt_integral_of_dominated_of_fderiv_le {F' : H → α → H →L
     (bound_integrable : Integrable (bound : α → ℝ) μ)
     (h_diff : ∀ᵐ a ∂μ, ∀ x ∈ s, HasFDerivAt (F · a) (F' x a) x) :
     HasFDerivAt (fun x ↦ ∫ a, F x a ∂μ) (∫ a, F' x₀ a ∂μ) x₀ := by
-  letI : NormedSpace ℝ H := NormedSpace.restrictScalars ℝ 𝕜 H
+  let : NormedSpace ℝ H := NormedSpace.restrictScalars ℝ 𝕜 H
   rcases Metric.mem_nhds_iff.1 hs with ⟨ε, ε_pos, hε⟩
   have x₀_in : x₀ ∈ ball x₀ ε := mem_ball_self ε_pos
   have diff_x₀ : ∀ᵐ a ∂μ, HasFDerivAt (F · a) (F' x₀ a) x₀ :=

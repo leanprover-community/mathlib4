@@ -82,7 +82,7 @@ lemma Module.FinitePresentation.of_finite_of_finitePresentation
     Module.FinitePresentation R S := by
   classical
   obtain ⟨R', _, _, _, _, _, f, hf⟩ := Module.Finite.exists_free_surjective R S
-  letI := f.toRingHom.toAlgebra
+  let := f.toRingHom.toAlgebra
   have : Module.FinitePresentation R R' :=
     Module.finitePresentation_of_projective R R'
   have : Module.FinitePresentation R' S :=

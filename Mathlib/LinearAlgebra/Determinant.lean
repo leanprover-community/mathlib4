@@ -211,7 +211,7 @@ theorem det_eq_det_toMatrix_of_finset [DecidableEq M] {s : Finset M} (b : Basis 
 @[simp]
 theorem det_toMatrix (b : Basis ι A M) (f : M →ₗ[A] M) :
     Matrix.det (toMatrix b b f) = LinearMap.det f := by
-  haveI := Classical.decEq M
+  have := Classical.decEq M
   rw [det_eq_det_toMatrix_of_finset b.reindexFinsetRange,
     det_toMatrix_eq_det_toMatrix b b.reindexFinsetRange]
 
@@ -267,7 +267,7 @@ theorem det_smul [Module.Free A M] (c : A) (f : M →ₗ[A] M) :
 
 theorem det_zero' {ι : Type*} [Finite ι] [Nonempty ι] (b : Basis ι A M) :
     LinearMap.det (0 : M →ₗ[A] M) = 0 := by
-  haveI := Classical.decEq ι
+  have := Classical.decEq ι
   cases nonempty_fintype ι
   rw [← det_toMatrix b, map_zero, det_zero]
 
@@ -669,7 +669,7 @@ theorem AlternatingMap.map_basis_eq_zero_iff {ι : Type*} [Finite ι] (e : Basis
     (f : M [⋀^ι]→ₗ[R] R) : f e = 0 ↔ f = 0 :=
   ⟨fun h => by
     cases nonempty_fintype ι
-    letI := Classical.decEq ι
+    let := Classical.decEq ι
     simpa [h] using f.eq_smul_basis_det e,
    fun h => h.symm ▸ AlternatingMap.zero_apply _⟩
 

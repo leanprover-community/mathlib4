@@ -418,11 +418,11 @@ theorem algebraMap_quotientMulEquiv_smul [Finite G] [Finite G'] (N : Subgroup G)
     [MulSemiringAction G C] [IsGaloisGroup G A C] [IsGaloisGroup N B C] [MulSemiringAction G' B]
     [IsGaloisGroup G' A B] (g : G) (x : B) :
     algebraMap B C (quotientMulEquiv G G' A B C N g • x) = g • algebraMap B C x := by
-  haveI : IsDomain B := (FaithfulSMul.algebraMap_injective B C).isDomain
-  letI := mulSemiringActionOfNormal G B C N
-  letI := mulSemiringActionQuotient G B C N
-  haveI := smulCommClassQuotient G A B C N
-  haveI := quotient G A B C N
+  have : IsDomain B := (FaithfulSMul.algebraMap_injective B C).isDomain
+  let := mulSemiringActionOfNormal G B C N
+  let := mulSemiringActionQuotient G B C N
+  have := smulCommClassQuotient G A B C N
+  have := quotient G A B C N
   rw [← algebraMap_smulOfNormal G B C N g x]
   congr
   apply mulEquivCongr_apply_smul

@@ -267,7 +267,7 @@ variable {Q} {Q'} in
 lemma δAux_toAlgHom (f : Hom Q Q') (x) :
     δAux R Q' (f.toAlgHom x) = δAux R Q x + Finsupp.linearCombination _ (δAux R Q' ∘ f.val)
       (Q.cotangentSpaceBasis.repr ((1 : T) ⊗ₜ[Q.Ring] D S Q.Ring x :)) := by
-  letI : AddCommGroup (T ⊗[S] Ω[S⁄R]) := inferInstance
+  let : AddCommGroup (T ⊗[S] Ω[S⁄R]) := inferInstance
   induction x using MvPolynomial.induction_on with
   | C s => simp [MvPolynomial.algebraMap_eq, δAux_C]
   | add x₁ x₂ hx₁ hx₂ =>
@@ -288,7 +288,7 @@ lemma δAux_ofComp (x : (Q.comp P).Ring) :
     δAux R Q ((Q.ofComp P).toAlgHom x) =
       P.toExtension.toKaehler.baseChange T (CotangentSpace.compEquiv Q P
         (1 ⊗ₜ[(Q.comp P).Ring] (D R (Q.comp P).Ring) x : _)).2 := by
-  letI : AddCommGroup (T ⊗[S] Ω[S⁄R]) := inferInstance
+  let : AddCommGroup (T ⊗[S] Ω[S⁄R]) := inferInstance
   induction x using MvPolynomial.induction_on with
   | C s =>
     simp only [algHom_C, δAux_C, derivation_C, Derivation.map_algebraMap,
@@ -435,7 +435,7 @@ lemma exact_map_δ :
 set_option backward.isDefEq.respectTransparency false in
 lemma δ_map (f : Hom Q' Q) (x) :
     δ Q P (Extension.H1Cotangent.map f.toExtensionHom x) = δ Q' P' x := by
-  letI : AddCommGroup (T ⊗[S] Ω[S⁄R]) := inferInstance
+  let : AddCommGroup (T ⊗[S] Ω[S⁄R]) := inferInstance
   obtain ⟨x, hx⟩ := x
   obtain ⟨⟨y, hy⟩, rfl⟩ := Extension.Cotangent.mk_surjective x
   change δ _ _ ⟨_, _⟩ = δ _ _ _

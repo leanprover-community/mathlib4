@@ -393,7 +393,7 @@ lemma prod_congr_of_eq_on_inter {ι M : Type*} {s₁ s₂ : Finset ι} {f g : ι
 @[to_additive]
 theorem prod_eq_mul_of_mem {s : Finset ι} {f : ι → M} (a b : ι) (ha : a ∈ s) (hb : b ∈ s)
     (hn : a ≠ b) (h₀ : ∀ c ∈ s, c ≠ a ∧ c ≠ b → f c = 1) : ∏ x ∈ s, f x = f a * f b := by
-  haveI := Classical.decEq ι; let s' := ({a, b} : Finset ι)
+  have := Classical.decEq ι; let s' := ({a, b} : Finset ι)
   have hu : s' ⊆ s := by grind
   have hf : ∀ c ∈ s, c ∉ s' → f c = 1 := by grind
   rw [← Finset.prod_subset hu hf]
@@ -403,7 +403,7 @@ theorem prod_eq_mul_of_mem {s : Finset ι} {f : ι → M} (a b : ι) (ha : a ∈
 theorem prod_eq_mul {s : Finset ι} {f : ι → M} (a b : ι) (hn : a ≠ b)
     (h₀ : ∀ c ∈ s, c ≠ a ∧ c ≠ b → f c = 1) (ha : a ∉ s → f a = 1) (hb : b ∉ s → f b = 1) :
     ∏ x ∈ s, f x = f a * f b := by
-  haveI := Classical.decEq ι; by_cases h₁ : a ∈ s <;> by_cases h₂ : b ∈ s
+  have := Classical.decEq ι; by_cases h₁ : a ∈ s <;> by_cases h₂ : b ∈ s
   · exact prod_eq_mul_of_mem a b h₁ h₂ hn h₀
   · rw [hb h₂, mul_one]
     apply prod_eq_single_of_mem a h₁
