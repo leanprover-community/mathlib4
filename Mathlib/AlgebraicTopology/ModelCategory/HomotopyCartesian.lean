@@ -92,7 +92,7 @@ by a fibration `r'' : X₂' ⟶ X₄`, the morphism `X₁ ⟶ pullback r'' b`
 induced by `t ≫ r'` and `l` is a weak equivalence.
 (This notion behaves well only in a right proper model category.)
 -/
-structure HoCartSq : Prop extends CommSq t l r b where mk'' ::
+structure HoCartSq : Prop extends CommSq t l r b where
   weakEquivalence_of_fac_right {X₂' : C} (r' : X₂ ⟶ X₂') (r'' : X₂' ⟶ X₄)
       [WeakEquivalence r'] [Fibration r''] (hr : r' ≫ r'' = r := by cat_disch) :
     WeakEquivalence (pullback.lift (t ≫ r') l (by simp [hr, w]) : X₁ ⟶ pullback r'' b)
@@ -101,7 +101,7 @@ namespace HoCartSq
 
 variable [IsRightProper C]
 
-lemma mk_of_fac_bottom
+lemma of_fac_bottom
     (sq : CommSq t l r b) {X₃' : C} (b' : X₃ ⟶ X₃') (b'' : X₃' ⟶ X₄)
     [WeakEquivalence b'] [Fibration b''] (hb : b' ≫ b'' = b := by cat_disch)
     (h : WeakEquivalence (pullback.lift t (l ≫ b') (by simp [hb, sq.w]) : X₁ ⟶ pullback r b'') :=
@@ -111,14 +111,14 @@ lemma mk_of_fac_bottom
   weakEquivalence_of_fac_right r' r'' _ _ hr := by
     rwa [key_lemma sq r' r'' b' b'']
 
-lemma mk_of_fac_right
+lemma of_fac_right
     (sq : CommSq t l r b) {X₂' : C} (r' : X₂ ⟶ X₂') (r'' : X₂' ⟶ X₄)
     [WeakEquivalence r'] [Fibration r''] (hr : r' ≫ r'' = r := by cat_disch)
     (h : WeakEquivalence (pullback.lift (t ≫ r') l (by simp [hr, sq.w]) : X₁ ⟶ pullback r'' b) :=
       by infer_instance) :
     HoCartSq t l r b := by
   let Φ := (trivialCofibrations C).factorizationData (fibrations C) b
-  refine mk_of_fac_bottom sq Φ.i Φ.p Φ.fac ?_
+  refine of_fac_bottom sq Φ.i Φ.p Φ.fac ?_
   rwa [← key_lemma sq r' r'' Φ.i Φ.p]
 
 lemma weakEquivalence_of_fac_bottom
@@ -148,7 +148,7 @@ lemma weakEquivalence_of_fac_bottom'
   infer_instance
 
 set_option backward.isDefEq.respectTransparency false in
-lemma mk_of_fac_bottom'
+lemma of_fac_bottom'
     (sq : CommSq t l r b)
     {X₃' P : C} {b'' : X₃' ⟶ X₄}
     {fst : P ⟶ X₂} {snd : P ⟶ X₃'} (sq' : IsPullback fst snd r b'')
@@ -160,7 +160,7 @@ lemma mk_of_fac_bottom'
     (hb'' : Fibration b'' := by infer_instance)
     (hα : WeakEquivalence α := by infer_instance) :
     HoCartSq t l r b := by
-  refine mk_of_fac_bottom sq _ _ hb ?_
+  refine of_fac_bottom sq _ _ hb ?_
   have : pullback.lift t (l ≫ b') (by simp [hb, sq.w]) =
       α ≫ (sq'.isoIsPullback (.of_hasPullback r b'')).hom := by
     cat_disch
@@ -179,7 +179,7 @@ lemma iff_of_fac_bottom'
     (hb'' : Fibration b'' := by infer_instance) :
     HoCartSq t l r b ↔ WeakEquivalence α :=
   ⟨fun sq'' ↦ sq''.weakEquivalence_of_fac_bottom' sq' _ _ hb,
-    fun _ ↦ mk_of_fac_bottom' sq sq' _ _ hb⟩
+    fun _ ↦ of_fac_bottom' sq sq' _ _ hb⟩
 
 set_option backward.isDefEq.respectTransparency false in
 lemma iff_of_fac_bottom
@@ -199,7 +199,7 @@ lemma flip (sq : HoCartSq t l r b) : HoCartSq l t b r where
     sq.weakEquivalence_of_fac_bottom'
       (IsPullback.of_hasPullback _ _).flip b' _ hb
 
-lemma mk_of_fac_right'
+lemma of_fac_right'
     (sq : CommSq t l r b)
     {X₂' P : C} {r'' : X₂' ⟶ X₄}
     {fst : P ⟶ X₂'} {snd : P ⟶ X₃} (sq' : IsPullback fst snd r'' b)
@@ -211,7 +211,7 @@ lemma mk_of_fac_right'
     (hr'' : Fibration r'' := by infer_instance)
     (hα : WeakEquivalence α := by infer_instance) :
     HoCartSq t l r b :=
-  .flip (mk_of_fac_bottom' sq.flip sq'.flip r' α)
+  .flip (of_fac_bottom' sq.flip sq'.flip r' α)
 
 lemma weakEquivalence_of_fac_right'
     (sq : HoCartSq t l r b) {X₂' P : C} {r'' : X₂' ⟶ X₄}
@@ -237,7 +237,7 @@ lemma iff_of_fac_right'
     (hr'' : Fibration r'' := by infer_instance) :
     HoCartSq t l r b ↔ WeakEquivalence α :=
   ⟨fun sq'' ↦ sq''.weakEquivalence_of_fac_right' sq' _ _ hr,
-    fun _ ↦ mk_of_fac_right' sq sq' _ _ hr⟩
+    fun _ ↦ of_fac_right' sq sq' _ _ hr⟩
 
 set_option backward.isDefEq.respectTransparency false in
 lemma iff_of_fac_right
@@ -253,17 +253,17 @@ lemma iff_of_fac_right
 variable (r b) in
 lemma of_hasPullback_of_fibration [Fibration r] :
     HoCartSq (pullback.fst r b) (pullback.snd r b) r b :=
-  mk_of_fac_right' ⟨pullback.condition⟩ (.of_hasPullback _ _) (𝟙 _) (𝟙 _)
+  of_fac_right' ⟨pullback.condition⟩ (.of_hasPullback _ _) (𝟙 _) (𝟙 _)
 
 variable (r b) in
 lemma of_hasPullback_of_fibration' [Fibration b] :
     HoCartSq (pullback.fst r b) (pullback.snd r b) r b :=
-  mk_of_fac_bottom' ⟨pullback.condition⟩ (.of_hasPullback _ _) (𝟙 _) (𝟙 _)
+  of_fac_bottom' ⟨pullback.condition⟩ (.of_hasPullback _ _) (𝟙 _) (𝟙 _)
 
 lemma of_vert_weakEquivalence
     (sq : CommSq t l r b) [WeakEquivalence l] [WeakEquivalence r] :
     HoCartSq t l r b :=
-  mk_of_fac_right' sq (.id_vert b) r l (by simp) sq.w.symm
+  of_fac_right' sq (.id_vert b) r l (by simp) sq.w.symm
 
 lemma of_horiz_weakEquivalence
     (sq : CommSq t l r b) [WeakEquivalence t] [WeakEquivalence b] :
