@@ -79,7 +79,7 @@ theorem Nonsingular.of_linearIndependent_col (ind : LinearIndependent R A.col) :
     ih (Option.rec i f ∘ finSuccEquiv r) (Option.rec j₀ g ∘ finSuccEquiv r)
 
 theorem Nonsingular.of_linearIndependent_row (ind : LinearIndependent R A.row) : A.Nonsingular := by
-  rw [← nonsingular_transpose_iff]; exact .of_linearIndependent_col ind
+  simpa using Nonsingular.of_linearIndependent_col (A := Aᵀ) ind
 
 theorem Nonsingular.of_leftRegular (h : IsLeftRegular A) : A.Nonsingular :=
   .of_linearIndependent_col (by rwa [← mulVec_injective_iff, ← isLeftRegular_iff_mulVec_injective])
@@ -93,13 +93,11 @@ variable [IsCancelAdd R]
 columns are linearly independent. Generalizes `Matrix.linearIndependent_cols_of_det_ne_zero`. -/
 theorem Nonsingular.linearIndependent_col (hA : A.Nonsingular) : LinearIndependent R A.col :=
   mulVec_injective_iff.mp fun x y eq ↦ funext fun k ↦ hA _ _ <| show _ = _ by
-    have hp := congr((A.adjp 1 *ᵥ $eq) k)
-    have hm := congr((A.adjp (-1) *ᵥ $eq) k)
-    simp_rw [mulVec_mulVec, mulVec, dotProduct, ← Finset.sum_erase_add _ _ (Finset.mem_univ k),
-      ← Finset.filter_ne, adjp_mul_apply_eq] at hp hm
-    iterate 2 rw [Finset.sum_congr rfl fun i h ↦ congr_arg (· * _) <|
-      adjp_mul_apply_ne _ _ _ (Finset.mem_filter.mp h).2] at hp
-    grind
+    have h v : ((A.adjp 1 * A + A.detp (-1) • 1) *ᵥ v) k =
+        ((A.adjp (-1) * A + A.detp 1 • 1) *ᵥ v) k := by
+      congr 1; ext k i
+      obtain (h | h) := eq_or_ne k i <;> simp [adjp_mul_apply_eq, add_comm, adjp_mul_apply_ne, h]
+    simp [add_mulVec, smul_mulVec, ← mulVec_mulVec] at h; grind
 
 theorem Nonsingular.linearIndependent_row (hA : A.Nonsingular) : LinearIndependent R A.row :=
   hA.transpose.linearIndependent_col
@@ -137,8 +135,7 @@ asks whether this is still true without `IsCancelAdd R`. -/
 theorem linearIndependent_col_iff_row [Finite n] :
     LinearIndependent R A.col ↔ LinearIndependent R A.row := by
   have := Fintype.ofFinite
-  classical rw [linearIndependent_col_iff, ← nonsingular_transpose_iff, ← linearIndependent_col_iff]
-  rfl
+  classical rw [linearIndependent_col_iff, linearIndependent_row_iff]
 
 end
 
@@ -150,12 +147,11 @@ open Matrix
 instance (priority := 100) CommSemiring.strongRankCondition_of_nontrivial [Nontrivial R] :
     StrongRankCondition R where
   le_of_fin_injective {n m} f hf := by
-    let g : (Fin m → R) →ₗ[R] (Fin n → R) :=
-      ⟨⟨fun x i ↦ if h : i < m then x ⟨i, h⟩ else 0, by aesop⟩, by aesop⟩
+    let g : (Fin m → R) →ₗ[R] (Fin n → R) := .pi fun i ↦ if h : i < m then .proj ⟨i, h⟩ else 0
     by_contra! hnm
     have hg : Function.Injective g := fun x y eq ↦ funext fun i ↦ by
       simpa [g] using congr($eq ⟨i, i.prop.trans hnm⟩)
-    let A := toLin'.symm (g ∘ₗ f)
+    let A := (g ∘ₗ f).toMatrix'
     have hA : A.Nonsingular := .of_linearIndependent_col <| mulVec_injective_iff.mp <| by
       convert hg.comp hf; ext; simp [A, g]
     have : A.row ⟨m, hnm⟩ = 0 := by ext; simp [A, g]
