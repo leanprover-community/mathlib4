@@ -152,6 +152,22 @@ lemma isHamiltonian_iff_isPath_and_length_eq [Fintype α] :
   refine (Fintype.equivFinOfCardEq ?_).symm
   simp_rw [length_support, h, Nat.sub_one_add_one Fintype.card_ne_zero]
 
+theorem isHamiltonian_iff_finite_and_isPath_and_length_eq :
+    p.IsHamiltonian ↔ Finite α ∧ p.IsPath ∧ p.length = Nat.card α - 1 := by
+  rcases finite_or_infinite α |>.symm with hinf | hfin
+  · simp [hinf]
+  cases nonempty_fintype α
+  simp [isHamiltonian_iff_isPath_and_length_eq, hfin]
+
+@[simp]
+theorem isHamiltonian_copy {a' b' : α} {p : G.Walk a b} {ha : a = a'} {hb : b = b'} :
+    (p.copy ha hb).IsHamiltonian ↔ p.IsHamiltonian := by
+  simp [isHamiltonian_iff_finite_and_isPath_and_length_eq]
+
+@[simp]
+theorem isHamiltonian_reverse : p.reverse.IsHamiltonian ↔ p.IsHamiltonian := by
+  simp [isHamiltonian_iff_finite_and_isPath_and_length_eq]
+
 /-- A Hamiltonian cycle is a cycle that visits every vertex once. -/
 structure IsHamiltonianCycle (p : G.Walk a a) : Prop extends p.IsCycle where
   isHamiltonian_tail : p.tail.IsHamiltonian
@@ -239,6 +255,11 @@ theorem isHamiltonianCycle_iff_isCycle_and_length_eq_natCard :
   · simpa using IsCycle.not_nil
   cases nonempty_fintype α
   simp [isHamiltonianCycle_iff_isCycle_and_length_eq]
+
+@[simp]
+theorem isHamiltonianCycle_copy {p : G.Walk a a} (h : a = b) :
+    (p.copy h h).IsHamiltonianCycle ↔ p.IsHamiltonianCycle := by
+  simp [isHamiltonianCycle_iff_isCycle_and_length_eq_natCard]
 
 @[simp]
 lemma isHamiltonianCycle_rotate (hv : v ∈ p.support) :
