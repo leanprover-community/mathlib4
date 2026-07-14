@@ -336,6 +336,8 @@ end Decidable
 def Pairwise (r : α → α → Prop) (m : Multiset α) [inst : Std.Symm r] : Prop := Quotient.lift
   (List.Pairwise r ·) (fun _ _ h ↦ propext <| List.Perm.pairwise_iff (inst.symm _ _) h) m
 
+@[deprecated (since := "2026-07-14")] alias pairwise_coe_iff := Pairwise
+
 theorem pairwise_coe_iff_pairwise {r : α → α → Prop} [Std.Symm r] {l : List α} :
     Multiset.Pairwise r l ↔ l.Pairwise r := by
   rfl
