@@ -360,6 +360,42 @@ theorem map_mapToSubgraph_eq_induce (s : Set V) {u v : V} :
     rw [mapToSubgraph, map_cons, map_map]
     exact congrArg _ <| w.map_mapToSubgraph_eq_induce s (hs · <| List.mem_of_mem_tail ·)
 
+theorem map_support_mapToSubgraph {u v} {p : G.Walk u v} :
+    p.mapToSubgraph.support.map (↑) = p.support := by
+  simpa [map_mapToSubgraph_hom] using p.mapToSubgraph.support_map p.toSubgraph.hom |>.symm
+
+theorem map_edges_mapToSubgraph {u v} {p : G.Walk u v} :
+    p.mapToSubgraph.edges.map (Sym2.map (↑)) = p.edges := by
+  simpa [map_mapToSubgraph_hom] using p.mapToSubgraph.edges_map p.toSubgraph.hom |>.symm
+
+theorem map_darts_mapToSubgraph {u v} {p : G.Walk u v} :
+    p.mapToSubgraph.darts.map p.toSubgraph.hom.mapDart = p.darts := by
+  simpa [map_mapToSubgraph_hom] using p.mapToSubgraph.darts_map p.toSubgraph.hom |>.symm
+
+theorem image_edgeSet_mapToSubgraph {u v} {p : G.Walk u v} :
+    Sym2.map (↑) '' p.mapToSubgraph.edgeSet = p.edgeSet := by
+  simpa [map_mapToSubgraph_hom] using p.mapToSubgraph.edgeSet_map p.toSubgraph.hom |>.symm
+
+theorem edgeSet_mapToSubgraph {u v} {p : G.Walk u v} :
+    p.mapToSubgraph.edgeSet = Sym2.map (↑) ⁻¹' p.edgeSet := by
+  simp [← p.image_edgeSet_mapToSubgraph, Sym2.map.injective]
+
+theorem isTrail_mapToSubgraph {u v} {p : G.Walk u v} :
+    p.mapToSubgraph.IsTrail ↔ p.IsTrail := by
+  simp [p.map_mapToSubgraph_hom, ← isTrail_map_iff_of_injective Subgraph.hom_injective]
+
+theorem isPath_mapToSubgraph {u v} {p : G.Walk u v} :
+    p.mapToSubgraph.IsPath ↔ p.IsPath := by
+  simp [p.map_mapToSubgraph_hom, ← isPath_map_iff_of_injective Subgraph.hom_injective]
+
+theorem isCircuit_mapToSubgraph {v} {p : G.Walk v v} :
+    p.mapToSubgraph.IsCircuit ↔ p.IsCircuit := by
+  simp [p.map_mapToSubgraph_hom, ← isCircuit_map_iff_of_injective Subgraph.hom_injective]
+
+theorem isCycle_mapToSubgraph {v} {p : G.Walk v v} :
+    p.mapToSubgraph.IsCycle ↔ p.IsCycle := by
+  simp [p.map_mapToSubgraph_hom, ← isCycle_map_iff_of_injective Subgraph.hom_injective]
+
 /-- Mapping a walk to its own subgraph and then to `G[w.support]` is the same as inducing the walk
 to its support. -/
 theorem map_mapToSubgraph_eq_induce_id {u v : V} (w : G.Walk u v) :
