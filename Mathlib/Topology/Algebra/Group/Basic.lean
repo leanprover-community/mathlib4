@@ -1102,9 +1102,8 @@ theorem tendsto_div_nhds_one_iff {α : Type*} {l : Filter α} {x : G} {u : α �
 theorem nhds_translation_div (x : G) : comap (· / x) (𝓝 1) = 𝓝 x := by
   simpa only [div_eq_mul_inv] using nhds_translation_mul_inv x
 
-variable [TopologicalSpace H] [CommGroup H] [PartialOrder H] [IsOrderedMonoid H]
-
-variable [IsTopologicalGroup H]
+variable [TopologicalSpace H] [CommGroup H] [IsTopologicalGroup H]
+  [PartialOrder H] [IsOrderedMonoid H]
 
 @[to_additive (attr := simp)]
 theorem Filter.map_divRight_nhdsGT {c a : H} : map (· / c) (𝓝[>] a) = 𝓝[>] (a / c) := by
