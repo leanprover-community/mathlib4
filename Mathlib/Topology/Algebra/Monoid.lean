@@ -242,9 +242,9 @@ instance (priority := 100) continuousMul_of_discreteTopology [TopologicalSpace N
   ⟨continuous_of_discreteTopology⟩
 
 @[to_additive]
-instance (priority := 100) continuousMul_of_indiscreteTopology [TopologicalSpace N] [Mul N]
-    [IndiscreteTopology N] : ContinuousMul N :=
-  ⟨continuous_of_indiscreteTopology⟩
+instance (priority := 100) continuousMul_of_hasIndiscreteTopology [TopologicalSpace N] [Mul N]
+    [HasIndiscreteTopology N] : ContinuousMul N :=
+  ⟨continuous_of_hasIndiscreteTopology⟩
 
 open Filter
 

@@ -149,8 +149,8 @@ theorem NoetherianSpace.finite [NoetherianSpace α] [T2Space α] : Finite α :=
 instance (priority := 100) Finite.to_noetherianSpace [Finite α] : NoetherianSpace α :=
   ⟨Finite.wellFounded_of_trans_of_irrefl _⟩
 
-instance (priority := 100) [IndiscreteTopology α] : NoetherianSpace α :=
-  noetherianSpace_of_surjective CofiniteTopology.of.symm continuous_of_indiscreteTopology
+instance (priority := 100) [HasIndiscreteTopology α] : NoetherianSpace α :=
+  noetherianSpace_of_surjective CofiniteTopology.of.symm continuous_of_hasIndiscreteTopology
     CofiniteTopology.of.symm.surjective
 
 /-- In a Noetherian space, every closed set is a finite union of irreducible closed sets. -/

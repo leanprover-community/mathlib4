@@ -603,18 +603,18 @@ instance [Subsingleton X] : Subsingleton (SeparationQuotient X) :=
 
 @[simp]
 theorem inseparableSetoid_eq_top_iff [TopologicalSpace α] :
-    inseparableSetoid α = ⊤ ↔ IndiscreteTopology α :=
+    inseparableSetoid α = ⊤ ↔ HasIndiscreteTopology α :=
   Setoid.eq_top_iff.trans TopologicalSpace.indiscrete_iff_forall_inseparable.symm
 
 theorem subsingleton_iff [TopologicalSpace α] :
-    Subsingleton (SeparationQuotient α) ↔ IndiscreteTopology α :=
+    Subsingleton (SeparationQuotient α) ↔ HasIndiscreteTopology α :=
   Quotient.subsingleton_iff.trans inseparableSetoid_eq_top_iff
 
-instance [TopologicalSpace α] [IndiscreteTopology α] : Subsingleton (SeparationQuotient α) :=
+instance [TopologicalSpace α] [HasIndiscreteTopology α] : Subsingleton (SeparationQuotient α) :=
   subsingleton_iff.2 ‹_›
 
-instance [TopologicalSpace α] [IndiscreteTopology α] {p : α → Prop} :
-    IndiscreteTopology (Subtype p) := by
+instance [TopologicalSpace α] [HasIndiscreteTopology α] {p : α → Prop} :
+    HasIndiscreteTopology (Subtype p) := by
   simp [TopologicalSpace.indiscrete_iff_forall_inseparable, subtype_inseparable_iff]
 
 theorem nontrivial_iff [TopologicalSpace α] :

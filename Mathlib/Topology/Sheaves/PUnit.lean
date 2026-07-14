@@ -26,7 +26,7 @@ variable {C : Type u} [Category.{v} C]
 
 theorem isSheaf_of_isTerminal_of_indiscrete {X : TopCat.{w}} (hind : X.str = ⊤) (F : Presheaf C X)
     (it : IsTerminal <| F.obj <| op ⊥) : F.IsSheaf := fun c U s hs => by
-  have : IndiscreteTopology X := ⟨hind⟩
+  have : HasIndiscreteTopology X := ⟨hind⟩
   obtain rfl | hne := eq_or_ne U ⊥
   · intro _ _
     rw [@existsUnique_iff_exists _ ⟨fun _ _ => _⟩]
