@@ -32,7 +32,6 @@ namespace FintypeCat
 /-- Complement of the image of a morphism `f : X ⟶ Y` in `FintypeCat`. -/
 noncomputable def imageComplement {X Y : FintypeCat.{u}} (f : X ⟶ Y) :
     FintypeCat.{u} := by
-  haveI : Fintype (↑(Set.range f)ᶜ) := Fintype.ofFinite _
   exact FintypeCat.of (↑(Set.range f)ᶜ)
 
 /-- The inclusion from the complement of the image of `f : X ⟶ Y` into `Y`. -/
@@ -85,7 +84,6 @@ noncomputable instance : PreservesFiniteLimits (forget (Action FintypeCat G)) :=
 instance : PreGaloisCategory (Action FintypeCat G) where
   hasQuotientsByFiniteGroups _ _ _ := inferInstance
   monoInducesIsoOnDirectSummand {_ _} i _ :=
-    haveI : Mono ((forget (Action FintypeCat G)).map i) := map_mono (forget _) i
     ⟨Action.imageComplement G i, Action.imageComplementIncl G i,
      ⟨isColimitOfReflects (Action.forget _ _ ⋙ FintypeCat.incl) <|
       (isColimitMapCoconeBinaryCofanEquiv (forget _) i _).symm

@@ -801,7 +801,6 @@ def Unit.map {X : ModuleCat R} : X ⟶ (extendScalars f ⋙ restrictScalars f).o
   { toFun := fun x => (1 : S) ⊗ₜ[R,f] x
     map_add' := fun x x' => by dsimp; rw [TensorProduct.tmul_add]
     map_smul' := fun r x => by
-      letI m1 : Module R S := Module.compHom S f
       dsimp; rw [← TensorProduct.smul_tmul, TensorProduct.smul_tmul'] }
 
 /--

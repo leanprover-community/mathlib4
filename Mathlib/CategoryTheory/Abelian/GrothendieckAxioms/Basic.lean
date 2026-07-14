@@ -388,12 +388,6 @@ instance preservesFiniteLimits_liftToFinset : PreservesFiniteLimits (liftToFinse
   preservesFiniteLimits_of_evaluation _ fun I =>
     letI : PreservesFiniteLimits (colim (J := Discrete I) (C := C)) :=
       preservesFiniteLimits_of_natIso HasBiproductsOfShape.colimIsoLim.symm
-    letI : PreservesFiniteLimits ((whiskeringLeft (Discrete I) (Discrete α) C).obj
-        (Discrete.functor fun x ↦ ↑x)) :=
-      ⟨fun J _ _ => whiskeringLeft_preservesLimitsOfShape J _⟩
-    letI : PreservesFiniteLimits ((whiskeringLeft (Discrete I) (Discrete α) C).obj
-        (Discrete.functor (·.val)) ⋙ colim) :=
-      comp_preservesFiniteLimits _ _
     preservesFiniteLimits_of_natIso (liftToFinsetEvaluationIso I).symm
 
 variable (J : Type*)
@@ -440,11 +434,6 @@ instance preservesFiniteColimits_liftToFinset : PreservesFiniteColimits (liftToF
   preservesFiniteColimits_of_evaluation _ fun ⟨I⟩ =>
     letI : PreservesFiniteColimits (lim (J := Discrete I) (C := C)) :=
       preservesFiniteColimits_of_natIso HasBiproductsOfShape.colimIsoLim
-    letI : PreservesFiniteColimits ((whiskeringLeft (Discrete I) (Discrete α) C).obj
-        (Discrete.functor fun x ↦ ↑x)) := ⟨fun _ _ _ => inferInstance⟩
-    letI : PreservesFiniteColimits ((whiskeringLeft (Discrete I) (Discrete α) C).obj
-        (Discrete.functor (·.val)) ⋙ lim) :=
-      comp_preservesFiniteColimits _ _
     preservesFiniteColimits_of_natIso (liftToFinsetEvaluationIso _ _ I).symm
 
 variable (J : Type*)

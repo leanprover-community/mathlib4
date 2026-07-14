@@ -279,7 +279,7 @@ theorem IndiscreteTopology.isOpen_iff [IndiscreteTopology α] (U : Set α) :
     exacts [@isOpen_empty _ ⊤, @isOpen_univ _ ⊤]
 
 theorem TopologicalSpace.isOpen_top_iff {α} (U : Set α) : IsOpen[⊤] U ↔ U = ∅ ∨ U = univ :=
-  letI : TopologicalSpace α := ⊤; IndiscreteTopology.isOpen_iff _
+  IndiscreteTopology.isOpen_iff _
 
 theorem IndiscreteTopology.isClosed_iff [IndiscreteTopology α] (C : Set α) :
     IsClosed C ↔ C = ∅ ∨ C = Set.univ := by

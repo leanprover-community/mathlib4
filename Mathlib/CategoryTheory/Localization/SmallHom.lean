@@ -110,7 +110,6 @@ that `HasSmallLocalizedHom.{w} W X Y` holds. -/
 noncomputable def equiv (L : C ⥤ D) [L.IsLocalization W] {X Y : C}
     [HasSmallLocalizedHom.{w} W X Y] :
     SmallHom.{w} W X Y ≃ (L.obj X ⟶ L.obj Y) :=
-  letI := small_of_hasSmallLocalizedHom.{w} W W.Q X Y
   (equivShrink _).symm.trans (homEquiv W W.Q L)
 
 set_option backward.isDefEq.respectTransparency false in

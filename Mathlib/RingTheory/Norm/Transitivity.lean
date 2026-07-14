@@ -266,8 +266,7 @@ theorem norm_eq_prod_embeddings [Algebra.IsSeparable K L] [IsAlgClosed E]
   rw [norm_eq_norm_adjoin K x, map_pow, ← adjoin.powerBasis_gen hx,
     norm_eq_prod_embeddings_gen E (adjoin.powerBasis hx) (IsAlgClosed.splits _)]
   · exact (prod_embeddings_eq_finrank_pow L (L := K⟮x⟯) E (adjoin.powerBasis hx)).symm
-  · haveI := Algebra.isSeparable_tower_bot_of_isSeparable K K⟮x⟯ L
-    exact Algebra.IsSeparable.isSeparable K _
+  · exact Algebra.IsSeparable.isSeparable K _
 
 theorem norm_eq_prod_automorphisms [IsGalois K L] (x : L) :
     algebraMap K L (norm K x) = ∏ σ : Gal(L/K), σ x := by

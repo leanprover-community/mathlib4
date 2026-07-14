@@ -313,7 +313,6 @@ def openAddSubgroup (i : ι) : @OpenAddSubgroup M _ hB.topology :=
   let _ := hB.topology
   { (B i).toAddSubgroup with
     isOpen' := by
-      letI := hB.topology
       rw [isOpen_iff_mem_nhds]
       intro a a_in
       rw [(hB.toModuleFilterBasis.toAddGroupFilterBasis.nhds_hasBasis a).mem_iff]

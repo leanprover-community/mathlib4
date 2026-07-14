@@ -332,8 +332,6 @@ noncomputable instance lan_preservesFiniteLimits_of_flat (F : C ⥤ D) [Represen
   intro J _ _
   apply preservesLimitsOfShape_of_evaluation (F.op.lan : (Cᵒᵖ ⥤ E) ⥤ Dᵒᵖ ⥤ E) J
   intro K
-  haveI : IsFiltered (CostructuredArrow F.op K) :=
-    IsFiltered.of_equivalence (structuredArrowOpEquivalence F (unop K))
   exact preservesLimitsOfShape_of_natIso (lanEvaluationIsoColim _ _ _).symm
 
 instance lan_flat_of_flat (F : C ⥤ D) [RepresentablyFlat F] :

@@ -81,7 +81,6 @@ variable [CompleteSpace E] {p q : Subspace 𝕜 E}
 
 theorem IsCompl.isTopCompl_of_isClosed (h : IsCompl p q) (hp : IsClosed (p : Set E))
     (hq : IsClosed (q : Set E)) : IsTopCompl p q := by
-  haveI := hp.completeSpace_coe; haveI := hq.completeSpace_coe
   rw [isTopCompl_iff_continuous_symm_prodEquivOfIsCompl h]
   exact (p.prodEquivOfIsCompl q h).continuous_symm (continuous_prodEquivOfIsCompl h)
 
@@ -97,7 +96,7 @@ isomorphic to `E`. -/
 @[deprecated prodEquivOfIsTopCompl (since := "2026-06-07")]
 def prodEquivOfClosedCompl (h : IsCompl p q) (hp : IsClosed (p : Set E))
     (hq : IsClosed (q : Set E)) : (p × q) ≃L[𝕜] E := by
-  haveI := hp.completeSpace_coe; haveI := hq.completeSpace_coe
+  haveI := hp.completeSpace_coe
   refine (p.prodEquivOfIsCompl q h).toContinuousLinearEquivOfContinuous ?_
   exact (p.subtypeL.coprod q.subtypeL).continuous
 

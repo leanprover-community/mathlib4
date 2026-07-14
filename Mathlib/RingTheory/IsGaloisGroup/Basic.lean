@@ -250,9 +250,6 @@ variable {K L : Type*} [Field K] [Field L] [Algebra K L] [MulSemiringAction G L]
 variable (F : IntermediateField K L) (N : Subgroup G) [N.Normal] [IsGaloisGroup N F L]
 
 noncomputable instance : MulSemiringAction (G ⧸ N) F :=
-  letI := smulOfNormal G F L N
-  haveI := smulDistribClass_smulOfNormal G F L N
-  letI := mulSemiringActionOfSmulDistribClass F L G
   mulSemiringActionQuotient G F L N
 
 instance [SMulCommClass G K L] [MulSemiringAction G F] [SMulDistribClass G F L]

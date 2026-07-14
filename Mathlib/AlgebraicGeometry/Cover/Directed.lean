@@ -290,7 +290,6 @@ variable {𝒰 : X.OpenCover} [Preorder 𝒰.I₀]
 
 include hle in
 lemma Cover.LocallyDirected.ofIsBasisOpensRange_le_iff (i j : 𝒰.I₀) :
-    letI := Cover.LocallyDirected.ofIsBasisOpensRange hle H
     i ≤ j ↔ (𝒰.f i).opensRange ≤ (𝒰.f j).opensRange := hle
 
 lemma Cover.LocallyDirected.ofIsBasisOpensRange_trans {i j : 𝒰.I₀} :

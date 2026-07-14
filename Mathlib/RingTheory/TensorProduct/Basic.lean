@@ -499,7 +499,6 @@ abbrev rightAlgebra : Algebra B (A ⊗[R] B) :=
 attribute [local instance] TensorProduct.rightAlgebra
 
 lemma algebraMap_eq_includeRight :
-    letI := rightAlgebra (R := R) (A := A) (B := B)
     algebraMap B (A ⊗[R] B) = includeRight (R := R) (A := A) (B := B) := rfl
 
 instance right_isScalarTower : IsScalarTower R B (A ⊗[R] B) :=

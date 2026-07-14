@@ -1176,7 +1176,6 @@ set_option backward.isDefEq.respectTransparency false in
 /-- Implementation of `AddMon.equivLaxMonoidalFunctorPUnit`. -/]
 def counitIso : monToLaxMonoidal.{w} C ⋙ laxMonoidalToMon C ≅ 𝟭 (Mon C) :=
   NatIso.ofComponents fun F ↦
-    letI : IsMonHom (counitIsoAux.{w} C F).hom := isMonHom_counitIsoAux C F
     mkIso (counitIsoAux.{w} C F)
 
 end EquivLaxMonoidalFunctorPUnit

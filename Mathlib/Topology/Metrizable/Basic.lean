@@ -131,7 +131,6 @@ instance (priority := 100) PseudoMetrizableSpace.toMetrizableSpace
     [T0Space X] [h : PseudoMetrizableSpace X] : MetrizableSpace X where
 
 instance (priority := 100) t2Space_of_metrizableSpace [MetrizableSpace X] : T2Space X :=
-  letI : UniformSpace X := pseudoMetrizableSpaceUniformity X
   inferInstance
 
 instance metrizableSpace_prod [MetrizableSpace X] [MetrizableSpace Y] :

@@ -118,7 +118,6 @@ noncomputable def Over.pullbackComp (f : X ⟶ Y) (g : Y ⟶ Z)
     Over.pullback P Q fg ≅ Over.pullback P Q g ⋙ Over.pullback P Q f :=
   haveI : P.HasPullbacksAlong fg := by subst hfg; infer_instance
   NatIso.ofComponents fun X ↦
-    haveI : HasPullback X.hom fg := HasPullbacksAlong.hasPullback _ X.prop
     Over.isoMk (pullback.congrHom rfl hfg ≪≫ (pullbackLeftPullbackSndIso X.hom g f).symm) (by simp)
 
 set_option backward.defeqAttrib.useBackward true in
@@ -139,7 +138,6 @@ noncomputable def Over.pullbackCongr {f : X ⟶ Y} [P.HasPullbacksAlong f]
     Over.pullback P Q f ≅ Over.pullback P Q g :=
   haveI : P.HasPullbacksAlong g := by subst h; infer_instance
   NatIso.ofComponents fun X ↦
-    haveI : HasPullback X.hom g := HasPullbacksAlong.hasPullback _ X.prop
     Over.isoMk (pullback.congrHom rfl h)
 
 set_option backward.defeqAttrib.useBackward true in
@@ -298,7 +296,6 @@ noncomputable def Under.pushoutComp (f : X ⟶ Y) (g : Y ⟶ Z)
     Under.pushout P Q fg ≅ Under.pushout P Q f ⋙ Under.pushout P Q g :=
   haveI : P.HasPushoutsAlong fg := by subst hfg; infer_instance
   NatIso.ofComponents fun X ↦
-    haveI : HasPushout X.hom fg := HasPushoutsAlong.hasPushout _ X.prop
     Under.isoMk (pushout.congrHom rfl hfg ≪≫ (pushoutLeftPushoutInrIso X.hom f g).symm) (by simp)
 
 set_option backward.defeqAttrib.useBackward true in
@@ -311,7 +308,6 @@ noncomputable def Under.pushoutCongr {f : X ⟶ Y} [P.HasPushoutsAlong f]
     Under.pushout P Q f ≅ Under.pushout P Q g :=
   haveI : P.HasPushoutsAlong g := by subst h; infer_instance
   NatIso.ofComponents fun X ↦
-    haveI : HasPushout X.hom g := HasPushoutsAlong.hasPushout _ X.prop
     Under.isoMk (pushout.congrHom rfl h)
 
 set_option backward.defeqAttrib.useBackward true in

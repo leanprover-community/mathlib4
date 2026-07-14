@@ -388,7 +388,7 @@ noncomputable def ringExpChar : ℕ := max (ringChar R) 1
 
 lemma ringExpChar.eq (q : ℕ) [h : ExpChar R q] : ringExpChar R = q := by
   rcases h with _ | h
-  · haveI := CharP.ofCharZero R
+  ·
     rw [ringExpChar, ringChar.eq R 0]; rfl
   rw [ringExpChar, ringChar.eq R q]
   exact Nat.max_eq_left h.one_lt.le

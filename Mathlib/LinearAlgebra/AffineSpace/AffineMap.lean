@@ -163,7 +163,6 @@ def const (p : P2) : P1 →ᵃ[k] P2 where
   toFun := Function.const P1 p
   linear := 0
   map_vadd' _ _ :=
-    letI : AddAction V2 P2 := inferInstance
     by simp
 
 @[simp]

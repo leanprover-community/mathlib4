@@ -263,8 +263,6 @@ noncomputable def bijection (A B : C) (X : D) :
     _ ≃ (i.obj ((reflector i).obj A) ⊗ i.obj ((reflector i).obj B) ⟶ i.obj X) :=
       ((ihom.adjunction _).homEquiv _ _).symm
     _ ≃ (i.obj ((reflector i).obj A ⊗ (reflector i).obj B) ⟶ i.obj X) :=
-      haveI : Limits.PreservesLimits i := (reflectorAdjunction i).rightAdjoint_preservesLimits
-      haveI := Limits.preservesSmallestLimits_of_preservesLimits i
       Iso.homCongr (prodComparisonIso _ _ _).symm (Iso.refl (i.obj X))
     _ ≃ ((reflector i).obj A ⊗ (reflector i).obj B ⟶ X) :=
       i.fullyFaithfulOfReflective.homEquiv.symm

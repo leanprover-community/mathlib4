@@ -130,8 +130,6 @@ lemma PreservesPointwiseLeftKanExtensionAt.mk' (c : C) {E : LeftExtension L F}
 instance hasLeftKanExtension_of_preserves [L.HasLeftKanExtension F]
     [PreservesLeftKanExtension G F L] : L.HasLeftKanExtension (F ⋙ G) :=
   @HasLeftKanExtension.mk _ _ _ _ _ _ _ _ _ _ <|
-    letI : (L.leftKanExtension F).IsLeftKanExtension <| L.leftKanExtensionUnit F := by
-      infer_instance
     PreservesLeftKanExtension.preserves (L.leftKanExtension F) (L.leftKanExtensionUnit F)
 
 instance hasPointwiseLeftKanExtension_of_preserves [L.HasPointwiseLeftKanExtension F]
@@ -390,8 +388,6 @@ lemma PreservesPointwiseRightKanExtensionAt.mk' (c : C) {E : RightExtension L F}
 instance hasRightKanExtension_of_preserves [L.HasRightKanExtension F]
     [PreservesRightKanExtension G F L] : L.HasRightKanExtension (F ⋙ G) :=
   @HasRightKanExtension.mk _ _ _ _ _ _ _ _ _ _ <|
-    letI : (L.rightKanExtension F).IsRightKanExtension <| L.rightKanExtensionCounit F := by
-      infer_instance
     PreservesRightKanExtension.preserves (L.rightKanExtension F) (L.rightKanExtensionCounit F)
 
 instance hasPointwiseRightKanExtension_of_preserves [L.HasPointwiseRightKanExtension F]

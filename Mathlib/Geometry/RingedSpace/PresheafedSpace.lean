@@ -298,10 +298,6 @@ instance ofRestrict_mono {U : TopCat} (X : PresheafedSpace C) (f : U ⟶ X.1)
     have hV : (Opens.map (X.ofRestrict hf).base).obj (hf.functor.obj V) = V := by
       ext1
       exact Set.preimage_image_eq _ hf.injective
-    haveI :
-      IsIso (hf.isOpenMap.adjunction.counit.app (unop (op (hf.functor.obj V)))) :=
-        NatIso.isIso_app_of_isIso
-          (whiskerLeft hf.functor hf.isOpenMap.adjunction.counit) V
     have := PresheafedSpace.congr_app eq (op (hf.functor.obj V))
     rw [PresheafedSpace.comp_c_app, PresheafedSpace.comp_c_app,
       PresheafedSpace.ofRestrict_c_app, Category.assoc, cancel_epi] at this

@@ -53,7 +53,6 @@ open scoped ZeroObject
 /-- If a Cartesian closed category has a zero object, each homset has exactly one element. -/
 @[instance_reducible]
 def uniqueHomsetOfZero [HasZeroObject C] (X Y : C) : Unique (X ⟶ Y) := by
-  haveI : HasInitial C := HasZeroObject.hasInitial
   apply uniqueHomsetOfInitialIsoUnit _ X Y
   refine ⟨default, (default : 𝟙_ C ⟶ 0) ≫ default, ?_, ?_⟩ <;> simp [eq_iff_true_of_subsingleton]
 

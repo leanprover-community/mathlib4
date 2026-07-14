@@ -253,7 +253,6 @@ def autAdjoinRootXPowSubCEquiv [NeZero n] :
     intro η
     have := Fact.mk H
     have : IsDomain K[n√a] := inferInstance
-    letI : Algebra K K[n√a] := inferInstance
     apply (rootsOfUnityEquivOfPrimitiveRoots (algebraMap K K[n√a]).injective hζ).injective
     ext
     simp only [AdjoinRoot.algebraMap_eq, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe,
@@ -268,7 +267,6 @@ def autAdjoinRootXPowSubCEquiv [NeZero n] :
   right_inv := by
     intro e
     have := Fact.mk H
-    letI : Algebra K K[n√a] := inferInstance
     apply AlgEquiv.coe_toAlgHom_injective
     apply AdjoinRoot.algHom_ext
     simp only [AdjoinRootXPowSubCEquivToRootsOfUnity, AdjoinRoot.algebraMap_eq, OneHom.toFun_eq_coe,

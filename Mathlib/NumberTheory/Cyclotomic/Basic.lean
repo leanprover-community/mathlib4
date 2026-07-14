@@ -675,7 +675,6 @@ instance isCyclotomicExtension [NeZero (n : K)] :
     IsCyclotomicExtension {n} K (CyclotomicField n K) := by
   have : NeZero (n : CyclotomicField n K) :=
     NeZero.nat_of_injective (algebraMap K _).injective
-  letI := Classical.decEq (CyclotomicField n K)
   have := (degree_cyclotomic_pos n K (NeZero.pos n)).ne'
   obtain ⟨ζ, hζ⟩ :=
     Splits.exists_eval_eq_zero (SplittingField.splits (cyclotomic n K)) (by rwa [degree_map])
@@ -811,8 +810,6 @@ instance [IsFractionRing A K] [IsDomain A] [NeZero (n : A)] :
       obtain ⟨⟨z, w⟩, hw⟩ := this k
       refine ⟨⟨algebraMap A (CyclotomicRing n A K) z, algebraMap A (CyclotomicRing n A K) w,
         map_mem_nonZeroDivisors _ (algebraBase_injective n A K) w.2⟩, ?_⟩
-      letI : IsScalarTower A K (CyclotomicField n K) :=
-        IsScalarTower.of_algebraMap_eq (congr_fun rfl)
       rw [← IsScalarTower.algebraMap_apply, ← IsScalarTower.algebraMap_apply,
         @IsScalarTower.algebraMap_apply A K _ _ _ _ _ (_root_.CyclotomicField.algebra n K) _ _ w,
         ← map_mul, hw, ← IsScalarTower.algebraMap_apply]

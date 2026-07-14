@@ -267,8 +267,6 @@ end LMapDomain
 /-- An equivalence of sets induces a linear equivalence of `Finsupp`s supported on those sets. -/
 noncomputable def congr {α' : Type*} (s : Set α) (t : Set α') (e : s ≃ t) :
     supported M R s ≃ₗ[R] supported M R t := by
-  haveI := Classical.decPred fun x => x ∈ s
-  haveI := Classical.decPred fun x => x ∈ t
   exact Finsupp.supportedEquivFinsupp s ≪≫ₗ
     (Finsupp.domLCongr e ≪≫ₗ (Finsupp.supportedEquivFinsupp t).symm)
 
