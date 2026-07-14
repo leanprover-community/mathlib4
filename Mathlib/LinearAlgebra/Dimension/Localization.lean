@@ -72,8 +72,8 @@ lemma IsLocalization.rank_eq : Module.rank S N = Module.rank R N := by
   · have := inj.nontrivial
     exact (hs.localization S p).cardinal_le_rank
 
-theorem IsLocalization.finrank_eq : Module.finrank S N = Module.finrank R N := by
-  simp_rw [Module.finrank, IsLocalization.rank_eq S p hp]
+theorem IsLocalization.finrank_eq : finrank S N = finrank R N := by
+  simp_rw [finrank, IsLocalization.rank_eq S p hp]
 
 end
 
