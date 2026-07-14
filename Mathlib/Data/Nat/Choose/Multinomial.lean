@@ -326,7 +326,7 @@ theorem sum_pow_of_commute (x : α → R) (s : Finset α)
       convert! @Nat.cast_one R _
       simp
     · rw [_root_.pow_succ, mul_zero]
-      haveI : IsEmpty (Finset.sym (∅ : Finset α) n.succ) := Finset.instIsEmpty
+      have : IsEmpty (Finset.sym (∅ : Finset α) n.succ) := Finset.instIsEmpty
       apply (Fintype.sum_empty _).symm
   | insert a s ha ih => ?_
   intro n; specialize ih (hc.mono <| s.subset_insert a)

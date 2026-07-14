@@ -238,8 +238,8 @@ private theorem exists_algHom_adjoin_of_splits'' {L : IntermediateField F E}
     (fun c _ hc _ _ ↦ Lifts.exists_upper_bound c hc) ⟨L, f⟩ le_rfl
   refine ⟨φ.emb.comp (inclusion <| (le_extendScalars_iff hfφ.1 <| adjoin L S).mp <|
     adjoin_le_iff.mpr fun s h ↦ ?_), AlgHom.ext hfφ.2⟩
-  letI := (inclusion hfφ.1).toAlgebra
-  letI : SMul L φ.carrier := Algebra.toSMul
+  let := (inclusion hfφ.1).toAlgebra
+  let : SMul L φ.carrier := Algebra.toSMul
   have : IsScalarTower L φ.carrier E := ⟨fun x y ↦ smul_assoc x (y : E)⟩
   have := φ.exists_lift_of_splits' (hK s h).1.tower_top ((hK s h).1.minpoly_splits_tower_top' ?_)
   · obtain ⟨y, h1, h2⟩ := this
@@ -264,7 +264,7 @@ theorem exists_algHom_adjoin_of_splits' :
       refine Eq.trans congr($hφ y) ?_
       simp only [AlgHom.coe_comp, Function.comp_apply, f']
       exact congr_arg f (AlgEquiv.symm_apply_apply _ _)
-  letI : Algebra L L' := (AlgEquiv.ofInjectiveField _).toRingHom.toAlgebra
+  let : Algebra L L' := (AlgEquiv.ofInjectiveField _).toRingHom.toAlgebra
   have : IsScalarTower L L' E := IsScalarTower.of_algebraMap_eq' rfl
   refine ⟨(hK s hs).1.tower_top, (hK s hs).1.minpoly_splits_tower_top' ?_⟩
   convert! (hK s hs).2

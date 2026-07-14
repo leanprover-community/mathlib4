@@ -520,7 +520,7 @@ theorem hasSum_setIntegral_iUnion {ι : Type*} [Countable ι] {s : ι → Set X}
     HasSum (fun n ↦ ∫ᵛ x in s n, f x ∂[B; μ]) (∫ᵛ x in ⋃ n, s n, f x ∂[B; μ]) := by
   classical
   rcases finite_or_infinite ι with hι | hι
-  · letI : Fintype ι := Fintype.ofFinite ι
+  · let : Fintype ι := Fintype.ofFinite ι
     have : ∫ᵛ x in ⋃ n, s n, f x ∂[B; μ] = ∑ i, ∫ᵛ x in s i, f x ∂[B; μ] := by
       rw [setIntegral_iUnion_fintype hm hd (fun i ↦ ?_)]
       exact hfi.mono (MeasurableSet.iUnion hm) (by simp [subset_iUnion s])
