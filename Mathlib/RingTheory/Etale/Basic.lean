@@ -198,8 +198,8 @@ theorem localization_base [FormallyEtale R Sₘ] : FormallyEtale Rₘ Sₘ :=
 
 /-- The localization of a formally étale map is formally étale. -/
 theorem localization_map [FormallyEtale R S] : FormallyEtale Rₘ Sₘ := by
-  haveI : FormallyEtale S Sₘ := FormallyEtale.of_isLocalization (M.map (algebraMap R S))
-  haveI : FormallyEtale R Sₘ := FormallyEtale.comp R S Sₘ
+  have : FormallyEtale S Sₘ := FormallyEtale.of_isLocalization (M.map (algebraMap R S))
+  have : FormallyEtale R Sₘ := FormallyEtale.comp R S Sₘ
   exact FormallyEtale.localization_base M
 
 end Localization

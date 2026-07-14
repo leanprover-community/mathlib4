@@ -72,7 +72,7 @@ theorem HasAffineProperty.diagonal_of_openCover (P) {Q} [HasAffineProperty P Q]
     (h𝒰' : ∀ i j k,
       Q (pullback.mapDesc ((𝒰' i).f j) ((𝒰' i).f k) (𝒰.pullbackHom f i))) :
     P.diagonal f := by
-  letI := isLocal_affineProperty P
+  let := isLocal_affineProperty P
   let 𝒱 := (Scheme.Pullback.openCoverOfBase 𝒰 f f).bind fun i =>
     Scheme.Pullback.openCoverOfLeftRight.{u} (𝒰' i) (𝒰' i) (pullback.snd _ _) (pullback.snd _ _)
   have i1 : ∀ i, IsAffine (𝒱.X i) := fun i => by dsimp [𝒱]; infer_instance
@@ -108,7 +108,7 @@ theorem HasAffineProperty.diagonal_of_diagonal_of_isPullback
     [IsAffine U] [IsOpenImmersion g]
     {iV : V ⟶ X} {f' : V ⟶ U} (h : IsPullback iV f' f g) (H : P.diagonal f) :
     Q.diagonal f' := by
-  letI := isLocal_affineProperty P
+  let := isLocal_affineProperty P
   rw [← Q.diagonal.cancel_left_of_respectsIso h.isoPullback.inv,
     h.isoPullback_inv_snd]
   rintro U V f₁ f₂ hU hV hf₁ hf₂
@@ -122,7 +122,7 @@ set_option backward.defeqAttrib.useBackward true in
 theorem HasAffineProperty.diagonal_iff
     (P) {Q} [HasAffineProperty P Q] {X Y : Scheme.{u}} {f : X ⟶ Y} [IsAffine Y] :
     Q.diagonal f ↔ P.diagonal f := by
-  letI := isLocal_affineProperty P
+  let := isLocal_affineProperty P
   refine ⟨fun hf ↦ ?_, diagonal_of_diagonal_of_isPullback P .of_id_fst⟩
   rw [← Q.diagonal.cancel_left_of_respectsIso
     (pullback.fst (f := f) (g := 𝟙 Y)), pullback.condition, Category.comp_id] at hf
@@ -175,7 +175,7 @@ instance (P) {Q} [HasAffineProperty P Q] : HasAffineProperty P.diagonal Q.diagon
   isLocal_affineProperty := letI := HasAffineProperty.isLocal_affineProperty P; inferInstance
   eq_targetAffineLocally' := by
     ext X Y f
-    letI := HasAffineProperty.isLocal_affineProperty P
+    let := HasAffineProperty.isLocal_affineProperty P
     constructor
     · exact fun H U ↦ HasAffineProperty.diagonal_of_diagonal_of_isPullback P
         (isPullback_morphismRestrict f U).flip H
@@ -374,7 +374,7 @@ lemma stalkwiseIsZariskiLocalAtTarget_of_respectsIso (hP : RingHom.RespectsIso P
     IsZariskiLocalAtTarget (stalkwise P) := by
   have hP' : (RingHom.toMorphismProperty P).RespectsIso :=
     RingHom.toMorphismProperty_respectsIso_iff.mp hP
-  letI := stalkwise_respectsIso hP
+  let := stalkwise_respectsIso hP
   apply IsZariskiLocalAtTarget.mk'
   · intro X Y f U hf x
     apply ((RingHom.toMorphismProperty P).arrow_mk_iso_iff <|
@@ -389,7 +389,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- If `P` respects isos, then `stalkwise P` is local at the source. -/
 lemma stalkwise_isZariskiLocalAtSource_of_respectsIso (hP : RingHom.RespectsIso P) :
     IsZariskiLocalAtSource (stalkwise P) := by
-  letI := stalkwise_respectsIso hP
+  let := stalkwise_respectsIso hP
   apply IsZariskiLocalAtSource.mk'
   · intro X Y f U hf x
     rw [Scheme.Hom.stalkMap_comp, CommRingCat.hom_comp, hP.cancel_right_isIso]

@@ -175,8 +175,8 @@ noncomputable def desc : CommRingCat.KaehlerDifferential f ⟶ M :=
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma desc_d (b : B) : D.desc (CommRingCat.KaehlerDifferential.d b) = D.d b := by
-  letI := f.hom.toAlgebra
-  letI := Module.compHom M f.hom
+  let := f.hom.toAlgebra
+  let := Module.compHom M f.hom
   apply D.liftKaehlerDifferential_comp_D
 
 end ModuleCat.Derivation

@@ -388,7 +388,7 @@ lemma Dual.eq_of_preReflection_mapsTo' [CharZero R] [IsDomain R] [IsTorsionFree 
     rw [range_inclusion]
     simp
   let x' : span R Φ := ⟨x, hx⟩
-  have this : ∀ {F : Dual R M}, MapsTo (preReflection x F) Φ Φ →
+  have : ∀ {F : Dual R M}, MapsTo (preReflection x F) Φ Φ →
       MapsTo (preReflection x' ((span R Φ).subtype.dualMap F)) Φ' Φ' := by
     intro F hF ⟨y, hy⟩ hy'
     simp only [Φ'] at hy' ⊢

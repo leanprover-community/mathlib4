@@ -230,9 +230,9 @@ theorem SequentialSpace.coinduced [SequentialSpace X] {Y} (f : X → Y) :
 
 protected theorem SequentialSpace.iSup {X} {ι : Sort*} {t : ι → TopologicalSpace X}
     (h : ∀ i, @SequentialSpace X (t i)) : @SequentialSpace X (⨆ i, t i) := by
-  letI : TopologicalSpace X := ⨆ i, t i
+  let : TopologicalSpace X := ⨆ i, t i
   refine ⟨fun s hs ↦ isClosed_iSup_iff.2 fun i ↦ ?_⟩
-  letI := t i
+  let := t i
   exact IsSeqClosed.isClosed fun u x hus hux ↦ hs hus <| hux.mono_right <| nhds_mono <| le_iSup _ _
 
 protected theorem SequentialSpace.sup {X} {t₁ t₂ : TopologicalSpace X}
