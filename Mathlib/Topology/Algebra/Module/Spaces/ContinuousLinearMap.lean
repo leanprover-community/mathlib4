@@ -299,13 +299,11 @@ theorem map_smulₛₗ₂ (f : E →SL[σ₁₃] F →SL[σ₂₃] G) (c : R) (x
     f (c • x) y = σ₁₃ c • f x y := by rw [f.map_smulₛₗ, smul_apply]
 
 /-- Send a continuous sesquilinear map to an abstract sesquilinear map (forgetting continuity). -/
+@[simps!]
 def toLinearMap₁₂ : (E →SL[σ₁₃] F →SL[σ₂₃] G) →ₗ[𝕜₃] (E →ₛₗ[σ₁₃] F →ₛₗ[σ₂₃] G) :=
   { toFun L := (coeLMₛₗ σ₂₃).comp L.toLinearMap
     map_add' _ _ := by ext; rfl
     map_smul' _ _ := by ext; rfl}
-
-@[simp] lemma toLinearMap₁₂_apply (L : E →SL[σ₁₃] F →SL[σ₂₃] G) (v : E) (w : F) :
-    L.toLinearMap₁₂ v w = L v w := rfl
 
 lemma toLinearMap₁₂_injective :
     Function.Injective (toLinearMap₁₂ (E := E) (F := F) (G := G) (σ₁₃ := σ₁₃) (σ₂₃ := σ₂₃)) := by
