@@ -11,6 +11,11 @@ public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
 /-!
 # Trivial bundles
 
+Let `p : E ⟶ B` be a morphism in a category `C` and `F : C`. We introduce
+a structure `TrivialBundleWithFiber F p` which contains the data
+of a morphism `r : E ⟶ F` such `(p, r)` makes `E` the binary product of `B` and `F`.
+The corresponding property of morphisms in `C` is `trivialBundleWithFiber F`.
+
 -/
 
 @[expose] public section
