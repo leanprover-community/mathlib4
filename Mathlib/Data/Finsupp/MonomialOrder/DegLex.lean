@@ -201,7 +201,6 @@ variable {σ : Type*} [LinearOrder σ] [WellFoundedGT σ]
 /-- The deg-lexicographic order on `σ →₀ ℕ`, as a `MonomialOrder` -/
 noncomputable def degLex :
     MonomialOrder σ where
-  wf := DegLex.wellFoundedLT
   syn := DegLex (σ →₀ ℕ)
   toSyn := { toEquiv := toDegLex, map_add' := toDegLex_add }
   toSyn_monotone a b h := by
@@ -211,6 +210,7 @@ noncomputable def degLex :
     · refine Or.inr ⟨le_antisymm ?_ ha, toLex_monotone h⟩
       rw [← add_tsub_cancel_of_le h, map_add]
       exact Nat.le_add_right a.degree (b - a).degree
+  wellFoundedLT_syn := DegLex.wellFoundedLT
 
 theorem degLex_le_iff {a b : σ →₀ ℕ} :
     a ≼[degLex] b ↔ toDegLex a ≤ toDegLex b :=
