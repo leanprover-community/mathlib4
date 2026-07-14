@@ -40,10 +40,17 @@ namespace Walk
 this definition doesn't contain that `p` is a path, `p.isPath` gives that. -/
 def IsHamiltonian (p : G.Walk a b) : Prop := ∀ a, p.support.count a = 1
 
-variable (f) in
-lemma IsHamiltonian.map (hf : Bijective f) (hp : p.IsHamiltonian) :
-    (p.map f).IsHamiltonian := by
-  simp [IsHamiltonian, hf.surjective.forall, hf.injective, hp _]
+theorem isHamiltonian_map (hf : Function.Bijective f) :
+    (p.map f).IsHamiltonian ↔ p.IsHamiltonian := by
+  simp [IsHamiltonian, hf.surjective.forall, hf.injective]
+
+alias ⟨_, IsHamiltonian.map⟩ := isHamiltonian_map
+
+@[simp]
+theorem isHamiltonian_mapLe {H} (hle : G ≤ H) : (p.mapLe hle).IsHamiltonian ↔ p.IsHamiltonian :=
+  isHamiltonian_map <| Function.bijective_id
+
+alias ⟨_, IsHamiltonian.mapLe⟩ := isHamiltonian_mapLe
 
 /-- A Hamiltonian path visits every vertex. -/
 @[simp] lemma IsHamiltonian.mem_support (hp : p.IsHamiltonian) (c : α) : c ∈ p.support :=
