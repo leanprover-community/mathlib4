@@ -87,6 +87,67 @@ instance : Unique (ℤ ≃+o ℤ) where
         simp
       simp [H] at h1
 
+namespace WithZero
+
+private noncomputable def logMapAddEquiv (e : ℤᵐ⁰ ≃*o ℤᵐ⁰) : ℤ ≃+ ℤ := by
+  let f : ℤ →+ ℤ :=
+    { toFun := fun z ↦ log (e (exp z))
+      map_zero' := by simp
+      map_add' := by
+        intro x y
+        rw [exp_add, map_mul, log_mul
+          ((map_ne_zero e).mpr exp_ne_zero) ((map_ne_zero e).mpr exp_ne_zero)] }
+  refine AddEquiv.ofBijective f ?_
+  constructor
+  · intro x y h
+    apply exp_injective
+    apply e.injective
+    simpa [f] using congrArg exp h
+  · intro y
+    refine ⟨log (e.symm (exp y)), ?_⟩
+    dsimp [f]
+    rw [exp_log ((map_ne_zero e.symm).mpr exp_ne_zero)]
+    simp
+
+/-- The only order-preserving multiplicative automorphism of `ℤᵐ⁰` is the identity. -/
+theorem orderMonoidIso_int_eq_refl (e : ℤᵐ⁰ ≃*o ℤᵐ⁰) :
+    e = OrderMonoidIso.refl ℤᵐ⁰ := by
+  have hmono : Monotone (logMapAddEquiv e) := by
+    intro x y hxy
+    dsimp [logMapAddEquiv]
+    change log (e (exp x)) ≤ log (e (exp y))
+    apply exp_le_exp.mp
+    rw [exp_log ((map_ne_zero e).mpr exp_ne_zero),
+      exp_log ((map_ne_zero e).mpr exp_ne_zero)]
+    exact e.toOrderIso.monotone (exp_le_exp.mpr hxy)
+  rcases Int.addEquiv_eq_refl_or_neg (logMapAddEquiv e) with h | h
+  · ext x
+    by_cases hx : x = 0
+    · simp [hx]
+    · rw [← exp_log hx]
+      apply exp_injective
+      have ht := congrArg exp (DFunLike.congr_fun h (log x))
+      simpa [logMapAddEquiv] using ht
+  · have hle := hmono (show (0 : ℤ) ≤ 1 by omega)
+    rw [h] at hle
+    norm_num at hle
+
+end WithZero
+
+/-- The identity is the unique order-preserving multiplicative automorphism of `ℤᵐ⁰`. -/
+instance : Unique (ℤᵐ⁰ ≃*o ℤᵐ⁰) where
+  default := OrderMonoidIso.refl ℤᵐ⁰
+  uniq := WithZero.orderMonoidIso_int_eq_refl
+
+/-- A normalized discrete rank-one value group has a unique order-preserving normalization. -/
+instance OrderMonoidIso.subsingleton_right_withZero_int {G : Type*}
+    [LinearOrderedCommGroupWithZero G] : Subsingleton (G ≃*o ℤᵐ⁰) where
+  allEq e f := by
+    have h := WithZero.orderMonoidIso_int_eq_refl (e.symm.trans f)
+    ext x
+    have hx := DFunLike.congr_fun h (e x)
+    simpa using hx.symm
+
 open OrderDual in
 instance : Unique (ℤ ≃+o ℤᵒᵈ) where
   default := ⟨AddEquiv.neg ℤ |>.trans ⟨toDual, toDual_add⟩, by simp⟩
