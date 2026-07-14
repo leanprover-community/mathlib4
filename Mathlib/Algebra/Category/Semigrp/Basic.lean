@@ -447,7 +447,8 @@ instance Semigrp.forgetReflectsIsos : (forget Semigrp.{u}).ReflectsIsomorphisms 
     exact e.toSemigrpIso.isIso_hom
 
 /-- Ensure that `forget₂ CommMonCat MonCat` automatically reflects isomorphisms. -/
-@[to_additive]
+@[to_additive /-- Ensure that `forget₂ AddCommMonCat AddMonCat` automatically reflects
+isomorphisms. -/]
 instance Semigrp.forget₂_full : (forget₂ Semigrp MagmaCat).Full where
   map_surjective f := ⟨ofHom f.hom, rfl⟩
 

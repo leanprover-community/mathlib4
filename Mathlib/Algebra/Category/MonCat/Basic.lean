@@ -504,7 +504,8 @@ instance CommMonCat.forget_reflects_isos : (forget CommMonCat.{u}).ReflectsIsomo
     exact e.toCommMonCatIso.isIso_hom
 
 /-- Ensure that `forget₂ CommMonCat MonCat` automatically reflects isomorphisms. -/
-@[to_additive]
+@[to_additive
+  /-- Ensure that `forget₂ AddCommMonCat AddMonCat` automatically reflects isomorphisms. -/]
 instance CommMonCat.forget₂_full : (forget₂ CommMonCat MonCat).Full where
   map_surjective f := ⟨ofHom f.hom, rfl⟩
 

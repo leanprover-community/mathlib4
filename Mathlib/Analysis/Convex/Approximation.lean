@@ -115,7 +115,7 @@ theorem sSup_affine_eq (hsc : IsClosed s)
   ext x
   rw [sSup_apply]
   refine csSup_eq_of_forall_le_of_forall_lt_exists_gt ?_ (fun r ⟨f, hf⟩ => ?_) (fun r hr => ?_)
-  · obtain ⟨l, c, hlc⟩ := exists_affine_le_of_lt (𝕜 := 𝕜) x.2 (show φ x - 1 < φ x from by grind)
+  · obtain ⟨l, c, hlc⟩ := exists_affine_le_of_lt (𝕜 := 𝕜) x.2 (show φ x - 1 < φ x by grind)
       hsc hφc hφcv
     exact ⟨φ x - 1, hlc.2 ▸ ⟨⟨s.restrict (re ∘ l) + const s c, hlc.1, l, c, rfl⟩, rfl⟩⟩
   · exact hf ▸ f.2.1 x

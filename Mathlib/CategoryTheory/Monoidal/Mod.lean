@@ -108,7 +108,8 @@ lemma smul_eq_mul (M : C) [MonObj M] : γ[M,M] = μ[M] := rfl
 
 /-- If `C` acts monoidally on `D`, then every object of `D` is canonically a
 module over the trivial monoid. -/
-@[to_additive (attr := simps)]
+@[to_additive (attr := simps) /-- If `C` acts monoidally on `D`, then every object of `D` is
+canonically an additive module over the trivial additive monoid. -/]
 instance (X : D) : ModObj (𝟙_ C) X where
   smul := (λₗ _).hom
 

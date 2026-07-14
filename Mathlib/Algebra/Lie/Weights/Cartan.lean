@@ -330,7 +330,7 @@ lemma lieIdeal_eq_inf_cartan_sup_biSup_inf_rootSpace (I : LieIdeal K L) :
   conv_lhs => rw [lieIdeal_eq_iSup_inf_genWeightSpace]
   exact iSup_le fun α ↦ by
     by_cases hα : α.IsZero
-    · rw [show genWeightSpace L (α : H → K) = H.toLieSubmodule from by ext; simp [hα.eq]]
+    · rw [show genWeightSpace L (α : H → K) = H.toLieSubmodule by ext; simp [hα.eq]]
       exact le_sup_left
     · exact le_sup_of_le_right (le_iSup₂_of_le α hα le_rfl)
 

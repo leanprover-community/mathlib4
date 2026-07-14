@@ -129,6 +129,17 @@ example {a b : Nat} (h : a < b) (f : Nat → Nat) (hf : ∀ i, 0 ≤ f i) :
   trace_state
   rfl
 
+/--
+trace: α : Type ?u.3
+X Y Z W : Set α
+⊢ ∀ {α : Type u_1} [inst : LinearOrder α] (a b : α), max a b ≤ max a b
+-/
+#guard_msgs in
+example : ∀ {α : Type*} [LinearOrder α] (a b : α), min a b ≤ max a b := by
+  grw [@inf_le_sup]
+  trace_state
+  intros; rfl
+
 end subsets
 
 section rationals
@@ -500,3 +511,45 @@ example (h₁ : a < b) : Set.Ici b ⊆ Set.Ioi a := by
   grw [h₁]
 
 end strict
+
+section universePolymorphic
+
+universe u v w w'
+
+axiom Cardinal : Type u
+
+axiom liftEq : Cardinal.{u} → Cardinal.{v} → Prop
+axiom liftLE : Cardinal.{u} → Cardinal.{v} → Prop
+
+variable {a : Cardinal.{u}} {b : Cardinal.{v}} {c : Cardinal.{w}} {d : Cardinal.{w'}}
+
+@[gcongr]
+axiom liftLE_imp_liftLE_of_liftLE_of_liftLE (h₁ : liftLE a b) (h₂ : liftLE c d) :
+    liftLE b c → liftLE a d
+
+@[refl]
+axiom liftEq_rfl : liftEq a a
+
+@[symm]
+axiom liftEq.comm (h : liftEq a b) : liftEq b a
+
+axiom liftLE_of_liftEq (h : liftEq a b) : liftLE a b
+
+@[refl]
+theorem liftLE_rfl : liftLE a a := liftLE_of_liftEq liftEq_rfl
+namespace Mathlib.Tactic.GCongr
+
+/-- See if the term is `AntisymmRel r a b` and the goal is `r a b`. -/
+@[gcongr_forward]
+public meta def exactLiftLEOfLiftEq : ForwardExt where
+  eval h goal := do goal.assignIfDefEq (← Lean.Meta.mkAppM ``liftLE_of_liftEq #[h])
+
+end Mathlib.Tactic.GCongr
+
+example (h : liftEq a b) (h' : liftLE b c) : liftLE a c := by
+  grw [h, h']
+
+example (h : liftEq b a) (h' : liftLE b c) : liftLE a c := by
+  grw [← h, ← h']
+
+end universePolymorphic

@@ -286,7 +286,11 @@ lemma mulRight_one (A : C) [GrpObj A] : mulRight η[A] = Iso.refl A := by
 In fact, any monoid object whose associativity diagram is Cartesian can be made into a group object
 (we do not prove this in this file), so we should expect that many properties of group objects
 follow from this result. -/
-@[to_additive]
+@[to_additive /-- The associativity diagram of an additive group object is Cartesian.
+
+In fact, any additive monoid object whose associativity diagram is Cartesian can be made into an
+additive group object (we do not prove this in this file), so we should expect that many properties
+of additive group objects follow from this result. -/]
 theorem isPullback (A : C) [GrpObj A] :
     IsPullback (μ ▷ A) ((α_ A A A).hom ≫ (A ◁ μ)) μ μ where
   w := by simp

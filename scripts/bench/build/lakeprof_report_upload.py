@@ -12,10 +12,9 @@ if not upload_url:
 if upload_url.endswith("/"):
     upload_url = upload_url[:-1]
 
-# Determine paths relative to the current file.
-script_file = Path(__file__)
-template_file = script_file.parent / "lakeprof_report_template.html"
-root_dir = script_file.parent.parent.parent.parent
+# Determine paths
+template_file = Path(__file__).with_name("lakeprof_report_template.html")
+root_dir = Path(os.environ["ROOT_DIR"])
 
 
 def run_stdout(*command: str, cwd: Path | None = None) -> str:
