@@ -167,14 +167,14 @@ theorem nodup_iff_ne_cons_cons {s : Multiset α} : s.Nodup ↔ ∀ a t, s ≠ a 
       h a t (by rwa [cons_add, cons_add, Multiset.zero_add] at s_eq)⟩
 
 theorem nodup_iff_pairwise {α} {s : Multiset α} : Nodup s ↔ Pairwise (· ≠ ·) s :=
-  Quotient.inductionOn s fun _ ↦ pairwise_coe_iff_pairwise.symm
+  Quotient.inductionOn s fun _ ↦ pairwise_coe_iff.symm
 
 protected theorem Nodup.pairwise (h : ∀ a ∈ s, ∀ b ∈ s, a ≠ b → r a b) (hn : Nodup s)
     [inst : Std.Symm r] : Pairwise r s := by
   induction s using Quotient.inductionOn with | _ l
   simp only [quot_mk_to_coe, coe_nodup] at hn
   simp only [quot_mk_to_coe, mem_coe, ne_eq] at h
-  simp only [quot_mk_to_coe, pairwise_coe_iff_pairwise]
+  simp only [quot_mk_to_coe, pairwise_coe_iff]
   induction l with
   | nil => grind
   | cons a l hl =>

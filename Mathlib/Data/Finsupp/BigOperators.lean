@@ -99,7 +99,7 @@ theorem Multiset.support_sum_eq [AddCommMonoid M] (s : Multiset (ι →₀ M))
     (hs : s.Pairwise (_root_.Disjoint on Finsupp.support)) :
     s.sum.support = (s.map Finsupp.support).sup := by
   induction s using Quotient.inductionOn with | _ a
-  replace hs := Multiset.pairwise_coe_iff_pairwise.mp hs
+  replace hs := Multiset.pairwise_coe_iff.mp hs
   convert! List.support_sum_eq a hs
   simp [List.foldr_map]
 
@@ -114,5 +114,5 @@ theorem Finset.support_sum_eq [AddCommMonoid M] (s : Finset (ι →₀ M))
     refine ⟨s.toList, ?_, Finset.nodup_toList _⟩
     simp
   subst hl
-  rwa [List.toFinset_val, List.dedup_eq_self.mpr hn, Multiset.pairwise_coe_iff_pairwise,
+  rwa [List.toFinset_val, List.dedup_eq_self.mpr hn, Multiset.pairwise_coe_iff,
     ← List.pairwiseDisjoint_iff_coe_toFinset_pairwise_disjoint hn]

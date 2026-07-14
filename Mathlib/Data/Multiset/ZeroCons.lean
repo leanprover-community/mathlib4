@@ -605,7 +605,7 @@ end Rel
 
 @[simp]
 theorem pairwise_zero (r : α → α → Prop) [Std.Symm r] : Multiset.Pairwise r 0 :=
-  pairwise_coe_iff_pairwise.mpr List.Pairwise.nil
+  pairwise_coe_iff.mpr List.Pairwise.nil
 
 
 section Nodup

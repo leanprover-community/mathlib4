@@ -22,7 +22,7 @@ namespace Multiset
 variable {α : Type*} {r : α → α → Prop} {s : Multiset α} [Std.Symm r]
 
 theorem Pairwise.forall (hs : s.Pairwise r) : ∀ ⦃a⦄, a ∈ s → ∀ ⦃b⦄, b ∈ s → a ≠ b → r a b :=
-  have h : List.Pairwise r s.toList := by grind [pairwise_coe_iff_pairwise, coe_toList]
+  have h : List.Pairwise r s.toList := by grind [pairwise_coe_iff, coe_toList]
   fun a ha b hb => List.Pairwise.forall h (by simp [ha]) (by simp [hb])
 
 instance instDecidablePairwise [DecidableRel r] : Decidable (s.Pairwise r) :=
