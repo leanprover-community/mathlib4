@@ -8,6 +8,7 @@ module
 public import Mathlib.Data.List.Perm.Subperm
 public import Mathlib.Data.Nat.Basic
 public import Mathlib.Data.Quot
+public import Mathlib.Logic.Relation
 public import Mathlib.Order.Monotone.Defs
 public import Mathlib.Order.RelClasses
 public import Mathlib.Tactic.Monotonicity.Attr
@@ -333,16 +334,20 @@ end Decidable
 
 
 /-- `Pairwise r m` inherited from `List.Pairwise` -/
-def Pairwise (r : α → α → Prop) (m : Multiset α) [inst : Std.Symm r] : Prop := Quotient.lift
-  (List.Pairwise r ·) (fun _ _ h ↦ propext <| List.Perm.pairwise_iff (inst.symm _ _) h) m
+def Pairwise (r : α → α → Prop) (m : Multiset α) : Prop := Quotient.lift
+  (List.Pairwise (Relation.SymmGen r)) (fun _ _ h ↦ propext <| List.Perm.pairwise_iff (by
+    grind [Relation.SymmGen]) h) m
 
-@[deprecated (since := "2026-07-14")] alias pairwise_coe_iff := Pairwise
-
-theorem pairwise_coe_iff_pairwise {r : α → α → Prop} [Std.Symm r] {l : List α} :
-    Multiset.Pairwise r l ↔ l.Pairwise r := by
+theorem pairwise_coe_iff {r : α → α → Prop} {l : List α} :
+    Multiset.Pairwise r l ↔ l.Pairwise (Relation.SymmGen r) := by
   rfl
 
+@[simp]
+theorem pairwise_coe_iff_of_symm {r : α → α → Prop} [Std.Symm r] {l : List α} :
+    Multiset.Pairwise r l ↔ l.Pairwise r := by
+  simp [pairwise_coe_iff]
 
+@[deprecated (since := "2027-07-14")] alias pairwise_coe_iff_pairwise := pairwise_coe_iff_of_symm
 section Nodup
 
 /-- `Nodup s` means that `s` has no duplicates, i.e. the multiplicity of
