@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2025 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Anatole Dedecker
+Authors: Anatole Dedecker, Luigi Massacci
 -/
 module
 
@@ -37,10 +37,9 @@ The theory will be expanded in future PRs.
 * `Distribution.mapCLM`: any continuous linear map `A : F →L[ℝ] G` induces a continuous linear
   map `𝓓'(Ω, F) →L[ℝ] 𝓓'(Ω, G)`. On locally integrable functions, this corresponds to applying `A`
   pointwise.
-* `Distribution.toDistribution Ω n f μ`: the distribution of order at most `n` induced by a
-  function `f : E → F`, sending a test function `φ` to `∫ x, φ x • f x ∂μ`. This is the zero map if
-  `f` is not locally integrable on `Ω`. The lemma `Distribution.toDistribution_inj` shows that a
-  locally integrable function is determined, as a distribution, by its values almost everywhere.
+* `Distribution.toDistribution Ω n f μ`: the distribution induced by a function `f : E → F`,
+  sending a test function `φ` to `∫ x, φ x • f x ∂μ`. This is the zero map if
+  `f` is not locally integrable on `Ω`.
 
 ## Notation
 
@@ -142,6 +141,7 @@ longer true for general filters.
 
 * [L. Schwartz, *Théorie des distributions*][schwartz1950]
 * [L. Schwartz, *Théorie des distributions à valeurs vectorielles*][schwartz1957]
+* [L. Hörmander, *The Analysis of Linear Partial Differential Operators I*][hormander2003]
 
 -/
 
