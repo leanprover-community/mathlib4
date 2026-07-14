@@ -557,10 +557,10 @@ theorem Submodule.isClosed_sup_finiteDimensional
 there exists a finite-codimension subspace of the domain whose image is closed. -/
 theorem LinearMap.isClosed_range_of_isClosed_map_of_finiteDimensional_quotient
     {E : Type*} [AddCommGroup E] [Module 𝕜 E] {f : E →ₗ[𝕜] F} {s : Submodule 𝕜 E}
-    [hs : FiniteDimensional 𝕜 (E ⧸ s)] (h : IsClosed (s.map f : Set F)) :
+    [s_cofg : s.CoFG] (h : IsClosed (s.map f : Set F)) :
     IsClosed (f.range : Set F) := by
   obtain ⟨t, s_compl_t⟩ := Submodule.exists_isCompl s
-  have : FiniteDimensional 𝕜 t := .of_fg <| Submodule.CoFG.fg_of_isCompl s_compl_t hs
+  have : FiniteDimensional 𝕜 t := .of_fg <| s_cofg.fg_of_isCompl s_compl_t
   rw [← Submodule.map_top, ← s_compl_t.sup_eq_top, Submodule.map_sup]
   exact Submodule.isClosed_sup_finiteDimensional _ _ h
 
