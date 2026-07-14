@@ -142,18 +142,22 @@ theorem isAlgebraic_one [Nontrivial R] : IsAlgebraic R (1 : A) := by
   rw [← map_one (algebraMap R A)]
   exact isAlgebraic_algebraMap 1
 
-theorem isAlgebraic_nat [Nontrivial R] (n : ℕ) : IsAlgebraic R (n : A) := by
+theorem isAlgebraic_natCast [Nontrivial R] (n : ℕ) : IsAlgebraic R (n : A) := by
   rw [← map_natCast (_ : R →+* A) n]
   exact isAlgebraic_algebraMap (Nat.cast n)
 
-theorem isAlgebraic_int [Nontrivial R] (n : ℤ) : IsAlgebraic R (n : A) := by
+theorem isAlgebraic_intCast [Nontrivial R] (n : ℤ) : IsAlgebraic R (n : A) := by
   rw [← map_intCast (algebraMap R A)]
   exact isAlgebraic_algebraMap (Int.cast n)
 
-theorem isAlgebraic_rat (R : Type u) {A : Type v} [DivisionRing A] [Field R] [Algebra R A] (n : ℚ) :
-    IsAlgebraic R (n : A) := by
+theorem isAlgebraic_ratCast (R : Type u) {A : Type v} [DivisionRing A] [Field R] [Algebra R A]
+    (n : ℚ) : IsAlgebraic R (n : A) := by
   rw [← map_ratCast (algebraMap R A)]
   exact isAlgebraic_algebraMap (Rat.cast n)
+
+@[deprecated (since := "2026-07-14")] alias isAlgebraic_nat := isAlgebraic_natCast
+@[deprecated (since := "2026-07-14")] alias isAlgebraic_int := isAlgebraic_intCast
+@[deprecated (since := "2026-07-14")] alias isAlgebraic_rat := isAlgebraic_ratCast
 
 theorem isAlgebraic_of_mem_rootSet {R : Type u} {A : Type v} [CommRing R] [Field A] [Algebra R A]
     {p : R[X]} {x : A} (hx : x ∈ p.rootSet A) : IsAlgebraic R x :=
