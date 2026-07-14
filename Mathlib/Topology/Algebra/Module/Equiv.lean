@@ -51,8 +51,8 @@ structure ContinuousLinearEquiv {R : Type*} {S : Type*} [Semiring R] [Semiring S
     {σ' : S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ] (M : Type*) [TopologicalSpace M]
     [AddCommMonoid M] (M₂ : Type*) [TopologicalSpace M₂] [AddCommMonoid M₂] [Module R M]
     [Module S M₂] extends M ≃ₛₗ[σ] M₂ where
-  continuous_toFun : Continuous toFun := by first | fun_prop | eta_expand; dsimp; fun_prop | skip
-  continuous_invFun : Continuous invFun := by first | fun_prop | eta_expand; dsimp; fun_prop | skip
+  continuous_toFun : Continuous toFun := by fun_prop_simp
+  continuous_invFun : Continuous invFun := by fun_prop_simp
 
 attribute [inherit_doc ContinuousLinearEquiv] ContinuousLinearEquiv.continuous_toFun
 ContinuousLinearEquiv.continuous_invFun
@@ -958,6 +958,10 @@ variable [IsTopologicalAddGroup M₄]
   and `f` is a rectangular block below the diagonal. -/
 def skewProd (e : M ≃L[R] M₂) (e' : M₃ ≃L[R] M₄) (f : M →L[R] M₄) : (M × M₃) ≃L[R] M₂ × M₄ where
   __ := e.toLinearEquiv.skewProd e'.toLinearEquiv ↑f
+  continuous_invFun :=
+    (e.continuous_invFun.comp continuous_fst).prodMk
+      (e'.continuous_invFun.comp <|
+        continuous_snd.sub <| f.continuous.comp <| e.continuous_invFun.comp continuous_fst)
 
 @[simp]
 theorem skewProd_apply (e : M ≃L[R] M₂) (e' : M₃ ≃L[R] M₄) (f : M →L[R] M₄) (x) :
