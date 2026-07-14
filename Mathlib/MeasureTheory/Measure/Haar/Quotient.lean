@@ -5,11 +5,8 @@ Authors: Alex Kontorovich, Heather Macbeth
 -/
 module
 
-public import Mathlib.Algebra.Group.Opposite
-public import Mathlib.MeasureTheory.Constructions.Polish.Basic
 public import Mathlib.MeasureTheory.Group.FundamentalDomain
 public import Mathlib.MeasureTheory.Integral.DominatedConvergence
-public import Mathlib.MeasureTheory.Measure.Haar.Basic
 
 /-!
 # Haar quotient measure
@@ -72,7 +69,9 @@ variable {G : Type*} [Group G] [MeasurableSpace G] (ν : Measure G) {Γ : Subgro
 /-- Given a subgroup `Γ` of a topological group `G` with measure `ν`, and a measure 'μ' on the
   quotient `G ⧸ Γ` satisfying `QuotientMeasureEqMeasurePreimage`, the restriction
   of `ν` to a fundamental domain is measure-preserving with respect to `μ`. -/
-@[to_additive]
+@[to_additive /-- Given a subgroup `Γ` of a topological additive group `G` with measure `ν`, and a
+  measure 'μ' on the quotient `G ⧸ Γ` satisfying `AddQuotientMeasureEqMeasurePreimage`, the
+  restriction of `ν` to a fundamental domain is measure-preserving with respect to `μ`. -/]
 theorem measurePreserving_quotientGroup_mk_of_QuotientMeasureEqMeasurePreimage
     {𝓕 : Set G} (h𝓕 : IsFundamentalDomain Γ.op 𝓕 ν) (μ : Measure (G ⧸ Γ))
     [QuotientMeasureEqMeasurePreimage ν μ] :
@@ -86,7 +85,8 @@ variable [TopologicalSpace G] [IsTopologicalGroup G] [BorelSpace G] [PolishSpace
 
 /-- If `μ` satisfies `QuotientMeasureEqMeasurePreimage` relative to a both left- and right-
   invariant measure `ν` on `G`, then it is a `G` invariant measure on `G ⧸ Γ`. -/
-@[to_additive]
+@[to_additive /-- If `μ` satisfies `AddQuotientMeasureEqMeasurePreimage` relative to a both left-
+  and right-invariant measure `ν` on `G`, then it is a `G` invariant measure on `G ⧸ Γ`. -/]
 lemma MeasureTheory.QuotientMeasureEqMeasurePreimage.smulInvariantMeasure_quotient
     [IsMulLeftInvariant ν] [hasFun : HasFundamentalDomain Γ.op G ν] :
     SMulInvariantMeasure G (G ⧸ Γ) μ where

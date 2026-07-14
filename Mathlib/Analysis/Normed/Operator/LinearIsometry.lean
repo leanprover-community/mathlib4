@@ -146,7 +146,7 @@ theorem toLinearMap_inj {f g : E →ₛₗᵢ[σ₁₂] E₂} : f.toLinearMap = 
 
 instance instFunLike : FunLike (E →ₛₗᵢ[σ₁₂] E₂) E E₂ where
   coe f := f.toFun
-  coe_injective' _ _ h := toLinearMap_injective (DFunLike.coe_injective h)
+  coe_injective _ _ h := toLinearMap_injective (DFunLike.coe_injective h)
 
 instance instSemilinearIsometryClass : SemilinearIsometryClass (E →ₛₗᵢ[σ₁₂] E₂) σ₁₂ E E₂ where
   map_add f := map_add f.toLinearMap
@@ -283,6 +283,9 @@ theorem diam_range : Metric.diam (range f) = Metric.diam (univ : Set E) :=
 /-- Interpret a linear isometry as a continuous linear map. -/
 def toContinuousLinearMap : E →SL[σ₁₂] E₂ :=
   ⟨f.toLinearMap, f.continuous⟩
+
+@[simp] lemma toLinearMap_toContinuousLinearMap (f : E →ₛₗᵢ[σ₁₂] E₂) :
+  f.toContinuousLinearMap.toLinearMap = f.toLinearMap := rfl
 
 theorem toContinuousLinearMap_injective :
     Function.Injective (toContinuousLinearMap : _ → E →SL[σ₁₂] E₂) := fun x _ h =>

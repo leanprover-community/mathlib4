@@ -6,7 +6,7 @@ Authors: Jz Pan
 module
 
 public import Mathlib.Algebra.CharP.IntermediateField
-public import Mathlib.FieldTheory.SeparableClosure
+public import Mathlib.FieldTheory.IsSepClosed
 
 /-!
 
@@ -441,6 +441,14 @@ theorem isPurelyInseparable_iff_finSepDegree_eq_one :
   ⟨fun _ ↦ IsPurelyInseparable.finSepDegree_eq_one F E,
     fun h ↦ isPurelyInseparable_of_finSepDegree_eq_one h⟩
 
+/-- An extension `E / F` is purely inseparable if and only there is at most one
+  embedding `E →ₐ[F] AlgebraicClosure E` -/
+theorem isPurelyInseparable_iff_subsingleton_emb :
+    IsPurelyInseparable F E ↔ Subsingleton (Field.Emb F E) := by
+  rw [isPurelyInseparable_iff_finSepDegree_eq_one, Field.finSepDegree, Nat.card_eq_one_iff_unique,
+    and_iff_left_iff_imp]
+  infer_instance
+
 lemma isSeparable_iff_finInsepDegree_eq_one :
     Algebra.IsSeparable F K ↔ finInsepDegree F K = 1 := by
   rw [← separableClosure.eq_top_iff, ← IntermediateField.finrank_eq_one_iff_eq_top, finInsepDegree]
@@ -604,7 +612,6 @@ lemma adjoin_eq_of_isAlgebraic_of_isSeparable [Algebra.IsAlgebraic F E]
     have := Algebra.isSeparable_tower_top_of_isSeparable E L K
     let i : S →+* L := Subsemiring.inclusion fun x hx ↦ subset_adjoin E (S : Set K) hx
     let _ : Algebra S L := i.toAlgebra
-    let _ : SMul S L := Algebra.toSMul
     have : IsScalarTower S L K := IsScalarTower.of_algebraMap_eq (congrFun rfl)
     have := Algebra.IsAlgebraic.trans F E K
     have : IsPurelyInseparable S K := separableClosure.isPurelyInseparable F K

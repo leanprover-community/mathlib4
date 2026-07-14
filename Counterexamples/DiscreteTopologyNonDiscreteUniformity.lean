@@ -7,6 +7,7 @@ import Mathlib.Analysis.SpecificLimits.Basic
 
 /-!
 # Discrete uniformities and discrete topology
+
 Exactly as different metrics can induce equivalent topologies on a space, it is possible that
 different uniform structures (a notion that generalises that of a metric structure) induce the same
 topology on a space. In this file we are concerned in particular with the *discrete topology*,
@@ -298,7 +299,7 @@ uniformity is not discrete. -/
 lemma atTopIsCauchy : Cauchy (atTop : Filter ℕ) := by
   rw [HasBasis_counterUniformity.cauchy_iff]
   refine ⟨atTop_neBot, fun i _ ↦ ?_⟩
-  simp_rw [mem_fundamentalEntourage, mem_atTop_sets, ge_iff_le]
+  simp_rw [mem_fundamentalEntourage, mem_atTop_sets]
   exact ⟨Ici i, ⟨⟨i, fun _ hb ↦ hb⟩, fun _ hx _ hy ↦ Or.inl ⟨hx, hy⟩⟩⟩
 
 /-- We find the same result about the identity map found in `idIsCauchy`, without using any metric

@@ -191,7 +191,7 @@ class OneHomClass (F : Type*) (M N : outParam Type*) [One M] [One N] [FunLike F 
 @[to_additive]
 instance OneHom.funLike : FunLike (OneHom M N) M N where
   coe := OneHom.toFun
-  coe_injective' f g h := by cases f; cases g; congr
+  coe_injective f g h := by cases f; cases g; congr
 
 @[to_additive]
 instance OneHom.oneHomClass : OneHomClass (OneHom M N) M N where
@@ -312,7 +312,7 @@ class MulHomClass (F : Type*) (M N : outParam Type*) [Mul M] [Mul N] [FunLike F 
 @[to_additive]
 instance MulHom.funLike : FunLike (M →ₙ* N) M N where
   coe := MulHom.toFun
-  coe_injective' f g h := by cases f; cases g; congr
+  coe_injective f g h := by cases f; cases g; congr
 
 /-- `MulHom` is a type of multiplication-preserving homomorphisms -/
 @[to_additive /-- `AddHom` is a type of addition-preserving homomorphisms -/]
@@ -382,11 +382,11 @@ class MonoidHomClass (F : Type*) (M N : outParam Type*) [MulOne M] [MulOne N]
 @[to_additive]
 instance MonoidHom.instFunLike : FunLike (M →* N) M N where
   coe f := f.toFun
-  coe_injective' f g h := by
+  coe_injective f g h := by
     cases f
     cases g
     congr
-    apply DFunLike.coe_injective'
+    apply DFunLike.coe_injective
     exact h
 
 @[to_additive]
@@ -713,6 +713,23 @@ theorem map_exists_left_inv (f : F) {x : M} (hx : ∃ y, y * x = 1) : ∃ y, y *
 
 @[deprecated (since := "2025-12-14")]
 alias isDedekindFiniteMonoid_of_injective := IsDedekindFiniteMonoid.of_injective
+
+@[to_additive]
+instance {M N : Type*} [Monoid M] [LeftCancelMonoid N] : MonoidHomClass (M →ₙ* N) M N where
+  map_mul := MulHom.map_mul'
+  map_one f := by
+    have h : f 1 * 1 = f 1 * f 1 := by simpa using f.map_mul' 1 1
+    exact (mul_left_cancel h).symm
+
+@[to_additive]
+instance {M N : Type*} [Monoid M] [RightCancelMonoid N] : MonoidHomClass (M →ₙ* N) M N where
+  map_mul := MulHom.map_mul'
+  map_one f := by
+    have h : 1 * f 1 = f 1 * f 1 := by simpa using f.map_mul' 1 1
+    exact (mul_right_cancel h).symm
+
+@[to_additive]
+instance {M N : Type*} [Monoid M] [CancelMonoid N] : MonoidHomClass (M →ₙ* N) M N where
 
 end MonoidHom
 

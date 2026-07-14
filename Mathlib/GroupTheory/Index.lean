@@ -8,12 +8,12 @@ module
 public import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
 public import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
 public import Mathlib.Algebra.GroupWithZero.Subgroup
-public import Mathlib.Data.Finite.Card
 public import Mathlib.Data.Finite.Prod
 public import Mathlib.Data.Set.Card
 public import Mathlib.GroupTheory.Coset.Card
 public import Mathlib.GroupTheory.GroupAction.Quotient
 public import Mathlib.GroupTheory.QuotientGroup.Basic
+public import Mathlib.SetTheory.Cardinal.NatCard
 
 /-!
 # Index of a Subgroup
@@ -520,12 +520,7 @@ lemma disjoint_of_coprime_natCard (h : Nat.card H |>.Coprime <| Nat.card K) : Di
   disjoint_iff.mpr <| card_eq_one.mp <| Nat.eq_one_of_dvd_coprimes h
     (card_dvd_of_le inf_le_left) (card_dvd_of_le inf_le_right)
 
-@[deprecated AddSubgroup.disjoint_of_coprime_natCard (since := "2026-05-28")]
-lemma _root_.AddSubgroup.inf_eq_bot_of_coprime {G : Type*} [AddGroup G] {H K : AddSubgroup G}
-    (h : Nat.Coprime (Nat.card H) (Nat.card K)) : H ⊓ K = ⊥ :=
-  disjoint_iff.mp <| AddSubgroup.disjoint_of_coprime_natCard h
-
-@[to_additive existing (attr := deprecated disjoint_of_coprime_natCard (since := "2026-05-28"))]
+@[to_additive (attr := deprecated disjoint_of_coprime_natCard (since := "2026-05-28"))]
 lemma inf_eq_bot_of_coprime (h : Nat.Coprime (Nat.card H) (Nat.card K)) : H ⊓ K = ⊥ :=
   disjoint_iff.mp <| disjoint_of_coprime_natCard h
 

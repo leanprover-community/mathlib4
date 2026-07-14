@@ -66,7 +66,7 @@ universe u v w z
 variable {α : Sort u} {β : Sort v} {γ : Sort w}
 
 /-- `α ≃ β` is the type of functions from `α → β` with a two-sided inverse. -/
-structure Equiv (α : Sort*) (β : Sort _) where
+structure Equiv (α β : Sort*) where
   /-- The forward map of an equivalence.
 
   Do NOT use directly. Use the coercion instead. -/
@@ -116,7 +116,7 @@ lemma _root_.EquivLike.coe_coe {F} [EquivLike F α β] (e : F) :
 
 /-- The map `(r ≃ s) → (r → s)` is injective. -/
 theorem coe_fn_injective : @Function.Injective (α ≃ β) (α → β) (fun e => e) :=
-  DFunLike.coe_injective'
+  DFunLike.coe_injective
 
 protected theorem coe_inj {e₁ e₂ : α ≃ β} : (e₁ : α → β) = e₂ ↔ e₁ = e₂ :=
   @DFunLike.coe_fn_eq _ _ _ _ e₁ e₂
