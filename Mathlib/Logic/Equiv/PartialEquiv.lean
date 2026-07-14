@@ -298,6 +298,12 @@ theorem symm_bijective :
 theorem image_source_eq_target : e '' e.source = e.target :=
   e.bijOn.image_eq
 
+theorem image_source_minus_singleton_eq {a : α} (h : a ∈ e.source) :
+    e '' (e.source \ {a}) = e.target \ {e a} := by
+  rw [image_sdiff_of_injOn, image_source_eq_target, image_singleton]
+  · exact e.injOn
+  · exact singleton_subset_iff.mpr h
+
 theorem forall_mem_target {p : β → Prop} : (∀ y ∈ e.target, p y) ↔ ∀ x ∈ e.source, p (e x) := by
   rw [← image_source_eq_target, forall_mem_image]
 
@@ -457,6 +463,9 @@ theorem source_subset_preimage_target : e.source ⊆ e ⁻¹' e.target :=
 
 theorem symm_image_target_eq_source : e.symm '' e.target = e.source :=
   e.symm.image_source_eq_target
+
+theorem symm_image_target_minus_singleton_eq {b : β} (h : b ∈ e.target) :
+    e.symm '' (e.target \ {b}) = e.source \ {e.symm b} := e.symm.image_source_minus_singleton_eq h
 
 theorem target_subset_preimage_source : e.target ⊆ e.symm ⁻¹' e.source :=
   e.mapsTo_symm
