@@ -676,6 +676,32 @@ theorem vonStaudt_clausen (k : ℕ) :
     obtain ⟨p, hp, hdvd⟩ := ne_one_iff_exists_prime_dvd.mp h
     exact (let : Fact p.Prime := ⟨hp⟩; not_dvd_den_vonStaudt_sum hk) hdvd
 
+/-- If `p` is prime, `k` is positive and even, and `p - 1 ∣ k`, then `p` divides the denominator of
+the Bernoulli number `Bₖ`. -/
+theorem dvd_den_bernoulli {k p : ℕ} (hk : 0 < k) (hk2 : Even k) [Fact p.Prime] (hpk : p - 1 ∣ k) :
+    p ∣ (bernoulli k).den := by
+  obtain ⟨m, rfl⟩ := hk2
+  rw [← two_mul] at hk hpk ⊢
+  have hkey := not_dvd_den_bernoulli_add_indicator (k := m) (p := p) (by omega)
+  rw [show vonStaudtIndicator (2 * m) p = 1 by simp [vonStaudtIndicator, hpk]] at hkey
+  have hvp : 1 < Rat.padicValuation p (1 / (p : ℚ)) := by
+    rw [← not_le, Rat.padicValuation_le_one_iff, not_not]
+    simp [(Fact.out : p.Prime).ne_zero]
+  have heq : Rat.padicValuation p (bernoulli (2 * m)) = Rat.padicValuation p (1 / (p : ℚ)) := by
+    simpa using (Rat.padicValuation p).map_sub_eq_of_lt_right
+      (lt_of_le_of_lt (Rat.padicValuation_le_one_iff.mpr hkey) hvp)
+  by_contra hcon
+  exact absurd (heq ▸ Rat.padicValuation_le_one_iff.mpr hcon) (not_le.mpr hvp)
+
+/-- If `p` is prime, `k` is positive and even, and `p - 1 ∣ k`, then the denominator of `Bₖ⁻¹`
+is not divisible by `p`. -/
+theorem not_dvd_den_inv_bernoulli {k p : ℕ} (hk : 0 < k) (hk2 : Even k) [Fact p.Prime]
+    (hpk : p - 1 ∣ k) : ¬ p ∣ (bernoulli k)⁻¹.den := by
+  have hdvd : p ∣ (bernoulli k).den := dvd_den_bernoulli hk hk2 hpk
+  have hB0 : bernoulli k ≠ 0 := fun h ↦ by simp [h, (Fact.out : p.Prime).ne_one] at hdvd
+  simpa [Rat.den_inv_of_ne_zero hB0] using fun hnum ↦
+    Nat.not_coprime_of_dvd_of_dvd (Fact.out : p.Prime).one_lt hnum hdvd (bernoulli k).reduced
+
 end Bernoulli
 
 end vonStaudtClausen
