@@ -104,7 +104,7 @@ def lift (f : ∀ i, G i →* K) (k : H →* K)
     (hf : ∀ i, (f i).comp (φ i) = k) :
     PushoutI φ →* K :=
   Con.lift _ (Coprod.lift (CoprodI.lift f) k) <| by
-    apply Con.conGen_le fun x y => ?_
+    apply Con.conGen_le.2 fun x y => ?_
     rintro ⟨i, x', rfl, rfl⟩
     simp only [DFunLike.ext_iff, MonoidHom.coe_comp, comp_apply] at hf
     simp [hf]
@@ -561,8 +561,8 @@ noncomputable def equiv : PushoutI φ ≃ NormalWord d :=
 
 theorem prod_injective {ι : Type*} {G : ι → Type*} [(i : ι) → Group (G i)] {φ : (i : ι) → H →* G i}
     {d : Transversal φ} : Function.Injective (prod : NormalWord d → PushoutI φ) := by
-  letI := Classical.decEq ι
-  letI := fun i => Classical.decEq (G i)
+  let := Classical.decEq ι
+  let := fun i => Classical.decEq (G i)
   classical exact equiv.symm.injective
 
 instance : FaithfulSMul (PushoutI φ) (NormalWord d) :=

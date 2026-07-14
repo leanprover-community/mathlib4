@@ -68,6 +68,13 @@ instance : IsNoetherianRing R := by
   · rw [Submodule.ker_mkQ, inf_eq_right.mpr ((Ideal.span_singleton_le_iff_mem I).mpr hx₁)]
     exact Submodule.fg_span_singleton x
 
+instance [IsDomain R] [PerfectField (FractionRing R)] (P : Ideal R) [P.IsPrime] :
+    PerfectField P.ResidueField := by
+  rcases eq_or_ne P ⊥ with rfl | hP
+  · exact PerfectField.of_ringEquiv (FractionRing.algEquiv R _).toRingEquiv
+  · have : Finite (R ⧸ P) := Ring.HasFiniteQuotients.finiteQuotient hP
+    infer_instance
+
 theorem cardQuot_pos (I : Ideal R) (hI : I ≠ ⊥) : 0 < I.cardQuot := by
   have := finiteQuotient hI
   rw [Submodule.cardQuot_apply]
@@ -159,7 +166,7 @@ instance : HasFiniteQuotients ℤ where
     exact inferInstanceAs <| Finite (ℤ ⧸ Ideal.span {n})
 
 /-- A domain that is finitely generated has finite quotients. -/
-instance [IsDomain R] [AddGroup.FG R] : HasFiniteQuotients R :=
-  of_module_finite ℤ R
+instance [IsDomain R] [Module.Finite ℤ R] : HasFiniteQuotients R :=
+  .of_module_finite ℤ R
 
 end Ring.HasFiniteQuotients

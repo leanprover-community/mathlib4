@@ -577,7 +577,7 @@ theorem IsTorsionBy.mk_smul [(Ideal.span {r}).IsTwoSided] (hM : IsTorsionBy R M 
 def IsTorsionBySet.module [I.IsTwoSided] (hM : IsTorsionBySet R M I) : Module (R ⧸ I) M :=
   letI := hM.hasSMul; fast_instance% I.mkQ_surjective.moduleLeft _ (IsTorsionBySet.mk_smul hM)
 
-instance IsTorsionBySet.isScalarTower [I.IsTwoSided] (hM : IsTorsionBySet R M I)
+instance IsTorsionBySet.isScalarTower (hM : IsTorsionBySet R M I)
     {S : Type*} [SMul S R] [SMul S M] [IsScalarTower S R M] [IsScalarTower S R R] :
     @IsScalarTower S (R ⧸ I) M _ hM.hasSMul _ :=
   -- Porting note: still needed to be fed the Module R / I M instance
@@ -808,7 +808,7 @@ theorem _root_.Submodule.annihilator_top_inter_nonZeroDivisors [Module.Finite R 
   refine ⟨_, ?_, (∏ x ∈ S, (@hM x).choose : R⁰).prop⟩
   rw [Submonoid.coe_finsetProd, SetLike.mem_coe, ← hS, mem_annihilator_span]
   intro n
-  letI := Classical.decEq M
+  let := Classical.decEq M
   rw [← Finset.prod_erase_mul _ _ n.prop, mul_smul, ← Submonoid.smul_def, (@hM n).choose_spec,
     smul_zero]
 

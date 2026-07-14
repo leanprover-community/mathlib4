@@ -104,7 +104,7 @@ instance isFiniteMeasureSMulNNReal [IsFiniteMeasure μ] {r : ℝ≥0} : IsFinite
 
 instance IsFiniteMeasure.average : IsFiniteMeasure ((μ univ)⁻¹ • μ) where
   measure_univ_lt_top := by
-    rw [smul_apply, smul_eq_mul, ← ENNReal.div_eq_inv_mul]
+    rw [Measure.smul_apply, smul_eq_mul, ← ENNReal.div_eq_inv_mul]
     exact ENNReal.div_self_le_one.trans_lt ENNReal.one_lt_top
 
 instance isFiniteMeasureSMulOfNNRealTower {R} [SMul R ℝ≥0] [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0 ℝ≥0∞]
@@ -148,7 +148,7 @@ theorem measureUnivNNReal_pos [IsFiniteMeasure μ] (hμ : μ ≠ 0) : 0 < measur
   contrapose! hμ
   simpa [measureUnivNNReal_eq_zero, Nat.le_zero] using hμ
 
-/-- `le_of_add_le_add_left` is normally applicable to `OrderedCancelAddCommMonoid`,
+/-- `le_of_add_le_add_left` is normally applicable to ordered cancellative monoids,
 but it holds for measures with the additional assumption that μ is finite. -/
 theorem Measure.le_of_add_le_add_left [IsFiniteMeasure μ] (A2 : μ + ν₁ ≤ μ + ν₂) : ν₁ ≤ ν₂ :=
   fun S => ENNReal.le_of_add_le_add_left (MeasureTheory.measure_ne_top μ S) (A2 S)
@@ -430,7 +430,7 @@ theorem ext_on_measurableSpace_of_generate_finite {α} (m₀ : MeasurableSpace �
     [IsFiniteMeasure μ] (C : Set (Set α)) (hμν : ∀ s ∈ C, μ s = ν s) {m : MeasurableSpace α}
     (h : m ≤ m₀) (hA : m = MeasurableSpace.generateFrom C) (hC : IsPiSystem C)
     (h_univ : μ Set.univ = ν Set.univ) {s : Set α} (hs : MeasurableSet[m] s) : μ s = ν s := by
-  haveI : IsFiniteMeasure ν := by
+  have : IsFiniteMeasure ν := by
     constructor
     rw [← h_univ]
     apply IsFiniteMeasure.measure_univ_lt_top
@@ -520,7 +520,7 @@ theorem exists_open_superset_measure_lt_top' (h : IsCompact s)
     (hμ : ∀ x ∈ s, μ.FiniteAtFilter (𝓝 x)) : ∃ U ⊇ s, IsOpen U ∧ μ U < ∞ := by
   refine IsCompact.induction_on h ?_ ?_ ?_ ?_
   · use ∅
-    simp [Superset]
+    simp
   · rintro s t hst ⟨U, htU, hUo, hU⟩
     exact ⟨U, hst.trans htU, hUo, hU⟩
   · rintro s t ⟨U, hsU, hUo, hU⟩ ⟨V, htV, hVo, hV⟩

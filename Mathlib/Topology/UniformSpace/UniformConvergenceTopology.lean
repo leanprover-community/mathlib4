@@ -392,7 +392,7 @@ protected theorem postcomp_isUniformEmbedding [UniformSpace γ] {f : γ → β}
 `𝒰(α, γ, comap f u) = comap (fun g ↦ f ∘ g) 𝒰(α, γ, u₁)`. -/
 protected theorem comap_eq {f : γ → β} :
     𝒰(α, γ, ‹UniformSpace β›.comap f) = 𝒰(α, β, _).comap (f ∘ ·) := by
-  letI : UniformSpace γ := .comap f ‹_›
+  let : UniformSpace γ := .comap f ‹_›
   exact (UniformFun.postcomp_isUniformInducing (f := f) ⟨rfl⟩).comap_uniformSpace.symm
 
 set_option backward.isDefEq.respectTransparency false in
@@ -828,6 +828,16 @@ lemma uniformContinuous_ofFun_toFun (𝔗 : Set (Set α)) (h : ∀ s ∈ 𝔖, �
   intro x hx
   obtain ⟨t, ht, hxt⟩ := Set.mem_sUnion.mp <| hsT hx
   exact hf t ht x hxt
+
+/-- A specialized version of `UniformOnFun.uniformContinuous_ofFun_toFun` for convenience. -/
+theorem uniformContinuous_ofFun_toFun_of_subset (𝔗 : Set (Set α)) (h : 𝔖 ⊆ 𝔗) :
+    UniformContinuous (ofFun 𝔗 ∘ toFun 𝔖 : (α →ᵤ[𝔗] β) → α →ᵤ[𝔖] β) :=
+  uniformContinuous_ofFun_toFun _ _ _ fun s _ ↦ ⟨{s}, by grind, by simp⟩
+
+/-- A specialized version of `UniformOnFun.uniformContinuous_ofFun_toFun` for convenience. -/
+theorem uniformContinuous_ofFun_toFun_of_mem (s : Set α) (h : s ∈ 𝔖) :
+    UniformContinuous (ofFun 𝔖 ∘ toFun {s} : (α →ᵤ[𝔖] β) → α →ᵤ[{s}] β) :=
+  uniformContinuous_ofFun_toFun_of_subset _ _ _ (by simpa)
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Let `u₁`, `u₂` be two uniform structures on `γ` and `𝔖₁ 𝔖₂ : Set (Set α)`. If `u₁ ≤ u₂` and

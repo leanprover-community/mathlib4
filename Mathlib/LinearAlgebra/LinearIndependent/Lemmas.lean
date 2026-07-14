@@ -206,7 +206,7 @@ theorem exists_maximal_linearIndepOn' (v : ι → M) :
     intro f hfsupp g hgsupp hsum
     rcases eq_empty_or_nonempty c with (rfl | hn)
     · rw [show f = 0 by simpa using! hfsupp, show g = 0 by simpa using! hgsupp]
-    haveI : Std.Refl r := ⟨fun _ => Set.Subset.refl _⟩
+    have : Std.Refl r := ⟨fun _ => Set.Subset.refl _⟩
     classical
     obtain ⟨I, _I_mem, hI⟩ : ∃ I ∈ c, (f.support ∪ g.support : Set ι) ⊆ I :=
       f.support.coe_union _ ▸ hc.directedOn.exists_mem_subset_of_finset_subset_biUnion hn <| by
@@ -522,6 +522,27 @@ theorem LinearIndependent.of_pairwise_dual_eq_zero_one (v : ι → M) (f : ι �
   simpa [s.sum_eq_single i aux (by lia), h2 i] using congr_arg (f i) hrel
 
 end Module
+
+open Finsupp in
+/-- A linearly independent family of vectors `f` remains linearly independent when we substitute one
+of the terms with a vector `m` provided there exists a non-zero divisor `r`, such that `r • m`
+belongs to the span of `f` with non-zero-divisor coefficients. -/
+lemma LinearIndependent.update [DecidableEq ι] [CommRing R] [AddCommGroup M] [Module R M]
+    {f : ι → M} (hf : LinearIndependent R f) (i : ι) (m : M)
+    (hg : ∃ r ∈ nonZeroDivisors R, ∃ l : ι →₀ R,
+      l i ∈ nonZeroDivisors R ∧ r • m = linearCombination R f l) :
+    LinearIndependent R (Function.update f i m) := by
+  rw [linearIndependent_iff] at hf ⊢
+  obtain ⟨r, hr, l, hl, hg⟩ := hg
+  intros l' hl'
+  apply_fun (r • ·) at hl'
+  simp_rw [Pi.update_eq_sub_add_single, ← bilinearCombination_apply _ (S := R), map_add, map_sub,
+    bilinearCombination_apply, LinearMap.add_apply, LinearMap.sub_apply,
+    linearCombination_single_index, smul_add, smul_sub, smul_zero, smul_comm r (l' i) m,
+    hg, ← LinearMap.map_smul, smul_smul, ← linearCombination_single, ← map_sub, ← map_add] at hl'
+  replace hl' : ∀ j, (r * l' j - (single i (r * l' i)) j) + l' i * l j = 0 :=
+    fun j ↦ DFunLike.congr_fun (hf _ hl') j
+  grind [mem_nonZeroDivisors_iff]
 
 /-!
 ### Properties which require `DivisionRing K`

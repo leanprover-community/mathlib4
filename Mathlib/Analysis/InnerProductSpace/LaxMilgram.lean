@@ -81,7 +81,7 @@ theorem isClosed_range (coercive : IsCoercive B) : IsClosed (B♯.range : Set V)
   exact antilipschitz.isClosed_range B♯.uniformContinuous
 
 theorem range_eq_top (coercive : IsCoercive B) : B♯.range = ⊤ := by
-  haveI := coercive.isClosed_range.completeSpace_coe
+  have := coercive.isClosed_range.completeSpace_coe
   rw [← B♯.range.orthogonal_orthogonal]
   rw [Submodule.eq_top_iff']
   intro v w mem_w_orthogonal

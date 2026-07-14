@@ -306,7 +306,7 @@ and the lcm is their infimum, and use this to instantiate `NormalizedGCDMonoid (
 
 @[simp]
 theorem sup_mul_inf (I J : Ideal A) : (I ⊔ J) * (I ⊓ J) = I * J := by
-  letI := UniqueFactorizationMonoid.toNormalizedGCDMonoid (Ideal A)
+  let := UniqueFactorizationMonoid.toNormalizedGCDMonoid (Ideal A)
   have hgcd : gcd I J = I ⊔ J := by
     rw [gcd_eq_normalize _ _, normalize_eq]
     · rw [dvd_iff_le, sup_le_iff, ← dvd_iff_le, ← dvd_iff_le]
@@ -323,8 +323,8 @@ theorem sup_mul_inf (I J : Ideal A) : (I ⊔ J) * (I ⊓ J) = I * J := by
 
 /-- Ideals in a Dedekind domain have gcd and lcm operators that (trivially) are compatible with
 the normalization operator. -/
-noncomputable instance : NormalizedGCDMonoid (Ideal A) :=
-  { normalizationMonoid with
+noncomputable instance : StrongNormalizedGCDMonoid (Ideal A) :=
+  { strongNormalizationMonoid with
     gcd := (· ⊔ ·)
     gcd_dvd_left := fun _ _ => by simpa only [dvd_iff_le] using le_sup_left
     gcd_dvd_right := fun _ _ => by simpa only [dvd_iff_le] using le_sup_right
@@ -744,7 +744,7 @@ def normalizedFactorsEquivOfQuotEquiv (hI : I ≠ ⊥) (hJ : J ≠ ⊥) :
         idealFactorsEquivOfQuotEquiv_mem_normalizedFactors_of_mem_normalizedFactors f.symm hI
           j.prop⟩
   left_inv := fun ⟨j, hj⟩ => by simp
-  right_inv := fun ⟨j, hj⟩ => by simp [-Set.coe_setOf]
+  right_inv := fun ⟨j, hj⟩ => by simp
 
 @[deprecated (since := "2026-04-16")]
 alias _root_.normalizedFactorsEquivOfQuotEquiv := normalizedFactorsEquivOfQuotEquiv
@@ -923,7 +923,6 @@ def quotientEquivPiOfProdEq {ι : Type*} [Fintype ι] (I : Ideal R) (P : ι → 
   HeightOneSpectrum.quotientEquivPiOfProdEq I
     (fun i ↦ ⟨P i, (isPrime_of_prime (prime i)), (prime i).ne_zero⟩) e (by grind) prod_eq
 
-open scoped Classical in
 /-- **Chinese remainder theorem** for a Dedekind domain: `R ⧸ I` factors as `Π i, R ⧸ (P i ^ e i)`,
 where `P i` ranges over the prime factors of `I` and `e i` over the multiplicities. -/
 def quotientEquivPiFactors {I : Ideal R} (hI : I ≠ ⊥) :
@@ -1162,7 +1161,6 @@ variable {A : Type*} [CommRing A] {p : Ideal A} (hpb : p ≠ ⊥) [hpm : p.IsMax
 
 namespace IsDedekindDomain
 
-open scoped Classical in
 variable (p) in
 /-- The finite set of all prime factors of the pushforward of `p`. -/
 noncomputable abbrev primesOverFinset : Finset (Ideal B) :=
@@ -1232,7 +1230,7 @@ namespace IsDedekindDomain
 theorem primesOver_finite : (primesOver p B).Finite := by
   by_cases hpb : p = ⊥
   · rw [hpb] at hpm ⊢
-    haveI : IsDomain A := IsDomain.of_bot_isPrime A
+    have : IsDomain A := IsDomain.of_bot_isPrime A
     rw [primesOver_bot A B]
     exact Set.finite_singleton ⊥
   · rw [← coe_primesOverFinset hpb B]

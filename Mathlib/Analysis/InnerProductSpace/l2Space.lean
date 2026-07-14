@@ -356,7 +356,7 @@ theorem Submodule.isHilbertSumOrthogonal (K : Submodule 𝕜 E) [hK : CompleteSp
   refine le_trans ?_ (Submodule.le_topologicalClosure _)
   rw [iSup_bool_eq, cond, cond]
   refine Codisjoint.top_le ?_
-  exact Submodule.isCompl_orthogonal_of_hasOrthogonalProjection.codisjoint
+  exact K.isCompl_orthogonal.codisjoint
 
 end IsHilbertSum
 
@@ -380,7 +380,7 @@ namespace HilbertBasis
 instance {ι : Type*} : Inhabited (HilbertBasis ι 𝕜 ℓ²(ι, 𝕜)) :=
   ⟨ofRepr (LinearIsometryEquiv.refl 𝕜 _)⟩
 
-open Classical in
+open scoped Classical in
 /-- `b i` is the `i`th basis vector. -/
 instance instFunLike : FunLike (HilbertBasis ι 𝕜 E) ι E where
   coe b i := b.repr.symm (lp.single 2 i (1 : 𝕜))
@@ -430,7 +430,7 @@ protected theorem hasSum_repr_symm (b : HilbertBasis ι 𝕜 E) (f : ℓ²(ι, �
     exact (↑b.repr.symm.toContinuousLinearEquiv : ℓ²(ι, 𝕜) →L[𝕜] E).hasSum this
   ext i
   apply b.repr.injective
-  letI : NormedSpace 𝕜 (lp (fun _i : ι => 𝕜) 2) := by infer_instance
+  let : NormedSpace 𝕜 (lp (fun _i : ι => 𝕜) 2) := by infer_instance
   have : lp.single (E := (fun _ : ι => 𝕜)) 2 i (f i * 1) = f i • lp.single 2 i 1 :=
     lp.single_smul (E := (fun _ : ι => 𝕜)) 2 i (f i) (1 : 𝕜)
   rw [mul_one] at this

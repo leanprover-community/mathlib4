@@ -470,7 +470,7 @@ theorem integrableOn_Lp_of_measure_ne_top {E} [NormedAddCommGroup E] {p : ℝ≥
   refine memLp_one_iff_integrable.mp ?_
   have hμ_restrict_univ : (μ.restrict s) Set.univ < ∞ := by
     simpa only [Set.univ_inter, MeasurableSet.univ, Measure.restrict_apply, lt_top_iff_ne_top]
-  haveI hμ_finite : IsFiniteMeasure (μ.restrict s) := ⟨hμ_restrict_univ⟩
+  have hμ_finite : IsFiniteMeasure (μ.restrict s) := ⟨hμ_restrict_univ⟩
   exact ((Lp.memLp _).restrict s).mono_exponent hp
 
 theorem Integrable.lintegral_lt_top {f : α → ℝ} (hf : Integrable f μ) :
@@ -544,6 +544,12 @@ lemma IntegrableAtFilter.congr (hf : IntegrableAtFilter f l μ) (h : f =ᵐ[μ] 
 lemma integrableAtFilter_congr (h : f =ᵐ[μ] g) :
     IntegrableAtFilter f l μ ↔ IntegrableAtFilter g l μ :=
   ⟨(·.congr h), (·.congr h.symm)⟩
+
+lemma IntegrableAtFilter.congr'_enorm {ε'' : Type*} [TopologicalSpace ε''] [ContinuousENorm ε'']
+    {g : α → ε''} (hf : IntegrableAtFilter f l μ) (hg : AEStronglyMeasurable g μ)
+    (h : ∀ᵐ a ∂μ, ‖f a‖ₑ = ‖g a‖ₑ) :
+    IntegrableAtFilter g l μ :=
+  let ⟨s, hs, hf⟩ := hf; ⟨s, hs, hf.congr'_enorm hg.restrict (ae_restrict_le h)⟩
 
 @[simp]
 lemma integrableAtFilter_zero : IntegrableAtFilter (0 : α → E) l μ :=
@@ -743,7 +749,7 @@ theorem ContinuousOn.aestronglyMeasurable_of_isSeparable [TopologicalSpace α]
     [PseudoMetrizableSpace β] {f : α → β} {s : Set α} {μ : Measure α} (hf : ContinuousOn f s)
     (hs : MeasurableSet s) (h's : TopologicalSpace.IsSeparable s) :
     AEStronglyMeasurable f (μ.restrict s) := by
-  letI := pseudoMetrizableSpacePseudoMetric α
+  let := pseudoMetrizableSpacePseudoMetric α
   borelize β
   rw [aestronglyMeasurable_iff_aemeasurable_separable]
   refine ⟨hf.aemeasurable hs, f '' s, hf.isSeparable_image h's, ?_⟩
@@ -844,7 +850,7 @@ theorem ContinuousOn.stronglyMeasurableAtFilter_nhdsWithin {α β : Type*} [Meas
 /-! ### Lemmas about adding and removing interval boundaries
 
 The primed lemmas take explicit arguments about the measure being finite at the endpoint, while
-the unprimed ones use `[NoAtoms μ]`.
+the unprimed ones use `[NullSingletonClass μ]`.
 -/
 
 
@@ -902,7 +908,7 @@ theorem integrableOn_Iic_iff_integrableOn_Iio'
     IntegrableOn f (Iic b) μ ↔ IntegrableOn f (Iio b) μ := by
   rw [← Iio_union_right, integrableOn_union, eq_true (integrableOn_singleton hb'), and_true]
 
-variable [NoAtoms μ]
+variable [NullSingletonClass μ]
 
 theorem integrableOn_Icc_iff_integrableOn_Ioc (ha : ‖f a‖ₑ ≠ ∞ := by finiteness) :
     IntegrableOn f (Icc a b) μ ↔ IntegrableOn f (Ioc a b) μ :=

@@ -84,7 +84,7 @@ theorem isCompact_and_isOpen_iff_finite_and_eq_biUnion_affineOpens {U : Set X} :
 
 theorem isCompact_iff_finite_and_eq_biUnion_affineOpens {U : X.Opens} :
     IsCompact (X := X) U ↔ ∃ s : Set X.affineOpens, s.Finite ∧ U = ⨆ i ∈ s, (i : X.Opens) := by
-  convert! isCompact_and_isOpen_iff_finite_and_eq_biUnion_affineOpens (U := U.1) using 4 with s
+  convert isCompact_and_isOpen_iff_finite_and_eq_biUnion_affineOpens (U := U.1) with s
   · simp [U.isOpen]
   · convert! SetLike.coe_injective.eq_iff.symm; simp
 
@@ -111,7 +111,7 @@ theorem isCompact_basicOpen (X : Scheme) {U : X.Opens} (hU : IsCompact (U : Set 
   let g : s → X.affineOpens := fun V ↦ ⟨V.1 ⊓ X.basicOpen f, by
     rw [← X.basicOpen_res _ (homOfLE ((le_iSup₂ V.1 V.2).trans_eq e.symm)).op]
     exact V.1.2.basicOpen _⟩
-  haveI : Finite s := hs.to_subtype
+  have : Finite s := hs.to_subtype
   refine ⟨Set.range g, Set.finite_range g, ?_⟩
   rw [iSup_range, ← iSup_inf_eq, iSup_subtype, ← e, inf_eq_right.mpr (X.basicOpen_le f)]
 
@@ -163,7 +163,7 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance quasiCompact_isStableUnderBaseChange :
     MorphismProperty.IsStableUnderBaseChange @QuasiCompact := by
-  letI := HasAffineProperty.isLocal_affineProperty @QuasiCompact
+  let := HasAffineProperty.isLocal_affineProperty @QuasiCompact
   apply HasAffineProperty.isStableUnderBaseChange
   apply AffineTargetMorphismProperty.IsStableUnderBaseChange.mk
   intro X Y S _ _ f g h
@@ -274,7 +274,7 @@ theorem exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isCompact (X : Scheme
     · rw [map_zero]
     · simp only [Scheme.basicOpen_res, inf_le_right]
   choose n hn using H'
-  haveI := hs.to_subtype
+  have := hs.to_subtype
   cases nonempty_fintype s
   use Finset.univ.sup n
   suffices ∀ i : s, X.presheaf.map (homOfLE (h₁ i)).op (f ^ Finset.univ.sup n * x) = 0 by

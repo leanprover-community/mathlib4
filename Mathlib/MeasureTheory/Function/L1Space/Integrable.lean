@@ -339,10 +339,10 @@ theorem Integrable.to_average {f : α → ε} (h : Integrable f μ) : Integrable
   · apply h.smul_measure
     simpa
 
-open scoped Classical in
 theorem integrable_average [IsFiniteMeasure μ] {f : α → ε} :
-    Integrable f ((μ univ)⁻¹ • μ) ↔ Integrable f μ :=
-  (eq_or_ne μ 0).by_cases (fun h => by simp [h]) fun h =>
+    Integrable f ((μ univ)⁻¹ • μ) ↔ Integrable f μ := by
+  classical
+  exact (eq_or_ne μ 0).by_cases (fun h => by simp [h]) fun h =>
     integrable_smul_measure (ENNReal.inv_ne_zero.2 <| by finiteness)
       (ENNReal.inv_ne_top.2 <| mt Measure.measure_univ_eq_zero.1 h)
 
@@ -771,8 +771,8 @@ lemma integrable_count_iff :
   have hs' : (Function.support f).Countable := by
     simpa only [Ne, Pi.zero_apply, eq_comm, Function.support, norm_eq_zero]
       using hs.countable_support
-  letI : MeasurableSpace β := borel β
-  haveI : BorelSpace β := ⟨rfl⟩
+  let : MeasurableSpace β := borel β
+  have : BorelSpace β := ⟨rfl⟩
   refine aestronglyMeasurable_iff_aemeasurable_separable.mpr ⟨?_, ?_⟩
   · refine (measurable_zero.measurable_of_countable_ne ?_).aemeasurable
     simpa only [Ne, Pi.zero_apply, eq_comm, Function.support] using hs'

@@ -181,7 +181,7 @@ variable [Fintype ι']
 theorem basis_toMatrix_mul_linearMap_toMatrix [Finite κ] [Fintype κ'] [DecidableEq ι'] :
     c.toMatrix c' * LinearMap.toMatrix b' c' f = LinearMap.toMatrix b' c f :=
   (Matrix.toLin b' c).injective <| by
-    haveI := Classical.decEq κ'
+    have := Classical.decEq κ'
     rw [toLin_toMatrix, toLin_mul b' c' c, toLin_toMatrix, c.toLin_toMatrix, LinearMap.id_comp]
 
 theorem basis_toMatrix_mul [Fintype κ] [Finite ι] [DecidableEq κ]
@@ -244,9 +244,9 @@ namespace Module.Basis
 @[simp]
 theorem toMatrix_mul_toMatrix {ι'' : Type*} [Fintype ι'] (b'' : ι'' → M) :
     b.toMatrix b' * b'.toMatrix b'' = b.toMatrix b'' := by
-  haveI := Classical.decEq ι
-  haveI := Classical.decEq ι'
-  haveI := Classical.decEq ι''
+  have := Classical.decEq ι
+  have := Classical.decEq ι'
+  have := Classical.decEq ι''
   ext i j
   simp only [Matrix.mul_apply, toMatrix_apply, sum_repr_mul_repr]
 
@@ -272,6 +272,9 @@ theorem toMatrix_map (b : Basis ι R M) (f : M ≃ₗ[R] N) (v : ι → N) :
     (b.map f).toMatrix v = b.toMatrix (f.symm ∘ v) := by
   ext
   simp only [toMatrix_apply, Basis.map, LinearEquiv.trans_apply, (· ∘ ·)]
+
+lemma _root_.LinearMap.toMatrix_eq_basisToMatrix [Fintype ι] [DecidableEq ι] [Finite κ] :
+    f.toMatrix b c = c.toMatrix (f ∘ b) := by ext; simp [LinearMap.toMatrix_apply, toMatrix_apply]
 
 end Module.Basis
 end MulLinearMapToMatrix

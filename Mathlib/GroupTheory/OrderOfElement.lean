@@ -275,6 +275,17 @@ theorem orderOf_dvd_iff_pow_eq_one {n : ℕ} : orderOf x ∣ n ↔ x ^ n = 1 :=
   ⟨fun h => by rw [← pow_mod_orderOf, Nat.mod_eq_zero_of_dvd h, _root_.pow_zero],
     orderOf_dvd_of_pow_eq_one⟩
 
+/-- If `x ^ p = 1` for some odd `p`, then every power of `x` is an even power of `x`. -/
+@[to_additive /-- If `p • x = 0` for some odd `p`, then every multiple of `x` is an even
+multiple of `x`. -/]
+theorem exists_pow_eq_pow_two_mul {p : ℕ} (hx : x ^ p = 1) (hp : Odd p) (n : ℕ) :
+    ∃ m, x ^ n = x ^ (2 * m) := by
+  obtain ⟨r, rfl⟩ := hp
+  have key : x ^ (2 * (r + 1)) = x := by
+    have h2 : 2 * (r + 1) = 2 * r + 1 + 1 := by omega
+    rw [h2, pow_succ, hx, one_mul]
+  exact ⟨(r + 1) * n, by rw [← mul_assoc, pow_mul, key]⟩
+
 @[to_additive addOrderOf_smul_dvd]
 theorem orderOf_pow_dvd (n : ℕ) : orderOf (x ^ n) ∣ orderOf x := by
   rw [orderOf_dvd_iff_pow_eq_one, pow_right_comm, pow_orderOf_eq_one, one_pow]
@@ -1243,7 +1254,7 @@ lemma Nat.Coprime.pow_left_bijective {G} [Group G] (hn : (Nat.card G).Coprime n)
 theorem image_range_orderOf [DecidableEq G] :
     letI : Fintype (zpowers x) := (Subgroup.zpowers x).instFintypeSubtypeMemOfDecidablePred
     Finset.image (fun i => x ^ i) (Finset.range (orderOf x)) = (zpowers x : Set G).toFinset := by
-  letI : Fintype (zpowers x) := (Subgroup.zpowers x).instFintypeSubtypeMemOfDecidablePred
+  let : Fintype (zpowers x) := (Subgroup.zpowers x).instFintypeSubtypeMemOfDecidablePred
   ext x
   rw [Set.mem_toFinset, SetLike.mem_coe, mem_zpowers_iff_mem_range_orderOf]
 

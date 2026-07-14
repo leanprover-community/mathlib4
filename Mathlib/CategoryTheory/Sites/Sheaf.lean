@@ -103,7 +103,7 @@ def conesEquivSieveCompatibleFamily :
   toFun π :=
     ⟨fun _ f h => π.app (op ⟨Over.mk f, h⟩), fun X Y f g hf => by
       let φ : S.arrows.categoryMk (g ≫ f) (S.downward_closed hf g) ⟶
-        S.arrows.categoryMk f hf := ObjectProperty.homMk (Over.homMk _ (by rfl))
+        S.arrows.categoryMk f hf := ObjectProperty.homMk (Over.homMk _ rfl)
       simpa using! π.naturality φ.op⟩
   invFun x :=
     { app := fun f => x.1 f.unop.1.hom f.unop.2
@@ -706,7 +706,7 @@ theorem isSheaf_comp_of_isSheaf (s : A ⥤ B) [PreservesLimitsOfSize.{v₁, max 
 theorem isSheaf_iff_isSheaf_comp (s : A ⥤ B) [HasLimitsOfSize.{v₁, max v₁ u₁} A]
     [PreservesLimitsOfSize.{v₁, max v₁ u₁} s] [s.ReflectsIsomorphisms] :
     IsSheaf J P ↔ IsSheaf J (P ⋙ s) := by
-  letI : ReflectsLimitsOfSize s := reflectsLimits_of_reflectsIsomorphisms
+  let : ReflectsLimitsOfSize s := reflectsLimits_of_reflectsIsomorphisms
   exact ⟨isSheaf_comp_of_isSheaf J P s, isSheaf_of_isSheaf_comp J P s⟩
 
 /--
