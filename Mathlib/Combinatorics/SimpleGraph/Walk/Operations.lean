@@ -669,6 +669,14 @@ lemma penultimate_reverse (p : G.Walk u v) : p.reverse.penultimate = p.snd := by
 def tail (p : G.Walk u v) : G.Walk (p.snd) v := p.drop 1
 
 @[simp]
+theorem darts_tail {p : G.Walk u v} : p.tail.darts = p.darts.tail := by
+  simp [tail, darts_drop]
+
+@[simp]
+theorem edges_tail {p : G.Walk u v} : p.tail.edges = p.edges.tail := by
+  simp [tail, edges_drop]
+
+@[simp]
 lemma drop_zero {u v} (p : G.Walk u v) :
     p.drop 0 = p.copy (getVert_zero p).symm rfl := by
   cases p <;> simp [Walk.drop]
@@ -725,6 +733,14 @@ lemma dropLast_cons_cons {w'} (h : G.Adj u v) (h₂ : G.Adj v w) (p : G.Walk w w
 lemma dropLast_cons_of_not_nil (h : G.Adj u v) (p : G.Walk v w) (hp : ¬ p.Nil) :
     (cons h p).dropLast = cons h (p.dropLast.copy rfl (penultimate_cons_of_not_nil _ _ hp).symm) :=
   p.notNilRec (by simp) hp h
+
+@[simp]
+theorem darts_dropLast {p : G.Walk u v} : p.dropLast.darts = p.darts.dropLast := by
+  simp [dropLast, darts_take, List.dropLast_eq_take]
+
+@[simp]
+theorem edges_dropLast {p : G.Walk u v} : p.dropLast.edges = p.edges.dropLast := by
+  simp [dropLast, edges_take, List.dropLast_eq_take]
 
 @[simp]
 lemma dropLast_concat {t u v} (p : G.Walk u v) (h : G.Adj v t) :
