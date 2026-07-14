@@ -702,6 +702,13 @@ theorem not_dvd_den_inv_bernoulli {k p : ℕ} (hk : 0 < k) (hk2 : Even k) [Fact 
   simpa [Rat.den_inv_of_ne_zero hB0] using fun hnum ↦
     Nat.not_coprime_of_dvd_of_dvd (Fact.out : p.Prime).one_lt hnum hdvd (bernoulli k).reduced
 
+/-- If `p` is prime, `k` is positive and even, and `p - 1 ∣ k`, then `p` divides the numerator
+of `Bₖ⁻¹`. -/
+theorem dvd_num_inv_bernoulli {k p : ℕ} (hk : 0 < k) (hk2 : Even k) [Fact p.Prime]
+    (hpk : p - 1 ∣ k) : (p : ℤ) ∣ (bernoulli k)⁻¹.num := by
+  rw [Rat.num_inv]
+  exact (Int.natCast_dvd_natCast.mpr (dvd_den_bernoulli hk hk2 hpk)).mul_left _
+
 end Bernoulli
 
 end vonStaudtClausen
