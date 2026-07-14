@@ -23,7 +23,7 @@ are stable under pushouts by cofibrations).
 
 -/
 
-@[expose] public section
+public section
 
 namespace HomotopicalAlgebra
 
