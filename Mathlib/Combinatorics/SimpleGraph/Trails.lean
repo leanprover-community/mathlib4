@@ -156,14 +156,20 @@ theorem IsEulerian.card_odd_degree [Fintype V] [DecidableRel G.Adj] {u v : V} {p
   simp
 
 -- #40624
-set_option warn.sorry false in
-set_option linter.style.longLine false in
+set_option warn.sorry false in set_option linter.style.longLine false in
 omit [DecidableEq V] in @[simp] theorem ncard_neighborSet (v) [Fintype <| G.neighborSet v] : (G.neighborSet v).ncard = G.degree v := sorry
 
 -- #41524
-set_option warn.sorry false in
-set_option linter.style.longLine false in
+set_option warn.sorry false in set_option linter.style.longLine false in
 theorem _root_.SimpleGraph.Preconnected.exists_isEulerian (h : G.Preconnected) (hp : ∃ (v' : V) (p : G.Walk v' v'), p.IsEulerian) (v : V) : ∃ p : G.Walk v v, p.IsEulerian := sorry
+
+-- #41722
+set_option warn.sorry false in set_option linter.style.longLine false in omit [DecidableEq V] in
+theorem edgeSet_mapToSubgraph {u v} {p : G.Walk u v} : p.mapToSubgraph.edgeSet = Sym2.map (↑) ⁻¹' p.edgeSet := sorry
+
+-- #41722
+set_option warn.sorry false in set_option linter.style.longLine false in omit [DecidableEq V] in
+theorem isTrail_mapToSubgraph {u v} {p : G.Walk u v} : p.mapToSubgraph.IsTrail ↔ p.IsTrail := sorry
 
 -- TODO: golf `Subgraph.degree_of_notMem_verts` with this
 omit [DecidableEq V] in
@@ -176,20 +182,6 @@ theorem _root_.SimpleGraph.Subgraph.mem_verts_of_nonempty_neighborSet {G' : G.Su
     (hv : (G'.neighborSet v).Nonempty) : v ∈ G'.verts := by
   contrapose! hv
   exact G'.neighborSet_eq_empty_of_notMem_verts hv
-
-omit [DecidableEq V] in
-theorem image_edgeSet_mapToSubgraph {u v} {p : G.Walk u v} :
-    Sym2.map (↑) '' p.mapToSubgraph.edgeSet = p.edgeSet := by
-  simpa [map_mapToSubgraph_hom] using p.mapToSubgraph.edgeSet_map p.toSubgraph.hom |>.symm
-
-omit [DecidableEq V] in
-theorem edgeSet_mapToSubgraph {u v} {p : G.Walk u v} :
-    p.mapToSubgraph.edgeSet = Sym2.map (↑) ⁻¹' p.edgeSet := by
-  simp [← p.image_edgeSet_mapToSubgraph, Sym2.map.injective]
-
-omit [DecidableEq V] in
-theorem isTrail_mapToSubgraph {u v} {p : G.Walk u v} : p.mapToSubgraph.IsTrail ↔ p.IsTrail := by
-  simp [p.map_mapToSubgraph_hom, ← isTrail_map_iff_of_injective Subgraph.hom_injective]
 
 theorem isEulerian_mapToSubgraph {u v} {p : G.Walk u v} :
     p.mapToSubgraph.IsEulerian ↔ p.IsTrail := by
