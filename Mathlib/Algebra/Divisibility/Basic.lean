@@ -136,7 +136,7 @@ theorem RightDvd.of_mul_left (h : b * a ∣ᵣ c) : a ∣ᵣ c :=
   (RightDvd.mul_self a b).trans h
 
 @[gcongr]
-theorem mul_rightDvd_mul_right (a : α) (h : b ∣ᵣ c) : b * a ∣ᵣ c * a := by
+theorem RightDvd.mul_const (a : α) (h : b ∣ᵣ c) : b * a ∣ᵣ c * a := by
   obtain ⟨d, rfl⟩ := h
   use d
   rw [mul_assoc]
@@ -144,7 +144,7 @@ theorem mul_rightDvd_mul_right (a : α) (h : b ∣ᵣ c) : b * a ∣ᵣ c * a :=
 theorem IsRightRegular.rightDvd_cancel_right (h : IsRightRegular a) :
     b * a ∣ᵣ c * a ↔ b ∣ᵣ c :=
   ⟨fun dvd ↦ have ⟨d, eq⟩ := dvd
-    ⟨d, h (eq.trans <| (mul_assoc ..).symm)⟩, mul_rightDvd_mul_right a⟩
+    ⟨d, h (eq.trans <| (mul_assoc ..).symm)⟩, RightDvd.mul_const a⟩
 
 theorem rightDvd_iff_op_dvd_op : a ∣ᵣ b ↔ MulOpposite.op a ∣ MulOpposite.op b :=
   ⟨fun ⟨c, hc⟩ => ⟨MulOpposite.op c, by simp [hc]⟩,
@@ -157,8 +157,8 @@ section RightCancelSemigroup
 variable [RightCancelSemigroup α] {a b c : α}
 
 @[simp]
-theorem mul_rightDvd_mul_iff_right : b * a ∣ᵣ c * a ↔ b ∣ᵣ c :=
-  ⟨fun ⟨d, eq⟩ ↦ ⟨d, mul_right_cancel (eq.trans (mul_assoc ..).symm)⟩, mul_rightDvd_mul_right a⟩
+theorem mul_rightDvd_mul_iff_left : b * a ∣ᵣ c * a ↔ b ∣ᵣ c :=
+  ⟨fun ⟨d, eq⟩ ↦ ⟨d, mul_right_cancel (eq.trans (mul_assoc ..).symm)⟩, RightDvd.mul_const a⟩
 
 end RightCancelSemigroup
 
