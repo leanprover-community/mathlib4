@@ -6,14 +6,11 @@ open scoped ENNReal Topology Pointwise
 set_option relaxedAutoImplicit false
 set_option autoImplicit false
 
-/- This file contains basic properties of outer measures that are frequently used in geometric
-measure theory. -/
-
 /-!
-## Notions of regularity for outer measures
+## This file contains notions of regularity for outer measures
 -/
 
-/- **TODO (Nathan): Locally finite** outer measure: an outer measure on a topological space is
+/- **Locally finite** outer measure: an outer measure on a topological space is
 locally finite if it assigns finite measure to every compact set. -/
 class IsFiniteOnCompactOuterMeasure {X : Type*} [TopologicalSpace X]
     (μ : OuterMeasure X) : Prop where
@@ -49,6 +46,7 @@ class IsBorelRegular {X : Type*} [TopologicalSpace X] [MeasurableSpace X] [Borel
       E ⊆ F ∧
       μ E = μ F
 
+/- **TODO:** describe what this instance is -/
 instance IsBorelRegular.toRegularOuterMeasure {X : Type*} [TopologicalSpace X]
     [MeasurableSpace X] [BorelSpace X] (μ : OuterMeasure X) [IsBorelRegular μ] :
     RegularOuterMeasure μ where
@@ -67,9 +65,7 @@ class IsRadon {X : Type*} [TopologicalSpace X] [MeasurableSpace X] [BorelSpace X
     (μ.toMeasure (BorelOuterMeasure.measurable_le_caratheodory (μ := μ))).Regular
 
 /-- **Support** of an outer measure: an outer measure `μ` on a topological space `X` has
-support the set of points `x` such that every neighborhood of `x` has positive `μ`-measure.
-(By monotonicity of `μ`, this equals the set of `x` whose every *open* neighborhood has positive
-measure.) -/
+support the set of points `x` such that every neighborhood of `x` has positive `μ`-measure.-/
 def SupportOuterMeasure {X : Type*} [TopologicalSpace X]
     (μ : OuterMeasure X) : Set X :=
   {x | ∀ U ∈ 𝓝 x, 0 < μ U}
@@ -79,16 +75,20 @@ def SupportOuterMeasure {X : Type*} [TopologicalSpace X]
 ## Basic facts about regular outer measures
 -/
 
-/- **TODO (Theo)** Lemma: If `μ` is a regular outer measure on a space `X` and
+/- Lemma: If `μ` is a regular outer measure on a space `X` and
 `A⊆X`, then `A` is `μ`-measurable if and only if `μ(A)+μ(X∖A)=μ(X)`.
-
 Reference: Bogachev - Measure Theory I, Proposition 1.11.7-/
+
+/- Preliminary lemma 1: sets with zero outer measure are Caratheodory measurable (I'm surprised
+this is not in mathlib, we should double-check. If that is the case, this should probably go
+in a different file) -/ 
 lemma isCaratheodory_of_measure_eq_zero {X : Type*} {μ : OuterMeasure X} {A : Set X}
     (hA : μ A = 0) : μ.IsCaratheodory A := by
   rw [OuterMeasure.isCaratheodory_iff_le']; intro T
   simpa [measure_mono_null inter_subset_right hA] using
     (measure_mono (diff_subset : T \ A ⊆ T) : μ (T \ A) ≤ μ T)
 
+/- Preliminary lemma 2: non-trivial direction of Bogachev's Proposition 1.11.7 -/
 lemma isCaratheodory_of_measure_add_compl_eq_univ
     {X : Type*} (μ : OuterMeasure X) [RegularOuterMeasure μ]
     (hμ : μ univ < ∞) {A : Set X} (hA : μ A + μ Aᶜ = μ univ) :
@@ -103,6 +103,7 @@ lemma isCaratheodory_of_measure_add_compl_eq_univ
       using (hF Aᶜ).symm
   convert μ.isCaratheodory_diff hF (isCaratheodory_of_measure_eq_zero hFA) using 1; aesop
 
+/- Bogachev's Proposition 1.11.7 -/
 lemma isCaratheodory_iff_measure_add_compl_eq_univ
     {X : Type*} (μ : OuterMeasure X) [RegularOuterMeasure μ]
     (hμ : μ univ < ∞) (A : Set X) :
