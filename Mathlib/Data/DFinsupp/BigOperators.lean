@@ -571,22 +571,10 @@ theorem map_dfinsuppSumAddHom [AddCommMonoid R] [AddCommMonoid S] [∀ i, AddZer
 
 end AddEquiv
 
+/-
 section ConGen
 
 variable {M} {r : M → M → Prop}
-
-/-- Congruences respect finite products -/
-@[to_additive /-- Additive congruences respect finite sums --/]
-theorem Con.prod' [CommMonoid M] (r : Con M)
-    {α : Type*} {s : Finset α} {f g : α → M} (hf : ∀ x ∈ s, r (f x) (g x)) :
-    r (∏ x ∈ s, f x) (∏ x ∈ s, g x) := by
-  classical
-  induction s using Finset.induction generalizing f g with
-  | empty => simp [Con.refl]
-  | insert a s has ih =>
-    simp only [Finset.prod_insert has]
-    exact r.mul (hf a (s.mem_insert_self a))
-      (ih fun x hx ↦ hf x (Finset.mem_insert_of_mem hx))
 
 @[to_additive] theorem ConGen.Rel.prod [CommMonoid M]
     {α : Type*} {s : Finset α} {f g : α → M} (hf : ∀ x ∈ s, r (f x) (g x)) :
@@ -604,5 +592,6 @@ theorem RingConGen.Rel.prod [CommSemiring M]
   Con.prod' (ringConGen r).toCon fun x hx ↦ of (f x) (g x) (hf x hx)
 
 end ConGen
+-/
 
 end
