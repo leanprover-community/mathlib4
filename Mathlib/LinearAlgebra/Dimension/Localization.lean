@@ -84,7 +84,7 @@ variable (R N) [IsFractionRing R S]
 theorem IsFractionRing.rank_eq : Module.rank S N = Module.rank R N :=
   IsLocalization.rank_eq S R⁰ le_rfl
 
-theorem IsFractionRing.finrank_eq : Module.finrank S N = Module.finrank R N :=
+theorem IsFractionRing.finrank_eq : finrank S N = finrank R N :=
   IsLocalization.finrank_eq S R⁰ le_rfl
 
 end
