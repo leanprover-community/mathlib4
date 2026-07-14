@@ -175,6 +175,8 @@ theorem mk_eq_iff {φ ψ : K →+* ℂ} : mk φ = mk ψ ↔ φ = ψ ∨ ComplexE
     · rw [← mk_conjugate_eq]
       exact congr_arg mk h
 
+/-- An infinite place `w` of `L / K` lies over the infinite place `v` of `K` if `v` is the
+restriction of `w` to `K`. -/
 protected abbrev LiesOver {L : Type*} [Field L] [Algebra K L]
     (w : InfinitePlace L) (v : InfinitePlace K) :=
   w.val.LiesOver v.val
