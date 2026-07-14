@@ -125,7 +125,7 @@ theorem IsCompactOperator.image_subset_compact_of_isVonNBounded {f : M₁ →ₛ
   let ⟨K, hK, hKf⟩ := hf
   let ⟨r, hr, hrS⟩ := (hS hKf).exists_pos
   let ⟨c, hc⟩ := NormedField.exists_lt_norm 𝕜₁ r
-  let this := ne_zero_of_norm_ne_zero (hr.trans hc).ne.symm
+  let := ne_zero_of_norm_ne_zero (hr.trans hc).ne.symm
   ⟨σ₁₂ c • K, hK.image <| continuous_id.const_smul (σ₁₂ c), by
     rw [image_subset_iff, this.isUnit.preimage_smul_setₛₗ σ₁₂]; exact hrS c hc.le⟩
 

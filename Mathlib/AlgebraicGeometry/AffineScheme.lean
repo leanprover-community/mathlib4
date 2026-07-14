@@ -229,8 +229,8 @@ instance hasColimits : HasColimits AffineScheme.{u} :=
   Adjunction.has_colimits_of_equivalence.{u} (opOpEquivalence AffineScheme.{u}).inverse
 
 instance hasLimits : HasLimits AffineScheme.{u} := by
-  haveI := Adjunction.has_colimits_of_equivalence Γ.{u}
-  haveI : HasLimits AffineScheme.{u}ᵒᵖᵒᵖ := Limits.hasLimits_op_of_hasColimits
+  have := Adjunction.has_colimits_of_equivalence Γ.{u}
+  have : HasLimits AffineScheme.{u}ᵒᵖᵒᵖ := Limits.hasLimits_op_of_hasColimits
   exact Adjunction.has_limits_of_equivalence (opOpEquivalence AffineScheme.{u}).inverse
 
 noncomputable instance Γ_preservesLimits : PreservesLimits Γ.{u}.rightOp := inferInstance
@@ -464,7 +464,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem map_fromSpec {V : X.Opens} (hV : IsAffineOpen V) (f : op U ⟶ op V) :
     Spec.map (X.presheaf.map f) ≫ hU.fromSpec = hV.fromSpec := by
   have : IsAffine U := hU
-  haveI : IsAffine _ := hV
+  have : IsAffine _ := hV
   conv_rhs =>
     rw [fromSpec, ← X.homOfLE_ι (V := U) f.unop.le, isoSpec_inv, Category.assoc,
       ← Scheme.isoSpec_inv_naturality_assoc,
@@ -685,8 +685,8 @@ lemma appLE_eq_away_map {X Y : Scheme.{u}} (f : X ⟶ Y) {U : Y.Opens} (hU : IsA
     letI := hV.isLocalization_basicOpen (f.appLE U V e r)
     f.appLE (Y.basicOpen r) (X.basicOpen (f.appLE U V e r)) (by simp [Scheme.Hom.appLE]) =
         CommRingCat.ofHom (IsLocalization.Away.map _ _ (f.appLE U V e).hom r) := by
-  letI := hU.isLocalization_basicOpen r
-  letI := hV.isLocalization_basicOpen (f.appLE U V e r)
+  let := hU.isLocalization_basicOpen r
+  let := hV.isLocalization_basicOpen (f.appLE U V e r)
   ext : 1
   apply IsLocalization.ringHom_ext (.powers r)
   rw [IsLocalization.Away.map, CommRingCat.hom_ofHom, IsLocalization.map_comp,
@@ -702,8 +702,8 @@ lemma app_basicOpen_eq_away_map {X Y : Scheme.{u}} (f : X ⟶ Y) {U : Y.Opens}
       (CommRingCat.ofHom
         (IsLocalization.Away.map Γ(Y, Y.basicOpen r) Γ(X, X.basicOpen (f.app U r)) (f.app U).hom r)
         ≫ X.presheaf.map (eqToHom (by simp)).op) := by
-  haveI := hU.isLocalization_basicOpen r
-  haveI := h.isLocalization_basicOpen (f.app U r)
+  have := hU.isLocalization_basicOpen r
+  have := h.isLocalization_basicOpen (f.app U r)
   ext : 1
   apply IsLocalization.ringHom_ext (.powers r)
   rw [IsLocalization.Away.map, CommRingCat.hom_comp, RingHom.comp_assoc, CommRingCat.hom_ofHom,
@@ -831,7 +831,7 @@ lemma stalkMap_injective (f : X ⟶ Y) {U : Opens Y} (hU : IsAffineOpen U) (x : 
     (h : ∀ g, f.stalkMap x (Y.presheaf.germ U (f x) hx g) = 0 →
       Y.presheaf.germ U (f x) hx g = 0) :
     Function.Injective (f.stalkMap x) := by
-  letI := Y.presheaf.algebra_section_stalk ⟨f x, hx⟩
+  let := Y.presheaf.algebra_section_stalk ⟨f x, hx⟩
   apply (hU.isLocalization_stalk ⟨f x, hx⟩).injective_of_map_algebraMap_zero
   exact h
 
@@ -839,7 +839,7 @@ include hU in
 lemma mem_ideal_iff {s : Γ(X, U)} {I : Ideal Γ(X, U)} :
     s ∈ I ↔ ∀ (x : X) (h : x ∈ U), X.presheaf.germ U x h s ∈ I.map (X.presheaf.germ U x h).hom := by
   refine ⟨fun hs x hxU ↦ Ideal.mem_map_of_mem _ hs, fun H ↦ ?_⟩
-  letI (x : _) : Algebra Γ(X, U) (X.presheaf.stalk (hU.fromSpec x)) :=
+  let (x : _) : Algebra Γ(X, U) (X.presheaf.stalk (hU.fromSpec x)) :=
     TopCat.Presheaf.algebra_section_stalk X.presheaf _
   have (P : Ideal Γ(X, U)) [hP : P.IsPrime] : IsLocalization.AtPrime _ P :=
       hU.isLocalization_stalk' ⟨P, hP⟩ (hU.isoSpec.inv _).2

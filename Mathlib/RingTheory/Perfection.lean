@@ -809,8 +809,8 @@ include hv
 
 theorem isDomain : IsDomain (PreTilt O p) := by
   have hp : Nat.Prime p := Fact.out
-  haveI : Nontrivial (PreTilt O p) := ⟨(CharP.nontrivial_of_char_ne_one hp.ne_one).1⟩
-  haveI : NoZeroDivisors (PreTilt O p) :=
+  have : Nontrivial (PreTilt O p) := ⟨(CharP.nontrivial_of_char_ne_one hp.ne_one).1⟩
+  have : NoZeroDivisors (PreTilt O p) :=
     ⟨fun hfg => by
       simp_rw [← map_eq_zero hv] at hfg ⊢; contrapose! hfg; rw [Valuation.map_mul]
       exact mul_ne_zero hfg.1 hfg.2⟩

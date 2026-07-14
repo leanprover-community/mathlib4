@@ -727,7 +727,7 @@ lemma hasHomology_of_isIso_leftRightHomologyComparison'
 lemma hasHomology_of_isIsoLeftRightHomologyComparison [S.HasLeftHomology]
     [S.HasRightHomology] [h : IsIso S.leftRightHomologyComparison] :
     S.HasHomology := by
-  haveI : IsIso (leftRightHomologyComparison' S.leftHomologyData S.rightHomologyData) := h
+  have : IsIso (leftRightHomologyComparison' S.leftHomologyData S.rightHomologyData) := h
   exact hasHomology_of_isIso_leftRightHomologyComparison' S.leftHomologyData S.rightHomologyData
 
 section

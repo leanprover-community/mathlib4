@@ -309,7 +309,7 @@ lemma even_card_of_isPerfectMatching [Fintype V] [DecidableEq V] [DecidableRel G
   `[SetLike X], X → Set α → Sort _` are
   blocked by the discrimination tree. This can be fixed by redeclaring the instance for `X`
   using the double coercion but the proper fix seems to avoid the double coercion. -/
-  letI : DecidablePred fun x ↦ x ∈ (M.induce c.supp).verts := fun a ↦ G.instDecidableMemSupp c a
+  let : DecidablePred fun x ↦ x ∈ (M.induce c.supp).verts := fun a ↦ G.instDecidableMemSupp c a
   have := (hM.induce_connectedComponent_isMatching c).even_card
   simp only [Subgraph.induce_verts, Set.toFinset_card] at this
   exact this
@@ -331,9 +331,9 @@ lemma odd_matches_node_outside [Finite V] {u : Set V}
       and_true] at hv' ⊢
     trivial
   apply Nat.not_even_iff_odd.2 c.prop
-  haveI : Fintype ↑(Subgraph.induce M (Subtype.val '' supp c.val)).verts := Fintype.ofFinite _
+  have : Fintype ↑(Subgraph.induce M (Subtype.val '' supp c.val)).verts := Fintype.ofFinite _
   classical
-  haveI := Fintype.ofFinite c.val.supp
+  have := Fintype.ofFinite c.val.supp
   simpa [Finset.card_image_of_injective] using hMmatch.even_card
 
 end Finite
@@ -517,7 +517,7 @@ lemma IsCycles.reachable_deleteEdges [Finite V] (hadj : G.Adj v w)
     simp only [Walk.toSubgraph, singletonSubgraph_le_iff, subgraphOfAdj_verts, Set.mem_insert_iff,
       Set.mem_singleton_iff, or_true, sup_of_le_left]
     exact (Subgraph.spanningCoe_subgraphOfAdj hadj).symm
-  rw [show G.deleteEdges {s(v, w)} = G \ fromEdgeSet {s(v, w)} from by rfl]
+  rw [show G.deleteEdges {s(v, w)} = G \ fromEdgeSet {s(v, w)} by rfl]
   exact this ▸ (hcyc.reachable_sdiff_toSubgraph_spanningCoe hadj.toWalk
     (Walk.IsPath.of_adj hadj)).symm
 
@@ -611,14 +611,14 @@ lemma Subgraph.IsPerfectMatching.symmDiff_of_isAlternating (hM : M.IsPerfectMatc
     · grind
     · obtain ⟨w'', hw''⟩ := hG'cyc.other_adj_of_adj hr.1
       by_contra! hc
-      simp_all [show M.Adj v y ↔ ¬M.Adj v w' from by simpa using hG' hc hr.1 hw'.2]
+      simp_all [show M.Adj v y ↔ ¬M.Adj v w' by simpa using hG' hc hr.1 hw'.2]
   · use w
     simp only [Subgraph.top_adj, SimpleGraph.sup_adj, sdiff_adj, Subgraph.spanningCoe_adj, hw.1, h,
       not_false_eq_true, and_self, not_true_eq_false, or_false, true_and]
     rintro y (hl | hr)
     · exact hw.2 _ hl.1
     · have ⟨w', hw'⟩ := hG'cyc.other_adj_of_adj hr.1
-      simp_all [show M.Adj v y ↔ ¬M.Adj v w' from by simpa using hG' hw'.1 hr.1 hw'.2]
+      simp_all [show M.Adj v y ↔ ¬M.Adj v w' by simpa using hG' hw'.1 hr.1 hw'.2]
 
 lemma Subgraph.IsPerfectMatching.isAlternating_symmDiff_left {M' : Subgraph G'}
     (hM : M.IsPerfectMatching) (hM' : M'.IsPerfectMatching) :

@@ -252,7 +252,7 @@ instance instDecidableRelSameCycle [DecidableEq α] [Fintype α] (f : Perm α) :
         rcases hxy.exists_pow_eq_of_mem_support_aux hx with ⟨i, hixy, hi⟩
         refine ⟨i, lt_of_lt_of_le hixy (card_le_univ _), hi⟩
       case neg =>
-        haveI : Nonempty α := ⟨x⟩
+        have : Nonempty α := ⟨x⟩
         rw [notMem_support] at hx
         exact ⟨0, Fintype.card_pos, hxy.eq_of_left hx⟩
 

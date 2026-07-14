@@ -172,7 +172,7 @@ theorem ACF_models_genericPolyMapSurjOnOfInjOn_of_prime [Finite ι]
     {p : ℕ} (hp : p.Prime) (φ : ring.Formula (α ⊕ ι)) (mons : ι → Finset (ι →₀ ℕ)) :
     Theory.ACF p ⊨ᵇ genericPolyMapSurjOnOfInjOn φ mons := by
   have : Fact p.Prime := ⟨hp⟩
-  letI := compatibleRingOfRing (AlgebraicClosure (ZMod p))
+  let := compatibleRingOfRing (AlgebraicClosure (ZMod p))
   rw [← (ACF_isComplete (Or.inl hp)).realize_sentence_iff _
     (AlgebraicClosure (ZMod p)), realize_genericPolyMapSurjOnOfInjOn]
   rintro v ⟨f, _⟩
@@ -206,7 +206,7 @@ theorem ax_grothendieck_of_definable [CompatibleRing K] {c : Set K}
     S.MapsTo (fun v i => eval v (ps i)) S →
     S.InjOn (fun v i => eval v (ps i)) →
     S.SurjOn (fun v i => eval v (ps i)) S := by
-  letI := Fintype.ofFinite ι
+  let := Fintype.ofFinite ι
   let p : ℕ := ringChar K
   rw [Set.definable_iff_finitely_definable] at hS
   rcases hS with ⟨c, _, hS⟩
@@ -231,7 +231,7 @@ theorem ax_grothendieck_zeroLocus
     S.MapsTo (fun v i => eval v (p i)) S →
     S.InjOn (fun v i => eval v (p i)) →
     S.SurjOn (fun v i => eval v (p i)) S := by
-  letI := compatibleRingOfRing K
+  let := compatibleRingOfRing K
   intro S
   obtain ⟨s, rfl⟩ : I.FG := IsNoetherian.noetherian I
   exact ax_grothendieck_of_definable S (mvPolynomial_zeroLocus_definable s) p
