@@ -188,6 +188,9 @@ An infinite place is ramified in a field extension if it is not unramified.
 -/
 abbrev IsRamified : Prop := ¬w.IsUnramified k
 
+lemma isUnramified_or_isRamified : w.IsUnramified k ∨ w.IsRamified k :=
+  or_not
+
 variable {k}
 
 lemma isUnramified_self : IsUnramified K w := rfl

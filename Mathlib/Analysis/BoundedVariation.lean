@@ -96,14 +96,14 @@ lemma eVariationOn_smul_le {𝕜 : Type*} {f : α → 𝕜} {g : α → F}
 lemma eVariation_mul_le {f g : α → ℝ}
     {C D : ℝ≥0∞} {s : Set α} (hf : ∀ x ∈ s, ‖f x‖ₑ ≤ C) (hg : ∀ x ∈ s, ‖g x‖ₑ ≤ D) :
     eVariationOn (f * g) s ≤ C * eVariationOn g s + D * eVariationOn f s := by
-  apply eVariationOn_smul_le hf hg
+  simpa using eVariationOn_smul_le hf hg
 
 lemma BoundedVariationOn.bilinear_comp
     (hf : BoundedVariationOn f s) (hg : BoundedVariationOn g s) (B : E →L[ℝ] F →L[ℝ] G) :
     BoundedVariationOn (fun x ↦ B (f x) (g x)) s := by
   rcases s.eq_empty_or_nonempty with rfl | ⟨⟨x, hx⟩⟩
   · simp
-  apply ne_of_lt
+  suffices eVariationOn (fun x ↦ (B (f x)) (g x)) s < ∞ from ne_of_lt this
   have A (y) (hy : y ∈ s) : ‖f y‖ₑ ≤ ‖f x‖ₑ + eVariationOn f s := by
     grw [show f y = f x + (f y - f x) by abel, enorm_add_le, ← edist_eq_enorm_sub,
       eVariationOn.edist_le _ hy hx]

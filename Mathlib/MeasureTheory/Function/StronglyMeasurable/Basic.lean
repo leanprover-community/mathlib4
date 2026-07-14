@@ -726,7 +726,8 @@ theorem _root_.Continuous.stronglyMeasurable [MeasurableSpace α] [TopologicalSp
   · exact hf.measurable.stronglyMeasurable
 
 /-- A continuous function whose support is contained in a compact set is strongly measurable. -/
-@[to_additive]
+@[to_additive /-- A continuous function whose support is contained in a compact set is strongly
+measurable. -/]
 theorem _root_.Continuous.stronglyMeasurable_of_mulSupport_subset_isCompact
     [MeasurableSpace α] [TopologicalSpace α] [OpensMeasurableSpace α] [TopologicalSpace β]
     [PseudoMetrizableSpace β] [One β] {f : α → β} (hf : Continuous f) {k : Set α}
@@ -737,7 +738,7 @@ theorem _root_.Continuous.stronglyMeasurable_of_mulSupport_subset_isCompact
   exact ⟨hf.measurable, (isCompact_range_of_mulSupport_subset_isCompact hf hk h'f).isSeparable⟩
 
 /-- A continuous function with compact support is strongly measurable. -/
-@[to_additive]
+@[to_additive /-- A continuous function with compact support is strongly measurable. -/]
 theorem _root_.Continuous.stronglyMeasurable_of_hasCompactMulSupport
     [MeasurableSpace α] [TopologicalSpace α] [OpensMeasurableSpace α] [TopologicalSpace β]
     [PseudoMetrizableSpace β] [One β] {f : α → β} (hf : Continuous f)

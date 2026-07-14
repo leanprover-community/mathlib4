@@ -673,7 +673,8 @@ theorem haarMeasure_unique (μ : Measure G) [SigmaFinite μ] [IsMulLeftInvariant
 
 /-- Let `μ` be a σ-finite left invariant measure on `G`. Then `μ` is equal to the Haar measure
 defined by `K₀` iff `μ K₀ = 1`. -/
-@[to_additive]
+@[to_additive /-- Let `μ` be a σ-finite left invariant measure on `G`. Then `μ` is equal to the
+additive Haar measure defined by `K₀` iff `μ K₀ = 1`. -/]
 theorem haarMeasure_eq_iff (K₀ : PositiveCompacts G) (μ : Measure G) [SigmaFinite μ]
     [IsMulLeftInvariant μ] :
     haarMeasure K₀ = μ ↔ μ K₀ = 1 :=

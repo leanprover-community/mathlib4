@@ -238,6 +238,12 @@ lemma IsLocalizedModule.exists_subsingleton_away {M' : Type*} [AddCommMonoid M']
   have : Subsingleton (LocalizedModule p.primeCompl M) := e.subsingleton
   exact LocalizedModule.exists_subsingleton_away p
 
+lemma Module.exists_localizedMap_away_surjective_of_localizedMap_atPrime_surjective (p : Ideal R)
+    [p.IsPrime] (φ : N →ₗ[R] M) (hφ : Function.Surjective (LocalizedModule.map p.primeCompl φ)) :
+    ∃ a ∉ p, Function.Surjective (LocalizedModule.map (Submonoid.powers a) φ) := by
+  simp_rw [φ.localizedMap_surjective_iff_subsingleton_localized_coker] at hφ ⊢
+  exact LocalizedModule.exists_subsingleton_away p
+
 /-- `Supp(M/IM) = Supp(M) ∩ Z(I)`. -/
 @[stacks 00L3 "(1)"]
 theorem Module.support_quotient (I : Ideal R) :
