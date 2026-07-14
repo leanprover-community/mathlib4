@@ -277,7 +277,7 @@ lemma dropUntil_append_of_mem_left {x : V} {p : G.Walk u v} {q : G.Walk v w} (hx
     (p.append q).dropUntil x (p.support_subset_support_append_left q hx) =
       (p.dropUntil x hx).append q := by
   induction p with
-  | nil => rw [mem_support_nil_iff] at hx; subst_vars; simp
+  | nil => grind [mem_support_nil_iff, dropUntil_first]
   | cons => simp! only; split_ifs <;> subst_vars <;> grind [cons_append]
 
 theorem dropUntil_append_of_notMem_left {x : V} {p : G.Walk u v} {q : G.Walk v w}
