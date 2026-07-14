@@ -1523,6 +1523,7 @@ public import Mathlib.AlgebraicTopology.ModelCategory.DerivabilityStructureFibra
 public import Mathlib.AlgebraicTopology.ModelCategory.FibrantObjectHomotopy
 public import Mathlib.AlgebraicTopology.ModelCategory.FundamentalLemma
 public import Mathlib.AlgebraicTopology.ModelCategory.Homotopy
+public import Mathlib.AlgebraicTopology.ModelCategory.HomotopyCartesian
 public import Mathlib.AlgebraicTopology.ModelCategory.Instances
 public import Mathlib.AlgebraicTopology.ModelCategory.IsCofibrant
 public import Mathlib.AlgebraicTopology.ModelCategory.JoyalTrick

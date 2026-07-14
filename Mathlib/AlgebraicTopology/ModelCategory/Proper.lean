@@ -1,11 +1,12 @@
 /-
-Copyright (c) 2025 Joël Riou. All rights reserved.
+Copyright (c) 2026 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 module
 
-public import Mathlib.AlgebraicTopology.ModelCategory.BifibrantObjectHomotopy
+public import Mathlib.AlgebraicTopology.ModelCategory.Instances
+public import Mathlib.CategoryTheory.MorphismProperty.Limits
 
 /-!
 # Proper model categories
@@ -25,6 +26,8 @@ open CategoryTheory Limits
 variable {C : Type*} [Category* C]
 
 variable (C) in
+/-- A model category is right proper when the pullback of a weak equivalence
+by a fibration is a weak equivalence. -/
 class IsRightProper [CategoryWithWeakEquivalences C] [CategoryWithFibrations C] : Prop where
   isStableUnderBaseChangeAlong {E B : C} (p : E ⟶ B) [Fibration p] :
     (weakEquivalences C).IsStableUnderBaseChangeAlong p
@@ -57,6 +60,32 @@ instance (p : E ⟶ B) (w : B' ⟶ B) [Fibration p] [WeakEquivalence w]
     [HasPullback p w] :
     WeakEquivalence (pullback.fst p w) :=
   weakEquivalence' (IsPullback.of_hasPullback p w)
+
+set_option backward.isDefEq.respectTransparency false in
+instance [(fibrations C).IsStableUnderBaseChange]
+    (p : E ⟶ B) {X Y : C} (w : X ⟶ Y) (a : Y ⟶ B) [HasPullback p a] [HasPullback p (w ≫ a)]
+    [WeakEquivalence w] [Fibration p] :
+    WeakEquivalence (pullback.map _ _ _ _ (𝟙 _) w (𝟙 _) (by simp) (by simp) :
+      pullback p (w ≫ a) ⟶ pullback p a) :=
+  have :
+      IsPullback (pullback.map _ _ _ _ (𝟙 _) w (𝟙 _) (by simp) (by simp))
+        (pullback.snd p (w ≫ a)) (pullback.snd p a) w :=
+    IsPullback.of_right (by simpa using IsPullback.of_hasPullback p (w ≫ a)) (by cat_disch)
+      (IsPullback.of_hasPullback p a)
+  weakEquivalence' this
+
+set_option backward.isDefEq.respectTransparency false in
+instance [(fibrations C).IsStableUnderBaseChange]
+    (p : E ⟶ B) {X Y : C} (w : X ⟶ Y) (a : Y ⟶ B) [HasPullback a p] [HasPullback (w ≫ a) p]
+    [WeakEquivalence w] [Fibration p] :
+    WeakEquivalence (pullback.map _ _ _ _ w (𝟙 _) (𝟙 _) (by simp) (by simp) :
+      pullback (w ≫ a) p ⟶ pullback a p) :=
+  have :
+      IsPullback (pullback.fst (w ≫ a) p)
+        (pullback.map _ _ _ _ w (𝟙 _) (𝟙 _) (by simp) (by simp)) w (pullback.fst a p ) :=
+    IsPullback.of_bot (by simpa using IsPullback.of_hasPullback (w ≫ a) p) (by cat_disch)
+      (IsPullback.of_hasPullback a p)
+  weakEquivalence this
 
 end IsRightProper
 
