@@ -80,7 +80,7 @@ lemma trace_quotient_eq_trace_localization_quotient (x) :
   · congr
   · ext x
     simp only [equivQuotMaximalIdeal, RingHom.quotientKerEquivOfSurjective,
-      RingEquiv.coe_ringHom_trans, RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply,
+      RingEquiv.coe_toRingHom_trans, RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply,
       Ideal.quotEquivOfEq_mk, RingHom.quotientKerEquivOfRightInverse.apply, RingHom.kerLift_mk,
       equivQuotientMapMaximalIdeal, Ideal.Quotient.algebraMap_quotient_map_quotient]
     rw [← IsScalarTower.algebraMap_apply, ← IsScalarTower.algebraMap_apply]

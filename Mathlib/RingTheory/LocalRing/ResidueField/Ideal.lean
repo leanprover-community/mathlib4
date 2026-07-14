@@ -245,7 +245,7 @@ lemma Ideal.ResidueField.ringHom_ext {I : Ideal R} [I.IsPrime]
 @[ext high] -- higher than `AlgHom.ext`.
 lemma Ideal.ResidueField.algHom_ext {I : Ideal A} [I.IsPrime] {f g : I.ResidueField →ₐ[R] B}
     (H : f.comp (IsScalarTower.toAlgHom R A _) = g.comp (IsScalarTower.toAlgHom R A _)) : f = g :=
-  AlgHom.coe_ringHom_injective (ringHom_ext congr($H))
+  AlgHom.coe_toRingHom_injective (ringHom_ext congr($H))
 
 @[simp] lemma Ideal.ResidueField.mapₐ_id (I : Ideal A) [I.IsPrime] :
     Ideal.ResidueField.mapₐ I I (.id R A) rfl = .id _ _ := by ext; simp

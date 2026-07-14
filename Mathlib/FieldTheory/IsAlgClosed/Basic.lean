@@ -469,7 +469,7 @@ noncomputable def equivOfEquivAux (hSR : S ≃+* R) :
   refine ⟨equivOfAlgebraic' R S L M, ?_⟩
   ext x
   simp only [RingEquiv.toRingHom_eq_coe, Function.comp_apply, RingHom.coe_comp,
-    AlgEquiv.coe_ringEquiv, RingEquiv.coe_toRingHom]
+    AlgEquiv.coe_toRingEquiv, RingEquiv.coe_toRingHom]
   conv_lhs => rw [← hSR.symm_apply_apply x]
   change equivOfAlgebraic' R S L M (algebraMap R L (hSR x)) = _
   rw [AlgEquiv.commutes]
