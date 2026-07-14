@@ -164,11 +164,13 @@ set_option warn.sorry false in set_option linter.style.longLine false in
 theorem _root_.SimpleGraph.Preconnected.exists_isEulerian (h : G.Preconnected) (hp : ∃ (v' : V) (p : G.Walk v' v'), p.IsEulerian) (v : V) : ∃ p : G.Walk v v, p.IsEulerian := sorry
 
 -- #41722
-set_option warn.sorry false in set_option linter.style.longLine false in omit [DecidableEq V] in
+set_option warn.sorry false in set_option linter.style.longLine false in
+omit [DecidableEq V] in
 theorem edgeSet_mapToSubgraph {u v} {p : G.Walk u v} : p.mapToSubgraph.edgeSet = Sym2.map (↑) ⁻¹' p.edgeSet := sorry
 
 -- #41722
-set_option warn.sorry false in set_option linter.style.longLine false in omit [DecidableEq V] in
+set_option warn.sorry false in set_option linter.style.longLine false in
+omit [DecidableEq V] in
 theorem isTrail_mapToSubgraph {u v} {p : G.Walk u v} : p.mapToSubgraph.IsTrail ↔ p.IsTrail := sorry
 
 -- TODO: golf `Subgraph.degree_of_notMem_verts` with this
