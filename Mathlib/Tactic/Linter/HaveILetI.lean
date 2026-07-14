@@ -52,7 +52,7 @@ def runHaveI (tk : Syntax) (c : TSyntax ``letConfig) (d : TSyntax ``letDecl) : T
     withMainContext do
     if ← isProp (← getMainTarget) then
       let suggs ← Hint.mkSuggestionsMessage #[{toTryThisSuggestion := "have"}] tk none false
-      logWarning m!"Try this: {suggs}\n\n\
+      logLint linter.style.haveILetI (← getRef) m!"Try this: {suggs}\n\n\
         The goal is a proposition, so `have` is preferred over `haveI`.\n\
         The difference between `have` and `haveI` is that `haveI` inlines the value.\n\
         But this is not relevant for proofs because of proof irrelevance."
@@ -67,7 +67,7 @@ def runLetI (tk : Syntax) (c : TSyntax ``letConfig) (d : TSyntax ``letDecl) : Ta
     withMainContext do
     if ← isProp (← getMainTarget) then
       let suggs ← Hint.mkSuggestionsMessage #[{toTryThisSuggestion := "let"}] tk none false
-      logWarning m!"Try this: {suggs}\n\n\
+      logLint linter.style.haveILetI (← getRef) m!"Try this: {suggs}\n\n\
         The goal is a proposition, so `let` is preferred over `letI`.\n\
         The difference between `let` and `letI` is that `letI` inlines the value.\n\
         But this is not relevant for proofs because of proof irrelevance."
