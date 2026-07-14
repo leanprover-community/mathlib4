@@ -553,8 +553,8 @@ theorem Submodule.isClosed_sup_finiteDimensional
   rw [← comap_map_mkQ]
   exact (map s.mkQ t).closed_of_finiteDimensional.preimage continuous_quot_mk
 
-/-- Let `f : E →ₗ[𝕜] F` be a linear map, and `s` a subspace of `E` with finite codimension.
-If the image of `s` by `f` is closed, the the range of `f` is closed. -/
+/-- A sufficient condition for a linear map taking values in a TVS to have closed range is that
+there exists a finite-codimension subspace of the domain whose image is closed. -/
 theorem LinearMap.isClosed_range_of_isClosed_map_of_finiteDimensional_quotient
     {E : Type*} [AddCommGroup E] [Module 𝕜 E] {f : E →ₗ[𝕜] F} {s : Submodule 𝕜 E}
     [hs : FiniteDimensional 𝕜 (E ⧸ s)] (h : IsClosed (s.map f : Set F)) :

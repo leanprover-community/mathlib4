@@ -144,7 +144,7 @@ We prove the theorem under the assumptions that
 -/
 
 theorem step2 [T2Space F] (u : E →L[𝕜] F) (A : Submodule 𝕜 E)
-    (A_closed : IsClosed (A : Set E)) [A_cofg : A.CoFG]
+    (A_closed : IsClosed (A : Set E)) [A.CoFG]
     (h_ker : Disjoint u.ker A) (h_range : u.range = ⊤) :
     IsStrictMap u ↔ IsStrictMap (u.domRestrict A) ∧ IsClosed (map u.toLinearMap A : Set F) := by
   -- To reduce to step 1, it suffices to show that `IsStrictMap u → IsClosed (map u A)`.
@@ -168,7 +168,7 @@ We prove the theorem under the assumptions that
 -/
 
 theorem step3 [T2Space F] (u : E →L[𝕜] F) (A : Submodule 𝕜 E)
-    (A_closed : IsClosed (A : Set E)) [A_cofg : A.CoFG]
+    (A_closed : IsClosed (A : Set E)) [A.CoFG]
     (h_ker : Disjoint u.ker A) (h_range : IsClosed (u.range : Set F)) :
     IsStrictMap u ↔ IsStrictMap (u.domRestrict A) ∧ IsClosed (map u.toLinearMap A : Set F) := by
   -- Let `F' := u.range` and `i : F' →L[𝕜] F` be the inclusion map. By assumption,
@@ -196,7 +196,7 @@ We prove the theorem under the assumption that `u.ker` is disjoint from `A`
 -/
 
 theorem step4 [T2Space F] (u : E →L[𝕜] F) (A : Submodule 𝕜 E) (A_closed : IsClosed (A : Set E))
-    [A_cofg : A.CoFG] (h_ker : Disjoint u.ker A) :
+    [A.CoFG] (h_ker : Disjoint u.ker A) :
     (IsStrictMap u ∧ IsClosed (u.range : Set F)) ↔
       IsStrictMap (u.domRestrict A) ∧ IsClosed (map u.toLinearMap A : Set F) := by
   -- To reduce to step 3, it suffices to show that, if `map u A` is closed, then so is `u.range`.
@@ -220,8 +220,7 @@ closed range.
 
 This is [N. Bourbaki, *Théories Spectrales*, Chapitre III, § 3, n° 1, Prop. 1][bourbaki2023]. -/
 public theorem ContinuousLinearMap.isStrictMap_isClosed_range_iff_restrict [T2Space F]
-    (u : E →L[𝕜] F) (A : Submodule 𝕜 E) (A_closed : IsClosed (A : Set E))
-    [A_cofg : A.CoFG] :
+    (u : E →L[𝕜] F) (A : Submodule 𝕜 E) (A_closed : IsClosed (A : Set E)) [A.CoFG] :
     (IsStrictMap u ∧ IsClosed (u.range : Set F)) ↔
       (IsStrictMap (u.domRestrict A) ∧ IsClosed (map u.toLinearMap A : Set F)) := by
   -- To reduce to step 4, we quotient by `N := A ⊓ u.ker`. Denoting by `π : E → E ⧸ N`
@@ -286,7 +285,7 @@ section FiniteRank
 then `u` is strict with closed range if and only if `v` is strict with closed range. -/
 public theorem ContinuousLinearMap.isStrictMap_isClosed_range_iff_of_eqOn [T2Space F]
     (u v : E →L[𝕜] F) (A : Submodule 𝕜 E) (A_closed : IsClosed (A : Set E))
-    [A_cofg : A.CoFG] (h_eqOn : EqOn u v A) :
+    [A.CoFG] (h_eqOn : EqOn u v A) :
     (IsStrictMap u ∧ IsClosed (u.range : Set F)) ↔
       (IsStrictMap v ∧ IsClosed (v.range : Set F)) := by
   simp_rw [u.isStrictMap_isClosed_range_iff_restrict A,
