@@ -7,17 +7,15 @@ module
 
 public import Mathlib.Algebra.BigOperators.Module
 public import Mathlib.Algebra.Order.Field.Power
-public import Mathlib.Algebra.Polynomial.Monic
 public import Mathlib.Analysis.Asymptotics.Lemmas
 public import Mathlib.Analysis.Normed.Ring.InfiniteSum
 public import Mathlib.Analysis.Normed.Module.Basic
 public import Mathlib.Analysis.Normed.Order.Lattice
 public import Mathlib.Analysis.SpecificLimits.Basic
-public import Mathlib.Data.List.TFAE
 public import Mathlib.Combinatorics.Enumerative.Stirling
 public import Mathlib.Data.Nat.Choose.Bounds
+public import Mathlib.Data.Nat.Choose.Sum
 public import Mathlib.Order.Filter.AtTopBot.ModEq
-public import Mathlib.RingTheory.Polynomial.Pochhammer
 public import Mathlib.Tactic.NoncommRing
 
 /-!
