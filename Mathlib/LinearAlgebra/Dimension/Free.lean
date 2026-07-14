@@ -314,7 +314,7 @@ theorem Basis.nonempty_unique_index_of_finrank_eq_one
     Nonempty (Unique ι) := by
   -- why isn't this an instance?
   have : Nontrivial R := nontrivial_of_invariantBasisNumber R
-  haveI : Module.Finite R M :=
+  have : Module.Finite R M :=
     Module.finite_of_finrank_pos (Nat.lt_of_sub_eq_succ d1)
   have : Finite ι := Module.Finite.finite_basis b
   have : Fintype ι := Fintype.ofFinite ι

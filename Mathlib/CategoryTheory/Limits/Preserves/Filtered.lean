@@ -79,7 +79,7 @@ lemma preservesFilteredColimitsOfSize_of_univLE (F : C ⥤ D) [UnivLE.{w, w'}]
       PreservesFilteredColimitsOfSize.{w, w₂} F where
   preserves_filtered_colimits J _ _ := by
     let e := ((ShrinkHoms.equivalence.{w'} J).trans <| Shrink.equivalence _).symm
-    haveI := IsFiltered.of_equivalence e.symm
+    have := IsFiltered.of_equivalence e.symm
     exact preservesColimitsOfShape_of_equiv e F
 
 /--
@@ -135,7 +135,7 @@ lemma reflectsFilteredColimitsOfSize_of_univLE (F : C ⥤ D) [UnivLE.{w, w'}]
       ReflectsFilteredColimitsOfSize.{w, w₂} F where
   reflects_filtered_colimits J _ _ := by
     let e := ((ShrinkHoms.equivalence.{w'} J).trans <| Shrink.equivalence _).symm
-    haveI := IsFiltered.of_equivalence e.symm
+    have := IsFiltered.of_equivalence e.symm
     exact reflectsColimitsOfShape_of_equiv e F
 
 /--
@@ -195,7 +195,7 @@ lemma preservesCofilteredLimitsOfSize_of_univLE (F : C ⥤ D) [UnivLE.{w, w'}]
       PreservesCofilteredLimitsOfSize.{w, w₂} F where
   preserves_cofiltered_limits J _ _ := by
     let e := ((ShrinkHoms.equivalence.{w'} J).trans <| Shrink.equivalence _).symm
-    haveI := IsCofiltered.of_equivalence e.symm
+    have := IsCofiltered.of_equivalence e.symm
     exact preservesLimitsOfShape_of_equiv e F
 
 /--
@@ -251,7 +251,7 @@ lemma reflectsCofilteredLimitsOfSize_of_univLE (F : C ⥤ D) [UnivLE.{w, w'}]
       ReflectsCofilteredLimitsOfSize.{w, w₂} F where
   reflects_cofiltered_limits J _ _ := by
     let e := ((ShrinkHoms.equivalence.{w'} J).trans <| Shrink.equivalence _).symm
-    haveI := IsCofiltered.of_equivalence e.symm
+    have := IsCofiltered.of_equivalence e.symm
     exact reflectsLimitsOfShape_of_equiv e F
 
 /--

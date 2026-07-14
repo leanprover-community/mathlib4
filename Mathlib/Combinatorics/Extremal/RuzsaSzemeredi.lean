@@ -166,7 +166,7 @@ private lemma locallyLinear (hs : ThreeAPFree (s : Set α)) :
 
 private lemma card_edgeFinset (hs : ThreeAPFree (s : Set α)) [DecidableEq α] :
     #(graph <| triangleIndices s).edgeFinset = 3 * card α * #s := by
-  haveI := noAccidental hs
+  have := noAccidental hs
   rw [(locallyLinear hs).card_edgeFinset, card_triangles, card_triangleIndices, mul_assoc]
 
 end RuzsaSzemeredi
@@ -176,7 +176,7 @@ variable (α) [Fintype α] [DecidableEq α] [CommRing α] [Fact <| IsUnit (2 : �
 lemma addRothNumber_le_ruzsaSzemerediNumber :
     card α * addRothNumber (univ : Finset α) ≤ ruzsaSzemerediNumber (Sum α (Sum α α)) := by
   obtain ⟨s, -, hscard, hs⟩ := addRothNumber_spec (univ : Finset α)
-  haveI := noAccidental hs
+  have := noAccidental hs
   rw [← hscard, ← card_triangleIndices, ← card_triangles]
   exact (locallyLinear hs).le_ruzsaSzemerediNumber
 
@@ -184,7 +184,7 @@ lemma rothNumberNat_le_ruzsaSzemerediNumberNat (n : ℕ) :
     (2 * n + 1) * rothNumberNat n ≤ ruzsaSzemerediNumberNat (6 * n + 3) := by
   let α := Fin (2 * n + 1)
   have : Nat.Coprime 2 (2 * n + 1) := by simp
-  haveI : Fact (IsUnit (2 : Fin (2 * n + 1))) := ⟨by simpa
+  have : Fact (IsUnit (2 : Fin (2 * n + 1))) := ⟨by simpa
     using! (ZMod.unitOfCoprime 2 this).isUnit⟩
   open scoped Fin.CommRing in
   calc
