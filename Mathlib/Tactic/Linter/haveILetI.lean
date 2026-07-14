@@ -35,7 +35,7 @@ meta section
 
 open Lean Elab Meta Parser.Term Tactic Linter
 
-namespace Mathlib.Linter.HaveLetI
+namespace Mathlib.Linter.HaveILetI
 
 /-- The `haveILetI` linter flags uses of the `haveI` or `letI` tactic in a proof of a
 proposition. Since proofs are irrelevant, the value-inlining behaviour of `haveI`/`letI`
@@ -57,7 +57,7 @@ def runHaveI (tk : Syntax) (c : TSyntax ``letConfig) (d : TSyntax ``letDecl) : T
         The difference between `have` and `haveI` is that `haveI` inlines the value.\n\
         But this is not relevant for proofs because of proof irrelevance."
 
-/-- `haveI` behaves like `have`, but inlines the value instead of producing a `have` term. -/
+@[tactic_alt Parser.Tactic.tacticHaveI__]
 elab tk:"haveI" c:letConfig d:letDecl : tactic => runHaveI tk c d
 
 /-- Run the `letI` tactic, with a try this suggestion when the goal is a `Prop`. -/
@@ -72,7 +72,7 @@ def runLetI (tk : Syntax) (c : TSyntax ``letConfig) (d : TSyntax ``letDecl) : Ta
         The difference between `let` and `letI` is that `letI` inlines the value.\n\
         But this is not relevant for proofs because of proof irrelevance."
 
-/-- `letI` behaves like `let`, but inlines the value instead of producing a `let` term. -/
+@[tactic_alt Parser.Tactic.tacticLetI__]
 elab tk:"letI" c:letConfig d:letDecl : tactic => runLetI tk c d
 
-end Mathlib.Linter.HaveLetI
+end Mathlib.Linter.HaveILetI
