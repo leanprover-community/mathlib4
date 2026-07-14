@@ -184,11 +184,11 @@ abbrev BinaryFan (X Y : C) :=
   Cone (pair X Y)
 
 /-- The first projection of a binary fan. -/
-abbrev BinaryFan.fst {X Y : C} (s : BinaryFan X Y) :=
+abbrev BinaryFan.fst {X Y : C} (s : BinaryFan X Y) : s.pt ⟶ X :=
   s.π.app ⟨WalkingPair.left⟩
 
 /-- The second projection of a binary fan. -/
-abbrev BinaryFan.snd {X Y : C} (s : BinaryFan X Y) :=
+abbrev BinaryFan.snd {X Y : C} (s : BinaryFan X Y) : s.pt ⟶ Y :=
   s.π.app ⟨WalkingPair.right⟩
 
 -- Marking this `@[simp]` causes loops since `s.fst` is reducibly defeq to the LHS.
@@ -234,10 +234,10 @@ theorem BinaryFan.IsLimit.hom_ext {W X Y : C} {s : BinaryFan X Y} (h : IsLimit s
 abbrev BinaryCofan (X Y : C) := Cocone (pair X Y)
 
 /-- The first inclusion of a binary cofan. -/
-abbrev BinaryCofan.inl {X Y : C} (s : BinaryCofan X Y) := s.ι.app ⟨WalkingPair.left⟩
+abbrev BinaryCofan.inl {X Y : C} (s : BinaryCofan X Y) : X ⟶ s.pt := s.ι.app ⟨WalkingPair.left⟩
 
 /-- The second inclusion of a binary cofan. -/
-abbrev BinaryCofan.inr {X Y : C} (s : BinaryCofan X Y) := s.ι.app ⟨WalkingPair.right⟩
+abbrev BinaryCofan.inr {X Y : C} (s : BinaryCofan X Y) : Y ⟶ s.pt := s.ι.app ⟨WalkingPair.right⟩
 
 /-- Constructs an isomorphism of `BinaryCofan`s out of an isomorphism of the tips that commutes with
 the injections. -/
@@ -381,6 +381,12 @@ lemma BinaryFan.IsLimit.lift_snd {W : C} {s : BinaryFan X Y} (h : IsLimit s)
     lift h f g ≫ s.snd = g :=
   h.fac (BinaryFan.mk f g) _
 
+lemma BinaryFan.IsLimit.exists_lift
+    {X Y : C} {s : BinaryFan X Y} (h : IsLimit s)
+    {W : C} (f₁ : W ⟶ X) (f₂ : W ⟶ Y) :
+    ∃ (φ : W ⟶ s.pt), φ ≫ s.fst = f₁ ∧ φ ≫ s.snd = f₂ :=
+  ⟨lift h f₁ f₂, by simp, by simp⟩
+
 /-- If `s` is a limit binary fan over `X` and `Y`, then every pair of morphisms `f : W ⟶ X` and
 `g : W ⟶ Y` induces a morphism `l : W ⟶ s.pt` satisfying `l ≫ s.fst = f` and `l ≫ s.snd = g`.
 -/
@@ -409,6 +415,12 @@ lemma BinaryCofan.IsColimit.inr_desc {W : C} {s : BinaryCofan X Y} (h : IsColimi
     s.inr ≫ desc h f g = g :=
   h.fac (BinaryCofan.mk f g) _
 
+lemma BinaryCofan.IsColimit.exists_desc
+    {X Y : C} {s : BinaryCofan X Y} (h : IsColimit s)
+    {W : C} (f₁ : X ⟶ W) (f₂ : Y ⟶ W) :
+    ∃ (φ : s.pt ⟶ W), s.inl ≫ φ = f₁ ∧ s.inr ≫ φ = f₂ :=
+  ⟨desc h f₁ f₂, by simp, by simp⟩
+
 /-- If `s` is a colimit binary cofan over `X` and `Y`, then every pair of morphisms `f : X ⟶ W` and
 `g : Y ⟶ W` induces a morphism `l : s.pt ⟶ W` satisfying `s.inl ≫ l = f` and `s.inr ≫ l = g`.
 -/
@@ -426,7 +438,6 @@ def BinaryFan.isLimitFlip {X Y : C} {c : BinaryFan X Y} (hc : IsLimit c) :
       (e₂.trans (hc.fac (BinaryFan.mk s.snd s.fst) ⟨WalkingPair.left⟩).symm)
       (e₁.trans (hc.fac (BinaryFan.mk s.snd s.fst) ⟨WalkingPair.right⟩).symm)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem BinaryFan.isLimit_iff_isIso_fst {X Y : C} (h : IsTerminal Y) (c : BinaryFan X Y) :
     Nonempty (IsLimit c) ↔ IsIso c.fst := by
   constructor
@@ -449,7 +460,6 @@ theorem BinaryFan.isLimit_iff_isIso_snd {X Y : C} (h : IsTerminal X) (c : Binary
     ⟨fun h => ⟨BinaryFan.isLimitFlip h.some⟩, fun h =>
       ⟨(BinaryFan.isLimitFlip h.some).ofIsoLimit (isoBinaryFanMk c).symm⟩⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `X' ≅ X`, then `X × Y` also is the product of `X'` and `Y`. -/
 noncomputable def BinaryFan.isLimitCompLeftIso {X Y X' : C} (c : BinaryFan X Y) (f : X ⟶ X')
     [IsIso f] (h : IsLimit c) : IsLimit (BinaryFan.mk (c.fst ≫ f) c.snd) := by
@@ -476,7 +486,6 @@ def BinaryCofan.isColimitFlip {X Y : C} {c : BinaryCofan X Y} (hc : IsColimit c)
       (e₂.trans (hc.fac (BinaryCofan.mk s.inr s.inl) ⟨WalkingPair.left⟩).symm)
       (e₁.trans (hc.fac (BinaryCofan.mk s.inr s.inl) ⟨WalkingPair.right⟩).symm)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem BinaryCofan.isColimit_iff_isIso_inl {X Y : C} (h : IsInitial Y) (c : BinaryCofan X Y) :
     Nonempty (IsColimit c) ↔ IsIso c.inl := by
   constructor
@@ -499,7 +508,6 @@ theorem BinaryCofan.isColimit_iff_isIso_inr {X Y : C} (h : IsInitial X) (c : Bin
     ⟨fun h => ⟨BinaryCofan.isColimitFlip h.some⟩, fun h =>
       ⟨(BinaryCofan.isColimitFlip h.some).ofIsoColimit (isoBinaryCofanMk c).symm⟩⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `X' ≅ X`, then `X ⨿ Y` also is the coproduct of `X'` and `Y`. -/
 noncomputable def BinaryCofan.isColimitCompLeftIso {X Y X' : C} (c : BinaryCofan X Y) (f : X' ⟶ X)
     [IsIso f] (h : IsColimit c) : IsColimit (BinaryCofan.mk (f ≫ c.inl) c.inr) := by

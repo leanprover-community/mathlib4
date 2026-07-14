@@ -196,6 +196,13 @@ lemma IsStableUnderBaseChange.of_forall_exists_isPullback {P : MorphismProperty 
   obtain ⟨T, fst, snd, h, hfst⟩ := H f g hg
   rwa [← h.isoPullback_inv_fst, P.cancel_left_of_respectsIso]
 
+instance {ι : Type*} (W : ι → MorphismProperty C) [∀ i, (W i).IsStableUnderBaseChange] :
+    (⨆ i, W i).IsStableUnderBaseChange where
+  of_isPullback sq h := by
+    simp only [iSup_iff] at h ⊢
+    obtain ⟨_, h⟩ := h
+    exact ⟨_, of_isPullback sq h⟩
+
 variable (C)
 
 instance IsStableUnderBaseChange.isomorphisms :
@@ -323,6 +330,13 @@ lemma IsStableUnderCobaseChange.of_forall_exists_isPullback {P : MorphismPropert
   refine .mk' fun X Y S f g _ hg ↦ ?_
   obtain ⟨T, inl, inr, h, hinl⟩ := H f g hg
   rwa [← h.inr_isoPushout_hom, P.cancel_right_of_respectsIso]
+
+instance {ι : Type*} (W : ι → MorphismProperty C) [∀ i, (W i).IsStableUnderCobaseChange] :
+    (⨆ i, W i).IsStableUnderCobaseChange where
+  of_isPushout sq h := by
+    simp only [iSup_iff] at h ⊢
+    obtain ⟨_, h⟩ := h
+    exact ⟨_, of_isPushout sq h⟩
 
 instance IsStableUnderCobaseChange.isomorphisms :
     (isomorphisms C).IsStableUnderCobaseChange where
