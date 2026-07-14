@@ -155,7 +155,7 @@ theorem dist_coe_center (z w : ℍ) (r : ℝ) : dist (z : ℂ) (w.center r) =
 
 theorem cmp_dist_eq_cmp_dist_coe_center (z w : ℍ) (r : ℝ) :
     cmp (dist z w) r = cmp (dist (z : ℂ) (w.center r)) (w.im * Real.sinh r) := by
-  letI := metricSpaceAux
+  let := metricSpaceAux
   rcases lt_or_ge r 0 with hr₀ | hr₀
   · trans Ordering.gt
     exacts [(hr₀.trans_le dist_nonneg).cmp_eq_gt,
@@ -258,7 +258,7 @@ instance : MetricSpace ℍ :=
       apply_rules [Continuous.div, Continuous.mul, continuous_const, Continuous.arsinh,
         Continuous.dist, continuous_coe.comp, continuous_fst, continuous_snd,
         Real.continuous_sqrt.comp, continuous_im.comp]
-    · letI : MetricSpace ℍ := metricSpaceAux
+    · let : MetricSpace ℍ := metricSpaceAux
       refine le_of_nhds_le_nhds fun z => ?_
       rw [nhds_induced]
       refine (nhds_basis_ball.le_basis_iff (nhds_basis_ball.comap _)).2 fun R hR => ?_

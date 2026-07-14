@@ -485,7 +485,7 @@ theorem natSepDegree_expand (q : ℕ) [hF : ExpChar F q] {n : ℕ} :
     (expand F (q ^ n) f).natSepDegree = f.natSepDegree := by
   obtain - | hprime := hF
   · simp only [one_pow, expand_one]
-  haveI := Fact.mk hprime
+  have := Fact.mk hprime
   classical
   simpa only [natSepDegree_eq_of_isAlgClosed (AlgebraicClosure F), aroots_def, map_expand,
     Fintype.card_coe] using Fintype.card_eq.2
@@ -585,7 +585,7 @@ theorem eq_X_pow_char_pow_sub_C_of_natSepDegree_eq_one_of_irreducible (q : ℕ) 
     exact ⟨0, y, .inl rfl, hf⟩
   | prime hq =>
     refine ⟨n, y, (em _).imp id fun hn ⟨z, hy⟩ ↦ ?_, hf⟩
-    haveI := expChar_of_injective_ringHom (R := F) C_injective q
+    have := expChar_of_injective_ringHom (R := F) C_injective q
     rw [hf, ← Nat.succ_pred hn, pow_succ, pow_mul, ← hy, frobenius_def, map_pow,
       ← sub_pow_expChar] at hi
     exact not_irreducible_pow hq.ne_one hi
@@ -671,8 +671,8 @@ separable degree one if and only if the minimal polynomial is of the form
 `(X - x) ^ (q ^ n)` for some `n : ℕ`. -/
 theorem natSepDegree_eq_one_iff_eq_X_sub_C_pow : (minpoly F x).natSepDegree = 1 ↔
     ∃ n : ℕ, (minpoly F x).map (algebraMap F E) = (X - C x) ^ q ^ n := by
-  haveI := expChar_of_injective_algebraMap (algebraMap F E).injective q
-  haveI := expChar_of_injective_ringHom (C_injective (R := E)) q
+  have := expChar_of_injective_algebraMap (algebraMap F E).injective q
+  have := expChar_of_injective_ringHom (C_injective (R := E)) q
   refine ⟨fun h ↦ ?_, fun ⟨n, h⟩ ↦ (natSepDegree_eq_one_iff_pow_mem q).2 ?_⟩
   · obtain ⟨n, y, h⟩ := (natSepDegree_eq_one_iff_eq_X_pow_sub_C q).1 h
     have hx := congr_arg (Polynomial.aeval x) h.symm
@@ -716,7 +716,7 @@ private theorem finSepDegree_adjoin_simple_dvd_finrank (α : E) :
 algebraic over `F`. -/
 theorem finSepDegree_adjoin_simple_le_finrank (α : E) (halg : IsAlgebraic F α) :
     finSepDegree F F⟮α⟯ ≤ finrank F F⟮α⟯ := by
-  haveI := adjoin.finiteDimensional halg.isIntegral
+  have := adjoin.finiteDimensional halg.isIntegral
   exact Nat.le_of_dvd finrank_pos <| finSepDegree_adjoin_simple_dvd_finrank F E α
 
 /-- If `α` is algebraic over `F`, then the separable degree of `F⟮α⟯ / F` is equal to the degree
@@ -800,7 +800,7 @@ theorem IntermediateField.isSeparable_adjoin_simple_iff_isSeparable {x : E} :
   refine ⟨fun _ ↦ ?_, fun hsep ↦ ?_⟩
   · exact isSeparable_of_mem_isSeparable F E <| mem_adjoin_simple_self F x
   · have h := IsSeparable.isIntegral hsep
-    haveI := adjoin.finiteDimensional h
+    have := adjoin.finiteDimensional h
     rwa [← finSepDegree_eq_finrank_iff,
       finSepDegree_adjoin_simple_eq_finrank_iff F E x h.isAlgebraic]
 
@@ -811,7 +811,7 @@ theorem IsSeparable.of_algebra_isSeparable_of_isSeparable [Algebra E K] [IsScala
     [Algebra.IsSeparable F E] {x : K} (hsep : IsSeparable E x) : IsSeparable F x := by
   set f := minpoly E x with hf
   let E' : IntermediateField F E := adjoin F f.coeffs
-  haveI : FiniteDimensional F E' :=
+  have : FiniteDimensional F E' :=
     finiteDimensional_adjoin fun x _ ↦ Algebra.IsSeparable.isIntegral F x
   let g : E'[X] := f.toSubring E'.toSubring (subset_adjoin F _)
   have h : g.map (algebraMap E' E) = f := f.map_toSubring E'.toSubring (subset_adjoin F _)
@@ -823,10 +823,10 @@ theorem IsSeparable.of_algebra_isSeparable_of_isSeparable [Algebra E K] [IsScala
     isIntegral_trans (R := F) (A := E) _ (IsSeparable.isIntegral hsep) |>.tower_top
   simp only [IsSeparable, ← hf, ← h, separable_map] at hsep
   replace hsep := hsep.of_dvd <| minpoly.dvd E' x hzero
-  haveI : Algebra.IsSeparable F E' := Algebra.isSeparable_tower_bot_of_isSeparable F E' E
-  haveI := (isSeparable_adjoin_simple_iff_isSeparable _ _).2 hsep
-  haveI := adjoin.finiteDimensional halg
-  haveI : FiniteDimensional F E'⟮x⟯ := FiniteDimensional.trans F E' E'⟮x⟯
+  have : Algebra.IsSeparable F E' := Algebra.isSeparable_tower_bot_of_isSeparable F E' E
+  have := (isSeparable_adjoin_simple_iff_isSeparable _ _).2 hsep
+  have := adjoin.finiteDimensional halg
+  have : FiniteDimensional F E'⟮x⟯ := FiniteDimensional.trans F E' E'⟮x⟯
   have := finSepDegree_mul_finSepDegree_of_isAlgebraic F E' E'⟮x⟯
   rw [finSepDegree_eq_finrank_of_isSeparable F E',
     finSepDegree_eq_finrank_of_isSeparable E' E'⟮x⟯,
@@ -908,7 +908,7 @@ theorem perfectField_iff_splits_of_natSepDegree_eq_one (F : Type*) [Field F] :
     rw [h.natSepDegree_eq_natDegree, hf] at key
     exact Splits.of_natDegree_le_one key
   obtain ⟨p, _⟩ := ExpChar.exists F
-  haveI := PerfectRing.ofSurjective F p fun x ↦ by
+  have := PerfectRing.ofSurjective F p fun x ↦ by
     obtain ⟨y, hy⟩ := Splits.exists_eval_eq_zero
       (h _ (pow_one p ▸ natSepDegree_X_pow_char_pow_sub_C p 1 x))
       ((degree_X_pow_sub_C (expChar_pos F p) x).symm ▸ Nat.cast_pos.2 (expChar_pos F p)).ne'
