@@ -128,7 +128,6 @@ def leastExt : ι → ι :=
       rw [adjoin_basis_eq_top, ← eq_top_iff] at this
       apply_fun Module.rank F at this
       refine ne_of_lt ?_ this
-      let _ : AddCommMonoid (⊤ : IntermediateField F E) := inferInstance
       conv_rhs => rw [topEquiv.toLinearEquiv.rank_eq]
       have := mk_Iio_lt i (by simp)
       rw [mk_toType, card_ord] at this

@@ -198,5 +198,4 @@ theorem Topology.IsUpperSet.isSheaf_of_isRightKanExtension
     @rightKanExtensionUnique _ _ _ _ _ _ _ _ _ _ (by assumption) _ _ (by assumption)
   change TopCat.Presheaf.IsSheaf (X := TopCat.of X) P
   rw [isSheaf_iso_iff this]
-  let _ : Preorder (TopCat.of X) := inferInstanceAs <| Preorder X
   exact isSheaf_principalsKanExtension (X := TopCat.of X) F
