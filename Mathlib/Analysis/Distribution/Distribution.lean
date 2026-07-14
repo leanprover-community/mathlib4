@@ -295,64 +295,51 @@ open MeasureTheory
 variable [MeasurableSpace E] [OpensMeasurableSpace E]
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
 
-variable (Ω n) in
-/-- The distribution of order at most `n` induced by a function `f : E → F` and a measure `μ`,
+variable (Ω) in
+/-- The distribution induced by a function `f : E → F` and a measure `μ`,
 sending a test function `φ` to `∫ x, φ x • f x ∂μ`. This is the zero map if `f` is not locally
-integrable on `Ω`.
-
-In most cases you want to use the smooth version, i.e. `n = ⊤`. -/
-noncomputable def toDistribution (f : E → F) (μ : Measure E := by volume_tac) :
+integrable on `Ω`. -/
+noncomputable def toDistribution (f : E → F) (μ : Measure E := by volume_tac) (n := ⊤) :
     𝓓'^{n}(Ω, F) :=
   TestFunction.integralAgainstBilinCLM (ContinuousLinearMap.lsmul ℝ ℝ) μ f
-
-protected lemma _root_.TestFunction.integrable_smul {f : E → F} {μ : Measure E}
-    (φ : 𝓓^{n}(Ω, ℝ)) (hf : LocallyIntegrableOn f Ω μ) :
-    Integrable (fun x ↦ φ x • f x) μ :=
-  φ.integrable_bilin (ContinuousLinearMap.lsmul ℝ ℝ) hf
 
 @[simp]
 theorem toDistribution_apply {f : E → F} {μ : Measure E} (hf : LocallyIntegrableOn f Ω μ)
     {φ : 𝓓^{n}(Ω, ℝ)} :
-    toDistribution Ω n f μ φ = ∫ x, φ x • f x ∂μ := by
-  have h : toDistribution Ω n f μ φ =
-      TestFunction.integralAgainstBilinCLM (ContinuousLinearMap.lsmul ℝ ℝ) μ f φ := rfl
-  rw [h, TestFunction.integralAgainstBilinCLM_eq_integral hf]
-  simp
+    toDistribution Ω  f μ n φ = ∫ x, φ x • f x ∂μ := by
+  exact TestFunction.integralAgainstBilinCLM_eq_integral hf
 
-theorem toDistribution_of_not_locallyIntegrable {f : E → F} {μ : Measure E}
-    (hf : ¬ LocallyIntegrableOn f Ω μ) : toDistribution Ω n f μ = 0 := by
-  unfold toDistribution
+theorem toDistribution_eq_zero {f : E → F} {μ : Measure E}
+    (hf : ¬ LocallyIntegrableOn f Ω μ) : toDistribution Ω f μ n = 0 := by
   exact TestFunction.integralAgainstBilinCLM_eq_zero hf
 
 @[simp]
-theorem toDistribution_zero {μ : Measure E} : toDistribution Ω n (0 : E → F) μ = 0 := by
+theorem toDistribution_zero {μ : Measure E} : toDistribution Ω (0 : E → F) μ n = 0 := by
   by_cases h0 : LocallyIntegrableOn (0 : E → F) Ω μ
   · ext φ
     simp [toDistribution_apply h0]
-  · exact toDistribution_of_not_locallyIntegrable h0
+  · exact toDistribution_eq_zero h0
 
-theorem toDistribution_ae_congr {f f' : E → F} {μ : Measure E} (h : f =ᵐ[μ.restrict Ω] f') :
-    toDistribution Ω n f μ = toDistribution Ω n f' μ := by
+theorem toDistribution_eq_of_ae {f f' : E → F} {μ : Measure E} (h : f =ᵐ[μ.restrict Ω] f') :
+    toDistribution Ω f μ n = toDistribution Ω f' μ n := by
   by_cases hf : LocallyIntegrableOn f Ω μ
   · have hf' : LocallyIntegrableOn f' Ω μ := hf.congr h
     ext φ
     rw [toDistribution_apply hf, toDistribution_apply hf']
-    refine integral_congr_ae ?_
-    have hΩ : MeasurableSet (Ω : Set E) := Ω.isOpen.measurableSet
-    have h' : ∀ᵐ x ∂μ, x ∈ Ω → f x = f' x := (ae_restrict_iff' hΩ).mp h
-    filter_upwards [h'] with x hx
-    by_cases hxΩ : x ∈ Ω
-    · rw [hx hxΩ]
-    · have : φ x = 0 :=
-        image_eq_zero_of_notMem_tsupport fun hmem ↦ hxΩ (φ.tsupport_subset hmem)
-      rw [this, zero_smul, zero_smul]
+    have h' : ∀ᵐ x ∂μ, x ∉ Ω → φ x • f x = 0 := by
+      filter_upwards with x hx; simp [φ.zero_on_compl hx]
+    have h'' :  ∀ᵐ x ∂μ, x ∉ Ω → φ x • f' x = 0 := by
+      filter_upwards with x hx; simp [φ.zero_on_compl hx]
+    rw [← setIntegral_eq_integral_of_ae_compl_eq_zero h',
+      ← setIntegral_eq_integral_of_ae_compl_eq_zero h'']
+    refine integral_congr_ae <| Filter.EventuallyEq.smul (ae_eq_rfl) h
   · have hf' : ¬ LocallyIntegrableOn f' Ω μ := fun c ↦ hf (c.congr h.symm)
-    rw [toDistribution_of_not_locallyIntegrable hf, toDistribution_of_not_locallyIntegrable hf']
+    rw [toDistribution_eq_zero hf, toDistribution_eq_zero hf']
 
 @[simp]
 theorem toDistribution_add {f g : E → F} {μ : Measure E}
     (hf : LocallyIntegrableOn f Ω μ) (hg : LocallyIntegrableOn g Ω μ) :
-    toDistribution Ω n (f + g) μ = toDistribution Ω n f μ + toDistribution Ω n g μ := by
+    toDistribution Ω (f + g) μ n = toDistribution Ω f μ n + toDistribution Ω g μ n := by
   ext φ
   rw [add_apply, toDistribution_apply hf, toDistribution_apply hg,
     toDistribution_apply (hf.add hg),
@@ -360,18 +347,17 @@ theorem toDistribution_add {f g : E → F} {μ : Measure E}
   simp [Pi.add_apply, smul_add]
 
 theorem toDistribution_neg {f : E → F} {μ : Measure E} :
-    toDistribution Ω n (-f) μ = -toDistribution Ω n f μ := by
+    toDistribution Ω (-f) μ n = -toDistribution Ω f μ n := by
   by_cases hf : LocallyIntegrableOn f Ω μ
   · ext φ
     simp [toDistribution_apply hf, toDistribution_apply hf.neg, Pi.neg_apply, smul_neg,
       integral_neg]
   · have hnf : ¬ LocallyIntegrableOn (-f) Ω μ := by rwa [locallyIntegrableOn_neg_iff]
-    rw [toDistribution_of_not_locallyIntegrable hf, toDistribution_of_not_locallyIntegrable hnf,
-      neg_zero]
+    rw [toDistribution_eq_zero hf, toDistribution_eq_zero hnf, neg_zero]
 
 @[simp]
 theorem toDistribution_smul {f : E → F} {μ : Measure E} (c : ℝ) :
-    toDistribution Ω n (c • f) μ = c • toDistribution Ω n f μ := by
+    toDistribution Ω (c • f) μ n = c • toDistribution Ω f μ n := by
   by_cases hf : LocallyIntegrableOn f Ω μ
   · ext φ
     rw [toDistribution_apply (hf.smul c), smul_apply, toDistribution_apply hf, ← integral_smul]
@@ -380,42 +366,26 @@ theorem toDistribution_smul {f : E → F} {μ : Measure E} (c : ℝ) :
     rw [smul_comm]
   · rcases eq_or_ne c 0 with rfl | hc
     · simp
-    · have hcf : ¬ LocallyIntegrableOn (c • f) Ω μ := by
-        rw [locallyIntegrableOn_smul_iff, not_or]; exact ⟨hc, hf⟩
-      rw [toDistribution_of_not_locallyIntegrable hf, toDistribution_of_not_locallyIntegrable hcf,
-        smul_zero]
-
-section Injective
+    · have hcf : ¬ LocallyIntegrableOn (c • f) Ω μ := by aesop
+      rw [toDistribution_eq_zero hf, toDistribution_eq_zero hcf, smul_zero]
 
 variable [BorelSpace E] [FiniteDimensional ℝ E] [CompleteSpace F]
 
-theorem toDistribution_inj {f f' : E → F} {μ : Measure E}
+theorem toDistribution_injective {f f' : E → F} {μ : Measure E}
     (hf : LocallyIntegrableOn f Ω μ) (hf' : LocallyIntegrableOn f' Ω μ)
-    (h : toDistribution Ω n f μ = toDistribution Ω n f' μ) :
+    (h : toDistribution Ω f μ n = toDistribution Ω f' μ n) :
     f =ᵐ[μ.restrict Ω] f' := by
-  have hΩ : MeasurableSet (Ω : Set E) := Ω.isOpen.measurableSet
-  have key : ∀ᵐ x ∂μ, x ∈ Ω → (f - f') x = 0 := by
-    refine Ω.isOpen.ae_eq_zero_of_integral_contDiff_smul_eq_zero (hf.sub hf')
-      fun g g_diff g_supp g_tsupp ↦ ?_
-    let φ : 𝓓^{n}(Ω, ℝ) := ⟨g, g_diff.of_le (mod_cast le_top), g_supp, g_tsupp⟩
-    have happ : ∀ x, φ x = g x := fun _ ↦ rfl
-    have hint : ∫ x, g x • f x ∂μ = ∫ x, g x • f' x ∂μ := by
-      have e := DFunLike.congr_fun h φ
-      rw [toDistribution_apply hf, toDistribution_apply hf'] at e
-      simpa only [happ] using e
-    calc
-      ∫ x, g x • (f - f') x ∂μ = ∫ x, (g x • f x - g x • f' x) ∂μ := by
-        simp [Pi.sub_apply, smul_sub]
-      _ = ∫ x, g x • f x ∂μ - ∫ x, g x • f' x ∂μ :=
-        integral_sub (φ.integrable_smul hf) (φ.integrable_smul hf')
-      _ = 0 := by rw [hint, sub_self]
-  have h' : ∀ᵐ x ∂μ, x ∈ Ω → f x = f' x := by
-    filter_upwards [key] with x hx hxΩ
-    have := hx hxΩ
-    rwa [Pi.sub_apply, sub_eq_zero] at this
-  exact (ae_restrict_iff' hΩ).mpr h'
-
-end Injective
+  suffices h' : ∀ᵐ x ∂μ, x ∈ Ω → (f - f') x = 0 by
+    rw [← sub_ae_eq_zero]
+    exact (ae_restrict_iff' Ω.isOpen.measurableSet).mpr h'
+  refine Ω.isOpen.ae_eq_zero_of_integral_contDiff_smul_eq_zero (hf.sub hf')
+    fun g g_diff g_compact g_tsupp ↦ ?_
+  let φ : 𝓓^{n}(Ω, ℝ) := ⟨g, g_diff.of_le (mod_cast le_top), g_compact, g_tsupp⟩
+  have : ∫ x, φ x • (f - f') x ∂μ = 0:= by
+    simp_rw [Pi.sub_apply, smul_sub]
+    rw [integral_sub (φ.integrable_smul hf) (φ.integrable_smul hf'), sub_eq_zero]
+    rw [← toDistribution_apply hf, ← toDistribution_apply hf', h]
+  congr
 
 end toDistribution
 
