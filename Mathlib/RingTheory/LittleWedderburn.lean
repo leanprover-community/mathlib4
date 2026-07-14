@@ -173,5 +173,4 @@ theorem Finite.isDomain_to_isField (D : Type*) [Finite D] [Ring D] [IsDomain D] 
   classical
   cases nonempty_fintype D
   let _ := Fintype.divisionRingOfIsDomain D
-  let _ := littleWedderburn D
   exact Field.toIsField D

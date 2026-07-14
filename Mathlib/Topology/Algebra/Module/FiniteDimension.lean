@@ -10,6 +10,7 @@ public import Mathlib.Analysis.LocallyConvex.Bounded
 public import Mathlib.Analysis.Normed.Module.Basic
 public import Mathlib.Analysis.SpecificLimits.Normed
 public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
+public import Mathlib.RingTheory.Finiteness.Cofinite
 public import Mathlib.RingTheory.LocalRing.Basic
 public import Mathlib.Topology.Algebra.Module.Determinant
 public import Mathlib.Topology.Algebra.Module.ModuleTopology
@@ -552,6 +553,17 @@ theorem Submodule.isClosed_sup_finiteDimensional
   rw [← comap_map_mkQ]
   exact (map s.mkQ t).closed_of_finiteDimensional.preimage continuous_quot_mk
 
+/-- A sufficient condition for a linear map taking values in a TVS to have closed range is that
+there exists a finite-codimension subspace of the domain whose image is closed. -/
+theorem LinearMap.isClosed_range_of_isClosed_map_of_finiteDimensional_quotient
+    {E : Type*} [AddCommGroup E] [Module 𝕜 E] {f : E →ₗ[𝕜] F} {s : Submodule 𝕜 E}
+    [s.CoFG] (h : IsClosed (s.map f : Set F)) :
+    IsClosed (f.range : Set F) := by
+  obtain ⟨t, s_compl_t⟩ := Submodule.exists_isCompl s
+  have : FiniteDimensional 𝕜 t := .of_fg <| Submodule.CoFG.fg_of_isCompl s_compl_t inferInstance
+  rw [← Submodule.map_top, ← s_compl_t.sup_eq_top, Submodule.map_sup]
+  exact Submodule.isClosed_sup_finiteDimensional _ _ h
+
 /-- An injective linear map with finite-dimensional domain is a closed embedding. -/
 theorem LinearMap.isClosedEmbedding_of_injective [T2Space E] [FiniteDimensional 𝕜 E] [T2Space F]
     {f : E →ₗ[𝕜] F} (hf : LinearMap.ker f = ⊥) : IsClosedEmbedding f :=
@@ -738,6 +750,14 @@ theorem Submodule.ClosedComplemented.of_finiteDimensional_quotient {p : Submodul
 @[deprecated (since := "2026-05-09")]
 alias Submodule.ClosedComplemented.of_quotient_finiteDimensional :=
   Submodule.ClosedComplemented.of_finiteDimensional_quotient
+
+theorem Submodule.ClosedComplemented.of_disjoint_of_finiteDimensional_quotient
+    {A B : Submodule 𝕜 E} [B_cofg : FiniteDimensional 𝕜 (E ⧸ B)] (hB : IsClosed (B : Set E))
+    (hAB : Disjoint A B) : A.ClosedComplemented := by
+  obtain ⟨C, B_le_C, C_compl_A⟩ := hAB.symm.exists_isCompl
+  have C_cofg : FiniteDimensional 𝕜 (E ⧸ C) := CoFG.of_le B_le_C B_cofg
+  have hC : IsClosed (C : Set E) := isClosed_mono_of_finiteDimensional_quotient hB B_le_C
+  exact C_compl_A.isTopCompl_of_finiteDimensional_quotient hC |>.symm.closedComplemented
 
 lemma Submodule.ClosedComplemented.of_finiteDimensional_of_le
     {A B : Submodule 𝕜 E} [FiniteDimensional 𝕜 A] (hA : A.ClosedComplemented) [T2Space A]
