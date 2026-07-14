@@ -693,21 +693,13 @@ theorem dvd_den_bernoulli {k p : ℕ} (hk : 0 < k) (hk2 : Even k) [Fact p.Prime]
   by_contra hcon
   exact absurd (heq ▸ Rat.padicValuation_le_one_iff.mpr hcon) (not_le.mpr hvp)
 
-/-- If `p` is prime, `k` is positive and even, and `p - 1 ∣ k`, then the denominator of `Bₖ⁻¹`
-is not divisible by `p`. -/
-theorem not_dvd_den_inv_bernoulli {k p : ℕ} (hk : 0 < k) (hk2 : Even k) [Fact p.Prime]
-    (hpk : p - 1 ∣ k) : ¬ p ∣ (bernoulli k)⁻¹.den := by
-  have hdvd : p ∣ (bernoulli k).den := dvd_den_bernoulli hk hk2 hpk
-  have hB0 : bernoulli k ≠ 0 := fun h ↦ by simp [h, (Fact.out : p.Prime).ne_one] at hdvd
-  simpa [Rat.den_inv_of_ne_zero hB0] using fun hnum ↦
-    Nat.not_coprime_of_dvd_of_dvd (Fact.out : p.Prime).one_lt hnum hdvd (bernoulli k).reduced
-
-/-- If `p` is prime, `k` is positive and even, and `p - 1 ∣ k`, then `p` divides the numerator
-of `Bₖ⁻¹`. -/
-theorem dvd_num_inv_bernoulli {k p : ℕ} (hk : 0 < k) (hk2 : Even k) [Fact p.Prime]
-    (hpk : p - 1 ∣ k) : (p : ℤ) ∣ (bernoulli k)⁻¹.num := by
-  rw [Rat.num_inv]
-  exact (Int.natCast_dvd_natCast.mpr (dvd_den_bernoulli hk hk2 hpk)).mul_left _
+/-- If `p` is prime, `k` is positive and even, and `p - 1 ∣ k`, then `p` does not divide the
+numerator of the Bernoulli number `Bₖ`. -/
+theorem not_dvd_num_bernoulli {k p : ℕ} (hk : 0 < k) (hk2 : Even k) [Fact p.Prime]
+    (hpk : p - 1 ∣ k) : ¬ (p : ℤ) ∣ (bernoulli k).num := by
+  rw [Int.natCast_dvd]
+  exact fun hnum ↦ Nat.not_coprime_of_dvd_of_dvd (Fact.out : p.Prime).one_lt hnum
+    (dvd_den_bernoulli hk hk2 hpk) (bernoulli k).reduced
 
 end Bernoulli
 
