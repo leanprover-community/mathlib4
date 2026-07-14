@@ -65,6 +65,26 @@ noncomputable def topologicalSheaf : Sheaf (ProEt.topology X) Ab :=
     ⟨continuousMapPresheafAb M, .of_le proetaleTopology_le_fpqcTopology <|
       isSheaf_fpqcTopology_continuousMapPresheafAb _⟩
 
+/-- Postcomposition with a continuous additive map, as a morphism of the sheaves of
+continuous maps. -/
+noncomputable def topologicalSheafMap {M' : Type v} [TopologicalSpace M']
+    [AddCommGroup M'] [IsTopologicalAddGroup M'] (f : M →+ M') (hf : Continuous f) :
+    topologicalSheaf X M ⟶ topologicalSheaf X M' where
+  hom :=
+    { app := fun U ↦ AddCommGrpCat.ofHom
+        (AddMonoidHom.mk' (fun g ↦ (ContinuousMap.mk f hf).comp g)
+          (fun g₁ g₂ ↦ by ext x; exact map_add f _ _))
+      naturality := by cat_disch }
+
+/-- Functoriality of `topologicalSheafMap`. -/
+lemma topologicalSheafMap_comp
+    {M₂ M₃ : Type v} [TopologicalSpace M₂] [AddCommGroup M₂] [IsTopologicalAddGroup M₂]
+    [TopologicalSpace M₃] [AddCommGroup M₃] [IsTopologicalAddGroup M₃]
+    (f : M →+ M₂) (hf : Continuous f) (g : M₂ →+ M₃) (hg : Continuous g) :
+    topologicalSheafMap X M f hf ≫ topologicalSheafMap X M₂ g hg =
+      topologicalSheafMap X M (g.comp f) (hg.comp hf) := by
+  cat_disch
+
 /--
 The sheaf of continuous maps `U ↦ C(U, ℤ_[ℓ])` on the pro-étale site. This the coefficient
 sheaf for `ℓ`-adic cohomology.
