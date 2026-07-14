@@ -253,6 +253,14 @@ theorem map_nontrivial : (s.map f).Nontrivial ↔ s.Nontrivial :=
 theorem attach_map_val {s : Finset α} : s.attach.map (Embedding.subtype _) = s :=
   eq_of_veq <| by rw [map_val, attach_val]; exact Multiset.attach_map_val _
 
+variable (f s) in
+/-- A `Finset` is in bijection with its image under an `Embedding`. -/
+@[simps!]
+noncomputable def equivMap : s ≃ s.map f :=
+  .ofBijective (fun x ↦ ⟨f x, s.mem_map_of_mem f x.2⟩) (⟨fun x y ↦ by simp, fun ⟨x, hx⟩ ↦ by
+    obtain ⟨x, hxs, rfl⟩ := mem_map.mp hx
+    exact ⟨⟨x, hxs⟩, rfl⟩⟩)
+
 end Map
 
 theorem range_add_one' (n : ℕ) :
