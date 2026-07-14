@@ -58,8 +58,7 @@ instance : IsGrothendieckAbelian.{u + 1} (Sheaf (ProEt.topology X) Ab.{u + 1}) :
 variable (M : Type v) [TopologicalSpace M] [AddCommGroup M] [IsTopologicalAddGroup M]
 
 /-- The sheaf `U ↦ C(U, M)` on the pro-étale site of `X`, for a topological abelian
-group `M`. For `M = ℤ_[ℓ]` this is `X.ellAdicSheaf ℓ` (definitionally, see
-`ellAdicSheaf_eq_topologicalSheaf`). -/
+group `M`. For `M = ℤ_[ℓ]` this is `X.ellAdicSheaf ℓ`. -/
 noncomputable def topologicalSheaf : Sheaf (ProEt.topology X) Ab :=
   ((ProEt.forget X ⋙ Over.forget _).sheafPushforwardContinuous _ _ proetaleTopology).obj
     ⟨continuousMapPresheafAb M, .of_le proetaleTopology_le_fpqcTopology <|
