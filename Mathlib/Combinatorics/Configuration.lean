@@ -230,7 +230,7 @@ theorem HasLines.card_le [HasLines P L] [Fintype P] [Fintype L] :
         · rw [lineCount, Nat.card_eq_fintype_card, Fintype.card_pos_iff]
           obtain ⟨l, _⟩ := @exists_line P L _ _ p
           exact
-            let this := not_exists.mp hp l
+            let := not_exists.mp hp l
             ⟨⟨mkLine this, (mkLine_ax this).2⟩⟩
   exact lt_irrefl _ this
 
@@ -286,7 +286,7 @@ theorem HasPoints.lineCount_eq_pointCount [HasPoints P L] [Fintype P] [Fintype L
 @[implicit_reducible]
 noncomputable def HasLines.hasPoints [HasLines P L] [Fintype P] [Fintype L]
     (h : Fintype.card P = Fintype.card L) : HasPoints P L :=
-  let this : ∀ l₁ l₂ : L, l₁ ≠ l₂ → ∃ p : P, p ∈ l₁ ∧ p ∈ l₂ := fun l₁ l₂ hl => by
+  let : ∀ l₁ l₂ : L, l₁ ≠ l₂ → ∃ p : P, p ∈ l₁ ∧ p ∈ l₂ := fun l₁ l₂ hl => by
     classical
       obtain ⟨f, _, hf2⟩ := HasLines.exists_bijective_of_card_eq h
       haveI : Nontrivial L := ⟨⟨l₁, l₂, hl⟩⟩
@@ -321,7 +321,7 @@ noncomputable def HasLines.hasPoints [HasLines P L] [Fintype P] [Fintype L]
 @[implicit_reducible]
 noncomputable def HasPoints.hasLines [HasPoints P L] [Fintype P] [Fintype L]
     (h : Fintype.card P = Fintype.card L) : HasLines P L :=
-  let this := @HasLines.hasPoints (Dual L) (Dual P) _ _ _ _ h.symm
+  let := @HasLines.hasPoints (Dual L) (Dual P) _ _ _ _ h.symm
   { ‹HasPoints P L› with
     mkLine := @fun _ _ => this.mkPoint
     mkLine_ax := @fun _ _ => this.mkPoint_ax }

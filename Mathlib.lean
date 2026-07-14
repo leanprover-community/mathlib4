@@ -4066,6 +4066,7 @@ public import Mathlib.Data.List.DropRight
 public import Mathlib.Data.List.Duplicate
 public import Mathlib.Data.List.Enum
 public import Mathlib.Data.List.FinRange
+public import Mathlib.Data.List.Find
 public import Mathlib.Data.List.Flatten
 public import Mathlib.Data.List.Fold
 public import Mathlib.Data.List.Forall2
@@ -4142,6 +4143,7 @@ public import Mathlib.Data.Multiset.Dedup
 public import Mathlib.Data.Multiset.Defs
 public import Mathlib.Data.Multiset.DershowitzManna
 public import Mathlib.Data.Multiset.Filter
+public import Mathlib.Data.Multiset.Find
 public import Mathlib.Data.Multiset.FinsetOps
 public import Mathlib.Data.Multiset.Fintype
 public import Mathlib.Data.Multiset.Fold
@@ -4810,12 +4812,14 @@ public import Mathlib.GroupTheory.MonoidLocalization.Away
 public import Mathlib.GroupTheory.MonoidLocalization.Basic
 public import Mathlib.GroupTheory.MonoidLocalization.Cardinality
 public import Mathlib.GroupTheory.MonoidLocalization.DivPairs
+public import Mathlib.GroupTheory.MonoidLocalization.Divisibility
 public import Mathlib.GroupTheory.MonoidLocalization.Finite
 public import Mathlib.GroupTheory.MonoidLocalization.GrothendieckGroup
 public import Mathlib.GroupTheory.MonoidLocalization.Lemmas
 public import Mathlib.GroupTheory.MonoidLocalization.Maps
 public import Mathlib.GroupTheory.MonoidLocalization.MonoidWithZero
 public import Mathlib.GroupTheory.MonoidLocalization.Order
+public import Mathlib.GroupTheory.MonoidLocalization.UniqueFactorization
 public import Mathlib.GroupTheory.Nilpotent
 public import Mathlib.GroupTheory.NoncommCoprod
 public import Mathlib.GroupTheory.NoncommPiCoprod
@@ -5105,7 +5109,7 @@ public import Mathlib.LinearAlgebra.Matrix.Circulant
 public import Mathlib.LinearAlgebra.Matrix.ConjTranspose
 public import Mathlib.LinearAlgebra.Matrix.Defs
 public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
-public import Mathlib.LinearAlgebra.Matrix.Determinant.Bird
+public import Mathlib.LinearAlgebra.Matrix.Determinant.Bird.Defs
 public import Mathlib.LinearAlgebra.Matrix.Determinant.Misc
 public import Mathlib.LinearAlgebra.Matrix.Determinant.TotallyUnimodular
 public import Mathlib.LinearAlgebra.Matrix.Diagonal
@@ -7989,6 +7993,7 @@ public import Mathlib.Topology.Maps.Proper.CompactlyGenerated
 public import Mathlib.Topology.Maps.Proper.UniversallyClosed
 public import Mathlib.Topology.Maps.Strict.Basic
 public import Mathlib.Topology.Maps.Strict.Group
+public import Mathlib.Topology.Maps.Strict.Module
 public import Mathlib.Topology.MetricSpace.Algebra
 public import Mathlib.Topology.MetricSpace.Antilipschitz
 public import Mathlib.Topology.MetricSpace.Basic
