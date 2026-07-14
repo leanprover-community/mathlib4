@@ -7,6 +7,10 @@ module
 
 public import Mathlib.Analysis.InnerProductSpace.Completion
 public import Mathlib.Analysis.InnerProductSpace.Positive
+public import Mathlib.Analysis.Normed.Lp.WithLp
+public import Mathlib.MeasureTheory.Measure.Typeclasses.Finite
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
+public import Mathlib.MeasureTheory.Integral.Prod
 
 /-!
 # Reproducing Kernel Hilbert Spaces
@@ -316,4 +320,113 @@ theorem kernel_ofKernel : kernel (OfKernel K) = K := by
   simp [kernel, adjoint_inner_left, -inner_kerFun, -kerFun_inner,
     coeCLM, OfKernel.kerFun, inner_H₀_def, RKHS.kerFun]
 
-end RKHS.OfKernel
+end OfKernel
+
+section Mercer
+
+open MeasureTheory
+
+variable [TopologicalSpace X] [CompactSpace X] [MeasurableSpace X] [BorelSpace X]
+variable (μ : Measure X) [IsFiniteMeasure μ]
+
+instance : NormedSpace ℝ V := NormedSpace.restrictScalars ℝ 𝕜 V
+
+variable (K) in
+private noncomputable def integralOperatorAux (f : Lp V 2 μ) : X → V :=
+  fun x => ∫ y, K x y (f y) ∂μ
+
+omit [CompleteSpace V] [Fact K.PosSemidef] [BorelSpace X] in
+private lemma integralOperatorAux_eLpNorm_le
+    (hK : MemLp (fun p : X × X => K p.1 p.2) 2 (μ.prod μ)) (f : Lp V 2 μ) :
+    AEStronglyMeasurable (integralOperatorAux K μ f) μ ∧
+      eLpNorm (integralOperatorAux K μ f) 2 μ
+        ≤ eLpNorm (fun p : X × X => K p.1 p.2) 2 (μ.prod μ) * eLpNorm f 2 μ := by
+  unfold integralOperatorAux
+  constructor
+  · exact AEStronglyMeasurable.integral_prod_right'
+      (isBoundedBilinearMap_apply.continuous.comp_aestronglyMeasurable
+        (hK.aestronglyMeasurable.prodMk ((Lp.aestronglyMeasurable f).comp_snd (μ:=μ))))
+  · grw [eLpNorm_eq_lintegral_rpow_enorm_toReal (Ne.symm (NeZero.ne' 2)) ENNReal.ofNat_ne_top, enorm_integral_le_lintegral_enorm, le_opENorm]
+    have hK_slice : ∀ᵐ x ∂μ, AEMeasurable (fun y ↦ ‖K x y‖ₑ) μ :=
+      hK.aestronglyMeasurable.prodMk_left.mono (fun x hx => hx.enorm)
+    have h' : ∀ᵐ x ∂μ,
+        ∫⁻ y, ‖K x y‖ₑ * ‖f y‖ₑ ∂μ
+          ≤ (∫⁻ y, ‖K x y‖ₑ ^ 2 ∂μ) ^ (2 : ℝ)⁻¹ * (∫⁻ y, ‖f y‖ₑ ^ 2 ∂μ) ^ (2 : ℝ)⁻¹ := by
+      filter_upwards [hK_slice] with x hx
+      simpa using ENNReal.lintegral_mul_le_Lp_mul_Lq μ Real.HolderConjugate.two_two
+        (f := fun y => ‖K x y‖ₑ) hx (Lp.aestronglyMeasurable f).enorm
+    calc
+       (∫⁻ (x : X), (∫⁻ (a : X), ‖K x a‖ₑ * ‖f a‖ₑ ∂μ) ^ (2:ℝ) ∂μ) ^ (1 / (2:ℝ))
+          = (∫⁻ (x : X), (∫⁻ (a : X), ‖K x a‖ₑ * ‖f a‖ₑ ∂μ) ^ 2 ∂μ) ^ (2:ℝ)⁻¹ := by
+        simp
+       _ ≤ (∫⁻ (a : X), ((∫⁻ (y : X), ‖K a y‖ₑ ^ 2 ∂μ) ^ (2:ℝ)⁻¹
+          * (∫⁻ (y : X), ‖f y‖ₑ ^ 2 ∂μ) ^ (2:ℝ)⁻¹) ^ 2 ∂μ) ^ (2:ℝ)⁻¹ := by
+        grw [lintegral_mono_ae (h'.mono fun x hx => ENNReal.pow_le_pow_left (n:=2) hx)]
+       _ = (∫⁻ (a : X), (∫⁻ (y : X), ‖K a y‖ₑ ^ 2 ∂μ)
+          * (∫⁻ (y : X), ‖f y‖ₑ ^ 2 ∂μ) ∂μ) ^ (2:ℝ)⁻¹ := by
+        have h : ∀ᵐ x ∂μ, ((∫⁻ (y : X), ‖K x y‖ₑ ^ 2 ∂μ) ^ (2:ℝ)⁻¹
+            * (∫⁻ (y : X), ‖f y‖ₑ ^ 2 ∂μ) ^ (2:ℝ)⁻¹) ^ 2
+            = (∫⁻ (y : X), ‖K x y‖ₑ ^ 2 ∂μ) * ∫⁻ (y : X), ‖f y‖ₑ ^ 2 ∂μ := by
+          apply ae_of_all
+          intro x
+          simp_rw [mul_pow, ← ENNReal.rpow_mul_natCast _ 2⁻¹ 2]
+          simp
+        rw [lintegral_congr_ae (h.mono fun x hx => hx)]
+       _ = (∫⁻ (a : X), (∫⁻ (y : X), ‖K a y‖ₑ ^ 2 ∂μ) ∂μ) ^ (2:ℝ)⁻¹
+          * (∫⁻ (y : X), ‖f y‖ₑ ^ 2 ∂μ) ^ (2:ℝ)⁻¹ := by
+        rw [← ENNReal.mul_rpow_of_nonneg _ _ (by norm_num), lintegral_mul_const'']
+        exact (hK.aestronglyMeasurable.enorm.pow_const 2).lintegral_prod_right'
+       _ ≤ eLpNorm (fun p ↦ K p.1 p.2) 2 (μ.prod μ) * eLpNorm (↑↑f) 2 μ := by
+        have h1 := eLpNorm_nnreal_eq_lintegral (μ:=μ.prod μ) (f:=(fun p ↦ ‖K p.1 p.2‖ₑ)) (by exact two_ne_zero)
+        have h2 := eLpNorm_nnreal_eq_lintegral (μ:=μ) (f:=f) (by exact two_ne_zero)
+        simp at h1 h2
+        rw [h1, ← h2]
+        rcases eq_or_ne (eLpNorm (↑↑f) 2 μ) 0 with hf0 | hf0
+        · simp [hf0]
+        rw [ENNReal.mul_le_mul_iff_left hf0 (Lp.eLpNorm_ne_top f),
+          ← lintegral_prod _ (hK.aestronglyMeasurable.enorm.pow_const 2)]
+
+private lemma integralOperatorAux_integrable_ae
+    (hK : MemLp (fun p : X × X => K p.1 p.2) 2 (μ.prod μ)) (f : Lp V 2 μ) :
+    ∀ᵐ x ∂μ, Integrable (fun y => K x y (f y)) μ := by sorry
+
+variable [SMulCommClass ℝ 𝕜 V]
+
+-- The integral operator as a continuous linear map from L^2 to L^2
+def integralOperator (hK : MemLp (fun ((x, y) : X × X) ↦ K x y) 2 (μ.prod μ)) :
+    Lp V 2 μ →L[𝕜] Lp V 2 μ :=
+  LinearMap.mkContinuous
+    { toFun f := MemLp.toLp (fun x => ∫ y, K x y (f y) ∂μ)
+        ⟨(integralOperatorAux_eLpNorm_le μ hK f).1,
+          (lt_of_le_of_lt (integralOperatorAux_eLpNorm_le μ hK f).2
+            (ENNReal.mul_lt_top hK.eLpNorm_lt_top (Lp.memLp f).eLpNorm_lt_top))⟩
+      map_add' f g := by
+        have hf_int := integralOperatorAux_integrable_ae μ hK f
+        have hg_int := integralOperatorAux_integrable_ae μ hK g
+        have hfg := Lp.coeFn_add f g
+        simp only [← MemLp.toLp_add, Pi.add_def, MemLp.toLp_eq_toLp_iff]
+        filter_upwards [hf_int, hg_int] with x hxf hxg
+        have hcong : (fun y => K x y ((f + g) y)) =ᵐ[μ] fun y => K x y (f y) + K x y (g y) :=
+          hfg.mono fun y hy => by simp_rw [hy]; simp [map_add]
+        simp_rw [integral_congr_ae hcong, integral_add hxf hxg]
+      map_smul' c f := by
+        have hcf := Lp.coeFn_smul c f
+        simp only [← MemLp.toLp_const_smul, RingHom.id_apply, MemLp.toLp_eq_toLp_iff]
+        refine ae_of_all μ fun x => ?_
+        have hcong : (fun y => K x y ((c • f) y)) =ᵐ[μ] fun y => c • K x y (f y) :=
+          hcf.mono fun y hy => by simp_rw [hy]; simp [map_smul]
+        simp_rw [integral_congr_ae hcong, Pi.smul_apply, integral_smul]
+    }
+    (eLpNorm (fun p : X × X => K p.1 p.2) 2 (μ.prod μ)).toReal
+    (fun f ↦ by
+      have h := (integralOperatorAux_eLpNorm_le μ hK f).2
+      unfold integralOperatorAux at h
+      simp only [LinearMap.coe_mk, AddHom.coe_mk, Lp.norm_toLp, ge_iff_le]
+      grw [h, ENNReal.toReal_mul, ← Lp.norm_def f]
+      rw [← lt_top_iff_ne_top]
+      refine ENNReal.mul_lt_top hK.2 f.2
+    )
+
+end Mercer
+
+end RKHS
