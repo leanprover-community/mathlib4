@@ -103,11 +103,14 @@ lemma IsCofinalFor.of_subset (hst : s ⊆ t) : IsCofinalFor s t :=
   fun a ha ↦ ⟨a, hst ha, le_rfl⟩
 
 @[to_dual]
-alias HasSubset.Subset.isCofinalFor := IsCofinalFor.of_subset
+alias LE.le.isCofinalFor := IsCofinalFor.of_subset
 
-@[deprecated HasSubset.Subset.isCofinalFor (since := "2026-01-08")]
+@[deprecated (since := "2026-03-23")] alias HasSubset.Subset.isCofinalFor := LE.le.isCofinalFor
+@[deprecated (since := "2026-03-23")] alias HasSubset.Subset.isCoinitialFor := LE.le.isCoinitialFor
+
+@[deprecated LE.le.isCofinalFor (since := "2026-01-08")]
 alias HasSubset.Subset.iscofinalfor := IsCofinalFor.of_subset
-@[deprecated HasSubset.Subset.isCoinitialFor (since := "2026-01-08")]
+@[deprecated LE.le.isCoinitialFor (since := "2026-01-08")]
 alias HasSubset.Subset.iscoinitialfor := IsCoinitialFor.of_subset
 
 @[to_dual (attr := refl)]
@@ -221,6 +224,14 @@ theorem upperBounds_mono ⦃s t : Set α⦄ (hst : s ⊆ t) ⦃a b⦄ (hab : a �
 @[to_dual (attr := gcongr) /-- If `s ⊆ t` and `t` is bounded below, then so is `s`. -/]
 theorem BddAbove.mono ⦃s t : Set α⦄ (h : s ⊆ t) : BddAbove t → BddAbove s :=
   Nonempty.mono <| upperBounds_mono_set h
+
+/-- If the range of a function `g` is bounded above, then `g ∘ f` is bounded above for all functions
+`f`. -/
+@[to_dual /-- If the range of a function `g` is bounded below, then `g ∘ f` is bounded below for all
+functions `f`. -/]
+theorem BddAbove.range_comp_right (f : γ → β) {g : β → α}
+    (hg : BddAbove (Set.range g)) : BddAbove (Set.range (g ∘ f)) :=
+  hg.mono (range_comp_subset_range f g)
 
 /-- If `a` is a least upper bound for sets `s` and `p`, then it is a least upper bound for any
 set `t`, `s ⊆ t ⊆ p`. -/

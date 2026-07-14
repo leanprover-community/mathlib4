@@ -308,7 +308,7 @@ open ModularFormClass
 local notation "𝕢" => Periodic.qParam
 
 /-- Summability of the divisor-sum q-expansion series `∑ σ_{k-1}(n) q^n`. -/
-private lemma summable_sigma_mul_cexp_pow {k : ℕ} (hk : 1 ≤ k) (z : ℍ) :
+lemma EisensteinSeries.summable_sigma_mul_cexp_pow {k : ℕ} (hk : 1 ≤ k) (z : ℍ) :
     Summable fun n : ℕ ↦ (σ (k - 1) n : ℂ) * cexp (2 * π * I * z) ^ n := by
   apply Summable.of_norm_bounded
     (summable_norm_pow_mul_geometric_of_norm_lt_one k (norm_exp_two_pi_I_lt_one z))

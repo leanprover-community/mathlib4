@@ -58,6 +58,13 @@ class Simple (X : C) : Prop where
 theorem isIso_of_mono_of_nonzero {X Y : C} [Simple Y] {f : X ⟶ Y} [Mono f] (w : f ≠ 0) : IsIso f :=
   (Simple.mono_isIso_iff_nonzero f).mpr w
 
+theorem Functor.simple_of_simple_obj {D : Type*} [Category* D] [HasZeroMorphisms D] (F : C ⥤ D)
+    [F.PreservesMonomorphisms] [F.PreservesZeroMorphisms] [F.ReflectsIsomorphisms] [F.Faithful]
+    (X : C) [Simple (F.obj X)] : Simple X :=
+  .mk fun {Y} g _ ↦ by
+    rw [← isIso_iff_of_reflects_iso g F, Simple.mono_isIso_iff_nonzero (F.map g),
+      ne_eq, ne_eq, not_iff_not, F.map_eq_zero_iff]
+
 theorem Simple.of_iso {X Y : C} [Simple Y] (i : X ≅ Y) : Simple X :=
   { mono_isIso_iff_nonzero := fun f m => by
       constructor
@@ -77,6 +84,19 @@ theorem Simple.of_iso {X Y : C} [Simple Y] (i : X ≅ Y) : Simple X :=
 
 theorem Simple.iff_of_iso {X Y : C} (i : X ≅ Y) : Simple X ↔ Simple Y :=
   ⟨fun _ => Simple.of_iso i.symm, fun _ => Simple.of_iso i⟩
+
+theorem simple_obj {D : Type*} [Category* D] [HasZeroMorphisms D] (F : C ⥤ D)
+    [F.IsEquivalence] (X : C) [Simple X] : Simple (F.obj X) := by
+  rw [← F.asEquivalence_functor]
+  have := F.asEquivalence.counitIso.app (F.asEquivalence.functor.obj X)
+  rw [Functor.comp_obj, Functor.id_obj] at this
+  have := Simple.of_iso <| Functor.preimageIso _ this
+  exact Functor.simple_of_simple_obj F.asEquivalence.inverse _
+
+theorem simple_obj_iff {D : Type*} [Category* D] [HasZeroMorphisms D] (F : C ⥤ D)
+    [F.IsEquivalence] (X : C) :
+    Simple (F.obj X) ↔ Simple X :=
+  ⟨fun _ ↦ Functor.simple_of_simple_obj F X, fun _ ↦ simple_obj F X⟩
 
 theorem kernel_zero_of_nonzero_from_simple {X Y : C} [Simple X] {f : X ⟶ Y} [HasKernel f]
     (w : f ≠ 0) : kernel.ι f = 0 := by
