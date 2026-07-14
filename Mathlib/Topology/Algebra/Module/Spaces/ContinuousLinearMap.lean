@@ -299,31 +299,21 @@ theorem map_smulₛₗ₂ (f : E →SL[σ₁₃] F →SL[σ₂₃] G) (c : R) (x
     f (c • x) y = σ₁₃ c • f x y := by rw [f.map_smulₛₗ, smul_apply]
 
 /-- Send a continuous sesquilinear map to an abstract sesquilinear map (forgetting continuity). -/
-def toLinearMap₁₂ (L : E →SL[σ₁₃] F →SL[σ₂₃] G) : E →ₛₗ[σ₁₃] F →ₛₗ[σ₂₃] G :=
-  (coeLMₛₗ σ₂₃).comp L.toLinearMap
+def toLinearMap₁₂ : (E →SL[σ₁₃] F →SL[σ₂₃] G) →ₗ[𝕜₃] (E →ₛₗ[σ₁₃] F →ₛₗ[σ₂₃] G) :=
+  { toFun L := (coeLMₛₗ σ₂₃).comp L.toLinearMap
+    map_add' _ _ := by ext; rfl
+    map_smul' _ _ := by ext; rfl}
 
 @[simp] lemma toLinearMap₁₂_apply (L : E →SL[σ₁₃] F →SL[σ₂₃] G) (v : E) (w : F) :
     L.toLinearMap₁₂ v w = L v w := rfl
 
 lemma toLinearMap₁₂_injective :
-    (toLinearMap₁₂ (E := E) (F := F) (G := G) (σ₁₃ := σ₁₃) (σ₂₃ := σ₂₃)).Injective := by
+    Function.Injective (toLinearMap₁₂ (E := E) (F := F) (G := G) (σ₁₃ := σ₁₃) (σ₂₃ := σ₂₃)) := by
   simp [Function.Injective, LinearMap.ext_iff, ← ContinuousLinearMap.ext_iff]
 
 lemma toLinearMap₁₂_inj (L₁ L₂ : E →SL[σ₁₃] F →SL[σ₂₃] G) :
     L₁.toLinearMap₁₂ = L₂.toLinearMap₁₂ ↔ L₁ = L₂ :=
   toLinearMap₁₂_injective.eq_iff
-
-@[simp]
-lemma toLinearMap₁₂_add (L₁ L₂ : E →SL[σ₁₃] F →SL[σ₂₃] G) :
-    (L₁ + L₂).toLinearMap₁₂ = L₁.toLinearMap₁₂ + L₂.toLinearMap₁₂ := by
-  ext x y
-  rfl
-
-@[simp]
-lemma toLinearMap₁₂_smul (c : 𝕜₃) (L : E →SL[σ₁₃] F →SL[σ₂₃] G) :
-    (c • L).toLinearMap₁₂ = c • L.toLinearMap₁₂ := by
-  ext x y
-  rfl
 
 end AddCommMonoid
 
