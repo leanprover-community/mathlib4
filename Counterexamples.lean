@@ -8,6 +8,7 @@ import Counterexamples.DirectSumIsInternal
 import Counterexamples.DiscreteTopologyNonDiscreteUniformity
 import Counterexamples.EulerSumOfPowers
 import Counterexamples.Girard
+import Counterexamples.GrothendieckPower
 import Counterexamples.HeawoodUnitDistance
 import Counterexamples.HomogeneousPrimeNotPrime
 import Counterexamples.InvertibleModuleNotIdeal
