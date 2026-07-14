@@ -91,7 +91,9 @@ theorem IsFractionRing.rank_right_eq : Module.rank S N = Module.rank R N :=
 /-- Given `IsScalarTower R S N`, if `S` is the fraction ring of `R`, then the finrank `finrank S N`
 of the right part of the tower equals the finrank `finrank R N` of the whole tower.
 
-See `IsFractionRing.rank_right_eq` for the rank version. -/
+See `IsFractionRing.rank_right_eq` for the rank version.
+See `IsFractionRing.finrank_left_eq` for the left version.
+See `IsFractionRing.finrank_eq` for the simultaneous version. -/
 theorem IsFractionRing.finrank_right_eq : finrank S N = finrank R N :=
   IsLocalization.finrank_eq S R⁰ le_rfl
 

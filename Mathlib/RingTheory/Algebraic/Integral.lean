@@ -45,30 +45,6 @@ theorem LinearIndepOn.iff_fractionRing (R K : Type*) [CommRing R] [CommRing K]
     LinearIndepOn R f s ↔ LinearIndepOn K f s :=
   LinearIndependent.iff_fractionRing R K
 
-/-- Given `IsScalarTower R S N`, if `S` is the fraction ring of `R`, then the rank `rank S N`
-of the right part of the tower equals the rank `rank R N` of the whole tower.
-
-See `IsFractionRing.finrank_right_eq` for the finrank version. -/
-theorem IsFractionRing.rank_right_eq (R R' S : Type*)
-    [CommRing R] [CommRing R'] [CommRing S]
-    [Algebra R R'] [Module R' S] [Module R S]
-    [IsScalarTower R R' S] [IsFractionRing R R'] :
-    Module.rank R S = Module.rank R' S := by
-  exact (IsLocalization.rank_eq R' (nonZeroDivisors R) le_rfl (N := S)).symm
-
-/-- Given `IsScalarTower R S N`, if `S` is the fraction ring of `R`, then the finrank `finrank S N`
-of the right part of the tower equals the finrank `finrank R N` of the whole tower.
-
-See `IsFractionRing.rank_right_eq` for the rank version.
-See `IsFractionRing.finrank_left_eq` for the left version.
-See `IsFractionRing.finrank_eq` for the simultaneous version. -/
-theorem IsFractionRing.finrank_right_eq (R R' S : Type*)
-    [CommRing R] [CommRing R'] [CommRing S]
-    [Algebra R R'] [Module R' S] [Module R S]
-    [IsScalarTower R R' S] [IsFractionRing R R'] :
-    Module.finrank R S = Module.finrank R' S := by
-  simp_rw [Module.finrank, IsFractionRing.rank_right_eq R R']
-
 theorem LinearIndependent.comp_algebraMap_iff
     {R S A : Type*} [CommRing R] [CommRing S] [CommRing A]
     [Algebra R S] [Algebra S A] [Algebra R A] [IsScalarTower R S A] [FaithfulSMul S A]
@@ -134,7 +110,7 @@ theorem IsFractionRing.finrank_left_eq (R S A : Type*)
     [CommRing R] [CommRing S] [CommRing A]
     [Algebra R S] [Algebra S A] [Algebra R A]
     [IsScalarTower R S A] [IsFractionRing S A] :
-    Module.finrank R A = Module.finrank R S := by
+    Module.finrank R S = Module.finrank R A := by
   nontriviality R
   classical
   apply Cardinal.toNat_eq_of_forall_le_iff
@@ -142,12 +118,12 @@ theorem IsFractionRing.finrank_left_eq (R S A : Type*)
   simp_rw [Module.le_rank_iff_exists_finset, LinearIndepOn]
   constructor
   · rintro ⟨s, rfl, hs⟩
-    exact ⟨finsetIntegerMultiple S⁰ s, card_finsetIntegerMultiple S⁰ s,
-      linearIndepOn_finsetIntegerMultiple R S⁰ hs⟩
-  · rintro ⟨s, rfl, hs⟩
     let f : S ↪ A := ⟨algebraMap S A, FaithfulSMul.algebraMap_injective S A⟩
     exact ⟨s.map f, s.card_map f,
       (linearIndependent_equiv (s.equivMap f)).mp (LinearIndependent.comp_algebraMap_iff.mpr hs)⟩
+  · rintro ⟨s, rfl, hs⟩
+    exact ⟨finsetIntegerMultiple S⁰ s, card_finsetIntegerMultiple S⁰ s,
+      linearIndepOn_finsetIntegerMultiple R S⁰ hs⟩
 
 theorem IsFractionRing.finrank_eq (R R' S S' : Type*)
     [CommRing R] [CommRing R'] [CommRing S] [CommRing S']
@@ -155,7 +131,7 @@ theorem IsFractionRing.finrank_eq (R R' S S' : Type*)
     [IsScalarTower R R' S'] [IsScalarTower R S S']
     [IsFractionRing R R'] [IsFractionRing S S'] :
     Module.finrank R' S' = Module.finrank R S :=
-  (finrank_right_eq R R' S').symm.trans (finrank_left_eq R S S')
+  (finrank_right_eq R R' S').trans (finrank_left_eq R S S').symm
 
 assert_not_exists IsLocalRing
 
