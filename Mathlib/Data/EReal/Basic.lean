@@ -693,7 +693,7 @@ theorem coe_ennreal_nsmul (n : ℕ) (x : ℝ≥0∞) : (↑(n • x) : EReal) = 
 /-! ### toENNReal -/
 
 /-- `x.toENNReal` returns `x` if it is nonnegative, `0` otherwise. -/
-noncomputable def toENNReal (x : EReal) : ℝ≥0∞ :=
+def toENNReal (x : EReal) : ℝ≥0∞ :=
   if x = ⊤ then ⊤
   else ENNReal.ofReal x.toReal
 

@@ -51,7 +51,7 @@ def succNthValUnits (n : ℕ) (a : Units k) (A : 𝕎 k) (bs : Fin (n + 1) → k
 Recursively defines the sequence of coefficients for the inverse to a Witt vector whose first entry
 is a unit.
 -/
-noncomputable def inverseCoeff (a : Units k) (A : 𝕎 k) : ℕ → k
+def inverseCoeff (a : Units k) (A : 𝕎 k) : ℕ → k
   | 0 => ↑a⁻¹
   | n + 1 => succNthValUnits n a A fun i => inverseCoeff a A i.val
 

@@ -146,7 +146,6 @@ theorem range_pullback_to_prod {X Y Z : TopCat.{u}} (f : X ⟶ Z) (g : Y ⟶ Z) 
       cat_disch
 
 /-- The pullback along an embedding is (isomorphic to) the preimage. -/
-noncomputable
 def pullbackHomeoPreimage
     {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
     (f : X → Z) (hf : Continuous f) (g : Y → Z) (hg : IsEmbedding g) :

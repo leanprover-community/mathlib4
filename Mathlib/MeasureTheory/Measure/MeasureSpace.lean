@@ -1298,7 +1298,7 @@ section Sum
 variable {f : ι → Measure α}
 
 /-- Sum of an indexed family of measures. -/
-noncomputable def sum (f : ι → Measure α) : Measure α :=
+def sum (f : ι → Measure α) : Measure α :=
   (OuterMeasure.sum fun i => (f i).toOuterMeasure).toMeasure <|
     le_trans (le_iInf fun _ => le_toOuterMeasure_caratheodory _)
       (OuterMeasure.le_sum_caratheodory _)

@@ -204,7 +204,7 @@ protected def inv : EReal → EReal
 
 instance : Inv (EReal) := ⟨EReal.inv⟩
 
-noncomputable instance : DivInvMonoid EReal where inv := EReal.inv
+instance : DivInvMonoid EReal where inv := EReal.inv
 
 @[simp]
 lemma inv_bot : (⊥ : EReal)⁻¹ = 0 := rfl
@@ -219,7 +219,7 @@ lemma inv_zero : (0 : EReal)⁻¹ = 0 := by
   change (0 : ℝ)⁻¹ = (0 : EReal)
   rw [GroupWithZero.inv_zero, coe_zero]
 
-noncomputable instance : DivInvOneMonoid EReal where
+instance : DivInvOneMonoid EReal where
   inv_one := by nth_rw 1 [← coe_one, ← coe_inv 1, _root_.inv_one, coe_one]
 
 lemma inv_neg (a : EReal) : (-a)⁻¹ = -a⁻¹ := by

@@ -749,7 +749,7 @@ variable (f : 𝒜 →+*ᵍ ℬ) (I : Ideal A) [I.IsPrime] (J : Ideal B) [J.IsPr
 -- `AtPrime.map` one day.
 /-- If `f : 𝒜 →+*ᵍ ℬ` is a graded ring homomorphism and `I` is a prime ideal of `A` and
 `J` is a prime ideal of `B` and `f⁻¹ J = I` then we have a map `AtPrime 𝒜 I →+* AtPrime ℬ J`. -/
-noncomputable def localRingHom : AtPrime 𝒜 I →+* AtPrime ℬ J :=
+def localRingHom : AtPrime 𝒜 I →+* AtPrime ℬ J :=
   map f <| Localization.le_comap_primeCompl_iff.mpr <| hIJ ▸ le_rfl
 
 variable {f I J hIJ}

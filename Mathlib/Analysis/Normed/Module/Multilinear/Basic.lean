@@ -1098,7 +1098,7 @@ open Function in
 `ContinuousMultilinearMap.compContinuousLinearMap`
 sending a continuous multilinear map `g` to `g (f₁ ·, ..., fₙ ·)`
 is continuous-linear in `g` and multilinear in `f₁, ..., fₙ`. -/
-noncomputable def compContinuousLinearMapMultilinear :
+def compContinuousLinearMapMultilinear :
     MultilinearMap 𝕜 (fun i ↦ E i →L[𝕜] E₁ i)
       ((ContinuousMultilinearMap 𝕜 E₁ G) →L[𝕜] ContinuousMultilinearMap 𝕜 E G) where
   toFun := compContinuousLinearMapL
@@ -1119,7 +1119,7 @@ noncomputable def compContinuousLinearMapMultilinear :
 sending a continuous multilinear map `g` to `g (f₁ ·, ..., fₙ ·)` is continuous-linear in `g` and
 continuous-multilinear in `f₁, ..., fₙ`. -/
 @[simps! apply_apply]
-noncomputable def compContinuousLinearMapContinuousMultilinear :
+def compContinuousLinearMapContinuousMultilinear :
     ContinuousMultilinearMap 𝕜 (fun i ↦ E i →L[𝕜] E₁ i)
       ((ContinuousMultilinearMap 𝕜 E₁ G) →L[𝕜] ContinuousMultilinearMap 𝕜 E G) :=
   MultilinearMap.mkContinuous (𝕜 := 𝕜) (E := fun i ↦ E i →L[𝕜] E₁ i)
@@ -1132,7 +1132,7 @@ variable {𝕜 E E₁ G}
 
 /-- Fréchet derivative of `compContinuousLinearMap f g` with respect to `g`.
 The derivative with respect to `f` is given by `compContinuousLinearMapL`. -/
-noncomputable def fderivCompContinuousLinearMap [DecidableEq ι]
+def fderivCompContinuousLinearMap [DecidableEq ι]
     (f : ContinuousMultilinearMap 𝕜 E₁ G) (g : ∀ i, E i →L[𝕜] E₁ i) :
     (∀ i, E i →L[𝕜] E₁ i) →L[𝕜] ContinuousMultilinearMap 𝕜 E G :=
   ContinuousLinearMap.apply _ _ f
@@ -1152,7 +1152,7 @@ continuous multilinear map of `k` vectors `v₁, ..., vₖ`, mapping them
 to `f (x₁, (v_{e.symm 2})₂, x₃, ...)`, where at indices `i` in `s` one uses the `i`-th coordinate of
 the vector `v_{e.symm i}` and otherwise one uses the `i`-th coordinate of a reference vector `x`.
 This is continuous multilinear in the components of `x` outside of `s`, and in the `v_j`. -/
-noncomputable def iteratedFDerivComponent {α : Type*} [Fintype α]
+def iteratedFDerivComponent {α : Type*} [Fintype α]
     (f : ContinuousMultilinearMap 𝕜 E₁ G) {s : Set ι} (e : α ≃ s) [DecidablePred (· ∈ s)] :
     ContinuousMultilinearMap 𝕜 (fun (i : {a : ι // a ∉ s}) ↦ E₁ i)
       (ContinuousMultilinearMap 𝕜 (fun (_ : α) ↦ (∀ i, E₁ i)) G) :=

@@ -944,7 +944,7 @@ theorem toMatrix_lsmul (x : R) :
 This definition is useful for doing (more) explicit computations with `LinearMap.mulLeft`,
 such as the trace form or norm map for algebras.
 -/
-noncomputable def leftMulMatrix : S →ₐ[R] Matrix m m R where
+def leftMulMatrix : S →ₐ[R] Matrix m m R where
   toFun x := LinearMap.toMatrix b b (Algebra.lmul R S x)
   map_zero' := by
     rw [map_zero, map_zero]
@@ -1073,7 +1073,6 @@ then `Basis.linearMap b₁ b₂` is the basis of `M₁ →ₗ[R] M₂` indexed b
 where `(i, j)` indexes the linear map that sends `b j` to `b i`
 and sends all other basis vectors to `0`. -/
 @[simps! -isSimp repr_apply repr_symm_apply]
-noncomputable
 def linearMap (b₁ : Basis ι₁ R M₁) (b₂ : Basis ι₂ R M₂) :
     Basis (ι₂ × ι₁) R (M₁ →ₗ[R] M₂) :=
   (Matrix.stdBasis R ι₂ ι₁).map (LinearMap.toMatrix b₁ b₂).symm
@@ -1099,7 +1098,6 @@ then `Basis.end b` is the basis of `Module.End R M` indexed by `ι × ι`
 where `(i, j)` indexes the linear map that sends `b j` to `b i`
 and sends all other basis vectors to `0`. -/
 @[simps! -isSimp repr_apply repr_symm_apply]
-noncomputable
 abbrev «end» (b : Basis ι R M) : Basis (ι × ι) R (Module.End R M) :=
   b.linearMap b
 

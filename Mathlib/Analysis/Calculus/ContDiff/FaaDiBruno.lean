@@ -161,7 +161,7 @@ lemma injective_embSigma (n : ℕ) : Injective (embSigma n) := by
 
 /-- The best proof would probably to establish the bijection with Finpartitions, but we opt
 for a direct argument, embedding `OrderedPartition n` in a type which is obviously finite. -/
-noncomputable instance : Fintype (OrderedFinpartition n) :=
+instance : Fintype (OrderedFinpartition n) :=
   Fintype.ofInjective _ (injective_embSigma n)
 
 instance instUniqueZero : Unique (OrderedFinpartition 0) := by
@@ -189,12 +189,12 @@ lemma emb_ne_emb_of_ne {i j : Fin c.length} {a : Fin (c.partSize i)} {b : Fin (c
   c.emb_injective.ne (a₁ := ⟨i, a⟩) (a₂ := ⟨j, b⟩) (by simp [h])
 
 /-- Given `j : Fin n`, the index of the part to which it belongs. -/
-noncomputable def index (j : Fin n) : Fin c.length :=
+def index (j : Fin n) : Fin c.length :=
   (c.exists_inverse j).choose.1
 
 /-- The inverse of `c.emb` for `c : OrderedFinpartition`. It maps `j : Fin n` to the point in
 `Fin (c.partSize (c.index j))` which is mapped back to `j` by `c.emb (c.index j)`. -/
-noncomputable def invEmbedding (j : Fin n) :
+def invEmbedding (j : Fin n) :
     Fin (c.partSize (c.index j)) := (c.exists_inverse j).choose.2
 
 @[simp] lemma emb_invEmbedding (j : Fin n) :
@@ -203,7 +203,7 @@ noncomputable def invEmbedding (j : Fin n) :
 
 /-- An ordered finpartition gives an equivalence between `Fin n` and the disjoint union of the
 parts, each of them parameterized by `Fin (c.partSize i)`. -/
-noncomputable def equivSigma : ((i : Fin c.length) × Fin (c.partSize i)) ≃ Fin n where
+def equivSigma : ((i : Fin c.length) × Fin (c.partSize i)) ≃ Fin n where
   toFun p := c.emb p.1 p.2
   invFun i := ⟨c.index i, c.invEmbedding i⟩
   right_inv _ := by simp
@@ -829,7 +829,7 @@ def compAlongOrderedFinpartitionₗ :
 variable (𝕜 E F G) in
 /-- Bundled version of `compAlongOrderedFinpartition`, depending continuously linearly on `f`
 and continuously multilinearly on `p`. -/
-noncomputable def compAlongOrderedFinpartitionL :
+def compAlongOrderedFinpartitionL :
     (F [×c.length]→L[𝕜] G) →L[𝕜]
       ContinuousMultilinearMap 𝕜 (fun i ↦ E [×c.partSize i]→L[𝕜] F) (E [×n]→L[𝕜] G) := by
   refine MultilinearMap.mkContinuousLinear c.compAlongOrderedFinpartitionₗ 1 fun f p ↦ ?_
@@ -900,7 +900,7 @@ the iterated derivatives of `g` and of `f`.
 Not to be confused with another notion of composition for formal multilinear series, called just
 `FormalMultilinearSeries.comp`, appearing in the composition of analytic functions.
 -/
-protected noncomputable def taylorComp
+protected def taylorComp
     (q : FormalMultilinearSeries 𝕜 F G) (p : FormalMultilinearSeries 𝕜 E F) :
     FormalMultilinearSeries 𝕜 E G :=
   fun n ↦ ∑ c : OrderedFinpartition n, q.compAlongOrderedFinpartition p c

@@ -129,7 +129,7 @@ def Presentation.isColimit {M : SheafOfModules.{u} R} (P : Presentation M) :
 set_option backward.defeqAttrib.useBackward true in
 /-- Mapping a presentation under an isomorphism. -/
 @[simps]
-noncomputable def Presentation.ofIsIso {M N : SheafOfModules.{u} R} (f : M ⟶ N) [IsIso f]
+def Presentation.ofIsIso {M N : SheafOfModules.{u} R} (f : M ⟶ N) [IsIso f]
     (σ : M.Presentation) : N.Presentation where
   generators := σ.generators.ofEpi f
   relations := σ.relations.ofEpi ((kernelCompMono _ f).symm.trans <| eqToIso (by simp)).hom
@@ -386,7 +386,7 @@ theorem Presentation.isQuasicoherent {M : SheafOfModules.{u} R} (P : Presentatio
 
 /-- Mapping quasicoherent data under an isomorphism. -/
 @[simps]
-noncomputable def QuasicoherentData.ofIsIso {M N : SheafOfModules.{u} R} (f : M ⟶ N) [IsIso f]
+def QuasicoherentData.ofIsIso {M N : SheafOfModules.{u} R} (f : M ⟶ N) [IsIso f]
     (σ : M.QuasicoherentData) : N.QuasicoherentData where
   I := σ.I
   X := σ.X

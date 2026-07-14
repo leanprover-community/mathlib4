@@ -58,7 +58,7 @@ namespace ZMod
 variable {N : ℕ} [NeZero N]
 
 /-- The `AddMonoidHom` from `ZMod N` to `ℝ / ℤ` sending `j mod N` to `j / N mod 1`. -/
-noncomputable def toAddCircle : ZMod N →+ UnitAddCircle :=
+def toAddCircle : ZMod N →+ UnitAddCircle :=
   lift N ⟨AddMonoidHom.mk' (fun j ↦ ↑(j / N : ℝ)) (by simp [add_div]),
     by simp [div_self (NeZero.ne _)]⟩
 

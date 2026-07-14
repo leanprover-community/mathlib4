@@ -453,7 +453,7 @@ def mapAlgEquiv (f : S ≃ₐ[R] T) (p : S[X]) (q : T[X]) (h : Associated (p.map
 variable (R) in
 /-- The canonical algebraic homomorphism from `AdjoinRoot f` to `AdjoinRoot g`, where
 the polynomial `g : S[X]` divides `f`. -/
-noncomputable def algHomOfDvd (f g : S[X]) (hgf : g ∣ f) : AdjoinRoot f →ₐ[R] AdjoinRoot g :=
+def algHomOfDvd (f g : S[X]) (hgf : g ∣ f) : AdjoinRoot f →ₐ[R] AdjoinRoot g :=
   mapAlgHom (.id R S) _ _ <| by simpa
 
 lemma coe_algHomOfDvd (f g : S[X]) (hgf) :
@@ -468,7 +468,7 @@ lemma coe_algHomOfDvd (f g : S[X]) (hgf) :
 variable (R) in
 /-- The canonical algebraic equivalence between `AdjoinRoot p` and `AdjoinRoot g`,
 where the two polynomials `f g : S[X]` are associated. -/
-noncomputable def algEquivOfAssociated (f g : S[X]) (hfg : Associated f g) :
+def algEquivOfAssociated (f g : S[X]) (hfg : Associated f g) :
     AdjoinRoot f ≃ₐ[R] AdjoinRoot g := mapAlgEquiv .refl f g <| by simpa
 
 lemma coe_algEquivOfAssociated (f g : S[X]) (hfg) :
@@ -488,7 +488,7 @@ lemma algEquivOfAssociated_toAlgHom (f g : S[X]) (hfg) :
 variable (R) in
 /-- The canonical algebraic equivalence between `AdjoinRoot f` and `AdjoinRoot g`, where
 the two polynomials `f g : S[X]` are equal. -/
-noncomputable def algEquivOfEq (f g : S[X]) (hfg : f = g) : AdjoinRoot f ≃ₐ[R] AdjoinRoot g :=
+def algEquivOfEq (f g : S[X]) (hfg : f = g) : AdjoinRoot f ≃ₐ[R] AdjoinRoot g :=
   algEquivOfAssociated R f g (by rw [hfg])
 
 lemma coe_algEquivOfEq (f g : S[X]) (hfg) :
@@ -513,12 +513,12 @@ variable [Field K] {f : K[X]}
 instance span_maximal_of_irreducible [Fact (Irreducible f)] : (span {f}).IsMaximal :=
   PrincipalIdealRing.isMaximal_of_irreducible <| Fact.out
 
-noncomputable instance instGroupWithZero [Fact (Irreducible f)] : GroupWithZero (AdjoinRoot f) :=
+instance instGroupWithZero [Fact (Irreducible f)] : GroupWithZero (AdjoinRoot f) :=
   fast_instance% Quotient.groupWithZero (span {f} : Ideal K[X])
 
 /-- If `R` is a field and `f` is irreducible, then `AdjoinRoot f` is a field -/
 @[stacks 09FX "first part, see also 09FI"]
-noncomputable instance instField [Fact (Irreducible f)] : Field (AdjoinRoot f) where
+instance instField [Fact (Irreducible f)] : Field (AdjoinRoot f) where
   __ := instCommRing _
   __ := instGroupWithZero
   nnqsmul := (· • ·)
@@ -949,7 +949,7 @@ theorem quotAdjoinRootEquivQuotPolynomialQuot_symm_mk_mk (p : R[X]) :
 
 /-- Promote `AdjoinRoot.quotAdjoinRootEquivQuotPolynomialQuot` to an `AlgEquiv`. -/
 @[simps!]
-noncomputable def quotEquivQuotMap (f : R[X]) (I : Ideal R) :
+def quotEquivQuotMap (f : R[X]) (I : Ideal R) :
     (AdjoinRoot f ⧸ Ideal.map (of f) I) ≃ₐ[R]
       (R ⧸ I)[X] ⧸ Ideal.span ({Polynomial.map (Ideal.Quotient.mk I) f} : Set (R ⧸ I)[X]) :=
   AlgEquiv.ofRingEquiv
@@ -1024,7 +1024,7 @@ variable [CommRing R] [CommRing S] [Algebra R S]
 /-- Let `α` have minimal polynomial `f` over `R` and `I` be an ideal of `R`,
 then `R[α] / (I) = (R[x] / (f)) / pS = (R/p)[x] / (f mod p)`. -/
 @[simps!]
-noncomputable def quotientEquivQuotientMinpolyMap (pb : PowerBasis R S) (I : Ideal R) :
+def quotientEquivQuotientMinpolyMap (pb : PowerBasis R S) (I : Ideal R) :
     (S ⧸ I.map (algebraMap R S)) ≃ₐ[R]
       Polynomial (R ⧸ I) ⧸
         Ideal.span ({(minpoly R pb.gen).map (Ideal.Quotient.mk I)} : Set (Polynomial (R ⧸ I))) :=

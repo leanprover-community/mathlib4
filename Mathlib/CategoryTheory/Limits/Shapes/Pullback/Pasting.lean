@@ -455,7 +455,7 @@ instance hasPullbackHorizPaste : HasPullback (f' ≫ f) g :=
   }
 
 /-- The canonical isomorphism `W ×[X] (X ×[Z] Y) ≅ W ×[Z] Y` -/
-noncomputable def pullbackRightPullbackFstIso :
+def pullbackRightPullbackFstIso :
     pullback f' (pullback.fst f g) ≅ pullback (f' ≫ f) g :=
   IsLimit.conePointUniqueUpToIso
     (pasteHorizIsPullback rfl (pullback.isLimit f g) (pullback.isLimit f' (pullback.fst f g)))
@@ -582,7 +582,7 @@ instance : HasPushout f (g ≫ g') :=
   }
 
 /-- The canonical isomorphism `(Y ⨿[X] Z) ⨿[Z] W ≅ Y ⨿[X] W` -/
-noncomputable def pushoutLeftPushoutInrIso :
+def pushoutLeftPushoutInrIso :
     pushout (pushout.inr f g) g' ≅ pushout f (g ≫ g') :=
   IsColimit.coconePointUniqueUpToIso
     (pasteHorizIsPushout rfl (pushout.isColimit f g) (pushout.isColimit (pushout.inr f g) g'))
@@ -650,7 +650,7 @@ instance hasPushoutVertPaste : HasPushout (f ≫ f') g :=
   }
 
 /-- The canonical isomorphism `W ⨿[Y] (Y ⨿[X] Z) ≅ W ⨿[X] Z` -/
-noncomputable def pushoutRightPushoutInlIso :
+def pushoutRightPushoutInlIso :
     pushout f' (pushout.inl f g) ≅ pushout (f ≫ f') g :=
   IsColimit.coconePointUniqueUpToIso
     (pasteVertIsPushout rfl (pushout.isColimit f g) (pushout.isColimit f' (pushout.inl f g)))

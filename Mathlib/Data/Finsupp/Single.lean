@@ -243,7 +243,7 @@ theorem card_support_le_one' [Nonempty α] {f : α →₀ M} :
 /-- If `α` has a unique term, then finitely supported functions `α →₀ M` are in bijection with `M`.
 -/
 @[simps]
-noncomputable def uniqueEquiv (a : α) [Subsingleton α] : (α →₀ M) ≃ M where
+def uniqueEquiv (a : α) [Subsingleton α] : (α →₀ M) ≃ M where
   toFun f := f a
   invFun := single a
   left_inv f := by ext b; simp [Subsingleton.elim b a]
@@ -257,7 +257,7 @@ noncomputable def uniqueEquiv (a : α) [Subsingleton α] : (α →₀ M) ≃ M w
 If `α` has a unique term, the type of finitely supported functions `α →₀ β` is equivalent to `β`.
 -/
 @[simps!, deprecated uniqueEquiv (since := "2026-05-06")]
-noncomputable def _root_.Equiv.finsuppUnique {ι : Type*} [Unique ι] : (ι →₀ M) ≃ M :=
+def _root_.Equiv.finsuppUnique {ι : Type*} [Unique ι] : (ι →₀ M) ≃ M :=
   Finsupp.equivFunOnFinite.trans (Equiv.funUnique ι M)
 
 @[simp]

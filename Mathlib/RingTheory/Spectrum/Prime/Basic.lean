@@ -96,7 +96,7 @@ def primeSpectrumProdOfSum : PrimeSpectrum R ⊕ PrimeSpectrum S → PrimeSpectr
 
 /-- The prime spectrum of `R × S` is in bijection with the disjoint unions of the prime spectrum of
 `R` and the prime spectrum of `S`. -/
-noncomputable def primeSpectrumProd :
+def primeSpectrumProd :
     PrimeSpectrum (R × S) ≃ PrimeSpectrum R ⊕ PrimeSpectrum S :=
   Equiv.symm <|
     Equiv.ofBijective (primeSpectrumProdOfSum R S) (by

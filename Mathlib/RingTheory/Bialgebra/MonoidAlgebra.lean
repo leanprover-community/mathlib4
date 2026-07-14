@@ -56,7 +56,7 @@ instance instBialgebra : Bialgebra R A[M] where
 variable (R) [AddMonoid M] [AddMonoid N] in
 /-- If `f : M → N` is a monoid hom, then `AddMonoidAlgebra.mapDomain f` is a bialgebra hom between
 their additive monoid algebras. -/
-noncomputable def _root_.AddMonoidAlgebra.mapDomainBialgHom (f : M →+ N) :
+def _root_.AddMonoidAlgebra.mapDomainBialgHom (f : M →+ N) :
     AddMonoidAlgebra R M →ₐc[R] AddMonoidAlgebra R N :=
   .ofAlgHom (AddMonoidAlgebra.mapDomainAlgHom R R f) (by ext; simp) (by ext; simp)
 
@@ -65,7 +65,7 @@ variable (R) in
 /-- If `f : M → N` is a monoid hom, then `MonoidAlgebra.mapDomain f` is a bialgebra hom between
 their monoid algebras. -/
 @[to_additive existing (attr := simps!)]
-noncomputable def mapDomainBialgHom (f : M →* N) : R[M] →ₐc[R] R[N] :=
+def mapDomainBialgHom (f : M →* N) : R[M] →ₐc[R] R[N] :=
   .ofAlgHom (mapDomainAlgHom R R f) (by ext; simp) (by ext; simp)
 
 @[to_additive (attr := simp)]

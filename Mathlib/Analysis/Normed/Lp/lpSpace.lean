@@ -747,7 +747,7 @@ variable [NormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E] [CompleteSpace
 variable (α 𝕜 E) in
 /-- Summation (i.e., `tsum`) in `ℓ¹(α, E)` as a continuous linear map. -/
 @[simps!]
-noncomputable def tsumCLM : ℓ¹(α, E) →L[𝕜] E :=
+def tsumCLM : ℓ¹(α, E) →L[𝕜] E :=
   LinearMap.mkContinuous
     { toFun f := ∑' i, f i
       map_add' f g := by
@@ -1070,7 +1070,7 @@ def lsingle (p) (i : α) : E i →ₗ[𝕜] lp E p where
 
 /-- The basis for `ℓ⁰(α, 𝕜)` given by `lp.single`. -/
 @[simps repr_apply]
-noncomputable def zeroBasis : Module.Basis α 𝕜 ℓ⁰(α, 𝕜) where
+def zeroBasis : Module.Basis α 𝕜 ℓ⁰(α, 𝕜) where
   repr :=
     { toFun x := .ofSupportFinite ⇑x <| memℓp_zero_iff.mp x.2
       invFun x := ⟨⇑x, memℓp_zero_iff.mpr x.hasFiniteSupport⟩

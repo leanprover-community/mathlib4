@@ -145,7 +145,7 @@ instance hasFiniteLimits [HasFiniteLimits C] :
 end Preadditive
 
 variable (C) in
-noncomputable instance abelian [Abelian C] :
+instance abelian [Abelian C] :
     Abelian.{w} (ShrinkHoms C) := abelianOfEquivalence (inverse C)
 
 end ShrinkHoms
@@ -182,7 +182,7 @@ instance hasFiniteLimits [HasFiniteLimits C] :
 end Preadditive
 
 variable (C) in
-noncomputable instance abelian [Abelian C] :
+instance abelian [Abelian C] :
     Abelian (AsSmall.{w} C) := abelianOfEquivalence equiv.inverse
 
 end AsSmall

@@ -1007,7 +1007,7 @@ variable (C)
 
 set_option backward.isDefEq.respectTransparency false in
 /-- A category with strong epi mono factorisations admits functorial epi/mono factorizations. -/
-noncomputable def functorialEpiMonoFactorizationData :
+def functorialEpiMonoFactorizationData :
     FunctorialFactorizationData (epimorphisms C) (monomorphisms C) where
   Z := im
   i := { app := fun f => factorThruImage f.hom }

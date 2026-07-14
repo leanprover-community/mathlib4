@@ -60,7 +60,6 @@ theorem tensorProduct_repr_tmul_apply (b : Basis ι S M) (c : Basis κ R N) (m :
 variable (S : Type*) [Semiring S] [Algebra R S]
 
 /-- The lift of an `R`-basis of `M` to an `S`-basis of the base change `S ⊗[R] M`. -/
-noncomputable
 def baseChange (b : Basis ι R M) : Basis ι S (S ⊗[R] M) :=
   (tensorProduct (.singleton Unit S) b).reindex (Equiv.punitProd ι)
 

@@ -302,7 +302,7 @@ def forgetToTop : Scheme ⥤ TopCat :=
   Scheme.forgetToLocallyRingedSpace ⋙ LocallyRingedSpace.forgetToTop
 
 /-- An isomorphism of schemes induces a homeomorphism of the underlying topological spaces. -/
-noncomputable def homeoOfIso {X Y : Scheme.{u}} (e : X ≅ Y) : X ≃ₜ Y :=
+def homeoOfIso {X Y : Scheme.{u}} (e : X ≅ Y) : X ≃ₜ Y :=
   TopCat.homeoOfIso (forgetToTop.mapIso e)
 
 @[simp]
@@ -323,7 +323,7 @@ lemma homeoOfIso_apply {X Y : Scheme} (e : X ≅ Y) (x : X) :
 alias _root_.CategoryTheory.Iso.schemeIsoToHomeo := homeoOfIso
 
 /-- An isomorphism of schemes induces a homeomorphism of the underlying topological spaces. -/
-noncomputable def Hom.homeomorph {X Y : Scheme.{u}} (f : X ⟶ Y) [IsIso (C := Scheme) f] :
+def Hom.homeomorph {X Y : Scheme.{u}} (f : X ⟶ Y) [IsIso (C := Scheme) f] :
     X ≃ₜ Y :=
   (asIso f).schemeIsoToHomeo
 
@@ -1000,7 +1000,7 @@ lemma germ_stalkMap_apply (U : Y.Opens) (x : X) (hx : f x ∈ U) (y) :
 
 set_option backward.defeqAttrib.useBackward true in
 /-- If `x = y`, the stalk maps are isomorphic. -/
-noncomputable def arrowStalkMapIsoOfEq {x y : X}
+def arrowStalkMapIsoOfEq {x y : X}
     (h : x = y) : Arrow.mk (f.stalkMap x) ≅ Arrow.mk (f.stalkMap y) :=
   Arrow.isoMk (Y.presheaf.stalkCongr <| (Inseparable.of_eq h).map f.continuous)
       (X.presheaf.stalkCongr <| Inseparable.of_eq h) <| by

@@ -1178,7 +1178,7 @@ open WithZero
 open scoped Classical in
 /-- The `p`-adic valuation on `ℚ_[p]`, as a `Valuation`, bundled `Padic.valuation`. -/
 @[simps]
-noncomputable def mulValuation : Valuation ℚ_[p] ℤᵐ⁰ where
+def mulValuation : Valuation ℚ_[p] ℤᵐ⁰ where
   toFun x := if x = 0 then 0 else exp (-x.valuation)
   map_zero' := by simp
   map_one' := by simp

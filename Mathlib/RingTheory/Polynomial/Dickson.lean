@@ -60,7 +60,7 @@ variable {R S : Type*} [CommRing R] [CommRing S] (k : ℕ) (a : R)
 
 /-- `dickson` is the `n`-th (generalised) Dickson polynomial of the `k`-th kind associated to the
 element `a ∈ R`. -/
-noncomputable def dickson : ℕ → R[X]
+def dickson : ℕ → R[X]
   | 0 => 3 - k
   | 1 => X
   | n + 2 => X * dickson (n + 1) - C a * dickson n

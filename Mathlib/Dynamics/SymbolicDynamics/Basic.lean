@@ -369,7 +369,7 @@ This definition does not assume left-cancellation; it only *chooses* a preimage.
 Uniqueness (and the usual equations such as `Pattern.shift p v (v + w) = p.config w`)
 require a left-cancellation hypothesis and are proved in separate lemmas.
 -/]
-protected noncomputable def Pattern.mulShift (p : Pattern A G) (v : G) : G → A := by
+protected def Pattern.mulShift (p : Pattern A G) (v : G) : G → A := by
   classical
   intro h
   if hmem : h ∈ p.support.image (v * ·) then
@@ -387,7 +387,7 @@ to a finite subset `U : Finset G`.
 The pattern has `config g = x g` for `g ∈ U` and `config g = default` outside `U`,
 with support `U`. In other words, `Pattern.fromConfig x U` is the partial configuration of
 `x` visible on the coordinates in `U`, padded with `default` elsewhere. -/
-noncomputable def fromConfig (x : G → A) (U : Finset G) : Pattern A G := by
+def fromConfig (x : G → A) (U : Finset G) : Pattern A G := by
   classical
   exact { config := fun g => if g ∈ U then x g else default,
           support := U,

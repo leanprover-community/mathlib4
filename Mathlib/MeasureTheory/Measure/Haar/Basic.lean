@@ -91,7 +91,7 @@ namespace haar
   it is the smallest number of (left) translates of `V` that is necessary to cover `K`.
   It is defined to be 0 if no finite number of translates cover `K`. -/
 @[to_additive addIndex /-- additive version of `MeasureTheory.Measure.haar.index` -/]
-noncomputable def index (K V : Set G) : ℕ :=
+def index (K V : Set G) : ℕ :=
   sInf <| Finset.card '' { t : Finset G | K ⊆ ⋃ g ∈ t, (fun h => g * h) ⁻¹' V }
 
 @[to_additive addIndex_empty]
@@ -105,7 +105,7 @@ variable [TopologicalSpace G]
   The argument `K` is a (bundled) compact set, so that we can consider `prehaar K₀ U` as an
   element of `haarProduct` (below). -/
 @[to_additive /-- additive version of `MeasureTheory.Measure.haar.prehaar` -/]
-noncomputable def prehaar (K₀ U : Set G) (K : Compacts G) : ℝ :=
+def prehaar (K₀ U : Set G) (K : Compacts G) : ℝ :=
   (index (K : Set G) U : ℝ) / index K₀ U
 
 @[to_additive]
@@ -347,7 +347,7 @@ theorem nonempty_iInter_clPrehaar (K₀ : PositiveCompacts G) :
   but it can differ slightly. We do know that
   `haarMeasure K₀ (interior K) ≤ chaar K₀ K ≤ haarMeasure K₀ K`. -/
 @[to_additive addCHaar /-- additive version of `MeasureTheory.Measure.haar.chaar` -/]
-noncomputable def chaar (K₀ : PositiveCompacts G) (K : Compacts G) : ℝ :=
+def chaar (K₀ : PositiveCompacts G) (K : Compacts G) : ℝ :=
   Classical.choose (nonempty_iInter_clPrehaar K₀) K
 
 @[to_additive addCHaar_mem_addHaarProduct]
@@ -459,7 +459,7 @@ theorem is_left_invariant_chaar {K₀ : PositiveCompacts G} (g : G) (K : Compact
 
 /-- The function `chaar` interpreted in `ℝ≥0`, as a content -/
 @[to_additive /-- additive version of `MeasureTheory.Measure.haar.haarContent` -/]
-noncomputable def haarContent (K₀ : PositiveCompacts G) : Content G where
+def haarContent (K₀ : PositiveCompacts G) : Content G where
   toFun K := ⟨chaar K₀ K, chaar_nonneg _ _⟩
   mono' K₁ K₂ h := by simp only [← NNReal.coe_le_coe, NNReal.toReal, chaar_mono, h]
   sup_disjoint' K₁ K₂ h _h₁ h₂ := by simp only [chaar_sup_eq h]; rfl
@@ -514,7 +514,7 @@ variable [TopologicalSpace G] [IsTopologicalGroup G] [MeasurableSpace G] [BorelS
 @[to_additive
 /-- The Haar measure on the locally compact additive group `G`, scaled so that
 `addHaarMeasure K₀ K₀ = 1`. -/]
-noncomputable def haarMeasure (K₀ : PositiveCompacts G) : Measure G :=
+def haarMeasure (K₀ : PositiveCompacts G) : Measure G :=
   ((haarContent K₀).measure K₀)⁻¹ • (haarContent K₀).measure
 
 @[to_additive]
@@ -577,7 +577,7 @@ instance isHaarMeasure_haarMeasure (K₀ : PositiveCompacts G) : IsHaarMeasure (
 /-- `haar` is some choice of a Haar measure, on a locally compact group. -/
 @[to_additive
 /-- `addHaar` is some choice of a Haar measure, on a locally compact additive group. -/]
-noncomputable abbrev haar [LocallyCompactSpace G] : Measure G :=
+abbrev haar [LocallyCompactSpace G] : Measure G :=
   haarMeasure <| Classical.arbitrary _
 
 /-! Steinhaus theorem: if `E` has positive measure, then `E / E` contains a neighborhood of zero.

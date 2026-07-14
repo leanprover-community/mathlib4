@@ -401,18 +401,18 @@ instance : PreservesColimitsOfShape (Discrete J) ((eval.{w} C A).obj F) :=
   preservesColimitsOfShape_of_discrete _
 
 /-- The yoneda embedding of `FormalCoproduct.{v} C` into `v`-presheaves. -/
-protected noncomputable abbrev yoneda :
+protected abbrev yoneda :
     FormalCoproduct.{v} C ⥤ Cᵒᵖ ⥤ Type v :=
   (eval _ _).obj yoneda
 
 /-- The yoneda embedding of `FormalCoproduct.{w} C` into `max w v`-presheaves. -/
-protected noncomputable abbrev uliftYoneda :
+protected abbrev uliftYoneda :
     FormalCoproduct.{w} C ⥤ Cᵒᵖ ⥤ Type (max w v) :=
   (eval _ _).obj uliftYoneda
 
 /-- The yoneda embedding of `FormalCoproduct.{w} C` into `w`-presheaves for a locally
 `w`-small category. -/
-protected noncomputable abbrev shrinkYoneda [LocallySmall.{w} C] :
+protected abbrev shrinkYoneda [LocallySmall.{w} C] :
     FormalCoproduct.{w} C ⥤ Cᵒᵖ ⥤ Type w :=
   (eval _ _).obj shrinkYoneda
 

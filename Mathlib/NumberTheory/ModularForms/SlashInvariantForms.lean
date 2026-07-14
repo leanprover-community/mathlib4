@@ -296,7 +296,7 @@ theorem coe_intCast [Γ.HasDetPlusMinusOne] (z : ℤ) : ⇑(z : SlashInvariantFo
 open ConjAct Pointwise in
 /-- Translating a `SlashInvariantForm` by `g : GL (Fin 2) ℝ`, to obtain a new
 `SlashInvariantForm` of level `g⁻¹ Γ g`. -/
-noncomputable def translate [SlashInvariantFormClass F Γ k] (f : F) (g : GL (Fin 2) ℝ) :
+def translate [SlashInvariantFormClass F Γ k] (f : F) (g : GL (Fin 2) ℝ) :
     SlashInvariantForm (toConjAct g⁻¹ • Γ) k where
   toFun := f ∣[k] g
   slash_action_eq' j hj := by

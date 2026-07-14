@@ -118,7 +118,7 @@ lemma isRegularMono_of_regularMono {f : X ⟶ Y} (h : RegularMono f) : IsRegular
 def IsRegularMono.getStruct (f : X ⟶ Y) [IsRegularMono f] : RegularMono f :=
   IsRegularMono.regularMono.some
 
-@[deprecated (since := "2025-12-01")] noncomputable alias regularMonoOfIsRegularMono :=
+@[deprecated (since := "2025-12-01")] alias regularMonoOfIsRegularMono :=
   IsRegularMono.getStruct
 
 /-- An equalizer diagram gives rise to a regular monomorphism. -/
@@ -374,7 +374,7 @@ lemma isRegularEpi_of_regularEpi {f : X ⟶ Y} (h : RegularEpi f) : IsRegularEpi
 def IsRegularEpi.getStruct (f : X ⟶ Y) [h : IsRegularEpi f] : RegularEpi f :=
   h.regularEpi.some
 
-@[deprecated (since := "2025-12-01")] noncomputable alias regularEpiOfIsRegularEpi :=
+@[deprecated (since := "2025-12-01")] alias regularEpiOfIsRegularEpi :=
   IsRegularEpi.getStruct
 
 /-- A coequalizer diagram gives rise to a regular epimorphism. -/
@@ -539,7 +539,7 @@ lemma isRegularEpi_iff_effectiveEpi {B X : C} (f : X ⟶ B) [HasPullback f f] :
 /-- Let `p : Y ⟶ X` be an effective epimorphism, `p₁ : Z ⟶ Y` and `p₂ : Z ⟶ Y` two
 morphisms which make `Z` the pullback of two copies of `Y` over `X`.
 Then, `Y ⟶ X` is the coequalizer of `p₁` and `p₂`. -/
-noncomputable def EffectiveEpiStruct.isColimitCoforkOfIsPullback
+def EffectiveEpiStruct.isColimitCoforkOfIsPullback
     {X Y Z : C} {p : Y ⟶ X} (hp : EffectiveEpiStruct p) {p₁ p₂ : Z ⟶ Y}
     (sq : IsPullback p₁ p₂ p p) :
     IsColimit (Cofork.ofπ p sq.w) :=
@@ -620,7 +620,7 @@ theorem isIso_of_regularEpi_of_mono (f : X ⟶ Y) (h : RegularEpi f) [Mono f] : 
 section
 
 /-- A regular monomorphism in `C` induces a regular epimorphism in `Cᵒᵖ`. -/
-noncomputable def RegularMono.op {X Y : C} {f : X ⟶ Y} (hf : RegularMono f) :
+def RegularMono.op {X Y : C} {f : X ⟶ Y} (hf : RegularMono f) :
     RegularEpi f.op where
   W := .op hf.Z
   left := hf.left.op
@@ -629,7 +629,7 @@ noncomputable def RegularMono.op {X Y : C} {f : X ⟶ Y} (hf : RegularMono f) :
   isColimit := Fork.isLimitOfιEquivIsColimitOp _ _ hf.w _ rfl hf.isLimit
 
 /-- A regular monomorphism in `Cᵒᵖ` induces a regular epimorphism in `C`. -/
-noncomputable def RegularMono.unop {X Y : Cᵒᵖ} {f : X ⟶ Y} (hf : RegularMono f) :
+def RegularMono.unop {X Y : Cᵒᵖ} {f : X ⟶ Y} (hf : RegularMono f) :
     RegularEpi f.unop where
   W := hf.Z.unop
   left := hf.left.unop
@@ -638,7 +638,7 @@ noncomputable def RegularMono.unop {X Y : Cᵒᵖ} {f : X ⟶ Y} (hf : RegularMo
   isColimit := Fork.isLimitOfιEquivIsColimitUnop _ _ hf.w _ rfl hf.isLimit
 
 /-- A regular epimorphism in `C` induces a regular monomorphism in `Cᵒᵖ`. -/
-noncomputable def RegularEpi.op {X Y : C} {f : X ⟶ Y} (hf : RegularEpi f) :
+def RegularEpi.op {X Y : C} {f : X ⟶ Y} (hf : RegularEpi f) :
     RegularMono f.op where
   Z := .op hf.W
   left := hf.left.op
@@ -647,7 +647,7 @@ noncomputable def RegularEpi.op {X Y : C} {f : X ⟶ Y} (hf : RegularEpi f) :
   isLimit := Cofork.isColimitOfπEquivIsLimitOp _ _ hf.w _ rfl hf.isColimit
 
 /-- A regular epimorphism in `Cᵒᵖ` induces a regular monomorphism in `C`. -/
-noncomputable def RegularEpi.unop {X Y : Cᵒᵖ} {f : X ⟶ Y} (hf : RegularEpi f) :
+def RegularEpi.unop {X Y : Cᵒᵖ} {f : X ⟶ Y} (hf : RegularEpi f) :
     RegularMono f.unop where
   Z := hf.W.unop
   left := hf.left.unop

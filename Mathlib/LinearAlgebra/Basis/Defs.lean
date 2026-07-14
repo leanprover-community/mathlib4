@@ -672,7 +672,7 @@ theorem forall_coord_eq_zero_iff {x : M} : (∀ i, b.coord i x = 0) ↔ x = 0 :=
     b.repr.map_eq_zero_iff
 
 /-- The sum of the coordinates of an element `m : M` with respect to a basis. -/
-noncomputable def sumCoords : M →ₗ[R] R :=
+def sumCoords : M →ₗ[R] R :=
   (Finsupp.lsum ℕ fun _ => LinearMap.id) ∘ₗ (b.repr : M →ₗ[R] ι →₀ R)
 
 @[simp]

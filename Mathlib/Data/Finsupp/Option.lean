@@ -105,7 +105,6 @@ theorem some_update_none (f : Option α →₀ M) (a : M) :
 /-- `Finsupp`s from `Option` are equivalent to
 pairs of an element and a `Finsupp` on the original type. -/
 @[simps]
-noncomputable
 def optionEquiv : (Option α →₀ M) ≃ M × (α →₀ M) where
   toFun P := (P none, P.some)
   invFun P := (P.2.embDomain .some).update none P.1

@@ -177,7 +177,7 @@ theorem quotientEquivOrthogonal_symm_eq_mk (x : E) (hx : x ∈ Kᗮ) :
     K.quotientEquivOrthogonal.symm ⟨x, hx⟩ = Quotient.mk x := by
   simp
 
-noncomputable instance instQuotientInnerProductSpace :
+instance instQuotientInnerProductSpace :
     InnerProductSpace 𝕜 (E ⧸ K) where
   inner x y := ⟪K.quotientEquivOrthogonal x, K.quotientEquivOrthogonal y⟫_𝕜
   add_left x y z := by rw [map_add, inner_add_left]

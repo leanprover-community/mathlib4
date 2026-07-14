@@ -802,7 +802,7 @@ open MonoidWithZeroHom MonoidWithZeroHom.ValueGroup₀
 /-- An equivalence of valuations `v.IsEquiv w` induces the following map from `ValueGroup₀ v` to
 `ValueGroup₀ w`: given `x : ValueGroup₀ v` and nonzero `a b : R` such that `(v a) * x = (v b)`,
 `valueGroup₀Fun x` is defined as `(w b) * (w a)⁻¹`. -/
-noncomputable def valueGroup₀Fun (h : v.IsEquiv w) (x : ValueGroup₀ (.ofClass v)) :
+def valueGroup₀Fun (h : v.IsEquiv w) (x : ValueGroup₀ (.ofClass v)) :
     ValueGroup₀ (.ofClass w) :=
   if hx : x = 0 then 0 else
     haveI c := (x.zero_or_exists_mk'.resolve_left hx).choose
@@ -820,7 +820,7 @@ theorem valueGroup₀Fun_spec (h : v.IsEquiv w) {r s : R} (hr : v r ≠ 0) (hs :
 theorem valueGroup₀Fun_zero (h : v.IsEquiv w) : valueGroup₀Fun h 0 = 0 := by simp [valueGroup₀Fun]
 
 /-- The isomorphism between the `ValueGroup₀`'s of two equivalent valuations. -/
-noncomputable def orderMonoidIso (h : v.IsEquiv w) :
+def orderMonoidIso (h : v.IsEquiv w) :
     ValueGroup₀ (.ofClass v) ≃*o ValueGroup₀ (.ofClass w) where
   toFun := valueGroup₀Fun h
   invFun := valueGroup₀Fun h.symm

@@ -34,12 +34,12 @@ open scoped TensorProduct
 /-- Auxiliary definition used to fight a timeout when building
 `AlgCat.instMonoidalCategory`. -/
 @[simps!]
-noncomputable abbrev tensorObj (X Y : AlgCat.{u} R) : AlgCat.{u} R :=
+abbrev tensorObj (X Y : AlgCat.{u} R) : AlgCat.{u} R :=
   of R (X ⊗[R] Y)
 
 /-- Auxiliary definition used to fight a timeout when building
 `AlgCat.instMonoidalCategory`. -/
-noncomputable abbrev tensorHom {W X Y Z : AlgCat.{u} R} (f : W ⟶ X) (g : Y ⟶ Z) :
+abbrev tensorHom {W X Y Z : AlgCat.{u} R} (f : W ⟶ X) (g : Y ⟶ Z) :
     tensorObj W Y ⟶ tensorObj X Z :=
   ofHom <| Algebra.TensorProduct.map f.hom g.hom
 
@@ -93,7 +93,7 @@ theorem hom_inv_associator {M N K : AlgCat.{u} R} :
     (α_ M N K).inv.hom = (Algebra.TensorProduct.assoc R R R M N K).symm.toAlgHom :=
   rfl
 
-noncomputable instance instMonoidalCategory : MonoidalCategory (AlgCat.{u} R) :=
+instance instMonoidalCategory : MonoidalCategory (AlgCat.{u} R) :=
   Monoidal.induced
     (forget₂ (AlgCat R) (ModuleCat R))
     { μIso := fun _ _ => Iso.refl _

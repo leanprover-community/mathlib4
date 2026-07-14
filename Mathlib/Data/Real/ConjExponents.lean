@@ -399,7 +399,7 @@ protected lemma Real.HolderConjugate.toNNReal {p q : ℝ} (h : p.HolderConjugate
 namespace ENNReal
 
 /-- The conjugate exponent of `p` is `q = 1 + (p - 1)⁻¹`, so that `p⁻¹ + q⁻¹ = 1`. -/
-noncomputable def conjExponent (p : ℝ≥0∞) : ℝ≥0∞ := 1 + (p - 1)⁻¹
+def conjExponent (p : ℝ≥0∞) : ℝ≥0∞ := 1 + (p - 1)⁻¹
 
 lemma coe_conjExponent {p : ℝ≥0} (hp : 1 < p) : p.conjExponent = conjExponent p := by
   rw [NNReal.conjExponent, conjExponent]

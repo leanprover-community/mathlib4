@@ -701,7 +701,6 @@ namespace FractionalIdeal
 
 /-- `c.divMod b a` (i.e. `c / b mod a`) is an arbitrary `x` such that `c = bx + a`.
 This is zero if the above is not possible, i.e. when `a = 0` or `b = 0` or `¬ a ≤ c`. -/
-noncomputable
 def divMod (c b a : FractionalIdeal R⁰ K) : K :=
   letI := Classical.propDecidable
   if h : a ≤ c ∧ a ≠ 0 ∧ b ≠ 0 then
@@ -734,7 +733,6 @@ lemma divMod_zero_of_not_le {a b c : FractionalIdeal R⁰ K} (hac : ¬ a ≤ c) 
 /-- Let `I J I' J'` be nonzero fractional ideals in a Dedekind domain with `J ≤ I` and `J' ≤ I'`.
 If `I/J = I'/J'` in the group of fractional ideals (i.e. `I * J' = I' * J`),
 then `I/J ≃ I'/J'` as quotient `R`-modules. -/
-noncomputable
 def quotientEquiv (I J I' J' : FractionalIdeal R⁰ K)
     (H : I * J' = I' * J) (h : J ≤ I) (h' : J' ≤ I') (hJ' : J' ≠ 0) (hI : I ≠ 0) :
     (I ⧸ J.coeToSubmodule.comap I.coeToSubmodule.subtype) ≃ₗ[R]

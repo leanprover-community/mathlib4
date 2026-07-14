@@ -136,7 +136,7 @@ instance hasWellFounded_toType (o : Ordinal) : WellFoundedRelation o.ToType :=
 namespace Ordinal
 
 @[no_expose]
-noncomputable instance (o : Ordinal) : SuccOrder o.ToType :=
+instance (o : Ordinal) : SuccOrder o.ToType :=
   .ofLinearWellFoundedLT _
 
 /-! ### Basic properties of the order type -/
@@ -548,7 +548,7 @@ def ToType.mk {o : Ordinal} : Set.Iio o ≃o o.ToType where
   right_inv _ := enum_typein _ _
   map_rel_iff' := enum_le_enum' _
 
-@[deprecated (since := "2025-12-04")] noncomputable alias enumIsoToType := ToType.mk
+@[deprecated (since := "2025-12-04")] alias enumIsoToType := ToType.mk
 
 /-- Convert an element of `α.toType` to the corresponding `Ordinal` -/
 abbrev ToType.toOrd {o : Ordinal} (α : o.ToType) : Set.Iio o := ToType.mk.symm α

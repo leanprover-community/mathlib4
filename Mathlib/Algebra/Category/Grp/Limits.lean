@@ -67,7 +67,7 @@ section
 variable [Small.{u} (Functor.sections (F ⋙ forget GrpCat))]
 
 @[to_additive]
-noncomputable instance limitGroup :
+instance limitGroup :
     Group (Types.Small.limitCone.{v, u} (F ⋙ forget GrpCat.{u})).pt :=
   inferInstanceAs <| Group (Shrink (F ⋙ forget GrpCat.{u}).sections)
 
@@ -83,7 +83,7 @@ the existing limit. -/
 
 All we need to do is notice that the limit point has an `AddGroup` instance available, and then
 reuse the existing limit. -/]
-noncomputable instance Forget₂.createsLimit :
+instance Forget₂.createsLimit :
     CreatesLimit F (forget₂ GrpCat.{u} MonCat.{u}) :=
   -- Porting note: need to add `forget₂ GrpCat MonCat` reflects isomorphism
   letI : (forget₂ GrpCat.{u} MonCat.{u}).ReflectsIsomorphisms :=
@@ -111,14 +111,14 @@ noncomputable instance Forget₂.createsLimit :
 (Generally, you'll just want to use `limit F`.) -/
 @[to_additive /-- A choice of limit cone for a functor into `GrpCat`.
   (Generally, you'll just want to use `limit F`.) -/]
-noncomputable def limitCone : Cone F :=
+def limitCone : Cone F :=
   liftLimit (limit.isLimit (F ⋙ forget₂ GrpCat.{u} MonCat.{u}))
 
 /-- The chosen cone is a limit cone.
 (Generally, you'll just want to use `limit.cone F`.) -/
 @[to_additive /-- The chosen cone is a limit cone.
 (Generally, you'll just want to use `limit.cone F`.) -/]
-noncomputable def limitConeIsLimit : IsLimit (limitCone F) :=
+def limitConeIsLimit : IsLimit (limitCone F) :=
   liftedLimitIsLimit _
 
 /-- If `(F ⋙ forget GrpCat).sections` is `u`-small, `F` has a limit. -/
@@ -196,13 +196,13 @@ instance forget_preservesLimits : PreservesLimits (forget GrpCat.{u}) :=
   GrpCat.forget_preservesLimitsOfSize.{u, u}
 
 @[to_additive]
-noncomputable instance forget_createsLimit :
+instance forget_createsLimit :
     CreatesLimit F (forget GrpCat.{u}) := by
   set e : forget₂ GrpCat.{u} MonCat.{u} ⋙ forget MonCat.{u} ≅ forget GrpCat.{u} := Iso.refl _
   exact createsLimitOfNatIso e
 
 @[to_additive]
-noncomputable instance forget_createsLimitsOfShape :
+instance forget_createsLimitsOfShape :
     CreatesLimitsOfShape J (forget GrpCat.{u}) where
   CreatesLimit := inferInstance
 
@@ -210,7 +210,7 @@ noncomputable instance forget_createsLimitsOfShape :
 -/
 @[to_additive
 /-- The forgetful functor from additive groups to types creates all limits. -/]
-noncomputable instance forget_createsLimitsOfSize :
+instance forget_createsLimitsOfSize :
     CreatesLimitsOfSize.{w, v} (forget GrpCat.{u}) where
   CreatesLimitsOfShape := inferInstance
 end GrpCat
@@ -224,7 +224,7 @@ instance commGroupObj (j) : CommGroup ((F ⋙ forget CommGrpCat).obj j) :=
   inferInstanceAs <| CommGroup (F.obj j)
 
 @[to_additive]
-noncomputable instance limitCommGroup
+instance limitCommGroup
     [Small.{u} (Functor.sections (F ⋙ forget CommGrpCat))] :
     CommGroup (Types.Small.limitCone.{v, u} (F ⋙ forget CommGrpCat.{u})).pt :=
   letI : CommGroup (F ⋙ forget CommGrpCat.{u}).sections :=
@@ -245,7 +245,7 @@ and then reuse the existing limit.
 
 All we need to do is notice that the limit point has an `AddCommGroup` instance available,
 and then reuse the existing limit. -/]
-noncomputable instance Forget₂.createsLimit :
+instance Forget₂.createsLimit :
     CreatesLimit F (forget₂ CommGrpCat GrpCat.{u}) :=
   createsLimitOfReflectsIso (fun c hc => by
     have : HasLimit _ := ⟨_, hc⟩
@@ -276,7 +276,7 @@ variable [Small.{u} (Functor.sections (F ⋙ forget CommGrpCat))]
 @[to_additive
 /-- A choice of limit cone for a functor into `AddCommGrpCat`.
 (Generally, you'll just want to use `limit F`.) -/]
-noncomputable def limitCone : Cone F :=
+def limitCone : Cone F :=
   letI : Small.{u} (Functor.sections ((F ⋙ forget₂ CommGrpCat GrpCat) ⋙ forget GrpCat)) :=
     inferInstanceAs <| Small (Functor.sections (F ⋙ forget CommGrpCat))
   liftLimit (limit.isLimit (F ⋙ forget₂ CommGrpCat.{u} GrpCat.{u}))
@@ -286,7 +286,7 @@ noncomputable def limitCone : Cone F :=
 @[to_additive
 /-- The chosen cone is a limit cone.
 (Generally, you'll just want to use `limit.cone F`.) -/]
-noncomputable def limitConeIsLimit : IsLimit (limitCone.{v, u} F) :=
+def limitConeIsLimit : IsLimit (limitCone.{v, u} F) :=
   liftedLimitIsLimit _
 
 /-- If `(F ⋙ forget CommGrpCat).sections` is `u`-small, `F` has a limit. -/
@@ -359,7 +359,7 @@ instance forget₂Group_preservesLimits :
 /-- An auxiliary declaration to speed up typechecking. -/
 @[to_additive AddCommGrpCat.forget₂AddCommMon_preservesLimitsAux
 /-- An auxiliary declaration to speed up typechecking. -/]
-noncomputable def forget₂CommMon_preservesLimitsAux
+def forget₂CommMon_preservesLimitsAux
     [Small.{u} (F ⋙ forget CommGrpCat).sections] :
     IsLimit ((forget₂ CommGrpCat.{u} CommMonCat.{u}).mapCone (limitCone.{v, u} F)) :=
   letI : Small.{u} (Functor.sections ((F ⋙ forget₂ _ CommMonCat) ⋙ forget CommMonCat)) :=
@@ -407,22 +407,22 @@ types.) -/]
 instance forget_preservesLimitsOfSize :
     PreservesLimitsOfSize.{w, v} (forget CommGrpCat.{u}) := inferInstance
 
-noncomputable instance _root_.AddCommGrpCat.forget_preservesLimits :
+instance _root_.AddCommGrpCat.forget_preservesLimits :
     PreservesLimits (forget AddCommGrpCat.{u}) :=
   AddCommGrpCat.forget_preservesLimitsOfSize.{u, u}
 
 @[to_additive existing]
-noncomputable instance forget_preservesLimits : PreservesLimits (forget CommGrpCat.{u}) :=
+instance forget_preservesLimits : PreservesLimits (forget CommGrpCat.{u}) :=
   CommGrpCat.forget_preservesLimitsOfSize.{u, u}
 
 @[to_additive]
-noncomputable instance forget_createsLimit :
+instance forget_createsLimit :
     CreatesLimit F (forget CommGrpCat.{u}) := by
   set e : forget₂ CommGrpCat.{u} GrpCat.{u} ⋙ forget GrpCat.{u} ≅ forget CommGrpCat.{u} := .refl _
   exact createsLimitOfNatIso e
 
 @[to_additive]
-noncomputable instance forget_createsLimitsOfShape (J : Type v) [Category.{w} J] :
+instance forget_createsLimitsOfShape (J : Type v) [Category.{w} J] :
     CreatesLimitsOfShape J (forget CommGrpCat.{u}) where
   CreatesLimit := inferInstance
 
@@ -430,7 +430,7 @@ noncomputable instance forget_createsLimitsOfShape (J : Type v) [Category.{w} J]
 -/
 @[to_additive
 /-- The forgetful functor from additive commutative groups to types creates all limits. -/]
-noncomputable instance forget_createsLimitsOfSize :
+instance forget_createsLimitsOfSize :
     CreatesLimitsOfSize.{w, v} (forget CommGrpCat.{u}) where
   CreatesLimitsOfShape := inferInstance
 

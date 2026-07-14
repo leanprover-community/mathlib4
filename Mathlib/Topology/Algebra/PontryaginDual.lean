@@ -102,7 +102,7 @@ instance [CompactSpace A] : DiscreteTopology (PontryaginDual A) := by
 instance [DiscreteTopology A] [CompactSpace A] : Finite (PontryaginDual A) :=
   finite_of_compact_of_discrete
 
-noncomputable instance [DiscreteTopology A] [CompactSpace A] : Fintype (PontryaginDual A) :=
+instance [DiscreteTopology A] [CompactSpace A] : Fintype (PontryaginDual A) :=
   .ofFinite _
 
 /-- `PontryaginDual` is a contravariant functor. -/

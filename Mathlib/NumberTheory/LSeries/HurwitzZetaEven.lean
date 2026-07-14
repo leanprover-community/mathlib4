@@ -580,7 +580,7 @@ lemma differentiableAt_update_of_residue
 
 /-- The even part of the Hurwitz zeta function, i.e. the meromorphic function of `s` which agrees
 with `1 / 2 * ∑' (n : ℤ), 1 / |n + a| ^ s` for `1 < re s` -/
-noncomputable def hurwitzZetaEven (a : UnitAddCircle) :=
+def hurwitzZetaEven (a : UnitAddCircle) :=
   Function.update (fun s ↦ completedHurwitzZetaEven a s / Gammaℝ s)
   0 (if a = 0 then -1 / 2 else 0)
 
@@ -694,7 +694,7 @@ lemma hasSum_nat_hurwitzZetaEven_of_mem_Icc {a : ℝ} (ha : a ∈ Icc 0 1) {s : 
 
 /-- The cosine zeta function, i.e. the meromorphic function of `s` which agrees
 with `∑' (n : ℕ), cos (2 * π * a * n) / n ^ s` for `1 < re s`. -/
-noncomputable def cosZeta (a : UnitAddCircle) :=
+def cosZeta (a : UnitAddCircle) :=
   Function.update (fun s : ℂ ↦ completedCosZeta a s / Gammaℝ s) 0 (-1 / 2)
 
 lemma cosZeta_apply_zero (a : UnitAddCircle) : cosZeta a 0 = -1 / 2 :=

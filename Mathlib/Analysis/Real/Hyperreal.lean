@@ -388,7 +388,7 @@ theorem isSt_iff {x r} : IsSt x r ↔ 0 ≤ mk x ∧ stdPart x = r where
 open scoped Classical in
 /-- Standard part function: like a "round" to ℝ instead of ℤ -/
 @[deprecated stdPart (since := "2026-01-05")]
-noncomputable def st : ℝ* → ℝ := fun x => if h : ∃ r, IsSt x r then Classical.choose h else 0
+def st : ℝ* → ℝ := fun x => if h : ∃ r, IsSt x r then Classical.choose h else 0
 
 @[deprecated "`st` is deprecated" (since := "2026-01-05")]
 theorem st_eq (x : ℝ*) : st x = stdPart x := by

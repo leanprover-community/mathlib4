@@ -39,7 +39,7 @@ variable [AddCommMonoid M] [Semiring R] [Module R M]
 /-- If `α` has a unique term, then the type of finitely supported functions `α →₀ M` is
 `R`-linearly equivalent to `M`. -/
 @[simps! apply symm_apply]
-noncomputable def uniqueLinearEquiv [Subsingleton α] (a : α) : (α →₀ M) ≃ₗ[R] M where
+def uniqueLinearEquiv [Subsingleton α] (a : α) : (α →₀ M) ≃ₗ[R] M where
   toAddEquiv := uniqueAddEquiv a
   map_smul' _ _ := rfl
 
@@ -50,7 +50,7 @@ noncomputable def uniqueLinearEquiv [Subsingleton α] (a : α) : (α →₀ M) �
 /-- If `α` has a unique term, then the type of finitely supported functions `α →₀ M` is
 `R`-linearly equivalent to `M`. -/
 @[deprecated uniqueLinearEquiv (since := "2026-05-06")]
-noncomputable def LinearEquiv.finsuppUnique (α : Type*) [Unique α] : (α →₀ M) ≃ₗ[R] M :=
+def LinearEquiv.finsuppUnique (α : Type*) [Unique α] : (α →₀ M) ≃ₗ[R] M :=
   { Finsupp.equivFunOnFinite.trans (Equiv.funUnique α M) with
     map_add' := fun _ _ => rfl
     map_smul' := fun _ _ => rfl }
@@ -256,7 +256,7 @@ section
 variable {M : Type*} [AddCommMonoid M] {X Y Z : Type*}
 
 /-- The map `(X → M) → (Y → M)` induced by a map `X → Y` between finite types. -/
-noncomputable def map [Finite X] [Finite Y] (f : X → Y) (s : X → M) : Y → M :=
+def map [Finite X] [Finite Y] (f : X → Y) (s : X → M) : Y → M :=
   Finsupp.equivFunOnFinite (Finsupp.mapDomain f (Finsupp.equivFunOnFinite.symm s))
 
 lemma map_apply_apply [Fintype X] [Finite Y] [DecidableEq Y] (f : X → Y) (s : X → M) (y : Y) :
@@ -293,7 +293,7 @@ section
 variable (R M : Type*) [Semiring R] [AddCommMonoid M] [Module R M] {X Y Z : Type*}
 
 /-- The linear map `(X → M) →ₗ[R] (Y → M)` induced by a map `X → Y` between finite types. -/
-noncomputable def linearMap [Finite X] [Finite Y] (f : X → Y) :
+def linearMap [Finite X] [Finite Y] (f : X → Y) :
     (X → M) →ₗ[R] (Y → M) :=
   (((Finsupp.linearEquivFunOnFinite R M Y)).comp (Finsupp.lmapDomain M R f)).comp
     (Finsupp.linearEquivFunOnFinite R M X).symm.toLinearMap

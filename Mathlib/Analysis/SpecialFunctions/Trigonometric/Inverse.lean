@@ -30,7 +30,7 @@ variable {x y : ℝ}
 /-- Inverse of the `sin` function, returns values in the range `-π / 2 ≤ arcsin x ≤ π / 2`.
 It defaults to `-π / 2` on `(-∞, -1)` and to `π / 2` to `(1, ∞)`. -/
 @[pp_nodot]
-noncomputable def arcsin : ℝ → ℝ :=
+def arcsin : ℝ → ℝ :=
   Subtype.val ∘ IccExtend (neg_le_self zero_le_one) sinOrderIso.symm
 
 theorem arcsin_mem_Icc (x : ℝ) : arcsin x ∈ Icc (-(π / 2)) (π / 2) :=
@@ -272,7 +272,7 @@ theorem tan_arcsin (x : ℝ) : tan (arcsin x) = x / √(1 - x ^ 2) := by
 /-- Inverse of the `cos` function, returns values in the range `0 ≤ arccos x` and `arccos x ≤ π`.
   It defaults to `π` on `(-∞, -1)` and to `0` to `(1, ∞)`. -/
 @[pp_nodot]
-noncomputable def arccos (x : ℝ) : ℝ :=
+def arccos (x : ℝ) : ℝ :=
   π / 2 - arcsin x
 
 theorem arccos_eq_pi_div_two_sub_arcsin (x : ℝ) : arccos x = π / 2 - arcsin x :=
@@ -448,7 +448,7 @@ def cosPartialHomeomorph : OpenPartialHomeomorph ℝ ℝ where
 
 /-- `Real.cos` and `Real.arccos` as a (partial) equivalence from `[0, π]` to `[-1, 1]` -/
 @[simps]
-noncomputable def cosPartialEquiv : PartialEquiv ℝ ℝ where
+def cosPartialEquiv : PartialEquiv ℝ ℝ where
   toFun θ := cos θ
   invFun x := arccos x
   source := Icc 0 π

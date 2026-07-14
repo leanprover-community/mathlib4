@@ -180,7 +180,7 @@ open scoped Real ENNReal
 
 /-- The polar coordinates open partial homeomorphism in `ℂ`, mapping `r (cos θ + I * sin θ)` to
 `(r, θ)`. It is a homeomorphism between `ℂ - ℝ≤0` and `(0, +∞) × (-π, π)`. -/
-protected noncomputable def polarCoord : OpenPartialHomeomorph ℂ (ℝ × ℝ) :=
+protected def polarCoord : OpenPartialHomeomorph ℂ (ℝ × ℝ) :=
   equivRealProdCLM.toHomeomorph.transOpenPartialHomeomorph polarCoord
 
 protected theorem polarCoord_apply (a : ℂ) :
@@ -228,7 +228,7 @@ variable {ι : Type*}
 
 open ContinuousLinearMap in
 /-- The derivative of `polarCoord.symm` on `ι → ℝ × ℝ`, see `hasFDerivAt_pi_polarCoord_symm`. -/
-noncomputable def fderivPiPolarCoordSymm (p : ι → ℝ × ℝ) : (ι → ℝ × ℝ) →L[ℝ] ι → ℝ × ℝ :=
+def fderivPiPolarCoordSymm (p : ι → ℝ × ℝ) : (ι → ℝ × ℝ) →L[ℝ] ι → ℝ × ℝ :=
   pi fun i ↦ (fderivPolarCoordSymm (p i)).comp (proj i)
 
 theorem injOn_pi_polarCoord_symm :

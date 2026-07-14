@@ -226,7 +226,7 @@ variable {K L : Type*} [Field K] [Field L] [Algebra K L] (f : L) (h : Transcende
 
 /-- Given a transcendental `f : L`, the `K`-algebra isomorphism between `RatFunc K` and `L` given
 by sending `X` to `f`. -/
-noncomputable def algEquivOfTranscendental : RatFunc K ≃ₐ[K] K⟮f⟯ :=
+def algEquivOfTranscendental : RatFunc K ≃ₐ[K] K⟮f⟯ :=
   IsFractionRing.algEquivOfAlgEquiv (Polynomial.algEquivOfTranscendental K f h)
 
 @[simp]

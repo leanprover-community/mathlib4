@@ -70,7 +70,7 @@ abbrev realMixedSpace :=
 The natural homeomorphism between the mixed space `ℝ^r₁ × ℂ^r₂` and the real mixed space
 `ℝ^r₁ × (ℝ × ℝ)^r₂`.
 -/
-noncomputable def mixedSpaceToRealMixedSpace : mixedSpace K ≃ₜ realMixedSpace K :=
+def mixedSpaceToRealMixedSpace : mixedSpace K ≃ₜ realMixedSpace K :=
   (Homeomorph.refl _).prodCongr <| .piCongrRight fun _ ↦ Complex.equivRealProdCLM.toHomeomorph
 
 @[simp]

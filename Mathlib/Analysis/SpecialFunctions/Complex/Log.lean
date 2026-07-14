@@ -27,7 +27,7 @@ open scoped Real Topology ComplexConjugate
 /-- Inverse of the `exp` function. Returns values such that `(log x).im > - π` and `(log x).im ≤ π`.
   `log 0 = 0` -/
 @[pp_nodot]
-noncomputable def log (x : ℂ) : ℂ :=
+def log (x : ℂ) : ℂ :=
   Real.log ‖x‖ + arg x * I
 
 theorem log_re (x : ℂ) : x.log.re = Real.log ‖x‖ := by simp [log]
@@ -293,7 +293,7 @@ open scoped Real
 This definition is used to prove that `Complex.log`
 is complex differentiable at all points but the negative real semi-axis.
 -/
-noncomputable def expOpenPartialHomeomorph : OpenPartialHomeomorph ℂ ℂ where
+def expOpenPartialHomeomorph : OpenPartialHomeomorph ℂ ℂ where
   toFun := exp
   invFun := log
   source := {z : ℂ | z.im ∈ Ioo (-π) π}

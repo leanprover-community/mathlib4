@@ -540,7 +540,7 @@ variable [CommSemiring R]
 open Finset Nat
 
 /-- The ring homomorphism taking a power series `f(X)` to `f(aX)`. -/
-noncomputable def rescale (a : R) : R⟦X⟧ →+* R⟦X⟧ where
+def rescale (a : R) : R⟦X⟧ →+* R⟦X⟧ where
   toFun f := PowerSeries.mk fun n => a ^ n * PowerSeries.coeff n f
   map_zero' := by
     ext
@@ -707,7 +707,7 @@ theorem rescale_neg_one_X : rescale (-1 : A) X = -X := by
   rw [rescale_X, map_neg, map_one, neg_one_mul]
 
 /-- The ring homomorphism taking a power series `f(X)` to `f(-X)`. -/
-noncomputable def evalNegHom : A⟦X⟧ →+* A⟦X⟧ :=
+def evalNegHom : A⟦X⟧ →+* A⟦X⟧ :=
   rescale (-1 : A)
 
 @[simp]

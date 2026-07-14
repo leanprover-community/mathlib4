@@ -323,7 +323,7 @@ section
 
 open scoped Classical in
 /-- Noncomputable multiplicative inverse in a direct limit of fields. -/
-noncomputable def inv (p : Ring.DirectLimit G f) : Ring.DirectLimit G f :=
+def inv (p : Ring.DirectLimit G f) : Ring.DirectLimit G f :=
   if H : p = 0 then 0 else Classical.choose (DirectLimit.exists_inv G f H)
 
 protected theorem mul_inv_cancel {p : Ring.DirectLimit G f} (hp : p ≠ 0) : p * inv G f p = 1 := by
@@ -334,7 +334,7 @@ protected theorem inv_mul_cancel {p : Ring.DirectLimit G f} (hp : p ≠ 0) : inv
 
 /-- Noncomputable field structure on the direct limit of fields.
 See note [reducible non-instances]. -/
-protected noncomputable abbrev field [DirectedSystem G (f' · · ·)] :
+protected abbrev field [DirectedSystem G (f' · · ·)] :
     Field (Ring.DirectLimit G (f' · · ·)) where
   -- This used to include the parent CommRing and Nontrivial instances,
   -- but leaving them implicit avoids a very expensive (2-3 minutes!) eta expansion.

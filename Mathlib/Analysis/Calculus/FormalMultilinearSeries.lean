@@ -250,7 +250,7 @@ variable {ι : Type*} {E : ι → Type*} [∀ i, AddCommGroup (E i)] [∀ i, Mod
 
 /-- Realize a ContinuousMultilinearMap on `∀ i : ι, E i` as the evaluation of a
 FormalMultilinearSeries by choosing an arbitrary identification `ι ≃ Fin (Fintype.card ι)`. -/
-noncomputable def toFormalMultilinearSeries : FormalMultilinearSeries 𝕜 (∀ i, E i) F :=
+def toFormalMultilinearSeries : FormalMultilinearSeries 𝕜 (∀ i, E i) F :=
   fun n ↦ if h : Fintype.card ι = n then
     (f.compContinuousLinearMap .proj).domDomCongr (Fintype.equivFinOfCardEq h)
   else 0
@@ -271,7 +271,7 @@ variable [Semiring 𝕜] {n : ℕ} [AddCommMonoid E] [Module 𝕜 E] [Topologica
 /-- The index of the first non-zero coefficient in `p` (or `0` if all coefficients are zero). This
   is the order of the isolated zero of an analytic function `f` at a point if `p` is the Taylor
   series of `f` at that point. -/
-noncomputable def order (p : FormalMultilinearSeries 𝕜 E F) : ℕ :=
+def order (p : FormalMultilinearSeries 𝕜 E F) : ℕ :=
   sInf { n | p n ≠ 0 }
 
 @[simp]
@@ -340,7 +340,7 @@ variable [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜
 
 /-- The formal counterpart of `dslope`, corresponding to the expansion of `(f z - f 0) / z`. If `f`
 has `p` as a power series, then `dslope f` has `fslope p` as a power series. -/
-noncomputable def fslope (p : FormalMultilinearSeries 𝕜 𝕜 E) : FormalMultilinearSeries 𝕜 𝕜 E :=
+def fslope (p : FormalMultilinearSeries 𝕜 𝕜 E) : FormalMultilinearSeries 𝕜 𝕜 E :=
   fun n => (p (n + 1)).curryLeft 1
 
 @[simp]

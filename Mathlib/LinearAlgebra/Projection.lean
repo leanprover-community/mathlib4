@@ -135,7 +135,7 @@ See also:
 * `Submodule.projectionOntoL` and `Submodule.projectionL` for the continuous versions.
 * `Submodule.orthogonalProjection` and `Submodule.orthogonalProjectionOnto` for the projections
   along the orthogonal subspace. -/
-noncomputable def projection (hpq : IsCompl p q) :=
+def projection (hpq : IsCompl p q) :=
   p.subtype ∘ₗ p.projectionOnto q hpq
 
 variable {p q}

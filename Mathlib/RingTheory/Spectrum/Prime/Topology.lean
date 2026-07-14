@@ -492,7 +492,6 @@ lemma isClosedEmbedding_comap_snd : IsClosedEmbedding (comap (RingHom.snd R S)) 
 
 /-- The prime spectrum of `R × S` is homeomorphic
 to the disjoint union of `PrimeSpectrum R` and `PrimeSpectrum S`. -/
-noncomputable
 def primeSpectrumProdHomeo :
     PrimeSpectrum (R × S) ≃ₜ PrimeSpectrum R ⊕ PrimeSpectrum S := by
   refine ((primeSpectrumProd R S).symm.toHomeomorphOfIsInducing ?_).symm
@@ -723,7 +722,7 @@ lemma isOpenEmbedding_sigmaToPi : Topology.IsOpenEmbedding (sigmaToPi R) := by
 
 /-- If `ι` is finite, the disjoint union of the prime spectra of the `R i` is homeomorphic
 to the prime spectrum of the product. -/
-noncomputable def sigmaToPiHomeo {ι : Type*} (R : ι → Type*) [∀ i, CommRing (R i)] [Finite ι] :
+def sigmaToPiHomeo {ι : Type*} (R : ι → Type*) [∀ i, CommRing (R i)] [Finite ι] :
     (Σ i, PrimeSpectrum (R i)) ≃ₜ PrimeSpectrum (Π i, R i) :=
   (isOpenEmbedding_sigmaToPi R).toHomeomorphOfSurjective (sigmaToPi_bijective R).surjective
 

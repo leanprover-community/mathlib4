@@ -675,7 +675,6 @@ lemma ideal_ker_le_ker_ΓSpecIso_inv_comp :
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- (Implementation): Use `Hom.toImage` instead which has better def-eqs. -/
-noncomputable
 def Hom.toImageAux : X ⟶ f.image :=
   Cover.glueMorphisms ((Y.openCoverOfIsOpenCover _ (iSup_affineOpens_eq_top Y)).pullback₁ f)
     (fun U ↦ (pullback.snd f U.1.ι ≫ U.1.toSpecΓ).liftQuotient _
@@ -695,7 +694,6 @@ lemma Hom.toImageAux_spec :
   simp [IdealSheafData.glueDataObjι, Scheme.Hom.liftQuotient_comp_assoc, pullback.condition]
 
 /-- The morphism from the domain to the scheme-theoretic image. -/
-noncomputable
 def Hom.toImage : X ⟶ f.image :=
   f.toImageAux.copyBase (fun x ↦ ⟨f x, f.range_subset_ker_support ⟨x, rfl⟩⟩)
     (funext fun x ↦ Subtype.ext congr($f.toImageAux_spec x))
@@ -757,7 +755,6 @@ set_option backward.defeqAttrib.useBackward true in
 open IdealSheafData in
 /-- The adjunction between `Y.IdealSheafData` and `(Over Y)ᵒᵖ` given by taking kernels. -/
 @[simps]
-noncomputable
 def kerAdjunction (Y : Scheme.{u}) : (subschemeFunctor Y).rightOp ⊣ Y.kerFunctor where
   unit.app I := eqToHom (by simp)
   counit.app f := (Over.homMk f.unop.hom.toImage f.unop.hom.toImage_imageι).op

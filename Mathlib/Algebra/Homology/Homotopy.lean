@@ -786,7 +786,7 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- A homotopy between morphisms of homological complexes `K ⟶ L` induces a homotopy
 between morphisms of short complexes `K.sc i ⟶ L.sc i`. -/
-noncomputable def Homotopy.toShortComplex (ho : Homotopy f g) (i : ι) :
+def Homotopy.toShortComplex (ho : Homotopy f g) (i : ι) :
     ShortComplex.Homotopy ((shortComplexFunctor C c i).map f)
       ((shortComplexFunctor C c i).map g) where
   h₀ :=
@@ -832,7 +832,7 @@ lemma Homotopy.homologyMap_eq (ho : Homotopy f g) (i : ι) [K.HasHomology i] [L.
   open scoped Classical in ShortComplex.Homotopy.homologyMap_congr (ho.toShortComplex i)
 
 /-- The isomorphism in homology induced by a homotopy equivalence. -/
-noncomputable def HomotopyEquiv.toHomologyIso (h : HomotopyEquiv K L) (i : ι)
+def HomotopyEquiv.toHomologyIso (h : HomotopyEquiv K L) (i : ι)
     [K.HasHomology i] [L.HasHomology i] : K.homology i ≅ L.homology i where
   hom := homologyMap h.hom i
   inv := homologyMap h.inv i

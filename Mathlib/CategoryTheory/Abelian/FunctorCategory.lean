@@ -93,7 +93,7 @@ instance functor_category_isIso_coimageImageComparison :
 
 end FunctorCategory
 
-noncomputable instance functorCategoryAbelian : Abelian (C ⥤ D) :=
+instance functorCategoryAbelian : Abelian (C ⥤ D) :=
   let _ : HasKernels (C ⥤ D) := inferInstance
   let _ : HasCokernels (C ⥤ D) := inferInstance
   Abelian.ofCoimageImageComparisonIsIso

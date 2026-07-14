@@ -244,7 +244,7 @@ instance truthIsSplitMono : IsSplitMono (truth C) :=
 alias _root_.CategoryTheory.HasClassifier.truthIsSplitMono := truthIsSplitMono
 
 /-- `truth C` is a regular monomorphism (because it is split). -/
-noncomputable def truthIsRegularMono : RegularMono (truth C) :=
+def truthIsRegularMono : RegularMono (truth C) :=
   RegularMono.ofIsSplitMono (truth C)
 
 @[deprecated (since := "2026-03-06")]

@@ -307,7 +307,6 @@ namespace IsCyclic
 /-- The isomorphism from the group of group homomorphisms from a finite cyclic group `G` of order
 `n` into another group `G'` to the group of `n`th roots of unity in `G'` determined by a generator
 `g` of `G`. It sends `φ : G →* G'` to `φ g`. -/
-noncomputable
 def monoidHomMulEquivRootsOfUnityOfGenerator {G : Type*} [CommGroup G] {g : G}
     (hg : ∀ (x : G), x ∈ Subgroup.zpowers g) (G' : Type*) [CommGroup G'] :
     (G →* G') ≃* rootsOfUnity (Nat.card G) G' where

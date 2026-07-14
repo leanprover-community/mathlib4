@@ -285,7 +285,7 @@ variable [Fact p.Prime]
 
 /-- `truncate n` is a ring homomorphism that truncates `x` to its first `n` entries
 to obtain a `TruncatedWittVector`, which has the same base `p` as `x`. -/
-noncomputable def truncate : 𝕎 R →+* TruncatedWittVector p n R where
+def truncate : 𝕎 R →+* TruncatedWittVector p n R where
   toFun := truncateFun n
   map_zero' := truncateFun_zero p n R
   map_add' := truncateFun_add n

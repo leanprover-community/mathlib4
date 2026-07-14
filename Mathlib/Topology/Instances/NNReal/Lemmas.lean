@@ -60,7 +60,7 @@ theorem _root_.continuous_real_toNNReal : Continuous Real.toNNReal :=
 
 /-- `Real.toNNReal` bundled as a continuous map for convenience. -/
 @[simps -fullyApplied]
-noncomputable def _root_.ContinuousMap.realToNNReal : C(ℝ, ℝ≥0) :=
+def _root_.ContinuousMap.realToNNReal : C(ℝ, ℝ≥0) :=
   .mk Real.toNNReal continuous_real_toNNReal
 
 @[simp]

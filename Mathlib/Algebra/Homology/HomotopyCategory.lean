@@ -200,14 +200,14 @@ section
 variable [CategoryWithHomology V]
 
 /-- The `i`-th homology, as a functor from the homotopy category. -/
-noncomputable def homologyFunctor (i : ι) : HomotopyCategory V c ⥤ V :=
+def homologyFunctor (i : ι) : HomotopyCategory V c ⥤ V :=
   CategoryTheory.Quotient.lift _ (HomologicalComplex.homologyFunctor V c i) (by
     rintro K L f g ⟨h⟩
     exact h.homologyMap_eq i)
 
 /-- The homology functor on the homotopy category is induced by
 the homology functor on homological complexes. -/
-noncomputable def homologyFunctorFactors (i : ι) :
+def homologyFunctorFactors (i : ι) :
     quotient V c ⋙ homologyFunctor V c i ≅
       HomologicalComplex.homologyFunctor V c i :=
   Quotient.lift.isLift _ _ _

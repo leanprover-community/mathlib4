@@ -53,7 +53,7 @@ namespace TensorProduct
 variable (ι : Type*) [DecidableEq ι]
 
 /-- The tensor product of `ι →₀ M` and `N` is linearly equivalent to `ι →₀ M ⊗[R] N` -/
-noncomputable def finsuppLeft :
+def finsuppLeft :
     (ι →₀ M) ⊗[R] N ≃ₗ[S] ι →₀ M ⊗[R] N :=
   AlgebraTensorModule.congr (finsuppLEquivDirectSum S M ι) (.refl R N) ≪≫ₗ
     directSumLeft _ S (fun _ ↦ M) N ≪≫ₗ (finsuppLEquivDirectSum _ _ ι).symm
@@ -88,7 +88,7 @@ lemma finsuppLeft_symm_apply_single (i : ι) (m : M) (n : N) :
 
 variable (R S M N ι) in
 /-- The tensor product of `M` and `ι →₀ N` is linearly equivalent to `ι →₀ M ⊗[R] N` -/
-noncomputable def finsuppRight :
+def finsuppRight :
     M ⊗[R] (ι →₀ N) ≃ₗ[S] ι →₀ M ⊗[R] N :=
   AlgebraTensorModule.congr (.refl S M) (finsuppLEquivDirectSum R N ι) ≪≫ₗ
     directSumRight R S M (fun _ : ι ↦ N) ≪≫ₗ (finsuppLEquivDirectSum _ _ ι).symm
@@ -136,7 +136,7 @@ lemma finsuppLeft'_apply (x : (ι →₀ M) ⊗[R] N) :
 
 variable (R M N ι) in
 /-- The tensor product of `ι →₀ R` and `N` is linearly equivalent to `ι →₀ N` -/
-noncomputable def finsuppScalarLeft :
+def finsuppScalarLeft :
     (ι →₀ R) ⊗[R] N ≃ₗ[R] ι →₀ N :=
   finsuppLeft R R R N ι ≪≫ₗ (Finsupp.mapRange.linearEquiv (TensorProduct.lid R N))
 
@@ -163,7 +163,7 @@ lemma finsuppScalarLeft_symm_apply_single (i : ι) (n : N) :
 
 variable (R S M N ι) in
 /-- The tensor product of `M` and `ι →₀ R` is linearly equivalent to `ι →₀ M` -/
-noncomputable def finsuppScalarRight :
+def finsuppScalarRight :
     M ⊗[R] (ι →₀ R) ≃ₗ[S] ι →₀ M :=
   finsuppRight R S M R ι ≪≫ₗ Finsupp.mapRange.linearEquiv (AlgebraTensorModule.rid R S M)
 

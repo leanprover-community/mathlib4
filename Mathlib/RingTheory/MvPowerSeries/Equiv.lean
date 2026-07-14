@@ -169,7 +169,6 @@ namespace PowerSeries
 
 /-- Given a power series `p : R⟦X⟧` and an index `i`, we may view it as a
 multivariate power series `toMvPowerSeries i p : MvPowerSeries σ R`. -/
-noncomputable
 def toMvPowerSeries : PowerSeries R →ₐ[R] MvPowerSeries σ R :=
   MvPowerSeries.rename (fun _ ↦ i)
 

@@ -409,7 +409,7 @@ open StrongDual
 /-- The extension `StrongDual.extendRCLike` as a continuous linear equivalence between
 the weak duals. -/
 @[simps! -isSimp apply symm_apply]
-noncomputable def extendRCLikeL : WeakDual ℝ F ≃L[ℝ] WeakDual 𝕜 F where
+def extendRCLikeL : WeakDual ℝ F ≃L[ℝ] WeakDual 𝕜 F where
   toLinearEquiv := toStrongDual ≪≫ₗ extendRCLikeₗ ≪≫ₗ toWeakDual.restrictScalars ℝ
   continuous_toFun := continuous_of_continuous_eval_re fun x ↦ by
     simpa [extendRCLikeₗ_apply] using eval_continuous x

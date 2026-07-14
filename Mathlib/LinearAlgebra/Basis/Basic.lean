@@ -108,7 +108,7 @@ section Mk
 variable (hli : LinearIndependent R v) (hsp : ⊤ ≤ span R (range v))
 
 /-- A linear independent family of vectors spanning the whole module is a basis. -/
-protected noncomputable def mk : Basis ι R M :=
+protected def mk : Basis ι R M :=
   .ofRepr
     { hli.repr.comp (LinearMap.id.codRestrict _ fun _ => hsp Submodule.mem_top) with
       invFun := Finsupp.linearCombination _ v
@@ -167,7 +167,7 @@ section Span
 variable (hli : LinearIndependent R v)
 
 /-- A linear independent family of vectors is a basis for their span. -/
-protected noncomputable def span : Basis ι R (span R (range v)) :=
+protected def span : Basis ι R (span R (range v)) :=
   Basis.mk (linearIndependent_span hli) <| by
     intro x _
     have : ∀ i, v i ∈ span R (range v) := fun i ↦ subset_span (Set.mem_range_self _)

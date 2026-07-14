@@ -62,7 +62,7 @@ well-founded recursion on the coefficients of the inverse.
 the totalised inverse formal power series `(_)⁻¹` and
 the inverse formal power series that depends on
 an inverse of the constant coefficient `invOfUnit`. -/
-protected noncomputable def inv.aux (a : R) (φ : MvPowerSeries σ R) : MvPowerSeries σ R
+protected def inv.aux (a : R) (φ : MvPowerSeries σ R) : MvPowerSeries σ R
   | n =>
     letI := Classical.decEq σ
     if n = 0 then a

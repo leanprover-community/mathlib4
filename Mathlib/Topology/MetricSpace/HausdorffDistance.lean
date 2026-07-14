@@ -448,7 +448,7 @@ namespace EMetric
 open Metric
 
 @[deprecated (since := "2026-01-08")]
-noncomputable alias infEdist := infEDist
+alias infEdist := infEDist
 
 @[deprecated (since := "2026-01-08")]
 alias infEdist_empty := infEDist_empty
@@ -503,7 +503,7 @@ alias _root_.IsCompact.exists_infEdist_eq_edist := _root_.IsCompact.exists_infED
 @[deprecated (since := "2026-01-08")] alias exists_pos_forall_lt_edist := exists_pos_forall_lt_edist
 @[deprecated (since := "2026-01-08")] alias infEdist_prod := infEDist_prod
 
-@[deprecated (since := "2026-01-08")] noncomputable alias hausdorffEdist := hausdorffEDist
+@[deprecated (since := "2026-01-08")] alias hausdorffEdist := hausdorffEDist
 @[deprecated (since := "2026-01-08")] alias hausdorffEdist_def := hausdorffEDist_def
 @[deprecated (since := "2026-01-08")] alias hausdorffEdist_self := hausdorffEDist_self
 @[deprecated (since := "2026-01-08")] alias hausdorffEdist_comm := hausdorffEDist_comm

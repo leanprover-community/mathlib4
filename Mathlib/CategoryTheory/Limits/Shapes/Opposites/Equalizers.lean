@@ -237,7 +237,7 @@ namespace Cofork
 
 /-- A cofork is a colimit cocone if and only if the corresponding fork in the opposite category is
 a limit cone. -/
-noncomputable -- just for performance; compilation takes several seconds
+-- just for performance; compilation takes several seconds
 def isColimitEquivIsLimitOp {X Y : C} {f g : X ⟶ Y} (c : Cofork f g) :
     IsColimit c ≃ IsLimit c.op := by
   apply equivOfSubsingletonOfSubsingleton
@@ -249,7 +249,7 @@ def isColimitEquivIsLimitOp {X Y : C} {f g : X ⟶ Y} (c : Cofork f g) :
 
 /-- A cofork is a colimit cocone in `Cᵒᵖ` if and only if the corresponding fork in `C` is
 a limit cone. -/
-noncomputable -- just for performance; compilation takes several seconds
+-- just for performance; compilation takes several seconds
 def isColimitEquivIsLimitUnop {X Y : Cᵒᵖ} {f g : X ⟶ Y} (c : Cofork f g) :
     IsColimit c ≃ IsLimit c.unop := by
   apply equivOfSubsingletonOfSubsingleton

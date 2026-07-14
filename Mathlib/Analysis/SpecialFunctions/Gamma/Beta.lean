@@ -57,7 +57,7 @@ section BetaIntegral
 namespace Complex
 
 /-- The Beta function `Β (u, v)`, defined as `∫ x:ℝ in 0..1, x ^ (u - 1) * (1 - x) ^ (v - 1)`. -/
-noncomputable def betaIntegral (u v : ℂ) : ℂ :=
+def betaIntegral (u v : ℂ) : ℂ :=
   ∫ x : ℝ in 0..1, (x : ℂ) ^ (u - 1) * (1 - (x : ℂ)) ^ (v - 1)
 
 /-- Auxiliary lemma for `betaIntegral_convergent`, showing convergence at the left endpoint. -/
@@ -227,7 +227,7 @@ namespace Complex
 
 /-- The sequence with `n`-th term `n ^ s * n! / (s * (s + 1) * ... * (s + n))`, for complex `s`.
 We will show that this tends to `Γ(s)` as `n → ∞`. -/
-noncomputable def GammaSeq (s : ℂ) (n : ℕ) :=
+def GammaSeq (s : ℂ) (n : ℕ) :=
   (n : ℂ) ^ s * n ! / ∏ j ∈ Finset.range (n + 1), (s + j)
 
 theorem GammaSeq_eq_betaIntegral_of_re_pos {s : ℂ} (hs : 0 < re s) (n : ℕ) :
@@ -461,7 +461,7 @@ namespace Real
 
 /-- The sequence with `n`-th term `n ^ s * n! / (s * (s + 1) * ... * (s + n))`, for real `s`. We
 will show that this tends to `Γ(s)` as `n → ∞`. -/
-noncomputable def GammaSeq (s : ℝ) (n : ℕ) :=
+def GammaSeq (s : ℝ) (n : ℕ) :=
   (n : ℝ) ^ s * n ! / ∏ j ∈ Finset.range (n + 1), (s + j)
 
 /-- Euler's limit formula for the real Gamma function. -/

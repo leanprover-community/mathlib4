@@ -79,7 +79,7 @@ structure SubmonoidPresheaf (F : X.Presheaf CommRingCat) where
 variable {F : X.Presheaf CommRingCat.{w}} (G : F.SubmonoidPresheaf)
 
 /-- The localization of a presheaf of `CommRing`s with respect to a `SubmonoidPresheaf`. -/
-protected noncomputable def SubmonoidPresheaf.localizationPresheaf : X.Presheaf CommRingCat where
+protected def SubmonoidPresheaf.localizationPresheaf : X.Presheaf CommRingCat where
   obj U := CommRingCat.of <| Localization (G.obj U)
   map {_ _} i := CommRingCat.ofHom <| IsLocalization.map _ (F.map i).hom (G.map i)
   map_id U := by
@@ -114,7 +114,7 @@ variable (F)
 /-- Given a submonoid at each of the stalks, we may define a submonoid presheaf consisting of
 sections whose restriction onto each stalk falls in the given submonoid. -/
 @[simps]
-noncomputable def submonoidPresheafOfStalk (S : ∀ x : X, Submonoid (F.stalk x)) :
+def submonoidPresheafOfStalk (S : ∀ x : X, Submonoid (F.stalk x)) :
     F.SubmonoidPresheaf where
   obj U := ⨅ x : U.unop, Submonoid.comap (F.germ U.unop x.1 x.2).hom (S x)
   map {U V} i := by
@@ -125,15 +125,15 @@ noncomputable def submonoidPresheafOfStalk (S : ∀ x : X, Submonoid (F.stalk x)
     rw [F.germ_res]
     exact hs ⟨_, i.unop.le x.2⟩
 
-noncomputable instance : Inhabited F.SubmonoidPresheaf :=
+instance : Inhabited F.SubmonoidPresheaf :=
   ⟨F.submonoidPresheafOfStalk fun _ => ⊥⟩
 
 /-- The localization of a presheaf of `CommRing`s at locally non-zero-divisor sections. -/
-noncomputable def totalQuotientPresheaf : X.Presheaf CommRingCat.{w} :=
+def totalQuotientPresheaf : X.Presheaf CommRingCat.{w} :=
   (F.submonoidPresheafOfStalk fun x => (F.stalk x)⁰).localizationPresheaf
 
 /-- The map into the presheaf of total quotient rings -/
-noncomputable def toTotalQuotientPresheaf : F ⟶ F.totalQuotientPresheaf :=
+def toTotalQuotientPresheaf : F ⟶ F.totalQuotientPresheaf :=
   SubmonoidPresheaf.toLocalizationPresheaf _
 deriving Epi
 

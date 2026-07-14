@@ -621,7 +621,7 @@ def equivCompletion : adicCompletion K v ≃ (v.valuation K).Completion where
   left_inv _ := rfl
   right_inv _ := rfl
 
-noncomputable instance : Field (adicCompletion K v) := fast_instance% (equivCompletion K v).field
+instance : Field (adicCompletion K v) := fast_instance% (equivCompletion K v).field
 
 /-- `adicCompletion.toCompletion` as a ring isomorphism onto the underlying completion. -/
 @[simps! apply]
@@ -648,7 +648,7 @@ theorem toCompletion_surjective : Function.Surjective (toCompletion (K := K) (v 
 theorem ofCompletion_surjective : Function.Surjective (ofCompletion (K := K) (v := v)) :=
   (equivCompletion K v).symm.surjective
 
-noncomputable instance : UniformSpace (adicCompletion K v) := .comap toCompletion inferInstance
+instance : UniformSpace (adicCompletion K v) := .comap toCompletion inferInstance
 
 theorem isUniformInducing_toCompletion :
     IsUniformInducing (toCompletion (K := K) (v := v)) := ⟨rfl⟩
@@ -658,7 +658,7 @@ instance : IsUniformAddGroup (adicCompletion K v) :=
 
 /-- The `v`-adic valuation on `adicCompletion K v`, transported from the completion along `equiv`.
 -/
-noncomputable def valuation : Valuation (adicCompletion K v) ℤᵐ⁰ :=
+def valuation : Valuation (adicCompletion K v) ℤᵐ⁰ :=
   Valued.v.comap (equiv K v).toRingHom
 
 theorem valueGroup_eq :
@@ -679,7 +679,7 @@ def valueGroupEquiv :
 
 /-- The order-preserving multiplicative equivalence between the `ValueGroup₀` of the completion's
 valuation, pulled back along `equiv`, and that of the completion. -/
-noncomputable def valueGroupOrderIso :
+def valueGroupOrderIso :
     ValueGroup₀ (.ofClass (valuation K v)) ≃*o
       ValueGroup₀ (.ofClass (Valued.v : Valuation (v.valuation K).Completion ℤᵐ⁰)) where
   toFun := WithZero.map' (valueGroupEquiv K v)
@@ -710,7 +710,7 @@ theorem valueGroupOrderIso_restrict (x : adicCompletion K v) :
   apply embedding_strictMono.injective
   rw [embedding_valueGroupOrderIso, embedding_restrict, embedding_restrict]; rfl
 
-noncomputable instance : Valued (adicCompletion K v) ℤᵐ⁰ where
+instance : Valued (adicCompletion K v) ℤᵐ⁰ where
   v := valuation K v
   is_topological_valuation s := by
     rw [(isUniformInducing_toCompletion K v).isInducing.nhds_eq_comap 0, toCompletion_zero,
@@ -728,7 +728,7 @@ noncomputable instance : Valued (adicCompletion K v) ℤᵐ⁰ where
           valueGroupOrderIso_restrict]
         simpa using hx
 
-noncomputable instance : CompleteSpace (adicCompletion K v) :=
+instance : CompleteSpace (adicCompletion K v) :=
   ((isUniformInducing_toCompletion K v).completeSpace_congr (toCompletion_surjective K v)).mpr
     inferInstance
 
@@ -840,7 +840,7 @@ instance adicValued.uniformContinuousConstSMul :
 
 open UniformSpace in
 /-- The `S`-algebra structure on the underlying completion. -/
-noncomputable instance instAlgebraCompletion : Algebra S ((v.valuation K).Completion) where
+instance instAlgebraCompletion : Algebra S ((v.valuation K).Completion) where
   toSMul := Completion.instSMul _ _
   algebraMap := Completion.coeRingHom.comp (algebraMap S (WithVal (v.valuation K)))
   commutes' r x := by
@@ -856,7 +856,7 @@ noncomputable instance instAlgebraCompletion : Algebra S ((v.valuation K).Comple
       simp [Algebra.smul_def, Completion.algebraMap_def, WithVal.algebraMap_right_apply,
         Completion.coeRingHom]
 
-noncomputable instance : Algebra S (v.adicCompletion K) :=
+instance : Algebra S (v.adicCompletion K) :=
   fast_instance% (adicCompletion.equivCompletion K v).algebra S
 
 theorem algebraMap_adicCompletion_toCompletion (r : S) :

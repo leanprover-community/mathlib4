@@ -318,7 +318,7 @@ variable [G.IsContinuous J K]
 Given a functor between sites that is continuous and cocontinuous,
 the pushforward for the continuous functor `G` is left adjoint to
 the pushforward for the cocontinuous functor `G`. -/
-noncomputable def sheafAdjunctionCocontinuous :
+def sheafAdjunctionCocontinuous :
     G.sheafPushforwardContinuous A J K ⊣ G.sheafPushforwardCocontinuous A J K :=
   (G.op.ranAdjunction A).restrictFullyFaithful
     (fullyFaithfulSheafToPresheaf K A) (fullyFaithfulSheafToPresheaf J A)

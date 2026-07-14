@@ -140,7 +140,7 @@ variable [Module S M] [SMulCommClass R S M]
 /-- A slight rearrangement from `lsum` gives us
 the bijection underlying the free-forgetful adjunction for R-modules.
 -/
-noncomputable def lift : (X → M) ≃+ ((X →₀ R) →ₗ[R] M) :=
+def lift : (X → M) ≃+ ((X →₀ R) →ₗ[R] M) :=
   (AddEquiv.arrowCongr (Equiv.refl X) (ringLmapEquivSelf R ℕ M).toAddEquiv.symm).trans
     (lsum _ : _ ≃ₗ[ℕ] _).toAddEquiv
 
@@ -156,7 +156,7 @@ set_option backward.defeqAttrib.useBackward true in
 /-- Given compatible `S` and `R`-module structures on `M` and a type `X`, the set of functions
 `X → M` is `S`-linearly equivalent to the `R`-linear maps from the free `R`-module
 on `X` to `M`. -/
-noncomputable def llift : (X → M) ≃ₗ[S] (X →₀ R) →ₗ[R] M :=
+def llift : (X → M) ≃ₗ[S] (X →₀ R) →ₗ[R] M :=
   { lift M R X with
     map_smul' := by
       intros

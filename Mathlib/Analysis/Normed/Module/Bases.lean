@@ -206,7 +206,7 @@ namespace UnconditionalSchauderBasis
 variable (b : UnconditionalSchauderBasis β 𝕜 X)
 
 /-- The basis constant for unconditional bases (supremum over all finite sets) as `enorm`. -/
-noncomputable def enormProjBound : ℝ≥0∞ := ⨆ A : Finset β, ‖b.proj A‖ₑ
+def enormProjBound : ℝ≥0∞ := ⨆ A : Finset β, ‖b.proj A‖ₑ
 
 /-- The `enorm` of any projection is bounded by the basis constant. -/
 theorem enorm_proj_le_enormProjBound (A : Finset β) : ‖b.proj A‖ₑ ≤ b.enormProjBound :=
@@ -237,7 +237,7 @@ theorem exists_norm_proj_le [CompleteSpace X] : ∃ C : ℝ, ∀ A : Finset β, 
 /-- The basis constant for unconditional bases (supremum over all finite sets) as `nnnorm`.
     It requires completeness to guarantee that the supremum is finite,
     see lemma `bddAbove_range_nnnorm_proj` below. -/
-noncomputable def nnnormProjBound : ℝ≥0 := ⨆ A : Finset β, ‖b.proj A‖₊
+def nnnormProjBound : ℝ≥0 := ⨆ A : Finset β, ‖b.proj A‖₊
 
 /-- The projection norms are bounded above in a complete space. -/
 theorem bddAbove_range_nnnorm_proj [CompleteSpace X] :
@@ -317,7 +317,7 @@ theorem exists_norm_proj_le [CompleteSpace X] : ∃ C : ℝ, ∀ n : ℕ, ‖b.p
   exact ⟨M, Set.forall_mem_range.mp hM⟩
 
 /-- The basis constant for Schauder bases (supremum over projections) as `enorm`. -/
-noncomputable def enormProjBound : ℝ≥0∞ := ⨆ n, ‖b.proj n‖ₑ
+def enormProjBound : ℝ≥0∞ := ⨆ n, ‖b.proj n‖ₑ
 
 /-- The enorm of any projection is bounded by the basis constant. -/
 theorem enorm_proj_le_enormProjBound (n : ℕ) : ‖b.proj n‖ₑ ≤ b.enormProjBound :=
@@ -326,7 +326,7 @@ theorem enorm_proj_le_enormProjBound (n : ℕ) : ‖b.proj n‖ₑ ≤ b.enormPr
 /-- The basis constant for Schauder bases (supremum over projections) as `nnnorm`.
     Requires completeness to guarantee the supremum is finite,
     see lemma `bddAbove_range_nnnorm_proj` below. -/
-noncomputable def nnnormProjBound : ℝ≥0 := ⨆ n, ‖b.proj n‖₊
+def nnnormProjBound : ℝ≥0 := ⨆ n, ‖b.proj n‖₊
 
 /-- The projection norms are bounded above in a complete space. -/
 theorem bddAbove_range_nnnorm_proj [CompleteSpace X] :

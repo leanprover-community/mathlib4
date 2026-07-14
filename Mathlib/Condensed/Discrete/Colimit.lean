@@ -42,7 +42,7 @@ set_option backward.defeqAttrib.useBackward true in
 The functor `locallyConstantPresheaf` takes cofiltered limits of finite sets with surjective
 projection maps to colimits.
 -/
-noncomputable def isColimitLocallyConstantPresheaf (hc : IsLimit c) [∀ i, Epi (c.π.app i)] :
+def isColimitLocallyConstantPresheaf (hc : IsLimit c) [∀ i, Epi (c.π.app i)] :
     IsColimit <| (locallyConstantPresheaf X).mapCocone c.op := by
   refine Types.FilteredColimit.isColimitOf _ _ ?_ ?_
   · intro (f : LocallyConstant c.pt X)
@@ -75,7 +75,7 @@ lemma isColimitLocallyConstantPresheaf_desc_apply (hc : IsLimit c) [∀ i, Epi (
   rfl
 
 /-- `isColimitLocallyConstantPresheaf` in the case of `S.asLimit`. -/
-noncomputable def isColimitLocallyConstantPresheafDiagram (S : Profinite) :
+def isColimitLocallyConstantPresheafDiagram (S : Profinite) :
     IsColimit <| (locallyConstantPresheaf X).mapCocone S.asLimitCone.op :=
   isColimitLocallyConstantPresheaf _ _ S.asLimit
 
@@ -210,7 +210,7 @@ def fintypeCatAsCofanIsColimit (X : Profinite) [Finite X] :
 
 variable [PreservesFiniteProducts F]
 
-noncomputable instance (X : Profinite) [Finite X] :
+instance (X : Profinite) [Finite X] :
     PreservesLimitsOfShape (Discrete X) F :=
   let X' := (Countable.toSmall.{0} X).equiv_small.choose
   let e : X ≃ X' := (Countable.toSmall X).equiv_small.choose_spec.some
@@ -329,7 +329,7 @@ set_option backward.defeqAttrib.useBackward true in
 The functor `locallyConstantPresheaf` takes sequential limits of finite sets with surjective
 projection maps to colimits.
 -/
-noncomputable def isColimitLocallyConstantPresheaf (hc : IsLimit c) [∀ i, Epi (c.π.app i)] :
+def isColimitLocallyConstantPresheaf (hc : IsLimit c) [∀ i, Epi (c.π.app i)] :
     IsColimit <| (locallyConstantPresheaf X).mapCocone c.op := by
   refine Types.FilteredColimit.isColimitOf _ _ ?_ ?_
   · intro (f : LocallyConstant c.pt X)
@@ -363,7 +363,7 @@ lemma isColimitLocallyConstantPresheaf_desc_apply (hc : IsLimit c) [∀ i, Epi (
   rfl
 
 /-- `isColimitLocallyConstantPresheaf` in the case of `S.asLimit`. -/
-noncomputable def isColimitLocallyConstantPresheafDiagram (S : LightProfinite) :
+def isColimitLocallyConstantPresheafDiagram (S : LightProfinite) :
     IsColimit <| (locallyConstantPresheaf X).mapCocone (coconeRightOpOfCone S.asLimitCone) :=
   (Functor.Final.isColimitWhiskerEquiv (opOpEquivalence ℕ).inverse _).symm
     (isColimitLocallyConstantPresheaf _ _ S.asLimit)
@@ -504,7 +504,7 @@ def fintypeCatAsCofanIsColimit (X : LightProfinite) [Finite X] :
 
 variable [PreservesFiniteProducts F]
 
-noncomputable instance (X : FintypeCat.{u}) : PreservesLimitsOfShape (Discrete X) F :=
+instance (X : FintypeCat.{u}) : PreservesLimitsOfShape (Discrete X) F :=
   let X' := (Countable.toSmall.{0} X).equiv_small.choose
   let e : X ≃ X' := (Countable.toSmall X).equiv_small.choose_spec.some
   have : Finite X' := Finite.of_equiv X e

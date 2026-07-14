@@ -267,7 +267,7 @@ variable {γ : Type*} [UniformSpace γ] [Semiring γ] [IsTopologicalSemiring γ]
 variable [T2Space γ] [CompleteSpace γ]
 
 /-- The dense inducing extension as a ring homomorphism. -/
-noncomputable def IsDenseInducing.extendRingHom {i : α →+* β} {f : α →+* γ}
+def IsDenseInducing.extendRingHom {i : α →+* β} {f : α →+* γ}
     (ue : IsUniformInducing i) (dr : DenseRange i) (hf : UniformContinuous f) : β →+* γ where
   toFun := (ue.isDenseInducing dr).extend f
   map_one' := by

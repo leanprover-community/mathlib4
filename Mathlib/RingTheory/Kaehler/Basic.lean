@@ -377,7 +377,7 @@ local instance instR : Module R (KaehlerDifferential.ideal R S).cotangentIdeal :
 
 /-- Derivations into `Ω[S⁄R]` is equivalent to derivations
 into `(KaehlerDifferential.ideal R S).cotangentIdeal`. -/
-noncomputable def KaehlerDifferential.endEquivDerivation' :
+def KaehlerDifferential.endEquivDerivation' :
     Derivation R S Ω[S⁄R] ≃ₗ[S] Derivation R S (ideal R S).cotangentIdeal :=
   LinearEquiv.compDer ((KaehlerDifferential.ideal R S).cotangentEquivIdeal.restrictScalars S)
 
@@ -394,7 +394,7 @@ def KaehlerDifferential.endEquivAuxEquiv :
 The endomorphisms of `Ω[S⁄R]` corresponds to sections of the surjection `S ⊗[R] S ⧸ J ^ 2 →ₐ[R] S`,
 with `J` being the kernel of the multiplication map `S ⊗[R] S →ₐ[R] S`.
 -/
-noncomputable def KaehlerDifferential.endEquiv :
+def KaehlerDifferential.endEquiv :
     Module.End S Ω[S⁄R] ≃
       { f // (TensorProduct.lmul' R : S ⊗[R] S →ₐ[R] S).kerSquareLift.comp f = AlgHom.id R S } :=
   (KaehlerDifferential.linearMapEquivDerivation R S).toEquiv.trans <|
@@ -473,7 +473,7 @@ This is the kernel of the surjection
 `Finsupp.linearCombination S Ω[S⁄R] S (KaehlerDifferential.D R S)`.
 See `KaehlerDifferential.kerTotal_eq` and `KaehlerDifferential.linearCombination_surjective`.
 -/
-noncomputable def KaehlerDifferential.kerTotal : Submodule S (S →₀ S) :=
+def KaehlerDifferential.kerTotal : Submodule S (S →₀ S) :=
   Submodule.span S
     (((Set.range fun x : S × S => single x.1 1 + single x.2 1 - single (x.1 + x.2) 1) ∪
         Set.range fun x : S × S => single x.2 x.1 + single x.1 x.2 - single (x.1 * x.2) 1) ∪
@@ -510,7 +510,7 @@ theorem KaehlerDifferential.kerTotal_mkQ_single_smul (r : R) (x y) : (y𝖣r •
     Finsupp.smul_single, mul_comm, Algebra.smul_def]
 
 /-- The (universal) derivation into `(S →₀ S) ⧸ KaehlerDifferential.kerTotal R S`. -/
-noncomputable def KaehlerDifferential.derivationQuotKerTotal :
+def KaehlerDifferential.derivationQuotKerTotal :
     Derivation R S ((S →₀ S) ⧸ KaehlerDifferential.kerTotal R S) where
   toFun x := 1𝖣x
   map_add' _ _ := KaehlerDifferential.kerTotal_mkQ_single_add _ _ _ _ _
@@ -549,7 +549,7 @@ theorem KaehlerDifferential.linearCombination_surjective :
 
 /-- `Ω[S⁄R]` is isomorphic to `S` copies of `S` with kernel `KaehlerDifferential.kerTotal`. -/
 @[simps!]
-noncomputable def KaehlerDifferential.quotKerTotalEquiv :
+def KaehlerDifferential.quotKerTotalEquiv :
     ((S →₀ S) ⧸ KaehlerDifferential.kerTotal R S) ≃ₗ[S] Ω[S⁄R] :=
   { (KaehlerDifferential.kerTotal R S).liftQ
       (Finsupp.linearCombination S (KaehlerDifferential.D R S))
@@ -715,7 +715,7 @@ theorem KaehlerDifferential.map_surjective :
 
 /-- The lift of the map `Ω[A⁄R] →ₗ[A] Ω[B⁄R]` to the base change along `A → B`.
 This is the first map in the exact sequence `B ⊗[A] Ω[A⁄R] → Ω[B⁄R] → Ω[B⁄A] → 0`. -/
-noncomputable def KaehlerDifferential.mapBaseChange : B ⊗[A] Ω[A⁄R] →ₗ[B] Ω[B⁄R] :=
+def KaehlerDifferential.mapBaseChange : B ⊗[A] Ω[A⁄R] →ₗ[B] Ω[B⁄R] :=
   (TensorProduct.isBaseChange A Ω[A⁄R] B).lift (KaehlerDifferential.map R R A B)
 
 @[simp]
@@ -760,7 +760,6 @@ end
 
 /-- The map `I → B ⊗[A] Ω[A⁄R]` where `I = ker(A → B)`. -/
 @[simps]
-noncomputable
 def KaehlerDifferential.kerToTensor :
     RingHom.ker (algebraMap A B) →ₗ[A] B ⊗[A] Ω[A⁄R] where
   toFun x := 1 ⊗ₜ D R A x
@@ -771,7 +770,6 @@ def KaehlerDifferential.kerToTensor :
     RingHom.id_apply]
 
 /-- The map `I/I² → B ⊗[A] Ω[A⁄R]` where `I = ker(A → B)`. -/
-noncomputable
 def KaehlerDifferential.kerCotangentToTensor :
     (RingHom.ker (algebraMap A B)).Cotangent →ₗ[A] B ⊗[A] Ω[A⁄R] :=
   Submodule.liftQ _ (kerToTensor R A B) <| by

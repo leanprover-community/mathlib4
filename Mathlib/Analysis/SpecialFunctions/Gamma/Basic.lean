@@ -245,7 +245,7 @@ end GammaRecurrence
 section GammaDef
 
 /-- The `n`th function in this family is `Γ(s)` if `-n < s.re`, and junk otherwise. -/
-private noncomputable def GammaAux : ℕ → ℂ → ℂ
+private def GammaAux : ℕ → ℂ → ℂ
   | 0 => GammaIntegral
   | n + 1 => fun s : ℂ => GammaAux n (s + 1) / s
 

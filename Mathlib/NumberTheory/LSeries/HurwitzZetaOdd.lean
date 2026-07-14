@@ -455,7 +455,7 @@ lemma hasSum_int_completedHurwitzZetaOdd (a : ℝ) {s : ℂ} (hs : 1 < re s) :
 
 /-- The odd part of the Hurwitz zeta function, i.e. the meromorphic function of `s` which agrees
 with `1 / 2 * ∑' (n : ℤ), sign (n + a) / |n + a| ^ s` for `1 < re s` -/
-noncomputable def hurwitzZetaOdd (a : UnitAddCircle) (s : ℂ) :=
+def hurwitzZetaOdd (a : UnitAddCircle) (s : ℂ) :=
   completedHurwitzZetaOdd a s / Gammaℝ (s + 1)
 
 lemma hurwitzZetaOdd_neg (a : UnitAddCircle) (s : ℂ) :
@@ -470,7 +470,7 @@ lemma differentiable_hurwitzZetaOdd (a : UnitAddCircle) :
 
 /-- The sine zeta function, i.e. the meromorphic function of `s` which agrees
 with `∑' (n : ℕ), sin (2 * π * a * n) / n ^ s` for `1 < re s`. -/
-noncomputable def sinZeta (a : UnitAddCircle) (s : ℂ) :=
+def sinZeta (a : UnitAddCircle) (s : ℂ) :=
   completedSinZeta a s / Gammaℝ (s + 1)
 
 lemma sinZeta_neg (a : UnitAddCircle) (s : ℂ) :

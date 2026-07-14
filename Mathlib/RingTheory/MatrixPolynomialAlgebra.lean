@@ -50,7 +50,7 @@ The algebra isomorphism stating "matrices of polynomials are the same as polynom
 it's an algebra equivalence, and characterised extensionally by the lemma
 `matPolyEquiv_coeff_apply` below.)
 -/
-noncomputable def matPolyEquiv : Matrix n n R[X] ≃ₐ[R] (Matrix n n R)[X] :=
+def matPolyEquiv : Matrix n n R[X] ≃ₐ[R] (Matrix n n R)[X] :=
   ((matrixEquivTensor n R R[X]).trans (Algebra.TensorProduct.comm R _ _)).trans
     (polyEquivTensor R (Matrix n n R)).symm
 

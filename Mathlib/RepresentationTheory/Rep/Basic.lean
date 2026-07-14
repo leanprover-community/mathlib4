@@ -759,7 +759,7 @@ variable {G : Type v} [Group G] (A B C : Rep.{w} k G)
 `(B, ρ₂)` to the representation `Homₖ(A, B)` that maps `g : G` and `f : A →ₗ[k] B` to
 `(ρ₂ g) ∘ₗ f ∘ₗ (ρ₁ g⁻¹)`. -/
 @[simps]
-protected noncomputable def ihom : Rep k G ⥤ Rep k G where
+protected def ihom : Rep k G ⥤ Rep k G where
   obj B := Rep.of (Representation.linHom A.ρ B.ρ)
   map {X} {Y} f := Rep.ofHom ⟨LinearMap.llcomp k _ _ _ f.hom.toLinearMap, fun g ↦ by
     ext; simp [Representation.IntertwiningMap.toLinearMap_apply, ← hom_comm_apply]⟩
@@ -794,7 +794,7 @@ def tensorHomEquiv (A B C : Rep.{u} k G) : (A ⊗ B ⟶ C) ≃ (B ⟶ (Rep.ihom 
 
 variable {A B C}
 
-noncomputable instance : MonoidalClosed (Rep k G) where
+instance : MonoidalClosed (Rep k G) where
   closed A :=
     { rightAdj := Rep.ihom A
       adj := Adjunction.mkOfHomEquiv ({

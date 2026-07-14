@@ -748,7 +748,7 @@ section truncateToReal
 
 /-- With truncation level `t`, the truncated cast `ℝ≥0∞ → ℝ` is given by `x ↦ (min t x).toReal`.
 Unlike `ENNReal.toReal`, this cast is continuous and monotone when `t ≠ ∞`. -/
-noncomputable def truncateToReal (t x : ℝ≥0∞) : ℝ := (min t x).toReal
+def truncateToReal (t x : ℝ≥0∞) : ℝ := (min t x).toReal
 
 lemma truncateToReal_eq_toReal {t x : ℝ≥0∞} (t_ne_top : t ≠ ∞) (x_le : x ≤ t) :
     truncateToReal t x = x.toReal := by

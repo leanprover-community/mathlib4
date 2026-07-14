@@ -261,7 +261,7 @@ namespace Submodule
 
 Note that the adjoint is taken with respect to the L^2 inner product on `E × F`, which is defined
 as `WithLp 2 (E × F)`. -/
-protected noncomputable
+protected
 def adjoint (g : Submodule 𝕜 (E × F)) : Submodule 𝕜 (F × E) :=
   (g.map ((LinearEquiv.skewSwap 𝕜 F E).symm.trans
     (WithLp.linearEquiv 2 𝕜 (F × E)).symm).toLinearMap).orthogonal.map

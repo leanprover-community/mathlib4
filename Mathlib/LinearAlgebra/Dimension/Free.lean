@@ -222,7 +222,7 @@ theorem FiniteDimensional.nonempty_linearEquiv_iff_finrank_eq [Module.Finite R M
 variable (M M')
 
 /-- Two finite and free modules are isomorphic if they have the same (finite) rank. -/
-noncomputable def LinearEquiv.ofFinrankEq [Module.Finite R M] [Module.Finite R M']
+def LinearEquiv.ofFinrankEq [Module.Finite R M] [Module.Finite R M']
     (cond : finrank R M = finrank R M') : M ≃ₗ[R] M' :=
   Classical.choice <| FiniteDimensional.nonempty_linearEquiv_of_finrank_eq cond
 
@@ -289,19 +289,19 @@ lemma finrank_bot_le_finrank_of_isScalarTower_of_free (S T : Type*) [Semiring S]
 variable (R M)
 
 /-- A finite rank free module has a basis indexed by `Fin (finrank R M)`. -/
-noncomputable def finBasis [Module.Finite R M] :
+def finBasis [Module.Finite R M] :
     Basis (Fin (finrank R M)) R M :=
   (Module.Free.chooseBasis R M).reindex (Fintype.equivFinOfCardEq
     (finrank_eq_card_chooseBasisIndex R M).symm)
 
 /-- A rank `n` free module has a basis indexed by `Fin n`. -/
-noncomputable def finBasisOfFinrankEq [Module.Finite R M] {n : ℕ} (hn : finrank R M = n) :
+def finBasisOfFinrankEq [Module.Finite R M] {n : ℕ} (hn : finrank R M = n) :
     Basis (Fin n) R M := (finBasis R M).reindex (finCongr hn)
 
 variable {R M}
 
 /-- A free module with rank 1 has a basis with one element. -/
-noncomputable def basisUnique (ι : Type*) [Unique ι]
+def basisUnique (ι : Type*) [Unique ι]
     (h : finrank R M = 1) :
     Basis ι R M :=
   haveI : Module.Finite R M :=
@@ -368,7 +368,7 @@ theorem _root_.LinearMap.existsUnique_eq_smul_id_of_finrank_eq_one
 
 /-- Endomorphisms of a free module of rank one are homotheties. -/
 @[simps apply]
-noncomputable def _root_.LinearEquiv.smul_id_of_finrank_eq_one (d1 : Module.finrank R M = 1) :
+def _root_.LinearEquiv.smul_id_of_finrank_eq_one (d1 : Module.finrank R M = 1) :
     R ≃ₗ[R] (M →ₗ[R] M) where
   toFun := fun c ↦ c • LinearMap.id
   map_add' c d := by ext; simp [add_smul]

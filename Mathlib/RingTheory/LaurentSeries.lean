@@ -971,7 +971,7 @@ instance : Valued (ratfuncAdicComplPkg (K := K).space) (WithZero (Multiplicative
 variable (K)
 /-- Having established that the `K⸨X⸩` is complete and contains `K⟮X⟯` as a dense
 subspace, it gives rise to an abstract completion of `K⟮X⟯`. -/
-noncomputable def LaurentSeriesPkg :
+def LaurentSeriesPkg :
     AbstractCompletion (WithVal (polynomialValuationX K)) where
   space := K⸨X⸩
   coe := (↑) ∘ WithVal.equiv _

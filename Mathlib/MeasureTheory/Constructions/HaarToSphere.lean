@@ -199,7 +199,7 @@ private lemma ball_subset_sector_of_small_epsilon
 /-- Lower estimate on the measure of the `ε`-cone in an `n`-dimensional normed space
 divided by the measure of the ball. -/
 @[irreducible]
-noncomputable def toSphereBallBound (n : ℕ) (ε : ℝ) : ℝ≥0 :=
+def toSphereBallBound (n : ℕ) (ε : ℝ) : ℝ≥0 :=
   if n ≠ 0 ∧ 0 < ε then n * ((min (Real.toNNReal ε) 2) / 4) ^ n else 1
 
 theorem toSphereBallBound_pos (n : ℕ) (ε : ℝ) : 0 < toSphereBallBound n ε := by

@@ -663,7 +663,7 @@ variable {F G : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 live in a different universe. However, one can always lift it to a continuous multilinear map
 on `(G × (Π i, E i)) ^ (1 + n)`, which maps `(v_0, ..., v_n)` to `B (g_0) (u_1, ..., u_n)` where
 `g_0` is the `G`-coordinate of `v_0` and `u_i` is the `E_i` coordinate of `v_i`. -/
-noncomputable def continuousMultilinearMapOption (B : G →L[𝕜] ContinuousMultilinearMap 𝕜 E F) :
+def continuousMultilinearMapOption (B : G →L[𝕜] ContinuousMultilinearMap 𝕜 E F) :
     ContinuousMultilinearMap 𝕜 (fun (_ : Option ι) ↦ (G × (Π i, E i))) F :=
   MultilinearMap.mkContinuous
   { toFun := fun p ↦ B (p none).1 (fun i ↦ (p i).2 i)

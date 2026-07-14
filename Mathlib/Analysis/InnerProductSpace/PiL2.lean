@@ -223,7 +223,6 @@ section restrict₂
 variable {I J : Finset ι'}
 
 /-- The restriction from `EuclideanSpace 𝕜 J` to `EuclideanSpace 𝕜 I` when `I ⊆ J`. -/
-noncomputable
 def restrict₂ (hIJ : I ⊆ J) :
     EuclideanSpace 𝕜 J →L[𝕜] EuclideanSpace 𝕜 I where
   toFun x := toLp 2 (Finset.restrict₂ («π» := fun _ ↦ 𝕜) hIJ x.ofLp)
@@ -649,7 +648,7 @@ variable {ι 𝕜 : Type*} [Unique ι] [RCLike 𝕜]
 variable (ι 𝕜) in
 /-- `OrthonormalBasis.singleton ι 𝕜` is the orthonormal basis sending the unique element of `ι` to
 `1 : 𝕜`. -/
-protected noncomputable def singleton : OrthonormalBasis ι 𝕜 𝕜 :=
+protected def singleton : OrthonormalBasis ι 𝕜 𝕜 :=
   (Basis.singleton ι 𝕜).toOrthonormalBasis (by simp)
 
 @[simp]
@@ -804,7 +803,7 @@ namespace EuclideanSpace
 variable (𝕜 ι)
 
 /-- The basis `Pi.basisFun`, bundled as an orthonormal basis of `EuclideanSpace 𝕜 ι`. -/
-noncomputable def basisFun : OrthonormalBasis ι 𝕜 (EuclideanSpace 𝕜 ι) :=
+def basisFun : OrthonormalBasis ι 𝕜 (EuclideanSpace 𝕜 ι) :=
   ⟨LinearIsometryEquiv.refl _ _⟩
 
 @[simp]
@@ -1014,7 +1013,7 @@ variable {A : ι → Submodule 𝕜 E}
 /-- Given an internal direct sum decomposition of a module `M`, and an orthonormal basis for each
 of the components of the direct sum, the disjoint union of these orthonormal bases is an
 orthonormal basis for `M`. -/
-noncomputable def DirectSum.IsInternal.collectedOrthonormalBasis
+def DirectSum.IsInternal.collectedOrthonormalBasis
     (hV : OrthogonalFamily 𝕜 (fun i => A i) fun i => (A i).subtypeₗᵢ) [DecidableEq ι]
     (hV_sum : DirectSum.IsInternal fun i => A i) {α : ι → Type*} [∀ i, Fintype (α i)]
     (v_family : ∀ i, OrthonormalBasis (α i) 𝕜 (A i)) : OrthonormalBasis (Σ i, α i) 𝕜 E :=
@@ -1175,7 +1174,7 @@ open Module
 isometry mapping `S` into `V` can be extended to a full isometry of `V`.
 
 TODO:  The case when `S` is a finite-dimensional subspace of an infinite-dimensional `V`. -/
-noncomputable def LinearIsometry.extend (L : S →ₗᵢ[𝕜] V) : V →ₗᵢ[𝕜] V := by
+def LinearIsometry.extend (L : S →ₗᵢ[𝕜] V) : V →ₗᵢ[𝕜] V := by
   -- Build an isometry from Sᗮ to L(S)ᗮ through `EuclideanSpace`
   let d := finrank 𝕜 Sᗮ
   let LS := LinearMap.range L.toLinearMap

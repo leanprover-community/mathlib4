@@ -334,7 +334,7 @@ theorem ofRealCLM_coe : (ofRealCLM : ℝ →ₗ[ℝ] ℂ) = ofRealAm.toLinearMap
 theorem ofRealCLM_apply (x : ℝ) : ofRealCLM x = x :=
   rfl
 
-noncomputable instance : RCLike ℂ where
+instance : RCLike ℂ where
   re := ⟨⟨Complex.re, Complex.zero_re⟩, Complex.add_re⟩
   im := ⟨⟨Complex.im, Complex.zero_im⟩, Complex.add_im⟩
   I := Complex.I

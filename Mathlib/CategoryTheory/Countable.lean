@@ -58,7 +58,7 @@ instance {i j : ObjAsType α} : Countable (i ⟶ j) :=
 instance : CountableCategory (ObjAsType α) where
 
 /-- The constructed category is indeed equivalent to `α`. -/
-noncomputable def objAsTypeEquiv : ObjAsType α ≌ α :=
+def objAsTypeEquiv : ObjAsType α ≌ α :=
   (inducedFunctor (equivShrink.{0} α).symm).asEquivalence
 
 /-- A countable category `α` is equivalent to a *small* category with objects in `Type`. -/
@@ -79,7 +79,7 @@ instance {i j : HomAsType α} : Countable (i ⟶ j) :=
 instance : CountableCategory (HomAsType α) where
 
 /-- The constructed category is indeed equivalent to `α`. -/
-noncomputable def homAsTypeEquiv : HomAsType α ≌ α :=
+def homAsTypeEquiv : HomAsType α ≌ α :=
   (ShrinkHoms.equivalence _).symm.trans (objAsTypeEquiv _)
 
 end CountableCategory

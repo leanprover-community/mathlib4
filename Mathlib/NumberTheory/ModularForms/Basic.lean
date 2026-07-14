@@ -687,7 +687,7 @@ variable {k : ℤ} {Γ : Subgroup (GL (Fin 2) ℝ)} {F : Type*} [FunLike F ℍ �
 
 open ConjAct Pointwise in
 /-- Translating a `ModularForm` by `GL(2, ℝ)`, to obtain a new `ModularForm`. -/
-noncomputable def ModularForm.translate [ModularFormClass F Γ k] (g : GL (Fin 2) ℝ) :
+def ModularForm.translate [ModularFormClass F Γ k] (g : GL (Fin 2) ℝ) :
     ModularForm (toConjAct g⁻¹ • Γ) k where
   __ := SlashInvariantForm.translate f g
   bdd_at_cusps' {c} hc γ hγ := by
@@ -704,7 +704,7 @@ lemma ModularForm.coe_translate [ModularFormClass F Γ k] (g : GL (Fin 2) ℝ) :
 
 open ConjAct Pointwise in
 /-- Translating a `CuspForm` by `SL(2, ℤ)`, to obtain a new `CuspForm`. -/
-noncomputable def CuspForm.translate [CuspFormClass F Γ k] (g : GL (Fin 2) ℝ) :
+def CuspForm.translate [CuspFormClass F Γ k] (g : GL (Fin 2) ℝ) :
     CuspForm (toConjAct g⁻¹ • Γ) k where
   __ := ModularForm.translate f g
   zero_at_cusps' {c} hc γ hγ := by

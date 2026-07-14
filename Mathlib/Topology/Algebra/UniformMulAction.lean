@@ -193,7 +193,7 @@ section SMul
 variable [SMul M X]
 
 @[to_additive]
-noncomputable instance : SMul M (Completion X) :=
+instance : SMul M (Completion X) :=
   ⟨fun c => Completion.map (c • ·)⟩
 
 @[to_additive]
@@ -237,7 +237,7 @@ theorem coe_smul (c : M) (x : X) : (↑(c • x) : Completion X) = c • (x : Co
 end SMul
 
 @[to_additive]
-noncomputable instance [Monoid M] [MulAction M X] [UniformContinuousConstSMul M X] :
+instance [Monoid M] [MulAction M X] [UniformContinuousConstSMul M X] :
     MulAction M (Completion X) where
   one_smul := ext' (continuous_const_smul _) continuous_id fun a => by rw [← coe_smul, one_smul]
   mul_smul x y :=

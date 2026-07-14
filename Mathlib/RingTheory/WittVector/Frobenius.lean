@@ -80,7 +80,7 @@ local notation "v" => multiplicity
 `p * (frobeniusPolyAux p n) + X n ^ p = frobeniusPoly p n`.
 This makes it easy to show that `frobeniusPoly p n` is congruent to `X n ^ p`
 modulo `p`. -/
-noncomputable def frobeniusPolyAux : ℕ → MvPolynomial ℕ ℤ
+def frobeniusPolyAux : ℕ → MvPolynomial ℕ ℤ
   | n => X (n + 1) - ∑ i : Fin n, have _ := i.is_lt
       ∑ j ∈ range (p ^ (n - i)),
         (((X (i : ℕ) ^ p) ^ (p ^ (n - (i : ℕ)) - (j + 1)) : MvPolynomial ℕ ℤ) *

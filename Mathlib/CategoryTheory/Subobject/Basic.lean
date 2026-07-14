@@ -149,12 +149,12 @@ protected theorem lift_mk {α : Sort*} {X : C} (F : ∀ ⦃A : C⦄ (f : A ⟶ X
 /-- The category of subobjects is equivalent to the `MonoOver` category. It is more convenient to
 use the former due to the partial order instance, but oftentimes it is easier to define structures
 on the latter. -/
-noncomputable def equivMonoOver (X : C) : Subobject X ≌ MonoOver X :=
+def equivMonoOver (X : C) : Subobject X ≌ MonoOver X :=
   ThinSkeleton.equivalence _
 
 /-- Use choice to pick a representative `MonoOver X` for each `Subobject X`.
 -/
-noncomputable def representative {X : C} : Subobject X ⥤ MonoOver X :=
+def representative {X : C} : Subobject X ⥤ MonoOver X :=
   (equivMonoOver X).functor
 
 instance : (representative (X := X)).IsEquivalence :=
@@ -164,7 +164,7 @@ instance : (representative (X := X)).IsEquivalence :=
 then pick an arbitrary representative using `representative.obj`.
 This is isomorphic (in `MonoOver X`) to the original `A`.
 -/
-noncomputable def representativeIso {X : C} (A : MonoOver X) :
+def representativeIso {X : C} (A : MonoOver X) :
     representative.obj ((toThinSkeleton _).obj A) ≅ A :=
   (equivMonoOver X).counitIso.app A
 
@@ -177,7 +177,7 @@ lemma thinSkeleton_mk_representative_eq_self {X : C} (A : Subobject X) :
 
 Prefer to use the coercion `P : C` rather than explicitly writing `underlying.obj P`.
 -/
-noncomputable def underlying {X : C} : Subobject X ⥤ C :=
+def underlying {X : C} : Subobject X ⥤ C :=
   representative ⋙ MonoOver.forget _ ⋙ Over.forget _
 
 instance : CoeOut (Subobject X) C where coe Y := underlying.obj Y
@@ -186,12 +186,12 @@ instance : CoeOut (Subobject X) C where coe Y := underlying.obj Y
 then pick an arbitrary choice of underlying object `(Subobject.mk f : C)` back in `C`,
 it is isomorphic (in `C`) to the original `X`.
 -/
-noncomputable def underlyingIso {X Y : C} (f : X ⟶ Y) [Mono f] : (Subobject.mk f : C) ≅ X :=
+def underlyingIso {X Y : C} (f : X ⟶ Y) [Mono f] : (Subobject.mk f : C) ≅ X :=
   (MonoOver.forget _ ⋙ Over.forget _).mapIso (representativeIso (MonoOver.mk f))
 
 /-- The morphism in `C` from the arbitrarily chosen underlying object to the ambient object.
 -/
-noncomputable def arrow {X : C} (Y : Subobject X) : (Y : C) ⟶ X :=
+def arrow {X : C} (Y : Subobject X) : (Y : C) ⟶ X :=
   (representative.obj Y).obj.hom
 
 instance arrow_mono {X : C} (Y : Subobject X) : Mono Y.arrow :=
@@ -623,7 +623,7 @@ lemma isPullback_aux (f : X ⟶ Y) (y : Subobject Y) :
     For instance in the category of sets, `Subobject.pullbackπ f y` is the restriction of `f` to
     elements of `X` that are in the preimage of `y ⊆ Y`.
 -/
-noncomputable def pullbackπ (f : X ⟶ Y) (y : Subobject Y) :
+def pullbackπ (f : X ⟶ Y) (y : Subobject Y) :
     ((Subobject.pullback f).obj y : C) ⟶ (y : C) :=
   (isPullback_aux f y).choose
 
