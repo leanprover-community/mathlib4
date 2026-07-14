@@ -238,7 +238,6 @@ theorem isDiscrete_tfae (M : LightCondMod.{u} R) :
   tfae_have 1 ↔ 4 := Sheaf.isConstant_iff_mem_essImage _
     LightProfinite.isTerminalPUnit (adjunction R) _
   tfae_have 1 ↔ 5 :=
-    -- These `have` statements above shouldn't be needed, but they are.
     Sheaf.isConstant_iff_isIso_counit_app' _ LightProfinite.isTerminalPUnit (adjunction R) _
   tfae_have 6 → 1 := by
     intro h
