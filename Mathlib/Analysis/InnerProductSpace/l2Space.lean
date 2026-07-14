@@ -380,7 +380,7 @@ namespace HilbertBasis
 instance {ι : Type*} : Inhabited (HilbertBasis ι 𝕜 ℓ²(ι, 𝕜)) :=
   ⟨ofRepr (LinearIsometryEquiv.refl 𝕜 _)⟩
 
-open Classical in
+open scoped Classical in
 /-- `b i` is the `i`th basis vector. -/
 instance instFunLike : FunLike (HilbertBasis ι 𝕜 E) ι E where
   coe b i := b.repr.symm (lp.single 2 i (1 : 𝕜))

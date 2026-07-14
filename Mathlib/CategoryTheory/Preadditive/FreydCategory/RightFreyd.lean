@@ -13,8 +13,16 @@ public import Mathlib.CategoryTheory.Quotient.Preadditive
 
 Let `V` be a preadditive category. The right Freyd category of `V` is the quotient of
 `Arrow V` by the right homotopy relation. (This is simply called "Freyd category"
-in the reference.)
+in the reference.) This is a preadditive category with a fully
+faithful additive functor `RightFreyd.functor : V ⥤ RightFreyd V`.
 
+We also show that, if `V` has binary biproducts, then `RightFreyd V` has cokernels. In fact
+we construct, given a morphism `f : u ⟶ v` in `Arrow V`, a morphism
+`Candidate.π f : v ⟶ Candidate.cokernel f` in `Arrow V` such that
+`f ≫ Candidate.π f` is right homotopic to `0` (see `Candidate.condition`).
+This allows us to define a cokernel cofork for `(quotient V).map f` (see
+`Candidate.cokernelCofork`), and we show in `Candidate.isColimitCokernelCofork` that this is
+a cokernel cofork.
 
 ## References
 * [Posur, S., *A constructive approach to Freyd categories*][posur2021Freyd]
@@ -134,6 +142,71 @@ instance : (functor V).Faithful where
     simpa [← sub_eq_zero] using! eq.some.comm
 
 end Functor
+
+variable [HasBinaryBiproducts V]
+
+variable {u v : Arrow V} (f : u ⟶ v)
+
+namespace Candidate
+
+/-- If `f` is a morphism of `Arrow V`, this is a "candidate cokernel" of `f`, i.e. an object
+in `Arrow V` whose image in `RightFreyd V` will be a cokernel of the image of `f`. -/
+abbrev cokernel := Arrow.mk (biprod.desc v.hom f.right)
+
+set_option backward.isDefEq.respectTransparency false in
+/-- For `f : u ⟶ v` a morphism in `Arrow V`, this is the morphism `v ⟶ cokernel f` from `v` to
+the "candidate cokernel" of `f`, whose image in `RightFreyd V` will be the projection to
+the cokernel of the image of `f`. -/
+def π : v ⟶ cokernel f := Arrow.homMk biprod.inl (𝟙 v.right)
+
+set_option backward.isDefEq.respectTransparency false in
+/-- The right homotopy expressing that `f ≫ π f` is sent to `0` in `RightFreyd V`. -/
+def condition : RightHomotopy (f ≫ π f) 0 where
+  hom := biprod.inr
+  comm := by simp [π]
+
+set_option backward.isDefEq.respectTransparency false in
+instance : Epi ((quotient V).map (π f)) :=
+  have : IsIso ((π f).right) := by simp only [π, homMk_right]; infer_instance
+  epi_of_isIso_right _
+
+variable {w : Arrow V} (g : v ⟶ w) (h : RightHomotopy (f ≫ g) 0)
+
+set_option backward.isDefEq.respectTransparency false in
+/-- If `f : u ⟶ v` and `g : v ⟶ w` are morphisms in `Arrow V` such that `f ≫ g` is right
+homotopic to `0`, this is the morphism from the "candidate cokernel" of `f` to `w` defined
+from the right homotopy. -/
+def desc : cokernel f ⟶ w :=
+  Arrow.homMk (biprod.desc g.left h.hom) g.right (biprod.hom_ext' _ _ (by simp)
+    (by simp [← h.comm]))
+
+set_option backward.isDefEq.respectTransparency false in
+@[reassoc (attr := simp)]
+lemma π_desc : π f ≫ desc f g h = g := by ext <;> simp [π, desc]
+
+/-- For `f` a morphism in `Arrow V`, this is a cokernel cofork of `(quotient V).map f`. -/
+def cokernelCofork : CokernelCofork ((quotient V).map f) :=
+  CokernelCofork.ofπ ((quotient V).map (Candidate.π f))
+    (eq_of_rightHomotopy _ _ (Candidate.condition f))
+
+set_option backward.isDefEq.respectTransparency false in
+/-- For `f` a morphism in `Arrow V`, the cokernel cofork of `(quotient V).map f` constructed
+in `cokernelCofork` is a colimit cofork. -/
+def isColimitCokernelCofork : IsColimit (cokernelCofork f) :=
+  CokernelCofork.IsColimit.ofπ' _
+    (eq_of_rightHomotopy _ _ (Candidate.condition f))
+    (fun g hg ↦ Nonempty.some (by
+      obtain ⟨g, rfl⟩ := (quotient V).map_surjective g
+      exact ⟨(quotient V).map (desc f g (homotopyOfEq _ _ hg)),
+        by simp [← Functor.map_comp]⟩))
+
+end Candidate
+
+/-- The category `RightFreyd V` has all cokernels if `V` has binary biproducts. -/
+instance : HasCokernels (RightFreyd V) where
+  has_colimit f := ⟨by
+    obtain ⟨f, rfl⟩ := (quotient V).map_surjective f
+    exact ⟨_, Candidate.isColimitCokernelCofork f⟩⟩
 
 end RightFreyd
 
