@@ -289,7 +289,6 @@ theorem exists_ideal_over_prime_of_isIntegral_of_isDomain [Algebra.IsIntegral R 
   letI : IsDomain (Localization (Algebra.algebraMapSubmonoid S P.primeCompl)) :=
     IsLocalization.isDomain_localization (le_nonZeroDivisors_of_noZeroDivisors hP0)
   obtain ⟨Qₚ : Ideal Sₚ, Qₚ_maximal⟩ := exists_maximal Sₚ
-  let _ : Algebra Rₚ Sₚ := localizationAlgebra P.primeCompl S
   have : Algebra.IsIntegral Rₚ Sₚ := ⟨isIntegral_localization⟩
   have Qₚ_max : IsMaximal (comap _ Qₚ) :=
     isMaximal_comap_of_isIntegral_of_isMaximal (R := Rₚ) (S := Sₚ) Qₚ

@@ -192,7 +192,7 @@ theorem inf_iSup_genEigenspace [FiniteDimensional K V] (h : ∀ x ∈ p, f x ∈
     f.mapsTo_genEigenspace_of_comm hfg μ k
   have hg₃ : InjOn g ↑(f.genEigenspace μ k) := by
     apply LinearMap.injOn_of_disjoint_ker subset_rfl
-    have this := f.independent_genEigenspace k
+    have := f.independent_genEigenspace k
     have aux (μ') (_hμ' : μ' ∈ m.support.erase μ) :
         (f.genEigenspace μ') ↑l₀ ≤ (f.genEigenspace μ') k := by
       apply (f.genEigenspace μ').mono

@@ -313,7 +313,7 @@ theorem of_mem_append {s₁ s₂ : Seq α} {a : α} (h : a ∈ append s₁ s₂)
     simpa using m
   | cons c t₁ =>
     intro m e
-    have this := congr_arg destruct e
+    have := congr_arg destruct e
     rcases show a = c ∨ a ∈ append t₁ s₂ by simpa using m with e' | m
     · rw [e']
       exact Or.inl (mem_cons _ _)
