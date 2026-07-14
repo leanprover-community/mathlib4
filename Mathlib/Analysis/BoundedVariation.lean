@@ -103,7 +103,7 @@ lemma BoundedVariationOn.bilinear_comp
     BoundedVariationOn (fun x ↦ B (f x) (g x)) s := by
   rcases s.eq_empty_or_nonempty with rfl | ⟨⟨x, hx⟩⟩
   · simp
-  apply ne_of_lt
+  suffices eVariationOn (fun x ↦ (B (f x)) (g x)) s < ∞ from ne_of_lt this
   have A (y) (hy : y ∈ s) : ‖f y‖ₑ ≤ ‖f x‖ₑ + eVariationOn f s := by
     grw [show f y = f x + (f y - f x) by abel, enorm_add_le, ← edist_eq_enorm_sub,
       eVariationOn.edist_le _ hy hx]
