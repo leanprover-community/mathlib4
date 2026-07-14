@@ -652,8 +652,9 @@ theorem primeCounting_eq_theta_div_log_add_integral {x : ℝ} (hx : 2 ≤ x) :
     have int_deriv (f : ℝ → ℝ) :
         ∫ u in 2..x, deriv (fun x ↦ (log x)⁻¹) u * f u =
         ∫ u in 2..x, f u * -(u * log u ^ 2)⁻¹ :=
-      intervalIntegral.integral_congr fun u _ ↦ by simp [deriv_inv_log, field]
-    simp [int_deriv, a, Set.indicator_apply, sum_filter, theta_eq_sum_Icc]
+      intervalIntegral.integral_congr fun u _ ↦ by simp [field]
+    rw [int_deriv]
+    simp [a, Set.indicator_apply, sum_filter, theta_eq_sum_Icc]
     grind
   · -- Differentiability
     intro z ⟨_, _⟩
@@ -662,7 +663,7 @@ theorem primeCounting_eq_theta_div_log_add_integral {x : ℝ} (hx : 2 ≤ x) :
     fun_prop
   · -- Integrability of the derivative
     refine ContinuousOn.integrableOn_Icc fun z ⟨_, _⟩ ↦ ContinuousWithinAt.congr ?_
-      (fun _ _ ↦ deriv_inv_log) deriv_inv_log
+      (fun _ _ ↦ deriv_inv_log_apply) deriv_inv_log_apply
     have : z ≠ 0 := by linarith
     have : log z ^ 2 ≠ 0 := by
       refine pow_ne_zero 2 <| log_ne_zero_of_pos_of_ne_one ?_ ?_ <;> linarith
@@ -853,3 +854,29 @@ theorem pi_le_log4_mul_div {x : ℝ} (hx : 1 < x) : π ⌊x⌋₊ ≤ log 4 * x 
 
 end PrimeCounting
 end Chebyshev
+
+namespace Mathlib.Meta.Positivity
+
+open Lean Meta Qq
+
+/-- Extension for the `positivity` tactic: the first Chebyshev function is nonnegative. -/
+@[positivity Chebyshev.theta _]
+meta def evalTheta : PositivityExt where eval {u α} _zα pα? e :=
+  match pα? with | none => pure .none | some _ => do
+  match u, α, e with
+  | 0, ~q(ℝ), ~q(@Chebyshev.theta $a) =>
+    assertInstancesCommute
+    pure (.nonnegative q(Chebyshev.theta_nonneg $a))
+  | _, _, _ => throwError "not theta"
+
+/-- Extension for the `positivity` tactic: the second Chebyshev function is nonnegative. -/
+@[positivity Chebyshev.psi _]
+meta def evalPsi : PositivityExt where eval {u α} _zα pα? e :=
+  match pα? with | none => pure .none | some _ => do
+  match u, α, e with
+  | 0, ~q(ℝ), ~q(@Chebyshev.psi $a) =>
+    assertInstancesCommute
+    pure (.nonnegative q(Chebyshev.psi_nonneg $a))
+  | _, _, _ => throwError "not psi"
+
+end Mathlib.Meta.Positivity

@@ -256,8 +256,7 @@ lemma le_of_iSup_eq_top {I J : X.IdealSheafData} {ι : Type*}
   refine Submodule.le_of_isLocalized_span _ this (fun i ↦ Γ(X, X.basicOpen i.1))
     (fun i ↦ Algebra.linearMap Γ(X, V.1) Γ(X, X.basicOpen i.1)) ?_
   rintro ⟨_, j, rfl⟩
-  dsimp
-  simp +instances only [← Submodule.restrictScalars_localized' Γ(X, X.basicOpen (r j)),
+  simp only [← Submodule.restrictScalars_localized' Γ(X, X.basicOpen (r j)),
     Ideal.localized'_eq_map, RingHom.algebraMap_toAlgebra]
   erw [I.map_ideal (U := ⟨_, V.2.basicOpen _⟩) (X.basicOpen_le (r j)),
     J.map_ideal (U := ⟨_, V.2.basicOpen _⟩) (X.basicOpen_le (r j))]

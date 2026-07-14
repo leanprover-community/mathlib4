@@ -135,7 +135,7 @@ theorem exists_lift
   apply Ideal.IsNilpotent.induction_on (S := B) I hI
   · intro B _ I hI _; exact FormallySmooth.comp_surjective R A I hI
   · intro B _ I J hIJ h₁ h₂ _ g
-    let this : ((B ⧸ I) ⧸ J.map (Ideal.Quotient.mk I)) ≃ₐ[R] B ⧸ J :=
+    let : ((B ⧸ I) ⧸ J.map (Ideal.Quotient.mk I)) ≃ₐ[R] B ⧸ J :=
       { (DoubleQuot.quotQuotEquivQuotSup I J).trans
           (Ideal.quotEquivOfEq (sup_eq_right.mpr hIJ)) with
         commutes' := fun x => rfl }
@@ -177,7 +177,7 @@ theorem liftOfSurjective_apply [FormallySmooth R A] (f : A →ₐ[R] C) (g : B �
     (hg : Function.Surjective g) (hg' : IsNilpotent <| RingHom.ker g) (x : A) :
     g (FormallySmooth.liftOfSurjective f g hg hg' x) = f x := by
   apply (Ideal.quotientKerAlgEquivOfSurjective hg).symm.injective
-  conv_rhs => rw [← AlgEquiv.coe_algHom, ← AlgHom.comp_apply,
+  conv_rhs => rw [← AlgEquiv.coe_toAlgHom, ← AlgHom.comp_apply,
     ← FormallySmooth.mk_lift (A := A) _ hg']
   apply (Ideal.quotientKerAlgEquivOfSurjective hg).injective
   rw [AlgEquiv.apply_symm_apply, Ideal.quotientKerAlgEquivOfSurjective_apply]
@@ -361,7 +361,7 @@ theorem of_comp_surjective
   refine ⟨g, AlgHom.ext fun x ↦ congr(f.kerSquareLift.kerLift ($hg x)).trans ?_⟩
   obtain ⟨x, rfl⟩ := (Ideal.quotientKerAlgEquivOfSurjective surj).surjective x
   obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x
-  simp only [AlgHom.toRingHom_eq_coe, AlgEquiv.coe_algHom, AlgEquiv.symm_apply_apply,
+  simp only [AlgHom.toRingHom_eq_coe, AlgEquiv.coe_toAlgHom, AlgEquiv.symm_apply_apply,
     AlgHom.coe_id, id_eq]
   simp only [Ideal.quotientKerAlgEquivOfSurjective_apply]
 
@@ -488,7 +488,7 @@ theorem of_isLocalization : FormallySmooth R Rₘ := by
     apply (IsNilpotent.isUnit_quotient_mk_iff ⟨2, e⟩).mp
     convert! (IsLocalization.map_units Rₘ x).map f
     simp only [Ideal.Quotient.mk_algebraMap, AlgHom.commutes]
-  let this : Rₘ →ₐ[R] Q :=
+  let : Rₘ →ₐ[R] Q :=
     { IsLocalization.lift this with commutes' := IsLocalization.lift_eq this }
   use this
   apply AlgHom.coe_ringHom_injective

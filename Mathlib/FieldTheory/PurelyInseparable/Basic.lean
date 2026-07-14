@@ -6,7 +6,7 @@ Authors: Jz Pan
 module
 
 public import Mathlib.Algebra.CharP.IntermediateField
-public import Mathlib.FieldTheory.SeparableClosure
+public import Mathlib.FieldTheory.IsSepClosed
 
 /-!
 
@@ -612,7 +612,6 @@ lemma adjoin_eq_of_isAlgebraic_of_isSeparable [Algebra.IsAlgebraic F E]
     have := Algebra.isSeparable_tower_top_of_isSeparable E L K
     let i : S →+* L := Subsemiring.inclusion fun x hx ↦ subset_adjoin E (S : Set K) hx
     let _ : Algebra S L := i.toAlgebra
-    let _ : SMul S L := Algebra.toSMul
     have : IsScalarTower S L K := IsScalarTower.of_algebraMap_eq (congrFun rfl)
     have := Algebra.IsAlgebraic.trans F E K
     have : IsPurelyInseparable S K := separableClosure.isPurelyInseparable F K

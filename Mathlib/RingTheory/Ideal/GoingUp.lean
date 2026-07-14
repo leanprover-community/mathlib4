@@ -289,7 +289,6 @@ theorem exists_ideal_over_prime_of_isIntegral_of_isDomain [Algebra.IsIntegral R 
   letI : IsDomain (Localization (Algebra.algebraMapSubmonoid S P.primeCompl)) :=
     IsLocalization.isDomain_localization (le_nonZeroDivisors_of_noZeroDivisors hP0)
   obtain ⟨Qₚ : Ideal Sₚ, Qₚ_maximal⟩ := exists_maximal Sₚ
-  let _ : Algebra Rₚ Sₚ := localizationAlgebra P.primeCompl S
   have : Algebra.IsIntegral Rₚ Sₚ := ⟨isIntegral_localization⟩
   have Qₚ_max : IsMaximal (comap _ Qₚ) :=
     isMaximal_comap_of_isIntegral_of_isMaximal (R := Rₚ) (S := Sₚ) Qₚ
@@ -333,10 +332,10 @@ theorem exists_ideal_over_prime_of_isIntegral [Algebra.IsIntegral R S] (P : Idea
   obtain ⟨Q, hQ, hQ', hQ''⟩ := exists_ideal_over_prime_of_isIntegral_of_isPrime P P' hP''
   exact ⟨Q, hP.trans hQ, hQ', hQ''⟩
 
-instance nonempty_primesOver [IsDomain R] [Nontrivial S] [Algebra.IsIntegral R S]
-    [Module.IsTorsionFree R S] (P : Ideal R) [P.IsPrime] :
+instance nonempty_primesOver [Algebra.IsIntegral R S] [FaithfulSMul R S] (P : Ideal R) [P.IsPrime] :
     Nonempty (primesOver P S) := by
-  obtain ⟨Q, _, hQ₁, hQ₂⟩ := exists_ideal_over_prime_of_isIntegral P (⊥ : Ideal S) (by simp)
+  obtain ⟨Q, _, hQ₁, hQ₂⟩ := exists_ideal_over_prime_of_isIntegral P (⊥ : Ideal S)
+    (by simp [← RingHom.ker_eq_comap_bot])
   exact ⟨Q, ⟨hQ₁, (liesOver_iff _ _).mpr hQ₂.symm⟩⟩
 
 /-- `comap (algebraMap R S)` is a surjection from the max spec of `S` to max spec of `R`.
