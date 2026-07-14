@@ -38,7 +38,8 @@ theorem length'_of_not_terminates {s : Seq α} (h : ¬ s.Terminates) :
   simp [length', h]
 
 @[simp]
-theorem length_nil : length (nil : Seq α) terminates_nil = 0 := by simp [length, terminatedAt_nil]
+theorem length_nil : length (nil : Seq α) terminates_nil = 0 :=
+  (Nat.find_eq_zero _).mpr terminatedAt_nil
 
 @[simp]
 theorem length'_nil : length' (nil : Seq α) = 0 := by
@@ -461,6 +462,7 @@ theorem join_cons (a : α) (s S) : join (cons (a, s) S) = cons a (append s (join
       · simpa only [BisimO, join_cons_cons, destruct_cons, cons_append, true_and] using
           Or.inr ⟨_, _, S, rfl, rfl⟩
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem join_append (S T : Seq (Seq1 α)) : join (append S T) = append (join S) (join T) := by
   apply
@@ -1021,6 +1023,7 @@ theorem ret_bind (a : α) (f : α → Seq1 β) : bind (ret a) f = f a := by
   obtain ⟨a, s⟩ := f a
   cases s <;> simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_join' (f : α → β) (S) : Seq.map f (Seq.join S) = Seq.join (Seq.map (map f) S) := by
   apply
@@ -1043,6 +1046,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem map_join (f : α → β) : ∀ S, map f (join S) = join (map (map f) S)
   | ((a, s), S) => by cases s <;> simp [map]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem join_join (SS : Seq (Seq1 (Seq1 α))) :
     Seq.join (Seq.join SS) = Seq.join (Seq.map join SS) := by
