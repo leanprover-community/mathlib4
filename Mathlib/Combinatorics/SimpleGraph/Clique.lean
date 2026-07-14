@@ -549,6 +549,7 @@ lemma CliqueFree.mem_of_sup_edge_isNClique {x y : α} {t : Finset α} {n : ℕ} 
 /-- Adding an edge increases the clique number by at most one. -/
 protected theorem CliqueFree.sup_edge (h : G.CliqueFree n) (v w : α) :
     (G ⊔ edge v w).CliqueFree (n + 1) := by
+  classical
   exact fun _ hs ↦ (hs.erase_of_sup_edge_of_mem <|
     (h.mono n.le_succ).mem_of_sup_edge_isNClique hs).not_cliqueFree h
 

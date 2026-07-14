@@ -230,6 +230,7 @@ def dual (I : FractionalIdeal B⁰ L) :
   open scoped Classical in
   if hI : I = 0 then 0 else
   ⟨Iᵛ, by
+    classical
     have ⟨s, b, hb⟩ := FiniteDimensional.exists_is_basis_integral A K L
     obtain ⟨x, hx, hx'⟩ := exists_ne_zero_mem_isInteger hI
     have ⟨y, hy⟩ := (IsIntegralClosure.isIntegral_iff (A := B)).mp

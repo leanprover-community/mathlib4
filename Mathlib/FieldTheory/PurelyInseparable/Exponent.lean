@@ -117,6 +117,7 @@ noncomputable def elemExponent (a : L) : ℕ :=
 variable {K} in
 theorem elemExponent_eq_zero_of_mem_range {a : L} (h : a ∈ (algebraMap K L).range) :
     elemExponent K a = 0 := by
+  classical
   apply (Nat.find_eq_zero _).mpr
   rw [pow_zero, pow_one]
   obtain ⟨y, hy⟩ := h
