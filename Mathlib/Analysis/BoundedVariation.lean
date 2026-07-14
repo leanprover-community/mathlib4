@@ -96,7 +96,7 @@ lemma eVariationOn_smul_le {𝕜 : Type*} {f : α → 𝕜} {g : α → F}
 lemma eVariation_mul_le {f g : α → ℝ}
     {C D : ℝ≥0∞} {s : Set α} (hf : ∀ x ∈ s, ‖f x‖ₑ ≤ C) (hg : ∀ x ∈ s, ‖g x‖ₑ ≤ D) :
     eVariationOn (f * g) s ≤ C * eVariationOn g s + D * eVariationOn f s := by
-  apply eVariationOn_smul_le hf hg
+  simpa using eVariationOn_smul_le hf hg
 
 lemma BoundedVariationOn.bilinear_comp
     (hf : BoundedVariationOn f s) (hg : BoundedVariationOn g s) (B : E →L[ℝ] F →L[ℝ] G) :
