@@ -393,7 +393,7 @@ instance : GeometricallyIrreducible (𝔸(n; S) ↘ S) := by
   rw [geometricallyIrreducible_iff]
   introv K h
   apply ObjectProperty.prop_of_iso _
-    ((h.isoIsPullback _ _ (isPullback_map _)) ≪≫ (SpecIso n (.of K))).symm
+    ((h.isoIsPullback (isPullback_map _)) ≪≫ (SpecIso n (.of K))).symm
   infer_instance
 
 instance [IrreducibleSpace S] : IrreducibleSpace 𝔸(n; S) :=
@@ -403,7 +403,7 @@ instance : GeometricallyReduced (𝔸(n; S) ↘ S) := by
   rw [geometricallyReduced_iff]
   introv K h
   apply ObjectProperty.prop_of_iso _
-    ((h.isoIsPullback _ _ (isPullback_map _)) ≪≫ (SpecIso n (.of K))).symm
+    ((h.isoIsPullback (isPullback_map _)) ≪≫ (SpecIso n (.of K))).symm
   infer_instance
 
 instance [h : IsReduced S] : IsReduced 𝔸(n; S) := by
