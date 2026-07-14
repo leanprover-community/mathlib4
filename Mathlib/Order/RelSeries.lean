@@ -614,7 +614,7 @@ def inductionOn (motive : RelSeries r → Sort*)
     (cons : (p : RelSeries r) → (x : α) → (hx : x ~[r] p.head) → (hp : motive p) →
       motive (p.cons x hx)) (p : RelSeries r) :
     motive p := by
-  let this {n : ℕ} (heq : p.length = n) : motive p := by
+  let {n : ℕ} (heq : p.length = n) : motive p := by
     induction n generalizing p with
     | zero =>
       convert! singleton p.head
@@ -679,7 +679,7 @@ def inductionOn' (motive : RelSeries r → Sort*)
     (snoc : (p : RelSeries r) → (x : α) → (hx : p.last ~[r] x) → (hp : motive p) →
       motive (p.snoc x hx)) (p : RelSeries r) :
     motive p := by
-  let this {n : ℕ} (heq : p.length = n) : motive p := by
+  let {n : ℕ} (heq : p.length = n) : motive p := by
     induction n generalizing p with
     | zero =>
       convert! singleton p.head

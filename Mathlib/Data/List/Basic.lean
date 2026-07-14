@@ -1007,7 +1007,7 @@ theorem length_erase_add_one {a : α} {l : List α} (h : a ∈ l) :
 
 theorem map_erase [BEq β] [LawfulBEq β] {f : α → β} (finj : Injective f) {a : α} (l : List α) :
     map f (l.erase a) = (map f l).erase (f a) := by
-  have this : (a == ·) = (f a == f ·) := by ext b; simp [finj.eq_iff]
+  have : (a == ·) = (f a == f ·) := by ext b; simp [finj.eq_iff]
   rw [erase_eq_eraseP, erase_eq_eraseP, eraseP_map, this]; rfl
 
 theorem map_foldl_erase [BEq β] [LawfulBEq β] {f : α → β} (finj : Injective f) {l₁ l₂ : List α} :

@@ -5,7 +5,6 @@ Authors: Kexing Ying
 -/
 module
 
-public import Mathlib.MeasureTheory.Function.ConvergenceInMeasure
 public import Mathlib.MeasureTheory.Function.L1Space.Integrable
 
 /-!

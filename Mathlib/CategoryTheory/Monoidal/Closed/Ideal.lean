@@ -147,7 +147,7 @@ abbrev CartesianMonoidalCategory.ofReflective [CartesianMonoidalCategory C] [Ref
         · change (reflector i ⋙ i).obj (i.obj X ⊗ i.obj Y) ≅ (𝟭 C).obj (i.obj X ⊗ i.obj Y)
           letI : IsIso ((reflectorAdjunction i).unit.app (i.obj X ⊗ i.obj Y)) := by
             apply Functor.essImage.unit_isIso
-            haveI := reflective_products i
+            have := reflective_products i
             use Limits.prod X Y
             constructor
             apply Limits.PreservesLimitPair.iso i _ _ |>.trans
@@ -187,7 +187,7 @@ instance (priority := 10) exponentialIdeal_of_preservesBinaryProducts
       prodComparison_natural_whiskerLeft_assoc, ← whiskerLeft_comp_assoc,
       ir.left_triangle_components, whiskerLeft_id, Category.id_comp]
     apply IsIso.hom_inv_id_assoc
-  haveI : IsSplitMono (η.app (A ⟹ i.obj B)) := IsSplitMono.mk' ⟨_, this⟩
+  have : IsSplitMono (η.app (A ⟹ i.obj B)) := IsSplitMono.mk' ⟨_, this⟩
   apply mem_essImage_of_unit_isSplitMono
 
 variable [ExponentialIdeal i]

@@ -12,6 +12,7 @@ public import Mathlib.Data.Set.Finite.Lemmas
 public import Mathlib.RingTheory.Coprime.Lemmas
 public import Mathlib.RingTheory.Localization.FractionRing
 public import Mathlib.SetTheory.Cardinal.Order
+public import Mathlib.Order.Filter.TendstoCofinite
 
 /-!
 # Theory of univariate polynomials
@@ -156,6 +157,15 @@ theorem eq_of_infinite_eval_eq (p q : R[X]) (h : Set.Infinite { x | eval x p = e
   rw [← sub_eq_zero]
   apply eq_zero_of_infinite_isRoot
   simpa only [IsRoot, eval_sub, sub_eq_zero]
+
+/-- Non-constant polynomials have finite fibres, provided the coefficients are a domain. -/
+lemma tendstoCofinite_of_natDegree_ne_zero {R : Type} [CommRing R] [IsDomain R] (p : R[X])
+    (hp : p.natDegree ≠ 0) : Filter.TendstoCofinite p.eval := by
+  rw [Filter.tendstoCofinite_iff_finite_preimage_singleton]
+  intro x
+  by_contra! hx
+  obtain ⟨rfl⟩ : p = C x := p.eq_of_infinite_eval_eq (C x) (by simpa)
+  simp at hp
 
 theorem roots_mul {p q : R[X]} (hpq : p * q ≠ 0) : (p * q).roots = p.roots + q.roots := by
   classical

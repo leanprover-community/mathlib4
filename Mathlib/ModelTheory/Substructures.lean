@@ -321,7 +321,7 @@ lemma mem_closure_iff_of_isRelational [L.IsRelational] (s : Set M) (m : M) :
 
 theorem _root_.Set.Countable.substructure_closure
     [Countable (Σ l, L.Functions l)] (h : s.Countable) : Countable.{w + 1} (closure L s) := by
-  haveI : Countable s := h.to_subtype
+  have : Countable s := h.to_subtype
   rw [← mk_le_aleph0_iff, ← lift_le_aleph0]
   exact lift_card_closure_le_card_term.trans mk_le_aleph0
 
@@ -378,7 +378,7 @@ theorem closure_insert (s : Set M) (m : M) : closure L (insert m s) = closure L 
 
 instance small_bot : Small.{u} (⊥ : L.Substructure M) := by
   rw [← closure_empty]
-  haveI : Small.{u} (∅ : Set M) := small_subsingleton _
+  have : Small.{u} (∅ : Set M) := small_subsingleton _
   exact Substructure.small_closure
 
 theorem iSup_eq_closure {ι : Sort*} (S : ι → L.Substructure M) :
@@ -400,7 +400,7 @@ theorem mem_iSup_of_directed {ι : Type*} [hι : Nonempty ι] {S : ι → L.Subs
 theorem mem_sSup_of_directedOn {S : Set (L.Substructure M)} (Sne : S.Nonempty)
     (hS : DirectedOn (· ≤ ·) S) {x : M} :
     x ∈ sSup S ↔ ∃ s ∈ S, x ∈ s := by
-  haveI : Nonempty S := Sne.to_subtype
+  have : Nonempty S := Sne.to_subtype
   simp only [sSup_eq_iSup', mem_iSup_of_directed hS.directed_val, Subtype.exists, exists_prop]
 
 variable (L) (M)

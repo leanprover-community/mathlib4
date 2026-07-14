@@ -314,6 +314,11 @@ theorem tendsto_iff_norm_div_tendsto_zero {f : α → E} {a : Filter α} {b : E}
   simp only [← dist_eq_norm_div, ← tendsto_iff_dist_tendsto_zero]
 
 @[to_additive]
+theorem tendsto_iff_enorm_div_tendsto_zero {f : α → E} {a : Filter α} {b : E} :
+    Tendsto f a (𝓝 b) ↔ Tendsto (fun e => ‖f e / b‖ₑ) a (𝓝 0) := by
+  simp only [← edist_eq_enorm_div, ← tendsto_iff_edist_tendsto_0]
+
+@[to_additive]
 theorem SeminormedCommGroup.mem_closure_iff {s : Set E} :
     a ∈ closure s ↔ ∀ ε, 0 < ε → ∃ b ∈ s, ‖a / b‖ < ε := by
   simp [Metric.mem_closure_iff, dist_eq_norm_div]

@@ -10,6 +10,7 @@ public import Mathlib.RingTheory.Localization.NormTrace
 
 /-!
 # Number field discriminant
+
 This file defines the discriminant of a number field.
 
 ## Main definitions

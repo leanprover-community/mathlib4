@@ -226,11 +226,11 @@ theorem toJordanDecomposition_eq_of_eq_add_withDensity {f : α → ℝ} (hf : Me
       @JordanDecomposition.mk α _
         (t.toJordanDecomposition.posPart + μ.withDensity fun x => ENNReal.ofReal (f x))
         (t.toJordanDecomposition.negPart + μ.withDensity fun x => ENNReal.ofReal (-f x))
-        (by haveI := isFiniteMeasure_withDensity_ofReal hfi.2; infer_instance)
-        (by haveI := isFiniteMeasure_withDensity_ofReal hfi.neg.2; infer_instance)
+        (by have := isFiniteMeasure_withDensity_ofReal hfi.2; infer_instance)
+        (by have := isFiniteMeasure_withDensity_ofReal hfi.neg.2; infer_instance)
         (jordanDecomposition_add_withDensity_mutuallySingular hf htμ) := by
-  haveI := isFiniteMeasure_withDensity_ofReal hfi.2
-  haveI := isFiniteMeasure_withDensity_ofReal hfi.neg.2
+  have := isFiniteMeasure_withDensity_ofReal hfi.2
+  have := isFiniteMeasure_withDensity_ofReal hfi.neg.2
   refine toJordanDecomposition_eq ?_
   simp_rw [JordanDecomposition.toSignedMeasure, hadd]
   ext i hi

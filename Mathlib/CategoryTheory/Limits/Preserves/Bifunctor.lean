@@ -231,7 +231,7 @@ instance of_preservesColimits_in_each_variable
           symm
           apply (P j₁).hom_ext
           intro j₂
-          haveI := (P j₁).fac s j₂
+          have := (P j₁).fac s j₂
           simp only [Functor.mapCocone_pt, Functor.mapCocone_ι_app, Q₀, s] at this
           simp only [Functor.mapCocone_pt,
             Functor.mapCocone_ι_app, NatTrans.naturality, this, Q₀, s])
@@ -361,7 +361,7 @@ instance of_preservesLimits_in_each_variable
           symm
           apply (P j₁).hom_ext
           intro j₂
-          haveI := (P j₁).fac s j₂
+          have := (P j₁).fac s j₂
           simp only [whiskeringLeft₂_obj_obj_obj_obj_obj,
             Functor.mapCone_pt, Functor.mapCone_π_app, s, Q₀] at this
           simp only [whiskeringLeft₂_obj_obj_obj_obj_obj,

@@ -725,7 +725,7 @@ lemma isLocalization_atPrime (f) (x : pbo f) {m} (f_deg : f ∈ 𝒜 m) (hm : 0 
     @IsLocalization (Away 𝒜 f) _ ((toSpec 𝒜 f).base x).asIdeal.primeCompl
       (AtPrime 𝒜 x.1.asHomogeneousIdeal.toIdeal) _
       (mapId 𝒜 (Submonoid.powers_le.mpr x.2)).toAlgebra := by
-  letI : Algebra (Away 𝒜 f) (AtPrime 𝒜 x.1.asHomogeneousIdeal.toIdeal) :=
+  let : Algebra (Away 𝒜 f) (AtPrime 𝒜 x.1.asHomogeneousIdeal.toIdeal) :=
     (mapId 𝒜 (Submonoid.powers_le.mpr x.2)).toAlgebra
   constructor; constructor
   · rintro ⟨y, hy⟩
@@ -817,10 +817,10 @@ lemma stalkMap_toSpec (f) (x : pbo f) {m} (f_deg : f ∈ 𝒜 m) (hm : 0 < m) :
 set_option backward.isDefEq.respectTransparency false in
 lemma isIso_toSpec (f) {m} (f_deg : f ∈ 𝒜 m) (hm : 0 < m) :
     IsIso (toSpec 𝒜 f) := by
-  haveI : IsIso (toSpec 𝒜 f).base := toSpec_base_isIso 𝒜 f_deg hm
-  haveI _ (x) : IsIso ((toSpec 𝒜 f).stalkMap x) := by
+  have : IsIso (toSpec 𝒜 f).base := toSpec_base_isIso 𝒜 f_deg hm
+  have _ (x) : IsIso ((toSpec 𝒜 f).stalkMap x) := by
     rw [stalkMap_toSpec 𝒜 f x f_deg hm]; infer_instance
-  haveI : LocallyRingedSpace.IsOpenImmersion (toSpec 𝒜 f) :=
+  have : LocallyRingedSpace.IsOpenImmersion (toSpec 𝒜 f) :=
     LocallyRingedSpace.IsOpenImmersion.of_stalk_iso (toSpec 𝒜 f)
       (TopCat.homeoOfIso (asIso <| (toSpec 𝒜 f).base)).isOpenEmbedding
   exact LocallyRingedSpace.IsOpenImmersion.to_iso _

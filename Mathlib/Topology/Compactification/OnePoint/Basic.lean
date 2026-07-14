@@ -589,7 +589,7 @@ noncomputable def equivOfIsEmbeddingOfRangeEq :
     exact (isClosed_compl_iff.mpr hU₂).isCompact
   let e : OnePoint X ≃ Y :=
     { toFun := fun p ↦ p.elim y f
-      invFun := fun q ↦ if hq : q = y then ∞ else ↑(show q ∈ range f from by simpa [hy]).choose
+      invFun := fun q ↦ if hq : q = y then ∞ else ↑(show q ∈ range f by simpa [hy]).choose
       left_inv := fun p ↦ by
         induction p using OnePoint.rec with
         | infty => simp

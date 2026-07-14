@@ -169,6 +169,10 @@ theorem under_map_of_isPrime_disjoint {I : Ideal R} (hI : I.IsPrime) (hM : Disjo
 @[deprecated (since := "2026-04-09")] alias comap_map_of_isPrime_disjoint :=
   under_map_of_isPrime_disjoint
 
+theorem liesOver_map_of_isPrime_disjoint {I : Ideal R} [I.IsPrime] (hM : Disjoint (M : Set R) I) :
+    (I.map (algebraMap R S)).LiesOver I :=
+  ⟨(under_map_of_isPrime_disjoint M S ‹_› hM).symm⟩
+
 /-- If `S` is the localization of `R` at a submonoid, the ordering of ideals of `S` is
 embedded in the ordering of ideals of `R`. -/
 def orderEmbedding : Ideal S ↪o Ideal R where
@@ -344,7 +348,7 @@ open nonZeroDivisors
 
 theorem bot_lt_under_prime [IsDomain R] (hM : M ≤ R⁰) (p : Ideal S) [hpp : p.IsPrime]
     (hp0 : p ≠ ⊥) : ⊥ < p.under R := by
-  haveI : IsDomain S := isDomain_of_le_nonZeroDivisors _ hM
+  have : IsDomain S := isDomain_of_le_nonZeroDivisors _ hM
   rw [← Ideal.comap_bot_of_injective (algebraMap R S) (IsLocalization.injective _ hM)]
   convert!
     (orderIsoOfPrime M S).lt_iff_lt.mpr

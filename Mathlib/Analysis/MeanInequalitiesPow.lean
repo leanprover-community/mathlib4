@@ -351,7 +351,7 @@ theorem rpow_add_le_mul_rpow_add_rpow' (z₁ z₂ : ℝ≥0∞) {p : ℝ} (hp : 
       · simp
       · rwa [ENNReal.inv_lt_one, one_lt_ofReal]
     rw [show LpAddConst (ENNReal.ofReal p)⁻¹ =
-        (2 : ℝ≥0∞) ^ (1 / ((ENNReal.ofReal p)⁻¹).toReal - 1) from by
+        (2 : ℝ≥0∞) ^ (1 / ((ENNReal.ofReal p)⁻¹).toReal - 1) by
       rw [LpAddConst, if_pos hmem]]
     simp only [ENNReal.toReal_inv, div_inv_eq_mul, one_mul]
     rw [ENNReal.toReal_ofReal hp]

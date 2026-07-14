@@ -185,8 +185,8 @@ lemma isFinite_iff_locallyOfFiniteType_of_jacobsonSpace
   obtain ⟨φ, rfl⟩ := Spec.map_surjective f
   rw [IsFinite.SpecMap_iff, HasRingHomProperty.Spec_iff (P := @LocallyOfFiniteType)]
   have := (PrimeSpectrum.t1Space_iff_isField (R := R)).mp (show T1Space (Spec R) by infer_instance)
-  letI := this.toField
-  letI := φ.hom.toAlgebra
+  let := this.toField
+  let := φ.hom.toAlgebra
   have := PrimeSpectrum.isJacobsonRing_iff_jacobsonSpace.mpr ‹_›
   change Module.Finite _ _ ↔ Algebra.FiniteType _ _
   exact ⟨fun _ ↦ inferInstance, fun _ ↦ finite_of_finite_type_of_isJacobsonRing _ _⟩

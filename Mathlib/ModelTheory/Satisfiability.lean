@@ -89,7 +89,7 @@ theorem isSatisfiable_onTheory_iff {L' : Language.{w, w'}} {φ : L →ᴸ L'} (h
     (φ.onTheory T).IsSatisfiable ↔ T.IsSatisfiable := by
   classical
     refine ⟨isSatisfiable_of_isSatisfiable_onTheory φ, fun h' => ?_⟩
-    haveI : Inhabited h'.some := Classical.inhabited_of_nonempty'
+    have : Inhabited h'.some := Classical.inhabited_of_nonempty'
     exact Model.isSatisfiable (h'.some.defaultExpansion h)
 
 theorem IsSatisfiable.isFinitelySatisfiable (h : T.IsSatisfiable) : T.IsFinitelySatisfiable :=
@@ -130,9 +130,9 @@ theorem isSatisfiable_union_distinctConstantsTheory_of_card_le (T : L.Theory) (s
     (M : Type w') [Nonempty M] [L.Structure M] [M ⊨ T]
     (h : Cardinal.lift.{w'} #s ≤ Cardinal.lift.{w} #M) :
     ((L.lhomWithConstants α).onTheory T ∪ L.distinctConstantsTheory s).IsSatisfiable := by
-  haveI : Inhabited M := Classical.inhabited_of_nonempty inferInstance
+  have : Inhabited M := Classical.inhabited_of_nonempty inferInstance
   rw [Cardinal.lift_mk_le'] at h
-  letI : (constantsOn α).Structure M := constantsOn.structure (Function.extend (↑) h.some default)
+  let : (constantsOn α).Structure M := constantsOn.structure (Function.extend (↑) h.some default)
   have : M ⊨ (L.lhomWithConstants α).onTheory T ∪ L.distinctConstantsTheory s := by
     refine ((LHom.onTheory_model _ _).2 inferInstance).union ?_
     rw [model_distinctConstantsTheory]
@@ -166,7 +166,7 @@ theorem exists_large_model_of_infinite_model (T : L.Theory) (κ : Cardinal.{w}) 
   obtain ⟨N⟩ :=
     isSatisfiable_union_distinctConstantsTheory_of_infinite T (Set.univ : Set κ.out) M
   refine ⟨(N.is_model.mono Set.subset_union_left).bundled.reduct _, ?_⟩
-  haveI : N ⊨ distinctConstantsTheory _ _ := N.is_model.mono Set.subset_union_right
+  have : N ⊨ distinctConstantsTheory _ _ := N.is_model.mono Set.subset_union_right
   rw [ModelType.reduct_Carrier, coe_of]
   refine _root_.trans (lift_le.2 (le_of_eq (Cardinal.mk_out κ).symm)) ?_
   rw [← mk_univ]
@@ -229,8 +229,8 @@ theorem exists_elementaryEmbedding_card_eq_of_ge (M : Type w') [L.Structure M] [
         rw [← lift_le.{w'}, lift_lift, lift_lift] at h1
         exact ⟨h2, h1⟩)
       (hN0.trans (by rw [← lift_umax, lift_id]))
-  letI := (lhomWithConstants L M).reduct N
-  haveI h : N ⊨ L.elementaryDiagram M :=
+  let := (lhomWithConstants L M).reduct N
+  have h : N ⊨ L.elementaryDiagram M :=
     (NN0.theory_model_iff (L.elementaryDiagram M)).2 inferInstance
   refine ⟨Bundled.of N, ⟨?_⟩, hN⟩
   apply ElementaryEmbedding.ofModelsElementaryDiagram L M N
@@ -271,7 +271,7 @@ theorem exists_model_card_eq (h : ∃ M : ModelType.{u, v, max u v} T, Infinite 
   cases h with
   | intro M MI =>
     obtain ⟨N, hN, rfl⟩ := exists_elementarilyEquivalent_card_eq L M κ h1 h2
-    haveI : Nonempty N := hN.nonempty
+    have : Nonempty N := hN.nonempty
     exact ⟨hN.theory_model.bundled, rfl⟩
 
 variable (T)
@@ -328,19 +328,19 @@ theorem models_formula_iff_onTheory_models_equivSentence {φ : L.Formula α} :
     T ⊨ᵇ φ ↔ (L.lhomWithConstants α).onTheory T ⊨ᵇ Formula.equivSentence φ := by
   refine ⟨fun h => models_sentence_iff.2 (fun M => ?_),
     fun h => models_formula_iff.2 (fun M v => ?_)⟩
-  · letI := (L.lhomWithConstants α).reduct M
+  · let := (L.lhomWithConstants α).reduct M
     rw [Formula.realize_equivSentence]
     have : M ⊨ T := (LHom.onTheory_model _ _).1 M.is_model -- why isn't M.is_model inferInstance?
     let M' := Theory.ModelType.of T M
     exact h M' (fun a => (L.con a : M)) _
-  · letI : (constantsOn α).Structure M := constantsOn.structure v
+  · let : (constantsOn α).Structure M := constantsOn.structure v
     have : M ⊨ (L.lhomWithConstants α).onTheory T := (LHom.onTheory_model _ _).2 inferInstance
     exact (Formula.realize_equivSentence _ _).1 (h.realize_sentence M)
 
 theorem ModelsBoundedFormula.realize_formula {φ : L.Formula α} (h : T ⊨ᵇ φ) (M : Type*)
     [L.Structure M] [M ⊨ T] [Nonempty M] {v : α → M} : φ.Realize v := by
   rw [models_formula_iff_onTheory_models_equivSentence] at h
-  letI : (constantsOn α).Structure M := constantsOn.structure v
+  let : (constantsOn α).Structure M := constantsOn.structure v
   have : M ⊨ (L.lhomWithConstants α).onTheory T := (LHom.onTheory_model _ _).2 inferInstance
   exact (Formula.realize_equivSentence _ _).1 (h.realize_sentence M)
 
@@ -373,7 +373,7 @@ theorem models_iff_finset_models {φ : L.Sentence} :
   simp only [models_iff_not_satisfiable]
   rw [isSatisfiable_iff_isFinitelySatisfiable, IsFinitelySatisfiable]
   contrapose!
-  letI := Classical.decEq (Sentence L)
+  let := Classical.decEq (Sentence L)
   constructor
   · intro h T0 hT0
     simpa using h (T0 ∪ {Formula.not φ})
@@ -517,8 +517,8 @@ theorem Categorical.isComplete (h : κ.Categorical T) (h1 : ℵ₀ ≤ κ)
     by_contra! ⟨⟨MF, hMF⟩, MT, hMT⟩
     rw [Sentence.realize_not, Classical.not_not] at hMT
     refine hMF ?_
-    haveI := hT MT
-    haveI := hT MF
+    have := hT MT
+    have := hT MF
     obtain ⟨NT, MNT, hNT⟩ := exists_elementarilyEquivalent_card_eq L MT κ h1 h2
     obtain ⟨NF, MNF, hNF⟩ := exists_elementarilyEquivalent_card_eq L MF κ h1 h2
     obtain ⟨TF⟩ := h (MNT.toModel T) (MNF.toModel T) hNT hNF
