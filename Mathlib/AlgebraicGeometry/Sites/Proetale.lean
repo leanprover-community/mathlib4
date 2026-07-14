@@ -156,6 +156,11 @@ lemma topology_eq_inducedTopology :
   MorphismProperty.toGrothendieck_comap_forget_eq_inducedTopology
     _ proetalePrecoverage_le_precoverage_weaklyEtale
 
+lemma topology_eq_restrictedTopology :
+    topology S = (ProEt.forget S).restrictedTopology (proetaleTopology.over S) :=
+  toGrothendieck_comap_forget_eq_restrictedTopology
+    _ proetalePrecoverage_le_precoverage_weaklyEtale
+
 instance : (ProEt.forget S ⋙ Over.forget S).IsContinuous (ProEt.topology S) proetaleTopology :=
   Functor.isContinuous_comp _ _ _ (proetaleTopology.over S) _
 
@@ -179,6 +184,8 @@ lemma topology_eq_top_of_isEmpty [IsEmpty S] : topology S = ⊤ := by
   intro X
   have : IsEmpty X.left := X.hom.base.1.1.isEmpty (β := S)
   exact bot_mem_topology _
+
+end ProEt
 
 /-- The inclusion of the étale site into the pro-étale site. -/
 @[simps! obj_toComma]
@@ -210,10 +217,10 @@ instance isContinuous_toProEtale :
   refine Functor.isContinuous_of_coverPreserving
     (compatiblePreservingOfFlat _ (toProEtale S)) ?_
   refine ⟨fun {X R} hR ↦ ?_⟩
-  rw [ProEt.topology_eq_inducedTopology, Functor.mem_inducedTopology_sieves_iff,
+  rw [ProEt.topology_eq_restrictedTopology, Functor.mem_restrictedTopology_iff,
     ← Sieve.functorPushforward_comp]
-  have hR' : R.functorPushforward (Over.forget @Etale ⊤ S) ∈ etaleTopology.over S _ := hR
-  rw [GrothendieckTopology.mem_over_iff] at hR' ⊢
+  have hR' : R.functorPushforward (Over.forget @Etale ⊤ S) ∈ etaleTopology.over S _ :=
+    Functor.mem_restrictedTopology_iff.mp hR
   exact etaleTopology_le_proetaleTopology _ hR'
 
 namespace ProEt
