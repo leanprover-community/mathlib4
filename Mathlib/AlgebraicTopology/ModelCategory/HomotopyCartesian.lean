@@ -38,7 +38,7 @@ iff the other is.
 
 -/
 
-@[expose] public section
+public section
 
 namespace HomotopicalAlgebra
 
