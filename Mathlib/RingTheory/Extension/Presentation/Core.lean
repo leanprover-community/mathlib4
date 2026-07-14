@@ -178,7 +178,7 @@ lemma tensorModelOfHasCoeffsHom_comp :
       ((P.quotientEquiv.restrictScalars R).toAlgHom.comp (Ideal.Quotient.mkₐ _ _)) :=
     (P.quotientEquiv.restrictScalars R).surjective.comp Ideal.Quotient.mk_surjective
   simp only [← AlgHom.cancel_right h, tensorModelOfHasCoeffsInv, AlgHom.id_comp]
-  rw [AlgHom.comp_assoc, AlgHom.comp_assoc, ← AlgHom.comp_assoc _ _ (Ideal.Quotient.mkₐ R P.ker),
+  rw [AlgHom.comp_assoc, AlgHom.comp_assoc, ← AlgHom.comp_assoc (Ideal.Quotient.mkₐ R P.ker),
     AlgEquiv.symm_comp, AlgHom.id_comp]
   ext x
   simp

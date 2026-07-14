@@ -858,7 +858,7 @@ theorem Matrix.toLinAlgEquiv_self (M : Matrix n n R) (i : n) :
   Matrix.toLin_self _ _ _ _
 
 theorem LinearMap.toMatrixAlgEquiv_id : LinearMap.toMatrixAlgEquiv v₁ id = 1 := by
-  simp_rw [LinearMap.toMatrixAlgEquiv, AlgEquiv.ofLinearEquiv_apply, LinearMap.toMatrix_id]
+  simp [LinearMap.toMatrixAlgEquiv, AlgEquiv.ofLinearEquiv_apply, LinearMap.toMatrix_id]
 
 theorem Matrix.toLinAlgEquiv_one : Matrix.toLinAlgEquiv v₁ 1 = LinearMap.id := by
   rw [← LinearMap.toMatrixAlgEquiv_id v₁, Matrix.toLinAlgEquiv_toMatrixAlgEquiv]
@@ -956,8 +956,7 @@ noncomputable def leftMulMatrix : S →ₐ[R] Matrix m m R where
     rw [map_mul, LinearMap.toMatrix_mul]
   commutes' r := by
     ext
-    rw [lmul_algebraMap, toMatrix_lsmul, algebraMap_eq_diagonal, Pi.algebraMap_def,
-      Algebra.algebraMap_self_apply]
+    simp [algebraMap_eq_diagonal, Pi.algebraMap_def]
 
 theorem leftMulMatrix_apply (x : S) : leftMulMatrix b x = LinearMap.toMatrix b b (lmul R S x) :=
   rfl

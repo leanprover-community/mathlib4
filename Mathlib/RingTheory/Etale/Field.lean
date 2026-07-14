@@ -151,7 +151,7 @@ lemma of_isSeparable [Algebra.IsSeparable K L] : FormallyEtale K L := by
     rfl
   · intro r
     change g _ (algebraMap K _ r) = _
-    rw [AlgHom.commutes]
+    rw [AlgHom.commutesₛₐ]
   · ext x
     simpa using AlgHom.congr_fun (hg₁ x) (IntermediateField.AdjoinSimple.gen K x)
 
@@ -237,7 +237,7 @@ lemma equivPiOfIsSepClosed_self_apply [IsSepClosed K] (x : K) (p : PrimeSpectrum
     IsArtinianRing.primeSpectrumEquivMaximalSpectrum_apply_asIdeal, IsArtinianRing.equivPi_apply]
   apply (AlgEquiv.ofBijective (ofId K (K ⧸ p.asIdeal))
     (IsSepClosed.algebraMap_bijective _ _)).injective
-  simp
+  simp [AlgEquiv.ofBijective_apply]
 
 variable {K A} in
 set_option backward.defeqAttrib.useBackward true in

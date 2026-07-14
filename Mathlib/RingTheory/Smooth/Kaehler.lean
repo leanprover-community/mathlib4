@@ -222,7 +222,7 @@ and algebra homomorphism sections of `f`.
 noncomputable
 def retractionKerToTensorEquivSection :
     { l // l ∘ₗ (kerToTensor R P S) = LinearMap.id } ≃
-      { g // (IsScalarTower.toAlgHom R P S).comp g = AlgHom.id R S } where
+      { g : S →ₐ[R] P // (IsScalarTower.toAlgHom R P S).comp g = AlgHom.id R S } where
   toFun l := ⟨_, toAlgHom_comp_sectionOfRetractionKerToTensor _ l.2 hf' hf⟩
   invFun g := ⟨_, retractionOfSectionOfKerSqZero_comp_kerToTensor _ hf' g.2⟩
   left_inv l := by
@@ -321,8 +321,8 @@ and algebra homomorphism sections of `f‾ : P/I² → S`.
 -/
 noncomputable
 def retractionKerCotangentToTensorEquivSection :
-    { l // l ∘ₗ (kerCotangentToTensor R P S) = LinearMap.id } ≃
-      { g // (IsScalarTower.toAlgHom R P S).kerSquareLift.comp g = AlgHom.id R S } := by
+    { l // l ∘ₗ (kerCotangentToTensor R P S) = LinearMap.id } ≃ { g : S →ₐ[R] P ⧸ _ //
+      (IsScalarTower.toAlgHom R P S).kerSquareLift.comp g = AlgHom.id R S } := by
   let P' := P ⧸ (RingHom.ker (algebraMap P S) ^ 2)
   have h₁ : Surjective (algebraMap P' S) := Function.Surjective.of_comp (g := algebraMap P P') hf
   have h₂ : RingHom.ker (algebraMap P' S) ^ 2 = ⊥ := by

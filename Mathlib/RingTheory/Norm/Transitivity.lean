@@ -277,6 +277,6 @@ theorem norm_eq_prod_automorphisms [IsGalois K L] (x : L) :
   · rw [← norm_eq_prod_embeddings _ _ x, ← IsScalarTower.algebraMap_apply]
   · intro σ
     simp only [Normal.algHomEquivAut, AlgHom.restrictNormal', Equiv.coe_fn_mk,
-      AlgEquiv.coe_ofBijective, AlgHom.restrictNormal_commutes, algebraMap_self, RingHom.id_apply]
+      AlgEquiv.ofBijective_apply, AlgHom.restrictNormal_commutes, algebraMap_self, RingHom.id_apply]
 
 end Algebra
