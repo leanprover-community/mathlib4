@@ -17,9 +17,7 @@ This file contains a proof that Bird's division-free algorithm computes
 `Matrix.det`, in both its matrix form `BirdDet.Spec.birdDet`
 (`birdDetSpec_eq_det`) and its flat-array form `BirdDet.birdDet`
 (`det_eq_birdDet`), formalizing the combinatorial argument of
-
-  R. S. Bird, *A simple division-free algorithm for computing determinants*,
-  Information Processing Letters 111 (2011) 1072–1074.
+[Richard S. Bird, *A simple division-free algorithm for computing determinants*][bird2011].
 
 ## Correspondence with the paper
 

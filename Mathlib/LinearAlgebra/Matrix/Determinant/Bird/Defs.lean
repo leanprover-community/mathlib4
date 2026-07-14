@@ -18,11 +18,8 @@ This file defines `birdDet`and `Spec.birdDet`, implementations of an
 division-free algorithm for computing determinants. The algorithm runs in O(n^4)
 for an n-by-n matrix.
 
-This determinant algorithm comes from:
-
-Title:  A simple division-free algorithm for computing determinants.
-Author: Richard S. Bird
-URL:    https://doi.org/10.1016/j.ipl.2011.08.006
+This determinant algorithm comes from
+[Richard S. Bird, *A simple division-free algorithm for computing determinants*][bird2011].
 
 ## Main definitions
 
