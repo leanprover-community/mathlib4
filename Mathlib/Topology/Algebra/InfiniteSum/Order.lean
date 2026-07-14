@@ -310,13 +310,13 @@ assumption. -/
   multipliable.tprod_union_of_disjoint hd multipliable
 
 @[to_additive] theorem tprod_le_of_subset (h : s ⊆ t) : ∏' (x : s), f x ≤ ∏' (x : t), f x := by
-  rw [← diff_union_of_subset h, tprod_union_of_disjoint disjoint_sdiff_left]
+  rw [← sdiff_union_of_subset h, tprod_union_of_disjoint disjoint_sdiff_left]
   exact le_mul_self
 
 @[to_additive] theorem tprod_union_le (f : ι → α) (s t : Set ι) :
     ∏' (x : ↑(s ∪ t)), f x ≤ (∏' (x : s), f x) * ∏' (x : t), f x := by
-  rw [← diff_union_self, tprod_union_of_disjoint disjoint_sdiff_left]
-  exact mul_le_mul_left (tprod_le_of_subset diff_subset) _
+  rw [← sdiff_union_self, tprod_union_of_disjoint disjoint_sdiff_left]
+  exact mul_le_mul_left (tprod_le_of_subset sdiff_subset) _
 
 @[to_additive]
 theorem tprod_insert (h : i ∉ s) : ∏' (x : ↑(insert i s)), f x = f i * ∏' (x : s), f x := by
@@ -392,7 +392,7 @@ assumption. -/
 /-- See also `Multipliable.prod_le_tprod` for more general result without `CompleteLattice`
 assumption. -/
 @[to_additive] theorem prod_le_tprod (s : Finset ι) : ∏ x ∈ s, f x ≤ ∏' x, f x :=
-  multipliable.prod_le_tprod s (fun _ _ ↦ one_le _)
+  multipliable.prod_le_tprod s (fun _ _ ↦ one_le)
 
 /-- See also `Multipliable.le_tprod'` for more general result without `CompleteLattice`
 assumption. -/
@@ -418,7 +418,7 @@ assumption. -/
 @[to_additive]
 theorem tprod_comp_le_tprod_of_injective {f : ι → ι'} (hf : Injective f) (g : ι' → α) :
     ∏' x, g (f x) ≤ ∏' y, g y :=
-  multipliable.tprod_le_tprod_of_inj f hf (fun _ _ ↦ one_le _) (fun _ ↦ le_rfl) multipliable
+  multipliable.tprod_le_tprod_of_inj f hf (fun _ _ ↦ one_le) (fun _ ↦ le_rfl) multipliable
 
 @[to_additive]
 theorem tprod_le_tprod_comp_of_surjective {f : ι → ι'} (hf : Surjective f) (g : ι' → α) :
