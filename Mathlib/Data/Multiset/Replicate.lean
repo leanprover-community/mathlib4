@@ -171,20 +171,16 @@ theorem nodup_iff_pairwise {α} {s : Multiset α} : Nodup s ↔ Pairwise (· ≠
 
 protected theorem Nodup.pairwise (h : ∀ a ∈ s, ∀ b ∈ s, a ≠ b → r a b) (hn : Nodup s)
     [inst : Std.Symm r] : Pairwise r s := by
-  revert h hn
-  rw [← and_imp]
-  refine Quotient.inductionOn s ?_
-  intro l h
-  simp only [quot_mk_to_coe, mem_coe, ne_eq, coe_nodup] at h
+  induction s using Quotient.inductionOn with | _ l
+  simp only [quot_mk_to_coe, coe_nodup] at hn
+  simp only [quot_mk_to_coe, mem_coe, ne_eq] at h
   simp only [quot_mk_to_coe, pairwise_coe_iff_pairwise]
   induction l with
   | nil => grind
   | cons a l hl =>
     refine List.Pairwise.cons ?_ ?_
-    · intro z _
-      grind [h.left z (by grind) a (by grind) (by grind)]
-    · apply hl
-      exact ⟨(fun x hx y hy hne => h.left x (by simp [hx]) y (by simp [hy]) hne) , by grind⟩
+    · exact fun z hz ↦ by grind [h z (by grind) a (by grind) (by grind)]
+    · exact (hl (by grind) (fun x hx y hy hne => h x (by simp [hx]) y (by simp [hy]) hne))
 
 end Replicate
 
