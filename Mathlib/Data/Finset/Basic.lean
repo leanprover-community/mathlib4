@@ -511,12 +511,9 @@ theorem toFinset_inter (l l' : List α) : (l ∩ l').toFinset = l.toFinset ∩ l
 alias ⟨_, Aesop.toFinset_nonempty_of_ne⟩ := toFinset_nonempty_iff
 
 @[simp]
-theorem toFinset_filter (s : List α) (p : α → Bool) :
-    (s.filter p).toFinset = s.toFinset.filter (p ·) := by
+theorem toFinset_filter (s : List α) (p : α → Prop) [DecidablePred p] :
+    (s.filter p).toFinset = s.toFinset.filter p := by
   ext; simp [List.mem_filter]
-
-theorem filter_toFinset (s : List α) (p : α → Prop) [DecidablePred p] :
-    s.toFinset.filter p = (s.filter p).toFinset := by simp
 
 end List
 
