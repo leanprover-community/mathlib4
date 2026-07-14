@@ -328,21 +328,9 @@ abbrev aB : B := algebraMap R B a
 /-- The image of `b` in `B`. -/
 abbrev bB : B := algebraMap R B b
 
-noncomputable instance : IsScalarTower R B B where
-  smul_assoc r x y := by
-    change (r • x) * y = r • (x * y)
-    rw [Algebra.smul_def r x, Algebra.smul_def r (x * y)]
-    exact mul_assoc _ _ _
-
 /-- The coordinate algebra `A = B[U] / (U² - abU + b²V)`, finite free of rank four over the
 base ring `R`. -/
 abbrev A := QuadraticAlgebra B (-(bB ^ 2) * V) (aB * bB)
-
-noncomputable instance : IsScalarTower R B A :=
-  { smul_assoc := fun r s x ↦ by
-      apply QuadraticAlgebra.ext
-      · exact smul_assoc r s x.re
-      · exact smul_assoc r s x.im }
 
 private theorem r_smul_mul (r : R) (x y : A) : r • x * y = r • (x * y) := by
   ext <;> simp [V, aB, bB, pow_two]
@@ -351,15 +339,6 @@ noncomputable instance : Algebra R A :=
   Algebra.ofModule r_smul_mul fun r x y ↦ by
     rw [mul_comm x (r • y), mul_comm x y]
     exact r_smul_mul r y x
-
-noncomputable instance : IsScalarTower R A A where
-  smul_assoc r x y := by
-    change (r • x) * y = r • (x * y)
-    exact r_smul_mul r x y
-
-noncomputable instance : SMulCommClass R A A where
-  smul_comm r x y := by
-    ext <;> simp [V, aB, bB, pow_two]
 
 /-- The generator `U` of `A`, satisfying `U² = abU - b²V`. -/
 def U : A := QuadraticAlgebra.omega
