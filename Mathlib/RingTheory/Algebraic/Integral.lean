@@ -45,19 +45,29 @@ theorem LinearIndepOn.iff_fractionRing (R K : Type*) [CommRing R] [CommRing K]
     LinearIndepOn R f s ↔ LinearIndepOn K f s :=
   LinearIndependent.iff_fractionRing R K
 
-theorem IsFractionRing.rank_eq (R R' S : Type*)
+/-- Given `IsScalarTower R S N`, if `S` is the fraction ring of `R`, then the rank `rank R N`
+of the whole tower equals the rank `rank S N` of the right part of the tower.
+
+See `IsFractionRing.finrank_eq_right` for the finrank version. -/
+theorem IsFractionRing.rank_eq_right (R R' S : Type*)
     [CommRing R] [CommRing R'] [CommRing S]
     [Algebra R R'] [Module R' S] [Module R S]
     [IsScalarTower R R' S] [IsFractionRing R R'] :
     Module.rank R S = Module.rank R' S := by
   exact (IsLocalization.rank_eq R' (nonZeroDivisors R) le_rfl (N := S)).symm
 
-theorem IsFractionRing.finrank_eq' (R R' S : Type*)
+/-- Given `IsScalarTower R S N`, if `S` is the fraction ring of `R`, then the finrank `finrank R N`
+of the whole tower equals the finrank `finrank S N` of the right part of the tower.
+
+See `IsFractionRing.rank_eq_right` for the rank version.
+See `IsFractionRing.finrank_eq_left` for a left version.
+See `IsFractionRing.finrank_eq` for a simultaneous version. -/
+theorem IsFractionRing.finrank_eq_right (R R' S : Type*)
     [CommRing R] [CommRing R'] [CommRing S]
     [Algebra R R'] [Module R' S] [Module R S]
     [IsScalarTower R R' S] [IsFractionRing R R'] :
     Module.finrank R S = Module.finrank R' S := by
-  simp_rw [Module.finrank, IsFractionRing.rank_eq R R']
+  simp_rw [Module.finrank, IsFractionRing.rank_eq_right R R']
 
 theorem LinearIndependent.comp_algebraMap_iff
     {R S A : Type*} [CommRing R] [CommRing S] [CommRing A]
@@ -115,11 +125,16 @@ theorem IsLocalization.linearIndepOn_finsetIntegerMultiple
   exact s.sum_congr rfl fun x hx ↦ smul_comm ..
 
 open IsLocalization nonZeroDivisors in
-theorem IsFractionRing.finrank_eq'' (R S S' : Type*)
-    [CommRing R] [CommRing S] [CommRing S']
-    [Algebra R S] [Algebra S S'] [Algebra R S']
-    [IsScalarTower R S S'] [IsFractionRing S S'] :
-    Module.finrank R S' = Module.finrank R S := by
+/-- Given `IsScalarTower R S A`, if `A` is the fraction ring of `S`, then the finrank `finrank R A`
+of the whole tower equals the finrank `finrank R S` of the right part of the tower.
+
+See `IsFractionRing.finrank_eq_right` for a right version.
+See `IsFractionRing.finrank_eq` for a simultaneous version. -/
+theorem IsFractionRing.finrank_eq_left (R S A : Type*)
+    [CommRing R] [CommRing S] [CommRing A]
+    [Algebra R S] [Algebra S A] [Algebra R A]
+    [IsScalarTower R S A] [IsFractionRing S A] :
+    Module.finrank R A = Module.finrank R S := by
   nontriviality R
   classical
   apply Cardinal.toNat_eq_of_forall_le_iff
@@ -130,19 +145,17 @@ theorem IsFractionRing.finrank_eq'' (R S S' : Type*)
     exact ⟨finsetIntegerMultiple S⁰ s, card_finsetIntegerMultiple S⁰ s,
       linearIndepOn_finsetIntegerMultiple R S⁰ hs⟩
   · rintro ⟨s, rfl, hs⟩
-    let f : S ↪ S' := ⟨algebraMap S S', FaithfulSMul.algebraMap_injective S S'⟩
+    let f : S ↪ A := ⟨algebraMap S A, FaithfulSMul.algebraMap_injective S A⟩
     exact ⟨s.map f, s.card_map f,
       (linearIndependent_equiv (s.equivMap f)).mp (LinearIndependent.comp_algebraMap_iff.mpr hs)⟩
 
-open IsLocalization nonZeroDivisors in
 theorem IsFractionRing.finrank_eq (R R' S S' : Type*)
     [CommRing R] [CommRing R'] [CommRing S] [CommRing S']
     [Algebra R S] [Algebra R R'] [Algebra S S'] [Module R' S'] [Algebra R S']
     [IsScalarTower R R' S'] [IsScalarTower R S S']
     [IsFractionRing R R'] [IsFractionRing S S'] :
     Module.finrank R' S' = Module.finrank R S := by
-  rw [← IsFractionRing.finrank_eq' R R' S']
-  rw [IsFractionRing.finrank_eq'' R S S']
+  rw [← finrank_eq_right R R' S', finrank_eq_left R S S']
 
 assert_not_exists IsLocalRing
 
