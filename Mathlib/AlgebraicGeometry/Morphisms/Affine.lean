@@ -171,7 +171,7 @@ instance : HasAffineProperty @IsAffineHom fun X _ _ _ ↦ IsAffine X where
 instance isAffineHom_isStableUnderBaseChange :
     MorphismProperty.IsStableUnderBaseChange @IsAffineHom := by
   apply HasAffineProperty.isStableUnderBaseChange
-  letI := HasAffineProperty.isLocal_affineProperty
+  let := HasAffineProperty.isLocal_affineProperty
   apply AffineTargetMorphismProperty.IsStableUnderBaseChange.mk
   introv X hX H
   infer_instance
@@ -295,8 +295,8 @@ theorem diagonal_isAffine_iff_forall_isAffineOpen_inf [IsAffine Y] (f : X ⟶ Y)
   constructor
   · intro H U V hU hV
     dsimp at H
-    haveI : IsAffine _ := hU
-    haveI : IsAffine _ := hV
+    have : IsAffine _ := hU
+    have : IsAffine _ := hV
     let g : pullback U.ι V.ι ⟶ X := pullback.fst _ _ ≫ U.ι
     have := IsOpenImmersion.isPullback (X.homOfLE inf_le_left) (X.homOfLE inf_le_right)
       U.ι V.ι (by simp) (by ext; simp)
