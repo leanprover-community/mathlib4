@@ -62,8 +62,8 @@ algebra, and the associated group scheme has order four but is not killed by fou
   scheme is noncommutative, as forced by Deligne's theorem for commutative group schemes.
 * `Counterexample.GrothendieckPower.monPowMap_affineGroupScheme_four_ne`: the group-scheme
   formulation, through Mathlib's antiequivalence between commutative Hopf algebras and
-  affine group schemes: the pointwise fourth power map of the group object `Spec A` is not
-  the constant-unit endomorphism.
+  affine group schemes: the pointwise fourth power map of the corresponding group object in
+  `(CommAlgCat R)ᵒᵖ` is not the constant-unit endomorphism.
 
 ## Implementation notes
 
@@ -1282,10 +1282,14 @@ theorem not_isCocomm : ¬Coalgebra.IsCocomm R A := by
 ### The group-scheme formulation
 
 Mathlib's antiequivalence `commHopfAlgCatEquivCogrpCommAlgCat` identifies commutative Hopf
-algebras over `R` with group objects in the opposite of the category of commutative
-`R`-algebras, that is, with affine group schemes over `R`.  This section transports the
-counterexample across that equivalence: the pointwise fourth power map of the resulting group
-object is not the constant-unit endomorphism.
+algebras over `R` with group objects in `(CommAlgCat R)ᵒᵖ`, the opposite of the category of
+commutative `R`-algebras.  This opposite category is the category of affine schemes over `R`
+(via the `Spec` antiequivalence), so these group objects are exactly the affine group schemes
+over `R`; here the group object is `op A`, the algebraic incarnation of `Spec A`.  We work
+entirely on the algebra side and do not use `AlgebraicGeometry.Spec`, as Mathlib does not yet
+connect commutative Hopf algebras to group objects in `AlgebraicGeometry.Scheme`.  This
+section transports the counterexample across that equivalence: the pointwise fourth power map
+of the resulting group object is not the constant-unit endomorphism.
 -/
 
 open CategoryTheory CartesianMonoidalCategory MonObj Opposite
@@ -1297,8 +1301,9 @@ def monPowMap {C : Type*} [Category C] [CartesianMonoidalCategory C] (M : C) [Mo
   | 0 => toUnit M ≫ η[M]
   | n + 1 => lift (monPowMap M n) (𝟙 M) ≫ μ[M]
 
-/-- On the group object `Spec A`, the pointwise `n`-th power map corresponds to the `n`-th
-convolution power of the identity of `A`. -/
+/-- On the group object `op A` in `(CommAlgCat R)ᵒᵖ` — the affine group scheme corresponding
+to `A` — the pointwise `n`-th power map corresponds to the `n`-th convolution power of the
+identity of `A`. -/
 theorem monPowMap_op_unop_hom (n : ℕ) :
     (monPowMap (op (CommAlgCat.of R A)) n).unop.hom = powerMap n := by
   induction n with
@@ -1313,8 +1318,8 @@ theorem monPowMap_op_unop_hom (n : ℕ) :
       rw [h, ← Algebra.TensorProduct.lmul'_comp_map, AlgHom.comp_assoc]
       rfl
 
-/-- The pointwise fourth power map of the group object `Spec A` is not the constant-unit
-endomorphism. -/
+/-- The pointwise fourth power map of the group object `op A` in `(CommAlgCat R)ᵒᵖ` — the
+affine group scheme corresponding to `A` — is not the constant-unit endomorphism. -/
 theorem monPowMap_op_four_ne :
     monPowMap (op (CommAlgCat.of R A)) 4 ≠
       toUnit (op (CommAlgCat.of R A)) ≫ η[op (CommAlgCat.of R A)] := by
@@ -1332,8 +1337,9 @@ noncomputable def affineGroupScheme : Grp (CommAlgCat R)ᵒᵖ :=
 
 theorem affineGroupScheme_X : affineGroupScheme.X = op (CommAlgCat.of R A) := rfl
 
-/-- The order-four affine group scheme `Spec A` is not killed by four: its pointwise fourth
-power map is not the constant-unit endomorphism. -/
+/-- The order-four affine group scheme corresponding to `A` (the group object in
+`(CommAlgCat R)ᵒᵖ`) is not killed by four: its pointwise fourth power map is not the
+constant-unit endomorphism. -/
 theorem monPowMap_affineGroupScheme_four_ne :
     monPowMap affineGroupScheme.X 4 ≠
       toUnit affineGroupScheme.X ≫ η[affineGroupScheme.X] :=
