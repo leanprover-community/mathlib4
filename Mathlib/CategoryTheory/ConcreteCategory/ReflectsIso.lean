@@ -34,8 +34,8 @@ where `forget C` reflects isomorphisms, itself reflects isomorphisms. -/
 instance reflectsIsomorphisms_forget₂ [HasForget₂ C D] [(forget C).ReflectsIsomorphisms] :
     (forget₂ C D).ReflectsIsomorphisms :=
   { reflects := fun X Y f {i} => by
-      haveI i' : IsIso ((forget D).map ((forget₂ C D).map f)) := Functor.map_isIso (forget D) _
-      haveI : IsIso ((forget C).map f) := by
+      have i' : IsIso ((forget D).map ((forget₂ C D).map f)) := Functor.map_isIso (forget D) _
+      have : IsIso ((forget C).map f) := by
         rwa [← @HasForget₂.forget_comp C _ _ _ _ _ D _ _ _ _ _]
       apply isIso_of_reflects_iso f (forget C) }
 

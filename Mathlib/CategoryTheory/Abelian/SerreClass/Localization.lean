@@ -431,20 +431,20 @@ lemma hasZeroObject : HasZeroObject D :=
   Abelian.hasZeroObject
 
 lemma preservesFiniteLimits : PreservesFiniteLimits L := by
-  letI := abelian L P
+  let := abelian L P
   rw [((Functor.preservesFiniteLimits_tfae L).out 3 2 :)]
   intro _ _ f
   exact preservesKernel L P f
 
 lemma preservesFiniteColimits : PreservesFiniteColimits L := by
-  letI := abelian L P
+  let := abelian L P
   rw [((Functor.preservesFiniteColimits_tfae L).out 3 2 :)]
   intro _ _ f
   exact preservesCokernel L P f
 
 lemma isIso_map_iff {X Y : C} (f : X ⟶ Y) :
     IsIso (L.map f) ↔ P.isoModSerre f := by
-  letI := abelian L P
+  let := abelian L P
   rw [isIso_iff_mono_and_epi, mono_map_iff L P, epi_map_iff L P, isoModSerre_iff]
 
 lemma inverseImage_isomorphisms :
@@ -457,7 +457,7 @@ variable (G : D ⥤ E)
 set_option backward.isDefEq.respectTransparency false in
 lemma preservesFiniteLimits_comp_iff :
     PreservesFiniteLimits (L ⋙ G) ↔ PreservesFiniteLimits G := by
-  letI := abelian L P
+  let := abelian L P
   have := preservesFiniteLimits L P
   refine ⟨fun _ ↦ ?_, fun _ ↦ comp_preservesFiniteLimits _ _⟩
   have := (Localization.functor_additive_iff L P.isoModSerre G).mpr
@@ -479,7 +479,7 @@ lemma preservesFiniteLimits_comp_iff :
 set_option backward.isDefEq.respectTransparency false in
 lemma preservesFiniteColimits_comp_iff :
     PreservesFiniteColimits (L ⋙ G) ↔ PreservesFiniteColimits G := by
-  letI := abelian L P
+  let := abelian L P
   have := preservesFiniteColimits L P
   refine ⟨fun _ ↦ ?_, fun _ ↦ comp_preservesFiniteColimits _ _⟩
   have := (Localization.functor_additive_iff L P.isoModSerre G).mpr (by

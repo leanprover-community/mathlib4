@@ -57,7 +57,7 @@ section Ring
 variable {R : Type*} {κ : ι → Type*} {M : ι → Type*} [CommRing R] [Π i, AddCommGroup (M i)]
   [Π i, Module R (M i)]
 
-open Classical in
+open scoped Classical in
 /-- An inverse to `PiTensorProduct.dualDistrib` given bases. -/
 noncomputable def dualDistribInvOfBasis [Finite ι] [∀ i, Finite (κ i)]
     (b : Π i, Basis (κ i) R (M i)) :
@@ -67,7 +67,7 @@ noncomputable def dualDistribInvOfBasis [Finite ι] [∀ i, Finite (κ i)]
   ∑ p : (Π i, κ i), (ringLmapEquivSelf R ℕ _).symm (⨂ₜ[R] i, (b i).dualBasis (p i)) ∘ₗ
     (applyₗ (⨂ₜ[R] i, b i (p i)))
 
-open Classical in
+open scoped Classical in
 @[simp]
 theorem dualDistribInvOfBasis_apply [Fintype ι] [∀ i, Fintype (κ i)] (b : Π i, Basis (κ i) R (M i))
     (f : Dual R (⨂[R] i, M i)) : dualDistribInvOfBasis b f =
@@ -80,8 +80,8 @@ theorem dualDistribInvOfBasis_apply [Fintype ι] [∀ i, Fintype (κ i)] (b : Π
 theorem dualDistrib_dualDistribInvOfBasis_left_inverse [Finite ι] [∀ i, Finite (κ i)]
     (b : Π i, Basis (κ i) R (M i)) :
     (dualDistrib) ∘ₗ (dualDistribInvOfBasis b) = LinearMap.id := by
-  haveI := Fintype.ofFinite ι
-  haveI := fun i => Fintype.ofFinite (κ i)
+  have := Fintype.ofFinite ι
+  have := fun i => Fintype.ofFinite (κ i)
   classical
   refine (Basis.piTensorProduct b).dualBasis.ext (fun p ↦ ?_)
   refine (Basis.piTensorProduct b).ext (fun q ↦ ?_)
@@ -90,8 +90,8 @@ theorem dualDistrib_dualDistribInvOfBasis_left_inverse [Finite ι] [∀ i, Finit
 theorem dualDistrib_dualDistribInvOfBasis_right_inverse [Finite ι] [∀ i, Finite (κ i)]
     (b : Π i, Basis (κ i) R (M i)) :
     (dualDistribInvOfBasis b) ∘ₗ dualDistrib = LinearMap.id := by
-  haveI := Fintype.ofFinite ι
-  haveI := fun i => Fintype.ofFinite (κ i)
+  have := Fintype.ofFinite ι
+  have := fun i => Fintype.ofFinite (κ i)
   classical
   refine (Basis.piTensorProduct (fun i => (b i).dualBasis)).ext (fun p ↦ ?_)
   refine (Basis.piTensorProduct (fun i => (b i).dualBasis)).ext_elem (fun q ↦ ?_)

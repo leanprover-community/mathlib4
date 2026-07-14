@@ -289,7 +289,7 @@ lemma PreservesSheafification.transport
     rw [← J.W_whiskerLeft_iff (G := G) (K := K)] at hf
     have := K.W_of_preservesSheafification F (whiskerLeft G.op f) hf
     rw [whiskerRight_left] at this
-    haveI := K.W.of_postcomp (W' := MorphismProperty.isomorphisms _) _ _ (Iso.isIso_inv _) <|
+    have := K.W.of_postcomp (W' := MorphismProperty.isomorphisms _) _ _ (Iso.isIso_inv _) <|
       K.W.of_precomp (W' := MorphismProperty.isomorphisms _) _ _ (Iso.isIso_hom _) this
     rwa [K.W_whiskerLeft_iff (G := G) (J := J) (f := whiskerRight f F)] at this
 

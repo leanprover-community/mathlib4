@@ -507,7 +507,7 @@ def openCoverOfLeft (𝒰 : OpenCover.{v} X) (f : X ⟶ Z) (g : Y ⟶ Z) :
   mem₀ := by
     rw [ofArrows_mem_precoverage_iff]
     refine ⟨fun x ↦ ?_, fun i ↦ ?_⟩
-    · letI 𝒱 := ((gluing 𝒰.ulift f g).openCover.pushforwardIso
+    · let 𝒱 := ((gluing 𝒰.ulift f g).openCover.pushforwardIso
               (limit.isoLimitCone ⟨_, gluedIsLimit 𝒰.ulift f g⟩).inv).copy
           𝒰.ulift.I₀ (fun i => pullback (𝒰.ulift.f i ≫ f) g)
           (fun i => pullback.map _ _ _ _ (𝒰.ulift.f i) (𝟙 _) (𝟙 _) (Category.comp_id _) (by simp))
