@@ -454,8 +454,6 @@ theorem algebraMap_restrictHom_smul [Finite G] [Finite G'] [MulSemiringAction G 
     [IsGaloisGroup G A C] [MulSemiringAction G' B] [IsGaloisGroup G' A B] (g : G) (x : B) :
     algebraMap B C (restrictHom G G' A B C g • x) = g • algebraMap B C x := by
   have : IsDomain B := IsDomain.of_faithfulSMul B C
-  have : IsDomain A := IsDomain.of_faithfulSMul A B
-  have : FaithfulSMul A C := FaithfulSMul.trans A B C
   let : MulSemiringAction G (FractionRing C) :=
     IsFractionRing.mulSemiringAction G C (FractionRing C)
   let : MulSemiringAction G' (FractionRing B) :=
@@ -504,7 +502,6 @@ theorem map_quotientMk' [Finite G] [IsGaloisGroup G K L] (h : E ≤ F) :
     IsGaloisGroup (H.map (QuotientGroup.mk' N)) E F :=
   let : Algebra E F := (IntermediateField.inclusion h).toAlgebra
   let : SMul G F := smulOfNormal G F L N
-  have : SMulDistribClass G F L := smulDistribClass_smulOfNormal G F L N
   let := mulSemiringActionOfSmulDistribClass F L G
   have : IsScalarTower E F L := IsScalarTower.of_algebraMap_eq' rfl
   { faithful := have := (inferInstance : IsGaloisGroup (G ⧸ N) K F).faithful; inferInstance

@@ -631,7 +631,6 @@ theorem fundamentalGroupToMulOpposite_apply_eq_Iff {g : Gᵐᵒᵖ} :
     hp.fundamentalGroupToMulOpposite e γ = g ↔ g.unop • e.1 = hp.isCoveringMap.monodromy γ e := by
   rw [fundamentalGroupToMulOpposite, ← MulOpposite.unop_injective.eq_iff, iff_comm, eq_comm,
     ← hp.fiberEquivGroup_smul_self e]
-  have := hp.isCancelSMul.right_cancel'
   aesop
 
 variable {e} in

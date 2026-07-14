@@ -280,7 +280,6 @@ coefficients at `x ∈ u` w.r.t. `s i`, then `t` is `C^n` at `x`. -/
 lemma contMDiffAt_of_coeff_aux [FiniteDimensional 𝕜 F]
     (h : ∀ i, CMDiffAt n ((LinearMap.piApply (hs.coeff i)) t) x)
     (hu : IsOpen u) (hx : x ∈ u) : CMDiffAt n (T% t) x := by
-  have := fintypeOfFiniteDimensional hs hx
   exact hs.contMDiffAt_of_coeff h (hu.mem_nhds hx)
 
 section

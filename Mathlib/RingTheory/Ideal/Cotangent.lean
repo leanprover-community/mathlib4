@@ -376,7 +376,6 @@ lemma Ideal.mapCotangent_ker_of_surjective (surj : Function.Surjective (algebraM
   have eqmap := Ideal.eq_map_of_comap_eq_ker_sup _ surj eq
   refine le_antisymm (fun x hx ↦ ?_) ?_
   · rcases J.toCotangent_surjective x with ⟨x', hx'⟩
-    have : Function.Surjective (Algebra.ofId A B) := surj
     simp only [← hx', LinearMap.mem_ker, Ideal.mapCotangent_toCotangent,
       Ideal.toCotangent_eq_zero, eqmap, Algebra.ofId_apply] at hx
     rw [← Ideal.map_pow, ← Ideal.mem_comap, Ideal.comap_map_of_surjective' _ surj] at hx

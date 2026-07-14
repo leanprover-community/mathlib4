@@ -88,7 +88,6 @@ have the same rank. -/
 lemma finrank_eq_of_isFiniteRelIndex {A B : AddSubgroup M} [Module.Finite ℤ B] [IsTorsionFree ℤ B]
     (h : A ≤ B) [A.IsFiniteRelIndex B] :
     finrank ℤ A = finrank ℤ B := by
-  have : (A.addSubgroupOf B).FiniteIndex := IsFiniteRelIndex.to_finiteIndex_addSubgroupOf
   rw [← finrank_eq_of_finiteIndex (A.addSubgroupOf B)]
   exact (addSubgroupOfEquivOfLe h).symm.toIntLinearEquiv.finrank_eq
 

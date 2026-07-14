@@ -795,8 +795,6 @@ theorem _root_.LinearMap.det_dualMap
     [Module.Free R M] [Module.Finite R M] (f : M →ₗ[R] M) :
     f.dualMap.det = f.det := by
   set b := Module.Free.chooseBasis R M
-  have : Fintype (Module.Free.ChooseBasisIndex R M) :=
-    Module.Free.ChooseBasisIndex.fintype R M
   rw [← LinearMap.det_toMatrix b, ← LinearMap.det_toMatrix b.dualBasis]
   simp [LinearMap.dualMap_def, LinearMap.toMatrix_transpose]
 

@@ -476,7 +476,6 @@ theorem taylor_integral_remainder_aux [NormedAddCommGroup F] [NormedSpace ℝ F]
     rw [← derivWithin_of_mem_nhds <| Icc_mem_nhds h1 h2]
     rfl
   | succ n ih =>
-    have : UniqueDiffOn ℝ [[x₀, x]] := uniqueDiffOn_Icc (by grind)
     specialize ih (by grind)
     simp only [taylorWithinEval_succ, mul_inv_rev]
     rw [sub_add_eq_sub_sub, ih]

@@ -398,7 +398,6 @@ protected theorem finite [IsDomain B] [h₁ : Finite S] [h₂ : IsCyclotomicExte
       exact H A B
     have : IsCyclotomicExtension S A (adjoin A {b : B | ∃ n : ℕ, n ∈ S ∧ n ≠ 0 ∧ b ^ n = 1}) :=
         union_left _ (insert n S) _ _ (subset_insert n S)
-    have := H A (adjoin A {b : B | ∃ n : ℕ, n ∈ S ∧ n ≠ 0 ∧ b ^ n = 1})
     have : Module.Finite (adjoin A {b : B | ∃ n : ℕ, n ∈ S ∧ n ≠ 0 ∧ b ^ n = 1}) B := by
       rw [← union_singleton] at h₂
       let _ := union_right S {n} A B

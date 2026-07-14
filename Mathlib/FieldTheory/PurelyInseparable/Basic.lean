@@ -566,7 +566,6 @@ variable {F E} in
 then `E` is also separably closed. -/
 theorem Algebra.IsAlgebraic.isSepClosed [Algebra.IsAlgebraic F E]
     [IsSepClosed F] : IsSepClosed E :=
-  have : Algebra.IsAlgebraic F (AlgebraicClosure E) := .trans F E _
   (isSepClosed_iff_isPurelyInseparable_algebraicClosure E _).mpr
     (IsPurelyInseparable.tower_top F E <| AlgebraicClosure E)
 
@@ -609,12 +608,10 @@ lemma adjoin_eq_of_isAlgebraic_of_isSeparable [Algebra.IsAlgebraic F E]
   top_unique fun x _ ↦ by
     set S := separableClosure F K
     set L := adjoin E (S : Set K)
-    have := Algebra.isSeparable_tower_top_of_isSeparable E L K
     let i : S →+* L := Subsemiring.inclusion fun x hx ↦ subset_adjoin E (S : Set K) hx
     let _ : Algebra S L := i.toAlgebra
     have : IsScalarTower S L K := IsScalarTower.of_algebraMap_eq (congrFun rfl)
     have := Algebra.IsAlgebraic.trans F E K
-    have : IsPurelyInseparable S K := separableClosure.isPurelyInseparable F K
     have := IsPurelyInseparable.tower_top S L K
     obtain ⟨y, rfl⟩ := IsPurelyInseparable.surjective_algebraMap_of_isSeparable L K x
     exact y.2

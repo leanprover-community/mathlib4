@@ -174,7 +174,6 @@ lemma sortedGT_map_snd_divisorsAntidiagonalList {n : ℕ} :
   (List.pairwise_map.mpr <| pairwise_divisorsAntidiagonalList_snd).sortedGT
 
 lemma nodup_divisorsAntidiagonalList {n : ℕ} : n.divisorsAntidiagonalList.Nodup :=
-  have : @Std.Irrefl (ℕ × ℕ) (·.fst < ·.fst) := ⟨by simp⟩
   pairwise_divisorsAntidiagonalList_fst.nodup
 
 /-- The `Finset` and `List` versions agree by definition. -/
@@ -194,7 +193,6 @@ lemma swap_mem_divisorsAntidiagonalList {a : ℕ × ℕ} :
 
 lemma reverse_divisorsAntidiagonalList (n : ℕ) :
     n.divisorsAntidiagonalList.reverse = n.divisorsAntidiagonalList.map .swap := by
-  have : Std.Asymm (α := ℕ × ℕ) (·.snd < ·.snd) := ⟨fun _ _ ↦ lt_asymm⟩
   refine List.Perm.eq_of_pairwise' pairwise_divisorsAntidiagonalList_snd.reverse
     (pairwise_divisorsAntidiagonalList_fst.map _ fun _ _ ↦ id) ?_
   simp [List.reverse_perm', List.perm_ext_iff_of_nodup nodup_divisorsAntidiagonalList

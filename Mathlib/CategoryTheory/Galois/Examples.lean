@@ -112,7 +112,6 @@ theorem Action.pretransitive_of_isConnected (X : Action FintypeCat G)
     /- We show that the `G`-orbit of `x` is a non-initial subobject of `X` and hence by
     connectedness, the orbit equals `X.V`. -/
     let T : Set X.V := MulAction.orbit G x
-    have : Fintype T := Fintype.ofFinite T
     letI : MulAction G (FintypeCat.of T) := inferInstanceAs <| MulAction G
       ↑(MulAction.orbit G x)
     let T' : Action FintypeCat G := Action.FintypeCat.ofMulAction G (FintypeCat.of T)

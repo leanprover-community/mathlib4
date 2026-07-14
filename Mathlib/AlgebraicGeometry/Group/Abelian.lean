@@ -46,7 +46,6 @@ theorem isCommMonObj_of_isProper_of_isIntegral_tensorObj_of_isAlgClosed [IsAlgCl
   have : Nonempty G.left := ⟨η[G].left point⟩
   have : IsProper (G ⊗ G).hom := by dsimp; infer_instance
   have : JacobsonSpace (G ⊗ G).left := LocallyOfFiniteType.jacobsonSpace (Y := Spec _) (G ⊗ G).hom
-  have : Surjective G.hom := ⟨Function.surjective_to_subsingleton (α := G.left) (β := Spec _) _⟩
   have : IsProper (fst G G).left := by dsimp; infer_instance
   have : Surjective (fst G G).left := by dsimp; infer_instance
   have : IsProper ((GrpObj.commutator G).left ≫ G.hom) := by rw [Over.w]; infer_instance

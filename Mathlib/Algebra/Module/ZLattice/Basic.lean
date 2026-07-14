@@ -468,7 +468,6 @@ theorem ZLattice.FG [hs : IsZLattice K L] : L.FG := by
       (Function.Injective.injOn (Subtype.coe_injective.comp (quotientEquiv b).injective))
     have : ((fundamentalDomain b) ∩ L).Finite := by
       change ((fundamentalDomain b) ∩ L.toAddSubgroup).Finite
-      have : DiscreteTopology L.toAddSubgroup := (inferInstance : DiscreteTopology L)
       exact Metric.finite_isBounded_inter_isClosed
         DiscreteTopology.isDiscrete (fundamentalDomain_isBounded b) inferInstance
     refine Set.Finite.subset this ?_
@@ -588,7 +587,6 @@ theorem ZLattice.rank [hs : IsZLattice K L] : finrank ℤ L = finrank K E := by
         · exact span_mono (by simp [e, ht_inc]) (coe_mem _)
     have h_finite : Set.Finite (Metric.closedBall 0 (∑ i, ‖e i‖) ∩ (L : Set E)) := by
       change ((_ : Set E) ∩ L.toAddSubgroup).Finite
-      have : DiscreteTopology L.toAddSubgroup := (inferInstance : DiscreteTopology L)
       exact Metric.finite_isBounded_inter_isClosed DiscreteTopology.isDiscrete
         Metric.isBounded_closedBall inferInstance
     obtain ⟨n, -, m, -, h_ne, h_eq⟩ := Set.Infinite.exists_ne_map_eq_of_mapsTo
@@ -793,7 +791,6 @@ lemma IsZLattice.isCompact_range_of_periodic
     [TopologicalSpace F]
     (L : Submodule ℤ E) [DiscreteTopology L] [IsZLattice ℝ L] (f : E → F) (hf : Continuous f)
     (hf' : ∀ z w, w ∈ L → f (z + w) = f z) : IsCompact (Set.range f) := by
-  have := ZLattice.module_free ℝ L
   let b := Module.Free.chooseBasis ℤ L
   convert! (b.ofZLatticeBasis ℝ).parallelepiped.isCompact.image hf
   refine le_antisymm ?_ (Set.image_subset_range _ _)

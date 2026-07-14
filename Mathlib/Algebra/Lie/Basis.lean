@@ -79,7 +79,6 @@ section CommRing
 variable {ι R L : Type*} [Finite ι] [CommRing R] [LieRing L] [LieAlgebra R L] (b : Basis ι R L)
 
 @[simp] lemma A_diag_eq_two [IsAddTorsionFree L] (i : ι) : b.A i i = 2 := by
-  have : NoZeroSMulDivisors ℤ L := IsAddTorsionFree.to_noZeroSMulDivisors_int
   have aux : (b.A i i - 2) • b.e i = 0 := by
     rw [sub_smul, ofNat_smul_eq_nsmul, ← (b.sl2 i).lie_h_e_nsmul, b.lie_h_e i i]; abel
   rwa [IsAddTorsionFree.zsmul_eq_zero_iff_left (b.sl2 i).e_ne_zero, sub_eq_zero] at aux

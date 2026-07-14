@@ -493,8 +493,6 @@ theorem isIntegral_trans [Algebra.IsIntegral R A] (x : B) (hx : IsIntegral A x) 
     ((Subalgebra.mem_restrictScalars R).mpr <| subset_adjoin rfl)
   rw [← Module.Finite.iff_fg]
   letI : SMul S Sx := { MSx with } -- need this even though MSx is there
-  have : IsScalarTower R S Sx :=
-    Submodule.isScalarTower Sx -- Lean looks for `Module A Sx` without this
   exact Module.Finite.trans S Sx
 
 variable (A) in

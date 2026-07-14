@@ -981,7 +981,6 @@ lemma ringEquivOfRingEquiv_trans {T : Type*} [CommRing T] [IsDomain T] (M : Type
     [Algebra T M] [IsFractionRing T M] (f : R ≃+* S) (g : S ≃+* T) :
     ringEquivOfRingEquiv K M (f.trans g) =
       (ringEquivOfRingEquiv K L f).trans (ringEquivOfRingEquiv L M g) := by
-  have : RingHomCompTriple f (g : S →+* T) (f.trans g : R →+* T) := ⟨rfl⟩
   ext1 I
   simp only [ringEquivOfRingEquiv, RingEquiv.coe_ringHom_trans, Function.comp_apply,
     semilinearEquivOfRingEquiv_comp K L f M, LinearEquiv.coe_trans,

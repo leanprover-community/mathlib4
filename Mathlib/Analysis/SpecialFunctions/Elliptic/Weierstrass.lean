@@ -908,7 +908,6 @@ lemma meromorphic_weierstrassP : Meromorphic ℘[L] := by
   intro x
   by_cases hx : x ∈ L.lattice
   · simp_rw [← funext <| L.weierstrassPExcept_add ⟨x, hx⟩]
-    have := (analyticOnNhd_weierstrassPExcept L x x (by simp)).meromorphicAt
     fun_prop
   · exact (L.analyticOnNhd_weierstrassP x hx).meromorphicAt
 

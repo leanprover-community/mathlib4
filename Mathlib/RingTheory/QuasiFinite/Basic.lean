@@ -317,7 +317,6 @@ lemma of_isIntegral_of_finiteType [Algebra.IsIntegral R S] [Algebra.FiniteType R
   let : Algebra A (Localization.Away sA) := OreLocalization.instAlgebra
   let : SMul A (Localization.Away sA) := Algebra.toSMul
   let : MulAction A (Localization.Away sA) := Algebra.toModule.toDistribMulAction.toMulAction
-  have : IsScalarTower R A (Localization.Away sA) := OreLocalization.instIsScalarTower
   have : IsScalarTower A (Localization.Away sA) T :=
     .of_algebraMap_eq (by simp [f, RingHom.algebraMap_toAlgebra, A])
   have : IsScalarTower R (Localization.Away sA) T := .to₁₃₄ R A (Localization.Away sA) T
@@ -339,7 +338,6 @@ lemma of_isIntegral_of_finiteType [Algebra.IsIntegral R S] [Algebra.FiniteType R
     Algebra.IsIntegral.finite
   have : Module.Finite R A :=
     Algebra.finite_adjoin_simple_of_isIntegral (Algebra.IsIntegral.isIntegral _)
-  have : Algebra.QuasiFinite R (Localization.Away sA) := .of_isLocalization (.powers sA)
   exact .trans _ (Localization.Away sA) _
 
 end Finite
@@ -440,9 +438,6 @@ lemma QuasiFiniteAt.exists_basicOpen_eq_singleton
     (p : Ideal S) [p.IsPrime] [IsArtinianRing R] [Algebra.EssFiniteType R S]
     [Algebra.QuasiFiniteAt R p] :
     ∃ f ∉ p, (PrimeSpectrum.basicOpen f : Set (PrimeSpectrum S)) = {⟨p, ‹_›⟩} := by
-  have : IsLocalizedModule p.primeCompl (.id (R := S) (M := Localization.AtPrime p)) :=
-    ⟨IsLocalizedModule.map_units (Algebra.linearMap S (Localization.AtPrime p)),
-      fun y ↦ ⟨⟨y, 1⟩, by simp⟩, by simpa using ⟨1, p.primeCompl.one_mem⟩⟩
   have : Module.Finite R (Localization.AtPrime p) := .of_quasiFinite
   have : Module.Finite S (Localization.AtPrime p) := .of_restrictScalars_finite R _ _
   have : IsArtinianRing (Localization.AtPrime p) := .of_finite R _

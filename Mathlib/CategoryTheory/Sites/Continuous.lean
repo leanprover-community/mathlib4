@@ -128,8 +128,6 @@ lemma functorPushforward_sieve₁_of_preservesPullbacks (h : p₁ ≫ E.f _ = p�
     [HasPullbacks C] [PreservesLimitsOfShape WalkingCospan F] :
     Sieve.functorPushforward F (E.sieve₁ p₁ p₂) = (E.map F).sieve₁ (F.map p₁) (F.map p₂) := by
   refine le_antisymm (PreOneHypercover.functorPushforward_sieve₁_map_le _ _ _) ?_
-  have : HasPullback ((E.map F).f i₁) ((E.map F).f i₂) :=
-    hasPullback_of_preservesPullback F (E.f i₁) (E.f i₂)
   rintro T f ⟨k, u, hf₁, hf₂⟩
   let l : W ⟶ pullback (E.f i₁) (E.f i₂) := pullback.lift p₁ p₂ h
   have hl₁ : l ≫ pullback.fst _ _ = p₁ := by simp [l]
@@ -222,8 +220,6 @@ private lemma isSheaf_of_isContinuous_aux (F : C ⥤ D) [Functor.IsContinuous F 
   intro X S hS
   have hWS : J.W (Sieve.shrinkFunctor.{max u₁ v₁ u₂ v₂} S).ι :=
     Sieve.W_shrinkFunctor_ι_of_mem.{max u₁ v₁ u₂ v₂} _ S hS
-  have : K.W _ := Functor.W_map_of_adjunction_of_isContinuous_aux (J := J) K F H adj
-    (Sieve.shrinkFunctor.{max u₁ v₁ u₂ v₂} S).ι hWS
   let e : H ⋙ (Functor.whiskeringRight _ _ _).obj uliftFunctor.{w} ≅
       (Functor.whiskeringRight _ _ _).obj uliftFunctor.{w} ⋙ H' :=
     uliftFunctor.{w, max (max (max u₁ u₂) v₁) v₂}.lanCompIsoOfPreserves F.op

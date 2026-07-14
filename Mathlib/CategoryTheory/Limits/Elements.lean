@@ -80,8 +80,6 @@ set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma map_π_liftedConeElement (i : I) :
     dsimp% A.map (limit.π (F ⋙ π A) i) (liftedConeElement F) = (F.obj i).snd := by
-  have := congr_hom
-    (preservesLimitIso_inv_π A (F ⋙ π A) i) (liftedConeElement' F)
   simp [liftedConeElement, ← comp_apply]
 
 /-- (implementation) The constructed limit cone. -/

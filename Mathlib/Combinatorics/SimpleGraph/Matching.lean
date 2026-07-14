@@ -510,7 +510,6 @@ decreasing_by
 
 lemma IsCycles.reachable_sdiff_toSubgraph_spanningCoe [Finite V] {v w : V} (hcyc : G.IsCycles)
     (p : G.Walk v w) (hp : p.IsPath) : (G \ p.toSubgraph.spanningCoe).Reachable w v := by
-  have : Fintype V := Fintype.ofFinite V
   exact reachable_sdiff_toSubgraph_spanningCoe_aux hcyc p hp
 
 lemma IsCycles.reachable_deleteEdges [Finite V] (hadj : G.Adj v w)

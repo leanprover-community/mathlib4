@@ -222,7 +222,6 @@ theorem Nat.eq_sq_add_sq_iff {n : ℕ} :
     refine ⟨a, b, hab.symm, ZMod.isSquare_neg_one_iff_forall_mem_primeFactors_mod_four_ne_three hb
       |>.mpr fun q hq hq4 ↦ ?_⟩
     have : Fact q.Prime := ⟨prime_of_mem_primeFactors hq⟩
-    have := Nat.primeFactors_mono <| Dvd.intro_left _ hab
     have : b.factorization q = 1 := by grind [Squarefree.natFactorization_le_one,
       Prime.dvd_iff_one_le_factorization, prime_of_mem_primeFactors, dvd_of_mem_primeFactors]
     grind [factorization_def, prime_of_mem_primeFactors, padicValNat.mul, padicValNat.pow]

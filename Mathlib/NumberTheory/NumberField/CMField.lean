@@ -468,8 +468,6 @@ theorem eq_maximalRealSubfield (E : Subfield K) [IsTotallyReal E] [IsQuadraticEx
       rw [← SetLike.coe_set_eq, Subfield.coe_toIntermediateField] at h
       rw [← sup_eq_left, ← SetLike.coe_set_eq, h, IntermediateField.coe_bot]
       aesop
-  have : Algebra.IsAlgebraic (maximalRealSubfield K) K :=
-    Algebra.IsAlgebraic.tower_top (K := ℚ) (maximalRealSubfield K)
   have : IsTotallyReal K := (h' ▸ isTotallyReal_sup).ofRingEquiv Subring.topEquiv
   obtain w : InfinitePlace K := Classical.choice (inferInstance : Nonempty _)
   exact (not_isReal_iff_isComplex.mpr (IsTotallyComplex.isComplex w)) (IsTotallyReal.isReal w)

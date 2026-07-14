@@ -399,7 +399,6 @@ be Galois.
 -/
 theorem relNorm_eq_pow_of_isPrime_isGalois [p.IsMaximal] [P.IsPrime]
     [IsGalois (FractionRing R) (FractionRing S)] : relNorm R P = p ^ P.inertiaDeg R := by
-  have : P.IsMaximal := IsMaximal.of_liesOver_isMaximal P p
   let G := Gal(FractionRing S/FractionRing R)
   let := IsIntegralClosure.MulSemiringAction R (FractionRing R) (FractionRing S) S
   have := IsGaloisGroup.of_isFractionRing G R S (FractionRing R) (FractionRing S)

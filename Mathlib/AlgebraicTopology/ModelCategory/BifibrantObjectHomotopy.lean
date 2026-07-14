@@ -96,7 +96,6 @@ lemma inverts_iff_factors (F : BifibrantObject C ⥤ D) :
       homRel C f g → F.map f = F.map g := by
   refine ⟨fun H K L f g h ↦ ?_, fun h X Y f hf ↦ ?_⟩
   · obtain ⟨P, _, ⟨h⟩⟩ := h.exists_very_good_pathObject
-    have := isCofibrant_of_cofibration P.ι
     have : IsIso (F.map (homMk P.ι)) := H _ (by
       rw [← weakEquivalence_iff, weakEquivalence_iff_of_objectProperty]
       exact inferInstanceAs (WeakEquivalence P.ι))

@@ -198,7 +198,6 @@ lemma isTopologicalBasis_biInter_Ioi_Iio_of_generateFrom (c : Set α)
   let kr := {s ∈ k | ∃ a ∈ c, s = Iio a}
   have k_eq : k = kl ∪ kr := by
     -- this `have` can be removed, but makes `grind` slower
-    have : ∀ s ∈ k, ∃ a ∈ c, s = Ioi a ∨ s = Iio a := hk
     ext
     grind
   have : Finite kl := k_fin.subset (by simp [k_eq])

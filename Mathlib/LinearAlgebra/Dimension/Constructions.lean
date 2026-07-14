@@ -548,7 +548,6 @@ variable [StrongRankCondition F] [IsTorsionFree F E] [Nontrivial E]
 theorem Subalgebra.rank_bot : Module.rank F (⊥ : Subalgebra F E) = 1 :=
   (Subalgebra.toSubmoduleEquiv (⊥ : Subalgebra F E)).symm.rank_eq.trans <| by
     rw [Algebra.toSubmodule_bot, one_eq_span, rank_span_set, mk_singleton _]
-    have := Module.nontrivial F E
     exact .singleton one_ne_zero
 
 @[simp]

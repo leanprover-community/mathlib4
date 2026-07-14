@@ -43,7 +43,6 @@ lemma IsUnramifiedAt.of_liesOver_of_ne_bot
     [IsDedekindDomain S] (hP₁ : P.primeCompl ≤ nonZeroDivisors T) (hP₂ : p ≠ ⊥ → P ≠ ⊥) :
     IsUnramifiedAt R p := by
   let p₀ : Ideal R := p.under R
-  have : P.LiesOver p₀ := .trans P p p₀
   let := Localization.AtPrime.algebraOfLiesOver p₀ p
   let := Localization.AtPrime.algebraOfLiesOver p P
   let := Localization.AtPrime.algebraOfLiesOver p₀ P

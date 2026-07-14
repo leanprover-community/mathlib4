@@ -150,7 +150,6 @@ theorem sum_bernoulli' (n : ℕ) : (∑ k ∈ range n, (n.choose k : ℚ) * bern
   simp_rw [mul_sum, ← mul_assoc]
   refine sum_congr rfl fun k hk => ?_
   congr
-  have : ((n - k : ℕ) : ℚ) + 1 ≠ 0 := by norm_cast
   simp only [← cast_sub (mem_range.1 hk).le, succ_eq_add_one, field, mul_comm]
   rw_mod_cast [tsub_add_eq_add_tsub (mem_range.1 hk).le, choose_mul_succ_eq]
 

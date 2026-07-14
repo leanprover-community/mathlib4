@@ -679,10 +679,6 @@ theorem integral_dirac' [MeasurableSpace X] [CompleteSpace G] {a : X} {v : F}
     (hfm : StronglyMeasurable f) :
     ∫ᵛ x, f x ∂[B; VectorMeasure.dirac a v] = B (f a) v := by
   borelize E
-  have : IsFiniteMeasure ((dirac a v).transpose B).variation := by
-    have : ‖B.flip v‖ₑ • Measure.dirac a = ‖B.flip v‖₊ • Measure.dirac a := rfl
-    simp only [transpose_dirac, variation_dirac, this]
-    infer_instance
   calc
     ∫ᵛ x, f x ∂[B; VectorMeasure.dirac a v] = ∫ᵛ _, f a ∂[B; VectorMeasure.dirac a v] := by
       apply integral_congr_ae
@@ -694,10 +690,6 @@ theorem integral_dirac' [MeasurableSpace X] [CompleteSpace G] {a : X} {v : F}
 theorem integral_dirac [MeasurableSpace X] [MeasurableSingletonClass X] [CompleteSpace G]
     {a : X} {v : F} :
     ∫ᵛ x, f x ∂[B; VectorMeasure.dirac a v] = B (f a) v := by
-  have : IsFiniteMeasure ((dirac a v).transpose B).variation := by
-    have : ‖B.flip v‖ₑ • Measure.dirac a = ‖B.flip v‖₊ • Measure.dirac a := rfl
-    simp only [transpose_dirac, variation_dirac, this]
-    infer_instance
   calc
     ∫ᵛ x, f x ∂[B; VectorMeasure.dirac a v] = ∫ᵛ _, f a ∂[B; VectorMeasure.dirac a v] := by
       apply integral_congr_ae

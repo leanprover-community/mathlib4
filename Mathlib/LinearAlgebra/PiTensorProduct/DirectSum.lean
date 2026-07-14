@@ -60,7 +60,6 @@ theorem ofDirectSumEquiv_symm_lof_tprod [Fintype ι] [(i : ι) → DecidableEq (
 theorem ofDirectSumEquiv_tprod_apply [Finite ι]
     (x : Π i, ⨁ j, M i j) (p : Π i, κ i) :
     ofDirectSumEquiv (tprod R x) p = ⨂ₜ[R] i, x i (p i) := by
-  have : Fintype ι := Fintype.ofFinite ι
   convert! ofDFinsuppEquiv_tprod_apply _ _
 
 end PiTensorProduct

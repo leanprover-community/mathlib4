@@ -301,7 +301,6 @@ lemma injective_of_isLocalization_of_span_eq_top
   algebraize [f]
   letI (r : s) : Algebra R (Sᵣ r) := (algebraMap S (Sᵣ r)).comp f |>.toAlgebra
   have (r : s) : IsScalarTower R S (Sᵣ r) := IsScalarTower.of_algebraMap_eq' rfl
-  have : ∀ r, IsLocalization.Away (algebraMap R S r.val) (Sᵣ r) := ‹_›
   letI (r : s) : Algebra (Rᵣ r) (Sᵣ r) := localizationAlgebra (.powers r.val) S
   have (r : s) : IsScalarTower R (Rᵣ r) (Sᵣ r) :=
     .of_algebraMap_eq <| by simp [RingHom.algebraMap_toAlgebra]
@@ -315,7 +314,6 @@ lemma surjective_of_isLocalization_of_span_eq_top
   algebraize [f]
   letI (r : s) : Algebra R (Sᵣ r) := (algebraMap S (Sᵣ r)).comp f |>.toAlgebra
   have (r : s) : IsScalarTower R S (Sᵣ r) := IsScalarTower.of_algebraMap_eq' rfl
-  have : ∀ r, IsLocalization.Away (algebraMap R S r.val) (Sᵣ r) := ‹_›
   letI (r : s) : Algebra (Rᵣ r) (Sᵣ r) := localizationAlgebra (.powers r.val) S
   have (r : s) : IsScalarTower R (Rᵣ r) (Sᵣ r) :=
     .of_algebraMap_eq <| by simp [RingHom.algebraMap_toAlgebra]

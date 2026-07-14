@@ -300,8 +300,6 @@ lemma isoLocallyConstantOfIsColimit_inv (X : Profinite.{u}ᵒᵖ ⥤ Type (u + 1
   dsimp [toProfinite_obj]
   rw [incl_of_counitAppApp.{u, u + 1}]
   simp only [counitAppAppImage]
-  have : Finite (fiber.{u, u + 1} f x) :=
-    Finite.of_injective (sigmaIncl.{u, u + 1} f x).1 Subtype.val_injective
   apply injective_of_mono (isoFinYonedaComponents X (fiber.{u, u + 1} f x)).hom
   ext y
   simp only [toProfinite_obj, isoFinYonedaComponents_hom, ConcreteCategory.hom_ofHom,
@@ -591,8 +589,6 @@ lemma isoLocallyConstantOfIsColimit_inv (X : LightProfinite.{u}ᵒᵖ ⥤ Type u
   dsimp [toLightProfinite_obj]
   rw [incl_of_counitAppApp]
   simp only [counitAppAppImage]
-  have : Finite (fiber.{u, u} f x) :=
-    Finite.of_injective (sigmaIncl.{u, u} f x).1 Subtype.val_injective
   apply injective_of_mono (isoFinYonedaComponents X (fiber.{u, u} f x)).hom
   ext y
   simp only [toLightProfinite_obj, isoFinYonedaComponents_hom, TypeCat.hom_ofHom,

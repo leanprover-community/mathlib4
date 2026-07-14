@@ -752,7 +752,6 @@ public theorem fermatLastTheoremThree : FermatLastTheoremFor 3 := by
   classical
   let K := CyclotomicField 3 ℚ
   let hζ := IsCyclotomicExtension.zeta_spec 3 ℚ K
-  have : NumberField K := IsCyclotomicExtension.numberField {3} ℚ _
   apply FermatLastTheoremForThree_of_FermatLastTheoremThreeGen hζ
   intro a b c u hc ha hb hcdvd coprime H
   let S' : FermatLastTheoremForThreeGen.Solution' hζ :=

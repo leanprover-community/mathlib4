@@ -990,8 +990,6 @@ theorem spectralNorm_eq_norm_coeff_zero_rpow (x : L) :
   set E := (mapAlg K L (minpoly K x)).SplittingField
   have hspl : Splits (mapAlg K E (minpoly K x)) :=
     IsSplittingField.IsScalarTower.splits (K := L) E (minpoly K x)
-  have : Algebra.IsAlgebraic L E :=
-    IsSplittingField.IsScalarTower.isAlgebraic E (mapAlg K L (minpoly K x))
   have : Algebra.IsAlgebraic K E := Algebra.IsAlgebraic.trans K L E
   rw [one_div, Real.eq_rpow_inv (spectralNorm_nonneg x) (norm_nonneg ((minpoly K x).coeff 0)),
     Real.rpow_natCast, @spectralNorm.eq_of_tower K _ E,

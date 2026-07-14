@@ -513,7 +513,6 @@ lemma injOn_of_surjOn_of_card_le (f : α → β) (hf : Set.MapsTo f s t) (hsurj 
     (hst : #s ≤ #t) : Set.InjOn f s := by
   classical
   have : s.image f = t := Finset.coe_injective <| by simp [hsurj.image_eq_of_mapsTo hf]
-  have : #(s.image f) = #t := by rw [this]
   have : #(s.image f) ≤ #s := card_image_le
   rw [← card_image_iff]
   lia

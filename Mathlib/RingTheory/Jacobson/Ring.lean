@@ -129,7 +129,6 @@ theorem isJacobsonRing_of_isIntegral [Algebra R S] [Algebra.IsIntegral R S] [IsJ
   intro P hP
   by_cases hP_top : comap (algebraMap R S) P = ⊤
   · simp [comap_eq_top_iff.1 hP_top]
-  have : Nontrivial (R ⧸ comap (algebraMap R S) P) := by rwa [Quotient.nontrivial_iff]
   rw [jacobson_eq_iff_jacobson_quotient_eq_bot]
   refine eq_bot_of_comap_eq_bot (R := R ⧸ comap (algebraMap R S) P) ?_
   rw [eq_bot_iff, ← jacobson_eq_iff_jacobson_quotient_eq_bot.1
@@ -344,9 +343,6 @@ theorem jacobson_bot_of_integral_localization
       hJ.2 ▸ this J hJ.1.2⟩
   intro I hI
   -- Remainder of the proof is pulling and pushing ideals around the square and the quotient square
-  have : (I.comap (algebraMap S Sₘ)).IsPrime := comap_isPrime _ I
-  have : (I.comap φ').IsPrime := comap_isPrime φ' I
-  have : (⊥ : Ideal (S ⧸ I.comap (algebraMap S Sₘ))).IsPrime := isPrime_bot
   have hcomm : φ'.comp (algebraMap R Rₘ) = (algebraMap S Sₘ).comp φ := IsLocalization.map_comp _
   let f := quotientMap (I.comap (algebraMap S Sₘ)) φ le_rfl
   let g := quotientMap I (algebraMap S Sₘ) le_rfl
@@ -373,7 +369,6 @@ private theorem isJacobsonRing_polynomial_of_domain (R : Type*) [CommRing R] [Is
       jacobson_bot_polynomial_of_jacobson_bot (hR.out isRadical_bot_of_noZeroDivisors)
   · rw [jacobson_eq_iff_jacobson_quotient_eq_bot]
     let P' := P.comap (C : R →+* R[X])
-    have : P'.IsPrime := comap_isPrime C P
     have hR' : IsJacobsonRing (R ⧸ P') := by infer_instance
     obtain ⟨p, pP, p0⟩ := exists_nonzero_mem_of_ne_bot Pb hP
     let x := (Polynomial.map (Ideal.Quotient.mk P') p).leadingCoeff
@@ -516,7 +511,6 @@ variable [IsJacobsonRing R]
 theorem quotient_mk_comp_C_isIntegral_of_isJacobsonRing :
     ((Ideal.Quotient.mk P).comp C : R →+* R[X] ⧸ P).IsIntegral := by
   let P' : Ideal R := P.comap C
-  have : P'.IsPrime := comap_isPrime C P
   let f : R[X] →+* Polynomial (R ⧸ P') := Polynomial.mapRingHom (Ideal.Quotient.mk P')
   have hf : Function.Surjective ↑f := map_surjective (Ideal.Quotient.mk P') Quotient.mk_surjective
   have hPJ : P = (P.map f).comap f := by

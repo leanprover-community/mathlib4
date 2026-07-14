@@ -320,7 +320,6 @@ variable {R}
 
 theorem associated_pow_irreducible {x : R} (hx : x ≠ 0) {ϖ : R} (hirr : Irreducible ϖ) :
     ∃ n : ℕ, Associated x (ϖ ^ n) := by
-  have : WfDvdMonoid R := IsNoetherianRing.wfDvdMonoid
   obtain ⟨fx, hfx⟩ := WfDvdMonoid.exists_factors x hx
   use Multiset.card fx
   have H := hfx.2

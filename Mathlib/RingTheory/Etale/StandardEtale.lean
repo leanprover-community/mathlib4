@@ -430,7 +430,6 @@ lemma IsStandardEtale.of_surjective
     [IsStandardEtale R S] [Algebra.Etale R T] (f : S →ₐ[R] T) (hf : Function.Surjective f) :
     IsStandardEtale R T := by
   letI := f.toAlgebra
-  have : IsScalarTower R S T := .of_algebraMap_eq' f.comp_algebraMap.symm
   obtain ⟨e, he, hfe⟩ :=
     (Ideal.isIdempotentElem_iff_of_fg _ (Algebra.FinitePresentation.ker_fG_of_surjective f hf)).mp
       ((Algebra.FormallyEtale.iff_of_surjective hf).mp (.of_restrictScalars (R := R)))

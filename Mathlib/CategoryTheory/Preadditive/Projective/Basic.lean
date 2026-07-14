@@ -143,7 +143,6 @@ theorem projective_iff_preservesEpimorphisms_coyoneda_obj (P : C) :
   ⟨fun hP =>
     ⟨fun f _ =>
       (epi_iff_surjective _).2 fun g =>
-        have : Projective (unop (op P)) := hP
         ⟨factorThru g f, factorThru_comp _ _⟩⟩,
     fun _ =>
     ⟨fun f e _ =>

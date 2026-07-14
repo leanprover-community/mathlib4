@@ -879,7 +879,6 @@ theorem coe_range_dense : DenseRange ((↑) : K⟮X⟯ → K⸨X⸩) := by
   rw [uniformity_eq_comap_neg_add_nhds_zero_swapped] at hV
   obtain ⟨T, hT₀, hT₁⟩ := hV
   obtain ⟨γ, hγ⟩ := Valued.mem_nhds_zero.mp hT₀
-  have := (embedding γ.1)
   obtain ⟨P, hP⟩ := exists_ratFunc_val_lt f
     <| γ.map (embedding (f := .ofClass (valued K).v))
   use P

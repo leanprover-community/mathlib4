@@ -52,7 +52,6 @@ private lemma Convex.condExp_mem_of_isFiniteMeasure [IsFiniteMeasure μ] (hm : m
   borelize E
   obtain ⟨t, ht, htt⟩ := hf_int.aestronglyMeasurable.isSeparable_ae_range
   let Y := (Submodule.span ℝ t).topologicalClosure
-  have : CompleteSpace Y := (Submodule.isClosed_topologicalClosure _).completeSpace_coe
   have : SecondCountableTopology Y := ht.span.closure.secondCountableTopology
   classical
   let fY : α → Y := fun a => if h : f a ∈ Y then ⟨f a, h⟩ else 0
@@ -89,8 +88,6 @@ lemma Convex.condExp_mem (hm : m ≤ mα) [SigmaFinite (μ.trim hm)]
     rintro - ⟨n, rfl⟩
   · exact hm _ (measurableSet_spanningSets (μ.trim hm) n)
   have h1 := condExp_restrict_ae_eq_restrict hm (measurableSet_spanningSets (μ.trim hm) n) hf_int
-  have : IsFiniteMeasure (μ.restrict (spanningSets (μ.trim hm) n)) := isFiniteMeasure_restrict.2
-    ((le_trim hm).trans_lt (measure_spanningSets_lt_top (μ.trim hm) n)).ne
   have h2 := hc.condExp_mem_of_isFiniteMeasure (μ := μ.restrict (spanningSets (μ.trim hm) n)) hm
     hf_int.restrict hs (ae_restrict_of_ae hf)
   filter_upwards [h1, h2] with a ha hb
@@ -120,7 +117,6 @@ private theorem ConvexOn.map_condExp_le_of_isFiniteMeasure [IsFiniteMeasure μ] 
   borelize E
   obtain ⟨t, ht, htt⟩ := hf_int.aestronglyMeasurable.isSeparable_ae_range
   let Y := (Submodule.span ℝ t).topologicalClosure
-  have : CompleteSpace Y := (Submodule.isClosed_topologicalClosure _).completeSpace_coe
   have : SecondCountableTopology Y := ht.span.closure.secondCountableTopology
   let φY := φ ∘ Y.subtypeL
   classical
@@ -174,8 +170,6 @@ theorem ConvexOn.map_condExp_le (hm : m ≤ mα) [SigmaFinite (μ.trim hm)]
   · exact hm _ (measurableSet_spanningSets (μ.trim hm) n)
   have h1 := condExp_restrict_ae_eq_restrict hm (measurableSet_spanningSets (μ.trim hm) n) hf_int
   have h2 := condExp_restrict_ae_eq_restrict hm (measurableSet_spanningSets (μ.trim hm) n) hφ_int
-  have : IsFiniteMeasure (μ.restrict (spanningSets (μ.trim hm) n)) := isFiniteMeasure_restrict.2
-    ((le_trim hm).trans_lt (measure_spanningSets_lt_top (μ.trim hm) n)).ne
   have h3 := hφ_cvx.map_condExp_le_of_isFiniteMeasure (μ := μ.restrict (spanningSets (μ.trim hm) n))
     hm hφ_cont (ae_restrict_of_ae hf) hs hf_int.restrict hφ_int.restrict
   filter_upwards [h1, h2, h3] with a ha hb hc

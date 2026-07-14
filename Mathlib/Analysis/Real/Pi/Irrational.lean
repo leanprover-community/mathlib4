@@ -112,7 +112,6 @@ private lemma recursion' (n : ℕ) :
     | zero => simp [u₂']
     | succ n => ring!
   simp_rw [this, sub_mul, mul_assoc _ _ (v₂ _)]
-  have : Continuous v₂ := by fun_prop
   rw [mul_mul_mul_comm, integral_sub, mul_sub, add_sub_assoc]
   · congr 1
     simp_rw [integral_const_mul]

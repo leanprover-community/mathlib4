@@ -101,7 +101,6 @@ public lemma convexOn_ringInverse :
 
 public lemma convexOn_ringInverse_algebraMap_add {t : ℝ} (ht : 0 < t) :
     ConvexOn ℝ (Ici (0 : A)) (fun x : A => Ring.inverse (algebraMap ℝ A t + x)) := by
-  have : ∀ x ∈ Ici (0 : A), IsStrictlyPositive (algebraMap ℝ A t + x) := by grind
   let addl : A →ᵃ[ℝ] A := (AffineMap.toConstProdLinearMap ℝ).symm (algebraMap ℝ A t, .id)
   have haddl : Function.Injective addl := by intro _ _; simp [addl]
   have hici : Ici (0 : A) = addl ⁻¹' addl '' Ici 0 := by

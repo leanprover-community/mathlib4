@@ -89,8 +89,6 @@ theorem isDiscrete_tfae (X : CondensedSet.{u}) :
   tfae_have 1 ↔ 3 := ⟨fun ⟨h⟩ ↦ h, fun h ↦ ⟨h⟩⟩
   tfae_have 1 ↔ 4 := Sheaf.isConstant_iff_mem_essImage _ CompHaus.isTerminalPUnit adjunction _
   tfae_have 1 ↔ 5 :=
-    have : functor.Faithful := inferInstance
-    have : functor.Full := inferInstance
     -- These `have` statements above shouldn't be needed, but they are.
     Sheaf.isConstant_iff_isIso_counit_app' _ CompHaus.isTerminalPUnit adjunction _
   tfae_have 1 ↔ 6 :=
@@ -136,8 +134,6 @@ theorem isDiscrete_tfae (M : CondensedMod.{u} R) :
   tfae_have 1 ↔ 3 := ⟨fun ⟨h⟩ ↦ h, fun h ↦ ⟨h⟩⟩
   tfae_have 1 ↔ 4 := Sheaf.isConstant_iff_mem_essImage _ CompHaus.isTerminalPUnit (adjunction R) _
   tfae_have 1 ↔ 5 :=
-    have : (functor R).Faithful := inferInstance
-    have : (functor R).Full := inferInstance
     -- These `have` statements above shouldn't be needed, but they are.
     Sheaf.isConstant_iff_isIso_counit_app' _ CompHaus.isTerminalPUnit (adjunction R) _
   tfae_have 1 ↔ 6 :=
@@ -206,8 +202,6 @@ theorem isDiscrete_tfae (X : LightCondSet.{u}) :
   tfae_have 1 ↔ 3 := ⟨fun ⟨h⟩ ↦ h, fun h ↦ ⟨h⟩⟩
   tfae_have 1 ↔ 4 := Sheaf.isConstant_iff_mem_essImage _ LightProfinite.isTerminalPUnit adjunction X
   tfae_have 1 ↔ 5 :=
-    have : functor.Faithful := inferInstance
-    have : functor.Full := inferInstance
     -- These `have` statements above shouldn't be needed, but they are.
     Sheaf.isConstant_iff_isIso_counit_app' _ LightProfinite.isTerminalPUnit adjunction X
   tfae_have 6 → 4 := fun h ↦
@@ -244,8 +238,6 @@ theorem isDiscrete_tfae (M : LightCondMod.{u} R) :
   tfae_have 1 ↔ 4 := Sheaf.isConstant_iff_mem_essImage _
     LightProfinite.isTerminalPUnit (adjunction R) _
   tfae_have 1 ↔ 5 :=
-    have : (functor R).Faithful := inferInstance
-    have : (functor R).Full := inferInstance
     -- These `have` statements above shouldn't be needed, but they are.
     Sheaf.isConstant_iff_isIso_counit_app' _ LightProfinite.isTerminalPUnit (adjunction R) _
   tfae_have 6 → 1 := by

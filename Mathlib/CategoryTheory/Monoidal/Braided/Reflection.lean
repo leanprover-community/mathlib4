@@ -119,7 +119,6 @@ theorem isIso_tfae : List.TFAE
     -- It is enough to show that the unit is a split monomorphism, and the retraction is given
     -- by `adjRetraction` above.
     let _ : Reflective R := { L := L, adj := adj }
-    have : IsIso adj.toMonad.μ := μ_iso_of_reflective (R := R)
     dsimp
     rw [← dsimp% [Adjunction.toMonad] adj.toMonad.isSplitMono_iff_isIso_unit]
     exact ⟨⟨adjRetraction adj _ _, adjRetraction_is_retraction adj _ _⟩⟩

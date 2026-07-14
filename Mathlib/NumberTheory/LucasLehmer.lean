@@ -634,7 +634,6 @@ theorem sModNat_eq_sMod (p k : ℕ) (hp : 2 ≤ p) : (sModNat (2 ^ p - 1) k : �
   induction k with
   | zero => grind [sModNat, sMod]
   | succ =>
-    have : 2 ^ 2 ≤ 2 ^ p := Nat.pow_le_pow_right (by lia) hp
     grind [sModNat, sMod, Int.emod_eq_add_self_emod]
 
 /-- Tail-recursive version of `sModNat`. -/

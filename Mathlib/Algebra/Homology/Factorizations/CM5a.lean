@@ -680,7 +680,6 @@ public lemma exists_quasiIso_injective (n : ℤ) [K.IsStrictlyGE n] :
     have hK : K.IsGE n := inferInstance
     rw [← DerivedCategory.isGE_Q_obj_iff] at hK ⊢
     exact DerivedCategory.TStructure.t.isGE_of_iso (asIso (DerivedCategory.Q.map i)) n
-  have : QuasiIso (L.πTruncGE n) := (L.quasiIso_πTruncGE_iff n).mpr inferInstance
   have : Injective (L.opcycles n) :=
     L.injective_opcycles (n - 1) n (L.exactAt_of_isGE n (n - 1))
   -- note: this `i ≫ L.πTruncGE n` is a mono in degrees > n, but it may not be in degree n

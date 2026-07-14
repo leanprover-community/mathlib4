@@ -112,7 +112,6 @@ private theorem exists_hasStandardEtaleSurjectionOn_of_exists_adjoin_singleton_e
     (PrimeSpectrum.primesOverOrderIsoFiber R S P ⟨Q, ‹_›, ‹_›⟩).asIdeal
   have : Q'.LiesOver Q := ⟨congr($((PrimeSpectrum.primesOverOrderIsoFiber R S P).symm_apply_apply
     ⟨Q, ‹_›, ‹_›⟩).1).symm⟩
-  have : Q'.LiesOver P := .trans _ Q _
   let := Localization.AtPrime.algebraOfLiesOver Q Q'
   let := Localization.AtPrime.algebraOfLiesOver P Q'
   have : IsUnramifiedAt P.ResidueField Q' := .residueField P Q _ (Q'.over_def Q)

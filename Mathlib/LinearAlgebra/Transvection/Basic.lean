@@ -642,7 +642,6 @@ open IsBaseChange
   let γ : S →+* R :=
     (MvPolynomial.aeval (Sum.elim (fun i ↦ f (b i)) (fun i ↦ b.coord i v)) :
       MvPolynomial (Fin n ⊕ Fin n) ℤ →ₐ[ℤ] R)
-  have : IsDomain S := inferInstance
   let _ : Algebra S R := RingHom.toAlgebra γ
   let _ : Module S V := compHom V γ
   have _ : IsScalarTower S R V := IsScalarTower.of_compHom S R V

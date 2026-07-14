@@ -324,7 +324,6 @@ lemma exists_isTranscendenceBasis_and_isSeparable_of_perfectField
     have : Algebra.IsAlgebraic (IntermediateField.adjoin k (t : Set K)) K := by
       convert! ht.isAlgebraic_field <;> simp
     exact ⟨t, ht, inferInstance⟩
-  have : ExpChar k p := .prime hp.out
   have : CharP K p := .of_ringHom_of_ne_zero (algebraMap k K) p hp.out.ne_zero
   refine exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow_of_essFiniteType
     p hp.out fun s hs ↦ ?_

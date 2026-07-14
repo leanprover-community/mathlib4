@@ -80,7 +80,6 @@ lemma GeometricallyReduced.isReduced_of_flat_of_finite_irreducibleComponents
   let Z := ∐ fun Z ↦ Spec (pt Z)
   let g : Z ⟶ Y := Sigma.desc fun Z ↦ Y.fromSpecStalk _
   have : Finite Z := (sigmaMk _).finite_iff.mp inferInstance
-  have : QuasiCompact g := ⟨fun _ _ _ ↦ (Set.toFinite _).isCompact⟩
   have H : IsSchemeTheoreticallyDominant g := by
     rw [isSchemeTheoreticallyDominant_iff_isDominant, isDominant_iff, denseRange_iff_closure_range,
       Set.eq_univ_iff_forall]
@@ -108,7 +107,6 @@ lemma GeometricallyReduced.isReduced_of_flat_of_isLocallyNoetherian
     [IsReduced Y] [IsLocallyNoetherian Y] : IsReduced X := by
   apply +allowSynthFailures @IsReduced.of_openCover (𝒰 := Y.affineCover.pullback₁ f)
   intro i
-  have : IsReduced (Y.affineCover.X i) := isReduced_of_isOpenImmersion (Y.affineCover.f i)
   have : Finite ↑(irreducibleComponents ↥(Y.affineCover.X i)) := by
     let : IsNoetherian (Y.affineCover.X i) := {}
     exact TopologicalSpace.NoetherianSpace.finite_irreducibleComponents

@@ -280,7 +280,6 @@ lemma kerCotangentToTensor_injective_iff
     [Algebra P A] [IsScalarTower R P A] (hf : Function.Surjective (algebraMap P A)) :
     Function.Injective (kerCotangentToTensor R P A) ↔ Subsingleton (Algebra.H1Cotangent R A) :=
   let P' : Algebra.Extension R A := ⟨P, _, Function.surjInv_eq hf⟩
-  have : Algebra.FormallySmooth R P'.Ring := ‹_›
   P'.cotangentComplex_injective_iff
 
 /--
