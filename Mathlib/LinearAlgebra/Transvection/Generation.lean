@@ -182,16 +182,33 @@ private theorem auxTransvection_mul_fixed {f : Dual K V} {u : V}
     refine hf (mem_sup_right ?_)
     simp
 
+theorem finrank_quotient_sup_span_singleton {W : Submodule K V} {v : V} (hv : v ∉ W) :
+    finrank K (V ⧸ (W ⊔ K ∙ v)) + 1 = finrank K (V ⧸ W) := by
+  have h1 := finrank_quotient_add_finrank (W ⊔ K ∙ v)
+  have h2 := finrank_quotient_add_finrank W
+  rw [finrank_sup_span_singleton hv] at h1
+  omega
+
+theorem sup_span_singleton_lt_top {W : Submodule K V} (v : V)
+    (hW : 1 < finrank K (V ⧸ W)) : W ⊔ K ∙ v < ⊤ := by
+  rw [lt_top_iff_ne_top]
+  intro htop
+  have h1 := finrank_quotient_add_finrank W
+  have h2 : finrank K ↥(W ⊔ K ∙ v) ≤ finrank K W + 1 := by
+    refine le_trans (Submodule.finrank_add_le_finrank_add_finrank _ _) ?_
+    simp only [add_le_add_iff_left]
+    exact le_trans (finrank_span_le_card {v}) (by simp)
+  rw [htop, finrank_top] at h2
+  omega
+
 variable {e} in
 private theorem finrank_mod_auxTransvection_mul_fixed {f : Dual K V} {u : V}
     {hf : e.fixedSubmodule ⊔ K ∙ (e u - u) ≤ LinearMap.ker f}
     (hfu : f u = 1) (hu : u ∉ e.fixedSubmodule) :
     finrank K (V ⧸ (auxTransvection hf * e).fixedSubmodule) + 1 = finrank K (V ⧸ e.fixedSubmodule)
     := by
-  rw [add_comm, ← Nat.add_left_inj (n := 1), add_assoc, add_comm _ 1,
-    ← Nat.add_left_inj, add_assoc, add_assoc, finrank_quotient_add_finrank, ← add_assoc, add_comm]
-  conv_rhs => rw [auxTransvection_mul_fixed hfu, add_assoc, add_comm 1, ← add_assoc]
-  simp only [finrank_sup_span_singleton hu, ← add_assoc, finrank_quotient_add_finrank]
+  rw [auxTransvection_mul_fixed hfu]
+  exact finrank_quotient_sup_span_singleton hu
 
 /-- If `e : V ≃ₗ[K] V` is such that `e.fixedReduce = 1`, then `e` is the product of
 at most `finrank K (V ⧸ e.fixedSubmodule) - 1` transvections and one dilatransvection.
