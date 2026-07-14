@@ -81,11 +81,6 @@ theorem LinearIndepOn.image_algebraMap_iff (R S A : Type*) [CommRing R] [CommRin
   rw [← linearIndepOn_iff_image (FaithfulSMul.algebraMap_injective S A).injOn]
   exact LinearIndepOn.comp_algebraMap_iff
 
-noncomputable def Finset.equivMap {α β : Type*} (s : Finset α) (f : α ↪ β) : s ≃ s.map f :=
-  .ofBijective (fun x ↦ ⟨f x, s.mem_map_of_mem f x.2⟩) (⟨fun x y ↦ by simp, fun ⟨x, hx⟩ ↦ by
-    obtain ⟨x, hxs, rfl⟩ := Finset.mem_map.mp hx
-    exact ⟨⟨x, hxs⟩, rfl⟩⟩)
-
 theorem IsLocalization.integerMultipleMultiple_injective {R : Type*} [CommSemiring R]
     (M : Submonoid R) {S : Type*} [CommSemiring S] [Algebra R S] [IsLocalization M S]
     {ι : Type*} (s : Finset ι) (f : ι → S) (hf : Function.Injective f) :
@@ -102,18 +97,6 @@ theorem IsLocalization.card_finsetIntegerMultiple {R : Type*} [CommSemiring R] (
   rw [finsetIntegerMultiple, Finset.card_image_of_injective, Finset.card_attach]
   apply integerMultipleMultiple_injective
   exact Function.injective_id
-
-theorem Cardinal.toNat_eq_of_forall_le_iff (c d : Cardinal)
-    (h : ∀ n : ℕ, n ≤ c ↔ n ≤ d) : c.toNat = d.toNat := by
-  have h' := forall_congr' h
-  rw [← Cardinal.aleph0_le, ← Cardinal.aleph0_le] at h'
-  rcases iff_iff_and_or_not_and_not.mp h' with ⟨h1, h2⟩ | ⟨h1, h2⟩
-  · simp [Cardinal.toNat_apply_of_aleph0_le, h1, h2]
-  · simp_rw [not_le, Cardinal.lt_aleph0] at h1 h2
-    obtain ⟨n1, h1⟩ := h1
-    obtain ⟨n2, h2⟩ := h2
-    apply eq_of_forall_le_iff
-    simp_all
 
 theorem IsLocalization.linearIndepOn_finsetIntegerMultiple
     (R : Type*) {S A : Type*} [DecidableEq S]
