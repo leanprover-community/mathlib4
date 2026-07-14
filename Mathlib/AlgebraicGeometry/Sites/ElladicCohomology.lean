@@ -59,29 +59,29 @@ variable (M : Type v) [TopologicalSpace M] [AddCommGroup M] [IsTopologicalAddGro
 
 /-- The sheaf `U ↦ C(U, M)` on the pro-étale site of `X`, for a topological abelian
 group `M`. For `M = ℤ_[ℓ]` this is `X.ellAdicSheaf ℓ`. -/
-noncomputable def topologicalSheaf : Sheaf (ProEt.topology X) Ab :=
+noncomputable def proEtTopologicalSheaf : Sheaf (ProEt.topology X) Ab :=
   ((ProEt.forget X ⋙ Over.forget _).sheafPushforwardContinuous _ _ proetaleTopology).obj
     ⟨continuousMapPresheafAb M, .of_le proetaleTopology_le_fpqcTopology <|
       isSheaf_fpqcTopology_continuousMapPresheafAb _⟩
 
 /-- Postcomposition with a continuous additive map, as a morphism of the sheaves of
 continuous maps. -/
-noncomputable def topologicalSheafMap {M' : Type v} [TopologicalSpace M']
+noncomputable def proEtTopologicalSheafMap {M' : Type v} [TopologicalSpace M']
     [AddCommGroup M'] [IsTopologicalAddGroup M'] (f : M →+ M') (hf : Continuous f) :
-    topologicalSheaf X M ⟶ topologicalSheaf X M' where
+    proEtTopologicalSheaf X M ⟶ proEtTopologicalSheaf X M' where
   hom :=
     { app := fun U ↦ AddCommGrpCat.ofHom
         (AddMonoidHom.mk' (fun g ↦ (ContinuousMap.mk f hf).comp g)
           (fun g₁ g₂ ↦ by ext x; exact map_add f _ _))
       naturality := by cat_disch }
 
-/-- Functoriality of `topologicalSheafMap`. -/
-lemma topologicalSheafMap_comp
+/-- Functoriality of `proEtTopologicalSheafMap`. -/
+lemma proEtTopologicalSheafMap_comp
     {M₂ M₃ : Type v} [TopologicalSpace M₂] [AddCommGroup M₂] [IsTopologicalAddGroup M₂]
     [TopologicalSpace M₃] [AddCommGroup M₃] [IsTopologicalAddGroup M₃]
     (f : M →+ M₂) (hf : Continuous f) (g : M₂ →+ M₃) (hg : Continuous g) :
-    topologicalSheafMap X M f hf ≫ topologicalSheafMap X M₂ g hg =
-      topologicalSheafMap X M (g.comp f) (hg.comp hf) := by
+    proEtTopologicalSheafMap X M f hf ≫ proEtTopologicalSheafMap X M₂ g hg =
+      proEtTopologicalSheafMap X M (g.comp f) (hg.comp hf) := by
   cat_disch
 
 /--
@@ -90,15 +90,15 @@ sheaf for `ℓ`-adic cohomology.
 [Definition 6.8.1.][proetale2015]
 -/
 noncomputable abbrev ellAdicSheaf (ℓ : ℕ) [Fact ℓ.Prime] :
-    Sheaf (ProEt.topology X) Ab.{u} := topologicalSheaf X ℤ_[ℓ]
+    Sheaf (ProEt.topology X) Ab.{u} := proEtTopologicalSheaf X ℤ_[ℓ]
 
 variable (ℓ : ℕ) [Fact ℓ.Prime]
 
-lemma isZero_topologicalSheaf_of_isEmpty [IsEmpty X] : IsZero (X.topologicalSheaf M) :=
+lemma isZero_proEtTopologicalSheaf_of_isEmpty [IsEmpty X] : IsZero (X.proEtTopologicalSheaf M) :=
   (Sheaf.isTerminalOfEqTop (ProEt.topology_eq_top_of_isEmpty _) _).isZero
 
 @[deprecated (since := "2026-07-14")] alias isZero_ellAdicSheaf_of_isEmpty :=
-  isZero_topologicalSheaf_of_isEmpty
+  isZero_proEtTopologicalSheaf_of_isEmpty
 
 /-- `ℓ`-adic cohomology of a scheme in degree `n`. -/
 def EllAdicCohomology (ℓ : ℕ) [Fact ℓ.Prime] (n : ℕ) : Type (u + 1) :=
@@ -111,6 +111,6 @@ noncomputable instance (ℓ : ℕ) [Fact ℓ.Prime] (n : ℕ) : AddCommGroup (X.
 /-- `ℓ`-adic cohomology is trivial for the empty scheme. -/
 instance [IsEmpty X] (n : ℕ) : Subsingleton (X.EllAdicCohomology ℓ n) := by
   apply Sheaf.subsingleton_H_of_isZero
-  exact Functor.map_isZero _ (isZero_topologicalSheaf_of_isEmpty _ _)
+  exact Functor.map_isZero _ (isZero_proEtTopologicalSheaf_of_isEmpty _ _)
 
 end AlgebraicGeometry.Scheme
