@@ -222,7 +222,7 @@ theorem wittOne_zero_eq_one : wittOne p 0 = 1 := by
 theorem wittOne_pos_eq_zero (n : ℕ) (hn : 0 < n) : wittOne p n = 0 := by
   apply MvPolynomial.map_injective (Int.castRingHom ℚ) Int.cast_injective
   simp only [wittOne, wittStructureRat, map_zero, map_one, map_wittStructureInt]
-  induction n using Nat.strong_induction_on with | h n IH => ?_
+  induction n using Nat.strong_induction_on with | ind n IH
   rw [xInTermsOfW_eq]
   simp only [map_mul, map_sub, map_sum, map_pow, bind₁_X_right,
     bind₁_C_right]

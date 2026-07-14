@@ -643,7 +643,7 @@ private lemma bernoulli_add_indicator_eq_sub {k p : ℕ} (hk : k > 0) [Fact p.Pr
 private lemma not_dvd_den_bernoulli_add_indicator {k p : ℕ} (hk : k > 0) [Fact p.Prime] :
     ¬ p ∣ (bernoulli (2 * k) + vonStaudtIndicator (2 * k) p / p).den := by
   induction k using Nat.strong_induction_on with
-  | _ k ih =>
+  | ind k ih =>
     obtain ⟨T, hT⟩ := bernoulli_add_indicator_eq_sub (p := p) hk
     rw [hT]
     have hT_int : pIntegral p T := Int.padicValuation_le_one p T

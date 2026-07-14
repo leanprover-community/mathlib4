@@ -1080,7 +1080,7 @@ lemma Polynomial.Monic.exists_splits_map.{u}
     {R : Type u} [CommRing R] [Nontrivial R] {p : R[X]} (hp : p.Monic) :
     ∃ (S : Type u) (_ : CommRing S) (_ : Algebra R S) (_ : Module.Finite R S) (_ : Module.Free R S)
       (_ : Nontrivial S), (p.map (algebraMap R S)).Splits := by
-  induction hn : p.natDegree using Nat.strong_induction_on generalizing R with | h n IH =>
+  induction hn : p.natDegree using Nat.strong_induction_on generalizing R with | ind n IH
   by_cases hpu : IsUnit p
   · obtain rfl := hp.eq_one_of_isUnit hpu
     exact ⟨R, inferInstance, inferInstance, inferInstance, inferInstance, inferInstance, by simp⟩

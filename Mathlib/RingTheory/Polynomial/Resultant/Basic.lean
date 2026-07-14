@@ -414,7 +414,7 @@ lemma resultant_eq_prod_roots_sub
       simp [hf'.natDegree_eq_card_roots, hg'.natDegree_eq_card_roots]
     · simp
   generalize hN : f.natDegree + g.natDegree = N
-  induction N using Nat.strong_induction_on generalizing K with | h n IH =>
+  induction N using Nat.strong_induction_on generalizing K with | ind n IH
   by_cases hr : g ∣ f
   · obtain ⟨r, rfl⟩ := hr
     have hr' : r ≠ 0 := by simpa [hg.ne_zero] using hf.ne_zero

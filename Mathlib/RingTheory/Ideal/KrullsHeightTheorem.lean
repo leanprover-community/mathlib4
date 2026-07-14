@@ -188,7 +188,7 @@ nonrec lemma Ideal.height_le_spanRank_toENat_of_mem_minimalPrimes
   rw [I.spanRank_toENat_eq_iInf_finset_card, le_iInf_iff]
   rintro ⟨s, (rfl : span s = I)⟩
   induction hn : s.card using Nat.strong_induction_on generalizing R with
-  | h n H =>
+  | ind n H =>
     replace hn : s.card ≤ n := hn.le
     have := hp.isPrime
     cases n with

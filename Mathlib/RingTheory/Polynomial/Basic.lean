@@ -648,7 +648,7 @@ theorem is_fg_degreeLE [IsNoetherianRing R] (I : Ideal R[X]) (n : ℕ) :
 lemma map_C_comap_of_comap_eq_leadingCoeff (I : Ideal R[X]) (hI : comap C I = I.leadingCoeff) :
     map C (comap C I) = I := by
   refine le_antisymm map_comap_le (fun f hfI ↦ ?_)
-  induction hn : f.natDegree using Nat.strong_induction_on generalizing f with | _ _ ih
+  induction hn : f.natDegree using Nat.strong_induction_on generalizing f with | ind _ ih
   have h : C f.leadingCoeff * X ^ f.natDegree ∈ map C (comap C I) :=
     (map C (comap C I)).mul_mem_right (X ^ f.natDegree) <| mem_map_of_mem C <| by
       simpa [hI] using (I.mem_leadingCoeff f.leadingCoeff).2 ⟨f, hfI, rfl⟩
@@ -797,7 +797,7 @@ protected theorem Polynomial.isNoetherianRing [inst : IsNoetherianRing R] : IsNo
         rw [this]
         intro p hp
         generalize hn : p.natDegree = k
-        induction k using Nat.strong_induction_on generalizing p with | _ k ih
+        induction k using Nat.strong_induction_on generalizing p with | ind k ih
         rcases le_or_gt k N with h | h
         · subst k
           refine hs2 ⟨Polynomial.mem_degreeLE.2

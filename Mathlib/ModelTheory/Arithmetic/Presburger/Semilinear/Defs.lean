@@ -338,7 +338,7 @@ lemma IsLinearSet.isProperSemilinearSet [IsCancelAdd M] (hs : IsLinearSet s) :
   classical
   rw [isLinearSet_iff] at hs
   rcases hs with ⟨a, t, rfl⟩
-  induction hn : t.card using Nat.strong_induction_on generalizing a t with | _ n ih
+  induction hn : t.card using Nat.strong_induction_on generalizing a t with | ind n ih
   subst hn
   by_cases hindep : LinearIndepOn ℕ id (t : Set M)
   · exact IsProperLinearSet.isProperSemilinearSet ⟨a, t, by simpa⟩
@@ -353,7 +353,7 @@ lemma IsLinearSet.isProperSemilinearSet [IsCancelAdd M] (hs : IsLinearSet s) :
     · rintro ⟨y, hy, rfl⟩
       rw [mem_closure_finset] at hy
       rcases hy with ⟨g, -, rfl⟩
-      induction hn : g i using Nat.strong_induction_on generalizing g with | _ n ih'
+      induction hn : g i using Nat.strong_induction_on generalizing g with | ind n ih'
       subst hn
       by_cases! hfg : ∀ j ∈ t', f j ≤ g j
       · convert!
