@@ -56,6 +56,10 @@ algebra, and the associated group scheme has order four but is not killed by fou
 * `Counterexample.GrothendieckPower.counterexample`: the combined statement: over the
   nontrivial ring `R`, the algebra `A` is finite free of rank four and its fourth power map
   is not the convolution unit.
+* `Counterexample.GrothendieckPower.exists_hopfAlgebra_not_killed_by_finrank`: the negative
+  answer to Grothendieck's question, spelled out as an existence statement: there is a
+  nontrivial commutative ring and a commutative Hopf algebra, free of finite rank over it,
+  whose convolution power map at the exponent equal to its rank is not the convolution unit.
 * `Counterexample.GrothendieckPower.orderOf_universalPoint`: the universal `A`-valued point
   of the group scheme has order exactly eight.
 * `Counterexample.GrothendieckPower.not_isCocomm`: `A` is not cocommutative, i.e. the group
@@ -113,9 +117,9 @@ regular representation of `R` on `ℤ/4 × ℤ/4 × (ℤ/2)⁵`, with `a` and `b
 explicit commuting additive endomorphisms.  All required relations are closed under `decide`.
 -/
 
-/-- Reduction modulo `2`, as an additive map `ℤ/4 → ℤ/2`. -/
-def reduce : ZMod 4 →+ ZMod 2 :=
-  (ZMod.castHom (by norm_num : 2 ∣ 4) (ZMod 2)).toAddMonoidHom
+/-- Reduction modulo `2`, as a ring homomorphism `ℤ/4 → ℤ/2`. -/
+def reduce : ZMod 4 →+* ZMod 2 :=
+  ZMod.castHom (by norm_num : 2 ∣ 4) (ZMod 2)
 
 /-- The additive map `ℤ/2 → ℤ/4` sending `1` to `2`. -/
 def double : ZMod 2 →+ ZMod 4 :=
@@ -131,8 +135,9 @@ def double : ZMod 2 →+ ZMod 4 :=
 base ring `ℤ[a, b] / (a³, b³, a²b + 2)`. -/
 abbrev M := ZMod 4 × ZMod 4 × (Fin 5 → ZMod 2)
 
-/-- The additive endomorphism of `M` realizing multiplication by `a` in the regular
-representation of the base ring. -/
+/-- The additive endomorphism of `M` realizing multiplication by the generator `a` (the class
+of the first variable) of the base ring `R = ℤ[a, b] / (a³, b³, a²b + 2)`, in its regular
+representation. -/
 def aEnd : AddMonoid.End M where
   toFun x :=
     (double (x.2.2 2), double (x.2.2 4),
@@ -150,8 +155,9 @@ def aEnd : AddMonoid.End M where
       · simp
       · funext i; fin_cases i <;> simp
 
-/-- The additive endomorphism of `M` realizing multiplication by `b` in the regular
-representation of the base ring. -/
+/-- The additive endomorphism of `M` realizing multiplication by the generator `b` (the class
+of the second variable) of the base ring `R = ℤ[a, b] / (a³, b³, a²b + 2)`, in its regular
+representation. -/
 def bEnd : AddMonoid.End M where
   toFun x :=
     (double (x.2.2 1), x.1,
@@ -169,7 +175,8 @@ def bEnd : AddMonoid.End M where
       · simp
       · funext i; fin_cases i <;> simp
 
-theorem aEnd_bEnd_comm : aEnd * bEnd = bEnd * aEnd := by decide +kernel
+theorem aEnd_bEnd_comm : Commute aEnd bEnd :=
+  (by decide +kernel : aEnd * bEnd = bEnd * aEnd)
 
 theorem aEnd_cube : aEnd ^ 3 = 0 := by decide +kernel
 
@@ -179,10 +186,9 @@ theorem aEnd_sq_mul_bEnd : aEnd ^ 2 * bEnd + 2 = 0 := by decide +kernel
 
 theorem two_mul_bEnd_ne_zero : 2 * bEnd ≠ 0 := by decide +kernel
 
-private theorem generators_commute :
-    ∀ x ∈ ({aEnd, bEnd} : Set (AddMonoid.End M)),
-      ∀ y ∈ ({aEnd, bEnd} : Set (AddMonoid.End M)), x * y = y * x := by
-  intro x hx y hy
+private theorem generators_commute {x y : AddMonoid.End M}
+    (hx : x ∈ ({aEnd, bEnd} : Set (AddMonoid.End M)))
+    (hy : y ∈ ({aEnd, bEnd} : Set (AddMonoid.End M))) : x * y = y * x := by
   simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at hx hy
   rcases hx with rfl | rfl <;> rcases hy with rfl | rfl
   · rfl
@@ -197,7 +203,7 @@ def WitnessRing := Subring.closure ({aEnd, bEnd} : Set (AddMonoid.End M))
 open scoped IsMulCommutative
 
 noncomputable instance : IsMulCommutative WitnessRing :=
-  Subring.isMulCommutative_closure generators_commute
+  Subring.isMulCommutative_closure fun _ hx _ hy ↦ generators_commute hx hy
 
 /-- The element `aEnd`, as an element of `WitnessRing`. -/
 def aw : WitnessRing := ⟨aEnd, Subring.subset_closure (Set.mem_insert _ _)⟩
@@ -232,10 +238,10 @@ open MvPolynomial
 abbrev P := MvPolynomial (Fin 2) ℤ
 
 /-- The polynomial variable `a`. -/
-def ap : P := X 0
+abbrev ap : P := X 0
 
 /-- The polynomial variable `b`. -/
-def bp : P := X 1
+abbrev bp : P := X 1
 
 /-- The ideal `(a³, b³, a²b + 2)` of `ℤ[a, b]`. -/
 def baseIdeal : Ideal P :=
@@ -356,12 +362,6 @@ def v : A := algebraMap B A V
 @[simp] theorem v_relation : v ^ 2 = algebraMap R A (a ^ 2) * v := by
   change (algebraMap B A V) ^ 2 = algebraMap R A (a ^ 2) * algebraMap B A V
   rw [← map_pow, V_relation, map_mul, IsScalarTower.algebraMap_apply R B A]
-
-instance : Nontrivial B :=
-  Function.Injective.nontrivial QuadraticAlgebra.algebraMap_injective
-
-instance : Nontrivial A :=
-  Function.Injective.nontrivial QuadraticAlgebra.algebraMap_injective
 
 noncomputable instance : Module.Free R A :=
   Module.Free.trans (R := R) (S := B) (M := A)
@@ -1211,6 +1211,26 @@ theorem counterexample :
   apply powerMap_four_U_ne_zero
   have hU := DFunLike.congr_fun h U
   simpa using hU
+
+/-- **Grothendieck's question has a negative answer.**  Grothendieck asked whether every finite
+locally free group scheme of order `n` is killed by `n` — equivalently, whether the `n`-th
+convolution power of the identity of a commutative Hopf algebra that is free of rank `n` over
+the base ring is always the convolution unit `1` (the composite of the counit with the unit).
+This is false: there is a nontrivial commutative ring `S` and a commutative `S`-Hopf algebra
+`H`, free of finite rank over `S`, whose `(Module.finrank S H)`-th convolution power of the
+identity is not the convolution unit.  The witness is the rank-four Hopf algebra `A` over `R`;
+see `counterexample`. -/
+theorem exists_hopfAlgebra_not_killed_by_finrank :
+    ∃ (S : Type) (_ : CommRing S) (_ : Nontrivial S) (H : Type) (_ : CommRing H)
+      (_ : HopfAlgebra S H) (_ : Module.Free S H) (_ : Module.Finite S H),
+        0 < Module.finrank S H ∧
+          WithConv.toConv (AlgHom.id S H) ^ Module.finrank S H ≠ 1 := by
+  refine ⟨R, inferInstance, inferInstance, A, inferInstance, inferInstance, inferInstance,
+    inferInstance, ?_, ?_⟩
+  · rw [finrank_A]; norm_num
+  · rw [finrank_A]
+    have h8 : orderOf (WithConv.toConv (AlgHom.id R A)) = 8 := orderOf_universalPoint
+    exact pow_ne_one_of_lt_orderOf (by norm_num) (by rw [h8]; norm_num)
 
 /-!
 ### Non-cocommutativity
