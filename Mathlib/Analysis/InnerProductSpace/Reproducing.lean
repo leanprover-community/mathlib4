@@ -11,6 +11,7 @@ public import Mathlib.Analysis.Normed.Lp.WithLp
 public import Mathlib.MeasureTheory.Measure.Typeclasses.Finite
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 public import Mathlib.MeasureTheory.Integral.Prod
+public import Mathlib.MeasureTheory.Function.L2Space
 
 /-!
 # Reproducing Kernel Hilbert Spaces
@@ -393,7 +394,7 @@ private lemma integralOperatorAux_integrable_ae
 variable [SMulCommClass ℝ 𝕜 V]
 
 -- The integral operator as a continuous linear map from L^2 to L^2
-def integralOperator (hK : MemLp (fun ((x, y) : X × X) ↦ K x y) 2 (μ.prod μ)) :
+def integralOperator' (hK : MemLp (fun ((x, y) : X × X) ↦ K x y) 2 (μ.prod μ)) :
     Lp V 2 μ →L[𝕜] Lp V 2 μ :=
   LinearMap.mkContinuous
     { toFun f := MemLp.toLp (fun x => ∫ y, K x y (f y) ∂μ)
@@ -426,6 +427,43 @@ def integralOperator (hK : MemLp (fun ((x, y) : X × X) ↦ K x y) 2 (μ.prod μ
       rw [← lt_top_iff_ne_top]
       refine ENNReal.mul_lt_top hK.2 f.2
     )
+
+variable (hK : MemLp (fun p : X × X => K p.1 p.2) 2 (μ.prod μ))
+
+variable [SMulCommClass ℝ 𝕜 𝕜]
+
+def mercerForm : Lp V 2 μ →L[𝕜] Lp V 2 μ →L[𝕜] 𝕜 := LinearMap.mkContinuous₂
+  (LinearMap.mk₂ 𝕜
+    (fun (f : Lp V 2 μ) (g : Lp V 2 μ) ↦ ∫ p : X × X, ⟪K p.1 p.2 (f p.2), (g p.1)⟫_𝕜 ∂ (μ.prod μ))
+    (fun f₁ f₂ g ↦ by
+      rw [← integral_add (by sorry) (by sorry)]
+      simp_rw [← inner_add_left]
+      simp_rw [← map_add]
+      sorry)
+    (fun c f g ↦ by
+      -- rw [← integral_smul]
+      sorry)
+    (fun f g₁ g₂ ↦ by
+      rw [← integral_add (by sorry) (by sorry)]
+      simp_rw [← inner_add_right]
+      sorry)
+    (fun c f g ↦ by
+      -- rw [← integral_smul]
+      sorry))
+  (eLpNorm (fun p : X × X => K p.1 p.2) 2 (μ.prod μ)).toReal
+  (fun f g ↦ by
+    simp
+    have := hK
+    sorry)
+
+def integralOperator : Lp V 2 μ →L[𝕜] Lp V 2 μ := LinearMap.mkContinuous
+  {
+    toFun := fun (f : Lp V 2 μ) ↦ (InnerProductSpace.toDual 𝕜 (Lp V 2 μ)).symm (mercerForm μ hK f)
+    map_add' f g := by ext; simp
+    map_smul' c f := by ext; simp; sorry
+  }
+  (eLpNorm (fun p : X × X => K p.1 p.2) 2 (μ.prod μ)).toReal
+  (fun f ↦ by simp; sorry)
 
 end Mercer
 
