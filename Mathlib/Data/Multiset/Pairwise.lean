@@ -15,16 +15,19 @@ This file provides basic results about `Multiset.Pairwise` (definitions are in
 `Mathlib/Data/Multiset/Defs.lean`).
 -/
 
-public section
+@[expose] public section
 
 namespace Multiset
 
-variable {α : Type*} {r : α → α → Prop} {s : Multiset α}
+variable {α : Type*} {r : α → α → Prop} {s : Multiset α} [Std.Symm r]
 
-theorem Pairwise.forall [Std.Symm r] (hs : s.Pairwise r) :
-    ∀ ⦃a⦄, a ∈ s → ∀ ⦃b⦄, b ∈ s → a ≠ b → r a b :=
+theorem Pairwise.forall (hs : s.Pairwise r) : ∀ ⦃a⦄, a ∈ s → ∀ ⦃b⦄, b ∈ s → a ≠ b → r a b :=
   have h : List.Pairwise r s.toList := by grind [pairwise_coe_iff_pairwise, coe_toList]
   fun a ha b hb => List.Pairwise.forall h (by simp [ha]) (by simp [hb])
 
+instance instDecidablePairwise [DecidableRel r] : Decidable (s.Pairwise r) :=
+  s.recOnSubsingleton (fun l ↦ (inferInstance : Decidable (l.Pairwise r)))
+
+variable [DecidableRel r]
 
 end Multiset
