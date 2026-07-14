@@ -159,7 +159,6 @@ lemma absNorm_eq_pow_inertiaDeg'_of_liesOver {S : Type*} [CommRing S] [IsDedekin
     (P : Ideal R) (p : Ideal S) [P.LiesOver p] (hp : p.IsPrime) (hp_ne_bot : p ≠ ⊥) :
     absNorm P = absNorm p ^ (p.inertiaDeg' P) := by
   have : p.IsMaximal := hp.isMaximal hp_ne_bot
-  let _ : Field (S ⧸ p) := Quotient.field p
   simpa [absNorm_apply, Submodule.cardQuot_apply] using Module.natCard_eq_pow_finrank (K := S ⧸ p)
 
 @[deprecated (since := "2026-07-03")] alias absNorm_eq_pow_inertiaDeg_of_liesOver :=
