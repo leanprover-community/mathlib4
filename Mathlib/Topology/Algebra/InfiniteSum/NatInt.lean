@@ -173,7 +173,7 @@ theorem rel_iSup_prod [CompleteLattice α] (m : α → M) (m0 : m ⊥ = 1) (R : 
 theorem rel_sup_mul [CompleteLattice α] (m : α → M) (m0 : m ⊥ = 1) (R : M → M → Prop)
     (m_iSup : ∀ s : ℕ → α, R (m (⨆ i, s i)) (∏' i, m (s i))) (s₁ s₂ : α) :
     R (m (s₁ ⊔ s₂)) (m s₁ * m s₂) := by
-  convert rel_iSup_tprod m m0 R m_iSup fun b ↦ cond b s₁ s₂
+  convert! rel_iSup_tprod m m0 R m_iSup fun b ↦ cond b s₁ s₂
   · simp only [iSup_bool_eq, cond]
   · rw [tprod_fintype, Fintype.prod_bool, cond, cond]
 
@@ -542,8 +542,26 @@ lemma multipliable_pnat_iff_multipliable_nat [TopologicalSpace G] [IsTopological
   rw [multipliable_pnat_iff_multipliable_succ, multipliable_nat_add_iff]
 
 @[to_additive]
+theorem hasProd_pnat_iff_hasProd_succ {f : ℕ → M} :
+    HasProd (fun x : ℕ+ ↦ f x) m ↔ HasProd (fun x : ℕ ↦ f (x + 1)) m :=
+  Equiv.pnatEquivNat.symm.hasProd_iff.symm
+
+@[to_additive]
+theorem hasProd_pnat_iff [TopologicalSpace G] [IsTopologicalGroup G] {f : ℕ → G} {a : G} :
+    HasProd (fun x : ℕ+ ↦ f x) a ↔ HasProd f (a * f 0) := by
+  simp [hasProd_pnat_iff_hasProd_succ, hasProd_nat_add_iff]
+
+@[to_additive]
 theorem tprod_pnat_eq_tprod_succ {f : ℕ → M} : ∏' n : ℕ+, f n = ∏' n, f (n + 1) :=
   (Equiv.pnatEquivNat.symm.tprod_eq _).symm
+
+@[to_additive]
+theorem tprod_pnat_eq_tprod_of_eq_one {f : ℕ → M} (hf : f 0 = 1) :
+    ∏' n : ℕ+, f n = ∏' n : ℕ, f n :=
+  PNat.coe_injective.tprod_eq fun n hn ↦ by
+    rcases Nat.eq_zero_or_pos n with rfl | h
+    · exact absurd hf hn
+    · exact ⟨⟨n, h⟩, rfl⟩
 
 @[to_additive]
 lemma tprod_zero_pnat_eq_tprod_nat [TopologicalSpace G] [IsTopologicalGroup G] [T2Space G]

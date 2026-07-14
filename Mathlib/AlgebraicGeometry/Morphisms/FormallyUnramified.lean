@@ -20,7 +20,7 @@ We show that these properties are local, and are stable under compositions and b
 
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section
@@ -163,7 +163,7 @@ instance [FormallyUnramified f] [LocallyOfFiniteType f] (x : X) :
   suffices h : Algebra.IsSeparable
       (IsLocalRing.ResidueField <| Y.presheaf.stalk (f x))
       (IsLocalRing.ResidueField <| X.presheaf.stalk x) by
-    convert h
+    convert! h
     refine Algebra.algebra_ext _ _ fun x ↦ ?_
     obtain ⟨x, rfl⟩ := IsLocalRing.residue_surjective x
     rfl
@@ -212,7 +212,7 @@ protected lemma hom_ext {Z' Z : Scheme} (i : Z' ⟶ Z) (hi : IsNilpotent i.ker) 
       Scheme.Hom.appLE_comp_appLE]⟩
   let ψ₂ : Γ(X, V) →ₐ[Γ(Y, U)] Γ(Z, W) := ⟨(g₂.appLE _ _ (hWV.trans inf_le_right)).hom, fun r ↦ by
     simp [RingHom.algebraMap_toAlgebra, ← CategoryTheory.comp_apply, -CommRingCat.hom_comp,
-      Scheme.Hom.appLE_comp_appLE, hgf, - Scheme.Hom.comp_appLE]⟩
+      Scheme.Hom.appLE_comp_appLE, hgf, -Scheme.Hom.comp_appLE]⟩
   suffices ψ₁ = ψ₂ by
     simpa [ψ₁, ψ₂, -Iso.cancel_iso_hom_left, IsAffineOpen.isoSpec_hom] using
       congr(hW.isoSpec.hom ≫ Spec.map (CommRingCat.ofHom ($this).toRingHom) ≫ hV.fromSpec)
@@ -220,7 +220,7 @@ protected lemma hom_ext {Z' Z : Scheme} (i : Z' ⟶ Z) (hi : IsNilpotent i.ker) 
   · obtain ⟨n, hn⟩ := hi
     exact ⟨n, by simpa using congr(($hn).ideal ⟨W, hW⟩)⟩
   · simp [ψ₁, ψ₂, ← CategoryTheory.comp_apply, -CommRingCat.hom_comp, hig,
-      Scheme.Hom.app_eq_appLE, Scheme.Hom.appLE_comp_appLE, - Scheme.Hom.comp_appLE]
+      Scheme.Hom.app_eq_appLE, Scheme.Hom.appLE_comp_appLE, -Scheme.Hom.comp_appLE]
 
 /--
 To show that `f : X ⟶ Y` is formally unramified,

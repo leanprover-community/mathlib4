@@ -65,7 +65,7 @@ scoped instance (X : C) : TopologicalSpace (Aut (F.obj X)) := ⊥
 /-- We give `F.obj X  ⟶ F.obj Y` the product topology. -/
 @[local simp]
 scoped instance {X Y : C} : TopologicalSpace (F.obj X ⟶ F.obj Y) :=
-  .coinduced (fun f ↦ ObjectProperty.homMk (TypeCat.ofHom f)) inferInstance
+  .coinduced (fun f ↦ ObjectProperty.homMk (↾f)) inferInstance
 
 scoped instance {X Y : C} : DiscreteTopology (F.obj X ⟶ F.obj Y) :=
   ⟨by simp [DiscreteTopology.eq_bot]⟩
@@ -92,7 +92,7 @@ lemma autEmbedding_range :
     Set.range (autEmbedding F) = ⋂ (f : Arrow C), { a | F.map f.hom ≫ (a f.right).hom =
       (a f.left).hom ≫ F.map f.hom } := by
   ext a
-  simp +instances only [Set.mem_range, Set.mem_iInter, Set.mem_setOf_eq]
+  simp only [Set.mem_range, Set.mem_iInter, Set.mem_setOf_eq]
   refine ⟨fun ⟨σ, h⟩ i ↦ by cat_disch, fun h ↦ ?_⟩
   exact ⟨NatIso.ofComponents a (fun {X Y} f ↦ by
     ext; simpa using ConcreteCategory.congr_hom (h ⟨X, Y, f⟩) _), rfl⟩

@@ -220,7 +220,7 @@ theorem exists_pow_ne_one_of_isCyclic [G_cyclic : IsCyclic G]
   rcases G_cyclic with ⟨a, ha⟩
   use a
   contrapose! k_lt_card_G
-  convert orderOf_le_of_pow_eq_one k_pos.bot_lt k_lt_card_G
+  convert! orderOf_le_of_pow_eq_one k_pos.bot_lt k_lt_card_G
   rw [← Nat.card_zpowers, eq_comm, card_eq_iff_eq_top, eq_top_iff]
   exact fun x _ ↦ ha x
 
@@ -414,7 +414,6 @@ theorem IsCyclic.image_range_card (ha : ∀ x : α, x ∈ zpowers a) :
 @[to_additive]
 lemma IsCyclic.ext [Finite G] [IsCyclic G] {d : ℕ} {a b : ZMod d}
     (hGcard : Nat.card G = d) (h : ∀ t : G, t ^ a.val = t ^ b.val) : a = b := by
-  have : NeZero (Nat.card G) := ⟨Nat.card_pos.ne'⟩
   obtain ⟨g, hg⟩ := IsCyclic.exists_generator (α := G)
   specialize h g
   subst hGcard

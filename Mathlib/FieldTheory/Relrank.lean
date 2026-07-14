@@ -112,7 +112,7 @@ theorem relrank_mul_rank_top (h : A ≤ B) : relrank A B * Module.rank B E = Mod
   exact rank_mul_rank A B E
 
 theorem relfinrank_mul_finrank_top (h : A ≤ B) : relfinrank A B * finrank B E = finrank A E := by
-  simpa using congr(toNat $(relrank_mul_rank_top h))
+  simpa using! congr(toNat $(relrank_mul_rank_top h))
 
 variable (A B)
 
@@ -124,7 +124,6 @@ theorem relfinrank_top_left : relfinrank ⊤ A = 1 := relfinrank_eq_one_of_le le
 
 @[simp]
 theorem relrank_top_right : relrank A ⊤ = Module.rank A E := by
-  let _ : AddCommMonoid (⊤ : IntermediateField A E) := inferInstance
   rw [relrank_eq_rank_of_le (show A ≤ ⊤ from le_top), extendScalars_top,
     IntermediateField.topEquiv.toLinearEquiv.rank_eq]
 
@@ -153,7 +152,7 @@ theorem relrank_comap {L : Type v} [Field L] (f : L →+* E)
 
 theorem relfinrank_comap (f : L →+* E) (B : Subfield L) :
     relfinrank (A.comap f) B = relfinrank A (B.map f) := by
-  simpa using congr(toNat $(lift_relrank_comap A f B))
+  simpa using! congr(toNat $(lift_relrank_comap A f B))
 
 theorem lift_rank_comap (f : L →+* E) :
     lift.{v} (Module.rank (A.comap f) L) = lift.{w} (relrank A f.fieldRange) := by
@@ -164,11 +163,11 @@ theorem rank_comap {L : Type v} [Field L] (f : L →+* E) :
   simpa only [lift_id] using A.lift_rank_comap f
 
 theorem finrank_comap (f : L →+* E) : finrank (A.comap f) L = relfinrank A f.fieldRange := by
-  simpa using congr(toNat $(lift_rank_comap A f))
+  simpa using! congr(toNat $(lift_rank_comap A f))
 
 theorem relfinrank_map_map (f : E →+* L) :
     relfinrank (A.map f) (B.map f) = relfinrank A B := by
-  simpa using congr(toNat $(lift_relrank_map_map A B f))
+  simpa using! congr(toNat $(lift_relrank_map_map A B f))
 
 theorem lift_relrank_comap_comap_eq_lift_relrank_inf (f : L →+* E) :
     lift.{v} (relrank (A.comap f) (B.comap f)) =
@@ -185,7 +184,7 @@ theorem relrank_comap_comap_eq_relrank_inf
 
 theorem relfinrank_comap_comap_eq_relfinrank_inf (f : L →+* E) :
     relfinrank (A.comap f) (B.comap f) = relfinrank A (B ⊓ f.fieldRange) := by
-  simpa using congr(toNat $(lift_relrank_comap_comap_eq_lift_relrank_inf A B f))
+  simpa using! congr(toNat $(lift_relrank_comap_comap_eq_lift_relrank_inf A B f))
 
 theorem lift_relrank_comap_comap_eq_lift_relrank_of_le (f : L →+* E) (h : B ≤ f.fieldRange) :
     lift.{v} (relrank (A.comap f) (B.comap f)) =
@@ -199,7 +198,7 @@ theorem relrank_comap_comap_eq_relrank_of_le
 
 theorem relfinrank_comap_comap_eq_relfinrank_of_le (f : L →+* E) (h : B ≤ f.fieldRange) :
     relfinrank (A.comap f) (B.comap f) = relfinrank A B := by
-  simpa using congr(toNat $(lift_relrank_comap_comap_eq_lift_relrank_of_le A B f h))
+  simpa using! congr(toNat $(lift_relrank_comap_comap_eq_lift_relrank_of_le A B f h))
 
 theorem lift_relrank_comap_comap_eq_lift_relrank_of_surjective
     (f : L →+* E) (h : Function.Surjective f) :
@@ -215,7 +214,7 @@ theorem relrank_comap_comap_eq_relrank_of_surjective
 theorem relfinrank_comap_comap_eq_relfinrank_of_surjective
     (f : L →+* E) (h : Function.Surjective f) :
     relfinrank (A.comap f) (B.comap f) = relfinrank A B := by
-  simpa using congr(toNat $(lift_relrank_comap_comap_eq_lift_relrank_of_surjective A B f h))
+  simpa using! congr(toNat $(lift_relrank_comap_comap_eq_lift_relrank_of_surjective A B f h))
 
 variable {A B} in
 theorem relrank_dvd_rank_top_of_le (h : A ≤ B) : relrank A B ∣ Module.rank A E :=
@@ -239,7 +238,7 @@ theorem relrank_mul_relrank (h1 : A ≤ B) (h2 : B ≤ C) :
 variable {A B C} in
 theorem relfinrank_mul_relfinrank (h1 : A ≤ B) (h2 : B ≤ C) :
     relfinrank A B * relfinrank B C = relfinrank A C := by
-  simpa using congr(toNat $(relrank_mul_relrank h1 h2))
+  simpa using! congr(toNat $(relrank_mul_relrank h1 h2))
 
 theorem relrank_inf_mul_relrank : A.relrank (B ⊓ C) * B.relrank C = (A ⊓ B).relrank C := by
   rw [← inf_relrank_right A (B ⊓ C), ← inf_relrank_right B C, ← inf_relrank_right (A ⊓ B) C,
@@ -247,7 +246,7 @@ theorem relrank_inf_mul_relrank : A.relrank (B ⊓ C) * B.relrank C = (A ⊓ B).
 
 theorem relfinrank_inf_mul_relfinrank :
     A.relfinrank (B ⊓ C) * B.relfinrank C = (A ⊓ B).relfinrank C := by
-  simpa using congr(toNat $(relrank_inf_mul_relrank A B C))
+  simpa using! congr(toNat $(relrank_inf_mul_relrank A B C))
 
 variable {B C} in
 theorem relrank_mul_relrank_eq_inf_relrank (h : B ≤ C) :
@@ -257,7 +256,7 @@ theorem relrank_mul_relrank_eq_inf_relrank (h : B ≤ C) :
 variable {B C} in
 theorem relfinrank_mul_relfinrank_eq_inf_relfinrank (h : B ≤ C) :
     relfinrank A B * relfinrank B C = (A ⊓ B).relfinrank C := by
-  simpa using congr(toNat $(relrank_mul_relrank_eq_inf_relrank A h))
+  simpa using! congr(toNat $(relrank_mul_relrank_eq_inf_relrank A h))
 
 variable {A B} in
 theorem relrank_inf_mul_relrank_of_le (h : A ≤ B) :
@@ -267,7 +266,7 @@ theorem relrank_inf_mul_relrank_of_le (h : A ≤ B) :
 variable {A B} in
 theorem relfinrank_inf_mul_relfinrank_of_le (h : A ≤ B) :
     A.relfinrank (B ⊓ C) * B.relfinrank C = A.relfinrank C := by
-  simpa using congr(toNat $(relrank_inf_mul_relrank_of_le C h))
+  simpa using! congr(toNat $(relrank_inf_mul_relrank_of_le C h))
 
 variable {A B} in
 theorem relrank_dvd_of_le_left (h : A ≤ B) : B.relrank C ∣ A.relrank C :=
@@ -357,7 +356,7 @@ theorem rank_comap {L : Type v} [Field L] [Algebra F L] (f : L →ₐ[F] E) :
   simpa only [lift_id] using A.lift_rank_comap f
 
 theorem finrank_comap (f : L →ₐ[F] E) : finrank (A.comap f) L = relfinrank A f.fieldRange := by
-  simpa using congr(toNat $(lift_rank_comap A f))
+  simpa using! congr(toNat $(lift_rank_comap A f))
 
 theorem lift_relrank_comap (f : L →ₐ[F] E) (B : IntermediateField F L) :
     Cardinal.lift.{v} (relrank (A.comap f) B) = Cardinal.lift.{w} (relrank A (B.map f)) :=
@@ -369,7 +368,7 @@ theorem relrank_comap {L : Type v} [Field L] [Algebra F L] (f : L →ₐ[F] E)
 
 theorem relfinrank_comap (f : L →ₐ[F] E) (B : IntermediateField F L) :
     relfinrank (A.comap f) B = relfinrank A (B.map f) := by
-  simpa using congr(toNat $(lift_relrank_comap A f B))
+  simpa using! congr(toNat $(lift_relrank_comap A f B))
 
 theorem lift_relrank_map_map (f : E →ₐ[F] L) :
     Cardinal.lift.{v} (relrank (A.map f) (B.map f)) = Cardinal.lift.{w} (relrank A B) := by
@@ -381,7 +380,7 @@ theorem relrank_map_map {L : Type v} [Field L] [Algebra F L] (f : E →ₐ[F] L)
 
 theorem relfinrank_map_map (f : E →ₐ[F] L) :
     relfinrank (A.map f) (B.map f) = relfinrank A B := by
-  simpa using congr(toNat $(lift_relrank_map_map A B f))
+  simpa using! congr(toNat $(lift_relrank_map_map A B f))
 
 theorem lift_relrank_comap_comap_eq_lift_relrank_inf (f : L →ₐ[F] E) :
     Cardinal.lift.{v} (relrank (A.comap f) (B.comap f)) =
@@ -395,7 +394,7 @@ theorem relrank_comap_comap_eq_relrank_inf
 
 theorem relfinrank_comap_comap_eq_relfinrank_inf (f : L →ₐ[F] E) :
     relfinrank (A.comap f) (B.comap f) = relfinrank A (B ⊓ f.fieldRange) := by
-  simpa using congr(toNat $(lift_relrank_comap_comap_eq_lift_relrank_inf A B f))
+  simpa using! congr(toNat $(lift_relrank_comap_comap_eq_lift_relrank_inf A B f))
 
 theorem lift_relrank_comap_comap_eq_lift_relrank_of_le (f : L →ₐ[F] E) (h : B ≤ f.fieldRange) :
     Cardinal.lift.{v} (relrank (A.comap f) (B.comap f)) = Cardinal.lift.{w} (relrank A B) := by
@@ -408,7 +407,7 @@ theorem relrank_comap_comap_eq_relrank_of_le
 
 theorem relfinrank_comap_comap_eq_relfinrank_of_le (f : L →ₐ[F] E) (h : B ≤ f.fieldRange) :
     relfinrank (A.comap f) (B.comap f) = relfinrank A B := by
-  simpa using congr(toNat $(lift_relrank_comap_comap_eq_lift_relrank_of_le A B f h))
+  simpa using! congr(toNat $(lift_relrank_comap_comap_eq_lift_relrank_of_le A B f h))
 
 theorem lift_relrank_comap_comap_eq_lift_relrank_of_surjective
     (f : L →ₐ[F] E) (h : Function.Surjective f) :
@@ -423,7 +422,7 @@ theorem relrank_comap_comap_eq_relrank_of_surjective
 theorem relfinrank_comap_comap_eq_relfinrank_of_surjective
     (f : L →ₐ[F] E) (h : Function.Surjective f) :
     relfinrank (A.comap f) (B.comap f) = relfinrank A B := by
-  simpa using congr(toNat $(lift_relrank_comap_comap_eq_lift_relrank_of_surjective A B f h))
+  simpa using! congr(toNat $(lift_relrank_comap_comap_eq_lift_relrank_of_surjective A B f h))
 
 variable {A B} in
 theorem relrank_mul_rank_top (h : A ≤ B) : relrank A B * Module.rank B E = Module.rank A E :=
@@ -431,7 +430,7 @@ theorem relrank_mul_rank_top (h : A ≤ B) : relrank A B * Module.rank B E = Mod
 
 variable {A B} in
 theorem relfinrank_mul_finrank_top (h : A ≤ B) : relfinrank A B * finrank B E = finrank A E := by
-  simpa using congr(toNat $(relrank_mul_rank_top h))
+  simpa using! congr(toNat $(relrank_mul_rank_top h))
 
 variable {A B} in
 theorem rank_bot_mul_relrank (h : A ≤ B) : Module.rank F A * relrank A B = Module.rank F B := by
@@ -441,7 +440,7 @@ theorem rank_bot_mul_relrank (h : A ≤ B) : Module.rank F A * relrank A B = Mod
 
 variable {A B} in
 theorem finrank_bot_mul_relfinrank (h : A ≤ B) : finrank F A * relfinrank A B = finrank F B := by
-  simpa using congr(toNat $(rank_bot_mul_relrank h))
+  simpa using! congr(toNat $(rank_bot_mul_relrank h))
 
 variable {A B} in
 theorem relrank_dvd_rank_top_of_le (h : A ≤ B) : relrank A B ∣ Module.rank A E :=
@@ -465,14 +464,14 @@ theorem relrank_mul_relrank (h1 : A ≤ B) (h2 : B ≤ C) :
 variable {A B C} in
 theorem relfinrank_mul_relfinrank (h1 : A ≤ B) (h2 : B ≤ C) :
     relfinrank A B * relfinrank B C = relfinrank A C := by
-  simpa using congr(toNat $(relrank_mul_relrank h1 h2))
+  simpa using! congr(toNat $(relrank_mul_relrank h1 h2))
 
 theorem relrank_inf_mul_relrank : A.relrank (B ⊓ C) * B.relrank C = (A ⊓ B).relrank C :=
   Subfield.relrank_inf_mul_relrank A.toSubfield B.toSubfield C.toSubfield
 
 theorem relfinrank_inf_mul_relfinrank :
     A.relfinrank (B ⊓ C) * B.relfinrank C = (A ⊓ B).relfinrank C := by
-  simpa using congr(toNat $(relrank_inf_mul_relrank A B C))
+  simpa using! congr(toNat $(relrank_inf_mul_relrank A B C))
 
 variable {B C} in
 theorem relrank_mul_relrank_eq_inf_relrank (h : B ≤ C) :
@@ -482,7 +481,7 @@ theorem relrank_mul_relrank_eq_inf_relrank (h : B ≤ C) :
 variable {B C} in
 theorem relfinrank_mul_relfinrank_eq_inf_relfinrank (h : B ≤ C) :
     relfinrank A B * relfinrank B C = (A ⊓ B).relfinrank C := by
-  simpa using congr(toNat $(relrank_mul_relrank_eq_inf_relrank A h))
+  simpa using! congr(toNat $(relrank_mul_relrank_eq_inf_relrank A h))
 
 variable {A B} in
 theorem relrank_inf_mul_relrank_of_le (h : A ≤ B) :
@@ -492,7 +491,7 @@ theorem relrank_inf_mul_relrank_of_le (h : A ≤ B) :
 variable {A B} in
 theorem relfinrank_inf_mul_relfinrank_of_le (h : A ≤ B) :
     A.relfinrank (B ⊓ C) * B.relfinrank C = A.relfinrank C := by
-  simpa using congr(toNat $(relrank_inf_mul_relrank_of_le C h))
+  simpa using! congr(toNat $(relrank_inf_mul_relrank_of_le C h))
 
 @[simp]
 theorem relrank_top_left : relrank ⊤ A = 1 := relrank_eq_one_of_le le_top

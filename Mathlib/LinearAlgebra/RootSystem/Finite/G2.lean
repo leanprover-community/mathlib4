@@ -110,6 +110,7 @@ lemma not_isG2_iff_isNotG2 :
   · specialize h i j
     lia
 
+set_option linter.overlappingInstances false in
 lemma IsG2.pairingIn_mem_zero_one_three [P.IsG2]
     (i j : ι) (h : P.root i ≠ P.root j) (h' : P.root i ≠ -P.root j) :
     P.pairingIn ℤ i j ∈ ({-3, -1, 0, 1, 3} : Set ℤ) := by
@@ -580,7 +581,7 @@ include P in
 lemma card_index_eq_twelve :
     Nat.card ι = 12 := by
   classical
-  have this : Nat.card (allRoots P).toFinset = 12 := by
+  have : Nat.card (allRoots P).toFinset = 12 := by
     rw [Nat.card_eq_fintype_card, Fintype.card_coe, toFinset_card_of_nodup (allRoots_nodup P)]
     simp
   rw [← this]

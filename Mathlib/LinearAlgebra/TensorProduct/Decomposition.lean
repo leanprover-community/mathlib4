@@ -15,7 +15,7 @@ then the `S`-module `S ⊗[R] M` has a decomposition `fun i ↦ (ℳ i).baseChan
 same `ι`.
 -/
 
-@[expose] public section
+public section
 
 open TensorProduct LinearMap
 

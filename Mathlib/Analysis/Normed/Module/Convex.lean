@@ -27,7 +27,7 @@ We prove the following facts:
   is bounded.
 -/
 
-@[expose] public section
+public section
 
 -- TODO assert_not_exists Cardinal
 
@@ -54,7 +54,7 @@ theorem convexOn_univ_norm : ConvexOn ℝ univ (norm : E → ℝ) :=
   convexOn_norm convex_univ
 
 theorem convexOn_dist (z : E) (hs : Convex ℝ s) : ConvexOn ℝ s fun z' => dist z' z := by
-  simpa [dist_eq_norm, preimage_preimage] using
+  simpa [dist_eq_norm, preimage_preimage] using!
     (convexOn_norm (hs.translate (-z))).comp_affineMap (AffineMap.id ℝ E - AffineMap.const ℝ E z)
 
 theorem convexOn_univ_dist (z : E) : ConvexOn ℝ univ fun z' => dist z' z :=

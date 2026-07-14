@@ -10,6 +10,7 @@ public import Mathlib.CategoryTheory.Monoidal.CoherenceLemmas
 public import Mathlib.CategoryTheory.Adjunction.Limits
 public import Mathlib.CategoryTheory.Adjunction.Mates
 public import Mathlib.CategoryTheory.Adjunction.Parametrized
+public import Mathlib.Tactic.BDSimp
 
 /-!
 # Closed monoidal categories
@@ -83,6 +84,9 @@ def adjunction : tensorLeft A ⊣ ihom A :=
 
 instance : (tensorLeft A).IsLeftAdjoint :=
   (ihom.adjunction A).isLeftAdjoint
+
+instance : (ihom A).IsRightAdjoint :=
+  (ihom.adjunction A).isRightAdjoint
 
 /-- The evaluation natural transformation. -/
 def ev : ihom A ⋙ tensorLeft A ⟶ 𝟭 C :=
@@ -206,6 +210,7 @@ theorem curry_id_eq_coev : curry (𝟙 _) = (ihom.coev A).app X := by
   rw [curry_eq, (ihom A).map_id (A ⊗ _)]
   apply comp_id
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma whiskerLeft_curry_ihom_ev_app (g : A ⊗ Y ⟶ X) :
@@ -287,6 +292,11 @@ def internalHom [MonoidalClosed C] : Cᵒᵖ ⥤ C ⥤ C where
   obj X := ihom X.unop
   map f := pre f.unop
 
+instance [MonoidalClosed C] (X : Cᵒᵖ) : (internalHom.obj X).IsRightAdjoint := by
+  bdsimp
+  infer_instance
+
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The parametrized adjunction between `curriedTensor C : C ⥤ C ⥤ C`
 and `internalHom : Cᵒᵖ ⥤ C ⥤ C` -/
@@ -311,6 +321,7 @@ noncomputable def ofEquiv : MonoidalClosed C where
           adj.toEquivalence.symm.toAdjunction)).ofNatIsoLeft
             (Iso.compInverseIso (H := adj.toEquivalence) (Functor.Monoidal.commTensorLeft F X)) }
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Suppose we have a monoidal equivalence `F : C ≌ D`, with `D` monoidal closed. We can pull the
 monoidal closed instance back along the equivalence. For `X, Y, Z : C`, this lemma describes the
 resulting currying map `Hom(X ⊗ Y, Z) → Hom(Y, (X ⟶[C] Z))`. (`X ⟶[C] Z` is defined to be
@@ -331,6 +342,7 @@ theorem ofEquiv_curry_def {X Y Z : C} (f : X ⊗ Y ⟶ Z) :
   rw [Adjunction.comp_homEquiv, Adjunction.comp_homEquiv]
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Suppose we have a monoidal equivalence `F : C ≌ D`, with `D` monoidal closed. We can pull the
 monoidal closed instance back along the equivalence. For `X, Y, Z : C`, this lemma describes the
 resulting uncurrying map `Hom(Y, (X ⟶[C] Z)) → Hom(X ⊗ Y ⟶ Z)`. (`X ⟶[C] Z` is

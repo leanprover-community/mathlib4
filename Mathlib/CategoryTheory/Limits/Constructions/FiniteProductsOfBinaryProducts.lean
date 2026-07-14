@@ -53,6 +53,7 @@ def extendFan {n : ℕ} {f : Fin (n + 1) → C} (c₁ : Fan fun i : Fin n => f i
       · intro i
         apply c₂.snd ≫ c₁.π.app ⟨i⟩)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Show that if the two given fans in `extendFan` are limits, then the constructed fan is also a
 limit.
@@ -118,6 +119,7 @@ variable [PreservesLimitsOfShape (Discrete WalkingPair) F]
 variable [PreservesLimitsOfShape (Discrete.{0} PEmpty) F]
 variable [HasFiniteProducts.{v} C]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `F` preserves the terminal object and binary products, then it preserves products indexed by
 `Fin n` for any `n`.
 -/
@@ -134,7 +136,7 @@ lemma preservesFinOfPreservesBinaryAndTerminal :
       preservesLimit_of_preserves_limit_cone
         (extendFanIsLimit f (limit.isLimit _) (limit.isLimit _)) _
     apply (isLimitMapConeFanMkEquiv _ _ _).symm _
-    let this :=
+    let :=
       extendFanIsLimit (fun i => F.obj (f i)) (isLimitOfHasProductOfPreservesLimit F _)
         (isLimitOfHasBinaryProductOfPreservesLimit F _ _)
     refine IsLimit.ofIsoLimit this ?_
@@ -176,6 +178,7 @@ def extendCofan {n : ℕ} {f : Fin (n + 1) → C} (c₁ : Cofan fun i : Fin n =>
       · intro i
         apply c₁.ι.app ⟨i⟩ ≫ c₂.inr)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Show that if the two given cofans in `extendCofan` are colimits,
 then the constructed cofan is also a colimit.
@@ -241,6 +244,7 @@ variable [PreservesColimitsOfShape (Discrete WalkingPair) F]
 variable [PreservesColimitsOfShape (Discrete.{0} PEmpty) F]
 variable [HasFiniteCoproducts.{v} C]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `F` preserves the initial object and binary coproducts, then it preserves products indexed by
 `Fin n` for any `n`.
 -/
@@ -257,7 +261,7 @@ lemma preserves_fin_of_preserves_binary_and_initial :
       preservesColimit_of_preserves_colimit_cocone
         (extendCofanIsColimit f (colimit.isColimit _) (colimit.isColimit _)) _
     apply (isColimitMapCoconeCofanMkEquiv _ _ _).symm _
-    let this :=
+    let :=
       extendCofanIsColimit (fun i => F.obj (f i))
         (isColimitOfHasCoproductOfPreservesColimit F _)
         (isColimitOfHasBinaryCoproductOfPreservesColimit F _ _)

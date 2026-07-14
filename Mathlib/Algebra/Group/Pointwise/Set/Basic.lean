@@ -85,7 +85,7 @@ protected def one : One (Set α) :=
 
 scoped[Pointwise] attribute [instance] Set.one Set.zero
 
-open Pointwise
+open scoped Pointwise
 
 -- TODO: This would be a good simp lemma scoped to `Pointwise`, but it seems `@[simp]` can't be
 -- scoped
@@ -152,7 +152,7 @@ protected def inv [Inv α] : Inv (Set α) :=
 
 scoped[Pointwise] attribute [instance] Set.inv Set.neg
 
-open Pointwise
+open scoped Pointwise
 
 section Inv
 
@@ -279,7 +279,7 @@ end InvolutiveInv
 
 end Inv
 
-open Pointwise
+open scoped Pointwise
 
 /-! ### Set addition/multiplication -/
 
@@ -354,7 +354,7 @@ theorem singleton_mul : {a} * t = (a * ·) '' t :=
 theorem singleton_mul_singleton : ({a} : Set α) * {b} = {a * b} :=
   image2_singleton
 
-@[to_additive (attr := mono, gcongr)]
+@[to_additive]
 theorem mul_subset_mul : s₁ ⊆ t₁ → s₂ ⊆ t₂ → s₁ * s₂ ⊆ t₁ * t₂ :=
   image2_subset
 
@@ -536,6 +536,10 @@ theorem inter_div_union_subset_union : s₁ ∩ s₂ / (t₁ ∪ t₂) ⊆ s₁ 
 theorem union_div_inter_subset_union : (s₁ ∪ s₂) / (t₁ ∩ t₂) ⊆ s₁ / t₁ ∪ s₂ / t₂ :=
   image2_union_inter_subset_union
 
+@[to_additive (attr := simp) prod_sub_prod_comm]
+lemma prod_div_prod_comm [Div β] (s₁ s₂ : Set α) (t₁ t₂ : Set β) :
+    (s₁ ×ˢ t₁) / (s₂ ×ˢ t₂) = (s₁ / s₂) ×ˢ (t₁ / t₂) := by aesop (add simp mem_div)
+
 end Div
 
 -- TODO: rename `NPow` to `npow` and `ZPow` to `zpow`.
@@ -642,7 +646,7 @@ scoped[Pointwise] attribute [instance] Set.monoid Set.addMonoid
 protected lemma pow_right_monotone (hs : 1 ∈ s) : Monotone (s ^ ·) :=
   pow_right_monotone <| one_subset.2 hs
 
-@[to_additive (attr := gcongr)]
+@[to_additive]
 lemma pow_subset_pow_left (hst : s ⊆ t) : s ^ n ⊆ t ^ n := pow_left_mono _ hst
 
 @[to_additive]
@@ -762,7 +766,7 @@ protected def commMonoid [CommMonoid α] : CommMonoid (Set α) :=
 
 scoped[Pointwise] attribute [instance] Set.commMonoid Set.addCommMonoid
 
-open Pointwise
+open scoped Pointwise
 
 section DivisionMonoid
 
@@ -911,6 +915,14 @@ theorem image_mul_left' : (a⁻¹ * ·) '' t = (a * ·) ⁻¹' t := by simp
 @[to_additive]
 theorem image_mul_right' : (· * b⁻¹) '' t = (· * b) ⁻¹' t := by simp
 
+@[to_additive]
+theorem image_div_left : (a / ·) '' t = (·⁻¹ * a) ⁻¹' t := by
+  rw [image_eq_preimage_of_inverse] <;> intro c <;> simp
+
+@[to_additive]
+theorem image_div_right : (· / b) '' t = (· * b) ⁻¹' t := by
+  rw [image_eq_preimage_of_inverse] <;> intro c <;> simp
+
 @[to_additive (attr := simp)]
 theorem preimage_mul_left_singleton : (a * ·) ⁻¹' {b} = {a⁻¹ * b} := by
   rw [← image_mul_left', image_singleton]
@@ -918,6 +930,10 @@ theorem preimage_mul_left_singleton : (a * ·) ⁻¹' {b} = {a⁻¹ * b} := by
 @[to_additive (attr := simp)]
 theorem preimage_mul_right_singleton : (· * a) ⁻¹' {b} = {b * a⁻¹} := by
   rw [← image_mul_right', image_singleton]
+
+@[to_additive (attr := simp)]
+theorem preimage_inv_mul_right_singleton : (·⁻¹ * a) ⁻¹' {b} = {a / b} := by
+  rw [← image_div_left, image_singleton]
 
 @[to_additive (attr := simp)]
 theorem preimage_mul_left_one : (a * ·) ⁻¹' 1 = {a⁻¹} := by

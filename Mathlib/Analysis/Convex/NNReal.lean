@@ -39,6 +39,6 @@ protected lemma convex_iff {M : Type*} [AddCommMonoid M] [Module ℝ M] {s : Set
     Convex ℝ≥0 s ↔ Convex ℝ s := by
   refine ⟨fun H ↦ ?_, Convex.lift ℝ≥0⟩
   intro _ hx _ hy a b ha hb hab
-  exact H hx hy (a := ⟨a, ha⟩) (b := ⟨b, hb⟩) (zero_le _) (zero_le _) (by ext; simpa)
+  exact H hx hy (a := ⟨a, ha⟩) (b := ⟨b, hb⟩) zero_le zero_le (by ext; simpa)
 
 end NNReal
