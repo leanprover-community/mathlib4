@@ -220,7 +220,6 @@ where
       let r : Q(decide ($na * $db ≤ $nb * $da) = true) := (q(Eq.refl true) : Expr)
       return (.isTrue q(isRat_le_true $pa $pb $r))
     else
-      let _i : Q(Nontrivial $α) := q(IsStrictOrderedRing.toNontrivial)
       let r : Q(decide ($nb * $da < $na * $db) = true) := (q(Eq.refl true) : Expr)
       return .isFalse q(isRat_le_false $pa $pb $r)
   match ra, rb with
