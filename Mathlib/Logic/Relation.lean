@@ -433,7 +433,7 @@ alias _root_.LE.le.symmGen := SymmGen.of_le
 alias _root_.LE.le.symmGen_symm := SymmGen.of_ge
 
 @[simp]
-protected theorem eq (h : Std.Symm r) : SymmGen r = r := by
+protected theorem eq [Std.Symm r] : SymmGen r = r := by
   grind [SymmGen, Std.Symm]
 
 end SymmGen
