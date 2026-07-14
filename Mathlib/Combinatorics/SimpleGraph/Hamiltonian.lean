@@ -44,13 +44,13 @@ theorem isHamiltonian_map (hf : Function.Bijective f) :
     (p.map f).IsHamiltonian ↔ p.IsHamiltonian := by
   simp [IsHamiltonian, hf.surjective.forall, hf.injective]
 
-alias ⟨_, IsHamiltonian.map⟩ := isHamiltonian_map
+protected alias ⟨_, IsHamiltonian.map⟩ := isHamiltonian_map
 
 @[simp]
 theorem isHamiltonian_mapLe {H} (hle : G ≤ H) : (p.mapLe hle).IsHamiltonian ↔ p.IsHamiltonian :=
   isHamiltonian_map <| Function.bijective_id
 
-alias ⟨_, IsHamiltonian.mapLe⟩ := isHamiltonian_mapLe
+protected alias ⟨_, IsHamiltonian.mapLe⟩ := isHamiltonian_mapLe
 
 /-- A Hamiltonian path visits every vertex. -/
 @[simp] lemma IsHamiltonian.mem_support (hp : p.IsHamiltonian) (c : α) : c ∈ p.support :=
