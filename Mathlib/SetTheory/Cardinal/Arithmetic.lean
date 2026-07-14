@@ -840,7 +840,7 @@ theorem mk_compl_eq_mk_compl_finite_lift {α : Type u} {β : Type v} [Finite α]
     (h2 : lift.{v, u} #s = lift.{u, v} #t) :
     lift.{v} #(sᶜ : Set α) = lift.{u} #(tᶜ : Set β) := by
   cases nonempty_fintype α
-  rcases lift_mk_eq'.1 h1 with ⟨e⟩; letI : Fintype β := Fintype.ofEquiv α e
+  rcases lift_mk_eq'.1 h1 with ⟨e⟩; let : Fintype β := Fintype.ofEquiv α e
   replace h1 : Fintype.card α = Fintype.card β := (Fintype.ofEquiv_card _).symm
   classical
     lift s to Finset α using s.toFinite
@@ -886,7 +886,7 @@ theorem extend_function_of_lt {α β : Type*} {s : Set α} (f : s ↪ β) (hs : 
   · exact extend_function_finite f h
   · apply extend_function f
     obtain ⟨g⟩ := id h
-    haveI := Infinite.of_injective _ g.injective
+    have := Infinite.of_injective _ g.injective
     rw [← lift_mk_eq'] at h ⊢
     rwa [mk_compl_of_infinite s hs, mk_compl_of_infinite]
     rwa [← lift_lt, mk_range_eq_of_injective f.injective, ← h, lift_lt]

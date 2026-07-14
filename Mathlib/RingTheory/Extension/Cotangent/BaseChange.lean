@@ -74,7 +74,7 @@ lemma tensorCotangentSpace_tmul_tmul (t : T) (s : S) (x : Ω[P.Ring⁄R]) :
     ← mk_apply s x, IsTensorProduct.assocOfMapSMul_symm_tmul]
   simp only [mk_apply, AlgebraTensorModule.cancelBaseChange_symm_tmul,
     AlgebraTensorModule.congr_tmul, LinearEquiv.refl_apply]
-  have this : x ∈ Submodule.span P.Ring (Set.range (KaehlerDifferential.D R P.Ring)) := by
+  have : x ∈ Submodule.span P.Ring (Set.range (KaehlerDifferential.D R P.Ring)) := by
     rw [KaehlerDifferential.span_range_derivation]
     trivial
   induction this using Submodule.span_induction with

@@ -468,7 +468,7 @@ is a valuation ring. -/
 theorem of_integers (v : Valuation K Γ) (hh : v.Integers 𝒪) :
     haveI := hh.hom_inj.isDomain
     ValuationRing 𝒪 := by
-  haveI := hh.hom_inj.isDomain
+  have := hh.hom_inj.isDomain
   suffices PreValuationRing 𝒪 from .mk
   constructor
   intro a b

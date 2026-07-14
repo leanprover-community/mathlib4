@@ -92,7 +92,7 @@ lemma autEmbedding_range :
     Set.range (autEmbedding F) = ⋂ (f : Arrow C), { a | F.map f.hom ≫ (a f.right).hom =
       (a f.left).hom ≫ F.map f.hom } := by
   ext a
-  simp +instances only [Set.mem_range, Set.mem_iInter, Set.mem_setOf_eq]
+  simp only [Set.mem_range, Set.mem_iInter, Set.mem_setOf_eq]
   refine ⟨fun ⟨σ, h⟩ i ↦ by cat_disch, fun h ↦ ?_⟩
   exact ⟨NatIso.ofComponents a (fun {X Y} f ↦ by
     ext; simpa using ConcreteCategory.congr_hom (h ⟨X, Y, f⟩) _), rfl⟩
@@ -209,8 +209,8 @@ lemma nhds_one_has_basis_stabilizers : (nhds (1 : Aut F)).HasBasis (fun _ ↦ Tr
       intro t (ht : t.hom.app A a = a)
       apply hU
       apply hmem
-      haveI (X : I) : IsConnected X.val := hc X.val X.property
-      haveI (X : I) : Nonempty (F.obj X.val) := nonempty_fiber_of_isConnected F X
+      have (X : I) : IsConnected X.val := hc X.val X.property
+      have (X : I) : Nonempty (F.obj X.val) := nonempty_fiber_of_isConnected F X
       intro X
       ext x
       simp only [FintypeCat.id_apply]

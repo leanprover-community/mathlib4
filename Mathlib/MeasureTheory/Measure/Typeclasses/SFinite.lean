@@ -594,7 +594,7 @@ lemma Measure.sigmaFinite_iff_measure_singleton_lt_top [Countable α] :
 
 theorem sigmaFinite_bot_iff (μ : @Measure α ⊥) : SigmaFinite μ ↔ IsFiniteMeasure μ := by
   refine ⟨fun h => ⟨?_⟩, fun h => by infer_instance⟩
-  haveI : SigmaFinite μ := h
+  have : SigmaFinite μ := h
   let s := spanningSets μ
   have hs_univ : ⋃ i, s i = Set.univ := iUnion_spanningSets μ
   have hs_meas : ∀ i, MeasurableSet[⊥] (s i) := measurableSet_spanningSets μ
