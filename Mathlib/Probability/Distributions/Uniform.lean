@@ -263,7 +263,7 @@ theorem toOuterMeasure_uniformOfFinset_apply :
       tsum_eq_sum fun _ hx => if_neg fun h => hx (Finset.mem_filter.2 h)
     _ = ∑ x ∈ s with x ∈ t, (#s : ℝ≥0∞)⁻¹ :=
       Finset.sum_congr rfl fun x hx => by
-        have this : x ∈ s ∧ x ∈ t := by simpa using hx
+        have : x ∈ s ∧ x ∈ t := by simpa using hx
         simp only [this, and_self_iff, if_true]
     _ = #{x ∈ s | x ∈ t} / #s := by
         simp only [div_eq_mul_inv, Finset.sum_const, nsmul_eq_mul]

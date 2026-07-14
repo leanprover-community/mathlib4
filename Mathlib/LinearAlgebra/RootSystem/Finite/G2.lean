@@ -581,7 +581,7 @@ include P in
 lemma card_index_eq_twelve :
     Nat.card ι = 12 := by
   classical
-  have this : Nat.card (allRoots P).toFinset = 12 := by
+  have : Nat.card (allRoots P).toFinset = 12 := by
     rw [Nat.card_eq_fintype_card, Fintype.card_coe, toFinset_card_of_nodup (allRoots_nodup P)]
     simp
   rw [← this]
