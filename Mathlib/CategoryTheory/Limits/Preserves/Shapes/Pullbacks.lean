@@ -89,7 +89,7 @@ def isLimitPullbackConeMapOfIsLimit [PreservesLimit (cospan f g) G]
 /-- The property of reflecting pullbacks expressed in terms of binary fans. -/
 def isLimitOfIsLimitPullbackConeMap [ReflectsLimit (cospan f g) G]
     (l : IsLimit (PullbackCone.mk (G.map h) (G.map k) (show G.map h ≫ G.map f = G.map k ≫ G.map g
-    from by simp only [← G.map_comp, comm]))) : IsLimit (PullbackCone.mk h k comm) :=
+    by simp only [← G.map_comp, comm]))) : IsLimit (PullbackCone.mk h k comm) :=
   isLimitOfReflects G
     ((PullbackCone.isLimitMapConeEquiv (PullbackCone.mk _ _ comm) G).2 l)
 
@@ -222,7 +222,7 @@ def isColimitPushoutCoconeMapOfIsColimit [PreservesColimit (span f g) G]
 /-- The property of reflecting pushouts expressed in terms of binary cofans. -/
 def isColimitOfIsColimitPushoutCoconeMap [ReflectsColimit (span f g) G]
     (l : IsColimit (PushoutCocone.mk (G.map h) (G.map k) (show G.map f ≫ G.map h =
-      G.map g ≫ G.map k from by simp only [← G.map_comp, comm]))) :
+      G.map g ≫ G.map k by simp only [← G.map_comp, comm]))) :
     IsColimit (PushoutCocone.mk h k comm) :=
   isColimitOfReflects G ((isColimitMapCoconePushoutCoconeEquiv G comm).symm l)
 
@@ -232,7 +232,7 @@ variable (f g) [PreservesColimit (span f g) G]
 morphisms of the pushout cocone is a colimit. -/
 def isColimitOfHasPushoutOfPreservesColimit [i : HasPushout f g] :
     IsColimit (PushoutCocone.mk (G.map (pushout.inl _ _)) (G.map (@pushout.inr _ _ _ _ _ f g i))
-    (show G.map f ≫ G.map (pushout.inl _ _) = G.map g ≫ G.map (pushout.inr _ _) from by
+    (show G.map f ≫ G.map (pushout.inl _ _) = G.map g ≫ G.map (pushout.inr _ _) by
       simp only [← G.map_comp, pushout.condition])) :=
   isColimitPushoutCoconeMapOfIsColimit G _ (pushoutIsPushout f g)
 
