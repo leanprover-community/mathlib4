@@ -181,7 +181,7 @@ variable [Fintype ι']
 theorem basis_toMatrix_mul_linearMap_toMatrix [Finite κ] [Fintype κ'] [DecidableEq ι'] :
     c.toMatrix c' * LinearMap.toMatrix b' c' f = LinearMap.toMatrix b' c f :=
   (Matrix.toLin b' c).injective <| by
-    haveI := Classical.decEq κ'
+    have := Classical.decEq κ'
     rw [toLin_toMatrix, toLin_mul b' c' c, toLin_toMatrix, c.toLin_toMatrix, LinearMap.id_comp]
 
 theorem basis_toMatrix_mul [Fintype κ] [Finite ι] [DecidableEq κ]

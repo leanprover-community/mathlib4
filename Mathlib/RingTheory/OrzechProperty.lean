@@ -80,7 +80,7 @@ theorem injective_of_surjective_of_injective
     {N : Type w} [AddCommMonoid N] [Module R N]
     (i f : N →ₗ[R] M) (hi : Injective i) (hf : Surjective f) : Injective f := by
   obtain ⟨n, g, hg⟩ := Module.Finite.exists_fin' R M
-  haveI := small_of_surjective hg
+  have := small_of_surjective hg
   let j : Shrink.{u} M ≃ₗ[R] M := Equiv.linearEquiv R (equivShrink M).symm
   let i' := j.symm.toLinearMap ∘ₗ i
   replace hi : Injective i' := by simpa [i'] using hi

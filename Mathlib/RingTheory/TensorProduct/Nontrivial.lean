@@ -30,7 +30,7 @@ theorem nontrivial_of_algebraMap_injective_of_isDomain
     (R A B : Type*) [CommRing R] [CommRing A] [CommRing B] [Algebra R A] [Algebra R B]
     (ha : Function.Injective (algebraMap R A)) (hb : Function.Injective (algebraMap R B))
     [IsDomain A] [IsDomain B] : Nontrivial (A ⊗[R] B) := by
-  haveI := ha.isDomain _
+  have := ha.isDomain _
   let FR := FractionRing R
   let FA := FractionRing A
   let FB := FractionRing B

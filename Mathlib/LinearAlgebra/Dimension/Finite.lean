@@ -423,6 +423,9 @@ theorem Module.finrank_eq_zero_of_rank_eq_zero (h : Module.rank R M = 0) :
   delta finrank
   rw [h, zero_toNat]
 
+theorem Module.finrank_eq_zero_of_not_faithfulSMul (h : ¬ FaithfulSMul R M) : finrank R M = 0 :=
+  finrank_eq_zero_of_rank_eq_zero (rank_eq_zero_of_not_faithfulSMul h)
+
 section
 
 variable {R M : Type*} [Ring R] [AddCommGroup M] [Module R M] [IsDomain R] [IsTorsionFree R M]

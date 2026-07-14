@@ -179,7 +179,7 @@ section AdjoinRoot
 include hζ H in
 /-- Also see `Polynomial.separable_X_pow_sub_C_unit` -/
 theorem Polynomial.separable_X_pow_sub_C_of_irreducible : (X ^ n - C a).Separable := by
-  letI := Fact.mk H
+  let := Fact.mk H
   have hn := Nat.pos_iff_ne_zero.mpr (ne_zero_of_irreducible_X_pow_sub_C H)
   by_cases hn' : n = 1
   · rw [hn', pow_one]; exact separable_X_sub_C
@@ -252,7 +252,7 @@ def autAdjoinRootXPowSubCEquiv [NeZero n] :
     intro η
     have := Fact.mk H
     have : IsDomain K[n√a] := inferInstance
-    letI : Algebra K K[n√a] := inferInstance
+    let : Algebra K K[n√a] := inferInstance
     apply (rootsOfUnityEquivOfPrimitiveRoots (algebraMap K K[n√a]).injective hζ).injective
     ext
     simp only [AdjoinRoot.algebraMap_eq, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe,
@@ -267,7 +267,7 @@ def autAdjoinRootXPowSubCEquiv [NeZero n] :
   right_inv := by
     intro e
     have := Fact.mk H
-    letI : Algebra K K[n√a] := inferInstance
+    let : Algebra K K[n√a] := inferInstance
     apply AlgEquiv.coe_toAlgHom_injective
     apply AdjoinRoot.algHom_ext
     simp only [AdjoinRootXPowSubCEquivToRootsOfUnity, AdjoinRoot.algebraMap_eq, OneHom.toFun_eq_coe,
@@ -331,8 +331,8 @@ noncomputable
 def adjoinRootXPowSubCEquiv (hζ : (primitiveRoots n K).Nonempty) (H : Irreducible (X ^ n - C a))
     (hα : α ^ n = algebraMap K L a) : K[n√a] ≃ₐ[K] L :=
   .ofBijective (AdjoinRoot.liftAlgHom (X ^ n - C a) (Algebra.ofId _ _) α (by simp [hα])) <| by
-    haveI := Fact.mk H
-    letI := isSplittingField_AdjoinRoot_X_pow_sub_C hζ H
+    have := Fact.mk H
+    let := isSplittingField_AdjoinRoot_X_pow_sub_C hζ H
     refine ⟨(liftAlgHom (X ^ n - C a) _ α _).injective, ?_⟩
     rw [← AlgHom.range_eq_top, ← IsSplittingField.adjoin_rootSet _ (X ^ n - C a),
       eq_comm, Splits.adjoin_rootSet_eq_range, IsSplittingField.adjoin_rootSet]

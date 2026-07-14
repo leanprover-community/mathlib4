@@ -81,7 +81,7 @@ theorem continuous_hatInv [CompletableTopField K] {x : hat K} (h : x ≠ 0) :
   rw [this, ← Filter.map_map]
   apply Cauchy.map _ (Completion.uniformContinuous_coe K)
   apply CompletableTopField.nice
-  · haveI := isDenseInducing_coe.comap_nhds_neBot y
+  · have := isDenseInducing_coe.comap_nhds_neBot y
     apply cauchy_nhds.comap
     rw [Completion.comap_coe_eq_uniformity]
   · have eq_bot : 𝓝 (0 : hat K) ⊓ 𝓝 y = ⊥ := by
@@ -185,7 +185,7 @@ instance Subfield.completableTopField (K : Subfield L) : CompletableTopField K w
 instance (priority := 100) completableTopField_of_complete (L : Type*) [Field L] [UniformSpace L]
     [IsTopologicalDivisionRing L] [T0Space L] [CompleteSpace L] : CompletableTopField L where
   nice F cau_F hF := by
-    haveI : NeBot F := cau_F.1
+    have : NeBot F := cau_F.1
     rcases CompleteSpace.complete cau_F with ⟨x, hx⟩
     have hx' : x ≠ 0 := by
       rintro rfl

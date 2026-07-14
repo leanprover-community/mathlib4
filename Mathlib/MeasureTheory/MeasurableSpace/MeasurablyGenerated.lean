@@ -33,7 +33,7 @@ namespace MeasurableSpace
 @[simp] theorem generateFrom_singleton (s : Set α) :
     generateFrom {s} = MeasurableSpace.comap (· ∈ s) ⊤ := by
   classical
-  letI : MeasurableSpace α := generateFrom {s}
+  let : MeasurableSpace α := generateFrom {s}
   refine le_antisymm (generateFrom_le fun t ht => ⟨{True}, trivial, by simp [ht.symm]⟩) ?_
   rintro _ ⟨u, -, rfl⟩
   exact (show MeasurableSet s from GenerateMeasurable.basic _ <| mem_singleton s).mem trivial
@@ -132,7 +132,7 @@ instance iInf_isMeasurablyGenerated {f : ι → Filter α} [∀ i, IsMeasurablyG
   refine ⟨⋂ i : t, U i, ?_, ?_, ?_⟩
   · rw [← Equiv.plift.surjective.iInf_comp, mem_iInf]
     exact ⟨t, ht, U, hUf, rfl⟩
-  · haveI := ht.countable.toEncodable.countable
+  · have := ht.countable.toEncodable.countable
     exact MeasurableSet.iInter fun i => (hU i).1
   · exact iInter_mono fun i => (hU i).2
 

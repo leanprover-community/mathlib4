@@ -135,7 +135,7 @@ theorem scaleRoots_eval₂_mul_of_commute {p : S[X]} (f : S →+* A) (a : A) (s 
       simp [eval₂_eq_sum, sum_def]
     _ = p.support.sum fun i => f (coeff p i * s ^ (p.natDegree - i)) * (f s * a) ^ i :=
       (Finset.sum_subset (support_scaleRoots_le p s) fun i _hi hi' => by
-        let this : coeff p i * s ^ (p.natDegree - i) = 0 := by simpa using hi'
+        let : coeff p i * s ^ (p.natDegree - i) = 0 := by simpa using hi'
         simp [this])
     _ = p.support.sum fun i : ℕ => f (p.coeff i) * f s ^ (p.natDegree - i + i) * a ^ i :=
       (Finset.sum_congr rfl fun i _hi => by

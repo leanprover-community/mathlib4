@@ -54,7 +54,7 @@ local notation "q" => Fintype.card K
 
 theorem MvPolynomial.sum_eval_eq_zero (f : MvPolynomial σ K)
     (h : f.totalDegree < (q - 1) * Fintype.card σ) : ∑ x, eval x f = 0 := by
-  haveI : DecidableEq K := Classical.decEq K
+  have : DecidableEq K := Classical.decEq K
   calc
     ∑ x, eval x f = ∑ x : σ → K, ∑ d ∈ f.support, f.coeff d * ∏ i, x i ^ d i := by
       simp only [eval_eq']

@@ -117,7 +117,7 @@ theorem Int.erdos_ginzburg_ziv (a : ι → ℤ) (hs : 2 * n - 1 ≤ #s) :
   | one => simpa using exists_subset_card_eq hs
   -- When `n := p` is prime, we use the prime case `Int.erdos_ginzburg_ziv_prime`.
   | prime p hp =>
-    haveI := Fact.mk hp
+    have := Fact.mk hp
     obtain ⟨t, hts, ht⟩ := exists_subset_card_eq hs
     obtain ⟨u, hut, hu⟩ := Int.erdos_ginzburg_ziv_prime a ht
     exact ⟨u, hut.trans hts, hu⟩

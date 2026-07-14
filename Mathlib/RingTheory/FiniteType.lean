@@ -361,7 +361,7 @@ image generates, as algebra, `R[M]`. -/
 theorem exists_finset_adjoin_eq_top [h : FiniteType R R[M]] :
     ∃ G : Finset M, Algebra.adjoin R (of' R M '' G) = ⊤ := by
   obtain ⟨S, hS⟩ := h
-  letI : DecidableEq M := Classical.decEq M
+  let : DecidableEq M := Classical.decEq M
   use Finset.biUnion S fun f => f.coeff.support
   have : S.biUnion (fun f => f.coeff.support) = ⋃ f ∈ S, (f.coeff.support : Set M) := by
     simp only [Finset.set_biUnion_coe, Finset.coe_biUnion]
@@ -510,7 +510,7 @@ generates, as algebra, `R[M]`. -/
 theorem exists_finset_adjoin_eq_top [h : FiniteType R R[M]] :
     ∃ G : Finset M, Algebra.adjoin R (of R M '' G) = ⊤ := by
   obtain ⟨S, hS⟩ := h
-  letI : DecidableEq M := Classical.decEq M
+  let : DecidableEq M := Classical.decEq M
   use Finset.biUnion S fun f => f.coeff.support
   have : S.biUnion (fun f => f.coeff.support) = ⋃ f ∈ S, (f.coeff.support : Set M) := by
     simp only [Finset.set_biUnion_coe, Finset.coe_biUnion]
@@ -629,8 +629,8 @@ A shortcut instance `commRing_strongRankCondition` is also provided.
 instance (priority := 100) CommRing.orzechProperty
     (R : Type*) [CommRing R] : OrzechProperty R := by
   refine ⟨fun {M} _ _ _ {N} f hf ↦ ?_⟩
-  letI := addCommMonoidToAddCommGroup R (M := M)
-  letI := addCommMonoidToAddCommGroup R (M := N)
+  let := addCommMonoidToAddCommGroup R (M := M)
+  let := addCommMonoidToAddCommGroup R (M := N)
   let i := N.subtype
   let hi : Function.Injective i := N.injective_subtype
   refine LinearMap.ker_eq_bot.1 <| LinearMap.ker_eq_bot'.2 fun n hn ↦ ?_
@@ -642,9 +642,9 @@ instance (priority := 100) CommRing.orzechProperty
   let A := Subring.closure (Set.range b ∪ Set.range c.uncurry)
   let N' := span A ({n} ∪ Set.range nj)
   let M' := span A (Set.range mj)
-  haveI : IsNoetherianRing A := is_noetherian_subring_closure _
+  have : IsNoetherianRing A := is_noetherian_subring_closure _
     (.union (Set.finite_range _) (Set.finite_range _))
-  haveI : Module.Finite A M' := span_of_finite A (Set.finite_range _)
+  have : Module.Finite A M' := span_of_finite A (Set.finite_range _)
   refine congr($((LinearMap.ker_eq_bot'.1 <| LinearMap.ker_eq_bot.2 <|
     IsNoetherian.injective_of_surjective_of_injective
       ((i.restrictScalars A).restrict fun x hx ↦ ?_ : N' →ₗ[A] M')

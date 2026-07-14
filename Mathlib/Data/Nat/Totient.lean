@@ -121,7 +121,7 @@ theorem _root_.ZMod.card_units_eq_totient (n : ℕ) [NeZero n] [Fintype (ZMod n)
       rfl
 
 theorem totient_even {n : ℕ} (hn : 2 < n) : Even n.totient := by
-  haveI : Fact (1 < n) := ⟨one_lt_two.trans hn⟩
+  have : Fact (1 < n) := ⟨one_lt_two.trans hn⟩
   suffices 2 = orderOf (-1 : (ZMod n)ˣ) by
     rw [← ZMod.card_units_eq_totient, even_iff_two_dvd, this]
     exact orderOf_dvd_card
@@ -132,8 +132,8 @@ theorem totient_mul {m n : ℕ} (h : m.Coprime n) : φ (m * n) = φ m * φ n :=
     rcases Nat.mul_eq_zero.1 hmn0 with h | h <;>
       simp only [totient_zero, mul_zero, zero_mul, h]
   else by
-    haveI : NeZero m := ⟨left_ne_zero_of_mul hmn0⟩
-    haveI : NeZero n := ⟨right_ne_zero_of_mul hmn0⟩
+    have : NeZero m := ⟨left_ne_zero_of_mul hmn0⟩
+    have : NeZero n := ⟨right_ne_zero_of_mul hmn0⟩
     simp only [← ZMod.card_units_eq_totient]
     rw [Fintype.card_congr (Units.mapEquiv (ZMod.chineseRemainder h).toMulEquiv).toEquiv,
       Fintype.card_congr (@MulEquiv.prodUnits (ZMod m) (ZMod n) _ _).toEquiv, Fintype.card_prod]
@@ -229,7 +229,7 @@ theorem totient_eq_iff_prime {p : ℕ} (hp : 0 < p) : p.totient = p - 1 ↔ p.Pr
 
 theorem card_units_zmod_lt_sub_one {p : ℕ} (hp : 1 < p) [Fintype (ZMod p)ˣ] :
     Fintype.card (ZMod p)ˣ ≤ p - 1 := by
-  haveI : NeZero p := ⟨(pos_of_gt hp).ne'⟩
+  have : NeZero p := ⟨(pos_of_gt hp).ne'⟩
   rw [ZMod.card_units_eq_totient p]
   exact Nat.le_sub_one_of_lt (Nat.totient_lt p hp)
 

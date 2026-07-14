@@ -291,8 +291,8 @@ variable (A B)
 protected
 theorem equiv {C : Type*} [CommRing C] [Algebra A C] [h : IsCyclotomicExtension S A B]
     (f : B ≃ₐ[A] C) : IsCyclotomicExtension S A C := by
-  letI : Algebra B C := f.toAlgHom.toRingHom.toAlgebra
-  haveI : IsCyclotomicExtension {1} B C := singleton_one_of_algebraMap_bijective f.surjective
+  let : Algebra B C := f.toAlgHom.toRingHom.toAlgebra
+  have : IsCyclotomicExtension {1} B C := singleton_one_of_algebraMap_bijective f.surjective
   exact (iff_union_singleton_one _ _ _).2 (trans S {1} A B C f.injective)
 
 theorem neZero_of_mem [IsCyclotomicExtension S A B] [IsDomain B] (hn : n ∈ S) : NeZero (n : B) :=
@@ -409,8 +409,8 @@ protected theorem finite [IsDomain B] [h₁ : Finite S] [h₂ : IsCyclotomicExte
 theorem numberField [h : NumberField K] [Finite S] [IsCyclotomicExtension S K L] : NumberField L :=
   { to_charZero := charZero_of_injective_algebraMap (algebraMap K L).injective
     to_finiteDimensional := by
-      haveI := charZero_of_injective_algebraMap (algebraMap K L).injective
-      haveI := IsCyclotomicExtension.finite S K L
+      have := charZero_of_injective_algebraMap (algebraMap K L).injective
+      have := IsCyclotomicExtension.finite S K L
       exact Module.Finite.trans K _ }
 
 /-- If `S` is finite and `IsCyclotomicExtension S K A`, then `finiteDimensional K A`. -/
@@ -673,7 +673,7 @@ instance isCyclotomicExtension [NeZero (n : K)] :
     IsCyclotomicExtension {n} K (CyclotomicField n K) := by
   have : NeZero (n : CyclotomicField n K) :=
     NeZero.nat_of_injective (algebraMap K _).injective
-  letI := Classical.decEq (CyclotomicField n K)
+  let := Classical.decEq (CyclotomicField n K)
   have := (degree_cyclotomic_pos n K (NeZero.pos n)).ne'
   obtain ⟨ζ, hζ⟩ :=
     Splits.exists_eval_eq_zero (SplittingField.splits (cyclotomic n K)) (by rwa [degree_map])
@@ -809,7 +809,7 @@ instance [IsFractionRing A K] [IsDomain A] [NeZero (n : A)] :
       obtain ⟨⟨z, w⟩, hw⟩ := this k
       refine ⟨⟨algebraMap A (CyclotomicRing n A K) z, algebraMap A (CyclotomicRing n A K) w,
         map_mem_nonZeroDivisors _ (algebraBase_injective n A K) w.2⟩, ?_⟩
-      letI : IsScalarTower A K (CyclotomicField n K) :=
+      let : IsScalarTower A K (CyclotomicField n K) :=
         IsScalarTower.of_algebraMap_eq (congr_fun rfl)
       rw [← IsScalarTower.algebraMap_apply, ← IsScalarTower.algebraMap_apply,
         @IsScalarTower.algebraMap_apply A K _ _ _ _ _ (_root_.CyclotomicField.algebra n K) _ _ w,

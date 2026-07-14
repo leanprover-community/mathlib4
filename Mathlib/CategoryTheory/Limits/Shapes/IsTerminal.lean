@@ -193,11 +193,11 @@ theorem IsInitial.isSplitEpi_to {X Y : C} (t : IsInitial X) (f : Y ⟶ X) : IsSp
 
 /-- Any morphism from a terminal object is mono. -/
 theorem IsTerminal.mono_from {X Y : C} (t : IsTerminal X) (f : X ⟶ Y) : Mono f := by
-  haveI := t.isSplitMono_from f; infer_instance
+  have := t.isSplitMono_from f; infer_instance
 
 /-- Any morphism to an initial object is epi. -/
 theorem IsInitial.epi_to {X Y : C} (t : IsInitial X) (f : Y ⟶ X) : Epi f := by
-  haveI := t.isSplitEpi_to f; infer_instance
+  have := t.isSplitEpi_to f; infer_instance
 
 /-- If `T` and `T'` are terminal, they are isomorphic. -/
 @[simps]

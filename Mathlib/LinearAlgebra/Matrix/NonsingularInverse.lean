@@ -84,7 +84,7 @@ def invertibleOfDetInvertible [Invertible A.det] : Invertible A where
     rw [smul_mul_assoc, adjugate_mul, smul_smul, invOf_mul_self, one_smul]
 
 theorem invOf_eq [Invertible A.det] [Invertible A] : ⅟A = ⅟A.det • A.adjugate := by
-  letI := invertibleOfDetInvertible A
+  let := invertibleOfDetInvertible A
   convert! (rfl : ⅟A = _)
 
 /-- `A.det` is invertible if `A` has a left inverse. -/
@@ -107,7 +107,7 @@ def detInvertibleOfInvertible [Invertible A] : Invertible A.det :=
   detInvertibleOfLeftInverse A (⅟A) (invOf_mul_self _)
 
 theorem det_invOf [Invertible A] [Invertible A.det] : (⅟A).det = ⅟A.det := by
-  letI := detInvertibleOfInvertible A
+  let := detInvertibleOfInvertible A
   convert! (rfl : _ = ⅟A.det)
 
 /-- Together `Matrix.detInvertibleOfInvertible` and `Matrix.invertibleOfDetInvertible` form an
@@ -181,7 +181,7 @@ theorem nonsing_inv_apply (h : IsUnit A.det) : A⁻¹ = (↑h.unit⁻¹ : α) �
 /-- The nonsingular inverse is the same as `invOf` when `A` is invertible. -/
 @[simp]
 theorem invOf_eq_nonsing_inv [Invertible A] : ⅟A = A⁻¹ := by
-  letI := detInvertibleOfInvertible A
+  let := detInvertibleOfInvertible A
   rw [inv_def, Ring.inverse_invertible, invOf_eq]
 
 /-- Coercing the result of `Units.instInv` is the same as coercing first and applying the
@@ -411,7 +411,7 @@ theorem det_nonsing_inv_mul_det (h : IsUnit A.det) : A⁻¹.det * A.det = 1 := b
 theorem det_nonsing_inv : A⁻¹.det = A.det⁻¹ʳ := by
   by_cases h : IsUnit A.det
   · cases h.nonempty_invertible
-    letI := invertibleOfDetInvertible A
+    let := invertibleOfDetInvertible A
     rw [Ring.inverse_invertible, ← invOf_eq_nonsing_inv, det_invOf]
   cases isEmpty_or_nonempty n
   · rw [det_isEmpty, det_isEmpty, Ring.inverse_one]
@@ -534,14 +534,14 @@ def invertibleOfDiagonalInvertible (v : n → α) [Invertible (diagonal v)] : In
   invOf := diag (⅟(diagonal v))
   invOf_mul_self :=
     funext fun i => by
-      letI : Invertible (diagonal v).det := detInvertibleOfInvertible _
+      let : Invertible (diagonal v).det := detInvertibleOfInvertible _
       rw [invOf_eq, diag_smul, adjugate_diagonal, diag_diagonal]
       dsimp
       rw [mul_assoc, prod_erase_mul _ _ (Finset.mem_univ _), ← det_diagonal]
       exact mul_invOf_self _
   mul_invOf_self :=
     funext fun i => by
-      letI : Invertible (diagonal v).det := detInvertibleOfInvertible _
+      let : Invertible (diagonal v).det := detInvertibleOfInvertible _
       rw [invOf_eq, diag_smul, adjugate_diagonal, diag_diagonal]
       dsimp
       rw [mul_left_comm, mul_prod_erase _ _ (Finset.mem_univ _), ← det_diagonal]
@@ -606,7 +606,7 @@ theorem add_mul_mul_inv_eq_sub (hA : IsUnit A) (hC : IsUnit C) (hAC : IsUnit (C�
   obtain ⟨_⟩ := hC.nonempty_invertible
   obtain ⟨iAC⟩ := hAC.nonempty_invertible
   simp only [← invOf_eq_nonsing_inv] at iAC
-  letI := invertibleAddMulMul A U C V
+  let := invertibleAddMulMul A U C V
   simp only [← invOf_eq_nonsing_inv]
   apply invOf_add_mul_mul
 
@@ -616,7 +616,7 @@ theorem add_mul_mul_inv_eq_sub' (hA : IsUnit A) (h : IsUnit (C + C * V * A⁻¹ 
   obtain ⟨_⟩ := hA.nonempty_invertible
   obtain ⟨ih⟩ := h.nonempty_invertible
   simp only [← invOf_eq_nonsing_inv] at ih
-  letI := invertibleAddMulMul' A U C V
+  let := invertibleAddMulMul' A U C V
   simp only [← invOf_eq_nonsing_inv]
   apply invOf_add_mul_mul'
 
@@ -722,7 +722,7 @@ theorem inv_submatrix_equiv (A : Matrix m m α) (e₁ e₂ : n ≃ m) :
     (A.submatrix e₁ e₂)⁻¹ = A⁻¹.submatrix e₂ e₁ := by
   by_cases h : IsUnit A
   · cases h.nonempty_invertible
-    letI := submatrixEquivInvertible A e₁ e₂
+    let := submatrixEquivInvertible A e₁ e₂
     rw [← invOf_eq_nonsing_inv, ← invOf_eq_nonsing_inv, invOf_submatrix_equiv_eq A]
   · have := (isUnit_submatrix_equiv e₁ e₂).not.mpr h
     simp_rw [nonsing_inv_eq_ringInverse, Ring.inverse_non_unit _ h, Ring.inverse_non_unit _ this,

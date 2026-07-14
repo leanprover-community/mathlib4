@@ -35,7 +35,7 @@ variable [Module.Free R A] [Module.Free A (Algebra.adjoin A (B : Set S))]
 theorem rank_sup_eq_rank_left_mul_rank_of_free :
     Module.rank R ↥(A ⊔ B) = Module.rank R A * Module.rank A (Algebra.adjoin A (B : Set S)) := by
   rcases subsingleton_or_nontrivial R with _ | _
-  · haveI := Module.subsingleton R S; simp
+  · have := Module.subsingleton R S; simp
   nontriviality S using rank_subsingleton'
   rw [rank_mul_rank R A (Algebra.adjoin A (B : Set S))]
   change _ = Module.rank R ((Algebra.adjoin A (B : Set S)).restrictScalars R)

@@ -186,7 +186,7 @@ def openAddSubgroup (i : ι) : @OpenAddSubgroup A _ hB.topology :=
 
 -- See note [non-Archimedean non-instances]
 theorem nonarchimedean : @NonarchimedeanRing A _ hB.topology := by
-  letI := hB.topology
+  let := hB.topology
   constructor
   intro U hU
   obtain ⟨i, -, hi : (B i : Set A) ⊆ U⟩ := hB.hasBasis_nhds_zero.mem_iff.mp hU
@@ -313,7 +313,7 @@ def openAddSubgroup (i : ι) : @OpenAddSubgroup M _ hB.topology :=
   let _ := hB.topology
   { (B i).toAddSubgroup with
     isOpen' := by
-      letI := hB.topology
+      let := hB.topology
       rw [isOpen_iff_mem_nhds]
       intro a a_in
       rw [(hB.toModuleFilterBasis.toAddGroupFilterBasis.nhds_hasBasis a).mem_iff]
@@ -325,7 +325,7 @@ def openAddSubgroup (i : ι) : @OpenAddSubgroup M _ hB.topology :=
 
 -- See note [non-Archimedean non-instances]
 theorem nonarchimedean (hB : SubmodulesBasis B) : @NonarchimedeanAddGroup M _ hB.topology := by
-  letI := hB.topology
+  let := hB.topology
   constructor
   intro U hU
   obtain ⟨-, ⟨i, rfl⟩, hi : (B i : Set M) ⊆ U⟩ :=

@@ -170,7 +170,7 @@ lemma map_final {A : Type u₁} [Category.{v₁} A] {B : Type u₂} [Category.{v
     isoWhiskerLeft _ ((StructuredArrow.map₂CompMap₂Iso _ _ _ _).symm ≪≫
       isoWhiskerLeft _ (StructuredArrow.preIsoMap₂ _ _ _).symm) ≪≫
     isoWhiskerRight (StructuredArrow.postIsoMap₂ j₂ G R').symm _
-  haveI := final_of_natIso this.symm
+  have := final_of_natIso this.symm
   rw [IsIso.Iso.inv_inv]
   infer_instance⟩
 

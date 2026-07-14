@@ -219,8 +219,8 @@ variable {N : Type*} [CommMonoidWithZero N]
 theorem factor_orderIso_map_one_eq_bot [IsCancelMulZero N] {m : Associates M} {n : Associates N}
     (d : { l : Associates M // l ≤ m } ≃o { l : Associates N // l ≤ n }) :
     (d ⟨1, one_dvd m⟩ : Associates N) = 1 := by
-  letI : OrderBot { l : Associates M // l ≤ m } := Subtype.orderBot bot_le
-  letI : OrderBot { l : Associates N // l ≤ n } := Subtype.orderBot bot_le
+  let : OrderBot { l : Associates M // l ≤ m } := Subtype.orderBot bot_le
+  let : OrderBot { l : Associates N // l ≤ n } := Subtype.orderBot bot_le
   simp only [← Associates.bot_eq_one, Subtype.mk_bot, bot_le, Subtype.coe_eq_bot_iff]
   exact map_bot d
 

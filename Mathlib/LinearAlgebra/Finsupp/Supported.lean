@@ -136,7 +136,7 @@ theorem supported_univ : supported M R (Set.univ : Set α) = ⊤ :=
 theorem supported_iUnion {δ : Type*} (s : δ → Set α) :
     supported M R (⋃ i, s i) = ⨆ i, supported M R (s i) := by
   refine le_antisymm ?_ (iSup_le fun i => supported_mono <| Set.subset_iUnion _ _)
-  haveI := Classical.decPred fun x => x ∈ ⋃ i, s i
+  have := Classical.decPred fun x => x ∈ ⋃ i, s i
   suffices
     LinearMap.range ((Submodule.subtype _).comp (restrictDom M R (⋃ i, s i))) ≤
       ⨆ i, supported M R (s i) by

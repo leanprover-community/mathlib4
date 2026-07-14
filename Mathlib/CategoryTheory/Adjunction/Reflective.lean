@@ -98,7 +98,7 @@ theorem mem_essImage_of_unit_isSplitMono [Reflective i] {A : C}
     refine @epi_of_epi _ _ _ _ _ (retraction (η.app A)) (η.app A) ?_
     rw [show retraction _ ≫ η.app A = _ from η.naturality (retraction (η.app A))]
     apply epi_comp (η.app (i.obj ((reflector i).obj A)))
-  haveI := isIso_of_epi_of_isSplitMono (η.app A)
+  have := isIso_of_epi_of_isSplitMono (η.app A)
   exact (reflectorAdjunction i).mem_essImage_of_unit_isIso A
 
 /-- Composition of reflective functors. -/
@@ -227,7 +227,7 @@ lemma mem_essImage_of_counit_isSplitEpi [Coreflective j] {A : D}
     refine @mono_of_mono _ _ _ _ _ (ε.app A) (section_ (ε.app A)) ?_
     rw [show ε.app A ≫ section_ _ = _ from (ε.naturality (section_ (ε.app A))).symm]
     apply mono_comp _ (ε.app (j.obj ((coreflector j).obj A)))
-  haveI := isIso_of_mono_of_isSplitEpi (ε.app A)
+  have := isIso_of_mono_of_isSplitEpi (ε.app A)
   exact (coreflectorAdjunction j).mem_essImage_of_counit_isIso A
 
 instance Coreflective.comp (F : C ⥤ D) (G : D ⥤ E) [Coreflective F] [Coreflective G] :

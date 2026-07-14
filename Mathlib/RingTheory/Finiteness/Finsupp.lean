@@ -34,8 +34,8 @@ finitely generated then so is M. -/
 theorem fg_of_fg_map_of_fg_inf_ker (f : M →ₗ[R] P) {s : Submodule R M}
     (hs1 : (s.map f).FG)
     (hs2 : (s ⊓ LinearMap.ker f).FG) : s.FG := by
-  haveI := Classical.decEq M
-  haveI := Classical.decEq P
+  have := Classical.decEq M
+  have := Classical.decEq P
   obtain ⟨t1, ht1⟩ := hs1
   obtain ⟨t2, ht2⟩ := hs2
   have : ∀ y ∈ t1, ∃ x ∈ s, f x = y := by

@@ -132,7 +132,7 @@ theorem iff_pid_with_one_nonzero_prime (R : Type u) [CommRing R] [IsDomain R] :
       rw [irreducible_iff_uniformizer] at hQ2
       exact hQ2.symm
   · rintro ⟨RPID, Punique⟩
-    haveI : IsLocalRing R := IsLocalRing.of_unique_nonzero_prime Punique
+    have : IsLocalRing R := IsLocalRing.of_unique_nonzero_prime Punique
     refine { not_a_field' := ?_ }
     rcases Punique with ⟨P, ⟨hP1, hP2⟩, _⟩
     have hPM : P ≤ maximalIdeal R := le_maximalIdeal hP2.1
@@ -272,7 +272,7 @@ theorem of_ufd_of_unique_irreducible {R : Type u} [CommRing R] [IsDomain R]
     (h₂ : ∀ ⦃p q : R⦄, Irreducible p → Irreducible q → Associated p q) :
     IsDiscreteValuationRing R := by
   rw [iff_pid_with_one_nonzero_prime]
-  haveI PID : IsPrincipalIdealRing R := aux_pid_of_ufd_of_unique_irreducible R h₁ h₂
+  have PID : IsPrincipalIdealRing R := aux_pid_of_ufd_of_unique_irreducible R h₁ h₂
   obtain ⟨p, hp⟩ := h₁
   refine ⟨PID, ⟨Ideal.span {p}, ⟨?_, ?_⟩, ?_⟩⟩
   · rw [Submodule.ne_bot_iff]
@@ -292,7 +292,7 @@ is a discrete valuation ring.
 -/
 theorem ofHasUnitMulPowIrreducibleFactorization {R : Type u} [CommRing R] [IsDomain R]
     (hR : HasUnitMulPowIrreducibleFactorization R) : IsDiscreteValuationRing R := by
-  letI : UniqueFactorizationMonoid R := hR.toUniqueFactorizationMonoid
+  let : UniqueFactorizationMonoid R := hR.toUniqueFactorizationMonoid
   apply of_ufd_of_unique_irreducible _ hR.unique_irreducible
   obtain ⟨p, hp, H⟩ := hR
   exact ⟨p, hp⟩
@@ -669,7 +669,7 @@ lemma maximalIdeal_eq_setOf_le_v_algebraMap :
     ∀ [IsDiscreteValuationRing O] {ϖ : O} (_h : Irreducible ϖ),
     (IsLocalRing.maximalIdeal O : Set O) =
       {y : O | v (algebraMap O K y) ≤ v (algebraMap O K ϖ)} := by
-  letI : IsDomain O := hv.hom_inj.isDomain
+  let : IsDomain O := hv.hom_inj.isDomain
   intro _ _ h
   rw [← hv.coe_span_singleton_eq_setOf_le_v_algebraMap, ← h.maximalIdeal_eq]
 
@@ -678,7 +678,7 @@ lemma maximalIdeal_pow_eq_setOf_le_v_algebraMap_pow :
     ∀ [IsDiscreteValuationRing O] {ϖ : O} (_h : Irreducible ϖ) (n : ℕ),
     ((IsLocalRing.maximalIdeal O ^ n : Ideal O) : Set O) =
       {y : O | v (algebraMap O K y) ≤ v (algebraMap O K ϖ) ^ n} := by
-  letI : IsDomain O := hv.hom_inj.isDomain
+  let : IsDomain O := hv.hom_inj.isDomain
   intro _ ϖ h n
   have : (v (algebraMap O K ϖ)) ^ n = v (algebraMap O K (ϖ ^ n)) := by simp
   rw [this, ← hv.coe_span_singleton_eq_setOf_le_v_algebraMap,

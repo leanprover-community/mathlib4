@@ -109,7 +109,7 @@ theorem hasBasis_nhds_zero_adic (I : Ideal R) :
 theorem hasBasis_nhds_adic (I : Ideal R) (x : R) :
     HasBasis (@nhds R I.adicTopology x) (fun _n : ℕ => True) fun n =>
       (fun y => x + y) '' (I ^ n : Ideal R) := by
-  letI := I.adicTopology
+  let := I.adicTopology
   have := I.hasBasis_nhds_zero_adic.map fun y => x + y
   rwa [map_add_left_nhds_zero x] at this
 
@@ -166,7 +166,7 @@ theorem isAdic_iff [top : TopologicalSpace R] [IsTopologicalRing R] {J : Ideal R
   · intro H
     change _ = _ at H
     rw [H]
-    letI := J.adicTopology
+    let := J.adicTopology
     constructor
     · intro n
       exact (J.openAddSubgroup n).isOpen'

@@ -985,9 +985,9 @@ set_option backward.isDefEq.respectTransparency false in
 lemma Localizations.comapFun_mk (y : PrimeSpectrum.Top S)
     (a : M) (b : (y.comap σ).asIdeal.primeCompl) :
     Localizations.comapFun f y (.mk a b) = .mk (f a) ⟨σ b.1, b.2⟩ := by
-  letI := Module.compHom N σ
-  letI := σ.toAlgebra
-  haveI : IsScalarTower R S N := .of_algebraMap_smul fun _ _ ↦ rfl
+  let := Module.compHom N σ
+  let := σ.toAlgebra
+  have : IsScalarTower R S N := .of_algebraMap_smul fun _ _ ↦ rfl
   apply ((Module.End.isUnit_iff _).mp (IsLocalizedModule.map_units (S := y.asIdeal.primeCompl)
     (LocalizedModule.mkLinearMap y.asIdeal.primeCompl N) ⟨σ b, b.2⟩)).1
   dsimp

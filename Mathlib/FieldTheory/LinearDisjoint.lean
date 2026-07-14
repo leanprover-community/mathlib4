@@ -668,7 +668,7 @@ theorem isField_of_forall (A : Type v) [Field A] (B : Type w) [Field B]
   obtain ⟨M, hM⟩ := Ideal.exists_maximal (A ⊗[F] B)
   apply not_imp_not.1 (Ring.ne_bot_of_isMaximal_of_not_isField hM)
   let K : Type (max v w) := A ⊗[F] B ⧸ M
-  letI : Field K := Ideal.Quotient.field _
+  let : Field K := Ideal.Quotient.field _
   let i := IsScalarTower.toAlgHom F (A ⊗[F] B) K
   let fa := i.comp (Algebra.TensorProduct.includeLeft : A →ₐ[F] _)
   let fb := i.comp (Algebra.TensorProduct.includeRight : B →ₐ[F] _)

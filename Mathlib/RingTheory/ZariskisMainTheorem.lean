@@ -190,7 +190,7 @@ lemma exists_isIntegral_leadingCoeff_pow_smul_sub_of_isIntegralElem_of_mul_mem_r
   set a := p.leadingCoeff
   let R' := Localization.Away a
   let S' := Localization.Away (algebraMap R S a)
-  letI : Algebra R' S' := (Localization.awayMap (algebraMap R S) a).toAlgebra
+  let : Algebra R' S' := (Localization.awayMap (algebraMap R S) a).toAlgebra
   have : IsScalarTower R R' S' := .of_algebraMap_eq (by
     simp +zetaDelta [RingHom.algebraMap_toAlgebra, IsLocalization.Away.map, ← algebraMap_apply R S])
   have ha : IsUnit (algebraMap R R' a) := IsLocalization.Away.algebraMap_isUnit a
@@ -460,7 +460,7 @@ private lemma ZariskisMainProperty.of_adjoin_eq_top
     (p : Ideal S) [p.IsPrime] [Algebra.WeaklyQuasiFiniteAt R p]
     (x : S) (hx : Algebra.adjoin R {x} = ⊤) : ZariskisMainProperty R p := by
   wlog H : integralClosure R S = ⊥
-  · letI inst : Algebra (integralClosure R S) (Localization.AtPrime p) :=
+  · let inst : Algebra (integralClosure R S) (Localization.AtPrime p) :=
       OreLocalization.instAlgebra
     have inst : Algebra.WeaklyQuasiFiniteAt (integralClosure R S) p :=
       .of_restrictScalars R (integralClosure R S) _
@@ -504,7 +504,7 @@ private lemma ZariskisMainProperty.of_algHom_polynomial
     (p : Ideal S) [p.IsPrime] [Algebra.WeaklyQuasiFiniteAt R p]
     (f : R[X] →ₐ[R] S) (hf : f.Finite) : ZariskisMainProperty R p := by
   wlog H : integralClosure R S = ⊥
-  · letI inst : Algebra (integralClosure R S) (Localization.AtPrime p) :=
+  · let inst : Algebra (integralClosure R S) (Localization.AtPrime p) :=
       OreLocalization.instAlgebra
     have inst : Algebra.WeaklyQuasiFiniteAt (integralClosure R S) p :=
       .of_restrictScalars R (integralClosure R S) _
@@ -591,7 +591,7 @@ private lemma ZariskisMainProperty.of_algHom_mvPolynomial
       MvPolynomial.aeval fun i ↦ ⟨f (.X i.succ), Algebra.subset_adjoin (by simp)⟩
     have := IH (R := R) (S := R') (p.under R') φ <| by
       refine RingHom.finite_iff_isIntegral_and_finiteType.mpr ⟨?_, ?_⟩
-      · letI := φ.toAlgebra
+      · let := φ.toAlgebra
         have : IsScalarTower (MvPolynomial (Fin n) R) R' S := .of_algebraMap_eq' <| by
           ext <;> simp [φ, (f'.toRingHom.comp C).algebraMap_toAlgebra, φ.algebraMap_toAlgebra, f',
             MvPolynomial.finSuccEquiv, MvPolynomial.optionEquivLeft]

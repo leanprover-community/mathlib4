@@ -267,7 +267,7 @@ theorem finStronglyMeasurable_of_set_sigmaFinite [TopologicalSpace β] [Zero β]
     refine fun n => measure_biUnion_lt_top {y ∈ (fs n).range | y ≠ 0}.finite_toSet fun y hy => ?_
     rw [SimpleFunc.restrict_preimage_singleton _ ((hS_meas n).inter ht)]
     swap
-    · letI : (y : β) → Decidable (y = 0) := fun y => Classical.propDecidable _
+    · let : (y : β) → Decidable (y = 0) := fun y => Classical.propDecidable _
       rw [Finset.mem_coe, Finset.mem_filter] at hy
       exact hy.2
     refine (measure_mono Set.inter_subset_left).trans_lt ?_
@@ -683,7 +683,7 @@ variable {mα : MeasurableSpace α} [MeasurableSpace β]
 theorem _root_.Measurable.stronglyMeasurable [TopologicalSpace β] [PseudoMetrizableSpace β]
     [SecondCountableTopology β] [OpensMeasurableSpace β] (hf : Measurable f) :
     StronglyMeasurable f := by
-  letI := pseudoMetrizableSpacePseudoMetric β
+  let := pseudoMetrizableSpacePseudoMetric β
   nontriviality β; inhabit β
   exact ⟨SimpleFunc.approxOn f hf Set.univ default (Set.mem_univ _), fun x ↦
     SimpleFunc.tendsto_approxOn hf (Set.mem_univ _) (by simp)⟩
@@ -724,7 +724,8 @@ theorem _root_.Continuous.stronglyMeasurable [MeasurableSpace α] [TopologicalSp
   · exact hf.measurable.stronglyMeasurable
 
 /-- A continuous function whose support is contained in a compact set is strongly measurable. -/
-@[to_additive]
+@[to_additive /-- A continuous function whose support is contained in a compact set is strongly
+measurable. -/]
 theorem _root_.Continuous.stronglyMeasurable_of_mulSupport_subset_isCompact
     [MeasurableSpace α] [TopologicalSpace α] [OpensMeasurableSpace α] [TopologicalSpace β]
     [PseudoMetrizableSpace β] [One β] {f : α → β} (hf : Continuous f) {k : Set α}
@@ -734,7 +735,7 @@ theorem _root_.Continuous.stronglyMeasurable_of_mulSupport_subset_isCompact
   exact ⟨hf.measurable, (isCompact_range_of_mulSupport_subset_isCompact hf hk h'f).isSeparable⟩
 
 /-- A continuous function with compact support is strongly measurable. -/
-@[to_additive]
+@[to_additive /-- A continuous function with compact support is strongly measurable. -/]
 theorem _root_.Continuous.stronglyMeasurable_of_hasCompactMulSupport
     [MeasurableSpace α] [TopologicalSpace α] [OpensMeasurableSpace α] [TopologicalSpace β]
     [PseudoMetrizableSpace β] [One β] {f : α → β} (hf : Continuous f)

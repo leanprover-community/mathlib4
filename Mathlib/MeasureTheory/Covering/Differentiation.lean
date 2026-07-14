@@ -137,7 +137,7 @@ theorem measure_le_of_frequently_le [SecondCountableTopology α] [BorelSpace α]
     apply Frequently.mono this
     rintro a ⟨ρa, _, aU⟩
     exact ⟨ρa, aU⟩
-  haveI : Encodable h.index := h.index_countable.toEncodable
+  have : Encodable h.index := h.index_countable.toEncodable
   calc
     ρ s ≤ ∑' x : h.index, ρ (h.covering x) := h.measure_le_tsum_of_absolutelyContinuous hρ
     _ ≤ ∑' x : h.index, ν (h.covering x) := ENNReal.tsum_le_tsum fun x => (h.covering_mem x.2).1

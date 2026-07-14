@@ -46,7 +46,7 @@ theorem isField_of_isIntegral_of_isField' [CommRing R] [CommRing S] [IsDomain S]
   exists_pair_ne := ⟨0, 1, zero_ne_one⟩
   mul_comm := mul_comm
   mul_inv_cancel {x} hx := by
-    letI := hR.toField
+    let := hR.toField
     obtain ⟨y, rfl⟩ := (Algebra.IsIntegral.isIntegral (R := R) x).isUnit hx
     exact ⟨y.inv, y.val_inv⟩
 
