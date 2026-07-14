@@ -385,7 +385,7 @@ theorem quotient_isArtinian_of_nonzero
 
 variable [IsDomain A]
 
-/-- If `N` is finitely generated and every element of `N` can be scaled by a non-zero divisor 
+/-- If `N` is finitely generated and every element of `N` can be scaled by a non-zero divisor
 into `F`, then `N ⧸ F` has finite length. -/
 theorem finiteLength_quotient_of_fg
     (F N : Submodule A M)
@@ -420,8 +420,8 @@ theorem finiteLength_quotient_of_fg
 
 variable [NoZeroSMulDivisors A M]
 
-/-- The length of the quotient `N ⧸ aN` equals the length of `F ⧸ aF` when `F ≤ N` 
-with `N` finitely generated, the element `a` non-zero, and 
+/-- The length of the quotient `N ⧸ aN` equals the length of `F ⧸ aF` when `F ≤ N`
+with `N` finitely generated, the element `a` non-zero, and
 every element of `N` can be scaled into `F`. -/
 theorem length_quotient_smul_eq_free
     (F N : Submodule A M) (a : A) (ha : a ≠ 0)
