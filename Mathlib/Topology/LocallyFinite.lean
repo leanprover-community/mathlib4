@@ -5,6 +5,7 @@ Authors: Yury Kudryashov
 -/
 module
 
+public import Mathlib.Data.Finset.Sigma
 public import Mathlib.Order.Filter.SmallSets
 public import Mathlib.Topology.ContinuousOn
 
@@ -189,6 +190,20 @@ theorem prod_right (hf : LocallyFinite f) (g : ι → Set Y) : LocallyFinite (fu
 theorem prod_left {g : ι → Set Y} (hg : LocallyFinite g) (f : ι → Set X) :
     LocallyFinite (fun i ↦ f i ×ˢ g i) :=
   (hg.preimage_continuous continuous_snd).subset fun _ ↦ prod_subset_preimage_snd _ _
+
+theorem sigma {β : ι → Type*} {g : (i : ι) → β i → Set X}
+    (hg : ∀ i, LocallyFinite (g i)) (hg' : LocallyFinite fun i ↦ ⋃ b, g i b) :
+    LocallyFinite fun p : (i : ι) × β i ↦ g p.1 p.2 := fun x ↦ by
+  obtain ⟨u, hux, hu⟩ := hg' x
+  let S := {i | ((⋃ b, g i b) ∩ u).Nonempty}
+  choose v hvx hv using fun i ↦ hg i x
+  let T i := {b | (g i b ∩ v i).Nonempty}
+  have : { p : (i : ι) × β i | p.1 ∈ S ∧ p.2 ∈ T p.1 }.Finite := .ofFinset
+    (hu.toFinset.sigma fun i ↦ (hv i).toFinset) fun ⟨i, b⟩ ↦ by simp [S, T]
+  refine ⟨u ∩ (⋂ n ∈ S, v n), inter_mem hux <| (biInter_mem hu).2 fun _ _ ↦ hvx _, this.subset ?_⟩
+  intro ⟨i, b⟩ ⟨y, hyg, hyu, hyv⟩
+  have hi : i ∈ S := ⟨y, mem_iUnion_of_mem b hyg, hyu⟩
+  exact ⟨hi, ⟨y, hyg, mem_iInter₂.1 hyv _ hi⟩⟩
 
 end LocallyFinite
 
