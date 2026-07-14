@@ -28,6 +28,4 @@ theorem Pairwise.forall (hs : s.Pairwise r) : ∀ ⦃a⦄, a ∈ s → ∀ ⦃b�
 instance instDecidablePairwise [DecidableRel r] : Decidable (s.Pairwise r) :=
   s.recOnSubsingleton (fun l ↦ (inferInstance : Decidable (l.Pairwise r)))
 
-variable [DecidableRel r]
-
 end Multiset
