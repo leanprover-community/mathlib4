@@ -57,3 +57,21 @@ theorem completion_apply_coe (f : α →SL[σ] β) (a : α) :
     f.completion a = f a := by simp [coe_completion, map_coe]
 
 end ContinuousLinearMap
+
+namespace UniformSpace.Completion
+variable {R α : Type*} [Semiring R] [UniformSpace α] [AddCommGroup α] [IsUniformAddGroup α]
+  [Module R α] [UniformContinuousConstSMul R α]
+
+variable (R α) in
+/-- Embedding of a normed space to its completion as a continuous linear map. -/
+def toComplL : α →L[R] Completion α where
+  __ := toCompl
+  map_smul' := by simp
+  cont := continuous_toCompl
+
+@[simp]
+lemma coe_toComplL : ⇑(toComplL R α : α →L[R] Completion α) = ((↑) : α → Completion α) := rfl
+
+@[simp] lemma toAddMonoidHom_toComplL : (toComplL R α : α →+ Completion α) = toCompl := rfl
+
+end UniformSpace.Completion
