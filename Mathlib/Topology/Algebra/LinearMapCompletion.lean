@@ -62,7 +62,6 @@ namespace UniformSpace.Completion
 variable {R α : Type*} [Semiring R] [UniformSpace α] [AddCommGroup α] [IsUniformAddGroup α]
   [Module R α] [UniformContinuousConstSMul R α]
 
-variable (R α) in
 /-- Embedding of a normed space to its completion as a continuous linear map. -/
 def toComplL : α →L[R] Completion α where
   __ := toCompl
@@ -70,8 +69,9 @@ def toComplL : α →L[R] Completion α where
   cont := continuous_toCompl
 
 @[simp]
-lemma coe_toComplL : ⇑(toComplL R α : α →L[R] Completion α) = ((↑) : α → Completion α) := rfl
+lemma coe_toComplL : ⇑(toComplL : α →L[R] Completion α) = ((↑) : α → Completion α) := rfl
 
-@[simp] lemma toAddMonoidHom_toComplL : (toComplL R α : α →+ Completion α) = toCompl := rfl
+@[simp] lemma toAddMonoidHom_toComplL :
+    (toComplL (R := R) (α := α) : α →+ Completion α) = toCompl := rfl
 
 end UniformSpace.Completion
