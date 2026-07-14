@@ -25,7 +25,6 @@ the type `Skeleton C` is `w`-small, and `C` is `w`-locally small.
 
 @[expose] public section
 
-
 universe w w' v v' u u'
 
 open CategoryTheory
