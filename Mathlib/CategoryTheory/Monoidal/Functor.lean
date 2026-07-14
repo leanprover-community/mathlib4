@@ -924,7 +924,7 @@ def rightAdjointLaxMonoidal : G.LaxMonoidal where
       counit_naturality, counit_naturality_assoc, left_triangle_components_assoc,
       MonoidalCategory.whiskerLeft_comp]
     rw [← δ_natural_left_assoc, ← δ_natural_left_assoc, ← δ_natural_left_assoc]
-    haveI := @NatTrans.whiskerRight_app_tensor_app_assoc _ _ _ _ _ _ _ _ _ adj.counit adj.counit
+    have := @NatTrans.whiskerRight_app_tensor_app_assoc _ _ _ _ _ _ _ _ _ adj.counit adj.counit
     dsimp only [id_obj, comp_obj, Functor.comp_map, Functor.id_map] at this
     rw [this, this, tensorHom_def, assoc, ← comp_whiskerRight_assoc,
       left_triangle_components, id_whiskerRight, id_comp,
@@ -967,7 +967,7 @@ class IsMonoidal [G.LaxMonoidal] : Prop where
 instance :
     letI := adj.rightAdjointLaxMonoidal
     adj.IsMonoidal := by
-  letI := adj.rightAdjointLaxMonoidal
+  let := adj.rightAdjointLaxMonoidal
   constructor
   · rfl
   · intro _ _
@@ -1070,7 +1070,7 @@ set_option backward.defeqAttrib.useBackward true in
 instance :
     letI := adj.leftAdjointOplaxMonoidal
     adj.IsMonoidal := by
-  letI := adj.leftAdjointOplaxMonoidal
+  let := adj.leftAdjointOplaxMonoidal
   refine ⟨?_, fun X Y ↦ ?_⟩
   · simp [homEquiv_counit, leftAdjointOplaxMonoidal_η]
   · simp [homEquiv_counit, ← μ_natural, leftAdjointOplaxMonoidal_δ]

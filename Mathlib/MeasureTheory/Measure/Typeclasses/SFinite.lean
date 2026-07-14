@@ -148,15 +148,15 @@ open scoped Classical in
 noncomputable def spanningSetsIndex (μ : Measure α) [SigmaFinite μ] (x : α) : ℕ :=
   Nat.find <| iUnion_eq_univ_iff.1 (iUnion_spanningSets μ) x
 
-open scoped Classical in
 theorem measurableSet_spanningSetsIndex (μ : Measure α) [SigmaFinite μ] :
-    Measurable (spanningSetsIndex μ) :=
-  measurable_find _ <| measurableSet_spanningSets μ
+    Measurable (spanningSetsIndex μ) := by
+  classical
+  exact measurable_find _ <| measurableSet_spanningSets μ
 
-open scoped Classical in
 theorem preimage_spanningSetsIndex_singleton (μ : Measure α) [SigmaFinite μ] (n : ℕ) :
-    spanningSetsIndex μ ⁻¹' {n} = disjointed (spanningSets μ) n :=
-  preimage_find_eq_disjointed _ _ _
+    spanningSetsIndex μ ⁻¹' {n} = disjointed (spanningSets μ) n := by
+  classical
+  exact preimage_find_eq_disjointed _ _ _
 
 theorem spanningSetsIndex_eq_iff (μ : Measure α) [SigmaFinite μ] {x : α} {n : ℕ} :
     spanningSetsIndex μ x = n ↔ x ∈ disjointed (spanningSets μ) n := by
@@ -594,7 +594,7 @@ lemma Measure.sigmaFinite_iff_measure_singleton_lt_top [Countable α] :
 
 theorem sigmaFinite_bot_iff (μ : @Measure α ⊥) : SigmaFinite μ ↔ IsFiniteMeasure μ := by
   refine ⟨fun h => ⟨?_⟩, fun h => by infer_instance⟩
-  haveI : SigmaFinite μ := h
+  have : SigmaFinite μ := h
   let s := spanningSets μ
   have hs_univ : ⋃ i, s i = Set.univ := iUnion_spanningSets μ
   have hs_meas : ∀ i, MeasurableSet[⊥] (s i) := measurableSet_spanningSets μ

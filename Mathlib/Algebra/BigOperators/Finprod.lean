@@ -226,9 +226,9 @@ theorem finprod_true (f : True → M) : ∏ᶠ i, f i = f trivial :=
 theorem finprod_eq_dif {p : Prop} [Decidable p] (f : p → M) :
     ∏ᶠ i, f i = if h : p then f h else 1 := by
   split_ifs with h
-  · haveI : Unique p := ⟨⟨h⟩, fun _ => rfl⟩
+  · have : Unique p := ⟨⟨h⟩, fun _ => rfl⟩
     exact finprod_unique f
-  · haveI : IsEmpty p := ⟨h⟩
+  · have : IsEmpty p := ⟨h⟩
     exact finprod_of_isEmpty f
 
 @[to_additive]
@@ -443,6 +443,14 @@ theorem finprod_ne_zero {M₀ : Type*} [CommMonoidWithZero M₀] [Nontrivial M�
     ∏ᶠ i, f i ≠ 0 := by
   by_cases h₂ : Set.Finite f.mulSupport
   · grind [finprod_eq_prod f h₂, Finset.prod_ne_zero_iff]
+  · simp [finprod_of_infinite_mulSupport h₂]
+
+theorem finprod_apply_ne_zero {ι : Type*} {N₀ M₀ : Type*} [CommMonoidWithZero M₀] [Nontrivial M₀]
+    [NoZeroDivisors M₀] {n : N₀} {f : ι → N₀ → M₀} (h : ∀ i, f i n ≠ 0) :
+    (∏ᶠ i, f i) n ≠ 0 := by
+  by_cases h₂ : f.mulSupport.Finite
+  · rw [finprod_eq_prod f h₂]
+    grind [Finset.prod_apply, Finset.prod_ne_zero_iff]
   · simp [finprod_of_infinite_mulSupport h₂]
 
 @[to_additive]
@@ -1057,7 +1065,7 @@ over `a ∈ ⋃ i ∈ I, t i` is equal to the product over `i ∈ I` of the prod
       over `a ∈ t i`. -/]
 theorem finprod_mem_biUnion {I : Set ι} {t : ι → Set α} (h : I.PairwiseDisjoint t) (hI : I.Finite)
     (ht : ∀ i ∈ I, (t i).Finite) : ∏ᶠ a ∈ ⋃ x ∈ I, t x, f a = ∏ᶠ i ∈ I, ∏ᶠ j ∈ t i, f j := by
-  haveI := hI.fintype
+  have := hI.fintype
   rw [biUnion_eq_iUnion, finprod_mem_iUnion, ← finprod_set_coe_eq_finprod_mem]
   exacts [fun x y hxy => h x.2 y.2 (Subtype.coe_injective.ne hxy), fun b => ht b b.2]
 

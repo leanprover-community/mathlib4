@@ -167,7 +167,7 @@ lemma IsDiscrete.preimage' {s : Set Y} (hs : IsDiscrete s)
 
 lemma IsDiscrete.eq_of_specializes (hs : IsDiscrete s)
     {a b : X} (hab : a ⤳ b) (ha : a ∈ s) (hb : b ∈ s) : a = b := by
-  letI := hs.1
+  let := hs.1
   simpa only [← Topology.IsInducing.subtypeVal.specializes_iff, hab, Subtype.mk.injEq,
     true_iff] using specializes_iff_eq (X := s) (x := ⟨a, ha⟩) (y := ⟨b, hb⟩)
 
@@ -332,6 +332,16 @@ theorem codiscreteWithin_iff_locallyFiniteComplementWithin [T1Space X] {s U : Se
     simp
 
 /--
+In a `T1Space`, every set is codiscrete within a subsingleton set.
+-/
+@[simp] theorem Set.Subsingleton.mem_codiscreteWithin [T1Space X] {s t : Set X}
+    (h : Set.Subsingleton t) :
+    s ∈ codiscreteWithin t := by
+  rw [codiscreteWithin_iff_locallyEmptyComplementWithin]
+  intro z hz
+  use univ \ t, nhdsNE_of_nhdsNE_sdiff_finite univ_mem h.finite, by aesop
+
+/--
 In a `T1Space`, complements of singleton sets are codiscrete within any set.
 -/
 @[simp]
@@ -365,7 +375,7 @@ lemma mem_codiscrete {S : Set X} :
     S ∈ codiscrete X ↔ ∀ x, Disjoint (𝓝[≠] x) (𝓟 Sᶜ) := by
   simp [codiscrete, mem_codiscreteWithin, compl_eq_univ_sdiff]
 
-lemma Disjoint.eventualy_nhdsWithin_specializes
+lemma Disjoint.eventually_nhdsWithin_specializes
     {p : X} {s : Set X} (hs : Disjoint (𝓝[s] p) cofinite) :
     ∀ᶠ x in 𝓝[s] p, x ⤳ p := by
   obtain ⟨t, h₁t, h₂t⟩ := disjoint_cofinite_right.mp hs
@@ -383,7 +393,7 @@ lemma Disjoint.nhdsWithin_eq_of_cofinite
     {p : X} {s : Set X} (hs : Disjoint (𝓝[s] p) cofinite) :
     𝓝[s] p = 𝓟 ({x | x ⤳ p} ∩ s) := by
   apply le_antisymm
-  · simpa using ⟨hs.eventualy_nhdsWithin_specializes, self_mem_nhdsWithin⟩
+  · simpa using ⟨hs.eventually_nhdsWithin_specializes, self_mem_nhdsWithin⟩
   · rw [← inf_principal, nhdsWithin]
     gcongr
     rw [Filter.principal_le_iff]
