@@ -81,7 +81,8 @@ lemma detp_submatrix_equiv_self (e : m ≃ n) : (A.submatrix e e).detp s = A.det
   simp
 
 /-- A square matrix `A` over a commutative semiring `R` is "determinant balanced"
-with respect to `a b : R` if `a|A|⁺ + b|A|⁻ = b|A|⁺ + a|A|⁻`. -/
+with respect to `a b : R` if `a|A|⁺ + b|A|⁻ = b|A|⁺ + a|A|⁻`. Over a commutative ring,
+this is equivalent to `(a - b)|A| = 0`, see `Matrix.detpBalanced_iff_sub_mul_det_eq_zero`. -/
 def DetpBalanced (a b : R) : Prop :=
   a * A.detp 1 + b * A.detp (-1) = b * A.detp 1 + a * A.detp (-1)
 

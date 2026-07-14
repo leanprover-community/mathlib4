@@ -49,42 +49,34 @@ lemma nonsingular_iff_det_mem_nonZeroDivisors {R : Type*} [CommRing R]
   simp_rw [Nonsingular, detpBalanced_iff_sub_mul_det_eq_zero, mem_nonZeroDivisors_iff_right]
   exact ⟨fun h x eq ↦ h x 0 (by simpa), fun h a b eq ↦ sub_eq_zero.mp <| h _ (by simpa)⟩
 
+lemma nonsingular_iff_det_ne_zero {R : Type*} [CommRing R] [IsDomain R]
+    {A : Matrix n n R} : A.Nonsingular ↔ A.det ≠ 0 := by
+  rw [nonsingular_iff_det_mem_nonZeroDivisors, mem_nonZeroDivisors_iff_ne_zero]
+
 /-- If the columns of a square matrix are linearly independent, then the matrix is nonsingular. -/
 theorem Nonsingular.of_linearIndependent_col (ind : LinearIndependent R A.col) : A.Nonsingular := by
   intro a b bal
-  let P (r : ℕ) : Prop := ∀ (m : Type) [Fintype m] [DecidableEq m] (le : Fintype.card m = r)
-    (f g : m → n), (A.submatrix f g).DetpBalanced a b
-  classical
-  let r := Nat.find ⟨_, show P _ from fun m _ _ eq ↦ bal.submatrix_of_card_le eq.ge⟩
-  have hr : P r := Nat.find_spec _
-  by_cases h0 : r = 0
-  · simpa [DetpBalanced] using hr Empty (by simp [h0]) Empty.elim Empty.elim
-  have := Nat.find_min _ (Nat.pred_lt h0)
-  simp_rw [P] at this; push Not at this
-  obtain ⟨m, _, _, eq, f, g, nbal⟩ := this
-  have hg : ¬ g.Surjective :=
-    fun surj ↦ nbal <| bal.submatrix_of_card_le (Fintype.card_le_of_surjective g surj) ..
-  rw [Function.Surjective] at hg; push Not at hg
-  obtain ⟨j₀, h₀⟩ := hg
-  let D : Matrix m m R := A.submatrix f g
-  let Aj (j : m) : Matrix m m R := A.submatrix f (Function.update g j j₀)
-  let v (a b : R) : n →₀ R := ∑ j : m, .single (g j) (a * (Aj j).detp (-1) + b * (Aj j).detp 1) +
+  let P (r : ℕ) : Prop := ∀ f g : Fin r → n, (A.submatrix f g).DetpBalanced a b
+  suffices h : P 0 by simpa [DetpBalanced] using h Fin.elim0 Fin.elim0
+  refine Nat.decreasingInduction' (n := Fintype.card n) (fun r _ _ ih f g ↦ ?_) (Nat.zero_le _) <|
+    bal.submatrix_of_card_le (Fintype.card_fin _).ge
+  by_cases hg : g.Surjective
+  · exact bal.submatrix_of_card_le (Fintype.card_le_of_surjective g hg) f g
+  obtain ⟨j₀, h₀⟩ := by simpa [Function.Surjective] using hg
+  let D := A.submatrix f g
+  let Aj (j : Fin r) := A.submatrix f (Function.update g j j₀)
+  let v (a b : R) : n →₀ R := ∑ j, .single (g j) (a * (Aj j).detp (-1) + b * (Aj j).detp 1) +
     .single j₀ (a * D.detp 1 + b * D.detp (-1))
-  have veq := congr($(ind (a₁ := v a b) (a₂ := v b a) ?_) j₀)
-  · exact (nbal <| by simpa [DetpBalanced, v, h₀] using veq).elim
-  ext i
+  suffices h : v a b = v b a by simpa [DetpBalanced, v, h₀] using congr($h j₀)
+  refine ind (funext fun i ↦ ?_)
   let Ai := A.submatrix (Option.rec i f) (Option.rec j₀ g)
-  have (s : ℤˣ) : Ai.detp s = ∑ j, detp (-s) (Aj j) * A.col (g j) i + detp s D * A.col j₀ i := by
+  have (s : ℤˣ) : Ai.detp s = ∑ j, (Aj j).detp (-s) * A.col (g j) i + D.detp s * A.col j₀ i := by
     simp_rw [mul_comm]; rw [detp_option_expand_row_none, add_comm]
-    congr!; ext
-    simp only [submatrix_apply, Ai, Aj, Function.update]
-    split_ifs <;> simp
+    congr!; aesop (add simp Function.update)
   have (a b : R) : (v a b).linearCombination R A.col i = a * Ai.detp 1 + b * Ai.detp (-1) := by
-    simp_rw [v, map_add, map_sum, Finsupp.linearCombination_single, Pi.add_apply, Finset.sum_apply,
-      add_smul, Pi.add_apply, Finset.sum_add_distrib, Pi.smul_apply, smul_eq_mul, mul_assoc,
-      ← Finset.mul_sum, add_add_add_comm, ← mul_add, this, neg_neg]
-  rw [this, this]
-  exact hr (Option m) (by rw [Fintype.card_option, eq]; exact Nat.succ_pred h0) ..
+    simp [v, Finset.sum_add_distrib, mul_assoc, ← Finset.mul_sum, add_add_add_comm, mul_add, this]
+  simpa [this, DetpBalanced, ← submatrix_submatrix] using
+    ih (Option.rec i f ∘ finSuccEquiv r) (Option.rec j₀ g ∘ finSuccEquiv r)
 
 theorem Nonsingular.of_linearIndependent_row (ind : LinearIndependent R A.row) : A.Nonsingular := by
   rw [← nonsingular_transpose_iff]; exact .of_linearIndependent_col ind
@@ -128,6 +120,12 @@ lemma Nonsingular.mul {B : Matrix n n R} (hA : A.Nonsingular) (hB : B.Nonsingula
     (A * B).Nonsingular := by
   rw [← isLeftRegular_iff_nonsingular] at *
   exact hA.mul hB
+
+lemma nonsingular_mul_iff {A B : Matrix n n R} :
+    (A * B).Nonsingular ↔ A.Nonsingular ∧ B.Nonsingular where
+  mp h := ⟨isRightRegular_iff_nonsingular.mp <| .of_mul <| isRightRegular_iff_nonsingular.mpr h,
+    isLeftRegular_iff_nonsingular.mp <| .of_mul <| isLeftRegular_iff_nonsingular.mpr h⟩
+  mpr h := h.1.mul h.2
 
 omit [DecidableEq n] in
 theorem isLeftRegular_iff_isRightRegular : IsLeftRegular A ↔ IsRightRegular A := by
