@@ -134,7 +134,6 @@ theorem isDiscrete_tfae (M : CondensedMod.{u} R) :
   tfae_have 1 ↔ 3 := ⟨fun ⟨h⟩ ↦ h, fun h ↦ ⟨h⟩⟩
   tfae_have 1 ↔ 4 := Sheaf.isConstant_iff_mem_essImage _ CompHaus.isTerminalPUnit (adjunction R) _
   tfae_have 1 ↔ 5 :=
-    -- These `have` statements above shouldn't be needed, but they are.
     Sheaf.isConstant_iff_isIso_counit_app' _ CompHaus.isTerminalPUnit (adjunction R) _
   tfae_have 1 ↔ 6 :=
     (Sheaf.isConstant_iff_of_equivalence (coherentTopology Profinite)
