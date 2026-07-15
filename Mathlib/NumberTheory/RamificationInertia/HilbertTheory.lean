@@ -64,9 +64,12 @@ degrees of the fields follow from those of the rings via
 
 namespace Ideal
 
+-- We fix the order of variables for the whole file
+variable {A K L B : Type*}
+
 section Ring
 
-variable {B : Type*} [CommRing B] (G : Type*) [Group G] [MulSemiringAction G B]
+variable [CommRing B] (G : Type*) [Group G] [MulSemiringAction G B]
   (P : Ideal B) (C : Type*) [CommRing C] [Algebra C B]
 
 open MulAction Pointwise
@@ -135,8 +138,7 @@ theorem IsInertiaRing.algebraMap_ringEquiv_symm_apply [IsInertiaRing G P C]
     algebraMap C B ((IsInertiaRing.ringEquiv G P C C').symm x) = algebraMap C' B x := by
   simp [IsInertiaRing.ringEquiv, IsGaloisGroup.ringEquiv]
 
-variable (A K L : Type*) [CommRing A] [Field K] [Field L] [Algebra B L] [IsFractionRing B L]
-  [Algebra A B] [Algebra A L] [IsScalarTower A B L] [Algebra K L]
+variable (K L) [Field K] [Field L] [Algebra B L] [IsFractionRing B L] [Algebra K L]
   [MulSemiringAction Gal(L/K) B] [SMulDistribClass Gal(L/K) B L]
 
 /-- If `L` is Galois over the field `D` with the decomposition group of `P` (so `D` is the
@@ -163,7 +165,7 @@ end basic
 
 section rank
 
-variable [IsDomain B] [Finite G] {A : Type*} [CommRing A] [IsDomain A] [Ring.HasFiniteQuotients A]
+variable [IsDomain B] [Finite G] [CommRing A] [IsDomain A] [Ring.HasFiniteQuotients A]
   [Algebra A B] [Module.Finite A B] [Module.Flat A B] [IsGaloisGroup G A B] {p : Ideal A}
   [P.LiesOver p]
 
@@ -248,7 +250,7 @@ section splitting
 
 /-! ### Splitting of a prime in a decomposition ring -/
 
-variable {A : Type*} [CommRing A] [Algebra A B] [Algebra A C] [IsScalarTower A C B]
+variable [CommRing A] [Algebra A B] [Algebra A C] [IsScalarTower A C B]
   {p : Ideal A} [P.LiesOver p] (𝓟 : Ideal C) [P.LiesOver 𝓟]
 
 namespace IsDecompositionRing
@@ -395,7 +397,7 @@ section IntermediateField
 
 open IntermediateField MulAction Pointwise
 
-variable (K L : Type*) [Field K] [Field L] [Algebra K L] {B : Type*} [CommRing B] (P : Ideal B)
+variable (K L) [Field K] [Field L] [Algebra K L] [CommRing B] (P : Ideal B)
   [MulSemiringAction Gal(L/K) B]
 
 /-- The decomposition field of `P` in `L/K`: the subfield of `L` fixed by the decomposition
@@ -421,6 +423,14 @@ theorem fixingSubgroup_decompositionField [FiniteDimensional K L] :
 theorem fixingSubgroup_inertiaField [FiniteDimensional K L] :
     (P.inertiaField K L).fixingSubgroup = inertia Gal(L/K) P :=
   fixingSubgroup_fixedField _
+
+instance [IsGalois K L] :
+    IsGaloisGroup (stabilizer Gal(L/K) P) (P.decompositionField K L) L :=
+  IsGaloisGroup.of_fixedPoints_eq _ _ _ _ _ rfl
+
+instance [IsGalois K L] :
+    IsGaloisGroup (inertia Gal(L/K) P) (P.inertiaField K L) L :=
+  IsGaloisGroup.of_fixedPoints_eq _ _ _ _ _ rfl
 
 theorem eq_decompositionField_iff [FiniteDimensional K L] [IsGalois K L]
     {D : IntermediateField K L} :
@@ -455,12 +465,84 @@ theorem inertiaField_le_iff {F : IntermediateField K L} [FiniteDimensional K L] 
     ← IntermediateField.fixingSubgroup, ← IntermediateField.fixingSubgroup,
     fixingSubgroup_inertiaField]
 
+section ring
+
+variable [IsGalois K L] [Algebra B L] [IsFractionRing B L] [SMulDistribClass Gal(L/K) B L]
+  (C : Type*) [CommRing C] [Algebra C B] [Algebra C L] [IsScalarTower C B L] [IsIntegrallyClosed C]
+  [Algebra.IsIntegral C B]
+
+/-- A ring `C` with `C ⊆ B`, `B` integral over `C`, `C` integrally closed, and fraction field the
+decomposition field of `P`, is a decomposition ring for `P`. -/
+theorem isDecompositionRing_of_isFractionRing [Algebra C (P.decompositionField K L)]
+    [IsScalarTower C (P.decompositionField K L) L] [IsFractionRing C (P.decompositionField K L)] :
+    P.IsDecompositionRing Gal(L/K) C := {
+  toIsGaloisGroup := IsGaloisGroup.of_isFractionRing _ C B (P.decompositionField K L) L }
+
+/-- A ring `C` with `C ⊆ B`, `B` integral over `C`, `C` integrally closed, and fraction field the
+inertia field of `P`, is an inertia ring for `P`. -/
+theorem isInertiaRing_of_isFractionRing [Algebra C (P.inertiaField K L)]
+    [IsScalarTower C (P.inertiaField K L) L] [IsFractionRing C (P.inertiaField K L)] :
+    P.IsInertiaRing Gal(L/K) C := {
+  toIsGaloisGroup := IsGaloisGroup.of_isFractionRing _ C B (P.inertiaField K L) L }
+
+end ring
+
+section rank
+
+variable [CommRing A] [IsDomain A] [IsIntegrallyClosed A] [IsDomain B]
+  [Algebra B L] [IsFractionRing B L] [SMulDistribClass Gal(L/K) B L]
+  [Algebra A K] [IsFractionRing A K] [Algebra A B] [Algebra A L]
+  [IsScalarTower A K L] [IsScalarTower A B L]
+  [Algebra.IsIntegral A B] [Module.Finite A B] [Module.Flat A B]
+  [FiniteDimensional K L] [IsGalois K L]
+  (p : Ideal A) [P.LiesOver p] [P.IsMaximal] [p.IsMaximal] [PerfectField p.ResidueField]
+
+/-- The degree `[L : D]` of `L` over the decomposition field `D` equals the product of the
+ramification index and the inertia degree of `p` in `B`. -/
+theorem finrank_decompositionField_top :
+    Module.finrank (P.decompositionField K L) L = p.ramificationIdxIn B * p.inertiaDegIn B := by
+  have : IsGaloisGroup Gal(L/K) A B := .of_isFractionRing _ _ _ K L
+  rw [decompositionField, finrank_fixedField_eq_card, card_stabilizer_eq p P]
+
+/-- The degree `[L : E]` of `L` over the inertia field `E` equals the ramification index of `p`
+in `B`. -/
+theorem finrank_inertiaField_top :
+    Module.finrank (P.inertiaField K L) L = p.ramificationIdxIn B := by
+  have : IsGaloisGroup Gal(L/K) A B := .of_isFractionRing _ _ _ K L
+  rw [inertiaField, finrank_fixedField_eq_card, card_inertia_eq_ramificationIdxIn p P]
+
+/-- The degree `[D : K]` of the decomposition field `D` over `K` equals the number of prime ideals
+of `B` lying over `p`. -/
+theorem finrank_decompositionField_bot :
+    Module.finrank K (P.decompositionField K L) = (p.primesOver B).ncard := by
+  have : IsGaloisGroup Gal(L/K) A B := .of_isFractionRing _ _ _ K L
+  rw [← mul_left_inj' (c := Module.finrank (P.decompositionField K L) L) Module.finrank_pos.ne',
+    Module.finrank_mul_finrank, finrank_decompositionField_top K L P p,
+    ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn p B Gal(L/K),
+    IsGaloisGroup.card_eq_finrank _ K L]
+
+/-- The degree `[E : K]` of the inertia field `E` over `K` equals the product of the number of
+prime ideals of `B` lying over `p` and the inertia degree of `p` in `B`. -/
+theorem finrank_inertiaField_bot :
+    Module.finrank K (P.inertiaField K L) = (p.primesOver B).ncard * p.inertiaDegIn B := by
+  have : IsGaloisGroup Gal(L/K) A B := .of_isFractionRing _ _ _ K L
+  rw [← mul_left_inj' (c := Module.finrank (P.inertiaField K L) L) Module.finrank_pos.ne',
+    Module.finrank_mul_finrank, finrank_inertiaField_top K L P p,  mul_assoc,
+    mul_comm (p.inertiaDegIn B), ← IsGaloisGroup.card_eq_finrank Gal(L/K),
+    ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn p B Gal(L/K)]
+
+end rank
+
 variable (F : IntermediateField K L) [Algebra B L] [IsFractionRing B L]
-  [SMulDistribClass Gal(L/K) B L] [MulSemiringAction Gal(L/F) B] [SMulDistribClass Gal(L/F) B L]
+  [SMulDistribClass Gal(L/K) B L]
+
+section restrictScalars
+
+variable [MulSemiringAction Gal(L/F) B] [SMulDistribClass Gal(L/F) B L]
 
 /-- Let `F` be an intermediate field of `L/K`. The decomposition field of `P` for `L/F` is the
 compositum of `F` with the decomposition field of `P` for `L/K`. -/
-theorem decompositionField_restrictScalars [FiniteDimensional K L] [IsGalois K L] :
+theorem restrictScalars_decompositionField [FiniteDimensional K L] [IsGalois K L] :
     (P.decompositionField F L).restrictScalars K = F ⊔ P.decompositionField K L := by
   let H : Subgroup Gal(L/K) := stabilizer Gal(L/K) P ⊓ F.fixingSubgroup
   have : IsGaloisGroup H ↑(F ⊔ P.decompositionField K L) L := by
@@ -480,7 +562,7 @@ theorem decompositionField_restrictScalars [FiniteDimensional K L] [IsGalois K L
 
 /-- Let `F` be an intermediate field of `L/K`. The inertia field of `P` for `L/F` is the
 compositum of `F` with the inertia field of `P` for `L/K`. -/
-theorem inertiaField_restrictScalars [FiniteDimensional K L] [IsGalois K L] :
+theorem restrictScalars_inertiaField [FiniteDimensional K L] [IsGalois K L] :
     (P.inertiaField F L).restrictScalars K = F ⊔ P.inertiaField K L := by
   let H : Subgroup Gal(L/K) := inertia Gal(L/K) P ⊓ F.fixingSubgroup
   have : IsGaloisGroup H ↑(F ⊔ P.inertiaField K L) L := by
@@ -496,6 +578,167 @@ theorem inertiaField_restrictScalars [FiniteDimensional K L] [IsGalois K L] :
     IsGaloisGroup.of_mulEquiv e fun _ _ ↦ rfl
   rw [inertiaField, fixedField, (IsGaloisGroup.subgroup_iff (F := extendScalars le_sup_left)).mp h,
     extendScalars_restrictScalars]
+
+end restrictScalars
+
+section lift
+
+variable {𝓞F : Type*} [CommRing 𝓞F] [Algebra 𝓞F F] [Algebra 𝓞F B] [Algebra 𝓞F L]
+  [IsScalarTower 𝓞F F L] [IsScalarTower 𝓞F B L] [IsFractionRing 𝓞F F]
+  [IsIntegrallyClosed 𝓞F] [Algebra.IsIntegral 𝓞F B]
+  [MulSemiringAction Gal(F/K) 𝓞F] [SMulDistribClass Gal(F/K) 𝓞F F]
+  (𝓟F : Ideal 𝓞F) [P.LiesOver 𝓟F]
+
+/-- Let `F` be an intermediate field of `L/K`. The decomposition field of the prime `𝓟F`
+below `P` for `F/K` is the intersection of `F` with the decomposition field of `P` for `L/K`. -/
+theorem lift_decompositionField [FiniteDimensional K L] [IsGalois K L] [Normal K F] [P.IsPrime] :
+    lift (𝓟F.decompositionField K F) = P.decompositionField K L ⊓ F := by
+  have : Algebra.IsInvariant 𝓞F B F.fixingSubgroup :=
+    have : IsGaloisGroup F.fixingSubgroup F L := IsGaloisGroup.intermediateField _ _ _ _
+    (IsGaloisGroup.of_isFractionRing F.fixingSubgroup 𝓞F B F L).isInvariant
+  have h : (stabilizer Gal(L/K) P).map (AlgEquiv.restrictNormalHom F) = stabilizer Gal(F/K) 𝓟F :=
+    Ideal.map_stabilizer_of_surjective _ F.fixingSubgroup 𝓟F P
+      (AlgEquiv.restrictNormalHom_surjective L)
+      (IntermediateField.restrictNormalHom_ker F).ge
+      (fun g x ↦ AlgEquiv.algebraMap_restrictNormalHom_smul' F x g)
+  rw [← IsGalois.fixedField_fixingSubgroup (lift (𝓟F.decompositionField K F)),lift,
+    show F.val = IsScalarTower.toAlgHom K F L from rfl, map_fixingSubgroup,
+    fixingSubgroup_decompositionField, ← h, Subgroup.comap_map_eq, restrictNormalHom_ker,
+    IsGalois.fixedField_eq_iff_fixingSubgroup_eq, fixingSubgroup_inf,
+    fixingSubgroup_decompositionField]
+
+/-- Let `F` be an intermediate field of `L/K`. The inertia field of the prime `𝓟F`
+below `P` for `F/K` is the intersection of `F` with the inertia field of `P` for `L/K`. -/
+theorem lift_inertiaField [FiniteDimensional K L] [IsGalois K L] [Normal K F] [P.IsPrime] :
+    lift (𝓟F.inertiaField K F) = P.inertiaField K L ⊓ F := by
+  have : Algebra.IsInvariant 𝓞F B F.fixingSubgroup :=
+    have : IsGaloisGroup F.fixingSubgroup F L := IsGaloisGroup.intermediateField _ _ _ _
+    (IsGaloisGroup.of_isFractionRing F.fixingSubgroup 𝓞F B F L).isInvariant
+  have h : (inertia Gal(L/K) P).map (AlgEquiv.restrictNormalHom F) = inertia Gal(F/K) 𝓟F :=
+    Ideal.map_inertia_of_surjective _ F.fixingSubgroup 𝓟F P
+      (AlgEquiv.restrictNormalHom_surjective L)
+      (IntermediateField.restrictNormalHom_ker F).ge
+      (fun g x ↦ AlgEquiv.algebraMap_restrictNormalHom_smul' F x g)
+  rw [← IsGalois.fixedField_fixingSubgroup (lift (𝓟F.inertiaField K F)),lift,
+    show F.val = IsScalarTower.toAlgHom K F L from rfl, map_fixingSubgroup,
+    fixingSubgroup_inertiaField, ← h, Subgroup.comap_map_eq, restrictNormalHom_ker,
+    IsGalois.fixedField_eq_iff_fixingSubgroup_eq, fixingSubgroup_inf,
+    fixingSubgroup_inertiaField]
+
+end lift
+
+section arithmetic
+
+variable (A) {𝓞F : Type*} [CommRing 𝓞F] [Algebra 𝓞F F] [Algebra 𝓞F B] [Algebra 𝓞F L]
+  [IsScalarTower 𝓞F F L] [IsScalarTower 𝓞F B L] [IsFractionRing 𝓞F F]
+  [IsIntegrallyClosed 𝓞F] [Algebra.IsIntegral 𝓞F B]
+  [FiniteDimensional K L] [IsGalois K L] (𝓟F : Ideal 𝓞F) [P.IsPrime] [P.LiesOver 𝓟F]
+
+/-- `D ≤ F` iff `P` is the unique prime of `L` above the prime `𝓟F` of `F` below `P`. -/
+theorem decompositionField_le_iff_primesOver [SMulCommClass Gal(L/K) 𝓞F B] :
+    P.decompositionField K L ≤ F ↔ 𝓟F.primesOver B = {P} := by
+  have : IsGaloisGroup F.fixingSubgroup F L := .intermediateField _ _ _ _
+  have : IsGaloisGroup F.fixingSubgroup 𝓞F B := .of_isFractionRing F.fixingSubgroup 𝓞F B F L
+  have hP : P ∈ 𝓟F.primesOver B := ⟨inferInstance, inferInstance⟩
+  simp only [decompositionField_le_iff, Set.eq_singleton_iff_unique_mem, hP, true_and]
+  refine ⟨fun h Q ⟨_, _⟩ ↦ ?_, fun h σ hσ ↦ ?_⟩
+  · obtain ⟨σ, rfl⟩ := exists_smul_eq_of_isGaloisGroup 𝓟F P Q F.fixingSubgroup
+    exact h σ.prop
+  · exact h (σ • P) ⟨IsPrime.smul σ, LiesOver.smul σ⟩
+
+variable [MulSemiringAction Gal(L/F) B] [SMulDistribClass Gal(L/F) B L] [CommRing A]
+  [IsIntegrallyClosed A] [Algebra A B] [Algebra A K] [IsFractionRing A K] [Algebra A L]
+  [IsScalarTower A K L] [IsScalarTower A B L] [Algebra A 𝓞F] [IsScalarTower A 𝓞F B] (p : Ideal A)
+  [P.LiesOver p] [𝓟F.LiesOver p] [Module.Finite A B] [Module.Flat A B] [Module.Flat 𝓞F B]
+  [p.IsMaximal] [PerfectField p.ResidueField] [IsDomain B]
+
+include 𝓟F in
+/-- `E ≤ F` iff `P` is totally ramified over the prime `𝓟F` of `F` below `P`. -/
+theorem inertiaField_le_iff_ramificationIdx_eq_finrank [Module.Finite 𝓞F B] [P.IsMaximal]
+    [𝓟F.IsPrime] [PerfectField 𝓟F.ResidueField] :
+    P.inertiaField K L ≤ F ↔ P.ramificationIdx 𝓞F = Module.finrank F L := by
+  have : IsDomain 𝓞F := Function.Injective.isDomain _ (IsFractionRing.injective 𝓞F F)
+  have : IsGaloisGroup Gal(L/F) 𝓞F B := .of_isFractionRing _ _ _ F L
+  have : 𝓟F.IsMaximal := IsMaximal.of_isMaximal_liesOver P 𝓟F
+  rw [← sup_eq_right, eq_comm, eq_iff_finrank_eq_of_le' le_sup_right]
+  have : Module.finrank (inertiaField F L P) L = Module.finrank ↑(F ⊔ inertiaField K L P) L :=
+    Algebra.finrank_eq_of_equiv_equiv
+      (equivOfEq (restrictScalars_inertiaField K L P F)).toRingEquiv (RingEquiv.refl L) rfl
+  rw [sup_comm, ← this, finrank_inertiaField_top F L P 𝓟F,
+    ramificationIdxIn_eq_ramificationIdx 𝓟F P Gal(L/F), eq_comm]
+
+include p in
+/-- `F ≤ E` iff `p` is unramified in `F`. -/
+theorem le_inertiaField_iff_ramificationIdx_eq_one :
+    F ≤ P.inertiaField K L ↔ 𝓟F.ramificationIdx A = 1 := by
+  have : IsDomain A := Function.Injective.isDomain _ (IsFractionRing.injective A K)
+  have : IsDomain 𝓞F := Function.Injective.isDomain _ (IsFractionRing.injective 𝓞F F)
+  have : IsGaloisGroup Gal(L/K) A B := .of_isFractionRing _ _ _ K L
+  have : IsGaloisGroup Gal(L/F) 𝓞F B := .of_isFractionRing _ _ _ F L
+  have : Module.Finite 𝓞F B := .right A 𝓞F B
+  have : P.IsMaximal := .of_liesOver_isMaximal P p
+  have : 𝓟F.IsMaximal := IsMaximal.of_isMaximal_liesOver P 𝓟F
+  have : Algebra.IsIntegral A 𝓞F := Algebra.IsIntegral.tower_bot B
+  let := Localization.AtPrime.algebraOfLiesOver p 𝓟F
+  have : PerfectField 𝓟F.ResidueField := Algebra.IsAlgebraic.perfectField p.ResidueField
+  have : Module.finrank (inertiaField F L P) L = Module.finrank ↑(F ⊔ inertiaField K L P) L :=
+    Algebra.finrank_eq_of_equiv_equiv
+      (equivOfEq (restrictScalars_inertiaField K L P F)).toRingEquiv (RingEquiv.refl L) rfl
+  rw [← sup_eq_right, eq_comm, eq_iff_finrank_eq_of_le' le_sup_right,
+    finrank_inertiaField_top K L P p, ramificationIdxIn_eq_ramificationIdx p P Gal(L/K),
+    ramificationIdx_tower 𝓟F, ← ramificationIdxIn_eq_ramificationIdx 𝓟F P Gal(L/F),
+    ← finrank_inertiaField_top F L P, this, mul_eq_right₀ Module.finrank_pos.ne']
+
+variable [P.IsMaximal] [IsDomain 𝓞F]
+
+include p in
+/-- `F ≤ D` iff `p` is totally split in `F`. -/
+theorem le_decompositionField_iff_ramificationIdx_inertiaDeg_eq_one [IsDomain A] :
+    F ≤ P.decompositionField K L ↔ 𝓟F.ramificationIdx A = 1 ∧ 𝓟F.inertiaDeg A = 1 := by
+  have : IsGaloisGroup Gal(L/K) A B := .of_isFractionRing _ _ _ K L
+  have : IsGaloisGroup Gal(L/F) 𝓞F B := .of_isFractionRing _ _ _ F L
+  have : Module.Finite 𝓞F B := .right A 𝓞F B
+  have : 𝓟F.IsMaximal := IsMaximal.of_isMaximal_liesOver P 𝓟F
+  have : Algebra.IsIntegral A 𝓞F := Algebra.IsIntegral.tower_bot B
+  let := Localization.AtPrime.algebraOfLiesOver p 𝓟F
+  have : PerfectField 𝓟F.ResidueField := Algebra.IsAlgebraic.perfectField p.ResidueField
+  have : Module.finrank (decompositionField F L P) L =
+      Module.finrank ↑(F ⊔ decompositionField K L P) L :=
+    Algebra.finrank_eq_of_equiv_equiv
+      (equivOfEq (restrictScalars_decompositionField K L P F)).toRingEquiv (RingEquiv.refl L) rfl
+  rw [← sup_eq_right, sup_comm, eq_comm, eq_iff_finrank_eq_of_le' le_sup_left,
+    finrank_decompositionField_top K L P p, sup_comm, ← this,
+    finrank_decompositionField_top F L P 𝓟F, ramificationIdxIn_eq_ramificationIdx p P Gal(L/K),
+    inertiaDegIn_eq_inertiaDeg p P Gal(L/K), ramificationIdxIn_eq_ramificationIdx 𝓟F P Gal(L/F),
+    inertiaDegIn_eq_inertiaDeg 𝓟F P Gal(L/F), ramificationIdx_tower 𝓟F P,
+    mul_comm (𝓟F.ramificationIdx A), mul_assoc, mul_right_inj' (Ideal.ramificationIdx_pos _ _).ne',
+    inertiaDeg_tower 𝓟F P,  ← mul_assoc, mul_eq_right₀ (Ideal.inertiaDeg_pos _ _).ne',  mul_eq_one]
+
+include p in
+/-- An intermediate field `F` of `L/K` is the decomposition field of `P` iff `p` is totally split
+in `F` and there is only one prime ideal above `𝓟F` in `L`. -/
+theorem eq_decompositionField_iff' [IsDomain A] [SMulCommClass Gal(L/K) 𝓞F B] :
+    F = P.decompositionField K L ↔
+      𝓟F.primesOver B = {P} ∧ 𝓟F.ramificationIdx A = 1 ∧ 𝓟F.inertiaDeg A = 1 := by
+  rw [le_antisymm_iff,
+    le_decompositionField_iff_ramificationIdx_inertiaDeg_eq_one A K L P F 𝓟F p,
+    decompositionField_le_iff_primesOver K L P F 𝓟F, and_comm]
+
+include p in
+/-- An intermediate field `F` of `L/K` is the inertia field of `P` iff the prime `𝓟F` of `F` below
+`P` is unramified over `p`, and `P` is totally ramified over `𝓟F`. -/
+theorem eq_inertiaField_iff' :
+    F = P.inertiaField K L ↔
+      P.ramificationIdx 𝓞F = Module.finrank F L ∧ 𝓟F.ramificationIdx A = 1 := by
+  have : Module.Finite 𝓞F B := .right A 𝓞F B
+  have : 𝓟F.IsMaximal := IsMaximal.of_isMaximal_liesOver P 𝓟F
+  have : Algebra.IsIntegral A 𝓞F := Algebra.IsIntegral.tower_bot B
+  let := Localization.AtPrime.algebraOfLiesOver p 𝓟F
+  have : PerfectField 𝓟F.ResidueField := Algebra.IsAlgebraic.perfectField p.ResidueField
+  rw [le_antisymm_iff, le_inertiaField_iff_ramificationIdx_eq_one A K L P F 𝓟F p,
+    inertiaField_le_iff_ramificationIdx_eq_finrank K L P F 𝓟F, and_comm]
+
+end arithmetic
 
 end IntermediateField
 
@@ -809,320 +1052,4 @@ end IsDecompositionField
 
 end splitting
 
-namespace IntermediateField
-
-variable [MulSemiringAction Gal(L/K) B] [FiniteDimensional K L] [IsGalois K L]
-  {F : IntermediateField K L}
-
-/--
-An intermediate field `F` of `L/K` is the decomposition field of `P` if and only if its fixing
-subgroup is the decomposition group of `P`, that is the stabilizer of `P` in `Gal(L/K)`.
--/
-theorem isDecompositionField_iff_fixingSubgroup :
-    IsDecompositionField K L P F ↔ F.fixingSubgroup = stabilizer Gal(L/K) P := by
-  rw [isDecompositionField_iff, IsGaloisGroup.subgroup_iff, ← IntermediateField.fixedField,
-    IsGalois.fixedField_eq_iff_fixingSubgroup_eq]
-
-/--
-An intermediate field `F` of `L/K` is the inertia field of `P` if and only if its fixing
-subgroup is the inertia group of `P` in `Gal(L/K)`.
--/
-theorem isInertiaField_iff_fixingSubgroup :
-    IsInertiaField K L P F ↔ F.fixingSubgroup = inertia Gal(L/K) P := by
-  rw [isInertiaField_iff, IsGaloisGroup.subgroup_iff, ← IntermediateField.fixedField,
-    IsGalois.fixedField_eq_iff_fixingSubgroup_eq]
-
-variable (D E : IntermediateField K L) [Algebra B L]
-  [hSD : SMulDistribClass Gal(L/K) B L]
-
-variable (F)
-
-/--
-Let `D` be the decomposition field of `P` in `L/K` and let `F` be a subextension of `L/K`.
-Then, the decomposition field of `P` in `L/F` is the compositum `DF`.
--/
-instance isDecompositionField_sup [FaithfulSMul B L] [MulSemiringAction Gal(L/F) B]
-    [SMulDistribClass Gal(L/F) B L] [hD : IsDecompositionField K L P D] :
-    IsDecompositionField F L P (D ⊔ F : IntermediateField K L) := by
-  let H : Subgroup Gal(L/K) := stabilizer Gal(L/K) P ⊓ F.fixingSubgroup
-  have : IsGaloisGroup H ↥(D ⊔ F) L := by
-    rw [IsGaloisGroup.subgroup_iff, ← fixedField, IsGalois.fixedField_eq_iff_fixingSubgroup_eq,
-      fixingSubgroup_sup, (isDecompositionField_iff_fixingSubgroup K L P).mp hD]
-  let e : stabilizer Gal(L/F) P ≃* H := by
-    refine (MulEquiv.trans ?_ ((stabilizer F.fixingSubgroup P).equivMapOfInjective _
-      F.fixingSubgroup.subtype_injective)).trans <| MulEquiv.subgroupCongr <| by ext; simp [H]
-    refine stabilizerEquiv P F.fixingSubgroupEquiv.symm fun σ x ↦ ?_
-    apply FaithfulSMul.algebraMap_injective B L
-    simp [algebraMap.smul', fixingSubgroupEquiv_symm_apply_apply]
-  exact (isDecompositionField_iff _ _ P _).mpr <| IsGaloisGroup.of_mulEquiv e fun g x ↦ rfl
-
-/--
-Let `E` be the inertia field of `P` in `L/K` and let `F` be a subextension of `L/K`.
-Then, the inertia field of `P` in `L/F` is the compositum `EF`.
--/
-instance isInertiaField_sup [FaithfulSMul B L] [MulSemiringAction Gal(L/F) B]
-    [SMulDistribClass Gal(L/F) B L] [hE : IsInertiaField K L P E] :
-    IsInertiaField F L P (E ⊔ F : IntermediateField K L) := by
-  let H : Subgroup Gal(L/K) := inertia Gal(L/K) P ⊓ F.fixingSubgroup
-  have : IsGaloisGroup H ↥(E ⊔ F) L := by
-    rw [IsGaloisGroup.subgroup_iff, ← fixedField, IsGalois.fixedField_eq_iff_fixingSubgroup_eq,
-      fixingSubgroup_sup, (isInertiaField_iff_fixingSubgroup K L P).mp hE]
-  let e : inertia Gal(L/F) P ≃* H := by
-    refine (MulEquiv.trans ?_ ((inertia F.fixingSubgroup P).equivMapOfInjective _
-      F.fixingSubgroup.subtype_injective)).trans <| MulEquiv.subgroupCongr <| by ext; simp [H]
-    refine inertiaEquiv P F.fixingSubgroupEquiv.symm fun _ _ ↦ ?_
-    apply FaithfulSMul.algebraMap_injective B L
-    simp [algebraMap.smul', fixingSubgroupEquiv_symm_apply_apply]
-  exact (isInertiaField_iff _ _ P _).mpr <| IsGaloisGroup.of_mulEquiv e fun g x ↦ rfl
-
-variable [IsFractionRing B L] (𝓞F : Type*) [CommRing 𝓞F] [Algebra 𝓞F F]
-  [Algebra 𝓞F B] [Algebra.IsIntegral 𝓞F B] [Algebra 𝓞F L] [IsScalarTower 𝓞F F L]
-  [IsScalarTower 𝓞F B L] (𝓟F : Ideal 𝓞F) [P.LiesOver 𝓟F]
-
-/- TEMP: original `_inf` proofs (via `stabilizerMapOfLiesOver`/`inertiaMapOfLiesOver` + an explicit
-`MulEquiv`) commented out while developing the `map_of_surjective`-based versions below.
-/--
-Let `D` be the decomposition field of `P` in `L/K` and let `F` be a subextension of `L/K`.
-Then, the decomposition field of `𝓟F` in `F/K` is `D ⊓ F` where `𝓟F` is the prime of `F`
-below `P`.
--/
-theorem isDecompositionField_inf [MulSemiringAction Gal(L/F) B] [SMulDistribClass Gal(L/F) B L]
-    [hD : IsDecompositionField K L P D] [IsFractionRing 𝓞F F] [MulSemiringAction Gal(F/K) 𝓞F]
-    [SMulDistribClass Gal(F/K) 𝓞F F] [P.IsPrime] [IsGalois K F] :
-    IsDecompositionField K F 𝓟F (D ⊓ F : IntermediateField K L) := by
-  let H : Subgroup Gal(L/K) := stabilizer Gal(L/K) P ⊔ F.fixingSubgroup
-  have : IsGaloisGroup F.fixingSubgroup F L := IsGaloisGroup.intermediateField _ _ _ _
-  have : IsGaloisGroup H ↥(D ⊓ F) L := by
-    rw [IsGaloisGroup.subgroup_iff, ← fixedField, IsGalois.fixedField_eq_iff_fixingSubgroup_eq,
-      fixingSubgroup_inf, (isDecompositionField_iff_fixingSubgroup K L P).mp hD]
-  let e : stabilizer Gal(F/K) 𝓟F ≃* Subgroup.map (QuotientGroup.mk' F.fixingSubgroup) H :=
-      ((QuotientGroup.liftEquiv _ (Ideal.stabilizerMapOfLiesOver_surjective K L F P 𝓟F)
-        (by rw [Ideal.stabilizerMapOfLiesOver_ker])).symm).trans
-      ((QuotientGroup.quotientInfEquivProdNormalQuotient (stabilizer Gal(L/K) P)
-        F.fixingSubgroup).trans (QuotientGroup.subgroupOfEquivMapQuotient _ _))
-  have := IsGaloisGroup.quotientMap Gal(L/K) K L F F.fixingSubgroup (D ⊓ F) H inf_le_right
-  refine (isDecompositionField_iff _ _ _ _).mpr <| IsGaloisGroup.of_mulEquiv (hG := this) e ?_
-  intro g x
-  obtain ⟨g, rfl⟩ := Ideal.stabilizerMapOfLiesOver_surjective K L F P 𝓟F g
-  rw [MulEquiv.trans_apply, MulEquiv.trans_apply, QuotientGroup.liftEquiv_symm_apply,
-    QuotientGroup.quotientInfEquivProdNormalQuotient_coe_apply, subgroup_smul_def,
-    QuotientGroup.subgroupOfEquivMapQuotient_coe_apply]
-  simp [Subtype.ext_iff, subgroup_smul_def, AlgEquiv.restrictNormalHom_apply]
-
-/--
-Let `E` be the inertia field of `P` in `L/K` and let `F` be a subextension of `L/K`.
-Then, the inertia field of `𝓟F` in `F/K` is `E ⊓ F` where `𝓟F` is the prime of `F`
-below `P`.
--/
-theorem isInertiaField_inf [IsIntegrallyClosed A] [Algebra A K] [IsFractionRing A K]
-    [Algebra A L] [Algebra.IsIntegral A B] [Algebra A 𝓞F] [IsScalarTower A 𝓞F B]
-    [IsScalarTower A K L] [IsScalarTower A B L]
-    [MulSemiringAction Gal(L/F) B] [SMulDistribClass Gal(L/F) B L]
-    [hE : IsInertiaField K L P E] [IsFractionRing 𝓞F F] [MulSemiringAction Gal(F/K) 𝓞F]
-    [SMulDistribClass Gal(F/K) 𝓞F F] [P.IsMaximal] [IsGalois K F] (p : Ideal A) [P.LiesOver p] :
-    IsInertiaField K F 𝓟F (E ⊓ F : IntermediateField K L) := by
-  let H : Subgroup Gal(L/K) := inertia Gal(L/K) P ⊔ F.fixingSubgroup
-  have : IsGaloisGroup F.fixingSubgroup F L := IsGaloisGroup.intermediateField _ _ _ _
-  have : IsGaloisGroup H ↥(E ⊓ F) L := by
-    rw [IsGaloisGroup.subgroup_iff, ← fixedField, IsGalois.fixedField_eq_iff_fixingSubgroup_eq,
-      fixingSubgroup_inf, (isInertiaField_iff_fixingSubgroup K L P).mp hE]
-  let e : inertia Gal(F/K) 𝓟F ≃* Subgroup.map (QuotientGroup.mk' F.fixingSubgroup) H :=
-      ((QuotientGroup.liftEquiv _ (Ideal.inertiaMapOfLiesOver_surjective K L F P 𝓟F p)
-        (by rw [Ideal.inertiaMapOfLiesOver_ker])).symm).trans
-      ((QuotientGroup.quotientInfEquivProdNormalQuotient (inertia Gal(L/K) P)
-        F.fixingSubgroup).trans (QuotientGroup.subgroupOfEquivMapQuotient _ _))
-  have := IsGaloisGroup.quotientMap Gal(L/K) K L F F.fixingSubgroup (E ⊓ F) H inf_le_right
-  refine (isInertiaField_iff _ _ _ _).mpr <| IsGaloisGroup.of_mulEquiv (hG := this) e ?_
-  intro g x
-  obtain ⟨g, rfl⟩ := Ideal.inertiaMapOfLiesOver_surjective K L F P 𝓟F p g
-  rw [MulEquiv.trans_apply, MulEquiv.trans_apply, QuotientGroup.liftEquiv_symm_apply,
-    QuotientGroup.quotientInfEquivProdNormalQuotient_coe_apply, subgroup_smul_def,
-    QuotientGroup.subgroupOfEquivMapQuotient_coe_apply]
-  simp [Subtype.ext_iff, subgroup_smul_def, AlgEquiv.restrictNormalHom_apply]
--/
-
-/-- Variant of `isDecompositionField_inf` using `IsGaloisGroup.map_of_surjective` (with
-`f = restrictNormalHom F`) and `Ideal.map_stabilizer_of_surjective`, instead of the bespoke
-`stabilizerMapOfLiesOver` and an explicit `MulEquiv`. -/
-theorem isDecompositionField_inf' [MulSemiringAction Gal(L/F) B] [SMulDistribClass Gal(L/F) B L]
-    [hD : IsDecompositionField K L P D] [IsFractionRing 𝓞F F] [MulSemiringAction Gal(F/K) 𝓞F]
-    [SMulDistribClass Gal(F/K) 𝓞F F] [P.IsPrime] [IsGalois K F] :
-    IsDecompositionField K F 𝓟F (D ⊓ F : IntermediateField K L) := by
-  let H : Subgroup Gal(L/K) := stabilizer Gal(L/K) P ⊔ F.fixingSubgroup
-  haveI : IsGaloisGroup F.fixingSubgroup F L := IsGaloisGroup.intermediateField _ _ _ _
-  haveI : IsGaloisGroup H ↥(D ⊓ F) L := by
-    rw [IsGaloisGroup.subgroup_iff, ← fixedField, IsGalois.fixedField_eq_iff_fixingSubgroup_eq,
-      fixingSubgroup_inf, (isDecompositionField_iff_fixingSubgroup K L P).mp hD]
-  -- `H.map (restrictNormalHom F)` is a Galois group for `(D ⊓ F) / F`:
-  have hmap : IsGaloisGroup (H.map (AlgEquiv.restrictNormalHom F)) ↥(D ⊓ F) F :=
-    IsGaloisGroup.map_of_surjective (H := H) (N := F.fixingSubgroup)
-      (E := (D ⊓ F : IntermediateField K L)) (f := AlgEquiv.restrictNormalHom F)
-      (hf := AlgEquiv.restrictNormalHom_surjective (E := L))
-      (hf_ker := IntermediateField.restrictNormalHom_ker F)
-      (hf_smul := fun g x ↦ AlgEquiv.restrictNormal_commutes g F x) (h := inf_le_right)
-  -- and that image is exactly the decomposition group of `𝓟F`. The clean shape is
-  --   `H.map (restrictNormalHom F) = (stabilizer P).map (restrictNormalHom F) = stabilizer Gal(F/K) 𝓟F`
-  -- via `Subgroup.map_sup` (dropping `F.fixingSubgroup ≤ ker`) + `Ideal.map_stabilizer_of_surjective`.
-  -- BUT `map_stabilizer_of_surjective` needs `Algebra.IsInvariant 𝓞F B F.fixingSubgroup`, i.e. the
-  -- ring-level Galois structure `IsGaloisGroup F.fixingSubgroup 𝓞F B`, which requires
-  -- `[IsIntegrallyClosed 𝓞F]` (and more) — hypotheses this theorem does not assume. (See notes.)
-  have hstab : H.map (AlgEquiv.restrictNormalHom F) = stabilizer Gal(F/K) 𝓟F := by
-    sorry
-  exact (isDecompositionField_iff _ _ _ _).mpr (hstab ▸ hmap)
-
-/-- Inertia analogue of `isDecompositionField_inf'`, via the same `IsGaloisGroup.map_of_surjective`
-and `Ideal.map_inertia_of_surjective`. -/
-theorem isInertiaField_inf' [IsIntegrallyClosed A] [Algebra A K] [IsFractionRing A K]
-    [Algebra A L] [Algebra.IsIntegral A B] [Algebra A 𝓞F] [IsScalarTower A 𝓞F B]
-    [IsScalarTower A K L] [IsScalarTower A B L]
-    [MulSemiringAction Gal(L/F) B] [SMulDistribClass Gal(L/F) B L]
-    [hE : IsInertiaField K L P E] [IsFractionRing 𝓞F F] [MulSemiringAction Gal(F/K) 𝓞F]
-    [SMulDistribClass Gal(F/K) 𝓞F F] [P.IsMaximal] [IsGalois K F] (p : Ideal A) [P.LiesOver p] :
-    IsInertiaField K F 𝓟F (E ⊓ F : IntermediateField K L) := by
-  let H : Subgroup Gal(L/K) := inertia Gal(L/K) P ⊔ F.fixingSubgroup
-  haveI : IsGaloisGroup F.fixingSubgroup F L := IsGaloisGroup.intermediateField _ _ _ _
-  haveI : IsGaloisGroup H ↥(E ⊓ F) L := by
-    rw [IsGaloisGroup.subgroup_iff, ← fixedField, IsGalois.fixedField_eq_iff_fixingSubgroup_eq,
-      fixingSubgroup_inf, (isInertiaField_iff_fixingSubgroup K L P).mp hE]
-  have hmap : IsGaloisGroup (H.map (AlgEquiv.restrictNormalHom F)) ↥(E ⊓ F) F :=
-    IsGaloisGroup.map_of_surjective (H := H) (N := F.fixingSubgroup)
-      (E := (E ⊓ F : IntermediateField K L)) (f := AlgEquiv.restrictNormalHom F)
-      (hf := AlgEquiv.restrictNormalHom_surjective (E := L))
-      (hf_ker := IntermediateField.restrictNormalHom_ker F)
-      (hf_smul := fun g x ↦ AlgEquiv.restrictNormal_commutes g F x) (h := inf_le_right)
-  have hinertia : H.map (AlgEquiv.restrictNormalHom F) = inertia Gal(F/K) 𝓟F := by
-    sorry
-  exact (isInertiaField_iff _ _ _ _).mpr (hinertia ▸ hmap)
-
-/--
-Let `D` be the decomposition field of `P` in `L/K` and let `F` be a subextension of `L/K`.
-Then, `D` is a subfield of `F` iff `P` is the only prime ideal above the prime `𝓟F` of `F`
-below `P`.
--/
-theorem isDecompositionField_le_iff [hD : IsDecompositionField K L P D] [IsFractionRing 𝓞F F]
-    [IsIntegrallyClosed 𝓞F] [P.IsPrime] :
-    D ≤ F ↔ primesOver 𝓟F B = {P} := by
-  have : IsGaloisGroup F.fixingSubgroup 𝓞F B := by
-      have : IsGaloisGroup F.fixingSubgroup F L := IsGaloisGroup.intermediateField _ _ _ _
-      exact IsGaloisGroup.of_isFractionRing _ 𝓞F B F L
-  have : P ∈ 𝓟F.primesOver B := ⟨inferInstance, inferInstance⟩
-  simp only [← IsGalois.intermediateFieldEquivSubgroup.le_iff_le,
-    IsGalois.intermediateFieldEquivSubgroup_apply, OrderDual.toDual_le_toDual,
-    (isDecompositionField_iff_fixingSubgroup K L P).mp hD, Set.eq_singleton_iff_unique_mem,
-    SetLike.le_def, this, true_and]
-  refine ⟨fun h Q ⟨hQ₁, hQ₂⟩ ↦ ?_, fun h σ hσ ↦ h (σ • P) ⟨IsPrime.smul σ, ?_⟩⟩
-  · obtain ⟨σ, rfl⟩ := Ideal.exists_smul_eq_of_isGaloisGroup 𝓟F P Q F.fixingSubgroup
-    exact h σ.prop
-  · exact Ideal.LiesOver.smul (⟨σ, hσ⟩ : F.fixingSubgroup)
-
-variable [IsDedekindDomain 𝓞F] [Module.Finite A B] [Module.IsTorsionFree A B] [Algebra A 𝓞F]
-  [IsIntegralClosure B 𝓞F L] [IsScalarTower A 𝓞F B] [FaithfulSMul 𝓞F B]
-
-omit [MulSemiringAction Gal(L/K) B] [FiniteDimensional K L] hSD in
-include A in
-/-- The instances shared by the proofs comparing `F` to the decomposition or inertia field:
-`𝓞F` is a Galois group setup for `B` over `F`, and the relevant finiteness/torsion-freeness. -/
-private lemma instances [IsFractionRing 𝓞F F] :
-    letI := IsIntegralClosure.MulSemiringAction 𝓞F F L B
-    IsGaloisGroup Gal(L/F) 𝓞F B ∧ Module.Finite 𝓞F B ∧ Module.IsTorsionFree A 𝓞F :=
-  letI := IsIntegralClosure.MulSemiringAction 𝓞F F L B
-  ⟨.of_isFractionRing _ _ _ F L, Module.Finite.right A 𝓞F B,
-    Module.IsTorsionFree.of_faithfulSMul _ _ B⟩
-
-variable [IsDedekindDomain A] [IsDedekindDomain B] [Ring.HasFiniteQuotients 𝓞F]
-
-include A in
-/--
-Let `E` be the inertia field of `P` in `L/K` and let `F` be a subextension of `L/K`.
-Then, `E` is a subfield of `F` iff `𝓟F` is totally ramified in `L` where `𝓟F` is the
-prime of `F` below `P`.
--/
-theorem isInertiaField_le_iff [IsFractionRing 𝓞F F] [P.IsMaximal] [IsInertiaField K L P E]
-    (hp : p ≠ ⊥) :
-    E ≤ F ↔ P.ramificationIdx' 𝓞F = Module.finrank F L := by
-  let := IsIntegralClosure.MulSemiringAction 𝓞F F L B
-  obtain ⟨_, _, _⟩ := instances (B := B) A K L F 𝓞F
-  let : Algebra F ↥(E ⊔ F) := (inclusion le_sup_right).toAlgebra
-  have : IsScalarTower F ↥(E ⊔ F) L := IsScalarTower.of_algebraMap_eq' rfl
-  have hPF : P.under 𝓞F ≠ ⊥ := ne_bot_of_liesOver_of_ne_bot hp _
-  rw [← sup_eq_right, eq_comm, eq_iff_finrank_eq_of_le' le_sup_right,
-    IsInertiaField.rank_left 𝓞F F L P ↥(E ⊔ F) hPF,
-    ramificationIdxIn_eq_ramificationIdx (P.under 𝓞F) P Gal(L/F), eq_comm]
-
-variable [Ring.HasFiniteQuotients A] [Algebra A K] [IsFractionRing A K] [Algebra A L]
-  [IsScalarTower A K L] [IsScalarTower A B L]
-
-include P in
-/--
-Let `D` be the decomposition field of `P` in `L/K` and let `F` be a subextension of `L/K`.
-Then, `F` is a subfield of `D` iff `p` is totally split in `F`.
--/
-theorem le_isDecompositionField_iff [IsFractionRing 𝓞F F] [IsDecompositionField K L P D]
-    [p.IsMaximal] [P.IsMaximal] [𝓟F.IsMaximal] (hp : p ≠ ⊥) :
-    F ≤ D ↔ 𝓟F.ramificationIdx' A = 1 ∧ 𝓟F.inertiaDeg' A = 1 := by
-  have : IsGaloisGroup Gal(L/K) A B := .of_isFractionRing _ _ _ K L
-  let := IsIntegralClosure.MulSemiringAction 𝓞F F L B
-  obtain ⟨_, _, _⟩ := instances (B := B) A K L F 𝓞F
-  let : Algebra F ↥(D ⊔ F) := (inclusion le_sup_right).toAlgebra
-  have : IsScalarTower F ↥(D ⊔ F) L := IsScalarTower.of_algebraMap_eq' rfl
-  have : 𝓟F.LiesOver p := LiesOver.tower_bot P 𝓟F p
-  have hPF : 𝓟F ≠ ⊥ := ne_bot_of_liesOver_of_ne_bot hp _
-  rw [← sup_eq_right, sup_comm, eq_comm, eq_iff_finrank_eq_of_le' le_sup_left,
-    IsDecompositionField.rank_left A K L P D hp, IsDecompositionField.rank_left 𝓞F F L P _ hPF,
-    ramificationIdxIn_eq_ramificationIdx p P Gal(L/K), inertiaDegIn_eq_inertiaDeg p P Gal(L/K),
-    ramificationIdxIn_eq_ramificationIdx 𝓟F P Gal(L/F), inertiaDegIn_eq_inertiaDeg 𝓟F P Gal(L/F),
-    ramificationIdx'_tower (R := A) 𝓟F P, inertiaDeg'_tower (R := A) 𝓟F P, mul_rotate, mul_assoc,
-    mul_right_inj' (ramificationIdx'_pos P 𝓞F).ne', mul_rotate,
-    mul_assoc, mul_eq_left₀ (inertiaDeg'_pos P 𝓞F).ne', mul_eq_one]
-
-include P in
-/--
-Let `E` be the inertia field of `P` in `L/K` and let `F` be a subextension of `L/K`.
-Then, `F` is a subfield of `E` iff `p` is unramified in `F`.
--/
-theorem le_isInertiaField_iff [IsFractionRing 𝓞F F] [IsInertiaField K L P E] [P.IsMaximal]
-    (hp : p ≠ ⊥) :
-    F ≤ E ↔ 𝓟F.ramificationIdx' A = 1 := by
-  have : IsGaloisGroup Gal(L/K) A B := .of_isFractionRing _ _ _ K L
-  let := IsIntegralClosure.MulSemiringAction 𝓞F F L B
-  obtain ⟨_, _, _⟩ := instances (B := B) A K L F 𝓞F
-  have : 𝓟F.LiesOver p := LiesOver.tower_bot P 𝓟F p
-  have hPF : 𝓟F ≠ ⊥ := ne_bot_of_liesOver_of_ne_bot hp _
-  rw [← sup_eq_right, sup_comm, eq_comm, eq_iff_finrank_eq_of_le' le_sup_left,
-    IsInertiaField.rank_left A K L P E hp, IsInertiaField.rank_left 𝓞F F L P _ hPF,
-    ramificationIdxIn_eq_ramificationIdx p P Gal(L/K),
-    ramificationIdxIn_eq_ramificationIdx 𝓟F P Gal(L/F), ramificationIdx'_tower (R := A) 𝓟F P,
-    mul_eq_right₀ (ramificationIdx'_pos P 𝓞F).ne']
-
-/--
-An intermediate field `F` of `L/K` is the decomposition field of `P` if and only if `p` is totally
-split in `F`, that is `P` is the only prime of `L` above the prime `𝓟F` of `F` below `P`, and `𝓟F`
-is unramified over `p` with inertia degree `1`.
--/
-theorem isDecompositionField_iff [IsFractionRing 𝓞F F] [p.IsMaximal] [P.IsMaximal] [𝓟F.IsMaximal]
-    (hp : p ≠ ⊥) :
-    IsDecompositionField K L P F ↔ primesOver 𝓟F B = {P} ∧
-      𝓟F.ramificationIdx' A = 1 ∧ 𝓟F.inertiaDeg' A = 1 := by
-  let D := (FixedPoints.intermediateField (stabilizer Gal(L/K) P) : IntermediateField K L)
-  convert_to D = F ↔ _
-  · rw [isDecompositionField_iff_fixingSubgroup, ← IsGalois.fixedField_eq_iff_fixingSubgroup_eq,
-      fixedField]
-  rw [le_antisymm_iff, le_isDecompositionField_iff A K L P F D 𝓞F 𝓟F hp,
-    isDecompositionField_le_iff K L P F D 𝓞F 𝓟F]
-
-/--
-An intermediate field `F` of `L/K` is the inertia field of `P` if and only if the prime `𝓟F` of
-`F` below `P` is unramified over `p`, and `P` is totally ramified over `𝓟F`, that is the
-ramification index of `P` over `𝓞F` equals `[L : F]`.
--/
-theorem isInertiaField_iff [IsFractionRing 𝓞F F] [P.IsMaximal] (hp : p ≠ ⊥) :
-    IsInertiaField K L P F ↔ P.ramificationIdx' 𝓞F = Module.finrank F L
-      ∧ 𝓟F.ramificationIdx' A = 1 := by
-  let E := (FixedPoints.intermediateField (inertia Gal(L/K) P) : IntermediateField K L)
-  convert_to E = F ↔ _
-  · rw [isInertiaField_iff_fixingSubgroup, ← IsGalois.fixedField_eq_iff_fixingSubgroup_eq,
-      fixedField]
-  rw [le_antisymm_iff, le_isInertiaField_iff A K L P F E 𝓞F 𝓟F hp,
-    isInertiaField_le_iff A K L P F E 𝓞F hp]
-
-end IntermediateField
+end deprecated
