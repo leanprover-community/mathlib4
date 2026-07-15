@@ -83,7 +83,7 @@ theorem wronskian_eq_of_sum_zero {a b c : R[X]} (hAdd : a + b + c = 0) :
 
 /-- Degree of `W(a,b)` is strictly less than the sum of degrees of `a` and `b` (both nonzero). -/
 theorem degree_wronskian_lt_add {a b : R[X]} (ha : a ≠ 0) (hb : b ≠ 0) :
-    (wronskian a b).degree < a.degree + b.degree := by
+    (wronskian a b).degree < a.degree + b.degree :=
   calc
     (wronskian a b).degree ≤ max (a * derivative b).degree (derivative a * b).degree :=
       Polynomial.degree_sub_le _ _

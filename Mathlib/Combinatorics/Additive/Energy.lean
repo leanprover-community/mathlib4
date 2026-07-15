@@ -139,7 +139,7 @@ variable {s t}
 
 @[to_additive card_sq_le_card_mul_addEnergy]
 lemma card_sq_le_card_mul_mulEnergy (s t u : Finset α) :
-    #{xy ∈ s ×ˢ t | xy.1 * xy.2 ∈ u} ^ 2 ≤ #u * Eₘ[s, t] := by
+    #{xy ∈ s ×ˢ t | xy.1 * xy.2 ∈ u} ^ 2 ≤ #u * Eₘ[s, t] :=
   calc
     _ = (∑ c ∈ u, #{xy ∈ s ×ˢ t | xy.1 * xy.2 = c}) ^ 2 := by
         rw [← sum_card_fiberwise_eq_card_filter]

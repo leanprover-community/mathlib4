@@ -77,7 +77,7 @@ private lemma stolzCone_subset_stolzSet_aux' (s : ℝ) :
       √(x ^ 2 + y ^ 2) < M * (1 - √((1 - x) ^ 2 + y ^ 2)) := by
   refine ⟨2 * √(1 + s ^ 2) + 1, 1 / (1 + s ^ 2), by positivity, by positivity,
     fun x y hx₀ hx₁ hy ↦ ?_⟩
-  have H : √((1 - x) ^ 2 + y ^ 2) ≤ 1 - x / 2 := by
+  have H : √((1 - x) ^ 2 + y ^ 2) ≤ 1 - x / 2 :=
     calc √((1 - x) ^ 2 + y ^ 2)
       _ ≤ √((1 - x) ^ 2 + (s * x) ^ 2) := sqrt_le_sqrt <| by rw [← sq_abs y]; gcongr
       _ = √(1 - 2 * x + (1 + s ^ 2) * x * x) := by congr 1; ring

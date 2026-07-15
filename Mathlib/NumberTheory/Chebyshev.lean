@@ -443,7 +443,7 @@ theorem abs_psi_sub_theta_le_sqrt_mul_log {x : ℝ} (hx : 1 ≤ x) :
 
 /-- Explicit upper bound on `ψ`. -/
 theorem psi_le {x : ℝ} (hx : 1 ≤ x) :
-    ψ x ≤ log 4 * x + 2 * x.sqrt * x.log := by
+    ψ x ≤ log 4 * x + 2 * x.sqrt * x.log :=
   calc
   _ = ψ x - θ x + θ x := by ring
   _ ≤ 2 * x.sqrt * x.log + log 4 * x := by
@@ -705,7 +705,7 @@ theorem intervalIntegrable_one_div_log_sq {a b : ℝ} (one_lt_a : 1 < a) (one_lt
 /-- Simple bound on the integral from monotonicity.
 We will bound the integral on 2..x by splitting into two intervals and using this result on both. -/
 private theorem integral_1_div_log_sq_le {a b : ℝ} (hab : a ≤ b) (one_lt : 1 < a) :
-    ∫ x in a..b, 1 / log x ^ 2 ≤ (b - a) / log a ^ 2 := by
+    ∫ x in a..b, 1 / log x ^ 2 ≤ (b - a) / log a ^ 2 :=
   calc
   _ ≤ ∫ x in a..b, 1 / log a ^ 2 := by
       refine intervalIntegral.integral_mono_on hab ?_ (by simp) fun x ⟨_, _⟩ ↦ by gcongr <;> bound

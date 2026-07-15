@@ -474,7 +474,7 @@ lemma padicValNat_add_le_self {a : ℕ} [hp : Fact p.Prime] (ha : p < a) :
     padicValNat p a + p ≤ a := by
   by_cases dvd : p ∣ a
   · rcases dvd with ⟨k, hk⟩
-    have : padicValNat p k < k := by calc
+    have : padicValNat p k < k := calc
       _ ≤ log p k := padicValNat_le_nat_log k
       _ < _ := log_lt_self p (by lia)
     rw [hk, padicValNat.mul (by lia) (by lia), padicValNat_self]

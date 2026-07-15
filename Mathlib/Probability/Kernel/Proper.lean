@@ -57,7 +57,7 @@ lemma isProper_iff_restrict_eq_indicator_smul (h𝓑𝓧 : 𝓑 ≤ 𝓧) :
 lemma isProper_iff_inter_eq_indicator_mul (h𝓑𝓧 : 𝓑 ≤ 𝓧) :
     IsProper π ↔
       ∀ ⦃A : Set X⦄ (_hA : MeasurableSet[𝓧] A) ⦃B : Set X⦄ (_hB : MeasurableSet[𝓑] B) (x : X),
-        π x (A ∩ B) = B.indicator 1 x * π x A := by
+        π x (A ∩ B) = B.indicator 1 x * π x A :=
   calc
     _ ↔ ∀ ⦃A : Set X⦄ (_hA : MeasurableSet[𝓧] A) ⦃B : Set X⦄ (hB : MeasurableSet[𝓑] B) (x : X),
           π.restrict (h𝓑𝓧 _ hB) x A = B.indicator 1 x * π x A := by

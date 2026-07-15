@@ -71,7 +71,7 @@ theorem mem_convexHull_erase [DecidableEq E] {t : Finset E} (h : ¬AffineIndepen
   have hi₀ : i₀ ∈ t := filter_subset _ _ mem
   let k : E → 𝕜 := fun z => f z - f i₀ / g i₀ * g z
   have hk : k i₀ = 0 := by simp [k, ne_of_gt hg]
-  have ksum : ∑ e ∈ t.erase i₀, k e = 1 := by
+  have ksum : ∑ e ∈ t.erase i₀, k e = 1 :=
     calc
       ∑ e ∈ t.erase i₀, k e = ∑ e ∈ t, k e := by
         conv_rhs => rw [← insert_erase hi₀, sum_insert (notMem_erase i₀ t), hk, zero_add]

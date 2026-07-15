@@ -731,7 +731,7 @@ lemma add_of_indepFun {Y : Ω → ℝ} {cX cY : ℝ≥0} (hX : HasSubgaussianMGF
     convert! MemLp.integrable_mul (hX.memLp_exp_mul t 2) (hY.memLp_exp_mul t 2)
     norm_cast
     infer_instance
-  mgf_le t := by
+  mgf_le t :=
     calc mgf (X + Y) μ t
     _ = mgf X μ t * mgf Y μ t :=
       hindep.mgf_add (hX.integrable_exp_mul t).1 (hY.integrable_exp_mul t).1
@@ -797,7 +797,7 @@ lemma measureReal_le_le_exp {Y : Ω → ℝ} {cX cY : ℝ≥0}
     (hX : HasSubgaussianMGF (fun ω ↦ X ω - μ[X]) cX μ)
     (hY : HasSubgaussianMGF (fun ω ↦ Y ω - μ[Y]) cY μ)
     (hindep : IndepFun X Y μ) (h_le : μ[Y] ≤ μ[X]) :
-    μ.real {ω | X ω ≤ Y ω} ≤ Real.exp (- (μ[Y] - μ[X]) ^ 2 / (2 * (cX + cY))) := by
+    μ.real {ω | X ω ≤ Y ω} ≤ Real.exp (- (μ[Y] - μ[X]) ^ 2 / (2 * (cX + cY))) :=
   calc μ.real {ω | X ω ≤ Y ω}
   _ = μ.real {ω | (μ[X] - μ[Y]) ≤ (Y ω - μ[Y]) - (X ω - μ[X])} := by
     congr with ω

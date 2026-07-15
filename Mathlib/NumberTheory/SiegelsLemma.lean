@@ -102,7 +102,7 @@ private lemma card_T_eq [DecidableEq β] : #T = (B + 1) ^ n := by
   simp only [Pi.zero_apply, card_Icc, sub_zero, toNat_natCast_add_one, prod_const, card_univ]
 
 -- This lemma is necessary to be able to apply the formula #(Icc a b) = b + 1 - a
-private lemma N_le_P_add_one (i : α) : N i ≤ P i + 1 := by
+private lemma N_le_P_add_one (i : α) : N i ≤ P i + 1 :=
   calc N i
   _ ≤ 0 := by
     apply Finset.sum_nonpos

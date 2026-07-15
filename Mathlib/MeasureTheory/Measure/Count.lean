@@ -170,7 +170,7 @@ instance neZero_count [Nonempty α] : NeZero (count : Measure α) where
   out := by rintro h; simpa using congr($h .univ)
 
 lemma _root_.Subsingleton.count_eq_dirac [Subsingleton α] (i : α) :
-    count = dirac i := by
+    count = dirac i :=
   calc count
       = count.restrict univ := by simp
     _ = count.restrict {i} := by congr; ext j; simp [Subsingleton.elim j i]

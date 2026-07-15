@@ -73,7 +73,7 @@ variable {u b c : ℕ → ℝ}
 theorem discrete_gronwall {n₀ : ℕ} (hun₀ : 0 ≤ u n₀)
     (hu : ∀ n ≥ n₀, u (n + 1) ≤ (1 + c n) * u n + b n) (hc : ∀ n ≥ n₀, 0 ≤ c n)
     (hb : ∀ n ≥ n₀, 0 ≤ b n) ⦃n : ℕ⦄ (hn : n₀ ≤ n) :
-    u n ≤ (u n₀ + ∑ k ∈ Ico n₀ n, b k) * exp (∑ i ∈ Ico n₀ n, c i) := by
+    u n ≤ (u n₀ + ∑ k ∈ Ico n₀ n, b k) * exp (∑ i ∈ Ico n₀ n, c i) :=
   calc u n
     _ ≤ u n₀ * ∏ i ∈ Ico n₀ n, (1 + c i) +
           ∑ k ∈ Ico n₀ n, b k * ∏ i ∈ Ico (k + 1) n, (1 + c i) :=

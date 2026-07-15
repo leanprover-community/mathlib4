@@ -272,7 +272,7 @@ lemma integrable_fun_norm_addHaar {f : ℝ → F} :
 
 lemma integrableOn_fun_norm_addHaar {f : ℝ → F} {r : ℝ} :
     IntegrableOn (fun x : E => f ‖x‖) (ball (0 : E) r) μ ↔
-    IntegrableOn (fun y ↦ y ^ (Module.finrank ℝ E - 1) • f y) (Ioo 0 r) := by
+    IntegrableOn (fun y ↦ y ^ (Module.finrank ℝ E - 1) • f y) (Ioo 0 r) :=
   calc
     _ ↔ Integrable (fun x ↦ (Iio r).indicator f ‖x‖) μ := by
       rw [← integrable_indicator_iff measurableSet_ball]

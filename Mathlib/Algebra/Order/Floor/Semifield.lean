@@ -53,7 +53,7 @@ end LinearOrderedSemifield
 section LinearOrderedField
 variable [Field K] [LinearOrder K] [IsOrderedRing K] [FloorSemiring K] {a b : K}
 
-lemma mul_lt_floor (hb₀ : 0 < b) (hb : b < 1) (hba : ⌈b / (1 - b)⌉₊ ≤ a) : b * a < ⌊a⌋₊ := by
+lemma mul_lt_floor (hb₀ : 0 < b) (hb : b < 1) (hba : ⌈b / (1 - b)⌉₊ ≤ a) : b * a < ⌊a⌋₊ :=
   calc
     b * a < b * (⌊a⌋₊ + 1) := by gcongr; apply lt_floor_add_one
     _ ≤ ⌊a⌋₊ := by

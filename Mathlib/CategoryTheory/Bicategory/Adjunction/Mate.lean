@@ -76,7 +76,7 @@ def homEquiv₁ {g : b ⟶ d} {h : c ⟶ d} : (g ⟶ l ≫ h) ≃ (r ≫ g ⟶ h
       _ = γ := by
         rw [adj.left_triangle]
         bicategory
-  right_inv β := by
+  right_inv β :=
     calc
       _ = 𝟙 _ ⊗≫ r ◁ adj.unit ▷ g ⊗≫ ((r ≫ l) ◁ β ≫ adj.counit ▷ h) ⊗≫ 𝟙 _ := by
         bicategory

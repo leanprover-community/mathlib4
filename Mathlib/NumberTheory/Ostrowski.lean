@@ -185,7 +185,7 @@ lemma eq_one_of_not_dvd {m : ℕ} (hpm : ¬ p ∣ m) : f m = 1 := by
   obtain ⟨a, b, bezout⟩ : IsCoprime (p ^ k : ℤ) (m ^ k) :=
     is_prime_of_minimal_nat_zero_lt_and_lt_one hp0 hp1 hmin
       |>.coprime_iff_not_dvd |>.mpr hpm |>.isCoprime |>.pow
-  have le_half {x} (hx0 : 0 < x) (hx1 : x < 1) (hxM : x ≤ M) : x ^ k < 1 / 2 := by
+  have le_half {x} (hx0 : 0 < x) (hx1 : x < 1) (hxM : x ≤ M) : x ^ k < 1 / 2 :=
     calc
     x ^ k = x ^ (k : ℝ) := (rpow_natCast x k).symm
     _ < x ^ M.logb (1 / 2) := by

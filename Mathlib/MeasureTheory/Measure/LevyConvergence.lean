@@ -73,7 +73,7 @@ lemma isTightMeasureSet_of_tendsto_charFun {μ : ℕ → Measure E} [∀ i, IsPr
   -- This is where we use that `charFun (μ n)` converges to `f`.
   have h_limsup_le r (hr : 0 < r) :
       limsup (fun n ↦ (μ n).real {x | r < |⟪z, x⟫|}) atTop
-        ≤ 2⁻¹ * r * ‖∫ t in -2 * r⁻¹..2 * r⁻¹, 1 - f (t • z)‖ := by
+        ≤ 2⁻¹ * r * ‖∫ t in -2 * r⁻¹..2 * r⁻¹, 1 - f (t • z)‖ :=
     calc limsup (fun n ↦ (μ n).real {x | r < |⟪z, x⟫|}) atTop
     _ ≤ limsup (fun n ↦ 2⁻¹ * r
         * ‖∫ t in -2 * r⁻¹..2 * r⁻¹, 1 - charFun (μ n) (t • z)‖) atTop := by

@@ -127,7 +127,7 @@ theorem ofIsLocalizedModule_repr_apply (m : M) (i : ι) :
     Finsupp.mapRange_single, Algebra.linearMap_apply, map_one]
 
 theorem ofIsLocalizedModule_span :
-    span R (Set.range (b.ofIsLocalizedModule Rₛ S f)) = LinearMap.range f := by
+    span R (Set.range (b.ofIsLocalizedModule Rₛ S f)) = LinearMap.range f :=
   calc span R (Set.range (b.ofIsLocalizedModule Rₛ S f))
     _ = span R (f '' (Set.range b)) := by congr; ext; simp
     _ = map f (span R (Set.range b)) := by rw [Submodule.map_span]

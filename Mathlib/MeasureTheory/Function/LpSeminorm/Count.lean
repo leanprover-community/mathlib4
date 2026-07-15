@@ -28,7 +28,7 @@ lemma eLpNorm_dirac (f : α → ε) (i : α) (hp : p ≠ 0) :
   · simp [eLpNorm', ENNReal.toReal_eq_zero_iff, *]
 
 lemma enorm_le_eLpNorm_count (f : α → ε) (i : α) (hp : p ≠ 0) :
-    ‖f i‖ₑ ≤ eLpNorm f p count := by
+    ‖f i‖ₑ ≤ eLpNorm f p count :=
   calc
     ‖f i‖ₑ = eLpNorm f p (dirac i) := by rw [eLpNorm_dirac f i hp]
       _ = eLpNorm f p (count.restrict {i}) := by simp

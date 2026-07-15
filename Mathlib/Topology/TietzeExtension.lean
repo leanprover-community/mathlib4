@@ -406,7 +406,7 @@ theorem exists_extension_forall_exists_le_ge_of_isClosedEmbedding [Nonempty X] (
       calc
         f x = c - (b - c) := by rw [← hsub, sub_sub_cancel]
         _ ≤ g y - dg y := sub_le_sub hc.le (dgmem _).2
-    · have hay : a < (g - dg) y := by
+    · have hay : a < (g - dg) y :=
         calc
           a = c - (b - c) := by rw [← hsub, sub_sub_cancel]
           _ < g y - (b - c) := sub_lt_sub_right hc _

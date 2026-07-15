@@ -246,7 +246,7 @@ lemma norm_inner_le {x y : E} : ‖⟪x, y⟫‖ ≤ ‖x‖ * ‖y‖ := by
 include A in
 variable (A) in
 protected lemma norm_triangle (x y : E) : ‖x + y‖ ≤ ‖x‖ + ‖y‖ := by
-  have h : ‖x + y‖ ^ 2 ≤ (‖x‖ + ‖y‖) ^ 2 := by
+  have h : ‖x + y‖ ^ 2 ≤ (‖x‖ + ‖y‖) ^ 2 :=
     calc _ ≤ ‖⟪x, x⟫ + ⟪y, x⟫‖ + ‖⟪x, y⟫‖ + ‖⟪y, y⟫‖ := by
           simp only [norm_eq_sqrt_norm_inner_self (A := A), inner_add_right, inner_add_left,
             ← add_assoc, norm_nonneg, Real.sq_sqrt]

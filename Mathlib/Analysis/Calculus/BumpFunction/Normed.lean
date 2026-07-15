@@ -99,7 +99,7 @@ end
 
 variable (μ)
 
-theorem measure_closedBall_le_integral : μ.real (closedBall c f.rIn) ≤ ∫ x, f x ∂μ := by calc
+theorem measure_closedBall_le_integral : μ.real (closedBall c f.rIn) ≤ ∫ x, f x ∂μ := calc
   μ.real (closedBall c f.rIn) = ∫ x in closedBall c f.rIn, 1 ∂μ := by simp
   _ = ∫ x in closedBall c f.rIn, f x ∂μ := setIntegral_congr_fun measurableSet_closedBall
         (fun x hx ↦ (one_of_mem_closedBall f hx).symm)
@@ -113,7 +113,7 @@ theorem normed_le_div_measure_closedBall_rIn [μ.IsOpenPosMeasure] (x : E) :
   · exact f.le_one
   · exact f.measure_closedBall_le_integral μ
 
-theorem integral_le_measure_closedBall : ∫ x, f x ∂μ ≤ μ.real (closedBall c f.rOut) := by calc
+theorem integral_le_measure_closedBall : ∫ x, f x ∂μ ≤ μ.real (closedBall c f.rOut) := calc
   ∫ x, f x ∂μ = ∫ x in closedBall c f.rOut, f x ∂μ := by
     apply (setIntegral_eq_integral_of_forall_compl_eq_zero (fun x hx ↦ ?_)).symm
     apply f.zero_of_le_dist (le_of_lt _)

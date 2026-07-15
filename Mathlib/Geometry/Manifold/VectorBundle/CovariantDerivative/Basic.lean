@@ -268,7 +268,7 @@ lemma finite_affine_combination {ι : Type*} {s : Finset ι}
     congr
     ext i
     rw [← smul_add, (h i).add hσ hσ' hx]
-  leibniz {σ g x} hσ hg hx := by
+  leibniz {σ g x} hσ hg hx :=
     calc ∑ i ∈ s, f i x • cov i (g • σ) x
       _ = ∑ i ∈ s, (g x • f i x • cov i σ x + f i x • (d% g x).smulRight (σ x)) := by
           congr! 1 with i hi

@@ -428,7 +428,7 @@ theorem isUnit_den {p : ℕ} [hp_prime : Fact p.Prime] (r : ℚ) (h : ‖(r : �
     congr
     rw_mod_cast [@Rat.mul_den_eq_num r]
   rw [padicNormE.mul] at hr
-  have key : ‖(r.num : ℚ_[p])‖ < 1 := by
+  have key : ‖(r.num : ℚ_[p])‖ < 1 :=
     calc
       _ = _ := hr.symm
       _ < 1 * 1 := mul_lt_mul' h norm_denom_lt (norm_nonneg _) zero_lt_one

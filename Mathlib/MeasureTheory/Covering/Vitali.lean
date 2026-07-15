@@ -337,7 +337,7 @@ theorem exists_disjoint_covering_ae
     nonpos_iff_eq_zero.mp (le_of_forall_gt_imp_ge_of_dense fun ε εpos => ?_)⟩
   -- the elements of `v` are disjoint and all contained in a finite volume ball, hence the sum
   -- of their measures is finite.
-  have I : (∑' a : v, μ (B a)) < ∞ := by
+  have I : (∑' a : v, μ (B a)) < ∞ :=
     calc
       (∑' a : v, μ (B a)) = μ (⋃ a ∈ v, B a) := by
         rw [measure_biUnion (u_count.mono vu) _ fun a ha => (h't _ (vu.trans ut ha)).measurableSet]

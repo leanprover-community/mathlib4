@@ -127,7 +127,7 @@ def map (N : G(k, (A ⊗[R] M); A)) : G(k, (B ⊗[R] M); B) :=
   { toSubmodule := (baseChangeMkQ B N.toSubmodule).ker
     finite_quotient := Module.Finite.equiv equiv.symm
     projective_quotient := Module.Projective.of_equiv equiv.symm
-    rankAtStalk_eq p := by
+    rankAtStalk_eq p :=
       calc
         _ = rankAtStalk (R := B) (B ⊗[A] ((A ⊗[R] M) ⧸ N.toSubmodule)) p := by
           simpa using congrArg (fun g => g p) <| Module.rankAtStalk_eq_of_equiv equiv

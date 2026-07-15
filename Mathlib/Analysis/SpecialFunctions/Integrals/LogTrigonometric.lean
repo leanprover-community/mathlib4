@@ -40,7 +40,7 @@ private lemma integral_log_sin_zero_pi_eq_two_mul_integral_log_sin_zero_pi_div_t
 /--
 The integral of `log ∘ sin` on `0 … π/2` equals `-log 2 * π / 2`.
 -/
-theorem integral_log_sin_zero_pi_div_two : ∫ x in 0..(π / 2), log (sin x) = -log 2 * π / 2 := by
+theorem integral_log_sin_zero_pi_div_two : ∫ x in 0..(π / 2), log (sin x) = -log 2 * π / 2 :=
   calc ∫ x in 0..(π / 2), log (sin x)
     _ = ∫ x in 0..(π / 2), (log (sin (2 * x)) - log 2 - log (cos x)) := by
       apply intervalIntegral.integral_congr_codiscreteWithin

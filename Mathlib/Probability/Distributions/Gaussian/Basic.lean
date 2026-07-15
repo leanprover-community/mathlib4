@@ -151,7 +151,7 @@ section charFunDual
 /-- The characteristic function of a Gaussian measure `μ` has value
 `exp (μ[L] * I - Var[L; μ] / 2)` at `L : Dual ℝ E`. -/
 lemma IsGaussian.charFunDual_eq (L : StrongDual ℝ E) :
-    charFunDual μ L = exp (μ[L] * I - Var[L; μ] / 2) := by
+    charFunDual μ L = exp (μ[L] * I - Var[L; μ] / 2) :=
   calc charFunDual μ L
   _ = charFun (μ.map L) 1 := by rw [charFunDual_eq_charFun_map_one]
   _ = charFun (gaussianReal (μ[L]) (Var[L; μ]).toNNReal) 1 := by
