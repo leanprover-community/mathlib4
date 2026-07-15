@@ -13,10 +13,11 @@ public import Mathlib.Analysis.Normed.Module.ContinuousInverse
 
 Given a map `f : M → N` between manifolds, we call `x` and *immersed point* of `f` if and only if
 the `mfderiv` of `f` at `x` *splits*, i.e. admits a continuous left inverse. (If `M` is
-finite-dimensional, this is equivalent to injectivity of the the `mfderiv`.)
+finite-dimensional, this is equivalent to injectivity of the `mfderiv`.)
 
-A future PR will show that `x` is an immersed point of `x` if and only if `f` is an immersion
-at `x`: the composition property of immersed can be used to prove that immersions compose.
+A future PR will show that (under certain conditions) `x` is an immersed point of `x` if and only if
+`f` is an immersion at `x`: the composition property of immersed points can be used to prove that
+immersions compose.
 
 
 ## Main definitions and results
@@ -38,7 +39,7 @@ at `x`: the composition property of immersed can be used to prove that immersion
 
 -/
 
-open Function Set Topology
+open Function Topology
 open scoped Manifold
 
 public section
@@ -63,8 +64,7 @@ variable {f : M → M'} {x : M} {n : WithTop ℕ∞}
 variable (I I' f x) in
 /-- We say a map `f : M → M` splits at `x` if `mfderiv I I' f x` splits,
 i.e. has a continuous left inverse. -/
-def IsImmersedPoint (f : M → M') (x : M) : Prop :=
-  mfderiv% f x |>.HasLeftInverse
+def IsImmersedPoint (f : M → M') (x : M) : Prop := mfderiv% f x |>.HasLeftInverse
 
 lemma isImmersedPoint_iff : IsImmersedPoint I I' f x ↔ (mfderiv% f x).HasLeftInverse := by rfl
 
@@ -72,7 +72,6 @@ namespace IsImmersedPoint
 
 variable {f g : M → M'} {x : M}
 
-open IsManifold in
 lemma mfderiv_injective (hf : IsImmersedPoint I I' f x) : Injective (mfderiv% f x) :=
   hf.injective
 
@@ -89,15 +88,19 @@ lemma congr (hf : IsImmersedPoint I I' f x) (hfg : g =ᶠ[𝓝 x] f) : IsImmerse
 proof_wanted prodMap {y : N} (hf : IsImmersedPoint I I' f x) {g : N → N'}
     (hg : IsImmersedPoint J J' g y) : IsImmersedPoint (I.prod J) (I'.prod J') (Prod.map f g) (x, y)
 
-lemma of_mfderiv_isInvertible (hf : (mfderiv% f x).IsInvertible) :
-    IsImmersedPoint I I' f x := by
+lemma of_mfderiv_isInvertible (hf : (mfderiv% f x).IsInvertible) : IsImmersedPoint I I' f x := by
   rw [isImmersedPoint_iff]
   exact ContinuousLinearMap.HasLeftInverse.of_isInvertible hf
 
-/-- If `x` is an immersed point of `f`, then `f` is a local diffeomorphism at `x`. -/
+/-- If `f` is a local diffeomorphism at `x`, then `x` is an immersed point of `f`. -/
 lemma _root_.IsLocalDiffeomorphAt.isImmersedPoint
     (hf : IsLocalDiffeomorphAt I I' n f x) (hn : n ≠ 0) : IsImmersedPoint I I' f x :=
   of_mfderiv_isInvertible (hf.isInvertible_mfderiv hn)
+
+/-- Every point is an immersed point of a continuous linear equivalence. -/
+lemma _root_.ContinuousLinearEquiv.isImmersedPoint (f : E ≃L[𝕜] F) {x : E} :
+    IsImmersedPoint 𝓘(𝕜, E) 𝓘(𝕜, F) f x :=
+  (f.toDiffeomorph.isLocalDiffeomorph _).isImmersedPoint (by simp)
 
 /-- If `x` is an immersed point of `x` and `f x` is an immersed point of `g`, then `x` is an
 immersed point of `g ∘ f`. -/
@@ -107,37 +110,22 @@ lemma comp {g : M' → N} (hg : IsImmersedPoint I' J g (f x)) (hf : IsImmersedPo
   rw [isImmersedPoint_iff] at hf hg
   exact hg.comp hf
 
+/-- If `x` is an immersed point of `g ∘ f`, then `x` is an immersed point of `x`
+provided `f` and `g` are differentiable at `x` and `f x`, respectively. -/
 lemma of_comp {g : M' → N} (hf : MDiffAt f x) (hg : MDiffAt g (f x))
     (hfg : IsImmersedPoint I J (g ∘ f) x) : IsImmersedPoint I I' f x := by
   rw [isImmersedPoint_iff, mfderiv_comp x hg hf] at hfg
   exact ContinuousLinearMap.HasLeftInverse.of_comp hfg
 
--- TODO: are these the lemmas I want, or should one rather have them with "differential is
--- invertible" instead of "is local diffeo"? (This difference matters for extended charts!)
 lemma comp_isInvertible_mfderiv_left (hf : IsImmersedPoint I I' f x)
     {f₀ : N → M} {y : N} (hxy : f₀ y = x) (hf₀ : (mfderiv% f₀ y) |>.IsInvertible) :
     IsImmersedPoint J I' (f ∘ f₀) y :=
   (hxy ▸ hf).comp (.of_mfderiv_isInvertible hf₀)
 
--- XXX: do I need and want this version?
 lemma comp_isLocalDiffeomorphAt_left (hf : IsImmersedPoint I I' f x)
     {f₀ : N → M} {y : N} (hxy : f₀ y = x) (hf₀ : IsLocalDiffeomorphAt J I n f₀ y) (hn : n ≠ 0) :
     IsImmersedPoint J I' (f ∘ f₀) y :=
   (hxy ▸ hf).comp (hf₀.isImmersedPoint hn)
-
--- TODO: is this true? do we need it?
-lemma comp_isInvertible_mfderiv_left_iff {f₀ : N → M} {y : N} (hxy : f₀ y = x)
-    (hf₀ : (mfderiv% f₀ y) |>.IsInvertible) (hn : n ≠ 0) :
-    IsImmersedPoint I I' f x ↔ IsImmersedPoint J I' (f ∘ f₀) y := by
-  refine ⟨fun hf ↦ hf.comp_isInvertible_mfderiv_left hxy hf₀, fun h ↦ ?_⟩
-  unfold IsImmersedPoint at h ⊢
-  have h' : ((mfderiv% f (f₀ y)).comp (mfderiv% f₀ y)).HasLeftInverse := by
-    convert h <;>
-    sorry /-rw [← mfderiv_comp]
-    · sorry -- this might not be true!
-    · sorry -- easy from hf₀ -/
-  --apply ContinuousLinearMap.HasLeftInverse.of_comp h' gives the wrong result!
-  sorry
 
 lemma comp_isLocalDiffeomorphAt_left_iff {f₀ : N → M} {y : N} (hxy : f₀ y = x)
     (hf₀ : IsLocalDiffeomorphAt J I n f₀ y) (hn : n ≠ 0) :
@@ -154,7 +142,6 @@ lemma comp_isInvertible_mfderiv_right (hf : IsImmersedPoint I I' f x)
     IsImmersedPoint I J (g ∘ f) x :=
   (IsImmersedPoint.of_mfderiv_isInvertible hg).comp hf
 
--- Do we want or need these versions?
 lemma comp_isLocalDiffeomorphAt_right (hf : IsImmersedPoint I I' f x)
     {g : M' → N} (hg : IsLocalDiffeomorphAt I' J n g (f x)) (hn : n ≠ 0) :
     IsImmersedPoint I J (g ∘ f) x :=
@@ -173,7 +160,8 @@ lemma comp_isLocalDiffeomorphAt_right_iff (hf : ContinuousAt f x)
 lemma of_injective_of_finiteDimensional [CompleteSpace 𝕜] [FiniteDimensional 𝕜 E']
     (hf' : Injective (mfderiv% f x)) : IsImmersedPoint I I' f x := by
   have : FiniteDimensional 𝕜 (TangentSpace I' (f x)) := inferInstanceAs (FiniteDimensional 𝕜 E')
-  sorry -- exact ContinuousLinearMap.HasLeftInverse.of_injective_of_finiteDimensional hf'
+  have : T2Space (TangentSpace% (f x)) := inferInstanceAs (T2Space E')
+  exact ContinuousLinearMap.HasLeftInverse.of_injective_of_finiteDimensional hf'
 
 end IsImmersedPoint
 
