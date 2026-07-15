@@ -95,7 +95,7 @@ private theorem exists_hasStandardEtaleSurjectionOn_of_exists_adjoin_singleton_e
   · dsimp [-TensorProduct.algebraMap_apply]
     rw [aeval_C, AlgEquiv.commutes]
     simp [← Ideal.Quotient.mk_algebraMap, I]
-  · simpa [e] using Polynomial.fiberEquivQuotient_tmul _ hx' P 1 X
+  · simpa [e] using! Polynomial.fiberEquivQuotient_tmul _ hx' P 1 X
 
 attribute [local instance] Algebra.TensorProduct.rightAlgebra in
 private theorem exists_hasStandardEtaleSurjectionOn_of_exists_adjoin_singleton_eq_top_aux₂
@@ -214,7 +214,12 @@ lemma exists_notMem_forall_ne_mem_and_adjoin_eq_top
   let p := Q.under R
   #adaptation_note /-- Needed after nightly-2023-02-23 -/
   have : p.IsPrime := Ideal.IsPrime.under R Q
-  classical
+  #adaptation_note /-- After nightly-2026-04-06, typeclass synthesis fails to find these
+  instances; provide them explicitly. -/
+  let : Module p.ResidueField (p.Fiber S) := TensorProduct.leftModule
+  let : SMul p.ResidueField (p.Fiber S) := this.toSMul -- added for #13807 (2026-05-20)
+  let : IsScalarTower p.ResidueField (p.Fiber S) (p.Fiber S) := IsScalarTower.right
+  let : Module.Finite p.ResidueField (p.Fiber S) := Module.Finite.base_change R p.ResidueField S
   have : IsArtinianRing (p.Fiber S) := .of_finite p.ResidueField _
   let α := PrimeSpectrum.primesOverOrderIsoFiber R S p
   obtain ⟨x, hx0, hx⟩ : ∃ x : Q.ResidueField, x ≠ 0 ∧ p.ResidueField[x] = ⊤ := by
@@ -280,7 +285,6 @@ lemma exists_primesOver_under_adjoin_eq_singleton_and_residueField_bijective
   let p := Q.under R
   let := Localization.AtPrime.algebraOfLiesOver p (Q.under R[t])
   let := Localization.AtPrime.algebraOfLiesOver (Q.under R[t]) Q
-  classical
   refine ⟨t, ?_, RingHom.injective _, ?_⟩
   · refine Set.ext fun Q' ↦ ⟨fun ⟨_, _⟩ ↦ ?_, fun e ↦ by exact ⟨e ▸ inferInstance, ⟨e ▸ rfl⟩⟩⟩
     by_contra! H
@@ -383,7 +387,6 @@ theorem IsSmoothAt.exists_isStandardEtale_mvPolynomial
     ∃ f ∉ p, ∃ (n : ℕ) (_ : Algebra (MvPolynomial (Fin n) R) (Localization.Away f)),
       IsScalarTower R (MvPolynomial (Fin n) R) (Localization.Away f) ∧
       IsStandardEtale (MvPolynomial (Fin n) R) (Localization.Away f) := by
-  classical
   obtain ⟨f, hfp, H⟩ := IsSmoothAt.exists_notMem_isStandardSmooth R p
   obtain ⟨n, φ, hgC, hg⟩ := RingHom.IsStandardSmooth.exists_etale_mvPolynomial
     (f := algebraMap R (Localization.Away f)) (by simpa [RingHom.isStandardSmooth_algebraMap])

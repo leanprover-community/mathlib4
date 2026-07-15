@@ -37,7 +37,6 @@ namespace Linear
 def smul (hr : ∀ (a : R) ⦃X Y : C⦄ (f₁ f₂ : X ⟶ Y) (_ : r f₁ f₂), r (a • f₁) (a • f₂))
     (X Y : Quotient r) : SMul R (X ⟶ Y) where
   smul a := Quot.lift (fun g => Quot.mk _ (a • g)) (fun f₁ f₂ h₁₂ => by
-    dsimp
     simp only [HomRel.compClosure_eq_self] at h₁₂
     apply Quot.sound
     rw [HomRel.compClosure_eq_self]
@@ -117,7 +116,7 @@ instance linear_functor
     (hr : ∀ (a : R) ⦃X Y : C⦄ (f₁ f₂ : X ⟶ Y) (_ : r f₁ f₂), r (a • f₁) (a • f₂))
     [Preadditive (Quotient r)] [(functor r).Additive] :
     letI := linear R r hr; Functor.Linear R (functor r) := by
-  letI := linear R r hr; exact { }
+  let := linear R r hr; exact { }
 
 end Quotient
 

@@ -44,7 +44,6 @@ instance (priority := 100) wfDvdMonoid : WfDvdMonoid R[X] where
             DvdNotUnit →r Prod.Lex (· < ·) DvdNotUnit)
           (wellFounded_lt.prod_lex ‹WfDvdMonoid R›.wf)
       rintro a b ⟨ane0, ⟨c, ⟨not_unit_c, rfl⟩⟩⟩
-      dsimp
       rw [Polynomial.degree_mul, if_neg ane0]
       split_ifs with hac
       · rw [hac, Polynomial.leadingCoeff_zero]
@@ -91,7 +90,7 @@ open UniqueFactorizationMonoid
 namespace Polynomial
 
 instance (priority := 100) uniqueFactorizationMonoid : UniqueFactorizationMonoid D[X] := by
-  letI := Classical.arbitrary (NormalizedGCDMonoid D)
+  let := Classical.arbitrary (NormalizedGCDMonoid D)
   exact ufm_of_decomposition_of_wfDvdMonoid
 
 /-- If `D` is a unique factorization domain, `f` is a non-zero polynomial in `D[X]`, then `f` has

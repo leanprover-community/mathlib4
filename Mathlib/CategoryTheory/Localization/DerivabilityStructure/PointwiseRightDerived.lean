@@ -75,6 +75,7 @@ lemma rightDerivedFunctorComparison_fac :
   dsimp only [rightDerivedFunctorComparison]
   rw [Functor.rightDerived_fac]
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma rightDerivedFunctorComparison_fac_app (X : C₁) :
     α₁.app X ≫ (Φ.rightDerivedFunctorComparison L₁ L₂ F F₁ α₁ F₂ α₂).app (L₁.obj X) =
@@ -125,9 +126,6 @@ lemma isIso_iff_of_isRightDerivabilityStructure (X : C₁) :
   rw [← isIso_comp_right_iff (α₁.app X)
     ((Φ.rightDerivedFunctorComparison L₁ L₂ F F₁ α₁ F₂ α₂).app (L₁.obj X)),
     rightDerivedFunctorComparison_fac_app, isIso_comp_right_iff]
-
-@[deprecated (since := "2025-11-16")] alias isIso_α_iff_of_isRightDerivabilityStructure :=
-  isIso_iff_of_isRightDerivabilityStructure
 
 end
 

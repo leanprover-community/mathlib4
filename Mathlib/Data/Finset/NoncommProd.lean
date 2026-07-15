@@ -339,14 +339,14 @@ theorem mul_noncommProd_erase [DecidableEq α] (s : Finset α) {a : α} (h : a �
     (comm' := fun _ hx _ hy hxy ↦ comm (s.mem_of_mem_erase hx) (s.mem_of_mem_erase hy) hxy) :
     f a * (s.erase a).noncommProd f comm' = s.noncommProd f comm := by
   classical
-  simpa only [← Multiset.map_erase_of_mem _ _ h] using
+  simpa only [← Multiset.map_erase_of_mem _ _ h] using!
     Multiset.mul_noncommProd_erase (s.1.map f) (Multiset.mem_map_of_mem f h) _
 
 theorem noncommProd_erase_mul [DecidableEq α] (s : Finset α) {a : α} (h : a ∈ s) (f : α → β) (comm)
     (comm' := fun _ hx _ hy hxy ↦ comm (s.mem_of_mem_erase hx) (s.mem_of_mem_erase hy) hxy) :
     (s.erase a).noncommProd f comm' * f a = s.noncommProd f comm := by
   classical
-  simpa only [← Multiset.map_erase_of_mem _ _ h] using
+  simpa only [← Multiset.map_erase_of_mem _ _ h] using!
     Multiset.noncommProd_erase_mul (s.1.map f) (Multiset.mem_map_of_mem f h) _
 
 @[to_additive]
@@ -417,12 +417,6 @@ theorem noncommProd_mulSingle [Fintype ι] [DecidableEq ι] (x : ∀ i, M i) :
       noncommProd_eq_pow_card (univ.erase i), one_pow, mul_one]
     · simp only [Pi.mulSingle_eq_same]
     · simpa using fun _ a ↦ Pi.mulSingle_eq_of_ne (a ·.symm) _
-
-@[deprecated noncommProd_mulSingle (since := "2025-11-25")]
-alias noncommProd_mul_single := noncommProd_mulSingle
-
-@[deprecated (since := "2025-12-09")]
-alias noncommSum_add_single := noncommSum_single
 
 @[to_additive]
 theorem _root_.MonoidHom.pi_ext [Finite ι] [DecidableEq ι] {f g : (∀ i, M i) →* γ}

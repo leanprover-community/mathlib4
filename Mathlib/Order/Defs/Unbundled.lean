@@ -22,9 +22,6 @@ and proves some basic lemmas about them.
 
 /-! ### Unbundled classes -/
 
-/-- An empty relation does not relate any elements. -/
-@[deprecated (since := "2025-12-22")] alias EmptyRelation := emptyRelation
-
 /-- `IsIrrefl X r` means the binary relation `r` on `X` is irreflexive (that is, `r x x` never
 holds). -/
 @[deprecated Std.Irrefl (since := "2026-01-07")]
@@ -33,10 +30,6 @@ abbrev IsIrrefl (α : Sort*) (r : α → α → Prop) : Prop := Std.Irrefl r
 /-- `IsRefl X r` means the binary relation `r` on `X` is reflexive. -/
 @[deprecated Std.Refl (since := "2026-01-08")]
 abbrev IsRefl (α : Sort*) (r : α → α → Prop) : Prop := Std.Refl r
-
-/-- `IsSymm X r` means the binary relation `r` on `X` is symmetric. -/
-@[deprecated Std.Symm (since := "2025-12-26")]
-abbrev IsSymm (α : Sort*) (r : α → α → Prop) : Prop := Std.Symm r
 
 /-- `IsAsymm X r` means that the binary relation `r` on `X` is asymmetric, that is,
 `r a b → ¬ r b a`. -/
@@ -112,6 +105,9 @@ instance eq_isEquiv (α : Sort*) : IsEquiv α (· = ·) where
   symm := @Eq.symm _
   trans := @Eq.trans _
   refl := Eq.refl
+
+instance (α : Sort*) : Std.Symm (α := α) Ne where
+  symm _ _ := Ne.symm
 
 /-- `Iff` is an equivalence relation. -/
 instance iff_isEquiv : IsEquiv Prop Iff where
@@ -216,6 +212,7 @@ section
 def Reflexive := ∀ x, x ≺ x
 
 /-- `Std.Symm` as a definition, suitable for use in proofs. -/
+@[deprecated Std.Symm (since := "2026-06-10")]
 def Symmetric := ∀ ⦃x y⦄, x ≺ y → y ≺ x
 
 /-- `IsTrans` as a definition, suitable for use in proofs. -/
@@ -239,13 +236,21 @@ theorem Equivalence.stdRefl (h : Equivalence r) : Std.Refl r where
 
 @[deprecated (since := "2026-03-27")] alias Equivalence.reflexive := Equivalence.stdRefl
 
-theorem Equivalence.symmetric (h : Equivalence r) : Symmetric r :=
-  fun _ _ ↦ h.symm
+theorem Equivalence.stdSymm (h : Equivalence r) : Std.Symm r where
+  symm _ _ := h.symm
+
+@[deprecated (since := "2026-06-10")] alias Equivalence.symmetric := Equivalence.stdSymm
 
 theorem Equivalence.isTrans (h : Equivalence r) : IsTrans α r :=
   ⟨fun _ _ _ ↦ h.trans⟩
 
 @[deprecated (since := "2026-02-20")] alias Equivalence.transitive := Equivalence.isTrans
+
+theorem Equivalence.isEquiv (h : Equivalence r) : IsEquiv α r :=
+  have := h.stdRefl
+  have := h.stdSymm
+  have := h.isTrans
+  {}
 
 variable {β : Sort*} (r : β → β → Prop) (f : α → β)
 
@@ -454,7 +459,6 @@ theorem trans_trichotomous_right [IsTrans α r] [Std.Trichotomous r] {a b c : α
   · exact h₁
   · exact absurd h₃ h₂
 
-set_option linter.deprecated false in
 @[deprecated IsTrans.trans (since := "2026-02-20")]
 theorem transitive_of_trans (r : α → α → Prop) [IsTrans α r] : Transitive r := IsTrans.trans
 

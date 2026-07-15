@@ -43,6 +43,7 @@ lemma nonempty_kernels {X₁ X₂ : C} (f : X₁ ⟶ X₂) (hf : W f) [HasKernel
     W.kernels.Nonempty :=
   ObjectProperty.nonempty_of_prop (kernels.of_isLimit f _ (kernelIsKernel f) hf)
 
+set_option backward.defeqAttrib.useBackward true in
 instance : W.kernels.IsClosedUnderIsomorphisms where
   of_iso := by
     rintro _ _ i ⟨f, k, hk, hf⟩
@@ -87,13 +88,14 @@ lemma prop_kernel [P.IsClosedUnderKernels] {X Y : C} (f : X ⟶ Y) [HasKernel f]
 instance [P.IsClosedUnderSubobjects] : P.IsClosedUnderKernels where
   kernels_le := by
     intro _ ⟨_, k, hk, hf⟩
-    letI := Fork.IsLimit.mono hk
+    let := Fork.IsLimit.mono hk
     exact P.prop_of_mono k.ι hf.1
 
 lemma hasLimit_parallelPair_comp_ι {X Y : P.FullSubcategory} (f : X ⟶ Y) [HasKernel f.hom] :
     HasLimit (parallelPair f 0 ⋙ P.ι) :=
   hasLimit_of_iso (F := parallelPair f.hom 0) (Iso.symm (diagramIsoParallelPair _))
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If an object property `P` is closed under kernels, then `P.ι` creates kernels.
 In particular, this implies `P.ι` preserves kernels. -/
 @[reducible]
@@ -134,13 +136,14 @@ lemma prop_cokernel [P.IsClosedUnderCokernels] {X Y : C} (f : X ⟶ Y) [HasCoker
 instance [P.IsClosedUnderQuotients] : P.IsClosedUnderCokernels where
   cokernels_le := by
     intro _ ⟨_, k, hk, hf⟩
-    letI := Cofork.IsColimit.epi hk
+    let := Cofork.IsColimit.epi hk
     exact P.prop_of_epi k.π hf.2
 
 lemma hasColimit_parallelPair_comp_ι {X Y : P.FullSubcategory} (f : X ⟶ Y) [HasCokernel f.hom] :
     HasColimit (parallelPair f 0 ⋙ P.ι) :=
   hasColimit_of_iso (F := parallelPair f.hom 0) (diagramIsoParallelPair _)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If an object property `P` is closed under cokernels, then `P.ι` creates cokernels.
 In particular, this implies `P.ι` preserves cokernels. -/
 @[reducible]

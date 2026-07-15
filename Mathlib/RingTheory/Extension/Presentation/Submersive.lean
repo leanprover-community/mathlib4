@@ -64,7 +64,6 @@ with relations equipped with an injective `map : relations → vars`.
 This map determines how the differential of `P` is constructed. See
 `PreSubmersivePresentation.differential` for details.
 -/
-@[nolint checkUnivs]
 structure PreSubmersivePresentation extends Algebra.Presentation R S ι σ where
   /-- A map from the relations type to the variables type. Used to compute the differential. -/
   map : σ → ι
@@ -192,7 +191,6 @@ lemma jacobiMatrix_ofAlgEquiv (P : PreSubmersivePresentation R S ι σ) {T : Typ
     (P.ofAlgEquiv e).jacobiMatrix = P.jacobiMatrix :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma jacobian_ofAlgEquiv (P : PreSubmersivePresentation R S ι σ) {T : Type*} [CommRing T]
     [Algebra R T] (e : S ≃ₐ[R] T) [Finite σ] :
@@ -216,7 +214,6 @@ noncomputable def ofBijectiveAlgebraMap (h : Function.Bijective (algebraMap R S)
 @[simp]
 lemma ofBijectiveAlgebraMap_jacobian (h : Function.Bijective (algebraMap R S)) :
     (ofBijectiveAlgebraMap h).jacobian = 1 := by
-  classical
   have : (algebraMap (ofBijectiveAlgebraMap h).Ring S).mapMatrix
       (ofBijectiveAlgebraMap h).jacobiMatrix = 1 := by
     ext (i j : PEmpty)
@@ -299,7 +296,6 @@ variable [Fintype σ] [Fintype σ']
 open scoped Classical in
 private lemma jacobiMatrix_comp_inl_inr (i : σ') (j : σ) :
     (Q.comp P).jacobiMatrix (Sum.inl i) (Sum.inr j) = 0 := by
-  classical
   rw [jacobiMatrix_apply]
   refine MvPolynomial.pderiv_eq_zero_of_notMem_vars (fun hmem ↦ ?_)
   apply MvPolynomial.vars_rename at hmem
@@ -441,7 +437,6 @@ lemma jacobiMatrix_reindex {ι' σ' : Type*} (e : ι' ≃ ι) (f : σ' ≃ σ)
   simp [jacobiMatrix_apply,
     MvPolynomial.pderiv_rename e.symm.injective, reindex, Presentation.reindex]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma jacobian_reindex (P : PreSubmersivePresentation R S ι σ)
     {ι' σ' : Type*} (e : ι' ≃ ι) (f : σ' ≃ σ) [Finite σ] [Finite σ'] :
@@ -497,7 +492,6 @@ variable [Finite σ]
 A `PreSubmersivePresentation` is submersive if its Jacobian is a unit in `S`
 and the presentation is finite.
 -/
-@[nolint checkUnivs]
 structure SubmersivePresentation extends PreSubmersivePresentation.{t, w} R S ι σ where
   jacobian_isUnit : IsUnit toPreSubmersivePresentation.jacobian
 
@@ -601,7 +595,7 @@ end Constructions
 
 variable {R S ι σ}
 
-open Classical in
+open scoped Classical in
 /-- If `P` is submersive, `PreSubmersivePresentation.aevalDifferential` is an isomorphism. -/
 noncomputable def aevalDifferentialEquiv (P : SubmersivePresentation R S ι σ) :
     (σ → S) ≃ₗ[S] (σ → S) :=

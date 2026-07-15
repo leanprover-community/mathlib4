@@ -114,7 +114,7 @@ noncomputable instance (p : F[X]) [Fact (Irreducible p)] [Fact p.Monic] :
       have : 0 < p.natDegree := Irreducible.natDegree_pos (Fact.out)
       apply not_dvd_of_natDegree_lt
       · intro nh
-        simp [natDegree_eq_zero_of_derivative_eq_zero nh] at this
+        simp_all
       apply natDegree_derivative_lt
       exact Nat.ne_zero_of_lt this)
 
@@ -148,9 +148,9 @@ lemma differentialAlgebraFiniteDimensional [FiniteDimensional F K] :
     letI := differentialFiniteDimensional F K
     DifferentialAlgebra F K := by
   let k := (Field.exists_primitive_element F K).choose
-  haveI h : F⟮k⟯ = ⊤ := (Field.exists_primitive_element F K).choose_spec
-  haveI : Fact (minpoly F k).Monic := ⟨minpoly.monic (IsAlgebraic.of_finite ..).isIntegral⟩
-  haveI : Fact (Irreducible (minpoly F k)) :=
+  have h : F⟮k⟯ = ⊤ := (Field.exists_primitive_element F K).choose_spec
+  have : Fact (minpoly F k).Monic := ⟨minpoly.monic (IsAlgebraic.of_finite ..).isIntegral⟩
+  have : Fact (Irreducible (minpoly F k)) :=
     ⟨minpoly.irreducible (IsAlgebraic.of_finite ..).isIntegral⟩
   apply DifferentialAlgebra.equiv
 
@@ -176,7 +176,7 @@ noncomputable def uniqueDifferentialAlgebraFiniteDimensional [FiniteDimensional 
       (minpoly.irreducible (Algebra.IsIntegral.isIntegral _))
     apply not_dvd_of_natDegree_lt
     · intro nh
-      simp [natDegree_eq_zero_of_derivative_eq_zero nh] at this
+      simp_all
     apply natDegree_derivative_lt
     exact Nat.ne_zero_of_lt this
 

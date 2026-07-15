@@ -12,6 +12,7 @@ public import Mathlib.RingTheory.Fintype
 
 /-!
 # Third Cyclotomic Field
+
 We gather various results about the third cyclotomic field. The following notations are used in this
 file: `K` is a number field such that `IsCyclotomicExtension {3} ℚ K`, `ζ` is any primitive `3`-rd
 root of unity in `K`, `η` is the element in the units of the ring of integers corresponding to `ζ`
@@ -62,7 +63,7 @@ theorem Units.mem [NumberField K] [IsCyclotomicExtension {3} ℚ K] :
     congr
     rw [Finset.univ_eq_empty_iff, hrank]
     infer_instance
-  obtain ⟨n, hnpos, hn⟩ := isOfFinOrder_iff_pow_eq_one.1 <| (CommGroup.mem_torsion _ _).1 x.2
+  obtain ⟨n, hnpos, hn⟩ := isOfFinOrder_iff_pow_eq_one.1 <| (CommGroup.mem_torsion _).1 x.2
   replace hn : (↑u : K) ^ ((⟨n, hnpos⟩ : ℕ+) : ℕ) = 1 := by
     rw [← map_pow]
     convert! map_one (algebraMap (𝓞 K) K)

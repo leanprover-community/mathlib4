@@ -156,7 +156,7 @@ lemma sup_preimage_val_id [Lattice α] [OrderBot α] {P : α → Prop}
     letI := Subtype.orderBot Pbot
     (t.preimage Subtype.val Subtype.val_injective.injOn).sup id =
       (⟨t.sup id, sup_induction Pbot (fun _ h _ => Psup h) ht⟩ : Subtype P) := by
-  letI : OrderBot (Subtype P) := Subtype.orderBot Pbot
+  let : OrderBot (Subtype P) := Subtype.orderBot Pbot
   ext
   simp only [sup_coe, id_eq]
   apply sup_preimage_self
@@ -210,6 +210,7 @@ lemma image_eq_preimage_symm_of_finset [DecidableEq β] (e : α ≃ β) (s : Fin
 
 end Equiv
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Reindexing and then restricting to a `Finset` is the same as first restricting to the preimage
 of this `Finset` and then reindexing. -/

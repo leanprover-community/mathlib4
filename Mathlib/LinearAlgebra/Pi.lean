@@ -54,7 +54,7 @@ variable [Semiring R] [AddCommMonoid M₂] [Module R M₂] [AddCommMonoid M₃] 
 /-- `pi` construction for linear functions. From a family of linear functions it produces a linear
 function into a family of modules. -/
 def pi (f : (i : ι) → M₂ →ₗ[R] φ i) : M₂ →ₗ[R] (i : ι) → φ i :=
-  { Pi.addHom fun i => (f i).toAddHom with
+  { AddHom.pi fun i => (f i).toAddHom with
     toFun := fun c i => f i c
     map_smul' := fun _ _ => funext fun i => (f i).map_smul _ _ }
 
@@ -731,7 +731,6 @@ lemma Module.pi_induction {ι : Type v} [Finite ι]
       [AddCommMonoid N'] [Module R N] [Module R N'], motive N → motive' N' → motive' (N × N'))
     (M : ι → Type u) [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)]
     (h : ∀ i, motive (M i)) : motive' (∀ i, M i) := by
-  classical
   cases nonempty_fintype ι
   revert M
   refine Fintype.induction_empty_option
@@ -780,7 +779,6 @@ lemma Module.pi_induction' {ι : Type v} [Finite ι] (R : Type*) [Ring R]
       [AddCommGroup N'] [Module R N] [Module R N'], motive N → motive' N' → motive' (N × N'))
     (M : ι → Type u) [∀ i, AddCommGroup (M i)] [∀ i, Module R (M i)]
     (h : ∀ i, motive (M i)) : motive' (∀ i, M i) := by
-  classical
   cases nonempty_fintype ι
   revert M
   refine Fintype.induction_empty_option

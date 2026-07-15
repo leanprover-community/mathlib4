@@ -170,11 +170,10 @@ theorem next (α : Type*) [AddGroup α] [One α] (i : α) : (ComplexShape.down �
 
 @[simp]
 theorem next_nat_zero : (ComplexShape.down ℕ).next 0 = 0 := by
-  classical
-    refine dif_neg ?_
-    push Not
-    intro
-    apply Nat.noConfusion
+  refine dif_neg ?_
+  push Not
+  intro
+  apply Nat.noConfusion
 
 @[simp]
 theorem next_nat_succ (i : ℕ) : (ComplexShape.down ℕ).next (i + 1) = i :=
@@ -195,11 +194,10 @@ theorem next (α : Type*) [AddRightCancelSemigroup α] [One α] (i : α) :
 
 @[simp]
 theorem prev_nat_zero : (ComplexShape.up ℕ).prev 0 = 0 := by
-  classical
-    refine dif_neg ?_
-    push Not
-    intro
-    apply Nat.noConfusion
+  refine dif_neg ?_
+  push Not
+  intro
+  apply Nat.noConfusion
 
 @[simp]
 theorem prev_nat_succ (i : ℕ) : (ComplexShape.up ℕ).prev (i + 1) = i :=
@@ -345,12 +343,14 @@ instance : (forget V c).Faithful where
     ext i
     exact congr_fun h i
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Forgetting the differentials than picking out the `i`-th object is the same as
 just picking out the `i`-th object. -/
 @[simps!]
 def forgetEval (i : ι) : forget V c ⋙ GradedObject.eval i ≅ eval V c i :=
   NatIso.ofComponents fun _ => Iso.refl _
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The differential as a natural transformation between `eval`. -/
 @[simps] def dNatTrans (i j : ι) :
     HomologicalComplex.eval V c i ⟶ HomologicalComplex.eval V c j where
@@ -614,8 +614,7 @@ instance (f : C₁ ⟶ C₂) [IsSplitMono f] (j : ι) : IsSplitMono (f.f j) :=
   inferInstanceAs (IsSplitMono ((eval _ _ j).map f))
 
 @[push ←, simp]
-lemma inv_f_apply (f : C₁ ⟶ C₂) [IsIso f] (j : ι) :
-   (inv f).f j = inv (f.f j) := by
+lemma inv_f_apply (f : C₁ ⟶ C₂) [IsIso f] (j : ι) : (inv f).f j = inv (f.f j) := by
   apply IsIso.eq_inv_of_inv_hom_id
   simp [← comp_f]
 
@@ -635,6 +634,7 @@ variable {V} {α : Type*} [AddRightCancelSemigroup α] [One α] [DecidableEq α]
 def of.d (X : α → V) (d : ∀ n, X (n + 1) ⟶ X n) (i : α) (j : α) : X i ⟶ X j :=
   if h : i = j + 1 then eqToHom (by rw [h]) ≫ d j else 0
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Construct an `α`-indexed chain complex from a dependently-typed differential.
 -/
 abbrev of (X : α → V) (d : ∀ n, X (n + 1) ⟶ X n) (sq : ∀ n, d (n + 1) ≫ d n = 0) :
@@ -644,7 +644,7 @@ abbrev of (X : α → V) (d : ∀ n, X (n + 1) ⟶ X n) (sq : ∀ n, d (n + 1) �
     shape := fun i j w => by simp [of.d, (Ne.symm w)]
     d_comp_d' := fun i j k hij hjk => by
       dsimp [of.d] at hij hjk ⊢
-      substs hij hjk
+      subst hij hjk
       simp only [eqToHom_refl, id_comp, dite_eq_ite, ite_true, sq] }
 
 variable (X : α → V) (d : ∀ n, X (n + 1) ⟶ X n) (sq : ∀ n, d (n + 1) ≫ d n = 0)
@@ -892,6 +892,7 @@ variable {V} {α : Type*} [AddRightCancelSemigroup α] [One α] [DecidableEq α]
 def of.d (X : α → V) (d : ∀ n, X n ⟶ X (n + 1)) (i : α) (j : α) : X i ⟶ X j :=
   if h : i + 1 = j then d _ ≫ eqToHom (by rw [h]) else 0
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Construct an `α`-indexed cochain complex from a dependently-typed differential.
 -/
 abbrev of (X : α → V) (d : ∀ n, X n ⟶ X (n + 1)) (sq : ∀ n, d n ≫ d (n + 1) = 0) :
@@ -902,7 +903,7 @@ abbrev of (X : α → V) (d : ∀ n, X n ⟶ X (n + 1)) (sq : ∀ n, d n ≫ d (
     d_comp_d' := fun i j k => by
       dsimp [of.d]
       split_ifs with h h' h'
-      · substs h h'
+      · subst h h'
         simp [sq]
       all_goals simp }
 

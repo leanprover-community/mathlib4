@@ -41,7 +41,7 @@ noncomputable def linear : Linear R D := Linear.ofRingMorphism
 lemma functor_linear :
     letI := linear R L W
     Functor.Linear R L := by
-  letI := linear R L W
+  let := linear R L W
   constructor
   intro X Y f r
   change L.map (r • f) = ((Linear.toCatCenter R C r).localization L W).app (L.obj X) ≫ L.map f
@@ -74,6 +74,7 @@ variable {E : Type*} [Category* E]
   (R : Type*) [Ring R]
   [Linear R C] [Linear R D] [Linear R E] [L.Linear R]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma functor_linear_iff (F : C ⥤ E) (G : D ⥤ E) [Lifting L W F G] :
     F.Linear R ↔ G.Linear R := by

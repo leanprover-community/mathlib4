@@ -84,7 +84,7 @@ def monoidalOppositeLeftAction [MonoidalRightAction C D] :
     MonoidalRightAction.actionHom_leftUnitor _ _
   associator_actionHom c₁ c₂ c₃ d := by
     simpa only [mop_tensorObj, mop_hom_associator,
-      MonoidalRightAction.actionHomRight_inv_hom_assoc] using
+      MonoidalRightAction.actionHomRight_inv_hom_assoc] using!
       (d ⊴ᵣ (α_ (unmop c₃) (unmop c₂) (unmop c₁)).inv) ≫=
         MonoidalRightAction.actionHom_associator
           (unmop c₃) (unmop c₂) (unmop c₁) d |>.symm
@@ -135,7 +135,7 @@ def oppositeLeftAction [MonoidalLeftAction C D] :
   actionAssocIso_hom_naturality
     | op f, op g, op h => by
         apply Quiver.Hom.unop_inj
-        haveI := (αₗ (unop _) (unop _) (unop _)).inv ≫=
+        have := (αₗ (unop _) (unop _) (unop _)).inv ≫=
           MonoidalLeftAction.actionAssocIso_hom_naturality f g h
         simp only [Iso.inv_hom_id_assoc] at this
         simp [← this]
@@ -175,7 +175,7 @@ def leftActionOfOppositeLeftAction [MonoidalLeftAction Cᵒᵖ Dᵒᵖ] :
       MonoidalLeftAction.actionHom_def f.op g.op
   actionAssocIso_hom_naturality f g h := by
     apply Quiver.Hom.op_inj
-    haveI := (αₗ (op _) (op _) (op _)).inv ≫=
+    have := (αₗ (op _) (op _) (op _)).inv ≫=
       MonoidalLeftAction.actionAssocIso_hom_naturality f.op g.op h.op
     simp only [Iso.inv_hom_id_assoc] at this
     simp [← this]
@@ -296,7 +296,7 @@ def monoidalOppositeRightAction [MonoidalLeftAction C D] :
     MonoidalLeftAction.actionUnitIso_hom_naturality _
   actionHom_associator c₁ c₂ c₃ d := by
     simpa only [mop_tensorObj, mop_hom_associator,
-      MonoidalLeftAction.inv_hom_actionHomLeft_assoc] using
+      MonoidalLeftAction.inv_hom_actionHomLeft_assoc] using!
       (α_ (unmop c₃) (unmop c₂) (unmop c₁)).inv ⊵ₗ d ≫=
         MonoidalLeftAction.associator_actionHom
           (unmop c₃) (unmop c₂) (unmop c₁) d |>.symm
@@ -347,7 +347,7 @@ def oppositeRightAction [MonoidalRightAction C D] :
   actionAssocIso_hom_naturality
     | op f, op g, op h => by
         apply Quiver.Hom.unop_inj
-        haveI := (αᵣ (unop _) (unop _) (unop _)).inv ≫=
+        have := (αᵣ (unop _) (unop _) (unop _)).inv ≫=
           MonoidalRightAction.actionAssocIso_hom_naturality f g h
         simp only [Iso.inv_hom_id_assoc] at this
         simp [← this]
@@ -387,7 +387,7 @@ def rightActionOfOppositeRightAction [MonoidalRightAction Cᵒᵖ Dᵒᵖ] :
       MonoidalRightAction.actionHom_def f.op g.op
   actionAssocIso_hom_naturality f g h := by
     apply Quiver.Hom.op_inj
-    haveI := (αᵣ (op _) (op _) (op _)).inv ≫=
+    have := (αᵣ (op _) (op _) (op _)).inv ≫=
       MonoidalRightAction.actionAssocIso_hom_naturality f.op g.op h.op
     simp only [Iso.inv_hom_id_assoc] at this
     simp [← this]

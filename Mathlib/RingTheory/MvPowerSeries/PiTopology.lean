@@ -211,7 +211,6 @@ theorem variables_tendsto_zero [Semiring R] :
 theorem isTopologicallyNilpotent_of_constantCoeff_isNilpotent [CommSemiring R]
     {f : MvPowerSeries σ R} (hf : IsNilpotent (constantCoeff f)) :
     IsTopologicallyNilpotent f := by
-  classical
   obtain ⟨m, hm⟩ := hf
   simp_rw [IsTopologicallyNilpotent, tendsto_iff_coeff_tendsto, coeff_zero]
   exact fun d ↦ tendsto_atTop_of_eventually_const fun n hn ↦
@@ -245,7 +244,7 @@ theorem hasSum_of_monomials_self (f : MvPowerSeries σ R) :
     HasSum (fun d : σ →₀ ℕ => monomial d (coeff d f)) f := by
   rw [Pi.hasSum]
   intro d
-  simpa using hasSum_single d (fun d' h ↦ coeff_monomial_ne h.symm _)
+  simpa using! hasSum_single d (fun d' h ↦ coeff_monomial_ne h.symm _)
 
 /-- If the coefficient space is T2, then the multivariate power series is `tsum` of its monomials -/
 theorem as_tsum [T2Space R] (f : MvPowerSeries σ R) :
@@ -268,7 +267,7 @@ theorem summable_iff_summable_coeff :
     exact ⟨coeff n a, h n⟩
   · intro h
     choose a h using h
-    exact ⟨a, by simpa using h⟩
+    exact ⟨a, by simpa using! h⟩
 
 variable [LinearOrder ι] [LocallyFiniteOrderBot ι]
 
@@ -298,7 +297,7 @@ theorem summable_pow_of_constantCoeff_eq_zero {f : MvPowerSeries σ R}
   apply summable_of_tendsto_order_atTop_nhds_top
   simp_rw [ENat.tendsto_nhds_top_iff_natCast_lt, Filter.eventually_atTop]
   refine fun n ↦ ⟨n + 1, fun m hm ↦ lt_of_lt_of_le ?_ (le_order_pow _)⟩
-  refine (ENat.coe_lt_coe.mpr (Nat.add_one_le_iff.mp hm.le)).trans_le ?_
+  refine (ENat.coe_lt_coe.mpr (Nat.add_one_le_iff.mp hm)).trans_le ?_
   simpa [nsmul_eq_mul] using ENat.self_le_mul_right m (order_ne_zero_iff_constCoeff_eq_zero.mpr h)
 
 section GeomSeries

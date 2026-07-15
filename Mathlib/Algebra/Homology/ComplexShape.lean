@@ -133,7 +133,7 @@ instance subsingleton_next (c : ComplexShape ι) (i : ι) : Subsingleton { j // 
   congr
   exact c.next_eq rij rik
 
-open Classical in
+open scoped Classical in
 /-- An arbitrary choice of index `j` such that `Rel i j`, if such exists.
 Returns `i` otherwise.
 -/
@@ -203,6 +203,7 @@ namespace ComplexShape
 
 variable (α : Type*) [AddRightCancelSemigroup α] [DecidableEq α]
 
+set_option backward.defeqAttrib.useBackward true in
 @[to_dual instDecidableRelRelDown']
 instance instDecidableRelRelUp' (a : α) : DecidableRel (ComplexShape.up' a).Rel :=
   fun _ _ => by dsimp; infer_instance

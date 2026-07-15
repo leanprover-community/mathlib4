@@ -111,8 +111,9 @@ nonrec theorem algHom_ext' ⦃f g : A[ε] →ₐ[R] B⦄
   algHom_ext' hinl (by
     ext a
     change f (inr a) = g (inr a)
-    simpa only [inr_eq_smul_eps] using DFunLike.congr_fun hinr a)
+    simpa only [inr_eq_smul_eps] using! DFunLike.congr_fun hinr a)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- For two `R`-algebra morphisms out of `R[ε]` to agree, it suffices for them to agree on `ε`. -/
 @[ext 1200]
 theorem algHom_ext ⦃f g : R[ε] →ₐ[R] A⦄ (hε : f ε = g ε) : f = g := by
@@ -126,7 +127,7 @@ on `R` and its value on `ε`. -/
 lemma ringHom_ext {R' : Type*} [CommSemiring R'] {f g : R[ε] →+* R'}
     (h₀ : f.comp (algebraMap R R[ε]) = g.comp (algebraMap R R[ε]))
     (hε : f ε = g ε) : f = g := by
-  letI : Algebra R R' := by
+  let : Algebra R R' := by
     letI := f.toAlgebra
     exact Algebra.compHom _ (algebraMap R R[ε])
   let f' : R[ε] →ₐ[R] R' :=

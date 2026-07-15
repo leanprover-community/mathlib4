@@ -146,7 +146,7 @@ theorem toLinearMap_inj {f g : E →ₛₗᵢ[σ₁₂] E₂} : f.toLinearMap = 
 
 instance instFunLike : FunLike (E →ₛₗᵢ[σ₁₂] E₂) E E₂ where
   coe f := f.toFun
-  coe_injective' _ _ h := toLinearMap_injective (DFunLike.coe_injective h)
+  coe_injective _ _ h := toLinearMap_injective (DFunLike.coe_injective h)
 
 instance instSemilinearIsometryClass : SemilinearIsometryClass (E →ₛₗᵢ[σ₁₂] E₂) σ₁₂ E E₂ where
   map_add f := map_add f.toLinearMap
@@ -211,17 +211,9 @@ theorem isComplete_image_iff [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] (f :
     IsComplete (f '' s) ↔ IsComplete s :=
   _root_.isComplete_image_iff (SemilinearIsometryClass.isometry f).isUniformInducing
 
-@[deprecated LinearIsometry.isComplete_image_iff (since := "2025-12-25")]
-theorem isComplete_image_iff' (f : LinearIsometry σ₁₂ E E₂) {s : Set E} :
-    IsComplete (f '' s) ↔ IsComplete s :=
-  LinearIsometry.isComplete_image_iff _
-
 theorem isComplete_map_iff [RingHomSurjective σ₁₂] {p : Submodule R E} :
     IsComplete (p.map f.toLinearMap : Set E₂) ↔ IsComplete (p : Set E) :=
   isComplete_image_iff f
-
-@[deprecated (since := "2025-12-25")]
-alias isComplete_map_iff' := isComplete_map_iff
 
 instance completeSpace_map [RingHomSurjective σ₁₂] (p : Submodule R E) [CompleteSpace p] :
     CompleteSpace (p.map (f : E →ₛₗ[σ₁₂] E₂)) :=
@@ -283,6 +275,9 @@ theorem diam_range : Metric.diam (range f) = Metric.diam (univ : Set E) :=
 /-- Interpret a linear isometry as a continuous linear map. -/
 def toContinuousLinearMap : E →SL[σ₁₂] E₂ :=
   ⟨f.toLinearMap, f.continuous⟩
+
+@[simp] lemma toLinearMap_toContinuousLinearMap (f : E →ₛₗᵢ[σ₁₂] E₂) :
+  f.toContinuousLinearMap.toLinearMap = f.toLinearMap := rfl
 
 theorem toContinuousLinearMap_injective :
     Function.Injective (toContinuousLinearMap : _ → E →SL[σ₁₂] E₂) := fun x _ h =>
@@ -990,7 +985,7 @@ theorem symm_neg : (neg R : E ≃ₗᵢ[R] E).symm = neg R :=
 variable (R E E₂)
 
 /-- The natural equivalence `E × E₂ ≃ E₂ × E` is a linear isometry. -/
-@[simps!]
+@[simps! apply]
 def prodComm [Module R E₂] : E × E₂ ≃ₗᵢ[R] E₂ × E :=
   ⟨LinearEquiv.prodComm R E E₂, by intro; simp [norm, sup_comm]⟩
 
