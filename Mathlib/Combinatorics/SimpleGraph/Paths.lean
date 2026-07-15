@@ -140,6 +140,15 @@ theorem isTrail_cons {u v w : V} (h : G.Adj u v) (p : G.Walk v w) :
 protected lemma IsTrail.cons {w : G.Walk u' v} (hw : w.IsTrail) (hu : G.Adj u u')
     (hu' : s(u, u') ∉ w.edges) : (w.cons hu).IsTrail := by simp [*]
 
+@[simp]
+theorem isTrail_concat (hadj : G.Adj v w) :
+    (p.concat hadj).IsTrail ↔ p.IsTrail ∧ s(v, w) ∉ p.edges := by
+  simp_rw [isTrail_def, edges_concat, List.nodup_concat, and_comm]
+
+theorem IsTrail.concat (hp : p.IsTrail) (hadj : G.Adj v w) (hmem : s(v, w) ∉ p.edges) :
+    (p.concat hadj).IsTrail :=
+  isTrail_concat hadj |>.mpr ⟨hp, hmem⟩
+
 theorem IsTrail.reverse {u v : V} (p : G.Walk u v) (h : p.IsTrail) : p.reverse.IsTrail := by
   simpa [isTrail_def] using h
 
@@ -244,15 +253,16 @@ theorem isPath_of_isSubwalk {v w v' w' : V} {p₁ : G.Walk v w} {p₂ : G.Walk v
 lemma IsPath.of_adj {G : SimpleGraph V} {u v : V} (h : G.Adj u v) : h.toWalk.IsPath := by
   aesop
 
-theorem concat_isPath_iff {p : G.Walk u v} (h : G.Adj v w) :
+@[simp]
+theorem isPath_concat {p : G.Walk u v} (h : G.Adj v w) :
     (p.concat h).IsPath ↔ p.IsPath ∧ w ∉ p.support := by
-  rw [← (p.concat h).isPath_reverse_iff, ← p.isPath_reverse_iff, reverse_concat, ← List.mem_reverse,
-    ← support_reverse]
-  exact cons_isPath_iff h.symm p.reverse
+  simp_rw [isPath_def, support_concat, ← List.concat_eq_append, List.nodup_concat, and_comm]
+
+@[deprecated (since := "2026-07-15")] alias concat_isPath_iff := isPath_concat
 
 theorem IsPath.concat {p : G.Walk u v} (hp : p.IsPath) (hw : w ∉ p.support)
     (h : G.Adj v w) : (p.concat h).IsPath :=
-  (concat_isPath_iff h).mpr ⟨hp, hw⟩
+  (isPath_concat h).mpr ⟨hp, hw⟩
 
 lemma IsPath.take_of_take {n k} {p : G.Walk u v} (h : (p.take k).IsPath) (hle : n ≤ k) :
     (p.take n).IsPath :=
