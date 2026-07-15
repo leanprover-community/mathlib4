@@ -313,39 +313,44 @@ instance Prod.locallyPathConnectedSpace [LocallyPathConnectedSpace Y] :
         (isPathConnected_pathComponentIn (mem_of_mem_nhds hv)),
       (Set.prod_mono pathComponentIn_subset pathComponentIn_subset).trans huv⟩
 
-/-- A finite product of locally path-connected spaces is locally path-connected. -/
-instance Pi.locallyPathConnectedSpace_of_finite [Finite ι] {Z : ι → Type*}
-    [∀ i, TopologicalSpace (Z i)] [∀ i, LocallyPathConnectedSpace (Z i)] :
-    LocallyPathConnectedSpace (∀ i, Z i) where
-  path_connected_basis x := hasBasis_self.mpr fun U hU ↦ by
-    rw [nhds_pi, Filter.mem_pi] at hU
-    obtain ⟨J, hJ, t, ht, htU⟩ := hU
-    exact ⟨univ.pi fun i ↦ pathComponentIn (t i) (x i),
-      set_pi_mem_nhds finite_univ fun i _ ↦ pathComponentIn_mem_nhds (ht i),
-      .pi fun i ↦ isPathConnected_pathComponentIn (mem_of_mem_nhds (ht i)),
-      fun f hf ↦ htU fun i hiJ ↦ pathComponentIn_subset (hf i trivial)⟩
-
-/-- A product of path-connected, locally path-connected spaces is locally path-connected. Note
-that an arbitrary product of locally path-connected spaces need not be locally path-connected, so
-the path-connectedness assumption cannot be dropped (it can when the index type is finite, see
-`Pi.locallyPathConnectedSpace_of_finite`). -/
-instance Pi.locallyPathConnectedSpace {Z : ι → Type*} [∀ i, TopologicalSpace (Z i)]
-    [∀ i, LocallyPathConnectedSpace (Z i)] [∀ i, PathConnectedSpace (Z i)] :
+/-- If each `Z i` is locally path-connected and all but finitely many are path-connected, then
+`∀ i, Z i` is locally path-connected. -/
+theorem Pi.locallyPathConnectedSpace_of_finite_nonpathconnected {Z : ι → Type*}
+    [∀ i, TopologicalSpace (Z i)] [∀ i, LocallyPathConnectedSpace (Z i)]
+    (hfinite : {i | ¬PathConnectedSpace (Z i)}.Finite) :
     LocallyPathConnectedSpace (∀ i, Z i) where
   path_connected_basis x := hasBasis_self.mpr fun U hU ↦ by
     rw [nhds_pi, Filter.mem_pi] at hU
     obtain ⟨J, hJ, t, ht, htU⟩ := hU
     classical
-    refine ⟨J.pi fun i ↦ pathComponentIn (t i) (x i),
-      set_pi_mem_nhds hJ fun i _ ↦ pathComponentIn_mem_nhds (ht i), ?_,
-      fun f hf ↦ htU fun i hiJ ↦ pathComponentIn_subset (hf i hiJ)⟩
+    set K := J ∪ {i | ¬PathConnectedSpace (Z i)} with hK
+    refine ⟨K.pi fun i ↦ pathComponentIn (t i) (x i),
+      set_pi_mem_nhds (hJ.union hfinite) fun i _ ↦ pathComponentIn_mem_nhds (ht i), ?_,
+      fun f hf ↦ htU fun i hiJ ↦ pathComponentIn_subset (hf i (mem_union_left _ hiJ))⟩
     rw [← univ_pi_piecewise_univ]
     refine .pi fun i ↦ ?_
-    by_cases hi : i ∈ J
+    by_cases hi : i ∈ K
     · rw [piecewise_eq_of_mem _ _ _ hi]
       exact isPathConnected_pathComponentIn (mem_of_mem_nhds (ht i))
     · rw [piecewise_eq_of_notMem _ _ _ hi]
+      have : PathConnectedSpace (Z i) := not_not.mp fun h ↦ hi (hK ▸ mem_union_right _ h)
       exact isPathConnected_univ
+
+/-- A finite product of locally path-connected spaces is locally path-connected. -/
+instance Pi.locallyPathConnectedSpace_of_finite [Finite ι] {Z : ι → Type*}
+    [∀ i, TopologicalSpace (Z i)] [∀ i, LocallyPathConnectedSpace (Z i)] :
+    LocallyPathConnectedSpace (∀ i, Z i) :=
+  locallyPathConnectedSpace_of_finite_nonpathconnected (Set.toFinite _)
+
+/-- A product of path-connected, locally path-connected spaces is locally path-connected. Note
+that an arbitrary product of locally path-connected spaces need not be locally path-connected, so
+the path-connectedness assumption cannot be dropped entirely (though it can be dropped for all but
+finitely many factors, see `Pi.locallyPathConnectedSpace_of_finite_nonpathconnected`). -/
+instance Pi.locallyPathConnectedSpace {Z : ι → Type*} [∀ i, TopologicalSpace (Z i)]
+    [∀ i, LocallyPathConnectedSpace (Z i)] [∀ i, PathConnectedSpace (Z i)] :
+    LocallyPathConnectedSpace (∀ i, Z i) :=
+  locallyPathConnectedSpace_of_finite_nonpathconnected
+    (Set.finite_empty.subset fun _ hi ↦ (hi inferInstance).elim)
 
 instance AlexandrovDiscrete.locallyPathConnectedSpace [AlexandrovDiscrete X] :
     LocallyPathConnectedSpace X := by

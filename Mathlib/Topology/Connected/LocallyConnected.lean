@@ -173,39 +173,42 @@ instance Prod.locallyConnectedSpace [TopologicalSpace β] [LocallyConnectedSpace
     isPreconnected_connectedComponentIn.prod isPreconnected_connectedComponentIn,
     (prod_mono (connectedComponentIn_subset _ _) (connectedComponentIn_subset _ _)).trans huv⟩
 
-/-- A finite product of locally connected spaces is locally connected. -/
-instance Pi.locallyConnectedSpace_of_finite [Finite ι] [∀ i, TopologicalSpace (X i)]
-    [∀ i, LocallyConnectedSpace (X i)] : LocallyConnectedSpace (∀ i, X i) := by
-  rw [locallyConnectedSpace_iff_connected_subsets]
-  intro x U hU
-  rw [nhds_pi, Filter.mem_pi] at hU
-  obtain ⟨J, hJ, t, ht, htU⟩ := hU
-  exact ⟨univ.pi fun i ↦ connectedComponentIn (t i) (x i),
-    set_pi_mem_nhds finite_univ fun i _ ↦ connectedComponentIn_mem_nhds (ht i),
-    isPreconnected_univ_pi fun i ↦ isPreconnected_connectedComponentIn,
-    fun f hf ↦ htU fun i hiJ ↦ connectedComponentIn_subset _ _ (hf i trivial)⟩
-
-/-- A product of connected, locally connected spaces is locally connected. Note that an arbitrary
-product of locally connected spaces need not be locally connected, so the connectedness assumption
-cannot be dropped (it can when the index type is finite, see
-`Pi.locallyConnectedSpace_of_finite`). -/
-instance Pi.locallyConnectedSpace [∀ i, TopologicalSpace (X i)]
-    [∀ i, LocallyConnectedSpace (X i)] [∀ i, ConnectedSpace (X i)] :
+/-- If each `X i` is locally connected and all but finitely many are preconnected, then
+`∀ i, X i` is locally connected. -/
+theorem Pi.locallyConnectedSpace_of_finite_nonpreconnected [∀ i, TopologicalSpace (X i)]
+    [∀ i, LocallyConnectedSpace (X i)] (hfinite : {i | ¬PreconnectedSpace (X i)}.Finite) :
     LocallyConnectedSpace (∀ i, X i) := by
   rw [locallyConnectedSpace_iff_connected_subsets]
   intro x U hU
   rw [nhds_pi, Filter.mem_pi] at hU
   obtain ⟨J, hJ, t, ht, htU⟩ := hU
   classical
-  refine ⟨J.pi fun i ↦ connectedComponentIn (t i) (x i),
-    set_pi_mem_nhds hJ fun i _ ↦ connectedComponentIn_mem_nhds (ht i), ?_,
-    fun f hf ↦ htU fun i hiJ ↦ connectedComponentIn_subset _ _ (hf i hiJ)⟩
+  set K := J ∪ {i | ¬PreconnectedSpace (X i)} with hK
+  refine ⟨K.pi fun i ↦ connectedComponentIn (t i) (x i),
+    set_pi_mem_nhds (hJ.union hfinite) fun i _ ↦ connectedComponentIn_mem_nhds (ht i), ?_,
+    fun f hf ↦ htU fun i hiJ ↦ connectedComponentIn_subset _ _ (hf i (mem_union_left _ hiJ))⟩
   rw [← univ_pi_piecewise_univ]
   refine isPreconnected_univ_pi fun i ↦ ?_
-  by_cases hi : i ∈ J
+  by_cases hi : i ∈ K
   · rw [piecewise_eq_of_mem _ _ _ hi]
     exact isPreconnected_connectedComponentIn
   · rw [piecewise_eq_of_notMem _ _ _ hi]
+    have : PreconnectedSpace (X i) := not_not.mp fun h ↦ hi (hK ▸ mem_union_right _ h)
     exact isPreconnected_univ
+
+/-- A finite product of locally connected spaces is locally connected. -/
+instance Pi.locallyConnectedSpace_of_finite [Finite ι] [∀ i, TopologicalSpace (X i)]
+    [∀ i, LocallyConnectedSpace (X i)] : LocallyConnectedSpace (∀ i, X i) :=
+  locallyConnectedSpace_of_finite_nonpreconnected (Set.toFinite _)
+
+/-- A product of preconnected, locally connected spaces is locally connected. Note that an
+arbitrary product of locally connected spaces need not be locally connected, so the
+preconnectedness assumption cannot be dropped entirely (though it can be dropped for all but
+finitely many factors, see `Pi.locallyConnectedSpace_of_finite_nonpreconnected`). -/
+instance Pi.locallyConnectedSpace [∀ i, TopologicalSpace (X i)]
+    [∀ i, LocallyConnectedSpace (X i)] [∀ i, PreconnectedSpace (X i)] :
+    LocallyConnectedSpace (∀ i, X i) :=
+  locallyConnectedSpace_of_finite_nonpreconnected
+    (Set.finite_empty.subset fun _ hi ↦ (hi inferInstance).elim)
 
 end LocallyConnectedSpace
