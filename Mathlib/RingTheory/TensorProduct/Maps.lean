@@ -10,8 +10,6 @@ public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
 public import Mathlib.Algebra.Module.Rat
 public import Mathlib.RingTheory.TensorProduct.Basic
 
-import Mathlib.Tactic.Algebraize
-
 /-!
 # Maps between tensor products of R-algebras
 
