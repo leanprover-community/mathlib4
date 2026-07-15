@@ -159,6 +159,7 @@ private lemma destruct_eq_destruct_map {basis_hd basis_tl}
   simp only [destruct, Option.map_map]
   exact Option.map_id_apply.symm
 
+set_option backward.isDefEq.respectTransparency false in
 theorem FriendlyOperation.coind_comp_friend_left {basis_hd basis_tl}
     {op : Multiseries basis_hd basis_tl → Multiseries basis_hd basis_tl}
     (motive : (Multiseries basis_hd basis_tl → Multiseries basis_hd basis_tl) → Prop)
@@ -176,6 +177,7 @@ theorem FriendlyOperation.coind_comp_friend_left {basis_hd basis_tl}
   simp
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem FriendlyOperation.coind_comp_friend_right {basis_hd basis_tl}
     {op : Multiseries basis_hd basis_tl → Multiseries basis_hd basis_tl}
     (motive : (Multiseries basis_hd basis_tl → Multiseries basis_hd basis_tl) → Prop)
@@ -245,6 +247,7 @@ def FriendlyOperation.unfold {basis_hd basis_tl}
       @Multiseries.FriendlyOperation basis_hd basis_tl)) :=
   Seq.FriendlyOperation.unfold h hd? |>.map (fun ((exp, coef), op') ↦ (exp, coef, op'))
 
+set_option backward.isDefEq.respectTransparency false in
 theorem FriendlyOperation.destruct_apply_eq_unfold {basis_hd basis_tl}
     {op : Multiseries basis_hd basis_tl → Multiseries basis_hd basis_tl}
     (h : FriendlyOperation op) (ms : Multiseries basis_hd basis_tl) :
@@ -359,6 +362,7 @@ theorem corec_cons {β : Type*} {basis_hd} {basis_tl} {exp : ℝ}
   rw [Seq.corec_cons]
   simpa
 
+set_option backward.isDefEq.respectTransparency false in
 theorem gcorec_nil {β γ : Type*} {basis_hd} {basis_tl}
     {F : β → Option (ℝ × MultiseriesExpansion basis_tl × γ × β)}
     {op : γ → Multiseries basis_hd basis_tl → Multiseries basis_hd basis_tl}
@@ -370,6 +374,7 @@ theorem gcorec_nil {β γ : Type*} {basis_hd} {basis_tl}
   · simp [nil]
   · simpa
 
+set_option backward.isDefEq.respectTransparency false in
 theorem gcorec_some {β γ : Type*} {basis_hd} {basis_tl}
     {F : β → Option (ℝ × MultiseriesExpansion basis_tl × γ × β)}
     {op : γ → Multiseries basis_hd basis_tl → Multiseries basis_hd basis_tl}
