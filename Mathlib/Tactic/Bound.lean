@@ -183,7 +183,7 @@ TODO: Kim Morrison noted that we could check for `ℕ` or `ℤ` and try `lia` as
 -/
 
 /-- Close numerical goals with `norm_num` -/
-meta def boundNormNum : Aesop.RuleTac :=
+def boundNormNum : Aesop.RuleTac :=
   Aesop.SingleRuleTac.toRuleTac fun i => do
     let tac := do Mathlib.Meta.NormNum.elabNormNum .missing .missing .missing
     let goals ← Lean.Elab.Tactic.run i.goal tac |>.run'
@@ -192,7 +192,7 @@ meta def boundNormNum : Aesop.RuleTac :=
 attribute [aesop unsafe 10% tactic (rule_sets := [Bound])] boundNormNum
 
 /-- Close numerical and other goals with `linarith` -/
-meta def boundLinarith : Aesop.RuleTac :=
+def boundLinarith : Aesop.RuleTac :=
   Aesop.SingleRuleTac.toRuleTac fun i => do
     Linarith.linarith false [] {} i.goal
     return (#[], none, some .hundred)

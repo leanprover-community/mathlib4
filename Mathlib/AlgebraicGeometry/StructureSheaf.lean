@@ -66,7 +66,7 @@ namespace AlgebraicGeometry
 
 variable (R) in
 /-- The prime spectrum as an object of `TopCat`. -/
-public def PrimeSpectrum.Top : TopCat := TopCat.of (PrimeSpectrum R)
+def PrimeSpectrum.Top : TopCat := TopCat.of (PrimeSpectrum R)
 
 namespace StructureSheaf
 

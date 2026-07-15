@@ -532,7 +532,7 @@ elab_rules : tactic
     let cfg := (← elabLinarithConfig cfg).updateReducibility bang.isSome
     commitIfNoEx do liftMetaFinishingTactic <| Linarith.linarith o.isSome args.toList cfg
 
-private meta partial def minimize (cfg : Linarith.LinarithConfig) (st : Tactic.SavedState)
+private partial def minimize (cfg : Linarith.LinarithConfig) (st : Tactic.SavedState)
     (g : MVarId) (hs : List Expr) (i : Nat) : TacticM (List Expr) := do
   if _h : i < hs.length then
     let rest := hs.eraseIdx i
