@@ -99,6 +99,7 @@ lemma MorphismProperty.isCardinalAccessible_ι_isLocal
     W.isLocal.ι.IsCardinalAccessible κ where
   preservesColimitOfShape J _ _ := by
     have := W.isClosedUnderColimitsOfShape_isLocal J κ hW
+    have := HasCardinalFilteredColimits.hasColimitsOfShape C κ J
     infer_instance
 
 namespace OrthogonalReflection
