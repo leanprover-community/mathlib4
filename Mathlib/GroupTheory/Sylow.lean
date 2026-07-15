@@ -452,9 +452,9 @@ private theorem not_dvd_index_aux [hp : Fact p.Prime] (P : Sylow p G) [P.Normal]
 theorem not_dvd_index' [hp : Fact p.Prime] [Finite (Sylow p G)] (P : Sylow p G)
     (hP : P.relIndex (normalizer P) ≠ 0) : ¬ p ∣ P.index := by
   rw [← relIndex_mul_index le_normalizer, P.coe_coe, ← card_eq_index_normalizer]
-  haveI : (P.subtype le_normalizer).Normal :=
+  have : (P.subtype le_normalizer).Normal :=
     Subgroup.normal_in_normalizer
-  haveI : (P.subtype le_normalizer).FiniteIndex := ⟨hP⟩
+  have : (P.subtype le_normalizer).FiniteIndex := ⟨hP⟩
   replace hP := not_dvd_index_aux (P.subtype le_normalizer)
   exact hp.1.not_dvd_mul hP (not_dvd_card_sylow p G)
 
@@ -796,7 +796,7 @@ theorem normal_of_all_max_subgroups_normal [Finite G]
       rcases eq_top_or_exists_le_coatom (normalizer (P : Set G))
         with (heq | ⟨K, hK, hNK⟩)
       · exact heq
-      · haveI := hnc _ hK
+      · have := hnc _ hK
         have hPK : P ≤ K := le_trans le_normalizer hNK
         refine (hK.1 ?_).elim
         rw [← sup_of_le_right hNK, P.normalizer_sup_eq_top' hPK])
@@ -819,8 +819,8 @@ noncomputable def directProductOfNormal [Finite G]
   have : ∀ p, Fintype (P p) := fun p ↦ Fintype.ofFinite (P p)
   have hcomm : Pairwise fun p₁ p₂ : ps => ∀ x y : G, x ∈ P p₁ → y ∈ P p₂ → Commute x y := by
     rintro ⟨p₁, hp₁⟩ ⟨p₂, hp₂⟩ hne
-    haveI hp₁' := Fact.mk (Nat.prime_of_mem_primeFactors hp₁)
-    haveI hp₂' := Fact.mk (Nat.prime_of_mem_primeFactors hp₂)
+    have hp₁' := Fact.mk (Nat.prime_of_mem_primeFactors hp₁)
+    have hp₂' := Fact.mk (Nat.prime_of_mem_primeFactors hp₂)
     have hne' : p₁ ≠ p₂ := by simpa using hne
     apply Subgroup.commute_of_normal_of_disjoint _ _ (hn (P p₁)) (hn (P p₂))
     apply IsPGroup.disjoint_of_ne p₁ p₂ hne' _ _ (P p₁).isPGroup' (P p₂).isPGroup'
@@ -838,8 +838,8 @@ noncomputable def directProductOfNormal [Finite G]
   · apply Subgroup.injective_noncommPiCoprod_of_iSupIndep
     apply independent_of_coprime_order hcomm
     rintro ⟨p₁, hp₁⟩ ⟨p₂, hp₂⟩ hne
-    haveI hp₁' := Fact.mk (Nat.prime_of_mem_primeFactors hp₁)
-    haveI hp₂' := Fact.mk (Nat.prime_of_mem_primeFactors hp₂)
+    have hp₁' := Fact.mk (Nat.prime_of_mem_primeFactors hp₁)
+    have hp₂' := Fact.mk (Nat.prime_of_mem_primeFactors hp₂)
     have hne' : p₁ ≠ p₂ := by simpa using hne
     simp only [← Nat.card_eq_fintype_card]
     apply IsPGroup.coprime_card_of_ne p₁ p₂ hne' _ _ (P p₁).isPGroup' (P p₂).isPGroup'

@@ -174,7 +174,7 @@ instance normal [h : Normal F L] : Normal F (normalClosure F K L) := by
 @[stacks 0BMG "When `L` is normal over `K`, this agrees with 0BMG (1) finiteness."]
 instance is_finiteDimensional [FiniteDimensional F K] :
     FiniteDimensional F (normalClosure F K L) := by
-  haveI : ∀ f : K →ₐ[F] L, FiniteDimensional F f.fieldRange := fun f ↦
+  have : ∀ f : K →ₐ[F] L, FiniteDimensional F f.fieldRange := fun f ↦
     f.toLinearMap.finiteDimensional_range
   apply IntermediateField.finiteDimensional_iSup_of_finite
 

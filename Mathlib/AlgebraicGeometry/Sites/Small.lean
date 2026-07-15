@@ -113,8 +113,8 @@ lemma overGrothendieckTopology_eq_toGrothendieck_overPretopology :
   · intro hR
     obtain ⟨𝒰, hle⟩ := exists_cover_of_mem_grothendieckTopology hR
     rw [mem_grothendieckTopology_iff] at hR
-    letI (i : 𝒰.I₀) : (𝒰.X i).Over S := { hom := 𝒰.f i ≫ X.hom }
-    letI : 𝒰.Over S :=
+    let (i : 𝒰.I₀) : (𝒰.X i).Over S := { hom := 𝒰.f i ≫ X.hom }
+    let : 𝒰.Over S :=
       { over := inferInstance
         isOver_map := fun i ↦ ⟨rfl⟩ }
     use 𝒰.toPresieveOver, ⟨𝒰, inferInstance, rfl⟩
@@ -249,7 +249,7 @@ lemma mem_toGrothendieck_smallPretopology (X : Q.Over ⊤ S) (R : Sieve X) :
         mem₀ := by
           rw [presieve₀_mem_precoverage_iff]
           refine ⟨fun x ↦ ⟨x, y x, hy x⟩, hP⟩ }
-    letI : 𝒰.Over S :=
+    let : 𝒰.Over S :=
       { over := fun i ↦ inferInstance
         isOver_map := fun i ↦ inferInstance }
     refine ⟨𝒰.toPresieveOverProp fun i ↦ MorphismProperty.Comma.prop _, ?_, ?_⟩

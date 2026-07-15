@@ -1047,7 +1047,7 @@ lemma isBoundedSMulSeminormedAddCommGroupToProd
     [Module R α] [Module R β] [IsBoundedSMul R α] [IsBoundedSMul R β] :
     letI := pseudoMetricSpaceToProd p α β
     IsBoundedSMul R (α × β) := by
-  letI := pseudoMetricSpaceToProd p α β
+  let := pseudoMetricSpaceToProd p α β
   refine ⟨fun x y z ↦ ?_, fun x y z ↦ ?_⟩
   · simpa [dist_pseudoMetricSpaceToProd] using dist_smul_pair x (toLp p y) (toLp p z)
   · simpa [dist_pseudoMetricSpaceToProd] using dist_pair_smul x y (toLp p z)
@@ -1057,7 +1057,7 @@ lemma normSMulClassSeminormedAddCommGroupToProd
     [Module R α] [Module R β] [NormSMulClass R α] [NormSMulClass R β] :
     letI := seminormedAddCommGroupToProd p α β
     NormSMulClass R (α × β) := by
-  letI := seminormedAddCommGroupToProd p α β
+  let := seminormedAddCommGroupToProd p α β
   exact ⟨fun x y ↦ norm_smul x (toLp p y)⟩
 
 /-- This definition allows to endow `α × β` with a normed space structure corresponding to
