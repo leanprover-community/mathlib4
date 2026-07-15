@@ -71,6 +71,8 @@ namespace NumberField
 
 variable {K : Type*} [Field K] [NumberField K] {S : Set (Ideal (𝓞 K))} {δ : ℝ}
 
+/-- The partial Dirichlet series `∑_{𝔭 ∈ S} N𝔭 ^ (-s)`, summed over the nonzero prime ideals
+of `𝓞 K` lying in `S`. -/
 def primeIdealZetaSum (S : Set (Ideal (𝓞 K))) (s : ℝ) : ℝ :=
   ∑' 𝔭 : {𝔭 : Ideal (𝓞 K) // 𝔭 ∈ S ∧ 𝔭.IsPrime ∧ 𝔭 ≠ ⊥}, (Ideal.absNorm 𝔭.1 : ℝ) ^ (-s)
 
