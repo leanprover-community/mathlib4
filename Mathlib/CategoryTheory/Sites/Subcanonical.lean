@@ -139,9 +139,6 @@ theorem uliftYonedaEquiv_symm_app_apply {X : C} {F : Sheaf J (Type (max v v'))}
     dsimp% (J.uliftYonedaEquiv.symm x).hom.app Y ⟨f⟩ = F.obj.map f.op x :=
   rfl
 
-@[deprecated (since := "2025-11-10")] alias yonedaULiftEquiv_symm_app_apply :=
-  uliftYonedaEquiv_symm_app_apply
-
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- See also `uliftYonedaEquiv_naturality'` for a more general version. -/

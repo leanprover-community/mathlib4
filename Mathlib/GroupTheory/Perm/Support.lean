@@ -51,10 +51,10 @@ variable {f g h : Perm α}
 @[symm]
 theorem Disjoint.symm : Disjoint f g → Disjoint g f := by simp only [Disjoint, or_comm, imp_self]
 
-theorem Disjoint.symmetric : Symmetric (@Disjoint α) := fun _ _ => Disjoint.symm
+instance Disjoint.stdSymm : Std.Symm (α := Perm α) Disjoint where
+  symm _ _ := Disjoint.symm
 
-instance : Std.Symm (α := Perm α) Disjoint :=
-  ⟨Disjoint.symmetric⟩
+@[deprecated (since := "2026-06-10")] alias Disjoint.symmetric := Disjoint.stdSymm
 
 theorem disjoint_comm : Disjoint f g ↔ Disjoint g f :=
   ⟨Disjoint.symm, Disjoint.symm⟩
@@ -220,8 +220,6 @@ variable (p q : Perm α)
 
 lemma set_support_symm_eq : {x | p.symm x ≠ x} = {x | p x ≠ x} := by
   ext; simp [eq_symm_apply, eq_comm]
-
-@[deprecated (since := "2025-11-17")] alias set_support_inv_eq := set_support_symm_eq
 
 theorem set_support_apply_mem {p : Perm α} {a : α} :
     p a ∈ { x | p x ≠ x } ↔ a ∈ { x | p x ≠ x } := by simp

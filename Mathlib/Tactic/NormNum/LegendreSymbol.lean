@@ -5,7 +5,6 @@ Authors: Michael Stoll
 -/
 module
 
-public meta import Mathlib.NumberTheory.LegendreSymbol.JacobiSymbol
 public import Mathlib.NumberTheory.LegendreSymbol.JacobiSymbol
 
 /-!
@@ -47,7 +46,7 @@ where we encode the residue classes mod 2, mod 4, or mod 8 by using hypotheses l
 are the ones occurring in the use of QR above.
 -/
 
-public meta section
+public section
 
 
 section Lemmas
@@ -117,7 +116,7 @@ theorem jacobiSymNat.odd_even (a b c : ℕ) (r : ℤ) (ha : a % 2 = 1) (hb : b %
     decide
   rcases eq_or_ne c 0 with (rfl | hc')
   · rw [← hr, Nat.eq_zero_of_dvd_of_div_eq_zero (Nat.dvd_of_mod_eq_zero hb) hc]
-  · haveI : NeZero c := ⟨hc'⟩
+  · have : NeZero c := ⟨hc'⟩
     -- for `jacobiSym.mul_right`
     rwa [← Nat.mod_add_div b 2, hb, hc, Nat.zero_add, jacobiSymNat, jacobiSym.mul_right,
       ← jacobiSym.legendreSym.to_jacobiSym, ha', one_mul]
@@ -192,6 +191,8 @@ theorem isInt_jacobiSymNat : {a na : ℕ} → {b nb : ℕ} → {r : ℤ} →
 end Mathlib.Meta.NormNum
 
 end Lemmas
+
+meta section
 
 section Evaluation
 

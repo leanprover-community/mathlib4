@@ -160,12 +160,9 @@ theorem toRingEquiv_eq_coe : e.toRingEquiv = e :=
 lemma toRingEquiv_toRingHom : ((e : A₁ ≃+* A₂) : A₁ →+* A₂) = e :=
   rfl
 
-@[simp]
-theorem coe_ringEquiv : ((e : A₁ ≃+* A₂) : A₁ → A₂) = e :=
-  rfl
+theorem coe_ringEquiv : ((e : A₁ ≃+* A₂) : A₁ → A₂) = e := rfl
 
-theorem coe_ringEquiv' : (e.toRingEquiv : A₁ → A₂) = e :=
-  rfl
+@[deprecated (since := "2026-06-21")] alias coe_ringEquiv' := coe_ringEquiv
 
 theorem coe_ringEquiv_injective : Function.Injective ((↑) : (A₁ ≃ₐ[R] A₂) → A₁ ≃+* A₂) :=
   fun _ _ h => ext <| RingEquiv.congr_fun h
@@ -190,11 +187,13 @@ theorem toAlgHom_apply (x : A₁) : e.toAlgHom x = e x :=
   rfl
 
 @[simp, norm_cast]
-theorem coe_algHom : DFunLike.coe e.toAlgHom = DFunLike.coe e :=
-  rfl
+theorem coe_toAlgHom :  DFunLike.coe e.toAlgHom = e := rfl
 
-theorem coe_algHom_injective : Function.Injective ((↑) : (A₁ ≃ₐ[R] A₂) → A₁ →ₐ[R] A₂) :=
+theorem coe_toAlgHom_injective : Function.Injective ((↑) : (A₁ ≃ₐ[R] A₂) → A₁ →ₐ[R] A₂) :=
   fun _ _ h => ext <| AlgHom.congr_fun h
+
+@[deprecated (since := "2026-05-05")] alias coe_algHom := coe_toAlgHom
+@[deprecated (since := "2026-05-05")] alias coe_algHom_injective := coe_toAlgHom_injective
 
 @[simp, norm_cast]
 lemma toAlgHom_toRingHom : ((e : A₁ →ₐ[R] A₂) : A₁ →+* A₂) = e :=
@@ -479,14 +478,17 @@ def ofAlgHom (f : A₁ →ₐ[R] A₂) (g : A₂ →ₐ[R] A₁) (h₁ : f.comp 
     left_inv := AlgHom.ext_iff.1 h₂
     right_inv := AlgHom.ext_iff.1 h₁ }
 
-theorem coe_algHom_ofAlgHom (f : A₁ →ₐ[R] A₂) (g : A₂ →ₐ[R] A₁) (h₁ h₂) :
+theorem toAlgHom_ofAlgHom (f : A₁ →ₐ[R] A₂) (g : A₂ →ₐ[R] A₁) (h₁ h₂) :
     ↑(ofAlgHom f g h₁ h₂) = f :=
   rfl
 
 @[simp]
-theorem ofAlgHom_coe_algHom (f : A₁ ≃ₐ[R] A₂) (g : A₂ →ₐ[R] A₁) (h₁ h₂) :
+theorem ofAlgHom_toAlgHom (f : A₁ ≃ₐ[R] A₂) (g : A₂ →ₐ[R] A₁) (h₁ h₂) :
     ofAlgHom (↑f) g h₁ h₂ = f :=
   ext fun _ => rfl
+
+@[deprecated (since := "2026-05-05")] alias coe_algHom_ofAlgHom := toAlgHom_ofAlgHom
+@[deprecated (since := "2026-05-05")] alias ofAlgHom_coe_algHom := ofAlgHom_toAlgHom
 
 theorem ofAlgHom_symm (f : A₁ →ₐ[R] A₂) (g : A₂ →ₐ[R] A₁) (h₁ h₂) :
     (ofAlgHom f g h₁ h₂).symm = ofAlgHom g f h₂ h₁ :=
@@ -764,7 +766,7 @@ def algHomUnitsEquiv (R S : Type*) [CommSemiring R] [Semiring S] [Algebra R S] :
 
 /-- See also `Finite.algHom` -/
 instance _root_.Finite.algEquiv [Finite (A₁ →ₐ[R] A₂)] : Finite (A₁ ≃ₐ[R] A₂) :=
-  Finite.of_injective _ AlgEquiv.coe_algHom_injective
+  Finite.of_injective _ AlgEquiv.coe_toAlgHom_injective
 
 -- TODO Morally this is just `isLocalHom_equiv`: can we obviate the need for this instance?
 instance : IsLocalHom e.toAlgHom := by
@@ -899,8 +901,6 @@ endomorphisms. -/
 @[simps!] def conjAlgEquiv (e : M₁ ≃ₗ[S] M₂) : Module.End S M₁ ≃ₐ[R] Module.End S M₂ where
   __ := e.conjRingEquiv
   commutes' _ := by ext; change e.restrictScalars R _ = _; simp
-
-@[deprecated (since := "2025-12-06")] alias algConj := conjAlgEquiv
 
 theorem conjAlgEquiv_apply (e : M₁ ≃ₗ[S] M₂) (f : Module.End S M₁) :
     e.conjAlgEquiv R f = e.toLinearMap ∘ₗ f ∘ₗ e.symm.toLinearMap := rfl

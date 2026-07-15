@@ -90,7 +90,7 @@ may not apply if the zero of `Set.range g` is not definitionally equal to `⟨0,
 lemma iff_rangeFactorization [One P] (hg : 1 ∈ Set.range g) :
     letI : One (Set.range g) := ⟨⟨1, hg⟩⟩
     MulExact f g ↔ MulExact ((↑) : Set.range f → N) (Set.rangeFactorization g) := by
-  letI : One (Set.range g) := ⟨⟨1, hg⟩⟩
+  let : One (Set.range g) := ⟨⟨1, hg⟩⟩
   have : ((1 : Set.range g) : P) = 1 := rfl
   simp [MulExact, Subtype.ext_iff, this]
 
@@ -563,6 +563,14 @@ lemma ker_eq_bot_range_liftQ_iff (h : range f ≤ ker g) :
 lemma injective_range_liftQ_of_exact (h : Function.Exact f g) :
     Function.Injective ((range f).liftQ g (h · |>.mpr)) := by
   simpa only [← LinearMap.ker_eq_bot, ker_eq_bot_range_liftQ_iff, exact_iff] using h
+
+lemma surjective_iff_eq_zero_of_exact (h : Function.Exact f g) :
+    Function.Surjective f ↔ g = 0 := by
+  rw [← LinearMap.ker_eq_top, h.linearMap_ker_eq, LinearMap.range_eq_top]
+
+lemma injective_iff_eq_zero_of_exact (h : Function.Exact f g) :
+    Function.Injective g ↔ f = 0 := by
+  rw [← LinearMap.ker_eq_bot, h.linearMap_ker_eq, LinearMap.range_eq_bot]
 
 end LinearMap
 

@@ -412,16 +412,15 @@ omit [Algebra S T] in
 lemma QuasiFiniteAt.eq_of_le_of_under_eq {P Q : Ideal S} [P.IsPrime] [Q.IsPrime]
     (h₁ : P ≤ Q) (h₂ : P.under R = Q.under R) [QuasiFiniteAt R Q] :
     P = Q := by
-  have : Disjoint (Q.primeCompl : Set S) P := by simpa [Set.disjoint_iff, Set.ext_iff, not_imp_comm]
-  have inst := IsLocalization.isPrime_of_isPrime_disjoint _ (Localization.AtPrime Q) P ‹_› this
+  have := Q.isPrime_map_of_isLocalizationAtPrime h₁ (S := Localization.AtPrime Q)
   have H := QuasiFinite.eq_of_le_of_under_eq (R := R)
     (Ideal.map (algebraMap S (Localization.AtPrime Q)) P) _
     (IsLocalRing.le_maximalIdeal_of_isPrime _) (by
       convert! h₂ <;> rw [← Ideal.under_under (B := S)]
-      · rw [IsLocalization.under_map_of_isPrime_disjoint Q.primeCompl _ ‹P.IsPrime› this]
+      · rw [Q.under_map_of_isLocalizationAtPrime h₁]
       · rw [Localization.AtPrime.under_maximalIdeal])
   rw [← Localization.AtPrime.under_maximalIdeal (I := Q), ← H,
-    IsLocalization.under_map_of_isPrime_disjoint Q.primeCompl _ ‹P.IsPrime› this]
+    Q.under_map_of_isLocalizationAtPrime h₁]
 
 instance (p : Ideal R) [p.IsPrime] (P : Ideal S) [P.IsPrime] [P.LiesOver p] [QuasiFiniteAt R P]
     [Algebra (Localization.AtPrime p) (Localization.AtPrime P)]
@@ -487,11 +486,8 @@ lemma QuasiFiniteAt.of_isOpen_singleton
   obtain ⟨e, he, H⟩ := PrimeSpectrum.isClopen_iff.mp H
   have hep : e ∉ p.asIdeal := H.le rfl
   let f : Localization.Away e →ₐ[S] Localization.AtPrime p.asIdeal :=
-    IsLocalization.liftAlgHom (M := .powers e) (f := Algebra.ofId _ _) <| by
-      simp only [Subtype.forall]
-      refine Submonoid.powers_le (P := (IsUnit.submonoid _).comap _).mpr ?_
-      simpa [IsUnit.mem_submonoid_iff] using IsLocalization.map_units
-        (M := p.asIdeal.primeCompl) _ ⟨e, hep⟩
+    IsLocalization.Away.liftAlgHom e (f := Algebra.ofId _ _)
+      (IsLocalization.map_units (M := p.asIdeal.primeCompl) _ ⟨e, hep⟩)
   have h₁ := (PrimeSpectrum.localization_away_comap_range (Localization.Away e) e).trans H.symm
   have : Subsingleton (PrimeSpectrum (Localization.Away e)) :=
     Function.Injective.subsingleton
@@ -522,7 +518,6 @@ lemma _root_.Ideal.exists_not_mem_forall_mem_of_ne_of_liesOver
     (p : Ideal R) [p.IsPrime] (q : Ideal S) [q.IsPrime] [q.LiesOver p]
     [Algebra.EssFiniteType R S] [Algebra.QuasiFiniteAt R q] :
     ∃ s ∉ q, ∀ q' : Ideal S, q'.IsPrime → q' ≠ q → q'.LiesOver p → s ∈ q' := by
-  classical
   let e := PrimeSpectrum.preimageHomeomorphFiber _ S ⟨p, inferInstance⟩
   let qF : PrimeSpectrum (p.Fiber S) := e ⟨⟨q, ‹_›⟩, PrimeSpectrum.ext (q.over_def p).symm⟩
   have : Algebra.QuasiFiniteAt p.ResidueField qF.asIdeal := .baseChange q _

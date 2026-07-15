@@ -54,7 +54,6 @@ open Finsupp (linearCombination)
 
 theorem linearIndependent_single (hf : ∀ i, LinearIndependent R (f i)) :
     LinearIndependent R fun ix : Σ i, φ i ↦ single ix.1 (f ix.1 ix.2) := by
-  classical
   have : linearCombination R (fun ix : Σ i, φ i ↦ single ix.1 (f ix.1 ix.2)) =
     DFinsupp.mapRange.linearMap (fun i ↦ linearCombination R (f i)) ∘ₗ
     (sigmaFinsuppLequivDFinsupp R).toLinearMap := by ext; simp
@@ -224,14 +223,14 @@ end FreeAbelianGroup
 namespace AddMonoidAlgebra
 variable {M R S : Type*} [Semiring R] [Semiring S] [Module R S] [Module.Free R S]
 
-instance : Module.Free R S[M] := .finsupp ..
+instance : Module.Free R S[M] := .of_equiv (coeffLinearEquiv _).symm
 
 end AddMonoidAlgebra
 
 namespace MonoidAlgebra
 variable {M R S : Type*} [Semiring R] [Semiring S] [Module R S] [Module.Free R S]
 
-instance : Module.Free R S[M] := .finsupp ..
+instance : Module.Free R S[M] := .of_equiv (coeffLinearEquiv _).symm
 
 end MonoidAlgebra
 

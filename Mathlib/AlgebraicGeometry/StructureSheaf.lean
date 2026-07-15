@@ -985,9 +985,9 @@ set_option backward.isDefEq.respectTransparency false in
 lemma Localizations.comapFun_mk (y : PrimeSpectrum.Top S)
     (a : M) (b : (y.comap σ).asIdeal.primeCompl) :
     Localizations.comapFun f y (.mk a b) = .mk (f a) ⟨σ b.1, b.2⟩ := by
-  letI := Module.compHom N σ
-  letI := σ.toAlgebra
-  haveI : IsScalarTower R S N := .of_algebraMap_smul fun _ _ ↦ rfl
+  let := Module.compHom N σ
+  let := σ.toAlgebra
+  have : IsScalarTower R S N := .of_algebraMap_smul fun _ _ ↦ rfl
   apply ((Module.End.isUnit_iff _).mp (IsLocalizedModule.map_units (S := y.asIdeal.primeCompl)
     (LocalizedModule.mkLinearMap y.asIdeal.primeCompl N) ⟨σ b, b.2⟩)).1
   dsimp
@@ -1020,9 +1020,9 @@ theorem isLocallyFraction_comapFun (U : Opens (PrimeSpectrum.Top R))
     (V : Opens (PrimeSpectrum.Top S)) (hUV : V.1 ⊆ PrimeSpectrum.comap σ ⁻¹' U.1)
     (s : ∀ x : U, Localizations M x.1) (hs : (isLocallyFraction R M).toPrelocalPredicate.pred s) :
     (isLocallyFraction S N).toPrelocalPredicate.pred (comapFun f U V hUV s) := by
-  letI := Module.compHom N σ
-  letI := σ.toAlgebra
-  haveI : IsScalarTower R S N := .of_algebraMap_smul fun _ _ ↦ rfl
+  let := Module.compHom N σ
+  let := σ.toAlgebra
+  have : IsScalarTower R S N := .of_algebraMap_smul fun _ _ ↦ rfl
   rintro ⟨p, hpV⟩
   obtain ⟨W, m, iWU, a, b, h_frac⟩ := hs ⟨PrimeSpectrum.comap σ p, hUV hpV⟩
   refine ⟨⟨_, (PrimeSpectrum.continuous_comap σ).isOpen_preimage _ W.2⟩ ⊓ V,

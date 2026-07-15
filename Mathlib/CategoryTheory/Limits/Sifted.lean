@@ -70,7 +70,7 @@ set_option backward.defeqAttrib.useBackward true in
 /-- Being sifted is preserved by equivalences of categories -/
 lemma isSifted_of_equiv [IsSifted C] {D : Type u₁} [Category.{v₁} D] (e : D ≌ C) : IsSifted D :=
   letI : Final (diag D) := by
-    letI : D × D ≌ C × C := Equivalence.prod e e
+    let : D × D ≌ C × C := Equivalence.prod e e
     have sq : (e.inverse ⋙ diag D ⋙ this.functor ≅ diag C) :=
         NatIso.ofComponents (fun c ↦ by dsimp [this]
                                         exact Iso.prod (e.counitIso.app c) (e.counitIso.app c))
@@ -104,7 +104,7 @@ set_option backward.isDefEq.respectTransparency false in
 instance [HasBinaryCoproducts C] : IsSiftedOrEmpty C := by
     constructor
     rintro ⟨c₁, c₂⟩
-    haveI : _root_.Nonempty <| StructuredArrow (c₁, c₂) (diag C) :=
+    have : _root_.Nonempty <| StructuredArrow (c₁, c₂) (diag C) :=
       ⟨.mk ((coprod.inl : c₁ ⟶ c₁ ⨿ c₂), (coprod.inr : c₂ ⟶ c₁ ⨿ c₂))⟩
     apply isConnected_of_zigzag
     rintro ⟨_, c, f⟩ ⟨_, c', g⟩

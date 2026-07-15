@@ -37,6 +37,12 @@ theorem iff_orderOf [hp : Fact p.Prime] : IsPGroup p G ↔ ∀ g : G, ∃ k : �
         ((Nat.dvd_prime_pow hp.out).mp (orderOf_dvd_of_pow_eq_one hk)),
       Exists.imp fun k hk => by rw [← hk, pow_orderOf_eq_one]⟩
 
+theorem dvd_orderOf [Fact p.Prime] (hG : IsPGroup p G) {g : G} (hg : g ≠ 1) : p ∣ orderOf g := by
+  have ⟨k, hk⟩ := IsPGroup.iff_orderOf.mp hG g
+  rw [hk]
+  refine dvd_pow_self _ fun hk0 ↦ hg ?_
+  rw [← orderOf_eq_one_iff, hk, hk0, pow_zero]
+
 theorem of_card {n : ℕ} (hG : Nat.card G = p ^ n) : IsPGroup p G := fun g =>
   ⟨n, by rw [← hG, pow_card_eq_one']⟩
 
@@ -51,7 +57,7 @@ theorem iff_card [Fact p.Prime] [Finite G] : IsPGroup p G ↔ ∃ n : ℕ, Nat.c
     rw [← List.prod_replicate, ← List.eq_replicate_of_mem this, Nat.prod_primeFactorsList hG]
   intro q hq
   obtain ⟨hq1, hq2⟩ := (Nat.mem_primeFactorsList hG).mp hq
-  haveI : Fact q.Prime := ⟨hq1⟩
+  have : Fact q.Prime := ⟨hq1⟩
   obtain ⟨g, hg⟩ := exists_prime_orderOf_dvd_card' q hq2
   obtain ⟨k, hk⟩ := (iff_orderOf.mp h) g
   exact (hq1.pow_eq_iff.mp (hg.symm.trans hk).symm).1.symm
@@ -146,8 +152,8 @@ variable {α : Type*} [MulAction G α]
 
 theorem card_orbit (a : α) [Finite (orbit G a)] : ∃ n : ℕ, Nat.card (orbit G a) = p ^ n := by
   let ϕ := orbitEquivQuotientStabilizer G a
-  haveI := Finite.of_equiv (orbit G a) ϕ
-  haveI := (stabilizer G a).finiteIndex_of_finite_quotient
+  have := Finite.of_equiv (orbit G a) ϕ
+  have := (stabilizer G a).finiteIndex_of_finite_quotient
   rw [Nat.card_congr ϕ]
   exact hG.index (stabilizer G a)
 
@@ -214,18 +220,17 @@ theorem exists_fixed_point_of_prime_dvd_card_of_fixed_point (hpα : p ∣ Nat.ca
     ⟨b, hb, fun hab => hba (by simp_rw [hab])⟩
 
 theorem center_nontrivial [Nontrivial G] [Finite G] : Nontrivial (Subgroup.center G) := by
-  classical
-    have := (hG.of_equiv ConjAct.toConjAct).exists_fixed_point_of_prime_dvd_card_of_fixed_point G
-    rw [ConjAct.fixedPoints_eq_center] at this
-    have dvd : p ∣ Nat.card G := by
-      obtain ⟨n, hn0, hn⟩ := hG.nontrivial_iff_card.mp inferInstance
-      exact hn.symm ▸ dvd_pow_self _ (ne_of_gt hn0)
-    obtain ⟨g, hg⟩ := this dvd (Subgroup.center G).one_mem
-    exact ⟨⟨1, ⟨g, hg.1⟩, mt Subtype.ext_iff.mp hg.2⟩⟩
+  have := (hG.of_equiv ConjAct.toConjAct).exists_fixed_point_of_prime_dvd_card_of_fixed_point G
+  rw [ConjAct.fixedPoints_eq_center] at this
+  have dvd : p ∣ Nat.card G := by
+    obtain ⟨n, hn0, hn⟩ := hG.nontrivial_iff_card.mp inferInstance
+    exact hn.symm ▸ dvd_pow_self _ (ne_of_gt hn0)
+  obtain ⟨g, hg⟩ := this dvd (Subgroup.center G).one_mem
+  exact ⟨⟨1, ⟨g, hg.1⟩, mt Subtype.ext_iff.mp hg.2⟩⟩
 
 theorem bot_lt_center [Nontrivial G] [Finite G] : ⊥ < Subgroup.center G := by
-  haveI := center_nontrivial hG
-  classical exact
+  have := center_nontrivial hG
+  exact
       bot_lt_iff_ne_bot.mpr ((Subgroup.center G).one_lt_card_iff_ne_bot.mp Finite.one_lt_card)
 
 end GIsPGroup
@@ -352,7 +357,7 @@ theorem card_center_eq_prime_pow (hGpn : Nat.card G = p ^ n) (hn : 0 < n) :
   have : Finite G := Nat.finite_of_card_ne_zero (hGpn ▸ pow_ne_zero n (NeZero.ne p))
   have hcG := to_subgroup (of_card hGpn) (center G)
   rcases iff_card.1 hcG with _
-  haveI : Nontrivial G := (nontrivial_iff_card <| of_card hGpn).2 ⟨n, hn, hGpn⟩
+  have : Nontrivial G := (nontrivial_iff_card <| of_card hGpn).2 ⟨n, hn, hGpn⟩
   exact (nontrivial_iff_card hcG).mp (center_nontrivial (of_card hGpn))
 
 /-- The quotient by the center of a group of cardinality `p ^ 2` is cyclic. -/

@@ -192,7 +192,7 @@ theorem fourier_add_half_inv_index {n : ℤ} (hn : n ≠ 0) (hT : 0 < T) (x : Ad
     Metric.unitSphere.coe_mul]
   have : (@toCircle T (n • (T / 2 / n) : ℝ) : ℂ) = -1 := by
     rw [zsmul_eq_mul, toCircle, Function.Periodic.lift_coe, Circle.coe_exp]
-    convert! Complex.exp_pi_mul_I using 3
+    convert Complex.exp_pi_mul_I
     field_simp
   rw [this]; simp
 
@@ -356,7 +356,7 @@ def fourierCoeffOn {a b : ℝ} (hab : a < b) (f : ℝ → E) (n : ℤ) : E :=
 theorem fourierCoeffOn_eq_integral {a b : ℝ} (f : ℝ → E) (n : ℤ) (hab : a < b) :
     fourierCoeffOn hab f n =
       (1 / (b - a)) • ∫ x in a..b, fourier (-n) (x : AddCircle (b - a)) • f x := by
-  haveI := Fact.mk (by linarith : 0 < b - a)
+  have := Fact.mk (by linarith : 0 < b - a)
   rw [fourierCoeffOn, fourierCoeff_eq_intervalIntegral _ _ a, add_sub, add_sub_cancel_left]
   congr 1
   simp_rw [intervalIntegral.integral_of_le hab.le]
@@ -366,7 +366,7 @@ theorem fourierCoeffOn_eq_integral {a b : ℝ} (f : ℝ → E) (n : ℤ) (hab : 
 
 theorem fourierCoeffOn.const_smul {a b : ℝ} (f : ℝ → E) (c : ℂ) (n : ℤ) (hab : a < b) :
     fourierCoeffOn hab (c • f) n = c • fourierCoeffOn hab f n := by
-  haveI := Fact.mk (by linarith : 0 < b - a)
+  have := Fact.mk (by linarith : 0 < b - a)
   apply fourierCoeff.const_smul
 
 theorem fourierCoeffOn.const_mul {a b : ℝ} (f : ℝ → ℂ) (c : ℂ) (n : ℤ) (hab : a < b) :
@@ -458,10 +458,10 @@ the sum of the squared norms of the Fourier coefficients equals the `L²` norm o
 theorem hasSum_sq_fourierCoeffOn
     {a b : ℝ} {f : ℝ → ℂ} (hab : a < b) (hL2 : MemLp f 2 (volume.restrict (Ioc a b))) :
     HasSum (fun i => ‖fourierCoeffOn hab f i‖ ^ 2) ((b - a)⁻¹ • ∫ x in a..b, ‖f x‖ ^ 2) := by
-  haveI := Fact.mk (by linarith : 0 < b - a)
+  have := Fact.mk (by linarith : 0 < b - a)
   rw [← add_sub_cancel a b] at hL2
   have h := hL2.memLp_liftIoc.haarAddCircle
-  convert! hasSum_sq_fourierCoeff h.toLp using 1
+  convert hasSum_sq_fourierCoeff h.toLp
   · simp [fourierCoeff_congr_ae h.coeFn_toLp, fourierCoeff_liftIoc_eq]
   · nth_rw 2 [← add_sub_cancel a b]
     rw [← AddCircle.integral_liftIoc_eq_intervalIntegral, ← Function.comp_def (f := (‖·‖ ^ 2))]

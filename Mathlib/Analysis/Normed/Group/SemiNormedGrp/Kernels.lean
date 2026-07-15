@@ -107,7 +107,7 @@ instance hasLimit_parallelPair {V W : SemiNormedGrp.{u}} (f g : V ⟶ W) :
     Nonempty.intro
       { cone := fork f g
         isLimit :=
-          have this := fun (c : Fork f g) =>
+          have := fun (c : Fork f g) =>
             show NormedAddGroupHom.compHom (f - g).hom c.ι.hom = 0 by
               rw [hom_sub, map_sub, AddMonoidHom.sub_apply, sub_eq_zero]
               exact congr_arg Hom.hom c.condition
