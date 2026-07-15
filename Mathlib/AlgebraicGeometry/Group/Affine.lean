@@ -236,10 +236,10 @@ instance isCommMonObj_spec_asOver_spec [Bialgebra R A] [IsCocomm R A] :
     · simp [AlgHom.toUnder, specOverSpec, over, OverClass.hom, h₁]; rfl
     · simp [AlgHom.toUnder, specOverSpec, over, OverClass.hom, h₂]; rfl
 
-instance instGrpObjSpecAsOverSpec [HopfAlgebra R A] : GrpObj ((Spec A).asOver (Spec R)) :=
-  ((hopfSpec R).obj <| .op <| .of R A).grp
+instance instGrpObjSpecAsOverSpec [HopfAlgebra R A] : GrpObj ((Spec A).asOver (Spec R)) where
+  __ := instMonObjSpecAsOverSpec
+  __ := ((hopfSpec R).obj <| .op <| .of R A).grp
 
-set_option backward.isDefEq.respectTransparency false in
 instance instCommGrpObjSpecAsOverSpec [HopfAlgebra R A] [IsCocomm R A] :
     CommGrpObj ((Spec A).asOver (Spec R)) where
 
@@ -301,7 +301,11 @@ lemma algebraMap_Γ [X.Over (Spec R)] [IsAffine X] :
   rfl
 
 attribute [local simp] specOverSpec_over algebraMap_Γ in
-instance [X.Over (Spec R)] [IsAffine X] : X.isoSpec.inv.IsOver (Spec R) where
+attribute [-simp] Hom.isOver_iff in
+instance [X.Over (Spec R)] [IsAffine X] : X.toSpecΓ.IsOver (Spec R) where
+
+instance [X.Over (Spec R)] [IsAffine X] : X.isoSpec.hom.IsOver (Spec R) :=
+  inferInstanceAs (X.toSpecΓ.IsOver (Spec R))
 
 /-- The global sections of an affine monoid scheme over `Spec R` are a `R`-bialgebra. -/
 instance [M.Over (Spec R)] [MonObj (M.asOver (Spec R))] [IsAffine M] :
@@ -433,7 +437,6 @@ affine group schemes over `Spec R`.
 
 section rightEdge
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The essential image of `R`-algebras under `Spec` is precisely affine schemes over `Spec R`. -/
 @[simp]
 lemma essImage_algSpec {G : Over <| Spec R} : (algSpec R).essImage G ↔ IsAffine G.left := by
