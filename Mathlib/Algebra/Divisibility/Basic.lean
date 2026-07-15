@@ -201,7 +201,6 @@ protected theorem RightDvd.rfl {a : α} : a ∣ᵣ a := .refl _
 
 instance : IsPreorder α RightDvd where
   refl := .refl
-  trans _ _ _ := .trans
 
 theorem RightDvd.of_eq (h : a = b) : a ∣ᵣ b := by rw [h]
 
