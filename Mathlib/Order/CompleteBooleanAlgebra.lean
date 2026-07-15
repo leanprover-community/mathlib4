@@ -63,7 +63,7 @@ except for implementing `Order.Frame` via `Order.Frame.ofMinimalAxioms`.
 
 This structure omits the `himp`, `compl` fields, which can be recovered using
 `Order.Frame.ofMinimalAxioms`. -/
-class Order.Frame.MinimalAxioms (α : Type u) extends CompleteLattice α where
+structure Order.Frame.MinimalAxioms (α : Type u) [CompleteLattice α] where
   inf_sSup_le_iSup_inf (a : α) (s : Set α) : a ⊓ sSup s ≤ ⨆ b ∈ s, a ⊓ b
 
 /-- Structure containing the minimal axioms required to check that an order is a coframe. Do NOT
@@ -71,16 +71,12 @@ use, except for implementing `Order.Coframe` via `Order.Coframe.ofMinimalAxioms`
 
 This structure omits the `sdiff`, `hnot` fields, which can be recovered using
 `Order.Coframe.ofMinimalAxioms`. -/
-class Order.Coframe.MinimalAxioms (α : Type u) extends CompleteLattice α where
+@[to_dual Frame.MinimalAxioms]
+structure Order.Coframe.MinimalAxioms (α : Type u) [CompleteLattice α] where
   iInf_sup_le_sup_sInf (a : α) (s : Set α) : ⨅ b ∈ s, a ⊔ b ≤ a ⊔ sInf s
 
 /-- A frame, aka complete Heyting algebra, is a complete lattice whose `⊓` distributes over `⨆`. -/
 class Order.Frame (α : Type*) extends CompleteLattice α, HeytingAlgebra α where
-
-/-- `⊓` distributes over `⨆`. -/
-theorem inf_sSup_eq {α : Type*} [Order.Frame α] {s : Set α} {a : α} :
-    a ⊓ sSup s = ⨆ b ∈ s, a ⊓ b :=
-  gc_inf_himp.l_sSup
 
 set_option linter.translate.warnInvalid false in
 /-- A coframe, aka complete Brouwer algebra or complete co-Heyting algebra, is a complete lattice
@@ -88,12 +84,12 @@ whose `⊔` distributes over `⨅`. -/
 @[to_dual]
 class Order.Coframe (α : Type*) extends CompleteLattice α, CoheytingAlgebra α where
 
-/-- `⊔` distributes over `⨅`. -/
-theorem sup_sInf_eq {α : Type*} [Order.Coframe α] {s : Set α} {a : α} :
-    a ⊔ sInf s = ⨅ b ∈ s, a ⊔ b :=
-  gc_sdiff_sup.u_sInf
-
 open Order
+
+/-- `⊓` distributes over `⨆`. -/
+@[to_dual /-- `⊔` distributes over `⨅`. -/]
+theorem inf_sSup_eq [Frame α] {s : Set α} {a : α} : a ⊓ sSup s = ⨆ b ∈ s, a ⊓ b :=
+  gc_inf_himp.l_sSup
 
 /-- Structure containing the minimal axioms required to check that an order is a complete
 distributive lattice. Do NOT use, except for implementing `CompleteDistribLattice` via
@@ -101,10 +97,9 @@ distributive lattice. Do NOT use, except for implementing `CompleteDistribLattic
 
 This structure omits the `himp`, `compl`, `sdiff`, `hnot` fields, which can be recovered using
 `CompleteDistribLattice.ofMinimalAxioms`. -/
-structure CompleteDistribLattice.MinimalAxioms (α : Type u)
-    extends CompleteLattice α,
-      toFrameMinimalAxioms : Frame.MinimalAxioms α,
-      toCoframeMinimalAxioms : Coframe.MinimalAxioms α where
+structure CompleteDistribLattice.MinimalAxioms (α : Type u) [CompleteLattice α] extends
+    toFrameMinimalAxioms : Frame.MinimalAxioms α,
+    toCoframeMinimalAxioms : Coframe.MinimalAxioms α where
 
 -- We give those projections better name further down
 attribute [nolint docBlame] CompleteDistribLattice.MinimalAxioms.toFrameMinimalAxioms
@@ -122,7 +117,7 @@ distributive. Do NOT use, except for implementing `CompletelyDistribLattice` via
 
 This structure omits the `himp`, `compl`, `sdiff`, `hnot` fields, which can be recovered using
 `CompletelyDistribLattice.ofMinimalAxioms`. -/
-structure CompletelyDistribLattice.MinimalAxioms (α : Type u) extends CompleteLattice α where
+structure CompletelyDistribLattice.MinimalAxioms (α : Type u) [CompleteLattice α] where
   protected iInf_iSup_eq {ι : Type u} {κ : ι → Type u} (f : ∀ a, κ a → α) :
     (⨅ a, ⨆ b, f a b) = ⨆ g : ∀ a, κ a, ⨅ a, f a (g a)
 
@@ -141,26 +136,21 @@ lemma iSup_iInf_le [CompleteLattice α] {f : ∀ a, κ a → α} :
   le_iInf_iSup (α := αᵒᵈ)
 
 namespace Order.Frame.MinimalAxioms
-variable (minAx : MinimalAxioms α) {s : Set α} {a b : α}
+variable (s : Set α) (a b : α)
 
-lemma inf_sSup_eq : a ⊓ sSup s = ⨆ b ∈ s, a ⊓ b :=
-  (minAx.inf_sSup_le_iSup_inf _ _).antisymm iSup_inf_le_inf_sSup
+@[to_dual]
+private lemma inf_sSup_eq [CompleteLattice α] (minAx : MinimalAxioms α) :
+    a ⊓ sSup s = ⨆ b ∈ s, a ⊓ b :=
+  le_antisymm (minAx.inf_sSup_le_iSup_inf _ _) iSup_inf_le_inf_sSup
 
-lemma sSup_inf_eq : sSup s ⊓ b = ⨆ a ∈ s, a ⊓ b := by
-  simpa only [inf_comm] using @inf_sSup_eq α _ s b
-
-lemma iSup_inf_eq (f : ι → α) (a : α) : (⨆ i, f i) ⊓ a = ⨆ i, f i ⊓ a := by
-  rw [iSup, sSup_inf_eq, iSup_range]
-
-lemma inf_iSup_eq (a : α) (f : ι → α) : (a ⊓ ⨆ i, f i) = ⨆ i, a ⊓ f i := by
-  simpa only [inf_comm] using minAx.iSup_inf_eq f a
-
-lemma inf_iSup₂_eq {f : ∀ i, κ i → α} (a : α) : (a ⊓ ⨆ i, ⨆ j, f i j) = ⨆ i, ⨆ j, a ⊓ f i j := by
-  simp only [inf_iSup_eq]
+@[to_dual]
+private lemma sSup_inf_eq [CompleteLattice α] (minAx : MinimalAxioms α) :
+    sSup s ⊓ b = ⨆ a ∈ s, a ⊓ b := by
+  simpa only [inf_comm] using inf_sSup_eq s b minAx
 
 /-- The `Order.Frame.MinimalAxioms` element corresponding to a frame. -/
-@[implicit_reducible]
-def of [Frame α] : MinimalAxioms α where
+@[to_dual /-- The `Order.Coframe.MinimalAxioms` element corresponding to a frame. -/]
+theorem of [Frame α] : MinimalAxioms α where
   __ := ‹Frame α›
   inf_sSup_le_iSup_inf a s := _root_.inf_sSup_eq.le
 
@@ -170,7 +160,7 @@ end MinimalAxioms
 
 This sets `a ⇨ b := sSup {c | c ⊓ a ≤ b}` and `aᶜ := a ⇨ ⊥`. -/
 -- See note [reducible non-instances]
-abbrev ofMinimalAxioms (minAx : MinimalAxioms α) : Frame α where
+abbrev ofMinimalAxioms [CompleteLattice α] (minAx : MinimalAxioms α) : Frame α where
   __ := minAx
   compl a := sSup {c | c ⊓ a ≤ ⊥}
   himp a b := sSup {c | c ⊓ a ≤ b}
@@ -180,37 +170,14 @@ abbrev ofMinimalAxioms (minAx : MinimalAxioms α) : Frame α where
 
 end Order.Frame
 
-namespace Order.Coframe.MinimalAxioms
-variable (minAx : MinimalAxioms α) {s : Set α} {a b : α}
-
-lemma sup_sInf_eq : a ⊔ sInf s = ⨅ b ∈ s, a ⊔ b :=
-  sup_sInf_le_iInf_sup.antisymm (minAx.iInf_sup_le_sup_sInf _ _)
-
-lemma sInf_sup_eq : sInf s ⊔ b = ⨅ a ∈ s, a ⊔ b := by
-  simpa only [sup_comm] using @sup_sInf_eq α _ s b
-
-lemma iInf_sup_eq (f : ι → α) (a : α) : (⨅ i, f i) ⊔ a = ⨅ i, f i ⊔ a := by
-  rw [iInf, sInf_sup_eq, iInf_range]
-
-lemma sup_iInf_eq (a : α) (f : ι → α) : (a ⊔ ⨅ i, f i) = ⨅ i, a ⊔ f i := by
-  simpa only [sup_comm] using minAx.iInf_sup_eq f a
-
-lemma sup_iInf₂_eq {f : ∀ i, κ i → α} (a : α) : (a ⊔ ⨅ i, ⨅ j, f i j) = ⨅ i, ⨅ j, a ⊔ f i j := by
-  simp only [sup_iInf_eq]
-
-/-- The `Order.Coframe.MinimalAxioms` element corresponding to a frame. -/
-@[implicit_reducible]
-def of [Coframe α] : MinimalAxioms α where
-  __ := ‹Coframe α›
-  iInf_sup_le_sup_sInf a s := _root_.sup_sInf_eq.ge
-
-end MinimalAxioms
+namespace Order.Coframe
 
 /-- Construct a coframe instance using the minimal amount of work needed.
 
 This sets `a \ b := sInf {c | a ≤ b ⊔ c}` and `￢a := ⊤ \ a`. -/
 -- See note [reducible non-instances]
-abbrev ofMinimalAxioms (minAx : MinimalAxioms α) : Coframe α where
+@[to_dual existing]
+abbrev ofMinimalAxioms [CompleteLattice α] (minAx : MinimalAxioms α) : Coframe α where
   __ := minAx
   hnot a := sInf {c | ⊤ ≤ a ⊔ c}
   sdiff a b := sInf {c | a ≤ b ⊔ c}
@@ -221,15 +188,15 @@ abbrev ofMinimalAxioms (minAx : MinimalAxioms α) : Coframe α where
 end Order.Coframe
 
 namespace CompleteDistribLattice.MinimalAxioms
-variable (minAx : MinimalAxioms α)
 
 /-- The `CompleteDistribLattice.MinimalAxioms` element corresponding to a complete distrib lattice.
 -/
-@[implicit_reducible]
-def of [CompleteDistribLattice α] : MinimalAxioms α where
+theorem of [CompleteDistribLattice α] : MinimalAxioms α where
   __ := ‹CompleteDistribLattice α›
   inf_sSup_le_iSup_inf a s := inf_sSup_eq.le
   iInf_sup_le_sup_sInf a s := sup_sInf_eq.ge
+
+variable [CompleteLattice α] (minAx : MinimalAxioms α)
 
 /-- Turn minimal axioms for `CompleteDistribLattice` into minimal axioms for `Order.Frame`. -/
 abbrev toFrame : Frame.MinimalAxioms α := minAx.toFrameMinimalAxioms
@@ -244,19 +211,17 @@ end MinimalAxioms
 This sets `a ⇨ b := sSup {c | c ⊓ a ≤ b}`, `aᶜ := a ⇨ ⊥`, `a \ b := sInf {c | a ≤ b ⊔ c}` and
 `￢a := ⊤ \ a`. -/
 -- See note [reducible non-instances]
-abbrev ofMinimalAxioms (minAx : MinimalAxioms α) : CompleteDistribLattice α where
+abbrev ofMinimalAxioms [CompleteLattice α] (minAx : MinimalAxioms α) :
+    CompleteDistribLattice α where
   __ := Frame.ofMinimalAxioms minAx.toFrame
   __ := Coframe.ofMinimalAxioms minAx.toCoframe
 
 end CompleteDistribLattice
 
 namespace CompletelyDistribLattice.MinimalAxioms
-variable (minAx : MinimalAxioms α)
 
-lemma iInf_iSup_eq' (f : ∀ a, κ a → α) :
-    let _ := minAx.toCompleteLattice
+private lemma iInf_iSup_eq' [CompleteLattice α] (minAx : MinimalAxioms α) (f : ∀ a, κ a → α) :
     ⨅ i, ⨆ j, f i j = ⨆ g : ∀ i, κ i, ⨅ i, f i (g i) := by
-  let _ := minAx.toCompleteLattice
   refine le_antisymm ?_ le_iInf_iSup
   calc
     _ = ⨅ a : range (range <| f ·), ⨆ b : a.1, b.1 := by
@@ -267,10 +232,9 @@ lemma iInf_iSup_eq' (f : ∀ a, κ a → α) :
       refine le_iInf fun a => le_trans (iInf_le _ ⟨range (f a), a, rfl⟩) ?_
       rw [← Classical.choose_spec (g ⟨_, a, rfl⟩).2]
 
-lemma iSup_iInf_eq (f : ∀ i, κ i → α) :
-    let _ := minAx.toCompleteLattice
+@[to_dual existing iInf_iSup_eq']
+private lemma iSup_iInf_eq [CompleteLattice α] (minAx : MinimalAxioms α) (f : ∀ i, κ i → α) :
     ⨆ i, ⨅ j, f i j = ⨅ g : ∀ i, κ i, ⨆ i, f i (g i) := by
-  let _ := minAx.toCompleteLattice
   refine le_antisymm iSup_iInf_le ?_
   rw [minAx.iInf_iSup_eq']
   refine iSup_le fun g => ?_
@@ -286,10 +250,10 @@ lemma iSup_iInf_eq (f : ∀ i, κ i → α) :
 
 /-- Turn minimal axioms for `CompletelyDistribLattice` into minimal axioms for
 `CompleteDistribLattice`. -/
-abbrev toCompleteDistribLattice : CompleteDistribLattice.MinimalAxioms α where
+abbrev toCompleteDistribLattice [CompleteLattice α] (minAx : MinimalAxioms α) :
+    CompleteDistribLattice.MinimalAxioms α where
   __ := minAx
   inf_sSup_le_iSup_inf a s := by
-    let _ := minAx.toCompleteLattice
     calc
       _ = ⨅ i : ULift.{u} Bool, ⨆ j : match i with | .up true => PUnit.{u + 1} | .up false => s,
           match i with
@@ -299,7 +263,6 @@ abbrev toCompleteDistribLattice : CompleteDistribLattice.MinimalAxioms α where
         simp only [minAx.iInf_iSup_eq, iInf_ulift, iInf_bool_eq, iSup_le_iff]
         exact fun x ↦ le_biSup _ (x (.up false)).2
   iInf_sup_le_sup_sInf a s := by
-    let _ := minAx.toCompleteLattice
     calc
       _ ≤ ⨆ i : ULift.{u} Bool, ⨅ j : match i with | .up true => PUnit.{u + 1} | .up false => s,
           match i with
@@ -310,8 +273,7 @@ abbrev toCompleteDistribLattice : CompleteDistribLattice.MinimalAxioms α where
       _ = _ := by simp [sInf_eq_iInf', iInf_unique, iSup_bool_eq]
 
 /-- The `CompletelyDistribLattice.MinimalAxioms` element corresponding to a frame. -/
-@[implicit_reducible]
-def of [CompletelyDistribLattice α] : MinimalAxioms α := { ‹CompletelyDistribLattice α› with }
+theorem of [CompletelyDistribLattice α] : MinimalAxioms α := { ‹CompletelyDistribLattice α› with }
 
 end MinimalAxioms
 
@@ -320,19 +282,17 @@ end MinimalAxioms
 This sets `a ⇨ b := sSup {c | c ⊓ a ≤ b}`, `aᶜ := a ⇨ ⊥`, `a \ b := sInf {c | a ≤ b ⊔ c}` and
 `￢a := ⊤ \ a`. -/
 -- See note [reducible non-instances]
-abbrev ofMinimalAxioms (minAx : MinimalAxioms α) : CompletelyDistribLattice α where
+abbrev ofMinimalAxioms [CompleteLattice α] (minAx : MinimalAxioms α) :
+    CompletelyDistribLattice α where
   __ := minAx
   __ := CompleteDistribLattice.ofMinimalAxioms minAx.toCompleteDistribLattice
 
 end CompletelyDistribLattice
 
+@[to_dual]
 theorem iInf_iSup_eq [CompletelyDistribLattice α] {f : ∀ a, κ a → α} :
     (⨅ a, ⨆ b, f a b) = ⨆ g : ∀ a, κ a, ⨅ a, f a (g a) :=
   CompletelyDistribLattice.MinimalAxioms.of.iInf_iSup_eq' _
-
-theorem iSup_iInf_eq [CompletelyDistribLattice α] {f : ∀ a, κ a → α} :
-    (⨆ a, ⨅ b, f a b) = ⨅ g : ∀ a, κ a, ⨆ a, f a (g a) :=
-  CompletelyDistribLattice.MinimalAxioms.of.iSup_iInf_eq _
 
 theorem biSup_iInter_of_pairwise_disjoint [CompletelyDistribLattice α] {ι κ : Type*}
     [hκ : Nonempty κ] {f : ι → α} (h : Pairwise (Disjoint on f)) (s : κ → Set ι) :
@@ -391,41 +351,54 @@ instance OrderDual.instCoframe : Coframe αᵒᵈ where
   __ := instCompleteLattice
   __ := instCoheytingAlgebra
 
+@[to_dual]
 theorem sSup_inf_eq : sSup s ⊓ b = ⨆ a ∈ s, a ⊓ b := by
   simpa only [inf_comm] using @inf_sSup_eq α _ s b
 
+@[to_dual]
 theorem iSup_inf_eq (f : ι → α) (a : α) : (⨆ i, f i) ⊓ a = ⨆ i, f i ⊓ a := by
   rw [iSup, sSup_inf_eq, iSup_range]
 
+@[to_dual]
 theorem inf_iSup_eq (a : α) (f : ι → α) : (a ⊓ ⨆ i, f i) = ⨆ i, a ⊓ f i := by
   simpa only [inf_comm] using iSup_inf_eq f a
 
+@[to_dual]
 theorem iSup₂_inf_eq {f : ∀ i, κ i → α} (a : α) :
     (⨆ (i) (j), f i j) ⊓ a = ⨆ (i) (j), f i j ⊓ a := by
   simp only [iSup_inf_eq]
 
+@[to_dual]
 theorem inf_iSup₂_eq {f : ∀ i, κ i → α} (a : α) :
     (a ⊓ ⨆ (i) (j), f i j) = ⨆ (i) (j), a ⊓ f i j := by
   simp only [inf_iSup_eq]
 
+@[to_dual iSup_sdiff_eq]
 theorem himp_iInf_eq {f : ι → α} : a ⇨ (⨅ x, f x) = ⨅ x, a ⇨ f x :=
   eq_of_forall_le_iff fun b => by simp
 
+@[to_dual sdiff_iInf_eq]
 theorem iSup_himp_eq {f : ι → α} : (⨆ x, f x) ⇨ a = ⨅ x, f x ⇨ a :=
   eq_of_forall_le_iff fun b => by simp [inf_iSup_eq]
 
+@[deprecated (since := "2026-07-15")] alias sdiff_iSup_eq := sdiff_iInf_eq
+
+@[to_dual]
 theorem iSup_inf_iSup {ι ι' : Type*} {f : ι → α} {g : ι' → α} :
     ((⨆ i, f i) ⊓ ⨆ j, g j) = ⨆ i : ι × ι', f i.1 ⊓ g i.2 := by
   simp_rw [iSup_inf_eq, inf_iSup_eq, iSup_prod]
 
+@[to_dual]
 theorem biSup_inf_biSup {ι ι' : Type*} {f : ι → α} {g : ι' → α} {s : Set ι} {t : Set ι'} :
     ((⨆ i ∈ s, f i) ⊓ ⨆ j ∈ t, g j) = ⨆ p ∈ s ×ˢ t, f (p : ι × ι').1 ⊓ g p.2 := by
   simp only [iSup_subtype', iSup_inf_iSup]
   exact (Equiv.surjective _).iSup_congr (Equiv.Set.prod s t).symm fun x => rfl
 
+@[to_dual]
 theorem sSup_inf_sSup : sSup s ⊓ sSup t = ⨆ p ∈ s ×ˢ t, (p : α × α).1 ⊓ p.2 := by
   simp only [sSup_eq_iSup, biSup_inf_biSup]
 
+@[to_dual]
 theorem biSup_inter_of_pairwise_disjoint {ι : Type*} {f : ι → α}
     (h : Pairwise (Disjoint on f)) (s t : Set ι) :
     (⨆ i ∈ (s ∩ t), f i) = (⨆ i ∈ s, f i) ⊓ (⨆ i ∈ t, f i) := by
@@ -437,26 +410,33 @@ theorem biSup_inter_of_pairwise_disjoint {ι : Type*} {f : ι → α}
   · exact le_iSup₂_of_le i ⟨his, hij ▸ hjs⟩ inf_le_left
   · simp [h hij |>.eq_bot]
 
+@[to_dual]
 theorem iSup_disjoint_iff {f : ι → α} : Disjoint (⨆ i, f i) a ↔ ∀ i, Disjoint (f i) a := by
   simp only [disjoint_iff, iSup_inf_eq, iSup_eq_bot]
 
+@[to_dual]
 theorem disjoint_iSup_iff {f : ι → α} : Disjoint a (⨆ i, f i) ↔ ∀ i, Disjoint a (f i) := by
   simpa only [disjoint_comm] using @iSup_disjoint_iff
 
+@[to_dual]
 theorem iSup₂_disjoint_iff {f : ∀ i, κ i → α} :
     Disjoint (⨆ (i) (j), f i j) a ↔ ∀ i j, Disjoint (f i j) a := by
   simp_rw [iSup_disjoint_iff]
 
+@[to_dual]
 theorem disjoint_iSup₂_iff {f : ∀ i, κ i → α} :
     Disjoint a (⨆ (i) (j), f i j) ↔ ∀ i j, Disjoint a (f i j) := by
   simp_rw [disjoint_iSup_iff]
 
+@[to_dual]
 theorem sSup_disjoint_iff {s : Set α} : Disjoint (sSup s) a ↔ ∀ b ∈ s, Disjoint b a := by
   simp only [disjoint_iff, sSup_inf_eq, iSup_eq_bot]
 
+@[to_dual]
 theorem disjoint_sSup_iff {s : Set α} : Disjoint a (sSup s) ↔ ∀ b ∈ s, Disjoint a b := by
   simpa only [disjoint_comm] using @sSup_disjoint_iff
 
+@[to_dual]
 theorem iSup_inf_of_monotone {ι : Type*} [Preorder ι] [IsDirectedOrder ι] {f g : ι → α}
     (hf : Monotone f) (hg : Monotone g) : ⨆ i, f i ⊓ g i = (⨆ i, f i) ⊓ ⨆ i, g i := by
   refine (le_iSup_inf_iSup f g).antisymm ?_
@@ -465,6 +445,7 @@ theorem iSup_inf_of_monotone {ι : Type*} [Preorder ι] [IsDirectedOrder ι] {f 
   rcases directed_of (· ≤ ·) i.1 i.2 with ⟨j, h₁, h₂⟩
   exact ⟨j, inf_le_inf (hf h₁) (hg h₂)⟩
 
+@[to_dual]
 theorem iSup_inf_of_antitone {ι : Type*} [Preorder ι] [IsCodirectedOrder ι] {f g : ι → α}
     (hf : Antitone f) (hg : Antitone g) : ⨆ i, f i ⊓ g i = (⨆ i, f i) ⊓ ⨆ i, g i :=
   @iSup_inf_of_monotone α _ ιᵒᵈ _ _ f g hf.dual_left hg.dual_left
@@ -478,7 +459,8 @@ theorem compl_eq_sSup_disjoint : aᶜ = sSup {w | Disjoint w a} :=
 lemma himp_le_iff : a ⇨ b ≤ c ↔ ∀ d, d ⊓ a ≤ b → d ≤ c := by simp [himp_eq_sSup]
 
 -- see Note [lower instance priority]
-instance (priority := 100) Frame.toDistribLattice : DistribLattice α :=
+@[to_dual]
+instance (priority := 100) Order.Frame.toDistribLattice : DistribLattice α :=
   DistribLattice.ofInfSupLe fun a b c => by
     rw [← sSup_pair, ← sSup_pair, inf_sSup_eq, ← sSup_image, image_pair]
 
@@ -496,51 +478,10 @@ section Coframe
 
 variable [Coframe α] {s t : Set α} {a b c d : α}
 
+@[to_dual existing]
 instance OrderDual.instFrame : Frame αᵒᵈ where
   __ := instCompleteLattice
   __ := instHeytingAlgebra
-
-theorem sInf_sup_eq : sInf s ⊔ b = ⨅ a ∈ s, a ⊔ b :=
-  @sSup_inf_eq αᵒᵈ _ _ _
-
-theorem iInf_sup_eq (f : ι → α) (a : α) : (⨅ i, f i) ⊔ a = ⨅ i, f i ⊔ a :=
-  @iSup_inf_eq αᵒᵈ _ _ _ _
-
-theorem sup_iInf_eq (a : α) (f : ι → α) : (a ⊔ ⨅ i, f i) = ⨅ i, a ⊔ f i :=
-  @inf_iSup_eq αᵒᵈ _ _ _ _
-
-theorem iInf₂_sup_eq {f : ∀ i, κ i → α} (a : α) : (⨅ (i) (j), f i j) ⊔ a = ⨅ (i) (j), f i j ⊔ a :=
-  @iSup₂_inf_eq αᵒᵈ _ _ _ _ _
-
-theorem sup_iInf₂_eq {f : ∀ i, κ i → α} (a : α) : (a ⊔ ⨅ (i) (j), f i j) = ⨅ (i) (j), a ⊔ f i j :=
-  @inf_iSup₂_eq αᵒᵈ _ _ _ _ _
-
-theorem iSup_sdiff_eq {f : ι → α} : (⨆ x, f x) \ a = ⨆ x, f x \ a :=
-  eq_of_forall_ge_iff fun _ => by simp
-
-theorem sdiff_iSup_eq {f : ι → α} : a \ ⨅ x, f x = ⨆ x, a \ f x :=
-  eq_of_forall_ge_iff fun _ => by simp [iInf_sup_eq]
-
-@[to_dual existing]
-theorem iInf_sup_iInf {ι ι' : Type*} {f : ι → α} {g : ι' → α} :
-    ((⨅ i, f i) ⊔ ⨅ i, g i) = ⨅ i : ι × ι', f i.1 ⊔ g i.2 :=
-  @iSup_inf_iSup αᵒᵈ _ _ _ _ _
-
-theorem biInf_sup_biInf {ι ι' : Type*} {f : ι → α} {g : ι' → α} {s : Set ι} {t : Set ι'} :
-    ((⨅ i ∈ s, f i) ⊔ ⨅ j ∈ t, g j) = ⨅ p ∈ s ×ˢ t, f (p : ι × ι').1 ⊔ g p.2 :=
-  @biSup_inf_biSup αᵒᵈ _ _ _ _ _ _ _
-
-theorem sInf_sup_sInf : sInf s ⊔ sInf t = ⨅ p ∈ s ×ˢ t, (p : α × α).1 ⊔ p.2 :=
-  @sSup_inf_sSup αᵒᵈ _ _ _
-
-@[to_dual existing]
-theorem iInf_sup_of_monotone {ι : Type*} [Preorder ι] [IsCodirectedOrder ι] {f g : ι → α}
-    (hf : Monotone f) (hg : Monotone g) : ⨅ i, f i ⊔ g i = (⨅ i, f i) ⊔ ⨅ i, g i :=
-  @iSup_inf_of_antitone αᵒᵈ _ _ _ _ _ _ hf.dual_right hg.dual_right
-
-theorem iInf_sup_of_antitone {ι : Type*} [Preorder ι] [IsDirectedOrder ι] {f g : ι → α}
-    (hf : Antitone f) (hg : Antitone g) : ⨅ i, f i ⊔ g i = (⨅ i, f i) ⊔ ⨅ i, g i :=
-  @iSup_inf_of_monotone αᵒᵈ _ _ _ _ _ _ hf.dual_right hg.dual_right
 
 theorem sdiff_eq_sInf : a \ b = sInf {w | a ≤ b ⊔ w} :=
   (isLeast_sdiff a b).isGLB.sInf_eq.symm
@@ -550,16 +491,12 @@ theorem hnot_eq_sInf_codisjoint : ￢a = sInf {w | Codisjoint a w} :=
 
 lemma le_sdiff_iff : a ≤ b \ c ↔ ∀ d, b ≤ c ⊔ d → a ≤ d := by simp [sdiff_eq_sInf]
 
--- see Note [lower instance priority]
-instance (priority := 100) Coframe.toDistribLattice : DistribLattice α where
-  __ := ‹Coframe α›
-  le_sup_inf a b c := by
-    rw [← sInf_pair, ← sInf_pair, sup_sInf_eq, ← sInf_image, image_pair]
-
+@[to_dual existing]
 instance Prod.instCoframe [Coframe β] : Coframe (α × β) where
   __ := instCompleteLattice
   __ := instCoheytingAlgebra
 
+@[to_dual existing]
 instance Pi.instCoframe {ι : Type*} {π : ι → Type*} [∀ i, Coframe (π i)] : Coframe (∀ i, π i) where
   __ := instCompleteLattice
   __ := instCoheytingAlgebra
@@ -743,36 +680,6 @@ instance Prop.instCompleteBooleanAlgebra : CompleteBooleanAlgebra Prop := inferI
 section lift
 
 -- See note [reducible non-instances]
-/-- Pullback an `Order.Frame.MinimalAxioms` along an injection. -/
-protected abbrev Function.Injective.frameMinimalAxioms [Max α] [Min α] [LE α] [LT α]
-    [SupSet α] [InfSet α] [Top α] [Bot α] (minAx : Frame.MinimalAxioms β)
-    (f : α → β) (hf : Injective f)
-    (le : ∀ {x y}, f x ≤ f y ↔ x ≤ y) (lt : ∀ {x y}, f x < f y ↔ x < y)
-    (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b)
-    (map_sSup : ∀ s, f (sSup s) = ⨆ a ∈ s, f a) (map_sInf : ∀ s, f (sInf s) = ⨅ a ∈ s, f a)
-    (map_top : f ⊤ = ⊤) (map_bot : f ⊥ = ⊥) : Frame.MinimalAxioms α where
-  __ := hf.completeLattice f le lt map_sup map_inf map_sSup map_sInf map_top map_bot
-  inf_sSup_le_iSup_inf a s := by
-    rw [← le, ← sSup_image, map_inf, map_sSup s, minAx.inf_iSup₂_eq]
-    simp_rw [← map_inf]
-    exact ((map_sSup _).trans iSup_image).ge
-
--- See note [reducible non-instances]
-/-- Pullback an `Order.Coframe.MinimalAxioms` along an injection. -/
-protected abbrev Function.Injective.coframeMinimalAxioms [Max α] [Min α] [LE α] [LT α]
-    [SupSet α] [InfSet α] [Top α] [Bot α] (minAx : Coframe.MinimalAxioms β)
-    (f : α → β) (hf : Injective f)
-    (le : ∀ {x y}, f x ≤ f y ↔ x ≤ y) (lt : ∀ {x y}, f x < f y ↔ x < y)
-    (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b)
-    (map_sSup : ∀ s, f (sSup s) = ⨆ a ∈ s, f a) (map_sInf : ∀ s, f (sInf s) = ⨅ a ∈ s, f a)
-    (map_top : f ⊤ = ⊤) (map_bot : f ⊥ = ⊥) : Coframe.MinimalAxioms α where
-  __ := hf.completeLattice f le lt map_sup map_inf map_sSup map_sInf map_top map_bot
-  iInf_sup_le_sup_sInf a s := by
-    rw [← le, ← sInf_image, map_sup, map_sInf s, minAx.sup_iInf₂_eq]
-    simp_rw [← map_sup]
-    exact ((map_sInf _).trans iInf_image).le
-
--- See note [reducible non-instances]
 /-- Pullback an `Order.Frame` along an injection. -/
 protected abbrev Function.Injective.frame [Max α] [Min α] [LE α] [LT α] [SupSet α] [InfSet α]
     [Top α] [Bot α] [Compl α] [HImp α] [Frame β] (f : α → β) (hf : Injective f)
@@ -781,7 +688,7 @@ protected abbrev Function.Injective.frame [Max α] [Min α] [LE α] [LT α] [Sup
     (map_sSup : ∀ s, f (sSup s) = ⨆ a ∈ s, f a) (map_sInf : ∀ s, f (sInf s) = ⨅ a ∈ s, f a)
     (map_top : f ⊤ = ⊤) (map_bot : f ⊥ = ⊥) (map_compl : ∀ a, f aᶜ = (f a)ᶜ)
     (map_himp : ∀ a b, f (a ⇨ b) = f a ⇨ f b) : Frame α where
-  __ := hf.frameMinimalAxioms .of f le lt map_sup map_inf map_sSup map_sInf map_top map_bot
+  __ := hf.completeLattice f le lt map_sup map_inf map_sSup map_sInf map_top map_bot
   __ := hf.heytingAlgebra f le lt map_sup map_inf map_top map_bot map_compl map_himp
 
 -- See note [reducible non-instances]
@@ -793,27 +700,8 @@ protected abbrev Function.Injective.coframe [Max α] [Min α] [LE α] [LT α] [S
     (map_sSup : ∀ s, f (sSup s) = ⨆ a ∈ s, f a) (map_sInf : ∀ s, f (sInf s) = ⨅ a ∈ s, f a)
     (map_top : f ⊤ = ⊤) (map_bot : f ⊥ = ⊥) (map_hnot : ∀ a, f (￢a) = ￢f a)
     (map_sdiff : ∀ a b, f (a \ b) = f a \ f b) : Coframe α where
-  __ := hf.coframeMinimalAxioms .of f le lt map_sup map_inf map_sSup map_sInf map_top map_bot
+  __ := hf.completeLattice f le lt map_sup map_inf map_sSup map_sInf map_top map_bot
   __ := hf.coheytingAlgebra f le lt map_sup map_inf map_top map_bot map_hnot map_sdiff
-
--- See note [reducible non-instances]
-/-- Pullback a `CompleteDistribLattice.MinimalAxioms` along an injection. -/
-protected abbrev Function.Injective.completeDistribLatticeMinimalAxioms [Max α] [Min α]
-    [LE α] [LT α] [SupSet α] [InfSet α] [Top α] [Bot α]
-    (minAx : CompleteDistribLattice.MinimalAxioms β) (f : α → β) (hf : Injective f)
-    (le : let _ := minAx.toCompleteLattice; ∀ {x y}, f x ≤ f y ↔ x ≤ y)
-    (lt : let _ := minAx.toCompleteLattice; ∀ {x y}, f x < f y ↔ x < y)
-    (map_sup : let _ := minAx.toCompleteLattice; ∀ a b, f (a ⊔ b) = f a ⊔ f b)
-    (map_inf : let _ := minAx.toCompleteLattice; ∀ a b, f (a ⊓ b) = f a ⊓ f b)
-    (map_sSup : let _ := minAx.toCompleteLattice; ∀ s, f (sSup s) = ⨆ a ∈ s, f a)
-    (map_sInf : let _ := minAx.toCompleteLattice; ∀ s, f (sInf s) = ⨅ a ∈ s, f a)
-    (map_top : let _ := minAx.toCompleteLattice; f ⊤ = ⊤)
-    (map_bot : let _ := minAx.toCompleteLattice; f ⊥ = ⊥) :
-    CompleteDistribLattice.MinimalAxioms α where
-  __ := hf.frameMinimalAxioms minAx.toFrame f
-    le lt map_sup map_inf map_sSup map_sInf map_top map_bot
-  __ := hf.coframeMinimalAxioms minAx.toCoframe f
-    le lt map_sup map_inf map_sSup map_sInf map_top map_bot
 
 -- See note [reducible non-instances]
 /-- Pullback a `CompleteDistribLattice` along an injection. -/
@@ -829,26 +717,6 @@ protected abbrev Function.Injective.completeDistribLattice [Max α] [Min α]
     CompleteDistribLattice α where
   __ := hf.frame f le lt map_sup map_inf map_sSup map_sInf map_top map_bot map_compl map_himp
   __ := hf.coframe f le lt map_sup map_inf map_sSup map_sInf map_top map_bot map_hnot map_sdiff
-
--- See note [reducible non-instances]
-/-- Pullback a `CompletelyDistribLattice.MinimalAxioms` along an injection. -/
-protected abbrev Function.Injective.completelyDistribLatticeMinimalAxioms [Max α] [Min α]
-    [LE α] [LT α] [SupSet α] [InfSet α] [Top α] [Bot α]
-    (minAx : CompletelyDistribLattice.MinimalAxioms β) (f : α → β) (hf : Injective f)
-    (le : let _ := minAx.toCompleteLattice; ∀ {x y}, f x ≤ f y ↔ x ≤ y)
-    (lt : let _ := minAx.toCompleteLattice; ∀ {x y}, f x < f y ↔ x < y)
-    (map_sup : let _ := minAx.toCompleteLattice; ∀ a b, f (a ⊔ b) = f a ⊔ f b)
-    (map_inf : let _ := minAx.toCompleteLattice; ∀ a b, f (a ⊓ b) = f a ⊓ f b)
-    (map_sSup : let _ := minAx.toCompleteLattice; ∀ s, f (sSup s) = ⨆ a ∈ s, f a)
-    (map_sInf : let _ := minAx.toCompleteLattice; ∀ s, f (sInf s) = ⨅ a ∈ s, f a)
-    (map_top : let _ := minAx.toCompleteLattice; f ⊤ = ⊤)
-    (map_bot : let _ := minAx.toCompleteLattice; f ⊥ = ⊥) :
-    CompletelyDistribLattice.MinimalAxioms α where
-  __ := hf.completeDistribLatticeMinimalAxioms minAx.toCompleteDistribLattice f
-    le lt map_sup map_inf map_sSup map_sInf map_top map_bot
-  iInf_iSup_eq g := hf <| by
-    simp_rw [iInf, map_sInf, iInf_range, iSup, map_sSup, iSup_range, map_sInf, iInf_range,
-      minAx.iInf_iSup_eq']
 
 -- See note [reducible non-instances]
 /-- Pullback a `CompletelyDistribLattice` along an injection. -/
@@ -954,12 +822,8 @@ instance instCompleteBooleanAlgebra : CompleteBooleanAlgebra PUnit where
 instance instCompleteAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra PUnit where
   iInf_iSup_eq _ := rfl
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem sSup_eq : sSup s = unit :=
-  rfl
-
-@[simp]
-theorem sInf_eq : sInf s = unit :=
   rfl
 
 end PUnit
