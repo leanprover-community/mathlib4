@@ -414,11 +414,15 @@ lemma IsQuasiInverse.comp {u : V →ₗ[K] V₂} {v : V₂ →ₗ[K] V₃} {u' :
     (u' ∘ₗ v').IsQuasiInverse (v ∘ₗ u) :=
   ⟨hu.1.comp hv.1, hu.2.comp hv.2⟩
 
-/-- If `u'` is a right quasi-inverse of `u` and `w` is a left quasi-inverse of `v ∘ₗ u`,
-then `u ∘ₗ w` is a left quasi-inverse of `v`. -/
+/-- If `w` is a left quasi-inverse for `v ∘ₗ u`, then `w ∘ₗ v` is a left quasi-inverse for `u`. -/
 lemma IsLeftQuasiInverse.of_comp_left {u : V →ₗ[K] V₂} {v : V₂ →ₗ[K] V₃}
-    {u' : V₂ →ₗ[K] V} {w : V₃ →ₗ[K] V} (hu : u'.IsRightQuasiInverse u)
-    (hw : w.IsLeftQuasiInverse (v ∘ₗ u)) :
+    {w : V₃ →ₗ[K] V} (hw : w.IsLeftQuasiInverse (v ∘ₗ u)) :
+    (w ∘ₗ v).IsLeftQuasiInverse u := hw
+
+/-- If `u` is right quasi-invertible and we know a left quasi-inverse `w` for `v ∘ₗ u`, then
+we can build a left quasi-inverse `u ∘ₗ w` for `v`. -/
+lemma IsLeftQuasiInverse.of_comp_right {u : V →ₗ[K] V₂} {v : V₂ →ₗ[K] V₃} {u' : V₂ →ₗ[K] V}
+    {w : V₃ →ₗ[K] V} (hu : u'.IsRightQuasiInverse u) (hw : w.IsLeftQuasiInverse (v ∘ₗ u)) :
     (u ∘ₗ w).IsLeftQuasiInverse v := by
   calc
     _ = ((u ∘ₗ w) ∘ₗ v) ∘ₗ .id := rfl
@@ -427,17 +431,15 @@ lemma IsLeftQuasiInverse.of_comp_left {u : V →ₗ[K] V₂} {v : V₂ →ₗ[K]
     _ ≈ u ∘ₗ .id ∘ₗ u' := by grw [hw.equiv]
     _ ≈ .id := hu.equiv
 
-/-- If `u'` is a quasi-inverse of `u` and `w` is a quasi-inverse of `v ∘ₗ u`, then
-`u ∘ₗ w` is a quasi-inverse of `v`. -/
-lemma IsQuasiInverse.of_comp_left {u : V →ₗ[K] V₂} {v : V₂ →ₗ[K] V₃}
-    {u' : V₂ →ₗ[K] V} {w : V₃ →ₗ[K] V} (hu : u'.IsQuasiInverse u)
-    (hw : w.IsQuasiInverse (v ∘ₗ u)) :
-    (u ∘ₗ w).IsQuasiInverse v :=
-  ⟨.of_comp_left hu.2 hw.1, hw.2⟩
-
-/-- If `v'` is a left quasi-inverse of `v` and `w` is a right quasi-inverse of `v ∘ₗ u`,
-then `w ∘ₗ v` is a right quasi-inverse of `u`. -/
+/-- If `w` is a right quasi-inverse for `v ∘ₗ u`, then `u ∘ₗ w` is a right quasi-inverse for `v`. -/
 lemma IsRightQuasiInverse.of_comp_right {u : V →ₗ[K] V₂} {v : V₂ →ₗ[K] V₃}
+    {w : V₃ →ₗ[K] V} (hw : w.IsRightQuasiInverse (v ∘ₗ u)) :
+    (u ∘ₗ w).IsRightQuasiInverse v :=
+  hw
+
+/-- If `v` is left quasi-invertible and we know a right quasi-inverse `w` for `v ∘ₗ u`, then
+we can builf a right quasi-inverse `w ∘ₗ v` for `u`. -/
+lemma IsRightQuasiInverse.of_comp_left {u : V →ₗ[K] V₂} {v : V₂ →ₗ[K] V₃}
     {v' : V₃ →ₗ[K] V₂} {w : V₃ →ₗ[K] V} (hv : v'.IsLeftQuasiInverse v)
     (hw : w.IsRightQuasiInverse (v ∘ₗ u)) :
     (w ∘ₗ v).IsRightQuasiInverse u := by
@@ -448,13 +450,21 @@ lemma IsRightQuasiInverse.of_comp_right {u : V →ₗ[K] V₂} {v : V₂ →ₗ[
     _ ≈ v' ∘ₗ .id ∘ₗ v := by grw [hw.equiv]
     _ ≈ .id := hv.equiv
 
+/-- If `u` is quasi-invertible and `w` is a quasi-inverse of `v ∘ₗ u`, then
+`u ∘ₗ w` is a quasi-inverse of `v`. -/
+lemma IsQuasiInverse.of_comp_right {u : V →ₗ[K] V₂} {v : V₂ →ₗ[K] V₃}
+    {u' : V₂ →ₗ[K] V} {w : V₃ →ₗ[K] V} (hu : u'.IsQuasiInverse u)
+    (hw : w.IsQuasiInverse (v ∘ₗ u)) :
+    (u ∘ₗ w).IsQuasiInverse v :=
+  ⟨.of_comp_right hu.2 hw.1, .of_comp_right hw.2⟩
+
 /-- If `v'` is a quasi-inverse of `v` and `w` is a quasi-inverse of `v ∘ₗ u`, then
 `w ∘ₗ v` is a quasi-inverse of `u`. -/
-lemma IsQuasiInverse.of_comp_right {u : V →ₗ[K] V₂} {v : V₂ →ₗ[K] V₃}
+lemma IsQuasiInverse.of_comp_left {u : V →ₗ[K] V₂} {v : V₂ →ₗ[K] V₃}
     {v' : V₃ →ₗ[K] V₂} {w : V₃ →ₗ[K] V} (hv : v'.IsQuasiInverse v)
     (hw : w.IsQuasiInverse (v ∘ₗ u)) :
     (w ∘ₗ v).IsQuasiInverse u :=
-  ⟨hw.1, IsRightQuasiInverse.of_comp_right hv.1 hw.2⟩
+  ⟨.of_comp_left hw.1, .of_comp_left hv.1 hw.2⟩
 
 lemma isQuasiInverse_subtype_projectionOnto_iff {S T : Submodule K V} (hST : IsCompl S T) :
     IsQuasiInverse S.subtype (S.projectionOnto T hST) ↔ IsNoetherian K T := by
