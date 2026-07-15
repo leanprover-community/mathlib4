@@ -5,6 +5,7 @@ Authors: Anatole Dedecker, Luigi Massacci
 -/
 module
 
+public import Mathlib.Analysis.Calculus.LineDeriv.IntegrationByParts
 public import Mathlib.Analysis.Distribution.AEEqOfIntegralContDiff
 public import Mathlib.Analysis.Distribution.TestFunction
 public import Mathlib.Topology.Algebra.Module.Spaces.CompactConvergenceCLM
@@ -386,6 +387,33 @@ theorem toDistribution_injective {f f' : E → F} {μ : Measure E}
     rw [integral_sub (φ.integrable_smul hf) (φ.integrable_smul hf'), sub_eq_zero]
     rw [← toDistribution_apply hf, ← toDistribution_apply hf', h]
   congr
+
+open TestFunction
+
+omit [CompleteSpace F] in
+theorem lineDerivCLM_toDistribution (f : E → F) {μ : Measure E} [μ.IsAddHaarMeasure]
+    (hf : ContDiff ℝ 1 f) (v : E) (hkn : k + 1 ≤ n) :
+    Distribution.lineDerivCLM v (toDistribution Ω f μ k)
+      = toDistribution Ω (fun x ↦ lineDeriv ℝ f x v) μ n := by
+  ext φ
+  have hf_loc : LocallyIntegrableOn f Ω μ :=
+    hf.continuous.locallyIntegrable.locallyIntegrableOn _
+  have hf_diff : ∀ x, DifferentiableAt ℝ f x :=
+    fun x ↦ (hf.differentiable one_ne_zero).differentiableAt
+  have hf'_loc : LocallyIntegrableOn (fun x ↦ lineDeriv ℝ f x v) Ω μ := by
+    have : Continuous (fun x ↦ lineDeriv ℝ f x v) := by
+      simp_rw [(hf_diff _).lineDeriv_eq_fderiv]
+      exact (hf.continuous_fderiv one_ne_zero).clm_apply continuous_const
+    exact this.locallyIntegrable.locallyIntegrableOn _
+  rw [lineDerivCLM_apply, toDistribution_apply hf_loc, toDistribution_apply hf'_loc]
+  simp_rw [lineDerivCLM_apply_of_le hkn]
+  have hφ'f : Integrable (fun x ↦ lineDeriv ℝ φ x v • f x) μ := by
+    simp_rw [← lineDerivCLM_apply_of_le hkn (𝕜 := ℝ)]
+    exact TestFunction.integrable_smul _ hf_loc
+  exact (integral_bilinear_hasLineDerivAt_right_eq_neg_left_of_integrable
+    (B := .lsmul ℝ ℝ) hφ'f (φ.integrable_smul hf'_loc) (φ.integrable_smul hf_loc) (fun x _ ↦
+    ((φ.contDiff.differentiable (by aesop)).differentiableAt).lineDifferentiableAt.hasLineDerivAt)
+    (fun x _ ↦ (hf_diff x).lineDifferentiableAt.hasLineDerivAt)).symm
 
 end toDistribution
 
