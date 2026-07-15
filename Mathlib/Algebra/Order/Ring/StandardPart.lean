@@ -73,9 +73,6 @@ theorem neg_mk {x : K} (h : 0 ≤ mk x) :
     -FiniteElement.mk x h = FiniteElement.mk (-x) (by rwa [mk_neg]) :=
   rfl
 
-@[deprecated (since := "2025-12-24")]
-alias mk_neg := neg_mk
-
 @[simp]
 theorem mk_add_mk (x y : K) (hx hy) :
     .mk x hx + .mk y hy = FiniteElement.mk (x + y) ((le_min hx hy).trans <| min_le_mk_add ..) :=

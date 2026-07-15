@@ -212,7 +212,7 @@ private lemma chainBotCoeff_mul_chainTopCoeff.aux_1
   intro _ him_mem hjl_mem hjk_mem
   /- Setup some typeclasses and name the 6th root `n`. -/
   have := chainBotCoeff_mul_chainTopCoeff.isNotG2 hi hj hij h₁ h₂ h₃
-  letI := P.indexNeg
+  let := P.indexNeg
   have : IsAddTorsionFree M := .of_isTorsionFree R M
   obtain ⟨n, hn⟩ := h₃
   /- Establish basic relationships about roots and their sums / differences. -/
@@ -272,7 +272,7 @@ private lemma chainBotCoeff_mul_chainTopCoeff.aux_2
       P.root j + P.root (-k) ∈ range P.root →
       ¬ (P.chainBotCoeff i m = 1 ∧ P.chainBotCoeff j (-l) = 0) := by
   intro _ him_mem hjl_mem hjk_mem
-  letI := P.indexNeg
+  let := P.indexNeg
   /- Setup some typeclasses. -/
   have := chainBotCoeff_mul_chainTopCoeff.isNotG2 hi hj hij h₁ h₂ h₃
   have : IsAddTorsionFree M := .of_isTorsionFree R M
@@ -338,7 +338,7 @@ lemma chainBotCoeff_mul_chainTopCoeff :
       (P.chainTopCoeff j l + 1) * (P.chainBotCoeff i k + 1) := by
   /- Setup some typeclasses. -/
   have := chainBotCoeff_mul_chainTopCoeff.isNotG2 hi hj hij h₁ h₂ h₃
-  letI := P.indexNeg
+  let := P.indexNeg
   suffices (P.chainBotCoeff i m + 1) * (P.chainBotCoeff j (-k) + 1) =
       (P.chainBotCoeff j (-l) + 1) * (P.chainBotCoeff i k + 1) by simpa
   /- Establish basic relationships about roots and their sums / differences. -/

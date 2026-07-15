@@ -192,7 +192,7 @@ theorem eq_zero_of_basicOpen_eq_bot {X : Scheme} [hX : IsReduced X] {U : X.Opens
   | h₂ X Y f =>
     refine ⟨f ⁻¹ᵁ f.opensRange, f.opensRange, by simp, rfl, ?_⟩
     rintro H hX s hs _ ⟨x, rfl⟩
-    haveI := isReduced_of_isOpenImmersion f
+    have := isReduced_of_isOpenImmersion f
     specialize H (f.app _ s) _ x ⟨x, rfl⟩
     · rw [← Scheme.preimage_basicOpen, hs]; ext1; simp [Opens.map]
     · have H : (X.presheaf.germ _ x _).hom _ = 0 := H
@@ -249,10 +249,10 @@ instance (priority := 900) isReduced_of_isIntegral [IsIntegral X] : IsReduced X 
   intro U
   rcases U.1.eq_empty_or_nonempty with h | h
   · have : U = ⊥ := SetLike.ext' h
-    haveI : Subsingleton Γ(X, U) :=
+    have : Subsingleton Γ(X, U) :=
       CommRingCat.subsingleton_of_isTerminal (X.sheaf.isTerminalOfEqEmpty this)
     infer_instance
-  · haveI : Nonempty U := by simpa
+  · have : Nonempty U := by simpa
     infer_instance
 
 instance Scheme.component_nontrivial (X : Scheme.{u}) (U : X.Opens) [Nonempty U] :
@@ -267,9 +267,9 @@ instance irreducibleSpace_of_isIntegral [IsIntegral X] : IrreducibleSpace X := b
   simp_rw [isPreirreducible_iff_isClosed_union_isClosed, not_forall, not_or] at H
   rcases H with ⟨S, T, hS, hT, h₁, h₂, h₃⟩
   rw [Set.not_univ_subset] at h₂ h₃
-  haveI : Nonempty (⟨Sᶜ, hS.1⟩ : X.Opens) := ⟨⟨_, h₂.choose_spec⟩⟩
-  haveI : Nonempty (⟨Tᶜ, hT.1⟩ : X.Opens) := ⟨⟨_, h₃.choose_spec⟩⟩
-  haveI : Nonempty (⟨Sᶜ, hS.1⟩ ⊔ ⟨Tᶜ, hT.1⟩ : X.Opens) := ⟨⟨_, Or.inl h₂.choose_spec⟩⟩
+  have : Nonempty (⟨Sᶜ, hS.1⟩ : X.Opens) := ⟨⟨_, h₂.choose_spec⟩⟩
+  have : Nonempty (⟨Tᶜ, hT.1⟩ : X.Opens) := ⟨⟨_, h₃.choose_spec⟩⟩
+  have : Nonempty (⟨Sᶜ, hS.1⟩ ⊔ ⟨Tᶜ, hT.1⟩ : X.Opens) := ⟨⟨_, Or.inl h₂.choose_spec⟩⟩
   let e : Γ(X, _) ≅ CommRingCat.of _ :=
     (X.sheaf.isProductOfDisjoint ⟨_, hS.1⟩ ⟨_, hT.1⟩ ?_).conePointUniqueUpToIso
       (CommRingCat.prodFanIsLimit _ _)
@@ -287,7 +287,7 @@ theorem isIntegral_of_irreducibleSpace_of_isReduced [IsReduced X] [H : Irreducib
     IsIntegral X := by
   constructor; · infer_instance
   intro U hU
-  haveI := (@LocallyRingedSpace.component_nontrivial X.toLocallyRingedSpace U hU).1
+  have := (@LocallyRingedSpace.component_nontrivial X.toLocallyRingedSpace U hU).1
   have : NoZeroDivisors
       (X.toLocallyRingedSpace.toSheafedSpace.toPresheafedSpace.presheaf.obj (op U)) := by
     refine ⟨fun {a b} e => ?_⟩

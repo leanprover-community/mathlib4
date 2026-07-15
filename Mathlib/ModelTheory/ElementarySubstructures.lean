@@ -205,7 +205,6 @@ open Set Formula
 /-- An elementary substructure, regarded as a subset of the ambient structure, meets definable
 sets. -/
 theorem meetsDefinable (S : L.ElementarySubstructure M) : L.MeetsDefinable (S : Set M) := by
-  classical
   rintro D ⟨x, hx⟩ ⟨φ, hφ⟩
   have hφx : φ.Realize ![x] := by
     simp [Set.ext_iff] at hφ

@@ -123,8 +123,8 @@ theorem norm_eval_le_injectiveSeminorm (f : ContinuousMultilinearMap 𝕜 E F) (
   set G := (⨂[𝕜] i, E i) ⧸ LinearMap.ker (lift f.toMultilinearMap)
   set G' := LinearMap.range (lift f.toMultilinearMap)
   set e := LinearMap.quotKerEquivRange (lift f.toMultilinearMap)
-  letI := SeminormedAddCommGroup.induced G G' e
-  letI := NormedSpace.induced 𝕜 G G' e
+  let := SeminormedAddCommGroup.induced G G' e
+  let := NormedSpace.induced 𝕜 G G' e
   set f'₀ := lift.symm (e.symm.toLinearMap ∘ₗ LinearMap.rangeRestrict (lift f.toMultilinearMap))
   have hf'₀ : ∀ (x : Π (i : ι), E i), ‖f'₀ x‖ ≤ ‖f‖ * ∏ i, ‖x i‖ := fun x ↦ by
     change ‖e (f'₀ x)‖ ≤ _

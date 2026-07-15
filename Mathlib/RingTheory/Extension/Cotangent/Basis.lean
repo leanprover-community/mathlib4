@@ -294,7 +294,6 @@ public lemma exists_presentation_of_basis_cotangent [Algebra.FinitePresentation 
         span_range_relation_eq_ker := by simpa using (RingHom.ker_eq_top_of_subsingleton _).symm }
     have : Subsingleton P'.toExtension.Cotangent := Module.subsingleton S _
     exact ⟨P', default, by subsingleton, by subsingleton⟩
-  classical
   choose f hf using Extension.Cotangent.mk_surjective (P := P.toExtension)
   let v (i : σ) : P.ker := f (b₀ i)
   let J : Ideal P.Ring := Ideal.span (Set.range <| Subtype.val ∘ v)

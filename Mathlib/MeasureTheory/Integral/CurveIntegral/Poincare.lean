@@ -395,7 +395,7 @@ variable [CompleteSpace E] {f : 𝕜 → E} {s : Set 𝕜}
 then it admits a primitive. -/
 theorem exists_forall_hasDerivWithinAt (hs : Convex ℝ s) (hf : DifferentiableOn 𝕜 f s) :
     ∃ g : 𝕜 → E, ∀ a ∈ s, HasDerivWithinAt g (f a) s a := by
-  letI : NormedSpace ℝ E := .restrictScalars ℝ 𝕜 E
+  let : NormedSpace ℝ E := .restrictScalars ℝ 𝕜 E
   apply hs.exists_forall_hasFDerivWithinAt_of_hasFDerivWithinAt_symmetric
   · intro a ha
     exact (ContinuousLinearMap.smulRightL 𝕜 𝕜 E 1).hasFDerivAt

@@ -225,6 +225,14 @@ theorem upperBounds_mono ⦃s t : Set α⦄ (hst : s ⊆ t) ⦃a b⦄ (hab : a �
 theorem BddAbove.mono ⦃s t : Set α⦄ (h : s ⊆ t) : BddAbove t → BddAbove s :=
   Nonempty.mono <| upperBounds_mono_set h
 
+/-- If the range of a function `g` is bounded above, then `g ∘ f` is bounded above for all functions
+`f`. -/
+@[to_dual /-- If the range of a function `g` is bounded below, then `g ∘ f` is bounded below for all
+functions `f`. -/]
+theorem BddAbove.range_comp_right (f : γ → β) {g : β → α}
+    (hg : BddAbove (Set.range g)) : BddAbove (Set.range (g ∘ f)) :=
+  hg.mono (range_comp_subset_range f g)
+
 /-- If `a` is a least upper bound for sets `s` and `p`, then it is a least upper bound for any
 set `t`, `s ⊆ t ⊆ p`. -/
 @[to_dual /-- If `a` is a greatest lower bound for sets `s` and `p`, then it is a greater lower

@@ -499,11 +499,6 @@ alias _root.CategoryTheory.Classifier.SubobjectRepresentableBy.iso_inv_hom_left_
 alias _root_.CategoryTheory.Classifier.SubobjectRepresentableBy.iso_inv_hom_left_comp :=
   iso_inv_hom_left_comp
 
-set_option linter.dupNamespace false in
-@[deprecated (since := "2025-12-18")]
-alias _root.CategoryTheory.Classifier.SubobjectRepresentableBy.iso_inv_left_comp :=
-  iso_inv_hom_left_comp
-
 set_option backward.isDefEq.respectTransparency false in
 lemma isPullback {U X : C} (m : U ⟶ X) [Mono m] :
     IsPullback m (h.π m) (h.χ m) h.Ω₀.arrow := by

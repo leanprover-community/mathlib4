@@ -61,10 +61,10 @@ include K L
 then `L` is the localization of the integral closure `C` of `A` in `L` at `A⁰`. -/
 theorem IsIntegralClosure.isLocalization [IsDomain A] [Algebra.IsAlgebraic K L] :
     IsLocalization (Algebra.algebraMapSubmonoid C A⁰) L := by
-  haveI : IsDomain C :=
+  have : IsDomain C :=
     (IsIntegralClosure.equiv A C L (integralClosure A L)).toMulEquiv.isDomain (integralClosure A L)
-  haveI : IsTorsionFree A L := .trans_faithfulSMul A K L
-  haveI : IsTorsionFree A C := IsIntegralClosure.isTorsionFree A L
+  have : IsTorsionFree A L := .trans_faithfulSMul A K L
+  have : IsTorsionFree A C := IsIntegralClosure.isTorsionFree A L
   refine ⟨?_, fun z => ?_, fun {x y} h => ⟨1, ?_⟩⟩
   · rintro ⟨_, x, hx, rfl⟩
     rw [isUnit_iff_ne_zero, map_ne_zero_iff _ (IsIntegralClosure.algebraMap_injective C A L),
@@ -123,7 +123,7 @@ variable (L)
 then `L` has a basis over `A` consisting of integral elements. -/
 theorem FiniteDimensional.exists_is_basis_integral :
     ∃ (s : Finset L) (b : Basis s K L), ∀ x, IsIntegral A (b x) := by
-  letI := Classical.decEq L
+  let := Classical.decEq L
   let s' := IsNoetherian.finsetBasisIndex K L
   let bs' := IsNoetherian.finsetBasis K L
   obtain ⟨y, hy, his'⟩ := exists_integral_multiples A K (Finset.univ.image bs')
@@ -150,10 +150,10 @@ integrally closed and Noetherian, the integral closure `C` of `A` in `L` is
 Noetherian over `A`. -/
 theorem IsIntegralClosure.isNoetherian [IsIntegrallyClosed A] [IsNoetherianRing A] :
     IsNoetherian A C := by
-  haveI := Classical.decEq L
+  have := Classical.decEq L
   obtain ⟨s, b, hb_int⟩ := FiniteDimensional.exists_is_basis_integral A K L
   let b' := (traceForm K L).dualBasis (traceForm_nondegenerate K L) b
-  letI := isNoetherian_span_of_finite A (Set.finite_range b')
+  let := isNoetherian_span_of_finite A (Set.finite_range b')
   let f : C →ₗ[A] Submodule.span A (Set.range b') :=
     (Submodule.inclusion (IsIntegralClosure.range_le_span_dualBasis C b hb_int)).comp
       ((Algebra.linearMap C L).restrictScalars A).rangeRestrict
@@ -173,7 +173,7 @@ integrally closed and Noetherian, the integral closure `C` of `A` in `L` is
 finite over `A`. -/
 theorem IsIntegralClosure.finite [IsIntegrallyClosed A] [IsNoetherianRing A] :
     Module.Finite A C := by
-  haveI := IsIntegralClosure.isNoetherian A K L C
+  have := IsIntegralClosure.isNoetherian A K L C
   exact Module.IsNoetherian.finite A C
 
 /-- If `L` is a finite separable extension of `K = Frac(A)`, where `A` is a principal ring
@@ -190,9 +190,9 @@ and `L` has no zero smul divisors by `A`, the `A`-rank of the integral closure `
 is equal to the `K`-rank of `L`. -/
 theorem IsIntegralClosure.rank [IsPrincipalIdealRing A] [IsTorsionFree A L] :
     Module.finrank A C = Module.finrank K L := by
-  haveI : Module.Free A C := IsIntegralClosure.module_free A K L C
-  haveI : IsNoetherian A C := IsIntegralClosure.isNoetherian A K L C
-  haveI : IsLocalization (Algebra.algebraMapSubmonoid C A⁰) L :=
+  have : Module.Free A C := IsIntegralClosure.module_free A K L C
+  have : IsNoetherian A C := IsIntegralClosure.isNoetherian A K L C
+  have : IsLocalization (Algebra.algebraMapSubmonoid C A⁰) L :=
     IsIntegralClosure.isLocalization A K L C
   let b := Basis.localizationLocalization K A⁰ L (Module.Free.chooseBasis A C)
   rw [Module.finrank_eq_card_chooseBasisIndex, Module.finrank_eq_card_basis b]

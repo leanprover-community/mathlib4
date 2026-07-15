@@ -751,7 +751,7 @@ so `u n` is related to the image of `{0, 1, ..., n-1}` under `u`.
 -/
 theorem seq_of_forall_finite_exists {γ : Type*} {P : γ → Set γ → Prop}
     (h : ∀ t : Set γ, t.Finite → ∃ c, P c t) : ∃ u : ℕ → γ, ∀ n, P (u n) (u '' Iio n) := by
-  haveI : Nonempty γ := (h ∅ finite_empty).nonempty
+  have : Nonempty γ := (h ∅ finite_empty).nonempty
   choose! c hc using h
   set f : (n : ℕ) → (g : (m : ℕ) → m < n → γ) → γ := fun n g => c (range fun k : Iio n => g k.1 k.2)
   set u : ℕ → γ := fun n ↦ Nat.strongRecOn n f
@@ -816,7 +816,7 @@ theorem Finite.card_toFinset {s : Set α} [Fintype s] (h : s.Finite) :
 
 theorem card_ne_eq [Fintype α] (a : α) [Fintype { x : α | x ≠ a }] :
     Fintype.card { x : α | x ≠ a } = Fintype.card α - 1 := by
-  haveI := Classical.decEq α
+  have := Classical.decEq α
   rw [← toFinset_card, toFinset_setOf, Finset.filter_ne',
     Finset.card_erase_of_mem (Finset.mem_univ _), Finset.card_univ]
 

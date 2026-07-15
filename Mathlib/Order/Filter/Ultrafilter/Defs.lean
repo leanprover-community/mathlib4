@@ -340,7 +340,7 @@ theorem Iic_pure (a : α) : Iic (pure a : Filter α) = {⊥, pure a} :=
 theorem mem_iff_ultrafilter : s ∈ f ↔ ∀ g : Ultrafilter α, ↑g ≤ f → s ∈ g := by
   refine ⟨fun hf g hg => hg hf, fun H => by_contra fun hf => ?_⟩
   set g : Filter (sᶜ : Set α) := comap (↑) f
-  haveI : NeBot g := comap_neBot_iff_compl_range.2 (by simpa [compl_setOf])
+  have : NeBot g := comap_neBot_iff_compl_range.2 (by simpa [compl_setOf])
   simpa using H ((of g).map (↑)) (map_le_iff_le_comap.mpr (of_le g))
 
 theorem le_iff_ultrafilter {f₁ f₂ : Filter α} : f₁ ≤ f₂ ↔ ∀ g : Ultrafilter α, ↑g ≤ f₁ → ↑g ≤ f₂ :=
@@ -375,13 +375,13 @@ noncomputable def ofComapInfPrincipal (h : m '' s ∈ g) : Ultrafilter α :=
 
 theorem ofComapInfPrincipal_mem (h : m '' s ∈ g) : s ∈ ofComapInfPrincipal h := by
   let f := Filter.comap m g ⊓ 𝓟 s
-  haveI : f.NeBot := comap_inf_principal_neBot_of_image_mem h
+  have : f.NeBot := comap_inf_principal_neBot_of_image_mem h
   have : s ∈ f := mem_inf_of_right (mem_principal_self s)
   exact le_def.mp (of_le _) s this
 
 theorem ofComapInfPrincipal_eq_of_map (h : m '' s ∈ g) : (ofComapInfPrincipal h).map m = g := by
   let f := Filter.comap m g ⊓ 𝓟 s
-  haveI : f.NeBot := comap_inf_principal_neBot_of_image_mem h
+  have : f.NeBot := comap_inf_principal_neBot_of_image_mem h
   apply eq_of_le
   calc
     Filter.map m (of f) ≤ Filter.map m f := map_mono (of_le _)

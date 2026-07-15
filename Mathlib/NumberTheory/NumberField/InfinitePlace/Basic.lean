@@ -175,6 +175,12 @@ theorem mk_eq_iff {φ ψ : K →+* ℂ} : mk φ = mk ψ ↔ φ = ψ ∨ ComplexE
     · rw [← mk_conjugate_eq]
       exact congr_arg mk h
 
+/-- An infinite place `w` of `L / K` lies over the infinite place `v` of `K` if `v` is the
+restriction of `w` to `K`. -/
+protected abbrev LiesOver {L : Type*} [Field L] [Algebra K L]
+    (w : InfinitePlace L) (v : InfinitePlace K) :=
+  w.val.LiesOver v.val
+
 /-- An infinite place is real if it is defined by a real embedding. -/
 def IsReal (w : InfinitePlace K) : Prop := ∃ φ : K →+* ℂ, ComplexEmbedding.IsReal φ ∧ mk φ = w
 
@@ -267,15 +273,21 @@ open scoped Classical in
 define it, see `card_filter_mk_eq`. -/
 noncomputable def mult (w : InfinitePlace K) : ℕ := if (IsReal w) then 1 else 2
 
+theorem IsReal.mult_eq_one {w : InfinitePlace K} (hw : IsReal w) : mult w = 1 :=
+  if_pos hw
+
+theorem IsComplex.mult_eq_two {w : InfinitePlace K} (hw : IsComplex w) : mult w = 2 :=
+  if_neg (not_isReal_iff_isComplex.mpr hw)
+
 @[simp]
 theorem mult_isReal (w : {w : InfinitePlace K // IsReal w}) :
-    mult w.1 = 1 := by
-  rw [mult, if_pos w.prop]
+    mult w.1 = 1 :=
+  w.2.mult_eq_one
 
 @[simp]
 theorem mult_isComplex (w : {w : InfinitePlace K // IsComplex w}) :
-    mult w.1 = 2 := by
-  rw [mult, if_neg (not_isReal_iff_isComplex.mpr w.prop)]
+    mult w.1 = 2 :=
+  w.2.mult_eq_two
 
 theorem mult_pos {w : InfinitePlace K} : 0 < mult w := by
   rw [mult]

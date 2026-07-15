@@ -222,8 +222,8 @@ theorem isInducing_prodMap {W X Y Z : TopCat.{u}} {f : W ⟶ X} {g : Y ⟶ Z} (h
 theorem isEmbedding_prodMap {W X Y Z : TopCat.{u}} {f : W ⟶ X} {g : Y ⟶ Z} (hf : IsEmbedding f)
     (hg : IsEmbedding g) : IsEmbedding (Limits.prod.map f g) :=
   ⟨isInducing_prodMap hf.isInducing hg.isInducing, by
-    haveI := (TopCat.mono_iff_injective _).mpr hf.injective
-    haveI := (TopCat.mono_iff_injective _).mpr hg.injective
+    have := (TopCat.mono_iff_injective _).mpr hf.injective
+    have := (TopCat.mono_iff_injective _).mpr hg.injective
     exact (TopCat.mono_iff_injective _).mp inferInstance⟩
 
 end Prod

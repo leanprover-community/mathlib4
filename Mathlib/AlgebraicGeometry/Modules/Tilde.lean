@@ -67,12 +67,12 @@ def SpecModulesToSheafFullyFaithful : (modulesSpecToSheaf (R := R)).FullyFaithfu
       congr($(f.1.naturality (homOfLE hrU).op).hom x)
     rw [← this, ← this, M.val.map_smul]
     generalize (Spec R).ringCatSheaf.obj.map (homOfLE hrU).op t = t
-    letI := Module.compHom (R := Γ(Spec R, basicOpen r)) Γ(M, basicOpen r)
+    let := Module.compHom (R := Γ(Spec R, basicOpen r)) Γ(M, basicOpen r)
       (algebraMap R Γ(Spec R, basicOpen r))
-    haveI : IsScalarTower R Γ(Spec R, basicOpen r) Γ(M, basicOpen r) :=
+    have : IsScalarTower R Γ(Spec R, basicOpen r) Γ(M, basicOpen r) :=
       .of_algebraMap_smul fun _ _ ↦ rfl
-    letI := Module.compHom Γ(N, basicOpen r) (algebraMap R Γ(Spec R, basicOpen r))
-    haveI : IsScalarTower R Γ(Spec R, basicOpen r) Γ(N, basicOpen r) :=
+    let := Module.compHom Γ(N, basicOpen r) (algebraMap R Γ(Spec R, basicOpen r))
+    have : IsScalarTower R Γ(Spec R, basicOpen r) Γ(N, basicOpen r) :=
       .of_algebraMap_smul fun _ _ ↦ rfl
     exact (IsLocalization.linearMap_compatibleSMul (.powers (M := R) r)
       Γ(Spec R, basicOpen r) Γ(M, basicOpen r) Γ(N, basicOpen r)).map_smul
@@ -260,7 +260,7 @@ noncomputable def Scheme.Modules.fromTildeΓ (M : (Spec (.of R)).Modules) :
         simp only [inducedFunctor_obj, Submonoid.powers_le, Submonoid.mem_comap]
         exact M.isUnit_algebraMap_end_of_le_basicOpen f.unop le_rfl
       naturality {f g : Rᵒᵖ} i := by
-        letI N := (modulesSpecToSheaf.obj M).presheaf.obj (.op ⊤)
+        let N := (modulesSpecToSheaf.obj M).presheaf.obj (.op ⊤)
         ext1
         apply IsLocalizedModule.ext (.powers (M := R) f.unop)
           (tilde.toOpen _ (PrimeSpectrum.basicOpen (R := R) f.unop)).hom

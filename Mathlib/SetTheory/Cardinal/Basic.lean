@@ -80,7 +80,7 @@ theorem prod_eq_of_fintype {α : Type u} [h : Fintype α] (f : α → Cardinal.{
   revert f
   refine Fintype.induction_empty_option ?_ ?_ ?_ α (h_fintype := h)
   · intro α β hβ e h f
-    letI := Fintype.ofEquiv β e.symm
+    let := Fintype.ofEquiv β e.symm
     rw [← e.prod_comp f, ← h]
     exact mk_congr (e.piCongrLeft _).symm
   · intro f
@@ -362,7 +362,7 @@ theorem lt_aleph0 {c : Cardinal} : c < ℵ₀ ↔ ∃ n : ℕ, c = n :=
       lift S to Finset ℕ using this
       simp
     contrapose! h'
-    haveI := Infinite.to_subtype h'
+    have := Infinite.to_subtype h'
     exact ⟨Infinite.natEmbedding S⟩, fun ⟨_, e⟩ => e.symm ▸ natCast_lt_aleph0⟩
 
 lemma succ_eq_of_lt_aleph0 {c : Cardinal} (h : c < ℵ₀) : Order.succ c = c + 1 := by

@@ -925,7 +925,7 @@ abbrev freeLiftLEquiv :
 
 lemma free_ext (f g : free k G α ⟶ A)
     (h : ∀ i : α, f.hom (single i (.single 1 1)) = g.hom (single i (.single 1 1))) : f = g := by
-  classical exact (freeLiftLEquiv k G α A).injective (funext_iff.2 h)
+  exact (freeLiftLEquiv k G α A).injective (funext_iff.2 h)
 
 variable {A}
 section

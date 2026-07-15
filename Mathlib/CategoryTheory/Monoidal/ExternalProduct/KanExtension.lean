@@ -63,7 +63,7 @@ def isPointwiseLeftKanExtensionAtExtensionUnitLeft
     (prod.rightUnitorEquivalence (CostructuredArrow L d)).inverse ⋙
       (𝟭 _).prod (Functor.fromPUnit.{0} <| .mk <| 𝟙 _)
   letI : I.Final := by
-    letI : Functor.fromPUnit.{0} (.mk (𝟙 e) : CostructuredArrow (𝟭 E) e) |>.Final :=
+    let : Functor.fromPUnit.{0} (.mk (𝟙 e) : CostructuredArrow (𝟭 E) e) |>.Final :=
       Functor.final_fromPUnit_of_isTerminal <| CostructuredArrow.mkIdTerminal (S := 𝟭 E) (Y := e)
     apply Iff.mp <| Functor.final_iff_final_comp
       (F := (prod.rightUnitorEquivalence <| CostructuredArrow L d).inverse)
@@ -111,7 +111,7 @@ def isPointwiseLeftKanExtensionAtExtensionUnitRight
     (prod.leftUnitorEquivalence <| CostructuredArrow L d).inverse ⋙
       (Functor.fromPUnit.{0} <| .mk <| 𝟙 _).prod (𝟭 _)
   letI : I.Final := by
-    letI : Functor.fromPUnit.{0} (.mk (𝟙 e) : CostructuredArrow (𝟭 E) e) |>.Final :=
+    let : Functor.fromPUnit.{0} (.mk (𝟙 e) : CostructuredArrow (𝟭 E) e) |>.Final :=
       Functor.final_fromPUnit_of_isTerminal <| CostructuredArrow.mkIdTerminal (S := 𝟭 E) (Y := e)
     apply Iff.mp <| Functor.final_iff_final_comp
       (F := (prod.leftUnitorEquivalence <| CostructuredArrow L d).inverse)

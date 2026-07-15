@@ -155,8 +155,8 @@ protected def finOrthonormalBasis (hn : 0 < n) (h : finrank ℝ E = n) (x : Orie
 @[simp]
 theorem finOrthonormalBasis_orientation (hn : 0 < n) (h : finrank ℝ E = n)
     (x : Orientation ℝ E (Fin n)) : (x.finOrthonormalBasis hn h).toBasis.orientation = x := by
-  haveI := Fin.pos_iff_nonempty.1 hn
-  haveI : FiniteDimensional ℝ E := .of_finrank_pos <| h.symm ▸ hn
+  have := Fin.pos_iff_nonempty.1 hn
+  have : FiniteDimensional ℝ E := .of_finrank_pos <| h.symm ▸ hn
   exact ((@stdOrthonormalBasis _ _ _ _ _ this).reindex <|
     finCongr h).orientation_adjustToOrientation x
 
@@ -244,7 +244,7 @@ value by the product of the norms of the vectors `v i`. -/
 theorem abs_volumeForm_apply_le (v : Fin n → E) : |o.volumeForm v| ≤ ∏ i : Fin n, ‖v i‖ := by
   rcases n with - | n
   · refine o.eq_or_eq_neg_of_isEmpty.elim ?_ ?_ <;> rintro rfl <;> simp
-  haveI : FiniteDimensional ℝ E := .of_fact_finrank_eq_succ n
+  have : FiniteDimensional ℝ E := .of_fact_finrank_eq_succ n
   have : finrank ℝ E = Fintype.card (Fin n.succ) := by simpa using _i.out
   let b : OrthonormalBasis (Fin n.succ) ℝ E := gramSchmidtOrthonormalBasis this v
   have hb : b.toBasis.det v = ∏ i, ⟪b i, v i⟫ := gramSchmidtOrthonormalBasis_det this v
@@ -266,7 +266,7 @@ theorem abs_volumeForm_apply_of_pairwise_orthogonal {v : Fin n → E}
     (hv : Pairwise fun i j => ⟪v i, v j⟫ = 0) : |o.volumeForm v| = ∏ i : Fin n, ‖v i‖ := by
   rcases n with - | n
   · refine o.eq_or_eq_neg_of_isEmpty.elim ?_ ?_ <;> rintro rfl <;> simp
-  haveI : FiniteDimensional ℝ E := .of_fact_finrank_eq_succ n
+  have : FiniteDimensional ℝ E := .of_fact_finrank_eq_succ n
   have hdim : finrank ℝ E = Fintype.card (Fin n.succ) := by simpa using _i.out
   let b : OrthonormalBasis (Fin n.succ) ℝ E := gramSchmidtOrthonormalBasis hdim v
   have hb : b.toBasis.det v = ∏ i, ⟪b i, v i⟫ := gramSchmidtOrthonormalBasis_det hdim v

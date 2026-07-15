@@ -75,8 +75,6 @@ theorem getD_append_right (l l' : List α) (d : α) (n : ℕ) (h : l.length ≤ 
     (l ++ l').getD n d = l'.getD (n - l.length) d := by
   grind
 
-@[deprecated (since := "2025-11-17")] alias getD_eq_getD_getElem? := getD_eq_getElem?_getD
-
 theorem getD_surjective_iff {l : List α} {d : α} :
     (l.getD · d).Surjective ↔ (∀ x, x = d ∨ x ∈ l) := by
   apply forall_congr'

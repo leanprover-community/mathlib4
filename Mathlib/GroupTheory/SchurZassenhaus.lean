@@ -49,7 +49,7 @@ theorem smul_diff_smul' [hH : Normal H] (g : Gᵐᵒᵖ) :
     diff (MonoidHom.id H) (g • α) (g • β) =
       ⟨g.unop⁻¹ * (diff (MonoidHom.id H) α β : H) * g.unop,
         hH.mem_comm ((congr_arg (· ∈ H) (mul_inv_cancel_left _ _)).mpr (SetLike.coe_mem _))⟩ := by
-  letI := H.fintypeQuotientOfFiniteIndex
+  let := H.fintypeQuotientOfFiniteIndex
   let ϕ : H →* H :=
     { toFun := fun h =>
         ⟨g.unop⁻¹ * h * g.unop,
@@ -80,7 +80,7 @@ noncomputable instance : MulAction G H.QuotientDiff where
 
 theorem smul_diff' (h : H) :
     diff (MonoidHom.id H) α (op (h : G) • β) = diff (MonoidHom.id H) α β * h ^ H.index := by
-  letI := H.fintypeQuotientOfFiniteIndex
+  let := H.fintypeQuotientOfFiniteIndex
   rw [diff, diff, index_eq_card, Nat.card_eq_fintype_card,
       ← Finset.card_univ, ← Finset.prod_const, ← Finset.prod_mul_distrib]
   refine Finset.prod_congr rfl fun q _ => ?_
@@ -231,25 +231,25 @@ private theorem step4 : (Nat.card N).minFac.Prime :=
 
 /-- Do not use this lemma: It is made obsolete by `exists_right_complement'_of_coprime` -/
 private theorem step5 {P : Sylow (Nat.card N).minFac N} : P.1 ≠ ⊥ := by
-  haveI : Fact (Nat.card N).minFac.Prime := ⟨step4 h1 h3⟩
+  have : Fact (Nat.card N).minFac.Prime := ⟨step4 h1 h3⟩
   apply P.ne_bot_of_dvd_card
   exact (Nat.card N).minFac_dvd
 
 include h2 in
 /-- Do not use this lemma: It is made obsolete by `exists_right_complement'_of_coprime` -/
 private theorem step6 : IsPGroup (Nat.card N).minFac N := by
-  haveI : Fact (Nat.card N).minFac.Prime := ⟨step4 h1 h3⟩
+  have : Fact (Nat.card N).minFac.Prime := ⟨step4 h1 h3⟩
   refine Sylow.nonempty.elim fun P => P.2.of_surjective P.1.subtype ?_
   rw [← MonoidHom.range_eq_top, range_subtype]
-  haveI : (P.1.map N.subtype).Normal :=
+  have : (P.1.map N.subtype).Normal :=
     normalizer_eq_top_iff.mp (step1 h1 h2 h3 _ P.normalizer_sup_eq_top)
   exact (step3 h1 h2 h3 P.1).resolve_left (step5 h1 h3)
 
 include h2 in
 /-- Do not use this lemma: It is made obsolete by `exists_right_complement'_of_coprime` -/
 theorem step7 : IsMulCommutative N := by
-  haveI := N.bot_or_nontrivial.resolve_left (step0 h1 h3)
-  haveI : Fact (Nat.card N).minFac.Prime := ⟨step4 h1 h3⟩
+  have := N.bot_or_nontrivial.resolve_left (step0 h1 h3)
+  have : Fact (Nat.card N).minFac.Prime := ⟨step4 h1 h3⟩
   exact
     ⟨⟨fun g h => ((eq_top_iff.mp ((step3 h1 h2 h3 (center N)).resolve_left
       (step6 h1 h2 h3).bot_lt_center.ne') (mem_top h)).comm g).symm⟩⟩
@@ -266,7 +266,7 @@ private theorem exists_right_complement'_of_coprime_aux' [Finite G] (hG : Nat.ca
   induction n using Nat.strongRecOn with | ind n ih => ?_
   rintro G _ _ rfl N _ hN
   refine not_forall_not.mp fun h3 => ?_
-  haveI := SchurZassenhausInduction.step7 hN (fun G' _ _ hG' => by apply ih _ hG'; rfl) h3
+  have := SchurZassenhausInduction.step7 hN (fun G' _ _ hG' => by apply ih _ hG'; rfl) h3
   exact not_exists_of_forall_not h3 (exists_right_complement'_of_coprime_aux hN)
 
 /-- **Schur-Zassenhaus** for normal subgroups:

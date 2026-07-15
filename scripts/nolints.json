@@ -483,8 +483,6 @@
   "CategoryTheory.IsCardinalFiltered.exists_cardinal_directed.instPartialOrderDiagramWithUniqueTerminal"],
  ["defsWithUnderscore", "CategoryTheory.Limits.BinaryBicone.retract_left"],
  ["defsWithUnderscore", "CategoryTheory.Limits.BinaryBicone.retract_right"],
- ["defsWithUnderscore", "CategoryTheory.Limits.Cocone.ext_inv"],
- ["defsWithUnderscore", "CategoryTheory.Limits.Cone.ext_inv"],
  ["defsWithUnderscore",
   "CategoryTheory.Limits.IsCofiltered.sequentialFunctor_obj"],
  ["defsWithUnderscore",

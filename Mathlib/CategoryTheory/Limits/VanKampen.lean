@@ -68,7 +68,7 @@ noncomputable def IsUniversalColimit.isColimit {F : J ⥤ C} {c : Cocone F}
     (h : IsUniversalColimit c) : IsColimit c := by
   refine ((h c (𝟙 F) (𝟙 c.pt :) (by rw [Functor.map_id, Category.comp_id, Category.id_comp])
     (.of_isIso _)) fun j => ?_).some
-  haveI : IsIso (𝟙 c.pt) := inferInstance
+  have : IsIso (𝟙 c.pt) := inferInstance
   exact IsPullback.of_vert_isIso ⟨by simp⟩
 
 /-- A van Kampen colimit is a colimit. -/
@@ -82,7 +82,7 @@ theorem IsInitial.isVanKampenColimit [HasStrictInitialObjects C] {X : C} (h : Is
   intro F' c' α f hf hα
   have : F' = Functor.empty C := by apply Functor.hext <;> rintro ⟨⟨⟩⟩
   subst this
-  haveI := h.isIso_to f
+  have := h.isIso_to f
   refine ⟨by rintro _ ⟨⟨⟩⟩,
     fun _ => ⟨IsColimit.ofIsoColimit h (Cocone.ext (asIso f).symm <| by rintro ⟨⟨⟩⟩)⟩⟩
 
@@ -109,7 +109,7 @@ theorem IsVanKampenColimit.of_iso {F : J ⥤ C} {c c' : Cocone F} (H : IsVanKamp
   apply forall_congr'
   intro j
   conv_lhs => rw [← Category.comp_id (α.app j)]
-  haveI : IsIso e.inv.hom := Functor.map_isIso (Cocone.forget _) e.inv
+  have : IsIso e.inv.hom := Functor.map_isIso (Cocone.forget _) e.inv
   exact (IsPullback.of_vert_isIso ⟨by simp⟩).paste_vert_iff (NatTrans.congr_app h j).symm
 
 set_option backward.isDefEq.respectTransparency false in
@@ -279,7 +279,7 @@ theorem IsUniversalColimit.map_reflective
     intro X
     apply IsIso.eq_inv_of_inv_hom_id
     exact adj.left_triangle_components _
-  haveI : ∀ X, IsIso (Gl.map (adj.unit.app X)) := by
+  have : ∀ X, IsIso (Gl.map (adj.unit.app X)) := by
     simp_rw [hadj]
     infer_instance
   have hα'' : ∀ j, Gl.map (Gr.map <| α'.app j) = adj.counit.app _ ≫ α.app j := by
@@ -503,13 +503,13 @@ theorem BinaryCofan.isVanKampen_mk {X Y : C} (c : BinaryCofan X Y)
     obtain ⟨hl, hr⟩ := h₁ αX αY (e.inv ≫ f) (by simp [e, hX]) (by simp [e, hY])
     constructor
     · rw [← Category.id_comp αX, ← Iso.hom_inv_id_assoc e f]
-      haveI : IsIso (𝟙 X') := inferInstance
+      have : IsIso (𝟙 X') := inferInstance
       have : c'.inl ≫ e.hom = 𝟙 X' ≫ (cofans X' Y').inl := by
         dsimp [e]
         simp
       exact (IsPullback.of_vert_isIso ⟨this⟩).paste_vert hl
     · rw [← Category.id_comp αY, ← Iso.hom_inv_id_assoc e f]
-      haveI : IsIso (𝟙 Y') := inferInstance
+      have : IsIso (𝟙 Y') := inferInstance
       have : c'.inr ≫ e.hom = 𝟙 Y' ≫ (cofans X' Y').inr := by
         dsimp [e]
         simp

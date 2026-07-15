@@ -142,8 +142,8 @@ lemma IsTranscendenceBasis.algebraMap_comp
   rw [Set.range_comp, ← AlgHom.map_adjoin]
   set Rx := adjoin R (range x)
   let e := Rx.equivMapOfInjective f (FaithfulSMul.algebraMap_injective S A)
-  letI := e.toRingHom.toAlgebra
-  haveI : IsScalarTower Rx (Rx.map f) A := .of_algebraMap_eq fun x ↦ rfl
+  let := e.toRingHom.toAlgebra
+  have : IsScalarTower Rx (Rx.map f) A := .of_algebraMap_eq fun x ↦ rfl
   have : Algebra.IsAlgebraic Rx S := hx.isAlgebraic
   have : Algebra.IsAlgebraic Rx A := .trans _ S _
   exact .extendScalars e.injective
@@ -158,7 +158,7 @@ lemma IsTranscendenceBasis.isAlgebraic_iff [IsDomain S] [NoZeroDivisors A]
     simpa [Sv, ← Subalgebra.isAlgebraic_iff, isAlgebraic_adjoin_iff]
   have le : Rv ≤ Sv.restrictScalars R := by
     rw [Subalgebra.restrictScalars_adjoin]; exact le_sup_right
-  letI : Algebra Rv Sv := (Subalgebra.inclusion le).toAlgebra
+  let : Algebra Rv Sv := (Subalgebra.inclusion le).toAlgebra
   have : IsScalarTower Rv Sv A := .of_algebraMap_eq fun x ↦ rfl
   have := (algebraMap R S).domain_nontrivial
   have := hv.isAlgebraic
@@ -237,11 +237,11 @@ theorem IsTranscendenceBasis.nonempty_iff_transcendental [Nontrivial R]
 theorem IsTranscendenceBasis.isAlgebraic_field {F E : Type*} {x : ι → E}
     [Field F] [Field E] [Algebra F E] (hx : IsTranscendenceBasis F x) :
     Algebra.IsAlgebraic (IntermediateField.adjoin F (range x)) E := by
-  haveI := hx.isAlgebraic
+  have := hx.isAlgebraic
   set S := range x
-  letI : Algebra (adjoin F S) (IntermediateField.adjoin F S) :=
+  let : Algebra (adjoin F S) (IntermediateField.adjoin F S) :=
     (Subalgebra.inclusion (IntermediateField.algebra_adjoin_le_adjoin F S)).toRingHom.toAlgebra
-  haveI : IsScalarTower (adjoin F S) (IntermediateField.adjoin F S) E :=
+  have : IsScalarTower (adjoin F S) (IntermediateField.adjoin F S) E :=
     IsScalarTower.of_algebraMap_eq (congrFun rfl)
   exact Algebra.IsAlgebraic.extendScalars (R := adjoin F S) (Subalgebra.inclusion_injective _)
 

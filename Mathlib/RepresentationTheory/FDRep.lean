@@ -103,8 +103,6 @@ lemma endRingEquiv_comp_ρ (V : FDRep R G) :
 @[simp]
 lemma hom_hom_action_ρ (V : FDRep R G) (g : G) : (Action.ρ V g).hom.hom = (ρ V g) := rfl
 
-@[deprecated (since := "2025-12-18")] alias hom_action_ρ := hom_hom_action_ρ
-
 /-- The underlying `LinearEquiv` of an isomorphism of representations. -/
 def isoToLinearEquiv {V W : FDRep R G} (i : V ≅ W) : V ≃ₗ[R] W :=
   FGModuleCat.isoToLinearEquiv ((Action.forget (FGModuleCat R) G).mapIso i)

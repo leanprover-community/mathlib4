@@ -232,8 +232,6 @@ theorem extension_comp_hom {X : UniformSpaceCat} {Y : CpltSepUniformSpace}
   ext x
   exact congr_fun (Completion.extension_comp_coe f.hom.property) x
 
-@[deprecated (since := "2025-12-18")] alias extension_comp_coe := extension_comp_hom
-
 set_option backward.isDefEq.respectTransparency false in
 /-- The completion functor is left adjoint to the forgetful functor. -/
 noncomputable def adj : completionFunctor ⊣ forget₂ CpltSepUniformSpace UniformSpaceCat :=

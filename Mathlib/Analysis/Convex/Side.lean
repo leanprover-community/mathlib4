@@ -780,7 +780,7 @@ variable [NormedAddTorsor V P]
 theorem isConnected_setOf_wSameSide {s : AffineSubspace ℝ P} (x : P) (h : (s : Set P).Nonempty) :
     IsConnected { y | s.WSameSide x y } := by
   obtain ⟨p, hp⟩ := h
-  haveI : Nonempty s := ⟨⟨p, hp⟩⟩
+  have : Nonempty s := ⟨⟨p, hp⟩⟩
   by_cases hx : x ∈ s
   · simp only [wSameSide_of_left_mem, hx]
     have := AddTorsor.connectedSpace V P
@@ -801,7 +801,7 @@ theorem isPreconnected_setOf_wSameSide (s : AffineSubspace ℝ P) (x : P) :
 theorem isConnected_setOf_sSameSide {s : AffineSubspace ℝ P} {x : P} (hx : x ∉ s)
     (h : (s : Set P).Nonempty) : IsConnected { y | s.SSameSide x y } := by
   obtain ⟨p, hp⟩ := h
-  haveI : Nonempty s := ⟨⟨p, hp⟩⟩
+  have : Nonempty s := ⟨⟨p, hp⟩⟩
   rw [setOf_sSameSide_eq_image2 hx hp, ← Set.image_prod]
   refine (isConnected_Ioi.prod (isConnected_iff_connectedSpace.2 ?_)).image _
     ((continuous_fst.smul continuous_const).vadd continuous_snd).continuousOn
@@ -821,7 +821,7 @@ theorem isPreconnected_setOf_sSameSide (s : AffineSubspace ℝ P) (x : P) :
 theorem isConnected_setOf_wOppSide {s : AffineSubspace ℝ P} (x : P) (h : (s : Set P).Nonempty) :
     IsConnected { y | s.WOppSide x y } := by
   obtain ⟨p, hp⟩ := h
-  haveI : Nonempty s := ⟨⟨p, hp⟩⟩
+  have : Nonempty s := ⟨⟨p, hp⟩⟩
   by_cases hx : x ∈ s
   · simp only [wOppSide_of_left_mem, hx]
     have := AddTorsor.connectedSpace V P
@@ -842,7 +842,7 @@ theorem isPreconnected_setOf_wOppSide (s : AffineSubspace ℝ P) (x : P) :
 theorem isConnected_setOf_sOppSide {s : AffineSubspace ℝ P} {x : P} (hx : x ∉ s)
     (h : (s : Set P).Nonempty) : IsConnected { y | s.SOppSide x y } := by
   obtain ⟨p, hp⟩ := h
-  haveI : Nonempty s := ⟨⟨p, hp⟩⟩
+  have : Nonempty s := ⟨⟨p, hp⟩⟩
   rw [setOf_sOppSide_eq_image2 hx hp, ← Set.image_prod]
   refine (isConnected_Iio.prod (isConnected_iff_connectedSpace.2 ?_)).image _
     ((continuous_fst.smul continuous_const).vadd continuous_snd).continuousOn

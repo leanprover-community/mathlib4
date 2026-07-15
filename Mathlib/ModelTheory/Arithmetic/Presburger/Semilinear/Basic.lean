@@ -140,7 +140,7 @@ private theorem Nat.isSemilinearSet_of_isSlice {ι : Type*} [Finite ι] {s : Set
     (hs : IsSlice s) : IsSemilinearSet s := by
   classical
   suffices h : ∀ (a : ι → ℕ) (t : Finset ι), (∀ x ∈ s, ∀ i ∉ t, x i = a i) → IsSemilinearSet s by
-    haveI := Fintype.ofFinite ι
+    have := Fintype.ofFinite ι
     exact h 0 Finset.univ (by simp)
   intro a t ht
   induction t using Finset.strongInductionOn generalizing s a with | _ t ih
@@ -249,7 +249,7 @@ public lemma IsSemilinearSet.exists_fg_eq_subtypeVal (hs : IsSemilinearSet s) :
     ∃ (P : AddSubmonoid M) (s' : Set P), P.FG ∧ IsSemilinearSet s' ∧ s = Subtype.val '' s' := by
   rcases hs with ⟨S, hS, hS', rfl⟩
   choose! P t hP ht ht' using fun s hs => (hS' s hs).exists_fg_eq_subtypeVal
-  haveI : Finite S := hS
+  have : Finite S := hS
   refine ⟨⨆ s : S, P s, ⋃ (s : S), AddSubmonoid.inclusion (le_iSup _ s) '' t s.1,
     .iSup _ fun s => hP s s.2, .iUnion fun s => (ht s s.2).isSemilinearSet.image _, ?_⟩
   simp_rw [sUnion_eq_iUnion, image_iUnion, image_image, AddSubmonoid.coe_inclusion,
@@ -270,7 +270,7 @@ public lemma IsSemilinearSet.exists_fg_eq_subtypeVal₂ (hs₁ : IsSemilinearSet
 private lemma Nat.isSemilinearSet_inter_of_isLinearSet [Finite ι] {s₁ s₂ : Set (ι → ℕ)}
     (hs₁ : IsLinearSet s₁) (hs₂ : IsLinearSet s₂) : IsSemilinearSet (s₁ ∩ s₂) := by
   classical
-  haveI := Fintype.ofFinite ι
+  have := Fintype.ofFinite ι
   rw [isLinearSet_iff_exists_matrix] at hs₁ hs₂
   rcases hs₁ with ⟨u, n, A, rfl⟩
   rcases hs₂ with ⟨v, m, B, rfl⟩
@@ -440,7 +440,7 @@ private noncomputable def fundamentalDomain : Set (ι → ℕ) :=
 
 private theorem finite_fundamentalDomain : hs.fundamentalDomain.Finite := by
   classical
-  haveI := Fintype.ofFinite ι
+  have := Fintype.ofFinite ι
   apply (finite_Iic (hs.base + ∑ i : hs.basisSet, i.1)).subset
   intro x hx
   rw [mem_Iic, ← toRatVec_mono, map_add, map_sum, ← add_sub_cancel (toRatVec hs.base) (toRatVec x),
@@ -620,7 +620,7 @@ private theorem isSemilinearSet_setOfFractNe : IsSemilinearSet hs.setOfFractNe :
     apply Nat.isSemilinearSet_inter <| Nat.isSemilinearSet_preimage
       (.closure_of_finite hs.finite_basisSet) (LinearMap.funLeft ℕ ℕ Sum.inr)
     classical
-    haveI := Fintype.ofFinite ι
+    have := Fintype.ofFinite ι
     convert!
       Nat.isSemilinearSet_setOf_mulVec_eq (κ := (ι ⊕ ι) ⊕ ι) 0 i
         (Matrix.fromCols (Matrix.fromCols 1 0) 1) (Matrix.fromCols (Matrix.fromCols 0 1) 0) using
@@ -682,7 +682,7 @@ private theorem isSemilinearSet_setOfFloorNeg : IsSemilinearSet hs.setOfFloorNeg
     rw [setOf_and]
     apply Nat.isSemilinearSet_inter <| Nat.isSemilinearSet_preimage
       (.closure_of_finite hs.finite_basisSet.sdiff) (LinearMap.funLeft ℕ ℕ Sum.inr)
-    haveI := Fintype.ofFinite ι
+    have := Fintype.ofFinite ι
     convert!
       Nat.isSemilinearSet_setOf_mulVec_eq (κ := ((ι ⊕ ι) ⊕ ι) ⊕ ι) i.1 hs.base
         (Matrix.fromCols (Matrix.fromCols (Matrix.fromCols 1 1) 0) 1)
@@ -743,7 +743,7 @@ private theorem isSemilinearSet_setOfFloorPos : IsSemilinearSet hs.setOfFloorPos
     rw [setOf_and]
     apply Nat.isSemilinearSet_inter <| Nat.isSemilinearSet_preimage
       (.closure_of_finite hs.finite_basisSet.sdiff) (LinearMap.funLeft ℕ ℕ Sum.inr)
-    haveI := Fintype.ofFinite ι
+    have := Fintype.ofFinite ι
     convert!
       Nat.isSemilinearSet_setOf_mulVec_eq (κ := ((ι ⊕ ι) ⊕ ι) ⊕ ι) 0 (hs.base + i.1)
         (Matrix.fromCols (Matrix.fromCols (Matrix.fromCols 1 0) 0) 1)

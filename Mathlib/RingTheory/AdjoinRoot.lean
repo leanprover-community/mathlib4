@@ -1069,7 +1069,7 @@ polynomial over `L` divides some monic irreducible polynomial over `K`. -/
 theorem Irreducible.exists_dvd_monic_irreducible_of_isIntegral {K L : Type*}
     [CommRing K] [IsDomain K] [Field L] [Algebra K L] [Algebra.IsIntegral K L] {f : L[X]}
     (hf : Irreducible f) : ∃ g : K[X], g.Monic ∧ Irreducible g ∧ f ∣ g.map (algebraMap K L) := by
-  haveI := Fact.mk hf
+  have := Fact.mk hf
   have h := hf.ne_zero
   have h2 := isIntegral_trans (R := K) _ (AdjoinRoot.isIntegral_root h)
   have h3 := (AdjoinRoot.minpoly_root h) ▸ minpoly.dvd_map_of_isScalarTower K L (AdjoinRoot.root f)

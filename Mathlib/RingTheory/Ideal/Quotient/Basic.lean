@@ -93,10 +93,10 @@ instance isDomain [hI : I.IsPrime] : IsDomain (R ⧸ I) :=
 
 theorem isDomain_iff_prime : IsDomain (R ⧸ I) ↔ I.IsPrime := by
   refine ⟨fun H => ⟨zero_ne_one_iff.1 ?_, fun {x y} h => ?_⟩, fun h => inferInstance⟩
-  · haveI : Nontrivial (R ⧸ I) := ⟨H.2.1⟩
+  · have : Nontrivial (R ⧸ I) := ⟨H.2.1⟩
     exact zero_ne_one
   · simp only [← eq_zero_iff_mem, (mk I).map_mul] at h ⊢
-    haveI := @IsDomain.to_noZeroDivisors (R ⧸ I) _ H
+    have := @IsDomain.to_noZeroDivisors (R ⧸ I) _ H
     exact eq_zero_or_eq_zero_of_mul_eq_zero h
 
 set_option backward.isDefEq.respectTransparency false in

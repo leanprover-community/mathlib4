@@ -50,7 +50,6 @@ variable [CommRing R] [AddCommGroup M] [Module R M]
 
 theorem separatingLeft_dualProd :
     (dualProd R M).SeparatingLeft ↔ Function.Injective (Module.Dual.eval R M) := by
-  classical
   rw [separatingLeft_iff_ker_eq_bot, ker_eq_bot]
   let e := LinearEquiv.prodComm R _ _ ≪≫ₗ Module.dualProdDualEquivDual R (Module.Dual R M) M
   let h_d := e.symm.toLinearMap.comp (dualProd R M)

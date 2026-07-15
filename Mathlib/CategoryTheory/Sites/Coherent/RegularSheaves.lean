@@ -91,8 +91,6 @@ def mapToEqualizer (P : Cᵒᵖ ⥤ Type*) {W X B : C} (f : X ⟶ B)
   ↾fun t ↦
     ⟨P.map f.op t, by simp only [Set.mem_setOf_eq, ← comp_apply, ← Functor.map_comp, ← op_comp, w]⟩
 
-@[deprecated (since := "2025-11-23")] alias MapToEqualizer := mapToEqualizer
-
 theorem EqualizerCondition.bijective_mapToEqualizer_pullback' {P : Cᵒᵖ ⥤ Type*}
     (hP : EqualizerCondition P) {X B : C} {π : X ⟶ B} [EffectiveEpi π]
     (c : PullbackCone π π) (hc : IsLimit c) :

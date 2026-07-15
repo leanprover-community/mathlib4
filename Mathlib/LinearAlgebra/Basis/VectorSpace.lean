@@ -247,7 +247,7 @@ theorem LinearMap.exists_leftInverse_of_injective (f : V →ₗ[K] V') (hf_inj :
   let C := this.extend (subset_univ _)
   have BC := this.subset_extend (subset_univ _)
   let hC := Basis.extend this
-  haveI Vinh : Inhabited V := ⟨0⟩
+  have Vinh : Inhabited V := ⟨0⟩
   refine ⟨(hC.constr ℕ : _ → _) (C.restrict (invFun f)), hB.ext fun b => ?_⟩
   rw [image_subset_iff] at BC
   have fb_eq : f b = hC ⟨f b, BC b.2⟩ := by

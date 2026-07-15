@@ -40,7 +40,7 @@ to the `x`. -/
 noncomputable def toSmallShiftedHom (x : CohomologyClass K L n) :
     SmallShiftedHom.{w} (HomologicalComplex.quasiIso C (.up ℤ)) K L n :=
   Quotient.lift (fun y ↦ SmallShiftedHom.mk _ (Cocycle.equivHomShift.symm y)) (by
-    letI := HasDerivedCategory.standard C
+    let := HasDerivedCategory.standard C
     intro y₁ y₂ h
     refine (SmallShiftedHom.equiv _ DerivedCategory.Q).injective ?_
     simp only [SmallShiftedHom.equiv_mk, ShiftedHom.map]

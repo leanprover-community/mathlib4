@@ -51,9 +51,9 @@ variable [NormedField 𝕜] [IsRCLikeNormedField 𝕜]
 theorem Module.Dual.exists_extension_of_le_seminorm [Module 𝕜 E] (S : Submodule 𝕜 E) (f : Dual 𝕜 S)
     {p : Seminorm 𝕜 E} (hp : ∀ x, ‖f x‖ ≤ p x) :
     ∃ g : Dual 𝕜 E, (∀ x : S, g x = f x) ∧ ∀ x, ‖g x‖ ≤ p x := by
-  letI : RCLike 𝕜 := IsRCLikeNormedField.rclike 𝕜
-  letI : Module ℝ E := .restrictScalars ℝ 𝕜 E
-  letI : IsScalarTower ℝ 𝕜 E := .restrictScalars _ _ _
+  let : RCLike 𝕜 := IsRCLikeNormedField.rclike 𝕜
+  let : Module ℝ E := .restrictScalars ℝ 𝕜 E
+  let : IsScalarTower ℝ 𝕜 E := .restrictScalars _ _ _
   let fr : Dual ℝ S := reLm.comp (f.restrictScalars ℝ)
   obtain ⟨g, (hg : ∀ x : S, g x = fr x), hgp⟩ :=
     fr.exists_extension_of_le_seminorm_real (S.restrictScalars ℝ) (p := p.restrictScalars ℝ)
@@ -106,7 +106,7 @@ space. -/
 lemma ContinuousLinearMap.exist_extension_of_finiteDimensional_range {S : Submodule 𝕜 E}
     (f : S →L[𝕜] F) [FiniteDimensional 𝕜 f.range] :
     ∃ g : E →L[𝕜] F, f = g.comp S.subtypeL := by
-  letI : RCLike 𝕜 := IsRCLikeNormedField.rclike 𝕜
+  let : RCLike 𝕜 := IsRCLikeNormedField.rclike 𝕜
   let b := Module.finBasis 𝕜 f.range
   let e := b.equivFunL
   let fi := fun i ↦ (LinearMap.toContinuousLinearMap (b.coord i)).comp

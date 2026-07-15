@@ -407,7 +407,7 @@ lemma RelCWComplex.cellFrontier_zero_eq_empty [RelCWComplex C D] {j : cell C 0} 
 @[alias_in CWComplex]
 lemma RelCWComplex.nonempty_cellFrontier [CWComplex C] {n : ℕ} (hn : n ≠ 0) (j : cell C n) :
     (cellFrontier n j).Nonempty := by
-  letI : NeZero n := ⟨hn⟩
+  let : NeZero n := ⟨hn⟩
   use map n j (Pi.single 0 1)
   simp only [cellFrontier, mem_image, mem_sphere_iff_norm, sub_zero]
   use Pi.single 0 1, by simp [Pi.norm_single]

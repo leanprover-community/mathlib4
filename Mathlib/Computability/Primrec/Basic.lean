@@ -683,7 +683,7 @@ theorem list_idxOf₁ [DecidableEq α] (l : List α) : Primrec fun a => l.idxOf 
 theorem dom_finite [Finite α] (f : α → σ) : Primrec f :=
   let ⟨l, _, m⟩ := Finite.exists_univ_list α
   option_some_iff.1 <| by
-    haveI := decidableEqOfEncodable α
+    have := decidableEqOfEncodable α
     refine ((list_getElem?₁ (l.map f)).comp (list_idxOf₁ l)).of_eq fun a => ?_
     rw [List.getElem?_map, List.getElem?_idxOf (m a), Option.map_some]
 
@@ -857,14 +857,14 @@ variable [Primcodable α] [Primcodable β] [Primcodable σ]
 theorem subtype_val {p : α → Prop} [DecidablePred p] {hp : PrimrecPred p} :
     haveI := Primcodable.subtype hp
     Primrec (@Subtype.val α p) := by
-  letI := Primcodable.subtype hp
+  let := Primcodable.subtype hp
   refine (Primcodable.prim (Subtype p)).of_eq fun n => ?_
   rcases @decode (Subtype p) _ n with (_ | ⟨a, h⟩) <;> rfl
 
 theorem subtype_val_iff {p : β → Prop} [DecidablePred p] {hp : PrimrecPred p} {f : α → Subtype p} :
     haveI := Primcodable.subtype hp
     (Primrec fun a => (f a).1) ↔ Primrec f := by
-  letI := Primcodable.subtype hp
+  let := Primcodable.subtype hp
   refine ⟨fun h => ?_, fun hf => subtype_val.comp hf⟩
   refine Nat.Primrec.of_eq h fun n => ?_
   rcases @decode α _ n with - | a; · rfl
@@ -892,7 +892,7 @@ theorem ulower_up : Primrec (ULower.up : ULower α → α) :=
   option_get (Primrec.decode₂.comp (subtype_val (hp := Primcodable.mem_range_encode)))
 
 theorem fin_val_iff {n} {f : α → Fin n} : (Primrec fun a => (f a).1) ↔ Primrec f := by
-  letI : Primcodable { a // a < n } := Primcodable.subtype (nat_lt.comp .id (const _))
+  let : Primcodable { a // a < n } := Primcodable.subtype (nat_lt.comp .id (const _))
   exact (Iff.trans (by rfl) subtype_val_iff).trans (of_equiv_iff _)
 
 theorem fin_val {n} : Primrec (fun (i : Fin n) => (i : ℕ)) :=

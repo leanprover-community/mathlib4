@@ -112,9 +112,6 @@ abbrev toSkeleton (X : C) : Skeleton C := ⟦X⟧
 noncomputable def fromSkeletonToSkeletonIso (X : C) : (fromSkeleton C).obj (toSkeleton X) ≅ X :=
   Nonempty.some (Quotient.mk_out X)
 
-@[deprecated (since := "2025-12-18")] alias preCounitIso :=
-  fromSkeletonToSkeletonIso
-
 @[reassoc, simp]
 lemma Skeleton.comp_hom {X Y Z : Skeleton C} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (f ≫ g).hom = f.hom ≫ g.hom := rfl

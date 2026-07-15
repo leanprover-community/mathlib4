@@ -243,7 +243,7 @@ end AEMeasurable
 theorem aemeasurable_const' (h : ∀ᵐ (x) (y) ∂μ, f x = f y) : AEMeasurable f μ := by
   rcases eq_or_ne μ 0 with (rfl | hμ)
   · exact aemeasurable_zero_measure
-  · haveI := ae_neBot.2 hμ
+  · have := ae_neBot.2 hμ
     rcases h.exists with ⟨x, hx⟩
     exact ⟨const α (f x), measurable_const, EventuallyEq.symm hx⟩
 
@@ -306,7 +306,7 @@ theorem aemeasurable_Ioi_of_forall_Ioc {β} {mβ : MeasurableSpace β} [LinearOr
     [(atTop : Filter α).IsCountablyGenerated] {x : α} {g : α → β}
     (g_meas : ∀ t > x, AEMeasurable g (μ.restrict (Ioc x t))) :
     AEMeasurable g (μ.restrict (Ioi x)) := by
-  haveI : Nonempty α := ⟨x⟩
+  have : Nonempty α := ⟨x⟩
   obtain ⟨u, hu_tendsto⟩ := exists_seq_tendsto (atTop : Filter α)
   have Ioi_eq_iUnion : Ioi x = ⋃ n : ℕ, Ioc x (u n) := by
     rw [iUnion_Ioc_eq_Ioi_self_iff.mpr _]

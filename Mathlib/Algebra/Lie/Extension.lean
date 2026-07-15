@@ -355,7 +355,7 @@ one extension. -/
 lemma lieModuleOf [IsLieAbelian M] (E : Extension R M L) :
     letI := E.ringModuleOf
     LieModule R L M := by
-  letI := E.ringModuleOf
+  let := E.ringModuleOf
   set h := E.proj_surjective.hasRightInverse
   exact
     { smul_lie r x m := by

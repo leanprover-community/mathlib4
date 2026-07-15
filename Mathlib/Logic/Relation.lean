@@ -964,8 +964,6 @@ alias reflTransGen_of_isTrans_reflexive := reflTransGen_le_of_le
 @[deprecated (since := "2026-02-21")]
 alias reflTransGen_of_transitive_reflexive := reflTransGen_le_of_le
 
-@[deprecated (since := "2025-12-17")] alias reflTransGen_minimal := reflTransGen_le_of_le
-
 theorem reflTransGen_le_of_equivalence_of_le {r' : α → α → Prop} (hr : Equivalence r) :
     r' ≤ r → ReflTransGen r' ≤ r :=
   @reflTransGen_le_of_le _ _ _ hr.stdRefl hr.isTrans

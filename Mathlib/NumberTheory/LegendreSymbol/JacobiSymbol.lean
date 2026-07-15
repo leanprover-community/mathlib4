@@ -140,7 +140,7 @@ theorem trichotomy (a : ℤ) (b : ℕ) : J(a | b) = 0 ∨ J(a | b) = 1 ∨ J(a |
       (by
         intro _ ha'
         rcases List.mem_pmap.mp ha' with ⟨p, hp, rfl⟩
-        haveI : Fact p.Prime := ⟨prime_of_mem_primeFactorsList hp⟩
+        have : Fact p.Prime := ⟨prime_of_mem_primeFactorsList hp⟩
         exact quadraticChar_isQuadratic (ZMod p) a)
 
 /-- The symbol `J(1 | b)` has the value `1`. -/

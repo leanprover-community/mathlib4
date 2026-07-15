@@ -212,7 +212,7 @@ theorem addWellApproximable_ae_empty_or_univ (δ : ℕ → ℝ) (hδ : Tendsto �
     `E` is almost equal to `C p` for every prime. Combining this with 3 we find that `E` is almost
     invariant under the map `y ↦ y + 1/p` for every prime `p`. The required result then follows from
     `AddCircle.ae_empty_or_univ_of_forall_vadd_ae_eq_self`. -/
-  letI : SemilatticeSup Nat.Primes := Nat.Subtype.semilatticeSup _
+  let : SemilatticeSup Nat.Primes := Nat.Subtype.semilatticeSup _
   set μ : Measure 𝕊 := volume
   set u : Nat.Primes → 𝕊 := fun p => ↑((↑(1 : ℕ) : ℝ) / ((p : ℕ) : ℝ) * T)
   have hu₀ : ∀ p : Nat.Primes, addOrderOf (u p) = (p : ℕ) := by

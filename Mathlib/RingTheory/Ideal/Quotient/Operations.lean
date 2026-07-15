@@ -175,7 +175,7 @@ theorem bot_quotient_isMaximal_iff (I : Ideal R) [I.IsTwoSided] :
     mk_ker (I := I) ▸
       comap_isMaximal_of_surjective (Quotient.mk I) Quotient.mk_surjective (K := ⊥) (H := hI),
     fun hI => by
-    letI := Quotient.divisionRing I
+    let := Quotient.divisionRing I
     exact bot_isMaximal⟩
 
 /-- See also `Ideal.mem_quotient_iff_mem` in case `I ≤ J`. -/

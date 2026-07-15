@@ -46,7 +46,7 @@ theorem isField_of_isIntegral_of_isField' [CommRing R] [CommRing S] [IsDomain S]
   exists_pair_ne := ⟨0, 1, zero_ne_one⟩
   mul_comm := mul_comm
   mul_inv_cancel {x} hx := by
-    letI := hR.toField
+    let := hR.toField
     obtain ⟨y, rfl⟩ := (Algebra.IsIntegral.isIntegral (R := R) x).isUnit hx
     exact ⟨y.inv, y.val_inv⟩
 
@@ -492,7 +492,7 @@ theorem isIntegral_trans [Algebra.IsIntegral R A] (x : B) (hx : IsIntegral A x) 
   refine .of_mem_of_fg ((S[x]).restrictScalars R) ?_ _
     ((Subalgebra.mem_restrictScalars R).mpr <| subset_adjoin rfl)
   rw [← Module.Finite.iff_fg]
-  letI : SMul S Sx := { MSx with } -- need this even though MSx is there
+  let : SMul S Sx := { MSx with } -- need this even though MSx is there
   have : IsScalarTower R S Sx :=
     Submodule.isScalarTower Sx -- Lean looks for `Module A Sx` without this
   exact Module.Finite.trans S Sx

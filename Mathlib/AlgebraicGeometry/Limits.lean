@@ -112,7 +112,7 @@ instance (priority := 100) isOpenImmersion_of_isEmpty {X Y : Scheme} (f : X ⟶ 
 
 instance (priority := 100) isIso_of_isEmpty {X Y : Scheme} (f : X ⟶ Y) [IsEmpty Y] :
     IsIso f := by
-  haveI : IsEmpty X := f.base.hom.1.isEmpty
+  have : IsEmpty X := f.base.hom.1.isEmpty
   have : Epi f.base := by
     rw [TopCat.epi_iff_surjective]; rintro (x : Y)
     exact isEmptyElim x
@@ -546,7 +546,7 @@ lemma isIso_stalkMap_coprodSpec (x) :
     rw [← IsIso.comp_inv_eq,
       Scheme.Hom.stalkMap_congr_hom _ (Spec.map _) (coprodSpec_inl R S)] at this
     rw [coprodMk_inl, ← this]
-    letI := (RingHom.fst R S).toAlgebra
+    let := (RingHom.fst R S).toAlgebra
     have : IsOpenImmersion (Spec.map (CommRingCat.ofHom (RingHom.fst R S))) :=
       IsOpenImmersion.of_isLocalization (1, 0)
     infer_instance
@@ -554,7 +554,7 @@ lemma isIso_stalkMap_coprodSpec (x) :
     rw [← IsIso.comp_inv_eq,
       Scheme.Hom.stalkMap_congr_hom _ (Spec.map _) (coprodSpec_inr R S)] at this
     rw [coprodMk_inr, ← this]
-    letI := (RingHom.snd R S).toAlgebra
+    let := (RingHom.snd R S).toAlgebra
     have : IsOpenImmersion (Spec.map (CommRingCat.ofHom (RingHom.snd R S))) :=
       IsOpenImmersion.of_isLocalization (0, 1)
     infer_instance
@@ -614,7 +614,7 @@ lemma ι_sigmaSpec (R : ι → CommRingCat) (i) :
 instance (i) (R : ι → Type _) [∀ i, CommRing (R i)] :
     IsOpenImmersion (Spec.map (CommRingCat.ofHom (Pi.evalRingHom (R ·) i))) := by
   classical
-  letI := (Pi.evalRingHom R i).toAlgebra
+  let := (Pi.evalRingHom R i).toAlgebra
   have : IsLocalization.Away (Function.update (β := R) 0 i 1) (R i) := by
     apply IsLocalization.away_of_isIdempotentElem_of_mul
     · ext j; by_cases h : j = i <;> aesop

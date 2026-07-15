@@ -90,7 +90,7 @@ open UniqueFactorizationMonoid
 namespace Polynomial
 
 instance (priority := 100) uniqueFactorizationMonoid : UniqueFactorizationMonoid D[X] := by
-  letI := Classical.arbitrary (NormalizedGCDMonoid D)
+  let := Classical.arbitrary (NormalizedGCDMonoid D)
   exact ufm_of_decomposition_of_wfDvdMonoid
 
 /-- If `D` is a unique factorization domain, `f` is a non-zero polynomial in `D[X]`, then `f` has

@@ -255,14 +255,6 @@ lemma toList_getElem (p : RelSeries r) {i : ℕ} (hi : i < p.toList.length) :
     p.toList[(i : ℕ)] = p ⟨i, by simpa using hi⟩ := by
   simp only [toList, List.getElem_ofFn]
 
-@[deprecated toList_getElem (since := "2025-11-25")]
-lemma toList_getElem_eq_apply (p : RelSeries r) (i : Fin (p.length + 1)) :
-    p.toList[(i : ℕ)] = p i := p.toList_getElem _
-
-@[deprecated toList_getElem (since := "2025-11-25")]
-lemma toList_getElem_eq_apply_of_lt_length {p : RelSeries r} {i : ℕ} (hi : i < p.length + 1) :
-    p.toList[i]'(by simpa using hi) = p ⟨i, hi⟩ := p.toList_getElem _
-
 lemma toList_getElem_zero_eq_head (p : RelSeries r) : p.toList[0] = p.head :=
   p.toList_getElem _
 
@@ -614,7 +606,7 @@ def inductionOn (motive : RelSeries r → Sort*)
     (cons : (p : RelSeries r) → (x : α) → (hx : x ~[r] p.head) → (hp : motive p) →
       motive (p.cons x hx)) (p : RelSeries r) :
     motive p := by
-  let this {n : ℕ} (heq : p.length = n) : motive p := by
+  let {n : ℕ} (heq : p.length = n) : motive p := by
     induction n generalizing p with
     | zero =>
       convert! singleton p.head
@@ -679,7 +671,7 @@ def inductionOn' (motive : RelSeries r → Sort*)
     (snoc : (p : RelSeries r) → (x : α) → (hx : p.last ~[r] x) → (hp : motive p) →
       motive (p.snoc x hx)) (p : RelSeries r) :
     motive p := by
-  let this {n : ℕ} (heq : p.length = n) : motive p := by
+  let {n : ℕ} (heq : p.length = n) : motive p := by
     induction n generalizing p with
     | zero =>
       convert! singleton p.head

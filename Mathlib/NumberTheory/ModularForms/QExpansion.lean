@@ -244,7 +244,7 @@ private lemma hasFPowerSeriesOnBall_update {f : ℍ → ℂ} (hh : 0 < h) {c : �
     rcases eq_or_ne r 0 with rfl | hr'
     · simp
     · lift r to NNReal using hr.ne_top
-      letI : FiniteDimensional ℝ ℂ := basisOneI.finiteDimensional_of_finite
+      let : FiniteDimensional ℝ ℂ := basisOneI.finiteDimensional_of_finite
       apply FormalMultilinearSeries.le_radius_of_summable
       simpa [smul_eq_mul, norm_mul, mul_comm, mul_left_comm, mul_assoc] using
         (hasSum_cuspFunction_of_hasSum_punctured hh hf (q := r) (by simpa using hr)

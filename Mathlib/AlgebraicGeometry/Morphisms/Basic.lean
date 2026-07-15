@@ -465,7 +465,7 @@ instance (P : AffineTargetMorphismProperty) [P.toProperty.RespectsIso] :
     exact H U
   · introv H
     rintro ⟨U, hU : IsAffineOpen U⟩; dsimp
-    haveI : IsAffine _ := hU.preimage_of_isIso e.hom
+    have : IsAffine _ := hU.preimage_of_isIso e.hom
     rw [morphismRestrict_comp, P.cancel_right_of_respectsIso]
     exact H ⟨(Opens.map e.hom.base).obj U, hU.preimage_of_isIso e.hom⟩
 
@@ -527,7 +527,7 @@ theorem restrict (hf : P f) (U : Y.affineOpens) :
   of_isPullback (isPullback_morphismRestrict f U).flip hf
 
 instance (priority := 900) : P.RespectsIso := by
-  letI := isLocal_affineProperty P
+  let := isLocal_affineProperty P
   rw [eq_targetAffineLocally P]
   infer_instance
 
@@ -535,7 +535,7 @@ theorem of_iSup_eq_top
     {ι} (U : ι → Y.affineOpens) (hU : ⨆ i, (U i : Y.Opens) = ⊤)
     (hU' : ∀ i, Q (f ∣_ U i)) :
     P f := by
-  letI := isLocal_affineProperty P
+  let := isLocal_affineProperty P
   rw [eq_targetAffineLocally P]
   classical
   intro V
@@ -568,14 +568,14 @@ theorem of_openCover
 
 theorem iff_of_openCover (𝒰 : Y.OpenCover) [∀ i, IsAffine (𝒰.X i)] :
     P f ↔ ∀ i, Q (𝒰.pullbackHom f i) := by
-  letI := isLocal_affineProperty P
+  let := isLocal_affineProperty P
   rw [iff_of_iSup_eq_top (P := P)
     (fun i ↦ ⟨_, isAffineOpen_opensRange _⟩) 𝒰.iSup_opensRange]
   exact forall_congr' fun i ↦ Q.arrow_mk_iso_iff
     (morphismRestrictOpensRange f _)
 
 theorem iff_of_isAffine [IsAffine Y] : P f ↔ Q f := by
-  letI := isLocal_affineProperty P
+  let := isLocal_affineProperty P
   rw [iff_of_openCover (P := P) (Scheme.coverOfIsIso.{0} (𝟙 Y))]
   trans Q (pullback.snd f (𝟙 _))
   · exact ⟨fun H => H PUnit.unit, fun H _ => H⟩
@@ -584,7 +584,7 @@ theorem iff_of_isAffine [IsAffine Y] : P f ↔ Q f := by
 
 set_option backward.isDefEq.respectTransparency false in
 instance (priority := 900) : IsZariskiLocalAtTarget P := by
-  letI := isLocal_affineProperty P
+  let := isLocal_affineProperty P
   apply IsZariskiLocalAtTarget.mk'
   · rw [eq_targetAffineLocally P]
     intro X Y f U H V
@@ -612,7 +612,7 @@ set_option backward.isDefEq.respectTransparency false in
 private theorem pullback_fst_of_right (hP' : Q.IsStableUnderBaseChange)
     {X Y S : Scheme} (f : X ⟶ S) (g : Y ⟶ S) [IsAffine S] (H : Q g) :
     P (pullback.fst f g) := by
-  letI := isLocal_affineProperty P
+  let := isLocal_affineProperty P
   rw [iff_of_openCover (P := P) X.affineCover]
   intro i
   let e := pullbackSymmetry _ _ ≪≫ pullbackRightPullbackFstIso f g (X.affineCover.f i)
@@ -641,7 +641,7 @@ theorem isStableUnderBaseChange (hP' : Q.IsStableUnderBaseChange) :
         simp [e]
       rw [← this, P.cancel_left_of_respectsIso]
       apply HasAffineProperty.pullback_fst_of_right hP'
-      letI := isLocal_affineProperty P
+      let := isLocal_affineProperty P
       rw [← pullbackSymmetry_hom_comp_snd, Q.cancel_left_of_respectsIso]
       apply of_isPullback (.of_hasPullback _ _) H)
 

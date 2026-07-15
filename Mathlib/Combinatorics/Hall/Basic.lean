@@ -120,10 +120,10 @@ theorem Finset.all_card_le_biUnion_card_iff_exists_injective {ι : Type u} {α :
   constructor
   · intro h
     -- Set up the functor
-    haveI : ∀ ι' : (Finset ι)ᵒᵖ, Nonempty ((hallMatchingsFunctor t).obj ι') := fun ι' =>
+    have : ∀ ι' : (Finset ι)ᵒᵖ, Nonempty ((hallMatchingsFunctor t).obj ι') := fun ι' =>
       hallMatchingsOn.nonempty t h ι'.unop
     classical
-      haveI : ∀ ι' : (Finset ι)ᵒᵖ, Finite ((hallMatchingsFunctor t).obj ι') := by
+      have : ∀ ι' : (Finset ι)ᵒᵖ, Finite ((hallMatchingsFunctor t).obj ι') := by
         intro ι'
         rw [hallMatchingsFunctor]
         infer_instance
@@ -196,7 +196,7 @@ rather than `Rel.image`.
 theorem Fintype.all_card_le_filter_rel_iff_exists_injective {α : Type u} {β : Type v} [Fintype β]
     (r : α → β → Prop) [DecidableRel r] :
     (∀ A : Finset α, #A ≤ #{b | ∃ a ∈ A, r a b}) ↔ ∃ f : α → β, Injective f ∧ ∀ x, r x (f x) := by
-  haveI := Classical.decEq β
+  have := Classical.decEq β
   let r' a : Finset β := {b | r a b}
   have h : ∀ A : Finset α, ({b | ∃ a ∈ A, r a b} : Finset _) = A.biUnion r' := by
     intro A

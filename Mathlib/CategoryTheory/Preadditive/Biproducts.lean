@@ -513,7 +513,7 @@ def binaryBiconeOfIsSplitMonoOfCokernel {X Y : C} {f : X ⟶ Y} [IsSplitMono f] 
     rw [splitEpiOfIdempotentOfIsColimitCofork_section_,
       isColimitCoforkOfCokernelCofork_desc, isCokernelEpiComp_desc]
     dsimp only [cokernelCoforkOfCofork_ofπ]
-    letI := epi_of_isColimit_cofork i
+    let := epi_of_isColimit_cofork i
     apply zero_of_epi_comp c.π
     simp only [sub_comp, comp_sub, Category.comp_id, Category.assoc, IsSplitMono.id, sub_self,
       Cofork.IsColimit.π_desc_assoc, CokernelCofork.π_ofπ, IsSplitMono.id_assoc]
@@ -627,7 +627,7 @@ def binaryBiconeOfIsSplitEpiOfKernel {X Y : C} {f : X ⟶ Y} [IsSplitEpi f] {c :
       rw [splitMonoOfIdempotentOfIsLimitFork_retraction, isLimitForkOfKernelFork_lift,
         isKernelCompMono_lift]
       dsimp only [kernelForkOfFork_ι]
-      letI := mono_of_isLimit_fork i
+      let := mono_of_isLimit_fork i
       apply zero_of_comp_mono c.ι
       simp only [comp_sub, Category.comp_id, Category.assoc, sub_self, Fork.IsLimit.lift_ι,
         Fork.ι_ofι, IsSplitEpi.id_assoc]
@@ -778,7 +778,7 @@ via Gaussian elimination.
 def Biprod.gaussian (f : X₁ ⊞ X₂ ⟶ Y₁ ⊞ Y₂) [IsIso (biprod.inl ≫ f ≫ biprod.fst)] :
     Σ' (L : X₁ ⊞ X₂ ≅ X₁ ⊞ X₂) (R : Y₁ ⊞ Y₂ ≅ Y₁ ⊞ Y₂) (g₂₂ : X₂ ⟶ Y₂),
       L.hom ≫ f ≫ R.hom = biprod.map (biprod.inl ≫ f ≫ biprod.fst) g₂₂ := by
-  let this :=
+  let :=
     Biprod.gaussian' (biprod.inl ≫ f ≫ biprod.fst) (biprod.inl ≫ f ≫ biprod.snd)
       (biprod.inr ≫ f ≫ biprod.fst) (biprod.inr ≫ f ≫ biprod.snd)
   rwa [Biprod.ofComponents_eq] at this
@@ -916,7 +916,7 @@ set_option backward.isDefEq.respectTransparency false in
 preserves the biproduct of `f`. For the converse, see `mapBiproduct`. -/
 lemma preservesBiproduct_of_mono_biproductComparison {f : J → C} [HasBiproduct f]
     [HasBiproduct (F.obj ∘ f)] [Mono (biproductComparison F f)] : PreservesBiproduct f F := by
-  haveI : HasProduct fun b => F.obj (f b) := by
+  have : HasProduct fun b => F.obj (f b) := by
     change HasProduct (F.obj ∘ f)
     infer_instance
   have that : piComparison F f =
@@ -924,19 +924,19 @@ lemma preservesBiproduct_of_mono_biproductComparison {f : J → C} [HasBiproduct
         biproductComparison F f ≫ (biproduct.isoProduct _).hom := by
     ext j
     convert! piComparison_comp_π F f j; simp [← Function.comp_def, ← Functor.map_comp]
-  haveI : IsIso (biproductComparison F f) := isIso_of_mono_of_isSplitEpi _
-  haveI : IsIso (piComparison F f) := by
+  have : IsIso (biproductComparison F f) := isIso_of_mono_of_isSplitEpi _
+  have : IsIso (piComparison F f) := by
     rw [that]
     infer_instance
-  haveI := PreservesProduct.of_iso_comparison F f
+  have := PreservesProduct.of_iso_comparison F f
   apply preservesBiproduct_of_preservesProduct
 
 /-- If the (coproduct-like) biproduct comparison for `F` and `f` is an epimorphism, then `F`
 preserves the biproduct of `F` and `f`. For the converse, see `mapBiproduct`. -/
 lemma preservesBiproduct_of_epi_biproductComparison' {f : J → C} [HasBiproduct f]
     [HasBiproduct (F.obj ∘ f)] [Epi (biproductComparison' F f)] : PreservesBiproduct f F := by
-  haveI : Epi (splitEpiBiproductComparison F f).section_ := by simpa
-  haveI : IsIso (biproductComparison F f) :=
+  have : Epi (splitEpiBiproductComparison F f).section_ := by simpa
+  have : IsIso (biproductComparison F f) :=
     IsIso.of_epi_section' (splitEpiBiproductComparison F f)
   apply preservesBiproduct_of_mono_biproductComparison
 
@@ -1039,11 +1039,11 @@ lemma preservesBinaryBiproduct_of_mono_biprodComparison {X Y : C} [HasBinaryBipr
     prodComparison F X Y =
       (F.mapIso (biprod.isoProd X Y)).inv ≫ biprodComparison F X Y ≫ (biprod.isoProd _ _).hom := by
     ext <;> simp [← Functor.map_comp]
-  haveI : IsIso (biprodComparison F X Y) := isIso_of_mono_of_isSplitEpi _
-  haveI : IsIso (prodComparison F X Y) := by
+  have : IsIso (biprodComparison F X Y) := isIso_of_mono_of_isSplitEpi _
+  have : IsIso (prodComparison F X Y) := by
     rw [that]
     infer_instance
-  haveI := PreservesLimitPair.of_iso_prod_comparison F X Y
+  have := PreservesLimitPair.of_iso_prod_comparison F X Y
   apply preservesBinaryBiproduct_of_preservesBinaryProduct
 
 /-- If the (coproduct-like) biproduct comparison for `F`, `X` and `Y` is an epimorphism, then
@@ -1051,8 +1051,8 @@ lemma preservesBinaryBiproduct_of_mono_biprodComparison {X Y : C} [HasBinaryBipr
 lemma preservesBinaryBiproduct_of_epi_biprodComparison' {X Y : C} [HasBinaryBiproduct X Y]
     [HasBinaryBiproduct (F.obj X) (F.obj Y)] [Epi (biprodComparison' F X Y)] :
     PreservesBinaryBiproduct X Y F := by
-  haveI : Epi (splitEpiBiprodComparison F X Y).section_ := by simpa
-  haveI : IsIso (biprodComparison F X Y) :=
+  have : Epi (splitEpiBiprodComparison F X Y).section_ := by simpa
+  have : IsIso (biprodComparison F X Y) :=
     IsIso.of_epi_section' (splitEpiBiprodComparison F X Y)
   apply preservesBinaryBiproduct_of_mono_biprodComparison
 

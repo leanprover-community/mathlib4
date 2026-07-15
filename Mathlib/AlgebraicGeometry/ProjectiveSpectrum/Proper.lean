@@ -218,7 +218,7 @@ theorem valuativeCriterion_existence_aux
     simp only [ψ, map_pow, pow_eq_zero_iff', map_eq_zero, ne_eq] at this
     have : φ 1 = 0 := by convert! (this j).1; ext; simp
     simp only [map_one, one_ne_zero] at this
-  letI := (awayMap 𝒜 (f := x j) (hxdi i₀) rfl).toAlgebra
+  let := (awayMap 𝒜 (f := x j) (hxdi i₀) rfl).toAlgebra
   have := Away.isLocalization_mul (hxdi j) (hxdi i₀) rfl (hdi _).ne'
   have hunit : IsUnit (φ (Away.isLocalizationElem (hxdi j) (hxdi i₀))) := isUnit_iff_ne_zero.mpr
     fun rid ↦ hKmax.ne' (.symm (by simpa [ψ, rid, Finset.prod_eq_zero_iff, (hdi _).ne'] using hi1))

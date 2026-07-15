@@ -83,7 +83,7 @@ lemma isZero_X (i : ι) (hG : IsZero (G.X i))
     (hF : ∀ (j : ι), c.Rel i j → IsZero (F.X j)) :
     IsZero (X φ i) := by
   by_cases h : c.Rel i (c.next i)
-  · haveI := HasHomotopyCofiber.hasBinaryBiproduct φ _ _ h
+  · have := HasHomotopyCofiber.hasBinaryBiproduct φ _ _ h
     refine IsZero.of_iso ?_ (XIsoBiprod φ _ _ h)
     simp only [biprod_isZero_iff]
     exact ⟨hF _ h, hG⟩
@@ -149,7 +149,7 @@ lemma inrX_fstX (i j : ι) (hij : c.Rel i j) :
 lemma inlX_XIsoBiprod_hom (i j : ι) (hij : c.Rel j i) :
     haveI := HasHomotopyCofiber.hasBinaryBiproduct φ _ _ hij
     inlX φ i j hij ≫ (XIsoBiprod φ j i hij).hom = biprod.inl := by
-  haveI := HasHomotopyCofiber.hasBinaryBiproduct φ _ _ hij
+  have := HasHomotopyCofiber.hasBinaryBiproduct φ _ _ hij
   simp [inlX]
 
 @[reassoc (attr := simp)]
@@ -163,7 +163,7 @@ lemma inrX_XIsoBiprod_hom (i j : ι) (hij : c.Rel j i) :
     haveI := HasHomotopyCofiber.hasBinaryBiproduct φ _ _ hij
     inrX φ j ≫ (XIsoBiprod φ j i hij).hom = biprod.inr := by
   obtain rfl := c.next_eq' hij
-  haveI := HasHomotopyCofiber.hasBinaryBiproduct φ _ _ hij
+  have := HasHomotopyCofiber.hasBinaryBiproduct φ _ _ hij
   simp [inrX, XIsoBiprod, dif_pos hij]
 
 @[reassoc (attr := simp)]
@@ -184,7 +184,7 @@ noncomputable def d (i j : ι) : X φ i ⟶ X φ j :=
 lemma ext_to_X (i j : ι) (hij : c.Rel i j) {A : C} {f g : A ⟶ X φ i}
     (h₁ : f ≫ fstX φ i j hij = g ≫ fstX φ i j hij) (h₂ : f ≫ sndX φ i = g ≫ sndX φ i) :
     f = g := by
-  haveI := HasHomotopyCofiber.hasBinaryBiproduct φ _ _ hij
+  have := HasHomotopyCofiber.hasBinaryBiproduct φ _ _ hij
   rw [← cancel_mono (XIsoBiprod φ i j hij).hom]
   apply biprod.hom_ext
   · simpa using! h₁
@@ -199,7 +199,7 @@ lemma ext_to_X' (i : ι) (hi : ¬ c.Rel i (c.next i)) {A : C} {f g : A ⟶ X φ 
 lemma ext_from_X (i j : ι) (hij : c.Rel j i) {A : C} {f g : X φ j ⟶ A}
     (h₁ : inlX φ i j hij ≫ f = inlX φ i j hij ≫ g) (h₂ : inrX φ j ≫ f = inrX φ j ≫ g) :
     f = g := by
-  haveI := HasHomotopyCofiber.hasBinaryBiproduct φ _ _ hij
+  have := HasHomotopyCofiber.hasBinaryBiproduct φ _ _ hij
   rw [← cancel_epi (XIsoBiprod φ j i hij).inv]
   apply biprod.hom_ext'
   · simpa

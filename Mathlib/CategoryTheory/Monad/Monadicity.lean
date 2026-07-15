@@ -319,7 +319,7 @@ def monadicOfHasPreservesReflectsGSplitCoequalizers [HasCoequalizerOfIsSplitPair
       · infer_instance
       -- Porting note: passing instances through
       apply @counitCoequalizerOfReflectsCoequalizer _ _ _ _ _ _ _ _ ?_
-      letI _ :
+      let _ :
         G.IsSplitPair (F.map (G.map (adj.counit.app Y)))
           (adj.counit.app (F.obj (G.obj Y))) :=
         MonadicityInternal.main_pair_G_split _ ((comparison adj).obj Y)

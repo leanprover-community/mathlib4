@@ -40,7 +40,7 @@ theorem MeasureTheory.aemeasurable_of_exist_almost_disjoint_supersets {α : Type
       { x | f x < p } ⊆ u ∧ { x | q < f x } ⊆ v ∧ μ (u ∩ v) = 0) :
     AEMeasurable f μ := by
   classical
-  haveI : Encodable s := s_count.toEncodable
+  have : Encodable s := s_count.toEncodable
   have h' : ∀ p q, ∃ u v, MeasurableSet u ∧ MeasurableSet v ∧
       { x | f x < p } ⊆ u ∧ { x | q < f x } ⊆ v ∧ (p ∈ s → q ∈ s → p < q → μ (u ∩ v) = 0) := by
     intro p q
@@ -64,7 +64,7 @@ theorem MeasureTheory.aemeasurable_of_exist_almost_disjoint_supersets {α : Type
       μ t ≤ ∑' (p : s) (q : ↥(s ∩ Ioi p)), μ (u' p ∩ v p q) := by
         refine (measure_iUnion_le _).trans ?_
         refine ENNReal.tsum_le_tsum fun p => ?_
-        haveI := (s_count.mono (s.inter_subset_left (t := Ioi ↑p))).to_subtype
+        have := (s_count.mono (s.inter_subset_left (t := Ioi ↑p))).to_subtype
         apply measure_iUnion_le
       _ ≤ ∑' (p : s) (q : ↥(s ∩ Ioi p)), μ (u p q ∩ v p q) := by
         gcongr with p q

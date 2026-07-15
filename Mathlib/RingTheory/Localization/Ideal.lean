@@ -348,7 +348,7 @@ open nonZeroDivisors
 
 theorem bot_lt_under_prime [IsDomain R] (hM : M ≤ R⁰) (p : Ideal S) [hpp : p.IsPrime]
     (hp0 : p ≠ ⊥) : ⊥ < p.under R := by
-  haveI : IsDomain S := isDomain_of_le_nonZeroDivisors _ hM
+  have : IsDomain S := isDomain_of_le_nonZeroDivisors _ hM
   rw [← Ideal.comap_bot_of_injective (algebraMap R S) (IsLocalization.injective _ hM)]
   convert!
     (orderIsoOfPrime M S).lt_iff_lt.mpr

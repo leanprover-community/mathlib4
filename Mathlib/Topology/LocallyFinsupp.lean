@@ -169,7 +169,6 @@ Simplifier lemma: `single x y` takes the value `y` at `x` and is zero otherwise.
 -/
 @[simp] lemma single_apply [DecidableEq X] [Zero Y] {x₁ x₂ : X} {y : Y} :
     single x₁ y x₂ = if x₂ = x₁ then y else 0 := by
-  classical
   simp_rw [DFunLike.coe, single, Pi.single_apply]
 
 /--

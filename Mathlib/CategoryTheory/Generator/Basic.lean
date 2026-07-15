@@ -432,9 +432,9 @@ theorem hasInitial_of_isCoseparating [LocallySmall.{w} C] [WellPowered.{w} C]
     [HasLimitsOfSize.{w, w} C] {P : ObjectProperty C} [ObjectProperty.Small.{w} P]
     (hP : P.IsCoseparating) : HasInitial C := by
   have := hasFiniteLimits_of_hasLimitsOfSize C
-  haveI := hasProductsOfShape_of_small C (Subtype P)
-  haveI := fun A => hasProductsOfShape_of_small.{w} C (StructuredArrow A P.ι)
-  letI := completeLatticeOfCompleteSemilatticeInf (Subobject (piObj (Subtype.val : Subtype P → C)))
+  have := hasProductsOfShape_of_small C (Subtype P)
+  have := fun A => hasProductsOfShape_of_small.{w} C (StructuredArrow A P.ι)
+  let := completeLatticeOfCompleteSemilatticeInf (Subobject (piObj (Subtype.val : Subtype P → C)))
   suffices ∀ A : C, Unique (((⊥ : Subobject (piObj (Subtype.val : Subtype P → C))) : C) ⟶ A) by
     exact hasInitial_of_unique ((⊥ : Subobject (piObj (Subtype.val : Subtype P → C))) : C)
   have := hP.mono_productTo
@@ -459,7 +459,7 @@ theorem hasInitial_of_isCoseparating [LocallySmall.{w} C] [WellPowered.{w} C]
 theorem hasTerminal_of_isSeparating [LocallySmall.{w} Cᵒᵖ] [WellPowered.{w} Cᵒᵖ]
     [HasColimitsOfSize.{w, w} C] {P : ObjectProperty C} [ObjectProperty.Small.{w} P]
     (hP : P.IsSeparating) : HasTerminal C := by
-  haveI : HasInitial Cᵒᵖ := hasInitial_of_isCoseparating (P.isCoseparating_op_iff.2 hP)
+  have : HasInitial Cᵒᵖ := hasInitial_of_isCoseparating (P.isCoseparating_op_iff.2 hP)
   exact hasTerminal_of_hasInitial_op
 
 section WellPowered
@@ -663,7 +663,7 @@ theorem isSeparator_iff_epi (G : C) [∀ A : C, HasCoproduct fun _ : G ⟶ A => 
   rw [isSeparator_def]
   refine ⟨fun h A => ⟨fun u v huv => h _ _ fun i => ?_⟩, fun h X Y f g hh => ?_⟩
   · simpa using Sigma.ι _ i ≫= huv
-  · haveI := h X
+  · have := h X
     refine (cancel_epi (Sigma.desc fun f : G ⟶ X => f)).1 (colimit.hom_ext fun j => ?_)
     simpa using hh j.as
 
@@ -673,7 +673,7 @@ theorem isCoseparator_iff_mono (G : C) [∀ A : C, HasProduct fun _ : A ⟶ G =>
   rw [isCoseparator_def]
   refine ⟨fun h A => ⟨fun u v huv => h _ _ fun i => ?_⟩, fun h X Y f g hh => ?_⟩
   · simpa using huv =≫ Pi.π _ i
-  · haveI := h Y
+  · have := h Y
     refine (cancel_mono (Pi.lift fun f : Y ⟶ G => f)).1 (limit.hom_ext fun j => ?_)
     simpa using hh j.as
 

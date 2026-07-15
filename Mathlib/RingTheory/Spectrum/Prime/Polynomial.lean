@@ -197,7 +197,6 @@ variable {σ : Type*}
 
 lemma mem_image_comap_C_basicOpen (f : MvPolynomial σ R) (x : PrimeSpectrum R) :
     x ∈ comap (C (σ := σ)) '' basicOpen f ↔ ∃ i, f.coeff i ∉ x.asIdeal := by
-  classical
   trans f.map (algebraMap R x.asIdeal.ResidueField) ≠ 0
   · refine (mem_image_comap_basicOpen _ _).trans (not_iff_not.mpr ?_)
     let e : x.asIdeal.ResidueField ⊗[R] MvPolynomial σ R ≃ₐ[x.asIdeal.ResidueField]

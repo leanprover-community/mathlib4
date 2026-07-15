@@ -13,6 +13,7 @@ public import Mathlib.Logic.Equiv.Fin.Basic
 public import Mathlib.Order.Fin.Finset
 public import Mathlib.Order.Fin.SuccAboveOrderIso
 public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
+import Mathlib.Order.Preorder.Finite
 
 /-!
 # The standard simplex

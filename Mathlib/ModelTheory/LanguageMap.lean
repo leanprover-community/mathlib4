@@ -264,7 +264,7 @@ theorem Injective.isExpansionOn_default {ϕ : L →ᴸ L'}
     [∀ (n) (r : L'.Relations n), Decidable (r ∈ Set.range fun r : L.Relations n => ϕ.onRelation r)]
     (h : ϕ.Injective) (M : Type*) [Inhabited M] [L.Structure M] :
     @IsExpansionOn L L' ϕ M _ (ϕ.defaultExpansion M) := by
-  letI := ϕ.defaultExpansion M
+  let := ϕ.defaultExpansion M
   refine ⟨fun {n} f xs => ?_, fun {n} r xs => ?_⟩
   · have hf : ϕ.onFunction f ∈ Set.range fun f : L.Functions n => ϕ.onFunction f := ⟨f, rfl⟩
     refine (dif_pos hf).trans ?_
@@ -361,8 +361,8 @@ def LHom.constantsOnMap (f : α → β) : constantsOn α →ᴸ constantsOn β w
 theorem constantsOnMap_isExpansionOn {f : α → β} {fα : α → M} {fβ : β → M} (h : fβ ∘ f = fα) :
     @LHom.IsExpansionOn _ _ (LHom.constantsOnMap f) M (constantsOn.structure fα)
       (constantsOn.structure fβ) := by
-  letI := constantsOn.structure fα
-  letI := constantsOn.structure fβ
+  let := constantsOn.structure fα
+  let := constantsOn.structure fβ
   exact
     ⟨fun {n} => Nat.casesOn n (fun F _x => (congr_fun h F :)) fun n F => isEmptyElim F, fun R =>
       isEmptyElim R⟩

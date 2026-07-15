@@ -373,7 +373,6 @@ If `f` is meromorphic, then the divisor of `f ^ n` is `n` times the divisor of `
 -/
 theorem divisor_pow {f : 𝕜 → 𝕜} (hf : MeromorphicOn f U) (n : ℕ) :
     divisor (f ^ n) U = n • divisor f U := by
-  classical
   ext z
   by_cases hn : n = 0
   · simp [hn]
@@ -392,7 +391,6 @@ If `f` is meromorphic, then the divisor of `f ^ n` is `n` times the divisor of `
 -/
 theorem divisor_zpow {f : 𝕜 → 𝕜} (hf : MeromorphicOn f U) (n : ℤ) :
     divisor (f ^ n) U = n • divisor f U := by
-  classical
   ext z
   by_cases hn : n = 0
   · simp [hn]

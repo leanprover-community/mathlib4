@@ -77,7 +77,7 @@ theorem isOpen_generateFrom_of_mem {g : Set (Set α)} {s : Set α} (hs : s ∈ g
 
 theorem nhds_generateFrom {g : Set (Set α)} {a : α} :
     @nhds α (generateFrom g) a = ⨅ s ∈ { s | a ∈ s ∧ s ∈ g }, 𝓟 s := by
-  letI := generateFrom g
+  let := generateFrom g
   rw [nhds_def]
   refine le_antisymm (biInf_mono fun s ⟨as, sg⟩ => ⟨as, .basic _ sg⟩) <| le_iInf₂ ?_
   rintro s ⟨ha, hs⟩
@@ -408,7 +408,7 @@ theorem isOpen_induced_iff [t : TopologicalSpace β] {s : Set α} {f : α → β
 
 theorem isClosed_induced_iff [t : TopologicalSpace β] {s : Set α} {f : α → β} :
     IsClosed[t.induced f] s ↔ ∃ t, IsClosed t ∧ f ⁻¹' t = s := by
-  letI := t.induced f
+  let := t.induced f
   simp only [← isOpen_compl_iff, isOpen_induced_iff]
   exact compl_surjective.exists.trans (by simp only [preimage_compl, compl_inj_iff])
 
@@ -422,7 +422,7 @@ theorem isClosed_coinduced {t : TopologicalSpace α} {s : Set β} {f : α → β
 
 theorem preimage_nhds_coinduced [TopologicalSpace α] {π : α → β} {s : Set β} {a : α}
     (hs : s ∈ @nhds β (TopologicalSpace.coinduced π ‹_›) (π a)) : π ⁻¹' s ∈ 𝓝 a := by
-  letI := TopologicalSpace.coinduced π ‹_›
+  let := TopologicalSpace.coinduced π ‹_›
   rcases mem_nhds_iff.mp hs with ⟨V, hVs, V_op, mem_V⟩
   exact mem_nhds_iff.mpr ⟨π ⁻¹' V, Set.preimage_mono hVs, V_op, mem_V⟩
 
@@ -882,7 +882,7 @@ theorem continuous_id_of_le {t t' : TopologicalSpace α} (h : t ≤ t') : Contin
 -- 𝓝 in the induced topology
 theorem mem_nhds_induced [T : TopologicalSpace α] (f : β → α) (a : β) (s : Set β) :
     s ∈ @nhds β (TopologicalSpace.induced f T) a ↔ ∃ u ∈ 𝓝 (f a), f ⁻¹' u ⊆ s := by
-  letI := T.induced f
+  let := T.induced f
   simp_rw [mem_nhds_iff, isOpen_induced_iff]
   constructor
   · rintro ⟨u, usub, ⟨v, openv, rfl⟩, au⟩

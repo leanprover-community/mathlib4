@@ -674,7 +674,6 @@ lemma diag_eq_diag2n_prod (i₀ : ι) (D : ι → F) (hD : det (diagonal D) = 1)
     (⟨diagonal D, hD⟩ : SpecialLinearGroup ι F) =
       Finset.noncommProd {i : ι | i ≠ i₀} (fun i ↦ if hi : i ≠ i₀ then
       diag2n hi (D i) (diagonal_neZero D hD i) else 1) (diag_commute i₀ D hD) := by
-  classical
   set g : ι → ι → F := fun i k ↦ if k = i then D i else if k = i₀ then (D i)⁻¹ else 1 with hg_def
   apply coeMonoidHom_injective
   rw [Finset.map_noncommProd]

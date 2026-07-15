@@ -983,8 +983,8 @@ theorem inj_on_of_surj_on_of_ncard_le {t : Set β} (f : ∀ a ∈ s, β) (hf : �
     obtain ⟨a, ha, rfl⟩ := hsurj y hy
     simp only [Subtype.exists]
     exact ⟨_, ha, rfl⟩
-  haveI := hs.fintype
-  haveI := Fintype.ofSurjective _ hsurj
+  have := hs.fintype
+  have := Fintype.ofSurjective _ hsurj
   set f'' : ∀ a, a ∈ s.toFinset → β := fun a h ↦ f a (by simpa using h)
   exact
     @Finset.inj_on_of_surj_on_of_card_le _ _ _ t.toFinset f''

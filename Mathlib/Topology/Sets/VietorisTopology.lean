@@ -369,6 +369,19 @@ theorem isClopen_singleton_bot : IsClopen {(⊥ : Compacts α)} := by
   convert! vietoris.isClopen_singleton_empty.preimage continuous_coe
   rw [← coe_bot, ← image_singleton (f := SetLike.coe), SetLike.coe_injective.preimage_image]
 
+theorem isOpen_setOf_disjoint_coe [T2Space α] :
+    IsOpen {p : Compacts α × Compacts α | Disjoint (p.1 : Set α) p.2} := by
+  rw [isOpen_iff_forall_mem_open]
+  intro ⟨K, L⟩ hKL
+  obtain ⟨U, V, hU, hV, hKU, hLV, hUV⟩ :=
+    SeparatedNhds.of_isCompact_isCompact K.isCompact L.isCompact hKL
+  exact ⟨{K' : Compacts α | ↑K' ⊆ U} ×ˢ {L' : Compacts α | ↑L' ⊆ V}, by grind,
+    (isOpen_subsets_of_isOpen hU).prod (isOpen_subsets_of_isOpen hV), hKU, hLV⟩
+
+theorem isOpen_setOf_disjoint [T2Space α] :
+    IsOpen {p : Compacts α × Compacts α | Disjoint p.1 p.2} := by
+  simpa only [disjoint_coe_iff] using isOpen_setOf_disjoint_coe
+
 theorem closure_finite_subsets (s : Set α) :
     closure {K : Compacts α | (K : Set α).Finite ∧ ↑K ⊆ s} = {K : Compacts α | ↑K ⊆ closure s} := by
   change closure (SetLike.coe ⁻¹' {K : Set α | K.Finite ∧ K ⊆ s}) =
@@ -646,6 +659,24 @@ instance [LocallyCompactSpace α] : LocallyCompactSpace (Compacts α) := by
       vietoris.specializes_of_subset_closure ?_ ?_⟩ <;>
       grind [coe_mk, subset_closure]
 
+instance [SeparableSpace α] : SeparableSpace (Compacts α) := by
+  obtain ⟨s, hs₁, hs₂⟩ := exists_countable_dense α
+  refine ⟨_, (countable_setOf_finite_subset hs₁).preimage SetLike.coe_injective, ?_⟩
+  simp [dense_iff_closure_eq, closure_finite_subsets, hs₂.closure_eq]
+
+@[simp]
+theorem separableSpace_iff : SeparableSpace (Compacts α) ↔ SeparableSpace α := by
+  refine ⟨fun _ => ?_, fun _ => inferInstance⟩
+  cases isEmpty_or_nonempty α
+  · infer_instance
+  obtain ⟨s, hs₁, hs₂⟩ := exists_countable_dense (Compacts α)
+  refine ⟨(fun K => Classical.epsilon (· ∈ K)) '' s, hs₁.image _,
+    dense_iff_inter_open.mpr fun U hU ⟨x, hx⟩ => ?_⟩
+  obtain ⟨K, ⟨hK₁, hK₂⟩, hK₃⟩ := hs₂.inter_open_nonempty _
+    ((isOpen_subsets_of_isOpen hU).inter (isOpen_inter_nonempty_of_isOpen hU)) ⟨{x}, by simpa⟩
+  refine ⟨Classical.epsilon (· ∈ K), ?_, mem_image_of_mem _ hK₃⟩
+  exact hK₁ <| Classical.epsilon_spec (hK₂.mono inter_subset_left)
+
 end Compacts
 
 namespace NonemptyCompacts
@@ -701,6 +732,10 @@ theorem isClosed_subsets_of_isClosed {F : Set α} (h : IsClosed F) :
 theorem isClosed_inter_nonempty_of_isClosed {F : Set α} (h : IsClosed F) :
     IsClosed {K : NonemptyCompacts α | (↑K ∩ F).Nonempty} :=
   (vietoris.isClosed_inter_nonempty_of_isClosed h).preimage continuous_coe
+
+theorem isOpen_setOf_disjoint_coe [T2Space α] :
+    IsOpen {p : NonemptyCompacts α × NonemptyCompacts α | Disjoint (p.1 : Set α) p.2} :=
+  Compacts.isOpen_setOf_disjoint_coe.preimage <| continuous_toCompacts.prodMap continuous_toCompacts
 
 theorem closure_finite_subsets (s : Set α) :
     closure {K : NonemptyCompacts α | (K : Set α).Finite ∧ ↑K ⊆ s} =
@@ -882,6 +917,16 @@ theorem _root_.TopologicalSpace.Compacts.locallyCompactSpace_iff :
     LocallyCompactSpace (Compacts α) ↔ LocallyCompactSpace α :=
   ⟨fun _ => NonemptyCompacts.locallyCompactSpace_iff.mp
     isOpenEmbedding_toCompacts.locallyCompactSpace, fun _ => inferInstance⟩
+
+instance [SeparableSpace α] : SeparableSpace (NonemptyCompacts α) :=
+  isOpenEmbedding_toCompacts.separableSpace
+
+@[simp]
+theorem separableSpace_iff : SeparableSpace (NonemptyCompacts α) ↔ SeparableSpace α := by
+  refine ⟨fun _ => ?_, fun _ => inferInstance⟩
+  rw [← Compacts.separableSpace_iff, ← isSeparable_univ_iff, ← union_compl_self {⊥},
+    ← range_toCompacts]
+  exact (finite_singleton _).isSeparable.union (isSeparable_range continuous_toCompacts)
 
 end NonemptyCompacts
 

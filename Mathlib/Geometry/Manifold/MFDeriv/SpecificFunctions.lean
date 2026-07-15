@@ -1001,7 +1001,6 @@ lemma HasMFDerivWithinAt.prod [DecidableEq ι]
     (hf : ∀ i ∈ t, HasMFDerivWithinAt I 𝓘(𝕜, F') (f i) s z (f' i)) :
     HasMFDerivWithinAt I 𝓘(𝕜, F') (∏ i ∈ t, f i) s z
       (∑ i ∈ t, (∏ j ∈ t.erase i, f j z) • (f' i)) := by
-  classical
   induction t using Finset.induction_on with
   | empty => simpa using! hasMFDerivWithinAt_const ..
   | insert i t hi IH =>

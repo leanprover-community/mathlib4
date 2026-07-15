@@ -528,7 +528,7 @@ instance (x y : OneTruncation₂ ((truncation 2).obj Δ[0])) : Unique (x ⟶ y) 
     obtain rfl : y = default := Unique.uniq _ _
     exact 𝟙rq instUniqueOneTruncation₂DeltaZero.default
   uniq _ := by
-    letI : Subsingleton (((truncation 2).obj Δ[0]).obj (.op ⦋1⦌₂)) :=
+    let : Subsingleton (((truncation 2).obj Δ[0]).obj (.op ⦋1⦌₂)) :=
       inferInstanceAs (Subsingleton (ULift.{_, 0} (⦋1⦌ ⟶ ⦋0⦌)))
     ext
     exact this.allEq _ _

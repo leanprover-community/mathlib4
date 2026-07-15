@@ -240,7 +240,7 @@ protected lemma of_hom_ext (f : X ⟶ Y)
       (_ : Spec.map φ ≫ g₁ = Spec.map φ ≫ g₂) (_ : g₁ ≫ f = g₂ ≫ f), g₁ = g₂) :
     FormallyUnramified f := by
   refine ⟨fun {U hU V hV hVU} ↦ ?_⟩
-  letI := (f.appLE U V hVU).hom.toAlgebra
+  let := (f.appLE U V hVU).hom.toAlgebra
   refine Algebra.FormallyUnramified.iff_comp_injective.mpr fun R _ _ I hI g₁ g₂ hg₁g₂ ↦ ?_
   have hg₁ : f.appLE U V hVU ≫ CommRingCat.ofHom g₁ = CommRingCat.ofHom (algebraMap _ R) :=
     CommRingCat.hom_ext g₁.comp_algebraMap

@@ -304,7 +304,6 @@ variable {R : Type*}
 
 theorem _root_.PreValuationRing.iff_dvd_total [Semigroup R] :
     PreValuationRing R ↔ @Std.Total R (· ∣ ·) := by
-  classical
   refine ⟨fun H => ⟨fun a b => ?_⟩, fun H => ⟨fun a b => ?_⟩⟩
   · obtain ⟨c, rfl | rfl⟩ := PreValuationRing.cond a b <;> simp
   · obtain ⟨c, rfl⟩ | ⟨c, rfl⟩ := H.total a b <;> use c <;> simp
@@ -386,7 +385,6 @@ instance (priority := 100) [ValuationRing R] : IsBezout R := by
   · rw [sup_eq_left.mpr h]; exact ⟨⟨_, rfl⟩⟩
 
 instance (priority := 100) [IsLocalRing R] [IsBezout R] : ValuationRing R := by
-  classical
   refine iff_dvd_total.mpr ⟨fun a b => ?_⟩
   obtain ⟨g, e : _ = Ideal.span _⟩ := IsBezout.span_pair_isPrincipal a b
   obtain ⟨a, rfl⟩ := Ideal.mem_span_singleton'.mp
@@ -468,7 +466,7 @@ is a valuation ring. -/
 theorem of_integers (v : Valuation K Γ) (hh : v.Integers 𝒪) :
     haveI := hh.hom_inj.isDomain
     ValuationRing 𝒪 := by
-  haveI := hh.hom_inj.isDomain
+  have := hh.hom_inj.isDomain
   suffices PreValuationRing 𝒪 from .mk
   constructor
   intro a b

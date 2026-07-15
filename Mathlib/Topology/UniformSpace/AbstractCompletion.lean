@@ -318,8 +318,6 @@ theorem compare_comp_eq_compare (γ : Type uγ) [TopologicalSpace γ]
     (∀ a : pkg.space,
       Filter.Tendsto f (Filter.comap pkg.coe (𝓝 a)) (𝓝 ((pkg.isDenseInducing.extend f) a))) →
       pkg.isDenseInducing.extend f ∘ pkg'.compare pkg = pkg'.isDenseInducing.extend f := by
-  let _ := pkg'.uniformStruct
-  let _ := pkg.uniformStruct
   intro h
   have (x : α) : (pkg.isDenseInducing.extend f ∘ pkg'.compare pkg) (pkg'.coe x) = f x := by
     simp only [Function.comp_apply, compare_coe, IsDenseInducing.extend_eq _ cont_f]

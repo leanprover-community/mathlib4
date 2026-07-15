@@ -100,7 +100,7 @@ theorem spec_of_surjective {R S : CommRingCat} (f : R ⟶ S) (h : Function.Surje
     IsClosedImmersion (Spec.map f) where
   isClosedEmbedding := PrimeSpectrum.isClosedEmbedding_comap_of_surjective _ _ h
   stalkMap_surjective x := by
-    haveI : (RingHom.toMorphismProperty (fun f ↦ Function.Surjective f)).RespectsIso := by
+    have : (RingHom.toMorphismProperty (fun f ↦ Function.Surjective f)).RespectsIso := by
       rw [← RingHom.toMorphismProperty_respectsIso_iff]
       exact RingHom.surjective_respectsIso
     apply (MorphismProperty.arrow_mk_iso_iff
@@ -370,7 +370,7 @@ lemma Scheme.Hom.app_surjective (f : X ⟶ Y) (U : Y.Opens) (hU : IsAffineOpen U
 instance IsClosedImmersion.isStableUnderBaseChange :
     MorphismProperty.IsStableUnderBaseChange @IsClosedImmersion := by
   apply HasAffineProperty.isStableUnderBaseChange
-  haveI := HasAffineProperty.isLocal_affineProperty @IsClosedImmersion
+  have := HasAffineProperty.isLocal_affineProperty @IsClosedImmersion
   apply AffineTargetMorphismProperty.IsStableUnderBaseChange.mk
   intro X Y S _ _ f g ⟨ha, hsurj⟩
   exact ⟨inferInstance, RingHom.surjective_isStableUnderBaseChange.pullback_fst_appTop _

@@ -179,7 +179,7 @@ end map
 `perfectClosure F E` is perfect. -/
 instance perfectClosure.perfectRing (p : ℕ) [ExpChar E p]
     [PerfectRing E p] : PerfectRing (perfectClosure F E) p := .ofSurjective _ p fun x ↦ by
-  haveI := RingHom.expChar _ (algebraMap F E).injective p
+  have := RingHom.expChar _ (algebraMap F E).injective p
   obtain ⟨x', hx⟩ := surjective_frobenius E p x.1
   obtain ⟨n, y, hy⟩ := (mem_perfectClosure_iff_pow_mem p).1 x.2
   rw [frobenius_def] at hx
@@ -240,10 +240,10 @@ theorem adjoin_eq_adjoin_pow_expChar_pow_of_isSeparable (S : Set E)
     rw [adjoin_le_iff]
     rintro _ ⟨y, hy, rfl⟩
     exact pow_mem (subset_adjoin F S hy) _
-  letI := (inclusion hi).toAlgebra
-  haveI : Algebra.IsSeparable M (extendScalars hi) :=
+  let := (inclusion hi).toAlgebra
+  have : Algebra.IsSeparable M (extendScalars hi) :=
     Algebra.isSeparable_tower_top_of_isSeparable F M L
-  haveI : IsPurelyInseparable M (extendScalars hi) := by
+  have : IsPurelyInseparable M (extendScalars hi) := by
     rw [extendScalars_adjoin hi, isPurelyInseparable_adjoin_iff_pow_mem M _ q]
     exact fun x hx ↦ ⟨n, ⟨x ^ q ^ n, subset_adjoin F _ ⟨x, hx, rfl⟩⟩, rfl⟩
   simpa only [extendScalars_restrictScalars, restrictScalars_bot_eq_self] using congr_arg
@@ -275,7 +275,7 @@ theorem adjoin_eq_adjoin_pow_expChar_of_isSeparable' [Algebra.IsSeparable F E] (
 `F⟮a⟯ = F⟮a ^ q ^ n⟯` for any natural number `n`. -/
 theorem adjoin_simple_eq_adjoin_pow_expChar_pow_of_isSeparable {a : E} (ha : IsSeparable F a)
     (q : ℕ) [ExpChar F q] (n : ℕ) : F⟮a⟯ = F⟮a ^ q ^ n⟯ := by
-  haveI := (isSeparable_adjoin_simple_iff_isSeparable F E).mpr ha
+  have := (isSeparable_adjoin_simple_iff_isSeparable F E).mpr ha
   simpa using adjoin_eq_adjoin_pow_expChar_pow_of_isSeparable F E {a} q n
 
 /-- If `E / F` is a separable field extension of exponential characteristic `q`, then
@@ -318,7 +318,7 @@ theorem Field.span_map_pow_expChar_pow_eq_top_of_isSeparable [Algebra.IsSeparabl
   rw [this]
   refine (Submodule.span_mono <| Set.range_comp_subset_range _ _).antisymm (Submodule.span_le.2 ?_)
   rw [Set.range_comp, ← Set.image_univ]
-  haveI := expChar_of_injective_algebraMap (algebraMap F E).injective q
+  have := expChar_of_injective_algebraMap (algebraMap F E).injective q
   apply h ▸ Submodule.image_span_subset_span (LinearMap.iterateFrobenius F E q n) _
 
 /-- If `E / F` is a finite separable extension of exponential characteristic `q`, if `{ u_i }` is a
@@ -332,7 +332,7 @@ private theorem LinearIndependent.map_pow_expChar_pow_of_fd_isSeparable
   have h' := h.linearIndepOn_id
   let ι' := h'.extend (Set.range v).subset_univ
   let b : Basis ι' F E := Basis.extend h'
-  letI : Fintype ι' := FiniteDimensional.fintypeBasisIndex b
+  let : Fintype ι' := FiniteDimensional.fintypeBasisIndex b
   have H := linearIndependent_of_top_le_span_of_card_eq_finrank
     (Field.span_map_pow_expChar_pow_eq_top_of_isSeparable q n b.span_eq).ge
     (Module.finrank_eq_card_basis b).symm
@@ -350,7 +350,7 @@ theorem LinearIndependent.map_pow_expChar_pow_of_isSeparable [Algebra.IsSeparabl
   rw [linearIndependent_iff_finset_linearIndependent] at h ⊢
   intro s
   let E' := adjoin F (s.image v : Set E)
-  haveI : FiniteDimensional F E' := finiteDimensional_adjoin
+  have : FiniteDimensional F E' := finiteDimensional_adjoin
     fun x _ ↦ Algebra.IsIntegral.isIntegral x
   let v' (i : s) : E' := ⟨v i.1, subset_adjoin F _ (Finset.mem_image.2 ⟨i.1, i.2, rfl⟩)⟩
   have h' : LinearIndependent F v' := (h s).of_comp E'.val.toLinearMap
@@ -364,7 +364,7 @@ theorem LinearIndependent.map_pow_expChar_pow_of_isSeparable'
     (hsep : ∀ i : ι, IsSeparable F (v i))
     (h : LinearIndependent F v) : LinearIndependent F (v · ^ q ^ n) := by
   let E' := adjoin F (Set.range v)
-  haveI : Algebra.IsSeparable F E' := (isSeparable_adjoin_iff_isSeparable F _).2 <| by
+  have : Algebra.IsSeparable F E' := (isSeparable_adjoin_iff_isSeparable F _).2 <| by
     rintro _ ⟨y, rfl⟩; exact hsep y
   let v' (i : ι) : E' := ⟨v i, subset_adjoin F _ ⟨i, rfl⟩⟩
   have h' : LinearIndependent F v' := h.of_comp E'.val.toLinearMap
@@ -410,8 +410,8 @@ end
 theorem perfectField_of_perfectClosure_eq_bot [h : PerfectField E] (eq : perfectClosure F E = ⊥) :
     PerfectField F := by
   let p := ringExpChar F
-  haveI := expChar_of_injective_algebraMap (algebraMap F E).injective p
-  haveI := PerfectRing.ofSurjective F p fun x ↦ by
+  have := expChar_of_injective_algebraMap (algebraMap F E).injective p
+  have := PerfectRing.ofSurjective F p fun x ↦ by
     obtain ⟨y, h⟩ := surjective_frobenius E p (algebraMap F E x)
     have : y ∈ perfectClosure F E := ⟨1, x, by rw [← h, pow_one, frobenius_def, ringExpChar.eq F p]⟩
     obtain ⟨z, rfl⟩ := eq ▸ this

@@ -181,7 +181,7 @@ theorem mem_ideal_smul_span_iff_exists_sum {ι : Type*} (f : ι → M) (x : M) :
   refine fun hx => span_induction ?_ ?_ ?_ ?_ (mem_smul_span.mp hx)
   · rintro x ⟨y, hy, x, ⟨i, rfl⟩, rfl⟩
     refine ⟨Finsupp.single i y, fun j => ?_, ?_⟩
-    · letI := Classical.decEq ι
+    · let := Classical.decEq ι
       rw [Finsupp.single_apply]
       split_ifs
       · assumption
@@ -672,13 +672,12 @@ theorem sup_eq_top_iff_isCoprime {R : Type*} [CommSemiring R] (x y : R) :
       ⟨_, mem_span_singleton'.mpr ⟨_, rfl⟩, _, mem_span_singleton'.mpr ⟨_, rfl⟩, h1⟩
 
 theorem multiset_prod_le_inf {s : Multiset (Ideal R)} : s.prod ≤ s.inf := by
-  classical
-    refine s.induction_on ?_ ?_
-    · rw [Multiset.inf_zero]
-      exact le_top
-    intro a s ih
-    rw [Multiset.prod_cons, Multiset.inf_cons]
-    exact le_trans mul_le_inf (inf_le_inf le_rfl ih)
+  refine s.induction_on ?_ ?_
+  · rw [Multiset.inf_zero]
+    exact le_top
+  intro a s ih
+  rw [Multiset.prod_cons, Multiset.inf_cons]
+  exact le_trans mul_le_inf (inf_le_inf le_rfl ih)
 
 theorem prod_le_inf {s : Finset ι} {f : ι → Ideal R} : s.prod f ≤ s.inf f :=
   multiset_prod_le_inf
@@ -1223,6 +1222,16 @@ lemma subset_union_prime_finite {R ι : Type*} [CommRing R] {s : Set ι}
     (congrArg _ heq).to_iff
   rw [hmem_union, Ideal.subset_union_prime a b (fun i hin ↦ hp i ((ht i).mp hin))]
   exact exists_congr (fun i ↦ and_congr_left fun _ ↦ ht i)
+
+lemma subset_iUnion_iff_mem_of_isMaximal_of_finite
+    {R : Type*} [CommRing R] {M : Ideal R} [M.IsMaximal] {S : Set (Ideal R)}
+    (hs : S.Finite) (a b : Ideal R) (hp : ∀ I ∈ S, I ≠ a → I ≠ b → I.IsPrime)
+    (ha : a ≠ ⊤) (hb : b ≠ ⊤) : ((M : Set R) ⊆ ⋃ I ∈ S, I) ↔ M ∈ S := by
+  refine (subset_union_prime_finite hs a b hp).trans ⟨fun ⟨I, mem, le⟩ ↦ ?_, (⟨M, ·, le_rfl⟩)⟩
+  rwa [‹M.IsMaximal›.eq_of_le _ le]
+  simp_rw [← or_iff_not_imp_left] at hp
+  obtain rfl | rfl | hp := hp I mem
+  exacts [ha, hb, hp.ne_top]
 
 /-- Generalize `Ideal.IsMaximal.exists_inv` to power of maximal ideals. -/
 theorem IsMaximal.exists_inv_pow (I : Ideal R) [I.IsMaximal]

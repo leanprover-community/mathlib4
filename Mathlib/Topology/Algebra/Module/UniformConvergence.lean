@@ -100,7 +100,7 @@ lemma UniformOnFun.continuousSMul_induced_of_image_bounded (φ : hom) (hφ : IsI
   obtain rfl := hφ.eq_induced; clear hφ
   simp +instances only [induced_iInf, UniformOnFun.topologicalSpace_eq, induced_compose]
   refine continuousSMul_iInf fun s ↦ continuousSMul_iInf fun hs ↦ ?_
-  letI : TopologicalSpace H :=
+  let : TopologicalSpace H :=
     .induced (UniformFun.ofFun ∘ s.restrict ∘ φ) (UniformFun.topologicalSpace s E)
   set φ' : H →ₗ[𝕜] (s → E) :=
     { toFun := s.restrict ∘ φ,

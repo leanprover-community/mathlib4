@@ -652,7 +652,7 @@ lemma isDenseEmbedding (hp_ne_top : p ≠ ∞) :
   intro f
   rw [mem_closure_iff_seq_limit]
   have hfi' : MemLp f p μ := Lp.memLp f
-  haveI : SeparableSpace (range f ∪ {0} : Set E) :=
+  have : SeparableSpace (range f ∪ {0} : Set E) :=
     (Lp.stronglyMeasurable f).separableSpace_range_union_singleton
   refine
     ⟨fun n =>

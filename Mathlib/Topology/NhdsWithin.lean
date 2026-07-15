@@ -593,7 +593,7 @@ lemma nhdsSetWithin_prod_le {s s' : Set α} {t t' : Set β} :
 
 lemma mem_nhdsSet_induced {α β : Type*} {t : TopologicalSpace β} (f : α → β) (s u : Set α) :
     u ∈ @nhdsSet α (t.induced f) s ↔ ∃ v ∈ 𝓝ˢ (f '' s), f ⁻¹' v ⊆ u := by
-  letI := t.induced f
+  let := t.induced f
   simp_rw [mem_nhdsSet_iff_exists, isOpen_induced_iff]
   refine ⟨fun ⟨v, ⟨v', hv'⟩, hv⟩ ↦ ?_, fun ⟨v, ⟨v', hv'⟩, hv⟩ ↦ ?_⟩
   · refine ⟨v', ⟨v', hv'.1, ?_, subset_rfl⟩, hv'.2.trans_subset hv.2⟩

@@ -302,10 +302,10 @@ theorem trace_conj' (f : M →ₗ[R] M) (e : M ≃ₗ[R] N) : trace R N (e.conj 
   classical
   by_cases hM : ∃ s : Finset M, Nonempty (Basis s R M)
   · obtain ⟨s, ⟨b⟩⟩ := hM
-    haveI := Module.Finite.of_basis b
-    haveI := (Module.free_def R M).mpr ⟨_, ⟨b⟩⟩
-    haveI := Module.Finite.of_basis (b.map e)
-    haveI := (Module.free_def R N).mpr ⟨_, ⟨(b.map e).reindex (e.toEquiv.image _)⟩⟩
+    have := Module.Finite.of_basis b
+    have := (Module.free_def R M).mpr ⟨_, ⟨b⟩⟩
+    have := Module.Finite.of_basis (b.map e)
+    have := (Module.free_def R N).mpr ⟨_, ⟨(b.map e).reindex (e.toEquiv.image _)⟩⟩
     rw [e.conj_apply, trace_comp_comm', ← comp_assoc, LinearEquiv.comp_coe,
       LinearEquiv.self_trans_symm, LinearEquiv.refl_toLinearMap, id_comp]
   · rw [trace, trace, dif_neg hM, dif_neg ?_, zero_apply, zero_apply]

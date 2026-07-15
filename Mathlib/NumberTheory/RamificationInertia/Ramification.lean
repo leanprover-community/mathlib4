@@ -266,7 +266,6 @@ theorem ramificationIdx'_eq_normalizedFactors_count
 
 theorem ramificationIdx'_eq_multiplicity (hp : map f p ≠ ⊥) (hP : P.IsPrime) :
     ramificationIdx' p P = multiplicity P (Ideal.map f p) := by
-  classical
   by_cases hP₂ : P = ⊥
   · rw [hP₂, ← Ideal.zero_eq_bot, multiplicity_zero_eq_zero_of_ne_zero _ hp]
     exact Ideal.ramificationIdx'_of_not_le (mt le_bot_iff.mp hp)
@@ -283,7 +282,6 @@ theorem ramificationIdx'_eq_factors_count
 
 theorem ramificationIdx'_ne_zero (hp0 : map f p ≠ ⊥) (hP : P.IsPrime) (le : map f p ≤ P) :
     ramificationIdx' p P ≠ 0 := by
-  classical
   have hP0 : P ≠ ⊥ := by
     rintro rfl
     exact hp0 (le_bot_iff.mp le)
@@ -397,13 +395,12 @@ theorem ramificationIdx'_algebra_tower [IsDedekindDomain S] [IsDedekindDomain T]
     (hfg : map (algebraMap R T) p ≠ ⊥) (hg : map (algebraMap S T) P ≤ Q) :
     ramificationIdx' p Q =
     ramificationIdx' p P * ramificationIdx' P Q := by
-  classical
   have hf0 : map (algebraMap R S) p ≠ ⊥ := by
     rw [IsScalarTower.algebraMap_eq R S T, ← map_map] at hfg
     exact ne_bot_of_map_ne_bot hfg
   have hp0 : P ≠ ⊥ := ne_bot_of_map_ne_bot hg0
   have hq0 : Q ≠ ⊥ := ne_bot_of_le_ne_bot hg0 hg
-  letI : P.IsMaximal := Ring.DimensionLEOne.maximalOfPrime hp0 hpm
+  let : P.IsMaximal := Ring.DimensionLEOne.maximalOfPrime hp0 hpm
   rw [IsDedekindDomain.ramificationIdx'_eq_normalizedFactors_count hf0 hpm hp0,
     IsDedekindDomain.ramificationIdx'_eq_normalizedFactors_count hg0 hqm hq0,
     IsDedekindDomain.ramificationIdx'_eq_normalizedFactors_count hfg hqm hq0,

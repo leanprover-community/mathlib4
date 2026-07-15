@@ -1408,7 +1408,7 @@ theorem StronglyMeasurable.setToFun_prod_right {β : Type*} {mβ : MeasurableSpa
   by_cases hF : CompleteSpace F; swap;
   · simp [setToFun, hF, stronglyMeasurable_const]
   borelize E
-  haveI : SeparableSpace (range (Function.uncurry f) ∪ {0} : Set E) :=
+  have : SeparableSpace (range (Function.uncurry f) ∪ {0} : Set E) :=
     hf.separableSpace_range_union_singleton
   let s : ℕ → SimpleFunc (β × α) E :=
     SimpleFunc.approxOn _ hf.measurable (range (Function.uncurry f) ∪ {0}) 0 (by simp)

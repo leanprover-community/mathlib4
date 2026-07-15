@@ -110,8 +110,8 @@ lemma isLocalization_away {U V : X.affineOpens}
     (h : U ≤ V) (f : Γ(X, V.1)) (hU : U = X.affineBasicOpen f) :
       letI := (Ideal.quotientMap _ _ (I.ideal_le_comap_ideal h)).toAlgebra
       IsLocalization.Away (Ideal.Quotient.mk (I.ideal V) f) (Γ(X, U) ⧸ (I.ideal U)) := by
-  letI := (Ideal.quotientMap _ _ (I.ideal_le_comap_ideal h)).toAlgebra
-  letI := (X.presheaf.map (homOfLE (X := X.Opens) h).op).hom.toAlgebra
+  let := (Ideal.quotientMap _ _ (I.ideal_le_comap_ideal h)).toAlgebra
+  let := (X.presheaf.map (homOfLE (X := X.Opens) h).op).hom.toAlgebra
   have : IsLocalization.Away f Γ(X, U) := by
     subst hU; exact V.2.isLocalization_of_eq_basicOpen _ _ rfl
   simp only [IsLocalization.Away, ← Submonoid.map_powers]
@@ -122,14 +122,14 @@ lemma isLocalization_away {U V : X.affineOpens}
 
 instance isOpenImmersion_glueDataObjMap {V : X.affineOpens} (f : Γ(X, V.1)) :
     IsOpenImmersion (I.glueDataObjMap (X.affineBasicOpen_le f)) := by
-  letI := (Ideal.quotientMap _ _ (I.ideal_le_comap_ideal (X.affineBasicOpen_le f))).toAlgebra
+  let := (Ideal.quotientMap _ _ (I.ideal_le_comap_ideal (X.affineBasicOpen_le f))).toAlgebra
   have := I.isLocalization_away (X.affineBasicOpen_le f) f rfl
   exact IsOpenImmersion.of_isLocalization (Ideal.Quotient.mk _ f)
 
 lemma opensRange_glueDataObjMap {V : X.affineOpens} (f : Γ(X, V.1)) :
       (I.glueDataObjMap (X.affineBasicOpen_le f)).opensRange =
         (I.glueDataObjι V) ⁻¹ᵁ (V.1.ι ⁻¹ᵁ X.basicOpen f) := by
-  letI := (Ideal.quotientMap _ _ (I.ideal_le_comap_ideal (X.affineBasicOpen_le f))).toAlgebra
+  let := (Ideal.quotientMap _ _ (I.ideal_le_comap_ideal (X.affineBasicOpen_le f))).toAlgebra
   let f' : Γ(X, V) ⧸ I.ideal V := Ideal.Quotient.mk _ f
   have := I.isLocalization_away (X.affineBasicOpen_le f) f rfl
   ext1

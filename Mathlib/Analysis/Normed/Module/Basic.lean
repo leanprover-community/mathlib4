@@ -236,7 +236,7 @@ Lean would have to search for `NormedSpace 𝕜 E` with unknown `𝕜`.
 We register this as an instance in two cases: `𝕜 = E` and `𝕜 = ℝ`. -/
 protected theorem NormedSpace.noncompactSpace : NoncompactSpace E := by
   by_cases! H : ∃ c : 𝕜, c ≠ 0 ∧ ‖c‖ ≠ 1
-  · letI := NontriviallyNormedField.ofNormNeOne H
+  · let := NontriviallyNormedField.ofNormNeOne H
     exact ⟨fun h ↦ NormedSpace.unbounded_univ 𝕜 E h.isBounded⟩
   · rcases exists_ne (0 : E) with ⟨x, hx⟩
     suffices IsClosedEmbedding (Infinite.natEmbedding 𝕜 · • x) from this.noncompactSpace
@@ -689,7 +689,7 @@ See note [reducible non-instances]. -/
 abbrev NormedAddCommGroup.ofCore (core : NormedSpace.Core 𝕜 E) : NormedAddCommGroup E :=
   { SeminormedAddCommGroup.ofCore core.toCore with
     eq_of_dist_eq_zero := by
-      letI := SeminormedAddCommGroup.ofCore core.toCore
+      let := SeminormedAddCommGroup.ofCore core.toCore
       intro x y h
       rw [← sub_eq_zero, ← core.norm_eq_zero_iff, ← norm_neg_add]
       exact h }
@@ -703,7 +703,7 @@ abbrev NormedAddCommGroup.ofCoreReplaceUniformity [U : UniformSpace E] (core : N
     NormedAddCommGroup E :=
   { SeminormedAddCommGroup.ofCoreReplaceUniformity core.toCore H with
     eq_of_dist_eq_zero := by
-      letI := SeminormedAddCommGroup.ofCore core.toCore
+      let := SeminormedAddCommGroup.ofCore core.toCore
       intro x y h
       rw [← sub_eq_zero, ← core.norm_eq_zero_iff, ← norm_neg_add]
       exact h }
@@ -718,7 +718,7 @@ abbrev NormedAddCommGroup.ofCoreReplaceTopology [T : TopologicalSpace E]
     NormedAddCommGroup E :=
   { SeminormedAddCommGroup.ofCoreReplaceTopology core.toCore H with
     eq_of_dist_eq_zero := by
-      letI := SeminormedAddCommGroup.ofCore core.toCore
+      let := SeminormedAddCommGroup.ofCore core.toCore
       intro x y h
       rw [← sub_eq_zero, ← core.norm_eq_zero_iff, ← norm_neg_add]
       exact h }
@@ -737,7 +737,7 @@ abbrev NormedAddCommGroup.ofCoreReplaceAll [U : UniformSpace E] [B : Bornology E
     NormedAddCommGroup E :=
   { SeminormedAddCommGroup.ofCoreReplaceAll core.toCore HU HB with
     eq_of_dist_eq_zero := by
-      letI := SeminormedAddCommGroup.ofCore core.toCore
+      let := SeminormedAddCommGroup.ofCore core.toCore
       intro x y h
       rw [← sub_eq_zero, ← core.norm_eq_zero_iff, ← norm_neg_add]
       exact h }

@@ -174,7 +174,7 @@ theorem Scheme.quasiSeparatedSpace_of_isOpenCover
     {I : Type*} (U : I → X.Opens) (hU : IsOpenCover U)
     (hU₁ : ∀ i, IsAffineOpen (U i)) (hU₂ : ∀ i j, IsCompact (X := X) (U i ∩ U j)) :
     QuasiSeparatedSpace X := by
-  letI := HasAffineProperty.isLocal_affineProperty @QuasiCompact
+  let := HasAffineProperty.isLocal_affineProperty @QuasiCompact
   rw [← quasiCompact_affineProperty_iff_quasiSeparatedSpace X.toSpecΓ]
   have : ∀ i, IsAffine ((X.openCoverOfIsOpenCover U hU).X i) := hU₁
   refine AffineTargetMorphismProperty.diagonal_of_openCover_source _
@@ -337,7 +337,7 @@ theorem exists_eq_pow_mul_of_isCompact_of_isQuasiSeparated (X : Scheme.{u}) (U :
         ⟨hSU _ _ Set.subset_union_left S.2 hS Set.subset_union_right U.1.2
             U.2.isCompact,
           (S ⊓ U.1).2⟩
-    haveI := hs'.to_subtype
+    have := hs'.to_subtype
     cases nonempty_fintype s
     replace hs : S ⊓ U.1 = iSup fun i : s => (i : X.Opens) := by ext1; simpa using hs
     have hs₁ (i : s) : i.1.1 ≤ S := by

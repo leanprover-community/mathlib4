@@ -91,7 +91,7 @@ orthogonal subspace with `K₂` add to that of `K₂`. -/
 theorem finrank_add_inf_finrank_orthogonal {K₁ K₂ : Submodule 𝕜 E}
     [FiniteDimensional 𝕜 K₂] (h : K₁ ≤ K₂) :
     finrank 𝕜 K₁ + finrank 𝕜 (K₁ᗮ ⊓ K₂ : Submodule 𝕜 E) = finrank 𝕜 K₂ := by
-  haveI : FiniteDimensional 𝕜 K₁ := Submodule.finiteDimensional_of_le h
+  have : FiniteDimensional 𝕜 K₁ := Submodule.finiteDimensional_of_le h
   have hd := Submodule.finrank_sup_add_finrank_inf_eq K₁ (K₁ᗮ ⊓ K₂)
   rw [← inf_assoc, (Submodule.orthogonal_disjoint K₁).eq_bot, bot_inf_eq, finrank_bot,
     Submodule.sup_orthogonal_inf_of_hasOrthogonalProjection h] at hd
@@ -126,7 +126,7 @@ theorem finrank_add_finrank_orthogonal' [FiniteDimensional 𝕜 E] {K : Submodul
 span of a nonzero vector is one less than the dimension of the space. -/
 theorem finrank_orthogonal_span_singleton {n : ℕ} [_i : Fact (finrank 𝕜 E = n + 1)] {v : E}
     (hv : v ≠ 0) : finrank 𝕜 (𝕜 ∙ v)ᗮ = n := by
-  haveI : FiniteDimensional 𝕜 E := .of_fact_finrank_eq_succ n
+  have : FiniteDimensional 𝕜 E := .of_fact_finrank_eq_succ n
   exact finrank_add_finrank_orthogonal' <| by
     simp [finrank_span_singleton hv, _i.elim, add_comm]
 
@@ -136,7 +136,7 @@ theorem mem_span_singleton_of_inner_eq_zero_of_inner_eq_zero
     [Fact (finrank 𝕜 E = 2)] {u v w : E} (hv : v ≠ 0) (hw : w ≠ 0)
     (huv : ⟪v, u⟫_𝕜 = 0) (hwv : ⟪v, w⟫_𝕜 = 0) :
     u ∈ 𝕜 ∙ w := by
-  haveI : FiniteDimensional 𝕜 E := .of_fact_finrank_eq_succ 1
+  have : FiniteDimensional 𝕜 E := .of_fact_finrank_eq_succ 1
   suffices heq : (𝕜 ∙ v)ᗮ = 𝕜 ∙ w by rwa [← heq, mem_orthogonal_singleton_iff_inner_right]
   exact eq_span_singleton_of_mem_of_finrank_eq_one
     (finrank_orthogonal_span_singleton (n := 1) hv)
@@ -173,7 +173,7 @@ theorem LinearIsometryEquiv.reflections_generate_dim_aux [FiniteDimensional ℝ 
     · obtain ⟨V, hV₁, hV₂⟩ := IH φ hn'
       exact ⟨V, hV₁.trans n.le_succ, hV₂⟩
     -- Take a nonzero element `v` of the orthogonal complement of `W`.
-    haveI : Nontrivial Wᗮ := nontrivial_of_finrank_pos (by lia : 0 < finrank ℝ Wᗮ)
+    have : Nontrivial Wᗮ := nontrivial_of_finrank_pos (by lia : 0 < finrank ℝ Wᗮ)
     obtain ⟨v, hv⟩ := exists_ne (0 : Wᗮ)
     have hφv : φ v ∈ Wᗮ := by
       intro w hw
@@ -255,7 +255,7 @@ orthogonal complement. -/
 theorem OrthogonalFamily.isInternal_iff_of_isComplete [DecidableEq ι] {V : ι → Submodule 𝕜 E}
     (hV : OrthogonalFamily 𝕜 (fun i => V i) fun i => (V i).subtypeₗᵢ)
     (hc : IsComplete (↑(iSup V) : Set E)) : DirectSum.IsInternal V ↔ (iSup V)ᗮ = ⊥ := by
-  haveI : CompleteSpace (↥(iSup V)) := hc.completeSpace_coe
+  have : CompleteSpace (↥(iSup V)) := hc.completeSpace_coe
   simp only [DirectSum.isInternal_submodule_iff_iSupIndep_and_iSup_eq_top, hV.independent,
     true_and, orthogonal_eq_bot_iff]
 
@@ -321,7 +321,7 @@ noncomputable abbrev OrthogonalFamily.decomposition
   decompose' x := DFinsupp.equivFunOnFintype.symm fun i => (V i).orthogonalProjectionOnto x
   left_inv x := by
     dsimp only
-    letI := fun i => Classical.decEq (V i)
+    let := fun i => Classical.decEq (V i)
     rw [DirectSum.coeAddMonoidHom, DirectSum.toAddMonoid, DFinsupp.liftAddHom_apply]
     -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
     erw [DFinsupp.sumAddHom_apply]; rw [DFinsupp.sum_eq_sum_fintype]

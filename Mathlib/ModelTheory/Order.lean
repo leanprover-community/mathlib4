@@ -359,7 +359,7 @@ def leOfStructure : LE M where
   le a b := Structure.RelMap (leSymb : L.Relations 2) ![a, b]
 
 instance : @OrderedStructure L M _ (L.leOfStructure M) _ := by
-  letI := L.leOfStructure M
+  let := L.leOfStructure M
   constructor
   simp only [Fin.forall_fin_succ_pi, Fin.cons_zero, Fin.forall_fin_zero_pi]
   intros
@@ -471,8 +471,8 @@ lemma dlo_isExtensionPair
   classical
   rw [isExtensionPair_iff_exists_embedding_closure_singleton_sup]
   intro S S_fg f m
-  letI := Language.order.linearOrderOfModels M
-  letI := Language.order.linearOrderOfModels N
+  let := Language.order.linearOrderOfModels M
+  let := Language.order.linearOrderOfModels N
   have := Language.order.denselyOrdered_of_dlo N
   have := Language.order.noBotOrder_of_dlo N
   have := Language.order.noTopOrder_of_dlo N
@@ -499,7 +499,7 @@ lemma dlo_isExtensionPair
 set_option backward.isDefEq.respectTransparency false in
 instance (M : Type w) [Language.order.Structure M] [M ⊨ Language.order.dlo] [Nonempty M] :
     Infinite M := by
-  letI := orderStructure ℚ
+  let := orderStructure ℚ
   obtain ⟨f, _⟩ := embedding_from_cg cg_of_countable default (dlo_isExtensionPair ℚ M)
   exact Infinite.of_injective f f.injective
 
@@ -511,8 +511,8 @@ lemma dlo_age [Language.order.Structure M] [Mdlo : M ⊨ Language.order.dlo] [No
   ext N
   refine ⟨fun ⟨hF, h⟩ => ⟨hF.finite, Theory.IsUniversal.models_of_embedding h.some⟩,
     fun ⟨hF, h⟩ => ⟨FG.of_finite, ?_⟩⟩
-  letI := Language.order.linearOrderOfModels M
-  letI := Language.order.linearOrderOfModels N
+  let := Language.order.linearOrderOfModels M
+  let := Language.order.linearOrderOfModels N
   exact ⟨StrongHomClass.toEmbedding (nonempty_orderEmbedding_of_finite_infinite N M).some⟩
 
 /-- Any countable nonempty model of the theory of dense linear orders is a Fraïssé limit of the
@@ -528,7 +528,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem isFraisse_finite_linear_order :
     IsFraisse {M : CategoryTheory.Bundled.{0} Language.order.Structure |
       Finite M ∧ M ⊨ Language.order.linearOrderTheory} := by
-  letI : Language.order.Structure ℚ := orderStructure _
+  let : Language.order.Structure ℚ := orderStructure _
   exact (isFraisseLimit_of_countable_nonempty_dlo ℚ).isFraisse
 
 open Cardinal
@@ -566,9 +566,9 @@ example (α β : Type w') [LinearOrder α] [LinearOrder β]
     [Countable α] [DenselyOrdered α] [NoMinOrder α] [NoMaxOrder α]
     [Nonempty α] [Countable β] [DenselyOrdered β] [NoMinOrder β] [NoMaxOrder β] [Nonempty β] :
     Nonempty (α ≃o β) := by
-  letI := orderStructure α
-  letI := orderStructure β
-  letI := StrongHomClass.toOrderIsoClass Language.order α β (α ≃[Language.order] β)
+  let := orderStructure α
+  let := orderStructure β
+  let := StrongHomClass.toOrderIsoClass Language.order α β (α ≃[Language.order] β)
   exact ⟨(IsFraisseLimit.nonempty_equiv (isFraisseLimit_of_countable_nonempty_dlo α)
     (isFraisseLimit_of_countable_nonempty_dlo β)).some⟩
 

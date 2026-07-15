@@ -302,7 +302,7 @@ def comonadicOfHasPreservesReflectsFSplitEqualizers [HasEqualizerOfIsCosplitPair
       change IsIso (IsLimit.conePointUniqueUpToIso _ ?_).inv
       · infer_instance
       apply @unitEqualizerOfCoreflectsEqualizer _ _ _ _ _ _ _ _ ?_
-      letI _ :
+      let _ :
         F.IsCosplitPair (G.map (F.map (adj.unit.app Y)))
           (adj.unit.app (G.obj (F.obj Y))) :=
         ComonadicityInternal.main_pair_F_cosplit _ ((comparison adj).obj Y)

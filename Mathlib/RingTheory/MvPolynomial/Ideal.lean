@@ -161,7 +161,6 @@ lemma span_leadingTerm_eq_span_monomial {B : Set (MvPolynomial σ R)}
     (hB : ∀ p ∈ B, IsUnit (m.leadingCoeff p)) :
     span (m.leadingTerm '' B) =
       span ((fun p ↦ MvPolynomial.monomial (m.degree p) (1 : R)) '' B) := by
-  classical
   apply le_antisymm
   all_goals
     rw [Ideal.span_le, Set.image_subset_iff]

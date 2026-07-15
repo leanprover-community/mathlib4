@@ -350,7 +350,7 @@ lemma face_restrict {n : ℕ} (s : Affine.Simplex k P n) {S : AffineSubspace k P
     (h : #fs = m + 1) :
     letI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
     (s.restrict S hS).face h = (s.face h).restrict S ((s.affineSpan_face_le h).trans hS) := by
-  letI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
+  let := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
   ext i
   rw [restrict_points_coe]
   simp_rw [Affine.Simplex.face_points]
@@ -441,7 +441,7 @@ lemma setInterior_restrict (I : Set k) {n : ℕ} (s : Simplex k P n) {S : Affine
     (hS : affineSpan k (Set.range s.points) ≤ S) :
     letI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
     (s.restrict S hS).setInterior I = S.subtype ⁻¹' (s.setInterior I) := by
-  letI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
+  let := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
   rw [← S.subtype_injective.image_injective.eq_iff,
     Set.image_preimage_eq_of_subset (s.setInterior_subset_affineSpan.trans (by simpa using! hS)),
     ← (s.restrict S hS).setInterior_map I S.subtype_injective]

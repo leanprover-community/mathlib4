@@ -76,11 +76,19 @@ local notation "ℝⁿ" => ι → ℝ
 ### Integral sum and its basic properties
 -/
 
-
 /-- The integral sum of `f : ℝⁿ → E` over a tagged prepartition `π` w.r.t. box-additive volume `vol`
 with codomain `E →L[ℝ] F` is the sum of `vol J (f (π.tag J))` over all boxes of `π`. -/
 def integralSum (f : ℝⁿ → E) (vol : ι →ᵇᵃ E →L[ℝ] F) (π : TaggedPrepartition I) : F :=
   ∑ J ∈ π.boxes, vol J (f (π.tag J))
+
+theorem integralSum_congr {f₁ f₂ : ℝⁿ → E} {vol₁ vol₂ : ι →ᵇᵃ E →L[ℝ] F}
+    (hf : EqOn f₁ f₂ I.Icc) (hvol : EqOn vol₁ vol₂ π.boxes) :
+    integralSum f₁ vol₁ π = integralSum f₂ vol₂ π := by
+  unfold integralSum
+  refine Finset.sum_congr rfl (fun J hJ ↦ ?_)
+  congr 1
+  · exact hvol hJ
+  exact hf (π.tag_mem_Icc J)
 
 theorem integralSum_biUnionTagged (f : ℝⁿ → E) (vol : ι →ᵇᵃ E →L[ℝ] F) (π : Prepartition I)
     (πi : ∀ J, TaggedPrepartition J) :
@@ -151,7 +159,6 @@ variable [Fintype ι]
 ### Basic integrability theory
 -/
 
-
 /-- The predicate `HasIntegral I l f vol y` says that `y` is the integral of `f` over `I` along `l`
 w.r.t. volume `vol`. This means that integral sums of `f` tend to `𝓝 y` along
 `BoxIntegral.IntegrationParams.toFilteriUnion I ⊤`. -/
@@ -169,6 +176,15 @@ open scoped Classical in
 Returns zero on non-integrable functions. -/
 def integral (I : Box ι) (l : IntegrationParams) (f : ℝⁿ → E) (vol : ι →ᵇᵃ E →L[ℝ] F) :=
   if h : Integrable I l f vol then h.choose else 0
+
+theorem hasIntegral_congr (I : Box ι) (l : IntegrationParams) {f₁ f₂ : ℝⁿ → E}
+    {vol₁ vol₂ : ι →ᵇᵃ E →L[ℝ] F}
+    (hf : EqOn f₁ f₂ I.Icc) (hvol : EqOn vol₁ vol₂ (Set.Iic I)) (y : F) :
+    HasIntegral I l f₁ vol₁ y ↔ HasIntegral I l f₂ vol₂ y := by
+  unfold HasIntegral
+  refine Filter.tendsto_congr (fun π ↦ integralSum_congr hf (hvol.mono ?_))
+  intro J hJ
+  simp [π.le_of_mem' J hJ]
 
 -- Porting note: using the above notation ℝⁿ here causes the theorem below to be silently ignored
 -- see https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Lean.204.20doesn't.20add.20lemma.20to.20the.20environment/near/363764522
@@ -389,7 +405,6 @@ The proof is mostly based on
 [Russel A. Gordon, *The integrals of Lebesgue, Denjoy, Perron, and Henstock*][Gordon55].
 
 -/
-
 namespace Integrable
 
 /-- If `ε > 0`, then `BoxIntegral.Integrable.convergenceR` is a function `r : ℝ≥0 → ℝⁿ → (0, ∞)`

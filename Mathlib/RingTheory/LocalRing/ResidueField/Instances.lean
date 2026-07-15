@@ -68,10 +68,10 @@ instance [Algebra.IsIntegral A B] :
     Algebra.IsAlgebraic p.ResidueField q.ResidueField := by
   have : Algebra.IsIntegral (A ⧸ p) (B ⧸ q) :=
     .tower_top A
-  letI := ((algebraMap (B ⧸ q) q.ResidueField).comp (algebraMap (A ⧸ p) (B ⧸ q))).toAlgebra
-  haveI : IsScalarTower (A ⧸ p) (B ⧸ q) q.ResidueField := .of_algebraMap_eq' rfl
-  haveI : Algebra.IsAlgebraic (A ⧸ p) q.ResidueField := .trans _ (B ⧸ q) _
-  haveI : IsScalarTower (A ⧸ p) p.ResidueField q.ResidueField := by
+  let := ((algebraMap (B ⧸ q) q.ResidueField).comp (algebraMap (A ⧸ p) (B ⧸ q))).toAlgebra
+  have : IsScalarTower (A ⧸ p) (B ⧸ q) q.ResidueField := .of_algebraMap_eq' rfl
+  have : Algebra.IsAlgebraic (A ⧸ p) q.ResidueField := .trans _ (B ⧸ q) _
+  have : IsScalarTower (A ⧸ p) p.ResidueField q.ResidueField := by
     refine .of_algebraMap_eq fun x ↦ ?_
     obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x
     simp [RingHom.algebraMap_toAlgebra, ← IsScalarTower.algebraMap_apply]

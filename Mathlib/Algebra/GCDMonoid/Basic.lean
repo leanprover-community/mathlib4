@@ -105,7 +105,6 @@ noncomputable abbrev NormalizationMonoid.ofRightInverse {α : Type*} [MonoidWith
 /-- A cancellative monoid with zero always admits a `NormalizationMonoid` structure. -/
 instance (α) [MonoidWithZero α] [IsLeftCancelMulZero α] :
     Nonempty (NormalizationMonoid α) := .intro <| by
-  classical
   exact .ofRightInverse
     (fun a ↦ by classical exact if a = 1 then 1 else a.out)
     (fun _ ↦ by split_ifs with h <;> simp [h]) (by simp)

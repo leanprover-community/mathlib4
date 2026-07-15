@@ -695,7 +695,7 @@ instance (X : Type*) [TopologicalSpace X] [PseudoMetrizableSpace X] [SeparableSp
 instance instMetrizableSpaceProbabilityMeasure (X : Type*) [TopologicalSpace X]
     [PseudoMetrizableSpace X] [SeparableSpace X] [MeasurableSpace X] [BorelSpace X] :
     MetrizableSpace (ProbabilityMeasure X) := by
-  letI : PseudoMetricSpace X := TopologicalSpace.pseudoMetrizableSpacePseudoMetric X
+  let : PseudoMetricSpace X := TopologicalSpace.pseudoMetrizableSpacePseudoMetric X
   exact LevyProkhorov.probabilityMeasureHomeomorph.isEmbedding.metrizableSpace
 
 end Levy_Prokhorov_metrizes_convergence_in_distribution

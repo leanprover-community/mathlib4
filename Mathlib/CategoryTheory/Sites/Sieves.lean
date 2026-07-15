@@ -1485,6 +1485,7 @@ lemma Presieve.bind_ofArrows_le_bindOfArrows {ι : Type*} {X : C} (Z : ι → C)
   rw [← Sieve.ofArrows.fac hv', ← reassoc_of% hu]
   exact ⟨S, u, u' ≫ f _, ⟨_, _, h⟩, rfl⟩
 
+@[deprecated "Use Sieve.arrows_generate_map_eq_functorPushforward instead." (since := "2026-07-09")]
 lemma Presieve.functorPushforward_overForget
     {S : C} {X : Over S} (R : Presieve X) :
     Presieve.functorPushforward (Over.forget S) R =

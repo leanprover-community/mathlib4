@@ -190,7 +190,7 @@ topological group. -/
 additive group filter basis, then it's an additive topological group. -/]
 instance (priority := 100) isTopologicalGroup (B : GroupFilterBasis G) :
     @IsTopologicalGroup G B.topology _ := by
-  letI := B.topology
+  let := B.topology
   have basis := B.nhds_one_hasBasis
   have basis' := basis.prod basis
   refine IsTopologicalGroup.of_nhds_one ?_ ?_ ?_ ?_
@@ -264,10 +264,10 @@ a ring filter basis then it's a topological ring. -/
 instance (priority := 100) isTopologicalRing {R : Type u} [Ring R] (B : RingFilterBasis R) :
     @IsTopologicalRing R B.topology _ := by
   let B' := B.toAddGroupFilterBasis
-  letI := B'.topology
+  let := B'.topology
   have basis := B'.nhds_zero_hasBasis
   have basis' := basis.prod basis
-  haveI := B'.isTopologicalAddGroup
+  have := B'.isTopologicalAddGroup
   apply IsTopologicalRing.of_addGroup_of_nhds_zero
   · rw [basis'.tendsto_iff basis]
     suffices ∀ U ∈ B', ∃ V W, (V ∈ B' ∧ W ∈ B') ∧ ∀ a b, a ∈ V → b ∈ W → a * b ∈ U by simpa

@@ -71,9 +71,6 @@ then a basis for `M` as `R`-module is also a basis for `M` as `R'`-module. -/
 noncomputable def algebraMapCoeffs : Basis ι A M :=
   b.mapCoeffs (RingEquiv.ofBijective _ h) fun c x => by simp
 
-@[deprecated (since := "2025-12-15")]
-alias algebraMapCoeffs_repr_apply_toFun := algebraMapCoeffs_repr_apply_apply
-
 @[simp]
 theorem algebraMapCoeffs_repr (m : M) :
     (b.algebraMapCoeffs A h).repr m = (b.repr m).mapRange (algebraMap R A) (map_zero _) := by
@@ -100,7 +97,6 @@ variable [Module R S] [Module S A] [Module R A] [IsScalarTower R S A]
 theorem linearIndependent_smul {ι : Type*} {b : ι → S} {ι' : Type*} {c : ι' → A}
     (hb : LinearIndependent R b) (hc : LinearIndependent S c) :
     LinearIndependent R fun p : ι × ι' ↦ b p.1 • c p.2 := by
-  classical
   rw [← linearIndependent_equiv' (.prodComm ..) (g := fun p : ι' × ι ↦ b p.2 • c p.1) rfl,
     LinearIndependent, linearCombination_smul]
   simpa using! Function.Injective.comp hc

@@ -489,7 +489,7 @@ open IsLocalization
 theorem IsField.localization_map_bijective {R Rₘ : Type*} [CommRing R] [CommRing Rₘ]
     {M : Submonoid R} (hM : (0 : R) ∉ M) (hR : IsField R) [Algebra R Rₘ] [IsLocalization M Rₘ] :
     Function.Bijective (algebraMap R Rₘ) := by
-  letI := hR.toField
+  let := hR.toField
   replace hM := le_nonZeroDivisors_of_noZeroDivisors hM
   refine ⟨IsLocalization.injective _ hM, fun x => ?_⟩
   obtain ⟨r, ⟨m, hm⟩, rfl⟩ := exists_mk'_eq M x

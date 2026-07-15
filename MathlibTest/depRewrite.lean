@@ -493,3 +493,57 @@ example (f : Nat → ∀ c, Fin (c + n)) : P (f (f (f m n) (f n m)) n).1 := by
   rw! (castMode := .all) [eq, ← eq]
   guard_target =ₛ P ((f (f (f n n) (f n n))) n).1
   exact test_sorry
+
+-- https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/conv-mode.20rw.21.20can.20produce.20type-incorrect.20term/near/609501125
+/--
+trace: n m : Nat
+eq : n = m
+B : Nat → Type
+ι : Type u_1
+X : ι → Sort u_2
+f : (i : ι) → X i
+i : ι
+y : X i
+h : (i, 1).fst = i
+| f i
+---
+trace: n m : Nat
+eq : n = m
+B : Nat → Type
+ι : Type u_1
+X : ι → Sort u_2
+f : (i : ι) → X i
+i : ι
+y : X i
+h : (i, 1).fst = i
+⊢ f i = y
+-/
+#guard_msgs in
+example {ι : Type*} {X : ι → Sort*} (f : ∀ i, X i) (i : ι) (y : X i) :
+    f (i, 1).1 = y := by
+  have h : (i, 1).1 = i := rfl
+  conv => lhs; rw! [h]; trace_state
+  trace_state
+  exact test_sorry
+
+def PropOrBool (x : Bool) : Type :=
+  bif x then Prop else Bool
+
+def boolToPropOrBool (x y : Bool) : PropOrBool x :=
+  match x with
+  | true => y = true
+  | false => y
+
+example : let t := true; boolToPropOrBool t t := by
+  intro t
+  have h : t = true := rfl
+  rw! [h]
+  guard_target =ₛ boolToPropOrBool true true
+  rfl
+
+example : let t := true; boolToPropOrBool (t || true) t := by
+  intro t
+  have h : t = false := test_sorry
+  rw! [h]
+  guard_target =ₛ boolToPropOrBool (false || true) false
+  contradiction

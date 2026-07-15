@@ -135,10 +135,10 @@ instance Functor.mapHomologicalComplex_reflects_iso (F : W₁ ⥤ W₂) [F.Prese
     ReflectsIsomorphisms (F.mapHomologicalComplex c) :=
   ⟨fun f => by
     intro
-    haveI : ∀ n : ι, IsIso (F.map (f.f n)) := fun n =>
+    have : ∀ n : ι, IsIso (F.map (f.f n)) := fun n =>
         ((HomologicalComplex.eval W₂ c n).mapIso
           (asIso ((F.mapHomologicalComplex c).map f))).isIso_hom
-    haveI := fun n => isIso_of_reflects_iso (f.f n) F
+    have := fun n => isIso_of_reflects_iso (f.f n) F
     exact HomologicalComplex.Hom.isIso_of_components f⟩
 
 instance (F : V ⥤ W) [F.Additive] (c : ComplexShape ι) [F.Faithful] :

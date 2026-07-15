@@ -218,7 +218,6 @@ theorem prod_edist_self (f : WithLp p (α × β)) : edist f f = 0 := by
 This holds independent of `p` and does not require `[Fact (1 ≤ p)]`. We keep it separate
 from `WithLp.instProdPseudoEMetricSpace` so it can be used also for `p < 1`. -/
 theorem prod_edist_comm (f g : WithLp p (α × β)) : edist f g = edist g f := by
-  classical
   rcases p.trichotomy with (rfl | rfl | h)
   · simp only [prod_edist_eq_card, edist_comm]
   · simp only [prod_edist_eq_sup, edist_comm]
@@ -1047,7 +1046,7 @@ lemma isBoundedSMulSeminormedAddCommGroupToProd
     [Module R α] [Module R β] [IsBoundedSMul R α] [IsBoundedSMul R β] :
     letI := pseudoMetricSpaceToProd p α β
     IsBoundedSMul R (α × β) := by
-  letI := pseudoMetricSpaceToProd p α β
+  let := pseudoMetricSpaceToProd p α β
   refine ⟨fun x y z ↦ ?_, fun x y z ↦ ?_⟩
   · simpa [dist_pseudoMetricSpaceToProd] using dist_smul_pair x (toLp p y) (toLp p z)
   · simpa [dist_pseudoMetricSpaceToProd] using dist_pair_smul x y (toLp p z)
@@ -1057,7 +1056,7 @@ lemma normSMulClassSeminormedAddCommGroupToProd
     [Module R α] [Module R β] [NormSMulClass R α] [NormSMulClass R β] :
     letI := seminormedAddCommGroupToProd p α β
     NormSMulClass R (α × β) := by
-  letI := seminormedAddCommGroupToProd p α β
+  let := seminormedAddCommGroupToProd p α β
   exact ⟨fun x y ↦ norm_smul x (toLp p y)⟩
 
 /-- This definition allows to endow `α × β` with a normed space structure corresponding to
@@ -1195,8 +1194,6 @@ def withLpProdCongr (f : α ≃ₗᵢ[𝕜] α') (g : β ≃ₗᵢ[𝕜] β') :
     WithLp p (α × β) ≃ₗᵢ[𝕜] WithLp p (α' × β') where
   __ := (f.toLinearEquiv.prodCongr g.toLinearEquiv).withLpCongr p
   norm_map' := (f.toLinearIsometry.withLpProdMap p g.toLinearIsometry).norm_map
-
-@[deprecated (since := "2025-12-22")] alias _root_.LinearIsometry.withLpProdCongr := withLpProdCongr
 
 /-- Commutativity of the `L^p` product as a linear isometric equivalence. -/
 def withLpProdComm : WithLp p (α × β) ≃ₗᵢ[𝕜] WithLp p (β × α) where

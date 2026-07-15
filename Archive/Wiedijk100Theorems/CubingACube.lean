@@ -451,7 +451,6 @@ theorem valley_mi : Valley cs (cs (mi h v)).shiftUp := by
   refine ⟨?_, ?_, ?_⟩
   · intro p; apply h.shiftUp_bottom_subset_bottoms mi_xm_ne_one
   · rintro i' hi' ⟨p2, hp2, h2p2⟩; simp only [head_shiftUp] at hi'
-    classical
     by_contra h2i'
     rw [tail_shiftUp] at h2p2
     simp only [not_subset, tail_shiftUp] at h2i'

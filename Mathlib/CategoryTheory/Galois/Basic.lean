@@ -156,22 +156,22 @@ instance {G : Type*} [Group G] [Finite G] :
 /-- Fiber functors reflect monomorphisms. -/
 instance : ReflectsMonomorphisms F := ReflectsMonomorphisms.mk <| by
   intro X Y f _
-  haveI : IsIso (pullback.fst (F.map f) (F.map f)) :=
+  have : IsIso (pullback.fst (F.map f) (F.map f)) :=
     isIso_fst_of_mono (F.map f)
-  haveI : IsIso (F.map (pullback.fst f f)) := by
+  have : IsIso (F.map (pullback.fst f f)) := by
     rw [← PreservesPullback.iso_hom_fst]
     exact IsIso.comp_isIso
-  haveI : IsIso (pullback.fst f f) := isIso_of_reflects_iso (pullback.fst _ _) F
+  have : IsIso (pullback.fst f f) := isIso_of_reflects_iso (pullback.fst _ _) F
   exact (pullback.diagonal_isKernelPair f).mono_of_isIso_fst
 
 /-- Fiber functors are faithful. -/
 instance : F.Faithful where
   map_injective {X Y} f g h := by
-    haveI : IsIso (equalizer.ι (F.map f) (F.map g)) := equalizer.ι_of_eq h
-    haveI : IsIso (F.map (equalizer.ι f g)) := by
+    have : IsIso (equalizer.ι (F.map f) (F.map g)) := equalizer.ι_of_eq h
+    have : IsIso (F.map (equalizer.ι f g)) := by
       rw [← equalizerComparison_comp_π f g F]
       exact IsIso.comp_isIso
-    haveI : IsIso (equalizer.ι f g) := isIso_of_reflects_iso _ F
+    have : IsIso (equalizer.ι f g) := isIso_of_reflects_iso _ F
     exact eq_of_epi_equalizer
 
 section
@@ -220,12 +220,6 @@ variable [PreGaloisCategory C] [FiberFunctor F]
 /-- An object is initial if and only if its fiber is empty. -/
 lemma initial_iff_fiber_empty (X : C) : Nonempty (IsInitial X) ↔ IsEmpty (F.obj X) := by
   rw [(IsInitial.isInitialIffObj F X).nonempty_congr]
-  haveI : PreservesFiniteColimits (forget FintypeCat) := by
-    change PreservesFiniteColimits FintypeCat.incl
-    infer_instance
-  haveI : ReflectsColimit (Functor.empty.{0} _) (forget FintypeCat) := by
-    change ReflectsColimit (Functor.empty.{0} _) FintypeCat.incl
-    infer_instance
   exact Concrete.initial_iff_empty_of_preserves_of_reflects (F.obj X)
 
 /-- An object is not initial if and only if its fiber is nonempty. -/
@@ -314,7 +308,7 @@ lemma fiberBinaryProductEquiv_symm_snd_apply {X Y : C} (x : F.obj X) (y : F.obj 
 lemma evaluation_injective_of_isConnected (A X : C) [IsConnected A] (a : F.obj A) :
     Function.Injective (fun (f : A ⟶ X) ↦ F.map f a) := by
   intro f g (h : F.map f a = F.map g a)
-  haveI : IsIso (equalizer.ι f g) := by
+  have : IsIso (equalizer.ι f g) := by
     apply IsConnected.noTrivialComponent _ (equalizer.ι f g)
     exact not_initial_of_inhabited F ((fiberEqualizerEquiv F f g).symm ⟨a, h⟩)
   exact eq_of_epi_equalizer

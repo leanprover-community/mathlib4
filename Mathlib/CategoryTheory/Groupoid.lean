@@ -100,12 +100,6 @@ def Groupoid.isoEquivHom : (X ≅ Y) ≃ (X ⟶ Y) where
 
 variable (C)
 
-/-- The functor from a groupoid `C` to its opposite sending every morphism to its inverse. -/
-@[simps, deprecated "Use Groupoid.invEquivalence.functor" (since := "2025-12-31")]
-def Groupoid.invFunctor : C ⥤ Cᵒᵖ where
-  obj := Opposite.op
-  map {_ _} f := (inv f).op
-
 set_option backward.defeqAttrib.useBackward true in
 /-- The equivalence from a groupoid `C` to its opposite sending every morphism to its inverse. -/
 @[simps]
