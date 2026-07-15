@@ -103,6 +103,15 @@ theorem natCast_strictMono : StrictMono (Nat.cast : ℕ → α) := by
   have h : n + (floor (n : α) + 1) ≤ floor (n : α) := (gc_floor (natCast_nonneg n)).mpr (hn _).le
   grind
 
+theorem natCast_pos {n : ℕ} : 0 < (n : α) ↔ 0 < n := by
+  rw [← Nat.cast_zero, natCast_strictMono.lt_iff_lt]
+
+theorem natCast_lt_iff {m n : ℕ} : (m : α) < (n : α) ↔ m < n :=
+  natCast_strictMono.lt_iff_lt
+
+theorem natCast_le_iff {m n : ℕ} : (m : α) ≤ (n : α) ↔ m ≤ n :=
+  natCast_strictMono.le_iff_le
+
 instance : ZeroLEOneClass α := ⟨by simpa only [Nat.cast_one] using natCast_nonneg 1⟩
 
 instance : CharZero α := ⟨natCast_strictMono.injective⟩
@@ -191,7 +200,7 @@ instance : FloorRing ℤ where
 
 /-- A `FloorRing` constructor from the `floor` function alone. -/
 @[implicit_reducible]
-def FloorRing.ofFloor (α) [Ring α] [LinearOrder α] [IsOrderedRing α] (floor : α → ℤ)
+def FloorRing.ofFloor (α) [Ring α] [LinearOrder α] [IsOrderedAddMonoid α] (floor : α → ℤ)
     (gc_coe_floor : GaloisConnection (↑) floor) : FloorRing α :=
   { floor
     ceil := fun a => -floor (-a)
@@ -200,7 +209,7 @@ def FloorRing.ofFloor (α) [Ring α] [LinearOrder α] [IsOrderedRing α] (floor 
 
 /-- A `FloorRing` constructor from the `ceil` function alone. -/
 @[implicit_reducible]
-def FloorRing.ofCeil (α) [Ring α] [LinearOrder α] [IsOrderedRing α] (ceil : α → ℤ)
+def FloorRing.ofCeil (α) [Ring α] [LinearOrder α] [IsOrderedAddMonoid α] (ceil : α → ℤ)
     (gc_ceil_coe : GaloisConnection ceil (↑)) : FloorRing α :=
   { floor := fun a => -ceil (-a)
     ceil
@@ -381,6 +390,12 @@ theorem intCast_strictMono : StrictMono (Int.cast : ℤ → α) := by
   obtain ⟨h⟩ : NeZero (1 : α) := inferInstance
   refine strictMono_int_of_lt_succ fun n => (intCast_mono (Int.le_add_one (le_refl _))).lt_of_ne ?_
   grind
+
+theorem intCast_lt_iff {m n : ℤ} : (m : α) < (n : α) ↔ m < n :=
+  intCast_strictMono.lt_iff_lt
+
+theorem intCast_le_iff {m n : ℤ} : (m : α) ≤ (n : α) ↔ m ≤ n :=
+  intCast_strictMono.le_iff_le
 
 end FloorRing
 
