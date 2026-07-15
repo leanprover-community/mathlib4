@@ -116,42 +116,43 @@ variable {X Y : C} (f : X ⟶ Y)
 
 /-- A morphism `f : X ⟶ Y` induces a functor `Subobject X ⥤ Subobject Y`
   by `X' ↦ kernel (cokernel.π (X'.arrow ≫ f))`. In an abelian category, this is the same
-  as `image (X'.arrow ≫ f)`. -/
+  as `image (X'.arrow ≫ f)`: see `directImage_eq_imageSubobject`. -/
 @[simp]
 noncomputable
-def image : Subobject X ⥤ Subobject Y where
+def directImage : Subobject X ⥤ Subobject Y where
   obj X' := kernelSubobject (cokernel.π (X'.arrow ≫ f))
   map {X' X''} h := homOfLE <| mk_le_mk_of_comm
     (kernel.map _ _ (𝟙 _) (cokernel.map _ _ (X'.ofLE X'' h.le) (𝟙 _) (by simp)) (by simp))
     (by simp)
 
-lemma image_eq_imageSubobject {X' : Subobject X} :
-    (image f).obj X' = imageSubobject (X'.arrow ≫ f) := by
-  simp only [← underlyingIso_arrow X'.arrow =≫ f, Category.assoc, image, imageSubobject_iso_comp]
+lemma directImage_eq_imageSubobject {X' : Subobject X} :
+    (directImage f).obj X' = imageSubobject (X'.arrow ≫ f) := by
+  simp only [← underlyingIso_arrow X'.arrow =≫ f, Category.assoc, directImage,
+    imageSubobject_iso_comp]
   rw [imageSubobject_eq_kernelSubobject]
   exact mk_eq_mk_of_comm _ _
     (kernel.mapIso _ _ (Iso.refl _)
       (cokernel.mapIso _ _ (underlyingIso _).symm (Iso.refl _) (by simp)) (by simp)) (by simp)
 
-lemma image_mk_eq_imageSubobject {A : C} (g : A ⟶ X) [Mono g] :
-    (image f).obj (Subobject.mk g) = imageSubobject (g ≫ f) := by
-  rw [image_eq_imageSubobject]
+lemma directImage_mk_eq_imageSubobject {A : C} (g : A ⟶ X) [Mono g] :
+    (directImage f).obj (Subobject.mk g) = imageSubobject (g ≫ f) := by
+  rw [directImage_eq_imageSubobject]
   simp only [← underlyingIso_arrow g =≫ f, Category.assoc, imageSubobject_iso_comp]
 
-lemma image_mono [Mono f] {X' : Subobject X} :
-    (image f).obj X' = Subobject.mk (X'.arrow ≫ f) := by
-  rw [image_eq_imageSubobject, imageSubobject_mono]
+lemma directImage_mono [Mono f] {X' : Subobject X} :
+    (directImage f).obj X' = Subobject.mk (X'.arrow ≫ f) := by
+  rw [directImage_eq_imageSubobject, imageSubobject_mono]
 
-lemma image_le {X' : Subobject X} {Y' : Subobject Y}
-    (u : (X' : C) ⟶ Y') (h : u ≫ Y'.arrow = X'.arrow ≫ f) : (image f).obj X' ≤ Y' := by
-  rw [image_eq_imageSubobject]
+lemma directImage_le {X' : Subobject X} {Y' : Subobject Y}
+    (u : (X' : C) ⟶ Y') (h : u ≫ Y'.arrow = X'.arrow ≫ f) : (directImage f).obj X' ≤ Y' := by
+  rw [directImage_eq_imageSubobject]
   exact imageSubobject_le (X'.arrow ≫ f) u h
 
 /-- For `f : X ⟶ Y`, the canonical map from `X' : Subobject X` to `f(X') : Subobject Y`. -/
 @[simp]
 noncomputable
-abbrev toImage {X Y : C} (X' : Subobject X) (f : X ⟶ Y) :
-    (X' : C) ⟶ (image f).obj X' :=
+abbrev toDirectImage {X Y : C} (X' : Subobject X) (f : X ⟶ Y) :
+    (X' : C) ⟶ (directImage f).obj X' :=
   factorThruKernelSubobject (cokernel.π (X'.arrow ≫ f)) (X'.arrow ≫ f) (cokernel.condition _)
 
 /-- A morphism `f : X ⟶ Y` induces a functor `Subobject Y ⥤ Subobject X`
@@ -184,28 +185,29 @@ abbrev fromInverseImage {X Y : C} (Y' : Subobject Y) (f : X ⟶ Y) :
   kernel.lift (cokernel.π Y'.arrow) (kernel.ι (f ≫ cokernel.π Y'.arrow) ≫ f) (by simp) ≫
   (isoKernelCokernel _).inv
 
-theorem image_inverseImage_gc : GaloisConnection (image f).obj (inverseImage f).obj := fun X' Y' ↦
-  ⟨fun h ↦ le_inverseImage f (toImage X' f ≫ ofLE _ _ h) (by simp),
-    fun h ↦ image_le f (ofLE _ _ h ≫ fromInverseImage Y' f) (by simp)⟩
+theorem directImage_inverseImage_gc :
+    GaloisConnection (directImage f).obj (inverseImage f).obj := fun X' Y' ↦
+  ⟨fun h ↦ le_inverseImage f (toDirectImage X' f ≫ ofLE _ _ h) (by simp),
+    fun h ↦ directImage_le f (ofLE _ _ h ≫ fromInverseImage Y' f) (by simp)⟩
 
-lemma inverseImage_image_le (X' : Subobject X) :
-    X' ≤ (inverseImage f).obj ((image f).obj X') := (image_inverseImage_gc f).le_u_l X'
+lemma inverseImage_directImage_le (X' : Subobject X) :
+    X' ≤ (inverseImage f).obj ((directImage f).obj X') := (directImage_inverseImage_gc f).le_u_l X'
 
-lemma image_inverseImage_le (Y' : Subobject Y) :
-    (image f).obj ((inverseImage f).obj Y') ≤ Y' := (image_inverseImage_gc f).l_u_le Y'
+lemma directImage_inverseImage_le (Y' : Subobject Y) :
+    (directImage f).obj ((inverseImage f).obj Y') ≤ Y' := (directImage_inverseImage_gc f).l_u_le Y'
 
-lemma image_le_image_iff_of_mono (X₁ X₂ : Subobject X) [Mono f] :
-    (image f).obj X₁ ≤ (image f).obj X₂ ↔ X₁ ≤ X₂ := by
-  refine ⟨fun h ↦ ?_, fun h ↦ (image f).monotone h⟩
-  simp only [image_mono f] at h
+lemma directImage_le_directImage_iff_of_mono (X₁ X₂ : Subobject X) [Mono f] :
+    (directImage f).obj X₁ ≤ (directImage f).obj X₂ ↔ X₁ ≤ X₂ := by
+  refine ⟨fun h ↦ ?_, fun h ↦ (directImage f).monotone h⟩
+  simp only [directImage_mono f] at h
   exact le_of_comm (ofMkLEMk (X₁.arrow ≫ f) (X₂.arrow ≫ f) h)
     (by rw [← cancel_mono f, Category.assoc, ofMkLEMk_comp])
 
 /-- If `f : X ⟶ Y` is a monomorphism in an abelian category, then `f⁻¹(f(X')) = X'`. -/
-theorem mono_inverseImage_image (X' : Subobject X) [Mono f] :
-    (inverseImage f).obj ((image f).obj X') = X' :=
-  le_antisymm ((image_le_image_iff_of_mono f _ _).mp (image_inverseImage_le f _))
-    (inverseImage_image_le f X')
+theorem mono_inverseImage_directImage (X' : Subobject X) [Mono f] :
+    (inverseImage f).obj ((directImage f).obj X') = X' :=
+  le_antisymm ((directImage_le_directImage_iff_of_mono f _ _).mp (directImage_inverseImage_le f _))
+    (inverseImage_directImage_le f X')
 
 lemma inverseImage_le_inverseImage_iff_of_epi (Y₁ Y₂ : Subobject Y) [Epi f] :
     (inverseImage f).obj Y₁ ≤ (inverseImage f).obj Y₂ ↔ Y₁ ≤ Y₂ := by
@@ -220,13 +222,13 @@ lemma inverseImage_le_inverseImage_iff_of_epi (Y₁ Y₂ : Subobject Y) [Epi f] 
   simp [le_iff_comp_cokernel_zero, ← hd]
 
 /-- If `f : X ⟶ Y` is an epimorphism in an abelian category, then `f(f⁻¹(Y')) = Y'`. -/
-theorem epi_image_inverseImage (Y' : Subobject Y) [Epi f] :
-    (image f).obj ((inverseImage f).obj Y') = Y' :=
-  le_antisymm (image_inverseImage_le f Y')
-    ((inverseImage_le_inverseImage_iff_of_epi f _ _).mp (inverseImage_image_le f _))
+theorem epi_directImage_inverseImage (Y' : Subobject Y) [Epi f] :
+    (directImage f).obj ((inverseImage f).obj Y') = Y' :=
+  le_antisymm (directImage_inverseImage_le f Y')
+    ((inverseImage_le_inverseImage_iff_of_epi f _ _).mp (inverseImage_directImage_le f _))
 
-theorem inverseImage_image_eq_self_of_epi [Epi f] (X' : Subobject X)
-    (h : kernelSubobject f ≤ X') : (inverseImage f).obj ((image f).obj X') = X' := by
+theorem inverseImage_directImage_eq_self_of_epi [Epi f] (X' : Subobject X)
+    (h : kernelSubobject f ≤ X') : (inverseImage f).obj ((directImage f).obj X') = X' := by
   let d := epiDesc f (cokernel.π X'.arrow) (by
     rw [← kernelSubobject_arrow' f, ← ofLE_arrow h]
     simp only [Category.assoc, cokernel.condition, comp_zero])
@@ -236,7 +238,7 @@ theorem inverseImage_image_eq_self_of_epi [Epi f] (X' : Subobject X)
     simp only [← Category.assoc, d, comp_epiDesc, kernelSubobject_comp_mono]
     rw [← imageSubobject_eq_kernelSubobject, imageSubobject_mono]
     exact mk_arrow X'
-  rw [← hX', epi_image_inverseImage]
+  rw [← hX', epi_directImage_inverseImage]
 
 /-- Given a subobject `Y` of `X`, there is an order-isomorphism between subobjects
 of `X/Y := cokernel (Y ↪ X)` and subobjects of `X` containing `Y`. -/
@@ -244,12 +246,12 @@ noncomputable
 def cokernelOrderIso (Y : Subobject X) :
     Subobject (cokernel Y.arrow) ≃o Set.Ici Y where
   toFun p := ⟨(inverseImage (cokernel.π Y.arrow)).obj p, le_kernelSubobject _ _ (by simp)⟩
-  invFun q := (image (cokernel.π Y.arrow)).obj q
-  left_inv p := epi_image_inverseImage (cokernel.π Y.arrow) p
+  invFun q := (directImage (cokernel.π Y.arrow)).obj q
+  left_inv p := epi_directImage_inverseImage (cokernel.π Y.arrow) p
   right_inv := by
     rintro ⟨q, hq : Y ≤ q⟩
     ext1
-    exact inverseImage_image_eq_self_of_epi _ _
+    exact inverseImage_directImage_eq_self_of_epi _ _
       (by rwa [← imageSubobject_eq_kernelSubobject, imageSubobject_mono, mk_arrow])
   map_rel_iff' := inverseImage_le_inverseImage_iff_of_epi _ _ _
 
