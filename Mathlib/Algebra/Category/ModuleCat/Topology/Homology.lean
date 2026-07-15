@@ -35,7 +35,7 @@ variable {M N : TopModuleCat.{v} R} (φ : M ⟶ N)
 section kernel
 
 /-- Kernel in `TopModuleCat R` is the kernel of the linear map with the subspace topology. -/
-abbrev ker : TopModuleCat R := .of R φ.hom.ker
+abbrev ker : TopModuleCat.{v} R := .of R φ.hom.ker
 
 /-- The inclusion map from the kernel in `TopModuleCat R`. -/
 def kerι : ker φ ⟶ M := ofHom ⟨Submodule.subtype _, continuous_subtype_val⟩
@@ -61,7 +61,7 @@ end kernel
 section cokernel
 
 /-- Cokernel in `TopModuleCat R` is the cokernel of the linear map with the quotient topology. -/
-abbrev coker : TopModuleCat R := .of R (N ⧸ φ.hom.range)
+abbrev coker : TopModuleCat.{v} R := .of R (N ⧸ φ.hom.range)
 
 /-- The projection map to the cokernel in `TopModuleCat R`. -/
 def cokerπ : N ⟶ coker φ := ofHom <| ⟨Submodule.mkQ _, by tauto⟩
@@ -93,7 +93,7 @@ def isColimitCoker : IsColimit (CokernelCofork.ofπ (cokerπ φ) (comp_cokerπ �
 end cokernel
 
 set_option backward.isDefEq.respectTransparency false in
-instance : CategoryWithHomology (TopModuleCat R) := by
+instance : CategoryWithHomology (TopModuleCat.{v} R) := by
   constructor
   intro S
   let D₁ : S.LeftHomologyData := ⟨_, _, _, _, _, isLimitKer _, by simp, isColimitCoker _⟩
@@ -101,7 +101,7 @@ instance : CategoryWithHomology (TopModuleCat R) := by
   let F := ShortComplex.leftRightHomologyComparison' D₁ D₂
   suffices IsIso F from ⟨⟨.ofIsIsoLeftRightHomologyComparison' D₁ D₂⟩⟩
   have hF : Function.Bijective F := by
-    change Function.Bijective ((forget₂ _ (ModuleCat R)).map F)
+    change Function.Bijective ((forget₂ _ (ModuleCat.{v} R)).map F)
     rw [← ConcreteCategory.isIso_iff_bijective, ShortComplex.map_leftRightHomologyComparison']
     infer_instance
   have hF' : Topology.IsEmbedding F := by
@@ -121,7 +121,7 @@ instance : CategoryWithHomology (TopModuleCat R) := by
       obtain ⟨z, hz⟩ := (Submodule.Quotient.eq _).mp e
       obtain rfl := eq_sub_iff_add_eq.mp hz
       simpa [show S.g (S.f z) = 0 from ConcreteCategory.congr_hom S.zero z] using hy
-  rw [← isIso_iff_of_reflects_iso _ (forget₂ (TopModuleCat R) TopCat),
+  rw [← isIso_iff_of_reflects_iso _ (forget₂ (TopModuleCat.{v} R) TopCat),
     TopCat.isIso_iff_isHomeomorph, isHomeomorph_iff_isEmbedding_surjective]
   exact ⟨hF', hF.2⟩
 
