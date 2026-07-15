@@ -5,7 +5,6 @@ Authors: Wrenna Robson
 -/
 module
 
-public import Batteries.Tactic.Alias
 public import Mathlib.Data.Nat.Notation
 public import Init.Data.Fin.Bitwise
 
