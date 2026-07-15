@@ -5,13 +5,13 @@ Authors: Violeta Hernández Palacios
 -/
 module
 
+public import Mathlib.Algebra.Order.Archimedean.Real.Basic
 public import Mathlib.Algebra.Order.Ring.Archimedean
 public import Mathlib.Algebra.Ring.Subring.Order
-public import Mathlib.Data.Real.Archimedean
 public import Mathlib.Order.Quotient
 public import Mathlib.RingTheory.Valuation.ValuationSubring
 
-import Mathlib.Data.Real.Hom
+import Mathlib.Algebra.Order.Archimedean.Real.Hom
 
 /-!
 # Standard part function
@@ -73,9 +73,6 @@ theorem neg_mk {x : K} (h : 0 ≤ mk x) :
     -FiniteElement.mk x h = FiniteElement.mk (-x) (by rwa [mk_neg]) :=
   rfl
 
-@[deprecated (since := "2025-12-24")]
-alias mk_neg := neg_mk
-
 @[simp]
 theorem mk_add_mk (x y : K) (hx hy) :
     .mk x hx + .mk y hy = FiniteElement.mk (x + y) ((le_min hx hy).trans <| min_le_mk_add ..) :=
@@ -115,7 +112,7 @@ instance : FloorRing (FiniteElement K) :=
   .ofBounded _ fun x ↦ by
     obtain ⟨n, hn⟩ := x.2
     refine ⟨n, (le_abs_self x).trans ?_⟩
-    simpa using hn
+    simpa using! hn
 
 end FiniteElement
 

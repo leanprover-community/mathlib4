@@ -13,6 +13,8 @@ public import Mathlib.MeasureTheory.Integral.CurveIntegral.Basic
 public import Mathlib.MeasureTheory.Integral.DivergenceTheorem
 public import Mathlib.Topology.Homotopy.Affine
 
+import Mathlib.Analysis.Calculus.AddTorsor.AffineMap
+
 /-!
 # Poincaré lemma for 1-forms
 
@@ -290,6 +292,7 @@ namespace Convex
 variable [NormedSpace ℝ E] [NormedSpace ℝ F]
   {a b c : E} {s : Set E} {ω : E → E →L[𝕜] F} {dω : E → E →L[ℝ] E →L[𝕜] F}
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `ω` is a closed `1`-form on a convex set,
 then `∫ᶜ x in Path.segment a b, ω x + ∫ᶜ x in Path.segment b c, ω x = ∫ᶜ x in Path.segment a c, ω x`
 for all `a b c ∈ s`.
@@ -329,10 +332,7 @@ theorem curveIntegral_segment_add_eq_of_hasFDerivWithinAt_symmetric (hs : Convex
       lift x to I using hx
       lift y to I using hy
       simp [φ]
-    refine .congr ?_ this
-    -- TODO: add `ContDiff.lineMap` etc
-    simp only [AffineMap.lineMap_apply_module]
-    fun_prop
+    exact .congr (by fun_prop) this
 
 variable [CompleteSpace F]
 
@@ -395,7 +395,7 @@ variable [CompleteSpace E] {f : 𝕜 → E} {s : Set 𝕜}
 then it admits a primitive. -/
 theorem exists_forall_hasDerivWithinAt (hs : Convex ℝ s) (hf : DifferentiableOn 𝕜 f s) :
     ∃ g : 𝕜 → E, ∀ a ∈ s, HasDerivWithinAt g (f a) s a := by
-  letI : NormedSpace ℝ E := .restrictScalars ℝ 𝕜 E
+  let : NormedSpace ℝ E := .restrictScalars ℝ 𝕜 E
   apply hs.exists_forall_hasFDerivWithinAt_of_hasFDerivWithinAt_symmetric
   · intro a ha
     exact (ContinuousLinearMap.smulRightL 𝕜 𝕜 E 1).hasFDerivAt

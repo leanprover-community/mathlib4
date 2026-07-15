@@ -80,13 +80,13 @@ theorem MeasureTheory.measure_lt_one_eq_integral_div_gamma {p : ℝ} (hp : 0 < p
     μ {x : E | g x < 1} =
       .ofReal ((∫ (x : E), Real.exp (-(g x) ^ p) ∂μ) / Real.Gamma (finrank ℝ E / p + 1)) := by
   -- We copy `E` to a new type `F` on which we will put the norm defined by `g`
-  letI F : Type _ := E
+  let F : Type _ := E
   let p : AddGroupNorm F := ⟨⟨g, h1, h3, h2⟩, fun x hx ↦ h4 hx⟩
-  letI : NormedAddCommGroup F := AddGroupNorm.toNormedAddCommGroup p
-  letI : NormedSpace ℝ F := { norm_smul_le := fun _ _ ↦ h5 _ _ }
+  let : NormedAddCommGroup F := AddGroupNorm.toNormedAddCommGroup p
+  let : NormedSpace ℝ F := { norm_smul_le := fun _ _ ↦ h5 _ _ }
   -- We put the new topology on F
-  letI : TopologicalSpace F := UniformSpace.toTopologicalSpace
-  letI : MeasurableSpace F := borel F
+  let : TopologicalSpace F := UniformSpace.toTopologicalSpace
+  let : MeasurableSpace F := borel F
   have : BorelSpace F := { measurable_eq := rfl }
   -- The map between `E` and `F` as a continuous linear equivalence
   let φ := @LinearEquiv.toContinuousLinearEquiv ℝ _ E _ _ tE _ _ F _ _ _ _ _ _ _ _ _
@@ -113,13 +113,13 @@ theorem MeasureTheory.measure_lt_one_eq_integral_div_gamma {p : ℝ} (hp : 0 < p
 theorem MeasureTheory.measure_le_eq_lt [Nontrivial E] (r : ℝ) :
     μ {x : E | g x ≤ r} = μ {x : E | g x < r} := by
   -- We copy `E` to a new type `F` on which we will put the norm defined by `g`
-  letI F : Type _ := E
+  let F : Type _ := E
   let p : AddGroupNorm F := ⟨⟨g, h1, h3, h2⟩, fun x hx ↦ h4 hx⟩
-  letI : NormedAddCommGroup F := AddGroupNorm.toNormedAddCommGroup p
-  letI : NormedSpace ℝ F := { norm_smul_le := fun _ _ ↦ h5 _ _ }
+  let : NormedAddCommGroup F := AddGroupNorm.toNormedAddCommGroup p
+  let : NormedSpace ℝ F := { norm_smul_le := fun _ _ ↦ h5 _ _ }
   -- We put the new topology on F
-  letI : TopologicalSpace F := UniformSpace.toTopologicalSpace
-  letI : MeasurableSpace F := borel F
+  let : TopologicalSpace F := UniformSpace.toTopologicalSpace
+  let : MeasurableSpace F := borel F
   have : BorelSpace F := { measurable_eq := rfl }
   -- The map between `E` and `F` as a continuous linear equivalence
   let φ := @LinearEquiv.toContinuousLinearEquiv ℝ _ E _ _ tE _ _ F _ _ _ _ _ _ _ _ _

@@ -76,6 +76,7 @@ instance : ExponentialIdeal (subterminalInclusion C) := by
   refine ⟨⟨A ⟹ B.1, fun Z g h => ?_⟩, ⟨Iso.refl _⟩⟩
   exact uncurry_injective (B.2 (MonoidalClosed.uncurry g) (MonoidalClosed.uncurry h))
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `D` is a reflective subcategory, the property of being an exponential ideal is equivalent to
 the presence of a natural isomorphism `i ⋙ exp A ⋙ leftAdjoint i ⋙ i ≅ i ⋙ exp A`, that is:
 `(A ⟹ iB) ≅ i L (A ⟹ iB)`, naturally in `B`.
@@ -108,7 +109,7 @@ variable (i : D ⥤ C)
 
 /- This cannot be a local instance since it has free variables,
 it can instead be used as a have when needed.
-We assume HasFiniteProducts D as a hypothesis below, to avoid making this a local instance.
+We assume `HasFiniteProducts D` as a hypothesis below, to avoid making this a local instance.
 -/
 theorem reflective_products [Limits.HasFiniteProducts C] [Reflective i] :
     Limits.HasFiniteProducts D := ⟨fun _ => hasLimitsOfShape_of_reflective i⟩
@@ -146,7 +147,7 @@ abbrev CartesianMonoidalCategory.ofReflective [CartesianMonoidalCategory C] [Ref
         · change (reflector i ⋙ i).obj (i.obj X ⊗ i.obj Y) ≅ (𝟭 C).obj (i.obj X ⊗ i.obj Y)
           letI : IsIso ((reflectorAdjunction i).unit.app (i.obj X ⊗ i.obj Y)) := by
             apply Functor.essImage.unit_isIso
-            haveI := reflective_products i
+            have := reflective_products i
             use Limits.prod X Y
             constructor
             apply Limits.PreservesLimitPair.iso i _ _ |>.trans
@@ -161,6 +162,7 @@ abbrev CartesianMonoidalCategory.ofReflective [CartesianMonoidalCategory C] [Ref
 variable [CartesianMonoidalCategory C] [Reflective i] [MonoidalClosed C]
   [CartesianMonoidalCategory D]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- If the reflector preserves binary products, the subcategory is an exponential ideal.
 This is the converse of `preservesBinaryProductsOfExponentialIdeal`.
@@ -185,11 +187,12 @@ instance (priority := 10) exponentialIdeal_of_preservesBinaryProducts
       prodComparison_natural_whiskerLeft_assoc, ← whiskerLeft_comp_assoc,
       ir.left_triangle_components, whiskerLeft_id, Category.id_comp]
     apply IsIso.hom_inv_id_assoc
-  haveI : IsSplitMono (η.app (A ⟹ i.obj B)) := IsSplitMono.mk' ⟨_, this⟩
+  have : IsSplitMono (η.app (A ⟹ i.obj B)) := IsSplitMono.mk' ⟨_, this⟩
   apply mem_essImage_of_unit_isSplitMono
 
 variable [ExponentialIdeal i]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `i` witnesses that `D` is a reflective subcategory and an exponential ideal, then `D` is
 itself Cartesian closed.
 
@@ -217,6 +220,7 @@ def cartesianClosedOfReflective' (l : i.EssImageSubcategory ⥤ D) (φ : l ⋙ i
         · exact (i.essImage.liftCompιIso _ _).symm.trans <|
             (Functor.isoWhiskerLeft _ φ.symm).trans (Functor.associator _ _ _).symm }
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `i` witnesses that `D` is a reflective subcategory and an exponential ideal, then `D` is
 itself Cartesian closed.
 
@@ -265,6 +269,7 @@ noncomputable def bijection (A B : C) (X : D) :
     _ ≃ ((reflector i).obj A ⊗ (reflector i).obj B ⟶ X) :=
       i.fullyFaithfulOfReflective.homEquiv.symm
 
+set_option backward.defeqAttrib.useBackward true in
 theorem bijection_symm_apply_id (A B : C) :
     (bijection i A B _).symm (𝟙 _) = prodComparison _ _ _ := by
   simp only [bijection, Equiv.trans_def, curriedTensor_obj_obj, Equiv.symm_trans_apply,
@@ -286,6 +291,7 @@ theorem bijection_symm_apply_id (A B : C) :
     prodComparison_snd]
     apply (reflectorAdjunction i).unit.naturality
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 theorem bijection_natural (A B : C) (X X' : D) (f : (reflector i).obj (A ⊗ B) ⟶ X) (g : X ⟶ X') :
     bijection i _ _ _ (f ≫ g) = bijection i _ _ _ f ≫ g := by

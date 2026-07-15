@@ -77,9 +77,9 @@ theorem map_tensorProduct_mk_eq_top {N : Submodule R M} [Module.Finite R M] :
     N.map (TensorProduct.mk R k M 1) = ⊤ ↔ N = ⊤ := by
   constructor
   · intro hN
-    letI : Module k (M ⧸ (𝔪 • ⊤ : Submodule R M)) :=
+    let : Module k (M ⧸ (𝔪 • ⊤ : Submodule R M)) :=
       inferInstanceAs (Module (R ⧸ 𝔪) (M ⧸ 𝔪 • (⊤ : Submodule R M)))
-    letI : IsScalarTower R k (M ⧸ (𝔪 • ⊤ : Submodule R M)) :=
+    let : IsScalarTower R k (M ⧸ (𝔪 • ⊤ : Submodule R M)) :=
       inferInstanceAs (IsScalarTower R (R ⧸ 𝔪) (M ⧸ 𝔪 • (⊤ : Submodule R M)))
     let f := AlgebraTensorModule.lift (((LinearMap.ringLmapEquivSelf k k _).symm
       (Submodule.mkQ (𝔪 • ⊤ : Submodule R M))).restrictScalars R)
@@ -170,8 +170,8 @@ lemma exists_basis_of_basis_baseChange [Module.FinitePresentation R M]
     (H : Function.Injective ((𝔪).subtype.rTensor M)) :
     ∃ (b : Basis ι R M), ∀ i, b i = v i := by
   let bk : Basis ι k (k ⊗[R] M) := Basis.mk hli (by rw [hsp])
-  haveI : Finite ι := Module.Finite.finite_basis bk
-  letI : Fintype ι := Fintype.ofFinite ι
+  have : Finite ι := Module.Finite.finite_basis bk
+  let : Fintype ι := Fintype.ofFinite ι
   let i := Finsupp.linearCombination R v
   have hi : Surjective i := by
     rw [← LinearMap.range_eq_top, Finsupp.range_linearCombination]
@@ -261,7 +261,7 @@ theorem IsLocalRing.linearIndependent_of_flat [Flat R M] {ι : Type u} (v : ι �
   rw [← Finset.sum_coe_sort] at hfv
   have ⟨l, a, y, hay, hfa⟩ := Flat.isTrivialRelation_of_sum_smul_eq_zero hfv
   have : v n ∉ 𝔪 • (⊤ : Submodule R M) := by
-    simpa only [← LinearMap.ker_tensorProductMk] using h.ne_zero n
+    simpa only [← LinearMap.ker_tensorProductMk] using! h.ne_zero n
   set n : ↥(insert n s) := ⟨n, Finset.mem_insert_self ..⟩ with n_def
   obtain ⟨j, hj⟩ : ∃ j, IsUnit (a n j) := by
     contrapose! this

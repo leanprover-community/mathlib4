@@ -84,6 +84,7 @@ def comparisonLeftAdjointObj (A : adj.toMonad.Algebra)
     [HasCoequalizer (F.map A.a) (adj.counit.app _)] : D :=
   coequalizer (F.map A.a) (adj.counit.app _)
 
+set_option backward.defeqAttrib.useBackward true in
 /--
 We have a bijection of homsets which will be used to construct the left adjoint to the comparison
 functor.
@@ -227,6 +228,7 @@ variable {C : Type u₁} {D : Type u₂}
 variable [Category.{v₁} C] [Category.{v₁} D]
 variable {G : D ⥤ C} {F : C ⥤ D} (adj : F ⊣ G)
 
+set_option backward.defeqAttrib.useBackward true in
 variable (G) in
 /--
 If `G` is monadic, it creates colimits of `G`-split pairs. This is the "boring" direction of Beck's
@@ -317,7 +319,7 @@ def monadicOfHasPreservesReflectsGSplitCoequalizers [HasCoequalizerOfIsSplitPair
       · infer_instance
       -- Porting note: passing instances through
       apply @counitCoequalizerOfReflectsCoequalizer _ _ _ _ _ _ _ _ ?_
-      letI _ :
+      let _ :
         G.IsSplitPair (F.map (G.map (adj.counit.app Y)))
           (adj.counit.app (F.obj (G.obj Y))) :=
         MonadicityInternal.main_pair_G_split _ ((comparison adj).obj Y)

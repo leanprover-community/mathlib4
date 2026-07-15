@@ -126,7 +126,7 @@ lemma range_sigmoid : range Real.sigmoid = Ioo 0 1 := by
 open Topology Filter
 
 lemma tendsto_sigmoid_atTop : Tendsto sigmoid atTop (𝓝 1) := by
-  simpa using Real.tendsto_exp_comp_nhds_zero.mpr tendsto_neg_atTop_atBot |>.const_add 1 |>.inv₀ <|
+  simpa using! Real.tendsto_exp_comp_nhds_zero.mpr tendsto_neg_atTop_atBot |>.const_add 1 |>.inv₀ <|
     by norm_num
 
 lemma tendsto_sigmoid_atBot : Tendsto sigmoid atBot (𝓝 0) :=
@@ -189,7 +189,7 @@ lemma ContDiff.sigmoid (hf : ContDiff ℝ ω f) : ContDiff ℝ ω (sigmoid ∘ f
 
 @[fun_prop]
 lemma differentiable_sigmoid : Differentiable ℝ sigmoid :=
-   contDiff_sigmoid.of_le le_top |>.differentiable_one
+  contDiff_sigmoid.of_le le_top |>.differentiable_one
 
 @[fun_prop]
 lemma Differentiable.sigmoid (hf : Differentiable ℝ f) : Differentiable ℝ (sigmoid ∘ f) :=

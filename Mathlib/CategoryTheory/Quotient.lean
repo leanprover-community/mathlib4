@@ -106,9 +106,6 @@ class Congruence : Prop
   /-- `r` is an equivalence on every hom-set. -/
   equivalence : ∀ {X Y}, _root_.Equivalence (@r X Y)
 
-@[deprecated (since := "2025-12-23")] alias Congruence.compLeft := HomRel.comp_left
-@[deprecated (since := "2025-12-23")] alias Congruence.compRight := HomRel.comp_right
-
 /-- For `F : C ⥤ D`, `F.homRel` is a congruence. -/
 instance Functor.congruence_homRel {C D : Type*} [Category* C] [Category* D] (F : C ⥤ D) :
     Congruence F.homRel where
@@ -127,15 +124,6 @@ structure Quotient (r : HomRel C) where
 
 instance [Inhabited C] : Inhabited (Quotient r) :=
   ⟨{ as := default }⟩
-
-@[deprecated (since := "2025-12-23")] alias Quotient.CompClosure := HomRel.CompClosure
-@[deprecated (since := "2025-12-23")] alias Quotient.CompClosure.of := HomRel.CompClosure.of
-@[deprecated (since := "2025-12-23")] alias Quotient.comp_left := HomRel.comp_left
-@[deprecated (since := "2025-12-23")] alias Quotient.comp_right := HomRel.comp_right
-@[deprecated (since := "2025-12-23")] alias Quotient.compClosure_iff_self :=
-  HomRel.compClosure_iff_self
-@[deprecated (since := "2025-12-23")] alias Quotient.compClosure_eq_self :=
-  HomRel.compClosure_eq_self
 
 namespace Quotient
 
@@ -181,7 +169,7 @@ variable {G : Type*} [Groupoid G] (r : HomRel G)
 protected def inv {X Y : Quotient r} (f : X ⟶ Y) : Y ⟶ X :=
   Quot.liftOn f (fun f' => Quot.mk _ (Groupoid.inv f')) (fun _ _ con => by
     obtain ⟨_, _, a, f, g, b, hfg⟩ := con
-    simpa using (Quot.sound (HomRel.CompClosure.intro _ _
+    simpa using! (Quot.sound (HomRel.CompClosure.intro _ _
       (inv b ≫ inv g) _ _ (inv f ≫ inv a) hfg)).symm)
 
 @[simp]
@@ -222,7 +210,7 @@ protected theorem induction {P : ∀ {a b : Quotient r}, (a ⟶ b) → Prop}
 
 protected theorem sound {a b : C} {f₁ f₂ : a ⟶ b} (h : r f₁ f₂) :
     (functor r).map f₁ = (functor r).map f₂ := by
-  simpa using Quot.sound (HomRel.CompClosure.intro _ _ (𝟙 a) f₁ f₂ (𝟙 b) h)
+  simpa using! Quot.sound (HomRel.CompClosure.intro _ _ (𝟙 a) f₁ f₂ (𝟙 b) h)
 
 set_option backward.isDefEq.respectTransparency false in
 theorem functor_map_eq_iff [h : Congruence r] {X Y : C} (f f' : X ⟶ Y) :

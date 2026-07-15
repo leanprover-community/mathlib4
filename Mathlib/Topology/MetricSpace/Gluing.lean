@@ -308,7 +308,7 @@ namespace Sigma
 of two spaces. I.e., work with sigma types instead of sum types. -/
 variable {ι : Type*} {E : ι → Type*} [∀ i, MetricSpace (E i)]
 
-open Classical in
+open scoped Classical in
 /-- Distance on a disjoint union. There are many (noncanonical) ways to put a distance compatible
 with each factor.
 We choose a construction that works for unbounded spaces, but requires basepoints,
@@ -591,8 +591,6 @@ def inductivePremetric (I : ∀ n, Isometry (f n)) : PseudoMetricSpace (Σ n, X 
         (dist_triangle _ _ _)
       _ = inductiveLimitDist f x y + inductiveLimitDist f y z := by
         rw [inductiveLimitDist_eq_dist I x y m hx hy, inductiveLimitDist_eq_dist I y z m hy hz]
-
-attribute [local instance] inductivePremetric
 
 /-- The type giving the inductive limit in a metric space context. -/
 def InductiveLimit (I : ∀ n, Isometry (f n)) : Type _ :=

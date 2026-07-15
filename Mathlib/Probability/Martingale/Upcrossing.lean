@@ -561,7 +561,6 @@ theorem sub_eq_zero_of_upcrossingsBefore_lt (hab : a < b) (hn : upcrossingsBefor
 theorem mul_upcrossingsBefore_le (hf : a ≤ f N ω) (hab : a < b) :
     (b - a) * upcrossingsBefore a b f N ω ≤
     ∑ k ∈ Finset.range N, upcrossingStrat a b f N k ω * (f (k + 1) - f k) ω := by
-  classical
   by_cases hN : N = 0
   · simp [hN]
   simp_rw [upcrossingStrat, Finset.sum_mul, ←
@@ -726,7 +725,7 @@ theorem upcrossingsBefore_eq_sum (hab : a < b) : upcrossingsBefore a b f N ω =
     ∑ i ∈ Finset.Ico 1 (N + 1), {n | upperCrossingTime a b f N n ω < N}.indicator 1 i := by
   by_cases hN : N = 0
   · simp [hN]
-  rw [← Finset.sum_Ico_consecutive _ (Nat.succ_le_succ zero_le')
+  rw [← Finset.sum_Ico_consecutive _ (Nat.succ_le_succ zero_le)
     (Nat.succ_le_succ (upcrossingsBefore_le f ω hab))]
   have h₁ : ∀ k ∈ Finset.Ico 1 (upcrossingsBefore a b f N ω + 1),
       {n : ℕ | upperCrossingTime a b f N n ω < N}.indicator 1 k = 1 := by
@@ -756,7 +755,7 @@ theorem StronglyAdapted.measurable_upcrossingsBefore (hf : StronglyAdapted ℱ f
   rw [this]
   refine Finset.measurable_fun_sum _ fun i _ => Measurable.indicator measurable_const <|
     ℱ.le N _ ?_
-  simpa only [ENat.some_eq_coe, Nat.cast_lt] using
+  simpa only [ENat.some_eq_coe, Nat.cast_lt] using!
     hf.isStoppingTime_upperCrossingTime.measurableSet_lt_of_pred N
 
 theorem StronglyAdapted.integrable_upcrossingsBefore [IsFiniteMeasure μ]

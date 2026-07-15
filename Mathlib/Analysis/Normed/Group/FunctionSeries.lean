@@ -59,8 +59,7 @@ theorem tendstoUniformlyOn_tsum_of_cofinite_eventually {ι : Type*} {f : ι → 
   classical
   refine tendstoUniformlyOn_iff.2 fun ε εpos => ?_
   have := (tendsto_order.1 (tendsto_tsum_compl_atTop_zero u)).2 _ εpos
-  simp only [gt_iff_lt,
-    eventually_atTop, ge_iff_le, Finset.le_eq_subset] at *
+  simp only [eventually_atTop] at *
   obtain ⟨t, ht⟩ := this
   rw [eventually_iff_exists_mem] at hfu
   obtain ⟨N, hN, HN⟩ := hfu
@@ -116,10 +115,9 @@ function is. -/
 theorem continuousOn_tsum [TopologicalSpace β] {f : α → β → F} {s : Set β}
     (hf : ∀ i, ContinuousOn (f i) s) (hu : Summable u) (hfu : ∀ n x, x ∈ s → ‖f n x‖ ≤ u n) :
     ContinuousOn (fun x => ∑' n, f n x) s := by
-  classical
-    refine (tendstoUniformlyOn_tsum hu hfu).continuousOn (Frequently.of_forall ?_)
-    intro t
-    exact continuousOn_finsetSum _ fun i _ => hf i
+  refine (tendstoUniformlyOn_tsum hu hfu).continuousOn (Frequently.of_forall ?_)
+  intro t
+  exact continuousOn_finsetSum _ fun i _ => hf i
 
 /-- An infinite sum of functions with summable sup norm is continuous if each individual
 function is. -/

@@ -152,7 +152,7 @@ lemma factoredNumbers_insert (s : Finset ℕ) {N : ℕ} (hN : ¬ N.Prime) :
 lemma factoredNumbers_compl {N : ℕ} {s : Finset ℕ} (h : primesBelow N ≤ s) :
     (factoredNumbers s)ᶜ \ {0} ⊆ {n | N ≤ n} := by
   intro n hn
-  simp only [Set.mem_compl_iff, mem_factoredNumbers, Set.mem_diff, ne_eq, not_and, not_forall,
+  simp only [Set.mem_compl_iff, mem_factoredNumbers, Set.mem_sdiff, ne_eq, not_and, not_forall,
     exists_prop, Set.mem_singleton_iff] at hn
   simp only [Set.mem_setOf_eq]
   obtain ⟨p, hp₁, hp₂⟩ := hn.1 hn.2
@@ -200,32 +200,22 @@ def equivProdNatFactoredNumbers {s : Finset ℕ} {p : ℕ} (hp : p.Prime) (hs : 
                             ⟨(m.primeFactorsList.filter (· ∈ s)).prod, prod_mem_factoredNumbers ..⟩)
   left_inv := by
     rintro ⟨e, m, hm₀, hm⟩
-    simp (etaStruct := .all) only [Prod.mk.injEq, Subtype.mk.injEq]
+    have hpm : ¬ p ∣ m := by grind [mem_primeFactorsList]
+    simp only [Prod.mk.injEq, Subtype.mk.injEq]
     constructor
-    · rw [factorization_mul (pos_iff_ne_zero.mp <| Nat.pow_pos hp.pos) hm₀]
-      simp only [factorization_pow, Finsupp.coe_add, Finsupp.coe_smul, nsmul_eq_mul,
-        Pi.natCast_def, cast_id, Pi.add_apply, Pi.mul_apply, hp.factorization_self,
-        mul_one, add_eq_left]
-      rw [← primeFactorsList_count_eq, count_eq_zero]
-      exact fun H ↦ hs (hm p H)
-    · nth_rewrite 2 [← prod_primeFactorsList hm₀]
+    · rw [factorization_mul (pow_ne_zero e hp.ne_zero) hm₀, Finsupp.add_apply,
+        factorization_pow_self hp, factorization_eq_zero_of_not_dvd hpm, add_zero]
+    · conv_rhs => rw [← prod_primeFactorsList hm₀]
       refine prod_eq <|
         (filter _ <| perm_primeFactorsList_mul (pow_ne_zero e hp.ne_zero) hm₀).trans ?_
-      rw [filter_append, hp.primeFactorsList_pow,
-          filter_eq_nil_iff.mpr fun q hq ↦ by rw [mem_replicate] at hq; simp [hq.2, hs],
-          nil_append, filter_eq_self.mpr fun q hq ↦ by simp only [hm q hq, decide_true]]
+      rw [filter_append, hp.primeFactorsList_pow, filter_eq_nil_iff.mpr <| by grind, nil_append,
+        filter_eq_self.mpr <| by grind]
   right_inv := by
     rintro ⟨m, hm₀, hm⟩
-    simp only [Subtype.mk.injEq]
-    rw [← primeFactorsList_count_eq, ← prod_replicate, ← prod_append]
-    nth_rewrite 3 [← prod_primeFactorsList hm₀]
-    have : m.primeFactorsList.filter (· = p) = m.primeFactorsList.filter (· ∉ s) := by
-      refine (filter_congr fun q hq ↦ ?_).symm
-      simp only [decide_not]
-      rcases Finset.mem_insert.mp <| hm _ hq with h | h
-      · simp only [h, hs, decide_false, Bool.not_false, decide_true]
-      · simp only [h, decide_true, Bool.not_true, false_eq_decide_iff]
-        exact fun H ↦ hs <| H ▸ h
+    rw [Subtype.mk.injEq, ← primeFactorsList_count_eq, ← prod_replicate, ← prod_append]
+    conv_rhs => rw [← prod_primeFactorsList hm₀]
+    have : m.primeFactorsList.filter (· = p) = m.primeFactorsList.filter (· ∉ s) :=
+      filter_congr <| by grind
     refine prod_eq <| (filter_eq p).symm ▸ this ▸ perm_append_comm.trans ?_
     simp only [decide_not]
     exact filter_append_perm (· ∈ s) (primeFactorsList m)

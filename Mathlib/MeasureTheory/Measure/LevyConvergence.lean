@@ -6,6 +6,7 @@ Authors: Rémy Degenne
 module
 
 public import Mathlib.MeasureTheory.Measure.CharacteristicFunction.Basic
+public import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
 public import Mathlib.MeasureTheory.Measure.Tight
 
 import Mathlib.MeasureTheory.Measure.CharacteristicFunction.TaylorExpansion
@@ -79,7 +80,7 @@ lemma isTightMeasureSet_of_tendsto_charFun {μ : ℕ → Measure E} [∀ i, IsPr
       refine limsup_le_limsup (.of_forall fun n ↦ h_le n r hr) ?_ ?_
       · exact IsCoboundedUnder.of_frequently_ge <| .of_forall fun _ ↦ ENNReal.toReal_nonneg
       · refine ⟨4, ?_⟩
-        simp only [eventually_map, eventually_atTop, ge_iff_le]
+        simp only [eventually_map, eventually_atTop]
         exact ⟨0, fun n _ ↦ h_le_4 n r hr⟩
     _ = 2⁻¹ * r * ‖∫ t in -2 * r⁻¹..2 * r⁻¹, 1 - f (t • z)‖ := by
       refine ((Tendsto.norm ?_).const_mul _).limsup_eq
@@ -97,7 +98,7 @@ lemma isTightMeasureSet_of_tendsto_charFun {μ : ℕ → Measure E} [∀ i, IsPr
   · filter_upwards [eventually_gt_atTop 0] with r hr
     refine le_limsup_of_le ?_ fun u hu ↦ ?_
     · refine ⟨4, ?_⟩
-      simp only [eventually_map, eventually_atTop, ge_iff_le]
+      simp only [eventually_map, eventually_atTop]
       exact ⟨0, fun n _ ↦ (h_le n r hr).trans (h_le_4 n r hr)⟩
     · exact ENNReal.toReal_nonneg.trans hu.exists.choose_spec
   · filter_upwards [eventually_gt_atTop 0] with r hr using h_limsup_le r hr
@@ -157,7 +158,7 @@ lemma ProbabilityMeasure.tendsto_of_tight_of_separatesPoints (𝕜 : Type*) [RCL
     {A : StarSubalgebra 𝕜 (E →ᵇ 𝕜)} (hA : (A.map (toContinuousMapStarₐ 𝕜)).SeparatesPoints)
     (hμ : ∀ g ∈ A, Tendsto (fun n ↦ ∫ x, g x ∂(μ n)) 𝓕 (𝓝 (∫ x, g x ∂μ₀))) :
     Tendsto μ 𝓕 (𝓝 μ₀) := by
-  letI := TopologicalSpace.upgradeIsCompletelyMetrizable E
+  let := TopologicalSpace.upgradeIsCompletelyMetrizable E
   obtain rfl | _ := 𝓕.eq_or_neBot
   · simp
   refine (Filter.tendsto_iff_ultrafilter _ _ _).2 fun U hU ↦ ?_
@@ -181,8 +182,8 @@ lemma ProbabilityMeasure.tendsto_charPoly_of_tendsto_charFun {μ : ι → Probab
   rw [mem_charPoly] at hg
   obtain ⟨w, hw⟩ := hg
   have h_eq (μ : Measure E) (hμ : IsProbabilityMeasure μ) :
-      ∫ x, g x ∂μ = ∑ a ∈ w.support, w a * ∫ x, (probChar (innerₗ E x a) : ℂ) ∂μ := by
-    simp_rw [hw]
+      ∫ x, g x ∂μ = w.coeff.sum (fun a z ↦ z * ∫ x, (probChar (innerₗ E x a) : ℂ) ∂μ) := by
+    simp_rw [hw, Finsupp.sum]
     rw [integral_finsetSum]
     · congr with y
       rw [integral_const_mul]

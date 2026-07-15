@@ -157,8 +157,8 @@ lemma edist_eq_two_iff {u v : V} :
     rw [mem_commonNeighbors] at hw
     have := (Walk.cons hw.1 <| .cons hw.2.symm .nil).edist_le
     simp_all
-  · by_contra! hc
-    cases ENat.le_one_iff_eq_zero_or_eq_one.mp (Order.le_of_lt_succ hc) <;> simp_all
+  · by_contra
+    simp_all [Order.le_one_iff]
 
 lemma two_lt_edist_iff {u v : V} :
     2 < G.edist u v ↔ u ≠ v ∧ ¬ G.Adj u v ∧ (G.commonNeighbors u v) = ∅ := by
@@ -319,16 +319,11 @@ theorem Adj.diff_dist_adj (hadj : G.Adj v w) :
   have : G.dist u v ≤ G.dist u w + G.dist w v := huw.dist_triangle_left v
   lia
 
-@[deprecated Adj.diff_dist_adj (since := "2025-12-11"), nolint unusedArguments]
-theorem Connected.diff_dist_adj (_ : G.Connected) (hadj : G.Adj v w) :
-    G.dist u w = G.dist u v ∨ G.dist u w = G.dist u v + 1 ∨ G.dist u w = G.dist u v - 1 := by
-  apply Adj.diff_dist_adj hadj
-
 theorem Walk.isPath_of_length_eq_dist (p : G.Walk u v) (hp : p.length = G.dist u v) :
     p.IsPath := by
   classical
   have : p.bypass = p := by
-    apply Walk.bypass_eq_self_of_length_le
+    apply bypass_eq_self_of_length_le_length_bypass
     calc p.length
       _ = G.dist u v := hp
       _ ≤ p.bypass.length := dist_le p.bypass
@@ -418,7 +413,7 @@ theorem ball_zero : G.ball c 0 = ∅ := by simp [ball]
 /-- The ball of radius one consists of just the center. -/
 @[simp]
 theorem ball_one : G.ball c 1 = {c} := by
-  simp [ball, ENat.lt_one_iff_eq_zero]
+  simp [ball]
 
 /-- The ball of radius two consists of the center and its neighbors. -/
 @[simp]

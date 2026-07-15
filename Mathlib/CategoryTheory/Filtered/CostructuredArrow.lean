@@ -34,6 +34,7 @@ section Small
 variable {A : Type u₁} [SmallCategory A] {B : Type u₁} [SmallCategory B]
 variable {T : Type u₁} [SmallCategory T]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 private lemma isFiltered_of_isFiltered_costructuredArrow_small (L : A ⥤ T) (R : B ⥤ T)
     [IsFiltered B] [Final R] [∀ b, IsFiltered (CostructuredArrow L (R.obj b))] : IsFiltered A := by
@@ -68,9 +69,9 @@ theorem isFiltered_of_isFiltered_costructuredArrow (L : A ⥤ T) (R : B ⥤ T)
       ((sB.inverse ⋙ R ⋙ sT.functor).obj ⟨b⟩) ≌ CostructuredArrow L (R.obj b) := fun b =>
     (CostructuredArrow.pre sA.inverse (L ⋙ sT.functor) _).asEquivalence.trans
       (CostructuredArrow.post L sT.functor _).asEquivalence.symm
-  haveI : ∀ b, IsFiltered (CostructuredArrow _ ((sB.inverse ⋙ R ⋙ sT.functor).obj b)) :=
+  have : ∀ b, IsFiltered (CostructuredArrow _ ((sB.inverse ⋙ R ⋙ sT.functor).obj b)) :=
     fun b => IsFiltered.of_equivalence (sC b.1).symm
-  haveI := isFiltered_of_isFiltered_costructuredArrow_small
+  have := isFiltered_of_isFiltered_costructuredArrow_small
     (sA.inverse ⋙ L ⋙ sT.functor) (sB.inverse ⋙ R ⋙ sT.functor)
   exact IsFiltered.of_equivalence sA.symm
 

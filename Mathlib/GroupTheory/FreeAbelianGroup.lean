@@ -146,9 +146,9 @@ end lift
 
 section
 
-open scoped Classical in
-theorem of_injective : Function.Injective (of : α → FreeAbelianGroup α) :=
-  fun x y hoxy ↦ Classical.by_contradiction fun hxy : x ≠ y ↦
+theorem of_injective : Function.Injective (of : α → FreeAbelianGroup α) := by
+  classical
+  exact fun x y hoxy ↦ Classical.by_contradiction fun hxy : x ≠ y ↦
     let f : FreeAbelianGroup α →+ ℤ := lift fun z ↦ if x = z then (1 : ℤ) else 0
     have hfx1 : f (of x) = 1 := (lift_apply_of _ _).trans <| if_pos rfl
     have hfy1 : f (of y) = 1 := hoxy ▸ hfx1
@@ -170,8 +170,6 @@ instance [Nonempty α] : Nontrivial (FreeAbelianGroup α) where
   exists_pair_ne := let ⟨x⟩ := ‹Nonempty α›; ⟨0, of x, zero_ne_of _⟩
 
 end
-
-attribute [local instance] QuotientGroup.leftRel
 
 @[elab_as_elim]
 protected theorem induction_on

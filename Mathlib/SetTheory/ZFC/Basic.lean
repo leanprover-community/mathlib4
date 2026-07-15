@@ -44,7 +44,7 @@ universe u
 
 /-- The ZFC universe of sets consists of the type of pre-sets,
   quotiented by extensional equivalence. -/
-@[pp_with_univ]
+@[pp_with_univ, use_set_notation_for_order]
 def ZFSet : Type (u + 1) :=
   Quotient PSet.setoid.{u}
 
@@ -177,7 +177,7 @@ private lemma ext_aux : (∀ z : ZFSet.{u}, z ∈ x.toSet ↔ z ∈ y.toSet) →
 
 instance : SetLike ZFSet.{u} ZFSet.{u} where
   coe := toSet
-  coe_injective' x y hxy := by apply ext_aux; intro z; exact congr(z ∈ $hxy)
+  coe_injective x y hxy := by apply ext_aux; intro z; exact congr(z ∈ $hxy)
 
 /-- The membership relation for ZFC sets is inherited from the membership relation for pre-sets. -/
 @[deprecated "use `∈` notation" (since := "2026-03-16")]
@@ -211,15 +211,10 @@ theorem nonempty_of_mem {x u : ZFSet} (h : x ∈ u) : u.Nonempty :=
 
 @[simp, norm_cast] lemma nonempty_coe : (x : Set ZFSet.{u}).Nonempty ↔ x.Nonempty := .rfl
 
-/-- `x ⊆ y` as ZFC sets means that all members of `x` are members of `y`. -/
-protected def Subset (x y : ZFSet.{u}) :=
-  ∀ ⦃z⦄, z ∈ x → z ∈ y
-
-instance : HasSubset ZFSet := ⟨ZFSet.Subset⟩
-instance : HasSSubset ZFSet := ⟨(· < ·)⟩
-
-@[simp] lemma le_def : x ≤ y ↔ x ⊆ y := .rfl
-@[simp] lemma lt_def : x < y ↔ x ⊂ y := .rfl
+@[deprecated "This is now a syntactic equality" (since := "2026-03-18"), nolint synTaut]
+lemma le_def : x ≤ y ↔ x ⊆ y := .rfl
+@[deprecated "This is now a syntactic equality" (since := "2026-03-18"), nolint synTaut]
+lemma lt_def : x < y ↔ x ⊂ y := .rfl
 
 theorem subset_def {x y : ZFSet.{u}} : x ⊆ y ↔ ∀ ⦃z⦄, z ∈ x → z ∈ y :=
   Iff.rfl
@@ -238,7 +233,7 @@ theorem subset_iff : ∀ {x y : PSet}, mk x ⊆ mk y ↔ x ⊆ y
         let ⟨b, ab⟩ := h a
         ⟨b, za.trans ab⟩⟩
 
-lemma coe_subset_coe : (x : Set ZFSet.{u}) ⊆ y ↔ x ⊆ y := by simp
+lemma coe_subset_coe : (x : Set ZFSet.{u}) ⊆ y ↔ x ⊆ y := SetLike.coe_subset_coe
 
 instance : @Std.Antisymm ZFSet (· ⊆ ·) :=
   ⟨@le_antisymm ZFSet _⟩
@@ -514,7 +509,7 @@ lemma coe_sInter (h : x.Nonempty) : (⋂₀ x : Set ZFSet) = ⋂₀ (SetLike.coe
   simp [mem_sInter h]
 
 theorem singleton_injective : Function.Injective (@singleton ZFSet ZFSet _) := fun x y H => by
-  let this := congr_arg sUnion H
+  let := congr_arg sUnion H
   rwa [sUnion_singleton, sUnion_singleton] at this
 
 @[simp]

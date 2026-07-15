@@ -201,7 +201,7 @@ end cfcₙL
 
 section CFCn
 
-open Classical in
+open scoped Classical in
 /-- This is the *continuous functional calculus* of an element `a : A` in a non-unital algebra
 applied to bare functions.  When either `a` does not satisfy the predicate `p` (i.e., `a` is not
 `IsStarNormal`, `IsSelfAdjoint`, or `0 ≤ a` when `R` is `ℂ`, `ℝ`, or `ℝ≥0`, respectively), or when
@@ -580,7 +580,7 @@ lemma cfcₙ_neg : cfcₙ (fun x ↦ -(f x)) a = -(cfcₙ f a) := by
     obtain (ha | hf | h0) := h
     · simp [cfcₙ_apply_of_not_predicate a ha]
     · rw [cfcₙ_apply_of_not_continuousOn a hf, cfcₙ_apply_of_not_continuousOn, neg_zero]
-      exact fun hf_neg ↦ hf <| by simpa using hf_neg.neg
+      exact fun hf_neg ↦ hf <| by simpa using hf_neg.fun_neg
     · rw [cfcₙ_apply_of_not_map_zero a h0, cfcₙ_apply_of_not_map_zero, neg_zero]
       exact (h0 <| neg_eq_zero.mp ·)
 
@@ -863,7 +863,7 @@ lemma cfcₙHom_eq_cfcₙHom_of_cfcHom [ContinuousFunctionalCalculus R A p]
     [ContinuousMapZero.UniqueHom R A] {a : A} (ha : p a) :
     cfcₙHom ha = cfcₙHom_of_cfcHom R ha :=
   cfcₙHom_eq_of_continuous_of_map_id ha _ (continuous_cfcₙHom_of_cfcHom ha) <| by
-    simpa only [cfcₙHom_id ha] using cfcHom_id ha
+    simpa only [cfcₙHom_id ha] using! cfcHom_id ha
 
 /-- When `cfc` is applied to a function that maps zero to zero, it is equivalent to using
 `cfcₙ`. -/
@@ -873,7 +873,7 @@ lemma cfcₙ_eq_cfc [ContinuousFunctionalCalculus R A p] [ContinuousMapZero.Uniq
   by_cases ha : p a
   · have hf' := hf.mono <| spectrum_subset_quasispectrum R a
     rw [cfc_apply f a ha hf', cfcₙ_apply f a hf, cfcₙHom_eq_cfcₙHom_of_cfcHom, cfcₙHom_of_cfcHom]
-    dsimp only [NonUnitalStarAlgHom.comp_apply, toContinuousMapHom_apply,
+    dsimp only [NonUnitalStarAlgHom.comp_apply,
       NonUnitalStarAlgHom.coe_coe, compStarAlgHom'_apply]
     congr
   · simp [cfc_apply_of_not_predicate a ha, cfcₙ_apply_of_not_predicate (R := R) a ha]

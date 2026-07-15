@@ -275,6 +275,17 @@ theorem orderOf_dvd_iff_pow_eq_one {n : ℕ} : orderOf x ∣ n ↔ x ^ n = 1 :=
   ⟨fun h => by rw [← pow_mod_orderOf, Nat.mod_eq_zero_of_dvd h, _root_.pow_zero],
     orderOf_dvd_of_pow_eq_one⟩
 
+/-- If `x ^ p = 1` for some odd `p`, then every power of `x` is an even power of `x`. -/
+@[to_additive /-- If `p • x = 0` for some odd `p`, then every multiple of `x` is an even
+multiple of `x`. -/]
+theorem exists_pow_eq_pow_two_mul {p : ℕ} (hx : x ^ p = 1) (hp : Odd p) (n : ℕ) :
+    ∃ m, x ^ n = x ^ (2 * m) := by
+  obtain ⟨r, rfl⟩ := hp
+  have key : x ^ (2 * (r + 1)) = x := by
+    have h2 : 2 * (r + 1) = 2 * r + 1 + 1 := by omega
+    rw [h2, pow_succ, hx, one_mul]
+  exact ⟨(r + 1) * n, by rw [← mul_assoc, pow_mul, key]⟩
+
 @[to_additive addOrderOf_smul_dvd]
 theorem orderOf_pow_dvd (n : ℕ) : orderOf (x ^ n) ∣ orderOf x := by
   rw [orderOf_dvd_iff_pow_eq_one, pow_right_comm, pow_orderOf_eq_one, one_pow]
@@ -282,7 +293,7 @@ theorem orderOf_pow_dvd (n : ℕ) : orderOf (x ^ n) ∣ orderOf x := by
 @[to_additive]
 lemma pow_injOn_Iio_orderOf : (Set.Iio <| orderOf x).InjOn (x ^ ·) := by
   simpa only [mul_left_iterate_apply_one]
-    using iterate_injOn_Iio_minimalPeriod (f := (x * ·)) (x := 1)
+    using! iterate_injOn_Iio_minimalPeriod (f := (x * ·)) (x := 1)
 
 @[to_additive]
 protected lemma IsOfFinOrder.mem_powers_iff_mem_range_orderOf [DecidableEq G]
@@ -644,7 +655,6 @@ lemma infinite_powers : (powers a : Set G).Infinite ↔ ¬ IsOfFinOrder a := fin
 /-- See also `orderOf_eq_card_powers`. -/
 @[to_additive /-- See also `addOrder_eq_card_multiples`. -/]
 lemma Nat.card_submonoidPowers : Nat.card (powers a) = orderOf a := by
-  classical
   by_cases ha : IsOfFinOrder a
   · exact (Nat.card_congr (finEquivPowers ha).symm).trans <| by simp
   · have := (infinite_powers.2 ha).to_subtype
@@ -731,7 +741,6 @@ lemma infinite_powers : (powers a : Set G).Infinite ↔ ¬ IsOfFinOrder a := fin
 /-- See also `orderOf_eq_card_powers`. -/
 @[to_additive /-- See also `addOrder_eq_card_multiples`. -/]
 lemma Nat.card_submonoidPowers : Nat.card (powers a) = orderOf a := by
-  classical
   by_cases ha : IsOfFinOrder a
   · exact (Nat.card_congr (finEquivPowers ha).symm).trans <| by simp
   · have := (infinite_powers.2 ha).to_subtype
@@ -1180,9 +1189,6 @@ theorem pow_card_eq_one' {G : Type*} [Group G] {x : G} : x ^ Nat.card G = 1 :=
 theorem pow_card_eq_one : x ^ Fintype.card G = 1 := by
   rw [← Nat.card_eq_fintype_card, pow_card_eq_one']
 
-@[deprecated "Use simp" (since := "2025-12-05")]
-theorem pow_gcd_card_eq_one_iff : x ^ n.gcd (Fintype.card G) = 1 ↔ x ^ n = 1 := by simp
-
 @[to_additive]
 theorem Subgroup.pow_index_mem {G : Type*} [Group G] (H : Subgroup G) [Normal H] (g : G) :
     g ^ index H ∈ H := by rw [← eq_one_iff, QuotientGroup.mk_pow H, index, pow_card_eq_one']
@@ -1217,12 +1223,10 @@ noncomputable def powCoprime {G : Type*} [Group G] (h : (Nat.card G).Coprime n) 
   invFun g := g ^ (Nat.card G).gcdB n
   left_inv g := by
     have key := congr_arg (g ^ ·) ((Nat.card G).gcd_eq_gcd_ab n)
-    dsimp only at key
     rwa [zpow_add, zpow_mul, zpow_mul, zpow_natCast, zpow_natCast, zpow_natCast, h.gcd_eq_one,
       pow_one, pow_card_eq_one', one_zpow, one_mul, eq_comm] at key
   right_inv g := by
     have key := congr_arg (g ^ ·) ((Nat.card G).gcd_eq_gcd_ab n)
-    dsimp only at key
     rwa [zpow_add, zpow_mul, zpow_mul', zpow_natCast, zpow_natCast, zpow_natCast, h.gcd_eq_one,
       pow_one, pow_card_eq_one', one_zpow, one_mul, eq_comm] at key
 
@@ -1245,7 +1249,7 @@ lemma Nat.Coprime.pow_left_bijective {G} [Group G] (hn : (Nat.card G).Coprime n)
 theorem image_range_orderOf [DecidableEq G] :
     letI : Fintype (zpowers x) := (Subgroup.zpowers x).instFintypeSubtypeMemOfDecidablePred
     Finset.image (fun i => x ^ i) (Finset.range (orderOf x)) = (zpowers x : Set G).toFinset := by
-  letI : Fintype (zpowers x) := (Subgroup.zpowers x).instFintypeSubtypeMemOfDecidablePred
+  let : Fintype (zpowers x) := (Subgroup.zpowers x).instFintypeSubtypeMemOfDecidablePred
   ext x
   rw [Set.mem_toFinset, SetLike.mem_coe, mem_zpowers_iff_mem_range_orderOf]
 

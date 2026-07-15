@@ -52,7 +52,7 @@ private theorem tendsto_norm_le_and_mk_eq_div_atTop_aux₁ (hJ : ClassGroup.mk0 
   exact fun _ ↦
     (mul_le_mul_iff_of_pos_left (Nat.cast_pos.mpr (absNorm_pos_of_nonZeroDivisors J))).symm
 
-open Classical in
+open scoped Classical in
 private def tendsto_norm_le_and_mk_eq_div_atTop_aux₂ :
     ↑({x | x ∈ (toMixed K) ⁻¹' fundamentalCone K ∧ mixedEmbedding.norm ((toMixed K) x) ≤ s} ∩
       (ZLattice.comap ℝ (idealLattice K ((FractionalIdeal.mk0 K) J)) (toMixed K).toLinearMap))
@@ -113,8 +113,7 @@ theorem tendsto_norm_le_and_mk_eq_div_atTop :
     ring_nf
     rw [mul_inv_cancel_right₀ h₃]
   · rwa [Set.mem_preimage, map_smul, smul_mem_iff_mem h.ne']
-  · dsimp only
-    rw [map_smul, mixedEmbedding.norm_smul, euclidean.finrank, abs_of_nonneg h]
+  · rw [map_smul, mixedEmbedding.norm_smul, euclidean.finrank, abs_of_nonneg h]
   · exact (toMixed K).continuous.measurable (measurableSet_normLeOne K)
   · rw [h₁, ← (toMixed K).coe_toHomeomorph, ← Homeomorph.preimage_frontier,
       (toMixed K).coe_toHomeomorph, (volumePreserving_toMixed K).measure_preimage

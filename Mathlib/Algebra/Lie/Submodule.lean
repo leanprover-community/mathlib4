@@ -53,7 +53,7 @@ variable (N N' : LieSubmodule R L M)
 
 instance : SetLike (LieSubmodule R L M) M where
   coe s := s.carrier
-  coe_injective' N O h := by cases N; cases O; congr; exact SetLike.coe_injective' h
+  coe_injective N O h := by cases N; cases O; congr; exact SetLike.coe_injective h
 
 instance : PartialOrder (LieSubmodule R L M) := .ofSetLike (LieSubmodule R L M) M
 
@@ -383,7 +383,6 @@ instance : SupSet (LieSubmodule R L M) where
         change ⁅x, m⁆ ∈ sSup {(p : Submodule R M) | p ∈ S}
         obtain ⟨s, hs, hsm⟩ := Submodule.mem_sSup_iff_exists_finset.mp hm
         clear hm
-        classical
         induction s using Finset.induction_on generalizing m with
         | empty =>
           replace hsm : m = 0 := by simpa using hsm

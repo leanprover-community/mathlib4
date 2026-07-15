@@ -32,6 +32,8 @@ satisfies `F.IsPrestackFor R.arrows` for all covering sieves `R`.
 
 -/
 
+set_option backward.defeqAttrib.useBackward true
+
 @[expose] public section
 
 universe t t' t'' v' v u' u
@@ -123,6 +125,7 @@ lemma id_hom (D : F.DescentData f) (i : ι) : Hom.hom (𝟙 D) i = 𝟙 _ := rfl
 lemma comp_hom {D₁ D₂ D₃ : F.DescentData f} (φ : D₁ ⟶ D₂) (φ' : D₂ ⟶ D₃) (i : ι) :
     (φ ≫ φ').hom i = φ.hom i ≫ φ'.hom i := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Given a family of morphisms `f : X i ⟶ S`, and `M : F.obj (.mk (op S))`,
 this is the object in `F.DescentData f` that is obtained by pulling back `M`
@@ -231,6 +234,7 @@ def pullFunctorObj (D : F.DescentData f) :
 
 variable (F)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Given a family of morphisms `f : X i ⟶ S` and `f' : X' j ⟶ S'`, and suitable
 commutative diagrams `p' j ≫ f (α j) = f' j ≫ p`, this is the
@@ -612,7 +616,7 @@ noncomputable def fullyFaithfulToDescentData [F.IsPrestack J] (hf : Sieve.ofArro
     intro M N
     refine ((isSheaf_iff_isSheaf_of_type _ _).1
       (IsPrestack.isSheaf J M N)).isSheafFor _ ?_
-    rwa [GrothendieckTopology.mem_over_iff, Sieve.generate_sieve, Equiv.apply_symm_apply])
+    rwa [GrothendieckTopology.mem_over_iff, Sieve.generate_sieve, OrderIso.apply_symm_apply])
 
 lemma isPrestackFor [F.IsPrestack J] {S : C} (R : Presieve S) (hR : Sieve.generate R ∈ J S) :
     F.IsPrestackFor R := by

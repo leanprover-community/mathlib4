@@ -13,6 +13,7 @@ public import Mathlib.Tactic.Qify
 
 /-!
 # Commuting Probability
+
 This file introduces the commuting probability of finite groups.
 
 ## Main definitions
@@ -80,7 +81,7 @@ variable {M}
 
 theorem commProb_eq_one_iff [h : Nonempty M] : commProb M = 1 ↔ IsMulCommutative M := by
   classical
-  haveI := Fintype.ofFinite M
+  have := Fintype.ofFinite M
   rw [commProb, ← Set.coe_setOf, Nat.card_eq_fintype_card, Nat.card_eq_fintype_card]
   rw [div_eq_one_iff_eq, ← Nat.cast_pow, Nat.cast_inj, sq, ← card_prod,
     set_fintype_card_eq_univ_iff, Set.eq_univ_iff_forall]
@@ -113,8 +114,7 @@ theorem Subgroup.commProb_quotient_le [H.Normal] : commProb (G ⧸ H) ≤ commPr
       conjugacy classes as `G ⧸ H`. -/
   rw [commProb_def', commProb_def', div_le_iff₀, mul_assoc, ← Nat.cast_mul, ← Subgroup.index,
     H.card_mul_index, div_mul_cancel₀, Nat.cast_le]
-  · apply Nat.card_le_card_of_surjective
-    show Function.Surjective (ConjClasses.map (QuotientGroup.mk' H))
+  · apply Nat.card_le_card_of_surjective (f := ConjClasses.map (QuotientGroup.mk' H))
     exact ConjClasses.map_surjective Quotient.mk''_surjective
   · exact Nat.cast_ne_zero.mpr Finite.card_pos.ne'
   · exact Nat.cast_pos.mpr Finite.card_pos

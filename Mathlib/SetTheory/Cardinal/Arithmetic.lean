@@ -365,7 +365,7 @@ theorem exists_rel_mk_fibers_lt (α : Type*) [Infinite α] :
     ∃ r : α → α → Prop, (∀ x, #{y // ¬ r x y} < #α) ∧ (∀ y, #{x // r x y} < #α) := by
   obtain ⟨α, _, hα⟩ := exists_ord_eq_type_lt α
   refine ⟨LT.lt, fun x ↦ ?_, fun y ↦ mk_Iio_lt _ hα⟩
-  simpa using mk_Iic_lt _ hα (aleph0_le_mk _)
+  simpa using! mk_Iic_lt _ hα (aleph0_le_mk _)
 
 /-! ### Properties of `ciSup` -/
 section ciSup
@@ -502,14 +502,14 @@ variable {n : ℕ} {a b : Cardinal}
 
 lemma natCast_mul_strictMono {n : ℕ} (hn : n ≠ 0) : StrictMono fun a : Cardinal ↦ n * a := by
   match n, hn with
-  | 1, _ => simpa using strictMono_id
+  | 1, _ => simpa using! strictMono_id
   | (n + 1) + 1, hneq1 =>
     intro a μ hlt
     push_cast
     conv_lhs => rw [add_mul, one_mul]
     conv_rhs => rw [add_mul, one_mul]
     refine Cardinal.add_lt_add ?_ hlt
-    simpa using (natCast_mul_strictMono (Nat.succ_ne_zero n) hlt)
+    simpa using! (natCast_mul_strictMono (Nat.succ_ne_zero n) hlt)
 
 lemma mul_natCast_strictMono (hn : n ≠ 0) : StrictMono fun a : Cardinal ↦ a * n :=
   fun _ _ hlt => by simpa [mul_comm] using natCast_mul_strictMono hn hlt
@@ -706,7 +706,7 @@ theorem mk_surjective_eq_arrow_of_lift_le (lle : lift.{u} #β' ≤ lift.{v} #α)
       exact add_eq_left (aleph0_le_lift.mpr <| aleph0_le_mk α) lle
     ⟨⟨fun f ↦ ⟨fun a ↦ (e a).elim f id, fun b ↦ ⟨e.symm (.inr b), congr_arg _ (e.right_inv _)⟩⟩,
       fun f g h ↦ funext fun a ↦ by
-        simpa only [e.apply_symm_apply] using congr_fun (Subtype.ext_iff.mp h) (e.symm <| .inl a)⟩⟩
+        simpa only [e.apply_symm_apply] using! congr_fun (Subtype.ext_iff.mp h) (e.symm <| .inl a)⟩⟩
 
 theorem mk_surjective_eq_arrow_of_le (le : #β ≤ #α) : #{f : α → β | Surjective f} = #(α → β) :=
   mk_surjective_eq_arrow_of_lift_le (lift_le.mpr le)
@@ -840,7 +840,7 @@ theorem mk_compl_eq_mk_compl_finite_lift {α : Type u} {β : Type v} [Finite α]
     (h2 : lift.{v, u} #s = lift.{u, v} #t) :
     lift.{v} #(sᶜ : Set α) = lift.{u} #(tᶜ : Set β) := by
   cases nonempty_fintype α
-  rcases lift_mk_eq'.1 h1 with ⟨e⟩; letI : Fintype β := Fintype.ofEquiv α e
+  rcases lift_mk_eq'.1 h1 with ⟨e⟩; let : Fintype β := Fintype.ofEquiv α e
   replace h1 : Fintype.card α = Fintype.card β := (Fintype.ofEquiv_card _).symm
   classical
     lift s to Finset α using s.toFinite
@@ -886,7 +886,7 @@ theorem extend_function_of_lt {α β : Type*} {s : Set α} (f : s ↪ β) (hs : 
   · exact extend_function_finite f h
   · apply extend_function f
     obtain ⟨g⟩ := id h
-    haveI := Infinite.of_injective _ g.injective
+    have := Infinite.of_injective _ g.injective
     rw [← lift_mk_eq'] at h ⊢
     rwa [mk_compl_of_infinite s hs, mk_compl_of_infinite]
     rwa [← lift_lt, mk_range_eq_of_injective f.injective, ← h, lift_lt]

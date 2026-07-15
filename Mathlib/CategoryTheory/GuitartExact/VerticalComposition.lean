@@ -16,6 +16,8 @@ is Guitart exact.
 
 -/
 
+set_option backward.defeqAttrib.useBackward true
+
 @[expose] public section
 
 namespace CategoryTheory
@@ -41,6 +43,7 @@ def whiskerVertical (α : L ⟶ L') (β : R' ⟶ R) :
 
 namespace GuitartExact
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A 2-square stays Guitart exact if we replace the left and right functors
 by isomorphic functors. See also `whiskerVertical_iff`. -/
 lemma whiskerVertical [w.GuitartExact] (α : L ≅ L') (β : R ≅ R') :
@@ -150,9 +153,9 @@ lemma vComp_iff_of_equivalences (eL : C₂ ≌ C₃) (eR : D₂ ≌ D₃)
     (w ≫ᵥ w'.hom).GuitartExact ↔ w.GuitartExact := by
   constructor
   · intro hww'
-    letI : CatCommSq H₂ eL.functor eR.functor H₃ := ⟨w'⟩
+    let : CatCommSq H₂ eL.functor eR.functor H₃ := ⟨w'⟩
     have hw' : CatCommSq.iso H₂ eL.functor eR.functor H₃ = w' := rfl
-    letI : CatCommSq H₃ eL.inverse eR.inverse H₂ := CatCommSq.vInvEquiv _ _ _ _ inferInstance
+    let : CatCommSq H₃ eL.inverse eR.inverse H₂ := CatCommSq.vInvEquiv _ _ _ _ inferInstance
     let w'' := CatCommSq.iso H₃ eL.inverse eR.inverse H₂
     let α : (L₁ ⋙ eL.functor) ⋙ eL.inverse ≅ L₁ :=
       Functor.associator _ _ _ ≪≫ Functor.isoWhiskerLeft L₁ eL.unitIso.symm ≪≫ L₁.rightUnitor

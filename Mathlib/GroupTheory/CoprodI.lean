@@ -141,9 +141,9 @@ universal property of the free product, characterizing it as a categorical copro
 def lift : (∀ i, M i →* N) ≃ (CoprodI M →* N) where
   toFun fi :=
     Con.lift _ (FreeMonoid.lift fun p : Σ i, M i => fi p.fst p.snd) <|
-      Con.conGen_le <| by
+      Con.conGen_le.2 <| fun _ _ => by
         simp_rw [Con.ker_rel]
-        rintro _ _ (i | ⟨x, y⟩) <;> simp
+        rintro (i | ⟨x, y⟩) <;> simp
   invFun f _ := f.comp of
   left_inv := by
     intro fi
@@ -458,6 +458,7 @@ theorem mem_of_mem_equivPair_tail {i j : ι} {w : Word M} (m : M i) :
   · exact List.mem_of_mem_tail h
   · revert h; cases w.toList <;> simp +contextual
 
+set_option backward.defeqAttrib.useBackward true in
 theorem equivPair_head {i : ι} {w : Word M} :
     (equivPair i w).head =
       if h : ∃ (h : w.toList ≠ []), (w.toList.head h).1 = i
@@ -855,28 +856,27 @@ theorem lift_word_prod_nontrivial_of_head_card {i j} (w : NeWord H i j)
 include hcard in
 theorem lift_word_prod_nontrivial_of_not_empty {i j} (w : NeWord H i j) :
     lift f w.prod ≠ 1 := by
-  classical
-    rcases hcard with hcard | hcard
-    · obtain ⟨i, h1, h2⟩ := Cardinal.exists_ne_ne_of_three_le hcard i j
-      exact lift_word_prod_nontrivial_of_other_i f X hXnonempty hXdisj hpp w h1 h2
-    · obtain ⟨k, hcard⟩ := hcard
-      by_cases hh : i = k <;> by_cases hl : j = k
-      · subst hh
-        subst hl
-        exact lift_word_prod_nontrivial_of_head_eq_last f X hXnonempty hXdisj hpp w
-      · subst hh
-        change j ≠ i at hl
-        exact lift_word_prod_nontrivial_of_head_card f X hXnonempty hXdisj hpp w hcard hl.symm
-      · subst hl
-        change i ≠ j at hh
-        have : lift f w.inv.prod ≠ 1 :=
-          lift_word_prod_nontrivial_of_head_card f X hXnonempty hXdisj hpp w.inv hcard hh.symm
-        intro heq
-        apply this
-        simpa using heq
-      · change i ≠ k at hh
-        change j ≠ k at hl
-        exact lift_word_prod_nontrivial_of_other_i f X hXnonempty hXdisj hpp w hh.symm hl.symm
+  rcases hcard with hcard | hcard
+  · obtain ⟨i, h1, h2⟩ := Cardinal.exists_ne_ne_of_three_le hcard i j
+    exact lift_word_prod_nontrivial_of_other_i f X hXnonempty hXdisj hpp w h1 h2
+  · obtain ⟨k, hcard⟩ := hcard
+    by_cases hh : i = k <;> by_cases hl : j = k
+    · subst hh
+      subst hl
+      exact lift_word_prod_nontrivial_of_head_eq_last f X hXnonempty hXdisj hpp w
+    · subst hh
+      change j ≠ i at hl
+      exact lift_word_prod_nontrivial_of_head_card f X hXnonempty hXdisj hpp w hcard hl.symm
+    · subst hl
+      change i ≠ j at hh
+      have : lift f w.inv.prod ≠ 1 :=
+        lift_word_prod_nontrivial_of_head_card f X hXnonempty hXdisj hpp w.inv hcard hh.symm
+      intro heq
+      apply this
+      simpa using heq
+    · change i ≠ k at hh
+      change j ≠ k at hl
+      exact lift_word_prod_nontrivial_of_other_i f X hXnonempty hXdisj hpp w hh.symm hl.symm
 
 include hcard in
 theorem empty_of_word_prod_eq_one {w : Word H} (h : lift f w.prod = 1) :

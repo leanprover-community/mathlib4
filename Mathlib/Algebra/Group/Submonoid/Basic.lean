@@ -203,10 +203,11 @@ theorem dense_induction {motive : M → Prop} (s : Set M) (closure : closure s =
   | one => exact one
   | mul _ _ _ _ h₁ h₂ => exact mul _ _ h₁ h₂
 
-/- The argument `s : Set M` is explicit in `Submonoid.dense_induction` because the type of the
+/-! The argument `s : Set M` is explicit in `Submonoid.dense_induction` because the type of the
 induction variable, namely `x : M`, does not reference `x`. Making `s` explicit allows the user
 to apply the induction principle while deferring the proof of `closure s = ⊤` without creating
 metavariables, as in the following example. -/
+
 example {p : M → Prop} (s : Set M) (closure : closure s = ⊤) (mem : ∀ x ∈ s, p x)
     (one : p 1) (mul : ∀ x y, p x → p y → p (x * y)) (x : M) : p x := by
   induction x using dense_induction s with
@@ -302,11 +303,11 @@ variable {t : Set M}
 
 @[to_additive] -- this must not be a simp-lemma as the conclusion applies to `hts`, causing loops
 lemma closure_sdiff_eq_closure (hts : t ⊆ closure (s \ t)) : closure (s \ t) = closure s := by
-  refine (closure_mono Set.diff_subset).antisymm <| closure_le.mpr <| fun x hxs ↦ ?_
+  refine (closure_mono Set.sdiff_subset).antisymm <| closure_le.mpr <| fun x hxs ↦ ?_
   by_cases hxt : x ∈ t
   · exact hts hxt
   · rw [SetLike.mem_coe, Submonoid.mem_closure]
-    exact fun N hN ↦ hN <| Set.mem_diff_of_mem hxs hxt
+    exact fun N hN ↦ hN <| Set.mem_sdiff_of_mem hxs hxt
 
 @[to_additive (attr := simp)]
 lemma closure_sdiff_singleton_one (s : Set M) : closure (s \ {1}) = closure s :=
@@ -359,6 +360,10 @@ theorem IsUnit.mem_submonoid_iff {M : Type*} [Monoid M] (a : M) :
   rw [Set.mem_setOf_eq]
 
 end IsUnit
+
+@[simp] lemma Submonoid.commute_coe_coe {S M : Type*} [Mul M] [SetLike S M]
+    [MulMemClass S M] {s : S} {x y : s} : Commute (x : M) (y : M) ↔ Commute x y := by
+  simp [commute_iff_eq, Subtype.ext_iff]
 
 namespace MonoidHom
 

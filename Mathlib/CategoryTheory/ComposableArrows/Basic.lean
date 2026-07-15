@@ -40,9 +40,9 @@ TODO (@joelriou):
 
 -/
 
-@[expose] public section
+set_option backward.defeqAttrib.useBackward true
 
-set_option backward.privateInPublic true
+@[expose] public section
 
 /-!
 New `simprocs` that run even in `dsimp` have caused breakages in this file.
@@ -201,7 +201,6 @@ def isoMk {F G : ComposableArrows C n} (app : ∀ i, F.obj i ≅ G.obj i)
     F ≅ G where
   hom := homMk (fun i => (app i).hom) w
   inv := homMk (fun i => (app i).inv) (fun i hi => by
-    dsimp only
     rw [← cancel_epi ((app _).hom), ← reassoc_of% (w i hi), Iso.hom_inv_id, comp_id,
       Iso.hom_inv_id_assoc])
 
@@ -303,10 +302,12 @@ lemma mk₁_comp_eqToHom {X₀ X₁ X₁' : C} (f : X₀ ⟶ X₁) (h : X₁ = X
     ComposableArrows.mk₁ (f ≫ eqToHom h) = ComposableArrows.mk₁ f := by
   cat_disch
 
+set_option backward.defeqAttrib.useBackward true in
 lemma mk₁_hom (X : ComposableArrows C 1) :
     mk₁ X.hom = X :=
   ext₁ rfl rfl (by simp)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The bijection between `ComposableArrows C 1` and `Arrow C`. -/
 @[simps]
 def arrowEquiv : ComposableArrows C 1 ≃ Arrow C where
@@ -436,6 +437,7 @@ variable {X₀ X₁ X₂ X₃ X₄ : C} (f : X₀ ⟶ X₁) (g : X₁ ⟶ X₂) 
 /-! These examples are meant to test the good definitional properties of `precomp`,
 and that `dsimp` can see through. -/
 
+set_option backward.defeqAttrib.useBackward true in
 example : map' (mk₂ f g) 0 1 = f := by dsimp
 example : map' (mk₂ f g) 1 2 = g := by dsimp
 example : map' (mk₂ f g) 0 2 = f ≫ g := by dsimp
@@ -544,9 +546,11 @@ def homMkSucc (α : F.obj' 0 ⟶ G.obj' 0) (β : F.δ₀ ⟶ G.δ₀)
 variable (α : F.obj' 0 ⟶ G.obj' 0) (β : F.δ₀ ⟶ G.δ₀)
   (w : F.map' 0 1 ≫ app' β 0 = α ≫ G.map' 0 1 := by cat_disch)
 
+set_option backward.privateInPublic true in
 @[simp]
 lemma homMkSucc_app_zero : (homMkSucc α β w).app 0 = α := rfl
 
+set_option backward.privateInPublic true in
 @[simp]
 lemma homMkSucc_app_succ (i : ℕ) (hi : i + 1 < n + 1 + 1) :
     (homMkSucc α β w).app ⟨i + 1, hi⟩ = app' β i := rfl
@@ -610,18 +614,23 @@ variable
     (w₀ : f.map' 0 1 ≫ app₁ = app₀ ≫ g.map' 0 1 := by cat_disch)
     (w₁ : f.map' 1 2 ≫ app₂ = app₁ ≫ g.map' 1 2 := by cat_disch)
 
+set_option backward.privateInPublic true in
 /-- Constructor for morphisms in `ComposableArrows C 2`. -/
 def homMk₂ : f ⟶ g := homMkSucc app₀ (homMk₁ app₁ app₂ w₁) w₀
 
+set_option backward.privateInPublic true in
 @[simp]
 lemma homMk₂_app_zero : (homMk₂ app₀ app₁ app₂ w₀ w₁).app 0 = app₀ := rfl
 
+set_option backward.privateInPublic true in
 @[simp]
 lemma homMk₂_app_one : (homMk₂ app₀ app₁ app₂ w₀ w₁).app 1 = app₁ := rfl
 
+set_option backward.privateInPublic true in
 @[simp]
 lemma homMk₂_app_two : (homMk₂ app₀ app₁ app₂ w₀ w₁).app 2 = app₂ := rfl
 
+set_option backward.privateInPublic true in
 @[simp]
 lemma homMk₂_app_two' : (homMk₂ app₀ app₁ app₂ w₀ w₁).app ⟨2, by valid⟩ = app₂ := rfl
 
@@ -683,19 +692,24 @@ variable
   (w₁ : f.map' 1 2 ≫ app₂ = app₁ ≫ g.map' 1 2 := by cat_disch)
   (w₂ : f.map' 2 3 ≫ app₃ = app₂ ≫ g.map' 2 3 := by cat_disch)
 
+set_option backward.privateInPublic true in
 /-- Constructor for morphisms in `ComposableArrows C 3`. -/
 def homMk₃ : f ⟶ g := homMkSucc app₀ (homMk₂ app₁ app₂ app₃ w₁ w₂) w₀
 
+set_option backward.privateInPublic true in
 @[simp]
 lemma homMk₃_app_zero : (homMk₃ app₀ app₁ app₂ app₃ w₀ w₁ w₂).app 0 = app₀ := rfl
 
+set_option backward.privateInPublic true in
 @[simp]
 lemma homMk₃_app_one : (homMk₃ app₀ app₁ app₂ app₃ w₀ w₁ w₂).app 1 = app₁ := rfl
 
+set_option backward.privateInPublic true in
 @[simp]
 lemma homMk₃_app_two : (homMk₃ app₀ app₁ app₂ app₃ w₀ w₁ w₂).app ⟨2, by valid⟩ = app₂ :=
   rfl
 
+set_option backward.privateInPublic true in
 @[simp]
 lemma homMk₃_app_three : (homMk₃ app₀ app₁ app₂ app₃ w₀ w₁ w₂).app ⟨3, by valid⟩ = app₃ :=
   rfl
@@ -750,23 +764,29 @@ variable
   (w₂ : f.map' 2 3 ≫ app₃ = app₂ ≫ g.map' 2 3 := by cat_disch)
   (w₃ : f.map' 3 4 ≫ app₄ = app₃ ≫ g.map' 3 4 := by cat_disch)
 
+set_option backward.privateInPublic true in
 /-- Constructor for morphisms in `ComposableArrows C 4`. -/
 def homMk₄ : f ⟶ g := homMkSucc app₀ (homMk₃ app₁ app₂ app₃ app₄ w₁ w₂ w₃) w₀
 
+set_option backward.privateInPublic true in
 @[simp]
 lemma homMk₄_app_zero : (homMk₄ app₀ app₁ app₂ app₃ app₄ w₀ w₁ w₂ w₃).app 0 = app₀ := rfl
 
+set_option backward.privateInPublic true in
 @[simp]
 lemma homMk₄_app_one : (homMk₄ app₀ app₁ app₂ app₃ app₄ w₀ w₁ w₂ w₃).app 1 = app₁ := rfl
 
+set_option backward.privateInPublic true in
 @[simp]
 lemma homMk₄_app_two :
     (homMk₄ app₀ app₁ app₂ app₃ app₄ w₀ w₁ w₂ w₃).app ⟨2, by valid⟩ = app₂ := rfl
 
+set_option backward.privateInPublic true in
 @[simp]
 lemma homMk₄_app_three :
     (homMk₄ app₀ app₁ app₂ app₃ app₄ w₀ w₁ w₂ w₃).app ⟨3, by valid⟩ = app₃ := rfl
 
+set_option backward.privateInPublic true in
 @[simp]
 lemma homMk₄_app_four :
     (homMk₄ app₀ app₁ app₂ app₃ app₄ w₀ w₁ w₂ w₃).app ⟨4, by valid⟩ = app₄ := rfl
@@ -831,27 +851,34 @@ variable
   (w₃ : f.map' 3 4 ≫ app₄ = app₃ ≫ g.map' 3 4 := by cat_disch)
   (w₄ : f.map' 4 5 ≫ app₅ = app₄ ≫ g.map' 4 5 := by cat_disch)
 
+set_option backward.privateInPublic true in
 /-- Constructor for morphisms in `ComposableArrows C 5`. -/
 def homMk₅ : f ⟶ g := homMkSucc app₀ (homMk₄ app₁ app₂ app₃ app₄ app₅ w₁ w₂ w₃ w₄) w₀
 
+set_option backward.privateInPublic true in
 @[simp]
 lemma homMk₅_app_zero : (homMk₅ app₀ app₁ app₂ app₃ app₄ app₅ w₀ w₁ w₂ w₃ w₄).app 0 = app₀ := rfl
 
+set_option backward.privateInPublic true in
 @[simp]
 lemma homMk₅_app_one : (homMk₅ app₀ app₁ app₂ app₃ app₄ app₅ w₀ w₁ w₂ w₃ w₄).app 1 = app₁ := rfl
 
+set_option backward.privateInPublic true in
 @[simp]
 lemma homMk₅_app_two :
     (homMk₅ app₀ app₁ app₂ app₃ app₄ app₅ w₀ w₁ w₂ w₃ w₄).app ⟨2, by valid⟩ = app₂ := rfl
 
+set_option backward.privateInPublic true in
 @[simp]
 lemma homMk₅_app_three :
     (homMk₅ app₀ app₁ app₂ app₃ app₄ app₅ w₀ w₁ w₂ w₃ w₄).app ⟨3, by valid⟩ = app₃ := rfl
 
+set_option backward.privateInPublic true in
 @[simp]
 lemma homMk₅_app_four :
     (homMk₅ app₀ app₁ app₂ app₃ app₄ app₅ w₀ w₁ w₂ w₃ w₄).app ⟨4, by valid⟩ = app₄ := rfl
 
+set_option backward.privateInPublic true in
 @[simp]
 lemma homMk₅_app_five :
     (homMk₅ app₀ app₁ app₂ app₃ app₄ app₅ w₀ w₁ w₂ w₃ w₄).app ⟨5, by valid⟩ = app₅ := rfl
@@ -942,7 +969,7 @@ lemma mkOfObjOfMapSucc_map_succ (i : ℕ) (hi : i < n := by valid) :
 set_option backward.isDefEq.respectTransparency false in
 lemma mkOfObjOfMapSucc_arrow (i : ℕ) (hi : i < n := by valid) :
     (mkOfObjOfMapSucc obj mapSucc).arrow i = mk₁ (mapSucc ⟨i, hi⟩) :=
-  ext₁ rfl rfl (by simpa using mkOfObjOfMapSucc_map_succ obj mapSucc i hi)
+  ext₁ rfl rfl (by simpa using! mkOfObjOfMapSucc_map_succ obj mapSucc i hi)
 
 end mkOfObjOfMapSucc
 

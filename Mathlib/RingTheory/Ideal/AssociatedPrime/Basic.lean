@@ -5,7 +5,7 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.Algebra.Exact
+public import Mathlib.Algebra.Exact.Basic
 public import Mathlib.RingTheory.Finiteness.Ideal
 public import Mathlib.RingTheory.Ideal.MinimalPrime.Colon
 public import Mathlib.RingTheory.Ideal.MinimalPrime.Noetherian
@@ -106,9 +106,6 @@ def associatedPrimes : Set (Ideal R) :=
 variable {I J M} {M' : Type*} [AddCommMonoid M'] [Module R M'] (f : M →ₗ[R] M')
 
 theorem AssociatedPrimes.mem_iff : I ∈ associatedPrimes R M ↔ IsAssociatedPrime I M := Iff.rfl
-
-@[deprecated (since := "2025-11-24")]
-alias AssociatePrimes.mem_iff := AssociatedPrimes.mem_iff
 
 theorem IsAssociatedPrime.isPrime (h : IsAssociatedPrime I M) : I.IsPrime := h.1
 
@@ -287,7 +284,7 @@ theorem associatedPrimes.eq_singleton_of_isPrimary [IsNoetherianRing R] (hI : I.
   rw [Set.mem_singleton_iff]
   refine ⟨IsAssociatedPrime.eq_radical hI, ?_⟩
   rintro rfl
-  haveI : Nontrivial (R ⧸ I) := by
+  have : Nontrivial (R ⧸ I) := by
     refine ⟨(Ideal.Quotient.mk I :) 1, (Ideal.Quotient.mk I :) 0, ?_⟩
     rw [Ne, Ideal.Quotient.eq, sub_zero, ← Ideal.eq_top_iff_one]
     exact hI.1

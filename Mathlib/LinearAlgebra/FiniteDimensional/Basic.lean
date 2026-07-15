@@ -53,6 +53,14 @@ section DivisionRing
 variable [DivisionRing K] [AddCommGroup V] [Module K V] {V₂ : Type v'} [AddCommGroup V₂]
   [Module K V₂]
 
+theorem finrank_le_iff_rank_le [FiniteDimensional K V] {n : ℕ} :
+    finrank K V ≤ n ↔ Module.rank K V ≤ n := by
+  simp [← Cardinal.toNat_le_iff_le_of_lt_aleph0 (rank_lt_aleph0 K V), finrank]
+
+theorem finrank_lt_iff_rank_lt [FiniteDimensional K V] {n : ℕ} :
+    finrank K V < n ↔ Module.rank K V < n := by
+  simp [← Cardinal.toNat_lt_iff_lt_of_lt_aleph0 (rank_lt_aleph0 K V), finrank]
+
 theorem _root_.LinearIndependent.lt_aleph0_of_finiteDimensional {ι : Type w} [FiniteDimensional K V]
     {v : ι → V} (h : LinearIndependent K v) : #ι < ℵ₀ :=
   h.lt_aleph0_of_finite
@@ -66,7 +74,7 @@ theorem _root_.Submodule.eq_top_of_finrank_eq [FiniteDimensional K V] {S : Submo
     simpa [bS] using bS.linearIndependent.linearIndepOn_id.image
       (f := Submodule.subtype S) (by simp)
   set b := Basis.extend this with b_eq
-  letI i2 : Fintype (((↑) : S → V) '' Basis.ofVectorSpaceIndex K S) :=
+  let i2 : Fintype (((↑) : S → V) '' Basis.ofVectorSpaceIndex K S) :=
     (LinearIndependent.set_finite_of_isNoetherian this).fintype
   have : (↑) '' Basis.ofVectorSpaceIndex K S = this.extend (Set.subset_univ _) :=
     Set.eq_of_subset_of_card_le (this.subset_extend _)
@@ -88,11 +96,11 @@ theorem _root_.Submodule.exists_linearEquiv_restrict_eq
   let eQ' := W'.prodEquivOfIsCompl Q' hQ'
   suffices Nonempty (Q ≃ₗ[K] Q') from
     ⟨eQ.symm ≪≫ₗ (LinearEquiv.prodCongr f this.some) ≪≫ₗ eQ', by aesop⟩
-  refine LinearEquiv.nonempty_equiv_iff_rank_eq.mpr ?_
+  refine Module.nonempty_linearEquiv_iff_rank_eq.mpr ?_
   rw [← Cardinal.add_right_inj_of_lt_aleph0 (γ := Module.rank K W),
-    add_comm, ← rank_prod', LinearEquiv.nonempty_equiv_iff_rank_eq.mp ⟨eQ⟩,
-    add_comm, LinearEquiv.nonempty_equiv_iff_rank_eq.mp ⟨f⟩,
-    ← rank_prod', LinearEquiv.nonempty_equiv_iff_rank_eq.mp ⟨eQ'⟩]
+    add_comm, ← rank_prod', Module.nonempty_linearEquiv_iff_rank_eq.mp ⟨eQ⟩,
+    add_comm, Module.nonempty_linearEquiv_iff_rank_eq.mp ⟨f⟩,
+    ← rank_prod', Module.nonempty_linearEquiv_iff_rank_eq.mp ⟨eQ'⟩]
   exact Module.rank_lt_aleph0 K ↥W
 
 section
@@ -358,24 +366,12 @@ theorem comp_eq_id_comm {f g : M →ₗ[R] M} : f ∘ₗ g = id ↔ g ∘ₗ f =
 
 end Semiring
 
-/-- In a finite-dimensional space, if linear maps are inverse to each other on one side then they
-are also inverse to each other on the other side. -/
-@[deprecated mul_eq_one_symm (since := "2025-11-30")]
-theorem mul_eq_one_of_mul_eq_one [FiniteDimensional K V] {f g : V →ₗ[K] V} (hfg : f * g = 1) :
-    g * f = 1 := mul_eq_one_symm hfg
-
-/-- In a finite-dimensional space, linear maps are inverse to each other on one side if and only if
-they are inverse to each other on the other side. -/
-@[deprecated mul_eq_one_comm (since := "2025-11-30")] protected
-theorem mul_eq_one_comm [FiniteDimensional K V] {f g : V →ₗ[K] V} : f * g = 1 ↔ g * f = 1 :=
-  mul_eq_one_comm
-
 theorem comap_eq_sup_ker_of_disjoint {p : Submodule K V} [FiniteDimensional K p] {f : V →ₗ[K] V}
     (h : ∀ x ∈ p, f x ∈ p) (h' : Disjoint p (ker f)) :
     p.comap f = p ⊔ ker f := by
   refine le_antisymm (fun x hx ↦ ?_) (sup_le_iff.mpr ⟨h, ker_le_comap _⟩)
   obtain ⟨⟨y, hy⟩, hxy⟩ :=
-    surjective_of_injective ((injective_restrict_iff_disjoint h).mpr h') ⟨f x, hx⟩
+    surjective_of_injective ((injective_restrict_iff h).mpr h') ⟨f x, hx⟩
   replace hxy : f y = f x := by simpa [Subtype.ext_iff] using hxy
   exact Submodule.mem_sup.mpr ⟨y, hy, x - y, by simp [hxy], add_sub_cancel y x⟩
 
@@ -574,6 +570,14 @@ lemma exists_smul_eq_of_finrank_eq_one
   have : y ∈ Submodule.span K {x} := by rw [this]; exact mem_top
   exact mem_span_singleton.1 this
 
+/-- A submodule of finrank 1 is spanned by any of its nonzero elements. -/
+theorem eq_span_singleton_of_mem_of_finrank_eq_one {S : Submodule K V} {w : V}
+    (hS : finrank K S = 1) (hw : w ∈ S) (hw0 : w ≠ 0) :
+    S = K ∙ w := by
+  have : FiniteDimensional K S := Module.finite_of_finrank_pos (by lia)
+  exact Eq.symm <| eq_of_le_of_finrank_le (by simpa)
+    (by rw [hS, finrank_span_singleton hw0])
+
 theorem Set.finrank_mono [FiniteDimensional K V] {s t : Set V} (h : s ⊆ t) :
     s.finrank K ≤ t.finrank K :=
   Submodule.finrank_mono (span_mono h)
@@ -658,3 +662,7 @@ theorem ker_pow_constant {f : End K V} {k : ℕ}
 end End
 
 end Module
+
+theorem AlgHom.bijective {K S : Type*} [Field K] [Ring S] [IsSimpleRing S]
+    [Algebra K S] [FiniteDimensional K S] (f : S →ₐ[K] S) : Function.Bijective f :=
+  ⟨f.toRingHom.injective, f.toLinearMap.injective_iff_surjective.mp f.toRingHom.injective⟩

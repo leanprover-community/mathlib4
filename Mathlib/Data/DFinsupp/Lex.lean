@@ -54,9 +54,6 @@ theorem Lex.lt_iff [LT ι] [∀ i, LT (α i)] {a b : Lex (Π₀ i, α i)} :
     a < b ↔ ∃ i, (∀ j, j < i → a j = b j) ∧ a i < b i :=
   .rfl
 
-@[deprecated (since := "2025-11-29")]
-alias lex_lt_iff := Lex.lt_iff
-
 theorem Colex.lt_iff [LT ι] [∀ i, LT (α i)] {a b : Colex (Π₀ i, α i)} :
     a < b ↔ ∃ i, (∀ j, i < j → a j = b j) ∧ a i < b i :=
   .rfl
@@ -83,9 +80,6 @@ theorem Lex.lt_iff_of_unique [Unique ι] [∀ i, LT (α i)] [Preorder ι] {x y :
     x < y ↔ x default < y default :=
   lex_iff_of_unique
 
-@[deprecated (since := "2025-11-29")]
-alias lex_lt_iff_of_unique := Lex.lt_iff_of_unique
-
 theorem colex_lt_iff_of_unique [Unique ι] [∀ i, LT (α i)] [Preorder ι] {x y : Colex (Π₀ i, α i)} :
     x < y ↔ x default < y default :=
   lex_iff_of_unique
@@ -105,6 +99,7 @@ instance Colex.isStrictOrder [∀ i, PartialOrder (α i)] :
 See `DFinsupp.Lex.linearOrder` for a proof that this partial order is in fact linear. -/
 instance Lex.partialOrder [∀ i, PartialOrder (α i)] : PartialOrder (Lex (Π₀ i, α i)) where
   le x y := ⇑(ofLex x) = ⇑(ofLex y) ∨ x < y
+  toLT := instLTLex
   __ := PartialOrder.lift (fun x : Lex (Π₀ i, α i) ↦ toLex (⇑(ofLex x)))
     (DFunLike.coe_injective (F := DFinsupp α))
 
@@ -112,15 +107,13 @@ instance Lex.partialOrder [∀ i, PartialOrder (α i)] : PartialOrder (Lex (Π�
 See `DFinsupp.Colex.linearOrder` for a proof that this partial order is in fact linear. -/
 instance Colex.partialOrder [∀ i, PartialOrder (α i)] : PartialOrder (Colex (Π₀ i, α i)) where
   le x y := ⇑(ofColex x) = ⇑(ofColex y) ∨ x < y
+  toLT := instLTColex
   __ := PartialOrder.lift (fun x : Colex (Π₀ i, α i) ↦ toColex (⇑(ofColex x)))
     (DFunLike.coe_injective (F := DFinsupp α))
 
 theorem Lex.le_iff_of_unique [Unique ι] [∀ i, PartialOrder (α i)] {x y : Lex (Π₀ i, α i)} :
     x ≤ y ↔ x default ≤ y default :=
   Pi.lex_le_iff_of_unique
-
-@[deprecated (since := "2025-11-29")]
-alias lex_le_iff_of_unique := Lex.le_iff_of_unique
 
 theorem Colex.le_iff_of_unique [Unique ι] [∀ i, PartialOrder (α i)] {x y : Colex (Π₀ i, α i)} :
     x ≤ y ↔ x default ≤ y default :=
@@ -175,14 +168,12 @@ instance Colex.decidableLT : DecidableLT (Colex (Π₀ i, α i)) :=
 
 /-- The linear order on `DFinsupp`s obtained by the lexicographic ordering. -/
 instance Lex.linearOrder : LinearOrder (Lex (Π₀ i, α i)) where
-  __ := Lex.partialOrder
   le_total := total_of _
   toDecidableLT := decidableLT
   toDecidableLE := decidableLE
 
 /-- The linear order on `DFinsupp`s obtained by the colexicographic ordering. -/
 instance Colex.linearOrder : LinearOrder (Colex (Π₀ i, α i)) where
-  __ := Colex.partialOrder
   le_total := total_of _
   toDecidableLT := decidableLT
   toDecidableLE := decidableLE
@@ -217,6 +208,7 @@ section Left
 
 variable [∀ i, AddLeftStrictMono (α i)]
 
+set_option backward.defeqAttrib.useBackward true in
 instance Lex.addLeftStrictMono : AddLeftStrictMono (Lex (Π₀ i, α i)) :=
   ⟨fun _ _ _ ⟨a, lta, ha⟩ ↦ ⟨a, fun j ja ↦ congr_arg _ (lta j ja), by dsimp; gcongr⟩⟩
 
@@ -236,6 +228,7 @@ section Right
 
 variable [∀ i, AddRightStrictMono (α i)]
 
+set_option backward.defeqAttrib.useBackward true in
 instance Lex.addRightStrictMono : AddRightStrictMono (Lex (Π₀ i, α i)) :=
   ⟨fun f _ _ ⟨a, lta, ha⟩ ↦
     ⟨a, fun j ja ↦ congr_arg (· + ofLex f j) (lta j ja), by dsimp; gcongr⟩⟩

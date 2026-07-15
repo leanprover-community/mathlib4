@@ -112,9 +112,6 @@ abbrev toSkeleton (X : C) : Skeleton C := ⟦X⟧
 noncomputable def fromSkeletonToSkeletonIso (X : C) : (fromSkeleton C).obj (toSkeleton X) ≅ X :=
   Nonempty.some (Quotient.mk_out X)
 
-@[deprecated (since := "2025-12-18")] alias preCounitIso :=
-  fromSkeletonToSkeletonIso
-
 @[reassoc, simp]
 lemma Skeleton.comp_hom {X Y Z : Skeleton C} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (f ≫ g).hom = f.hom ≫ g.hom := rfl
@@ -129,6 +126,7 @@ variable (C)
   map_id _ := by aesop
   map_comp _ _ := InducedCategory.hom_ext (by simp)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The equivalence between the skeleton and the category itself. -/
 @[simps] noncomputable def skeletonEquivalence : Skeleton C ≌ C where
   functor := fromSkeleton C
@@ -142,7 +140,7 @@ variable (C)
 theorem skeleton_skeletal : Skeletal (Skeleton C) := by
   rintro X Y ⟨h⟩
   have : X.out ≈ Y.out := ⟨(fromSkeleton C).mapIso h⟩
-  simpa using Quotient.sound this
+  simpa using! Quotient.sound this
 
 /-- The `skeleton` of `C` given by choice is a skeleton of `C`. -/
 lemma skeleton_isSkeleton : IsSkeletonOf C (Skeleton C) (fromSkeleton C) where
@@ -187,6 +185,7 @@ instance [F.Faithful] : F.mapSkeleton.Faithful := inferInstanceAs <| (_ ⋙ _).F
 
 instance [F.EssSurj] : F.mapSkeleton.EssSurj := inferInstanceAs <| (_ ⋙ _).EssSurj
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- A natural isomorphism between `X ↦ ⟦X⟧ ↦ ⟦FX⟧` and `X ↦ FX ↦ ⟦FX⟧`. On the level of
 categories, these are `C ⥤ Skeleton C ⥤ Skeleton D` and `C ⥤ D ⥤ Skeleton D`. So this says that

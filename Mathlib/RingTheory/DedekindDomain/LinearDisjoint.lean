@@ -18,8 +18,8 @@ and `Frac R` denotes the fraction field of a domain `R`.
 
 ## Main results and definitions
 
-* `FractionalIdeal.differentIdeal_eq_map_differentIdeal`: `𝓓(B/R₁) = 𝓓(R₂/A)`
-* `FractionalIdeal.differentIdeal_eq_differentIdeal_mul_differentIdeal_of_isCoprime`:
+* `IsDedekindDomain.differentIdeal_eq_map_differentIdeal`: `𝓓(B/R₁) = 𝓓(R₂/A)`
+* `IsDedekindDomain.differentIdeal_eq_differentIdeal_mul_differentIdeal_of_isCoprime`:
   `𝓓(B/A) = 𝓓(R₁/A) * 𝓓(R₂/A)`.
 * `Module.Basis.ofIsCoprimeDifferentIdeal`: Construct a `R₁`-basis of `B` by lifting an
   `A`-basis of `R₂`.
@@ -75,6 +75,8 @@ attribute [local instance] FractionRing.liftAlgebra
 variable [IsDomain A] [IsDedekindDomain B] [IsDedekindDomain R₁] [IsDedekindDomain R₂]
     [IsFractionRing B L] [IsFractionRing R₁ F₁] [IsFractionRing R₂ F₂] [IsIntegrallyClosed A]
     [IsIntegralClosure B R₁ L] [IsTorsionFree R₁ B] [IsTorsionFree R₂ B]
+
+set_option linter.overlappingInstances false
 
 namespace IsDedekindDomain
 

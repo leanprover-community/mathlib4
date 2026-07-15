@@ -208,7 +208,7 @@ theorem HasTemperateGrowth.add (hf : f.HasTemperateGrowth) (hg : g.HasTemperateG
 @[to_fun (attr := fun_prop)]
 theorem HasTemperateGrowth.sub (hf : f.HasTemperateGrowth) (hg : g.HasTemperateGrowth) :
     (f - g).HasTemperateGrowth := by
-  convert! hf.add hg.neg using 1
+  convert hf.add hg.neg
   grind
 
 @[fun_prop]
@@ -218,8 +218,8 @@ theorem HasTemperateGrowth.sum {f : ι → E → F} {s : Finset ι}
   induction s using Finset.induction_on with
   | empty => simp
   | insert a s has ih =>
-    obtain ⟨hf, h⟩ := by simpa using hf
-    simpa [has] using hf.add (ih h)
+    obtain ⟨hf, h⟩ := by simpa using! hf
+    simpa [has] using! hf.add (ih h)
 
 end Addition
 
@@ -284,7 +284,7 @@ theorem HasTemperateGrowth.mul {f g : E → R} (hf : f.HasTemperateGrowth)
 theorem HasTemperateGrowth.pow {f : E → R} (hf : f.HasTemperateGrowth) (k : ℕ) :
     (f ^ k).HasTemperateGrowth := by
   induction k with
-  | zero => simpa only [pow_zero] using HasTemperateGrowth.const 1
+  | zero => simpa only [pow_zero] using! HasTemperateGrowth.const 1
   | succ k IH => rw [pow_succ]; fun_prop
 
 end Multiplication
@@ -424,7 +424,7 @@ open scoped ENNReal
 class HasTemperateGrowth (μ : Measure E) : Prop where
   exists_integrable : ∃ (n : ℕ), Integrable (fun x ↦ (1 + ‖x‖) ^ (- (n : ℝ))) μ
 
-open Classical in
+open scoped Classical in
 /-- An integer exponent `l` such that `(1 + ‖x‖) ^ (-l)` is integrable if `μ` has
 temperate growth. -/
 def integrablePower (μ : Measure E) : ℕ :=

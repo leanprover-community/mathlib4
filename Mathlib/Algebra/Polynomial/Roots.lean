@@ -12,6 +12,7 @@ public import Mathlib.Data.Set.Finite.Lemmas
 public import Mathlib.RingTheory.Coprime.Lemmas
 public import Mathlib.RingTheory.Localization.FractionRing
 public import Mathlib.SetTheory.Cardinal.Order
+public import Mathlib.Order.Filter.TendstoCofinite
 
 /-!
 # Theory of univariate polynomials
@@ -96,7 +97,6 @@ theorem card_roots_sub_C' {p : R[X]} {a : R} (hp0 : 0 < degree p) :
 
 @[simp]
 theorem count_roots [DecidableEq R] (p : R[X]) : p.roots.count a = rootMultiplicity a p := by
-  classical
   by_cases hp : p = 0
   · simp [hp]
   rw [roots_def, dif_neg hp]
@@ -156,6 +156,15 @@ theorem eq_of_infinite_eval_eq (p q : R[X]) (h : Set.Infinite { x | eval x p = e
   rw [← sub_eq_zero]
   apply eq_zero_of_infinite_isRoot
   simpa only [IsRoot, eval_sub, sub_eq_zero]
+
+/-- Non-constant polynomials have finite fibres, provided the coefficients are a domain. -/
+lemma tendstoCofinite_of_natDegree_ne_zero {R : Type} [CommRing R] [IsDomain R] (p : R[X])
+    (hp : p.natDegree ≠ 0) : Filter.TendstoCofinite p.eval := by
+  rw [Filter.tendstoCofinite_iff_finite_preimage_singleton]
+  intro x
+  by_contra! hx
+  obtain ⟨rfl⟩ : p = C x := p.eq_of_infinite_eval_eq (C x) (by simpa)
+  simp at hp
 
 theorem roots_mul {p q : R[X]} (hpq : p * q ≠ 0) : (p * q).roots = p.roots + q.roots := by
   classical
@@ -217,6 +226,29 @@ lemma roots_neg (p : R[X]) : (-p).roots = p.roots := by
   rw [← neg_one_smul R p, roots_smul_nonzero p (neg_ne_zero.mpr one_ne_zero)]
 
 @[simp]
+theorem map_roots_comp_C_mul_X_add_C (p : R[X]) (a b : R) (ha : IsUnit a) :
+    (p.comp (C a * X + C b)).roots.map (fun x ↦ a * x + b) = p.roots := by
+  classical
+  set f := fun x ↦ a * x + b
+  have hf : Function.Bijective f :=
+    (AddGroup.addRight_bijective b).comp (IsUnit.isUnit_iff_mulLeft_bijective.mp ha)
+  rw [Multiset.ext]
+  intro x
+  obtain ⟨x, rfl⟩ := hf.surjective x
+  rw [count_roots, count_map_eq_count' f _ hf.injective, count_roots,
+    rootMultiplicity_comp_C_mul_X_add_C p a b x ha]
+
+open scoped Ring in
+theorem roots_comp_C_mul_X_add_C (p : R[X]) (a b : R) (ha : IsUnit a) :
+    (p.comp (C a * X + C b)).roots = p.roots.map (fun x ↦ a⁻¹ʳ * (x - b)) := by
+  conv_rhs => rw [← p.map_roots_comp_C_mul_X_add_C a b ha]
+  simp [← mul_assoc, Ring.inverse_mul_cancel a ha]
+
+@[simp]
+theorem roots_comp_neg_X (p : R[X]) : (p.comp (-X)).roots = p.roots.map fun x ↦ -x := by
+  simp [← map_roots_comp_C_mul_X_add_C p (-1) 0 isUnit_neg_one]
+
+@[simp]
 theorem roots_C_mul_X_sub_C_of_IsUnit (b : R) (a : Rˣ) : (C (a : R) * X - C b).roots =
     {a⁻¹ * b} := by
   rw [← roots_C_mul _ (Units.ne_zero a⁻¹), mul_sub, ← mul_assoc, ← C_mul, ← C_mul,
@@ -237,7 +269,7 @@ theorem roots_list_prod (L : List R[X]) :
 
 theorem roots_multiset_prod (m : Multiset R[X]) : (0 : R[X]) ∉ m → m.prod.roots = m.bind roots := by
   rcases m with ⟨L⟩
-  simpa only [Multiset.prod_coe, quot_mk_to_coe''] using roots_list_prod L
+  simpa only [Multiset.prod_coe, quot_mk_to_coe''] using! roots_list_prod L
 
 theorem roots_prod {ι : Type*} (f : ι → R[X]) (s : Finset ι) :
     s.prod f ≠ 0 → (s.prod f).roots = s.val.bind fun i => roots (f i) := by
@@ -307,8 +339,6 @@ theorem roots_eq_of_degree_le_card_of_ne_zero {S : Finset R}
 theorem roots_eq_of_degree_eq_card {S : Finset R}
     (hS : ∀ x ∈ S, p.eval x = 0) (hcard : S.card = p.degree) : p.roots = S.val :=
   roots_eq_of_degree_le_card_of_ne_zero hS (by grind) (by contrapose! hcard; simp [hcard])
-
-@[deprecated (since := "2025-12-16")] alias roots_eq_of_degree_le_card := roots_eq_of_degree_eq_card
 
 theorem roots_eq_of_natDegree_le_card_of_ne_zero {S : Finset R}
     (hS : ∀ x ∈ S, p.eval x = 0) (hcard : p.natDegree ≤ S.card) (hp : p ≠ 0) : p.roots = S.val :=

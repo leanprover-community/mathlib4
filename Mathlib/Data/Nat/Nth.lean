@@ -107,7 +107,7 @@ theorem nth_injOn (hf : (setOf p).Finite) : (Set.Iio #hf.toFinset).InjOn (nth p)
 
 theorem range_nth_of_finite (hf : (setOf p).Finite) : Set.range (nth p) = insert 0 (setOf p) := by
   simpa only [← List.getD_eq_getElem?_getD, ← nth_eq_getD_sort hf, mem_sort,
-    Set.Finite.mem_toFinset] using Set.range_list_getD (hf.toFinset.sort (· ≤ ·)) 0
+    Set.Finite.mem_toFinset] using! Set.range_list_getD (hf.toFinset.sort (· ≤ ·)) 0
 
 @[simp]
 theorem image_nth_Iio_card (hf : (setOf p).Finite) : nth p '' Set.Iio #hf.toFinset = setOf p :=
@@ -157,7 +157,7 @@ theorem nth_le_nth (hf : (setOf p).Infinite) {k n} : nth p k ≤ nth p n ↔ k �
 
 theorem range_nth_of_infinite (hf : (setOf p).Infinite) : Set.range (nth p) = setOf p := by
   rw [nth_eq_orderIsoOfNat hf]
-  haveI := hf.to_subtype
+  have := hf.to_subtype
   classical exact Nat.Subtype.coe_comp_ofNat_range
 
 theorem nth_mem_of_infinite (hf : (setOf p).Infinite) (n : ℕ) : p (nth p n) :=

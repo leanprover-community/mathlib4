@@ -9,7 +9,7 @@ public import Mathlib.RingTheory.Derivation.ToSquareZero
 public import Mathlib.RingTheory.Ideal.Cotangent
 public import Mathlib.RingTheory.IsTensorProduct
 public import Mathlib.RingTheory.EssentialFiniteness
-public import Mathlib.Algebra.Exact
+public import Mathlib.Algebra.Exact.Basic
 public import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 public import Mathlib.Tactic.SuppressCompilation
 
@@ -192,6 +192,7 @@ theorem KaehlerDifferential.DLinearMap_apply (s : S) :
       (KaehlerDifferential.ideal R S).toCotangent
         ⟨1 ⊗ₜ s - s ⊗ₜ 1, KaehlerDifferential.one_smul_sub_smul_one_mem_ideal R s⟩ := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The universal derivation into `Ω[S⁄R]`. -/
 def KaehlerDifferential.D : Derivation R S Ω[S⁄R] :=
@@ -503,7 +504,7 @@ theorem KaehlerDifferential.kerTotal_mkQ_single_algebraMap_one (x) : (x𝖣1) = 
   rw [← (algebraMap R S).map_one, KaehlerDifferential.kerTotal_mkQ_single_algebraMap]
 
 theorem KaehlerDifferential.kerTotal_mkQ_single_smul (r : R) (x y) : (y𝖣r • x) = r • y𝖣x := by
-  letI : SMulZeroClass R S := inferInstance
+  let : SMulZeroClass R S := inferInstance
   rw [Algebra.smul_def, KaehlerDifferential.kerTotal_mkQ_single_mul,
     KaehlerDifferential.kerTotal_mkQ_single_algebraMap, add_zero, ← LinearMap.map_smul_of_tower,
     Finsupp.smul_single, mul_comm, Algebra.smul_def]

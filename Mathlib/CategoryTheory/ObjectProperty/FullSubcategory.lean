@@ -76,9 +76,6 @@ lemma FullSubcategory.id_hom (X : P.FullSubcategory) :
 lemma FullSubcategory.comp_hom {X Y Z : P.FullSubcategory} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (f ≫ g).hom = f.hom ≫ g.hom := rfl
 
-@[deprecated (since := "2025-12-18")] alias FullSubcategory.id_def := FullSubcategory.id_hom
-@[deprecated (since := "2025-12-18")] alias FullSubcategory.comp_def := FullSubcategory.comp_hom
-
 variable {P} in
 /-- Constructor for morphisms in a full subcategory. -/
 @[simps]
@@ -166,11 +163,9 @@ def lift : C ⥤ FullSubcategory P where
     original functor. This is actually true definitionally. -/
 def liftCompιIso : P.lift F hF ⋙ P.ι ≅ F := Iso.refl _
 
-@[simp]
 lemma ι_obj_lift_obj (X : C) :
     P.ι.obj ((P.lift F hF).obj X) = F.obj X := rfl
 
-@[simp]
 lemma ι_obj_lift_map {X Y : C} (f : X ⟶ Y) :
     P.ι.map ((P.lift F hF).map f) = F.map f := rfl
 

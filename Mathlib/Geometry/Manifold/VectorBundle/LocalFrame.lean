@@ -32,9 +32,6 @@ complete field). In the planned file `Mathlib/Geometry/Manifold/VectorBundle/Ort
 metric. This includes bundles of finite rank, modelled on a Hilbert space or on a Banach space which
 has smooth partitions of unity.
 
-We will use this to construct local extensions of a vector to a section which is smooth on the
-trivialisation domain.
-
 ## Main definitions and results
 
 * `IsLocalFrameOn`: a family of sections `s i` of `V → M` is called a **C^k local frame** on a set
@@ -181,9 +178,6 @@ noncomputable def fintypeOfFiniteDimensional [VectorBundle 𝕜 F V] [FiniteDime
     exact Finite.equiv phi.symm
   exact FiniteDimensional.fintypeBasisIndex (hs.toBasisAt hx)
 
-@[deprecated (since := "2025-12-19")]
-alias fintype_of_finiteDimensional := fintypeOfFiniteDimensional
-
 open scoped Classical in
 /-- Coefficients of a section `s` of `V` w.r.t. a local frame `{s i}` on `u`.
 Outside of `u`, this returns the junk value 0. -/
@@ -297,7 +291,7 @@ lemma mdifferentiableOn_of_coeff [FiniteDimensional 𝕜 F]
   have this (i) : MDiff[u] (T% ((LinearMap.piApply (hs.coeff i)) t • s i)) :=
     (h i).smul_section ((hs.contMDiffOn i).mdifferentiableOn one_ne_zero)
   have almost : MDiff[u] (T% (fun x ↦ ∑ i, hs.coeff i x (t x) • s i x)) :=
-    .sum_section (fun i _ hx ↦ this i _ hx)
+    .sum_section (fun i _ _ hx ↦ this i _ hx)
   apply almost.congr
   intro y hy
   simpa using congrArg (TotalSpace.mk' F y) (hs.coeff_sum_eq t hy)
@@ -309,7 +303,7 @@ lemma mdifferentiableAt_of_coeff [FiniteDimensional 𝕜 F]
     MDiffAt (T% t) x := by
   have := fintypeOfFiniteDimensional hs (mem_of_mem_nhds hu)
   have almost : MDiffAt (T% (fun x ↦ ∑ i, hs.coeff i x (t x) • s i x)) x :=
-    .sum_section (fun i ↦ (h i).smul_section <|
+    .sum_section (fun i _ ↦ (h i).smul_section <|
       ((hs.contMDiffOn i).mdifferentiableOn one_ne_zero).mdifferentiableAt hu)
   exact almost.congr_of_eventuallyEq <| (hs.eventually_eq_sum_coeff_smul t hu).mono (by simp)
 
@@ -425,7 +419,7 @@ variable (e b) in
 /-- The representation of `s` in a local frame at `x` only depends on `s` at `x`. -/
 lemma localFrame_coeff_congr {i : ι} (hss' : s x = s' x) :
     e.localFrame_coeff I b i x (s x) = e.localFrame_coeff I b i x (s' x) := by
-  simpa using (isLocalFrameOn_localFrame_baseSet I 1 e b).coeff_congr hss' i
+  simpa using! (isLocalFrameOn_localFrame_baseSet I 1 e b).coeff_congr hss' i
 
 variable {n}
 
@@ -456,7 +450,6 @@ near `x` induced by `e` and `b` -/
 lemma contMDiffAt_localFrame_coeff (hxe : x ∈ e.baseSet) (hs : CMDiffAt k (T% s) x) (i : ι) :
     CMDiffAt k ((LinearMap.piApply (e.localFrame_coeff I b i)) s) x := by
   -- This boils down to computing the frame coefficients in a local trivialisation.
-  classical
   -- step 1: on e.baseSet, we know compute the coefficient very well
   let aux := fun x ↦ b.repr (e ((T% s) x)).2 i
   -- Since `e.baseSet` is open, this is sufficient.
@@ -474,7 +467,7 @@ lemma contMDiffAt_localFrame_coeff (hxe : x ∈ e.baseSet) (hs : CMDiffAt k (T% 
     { toFun v := b.repr v i
       map_add' m m' := by simp
       map_smul' m x := by simp }
-  have : ContMDiffAt 𝓘(𝕜, F) 𝓘(𝕜) k breprl.toContinuousLinearMap (e ((T% s) x)).2 :=
+  have : CMDiffAt k breprl.toContinuousLinearMap (e ((T% s) x)).2 :=
     contMDiffAt_iff_contDiffAt.mpr <| by fun_prop
   exact this.comp x h₁
 
@@ -524,7 +517,6 @@ lemma mdifferentiableAt_localFrame_coeff
     (hxe : x ∈ e.baseSet) (hs : MDiffAt (T% s) x) (i : ι) :
     MDiffAt ((LinearMap.piApply (e.localFrame_coeff I b i)) s) x := by
   -- This boils down to computing the frame coefficients in a local trivialisation.
-  classical
   -- step 1: on `e.baseSet`, we know the coefficient very well
   let aux := fun x ↦ b.repr (e ((T% s) x)).2 i
   -- Since `e.baseSet` is open, this is sufficient.

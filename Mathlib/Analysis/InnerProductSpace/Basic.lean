@@ -153,9 +153,6 @@ variable {F}
 
 variable {𝕜}
 
-@[deprecated (since := "2025-12-26")] alias sesqFormOfInner := innerₛₗ
-@[deprecated (since := "2025-12-26")] noncomputable alias bilinFormOfRealInner := innerₗ
-
 /-- An inner product with a sum on the left. -/
 theorem sum_inner {ι : Type*} (s : Finset ι) (f : ι → E) (x : E) :
     ⟪∑ i ∈ s, f i, x⟫ = ∑ i ∈ s, ⟪f i, x⟫ :=
@@ -278,6 +275,7 @@ theorem parallelogram_law {x y : E} : ⟪x + y, x + y⟫ + ⟪x - y, x - y⟫ = 
   ring
 
 /-- **Cauchy–Schwarz inequality**. -/
+@[wikidata Q190546]
 theorem inner_mul_inner_self_le (x y : E) : ‖⟪x, y⟫‖ * ‖⟪y, x⟫‖ ≤ re ⟪x, x⟫ * re ⟪y, y⟫ :=
   letI : PreInnerProductSpace.Core 𝕜 E := PreInnerProductSpace.toCore
   InnerProductSpace.Core.inner_mul_inner_self_le x y
@@ -454,7 +452,7 @@ theorem norm_sub_mul_self_real (x y : F) :
 /-- Cauchy–Schwarz inequality with norm -/
 theorem norm_inner_le_norm (x y : E) : ‖⟪x, y⟫‖ ≤ ‖x‖ * ‖y‖ := by
   rw [norm_eq_sqrt_re_inner (𝕜 := 𝕜) x, norm_eq_sqrt_re_inner (𝕜 := 𝕜) y]
-  letI : PreInnerProductSpace.Core 𝕜 E := PreInnerProductSpace.toCore
+  let : PreInnerProductSpace.Core 𝕜 E := PreInnerProductSpace.toCore
   exact InnerProductSpace.Core.norm_inner_le_norm x y
 
 theorem nnnorm_inner_le_nnnorm (x y : E) : ‖⟪x, y⟫‖₊ ≤ ‖x‖₊ * ‖y‖₊ :=
@@ -711,7 +709,7 @@ theorem norm_inner_eq_norm_tfae (x y : E) :
     rw [← sq_eq_sq₀, mul_pow, ← mul_right_inj' this, eq_comm, ← sub_eq_zero, ← mul_sub] at h <;>
       try positivity
     simp only [@norm_sq_eq_re_inner 𝕜] at h
-    letI : InnerProductSpace.Core 𝕜 E := InnerProductSpace.toCore
+    let : InnerProductSpace.Core 𝕜 E := InnerProductSpace.toCore
     erw [← InnerProductSpace.Core.cauchy_schwarz_aux (𝕜 := 𝕜) (F := E)] at h
     rw [InnerProductSpace.Core.normSq_eq_zero, sub_eq_zero] at h
     rw [div_eq_inv_mul, mul_smul, h, inv_smul_smul₀]
@@ -817,7 +815,7 @@ theorem real_inner_div_norm_mul_norm_eq_neg_one_iff (x y : F) :
 the equality case for Cauchy-Schwarz. -/
 theorem inner_eq_one_iff_of_norm_eq_one {x y : E} (hx : ‖x‖ = 1) (hy : ‖y‖ = 1) :
     ⟪x, y⟫ = 1 ↔ x = y := by
-  convert! inner_eq_norm_mul_iff (𝕜 := 𝕜) (E := E) using 2 <;> simp [hx, hy]
+  convert inner_eq_norm_mul_iff (𝕜 := 𝕜) (E := E) <;> simp [hx, hy]
 
 /-- If the inner product of two unit vectors is `-1`, then the two vectors are negations of each
 other. -/
@@ -951,7 +949,7 @@ abbrev InnerProductSpace.rclikeToReal : InnerProductSpace ℝ E :=
     add_left := fun x y z => by
       simp +instances only [Inner.rclikeToReal, inner_add_left, map_add]
     smul_left := fun x y r => by
-      letI := NormedSpace.restrictScalars ℝ 𝕜 E
+      let := NormedSpace.restrictScalars ℝ 𝕜 E
       have : r • x = (r : 𝕜) • x := rfl
       simp +instances only [Inner.rclikeToReal, this, conj_trivial, inner_smul_left, conj_ofReal,
         re_ofReal_mul] }
@@ -999,6 +997,8 @@ example : (innerProductSpace : InnerProductSpace ℝ ℝ) = RCLike.toInnerProduc
 example :
     (instInnerProductSpaceRealComplex : InnerProductSpace ℝ ℂ) = RCLike.toInnerProductSpaceReal :=
   rfl
+
+theorem Real.inner_apply (x y : ℝ) : inner ℝ x y = x * y := by rw [mul_comm]; rfl
 
 section IsPosSemidef
 

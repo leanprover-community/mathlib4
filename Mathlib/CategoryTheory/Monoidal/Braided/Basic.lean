@@ -138,6 +138,7 @@ theorem braiding_inv_naturality {X X' Y Y' : C} (f : X ⟶ Y) (g : X' ⟶ Y') :
     (f ⊗ₘ g) ≫ (β_ Y' Y).inv = (β_ X' X).inv ≫ (g ⊗ₘ f) :=
   CommSq.w <| .vert_inv <| .mk <| braiding_naturality g f
 
+set_option backward.defeqAttrib.useBackward true in
 /-- In a braided monoidal category, the functors `tensorLeft X` and
 `tensorRight X` are isomorphic. -/
 @[simps]
@@ -146,6 +147,7 @@ def tensorLeftIsoTensorRight (X : C) :
   hom := { app Y := (β_ X Y).hom }
   inv := { app Y := (β_ X Y).inv }
 
+set_option backward.defeqAttrib.useBackward true in
 variable (C) in
 /-- The braiding isomorphism as a natural isomorphism of bifunctors `C ⥤ C ⥤ C`. -/
 @[simps!]
@@ -390,6 +392,7 @@ attribute [reassoc] braided
 
 instance id : (𝟭 C).LaxBraided where
 
+set_option backward.defeqAttrib.useBackward true in
 instance (F : C ⥤ D) (G : D ⥤ E) [F.LaxBraided] [G.LaxBraided] :
     (F ⋙ G).LaxBraided where
   braided X Y := by
@@ -410,6 +413,17 @@ def ofNatIso {F G : C ⥤ D} (i : F ≅ G) [F.LaxBraided] [G.LaxMonoidal]
       simp [NatTrans.IsMonoidal.tensor X Y, tensorHom_comp_tensorHom_assoc]
     rw [this X Y, this Y X, ← braiding_naturality_assoc, ← Functor.LaxBraided.braided_assoc]
     simp
+
+/-- Copy of a lax braided structure on a functor `F` with new `ε` and `μ` fields equal to the old
+ones.
+
+This is useful to fix definitional equalities. -/
+@[implicit_reducible]
+def copy {F : C ⥤ D} (hF : F.LaxBraided) (ε' : 𝟙_ D ⟶ F.obj (𝟙_ C))
+    (μ' : ∀ X Y : C, F.obj X ⊗ F.obj Y ⟶ F.obj (X ⊗ Y))
+    (hε : ε' = ε F := by cat_disch) (hμ : μ' = μ F := by cat_disch) : F.LaxBraided where
+  __ := hF.toLaxMonoidal.copy ε' μ' hε hμ
+  braided X Y := hμ ▸ hF.braided X Y
 
 end Functor.LaxBraided
 
@@ -503,12 +517,6 @@ set_option backward.privateInPublic true in
 lemma isoOfComponents_inv_hom_hom_app (X : C) :
     (isoOfComponents e naturality unit tensor).inv.hom.hom.app X = (e X).inv := rfl
 
-@[deprecated (since := "2025-12-18")] alias isoOfComponents_hom_hom_app :=
-  isoOfComponents_hom_hom_hom_app
-
-@[deprecated (since := "2025-12-18")] alias isoOfComponents_inv_hom_app :=
-  isoOfComponents_inv_hom_hom_app
-
 end
 
 end LaxBraidedFunctor
@@ -555,6 +563,19 @@ instance (F : C ⥤ D) (G : D ⥤ E) [F.Braided] [G.Braided] : (F ⋙ G).Braided
 
 lemma toMonoidal_injective (F : C ⥤ D) : Function.Injective
     (@Braided.toMonoidal _ _ _ _ _ _ _ _ _ : F.Braided → F.Monoidal) := by rintro ⟨⟩ ⟨⟩ rfl; rfl
+
+/-- Copy of a braided structure on a functor `F` with new `ε`, `μ`, `η` and `δ` fields equal to the
+old ones.
+
+This is useful to fix definitional equalities. -/
+@[implicit_reducible]
+def copy {F : C ⥤ D} (hF : F.Braided) (ε' : 𝟙_ D ⟶ F.obj (𝟙_ C))
+    (μ' : ∀ X Y : C, F.obj X ⊗ F.obj Y ⟶ F.obj (X ⊗ Y)) (η' : F.obj (𝟙_ C) ⟶ 𝟙_ D)
+    (δ' : ∀ X Y : C, F.obj (X ⊗ Y) ⟶ F.obj X ⊗ F.obj Y)
+    (hε : ε' = ε F := by cat_disch) (hμ : μ' = μ F := by cat_disch)
+    (hη : η' = η F := by cat_disch) (hδ : δ' = δ F := by cat_disch) : F.Braided where
+  __ := hF.toMonoidal.copy ε' μ' η' δ' hε hμ hη hδ
+  braided X Y := hμ ▸ hF.braided X Y
 
 end Functor.Braided
 
@@ -689,6 +710,7 @@ theorem tensor_associativity (X₁ X₂ Y₁ Y₂ Z₁ Z₂ : C) :
         X₁ ◁ Y₁ ◁ (β_ X₂ Z₁).hom ▷ Y₂ ▷ Z₂ ⊗≫ 𝟙 _ := by monoidal
     _ = _ := by rw [← whisker_exchange]; monoidal
 
+set_option backward.defeqAttrib.useBackward true in
 instance tensorMonoidal : (tensor C).Monoidal :=
     Functor.CoreMonoidal.toMonoidal
       { εIso := (λ_ (𝟙_ C)).symm
@@ -822,6 +844,7 @@ lemma unmop_inv_braiding (X Y : Cᴹᵒᵖ) : (β_ X Y).inv.unmop = (β_ (unmop 
 
 end MonoidalOppositeLemmas
 
+set_option backward.defeqAttrib.useBackward true in
 instance : (mopFunctor C).Monoidal :=
   Functor.CoreMonoidal.toMonoidal
     { εIso := Iso.refl _
@@ -833,6 +856,7 @@ instance : (mopFunctor C).Monoidal :=
 @[simp] lemma mopFunctor_μ (X Y : C) : μ (mopFunctor C) X Y = (β_ (mop X) (mop Y)).hom := rfl
 @[simp] lemma mopFunctor_δ (X Y : C) : δ (mopFunctor C) X Y = (β_ (mop X) (mop Y)).inv := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 instance : (unmopFunctor C).Monoidal :=
   Functor.CoreMonoidal.toMonoidal
     { εIso := Iso.refl _

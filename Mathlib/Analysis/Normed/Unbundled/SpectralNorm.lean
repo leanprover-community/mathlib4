@@ -271,7 +271,8 @@ theorem norm_root_le_spectralValue {f : AlgebraNorm K L} (hf_pm : IsPowMul f)
       set g := fun i : ℕ ↦ p.coeff i • x ^ i
       obtain ⟨m, hm_in, hm⟩ : ∃ (m : ℕ) (_ : 0 < p.natDegree → m < p.natDegree),
           f ((Finset.range p.natDegree).sum g) ≤ f (g m) := by
-        obtain ⟨m, hm, h⟩ := IsNonarchimedean.finset_image_add hf_na g (Finset.range p.natDegree)
+        obtain ⟨m, hm, h⟩ := IsNonarchimedean.finset_image_add (map_zero _) (apply_nonneg _) hf_na g
+          (Finset.range p.natDegree)
         rw [Finset.nonempty_range_iff, ← zero_lt_iff, Finset.mem_range] at hm
         exact ⟨m, hm, h⟩
       exact lt_of_le_of_lt hm (hn' m (hm_in h_deg))
@@ -346,7 +347,7 @@ theorem max_norm_root_eq_spectralValue [DecidableEq L] {f : AlgebraNorm K L} (hf
           exact hzr ▸ hy_max _ (hts _ hzt)
         have : (map g t).prod ≤ g y ^ (p.natDegree - m) := h_card ▸ prod_le_pow_card _ _ hx_le
         simpa [g, ← NNReal.coe_le_coe, NNReal.coe_pow, NNReal.coe_mk, NNReal.coe_multiset_prod,
-          map_map, Function.comp_apply, NNReal.coe_mk] using this
+          map_map, Function.comp_apply, NNReal.coe_mk] using! this
       have h_bdd : BddAbove (Set.range fun x : L ↦ ite (x ∈ s) (f x) 0) := by
         use f y
         intro r hr
@@ -582,7 +583,7 @@ variable [IsUltrametricDist K]
 theorem spectralNorm_neg {y : L} (hy : IsAlgebraic K y) :
     spectralNorm K L (-y) = spectralNorm K L y := by
   set E := K⟮y⟯
-  haveI h_finiteDimensional_E : FiniteDimensional K E :=
+  have h_finiteDimensional_E : FiniteDimensional K E :=
     IntermediateField.adjoin.finiteDimensional hy.isIntegral
   set g := IntermediateField.AdjoinSimple.gen K y
   have hy : -y = (algebraMap K⟮y⟯ L) (-g) := rfl
@@ -595,7 +596,7 @@ theorem spectralNorm_neg {y : L} (hy : IsAlgebraic K y) :
 theorem spectralNorm_smul (k : K) {y : L} (hy : IsAlgebraic K y) :
     spectralNorm K L (k • y) = ‖k‖₊ * spectralNorm K L y := by
   set E := K⟮y⟯
-  haveI h_finiteDimensional_E : FiniteDimensional K E :=
+  have h_finiteDimensional_E : FiniteDimensional K E :=
     IntermediateField.adjoin.finiteDimensional hy.isIntegral
   set g := IntermediateField.AdjoinSimple.gen K y
   have hgy : k • y = (algebraMap (↥K⟮y⟯) L) (k • g) := rfl
@@ -611,7 +612,7 @@ theorem spectralNorm_smul (k : K) {y : L} (hy : IsAlgebraic K y) :
 theorem spectralNorm_mul {x y : L} (hx : IsAlgebraic K x) (hy : IsAlgebraic K y) :
     spectralNorm K L (x * y) ≤ spectralNorm K L x * spectralNorm K L y := by
   set E := K⟮x, y⟯
-  haveI h_finiteDimensional_E : FiniteDimensional K E :=
+  have h_finiteDimensional_E : FiniteDimensional K E :=
     IntermediateField.finiteDimensional_adjoin_pair hx.isIntegral hy.isIntegral
   set gx := IntermediateField.AdjoinPair.gen₁ K x y
   set gy := IntermediateField.AdjoinPair.gen₂ K x y
@@ -630,7 +631,7 @@ variable [h_alg : Algebra.IsAlgebraic K L]
 theorem isPowMul_spectralNorm : IsPowMul (spectralNorm K L) := by
   intro x n hn
   set E := K⟮x⟯
-  haveI h_finiteDimensional_E : FiniteDimensional K E :=
+  have h_finiteDimensional_E : FiniteDimensional K E :=
     IntermediateField.adjoin.finiteDimensional (h_alg.isAlgebraic x).isIntegral
   set g := IntermediateField.AdjoinSimple.gen K x with hg
   have h_map : algebraMap E L g ^ n = x ^ n := rfl
@@ -643,7 +644,7 @@ theorem isPowMul_spectralNorm : IsPowMul (spectralNorm K L) := by
 theorem isNonarchimedean_spectralNorm : IsNonarchimedean (spectralNorm K L) := by
   intro x y
   set E := K⟮x, y⟯
-  haveI h_finiteDimensional_E : FiniteDimensional K E :=
+  have h_finiteDimensional_E : FiniteDimensional K E :=
     IntermediateField.finiteDimensional_adjoin_pair (h_alg.isAlgebraic x).isIntegral
        (h_alg.isAlgebraic y).isIntegral
   set gx := IntermediateField.AdjoinPair.gen₁ K x y
@@ -697,8 +698,8 @@ theorem spectralNorm_unique [CompleteSpace K] {f : AlgebraNorm K L} (hf_pm : IsP
   apply eq_of_powMul_faithful f hf_pm _ spectralAlgNorm_isPowMul
   intro x
   let E : Type v := id K⟮x⟯
-  let : Field E := show Field K⟮x⟯ by infer_instance
-  let : Module K E := show Module K K⟮x⟯ by infer_instance
+  let : Field E := id <| show Field K⟮x⟯ by infer_instance
+  let : Module K E := id <| show Module K K⟮x⟯ by infer_instance
   let id1 : K⟮x⟯ →ₗ[K] E := LinearMap.id
   let id2 : E →ₗ[K] K⟮x⟯ := LinearMap.id
   set hs_norm : RingNorm E :=
@@ -713,7 +714,7 @@ theorem spectralNorm_unique [CompleteSpace K] {f : AlgebraNorm K L} (hf_pm : IsP
         exact map_mul_le_mul _ _ _
       eq_zero_of_map_eq_zero' a ha := by
         simpa [id_eq, eq_mpr_eq_cast, cast_eq, LinearMap.coe_mk, ← spectralAlgNorm_def,
-          map_eq_zero_iff_eq_zero, ZeroMemClass.coe_eq_zero] using ha }
+          map_eq_zero_iff_eq_zero, ZeroMemClass.coe_eq_zero] using! ha }
   let n1 : NormedRing E := RingNorm.toNormedRing hs_norm
   let N1 : NormedSpace K E :=
     { one_smul e := by simp [one_smul]
@@ -733,7 +734,7 @@ theorem spectralNorm_unique [CompleteSpace K] {f : AlgebraNorm K L} (hf_pm : IsP
       neg' y := by simp [(algebraMap K⟮x⟯ L).map_neg y]
       mul_le' a b := map_mul_le_mul _ _ _
       eq_zero_of_map_eq_zero' a ha := by
-        simpa [map_eq_zero_iff_eq_zero, map_eq_zero] using ha }
+        simpa [map_eq_zero_iff_eq_zero, map_eq_zero] using! ha }
   let n2 : NormedRing K⟮x⟯ := RingNorm.toNormedRing hf_norm
   let N2 : NormedSpace K K⟮x⟯ :=
     { one_smul e := by simp [one_smul]
@@ -934,8 +935,8 @@ def uniformSpace : UniformSpace L := (metricSpace K L).toUniformSpace
   by the spectral norm. -/
 instance (priority := 100) completeSpace [h_fin : FiniteDimensional K L] :
     @CompleteSpace L (uniformSpace K L) := by
-  letI := (normedAddCommGroup K L)
-  letI := (normedSpace K L)
+  let := (normedAddCommGroup K L)
+  let := (normedSpace K L)
   exact FiniteDimensional.complete K L
 
 omit [Algebra.IsAlgebraic K L] in
