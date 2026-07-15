@@ -45,7 +45,7 @@ Extension of `sSup` and `sInf` from a preorder `α` to `WithTop α` and `WithBot
 
 variable [LE α]
 
-open Classical in
+open scoped Classical in
 @[to_dual]
 noncomputable instance WithTop.instSupSet [SupSet α] :
     SupSet (WithTop α) :=
@@ -53,7 +53,7 @@ noncomputable instance WithTop.instSupSet [SupSet α] :
     if ⊤ ∈ S then ⊤ else if BddAbove ((fun (a : α) ↦ ↑a) ⁻¹' S : Set α) then
       ↑(sSup ((fun (a : α) ↦ (a : WithTop α)) ⁻¹' S : Set α)) else ⊤⟩
 
-open Classical in
+open scoped Classical in
 @[to_dual]
 noncomputable instance WithTop.instInfSet [InfSet α] : InfSet (WithTop α) :=
   ⟨fun S => if S ⊆ {⊤} ∨ ¬BddBelow S then ⊤ else ↑(sInf ((fun (a : α) ↦ ↑a) ⁻¹' S : Set α))⟩
@@ -742,7 +742,11 @@ end WithTop
 
 namespace Monotone
 
-variable [Preorder α] [ConditionallyCompleteLattice β] {f : α → β} (h_mono : Monotone f)
+variable [ConditionallyCompleteLattice β]
+
+section Preorder
+
+variable [Preorder α] {f : α → β} (h_mono : Monotone f)
 include h_mono
 
 /-! A monotone function into a conditionally complete lattice preserves the ordering properties of
@@ -757,6 +761,24 @@ theorem le_csSup_image {s : Set α} {c : α} (hcs : c ∈ s) (h_bdd : BddAbove s
 theorem csSup_image_le {s : Set α} (hs : s.Nonempty) {B : α} (hB : B ∈ upperBounds s) :
     sSup (f '' s) ≤ f B :=
   csSup_le (Nonempty.image f hs) (h_mono.mem_upperBounds_image hB)
+
+end Preorder
+
+section ConditionallyCompleteLattice
+
+variable [ConditionallyCompleteLattice α]
+variable {f : α → β} {s : Set α} (hs : s.Nonempty) (hf : Monotone f)
+include hs hf
+
+theorem csSup_image_le_map_csSup (hbdd : BddAbove s := by bddDefault) :
+    sSup (f '' s) ≤ f (sSup s) :=
+  csSup_image_le hf hs <| isLUB_csSup hs hbdd |>.left
+
+theorem map_csInf_le_csInf_image (hbdd : BddBelow s := by bddDefault) :
+    f (sInf s) ≤ sInf (f '' s) :=
+  le_csInf_image hf hs <| isGLB_csInf hs hbdd |>.left
+
+end ConditionallyCompleteLattice
 
 end Monotone
 
@@ -932,7 +954,7 @@ noncomputable instance [ConditionallyCompleteLinearOrder α] :
   csInf_of_not_bddBelow s := absurd <| OrderBot.bddBelow s
   csSup_empty := WithBot.sSup_empty
 
-open Classical in
+open scoped Classical in
 noncomputable instance WithTop.WithBot.completeLattice {α : Type*}
     [ConditionallyCompleteLattice α] : CompleteLattice (WithTop (WithBot α)) where
   isLUB_sSup S := ⟨fun a haS ↦ (WithTop.isLUB_sSup' ⟨a, haS⟩).1 haS, fun a ha ↦ by

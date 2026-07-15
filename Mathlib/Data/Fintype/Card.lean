@@ -359,12 +359,6 @@ alias ⟨_root_.Function.Injective.surjective_of_finite,
     _root_.Function.Surjective.injective_of_finite⟩ :=
   injective_iff_surjective_of_equiv
 
-@[deprecated (since := "2025-11-28")]
-alias _root_.Function.Injective.surjective_of_fintype := Injective.surjective_of_finite
-
-@[deprecated (since := "2025-11-28")]
-alias _root_.Function.Surjective.injective_of_fintype := Surjective.injective_of_finite
-
 end Finite
 
 @[simp]
@@ -444,8 +438,7 @@ theorem wellFounded_of_trans_of_irrefl (r : α → α → Prop) [IsTrans α r] [
   cases nonempty_fintype α
   have (x y) (hxy : r x y) : #{z | r z x} < #{z | r z y} :=
     Finset.card_lt_card <| by
-      simp_rw [Finset.lt_iff_ssubset.symm, lt_iff_le_not_ge, Finset.le_iff_subset,
-        Finset.subset_iff, mem_filter_univ]
+      simp_rw [lt_iff_le_not_ge, Finset.subset_iff, mem_filter_univ]
       exact
         ⟨fun z hzx => _root_.trans hzx hxy,
           not_forall_of_exists_not ⟨x, Classical.not_imp.2 ⟨hxy, irrefl x⟩⟩⟩

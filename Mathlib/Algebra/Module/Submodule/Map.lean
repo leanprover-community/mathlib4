@@ -245,12 +245,13 @@ theorem comap_inf (f : M →ₛₗ[σ₁₂] M₂) : comap f (q ⊓ q') = comap 
   rfl
 
 @[simp]
-theorem comap_iInf [RingHomSurjective σ₁₂] {ι : Sort*} (f : M →ₛₗ[σ₁₂] M₂)
-    (p : ι → Submodule R₂ M₂) : comap f (⨅ i, p i) = ⨅ i, comap f (p i) :=
-  (gc_map_comap f).u_iInf
+theorem comap_iInf {ι : Sort*} (f : M →ₛₗ[σ₁₂] M₂)
+    (p : ι → Submodule R₂ M₂) : comap f (⨅ i, p i) = ⨅ i, comap f (p i) := by
+  ext
+  simp
 
 @[simp]
-theorem comap_finsetInf [RingHomSurjective σ₁₂] {ι : Type*} (f : M →ₛₗ[σ₁₂] M₂)
+theorem comap_finsetInf {ι : Type*} (f : M →ₛₗ[σ₁₂] M₂)
     (s : Finset ι) (p : ι → Submodule R₂ M₂) : comap f (s.inf p) = s.inf fun i ↦ comap f (p i) := by
   simp [Finset.inf_eq_iInf]
 
@@ -451,8 +452,7 @@ end OrderIso
 --TODO(Mario): is there a way to prove this from order properties?
 theorem map_inf_eq_map_inf_comap [RingHomSurjective σ₁₂] {f : M →ₛₗ[σ₁₂] M₂} {p : Submodule R M}
     {p' : Submodule R₂ M₂} : map f p ⊓ p' = map f (p ⊓ comap f p') :=
-  le_antisymm (by rintro _ ⟨⟨x, h₁, rfl⟩, h₂⟩; exact ⟨_, ⟨h₁, h₂⟩, rfl⟩)
-    (le_inf (map_mono inf_le_left) (map_le_iff_le_comap.2 inf_le_right))
+  .symm <| SetLike.coe_injective <| image_inter_preimage _ _ _
 
 @[simp]
 theorem map_comap_subtype : map p.subtype (comap p.subtype p') = p ⊓ p' :=
@@ -517,11 +517,11 @@ protected theorem map_smul (f : V →ₗ[K] V₂) (p : Submodule K V) (a : K) (h
 
 theorem comap_smul' (f : V →ₗ[K] V₂) (p : Submodule K V₂) (a : K) :
     p.comap (a • f) = ⨅ _ : a ≠ 0, p.comap f := by
-  classical by_cases h : a = 0 <;> simp [h, comap_smul]
+  by_cases h : a = 0 <;> simp [h, comap_smul]
 
 theorem map_smul' (f : V →ₗ[K] V₂) (p : Submodule K V) (a : K) :
     p.map (a • f) = ⨆ _ : a ≠ 0, map f p := by
-  classical by_cases h : a = 0 <;> simp [h, Submodule.map_smul]
+  by_cases h : a = 0 <;> simp [h, Submodule.map_smul]
 
 end Submodule
 

@@ -55,12 +55,11 @@ noncomputable def withDensity (κ : Kernel α β) [IsSFiniteKernel κ] (f : α �
         exact hf.setLIntegral_kernel_prod_right hs⟩ : Kernel α β)) fun _ => 0
 
 theorem withDensity_of_not_measurable (κ : Kernel α β) [IsSFiniteKernel κ]
-    (hf : ¬Measurable (Function.uncurry f)) : withDensity κ f = 0 := by classical exact dif_neg hf
+    (hf : ¬Measurable (Function.uncurry f)) : withDensity κ f = 0 := by exact dif_neg hf
 
 protected theorem withDensity_apply (κ : Kernel α β) [IsSFiniteKernel κ]
     (hf : Measurable (Function.uncurry f)) (a : α) :
     withDensity κ f a = (κ a).withDensity (f a) := by
-  classical
   rw [withDensity, dif_pos hf]
   rfl
 

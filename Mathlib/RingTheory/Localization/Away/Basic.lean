@@ -159,6 +159,26 @@ theorem lift_eq (hg : IsUnit (g x)) (a : R) : lift x hg (algebraMap R S a) = g a
 theorem lift_comp (hg : IsUnit (g x)) : (lift x hg).comp (algebraMap R S) = g :=
   IsLocalization.lift_comp _
 
+section liftAlgHom
+
+variable {A : Type*} [CommSemiring A] [Algebra A R] [Algebra A S] [Algebra A P]
+  [IsScalarTower A R S] {f : R →ₐ[A] P} (hf : IsUnit (f x))
+include hf
+
+/-- `AlgHom` version of `IsLocalization.Away.lift`. -/
+noncomputable def liftAlgHom : S →ₐ[A] P where
+  __ := lift x hf
+  commutes' r := by simp [IsScalarTower.algebraMap_apply A R S]
+
+theorem liftAlgHom_toRingHom : (liftAlgHom x hf : S →ₐ[A] P).toRingHom = lift x hf := rfl
+
+@[simp]
+theorem coe_liftAlgHom : ⇑(liftAlgHom x hf : S →ₐ[A] P) = lift x hf := rfl
+
+theorem liftAlgHom_apply (s : S) : liftAlgHom x hf s = lift x hf s := rfl
+
+end liftAlgHom
+
 /-- Given `x y : R` and localizations `S`, `P` away from `x` and `y * x`
 respectively, the homomorphism induced from `S` to `P`. -/
 noncomputable def awayToAwayLeft (y : R) [Algebra R P] [IsLocalization.Away (y * x) P] : S →+* P :=
@@ -704,7 +724,7 @@ theorem exists_reduced_fraction' {b : B} (hb : b ≠ 0) (hx : Irreducible x) :
   obtain ⟨⟨a₀, y⟩, H⟩ := surj (Submonoid.powers x) b
   obtain ⟨d, hy⟩ := (Submonoid.mem_powers_iff y.1 x).mp y.2
   have ha₀ : a₀ ≠ 0 := by
-    haveI := isDomain_of_le_nonZeroDivisors B
+    have := isDomain_of_le_nonZeroDivisors B
       (powers_le_nonZeroDivisors_of_noZeroDivisors hx.ne_zero)
     simp only [← hy, map_pow] at H
     apply ((injective_iff_map_eq_zero' (algebraMap R B)).mp _ a₀).mpr.mt

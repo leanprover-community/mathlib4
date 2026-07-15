@@ -211,47 +211,46 @@ theorem refinement_of_locallyCompact_sigmaCompact_of_nhds_basis_set [WeaklyLocal
     ∃ (α : Type v) (c : α → X) (r : ∀ a, ι (c a)),
       (∀ a, c a ∈ s ∧ p (c a) (r a)) ∧
         (s ⊆ ⋃ a, B (c a) (r a)) ∧ LocallyFinite fun a ↦ B (c a) (r a) := by
-  classical
-    -- For technical reasons we prepend two empty sets to the sequence `CompactExhaustion.choice X`
-    set K' : CompactExhaustion X := CompactExhaustion.choice X
-    set K : CompactExhaustion X := K'.shiftr.shiftr
-    set Kdiff := fun n ↦ K (n + 1) \ interior (K n)
-    -- Now we restate some properties of `CompactExhaustion` for `K`/`Kdiff`
-    have hKcov : ∀ x, x ∈ Kdiff (K'.find x + 1) := fun x ↦ by
-      simpa only [K'.find_shiftr] using
-        sdiff_subset_sdiff_right interior_subset (K'.shiftr.mem_sdiff_shiftr_find x)
-    have Kdiffc : ∀ n, IsCompact (Kdiff n ∩ s) :=
-      fun n ↦ ((K.isCompact _).diff isOpen_interior).inter_right hs
-    -- Next we choose a finite covering `B (c n i) (r n i)` of each
-    -- `Kdiff (n + 1) ∩ s` such that `B (c n i) (r n i) ∩ s` is disjoint with `K n`
-    have : ∀ (n) (x : ↑(Kdiff (n + 1) ∩ s)), (K n)ᶜ ∈ 𝓝 (x : X) :=
-      fun n x ↦ (K.isClosed n).compl_mem_nhds fun hx' ↦ x.2.1.2 <| K.subset_interior_succ _ hx'
-    choose! r hrp hr using fun n (x : ↑(Kdiff (n + 1) ∩ s)) ↦ (hB x x.2.2).mem_iff.1 (this n x)
-    have hxr : ∀ (n x) (hx : x ∈ Kdiff (n + 1) ∩ s), B x (r n ⟨x, hx⟩) ∈ 𝓝 x := fun n x hx ↦
-      (hB x hx.2).mem_of_mem (hrp _ ⟨x, hx⟩)
-    choose T hT using fun n ↦ (Kdiffc (n + 1)).elim_nhds_subcover' _ (hxr n)
-    set T' : ∀ n, Set ↑(Kdiff (n + 1) ∩ s) := fun n ↦ T n
-    -- Finally, we take the union of all these coverings
-    refine ⟨Σ n, T' n, fun a ↦ a.2, fun a ↦ r a.1 a.2, ?_, ?_, ?_⟩
-    · rintro ⟨n, x, hx⟩
-      exact ⟨x.2.2, hrp _ _⟩
-    · refine fun x hx ↦ mem_iUnion.2 ?_
-      rcases mem_iUnion₂.1 (hT _ ⟨hKcov x, hx⟩) with ⟨⟨c, hc⟩, hcT, hcx⟩
-      exact ⟨⟨_, ⟨c, hc⟩, hcT⟩, hcx⟩
-    · intro x
-      refine
-        ⟨interior (K (K'.find x + 3)),
-          IsOpen.mem_nhds isOpen_interior (K.subset_interior_succ _ (hKcov x).1), ?_⟩
-      have : (⋃ k ≤ K'.find x + 2, range (Sigma.mk k) : Set (Σ n, T' n)).Finite :=
-        (finite_le_nat _).biUnion fun k _ ↦ finite_range _
-      apply this.subset
-      rintro ⟨k, c, hc⟩
-      simp only [mem_iUnion, mem_setOf_eq, Subtype.coe_mk]
-      rintro ⟨x, hxB : x ∈ B c (r k c), hxK⟩
-      refine ⟨k, ?_, ⟨c, hc⟩, rfl⟩
-      have := (mem_compl_iff _ _).1 (hr k c hxB)
-      contrapose! this with hnk
-      exact K.subset hnk (interior_subset hxK)
+  -- For technical reasons we prepend two empty sets to the sequence `CompactExhaustion.choice X`
+  set K' : CompactExhaustion X := CompactExhaustion.choice X
+  set K : CompactExhaustion X := K'.shiftr.shiftr
+  set Kdiff := fun n ↦ K (n + 1) \ interior (K n)
+  -- Now we restate some properties of `CompactExhaustion` for `K`/`Kdiff`
+  have hKcov : ∀ x, x ∈ Kdiff (K'.find x + 1) := fun x ↦ by
+    simpa only [K'.find_shiftr] using
+      sdiff_subset_sdiff_right interior_subset (K'.shiftr.mem_sdiff_shiftr_find x)
+  have Kdiffc : ∀ n, IsCompact (Kdiff n ∩ s) :=
+    fun n ↦ ((K.isCompact _).diff isOpen_interior).inter_right hs
+  -- Next we choose a finite covering `B (c n i) (r n i)` of each
+  -- `Kdiff (n + 1) ∩ s` such that `B (c n i) (r n i) ∩ s` is disjoint with `K n`
+  have : ∀ (n) (x : ↑(Kdiff (n + 1) ∩ s)), (K n)ᶜ ∈ 𝓝 (x : X) :=
+    fun n x ↦ (K.isClosed n).compl_mem_nhds fun hx' ↦ x.2.1.2 <| K.subset_interior_succ _ hx'
+  choose! r hrp hr using fun n (x : ↑(Kdiff (n + 1) ∩ s)) ↦ (hB x x.2.2).mem_iff.1 (this n x)
+  have hxr : ∀ (n x) (hx : x ∈ Kdiff (n + 1) ∩ s), B x (r n ⟨x, hx⟩) ∈ 𝓝 x := fun n x hx ↦
+    (hB x hx.2).mem_of_mem (hrp _ ⟨x, hx⟩)
+  choose T hT using fun n ↦ (Kdiffc (n + 1)).elim_nhds_subcover' _ (hxr n)
+  set T' : ∀ n, Set ↑(Kdiff (n + 1) ∩ s) := fun n ↦ T n
+  -- Finally, we take the union of all these coverings
+  refine ⟨Σ n, T' n, fun a ↦ a.2, fun a ↦ r a.1 a.2, ?_, ?_, ?_⟩
+  · rintro ⟨n, x, hx⟩
+    exact ⟨x.2.2, hrp _ _⟩
+  · refine fun x hx ↦ mem_iUnion.2 ?_
+    rcases mem_iUnion₂.1 (hT _ ⟨hKcov x, hx⟩) with ⟨⟨c, hc⟩, hcT, hcx⟩
+    exact ⟨⟨_, ⟨c, hc⟩, hcT⟩, hcx⟩
+  · intro x
+    refine
+      ⟨interior (K (K'.find x + 3)),
+        IsOpen.mem_nhds isOpen_interior (K.subset_interior_succ _ (hKcov x).1), ?_⟩
+    have : (⋃ k ≤ K'.find x + 2, range (Sigma.mk k) : Set (Σ n, T' n)).Finite :=
+      (finite_le_nat _).biUnion fun k _ ↦ finite_range _
+    apply this.subset
+    rintro ⟨k, c, hc⟩
+    simp only [mem_iUnion, mem_setOf_eq, Subtype.coe_mk]
+    rintro ⟨x, hxB : x ∈ B c (r k c), hxK⟩
+    refine ⟨k, ?_, ⟨c, hc⟩, rfl⟩
+    have := (mem_compl_iff _ _).1 (hr k c hxB)
+    contrapose! this with hnk
+    exact K.subset hnk (interior_subset hxK)
 
 /-- Let `X` be a locally compact sigma compact Hausdorff topological space. Suppose that for each
 `x` the sets `B x : ι x → Set X` with the predicate `p x : ι x → Prop` form a basis of the filter

@@ -281,9 +281,14 @@ lemma mapDomain_of_not_mem_image_support {f : α → β} {x : α →₀ M} {b : 
   rw [mapDomain, sum_apply, sum, Finset.sum_eq_zero]
   exact fun a ha ↦ single_eq_of_ne fun eq => hb <| eq ▸ Set.mem_image_of_mem _ ha
 
-theorem mapDomain_notin_range {f : α → β} (x : α →₀ M) (a : β) (h : a ∉ Set.range f) :
+theorem mapDomain_of_notMem_range {f : α → β} (x : α →₀ M) (a : β) (h : a ∉ Set.range f) :
     mapDomain f x a = 0 :=
   mapDomain_of_not_mem_image_support <| by grw [Set.image_subset_range]; exact h
+
+@[deprecated (since := "2026-07-15")] alias mapDomain_notin_range := mapDomain_of_notMem_range
+
+lemma mem_range_of_mapDomain_ne_zero {f : α → β} {x : α →₀ M} {b : β} (h : mapDomain f x b ≠ 0) :
+    b ∈ Set.range f := by contrapose! h; exact mapDomain_of_notMem_range _ _ h
 
 @[simp]
 theorem mapDomain_id : mapDomain id v = v :=
@@ -323,6 +328,16 @@ theorem mapDomain_equiv_apply {f : α ≃ β} (x : α →₀ M) (a : β) :
     mapDomain f x a = x (f.symm a) := by
   conv_lhs => rw [← f.apply_symm_apply a]
   exact mapDomain_apply f.injective _ _
+
+@[simp] lemma support_mapDomain_embedding (f : α ↪ β) (x : α →₀ M) :
+    (mapDomain f x).support = x.support.map f := by
+  ext b
+  simp only [mem_support_iff, ne_eq, mem_map]
+  refine ⟨fun h ↦ ?_, ?_⟩
+  · obtain ⟨a, rfl⟩ := mem_range_of_mapDomain_ne_zero h
+    exact ⟨a, by simpa [f.injective] using h⟩
+  · rintro ⟨a, ha, rfl⟩
+    simpa [f.injective]
 
 /-- `Finsupp.mapDomain` is an `AddMonoidHom`. -/
 @[simps]
@@ -408,7 +423,7 @@ theorem embDomain_eq_mapDomain (f : α ↪ β) (v : α →₀ M) : embDomain f v
   by_cases h : a ∈ Set.range f
   · rcases h with ⟨a, rfl⟩
     rw [mapDomain_apply f.injective, embDomain_apply_self]
-  · rw [mapDomain_notin_range, embDomain_notin_range] <;> assumption
+  · rw [mapDomain_of_notMem_range, embDomain_of_notMem_range] <;> assumption
 
 @[to_additive]
 theorem prod_mapDomain_index_inj [CommMonoid N] {f : α → β} {s : α →₀ M} {h : β → M → N}
@@ -533,7 +548,7 @@ lemma embDomain_comapDomain {f : α ↪ β} {g : β →₀ M} (hg : ↑g.support
   · obtain ⟨a, rfl⟩ := hb
     rw [embDomain_apply_self, comapDomain_apply]
   · replace hg : g b = 0 := notMem_support_iff.mp <| mt (hg ·) hb
-    rw [embDomain_notin_range _ _ _ hb, hg]
+    rw [embDomain_of_notMem_range _ _ _ hb, hg]
 
 @[simp]
 theorem comapDomain_embDomain (f : α ↪ β) (l : α →₀ M) :
@@ -612,7 +627,7 @@ theorem comapDomain_mapDomain (hf : Function.Injective f) (l : α →₀ M) :
 
 lemma mem_range_mapDomain_iff (hf : Function.Injective f) (x : β →₀ M) :
     x ∈ Set.range (Finsupp.mapDomain f) ↔ ∀ b ∉ Set.range f, x b = 0 := by
-  refine ⟨fun ⟨y, hy⟩ x hx ↦ hy ▸ Finsupp.mapDomain_notin_range y x hx, fun h ↦ ?_⟩
+  refine ⟨fun ⟨y, hy⟩ x hx ↦ hy ▸ Finsupp.mapDomain_of_notMem_range y x hx, fun h ↦ ?_⟩
   refine ⟨Finsupp.comapDomain f x hf.injOn, Finsupp.mapDomain_comapDomain f hf _ fun i hi ↦ ?_⟩
   by_contra hc
   simp only [Finset.mem_coe, Finsupp.mem_support_iff, ne_eq] at hi
@@ -672,7 +687,7 @@ theorem filter_apply_neg {a : α} (h : ¬p a) : f.filter p a = 0 := if_neg h
 theorem support_filter : (f.filter p).support = {x ∈ f.support | p x} := rfl
 
 theorem filter_zero : (0 : α →₀ M).filter p = 0 := by
-  classical rw [← support_eq_empty, support_filter, support_zero, Finset.filter_empty]
+  rw [← support_eq_empty, support_filter, support_zero, Finset.filter_empty]
 
 @[simp]
 theorem filter_single_of_pos {a : α} {b : M} (h : p a) : (single a b).filter p = single a b :=
@@ -1053,7 +1068,7 @@ lemma sumElim_inr (f : α →₀ γ) (g : β →₀ γ) (x : β) : sumElim f g (
 
 lemma sumElim_eq_add [AddCommMonoid M] (f : α →₀ M) (g : β →₀ M) :
     sumElim f g = mapDomain Sum.inl f + mapDomain Sum.inr g := by
-  ext (_ | _) <;> simp [mapDomain_notin_range, Sum.inl_injective, Sum.inr_injective]
+  ext (_ | _) <;> simp [mapDomain_of_notMem_range, Sum.inl_injective, Sum.inr_injective]
 
 @[simp] lemma mapDomain_swap_sumElim [AddCommMonoid M] (f : α →₀ M) (g : β →₀ M) :
     mapDomain Sum.swap (sumElim f g) = sumElim g f := by
@@ -1202,16 +1217,13 @@ theorem subtypeDomain_not_piecewise (f : Subtype P →₀ M) (g : {a // ¬ P a} 
 @[simps! (attr := grind =) support apply]
 def extendDomain (f : Subtype P →₀ M) : α →₀ M := piecewise f 0
 
-@[deprecated (since := "2025-12-15")]
-alias extendDomain_toFun := extendDomain_apply
-
 theorem extendDomain_eq_embDomain_subtype (f : Subtype P →₀ M) :
     extendDomain f = embDomain (.subtype _) f := by
   ext a
   by_cases h : P a
   · refine Eq.trans ?_ (embDomain_apply_self (.subtype P) f (Subtype.mk a h)).symm
     simp [h]
-  · simp [embDomain, h]
+  · rw [embDomain_of_notMem_range] <;> simp [*]
 
 theorem support_extendDomain_subset (f : Subtype P →₀ M) :
     ↑(f.extendDomain).support ⊆ {x | P x} := by

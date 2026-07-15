@@ -55,7 +55,7 @@ noncomputable def mapOfMeasurable (κ : Kernel α β) (f : β → γ) (hf : Meas
   toFun a := (κ a).map f
   measurable' := by fun_prop
 
-open Classical in
+open scoped Classical in
 /-- The pushforward of a kernel along a function.
 If the function is not measurable, we use zero instead. This choice of junk
 value ensures that typeclass inference can infer that the `map` of a kernel

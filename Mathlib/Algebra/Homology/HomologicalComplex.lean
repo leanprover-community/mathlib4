@@ -170,11 +170,10 @@ theorem next (α : Type*) [AddGroup α] [One α] (i : α) : (ComplexShape.down �
 
 @[simp]
 theorem next_nat_zero : (ComplexShape.down ℕ).next 0 = 0 := by
-  classical
-    refine dif_neg ?_
-    push Not
-    intro
-    apply Nat.noConfusion
+  refine dif_neg ?_
+  push Not
+  intro
+  apply Nat.noConfusion
 
 @[simp]
 theorem next_nat_succ (i : ℕ) : (ComplexShape.down ℕ).next (i + 1) = i :=
@@ -195,11 +194,10 @@ theorem next (α : Type*) [AddRightCancelSemigroup α] [One α] (i : α) :
 
 @[simp]
 theorem prev_nat_zero : (ComplexShape.up ℕ).prev 0 = 0 := by
-  classical
-    refine dif_neg ?_
-    push Not
-    intro
-    apply Nat.noConfusion
+  refine dif_neg ?_
+  push Not
+  intro
+  apply Nat.noConfusion
 
 @[simp]
 theorem prev_nat_succ (i : ℕ) : (ComplexShape.up ℕ).prev (i + 1) = i :=
@@ -616,8 +614,7 @@ instance (f : C₁ ⟶ C₂) [IsSplitMono f] (j : ι) : IsSplitMono (f.f j) :=
   inferInstanceAs (IsSplitMono ((eval _ _ j).map f))
 
 @[push ←, simp]
-lemma inv_f_apply (f : C₁ ⟶ C₂) [IsIso f] (j : ι) :
-   (inv f).f j = inv (f.f j) := by
+lemma inv_f_apply (f : C₁ ⟶ C₂) [IsIso f] (j : ι) : (inv f).f j = inv (f.f j) := by
   apply IsIso.eq_inv_of_inv_hom_id
   simp [← comp_f]
 

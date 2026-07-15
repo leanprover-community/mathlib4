@@ -323,7 +323,7 @@ instance epi_coprod_to_pushout {C : Type*} [Category* C] {X Y Z : C} (f : X ⟶ 
 /-- The pushout of `f, g` is also the pullback of `h ≫ f, h ≫ g` for any epi `h`. -/
 noncomputable def pushoutIsPushoutOfEpiComp (f : X ⟶ Y) (g : X ⟶ Z) (h : W ⟶ X) [Epi h]
     [HasPushout f g] : IsColimit (PushoutCocone.mk (pushout.inl f g) (pushout.inr f g)
-    (show (h ≫ f) ≫ pushout.inl f g = (h ≫ g) ≫ pushout.inr f g from by
+    (show (h ≫ f) ≫ pushout.inl f g = (h ≫ g) ≫ pushout.inr f g by
     simp only [Category.assoc]; rw [cancel_epi]; exact pushout.condition)) :=
   PushoutCocone.isColimitOfEpiComp f g h _ (colimit.isColimit (span f g))
 
