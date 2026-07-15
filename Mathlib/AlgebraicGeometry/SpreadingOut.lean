@@ -243,16 +243,16 @@ lemma exists_lift_of_germInjective_aux {U : X.Opens} {x : X} (hxU)
     (e : φRA ≫ φ = φRX ≫ X.presheaf.germ U x hxU) :
     ∃ (V : X.Opens) (hxV : x ∈ V),
       V ≤ U ∧ RingHom.range φ.hom ≤ RingHom.range (X.presheaf.germ V x hxV).hom := by
-  letI := φRA.hom.toAlgebra
+  let := φRA.hom.toAlgebra
   obtain ⟨s, hs⟩ := hφRA
   choose W hxW f hf using fun t ↦ X.presheaf.exists_germ_eq (φ t)
   have H : x ∈ s.inf W ⊓ U := by
     rw [← SetLike.mem_coe, TopologicalSpace.Opens.coe_inf, TopologicalSpace.Opens.coe_finset_inf]
     exact ⟨by simpa using fun x _ ↦ hxW x, hxU⟩
   refine ⟨s.inf W ⊓ U, H, inf_le_right, ?_⟩
-  letI := φRX.hom.toAlgebra
-  letI := (φRX ≫ X.presheaf.germ U x hxU).hom.toAlgebra
-  letI := (φRX ≫ X.presheaf.map (homOfLE (inf_le_right (a := s.inf W))).op).hom.toAlgebra
+  let := φRX.hom.toAlgebra
+  let := (φRX ≫ X.presheaf.germ U x hxU).hom.toAlgebra
+  let := (φRX ≫ X.presheaf.map (homOfLE (inf_le_right (a := s.inf W))).op).hom.toAlgebra
   let φ' : A →ₐ[R] X.presheaf.stalk x :=
     { φ.hom with commutes' := DFunLike.congr_fun (congr_arg CommRingCat.Hom.hom e) }
   let ψ : Γ(X, s.inf W ⊓ U) →ₐ[R] X.presheaf.stalk x :=
