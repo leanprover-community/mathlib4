@@ -603,7 +603,6 @@ theorem eq_X_pow_char_pow_sub_C_pow_of_natSepDegree_eq_one (q : ℕ) [ExpChar F 
     Nat.pos_of_ne_zero <| (natSepDegree_ne_zero_iff _).2 hI.natDegree_pos.ne'
   obtain ⟨n, y, H, hp⟩ := hM.eq_X_pow_char_pow_sub_C_of_natSepDegree_eq_one_of_irreducible q hI hD
   have hF := finiteMultiplicity_of_degree_pos_of_monic (degree_pos_of_irreducible hI) hM hm.ne_zero
-  classical
   have hne := (multiplicity_pos_of_dvd hf).ne'
   refine ⟨_, n, y, hne, H, ?_⟩
   obtain ⟨c, hf, H⟩ := hF.exists_eq_pow_mul_and_not_dvd
@@ -853,10 +852,6 @@ theorem IntermediateField.isSeparable_adjoin_pair_of_isSeparable {x y : E}
   exact Algebra.IsSeparable.trans F F⟮x⟯ F⟮x⟯⟮y⟯
 
 namespace Field
-
-/-- Any element `x` of `F` is a separable element of `E / F` when embedded into `E`. -/
-@[deprecated (since := "2025-11-21")]
-protected alias isSeparable_algebraMap := _root_.isSeparable_algebraMap
 
 variable {F E}
 

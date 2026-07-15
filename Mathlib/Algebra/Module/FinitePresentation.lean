@@ -122,7 +122,6 @@ lemma Module.finitePresentation_of_free_of_surjective [Module.Free R M] [Module.
     (l : M →ₗ[R] N)
     (hl : Function.Surjective l) (hl' : (LinearMap.ker l).FG) :
     Module.FinitePresentation R N := by
-  classical
   let b := Module.Free.chooseBasis R M
   let π : Free.ChooseBasisIndex R M → (Set.finite_range (l ∘ b)).toFinset :=
     fun i ↦ ⟨l (b i), by simp⟩
@@ -184,7 +183,6 @@ lemma Module.finitePresentation_of_surjective [h : Module.FinitePresentation R M
 lemma Module.FinitePresentation.fg_ker [Module.Finite R M]
     [h : Module.FinitePresentation R N] (l : M →ₗ[R] N) (hl : Function.Surjective l) :
     (LinearMap.ker l).FG := by
-  classical
   obtain ⟨s, hs, hs'⟩ := h
   have H : Function.Surjective (Finsupp.linearCombination R ((↑) : s → N)) :=
     LinearMap.range_eq_top.mp
@@ -331,7 +329,6 @@ lemma Module.FinitePresentation.trans (S : Type*) [CommRing S] [Algebra R S]
 open TensorProduct in
 instance {A} [CommRing A] [Algebra R A] [Module.FinitePresentation R M] :
     Module.FinitePresentation A (A ⊗[R] M) := by
-  classical
   obtain ⟨n, f, hf⟩ := Module.Finite.exists_fin' R M
   have inst := Module.finitePresentation_of_projective A (A ⊗[R] (Fin n → R))
   apply Module.finitePresentation_of_surjective (f.baseChange A)

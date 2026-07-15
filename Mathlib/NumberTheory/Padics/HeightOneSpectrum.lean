@@ -76,8 +76,6 @@ isomorphic to `ℤ`. -/
 noncomputable def Rat.IsIntegralClosure.intEquiv : R ≃+* ℤ :=
   (NumberField.RingOfIntegers.equiv R).symm.trans ringOfIntegersEquiv
 
-@[deprecated (since := "2025-12-22")] alias Rat.intEquiv := Rat.IsIntegralClosure.intEquiv
-
 @[simp]
 theorem Rat.IsIntegralClosure.intEquiv_apply_eq_ringOfIntegersEquiv (x : 𝓞 ℚ) :
     intEquiv (𝓞 ℚ) x = ringOfIntegersEquiv x := by
@@ -267,7 +265,7 @@ commutes. -/
 theorem coe_adicCompletionIntegersEquiv_symm_apply (p : Nat.Primes)
     (x : (primesEquiv.symm p).adicCompletionIntegers ℚ) :
     (adicCompletionIntegersEquiv R p).symm x = (adicCompletionEquiv R p).symm x := by
-  simp only [adicCompletionIntegersEquiv, ContinuousAlgEquiv.symm_trans_apply,
+  simp -implicitDefEqProofs only [adicCompletionIntegersEquiv, ContinuousAlgEquiv.symm_trans_apply,
     ContinuousAlgEquiv.symm_symm, adicCompletionEquiv, Equiv.cast_apply, eq_cast_iff_heq,
     ← adicCompletionIntegers.coe_padicIntEquiv_apply, ContinuousAlgEquiv.cast_symm_apply]
   rw [← Subtype.heq_iff_coe_heq (by rw [primesEquiv.apply_symm_apply])

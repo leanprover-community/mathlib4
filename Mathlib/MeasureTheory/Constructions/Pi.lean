@@ -369,14 +369,12 @@ theorem pi_eval_preimage_null {i : ι} {s : Set (α i)} (hs : μ i s = 0) :
 
 theorem quasiMeasurePreserving_eval (i : ι) :
     QuasiMeasurePreserving (Function.eval i) (Measure.pi μ) (μ i) := by
-  classical
   refine ⟨by fun_prop, AbsolutelyContinuous.mk fun s hs h2s => ?_⟩
   rw [map_apply (by fun_prop) hs, pi_eval_preimage_null μ h2s]
 
 lemma pi_map_eval [DecidableEq ι] (i : ι) :
      (Measure.pi μ).map (Function.eval i) = (∏ j ∈ Finset.univ.erase i, μ j Set.univ) • (μ i) := by
   ext s hs
-  classical
   rw [Measure.map_apply (measurable_pi_apply i) hs, ← Set.univ_pi_update_univ, Measure.pi_pi,
     Measure.smul_apply, smul_eq_mul, ← Finset.prod_erase_mul _ _ (a := i) (by simp)]
   congrm ?_ * ?_
@@ -934,7 +932,6 @@ theorem measurePreserving_arrowCongr' {α₁ β₁ α₂ β₂ : Type*} [Fintype
     (hm : ∀ i, MeasurePreserving eβ (μ i) (ν (eα i))) :
     MeasurePreserving (MeasurableEquiv.arrowCongr' eα eβ) (Measure.pi fun i ↦ μ i)
       (Measure.pi fun i ↦ ν i) := by
-  classical
   convert!
     (measurePreserving_piCongrLeft (fun i : α₂ ↦ ν i) eα).comp
       (measurePreserving_pi μ (fun i : α₁ ↦ ν (eα i)) hm)

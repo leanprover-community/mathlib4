@@ -479,7 +479,6 @@ lemma measurableSet_generateFrom_memPartition_iff (t : ℕ → Set α) (n : ℕ)
     | empty => exact ⟨∅, by simp, by simp⟩
     | compl u _ hu =>
       obtain ⟨S, hS_subset, rfl⟩ := hu
-      classical
       refine ⟨(memPartition t n).toFinset \ S, ?_, ?_⟩
       · simp only [Finset.coe_sdiff, coe_toFinset]
         exact sdiff_subset

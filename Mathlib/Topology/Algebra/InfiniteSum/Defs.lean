@@ -325,7 +325,7 @@ variable [T2Space α] [L.NeBot]
 @[to_additive]
 theorem HasProd.unique {a₁ a₂ : α} :
     HasProd f a₁ L → HasProd f a₂ L → a₁ = a₂ := by
-  classical exact tendsto_nhds_unique
+  exact tendsto_nhds_unique
 
 @[to_additive]
 theorem HasProd.tprod_eq (ha : HasProd f a L) : ∏'[L] b, f b = a :=
