@@ -184,7 +184,8 @@ theorem mul_antipode_rTensor_comul_adjoin_top {X : Set A} (S : A →ₐ[R] Aᵐ�
               mul'_apply, coe_comp, Function.comp_apply,
               LinearEquiv.coe_coe, MulOpposite.coe_opLinearEquiv_symm, AlgHom.coe_toLinearMap,
               map_mul, MulOpposite.unop_mul, Finset.mul_sum, Finset.sum_mul, mul_assoc]
-  exact h t (by rw [hX]; exact mem_top)
+  refine h t ?_
+  simp only [hX, mem_top]
 
 theorem mul_antipode_rlTensor_comul_adjoin_top {X : Set A} (S : A →ₐ[R] Aᵐᵒᵖ) (hX : adjoin R X = ⊤)
   (h : ∀ x ∈ X, (mul' R A) ((LinearMap.lTensor A
@@ -241,7 +242,8 @@ theorem mul_antipode_rlTensor_comul_adjoin_top {X : Set A} (S : A →ₐ[R] Aᵐ
               Function.comp_apply, LinearEquiv.coe_coe, MulOpposite.coe_opLinearEquiv_symm,
               AlgHom.coe_toLinearMap, map_mul, MulOpposite.unop_mul, Finset.mul_sum, Finset.sum_mul,
               mul_assoc]
-  exact h t (by rw [hX]; exact mem_top)
+  refine h t ?_
+  simp only [hX, mem_top]
 
 /--
 If `A` is generated as an `R`-algebra by `X`, and `S : A →ₐ[R] Aᵐᵒᵖ` satisfies the two
