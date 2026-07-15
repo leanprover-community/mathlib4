@@ -27,8 +27,7 @@ This determinant algorithm comes from
 - `BirdDet.birdDet`: The entrypoint for the determinant calculation.
 - `BirdDet.get`: matrix entry lookup.
 - `BirdDet.sumFrom`: The sum `f lo + ... + f (n - 1)`.
-- `BirdDet.diagSum`, `BirdDet.diagTerm`, `BirdDet.tailSum`,
-  `BirdDet.stepEntry`: Named pieces of one scalar recurrence step.
+- `BirdDet.diagSum`, `BirdDet.stepEntry`: Named pieces of one scalar recurrence step.
 - `BirdDet.iter`: The internal scalar recurrence for Bird's algorithm.
 - `BirdDet.Spec.birdDet`: An implementation of Bird's algorithm using `Matrix`.
 
@@ -65,17 +64,10 @@ This is the sum of the diagonal entries of `F` strictly below row `i`.
 def diagSum (n : ℕ) (F : ℕ → ℕ → R) (i : ℕ) : R :=
   BirdDet.sumFrom n (i + 1) fun k => F k k
 
-/-- The diagonal contribution to one scalar Bird recurrence step. -/
-def diagTerm (n : ℕ) (A : Array R) (F : ℕ → ℕ → R) (i j : ℕ) : R :=
-  -(diagSum n F i) * BirdDet.get n A i j
-
-/-- The upper-tail contribution to one scalar Bird recurrence step. -/
-def tailSum (n : ℕ) (A : Array R) (F : ℕ → ℕ → R) (i j : ℕ) : R :=
-  BirdDet.sumFrom n (i + 1) fun k => F i k * BirdDet.get n A k j
-
 /-- One entry of one scalar Bird recurrence step. -/
 def stepEntry (n : ℕ) (A : Array R) (F : ℕ → ℕ → R) (i j : ℕ) : R :=
-  diagTerm n A F i j + tailSum n A F i j
+  -(diagSum n F i) * BirdDet.get n A i j +
+    BirdDet.sumFrom n (i + 1) fun k => F i k * BirdDet.get n A k j
 
 /--
 # Scalar recurrence for Bird's algorithm.
@@ -152,24 +144,12 @@ theorem diagSum_eq (n : ℕ) (F : ℕ → ℕ → R) (i : ℕ) :
     diagSum n F i = BirdDet.sumFrom n (i + 1) fun k => F k k := by
   rfl
 
-/-- Unfold `diagTerm` to its scalar formula. -/
-theorem diagTerm_eq (n : ℕ) (A : Array R) (F : ℕ → ℕ → R) (i j : ℕ) :
-    diagTerm n A F i j =
-      -(BirdDet.sumFrom n (i + 1) fun k => F k k) * BirdDet.get n A i j := by
-  rw [diagTerm, diagSum_eq]
-
-/-- Unfold `tailSum` to the corresponding `sumFrom`. -/
-theorem tailSum_eq (n : ℕ) (A : Array R) (F : ℕ → ℕ → R) (i j : ℕ) :
-    tailSum n A F i j =
-      BirdDet.sumFrom n (i + 1) fun k => F i k * BirdDet.get n A k j := by
-  rfl
-
 /-- Unfold one scalar Bird recurrence step to the entry-wise formula. -/
 theorem stepEntry_eq (n : ℕ) (A : Array R) (F : ℕ → ℕ → R) (i j : ℕ) :
     stepEntry n A F i j =
       -(BirdDet.sumFrom n (i + 1) fun k => F k k) * BirdDet.get n A i j
         + BirdDet.sumFrom n (i + 1) fun k => F i k * BirdDet.get n A k j := by
-  rw [stepEntry, diagTerm_eq, tailSum_eq]
+  rfl
 
 theorem iter_zero (n : ℕ) (A : Array R) (F : ℕ → ℕ → R) (i j : ℕ) :
     BirdDet.iter n A 0 F i j = F i j := by
@@ -202,20 +182,10 @@ open scoped BigOperators
 def diagSum {n : ℕ} (F : Matrix (Fin n) (Fin n) R) (i : Fin n) : R :=
   ∑ k : Fin n, if i < k then F k k else 0
 
-/-- The diagonal contribution to one Matrix/Fin Bird recurrence step. -/
-def diagTerm {n : ℕ}
-    (A F : Matrix (Fin n) (Fin n) R) : Matrix (Fin n) (Fin n) R :=
-  .of fun i j => -(diagSum F i) * A i j
-
-/-- The upper-tail contribution to one Matrix/Fin Bird recurrence step. -/
-def tailSum {n : ℕ}
-    (A F : Matrix (Fin n) (Fin n) R) : Matrix (Fin n) (Fin n) R :=
-  .of fun i j => ∑ k : Fin n, if i < k then F i k * A k j else 0
-
 /-- One entry of one Matrix/Fin Bird recurrence step. -/
 def stepEntry {n : ℕ}
     (A F : Matrix (Fin n) (Fin n) R) : Matrix (Fin n) (Fin n) R :=
-  diagTerm A F + tailSum A F
+  .of fun i j ↦ -(diagSum F i) * A i j + ∑ k : Fin n, if i < k then F i k * A k j else 0
 
 /-- A version of the Bird determinant algorithm that is stated in terms of `Matrix`. -/
 def birdDet {n : ℕ}
@@ -234,9 +204,7 @@ theorem stepEntry_eq {n : ℕ}
     stepEntry A F =
       .of fun i j ↦ (-∑ k : Fin n, if i < k then F k k else 0) * A i j
         + ∑ k : Fin n, if i < k then F i k * A k j else 0 := by
-  ext i j
-  rw [stepEntry, diagTerm, tailSum]
-  simp only [Matrix.add_apply, Matrix.of_apply, diagSum_eq]
+  rfl
 
 theorem birdDetSpec_zero
     (A : Matrix (Fin 0) (Fin 0) R) :
@@ -246,8 +214,8 @@ theorem birdDetSpec_zero
 theorem birdDetSpec_succ {k : ℕ}
     (A : Matrix (Fin (k + 1)) (Fin (k + 1)) R) :
     birdDet A =
-      (-1 : R) ^ k * (stepEntry A)^[k] A 0 0 :=
-  by rw [birdDet]
+      (-1 : R) ^ k * (stepEntry A)^[k] A 0 0 := by
+  rw [birdDet]
 
 end Spec
 
