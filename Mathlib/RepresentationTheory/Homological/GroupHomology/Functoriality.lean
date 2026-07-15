@@ -488,9 +488,7 @@ theorem H1CoresCoinfOfTrivial_exact :
       (d₂₁ (A.ofQuotient S)).hom y := by
     have := congr($((mapShortComplexH1 (QuotientGroup.mk' S)
       (resOfQuotientIso A S).inv).comm₁₂.symm) z)
-    simp_all [shortComplexH1, z, ← mapDomain_comp, Prod.map_map]
-    erw [Rep.hom_id] at this
-    simp_all
+    simp_all [shortComplexH1, z, ← mapDomain_comp, Prod.map_map, Rep.hom_id (res _ _)]
   let v := x - (d₂₁ _).hom z
 /- We have `C₁(s ∘ π)(v) = ∑ v(g)·s(π(g)) = 0`, since `C₁(π)(v) = dC₁(π)(z) - C₁(π)(dz) = 0` by
 previous assumptions. -/
