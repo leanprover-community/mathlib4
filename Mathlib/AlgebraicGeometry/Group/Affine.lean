@@ -200,7 +200,6 @@ lemma one_spec_asOver_spec [Bialgebra R A] :
         (Spec.map <| CommRingCat.ofHom <| Bialgebra.counitAlgHom R A)
           (by simp [specOverSpec_over, ← Spec.map_comp, ← CommRingCat.ofHom_comp]) := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 lemma left_one_spec_asOver_spec [Bialgebra R A] :
     η[(Spec A).asOver (Spec R)].left =
       (Spec.map <| CommRingCat.ofHom <| Bialgebra.counitAlgHom R A) := rfl
