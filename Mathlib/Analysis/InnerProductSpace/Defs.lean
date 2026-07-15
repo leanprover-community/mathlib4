@@ -427,7 +427,7 @@ omit c in
 lemma toSeminormedSpaceCore (c : PreInnerProductSpace.Core 𝕜 F) : SeminormedSpace.Core 𝕜 F where
   norm_nonneg x := norm_nonneg x
   norm_smul c x := by
-    letI : NormedSpace 𝕜 F := toNormedSpace
+    let : NormedSpace 𝕜 F := toNormedSpace
     exact _root_.norm_smul c x
   norm_triangle x y := norm_add_le x y
 
@@ -494,7 +494,7 @@ lemma toNormedSpaceCore (cd : InnerProductSpace.Core 𝕜 F) : NormedSpace.Core 
   norm_nonneg x := norm_nonneg x
   norm_eq_zero_iff x := norm_eq_zero
   norm_smul c x := by
-    letI : NormedSpace 𝕜 F := toNormedSpace
+    let : NormedSpace 𝕜 F := toNormedSpace
     exact _root_.norm_smul c x
   norm_triangle x y := norm_add_le x y
 

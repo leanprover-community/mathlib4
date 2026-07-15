@@ -1013,7 +1013,7 @@ variable [DecidableEq ι]
 
 @[simp]
 theorem nnnorm_single (i : ι) (b : β i) : ‖single p i b‖₊ = ‖b‖₊ := by
-  haveI : Nonempty ι := ⟨i⟩
+  have : Nonempty ι := ⟨i⟩
   induction p generalizing hp with
   | top =>
     simp_rw [nnnorm_eq_ciSup]
@@ -1262,7 +1262,7 @@ lemma isBoundedSMulSeminormedAddCommGroupToPi
     [∀ i, Module R (α i)] [∀ i, IsBoundedSMul R (α i)] :
     letI := pseudoMetricSpaceToPi p α
     IsBoundedSMul R (Π i, α i) := by
-  letI := pseudoMetricSpaceToPi p α
+  let := pseudoMetricSpaceToPi p α
   refine ⟨fun x y z ↦ ?_, fun x y z ↦ ?_⟩
   · simpa [dist_pseudoMetricSpaceToPi] using dist_smul_pair x (toLp p y) (toLp p z)
   · simpa [dist_pseudoMetricSpaceToPi] using dist_pair_smul x y (toLp p z)
@@ -1272,7 +1272,7 @@ lemma normSMulClassSeminormedAddCommGroupToPi
     [∀ i, Module R (α i)] [∀ i, NormSMulClass R (α i)] :
     letI := seminormedAddCommGroupToPi p α
     NormSMulClass R (Π i, α i) := by
-  letI := seminormedAddCommGroupToPi p α
+  let := seminormedAddCommGroupToPi p α
   refine ⟨fun x y ↦ ?_⟩
   simp [norm_seminormedAddCommGroupToPi, norm_smul]
 

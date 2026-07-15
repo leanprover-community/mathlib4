@@ -115,7 +115,7 @@ theorem tendsto_normSq_coprime_pair :
     Filter.Tendsto (fun p : Fin 2 → ℤ => normSq ((p 0 : ℂ) * z + p 1)) cofinite atTop := by
   -- using this instance rather than the automatic `Function.module` makes unification issues in
   -- `LinearEquiv.isClosedEmbedding_of_injective` less bad later in the proof.
-  letI : Module ℝ (Fin 2 → ℝ) := NormedSpace.toModule
+  let : Module ℝ (Fin 2 → ℝ) := NormedSpace.toModule
   let π₀ : (Fin 2 → ℝ) →ₗ[ℝ] ℝ := LinearMap.proj 0
   let π₁ : (Fin 2 → ℝ) →ₗ[ℝ] ℝ := LinearMap.proj 1
   let f : (Fin 2 → ℝ) →ₗ[ℝ] ℂ := π₀.smulRight (z : ℂ) + π₁.smulRight 1
@@ -294,7 +294,7 @@ theorem exists_max_im : ∃ g : SL(2, ℤ), ∀ g' : SL(2, ℤ), (g' • z).im �
 theorem exists_row_one_eq_and_min_re {cd : Fin 2 → ℤ} (hcd : IsCoprime (cd 0) (cd 1)) :
     ∃ g : SL(2, ℤ), g 1 = cd ∧ ∀ g' : SL(2, ℤ), g 1 = g' 1 →
       |(g • z).re| ≤ |(g' • z).re| := by
-  haveI : Nonempty { g : SL(2, ℤ) // g 1 = cd } :=
+  have : Nonempty { g : SL(2, ℤ) // g 1 = cd } :=
     let ⟨x, hx⟩ := bottom_row_surj hcd
     ⟨⟨x, hx.2⟩⟩
   obtain ⟨g, hg⟩ := Filter.Tendsto.exists_forall_le (tendsto_abs_re_smul z hcd)

@@ -1060,7 +1060,7 @@ theorem _root_.MeasurableSet.measure_eq_iSup_isClosed_of_ne_top [WeaklyRegular �
 weakly regular. -/
 theorem restrict_of_measure_ne_top [BorelSpace α] [WeaklyRegular μ] {A : Set α}
     (h'A : μ A ≠ ∞) : WeaklyRegular (μ.restrict A) := by
-  haveI : Fact (μ A < ∞) := ⟨h'A.lt_top⟩
+  have : Fact (μ A < ∞) := ⟨h'A.lt_top⟩
   refine InnerRegularWRT.weaklyRegular_of_finite (μ.restrict A) (fun V V_open r hr ↦ ?_)
   have : InnerRegularWRT (μ.restrict A) IsClosed (fun s ↦ MeasurableSet s) :=
     InnerRegularWRT.restrict_of_measure_ne_top innerRegular_measurable h'A
@@ -1088,7 +1088,7 @@ instance (priority := 100) of_pseudoMetrizableSpace_secondCountable_of_locallyFi
   ⟨InnerRegularWRT.of_pseudoMetrizableSpace μ⟩
 
 protected theorem smul [WeaklyRegular μ] {x : ℝ≥0∞} (hx : x ≠ ∞) : (x • μ).WeaklyRegular := by
-  haveI := OuterRegular.smul μ hx
+  have := OuterRegular.smul μ hx
   exact ⟨WeaklyRegular.innerRegular.smul x⟩
 
 instance smul_nnreal [WeaklyRegular μ] (c : ℝ≥0) : WeaklyRegular (c • μ) :=
@@ -1124,8 +1124,8 @@ instance (priority := 100) [Regular μ] : InnerRegularCompactLTTop μ :=
 
 protected theorem map [BorelSpace α] [MeasurableSpace β] [TopologicalSpace β]
     [BorelSpace β] [Regular μ] (f : α ≃ₜ β) : (Measure.map f μ).Regular := by
-  haveI := OuterRegular.map f μ
-  haveI := IsFiniteMeasureOnCompacts.map μ f
+  have := OuterRegular.map f μ
+  have := IsFiniteMeasureOnCompacts.map μ f
   exact
     ⟨Regular.innerRegular.map' f.toMeasurableEquiv
         (fun U hU => hU.preimage f.continuous)
@@ -1143,8 +1143,8 @@ open Topology in
 protected theorem comap' [BorelSpace α]
     {mβ : MeasurableSpace β} [TopologicalSpace β] [BorelSpace β] (μ : Measure β) [Regular μ]
     {f : α → β} (hf : IsOpenEmbedding f) : (μ.comap f).Regular := by
-  haveI := OuterRegular.comap' μ hf.continuous hf.measurableEmbedding
-  haveI := IsFiniteMeasureOnCompacts.comap' μ hf.continuous hf.measurableEmbedding
+  have := OuterRegular.comap' μ hf.continuous hf.measurableEmbedding
+  have := IsFiniteMeasureOnCompacts.comap' μ hf.continuous hf.measurableEmbedding
   exact ⟨InnerRegularWRT.comap Regular.innerRegular hf.measurableEmbedding
     (fun _ hU ↦ hf.isOpen_iff_image_isOpen.mp hU)
     (fun _ hKrange hK ↦ hf.isInducing.isCompact_preimage' hK hKrange)⟩
@@ -1154,8 +1154,8 @@ protected theorem comap [BorelSpace α] {mβ : MeasurableSpace β} [TopologicalS
   Regular.comap' μ f.isOpenEmbedding
 
 protected theorem smul [Regular μ] {x : ℝ≥0∞} (hx : x ≠ ∞) : (x • μ).Regular := by
-  haveI := OuterRegular.smul μ hx
-  haveI := IsFiniteMeasureOnCompacts.smul μ hx
+  have := OuterRegular.smul μ hx
+  have := IsFiniteMeasureOnCompacts.smul μ hx
   exact ⟨Regular.innerRegular.smul x⟩
 
 instance smul_nnreal [Regular μ] (c : ℝ≥0) : Regular (c • μ) := Regular.smul coe_ne_top

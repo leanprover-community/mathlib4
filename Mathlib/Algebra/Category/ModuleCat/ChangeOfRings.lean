@@ -427,7 +427,7 @@ lemma hom_ext {M : ModuleCat R} {N : ModuleCat S}
     {α β : (extendScalars f).obj M ⟶ N}
     (h : ∀ (m : M), α ((1 : S) ⊗ₜ m) = β ((1 : S) ⊗ₜ m)) : α = β := by
   apply (restrictScalars f).map_injective
-  letI := f.toAlgebra
+  let := f.toAlgebra
   ext : 1
   apply TensorProduct.ext'
   intro (s : S) m
@@ -765,7 +765,7 @@ def homEquiv {X : ModuleCat R} {Y : ModuleCat S} :
   toFun := HomEquiv.toRestrictScalars.{u₁, u₂, v} f
   invFun := HomEquiv.fromExtendScalars.{u₁, u₂, v} f
   left_inv g := by
-    letI m1 : Module R S := Module.compHom S f; letI m2 : Module R Y := Module.compHom Y f
+    let m1 : Module R S := Module.compHom S f; let m2 : Module R Y := Module.compHom Y f
     apply hom_ext
     apply LinearMap.ext; intro z
     induction z using TensorProduct.induction_on with
@@ -779,7 +779,7 @@ def homEquiv {X : ModuleCat R} {Y : ModuleCat S} :
       rfl
     | add _ _ ih1 ih2 => rw [map_add, map_add, ih1, ih2]
   right_inv g := by
-    letI m1 : Module R S := Module.compHom S f; letI m2 : Module R Y := Module.compHom Y f
+    let m1 : Module R S := Module.compHom S f; let m2 : Module R Y := Module.compHom Y f
     ext x
     rw [HomEquiv.toRestrictScalars_hom_apply]
     -- This needs to be `erw` because of some unfolding in `fromExtendScalars`
@@ -801,7 +801,7 @@ def Unit.map {X : ModuleCat R} : X ⟶ (extendScalars f ⋙ restrictScalars f).o
   { toFun := fun x => (1 : S) ⊗ₜ[R,f] x
     map_add' := fun x x' => by dsimp; rw [TensorProduct.tmul_add]
     map_smul' := fun r x => by
-      letI m1 : Module R S := Module.compHom S f
+      let m1 : Module R S := Module.compHom S f
       dsimp; rw [← TensorProduct.smul_tmul, TensorProduct.smul_tmul'] }
 
 /--
@@ -860,9 +860,9 @@ def counit : restrictScalars.{max v u₂, u₁, u₂} f ⋙ extendScalars f ⟶ 
   app _ := Counit.map.{u₁, u₂, v} f
   naturality Y Y' g := by
     -- Porting note: this is very annoying; fix instances in concrete categories
-    letI m1 : Module R S := Module.compHom S f
-    letI m2 : Module R Y := Module.compHom Y f
-    letI m2 : Module R Y' := Module.compHom Y' f
+    let m1 : Module R S := Module.compHom S f
+    let m2 : Module R Y := Module.compHom Y f
+    let m2 : Module R Y' := Module.compHom Y' f
     ext z
     induction z using TensorProduct.induction_on with
     | zero => rw [map_zero, map_zero]

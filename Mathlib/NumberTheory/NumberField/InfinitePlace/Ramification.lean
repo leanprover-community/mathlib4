@@ -188,6 +188,9 @@ An infinite place is ramified in a field extension if it is not unramified.
 -/
 abbrev IsRamified : Prop := ¬w.IsUnramified k
 
+lemma isUnramified_or_isRamified : w.IsUnramified k ∨ w.IsRamified k :=
+  or_not
+
 variable {k}
 
 lemma isUnramified_self : IsUnramified K w := rfl
@@ -331,8 +334,8 @@ lemma isUnramified_mk_iff_forall_isConj [IsGalois k K] {φ : K →+* ℂ} :
   rw [not_isUnramified_iff] at hφ
   rw [comap_mk, isReal_mk_iff, ← not_isReal_iff_isComplex, isReal_mk_iff,
     ← ComplexEmbedding.isConj_one_iff (k := k)] at hφ
-  letI := (φ.comp (algebraMap k K)).toAlgebra
-  letI := φ.toAlgebra
+  let := (φ.comp (algebraMap k K)).toAlgebra
+  let := φ.toAlgebra
   have : IsScalarTower k K ℂ := IsScalarTower.of_algebraMap_eq' rfl
   let φ' : K →ₐ[k] ℂ := { star φ with
     commutes' := fun r ↦ by simpa using! RingHom.congr_fun hφ.2 r }
@@ -593,7 +596,7 @@ variable {K L : Type*} [Field K] [Field L] [Algebra K L]
 
 section LiesOver
 
-variable (w : InfinitePlace L) (v : InfinitePlace K) [w.1.LiesOver v.1]
+variable (w : InfinitePlace L) (v : InfinitePlace K) [w.LiesOver v]
 
 namespace LiesOver
 
@@ -648,13 +651,13 @@ section placesOver
 variable (v : InfinitePlace K) (L)
 
 /-- The set of infinite places of `L` that lie above a given infinite place of `K`. -/
-def placesOver : Set (InfinitePlace L) := { w | w.1.LiesOver v.1 }
+def placesOver : Set (InfinitePlace L) := { w | w.LiesOver v }
 
 /-- The set of infinite places of `L` that are unramified over a given infinite place of `K`. -/
-def unramifiedPlacesOver : Set (InfinitePlace L) := { w | w.1.LiesOver v.1 ∧ w.IsUnramified K }
+def unramifiedPlacesOver : Set (InfinitePlace L) := { w | w.LiesOver v ∧ w.IsUnramified K }
 
 /-- The set of infinite places of `L` that are ramified over a given infinite place of `K`. -/
-def ramifiedPlacesOver : Set (InfinitePlace L) := { w | w.1.LiesOver v.1 ∧ w.IsRamified K }
+def ramifiedPlacesOver : Set (InfinitePlace L) := { w | w.LiesOver v ∧ w.IsRamified K }
 
 variable {L} {v} {w : InfinitePlace L}
 

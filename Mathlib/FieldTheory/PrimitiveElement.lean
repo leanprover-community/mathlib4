@@ -218,7 +218,7 @@ theorem exists_primitive_element : ∃ α : E, F⟮α⟯ = ⊤ := by
       intro K β hK
       obtain ⟨α, hK⟩ := hK
       rw [← hK, adjoin_simple_adjoin_simple]
-      haveI : Infinite F := isEmpty_fintype.mp F_inf
+      have : Infinite F := isEmpty_fintype.mp F_inf
       obtain ⟨γ, hγ⟩ := primitive_element_inf_aux F α β
       exact ⟨γ, hγ.symm⟩
     exact induction_on_adjoin P base ih ⊤
@@ -279,7 +279,7 @@ theorem FiniteDimensional.of_finite_intermediateField
     [Finite (IntermediateField F E)] : FiniteDimensional F E := by
   let IF := { K : IntermediateField F E // ∃ x, K = F⟮x⟯ }
   have := isAlgebraic_of_finite_intermediateField F E
-  haveI : ∀ K : IF, FiniteDimensional F K.1 := fun ⟨_, x, rfl⟩ ↦ adjoin.finiteDimensional
+  have : ∀ K : IF, FiniteDimensional F K.1 := fun ⟨_, x, rfl⟩ ↦ adjoin.finiteDimensional
     (Algebra.IsIntegral.isIntegral _)
   have hfin := finiteDimensional_iSup_of_finite (t := fun K : IF ↦ K.1)
   have htop : ⨆ K : IF, K.1 = ⊤ := le_top.antisymm fun x _ ↦
@@ -289,7 +289,7 @@ theorem FiniteDimensional.of_finite_intermediateField
 
 theorem exists_primitive_element_of_finite_intermediateField
     [Finite (IntermediateField F E)] (K : IntermediateField F E) : ∃ α : E, F⟮α⟯ = K := by
-  haveI := FiniteDimensional.of_finite_intermediateField F E
+  have := FiniteDimensional.of_finite_intermediateField F E
   rcases finite_or_infinite F with (_ | _)
   · obtain ⟨α, h⟩ := exists_primitive_element_of_finite_bot F K
     exact ⟨α, by simpa only [lift_adjoin_simple, lift_top] using congr_arg lift h⟩
@@ -308,7 +308,7 @@ theorem FiniteDimensional.of_exists_primitive_element [Algebra.IsAlgebraic F E]
 -- A finite simple extension has only finitely many intermediate fields
 theorem finite_intermediateField_of_exists_primitive_element [Algebra.IsAlgebraic F E]
     (h : ∃ α : E, F⟮α⟯ = ⊤) : Finite (IntermediateField F E) := by
-  haveI := FiniteDimensional.of_exists_primitive_element F E h
+  have := FiniteDimensional.of_exists_primitive_element F E h
   obtain ⟨α, hprim⟩ := h
   -- Let `f` be the minimal polynomial of `α ∈ E` over `F`
   let f : F[X] := minpoly F α
@@ -401,7 +401,7 @@ theorem primitive_element_iff_algHom_eq_of_eval (α : E)
     (φ : E →ₐ[F] A) : F⟮α⟯ = ⊤ ↔ ∀ ψ : E →ₐ[F] A, φ α = ψ α → φ = ψ := by
   refine ⟨fun h ψ hψ ↦ (Field.primitive_element_iff_algHom_eq_of_eval' F A hA α).mp h hψ,
     fun h ↦ eq_of_le_of_finrank_eq' le_top ?_⟩
-  letI : Algebra F⟮α⟯ A := (φ.comp F⟮α⟯.val).toAlgebra
+  let : Algebra F⟮α⟯ A := (φ.comp F⟮α⟯.val).toAlgebra
   rw [IntermediateField.finrank_top, ← AlgHom.card_of_splits _ _ A, Fintype.card_eq_one_iff]
   · exact ⟨{ __ := φ, commutes' := fun _ ↦ rfl }, fun ψ ↦ AlgHom.restrictScalars_injective F <|
       Eq.symm <| h _ (ψ.commutes <| AdjoinSimple.gen F α).symm⟩
