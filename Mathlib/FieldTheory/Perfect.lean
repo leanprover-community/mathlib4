@@ -299,7 +299,7 @@ lemma PerfectRing.toPerfectField (K : Type*) (p : ℕ)
   refine PerfectField.mk fun hf ↦ ?_
   rcases separable_or p hf with h | ⟨-, g, -, rfl⟩
   · assumption
-  · exfalso; revert hf; haveI := Fact.mk hp; simp
+  · exfalso; revert hf; have := Fact.mk hp; simp
 
 namespace PerfectField
 
@@ -455,7 +455,6 @@ noncomputable def rootsExpandToRoots : (expand R p f).roots.toFinset ↪ f.roots
 @[simp]
 theorem rootsExpandToRoots_apply (x) : (rootsExpandToRoots p f x : R) = x ^ p := rfl
 
-open scoped Classical in
 /-- If `f` is a polynomial over an integral domain `R` of characteristic `p`, then there is
 a map from the set of roots of `Polynomial.expand R (p ^ n) f` to the set of roots of `f`.
 It's given by `x ↦ x ^ (p ^ n)`, see `rootsExpandPowToRoots_apply`. -/

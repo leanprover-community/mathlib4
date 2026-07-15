@@ -171,7 +171,7 @@ instance : HasAffineProperty @IsAffineHom fun X _ _ _ ↦ IsAffine X where
 instance isAffineHom_isStableUnderBaseChange :
     MorphismProperty.IsStableUnderBaseChange @IsAffineHom := by
   apply HasAffineProperty.isStableUnderBaseChange
-  letI := HasAffineProperty.isLocal_affineProperty
+  let := HasAffineProperty.isLocal_affineProperty
   apply AffineTargetMorphismProperty.IsStableUnderBaseChange.mk
   introv X hX H
   infer_instance
@@ -253,14 +253,14 @@ lemma isAffineHom_of_isInducing
       exact ⟨⟨U', hU'⟩ ⊓ U, inf_le_right, Opens.ext (by simpa [e] using hVU)⟩
     obtain ⟨r, hrU', hxr⟩ := hU.exists_basicOpen_le ⟨f x, hxV⟩ hxU
     refine ⟨_, hxr, hU.basicOpen r, ?_⟩
-    convert! hV.basicOpen (f.app _ (Y.presheaf.map (homOfLE hU'U).op r)) using 1
+    convert hV.basicOpen (f.app _ (Y.presheaf.map (homOfLE hU'U).op r))
     simp only [Scheme.preimage_basicOpen, ← CommRingCat.comp_apply, f.naturality]
     simpa using ((Opens.map f.base).map (homOfLE hrU')).le
   · obtain ⟨_, ⟨U, hU, rfl⟩, hyU, hU'⟩ :=
       Y.isBasis_affineOpens.exists_subset_of_mem_open hy hf₂.isOpen_compl
     rw [Set.subset_compl_iff_disjoint_right, ← Set.preimage_eq_empty_iff] at hU'
     refine ⟨U, hyU, hU, ?_⟩
-    convert! isAffineOpen_bot _
+    convert isAffineOpen_bot _
     exact Opens.ext hU'
 
 lemma IsAffineOpen.isCompact_pullback_inf {X Y Z : Scheme.{u}} {f : X ⟶ Z} {g : Y ⟶ Z}
@@ -295,15 +295,15 @@ theorem diagonal_isAffine_iff_forall_isAffineOpen_inf [IsAffine Y] (f : X ⟶ Y)
   constructor
   · intro H U V hU hV
     dsimp at H
-    haveI : IsAffine _ := hU
-    haveI : IsAffine _ := hV
+    have : IsAffine _ := hU
+    have : IsAffine _ := hV
     let g : pullback U.ι V.ι ⟶ X := pullback.fst _ _ ≫ U.ι
     have := IsOpenImmersion.isPullback (X.homOfLE inf_le_left) (X.homOfLE inf_le_right)
       U.ι V.ι (by simp) (by ext; simp)
     exact .of_isIso this.isoPullback.hom
   · introv H h₁ h₂
     have : IsAffineOpen (pullback.fst f₁ f₂ ≫ f₁).opensRange := by
-      convert! H _ _ (isAffineOpen_opensRange f₁) (isAffineOpen_opensRange f₂) using 1
+      convert! H _ _ (isAffineOpen_opensRange f₁) (isAffineOpen_opensRange f₂)
       exact Opens.ext (IsOpenImmersion.range_pullback_to_base_of_left _ _)
     change IsAffine _ at this
     exact .of_isIso (pullback.fst f₁ f₂ ≫ f₁).isoOpensRange.hom

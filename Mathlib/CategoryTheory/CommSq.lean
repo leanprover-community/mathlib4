@@ -32,6 +32,7 @@ namespace CategoryTheory
 
 variable {C : Type*} [Category* C]
 
+set_option linter.translate.warnInvalid false in
 /-- The proposition that a square
 ```
   W ---f---> X
@@ -55,11 +56,9 @@ namespace CommSq
 
 variable {W X Y Z : C} {f : W ⟶ X} {g : W ⟶ Y} {h : X ⟶ Z} {i : Y ⟶ Z}
 
-set_option linter.translateOverwrite false in
 @[to_dual existing w]
 lemma w' (self : CommSq f g h i) : g ≫ i = f ≫ h := self.w.symm
 
-set_option linter.translateOverwrite false in
 /-- `CommSq.mk'` is the dual of `CommSq.mk`, which we need for `to_dual`.
 Please avoid using this directly. -/
 @[to_dual existing mk]
@@ -171,6 +170,7 @@ namespace CommSq
 
 variable {A B X Y : C} {f : A ⟶ X} {i : A ⟶ B} {p : X ⟶ Y} {g : B ⟶ Y}
 
+set_option linter.translate.warnInvalid false in
 /-- Now we consider a square:
 ```
   A ---f---> X
@@ -193,7 +193,6 @@ structure LiftStruct (sq : CommSq f i p g) where
   fac_right : l ≫ p = g := by cat_disch
 
 attribute [to_dual self] LiftStruct.ext
-set_option linter.translateOverwrite false in
 attribute [to_dual existing fac_left] LiftStruct.fac_right
 attribute [to_dual self (reorder := A Y, B X, f g, i p, fac_left fac_right)] LiftStruct.mk
 

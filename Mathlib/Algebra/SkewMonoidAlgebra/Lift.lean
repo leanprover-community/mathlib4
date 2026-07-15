@@ -108,22 +108,17 @@ variable [AddCommMonoid k]
 /-- Given `f : G ≃ H`, we can map `l : SkewMonoidAlgebra k G` to
 `equivMapDomain f l : SkewMonoidAlgebra k H` (computably) by mapping the support forwards
 and the function backwards. -/
+@[simps]
 def equivMapDomain (f : G ≃ H) (l : SkewMonoidAlgebra k G) : SkewMonoidAlgebra k H where
-  toFinsupp := ⟨l.support.map f.toEmbedding, fun a ↦ l.coeff (f.symm a), by simp⟩
+  coeff := l.coeff.equivMapDomain f
 
-@[simp]
-theorem coeff_equivMapDomain (f : G ≃ H) (l : SkewMonoidAlgebra k G) (b : H) :
-    (equivMapDomain f l).coeff b = l.coeff (f.symm b) :=
-  rfl
-
-lemma toFinsupp_equivMapDomain (f : G ≃ H) (l : SkewMonoidAlgebra k G) :
-    (equivMapDomain f l).toFinsupp = Finsupp.equivMapDomain f l.toFinsupp := rfl
+@[deprecated (since := "2026-07-06")] alias toFinsupp_equivMapDomain := coeff_equivMapDomain
 
 theorem equivMapDomain_eq_mapDomain (f : G ≃ H) (l : SkewMonoidAlgebra k G) :
     equivMapDomain f l = mapDomain f l := by
-  apply toFinsupp_injective
+  apply coeff_injective
   ext x
-  simp_rw [toFinsupp_equivMapDomain, Finsupp.equivMapDomain_apply, toFinsupp_mapDomain,
+  simp_rw [coeff_equivMapDomain, Finsupp.equivMapDomain_apply, coeff_mapDomain,
     Finsupp.mapDomain_equiv_apply]
 
 theorem equivMapDomain_trans {G' G'' : Type*} (f : G ≃ G') (g : G' ≃ G'')
@@ -139,8 +134,8 @@ theorem equivMapDomain_refl (l : SkewMonoidAlgebra k G) : equivMapDomain (Equiv.
 theorem equivMapDomain_single (f : G ≃ H) (a : G) (b : k) :
     equivMapDomain f (single a b) = single (f a) b := by
   classical
-  apply toFinsupp_injective
-  simp_rw [toFinsupp_equivMapDomain, single, Finsupp.equivMapDomain_single]
+  apply coeff_injective
+  simp_rw [coeff_equivMapDomain, single, Finsupp.equivMapDomain_single]
 
 end equivMapDomain
 

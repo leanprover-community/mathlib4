@@ -210,12 +210,12 @@ instance : HasStrongEpiMonoFactorisations NonemptyFinLinOrd.{u} :=
     let I := of (Set.image f ⊤)
     let e : X ⟶ I := ofHom ⟨fun x => ⟨f x, ⟨x, by tauto⟩⟩, fun x₁ x₂ h => f.hom.hom.monotone h⟩
     let m : I ⟶ Y := ofHom ⟨fun y => y.1, by tauto⟩
-    haveI : Epi e := by
+    have : Epi e := by
       rw [epi_iff_surjective]
       rintro ⟨_, y, h, rfl⟩
       exact ⟨y, rfl⟩
-    haveI : StrongEpi e := strongEpi_of_epi e
-    haveI : Mono m := ConcreteCategory.mono_of_injective _ (fun x y h => Subtype.ext h)
+    have : StrongEpi e := strongEpi_of_epi e
+    have : Mono m := ConcreteCategory.mono_of_injective _ (fun x y h => Subtype.ext h)
     exact ⟨⟨I, m, e, rfl⟩⟩⟩
 
 end NonemptyFinLinOrd

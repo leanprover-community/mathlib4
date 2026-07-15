@@ -77,7 +77,7 @@ theorem Theory.simpleGraph_model_iff [Language.graph.Structure V] :
 
 instance simpleGraph_model (G : SimpleGraph V) :
     @Theory.Model _ V G.structure Theory.simpleGraph := by
-  letI := G.structure
+  let := G.structure
   simp [Theory.simpleGraph_model_iff, Std.irrefl_iff, RelMap, G.symm_adj]
 
 variable (V) in

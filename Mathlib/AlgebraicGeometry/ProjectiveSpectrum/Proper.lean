@@ -53,17 +53,17 @@ lemma lift_awayMapₐ_awayMapₐ_surjective {d e : ℕ} {f : A} (hf : f ∈ 𝒜
   let x0 : NumDenSameDeg 𝒜 (.powers f) :=
   { deg := j * (d * (e + 1))
     num := ⟨a * g ^ (j * (d - 1)), by
-      convert! SetLike.mul_mem_graded ha (SetLike.pow_mem_graded _ hg) using 2
+      convert SetLike.mul_mem_graded ha (SetLike.pow_mem_graded _ hg)
       rw [this]
       cases d
       · contradiction
       · simp; ring⟩
-    den := ⟨f ^ (j * (e + 1)), by convert! SetLike.pow_mem_graded _ hf using 2; ring⟩
+    den := ⟨f ^ (j * (e + 1)), by convert SetLike.pow_mem_graded _ hf; ring⟩
     den_mem := ⟨_,rfl⟩ }
   let y0 : NumDenSameDeg 𝒜 (.powers g) :=
   { deg := j * (d * e)
-    num := ⟨f ^ (j * e), by convert! SetLike.pow_mem_graded _ hf using 2; ring⟩
-    den := ⟨g ^ (j * d), by convert! SetLike.pow_mem_graded _ hg using 2; ring⟩
+    num := ⟨f ^ (j * e), by convert SetLike.pow_mem_graded _ hf; ring⟩
+    den := ⟨g ^ (j * d), by convert SetLike.pow_mem_graded _ hg; ring⟩
     den_mem := ⟨_,rfl⟩ }
   use mk x0 ⊗ₜ mk y0
   ext
@@ -218,7 +218,7 @@ theorem valuativeCriterion_existence_aux
     simp only [ψ, map_pow, pow_eq_zero_iff', map_eq_zero, ne_eq] at this
     have : φ 1 = 0 := by convert! (this j).1; ext; simp
     simp only [map_one, one_ne_zero] at this
-  letI := (awayMap 𝒜 (f := x j) (hxdi i₀) rfl).toAlgebra
+  let := (awayMap 𝒜 (f := x j) (hxdi i₀) rfl).toAlgebra
   have := Away.isLocalization_mul (hxdi j) (hxdi i₀) rfl (hdi _).ne'
   have hunit : IsUnit (φ (Away.isLocalizationElem (hxdi j) (hxdi i₀))) := isUnit_iff_ne_zero.mpr
     fun rid ↦ hKmax.ne' (.symm (by simpa [ψ, rid, Finset.prod_eq_zero_iff, (hdi _).ne'] using hi1))

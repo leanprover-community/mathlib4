@@ -10,6 +10,7 @@ public import Mathlib.Analysis.Normed.Module.Convex
 public import Mathlib.Analysis.RCLike.TangentCone
 public import Mathlib.Data.Bundle
 public import Mathlib.Geometry.Manifold.HasGroupoid
+public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # `C^n` manifolds (possibly with boundary or corners)
@@ -195,8 +196,8 @@ def ModelWithCorners.ofTargetUniv (𝕜 : Type*) [NontriviallyNormedField 𝕜]
     have : range φ = φ.target := by rw [← φ.image_source_eq_target, hsource, image_univ.symm]
     simp only [this, htarget, dite_else_true]
     intro h
-    letI := h.rclike 𝕜
-    letI := NormedSpace.restrictScalars ℝ 𝕜 E
+    let := h.rclike 𝕜
+    let := NormedSpace.restrictScalars ℝ 𝕜 E
     exact convex_univ
   nonempty_interior' := by
     have : range φ = φ.target := by rw [← φ.image_source_eq_target, hsource, image_univ.symm]
@@ -310,8 +311,8 @@ lemma _root_.Convex.convex_isRCLikeNormedField [NormedSpace ℝ E] [h : IsRCLike
     letI := h.rclike
     letI := NormedSpace.restrictScalars ℝ 𝕜 E
     Convex ℝ s := by
-  letI := h.rclike
-  letI := NormedSpace.restrictScalars ℝ 𝕜 E
+  let := h.rclike
+  let := NormedSpace.restrictScalars ℝ 𝕜 E
   simp only [Convex, StarConvex] at hs ⊢
   intro u hu v hv a b ha hb hab
   convert! hs hu hv ha hb hab using 2
@@ -339,7 +340,7 @@ def ofConvexRange
 
 theorem convex_range [NormedSpace ℝ E] : Convex ℝ (range I) := by
   by_cases h : IsRCLikeNormedField 𝕜
-  · letI : RCLike 𝕜 := h.rclike
+  · let : RCLike 𝕜 := h.rclike
     have W := I.convex_range'
     simp only [h, ↓reduceDIte, toPartialEquiv_coe] at W
     simp only [Convex, StarConvex] at W ⊢
@@ -353,16 +354,16 @@ theorem convex_range [NormedSpace ℝ E] : Convex ℝ (range I) := by
 
 protected theorem uniqueDiffOn : UniqueDiffOn 𝕜 (range I) := by
   by_cases h : IsRCLikeNormedField 𝕜
-  · letI := h.rclike 𝕜
-    letI := NormedSpace.restrictScalars ℝ 𝕜 E
+  · let := h.rclike 𝕜
+    let := NormedSpace.restrictScalars ℝ 𝕜 E
     apply uniqueDiffOn_convex_of_isRCLikeNormedField _ I.nonempty_interior
     simpa [h] using I.convex_range
   · simp [range_eq_univ_of_not_isRCLikeNormedField I h, uniqueDiffOn_univ]
 
 theorem range_subset_closure_interior : range I ⊆ closure (interior (range I)) := by
   by_cases h : IsRCLikeNormedField 𝕜
-  · letI := h.rclike 𝕜
-    letI := NormedSpace.restrictScalars ℝ 𝕜 E
+  · let := h.rclike 𝕜
+    let := NormedSpace.restrictScalars ℝ 𝕜 E
     rw [Convex.closure_interior_eq_closure_of_nonempty_interior (𝕜 := ℝ)]
     · apply subset_closure
     · apply I.convex_range
@@ -512,8 +513,8 @@ def ModelWithCorners.prod {𝕜 : Type u} [NontriviallyNormedField 𝕜] {E : Ty
       have : range (fun (x : ModelProd H H') ↦ (I x.1, I' x.2)) = range (Prod.map I I') := rfl
       rw [this, Set.range_prodMap]
       split_ifs with h
-      · letI := h.rclike
-        letI := NormedSpace.restrictScalars ℝ 𝕜 E; letI := NormedSpace.restrictScalars ℝ 𝕜 E'
+      · let := h.rclike
+        let := NormedSpace.restrictScalars ℝ 𝕜 E; let := NormedSpace.restrictScalars ℝ 𝕜 E'
         exact I.convex_range.prod I'.convex_range
       · simp [range_eq_univ_of_not_isRCLikeNormedField, h]
     nonempty_interior' := by
@@ -535,8 +536,8 @@ def ModelWithCorners.pi {𝕜 : Type u} [NontriviallyNormedField 𝕜] {ι : Typ
   convex_range' := by
     rw [PartialEquiv.pi_apply, Set.range_piMap]
     split_ifs with h
-    · letI := h.rclike
-      letI := fun i ↦ NormedSpace.restrictScalars ℝ 𝕜 (E i)
+    · let := h.rclike
+      let := fun i ↦ NormedSpace.restrictScalars ℝ 𝕜 (E i)
       exact convex_pi fun i _hi ↦ (I i).convex_range
     · simp [range_eq_univ_of_not_isRCLikeNormedField, h]
   nonempty_interior' := by
@@ -751,7 +752,7 @@ theorem contDiffGroupoid_prod {I : ModelWithCorners 𝕜 E H} {I' : ModelWithCor
     e.prod e' ∈ contDiffGroupoid n (I.prod I') := by
   obtain ⟨he, he_symm⟩ := he
   obtain ⟨he', he'_symm⟩ := he'
-  constructor <;> simp only [PartialEquiv.prod_source, OpenPartialHomeomorph.prod_toPartialEquiv,
+  constructor <;> simp only [OpenPartialHomeomorph.prod_toPartialHomeomorph,
     contDiffPregroupoid]
   · have h3 := ContDiffOn.prodMap he he'
     rw [← I.image_eq, ← I'.image_eq, prod_image_image_eq] at h3
@@ -804,7 +805,7 @@ theorem isManifold_of_contDiffOn {𝕜 : Type*} [NontriviallyNormedField 𝕜]
       ContDiffOn 𝕜 n (I ∘ e.symm ≫ₕ e' ∘ I.symm) (I.symm ⁻¹' (e.symm ≫ₕ e').source ∩ range I)) :
     IsManifold I n M where
   compatible := by
-    haveI : HasGroupoid M (contDiffGroupoid n I) := hasGroupoid_of_pregroupoid _ (h _ _)
+    have : HasGroupoid M (contDiffGroupoid n I) := hasGroupoid_of_pregroupoid _ (h _ _)
     apply StructureGroupoid.compatible
 
 /-- For any model with corners, the model space is a `C^n` manifold -/
@@ -1037,7 +1038,7 @@ set_option linter.unusedVariables false in
 The definition of `TangentSpace` is not reducible so that type class inference
 does not pick wrong instances.
 -/
-@[nolint unusedArguments]
+@[nolint unusedArguments, wikidata Q909601]
 def TangentSpace {𝕜 : Type*} [NontriviallyNormedField 𝕜]
     {E : Type u} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
     {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H)
@@ -1070,6 +1071,7 @@ variable (M) in
 -- is empty if the base manifold is empty
 /-- The tangent bundle to a manifold, as a Sigma type. Defined in terms of
 `Bundle.TotalSpace` to be able to put a suitable topology on it. -/
+@[wikidata Q746550]
 abbrev TangentBundle := Bundle.TotalSpace E (TangentSpace I : M → Type _)
 
 end TangentSpace

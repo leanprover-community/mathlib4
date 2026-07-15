@@ -203,7 +203,7 @@ theorem discr_powerBasis_eq_norm [Algebra.IsSeparable K L] :
       (-1) ^ (n * (n - 1) / 2) *
       norm K (aeval pb.gen (minpoly K pb.gen).derivative) := by
   let E := AlgebraicClosure L
-  letI := fun a b : E => Classical.propDecidable (Eq a b)
+  let := fun a b : E => Classical.propDecidable (Eq a b)
   have e : Fin pb.dim ≃ (L →ₐ[K] E) := by
     refine equivOfCardEq ?_
     rw [Fintype.card_fin, AlgHom.card]

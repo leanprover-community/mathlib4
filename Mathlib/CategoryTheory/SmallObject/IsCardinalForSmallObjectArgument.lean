@@ -118,9 +118,9 @@ lemma preservesColimit {A B X Y : C} (i : A ⟶ B) (hi : I i) (f : X ⟶ Y)
 lemma hasColimitsOfShape_discrete (X Y : C) (p : X ⟶ Y) :
     HasColimitsOfShape
       (Discrete (FunctorObjIndex I.homFamily p)) C := by
-  haveI := locallySmall I κ
-  haveI := isSmall I κ
-  haveI := hasCoproducts I κ
+  have := locallySmall I κ
+  have := isSmall I κ
+  have := hasCoproducts I κ
   exact hasColimitsOfShape_of_equivalence
     (Discrete.equivalence (equivShrink.{w} _)).symm
 
@@ -157,10 +157,10 @@ def propArrow : MorphismProperty (Arrow C) := fun _ _ f ↦
 set_option backward.defeqAttrib.useBackward true in
 lemma succStruct_prop_le_propArrow :
     (succStruct I κ).prop ≤ (propArrow.{w} I).functorCategory (Arrow C) := by
-  haveI := locallySmall I κ
-  haveI := isSmall I κ
-  haveI := hasColimitsOfShape_discrete I κ
-  haveI := hasPushouts I κ
+  have := locallySmall I κ
+  have := isSmall I κ
+  have := hasColimitsOfShape_discrete I κ
+  have := hasPushouts I κ
   intro _ _ _ ⟨F⟩ f
   constructor
   · nth_rw 1 [← I.ofHoms_homFamily]
@@ -261,7 +261,7 @@ noncomputable def iterationFunctorMapSuccAppArrowIso (f : Arrow C) (j : κ.ord.T
   Arrow.isoMk (Iso.refl _)
     (((evaluation _ _).obj f).mapIso
       ((succStruct I κ).iterationFunctorObjSuccIso j (not_isMax j))) (by
-    have this := NatTrans.congr_app ((succStruct I κ).iterationFunctor_map_succ j (not_isMax j)) f
+    have := NatTrans.congr_app ((succStruct I κ).iterationFunctor_map_succ j (not_isMax j)) f
     dsimp at this
     dsimp [iterationFunctor]
     rw [id_comp, this, assoc, Iso.inv_hom_id_app, comp_id]
@@ -382,9 +382,9 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma hasRightLiftingProperty_πObj {A B : C} (i : A ⟶ B) (hi : I i) (f : X ⟶ Y) :
     HasLiftingProperty i (πObj I κ f) := ⟨by
-  haveI := hasColimitsOfShape_discrete I κ
-  haveI := hasPushouts I κ
-  haveI := preservesColimit I κ i hi _ (relativeCellComplexιObj I κ f)
+  have := hasColimitsOfShape_discrete I κ
+  have := hasPushouts I κ
+  have := preservesColimit I κ i hi _ (relativeCellComplexιObj I κ f)
   intro g b sq
   obtain ⟨j, t, ht⟩ := Types.jointly_surjective _
     (isColimitOfPreserves (coyoneda.obj (Opposite.op A))

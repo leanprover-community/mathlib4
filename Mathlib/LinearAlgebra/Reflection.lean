@@ -21,8 +21,8 @@ public import Mathlib.Tactic.Module
 
 Given an element `x` in a module `M` together with a linear form `f` on `M` such that `f x = 2`, the
 map `y ↦ y - (f y) • x` is an involutive endomorphism of `M`, such that:
- 1. the kernel of `f` is fixed,
- 2. the point `x` maps to `-x`.
+1. the kernel of `f` is fixed,
+2. the point `x` maps to `-x`.
 
 Such endomorphisms are often called reflections of the module `M`. When `M` carries an inner product
 for which `x` is perpendicular to the kernel of `f`, then (with mild assumptions) the endomorphism
@@ -388,7 +388,7 @@ lemma Dual.eq_of_preReflection_mapsTo' [CharZero R] [IsDomain R] [IsTorsionFree 
     rw [range_inclusion]
     simp
   let x' : span R Φ := ⟨x, hx⟩
-  have this : ∀ {F : Dual R M}, MapsTo (preReflection x F) Φ Φ →
+  have : ∀ {F : Dual R M}, MapsTo (preReflection x F) Φ Φ →
       MapsTo (preReflection x' ((span R Φ).subtype.dualMap F)) Φ' Φ' := by
     intro F hF ⟨y, hy⟩ hy'
     simp only [Φ'] at hy' ⊢
