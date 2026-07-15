@@ -12,13 +12,14 @@ public import Mathlib.AlgebraicGeometry.Birational.Composition
 # Birational maps between schemes
 
 A `BirationalMap` between irreducible schemes is a pair of dominant rational
-maps that are mutually inverse. A `BirationalMapOver` is the variant for
-schemes over a base `S`.
+maps that are mutually inverse. For schemes over a base `S`, the predicate
+`BirationalMap.IsOver` says that a birational map is defined over `S`.
 
 ## Main results
 
-- The birational automorphisms of a scheme `X` form a group. See the group instances on
-  `BirationalMap X X` and `BirationalMapOver S X X`.
+- The birational automorphisms of a scheme `X` form a group, see the group instance on
+  `BirationalMap X X`. Those defined over a base scheme `S` form a subgroup, see
+  `birationalAutOver`.
 - A partial isomorphism gives rise to a birational map, see `PartialIso.toBirationalMap`
   (stacks 0BAA 'if' part).
 
@@ -121,90 +122,28 @@ noncomputable instance : Group (X.BirationalMap X) where
   mul_one := trans_refl
   inv_mul_cancel := symm_trans_self_id
 
-end BirationalMap
-
 /-- A birational map between irreducible schemes `X` and `Y` over a base scheme `S`: a
 `BirationalMap` whose underlying forward rational map is an `S`-map.
 The inverse is then automatically an `S`-map too, see `BirationalMapOver.isOver_inv`. -/
-structure BirationalMapOver (S X Y : Scheme.{u}) [IrreducibleSpace X] [IrreducibleSpace Y]
-    [X.Over S] [Y.Over S] extends BirationalMap X Y where
-  isOver_hom : hom.IsOver S
+abbrev IsOver (S : Scheme.{u}) [X.Over S] [Y.Over S] (f : X.BirationalMap Y) : Prop :=
+  f.hom.IsOver S
 
-attribute [instance] BirationalMapOver.isOver_hom
+instance (S : Scheme.{u}) [X.Over S] [Y.Over S] (f : BirationalMap X Y) [hf : f.IsOver S] :
+    f.inv.IsOver S := by
+  simp [RationalMap.isOver_iff, ← RationalMap.isOver_iff.mp hf, ← RationalMap.comp_toRationalMap,
+    ← RationalMap.comp_assoc]
 
-namespace BirationalMapOver
+end BirationalMap
 
-variable {S X Y Z : Scheme.{u}} [IrreducibleSpace X] [IrreducibleSpace Y] [IrreducibleSpace Z]
-  [X.Over S] [Y.Over S] [Z.Over S]
+variable {X Y : Scheme.{u}} [IrreducibleSpace X] [IrreducibleSpace Y]
 
-instance isOver_inv (f : BirationalMapOver S X Y) : f.inv.IsOver S := by
-  simp [RationalMap.isOver_iff, ← RationalMap.isOver_iff.mp f.isOver_hom,
-    ← RationalMap.comp_toRationalMap, ← RationalMap.comp_assoc]
-
-@[ext, grind ext]
-lemma ext (f g : BirationalMapOver S X Y) (e : f.toBirationalMap = g.toBirationalMap) :
-    f = g := by
-  cases f; cases g; cases e; rfl
-
-variable (S X) in
-/-- The identity birational map on `X` over `S`. -/
-@[simps!, refl]
-def refl : BirationalMapOver S X X where
-  __ := BirationalMap.refl X
-  isOver_hom := inferInstanceAs ((RationalMap.id X).IsOver S)
-
-/-- The inverse of a birational map over `S`. -/
-@[simps!, symm]
-def symm (f : BirationalMapOver S X Y) : BirationalMapOver S Y X where
-  __ := f.toBirationalMap.symm
-  isOver_hom := inferInstanceAs (f.inv.IsOver S)
-
-/-- The composition of two birational maps over `S`. -/
-@[simps!, trans]
-noncomputable def trans (f : BirationalMapOver S X Y) (g : BirationalMapOver S Y Z) :
-    BirationalMapOver S X Z where
-  __ := f.toBirationalMap.trans g.toBirationalMap
-  isOver_hom := inferInstanceAs ((f.hom.comp g.hom).IsOver S)
-
-@[simp]
-theorem refl_trans (f : BirationalMapOver S X Y) : (refl S X).trans f = f := by
-  ext; simp
-
-@[simp]
-theorem trans_refl (f : BirationalMapOver S X Y) : f.trans (refl S Y) = f := by
-  ext; simp
-
-@[simp, grind _=_]
-theorem trans_symm (f : BirationalMapOver S X Y) (g : BirationalMapOver S Y Z) :
-    (f.trans g).symm = g.symm.trans f.symm := by
-  ext; simp
-
-@[simp]
-theorem symm_trans_self_id (f : BirationalMapOver S X Y) : f.symm.trans f = refl S Y := by
-  ext; simp
-
-@[simp]
-theorem self_trans_symm_id (f : BirationalMapOver S X Y) : f.trans f.symm = refl S X := by
-  ext; simp
-
-@[simp, grind _=_]
-theorem trans_assoc {W : Scheme.{u}} [IrreducibleSpace W] [W.Over S]
-    (f : BirationalMapOver S X Y) (g : BirationalMapOver S Y Z) (h : BirationalMapOver S Z W) :
-    (f.trans g).trans h = f.trans (g.trans h) := by
-  ext; simp only [BirationalMapOver.trans_hom, f.hom.comp_assoc]
-
-noncomputable instance : Group (BirationalMapOver S X X) where
-  one := refl S X
-  inv := symm
-  mul := trans
-  mul_assoc := trans_assoc
-  one_mul := refl_trans
-  mul_one := trans_refl
-  inv_mul_cancel := symm_trans_self_id
-
-end BirationalMapOver
-
-variable {S X Y : Scheme.{u}} [IrreducibleSpace X] [IrreducibleSpace Y]
+/-- The subgroup of the group of birational self-maps of `X` consisting of those maps
+that are defined over the base scheme `S`. -/
+def birationalAutOver (S : Scheme.{u}) [X.Over S] : Subgroup (X.BirationalMap X) where
+  carrier := { f | f.IsOver S }
+  one_mem' := inferInstanceAs ((RationalMap.id X).IsOver S)
+  mul_mem' {f g} (_ : f.IsOver S) (_ : g.IsOver S) := inferInstanceAs ((f.hom.comp g.hom).IsOver S)
+  inv_mem' {f} (_ : f.IsOver S) := inferInstanceAs (f.inv.IsOver S)
 
 lemma PartialIso.toPartialMap_comp_symm (f : X.PartialIso Y) :
     f.toPartialMap.comp f.symm.toPartialMap =
@@ -250,13 +189,10 @@ def PartialIso.toBirationalMap (f : X.PartialIso Y) : X.BirationalMap Y where
       PartialIso.symm_toPartialMap_comp]
     apply PartialMap.restrict_equiv
 
-/-- A partial isomorphism over `S` gives rise to a birational map over `S`. -/
-@[simps!, stacks 0BAA "(2) 'if' part"]
-def PartialIso.toBirationalMapOver [X.Over S] [Y.Over S] (f : X.PartialIso Y)
-    (hf : f.IsOver (X ↘ S) (Y ↘ S)) : BirationalMapOver S X Y where
-  __ := f.toBirationalMap
-  isOver_hom :=
-    have : PartialMap.IsOver S f.toPartialMap := ⟨hf⟩
-    inferInstanceAs (RationalMap.IsOver S f.toRationalMap)
+@[stacks 0BAA "(2) 'if' part"]
+lemma PartialIso.isOver_toBirationalMap (S : Scheme.{u}) [X.Over S] [Y.Over S] (f : X.PartialIso Y)
+    (hf : f.IsOver (X ↘ S) (Y ↘ S)) : f.toBirationalMap.IsOver S :=
+  have : PartialMap.IsOver S f.toPartialMap := ⟨hf⟩
+  inferInstanceAs (RationalMap.IsOver S f.toRationalMap)
 
 end AlgebraicGeometry.Scheme
