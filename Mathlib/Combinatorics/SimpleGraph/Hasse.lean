@@ -132,7 +132,16 @@ namespace Walk
 
 variable (n : ℕ)
 
-/-- The walk in a path graph going through all vertices in order -/
+/-- The walk in a path graph going from `i` to `j`. -/
+def ofPathGraph' : ∀ {n} i j, (pathGraph n).Walk i j
+  | n, ⟨0, _⟩, ⟨0, _⟩ => nil
+  | n, ⟨0, h₀⟩, ⟨j + 1, _⟩ => ofPathGraph' ⟨0, h₀⟩ ⟨j, by lia⟩ |>.concat <| by simp [pathGraph_adj]
+  | n, ⟨i + 1, _⟩, ⟨0, h₀⟩ => ofPathGraph' ⟨i, by lia⟩ ⟨0, h₀⟩ |>.cons <| by simp [pathGraph_adj]
+  | n + 1, ⟨i + 1, _⟩, ⟨j + 1, _⟩ =>
+    ofPathGraph' ⟨i, by lia⟩ ⟨j, by lia⟩ |>.map <| Embedding.toHom <|
+      .hasse (Fin.succOrderEmb _) <| by simp [← Set.Iio_union_Ioi, Set.ordConnected_Ioi]
+
+/-- The walk in a path graph going through all vertices in order. -/
 def ofPathGraph (n : ℕ) : (pathGraph (n + 1)).Walk 0 (Fin.last n) :=
   match n with
   | .zero => .nil
