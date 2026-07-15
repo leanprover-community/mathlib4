@@ -22,7 +22,7 @@ finite `A`-length quotient.
 ## Main results
 
 - `krullAkizuki_isNoetherianRing`: `B` is a Noetherian ring.
-- `krullAkizuki_dimensionLEOne`: `B` has Krull dimension at most one.
+- `krullAkizuki_krullDimLE_one`: `B` has Krull dimension at most one.
 - `krullAkizuki_quotient_ideal_finiteLength`: every nonzero ideal quotient `B ⧸ J` has finite
   `A`-length.
 - `krull_akizuki`: combined statement of all three conclusions.
@@ -40,45 +40,6 @@ open scoped Pointwise
 /-! ### Auxiliary lemmas -/
 
 section Lemmata
-
-variable {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
-
-/-- For an endomorphism `φ` of a module of finite length, the length of `ker φ` equals the
-length of `coker φ`. -/
-theorem length_ker_eq_length_coker
-    (φ : M →ₗ[R] M) (hlen : Module.length R M < ⊤) :
-    Module.length R (LinearMap.ker φ) = Module.length R (M ⧸ LinearMap.range φ) := by
-  have h1 : Module.length R M =
-      Module.length R (LinearMap.ker φ) + Module.length R (LinearMap.range φ) := by
-    convert Module.length_eq_add_of_exact (LinearMap.ker φ).subtype (LinearMap.rangeRestrict φ)
-      Subtype.coe_injective
-      (fun x => ⟨Classical.choose x.2, Subtype.ext (Classical.choose_spec x.2)⟩)
-      (by rw [LinearMap.exact_iff, Submodule.range_subtype, LinearMap.ker_rangeRestrict]) using 1
-  have h2 : Module.length R M =
-      Module.length R (LinearMap.range φ) + Module.length R (M ⧸ LinearMap.range φ) := by
-    convert Module.length_eq_add_of_exact (LinearMap.range φ).subtype
-      (Submodule.mkQ (LinearMap.range φ))
-      Subtype.coe_injective (Submodule.mkQ_surjective _)
-      (by rw [LinearMap.exact_iff, Submodule.range_subtype, Submodule.ker_mkQ]) using 1
-  obtain hr | hr := eq_or_ne (Module.length R (LinearMap.range φ)) ⊤
-  · exfalso; rw [hr] at h2; simp only [top_add] at h2; exact hlen.ne h2
-  · exact WithTop.add_right_cancel hr (h1.symm.trans (h2.trans (add_comm _ _)))
-
-/-- The length of `M ⧸ S` decomposes as the sum of `M ⧸ T` and `T ⧸ S` for `S ≤ T`. -/
-lemma length_quotient_chain
-    (S T : Submodule R M) (hST : S ≤ T) :
-    Module.length R (M ⧸ S) =
-      Module.length R (M ⧸ T) + Module.length R (T ⧸ S.comap T.subtype) := by
-  have h_iso : (T ⧸ S.comap T.subtype) ≃ₗ[R] T.map S.mkQ :=
-    (Submodule.quotEquivOfEq _ _ (by rw [LinearMap.ker_comp, Submodule.ker_mkQ])).symm.trans <|
-      (LinearMap.quotKerEquivRange (S.mkQ.comp T.subtype)).trans <|
-      LinearEquiv.ofEq _ _ (by rw [LinearMap.range_comp, Submodule.range_subtype])
-  rw [Module.length_eq_add_of_exact (T.map S.mkQ).subtype (T.map S.mkQ).mkQ
-        (Submodule.subtype_injective _) (Submodule.mkQ_surjective _)
-        (LinearMap.exact_subtype_mkQ _),
-      (Submodule.quotientQuotientEquivQuotient S T hST).length_eq,
-      ← h_iso.length_eq,
-      add_comm]
 
 variable (A : Type*) [CommRing A]
 
@@ -362,7 +323,7 @@ lemma build_fg_witness
       ⟨y, Set.mem_univ y, hy_eq⟩
   exact (q.toFun i).property hx_top
 
-variable [Ring.DimensionLEOne A]
+variable [IsDomain A] [Ring.KrullDimLE 1 A]
 
 /-- The quotient of a one-dimensional Noetherian ring by a nonzero principal ideal is
 Artinian. -/
@@ -372,7 +333,7 @@ theorem quotient_isArtinian_of_nonzero
   rw [isArtinianRing_iff_krullDimLE_zero, Ring.krullDimLE_zero_iff]
   intro I hI
   have h_max : (Ideal.comap (Ideal.Quotient.mk (Ideal.span {a})) I).IsMaximal :=
-    Ideal.IsPrime.isMaximal inferInstance fun h_bot =>
+    Ideal.IsPrime.isMaximal_of_ne_bot inferInstance fun h_bot =>
       ha <| Ideal.mem_bot.mp (h_bot ▸ Ideal.mem_comap.mpr
         ((Ideal.Quotient.eq_zero_iff_mem.mpr
           (Ideal.mem_span_singleton_self a)).symm ▸ Submodule.zero_mem I))
@@ -383,9 +344,7 @@ theorem quotient_isArtinian_of_nonzero
   exact (Ideal.map_eq_top_or_isMaximal_of_surjective _ Ideal.Quotient.mk_surjective h_max).elim
     (fun h_top => absurd h_top hI.ne_top) id
 
-variable [IsDomain A]
-
-/-- If `N` is finitely generated and every element of `N` can be scaled by a non-zero divisor 
+/-- If `N` is finitely generated and every element of `N` can be scaled by a non-zero divisor
 into `F`, then `N ⧸ F` has finite length. -/
 theorem finiteLength_quotient_of_fg
     (F N : Submodule A M)
@@ -420,8 +379,8 @@ theorem finiteLength_quotient_of_fg
 
 variable [NoZeroSMulDivisors A M]
 
-/-- The length of the quotient `N ⧸ aN` equals the length of `F ⧸ aF` when `F ≤ N` 
-with `N` finitely generated, the element `a` non-zero, and 
+/-- The length of the quotient `N ⧸ aN` equals the length of `F ⧸ aF` when `F ≤ N`
+with `N` finitely generated, the element `a` non-zero, and
 every element of `N` can be scaled into `F`. -/
 theorem length_quotient_smul_eq_free
     (F N : Submodule A M) (a : A) (ha : a ≠ 0)
@@ -626,7 +585,7 @@ theorem krullAkizuki_ideal_inter_nonzero
   exact ideal_inter_of_aeval_eq_zero A B J b hb hbJ p hp <| hinj <| by
     rw [map_zero, ← Polynomial.aeval_algebraMap_apply L b p, heval_L]
 
-variable [IsNoetherianRing A] [Ring.DimensionLEOne A]
+variable [IsNoetherianRing A] [Ring.KrullDimLE 1 A]
 
 /-- The quotient of `B` by any nonzero ideal has finite `A`-length. -/
 theorem krullAkizuki_quotient_ideal_finiteLength
@@ -694,22 +653,22 @@ theorem krullAkizuki_isNoetherianRing :
       inf_of_le_right (Ideal.span_le.mpr (Set.singleton_subset_iff.mpr hbJ))]⟩
 
 /-- **Krull–Akizuki theorem** (dimension part): `B` has Krull dimension at most one. -/
-theorem krullAkizuki_dimensionLEOne :
-    Ring.DimensionLEOne B :=
-  ⟨fun {p} hp_ne hp_prime => by
+theorem krullAkizuki_krullDimLE_one :
+    Ring.KrullDimLE 1 B :=
+  Ring.KrullDimLE.mk₁' fun {p} hp_ne hp_prime => by
     letI : IsDomain (B ⧸ p) := Ideal.Quotient.isDomain p
     haveI : IsArtinianRing (B ⧸ p) := isArtinian_of_tower B (isArtinian_of_tower A
       (isFiniteLength_iff_isNoetherian_isArtinian.mp <| Module.length_ne_top_iff.mp <|
         ne_of_lt (krullAkizuki_quotient_ideal_finiteLength A K L B p hp_ne)).2)
-    exact Ideal.Quotient.maximal_of_isField p (IsArtinianRing.isField_of_isDomain (B ⧸ p))⟩
+    exact Ideal.Quotient.maximal_of_isField p (IsArtinianRing.isField_of_isDomain (B ⧸ p))
 
 /-- **Krull–Akizuki theorem**: `B` is Noetherian, has Krull dimension at most one, and
 every nonzero ideal quotient has finite `A`-length. -/
 theorem krull_akizuki :
     IsNoetherianRing B ∧
-    Ring.DimensionLEOne B ∧
+    Ring.KrullDimLE 1 B ∧
     ∀ J : Ideal B, J ≠ ⊥ → Module.length A (B ⧸ J) < ⊤ :=
-  ⟨krullAkizuki_isNoetherianRing A K L B, krullAkizuki_dimensionLEOne A K L B,
+  ⟨krullAkizuki_isNoetherianRing A K L B, krullAkizuki_krullDimLE_one A K L B,
     krullAkizuki_quotient_ideal_finiteLength A K L B⟩
 
 end KrullAkizuki
