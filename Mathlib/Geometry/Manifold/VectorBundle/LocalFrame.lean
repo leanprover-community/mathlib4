@@ -178,9 +178,6 @@ noncomputable def fintypeOfFiniteDimensional [VectorBundle 𝕜 F V] [FiniteDime
     exact Finite.equiv phi.symm
   exact FiniteDimensional.fintypeBasisIndex (hs.toBasisAt hx)
 
-@[deprecated (since := "2025-12-19")]
-alias fintype_of_finiteDimensional := fintypeOfFiniteDimensional
-
 open scoped Classical in
 /-- Coefficients of a section `s` of `V` w.r.t. a local frame `{s i}` on `u`.
 Outside of `u`, this returns the junk value 0. -/

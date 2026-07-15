@@ -336,10 +336,6 @@ lemma continuous_comap (f : R →+* S) : Continuous (comap f) := by
   rintro _ ⟨s, rfl⟩
   exact ⟨_, preimage_comap_zeroLocus_aux f s⟩
 
-@[deprecated "RingHom.specComap and PrimeSpectrum.comap were unified,\
-so this lemma is now a no-op." (since := "2025-12-10"), nolint synTaut]
-lemma comap_apply (f : R →+* S) (x : PrimeSpectrum S) : comap f x = comap f x := rfl
-
 variable (f : R →+* S)
 
 variable (S)
@@ -353,9 +349,6 @@ theorem localization_comap_injective [Algebra R S] (M : Submonoid R) [IsLocaliza
   ext1
   exact h
 
-@[deprecated (since := "2025-12-10")]
-alias localization_specComap_injective := localization_comap_injective
-
 theorem localization_comap_range [Algebra R S] (M : Submonoid R) [IsLocalization M S] :
     Set.range (comap (algebraMap R S)) = { p | Disjoint (M : Set R) p.asIdeal } := by
   refine Set.ext fun x ↦ ⟨?_, fun h ↦ ?_⟩
@@ -364,8 +357,6 @@ theorem localization_comap_range [Algebra R S] (M : Submonoid R) [IsLocalization
   · use ⟨x.asIdeal.map (algebraMap R S), IsLocalization.isPrime_of_isPrime_disjoint M S _ x.2 h⟩
     ext1
     exact IsLocalization.under_map_of_isPrime_disjoint M S x.2 h
-
-@[deprecated (since := "2025-12-10")] alias localization_specComap_range := localization_comap_range
 
 theorem localization_comap_isInducing [Algebra R S] (M : Submonoid R) [IsLocalization M S] :
     IsInducing (comap (algebraMap R S)) := by
@@ -1235,9 +1226,6 @@ lemma _root_.RingHom.IsIntegral.comap_surjective {f : R →+* S} (hf : f.IsInteg
   algebraize [f]
   have : FaithfulSMul R S := (faithfulSMul_iff_algebraMap_injective R S).mpr hinj
   exact Algebra.IsIntegral.comap_surjective _ _
-
-@[deprecated (since := "2025-12-10")]
-alias _root_.RingHom.IsIntegral.specComap_surjective := _root_.RingHom.IsIntegral.comap_surjective
 
 end IsIntegral
 

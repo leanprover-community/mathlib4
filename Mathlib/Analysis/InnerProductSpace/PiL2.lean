@@ -559,9 +559,6 @@ protected theorem orthogonalProjectionOnto_apply_eq_sum {U : Submodule 𝕜 E}
   simpa only [b.repr_apply_apply, inner_orthogonalProjectionOnto_eq_of_mem_left] using
     (b.sum_repr (U.orthogonalProjectionOnto x)).symm
 
-@[deprecated (since := "2025-12-31")] alias orthogonalProjection_eq_sum :=
-  OrthonormalBasis.orthogonalProjectionOnto_apply_eq_sum
-
 @[deprecated (since := "2026-05-05")] alias orthogonalProjection_apply_eq_sum :=
   OrthonormalBasis.orthogonalProjectionOnto_apply_eq_sum
 
