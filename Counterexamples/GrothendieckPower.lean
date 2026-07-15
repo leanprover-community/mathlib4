@@ -301,9 +301,7 @@ abbrev B := QuadraticAlgebra R 0 (a ^ 2)
 abbrev VB : B := QuadraticAlgebra.omega
 
 @[simp] theorem VB_relation : VB ^ 2 = algebraMap R B (a ^ 2) * VB := by
-  unfold VB
-  rw [pow_two, QuadraticAlgebra.omega_mul_omega_eq_mk]
-  ext <;> simp [pow_two]
+  simp [pow_two, QuadraticAlgebra.omega_mul_omega_eq_algebraMap]
 
 /-- The image of `a` in `B`. -/
 abbrev aB : B := algebraMap R B a
@@ -590,16 +588,10 @@ noncomputable def comulB : B →ₐ[R] A ⊗[R] A :=
   quadratic_lift_omega deltaV _
 
 theorem comulB_aB : comulB aB = aaT := by
-  calc
-    comulB aB = algebraMap R (A ⊗[R] A) a := comulB.commutes a
-    _ = a • (1 : A ⊗[R] A) := Algebra.algebraMap_eq_smul_one a
-    _ = aaT := aaT_smul.symm
+  rw [comulB.commutes, Algebra.algebraMap_eq_smul_one, ← aaT_smul]
 
 theorem comulB_bB : comulB bB = bbT := by
-  calc
-    comulB bB = algebraMap R (A ⊗[R] A) b := comulB.commutes b
-    _ = b • (1 : A ⊗[R] A) := Algebra.algebraMap_eq_smul_one b
-    _ = bbT := bbT_smul.symm
+  rw [comulB.commutes, Algebra.algebraMap_eq_smul_one, ← bbT_smul]
 
 private theorem comulB_neg (x : B) : comulB (-x) = -comulB x :=
   map_neg comulB x
@@ -673,22 +665,13 @@ theorem comul_aA : comul aA = aaT := by
     _ = aaT := aaT_smul.symm
 
 theorem comul_bA : comul bA = bbT := by
-  calc
-    comul bA = algebraMap R (A ⊗[R] A) b := comul.commutes b
-    _ = b • (1 : A ⊗[R] A) := Algebra.algebraMap_eq_smul_one b
-    _ = bbT := bbT_smul.symm
+  rw [comul.commutes, Algebra.algebraMap_eq_smul_one, ← bbT_smul]
 
 theorem left_lambda : left lambda = l₁ := by
-  have hone : left (1 : A) = 1 := left.map_one
-  unfold lambda l₁
-  simp only [map_mul, map_add]
-  rw [hone]
+  simp only [lambda, map_mul, map_add, map_one]
 
 theorem right_lambda : right lambda = l₂ := by
-  have hone : right (1 : A) = 1 := right.map_one
-  unfold lambda l₂
-  simp only [map_mul, map_add]
-  rw [hone, right_aA, right_bA]
+  simp only [lambda, map_mul, map_add, map_one, right_aA, right_bA]
 
 @[simp] theorem comul_lambda : comul lambda = left lambda * right lambda := by
   rw [left_lambda, right_lambda]
