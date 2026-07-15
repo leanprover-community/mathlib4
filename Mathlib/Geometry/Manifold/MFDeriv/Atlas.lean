@@ -225,6 +225,21 @@ theorem OpenPartialHomeomorph.mdifferentiableOn_extend (he : e ∈ maximalAtlas 
     MDiff[e.source] (e.extend I) :=
   e.contMDiffOn_extend he |>.mdifferentiableOn (by simp)
 
+variable {z : E}
+
+theorem mdifferentiableWithinAt_extend_symm
+    (he : e ∈ maximalAtlas I 1 M) (h : z ∈ (e.extend I).target) :
+    MDiffAt[range I] (e.extend I).symm z := by
+  have Z : MDiffAt[range ↑I] I.symm z :=
+    I.mdifferentiableWithinAt_symm (e.extend_target_subset_range h)
+  apply MDifferentiableAt.comp_mdifferentiableWithinAt _ _ Z
+  exact mdifferentiableAt_symm_of_mem_maximalAtlas he (by simp_all)
+
+theorem mdifferentiableOn_extend_symm (he : e ∈ maximalAtlas I 1 M) :
+    MDiff[(e.extend I).target] (e.extend I).symm := by
+  intro y hy
+  exact mdifferentiableWithinAt_extend_symm he hy |>.mono (e.extend_target_subset_range)
+
 end
 
 section extChartAt
@@ -246,20 +261,15 @@ theorem mdifferentiableAt_extChartAt (h : y ∈ (chartAt H x).source) :
 theorem mdifferentiableOn_extChartAt : MDiff[(chartAt H x).source] (extChartAt I x) :=
   fun _y hy ↦ (hasMFDerivWithinAt_extChartAt hy).mdifferentiableWithinAt
 
+variable {e : OpenPartialHomeomorph M H}
+
 theorem mdifferentiableWithinAt_extChartAt_symm (h : z ∈ (extChartAt I x).target) :
     MDiffAt[range I] (extChartAt I x).symm z := by
-  have Z := I.mdifferentiableWithinAt_symm (extChartAt_target_subset_range x h)
-  apply MDifferentiableAt.comp_mdifferentiableWithinAt (I' := I) _ _ Z
-  apply mdifferentiableAt_atlas_symm (ChartedSpace.chart_mem_atlas x)
-  simp only [extChartAt, OpenPartialHomeomorph.extend, PartialEquiv.trans_target,
-    ModelWithCorners.target_eq, ModelWithCorners.toPartialEquiv_coe_symm, mem_inter_iff, mem_range,
-    mem_preimage] at h
-  exact h.2
+  apply mdifferentiableWithinAt_extend_symm ?_ h
+  exact IsManifold.chart_mem_maximalAtlas x
 
-theorem mdifferentiableOn_extChartAt_symm :
-    MDiff[(extChartAt I x).target] (extChartAt I x).symm := by
-  intro y hy
-  exact (mdifferentiableWithinAt_extChartAt_symm hy).mono (extChartAt_target_subset_range x)
+theorem mdifferentiableOn_extChartAt_symm : MDiff[(extChartAt I x).target] (extChartAt I x).symm :=
+  mdifferentiableOn_extend_symm (IsManifold.chart_mem_maximalAtlas x)
 
 /-- The composition of the derivative of `extChartAt` with the derivative of the inverse of
 `extChartAt` gives the identity.
@@ -342,17 +352,8 @@ lemma isInvertible_mfderivWithin_extChartAt_symm {y : E} (hy : y ∈ (extChartAt
     (mfderivWithin_extChartAt_symm_comp_mfderiv_extChartAt hy)
     (mfderiv_extChartAt_comp_mfderivWithin_extChartAt_symm hy)
 
-lemma isInvertible_mfderiv_extChartAt {y : M} (hy : y ∈ (extChartAt I x).source) :
-    (mfderiv% (extChartAt I x) y).IsInvertible := by
-  have h'y : extChartAt I x y ∈ (extChartAt I x).target := (extChartAt I x).map_source hy
-  have Z := ContinuousLinearMap.IsInvertible.of_inverse
-    (mfderiv_extChartAt_comp_mfderivWithin_extChartAt_symm h'y)
-    (mfderivWithin_extChartAt_symm_comp_mfderiv_extChartAt h'y)
-  have : (extChartAt I x).symm ((extChartAt I x) y) = y := (extChartAt I x).left_inv hy
-  rwa [this] at Z
-
-variable {e : OpenPartialHomeomorph M H} (he : e ∈ IsManifold.maximalAtlas I 1 M)
-lemma isInvertible_mfderiv_extend {y : M} (hy : y ∈ (e.extend I).source) :
+variable (he : e ∈ IsManifold.maximalAtlas I 1 M)
+lemma isInvertible_mfderiv_extend {y : M} (hy : y ∈ e.source) :
     (mfderiv% (e.extend I) y).IsInvertible := by
   have h'y : e.extend I y ∈ (e.extend I).target := (e.extend I).map_source hy
   sorry -- TODO: generalise more basic lemmas!
