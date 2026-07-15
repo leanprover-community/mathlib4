@@ -64,6 +64,7 @@ class ModObj (X : D) where
   /-- The action map is compatible with multiplication. -/
   mul_smul (X) : μ ⊵ₗ X ≫ smul = (αₗ M M X).hom ≫ M ⊴ₗ smul ≫ smul := by cat_disch
 
+set_option linter.translateOverwrite false in
 attribute [to_additive existing (attr := reassoc (attr := simp))] ModObj.mul_smul ModObj.one_smul
 
 
@@ -191,6 +192,7 @@ alias IsMod_Hom := IsModHom
 @[deprecated (since := "2026-04-21")]
 alias IsMod_Hom.smul_hom := IsModHom.smul_hom
 
+set_option linter.translateOverwrite false in
 attribute [to_additive existing (attr := reassoc (attr := simp))] IsModHom.smul_hom
 
 variable {M N O : D} [ModObj A M] [ModObj A N] [ModObj A O]
@@ -264,7 +266,6 @@ structure Hom (M N : Mod D A) where
   [isModHom : IsModHom A hom]
 
 attribute [instance] Hom.isModHom
-attribute [to_additive existing (attr := instance)] Hom.isModHom
 
 /-- An alternative constructor for `Hom`,
 taking a morphism without a `[IsModHom]` instance, as well as the relevant

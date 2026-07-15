@@ -190,8 +190,8 @@ lemma rothNumberNat_le_ruzsaSzemerediNumberNat (n : ℕ) :
   open scoped Fin.CommRing in
   calc
     (2 * n + 1) * rothNumberNat n
-    _ = Fintype.card α * addRothNumber (Iio (n : α)) := by
-      rw [Fin.addRothNumber_eq_rothNumberNat le_rfl, Fintype.card_fin]
+    _ = Fintype.card α * addRothNumber (Iio (⟨n, by lia⟩ : α)) := by
+      rw [Fin.addRothNumber_eq_rothNumberNat (by simp), Fintype.card_fin]
     _ ≤ Fintype.card α * addRothNumber (univ : Finset α) := by
       gcongr; exact subset_univ _
     _ ≤ ruzsaSzemerediNumber (Sum α (Sum α α)) := addRothNumber_le_ruzsaSzemerediNumber _

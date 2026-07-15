@@ -561,6 +561,16 @@ theorem comap_map_sup_of_comap_le {f : M →ₛₗ[τ₁₂] M₂} {p : Submodul
   rw [add_comm, ← eq_sub_iff_add_eq, ← map_sub] at eq; subst eq
   simpa using p.add_mem (le hz) hy
 
+lemma disjoint_map_of_ker_le_right {f : M →ₛₗ[τ₁₂] M₂} {p q : Submodule R M}
+    (hpq : Disjoint p q) (hker : f.ker ≤ q) : Disjoint (p.map f) (q.map f) := by
+  rw [disjoint_iff, map_inf_eq_map_inf_comap, comap_map_eq, eq_bot_iff, map_le_iff_le_comap,
+    comap_bot, sup_eq_left.mpr hker, hpq.eq_bot]
+  exact bot_le
+
+lemma disjoint_map_of_ker_le_left {f : M →ₛₗ[τ₁₂] M₂} {p q : Submodule R M}
+    (hpq : Disjoint p q) (hker : f.ker ≤ p) : Disjoint (p.map f) (q.map f) :=
+  disjoint_map_of_ker_le_right hpq.symm hker |>.symm
+
 theorem isCoatom_comap_or_eq_top (f : M →ₛₗ[τ₁₂] M₂) {p : Submodule R₂ M₂} (hp : IsCoatom p) :
     IsCoatom (comap f p) ∨ comap f p = ⊤ :=
   or_iff_not_imp_right.mpr fun h ↦ ⟨h, fun q lt ↦ by

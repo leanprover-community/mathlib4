@@ -66,7 +66,7 @@ universe u v w z
 variable {α : Sort u} {β : Sort v} {γ : Sort w}
 
 /-- `α ≃ β` is the type of functions from `α → β` with a two-sided inverse. -/
-structure Equiv (α : Sort*) (β : Sort _) where
+structure Equiv (α β : Sort*) where
   /-- The forward map of an equivalence.
 
   Do NOT use directly. Use the coercion instead. -/
