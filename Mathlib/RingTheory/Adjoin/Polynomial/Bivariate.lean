@@ -6,7 +6,7 @@ Authors: Xavier Généreux, María Inés de Frutos Fernández
 module
 
 public import Mathlib.Algebra.Polynomial.Bivariate
-public import Mathlib.Algebra.Ring.Defs
+public import Mathlib.RingTheory.Adjoin.Polynomial.Transcendental
 
 /-!
 # Bivariate polynomials and adjoining transcendental elements
