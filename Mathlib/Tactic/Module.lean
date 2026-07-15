@@ -266,7 +266,7 @@ the same `ℕ`-component `k`, then the expressions `x₁` and `x₂` are equal.
 The construction is as follows: merge the two lists, except that if pairs `(a₁, x₁)` and `(a₂, x₂)`
 appear in `l₁`, `l₂` respectively with the same `ℕ`-component `k`, then contribute a term
 `(a₁ + a₂, x₁)` to the output list with `ℕ`-component `k`. -/
-def add (iR : Q(Semiring $R)) : qNF R M → qNF R M → qNF R M
+meta def add (iR : Q(Semiring $R)) : qNF R M → qNF R M → qNF R M
   | [], l => l
   | l, [] => l
   | ((a₁, x₁), k₁) ::ᵣ t₁, ((a₂, x₂), k₂) ::ᵣ t₂ =>
@@ -281,7 +281,7 @@ def add (iR : Q(Semiring $R)) : qNF R M → qNF R M → qNF R M
 and a natural number), recursively construct a proof that in the `$R`-module `$M`, the sum of the
 "linear combinations" represented by `l₁` and `l₂` is the linear combination represented by
 `Module.qNF.add iR l₁ l₁`. -/
-def mkAddProof {iR : Q(Semiring $R)} {iM : Q(AddCommMonoid $M)} (iRM : Q(Module $R $M))
+meta def mkAddProof {iR : Q(Semiring $R)} {iM : Q(AddCommMonoid $M)} (iRM : Q(Module $R $M))
     (l₁ l₂ : qNF R M) :
     Q(NF.eval $(l₁.toNF) + NF.eval $(l₂.toNF) = NF.eval $((qNF.add iR l₁ l₂).toNF)) :=
   match l₁, l₂ with

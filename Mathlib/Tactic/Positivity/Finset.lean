@@ -27,7 +27,7 @@ open Qq Lean Meta Finset
 
 It calls `Mathlib.Meta.proveFinsetNonempty` to attempt proving that the finset is nonempty. -/
 @[positivity Finset.card _]
-def evalFinsetCard : PositivityExt where eval {u α} _ pα? e :=
+meta def evalFinsetCard : PositivityExt where eval {u α} _ pα? e :=
   match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℕ), ~q(Finset.card $s) =>
@@ -38,7 +38,7 @@ def evalFinsetCard : PositivityExt where eval {u α} _ pα? e :=
 
 /-- Extension for `Fintype.card`. `Fintype.card α` is positive if `α` is nonempty. -/
 @[positivity Fintype.card _]
-def evalFintypeCard : PositivityExt where eval {u α} _ pα? e :=
+meta def evalFintypeCard : PositivityExt where eval {u α} _ pα? e :=
   match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℕ), ~q(@Fintype.card $β $instβ) =>
@@ -51,7 +51,7 @@ def evalFintypeCard : PositivityExt where eval {u α} _ pα? e :=
 
 It calls `Mathlib.Meta.proveFinsetNonempty` to attempt proving that the finset is nonempty. -/
 @[positivity Finset.dens _]
-def evalFinsetDens : PositivityExt where eval {u 𝕜} _ pα? e :=
+meta def evalFinsetDens : PositivityExt where eval {u 𝕜} _ pα? e :=
   match pα? with | none => pure .none | some _ => do
   match u, 𝕜, e with
   | 0, ~q(ℚ≥0), ~q(@Finset.dens $α $instα $s) =>
@@ -71,7 +71,7 @@ example (s : Finset ℕ) (f : ℕ → ℤ) (hf : ∀ n, 0 ≤ f n) : 0 ≤ s.sum
 because `compareHyp` can't look for assumptions behind binders.
 -/
 @[positivity Finset.sum _ _]
-def evalFinsetSum : PositivityExt where eval {u α} zα pα? e :=
+meta def evalFinsetSum : PositivityExt where eval {u α} zα pα? e :=
   match pα? with
   | none => pure .none -- TODO: the case without PartialOrder
   | some pα => do

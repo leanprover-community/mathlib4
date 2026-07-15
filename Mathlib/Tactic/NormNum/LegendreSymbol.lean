@@ -209,7 +209,7 @@ namespace Mathlib.Meta.NormNum
 open Lean Elab Tactic Qq
 
 -- TODO: redefined here for reduction; should this be special-handled in quote4?
-private def mkRawIntLit' (n : ℤ) : Q(ℤ) :=
+private meta def mkRawIntLit' (n : ℤ) : Q(ℤ) :=
   let lit : Q(ℕ) := .lit <| .natVal n.natAbs
   if 0 ≤ n then q(.ofNat $lit) else q(.negOfNat $lit)
 

@@ -149,7 +149,7 @@ as the base of an exponent expression `e^n`. The `sum` constructor is only used 
 Used to represent normalized natural number expressions in exponents.
 
 `ExBaseNat q($e)` is equivalent to `ExBase btℕ sℕ q($e)`, and one can cast between the two. -/
-inductive ExBaseNat : (e : Q(ℕ)) → Type
+meta inductive ExBaseNat : (e : Q(ℕ)) → Type
   /--
   An atomic expression `e` with id `id`.
 
@@ -173,7 +173,7 @@ Used to represent normalized natural number expressions in exponents.
 
 `ExProdNat q($e)` is equivalent to `ExProd btℕ sℕ q($e)`, and one can cast between the two.
 -/
-inductive ExProdNat : (e : Q(ℕ)) → Type
+meta inductive ExProdNat : (e : Q(ℕ)) → Type
   /-- A coefficient `value`, holding the data that `ring` uses to represent rational coefficients.
   In this case these happen to always be natural numbers. -/
   | const {e : Q(ℕ)} (value : btℕ e) : ExProdNat e
@@ -189,7 +189,7 @@ a sum of monomials.
 Used to represent normalized natural number expressions in exponents.
 
 `ExSumNat q($e)` is equivalent to `ExSum btℕ sℕ q($e)`, and one can cast between the two. -/
-inductive ExSumNat : (e : Q(ℕ)) → Type
+meta inductive ExSumNat : (e : Q(ℕ)) → Type
   /-- Zero is a polynomial. `e` is the expression `0`. -/
   | zero : ExSumNat q(0)
   /-- A sum `a + b` is a polynomial if `a` is a monomial and `b` is another polynomial. -/
@@ -207,7 +207,7 @@ mutual
 /-- `ExBase BaseType sα e` stores the structure of a normalized expression `e`, which appears
 as the base of an exponent expression `e^n`. The `sum` constructor is only used when the exponent
 `n` is not a constant. -/
-inductive ExBase {u : Lean.Level} {α : Q(Type u)} (BaseType : Q($α) → Type)
+meta inductive ExBase {u : Lean.Level} {α : Q(Type u)} (BaseType : Q($α) → Type)
     (sα : Q(CommSemiring $α)) : (e : Q($α)) → Type
   /--
   An atomic expression `e` with id `id`.
@@ -228,7 +228,7 @@ inductive ExBase {u : Lean.Level} {α : Q(Type u)} (BaseType : Q($α) → Type)
 /-- `ExProd BaseType sα e` stores the structure of a normalized monomial expression `e`.
 A monomial here is a product of powers of `ExBase` expressions, terminated by a (nonzero) constant
 coefficient. The data of the constant coefficient is stored in the `BaseType`. -/
-inductive ExProd {u : Lean.Level} {α : Q(Type u)} (BaseType : Q($α) → Type)
+meta inductive ExProd {u : Lean.Level} {α : Q(Type u)} (BaseType : Q($α) → Type)
     (sα : Q(CommSemiring $α)) : (e : Q($α)) → Type
   /-- A coefficient `value`, which must not be `0`. `e` is a raw rat cast.
   If `value` is not an integer, then `hyp` should be a proof of `(value.den : α) ≠ 0`. -/
@@ -242,7 +242,7 @@ inductive ExProd {u : Lean.Level} {α : Q(Type u)} (BaseType : Q($α) → Type)
 
 /-- `ExSum BaseType sα e` stores the structure of a normalized polynomial expression `e`, which is
 a sum of monomials. -/
-inductive ExSum {u : Lean.Level} {α : Q(Type u)} (BaseType : Q($α) → Type)
+meta inductive ExSum {u : Lean.Level} {α : Q(Type u)} (BaseType : Q($α) → Type)
     (sα : Q(CommSemiring $α)) : (e : Q($α)) → Type
   /-- Zero is a polynomial. `e` is the expression `0`. -/
   | zero : ExSum BaseType sα q(0 : $α)

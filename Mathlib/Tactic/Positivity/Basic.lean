@@ -331,7 +331,7 @@ theorem pow_zero_ne_zero [Semiring α] [Nontrivial α] (a : α) : a ^ 0 ≠ 0 :=
 /-- The `positivity` extension which identifies expressions of the form `a ^ (0 : ℕ)`.
 This extension is run in addition to the general `a ^ b` extension (they are overlapping). -/
 @[positivity _ ^ (0 : ℕ)]
-def evalPowZeroNat : PositivityExt where eval {u α} _zα pα? e := do
+meta def evalPowZeroNat : PositivityExt where eval {u α} _zα pα? e := do
   let .app (.app _ (a : Q($α))) _ ← whnfR e | throwError "not ^"
   let _a ← synthInstanceQ q(Semiring $α)
   assumeInstancesCommute
@@ -346,7 +346,7 @@ def evalPowZeroNat : PositivityExt where eval {u α} _zα pα? e := do
 /-- The `positivity` extension which identifies expressions of the form `a ^ (b : ℕ)`,
 such that `positivity` successfully recognises both `a` and `b`. -/
 @[positivity _ ^ (_ : ℕ)]
-def evalPow : PositivityExt where eval {u α} zα pα? e := do
+meta def evalPow : PositivityExt where eval {u α} zα pα? e := do
   let .app (.app _ (a : Q($α))) (b : Q(ℕ)) ← whnfR e | throwError "not ^"
   match (dependent := true) pα? with
   | none =>
@@ -410,7 +410,7 @@ theorem abs_pos_of_ne_zero {α : Type*} [AddGroup α] [LinearOrder α]
 
 /-- The `positivity` extension which identifies expressions of the form `|a|`. -/
 @[positivity |_|]
-def evalAbs : PositivityExt where eval {_u} (α zα pα?) (e : Q($α)) :=
+meta def evalAbs : PositivityExt where eval {_u} (α zα pα?) (e : Q($α)) :=
   match pα? with | none => pure .none | some pα' => do
   let ~q(@abs _ (_) (_) $a) := e | throwError "not |·|"
   try
@@ -434,7 +434,7 @@ Since the output type of `Int.natAbs` is `ℕ`, the nonnegative case is handled 
 `positivity` tactic.
 -/
 @[positivity Int.natAbs _]
-def evalNatAbs : PositivityExt where eval {u α} _zα pα? e :=
+meta def evalNatAbs : PositivityExt where eval {u α} _zα pα? e :=
   match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℕ), ~q(Int.natAbs $a) =>
@@ -456,7 +456,7 @@ def evalNatAbs : PositivityExt where eval {u α} _zα pα? e :=
 /-- Extension for the `positivity` tactic: `Nat.cast` is always non-negative,
 and positive when its input is. -/
 @[positivity Nat.cast _]
-def evalNatCast : PositivityExt where eval {u α} _zα pα? e := do
+meta def evalNatCast : PositivityExt where eval {u α} _zα pα? e := do
   let ~q(@Nat.cast _ (_) ($a : ℕ)) := e | throwError "not Nat.cast"
   let zα' : Q(Zero Nat) := q(inferInstance)
   let (_i1 : Q(AddMonoidWithOne $α)) ← synthInstanceQ q(AddMonoidWithOne $α)
@@ -485,7 +485,7 @@ def evalNatCast : PositivityExt where eval {u α} _zα pα? e := do
 /-- Extension for the `positivity` tactic: `Int.cast` is positive (resp. non-negative)
 if its input is. -/
 @[positivity Int.cast _]
-def evalIntCast : PositivityExt where eval {u α} _zα pα? e := do
+meta def evalIntCast : PositivityExt where eval {u α} _zα pα? e := do
   let ~q(@Int.cast _ (_) ($a : ℤ)) := e | throwError "not Int.cast"
   let zα' : Q(Zero Int) := q(inferInstance)
   let pα' : Q(PartialOrder Int) := q(inferInstance)
@@ -513,7 +513,7 @@ def evalIntCast : PositivityExt where eval {u α} _zα pα? e := do
 
 /-- Extension for `Nat.succ`. -/
 @[positivity Nat.succ _]
-def evalNatSucc : PositivityExt where eval {u α} _zα pα? e :=
+meta def evalNatSucc : PositivityExt where eval {u α} _zα pα? e :=
   match pα? with | none => throwError "not PartialOrder ℕ" | some _ => do
   match u, α, e with
   | 0, ~q(ℕ), ~q(Nat.succ $a) =>
@@ -523,7 +523,7 @@ def evalNatSucc : PositivityExt where eval {u α} _zα pα? e :=
 
 /-- Extension for `PNat.val`. -/
 @[positivity PNat.val _]
-def evalPNatVal : PositivityExt where eval {u α} _zα pα? e :=
+meta def evalPNatVal : PositivityExt where eval {u α} _zα pα? e :=
   match pα? with | none => throwError "not PartialOrder ℕ" | some _ => do
   match u, α, e with
   | 0, ~q(ℕ), ~q(PNat.val $a) =>
@@ -533,7 +533,7 @@ def evalPNatVal : PositivityExt where eval {u α} _zα pα? e :=
 
 /-- Extension for `Nat.factorial`. -/
 @[positivity Nat.factorial _]
-def evalFactorial : PositivityExt where eval {u α} _ pα? e :=
+meta def evalFactorial : PositivityExt where eval {u α} _ pα? e :=
   match pα? with | none => throwError "not PartialOrder ℕ" | some _ => do
   match u, α, e with
   | 0, ~q(ℕ), ~q(Nat.factorial $a) =>
@@ -543,7 +543,7 @@ def evalFactorial : PositivityExt where eval {u α} _ pα? e :=
 
 /-- Extension for `Nat.ascFactorial`. -/
 @[positivity Nat.ascFactorial _ _]
-def evalAscFactorial : PositivityExt where eval {u α} _ pα? e :=
+meta def evalAscFactorial : PositivityExt where eval {u α} _ pα? e :=
   match pα? with | none => throwError "not PartialOrder ℕ" | some _ => do
   match u, α, e with
   | 0, ~q(ℕ), ~q(Nat.ascFactorial ($n + 1) $k) =>
@@ -556,7 +556,7 @@ Uses positivity of the left term, if available, then tries the right term.
 
 The implementation relies on the fact that `Positivity.core` on `ℕ` never returns `nonzero`. -/
 @[positivity Nat.gcd _ _]
-def evalNatGCD : PositivityExt where eval {u α} z p e :=
+meta def evalNatGCD : PositivityExt where eval {u α} z p e :=
   match p with | none => throwError "not PartialOrder ℕ" | some p => do
   match u, α, e with
   | 0, ~q(ℕ), ~q(Nat.gcd $a $b) =>
@@ -575,7 +575,7 @@ def evalNatGCD : PositivityExt where eval {u α} z p e :=
 
 /-- Extension for `Nat.lcm`. -/
 @[positivity Nat.lcm _ _]
-def evalNatLCM : PositivityExt where eval {u α} z p e :=
+meta def evalNatLCM : PositivityExt where eval {u α} z p e :=
   match p with | none => throwError "not PartialOrder ℕ" | some p => do
   match u, α, e with
   | 0, ~q(ℕ), ~q(Nat.lcm $a $b) =>
@@ -592,7 +592,7 @@ def evalNatLCM : PositivityExt where eval {u α} z p e :=
 
 /-- Extension for `Nat.sqrt`. -/
 @[positivity Nat.sqrt _]
-def evalNatSqrt : PositivityExt where eval {u α} z p e :=
+meta def evalNatSqrt : PositivityExt where eval {u α} z p e :=
   match p with | none => throwError "not PartialOrder ℕ" | some p => do
   match u, α, e with
   | 0, ~q(ℕ), ~q(Nat.sqrt $n) =>
@@ -606,7 +606,7 @@ def evalNatSqrt : PositivityExt where eval {u α} z p e :=
 /-- Extension for `Int.gcd`.
 Uses positivity of the left term, if available, then tries the right term. -/
 @[positivity Int.gcd _ _]
-def evalIntGCD : PositivityExt where eval {u α} _ pα? e :=
+meta def evalIntGCD : PositivityExt where eval {u α} _ pα? e :=
   match pα? with | none => throwError "not PartialOrder ℕ" | some _ => do
   match u, α, e with
   | 0, ~q(ℕ), ~q(Int.gcd $a $b) =>
@@ -623,7 +623,7 @@ def evalIntGCD : PositivityExt where eval {u α} _ pα? e :=
 
 /-- Extension for `Int.lcm`. -/
 @[positivity Int.lcm _ _]
-def evalIntLCM : PositivityExt where eval {u α} _ pα? e :=
+meta def evalIntLCM : PositivityExt where eval {u α} _ pα? e :=
   match pα? with | none => throwError "not PartialOrder ℕ" | some _ => do
   match u, α, e with
   | 0, ~q(ℕ), ~q(Int.lcm $a $b) =>
@@ -647,7 +647,7 @@ alias ⟨_, NNRat.num_ne_zero_of_ne_zero⟩ := num_ne_zero
 /-- The `positivity` extension which identifies expressions of the form `NNRat.num q`,
 such that `positivity` successfully recognises `q`. -/
 @[positivity NNRat.num _]
-def evalNNRatNum : PositivityExt where eval {u α} _ pα? e :=
+meta def evalNNRatNum : PositivityExt where eval {u α} _ pα? e :=
   match pα? with | none => throwError "not PartialOrder ℕ" | some _ => do
   match u, α, e with
   | 0, ~q(ℕ), ~q(NNRat.num $a) =>
@@ -664,7 +664,7 @@ def evalNNRatNum : PositivityExt where eval {u α} _ pα? e :=
 
 /-- The `positivity` extension which identifies expressions of the form `Rat.den a`. -/
 @[positivity NNRat.den _]
-def evalNNRatDen : PositivityExt where eval {u α} _ pα? e :=
+meta def evalNNRatDen : PositivityExt where eval {u α} _ pα? e :=
   match pα? with | none => throwError "not PartialOrder ℕ" | some _ => do
   match u, α, e with
   | 0, ~q(ℕ), ~q(NNRat.den $a) =>
@@ -689,7 +689,7 @@ alias ⟨_, num_ne_zero_of_ne_zero⟩ := num_ne_zero
 /-- The `positivity` extension which identifies expressions of the form `Rat.num a`,
 such that `positivity` successfully recognises `a`. -/
 @[positivity Rat.num _]
-def evalRatNum : PositivityExt where eval {u α} _ pα? e :=
+meta def evalRatNum : PositivityExt where eval {u α} _ pα? e :=
   match pα? with | none => throwError "not PartialOrder ℤ" | some _ => do
   match u, α, e with
   | 0, ~q(ℤ), ~q(Rat.num $a) =>
@@ -707,7 +707,7 @@ def evalRatNum : PositivityExt where eval {u α} _ pα? e :=
 
 /-- The `positivity` extension which identifies expressions of the form `Rat.den a`. -/
 @[positivity Rat.den _]
-def evalRatDen : PositivityExt where eval {u α} _ pα? e :=
+meta def evalRatDen : PositivityExt where eval {u α} _ pα? e :=
   match pα? with | none => throwError "not PartialOrder ℕ" | some _ => do
   match u, α, e with
   | 0, ~q(ℕ), ~q(Rat.den $a) =>
@@ -717,7 +717,7 @@ def evalRatDen : PositivityExt where eval {u α} _ pα? e :=
 
 /-- Extension for `posPart`. `a⁺` is always nonnegative, and positive if `a` is. -/
 @[positivity _⁺]
-def evalPosPart : PositivityExt where eval {u α} zα pα? e :=
+meta def evalPosPart : PositivityExt where eval {u α} zα pα? e :=
   match pα? with | none => pure .none | some pα => do
   match e with
   | ~q(@posPart _ $instαpospart $a) =>
@@ -735,7 +735,7 @@ def evalPosPart : PositivityExt where eval {u α} zα pα? e :=
 
 /-- Extension for `negPart`. `a⁻` is always nonnegative. -/
 @[positivity _⁻]
-def evalNegPart : PositivityExt where eval {u α} _ pα? e :=
+meta def evalNegPart : PositivityExt where eval {u α} _ pα? e :=
   match pα? with | none => pure .none | some _ => do
   match e with
   | ~q(@negPart _ $instαnegpart $a) =>
@@ -747,7 +747,7 @@ def evalNegPart : PositivityExt where eval {u α} _ pα? e :=
 
 /-- Extension for the `positivity` tactic: nonnegative maps take nonnegative values. -/
 @[positivity DFunLike.coe _ _]
-def evalMap : PositivityExt where eval {_ β} _ pβ? e :=
+meta def evalMap : PositivityExt where eval {_ β} _ pβ? e :=
   match pβ? with | none => pure .none | some _ => do
   let .app (.app _ f) a ← whnfR e
     | throwError "not ↑f · where f is of NonnegHomClass"
