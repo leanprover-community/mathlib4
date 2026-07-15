@@ -140,7 +140,7 @@ lemma IsFredholm.closedComplemented_range {u : E →L[𝕜] F} (u_fred : IsFredh
 
 end IsFredholm
 
-section FredholmDecomposition
+section FredholmPackage
 
 variable (𝕜 E) in
 /-- A **Fredholm decomposition** of a topological vector space `E` is the data of two subspaces
@@ -224,7 +224,7 @@ lemma FredholmPackage.isQuasiInverse {u : E →L[𝕜] F} (pkg : FredholmPackage
   -- For some reason `exact` and `refine` are slow here!
   apply hdom.comp (hequiv.comp hcodom.symm)
 
-end FredholmDecomposition
+end FredholmPackage
 
 section TFAE
 
@@ -274,8 +274,7 @@ theorem IsFredholm.of_isInvertible_restrict {u : E →L[𝕜] F}
   have eqL : u.domRestrict E₁ = F₁.subtypeL ∘L e := congr(F₁.subtypeL ∘L $he).symm
   have eqₗ : u.toLinearMap.domRestrict E₁ = F₁.subtype ∘ₗ e := congr(($eqL).toLinearMap)
   have h : Topology.IsStrictMap u ∧ IsClosed (u.range : Set F) := by
-    rw [u.isStrictMap_isClosed_range_iff_restrict E₁ E₁_closed, ← LinearMap.range_domRestrict,
-      eqₗ, eqL]
+    rw [u.isStrictMap_isClosed_range_iff_restrict E₁ E₁_closed, eqL]
     exact ⟨F₁.isEmbedding_subtype.comp e.isHomeomorph.isEmbedding |>.isStrictMap, by simpa⟩
   have disj : Disjoint E₁ u.ker := by
     rw [disjoint_iff_comap_eq_bot, ← LinearMap.ker_domRestrict, eqₗ,
