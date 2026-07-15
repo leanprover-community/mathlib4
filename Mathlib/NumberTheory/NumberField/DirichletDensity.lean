@@ -39,33 +39,7 @@ with both sums running over nonzero prime ideals. The denominator is asymptotic 
 
 noncomputable section
 
-open Filter NumberField Topology Set
-
-theorem tendsto_log_one_div_sub_one_atTop :
-    Tendsto (fun s : ℝ ↦ Real.log (1 / (s - 1))) (𝓝[>] (1 : ℝ)) atTop := by
-  refine Real.tendsto_log_atTop.comp ?_
-  have h1 : Tendsto (fun s : ℝ ↦ s - 1) (𝓝[>] (1 : ℝ)) (𝓝[>] (0 : ℝ)) := by
-    refine tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _ ?_ ?_
-    · exact ((continuous_sub_right 1).tendsto' 1 0 (by ring)).mono_left nhdsWithin_le_nhds
-    · filter_upwards [self_mem_nhdsWithin] with s hs
-      simp only [Set.mem_Ioi] at hs ⊢
-      linarith
-  simpa only [one_div] using! h1.inv_tendsto_nhdsGT_zero
-
-theorem tendsto_ratio_one_of_log_pm_bounded
-    (f : ℝ → ℝ) (h_le : ∃ C : ℝ, ∀ᶠ s in 𝓝[>] (1 : ℝ), f s ≤ Real.log (1 / (s - 1)) + C)
-    (h_lower : ∃ C : ℝ, ∀ᶠ s in 𝓝[>] (1 : ℝ), Real.log (1 / (s - 1)) - C ≤ f s) :
-    Tendsto (fun s : ℝ ↦ f s / Real.log (1 / (s - 1))) (𝓝[>] 1) (𝓝 1) := by
-  obtain ⟨C₁, hle⟩ := h_le
-  obtain ⟨C₂, hlower⟩ := h_lower
-  have hL := tendsto_log_one_div_sub_one_atTop
-  have h0 : Tendsto (fun s ↦ (f s - Real.log (1 / (s - 1))) / Real.log (1 / (s - 1)))
-      (𝓝[>] (1 : ℝ)) (𝓝 0) :=
-    tendsto_bdd_div_atTop_nhds_zero (b := -C₂) (B := C₁)
-      (hlower.mono fun s h ↦ by linarith) (hle.mono fun s h ↦ by linarith) hL
-  refine (add_zero (1 : ℝ) ▸ h0.const_add 1).congr' ?_
-  filter_upwards [hL.eventually_gt_atTop 0] with s h
-  rw [add_div_eq_mul_add_div _ _ h.ne', one_mul, add_sub_cancel]
+open Filter Topology Set
 
 namespace NumberField
 
@@ -133,6 +107,8 @@ theorem logDedekindZeta_sub_log_inv_sub_one_bounded : ∃ C : ℝ, ∀ᶠ (s : �
   rw [one_div, Real.log_inv, sub_neg_eq_add,
     ← Real.log_mul (ne_of_gt hζpos) (ne_of_gt hsm1), mul_comm]
   exact abs_le_max_abs_abs (Real.log_lt_log (by linarith) hlo).le (Real.log_lt_log hFpos hhi).le
+
+variable {K}
 
 theorem primeIdealZetaSum_le_card_of_finite (hS : S.Finite) {s : ℝ} (hs : 0 < s) :
     primeIdealZetaSum S s ≤ Nat.card {𝔭 : Ideal (𝓞 K) // 𝔭 ∈ S ∧ 𝔭.IsPrime ∧ 𝔭 ≠ ⊥} := by
