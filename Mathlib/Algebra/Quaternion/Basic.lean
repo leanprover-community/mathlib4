@@ -668,6 +668,24 @@ theorem mul_star_eq_coe : a * star a = (a * star a).re := by
   rw [← star_comm_self']
   exact a.star_mul_eq_coe
 
+theorem isUnit_iff : IsUnit a ↔ IsUnit ((a * star a).re) := by
+  constructor
+  · intro h
+    obtain ⟨x, hx⟩ := (h.mul h.star).exists_right_inv
+    rw [mul_star_eq_coe, coe_mul_eq_smul] at hx
+    exact .of_mul_eq_one x.re (by simpa using congrArg re hx)
+  · intro h
+    obtain ⟨s, hs⟩ := h.exists_right_inv
+    refine ⟨⟨a, s • star a, ?_, ?_⟩, rfl⟩
+    · rw [mul_smul_comm, mul_star_eq_coe, smul_coe, mul_comm, hs, coe_one]
+    · rw [smul_mul_assoc, star_comm_self', mul_star_eq_coe, smul_coe, mul_comm, hs, coe_one]
+
+
+theorem isUnit_of_isUnit_re (isUnit_re : IsUnit a.re) (haI : a.imI = 0) (haJ : a.imJ = 0)
+    (haK : a.imK = 0) : IsUnit a := by
+  simp [isUnit_iff, haI, haJ, haK, isUnit_re]
+
+
 open MulOpposite
 
 /-- Quaternion conjugate as an `AlgEquiv` to the opposite ring. -/

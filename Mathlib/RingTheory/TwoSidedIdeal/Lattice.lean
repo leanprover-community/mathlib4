@@ -133,6 +133,21 @@ instance : CompleteLattice (TwoSidedIdeal R) where
 @[simp]
 lemma coe_bot : ((⊥ : TwoSidedIdeal R) : Set R) = {0} := rfl
 
+protected theorem ne_bot_iff (I : TwoSidedIdeal R) : I ≠ ⊥ ↔ ∃ x ∈ I, x ≠ 0 := by
+  refine ⟨fun h ↦ ?_, ?_⟩
+  · by_contra h'
+    apply h
+    push Not at h'
+    ext x
+    simp only [mem_bot]
+    exact ⟨h' x, fun hx => hx ▸ I.zero_mem⟩
+  · rintro ⟨x, hx, hne⟩ heq
+    simp only [heq, mem_bot] at hx
+    exact hne hx
+
+theorem exists_mem_ne_zero_of_ne_bot {I : TwoSidedIdeal R} (h : I ≠ ⊥) : ∃ b ∈ I, b ≠ 0 :=
+  I.ne_bot_iff.mp h
+
 @[simp]
 lemma coe_top : ((⊤ : TwoSidedIdeal R) : Set R) = Set.univ := rfl
 
@@ -141,5 +156,10 @@ lemma one_mem_iff {R : Type*} [NonAssocRing R] (I : TwoSidedIdeal R) :
   ⟨fun h => eq_top_iff.2 fun x _ => by simpa using I.mul_mem_left x _ h, fun h ↦ h.symm ▸ trivial⟩
 
 alias ⟨eq_top, one_mem⟩ := one_mem_iff
+
+theorem eq_top_of_isUnit_mem {R : Type*} [Ring R] (I : TwoSidedIdeal R) {x : R}
+    (hx : x ∈ I) (h : IsUnit x) : I = ⊤ := by
+  obtain ⟨y, hy⟩ := h.exists_right_inv
+  exact I.eq_top (by simpa only [← hy] using I.mul_mem_right x y hx)
 
 end TwoSidedIdeal
