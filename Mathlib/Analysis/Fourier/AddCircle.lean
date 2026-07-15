@@ -277,7 +277,8 @@ theorem orthonormal_fourier : Orthonormal ℂ (@fourierLp T _ 2 _) := by
   · simp [h]
   have hij : j + -i ≠ 0 := by
     exact sub_ne_zero.mpr (Ne.symm h)
-  exact
+  -- faster than `exact`
+  convert!
     integral_eq_zero_of_add_right_eq_neg (μ := haarAddCircle)
       (fourier_add_half_inv_index hij hT.elim)
 
@@ -502,7 +503,8 @@ theorem hasSum_fourier_series_of_summable (h : Summable (fourierCoeff f)) :
 converges everywhere pointwise to `f`. -/
 theorem has_pointwise_sum_fourier_series_of_summable (h : Summable (fourierCoeff f))
     (x : AddCircle T) : HasSum (fun i => fourierCoeff f i • fourier i x) (f x) := by
-  exact (ContinuousMap.evalCLM ℂ x).hasSum (hasSum_fourier_series_of_summable h)
+  -- faster than `exact`
+  convert! (ContinuousMap.evalCLM ℂ x).hasSum (hasSum_fourier_series_of_summable h)
 
 end Convergence
 
