@@ -350,9 +350,9 @@ variable {R A B : Type*} [CommRing R] [CommRing A] [CommRing B]
 variable [Algebra R B] [Algebra A B] [IsIntegralClosure A R B]
 variable (R B)
 
-protected theorem isIntegral [Algebra R A] [IsScalarTower R A B] (x : A) : IsIntegral R x := by
+protected theorem isIntegral [Algebra R A] [IsScalarTower R A B] (x : A) : IsIntegral R x :=
   have := faithfulSMul R A B
-  exact (isIntegral_algebraMap_iff).mp <|
+  (isIntegral_algebraMap_iff).mp <|
     show IsIntegral R (algebraMap A B x) from isIntegral_iff.mpr ⟨x, rfl⟩
 
 theorem isIntegral_algebra [Algebra R A] [IsScalarTower R A B] : Algebra.IsIntegral R A :=
