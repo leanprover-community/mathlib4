@@ -10,20 +10,19 @@ public import Mathlib.NumberTheory.NumberField.DedekindZeta
 /-!
 # Dirichlet density of a set of prime ideals
 
-For a number field `K`, the Dirichlet density of a set `S` of nonzero prime ideals of `𝓞 K`,
-that is of elements of `IsDedekindDomain.HeightOneSpectrum (𝓞 K)`, is, when it exists,
+Let `K` be a number field and let `S` be a set of nonzero prime ideals of `𝓞 K`, that is a set of
+elements of `IsDedekindDomain.HeightOneSpectrum (𝓞 K)`. The Dirichlet density of `S` is
 
   δ(S) = lim_{s → 1⁺} ( Σ_{𝔭 ∈ S} N𝔭^{-s} ) / ( Σ_𝔭 N𝔭^{-s} ),
 
-with the sum in the denominator running over all nonzero prime ideals. The denominator is
-asymptotic to `log (s - 1)⁻¹` as `s ↓ 1`.
+when this limit exists, the sum in the denominator running over all nonzero prime ideals.
 
 ## Main definitions
 
 * `NumberField.primeIdealZetaSum` — the partial Dirichlet series `Σ_{𝔭 ∈ S} N𝔭^{-s}`.
 * `NumberField.HasDirichletDensity` — `S` has Dirichlet density `δ`.
-* `NumberField.HasUpperDirichletDensity`, `NumberField.HasLowerDirichletDensity` — the `limsup` /
-  `liminf` variants of the density.
+* `NumberField.HasUpperDirichletDensity`, `NumberField.HasLowerDirichletDensity` — `S` has upper,
+  resp. lower, Dirichlet density `δ`, defined using `limsup`, resp. `liminf`.
 
 ## Main results
 
@@ -45,26 +44,24 @@ namespace NumberField
 
 variable {K : Type*} [Field K] [NumberField K] {S : Set (HeightOneSpectrum (𝓞 K))} {δ : ℝ}
 
-/-- The partial Dirichlet series `∑_{𝔭 ∈ S} N𝔭 ^ (-s)`, summed over the nonzero prime ideals
-of `𝓞 K` lying in `S`. -/
+/-- The partial Dirichlet series `∑_{𝔭 ∈ S} N𝔭 ^ (-s)`. -/
 def primeIdealZetaSum (S : Set (HeightOneSpectrum (𝓞 K))) (s : ℝ) : ℝ :=
   ∑' 𝔭 : S, (Ideal.absNorm 𝔭.1.asIdeal : ℝ) ^ (-s)
 
 theorem primeIdealZetaSum_def (S : Set (HeightOneSpectrum (𝓞 K))) (s : ℝ) :
     primeIdealZetaSum S s = ∑' 𝔭 : S, (Ideal.absNorm 𝔭.1.asIdeal : ℝ) ^ (-s) := rfl
 
-/-- The Dirichlet density of a set `S` of prime ideals of `𝓞 K` is `δ` when the ratio of partial
-sums tends to `δ` as `s ↓ 1`. -/
+/-- `S` has Dirichlet density `δ` when the ratio of partial sums tends to `δ` as `s ↓ 1`. -/
 def HasDirichletDensity (S : Set (HeightOneSpectrum (𝓞 K))) (δ : ℝ) : Prop :=
   Tendsto (fun s : ℝ ↦ primeIdealZetaSum S s /
     primeIdealZetaSum (univ : Set (HeightOneSpectrum (𝓞 K))) s) (𝓝[>] 1) (𝓝 δ)
 
-/-- Upper Dirichlet density, defined as the `limsup` of the ratio. -/
+/-- `S` has upper Dirichlet density `δ` when the `limsup` of the ratio of partial sums is `δ`. -/
 def HasUpperDirichletDensity (S : Set (HeightOneSpectrum (𝓞 K))) (δ : ℝ) : Prop :=
   limsup (fun s : ℝ ↦ primeIdealZetaSum S s /
     primeIdealZetaSum (univ : Set (HeightOneSpectrum (𝓞 K))) s) (𝓝[>] 1) = δ
 
-/-- Lower Dirichlet density, defined as the `liminf` of the ratio. -/
+/-- `S` has lower Dirichlet density `δ` when the `liminf` of the ratio of partial sums is `δ`. -/
 def HasLowerDirichletDensity (S : Set (HeightOneSpectrum (𝓞 K))) (δ : ℝ) : Prop :=
   liminf (fun s : ℝ ↦ primeIdealZetaSum S s /
     primeIdealZetaSum (univ : Set (HeightOneSpectrum (𝓞 K))) s) (𝓝[>] 1) = δ
