@@ -27,9 +27,9 @@ variable {n k : ℕ}
 theorem xor_assoc (h : k = 2 ^ n) (a b c : Fin k) : (a ^^^ b) ^^^ c = a ^^^ (b ^^^ c) := by
   grind [Fin.xor_val, Nat.xor_mod_two_pow, Nat.mod_mod]
 theorem xor_comm (a b : Fin k) : a ^^^ b = b ^^^ a := by grind [Fin.xor_val]
-@[simp] theorem xor_self [NeZero k] {a : Fin k} : a ^^^ a = 0 := by
+@[simp] theorem xor_self [NeZero k] (a : Fin k) : a ^^^ a = 0 := by
   grind [Fin.xor_val, Nat.zero_mod]
-@[simp] theorem xor_zero [NeZero k] {a : Fin k} : a ^^^ 0 = a := by
+@[simp] theorem xor_zero [NeZero k] (a : Fin k) : a ^^^ 0 = a := by
   grind [Fin.xor_val, Fin.val_zero, Nat.mod_eq_of_lt]
 
 end Fin
