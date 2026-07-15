@@ -54,6 +54,8 @@ instance : Monoid (Function.End α) where
   mul_assoc _ _ _ := rfl
   mul_one _ := rfl
   one_mul _ := rfl
+  ppow n f := f^[n]
+  ppow_succ _ _ := Function.iterate_succ _ _
   npow n f := f^[n]
   npow_succ _ _ := Function.iterate_succ _ _
 
@@ -68,6 +70,8 @@ attribute [to_additive_dont_translate] Perm Equiv
 instance instOne : One (Perm α) where one := Equiv.refl _
 instance instMul : Mul (Perm α) where mul f g := Equiv.trans g f
 instance instInv : Inv (Perm α) where inv := Equiv.symm
+instance instPowPNat : Pow (Perm α) ℕ+ where
+  pow f n := ⟨f^[n], f.symm^[n], f.left_inv.iterate _, f.right_inv.iterate _⟩
 instance instPowNat : Pow (Perm α) ℕ where
   pow f n := ⟨f^[n], f.symm^[n], f.left_inv.iterate _, f.right_inv.iterate _⟩
 
@@ -76,6 +80,8 @@ instance permGroup : Group (Perm α) where
   one_mul := trans_refl
   mul_one := refl_trans
   inv_mul_cancel := self_trans_symm
+  ppow n f := f ^ n
+  ppow_succ _ _ := coe_fn_injective <| Function.iterate_succ _ _
   npow n f := f ^ n
   npow_succ _ _ := coe_fn_injective <| Function.iterate_succ _ _
   zpow := zpowRec fun n f ↦ f ^ n

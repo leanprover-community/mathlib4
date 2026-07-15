@@ -167,6 +167,7 @@ end SMul
 
 instance : AddCommMonoid (SummableFamily Γ R α) := fast_instance%
   DFunLike.coe_injective.addCommMonoid _ coe_zero coe_add (fun _ _ => coe_smul' _ _)
+    (fun _ _ => coe_smul' _ _)
 
 /-- The coefficient function of a summable family, as a finsupp on the parameter type. -/
 @[simps]
@@ -358,8 +359,8 @@ theorem sub_apply : (s - t) a = s a - t a :=
 
 
 instance : AddCommGroup (SummableFamily Γ R α) := fast_instance%
-  DFunLike.coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub
-    (fun _ _ => coe_smul' _ _) (fun _ _ => coe_smul' _ _)
+  DFunLike.coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub (swap coe_smul')
+    (swap coe_smul') (swap coe_smul')
 
 end AddCommGroup
 

@@ -179,10 +179,24 @@ protected theorem Inseparable.mul {a b c d : M} (hab : Inseparable a b) (hcd : I
   hab.smul hcd
 
 @[to_additive]
+protected theorem Specializes.ppow {M : Type*} [Semigroup M] [TopologicalSpace M] [ContinuousMul M]
+    {a b : M} (h : a ⤳ b) (n : ℕ+) : (a ^ n) ⤳ (b ^ n) := by
+  induction n using Semigroup.ppow_induction a generalizing b with
+  | h1 => simp [h]
+  | hsucc n IH =>
+    rw [ppow_succ b]
+    exact (IH h).mul h
+
+@[to_additive]
 protected theorem Specializes.pow {M : Type*} [Monoid M] [TopologicalSpace M] [ContinuousMul M]
     {a b : M} (h : a ⤳ b) (n : ℕ) : (a ^ n) ⤳ (b ^ n) :=
   Nat.recOn n (by simp only [pow_zero, specializes_rfl]) fun _ ihn ↦ by
     simpa only [pow_succ] using ihn.mul h
+
+@[to_additive]
+protected theorem Inseparable.ppow {M : Type*} [Semigroup M] [TopologicalSpace M] [ContinuousMul M]
+    {a b : M} (h : Inseparable a b) (n : ℕ+) : Inseparable (a ^ n) (b ^ n) :=
+  (h.specializes.ppow n).antisymm (h.specializes'.ppow n)
 
 @[to_additive]
 protected theorem Inseparable.pow {M : Type*} [Monoid M] [TopologicalSpace M] [ContinuousMul M]
@@ -786,11 +800,28 @@ theorem continuousOn_list_prod {f : ι → X → M} (l : List ι) {t : Set X}
   exact h
 
 @[to_additive (attr := continuity)]
+theorem continuous_ppow {M : Type*} [TopologicalSpace M] [Semigroup M] [ContinuousMul M] (n : ℕ+) :
+    Continuous fun a : M => a ^ n := by
+  induction n with
+  | one => simpa using continuous_id'
+  | succ n IH =>
+    simp_rw [ppow_succ]
+    exact IH.mul continuous_id
+
+@[to_additive (attr := continuity)]
 theorem continuous_pow : ∀ n : ℕ, Continuous fun a : M => a ^ n
   | 0 => by simpa using continuous_const
   | k + 1 => by
     simp only [pow_succ']
     exact continuous_id.mul (continuous_pow _)
+
+instance AddSemigroup.continuousConstSMul_pnat {A} [AddSemigroup A] [TopologicalSpace A]
+    [ContinuousAdd A] : ContinuousConstSMul ℕ+ A :=
+  ⟨continuous_psmul⟩
+
+instance AddSemigroup.continuousSMul_pnat {A} [AddSemigroup A] [TopologicalSpace A]
+    [ContinuousAdd A] : ContinuousSMul ℕ+ A :=
+  ⟨continuous_prod_of_discrete_left.mpr continuous_psmul⟩
 
 instance AddMonoid.continuousConstSMul_nat {A} [AddMonoid A] [TopologicalSpace A]
     [ContinuousAdd A] : ContinuousConstSMul ℕ A :=
@@ -799,6 +830,29 @@ instance AddMonoid.continuousConstSMul_nat {A} [AddMonoid A] [TopologicalSpace A
 instance AddMonoid.continuousSMul_nat {A} [AddMonoid A] [TopologicalSpace A]
     [ContinuousAdd A] : ContinuousSMul ℕ A :=
   ⟨continuous_prod_of_discrete_left.mpr continuous_nsmul⟩
+
+section Semigroup
+
+variable {S : Type*} [TopologicalSpace S] [Semigroup S] [ContinuousMul S]
+
+@[to_additive (attr := aesop safe -100 (rule_sets := [Continuous]), fun_prop)]
+theorem Continuous.ppow {f : X → S} (h : Continuous f) (n : ℕ+) : Continuous fun b => f b ^ n :=
+  (continuous_ppow n).comp h
+
+@[to_additive]
+theorem continuousOn_ppow {s : Set S} (n : ℕ+) : ContinuousOn (fun (x : S) => x ^ n) s :=
+  (continuous_ppow n).continuousOn
+
+@[to_additive]
+theorem continuousAt_ppow (x : S) (n : ℕ+) : ContinuousAt (fun (x : S) => x ^ n) x :=
+  (continuous_ppow n).continuousAt
+
+@[to_additive]
+theorem Filter.Tendsto.ppow {l : Filter α} {f : α → S} {x : S} (hf : Tendsto f l (𝓝 x)) (n : ℕ+) :
+    Tendsto (fun x => f x ^ n) l (𝓝 (x ^ n)) :=
+  (continuousAt_ppow _ _).tendsto.comp hf
+
+end Semigroup
 
 -- We register `Continuous.pow` as a `continuity` lemma with low penalty (so
 -- `continuity` will try it before other `continuity` lemmas). This is a

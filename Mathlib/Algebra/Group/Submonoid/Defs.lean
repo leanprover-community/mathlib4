@@ -397,14 +397,14 @@ instance (S : A) [IsDedekindFiniteMonoid M] : IsDedekindFiniteMonoid S where
 @[to_additive /-- An `AddSubmonoid` of an `AddMonoid` inherits an `AddMonoid` structure. -/]
 instance (priority := 75) toMonoid {M : Type*} [Monoid M] {A : Type*} [SetLike A M]
     [SubmonoidClass A M] (S : A) : Monoid S := fast_instance%
-  Subtype.coe_injective.monoid Subtype.val rfl (fun _ _ => rfl) (fun _ _ => rfl)
+  Subtype.coe_injective.monoid Subtype.val rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
 
 -- Prefer subclasses of `Monoid` over subclasses of `SubmonoidClass`.
 /-- A submonoid of a `CommMonoid` is a `CommMonoid`. -/
 @[to_additive /-- An `AddSubmonoid` of an `AddCommMonoid` is an `AddCommMonoid`. -/]
 instance (priority := 75) toCommMonoid {M} [CommMonoid M] {A : Type*} [SetLike A M]
     [SubmonoidClass A M] (S : A) : CommMonoid S := fast_instance%
-  Subtype.coe_injective.commMonoid Subtype.val rfl (fun _ _ => rfl) fun _ _ => rfl
+  Subtype.coe_injective.commMonoid Subtype.val rfl (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
 
 /-- The natural monoid hom from a submonoid of monoid `M` to `M`. -/
 @[to_additive /-- The natural monoid hom from an `AddSubmonoid` of `AddMonoid` `M` to `M`. -/]

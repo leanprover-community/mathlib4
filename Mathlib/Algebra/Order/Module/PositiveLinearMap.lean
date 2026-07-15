@@ -163,6 +163,22 @@ lemma add_apply (f g : E₁ →ₚ[R] E₂) (x : E₁) :
     (f + g) x = f x + g x := by
   rfl
 
+instance : SMul ℕ+ (E₁ →ₚ[R] E₂) where
+  smul n f := .mk (n • f.toLinearMap) fun x y h ↦ by
+    induction n using AddSemigroup.psmul_induction f.toLinearMap with
+    | h1 => exact OrderHomClass.mono f h
+    | hsucc n IH => exact add_le_add IH (OrderHomClass.mono f h)
+
+@[simp]
+lemma toLinearMap_psmul (f : E₁ →ₚ[R] E₂) (n : ℕ+) :
+    (n • f).toLinearMap = n • f.toLinearMap :=
+  rfl
+
+@[simp]
+lemma psmul_apply (f : E₁ →ₚ[R] E₂) (n : ℕ+) (x : E₁) :
+    (n • f) x = n • (f x) :=
+  rfl
+
 instance : SMul ℕ (E₁ →ₚ[R] E₂) where
   smul n f := .mk (n • f.toLinearMap) fun x y h ↦ by
     induction n with
@@ -181,7 +197,7 @@ lemma nsmul_apply (f : E₁ →ₚ[R] E₂) (n : ℕ) (x : E₁) :
 
 instance : AddCommMonoid (E₁ →ₚ[R] E₂) :=
   toLinearMap_injective.addCommMonoid _ toLinearMap_zero toLinearMap_add
-    toLinearMap_nsmul
+    toLinearMap_psmul toLinearMap_nsmul
 
 end general
 

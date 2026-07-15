@@ -312,7 +312,7 @@ theorem sub_apply (f g : ModularForm Γ k) (z : ℍ) : (f - g) z = f z - g z :=
   rfl
 
 instance : AddCommGroup (ModularForm Γ k) :=
-  DFunLike.coe_injective.addCommGroup _ rfl coe_add coe_neg coe_sub coe_smul coe_smul
+  DFunLike.coe_injective.addCommGroup _ rfl coe_add coe_neg coe_sub coe_smul coe_smul coe_smul
 
 /-- Additive coercion from `ModularForm` to `ℍ → ℂ`. -/
 @[simps]
@@ -500,7 +500,7 @@ theorem sub_apply (f g : CuspForm Γ k) (z : ℍ) : (f - g) z = f z - g z :=
   rfl
 
 instance : AddCommGroup (CuspForm Γ k) :=
-  DFunLike.coe_injective.addCommGroup _ rfl coe_add coe_neg coe_sub coe_smul coe_smul
+  DFunLike.coe_injective.addCommGroup _ rfl coe_add coe_neg coe_sub coe_smul coe_smul coe_smul
 
 /-- Additive coercion from `CuspForm` to `ℍ → ℂ`. -/
 @[simps]

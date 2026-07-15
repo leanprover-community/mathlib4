@@ -223,10 +223,10 @@ variable (R)
 
 /-- The center of a semiring `R` is the set of elements that commute and associate with everything
 in `R` -/
-def center : NonUnitalSubsemiring R :=
-  { Subsemigroup.center R with
-    zero_mem' := Set.zero_mem_center
-    add_mem' := Set.add_mem_center }
+def center : NonUnitalSubsemiring R where
+  __ := Subsemigroup.center R
+  zero_mem' := Set.zero_mem_center
+  add_mem' := Set.add_mem_center
 
 theorem coe_center : ↑(center R) = Set.center R :=
   rfl
@@ -237,9 +237,10 @@ theorem center_toSubsemigroup :
   rfl
 
 /-- The center is commutative and associative. -/
-instance center.instNonUnitalCommSemiring : NonUnitalCommSemiring (center R) :=
-  { Subsemigroup.center.commSemigroup,
-    NonUnitalSubsemiringClass.toNonUnitalNonAssocSemiring (center R) with }
+instance (priority := 75) center.instNonUnitalCommSemiring : NonUnitalCommSemiring (center R) where
+  __ := NonUnitalSubsemiringClass.toNonUnitalNonAssocSemiring (center R)
+  __ := Subsemigroup.center.commSemigroup.toCommMagma
+  mul_assoc := Subsemigroup.center.commSemigroup.mul_assoc
 
 /-- A point-free means of proving membership in the center, for a non-associative ring.
 
@@ -269,11 +270,19 @@ end NonUnitalNonAssocSemiring
 
 section NonUnitalSemiring
 
-set_option backward.isDefEq.respectTransparency false in
+variable {R : Type*} [NonUnitalSemiring R]
+
+/-- When the ambient semiring is associative, use the inherited subsemiring structure so that
+positive powers agree definitionally with the ambient powers. -/
+instance center.instNonUnitalCommSemiringOfNonUnitalSemiring :
+    NonUnitalCommSemiring (center R) where
+  __ := NonUnitalSubsemiringClass.toNonUnitalSemiring (center R)
+  mul_comm := Subsemigroup.center.commSemigroup.mul_comm
+
 -- no instance diamond, unlike the unital version
 example {R} [NonUnitalSemiring R] :
-    (center.instNonUnitalCommSemiring _).toNonUnitalSemiring =
-      NonUnitalSubsemiringClass.toNonUnitalSemiring (center R) := by
+    ((inferInstance : NonUnitalCommSemiring (center R)).toNonUnitalSemiring).toSemigroup.ppow =
+      (NonUnitalSubsemiringClass.toNonUnitalSemiring (center R)).toSemigroup.ppow := by
   with_reducible_and_instances rfl
 
 theorem mem_center_iff {R} [NonUnitalSemiring R] {z : R} : z ∈ center R ↔ ∀ g, g * z = z * g := by

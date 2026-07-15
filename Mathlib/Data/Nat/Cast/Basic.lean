@@ -26,9 +26,7 @@ the natural numbers into an additive monoid with a one (`Nat.cast`).
 @[expose] public section
 
 assert_not_exists IsOrderedMonoid Commute.zero_right Commute.add_right abs_eq_max_neg
-  NeZero.natCast_ne
--- TODO: `MulOpposite.op_natCast` was not intended to be imported
--- assert_not_exists MulOpposite.op_natCast
+  NeZero.natCast_ne MulOpposite.op_natCast
 
 open Additive Multiplicative
 

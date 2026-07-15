@@ -185,9 +185,22 @@ theorem mul_apply [MulZeroClass β] [ContinuousMul β] (f g : C₀(α, β)) : (f
 instance instMulZeroClass [MulZeroClass β] [ContinuousMul β] : MulZeroClass C₀(α, β) :=
   fast_instance% DFunLike.coe_injective.mulZeroClass _ coe_zero coe_mul
 
+instance instPPow [SemigroupWithZero β] [ContinuousMul β] : Pow C₀(α, β) ℕ+ :=
+  ⟨fun f n =>
+    ⟨f ^ n, by simpa only [zero_ppow] using! (zero_at_infty f).ppow n⟩⟩
+
+@[simp]
+theorem coe_ppow [SemigroupWithZero β] [ContinuousMul β] (f : C₀(α, β)) (n : ℕ+) :
+    ⇑(f ^ n) = f ^ n :=
+  rfl
+
+theorem ppow_apply [SemigroupWithZero β] [ContinuousMul β] (f : C₀(α, β)) (n : ℕ+) (x : α) :
+    (f ^ n) x = f x ^ n :=
+  rfl
+
 instance instSemigroupWithZero [SemigroupWithZero β] [ContinuousMul β] :
     SemigroupWithZero C₀(α, β) := fast_instance%
-  DFunLike.coe_injective.semigroupWithZero _ coe_zero coe_mul
+  DFunLike.coe_injective.semigroupWithZero _ coe_zero coe_mul coe_ppow
 
 instance instAdd [AddZeroClass β] [ContinuousAdd β] : Add C₀(α, β) :=
   ⟨fun f g => ⟨f + g, by simpa only [add_zero] using! (zero_at_infty f).add (zero_at_infty g)⟩⟩
@@ -202,16 +215,16 @@ theorem add_apply [AddZeroClass β] [ContinuousAdd β] (f g : C₀(α, β)) : (f
 instance instAddZeroClass [AddZeroClass β] [ContinuousAdd β] : AddZeroClass C₀(α, β) :=
   fast_instance% DFunLike.coe_injective.addZeroClass _ coe_zero coe_add
 
-instance instSMul [Zero β] {R : Type*} [Zero R] [SMulWithZero R β] [ContinuousConstSMul R β] :
+instance instSMul [Zero β] {R : Type*} [SMulZeroClass R β] [ContinuousConstSMul R β] :
     SMul R C₀(α, β) :=
   ⟨fun r f => ⟨r • f, by simpa [smul_zero] using! (zero_at_infty f).const_smul r⟩⟩
 
 @[simp, norm_cast]
-theorem coe_smul [Zero β] {R : Type*} [Zero R] [SMulWithZero R β] [ContinuousConstSMul R β] (r : R)
+theorem coe_smul [Zero β] {R : Type*} [SMulZeroClass R β] [ContinuousConstSMul R β] (r : R)
     (f : C₀(α, β)) : ⇑(r • f) = r • ⇑f :=
   rfl
 
-theorem smul_apply [Zero β] {R : Type*} [Zero R] [SMulWithZero R β] [ContinuousConstSMul R β]
+theorem smul_apply [Zero β] {R : Type*} [SMulZeroClass R β] [ContinuousConstSMul R β]
     (r : R) (f : C₀(α, β)) (x : α) : (r • f) x = r • f x :=
   rfl
 
@@ -220,12 +233,13 @@ section AddMonoid
 variable [AddMonoid β] [ContinuousAdd β] (f g : C₀(α, β))
 
 instance instAddMonoid : AddMonoid C₀(α, β) := fast_instance%
-  DFunLike.coe_injective.addMonoid _ coe_zero coe_add fun _ _ => rfl
+  DFunLike.coe_injective.addMonoid _ coe_zero coe_add (fun _ _ => rfl) (fun _ _ => coe_smul _ _)
 
 end AddMonoid
 
 instance instAddCommMonoid [AddCommMonoid β] [ContinuousAdd β] : AddCommMonoid C₀(α, β) :=
-  fast_instance% DFunLike.coe_injective.addCommMonoid _ coe_zero coe_add fun _ _ => rfl
+  fast_instance% DFunLike.coe_injective.addCommMonoid _ coe_zero coe_add (fun _ _ => coe_smul _ _)
+    fun _ _ => rfl
 
 section AddGroup
 
@@ -252,14 +266,15 @@ theorem sub_apply : (f - g) x = f x - g x :=
   rfl
 
 instance instAddGroup : AddGroup C₀(α, β) := fast_instance%
-  DFunLike.coe_injective.addGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => rfl) fun _ _ => rfl
+  DFunLike.coe_injective.addGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => rfl)
+    (fun _ _ => coe_smul _ _) fun _ _ => coe_smul _ _
 
 end AddGroup
 
 instance instAddCommGroup [AddCommGroup β] [IsTopologicalAddGroup β] : AddCommGroup C₀(α, β) :=
   fast_instance%
-  DFunLike.coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => rfl) fun _ _ =>
-    rfl
+  DFunLike.coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => rfl)
+    (fun _ _ => coe_smul _ _) fun _ _ => coe_smul _ _
 
 instance instIsCentralScalar [Zero β] {R : Type*} [Zero R] [SMulWithZero R β] [SMulWithZero Rᵐᵒᵖ β]
     [ContinuousConstSMul R β] [IsCentralScalar R β] : IsCentralScalar R C₀(α, β) :=
@@ -279,30 +294,33 @@ instance instModule [AddCommMonoid β] [ContinuousAdd β] {R : Type*} [Semiring 
 
 instance instNonUnitalNonAssocSemiring [NonUnitalNonAssocSemiring β] [IsTopologicalSemiring β] :
     NonUnitalNonAssocSemiring C₀(α, β) := fast_instance%
-  DFunLike.coe_injective.nonUnitalNonAssocSemiring _ coe_zero coe_add coe_mul fun _ _ => rfl
+  DFunLike.coe_injective.nonUnitalNonAssocSemiring _ coe_zero coe_add coe_mul
+    (fun _ _ => coe_smul _ _) fun _ _ => coe_smul _ _
 
 instance instNonUnitalSemiring [NonUnitalSemiring β] [IsTopologicalSemiring β] :
     NonUnitalSemiring C₀(α, β) := fast_instance%
-  DFunLike.coe_injective.nonUnitalSemiring _ coe_zero coe_add coe_mul fun _ _ => rfl
+  DFunLike.coe_injective.nonUnitalSemiring _ coe_zero coe_add coe_mul
+    (fun _ _ => coe_smul _ _) (fun _ _ => coe_smul _ _) coe_ppow
 
 instance instNonUnitalCommSemiring [NonUnitalCommSemiring β] [IsTopologicalSemiring β] :
     NonUnitalCommSemiring C₀(α, β) := fast_instance%
-  DFunLike.coe_injective.nonUnitalCommSemiring _ coe_zero coe_add coe_mul fun _ _ => rfl
+  DFunLike.coe_injective.nonUnitalCommSemiring _ coe_zero coe_add coe_mul
+    (fun _ _ => coe_smul _ _) (fun _ _ => coe_smul _ _) coe_ppow
 
 instance instNonUnitalNonAssocRing [NonUnitalNonAssocRing β] [IsTopologicalRing β] :
     NonUnitalNonAssocRing C₀(α, β) := fast_instance%
   DFunLike.coe_injective.nonUnitalNonAssocRing _ coe_zero coe_add coe_mul coe_neg coe_sub
-    (fun _ _ => rfl) fun _ _ => rfl
+    (fun _ _ => coe_smul _ _) (fun _ _ => coe_smul _ _) (fun _ _ => coe_smul _ _)
 
 instance instNonUnitalRing [NonUnitalRing β] [IsTopologicalRing β] : NonUnitalRing C₀(α, β) :=
   fast_instance%
   DFunLike.coe_injective.nonUnitalRing _ coe_zero coe_add coe_mul coe_neg coe_sub (fun _ _ => rfl)
-    fun _ _ => rfl
+    (fun _ _ => coe_smul _ _) (fun _ _ => coe_smul _ _) coe_ppow
 
 instance instNonUnitalCommRing [NonUnitalCommRing β] [IsTopologicalRing β] :
     NonUnitalCommRing C₀(α, β) := fast_instance%
   DFunLike.coe_injective.nonUnitalCommRing _ coe_zero coe_add coe_mul coe_neg coe_sub
-    (fun _ _ => rfl) fun _ _ => rfl
+    (fun _ _ => coe_smul _ _) (fun _ _ => coe_smul _ _) (fun _ _ => coe_smul _ _) coe_ppow
 
 instance instIsScalarTower {R : Type*} [Semiring R] [NonUnitalNonAssocSemiring β]
     [IsTopologicalSemiring β] [Module R β] [ContinuousConstSMul R β] [IsScalarTower R β β] :

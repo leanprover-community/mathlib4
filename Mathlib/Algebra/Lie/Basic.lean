@@ -202,6 +202,14 @@ theorem sub_lie : ⁅x - y, m⁆ = ⁅x, m⁆ - ⁅y, m⁆ := by simp [sub_eq_ad
 theorem lie_sub : ⁅x, m - n⁆ = ⁅x, m⁆ - ⁅x, n⁆ := by simp [sub_eq_add_neg]
 
 @[simp]
+theorem psmul_lie (n : ℕ+) : ⁅n • x, m⁆ = n • ⁅x, m⁆ :=
+  AddHom.map_psmul { toFun := fun x : L => ⁅x, m⁆, map_add' := fun _ _ => add_lie _ _ _ } _ _
+
+@[simp]
+theorem lie_psmul (n : ℕ+) : ⁅x, n • m⁆ = n • ⁅x, m⁆ :=
+  AddHom.map_psmul { toFun := fun m : M => ⁅x, m⁆, map_add' := fun _ _ => lie_add _ _ _ } _ _
+
+@[simp]
 theorem nsmul_lie (n : ℕ) : ⁅n • x, m⁆ = n • ⁅x, m⁆ :=
   AddMonoidHom.map_nsmul
     { toFun := fun x : L => ⁅x, m⁆, map_zero' := zero_lie m, map_add' := fun _ _ => add_lie _ _ _ }
@@ -817,6 +825,16 @@ theorem coe_neg (f : M →ₗ⁅R,L⁆ N) : ⇑(-f) = -f :=
 theorem neg_apply (f : M →ₗ⁅R,L⁆ N) (m : M) : (-f) m = -f m :=
   rfl
 
+instance hasPSMul : SMul ℕ+ (M →ₗ⁅R,L⁆ N) where
+  smul n f := { n • (f : M →ₗ[R] N) with map_lie' := by simp }
+
+@[norm_cast, simp]
+theorem coe_psmul (n : ℕ+) (f : M →ₗ⁅R,L⁆ N) : ⇑(n • f) = n • (⇑f) :=
+  rfl
+
+theorem psmul_apply (n : ℕ+) (f : M →ₗ⁅R,L⁆ N) (m : M) : (n • f) m = n • f m :=
+  rfl
+
 instance hasNSMul : SMul ℕ (M →ₗ⁅R,L⁆ N) where
   smul n f := { n • (f : M →ₗ[R] N) with map_lie' := by simp }
 
@@ -838,8 +856,8 @@ theorem zsmul_apply (z : ℤ) (f : M →ₗ⁅R,L⁆ N) (m : M) : (z • f) m = 
   rfl
 
 instance : AddCommGroup (M →ₗ⁅R,L⁆ N) :=
-  coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => coe_nsmul _ _)
-    (fun _ _ => coe_zsmul _ _)
+  coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => rfl)
+    (fun _ _ => coe_nsmul _ _) (fun _ _ => coe_zsmul _ _)
 
 variable [LieAlgebra R L] [LieModule R L N]
 

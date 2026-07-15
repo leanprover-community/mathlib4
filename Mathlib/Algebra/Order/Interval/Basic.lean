@@ -186,6 +186,11 @@ end Mul
 
 section Pow
 
+@[to_additive]
+instance NonemptyInterval.instPPow [Semigroup α] [Preorder α] [MulLeftMono α] [MulRightMono α] :
+    Pow (NonemptyInterval α) ℕ+ :=
+  ⟨fun s n => ⟨s.toProd ^ n, ppow_le_ppow_left' s.fst_le_snd _⟩⟩
+
 variable [Monoid α] [Preorder α]
 
 @[to_additive]
@@ -198,7 +203,11 @@ namespace NonemptyInterval
 variable [MulLeftMono α] [MulRightMono α]
 variable (s : NonemptyInterval α) (a : α) (n : ℕ)
 
-@[to_additive (attr := simp) toProd_nsmul]
+@[to_additive (reorder := s n) (attr := simp) toProd_psmul]
+theorem toProd_ppow (n : ℕ+) : (s ^ n).toProd = s.toProd ^ n :=
+  rfl
+
+@[to_additive (reorder := s n) (attr := simp) toProd_nsmul]
 theorem toProd_pow : (s ^ n).toProd = s.toProd ^ n :=
   rfl
 
@@ -223,7 +232,8 @@ namespace NonemptyInterval
 @[to_additive]
 instance commMonoid [CommMonoid α] [Preorder α] [IsOrderedMonoid α] :
     CommMonoid (NonemptyInterval α) :=
-  fast_instance% NonemptyInterval.toProd_injective.commMonoid _ toProd_one toProd_mul toProd_pow
+  fast_instance% NonemptyInterval.toProd_injective.commMonoid _ toProd_one toProd_mul
+    toProd_ppow toProd_pow
 
 end NonemptyInterval
 
@@ -298,7 +308,8 @@ namespace NonemptyInterval
 instance [CommSemiring α] [PartialOrder α] [CanonicallyOrderedAdd α] :
     CommSemiring (NonemptyInterval α) :=
   fast_instance% NonemptyInterval.toProd_injective.commSemiring _
-    toProd_zero toProd_one toProd_add toProd_mul (swap toProd_nsmul) toProd_pow (fun _ => rfl)
+    toProd_zero toProd_one toProd_add toProd_mul toProd_psmul toProd_nsmul
+      toProd_ppow toProd_pow (fun _ => rfl)
 
 end NonemptyInterval
 

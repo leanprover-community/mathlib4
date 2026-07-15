@@ -387,11 +387,15 @@ instance {K : Type*} [AddMonoid K] [AddAction K H] [VAddAssocClass K H H] :
 instance : Mul (G →+c[a, a] G) := ⟨comp⟩
 instance : One (G →+c[a, a] G) := ⟨.id⟩
 
+instance : Pow (G →+c[a, a] G) ℕ+ where
+  pow f n := ⟨f^[n], Commute.iterate_left (AddConstMapClass.semiconj f) _⟩
+
 instance : Pow (G →+c[a, a] G) ℕ where
   pow f n := ⟨f^[n], Commute.iterate_left (AddConstMapClass.semiconj f) _⟩
 
 instance : Monoid (G →+c[a, a] G) :=
-  DFunLike.coe_injective.monoid (M₂ := Function.End G) _ rfl (fun _ _ ↦ rfl) fun _ _ ↦ rfl
+  DFunLike.coe_injective.monoid (M₂ := Function.End G) _ rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+    fun _ _ ↦ rfl
 
 theorem mul_def (f g : G →+c[a, a] G) : f * g = f.comp g := rfl
 @[simp, push_cast] theorem coe_mul (f g : G →+c[a, a] G) : ⇑(f * g) = f ∘ g := rfl
@@ -400,6 +404,8 @@ theorem one_def : (1 : G →+c[a, a] G) = .id := rfl
 @[simp, push_cast] theorem coe_one : ⇑(1 : G →+c[a, a] G) = id := rfl
 
 @[simp, push_cast] theorem coe_pow (f : G →+c[a, a] G) (n : ℕ) : ⇑(f ^ n) = f^[n] := rfl
+
+theorem ppow_apply (f : G →+c[a, a] G) (n : ℕ+) (x : G) : (f ^ n) x = f^[n] x := rfl
 
 theorem pow_apply (f : G →+c[a, a] G) (n : ℕ) (x : G) : (f ^ n) x = f^[n] x := rfl
 

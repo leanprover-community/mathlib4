@@ -970,7 +970,7 @@ instance instMulAction [Monoid R] [MulAction R ℝ≥0∞] [IsScalarTower R ℝ�
 
 instance instAddCommMonoid {_ : MeasurableSpace α} : AddCommMonoid (Measure α) :=
   toOuterMeasure_injective.addCommMonoid toOuterMeasure zero_toOuterMeasure add_toOuterMeasure
-    fun _ _ => smul_toOuterMeasure _ _
+    (fun _ _ => smul_toOuterMeasure _ _) fun _ _ => smul_toOuterMeasure _ _
 
 /-- Coercion to function as an additive monoid homomorphism. -/
 def coeAddHom {_ : MeasurableSpace α} : Measure α →+ Set α → ℝ≥0∞ where

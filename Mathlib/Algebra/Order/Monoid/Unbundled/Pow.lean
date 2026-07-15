@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
 public import Mathlib.Algebra.Order.Monoid.Unbundled.OrderDual
+public import Mathlib.Algebra.Group.PPow.Defs
 public import Mathlib.Tactic.Lift
 public import Mathlib.Tactic.Monotonicity.Attr
 
@@ -32,6 +33,21 @@ namespace Left
 
 variable [MulLeftMono M] {a : M}
 
+@[to_additive Left.psmul_nonneg]
+theorem one_le_ppow_of_le (ha : 1 ≤ a) (n : ℕ+) : 1 ≤ a ^ n := by
+  induction n using Semigroup.ppow_induction a
+  · exact ha
+  · exact one_le_mul ‹_› ha
+
+@[to_additive psmul_nonpos]
+theorem ppow_le_one_of_le (ha : a ≤ 1) (n : ℕ+) : a ^ n ≤ 1 := one_le_ppow_of_le (M := Mᵒᵈ) ha n
+
+@[to_additive psmul_neg]
+theorem ppow_lt_one_of_lt {a : M} (n : ℕ+) (h : a < 1) : a ^ n < 1 := by
+  induction n using Semigroup.ppow_induction' a
+  · exact h
+  · exact mul_lt_one_of_lt_of_le h (ppow_le_one_of_le h.le _)
+
 @[to_additive Left.nsmul_nonneg]
 theorem one_le_pow_of_le (ha : 1 ≤ a) : ∀ n : ℕ, 1 ≤ a ^ n
   | 0 => by simp
@@ -50,6 +66,9 @@ theorem pow_lt_one_of_lt {a : M} {n : ℕ} (h : a < 1) (hn : n ≠ 0) : a ^ n < 
 
 end Left
 
+@[to_additive psmul_nonneg] alias one_le_ppow_of_one_le' := Left.one_le_ppow_of_le
+@[to_additive psmul_nonpos] alias ppow_le_one' := Left.ppow_le_one_of_le
+@[to_additive psmul_neg] alias ppow_lt_one' := Left.ppow_lt_one_of_lt
 @[to_additive nsmul_nonneg] alias one_le_pow_of_one_le' := Left.one_le_pow_of_le
 @[to_additive nsmul_nonpos] alias pow_le_one' := Left.pow_le_one_of_le
 @[to_additive nsmul_neg] alias pow_lt_one' := Left.pow_lt_one_of_lt
@@ -156,6 +175,15 @@ end CovariantLTSwap
 section CovariantLESwap
 
 variable [Preorder β] [MulLeftMono M] [MulRightMono M]
+
+@[to_additive (attr := mono, gcongr) psmul_le_psmul_right]
+theorem ppow_le_ppow_left' {M : Type*} [Semigroup M] [Preorder M] [MulLeftMono M] [MulRightMono M]
+    {a b : M} (hab : a ≤ b) (i : ℕ+) : a ^ i ≤ b ^ i := by
+  induction i using Semigroup.ppow_induction a generalizing b with
+  | h1 => simp [hab]
+  | hsucc i IH =>
+    rw [ppow_succ b]
+    exact mul_le_mul' (IH hab) hab
 
 @[to_additive (attr := mono, gcongr) nsmul_le_nsmul_right]
 theorem pow_le_pow_left' {a b : M} (hab : a ≤ b) : ∀ i : ℕ, a ^ i ≤ b ^ i

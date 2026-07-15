@@ -43,6 +43,8 @@ instance : One (WithConv <| C →ₐ[R] A) where
 instance : Mul (WithConv <| C →ₐ[R] A) where
   mul f g := toConv <| .comp (lmul' R) <| .comp (map f.ofConv g.ofConv) <| comulAlgHom R C
 
+instance : Pow (WithConv <| C →ₐ[R] A) ℕ+ := ⟨fun f n ↦ ppowRec n f⟩
+
 instance : Pow (WithConv <| C →ₐ[R] A) ℕ := ⟨fun f n ↦ npowRec n f⟩
 
 lemma convOne_def : 1 = toConv ((Algebra.ofId R A).comp (counitAlgHom R C)) := rfl
@@ -50,6 +52,8 @@ lemma convOne_def : 1 = toConv ((Algebra.ofId R A).comp (counitAlgHom R C)) := r
 lemma convMul_def (f g : WithConv <| C →ₐ[R] A) :
     f * g = toConv (.comp (lmul' R) <| .comp (map f.ofConv g.ofConv) <| comulAlgHom R C) := rfl
 
+private lemma convPPow_succ (f : WithConv <| C →ₐ[R] A) (n : ℕ+) : f ^ (n + 1) = (f ^ n) * f :=
+  ppowRec_succ n _
 private lemma convPow_succ (f : WithConv <| C →ₐ[R] A) (n : ℕ) : f ^ (n + 1) = (f ^ n) * f := rfl
 
 @[simp]
@@ -71,6 +75,13 @@ lemma toLinearMap_convMul (f g : WithConv <| C →ₐ[R] A) :
   rfl
 
 @[simp]
+lemma toLinearMap_convPPow (f : WithConv <| C →ₐ[R] A) (n : ℕ+) :
+    toConv (f ^ n).ofConv.toLinearMap = toConv f.ofConv.toLinearMap ^ n := by
+  induction n
+  · rfl
+  · grind [convPPow_succ, toLinearMap_convMul, ppow_succ]
+
+@[simp]
 lemma toLinearMap_convPow (f : WithConv <| C →ₐ[R] A) :
     ∀ n : ℕ, toConv (f ^ n).ofConv.toLinearMap = toConv f.ofConv.toLinearMap ^ n
   | 0 => rfl
@@ -90,13 +101,13 @@ lemma comp_convMul_distrib [Algebra R B] (h : A →ₐ[R] B) (f g : WithConv <| 
 
 instance : Monoid (WithConv <| C →ₐ[R] A) := fast_instance%
   (toConv_injective.comp <| toLinearMap_injective.comp ofConv_injective).monoid _
-    toLinearMap_convOne toLinearMap_convMul toLinearMap_convPow
+    toLinearMap_convOne toLinearMap_convMul toLinearMap_convPPow toLinearMap_convPow
 
 variable [IsCocomm R C]
 
 instance : CommMonoid (WithConv <| C →ₐ[R] A) := fast_instance%
   (toConv_injective.comp <| toLinearMap_injective.comp ofConv_injective).commMonoid _
-    toLinearMap_convOne toLinearMap_convMul toLinearMap_convPow
+    toLinearMap_convOne toLinearMap_convMul toLinearMap_convPPow toLinearMap_convPow
 
 end AlgHom
 
@@ -122,6 +133,8 @@ variable [IsCocomm R C]
 instance : Mul (WithConv <| C →ₐc[R] A) where
   mul f g := toConv <| .comp (mulBialgHom R A) <| .comp (map f.ofConv g.ofConv) <| comulBialgHom R C
 
+instance : Pow (WithConv <| C →ₐc[R] A) ℕ+ := ⟨fun f n ↦ ppowRec n f⟩
+
 instance : Pow (WithConv <| C →ₐc[R] A) ℕ := ⟨fun f n ↦ npowRec n f⟩
 
 lemma convMul_def (f g : WithConv <| C →ₐc[R] A) :
@@ -129,6 +142,8 @@ lemma convMul_def (f g : WithConv <| C →ₐc[R] A) :
       toConv (.comp (mulBialgHom R A) <| .comp (map f.ofConv g.ofConv) <| comulBialgHom R C) :=
   rfl
 
+private lemma convPPow_succ (f : WithConv <| C →ₐc[R] A) (n : ℕ+) : f ^ (n + 1) = (f ^ n) * f :=
+  ppowRec_succ n _
 private lemma convPow_succ (f : WithConv <| C →ₐc[R] A) (n : ℕ) : f ^ (n + 1) = (f ^ n) * f := rfl
 
 -- TODO: Make simp once `SemilinearMapClass.semilinearMap` is not simp nf anymore.
@@ -144,10 +159,25 @@ lemma toAlgHom_convMul (f g : WithConv <| C →ₐc[R] A) :
 
 -- TODO: Make simp once `SemilinearMapClass.semilinearMap` is not simp nf anymore.
 -- @[simp]
+lemma toLinearMap_convPPow (f : WithConv <| C →ₐc[R] A) (n : ℕ+) :
+    toConv (f ^ n).ofConv.toLinearMap = toConv f.ofConv.toLinearMap ^ n := by
+  induction n with
+  | one => rfl
+  | succ n IH => rw [convPPow_succ, toLinearMap_convMul, ppow_succ, IH]
+
+-- TODO: Make simp once `SemilinearMapClass.semilinearMap` is not simp nf anymore.
+-- @[simp]
 lemma toLinearMap_convPow (f : WithConv <| C →ₐc[R] A) :
     ∀ n, toConv (f ^ n).ofConv.toLinearMap = toConv f.ofConv.toLinearMap ^ n
   | 0 => rfl
   | n + 1 => by simp only [convPow_succ, pow_succ, toLinearMap_convMul, toLinearMap_convPow]
+
+@[simp]
+lemma toAlgHom_convPPow (f : WithConv <| C →ₐc[R] A) (n : ℕ+) :
+    toConv (f ^ n).ofConv.toAlgHom = toConv f.ofConv.toAlgHom ^ n := by
+  induction n with
+  | one => rfl
+  | succ n IH => rw [convPPow_succ, toAlgHom_convMul, ppow_succ, IH]
 
 @[simp]
 lemma toAlgHom_convPow (f : WithConv <| C →ₐc[R] A) :
@@ -157,6 +187,6 @@ lemma toAlgHom_convPow (f : WithConv <| C →ₐc[R] A) :
 
 instance : CommMonoid (WithConv <| C →ₐc[R] A) := fast_instance%
   (toConv_injective.comp <| coe_linearMap_injective.comp ofConv_injective).commMonoid _
-    toLinearMap_convOne toLinearMap_convMul toLinearMap_convPow
+    toLinearMap_convOne toLinearMap_convMul toLinearMap_convPPow toLinearMap_convPow
 
 end BialgHom

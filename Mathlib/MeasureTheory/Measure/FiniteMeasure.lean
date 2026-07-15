@@ -259,7 +259,8 @@ theorem coeFn_smul [IsScalarTower R ℝ≥0 ℝ≥0] (c : R) (μ : FiniteMeasure
   funext; simp [← ENNReal.coe_inj, ENNReal.coe_smul]
 
 instance instAddCommMonoid : AddCommMonoid (FiniteMeasure Ω) := fast_instance%
-  toMeasure_injective.addCommMonoid _ toMeasure_zero toMeasure_add fun _ _ ↦ toMeasure_smul _ _
+  toMeasure_injective.addCommMonoid _ toMeasure_zero toMeasure_add (fun _ _ ↦ toMeasure_smul _ _)
+    fun _ _ ↦ toMeasure_smul _ _
 
 /-- Coercion is an `AddMonoidHom`. -/
 @[simps]

@@ -93,16 +93,17 @@ variable [Mul F]
 /-- A `FunLike` type that satisfies `(f * g) x = f x * g x` is a semigroup if `β` is a semigroup. -/
 @[to_additive /-- A `FunLike` type that satisfies `(f + g) x = f x + g x` is an additive semigroup
 if `β` is an additive semigroup. -/]
-protected abbrev semigroup [Semigroup β] [IsMulApply F α β] : Semigroup F :=
-  DFunLike.coe_injective.semigroup (fun (f : F) ↦ (f : α → β)) coe_mul
+protected abbrev semigroup [Semigroup β] [Pow F ℕ+] [IsMulApply F α β] [IsPowApply ℕ+ F α β] :
+    Semigroup F :=
+  DFunLike.coe_injective.semigroup (fun (f : F) ↦ (f : α → β)) coe_mul coe_pow
 
 /-- A `FunLike` type that satisfies `(f * g) x = f x * g x` is a commutative semigroup if `β` is a
 commutative semigroup. -/
 @[to_additive /-- A `FunLike` type that satisfies `(f + g) x = f x + g x` is a commatative additive
 semigroup if `β` is a commatative additive semigroup. -/]
-protected abbrev commSemigroup [CommSemigroup β] [IsMulApply F α β] :
-    CommSemigroup F :=
-  DFunLike.coe_injective.commSemigroup (fun (f : F) ↦ (f : α → β)) coe_mul
+protected abbrev commSemigroup [CommSemigroup β] [Pow F ℕ+] [IsMulApply F α β]
+    [IsPowApply ℕ+ F α β] : CommSemigroup F :=
+  DFunLike.coe_injective.commSemigroup (fun (f : F) ↦ (f : α → β)) coe_mul coe_pow
 
 /-- A `FunLike` type that satisfies `(f * g) x = f x * g x` has left cancellative multiplication if
 `β` has left cancellative multiplication. -/
@@ -132,17 +133,18 @@ protected theorem isCancelMul [Mul β] [IsCancelMul β] [IsMulApply F α β] :
 left cancel semigroup. -/
 @[to_additive /-- A `FunLike` type that satisfies `(f + g) x = f x + g x` is a left cancel additive
 semigroup if `β` is a left cancel additive semigroup. -/]
-protected abbrev leftCancelSemigroup [LeftCancelSemigroup β] [IsMulApply F α β] :
+protected abbrev leftCancelSemigroup [LeftCancelSemigroup β] [IsMulApply F α β] [Pow F ℕ+]
+    [IsPowApply ℕ+ F α β] :
     LeftCancelSemigroup F :=
-  DFunLike.coe_injective.leftCancelSemigroup (fun (f : F) ↦ (f : α → β)) coe_mul
+  DFunLike.coe_injective.leftCancelSemigroup (fun (f : F) ↦ (f : α → β)) coe_mul coe_pow
 
 /-- A `FunLike` type that satisfies `(f * g) x = f x * g x` is a right cancel semigroup if `β` is a
 right cancel semigroup. -/
 @[to_additive /-- A `FunLike` type that satisfies `(f + g) x = f x + g x` is a right cancel additive
 semigroup if `β` is a right cancel additive semigroup. -/]
-protected abbrev rightCancelSemigroup [RightCancelSemigroup β] [IsMulApply F α β] :
-    RightCancelSemigroup F :=
-  DFunLike.coe_injective.rightCancelSemigroup (fun (f : F) ↦ (f : α → β)) coe_mul
+protected abbrev rightCancelSemigroup [RightCancelSemigroup β] [IsMulApply F α β] [Pow F ℕ+]
+    [IsPowApply ℕ+ F α β] : RightCancelSemigroup F :=
+  DFunLike.coe_injective.rightCancelSemigroup (fun (f : F) ↦ (f : α → β)) coe_mul coe_pow
 
 variable [One F]
 
@@ -153,23 +155,24 @@ protected abbrev mulOneClass [MulOneClass β] [IsOneApply F α β] [IsMulApply F
     MulOneClass F :=
   DFunLike.coe_injective.mulOneClass (fun (f : F) ↦ (f : α → β)) coe_one coe_mul
 
-variable [Pow F ℕ]
+variable [Pow F ℕ+] [Pow F ℕ]
 
 /-- A `FunLike` type that satisfies `(f * g) x = f x * g x`, `1 x = 1`, and `(f ^ n) x = f x ^ n`
 is a monoid if `β` is a monoid. -/
 @[to_additive /-- A `FunLike` type that satisfies `(f + g) x = f x + g x`, `0 x = 0`, and
 `(n • f) x = n • f x` is an additive monoid if `β` is an additive monoid. -/]
-protected abbrev monoid [Monoid β] [IsOneApply F α β] [IsMulApply F α β] [IsPowApply ℕ F α β] :
-    Monoid F :=
-  DFunLike.coe_injective.monoid (fun (f : F) ↦ (f : α → β)) coe_one coe_mul coe_pow
+protected abbrev monoid [Monoid β] [IsOneApply F α β] [IsMulApply F α β] [IsPowApply ℕ+ F α β]
+    [IsPowApply ℕ F α β] : Monoid F :=
+  DFunLike.coe_injective.monoid (fun (f : F) ↦ (f : α → β)) coe_one coe_mul coe_pow coe_pow
 
 /-- A `FunLike` type that satisfies `(f * g) x = f x * g x`, `1 x = 1`, and `(f ^ n) x = f x ^ n`
 is a left cancel monoid if `β` is a left cancel monoid. -/
 @[to_additive /-- A `FunLike` type that satisfies `(f + g) x = f x + g x`, `0 x = 0`, and
 `(n • f) x = n • f x` is a left cancel additive monoid if `β` is a left cancel additive monoid. -/]
 protected abbrev leftCancelMonoid [LeftCancelMonoid β] [IsOneApply F α β] [IsMulApply F α β]
-    [IsPowApply ℕ F α β] : LeftCancelMonoid F :=
+    [IsPowApply ℕ+ F α β] [IsPowApply ℕ F α β] : LeftCancelMonoid F :=
   DFunLike.coe_injective.leftCancelMonoid (fun (f : F) ↦ (f : α → β)) coe_one coe_mul coe_pow
+    coe_pow
 
 /-- A `FunLike` type that satisfies `(f * g) x = f x * g x`, `1 x = 1`, and `(f ^ n) x = f x ^ n`
 is a right cancel monoid if `β` is a right cancel monoid. -/
@@ -177,24 +180,27 @@ is a right cancel monoid if `β` is a right cancel monoid. -/
 `(n • f) x = n • f x` is a right cancel additive monoid if `β` is a right cancel
 additive monoid. -/]
 protected abbrev rightCancelMonoid [RightCancelMonoid β] [IsOneApply F α β] [IsMulApply F α β]
-    [IsPowApply ℕ F α β] : RightCancelMonoid F :=
+    [IsPowApply ℕ+ F α β] [IsPowApply ℕ F α β] : RightCancelMonoid F :=
   DFunLike.coe_injective.rightCancelMonoid (fun (f : F) ↦ (f : α → β)) coe_one coe_mul coe_pow
+    coe_pow
 
 /-- A `FunLike` type that satisfies `(f * g) x = f x * g x`, `1 x = 1`, and `(f ^ n) x = f x ^ n`
 is a cancel monoid if `β` is a cancel monoid. -/
 @[to_additive /-- A `FunLike` type that satisfies `(f + g) x = f x + g x`, `0 x = 0`, and
 `(n • f) x = n • f x` is a cancel additive monoid if `β` is a cancel additive monoid. -/]
 protected abbrev cancelMonoid [CancelMonoid β] [IsOneApply F α β] [IsMulApply F α β]
-    [IsPowApply ℕ F α β] : CancelMonoid F :=
+    [IsPowApply ℕ+ F α β] [IsPowApply ℕ F α β] : CancelMonoid F :=
   DFunLike.coe_injective.cancelMonoid (fun (f : F) ↦ (f : α → β)) coe_one coe_mul coe_pow
+    coe_pow
 
 /-- A `FunLike` type that satisfies `(f * g) x = f x * g x`, `1 x = 1`, and `(f ^ n) x = f x ^ n`
 is a commutative monoid if `β` is a commutative monoid. -/
 @[to_additive /-- A `FunLike` type that satisfies `(f + g) x = f x + g x`, `0 x = 0`, and
 `(n • f) x = n • f x` is a commutative additive monoid if `β` is a commutative additive monoid. -/]
 protected abbrev commMonoid [CommMonoid β] [IsOneApply F α β] [IsMulApply F α β]
-    [IsPowApply ℕ F α β] : CommMonoid F :=
+    [IsPowApply ℕ+ F α β] [IsPowApply ℕ F α β] : CommMonoid F :=
   DFunLike.coe_injective.commMonoid (fun (f : F) ↦ (f : α → β)) coe_one coe_mul coe_pow
+    coe_pow
 
 /-- A `FunLike` type that satisfies `(f * g) x = f x * g x`, `1 x = 1`, and `(f ^ n) x = f x ^ n`
 is a cancel commutative monoid if `β` is a cancel commutative monoid. -/
@@ -202,8 +208,9 @@ is a cancel commutative monoid if `β` is a cancel commutative monoid. -/
 `(n • f) x = n • f x` is a cancel commutative additive monoid if `β` is a cancel commutative
 additive monoid. -/]
 protected abbrev cancelCommMonoid [CancelCommMonoid β] [IsOneApply F α β] [IsMulApply F α β]
-    [IsPowApply ℕ F α β] : CancelCommMonoid F :=
+    [IsPowApply ℕ+ F α β] [IsPowApply ℕ F α β] : CancelCommMonoid F :=
   DFunLike.coe_injective.cancelCommMonoid (fun (f : F) ↦ (f : α → β)) coe_one coe_mul coe_pow
+    coe_pow
 
 variable [Inv F]
 
@@ -226,53 +233,53 @@ variable [Div F] [Pow F ℤ]
 /-- A `FunLike` type is a `DivInvMonoid` if `β` is a `DivInvMonoid`. -/
 @[to_additive subNegMonoid /-- A `FunLike` type is a `SubNegMonoid` if `β` is a `SubNegMonoid`. -/]
 protected abbrev divInvMonoid [DivInvMonoid β] [IsOneApply F α β] [IsMulApply F α β]
-    [IsInvApply F α β] [IsDivApply F α β] [IsPowApply ℕ F α β] [IsPowApply ℤ F α β] :
-    DivInvMonoid F :=
+    [IsInvApply F α β] [IsDivApply F α β] [IsPowApply ℕ+ F α β] [IsPowApply ℕ F α β]
+    [IsPowApply ℤ F α β] : DivInvMonoid F :=
   DFunLike.coe_injective.divInvMonoid (fun (f : F) ↦ (f : α → β)) coe_one coe_mul coe_inv coe_div
-    coe_pow coe_pow
+    coe_pow coe_pow coe_pow
 
 /-- A `FunLike` type is a `DivInvOneMonoid` if `β` is a `DivInvOneMonoid`. -/
 @[to_additive
 /-- A `FunLike` type is a `SubNegOneMonoid` if `β` is a `SubNegOneMonoid`. -/]
 protected abbrev divInvOneMonoid [DivInvOneMonoid β] [IsOneApply F α β] [IsMulApply F α β]
-    [IsInvApply F α β] [IsDivApply F α β] [IsPowApply ℕ F α β] [IsPowApply ℤ F α β] :
-    DivInvOneMonoid F :=
+    [IsInvApply F α β] [IsDivApply F α β] [IsPowApply ℕ+ F α β] [IsPowApply ℕ F α β]
+    [IsPowApply ℤ F α β] : DivInvOneMonoid F :=
   DFunLike.coe_injective.divInvOneMonoid (fun (f : F) ↦ (f : α → β)) coe_one coe_mul
-    coe_inv coe_div coe_pow coe_pow
+    coe_inv coe_div coe_pow coe_pow coe_pow
 
 /-- A `FunLike` type is a division monoid if `β` is a division monoid. -/
 @[to_additive /-- A `FunLike` type is a subtraction monoid if `β` is a subtraction monoid. -/]
 protected abbrev divisionMonoid [DivisionMonoid β] [IsOneApply F α β] [IsMulApply F α β]
-    [IsInvApply F α β] [IsDivApply F α β] [IsPowApply ℕ F α β] [IsPowApply ℤ F α β] :
-    DivisionMonoid F :=
+    [IsInvApply F α β] [IsDivApply F α β] [IsPowApply ℕ+ F α β] [IsPowApply ℕ F α β]
+    [IsPowApply ℤ F α β] : DivisionMonoid F :=
   DFunLike.coe_injective.divisionMonoid (fun (f : F) ↦ (f : α → β)) coe_one coe_mul
-    coe_inv coe_div coe_pow coe_pow
+    coe_inv coe_div coe_pow coe_pow coe_pow
 
 /-- A `FunLike` type is a division commutative monoid if `β` is a division commutative monoid. -/
 @[to_additive subtractionCommMonoid /-- A `FunLike` type is a subtraction commutative monoid if `β`
 is a subtraction commutative monoid. -/]
 protected abbrev divisionCommMonoid [DivisionCommMonoid β] [IsOneApply F α β] [IsMulApply F α β]
-    [IsInvApply F α β] [IsDivApply F α β] [IsPowApply ℕ F α β] [IsPowApply ℤ F α β] :
-    DivisionCommMonoid F :=
+    [IsInvApply F α β] [IsDivApply F α β] [IsPowApply ℕ+ F α β] [IsPowApply ℕ F α β]
+    [IsPowApply ℤ F α β] : DivisionCommMonoid F :=
   DFunLike.coe_injective.divisionCommMonoid (fun (f : F) ↦ (f : α → β)) coe_one coe_mul coe_inv
-    coe_div coe_pow coe_pow
+    coe_div coe_pow coe_pow coe_pow
 
 /-- A `FunLike` type is a group if `β` is a group. -/
 @[to_additive /-- A `FunLike` type is an additive group if `β` is an additive group. -/]
 protected abbrev group [Group β] [IsOneApply F α β] [IsMulApply F α β] [IsInvApply F α β]
-    [IsDivApply F α β] [IsPowApply ℕ F α β] [IsPowApply ℤ F α β] :
+    [IsDivApply F α β] [IsPowApply ℕ+ F α β] [IsPowApply ℕ F α β] [IsPowApply ℤ F α β] :
     Group F :=
   DFunLike.coe_injective.group (fun (f : F) ↦ (f : α → β)) coe_one coe_mul coe_inv coe_div coe_pow
-    coe_pow
+    coe_pow coe_pow
 
 /-- A `FunLike` type is a commutative group if `β` is a commutative group. -/
 @[to_additive /-- A `FunLike` type is an additive commutative group if `β` is an additive
 commutative group. -/]
 protected abbrev commGroup [CommGroup β] [IsOneApply F α β] [IsMulApply F α β] [IsInvApply F α β]
-    [IsDivApply F α β] [IsPowApply ℕ F α β] [IsPowApply ℤ F α β] :
+    [IsDivApply F α β] [IsPowApply ℕ+ F α β] [IsPowApply ℕ F α β] [IsPowApply ℤ F α β] :
     CommGroup F :=
   DFunLike.coe_injective.commGroup (fun (f : F) ↦ (f : α → β)) coe_one coe_mul coe_inv coe_div
-    coe_pow coe_pow
+    coe_pow coe_pow coe_pow
 
 end GroupInstances
 

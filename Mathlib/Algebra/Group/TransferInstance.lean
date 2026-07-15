@@ -118,13 +118,15 @@ lemma mulEquiv_symm_apply (e : α ≃ β) [Mul β] (b : β) :
 @[to_additive /-- Transfer `add_semigroup` across an `Equiv` -/]
 protected abbrev semigroup [Semigroup β] : Semigroup α := by
   let mul := e.mul
-  apply e.injective.semigroup _; intros; exact e.apply_symm_apply _
+  let ppow := e.pow ℕ+
+  apply e.injective.semigroup _ <;> intros <;> exact e.apply_symm_apply _
 
 /-- Transfer `CommSemigroup` across an `Equiv` -/
 @[to_additive /-- Transfer `AddCommSemigroup` across an `Equiv` -/]
 protected abbrev commSemigroup [CommSemigroup β] : CommSemigroup α := by
   let mul := e.mul
-  apply e.injective.commSemigroup _; intros; exact e.apply_symm_apply _
+  let ppow := e.pow ℕ+
+  apply e.injective.commSemigroup _ <;> intros <;> exact e.apply_symm_apply _
 
 /-- Transfer `IsLeftCancelMul` across an `Equiv` -/
 @[to_additive /-- Transfer `IsLeftCancelAdd` across an `Equiv` -/]
@@ -159,6 +161,7 @@ protected abbrev mulOneClass [MulOneClass β] : MulOneClass α := by
 protected abbrev monoid [Monoid β] : Monoid α := by
   let one := e.one
   let mul := e.mul
+  let ppow := e.pow ℕ+
   let pow := e.pow ℕ
   apply e.injective.monoid _ <;> intros <;> exact e.apply_symm_apply _
 
@@ -167,6 +170,7 @@ protected abbrev monoid [Monoid β] : Monoid α := by
 protected abbrev commMonoid [CommMonoid β] : CommMonoid α := by
   let one := e.one
   let mul := e.mul
+  let ppow := e.pow ℕ+
   let pow := e.pow ℕ
   apply e.injective.commMonoid _ <;> intros <;> exact e.apply_symm_apply _
 
@@ -177,6 +181,7 @@ protected abbrev group [Group β] : Group α := by
   let mul := e.mul
   let inv := e.Inv
   let div := e.div
+  let ppow := e.pow ℕ+
   let npow := e.pow ℕ
   let zpow := e.pow ℤ
   apply e.injective.group _ <;> intros <;> exact e.apply_symm_apply _
@@ -188,6 +193,7 @@ protected abbrev commGroup [CommGroup β] : CommGroup α := by
   let mul := e.mul
   let inv := e.Inv
   let div := e.div
+  let ppow := e.pow ℕ+
   let npow := e.pow ℕ
   let zpow := e.pow ℤ
   apply e.injective.commGroup _ <;> intros <;> exact e.apply_symm_apply _

@@ -6,6 +6,7 @@ Authors: Jakob von Raumer, Kevin Klinge, Andrew Yang
 module
 
 public import Mathlib.Algebra.Algebra.Defs
+public import Mathlib.Algebra.Group.PPow.Basic -- FIXME: move
 public import Mathlib.Algebra.Field.Defs
 public import Mathlib.RingTheory.OreLocalization.NonZeroDivisors
 
@@ -23,6 +24,16 @@ The `Monoid` and `DistribMulAction` instances and additive versions are provided
 assert_not_exists Subgroup
 
 universe u
+
+-- FIXME: move
+instance AddSemigroup.instPNatMulAction {S : Type*} [AddSemigroup S] :
+    MulAction ℕ+ S where
+  mul_smul n m x := by
+    induction n with
+    | one => simp
+    | succ n IH =>
+      simp [add_mul, one_mul, add_psmul, IH]
+  one_smul := one_psmul
 
 namespace OreLocalization
 
@@ -95,12 +106,19 @@ instance {R₀} [Semiring R₀] [Module R₀ X] [Module R₀ R]
   add_smul r s x := by simp only [← smul_one_oreDiv_one_smul, add_smul, ← add_oreDiv]
   zero_smul x := by rw [← smul_one_oreDiv_one_smul, zero_smul, zero_oreDiv, zero_smul]
 
-@[simp]
 lemma nsmul_eq_nsmul (n : ℕ) (x : X[S⁻¹]) :
     letI inst := OreLocalization.instModuleOfIsScalarTower (R₀ := ℕ) (R := R) (X := X) (S := S)
     HSMul.hSMul (self := @instHSMul _ _ inst.toSMul) n x = n • x := by
   let inst := OreLocalization.instModuleOfIsScalarTower (R₀ := ℕ) (R := R) (X := X) (S := S)
   exact congr($(AddCommMonoid.uniqueNatModule.2 inst).smul n x)
+
+lemma psmul_eq_psmul (n : ℕ+) (x : X[S⁻¹]) :
+    letI inst := OreLocalization.instMulActionOfIsScalarTower (R := ℕ+) (X := X) (S := S)
+    HSMul.hSMul (self := @instHSMul _ _ inst.toSMul) n x =
+    HSMul.hSMul (self := @instHSMul _ _ instAddMonoid.toAddSemigroup.toPSMul.toSMul) n x := by
+  letI inst := OreLocalization.instMulActionOfIsScalarTower (R := ℕ+) (X := X) (S := S)
+  rw [← nsmul_val_eq_psmul, ← nsmul_eq_nsmul, ← OreLocalization.smul_one_oreDiv_one_smul n x,
+    ← OreLocalization.smul_one_oreDiv_one_smul (n : ℕ) x, nsmul_val_eq_psmul]
 
 /-- The ring homomorphism from `R` to `R[S⁻¹]`, mapping `r : R` to the fraction `r /ₒ 1`. -/
 @[simps!]

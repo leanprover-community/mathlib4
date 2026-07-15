@@ -88,11 +88,14 @@ initialize_simps_projections Kernel (toFun → apply)
 
 instance instZero : Zero (Kernel α β) where zero := ⟨0, measurable_zero⟩
 noncomputable instance instAdd : Add (Kernel α β) where add κ η := ⟨κ + η, κ.2.add η.2⟩
+noncomputable instance instSMulPNat : SMul ℕ+ (Kernel α β) where
+  smul n κ := ⟨n • κ, (measurable_const (a := n)).smul κ.2⟩
 noncomputable instance instSMulNat : SMul ℕ (Kernel α β) where
   smul n κ := ⟨n • κ, (measurable_const (a := n)).smul κ.2⟩
 
 @[simp, norm_cast] lemma coe_zero : ⇑(0 : Kernel α β) = 0 := rfl
 @[simp, norm_cast] lemma coe_add (κ η : Kernel α β) : ⇑(κ + η) = κ + η := rfl
+@[simp, norm_cast] lemma coe_psmul (n : ℕ+) (κ : Kernel α β) : ⇑(n • κ) = n • κ := rfl
 @[simp, norm_cast] lemma coe_nsmul (n : ℕ) (κ : Kernel α β) : ⇑(n • κ) = n • κ := rfl
 
 @[simp] lemma zero_apply (a : α) : (0 : Kernel α β) a = 0 := rfl
@@ -100,7 +103,7 @@ noncomputable instance instSMulNat : SMul ℕ (Kernel α β) where
 @[simp] lemma nsmul_apply (n : ℕ) (κ : Kernel α β) (a : α) : (n • κ) a = n • κ a := rfl
 
 noncomputable instance instAddCommMonoid : AddCommMonoid (Kernel α β) :=
-  DFunLike.coe_injective.addCommMonoid _ coe_zero coe_add (by intros; rfl)
+  DFunLike.coe_injective.addCommMonoid _ coe_zero coe_add (by intros; rfl) (by intros; rfl)
 
 instance instPartialOrder : PartialOrder (Kernel α β) := .lift _ DFunLike.coe_injective
 

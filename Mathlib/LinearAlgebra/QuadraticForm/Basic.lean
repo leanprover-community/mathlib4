@@ -416,6 +416,24 @@ theorem coeFn_smul (a : S) (Q : QuadraticMap R M N) : ⇑(a • Q) = a • ⇑Q 
 theorem smul_apply (a : S) (Q : QuadraticMap R M N) (x : M) : (a • Q) x = a • Q x :=
   rfl
 
+instance : SMul ℕ+ (QuadraticMap R M N) :=
+  ⟨fun a Q =>
+    { toFun := a • ⇑Q
+      toFun_smul := fun b x => by
+        rw [Pi.smul_apply, Q.map_smul, Pi.smul_apply, smul_comm]
+      exists_companion' :=
+        let ⟨B, h⟩ := Q.exists_companion
+        letI := SMulCommClass.symm S R N
+        ⟨a • B, by simp [h]⟩ }⟩
+
+@[simp, norm_cast]
+theorem coeFn_psmul (a : ℕ+) (Q : QuadraticMap R M N) : ⇑(a • Q) = a • ⇑Q :=
+  rfl
+
+@[simp]
+theorem psmul_apply (a : ℕ+) (Q : QuadraticMap R M N) (x : M) : (a • Q) x = a • Q x :=
+  rfl
+
 instance [SMulCommClass S T N] : SMulCommClass S T (QuadraticMap R M N) where
   smul_comm _s _t _q := ext fun _ => smul_comm _ _ _
 
@@ -459,7 +477,8 @@ theorem add_apply (Q Q' : QuadraticMap R M N) (x : M) : (Q + Q') x = Q x + Q' x 
   rfl
 
 instance : AddCommMonoid (QuadraticMap R M N) :=
-  DFunLike.coe_injective.addCommMonoid _ coeFn_zero coeFn_add fun _ _ => coeFn_smul _ _
+  DFunLike.coe_injective.addCommMonoid _ coeFn_zero coeFn_add (fun _ _ => coeFn_psmul _ _)
+    fun _ _ => coeFn_smul _ _
 
 /-- `@CoeFn (QuadraticMap R M)` as an `AddMonoidHom`.
 
@@ -544,7 +563,7 @@ theorem sub_apply (Q Q' : QuadraticMap R M N) (x : M) : (Q - Q') x = Q x - Q' x 
 
 instance : AddCommGroup (QuadraticMap R M N) :=
   DFunLike.coe_injective.addCommGroup _ coeFn_zero coeFn_add coeFn_neg coeFn_sub
-    (fun _ _ => coeFn_smul _ _) fun _ _ => coeFn_smul _ _
+    (fun _ _ => coeFn_psmul _ _) (fun _ _ => coeFn_smul _ _) fun _ _ => coeFn_smul _ _
 
 end RingOperators
 
@@ -665,9 +684,7 @@ theorem linMulLin_comp (f g : M →ₗ[R] A) (h : N' →ₗ[R] M) :
 variable {n : Type*}
 
 /-- `sq` is the quadratic map sending the vector `x : A` to `x * x` -/
-@[simps!]
-def sq : QuadraticMap R A A :=
-  linMulLin LinearMap.id LinearMap.id
+@[simps!] def sq : QuadraticMap R A A := linMulLin LinearMap.id LinearMap.id
 
 /-- `proj i j` is the quadratic map sending the vector `x : n → R` to `x i * x j` -/
 def proj (i j : n) : QuadraticMap R (n → A) A :=
@@ -881,8 +898,7 @@ end
 
 section AssociatedHom
 
-variable [CommRing R] [AddCommGroup M] [Module R M]
-variable [AddCommGroup N] [Module R N]
+variable [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
 variable (S) [CommSemiring S] [Algebra S R] [Module S N] [IsScalarTower S R N]
 
 -- the requirement that multiplication by `2` is invertible on the target module `N`
@@ -1393,8 +1409,7 @@ theorem exists_orthogonal_basis [hK : Invertible (2 : K)] {B : LinearMap.BilinFo
   let B' := B.domRestrict₁₂ ((K ∙ x).orthogonalBilin B) ((K ∙ x).orthogonalBilin B)
   obtain ⟨v', hv₁⟩ := ih (hB₂.domRestrict _ : B'.IsSymm) (Nat.succ.inj hd)
   -- concatenate `x` with the basis obtained by induction
-  let b :=
-    Basis.mkFinCons x v'
+  let b := Basis.mkFinCons x v'
       (by
         rintro c y hy hc
         rw [add_eq_zero_iff_neg_eq] at hc

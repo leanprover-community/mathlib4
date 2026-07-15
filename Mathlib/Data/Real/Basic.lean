@@ -188,6 +188,8 @@ instance commRing : CommRing ℝ where
   natCast n := ⟨n⟩
   intCast z := ⟨z⟩
   npow := @npowRec ℝ ⟨1⟩ ⟨(· * ·)⟩
+  ppow := @ppowRec ℝ ⟨(· * ·)⟩
+  psmul := @psmulRec ℝ ⟨(· + ·)⟩
   nsmul := @nsmulRec ℝ ⟨0⟩ ⟨(· + ·)⟩
   zsmul := @zsmulRec ℝ ⟨0⟩ ⟨(· + ·)⟩ ⟨@Neg.neg ℝ _⟩ (@nsmulRec ℝ ⟨0⟩ ⟨(· + ·)⟩)
   add_zero a := by apply ext_cauchy; simp [cauchy_add, cauchy_zero]

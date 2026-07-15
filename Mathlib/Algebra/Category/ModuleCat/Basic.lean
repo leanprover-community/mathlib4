@@ -328,6 +328,13 @@ instance : Zero (M ⟶ N) where
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
+instance : SMul ℕ+ (M ⟶ N) where
+  smul n f := ⟨n • f.hom⟩
+
+@[simp] lemma hom_psmul (n : ℕ+) (f : M ⟶ N) : (n • f).hom = n • f.hom := rfl
+
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : SMul ℕ (M ⟶ N) where
   smul n f := ⟨n • f.hom⟩
 
@@ -357,6 +364,7 @@ instance : SMul ℤ (M ⟶ N) where
 instance : AddCommGroup (M ⟶ N) :=
   Function.Injective.addCommGroup (Hom.hom) hom_injective
     rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
+      (fun _ _ => rfl)
 
 @[simp] lemma hom_sum {ι : Type*} (f : ι → (M ⟶ N)) (s : Finset ι) :
     (∑ i ∈ s, f i).hom = ∑ i ∈ s, (f i).hom :=

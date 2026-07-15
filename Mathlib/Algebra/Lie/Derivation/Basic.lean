@@ -252,14 +252,38 @@ theorem coe_smul_linearMap (r : S) (D : LieDerivation R L M) : ↑(r • D) = r 
 theorem smul_apply (r : S) (D : LieDerivation R L M) : (r • D) a = r • D a :=
   rfl
 
+-- instead of forcing this instance, we could assume
+--  [DistribSMul S (A →ₗ[R] M)] [DistribSMul S M] [SMulCommClass R S M] [SMulCommClass S A M]
+-- that is, inherit SMul from the underlying linear map instead of relying on the
+-- same instance synthesis that provides SMul for a linear map in the most common case
+instance instPSMul : SMul ℕ+ (LieDerivation R L M) where
+  smul r D :=
+    { toLinearMap := r • D
+      leibniz' := fun a b => by simp only [LinearMap.smul_apply, coeFn_coe, apply_lie_eq_sub,
+        smul_sub, lie_psmul] }
+
+@[simp]
+theorem coe_psmul (r : S) (D : LieDerivation R L M) : ⇑(r • D) = r • ⇑D :=
+  rfl
+
+@[simp]
+theorem coe_psmul_linearMap (r : S) (D : LieDerivation R L M) : ↑(r • D) = r • (D : L →ₗ[R] M) :=
+  rfl
+
+theorem psmul_apply (r : S) (D : LieDerivation R L M) : (r • D) a = r • D a :=
+  rfl
+
 instance instSMulBase : SMulBracketCommClass R L M := ⟨fun s l a ↦ (lie_smul s l a).symm⟩
+
+instance instSMulPNat : SMulBracketCommClass ℕ+ L M := ⟨fun s l a => (lie_psmul l a s).symm⟩
 
 instance instSMulNat : SMulBracketCommClass ℕ L M := ⟨fun s l a => (lie_nsmul l a s).symm⟩
 
 instance instSMulInt : SMulBracketCommClass ℤ L M := ⟨fun s l a => (lie_zsmul l a s).symm⟩
 
 instance instAddCommGroup : AddCommGroup (LieDerivation R L M) :=
-  coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => rfl) fun _ _ => rfl
+  coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => rfl) (fun _ _ => rfl)
+    fun _ _ => rfl
 
 /-- `coe_fn` as an `AddMonoidHom`. -/
 def coeFnAddMonoidHom : LieDerivation R L M →+ L → M where

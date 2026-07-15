@@ -272,6 +272,16 @@ instance [DistribMulAction Sᵐᵒᵖ W] [IsCentralScalar S W] : IsCentralScalar
 instance : MulAction S (P →ᴬ[R] W) :=
   Function.Injective.mulAction _ coe_injective coe_smul
 
+instance [ContinuousConstSMul ℕ+ W] : SMul ℕ+ (P →ᴬ[R] W) where
+  smul t f := { t • (f : P →ᵃ[R] W) with cont := f.continuous.const_smul t }
+
+@[norm_cast, simp]
+theorem coe_psmul [ContinuousConstSMul ℕ+ W] (t : ℕ+) (f : P →ᴬ[R] W) : ⇑(t • f) = t • ⇑f := rfl
+
+theorem psmul_apply [ContinuousConstSMul ℕ+ W] (t : ℕ+) (f : P →ᴬ[R] W) (x : P) :
+    (t • f) x = t • f x :=
+  rfl
+
 variable [TopologicalSpace V] [IsTopologicalAddTorsor P] [IsTopologicalAddGroup W]
 
 @[simp]
@@ -307,8 +317,8 @@ theorem coe_neg (f : P →ᴬ[R] W) : ⇑(-f) = -f := rfl
 theorem neg_apply (f : P →ᴬ[R] W) (x : P) : (-f) x = -f x := rfl
 
 instance : AddCommGroup (P →ᴬ[R] W) :=
-  coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ ↦ coe_smul _ _) fun _ _ ↦
-    coe_smul _ _
+  coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ ↦ coe_psmul _ _)
+    (fun _ _ ↦ coe_smul _ _) fun _ _ ↦ coe_smul _ _
 
 instance [Monoid S] [DistribMulAction S W] [SMulCommClass R S W] [ContinuousConstSMul S W] :
     DistribMulAction S (P →ᴬ[R] W) :=

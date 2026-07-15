@@ -419,6 +419,11 @@ theorem oreDiv_pow (r : R) (s : S) (n : ℕ) (h : Commute r (s : R)) :
     exact h.pow_right _ |>.symm
 
 @[to_additive]
+theorem oreDiv_ppow (r : R) (s : S) (n : ℕ+) (h : Commute r (s : R)) :
+    (r /ₒ s) ^ n = (r ^ n) /ₒ (s ^ n) := by
+  rw [← npow_val_eq_ppow, oreDiv_pow _ _ _ h, npow_val_eq_ppow, npow_val_eq_ppow]
+
+@[to_additive]
 instance instMulActionOreLocalization : MulAction R[S⁻¹] X[S⁻¹] where
   one_smul := OreLocalization.one_smul
   mul_smul := OreLocalization.mul_smul

@@ -206,7 +206,7 @@ variable (H)
 @[to_additive /-- An additive subgroup of an `AddGroup` inherits an `AddGroup` structure. -/]
 instance (priority := 75) toGroup : Group H := fast_instance%
   Subtype.coe_injective.group _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) fun _ _ => rfl
+    (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
 
 -- Prefer subclasses of `CommGroup` over subclasses of `SubgroupClass`.
 /-- A subgroup of a `CommGroup` is a `CommGroup`. -/
@@ -214,7 +214,7 @@ instance (priority := 75) toGroup : Group H := fast_instance%
 instance (priority := 75) toCommGroup {G : Type*} [CommGroup G] [SetLike S G] [SubgroupClass S G] :
     CommGroup H := fast_instance%
   Subtype.coe_injective.commGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) fun _ _ => rfl
+    (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
 
 /-- The natural group hom from a subgroup of group `G` to `G`. -/
 @[to_additive (attr := coe)
@@ -534,6 +534,10 @@ theorem coe_div (x y : H) : (↑(x / y) : G) = ↑x / ↑y :=
 
 @[to_additive (attr := norm_cast)]
 theorem coe_mk (x : G) (hx : x ∈ H) : ((⟨x, hx⟩ : H) : G) = x :=
+  rfl
+
+@[to_additive (attr := simp, norm_cast)]
+theorem coe_ppow (x : H) (n : ℕ+) : ((x ^ n : H) : G) = (x : G) ^ n :=
   rfl
 
 @[to_additive (attr := simp, norm_cast)]

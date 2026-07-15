@@ -45,6 +45,11 @@ instance : Neg (C ⟶ D) :=
 instance : Sub (C ⟶ D) :=
   ⟨fun f g => { f := fun i => f.f i - g.f i }⟩
 
+instance hasPNatScalar : SMul ℕ+ (C ⟶ D) :=
+  ⟨fun n f =>
+    { f := fun i => n • f.f i
+      comm' := fun i j _ => by simp [Preadditive.psmul_comp, Preadditive.comp_psmul] }⟩
+
 instance hasNatScalar : SMul ℕ (C ⟶ D) :=
   ⟨fun n f =>
     { f := fun i => n • f.f i
@@ -72,6 +77,10 @@ theorem sub_f_apply (f g : C ⟶ D) (i : ι) : (f - g).f i = f.f i - g.f i :=
   rfl
 
 @[simp]
+theorem psmul_f_apply (n : ℕ+) (f : C ⟶ D) (i : ι) : (n • f).f i = n • f.f i :=
+  rfl
+
+@[simp]
 theorem nsmul_f_apply (n : ℕ) (f : C ⟶ D) (i : ι) : (n • f).f i = n • f.f i :=
   rfl
 
@@ -82,6 +91,7 @@ theorem zsmul_f_apply (n : ℤ) (f : C ⟶ D) (i : ι) : (n • f).f i = n • f
 instance : AddCommGroup (C ⟶ D) :=
   Function.Injective.addCommGroup Hom.f HomologicalComplex.hom_f_injective
     (by cat_disch) (by cat_disch) (by cat_disch) (by cat_disch) (by cat_disch) (by cat_disch)
+    (by cat_disch)
 
 instance : Preadditive (HomologicalComplex V c) where
 

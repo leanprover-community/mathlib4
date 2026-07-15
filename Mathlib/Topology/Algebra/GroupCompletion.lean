@@ -110,6 +110,14 @@ instance : AddMonoid (Completion α) where
         (continuous_map₂ continuous_fst (continuous_map₂ (by fun_prop) (by fun_prop))))
       fun a b c ↦
       show (a : Completion α) + b + c = a + (b + c) by repeat' rw_mod_cast [add_assoc]
+  psmul_one a :=
+    Completion.induction_on a (isClosed_eq continuous_map continuous_id) fun a ↦
+      show 1 • (a : Completion α) = a by rw [← coe_smul, one_psmul]
+  psmul_succ n a :=
+    Completion.induction_on a
+      (isClosed_eq continuous_map <| continuous_map₂ continuous_map continuous_id) fun a ↦
+      show (n + 1) • (a : Completion α) = n • (a : Completion α) + (a : Completion α) by
+        rw [← coe_smul, succ_psmul, coe_add, coe_smul]
   nsmul_zero a :=
     Completion.induction_on a (isClosed_eq continuous_map continuous_const) fun a ↦
       show 0 • (a : Completion α) = 0 by rw [← coe_smul, ← coe_zero, zero_smul]

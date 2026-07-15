@@ -258,8 +258,9 @@ instance Metric.unitSphere.instGroup [NormedDivisionRing 𝕜] : Group (sphere (
   fast_instance% unitSphereToUnits_injective.group (unitSphereToUnits 𝕜) (Units.ext rfl)
     (fun _x _y => Units.ext rfl)
     (fun _x => Units.ext rfl) (fun _x _y => Units.ext <| div_eq_mul_inv _ _)
-    (fun x n => Units.ext (Units.val_pow_eq_pow_val (unitSphereToUnits 𝕜 x) n).symm) fun x n =>
-    Units.ext (Units.val_zpow_eq_zpow_val (unitSphereToUnits 𝕜 x) n).symm
+    (fun x n => Units.ext (Units.val_ppow_eq_ppow_val (unitSphereToUnits 𝕜 x) n).symm)
+    (fun x n => Units.ext (Units.val_pow_eq_pow_val (unitSphereToUnits 𝕜 x) n).symm)
+    fun x n => Units.ext (Units.val_zpow_eq_zpow_val (unitSphereToUnits 𝕜 x) n).symm
 
 instance Metric.sphere.instHasDistribNeg [SeminormedRing 𝕜] [NormMulClass 𝕜] [NormOneClass 𝕜] :
     HasDistribNeg (sphere (0 : 𝕜) 1) :=

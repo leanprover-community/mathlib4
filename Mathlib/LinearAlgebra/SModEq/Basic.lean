@@ -105,6 +105,11 @@ theorem smul (hxy : x ≡ y [SMOD U]) (c : R) : c • x ≡ c • y [SMOD U] := 
   simp_rw [Quotient.mk_smul, hxy]
 
 @[gcongr]
+lemma psmul (hxy : x ≡ y [SMOD U]) (n : ℕ+) : n • x ≡ n • y [SMOD U] := by
+  rw [SModEq.def] at hxy ⊢
+  simp_rw [Quotient.mk_smul, hxy]
+
+@[gcongr]
 lemma nsmul (hxy : x ≡ y [SMOD U]) (n : ℕ) : n • x ≡ n • y [SMOD U] := by
   rw [SModEq.def] at hxy ⊢
   simp_rw [Quotient.mk_smul, hxy]
@@ -128,6 +133,12 @@ theorem prod {I : Ideal A} {ι} {s : Finset ι} {x y : ι → A}
   | cons i s _ ih =>
     grw [Finset.prod_cons, Finset.prod_cons, hxy i (Finset.mem_cons_self i s),
       ih (fun j hj ↦ hxy j (Finset.mem_cons_of_mem hj))]
+
+@[gcongr]
+lemma ppow {I : Ideal A} {x y : A} (n : ℕ+) (hxy : x ≡ y [SMOD I]) :
+    x ^ n ≡ y ^ n [SMOD I] := by
+  simp only [SModEq.def, Ideal.Quotient.mk_eq_mk, map_ppow] at hxy ⊢
+  rw [hxy]
 
 @[gcongr]
 lemma pow {I : Ideal A} {x y : A} (n : ℕ) (hxy : x ≡ y [SMOD I]) :

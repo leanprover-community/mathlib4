@@ -431,11 +431,11 @@ theorem add_domain (f g : E →ₛₗ.[σ] F) : (f + g).domain = f.domain ⊓ g.
 theorem add_apply (f g : E →ₛₗ.[σ] F) (x : (f.domain ⊓ g.domain : Submodule R E)) :
     (f + g) x = f ⟨x, x.prop.1⟩ + g ⟨x, x.prop.2⟩ := rfl
 
-instance instAddSemigroup : AddSemigroup (E →ₛₗ.[σ] F) :=
-  ⟨fun f g h => by
+instance instAddSemigroup : AddSemigroup (E →ₛₗ.[σ] F) where
+  add_assoc := fun f g h => by
     ext x y hxy
     · simp only [add_domain, inf_assoc]
-    · simp only [add_apply, add_assoc]⟩
+    · simp only [add_apply, add_assoc]
 
 instance instAddZeroClass : AddZeroClass (E →ₛₗ.[σ] F) where
   zero_add := fun f => by

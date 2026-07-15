@@ -176,8 +176,6 @@ instance : IsAddApply (Seminorm 𝕜 E) E ℝ where
 
 @[deprecated (since := "2026-06-22")] alias coe_add := FunLike.coe_add
 
-@[deprecated (since := "2026-06-22")] protected alias add_apply := add_apply
-
 instance instAddMonoid : AddMonoid (Seminorm 𝕜 E) := fast_instance% FunLike.addMonoid
 
 instance instAddCommMonoid : AddCommMonoid (Seminorm 𝕜 E) := fast_instance% FunLike.addCommMonoid

@@ -457,6 +457,24 @@ instance isCentralScalar [DistribMulAction Rᵐᵒᵖ V₂] [IsCentralScalar R V
 
 end SMul
 
+instance psmul : SMul ℕ+ (NormedAddGroupHom V₁ V₂) where
+  smul n f :=
+    { toFun := n • ⇑f
+      map_add' := (n • f.toAddMonoidHom).map_add'
+      bound' :=
+        let ⟨b, hb⟩ := f.bound'
+        ⟨n • b, fun v => by
+          rw [Pi.smul_apply, ← nsmul_val_eq_psmul, ← nsmul_val_eq_psmul, nsmul_eq_mul, mul_assoc]
+          exact norm_nsmul_le.trans (by gcongr; apply hb)⟩ }
+
+@[simp]
+theorem coe_psmul (r : ℕ+) (f : NormedAddGroupHom V₁ V₂) : ⇑(r • f) = r • ⇑f :=
+  rfl
+
+@[simp]
+theorem psmul_apply (r : ℕ+) (f : NormedAddGroupHom V₁ V₂) (v : V₁) : (r • f) v = r • f v :=
+  rfl
+
 instance nsmul : SMul ℕ (NormedAddGroupHom V₁ V₂) where
   smul n f :=
     { toFun := n • ⇑f
@@ -499,7 +517,7 @@ theorem zsmul_apply (r : ℤ) (f : NormedAddGroupHom V₁ V₂) (v : V₁) : (r 
 /-- Homs between two given normed groups form a commutative additive group. -/
 instance toAddCommGroup : AddCommGroup (NormedAddGroupHom V₁ V₂) :=
   coe_injective.addCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
-    fun _ _ => rfl
+    (fun _ _ => rfl) fun _ _ => rfl
 
 /-- Normed group homomorphisms themselves form a seminormed group with respect to
 the operator norm. -/

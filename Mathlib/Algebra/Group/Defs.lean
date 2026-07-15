@@ -7,6 +7,7 @@ module
 
 public import Batteries.Logic
 public import Batteries.Util.LibraryNote
+public import Mathlib.Algebra.Group.PPow.Rec
 public import Mathlib.Algebra.Notation.Defs
 public import Mathlib.Algebra.Regular.Defs
 public import Mathlib.Data.Int.Notation
@@ -45,6 +46,7 @@ We register the following instances:
 
 -/
 
+set_option linter.style.longFile 1700
 @[expose] public section
 
 assert_not_exists MonoidWithZero DenselyOrdered Function.const_injective
@@ -171,17 +173,64 @@ end IsRightCancelMul
 
 end Mul
 
+/-- `PSMul` is an implementation detail of `AddSemigroup`. It is needed because it is
+impossible to extend `SMul ℕ M+` and `SMul ℤ M` at the same time. -/
+class PSMul (M : Type u) where
+  /-- Multiplication by a positive natural number.
+  Set this to `psmulRec` unless `Module` diamonds are possible. -/
+  protected psmul : ℕ+ → M → M
+
+/-- `PPow` is an implementation detail of `Semigroup`. It is needed because it is
+impossible to extend `Pow M ℕ+` and `Pow M ℕ+` at the same time. -/
+@[to_additive]
+class PPow (M : Type u) where
+  /-- Raising to the power of a positive natural number. -/
+  protected ppow : ℕ+ → M → M
+
+@[default_instance high, to_additive toSMul]
+instance PPow.toPow {M : Type*} [PPow M] : Pow M ℕ+ :=
+  ⟨fun x n ↦ PPow.ppow n x⟩
+
+@[to_additive ofSMul]
+instance PPow.ofPow {M : Type*} [Pow M ℕ+] : PPow M := ⟨fun n x ↦ Pow.pow x n⟩
+
+/--
+An abbreviation for `ppowRec` with an additional assumption on associativity
+so that we can use `@[csimp]` to replace it with an implementation by repeated squaring
+in compiled code.
+-/
+@[to_additive
+/-- An abbreviation for `psmulRec` with an additional assumption on associativity
+so that we can use `@[csimp]` to replace it with an implementation by repeated doubling in compiled
+code as an automatic parameter. -/]
+abbrev ppowRecAuto {M : Type*} [Mul M] (_h : ∀ a b c : M, a * b * c = a * (b * c)) (k : ℕ+)
+    (m : M) : M :=
+  ppowRec k m
+
 /-- A semigroup is a type with an associative `(*)`. -/
-@[ext]
-class Semigroup (G : Type u) extends Mul G where
+class Semigroup (G : Type u) extends Mul G, PPow G where
+  ppow := ppowRecAuto mul_assoc
   /-- Multiplication is associative -/
   protected mul_assoc : ∀ a b c : G, a * b * c = a * (b * c)
+  /-- Raising to the power `(1 : ℕ+)` gives the same element.. -/
+  protected ppow_one (x : G) : x ^ (1 : ℕ+) = x := by first | intros; rfl | exact @ppowRec_one _ ⟨_⟩
+  /-- Raising to the power `(n + 1 : ℕ+)` behaves as expected. -/
+  protected ppow_succ (n : ℕ+) (x : G) : x ^ (n + 1) = x ^ n * x := by
+    -- so that Mul can be inferred when inlined
+    first | intros; rfl | exact @ppowRec_succ _ ⟨_⟩
 
 /-- An additive semigroup is a type with an associative `(+)`. -/
-@[ext]
-class AddSemigroup (G : Type u) extends Add G where
+class AddSemigroup (G : Type u) extends Add G, PSMul G where
+  psmul := psmulRecAuto add_assoc
   /-- Addition is associative -/
   protected add_assoc : ∀ a b c : G, a + b + c = a + (b + c)
+  /-- Scalar multiplication by `(1 : ℕ+)` gives the same element. -/
+  protected psmul_one (x : G) : (1 : ℕ+) • x = x := by
+    first | intros; rfl | exact @psmulRec_one _ ⟨_⟩
+  /-- Scalar multiplication by `(n + 1 : ℕ+)` behaves as expected. -/
+  protected psmul_succ (n : ℕ+) (x : G) : (n + 1 : ℕ+) • x = n • x + x := by
+    -- so that Add can be inferred when inlined
+    first | intros; rfl | exact @psmulRec_succ _ ⟨_⟩
 
 attribute [to_additive] Semigroup
 
@@ -192,6 +241,26 @@ variable [Semigroup G]
 @[to_additive]
 theorem mul_assoc : ∀ a b c : G, a * b * c = a * (b * c) :=
   Semigroup.mul_assoc
+
+@[to_additive (attr := simp) psmul_eq_smul]
+theorem ppow_eq_pow (n : ℕ+) (x : G) : PPow.ppow n x = x ^ n :=
+  rfl
+
+-- This lemma is higher priority than later `one_psmul` so that the `simpNF` is happy
+@[to_additive (attr := simp high) one_psmul]
+theorem ppow_one (a : G) : a ^ (1 : ℕ+) = a :=
+  Semigroup.ppow_one _
+
+@[to_additive (reorder := a n) succ_psmul]
+theorem ppow_succ (a : G) (n : ℕ+) : a ^ (n + 1) = a ^ n * a :=
+  Semigroup.ppow_succ n a
+
+@[to_additive (reorder := a n) succ_psmul']
+lemma ppow_succ' (a : G) (n : ℕ+) :
+    a ^ (n + 1) = a * a ^ n := by
+  induction n with
+  | one => simp [ppow_succ]
+  | succ n IH => rw [ppow_succ _ n, ppow_succ, IH, mul_assoc]
 
 end Semigroup
 
@@ -243,11 +312,9 @@ class CommMagma (G : Type u) extends Mul G where
 attribute [to_additive] CommMagma
 
 /-- A commutative semigroup is a type with an associative commutative `(*)`. -/
-@[ext]
 class CommSemigroup (G : Type u) extends Semigroup G, CommMagma G where
 
 /-- A commutative additive semigroup is a type with an associative commutative `(+)`. -/
-@[ext]
 class AddCommSemigroup (G : Type u) extends AddSemigroup G, AddCommMagma G where
 
 attribute [to_additive] CommSemigroup
@@ -516,44 +583,33 @@ needed. These problems do not come up in practice, so most of the time we will n
 the `npow` field when defining multiplicative objects.
 -/
 
-/-- Exponentiation by repeated squaring. -/
-@[to_additive /-- Scalar multiplication by repeated self-addition,
-the additive version of exponentiation by repeated squaring. -/]
-def npowBinRec {M : Type*} [One M] [Mul M] (k : ℕ) : M → M :=
-  npowBinRec.go k 1
-where
-  /-- Auxiliary tail-recursive implementation for `npowBinRec`. -/
-  @[to_additive nsmulBinRec.go /-- Auxiliary tail-recursive implementation for `nsmulBinRec`. -/]
-  go (k : ℕ) : M → M → M :=
-    k.binaryRec (fun y _ ↦ y) fun bn _n fn y x ↦ fn (cond bn (y * x) y) (x * x)
-
 /--
 A variant of `npowRec` which is a semigroup homomorphism from `ℕ₊` to `M`.
 -/
-def npowRec' {M : Type*} [One M] [Mul M] : ℕ → M → M
-  | 0, _ => 1
+def npowRec' {M : Type*} [Mul M] (base : M) : ℕ → M → M
+  | 0, _ => base
   | 1, m => m
-  | k + 2, m => npowRec' (k + 1) m * m
+  | k + 2, m => npowRec' base (k + 1) m * m
 
 /--
 A variant of `nsmulRec` which is a semigroup homomorphism from `ℕ₊` to `M`.
 -/
-def nsmulRec' {M : Type*} [Zero M] [Add M] : ℕ → M → M
-  | 0, _ => 0
+def nsmulRec' {M : Type*} [Add M] (base : M) : ℕ → M → M
+  | 0, _ => base
   | 1, m => m
-  | k + 2, m => nsmulRec' (k + 1) m + m
+  | k + 2, m => nsmulRec' base (k + 1) m + m
 
 attribute [to_additive existing] npowRec'
 
 @[to_additive]
-theorem npowRec'_succ {M : Type*} [Mul M] [One M] {k : ℕ} (_ : k ≠ 0) (m : M) :
-    npowRec' (k + 1) m = npowRec' k m * m :=
+theorem npowRec'_succ {M : Type*} [Mul M] (base : M) {k : ℕ} (_ : k ≠ 0) (m : M) :
+    npowRec' base (k + 1) m = npowRec' base k m * m :=
   match k with
   | _ + 1 => rfl
 
 @[to_additive]
-theorem npowRec'_two_mul {M : Type*} [Semigroup M] [One M] (k : ℕ) (m : M) :
-    npowRec' (2 * k) m = npowRec' k (m * m) := by
+theorem npowRec'_two_mul {M : Type*} [Semigroup M] (base : M) (k : ℕ) (m : M) :
+    npowRec' base (2 * k) m = npowRec' base k (m * m) := by
   induction k using Nat.strongRecOn with
   | ind k' ih =>
     match k' with
@@ -563,8 +619,8 @@ theorem npowRec'_two_mul {M : Type*} [Semigroup M] [One M] (k : ℕ) (m : M) :
       simp [npowRec', ← mul_assoc, ← ih, Nat.mul_succ]
 
 @[to_additive]
-theorem npowRec'_mul_comm {M : Type*} [Semigroup M] [One M] {k : ℕ} (k0 : k ≠ 0) (m : M) :
-    m * npowRec' k m = npowRec' k m * m := by
+theorem npowRec'_mul_comm {M : Type*} [Semigroup M] (base : M) {k : ℕ} (k0 : k ≠ 0) (m : M) :
+    m * npowRec' base k m = npowRec' base k m * m := by
   induction k using Nat.strongRecOn with
   | ind k' ih =>
     match k' with
@@ -573,19 +629,40 @@ theorem npowRec'_mul_comm {M : Type*} [Semigroup M] [One M] {k : ℕ} (k0 : k �
 
 @[to_additive]
 theorem npowRec_eq {M : Type*} [Semigroup M] [One M] (k : ℕ) (m : M) :
-    npowRec (k + 1) m = 1 * npowRec' (k + 1) m := by
+    npowRec (k + 1) m = 1 * npowRec' 1 (k + 1) m := by
   induction k using Nat.strongRecOn with
   | ind k' ih =>
     match k' with
     | 0 => rfl
     | k + 1 =>
-      rw [npowRec, npowRec'_succ k.succ_ne_zero, ← mul_assoc]
+      rw [npowRec, npowRec'_succ 1 k.succ_ne_zero, ← mul_assoc]
       congr
       simp [ih]
 
 @[to_additive]
-theorem npowBinRec.go_spec {M : Type*} [Semigroup M] [One M] (k : ℕ) (m n : M) :
-    npowBinRec.go (k + 1) m n = m * npowRec' (k + 1) n := by
+theorem ppowRec_eq {M : Type*} [Mul M] (k : ℕ+) (m : M) :
+    ppowRec k m = npowRec' m k m := by
+  induction k with
+  | one => simp [npowRec']
+  | succ k IH =>
+    simp only [PNat.add_coe, PNat.val_one]
+    rw [ppowRec_succ, IH, npowRec'_succ _ (by grind)]
+
+/-- Exponentiation by repeated squaring against a starting element. -/
+@[to_additive /-- Scalar multiplication by repeated self-addition,
+the additive version of exponentiation by repeated squaring, against a starting element. -/]
+def npowBinRecAux {M : Type*} [Mul M] (base : M) (k : ℕ) : M → M :=
+  npowBinRecAux.go k base
+where
+  /-- Auxiliary tail-recursive implementation for `npowBinRecAux`. -/
+  @[to_additive nsmulBinRec.go
+    /-- Auxiliary tail-recursive implementation for `nsmulBinRecAux`. -/]
+  go (k : ℕ) : M → M → M :=
+    k.binaryRec (fun y _ ↦ y) fun bn _n fn y x ↦ fn (cond bn (y * x) y) (x * x)
+
+@[to_additive]
+theorem npowBinRecAux.go_spec {M : Type*} [Semigroup M] (base : M) (k : ℕ) (m n : M) :
+    npowBinRecAux.go (k + 1) m n = m * npowRec' base (k + 1) n := by
   unfold go
   generalize hk : k + 1 = k'
   replace hk : k' ≠ 0 := by lia
@@ -595,8 +672,48 @@ theorem npowBinRec.go_spec {M : Type*} [Semigroup M] [One M] (k : ℕ) (m n : M)
   | bit b k' k'0 ih =>
     rw [Nat.binaryRec_eq _ _ (Or.inl rfl), ih _ _ k'0]
     cases b <;> simp only [Nat.bit, cond_false, cond_true, npowRec'_two_mul]
-    rw [npowRec'_succ (by lia), npowRec'_two_mul, ← npowRec'_two_mul,
-      ← npowRec'_mul_comm (by lia), mul_assoc]
+    rw [npowRec'_succ _ (by lia), npowRec'_two_mul, ← npowRec'_two_mul,
+      ← npowRec'_mul_comm _ (by lia), mul_assoc]
+
+/--
+An abbreviation for `ppowRec` with an additional typeclass assumption on associativity
+so that we can use it in `@[csimp]` for more performant code generation.
+-/
+@[to_additive
+/-- An abbreviation for `psmulRec` with an additional assumption on associativity
+so that we can use it in `@[csimp]` for more performant code generation
+as an automatic parameter. -/]
+abbrev ppowBinRec {M : Type*} [Mul M] (_h : ∀ a b c : M, a * b * c = a * (b * c)) (k : ℕ+) (m : M) :
+    M :=
+  npowBinRecAux m (k.val - 1) m
+
+@[to_additive (attr := csimp)]
+theorem ppowRec_eq_ppowBinRec : @ppowRecAuto = @ppowBinRec := by
+  funext M _ h k m
+  let S : Semigroup M := {
+    mul_assoc := h
+  }
+  rw [ppowBinRec, ppowRecAuto, npowBinRecAux, ppowRec_eq]
+  rcases k with ⟨_|k, hk⟩
+  · contradiction
+  simp only [PNat.mk_coe, Nat.add_one_sub_one]
+  clear hk
+  cases k
+  · rfl
+  · rw [npowBinRecAux.go_spec m, npowRec'_succ _ (by grind), npowRec'_mul_comm _ (by grind)]
+
+@[to_additive] theorem ppowBinRec_one {M : Type*} [Semigroup M] (m : M) :
+    ppowBinRec mul_assoc 1 m = m := rfl
+
+@[to_additive] theorem ppowBinRec_succ {M : Type*} [Semigroup M] (n : ℕ+) (m : M) :
+    ppowBinRec mul_assoc (n + 1) m = ppowBinRec mul_assoc n m * m := by
+  rw [← ppowRec_eq_ppowBinRec, ppowRecAuto, ppowRecAuto, ppowRec_succ]
+
+/-- Exponentiation by repeated squaring. -/
+@[to_additive /-- Scalar multiplication by repeated self-addition,
+the additive version of exponentiation by repeated squaring. -/]
+def npowBinRec {M : Type*} [One M] [Mul M] (k : ℕ) : M → M :=
+  npowBinRecAux 1 k
 
 /--
 An abbreviation for `npowRec` with an additional typeclass assumption on associativity
@@ -624,10 +741,10 @@ abbrev npowBinRecAuto {M : Type*} [Semigroup M] [One M] (k : ℕ) (m : M) : M :=
 @[to_additive (attr := csimp)]
 theorem npowRec_eq_npowBinRec : @npowRecAuto = @npowBinRecAuto := by
   funext M _ _ k m
-  rw [npowBinRecAuto, npowRecAuto, npowBinRec]
+  rw [npowBinRecAuto, npowRecAuto, npowBinRec, npowBinRecAux]
   match k with
-  | 0 => rw [npowRec, npowBinRec.go, Nat.binaryRec_zero]
-  | k + 1 => rw [npowBinRec.go_spec, npowRec_eq]
+  | 0 => rw [npowRec, npowBinRecAux.go, Nat.binaryRec_zero]
+  | k + 1 => rw [npowBinRecAux.go_spec, npowRec_eq]
 
 @[to_additive] theorem npowBinRec_zero {M : Type*} [Mul M] [One M] (m : M) :
     npowBinRec 0 m = 1 := rfl
@@ -1436,9 +1553,9 @@ end IsMulCommutative
 /-! We initialize all projections for `@[simps]` here, so that we don't have to do it in later
 files.
 
-Note: the lemmas generated for the `npow`/`zpow` projections will *not* apply to `x ^ y`, since the
-argument order of these projections doesn't match the argument order of `^`.
-The `nsmul`/`zsmul` lemmas will be correct. -/
+Note: the lemmas generated for the `ppow`/`npow`/`zpow` projections will *not* apply to `x ^ y`,
+since the argument order of these projections doesn't match the argument order of `^`.
+The `psmul`/`nsmul`/`zsmul` lemmas will be correct. -/
 initialize_simps_projections Semigroup
 initialize_simps_projections AddSemigroup
 initialize_simps_projections CommSemigroup

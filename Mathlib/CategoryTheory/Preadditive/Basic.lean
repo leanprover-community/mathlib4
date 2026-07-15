@@ -164,6 +164,12 @@ theorem comp_neg : f ≫ (-g) = -f ≫ g :=
 @[reassoc]
 theorem neg_comp_neg : (-f) ≫ (-g) = f ≫ g := by simp
 
+theorem psmul_comp (n : ℕ+) : (n • f) ≫ g = n • f ≫ g :=
+  map_psmul (rightComp P g) n f
+
+theorem comp_psmul (n : ℕ+) : f ≫ (n • g) = n • f ≫ g :=
+  map_psmul (leftComp R f) n g
+
 theorem nsmul_comp (n : ℕ) : (n • f) ≫ g = n • f ≫ g :=
   map_nsmul (rightComp P g) n f
 

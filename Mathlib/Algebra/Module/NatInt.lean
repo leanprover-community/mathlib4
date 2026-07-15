@@ -45,6 +45,11 @@ instance [AddMonoid M] : SMulWithZero ℕ M where
   smul_zero := nsmul_zero
   zero_smul := zero_nsmul
 
+-- Ideally we would also have `SemigroupAction ℕ+ M` but no `Semigroup ℕ+` available here
+
+instance [AddMonoid M] : SMulZeroClass ℕ+ M where
+  smul_zero := psmul_zero
+
 instance [SubtractionMonoid M] : MulAction ℤ M where
   one_smul := one_zsmul
   mul_smul _ _ _ := mul_zsmul ..
@@ -56,6 +61,10 @@ instance [SubtractionMonoid M] : SMulWithZero ℤ M where
 section AddCommMonoid
 
 variable [AddCommMonoid M]
+
+instance AddCommMonoid.toPNatDistribSMul : DistribSMul ℕ+ M where
+  smul_add n a b := psmul_add a b n
+  smul_zero := psmul_zero
 
 instance AddCommMonoid.toNatModule : Module ℕ M where
   smul_add n a b := nsmul_add a b n
@@ -146,6 +155,9 @@ instance AddCommMonoid.nat_isScalarTower : IsScalarTower ℕ R M where
     induction n with
     | zero => simp only [zero_smul]
     | succ n ih => simp only [add_smul, one_smul, ih]
+
+instance AddCommMonoid.pnat_isScalarTower : IsScalarTower ℕ+ R M where
+  smul_assoc _ _ _ := by rw [← nsmul_val_eq_psmul, smul_assoc, nsmul_val_eq_psmul]
 
 end AddCommMonoid
 

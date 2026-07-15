@@ -856,9 +856,23 @@ instance : Mul (lp B ∞) where
 theorem infty_coeFn_mul (f g : lp B ∞) : ⇑(f * g) = ⇑f * ⇑g :=
   rfl
 
+theorem _root_.Memℓp.infty_ppow {f : ∀ i, B i} (hf : Memℓp f ∞) (n : ℕ+) :
+    Memℓp (f ^ n) ∞ := by
+  induction n using Semigroup.ppow_induction f with
+  | h1 => exact hf
+  | hsucc n IH => exact IH.infty_mul hf
+
+instance : Pow (lp B ∞) ℕ+ where
+  pow f n := ⟨HPow.hPow (α := ∀ i, B i) _ _, f.property.infty_ppow n⟩
+
+@[simp]
+lemma infty_coeFn_ppow (f : lp B ∞) (n : ℕ+) : ⇑(f ^ n) = ⇑f ^ n :=
+  rfl
+
 instance nonUnitalRing : NonUnitalRing (lp B ∞) := fast_instance%
   Function.Injective.nonUnitalRing lp.coeFun.coe Subtype.coe_injective (lp.coeFn_zero B ∞)
-    lp.coeFn_add infty_coeFn_mul lp.coeFn_neg lp.coeFn_sub (fun _ _ => rfl) fun _ _ => rfl
+    lp.coeFn_add infty_coeFn_mul lp.coeFn_neg lp.coeFn_sub (fun _ _ => rfl) (fun _ _ => rfl)
+    (fun _ _ => rfl) fun _ _ => rfl
 
 instance nonUnitalNormedRing : NonUnitalNormedRing (lp B ∞) :=
   { lp.nonUnitalRing, lp.normedAddCommGroup with

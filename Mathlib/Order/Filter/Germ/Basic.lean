@@ -348,14 +348,36 @@ theorem coe_mul [Mul M] (f g : α → M) : ↑(f * g) = (f * g : Germ l M) :=
 theorem coe_one [One M] : ↑(1 : α → M) = (1 : Germ l M) :=
   rfl
 
+@[to_additive (attr := to_additive) instSMul]
+instance instPow [Pow G M] : Pow (Germ l G) M where pow f n := map (· ^ n) f
+
+@[to_additive (attr := simp, norm_cast)]
+theorem coe_smul [SMul M G] (n : M) (f : α → G) : ↑(n • f) = n • (f : Germ l G) :=
+  rfl
+
+@[to_additive (attr := simp, norm_cast)]
+theorem const_smul [SMul M G] (n : M) (a : G) : (↑(n • a) : Germ l G) = n • (↑a : Germ l G) :=
+  rfl
+
+@[to_additive (attr := simp, norm_cast)]
+theorem coe_pow [Pow G M] (f : α → G) (n : M) : ↑(f ^ n) = (f : Germ l G) ^ n :=
+  rfl
+
+@[to_additive (attr := simp, norm_cast)]
+theorem const_pow [Pow G M] (a : G) (n : M) : (↑(a ^ n) : Germ l G) = (↑a : Germ l G) ^ n :=
+  rfl
+
 @[to_additive]
 instance instSemigroup [Semigroup M] : Semigroup (Germ l M) :=
-  { mul_assoc := fun a b c => Quotient.inductionOn₃' a b c
+  { ppow n f := f ^ n,
+    ppow_one := Quotient.ind' fun _ ↦ congrArg ofFun <| ppow_one _,
+    ppow_succ _ := Quotient.ind' fun _ ↦ congrArg ofFun <| ppow_succ _ _,
+    mul_assoc := fun a b c => Quotient.inductionOn₃' a b c
       fun _ _ _ => congrArg ofFun <| mul_assoc .. }
 
 @[to_additive]
-instance instCommSemigroup [CommSemigroup M] : CommSemigroup (Germ l M) :=
-  { mul_comm := Quotient.ind₂' fun _ _ => congrArg ofFun <| mul_comm .. }
+instance instCommSemigroup [CommSemigroup M] : CommSemigroup (Germ l M) where
+  mul_comm := Quotient.ind₂' fun _ _ => congrArg ofFun <| mul_comm ..
 
 @[to_additive]
 instance instIsLeftCancelMul [Mul M] [IsLeftCancelMul M] : IsLeftCancelMul (Germ l M) where
@@ -385,30 +407,11 @@ instance instMulOneClass [MulOneClass M] : MulOneClass (Germ l M) :=
   { one_mul := Quotient.ind' fun _ => congrArg ofFun <| one_mul _
     mul_one := Quotient.ind' fun _ => congrArg ofFun <| mul_one _ }
 
-@[to_additive (attr := to_additive) instSMul]
-instance instPow [Pow G M] : Pow (Germ l G) M where pow f n := map (· ^ n) f
-
-@[to_additive (attr := simp, norm_cast)]
-theorem coe_smul [SMul M G] (n : M) (f : α → G) : ↑(n • f) = n • (f : Germ l G) :=
-  rfl
-
-@[to_additive (attr := simp, norm_cast)]
-theorem const_smul [SMul M G] (n : M) (a : G) : (↑(n • a) : Germ l G) = n • (↑a : Germ l G) :=
-  rfl
-
-@[to_additive (attr := simp, norm_cast)]
-theorem coe_pow [Pow G M] (f : α → G) (n : M) : ↑(f ^ n) = (f : Germ l G) ^ n :=
-  rfl
-
-@[to_additive (attr := simp, norm_cast)]
-theorem const_pow [Pow G M] (a : G) (n : M) : (↑(a ^ n) : Germ l G) = (↑a : Germ l G) ^ n :=
-  rfl
-
 -- TODO: https://github.com/leanprover-community/mathlib4/pull/7432
 @[to_additive]
 instance instMonoid [Monoid M] : Monoid (Germ l M) :=
   { Function.Surjective.monoid ofFun Quot.mk_surjective rfl
-      (fun _ _ => by rfl) fun _ _ => by rfl with
+      (fun _ _ => by rfl) (fun _ _ => by rfl) fun _ _ => by rfl with
     toSemigroup := instSemigroup
     toOne := instOne
     npow := fun n a => a ^ n }
@@ -553,7 +556,7 @@ instance instNonUnitalNonAssocSemiring [NonUnitalNonAssocSemiring R] :
   __ := instMulZeroClass
 
 instance instNonUnitalSemiring [NonUnitalSemiring R] : NonUnitalSemiring (Germ l R) :=
-  { mul_assoc := mul_assoc }
+  { mul_assoc := mul_assoc, ppow_one := ppow_one, ppow_succ := Function.swap ppow_succ }
 
 instance instNonAssocSemiring [NonAssocSemiring R] : NonAssocSemiring (Germ l R) where
   __ := instNonUnitalNonAssocSemiring
@@ -566,7 +569,7 @@ instance instNonUnitalNonAssocRing [NonUnitalNonAssocRing R] :
   __ := instNonUnitalNonAssocSemiring
 
 instance instNonUnitalRing [NonUnitalRing R] : NonUnitalRing (Germ l R) :=
-  { mul_assoc := mul_assoc }
+  { mul_assoc := mul_assoc, ppow_one := ppow_one, ppow_succ := Function.swap ppow_succ }
 
 instance instNonAssocRing [NonAssocRing R] : NonAssocRing (Germ l R) where
   __ := instNonUnitalNonAssocRing
@@ -671,6 +674,15 @@ instance instModule' [Semiring R] [AddCommMonoid M] [Module R M] :
       norm_cast
       simp [add_smul]
   zero_smul f := inductionOn f fun f => by simp only [← coe_zero, ← coe_smul', zero_smul]
+  mul_smul c₁ c₂ f :=
+    inductionOn₃ c₁ c₂ f fun c₁ c₂ f => by
+      norm_cast
+      simp [mul_smul]
+  one_smul f := inductionOn f fun f => by simp only [← coe_one, ← coe_smul', one_smul]
+  smul_zero f := inductionOn f fun f => by simp only [← coe_zero, ← coe_smul', smul_zero]
+  smul_add c f g := inductionOn₃ c f g fun c f g => by
+    norm_cast
+    simp [smul_add]
 
 end Module
 
