@@ -94,7 +94,7 @@ lemma LinearEquiv.isScalarTower [Module R α] [Module R β] [IsScalarTower R A �
     (e : α ≃ₗ[R] β) :
     letI := e.toAddEquiv.module A
     IsScalarTower R A α := by
-  letI := e.toAddEquiv.module A
+  let := e.toAddEquiv.module A
   constructor
   intro x y z
   simp only [Equiv.smul_def, smul_assoc]

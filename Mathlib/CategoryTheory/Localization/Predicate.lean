@@ -127,6 +127,9 @@ theorem IsLocalization.for_id (hW : W ≤ MorphismProperty.isomorphisms C) : (�
   IsLocalization.mk' _ _ (Localization.strictUniversalPropertyFixedTargetId W _ hW)
     (Localization.strictUniversalPropertyFixedTargetId W _ hW)
 
+instance : (𝟭 C).IsLocalization (MorphismProperty.isomorphisms C) :=
+  IsLocalization.for_id _ (by rfl)
+
 end Functor
 
 namespace Localization
@@ -282,7 +285,7 @@ variable {E}
 
 theorem natTrans_ext (L : C ⥤ D) (W) [L.IsLocalization W] {F₁ F₂ : D ⥤ E} {τ τ' : F₁ ⟶ F₂}
     (h : ∀ X : C, τ.app (L.obj X) = τ'.app (L.obj X)) : τ = τ' := by
-  haveI := essSurj L W
+  have := essSurj L W
   ext Y
   rw [← cancel_epi (F₁.map (L.objObjPreimageIso Y).hom), τ.naturality, τ'.naturality, h]
 
@@ -419,7 +422,7 @@ instance (F : D ⥤ E) [F.IsEquivalence] [L.IsLocalization W] :
 lemma of_isEquivalence (L : C ⥤ D) (W : MorphismProperty C)
     (hW : W ≤ MorphismProperty.isomorphisms C) [IsEquivalence L] :
     L.IsLocalization W := by
-  haveI : (𝟭 C).IsLocalization W := for_id W hW
+  have : (𝟭 C).IsLocalization W := for_id W hW
   exact of_equivalence_target (𝟭 C) W L L.asEquivalence L.leftUnitor
 
 end IsLocalization
