@@ -320,7 +320,11 @@ def IsRightQuasiInverse (u : V₃ →ₗ[K] V₂) (v : V₂ →ₗ[K] V₃) : Pr
 
 /-- `u` is a **quasi-inverse** to `v` if `u ∘ₗ v ≈ id` and `v ∘ₗ u ≈ id` modulo
 linear maps with noetherian ranges. Recall that if the scalar ring is noetherian
-(e.g a field), then "noetherian range" can be replaced by "finitely generated range". -/
+(e.g a field), then "noetherian range" can be replaced by "finitely generated range".
+
+This is a symmetric statement, but the API is built with the assumption that the second argument
+is "known in advance", and the first is the quasi-inverse to find. For example,
+`IsQuasiInverse.of_comp_right` gives a quasi-inverse for `v` given a quasi-inverse for `v ∘ u`. -/
 def IsQuasiInverse (u : V₃ →ₗ[K] V₂) (v : V₂ →ₗ[K] V₃) : Prop :=
   u.IsLeftQuasiInverse v ∧ u.IsRightQuasiInverse v
 
