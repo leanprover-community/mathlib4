@@ -185,7 +185,7 @@ private lemma Alon.of_mem_P_support {ι : Type*} (i : ι) (S : Finset R) (m : ι
     rw [← Alon.degree_P]
     apply MonomialOrder.le_degree
     rw [mem_support_iff]
-    convert! he
+    exact he
   · rw [← hm]
     ext j
     by_cases hj : j = i

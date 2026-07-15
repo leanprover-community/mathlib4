@@ -300,7 +300,7 @@ theorem eq_of_comp_left_eq {f g : X ⟶ Y} (w : ∀ {Z : C} (h : Y ⟶ Z), f ≫
 @[to_dual eq_of_comp_right_eq']
 theorem eq_of_comp_left_eq' (f g : X ⟶ Y)
     (w : (fun {Z} (h : Y ⟶ Z) => f ≫ h) = fun {Z} (h : Y ⟶ Z) => g ≫ h) : f = g :=
-  eq_of_comp_left_eq @fun Z h => by convert! congr_fun (congr_fun w Z) h
+  eq_of_comp_left_eq @fun Z h => by exact congr_fun (congr_fun w Z) h
 
 @[to_dual id_of_comp_right_id]
 theorem id_of_comp_left_id (f : X ⟶ X) (w : ∀ {Y : C} (g : X ⟶ Y), f ≫ g = g) : f = 𝟙 X := by

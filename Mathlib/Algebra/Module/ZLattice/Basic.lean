@@ -500,7 +500,7 @@ instance instModuleFinite_of_discrete_submodule {E : Type*} [NormedAddCommGroup 
   suffices Module.Finite ℤ L₀ by
     have : L₀.map (f.restrictScalars ℤ) = L :=
       SetLike.ext'_iff.mpr h_img
-    convert! this ▸ Module.Finite.map L₀ (f.restrictScalars ℤ)
+    exact this ▸ Module.Finite.map L₀ (f.restrictScalars ℤ)
   have : DiscreteTopology L₀ := by
     refine DiscreteTopology.preimage_of_continuous_injective (L : Set E) ?_ (injective_subtype _)
     exact LinearMap.continuous_of_finiteDimensional f

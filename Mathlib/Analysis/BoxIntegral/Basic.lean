@@ -498,7 +498,7 @@ theorem to_subbox_aux (h : Integrable I l f vol) (hJ : J ≤ I) :
       Tendsto (integralSum f vol) (l.toFilteriUnion I (Prepartition.single I J hJ)) (𝓝 y) := by
   refine (cauchy_map_iff_exists_tendsto.1
     (h.cauchy_map_integralSum_toFilteriUnion (.single I J hJ))).imp fun y hy ↦ ⟨?_, hy⟩
-  convert!
+  exact
     hy.comp
       (l.tendsto_embedBox_toFilteriUnion_top hJ) -- faster than `exact` here
          -- faster than `exact` here

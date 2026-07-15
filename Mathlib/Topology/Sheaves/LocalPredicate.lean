@@ -161,7 +161,7 @@ namespace PrelocalPredicate
 
 theorem sheafifyOf {T : X → Type*} {P : PrelocalPredicate T} {U : Opens X}
     {f : ∀ x : U, T x} (h : P.pred f) : P.sheafify.pred f := fun x ↦
-  ⟨U, x.2, 𝟙 _, by convert! h⟩
+  ⟨U, x.2, 𝟙 _, by exact h⟩
 
 /-- For a unary operation (e.g. `x ↦ -x`) defined at each stalk, if a prelocal predicate is closed
 under the operation on each open set (possibly by refinement), then the sheafified predicate is

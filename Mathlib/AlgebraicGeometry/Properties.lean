@@ -324,7 +324,7 @@ lemma IsIntegral.of_isIso {X Y : Scheme.{u}} [h : IsIntegral X] (f : X ⟶ Y) [I
   exact Nonempty.map f inferInstance
 
 instance {R : CommRingCat} [IsDomain R] : IrreducibleSpace (Spec R) := by
-  convert! PrimeSpectrum.irreducibleSpace (R := R)
+  exact PrimeSpectrum.irreducibleSpace (R := R)
 
 instance {R : CommRingCat} [IsDomain R] : IsIntegral (Spec R) :=
   isIntegral_of_irreducibleSpace_of_isReduced _

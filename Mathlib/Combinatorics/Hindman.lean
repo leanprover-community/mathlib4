@@ -150,7 +150,7 @@ theorem exists_idempotent_ultrafilter_le_FP {M} [Semigroup M] (a : Stream' M) :
   have h := exists_idempotent_in_compact_subsemigroup ?_ S ?_ ?_ ?_
   · rcases h with ⟨U, hU, U_idem⟩
     refine ⟨U, U_idem, ?_⟩
-    convert! Set.mem_iInter.mp hU 0
+    exact Set.mem_iInter.mp hU 0
   · exact Ultrafilter.continuous_mul_left
   · apply IsCompact.nonempty_iInter_of_sequence_nonempty_isCompact_isClosed
     · intro n U hU

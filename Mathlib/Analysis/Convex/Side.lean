@@ -788,7 +788,7 @@ theorem isConnected_setOf_wSameSide {s : AffineSubspace ℝ P} (x : P) (h : (s :
   · rw [setOf_wSameSide_eq_image2 hx hp, ← Set.image_prod]
     refine (isConnected_Ici.prod (isConnected_iff_connectedSpace.2 ?_)).image _
       ((continuous_fst.smul continuous_const).vadd continuous_snd).continuousOn
-    convert! AddTorsor.connectedSpace s.direction s
+    exact AddTorsor.connectedSpace s.direction s
 
 theorem isPreconnected_setOf_wSameSide (s : AffineSubspace ℝ P) (x : P) :
     IsPreconnected { y | s.WSameSide x y } := by
@@ -805,7 +805,7 @@ theorem isConnected_setOf_sSameSide {s : AffineSubspace ℝ P} {x : P} (hx : x �
   rw [setOf_sSameSide_eq_image2 hx hp, ← Set.image_prod]
   refine (isConnected_Ioi.prod (isConnected_iff_connectedSpace.2 ?_)).image _
     ((continuous_fst.smul continuous_const).vadd continuous_snd).continuousOn
-  convert! AddTorsor.connectedSpace s.direction s
+  exact AddTorsor.connectedSpace s.direction s
 
 theorem isPreconnected_setOf_sSameSide (s : AffineSubspace ℝ P) (x : P) :
     IsPreconnected { y | s.SSameSide x y } := by
@@ -829,7 +829,7 @@ theorem isConnected_setOf_wOppSide {s : AffineSubspace ℝ P} (x : P) (h : (s : 
   · rw [setOf_wOppSide_eq_image2 hx hp, ← Set.image_prod]
     refine (isConnected_Iic.prod (isConnected_iff_connectedSpace.2 ?_)).image _
       ((continuous_fst.smul continuous_const).vadd continuous_snd).continuousOn
-    convert! AddTorsor.connectedSpace s.direction s
+    exact AddTorsor.connectedSpace s.direction s
 
 theorem isPreconnected_setOf_wOppSide (s : AffineSubspace ℝ P) (x : P) :
     IsPreconnected { y | s.WOppSide x y } := by
@@ -846,7 +846,7 @@ theorem isConnected_setOf_sOppSide {s : AffineSubspace ℝ P} {x : P} (hx : x �
   rw [setOf_sOppSide_eq_image2 hx hp, ← Set.image_prod]
   refine (isConnected_Iio.prod (isConnected_iff_connectedSpace.2 ?_)).image _
     ((continuous_fst.smul continuous_const).vadd continuous_snd).continuousOn
-  convert! AddTorsor.connectedSpace s.direction s
+  exact AddTorsor.connectedSpace s.direction s
 
 theorem isPreconnected_setOf_sOppSide (s : AffineSubspace ℝ P) (x : P) :
     IsPreconnected { y | s.SOppSide x y } := by

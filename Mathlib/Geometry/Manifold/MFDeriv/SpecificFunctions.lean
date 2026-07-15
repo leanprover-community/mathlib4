@@ -435,7 +435,7 @@ theorem mdifferentiableOn_prod_module_iff (f : M → F₁ × F₂) :
 
 theorem mdifferentiable_prod_iff (f : M → M' × N') :
     MDiff f ↔ MDiff (Prod.fst ∘ f) ∧ MDiff (Prod.snd ∘ f) :=
-  ⟨fun h ↦ ⟨h.fst, h.snd⟩, fun h ↦ by convert! h.1.prodMk h.2⟩
+  ⟨fun h ↦ ⟨h.fst, h.snd⟩, fun h ↦ by exact h.1.prodMk h.2⟩
 
 theorem mdifferentiable_prod_module_iff (f : M → F₁ × F₂) :
     MDifferentiable I 𝓘(𝕜, F₁ × F₂) f ↔ MDiff (Prod.fst ∘ f) ∧ MDiff (Prod.snd ∘ f) := by

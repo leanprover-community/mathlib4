@@ -377,7 +377,7 @@ lemma comp_jacobian_eq_jacobian_smul_jacobian [Finite σ] [Finite σ'] :
     (aeval (Q.comp P).val) (Q.comp P).jacobiMatrix.toBlocks₂₂.det = P.jacobian • Q.jacobian
   · simp only [Generators.algebraMap_apply, ← map_mul]
     congr
-    convert!
+    exact
       Matrix.det_fromBlocks_zero₁₂ (Q.comp P).jacobiMatrix.toBlocks₁₁
         (Q.comp P).jacobiMatrix.toBlocks₂₁ (Q.comp P).jacobiMatrix.toBlocks₂₂
   · rw [jacobiMatrix_comp_₁₁_det, jacobiMatrix_comp_₂₂_det, mul_comm, Algebra.smul_def]

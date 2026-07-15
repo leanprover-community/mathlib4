@@ -853,7 +853,7 @@ noncomputable def domExtend {s : Set B} (hps : IsOpen (proj ⁻¹' s))
     ext1 ⟨x, (hx : proj x ∈ s)⟩
     simpa [Pretrivialization.domExtend] using! dif_pos hx
   continuousOn_invFun := continuous_subtype_val.comp_continuousOn <| by
-    convert! e.continuousOn_invFun
+    exact e.continuousOn_invFun
 
 /-- Extend the base of a trivialization from a set to the whole space. -/
 @[simps! apply source target baseSet]

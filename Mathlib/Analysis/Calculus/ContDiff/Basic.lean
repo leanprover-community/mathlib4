@@ -528,7 +528,7 @@ theorem HasFTaylorSeriesUpToOn.prodMk {n : ℕ∞ω}
   constructor
   · intro x hx; rw [← hf.zero_eq x hx, ← hg.zero_eq x hx]; rfl
   · intro m hm x hx
-    convert!
+    exact
       (L m).hasFDerivAt.comp_hasFDerivWithinAt x
         ((hf.fderivWithin m hm x hx).prodMk (hg.fderivWithin m hm x hx))
   · intro m hm

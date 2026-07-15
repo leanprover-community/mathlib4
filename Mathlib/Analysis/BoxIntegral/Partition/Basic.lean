@@ -560,7 +560,7 @@ open scoped Classical in
 theorem sum_fiberwise {α M} [AddCommMonoid M] (π : Prepartition I) (f : Box ι → α) (g : Box ι → M) :
     (∑ y ∈ π.boxes.image f, ∑ J ∈ (π.filter fun J => f J = y).boxes, g J) =
       ∑ J ∈ π.boxes, g J := by
-  convert! sum_fiberwise_of_maps_to (fun _ => Finset.mem_image_of_mem f) g
+  exact sum_fiberwise_of_maps_to (fun _ => Finset.mem_image_of_mem f) g
 
 open scoped Classical in
 /-- Union of two disjoint prepartitions. -/

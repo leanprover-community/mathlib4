@@ -552,7 +552,7 @@ lemma infinitePi_map_curry_symm :
         (MeasurableEquiv.curry ι κ X).symm = ⇑(MeasurableEquiv.piCurry (fun _ _ ↦ X)).symm := by
       ext; simp [piCongrLeft, Equiv.piCongrLeft, Sigma.uncurry]
     rw [this, infinitePi_map_piCurry_symm]
-    convert! infinitePi_map_piCongrLeft (fun p ↦ μ p.1 p.2) (Equiv.sigmaEquivProd ι κ).symm |>.symm
+    exact infinitePi_map_piCongrLeft (fun p ↦ μ p.1 p.2) (Equiv.sigmaEquivProd ι κ).symm |>.symm
   all_goals fun_prop
 
 lemma infinitePi_map_curry :

@@ -76,7 +76,7 @@ theorem numberField_discr : discr ℚ = 1 := by
   let b : Basis (Fin 1) ℤ (𝓞 ℚ) :=
     Basis.map (Basis.singleton (Fin 1) ℤ) ringOfIntegersEquiv.toAddEquiv.toIntLinearEquiv.symm
   calc NumberField.discr ℚ
-    _ = Algebra.discr ℤ b := by convert! (discr_eq_discr ℚ b).symm
+    _ = Algebra.discr ℤ b := by exact (discr_eq_discr ℚ b).symm
     _ = Algebra.trace ℤ (𝓞 ℚ) (b default * b default) := by
       rw [Algebra.discr_def, Matrix.det_unique, Algebra.traceMatrix_apply, Algebra.traceForm_apply]
     _ = Algebra.trace ℤ (𝓞 ℚ) 1 := by

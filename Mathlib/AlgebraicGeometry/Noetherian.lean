@@ -175,7 +175,7 @@ theorem isLocallyNoetherian_iff_openCover (𝒰 : Scheme.OpenCover X) :
 /-- If `R` is a Noetherian ring, `Spec R` is a Noetherian topological space. -/
 instance {R : CommRingCat} [IsNoetherianRing R] :
     NoetherianSpace (Spec R) := by
-  convert! PrimeSpectrum.instNoetherianSpace (R := R)
+  exact PrimeSpectrum.instNoetherianSpace (R := R)
 
 lemma noetherianSpace_of_isAffine [IsAffine X] [IsNoetherianRing Γ(X, ⊤)] :
     NoetherianSpace X :=
