@@ -136,7 +136,7 @@ open scoped RingTheory.LinearMap
 theorem mul_antipode_rTensor_comul_adjoin_top {X : Set A} (S : A →ₐ[R] Aᵐᵒᵖ) (hX : adjoin R X = ⊤)
   (h : ∀ x ∈ X, (mul' R A) ((LinearMap.rTensor A
       ((MulOpposite.opLinearEquiv R (M := A)).symm ∘ₗ S.toLinearMap)) (δ x)) =
-        (algebraMap R A) (ε x)) :
+        (Algebra.linearMap R A) (ε x)) :
   mul' R A ∘ₗ LinearMap.rTensor A
   ((MulOpposite.opLinearEquiv R (M := A)).symm ∘ₗ S.toLinearMap) ∘ₗ δ =
     Algebra.linearMap R A ∘ₗ ε := by
@@ -190,13 +190,13 @@ theorem mul_antipode_rTensor_comul_adjoin_top {X : Set A} (S : A →ₐ[R] Aᵐ�
 theorem mul_antipode_rlTensor_comul_adjoin_top {X : Set A} (S : A →ₐ[R] Aᵐᵒᵖ) (hX : adjoin R X = ⊤)
   (h : ∀ x ∈ X, (mul' R A) ((LinearMap.lTensor A
       ((MulOpposite.opLinearEquiv R (M := A)).symm ∘ₗ S.toLinearMap)) (δ x)) =
-        (algebraMap R A) (ε x)) :
+        (Algebra.linearMap R A) (ε x)) :
   mul' R A ∘ₗ LinearMap.lTensor A
   ((MulOpposite.opLinearEquiv R (M := A)).symm ∘ₗ S.toLinearMap) ∘ₗ δ =
     Algebra.linearMap R A ∘ₗ ε := by
   ext t
   let P : A → Prop := fun y ↦ (mul' R A ∘ₗ
-    lTensor A ((MulOpposite.opLinearEquiv (M := A) R).symm ∘ₗ S.toLinearMap) ∘ₗ
+    lTensor A ((MulOpposite.opLinearEquiv R (M := A)).symm ∘ₗ S.toLinearMap) ∘ₗ
     CoalgebraStruct.comul) y = (Algebra.linearMap R A ∘ₗ CoalgebraStruct.counit) y
   have h y (hy : y ∈ adjoin R X) : P y := by
     refine adjoin_induction (R := R) (s := X) (p := fun y _ => P y) h (fun r ↦ ?_) ?_ ?_ hy
@@ -207,15 +207,16 @@ theorem mul_antipode_rlTensor_comul_adjoin_top {X : Set A} (S : A →ₐ[R] Aᵐ
     · simp_all only [mem_top, coe_comp, Function.comp_apply, linearMap_apply, map_add,
       implies_true, P]
     · intro x y hx hy hxP hyP
-      have key : ∀ z : A, P z → (∑ i ∈ (ℛ R z).index, (ℛ R z).left i *
+      have key (z : A) (hz : P z) : (∑ i ∈ (ℛ R z).index, (ℛ R z).left i *
           ((MulOpposite.opLinearEquiv R).symm.toLinearMap ∘ₗ S.toLinearMap) ((ℛ R z).right i))
-          = algebraMap R A (ε z) := fun z hz ↦ by
+          = algebraMap R A (ε z) := by
         unfold P at hz
         simp only [coe_comp, Function.comp_apply, linearMap_apply] at hz
         rw [← hz, ← Coalgebra.Repr.eq (ℛ R z)]
         simp only [map_sum, lTensor_tmul, mul'_apply, coe_comp, Function.comp_apply,
           LinearEquiv.coe_coe,  MulOpposite.coe_opLinearEquiv_symm, AlgHom.coe_toLinearMap]
       unfold P
+
       symm
       calc
         _ = (∑ i ∈ (ℛ R x).index, (ℛ R x).left i *
