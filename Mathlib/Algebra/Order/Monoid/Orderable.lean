@@ -87,36 +87,36 @@ variable {G : Type*} [Monoid G]
 /-- A linear order with monotone left multiplication makes a monoid left-orderable. -/
 @[to_additive /-- A linear order with monotone left addition makes an additive monoid
 left-orderable. -/]
-instance MulLeftMono.to_isLeftOrderable [LinearOrder G] [MulLeftMono G] :
+instance [LinearOrder G] [MulLeftMono G] :
     IsLeftOrderable G := ⟨⟨‹_›, ‹_›⟩⟩
 
 /-- A linear order with monotone right multiplication makes a monoid right-orderable. -/
 @[to_additive /-- A linear order with monotone right addition makes an additive monoid
 right-orderable. -/]
-instance MulRightMono.to_isRightOrderable [LinearOrder G] [MulRightMono G] :
+instance [LinearOrder G] [MulRightMono G] :
     IsRightOrderable G := ⟨⟨‹_›, ‹_›⟩⟩
 
 /-- A linear order monotone under both multiplications makes a monoid bi-orderable. -/
 @[to_additive /-- A linear order monotone under both additions makes an additive monoid
 bi-orderable. -/]
-instance MulLeftMono.to_isBiOrderable [LinearOrder G] [MulLeftMono G] [MulRightMono G] :
+instance [LinearOrder G] [MulLeftMono G] [MulRightMono G] :
     IsBiOrderable G := ⟨⟨‹_›, ‹_›, ‹_›⟩⟩
 
-/-- The strict counterpart of `MulLeftMono.to_isLeftOrderable`, a separate instance since
+/-- The strict counterpart of the `MulLeftMono` instance, a separate one since
 `MulLeftStrictMono` does not synthesize `MulLeftMono`. -/
-@[to_additive /-- The strict counterpart of `AddLeftMono.to_isAddLeftOrderable`, a separate instance
+@[to_additive /-- The strict counterpart of the `AddLeftMono` instance, a separate one
 since `AddLeftStrictMono` does not synthesize `AddLeftMono`. -/]
-instance MulLeftStrictMono.to_isLeftOrderable [LinearOrder G] [MulLeftStrictMono G] :
+instance [LinearOrder G] [MulLeftStrictMono G] :
     IsLeftOrderable G := ⟨⟨‹_›, mulLeftMono_of_mulLeftStrictMono G⟩⟩
 
-/-- The strict counterpart of `MulRightMono.to_isRightOrderable`. -/
-@[to_additive /-- The strict counterpart of `AddRightMono.to_isAddRightOrderable`. -/]
-instance MulRightStrictMono.to_isRightOrderable [LinearOrder G] [MulRightStrictMono G] :
+/-- The strict counterpart of the `MulRightMono` instance. -/
+@[to_additive /-- The strict counterpart of the `AddRightMono` instance. -/]
+instance [LinearOrder G] [MulRightStrictMono G] :
     IsRightOrderable G := ⟨⟨‹_›, mulRightMono_of_mulRightStrictMono G⟩⟩
 
-/-- The strict counterpart of `MulLeftMono.to_isBiOrderable`. -/
-@[to_additive /-- The strict counterpart of `AddLeftMono.to_isAddBiOrderable`. -/]
-instance MulLeftStrictMono.to_isBiOrderable [LinearOrder G] [MulLeftStrictMono G]
+/-- The strict counterpart of the `MulLeftMono`/`MulRightMono` instance. -/
+@[to_additive /-- The strict counterpart of the `AddLeftMono`/`AddRightMono` instance. -/]
+instance [LinearOrder G] [MulLeftStrictMono G]
     [MulRightStrictMono G] : IsBiOrderable G :=
   ⟨⟨‹_›, mulLeftMono_of_mulLeftStrictMono G, mulRightMono_of_mulRightStrictMono G⟩⟩
 
