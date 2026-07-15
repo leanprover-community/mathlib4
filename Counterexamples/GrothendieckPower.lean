@@ -189,11 +189,9 @@ def aw : WitnessRing := ⟨aEnd, Subring.subset_closure (Set.mem_insert _ _)⟩
 def bw : WitnessRing :=
   ⟨bEnd, Subring.subset_closure (Set.mem_insert_of_mem _ (Set.mem_singleton _))⟩
 
-@[simp] theorem aw_cube : aw ^ 3 = 0 :=
-  Subtype.ext aEnd_cube
+@[simp] theorem aw_cube : aw ^ 3 = 0 := Subtype.ext aEnd_cube
 
-@[simp] theorem bw_cube : bw ^ 3 = 0 :=
-  Subtype.ext bEnd_cube
+@[simp] theorem bw_cube : bw ^ 3 = 0 := Subtype.ext bEnd_cube
 
 @[simp] theorem witness_relation : aw ^ 2 * bw + 2 = 0 :=
   Subtype.ext aEnd_sq_mul_bEnd
@@ -234,18 +232,18 @@ def a : R := Ideal.Quotient.mk baseIdeal ap
 def b : R := Ideal.Quotient.mk baseIdeal bp
 
 @[simp] theorem a_cube : a ^ 3 = 0 := by
-  rw [show a ^ 3 = Ideal.Quotient.mk baseIdeal (ap ^ 3) by rfl,
+  rw [show a ^ 3 = Ideal.Quotient.mk baseIdeal (ap ^ 3) by simp [a],
     Ideal.Quotient.eq_zero_iff_mem]
   exact Ideal.subset_span (by simp)
 
 @[simp] theorem b_cube : b ^ 3 = 0 := by
-  rw [show b ^ 3 = Ideal.Quotient.mk baseIdeal (bp ^ 3) by rfl,
+  rw [show b ^ 3 = Ideal.Quotient.mk baseIdeal (bp ^ 3) by simp [b],
     Ideal.Quotient.eq_zero_iff_mem]
   exact Ideal.subset_span (by simp)
 
 @[simp] theorem base_relation : a ^ 2 * b + 2 = 0 := by
   rw [show a ^ 2 * b + 2 =
-      Ideal.Quotient.mk baseIdeal (ap ^ 2 * bp + C 2) by rfl,
+      Ideal.Quotient.mk baseIdeal (ap ^ 2 * bp + C 2) by simp [a, b]; rfl,
     Ideal.Quotient.eq_zero_iff_mem]
   exact Ideal.subset_span (by simp)
 
@@ -254,21 +252,12 @@ def evalWitness : P →+* WitnessRing :=
   eval₂Hom (Int.castRingHom WitnessRing) ![aw, bw]
 
 theorem baseIdeal_le_ker_evalWitness : baseIdeal ≤ RingHom.ker evalWitness := by
-  apply Ideal.span_le.2
+  rw [baseIdeal, Ideal.span_le]
   intro p hp
   simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at hp
-  rcases hp with rfl | rfl | rfl
-  · apply (RingHom.mem_ker).2
-    simpa only [evalWitness, ap, map_pow, eval₂Hom_X', Matrix.cons_val_zero] using aw_cube
-  · apply (RingHom.mem_ker).2
-    simpa only [evalWitness, bp, map_pow, eval₂Hom_X', Matrix.cons_val_one,
-      Matrix.cons_val_zero] using bw_cube
-  · apply (RingHom.mem_ker).2
-    simpa only [evalWitness, ap, bp, map_add, map_mul, map_pow, map_ofNat,
-      eval₂Hom_X', eval₂Hom_C, Matrix.cons_val_zero, Matrix.cons_val_one] using witness_relation
+  rcases hp with rfl | rfl | rfl <;> simp [evalWitness, ap, bp]
 
-/-- The ring map `R → WitnessRing`, witnessing that relations not in `baseIdeal` do not hold
-in `R`. -/
+/-- The ring map `R → WitnessRing`, giving an action of `R` on `M`. -/
 def witnessHom : R →+* WitnessRing :=
   Ideal.Quotient.lift baseIdeal evalWitness baseIdeal_le_ker_evalWitness
 
@@ -279,9 +268,7 @@ def witnessHom : R →+* WitnessRing :=
 theorem two_b_ne_zero : (2 : R) * b ≠ 0 := by
   intro h
   apply two_bw_ne_zero
-  have := congr_arg witnessHom h
-  rw [map_mul, map_ofNat, map_zero] at this
-  simpa only [witnessHom_b] using this
+  simpa [map_ofNat] using congr_arg witnessHom h
 
 instance : Nontrivial R := ⟨⟨(2 : R) * b, 0, two_b_ne_zero⟩⟩
 
