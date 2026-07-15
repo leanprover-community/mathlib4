@@ -1258,6 +1258,10 @@ theorem prod_prime_one_minus_inv_eq {x : ℝ} (hx : 1 < x) : ∏ p ∈ primesLE 
   field_simp
   exact prod_congr rfl fun p hp ↦ (exp_log (hpos (mem_filter.mp hp).2)).symm
 
+theorem prod_prime_one_minus_inv_eq_nat {N : ℕ} (hN : 1 < N) : ∏ p ∈ primesLE N, (1 - (1 : ℝ) / p) =
+    exp (-eulerMascheroniConstant) * exp (E₃ N) / log N := by
+  simpa using prod_prime_one_minus_inv_eq (x := N) (mod_cast hN)
+
 /-- A completely explicit upper bound on the error term. -/
 theorem E₃_bound {x : ℝ} (hx : 2 ≤ x) : |E₃ x| ≤ (log 4 + 3) / log x + 1 / ⌊x⌋₊ := by
   have hx' := floor_mono hx
