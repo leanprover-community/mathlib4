@@ -121,14 +121,7 @@ theorem concat_get_prefix {x y : List α} (h : x <+: y) (hl : x.length < y.lengt
 
 theorem prefix_append_drop {l₁ l₂ : List α} (h : l₁ <+: l₂) :
     l₂ = l₁ ++ l₂.drop l₁.length := by
-  induction l₂ generalizing l₁ with
-  | nil => simp [List.prefix_nil.mp h]
-  | cons _ _ ih =>
-    cases l₁ with
-    | nil => rfl
-    | cons =>
-      obtain ⟨rfl, h'⟩ := List.cons_prefix_cons.mp h
-      simpa using ih h'
+  grind [prefix_iff_exists_eq_append]
 
 instance decidableInfix [DecidableEq α] : ∀ l₁ l₂ : List α, Decidable (l₁ <:+: l₂)
   | [], l₂ => isTrue ⟨[], l₂, rfl⟩

@@ -702,13 +702,7 @@ theorem reflTransGen_iff_eq (h : ∀ b, ¬r a b) : ReflTransGen r a b ↔ b = a 
 
 @[grind =]
 theorem reflTransGen_iff_eq_or_transGen : ReflTransGen r a b ↔ b = a ∨ TransGen r a b := by
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · cases h with
-    | refl => exact Or.inl rfl
-    | tail hac hcb => exact Or.inr (TransGen.tail' hac hcb)
-  · rcases h with (rfl | h)
-    · rfl
-    · exact h.to_reflTransGen
+  grind [cases_head_iff, TransGen.head'_iff]
 
 theorem ReflTransGen.lift {p : β → β → Prop} (f : α → β) (h : r ≤ (p on f)) :
     ReflTransGen r ≤ (ReflTransGen p on f) :=

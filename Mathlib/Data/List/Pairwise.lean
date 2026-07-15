@@ -64,12 +64,7 @@ theorem Pairwise.set_pairwise (hl : Pairwise R l) [Std.Symm R] : { x | x ∈ l }
 theorem pairwise_of_reflexive_of_forall_ne [Std.Refl R] (h : ∀ a ∈ l, ∀ b ∈ l, a ≠ b → R a b) :
     l.Pairwise R := by
   rw [pairwise_iff_forall_sublist]
-  intro a b hab
-  if heq : a = b then
-    cases heq; apply refl
-  else
-    apply h <;> try (apply hab.subset; simp)
-    exact heq
+  grind +splitIndPred
 
 theorem Pairwise.rel_head_tail (h₁ : l.Pairwise R) (ha : a ∈ l.tail) :
     R (l.head <| ne_nil_of_mem <| mem_of_mem_tail ha) a := by
