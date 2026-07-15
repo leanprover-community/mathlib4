@@ -240,6 +240,39 @@ theorem mdifferentiableOn_extend_symm (he : e ∈ maximalAtlas I 1 M) :
   intro y hy
   exact mdifferentiableWithinAt_extend_symm he hy |>.mono (e.extend_target_subset_range)
 
+/-- The composition of the derivative of an extended chart `e.extend I` with the derivative of its
+inverse `(e.extend I).symm` gives the identity.
+Version where the basepoint belongs to `(e.extend I).target`. -/
+lemma mfderiv_extend_comp_mfderivWithin_extend_symm
+    {y : E} (he : e ∈ maximalAtlas I 1 M) (hy : y ∈ (e.extend I).target) :
+    (mfderiv% (e.extend I) ((e.extend I).symm y)) ∘L
+      (mfderiv[range I] (e.extend I).symm y) = ContinuousLinearMap.id _ _ := by
+  have U : UniqueMDiffAt[range I] y := by
+    apply I.uniqueMDiffOn
+    apply e.extend_target_subset_range hy
+  have h'y : (e.extend I).symm y ∈ e.source := PartialEquiv.map_target _ (by simp_all)
+  rw [← mfderiv_comp_mfderivWithin]; rotate_left
+  · exact e.mdifferentiableAt_extend he h'y
+  · exact mdifferentiableWithinAt_extend_symm he hy
+  · exact U
+  rw [← mfderivWithin_id U]
+  apply Filter.EventuallyEq.mfderivWithin_eq
+  · have : (e.extend I) ((e.extend I).symm y) = y := (e.extend I).right_inv hy
+    filter_upwards [this ▸ e.extend_target_mem_nhdsWithin h'y (I := I)] with z hz
+    simp_all
+  · simp_all
+
+
+/-- The composition of the derivative of an extended chart `e.extend I` with the derivative of its
+inverse `(e.extend I).symm` gives the identity.
+Version where the basepoint belongs to `(e.extend).source`. -/
+lemma mfderiv_extend_comp_mfderivWithin_extend_symm'
+    {y : M} (he : e ∈ maximalAtlas I 1 M) (hy : y ∈ (e.extend I).source) :
+    (mfderiv% (e.extend I) y) ∘L (mfderiv[range I] (e.extend I).symm (e.extend I y))
+    = ContinuousLinearMap.id _ _ := by
+  have : y = (e.extend I).symm (e.extend I y) := ((e.extend I).left_inv hy).symm
+  convert! mfderiv_extend_comp_mfderivWithin_extend_symm he ((e.extend I).map_source hy)
+
 end
 
 section extChartAt
@@ -277,22 +310,8 @@ Version where the basepoint belongs to `(extChartAt I x).target`. -/
 lemma mfderiv_extChartAt_comp_mfderivWithin_extChartAt_symm {x : M}
     {y : E} (hy : y ∈ (extChartAt I x).target) :
     (mfderiv% (extChartAt I x) ((extChartAt I x).symm y)) ∘L
-      (mfderiv[range I] (extChartAt I x).symm y) = ContinuousLinearMap.id _ _ := by
-  have U : UniqueMDiffAt[range I] y := by
-    apply I.uniqueMDiffOn
-    exact extChartAt_target_subset_range x hy
-  have h'y : (extChartAt I x).symm y ∈ (extChartAt I x).source := (extChartAt I x).map_target hy
-  have h''y : (extChartAt I x).symm y ∈ (chartAt H x).source := by
-    rwa [← extChartAt_source (I := I)]
-  rw [← mfderiv_comp_mfderivWithin]; rotate_left
-  · apply mdifferentiableAt_extChartAt h''y
-  · exact mdifferentiableWithinAt_extChartAt_symm hy
-  · exact U
-  rw [← mfderivWithin_id U]
-  apply Filter.EventuallyEq.mfderivWithin_eq
-  · filter_upwards [extChartAt_target_mem_nhdsWithin_of_mem hy] with z hz
-    simp only [Function.comp_def, PartialEquiv.right_inv (extChartAt I x) hz, id_eq]
-  · simp only [Function.comp_def, PartialEquiv.right_inv (extChartAt I x) hy, id_eq]
+      (mfderiv[range I] (extChartAt I x).symm y) = ContinuousLinearMap.id _ _ :=
+  mfderiv_extend_comp_mfderivWithin_extend_symm (IsManifold.chart_mem_maximalAtlas x) hy
 
 /-- The composition of the derivative of `extChartAt` with the derivative of the inverse of
 `extChartAt` gives the identity.
@@ -300,9 +319,8 @@ Version where the basepoint belongs to `(extChartAt I x).source`. -/
 lemma mfderiv_extChartAt_comp_mfderivWithin_extChartAt_symm' {x : M}
     {y : M} (hy : y ∈ (extChartAt I x).source) :
     (mfderiv% (extChartAt I x) y) ∘L (mfderiv[range I] (extChartAt I x).symm (extChartAt I x y))
-    = ContinuousLinearMap.id _ _ := by
-  have : y = (extChartAt I x).symm (extChartAt I x y) := ((extChartAt I x).left_inv hy).symm
-  convert! mfderiv_extChartAt_comp_mfderivWithin_extChartAt_symm ((extChartAt I x).map_source hy)
+    = ContinuousLinearMap.id _ _ :=
+  mfderiv_extend_comp_mfderivWithin_extend_symm' (IsManifold.chart_mem_maximalAtlas x) hy
 
 /-- The composition of the derivative of the inverse of `extChartAt` with the derivative of
 `extChartAt` gives the identity.
