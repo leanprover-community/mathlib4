@@ -314,7 +314,7 @@ theorem Functor.initial_iff_isCofiltered_costructuredArrow [IsCofilteredOrEmpty 
 /-- If `C` is filtered, then the structured arrow category on the diagonal functor `C ⥤ C × C`
 is filtered as well. -/
 instance [IsFilteredOrEmpty C] (X : C × C) : IsFiltered (StructuredArrow X (diag C)) := by
-  haveI : ∀ Y, IsFiltered (StructuredArrow Y (Under.forget X.1)) := by
+  have : ∀ Y, IsFiltered (StructuredArrow Y (Under.forget X.1)) := by
     rw [← final_iff_isFiltered_structuredArrow (Under.forget X.1)]
     infer_instance
   apply IsFiltered.of_equivalence (StructuredArrow.ofDiagEquivalence X).symm
@@ -334,7 +334,7 @@ theorem IsFiltered.isSifted [IsFiltered C] : IsSifted C where
 /-- If `C` is cofiltered, then the costructured arrow category on the diagonal functor `C ⥤ C × C`
 is cofiltered as well. -/
 instance [IsCofilteredOrEmpty C] (X : C × C) : IsCofiltered (CostructuredArrow (diag C) X) := by
-  haveI : ∀ Y, IsCofiltered (CostructuredArrow (Over.forget X.1) Y) := by
+  have : ∀ Y, IsCofiltered (CostructuredArrow (Over.forget X.1) Y) := by
     rw [← initial_iff_isCofiltered_costructuredArrow (Over.forget X.1)]
     infer_instance
   apply IsCofiltered.of_equivalence (CostructuredArrow.ofDiagEquivalence X).symm
@@ -385,7 +385,7 @@ instance StructuredArrow.final_map₂_id [IsFiltered C] {E : Type u₃} [Categor
     {T : C ⥤ D} [T.Final] {S : D ⥤ E} [S.Final] {T' : C ⥤ E}
     {d : D} {e : E} (u : e ⟶ S.obj d) (α : T ⋙ S ⟶ T') [IsIso α] :
     Final (map₂ (F := 𝟭 _) u α) := by
-  haveI : IsFiltered (StructuredArrow e (T ⋙ S)) :=
+  have : IsFiltered (StructuredArrow e (T ⋙ S)) :=
     (T ⋙ S).final_iff_isFiltered_structuredArrow.mp inferInstance e
   apply final_of_natIso (map₂IsoPreEquivalenceInverseCompProj d e u α).symm
 
@@ -393,7 +393,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- `StructuredArrow.map` is final if the functor `T` is final and its domain is filtered. -/
 instance StructuredArrow.final_map [IsFiltered C] {S S' : D} (f : S ⟶ S') (T : C ⥤ D) [T.Final] :
     Final (map (T := T) f) := by
-  haveI := NatIso.isIso_of_isIso_app (𝟙 T)
+  have := NatIso.isIso_of_isIso_app (𝟙 T)
   have : (map₂ (F := 𝟭 C) (G := 𝟭 D) f (𝟙 T)).Final := by
     apply StructuredArrow.final_map₂_id (S := 𝟭 D) (T := T) (T' := T) f (𝟙 T)
   apply final_of_natIso (mapIsoMap₂ f).symm

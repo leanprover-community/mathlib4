@@ -64,7 +64,7 @@ variable {κ} {J : Type u} [SmallCategory J] [IsCardinalFiltered J κ]
 lemma isCardinalFiltered_pt (hF : ∀ j, IsCardinalFiltered (F.obj j) κ) :
     haveI := isFiltered_of_isCardinalFiltered J κ
     IsCardinalFiltered (CoconePt hc) κ := by
-  haveI := isFiltered_of_isCardinalFiltered J κ
+  have := isFiltered_of_isCardinalFiltered J κ
   refine isCardinalFiltered_preorder _ _ (fun K f hK ↦ ?_)
   rw [← hasCardinalLT_iff_cardinal_mk_lt] at hK
   choose j₀ x₀ hx₀ using fun k ↦ Types.jointly_surjective_of_isColimit hc (f k)
@@ -208,7 +208,7 @@ instance : ObjectProperty.EssentiallySmall.{u} (hasCardinalLTWithTerminal κ) wh
     obtain ⟨f⟩ : Cardinal.mk J.obj ≤ Cardinal.mk X := by
       simpa [hX] using ((hasCardinalLT_iff_cardinal_mk_lt _ _).1 hJ).le
     let e := Equiv.ofInjective _ f.injective
-    letI : PartialOrder (Set.range f) := PartialOrder.lift _ e.symm.injective
+    let : PartialOrder (Set.range f) := PartialOrder.lift _ e.symm.injective
     let e' : Set.range f ≃o J.obj := { toEquiv := e.symm, map_rel_iff' := by rfl }
     exact ⟨_, ⟨⟨Set.range f, inferInstance,
       ⟨⟨IsCardinalFiltered.of_equivalence κ e'.symm.equivalence⟩⟩⟩⟩,
@@ -292,7 +292,6 @@ instance : IsCardinalFiltered (Subtype (J.PropSetWithTop κ')) κ' :=
       hasCardinalLT_union hκ' (hasCardinalLT_iUnion _ hK (fun k ↦ (α k).property.left))
         (hasCardinalLT_of_finite _ _ hκ'), by simp⟩, fun k ↦ ?_⟩
     rw [Subtype.mk_le_mk]
-    simp only [Set.le_eq_subset]
     exact subset_trans (Set.subset_iUnion (fun i ↦ (α i).1) k) Set.subset_union_left)
 
 instance : IsFiltered (Subtype (J.PropSetWithTop κ')) :=
@@ -393,7 +392,7 @@ instance : IsCardinalFiltered (Subtype J.PropSet) κ :=
     · have hκ : Cardinal.aleph0 ≤ κ :=  Cardinal.IsRegular.aleph0_le Fact.out
       exact hasCardinalLT_union hκ (hasCardinalLT_iUnion _ hK (fun k ↦ (α k).2.1))
         (hasCardinalLT_of_finite _ _ hκ)
-    · simp only [← Subtype.coe_le_coe, Set.le_eq_subset]
+    · simp only [← Subtype.coe_le_coe]
       exact subset_trans (Set.subset_iUnion_of_subset k (subset_refl _)) Set.subset_union_left )
 
 instance : IsFiltered (Subtype J.PropSet) := isFiltered_of_isCardinalFiltered _ κ

@@ -97,7 +97,7 @@ instance : IsLocalization.Away D.gbar S := by
     rw [← map_one (algebraMap P.Ring S), ← sub_eq_zero, ← map_sub, ← RingHom.mem_ker]
     exact D.hgmem
 
-open Classical in
+open scoped Classical in
 /-- The "naive" presentation of `T = R[X₁, ..., Xₙ] / (b₁, ..., bᵣ)` over `R`.
 We make sure the section `T → R[X₁, ..., Xₙ]` maps `-1` to `-1` and `0` to `0`. -/
 def presLeft : Presentation R D.T ι σ :=
@@ -294,7 +294,6 @@ public lemma exists_presentation_of_basis_cotangent [Algebra.FinitePresentation 
         span_range_relation_eq_ker := by simpa using (RingHom.ker_eq_top_of_subsingleton _).symm }
     have : Subsingleton P'.toExtension.Cotangent := Module.subsingleton S _
     exact ⟨P', default, by subsingleton, by subsingleton⟩
-  classical
   choose f hf using Extension.Cotangent.mk_surjective (P := P.toExtension)
   let v (i : σ) : P.ker := f (b₀ i)
   let J : Ideal P.Ring := Ideal.span (Set.range <| Subtype.val ∘ v)

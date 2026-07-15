@@ -753,7 +753,7 @@ def uniqueRingEquiv [Subsingleton M] : R[M] ≃+* R where
 variable (M) in
 @[to_additive (dont_translate := R) (attr := simp)]
 lemma uniqueRingEquiv_symm_apply [Subsingleton M] (r : R) :
-    (uniqueRingEquiv M).symm r = single 1 r := by classical ext; simp [uniqueRingEquiv]
+    (uniqueRingEquiv M).symm r = single 1 r := by ext; simp [uniqueRingEquiv]
 
 -- We want this lemma to fire before `uniqueRingEquiv_symm_apply`.
 @[to_additive (dont_translate := R) (attr := simp↓ high)]

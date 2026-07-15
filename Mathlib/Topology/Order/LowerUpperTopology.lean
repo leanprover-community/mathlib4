@@ -287,7 +287,7 @@ protected theorem isTopologicalBasis : IsTopologicalBasis (lowerBasis α) := by
     refine ⟨(fun a => (Ici a)ᶜ) '' F, ⟨hF.image _, image_subset_iff.2 fun _ _ => ⟨_, rfl⟩⟩, ?_⟩
     simp only [sInter_image]
   · rintro ⟨F, ⟨hF, hs⟩, rfl⟩
-    haveI := hF.to_subtype
+    have := hF.to_subtype
     rw [subset_def, Subtype.forall'] at hs
     choose f hf using hs
     exact ⟨_, finite_range f, by simp_rw [biInter_range, hf, sInter_eq_iInter]⟩

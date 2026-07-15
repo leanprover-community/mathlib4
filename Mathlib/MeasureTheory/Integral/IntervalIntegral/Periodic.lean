@@ -350,7 +350,7 @@ theorem intervalIntegral_add_eq (hf : Periodic f T) (t s : ℝ) :
       simpa only [← sub_eq_add_neg, add_sub_cancel_right] using
         this hf.neg (t + T) (s + T) (by aesop : 0 < -T)
   simp only [integral_of_le, hT.le, le_add_iff_nonneg_right]
-  haveI : VAddInvariantMeasure (AddSubgroup.zmultiples T) ℝ volume :=
+  have : VAddInvariantMeasure (AddSubgroup.zmultiples T) ℝ volume :=
     ⟨fun c s _ => measure_preimage_add _ _ _⟩
   apply IsAddFundamentalDomain.setIntegral_eq (G := AddSubgroup.zmultiples T)
   exacts [isAddFundamentalDomain_Ioc hT t, isAddFundamentalDomain_Ioc hT s, hf.map_vadd_zmultiples]

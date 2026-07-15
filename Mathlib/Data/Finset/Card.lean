@@ -450,7 +450,6 @@ See also `Set.exists_ne_map_eq_of_encard_lt_of_maps_to` and
 `Set.exists_ne_map_eq_of_ncard_lt_of_maps_to`. -/
 theorem exists_ne_map_eq_of_card_lt_of_maps_to (hc : #t < #s) {f : α → β}
     (hf : Set.MapsTo f s t) : ∃ x ∈ s, ∃ y ∈ s, x ≠ y ∧ f x = f y := by
-  classical
   by_contra! hz
   refine hc.not_ge (card_le_card_of_injOn f hf ?_)
   intro x hx y hy

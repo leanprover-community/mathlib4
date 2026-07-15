@@ -214,7 +214,6 @@ noncomputable def ofBijectiveAlgebraMap (h : Function.Bijective (algebraMap R S)
 @[simp]
 lemma ofBijectiveAlgebraMap_jacobian (h : Function.Bijective (algebraMap R S)) :
     (ofBijectiveAlgebraMap h).jacobian = 1 := by
-  classical
   have : (algebraMap (ofBijectiveAlgebraMap h).Ring S).mapMatrix
       (ofBijectiveAlgebraMap h).jacobiMatrix = 1 := by
     ext (i j : PEmpty)
@@ -297,7 +296,6 @@ variable [Fintype σ] [Fintype σ']
 open scoped Classical in
 private lemma jacobiMatrix_comp_inl_inr (i : σ') (j : σ) :
     (Q.comp P).jacobiMatrix (Sum.inl i) (Sum.inr j) = 0 := by
-  classical
   rw [jacobiMatrix_apply]
   refine MvPolynomial.pderiv_eq_zero_of_notMem_vars (fun hmem ↦ ?_)
   apply MvPolynomial.vars_rename at hmem
@@ -597,7 +595,7 @@ end Constructions
 
 variable {R S ι σ}
 
-open Classical in
+open scoped Classical in
 /-- If `P` is submersive, `PreSubmersivePresentation.aevalDifferential` is an isomorphism. -/
 noncomputable def aevalDifferentialEquiv (P : SubmersivePresentation R S ι σ) :
     (σ → S) ≃ₗ[S] (σ → S) :=

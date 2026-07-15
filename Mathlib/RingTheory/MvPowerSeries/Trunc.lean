@@ -76,7 +76,6 @@ def truncFinset (R : Type*) [CommSemiring R] (s : Finset (σ →₀ ℕ)) :
   toFun p := ∑ x ∈ s, MvPolynomial.monomial x (p.coeff x)
   map_add' _ _ := by simp [sum_add_distrib]
   map_smul' _ _ := by
-    classical
     ext
     simp [single, MvPolynomial.monomial]
 

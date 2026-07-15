@@ -195,6 +195,11 @@ theorem map_eval₂Hom [CommSemiring S₂] (f : R →+* S₁) (g : σ → S₁) 
   rw [← comp_eval₂Hom]
   rfl
 
+theorem hom_eval₂ [CommSemiring S₂] (p : MvPolynomial σ R) (f : R →+* S₁)
+    (φ : S₁ →+* S₂) (g : σ → S₁) :
+    φ (p.eval₂ f g) = p.eval₂ (φ.comp f) (fun i => φ (g i)) :=
+  map_eval₂Hom f g φ p
+
 theorem eval₂Hom_monomial (f : R →+* S₁) (g : σ → S₁) (d : σ →₀ ℕ) (r : R) :
     eval₂Hom f g (monomial d r) = f r * d.prod fun i k => g i ^ k := by
   simp only [coe_eval₂Hom, eval₂_monomial]
