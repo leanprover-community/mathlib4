@@ -50,50 +50,23 @@ lemma ideal_inter_of_aeval_eq_zero
     (J : Ideal B) (b : B) (hb : b ≠ 0) (hbJ : b ∈ J)
     (p : Polynomial A) (hp : p ≠ 0) (heval : Polynomial.aeval b p = 0) :
     ∃ a : A, a ≠ 0 ∧ algebraMap A B a ∈ J := by
-  obtain ⟨k, q, hq_eq, hq_zero⟩ :
-      ∃ k : ℕ, ∃ q : Polynomial A, p = Polynomial.X ^ k * q ∧ q.coeff 0 ≠ 0 := by
-    use Polynomial.rootMultiplicity 0 p
-    have h1 := Polynomial.pow_rootMultiplicity_dvd p 0
-    have h2 := Polynomial.pow_rootMultiplicity_not_dvd hp 0
-    rw [Polynomial.C_0, sub_zero] at h1 h2
-    obtain ⟨q, hq⟩ := h1
-    refine ⟨q, hq, fun h => h2 ?_⟩
-    rw [pow_succ]
-    have h_dvd : Polynomial.X ^ Polynomial.rootMultiplicity 0 p * Polynomial.X ∣
-        Polynomial.X ^ Polynomial.rootMultiplicity 0 p * q :=
-      mul_dvd_mul_left _ (Polynomial.X_dvd_iff.mpr h)
-    rw [← hq] at h_dvd
-    exact h_dvd
-  have h_eval_q_add : Polynomial.aeval b q = algebraMap A B (q.coeff 0) +
-      b * (∑ i ∈ Finset.range q.natDegree, algebraMap A B (q.coeff (i + 1)) * b^i) := by
-    rw [Polynomial.aeval_eq_sum_range]
-    simp only [Finset.sum_range_succ', pow_zero, Algebra.smul_def, mul_one, pow_succ']
-    have h_sum : (∑ i ∈ Finset.range q.natDegree,
-          (algebraMap A B) (q.coeff (i + 1)) * (b * b ^ i)) =
-        ∑ i ∈ Finset.range q.natDegree, b * ((algebraMap A B) (q.coeff (i + 1)) * b ^ i) :=
-      Finset.sum_congr rfl (fun _ _ => by ring)
-    rw [h_sum, ← Finset.mul_sum, add_comm]
-  have hq_eval_zero : Polynomial.aeval b q = 0 := by
-    have h_aeval : b ^ k * Polynomial.aeval b q = 0 := by
+  obtain ⟨q, hq_eq⟩ := Polynomial.pow_rootMultiplicity_dvd p 0
+  rw [Polynomial.C_0, sub_zero] at hq_eq
+  refine ⟨q.coeff 0, fun h ↦ ?_, ?_⟩
+  · apply Polynomial.pow_rootMultiplicity_not_dvd hp 0
+    rw [Polynomial.C_0, sub_zero, pow_succ]
+    have hdvd := mul_dvd_mul_left (Polynomial.X ^ Polynomial.rootMultiplicity 0 p) (Polynomial.X_dvd_iff.mpr h)
+    rw [← hq_eq] at hdvd
+    exact hdvd
+  · have hq_eval : Polynomial.aeval b q = 0 := by
       rw [hq_eq, map_mul, map_pow, Polynomial.aeval_X] at heval
-      exact heval
-    rcases mul_eq_zero.mp h_aeval with h | h
-    · exact absurd (eq_zero_of_pow_eq_zero h) hb
-    · exact h
-  have h_eval_q : algebraMap A B (q.coeff 0) =
-      -b * (∑ i ∈ Finset.range q.natDegree, algebraMap A B (q.coeff (i + 1)) * b^i) := by
-    have h_add : algebraMap A B (q.coeff 0) +
-        b * (∑ i ∈ Finset.range q.natDegree, algebraMap A B (q.coeff (i + 1)) * b^i) = 0 := by
-      rw [← h_eval_q_add, hq_eval_zero]
-    calc algebraMap A B (q.coeff 0) =
-          - (b * ∑ i ∈ Finset.range q.natDegree, algebraMap A B (q.coeff (i + 1)) * b^i) :=
-            eq_neg_of_add_eq_zero_left h_add
-         _ = -b * (∑ i ∈ Finset.range q.natDegree, algebraMap A B (q.coeff (i + 1)) * b^i) :=
-            by ring
-  refine ⟨q.coeff 0, hq_zero, ?_⟩
-  rw [h_eval_q]
-  apply Ideal.mul_mem_right
-  exact neg_mem hbJ
+      exact (mul_eq_zero.mp heval).resolve_left (pow_ne_zero _ hb)
+    obtain ⟨r, hr⟩ : Polynomial.X ∣ q - Polynomial.C (q.coeff 0) := by
+      rw [Polynomial.X_dvd_iff, Polynomial.coeff_sub, Polynomial.coeff_C_zero, sub_self]
+    have h_sub := congrArg (Polynomial.aeval b) hr
+    rw [map_sub, hq_eval, zero_sub, Polynomial.aeval_C, map_mul, Polynomial.aeval_X] at h_sub
+    rw [← neg_neg (algebraMap A B (q.coeff 0)), h_sub]
+    exact J.neg_mem (J.mul_mem_right _ hbJ)
 
 variable
   (A : Type*) [CommRing A]
