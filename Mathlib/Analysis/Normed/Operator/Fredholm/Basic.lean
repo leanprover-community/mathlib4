@@ -376,7 +376,7 @@ theorem FredholmPackage.isFredholm {u : E →L[𝕜] F} (pkg : FredholmPackage u
   isFredholm_tfae u |>.out 3 0 |>.mp (Nonempty.intro pkg)
 
 theorem isFredholm_iff_exists_isQuasiInverse {u : E →L[𝕜] F} :
-    IsFredholm u ↔ ∃ v : F →L[𝕜] E, u.IsQuasiInverse v :=
+    IsFredholm u ↔ ∃ v : F →L[𝕜] E, v.IsQuasiInverse u :=
   isFredholm_tfae u |>.out 0 1
 
 end DefTFAE
@@ -403,7 +403,7 @@ variable [CompleteSpace 𝕜] [IsTopologicalAddGroup E] [IsTopologicalAddGroup F
 theorem isFredholm_congr {u u' : E →L[𝕜] F} (h : u.toLinearMap ≈ u'.toLinearMap) :
     IsFredholm u ↔ IsFredholm u' := by
   simp_rw [isFredholm_iff_exists_isQuasiInverse]
-  refine exists_congr fun _ ↦ isQuasiInverse_congr (Setoid.symm h) (Setoid.refl _)
+  refine exists_congr fun _ ↦ isQuasiInverse_congr (Setoid.refl _) (Setoid.symm h)
 
 theorem IsFredholm.congr {u u' : E →L[𝕜] F} (hu : IsFredholm u)
     (h : u.toLinearMap ≈ u'.toLinearMap) :
@@ -415,7 +415,7 @@ theorem IsFredholm.comp {f' : F →L[𝕜] G} {f : E →L[𝕜] F} (hf' : IsFred
   rw [isFredholm_iff_exists_isQuasiInverse] at *
   rcases hf with ⟨g, hg⟩
   rcases hf' with ⟨g', hg'⟩
-  exact ⟨g ∘L g', hg'.comp hg⟩
+  exact ⟨g ∘L g', hg.comp hg'⟩
 
 theorem IsFredholm.comp_iff_left {f : E →L[𝕜] F} {f' : F →L[𝕜] G} (hf : IsFredholm f) :
     IsFredholm (f' ∘L f) ↔ IsFredholm f' := by
@@ -423,7 +423,7 @@ theorem IsFredholm.comp_iff_left {f : E →L[𝕜] F} {f' : F →L[𝕜] G} (hf 
   rw [isFredholm_iff_exists_isQuasiInverse, toLinearMap_comp] at *
   rcases hf with ⟨g, hg⟩
   rcases hcomp with ⟨w, hw⟩
-  exact ⟨f ∘L w, .symm <| hg.symm.of_comp_left hw.symm⟩
+  exact ⟨f ∘L w, hg.of_comp_left hw⟩
 
 theorem IsFredholm.comp_iff_right {f : E →L[𝕜] F} {f' : F →L[𝕜] G} (hf' : IsFredholm f') :
     IsFredholm (f' ∘L f) ↔ IsFredholm f := by
@@ -431,7 +431,7 @@ theorem IsFredholm.comp_iff_right {f : E →L[𝕜] F} {f' : F →L[𝕜] G} (hf
   rw [isFredholm_iff_exists_isQuasiInverse, toLinearMap_comp] at *
   rcases hf' with ⟨g', hg'⟩
   rcases hcomp with ⟨w, hw⟩
-  exact ⟨w ∘L f', .symm <| hg'.symm.of_comp_right hw.symm⟩
+  exact ⟨w ∘L f', hg'.of_comp_right hw⟩
 
 end Constructions
 
