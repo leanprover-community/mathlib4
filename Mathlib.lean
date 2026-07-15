@@ -7012,6 +7012,7 @@ public import Mathlib.RingTheory.SimpleRing.DivisionRing
 public import Mathlib.RingTheory.SimpleRing.Field
 public import Mathlib.RingTheory.SimpleRing.Matrix
 public import Mathlib.RingTheory.SimpleRing.Principal
+public import Mathlib.RingTheory.SimpleRing.TensorProduct
 public import Mathlib.RingTheory.Smooth.AdicCompletion
 public import Mathlib.RingTheory.Smooth.Basic
 public import Mathlib.RingTheory.Smooth.Fiber
