@@ -120,7 +120,7 @@ lemma Subgroup.Centralizer.toConjAct_smul_mem_cycleFactorsFinset {k c : Perm α}
     (ConjAct.toConjAct k) • g.cycleFactorsFinset by
     rw [← Finset.mem_coe, this]
     simp only [Set.smul_mem_smul_set_iff, Finset.mem_coe, c_mem]
-  have this := cycleFactorsFinset_conj_eq (ConjAct.toConjAct (k : Perm α)) g
+  have := cycleFactorsFinset_conj_eq (ConjAct.toConjAct (k : Perm α)) g
   rw [ConjAct.toConjAct_smul, mem_centralizer_singleton_iff.mp k_mem, mul_assoc] at this
   simp only [mul_inv_cancel, mul_one] at this
   conv_lhs => rw [this]

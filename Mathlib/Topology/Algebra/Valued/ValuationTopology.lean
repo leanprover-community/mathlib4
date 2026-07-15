@@ -60,7 +60,6 @@ theorem subgroups_basis :
     RingSubgroupsBasis fun γ : (ValueGroup₀ (.ofClass v))ˣ ↦
       v.ltAddSubgroup <| Units.map (ValueGroup₀.embedding (f := (.ofClass v))) γ :=
   { inter := by
-      classical
       rintro γ₀ γ₁
       use min γ₀ γ₁
       have hmin : embedding (min γ₀.1 γ₁.1) = min (embedding γ₀.1) (embedding γ₁.1) :=
@@ -139,7 +138,7 @@ def mk' (v : Valuation R Γ₀) : Valued R Γ₀ :=
     toUniformSpace := @IsTopologicalAddGroup.rightUniformSpace R _ v.subgroups_basis.topology _
     toIsUniformAddGroup := @isUniformAddGroup_of_addCommGroup _ _ v.subgroups_basis.topology _
     is_topological_valuation := by
-      letI := @IsTopologicalAddGroup.rightUniformSpace R _ v.subgroups_basis.topology _
+      let := @IsTopologicalAddGroup.rightUniformSpace R _ v.subgroups_basis.topology _
       intro s
       rw [Filter.hasBasis_iff.mp v.subgroups_basis.hasBasis_nhds_zero s]
       simp_rw [restrict_lt_iff_lt_embedding]

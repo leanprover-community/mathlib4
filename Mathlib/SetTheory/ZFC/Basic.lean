@@ -509,7 +509,7 @@ lemma coe_sInter (h : x.Nonempty) : (⋂₀ x : Set ZFSet) = ⋂₀ (SetLike.coe
   simp [mem_sInter h]
 
 theorem singleton_injective : Function.Injective (@singleton ZFSet ZFSet _) := fun x y H => by
-  let this := congr_arg sUnion H
+  let := congr_arg sUnion H
   rwa [sUnion_singleton, sUnion_singleton] at this
 
 @[simp]

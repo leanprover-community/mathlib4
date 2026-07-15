@@ -884,7 +884,7 @@ instance decidableZero [∀ (i) (x : β i), Decidable (x = 0)] (f : Π₀ i, β 
       case mp =>
         intro hs₁; ext i
         -- This instance prevent consuming `DecidableEq ι` in the next `by_cases`.
-        letI := Classical.propDecidable
+        let := Classical.propDecidable
         by_cases hs₂ : i ∈ s.val
         case pos => exact hs₁ _ hs₂
         case neg => exact (s.prop i).resolve_left hs₂

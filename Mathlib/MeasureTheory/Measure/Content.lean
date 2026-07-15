@@ -321,7 +321,7 @@ theorem borel_le_caratheodory : S ≤ μ.outerMeasure.caratheodory := by
   rw [μ.outerMeasure_of_isOpen ((U' : Set G) ∩ U) (U'.isOpen.inter hU)]
   simp only [innerContent, iSup_subtype']
   rw [Opens.coe_mk]
-  haveI : Nonempty { L : Compacts G // (L : Set G) ⊆ U' ∩ U } := ⟨⟨⊥, empty_subset _⟩⟩
+  have : Nonempty { L : Compacts G // (L : Set G) ⊆ U' ∩ U } := ⟨⟨⊥, empty_subset _⟩⟩
   rw [ENNReal.iSup_add]
   refine iSup_le ?_
   rintro ⟨L, hL⟩
@@ -336,7 +336,7 @@ theorem borel_le_caratheodory : S ≤ μ.outerMeasure.caratheodory := by
   rw [μ.outerMeasure_of_isOpen (↑U' \ L') (IsOpen.sdiff U'.2 isClosed_closure)]
   simp only [innerContent, iSup_subtype']
   rw [Opens.coe_mk]
-  haveI : Nonempty { M : Compacts G // (M : Set G) ⊆ ↑U' \ closure L } := ⟨⟨⊥, empty_subset _⟩⟩
+  have : Nonempty { M : Compacts G // (M : Set G) ⊆ ↑U' \ closure L } := ⟨⟨⊥, empty_subset _⟩⟩
   rw [ENNReal.add_iSup]
   refine iSup_le ?_
   rintro ⟨M, hM⟩

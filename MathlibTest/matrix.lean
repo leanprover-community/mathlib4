@@ -4,7 +4,7 @@ https://github.com/leanprover-community/mathlib/blob/4f4a1c875d0baa92ab5d92f3fb1
 -/
 import Mathlib.GroupTheory.Perm.Fin
 import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
-import Mathlib.LinearAlgebra.Matrix.Determinant.Bird
+import Mathlib.LinearAlgebra.Matrix.Determinant.Bird.Defs
 import Mathlib.LinearAlgebra.Matrix.Notation
 import Mathlib.RingTheory.Polynomial.Basic
 import Mathlib.Tactic.Determinant.Bird

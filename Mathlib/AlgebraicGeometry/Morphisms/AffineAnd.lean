@@ -82,7 +82,7 @@ lemma affineAnd_isLocal (hPi : RingHom.RespectsIso Q) (hQl : RingHom.Localizatio
       exact hf
   of_basicOpenCover {X Y _} f s hs hf := by
     dsimp [affineAnd] at hf
-    haveI : IsAffine X := by
+    have : IsAffine X := by
       apply isAffine_of_isAffineOpen_basicOpen (f.appTop '' s)
       · apply_fun Ideal.map (f.appTop).hom at hs
         rwa [Ideal.map_span, Ideal.map_top] at hs
@@ -109,7 +109,7 @@ lemma affineAnd_isLocal_of_propertyIsLocal
 lemma affineAnd_isStableUnderBaseChange (hQi : RingHom.RespectsIso Q)
     (hQb : RingHom.IsStableUnderBaseChange Q) :
     (affineAnd Q).IsStableUnderBaseChange := by
-  haveI : (affineAnd Q).toProperty.RespectsIso := affineAnd_respectsIso hQi
+  have : (affineAnd Q).toProperty.RespectsIso := affineAnd_respectsIso hQi
   apply AffineTargetMorphismProperty.IsStableUnderBaseChange.mk
   intro X Y S _ _ f g ⟨hY, hg⟩
   exact ⟨inferInstance, hQb.pullback_fst_appTop _ hQi f _ hg⟩
@@ -143,7 +143,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma targetAffineLocally_affineAnd_iff_affineLocally (hQ : RingHom.PropertyIsLocal Q)
     {X Y : Scheme.{u}} (f : X ⟶ Y) :
     targetAffineLocally (affineAnd Q) f ↔ IsAffineHom f ∧ affineLocally Q f := by
-  haveI : HasRingHomProperty (affineLocally Q) Q := ⟨hQ, rfl⟩
+  have : HasRingHomProperty (affineLocally Q) Q := ⟨hQ, rfl⟩
   rw [targetAffineLocally_affineAnd_iff' hQ.respectsIso]
   simp only [and_congr_right_iff]
   intro hf

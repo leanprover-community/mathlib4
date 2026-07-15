@@ -54,7 +54,6 @@ open Finsupp (linearCombination)
 
 theorem linearIndependent_single (hf : ∀ i, LinearIndependent R (f i)) :
     LinearIndependent R fun ix : Σ i, φ i ↦ single ix.1 (f ix.1 ix.2) := by
-  classical
   have : linearCombination R (fun ix : Σ i, φ i ↦ single ix.1 (f ix.1 ix.2)) =
     DFinsupp.mapRange.linearMap (fun i ↦ linearCombination R (f i)) ∘ₗ
     (sigmaFinsuppLequivDFinsupp R).toLinearMap := by ext; simp

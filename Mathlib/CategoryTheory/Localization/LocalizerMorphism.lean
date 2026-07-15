@@ -183,7 +183,7 @@ lemma isEquivalence [h : Φ.IsLocalizedEquivalence] [CatCommSq Φ.functor L₁ L
 
 instance [Φ.IsLocalizedEquivalence] : Φ.op.IsLocalizedEquivalence := by
   let G := Φ.localizedFunctor W₁.Q W₂.Q
-  letI : CatCommSq Φ.op.functor W₁.Q.op W₂.Q.op G.op :=
+  let : CatCommSq Φ.op.functor W₁.Q.op W₂.Q.op G.op :=
     ⟨NatIso.op (CatCommSq.iso Φ.functor W₁.Q W₂.Q G).symm⟩
   have := Φ.isEquivalence W₁.Q W₂.Q G
   exact IsLocalizedEquivalence.mk' Φ.op W₁.Q.op W₂.Q.op G.op
@@ -208,7 +208,7 @@ an equivalence of categories and that `W₁` and `W₂` essentially correspond t
 other via this equivalence, then `Φ` is a localized equivalence. -/
 lemma IsLocalizedEquivalence.of_equivalence [Φ.functor.IsEquivalence]
     (h : W₂ ≤ W₁.map Φ.functor) : IsLocalizedEquivalence Φ := by
-  haveI : Functor.IsLocalization (Φ.functor ⋙ MorphismProperty.Q W₂) W₁ := by
+  have : Functor.IsLocalization (Φ.functor ⋙ MorphismProperty.Q W₂) W₁ := by
     refine Functor.IsLocalization.of_equivalence_source W₂.Q W₂ (Φ.functor ⋙ W₂.Q) W₁
       (asEquivalence Φ.functor).symm ?_ (Φ.inverts W₂.Q)
       ((associator _ _ _).symm ≪≫ isoWhiskerRight ((Equivalence.unitIso _).symm) _ ≪≫
@@ -305,7 +305,7 @@ instance [Φ.IsLocalizedFullyFaithful] : (Φ.localizedFunctor L₁ L₂).Faithfu
 
 instance [Φ.IsLocalizedFullyFaithful] : Φ.op.IsLocalizedFullyFaithful := by
   let G := Φ.localizedFunctor W₁.Q W₂.Q
-  letI : CatCommSq Φ.op.functor W₁.Q.op W₂.Q.op G.op :=
+  let : CatCommSq Φ.op.functor W₁.Q.op W₂.Q.op G.op :=
     ⟨NatIso.op (CatCommSq.iso Φ.functor W₁.Q W₂.Q G).symm⟩
   exact IsLocalizedFullyFaithful.mk' Φ.op W₁.Q.op W₂.Q.op G.op
     (Φ.fullyFaithful W₁.Q W₂.Q G).op
@@ -328,7 +328,7 @@ lemma isLocalization_of_isLocalizedFullyFaithful
       (Arrow.isoOfNatIso iso f)).1 (Localization.inverts L₂ W₂ _ (Φ.map _ hf))
   let G := Localization.lift L₁ h W₁.Q
   let e : W₁.Q ⋙ G ≅ L₁ := Localization.fac L₁ h W₁.Q
-  letI : CatCommSq Φ.functor W₁.Q L₂ (G ⋙ F) :=
+  let : CatCommSq Φ.functor W₁.Q L₂ (G ⋙ F) :=
     ⟨iso ≪≫ isoWhiskerRight e.symm _ ≪≫ associator _ _ _⟩
   have hG : G.FullyFaithful := Functor.FullyFaithful.ofCompFaithful
     (Φ.fullyFaithful W₁.Q L₂ (G ⋙ F))

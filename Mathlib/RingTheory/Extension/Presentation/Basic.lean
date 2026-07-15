@@ -462,7 +462,6 @@ lemma relation_comp_localizationAway_inl (P : Presentation R S ι σ)
     (h1 : P.σ (-1) = -1) (h0 : P.σ 0 = 0) (r : Unit) :
     ((Presentation.localizationAway T g).comp P).relation (Sum.inl r) =
       rename Sum.inr (P.σ g) * X (Sum.inl ()) - 1 := by
-  classical
   simp only [Presentation.comp, Sum.elim_inl, Presentation.compRelationAux,
     Presentation.localizationAway_relation, sub_eq_add_neg, C_mul_X_eq_monomial,
     ← map_one C, ← map_neg C]

@@ -277,7 +277,6 @@ private theorem fixed_of_fixed1_aux3 [NoZeroDivisors B] {b : B} {i j : ℕ} {p :
 private theorem fixed_of_fixed1 [Module.IsTorsionFree (B ⧸ Q) L] (f : Gal(L/K)) (b : B ⧸ Q)
     (hx : ∀ g : MulAction.stabilizer G Q, Ideal.Quotient.stabilizerHom Q P G g b = b) :
     f (algebraMap (B ⧸ Q) L b) = (algebraMap (B ⧸ Q) L b) := by
-  classical
   cases nonempty_fintype G
   obtain ⟨b₀, rfl⟩ := Ideal.Quotient.mk_surjective b
   rw [← Ideal.Quotient.algebraMap_eq]
@@ -428,9 +427,9 @@ lemma Ideal.Quotient.exists_algHom_fixedPoint_quotient_under
   cases nonempty_fintype G
   algebraize [(algebraMap (A ⧸ P) k).comp (algebraMap A (A ⧸ P)),
     (algebraMap (B ⧸ Q) k).comp (algebraMap B (B ⧸ Q))]
-  haveI : IsScalarTower A (B ⧸ Q) k := .of_algebraMap_eq fun x ↦
+  have : IsScalarTower A (B ⧸ Q) k := .of_algebraMap_eq fun x ↦
     (IsScalarTower.algebraMap_apply (A ⧸ P) (B ⧸ Q) k (mk P x))
-  haveI : IsScalarTower A B k := .of_algebraMap_eq fun x ↦
+  have : IsScalarTower A B k := .of_algebraMap_eq fun x ↦
     (IsScalarTower.algebraMap_apply (A ⧸ P) (B ⧸ Q) k (mk P x))
   obtain ⟨P, hp⟩ := Algebra.IsInvariant.charpoly_mem_lifts A B G x
   have : Polynomial.aeval x P = 0 := by

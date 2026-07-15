@@ -108,7 +108,7 @@ protected theorem Decomposition.inductionOn {motive : M → Prop} (zero : motive
     (add : ∀ m m' : M, motive m → motive m' → motive (m + m')) : ∀ m, motive m := by
   let ℳ' : ι → AddSubmonoid M := fun i ↦
     (⟨⟨ℳ i, fun x y ↦ AddMemClass.add_mem x y⟩, (ZeroMemClass.zero_mem _)⟩ : AddSubmonoid M)
-  haveI t : DirectSum.Decomposition ℳ' :=
+  have t : DirectSum.Decomposition ℳ' :=
     { decompose' := DirectSum.decompose ℳ
       left_inv := fun _ ↦ (decompose ℳ).left_inv _
       right_inv := fun _ ↦ (decompose ℳ).right_inv _ }

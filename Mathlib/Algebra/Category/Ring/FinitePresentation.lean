@@ -83,7 +83,7 @@ lemma RingHom.EssFiniteType.exists_eq_comp_ι_app_of_isColimit (hf : f.hom.Finit
     ∃ (i : J) (g' : S ⟶ F.obj i), f ≫ g' = α.app i ∧ g = g' ≫ c.ι.app i := by
   classical
   have hc' := isColimitOfPreserves (forget _) hc
-  letI := f.hom.toAlgebra
+  let := f.hom.toAlgebra
   obtain ⟨n, hn⟩ := hf
   let P := CommRingCat.of (MvPolynomial (Fin n) R)
   let iP : R ⟶ P := CommRingCat.ofHom MvPolynomial.C

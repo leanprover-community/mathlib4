@@ -68,7 +68,7 @@ variable (K L : CochainComplex C ℤ) (n : ℤ)
 
 lemma bijective_toSmallShiftedHom_of_isKProjective [K.IsKProjective] :
     Function.Bijective (toSmallShiftedHom.{w} (K := K) (L := L) (n := n)) := by
-  letI := HasDerivedCategory.standard C
+  let := HasDerivedCategory.standard C
   rw [← Function.Bijective.of_comp_iff'
       (SmallShiftedHom.equiv _ DerivedCategory.Q).bijective,
     ← Function.Bijective.of_comp_iff' (Iso.homCongr ((quotientCompQhIso C).symm.app K)

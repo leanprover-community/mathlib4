@@ -90,7 +90,7 @@ may not apply if the zero of `Set.range g` is not definitionally equal to `⟨0,
 lemma iff_rangeFactorization [One P] (hg : 1 ∈ Set.range g) :
     letI : One (Set.range g) := ⟨⟨1, hg⟩⟩
     MulExact f g ↔ MulExact ((↑) : Set.range f → N) (Set.rangeFactorization g) := by
-  letI : One (Set.range g) := ⟨⟨1, hg⟩⟩
+  let : One (Set.range g) := ⟨⟨1, hg⟩⟩
   have : ((1 : Set.range g) : P) = 1 := rfl
   simp [MulExact, Subtype.ext_iff, this]
 

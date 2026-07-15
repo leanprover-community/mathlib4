@@ -687,7 +687,6 @@ theorem splits_iff_splits {f : R[X]} :
     (hf.of_dvd h0 hgf).degree_eq_one_of_irreducible hg, ?_⟩
   rintro (rfl | hf)
   · aesop
-  classical
   by_cases hf0 : f = 0
   · simp [hf0]
   obtain ⟨u, hu⟩ := factors_prod hf0

@@ -416,7 +416,7 @@ set_option backward.isDefEq.respectTransparency false in
 then `e` is `C^n`. -/
 lemma contMDiff_isOpenEmbedding [Nonempty M] :
     haveI := h.singletonChartedSpace; ContMDiff I I n e := by
-  haveI := h.isManifold_singleton (I := I) (n := ω)
+  have := h.isManifold_singleton (I := I) (n := ω)
   rw [@contMDiff_iff _ _ _ _ _ _ _ _ _ _ h.singletonChartedSpace]
   use h.continuous
   intro x y
@@ -443,7 +443,7 @@ then the inverse of `e` is `C^n`. -/
 lemma contMDiffOn_isOpenEmbedding_symm [Nonempty M] :
     haveI := h.singletonChartedSpace; ContMDiffOn I I
       n (IsOpenEmbedding.toOpenPartialHomeomorph e h).symm (range e) := by
-  haveI := h.isManifold_singleton (I := I) (n := ω)
+  have := h.isManifold_singleton (I := I) (n := ω)
   rw [@contMDiffOn_iff]
   constructor
   · rw [← h.toOpenPartialHomeomorph_target]

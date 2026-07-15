@@ -954,7 +954,7 @@ theorem isStronglyProgressive_min_stopping_time [PseudoMetrizableSpace ι]
       suffices h_meas : @Measurable _ _ (m_set s) (f i) fun x : s ↦ (x : Set.Iic i × Ω).snd from
         h_meas (f.mono (min_le_left _ _) _ (hτ.measurableSet_le (min i j)))
       exact measurable_snd.comp (@measurable_subtype_coe _ m_prod _)
-  · letI sc := sᶜ
+  · let sc := sᶜ
     suffices h_min_eq_left :
       (fun x : sc => min (↑(x : Set.Iic i × Ω).fst) (τ (x : Set.Iic i × Ω).snd)) = fun x : sc =>
         ↑(x : Set.Iic i × Ω).fst by

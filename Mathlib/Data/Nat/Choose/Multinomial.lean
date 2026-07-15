@@ -271,7 +271,6 @@ lemma sum_pow_eq_sum_piAntidiag_of_commute (s : Finset α) (f : α → R)
     (hc : (s : Set α).Pairwise (Commute on f)) (n : ℕ) :
     (∑ i ∈ s, f i) ^ n = ∑ k ∈ piAntidiag s n, multinomial s k *
       s.noncommProd (fun i ↦ f i ^ k i) (hc.mono' fun _ _ h ↦ h.pow_pow ..) := by
-  classical
   induction s using Finset.cons_induction generalizing n with
   | empty => cases n <;> simp
   | cons a s has ih => ?_
@@ -327,7 +326,7 @@ theorem sum_pow_of_commute (x : α → R) (s : Finset α)
       convert! @Nat.cast_one R _
       simp
     · rw [_root_.pow_succ, mul_zero]
-      haveI : IsEmpty (Finset.sym (∅ : Finset α) n.succ) := Finset.instIsEmpty
+      have : IsEmpty (Finset.sym (∅ : Finset α) n.succ) := Finset.instIsEmpty
       apply (Fintype.sum_empty _).symm
   | insert a s ha ih => ?_
   intro n; specialize ih (hc.mono <| s.subset_insert a)

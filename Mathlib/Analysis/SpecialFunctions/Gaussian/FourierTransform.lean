@@ -207,7 +207,7 @@ theorem _root_.fourierIntegral_gaussian (hb : 0 < b.re) (t : ℂ) :
 theorem _root_.fourier_gaussian_pi' (hb : 0 < b.re) (c : ℂ) :
     (𝓕 fun x : ℝ => cexp (-π * b * x ^ 2 + 2 * π * c * x)) = fun t : ℝ =>
     1 / b ^ (1 / 2 : ℂ) * cexp (-π / b * (t + I * c) ^ 2) := by
-  haveI : b ≠ 0 := by contrapose! hb; rw [hb, zero_re]
+  have : b ≠ 0 := by contrapose! hb; rw [hb, zero_re]
   have h : (-↑π * b).re < 0 := by
     simpa only [neg_mul, neg_re, re_ofReal_mul, neg_lt_zero] using mul_pos pi_pos hb
   ext1 t

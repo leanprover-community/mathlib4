@@ -378,7 +378,6 @@ variable {D}
 @[simp]
 theorem leadingCoeff_single [Nonempty A] (hD : D.Injective) (a : A) (r : R) :
     (single a r).leadingCoeff D = r := by
-  classical
   rw [leadingCoeff, supDegree_single]
   split_ifs with hr
   · simp [hr]

@@ -54,7 +54,7 @@ variable {C}
 
 instance (priority := 100) monoCoprodOfHasZeroMorphisms [HasZeroMorphisms C] : MonoCoprod C :=
   ⟨fun A B c hc => by
-    haveI : IsSplitMono c.inl :=
+    have : IsSplitMono c.inl :=
       IsSplitMono.mk' (SplitMono.mk (BinaryCofan.IsColimit.desc hc (𝟙 A) 0) (IsColimit.fac _ _ _))
     infer_instance⟩
 
@@ -63,7 +63,7 @@ namespace MonoCoprod
 set_option backward.isDefEq.respectTransparency false in
 theorem binaryCofan_inr {A B : C} [MonoCoprod C] (c : BinaryCofan A B) (hc : IsColimit c) :
     Mono c.inr := by
-  haveI hc' : IsColimit (BinaryCofan.mk c.inr c.inl) :=
+  have hc' : IsColimit (BinaryCofan.mk c.inr c.inl) :=
     BinaryCofan.IsColimit.mk _
       (fun f₁ f₂ => BinaryCofan.IsColimit.desc (s := c) hc f₂ f₁)
       (by simp) (by simp)

@@ -84,7 +84,7 @@ theorem isIdempotentComplete_iff_hasEqualizer_of_id_and_idempotent :
   · intro h
     refine ⟨?_⟩
     intro X p hp
-    haveI : HasEqualizer (𝟙 X) p := h X p hp
+    have : HasEqualizer (𝟙 X) p := h X p hp
     refine ⟨equalizer (𝟙 X) p, equalizer.ι (𝟙 X) p,
       equalizer.lift p (show p ≫ 𝟙 X = p ≫ p by rw [hp, comp_id]), ?_, equalizer.lift_ι _ _⟩
     ext
@@ -105,11 +105,11 @@ theorem isIdempotentComplete_iff_idempotents_have_kernels [Preadditive C] :
   rw [isIdempotentComplete_iff_hasEqualizer_of_id_and_idempotent]
   constructor
   · intro h X p hp
-    haveI : HasEqualizer (𝟙 X) (𝟙 X - p) := h X (𝟙 _ - p) (idem_of_id_sub_idem p hp)
+    have : HasEqualizer (𝟙 X) (𝟙 X - p) := h X (𝟙 _ - p) (idem_of_id_sub_idem p hp)
     convert! hasKernel_of_hasEqualizer (𝟙 X) (𝟙 X - p)
     rw [sub_sub_cancel]
   · intro h X p hp
-    haveI : HasKernel (𝟙 _ - p) := h X (𝟙 _ - p) (idem_of_id_sub_idem p hp)
+    have : HasKernel (𝟙 _ - p) := h X (𝟙 _ - p) (idem_of_id_sub_idem p hp)
     apply Preadditive.hasEqualizer_of_hasKernel
 
 /-- An abelian category is idempotent complete. -/

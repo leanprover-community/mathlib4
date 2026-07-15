@@ -104,7 +104,7 @@ theorem union_support_maximal_linearIndependent_eq_range_basis {ι : Type w} (b 
     have l₁ : l.some = l'.some := ind <| b.repr.injective <| ext fun j ↦ by
       obtain rfl | ne := eq_or_ne i j
       · simp_rw [repr_eq_zero]
-      classical simpa [single_apply, ne] using congr(b.repr $z j)
+      simpa [single_apply, ne] using congr(b.repr $z j)
     exact DFunLike.congr_fun l₁ a
   exact r'' (m (range v') i' r)
 

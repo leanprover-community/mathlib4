@@ -270,7 +270,6 @@ protected lemma induction {motive : (ι →₀ M) → Prop} (f : ι →₀ M) (z
 lemma induction₂ {motive : (ι →₀ M) → Prop} (f : ι →₀ M) (zero : motive 0)
     (add_single : ∀ (a b) (f : ι →₀ M),
       a ∉ f.support → b ≠ 0 → motive f → motive (f + single a b)) : motive f := by
-  classical
   refine f.induction zero ?_
   convert! add_single using 7
   apply (addCommute_of_disjoint _).eq
@@ -316,7 +315,6 @@ The lemma `induction_on_max` swaps the argument order in the sum. -/
 lemma induction_on_max₂ (f : ι →₀ M) (zero : motive 0)
     (add_single : ∀ a b (f : ι →₀ M), (∀ c ∈ f.support, c < a) → b ≠ 0 →
       motive f → motive (f + single a b)) : motive f := by
-  classical
   refine f.induction_on_max zero ?_
   convert! add_single using 7 with _ _ _ H
   have := fun c hc ↦ (H c hc).ne

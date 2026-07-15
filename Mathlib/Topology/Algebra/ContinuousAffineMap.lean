@@ -502,7 +502,7 @@ def decompEquiv : (V →ᴬ[R] Q) ≃ Q × (V →L[R] W) where
     simp_rw [vadd_apply, f.contLinear.coe_toContinuousAffineMap, coe_const, Function.const_apply,
       ← f.map_vadd, vadd_eq_add, add_zero]
   right_inv := by
-    haveI := IsTopologicalAddTorsor.to_isTopologicalAddGroup W Q
+    have := IsTopologicalAddTorsor.to_isTopologicalAddGroup W Q
     rintro ⟨v, f⟩; ext <;> simp
 
 @[simp]
@@ -524,7 +524,7 @@ set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem decompEquiv_symm_contLinear (p : Q × (V →L[R] W)) :
     ((decompEquiv R V Q).symm p).contLinear = p.2 := by
-  haveI := IsTopologicalAddTorsor.to_isTopologicalAddGroup W Q
+  have := IsTopologicalAddTorsor.to_isTopologicalAddGroup W Q
   ext; simp [decompEquiv]
 
 end

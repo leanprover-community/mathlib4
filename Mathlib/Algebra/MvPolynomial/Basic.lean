@@ -884,12 +884,10 @@ lemma coeffs_C_subset (r : R) : (C (σ := σ) r).coeffs ⊆ {r} := by
 
 @[simp]
 lemma coeffs_mul_X (p : MvPolynomial σ R) (n : σ) : (p * X n).coeffs = p.coeffs := by
-  classical
   aesop (add simp mem_coeffs_iff)
 
 @[simp]
 lemma coeffs_X_mul (p : MvPolynomial σ R) (n : σ) : (X n * p).coeffs = p.coeffs := by
-  classical
   aesop (add simp mem_coeffs_iff)
 
 lemma coeffs_add [DecidableEq R] {p q : MvPolynomial σ R} (h : Disjoint p.support q.support) :
@@ -930,7 +928,7 @@ theorem constantCoeff_eq : (constantCoeff : MvPolynomial σ R → R) = coeff 0 :
 variable (σ) in
 @[simp]
 theorem constantCoeff_C (r : R) : constantCoeff (C r : MvPolynomial σ R) = r := by
-  classical simp [constantCoeff_eq]
+  simp [constantCoeff_eq]
 
 variable (R) in
 @[simp]
@@ -1004,7 +1002,6 @@ lemma one_coeffsIn : 1 ∈ coeffsIn σ M ↔ 1 ∈ M := by simpa using C_mem_coe
 
 @[simp]
 lemma mul_monomial_mem_coeffsIn : p * monomial i 1 ∈ coeffsIn σ M ↔ p ∈ coeffsIn σ M := by
-  classical
   simp only [mem_coeffsIn, coeff_mul_monomial']
   constructor
   · rintro hp j

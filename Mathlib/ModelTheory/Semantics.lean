@@ -964,7 +964,6 @@ theorem exists_realize_equivSentence_iff_realize_exClosure
         (by simpa [Formula.Realize]
           using (realize_equivSentence_symm M (Formula.equivSentence φ) v).2 hv)⟩
   · intro h
-    classical
     obtain ⟨v, hv⟩ := (Formula.realize_exClosure φ).1 h
     let v' := fun a => if hmem : a ∈ φ.freeVarFinset
       then v ⟨a, hmem⟩ else Classical.choice inferInstance

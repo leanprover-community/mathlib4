@@ -181,7 +181,7 @@ lemma smul_def (f : R[X]) (m : PolynomialModule R M) :
 
 instance isScalarTower' (M : Type u) [AddCommGroup M] [Module R M] [Module S M]
     [IsScalarTower S R M] : IsScalarTower S R[X] (PolynomialModule R M) := by
-  haveI : IsScalarTower R R[X] (PolynomialModule R M) :=
+  have : IsScalarTower R R[X] (PolynomialModule R M) :=
     inferInstanceAs <| IsScalarTower R R[X] <| Module.AEval' <| (coeffLinearEquiv R R).symm.comp <|
     (Finsupp.lmapDomain M R Nat.succ).comp (coeffLinearEquiv R R).toLinearMap
   constructor

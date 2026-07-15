@@ -129,7 +129,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 variable (R M) in
 @[to_additive (dont_translate := A) (attr := simp)]
 lemma uniqueAlgEquiv_symm_apply [Subsingleton M] (a : A) :
-    (uniqueAlgEquiv R M).symm a = single 1 a := by classical ext; simp [uniqueAlgEquiv]
+    (uniqueAlgEquiv R M).symm a = single 1 a := by ext; simp [uniqueAlgEquiv]
 
 -- We want this lemma to fire before `uniqueAlgEquiv_symm_apply`.
 @[to_additive (dont_translate := A) (attr := simp↓ high)]

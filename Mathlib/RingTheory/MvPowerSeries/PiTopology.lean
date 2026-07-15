@@ -211,7 +211,6 @@ theorem variables_tendsto_zero [Semiring R] :
 theorem isTopologicallyNilpotent_of_constantCoeff_isNilpotent [CommSemiring R]
     {f : MvPowerSeries σ R} (hf : IsNilpotent (constantCoeff f)) :
     IsTopologicallyNilpotent f := by
-  classical
   obtain ⟨m, hm⟩ := hf
   simp_rw [IsTopologicallyNilpotent, tendsto_iff_coeff_tendsto, coeff_zero]
   exact fun d ↦ tendsto_atTop_of_eventually_const fun n hn ↦

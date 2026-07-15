@@ -131,7 +131,7 @@ implies the textbook approach.
 noncomputable def rootableByOfPowLeftSurj
     (H : ∀ {n : α}, n ≠ 0 → Function.Surjective (fun a => a ^ n : A → A)) : RootableBy A α where
   root a n := @dite _ (n = 0) (Classical.dec _) (fun _ => (1 : A)) fun hn => (H hn a).choose
-  root_zero _ := by classical exact dif_pos rfl
+  root_zero _ := by exact dif_pos rfl
   root_cancel a hn := by
     dsimp only
     rw [dif_neg hn]

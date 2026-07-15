@@ -250,7 +250,6 @@ lemma pderiv_inl_universalFactorizationMap_X (i j) :
       (universalFactorizationMap R n m k hn (X j))) =
     if ↑j < (i : ℕ) then 0 else if h : ↑j - ↑i < k then X (.inr ⟨↑j - ↑i, h⟩)
       else if ↑j - ↑i = k then 1 else 0 := by
-  classical
   trans ∑ x ∈ Finset.antidiagonal ↑j,
     if h : x.2 < k then if x.1 < m ∧ x.1 = ↑i then X (Sum.inr ⟨x.2, h⟩) else 0
     else if x.2 = k ∧ x.1 < m ∧ x.1 = ↑i then 1 else 0
@@ -275,7 +274,6 @@ lemma pderiv_inr_universalFactorizationMap_X (i j) :
       (universalFactorizationMap R n m k hn (X j))) =
     if ↑j < (i : ℕ) then 0 else if h : ↑j - ↑i < m then
       X (.inl ⟨↑j - ↑i, h⟩) else if ↑j - ↑i = m then 1 else 0 := by
-  classical
   trans ∑ x ∈ Finset.antidiagonal ↑j, if x.2 < k then if h : x.1 < m then if x.2 = ↑i then
     X (Sum.inl ⟨x.1, h⟩) else 0 else if x.1 = m ∧ x.2 = ↑i then 1 else 0 else 0
   · simp [universalFactorizationMap, mapEquivMonic, Polynomial.coeff_mul, coeff_freeMonic,
@@ -299,7 +297,7 @@ lemma universalFactorizationMapPresentation_jacobiMatrix :
       ((freeMonic R m).map (((mapAlgHom (Algebra.ofId _ _)).comp (rename Sum.inl)).toRingHom))
       ((freeMonic R k).map (((mapAlgHom (Algebra.ofId _ _)).comp (rename Sum.inr)).toRingHom))
       m k).reindex (finCongr (by lia)) (finCongr (by lia))).transpose := by
-  letI := (universalFactorizationMap R n m k hn).toAlgebra
+  let := (universalFactorizationMap R n m k hn).toAlgebra
   subst hn
   ext i j : 1
   dsimp [Polynomial.sylvester]
@@ -317,7 +315,7 @@ lemma universalFactorizationMapPresentation_jacobian :
       ((freeMonic R k).map Algebra.TensorProduct.includeRight.toRingHom)) := by
   cases subsingleton_or_nontrivial R
   · exact Subsingleton.elim _ _
-  letI := (universalFactorizationMap R n m k hn).toAlgebra
+  let := (universalFactorizationMap R n m k hn).toAlgebra
   rw [Algebra.PreSubmersivePresentation.jacobian_eq_jacobiMatrix_det,
     MvPolynomial.universalFactorizationMapPresentation_jacobiMatrix]
   simp only [AlgHom.toRingHom_eq_coe, Matrix.det_neg, Matrix.det_transpose, Matrix.det_reindex_self,
@@ -342,10 +340,10 @@ lemma finite_universalFactorizationMap :
     (universalFactorizationMap R n m k hn).Finite := by
   refine RingHom.IsIntegral.to_finite ?_
     (.of_finitePresentation (finitePresentation_universalFactorizationMap R n m k hn))
-  letI := (universalFactorizationMap R n m k hn).toAlgebra
+  let := (universalFactorizationMap R n m k hn).toAlgebra
   have : IsDomain (MvPolynomial (Fin m) ℤ ⊗[ℤ] MvPolynomial (Fin k) ℤ) :=
     (MvPolynomial.tensorEquivSum ℤ (Fin m) (Fin k) ℤ).toRingEquiv.isDomain_iff.mpr inferInstance
-  letI := (universalFactorizationMap ℤ n m k hn).toAlgebra
+  let := (universalFactorizationMap ℤ n m k hn).toAlgebra
   let F : MvPolynomial (Fin m) ℤ ⊗[ℤ] MvPolynomial (Fin k) ℤ →ₐ[ℤ]
       MvPolynomial (Fin m) R ⊗[R] MvPolynomial (Fin k) R :=
     Algebra.TensorProduct.lift
@@ -424,8 +422,8 @@ def UniversalFactorizationRing.fromTensor :
 lemma UniversalFactorizationRing.fromTensor_comp_universalFactorizationMap :
   (fromTensor m k hn p).comp (MvPolynomial.universalFactorizationMap R n m k hn) =
     (Algebra.ofId R _).comp ((MvPolynomial.mapEquivMonic R _ n).symm p) := by
-  letI := (MvPolynomial.universalFactorizationMap R n m k hn).toAlgebra
-  letI := ((MvPolynomial.mapEquivMonic R _ n).symm p).toAlgebra
+  let := (MvPolynomial.universalFactorizationMap R n m k hn).toAlgebra
+  let := ((MvPolynomial.mapEquivMonic R _ n).symm p).toAlgebra
   exact AlgHom.ext fun x ↦ (Algebra.TensorProduct.tmul_one_eq_one_tmul x).symm
 
 lemma UniversalFactorizationRing.fromTensor_comp_universalFactorizationMap' :
@@ -472,10 +470,10 @@ def UniversalFactorizationRing.homEquiv :
         commutes' r := congr($(f.2) r).trans
           (by simp [MvPolynomial.mapEquivMonic_symm_map_algebraMap]; rfl) } fun _ _ ↦ .all _ _
   left_inv f := by
-    letI := (MvPolynomial.universalFactorizationMap R n m k hn).toAlgebra
-    letI := ((MvPolynomial.mapEquivMonic R _ n).symm p).toAlgebra
-    letI := Algebra.compHom S ((MvPolynomial.mapEquivMonic R _ n).symm p).toRingHom
-    haveI : IsScalarTower (MvPolynomial (Fin n) R) R S := .of_algebraMap_eq' rfl
+    let := (MvPolynomial.universalFactorizationMap R n m k hn).toAlgebra
+    let := ((MvPolynomial.mapEquivMonic R _ n).symm p).toAlgebra
+    let := Algebra.compHom S ((MvPolynomial.mapEquivMonic R _ n).symm p).toRingHom
+    have : IsScalarTower (MvPolynomial (Fin n) R) R S := .of_algebraMap_eq' rfl
     have : IsScalarTower R (MvPolynomial (Fin n) R) S := .of_algebraMap_eq fun r ↦ by
       simp [Algebra.compHom_algebraMap_apply]
     refine Algebra.TensorProduct.ext (by ext) ?_
@@ -485,8 +483,8 @@ def UniversalFactorizationRing.homEquiv :
     · ext; simp [MvPolynomial.universalFactorizationMapLiftEquiv, MvPolynomial.mapEquivMonic,
         UniversalFactorizationRing.factor₂, coeff_freeMonic]; rfl
   right_inv q := by
-    letI := (MvPolynomial.universalFactorizationMap R n m k hn).toAlgebra
-    letI := ((MvPolynomial.mapEquivMonic R _ n).symm p).toAlgebra
+    let := (MvPolynomial.universalFactorizationMap R n m k hn).toAlgebra
+    let := ((MvPolynomial.mapEquivMonic R _ n).symm p).toAlgebra
     simp only [UniversalFactorizationRing, MvPolynomial.mapEquivMonic, AlgHom.toRingHom_eq_coe,
       Equiv.coe_fn_symm_mk, MvPolynomial.coe_aeval_eq_eval, factor₁,
       MvPolynomial.universalFactorizationMapLiftEquiv, Equiv.coe_fn_mk, fromTensor, factor₂]
@@ -526,8 +524,8 @@ lemma UniversalFactorizationRing.jacobian_resentation :
   · dsimp [UniversalFactorizationRing]; exact Subsingleton.elim _ _
   cases subsingleton_or_nontrivial R
   · dsimp [UniversalFactorizationRing]; exact Subsingleton.elim _ _
-  letI := (MvPolynomial.universalFactorizationMap R n m k hn).toAlgebra
-  letI := ((MvPolynomial.mapEquivMonic R _ n).symm p).toAlgebra
+  let := (MvPolynomial.universalFactorizationMap R n m k hn).toAlgebra
+  let := ((MvPolynomial.mapEquivMonic R _ n).symm p).toAlgebra
   refine (Algebra.PreSubmersivePresentation.baseChange_jacobian _ _).trans ?_
   change fromTensor _ _ _ _ _ = _
   rw [MvPolynomial.universalFactorizationMapPresentation_jacobian]

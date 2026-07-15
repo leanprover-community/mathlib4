@@ -65,7 +65,7 @@ theorem univ_eq : (Finset.univ : Finset SignType) = {0, -1, 1} := by
 
 theorem range_eq {α} (f : SignType → α) : Set.range f = {f zero, f neg, f pos} := by
   classical rw [← Fintype.coe_image_univ, univ_eq]
-  classical simp [Finset.coe_insert]
+  simp [Finset.coe_insert]
 
 @[simp, norm_cast] lemma coe_mul {α} [MulZeroOneClass α] [HasDistribNeg α] (a b : SignType) :
     ↑(a * b) = (a : α) * b :=

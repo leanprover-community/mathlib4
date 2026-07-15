@@ -94,7 +94,7 @@ def ofEquiv (α) {β} [Denumerable α] (e : β ≃ α) : Denumerable β :=
 @[simp]
 theorem ofEquiv_ofNat (α) {β} [Denumerable α] (e : β ≃ α) (n) :
     @ofNat β (ofEquiv _ e) n = e.symm (ofNat α n) := by
-  letI := ofEquiv _ e
+  let := ofEquiv _ e
   refine ofNat_of_decode ?_
   rw [decode_ofEquiv e]
   simp

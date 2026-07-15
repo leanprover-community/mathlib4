@@ -79,7 +79,7 @@ theorem IsAffineOpen.fromSpecStalk_eq_fromSpecStalk {x : X} (hxU : x ∈ U) :
 instance IsAffineOpen.fromSpecStalk_isPreimmersion {X : Scheme.{u}} {U : Opens X}
     (hU : IsAffineOpen U) (x : X) (hx : x ∈ U) : IsPreimmersion (hU.fromSpecStalk hx) := by
   dsimp [IsAffineOpen.fromSpecStalk]
-  haveI : IsPreimmersion (Spec.map (X.presheaf.germ U x hx)) :=
+  have : IsPreimmersion (Spec.map (X.presheaf.germ U x hx)) :=
     letI : Algebra Γ(X, U) (X.presheaf.stalk x) := (X.presheaf.germ U x hx).hom.toAlgebra
     haveI := hU.isLocalization_stalk ⟨x, hx⟩
     IsPreimmersion.of_isLocalization (R := Γ(X, U)) (S := X.presheaf.stalk x)
