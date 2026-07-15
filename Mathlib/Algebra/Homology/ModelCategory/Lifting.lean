@@ -106,7 +106,7 @@ noncomputable def cocycle₁ : Cocycle Q K 1 :=
     have : Epi π := Cofork.IsColimit.epi hQ
     have : Mono ι := Fork.IsLimit.mono hK
     ext n _ rfl
-    have this := Cochain.congr_v ((cocycle₁' sq hsq).δ_eq_zero 2) n _ rfl
+    have := Cochain.congr_v ((cocycle₁' sq hsq).δ_eq_zero 2) n _ rfl
     rw [Cochain.zero_v, δ_v _ _ (by simp) _ _ _ _ (n + 1) _ (by lia) rfl,
       Int.negOnePow_even 2 ⟨1, by simp⟩, one_smul] at this ⊢
     rwa [← cancel_mono (ι.f (n + 2)), ← cancel_epi (π.f n),

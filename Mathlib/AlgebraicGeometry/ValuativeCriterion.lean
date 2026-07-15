@@ -144,9 +144,9 @@ set_option backward.isDefEq.respectTransparency false in
 lemma of_specializingMap (H : (topologically @SpecializingMap).universally f) :
     ValuativeCriterion.Existence f := by
   rintro ⟨R, K, i₁, i₂, ⟨w⟩⟩
-  haveI : IsDomain (CommRingCat.of R) := ‹_›
-  haveI : ValuationRing (CommRingCat.of R) := ‹_›
-  letI : Field (CommRingCat.of K) := ‹_›
+  have : IsDomain (CommRingCat.of R) := ‹_›
+  have : ValuationRing (CommRingCat.of R) := ‹_›
+  let : Field (CommRingCat.of K) := ‹_›
   replace H := H (pullback.snd i₂ f) i₂ (pullback.fst i₂ f) (.of_hasPullback i₂ f)
   let lft := pullback.lift (Spec.map (CommRingCat.ofHom (algebraMap R K))) i₁ w.symm
   obtain ⟨x, h₁, h₂⟩ := @H (lft (closedPoint _)) _ (specializes_closedPoint (R := R) _)

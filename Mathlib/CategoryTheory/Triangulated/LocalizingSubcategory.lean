@@ -241,8 +241,8 @@ instance [Preadditive D₁] [Preadditive D₂] [L₁.Additive] [L₂.Additive] :
 
 set_option backward.defeqAttrib.useBackward true in
 instance : ((A.triangulatedLocalizerMorphism B).localizedFunctor L₁ L₂).Faithful := by
-  letI := Localization.preadditive L₁ (B.inverseImage A.ι).trW
-  letI := Localization.preadditive L₂ B.trW
+  let := Localization.preadditive L₁ (B.inverseImage A.ι).trW
+  let := Localization.preadditive L₂ B.trW
   have := Localization.functor_additive L₁ (B.inverseImage A.ι).trW
   have := Localization.functor_additive L₂ B.trW
   let F := (A.triangulatedLocalizerMorphism B).localizedFunctor L₁ L₂
@@ -276,7 +276,7 @@ instance [A.IsVerdierLeftLocalizing B] :
   let L₂ := B.trW.Q
   let F : (B.inverseImage A.ι).trW.Localization ⥤ B.trW.Localization :=
     (A.triangulatedLocalizerMorphism B).localizedFunctor L₁ L₂
-  letI : CatCommSq (A.op.triangulatedLocalizerMorphism B.op).functor
+  let : CatCommSq (A.op.triangulatedLocalizerMorphism B.op).functor
     (A.opEquivalence.functor ⋙ L₁.op) L₂.op F.op :=
     ⟨Functor.isoWhiskerLeft A.opEquivalence.functor
       (NatIso.op (CatCommSq.iso (A.triangulatedLocalizerMorphism B).functor L₁ L₂ F).symm)⟩
