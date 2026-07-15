@@ -449,29 +449,61 @@ section
 
 open Mathlib.Linter.Style.nameCheck
 
-/- Unit tests for the `defsWithUnderscore` linter. -/
-#guard isBadNameWithUnderscore `Foo == false
-#guard isBadNameWithUnderscore `fooBarBaz == false
-#guard isBadNameWithUnderscore `foo_bar == true
-#guard isBadNameWithUnderscore `_fooFoo == true
-#guard isBadNameWithUnderscore `Foo._bar == true
--- A namespace `Mathlib` in the middle does not silence the linter: we only test for a *prefix*
--- `Mathlib`, `Parser` or `Mathlib.Tactic`.
-#guard isBadNameWithUnderscore `Nat.Mathlib.foo_bar == true
-#guard isBadNameWithUnderscore `Parser.foo_bar == false
-#guard isBadNameWithUnderscore `Parser.Attr.coassoc_simps == false
-#guard isBadNameWithUnderscore `Mathlib.Tactic.foo_bar == false
-#guard isBadNameWithUnderscore `AlgebraicGeometry.Scheme.IdealSheafData.Simps.coe_support == false
+def testDecl_mathlibTest := true
+def testDecl_mathlib := true
 
-#guard isBadNameWithUnderscore `Mathlib.Mat._Foo == true
-#guard isBadNameWithUnderscore `Mathlib.foo_ == false
-#guard isBadNameWithUnderscore `«termXYZ» == false
-#guard isBadNameWithUnderscore `ExteriorAlgebra.«term⋀[_]^_» == false
-#guard isBadNameWithUnderscore `Nat.term_! == false
-#guard isBadNameWithUnderscore `Nat.foo_bar2 == true
-#guard isBadNameWithUnderscore `Nat.fooBar_2 == false
-#guard isBadNameWithUnderscore `Nat.foo_bar_2 == false
-#guard isBadNameWithUnderscore `LibraryNote.coercion_into_rings == false
+def goodDef := true
+@[deprecated goodDef (since := "today")] def bad_def := true
+
+theorem foo_bar_baz : True := trivial
+def foo_bar_baz.testThm : Bool := true
+def foo_bar_baz.test_badThm : Bool := true
+
+/- Unit tests for the `defsWithUnderscore` linter. -/
+run_meta do
+  guard <| not <| ← isBadDefNameWithUnderscore `Foo
+  guard <| not <| ← isBadDefNameWithUnderscore `fooBarBaz
+  guard <| not <| ← isBadDefNameWithUnderscore `Foo._foo_Foo -- `isAutoDecl`
+  guard <| not <| ← isBadDefNameWithUnderscore `foo_bar_37 -- `_<number>`
+  guard <| ← isBadDefNameWithUnderscore `foo_5bar37 -- (bad) `<number>`
+  guard <| not <| ← isBadDefNameWithUnderscore ``testDecl_mathlibTest -- `_<project>`
+  guard <| ← isBadDefNameWithUnderscore ``testDecl_mathlib -- (bad) wrong `_<project>`
+  guard <| not <| ← isBadDefNameWithUnderscore `Foo.Simps.coe_support -- `Simps`
+  guard <| not <| ← isBadDefNameWithUnderscore `Foo.section_ -- `<keyword>_`
+  guard <| ← isBadDefNameWithUnderscore `Foo.sectionnn_ -- (bad) `<non-keyword>_`
+  guard <| ← isBadDefNameWithUnderscore `set_option -- (bad) `<keyword>`, no trailing `_`
+  -- type and env exemptions
+  guard <| not <| ← isBadDefNameWithUnderscore ``bad_def -- deprecated, exempt
+  guard <| not <| ← isBadDefNameWithUnderscore
+    ``Lean.Elab.Tactic.BVDecide.Frontend.Normalize.bool_and -- `Simproc`
+  guard <| not <| ← isBadDefNameWithUnderscore ``LibraryNote.decidable_namespace -- `LibraryNote`
+  guard <| not <| ← isBadDefNameWithUnderscore ``Lean.Json.«json[_]» -- `ParserDescr`
+  guard <| not <| ← isBadDefNameWithUnderscore ``«term_+_» -- `TrailingParserDescr`
+  guard <| ← isBadDefNameWithUnderscore `«term_++++_» -- (bad) not a real parser
+  -- registered formatter:
+  guard <| not <| ← isBadDefNameWithUnderscore ``Lean.Parser.Tactic.set_option.formatter
+  -- unregistered:
+  guard <| ← isBadDefNameWithUnderscore `Lean.Parser.Foo.set_option.formatter
+  -- registered parenthesizer:
+  guard <| not <| ← isBadDefNameWithUnderscore ``Lean.Parser.Tactic.set_option.parenthesizer
+  -- unregistered:
+  guard <| ← isBadDefNameWithUnderscore `Lean.Parser.Foo.set_option.parenthesizer
+  -- theorem & theorem namespace:
+  guard <| not <| ← isBadDefNameWithUnderscore ``foo_bar_baz -- theorem, not linted
+  guard <| not <| ← isBadDefNameWithUnderscore ``foo_bar_baz.testThm -- ok: namespaced under theorem
+  guard <| ← isBadDefNameWithUnderscore ``foo_bar_baz.test_badThm -- bad: same, but bad def name
+
+/--
+error: The definition `foo_bar` contains an underscore. This almost surely violates the definition naming convention; use lowerCamelCase (or UpperCamelCase for `Sort`-valued definitions) instead.
+---
+error: The private definition `foo_bar_baz.test_badThm` contains an underscore. This almost surely violates the definition naming convention; use lowerCamelCase (or UpperCamelCase for `Sort`-valued definitions) instead.
+-/
+#guard_msgs in
+run_meta
+  let some msg ← defsWithUnderscore.test `foo_bar | failure
+  Lean.logError msg
+  let some msg ← defsWithUnderscore.test ``foo_bar_baz.test_badThm | failure
+  Lean.logError msg
 
 end
 
