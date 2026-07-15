@@ -95,6 +95,9 @@ theorem length_nil {u : V} : (nil : G.Walk u u).length = 0 := rfl
 theorem length_cons {u v w : V} (h : G.Adj u v) (p : G.Walk v w) :
     (cons h p).length = p.length + 1 := rfl
 
+theorem _root_.SimpleGraph.Adj.length_toWalk (h : G.Adj u v) : h.toWalk.length = 1 := by
+  simp
+
 theorem eq_of_length_eq_zero {u v : V} : ∀ {p : G.Walk u v}, p.length = 0 → u = v
   | nil, _ => rfl
 
@@ -131,6 +134,9 @@ theorem support_nil {u : V} : (nil : G.Walk u u).support = [u] := rfl
 @[simp, grind =]
 theorem support_cons {u v w : V} (h : G.Adj u v) (p : G.Walk v w) :
     (cons h p).support = u :: p.support := rfl
+
+theorem _root_.SimpleGraph.Adj.support_toWalk (h : G.Adj u v) : h.toWalk.support = [u, v] :=
+  rfl
 
 @[simp]
 theorem support_ne_nil {u v : V} (p : G.Walk u v) : p.support ≠ [] := by cases p <;> simp
@@ -222,6 +228,9 @@ theorem darts_nil {u : V} : (nil : G.Walk u u).darts = [] := rfl
 theorem darts_cons {u v w : V} (h : G.Adj u v) (p : G.Walk v w) :
     (cons h p).darts = ⟨(u, v), h⟩ :: p.darts := rfl
 
+theorem _root_.SimpleGraph.Adj.darts_toWalk (h : G.Adj u v) : h.toWalk.darts = [⟨(u, v), h⟩] :=
+  rfl
+
 theorem cons_map_snd_darts {u v : V} (p : G.Walk u v) : (u :: p.darts.map (·.snd)) = p.support := by
   induction p <;> simp [*]
 
@@ -241,6 +250,9 @@ theorem edges_nil {u : V} : (nil : G.Walk u u).edges = [] := rfl
 @[simp]
 theorem edges_cons {u v w : V} (h : G.Adj u v) (p : G.Walk v w) :
     (cons h p).edges = s(u, v) :: p.edges := rfl
+
+theorem _root_.SimpleGraph.Adj.edges_toWalk (h : G.Adj u v) : h.toWalk.edges = [s(u, v)] :=
+  rfl
 
 @[simp, grind =]
 theorem length_support {u v : V} (p : G.Walk u v) : p.support.length = p.length + 1 := by
@@ -485,10 +497,11 @@ def ofDarts (l : List G.Dart) (hne : l ≠ []) (hchain : l.IsChain G.DartAdj) :
   | d₁ :: d₂ :: l =>
     .cons (hchain.rel ▸ d₁.adj) <| ofDarts (d₂ :: l) (l.cons_ne_nil d₂) hchain.of_cons
 
-variable (G) in
 @[simp]
-theorem ofDarts_singleton (d : G.Dart) :
-    ofDarts [d] ([].cons_ne_nil d) (.singleton d) = .cons d.adj .nil :=
+theorem ofDarts_singleton (d : G.Dart) : ofDarts [d] (by simp) (by simp) = .cons d.adj .nil :=
+  rfl
+
+theorem ofDarts_singleton' (d : G.Dart) : ofDarts [d] (by simp) (by simp) = d.adj.toWalk :=
   rfl
 
 @[simp]

@@ -215,6 +215,10 @@ theorem mem_edges_toSubgraph (p : G.Walk u v) {e : Sym2 V} :
 theorem edgeSet_toSubgraph (p : G.Walk u v) : p.toSubgraph.edgeSet = p.edgeSet :=
   Set.ext fun _ => p.mem_edges_toSubgraph
 
+theorem _root_.SimpleGraph.Adj.toSubgraph_toWalk (h : G.Adj u v) :
+    h.toWalk.toSubgraph = G.subgraphOfAdj h := by
+  ext <;> simp
+
 @[simp]
 theorem toSubgraph_append (p : G.Walk u v) (q : G.Walk v w) :
     (p.append q).toSubgraph = p.toSubgraph ⊔ q.toSubgraph := by induction p <;> simp [*, sup_assoc]
