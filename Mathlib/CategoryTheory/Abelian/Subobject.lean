@@ -273,7 +273,7 @@ def cokernelOrderIso (Y : Subobject X) :
   left_inv p := epi_image_inverseImage (cokernel.π Y.arrow) p
   right_inv := by
     rintro ⟨q, hq : Y ≤ q⟩
-    apply le_antisymm
+    refine le_antisymm ?_ (inverseImage_image_le _ _)
     · refine mk_le_of_comm ?_ ?_
       · dsimp
         refine kernel.lift _ (kernel.ι _) ?_ ≫ (isoKernelCokernel q.arrow).inv
@@ -284,7 +284,6 @@ def cokernelOrderIso (Y : Subobject X) :
         slice_lhs 2 4 => rw [← Category.assoc]
         simp only [kernel.condition_assoc, zero_comp]
       · simp
-    · exact inverseImage_image_le _ _
   map_rel_iff' {a b} := by
     dsimp
     constructor
