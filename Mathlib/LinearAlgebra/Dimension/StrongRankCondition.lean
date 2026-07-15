@@ -67,7 +67,6 @@ variable [InvariantBasisNumber R]
 have the same cardinalities. -/
 theorem mk_eq_mk_of_basis (v : Basis ι R M) (v' : Basis ι' R M) :
     Cardinal.lift.{w'} #ι = Cardinal.lift.{w} #ι' := by
-  classical
   have := nontrivial_of_invariantBasisNumber R
   cases fintypeOrInfinite ι
   · -- `v` is a finite basis, so by `basis_finite_of_finite_spans` so is `v'`.
