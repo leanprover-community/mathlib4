@@ -71,9 +71,9 @@ section FiniteCodimSubspace
 /-!
 ## Proof of `ContinuousLinearMap.isStrictMap_isClosed_range_iff_restrict`
 
-Let `u : E →L[𝕜] F` be a continuous linear map, and `A` a finite codimension closed
+Let `u : E → F` be a continuous linear map, and `A` a finite codimension closed
 subspace of `E`. We want to show that `u` is strict with closed range if and only if
-`u.domRestrict A` is strict with closed range.
+its restriction `u.domRestrict A : A → F` is strict with closed range.
 
 We do the proof in five steps.
 -/
@@ -216,9 +216,9 @@ theorem step4 [T2Space F] (u : E →L[𝕜] F) (A : Submodule 𝕜 E) (A_closed 
 We now deduce from the previous steps the full strength of the theorem.
 -/
 
-/-- Consider `u : E →L[𝕜] F` and `A` a closed subspace of `E` of finite codimension.
-We have that `u` is strict with closed range if and only if `u.domRestrict A` is strict with
-closed range.
+/-- Let `u : E → F` be a continuous linear map, and `A` a closed subspace of `E` of finite
+codimension. Then `u` is strict with closed range if and only if its restriction
+`u.domRestrict A : A → F` is strict with closed range.
 
 This is [N. Bourbaki, *Théories Spectrales*, Chapitre III, § 3, n° 1, Prop. 1][bourbaki2023]. -/
 public theorem ContinuousLinearMap.isStrictMap_isClosed_range_iff_restrict [T2Space F]
@@ -283,8 +283,8 @@ end FiniteCodimSubspace
 
 section FiniteRank
 
-/-- If `u, v : E →L[𝕜] F` agree on a closed subspace `A` of `E` with finite codimension,
-then `u` is strict with closed range if and only if `v` is strict with closed range. -/
+/-- If two continuous linear maps `u, v : E → F` agree on a closed subspace `A` of `E` with finite
+codimension, then `u` is strict with closed range if and only if `v` is strict with closed range. -/
 public theorem ContinuousLinearMap.isStrictMap_isClosed_range_iff_of_eqOn [T2Space F]
     (u v : E →L[𝕜] F) (A : Submodule 𝕜 E) (A_closed : IsClosed (A : Set E))
     [A.CoFG] (h_eqOn : EqOn u v A) :
@@ -297,7 +297,7 @@ public theorem ContinuousLinearMap.isStrictMap_isClosed_range_iff_of_eqOn [T2Spa
 
 open LinearMap.FiniteRangeSetoid
 
-/-- If `u, v : E →L[𝕜] F` differ by a finite rank linear map (recall that this is
+/-- If two linear maps `u, v : E → F` differ by a finite rank linear map (recall that this is
 denoted `u.toLinearMap ≈ v.toLinearMap` in scope `LinearMap.FiniteRangeSetoid`), then `u` is
 strict with closed range if and only if `v` is strict with closed range.
 
@@ -318,8 +318,9 @@ section FiniteDimQuotient
 
 open LinearMap.FiniteRangeSetoid
 
-/-- Consider `u : E →L[𝕜] F` and `B` a *complemented* finite dimensional subspace of `F`. We have
-that `u` is strict with closed range if and only if `B.mkQL ∘L u` is strict with closed range.
+/-- Let `u : E → F` be a continuous linear map, and `A` a *complemented* finite dimensional
+subspace of `F`. Then `u` is strict with closed range if and only if the induced map `E → F ⧸ A`
+is strict with closed range.
 
 This is [N. Bourbaki, *Théories Spectrales*, Chapitre III, § 3, n° 1, Cor. 2][bourbaki2023]. -/
 public theorem ContinuousLinearMap.isStrictMap_isClosed_range_iff_quotient [T2Space F]
