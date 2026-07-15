@@ -39,7 +39,7 @@ universe u₁ u₂ w
 
 namespace CategoryTheory
 
-open Limits Functor
+open Limits CategoryTheory.Functor
 
 variable {C : Type u₁} [Category.{u₂} C]
 

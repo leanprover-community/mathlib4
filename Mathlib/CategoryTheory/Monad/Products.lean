@@ -86,7 +86,6 @@ end
 
 section
 
-open Monad
 
 variable [HasBinaryCoproducts C]
 

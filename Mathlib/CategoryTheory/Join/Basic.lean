@@ -41,7 +41,7 @@ universe v₁ v₂ v₃ v₄ v₅ v₆ u₁ u₂ u₃ u₄ u₅ u₆
 
 namespace CategoryTheory
 
-open Functor
+open CategoryTheory.Functor
 
 /-- Elements of `Join C D` are either elements of `C` or elements of `D`. -/
 -- Impl. : We are not defining it as a type alias for `C ⊕ D` so that we can have

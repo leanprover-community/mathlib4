@@ -56,7 +56,7 @@ namespace CategoryTheory
 
 namespace PreGaloisCategory
 
-open Limits Functor
+open Limits
 
 variable {C : Type u₁} [Category.{u₂} C] (F : C ⥤ FintypeCat.{w})
 

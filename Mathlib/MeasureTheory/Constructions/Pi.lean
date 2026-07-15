@@ -169,7 +169,7 @@ end Tprod
 
 section Encodable
 
-open List MeasurableEquiv
+open List
 
 variable [Encodable ι]
 

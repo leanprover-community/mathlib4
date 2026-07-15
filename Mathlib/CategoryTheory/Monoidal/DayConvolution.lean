@@ -76,7 +76,7 @@ class DayConvolution (F G : C ⥤ V) where
 
 namespace DayConvolution
 
-open scoped Prod
+open scoped CategoryTheory.Prod
 
 section
 
@@ -194,7 +194,7 @@ theorem convolution_hom_ext_at (c : C) {v : V} {f g : (F ⊛ G).obj c ⟶ v}
 
 section associator
 
-open Functor
+open CategoryTheory.Functor
 
 variable (H : C ⥤ V) [DayConvolution G H] [DayConvolution F (G ⊛ H)] [DayConvolution (F ⊛ G) H]
     [∀ (v : V) (d : C), Limits.PreservesColimitsOfShape
@@ -445,7 +445,7 @@ namespace DayConvolutionUnit
 
 variable (U : C ⥤ V) [DayConvolutionUnit U]
 open scoped DayConvolution
-open ExternalProduct Functor
+open ExternalProduct CategoryTheory.Functor
 
 /-- A shorthand for the natural transformation of functors out of PUnit defined by
 the canonical morphism `𝟙_ V ⟶ U.obj (𝟙_ C)` when `U` is a unit for Day convolution. -/

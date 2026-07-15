@@ -25,7 +25,7 @@ public noncomputable section
 
 namespace CategoryTheory.Over
 
-open Functor Limits CartesianMonoidalCategory
+open CategoryTheory.Functor Limits CartesianMonoidalCategory
 
 variable {C : Type*} [Category* C] [HasPullbacks C]
 

@@ -47,7 +47,7 @@ universe v v' u u'
 
 namespace CategoryTheory
 
-open Limits MonoidalCategory Functor PushoutObjObj
+open Limits MonoidalCategory CategoryTheory.Functor PushoutObjObj
 
 variable {C : Type u} [Category.{v} C]
 

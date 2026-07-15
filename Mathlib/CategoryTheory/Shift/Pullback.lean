@@ -213,7 +213,7 @@ namespace NatTrans
 variable {F} {G : C ⥤ D} [G.CommShift B]
 
 set_option backward.isDefEq.respectTransparency false in
-open Functor in
+open CategoryTheory.Functor in
 instance commShiftPullback (τ : F ⟶ G) [NatTrans.CommShift τ B] :
     NatTrans.CommShift (PullbackShift.natTrans φ τ) A where
   shift_comm _ := by
@@ -262,7 +262,7 @@ composition of `CommShift` structures by `B` on `F` and `G`), and that on
 `PullbackShift.functor F φ ⋙ PullbackShift.functor G φ` (i.e. the one coming from
 the composition of the pulled back `CommShift` structures on `F` and `G`).
 -/
-open Functor in
+open CategoryTheory.Functor in
 instance : NatTrans.CommShift (PullbackShift.natIsoComp φ F G).hom A where
   shift_comm _ := by
     ext

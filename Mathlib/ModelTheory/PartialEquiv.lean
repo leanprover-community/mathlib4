@@ -368,7 +368,7 @@ end DirectLimit
 
 section FGEquiv
 
-open PartialEquiv Set DirectLimit
+open PartialEquiv Set Language.DirectLimit
 
 variable (M) (N) (L)
 

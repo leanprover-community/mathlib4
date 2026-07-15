@@ -35,6 +35,7 @@ variable {C : Type u} [Category.{v} C]
 
 namespace Presieve
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma functorPullback_map_overForget {X : C} {Y : Over X} (S : Presieve Y) :
     (S.map (Over.forget X)).functorPullback (Over.forget X) = S := by
@@ -52,6 +53,8 @@ lemma map_functorPullback_overForget {X : C} {Y : Over X} (R : Presieve Y.left) 
   le_antisymm (map_functorPullback _) fun Z g hg ↦
     map.of (u := (Over.homMk g : Over.mk (g ≫ Y.hom) ⟶ Y)) hg
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- The equivalence `Presieve Y ≃ Presieve Y.left` for all `Y : Over X`. -/
 @[simps]
 def overEquiv {X : C} (Y : Over X) : Presieve Y ≃o Presieve Y.left where
@@ -78,6 +81,7 @@ lemma functorPullback_functorPushforward_overForget {X : C} {Y : Over X} (S : Si
   apply arrows_ext
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma functorPushforward_functorPullback_overForget {X : C} {Y : Over X} (S : Sieve Y.left) :
     (S.functorPullback (Over.forget X)).functorPushforward (Over.forget X) = S := by

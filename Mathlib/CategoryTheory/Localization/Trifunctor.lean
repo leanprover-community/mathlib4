@@ -24,7 +24,7 @@ The main result in this file is that we can localize "associator" isomorphisms
 
 namespace CategoryTheory
 
-open Functor
+open CategoryTheory.Functor
 
 variable {C₁ C₂ C₃ C₁₂ C₂₃ D₁ D₂ D₃ D₁₂ D₂₃ C D E : Type*}
   [Category* C₁] [Category* C₂] [Category* C₃] [Category* D₁] [Category* D₂] [Category* D₃]

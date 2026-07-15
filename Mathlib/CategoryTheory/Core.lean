@@ -29,7 +29,7 @@ set_option backward.defeqAttrib.useBackward true
 
 namespace CategoryTheory
 
-open Functor
+open CategoryTheory.Functor
 
 universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 

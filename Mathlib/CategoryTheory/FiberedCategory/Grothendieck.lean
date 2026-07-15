@@ -27,7 +27,7 @@ Angelo Vistoli
 
 namespace CategoryTheory.Pseudofunctor.CoGrothendieck
 
-open Functor Opposite Bicategory Fiber
+open CategoryTheory.Functor Opposite Bicategory Fiber
 
 variable {𝒮 : Type*} [Category* 𝒮] {F : LocallyDiscrete 𝒮ᵒᵖ ⥤ᵖ Cat}
 

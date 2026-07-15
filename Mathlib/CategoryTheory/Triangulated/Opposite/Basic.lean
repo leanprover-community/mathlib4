@@ -70,7 +70,7 @@ instance [Preadditive C] [∀ (n : ℤ), (shiftFunctor C n).Additive] (n : ℤ) 
 
 end Opposite
 
-open Opposite
+open Pretriangulated.Opposite
 
 /-- The shift functor on the opposite category identifies to the opposite functor
 of a shift functor on the original category. -/

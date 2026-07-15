@@ -27,7 +27,7 @@ induced adjunction `Adjunction.localization L₁ W₁ L₂ W₂ G' F' : G' ⊣ F
 
 namespace CategoryTheory
 
-open Localization Category Functor
+open Localization Category CategoryTheory.Functor
 
 namespace Adjunction
 

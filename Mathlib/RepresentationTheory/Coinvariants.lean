@@ -248,7 +248,7 @@ end Finsupp
 
 section TensorProduct
 
-open TensorProduct Coinvariants Finsupp
+open Coinvariants Finsupp
 
 variable {k G V W : Type*} [CommRing k] [Group G] [AddCommGroup V] [Module k V]
   [AddCommGroup W] [Module k W] (ρ : Representation k G V) (τ : Representation k G W)

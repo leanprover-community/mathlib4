@@ -32,7 +32,7 @@ universe v₅ u₅ v₄ u₄ v₃ u₃ v₂ u₂ v₁ u₁
 
 namespace CategoryTheory
 
-open Functor Category NatTrans IsHomLift
+open CategoryTheory.Functor Category NatTrans IsHomLift
 
 variable {𝒮 : Type u₁} [Category.{v₁} 𝒮]
 

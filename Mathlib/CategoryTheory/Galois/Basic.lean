@@ -51,7 +51,7 @@ universe u₁ u₂ v₁ v₂ w t
 
 namespace CategoryTheory
 
-open Limits Functor
+open Limits CategoryTheory.Functor
 
 /-!
 A category `C` is a PreGalois category if it satisfies all properties

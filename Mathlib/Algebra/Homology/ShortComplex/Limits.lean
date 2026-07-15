@@ -22,7 +22,7 @@ of a certain shape `J`, then it is also the case of the category `ShortComplex C
 
 namespace CategoryTheory
 
-open Category Limits Functor
+open Category Limits CategoryTheory.Functor
 
 variable {J C : Type*} [Category* J] [Category* C] [HasZeroMorphisms C]
   {F : J ⥤ ShortComplex C}

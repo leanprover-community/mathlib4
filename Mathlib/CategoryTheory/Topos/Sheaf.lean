@@ -155,7 +155,7 @@ lemma GrothendieckTopology.isClosed_χ_app_apply_of_isSheaf_of_isSeparated
       op_comp, Functor.map_comp_apply]
 
 namespace Sheaf
-open Functor
+open CategoryTheory.Functor
 variable {F G : Sheaf J (Type max u v)}
 
 /-- The sheaf of closed sieves w/r/t `J`. See also `Functor.closedSieves` and `Sheaf.classifier` -/

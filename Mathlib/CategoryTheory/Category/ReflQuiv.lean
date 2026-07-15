@@ -391,7 +391,7 @@ def freeReflNatTrans : ReflQuiv.forgetToQuiv ⋙ Cat.free ⟶ freeRefl where
 end Cat
 
 namespace ReflQuiv
-open Category Functor
+open Category
 
 namespace adj
 

@@ -119,7 +119,7 @@ noncomputable def isColimitCokernelCoforkObj (X : C) :
     IsColimit (CokernelCofork.ofπ _ (Φ.ι_π_app X)) :=
   (Φ.shortExact_shortComplexObj X).gIsCokernel
 
-open Functor
+open CategoryTheory.Functor
 
 /-- The colon preradical from Stenström, defined as the pullback of `Φ.π : 𝟭 C ⟶ Φ.quotient` along
 `Φ.quotient.whiskerLeft Ψ.ι ≫ Φ.quotient.rightUnitor.hom : Φ.quotient ⋙ Ψ.r ⟶ Φ.quotient` -/

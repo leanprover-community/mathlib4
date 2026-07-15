@@ -481,7 +481,7 @@ theorem congr_fun_congr_arg {α β γ : Sort*} (f : α → β → γ) {a a' : α
 
 theorem rec_heq_of_heq {α β : Sort _} {a b : α} {C : α → Sort*} {x : C a} {y : β}
     (e : a = b) (h : x ≍ y) : e ▸ x ≍ y :=
-  eqRec_heq_iff_heq.mpr h
+  eqRec_heq_iff.mpr h
 
 @[simp]
 theorem cast_heq_iff_heq {α β γ : Sort _} (e : α = β) (a : α) (c : γ) :

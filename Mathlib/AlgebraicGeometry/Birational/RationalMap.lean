@@ -150,6 +150,7 @@ variable (X) in
 /-- The identity partial map. -/
 protected abbrev id : X.PartialMap X := (𝟙 X : X ⟶ X).toPartialMap
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma id_compHom (f : X ⟶ Y) : (PartialMap.id X).compHom f = f.toPartialMap := by
   apply PartialMap.ext _ _ rfl
@@ -261,6 +262,7 @@ lemma equiv_of_restrict_eq (f g : X.PartialMap Y) {W₁ W₂ : X.Opens} {hW₁ :
   subst e
   exact ⟨W₁, hW₁, hW₁', hW₂', congr($(H).hom)⟩
 
+set_option backward.isDefEq.respectTransparency false in
 @[refl]
 lemma equiv.refl (f : X.PartialMap Y) : f.equiv f :=
   ⟨f.domain, f.dense_domain, by simp⟩

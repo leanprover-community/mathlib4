@@ -294,9 +294,9 @@ theorem eRank_reindex {m₀ : Type um} {n : Type un} [Semiring R] (A : Matrix m 
     (en : n ≃ n₀) : eRank (A.reindex em en) = eRank A :=
   eRank_submatrix ..
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The rank of a matrix equals the dimension of the range of the corresponding linear map,
 and is therefore independent of the choice of bases. -/
-set_option backward.isDefEq.respectTransparency false in
 theorem rank_eq_finrank_range_toLin [Finite m] [DecidableEq n] {M₁ M₂ : Type*} [CommSemiring R]
     [AddCommMonoid M₁] [AddCommMonoid M₂] [Module R M₁] [Module R M₂] (A : Matrix m n R)
     (v₁ : Basis m R M₁) (v₂ : Basis n R M₂) :

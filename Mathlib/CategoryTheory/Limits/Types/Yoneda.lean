@@ -22,7 +22,7 @@ universe v u
 
 namespace CategoryTheory.Limits
 
-open Functor Opposite
+open CategoryTheory.Functor Opposite
 
 section
 

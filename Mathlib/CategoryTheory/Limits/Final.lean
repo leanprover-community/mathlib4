@@ -984,7 +984,7 @@ end
 end Functor
 
 section Filtered
-open Functor
+open CategoryTheory.Functor
 
 variable {C : Type u₁} [Category.{v₁} C]
 variable {D : Type u₂} [Category.{v₂} D]
@@ -1055,7 +1055,7 @@ variable {C : Type u₁} [Category.{v₁} C]
 variable {D : Type u₂} [Category.{v₂} D]
 variable {E : Type u₃} [Category.{v₃} E]
 
-open Functor
+open CategoryTheory.Functor
 
 /-- The functor `StructuredArrow.pre X T S` is final if `T` is final. -/
 instance StructuredArrow.final_pre (T : C ⥤ D) [Final T] (S : D ⥤ E) (X : E) :
@@ -1079,7 +1079,7 @@ variable {C : Type u₁} [Category.{v₁} C]
 variable {D : Type u₂} [Category.{v₂} D]
 variable (F : D ⥤ Cat) (G : C ⥤ D)
 
-open Functor
+open CategoryTheory.Functor
 
 set_option backward.isDefEq.respectTransparency false in
 /-- A prefunctor mapping structured arrows on `G` to structured arrows on `pre F G` with their
