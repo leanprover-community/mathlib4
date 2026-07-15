@@ -184,7 +184,7 @@ theorem ContinuousLinearMap.continuous_det : Continuous fun f : E →L[𝕜] E =
   -- TODO: this could be easier with `det_cases`
   by_cases h : ∃ s : Finset E, Nonempty (Basis (↥s) 𝕜 E)
   · rcases h with ⟨s, ⟨b⟩⟩
-    haveI : FiniteDimensional 𝕜 E := b.finiteDimensional_of_finite
+    have : FiniteDimensional 𝕜 E := b.finiteDimensional_of_finite
     classical
     simp_rw [LinearMap.det_eq_det_toMatrix_of_finset b]
     refine Continuous.matrix_det ?_
@@ -347,7 +347,7 @@ theorem isOpen_setOf_affineIndependent {ι : Type*} [Finite ι] :
   · simp_rw [affineIndependent_iff_linearIndependent_vsub 𝕜 _ i₀]
     let ι' := { x // x ≠ i₀ }
     cases nonempty_fintype ι
-    haveI : Fintype ι' := Subtype.fintype _
+    have : Fintype ι' := Subtype.fintype _
     convert_to!
       IsOpen ((fun (p : ι → E) (i : ι') ↦ p i -ᵥ p i₀) ⁻¹' {p : ι' → E | LinearIndependent 𝕜 p})
     exact isOpen_setOf_linearIndependent.preimage (by fun_prop)
@@ -418,7 +418,7 @@ theorem exists_norm_le_le_norm_sub_of_finset {c : 𝕜} (hc : 1 < ‖c‖) {R : 
     (h : ¬FiniteDimensional 𝕜 E) (s : Finset E) : ∃ x : E, ‖x‖ ≤ R ∧ ∀ y ∈ s, 1 ≤ ‖y - x‖ := by
   let F := Submodule.span 𝕜 (s : Set E)
   have hF : F.FG := ⟨s, rfl⟩
-  haveI : FiniteDimensional 𝕜 F := .of_fg hF
+  have : FiniteDimensional 𝕜 F := .of_fg hF
   have Fclosed : IsClosed (F : Set E) := Submodule.closed_of_finiteDimensional _
   have : ∃ x, x ∉ F := by
     contrapose! h

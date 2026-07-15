@@ -142,7 +142,7 @@ theorem exists_end_algEquiv_pi_matrix_end :
       Nonempty (End R M ≃ₐ[R₀] Π i, Matrix (Fin (d i)) (Fin (d i)) (End R (S i))) := by
   choose d pos S _ simple e using fun c : isotypicComponents R M ↦
     (IsIsotypic.isotypicComponents c.2).submodule_linearEquiv_fun
-  classical exact ⟨_, _, _, fun _ ↦ simple _, fun _ ↦ pos _, ⟨.trans (endAlgEquiv R₀ R M) <| .trans
+  exact ⟨_, _, _, fun _ ↦ simple _, fun _ ↦ pos _, ⟨.trans (endAlgEquiv R₀ R M) <| .trans
     (.piCongrRight fun c ↦ ((e c).some.conjAlgEquiv R₀).trans (endVecAlgEquivMatrixEnd ..)) <|
     (.piCongrLeft' R₀ _ (Finite.equivFin _))⟩⟩
 
@@ -151,10 +151,6 @@ theorem exists_end_ringEquiv_pi_matrix_end :
       (∀ i, IsSimpleModule R (S i)) ∧ (∀ i, NeZero (d i)) ∧
       Nonempty (End R M ≃+* Π i, Matrix (Fin (d i)) (Fin (d i)) (End R (S i))) :=
   have ⟨n, S, d, hS, hd, ⟨e⟩⟩ := exists_end_algEquiv_pi_matrix_end ℕ R M; ⟨n, S, d, hS, hd, ⟨e⟩⟩
-
-@[deprecated (since := "2025-11-16")] alias exists_end_algEquiv := exists_end_algEquiv_pi_matrix_end
-@[deprecated (since := "2025-11-16")]
-alias exists_end_ringEquiv := exists_end_ringEquiv_pi_matrix_end
 
 -- TODO: can also require D be in `Type u`, since every simple module is the quotient by an ideal.
 theorem exists_end_algEquiv_pi_matrix_divisionRing :

@@ -71,7 +71,7 @@ namespace PiNat
 
 /-! ### The firstDiff function -/
 
-open Classical in
+open scoped Classical in
 /-- In a product space `Π n, E n`, then `firstDiff x y` is the first index at which `x` and `y`
 differ. If `x = y`, then by convention we set `firstDiff x x = 0`. -/
 irreducible_def firstDiff (x y : ∀ n, E n) : ℕ :=
@@ -249,7 +249,7 @@ a `MetricSpace` instance, as other distances may be used on these spaces, but we
 local instances in this section.
 -/
 
-open Classical in
+open scoped Classical in
 /-- The distance function on a product space `Π n, E n`, given by `dist x y = (1/2)^n` where `n` is
 the first index at which `x` and `y` differ. -/
 @[instance_reducible]
@@ -482,7 +482,7 @@ theorem exists_disjoint_cylinder {s : Set (∀ n, E n)} (hs : IsClosed s) {x : �
       exact mem_cylinder_iff_dist_le.1 hy
     _ < infDist x s := hn
 
-open Classical in
+open scoped Classical in
 /-- Given a point `x` in a product space `Π (n : ℕ), E n`, and `s` a subset of this space, then
 `shortestPrefixDiff x s` if the smallest `n` for which there is no element of `s` having the same
 prefix of length `n` as `x`. If there is no such `n`, then use `0` by convention. -/
@@ -702,7 +702,7 @@ theorem exists_nat_nat_continuous_surjective_of_completeSpace (α : Type*) [Metr
     balls `closedBall (u xₙ) (1/2^n)` have a nonempty intersection. This set is closed,
     and we define `f x` there to be the unique point in the intersection.
     This function is continuous and surjective by design. -/
-  letI : MetricSpace (ℕ → ℕ) := PiNat.metricSpaceNatNat
+  let : MetricSpace (ℕ → ℕ) := PiNat.metricSpaceNatNat
   have I0 : (0 : ℝ) < 1 / 2 := by simp
   have I1 : (1 / 2 : ℝ) < 1 := by norm_num
   rcases exists_dense_seq α with ⟨u, hu⟩
@@ -846,7 +846,6 @@ protected def pseudoEMetricSpace : PseudoEMetricSpace (∀ i, F i) where
       PseudoEMetricSpace.uniformity_edist, le_antisymm_iff, le_iInf_iff, le_principal_iff]
     constructor
     · intro ε hε
-      classical
       obtain ⟨K, hK⟩ : ∃ K : Finset ι, ∑' i : {j // j ∉ K}, 2⁻¹ ^ encode (i : ι) < ε / 2 :=
         ((tendsto_order.1 <| ENNReal.tendsto_tsum_compl_atTop_zero
           (tsum_geometric_encode_lt_top ENNReal.one_half_lt_one).ne).2 _
@@ -1075,7 +1074,7 @@ variable [TopologicalSpace X] [CompactSpace X]
 lemma isHomeomorph_toPiNat (continuous_f : ∀ i, Continuous (f i))
     (separating_f : Pairwise fun x y ↦ ∃ i, f i x ≠ f i y) :
     IsHomeomorph (toPiNat : X → PiNatEmbed X Y f) := by
-  letI := emetricSpace separating_f
+  let := emetricSpace separating_f
   rw [isHomeomorph_iff_continuous_bijective]
   exact ⟨continuous_toPiNat continuous_f, (toPiNatEquiv X Y f).bijective⟩
 
@@ -1163,10 +1162,6 @@ theorem exists_embedding_to_hilbert_cube : ∃ F : X → ℕ → I, IsEmbedding 
   let isEmbedding_secondstep : IsEmbedding secondstep :=
       (isUniformEmbedding_embed injective_distDenseSeq).isEmbedding
   exact ⟨_, isEmbedding_secondstep.comp firststep.isEmbedding⟩
-
-@[deprecated "This version is more general as compact metric spaces are separable"
-(since := "2025-11-27")] alias
-exists_closed_embedding_to_hilbert_cube := Metric.PiNatEmbed.exists_embedding_to_hilbert_cube
 
 end MetricSpace
 end PiNatEmbed

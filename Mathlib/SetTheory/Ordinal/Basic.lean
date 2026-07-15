@@ -120,9 +120,6 @@ Ordinal.ToType.toOrd : o.ToType → Iio o
 def Ordinal.ToType (o : Ordinal.{u}) : Type u :=
   o.out.α
 
-@[deprecated (since := "2025-12-04")]
-alias Ordinal.toType := Ordinal.ToType
-
 @[no_expose]
 instance linearOrder_toType (o : Ordinal) : LinearOrder o.ToType :=
   @IsWellOrder.linearOrder _ o.out.r o.out.wo
@@ -266,14 +263,14 @@ theorem inductionOn₃ {motive : Ordinal → Ordinal → Ordinal → Prop} (o₁
       motive (type r) (type s) (type t)) : motive o₁ o₂ o₃ :=
   Quotient.inductionOn₃ o₁ o₂ o₃ fun ⟨α, r, _⟩ ⟨β, s, _⟩ ⟨γ, t, _⟩ ↦ type α r β s γ t
 
-open Classical in
+open scoped Classical in
 /-- To prove a result on ordinals, it suffices to prove it for order types of well-orders. -/
 @[elab_as_elim]
 theorem inductionOnWellOrder {motive : Ordinal → Prop} (o : Ordinal)
     (type : ∀ (α) [LinearOrder α] [WellFoundedLT α], motive (typeLT α)) : motive o :=
   inductionOn o fun α r wo ↦ @type α (linearOrderOfSTO r) wo.toIsWellFounded
 
-open Classical in
+open scoped Classical in
 /-- To define a function on ordinals, it suffices to define them on order types of well-orders.
 
 Since `LinearOrder` is data-carrying, `liftOnWellOrder_type` is not a definitional equality, unlike
@@ -357,17 +354,6 @@ instance : OrderBot Ordinal where
 @[simp]
 theorem bot_eq_zero : (⊥ : Ordinal) = 0 :=
   rfl
-
-@[deprecated nonpos_iff_eq_zero (since := "2025-11-21")]
-protected theorem le_zero {o : Ordinal} : o ≤ 0 ↔ o = 0 :=
-  le_bot_iff
-
-@[deprecated not_neg (since := "2025-11-21")]
-protected theorem not_lt_zero (o : Ordinal) : ¬o < 0 :=
-  not_lt_bot
-
-@[deprecated eq_zero_or_pos (since := "2025-11-21")]
-protected theorem eq_zero_or_pos : ∀ a : Ordinal, a = 0 ∨ 0 < a := eq_bot_or_bot_lt
 
 theorem type_le_iff {α β} {r : α → α → Prop} {s : β → β → Prop} [IsWellOrder α r]
     [IsWellOrder β s] : type r ≤ type s ↔ Nonempty (r ≼i s) :=
@@ -547,8 +533,6 @@ def ToType.mk {o : Ordinal} : Set.Iio o ≃o o.ToType where
   left_inv _ := Subtype.ext (typein_enum _ _)
   right_inv _ := enum_typein _ _
   map_rel_iff' := enum_le_enum' _
-
-@[deprecated (since := "2025-12-04")] noncomputable alias enumIsoToType := ToType.mk
 
 /-- Convert an element of `α.toType` to the corresponding `Ordinal` -/
 abbrev ToType.toOrd {o : Ordinal} (α : o.ToType) : Set.Iio o := ToType.mk.symm α
@@ -892,12 +876,6 @@ instance canonicallyOrderedAdd : CanonicallyOrderedAdd Ordinal where
   le_add_self a b := by simpa using add_le_add_left bot_le a
   le_self_add a b := by simpa using add_le_add_right bot_le a
 
-@[deprecated le_self_add (since := "2025-11-21")]
-protected theorem le_add_right (a b : Ordinal) : a ≤ a + b := le_self_add
-
-@[deprecated le_add_self (since := "2025-11-21")]
-protected theorem le_add_left (a b : Ordinal) : a ≤ b + a := le_add_self
-
 @[deprecated zero_max (since := "2026-05-07")]
 theorem max_zero_left : ∀ a : Ordinal, max 0 a = a :=
   zero_max
@@ -1076,11 +1054,11 @@ theorem exists_ord_eq (α) : ∃ (r : α → α → Prop) (_ : IsWellOrder α r)
 
 /-- There exists a well-order on `α` whose order type is exactly `ord #α`. -/
 theorem exists_ord_eq_type_lt (α) :
-    ∃ (_ : LinearOrder α) (_ : WellFoundedLT α), ord #α = typeLT α :=
-  open scoped Classical in
+    ∃ (_ : LinearOrder α) (_ : WellFoundedLT α), ord #α = typeLT α := by
+  classical
   let ⟨r, _, hr⟩ := exists_ord_eq α
   let := linearOrderOfSTO r
-  ⟨this, inferInstance, hr⟩
+  exact ⟨this, inferInstance, hr⟩
 
 theorem ord_le_type (r : α → α → Prop) [h : IsWellOrder α r] : ord #α ≤ type r :=
   ciInf_le' _ (Subtype.mk r h)
@@ -1413,5 +1391,3 @@ theorem List.SortedGT.lt_ord_of_lt [LinearOrder α] [WellFoundedLT α] {l m : Li
       | head as => exact List.head_le_of_lt hmltl
       | tail b hi => exact le_of_lt (lt_of_lt_of_le (List.rel_of_pairwise_cons hm.pairwise hi)
           (List.head_le_of_lt hmltl))
-
-@[deprecated (since := "2025-11-27")] alias List.Sorted.lt_ord_of_lt := List.SortedGT.lt_ord_of_lt

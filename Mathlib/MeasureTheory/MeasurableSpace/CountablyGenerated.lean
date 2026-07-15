@@ -100,7 +100,7 @@ theorem CountablyGenerated.comap [m : MeasurableSpace β] [h : CountablyGenerate
     @CountablyGenerated α (.comap f m) := by
   rcases h with ⟨⟨b, hbc, rfl⟩⟩
   rw [comap_generateFrom]
-  letI := generateFrom (preimage f '' b)
+  let := generateFrom (preimage f '' b)
   exact ⟨_, hbc.image _, rfl⟩
 
 theorem CountablyGenerated.sup {m₁ m₂ : MeasurableSpace β} (h₁ : @CountablyGenerated β m₁)
@@ -138,7 +138,7 @@ section CountablyGeneratedAtom
 
 variable {mα : MeasurableSpace α} [CountablyGenerated α]
 
-open Classical in
+open scoped Classical in
 /-- The atoms in a countably generated measurable space.
 
 Some of those sets may be empty, but the nonempty ones are the atoms of the measurable space.
@@ -175,7 +175,7 @@ lemma mem_countablyGeneratedAtom_natGeneratingSequence (x : α) :
     x ∈ countablyGeneratedAtom α (x ∈ natGeneratingSequence α ·) := by
   simp [countablyGeneratedAtom]; grind
 
-open Classical in
+open scoped Classical in
 /-- Any measurable set in a countably generated measurable space can be expressed as a union of
 atoms. -/
 lemma exists_eq_iUnion_countablyGeneratedAtom {s : Set α} (hs : MeasurableSet s) :
@@ -282,7 +282,7 @@ then this is witnessed by sets in `S`. -/
 theorem separating_of_generateFrom (S : Set (Set α))
     [h : @SeparatesPoints α (generateFrom S)] :
     ∀ x y : α, (∀ s ∈ S, x ∈ s ↔ y ∈ s) → x = y := by
-  letI := generateFrom S
+  let := generateFrom S
   intro x y hxy
   rw [← forall_generateFrom_mem_iff_mem_iff] at hxy
   exact separatesPoints_def <| fun _ hs ↦ (hxy _ hs).mp
@@ -391,7 +391,7 @@ theorem exists_countablyGenerated_le_of_countablySeparated [m : MeasurableSpace 
 
 open Function
 
-open Classical in
+open scoped Classical in
 /-- A map from a measurable space to the Cantor space `ℕ → Bool` induced by a countable
 sequence of sets generating the measurable space. -/
 noncomputable
@@ -479,7 +479,6 @@ lemma measurableSet_generateFrom_memPartition_iff (t : ℕ → Set α) (n : ℕ)
     | empty => exact ⟨∅, by simp, by simp⟩
     | compl u _ hu =>
       obtain ⟨S, hS_subset, rfl⟩ := hu
-      classical
       refine ⟨(memPartition t n).toFinset \ S, ?_, ?_⟩
       · simp only [Finset.coe_sdiff, coe_toFinset]
         exact sdiff_subset

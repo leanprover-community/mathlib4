@@ -414,6 +414,17 @@ def ofNatIso {F G : C ⥤ D} (i : F ≅ G) [F.LaxBraided] [G.LaxMonoidal]
     rw [this X Y, this Y X, ← braiding_naturality_assoc, ← Functor.LaxBraided.braided_assoc]
     simp
 
+/-- Copy of a lax braided structure on a functor `F` with new `ε` and `μ` fields equal to the old
+ones.
+
+This is useful to fix definitional equalities. -/
+@[implicit_reducible]
+def copy {F : C ⥤ D} (hF : F.LaxBraided) (ε' : 𝟙_ D ⟶ F.obj (𝟙_ C))
+    (μ' : ∀ X Y : C, F.obj X ⊗ F.obj Y ⟶ F.obj (X ⊗ Y))
+    (hε : ε' = ε F := by cat_disch) (hμ : μ' = μ F := by cat_disch) : F.LaxBraided where
+  __ := hF.toLaxMonoidal.copy ε' μ' hε hμ
+  braided X Y := hμ ▸ hF.braided X Y
+
 end Functor.LaxBraided
 
 section
@@ -506,12 +517,6 @@ set_option backward.privateInPublic true in
 lemma isoOfComponents_inv_hom_hom_app (X : C) :
     (isoOfComponents e naturality unit tensor).inv.hom.hom.app X = (e X).inv := rfl
 
-@[deprecated (since := "2025-12-18")] alias isoOfComponents_hom_hom_app :=
-  isoOfComponents_hom_hom_hom_app
-
-@[deprecated (since := "2025-12-18")] alias isoOfComponents_inv_hom_app :=
-  isoOfComponents_inv_hom_hom_app
-
 end
 
 end LaxBraidedFunctor
@@ -558,6 +563,19 @@ instance (F : C ⥤ D) (G : D ⥤ E) [F.Braided] [G.Braided] : (F ⋙ G).Braided
 
 lemma toMonoidal_injective (F : C ⥤ D) : Function.Injective
     (@Braided.toMonoidal _ _ _ _ _ _ _ _ _ : F.Braided → F.Monoidal) := by rintro ⟨⟩ ⟨⟩ rfl; rfl
+
+/-- Copy of a braided structure on a functor `F` with new `ε`, `μ`, `η` and `δ` fields equal to the
+old ones.
+
+This is useful to fix definitional equalities. -/
+@[implicit_reducible]
+def copy {F : C ⥤ D} (hF : F.Braided) (ε' : 𝟙_ D ⟶ F.obj (𝟙_ C))
+    (μ' : ∀ X Y : C, F.obj X ⊗ F.obj Y ⟶ F.obj (X ⊗ Y)) (η' : F.obj (𝟙_ C) ⟶ 𝟙_ D)
+    (δ' : ∀ X Y : C, F.obj (X ⊗ Y) ⟶ F.obj X ⊗ F.obj Y)
+    (hε : ε' = ε F := by cat_disch) (hμ : μ' = μ F := by cat_disch)
+    (hη : η' = η F := by cat_disch) (hδ : δ' = δ F := by cat_disch) : F.Braided where
+  __ := hF.toMonoidal.copy ε' μ' η' δ' hε hμ hη hδ
+  braided X Y := hμ ▸ hF.braided X Y
 
 end Functor.Braided
 

@@ -97,7 +97,7 @@ lemma quotMapEquivQuotQuotMap_symm_apply (hx : (conductor R x).comap (algebraMap
   simp only [RingEquiv.apply_symm_apply, adjoin.powerBasis'_gen, quotAdjoinEquivQuotMap_apply_mk,
     coe_aeval_mk_apply]
 
-open Classical in
+open scoped Classical in
 /-- The first half of the **Kummer-Dedekind Theorem**, stating that the prime
 factors of `I*S` are in bijection with those of the minimal polynomial of the generator of `S`
 over `R`, taken `mod I`. -/
@@ -130,7 +130,7 @@ theorem emultiplicity_factors_map_eq_emultiplicity
     IsDedekindDomain.normalizedFactorsEquivOfQuotEquiv_emultiplicity_eq_emultiplicity]
 
 set_option backward.isDefEq.respectTransparency false in
-open Classical in
+open scoped Classical in
 /-- The **Kummer-Dedekind Theorem**. -/
 theorem normalizedFactors_ideal_map_eq_normalizedFactors_min_poly_mk_map (hI : IsMaximal I)
     (hI' : I ≠ ⊥) (hx : (conductor R x).comap (algebraMap R S) ⊔ I = ⊤) (hx' : IsIntegral R x) :

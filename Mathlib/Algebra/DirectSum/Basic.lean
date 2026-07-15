@@ -442,10 +442,10 @@ def map : (⨁ i, α i) →+ ⨁ i, β i := DFinsupp.mapRange.addMonoidHom f
   DFinsupp.mapRange.addMonoidHom_comp _ _
 
 lemma map_injective : Function.Injective (map f) ↔ ∀ i, Function.Injective (f i) := by
-  classical exact DFinsupp.mapRange_injective (hf := fun _ ↦ map_zero _)
+  exact DFinsupp.mapRange_injective (hf := fun _ ↦ map_zero _)
 
 lemma map_surjective : Function.Surjective (map f) ↔ (∀ i, Function.Surjective (f i)) := by
-  classical exact DFinsupp.mapRange_surjective (hf := fun _ ↦ map_zero _)
+  exact DFinsupp.mapRange_surjective (hf := fun _ ↦ map_zero _)
 
 lemma map_eq_iff (x y : ⨁ i, α i) :
     map f x = map f y ↔ ∀ i, f i (x i) = f i (y i) := by

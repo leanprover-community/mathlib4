@@ -197,12 +197,7 @@ theorem MonoidHom.isMulCommutative_of_isCyclic_of_ker_le_center [IsCyclic G'] (f
     _ = y ^ m * y ^ n * y ^ (-m) * (y ^ (-n) * b * a) := by rw [mem_center_iff.1 hb]
     _ = b * a := by group
 
-@[deprecated AddMonoidHom.isAddCommutative_of_isAddCyclic_of_ker_le_center (since := "2026-05-26")]
-theorem commutative_of_addCyclic_center_quotient {G G' : Type*} [AddGroup G] [AddGroup G']
-    [IsAddCyclic G'] (f : G →+ G') (hf : f.ker ≤ .center G) (a b : G) : a + b = b + a :=
-  f.isAddCommutative_of_isAddCyclic_of_ker_le_center hf |>.is_comm.comm a b
-
-@[to_additive existing (attr := deprecated MonoidHom.isMulCommutative_of_isCyclic_of_ker_le_center
+@[to_additive (attr := deprecated MonoidHom.isMulCommutative_of_isCyclic_of_ker_le_center
   (since := "2026-05-26"))]
 theorem commutative_of_cyclic_center_quotient [IsCyclic G'] (f : G →* G') (hf : f.ker ≤ center G)
     (a b : G) : a * b = b * a :=
@@ -276,9 +271,6 @@ theorem Group.is_simple_iff_prime_card [Group α] [IsMulCommutative α] :
 @[to_additive]
 theorem CommGroup.is_simple_iff_prime_card [CommGroup α] : IsSimpleGroup α ↔ (Nat.card α).Prime :=
   Group.is_simple_iff_prime_card
-
-@[deprecated (since := "2025-11-19")]
-alias CommGroup.is_simple_iff_isCyclic_and_prime_card := CommGroup.is_simple_iff_prime_card
 
 section SpecificInstances
 

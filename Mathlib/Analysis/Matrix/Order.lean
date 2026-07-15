@@ -338,9 +338,6 @@ def toMatrixInnerProductSpace (M : Matrix n n 𝕜) (hM : M.PosSemidef) :
     InnerProductSpace 𝕜 (Matrix n n 𝕜) :=
   InnerProductSpace.ofCore _
 
-@[deprecated (since := "2025-11-18")] alias PosDef.matrixNormedAddCommGroup :=
-  toMatrixNormedAddCommGroup
-
 open scoped Norms.L2Operator in
 set_option backward.isDefEq.respectTransparency false in
 /-- The isometric continuous functional calculus on `Matrix n n 𝕜` arising from the operator norm
