@@ -105,7 +105,7 @@ namespace PartialDiffeomorph
 variable (Φ : PartialDiffeomorph I J M N n)
 
 /-- A partial diffeomorphism is also a local homeomorphism. -/
-@[expose, simps toPartialEquiv]
+@[expose, simps toPartialHomeomorph_toPartialEquiv]
 def toOpenPartialHomeomorph : OpenPartialHomeomorph M N where
   toPartialEquiv := Φ.toPartialEquiv
   open_source := Φ.open_source
