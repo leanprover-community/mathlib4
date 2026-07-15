@@ -189,8 +189,8 @@ theorem Pi.Lex.wellFounded [IsStrictTotalOrder ι r] [Finite ι] (hs : ∀ i, We
     WellFounded (Pi.Lex r (fun {i} ↦ s i)) := by
   obtain h | ⟨⟨x⟩⟩ := isEmpty_or_nonempty (∀ i, α i)
   · convert! emptyWf.wf
-  letI : ∀ i, Zero (α i) := fun i => ⟨(hs i).min ⊤ ⟨x i, trivial⟩⟩
-  haveI := Fintype.ofFinite ι
+  let : ∀ i, Zero (α i) := fun i => ⟨(hs i).min ⊤ ⟨x i, trivial⟩⟩
+  have := Fintype.ofFinite ι
   refine InvImage.wf equivFunOnFintype.symm (Lex.wellFounded' (fun i a => ?_) hs ?_)
   exacts [(hs i).not_lt_min ⊤ trivial, Finite.wellFounded_of_trans_of_irrefl (Function.swap r)]
 
@@ -246,8 +246,8 @@ instance Pi.wellFoundedLT [Finite ι] [∀ i, Preorder (α i)] [hw : ∀ i, Well
   ⟨by
     obtain h | ⟨⟨x⟩⟩ := isEmpty_or_nonempty (∀ i, α i)
     · convert! emptyWf.wf
-    letI : ∀ i, Zero (α i) := fun i => ⟨(hw i).wf.min ⊤ ⟨x i, trivial⟩⟩
-    haveI := Fintype.ofFinite ι
+    let : ∀ i, Zero (α i) := fun i => ⟨(hw i).wf.min ⊤ ⟨x i, trivial⟩⟩
+    have := Fintype.ofFinite ι
     refine InvImage.wf equivFunOnFintype.symm (DFinsupp.wellFoundedLT fun i a => ?_).wf
     exact (hw i).wf.not_lt_min ⊤ trivial⟩
 

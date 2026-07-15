@@ -350,7 +350,7 @@ variable [Algebra R₁ K]
 
 instance : Nontrivial (FractionalIdeal R₁⁰ K) :=
   ⟨⟨0, 1, fun h =>
-      have this : (1 : K) ∈ (0 : FractionalIdeal R₁⁰ K) := by
+      have : (1 : K) ∈ (0 : FractionalIdeal R₁⁰ K) := by
         rw [← (algebraMap R₁ K).map_one]
         simpa only [h] using coe_mem_one R₁⁰ 1
       one_ne_zero ((mem_zero_iff _).mp this)⟩⟩

@@ -92,6 +92,7 @@ universe w v₁ v₂ v₃ u₁ u₂ u₃
 
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 
+set_option linter.translate.warnInvalid false in
 /-- `F ⊣ G` represents the data of an adjunction between two functors
 `F : C ⥤ D` and `G : D ⥤ C`. `F` is the left adjoint and `G` is the right adjoint.
 
@@ -119,11 +120,8 @@ structure Adjunction (F : C ⥤ D) (G : D ⥤ C) where
     dsimp% unit.app (G.obj Y) ≫ G.map (counit.app Y) = 𝟙 (G.obj Y) := by cat_disch
 
 to_dual_name_hint Left Right
-set_option linter.translateOverwrite false
-set_option linter.translateGenerateName false
 
-attribute [to_dual existing counit] Adjunction.unit
-attribute [to_dual existing right_triangle_components] Adjunction.left_triangle_components
+attribute [to_dual existing] Adjunction.unit Adjunction.left_triangle_components
 attribute [to_dual self (reorder := C D, 2 4, F G,
   unit counit, left_triangle_components right_triangle_components)] Adjunction.mk
 attribute [to_dual self (reorder := C D, 2 4, F G,
@@ -593,7 +591,7 @@ lemma comp_unit_app (X : C) : dsimp%
     (adj₁.comp adj₂).unit.app X = adj₁.unit.app X ≫ G.map (adj₂.unit.app (F.obj X)) := by
   simp [Adjunction.comp]
 
-@[to_dual existing (attr := simp, reassoc) comp_unit_app]
+@[to_dual existing (attr := simp, reassoc)]
 lemma comp_counit_app (X : E) : dsimp%
     (adj₁.comp adj₂).counit.app X = H.map (adj₁.counit.app (I.obj X)) ≫ adj₂.counit.app X := by
   simp [Adjunction.comp]
