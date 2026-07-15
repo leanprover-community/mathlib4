@@ -54,7 +54,7 @@ instance {F : C ⥤ FintypeCat.{u₁}} [FiberFunctor F] : (functorToContAction F
 
 instance : (functorToContAction F).EssSurj := by
   let F' : C ⥤ FintypeCat.{u₁} := F ⋙ FintypeCat.uSwitch.{w, u₁}
-  letI : FiberFunctor F' := FiberFunctor.comp_right _
+  let : FiberFunctor F' := FiberFunctor.comp_right _
   have : (functorToContAction F').EssSurj := inferInstance
   let f : Aut F ≃ₜ* Aut F' :=
     (autEquivAutWhiskerRight F (FintypeCat.uSwitchEquivalence.{w, u₁}).fullyFaithfulFunctor)

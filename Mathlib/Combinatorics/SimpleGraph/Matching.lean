@@ -309,7 +309,7 @@ lemma even_card_of_isPerfectMatching [Fintype V] [DecidableEq V] [DecidableRel G
   `[SetLike X], X → Set α → Sort _` are
   blocked by the discrimination tree. This can be fixed by redeclaring the instance for `X`
   using the double coercion but the proper fix seems to avoid the double coercion. -/
-  letI : DecidablePred fun x ↦ x ∈ (M.induce c.supp).verts := fun a ↦ G.instDecidableMemSupp c a
+  let : DecidablePred fun x ↦ x ∈ (M.induce c.supp).verts := fun a ↦ G.instDecidableMemSupp c a
   have := (hM.induce_connectedComponent_isMatching c).even_card
   simp only [Subgraph.induce_verts, Set.toFinset_card] at this
   exact this
@@ -331,9 +331,9 @@ lemma odd_matches_node_outside [Finite V] {u : Set V}
       and_true] at hv' ⊢
     trivial
   apply Nat.not_even_iff_odd.2 c.prop
-  haveI : Fintype ↑(Subgraph.induce M (Subtype.val '' supp c.val)).verts := Fintype.ofFinite _
+  have : Fintype ↑(Subgraph.induce M (Subtype.val '' supp c.val)).verts := Fintype.ofFinite _
   classical
-  haveI := Fintype.ofFinite c.val.supp
+  have := Fintype.ofFinite c.val.supp
   simpa [Finset.card_image_of_injective] using hMmatch.even_card
 
 end Finite

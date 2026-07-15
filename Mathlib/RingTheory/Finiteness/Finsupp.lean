@@ -34,9 +34,9 @@ finitely generated then so is M. -/
 theorem fg_of_fg_map_of_fg_inf_ker (f : M →ₗ[R] P) {s : Submodule R M}
     (hs1 : (s.map f).FG)
     (hs2 : (s ⊓ LinearMap.ker f).FG) : s.FG := by
-  haveI := Classical.decEq R
-  haveI := Classical.decEq M
-  haveI := Classical.decEq P
+  have := Classical.decEq R
+  have := Classical.decEq M
+  have := Classical.decEq P
   obtain ⟨t1, ht1⟩ := hs1
   obtain ⟨t2, ht2⟩ := hs2
   have : ∀ y ∈ t1, ∃ x ∈ s, f x = y := by
@@ -80,7 +80,7 @@ theorem fg_of_fg_map_of_fg_inf_ker (f : M →ₗ[R] P) {s : Submodule R M}
         add_sub_cancel _ _⟩
   · rw [← Set.image_id (g '' ↑t1), Finsupp.mem_span_image_iff_linearCombination]
     refine ⟨_, ?_, rfl⟩
-    haveI : Inhabited P := ⟨0⟩
+    have : Inhabited P := ⟨0⟩
     rw [← Finsupp.lmapDomain_supported _ _ g, mem_map]
     refine ⟨l, hl1, ?_⟩
     rfl
