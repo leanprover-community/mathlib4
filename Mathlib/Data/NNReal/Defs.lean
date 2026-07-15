@@ -719,18 +719,18 @@ section Pow
 theorem pow_antitone_exp {a : ℝ≥0} (m n : ℕ) (mn : m ≤ n) (a1 : a ≤ 1) : a ^ n ≤ a ^ m :=
   pow_le_pow_of_le_one zero_le a1 mn
 
-nonrec theorem exists_pow_lt_of_lt_one {a b : ℝ≥0} (ha : 0 < a) (hb : b < 1) :
+theorem exists_pow_lt_of_lt_one {a b : ℝ≥0} (ha : 0 < a) (hb : b < 1) :
     ∃ n : ℕ, b ^ n < a := by
   simpa only [← coe_pow, NNReal.coe_lt_coe] using
-    exists_pow_lt_of_lt_one (NNReal.coe_pos.2 ha) (NNReal.coe_lt_coe.2 hb)
+    _root_.exists_pow_lt_of_lt_one (NNReal.coe_pos.2 ha) (NNReal.coe_lt_coe.2 hb)
 
-nonrec theorem exists_mem_Ico_zpow {x : ℝ≥0} {y : ℝ≥0} (hx : x ≠ 0) (hy : 1 < y) :
+theorem exists_mem_Ico_zpow {x : ℝ≥0} {y : ℝ≥0} (hx : x ≠ 0) (hy : 1 < y) :
     ∃ n : ℤ, x ∈ Set.Ico (y ^ n) (y ^ (n + 1)) :=
-  exists_mem_Ico_zpow hx.bot_lt hy
+  _root_.exists_mem_Ico_zpow hx.bot_lt hy
 
-nonrec theorem exists_mem_Ioc_zpow {x : ℝ≥0} {y : ℝ≥0} (hx : x ≠ 0) (hy : 1 < y) :
+theorem exists_mem_Ioc_zpow {x : ℝ≥0} {y : ℝ≥0} (hx : x ≠ 0) (hy : 1 < y) :
     ∃ n : ℤ, x ∈ Set.Ioc (y ^ n) (y ^ (n + 1)) :=
-  exists_mem_Ioc_zpow hx.bot_lt hy
+  _root_.exists_mem_Ioc_zpow hx.bot_lt hy
 
 end Pow
 
@@ -791,11 +791,11 @@ theorem le_of_forall_lt_one_mul_le {x y : ℝ≥0} (h : ∀ a < 1, a * x ≤ y) 
     have : a * x⁻¹ * x ≤ y := h _ this
     rwa [mul_assoc, inv_mul_cancel₀ hx, mul_one] at this
 
-nonrec theorem half_le_self (a : ℝ≥0) : a / 2 ≤ a :=
-  half_le_self bot_le
+theorem half_le_self (a : ℝ≥0) : a / 2 ≤ a :=
+  _root_.half_le_self bot_le
 
-nonrec theorem half_lt_self {a : ℝ≥0} (h : a ≠ 0) : a / 2 < a :=
-  half_lt_self h.bot_lt
+theorem half_lt_self {a : ℝ≥0} (h : a ≠ 0) : a / 2 < a :=
+  _root_.half_lt_self h.bot_lt
 
 theorem div_lt_one_of_lt {a b : ℝ≥0} (h : a < b) : a / b < 1 := by
   rwa [div_lt_iff₀ h.bot_lt, one_mul]
@@ -839,7 +839,7 @@ variable {ι : Sort*} {f : ι → ℝ≥0}
 theorem le_toNNReal_of_coe_le {x : ℝ≥0} {y : ℝ} (h : ↑x ≤ y) : x ≤ y.toNNReal :=
   (le_toNNReal_iff_coe_le <| x.2.trans h).2 h
 
-nonrec theorem sSup_of_not_bddAbove {s : Set ℝ≥0} (hs : ¬BddAbove s) : SupSet.sSup s = 0 := by
+theorem sSup_of_not_bddAbove {s : Set ℝ≥0} (hs : ¬BddAbove s) : SupSet.sSup s = 0 := by
   grind [csSup_of_not_bddAbove, csSup_empty, bot_eq_zero']
 
 theorem iSup_of_not_bddAbove (hf : ¬BddAbove (range f)) : ⨆ i, f i = 0 :=

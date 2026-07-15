@@ -534,15 +534,15 @@ any two vertices. -/
 abbrev IsThin :=
   Quiver.IsThin S.objs
 
-nonrec theorem isThin_iff : S.IsThin ↔ ∀ c : S.objs, Subsingleton (S.arrows c c) := isThin_iff _
+theorem isThin_iff : S.IsThin ↔ ∀ c : S.objs, Subsingleton (S.arrows c c) := Groupoid.isThin_iff _
 
 end Thin
 
 section Disconnected
 
 /-- A subgroupoid `IsTotallyDisconnected` if it has only isotropy arrows. -/
-nonrec abbrev IsTotallyDisconnected :=
-  IsTotallyDisconnected S.objs
+abbrev IsTotallyDisconnected :=
+  Groupoid.IsTotallyDisconnected S.objs
 
 theorem isTotallyDisconnected_iff :
     S.IsTotallyDisconnected ↔ ∀ c d, (S.arrows c d).Nonempty → c = d := by

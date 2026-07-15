@@ -239,28 +239,28 @@ open EulerProduct
 complete normed commutative ring `R`: if `‖f ·‖` is summable, then
 `∏' p : Nat.Primes, ∑' e, f (p ^ e) = ∑' n, f n`.
 This version is stated in terms of `HasProd`. -/
-nonrec theorem IsMultiplicative.eulerProduct_hasProd {f : ArithmeticFunction R}
+theorem IsMultiplicative.eulerProduct_hasProd {f : ArithmeticFunction R}
     (hf : f.IsMultiplicative) (hsum : Summable (‖f ·‖)) :
     HasProd (fun p : Primes ↦ ∑' e, f (p ^ e)) (∑' n, f n) :=
-  eulerProduct_hasProd hf.1 hf.2 hsum f.map_zero
+  EulerProduct.eulerProduct_hasProd hf.1 hf.2 hsum f.map_zero
 
 open Filter in
 /-- The *Euler Product* for a multiplicative arithmetic function `f` with values in a
 complete normed commutative ring `R`: if `‖f ·‖` is summable, then
 `∏' p : Nat.Primes, ∑' e, f (p ^ e) = ∑' n, f n`.
 This version is stated in the form of convergence of finite partial products. -/
-nonrec theorem IsMultiplicative.eulerProduct {f : ArithmeticFunction R} (hf : f.IsMultiplicative)
+theorem IsMultiplicative.eulerProduct {f : ArithmeticFunction R} (hf : f.IsMultiplicative)
     (hsum : Summable (‖f ·‖)) :
     Tendsto (fun n : ℕ ↦ ∏ p ∈ primesBelow n, ∑' e, f (p ^ e)) atTop (𝓝 (∑' n, f n)) :=
-  eulerProduct hf.1 hf.2 hsum f.map_zero
+  EulerProduct.eulerProduct hf.1 hf.2 hsum f.map_zero
 
 /-- The *Euler Product* for a multiplicative arithmetic function `f` with values in a
 complete normed commutative ring `R`: if `‖f ·‖` is summable, then
 `∏' p : Nat.Primes, ∑' e, f (p ^ e) = ∑' n, f n`. -/
-nonrec theorem IsMultiplicative.eulerProduct_tprod {f : ArithmeticFunction R}
+theorem IsMultiplicative.eulerProduct_tprod {f : ArithmeticFunction R}
     (hf : f.IsMultiplicative) (hsum : Summable (‖f ·‖)) :
     ∏' p : Primes, ∑' e, f (p ^ e) = ∑' n, f n :=
-  eulerProduct_tprod hf.1 hf.2 hsum f.map_zero
+  EulerProduct.eulerProduct_tprod hf.1 hf.2 hsum f.map_zero
 
 end ArithmeticFunction
 

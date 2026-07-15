@@ -470,9 +470,9 @@ theorem card_eq : Fintype.card (X q) = q ^ 2 := by
   rw [Fintype.card_prod, ZMod.card q, sq]
 
 /-- There are strictly fewer than `q^2` units, since `0` is not a unit. -/
-nonrec theorem card_units_lt (w : 1 < q) : Fintype.card (X q)ˣ < q ^ 2 := by
+theorem card_units_lt (w : 1 < q) : Fintype.card (X q)ˣ < q ^ 2 := by
   have : Fact (1 < (q : ℕ)) := ⟨w⟩
-  convert! card_units_lt (X q)
+  convert! _root_.card_units_lt (X q)
   rw [card_eq]
 
 end X

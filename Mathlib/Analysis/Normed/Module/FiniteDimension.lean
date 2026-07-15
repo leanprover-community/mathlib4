@@ -579,7 +579,7 @@ theorem exists_mem_frontier_infDist_compl_eq_dist {E : Type*} [NormedAddCommGrou
 /-- If `K` is a compact set in a nontrivial real normed space and `x ∈ K`, then there exists a point
 `y` of the boundary of `K` at distance `Metric.infDist x Kᶜ` from `x`. See also
 `exists_mem_frontier_infDist_compl_eq_dist`. -/
-nonrec theorem IsCompact.exists_mem_frontier_infDist_compl_eq_dist {E : Type*}
+theorem IsCompact.exists_mem_frontier_infDist_compl_eq_dist {E : Type*}
     [NormedAddCommGroup E] [NormedSpace ℝ E] [Nontrivial E] {x : E} {K : Set E} (hK : IsCompact K)
     (hx : x ∈ K) :
     ∃ y ∈ frontier K, Metric.infDist x Kᶜ = dist x y := by
@@ -591,7 +591,7 @@ nonrec theorem IsCompact.exists_mem_frontier_infDist_compl_eq_dist {E : Type*}
     have : FiniteDimensional ℝ E :=
       .of_isCompact_closedBall ℝ hr₀
         (hK.of_isClosed_subset Metric.isClosed_closedBall hrK)
-    exact exists_mem_frontier_infDist_compl_eq_dist hx hK.ne_univ
+    exact _root_.exists_mem_frontier_infDist_compl_eq_dist hx hK.ne_univ
   · refine ⟨x, hx', ?_⟩
     rw [frontier_eq_closure_inter_closure] at hx'
     rw [Metric.infDist_zero_of_mem_closure hx'.2, dist_self]

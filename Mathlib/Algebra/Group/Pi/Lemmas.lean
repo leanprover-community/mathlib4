@@ -252,8 +252,8 @@ This is the `OneHom` version of `Pi.mulSingle`. -/
   as functions supported at a point.
 
   This is the `ZeroHom` version of `Pi.single`. -/]
-nonrec def OneHom.mulSingle [∀ i, One <| f i] (i : I) : OneHom (f i) (∀ i, f i) where
-  toFun := mulSingle i
+def OneHom.mulSingle [∀ i, One <| f i] (i : I) : OneHom (f i) (∀ i, f i) where
+  toFun := Pi.mulSingle i
   map_one' := mulSingle_one i
 
 @[to_additive (attr := simp)]

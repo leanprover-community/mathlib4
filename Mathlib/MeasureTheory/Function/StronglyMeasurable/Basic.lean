@@ -325,10 +325,10 @@ theorem _root_.Continuous.comp_stronglyMeasurable {_ : MeasurableSpace α} [Topo
   ⟨fun n => SimpleFunc.map g (hf.approx n), fun x => (hg.tendsto _).comp (hf.tendsto_approx x)⟩
 
 @[to_additive]
-nonrec theorem measurableSet_mulSupport {m : MeasurableSpace α} [One β] [TopologicalSpace β]
+theorem measurableSet_mulSupport {m : MeasurableSpace α} [One β] [TopologicalSpace β]
     [MetrizableSpace β] (hf : StronglyMeasurable f) : MeasurableSet (mulSupport f) := by
   borelize β
-  exact measurableSet_mulSupport hf.measurable
+  exact _root_.measurableSet_mulSupport hf.measurable
 
 protected theorem mono {m m' : MeasurableSpace α} [TopologicalSpace β]
     (hf : StronglyMeasurable[m'] f) (h_mono : m' ≤ m) : StronglyMeasurable[m] f := by
@@ -549,11 +549,11 @@ theorem _root_.stronglyMeasurable_const_smul_iff {m : MeasurableSpace α} (c : G
     (StronglyMeasurable fun x => c • f x) ↔ StronglyMeasurable f :=
   ⟨fun h => by simpa only [inv_smul_smul] using h.fun_const_smul c⁻¹, fun h => h.const_smul c⟩
 
-nonrec theorem _root_.IsUnit.stronglyMeasurable_const_smul_iff {_ : MeasurableSpace α} {c : M}
+theorem _root_.IsUnit.stronglyMeasurable_const_smul_iff {_ : MeasurableSpace α} {c : M}
     (hc : IsUnit c) :
     (StronglyMeasurable fun x => c • f x) ↔ StronglyMeasurable f :=
   let ⟨u, hu⟩ := hc
-  hu ▸ stronglyMeasurable_const_smul_iff u
+  hu ▸ _root_.stronglyMeasurable_const_smul_iff u
 
 theorem _root_.stronglyMeasurable_const_smul_iff₀ {_ : MeasurableSpace α} {c : G₀} (hc : c ≠ 0) :
     (StronglyMeasurable fun x => c • f x) ↔ StronglyMeasurable f :=

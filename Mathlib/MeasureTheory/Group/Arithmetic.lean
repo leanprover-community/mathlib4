@@ -523,7 +523,7 @@ instance Pi.instMeasurableConstSMul {ι : Type*} {α : ι → Type*} [∀ i, SMu
 
 /-- If a scalar is central, then its right action is measurable when its left action is. -/
 @[to_additive]
-nonrec instance MulOpposite.instMeasurableConstSMul [SMul M α] [SMul Mᵐᵒᵖ α] [IsCentralScalar M α]
+instance MulOpposite.instMeasurableConstSMul [SMul M α] [SMul Mᵐᵒᵖ α] [IsCentralScalar M α]
     [MeasurableConstSMul M α] : MeasurableConstSMul Mᵐᵒᵖ α where
   measurable_const_smul := by simpa using measurable_const_smul
 
@@ -647,16 +647,16 @@ instance Units.instMeasurableConstSMul : MeasurableConstSMul Mˣ β where
   measurable_const_smul c := measurable_const_smul (c : M)
 
 @[to_additive]
-nonrec theorem IsUnit.measurable_const_smul_iff {c : M} (hc : IsUnit c) :
+theorem IsUnit.measurable_const_smul_iff {c : M} (hc : IsUnit c) :
     (Measurable fun x => c • f x) ↔ Measurable f :=
   let ⟨u, hu⟩ := hc
-  hu ▸ measurable_const_smul_iff u
+  hu ▸ _root_.measurable_const_smul_iff u
 
 @[to_additive]
-nonrec theorem IsUnit.aemeasurable_const_smul_iff {c : M} (hc : IsUnit c) :
+theorem IsUnit.aemeasurable_const_smul_iff {c : M} (hc : IsUnit c) :
     AEMeasurable (fun x => c • f x) μ ↔ AEMeasurable f μ :=
   let ⟨u, hu⟩ := hc
-  hu ▸ aemeasurable_const_smul_iff u
+  hu ▸ _root_.aemeasurable_const_smul_iff u
 
 end MeasurableConstSMul
 
@@ -724,16 +724,16 @@ instance MulOpposite.instMeasurableMul₂ {M : Type*} [Mul M] [MeasurableSpace M
 
 /-- If a scalar is central, then its right action is measurable when its left action is. -/
 @[to_additive]
-nonrec instance MeasurableSMul.op {M α} [MeasurableSpace M] [MeasurableSpace α] [SMul M α]
+instance MeasurableSMul.op {M α} [MeasurableSpace M] [MeasurableSpace α] [SMul M α]
     [SMul Mᵐᵒᵖ α] [IsCentralScalar M α] [MeasurableSMul M α] : MeasurableSMul Mᵐᵒᵖ α where
   measurable_smul_const x :=
-    show Measurable fun c => op (unop c) • x by
+    show Measurable fun c => MulOpposite.op (unop c) • x by
       simpa only [op_smul_eq_smul] using! (measurable_smul_const x).comp measurable_mul_unop
 
 /-- If a scalar is central, then its right action is measurable when its left action is. -/
-nonrec instance MeasurableSMul₂.op {M α} [MeasurableSpace M] [MeasurableSpace α] [SMul M α]
+instance MeasurableSMul₂.op {M α} [MeasurableSpace M] [MeasurableSpace α] [SMul M α]
     [SMul Mᵐᵒᵖ α] [IsCentralScalar M α] [MeasurableSMul₂ M α] : MeasurableSMul₂ Mᵐᵒᵖ α :=
-  ⟨show Measurable fun x : Mᵐᵒᵖ × α => op (unop x.1) • x.2 by
+  ⟨show Measurable fun x : Mᵐᵒᵖ × α => MulOpposite.op (unop x.1) • x.2 by
       simp_rw [op_smul_eq_smul]
       exact (measurable_mul_unop.comp measurable_fst).smul measurable_snd⟩
 

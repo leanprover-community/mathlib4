@@ -164,12 +164,12 @@ theorem mul_right_distrib [Distrib α] (x : Holor α ds₁) (y : Holor α ds₁)
     (x + y) ⊗ z = x ⊗ z + y ⊗ z := funext fun t => add_mul (x t.take) (y t.take) (z t.drop)
 
 @[simp]
-nonrec theorem zero_mul {α : Type} [MulZeroClass α] (x : Holor α ds₂) : (0 : Holor α ds₁) ⊗ x = 0 :=
-  funext fun t => zero_mul (x (HolorIndex.drop t))
+theorem zero_mul {α : Type} [MulZeroClass α] (x : Holor α ds₂) : (0 : Holor α ds₁) ⊗ x = 0 :=
+  funext fun t => MulZeroClass.zero_mul (x (HolorIndex.drop t))
 
 @[simp]
-nonrec theorem mul_zero {α : Type} [MulZeroClass α] (x : Holor α ds₁) : x ⊗ (0 : Holor α ds₂) = 0 :=
-  funext fun t => mul_zero (x (HolorIndex.take t))
+theorem mul_zero {α : Type} [MulZeroClass α] (x : Holor α ds₁) : x ⊗ (0 : Holor α ds₂) = 0 :=
+  funext fun t => MulZeroClass.mul_zero (x (HolorIndex.take t))
 
 theorem mul_scalar_mul [Mul α] (x : Holor α []) (y : Holor α ds) :
     x ⊗ y = x ⟨[], Forall₂.nil⟩ • y := by

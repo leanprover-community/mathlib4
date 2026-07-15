@@ -182,8 +182,8 @@ theorem OneOneEquiv.to_many_one {α β} [Primcodable α] [Primcodable β] {p : �
   | ⟨pq, qp⟩ => ⟨pq.to_many_one, qp.to_many_one⟩
 
 /-- a computable bijection -/
-nonrec def Equiv.Computable {α β} [Primcodable α] [Primcodable β] (e : α ≃ β) :=
-  Computable e ∧ Computable e.symm
+def Equiv.Computable {α β} [Primcodable α] [Primcodable β] (e : α ≃ β) :=
+  _root_.Computable e ∧ _root_.Computable e.symm
 
 theorem Equiv.Computable.symm {α β} [Primcodable α] [Primcodable β] {e : α ≃ β} :
     e.Computable → e.symm.Computable :=

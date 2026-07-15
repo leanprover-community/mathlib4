@@ -404,8 +404,8 @@ variable {δ : Type*} [TopologicalSpace δ] [DiscreteTopology δ]
 
 /-- A version of `Function.extend` for bounded continuous maps. We assume that the domain has
 discrete topology, so we only need to verify boundedness. -/
-nonrec def extend (f : α ↪ δ) (g : α →ᵇ β) (h : δ →ᵇ β) : δ →ᵇ β where
-  toFun := extend f g h
+def extend (f : α ↪ δ) (g : α →ᵇ β) (h : δ →ᵇ β) : δ →ᵇ β where
+  toFun := Function.extend f g h
   continuous_toFun := continuous_of_discreteTopology
   map_bounded' := by
     rw [← isBounded_range_iff, range_extend f.injective]
@@ -416,12 +416,12 @@ theorem extend_apply (f : α ↪ δ) (g : α →ᵇ β) (h : δ →ᵇ β) (x : 
   f.injective.extend_apply _ _ _
 
 @[simp]
-nonrec theorem extend_comp (f : α ↪ δ) (g : α →ᵇ β) (h : δ →ᵇ β) : extend f g h ∘ f = g :=
-  extend_comp f.injective _ _
+theorem extend_comp (f : α ↪ δ) (g : α →ᵇ β) (h : δ →ᵇ β) : extend f g h ∘ f = g :=
+  Function.extend_comp f.injective _ _
 
-nonrec theorem extend_apply' {f : α ↪ δ} {x : δ} (hx : x ∉ range f) (g : α →ᵇ β) (h : δ →ᵇ β) :
+theorem extend_apply' {f : α ↪ δ} {x : δ} (hx : x ∉ range f) (g : α →ᵇ β) (h : δ →ᵇ β) :
     extend f g h x = h x :=
-  extend_apply' _ _ _ hx
+  Function.extend_apply' _ _ _ hx
 
 theorem extend_of_empty [IsEmpty α] (f : α ↪ δ) (g : α →ᵇ β) (h : δ →ᵇ β) : extend f g h = h :=
   DFunLike.coe_injective <| Function.extend_of_isEmpty f g h

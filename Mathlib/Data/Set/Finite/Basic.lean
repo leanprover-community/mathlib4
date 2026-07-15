@@ -162,9 +162,9 @@ protected theorem toFinset_setOf [Fintype α] (p : α → Prop) [DecidablePred p
     (h : { x | p x }.Finite) : h.toFinset = ({x | p x} : Finset α) := by simp
 
 @[simp]
-nonrec theorem disjoint_toFinset {hs : s.Finite} {ht : t.Finite} :
+theorem disjoint_toFinset {hs : s.Finite} {ht : t.Finite} :
     Disjoint hs.toFinset ht.toFinset ↔ Disjoint s t :=
-  @disjoint_toFinset _ _ _ hs.fintype ht.fintype
+  @Set.disjoint_toFinset _ _ _ hs.fintype ht.fintype
 
 protected theorem toFinset_inter [DecidableEq α] (hs : s.Finite) (ht : t.Finite)
     (h : (s ∩ t).Finite) : h.toFinset = hs.toFinset ∩ ht.toFinset := by

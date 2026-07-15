@@ -325,9 +325,9 @@ theorem support_sup [DecidableEq ι] (f g : ι →₀ α) : (f ⊔ g).support = 
   ext
   simp [imp_iff_not_or]
 
-nonrec theorem disjoint_iff {f g : ι →₀ α} : Disjoint f g ↔ Disjoint f.support g.support := by
+theorem disjoint_iff {f g : ι →₀ α} : Disjoint f g ↔ Disjoint f.support g.support := by
   classical
-  simp [disjoint_iff, bot_eq_zero, ← Finsupp.support_eq_empty]
+  simp [_root_.disjoint_iff, bot_eq_zero, ← Finsupp.support_eq_empty]
 
 end LinearOrder
 

@@ -233,9 +233,9 @@ theorem asymptoticCone_sUnion {S : Set (Set P)} (hS : S.Finite) :
     asymptoticCone k (⋃₀ S) = ⋃ s ∈ S, asymptoticCone k s := by
   rw [Set.sUnion_eq_biUnion, asymptoticCone_biUnion hS]
 
-nonrec theorem Finset.asymptoticCone_biUnion {ι : Type*} (s : Finset ι) (f : ι → Set P) :
+theorem Finset.asymptoticCone_biUnion {ι : Type*} (s : Finset ι) (f : ι → Set P) :
     asymptoticCone k (⋃ i ∈ s, f i) = ⋃ i ∈ s, asymptoticCone k (f i) :=
-  asymptoticCone_biUnion s.finite_toSet f
+  _root_.asymptoticCone_biUnion s.finite_toSet f
 
 theorem asymptoticCone_iUnion_of_finite {ι : Type*} [Finite ι] (f : ι → Set P) :
     asymptoticCone k (⋃ i, f i) = ⋃ i, asymptoticCone k (f i) := by

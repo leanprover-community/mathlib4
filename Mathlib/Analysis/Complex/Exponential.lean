@@ -206,7 +206,7 @@ variable (x y : ℝ)
 @[simp]
 theorem exp_zero : exp 0 = 1 := by simp [Real.exp]
 
-nonrec theorem exp_add : exp (x + y) = exp x * exp y := by simp [exp_add, exp]
+theorem exp_add : exp (x + y) = exp x * exp y := by simp [Complex.exp_add, exp]
 
 /-- the exponential function as a monoid hom from `Multiplicative ℝ` to `ℝ` -/
 @[simps]
@@ -228,15 +228,15 @@ theorem exp_sum {α : Type*} (s : Finset α) (f : α → ℝ) :
 lemma exp_nsmul (x : ℝ) (n : ℕ) : exp (n • x) = exp x ^ n :=
   @MonoidHom.map_pow (Multiplicative ℝ) ℝ _ _ expMonoidHom _ _
 
-nonrec theorem exp_nat_mul (x : ℝ) (n : ℕ) : exp (n * x) = exp x ^ n :=
-  ofReal_injective (by simp [exp_nat_mul])
+theorem exp_nat_mul (x : ℝ) (n : ℕ) : exp (n * x) = exp x ^ n :=
+  ofReal_injective (by simp [Complex.exp_nat_mul])
 
 @[simp]
-nonrec theorem exp_ne_zero : exp x ≠ 0 := fun h =>
-  exp_ne_zero x <| by rw [exp, ← ofReal_inj] at h; simp_all
+theorem exp_ne_zero : exp x ≠ 0 := fun h =>
+  Complex.exp_ne_zero x <| by rw [exp, ← ofReal_inj] at h; simp_all
 
-nonrec theorem exp_neg : exp (-x) = (exp x)⁻¹ :=
-  ofReal_injective <| by simp [exp_neg]
+theorem exp_neg : exp (-x) = (exp x)⁻¹ :=
+  ofReal_injective <| by simp [Complex.exp_neg]
 
 theorem exp_sub : exp (x - y) = exp x / exp y := by
   simp [sub_eq_add_neg, exp_add, exp_neg, div_eq_mul_inv]
@@ -512,10 +512,10 @@ namespace Real
 
 open Complex Finset
 
-nonrec theorem exp_bound {x : ℝ} (hx : |x| ≤ 1) {n : ℕ} (hn : 0 < n) :
+theorem exp_bound {x : ℝ} (hx : |x| ≤ 1) {n : ℕ} (hn : 0 < n) :
     |exp x - ∑ m ∈ range n, x ^ m / m.factorial| ≤ |x| ^ n * (n.succ / (n.factorial * n)) := by
   have hxc : ‖(x : ℂ)‖ ≤ 1 := mod_cast hx
-  convert exp_bound hxc hn <;>
+  convert Complex.exp_bound hxc hn <;>
   norm_cast
 
 theorem exp_bound' {x : ℝ} (h1 : 0 ≤ x) (h2 : x ≤ 1) {n : ℕ} (hn : 0 < n) :

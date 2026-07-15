@@ -869,13 +869,13 @@ instance isHaarMeasure_map_mul_right [BorelSpace G] [IsTopologicalGroup G] (g : 
 
 /-- A convenience wrapper for `MeasureTheory.Measure.isHaarMeasure_map`. -/
 @[to_additive /-- A convenience wrapper for `MeasureTheory.Measure.isAddHaarMeasure_map`. -/]
-nonrec theorem _root_.MulEquiv.isHaarMeasure_map [BorelSpace G] [ContinuousMul G] {H : Type*}
+theorem _root_.MulEquiv.isHaarMeasure_map [BorelSpace G] [ContinuousMul G] {H : Type*}
     [Group H] [TopologicalSpace H] [MeasurableSpace H] [BorelSpace H]
     [IsTopologicalGroup H] (e : G ≃* H) (he : Continuous e) (hesymm : Continuous e.symm) :
     IsHaarMeasure (Measure.map e μ) :=
   let f : G ≃ₜ H := .mk e he hesymm
   -- We need to write `e.toMonoidHom` instead of just `e`, to avoid unification issues.
-  isHaarMeasure_map μ e.toMonoidHom he e.surjective f.isClosedEmbedding.tendsto_cocompact
+  Measure.isHaarMeasure_map μ e.toMonoidHom he e.surjective f.isClosedEmbedding.tendsto_cocompact
 
 /--
 A convenience wrapper for `MeasureTheory.Measure.isHaarMeasure_map`.

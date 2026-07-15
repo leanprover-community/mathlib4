@@ -598,9 +598,9 @@ namespace Module.Basis
 set_option backward.defeqAttrib.useBackward true in
 /-- The determinant of a family of vectors with respect to some basis, as an alternating
 multilinear map. -/
-nonrec def det : M [⋀^ι]→ₗ[R] R where
+def det : M [⋀^ι]→ₗ[R] R where
   toMultilinearMap :=
-    MultilinearMap.mk' (fun v ↦ det (e.toMatrix v))
+    MultilinearMap.mk' (fun v ↦ Matrix.det (e.toMatrix v))
       (fun v i x y ↦ by
         simp only [e.toMatrix_update, map_add, Finsupp.coe_add, det_updateCol_add])
       (fun u i c x ↦ by

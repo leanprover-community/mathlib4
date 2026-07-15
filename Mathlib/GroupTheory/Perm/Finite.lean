@@ -136,14 +136,14 @@ theorem mem_sumCongrHom_range_of_perm_mapsTo_inl {m n : Type*} [Finite m] [Finit
       apply_ofInjective_symm Sum.inr_injective, ofInjective_apply]
     rfl
 
-nonrec theorem Disjoint.orderOf {σ τ : Perm α} (hστ : Disjoint σ τ) :
-    orderOf (σ * τ) = Nat.lcm (orderOf σ) (orderOf τ) :=
+theorem Disjoint.orderOf {σ τ : Perm α} (hστ : Disjoint σ τ) :
+    _root_.orderOf (σ * τ) = Nat.lcm (_root_.orderOf σ) (_root_.orderOf τ) :=
   haveI h : ∀ n : ℕ, (σ * τ) ^ n = 1 ↔ σ ^ n = 1 ∧ τ ^ n = 1 := fun n => by
     rw [hστ.commute.mul_pow, Disjoint.mul_eq_one_iff (hστ.pow_disjoint_pow n n)]
   Nat.dvd_antisymm hστ.commute.orderOf_mul_dvd_lcm
     (Nat.lcm_dvd
-      (orderOf_dvd_of_pow_eq_one ((h (orderOf (σ * τ))).mp (pow_orderOf_eq_one (σ * τ))).1)
-      (orderOf_dvd_of_pow_eq_one ((h (orderOf (σ * τ))).mp (pow_orderOf_eq_one (σ * τ))).2))
+      (orderOf_dvd_of_pow_eq_one ((h (_root_.orderOf (σ * τ))).mp (pow_orderOf_eq_one (σ * τ))).1)
+      (orderOf_dvd_of_pow_eq_one ((h (_root_.orderOf (σ * τ))).mp (pow_orderOf_eq_one (σ * τ))).2))
 
 theorem Disjoint.extendDomain {p : β → Prop} [DecidablePred p] (f : α ≃ Subtype p)
     {σ τ : Perm α} (h : Disjoint σ τ) : Disjoint (σ.extendDomain f) (τ.extendDomain f) := by

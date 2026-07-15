@@ -242,11 +242,11 @@ def Closeds.compl (s : Closeds α) : Opens α :=
 def Opens.compl (s : Opens α) : Closeds α :=
   ⟨sᶜ, s.2.isClosed_compl⟩
 
-nonrec theorem Closeds.compl_compl (s : Closeds α) : s.compl.compl = s :=
-  Closeds.ext (compl_compl (s : Set α))
+theorem Closeds.compl_compl (s : Closeds α) : s.compl.compl = s :=
+  Closeds.ext (_root_.compl_compl (s : Set α))
 
-nonrec theorem Opens.compl_compl (s : Opens α) : s.compl.compl = s :=
-  Opens.ext (compl_compl (s : Set α))
+theorem Opens.compl_compl (s : Opens α) : s.compl.compl = s :=
+  Opens.ext (_root_.compl_compl (s : Set α))
 
 theorem Closeds.compl_bijective : Function.Bijective (@Closeds.compl α _) :=
   Function.bijective_iff_has_inverse.mpr ⟨Opens.compl, Closeds.compl_compl, Opens.compl_compl⟩

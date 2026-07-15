@@ -104,13 +104,13 @@ theorem midpoint_pointReflection_right (x y : P) :
     midpoint R y (Equiv.pointReflection x y) = x :=
   midpoint_eq_iff.2 rfl
 
-nonrec lemma AffineEquiv.midpoint_pointReflection_left (x y : P) :
+lemma AffineEquiv.midpoint_pointReflection_left (x y : P) :
     midpoint R (pointReflection R x y) y = x :=
-  midpoint_pointReflection_left x y
+  _root_.midpoint_pointReflection_left x y
 
-nonrec lemma AffineEquiv.midpoint_pointReflection_right (x y : P) :
+lemma AffineEquiv.midpoint_pointReflection_right (x y : P) :
     midpoint R y (pointReflection R x y) = x :=
-  midpoint_pointReflection_right x y
+  _root_.midpoint_pointReflection_right x y
 
 @[simp]
 theorem midpoint_vsub_left (p₁ p₂ : P) : midpoint R p₁ p₂ -ᵥ p₁ = (⅟2 : R) • (p₂ -ᵥ p₁) :=

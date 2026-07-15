@@ -348,8 +348,8 @@ variable {G α}
 
 /-- The orbit corresponding to an element of the quotient by `MulAction.orbitRel` -/
 @[to_additive /-- The orbit corresponding to an element of the quotient by `AddAction.orbitRel` -/]
-nonrec def orbitRel.Quotient.orbit (x : orbitRel.Quotient G α) : Set α :=
-  Quotient.liftOn' x (orbit G) fun _ _ => MulAction.orbit_eq_iff.2
+def orbitRel.Quotient.orbit (x : orbitRel.Quotient G α) : Set α :=
+  Quotient.liftOn' x (MulAction.orbit G) fun _ _ => MulAction.orbit_eq_iff.2
 
 @[to_additive (attr := simp)]
 theorem orbitRel.Quotient.orbit_mk (a : α) :
@@ -396,16 +396,16 @@ lemma orbitRel.quotient_eq_of_quotient_subgroup_eq' {H : Subgroup G} {a b : α}
   orbitRel.quotient_eq_of_quotient_subgroup_eq h
 
 @[to_additive]
-nonrec lemma orbitRel.Quotient.nonempty_orbit (x : orbitRel.Quotient G α) :
+lemma orbitRel.Quotient.nonempty_orbit (x : orbitRel.Quotient G α) :
     Set.Nonempty x.orbit := by
   rw [orbitRel.Quotient.orbit_eq_orbit_out x Quotient.out_eq']
-  exact nonempty_orbit _
+  exact MulAction.nonempty_orbit _
 
 @[to_additive]
-nonrec lemma orbitRel.Quotient.mapsTo_smul_orbit (g : G) (x : orbitRel.Quotient G α) :
+lemma orbitRel.Quotient.mapsTo_smul_orbit (g : G) (x : orbitRel.Quotient G α) :
     Set.MapsTo (g • ·) x.orbit x.orbit := by
   rw [orbitRel.Quotient.orbit_eq_orbit_out x Quotient.out_eq']
-  exact mapsTo_smul_orbit g x.out
+  exact MulAction.mapsTo_smul_orbit g x.out
 
 @[to_additive]
 instance (x : orbitRel.Quotient G α) : MulAction G x.orbit where

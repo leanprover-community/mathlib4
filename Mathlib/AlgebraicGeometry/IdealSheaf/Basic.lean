@@ -561,9 +561,9 @@ set_option backward.isDefEq.respectTransparency false in
 which is the largest ideal sheaf whose support is equal to it.
 The reduced induced scheme structure on the closed set is the quotient of this ideal. -/
 @[simps! ideal coe_support]
-noncomputable nonrec def vanishingIdeal (Z : Closeds X) : IdealSheafData X :=
+noncomputable def vanishingIdeal (Z : Closeds X) : IdealSheafData X :=
   mkOfMemSupportIff
-    (fun U ↦ vanishingIdeal (U.2.fromSpec ⁻¹' Z))
+    (fun U ↦ PrimeSpectrum.vanishingIdeal (U.2.fromSpec ⁻¹' Z))
     (fun U f ↦ by
       let F := X.presheaf.map (homOfLE (X.basicOpen_le f)).op
       apply le_antisymm
@@ -586,7 +586,7 @@ noncomputable nonrec def vanishingIdeal (Z : Closeds X) : IdealSheafData X :=
         rw [← U.2.map_fromSpec (X.affineBasicOpen f).2 (homOfLE (X.basicOpen_le f)).op,
           Scheme.Hom.comp_base, TopCat.coe_comp, Set.preimage_comp] at hx
         generalize U.2.fromSpec ⁻¹' Z = Z' at hx ⊢
-        replace hx : x ∈ vanishingIdeal (Spec.map F ⁻¹' Z') := hx
+        replace hx : x ∈ PrimeSpectrum.vanishingIdeal (Spec.map F ⁻¹' Z') := hx
         obtain ⟨I, hI, e⟩ :=
           (isClosed_iff_zeroLocus_radical_ideal _).mp (isClosed_closure (s := Z'))
         rw [← vanishingIdeal_closure,
@@ -598,7 +598,7 @@ noncomputable nonrec def vanishingIdeal (Z : Closeds X) : IdealSheafData X :=
           ← IsLocalization.map_radical (.powers f), ← vanishingIdeal_zeroLocus_eq_radical] at hx)
     Z
     (fun U x hxU ↦ by
-      trans x ∈ X.zeroLocus (U := U.1) (vanishingIdeal (U.2.fromSpec ⁻¹' Z)) ∩ U.1
+      trans x ∈ X.zeroLocus (U := U.1) (PrimeSpectrum.vanishingIdeal (U.2.fromSpec ⁻¹' Z)) ∩ U.1
       · rw [← U.2.fromSpec_image_zeroLocus, zeroLocus_vanishingIdeal_eq_closure,
           ← U.2.fromSpec.isOpenEmbedding.isOpenMap.preimage_closure_eq_closure_preimage
             U.2.fromSpec.continuous,

@@ -486,8 +486,8 @@ instance [DecidableEq α] (x : α) (s : Cycle α) : Decidable (x ∈ s) :=
   Quotient.recOnSubsingleton' s fun l => show Decidable (x ∈ l) from inferInstance
 
 /-- Reverse a `s : Cycle α` by reversing the underlying `List`. -/
-nonrec def reverse (s : Cycle α) : Cycle α :=
-  Quot.map reverse (fun _ _ => IsRotated.reverse) s
+def reverse (s : Cycle α) : Cycle α :=
+  Quot.map List.reverse (fun _ _ => IsRotated.reverse) s
 
 @[simp]
 theorem reverse_coe (l : List α) : (l : Cycle α).reverse = l.reverse :=
@@ -572,12 +572,12 @@ theorem length_nontrivial {s : Cycle α} (h : Nontrivial s) : 2 ≤ length s := 
   · simp [Nat.succ_le_succ_iff]
 
 /-- The `s : Cycle α` contains no duplicates. -/
-nonrec def Nodup (s : Cycle α) : Prop :=
-  Quot.liftOn s Nodup fun _l₁ _l₂ e => propext <| e.nodup_iff
+def Nodup (s : Cycle α) : Prop :=
+  Quot.liftOn s List.Nodup fun _l₁ _l₂ e => propext <| e.nodup_iff
 
 @[simp]
-nonrec theorem nodup_nil : Nodup (@nil α) :=
-  nodup_nil
+theorem nodup_nil : Nodup (@nil α) :=
+  List.nodup_nil
 
 @[simp]
 theorem nodup_coe_iff {l : List α} : Nodup (l : Cycle α) ↔ l.Nodup :=
@@ -716,9 +716,9 @@ theorem toFinset_eq_nil {s : Cycle α} : s.toFinset = ∅ ↔ s = Cycle.nil :=
   Quotient.inductionOn' s (by simp)
 
 /-- Given a `s : Cycle α` such that `Nodup s`, retrieve the next element after `x ∈ s`. -/
-nonrec def next : ∀ (s : Cycle α) (_hs : Nodup s) (x : α) (_hx : x ∈ s), α := fun s =>
+def next : ∀ (s : Cycle α) (_hs : Nodup s) (x : α) (_hx : x ∈ s), α := fun s =>
   Quot.hrecOn (motive := fun (s : Cycle α) => ∀ (_hs : Cycle.Nodup s) (x : α) (_hx : x ∈ s), α) s
-  (fun l _hn x hx => next l x hx) fun l₁ l₂ h =>
+  (fun l _hn x hx => List.next l x hx) fun l₁ l₂ h =>
     Function.hfunext (propext h.nodup_iff) fun h₁ h₂ _he =>
       Function.hfunext rfl fun x y hxy =>
         Function.hfunext (propext (by rw [eq_of_heq hxy]; simpa [eq_of_heq hxy] using h.mem_iff))
@@ -726,9 +726,9 @@ nonrec def next : ∀ (s : Cycle α) (_hs : Nodup s) (x : α) (_hx : x ∈ s), �
     (by rw [heq_iff_eq] at hxy; subst x; simpa using isRotated_next_eq h h₁ _)
 
 /-- Given a `s : Cycle α` such that `Nodup s`, retrieve the previous element before `x ∈ s`. -/
-nonrec def prev : ∀ (s : Cycle α) (_hs : Nodup s) (x : α) (_hx : x ∈ s), α := fun s =>
+def prev : ∀ (s : Cycle α) (_hs : Nodup s) (x : α) (_hx : x ∈ s), α := fun s =>
   Quot.hrecOn (motive := fun (s : Cycle α) => ∀ (_hs : Cycle.Nodup s) (x : α) (_hx : x ∈ s), α) s
-  (fun l _hn x hx => prev l x hx) fun l₁ l₂ h =>
+  (fun l _hn x hx => List.prev l x hx) fun l₁ l₂ h =>
     Function.hfunext (propext h.nodup_iff) fun h₁ h₂ _he =>
       Function.hfunext rfl fun x y hxy =>
         Function.hfunext (propext (by rw [eq_of_heq hxy]; simpa [eq_of_heq hxy] using h.mem_iff))
@@ -736,12 +736,12 @@ nonrec def prev : ∀ (s : Cycle α) (_hs : Nodup s) (x : α) (_hx : x ∈ s), �
     (by rw [heq_iff_eq] at hxy; subst x; simpa using isRotated_prev_eq h h₁ _)
 
 -- `simp` cannot infer the proofs: see `prev_reverse_eq_next'` for `@[simp]` lemma.
-nonrec theorem prev_reverse_eq_next (s : Cycle α) : ∀ (hs : Nodup s) (x : α) (hx : x ∈ s),
+theorem prev_reverse_eq_next (s : Cycle α) : ∀ (hs : Nodup s) (x : α) (hx : x ∈ s),
     s.reverse.prev (nodup_reverse_iff.mpr hs) x (mem_reverse_iff.mpr hx) = s.next hs x hx :=
-  Quotient.inductionOn' s prev_reverse_eq_next
+  Quotient.inductionOn' s List.prev_reverse_eq_next
 
 @[simp]
-nonrec theorem prev_reverse_eq_next' (s : Cycle α) (hs : Nodup s.reverse) (x : α)
+theorem prev_reverse_eq_next' (s : Cycle α) (hs : Nodup s.reverse) (x : α)
     (hx : x ∈ s.reverse) :
     s.reverse.prev hs x hx = s.next (nodup_reverse_iff.mp hs) x (mem_reverse_iff.mp hx) :=
   prev_reverse_eq_next s (nodup_reverse_iff.mp hs) x (mem_reverse_iff.mp hx)
@@ -757,23 +757,23 @@ theorem next_reverse_eq_prev' (s : Cycle α) (hs : Nodup s.reverse) (x : α) (hx
   simp [← prev_reverse_eq_next]
 
 @[simp]
-nonrec theorem next_mem (s : Cycle α) (hs : Nodup s) (x : α) (hx : x ∈ s) : s.next hs x hx ∈ s := by
+theorem next_mem (s : Cycle α) (hs : Nodup s) (x : α) (hx : x ∈ s) : s.next hs x hx ∈ s := by
   induction s using Quot.inductionOn
-  apply next_mem; assumption
+  apply List.next_mem; assumption
 
 theorem prev_mem (s : Cycle α) (hs : Nodup s) (x : α) (hx : x ∈ s) : s.prev hs x hx ∈ s := by
   rw [← next_reverse_eq_prev, ← mem_reverse_iff]
   apply next_mem
 
 @[simp]
-nonrec theorem prev_next (s : Cycle α) : ∀ (hs : Nodup s) (x : α) (hx : x ∈ s),
+theorem prev_next (s : Cycle α) : ∀ (hs : Nodup s) (x : α) (hx : x ∈ s),
     s.prev hs (s.next hs x hx) (next_mem s hs x hx) = x :=
-  Quotient.inductionOn' s prev_next
+  Quotient.inductionOn' s List.prev_next
 
 @[simp]
-nonrec theorem next_prev (s : Cycle α) : ∀ (hs : Nodup s) (x : α) (hx : x ∈ s),
+theorem next_prev (s : Cycle α) : ∀ (hs : Nodup s) (x : α) (hx : x ∈ s),
     s.next hs (s.prev hs x hx) (prev_mem s hs x hx) = x :=
-  Quotient.inductionOn' s next_prev
+  Quotient.inductionOn' s List.next_prev
 
 end Decidable
 
@@ -788,7 +788,7 @@ unsafe instance [Repr α] : Repr (Cycle α) :=
 /-- `chain R s` means that `R` holds between adjacent elements of `s`.
 
 `chain R ([a, b, c] : Cycle α) ↔ R a b ∧ R b c ∧ R c a` -/
-nonrec def Chain (r : α → α → Prop) (c : Cycle α) : Prop :=
+def Chain (r : α → α → Prop) (c : Cycle α) : Prop :=
   Quotient.liftOn' c
     (fun l =>
       match l with

@@ -169,17 +169,17 @@ theorem formPerm_apply_mem_eq_next (s : Cycle α) (h : Nodup s) (x : α) (hx : x
   induction s using Quot.inductionOn
   simpa using! List.formPerm_apply_mem_eq_next h _ (by simp_all)
 
-nonrec theorem formPerm_reverse (s : Cycle α) (h : Nodup s) :
+theorem formPerm_reverse (s : Cycle α) (h : Nodup s) :
     formPerm s.reverse (nodup_reverse_iff.mpr h) = (formPerm s h)⁻¹ := by
   induction s using Quot.inductionOn
-  simpa using formPerm_reverse _
+  simpa using List.formPerm_reverse _
 
-nonrec theorem formPerm_eq_formPerm_iff {α : Type*} [DecidableEq α] {s s' : Cycle α} {hs : s.Nodup}
+theorem formPerm_eq_formPerm_iff {α : Type*} [DecidableEq α] {s s' : Cycle α} {hs : s.Nodup}
     {hs' : s'.Nodup} :
     s.formPerm hs = s'.formPerm hs' ↔ s = s' ∨ s.Subsingleton ∧ s'.Subsingleton := by
   rw [Cycle.length_subsingleton_iff, Cycle.length_subsingleton_iff]
   induction s, s' using Quotient.inductionOn₂'
-  simpa using formPerm_eq_formPerm_iff hs hs'
+  simpa using List.formPerm_eq_formPerm_iff hs hs'
 
 end Cycle
 

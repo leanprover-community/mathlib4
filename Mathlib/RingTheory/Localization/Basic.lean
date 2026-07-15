@@ -461,12 +461,12 @@ noncomputable def _root_.IsLocalization.unique (R Rₘ) [CommSemiring R] [CommSe
 
 end
 
-nonrec theorem algEquiv_mk' (x : R) (y : M) : algEquiv M S (mk' (Localization M) x y) = mk' S x y :=
-  algEquiv_mk' _ _
+theorem algEquiv_mk' (x : R) (y : M) : algEquiv M S (mk' (Localization M) x y) = mk' S x y :=
+  IsLocalization.algEquiv_mk' _ _
 
-nonrec theorem algEquiv_symm_mk' (x : R) (y : M) :
+theorem algEquiv_symm_mk' (x : R) (y : M) :
     (algEquiv M S).symm (mk' S x y) = mk' (Localization M) x y :=
-  algEquiv_symm_mk' _ _
+  IsLocalization.algEquiv_symm_mk' _ _
 
 theorem algEquiv_mk (x y) : algEquiv M S (mk x y) = mk' S x y := by rw [mk_eq_mk', algEquiv_mk']
 

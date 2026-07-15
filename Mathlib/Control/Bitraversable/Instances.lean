@@ -76,9 +76,9 @@ instance LawfulBitraversable.const : LawfulBitraversable Const := by
   constructor <;> intros <;> simp [bitraverse, Const.bitraverse, functor_norm] <;> rfl
 
 /-- The bitraverse function for `flip`. -/
-nonrec def flip.bitraverse {α α' β β'} (f : α → F α') (f' : β → F β') :
+def flip.bitraverse {α α' β β'} (f : α → F α') (f' : β → F β') :
     flip t α β → F (flip t α' β') :=
-  (bitraverse f' f : t β α → F (t β' α'))
+  (Bitraversable.bitraverse f' f : t β α → F (t β' α'))
 
 instance Bitraversable.flip : Bitraversable (flip t) where bitraverse := @flip.bitraverse t _
 
@@ -110,9 +110,9 @@ section Bicompl
 variable (F G : Type u → Type u) [Traversable F] [Traversable G]
 
 /-- The bitraverse function for `bicompl`. -/
-nonrec def Bicompl.bitraverse {m} [Applicative m] {α β α' β'} (f : α → m β) (f' : α' → m β') :
+def Bicompl.bitraverse {m} [Applicative m] {α β α' β'} (f : α → m β) (f' : α' → m β') :
     bicompl t F G α α' → m (bicompl t F G β β') :=
-  (bitraverse (traverse f) (traverse f') : t (F α) (G α') → m _)
+  (Bitraversable.bitraverse (traverse f) (traverse f') : t (F α) (G α') → m _)
 
 instance : Bitraversable (bicompl t F G) where bitraverse := @Bicompl.bitraverse t _ F G _ _
 
@@ -133,9 +133,9 @@ section Bicompr
 variable (F : Type u → Type u) [Traversable F]
 
 /-- The bitraverse function for `bicompr`. -/
-nonrec def Bicompr.bitraverse {m} [Applicative m] {α β α' β'} (f : α → m β) (f' : α' → m β') :
+def Bicompr.bitraverse {m} [Applicative m] {α β α' β'} (f : α → m β) (f' : α' → m β') :
     bicompr F t α α' → m (bicompr F t β β') :=
-  (traverse (bitraverse f f') : F (t α α') → m _)
+  (traverse (Bitraversable.bitraverse f f') : F (t α α') → m _)
 
 instance : Bitraversable (bicompr F t) where bitraverse := @Bicompr.bitraverse t _ F _
 

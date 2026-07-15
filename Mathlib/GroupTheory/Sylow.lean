@@ -364,8 +364,8 @@ variable {p} {G}
 namespace Sylow
 
 /-- Sylow subgroups are isomorphic -/
-nonrec def equivSMul (P : Sylow p G) (g : G) : P ≃* (g • P : Sylow p G) :=
-  equivSMul (MulAut.conj g) P.toSubgroup
+def equivSMul (P : Sylow p G) (g : G) : P ≃* (g • P : Sylow p G) :=
+  Subgroup.equivSMul (MulAut.conj g) P.toSubgroup
 
 /-- Sylow subgroups are isomorphic -/
 noncomputable def equiv [Fact p.Prime] [Finite (Sylow p G)] (P Q : Sylow p G) : P ≃* Q := by

@@ -59,8 +59,8 @@ namespace Hom
 
 /-- The identity morphism of `X : Bipointed`. -/
 @[simps]
-nonrec def id (X : Bipointed) : Bipointed.Hom X X :=
-  ⟨id, rfl, rfl⟩
+def id (X : Bipointed) : Bipointed.Hom X X :=
+  ⟨_root_.id, rfl, rfl⟩
 
 instance (X : Bipointed) : Inhabited (Bipointed.Hom X X) :=
   ⟨id X⟩

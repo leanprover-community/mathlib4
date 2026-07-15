@@ -590,9 +590,9 @@ theorem Measurable.max {f g : δ → α} (hf : Measurable f) (hg : Measurable g)
   simpa only [max_def'] using! hf.piecewise (measurableSet_le hg hf) hg
 
 @[fun_prop]
-nonrec theorem AEMeasurable.max {f g : δ → α} {μ : Measure δ} (hf : AEMeasurable f μ)
-    (hg : AEMeasurable g μ) : AEMeasurable (fun a => max (f a) (g a)) μ :=
-  ⟨fun a => max (hf.mk f a) (hg.mk g a), hf.measurable_mk.max hg.measurable_mk,
+theorem AEMeasurable.max {f g : δ → α} {μ : Measure δ} (hf : AEMeasurable f μ)
+    (hg : AEMeasurable g μ) : AEMeasurable (fun a => Max.max (f a) (g a)) μ :=
+  ⟨fun a => Max.max (hf.mk f a) (hg.mk g a), hf.measurable_mk.max hg.measurable_mk,
     EventuallyEq.comp₂ hf.ae_eq_mk _ hg.ae_eq_mk⟩
 
 @[fun_prop]
@@ -601,9 +601,9 @@ theorem Measurable.min {f g : δ → α} (hf : Measurable f) (hg : Measurable g)
   simpa only [min_def] using! hf.piecewise (measurableSet_le hf hg) hg
 
 @[fun_prop]
-nonrec theorem AEMeasurable.min {f g : δ → α} {μ : Measure δ} (hf : AEMeasurable f μ)
-    (hg : AEMeasurable g μ) : AEMeasurable (fun a => min (f a) (g a)) μ :=
-  ⟨fun a => min (hf.mk f a) (hg.mk g a), hf.measurable_mk.min hg.measurable_mk,
+theorem AEMeasurable.min {f g : δ → α} {μ : Measure δ} (hf : AEMeasurable f μ)
+    (hg : AEMeasurable g μ) : AEMeasurable (fun a => Min.min (f a) (g a)) μ :=
+  ⟨fun a => Min.min (hf.mk f a) (hg.mk g a), hf.measurable_mk.min hg.measurable_mk,
     EventuallyEq.comp₂ hf.ae_eq_mk _ hg.ae_eq_mk⟩
 
 end LinearOrder

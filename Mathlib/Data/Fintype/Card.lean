@@ -309,8 +309,8 @@ theorem existsUnique_iff_card_one {α} [Fintype α] (p : α → Prop) [Decidable
   simp only [Subset.antisymm_iff, subset_singleton_iff', singleton_subset_iff, and_comm,
     mem_filter_univ]
 
-nonrec theorem two_lt_card_iff : 2 < card α ↔ ∃ a b c : α, a ≠ b ∧ a ≠ c ∧ b ≠ c := by
-  simp_rw [← Finset.card_univ, two_lt_card_iff, mem_univ, true_and]
+theorem two_lt_card_iff : 2 < card α ↔ ∃ a b c : α, a ≠ b ∧ a ≠ c ∧ b ≠ c := by
+  simp_rw [← Finset.card_univ, Finset.two_lt_card_iff, mem_univ, true_and]
 
 theorem card_of_bijective {f : α → β} (hf : Bijective f) : card α = card β :=
   card_congr (Equiv.ofBijective f hf)

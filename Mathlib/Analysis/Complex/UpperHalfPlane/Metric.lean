@@ -200,10 +200,11 @@ theorem le_dist_iff_le_dist_coe_center :
 
 /-- For two points on the same vertical line, the distance is equal to the distance between the
 logarithms of their imaginary parts. -/
-nonrec theorem dist_of_re_eq (h : z.re = w.re) : dist z w = dist (log z.im) (log w.im) := by
+theorem dist_of_re_eq (h : z.re = w.re) : dist z w = dist (log z.im) (log w.im) := by
   have h₀ : 0 < z.im / w.im := by positivity
   rw [dist_eq_iff_dist_coe_center_eq, Real.dist_eq, ← abs_sinh, ← log_div z.im_ne_zero w.im_ne_zero,
-    sinh_log h₀, dist_of_re_eq, coe_im, coe_im, center_im, cosh_abs, cosh_log h₀, inv_div] <;>
+    sinh_log h₀, Complex.dist_of_re_eq, coe_im, coe_im, center_im, cosh_abs, cosh_log h₀,
+    inv_div] <;>
   [skip; exact h]
   nth_rw 4 [← abs_of_pos w.im_pos]
   simp only [← _root_.abs_mul, Real.dist_eq]

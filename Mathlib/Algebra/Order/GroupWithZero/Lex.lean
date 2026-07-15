@@ -81,24 +81,24 @@ open MonoidWithZeroHom
 M to `WithZero (Mˣ ×ₗ Nˣ)`, which is the linearly ordered group with zero that can be identified
 as their product. -/
 @[simps!]
-nonrec def inl : α →*₀o WithZero (αˣ ×ₗ βˣ) where
-  __ := (WithZero.map' (toLexMulEquiv ..).toMonoidHom).comp (inl α β)
+def inl : α →*₀o WithZero (αˣ ×ₗ βˣ) where
+  __ := (WithZero.map' (toLexMulEquiv ..).toMonoidHom).comp (MonoidWithZeroHom.inl α β)
   monotone' := by simpa using (WithZero.map'_mono (Prod.Lex.toLex_mono)).comp inl_mono
 
 /-- Given linearly ordered groups with zero M, N, the natural inclusion ordered homomorphism from
 N to `WithZero (Mˣ ×ₗ Nˣ)`, which is the linearly ordered group with zero that can be identified
 as their product. -/
 @[simps!]
-nonrec def inr : β →*₀o WithZero (αˣ ×ₗ βˣ) where
-  __ := (WithZero.map' (toLexMulEquiv ..).toMonoidHom).comp (inr α β)
+def inr : β →*₀o WithZero (αˣ ×ₗ βˣ) where
+  __ := (WithZero.map' (toLexMulEquiv ..).toMonoidHom).comp (MonoidWithZeroHom.inr α β)
   monotone' := by simpa using (WithZero.map'_mono (Prod.Lex.toLex_mono)).comp inr_mono
 
 /-- Given linearly ordered groups with zero M, N, the natural projection ordered homomorphism from
 `WithZero (Mˣ ×ₗ Nˣ)` to M, which is the linearly ordered group with zero that can be identified
 as their product. -/
 @[simps!]
-nonrec def fst : WithZero (αˣ ×ₗ βˣ) →*₀o α where
-  __ := (fst α β).comp (WithZero.map' (toLexMulEquiv (αˣ × βˣ)).symm.toMonoidHom)
+def fst : WithZero (αˣ ×ₗ βˣ) →*₀o α where
+  __ := (MonoidWithZeroHom.fst α β).comp (WithZero.map' (toLexMulEquiv (αˣ × βˣ)).symm.toMonoidHom)
   monotone' := by
     -- this can't rely on `Monotone.comp` since `ofLex` is not monotone
     intro x y

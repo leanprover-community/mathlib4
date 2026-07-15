@@ -492,7 +492,7 @@ nonrec theorem IsLocalMinOn.congr {f g : α → β} {a : α} (h : IsLocalMinOn f
     (heq : f =ᶠ[𝓝[s] a] g) (hmem : a ∈ s) : IsLocalMinOn g s a :=
   h.congr heq <| heq.eq_of_nhdsWithin hmem
 
-nonrec theorem Filter.EventuallyEq.isLocalMinOn_iff {f g : α → β} {a : α} (heq : f =ᶠ[𝓝[s] a] g)
+theorem Filter.EventuallyEq.isLocalMinOn_iff {f g : α → β} {a : α} (heq : f =ᶠ[𝓝[s] a] g)
     (hmem : a ∈ s) : IsLocalMinOn f s a ↔ IsLocalMinOn g s a :=
   heq.isMinFilter_iff <| heq.eq_of_nhdsWithin hmem
 

@@ -353,11 +353,11 @@ theorem comp {g₀ g₁ : C(Y, Z)} {f₀ f₁ : C(X, Y)} (hg : Homotopic g₀ g�
 theorem equivalence : Equivalence (@Homotopic X Y _ _) :=
   ⟨refl, by apply symm, by apply trans⟩
 
-nonrec theorem prodMk {f₀ f₁ : C(X, Y)} {g₀ g₁ : C(X, Z)} :
+theorem prodMk {f₀ f₁ : C(X, Y)} {g₀ g₁ : C(X, Z)} :
     Homotopic f₀ f₁ → Homotopic g₀ g₁ → Homotopic (f₀.prodMk g₀) (f₁.prodMk g₁)
   | ⟨F⟩, ⟨G⟩ => ⟨F.prodMk G⟩
 
-nonrec theorem prodMap {f₀ f₁ : C(X, Y)} {g₀ g₁ : C(Z, Z')} :
+theorem prodMap {f₀ f₁ : C(X, Y)} {g₀ g₁ : C(Z, Z')} :
     Homotopic f₀ f₁ → Homotopic g₀ g₁ → Homotopic (f₀.prodMap g₀) (f₁.prodMap g₁)
   | ⟨F⟩, ⟨G⟩ => ⟨F.prodMap G⟩
 

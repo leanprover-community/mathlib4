@@ -176,10 +176,10 @@ lemma toTriangle_is3Clique (hx : x ∈ t) : (graph t).IsNClique 3 (toTriangle x)
 lemma exists_mem_toTriangle {x y : α ⊕ β ⊕ γ} (hxy : (graph t).Adj x y) :
     ∃ z ∈ t, x ∈ toTriangle z ∧ y ∈ toTriangle z := by cases hxy <;> exact ⟨_, ‹_›, by simp⟩
 
-nonrec lemma is3Clique_iff [NoAccidental t] {s : Finset (α ⊕ β ⊕ γ)} :
+lemma is3Clique_iff [NoAccidental t] {s : Finset (α ⊕ β ⊕ γ)} :
     (graph t).IsNClique 3 s ↔ ∃ x, x ∈ t ∧ toTriangle x = s := by
   refine ⟨fun h ↦ ?_, ?_⟩
-  · rw [is3Clique_iff] at h
+  · rw [SimpleGraph.is3Clique_iff] at h
     obtain ⟨x, y, z, hxy, hxz, hyz, rfl⟩ := h
     obtain ⟨a, b, c, habc, hab, hac, hbc⟩ := graph_triple hxy hxz hyz
     refine ⟨(a, b, c), ?_, habc⟩

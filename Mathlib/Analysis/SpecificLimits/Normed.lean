@@ -554,9 +554,9 @@ section SummableLeGeometric
 
 variable [SeminormedAddCommGroup α] {r C : ℝ} {f : ℕ → α}
 
-nonrec theorem SeminormedAddCommGroup.cauchySeq_of_le_geometric {C : ℝ} {r : ℝ} (hr : r < 1)
+theorem SeminormedAddCommGroup.cauchySeq_of_le_geometric {C : ℝ} {r : ℝ} (hr : r < 1)
     {u : ℕ → α} (h : ∀ n, ‖u n - u (n + 1)‖ ≤ C * r ^ n) : CauchySeq u :=
-  cauchySeq_of_le_geometric r C hr (by simpa [dist_eq_norm] using h)
+  _root_.cauchySeq_of_le_geometric r C hr (by simpa [dist_eq_norm] using h)
 
 theorem dist_partial_sum_le_of_le_geometric (hf : ∀ n, ‖f n‖ ≤ C * r ^ n) (n : ℕ) :
     dist (∑ i ∈ range n, f i) (∑ i ∈ range (n + 1), f i) ≤ C * r ^ n := by

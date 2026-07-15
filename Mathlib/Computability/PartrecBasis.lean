@@ -84,7 +84,7 @@ protected theorem map {n f} {g : List.Vector ℕ (n + 1) → ℕ} (hf : @Partrec
 def Vec {n m} (f : List.Vector ℕ n → List.Vector ℕ m) :=
   ∀ i, Partrec' fun v => (f v).get i
 
-nonrec theorem Vec.prim {n m f} (hf : @Nat.Primrec'.Vec n m f) : Vec f := fun i => prim <| hf i
+theorem Vec.prim {n m f} (hf : @Nat.Primrec'.Vec n m f) : Vec f := fun i => Partrec'.prim <| hf i
 
 protected theorem nil {n} : @Vec n 0 fun _ => nil := fun i => i.elim0
 

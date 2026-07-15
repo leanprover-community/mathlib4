@@ -308,8 +308,8 @@ theorem support_sup : (f ⊔ g).support = f.support ∪ g.support := by
   ext
   simp [imp_iff_not_or]
 
-nonrec theorem disjoint_iff : Disjoint f g ↔ Disjoint f.support g.support := by
-  simp [disjoint_iff, bot_eq_zero, ← DFinsupp.support_eq_empty]
+theorem disjoint_iff : Disjoint f g ↔ Disjoint f.support g.support := by
+  simp [_root_.disjoint_iff, bot_eq_zero, ← DFinsupp.support_eq_empty]
 
 end LinearOrder
 

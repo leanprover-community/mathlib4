@@ -162,7 +162,7 @@ def Cover.pushforwardIso [P.RespectsIso] [P.ContainsIdentities] [P.IsStableUnder
 
 /-- Adding map satisfying `P` into a cover gives another cover. -/
 @[simps toPreZeroHypercover]
-nonrec def Cover.add {X Y : Scheme.{u}} (𝒰 : X.Cover (precoverage P)) (f : Y ⟶ X)
+def Cover.add {X Y : Scheme.{u}} (𝒰 : X.Cover (precoverage P)) (f : Y ⟶ X)
     (hf : P f := by infer_instance) : X.Cover (precoverage P) where
   __ := 𝒰.toPreZeroHypercover.add f
   mem₀ := by

@@ -56,7 +56,7 @@ protected lemma IsSeparated.singleton : IsSeparated ε {x} := pairwise_singleton
 
 alias _root_.Set.Subsingleton.isSeparated := IsSeparated.of_subsingleton
 
-nonrec lemma IsSeparated.anti (hεδ : ε ≤ δ) (hs : IsSeparated δ s) : IsSeparated ε s :=
+lemma IsSeparated.anti (hεδ : ε ≤ δ) (hs : IsSeparated δ s) : IsSeparated ε s :=
   hs.mono' fun _ _ ↦ hεδ.trans_lt
 
 lemma IsSeparated.subset (hst : s ⊆ t) (hs : IsSeparated ε t) : IsSeparated ε s := hs.mono hst

@@ -54,7 +54,7 @@ protected nonrec theorem ContDiffAt.inversion (hc : ContDiffAt ℝ n c a) (hR : 
     ContDiffAt ℝ n (fun a ↦ inversion (c a) (R a) (x a)) a :=
   hc.inversion hR hx hne
 
-protected nonrec theorem ContDiff.inversion (hc : ContDiff ℝ n c) (hR : ContDiff ℝ n R)
+protected theorem ContDiff.inversion (hc : ContDiff ℝ n c) (hR : ContDiff ℝ n R)
     (hx : ContDiff ℝ n x) (hne : ∀ a, x a ≠ c a) :
     ContDiff ℝ n (fun a ↦ inversion (c a) (R a) (x a)) :=
   contDiff_iff_contDiffAt.2 fun a ↦ hc.contDiffAt.inversion hR.contDiffAt hx.contDiffAt (hne a)

@@ -636,10 +636,10 @@ theorem not_linearIndependent_iffₒₛ :
   · exact ⟨s, t, f, hst, heq, i, hi, hfi⟩
   · exact ⟨t, s, f, hst.symm, heq.symm, i, hi, hgi⟩
 
-nonrec theorem Fintype.linearIndependent_iffₒₛ [DecidableEq ι] [Fintype ι] :
+theorem Fintype.linearIndependent_iffₒₛ [DecidableEq ι] [Fintype ι] :
     LinearIndependent R v ↔ ∀ t, ∀ (f : ι → R),
       ∑ i ∈ t, f i • v i = ∑ i ∉ t, f i • v i → ∀ i, f i = 0 := by
-  rw [linearIndependent_iffₒₛ]
+  rw [_root_.linearIndependent_iffₒₛ]
   refine ⟨fun h t f heq i => ?_, fun h t₁ t₂ f ht₁t₂ heq => ?_⟩
   · specialize h t tᶜ f disjoint_compl_right heq
     by_cases hi : i ∈ t

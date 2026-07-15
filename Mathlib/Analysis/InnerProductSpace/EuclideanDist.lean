@@ -45,8 +45,8 @@ namespace Euclidean
 /-- If `x` and `y` are two points in a finite-dimensional space over `ℝ`, then `Euclidean.dist x y`
 is the distance between these points in the metric defined by some inner product space structure on
 `E`. -/
-nonrec def dist (x y : E) : ℝ :=
-  dist (toEuclidean x) (toEuclidean y)
+def dist (x y : E) : ℝ :=
+  Dist.dist (toEuclidean x) (toEuclidean y)
 
 /-- Closed ball w.r.t. the Euclidean distance. -/
 def closedBall (x : E) (r : ℝ) : Set E :=
@@ -77,21 +77,21 @@ theorem closedBall_eq_image (x : E) (r : ℝ) :
     closedBall x r = toEuclidean.symm '' Metric.closedBall (toEuclidean x) r := by
   rw [toEuclidean.image_symm_eq_preimage, closedBall_eq_preimage]
 
-nonrec theorem isCompact_closedBall {x : E} {r : ℝ} : IsCompact (closedBall x r) := by
+theorem isCompact_closedBall {x : E} {r : ℝ} : IsCompact (closedBall x r) := by
   rw [closedBall_eq_image]
-  exact (isCompact_closedBall _ _).image toEuclidean.symm.continuous
+  exact (ProperSpace.isCompact_closedBall _ _).image toEuclidean.symm.continuous
 
 theorem isClosed_closedBall {x : E} {r : ℝ} : IsClosed (closedBall x r) :=
   isCompact_closedBall.isClosed
 
-nonrec theorem closure_ball (x : E) {r : ℝ} (h : r ≠ 0) : closure (ball x r) = closedBall x r := by
-  rw [ball_eq_preimage, ← toEuclidean.preimage_closure, closure_ball (toEuclidean x) h,
+theorem closure_ball (x : E) {r : ℝ} (h : r ≠ 0) : closure (ball x r) = closedBall x r := by
+  rw [ball_eq_preimage, ← toEuclidean.preimage_closure, _root_.closure_ball (toEuclidean x) h,
     closedBall_eq_preimage]
 
-nonrec theorem exists_pos_lt_subset_ball {R : ℝ} {s : Set E} {x : E} (hR : 0 < R) (hs : IsClosed s)
+theorem exists_pos_lt_subset_ball {R : ℝ} {s : Set E} {x : E} (hR : 0 < R) (hs : IsClosed s)
     (h : s ⊆ ball x R) : ∃ r ∈ Ioo 0 R, s ⊆ ball x r := by
   rw [ball_eq_preimage, ← image_subset_iff] at h
-  rcases exists_pos_lt_subset_ball hR (toEuclidean.isClosed_image.2 hs) h with ⟨r, hr, hsr⟩
+  rcases _root_.exists_pos_lt_subset_ball hR (toEuclidean.isClosed_image.2 hs) h with ⟨r, hr, hsr⟩
   exact ⟨r, hr, image_subset_iff.1 hsr⟩
 
 theorem nhds_basis_closedBall {x : E} : (𝓝 x).HasBasis (fun r : ℝ => 0 < r) (closedBall x) := by

@@ -48,7 +48,7 @@ class LiftObj (X : C) where
 
 namespace LiftObj
 
-nonrec instance unit : LiftObj (𝟙_ C) := ⟨unit⟩
+instance unit : LiftObj (𝟙_ C) := ⟨FreeMonoidalCategory.unit⟩
 
 instance tensor (X Y : C) [LiftObj X] [LiftObj Y] : LiftObj (X ⊗ Y) where
   lift := LiftObj.lift X ⊗ LiftObj.lift Y
