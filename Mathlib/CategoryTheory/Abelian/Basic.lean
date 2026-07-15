@@ -485,6 +485,42 @@ def monoIsKernelOfCokernel [Mono f] (s : Cofork f 0) (h : IsColimit s) :
     IsLimit (KernelFork.ofι f (CokernelCofork.condition s)) :=
   NonPreadditiveAbelian.monoIsKernelOfCokernel s h
 
+/-- If `f : X ⟶ Y` is a monomorphism in an abelian category, then `X ≅ kernel (cokernel.π f)`. -/
+def isoKernelCokernel {X Y : C} (f : X ⟶ Y) [Mono f] :
+    X ≅ kernel (cokernel.π f) := by
+  have := ((monoIsKernelOfCokernel _ (cokernelIsCokernel f)).conePointUniqueUpToIso
+    (kernelIsKernel (cokernel.π f)))
+  exact this
+
+/-- If `f : X ⟶ Y` is an epimorphism in an abelian category, then `X ≅ cokernel (kernel.ι f)`. -/
+def isoCokernelKernel {X Y : C} (f : X ⟶ Y) [Epi f] :
+    Y ≅ cokernel (kernel.ι f) := by
+  have := ((epiIsCokernelOfKernel _ (kernelIsKernel f)).coconePointUniqueUpToIso
+    (cokernelIsCokernel (kernel.ι f)))
+  exact this
+
+@[simp]
+lemma isoKernelCokernel_hom_comp {X Y : C} (f : X ⟶ Y) [Mono f] :
+    (isoKernelCokernel f).hom ≫ kernel.ι (cokernel.π f) = f :=
+  (IsLimit.conePointUniqueUpToIso_hom_comp _ _) WalkingParallelPair.zero
+
+@[simp]
+lemma isoKernelCokernel_inv_comp {X Y : C} (f : X ⟶ Y) [Mono f] :
+    (isoKernelCokernel f).inv ≫ f = kernel.ι (cokernel.π f) :=
+  (IsLimit.conePointUniqueUpToIso_inv_comp _ _) WalkingParallelPair.zero
+
+@[simp]
+lemma comp_isoCokernelKernel_hom {X Y : C} (f : X ⟶ Y) [Epi f] :
+    f ≫ (isoCokernelKernel f).hom = cokernel.π (kernel.ι f) :=
+  (IsColimit.comp_coconePointUniqueUpToIso_hom
+    (epiIsCokernelOfKernel _ (kernelIsKernel f)) (cokernelIsCokernel _)) WalkingParallelPair.one
+
+@[simp]
+lemma comp_isoCokernelKernel_inv {X Y : C} (f : X ⟶ Y) [Epi f] :
+    cokernel.π (kernel.ι f) ≫ (isoCokernelKernel f).inv = f :=
+  (IsColimit.comp_coconePointUniqueUpToIso_inv
+    (epiIsCokernelOfKernel _ (kernelIsKernel f)) (cokernelIsCokernel _)) WalkingParallelPair.one
+
 variable (f)
 
 /-- In an abelian category, any morphism that turns to zero when precomposed with the kernel of an

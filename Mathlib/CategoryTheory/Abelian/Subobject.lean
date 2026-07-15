@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2022 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Markus Himmel
+Authors: Markus Himmel, Jack McKoen
 -/
 module
 
@@ -10,7 +10,21 @@ public import Mathlib.CategoryTheory.Subobject.Limits
 public import Mathlib.CategoryTheory.Abelian.Basic
 
 /-!
-# Equivalence between subobjects and quotients in an abelian category
+# Subobjects in abelian categories
+
+This file contains numerous results about subobjects which are unique to abelian categories.
+
+## Main results
+
+* subobjects and quotient objects of an object `X` are order-isomorphic via taking kernels and
+  cokernels
+* A correspondence theorem: Given a suboject `Y` of `X`, `Abelian.Subobject.cokernelOrderIso` is
+  an order-isomorphism between subobjects of `cokernel (Y ↪ X)` and subobjects of `X`
+  containing `Y`.
+
+## References
+
+* [N. Popescu, *Abelian Categories with Applications to Rings and Modules*][]
 
 -/
 
@@ -69,11 +83,15 @@ instance wellPowered_opposite [LocallySmall.{w} C] [WellPowered.{w} C] :
   subobject_small X :=
     (small_congr (subobjectIsoSubobjectOp (unop X)).toEquiv).1 inferInstance
 
-section Sup
+namespace Subobject
 
+section SupBiproductFactorization
+
+/-- If `C` is abelian and `f g : Subobject A`, then `f ⊞ g ⟶ A` factors as
+  `f ⊞ g ⟶ f ⊔ g ⟶ A` -/
 @[simps]
 noncomputable
-def Subobject.sup_MonoFactorisation {A : C} (f g : Subobject A) : MonoFactorisation
+def supMonoFactorisation {A : C} (f g : Subobject A) : MonoFactorisation
     (biprod.desc f.arrow g.arrow) where
   I := underlying.obj (f ⊔ g)
   m := (f ⊔ g).arrow
@@ -81,160 +99,118 @@ def Subobject.sup_MonoFactorisation {A : C} (f g : Subobject A) : MonoFactorisat
   e := biprod.desc (ofLE f (f ⊔ g) le_sup_left) (ofLE g (f ⊔ g) le_sup_right)
   fac := by simp only [biprod.desc_eq, Preadditive.add_comp, Category.assoc, ofLE_arrow]
 
+/-- If `C` is abelian, then `f ⊔ g` is an image of `f ⊞ g ⟶ A`. -/
 @[simps]
 noncomputable
-def Subobject.sup_isImage {A : C} (f g : Subobject A) :
-    IsImage (sup_MonoFactorisation f g) where
+def supIsImage {A : C} (f g : Subobject A) :
+    IsImage (supMonoFactorisation f g) where
   lift F := by
     refine (f ⊔ g).ofLEMk F.m (sup_le ?_ ?_)
     · refine le_mk_of_comm (biprod.inl ≫ F.e) ?_
       · simp only [Category.assoc, MonoFactorisation.fac, biprod.inl_desc]
     · refine le_mk_of_comm (biprod.inr ≫ F.e) ?_
       · simp only [Category.assoc, MonoFactorisation.fac, biprod.inr_desc]
-  lift_fac := by simp [sup_MonoFactorisation]
+  lift_fac := by simp [supMonoFactorisation]
 
+/-- If `C` is abelian, then `f ⊔ g ≅ image (f ⊞ g ⟶ A)`. -/
 @[simps!]
 noncomputable
-def Subobject.sup_isoImage {A : C} (f g : Subobject A) : underlying.obj (f ⊔ g) ≅
+def supIsoImage {A : C} (f g : Subobject A) : underlying.obj (f ⊔ g) ≅
     Limits.image (biprod.desc f.arrow g.arrow) :=
-  IsImage.isoExt (sup_isImage ..) <| Image.isImage _
+  IsImage.isoExt (supIsImage ..) <| Image.isImage _
 
-lemma Subobject.sup_eq_imageSubobject {A : C} (X Y : Subobject A) :
+lemma sup_eq_imageSubobject {A : C} (X Y : Subobject A) :
     X ⊔ Y = imageSubobject (biprod.desc X.arrow Y.arrow) := by
   refine eq_mk_of_comm (Limits.image.ι (biprod.desc X.arrow Y.arrow)) ?_ ?_
-  · exact (sup_isoImage X Y)
-  · simp only [sup_isoImage_hom]
+  · exact (supIsoImage X Y)
+  · simp only [supIsoImage_hom]
     apply ofLEMk_comp
 
-end Sup
+end SupBiproductFactorization
+
+lemma le_iff_comp_cokernel_zero {X : C} (f g : Subobject X) :
+    f ≤ g ↔ f.arrow ≫ cokernel.π (g.arrow) = 0 := by
+  constructor
+  · intro h
+    rw [← ofLE_arrow h, Category.assoc, cokernel.condition, comp_zero]
+  · intro h
+    exact le_of_comm
+      (kernel.lift (cokernel.π g.arrow) f.arrow h ≫ (isoKernelCokernel g.arrow).inv) (by simp)
 
 section
 
 variable {X Y : C} (f : X ⟶ Y)
 
+/-- A morphism `f : X ⟶ Y` induces a functor `Subobject X ⥤ Subobject Y`
+  by `X' ↦ image (X' ⟶ X ⟶ Y)`. -/
 @[simp]
 noncomputable
-def Subobject.image {X Y : C} (f : X ⟶ Y) : Subobject X ⥤ Subobject Y where
+def image : Subobject X ⥤ Subobject Y where
   obj X' := imageSubobject (X'.arrow ≫ f)
   map {X' X''} h := by
     apply homOfLE
     exact (Eq.le (by simp)).trans (imageSubobject_comp_le (X'.ofLE X'' h.le) (X''.arrow ≫ f))
 
-lemma Subobject.image_mono {X Y : C} (f : X ⟶ Y) [Mono f] {X' : Subobject X} :
+lemma image_mono [Mono f] {X' : Subobject X} :
     (image f).obj X' = Subobject.mk (X'.arrow ≫ f) := by
   simp [imageSubobject_mono]
 
-/-
-lemma Limits.imageSubobject_eq_of_arrowIso {X Y A : C} {f : X ⟶ Y} {g : A ⟶ Y}
-    (e : Arrow.mk f ≅ Arrow.mk g) :imageSubobject f = imageSubobject g := by
-  rw [Arrow.iso_w' e]
-  have := Arrow.iso_w' e.symm
-  simp at this
-  erw [imageSubobject_iso_comp (Arrow.Hom.left e.inv) (f ≫ Arrow.Hom.right e.hom)]
-  sorry
--/
-
-lemma Subobject.image_mk_eq {X Y : C} (f : X ⟶ Y) {A : C} (g : A ⟶ X) [Mono g] :
+lemma image_mk_eq {A : C} (g : A ⟶ X) [Mono g] :
     (image f).obj (Subobject.mk g) = imageSubobject (g ≫ f) := by
   simp only [← underlyingIso_arrow g =≫ f, Category.assoc, image, imageSubobject_iso_comp]
 
-lemma Subobject.image_le {X Y : C} (f : X ⟶ Y) {X' : Subobject X} {Y' : Subobject Y}
+lemma image_le {X' : Subobject X} {Y' : Subobject Y}
     (u : (X' : C) ⟶ Y') (h : u ≫ Y'.arrow = X'.arrow ≫ f) : (image f).obj X' ≤ Y' :=
   imageSubobject_le (X'.arrow ≫ f) u h
 
+/-- For `f : X ⟶ Y`, the canonical map from `X' : Subobject X` to `f(X') : Subobject Y`. -/
 @[simp]
 noncomputable
-def Subobject.image_map {X Y : C} (f : X ⟶ Y) (X' : Subobject X) :
+abbrev toImage {X Y : C} (X' : Subobject X) (f : X ⟶ Y) :
     (X' : C) ⟶ (image f).obj X' :=
   factorThruImageSubobject (X'.arrow ≫ f)
 
+/-- A morphism `f : X ⟶ Y` induces a functor `Subobject Y ⥤ Subobject X`
+  by `Y' ↦ kernel (X ⟶ Y ⟶ cokernel Y')`. -/
 @[simp]
 noncomputable
-def Subobject.inverseImage {X Y : C} (f : X ⟶ Y) : Subobject Y ⥤ Subobject X where
+def inverseImage : Subobject Y ⥤ Subobject X where
   obj Y' := kernelSubobject (f ≫ cokernel.π Y'.arrow)
-  map {Y' Y''} h := by
-    apply homOfLE
-    refine mk_le_mk_of_comm ?_ ?_
-    · exact kernel.map (f ≫ cokernel.π Y'.arrow) (f ≫ cokernel.π Y''.arrow) (𝟙 _)
-        (cokernel.map Y'.arrow Y''.arrow (underlying.map h) (𝟙 _) (by simp)) (by simp)
-    · simp
+  map h :=
+    homOfLE <| mk_le_mk_of_comm
+      (kernel.map _ _ (𝟙 _) (cokernel.map _ _ (underlying.map h) (𝟙 _) (by simp)) (by simp))
+      (by simp)
 
-lemma Subobject.inverseImage_mk_eq {X Y : C} (f : X ⟶ Y) {A : C} (g : A ⟶ Y) [Mono g] :
+lemma inverseImage_mk_eq {A : C} (g : A ⟶ Y) [Mono g] :
     (inverseImage f).obj (Subobject.mk g) = kernelSubobject (f ≫ cokernel.π g) :=
   mk_eq_mk_of_comm _ _
     (kernel.mapIso _ _ (Iso.refl _)
       (cokernel.mapIso _ _ (underlyingIso _) (Iso.refl _) (by simp)) (by simp))
     (by simp)
 
-def Subobject.isoKernelCokernel {X Y : C} (f : X ⟶ Y) [Mono f] :
-    X ≅ kernel (cokernel.π f) := by
-  have := ((monoIsKernelOfCokernel _ (cokernelIsCokernel f)).conePointUniqueUpToIso
-    (kernelIsKernel (cokernel.π f)))
-  exact this
-
-def Subobject.isoCokernelKernel {X Y : C} (f : X ⟶ Y) [Epi f] :
-    Y ≅ cokernel (kernel.ι f) := by
-  have := ((epiIsCokernelOfKernel _ (kernelIsKernel f)).coconePointUniqueUpToIso
-    (cokernelIsCokernel (kernel.ι f)))
-  exact this
-
+/-- For `f : X ⟶ Y`, the canonical map from `f⁻¹(Y') : Subobject X` to `Y' : Subobject X`. -/
 @[simp]
-lemma Subobject.isoKernelCokernel_hom_arrow {X Y : C} (f : X ⟶ Y) [Mono f] :
-    (isoKernelCokernel f).hom ≫ kernel.ι (cokernel.π f) = f :=
-  (IsLimit.conePointUniqueUpToIso_hom_comp _ _) WalkingParallelPair.zero
-
-@[simp]
-lemma Subobject.isoKernelCokernel_inv_arrow {X Y : C} (f : X ⟶ Y) [Mono f] :
-    (isoKernelCokernel f).inv ≫ f = kernel.ι (cokernel.π f) :=
-  (IsLimit.conePointUniqueUpToIso_inv_comp _ _) WalkingParallelPair.zero
-
-@[simp]
-lemma Subobject.isoCokernelKernel_hom_arrow {X Y : C} (f : X ⟶ Y) [Epi f] :
-    f ≫ (isoCokernelKernel f).hom = cokernel.π (kernel.ι f) :=
-  (IsColimit.comp_coconePointUniqueUpToIso_hom
-    (epiIsCokernelOfKernel _ (kernelIsKernel f)) (cokernelIsCokernel _)) WalkingParallelPair.one
-
-@[simp]
-lemma Subobject.isoCokernelKernel_inv_arrow {X Y : C} (f : X ⟶ Y) [Epi f] :
-    cokernel.π (kernel.ι f) ≫ (isoCokernelKernel f).inv = f :=
-  (IsColimit.comp_coconePointUniqueUpToIso_inv
-    (epiIsCokernelOfKernel _ (kernelIsKernel f)) (cokernelIsCokernel _)) WalkingParallelPair.one
-
-/-
-@[to_dual (attr := reassoc (attr := simp)) coconePointUniqueUpToIso_inv_desc]
-theorem lift_comp_conePointUniqueUpToIso_hom {r s t : Cone F} (P : IsLimit s) (Q : IsLimit t) :
-    P.lift r ≫ (conePointUniqueUpToIso P Q).hom = Q.lift r :=
-  Q.uniq _ _ (by simp)
-
-@[to_dual (attr := reassoc (attr := simp)) coconePointUniqueUpToIso_hom_desc]
-theorem lift_comp_conePointUniqueUpToIso_inv {r s t : Cone F} (P : IsLimit s) (Q : IsLimit t) :
-    Q.lift r ≫ (conePointUniqueUpToIso P Q).inv = P.lift r :=
-  P.uniq _ _ (by simp)
--/
-
-
-@[simp]
-def Subobject.inverseImage_map {X Y : C} (f : X ⟶ Y) (Y' : Subobject Y) :
+abbrev fromInverseImage {X Y : C} (Y' : Subobject Y) (f : X ⟶ Y) :
     (((inverseImage f).obj Y') : C) ⟶ Y' := (kernelSubobjectIso _).hom ≫
   kernel.lift (cokernel.π Y'.arrow) (kernel.ι (f ≫ cokernel.π Y'.arrow) ≫ f) (by simp) ≫
   (isoKernelCokernel _).inv
 
-lemma Subobject.le_inverseImage {X Y : C} (f : X ⟶ Y) {X' : Subobject X} {Y' : Subobject Y}
+lemma le_inverseImage {X' : Subobject X} {Y' : Subobject Y}
     (u : (X' : C) ⟶ Y') (h : u ≫ Y'.arrow = X'.arrow ≫ f) : X' ≤ (inverseImage f).obj Y' := by
   refine le_kernelSubobject (f ≫ cokernel.π Y'.arrow) X' ?_
   rw [← Category.assoc]
   simp [← h]
 
-lemma Subobject.inverseImage_image_le {X Y : C} (f : X ⟶ Y) (X' : Subobject X) :
+lemma inverseImage_image_le (X' : Subobject X) :
     X' ≤ (inverseImage f).obj ((image f).obj X') :=
-  le_inverseImage _ (factorThruImageSubobject _) (by simp)
+  le_inverseImage _ (toImage _ _) (by simp)
 
-lemma Subobject.image_inverseImage_le {X Y : C} (f : X ⟶ Y) (Y' : Subobject Y) :
+lemma image_inverseImage_le (Y' : Subobject Y) :
     (image f).obj ((inverseImage f).obj Y') ≤ Y' :=
-  image_le _ (inverseImage_map f Y') (by simp)
+  image_le _ (fromInverseImage _ _) (by simp)
 
-@[simp]
-lemma Subobject.mono_inverseImage_image {X Y : C} (f : X ⟶ Y) (X' : Subobject X) [Mono f] :
+/-- If `f : X ⟶ Y` is a monomorphism in an abelian category, then `f⁻¹(f(X')) = X'`. -/
+theorem mono_inverseImage_image (X' : Subobject X) [Mono f] :
     (inverseImage f).obj ((image f).obj X') = X' := by
   apply le_antisymm
   · rw [image_mono f, inverseImage_mk_eq]
@@ -246,19 +222,17 @@ lemma Subobject.mono_inverseImage_image {X Y : C} (f : X ⟶ Y) (X' : Subobject 
   · exact inverseImage_image_le f X'
 
 set_option linter.style.emptyLine false in
-@[simp]
-lemma Subobject.epi_image_inverseImage {X Y : C} (f : X ⟶ Y) (Y' : Subobject Y) [Epi f] :
+/-- If `f : X ⟶ Y` is an epimorphism in an abelian category, then `f(f⁻¹(Y')) = Y'`. -/
+lemma epi_image_inverseImage (Y' : Subobject Y) [Epi f] :
     (image f).obj ((inverseImage f).obj Y') = Y' := by
   apply le_antisymm (image_inverseImage_le f Y')
   dsimp only [inverseImage, kernelSubobject]
-  rw [Subobject.image_mk_eq]
   let k : kernel (f ≫ cokernel.π Y'.arrow) ⟶ X := kernel.ι (f ≫ cokernel.π Y'.arrow)
-
   let v : kernel (f ≫ cokernel.π Y'.arrow) ⟶ Y' :=
     (kernel.lift (cokernel.π Y'.arrow) (k ≫ f) (by simp [k]) ≫ (isoKernelCokernel Y'.arrow).inv)
 
-  have : IsLimit (PullbackCone.mk k v (show k ≫ f = v ≫ Y'.arrow by simp [k, v])) := by
-    refine Limits.PullbackCone.IsLimit.mk ?_ ?_ ?_ ?_ ?_
+  have h : IsLimit (PullbackCone.mk k v (show k ≫ f = v ≫ Y'.arrow by simp [k, v])) := by
+    refine PullbackCone.IsLimit.mk ?_ ?_ ?_ ?_ ?_
     · intro s
       exact kernel.lift (f ≫ cokernel.π Y'.arrow) s.fst
         (by simpa using s.condition =≫ cokernel.π Y'.arrow)
@@ -267,7 +241,7 @@ lemma Subobject.epi_image_inverseImage {X Y : C} (f : X ⟶ Y) (Y' : Subobject Y
       simp [v, k, ← cancel_mono Y'.arrow, s.condition]
     · cat_disch
 
-  have : Epi v := epi_snd_of_isLimit _ _ this
+  have : Epi v := epi_snd_of_isLimit _ _ h
 
   have : Epi
       (kernel.lift (cokernel.π Y'.arrow) (kernel.ι (f ≫ cokernel.π Y'.arrow) ≫ f) (by simp)) := by
@@ -277,10 +251,67 @@ lemma Subobject.epi_image_inverseImage {X Y : C} (f : X ⟶ Y) (Y' : Subobject Y
   have := strongEpi_of_epi
     (kernel.lift (cokernel.π Y'.arrow) (kernel.ι (f ≫ cokernel.π Y'.arrow) ≫ f) _)
 
-  rw [← kernel.lift_ι (cokernel.π Y'.arrow) (kernel.ι (f ≫ cokernel.π Y'.arrow) ≫ f) (by simp),
+  rw [image_mk_eq,
+    ← kernel.lift_ι (cokernel.π Y'.arrow) (kernel.ι (f ≫ cokernel.π Y'.arrow) ≫ f) (by simp),
     imageSubobject_epi_comp, imageSubobject_mono]
   exact le_kernelSubobject (cokernel.π Y'.arrow) Y' (cokernel.condition Y'.arrow)
 
+set_option linter.style.emptyLine false in
+open Subobject in
+/-- Given a suboject `Y` of `X`, there is an order-isomorphism between subobjects
+of `X/Y := cokernel (Y ↪ X)` and subobjects of `X` containing `Y`. -/
+noncomputable
+def cokernelOrderIso (Y : Subobject X) :
+    Subobject (cokernel Y.arrow) ≃o Set.Ici Y where
+  toFun p := ⟨(inverseImage (cokernel.π Y.arrow)).obj p, le_kernelSubobject _ _ (by simp)⟩
+  invFun q := (image (cokernel.π Y.arrow)).obj q
+  left_inv p := epi_image_inverseImage (cokernel.π Y.arrow) p
+  right_inv := by
+    rintro ⟨q, hq : Y ≤ q⟩
+    apply le_antisymm
+    · simp only [inverseImage, homOfLE_leOfHom, image, Subtype.mk_le_mk]
+      refine mk_le_of_comm ?_ ?_
+      · refine kernel.lift _ (kernel.ι _) ?_ ≫ (isoKernelCokernel q.arrow).inv
+
+        let c := cokernel.π Y.arrow ≫
+          cokernel.π (imageSubobject (q.arrow ≫ cokernel.π Y.arrow)).arrow
+
+        let r := cokernel.desc Y.arrow (cokernel.π (q.arrow))
+          (by simp only [← ofLE_arrow hq, Category.assoc, cokernel.condition, comp_zero])
+
+        let u := cokernel.desc (imageSubobject (q.arrow ≫ cokernel.π Y.arrow)).arrow r
+          (imageSubobject_arrow_comp_eq_zero (by simp [r]))
+
+        have : cokernel.π q.arrow = c ≫ u := by
+          simp only [Category.assoc, cokernel.π_desc, c, u, r]
+
+        rw [this]
+        simp only [c, u, r, kernel.condition_assoc, zero_comp]
+      · cat_disch
+    · exact inverseImage_image_le _ _
+  map_rel_iff' := by
+    intro a b
+    simp only [inverseImage, homOfLE_leOfHom, image, Equiv.coe_fn_mk, Subtype.mk_le_mk]
+    constructor
+    · intro h
+      have eq : kernel.ι (cokernel.π Y.arrow ≫ cokernel.π a.arrow) ≫
+          cokernel.π Y.arrow ≫ cokernel.π b.arrow = 0 := by
+        rw [← Preadditive.IsIso.comp_left_eq_zero (kernelSubobjectIso _).hom _, ← Category.assoc,
+          kernelSubobject_arrow]
+        simp only [← ofLE_arrow h, ← kernelSubobject_arrow, Category.assoc, kernel.condition,
+          comp_zero]
+
+      have := (cokernel.π_desc
+            (kernel.ι (cokernel.π Y.arrow ≫ cokernel.π a.arrow))
+            (cokernel.π Y.arrow ≫ cokernel.π b.arrow) eq)
+      simp only [← comp_isoCokernelKernel_hom (cokernel.π Y.arrow ≫ cokernel.π a.arrow),
+        Category.assoc, cancel_epi] at this
+      rw [le_iff_comp_cokernel_zero, ← this]
+      simp
+    · intro h
+      exact mk_le_mk_of_comm
+        (kernel.map _ _ (𝟙 _) (cokernel.map _ _ (ofLE a b h) (𝟙 _) (by simp)) (by simp)) (by simp)
+
 end
 
-end CategoryTheory.Abelian
+end CategoryTheory.Abelian.Subobject
