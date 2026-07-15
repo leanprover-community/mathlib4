@@ -5,12 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Adjunction.Limits
 public import Mathlib.CategoryTheory.Limits.Constructions.EventuallyConstant
-public import Mathlib.CategoryTheory.Limits.Preserves.Ulift
-public import Mathlib.CategoryTheory.Limits.Types.Filtered
 public import Mathlib.CategoryTheory.Presentable.IsCardinalFiltered
-public import Mathlib.SetTheory.Cardinal.HasCardinalLT
 
 /-! # Presentable objects
 
@@ -110,13 +106,13 @@ end
 
 section
 
-variable (F : C ⥤ D)
-
 /-- A functor is accessible relative to a universe `w` if
 it is `κ`-accessible for some regular `κ : Cardinal.{w}`. -/
 @[pp_with_univ]
-class IsAccessible : Prop where
-  exists_cardinal : ∃ (κ : Cardinal.{w}) (_ : Fact κ.IsRegular), IsCardinalAccessible F κ
+class IsAccessible (F : C ⥤ D) : Prop where
+  exists_cardinal (F) : ∃ (κ : Cardinal.{w}) (_ : Fact κ.IsRegular), IsCardinalAccessible F κ
+
+variable (F : C ⥤ D)
 
 lemma isAccessible_of_isCardinalAccessible (κ : Cardinal.{w}) [Fact κ.IsRegular]
     [IsCardinalAccessible F κ] : IsAccessible.{w} F where
@@ -150,7 +146,7 @@ abbrev IsCardinalPresentable : Prop := (coyoneda.obj (op X)).IsCardinalAccessibl
 
 variable (C) in
 /-- The property of objects that are `κ`-presentable. -/
-def isCardinalPresentable : ObjectProperty C := fun X ↦ IsCardinalPresentable X κ
+abbrev isCardinalPresentable : ObjectProperty C := fun X ↦ IsCardinalPresentable X κ
 
 instance (X : (isCardinalPresentable C κ).FullSubcategory) :
     IsCardinalPresentable X.obj κ :=
@@ -344,17 +340,26 @@ end
 
 section
 
-variable (C) (κ : Cardinal.{w}) [Fact κ.IsRegular]
-
 /-- A category has `κ`-filtered colimits if it has colimits of shape `J`
 for any `κ`-filtered category `J`. -/
-class HasCardinalFilteredColimits : Prop where
-  hasColimitsOfShape (J : Type w) [SmallCategory J] [IsCardinalFiltered J κ] :
+class HasCardinalFilteredColimits
+    (C : Type u₁) [Category.{v₁} C] (κ : Cardinal.{w}) [Fact κ.IsRegular] : Prop where
+  hasColimitsOfShape (C) (κ) (J : Type w) [SmallCategory J] [IsCardinalFiltered J κ] :
     HasColimitsOfShape J C := by intros; infer_instance
 
 attribute [instance] HasCardinalFilteredColimits.hasColimitsOfShape
 
+variable (C) (κ : Cardinal.{w}) [Fact κ.IsRegular]
+
 instance [HasColimitsOfSize.{w, w} C] : HasCardinalFilteredColimits.{w} C κ where
+
+variable {κ} in
+lemma HasCardinalFilteredColimits.of_le
+    [HasCardinalFilteredColimits C κ] {κ' : Cardinal.{w}} [Fact κ'.IsRegular] (h : κ ≤ κ') :
+    HasCardinalFilteredColimits C κ' where
+  hasColimitsOfShape J _ _ := by
+    have := IsCardinalFiltered.of_le J h
+    exact HasCardinalFilteredColimits.hasColimitsOfShape C κ J
 
 end
 
