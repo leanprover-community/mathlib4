@@ -396,7 +396,7 @@ def embDomainOrderEmbedding [Zero R] : Lex R⟦Γ⟧ ↪o Lex R⟦Γ'⟧ where
     · rintro (⟨i, hj, hi⟩ | heq)
       · have himem : i ∈ Set.range f := by
           contrapose hi
-          simp [embDomain_notin_range hi]
+          simp [embDomain_of_notMem_range hi]
         obtain ⟨k, rfl⟩ := himem
         refine Or.inl ⟨k, fun j hjk ↦ ?_, by simpa using hi⟩
         simpa using hj (f j) (f.lt_iff_lt.mpr hjk)
@@ -406,7 +406,7 @@ def embDomainOrderEmbedding [Zero R] : Lex R⟦Γ⟧ ↪o Lex R⟦Γ'⟧ where
         by_cases hkmem : k ∈ Set.range f
         · obtain ⟨j', rfl⟩ := hkmem
           simpa using hj _ <| f.lt_iff_lt.mp hki
-        · simp_rw [embDomain_notin_range hkmem]
+        · simp_rw [embDomain_of_notMem_range hkmem]
       · simp
 
 /-- `HahnSeries.embDomain` as an `OrderAddMonoidHom`. -/

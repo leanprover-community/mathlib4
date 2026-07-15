@@ -238,7 +238,6 @@ since this cardinal is finite, as a natural number in `finrank_V` -/
 
 theorem dim_V : Module.rank ℝ (V n) = 2 ^ n := by
   have : Module.rank ℝ (V n) = (2 ^ n : ℕ) := by
-    classical
     rw [rank_eq_card_basis (dualBases_e_ε _).basis, Q.card]
   assumption_mod_cast
 

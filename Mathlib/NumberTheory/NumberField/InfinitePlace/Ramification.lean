@@ -744,7 +744,6 @@ private theorem mapsTo_embeddingConjugateIte : (unramifiedPlacesOver L v).MapsTo
 
 private theorem surjOn_embeddingConjugateIte : (unramifiedPlacesOver L v).SurjOn
     (embeddingConjugateIte v) (unmixedEmbeddingsOver L v.embedding) := by
-  classical
   refine fun ψ h ↦ ⟨mk ψ, mk_mem_unramifiedPlacesOver h, ?_⟩
   rcases embedding_mk_eq ψ with (_ | hψ)
   · aesop (add simp [embeddingConjugateIte, unmixedEmbeddingsOver])

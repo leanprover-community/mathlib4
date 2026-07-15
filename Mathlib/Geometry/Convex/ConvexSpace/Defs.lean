@@ -94,7 +94,6 @@ theorem mk_single (x : M) {nonneg total} : (mk (.single x (1 : R)) nonneg total)
 
 @[simp] lemma support_weights_eq_singleton : w.weights.support = {x} ↔ w = single x where
   mp := by
-    classical
     rw [support_eq_singleton']
     rintro ⟨a, ha, hwa⟩
     ext : 1

@@ -1199,7 +1199,6 @@ theorem ext_continuousAddMonoidHom
       f.comp (singleContinuousAddMonoidHom E p i) = g.comp (singleContinuousAddMonoidHom E p i)) :
     f = g := by
   ext x
-  classical
   have := lp.hasSum_single hp x
   rw [← (this.map f f.continuous).tsum_eq, ← (this.map g g.continuous).tsum_eq]
   congr! 2 with i

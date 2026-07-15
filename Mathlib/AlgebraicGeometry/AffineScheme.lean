@@ -1022,7 +1022,6 @@ theorem of_affine_open_cover {X : Scheme} {P : X.affineOpens → Prop}
         (_ : Ideal.span (s : Set (Γ(X, U))) = ⊤),
         (∀ f : s, P (X.affineBasicOpen f.1)) → P U)
     (hU : ∀ i, P (U i)) : P V := by
-  classical
   have : ∀ (x : V.1), ∃ f : Γ(X, V), ↑x ∈ X.basicOpen f ∧ P (X.affineBasicOpen f) := by
     intro x
     obtain ⟨i, hi⟩ := Opens.mem_iSup.mp (iSup_U.ge (Set.mem_univ x))

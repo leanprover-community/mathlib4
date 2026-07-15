@@ -165,21 +165,20 @@ theorem transfer_eq_prod_quotient_orbitRel_zpowers_quot [FiniteIndex H] (g : G)
         ϕ
           ⟨q.out.out⁻¹ * g ^ Function.minimalPeriod (g • ·) q.out * q.out.out,
             QuotientGroup.out_conj_pow_minimalPeriod_mem H g q.out⟩ := by
-  classical
-    let := H.fintypeQuotientOfFiniteIndex
-    calc
-      transfer ϕ g = ∏ q : G ⧸ H, _ := transfer_def ϕ (transferTransversal H g) g
-      _ = _ := ((quotientEquivSigmaZMod H g).symm.prod_comp _).symm
-      _ = _ := Finset.prod_sigma _ _ _
-      _ = _ := by
-        refine Fintype.prod_congr _ _ (fun q => ?_)
-        simp only [quotientEquivSigmaZMod_symm_apply, transferTransversal_apply',
-          transferTransversal_apply'']
-        rw [Fintype.prod_eq_single (0 : ZMod (Function.minimalPeriod (g • ·) q.out)) _]
-        · simp only [if_pos, ZMod.cast_zero, zpow_zero, one_mul, mul_assoc]
-        · intro k hk
-          simp only [if_neg hk, inv_mul_cancel]
-          exact map_one ϕ
+  let := H.fintypeQuotientOfFiniteIndex
+  calc
+    transfer ϕ g = ∏ q : G ⧸ H, _ := transfer_def ϕ (transferTransversal H g) g
+    _ = _ := ((quotientEquivSigmaZMod H g).symm.prod_comp _).symm
+    _ = _ := Finset.prod_sigma _ _ _
+    _ = _ := by
+      refine Fintype.prod_congr _ _ (fun q => ?_)
+      simp only [quotientEquivSigmaZMod_symm_apply, transferTransversal_apply',
+        transferTransversal_apply'']
+      rw [Fintype.prod_eq_single (0 : ZMod (Function.minimalPeriod (g • ·) q.out)) _]
+      · simp only [if_pos, ZMod.cast_zero, zpow_zero, one_mul, mul_assoc]
+      · intro k hk
+        simp only [if_neg hk, inv_mul_cancel]
+        exact map_one ϕ
 
 open scoped IsMulCommutative in
 /-- Auxiliary lemma in order to state `transfer_eq_pow`. -/
