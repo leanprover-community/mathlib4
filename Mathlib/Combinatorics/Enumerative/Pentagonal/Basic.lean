@@ -21,11 +21,6 @@ convention, but implicitly shows the monotonicity in `pentagonal_lt_pentagonal_n
 
 * `pentagonal`: pentagonal numbers as a function `ℤ → ℕ`.
 
-## TODO
-
-Show the relation between pentagonal numbers and partitions, including the pentagonal number
-theorem.
-
 ## References
 
 * https://en.wikipedia.org/wiki/Pentagonal_number
