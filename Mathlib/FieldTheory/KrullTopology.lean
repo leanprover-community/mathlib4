@@ -44,10 +44,6 @@ all intermediate fields `E` with `E/K` finite dimensional.
 - `stabilizer_isOpen_of_isIntegral`: For an integral field extension `L/K`, the stabilizer
   in `Gal(L/K)` of any element in `L` is open for the Krull topology.
 
-- `IntermediateField.finrank_eq_fixingSubgroup_index`: given a Galois extension `K/k` and an
-  intermediate field `L`, the `[L : k]` as a natural number is equal to the index of the
-  fixing subgroup of `L`.
-
 ## Notation
 
 - In docstrings, we will write `Gal(L/E)` to denote the fixing subgroup of an intermediate field
