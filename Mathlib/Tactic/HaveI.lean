@@ -30,6 +30,7 @@ macro_rules
 
 (This is the do-notation version of the term-mode `haveI`.)
 -/
+@[deprecated "prefer `have` over `haveI'`" (since := "2026-07-14")]
 macro "haveI' " hd:letDecl : doElem =>
   `(doElem| assert! haveIDummy $hd:letDecl)
 
@@ -42,6 +43,7 @@ macro_rules
 
 (This is the do-notation version of the term-mode `haveI`.)
 -/
+@[deprecated "prefer `let` over `letI'`" (since := "2026-07-14")]
 macro "letI' " hd:letDecl : doElem =>
   `(doElem| assert! letIDummy $hd:letDecl)
 

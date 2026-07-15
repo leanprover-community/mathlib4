@@ -53,17 +53,17 @@ attribute [local instance] monadLiftOptionMetaM in
 /-- The `norm_num` extension which identifies expressions of the form `a = b`,
 such that `norm_num` successfully recognises both `a` and `b`. -/
 @[norm_num _ = _] def evalEq : NormNumExt where eval {v β} e := do
-  haveI' : v =QL 0 := ⟨⟩; haveI' : $β =Q Prop := ⟨⟩
+  have : v =QL 0 := ⟨⟩; have : $β =Q Prop := ⟨⟩
   let .app (.app f a) b ← whnfR e | failure
   let ⟨u, α, a⟩ ← inferTypeQ' a
   have b : Q($α) := b
-  haveI' : $e =Q ($a = $b) := ⟨⟩
+  have : $e =Q ($a = $b) := ⟨⟩
   guard <|← withNewMCtxDepth <| isDefEq f q(Eq (α := $α))
   let ra ← derive a; let rb ← derive b
   let rec intArm (rα : Q(Ring $α)) := do
     let ⟨za, na, pa⟩ ← ra.toInt rα; let ⟨zb, nb, pb⟩ ← rb.toInt rα
     if za = zb then
-      haveI' : $na =Q $nb := ⟨⟩
+      have : $na =Q $nb := ⟨⟩
       return .isTrue q(isInt_eq_true $pa $pb)
     else if let some _i ← inferCharZeroOfRing? rα then
       let r : Q(decide ($na = $nb) = false) := (q(Eq.refl false) : Expr)
@@ -73,8 +73,8 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
   let rec nnratArm (dsα : Q(DivisionSemiring $α)) := do
     let ⟨qa, na, da, pa⟩ ← ra.toNNRat' dsα; let ⟨qb, nb, db, pb⟩ ← rb.toNNRat' dsα
     if qa = qb then
-      haveI' : $na =Q $nb := ⟨⟩
-      haveI' : $da =Q $db := ⟨⟩
+      have : $na =Q $nb := ⟨⟩
+      have : $da =Q $db := ⟨⟩
       return .isTrue q(isNNRat_eq_true $pa $pb)
     else if let some _i ← inferCharZeroOfDivisionSemiring? dsα then
       let r : Q(decide (Nat.mul $na $db = Nat.mul $nb $da) = false) :=
@@ -85,8 +85,8 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
   let rec ratArm (dα : Q(DivisionRing $α)) := do
     let ⟨qa, na, da, pa⟩ ← ra.toRat' dα; let ⟨qb, nb, db, pb⟩ ← rb.toRat' dα
     if qa = qb then
-      haveI' : $na =Q $nb := ⟨⟩
-      haveI' : $da =Q $db := ⟨⟩
+      have : $na =Q $nb := ⟨⟩
+      have : $da =Q $db := ⟨⟩
       return .isTrue q(isRat_eq_true $pa $pb)
     else if let some _i ← inferCharZeroOfDivisionRing? dα then
       let r : Q(decide (Int.mul $na (.ofNat $db) = Int.mul $nb (.ofNat $da)) = false) :=
@@ -118,7 +118,7 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
   | .isNat _ na pa, .isNat mα nb pb =>
     assumeInstancesCommute
     if na.natLit! = nb.natLit! then
-      haveI' : $na =Q $nb := ⟨⟩
+      have : $na =Q $nb := ⟨⟩
       return .isTrue q(isNat_eq_true $pa $pb)
     else if let some _i ← inferCharZeroOfAddMonoidWithOne? mα then
       let r : Q(Nat.beq $na $nb = false) := (q(Eq.refl false) : Expr)
