@@ -288,29 +288,44 @@ protected def TopologicalSpace.cofinite {X : Type*} : TopologicalSpace X where
     exact Finite.sInter (mem_image_of_mem _ hts) (h t hts ⟨x, hzt⟩)
 
 /-- A type synonym equipped with the topology whose open sets are the empty set and the sets with
-finite complements. -/
-abbrev CofiniteTopology (X : Type*) :=
+finite complements.
+
+For the predicate stating that a particular topological space is the cofinite topology, see `CofiniteTopology`. -/
+abbrev WithCofiniteTopology (X : Type*) :=
   WithTopology X .cofinite
+
+/-- The identity equivalence between `X` and `WithCofiniteTopology X`. -/
+def WithCofiniteTopology.of : X ≃ WithCofiniteTopology X := (WithTopology.equiv _ _).symm
+
+instance WithCofiniteTopology.instInhabited [Inhabited X] : Inhabited (WithCofiniteTopology X) where
+  default := of default
+
+/-- A space has cofinite topology if a set is open if and
+only if it is empty or has finite complement.
+
+For a type synonym equipped with the cofinite topology see `WithCofiniteTopology`. -/
+class CofiniteTopology (X : Type*) [TopologicalSpace X] : Prop where
+  isOpen_iff (s : Set X) : IsOpen s ↔ s.Nonempty → sᶜ.Finite
 
 namespace CofiniteTopology
 
-/-- The identity equivalence between `X` and `CofiniteTopology X`. -/
-def of : X ≃ CofiniteTopology X := (WithTopology.equiv _ _).symm
+instance : CofiniteTopology (WithCofiniteTopology X) where
+  isOpen_iff s := by
+    simp_rw [isOpen_coinduced, TopologicalSpace.cofinite, isOpen_mk, ← Set.preimage_compl,
+      WithTopology.preimage_toTopology, image_nonempty,
+      finite_image_iff (WithTopology.ofTopology_injective _).injOn]
 
-instance [Inhabited X] : Inhabited (CofiniteTopology X) where default := of default
+variable {X : Type*} [TopologicalSpace X] [CofiniteTopology X]
 
-theorem isOpen_iff {s : Set (CofiniteTopology X)} : IsOpen s ↔ s.Nonempty → sᶜ.Finite := by
-  simp_rw [isOpen_coinduced, TopologicalSpace.cofinite, isOpen_mk, ← Set.preimage_compl,
-    WithTopology.preimage_toTopology, image_nonempty,
-    finite_image_iff (WithTopology.ofTopology_injective _).injOn]
-
-theorem isOpen_iff' {s : Set (CofiniteTopology X)} : IsOpen s ↔ s = ∅ ∨ sᶜ.Finite := by
+/-- A set in a cofinite topology is open if and
+only if it is empty or its complement is finite. -/
+theorem isOpen_iff' {s : Set X} : IsOpen s ↔ s = ∅ ∨ sᶜ.Finite := by
   simp only [isOpen_iff, nonempty_iff_ne_empty, or_iff_not_imp_left]
 
-theorem isClosed_iff {s : Set (CofiniteTopology X)} : IsClosed s ↔ s = univ ∨ s.Finite := by
+theorem isClosed_iff {s : Set X} : IsClosed s ↔ s = univ ∨ s.Finite := by
   simp only [← isOpen_compl_iff, isOpen_iff', compl_compl, compl_empty_iff]
 
-theorem nhds_eq (x : CofiniteTopology X) : 𝓝 x = pure x ⊔ cofinite := by
+theorem nhds_eq (x : X) : 𝓝 x = pure x ⊔ cofinite := by
   ext U
   simp_rw [mem_nhds_iff, isOpen_iff]
   constructor
@@ -319,7 +334,7 @@ theorem nhds_eq (x : CofiniteTopology X) : 𝓝 x = pure x ⊔ cofinite := by
   · rintro ⟨hU : x ∈ U, hU' : Uᶜ.Finite⟩
     exact ⟨U, Subset.rfl, fun _ => hU', hU⟩
 
-theorem mem_nhds_iff {x : CofiniteTopology X} {s : Set (CofiniteTopology X)} :
+theorem mem_nhds_iff {x : X} {s : Set X} :
     s ∈ 𝓝 x ↔ x ∈ s ∧ sᶜ.Finite := by simp [nhds_eq]
 
 end CofiniteTopology

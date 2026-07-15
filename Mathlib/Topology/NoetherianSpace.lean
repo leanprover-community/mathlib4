@@ -97,7 +97,7 @@ theorem noetherianSpace_iff_isCompact : NoetherianSpace α ↔ ∀ s : Set α, I
 instance [NoetherianSpace α] : WellFoundedLT (Closeds α) :=
   Iff.mp ((noetherianSpace_TFAE α).out 0 1) ‹_›
 
-instance {α} : NoetherianSpace (CofiniteTopology α) := by
+instance [CofiniteTopology α] : NoetherianSpace α := by
   simp only [noetherianSpace_iff_isCompact, isCompact_iff_ultrafilter_le_nhds,
     CofiniteTopology.nhds_eq, Ultrafilter.le_sup_iff, Filter.le_principal_iff]
   intro s f hs
@@ -150,8 +150,8 @@ instance (priority := 100) Finite.to_noetherianSpace [Finite α] : NoetherianSpa
   ⟨Finite.wellFounded_of_trans_of_irrefl _⟩
 
 instance (priority := 100) [IndiscreteTopology α] : NoetherianSpace α :=
-  noetherianSpace_of_surjective CofiniteTopology.of.symm continuous_of_indiscreteTopology
-    CofiniteTopology.of.symm.surjective
+  noetherianSpace_of_surjective WithCofiniteTopology.of.symm continuous_of_indiscreteTopology
+    WithCofiniteTopology.of.symm.surjective
 
 /-- In a Noetherian space, every closed set is a finite union of irreducible closed sets. -/
 theorem NoetherianSpace.exists_finite_set_closeds_irreducible [NoetherianSpace α] (s : Closeds α) :

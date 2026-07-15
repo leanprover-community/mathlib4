@@ -401,14 +401,14 @@ theorem TopologicalSpace.IsTopologicalBasis.exists_mem_of_ne [T1Space X] {b : Se
 protected theorem Finset.isClosed [T1Space X] (s : Finset X) : IsClosed (s : Set X) :=
   s.finite_toSet.isClosed
 
-instance : T1Space (CofiniteTopology X) where
+instance [CofiniteTopology X] : T1Space X where
   t1 x := CofiniteTopology.isClosed_iff.mpr <| by simp
 
 theorem t1Space_TFAE (X : Type u) [TopologicalSpace X] :
     List.TFAE [T1Space X,
       ∀ x, IsClosed ({ x } : Set X),
       ∀ x, IsOpen ({ x }ᶜ : Set X),
-      Continuous (@CofiniteTopology.of X),
+      Continuous (@WithCofiniteTopology.of X),
       ∀ ⦃x y : X⦄, x ≠ y → {y}ᶜ ∈ 𝓝 x,
       ∀ ⦃x y : X⦄, x ≠ y → ∃ s ∈ 𝓝 x, y ∉ s,
       ∀ ⦃x y : X⦄, x ≠ y → ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ y ∉ U,
@@ -438,7 +438,7 @@ theorem t1Space_TFAE (X : Type u) [TopologicalSpace X] :
       exact hs.preimage (Equiv.injective _).injOn |>.isClosed.isOpen_compl
   tfae_have 4 → 2 := by
     intro h x
-    rw [← CofiniteTopology.of.preimage_image {x}]
+    rw [← WithCofiniteTopology.of.preimage_image {x}]
     exact (Set.Finite.isClosed <| by simp) |>.preimage h
   tfae_have 2 ↔ 10 := by
     simp only [← closure_subset_iff_isClosed, specializes_iff_mem_closure, subset_def,
@@ -448,10 +448,10 @@ theorem t1Space_TFAE (X : Type u) [TopologicalSpace X] :
       fun ⟨_, _⟩ _ _ h => (h.antisymm h.symm).eq⟩
   tfae_finish
 
-theorem t1Space_iff_continuous_cofinite_of : T1Space X ↔ Continuous (@CofiniteTopology.of X) :=
+theorem t1Space_iff_continuous_cofinite_of : T1Space X ↔ Continuous (@WithCofiniteTopology.of X) :=
   (t1Space_TFAE X).out 0 3
 
-theorem CofiniteTopology.continuous_of [T1Space X] : Continuous (@CofiniteTopology.of X) :=
+theorem WithCofiniteTopology.continuous_of [T1Space X] : Continuous (@WithCofiniteTopology.of X) :=
   t1Space_iff_continuous_cofinite_of.mp ‹_›
 
 theorem t1Space_iff_exists_open :
