@@ -511,6 +511,9 @@ theorem edgeSet_top : (⊤ : SimpleGraph V).edgeSet = Sym2.diagSetᶜ :=
 theorem edgeSet_subset_compl_diagSet : G.edgeSet ⊆ Sym2.diagSetᶜ := by
   simpa [Set.subset_compl_iff_disjoint_left, edgeSet, edgeSetEmbedding] using G.loopless
 
+theorem disjoint_edgeSet_diagSet : Disjoint G.edgeSet Sym2.diagSet :=
+  Set.subset_compl_iff_disjoint_right.mp G.edgeSet_subset_compl_diagSet
+
 @[simp]
 theorem edgeSet_sup : (G₁ ⊔ G₂).edgeSet = G₁.edgeSet ∪ G₂.edgeSet := by
   ext ⟨x, y⟩

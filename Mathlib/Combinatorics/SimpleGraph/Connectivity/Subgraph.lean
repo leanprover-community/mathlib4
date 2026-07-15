@@ -174,7 +174,7 @@ end ConnectedComponent
 
 namespace Walk
 
-variable {u v w : V}
+variable {u v w : V} (p : G.Walk u v)
 
 /-- The subgraph consisting of the vertices and edges of the walk. -/
 @[simp]
@@ -214,6 +214,10 @@ theorem mem_edges_toSubgraph (p : G.Walk u v) {e : Sym2 V} :
 @[simp]
 theorem edgeSet_toSubgraph (p : G.Walk u v) : p.toSubgraph.edgeSet = p.edgeSet :=
   Set.ext fun _ => p.mem_edges_toSubgraph
+
+@[simp]
+theorem fromEdgeSet_edgeSet : fromEdgeSet p.edgeSet = p.toSubgraph.spanningCoe := by
+  rw [← edgeSet_toSubgraph, Subgraph.fromEdgeSet_edgeSet]
 
 @[simp]
 theorem toSubgraph_append (p : G.Walk u v) (q : G.Walk v w) :
