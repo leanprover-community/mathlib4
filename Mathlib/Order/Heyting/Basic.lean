@@ -34,6 +34,13 @@ Heyting algebras are the order-theoretic equivalent of Cartesian closed categori
 * `CoheytingAlgebra`: Co-Heyting algebra.
 * `BiheytingAlgebra`: Bi-Heyting algebra.
 
+## Implementation notes
+
+Aligning the `Heyting` and `Coheyting` API with `to_dual` is kind of awkward, because they are
+unfortunately quite different. One reason is that the arguments of sup/inf are often swapped
+in the dual version, which is not compatible with `to_dual`. We work around this with extensive
+use of `to_dual none`.
+
 ## References
 
 * [Francis Borceux, *Handbook of Categorical Algebra III*][borceux-vol3]
