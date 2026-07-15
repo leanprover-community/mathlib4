@@ -438,7 +438,7 @@ def basis : Basis (Fin (natDegree f)) R S where
     rw [degree_eq_natDegree h.monic.ne_zero, degree_lt_iff_coeff_zero]
     intro m hm
     rw [Polynomial.coeff]
-    rw [Finsupp.mapDomain_notin_range]
+    rw [Finsupp.mapDomain_of_notMem_range]
     rw [Set.mem_range, not_exists]
     rintro i rfl
     exact i.prop.not_ge hm
