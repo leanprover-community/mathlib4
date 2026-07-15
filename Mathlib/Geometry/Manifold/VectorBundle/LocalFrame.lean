@@ -32,9 +32,6 @@ complete field). In the planned file `Mathlib/Geometry/Manifold/VectorBundle/Ort
 metric. This includes bundles of finite rank, modelled on a Hilbert space or on a Banach space which
 has smooth partitions of unity.
 
-We will use this to construct local extensions of a vector to a section which is smooth on the
-trivialisation domain.
-
 ## Main definitions and results
 
 * `IsLocalFrameOn`: a family of sections `s i` of `V → M` is called a **C^k local frame** on a set
@@ -180,9 +177,6 @@ noncomputable def fintypeOfFiniteDimensional [VectorBundle 𝕜 F V] [FiniteDime
       (FiberBundle.mem_baseSet_trivializationAt' x)
     exact Finite.equiv phi.symm
   exact FiniteDimensional.fintypeBasisIndex (hs.toBasisAt hx)
-
-@[deprecated (since := "2025-12-19")]
-alias fintype_of_finiteDimensional := fintypeOfFiniteDimensional
 
 open scoped Classical in
 /-- Coefficients of a section `s` of `V` w.r.t. a local frame `{s i}` on `u`.
@@ -456,7 +450,6 @@ near `x` induced by `e` and `b` -/
 lemma contMDiffAt_localFrame_coeff (hxe : x ∈ e.baseSet) (hs : CMDiffAt k (T% s) x) (i : ι) :
     CMDiffAt k ((LinearMap.piApply (e.localFrame_coeff I b i)) s) x := by
   -- This boils down to computing the frame coefficients in a local trivialisation.
-  classical
   -- step 1: on e.baseSet, we know compute the coefficient very well
   let aux := fun x ↦ b.repr (e ((T% s) x)).2 i
   -- Since `e.baseSet` is open, this is sufficient.
@@ -524,7 +517,6 @@ lemma mdifferentiableAt_localFrame_coeff
     (hxe : x ∈ e.baseSet) (hs : MDiffAt (T% s) x) (i : ι) :
     MDiffAt ((LinearMap.piApply (e.localFrame_coeff I b i)) s) x := by
   -- This boils down to computing the frame coefficients in a local trivialisation.
-  classical
   -- step 1: on `e.baseSet`, we know the coefficient very well
   let aux := fun x ↦ b.repr (e ((T% s) x)).2 i
   -- Since `e.baseSet` is open, this is sufficient.

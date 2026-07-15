@@ -709,13 +709,13 @@ lemma krullDim_eq_top [InfiniteDimensionalOrder α] :
     krullDim α = ⊤ :=
   le_antisymm le_top <| le_iSup_iff.mpr <| fun m hm ↦ match m, hm with
   | ⊥, hm => False.elim <| by
-    haveI : Inhabited α := ⟨LTSeries.withLength _ 0 0⟩
+    have : Inhabited α := ⟨LTSeries.withLength _ 0 0⟩
     exact not_le_of_gt (WithBot.bot_lt_coe _ : ⊥ < (0 : WithBot (WithTop ℕ))) <| hm default
-  | some ⊤, _ => le_refl _
-  | some (some m), hm => by
-    refine (not_lt_of_ge (hm (LTSeries.withLength _ (m + 1))) ?_).elim
-    simp [ENat.WithBot.lt_add_one_iff]
-    norm_cast
+  | ⊤, _ => le_refl _
+  | m, hm => by
+    rw [top_le_iff, ENat.WithBot.eq_top_iff_forall_ge]
+    intro n
+    simpa using hm (LTSeries.withLength _ n)
 
 lemma krullDim_eq_top_iff : krullDim α = ⊤ ↔ InfiniteDimensionalOrder α := by
   refine ⟨fun h ↦ ?_, fun _ ↦ krullDim_eq_top⟩

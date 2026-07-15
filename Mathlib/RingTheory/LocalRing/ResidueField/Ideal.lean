@@ -97,9 +97,6 @@ lemma Ideal.algebraMap_quotient_residueField_mk (x) :
     algebraMap (R ⧸ I) I.ResidueField (Ideal.Quotient.mk _ x) =
     algebraMap R I.ResidueField x := rfl
 
-@[deprecated (since := "2025-12-02")]
-alias algebraMap_mk := Ideal.algebraMap_quotient_residueField_mk
-
 lemma Ideal.injective_algebraMap_quotient_residueField :
     Function.Injective (algebraMap (R ⧸ I) I.ResidueField) := by
   rw [RingHom.injective_iff_ker_eq_bot]

@@ -69,8 +69,6 @@ class PredOrder (α : Type*) [Preorder α] where
   /-- Proof that `pred b` is the greatest element less than `b` -/
   le_pred_of_lt {a b} : a < b → a ≤ pred b
 
-attribute [to_dual existing] PredOrder.mk PredOrder.le_pred_of_lt
-
 @[to_dual]
 instance [Preorder α] [SuccOrder α] : PredOrder αᵒᵈ where
   pred := toDual ∘ SuccOrder.succ ∘ ofDual
@@ -354,9 +352,6 @@ theorem le_succ_and_le_iff : b ≤ succ a ∧ a ≤ b ↔ b = a ∨ b = succ a :
   rw [and_comm]
   exact le_and_le_succ_iff
 
-@[deprecated (since := "2025-12-04")]
-alias le_le_succ_iff := le_and_le_succ_iff
-
 /-- See also `Order.le_succ_of_wcovBy`. -/
 @[to_dual /-- See also `Order.pred_le_of_wcovBy`. -/]
 lemma succ_eq_of_covBy (h : a ⋖ b) : succ a = b := (succ_le_of_lt h.lt).antisymm h.wcovBy.le_succ
@@ -635,13 +630,6 @@ variable [Preorder α] [PredOrder α] {a b : α}
 
 -- TODO: auto-generate all of these through `to_dual`
 
-@[deprecated pred_lt_of_le_of_not_isMin (since := "2025-12-04")]
-theorem pred_lt_of_not_isMin_of_le (ha : ¬IsMin a) : a ≤ b → pred a < b :=
-  (pred_lt_of_not_isMin ha).trans_le
-
-@[deprecated (since := "2025-12-04")]
-alias pred_le_pred_of_not_isMin_of_le := pred_mono
-
 @[to_dual existing]
 theorem isMin_iterate_pred_of_eq_of_lt {n m : ℕ} (h_eq : pred^[n] a = pred^[m] a)
     (h_lt : n < m) : IsMin (pred^[n] a) :=
@@ -652,13 +640,7 @@ theorem isMin_iterate_pred_of_eq_of_ne {n m : ℕ} (h_eq : pred^[n] a = pred^[m]
     (h_ne : n ≠ m) : IsMin (pred^[n] a) :=
   @isMax_iterate_succ_of_eq_of_ne αᵒᵈ _ _ _ _ _ h_eq h_ne
 
-@[deprecated (since := "2025-12-04")]
-alias pred_le_pred_of_le := pred_mono
-
 end Preorder
-
-@[deprecated le_and_pred_le_iff (since := "2025-12-04")]
-alias pred_le_le_iff := pred_le_and_le_iff
 
 /-! ### Successor-predecessor orders -/
 

@@ -499,7 +499,7 @@ instance forget_preservesLimitsOfRight : PreservesLimit (cospan g f) (forget C) 
 set_option backward.isDefEq.respectTransparency false in
 theorem pullback_snd_isIso_of_range_subset (H : Set.range g.base ⊆ Set.range f.base) :
     IsIso (pullback.snd f g) := by
-  haveI := TopCat.snd_iso_of_left_embedding_range_subset hf.base_open.isEmbedding g.base H
+  have := TopCat.snd_iso_of_left_embedding_range_subset hf.base_open.isEmbedding g.base H
   have : IsIso (pullback.snd f g).base := by
     delta pullback.snd
     rw [← limit.isoLimitCone_hom_π ⟨_, pullbackConeOfLeftIsLimit f g⟩ WalkingCospan.right]
@@ -567,9 +567,6 @@ theorem toSheafedSpaceHom_hom_base : (toSheafedSpaceHom Y f).hom.base = f.base :
 @[simp]
 theorem toSheafedSpaceHom_hom_c : (toSheafedSpaceHom Y f).hom.c = f.c :=
   rfl
-
-@[deprecated (since := "2025-12-18")] alias toSheafedSpaceHom_base := toSheafedSpaceHom_hom_base
-@[deprecated (since := "2025-12-18")] alias toSheafedSpaceHom_c := toSheafedSpaceHom_hom_c
 
 instance toSheafedSpace_isOpenImmersion : SheafedSpace.IsOpenImmersion (toSheafedSpaceHom Y f) :=
   H
@@ -776,7 +773,7 @@ theorem of_stalk_iso {X Y : SheafedSpace C} (f : X ⟶ Y) (hf : IsOpenEmbedding 
       rintro ⟨_, y, hy, rfl⟩
       specialize H y
       delta PresheafedSpace.Hom.stalkMap at H
-      haveI H' := TopCat.Presheaf.stalkPushforward.stalkPushforward_iso_of_isInducing C
+      have H' := TopCat.Presheaf.stalkPushforward.stalkPushforward_iso_of_isInducing C
         hf.toIsInducing X.presheaf y
       have := IsIso.comp_isIso' H (@IsIso.inv_isIso _ _ _ _ _ H')
       rwa [Category.assoc, IsIso.hom_inv_id, Category.comp_id] at this }
@@ -864,7 +861,7 @@ theorem ofRestrict_invApp {C : Type*} [Category* C] (X : SheafedSpace C) {Y : To
 
 /-- An open immersion is an iso if the underlying continuous map is epi. -/
 theorem to_iso [h' : Epi f.hom.base] : IsIso f := by
-  haveI : IsIso (forgetToPresheafedSpace.map f) := PresheafedSpace.IsOpenImmersion.to_iso f.hom
+  have : IsIso (forgetToPresheafedSpace.map f) := PresheafedSpace.IsOpenImmersion.to_iso f.hom
   apply isIso_of_reflects_iso _ (SheafedSpace.forgetToPresheafedSpace)
 
 instance stalk_iso [HasColimits C] (x : X) :
