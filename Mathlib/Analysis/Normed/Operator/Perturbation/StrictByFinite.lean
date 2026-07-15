@@ -36,7 +36,9 @@ theorem, so there is no significant restriction on the field.
 
 ## Implementation details
 
-There are two notable changes compared to Bourbaki.
+This file covers almost exactly the content of
+[N. Bourbaki, *Théories Spectrales*, Chapitre III, § 3, n° 1][bourbaki2023]. However,
+there are two notable changes compared to Bourbaki :
 * We treat all topological vector spaces over complete nontrivially normed fields,
   where Bourbaki restricts to locally convex spaces over `ℝ` or `ℂ`. To do so, we have to
   tweak one statement by assuming that a finite dimensional subspace is complemented, which
