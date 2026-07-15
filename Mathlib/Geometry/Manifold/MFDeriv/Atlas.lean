@@ -262,7 +262,6 @@ lemma mfderiv_extend_comp_mfderivWithin_extend_symm
     simp_all
   · simp_all
 
-
 /-- The composition of the derivative of an extended chart `e.extend I` with the derivative of its
 inverse `(e.extend I).symm` gives the identity.
 Version where the basepoint belongs to `(e.extend).source`. -/
@@ -387,8 +386,6 @@ lemma mfderivWithin_extChartAt_symm_comp_mfderiv_extChartAt
       = ContinuousLinearMap.id _ _ :=
   mfderivWithin_extend_symm_comp_mfderiv_extend (IsManifold.chart_mem_maximalAtlas x) hy
 
--- TODO: continue generalising from here!
-set_option backward.isDefEq.respectTransparency false in
 /-- The composition of the derivative of the inverse of `extChartAt` with the derivative of
 `extChartAt` gives the identity.
 Version where the basepoint belongs to `(extChartAt I x).source`. -/
@@ -398,6 +395,7 @@ lemma mfderivWithin_extChartAt_symm_comp_mfderiv_extChartAt'
       = ContinuousLinearMap.id _ _ := by
   have : y = (extChartAt I x).symm (extChartAt I x y) := ((extChartAt I x).left_inv hy).symm
   convert! mfderivWithin_extChartAt_symm_comp_mfderiv_extChartAt ((extChartAt I x).map_source hy)
+  rw [(extChartAt I x).left_inv (by simpa using hy)]
 
 lemma isInvertible_mfderivWithin_extChartAt_symm {y : E} (hy : y ∈ (extChartAt I x).target) :
     (mfderiv[range I] (extChartAt I x).symm y).IsInvertible :=
