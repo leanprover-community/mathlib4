@@ -506,11 +506,11 @@ lemma _root_.ContMDiffAt.iff_comp_isImmersionAtOfComplement
 lemma isImmersedPoint [IsManifold I 1 M] [IsManifold J 1 N]
     (h : IsImmersionAtOfComplement F I J n f x) (hn : n ≠ 0) :
     IsImmersedPoint I J f x := by
+  have hn' : 1 ≤ n := ENat.one_le_iff_ne_zero_withTop.mpr hn
   suffices IsImmersedPoint I 𝓘(𝕜, E'') ((h.codChart.extend J) ∘ f) x by
     apply IsImmersedPoint.of_comp (h.contMDiffAt.mdifferentiableAt hn) ?_ this
     exact h.codChart.mdifferentiableAt_extend
-      (IsManifold.maximalAtlas_subset_of_le (ENat.one_le_iff_ne_zero_withTop.mpr hn)
-      h.codChart_mem_maximalAtlas) h.mem_codChart_source
+      (IsManifold.maximalAtlas_subset_of_le hn' h.codChart_mem_maximalAtlas) h.mem_codChart_source
   -- The local representative of f in the nice charts at x, as a continuous linear map.
   let rhs : E →L[𝕜] E'' := h.equiv.toContinuousLinearMap.comp ((ContinuousLinearMap.id _ _).prod 0)
   have heq : EqOn ((h.codChart.extend J) ∘ f) (rhs ∘ (h.domChart.extend I)) h.domChart.source := by
@@ -526,7 +526,9 @@ lemma isImmersedPoint [IsManifold I 1 M] [IsManifold J 1 N]
     dsimp
     rw [isImmersedPoint_iff, mfderiv_eq_fderiv, ContinuousLinearMap.fderiv]
     exact ContinuousLinearMap.HasLeftInverse.inl
-  · exact .of_mfderiv_isInvertible <| isInvertible_mfderiv_extend (by simp [h.mem_domChart_source])
+  · exact IsImmersedPoint.of_mfderiv_isInvertible <| isInvertible_mfderiv_extend
+      (IsManifold.maximalAtlas_subset_of_le hn' h.domChart_mem_maximalAtlas)
+      (by simp [h.mem_domChart_source])
 
 /-- An immersion at `x` has injective differential. -/
 lemma injective_mfderiv [IsManifold I 1 M] [IsManifold J 1 N]
