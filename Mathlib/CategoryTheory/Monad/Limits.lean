@@ -352,7 +352,7 @@ theorem hasColimitsOfShape_of_reflective (R : D ⥤ C) [Reflective R] [HasColimi
     HasColimitsOfShape J D where
   has_colimit := fun F => by
       let c := (monadicLeftAdjoint R).mapCocone (colimit.cocone (F ⋙ R))
-      letI : PreservesColimitsOfShape J _ :=
+      let : PreservesColimitsOfShape J _ :=
         (monadicAdjunction R).leftAdjoint_preservesColimits.1
       let t : IsColimit c := isColimitOfPreserves (monadicLeftAdjoint R) (colimit.isColimit _)
       apply HasColimit.mk ⟨_, (IsColimit.precomposeInvEquiv _ _).symm t⟩
@@ -371,11 +371,11 @@ lemma leftAdjoint_preservesTerminal_of_reflective (R : D ⥤ C) [Reflective R] :
     PreservesLimitsOfShape (Discrete.{v} PEmpty) (monadicLeftAdjoint R) where
   preservesLimit {K} := by
     let F := Functor.empty.{v} D
-    letI : PreservesLimit (F ⋙ R) (monadicLeftAdjoint R) := by
+    let : PreservesLimit (F ⋙ R) (monadicLeftAdjoint R) := by
       constructor
       intro c h
-      haveI : HasLimit (F ⋙ R) := ⟨⟨⟨c, h⟩⟩⟩
-      haveI : HasLimit F := hasLimit_of_reflective F R
+      have : HasLimit (F ⋙ R) := ⟨⟨⟨c, h⟩⟩⟩
+      have : HasLimit F := hasLimit_of_reflective F R
       constructor
       apply isLimitChangeEmptyCone D (limit.isLimit F)
       apply (asIso ((monadicAdjunction R).counit.app _)).symm.trans
@@ -681,7 +681,7 @@ theorem hasLimitsOfShape_of_coreflective (R : D ⥤ C) [Coreflective R] [HasLimi
     HasLimitsOfShape J D where
   has_limit := fun F => by
       let c := (comonadicRightAdjoint R).mapCone (limit.cone (F ⋙ R))
-      letI : PreservesLimitsOfShape J _ :=
+      let : PreservesLimitsOfShape J _ :=
         (comonadicAdjunction R).rightAdjoint_preservesLimits.1
       let t : IsLimit c := isLimitOfPreserves (comonadicRightAdjoint R) (limit.isLimit _)
       apply HasLimit.mk ⟨_, (IsLimit.postcomposeHomEquiv _ _).symm t⟩
@@ -700,11 +700,11 @@ lemma rightAdjoint_preservesInitial_of_coreflective (R : D ⥤ C) [Coreflective 
     PreservesColimitsOfShape (Discrete.{v} PEmpty) (comonadicRightAdjoint R) where
   preservesColimit {K} := by
     let F := Functor.empty.{v} D
-    letI : PreservesColimit (F ⋙ R) (comonadicRightAdjoint R) := by
+    let : PreservesColimit (F ⋙ R) (comonadicRightAdjoint R) := by
       constructor
       intro c h
-      haveI : HasColimit (F ⋙ R) := ⟨⟨⟨c, h⟩⟩⟩
-      haveI : HasColimit F := hasColimit_of_coreflective F R
+      have : HasColimit (F ⋙ R) := ⟨⟨⟨c, h⟩⟩⟩
+      have : HasColimit F := hasColimit_of_coreflective F R
       constructor
       apply isColimitChangeEmptyCocone D (colimit.isColimit F)
       apply (asIso ((comonadicAdjunction R).unit.app _)).trans

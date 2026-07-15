@@ -178,7 +178,7 @@ private lemma Alon.of_mem_P_support {ι : Type*} (i : ι) (S : Finset R) (m : ι
   rw [hP, support_rename_of_injective (Function.injective_of_subsingleton _)] at hm
   simp only [Finset.mem_image, mem_support_iff, ne_eq] at hm
   obtain ⟨e, he, hm⟩ := hm
-  haveI : Nontrivial R := nontrivial_of_ne _ _ he
+  have : Nontrivial R := nontrivial_of_ne _ _ he
   refine ⟨e (), ?_, ?_⟩
   · suffices e ≼[lex] single () #S by
       simpa [MonomialOrder.lex_le_iff_of_unique] using this
@@ -210,7 +210,7 @@ theorem combinatorial_nullstellensatz_exists_linearCombination
     ∃ (h : σ →₀ MvPolynomial σ R),
       (∀ i, ((∏ s ∈ S i, (X i - C s)) * h i).totalDegree ≤ f.totalDegree) ∧
       f = linearCombination (MvPolynomial σ R) (fun i ↦ ∏ r ∈ S i, (X i - C r)) h := by
-  letI : LinearOrder σ := WellOrderingRel.isWellOrder.linearOrder
+  let : LinearOrder σ := WellOrderingRel.isWellOrder.linearOrder
   obtain ⟨h, r, hf, hh, hr⟩ := degLex.div (b := fun i ↦ Alon.P (S i) i)
       (fun i ↦ by simp only [(Alon.monic_P ..).leadingCoeff_eq_one, isUnit_one]) f
   use h
