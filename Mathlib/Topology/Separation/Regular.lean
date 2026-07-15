@@ -492,7 +492,7 @@ theorem exists_mem_nhdsSet_isClosed_subset [NormalSpace X] {u s : Set X} (h : s 
 
 theorem closed_nhdsSet_basis [NormalSpace X] (u : Set X) (hu : IsClosed u) : (𝓝ˢ u).HasBasis
     (fun s : Set X ↦ s ∈ 𝓝ˢ u ∧ IsClosed s) id := by
-  refine hasBasis_self.2 fun _ ht ↦ exists_mem_nhdsSet_isClosed_subset ht hu
+  exact hasBasis_self.2 fun _ ht ↦ exists_mem_nhdsSet_isClosed_subset ht hu
 
 theorem lift'_nhdsSet_closure [NormalSpace X] (u : Set X) (hu : IsClosed u) :
     (𝓝ˢ u).lift' closure = 𝓝ˢ u :=

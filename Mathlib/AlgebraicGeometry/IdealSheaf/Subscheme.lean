@@ -669,7 +669,7 @@ lemma ideal_ker_le_ker_ΓSpecIso_inv_comp :
     rw [Hom.comp_appLE, Opens.ι_app]
     exact Hom.map_appLE _ _ (homOfLE le_top).op
   rw [← he]
-  refine (IdealSheafData.ideal_ofIdeals_le _ _).trans_eq
+  exact (IdealSheafData.ideal_ofIdeals_le _ _).trans_eq
     (RingHom.ker_equiv_comp _ e.commRingCatIsoToRingEquiv).symm
 
 set_option backward.defeqAttrib.useBackward true in

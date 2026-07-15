@@ -136,6 +136,6 @@ theorem Pairwise.rel_get_of_le [Std.Refl R] {l : List α} (h : l.Pairwise R) {a 
 
 theorem Pairwise.decide [DecidableRel R] (l : List α) (h : Pairwise R l) :
     Pairwise (fun a b => decide (R a b) = true) l := by
-  refine h.imp fun {a b} h => by simpa using h
+  exact h.imp fun {a b} h => by simpa using h
 
 end List

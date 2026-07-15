@@ -879,7 +879,7 @@ lemma summable_weierstrassPSummand (z x : ℂ)
     (hx : ∀ l : L.lattice, ‖z - x‖ < ‖l - x‖) :
     Summable (Function.uncurry fun b c ↦ L.weierstrassPSummand x b c * (z - x) ^ b) := by
   simp_rw [← L.weierstrassPExceptSummand_of_notMem _ L.ω₁_div_two_notMem_lattice]
-  refine L.summable_weierstrassPExceptSummand _ z x fun l hl ↦ hx l
+  exact L.summable_weierstrassPExceptSummand _ z x fun l hl ↦ hx l
 
 lemma weierstrassPSeries_hasSum (z x : ℂ) (hx : ∀ l : L.lattice, ‖z - x‖ < ‖l - x‖) :
     HasSum (fun i ↦ (L.weierstrassPSeries x).coeff i * (z - x) ^ i) (℘[L] z) := by

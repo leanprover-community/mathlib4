@@ -154,7 +154,7 @@ def map (f : Hom P P') : P.CotangentSpace →ₗ[S] P'.CotangentSpace := by
   haveI : IsScalarTower P.Ring P'.Ring S' :=
     IsScalarTower.of_algebraMap_eq (fun x ↦ (f.algebraMap_toRingHom x).symm)
   apply LinearMap.liftBaseChange
-  refine (TensorProduct.mk _ _ _ 1).restrictScalars _ ∘ₗ KaehlerDifferential.map R R' P.Ring P'.Ring
+  exact (TensorProduct.mk _ _ _ 1).restrictScalars _ ∘ₗ KaehlerDifferential.map R R' P.Ring P'.Ring
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]

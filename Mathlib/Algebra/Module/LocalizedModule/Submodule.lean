@@ -331,7 +331,7 @@ lemma ker_localizedMap_eq_localized₀_ker (g : M →ₗ[R] P) :
   · obtain ⟨⟨a, b⟩, rfl⟩ := IsLocalizedModule.mk'_surjective p f x
     simp only [Function.uncurry_apply_pair, map_mk', mk'_eq_zero, eq_zero_iff p f'] at h
     obtain ⟨c, hc⟩ := h
-    refine ⟨c • a, by simpa, c * b, by simp⟩
+    exact ⟨c • a, by simpa, c * b, by simp⟩
   · rintro ⟨m, hm, a, ha, rfl⟩
     simp [IsLocalizedModule.map_mk', hm]
 

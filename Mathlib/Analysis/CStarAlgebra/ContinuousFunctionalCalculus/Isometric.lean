@@ -61,7 +61,7 @@ variable [IsometricContinuousFunctionalCalculus 𝕜 A p]
 
 lemma norm_cfcHom (a : A) (f : C(σ 𝕜 a, 𝕜)) (ha : p a := by cfc_tac) :
     ‖cfcHom (show p a from ha) f‖ = ‖f‖ := by
-  refine isometry_cfcHom a |>.norm_map_of_map_zero (map_zero _) f
+  exact isometry_cfcHom a |>.norm_map_of_map_zero (map_zero _) f
 
 lemma nnnorm_cfcHom (a : A) (f : C(σ 𝕜 a, 𝕜)) (ha : p a := by cfc_tac) :
     ‖cfcHom (show p a from ha) f‖₊ = ‖f‖₊ :=
@@ -251,7 +251,7 @@ open scoped ContinuousMapZero NonUnitalContinuousFunctionalCalculus
 
 lemma norm_cfcₙHom (a : A) (f : C(σₙ 𝕜 a, 𝕜)₀) (ha : p a := by cfc_tac) :
     ‖cfcₙHom (show p a from ha) f‖ = ‖f‖ := by
-  refine isometry_cfcₙHom a |>.norm_map_of_map_zero (map_zero _) f
+  exact isometry_cfcₙHom a |>.norm_map_of_map_zero (map_zero _) f
 
 lemma nnnorm_cfcₙHom (a : A) (f : C(σₙ 𝕜 a, 𝕜)₀) (ha : p a := by cfc_tac) :
     ‖cfcₙHom (show p a from ha) f‖₊ = ‖f‖₊ :=

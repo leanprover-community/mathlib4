@@ -427,7 +427,7 @@ def saturation (s : Subalgebra R S) (M : Submonoid S) (H : M ≤ s.toSubmonoid) 
   carrier := { x | ∃ m ∈ M, m * x ∈ s }
   mul_mem' := by
     intro a b ⟨m, hm, ha⟩ ⟨n, hn, hb⟩
-    refine ⟨_, mul_mem hm hn, mul_mul_mul_comm m n a b ▸ mul_mem ha hb⟩
+    exact ⟨_, mul_mem hm hn, mul_mul_mul_comm m n a b ▸ mul_mem ha hb⟩
   add_mem' := by
     intro a b ⟨m, hm, ha⟩ ⟨n, hn, hb⟩
     refine ⟨_, mul_mem hn hm, ?_⟩

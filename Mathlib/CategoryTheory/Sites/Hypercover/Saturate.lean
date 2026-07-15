@@ -112,7 +112,7 @@ set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma toSaturateOfHasPullbacks_fromSaturateOfHasPullbacks :
     E.toSaturateOfHasPullbacks.comp E.fromSaturateOfHasPullbacks = .id _ := by
-  refine PreOneHypercover.Hom.ext' rfl (by simp) (by simp) (by simp)
+  exact PreOneHypercover.Hom.ext' rfl (by simp) (by simp) (by simp)
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The composition `E.saturate ⟶ E.toPreOneHypercover ⟶ E.saturate` is homotopic to the

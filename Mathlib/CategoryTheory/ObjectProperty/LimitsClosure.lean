@@ -224,7 +224,7 @@ lemma isoClosure_strictLimitsClosureIter_eq_limitsClosure :
       rw [limitsOfShape_isoClosure, ← isoClosure_strictLimitsOfShape,
         strictLimitsClosureStep]
       exact monotone_isoClosure ((le_trans (by rfl) (le_iSup _ a)).trans le_sup_right)⟩
-    refine limitsClosure_le
+    exact limitsClosure_le
       ((P.le_strictLimitsClosureIter J κ.ord).trans (le_isoClosure _))
 
 lemma isEssentiallySmall_limitsClosure

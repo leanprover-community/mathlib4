@@ -1158,7 +1158,7 @@ theorem isClosedMap_comap_of_isIntegral (hf : f.IsIntegral) :
   algebraize [f]
   obtain ⟨q, hq₁, hq₂, hq₃⟩ := Ideal.exists_ideal_over_prime_of_isIntegral y.asIdeal x.asIdeal
     ((le_iff_specializes _ _).mpr e)
-  refine ⟨⟨q, hq₂⟩, ((le_iff_specializes _ ⟨q, hq₂⟩).mp hq₁).mem_closed hs hx,
+  exact ⟨⟨q, hq₂⟩, ((le_iff_specializes _ ⟨q, hq₂⟩).mp hq₁).mem_closed hs hx,
     PrimeSpectrum.ext hq₃⟩
 
 theorem isClosed_comap_singleton_of_isIntegral (hf : f.IsIntegral)

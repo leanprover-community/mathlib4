@@ -152,7 +152,7 @@ theorem exists_smodEq (pb : PowerBasis A B) (b : B) :
   · rw [Quotient.mk_zero, Quotient.mk_eq_zero, coe_basis]
     refine sum_mem _ (fun i hi ↦ ?_)
     rw [Algebra.smul_def']
-    refine Ideal.mul_mem_left _ _ <| Ideal.pow_mem_of_mem _ (Ideal.subset_span (by simp)) _ <|
+    exact Ideal.mul_mem_left _ _ <| Ideal.pow_mem_of_mem _ (Ideal.subset_span (by simp)) _ <|
       Nat.pos_of_ne_zero <| fun h ↦ notMem_erase i univ <| Fin.eq_mk_iff_val_eq.2 h ▸ hi
 
 open Submodule.Quotient in

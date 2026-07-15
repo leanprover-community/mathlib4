@@ -78,7 +78,7 @@ lemma exists_comp_isoModSerre_eq_zero_iff {X Y : C} (f : X ⟶ Y) :
   · rintro ⟨Y', s, hs, eq⟩
     rw [← exists_comp_monoModSerre_eq_zero_iff P]
     exact ⟨Y', s, hs.1, eq⟩
-  · refine ⟨_, cokernel.π f, by rwa [isoModSerre_iff_of_epi], by simp⟩
+  · exact ⟨_, cokernel.π f, by rwa [isoModSerre_iff_of_epi], by simp⟩
 
 variable {P} in
 lemma monoModSerre.isoModSerre_factorThruImage
@@ -198,7 +198,7 @@ lemma epi_map_tfae {X Y : C} (f : X ⟶ Y) :
     rw [← L.map_comp] at hz
     rw [map_eq_zero_iff L P, ← exists_epiModSerre_comp_eq_zero_iff P] at hz ⊢
     obtain ⟨W, s, hs, eq⟩ := hz
-    refine ⟨_, s ≫ f, MorphismProperty.comp_mem _ _ _ hs hf, by simpa⟩
+    exact ⟨_, s ≫ f, MorphismProperty.comp_mem _ _ _ hs hf, by simpa⟩
   tfae_have 3 → 1 := fun hf ↦ by
     rw [Preadditive.epi_iff_cancel_zero]
     intro W z hz
@@ -275,7 +275,7 @@ lemma epi_iff {X Y : D} (f : X ⟶ Y) :
     rw [epi_map_iff L P] at hf
     refine ⟨_, _, Abelian.factorThruImage f, inferInstance, ⟨?_⟩⟩
     have := Localization.inverts L P.isoModSerre _ hf.isoModSerre_image_ι
-    refine Arrow.isoMk (Iso.refl _) (asIso (L.map (Abelian.image.ι f))) (by simp [← L.map_comp])
+    exact Arrow.isoMk (Iso.refl _) (asIso (L.map (Abelian.image.ι f))) (by simp [← L.map_comp])
   · rintro ⟨X', Y', f', _, ⟨e⟩⟩
     exact ((MorphismProperty.epimorphisms D).arrow_mk_iso_iff e).1
       (by simpa using inferInstanceAs (Epi (L.map f')))

@@ -30,8 +30,8 @@ We don't need the full ring structure, only that there is an order embedding `�
 namespace Finset
 variable {α : Type*} [Ring α] [PartialOrder α] [IsOrderedRing α] [LocallyFiniteOrder α] {n : ℕ}
 
-private lemma Icc_neg_mono : Monotone fun n : ℕ ↦ Icc (-n : α) n := by
-  refine fun m n hmn ↦ by apply Icc_subset_Icc <;> simpa using Nat.mono_cast hmn
+private lemma Icc_neg_mono : Monotone fun n : ℕ ↦ Icc (-n : α) n :=
+  fun m n hmn ↦ by apply Icc_subset_Icc <;> simpa using Nat.mono_cast hmn
 
 variable [DecidableEq α]
 

@@ -843,7 +843,7 @@ theorem image_basicOpen {U : X.Opens} (r : Γ(X, U)) :
   have e := Scheme.preimage_basicOpen f ((f.appIso U).inv r)
   rw [Scheme.Hom.appIso_inv_app_apply, Scheme.basicOpen_res, inf_eq_right.mpr _] at e
   · rw [← e, f.image_preimage_eq_opensRange_inf, inf_eq_right]
-    refine Set.Subset.trans (Scheme.basicOpen_le _ _) (Set.image_subset_range _ _)
+    exact Set.Subset.trans (Scheme.basicOpen_le _ _) (Set.image_subset_range _ _)
   · exact (X.basicOpen_le r).trans (f.preimage_image_eq _).ge
 
 lemma image_zeroLocus {U : X.Opens} (s : Set Γ(X, U)) :

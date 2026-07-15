@@ -66,7 +66,7 @@ protected def sigma (M : (i : ι) → Matroid (α i)) : Matroid ((i : ι) × α 
     choose Bs hBs using fun i ↦ (h i).exists_isBase_superset
     refine ⟨univ.sigma Bs, fun i ↦ by simpa using (hBs i).1, ?_⟩
     rw [← univ_sigma_preimage_mk I]
-    refine sigma_mono rfl.subset fun i ↦ (hBs i).2
+    exact sigma_mono subset_rfl fun i ↦ (hBs i).2
 
   exists_isBase := by
     choose B hB using fun i ↦ (M i).exists_isBase

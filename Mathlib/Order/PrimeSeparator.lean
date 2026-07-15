@@ -55,7 +55,7 @@ theorem DistribLattice.prime_ideal_of_disjoint_filter_ideal [DistribLattice α]
     refine ⟨?_, fun s hs ↦ le_sSup hs⟩
     simp only [mem_setOf_eq, disjoint_sUnion_right, S]
     let ⟨J, hJ⟩ := hcNe
-    refine ⟨Order.isIdeal_sUnion_of_isChain (fun _ hJ ↦ (hcS hJ).1) hcC hcNe,
+    exact ⟨Order.isIdeal_sUnion_of_isChain (fun _ hJ ↦ (hcS hJ).1) hcC hcNe,
             ⟨le_trans (hcS hJ).2.1 (le_sSup hJ), fun J hJ ↦ (hcS hJ).2.2⟩⟩
   -- Thus, by Zorn's lemma, we can pick a maximal ideal J in S.
   obtain ⟨Jset, _, hmax⟩ := zorn_subset_nonempty S chainub I IinS

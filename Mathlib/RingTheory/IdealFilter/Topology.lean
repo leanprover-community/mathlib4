@@ -68,7 +68,7 @@ def ringFilterBasis {A : Type*} [Ring A] {F : IdealFilter A} [F.IsUniform] :
     exact ⟨I, ⟨I, hI, rfl⟩, fun a ha ↦ Ideal.mul_mem_left I x₀ ha⟩
   mul_right' := by
     rintro x₀ U ⟨I, hI, rfl⟩
-    refine ⟨I.colon {x₀}, ⟨I.colon {x₀}, IsUniform.colon_mem hI x₀, rfl⟩,
+    exact ⟨I.colon {x₀}, ⟨I.colon {x₀}, IsUniform.colon_mem hI x₀, rfl⟩,
       fun a ha ↦ Set.mem_preimage.mpr (Submodule.mem_colon_singleton.mp ha)⟩
 
 /-- An `IdealFilter` on a ring `A` is uniform if and only if its ideals form a `RingFilterBasis`

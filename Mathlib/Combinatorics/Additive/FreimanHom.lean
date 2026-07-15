@@ -253,8 +253,8 @@ lemma isMulFreimanIso_two :
 @[to_additive] lemma IsMulFreimanIso.subset (hA : A₁ ⊆ A₂) (hf : IsMulFreimanIso n A₂ B₂ f)
     (hf' : BijOn f A₁ B₁) : IsMulFreimanIso n A₁ B₁ f where
   bijOn := hf'
-  map_prod_eq_map_prod s t hsA htA hs ht := by
-    refine hf.map_prod_eq_map_prod (fun a ha ↦ hA (hsA ha)) (fun a ha ↦ hA (htA ha)) hs ht
+  map_prod_eq_map_prod _ _ hsA htA hs ht := hf.map_prod_eq_map_prod (fun _ ha ↦ hA (hsA ha))
+    (fun _ ha ↦ hA (htA ha)) hs ht
 
 @[to_additive]
 lemma isMulFreimanHom_const {b : β} (hb : b ∈ B) : IsMulFreimanHom n A B fun _ ↦ b where

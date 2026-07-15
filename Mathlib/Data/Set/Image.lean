@@ -558,7 +558,7 @@ theorem powerset_insert (s : Set α) (a : α) : 𝒫 insert a s = 𝒫 s ∪ ins
   · intro h
     by_cases hs : a ∈ t
     · right
-      refine ⟨t \ {a}, by grind⟩
+      exact ⟨t \ {a}, by grind⟩
     · grind
   · grind
 

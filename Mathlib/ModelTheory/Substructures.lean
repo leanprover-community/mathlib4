@@ -394,7 +394,7 @@ theorem mem_iSup_of_directed {ι : Type*} [hι : Nonempty ι] {S : ι → L.Subs
   refine fun hx ↦ closure_induction hx (fun _ ↦ mem_iUnion.1) (fun f v hC ↦ ?_)
   simp_rw [Set.mem_setOf] at *
   have ⟨i, hi⟩ := hS.finite_le (fun i ↦ Classical.choose (hC i))
-  refine ⟨i, (S i).fun_mem f v (fun j ↦ hi j (Classical.choose_spec (hC j)))⟩
+  exact ⟨i, (S i).fun_mem f v (fun j ↦ hi j (Classical.choose_spec (hC j)))⟩
 
 -- This proof uses the fact that `Substructure.closure` is finitary.
 theorem mem_sSup_of_directedOn {S : Set (L.Substructure M)} (Sne : S.Nonempty)

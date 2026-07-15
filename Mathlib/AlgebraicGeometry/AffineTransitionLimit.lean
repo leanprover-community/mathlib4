@@ -913,7 +913,7 @@ lemma exists_appTop_π_eq_of_isLimit [∀ {i j} (f : i ⟶ j), IsAffineHom (D.ma
     (fun x _ ↦ by
       obtain ⟨ix, hix, h⟩ : ∃ ix, ∃ (h : ix ∈ σ), (D.map (fk'k ≫ fk (hiS h))).base x ∈ U ix := by
         simpa using hk'.ge (Set.mem_univ x)
-      refine ⟨D.map (fk'k ≫ fk (hiS hix)) ⁻¹ᵁ U ix, homOfLE le_top,
+      exact ⟨D.map (fk'k ≫ fk (hiS hix)) ⁻¹ᵁ U ix, homOfLE le_top,
         Sieve.ofArrows_mk (I := σ) _ _ ⟨ix, hix⟩, h⟩)
   rw [← Presieve.isSheafFor_iff_generate, Presieve.isSheafFor_arrows_iff] at this
   obtain ⟨t₀, ht₀, -⟩ := this (fun x ↦ (D.map _).app _ (t x)) fun x y V fVx fVy _ ↦ by
@@ -1303,7 +1303,7 @@ lemma Scheme.exists_π_app_comp_eq_of_locallyOfFinitePresentation
           (Scheme.homOfLE _ (by simp [𝒱']) ≫ ak j₁) (Scheme.homOfLE _ (by simp [𝒱']) ≫ ak j₂)
           (by simp [hak]) (by simp [hak]) (by simp; simp [Hom.resLE, hak'])
       obtain rfl : flk = flk' := by simpa using! h.symm
-      refine ⟨l, flk, by simpa [← Scheme.Hom.resLE_eq_morphismRestrict] using! e⟩
+      exact ⟨l, flk, by simpa [← Scheme.Hom.resLE_eq_morphismRestrict] using! e⟩
     choose l flk hflk using this
     obtain ⟨l', fl'k, fl'l, hl'⟩ := IsCofiltered.wideCospan (I := s × s) fun x ↦ flk x.1 x.2
     refine ⟨l', fl'k, fun j₁ j₂ ↦ ?_⟩

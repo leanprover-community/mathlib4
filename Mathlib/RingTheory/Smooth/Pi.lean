@@ -107,7 +107,7 @@ theorem pi_iff [Finite I] :
         rw [Pi.single_eq_same, hy']
       · have : Ideal.Quotient.mk (Ideal.span {1 - e j}) (e i) = 0 := by
           rw [Ideal.Quotient.eq_zero_iff_mem, Ideal.mem_span_singleton]
-          refine ⟨e i, by simp [he.ortho (Ne.symm hij), sub_mul]⟩
+          exact ⟨e i, by simp [he.ortho (Ne.symm hij), sub_mul]⟩
         rw [Pi.single_eq_of_ne (Ne.symm hij), map_zero, map_mul, this, mul_zero]
     · have : ι i (Ideal.Quotient.mk J (y * e i)) = ι i (g (Pi.single i x)) := by
         rw [← ha, ← hy']

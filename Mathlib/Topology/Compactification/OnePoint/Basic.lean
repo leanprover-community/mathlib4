@@ -376,7 +376,7 @@ def continuousMapMk {Y : Type*} [TopologicalSpace Y] (f : C(X, Y)) (y : Y)
   toFun x := x.elim y f
   continuous_toFun := by
     rw [continuous_iff]
-    refine ⟨h, f.continuous⟩
+    exact ⟨h, f.continuous⟩
 
 lemma continuous_iff_from_discrete {Y : Type*} [TopologicalSpace Y]
     [DiscreteTopology X] (f : OnePoint X → Y) :
@@ -434,7 +434,7 @@ bijectively to convergent sequences in `Y`.
 -/
 noncomputable def continuousMapNatEquiv (Y : Type*) [TopologicalSpace Y] [T2Space Y] :
     C(OnePoint ℕ, Y) ≃ { f : ℕ → Y // ∃ L, Tendsto (f ·) atTop (𝓝 L) } := by
-  refine (continuousMapDiscreteEquiv ℕ Y).trans {
+  exact (continuousMapDiscreteEquiv ℕ Y).trans {
     toFun := fun ⟨f, hf⟩ ↦ ⟨f, by rwa [← Nat.cofinite_eq_atTop]⟩
     invFun := fun ⟨f, hf⟩ ↦ ⟨f, by rwa [Nat.cofinite_eq_atTop]⟩ }
 

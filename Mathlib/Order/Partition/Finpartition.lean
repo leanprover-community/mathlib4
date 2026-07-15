@@ -426,7 +426,7 @@ instance : SemilatticeInf (Finpartition a) :=
       obtain ⟨c, hc, hbc⟩ := hPQ hb
       obtain ⟨d, hd, hbd⟩ := hPR hb
       have h := _root_.le_inf hbc hbd
-      refine
+      exact
         ⟨c ⊓ d,
           mem_erase_of_ne_of_mem (ne_bot_of_le_ne_bot (P.ne_bot hb) h)
             (mem_image.2 ⟨(c, d), mem_product.2 ⟨hc, hd⟩, rfl⟩),
@@ -818,7 +818,7 @@ def ofSetSetoid (s : Setoid α) (x : Finset α) [DecidableRel s.r] : Finpartitio
   sup_parts := by
     ext a
     simp_rw [sup_image, id_comp, mem_sup, mem_filter]
-    refine ⟨(·.choose_spec.2.1), fun _ ↦ by use a⟩
+    exact ⟨(·.choose_spec.2.1), fun _ ↦ by use a⟩
   bot_notMem := by
     suffices ∀ x₁ ∈ x, ∃ x₂ ∈ x, s x₁ x₂ by simpa [filter_eq_empty_iff]
     intro x _

@@ -112,8 +112,8 @@ lemma range_cut_partition (f : C_c(X, ℝ)) (a : ℝ) {ε : ℝ} (hε : 0 < ε) 
   let y : Fin N → ℝ := fun n ↦ a + ε * (n + 1)
   -- By definition `y n` and `y m` are separated by at least `ε`.
   have hy {n m : Fin N} (h : n < m) : y n + ε ≤ y m := calc
-    _ ≤ a + ε * m + ε := by
-      exact add_le_add_three (by rfl) ((mul_le_mul_iff_of_pos_left hε).mpr (by norm_cast)) (by rfl)
+    _ ≤ a + ε * m + ε :=
+        add_le_add_three (by rfl) ((mul_le_mul_iff_of_pos_left hε).mpr (by norm_cast)) (by rfl)
     _ = _ := by dsimp [y]; rw [mul_add, mul_one, add_assoc]
   -- Define `E n` as the inverse image of the interval `(y n - ε, y n]`.
   let E (n : Fin N) := (f ⁻¹' Ioc (y n - ε) (y n)) ∩ (tsupport f)
@@ -129,7 +129,7 @@ lemma range_cut_partition (f : C_c(X, ℝ)) (a : ℝ) {ε : ℝ} (hε : 0 < ε) 
       _ ⊆ _ := by
         intro z
         simp only [Finset.mem_range, mem_iUnion, mem_Ioc, forall_exists_index, and_imp, y]
-        refine fun n hn _ _ ↦ ⟨⟨n, hn⟩, ⟨by linarith, by simp_all [mul_comm ε _]⟩⟩
+        exact fun n hn _ _ ↦ ⟨⟨n, hn⟩, ⟨by linarith, by simp_all [mul_comm ε _]⟩⟩
     simp only [E, ← iUnion_inter, ← preimage_iUnion, eq_comm (a := tsupport _), inter_eq_right]
     exact fun x _ ↦ partition_aux (mem_range_self x)
   · -- The sets `E n` are pairwise disjoint.
@@ -292,7 +292,7 @@ private lemma integral_riesz_aux (f : C_c(X, ℝ)) : Λ f ≤ ∫ x, f x ∂(rie
     apply ENNReal.toReal_le_of_le_ofReal
     · exact Λ.map_nonneg (fun x ↦ h x)
     · have h' x (hx : x ∈ K) : (∑ n, g n) x = 1 := by simp [hg.2.1 hx]
-      refine rieszMeasure_le_of_eq_one Λ h f.2 h'
+      exact rieszMeasure_le_of_eq_one Λ h f.2 h'
   · -- Rearrange the sums
     have (n : Fin N) : (|a| + y n + ε') * μ.real (E n) =
         (|a| + 2 * ε') * μ.real (E n) + (y n - ε') * μ.real (E n) := by linarith

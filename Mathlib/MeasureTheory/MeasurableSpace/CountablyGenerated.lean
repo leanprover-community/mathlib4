@@ -203,7 +203,7 @@ lemma exists_eq_iUnion_countablyGeneratedAtom {s : Set α} (hs : MeasurableSet s
     · refine ⟨fun n ↦ x ∈ natGeneratingSequence α n, ?_,
         mem_countablyGeneratedAtom_natGeneratingSequence x⟩
       contrapose! h
-      refine ⟨fun n ↦ x ∈ natGeneratingSequence α n, h,
+      exact ⟨fun n ↦ x ∈ natGeneratingSequence α n, h,
         mem_countablyGeneratedAtom_natGeneratingSequence x⟩
     · rintro ⟨p, hpq, hpx⟩ p' hqp' hx_mem
       have hpp' : p ≠ p' := by grind

@@ -229,7 +229,7 @@ lemma IsBasis.contract_sdiff_isBasis_sdiff (hIX : M.IsBasis I X) (hJY : M.IsBasi
       hIX.eq_of_subset_indep (hJY.indep.inter_right X) (subset_inter hIJ hIX.subset)
       inter_subset_right, sdiff_self_inter]
     exact disjoint_sdiff_left
-  refine sdiff_subset_sdiff_right hIX.subset
+  exact sdiff_subset_sdiff_right hIX.subset
 
 @[deprecated (since := "2026-06-03")]
 alias IsBasis.contract_diff_isBasis_diff := IsBasis.contract_sdiff_isBasis_sdiff
@@ -427,7 +427,7 @@ lemma contract_closure_eq (M : Matroid α) (C X : Set α) :
     union_comm X, ← contract_contract, contract_loops_eq, subset_antisymm_iff, union_subset_iff,
     and_iff_right sdiff_subset, ← sdiff_subset_iff]
   simp only [sdiff_sdiff_right_self, subset_inter_iff, inter_subset_right, and_true]
-  refine ⟨fun e ⟨he, he'⟩ ↦ ⟨mem_closure_of_mem' _ (.inr he') (mem_ground_of_mem_closure he).1,
+  exact ⟨fun e ⟨he, he'⟩ ↦ ⟨mem_closure_of_mem' _ (.inr he') (mem_ground_of_mem_closure he).1,
     (closure_subset_ground _ _ he).2⟩, fun e ⟨⟨he, heC⟩, he'⟩ ↦
     mem_closure_of_mem' _ he' ⟨M.closure_subset_ground _ he, heC⟩⟩
 
@@ -506,7 +506,7 @@ lemma IsCircuit.exists_subset_isCircuit_of_contract (hC : (M ／ K).IsCircuit C)
   refine ⟨C', hC', ?_, hC'ss⟩
   have hdep2 : (M ／ K).Dep (C' \ K) := by
     rw [hKi.contract_dep_iff, and_iff_right disjoint_sdiff_left]
-    refine hC'.dep.superset (by simp)
+    exact hC'.dep.superset (by simp)
   rw [← (hC.eq_of_dep_subset hdep2 (sdiff_subset_iff.2 (union_comm _ _ ▸ hC'ss)))]
   exact sdiff_subset
 

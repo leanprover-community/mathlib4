@@ -782,7 +782,7 @@ lemma SetRel.not_finiteDimensional_iff [Nonempty α] :
   constructor
   · intro H n
     induction n with
-    | zero => refine ⟨⟨0, ![_root_.Nonempty.some ‹_›], by simp⟩, by simp⟩
+    | zero => exact ⟨⟨0, ![_root_.Nonempty.some ‹_›], by simp⟩, by simp⟩
     | succ n IH =>
       obtain ⟨l, hl⟩ := IH
       obtain ⟨l', hl'⟩ := H l

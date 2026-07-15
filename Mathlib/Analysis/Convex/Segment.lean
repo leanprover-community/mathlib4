@@ -615,7 +615,7 @@ protected lemma Icc_subset_segment {x y : {t : 𝕜 // 0 ≤ t}} :
 
 protected lemma segment_eq_Icc {x y : {t : 𝕜 // 0 ≤ t}} (hxy : x ≤ y) :
     segment {t : 𝕜 // 0 ≤ t} x y = Icc x y := by
-  refine subset_antisymm (segment_subset_Icc hxy) Nonneg.Icc_subset_segment
+  exact subset_antisymm (segment_subset_Icc hxy) Nonneg.Icc_subset_segment
 
 protected lemma segment_eq_uIcc {x y : {t : 𝕜 // 0 ≤ t}} :
     segment {t : 𝕜 // 0 ≤ t} x y = uIcc x y := by

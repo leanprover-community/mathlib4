@@ -157,7 +157,7 @@ theorem IsPushout.isVanKampen_iff' {H : IsPushout f g h i} :
     constructor
     · intro H''
       rw [H' h' i' αX αY αZ sq_h sq_i]
-      refine ⟨W', f', g', αW, hf, hg, H''⟩
+      exact ⟨W', f', g', αW, hf, hg, H''⟩
     · intro ⟨hh, hi⟩
       obtain ⟨W'', f'', g'', αW', hf', hg', hP⟩ := (H' h' i' αX αY αZ sq_h sq_i).1 ⟨hh, hi⟩
       refine hP.of_iso (IsPullback.isoIsPullback _ _ hf' hf)

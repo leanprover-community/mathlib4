@@ -519,8 +519,8 @@ theorem homIso_hom (h : IsLimit t) {W : C} :
 set_option backward.defeqAttrib.useBackward true in
 /-- The limit of `F` represents the functor taking `W` to
   the set of cones on `F` with cone point `W`. -/
-def natIso (h : IsLimit t) : yoneda.obj t.pt ⋙ uliftFunctor.{u₁} ≅ F.cones := by
-  refine NatIso.ofComponents (fun W => IsLimit.homIso h (unop W))
+def natIso (h : IsLimit t) : yoneda.obj t.pt ⋙ uliftFunctor.{u₁} ≅ F.cones :=
+  NatIso.ofComponents (fun W => IsLimit.homIso h (unop W))
 
 set_option backward.defeqAttrib.useBackward true in
 /-- Another, more explicit, formulation of the universal property of a limit cone.

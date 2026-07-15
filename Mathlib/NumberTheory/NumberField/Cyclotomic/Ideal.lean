@@ -106,8 +106,8 @@ attribute [local instance] FractionRing.liftAlgebra in
 theorem map_eq_span_zeta_sub_one_pow :
     (map (algebraMap ℤ (𝓞 K)) 𝒑) = span {hζ.toInteger - 1} ^ Module.finrank ℚ K := by
   have : IsGalois ℚ K := isGalois {p ^ (k + 1)} ℚ K
-  have : IsGalois (FractionRing ℤ) (FractionRing (𝓞 K)) := by
-    refine IsGalois.of_equiv_equiv (f := (FractionRing.algEquiv ℤ ℚ).toRingEquiv.symm)
+  have : IsGalois (FractionRing ℤ) (FractionRing (𝓞 K)) :=
+    IsGalois.of_equiv_equiv (f := (FractionRing.algEquiv ℤ ℚ).toRingEquiv.symm)
       (g := (FractionRing.algEquiv (𝓞 K) K).toRingEquiv.symm) <|
         RingHom.ext fun x ↦ IsFractionRing.algEquiv_commutes (FractionRing.algEquiv ℤ ℚ).symm
           (FractionRing.algEquiv (𝓞 K) K).symm _

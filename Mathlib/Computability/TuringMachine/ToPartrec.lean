@@ -827,7 +827,7 @@ theorem pred_ok (q₁ q₂ s v) (c d : List Γ') : ∃ s',
     rfl
   | bit0 m IH =>
     obtain ⟨a, l, e, h⟩ : ∃ a l, (trPosNum m = a::l) ∧ natEnd a = false := by
-      cases m <;> refine ⟨_, _, rfl, rfl⟩
+      cases m <;> exact ⟨_, _, rfl, rfl⟩
     refine ⟨Γ'.bit0 :: l₁, _, some a, rfl, TransGen.single ?_⟩
     simp [trPosNum, PosNum.succ, e, h, show some Γ'.bit1 ≠ some Γ'.bit0 by decide,
       Option.getD, -natEnd]
@@ -839,8 +839,8 @@ theorem trNormal_respects (c k v s) :
         Reaches₁ (TM2.step tr)
           ⟨some (trNormal c (trCont k)), s, K'.elim (trList v) [] [] (trContStack k)⟩ b₂ := by
   induction c generalizing k v s with
-  | zero' => refine ⟨_, ⟨s, rfl⟩, TransGen.single ?_⟩; simp
-  | succ => refine ⟨_, ⟨none, rfl⟩, head_main_ok.trans succ_ok⟩
+  | zero' => exact ⟨_, ⟨s, rfl⟩, TransGen.single (by simp)⟩
+  | succ => exact ⟨_, ⟨none, rfl⟩, head_main_ok.trans succ_ok⟩
   | tail =>
     let o : Option Γ' := List.casesOn v none fun _ _ => some Γ'.cons
     refine ⟨_, ⟨o, rfl⟩, ?_⟩; convert! clear_ok _ using 2

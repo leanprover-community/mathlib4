@@ -86,7 +86,7 @@ lemma exists_pow_le_of_le_radical_of_fg {R : Type*} [CommSemiring R] {I J : Idea
   | singleton x =>
     simp only [submodule_span_eq, span_le, Set.singleton_subset_iff, SetLike.mem_coe] at h'
     obtain ⟨n, hn⟩ := h'
-    refine ⟨n, by simpa [span_singleton_pow, span_le]⟩
+    exact ⟨n, by simpa [span_singleton_pow, span_le]⟩
   | sup I₁ I₂ _ _ h₁ h₂ =>
     obtain ⟨n₁, hn₁⟩ := h₁ (le_sup_left.trans h')
     obtain ⟨n₂, hn₂⟩ := h₂ (le_sup_right.trans h')

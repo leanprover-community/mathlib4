@@ -106,7 +106,7 @@ lemma IsLocallyClosed.inter (hs : IsLocallyClosed s) (ht : IsLocallyClosed t) :
     IsLocallyClosed (s ∩ t) := by
   obtain ⟨U₁, Z₁, hU₁, hZ₁, rfl⟩ := hs
   obtain ⟨U₂, Z₂, hU₂, hZ₂, rfl⟩ := ht
-  refine ⟨_, _, hU₁.inter hU₂, hZ₁.inter hZ₂, inter_inter_inter_comm U₁ Z₁ U₂ Z₂⟩
+  exact ⟨_, _, hU₁.inter hU₂, hZ₁.inter hZ₂, inter_inter_inter_comm U₁ Z₁ U₂ Z₂⟩
 
 lemma IsLocallyClosed.preimage {s : Set Y} (hs : IsLocallyClosed s)
     {f : X → Y} (hf : Continuous f) :
@@ -158,7 +158,7 @@ lemma isLocallyClosed_tfae (s : Set X) :
     have : Z ∪ (frontier (U ∩ Z))ᶜ = univ := by
       nth_rw 1 [← hZ.closure_eq]
       rw [← compl_subset_iff_union, compl_subset_compl]
-      refine frontier_subset_closure.trans (closure_mono inter_subset_right)
+      exact frontier_subset_closure.trans (closure_mono inter_subset_right)
     rw [coborder_eq_union_frontier_compl, inter_union_distrib_right, this,
       inter_univ]
     exact hU.union isClosed_frontier.isOpen_compl

@@ -350,7 +350,7 @@ theorem dilatransvection.apply {f : Dual R V} {v : V} {h : IsUnit (1 + f v)} {x 
 theorem dilatransvection_mem_dilatransvections {f : Dual R V} {v : V} {h : IsUnit (1 + f v)} :
     dilatransvection h ∈ dilatransvections R V := by
   simp only [dilatransvections, Set.mem_setOf_eq]
-  refine ⟨f, v, by simp⟩
+  exact ⟨f, v, by simp⟩
 
 open scoped Pointwise in
 theorem dilatransvections_pow_mono :

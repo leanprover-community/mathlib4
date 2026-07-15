@@ -326,7 +326,7 @@ theorem unitLattice_span_eq_top :
   suffices B.det v ≠ 0 by
     rw [← isUnit_iff_ne_zero, ← Basis.is_basis_iff_det] at this
     rw [← this.2]
-    refine Submodule.span_monotone fun _ ⟨w, hw⟩ ↦ ⟨(exists_unit K w).choose, trivial, hw⟩
+    exact Submodule.span_monotone fun _ ⟨w, hw⟩ ↦ ⟨(exists_unit K w).choose, trivial, hw⟩
   rw [Basis.det_apply]
   -- We use a specific lemma to prove that this determinant is nonzero
   refine det_ne_zero_of_sum_col_lt_diag (fun w ↦ ?_)

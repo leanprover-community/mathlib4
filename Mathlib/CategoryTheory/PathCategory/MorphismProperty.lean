@@ -159,7 +159,7 @@ lemma composePath_mem_of_length_pos (W : MorphismProperty C) [W.IsStableUnderCom
   refine p.rec (by simp) fun p f hp hp' hp'' ↦ ?_
   cases p
   · simpa [paths] using hp'
-  · refine W.comp_mem _ _ (hp hp'.1 (by simp)) hp'.2
+  · exact W.comp_mem _ _ (hp hp'.1 (by simp)) hp'.2
 
 lemma composePath_mem (W : MorphismProperty C) [W.IsMultiplicative] {X Y : C}
     {p : Path X Y} (hp : W.paths p) : W (composePath p) :=

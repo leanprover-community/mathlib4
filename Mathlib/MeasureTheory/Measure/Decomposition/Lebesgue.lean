@@ -903,7 +903,7 @@ theorem haveLebesgueDecomposition_of_finiteMeasure [IsFiniteMeasure μ] [IsFinit
         specialize hE₃ A hA
         rw [lintegral_add_left measurable_const, lintegral_const, restrict_apply_univ]
         rw [Measure.sub_apply (hA.inter hE₁) hle, withDensity_apply _ (hA.inter hE₁)] at hE₃
-        refine add_le_of_le_tsub_right_of_le (hξle _ (hA.inter hE₁)) hE₃
+        exact add_le_of_le_tsub_right_of_le (hξle _ (hA.inter hE₁)) hE₃
       -- from this, we can show `ξ + ε * E.indicator` is a function in `measurableLE` with
       -- integral greater than `ξ`
       have hξε : (ξ + E.indicator fun _ ↦ (ε : ℝ≥0∞)) ∈ measurableLE ν μ := by

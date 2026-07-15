@@ -574,7 +574,7 @@ instance Module.FinitePresentation.isLocalizedModule_map [Module.FinitePresentat
     obtain ⟨h', s, e⟩ := Module.FinitePresentation.exists_lift_of_isLocalizedModule S g (h ∘ₗ f)
     refine ⟨⟨h', s⟩, ?_⟩
     apply IsLocalizedModule.ext S f (IsLocalizedModule.map_units g)
-    refine e.symm.trans (by ext; simp)
+    exact e.symm.trans (by ext; simp)
   · intro h₁ h₂ e
     apply Module.Finite.exists_smul_of_comp_eq_of_isLocalizedModule S g
     ext x

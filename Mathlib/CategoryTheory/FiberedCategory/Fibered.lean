@@ -161,7 +161,7 @@ lemma of_exists_isStronglyCartesian {p : 𝒳 ⥤ 𝒮}
   exists_isCartesian' := by
     intro a R f
     obtain ⟨b, φ, hφ⟩ := h a R f
-    refine ⟨b, φ, inferInstance⟩
+    exact ⟨b, φ, inferInstance⟩
   comp := fun R S T f g {a b c} φ ψ _ _ =>
     have : p.IsStronglyCartesian f φ := isStronglyCartesian_of_exists_isCartesian p h _ _
     have : p.IsStronglyCartesian g ψ := isStronglyCartesian_of_exists_isCartesian p h _ _

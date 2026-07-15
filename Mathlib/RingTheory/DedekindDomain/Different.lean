@@ -921,7 +921,7 @@ theorem not_dvd_differentIdeal_iff
       ((IsLocalization.algEquiv B⁰ _ _).restrictScalars A)).mp ?_
     have : Algebra.FormallyUnramified K L := by
       rwa [Algebra.FormallyUnramified.iff_isSeparable]
-    refine .comp A K L
+    exact .comp A K L
   have hp : P.under A ≠ ⊥ := mt Ideal.eq_bot_of_comap_eq_bot hPbot
   have hp' := (Ideal.map_eq_bot_iff_of_injective
     (FaithfulSMul.algebraMap_injective A B)).not.mpr hp

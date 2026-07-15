@@ -423,7 +423,7 @@ noncomputable instance instInf : Min (Seminorm 𝕜 E) where
         intro a x
         obtain rfl | ha := eq_or_ne a 0
         · rw [norm_zero, zero_mul, zero_smul]
-          refine
+          exact
             ciInf_eq_of_forall_ge_of_forall_gt_exists_lt
               (fun i => by positivity)
               fun x hx => ⟨0, by rwa [map_zero, sub_zero, map_zero, add_zero]⟩

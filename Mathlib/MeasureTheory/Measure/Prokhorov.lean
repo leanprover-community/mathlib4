@@ -199,7 +199,7 @@ lemma isCompact_setOf_finiteMeasure_le_of_isCompact
         setOf_subset_setOf, F, T]
       intro μ hμ
       rw [Measure.map_apply hf.continuous.measurable hK.measurableSet.compl]
-      refine ⟨(mass_map_le _ _).trans hμ, by simp [f]⟩
+      exact ⟨(mass_map_le _ _).trans hμ, by simp [f]⟩
   rw [this]
   apply IsCompact.image _ (by fun_prop)
   have : CompactSpace K := isCompact_iff_compactSpace.mp hK

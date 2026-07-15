@@ -133,9 +133,9 @@ def map {R A B L L' : Type*} [CommRing R] [CommRing A] [Algebra R A] [CommRing B
       simp only [bracket_def, AddHom.toFun_eq_coe, LinearMap.coe_toAddHom]
       refine x.induction_on (by simp) ?_ ?_
       · intro _ _
-        refine y.induction_on (by simp) (fun _ _ ↦ by simp) (fun _ _ h1 h2 ↦ by simp [h1, h2])
+        exact y.induction_on (by simp) (fun _ _ ↦ by simp) (fun _ _ h1 h2 ↦ by simp [h1, h2])
       · intro _ _
-        refine y.induction_on (by simp) (fun _ _ h ↦ by simp [h]) (by simp_all) }
+        exact y.induction_on (by simp) (fun _ _ h ↦ by simp [h]) (by simp_all) }
 
 @[simp]
 lemma map_apply_tmul {R A B L L' : Type*} [CommRing R] [CommRing A] [Algebra R A] [CommRing B]

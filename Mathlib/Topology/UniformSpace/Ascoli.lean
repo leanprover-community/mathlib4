@@ -436,7 +436,7 @@ theorem ArzelaAscoli.compactSpace_of_closed_inducing' [TopologicalSpace ι] {�
   -- the range of `(⋃₀ 𝔖).restrict ∘ F` is still closed in the product topology.
   -- But it's contained in the product of the `Q x`s, which is compact by Tykhonov, hence
   -- it is compact as well.
-  refine IsCompact.of_isClosed_subset (isCompact_univ_pi fun x ↦ Q_compact x x.2)
+  exact IsCompact.of_isClosed_subset (isCompact_univ_pi fun x ↦ Q_compact x x.2)
     (EquicontinuousOn.isClosed_range_pi_of_uniformOnFun' 𝔖_compact F_eqcont F_cl)
     (range_subset_iff.mpr fun i x _ ↦ F_in_Q x x.2 i)
 

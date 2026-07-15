@@ -439,7 +439,7 @@ theorem finite_setOf_absNorm_le [CharZero S] (n : ℕ) :
     {I : Ideal S | Ideal.absNorm I ≤ n}.Finite := by
   rw [show {I : Ideal S | Ideal.absNorm I ≤ n} =
     (⋃ i ∈ Set.Icc 0 n, {I : Ideal S | Ideal.absNorm I = i}) by ext; simp]
-  refine Set.Finite.biUnion (Set.finite_Icc 0 n) (fun i _ => Ideal.finite_setOf_absNorm_eq i)
+  exact Set.Finite.biUnion (Set.finite_Icc 0 n) (fun i _ => Ideal.finite_setOf_absNorm_eq i)
 
 theorem finite_setOf_absNorm_le₀ [CharZero S] (n : ℕ) :
     {I : (Ideal S)⁰ | Ideal.absNorm (I : Ideal S) ≤ n}.Finite := by

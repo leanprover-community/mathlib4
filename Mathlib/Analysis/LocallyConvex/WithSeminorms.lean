@@ -99,8 +99,8 @@ theorem basisSets_univ_mem : univ ∈ p.basisSets :=
   (basisSets_iff _).mpr ⟨∅, _, one_pos, by
     rw [Finset.sup_empty, Seminorm.bot_eq_zero, ball_zero' _ one_pos]⟩
 
-theorem basisSets_nonempty : p.basisSets.Nonempty := by
-  refine nonempty_def.mpr ⟨univ, basisSets_univ_mem _⟩
+theorem basisSets_nonempty : p.basisSets.Nonempty :=
+  nonempty_def.mpr ⟨univ, basisSets_univ_mem _⟩
 
 theorem basisSets_intersect (U V : Set E) (hU : U ∈ p.basisSets) (hV : V ∈ p.basisSets) :
     ∃ z ∈ p.basisSets, z ⊆ U ∩ V := by
@@ -808,7 +808,7 @@ protected theorem congr {p : SeminormFamily 𝕜 E ι} {q : SeminormFamily 𝕜 
   clear hp t
   refine le_antisymm ?_ ?_ <;>
   rw [← continuous_id_iff_le] <;>
-  refine continuous_of_isBounded (.mk (topology := _) rfl) (.mk (topology := _) rfl)
+  exact continuous_of_isBounded (.mk (topology := _) rfl) (.mk (topology := _) rfl)
     LinearMap.id (by assumption)
 
 protected theorem finset_sups {p : SeminormFamily 𝕜 E ι} [TopologicalSpace E]

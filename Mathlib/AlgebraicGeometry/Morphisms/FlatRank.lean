@@ -177,7 +177,7 @@ nonrec lemma Scheme.Hom.one_le_finrank_map (x : X) : 1 ≤ finrank f (f x) := by
     rw [← hy, ← finrank_pullback_snd]
     obtain ⟨z, hzl, hzr⟩ := Scheme.Pullback.exists_preimage_pullback (f := f) (g := g) x y hy.symm
     rw [hzr.symm]
-    refine this _ _ ⟨_, rfl⟩
+    exact this _ _ ⟨_, rfl⟩
   obtain ⟨R, rfl⟩ := hY
   wlog hX : ∃ S, X = Spec S
   · have _ : IsAffine X := isAffine_of_isAffineHom f

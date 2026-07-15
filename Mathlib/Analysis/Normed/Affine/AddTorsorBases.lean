@@ -136,7 +136,7 @@ theorem interior_convexHull_nonempty_iff_affineSpan_eq_top [FiniteDimensional �
   obtain ⟨t, hts, b, hb⟩ := AffineBasis.exists_affine_subbasis h
   suffices (interior (convexHull ℝ (range b))).Nonempty by
     rw [hb, Subtype.range_coe_subtype, setOf_mem_eq] at this
-    refine this.mono (by gcongr)
+    exact this.mono (by gcongr)
   lift t to Finset V using b.finite_set
   exact ⟨_, b.centroid_mem_interior_convexHull⟩
 

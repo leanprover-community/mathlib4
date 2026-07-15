@@ -182,7 +182,7 @@ lemma Ideal.height_le_ringKrullDim_of_ne_top {I : Ideal R} (h : I ≠ ⊤) :
   obtain ⟨P, hP⟩ : Nonempty (I.minimalPrimes) := Ideal.nonempty_minimalPrimes h
   rw [I.height_eq_inf_minimalPrimes]
   have := hP.isPrime
-  refine (WithBot.coe_le_coe.mpr (iInf₂_le _ hP)).trans P.height_le_ringKrullDim_of_isPrime
+  exact (WithBot.coe_le_coe.mpr (iInf₂_le _ hP)).trans P.height_le_ringKrullDim_of_isPrime
 
 /-- If `R` has finite Krull dimension, there exists a maximal ideal `m` with `ht m = dim R`. -/
 lemma Ideal.exists_isMaximal_height [FiniteRingKrullDim R] :
@@ -248,7 +248,7 @@ lemma Ideal.height_bot [Nontrivial R] : (⊥ : Ideal R).height = 0 := by
   obtain ⟨p, hp⟩ := Ideal.nonempty_minimalPrimes (R := R) (I := ⊥) top_ne_bot.symm
   rw [Ideal.height_eq_inf_minimalPrimes]
   simp only [ENat.iInf_eq_zero]
-  refine ⟨p, hp, haveI := hp.isPrime; height_eq_zero_iff.mpr hp⟩
+  exact ⟨p, hp, haveI := hp.isPrime; height_eq_zero_iff.mpr hp⟩
 
 @[simp]
 lemma Ideal.height_eq_zero_iff_eq_bot [IsDomain R] {I : Ideal R} : I.height = 0 ↔ I = ⊥ := by

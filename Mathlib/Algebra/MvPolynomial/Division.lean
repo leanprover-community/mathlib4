@@ -337,7 +337,7 @@ theorem dvd_monomial_mul_iff_exists [IsCancelMulZero R] {n : σ →₀ ℕ} :
     p ∣ monomial n 1 * q ↔ ∃ m r, m ≤ n ∧ r ∣ q ∧ p = monomial m 1 * r := by
   rcases subsingleton_or_nontrivial R with hR | hR
   · simp only [Subsingleton.elim _ p, dvd_refl, and_self, and_true, exists_const, true_iff]
-    refine ⟨n, le_refl n⟩
+    exact ⟨n, le_refl n⟩
   suffices ∀ (d) (n : σ →₀ ℕ) (hd : n.degree = d) (p q : MvPolynomial σ R),
     p ∣ monomial n 1 * q ↔ ∃ m r, m ≤ n ∧ r ∣ q ∧ p = monomial m 1 * r from this n.degree n rfl p q
   intro d

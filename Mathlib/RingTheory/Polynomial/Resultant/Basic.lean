@@ -878,7 +878,7 @@ lemma exists_mul_add_mul_eq_C_resultant
     ← Nat.cast_add, Nat.pos_iff_ne_zero, not_and_or, -not_and] using H⟩
   have : ((sylvesterMap f g hf hg X)).1 = _ :=
     congr(($(sylveserMap_comp_adjSylvester f g hf hg) _).1)
-  refine ⟨X.2, X.1, by simpa [-SetLike.coe_mem] using X.2.2,
+  exact ⟨X.2, X.1, by simpa [-SetLike.coe_mem] using X.2.2,
     by simpa [-SetLike.coe_mem] using X.1.2, by simpa [Algebra.smul_def] using this⟩
 
 lemma isUnit_resultant_iff_isCoprime {f g : R[X]} (hf : f.Monic) :

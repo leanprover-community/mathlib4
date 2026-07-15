@@ -239,7 +239,7 @@ protected theorem isLocalHomeomorphOn (hf : IsCoveringMapOn f s) :
   let e := (hf (f x) hx).toTrivialization
   have h := (hf (f x) hx).mem_toTrivialization_baseSet
   let he := e.mem_source.2 h
-  refine
+  exact
     ⟨e.toOpenPartialHomeomorph.trans
         { toFun := fun p => p.1
           invFun := fun p => ⟨p, x, rfl⟩

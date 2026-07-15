@@ -363,7 +363,7 @@ lemma exists_hasStandardEtaleSurjectionOn
     .ofBijective (Localization.awayMapₐ S'.val (r * f))
       (Localization.awayMap_bijective_of_dvd _ (dvd_mul_right r f) hr)
   obtain ⟨P, φ, hφ⟩ := hf.of_dvd (g := r * f) (by simp)
-  refine ⟨_, ‹Q.IsPrime›.mul_notMem hrQ hfQ,
+  exact ⟨_, ‹Q.IsPrime›.mul_notMem hrQ hfQ,
     .mk (f := r.1 * f.1) (e.toAlgHom.comp φ) (e.surjective.comp hφ)⟩
 
 end IsUnramifiedAt
