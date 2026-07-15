@@ -40,6 +40,12 @@ example : 1 + 2 = 3 := by
   guard_hyp b :=ₛ 2
   trivial
 
+-- TODO:
+-- -- set_option pp.raw true
+-- example : ∃ n : ℕ, True := by
+--   let a := "foo"
+--   setm ∃ n, ?n
+
 variable {a b c : Nat}
 
 /- Test reusing named holes -/
@@ -60,6 +66,10 @@ example (h : b + a = c) : a + b = c := by
   guard_hyp B :=ₛ a
   exact h
 
+-- TODO:
+-- example (a : Array Nat) (i i' : Nat) (h') (h) (h₀ : a[i] = 2) : a[i] + a[i'] = 4 := by
+--   setm a[?j] + a[i'] = 4 at h₀
+
 /- Test reducible + instances transparency -/
 
 def NotQuiteNat : Type := Nat
@@ -68,17 +78,39 @@ instance : HAdd NotQuiteNat NotQuiteNat NotQuiteNat := inferInstanceAs (HAdd Nat
 
 example {a b c : NotQuiteNat} (h : a + b = c) : True := by
   /- setm 1-/
+  have A : True := trivial
   setm ?A + ?B = _ using h
   guard_hyp h :ₛ A + B = c
   guard_hyp A := a
   guard_hyp B := b
   trivial
 
+-- TODO:
+-- abbrev f : Nat → Nat → Nat := fun _ x => x
+
+-- example (h : 4 = 3) : () = () := by
+--   setm (true : Unit) = (true : Unit)
+
+-- example (h : (4, fun x : Nat => x) = (5, fun _ => 5)) :
+--   ((4, fun x : Nat => x) : Nat × (Nat → Nat)) = (5, fun _ : Nat => 5) := by
+--   /- setm 1-/
+--   have A : True := trivial
+--   setm (?l, fun _ => ?l) = (_ + _, _) at h
+--   guard_hyp h :ₛ A + B = c
+--   guard_hyp A := a
+--   guard_hyp B := b
+--   trivial
+
 /--
-error: setm pattern
-  @Eq Nat (A + B) ?m.18
+error: Tactic `setm` failed: Pattern
+  @Eq Nat (A + B) ?m.20
 is not definitionally equal to the target
   @Eq NotQuiteNat (a + b) c
+
+a✝ b✝ c✝ : Nat
+a b c : NotQuiteNat
+h : a + b = c
+⊢ True
 -/
 #guard_msgs in
 example {a b c : NotQuiteNat} (h : a + b = c) : True := by
