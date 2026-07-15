@@ -374,7 +374,7 @@ The `R`-linear equivalence between additive morphisms `A →+ B` and `ℕ`-linea
 def addMonoidHomLequivNat {A B : Type*} (R : Type*) [Semiring R] [AddCommMonoid A]
     [AddCommMonoid B] [Module R B] : (A →+ B) ≃ₗ[R] A →ₗ[ℕ] B where
   toFun := AddMonoidHom.toNatLinearMap
-  invFun := LinearMap.toAddMonoidHom
+  invFun f := f.toAddMonoidHom
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
@@ -385,7 +385,7 @@ The `R`-linear equivalence between additive morphisms `A →+ B` and `ℤ`-linea
 def addMonoidHomLequivInt {A B : Type*} (R : Type*) [Semiring R] [AddCommGroup A] [AddCommGroup B]
     [Module R B] : (A →+ B) ≃ₗ[R] A →ₗ[ℤ] B where
   toFun := AddMonoidHom.toIntLinearMap
-  invFun := LinearMap.toAddMonoidHom
+  invFun f := f.toAddMonoidHom
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 

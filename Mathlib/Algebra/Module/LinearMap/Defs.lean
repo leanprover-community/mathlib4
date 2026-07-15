@@ -84,13 +84,10 @@ is semilinear if it satisfies the two properties `f (x + y) = f x + f y` and
 maps is available with the predicate `IsLinearMap`, but it should be avoided most of the time. -/
 structure LinearMap {R S : Type*} [Semiring R] [Semiring S] (σ : R →+* S) (M : Type*)
     (M₂ : Type*) [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module S M₂] extends
-    AddHom M M₂, MulActionHom σ M M₂
-
-/-- The `MulActionHom` underlying a `LinearMap`. -/
-add_decl_doc LinearMap.toMulActionHom
-
-/-- The `AddHom` underlying a `LinearMap`. -/
-add_decl_doc LinearMap.toAddHom
+    MulActionHom σ M M₂, DistribMulActionHom σ.toMonoidHom M M₂ where
+  map_zero' := calc
+    toFun 0 = toFun ((0 : R) • 0) := by rw [zero_smul]
+    _ = 0 := by rw [map_smul']; simp
 
 /-- `M →ₛₗ[σ] N` is the type of `σ`-semilinear maps from `M` to `N`. -/
 notation:25 M " →ₛₗ[" σ:25 "] " M₂:0 => LinearMap σ M M₂
@@ -205,16 +202,12 @@ instance instFunLike : FunLike (M →ₛₗ[σ] M₃) M M₃ where
 
 instance semilinearMapClass : SemilinearMapClass (M →ₛₗ[σ] M₃) σ M M₃ where
   map_add f := f.map_add'
-  map_smulₛₗ := LinearMap.map_smul'
+  map_smulₛₗ f := f.map_smul'
 
 @[simp, norm_cast]
 lemma coe_coe {F : Type*} [FunLike F M M₃] [SemilinearMapClass F σ M M₃] {f : F} :
     ⇑(f : M →ₛₗ[σ] M₃) = f :=
   rfl
-
-/-- The `DistribMulActionHom` underlying a `LinearMap`. -/
-def toDistribMulActionHom (f : M →ₛₗ[σ] M₃) : DistribMulActionHom σ.toMonoidHom M M₃ :=
-  { f with map_zero' := show f 0 = 0 from map_zero f }
 
 @[simp]
 theorem coe_toAddHom (f : M →ₛₗ[σ] M₃) : ⇑f.toAddHom = f := rfl
@@ -243,13 +236,8 @@ theorem copy_eq (f : M →ₛₗ[σ] M₃) (f' : M → M₃) (h : f' = ⇑f) : f
 initialize_simps_projections LinearMap (toFun → apply)
 
 @[simp]
-theorem coe_mk {σ : R →+* S} (f : AddHom M M₃) (h) :
-    ((LinearMap.mk f h : M →ₛₗ[σ] M₃) : M → M₃) = f :=
-  rfl
-
-@[simp]
-theorem coe_addHom_mk {σ : R →+* S} (f : AddHom M M₃) (h) :
-    ((LinearMap.mk f h : M →ₛₗ[σ] M₃) : AddHom M M₃) = f :=
+theorem coe_mk {σ : R →+* S} (f : M →ₑ[⇑σ] M₃) (h0) (ha) :
+    ((LinearMap.mk f h0 ha : M →ₛₗ[σ] M₃) : M → M₃) = f :=
   rfl
 
 theorem coe_semilinearMap {F : Type*} [FunLike F M M₃] [SemilinearMapClass F σ M M₃] (f : F) :
@@ -314,8 +302,8 @@ protected theorem congr_arg {x x' : M} : x = x' → f x = f x' :=
 protected theorem congr_fun (h : f = g) (x : M) : f x = g x :=
   DFunLike.congr_fun h x
 
-@[simp] lemma mk_coe (f : M →ₛₗ[σ] M₃) (h) : (mk f h : M →ₛₗ[σ] M₃) = f := rfl
-@[simp] lemma mk_coe' (f : M →ₛₗ[σ] M₃) (h) : (mk f.toAddHom h : M →ₛₗ[σ] M₃) = f := rfl
+@[simp] lemma mk_coe (f : M →ₛₗ[σ] M₃) :
+    (mk f.toMulActionHom f.map_zero' f.map_add' : M →ₛₗ[σ] M₃) = f := rfl
 
 variable (fₗ f g)
 
@@ -399,14 +387,6 @@ theorem isLinearMap_of_compatibleSMul [Module S M] [Module S M₂] [CompatibleSM
   map_add := map_add f
   map_smul := map_smul_of_tower f
 
-/-- Convert a linear map to an additive monoid hom. -/
--- See note [implicit instance arguments]
-def toAddMonoidHom {modM₁ : Module R M₁} {modM₂ : Module S M₂} {σ : R →+* S} (f : M₁ →ₛₗ[σ] M₂) :
-    M₁ →+ M₂ where
-  toFun := f
-  map_zero' := f.map_zero
-  map_add' := f.map_add
-
 omit [Module R M₂] in
 @[simp]
 lemma toAddMonoidHom_coe {modM₁ : Module R M₁} {modM₂ : Module S M₂} {σ : R →+* S}
@@ -456,7 +436,7 @@ lemma restrictScalars_id [CompatibleSMul M M R S] :
 end RestrictScalars
 
 theorem toAddMonoidHom_injective :
-    Function.Injective (toAddMonoidHom : (M →ₛₗ[σ] M₃) → M →+ M₃) := fun fₗ gₗ h ↦
+    Function.Injective (fun f : (M →ₛₗ[σ] M₃) => f.toAddMonoidHom) := fun fₗ gₗ h ↦
   ext <| (DFunLike.congr_fun h : ∀ x, fₗ.toAddMonoidHom x = gₗ.toAddMonoidHom x)
 
 /-- If two `σ`-linear maps from `R` are equal on `1`, then they are equal. -/
@@ -486,9 +466,9 @@ variable {σ₁₂ : R₁ →+* R₂} {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R
 def comp [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] (f : M₂ →ₛₗ[σ₂₃] M₃) (g : M₁ →ₛₗ[σ₁₂] M₂) :
     M₁ →ₛₗ[σ₁₃] M₃ where
   toFun x := f (g x)
-  map_add' := by simp only [map_add, forall_const]
+  map_add' := by simp
   -- Note that https://github.com/leanprover-community/mathlib4/pull/8386 changed `map_smulₛₗ` to `map_smulₛₗ _`
-  map_smul' r x := by simp only [map_smulₛₗ _, RingHomCompTriple.comp_apply]
+  map_smul' := by simp
 
 variable [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
 variable (f : M₂ →ₛₗ[σ₂₃] M₃) (g : M₁ →ₛₗ[σ₁₂] M₂)
@@ -559,14 +539,10 @@ variable [Module R M] [Module S M₂] {σ : R →+* S} {σ' : S →+* R} [RingHo
 
 /-- If a function `g` is a left and right inverse of a linear map `f`, then `g` is linear itself. -/
 def inverse (f : M →ₛₗ[σ] M₂) (g : M₂ → M) (h₁ : LeftInverse g f) (h₂ : RightInverse g f) :
-    M₂ →ₛₗ[σ'] M := by
-  dsimp [LeftInverse, Function.RightInverse] at h₁ h₂
-  exact
-    { toFun := g
-      map_add' := fun x y ↦ by rw [← h₁ (g (x + y)), ← h₁ (g x + g y)]; simp [h₂]
-      map_smul' := fun a b ↦ by
-        rw [← h₁ (g (a • b)), ← h₁ (σ' a • g b)]
-        simp [h₂] }
+    M₂ →ₛₗ[σ'] M where
+  toFun := g
+  map_add' x y := by rw [← h₁.eq (g (x + y)), ← h₁.eq (g x + g y)]; simp [h₂.eq]
+  map_smul' a b := by rw [← h₁.eq (g (a • b)), ← h₁.eq (σ' a • g b)]; simp [h₂.eq]
 
 variable (f : M →ₛₗ[σ] M₂) (g : M₂ →ₛₗ[σ'] M) (h : g.comp f = .id)
 
@@ -905,9 +881,9 @@ def evalAddMonoidHom (a : M) : (M →ₛₗ[σ₁₂] M₂) →+ M₂ where
 /-- `LinearMap.toAddMonoidHom` promoted to an `AddMonoidHom`. -/
 @[simps]
 def toAddMonoidHom' : (M →ₛₗ[σ₁₂] M₂) →+ M →+ M₂ where
-  toFun := toAddMonoidHom
+  toFun f := f.toAddMonoidHom
   map_zero' := by ext; rfl
-  map_add' := by intros; ext; rfl
+  map_add' _ _ := by ext; rfl
 
 /-- If `M` is the zero module, then the identity map of `M` is the zero map. -/
 @[simp]

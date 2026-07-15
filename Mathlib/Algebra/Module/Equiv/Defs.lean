@@ -138,15 +138,12 @@ variable [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
 instance : Coe (M ≃ₛₗ[σ] M₂) (M →ₛₗ[σ] M₂) :=
   ⟨toLinearMap⟩
 
--- This exists for compatibility, previously `≃ₗ[R]` extended `≃` instead of `≃+`.
-/-- The equivalence of types underlying a linear equivalence. -/
-def toEquiv (e : M ≃ₛₗ[σ] M₂) : M ≃ M₂ := e.toAddEquiv.toEquiv
-
 theorem toEquiv_injective :
-    (toEquiv (modM := modM) (modM₂ := modM₂) : (M ≃ₛₗ[σ] M₂) → M ≃ M₂).Injective :=
-  fun ⟨⟨⟨_, _⟩, _⟩, _, _, _⟩ ⟨⟨⟨_, _⟩, _⟩, _, _, _⟩ h ↦
-    (LinearEquiv.mk.injEq _ _ _ _ _ _ _ _).mpr
-      ⟨LinearMap.ext (congr_fun (Equiv.mk.inj h).1), (Equiv.mk.inj h).2⟩
+    (fun f : (M ≃ₛₗ[σ] M₂) => f.toEquiv).Injective := by
+  intro f g hfg
+  cases f
+  cases g
+  simpa using hfg
 
 @[simp]
 theorem toEquiv_inj {e₁ e₂ : M ≃ₛₗ[σ] M₂} : e₁.toEquiv = e₂.toEquiv ↔ e₁ = e₂ :=
@@ -521,7 +518,7 @@ theorem symm_bijective [Module R M] [Module S M₂] [RingHomInvPair σ' σ] [Rin
 
 @[simp]
 theorem mk_coe' (f h₁ h₂ h₃ h₄) :
-    (LinearEquiv.mk ⟨⟨f, h₁⟩, h₂⟩ (⇑e) h₃ h₄ : M₂ ≃ₛₗ[σ'] M) = e.symm :=
+    (LinearEquiv.mk (LinearMap.mk f h₁ h₂) (⇑e) h₃ h₄ : M₂ ≃ₛₗ[σ'] M) = e.symm :=
   symm_bijective.injective <| ext fun _ ↦ rfl
 
 @[simp]
@@ -534,8 +531,8 @@ theorem symm_mk (toLinearMap invFun h₁ h₂) : dsimp%
 
 /-- For a more powerful version, see `coe_symm_mk'`. -/
 theorem coe_symm_mk [Module R M] [Module R M₂]
-    {to_fun inv_fun map_add map_smul left_inv right_inv} :
-    ⇑(⟨⟨⟨to_fun, map_add⟩, map_smul⟩, inv_fun, left_inv, right_inv⟩ : M ≃ₗ[R] M₂).symm = inv_fun :=
+    {f g h₁ h₂ h₃ h₄} :
+    ⇑(LinearEquiv.mk (LinearMap.mk f h₁ h₂) g h₃ h₄ : M ≃ₗ[R] M₂).symm = g :=
   rfl
 
 @[simp]
