@@ -127,17 +127,17 @@ def birdDet (n : ℕ) (A : Array R) : R :=
 
 /-- Unfold a row-major matrix entry lookup. -/
 theorem get_eq (n : ℕ) (A : Array R) (i j : ℕ) :
-    BirdDet.get n A i j = A.getD (n * i + j) 0 :=
-  BirdDet.get.eq_1 n A i j
+    BirdDet.get n A i j = A.getD (n * i + j) 0 := by
+  rfl
 
 theorem sumFrom_step (n lo : ℕ) (f : ℕ → R) (h : lo < n) :
     BirdDet.sumFrom n lo f = f lo + BirdDet.sumFrom n (lo + 1) f := by
-  rw [BirdDet.sumFrom.eq_1]
+  rw [BirdDet.sumFrom]
   simp [h]
 
 theorem sumFrom_stop (n lo : ℕ) (f : ℕ → R) (h : ¬ lo < n) :
     BirdDet.sumFrom n lo f = 0 := by
-  rw [BirdDet.sumFrom.eq_1]
+  rw [BirdDet.sumFrom]
   simp [h]
 
 /-- Induction following the recursive structure of `sumFrom`. -/
@@ -149,45 +149,45 @@ theorem sumFrom_induct (n : ℕ) (motive : ℕ → Prop)
 
 /-- Unfold `diagSum` to the corresponding `sumFrom`. -/
 theorem diagSum_eq (n : ℕ) (F : ℕ → ℕ → R) (i : ℕ) :
-    diagSum n F i = BirdDet.sumFrom n (i + 1) fun k => F k k :=
-  BirdDet.diagSum.eq_1 n F i
+    diagSum n F i = BirdDet.sumFrom n (i + 1) fun k => F k k := by
+  rfl
 
 /-- Unfold `diagTerm` to its scalar formula. -/
 theorem diagTerm_eq (n : ℕ) (A : Array R) (F : ℕ → ℕ → R) (i j : ℕ) :
     diagTerm n A F i j =
       -(BirdDet.sumFrom n (i + 1) fun k => F k k) * BirdDet.get n A i j := by
-  rw [BirdDet.diagTerm.eq_1, diagSum_eq]
+  rw [diagTerm, diagSum_eq]
 
 /-- Unfold `tailSum` to the corresponding `sumFrom`. -/
 theorem tailSum_eq (n : ℕ) (A : Array R) (F : ℕ → ℕ → R) (i j : ℕ) :
     tailSum n A F i j =
-      BirdDet.sumFrom n (i + 1) fun k => F i k * BirdDet.get n A k j :=
-  BirdDet.tailSum.eq_1 n A F i j
+      BirdDet.sumFrom n (i + 1) fun k => F i k * BirdDet.get n A k j := by
+  rfl
 
 /-- Unfold one scalar Bird recurrence step to the entry-wise formula. -/
 theorem stepEntry_eq (n : ℕ) (A : Array R) (F : ℕ → ℕ → R) (i j : ℕ) :
     stepEntry n A F i j =
       -(BirdDet.sumFrom n (i + 1) fun k => F k k) * BirdDet.get n A i j
         + BirdDet.sumFrom n (i + 1) fun k => F i k * BirdDet.get n A k j := by
-  rw [BirdDet.stepEntry.eq_1, diagTerm_eq, tailSum_eq]
+  rw [stepEntry, diagTerm_eq, tailSum_eq]
 
 theorem iter_zero (n : ℕ) (A : Array R) (F : ℕ → ℕ → R) (i j : ℕ) :
     BirdDet.iter n A 0 F i j = F i j := by
-  rw [BirdDet.iter.eq_1]
+  rfl
 
 theorem iter_succ (n : ℕ) (A : Array R) (t : ℕ) (F : ℕ → ℕ → R) (i j : ℕ) :
     BirdDet.iter n A (t + 1) F i j =
       stepEntry n A (BirdDet.iter n A t F) i j := by
-  rw [BirdDet.iter.eq_2]
+  rfl
 
-theorem birdDet_zero (A : Array R) : birdDet 0 A = 1 :=
-  BirdDet.birdDet.eq_1 A
+theorem birdDet_zero (A : Array R) : birdDet 0 A = 1 := by
+  rfl
 
 /-- Unfold `birdDet` at a successor dimension. -/
 theorem birdDet_succ (k : ℕ) (A : Array R) :
     birdDet (k + 1) A =
       (-1 : R) ^ k * BirdDet.iter (k + 1) A k (BirdDet.get (k + 1) A) 0 0 :=
-  BirdDet.birdDet.eq_2 A k
+  by rw [birdDet]
 
 theorem birdDet_eq (n k : ℕ) (A : Array R) (hn : n = k + 1) :
     birdDet n A = (-1 : R) ^ k * BirdDet.iter n A k (BirdDet.get n A) 0 0 := by
@@ -243,8 +243,8 @@ def birdDet {n : ℕ}
 
 /-- Unfold the diagonal tail sum in the matrix specification. -/
 theorem diagSum_eq {n : ℕ} (F : Matrix (Fin n) (Fin n) R) (i : Fin n) :
-    diagSum F i = ∑ k : Fin n, if i < k then F k k else 0 :=
-  BirdDet.Spec.diagSum.eq_1 F i
+    diagSum F i = ∑ k : Fin n, if i < k then F k k else 0 := by
+  rfl
 
 theorem stepEntry_eq {n : ℕ}
     (A F : Matrix (Fin n) (Fin n) R)
@@ -252,32 +252,31 @@ theorem stepEntry_eq {n : ℕ}
     stepEntry A F i j =
       (-∑ k : Fin n, if i < k then F k k else 0) * A i j
         + ∑ k : Fin n, if i < k then F i k * A k j else 0 := by
-  rw [BirdDet.Spec.stepEntry.eq_1, BirdDet.Spec.diagTerm.eq_1,
-    BirdDet.Spec.tailSum.eq_1]
+  rw [stepEntry, diagTerm, tailSum]
   simp only [Matrix.add_apply, Matrix.of_apply, diagSum_eq]
 
 theorem iterEntry_zero {n : ℕ}
     (A F : Matrix (Fin n) (Fin n) R) :
-    iterEntry A 0 F = F :=
-  BirdDet.Spec.iterEntry.eq_1 A F
+    iterEntry A 0 F = F := by
+  rfl
 
 theorem iterEntry_succ {n p : ℕ}
     (A F : Matrix (Fin n) (Fin n) R) :
     iterEntry A (p + 1) F =
       fun i j => stepEntry A (iterEntry A p F) i j :=
-  BirdDet.Spec.iterEntry.eq_2 A F p
+  by rw [iterEntry]
 
 theorem iterMatrix_zero {n : ℕ}
     (A : Matrix (Fin n) (Fin n) R)
     (i j : Fin n) :
     iterMatrix A 0 i j = A i j := by
-  rw [BirdDet.Spec.iterMatrix.eq_1, iterEntry_zero]
+  rw [iterMatrix, iterEntry_zero]
 
 theorem iterMatrix_succ {n p : ℕ}
     (A : Matrix (Fin n) (Fin n) R) :
     iterMatrix A (p + 1) =
       fun i j => stepEntry A (iterMatrix A p) i j := by
-  rw [BirdDet.Spec.iterMatrix.eq_1, iterEntry_succ, BirdDet.Spec.iterMatrix.eq_1]
+  rw [iterMatrix, iterEntry_succ, iterMatrix]
 
 /-- Unfold one entry of the matrix recurrence at a successor step. -/
 theorem iterMatrix_succ_apply {n p : ℕ}
@@ -287,20 +286,20 @@ theorem iterMatrix_succ_apply {n p : ℕ}
 
 theorem birdDetSpec_zero
     (A : Matrix (Fin 0) (Fin 0) R) :
-    birdDet A = 1 :=
-  BirdDet.Spec.birdDet.eq_1 A
+    birdDet A = 1 := by
+  rfl
 
 theorem birdDetSpec_succ {k : ℕ}
     (A : Matrix (Fin (k + 1)) (Fin (k + 1)) R) :
     birdDet A =
       (-1 : R) ^ k * iterEntry A k A 0 0 :=
-  BirdDet.Spec.birdDet.eq_2 k A
+  by rw [birdDet]
 
 theorem birdDetSpec_succ_iterMatrix {k : ℕ}
     (A : Matrix (Fin (k + 1)) (Fin (k + 1)) R) :
     birdDet A =
       (-1 : R) ^ k * iterMatrix A k 0 0 := by
-  rw [birdDetSpec_succ, BirdDet.Spec.iterMatrix.eq_1]
+  rw [birdDetSpec_succ, iterMatrix]
 
 end Spec
 
