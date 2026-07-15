@@ -273,6 +273,35 @@ lemma mfderiv_extend_comp_mfderivWithin_extend_symm'
   have : y = (e.extend I).symm (e.extend I y) := ((e.extend I).left_inv hy).symm
   convert! mfderiv_extend_comp_mfderivWithin_extend_symm he ((e.extend I).map_source hy)
 
+/-- The composition of the derivative of the inverse of an extended chart `e.extend I` with the
+derivative of `e.extend I` gives the identity.
+Version where the basepoint belongs to `(extChartAt I x).target`. -/
+lemma mfderivWithin_extend_symm_comp_mfderiv_extend
+    {y : E} (he : e ∈ maximalAtlas I 1 M) (hy : y ∈ (e.extend I).target) :
+    (mfderiv[range I] (e.extend I).symm y) ∘L
+      (mfderiv% (e.extend I) ((e.extend I).symm y))
+      = ContinuousLinearMap.id _ _ := by
+  have h'y : (e.extend I).symm y ∈ e.source := by simp_all
+  have U' : UniqueMDiffAt[(e.extend I).source] ((e.extend I).symm y) := by
+    rw [e.extend_source]
+    exact e.open_source.uniqueMDiffWithinAt h'y
+  have : mfderiv% (e.extend I) ((e.extend I).symm y)
+      = mfderiv[(e.extend I).source] (e.extend I) ((e.extend I).symm y) := by
+    rw [mfderivWithin_eq_mfderiv U']
+    exact e.mdifferentiableAt_extend he h'y
+  rw [this, ← mfderivWithin_comp_of_eq]; rotate_left
+  · exact mdifferentiableWithinAt_extend_symm he hy
+  · exact (e.mdifferentiableAt_extend he h'y).mdifferentiableWithinAt
+  · intro z hz
+    exact e.extend_target_subset_range ((e.extend I).map_source hz)
+  · exact U'
+  · exact (e.extend I).right_inv hy
+  rw [← mfderivWithin_id U']
+  apply Filter.EventuallyEq.mfderivWithin_eq
+  · filter_upwards [e.extend_source_mem_nhdsWithin (I := I) h'y] with z hz
+    simp only [Function.comp_def, PartialEquiv.left_inv (e.extend I) hz, id_eq]
+  · simp only [Function.comp_def, PartialEquiv.right_inv (e.extend I) hy, id_eq]
+
 end
 
 section extChartAt
@@ -329,29 +358,8 @@ lemma mfderivWithin_extChartAt_symm_comp_mfderiv_extChartAt
     {y : E} (hy : y ∈ (extChartAt I x).target) :
     (mfderiv[range I] (extChartAt I x).symm y) ∘L
       (mfderiv% (extChartAt I x) ((extChartAt I x).symm y))
-      = ContinuousLinearMap.id _ _ := by
-  have h'y : (extChartAt I x).symm y ∈ (extChartAt I x).source := (extChartAt I x).map_target hy
-  have h''y : (extChartAt I x).symm y ∈ (chartAt H x).source := by
-    rwa [← extChartAt_source (I := I)]
-  have U' : UniqueMDiffAt[(extChartAt I x).source] ((extChartAt I x).symm y) :=
-    (isOpen_extChartAt_source x).uniqueMDiffWithinAt h'y
-  have : mfderiv% (extChartAt I x) ((extChartAt I x).symm y)
-      = mfderiv[(extChartAt I x).source] (extChartAt I x) ((extChartAt I x).symm y) := by
-    rw [mfderivWithin_eq_mfderiv U']
-    exact mdifferentiableAt_extChartAt h''y
-  rw [this, ← mfderivWithin_comp_of_eq]; rotate_left
-  · exact mdifferentiableWithinAt_extChartAt_symm hy
-  · exact (mdifferentiableAt_extChartAt h''y).mdifferentiableWithinAt
-  · intro z hz
-    apply extChartAt_target_subset_range x
-    exact PartialEquiv.map_source (extChartAt I x) hz
-  · exact U'
-  · exact PartialEquiv.right_inv (extChartAt I x) hy
-  rw [← mfderivWithin_id U']
-  apply Filter.EventuallyEq.mfderivWithin_eq
-  · filter_upwards [extChartAt_source_mem_nhdsWithin' h'y] with z hz
-    simp only [Function.comp_def, PartialEquiv.left_inv (extChartAt I x) hz, id_eq]
-  · simp only [Function.comp_def, PartialEquiv.right_inv (extChartAt I x) hy, id_eq]
+      = ContinuousLinearMap.id _ _ :=
+  mfderivWithin_extend_symm_comp_mfderiv_extend (IsManifold.chart_mem_maximalAtlas x) hy
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The composition of the derivative of the inverse of `extChartAt` with the derivative of
