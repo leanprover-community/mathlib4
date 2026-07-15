@@ -149,13 +149,13 @@ theorem definable_biUnion_finset {ι : Type*} {f : ι → Set (α → M)}
 
 theorem definable_iInter_of_finite {ι : Type*} [Finite ι] {f : ι → Set (α → M)}
     (hf : ∀ i, A.Definable L (f i)) : A.Definable L (⋂ i, f i) := by
-  haveI := Fintype.ofFinite ι
+  have := Fintype.ofFinite ι
   convert! definable_finset_inf hf Finset.univ using 1
   simp
 
 theorem definable_iUnion_of_finite {ι : Type*} [Finite ι] {f : ι → Set (α → M)}
     (hf : ∀ i, A.Definable L (f i)) : A.Definable L (⋃ i, f i) := by
-  haveI := Fintype.ofFinite ι
+  have := Fintype.ofFinite ι
   convert! definable_finset_sup hf Finset.univ using 1
   simp
 

@@ -115,6 +115,9 @@ lemma IsAtom.ne_bot_iff_eq (ha : IsAtom a) (hba : b ≤ a) : b ≠ ⊥ ↔ b = a
 theorem IsAtom.Iic_eq (h : IsAtom a) : Set.Iic a = {⊥, a} :=
   Set.ext fun _ => h.le_iff
 
+lemma Set.Iio_eq_singleton_bot_iff : Iio a = {⊥} ↔ IsAtom a := by
+  simp [IsAtom, superset_antisymm_iff, bot_lt_iff_ne_bot]
+
 @[simp]
 theorem bot_covBy_iff : ⊥ ⋖ a ↔ IsAtom a := by
   simp only [CovBy, bot_lt_iff_ne_bot, IsAtom, not_imp_not]
@@ -208,6 +211,9 @@ lemma IsCoatom.ne_top_iff_eq (ha : IsCoatom a) (hab : a ≤ b) : b ≠ ⊤ ↔ b
 
 theorem IsCoatom.Ici_eq (h : IsCoatom a) : Set.Ici a = {⊤, a} :=
   h.dual.Iic_eq
+
+lemma Set.Ioi_eq_singleton_top_iff : Ioi a = {⊤} ↔ IsCoatom a := by
+  simp [IsCoatom, superset_antisymm_iff, lt_top_iff_ne_top]
 
 @[simp]
 theorem covBy_top_iff : a ⋖ ⊤ ↔ IsCoatom a :=
@@ -686,11 +692,6 @@ instance {α} [CompleteAtomicBooleanAlgebra α] : IsAtomistic α :=
 instance {α} [CompleteAtomicBooleanAlgebra α] : IsCoatomistic α :=
   isAtomistic_dual_iff_isCoatomistic.1 inferInstance
 
-@[deprecated "Use `IsAtom.le_sSup` instead" (since := "2025-11-24")]
-theorem exists_mem_le_of_le_sSup_of_isAtom {α} [CompleteAtomicBooleanAlgebra α] {a}
-    (ha : IsAtom a) {s : Set α} (hs : a ≤ sSup s) : ∃ b ∈ s, a ≤ b :=
-  (IsAtom.le_sSup ha).mp hs
-
 lemma eq_setOf_le_sSup_and_isAtom {α} [CompleteAtomicBooleanAlgebra α] {S : Set α}
     (hS : ∀ a ∈ S, IsAtom a) : S = {a | a ≤ sSup S ∧ IsAtom a} := by
   ext a
@@ -892,7 +893,7 @@ end DecidableEq
 
 variable [Lattice α] [BoundedOrder α] [IsSimpleOrder α]
 
-open Classical in
+open scoped Classical in
 /-- A simple `BoundedOrder` is also complete. -/
 @[implicit_reducible]
 protected noncomputable def completeLattice : CompleteLattice α :=
@@ -921,7 +922,7 @@ protected noncomputable def completeLattice : CompleteLattice α :=
           intro con
           exact top_ne_bot (eq_bot_iff.2 (h con)) }
 
-open Classical in
+open scoped Classical in
 /-- A simple `BoundedOrder` is also a `CompleteBooleanAlgebra`. -/
 @[implicit_reducible]
 protected noncomputable def completeBooleanAlgebra : CompleteBooleanAlgebra α :=

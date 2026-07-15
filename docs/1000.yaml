@@ -241,6 +241,7 @@ Q225973:
 
 Q226014:
   title: Poincaré recurrence theorem
+  decl: MeasureTheory.Conservative.ae_mem_imp_frequently_image_mem
 
 Q230848:
   title: Lamé’s theorem
@@ -365,6 +366,7 @@ Q332465:
 
 Q338886:
   title: Divergence theorem
+  decl: MeasureTheory.integral_divergence_of_hasFDerivAt_off_countable
 
 Q339495:
   title: Symphonic theorem
@@ -681,7 +683,7 @@ Q656176:
 
 Q656198:
   title: Maschke's theorem
-  # `RepresentationTheory/Maschke` comes very close, but doesn't prove the standard form yet...
+  decl: MonoidAlgebra.Submodule.exists_isCompl
 
 Q656645:
   title: Hilbert's basis theorem
@@ -909,9 +911,8 @@ Q830513:
 
 Q834025:
   title: Cauchy integral theorem
-  decl: Complex.circleIntegral_div_sub_of_differentiable_on_off_countable
-  authors: Yury Kudryashov
-  date: 2021
+  comment: We have `DiffContOnCl.circleIntegral_eq_zero` for circle contours
+  url: https://leanprover-community.github.io/mathlib4_docs/Mathlib/Analysis/Complex/CauchyIntegral.html#DiffContOnCl.circleIntegral_eq_zero
 
 Q834211:
   title: Wallace–Bolyai–Gerwien theorem
@@ -1401,6 +1402,7 @@ Q1139524:
 
 Q1140119:
   title: Morera's theorem
+  decl: Complex.isConservativeOn_and_continuousOn_iff_isDifferentiableOn
 
 Q1140200:
   title: PCP theorem
@@ -2246,6 +2248,9 @@ Q2621667:
 
 Q2631152:
   title: Carathéodory's extension theorem
+  decls:
+    - MeasureTheory.AddContent.measure
+    - MeasureTheory.AddContent.measure_eq
 
 Q2635326:
   title: Structured program theorem
@@ -2482,7 +2487,7 @@ Q3527162:
 
 Q3527166:
   title: Steinhaus theorem
-  # not difficult, but seemingly missing
+  decl: MeasureTheory.Measure.div_mem_nhds_one_of_haar_pos
 
 Q3527171:
   title: Synge's theorem
@@ -4157,6 +4162,7 @@ Q20278711:
 
 Q20971632:
   title: Lie's theorem
+  decl: LieModule.exists_nontrivial_weightSpace_of_isSolvable
 
 Q22952648:
   title: Uncountability of the continuum
