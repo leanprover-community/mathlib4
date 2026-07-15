@@ -172,7 +172,6 @@ theorem le_weight_of_ne_zero' {s : σ} {f : σ →₀ ℕ} (hs : f s ≠ 0) : w 
 theorem weight_eq_zero_iff_eq_zero
     (w : σ → M) [NonTorsionWeight ℕ w] {f : σ →₀ ℕ} :
     weight w f = 0 ↔ f = 0 := by
-  classical
   constructor
   · intro h
     ext s
@@ -199,6 +198,14 @@ theorem finite_of_nat_weight_le [Finite σ] (w : σ → ℕ) (hw : ∀ x, w x �
   dsimp at hd
   grw [← le_weight _ (hw x)] at hd
   simp [*]
+
+theorem finite_of_nat_weight_lt [Finite σ] (w : σ → ℕ) (hw : ∀ x, w x ≠ 0) (n : ℕ) :
+    {d : σ →₀ ℕ | weight w d < n}.Finite :=
+  Set.Finite.subset (finite_of_nat_weight_le w hw n) (by grind)
+
+theorem finite_of_nat_weight_eq [Finite σ] (w : σ → ℕ) (hw : ∀ x, w x ≠ 0) (n : ℕ) :
+    {d : σ →₀ ℕ | weight w d = n}.Finite :=
+  Set.Finite.subset (finite_of_nat_weight_le w hw n) (by grind)
 
 end CanonicallyOrderedAddCommMonoid
 
@@ -255,6 +262,9 @@ theorem finite_of_degree_le [Finite σ] (n : ℕ) :
   simp only [Function.const_apply, ne_eq, one_ne_zero, not_false_eq_true]
 
 lemma finite_of_degree_lt [Finite σ] (n : ℕ) : {f : σ →₀ ℕ | degree f < n}.Finite :=
+  Set.Finite.subset (finite_of_degree_le n) (by grind)
+
+lemma finite_of_degree_eq [Finite σ] (n : ℕ) : {f : σ →₀ ℕ | f.degree = n}.Finite :=
   Set.Finite.subset (finite_of_degree_le n) (by grind)
 
 lemma range_single_one :

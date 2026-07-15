@@ -350,7 +350,7 @@ noncomputable def adjunction [HasExplicitFiniteCoproducts.{u} P] :
     ext (x : X.obj.obj _)
     dsimp
     have := CompHausLike.preregular hs
-    letI : PreservesFiniteProducts ((sheafToPresheaf (coherentTopology _) _).obj X) :=
+    let : PreservesFiniteProducts ((sheafToPresheaf (coherentTopology _) _).obj X) :=
       inferInstanceAs (PreservesFiniteProducts X.obj)
     apply presheaf_ext ((unit P hs).app _ x)
     intro a
