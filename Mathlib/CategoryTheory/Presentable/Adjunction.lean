@@ -86,8 +86,9 @@ lemma isCardinalLocallyPresentable [IsCardinalLocallyPresentable C κ]
 lemma isCardinalAccessibleCategory [IsCardinalAccessibleCategory C κ]
     [G.IsCardinalAccessible κ] [G.Full] [G.Faithful] :
     IsCardinalAccessibleCategory D κ where
-  toHasCardinalFilteredColimits := ⟨fun _ _ _ ↦
+  toHasCardinalFilteredColimits := ⟨fun J _ _ ↦
     let : Reflective G := ⟨_, adj⟩
+    have := HasCardinalFilteredColimits.hasColimitsOfShape κ J (C := C)
     hasColimitsOfShape_of_reflective G⟩
   toHasCardinalFilteredGenerator := adj.hasCardinalFilteredGenerator κ
 
