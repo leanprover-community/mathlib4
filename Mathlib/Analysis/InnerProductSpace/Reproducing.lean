@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.InnerProductSpace.Completion
 public import Mathlib.Analysis.InnerProductSpace.Positive
+public import Mathlib.Topology.Algebra.LinearMapCompletion
 
 /-!
 # Reproducing Kernel Hilbert Spaces
@@ -335,16 +336,13 @@ private def toH' (h : kernel H = kernel H') : H₀ (kernel H) →ₗᵢ[𝕜] H'
 }
 
 private def equivAux (h : kernel H = kernel H') : OfKernel (kernel H) ≃ₗᵢ[𝕜] H' := by
-  have h_lin := UniformSpace.Completion.isLinearMap_extension
-    (toH' H h).isometry.uniformContinuous
+  let h_lin := ContinuousLinearMap.fromCompletion (toH' H h).toContinuousLinearMap.uniformContinuous
   let ofOfKernel : OfKernel (kernel H) →ₗᵢ[𝕜] H' := {
-    toFun := UniformSpace.Completion.extension (toH' H h)
-    map_add' := h_lin.map_add
-    map_smul' := h_lin.map_smul
+    h_lin with
     norm_map' x := by
-      have h := (toH' H h).isometry.completion_extension.dist_eq x 0
-      have h' := h_lin.map_zero
-      simp_all
+      have h1 := (toH' H h).isometry.completion_extension.dist_eq x 0
+      have h2 := h_lin.map_zero
+      simp_all [h_lin]
   }
   have h_surj : Function.Surjective ofOfKernel := by
     apply Set.range_eq_univ.mp
