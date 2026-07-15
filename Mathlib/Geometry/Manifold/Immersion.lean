@@ -509,9 +509,9 @@ lemma isImmersedPoint [IsManifold I 1 M] [IsManifold J 1 N]
     IsImmersedPoint I J f x := by
   suffices IsImmersedPoint I 𝓘(𝕜, E'') ((h.codChart.extend J) ∘ f) x by
     apply IsImmersedPoint.of_comp (h.contMDiffAt.mdifferentiableAt hn) ?_ this
-    -- should this be an API lemma, `mdifferentiableAt_extend`?
-    apply ContMDiffAt.mdifferentiableAt ?_ hn
-    exact h.codChart.contMDiffAt_extend h.codChart_mem_maximalAtlas h.mem_codChart_source
+    exact h.codChart.mdifferentiableAt_extend
+      (IsManifold.maximalAtlas_subset_of_le (ENat.one_le_iff_ne_zero_withTop.mpr hn)
+      h.codChart_mem_maximalAtlas) h.mem_codChart_source
   -- The local representative of f in the nice charts at x, as a continuous linear map.
   let rhs : E →L[𝕜] E'' := h.equiv.toContinuousLinearMap.comp ((ContinuousLinearMap.id _ _).prod 0)
   have heq : EqOn ((h.codChart.extend J) ∘ f) (rhs ∘ (h.domChart.extend I)) h.domChart.source := by
@@ -523,13 +523,17 @@ lemma isImmersedPoint [IsManifold I 1 M] [IsManifold J 1 N]
     this.congr
       (Filter.eventually_of_mem (h.domChart.open_source.mem_nhds h.mem_domChart_source) heq)
   apply IsImmersedPoint.comp (I' := 𝓘(𝕜, E))
-  · -- Maybe extract as lemma: a CLE has immersed points everywhere (would be the first term).
-    apply ((h.equiv.toDiffeomorph.isLocalDiffeomorph _).isImmersedPoint (by simp)).comp
+  · apply h.equiv.isImmersedPoint.comp
     dsimp
     rw [isImmersedPoint_iff, mfderiv_eq_fderiv, ContinuousLinearMap.fderiv]
-    apply ContinuousLinearMap.HasLeftInverse.inl
-  · exact IsImmersedPoint.of_mfderiv_isInvertible
-      <| isInvertible_mfderiv_extend (by simp [h.mem_domChart_source])
+    exact ContinuousLinearMap.HasLeftInverse.inl
+  · exact .of_mfderiv_isInvertible <| isInvertible_mfderiv_extend (by simp [h.mem_domChart_source])
+
+/-- An immersion at `x` has injective differential. -/
+lemma injective_mfderiv [IsManifold I 1 M] [IsManifold J 1 N]
+    (h : IsImmersionAtOfComplement F I J n f x) (hn : n ≠ 0) :
+    Injective (mfderiv% f x) :=
+  (h.isImmersedPoint hn).mfderiv_injective
 
 -- The hard direction, using the inverse function theorem.
 lemma of_isImmersedPoint [IsManifold I n M] [IsManifold J 1 N]
@@ -540,8 +544,7 @@ lemma of_isImmersedPoint [IsManifold I n M] [IsManifold J 1 N]
   let f' := (extChartAt J (f x)) ∘ f
   have hf' : IsImmersedPoint I 𝓘(𝕜, E'') f' x := by
     apply IsImmersedPoint.comp (I' := J) ?_ hf
-    exact IsImmersedPoint.of_mfderiv_isInvertible
-      <| isInvertible_mfderiv_extChartAt (by simp)
+    exact .of_mfderiv_isInvertible <| isInvertible_mfderiv_extChartAt (by simp)
   -- Choose a complement for df'_x.
   let F₁ := LinearMap.range (mfderiv% f' x).toLinearMap
   rw [isImmersedPoint_iff] at hf'

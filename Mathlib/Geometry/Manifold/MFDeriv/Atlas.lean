@@ -228,6 +228,23 @@ end OpenPartialHomeomorph.MDifferentiable
 
 /-! ### Differentiability of `extChartAt` -/
 
+section
+
+open IsManifold
+
+variable {e : OpenPartialHomeomorph M H}
+
+theorem OpenPartialHomeomorph.mdifferentiableAt_extend
+    {x : M} (he : e ∈ maximalAtlas I 1 M) (hx : x ∈ e.source) :
+    MDiffAt (e.extend I) x :=
+  e.contMDiffAt_extend he hx |>.mdifferentiableAt (by simp)
+
+theorem OpenPartialHomeomorph.mdifferentiableOn_extend (he : e ∈ maximalAtlas I 1 M) :
+    MDiff[e.source] (e.extend I) :=
+  e.contMDiffOn_extend he |>.mdifferentiableOn (by simp)
+
+end
+
 section extChartAt
 
 variable [IsManifold I 1 M] {s : Set M} {x y : M} {z : E}

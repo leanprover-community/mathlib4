@@ -99,6 +99,11 @@ lemma _root_.IsLocalDiffeomorphAt.isImmersedPoint
     (hf : IsLocalDiffeomorphAt I I' n f x) (hn : n ≠ 0) : IsImmersedPoint I I' f x :=
   of_mfderiv_isInvertible (hf.isInvertible_mfderiv hn)
 
+/-- Every point is an immersed point of a continuous linear equiv. -/
+lemma _root_.ContinuousLinearEquiv.isImmersedPoint (f : E ≃L[𝕜] F) {x : E} :
+    IsImmersedPoint 𝓘(𝕜, E) 𝓘(𝕜, F) f x :=
+  (f.toDiffeomorph.isLocalDiffeomorph _).isImmersedPoint (by simp)
+
 /-- If `x` is an immersed point of `x` and `f x` is an immersed point of `g`, then `x` is an
 immersed point of `g ∘ f`. -/
 lemma comp {g : M' → N} (hg : IsImmersedPoint I' J g (f x)) (hf : IsImmersedPoint I I' f x) :
