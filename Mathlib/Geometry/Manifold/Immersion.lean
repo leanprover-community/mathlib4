@@ -507,7 +507,7 @@ lemma _root_.ContMDiffAt.iff_comp_isImmersionAtOfComplement
 -- future.
 /-- Post-composing an immersion at `x` with a diffeomorphism still yields an immersion at `x`. -/
 lemma comp_diffeomorph
-    {N' : Type*} [TopologicalSpace N'] [ChartedSpace G N'] [IsManifold J n N] [IsManifold J n N']
+    {N' : Type*} [TopologicalSpace N'] [ChartedSpace G N'] [IsManifold J n N']
     (h : IsImmersionAtOfComplement F I J n f x) (Φ : Diffeomorph J J N N' n) :
     IsImmersionAtOfComplement F I J n (Φ ∘ f) x := by
   -- XXX: right now, `fun_prop` does not prove this (even with added tagging): investigate!
@@ -719,7 +719,7 @@ lemma _root_.ContMDiffAt.iff_comp_isImmersionAt {f : M → N} {φ : N → N'}
 
 /-- Post-composing an immersion at `x` with a diffeomorphism still yields an immersion at `x`. -/
 lemma comp_diffeomorph
-    {N' : Type*} [TopologicalSpace N'] [ChartedSpace G N'] [IsManifold J n N] [IsManifold J n N']
+    {N' : Type*} [TopologicalSpace N'] [ChartedSpace G N'] [IsManifold J n N']
     (h : IsImmersionAt I J n f x) (Φ : Diffeomorph J J N N' n) :
     IsImmersionAt I J n (Φ ∘ f) x := by
   use h.complement, by infer_instance, by infer_instance
@@ -826,7 +826,7 @@ protected lemma _root_.ModelWithCorners.isImmersionOfComplement {n : ℕ} :
 
 /-- Post-composing an immersion with a diffeomorphism still yields an immersion. -/
 lemma comp_diffeomorph
-    {N' : Type*} [TopologicalSpace N'] [ChartedSpace G N'] [IsManifold J n N] [IsManifold J n N']
+    {N' : Type*} [TopologicalSpace N'] [ChartedSpace G N'] [IsManifold J n N']
     (h : IsImmersionOfComplement F I J n f) (Φ : Diffeomorph J J N N' n) :
     IsImmersionOfComplement F I J n (Φ ∘ f) :=
   fun x ↦ (h x).comp_diffeomorph Φ
@@ -948,8 +948,7 @@ lemma _root_.ContMDiff.iff_comp_isImmersion {f : M → N} {φ : N → N'} (hφ :
   rw [ContMDiff.iff_comp_isImmersionOfComplement hφ.isImmersionOfComplement_complement]
 
 /-- Post-composing an immersion with a diffeomorphism still yields an immersion. -/
-lemma comp_diffeomorph
-    {N' : Type*} [TopologicalSpace N'] [ChartedSpace G N'] [IsManifold J n N] [IsManifold J n N']
+lemma comp_diffeomorph {N' : Type*} [TopologicalSpace N'] [ChartedSpace G N'] [IsManifold J n N']
     (h : IsImmersion I J n f) (Φ : Diffeomorph J J N N' n) :
     IsImmersion I J n (Φ ∘ f) := by
   use h.complement, by infer_instance, by infer_instance
