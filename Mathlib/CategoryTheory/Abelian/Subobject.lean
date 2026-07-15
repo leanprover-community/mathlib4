@@ -5,9 +5,8 @@ Authors: Markus Himmel, Jack McKoen
 -/
 module
 
-public import Mathlib.Algebra.Homology.ShortComplex.SnakeLemma
-public import Mathlib.CategoryTheory.Subobject.Limits
 public import Mathlib.CategoryTheory.Abelian.Basic
+public import Mathlib.CategoryTheory.Subobject.Limits
 
 /-!
 # Subobjects in abelian categories
@@ -18,13 +17,13 @@ This file contains numerous results about subobjects which are unique to abelian
 
 * subobjects and quotient objects of an object `X` are order-isomorphic via taking kernels and
   cokernels
-* A correspondence theorem: Given a suboject `Y` of `X`, `Abelian.Subobject.cokernelOrderIso` is
+* a correspondence theorem: Given a subobject `Y` of `X`, `Abelian.Subobject.cokernelOrderIso` is
   an order-isomorphism between subobjects of `cokernel (Y ↪ X)` and subobjects of `X`
   containing `Y`.
 
 ## References
 
-* [N. Popescu, *Abelian Categories with Applications to Rings and Modules*][]
+* [N. Popescu, *Abelian Categories with Applications to Rings and Modules*][popescu1973]
 
 -/
 
@@ -223,14 +222,21 @@ theorem mono_inverseImage_image (X' : Subobject X) [Mono f] :
 
 set_option linter.style.emptyLine false in
 /-- If `f : X ⟶ Y` is an epimorphism in an abelian category, then `f(f⁻¹(Y')) = Y'`. -/
-lemma epi_image_inverseImage (Y' : Subobject Y) [Epi f] :
+theorem epi_image_inverseImage (Y' : Subobject Y) [Epi f] :
     (image f).obj ((inverseImage f).obj Y') = Y' := by
   apply le_antisymm (image_inverseImage_le f Y')
   dsimp only [inverseImage, kernelSubobject]
   let k : kernel (f ≫ cokernel.π Y'.arrow) ⟶ X := kernel.ι (f ≫ cokernel.π Y'.arrow)
+  change Y' ≤ (image f).obj (Subobject.mk k)
   let v : kernel (f ≫ cokernel.π Y'.arrow) ⟶ Y' :=
     (kernel.lift (cokernel.π Y'.arrow) (k ≫ f) (by simp [k]) ≫ (isoKernelCokernel Y'.arrow).inv)
-
+  /- First, we show the following square is a pullback:
+     `ker (f ≫ coker.π Y')` -`v`-> `Y'`
+              |                      |
+             `k`                     |
+              |                      |
+              V                      v
+             `X` -------`f`-------> `Y` -/
   have h : IsLimit (PullbackCone.mk k v (show k ≫ f = v ≫ Y'.arrow by simp [k, v])) := by
     refine PullbackCone.IsLimit.mk ?_ ?_ ?_ ?_ ?_
     · intro s
@@ -240,25 +246,24 @@ lemma epi_image_inverseImage (Y' : Subobject Y) [Epi f] :
     · intro s
       simp [v, k, ← cancel_mono Y'.arrow, s.condition]
     · cat_disch
-
+  /- Because `C` is abelian and `f` is an epimorphism, the pullback above implies `v` is an epi. -/
   have : Epi v := epi_snd_of_isLimit _ _ h
-
-  have : Epi
-      (kernel.lift (cokernel.π Y'.arrow) (kernel.ι (f ≫ cokernel.π Y'.arrow) ≫ f) (by simp)) := by
+  let : StrongEpi (kernel.lift (cokernel.π Y'.arrow) (k ≫ f) (by simp [k])) := by
     dsimp [v] at this
-    cat_disch
-
-  have := strongEpi_of_epi
-    (kernel.lift (cokernel.π Y'.arrow) (kernel.ι (f ≫ cokernel.π Y'.arrow) ≫ f) _)
-
-  rw [image_mk_eq,
-    ← kernel.lift_ι (cokernel.π Y'.arrow) (kernel.ι (f ≫ cokernel.π Y'.arrow) ≫ f) (by simp),
+    rw [epi_comp_iff_of_isIso] at this
+    exact strongEpi_of_epi (kernel.lift (cokernel.π Y'.arrow) (k ≫ f) _)
+  /- Now `f(k) = image(k ≫ f)` because `k` is a mono.
+              `= image(v ≫ kernel.ι)` by the kernel property.
+              `= image(kernel.ι)` because `v` is an epi.
+              `= kernel(cokernel.π Y')`
+    From here it is straightforward that `Y' ≤ kernel(cokernel.π Y')`. -/
+  rw [image_mk_eq, ← kernel.lift_ι (cokernel.π Y'.arrow) (k ≫ f) (by simp [k]),
     imageSubobject_epi_comp, imageSubobject_mono]
   exact le_kernelSubobject (cokernel.π Y'.arrow) Y' (cokernel.condition Y'.arrow)
 
 set_option linter.style.emptyLine false in
 open Subobject in
-/-- Given a suboject `Y` of `X`, there is an order-isomorphism between subobjects
+/-- Given a subobject `Y` of `X`, there is an order-isomorphism between subobjects
 of `X/Y := cokernel (Y ↪ X)` and subobjects of `X` containing `Y`. -/
 noncomputable
 def cokernelOrderIso (Y : Subobject X) :
@@ -269,29 +274,19 @@ def cokernelOrderIso (Y : Subobject X) :
   right_inv := by
     rintro ⟨q, hq : Y ≤ q⟩
     apply le_antisymm
-    · simp only [inverseImage, homOfLE_leOfHom, image, Subtype.mk_le_mk]
-      refine mk_le_of_comm ?_ ?_
-      · refine kernel.lift _ (kernel.ι _) ?_ ≫ (isoKernelCokernel q.arrow).inv
-
-        let c := cokernel.π Y.arrow ≫
-          cokernel.π (imageSubobject (q.arrow ≫ cokernel.π Y.arrow)).arrow
-
-        let r := cokernel.desc Y.arrow (cokernel.π (q.arrow))
-          (by simp only [← ofLE_arrow hq, Category.assoc, cokernel.condition, comp_zero])
-
-        let u := cokernel.desc (imageSubobject (q.arrow ≫ cokernel.π Y.arrow)).arrow r
-          (imageSubobject_arrow_comp_eq_zero (by simp [r]))
-
-        have : cokernel.π q.arrow = c ≫ u := by
-          simp only [Category.assoc, cokernel.π_desc, c, u, r]
-
-        rw [this]
-        simp only [c, u, r, kernel.condition_assoc, zero_comp]
-      · cat_disch
+    · refine mk_le_of_comm ?_ ?_
+      · dsimp
+        refine kernel.lift _ (kernel.ι _) ?_ ≫ (isoKernelCokernel q.arrow).inv
+        rw [← cokernel.π_desc Y.arrow (cokernel.π q.arrow) ((le_iff_comp_cokernel_zero Y q).mp hq),
+          ← cokernel.π_desc (imageSubobject (q.arrow ≫ cokernel.π Y.arrow)).arrow
+          (cokernel.desc Y.arrow (cokernel.π q.arrow) ((le_iff_comp_cokernel_zero Y q).mp hq))
+          (imageSubobject_arrow_comp_eq_zero (by simp))]
+        slice_lhs 2 4 => rw [← Category.assoc]
+        simp only [kernel.condition_assoc, zero_comp]
+      · simp
     · exact inverseImage_image_le _ _
-  map_rel_iff' := by
-    intro a b
-    simp only [inverseImage, homOfLE_leOfHom, image, Equiv.coe_fn_mk, Subtype.mk_le_mk]
+  map_rel_iff' {a b} := by
+    dsimp
     constructor
     · intro h
       have eq : kernel.ι (cokernel.π Y.arrow ≫ cokernel.π a.arrow) ≫
@@ -300,7 +295,6 @@ def cokernelOrderIso (Y : Subobject X) :
           kernelSubobject_arrow]
         simp only [← ofLE_arrow h, ← kernelSubobject_arrow, Category.assoc, kernel.condition,
           comp_zero]
-
       have := (cokernel.π_desc
             (kernel.ι (cokernel.π Y.arrow ≫ cokernel.π a.arrow))
             (cokernel.π Y.arrow ≫ cokernel.π b.arrow) eq)
