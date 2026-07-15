@@ -403,8 +403,6 @@ protected lemma _root_.ModelWithCorners.isImmersionAtOfComplement {n : ℕ} {x :
     (IsManifold.subset_maximalAtlas (by simp)) (IsManifold.subset_maximalAtlas (by simp))
     (by simp [Function.comp_def])
 
-@[deprecated (since := "2025-12-16")] alias ofOpen := of_opens
-
 /-- Prefer using `IsImmersionAtOfComplement.continuousAt` instead -/
 theorem continuousOn (h : IsImmersionAtOfComplement F I J n f x) :
     ContinuousOn f h.domChart.source := by
@@ -664,8 +662,6 @@ lemma of_opens [IsManifold I n M] (s : TopologicalSpace.Opens M) (hx : x ∈ s) 
   use PUnit, by infer_instance, by infer_instance
   apply Manifold.IsImmersionAtOfComplement.of_opens
 
-@[deprecated (since := "2025-12-16")] alias ofOpen := of_opens
-
 /-- Every `ModelWithCorners 𝕜 E H` is an immersion when viewed as a map `H → E`. -/
 protected lemma _root_.ModelWithCorners.isImmersionAt {n : ℕ} {x : H} :
     IsImmersionAt I (modelWithCornersSelf 𝕜 E) n I x := by
@@ -822,8 +818,6 @@ lemma sumInr {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M'] [IsManifold 
     rw [(chartAt H x).right_inv (by simp_all), I.right_inv (by simp_all)]
   simpa
 
-@[deprecated (since := "2025-12-16")] alias ofOpen := of_opens
-
 /-- A `C^n` immersion is `C^n`. -/
 theorem contMDiff (h : IsImmersionOfComplement F I J n f) : CMDiff n f :=
   fun x ↦ (h x).contMDiffAt
@@ -896,8 +890,6 @@ lemma of_opens [IsManifold I n M] (s : TopologicalSpace.Opens M) :
     IsImmersion I I n (Subtype.val : s → M) := by
   use PUnit, by infer_instance, by infer_instance
   exact IsImmersionOfComplement.of_opens s
-
-@[deprecated (since := "2025-12-16")] alias ofOpen := of_opens
 
 /-- Every `ModelWithCorners 𝕜 E H` is an immersion when viewed as a map `H → E`. -/
 protected lemma _root_.ModelWithCorners.isImmersion {n : ℕ} :

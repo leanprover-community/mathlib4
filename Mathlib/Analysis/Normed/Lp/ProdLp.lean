@@ -1197,8 +1197,6 @@ def withLpProdCongr (f : α ≃ₗᵢ[𝕜] α') (g : β ≃ₗᵢ[𝕜] β') :
   __ := (f.toLinearEquiv.prodCongr g.toLinearEquiv).withLpCongr p
   norm_map' := (f.toLinearIsometry.withLpProdMap p g.toLinearIsometry).norm_map
 
-@[deprecated (since := "2025-12-22")] alias _root_.LinearIsometry.withLpProdCongr := withLpProdCongr
-
 /-- Commutativity of the `L^p` product as a linear isometric equivalence. -/
 def withLpProdComm : WithLp p (α × β) ≃ₗᵢ[𝕜] WithLp p (β × α) where
   __ := (LinearEquiv.prodComm 𝕜 α β).withLpCongr p

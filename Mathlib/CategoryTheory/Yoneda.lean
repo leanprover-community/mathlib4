@@ -1318,13 +1318,6 @@ def homNatIso {D : Type u₂} [Category.{v₂} D] {F : C ⥤ D} (hF : F.FullyFai
     (fun Y => Equiv.toIso (Equiv.ulift.trans <| hF.homEquiv.symm.trans Equiv.ulift.symm))
     (fun f => by ext; exact Equiv.ulift.injective (hF.map_injective (by simp)))
 
-/-- `FullyFaithful.homEquiv` as a natural isomorphism. -/
-@[deprecated homNatIso (since := "2025-10-28")]
-def homNatIsoMaxRight {D : Type u₂} [Category.{max v₁ v₂} D] {F : C ⥤ D} (hF : F.FullyFaithful)
-    (X : C) : F.op ⋙ yoneda.obj (F.obj X) ≅ uliftYoneda.{v₂}.obj X :=
-  isoWhiskerLeft F.op (uliftYonedaIsoYoneda.symm.app _) ≪≫ hF.homNatIso _ ≪≫
-    NatIso.ofComponents (fun _ => Equiv.toIso (Equiv.ulift.trans Equiv.ulift.symm))
-
 set_option backward.isDefEq.respectTransparency.types false in
 /-- `FullyFaithful.homEquiv` as a natural isomorphism. -/
 @[simps! +dsimpLhs]
@@ -1333,18 +1326,6 @@ def compUliftYonedaCompWhiskeringLeft {D : Type u₂} [Category.{v₂} D] {F : C
     F ⋙ uliftYoneda.{v₁} ⋙ (whiskeringLeft _ _ _).obj F.op ≅ uliftYoneda.{v₂} :=
   NatIso.ofComponents (fun X => hF.homNatIso _) fun f => by
     ext; exact Equiv.ulift.injective (hF.map_injective (by simp))
-
-@[deprecated (since := "2025-10-20")] alias compYonedaCompWhiskeringLeft :=
-  compUliftYonedaCompWhiskeringLeft
-
-/-- `FullyFaithful.homEquiv` as a natural isomorphism. -/
-@[deprecated compUliftYonedaCompWhiskeringLeft (since := "2025-10-28")]
-def compYonedaCompWhiskeringLeftMaxRight {D : Type u₂} [Category.{max v₁ v₂} D] {F : C ⥤ D}
-    (hF : F.FullyFaithful) : F ⋙ yoneda ⋙ (whiskeringLeft _ _ _).obj F.op ≅ uliftYoneda.{v₂} := by
-  refine isoWhiskerLeft F (isoWhiskerRight uliftYonedaIsoYoneda.{v₁}.symm _) ≪≫
-    hF.compUliftYonedaCompWhiskeringLeft ≪≫
-    NatIso.ofComponents (fun _ => NatIso.ofComponents
-      (fun _ => Equiv.toIso (Equiv.ulift.trans Equiv.ulift.symm)))
 
 set_option backward.isDefEq.respectTransparency.types false in
 /-- `FullyFaithful.homEquiv` as a natural isomorphism, using coyoneda. -/

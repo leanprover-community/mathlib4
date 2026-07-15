@@ -268,9 +268,6 @@ theorem map_frobenius_expand (f : R[X]) : map (frobenius R p) (expand R p f) = f
       mul_pow, ← C.map_pow, frobenius_def]
     ring
 
-@[deprecated (since := "2025-12-27")]
-alias expand_char := map_frobenius_expand
-
 theorem map_iterateFrobenius_expand (f : R[X]) (n : ℕ) :
     map (iterateFrobenius R p n) (expand R (p ^ n) f) = f ^ p ^ n := by
   induction n with
@@ -280,9 +277,6 @@ theorem map_iterateFrobenius_expand (f : R[X]) (n : ℕ) :
     conv_lhs => rw [pow_succ, pow_mul, ← n_ih]
     simp_rw [← map_frobenius_expand p, pow_succ', add_comm k, iterateFrobenius_add,
       ← map_map, ← map_expand, ← expand_mul, iterateFrobenius_one]
-
-@[deprecated (since := "2025-12-27")]
-alias map_expand_pow_char := map_iterateFrobenius_expand
 
 end ExpChar
 

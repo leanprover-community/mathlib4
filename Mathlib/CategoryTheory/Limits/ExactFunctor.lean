@@ -300,10 +300,4 @@ end
 
 end
 
-@[deprecated (since := "2025-12-18")] alias LeftExactFunctor.ofExact_map :=
-  LeftExactFunctor.ofExact_map_hom
-
-@[deprecated (since := "2025-12-18")] alias RightExactFunctor.ofExact_map :=
-  RightExactFunctor.ofExact_map_hom
-
 end CategoryTheory

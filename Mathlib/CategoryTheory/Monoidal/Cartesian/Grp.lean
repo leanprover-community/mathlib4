@@ -291,10 +291,6 @@ lemma hom_hom_div (f g : G ⟶ H) : (f / g).hom.hom = f.hom.hom / g.hom.hom := r
 lemma hom_hom_zpow (f : G ⟶ H) (n : ℤ) : (f ^ n).hom.hom = f.hom.hom ^ n := by
   cases n <;> simp
 
-@[deprecated (since := "2025-12-18")] alias hom_inv := hom_hom_inv
-@[deprecated (since := "2025-12-18")] alias hom_div := hom_hom_div
-@[deprecated (since := "2025-12-18")] alias hom_zpow := hom_hom_zpow
-
 end Hom
 
 attribute [local simp] mul_eq_mul comp_mul mul_comm mul_div_mul_comm in

@@ -76,8 +76,6 @@ isomorphic to `ℤ`. -/
 noncomputable def Rat.IsIntegralClosure.intEquiv : R ≃+* ℤ :=
   (NumberField.RingOfIntegers.equiv R).symm.trans ringOfIntegersEquiv
 
-@[deprecated (since := "2025-12-22")] alias Rat.intEquiv := Rat.IsIntegralClosure.intEquiv
-
 @[simp]
 theorem Rat.IsIntegralClosure.intEquiv_apply_eq_ringOfIntegersEquiv (x : 𝓞 ℚ) :
     intEquiv (𝓞 ℚ) x = ringOfIntegersEquiv x := by

@@ -644,8 +644,10 @@ theorem embDomain_image : s.embDomain f (f a) = s a := by
   exact congr rfl (f.injective (Classical.choose_spec (Set.mem_range_self a)))
 
 @[simp]
-theorem embDomain_notin_range (h : b ∉ Set.range f) : s.embDomain f b = 0 := by
+theorem embDomain_of_notMem_range (h : b ∉ Set.range f) : s.embDomain f b = 0 := by
   rw [embDomain_apply, dif_neg h]
+
+@[deprecated (since := "2026-07-15")] alias embDomain_notin_range := embDomain_of_notMem_range
 
 @[simp]
 theorem hsum_embDomain : (s.embDomain f).hsum = s.hsum := by

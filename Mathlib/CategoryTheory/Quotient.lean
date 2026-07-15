@@ -106,9 +106,6 @@ class Congruence : Prop
   /-- `r` is an equivalence on every hom-set. -/
   equivalence : ∀ {X Y}, _root_.Equivalence (@r X Y)
 
-@[deprecated (since := "2025-12-23")] alias Congruence.compLeft := HomRel.comp_left
-@[deprecated (since := "2025-12-23")] alias Congruence.compRight := HomRel.comp_right
-
 /-- For `F : C ⥤ D`, `F.homRel` is a congruence. -/
 instance Functor.congruence_homRel {C D : Type*} [Category* C] [Category* D] (F : C ⥤ D) :
     Congruence F.homRel where
@@ -127,15 +124,6 @@ structure Quotient (r : HomRel C) where
 
 instance [Inhabited C] : Inhabited (Quotient r) :=
   ⟨{ as := default }⟩
-
-@[deprecated (since := "2025-12-23")] alias Quotient.CompClosure := HomRel.CompClosure
-@[deprecated (since := "2025-12-23")] alias Quotient.CompClosure.of := HomRel.CompClosure.of
-@[deprecated (since := "2025-12-23")] alias Quotient.comp_left := HomRel.comp_left
-@[deprecated (since := "2025-12-23")] alias Quotient.comp_right := HomRel.comp_right
-@[deprecated (since := "2025-12-23")] alias Quotient.compClosure_iff_self :=
-  HomRel.compClosure_iff_self
-@[deprecated (since := "2025-12-23")] alias Quotient.compClosure_eq_self :=
-  HomRel.compClosure_eq_self
 
 namespace Quotient
 

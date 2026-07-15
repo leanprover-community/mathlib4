@@ -55,9 +55,6 @@ theorem Lex.lt_iff [LT ι] [∀ i, LT (α i)] {a b : Lex (Π₀ i, α i)} :
     a < b ↔ ∃ i, (∀ j, j < i → a j = b j) ∧ a i < b i :=
   .rfl
 
-@[deprecated (since := "2025-11-29")]
-alias lex_lt_iff := Lex.lt_iff
-
 set_option backward.isDefEq.respectTransparency false in
 theorem Colex.lt_iff [LT ι] [∀ i, LT (α i)] {a b : Colex (Π₀ i, α i)} :
     a < b ↔ ∃ i, (∀ j, i < j → a j = b j) ∧ a i < b i :=
@@ -85,9 +82,6 @@ set_option backward.isDefEq.respectTransparency false in
 theorem Lex.lt_iff_of_unique [Unique ι] [∀ i, LT (α i)] [Preorder ι] {x y : Lex (Π₀ i, α i)} :
     x < y ↔ x default < y default :=
   lex_iff_of_unique
-
-@[deprecated (since := "2025-11-29")]
-alias lex_lt_iff_of_unique := Lex.lt_iff_of_unique
 
 set_option backward.isDefEq.respectTransparency false in
 theorem colex_lt_iff_of_unique [Unique ι] [∀ i, LT (α i)] [Preorder ι] {x y : Colex (Π₀ i, α i)} :
@@ -126,9 +120,6 @@ set_option backward.isDefEq.respectTransparency false in
 theorem Lex.le_iff_of_unique [Unique ι] [∀ i, PartialOrder (α i)] {x y : Lex (Π₀ i, α i)} :
     x ≤ y ↔ x default ≤ y default :=
   Pi.lex_le_iff_of_unique
-
-@[deprecated (since := "2025-11-29")]
-alias lex_le_iff_of_unique := Lex.le_iff_of_unique
 
 set_option backward.isDefEq.respectTransparency false in
 theorem Colex.le_iff_of_unique [Unique ι] [∀ i, PartialOrder (α i)] {x y : Colex (Π₀ i, α i)} :

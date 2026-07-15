@@ -711,9 +711,6 @@ theorem map_exists_left_inv (f : F) {x : M} (hx : ∃ y, y * x = 1) : ∃ y, y *
     (hf : Function.Injective f) [IsDedekindFiniteMonoid N] : IsDedekindFiniteMonoid M where
   mul_eq_one_symm eq := hf <| by simpa [mul_eq_one_comm] using congr_arg f eq
 
-@[deprecated (since := "2025-12-14")]
-alias isDedekindFiniteMonoid_of_injective := IsDedekindFiniteMonoid.of_injective
-
 @[to_additive]
 instance {M N : Type*} [Monoid M] [LeftCancelMonoid N] : MonoidHomClass (M →ₙ* N) M N where
   map_mul := MulHom.map_mul'
