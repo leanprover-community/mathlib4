@@ -267,7 +267,7 @@ commutes. -/
 theorem coe_adicCompletionIntegersEquiv_symm_apply (p : Nat.Primes)
     (x : (primesEquiv.symm p).adicCompletionIntegers ℚ) :
     (adicCompletionIntegersEquiv R p).symm x = (adicCompletionEquiv R p).symm x := by
-  simp only [adicCompletionIntegersEquiv, ContinuousAlgEquiv.symm_trans_apply,
+  simp -implicitDefEqProofs only [adicCompletionIntegersEquiv, ContinuousAlgEquiv.symm_trans_apply,
     ContinuousAlgEquiv.symm_symm, adicCompletionEquiv, Equiv.cast_apply, eq_cast_iff_heq,
     ← adicCompletionIntegers.coe_padicIntEquiv_apply, ContinuousAlgEquiv.cast_symm_apply]
   rw [← Subtype.heq_iff_coe_heq (by rw [primesEquiv.apply_symm_apply])

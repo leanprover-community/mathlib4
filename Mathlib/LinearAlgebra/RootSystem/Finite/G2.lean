@@ -191,7 +191,7 @@ lemma chainBotCoeff_if_one_zero [P.IsNotG2] (h : P.root i + P.root j ∈ range P
 
 lemma chainTopCoeff_if_one_zero [P.IsNotG2] (h : P.root i - P.root j ∈ range P.root) :
     P.chainTopCoeff i j = if P.pairingIn ℤ i j = 0 then 1 else 0 := by
-  letI := P.indexNeg
+  let := P.indexNeg
   replace h : P.root i + P.root (-j) ∈ range P.root := by simpa [← sub_eq_add_neg] using h
   simpa using P.chainBotCoeff_if_one_zero h
 

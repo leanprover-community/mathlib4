@@ -493,7 +493,7 @@ variable {D}
 set_option backward.isDefEq.respectTransparency false in
 theorem isIso_toSheafify {P : Cᵒᵖ ⥤ D} (hP : Presheaf.IsSheaf J P) : IsIso (J.toSheafify P) := by
   dsimp [toSheafify]
-  haveI := isIso_toPlus_of_isSheaf J P hP
+  have := isIso_toPlus_of_isSheaf J P hP
   change (IsIso (toPlus J P ≫ (J.plusFunctor D).map (toPlus J P)))
   infer_instance
 

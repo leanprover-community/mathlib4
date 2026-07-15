@@ -190,7 +190,7 @@ an index set which is a countable set in any type. -/
 theorem dense_biInter_of_Gδ {S : Set α} {f : ∀ x ∈ S, Set X} (ho : ∀ s (H : s ∈ S), IsGδ (f s H))
     (hS : S.Countable) (hd : ∀ s (H : s ∈ S), Dense (f s H)) : Dense (⋂ s ∈ S, f s ‹_›) := by
   rw [biInter_eq_iInter]
-  haveI := hS.to_subtype
+  have := hS.to_subtype
   exact dense_iInter_of_Gδ (fun s => ho s s.2) fun s => hd s s.2
 
 /-- Baire theorem: the intersection of two dense Gδ sets is dense. -/
@@ -221,7 +221,7 @@ is dense. Formulated here with a union over a countable set in any type. -/
 theorem IsGδ.dense_biUnion_interior_of_closed {t : Set α} {s : Set X} (hs : IsGδ s) (hd : Dense s)
     (ht : t.Countable) {f : α → Set X} (hc : ∀ i ∈ t, IsClosed (f i)) (hU : s ⊆ ⋃ i ∈ t, f i) :
     Dense (⋃ i ∈ t, interior (f i)) := by
-  haveI := ht.to_subtype
+  have := ht.to_subtype
   simp only [biUnion_eq_iUnion, SetCoe.forall'] at *
   exact hs.dense_iUnion_interior_of_closed hd hc hU
 
