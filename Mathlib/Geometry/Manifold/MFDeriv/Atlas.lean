@@ -302,6 +302,34 @@ lemma mfderivWithin_extend_symm_comp_mfderiv_extend
     simp only [Function.comp_def, PartialEquiv.left_inv (e.extend I) hz, id_eq]
   · simp only [Function.comp_def, PartialEquiv.right_inv (e.extend I) hy, id_eq]
 
+/-- The composition of the derivative of the inverse of an extended chart `e.extend I` with the
+derivative of `e.extend I` gives the identity.
+Version where the basepoint belongs to `e.source`. -/
+lemma mfderivWithin_extend_symm_comp_mfderiv_extend'
+    {y : M} (he : e ∈ maximalAtlas I 1 M) (hy : y ∈ e.source) :
+    (mfderiv[range I] (e.extend I).symm (e.extend I y)) ∘L (mfderiv% (e.extend I) y)
+      = ContinuousLinearMap.id _ _ := by
+  have : y = (e.extend I).symm (e.extend I y) := ((e.extend I).left_inv (by simpa using hy)).symm
+  convert! mfderivWithin_extend_symm_comp_mfderiv_extend he
+    ((e.extend I).map_source (by simpa using hy))
+  rw [(e.extend I).left_inv (by simpa using hy)]
+
+lemma isInvertible_mfderivWithin_extend_symm
+    {y : E} (he : e ∈ maximalAtlas I 1 M) (hy : y ∈ (e.extend I).target) :
+    (mfderiv[range I] (e.extend I).symm y).IsInvertible :=
+  ContinuousLinearMap.IsInvertible.of_inverse
+    (mfderivWithin_extend_symm_comp_mfderiv_extend he hy)
+    (mfderiv_extend_comp_mfderivWithin_extend_symm he hy)
+
+lemma isInvertible_mfderiv_extend {y : M} (he : e ∈ maximalAtlas I 1 M) (hy : y ∈ e.source) :
+    (mfderiv% (e.extend I) y).IsInvertible := by
+  have h'y : e.extend I y ∈ (e.extend I).target := (e.extend I).map_source (by simpa using hy)
+  have Z := ContinuousLinearMap.IsInvertible.of_inverse
+    (mfderiv_extend_comp_mfderivWithin_extend_symm he h'y)
+    (mfderivWithin_extend_symm_comp_mfderiv_extend he h'y)
+  have : (e.extend I).symm ((e.extend I) y) = y := (e.extend I).left_inv (by simpa using hy)
+  rwa [this] at Z
+
 end
 
 section extChartAt
@@ -322,8 +350,6 @@ theorem mdifferentiableAt_extChartAt (h : y ∈ (chartAt H x).source) :
 
 theorem mdifferentiableOn_extChartAt : MDiff[(chartAt H x).source] (extChartAt I x) :=
   fun _y hy ↦ (hasMFDerivWithinAt_extChartAt hy).mdifferentiableWithinAt
-
-variable {e : OpenPartialHomeomorph M H}
 
 theorem mdifferentiableWithinAt_extChartAt_symm (h : z ∈ (extChartAt I x).target) :
     MDiffAt[range I] (extChartAt I x).symm z := by
@@ -361,6 +387,7 @@ lemma mfderivWithin_extChartAt_symm_comp_mfderiv_extChartAt
       = ContinuousLinearMap.id _ _ :=
   mfderivWithin_extend_symm_comp_mfderiv_extend (IsManifold.chart_mem_maximalAtlas x) hy
 
+-- TODO: continue generalising from here!
 set_option backward.isDefEq.respectTransparency false in
 /-- The composition of the derivative of the inverse of `extChartAt` with the derivative of
 `extChartAt` gives the identity.
@@ -374,20 +401,11 @@ lemma mfderivWithin_extChartAt_symm_comp_mfderiv_extChartAt'
 
 lemma isInvertible_mfderivWithin_extChartAt_symm {y : E} (hy : y ∈ (extChartAt I x).target) :
     (mfderiv[range I] (extChartAt I x).symm y).IsInvertible :=
-  ContinuousLinearMap.IsInvertible.of_inverse
-    (mfderivWithin_extChartAt_symm_comp_mfderiv_extChartAt hy)
-    (mfderiv_extChartAt_comp_mfderivWithin_extChartAt_symm hy)
+  isInvertible_mfderivWithin_extend_symm (IsManifold.chart_mem_maximalAtlas x) hy
 
-variable (he : e ∈ IsManifold.maximalAtlas I 1 M)
-lemma isInvertible_mfderiv_extend {y : M} (hy : y ∈ e.source) :
-    (mfderiv% (e.extend I) y).IsInvertible := by
-  have h'y : e.extend I y ∈ (e.extend I).target := (e.extend I).map_source hy
-  sorry -- TODO: generalise more basic lemmas!
-  -- have Z := ContinuousLinearMap.IsInvertible.of_inverse
-  --   (mfderiv_extChartAt_comp_mfderivWithin_extChartAt_symm h'y)
-  --   (mfderivWithin_extChartAt_symm_comp_mfderiv_extChartAt h'y)
-  -- have : (extChartAt I x).symm ((extChartAt I x) y) = y := (extChartAt I x).left_inv hy
-  -- rwa [this] at Z
+lemma isInvertible_mfderiv_extChartAt {y : M} (hy : y ∈ (extChartAt I x).source) :
+    (mfderiv% (extChartAt I x) y).IsInvertible :=
+  isInvertible_mfderiv_extend (IsManifold.chart_mem_maximalAtlas x) (by simpa using hy)
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The trivialization of the tangent bundle at a point is the manifold derivative of the
