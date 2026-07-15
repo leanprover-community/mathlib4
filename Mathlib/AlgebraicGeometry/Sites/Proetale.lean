@@ -27,7 +27,10 @@ We prefer to work with weakly étale morphisms instead of pro-étale morphisms, 
 of being pro-étale is not well-behaved: it is not local on the target.
 
 We also define the small pro-étale site of a scheme `S` to be the category of schemes weakly-étale
-over `S` and equip it with the induced topology.
+over `S` and equip it with the induced topology. Then we define the inclusion functor from small
+étale site to the small pro-étale site and prove its basic
+properties: it is fully faithful, preserves finite limits (hence is representably flat),
+and is continuous.
 
 ## References
 
@@ -153,6 +156,11 @@ lemma topology_eq_inducedTopology :
   MorphismProperty.toGrothendieck_comap_forget_eq_inducedTopology
     _ proetalePrecoverage_le_precoverage_weaklyEtale
 
+lemma topology_eq_restrictedTopology :
+    topology S = (ProEt.forget S).restrictedTopology (proetaleTopology.over S) :=
+  toGrothendieck_comap_forget_eq_restrictedTopology
+    _ proetalePrecoverage_le_precoverage_weaklyEtale
+
 instance : (ProEt.forget S ⋙ Over.forget S).IsContinuous (ProEt.topology S) proetaleTopology :=
   Functor.isContinuous_comp _ _ _ (proetaleTopology.over S) _
 
@@ -176,6 +184,72 @@ lemma topology_eq_top_of_isEmpty [IsEmpty S] : topology S = ⊤ := by
   intro X
   have : IsEmpty X.left := X.hom.base.1.1.isEmpty (β := S)
   exact bot_mem_topology _
+
+end ProEt
+
+/-- The inclusion of the étale site into the pro-étale site. -/
+@[simps! obj_toComma]
+def toProEtale (S : Scheme.{u}) : S.Etale ⥤ S.ProEt :=
+  MorphismProperty.Over.changeProp _ etale_le_weaklyEtale le_rfl
+
+variable (S : Scheme.{u})
+
+instance : (toProEtale S).Full :=
+  inferInstanceAs <| (MorphismProperty.Over.changeProp _ etale_le_weaklyEtale le_rfl).Full
+
+instance : (toProEtale S).Faithful :=
+  inferInstanceAs <| (MorphismProperty.Over.changeProp _ etale_le_weaklyEtale le_rfl).Faithful
+
+instance : HasFiniteLimits S.Etale :=
+  inferInstanceAs <| HasFiniteLimits (MorphismProperty.Over @Etale ⊤ S)
+
+instance : PreservesFiniteLimits (toProEtale S) := by
+  have : PreservesFiniteLimits (toProEtale S ⋙ ProEt.forget S) :=
+    inferInstanceAs <| PreservesFiniteLimits (MorphismProperty.Over.forget @Etale ⊤ S)
+  exact preservesFiniteLimits_of_reflects_of_preserves (toProEtale S) (ProEt.forget S)
+
+instance representablyFlat_toProEtale : RepresentablyFlat (toProEtale S) :=
+  flat_of_preservesFiniteLimits _
+
+/-- The inclusion of the étale site into the pro-étale site is continuous. -/
+instance isContinuous_toProEtale :
+    (toProEtale S).IsContinuous (smallEtaleTopology S) (ProEt.topology S) := by
+  refine Functor.isContinuous_of_coverPreserving
+    (compatiblePreservingOfFlat _ (toProEtale S)) ?_
+  refine ⟨fun {X R} hR ↦ ?_⟩
+  rw [ProEt.topology_eq_restrictedTopology, Functor.mem_restrictedTopology_iff,
+    ← Sieve.functorPushforward_comp]
+  have hR' : R.functorPushforward (Over.forget @Etale ⊤ S) ∈ etaleTopology.over S _ :=
+    Functor.mem_restrictedTopology_iff.mp hR
+  exact etaleTopology_le_proetaleTopology _ hR'
+
+namespace ProEt
+
+variable (A : Type*) [Category A]
+
+/-- The direct image functor from pro-étale sheafs to étale sheafs. -/
+@[simps! obj_obj]
+abbrev sheafPushforward :
+    Sheaf (ProEt.topology S) A ⥤ Sheaf (smallEtaleTopology S) A :=
+  (toProEtale S).sheafPushforwardContinuous _ _ _
+
+instance (F : S.Etaleᵒᵖ ⥤ Ab.{u + 1}) : (toProEtale S).op.HasPointwiseLeftKanExtension F :=
+  inferInstance
+
+/-- The direct image functor from pro-étale sheafs to étale sheafs has a left-adjoint. -/
+instance : (ProEt.sheafPushforward S Ab.{u + 1}).IsRightAdjoint := inferInstance
+
+variable [(sheafPushforward S A).IsRightAdjoint]
+
+/-- The inverse image functor from étale sheafs to pro-étale sheafs. -/
+noncomputable abbrev sheafPullback :
+    Sheaf (smallEtaleTopology S) A ⥤ Sheaf (ProEt.topology S) A :=
+  (toProEtale S).sheafPullback _ _ _
+
+/-- The inverse image - direct image adjunction for the pro-étale site. -/
+noncomputable abbrev sheafAdjunction :
+    ProEt.sheafPullback S A ⊣ ProEt.sheafPushforward S A :=
+  (toProEtale S).sheafAdjunctionContinuous _ _ _
 
 end ProEt
 
