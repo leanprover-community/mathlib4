@@ -138,7 +138,7 @@ private theorem tprod_one_sub_X_pow' [IsTopologicalRing R] [T2Space R] :
   refine Pentagonal.tprod_one_sub_pow ?_ ?_ ?_ ?_ ?_
   · rw [IsTopologicallyNilpotent, tendsto_iff_coeff_tendsto]
     refine fun d ↦ tendsto_atTop_of_eventually_const fun i (hi : i ≥ d + 1) ↦ ?_
-    grind [coeff_X_pow]
+    grind
   · exact Pentagonal.summable_pow_mul_prod_one_sub_pow R
   · exact Pentagonal.multipliable_one_sub_X_pow R
   · exact (hasSum_pow_pentagonal_sub_pentagonalSeries R).summable
