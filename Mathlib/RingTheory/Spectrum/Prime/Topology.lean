@@ -220,7 +220,7 @@ theorem t1Space_iff_isField [IsDomain R] : T1Space (PrimeSpectrum R) ↔ IsField
           (by simp))
   · refine ⟨fun x => (isClosed_singleton_iff_isMaximal x).2 ?_⟩
     by_cases hx : x.asIdeal = ⊥
-    · letI := h.toSemifield
+    · let := h.toSemifield
       exact hx.symm ▸ Ideal.bot_isMaximal
     · exact absurd h (Ring.not_isField_iff_exists_prime.2 ⟨x.asIdeal, ⟨hx, x.2⟩⟩)
 
@@ -660,7 +660,7 @@ lemma range_comap_algebraMap_localization_compl_eq_range_comap_quotientMk
     letI := (mapRingHom (algebraMap R (Away c))).toAlgebra
     (range (comap (algebraMap R[X] (Away c)[X])))ᶜ
       = range (comap (mapRingHom (Ideal.Quotient.mk (.span {c})))) := by
-  letI := (mapRingHom (algebraMap R (Away c))).toAlgebra
+  let := (mapRingHom (algebraMap R (Away c))).toAlgebra
   have := Polynomial.isLocalization (.powers c) (Away c)
   rw [Submonoid.map_powers] at this
   have surj : Function.Surjective (mapRingHom (Ideal.Quotient.mk (.span {c}))) :=

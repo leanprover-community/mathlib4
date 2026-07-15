@@ -925,8 +925,8 @@ theorem toVectorBundle : @VectorBundle R _ F E _ _ _ _ _ _ a.totalSpaceTopology 
       rintro _ _ ⟨e, he, rfl⟩ ⟨e', he', rfl⟩
       refine (a.continuousOn_coordChange he he').congr fun b hb ↦ ?_
       ext v
-      haveI h₁ := a.linear_trivializationOfMemPretrivializationAtlas he
-      haveI h₂ := a.linear_trivializationOfMemPretrivializationAtlas he'
+      have h₁ := a.linear_trivializationOfMemPretrivializationAtlas he
+      have h₂ := a.linear_trivializationOfMemPretrivializationAtlas he'
       rw [trivializationOfMemPretrivializationAtlas] at h₁ h₂
       rw [a.coordChange_apply he he' hb v, ContinuousLinearEquiv.coe_coe,
         Trivialization.coordChangeL_apply]
