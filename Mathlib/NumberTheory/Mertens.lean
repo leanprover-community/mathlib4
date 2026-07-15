@@ -95,9 +95,8 @@ theorem sum_log_le {x : ℝ} (hx : 1 ≤ x) : ∑ n ∈ Ioc 0 ⌊x⌋₊, log n 
   have h1 := floor_le (by linarith : 0 ≤ x)
   have h2 : 1 ≤ ⌊x⌋₊ := by simpa
   calc
-    _ = ∑ n ∈ Icc 1 ⌊x⌋₊, log n := by rfl
     _ ≤ (∫ t in (1:ℕ)..⌊x⌋₊, log t) + log x := by
-      rw [← sum_Ico_add_eq_sum_Icc (by simpa)]
+      rw [← Icc_add_one_left_eq_Ioc, ← sum_Ico_add_eq_sum_Icc (by simpa)]
       gcongr
       exact (strictMonoOn_log.monotoneOn.mono (by grind)).sum_le_integral_Ico h2
     _ ≤ (∫ t in 1..x, log t) + log x := by
@@ -115,13 +114,10 @@ theorem le_sum_log {x : ℝ} (hx : 1 ≤ x) :
     x * log x - x - log x + 1 ≤ ∑ n ∈ Ioc 0 ⌊x⌋₊, log n := by
   have : 1 ≤ ⌊x⌋₊ := by simpa
   calc
-    _ = ∑ n ∈ Icc 1 ⌊x⌋₊, log n := by rfl
-    _ = ∑ n ∈ Ico (1 + 1) (⌊x⌋₊ + 1), log n := by
-      simp [← add_sum_Ioc_eq_sum_Icc this, ← Ico_add_one_add_one_eq_Ioc]
-    _ = ∑ n ∈ Ico 1 ⌊x⌋₊, log (n + 1 : ℕ) := by rw [← sum_Ico_add']
     _ ≥ ∫ t in 1..⌊x⌋₊, log t := by
-      convert ((strictMonoOn_log.mono (by grind)).monotoneOn.integral_le_sum_Ico this).ge
-      norm_cast
+      rw [← Icc_add_one_left_eq_Ioc, zero_add, ← add_sum_Ioc_eq_sum_Icc this, cast_one,
+      log_one, ← Ico_add_one_add_one_eq_Ioc, zero_add, ← sum_Ico_add']
+      exact_mod_cast ((strictMonoOn_log.mono (by grind)).monotoneOn.integral_le_sum_Ico this).ge
     _ = (∫ t in 1..x, log t) - ∫ t in ⌊x⌋₊..x, log t := by
       nth_rw 3 [integral_symm]
       rw [sub_neg_eq_add, integral_add_adjacent_intervals] <;> simp
@@ -1251,7 +1247,7 @@ theorem sum_prime_log_sub_inv_eq_nat (N : ℕ) : ∑ p ∈ primesLE N, log (1 - 
 
 theorem prod_prime_one_minus_inv_eq {x : ℝ} (hx : 1 < x) : ∏ p ∈ primesLE ⌊x⌋₊, (1 - (1 : ℝ) / p) =
     exp (-eulerMascheroniConstant) * exp (E₃ x) / log x := by
-  have hlog : 0 < log x := log_pos hx
+  have hlog := log_pos hx
   have hpos {p : ℕ} (hp : p.Prime) : (0 : ℝ) < 1 - 1 / p := by
     grind [one_div_le_one_div_of_le two_pos (mod_cast hp.two_le : (2 : ℝ) ≤ p)]
   simp_rw [E₃, exp_add, exp_sum, exp_log hlog, exp_neg]
