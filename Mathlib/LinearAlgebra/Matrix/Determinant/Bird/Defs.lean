@@ -278,12 +278,6 @@ theorem iterMatrix_succ {n p : ℕ}
   ext i j
   rw [iterMatrix, iterEntry_succ, iterMatrix, Matrix.of_apply]
 
-/-- Unfold one entry of the matrix recurrence at a successor step. -/
-theorem iterMatrix_succ_apply {n p : ℕ}
-    (A : Matrix (Fin n) (Fin n) R) (i j : Fin n) :
-    iterMatrix A (p + 1) i j = stepEntry A (iterMatrix A p) i j := by
-  rw [iterMatrix_succ, Matrix.of_apply]
-
 theorem birdDetSpec_zero
     (A : Matrix (Fin 0) (Fin 0) R) :
     birdDet A = 1 := by
