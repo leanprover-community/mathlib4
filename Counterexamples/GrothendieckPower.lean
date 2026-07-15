@@ -341,11 +341,6 @@ abbrev A := QuadraticAlgebra B (-(bB ^ 2) * V) (aB * bB)
 private theorem r_smul_mul (r : R) (x y : A) : r • x * y = r • (x * y) := by
   ext <;> simp [V, aB, bB, pow_two]
 
-noncomputable instance : Algebra R A :=
-  Algebra.ofModule r_smul_mul fun r x y ↦ by
-    rw [mul_comm x (r • y), mul_comm x y]
-    exact r_smul_mul r y x
-
 /-- The generator `U` of `A`, satisfying `U² = abU - b²V`. -/
 abbrev U : A := QuadraticAlgebra.omega
 
@@ -365,6 +360,7 @@ abbrev v : A := algebraMap B A V
 
 noncomputable instance : Module.Free R A :=
   Module.Free.trans (R := R) (S := B) (M := A)
+
 noncomputable instance : Module.Finite R A :=
   Module.Finite.trans (R := R) (A := B) (M := A)
 
@@ -510,21 +506,6 @@ private theorem mapped_relations {S : Type*} [CommRing S] [Algebra R S]
 
 open scoped TensorProduct
 
-/-- The `R`-module structure on `A` bundled with the algebra structure.  Fixing this instance
-from this point on keeps iterated tensor products definitionally aligned with Mathlib's
-bialgebra API. -/
-local instance canonicalModuleRA : Module R A := Algebra.toModule
-
-/-- The canonical semiring structure on the tensor square `A ⊗[R] A`.  See
-`canonicalModuleRA`. -/
-local instance canonicalSemiringT : Semiring (A ⊗[R] A) :=
-  Algebra.TensorProduct.instSemiring
-
-/-- The canonical algebra structure on the tensor square `A ⊗[R] A`.  See
-`canonicalModuleRA`. -/
-local instance canonicalAlgebraRT : Algebra R (A ⊗[R] A) :=
-  Algebra.TensorProduct.instAlgebra
-
 /-- The inclusion of the left tensor factor `A → A ⊗[R] A`. -/
 abbrev left : A →ₐ[R] A ⊗[R] A :=
   Algebra.TensorProduct.includeLeft (R := R) (S := R) (A := A) (B := A)
@@ -655,6 +636,7 @@ private theorem comulB_bB_sq : comulB (bB ^ 2) = comulB bB ^ 2 := by
     _ = comulB bB * comulB bB := comulB.map_mul bB bB
     _ = comulB bB ^ 2 := (pow_two (comulB bB)).symm
 
+-- TODO (buzzard): this causes a diamond I believe
 noncomputable instance instAlgebraBT : Algebra B (A ⊗[R] A) :=
   comulB.toRingHom.toAlgebra' fun (c : B) (x : A ⊗[R] A) ↦ mul_comm (comulB c) x
 
