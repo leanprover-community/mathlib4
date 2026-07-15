@@ -28,11 +28,8 @@ theorem vAdd_apply_of_mem_strictPeriods {Γ : Subgroup (GL (Fin 2) ℝ)} {k : �
     (f : F) (τ : ℍ) {h : ℝ} (hH : h ∈ Γ.strictPeriods) :
     f (h +ᵥ τ) = f τ := by
   rw [← congr_fun (slash_action_eqn f _ <| Γ.mem_strictPeriods_iff.mp hH) τ]
-  suffices GeneralLinearGroup.upperRightHom h • τ = h +ᵥ τ by
-    simp_rw [slash_def, this]
-    simp [σ, denom, GeneralLinearGroup.val_det_apply, denom]
-  ext
-  simp [σ, num, denom, coe_vadd, UpperHalfPlane.coe_smul, num, add_comm]
+  simp_rw [slash_def, upperRightHom_smul]
+  simp [σ, denom, GeneralLinearGroup.val_det_apply]
 
 theorem vAdd_width_periodic (N : ℕ) (k n : ℤ) (f : SlashInvariantForm (Gamma N) k) (z : ℍ) :
     f ((N * n : ℝ) +ᵥ z) = f z := by
@@ -48,6 +45,14 @@ lemma slash_S_apply (f : ℍ → ℂ) (k : ℤ) (z : ℍ) :
     (f ∣[k] ModularGroup.S) z = f (.mk _ z.im_inv_neg_coe_pos) * z ^ (-k) := by
   rw [SL_slash_apply, modular_S_smul]
   simp [ModularGroup.S, denom]
+
+/-- Acting on a function `g : ℍ → ℂ` by `T ^ j` via the weight `k` slash action is the shift
+`τ ↦ g ((j : ℝ) +ᵥ τ)`. -/
+lemma slash_T_zpow_apply (k j : ℤ) (g : ℍ → ℂ) (τ : ℍ) :
+    (g ∣[k] ((ModularGroup.T : SL(2, ℤ))^j : GL (Fin 2) ℝ)) τ = g ((j : ℝ) +ᵥ τ) := by
+  change (g ∣[k] ((mapGL ℝ (ModularGroup.T : SL(2, ℤ)))^j)) τ = _
+  rw [← map_zpow, ModularGroup.mapGL_T_zpow_eq_upperRightHom, slash_apply, upperRightHom_smul]
+  simp [σ, denom]
 
 section Generators
 
