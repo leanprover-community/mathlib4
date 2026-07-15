@@ -532,9 +532,9 @@ instance reflects_cone_isomorphism (F : C ⥤ D) [F.ReflectsIsomorphisms] (K : J
     (functoriality K F).ReflectsIsomorphisms := by
   constructor
   intro A B f _
-  haveI : IsIso (F.map f.hom) :=
+  have : IsIso (F.map f.hom) :=
     (forget (K ⋙ F)).map_isIso ((functoriality K F).map f)
-  haveI := ReflectsIsomorphisms.reflects F f.hom
+  have := ReflectsIsomorphisms.reflects F f.hom
   apply cone_iso_of_hom_iso
 
 end

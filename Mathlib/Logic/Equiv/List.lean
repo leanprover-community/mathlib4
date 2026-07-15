@@ -64,7 +64,7 @@ instance _root_.List.encodable : Encodable (List α) :=
   ⟨encodeList, decodeList, decodeList_encodeList_eq_self⟩
 
 instance _root_.List.countable {α : Type*} [Countable α] : Countable (List α) := by
-  haveI := Encodable.ofCountable α
+  have := Encodable.ofCountable α
   infer_instance
 
 @[simp]
