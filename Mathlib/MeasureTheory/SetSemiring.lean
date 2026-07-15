@@ -383,6 +383,7 @@ variable {j : Set α} {J : Finset (Set α)}
 
 open MeasureTheory Order
 
+@[deprecated "deprecated without replacement" (since := "2026-06-01")]
 theorem disjointOfUnion_props (hC : IsSetSemiring C) (h1 : ↑J ⊆ C) :
     ∃ K : Set α → Finset (Set α),
       PairwiseDisjoint J K
@@ -465,38 +466,47 @@ a `Finset (Set α)` such that `K j := hC.disjointOfUnion hJ` are disjoint
 and `⋃₀ K j ⊆ j`, for `j ∈ J`.
 Using these we write `⋃₀ J` as a disjoint union `⋃₀ J = ⋃₀ ⋃ x ∈ J, (K x)`.
 See `MeasureTheory.IsSetSemiring.disjointOfUnion_props`. -/
+@[deprecated "deprecated without replacement" (since := "2026-06-01")]
 noncomputable def disjointOfUnion (hC : IsSetSemiring C) (hJ : ↑J ⊆ C) (j : Set α) :=
   (hC.disjointOfUnion_props hJ).choose j
 
+@[deprecated "deprecated without replacement" (since := "2026-06-01")]
 lemma pairwiseDisjoint_disjointOfUnion (hC : IsSetSemiring C) (hJ : ↑J ⊆ C) :
     PairwiseDisjoint J (hC.disjointOfUnion hJ) :=
   (Exists.choose_spec (hC.disjointOfUnion_props hJ)).1
 
+@[deprecated "deprecated without replacement" (since := "2026-06-01")]
 lemma disjointOfUnion_subset (hC : IsSetSemiring C) (hJ : ↑J ⊆ C) (hj : j ∈ J) :
     (disjointOfUnion hC hJ j : Set (Set α)) ⊆ C :=
   (Exists.choose_spec (hC.disjointOfUnion_props hJ)).2.1 _ hj
 
+@[deprecated "deprecated without replacement" (since := "2026-06-01")]
 lemma pairwiseDisjoint_biUnion_disjointOfUnion (hC : IsSetSemiring C) (hJ : ↑J ⊆ C) :
     PairwiseDisjoint (⋃ x ∈ J, (hC.disjointOfUnion hJ x : Set (Set α))) id :=
   (Exists.choose_spec (hC.disjointOfUnion_props hJ)).2.2.1
 
+@[deprecated "deprecated without replacement" (since := "2026-06-01")]
 lemma pairwiseDisjoint_disjointOfUnion_of_mem (hC : IsSetSemiring C) (hJ : ↑J ⊆ C) (hj : j ∈ J) :
     PairwiseDisjoint (hC.disjointOfUnion hJ j : Set (Set α)) id := by
   apply PairwiseDisjoint.subset (hC.pairwiseDisjoint_biUnion_disjointOfUnion hJ)
   exact subset_iUnion₂_of_subset j hj fun ⦃a⦄ a ↦ a
 
+@[deprecated "deprecated without replacement" (since := "2026-06-01")]
 lemma disjointOfUnion_subset_of_mem (hC : IsSetSemiring C) (hJ : ↑J ⊆ C) (hj : j ∈ J) :
     ⋃₀ hC.disjointOfUnion hJ j ⊆ j :=
   (Exists.choose_spec (hC.disjointOfUnion_props hJ)).2.2.2.1 j hj
 
+@[deprecated "deprecated without replacement" (since := "2026-06-01")]
 lemma subset_of_mem_disjointOfUnion (hC : IsSetSemiring C) (hJ : ↑J ⊆ C) (hj : j ∈ J) {x : Set α}
     (hx : x ∈ (hC.disjointOfUnion hJ) j) : x ⊆ j :=
   sUnion_subset_iff.mp (hC.disjointOfUnion_subset_of_mem hJ hj) x hx
 
+@[deprecated "deprecated without replacement" (since := "2026-06-01")]
 lemma empty_notMem_disjointOfUnion (hC : IsSetSemiring C) (hJ : ↑J ⊆ C) (hj : j ∈ J) :
     ∅ ∉ hC.disjointOfUnion hJ j :=
   (Exists.choose_spec (hC.disjointOfUnion_props hJ)).2.2.2.2.1 j hj
 
+@[deprecated "deprecated without replacement" (since := "2026-06-01")]
 lemma sUnion_disjointOfUnion (hC : IsSetSemiring C) (hJ : ↑J ⊆ C) :
     ⋃₀ ⋃ x ∈ J, (hC.disjointOfUnion hJ x : Set (Set α)) = ⋃₀ J :=
   (Exists.choose_spec (hC.disjointOfUnion_props hJ)).2.2.2.2.2.symm
