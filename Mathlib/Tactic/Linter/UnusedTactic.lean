@@ -70,7 +70,7 @@ public register_option linter.unusedTactic : Bool := {
 namespace UnusedTactic
 
 /-- The monad for collecting the ranges of the syntaxes that do not modify any goal. -/
-abbrev M := StateRefT (Std.HashMap Lean.Syntax.Range Syntax) IO
+abbrev M := StateRefT (Std.HashMap Lean.Syntax.Range Syntax) Command.CommandElabM
 
 -- Tactics that are expected to not change the state but should also not be flagged by the
 -- unused tactic linter.
@@ -144,39 +144,43 @@ def getNames (mctx : MetavarContext) : List Name :=
   let locDecls := (lcts.map (PersistentArray.toList ∘ LocalContext.decls)).flatten.reduceOption
   locDecls.map LocalDecl.userName
 
-mutual
-/-- Search for tactic executions in the info tree and remove the syntax of the tactics that
-changed something. -/
-partial def eraseUsedTacticsList (exceptions : Std.HashSet SyntaxNodeKind)
-    (trees : PersistentArray InfoTree) : M Unit :=
-  trees.forM (eraseUsedTactics exceptions)
+/-- Determine if a tactic should be considered used. -/
+def isUsed (exceptions : Std.HashSet SyntaxNodeKind) (ctx? : Option ContextInfo)
+    (i : TacticInfo) :
+    M Bool := do
+  if let some ctx := ctx? then
+    Lean.logInfo m!"has ctx {ctx.options}"
+    -- linter locally disabled, indicating the tactic should be considered used
+    if getLinterValue linter.unusedTactic (← ctx.options.toLinterOptions) = false then
+      return true
+  else
+    Lean.logInfo m!"No context"
+  -- if the tactic is allowed to not change the goals
+  if exceptions.contains i.stx.getKind then
+    return true
+  -- if the goals have changed
+  if i.goalsAfter != i.goalsBefore then
+    return true
+  -- bespoke check for `swap_var`: the only change that it does is
+  -- in the usernames of local declarations, so we check the names before and after
+  if (i.stx.getKind == `Mathlib.Tactic.«tacticSwap_var__,,») &&
+          (getNames i.mctxBefore != getNames i.mctxAfter) then
+    return true
+  return false
 
 /-- Search for tactic executions in the info tree and remove the syntax of the tactics that
 changed something. -/
-partial def eraseUsedTactics (exceptions : Std.HashSet SyntaxNodeKind) : InfoTree → M Unit
-  | .node i c => do
+partial def eraseUsedTactics (exceptions : Std.HashSet SyntaxNodeKind) : InfoTree → M Unit :=
+  go none
+where go : Option ContextInfo → InfoTree → M Unit
+  | ctx?, .node i c => do
     if let .ofTacticInfo i := i then
-      let stx := i.stx
-      let kind := stx.getKind
-      if let some r := stx.getRange? true then
-        if exceptions.contains kind
-        -- if the tactic is allowed to not change the goals
-        then modify (·.erase r)
-        else
-        -- if the goals have changed
-        if i.goalsAfter != i.goalsBefore
-        then modify (·.erase r)
-        -- bespoke check for `swap_var`: the only change that it does is
-        -- in the usernames of local declarations, so we check the names before and after
-        else
-        if (kind == `Mathlib.Tactic.«tacticSwap_var__,,») &&
-                (getNames i.mctxBefore != getNames i.mctxAfter)
-        then modify (·.erase r)
-    eraseUsedTacticsList exceptions c
-  | .context _ t => eraseUsedTactics exceptions t
-  | .hole _ => pure ()
-
-end
+      if let some r := i.stx.getRange? true then
+        if ← isUsed exceptions ctx? i then
+          modify (·.erase r)
+    c.forM (go ctx?)
+  | ctx?, .context ctx t => go (ctx.mergeIntoOuter? ctx?) t
+  | _, .hole _ => pure ()
 
 /-- The main entry point to the unused tactic linter. -/
 def unusedTacticLinter : Linter where run := withSetOptionIn fun stx => do
@@ -196,7 +200,7 @@ def unusedTacticLinter : Linter where run := withSetOptionIn fun stx => do
   let exceptions := (← allowedRef.get).union <| allowedUnusedTacticExt.getState env
   let go : M Unit := do
     getTactics (← ignoreTacticKindsRef.get) (fun k => tactics.contains k || convs.contains k) stx
-    eraseUsedTacticsList exceptions trees
+    trees.forM <| eraseUsedTactics exceptions
   let (_, map) ← go.run {}
   let unused := map.toArray
   let key (r : Lean.Syntax.Range) := (r.start.byteIdx, (-r.stop.byteIdx : Int))
