@@ -131,7 +131,6 @@ The logarithmic counting function of a singleton indicator is asymptotically equ
 @[simp] lemma logCounting_single_eq_log_sub_const [DecidableEq E] [ProperSpace E] {e : E} {r : ℝ}
     {n : ℤ} (hr : ‖e‖ ≤ r) :
     logCounting (single e n) r = n * (log r - log ‖e‖) := by
-  classical
   simp only [logCounting, AddMonoidHom.coe_mk, ZeroHom.coe_mk]
   rw [finsum_eq_sum_of_support_subset _ (s := (finite_singleton e).toFinset)
     (by simp_all [toClosedBall, restrict_apply, single_apply])]

@@ -370,19 +370,18 @@ theorem mem_range_embedding_iff {j : Fin n} {i : Fin c.length} :
 /-- The embeddings of different blocks of a composition are disjoint. -/
 theorem disjoint_range {i₁ i₂ : Fin c.length} (h : i₁ ≠ i₂) :
     Disjoint (Set.range (c.embedding i₁)) (Set.range (c.embedding i₂)) := by
-  classical
-    wlog h' : i₁ < i₂
-    · exact (this c h.symm (h.lt_or_gt.resolve_left h')).symm
-    by_contra d
-    obtain ⟨x, hx₁, hx₂⟩ :
-      ∃ x : Fin n, x ∈ Set.range (c.embedding i₁) ∧ x ∈ Set.range (c.embedding i₂) :=
-      Set.not_disjoint_iff.1 d
-    have A : (i₁ : ℕ).succ ≤ i₂ := Nat.succ_le_of_lt h'
-    apply lt_irrefl (x : ℕ)
-    calc
-      (x : ℕ) < c.sizeUpTo (i₁ : ℕ).succ := (c.mem_range_embedding_iff.1 hx₁).2
-      _ ≤ c.sizeUpTo (i₂ : ℕ) := monotone_sum_take _ A
-      _ ≤ x := (c.mem_range_embedding_iff.1 hx₂).1
+  wlog h' : i₁ < i₂
+  · exact (this c h.symm (h.lt_or_gt.resolve_left h')).symm
+  by_contra d
+  obtain ⟨x, hx₁, hx₂⟩ :
+    ∃ x : Fin n, x ∈ Set.range (c.embedding i₁) ∧ x ∈ Set.range (c.embedding i₂) :=
+    Set.not_disjoint_iff.1 d
+  have A : (i₁ : ℕ).succ ≤ i₂ := Nat.succ_le_of_lt h'
+  apply lt_irrefl (x : ℕ)
+  calc
+    (x : ℕ) < c.sizeUpTo (i₁ : ℕ).succ := (c.mem_range_embedding_iff.1 hx₁).2
+    _ ≤ c.sizeUpTo (i₂ : ℕ) := monotone_sum_take _ A
+    _ ≤ x := (c.mem_range_embedding_iff.1 hx₂).1
 
 theorem mem_range_embedding (j : Fin n) : j ∈ Set.range (c.embedding (c.index j)) := by
   have : c.embedding (c.index j) (c.invEmbedding j) ∈ Set.range (c.embedding (c.index j)) :=

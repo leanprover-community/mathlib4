@@ -172,7 +172,6 @@ theorem le_weight_of_ne_zero' {s : σ} {f : σ →₀ ℕ} (hs : f s ≠ 0) : w 
 theorem weight_eq_zero_iff_eq_zero
     (w : σ → M) [NonTorsionWeight ℕ w] {f : σ →₀ ℕ} :
     weight w f = 0 ↔ f = 0 := by
-  classical
   constructor
   · intro h
     ext s

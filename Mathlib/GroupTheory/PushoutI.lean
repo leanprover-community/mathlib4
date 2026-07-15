@@ -563,7 +563,7 @@ theorem prod_injective {ι : Type*} {G : ι → Type*} [(i : ι) → Group (G i)
     {d : Transversal φ} : Function.Injective (prod : NormalWord d → PushoutI φ) := by
   let := Classical.decEq ι
   let := fun i => Classical.decEq (G i)
-  classical exact equiv.symm.injective
+  exact equiv.symm.injective
 
 instance : FaithfulSMul (PushoutI φ) (NormalWord d) :=
   ⟨fun h => by simpa using congr_arg prod (h empty)⟩
@@ -614,7 +614,6 @@ def Reduced (w : Word G) : Prop :=
 theorem Reduced.exists_normalWord_prod_eq (d : Transversal φ) {w : Word G} (hw : Reduced φ w) :
     ∃ w' : NormalWord d, w'.prod = ofCoprodI w.prod ∧
       w'.toList.map Sigma.fst = w.toList.map Sigma.fst := by
-  classical
   induction w using Word.consRecOn with
   | empty => exact ⟨empty, by simp, rfl⟩
   | cons i g w hIdx hg1 ih =>

@@ -655,7 +655,6 @@ lemma infinite_powers : (powers a : Set G).Infinite ↔ ¬ IsOfFinOrder a := fin
 /-- See also `orderOf_eq_card_powers`. -/
 @[to_additive /-- See also `addOrder_eq_card_multiples`. -/]
 lemma Nat.card_submonoidPowers : Nat.card (powers a) = orderOf a := by
-  classical
   by_cases ha : IsOfFinOrder a
   · exact (Nat.card_congr (finEquivPowers ha).symm).trans <| by simp
   · have := (infinite_powers.2 ha).to_subtype
@@ -742,7 +741,6 @@ lemma infinite_powers : (powers a : Set G).Infinite ↔ ¬ IsOfFinOrder a := fin
 /-- See also `orderOf_eq_card_powers`. -/
 @[to_additive /-- See also `addOrder_eq_card_multiples`. -/]
 lemma Nat.card_submonoidPowers : Nat.card (powers a) = orderOf a := by
-  classical
   by_cases ha : IsOfFinOrder a
   · exact (Nat.card_congr (finEquivPowers ha).symm).trans <| by simp
   · have := (infinite_powers.2 ha).to_subtype
