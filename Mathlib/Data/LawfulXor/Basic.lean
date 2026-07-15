@@ -135,7 +135,7 @@ lemma xor_eq_iff_left_eq (a b c : α) :
 lemma xor_eq_iff_right_eq (a b c : α) :
     a ^^^ b = c ↔ b = a ^^^ c := xor_right_involutive _ |>.eq_iff
 
-@[simp] lemma xor_eq_zero_iff (a b : α) : a ^^^ b = 0 ↔ a = b := by
+@[simp] lemma xor_eq_zero_iff {a b : α} : a ^^^ b = 0 ↔ a = b := by
   rw [ xor_eq_iff_left_eq, zero_xor]
 
 @[simp] lemma xor_xor_cancel_comm (a b : α) : a ^^^ b ^^^ a = b := by
