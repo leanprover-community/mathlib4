@@ -194,13 +194,126 @@ variable {R A : Type*} [CommSemiring R] [Semiring A] [Bialgebra R A]
 open Algebra Coalgebra Bialgebra HopfAlgebra TensorProduct WithConv LinearMap
 open scoped RingTheory.LinearMap
 
+theorem mul_antipode_rTensor_comul_adjoin_top {X : Set A} (S : A →ₐ[R] Aᵐᵒᵖ) (hX : adjoin R X = ⊤)
+  (hxr : ∀ x ∈ X, (mul' R A) ((LinearMap.rTensor A
+      (↑(MulOpposite.opLinearEquiv R (M := A)).symm ∘ₗ S.toLinearMap)) (δ x)) =
+        (algebraMap R A) (ε x)) :
+  mul' R A ∘ₗ LinearMap.rTensor A
+  ((MulOpposite.opLinearEquiv R (M := A)).symm ∘ₗ S.toLinearMap) ∘ₗ δ =
+    Algebra.linearMap R A ∘ₗ ε := by
+  ext t
+  let P y : Prop := (mul' R A ∘ₗ rTensor A
+    ((MulOpposite.opLinearEquiv (M := A) R).symm ∘ₗ S.toLinearMap) ∘ₗ
+    CoalgebraStruct.comul) y = (Algebra.linearMap R A ∘ₗ CoalgebraStruct.counit) y
+  have h y (hy : y ∈ adjoin R X) : P y := by
+    refine adjoin_induction (p := fun y _ => P y) hxr (fun r ↦ ?_) ?_ ?_ hy
+    · simp_all only [mem_top, coe_comp, Function.comp_apply,
+      linearMap_apply, comul_algebraMap, TensorProduct.algebraMap_apply,
+      rTensor_tmul, LinearEquiv.coe_coe, MulOpposite.coe_opLinearEquiv_symm,
+      AlgHom.coe_toLinearMap, AlgHom.commutes, MulOpposite.algebraMap_apply, MulOpposite.unop_op,
+      mul'_apply, mul_one, counit_algebraMap, P]
+    · simp_all only [mem_top, coe_comp, Function.comp_apply, linearMap_apply, map_add,
+      implies_true, P]
+    · intro x y hx hy hxP hyP
+      have key : ∀ z : A, P z → (∑ i ∈ (ℛ R z).index,
+          ((MulOpposite.opLinearEquiv R).symm.toLinearMap ∘ₗ S.toLinearMap) ((ℛ R z).left i) *
+          (ℛ R z).right i) = algebraMap R A (ε z) := fun z hz ↦ by
+        unfold P at hz
+        simp only [coe_comp, Function.comp_apply, linearMap_apply] at hz
+        rw [← hz, ← Coalgebra.Repr.eq (ℛ R z)]
+        simp only [map_sum, rTensor_tmul, mul'_apply, coe_comp, Function.comp_apply,
+          LinearEquiv.coe_coe, MulOpposite.coe_opLinearEquiv_symm, AlgHom.coe_toLinearMap]
+      unfold P
+      symm
+      calc
+        _ = algebraMap R A (ε x) * ∑ j ∈ (ℛ R y).index,
+            ((MulOpposite.opLinearEquiv R).symm.toLinearMap ∘ₗ S.toLinearMap) ((ℛ R y).left j) *
+            (ℛ R y).right j := by rw [key y hyP]; simp only [coe_comp, Function.comp_apply,
+            counit_mul, linearMap_apply, map_mul]
+        _ = ∑ j ∈ (ℛ R y).index,
+            ((MulOpposite.opLinearEquiv R).symm.toLinearMap ∘ₗ S.toLinearMap) ((ℛ R y).left j) *
+            (∑ i ∈ (ℛ R x).index,
+              ((MulOpposite.opLinearEquiv R).symm.toLinearMap ∘ₗ S.toLinearMap) ((ℛ R x).left i) *
+              (ℛ R x).right i) *
+            (ℛ R y).right j := by
+            rw [key x hxP, Finset.mul_sum]
+            exact Finset.sum_congr rfl fun j _ ↦ by rw [← mul_assoc, commutes]
+        _ = _ := by
+            simp only [coe_comp, Function.comp_apply]
+            rw [comul_mul, ← Coalgebra.Repr.eq (ℛ R x), ← Coalgebra.Repr.eq (ℛ R y),
+              Finset.sum_mul_sum, Finset.sum_comm]
+            simp only [TensorProduct.tmul_mul_tmul, map_sum, rTensor_tmul,
+              mul'_apply, coe_comp, Function.comp_apply,
+              LinearEquiv.coe_coe, MulOpposite.coe_opLinearEquiv_symm, AlgHom.coe_toLinearMap,
+              map_mul, MulOpposite.unop_mul, Finset.mul_sum, Finset.sum_mul, mul_assoc]
+  exact h t (by rw [hX]; exact mem_top)
+
+theorem mul_antipode_rlTensor_comul_adjoin_top {X : Set A} (S : A →ₐ[R] Aᵐᵒᵖ) (hX : adjoin R X = ⊤)
+  (hxl :
+    ∀ x ∈ X,
+      (mul' R A) ((LinearMap.lTensor A ((MulOpposite.opLinearEquiv R (M := A)).symm ∘ₗ S.toLinearMap)) (δ x)) =
+        (algebraMap R A) (ε x)) :
+  mul' R A ∘ₗ LinearMap.lTensor A ((MulOpposite.opLinearEquiv R (M := A)).symm ∘ₗ S.toLinearMap) ∘ₗ δ =
+    Algebra.linearMap R A ∘ₗ ε := by
+  ext t
+  let P : A → Prop := fun y ↦ (mul' R A ∘ₗ
+    lTensor A ((MulOpposite.opLinearEquiv (M := A) R).symm ∘ₗ S.toLinearMap) ∘ₗ
+    CoalgebraStruct.comul) y = (Algebra.linearMap R A ∘ₗ CoalgebraStruct.counit) y
+  have h y (hy : y ∈ adjoin R X) : P y := by
+    refine adjoin_induction (R := R) (s := X) (p := fun y _ => P y) hxl (fun r ↦ ?_) ?_ ?_ hy
+    · simp_all only [mem_top, coe_comp, Function.comp_apply,
+        linearMap_apply, comul_algebraMap, TensorProduct.algebraMap_apply,
+        lTensor_tmul, LinearEquiv.coe_coe, MulOpposite.coe_opLinearEquiv_symm,
+        AlgHom.coe_toLinearMap, map_one, MulOpposite.unop_one, mul'_apply,
+        mul_one, counit_algebraMap, P]
+    · simp_all only [mem_top, coe_comp, Function.comp_apply, linearMap_apply, map_add,
+      implies_true, P]
+    · intro x y hx hy hxP hyP
+      have key : ∀ z : A, P z → (∑ i ∈ (ℛ R z).index, (ℛ R z).left i *
+          ((MulOpposite.opLinearEquiv R).symm.toLinearMap ∘ₗ S.toLinearMap) ((ℛ R z).right i))
+          = algebraMap R A (ε z) := fun z hz ↦ by
+        unfold P at hz
+        simp only [coe_comp, Function.comp_apply, linearMap_apply] at hz
+        rw [← hz, ← Coalgebra.Repr.eq (ℛ R z)]
+        simp only [map_sum, lTensor_tmul, mul'_apply,
+          coe_comp, Function.comp_apply, LinearEquiv.coe_coe,
+          MulOpposite.coe_opLinearEquiv_symm, AlgHom.coe_toLinearMap]
+      unfold P
+      symm
+      calc
+        _ = (∑ i ∈ (ℛ R x).index, (ℛ R x).left i *
+            ((MulOpposite.opLinearEquiv R).symm.toLinearMap ∘ₗ S.toLinearMap)
+              ((ℛ R x).right i)) *
+            algebraMap R A (ε y) := by
+            rw [key x hxP]
+            simp only [coe_comp, Function.comp_apply, counit_mul,
+              linearMap_apply, map_mul]
+        _ = ∑ i ∈ (ℛ R x).index, (ℛ R x).left i *
+            (∑ j ∈ (ℛ R y).index, (ℛ R y).left j *
+              ((MulOpposite.opLinearEquiv R).symm.toLinearMap ∘ₗ S.toLinearMap)
+                ((ℛ R y).right j)) *
+            ((MulOpposite.opLinearEquiv R).symm.toLinearMap ∘ₗ S.toLinearMap)
+              ((ℛ R x).right i) := by
+            rw [key y hyP, Finset.sum_mul]
+            exact Finset.sum_congr rfl fun i _ ↦ by
+              rw [mul_assoc, ← commutes, ← mul_assoc]
+        _ = _ := by
+            simp only [coe_comp, Function.comp_apply]
+            rw [comul_mul, ← Coalgebra.Repr.eq (ℛ R x), ← Coalgebra.Repr.eq (ℛ R y),
+              Finset.sum_mul_sum]
+            simp only [TensorProduct.tmul_mul_tmul, map_sum, lTensor_tmul,
+              mul'_apply, coe_comp, Function.comp_apply,
+              LinearEquiv.coe_coe, MulOpposite.coe_opLinearEquiv_symm, AlgHom.coe_toLinearMap,
+              map_mul, MulOpposite.unop_mul, Finset.mul_sum, Finset.sum_mul, mul_assoc]
+  exact h t (by rw [hX]; exact mem_top)
+
+
 /--
 If `A` is generated as an `R`-algebra by `X`, and `S : A →ₐ[R] Aᵐᵒᵖ` satisfies the two
 antipode identities on `X`, then the underlying linear map gives a Hopf algebra structure on `A`.
 -/
 abbrev ofAntipodeOfAdjoin
-    {R A : Type*} [CommSemiring R] [Semiring A] [Bialgebra R A]
-    {X : Set A} (S : A →ₐ[R] Aᵐᵒᵖ)
+    {R A : Type*} [CommSemiring R] [Semiring A] [Bialgebra R A] {X : Set A} (S : A →ₐ[R] Aᵐᵒᵖ)
     (hX : adjoin R X = ⊤)
     (hxr : ∀ x ∈ X,
       mul' R A (((MulOpposite.opLinearEquiv R).symm.toLinearMap ∘ₗ S.toLinearMap).rTensor A
@@ -209,107 +322,8 @@ abbrev ofAntipodeOfAdjoin
       mul' R A (((MulOpposite.opLinearEquiv R).symm.toLinearMap ∘ₗ S.toLinearMap).lTensor A
           (Coalgebra.comul x)) = algebraMap R A (Coalgebra.counit x)) : HopfAlgebra R A where
   antipode := (MulOpposite.opLinearEquiv R).symm.toLinearMap ∘ₗ S.toLinearMap
-  mul_antipode_rTensor_comul := by
-    ext t
-    let P y : Prop := (mul' R A ∘ₗ rTensor A
-      ((MulOpposite.opLinearEquiv (M := A) R).symm ∘ₗ S.toLinearMap) ∘ₗ
-      CoalgebraStruct.comul) y = (Algebra.linearMap R A ∘ₗ CoalgebraStruct.counit) y
-    have hgood y (hy : y ∈ adjoin R X) : P y := by
-      refine adjoin_induction (p := fun y _ => P y) hxr (fun r ↦ ?_) ?_ ?_ hy
-      · simp_all only [mem_top, coe_comp, Function.comp_apply,
-        linearMap_apply, comul_algebraMap, TensorProduct.algebraMap_apply,
-        rTensor_tmul, LinearEquiv.coe_coe, MulOpposite.coe_opLinearEquiv_symm,
-        AlgHom.coe_toLinearMap, AlgHom.commutes, MulOpposite.algebraMap_apply, MulOpposite.unop_op,
-        mul'_apply, mul_one, counit_algebraMap, P]
-      · simp_all only [mem_top, coe_comp, Function.comp_apply, linearMap_apply, map_add,
-        implies_true, P]
-      · intro x y hx hy hxP hyP
-        have key : ∀ z : A, P z → (∑ i ∈ (ℛ R z).index,
-            ((MulOpposite.opLinearEquiv R).symm.toLinearMap ∘ₗ S.toLinearMap) ((ℛ R z).left i) *
-            (ℛ R z).right i) = algebraMap R A (ε z) := fun z hz ↦ by
-          unfold P at hz
-          simp only [coe_comp, Function.comp_apply, linearMap_apply] at hz
-          rw [← hz, ← Coalgebra.Repr.eq (ℛ R z)]
-          simp only [map_sum, rTensor_tmul, mul'_apply, coe_comp, Function.comp_apply,
-            LinearEquiv.coe_coe, MulOpposite.coe_opLinearEquiv_symm, AlgHom.coe_toLinearMap]
-        unfold P
-        symm
-        calc
-          _ = algebraMap R A (ε x) * ∑ j ∈ (ℛ R y).index,
-              ((MulOpposite.opLinearEquiv R).symm.toLinearMap ∘ₗ S.toLinearMap) ((ℛ R y).left j) *
-              (ℛ R y).right j := by rw [key y hyP]; simp only [coe_comp, Function.comp_apply,
-              counit_mul, linearMap_apply, map_mul]
-          _ = ∑ j ∈ (ℛ R y).index,
-              ((MulOpposite.opLinearEquiv R).symm.toLinearMap ∘ₗ S.toLinearMap) ((ℛ R y).left j) *
-              (∑ i ∈ (ℛ R x).index,
-                ((MulOpposite.opLinearEquiv R).symm.toLinearMap ∘ₗ S.toLinearMap) ((ℛ R x).left i) *
-                (ℛ R x).right i) *
-              (ℛ R y).right j := by
-              rw [key x hxP, Finset.mul_sum]
-              exact Finset.sum_congr rfl fun j _ ↦ by rw [← mul_assoc, commutes]
-          _ = _ := by
-              simp only [coe_comp, Function.comp_apply]
-              rw [comul_mul, ← Coalgebra.Repr.eq (ℛ R x), ← Coalgebra.Repr.eq (ℛ R y),
-                Finset.sum_mul_sum, Finset.sum_comm]
-              simp only [TensorProduct.tmul_mul_tmul, map_sum, rTensor_tmul,
-                mul'_apply, coe_comp, Function.comp_apply,
-                LinearEquiv.coe_coe, MulOpposite.coe_opLinearEquiv_symm, AlgHom.coe_toLinearMap,
-                map_mul, MulOpposite.unop_mul, Finset.mul_sum, Finset.sum_mul, mul_assoc]
-    exact hgood t (by rw [hX]; exact mem_top)
-  mul_antipode_lTensor_comul := by
-    ext t
-    let P : A → Prop := fun y ↦ (mul' R A ∘ₗ
-      lTensor A ((MulOpposite.opLinearEquiv (M := A) R).symm ∘ₗ S.toLinearMap) ∘ₗ
-      CoalgebraStruct.comul) y = (Algebra.linearMap R A ∘ₗ CoalgebraStruct.counit) y
-    have hgood y (hy : y ∈ adjoin R X) : P y := by
-      refine adjoin_induction (R := R) (s := X) (p := fun y _ => P y)
-        hxl (fun r ↦ ?_) ?_ ?_ hy
-      · simp_all only [mem_top, coe_comp, Function.comp_apply,
-          linearMap_apply, comul_algebraMap, TensorProduct.algebraMap_apply,
-          lTensor_tmul, LinearEquiv.coe_coe, MulOpposite.coe_opLinearEquiv_symm,
-          AlgHom.coe_toLinearMap, map_one, MulOpposite.unop_one, mul'_apply,
-          mul_one, counit_algebraMap, P]
-      · intro x y_1 hx hy_1 a a_1
-        simp_all only [mem_top, coe_comp, Function.comp_apply,
-          linearMap_apply, map_add, P]
-      · intro x y hx hy hxP hyP
-        have key : ∀ z : A, P z → (∑ i ∈ (ℛ R z).index, (ℛ R z).left i *
-            ((MulOpposite.opLinearEquiv R).symm.toLinearMap ∘ₗ S.toLinearMap) ((ℛ R z).right i))
-            = algebraMap R A (ε z) := fun z hz ↦ by
-          unfold P at hz
-          simp only [coe_comp, Function.comp_apply, linearMap_apply] at hz
-          rw [← hz, ← Coalgebra.Repr.eq (ℛ R z)]
-          simp only [map_sum, lTensor_tmul, mul'_apply,
-            coe_comp, Function.comp_apply, LinearEquiv.coe_coe,
-            MulOpposite.coe_opLinearEquiv_symm, AlgHom.coe_toLinearMap]
-        unfold P
-        symm
-        calc
-          _ = (∑ i ∈ (ℛ R x).index, (ℛ R x).left i *
-              ((MulOpposite.opLinearEquiv R).symm.toLinearMap ∘ₗ S.toLinearMap)
-                ((ℛ R x).right i)) *
-              algebraMap R A (ε y) := by
-              rw [key x hxP]
-              simp only [coe_comp, Function.comp_apply, counit_mul,
-                linearMap_apply, map_mul]
-          _ = ∑ i ∈ (ℛ R x).index, (ℛ R x).left i *
-              (∑ j ∈ (ℛ R y).index, (ℛ R y).left j *
-                ((MulOpposite.opLinearEquiv R).symm.toLinearMap ∘ₗ S.toLinearMap)
-                  ((ℛ R y).right j)) *
-              ((MulOpposite.opLinearEquiv R).symm.toLinearMap ∘ₗ S.toLinearMap)
-                ((ℛ R x).right i) := by
-              rw [key y hyP, Finset.sum_mul]
-              exact Finset.sum_congr rfl fun i _ ↦ by
-                rw [mul_assoc, ← commutes, ← mul_assoc]
-          _ = _ := by
-              simp only [coe_comp, Function.comp_apply]
-              rw [comul_mul, ← Coalgebra.Repr.eq (ℛ R x), ← Coalgebra.Repr.eq (ℛ R y),
-                Finset.sum_mul_sum]
-              simp only [TensorProduct.tmul_mul_tmul, map_sum, lTensor_tmul,
-                mul'_apply, coe_comp, Function.comp_apply,
-                LinearEquiv.coe_coe, MulOpposite.coe_opLinearEquiv_symm, AlgHom.coe_toLinearMap,
-                map_mul, MulOpposite.unop_mul, Finset.mul_sum, Finset.sum_mul, mul_assoc]
-    exact hgood t (by rw [hX]; exact mem_top)
+  mul_antipode_rTensor_comul := mul_antipode_rTensor_comul_adjoin_top S hX hxr
+  mul_antipode_lTensor_comul := mul_antipode_rlTensor_comul_adjoin_top S hX hxl
 
 
 
