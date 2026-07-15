@@ -285,7 +285,7 @@ open scoped QuadraticAlgebra
 abbrev B := QuadraticAlgebra R 0 (a ^ 2)
 
 /-- The generator `VB` of `B`, satisfying `VB² = a²·VB`. -/
-abbrev VB : B := QuadraticAlgebra.omega
+abbrev VB : B := ω
 
 @[simp] theorem VB_relation : VB ^ 2 = algebraMap R B (a ^ 2) * VB := by
   simp [pow_two, QuadraticAlgebra.omega_mul_omega_eq_algebraMap]
@@ -301,10 +301,16 @@ base ring `R`. -/
 abbrev A := QuadraticAlgebra B (-(bB ^ 2) * VB) (aB * bB)
 
 /-- The generator `U` of `A`, satisfying `U² = abU - b²V`. -/
-abbrev U : A := QuadraticAlgebra.omega
+abbrev U : A := ω
 
 /-- The image of `VB` in `A`. -/
 abbrev V : A := algebraMap B A VB
+
+/-- The image of `a` in `A`. -/
+abbrev aA : A := algebraMap R A a
+
+/-- The image of `b` in `A`. -/
+abbrev bA : A := algebraMap R A b
 
 @[simp] theorem U_relation :
     U ^ 2 = algebraMap R A (a * b) * U - algebraMap R A (b ^ 2) * V := by
@@ -318,22 +324,19 @@ abbrev V : A := algebraMap B A VB
   rw [← map_pow, VB_relation, map_mul, IsScalarTower.algebraMap_apply R B A]
 
 noncomputable instance : Module.Free R A :=
-  Module.Free.trans (R := R) (S := B) (M := A)
+  Module.Free.trans (S := B) -- TODO (buzzard) Module.Free.trans should have S explicit
 
 noncomputable instance : Module.Finite R A :=
-  Module.Finite.trans (R := R) (A := B) (M := A)
+  Module.Finite.trans B A
 
 theorem finrank_B : Module.finrank R B = 2 :=
-  QuadraticAlgebra.finrank_eq_two (0 : R) (a ^ 2)
+  QuadraticAlgebra.finrank_eq_two _ _
 
 theorem finrank_A_over_B : Module.finrank B A = 2 :=
-  QuadraticAlgebra.finrank_eq_two (-(bB ^ 2) * VB) (aB * bB)
+  QuadraticAlgebra.finrank_eq_two _ _
 
 theorem finrank_A : Module.finrank R A = 4 := by
-  calc
-    Module.finrank R A = Module.finrank R B * Module.finrank B A :=
-      (Module.finrank_mul_finrank R B A).symm
-    _ = 4 := by rw [finrank_B, finrank_A_over_B]
+  rw [← Module.finrank_mul_finrank R B A, finrank_B, finrank_A_over_B]
 
 /-!
 ### The comultiplication
@@ -353,7 +356,7 @@ private theorem law_relations_generic {S : Type*} [CommRing S]
     let dv := v₁ * l₂ + v₂
     let du := u₁ + l₁ * u₂
     dv ^ 2 = a ^ 2 * dv ∧ du ^ 2 = a * b * du - b ^ 2 * dv := by
-  dsimp
+  dsimp only
   have hab' : a ^ 2 * b = -2 := eq_neg_of_add_eq_zero_left hab
   have h2a : 2 * a = 0 := by
     linear_combination a * hab - b * ha
@@ -422,12 +425,6 @@ private theorem law_lambda_generic {S : Type*} [CommRing S]
     (a * u₁ * b ^ 2 * v₁ * u₂) * ha -
     (2 * a * b ^ 4 * v₁ * v₂) * ha
 
-/-- The image of `a` in `A`. -/
-abbrev aA : A := algebraMap R A a
-
-/-- The image of `b` in `A`. -/
-abbrev bA : A := algebraMap R A b
-
 /-- The group-like unit controlling the semidirect-product law. -/
 def lambda : A := (1 + aA * U) * (1 + bA * V)
 
@@ -466,12 +463,10 @@ private theorem mapped_relations {S : Type*} [CommRing S] [Algebra R S]
 open scoped TensorProduct
 
 /-- The inclusion of the left tensor factor `A → A ⊗[R] A`. -/
-abbrev left : A →ₐ[R] A ⊗[R] A :=
-  Algebra.TensorProduct.includeLeft (R := R) (S := R) (A := A) (B := A)
+abbrev left : A →ₐ[R] A ⊗[R] A := Algebra.TensorProduct.includeLeft
 
 /-- The inclusion of the right tensor factor `A → A ⊗[R] A`. -/
-abbrev right : A →ₐ[R] A ⊗[R] A :=
-  Algebra.TensorProduct.includeRight (R := R) (A := A) (B := A)
+abbrev right : A →ₐ[R] A ⊗[R] A := Algebra.TensorProduct.includeRight
 
 /-- The image of `a` in `A ⊗[R] A`. -/
 abbrev aaT : A ⊗[R] A := left aA
@@ -538,17 +533,8 @@ private theorem bbT_smul : bbT = b • (1 : A ⊗[R] A) := by
   rw [show bA = b • (1 : A) from Algebra.algebraMap_eq_smul_one b]
   exact TensorProduct.smul_tmul' b 1 1
 
-private theorem zero_smul_A (x : A) : (0 : R) • x = 0 := by
-  ext <;> simp
-
 private theorem zero_smul_T (x : A ⊗[R] A) : (0 : R) • x = 0 := by
-  induction x using TensorProduct.induction_on with
-  | zero => rfl
-  | tmul x y =>
-      change ((0 : R) • x) ⊗ₜ[R] y = 0
-      rw [zero_smul_A, TensorProduct.zero_tmul]
-  | add x y hx hy =>
-      rw [TensorProduct.smul_add, hx, hy, add_zero]
+  simp
 
 /-- First lift of the coproduct, sending `VB` to `deltaV`. -/
 noncomputable def comulB : B →ₐ[R] A ⊗[R] A :=
@@ -580,14 +566,9 @@ theorem comulB_aB : comulB aB = aaT := by
 theorem comulB_bB : comulB bB = bbT := by
   rw [comulB.commutes, Algebra.algebraMap_eq_smul_one, ← bbT_smul]
 
-private theorem comulB_neg (x : B) : comulB (-x) = -comulB x :=
-  map_neg comulB x
+private theorem comulB_neg (x : B) : comulB (-x) = -comulB x := by simp
 
-private theorem comulB_bB_sq : comulB (bB ^ 2) = comulB bB ^ 2 := by
-  calc
-    comulB (bB ^ 2) = comulB (bB * bB) := congr_arg comulB (pow_two bB)
-    _ = comulB bB * comulB bB := comulB.map_mul bB bB
-    _ = comulB bB ^ 2 := (pow_two (comulB bB)).symm
+private theorem comulB_bB_sq : comulB (bB ^ 2) = comulB bB ^ 2 := by simp
 
 -- TODO (buzzard): this causes a diamond I believe
 noncomputable instance instAlgebraBT : Algebra B (A ⊗[R] A) :=
