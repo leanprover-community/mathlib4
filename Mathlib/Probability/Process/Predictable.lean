@@ -174,8 +174,8 @@ variable [LinearOrder ι] [OrderBot ι] [MeasurableSpace ι] [TopologicalSpace �
 lemma isStronglyProgressive {𝓕 : Filtration ι m} {u : ι → Ω → E} (h𝓕 : IsStronglyPredictable 𝓕 u) :
     IsStronglyProgressive 𝓕 u := by
   intro i
-  letI : MeasurableSpace (ι × Ω) := 𝓕.predictable
-  letI : MeasurableSpace (Set.Iic i × Ω) := Subtype.instMeasurableSpace.prod (𝓕 i)
+  let : MeasurableSpace (ι × Ω) := 𝓕.predictable
+  let : MeasurableSpace (Set.Iic i × Ω) := Subtype.instMeasurableSpace.prod (𝓕 i)
   let X m (x : Set.Iic i × Ω) := h𝓕.approx m ⟨x.1, x.2⟩
   refine ⟨fun m ↦ SimpleFunc.mk (X m) ?_ ?_, ?_⟩
   · exact fun e ↦ measurable_inclusion_predictable <| (h𝓕.approx m).measurableSet_fiber e
@@ -192,8 +192,8 @@ section Discrete
 /-- If `u` is a discrete predictable process, then `u (n + 1)` is `𝓕 n`-measurable. -/
 lemma measurable_add_one {𝓕 : Filtration ℕ m} {u : ℕ → Ω → E}
     (h𝓕 : IsStronglyPredictable 𝓕 u) (n : ℕ) : StronglyMeasurable[𝓕 n] (u (n + 1)) := by
-  letI : MeasurableSpace (ℕ × Ω) := 𝓕.predictable
-  letI : MeasurableSpace Ω := 𝓕 n
+  let : MeasurableSpace (ℕ × Ω) := 𝓕.predictable
+  let : MeasurableSpace Ω := 𝓕 n
   let X m := (Function.curry (h𝓕.approx m) (n + 1))
   refine ⟨(fun m ↦ SimpleFunc.mk (X m) ?_ ?_), (fun ω ↦ h𝓕.tendsto_approx ⟨(n + 1), ω⟩)⟩
   · intro s
@@ -207,7 +207,7 @@ lemma measurable_add_one {𝓕 : Filtration ℕ m} {u : ℕ → Ω → E}
 lemma of_measurable_add_one {𝓕 : Filtration ℕ m} {u : ℕ → Ω → E}
     (h₀ : StronglyMeasurable[𝓕 0] (u 0)) (h : ∀ n, StronglyMeasurable[𝓕 n] (u (n + 1))) :
     IsStronglyPredictable 𝓕 u := by
-  letI : MeasurableSpace (ℕ × Ω) := 𝓕.predictable
+  let : MeasurableSpace (ℕ × Ω) := 𝓕.predictable
   -- first layer of approximation
   let X m (x : ℕ × Ω) := match x.1 with
     | 0 => h₀.approx m x.2
@@ -220,16 +220,16 @@ lemma of_measurable_add_one {𝓕 : Filtration ℕ m} {u : ℕ → Ω → E}
     refine MeasurableSet.iUnion <| fun n ↦ ?_
     rcases n with rfl | n
     · apply measurableSet_predictable_singleton_bot_prod
-      letI : MeasurableSpace Ω := 𝓕 0
+      let : MeasurableSpace Ω := 𝓕 0
       exact (h₀.approx m).measurableSet_fiber s
     · apply measurableSet_predictable_singleton_prod
       by_cases! hmk : n + 1 ≤ m
       · rw [(by aesop : Function.curry (Y m) (n + 1) = Function.curry (X m) (n + 1))]
-        letI : MeasurableSpace Ω := 𝓕 n
+        let : MeasurableSpace Ω := 𝓕 n
         exact ((h n).approx m).measurableSet_fiber s
       · rw [(by aesop : Function.curry (Y m) (n + 1) = Function.curry (X m) 0)]
         apply 𝓕.mono (i := 0) (by simp)
-        letI : MeasurableSpace Ω := 𝓕 0
+        let : MeasurableSpace Ω := 𝓕 0
         exact (h₀.approx m).measurableSet_fiber s
   · apply Set.Finite.subset (s := ⋃ k ∈ Finset.range (m + 1), Set.range (Function.curry (X m) k))
     · refine Set.Finite.biUnion' (by aesop) (fun n hn ↦ ?_)

@@ -54,7 +54,6 @@ omit [IsSFiniteKernel κ] in
 @[fun_prop]
 theorem StronglyMeasurable.integral_kernel ⦃f : β → E⦄
     (hf : StronglyMeasurable f) : StronglyMeasurable fun x ↦ ∫ y, f y ∂κ x := by
-  classical
   by_cases hE : CompleteSpace E; swap
   · simp [integral, hE, stronglyMeasurable_const]
   borelize E
@@ -81,7 +80,7 @@ theorem StronglyMeasurable.integral_kernel_prod_right ⦃f : α → β → E⦄
   by_cases hE : CompleteSpace E; swap
   · simp [integral, hE, stronglyMeasurable_const]
   borelize E
-  haveI : TopologicalSpace.SeparableSpace (range (uncurry f) ∪ {0} : Set E) :=
+  have : TopologicalSpace.SeparableSpace (range (uncurry f) ∪ {0} : Set E) :=
     hf.separableSpace_range_union_singleton
   let s : ℕ → SimpleFunc (α × β) E :=
     SimpleFunc.approxOn _ hf.measurable (range (uncurry f) ∪ {0}) 0 (by simp)

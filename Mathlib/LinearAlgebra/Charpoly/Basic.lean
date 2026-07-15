@@ -75,7 +75,7 @@ theorem charpoly_monic : f.charpoly.Monic :=
 open Module in
 lemma charpoly_natDegree [StrongRankCondition R] :
     natDegree (charpoly f) = finrank R M := by
-  haveI := nontrivial_of_invariantBasisNumber
+  have := nontrivial_of_invariantBasisNumber
   rw [charpoly, Matrix.charpoly_natDegree_eq_dim, finrank_eq_card_chooseBasisIndex]
 
 end Coeff

@@ -488,7 +488,7 @@ noncomputable instance instSupSet : SupSet (Seminorm 𝕜 E) where
           rcases h with ⟨q, hq⟩
           obtain rfl | h := s.eq_empty_or_nonempty
           · simp [Real.iSup_of_isEmpty]
-          haveI : Nonempty ↑s := h.coe_sort
+          have : Nonempty ↑s := h.coe_sort
           simp only [iSup_apply]
           refine ciSup_le fun i =>
             ((i : Seminorm 𝕜 E).add_le' x y).trans <| add_le_add
@@ -555,7 +555,7 @@ protected theorem sSup_empty : sSup (∅ : Set (Seminorm 𝕜 E)) = ⊥ := by
 set_option backward.privateInPublic true in
 private theorem isLUB_sSup (s : Set (Seminorm 𝕜 E)) (hs₁ : BddAbove s) (hs₂ : s.Nonempty) :
     IsLUB s (sSup s) := by
-  refine ⟨fun p hp x => ?_, fun p hp x => ?_⟩ <;> haveI : Nonempty ↑s := hs₂.coe_sort <;>
+  refine ⟨fun p hp x => ?_, fun p hp x => ?_⟩ <;> have : Nonempty ↑s := hs₂.coe_sort <;>
     dsimp <;> rw [Seminorm.coe_sSup_eq hs₁, iSup_apply]
   · rcases hs₁ with ⟨q, hq⟩
     exact le_ciSup ⟨q x, forall_mem_range.mpr fun i : s => hq i.2 x⟩ ⟨p, hp⟩
@@ -725,12 +725,12 @@ lemma closedBall_eq_metric :
 
 /-- The image of a ball under addition with a singleton is another ball. -/
 theorem vadd_ball (p : Seminorm 𝕜 E) : x +ᵥ p.ball y r = p.ball (x +ᵥ y) r := by
-  letI := AddGroupSeminorm.toSeminormedAddCommGroup p.toAddGroupSeminorm
+  let := AddGroupSeminorm.toSeminormedAddCommGroup p.toAddGroupSeminorm
   simp [ball_eq_metric]
 
 /-- The image of a closed ball under addition with a singleton is another closed ball. -/
 theorem vadd_closedBall (p : Seminorm 𝕜 E) : x +ᵥ p.closedBall y r = p.closedBall (x +ᵥ y) r := by
-  letI := AddGroupSeminorm.toSeminormedAddCommGroup p.toAddGroupSeminorm
+  let := AddGroupSeminorm.toSeminormedAddCommGroup p.toAddGroupSeminorm
   simp [closedBall_eq_metric]
 
 end SMul
@@ -1093,8 +1093,8 @@ protected theorem uniformContinuous_of_continuousAt_zero [UniformSpace E] [IsUni
 
 protected theorem continuous_of_continuousAt_zero [TopologicalSpace E] [IsTopologicalAddGroup E]
     {p : Seminorm 𝕝 E} (hp : ContinuousAt p 0) : Continuous p := by
-  letI := IsTopologicalAddGroup.rightUniformSpace E
-  haveI : IsUniformAddGroup E := isUniformAddGroup_of_addCommGroup
+  let := IsTopologicalAddGroup.rightUniformSpace E
+  have : IsUniformAddGroup E := isUniformAddGroup_of_addCommGroup
   exact (Seminorm.uniformContinuous_of_continuousAt_zero hp).continuous
 
 /-- A seminorm is uniformly continuous if `p.ball 0 r ∈ 𝓝 0` for *all* `r > 0`.
@@ -1177,7 +1177,7 @@ theorem continuous_finsetSup [TopologicalSpace E] [IsTopologicalAddGroup E]
 
 lemma ball_mem_nhds [TopologicalSpace E] {p : Seminorm 𝕝 E} (hp : Continuous p) {r : ℝ}
     (hr : 0 < r) : p.ball 0 r ∈ (𝓝 0 : Filter E) := by
-  have this : Tendsto p (𝓝 0) (𝓝 0) := map_zero p ▸ hp.tendsto 0
+  have : Tendsto p (𝓝 0) (𝓝 0) := map_zero p ▸ hp.tendsto 0
   simpa only [p.ball_zero_eq] using! this (Iio_mem_nhds hr)
 
 lemma uniformSpace_eq_of_hasBasis

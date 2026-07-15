@@ -3660,6 +3660,7 @@ public import Mathlib.Combinatorics.SimpleGraph.Extremal.Basic
 public import Mathlib.Combinatorics.SimpleGraph.Extremal.ErdosStoneSimonovits
 public import Mathlib.Combinatorics.SimpleGraph.Extremal.Turan
 public import Mathlib.Combinatorics.SimpleGraph.Extremal.TuranDensity
+public import Mathlib.Combinatorics.SimpleGraph.Extremal.Zarankiewicz
 public import Mathlib.Combinatorics.SimpleGraph.Finite
 public import Mathlib.Combinatorics.SimpleGraph.Finsubgraph
 public import Mathlib.Combinatorics.SimpleGraph.FiveWheelLike
@@ -4810,12 +4811,14 @@ public import Mathlib.GroupTheory.MonoidLocalization.Away
 public import Mathlib.GroupTheory.MonoidLocalization.Basic
 public import Mathlib.GroupTheory.MonoidLocalization.Cardinality
 public import Mathlib.GroupTheory.MonoidLocalization.DivPairs
+public import Mathlib.GroupTheory.MonoidLocalization.Divisibility
 public import Mathlib.GroupTheory.MonoidLocalization.Finite
 public import Mathlib.GroupTheory.MonoidLocalization.GrothendieckGroup
 public import Mathlib.GroupTheory.MonoidLocalization.Lemmas
 public import Mathlib.GroupTheory.MonoidLocalization.Maps
 public import Mathlib.GroupTheory.MonoidLocalization.MonoidWithZero
 public import Mathlib.GroupTheory.MonoidLocalization.Order
+public import Mathlib.GroupTheory.MonoidLocalization.UniqueFactorization
 public import Mathlib.GroupTheory.Nilpotent
 public import Mathlib.GroupTheory.NoncommCoprod
 public import Mathlib.GroupTheory.NoncommPiCoprod
@@ -5105,7 +5108,7 @@ public import Mathlib.LinearAlgebra.Matrix.Circulant
 public import Mathlib.LinearAlgebra.Matrix.ConjTranspose
 public import Mathlib.LinearAlgebra.Matrix.Defs
 public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
-public import Mathlib.LinearAlgebra.Matrix.Determinant.Bird
+public import Mathlib.LinearAlgebra.Matrix.Determinant.Bird.Defs
 public import Mathlib.LinearAlgebra.Matrix.Determinant.Misc
 public import Mathlib.LinearAlgebra.Matrix.Determinant.TotallyUnimodular
 public import Mathlib.LinearAlgebra.Matrix.Diagonal
@@ -5289,6 +5292,7 @@ public import Mathlib.LinearAlgebra.TensorProduct.Vanishing
 public import Mathlib.LinearAlgebra.Trace
 public import Mathlib.LinearAlgebra.Transvection
 public import Mathlib.LinearAlgebra.Transvection.Basic
+public import Mathlib.LinearAlgebra.Transvection.Generation
 public import Mathlib.LinearAlgebra.UnitaryGroup
 public import Mathlib.LinearAlgebra.Vandermonde
 public import Mathlib.Logic.Basic
@@ -7989,6 +7993,7 @@ public import Mathlib.Topology.Maps.Proper.CompactlyGenerated
 public import Mathlib.Topology.Maps.Proper.UniversallyClosed
 public import Mathlib.Topology.Maps.Strict.Basic
 public import Mathlib.Topology.Maps.Strict.Group
+public import Mathlib.Topology.Maps.Strict.Module
 public import Mathlib.Topology.MetricSpace.Algebra
 public import Mathlib.Topology.MetricSpace.Antilipschitz
 public import Mathlib.Topology.MetricSpace.Basic
