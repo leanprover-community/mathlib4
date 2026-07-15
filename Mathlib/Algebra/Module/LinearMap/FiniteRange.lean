@@ -399,7 +399,7 @@ lemma IsQuasiInverse.equiv_of_right {u u' : V₃ →ₗ[K] V₂} {v v' : V₂ �
 
 /-- Left quasi-inverses compose in the opposite order. -/
 lemma IsLeftQuasiInverse.comp {u : V →ₗ[K] V₂} {v : V₂ →ₗ[K] V₃} {u' : V₂ →ₗ[K] V}
-    {v' : V₃ →ₗ[K] V₂} (hu : u'.IsLeftQuasiInverse u) (hv : v'.IsLeftQuasiInverse v) :
+    {v' : V₃ →ₗ[K] V₂} (hv : v'.IsLeftQuasiInverse v) (hu : u'.IsLeftQuasiInverse u) :
     (u' ∘ₗ v').IsLeftQuasiInverse (v ∘ₗ u) :=
   calc
     _ = u' ∘ₗ (v' ∘ₗ v) ∘ₗ u := rfl
@@ -408,15 +408,15 @@ lemma IsLeftQuasiInverse.comp {u : V →ₗ[K] V₂} {v : V₂ →ₗ[K] V₃} {
 
 /-- Right quasi-inverses compose in the opposite order. -/
 lemma IsRightQuasiInverse.comp {u : V →ₗ[K] V₂} {v : V₂ →ₗ[K] V₃} {u' : V₂ →ₗ[K] V}
-    {v' : V₃ →ₗ[K] V₂} (hu : u'.IsRightQuasiInverse u) (hv : v'.IsRightQuasiInverse v) :
+    {v' : V₃ →ₗ[K] V₂} (hv : v'.IsRightQuasiInverse v) (hu : u'.IsRightQuasiInverse u) :
     (u' ∘ₗ v').IsRightQuasiInverse (v ∘ₗ u) :=
-  hv.isLeftQuasiInverse.comp hu.isLeftQuasiInverse |>.isRightQuasiInverse
+  hu.isLeftQuasiInverse.comp hv.isLeftQuasiInverse |>.isRightQuasiInverse
 
 /-- Quasi-inverses compose in the opposite order. -/
 lemma IsQuasiInverse.comp {u : V →ₗ[K] V₂} {v : V₂ →ₗ[K] V₃} {u' : V₂ →ₗ[K] V}
-    {v' : V₃ →ₗ[K] V₂} (hu : u'.IsQuasiInverse u) (hv : v'.IsQuasiInverse v) :
+    {v' : V₃ →ₗ[K] V₂} (hv : v'.IsQuasiInverse v) (hu : u'.IsQuasiInverse u) :
     (u' ∘ₗ v').IsQuasiInverse (v ∘ₗ u) :=
-  ⟨hu.1.comp hv.1, hu.2.comp hv.2⟩
+  ⟨hv.1.comp hu.1, hv.2.comp hu.2⟩
 
 /-- If `w` is a left quasi-inverse for `v ∘ₗ u`, then `w ∘ₗ v` is a left quasi-inverse for `u`. -/
 lemma IsLeftQuasiInverse.of_comp_left {u : V →ₗ[K] V₂} {v : V₂ →ₗ[K] V₃}
