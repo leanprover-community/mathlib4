@@ -561,8 +561,8 @@ noncomputable def equiv : PushoutI φ ≃ NormalWord d :=
 
 theorem prod_injective {ι : Type*} {G : ι → Type*} [(i : ι) → Group (G i)] {φ : (i : ι) → H →* G i}
     {d : Transversal φ} : Function.Injective (prod : NormalWord d → PushoutI φ) := by
-  letI := Classical.decEq ι
-  letI := fun i => Classical.decEq (G i)
+  let := Classical.decEq ι
+  let := fun i => Classical.decEq (G i)
   classical exact equiv.symm.injective
 
 instance : FaithfulSMul (PushoutI φ) (NormalWord d) :=

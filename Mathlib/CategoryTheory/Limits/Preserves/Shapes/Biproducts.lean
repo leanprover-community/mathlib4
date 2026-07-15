@@ -144,7 +144,7 @@ lemma preservesBiproducts_shrink (F : C ⥤ D) [PreservesZeroMorphisms F]
 
 instance (priority := 100) preservesFiniteBiproductsOfPreservesBiproducts (F : C ⥤ D)
     [PreservesZeroMorphisms F] [PreservesBiproducts.{w₁} F] : PreservesFiniteBiproducts F where
-  preserves {J} _ := by letI := preservesBiproducts_shrink.{0} F; infer_instance
+  preserves {J} _ := by let := preservesBiproducts_shrink.{0} F; infer_instance
 
 /-- A functor `F` preserves binary biproducts of `X` and `Y` if `F` maps every bilimit bicone over
 `X` and `Y` to a bilimit bicone over `F.obj X` and `F.obj Y`. -/

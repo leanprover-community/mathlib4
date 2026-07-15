@@ -95,7 +95,7 @@ theorem Submodule.exists_isInternal_prime_power_torsion_of_pid [Module.Finite R 
   · exact Finset.fintypeCoeSort _
   · rintro ⟨p, hp⟩
     have hP := prime_of_factor p (Multiset.mem_toFinset.mp hp)
-    haveI := Ideal.isPrime_of_prime hP
+    have := Ideal.isPrime_of_prime hP
     exact (IsPrincipal.prime_generator_of_isPrime p hP.ne_zero).irreducible
 
 namespace Module
@@ -177,7 +177,7 @@ theorem torsion_by_prime_power_decomposition (hM : Module.IsTorsion' M (Submonoi
   | zero =>
     use finZeroElim
     rw [Set.range_eq_empty, Submodule.span_empty] at hs
-    haveI : Unique M :=
+    have : Unique M :=
       ⟨⟨0⟩, fun x => by dsimp; rw [← Submodule.mem_bot R, hs]; exact Submodule.mem_top⟩
     exact ⟨0⟩
   | succ d IH =>

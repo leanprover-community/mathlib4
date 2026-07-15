@@ -874,14 +874,14 @@ theorem extChartAt_comp [ChartedSpace H H'] (x : M') :
 theorem writtenInExtChartAt_chartAt_comp [ChartedSpace H H'] (x : M') {y}
     (hy : y ∈ letI := ChartedSpace.comp H H' M'; (extChartAt I x).target) :
     (letI := ChartedSpace.comp H H' M'; writtenInExtChartAt I I x (chartAt H' x) y) = y := by
-  letI := ChartedSpace.comp H H' M'
+  let := ChartedSpace.comp H H' M'
   simp_all only [mfld_simps, chartAt_comp]
 
 theorem writtenInExtChartAt_chartAt_symm_comp [ChartedSpace H H'] (x : M') {y}
     (hy : y ∈ letI := ChartedSpace.comp H H' M'; (extChartAt I x).target) :
     (letI := ChartedSpace.comp H H' M'
      writtenInExtChartAt I I (chartAt H' x x) (chartAt H' x).symm y) = y := by
-  letI := ChartedSpace.comp H H' M'
+  let := ChartedSpace.comp H H' M'
   simp_all only [mfld_simps, chartAt_comp]
 
 end ExtendedCharts
