@@ -260,3 +260,25 @@ theorem galgebra_toFun_def (r : R) :
 example : Algebra R (⨁ n : ℕ, ⨂[R]^n M) := by infer_instance
 
 end TensorPower
+
+section permutation
+
+variable (R : Type*) [CommSemiring R]
+variable (V : Type*) [AddCommMonoid V] [Module R V]
+
+/-- Reindexing the factors gives the canonical permutation action on an abstract tensor power. -/
+def tensorPowerPermAction {k : ℕ} (σ : Equiv.Perm (Fin k)) :
+    TensorPower R k V ≃ₗ[R] TensorPower R k V :=
+  PiTensorProduct.reindex R (fun _ : Fin k ↦ V) σ
+
+/-- Endomorphism-valued form of the abstract permutation action. -/
+def tensorPowerPermEnd {k : ℕ} (σ : Equiv.Perm (Fin k)) :
+    Module.End R (TensorPower R k V) :=
+  (tensorPowerPermAction R V σ).toLinearMap
+
+/-- The set of permutation operators on an abstract `R`-module `V`. -/
+def tensorPowerPermImage (k : ℕ) : Set (Module.End R (TensorPower R k V)) :=
+  Set.range (tensorPowerPermEnd R V : Equiv.Perm (Fin k) →
+    Module.End R (TensorPower R k V))
+
+end permutation
