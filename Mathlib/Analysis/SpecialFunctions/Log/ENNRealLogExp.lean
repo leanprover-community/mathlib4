@@ -63,13 +63,14 @@ lemma exp_nmul (x : EReal) (n : ℕ) : exp (n * x) = (exp x) ^ n := by
 lemma exp_mul (x : EReal) (y : ℝ) : exp (x * y) = (exp x) ^ y := by
   rw [← log_eq_iff, log_rpow, log_exp, log_exp, mul_comm]
 
-lemma ENNReal.rpow_eq_exp_mul_log (x : ℝ≥0∞) (y : ℝ) : x ^ y = exp (y * log x) := by
-  rw [mul_comm, EReal.exp_mul, exp_log]
-
 end EReal
 end Exp
 
 namespace ENNReal
+
+lemma rpow_eq_exp_mul_log (x : ℝ≥0∞) (y : ℝ) : x ^ y = exp (y * log x) := by
+  rw [← log_rpow, exp_log]
+
 section OrderIso
 
 /-- `ENNReal.log` and its inverse `EReal.exp` are an order isomorphism between `ℝ≥0∞` and
