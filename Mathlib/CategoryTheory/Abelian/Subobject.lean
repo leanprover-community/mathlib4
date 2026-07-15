@@ -5,8 +5,9 @@ Authors: Markus Himmel, Jack McKoen
 -/
 module
 
-public import Mathlib.CategoryTheory.Abelian.Basic
+public import Mathlib.CategoryTheory.Abelian.Regular
 public import Mathlib.CategoryTheory.Subobject.Limits
+public import Mathlib.Order.Atoms
 
 /-!
 # Subobjects in abelian categories
@@ -20,10 +21,9 @@ This file contains numerous results about subobjects which are unique to abelian
 * a correspondence theorem: Given a subobject `Y` of `X`, `Abelian.Subobject.cokernelOrderIso` is
   an order-isomorphism between subobjects of `cokernel (Y ↪ X)` and subobjects of `X`
   containing `Y`.
-
-## Future work
-
-* connection to `Subobject.«exists»`, `Subobject.pullback`
+* the kernel-cokernel definitions of direct and inverse image agree with `Subobject.«exists»` and
+  `Subobject.pullback`, respectively
+* `directImage_inf_inverseImage` expresses Frobenius reciprocity for direct and inverse image
 
 ## References
 
@@ -134,6 +134,19 @@ lemma directImage_eq_imageSubobject {X' : Subobject X} :
     (kernel.mapIso _ _ (Iso.refl _)
       (cokernel.mapIso _ _ (underlyingIso _).symm (Iso.refl _) (by simp)) (by simp)) (by simp)
 
+/-- The kernel-cokernel definition of direct image agrees with the generic direct image of
+subobjects. -/
+lemma directImage_eq_exists (X' : Subobject X) :
+    (directImage f).obj X' = (Subobject.«exists» f).obj X' := by
+  rw [directImage_eq_imageSubobject]
+  apply Subobject.eq_of_comm
+    ((imageSubobjectIso (X'.arrow ≫ f)).trans (Subobject.existsIsoImage f X').symm)
+  have h : (Subobject.existsIsoImage f X').inv ≫
+      ((Subobject.«exists» f).obj X').arrow = Limits.image.ι (X'.arrow ≫ f) := by
+    rw [Iso.inv_comp_eq]
+    exact (Over.w ((Subobject.existsCompRepresentativeIso f).app X').hom.hom).symm
+  simp only [Iso.trans_hom, Iso.symm_hom, Category.assoc, h, imageSubobject_arrow]
+
 lemma directImage_mk_eq_imageSubobject {A : C} (g : A ⟶ X) [Mono g] :
     (directImage f).obj (Subobject.mk g) = imageSubobject (g ≫ f) := by
   rw [directImage_eq_imageSubobject]
@@ -189,6 +202,21 @@ theorem directImage_inverseImage_gc :
     GaloisConnection (directImage f).obj (inverseImage f).obj := fun X' Y' ↦
   ⟨fun h ↦ le_inverseImage f (toDirectImage X' f ≫ ofLE _ _ h) (by simp),
     fun h ↦ directImage_le f (ofLE _ _ h ≫ fromInverseImage Y' f) (by simp)⟩
+
+/-- The kernel definition of inverse image agrees with the generic pullback of subobjects. -/
+lemma inverseImage_eq_pullback (Y' : Subobject Y) :
+    (inverseImage f).obj Y' = (Subobject.pullback f).obj Y' := by
+  let gc : GaloisConnection (Subobject.«exists» f).obj (Subobject.pullback f).obj :=
+    fun X' Y' ↦
+      ⟨fun h ↦ ((Subobject.existsPullbackAdj f).homEquiv _ _ (homOfLE h)).le,
+        fun h ↦ ((Subobject.existsPullbackAdj f).homEquiv _ _).symm (homOfLE h) |>.le⟩
+  exact (directImage_inverseImage_gc f).u_unique gc (directImage_eq_exists f)
+
+/-- Direct image satisfies Frobenius reciprocity with inverse image in an abelian category. -/
+lemma directImage_inf_inverseImage (X' : Subobject X) (Y' : Subobject Y) :
+    (directImage f).obj (X' ⊓ (inverseImage f).obj Y') = (directImage f).obj X' ⊓ Y' := by
+  rw [directImage_eq_exists, inverseImage_eq_pullback, directImage_eq_exists]
+  exact Regular.exists_inf_pullback_eq_exists_inf f X' Y'
 
 lemma inverseImage_directImage_le (X' : Subobject X) :
     X' ≤ (inverseImage f).obj ((directImage f).obj X') := (directImage_inverseImage_gc f).le_u_l X'
@@ -256,5 +284,46 @@ def cokernelOrderIso (Y : Subobject X) :
   map_rel_iff' := inverseImage_le_inverseImage_iff_of_epi _ _ _
 
 end
+
+section IsSimpleSubobject
+
+/-- An object is simple when it has only two subobjects, `⊥` and `⊤`. -/
+@[mk_iff] class IsSimpleSubobject (X : C) extends
+  IsSimpleOrder (Subobject X)
+
+theorem IsSimpleSubobject.congr {X Y : C} (e : X ≅ Y) [IsSimpleSubobject X] :
+    IsSimpleSubobject Y where
+  __ := (Subobject.mapIsoToOrderIso e.symm).isSimpleOrder
+
+theorem IsSimpleSubobject_iff_isAtom {X : C} {x : Subobject X} :
+    IsSimpleSubobject (x : C) ↔ IsAtom x := by
+  rw [← Set.isSimpleOrder_Iic_iff_isAtom, isSimpleSubobject_iff]
+  exact x.subobjectOrderIso.isSimpleOrder_iff
+
+theorem IsSimpleSubobject_iff_isCoatom {X : C} {x : Subobject X} :
+    IsSimpleSubobject (cokernel x.arrow) ↔ IsCoatom x := by
+  rw [← Set.isSimpleOrder_Ici_iff_isCoatom, isSimpleSubobject_iff]
+  exact (Abelian.Subobject.cokernelOrderIso _).isSimpleOrder_iff
+
+theorem IsSimpleSubobject_iff_iso {X Y : C} (e : X ≅ Y) :
+    IsSimpleSubobject X ↔ IsSimpleSubobject Y :=
+  ⟨fun _ ↦ IsSimpleSubobject.congr e, fun _ ↦ IsSimpleSubobject.congr e.symm⟩
+
+theorem covBy_iff_cokernel_is_simple {X : C} {A B : Subobject X} (hAB : A ≤ B) :
+    A ⋖ B ↔ IsSimpleSubobject (cokernel (A.ofLE B hAB)) := by
+  set f : Subobject (B : C) ≃o Set.Iic B := B.subobjectOrderIso with hf
+  rw [covBy_iff_coatom_Iic hAB]
+  have : (cokernel (A.ofLE B hAB)) ≅ cokernel ((Subobject.mk (A.ofLE B hAB)).arrow) :=
+    cokernel.mapIso _ _ ((underlyingIso _).symm) (Iso.refl _) (by simp)
+  rw [IsSimpleSubobject_iff_iso this]
+  rw [IsSimpleSubobject_iff_isCoatom, ← OrderIso.isCoatom_iff f, hf]
+  dsimp [subobjectOrderIso]
+  have : Subobject.mk ((Subobject.mk (A.ofLE B hAB)).arrow ≫ B.arrow) = A := by
+    refine mk_eq_of_comm ((Subobject.mk (A.ofLE B hAB)).arrow ≫ B.arrow) ?_ ?_
+    · exact underlyingIso (A.ofLE B hAB)
+    · rw [← underlyingIso_hom_comp_eq_mk, Category.assoc, Iso.cancel_iso_hom_left, ofLE_arrow]
+  simp [this]
+
+end IsSimpleSubobject
 
 end CategoryTheory.Abelian.Subobject

@@ -544,6 +544,44 @@ theorem monoLift_comp [Mono f] {T : C} (g : T ⟶ Y) (hg : g ≫ cokernel.π f =
   (monoIsKernelOfCokernel _ (colimit.isColimit _)).fac (KernelFork.ofι _ hg)
     WalkingParallelPair.zero
 
+section PullbackKernel
+
+variable {P X' Y' Z : C} {fst : P ⟶ X'} {snd : P ⟶ Y'}
+  {i : X' ⟶ Z} {j : Y' ⟶ Z}
+
+/-- In an abelian category, the pullback of a monomorphism `i` along `j` is a kernel of
+`j ≫ cokernel.π i`. -/
+noncomputable def isLimitKernelForkOfIsPullback
+    (sq : IsPullback fst snd i j) [Mono i] :
+    IsLimit (KernelFork.ofι (f := j ≫ cokernel.π i) snd (by
+      rw [← sq.w_assoc]
+      simp)) := by
+  letI : Mono snd := PullbackCone.mono_snd_of_is_pullback_of_mono sq.isLimit
+  apply KernelFork.IsLimit.ofι'
+  intro T k hk
+  let x := monoLift i (k ≫ j) (by simpa only [Category.assoc] using hk)
+  exact ⟨sq.lift x k (by simp [x]), by simp⟩
+
+/-- In an abelian category, the pullback of a monomorphism `i` along `j` is canonically
+isomorphic to the kernel of `j ≫ cokernel.π i`. -/
+noncomputable def isoKernelOfIsPullback (sq : IsPullback fst snd i j) [Mono i] :
+    P ≅ kernel (j ≫ cokernel.π i) := by
+  have e := (isLimitKernelForkOfIsPullback sq).conePointUniqueUpToIso
+    (kernelIsKernel (j ≫ cokernel.π i))
+  exact e
+
+@[simp]
+lemma isoKernelOfIsPullback_hom_comp (sq : IsPullback fst snd i j) [Mono i] :
+    (isoKernelOfIsPullback sq).hom ≫ kernel.ι (j ≫ cokernel.π i) = snd :=
+  IsLimit.conePointUniqueUpToIso_hom_comp _ _ WalkingParallelPair.zero
+
+@[simp]
+lemma isoKernelOfIsPullback_inv_comp (sq : IsPullback fst snd i j) [Mono i] :
+    (isoKernelOfIsPullback sq).inv ≫ snd = kernel.ι (j ≫ cokernel.π i) :=
+  IsLimit.conePointUniqueUpToIso_inv_comp _ _ WalkingParallelPair.zero
+
+end PullbackKernel
+
 section
 
 variable {D : Type*} [Category* D] [HasZeroMorphisms D]
