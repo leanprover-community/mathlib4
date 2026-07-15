@@ -247,11 +247,11 @@ theorem diagSum_eq {n : ℕ} (F : Matrix (Fin n) (Fin n) R) (i : Fin n) :
   rfl
 
 theorem stepEntry_eq {n : ℕ}
-    (A F : Matrix (Fin n) (Fin n) R)
-    (i j : Fin n) :
-    stepEntry A F i j =
-      (-∑ k : Fin n, if i < k then F k k else 0) * A i j
+    (A F : Matrix (Fin n) (Fin n) R) :
+    stepEntry A F =
+      .of fun i j ↦ (-∑ k : Fin n, if i < k then F k k else 0) * A i j
         + ∑ k : Fin n, if i < k then F i k * A k j else 0 := by
+  ext i j
   rw [stepEntry, diagTerm, tailSum]
   simp only [Matrix.add_apply, Matrix.of_apply, diagSum_eq]
 

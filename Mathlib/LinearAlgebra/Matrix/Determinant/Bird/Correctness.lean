@@ -162,7 +162,8 @@ theorem iter_succ_entry (i j : Fin n) :
     Spec.iterMatrix A (p + 1) i j =
       -Spec.diagSum (Spec.iterMatrix A p) i * A i j
       + ∑ k ∈ Finset.Ioi i, Spec.iterMatrix A p i k * A k j := by
-  rw [Spec.iterMatrix_succ_apply, Spec.stepEntry_eq, Spec.diagSum_eq, sum_Ioi_eq_sum_ite]
+  rw [Spec.iterMatrix_succ_apply, Spec.stepEntry_eq, Matrix.of_apply, Spec.diagSum_eq,
+    sum_Ioi_eq_sum_ite]
 
 /-- Bird's equation (3), assuming equation (1) at `p` as the induction hypothesis. -/
 theorem paper_eq3 (i j : Fin n) (hEq1 : Eq1 A p) :
@@ -475,7 +476,7 @@ theorem iter_get_eq_spec_iterMatrix (A : Array R) (hA : A.size = n * n) (t : ℕ
   | succ t ih =>
     rw [BirdDet.iter_succ, stepEntry_eq]
     rw [Spec.iterMatrix_succ_apply]
-    rw [Spec.stepEntry_eq, sumFrom_fin_tail, sumFrom_fin_tail]
+    rw [Spec.stepEntry_eq, Matrix.of_apply, sumFrom_fin_tail, sumFrom_fin_tail]
     simp only [ih, get_eq_ofArray_apply A hA, neg_mul]
 
 end FlatArrayProof
