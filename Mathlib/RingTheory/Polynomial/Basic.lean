@@ -726,7 +726,7 @@ private theorem prime_C_iff_of_fintype {R : Type u} (σ : Type v) {r : R} [CommR
   · congr!
     simp only [renameEquiv_apply, algHom_C, algebraMap_eq]
   · induction Fintype.card σ with
-    | zero => exact MulEquiv.prime_iff (isEmptyAlgEquiv R (Fin 0)).symm (p := r)
+    | zero => simpa using MulEquiv.prime_iff (isEmptyAlgEquiv R (Fin 0)).symm (p := r)
     | succ d hd =>
       convert! MulEquiv.prime_iff (finSuccEquiv R d).symm (p := Polynomial.C (C r))
       · simp [← finSuccEquiv_comp_C_eq_C]
@@ -761,14 +761,12 @@ theorem prime_rename_iff (s : Set σ) {p : MvPolynomial s R} :
     let eqv :=
       (sumAlgEquiv R (↥sᶜ) s).symm.trans
         (renameEquiv R <| (Equiv.sumComm (↥sᶜ) s).trans <| Equiv.Set.sumCompl s)
-    have : (rename (↑)).toRingHom = eqv.toAlgHom.toRingHom.comp C := by
-      apply ringHom_ext
-      · simp [eqv]
-      · simp [eqv]
+    have : rename Subtype.val = eqv.toAlgHom.comp (Algebra.algHom _ (MvPolynomial s R) _) := by
+      apply algHom_ext
+      simp [eqv, rename, X, monomial, Algebra.algHom, renameEquiv, Finsupp.mapDomain.addMonoidHom,
+        sumAlgEquiv, C]
     apply_fun (· p) at this
-    simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_coe, AlgEquiv.toAlgHom_toRingHom,
-      RingHom.coe_comp, Function.comp_apply] at this
-    rw [this, MulEquiv.prime_iff, prime_C_iff]
+    simpa [this, MulEquiv.prime_iff, Algebra.algHom] using (prime_C_iff _).symm
 
 end MvPolynomial
 
@@ -785,7 +783,6 @@ protected theorem Polynomial.isNoetherianRing [inst : IsNoetherianRing R] : IsNo
       have hm2 : ∀ k, I.leadingCoeffNth k ≤ M := fun k =>
         Or.casesOn (le_or_gt k N) (fun h => HN ▸ I.leadingCoeffNth_mono h) fun h _ hx =>
           Classical.by_contradiction fun hxm =>
-            haveI : IsNoetherian R R := inst
             have : ¬M < I.leadingCoeffNth k := by
               refine WellFounded.not_lt_min inst.wf _ ?_; exact ⟨k, rfl⟩
             this ⟨HN ▸ I.leadingCoeffNth_mono (le_of_lt h), fun H => hxm (H hx)⟩
@@ -854,10 +851,8 @@ namespace Polynomial
 
 theorem linearIndependent_powers_iff_aeval (f : M →ₗ[R] M) (v : M) :
     (LinearIndependent R fun n : ℕ => (f ^ n) v) ↔ ∀ p : R[X], aeval f p v = 0 → p = 0 := by
-  rw [linearIndependent_iff]
-  simp only [Finsupp.linearCombination_apply, aeval_endomorphism, forall_iff_forall_finsupp,
-    ofFinsupp_eq_zero]
-  exact Iff.rfl
+  simp [linearIndependent_iff, Finsupp.linearCombination_apply, aeval_endomorphism, Finsupp.sum,
+    forall_iff_forall_finsupp, AddMonoidAlgebra.coeffEquiv.forall_congr_left, Polynomial.sum]
 
 theorem disjoint_ker_aeval_of_isCoprime (f : M →ₗ[R] M) {p q : R[X]} (hpq : IsCoprime p q) :
     Disjoint (LinearMap.ker (aeval f p)) (LinearMap.ker (aeval f q)) := by
