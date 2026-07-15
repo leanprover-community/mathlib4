@@ -446,13 +446,11 @@ theorem w₀ {X Y : Augmented C} (f : X ⟶ Y) :
       X.hom.app (op ⦋0⦌) ≫ Augmented.point.map f :=
   congr_app f.w (op ⦋0⦌)
 
-variable (C)
-
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Functor composition induces a functor on augmented simplicial objects. -/
-@[simp]
-def whiskeringObj (D : Type*) [Category* D] (F : C ⥤ D) : Augmented C ⥤ Augmented D where
+@[simps]
+def whiskeringObj {D : Type*} [Category* D] (F : C ⥤ D) : Augmented C ⥤ Augmented D where
   obj X :=
     { left := ((whiskering _ _).obj F).obj (drop.obj X)
       right := F.obj (point.obj X)
@@ -463,10 +461,19 @@ def whiskeringObj (D : Type*) [Category* D] (F : C ⥤ D) : Augmented C ⥤ Augm
       w := by ext; simp [← Functor.map_comp, w_app] }
 
 set_option backward.defeqAttrib.useBackward true in
+@[simps!]
+def whiskeringObjCompIso {D : Type*} [Category* D] {E : Type*} [Category* E]
+    (F : C ⥤ D) (G : D ⥤ E) :
+    whiskeringObj F ⋙ whiskeringObj G ≅ whiskeringObj (F ⋙ G) :=
+  NatIso.ofComponents (fun _ ↦ Comma.isoMk (Iso.refl _) (Iso.refl _))
+
+variable (C)
+
+set_option backward.defeqAttrib.useBackward true in
 /-- Functor composition induces a functor on augmented simplicial objects. -/
 @[simps]
 def whiskering (D : Type u') [Category.{v'} D] : (C ⥤ D) ⥤ Augmented C ⥤ Augmented D where
-  obj := whiskeringObj _ _
+  obj := whiskeringObj
   map η :=
     { app := fun A =>
         { left := whiskerLeft _ η
