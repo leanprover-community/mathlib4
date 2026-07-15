@@ -216,33 +216,29 @@ theorem mul_antipode_rlTensor_comul_adjoin_top {X : Set A} (S : A →ₐ[R] Aᵐ
         simp only [map_sum, lTensor_tmul, mul'_apply, coe_comp, Function.comp_apply,
           LinearEquiv.coe_coe,  MulOpposite.coe_opLinearEquiv_symm, AlgHom.coe_toLinearMap]
       unfold P
-
-      symm
       calc
-        _ = (∑ i ∈ (ℛ R x).index, (ℛ R x).left i *
-            ((MulOpposite.opLinearEquiv R).symm.toLinearMap ∘ₗ S.toLinearMap)
-              ((ℛ R x).right i)) *
-            algebraMap R A (ε y) := by
-            rw [key x hxP]
-            simp only [coe_comp, Function.comp_apply, counit_mul,
-              linearMap_apply, map_mul]
         _ = ∑ i ∈ (ℛ R x).index, (ℛ R x).left i *
             (∑ j ∈ (ℛ R y).index, (ℛ R y).left j *
               ((MulOpposite.opLinearEquiv R).symm.toLinearMap ∘ₗ S.toLinearMap)
                 ((ℛ R y).right j)) *
             ((MulOpposite.opLinearEquiv R).symm.toLinearMap ∘ₗ S.toLinearMap)
               ((ℛ R x).right i) := by
+              simp only [coe_comp, Function.comp_apply, comul_mul, ← Coalgebra.Repr.eq (ℛ R x),
+                ← Coalgebra.Repr.eq (ℛ R y), Finset.sum_mul_sum]
+              simp only [tmul_mul_tmul, map_sum, lTensor_tmul, coe_comp, LinearEquiv.coe_coe,
+                MulOpposite.coe_opLinearEquiv_symm, AlgHom.coe_toLinearMap, Function.comp_apply,
+                map_mul, MulOpposite.unop_mul, mul'_apply, mul_assoc, Finset.mul_sum,
+                Finset.sum_mul]
+        _ = (∑ i ∈ (ℛ R x).index, (ℛ R x).left i *
+            ((MulOpposite.opLinearEquiv R).symm.toLinearMap ∘ₗ S.toLinearMap)
+              ((ℛ R x).right i)) *
+            algebraMap R A (ε y) := by
             rw [key y hyP, Finset.sum_mul]
-            exact Finset.sum_congr rfl fun i _ ↦ by
-              rw [mul_assoc, ← commutes, ← mul_assoc]
-        _ = _ := by
-            simp only [coe_comp, Function.comp_apply]
-            rw [comul_mul, ← Coalgebra.Repr.eq (ℛ R x), ← Coalgebra.Repr.eq (ℛ R y),
-              Finset.sum_mul_sum]
-            simp only [TensorProduct.tmul_mul_tmul, map_sum, lTensor_tmul,  mul'_apply, coe_comp,
-              Function.comp_apply, LinearEquiv.coe_coe, MulOpposite.coe_opLinearEquiv_symm,
-              AlgHom.coe_toLinearMap, map_mul, MulOpposite.unop_mul, Finset.mul_sum, Finset.sum_mul,
-              mul_assoc]
+            exact Finset.sum_congr rfl fun i _ ↦ by  rw [mul_assoc, commutes, mul_assoc]
+        _ = (Algebra.linearMap R A ∘ₗ ε) (x * y) := by
+            rw [key x hxP]
+            simp only [coe_comp, Function.comp_apply, counit_mul,
+            linearMap_apply, map_mul]
   refine h t ?_
   simp only [hX, mem_top]
 
