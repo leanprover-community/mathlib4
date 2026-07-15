@@ -68,7 +68,7 @@ noncomputable def coproduct : LocallyRingedSpace where
     (F ⋙ forgetToSheafedSpace)
   isLocalRing x := by
     obtain ⟨i, y, ⟨⟩⟩ := SheafedSpace.colimit_exists_rep (F ⋙ forgetToSheafedSpace) x
-    haveI : IsLocalRing (((F ⋙ forgetToSheafedSpace).obj i).presheaf.stalk y) :=
+    have : IsLocalRing (((F ⋙ forgetToSheafedSpace).obj i).presheaf.stalk y) :=
       (F.obj i).isLocalRing _
     exact
       (asIso ((colimit.ι (C := SheafedSpace.{u + 1, u, u} CommRingCat.{u})
@@ -139,7 +139,7 @@ theorem coequalizer_π_app_isLocalHom
   rw [← this, PresheafedSpace.comp_c_app,
     ← PresheafedSpace.colimitPresheafObjIsoComponentwiseLimit_hom_π]
   -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): this instance has to be manually added
-  haveI : IsIso (PreservesCoequalizer.iso
+  have : IsIso (PreservesCoequalizer.iso
       SheafedSpace.forgetToPresheafedSpace f.toShHom g.toShHom).hom.c :=
     inferInstance
   apply +allowSynthFailures RingHom.isLocalHom_comp

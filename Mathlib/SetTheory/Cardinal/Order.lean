@@ -362,7 +362,7 @@ protected theorem lt_wf : @WellFounded Cardinal.{u} (· < ·) :=
     by_contradiction fun h => by
       let ι := { c : Cardinal // ¬Acc (· < ·) c }
       let f : ι → Cardinal := Subtype.val
-      haveI hι : Nonempty ι := ⟨⟨_, h⟩⟩
+      have hι : Nonempty ι := ⟨⟨_, h⟩⟩
       obtain ⟨⟨c : Cardinal, hc : ¬Acc (· < ·) c⟩, ⟨h_1 : ∀ j, (f ⟨c, hc⟩).out ↪ (f j).out⟩⟩ :=
         Embedding.min_injective fun i => (f i).out
       refine hc (Acc.intro _ fun j h' => by_contradiction fun hj => h'.2 ?_)

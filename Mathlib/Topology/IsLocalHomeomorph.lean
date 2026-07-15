@@ -53,7 +53,7 @@ theorem isLocalHomeomorphOn_iff_isOpenEmbedding_restrict {f : X → Y} :
       refine emb.comp ⟨.inclusion interior_subset, ?_⟩
       rw [Set.range_inclusion]; exact isOpen_induced isOpen_interior
     obtain ⟨cont, inj, openMap⟩ := isOpenEmbedding_iff_continuous_injective_isOpenMap.mp this
-    haveI : Nonempty X := ⟨x⟩
+    have : Nonempty X := ⟨x⟩
     exact ⟨OpenPartialHomeomorph.ofContinuousOpenRestrict
       (Set.injOn_iff_injective.mpr inj).toPartialEquiv
       (continuousOn_iff_continuous_restrict.mpr cont) openMap isOpen_interior,

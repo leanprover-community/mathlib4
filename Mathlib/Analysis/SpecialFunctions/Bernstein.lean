@@ -181,7 +181,7 @@ and reproduced on wikipedia.
 -/
 theorem bernsteinApproximation_uniform [LocallyConvexSpace ℝ E] (f : C(I, E)) :
     Tendsto (fun n : ℕ => bernsteinApproximation n f) atTop (𝓝 f) := by
-  letI : UniformSpace E := IsTopologicalAddGroup.rightUniformSpace E
+  let : UniformSpace E := IsTopologicalAddGroup.rightUniformSpace E
   have : IsUniformAddGroup E := isUniformAddGroup_of_addCommGroup
   /- Topology on a locally convex TVS is given by a family of seminorms `‖x‖_U = gauge U x`,
   where the open symmetric convex sets `U` form a basis of neighborhoods in this topology,

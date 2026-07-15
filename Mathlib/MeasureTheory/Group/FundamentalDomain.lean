@@ -287,7 +287,7 @@ is determined by the measure of its intersection with a fundamental domain for t
   its intersection with a fundamental domain for the action of `G`. -/]
 theorem measure_eq_card_smul_of_smul_ae_eq_self [Finite G] (h : IsFundamentalDomain G s μ)
     (t : Set α) (ht : ∀ g : G, (g • t : Set α) =ᵐ[μ] t) : μ t = Nat.card G • μ (t ∩ s) := by
-  haveI : Fintype G := Fintype.ofFinite G
+  have : Fintype G := Fintype.ofFinite G
   rw [h.measure_eq_tsum]
   replace ht : ∀ g : G, (g • t ∩ s : Set α) =ᵐ[μ] (t ∩ s : Set α) := fun g =>
     ae_eq_set_inter (ht g) (ae_eq_refl s)
@@ -783,7 +783,7 @@ theorem IsFundamentalDomain.measurePreserving_quotient_mk
     MeasurePreserving π (ν.restrict 𝓕) μ where
   measurable := measurable_quotient_mk' (s := α_mod_G)
   map_eq := by
-    haveI : HasFundamentalDomain G α ν := ⟨𝓕, h𝓕⟩
+    have : HasFundamentalDomain G α ν := ⟨𝓕, h𝓕⟩
     rw [h𝓕.projection_respects_measure (μ := μ)]
 
 variable [SMulInvariantMeasure G α ν] [Countable G] [MeasurableConstSMul G α]
@@ -832,7 +832,6 @@ lemma QuotientMeasureEqMeasurePreimage.sigmaFiniteQuotient
   · obtain ⟨s, fund_dom_s⟩ := i'
     have : π ⁻¹' π '' (A n) = _ := MulAction.quotient_preimage_image_eq_union_mul (A n) (G := G)
     have measπAn : MeasurableSet (π '' A n) := by
-      let _ : Setoid α := α_mod_G
       rw [measurableSet_quotient, Quotient.mk''_eq_mk, this]
       apply MeasurableSet.iUnion
       exact fun g ↦ MeasurableSet.const_smul (hA_meas n) g

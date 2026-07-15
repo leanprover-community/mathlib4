@@ -964,7 +964,7 @@ theorem exists_closedBall_covering_tsum_measure_le (μ : Measure α) [SFinite μ
         (∑' x : t0, μ (closedBall x (r x))) = ∑' x : t0, μ (closedBall x (r0 x)) := by
           congr 1; ext x; rw [r_t0 x x.2]
         _ = μ (⋃ x : t0, closedBall x (r0 x)) := by
-          haveI : Encodable t0 := t0_count.toEncodable
+          have : Encodable t0 := t0_count.toEncodable
           rw [measure_iUnion]
           · exact (pairwise_subtype_iff_pairwise_set _ _).2 t0_disj
           · exact fun i => measurableSet_closedBall
@@ -986,7 +986,7 @@ theorem exists_closedBall_covering_tsum_measure_le (μ : Measure α) [SFinite μ
         _ = ∑' x : S i, μ (closedBall x (r1 x)) := by
           grind
         _ = μ (⋃ x : S i, closedBall x (r1 x)) := by
-          haveI : Encodable (S i) := (S_count i).toEncodable
+          have : Encodable (S i) := (S_count i).toEncodable
           rw [measure_iUnion]
           · exact (pairwise_subtype_iff_pairwise_set _ _).2 (S_disj i)
           · exact fun i => measurableSet_closedBall

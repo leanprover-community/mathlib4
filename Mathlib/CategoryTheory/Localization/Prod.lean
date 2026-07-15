@@ -62,7 +62,7 @@ noncomputable def prodLift₁ [W₂.ContainsIdentities]
     (hF : (W₁.prod W₂).IsInvertedBy F) :
     W₁.Localization ⥤ C₂ ⥤ E :=
   Construction.lift (curry.obj F) (fun _ _ f₁ hf₁ => by
-    haveI : ∀ (X₂ : C₂), IsIso (((curry.obj F).map f₁).app X₂) :=
+    have : ∀ (X₂ : C₂), IsIso (((curry.obj F).map f₁).app X₂) :=
       fun X₂ => hF _ ⟨hf₁, MorphismProperty.id_mem _ _⟩
     apply NatIso.isIso_of_isIso_app)
 
@@ -80,7 +80,7 @@ noncomputable def prodLift :
     W₁.Localization × W₂.Localization ⥤ E := by
   refine uncurry.obj (Construction.lift (prodLift₁ F hF).flip ?_).flip
   intro _ _ f₂ hf₂
-  haveI : ∀ (X₁ : W₁.Localization),
+  have : ∀ (X₁ : W₁.Localization),
       IsIso (((Functor.flip (prodLift₁ F hF)).map f₂).app X₁) := fun X₁ => by
     obtain ⟨X₁, rfl⟩ := (Construction.objEquiv W₁).surjective X₁
     exact ((MorphismProperty.isomorphisms E).arrow_mk_iso_iff
@@ -138,7 +138,7 @@ and if both `W₁` and `W₂` contain identities, then the product
 functor `L₁.prod L₂ : C₁ × C₂ ⥤ D₁ × D₂` is a localization functor for `W₁.prod W₂`. -/
 instance prod [L₁.IsLocalization W₁] [L₂.IsLocalization W₂] :
     (L₁.prod L₂).IsLocalization (W₁.prod W₂) := by
-  haveI := Construction.prodIsLocalization W₁ W₂
+  have := Construction.prodIsLocalization W₁ W₂
   exact of_equivalence_target (W₁.Q.prod W₂.Q) (W₁.prod W₂) (L₁.prod L₂)
     ((uniq W₁.Q L₁ W₁).prod (uniq W₂.Q L₂ W₂))
     (NatIso.prod (compUniqFunctor W₁.Q L₁ W₁) (compUniqFunctor W₂.Q L₂ W₂))

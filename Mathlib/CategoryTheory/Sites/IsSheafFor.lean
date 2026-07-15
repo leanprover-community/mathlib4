@@ -184,10 +184,10 @@ theorem pullbackCompatible_iff (x : FamilyOfElements P R) [R.HasPairwisePullback
   constructor
   · intro t Y₁ Y₂ f₁ f₂ hf₁ hf₂
     apply t
-    haveI := HasPairwisePullbacks.has_pullbacks hf₁ hf₂
+    have := HasPairwisePullbacks.has_pullbacks hf₁ hf₂
     apply pullback.condition
   · intro t Y₁ Y₂ Z g₁ g₂ f₁ f₂ hf₁ hf₂ comm
-    haveI := HasPairwisePullbacks.has_pullbacks hf₁ hf₂
+    have := HasPairwisePullbacks.has_pullbacks hf₁ hf₂
     rw [← pullback.lift_fst _ _ comm, op_comp, Functor.map_comp, comp_apply,
       t hf₁ hf₂, ← comp_apply, ← Functor.map_comp, ← op_comp, pullback.lift_snd]
 

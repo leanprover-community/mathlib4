@@ -193,8 +193,8 @@ theorem sup_coe {P : α → Prop} {Pbot : P ⊥} {Psup : ∀ ⦃x y⦄, P x → 
     letI := Subtype.semilatticeSup Psup
     letI := Subtype.orderBot Pbot
     (t.sup f).val = t.sup fun x => ↑(f x) := by
-  letI := Subtype.semilatticeSup Psup
-  letI := Subtype.orderBot Pbot
+  let := Subtype.semilatticeSup Psup
+  let := Subtype.orderBot Pbot
   apply apply_sup_eq_sup_comp Subtype.val <;> intros <;> rfl
 
 @[simp]
@@ -771,7 +771,7 @@ theorem map_finset_sup [DecidableEq α] [DecidableEq β] (s : Finset γ) (f : γ
 
 theorem count_finset_sup [DecidableEq β] (s : Finset α) (f : α → Multiset β) (b : β) :
     count b (s.sup f) = s.sup fun a => count b (f a) := by
-  letI := Classical.decEq α
+  let := Classical.decEq α
   refine s.induction ?_ ?_
   · exact count_zero _
   · intro i s _ ih

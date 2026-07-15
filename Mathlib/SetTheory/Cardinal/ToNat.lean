@@ -170,4 +170,16 @@ lemma toNat_eq_iff_of_lt_aleph0 {a : Cardinal.{u}} (n : ℕ) (lt : a < Cardinal.
   nth_rw 2 [← Cardinal.cast_toNat_of_lt_aleph0 lt]
   exact Nat.cast_inj.symm
 
+/-- A `Cardinal.toNat` version of `eq_of_forall_le_iff`.
+This is useful for proving equality of `Module.finrank`. -/
+theorem toNat_eq_of_forall_le_iff {c : Cardinal.{u}} {d : Cardinal.{v}}
+    (h : ∀ n : ℕ, n ≤ c ↔ n ≤ d) : c.toNat = d.toNat := by
+  have h' := forall_congr' h
+  rw [← Cardinal.aleph0_le, ← Cardinal.aleph0_le] at h'
+  rcases iff_iff_and_or_not_and_not.mp h' with ⟨hc, hd⟩ | ⟨hc, hd⟩
+  · simp [Cardinal.toNat_apply_of_aleph0_le, hc, hd]
+  · apply eq_of_forall_le_iff
+    rw [← cast_toNat_of_lt_aleph0 (not_le.mp hc), ← cast_toNat_of_lt_aleph0 (not_le.mp hd)] at h
+    simpa using h
+
 end Cardinal

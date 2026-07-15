@@ -67,7 +67,7 @@ lemma FunctorCategory.prod_preservesColimits [HasBinaryProducts D] [HasColimits 
           preserves := fun {c : Cocone K} (t : IsColimit c) => ⟨by
             apply evaluationJointlyReflectsColimits _ fun {k} => ?_
             change IsColimit ((prod.functor.obj F ⋙ (evaluation _ _).obj k).mapCocone c)
-            let this :=
+            let :=
               isColimitOfPreserves ((evaluation C D).obj k ⋙ prod.functor.obj (F.obj k)) t
             apply IsColimit.mapCoconeEquiv _ this
             apply (NatIso.ofComponents _ _).symm

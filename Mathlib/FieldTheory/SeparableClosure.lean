@@ -436,7 +436,7 @@ theorem insepDegree_bot' : insepDegree F (⊥ : IntermediateField E K) = insepDe
 variable (F) in
 lemma _root_.Field.insepDegree_top_le_insepDegree_of_isScalarTower :
     insepDegree E K ≤ insepDegree F K := by
-  letI := (IntermediateField.inclusion (separableClosure.le_restrictScalars F E K)).toAlgebra
+  let := (IntermediateField.inclusion (separableClosure.le_restrictScalars F E K)).toAlgebra
   have : IsScalarTower (separableClosure F K) ((separableClosure E K).restrictScalars F) K :=
     .of_algebraMap_eq' rfl
   exact Module.rank_top_le_rank_of_isScalarTower
@@ -445,14 +445,14 @@ lemma _root_.Field.insepDegree_top_le_insepDegree_of_isScalarTower :
 variable {K} in
 lemma _root_.Field.insepDegree_le_of_left_le {E₁ E₂ : IntermediateField F K} (H : E₁ ≤ E₂) :
     insepDegree E₂ K ≤ insepDegree E₁ K := by
-  letI := (IntermediateField.inclusion H).toAlgebra
+  let := (IntermediateField.inclusion H).toAlgebra
   have : IsScalarTower E₁ E₂ K := .of_algebraMap_eq' rfl
   exact insepDegree_top_le_insepDegree_of_isScalarTower _ _ _
 
 variable (F) in
 lemma _root_.Field.finInsepDegree_top_le_finInsepDegree_of_isScalarTower [Module.Finite F K] :
     finInsepDegree E K ≤ finInsepDegree F K := by
-  letI := (IntermediateField.inclusion (separableClosure.le_restrictScalars F E K)).toAlgebra
+  let := (IntermediateField.inclusion (separableClosure.le_restrictScalars F E K)).toAlgebra
   have : IsScalarTower (separableClosure F K) ((separableClosure E K).restrictScalars F) K :=
     .of_algebraMap_eq' rfl
   exact Module.finrank_top_le_finrank_of_isScalarTower
@@ -461,7 +461,7 @@ lemma _root_.Field.finInsepDegree_top_le_finInsepDegree_of_isScalarTower [Module
 variable {K} in
 lemma finInsepDegree_le_of_left_le {E₁ E₂ : IntermediateField F K} (H : E₁ ≤ E₂)
     [Module.Finite E₁ K] : finInsepDegree E₂ K ≤ finInsepDegree E₁ K := by
-  letI := (IntermediateField.inclusion H).toAlgebra
+  let := (IntermediateField.inclusion H).toAlgebra
   have : IsScalarTower E₁ E₂ K := .of_algebraMap_eq' rfl
   exact finInsepDegree_top_le_finInsepDegree_of_isScalarTower _ _ _
 

@@ -75,7 +75,7 @@ lemma exists_monic_aeval_eq_zero_forall_mem_pow_of_mem_map [Algebra.IsIntegral R
     ∃ p : R[X], p.Monic ∧ aeval x p = 0 ∧ ∀ i, p.coeff i ∈ I ^ (p.natDegree - i) := by
   classical
   let A : Subalgebra R R[X] := Algebra.adjoin R { C r * X | r ∈ I }
-  letI := Polynomial.algebra R S
+  let := Polynomial.algebra R S
   refine exists_monic_aeval_eq_zero_forall_mem_pow_of_isIntegral ?_
   induction hx using Submodule.span_induction with
   | zero => simp [isIntegral_zero]

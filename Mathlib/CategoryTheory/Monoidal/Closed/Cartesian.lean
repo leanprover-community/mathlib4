@@ -115,10 +115,10 @@ This actually shows a slightly stronger version: any morphism to an initial obje
 exponentiable object is an isomorphism.
 -/
 theorem strict_initial {I : C} (t : IsInitial I) (f : A ⟶ I) : IsIso f := by
-  haveI : Mono f := by
+  have : Mono f := by
     rw [← lift_snd (𝟙 A) f, ← zeroMul_hom t]
     exact mono_comp _ _
-  haveI : IsSplitEpi f := IsSplitEpi.mk' ⟨t.to _, t.hom_ext _ _⟩
+  have : IsSplitEpi f := IsSplitEpi.mk' ⟨t.to _, t.hom_ext _ _⟩
   apply isIso_of_mono_of_isSplitEpi
 
 instance to_initial_isIso [HasInitial C] (f : A ⟶ ⊥_ C) : IsIso f :=
@@ -127,8 +127,8 @@ instance to_initial_isIso [HasInitial C] (f : A ⟶ ⊥_ C) : IsIso f :=
 /-- If an initial object `0` exists in a CCC then every morphism from it is monic. -/
 theorem initial_mono {I : C} (B : C) (t : IsInitial I) [MonoidalClosed C] : Mono (t.to B) :=
   ⟨fun g h _ => by
-    haveI := strict_initial t g
-    haveI := strict_initial t h
+    have := strict_initial t g
+    have := strict_initial t h
     exact eq_of_inv_eq_inv (t.hom_ext _ _)⟩
 
 instance Initial.mono_to [HasInitial C] (B : C) [MonoidalClosed C] : Mono (initial.to B) :=

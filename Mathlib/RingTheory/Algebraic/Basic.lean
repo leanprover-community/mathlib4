@@ -382,7 +382,7 @@ lemma IsAlgebraic.inv_iff {K} [Field K] [Algebra R K] {x : K} :
     IsAlgebraic R (x⁻¹) ↔ IsAlgebraic R x := by
   by_cases hx : x = 0
   · simp [hx]
-  letI := invertibleOfNonzero hx
+  let := invertibleOfNonzero hx
   exact IsAlgebraic.invOf_iff (R := R) (x := x)
 
 alias ⟨_, IsAlgebraic.inv⟩ := IsAlgebraic.inv_iff
@@ -413,8 +413,8 @@ theorem IsAlgebraic.extendScalars (hinj : Function.Injective (algebraMap R S)) {
 theorem IsAlgebraic.tower_top_of_subalgebra_le
     {A B : Subalgebra R S} (hle : A ≤ B) {x : S}
     (h : IsAlgebraic A x) : IsAlgebraic B x := by
-  letI : Algebra A B := (Subalgebra.inclusion hle).toAlgebra
-  haveI : IsScalarTower A B S := .of_algebraMap_eq fun _ ↦ rfl
+  let : Algebra A B := (Subalgebra.inclusion hle).toAlgebra
+  have : IsScalarTower A B S := .of_algebraMap_eq fun _ ↦ rfl
   exact h.extendScalars (Subalgebra.inclusion_injective hle)
 
 /-- If `x` is transcendental over `S`, then `x` is transcendental over `R` when `S` is an extension

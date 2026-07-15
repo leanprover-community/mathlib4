@@ -158,7 +158,7 @@ lemma ProbabilityMeasure.tendsto_of_tight_of_separatesPoints (𝕜 : Type*) [RCL
     {A : StarSubalgebra 𝕜 (E →ᵇ 𝕜)} (hA : (A.map (toContinuousMapStarₐ 𝕜)).SeparatesPoints)
     (hμ : ∀ g ∈ A, Tendsto (fun n ↦ ∫ x, g x ∂(μ n)) 𝓕 (𝓝 (∫ x, g x ∂μ₀))) :
     Tendsto μ 𝓕 (𝓝 μ₀) := by
-  letI := TopologicalSpace.upgradeIsCompletelyMetrizable E
+  let := TopologicalSpace.upgradeIsCompletelyMetrizable E
   obtain rfl | _ := 𝓕.eq_or_neBot
   · simp
   refine (Filter.tendsto_iff_ultrafilter _ _ _).2 fun U hU ↦ ?_

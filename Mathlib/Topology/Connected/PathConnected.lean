@@ -548,7 +548,7 @@ class PathConnectedSpace (X : Type*) [TopologicalSpace X] : Prop where
 
 theorem pathConnectedSpace_iff_zerothHomotopy :
     PathConnectedSpace X ↔ Nonempty (ZerothHomotopy X) ∧ Subsingleton (ZerothHomotopy X) := by
-  letI := pathSetoid X
+  let := pathSetoid X
   constructor
   · intro h
     refine ⟨(nonempty_quotient_iff _).mpr h.1, ⟨?_⟩⟩

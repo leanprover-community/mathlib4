@@ -132,7 +132,7 @@ theorem IsOpen.ae_eq_zero_of_integral_contMDiff_smul_eq_zero' {U : Set M} (hU : 
   rw [← ae_restrict_iff' meas_U, ae_restrict_iff_subtype meas_U]
   let U : Opens M := ⟨U, hU⟩
   change ∀ᵐ (x : U) ∂_, _
-  haveI : SigmaCompactSpace U := isSigmaCompact_iff_sigmaCompactSpace.mp hSig
+  have : SigmaCompactSpace U := isSigmaCompact_iff_sigmaCompactSpace.mp hSig
   refine ae_eq_zero_of_integral_contMDiff_smul_eq_zero I ?_ fun g g_smth g_supp ↦ ?_
   · exact (locallyIntegrable_comap meas_U).mpr hf
   specialize h (Subtype.val.extend g 0) (g_smth.extend_zero g_supp)

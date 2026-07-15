@@ -55,11 +55,11 @@ def homDiagram {F : J ⥤ Cat.{v, v}} (X Y : limit (F ⋙ Cat.objects.{v, v})) :
     · exact congr_hom (limit.w (F ⋙ Cat.objects) f) Y
   map_id X := by
     ext f
-    letI : Category (objects.obj (F.obj X)) := (inferInstance : Category (F.obj X))
+    let : Category (objects.obj (F.obj X)) := (inferInstance : Category (F.obj X))
     simp [Functor.congr_hom congr($(F.map_id X).toFunctor) f]
   map_comp {_ _ Z} f g := by
     ext h
-    letI : Category (objects.obj (F.obj Z)) := (inferInstance : Category (F.obj Z))
+    let : Category (objects.obj (F.obj Z)) := (inferInstance : Category (F.obj Z))
     simp [Functor.congr_hom congr($(F.map_comp f g).toFunctor) h, eqToHom_map]
 
 set_option backward.isDefEq.respectTransparency false in

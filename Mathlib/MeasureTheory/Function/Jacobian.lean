@@ -219,7 +219,7 @@ theorem exists_closed_cover_approximatesLinearOn_of_hasFDerivWithinAt [SecondCou
     isClosed_closure.inter isClosed_closedBall
   -- reindex the sets `K n z p`, to let them only depend on an integer parameter `q`.
   obtain ⟨F, hF⟩ : ∃ F : ℕ → ℕ × T × ℕ, Function.Surjective F := by
-    haveI : Encodable T := T_count.toEncodable
+    have : Encodable T := T_count.toEncodable
     have : Nonempty T := by
       rcases hs with ⟨x, xs⟩
       rcases s_subset x xs with ⟨n, z, _⟩
@@ -366,7 +366,7 @@ theorem addHaar_image_le_mul_of_det_lt (A : E →L[ℝ] E) {m : ℝ≥0}
                 (∑' x : ↥t, μ (closedBall (↑x) (r ↑x))) ≤ μ s + a :=
       Besicovitch.exists_closedBall_covering_tsum_measure_le μ ha.ne' (fun _ => Ioi 0) s
         fun x _ δ δpos => ⟨δ / 2, by simp [half_pos δpos, δpos]⟩
-    haveI : Encodable t := t_count.toEncodable
+    have : Encodable t := t_count.toEncodable
     calc
       μ (f '' s) ≤ μ (⋃ x : t, f '' (s ∩ closedBall x (r x))) := by
         rw [biUnion_eq_iUnion] at st

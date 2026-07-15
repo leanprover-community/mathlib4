@@ -106,7 +106,7 @@ theorem totallyBounded_of_finite_discretization {s : Set α}
   · rw [hs]
     exact totallyBounded_empty
   rcases hs with ⟨x0, hx0⟩
-  haveI : Inhabited s := ⟨⟨x0, hx0⟩⟩
+  have : Inhabited s := ⟨⟨x0, hx0⟩⟩
   refine totallyBounded_iff.2 fun ε ε0 => ?_
   rcases H ε ε0 with ⟨β, fβ, F, hF⟩
   let Finv := Function.invFun F
@@ -214,7 +214,7 @@ namespace Topology
 protected lemma IsInducing.isSeparable_preimage {α : Type*} [TopologicalSpace α]
     [PseudoMetrizableSpace α] {f : β → α} [TopologicalSpace β]
     (hf : IsInducing f) {s : Set α} (hs : IsSeparable s) : IsSeparable (f ⁻¹' s) := by
-  letI : UniformSpace α := TopologicalSpace.pseudoMetrizableSpaceUniformity α
+  let : UniformSpace α := TopologicalSpace.pseudoMetrizableSpaceUniformity α
   have := pseudoMetrizableSpaceUniformity_countably_generated
   have : SeparableSpace s := hs.separableSpace
   have : SecondCountableTopology s := UniformSpace.secondCountable_of_separable _

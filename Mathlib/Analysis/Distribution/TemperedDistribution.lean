@@ -201,7 +201,7 @@ def toTemperedDistributionCLM (μ : Measure E := by volume_tac) [μ.HasTemperate
   cont := by
     apply PointwiseConvergenceCLM.continuous_of_continuous_eval
     intro g
-    haveI : Fact (1 ≤ (1 - p⁻¹)⁻¹) := by simp [fact_iff]
+    have : Fact (1 ≤ (1 - p⁻¹)⁻¹) := by simp [fact_iff]
     have hpq : ENNReal.HolderConjugate p (1 - p⁻¹)⁻¹ :=
       ENNReal.HolderConjugate.inv_one_sub_inv' hp.out
     exact (((lsmul ℂ ℂ (E := F)).flip.lpPairing μ p (1 - p⁻¹)⁻¹).flip (g.toLp (1 - p⁻¹)⁻¹ μ)).cont

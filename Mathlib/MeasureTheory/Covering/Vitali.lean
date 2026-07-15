@@ -414,7 +414,7 @@ theorem exists_disjoint_covering_ae
     exact subset_iUnion (fun a : { a // a ∉ w } => closedBall (c a) (3 * r a)) b''
   -- now that we have proved our main inclusion, we can use it to estimate the measure of the points
   -- in `ball x (r x)` not covered by `u`.
-  haveI : Countable v := (u_count.mono vu).to_subtype
+  have : Countable v := (u_count.mono vu).to_subtype
   calc
     μ ((s \ ⋃ a ∈ u, B a) ∩ ball x (R x)) ≤ μ (⋃ a : { a // a ∉ w }, closedBall (c a) (3 * r a)) :=
       measure_mono M

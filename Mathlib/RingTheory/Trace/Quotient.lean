@@ -93,28 +93,28 @@ lemma Algebra.trace_quotient_eq_of_isDedekindDomain (x) [IsDedekindDomain R] [Is
       Ideal.Quotient.mk p (Algebra.intTrace R S x) := by
   let Rₚ := Localization.AtPrime p
   let Sₚ := Localization (Algebra.algebraMapSubmonoid S p.primeCompl)
-  letI : Algebra Rₚ Sₚ := localizationAlgebra p.primeCompl S
-  haveI : IsScalarTower R Rₚ Sₚ := IsScalarTower.of_algebraMap_eq'
+  let : Algebra Rₚ Sₚ := localizationAlgebra p.primeCompl S
+  have : IsScalarTower R Rₚ Sₚ := IsScalarTower.of_algebraMap_eq'
     (by rw [RingHom.algebraMap_toAlgebra, IsLocalization.map_comp, ← IsScalarTower.algebraMap_eq])
-  haveI : IsLocalization (Submonoid.map (algebraMap R S) (Ideal.primeCompl p)) Sₚ :=
+  have : IsLocalization (Submonoid.map (algebraMap R S) (Ideal.primeCompl p)) Sₚ :=
     inferInstanceAs (IsLocalization (Algebra.algebraMapSubmonoid S p.primeCompl) Sₚ)
   have e : Algebra.algebraMapSubmonoid S p.primeCompl ≤ S⁰ :=
     Submonoid.map_le_of_le_comap _ <| p.primeCompl_le_nonZeroDivisors.trans
       (nonZeroDivisors_le_comap_nonZeroDivisors_of_injective _
         (FaithfulSMul.algebraMap_injective _ _))
-  haveI : IsDomain Sₚ := IsLocalization.isDomain_of_le_nonZeroDivisors _ e
-  haveI : IsTorsionFree Rₚ Sₚ := by
+  have : IsDomain Sₚ := IsLocalization.isDomain_of_le_nonZeroDivisors _ e
+  have : IsTorsionFree Rₚ Sₚ := by
     rw [isTorsionFree_iff_algebraMap_injective, RingHom.injective_iff_ker_eq_bot,
       RingHom.ker_eq_bot_iff_eq_zero]
     simp
-  haveI : Module.Finite Rₚ Sₚ := .of_isLocalization R S p.primeCompl
-  haveI : IsIntegrallyClosed Sₚ := isIntegrallyClosed_of_isLocalization _ _ e
+  have : Module.Finite Rₚ Sₚ := .of_isLocalization R S p.primeCompl
+  have : IsIntegrallyClosed Sₚ := isIntegrallyClosed_of_isLocalization _ _ e
   have : IsPrincipalIdealRing Rₚ := by
     by_cases hp : p = ⊥
     · infer_instance
     · have := (IsDedekindDomain.isDedekindDomainDvr R).2 p hp inferInstance
       infer_instance
-  haveI : Module.Free Rₚ Sₚ := Module.free_of_finite_type_torsion_free'
+  have : Module.Free Rₚ Sₚ := Module.free_of_finite_type_torsion_free'
   apply (equivQuotMaximalIdeal p Rₚ).injective
   rw [trace_quotient_eq_trace_localization_quotient S p Rₚ Sₚ, IsScalarTower.algebraMap_eq S Sₚ,
     RingHom.comp_apply, Ideal.Quotient.algebraMap_eq, Algebra.trace_quotient_mk,

@@ -223,9 +223,9 @@ open TopologicalSpace
 theorem ChartedSpace.secondCountable_of_countable_cover [SecondCountableTopology H] {s : Set M}
     (hs : ⋃ (x) (_ : x ∈ s), (chartAt H x).source = univ) (hsc : s.Countable) :
     SecondCountableTopology M := by
-  haveI : ∀ x : M, SecondCountableTopology (chartAt H x).source :=
+  have : ∀ x : M, SecondCountableTopology (chartAt H x).source :=
     fun x ↦ (chartAt (H := H) x).secondCountableTopology_source
-  haveI := hsc.toEncodable
+  have := hsc.toEncodable
   rw [biUnion_eq_iUnion] at hs
   exact secondCountableTopology_of_countable_cover (fun x : s ↦ (chartAt H (x : M)).open_source) hs
 
@@ -546,13 +546,13 @@ lemma ChartedSpace.sum_chartAt_inr (x' : M') :
 
 @[simp, mfld_simps] lemma sum_chartAt_inl_apply {x y : M} :
     (chartAt H (.inl x : M ⊕ M')) (Sum.inl y) = (chartAt H x) y := by
-  haveI : Nonempty H := nonempty_of_chartedSpace x
+  have : Nonempty H := nonempty_of_chartedSpace x
   rw [ChartedSpace.sum_chartAt_inl]
   exact OpenPartialHomeomorph.lift_openEmbedding_apply _ _
 
 @[simp, mfld_simps] lemma sum_chartAt_inr_apply {x y : M'} :
     (chartAt H (.inr x : M ⊕ M')) (Sum.inr y) = (chartAt H x) y := by
-  haveI : Nonempty H := nonempty_of_chartedSpace x
+  have : Nonempty H := nonempty_of_chartedSpace x
   rw [ChartedSpace.sum_chartAt_inr]
   exact OpenPartialHomeomorph.lift_openEmbedding_apply _ _
 
@@ -656,7 +656,7 @@ protected def openPartialHomeomorph (e : PartialEquiv M H) (he : e ∈ c.atlas) 
     open_source := by convert! c.open_source' he
     open_target := by convert! c.open_target he
     continuousOn_toFun := by
-      letI : TopologicalSpace M := c.toTopologicalSpace
+      let : TopologicalSpace M := c.toTopologicalSpace
       rw [continuousOn_open_iff (c.open_source' he)]
       intro s s_open
       rw [inter_comm]
@@ -664,7 +664,7 @@ protected def openPartialHomeomorph (e : PartialEquiv M H) (he : e ∈ c.atlas) 
       simp only [exists_prop, mem_iUnion, mem_singleton_iff]
       exact ⟨e, he, ⟨s, s_open, rfl⟩⟩
     continuousOn_invFun := by
-      letI : TopologicalSpace M := c.toTopologicalSpace
+      let : TopologicalSpace M := c.toTopologicalSpace
       apply continuousOn_isOpen_of_generateFrom
       intro t ht
       simp only [exists_prop, mem_iUnion, mem_singleton_iff] at ht

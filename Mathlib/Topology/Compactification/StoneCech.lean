@@ -178,8 +178,8 @@ variable [T2Space γ]
 
 @[simp]
 lemma ultrafilter_extend_extends (f : α → γ) : Ultrafilter.extend f ∘ pure = f := by
-  letI : TopologicalSpace α := ⊥
-  haveI : DiscreteTopology α := ⟨rfl⟩
+  let : TopologicalSpace α := ⊥
+  have : DiscreteTopology α := ⟨rfl⟩
   exact funext (isDenseInducing_pure.extend_eq continuous_of_discreteTopology)
 
 @[simp]

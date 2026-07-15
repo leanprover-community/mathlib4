@@ -350,6 +350,6 @@ def Fintype.orderIsoFinOfCardEq
 lemma nonempty_orderEmbedding_of_finite_infinite
     (α : Type*) [LinearOrder α] [hα : Finite α]
     (β : Type*) [LinearOrder β] [hβ : Infinite β] : Nonempty (α ↪o β) := by
-  haveI := Fintype.ofFinite α
+  have := Fintype.ofFinite α
   obtain ⟨s, hs⟩ := Infinite.exists_subset_card_eq β (Fintype.card α)
   exact ⟨((Fintype.orderIsoFinOfCardEq α rfl).symm.toOrderEmbedding).trans (s.orderEmbOfFin hs)⟩

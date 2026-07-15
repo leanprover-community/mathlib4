@@ -813,7 +813,7 @@ protected theorem Polynomial.isNoetherianRing [inst : IsNoetherianRing R] : IsNo
             refine (mul_one _).symm.trans ?_
             rw [← h, mul_zero]
             rfl
-          haveI : Nontrivial R := ⟨⟨0, 1, this⟩⟩
+          have : Nontrivial R := ⟨⟨0, 1, this⟩⟩
           have : p.leadingCoeff ∈ I.leadingCoeffNth N := by
             rw [HN]
             exact hm2 k ((I.mem_leadingCoeffNth _ _).2

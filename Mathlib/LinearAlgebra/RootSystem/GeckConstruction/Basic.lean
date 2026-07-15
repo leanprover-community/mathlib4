@@ -260,7 +260,7 @@ lemma ω_mul_h [Fintype ι] (i : b.support) :
 
 lemma ω_mul_e [Fintype ι] (i : b.support) :
     ω b * e i = f i * ω b := by
-  letI := P.indexNeg
+  let := P.indexNeg
   classical
   ext (k | k) (l | l)
   · simp [ω, e, f]
@@ -351,7 +351,7 @@ lemma e_lie_u (i j : b.support) :
 
 lemma e_lie_v_ne {i j : ι} {k : b.support} (h : P.root j = P.root k + P.root i) :
     ⁅e k, v b i⁆ = (P.chainBotCoeff k i + 1 : R) • v b j := by
-  letI := P.indexNeg
+  let := P.indexNeg
   ext (l | l)
   · replace h : i ≠ -k := by rintro rfl; exact P.ne_zero j <| by simpa using h
     simp [e, h, -indexNeg_neg]

@@ -57,7 +57,7 @@ the same assumptions. -/
 theorem Function.Injective.map_atTop_finsetProd_eq {g : α → β}
     (hg : Function.Injective g) {f : β → M} (hf : ∀ x, x ∉ Set.range g → f x = 1) :
     map (fun s => ∏ i ∈ s, f (g i)) atTop = map (fun s => ∏ i ∈ s, f i) atTop := by
-  haveI := Classical.decEq β
+  have := Classical.decEq β
   apply le_antisymm <;> refine map_atTop_finsetProd_le_of_prod_eq fun s => ?_
   · refine ⟨s.preimage g hg.injOn, fun t ht => ?_⟩
     refine ⟨t.image g ∪ s, Finset.subset_union_right, ?_⟩

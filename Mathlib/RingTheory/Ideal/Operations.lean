@@ -181,7 +181,7 @@ theorem mem_ideal_smul_span_iff_exists_sum {ι : Type*} (f : ι → M) (x : M) :
   refine fun hx => span_induction ?_ ?_ ?_ ?_ (mem_smul_span.mp hx)
   · rintro x ⟨y, hy, x, ⟨i, rfl⟩, rfl⟩
     refine ⟨Finsupp.single i y, fun j => ?_, ?_⟩
-    · letI := Classical.decEq ι
+    · let := Classical.decEq ι
       rw [Finsupp.single_apply]
       split_ifs
       · assumption

@@ -588,7 +588,7 @@ theorem setIntegral_map_equiv {Y} [MeasurableSpace Y] (e : X ≃ᵐ Y) (f : Y �
 theorem norm_setIntegral_le_of_norm_le_const_ae {C : ℝ} (hs : μ s < ∞)
     (hC : ∀ᵐ x ∂μ.restrict s, ‖f x‖ ≤ C) : ‖∫ x in s, f x ∂μ‖ ≤ C * μ.real s := by
   rw [← Measure.restrict_apply_univ] at *
-  haveI : IsFiniteMeasure (μ.restrict s) := ⟨hs⟩
+  have : IsFiniteMeasure (μ.restrict s) := ⟨hs⟩
   simpa using norm_integral_le_of_norm_le_const hC
 
 theorem norm_setIntegral_le_of_norm_le_const_ae' {C : ℝ} (hs : μ s < ∞)
@@ -1010,7 +1010,7 @@ theorem LpToLpRestrictCLM_coeFn [Fact (1 ≤ p)] (s : Set X) (f : Lp F p μ) :
 @[continuity]
 theorem continuous_setIntegral [NormedSpace ℝ E] (s : Set X) :
     Continuous fun f : X →₁[μ] E => ∫ x in s, f x ∂μ := by
-  haveI : Fact ((1 : ℝ≥0∞) ≤ 1) := ⟨le_rfl⟩
+  have : Fact ((1 : ℝ≥0∞) ≤ 1) := ⟨le_rfl⟩
   have h_comp :
     (fun f : X →₁[μ] E => ∫ x in s, f x ∂μ) =
       integral (μ.restrict s) ∘ fun f => LpToLpRestrictCLM X E ℝ μ 1 s f := by

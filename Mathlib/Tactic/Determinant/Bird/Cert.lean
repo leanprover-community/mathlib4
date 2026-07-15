@@ -13,7 +13,7 @@ public meta import Mathlib.Tactic.Ring
 # Certificate-chain evaluator for `BirdDet.birdDet`
 
 This file contains an evaulator that computes the ring tactic normal form of
-`Mathlib.LinearAlgebra.Matrix.Determinant.Bird.birdDet` via iteratively
+`Mathlib.LinearAlgebra.Matrix.Determinant.Bird.Defs.birdDet` via iteratively
 unfolding its definition, using the ring tactic for ring operations, and caching
 intermediate certificates.
 

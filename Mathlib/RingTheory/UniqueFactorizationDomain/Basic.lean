@@ -88,7 +88,7 @@ theorem prime_factors_unique [CommMonoidWithZero α] [IsCancelMulZero α] :
     let ⟨b, hbg, hb⟩ :=
       (exists_associated_mem_of_dvd_prod (hf p (by simp)) fun q hq => hg _ hq) <|
         hfg.dvd_iff_dvd_right.1 (show p ∣ (p ::ₘ f).prod by simp)
-    haveI := Classical.decEq α
+    have := Classical.decEq α
     rw [← Multiset.cons_erase hbg]
     exact
       Multiset.Rel.cons hb
@@ -122,7 +122,7 @@ end UniqueFactorizationMonoid
   then it is an associate of one of its prime factors. -/
 theorem prime_factors_irreducible [CommMonoidWithZero α] {a : α} {f : Multiset α}
     (ha : Irreducible a) (pfa : (∀ b ∈ f, Prime b) ∧ f.prod ~ᵤ a) : ∃ p, a ~ᵤ p ∧ f = {p} := by
-  haveI := Classical.decEq α
+  have := Classical.decEq α
   refine @Multiset.induction_on _
     (fun g => (g.prod ~ᵤ a) → (∀ b ∈ g, Prime b) → ∃ p, a ~ᵤ p ∧ g = {p}) f ?_ ?_ pfa.2 pfa.1
   · intro h; exact (ha.not_isUnit (associated_one_iff_isUnit.1 (Associated.symm h))).elim

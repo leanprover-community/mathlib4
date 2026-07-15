@@ -122,12 +122,12 @@ lemma exists_mem_of_isClosed_of_nonempty
     map_id _ := by simp [← cancel_mono (subschemeι _)]
     map_comp _ _ := by simp [← cancel_mono (subschemeι _)] }
   let ι : D' ⟶ D := { app i := subschemeι _, naturality _ _ _ := by simp [D'] }
-  haveI {i j} (f : i ⟶ j) : IsAffineHom (D'.map f) := by
+  have {i j} (f : i ⟶ j) : IsAffineHom (D'.map f) := by
     suffices IsAffineHom (D'.map f ≫ ι.app j) from .of_comp _ (ι.app j)
     simp only [subschemeMap_subschemeι, D', ι]
     infer_instance
-  haveI _ (i) : Nonempty (D'.obj i) := Set.nonempty_coe_sort.mpr (hZne i)
-  haveI _ (i) : CompactSpace (D'.obj i) := isCompact_iff_compactSpace.mp (hZcpt i)
+  have _ (i) : Nonempty (D'.obj i) := Set.nonempty_coe_sort.mpr (hZne i)
+  have _ (i) : CompactSpace (D'.obj i) := isCompact_iff_compactSpace.mp (hZcpt i)
   let c' : Cone D' :=
   { pt := (⨆ i, (vanishingIdeal ⟨Z i, hZc i⟩).comap (c.π.app i)).subscheme
     π :=

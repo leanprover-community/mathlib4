@@ -85,7 +85,7 @@ theorem IsDedekindDomain.HeightOneSpectrum.maxPowDividing_eq_pow_multiset_count
 theorem Ideal.finite_factors {I : Ideal R} (hI : I ≠ 0) :
     {v : HeightOneSpectrum R | v.asIdeal ∣ I}.Finite := by
   rw [← Set.finite_coe_iff, Set.coe_setOf]
-  haveI h_fin := fintypeSubtypeDvd I hI
+  have h_fin := fintypeSubtypeDvd I hI
   refine
     Finite.of_injective (fun v => (⟨(v : HeightOneSpectrum R).asIdeal, v.2⟩ : { x // x ∣ I })) ?_
   intro v w hvw

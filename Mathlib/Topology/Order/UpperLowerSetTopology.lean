@@ -197,7 +197,7 @@ attribute [nolint docBlame] IsUpperSet.topology_eq_upperSetTopology
 instance [Preorder α] : Topology.IsUpperSet (WithUpperSet α) := ⟨rfl⟩
 
 instance [Preorder α] : @Topology.IsUpperSet α (upperSet α) _ := by
-  letI := upperSet α
+  let := upperSet α
   exact ⟨rfl⟩
 
 /--
@@ -212,7 +212,7 @@ attribute [nolint docBlame] IsLowerSet.topology_eq_lowerSetTopology
 instance [Preorder α] : Topology.IsLowerSet (WithLowerSet α) := ⟨rfl⟩
 
 instance [Preorder α] : @Topology.IsLowerSet α (lowerSet α) _ := by
-  letI := lowerSet α
+  let := lowerSet α
   exact ⟨rfl⟩
 
 namespace IsUpperSet

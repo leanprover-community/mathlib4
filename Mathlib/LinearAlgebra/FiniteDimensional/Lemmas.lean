@@ -324,7 +324,7 @@ noncomputable def finsetBasisOfLinearIndependentOfCardEqFinrank {s : Finset V} (
 theorem coe_finsetBasisOfLinearIndependentOfCardEqFinrank {s : Finset V} (hs : s.Nonempty)
     (lin_ind : LinearIndependent K ((↑) : s → V)) (card_eq : s.card = finrank K V) :
     ⇑(finsetBasisOfLinearIndependentOfCardEqFinrank hs lin_ind card_eq) = ((↑) : s → V) := by
-  haveI : Nonempty s := ⟨⟨hs.choose, hs.choose_spec⟩⟩
+  have : Nonempty s := ⟨⟨hs.choose, hs.choose_spec⟩⟩
   simp [finsetBasisOfLinearIndependentOfCardEqFinrank]
 
 /-- A linear independent set of `finrank K V`-many vectors forms a basis. -/
@@ -351,10 +351,10 @@ section finrank_eq_one
 /-- Any `K`-algebra module that is 1-dimensional over `K` is simple. -/
 theorem is_simple_module_of_finrank_eq_one {A} [Semiring A] [Module A V] [SMul K A]
     [IsScalarTower K A V] (h : finrank K V = 1) : IsSimpleOrder (Submodule A V) := by
-  haveI := nontrivial_of_finrank_eq_succ h
+  have := nontrivial_of_finrank_eq_succ h
   refine ⟨fun S => or_iff_not_imp_left.2 fun hn => ?_⟩
   rw [← restrictScalars_inj K] at hn ⊢
-  haveI : FiniteDimensional _ _ := .of_finrank_eq_succ h
+  have : FiniteDimensional _ _ := .of_finrank_eq_succ h
   refine eq_top_of_finrank_eq ((Submodule.finrank_le _).antisymm ?_)
   simpa only [h, finrank_bot] using! Submodule.finrank_strictMono (Ne.bot_lt hn)
 
@@ -375,8 +375,8 @@ theorem Subalgebra.isSimpleOrder_of_finrank (hr : finrank F E = 2) :
       ⟨⟨⊥, ⊤, fun h => by cases hr.symm.trans (Subalgebra.bot_eq_top_iff_finrank_eq_one.1 h)⟩⟩
     eq_bot_or_eq_top := by
       intro S
-      haveI : FiniteDimensional F E := .of_finrank_eq_succ hr
-      haveI : FiniteDimensional F S :=
+      have : FiniteDimensional F E := .of_finrank_eq_succ hr
+      have : FiniteDimensional F S :=
         FiniteDimensional.finiteDimensional_submodule (Subalgebra.toSubmodule S)
       have : finrank F S ≤ 2 := hr ▸ S.toSubmodule.finrank_le
       have : 0 < finrank F S := finrank_pos_iff.mpr inferInstance

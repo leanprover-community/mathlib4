@@ -288,7 +288,7 @@ variable [HasPullbacks C]
 by pulling back a monomorphism along `f`. -/
 def pullback (f : X ⟶ Y) : MonoOver Y ⥤ MonoOver X :=
   MonoOver.lift (Over.pullback f) (fun g => by
-    haveI : Mono ((forget Y).obj g).hom := (inferInstance : Mono g.arrow)
+    have : Mono ((forget Y).obj g).hom := (inferInstance : Mono g.arrow)
     apply pullback.snd_of_mono)
 
 /-- pullback commutes with composition (up to a natural isomorphism) -/

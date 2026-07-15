@@ -218,7 +218,7 @@ lemma Hom.sub_aux (f g : Hom P P') (x y) :
         (P'.σ ((algebraMap P.Ring S') x) * (f.toAlgHom y - g.toAlgHom y) +
           P'.σ ((algebraMap P.Ring S') y) * (f.toAlgHom x - g.toAlgHom x)) ∈
       P'.ker ^ 2 := by
-  letI := ((algebraMap S S').comp (algebraMap P.Ring S)).toAlgebra
+  let := ((algebraMap S S').comp (algebraMap P.Ring S)).toAlgebra
   have :
       (f.toAlgHom x - P'.σ (algebraMap P.Ring S' x)) * (f.toAlgHom y - g.toAlgHom y) +
       (g.toAlgHom y - P'.σ (algebraMap P.Ring S' y)) * (f.toAlgHom x - g.toAlgHom x)

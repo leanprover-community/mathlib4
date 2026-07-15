@@ -346,8 +346,8 @@ private instance FractionRing.isAlgebraic :
     letI : IsDomain R := (FaithfulSMul.algebraMap_injective R S).isDomain _
     letI : Algebra (FractionRing R) (FractionRing S) := FractionRing.liftAlgebra R _
     Algebra.IsAlgebraic (FractionRing R) (FractionRing S) := by
-  letI : IsDomain R := (FaithfulSMul.algebraMap_injective R S).isDomain _
-  letI : Algebra (FractionRing R) (FractionRing S) := FractionRing.liftAlgebra R _
+  let : IsDomain R := (FaithfulSMul.algebraMap_injective R S).isDomain _
+  let : Algebra (FractionRing R) (FractionRing S) := FractionRing.liftAlgebra R _
   have := FractionRing.isScalarTower_liftAlgebra R (FractionRing S)
   have := (IsFractionRing.isAlgebraic_iff' R S (FractionRing S)).1 inferInstance
   exact ⟨fun _ ↦ (IsFractionRing.isAlgebraic_iff R (FractionRing R) (FractionRing S)).1

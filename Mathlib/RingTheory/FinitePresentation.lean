@@ -132,7 +132,7 @@ theorem iff :
   · rintro ⟨n, f, hf⟩
     exact ⟨n, RingHom.ker f.toRingHom, Ideal.quotientKerAlgEquivOfSurjective hf.1, hf.2⟩
   · rintro ⟨n, I, e, hfg⟩
-    letI := (FinitePresentation.mvPolynomial_aux R _).quotient hfg
+    let := (FinitePresentation.mvPolynomial_aux R _).quotient hfg
     exact equiv e
 
 /-- An algebra is finitely presented if and only if it is a quotient of a polynomial ring whose
@@ -183,7 +183,7 @@ theorem trans [Algebra A B] [IsScalarTower R A B] [FinitePresentation R A]
     [FinitePresentation A B] : FinitePresentation R B := by
   have hfpB : FinitePresentation A B := inferInstance
   obtain ⟨n, I, e, hfg⟩ := iff.1 hfpB
-  letI : FinitePresentation R (MvPolynomial (Fin n) A ⧸ I) :=
+  let : FinitePresentation R (MvPolynomial (Fin n) A ⧸ I) :=
     (mvPolynomial_of_finitePresentation _).quotient hfg
   exact equiv (e.restrictScalars R)
 
@@ -212,8 +212,8 @@ theorem of_restrict_scalars_finitePresentation [Algebra A B] [IsScalarTower R A 
     FinitePresentation.{w₂, w₃} A B := by
   classical
   obtain ⟨n, f, hf, s, hs⟩ := FinitePresentation.out (R := R) (A := B)
-  letI RX := MvPolynomial (Fin n) R
-  letI AX := MvPolynomial (Fin n) A
+  let RX := MvPolynomial (Fin n) R
+  let AX := MvPolynomial (Fin n) A
   refine ⟨n, MvPolynomial.aeval (f ∘ X), ?_, ?_⟩
   · rw [← AlgHom.range_eq_top, ← Algebra.adjoin_range_eq_range_aeval,
       Set.range_comp f MvPolynomial.X, eq_top_iff, ← @adjoin_adjoin_of_tower R A B,
@@ -230,7 +230,7 @@ theorem of_restrict_scalars_finitePresentation [Algebra A B] [IsScalarTower R A 
       apply Subalgebra.restrictScalars_injective R
       rw [← adjoin_restrictScalars, adjoin_range_X, Subalgebra.restrictScalars_top,
         Subalgebra.restrictScalars_top]
-    letI g : t → AX := fun x => MvPolynomial.C (x : A) - map (algebraMap R A) (t' x)
+    let g : t → AX := fun x => MvPolynomial.C (x : A) - map (algebraMap R A) (t' x)
     refine ⟨s.image (map (algebraMap R A)) ∪ t.attach.image g, ?_⟩
     rw [Finset.coe_union, Finset.coe_image, Finset.coe_image, Finset.attach_eq_univ,
       Finset.coe_univ, Set.image_univ]
@@ -475,7 +475,7 @@ lemma polynomial_induction
       P R S f → Q S T g → Q R T (g.comp f))
     {R : Type u} {S : Type v} [CommRing R] [CommRing S] (f : R →+* S) (hf : f.FinitePresentation) :
     Q R S f := by
-  letI := f.toAlgebra
+  let := f.toAlgebra
   obtain ⟨n, g, hg, hg'⟩ := hf
   let g' := g.toRingHom
   change Surjective g' at hg

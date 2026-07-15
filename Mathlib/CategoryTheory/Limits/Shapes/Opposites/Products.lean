@@ -36,7 +36,7 @@ variable (X : Type v₂)
 /-- If `C` has products indexed by `X`, then `Cᵒᵖ` has coproducts indexed by `X`.
 -/
 instance hasCoproductsOfShape_opposite [HasProductsOfShape X C] : HasCoproductsOfShape X Cᵒᵖ := by
-  haveI : HasLimitsOfShape (Discrete X)ᵒᵖ C :=
+  have : HasLimitsOfShape (Discrete X)ᵒᵖ C :=
     hasLimitsOfShape_of_equivalence (Discrete.opposite X).symm
   infer_instance
 

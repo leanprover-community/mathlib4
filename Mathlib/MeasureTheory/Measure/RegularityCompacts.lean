@@ -101,7 +101,7 @@ theorem exists_isCompact_closure_measure_compl_lt [TopologicalSpace α]
   of natural numbers `u n`, such that `interUnionBalls seq u t`, which is the intersection over
   `n` of the `t n`-neighborhood of `seq 1, ..., seq (u n)`, covers the space arbitrarily well.
   -/
-  letI := upgradeIsCompletelyPseudoMetrizable α
+  let := upgradeIsCompletelyPseudoMetrizable α
   cases isEmpty_or_nonempty α
   case inl =>
     refine ⟨∅, by simp, ?_⟩

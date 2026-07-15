@@ -85,7 +85,7 @@ lemma map_comp_uliftYonedaEquiv_down (E : ℰ) {X Y : C} (f : X ⟶ Y)
     (g : uliftYoneda.{max w v₂}.obj Y ⟶ (restrictedULiftYoneda.{max w v₁} A).obj E) :
     A.map f ≫ (uliftYonedaEquiv g).down =
       (uliftYonedaEquiv (uliftYoneda.map f ≫ g)).down := by
-  have this := (g.naturality_apply f.op) (ULift.up (𝟙 Y))
+  have := (g.naturality_apply f.op) (ULift.up (𝟙 Y))
   dsimp [uliftYonedaEquiv, uliftYoneda] at this ⊢
   cat_disch
 

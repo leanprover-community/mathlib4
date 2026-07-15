@@ -500,7 +500,7 @@ theorem mkMetric_le_liminf_tsum {β : Type*} {ι : β → Type*} [∀ n, Countab
     {l : Filter β} (r : β → ℝ≥0∞) (hr : Tendsto r l (𝓝 0)) (t : ∀ n : β, ι n → Set X)
     (ht : ∀ᶠ n in l, ∀ i, ediam (t n i) ≤ r n) (hst : ∀ᶠ n in l, s ⊆ ⋃ i, t n i) (m : ℝ≥0∞ → ℝ≥0∞) :
     mkMetric m s ≤ liminf (fun n => ∑' i, m (ediam (t n i))) l := by
-  haveI : ∀ n, Encodable (ι n) := fun n => Encodable.ofCountable _
+  have : ∀ n, Encodable (ι n) := fun n => Encodable.ofCountable _
   simp only [mkMetric_apply]
   refine iSup₂_le fun ε hε => ?_
   refine le_of_forall_gt_imp_ge_of_dense fun c hc => ?_
@@ -651,7 +651,7 @@ theorem hausdorffMeasure_le_one_of_subsingleton {s : Set X} (hs : s.Subsingleton
   · rw [(subsingleton_iff_singleton hx).1 hs]
     rcases eq_or_lt_of_le hd with (rfl | dpos)
     · simp only [le_refl, hausdorffMeasure_zero_singleton]
-    · haveI := nullSingletonClass_hausdorff X dpos
+    · have := nullSingletonClass_hausdorff X dpos
       simp only [zero_le, measure_singleton]
 
 end Measure
@@ -689,7 +689,7 @@ theorem hausdorffMeasure_image_le (h : HolderOnWith C r f s) (hr : 0 < r) {d : �
     · simp only [ENNReal.rpow_zero, one_mul, mul_zero]
       rw [hausdorffMeasure_zero_singleton]
       exact one_le_hausdorffMeasure_zero_of_nonempty ⟨x, hx⟩
-    · haveI := nullSingletonClass_hausdorff Y h'd
+    · have := nullSingletonClass_hausdorff Y h'd
       simp only [zero_le, measure_singleton]
   -- Now assume `C ≠ 0`
   · have hCd0 : (C : ℝ≥0∞) ^ d ≠ 0 := by simp [hC0.ne']
@@ -771,7 +771,7 @@ theorem hausdorffMeasure_preimage_le (hf : AntilipschitzWith K f) (hd : 0 ≤ d)
   · rcases eq_empty_or_nonempty (f ⁻¹' s) with (hs | ⟨x, hx⟩)
     · simp only [hs, measure_empty, zero_le]
     have : f ⁻¹' s = {x} := by
-      haveI : Subsingleton X := hf.subsingleton
+      have : Subsingleton X := hf.subsingleton
       have : (f ⁻¹' s).Subsingleton := subsingleton_univ.anti (subset_univ _)
       exact (subsingleton_iff_singleton hx).1 this
     rw [this]
@@ -779,7 +779,7 @@ theorem hausdorffMeasure_preimage_le (hf : AntilipschitzWith K f) (hd : 0 ≤ d)
     · simp only [ENNReal.rpow_zero, one_mul]
       rw [hausdorffMeasure_zero_singleton]
       exact one_le_hausdorffMeasure_zero_of_nonempty ⟨f x, hx⟩
-    · haveI := nullSingletonClass_hausdorff X h'd
+    · have := nullSingletonClass_hausdorff X h'd
       simp only [zero_le, measure_singleton]
   have hKd0 : (K : ℝ≥0∞) ^ d ≠ 0 := by simp [h0]
   have hKd : (K : ℝ≥0∞) ^ d ≠ ∞ := by simp [hd]
@@ -1027,7 +1027,7 @@ theorem hausdorffMeasure_smul_right_image [NormedAddCommGroup E] [NormedSpace �
     [MeasurableSpace E] [BorelSpace E] (v : E) (s : Set ℝ) :
     μH[1] ((fun r => r • v) '' s) = ‖v‖₊ • μH[1] s := by
   obtain rfl | hv := eq_or_ne v 0
-  · haveI := nullSingletonClass_hausdorff E one_pos
+  · have := nullSingletonClass_hausdorff E one_pos
     obtain rfl | hs := s.eq_empty_or_nonempty
     · simp
     simp [hs]

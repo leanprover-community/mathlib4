@@ -42,10 +42,10 @@ open scoped NumberField.LiesOver
 
 variable {K L : Type*} [Field K] [Field L] [Algebra K L] (v : InfinitePlace K) {w : InfinitePlace L}
 
-namespace Completion
+open Completion
 
 /-- If `w` is a ramified place over `v` then `w.Completion` has `v.Completion` dimension two. -/
-theorem finrank_eq_two_of_isRamified [w.1.LiesOver v.1] (h : w.IsRamified K) :
+theorem IsRamified.finrank_eq_two [w.1.LiesOver v.1] (h : w.IsRamified K) :
     Module.finrank v.Completion w.Completion = 2 := by
   have H := NumberField.InfinitePlace.isRamified_iff.mp h
   rw [NumberField.InfinitePlace.LiesOver.comap_eq w v] at H
@@ -55,7 +55,7 @@ theorem finrank_eq_two_of_isRamified [w.1.LiesOver v.1] (h : w.IsRamified K) :
     Complex.finrank_real_complex]
 
 /-- If `w` is an unramified place over `v` then `w.Completion` has `v.Completion` dimension one. -/
-theorem finrank_eq_one_of_isUnramified [w.1.LiesOver v.1] (h : w.IsUnramified K) :
+theorem IsUnramified.finrank_eq_one [w.1.LiesOver v.1] (h : w.IsUnramified K) :
     Module.finrank v.Completion w.Completion = 1 := by
   rcases v.isReal_or_isComplex with (hv | hv)
   · have := LiesOver.extensionEmbedding_liesOver_of_isReal w hv
@@ -77,7 +77,19 @@ theorem finrank_eq_one_of_isUnramified [w.1.LiesOver v.1] (h : w.IsUnramified K)
           (starRingAut (R := ℂ))) (by ext; simp [← conjugate_coe_eq]),
         Module.finrank_self]
 
-end Completion
+@[deprecated (since := "2026-07-10")] alias Completion.finrank_eq_two_of_isRamified :=
+  IsRamified.finrank_eq_two
+
+@[deprecated (since := "2026-07-10")] alias Completion.finrank_eq_one_of_isUnramified :=
+  IsUnramified.finrank_eq_one
+
+variable (w) in
+theorem mult_mul_finrank [w.1.LiesOver v.1] :
+    v.mult * Module.finrank v.Completion w.Completion = w.mult := by
+  have hv : v = w.comap (algebraMap K L) := Subtype.ext ‹w.1.LiesOver v.1›.comp_eq.symm
+  rcases w.isUnramified_or_isRamified K with h | h
+  · rw [h.finrank_eq_one v, hv, h.eq, mul_one]
+  · rw [h.finrank_eq_two v, hv, h.isReal.mult_eq_one, h.isComplex.mult_eq_two, one_mul]
 
 open Completion
 
@@ -100,11 +112,11 @@ theorem inertiaDeg_eq_finrank [w.1.LiesOver v.1] :
 
 variable {v w} in
 theorem inertiaDeg_eq_one (hw : w ∈ unramifiedPlacesOver L v) : v.inertiaDeg w = 1 :=
-  have := (Set.mem_setOf.1 hw).1; finrank_eq_one_of_isUnramified v hw.2 ▸ inertiaDeg_eq_finrank v w
+  have := (Set.mem_setOf.1 hw).1; hw.2.finrank_eq_one v ▸ inertiaDeg_eq_finrank v w
 
 variable {v w} in
 theorem inertiaDeg_eq_two (hw : w ∈ ramifiedPlacesOver L v) : v.inertiaDeg w = 2 :=
-  have := (Set.mem_setOf.1 hw).1; finrank_eq_two_of_isRamified v hw.2 ▸ inertiaDeg_eq_finrank v w
+  have := (Set.mem_setOf.1 hw).1; hw.2.finrank_eq_two v ▸ inertiaDeg_eq_finrank v w
 
 variable (K L) in
 open scoped Classical in

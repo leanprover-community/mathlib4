@@ -72,6 +72,29 @@ lemma IsLocalization.rank_eq : Module.rank S N = Module.rank R N := by
   · have := inj.nontrivial
     exact (hs.localization S p).cardinal_le_rank
 
+theorem IsLocalization.finrank_eq : finrank S N = finrank R N := by
+  simp_rw [finrank, rank_eq S p hp]
+
+end
+
+section
+
+variable (R N) [IsFractionRing R S]
+
+/-- Given `IsScalarTower R S N`, if `S` is the fraction ring of `R`, then the rank `rank S N`
+of the right part of the tower equals the rank `rank R N` of the whole tower.
+
+See `IsFractionRing.finrank_right_eq` for the finrank version. -/
+theorem IsFractionRing.rank_right_eq : Module.rank S N = Module.rank R N :=
+  IsLocalization.rank_eq S R⁰ le_rfl
+
+/-- Given `IsScalarTower R S N`, if `S` is the fraction ring of `R`, then the finrank `finrank S N`
+of the right part of the tower equals the finrank `finrank R N` of the whole tower.
+
+See `IsFractionRing.rank_right_eq` for the rank version. -/
+theorem IsFractionRing.finrank_right_eq : finrank S N = finrank R N :=
+  IsLocalization.finrank_eq S R⁰ le_rfl
+
 end
 
 variable (R M) in

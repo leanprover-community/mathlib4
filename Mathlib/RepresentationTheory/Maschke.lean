@@ -145,8 +145,8 @@ set_option backward.isDefEq.respectTransparency false in
 theorem exists_leftInverse_of_injective (f : V →ₗ[k[G]] W) (hf : LinearMap.ker f = ⊥) :
     ∃ g : W →ₗ[k[G]] V, g.comp f = .id := by
   let A := k[G]
-  letI : Module k W := .compHom W (algebraMap k A)
-  letI : Module k V := .compHom V (algebraMap k A)
+  let : Module k W := .compHom W (algebraMap k A)
+  let : Module k V := .compHom V (algebraMap k A)
   have := IsScalarTower.of_compHom k A W
   have := IsScalarTower.of_compHom k A V
   set φ := (f.restrictScalars k).leftInverse

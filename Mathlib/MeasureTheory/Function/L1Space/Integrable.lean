@@ -771,8 +771,8 @@ lemma integrable_count_iff :
   have hs' : (Function.support f).Countable := by
     simpa only [Ne, Pi.zero_apply, eq_comm, Function.support, norm_eq_zero]
       using hs.countable_support
-  letI : MeasurableSpace β := borel β
-  haveI : BorelSpace β := ⟨rfl⟩
+  let : MeasurableSpace β := borel β
+  have : BorelSpace β := ⟨rfl⟩
   refine aestronglyMeasurable_iff_aemeasurable_separable.mpr ⟨?_, ?_⟩
   · refine (measurable_zero.measurable_of_countable_ne ?_).aemeasurable
     simpa only [Ne, Pi.zero_apply, eq_comm, Function.support] using hs'

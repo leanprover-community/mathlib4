@@ -52,7 +52,7 @@ variable {ι : Type*} [Fintype ι]
 /-- The volume on the real line (as a particular case of the volume on a finite-dimensional
 inner product space) coincides with the Stieltjes measure coming from the identity function. -/
 theorem volume_eq_stieltjes_id : (volume : Measure ℝ) = StieltjesFunction.id.measure := by
-  haveI : IsAddLeftInvariant StieltjesFunction.id.measure :=
+  have : IsAddLeftInvariant StieltjesFunction.id.measure :=
     ⟨fun a =>
       Eq.symm <|
         Real.measure_ext_Ioo_rat fun p q => by

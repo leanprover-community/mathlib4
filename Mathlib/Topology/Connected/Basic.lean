@@ -700,7 +700,7 @@ theorem connectedSpace_iff_connectedComponent :
     exact
       ⟨x, eq_univ_of_univ_subset <| isPreconnected_univ.subset_connectedComponent (mem_univ x)⟩
   · rintro ⟨x, h⟩
-    haveI : PreconnectedSpace α :=
+    have : PreconnectedSpace α :=
       ⟨by rw [← h]; exact isPreconnected_connectedComponent⟩
     exact ⟨⟨x⟩⟩
 

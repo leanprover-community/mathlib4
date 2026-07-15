@@ -176,6 +176,11 @@ theorem Module.one_le_rank_iff : 1 ≤ Module.rank R M ↔ ∃ f : R →ₗ[R] M
   · exact ⟨f ∘ₗ _, by apply hf.comp (LinearEquiv.piUnique R ..).symm.injective⟩
   · exact ⟨f ∘ₗ _, hf.comp (LinearEquiv.piUnique R ..).injective⟩
 
+theorem Module.rank_eq_zero_of_not_faithfulSMul (h : ¬ FaithfulSMul R M) : Module.rank R M = 0 := by
+  contrapose! h
+  obtain ⟨f, hf⟩ := by rwa [← Cardinal.one_le_iff_ne_zero, one_le_rank_iff] at h
+  exact ⟨fun {x y} hxy ↦ hf (by simpa [← map_smul] using hxy (f 1))⟩
+
 section
 variable [AddCommMonoid M'] [Module R' M']
 

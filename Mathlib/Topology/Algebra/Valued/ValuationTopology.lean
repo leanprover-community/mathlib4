@@ -139,7 +139,7 @@ def mk' (v : Valuation R Γ₀) : Valued R Γ₀ :=
     toUniformSpace := @IsTopologicalAddGroup.rightUniformSpace R _ v.subgroups_basis.topology _
     toIsUniformAddGroup := @isUniformAddGroup_of_addCommGroup _ _ v.subgroups_basis.topology _
     is_topological_valuation := by
-      letI := @IsTopologicalAddGroup.rightUniformSpace R _ v.subgroups_basis.topology _
+      let := @IsTopologicalAddGroup.rightUniformSpace R _ v.subgroups_basis.topology _
       intro s
       rw [Filter.hasBasis_iff.mp v.subgroups_basis.hasBasis_nhds_zero s]
       simp_rw [restrict_lt_iff_lt_embedding]

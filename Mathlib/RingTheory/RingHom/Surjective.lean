@@ -70,7 +70,7 @@ theorem surjective_localizationPreserves :
 theorem surjective_ofLocalizationSpan : OfLocalizationSpan surjective := by
   introv R e H
   rw [← Set.range_eq_univ, Set.eq_univ_iff_forall]
-  letI := f.toAlgebra
+  let := f.toAlgebra
   intro x
   apply Submodule.mem_of_span_eq_top_of_smul_pow_mem
     (LinearMap.range (Algebra.linearMap R S)) s e

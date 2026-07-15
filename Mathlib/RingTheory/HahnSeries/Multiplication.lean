@@ -967,7 +967,7 @@ variable [NonUnitalNonAssocSemiring R]
 instance [IsCancelAdd R] [IsCancelMulZero R] : IsCancelMulZero R⟦Γ⟧ where
   -- TODO: This proof is painful because `coeff_mul` isn't stated in terms of `Finsupp.sum`.
   mul_left_cancel_of_ne_zero {x} hx y z hyz := by
-    letI : AddCancelCommMonoid R := ⟨⟩
+    let : AddCancelCommMonoid R := ⟨⟩
     contrapose! hyz
     simp only [ne_eq, ← coeff_inj, funext_iff, not_forall] at ⊢ hyz
     have : Set.IsWF {a | y.coeff a ≠ z.coeff a} :=
@@ -989,7 +989,7 @@ instance [IsCancelAdd R] [IsCancelMulZero R] : IsCancelMulZero R⟦Γ⟧ where
     · simp +contextual [← and_or_left, ← or_and_right]
     · simp +contextual [← and_or_left, ← or_and_right]
   mul_right_cancel_of_ne_zero {x} hx y z hyz := by
-    letI : AddCancelCommMonoid R := ⟨⟩
+    let : AddCancelCommMonoid R := ⟨⟩
     contrapose! hyz
     simp only [ne_eq, ← coeff_inj, funext_iff, not_forall] at ⊢ hyz
     have : Set.IsWF {a | y.coeff a ≠ z.coeff a} :=
