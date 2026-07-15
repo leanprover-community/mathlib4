@@ -1,10 +1,11 @@
 /-
 Copyright (c) 2025 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Anatole Dedecker
+Authors: Anatole Dedecker, Luigi Massacci
 -/
 module
 
+public import Mathlib.Analysis.Distribution.AEEqOfIntegralContDiff
 public import Mathlib.Analysis.Distribution.TestFunction
 public import Mathlib.Topology.Algebra.Module.Spaces.CompactConvergenceCLM
 
@@ -36,8 +37,14 @@ The theory will be expanded in future PRs.
 * `Distribution.mapCLM`: any continuous linear map `A : F →L[ℝ] G` induces a continuous linear
   map `𝓓'(Ω, F) →L[ℝ] 𝓓'(Ω, G)`. On locally integrable functions, this corresponds to applying `A`
   pointwise.
+<<<<<<< HEAD
 * `Distribution.smulLeftCLM`: multiplication by a `C^n` function as a continuous linear map on
   `𝓓'^{n}(Ω, F)`. On locally integrable functions, this corresponds to pointwise multiplication.
+=======
+* `Distribution.toDistribution Ω n f μ`: the distribution induced by a function `f : E → F`,
+  sending a test function `φ` to `∫ x, φ x • f x ∂μ`. This is the zero map if
+  `f` is not locally integrable on `Ω`.
+>>>>>>> LM_distrib_induced
 
 ## Notation
 
@@ -139,6 +146,7 @@ longer true for general filters.
 
 * [L. Schwartz, *Théorie des distributions*][schwartz1950]
 * [L. Schwartz, *Théorie des distributions à valeurs vectorielles*][schwartz1957]
+* [L. Hörmander, *The Analysis of Linear Partial Differential Operators I*][hormander2003]
 
 -/
 
@@ -285,6 +293,7 @@ lemma lineDerivOpCLM_eq_lineDerivCLM {v : E} :
 
 end LineDerivCLM
 
+<<<<<<< HEAD
 section Multiplication
 
 variable (Ω F n) in
@@ -337,5 +346,107 @@ theorem smulLeftCLM_neg {g : E → ℝ} (hg : ContDiff ℝ n g) :
   simp [TestFunction.smulLeftCLM_neg hg]
 
 end Multiplication
+=======
+section toDistribution
+
+open MeasureTheory
+
+variable [MeasurableSpace E] [OpensMeasurableSpace E]
+variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
+
+variable (Ω) in
+/-- The distribution induced by a function `f : E → F` and a measure `μ`,
+sending a test function `φ` to `∫ x, φ x • f x ∂μ`. This is the zero map if `f` is not locally
+integrable on `Ω`. -/
+noncomputable def toDistribution (f : E → F) (μ : Measure E := by volume_tac) (n := ⊤) :
+    𝓓'^{n}(Ω, F) :=
+  TestFunction.integralAgainstBilinCLM (ContinuousLinearMap.lsmul ℝ ℝ) μ f
+
+@[simp]
+theorem toDistribution_apply {f : E → F} {μ : Measure E} (hf : LocallyIntegrableOn f Ω μ)
+    {φ : 𝓓^{n}(Ω, ℝ)} :
+    toDistribution Ω  f μ n φ = ∫ x, φ x • f x ∂μ := by
+  exact TestFunction.integralAgainstBilinCLM_eq_integral hf
+
+theorem toDistribution_eq_zero {f : E → F} {μ : Measure E}
+    (hf : ¬ LocallyIntegrableOn f Ω μ) : toDistribution Ω f μ n = 0 := by
+  exact TestFunction.integralAgainstBilinCLM_eq_zero hf
+
+@[simp]
+theorem toDistribution_zero {μ : Measure E} : toDistribution Ω (0 : E → F) μ n = 0 := by
+  by_cases h0 : LocallyIntegrableOn (0 : E → F) Ω μ
+  · ext φ
+    simp [toDistribution_apply h0]
+  · exact toDistribution_eq_zero h0
+
+theorem toDistribution_eq_of_ae {f f' : E → F} {μ : Measure E} (h : f =ᵐ[μ.restrict Ω] f') :
+    toDistribution Ω f μ n = toDistribution Ω f' μ n := by
+  by_cases hf : LocallyIntegrableOn f Ω μ
+  · have hf' : LocallyIntegrableOn f' Ω μ := hf.congr h
+    ext φ
+    rw [toDistribution_apply hf, toDistribution_apply hf']
+    have h' : ∀ᵐ x ∂μ, x ∉ Ω → φ x • f x = 0 := by
+      filter_upwards with x hx; simp [φ.zero_on_compl hx]
+    have h'' :  ∀ᵐ x ∂μ, x ∉ Ω → φ x • f' x = 0 := by
+      filter_upwards with x hx; simp [φ.zero_on_compl hx]
+    rw [← setIntegral_eq_integral_of_ae_compl_eq_zero h',
+      ← setIntegral_eq_integral_of_ae_compl_eq_zero h'']
+    refine integral_congr_ae <| Filter.EventuallyEq.smul (ae_eq_rfl) h
+  · have hf' : ¬ LocallyIntegrableOn f' Ω μ := fun c ↦ hf (c.congr h.symm)
+    rw [toDistribution_eq_zero hf, toDistribution_eq_zero hf']
+
+@[simp]
+theorem toDistribution_add {f g : E → F} {μ : Measure E}
+    (hf : LocallyIntegrableOn f Ω μ) (hg : LocallyIntegrableOn g Ω μ) :
+    toDistribution Ω (f + g) μ n = toDistribution Ω f μ n + toDistribution Ω g μ n := by
+  ext φ
+  rw [add_apply, toDistribution_apply hf, toDistribution_apply hg,
+    toDistribution_apply (hf.add hg),
+    ← integral_add (φ.integrable_smul hf) (φ.integrable_smul hg)]
+  simp [Pi.add_apply, smul_add]
+
+theorem toDistribution_neg {f : E → F} {μ : Measure E} :
+    toDistribution Ω (-f) μ n = -toDistribution Ω f μ n := by
+  by_cases hf : LocallyIntegrableOn f Ω μ
+  · ext φ
+    simp [toDistribution_apply hf, toDistribution_apply hf.neg, Pi.neg_apply, smul_neg,
+      integral_neg]
+  · have hnf : ¬ LocallyIntegrableOn (-f) Ω μ := by rwa [locallyIntegrableOn_neg_iff]
+    rw [toDistribution_eq_zero hf, toDistribution_eq_zero hnf, neg_zero]
+
+@[simp]
+theorem toDistribution_smul {f : E → F} {μ : Measure E} (c : ℝ) :
+    toDistribution Ω (c • f) μ n = c • toDistribution Ω f μ n := by
+  by_cases hf : LocallyIntegrableOn f Ω μ
+  · ext φ
+    rw [toDistribution_apply (hf.smul c), smul_apply, toDistribution_apply hf, ← integral_smul]
+    refine integral_congr_ae (ae_of_all _ fun x ↦ ?_)
+    simp only [Pi.smul_apply]
+    rw [smul_comm]
+  · rcases eq_or_ne c 0 with rfl | hc
+    · simp
+    · have hcf : ¬ LocallyIntegrableOn (c • f) Ω μ := by aesop
+      rw [toDistribution_eq_zero hf, toDistribution_eq_zero hcf, smul_zero]
+
+variable [BorelSpace E] [FiniteDimensional ℝ E] [CompleteSpace F]
+
+theorem toDistribution_injective {f f' : E → F} {μ : Measure E}
+    (hf : LocallyIntegrableOn f Ω μ) (hf' : LocallyIntegrableOn f' Ω μ)
+    (h : toDistribution Ω f μ n = toDistribution Ω f' μ n) :
+    f =ᵐ[μ.restrict Ω] f' := by
+  suffices h' : ∀ᵐ x ∂μ, x ∈ Ω → (f - f') x = 0 by
+    rw [← sub_ae_eq_zero]
+    exact (ae_restrict_iff' Ω.isOpen.measurableSet).mpr h'
+  refine Ω.isOpen.ae_eq_zero_of_integral_contDiff_smul_eq_zero (hf.sub hf')
+    fun g g_diff g_compact g_tsupp ↦ ?_
+  let φ : 𝓓^{n}(Ω, ℝ) := ⟨g, g_diff.of_le (mod_cast le_top), g_compact, g_tsupp⟩
+  have : ∫ x, φ x • (f - f') x ∂μ = 0:= by
+    simp_rw [Pi.sub_apply, smul_sub]
+    rw [integral_sub (φ.integrable_smul hf) (φ.integrable_smul hf'), sub_eq_zero]
+    rw [← toDistribution_apply hf, ← toDistribution_apply hf', h]
+  congr
+
+end toDistribution
+>>>>>>> LM_distrib_induced
 
 end Distribution
