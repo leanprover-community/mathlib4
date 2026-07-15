@@ -17,13 +17,11 @@ This file contains numerous results about subobjects which are unique to abelian
 
 * subobjects and quotient objects of an object `X` are order-isomorphic via taking kernels and
   cokernels
+* `inverseImage_directImage_eq_sup` and `directImage_inverseImage_eq_inf` describe the closure and
+  interior operators induced by direct and inverse image
 * a correspondence theorem: Given a subobject `Y` of `X`, `Abelian.Subobject.cokernelOrderIso` is
   an order-isomorphism between subobjects of `cokernel (Y ↪ X)` and subobjects of `X`
   containing `Y`.
-
-## Future work
-
-* connection to `Subobject.«exists»`, `Subobject.pullback`
 
 ## References
 
@@ -134,6 +132,19 @@ lemma directImage_eq_imageSubobject {X' : Subobject X} :
     (kernel.mapIso _ _ (Iso.refl _)
       (cokernel.mapIso _ _ (underlyingIso _).symm (Iso.refl _) (by simp)) (by simp)) (by simp)
 
+/-- The kernel-cokernel definition of direct image agrees with the generic direct image of
+subobjects. -/
+lemma directImage_eq_exists (X' : Subobject X) :
+    (directImage f).obj X' = (Subobject.«exists» f).obj X' := by
+  rw [directImage_eq_imageSubobject]
+  apply Subobject.eq_of_comm
+    ((imageSubobjectIso (X'.arrow ≫ f)).trans (Subobject.existsIsoImage f X').symm)
+  have h : (Subobject.existsIsoImage f X').inv ≫
+      ((Subobject.«exists» f).obj X').arrow = Limits.image.ι (X'.arrow ≫ f) := by
+    rw [Iso.inv_comp_eq]
+    exact (Over.w ((Subobject.existsCompRepresentativeIso f).app X').hom.hom).symm
+  simp only [Iso.trans_hom, Iso.symm_hom, Category.assoc, h, imageSubobject_arrow]
+
 lemma directImage_mk_eq_imageSubobject {A : C} (g : A ⟶ X) [Mono g] :
     (directImage f).obj (Subobject.mk g) = imageSubobject (g ≫ f) := by
   rw [directImage_eq_imageSubobject]
@@ -190,6 +201,29 @@ theorem directImage_inverseImage_gc :
   ⟨fun h ↦ le_inverseImage f (toDirectImage X' f ≫ ofLE _ _ h) (by simp),
     fun h ↦ directImage_le f (ofLE _ _ h ≫ fromInverseImage Y' f) (by simp)⟩
 
+/-- The kernel definition of inverse image agrees with the generic pullback of subobjects. -/
+lemma inverseImage_eq_pullback (Y' : Subobject Y) :
+    (inverseImage f).obj Y' = (Subobject.pullback f).obj Y' := by
+  let gc : GaloisConnection (Subobject.«exists» f).obj (Subobject.pullback f).obj :=
+    fun X' Y' ↦
+      ⟨fun h ↦ ((Subobject.existsPullbackAdj f).homEquiv _ _ (homOfLE h)).le,
+        fun h ↦ ((Subobject.existsPullbackAdj f).homEquiv _ _).symm (homOfLE h) |>.le⟩
+  exact (directImage_inverseImage_gc f).u_unique gc (directImage_eq_exists f)
+
+/-- Inverse image commutes with composition. -/
+lemma inverseImage_comp {Z : C} (g : Y ⟶ Z) (Z' : Subobject Z) :
+    (inverseImage (f ≫ g)).obj Z' =
+      (inverseImage f).obj ((inverseImage g).obj Z') := by
+  rw [inverseImage_eq_pullback, inverseImage_eq_pullback, inverseImage_eq_pullback,
+    ← Subobject.pullback_comp]
+
+/-- Direct image commutes with composition. -/
+lemma directImage_comp {Z : C} (g : Y ⟶ Z) (X' : Subobject X) :
+    (directImage (f ≫ g)).obj X' = (directImage g).obj ((directImage f).obj X') :=
+  (directImage_inverseImage_gc (f ≫ g)).l_unique
+    ((directImage_inverseImage_gc f).compose (directImage_inverseImage_gc g))
+    (inverseImage_comp f g)
+
 lemma inverseImage_directImage_le (X' : Subobject X) :
     X' ≤ (inverseImage f).obj ((directImage f).obj X') := (directImage_inverseImage_gc f).le_u_l X'
 
@@ -239,6 +273,41 @@ theorem inverseImage_directImage_eq_self_of_epi [Epi f] (X' : Subobject X)
     rw [← imageSubobject_eq_kernelSubobject, imageSubobject_mono]
     exact mk_arrow X'
   rw [← hX', epi_directImage_inverseImage]
+
+/-- For an epimorphism, taking direct image and then inverse image adds its kernel. -/
+lemma inverseImage_directImage_eq_sup_of_epi [Epi f] (X' : Subobject X) :
+    (inverseImage f).obj ((directImage f).obj X') = X' ⊔ kernelSubobject f := by
+  apply le_antisymm
+  · rw [← inverseImage_directImage_eq_self_of_epi f
+      (X' ⊔ kernelSubobject f) le_sup_right]
+    exact (inverseImage f).monotone ((directImage f).monotone le_sup_left)
+  · apply sup_le (inverseImage_directImage_le f X')
+    exact kernelSubobject_comp_le f _
+
+/-- Taking direct image and then inverse image adds the kernel of the morphism. -/
+lemma inverseImage_directImage_eq_sup (X' : Subobject X) :
+    (inverseImage f).obj ((directImage f).obj X') = X' ⊔ kernelSubobject f := by
+  rw [← imageSubobject_arrow_comp f, directImage_comp, inverseImage_comp,
+    mono_inverseImage_directImage, inverseImage_directImage_eq_sup_of_epi,
+    kernelSubobject_comp_mono]
+
+/-- For a monomorphism, taking inverse image and then direct image intersects with its image. -/
+lemma directImage_inverseImage_eq_inf_of_mono [Mono f] (Y' : Subobject Y) :
+    (directImage f).obj ((inverseImage f).obj Y') = Y' ⊓ imageSubobject f := by
+  rw [directImage_eq_exists, inverseImage_eq_pullback, Subobject.exists_iso_map]
+  change (Subobject.map (MonoOver.mk f).arrow).obj
+      ((Subobject.pullback (MonoOver.mk f).arrow).obj Y') = _
+  rw [← Subobject.inf_eq_map_pullback' (MonoOver.mk f) Y']
+  change Subobject.mk f ⊓ Y' = _
+  rw [imageSubobject_mono, inf_comm]
+
+/-- Taking inverse image and then direct image intersects with the image of the morphism. -/
+lemma directImage_inverseImage_eq_inf (Y' : Subobject Y) :
+    (directImage f).obj ((inverseImage f).obj Y') = Y' ⊓ imageSubobject f := by
+  conv_lhs =>
+    rw [← imageSubobject_arrow_comp f, directImage_comp, inverseImage_comp,
+      epi_directImage_inverseImage, directImage_inverseImage_eq_inf_of_mono]
+  rw [imageSubobject_mono, mk_arrow]
 
 /-- Given a subobject `Y` of `X`, there is an order-isomorphism between subobjects
 of `X/Y := cokernel (Y ↪ X)` and subobjects of `X` containing `Y`. -/
