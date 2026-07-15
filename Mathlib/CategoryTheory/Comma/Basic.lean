@@ -374,11 +374,8 @@ def mapLeftComp (l : L₁ ⟶ L₂) (l' : L₂ ⟶ L₃) :
     mapLeft R (l ≫ l') ≅ mapLeft R l' ⋙ mapLeft R l :=
   NatIso.ofComponents (fun X => isoMk (Iso.refl _) (Iso.refl _))
 
-<<<<<<< HEAD
-set_option backward.isDefEq.respectTransparency.types false in
-=======
 set_option linter.translate.warnInvalid false in
->>>>>>> f34e762642b3470574f0117a100a8fc4eaeae651
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Two equal natural transformations `L₁ ⟶ L₂` yield naturally isomorphic functors
 `Comma L₁ R ⥤ Comma L₂ R`. -/
 @[to_dual (attr := simps!)

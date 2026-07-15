@@ -335,16 +335,13 @@ def map (f : α ≃o β) : UpperSet α ≃o UpperSet β where
   right_inv _ := ext <| f.image_preimage _
   map_rel_iff' := image_subset_image_iff f.injective
 
-<<<<<<< HEAD
-set_option backward.isDefEq.respectTransparency false in
-=======
 -- `simps` could generate these theorems, but `to_dual` is not happy with those versions.
 @[to_dual (attr := simp)]
 theorem coe_map_apply (f : α ≃o β) (s : UpperSet α) : map f s = f '' s := rfl
 @[to_dual (attr := simp)]
 theorem coe_map_symm_apply (f : α ≃o β) (s : UpperSet β) : (map f).symm s = f ⁻¹' s := rfl
 
->>>>>>> f34e762642b3470574f0117a100a8fc4eaeae651
+set_option backward.isDefEq.respectTransparency false in
 @[to_dual (attr := simp)]
 theorem symm_map (f : α ≃o β) : (map f).symm = map f.symm := by
   ext; simp [map, OrderIso.symm_apply_eq]

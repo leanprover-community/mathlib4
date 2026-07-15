@@ -65,10 +65,6 @@ end Presieve
 
 namespace Sieve
 
-<<<<<<< HEAD
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
-=======
 @[simp]
 lemma functorPushforward_overForget_arrows {X : C} {Y : Over X} (S : Sieve Y) :
     S.arrows.functorPushforward (Over.forget X) = S.arrows.map (Over.forget X) := by
@@ -88,7 +84,8 @@ lemma functorPushforward_functorPullback_overForget {X : C} {Y : Over X} (S : Si
   apply arrows_ext
   simp [← arrows_generate_map_eq_functorPushforward]
 
->>>>>>> f34e762642b3470574f0117a100a8fc4eaeae651
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- The equivalence `Sieve Y ≃ Sieve Y.left` for all `Y : Over X`. -/
 @[simps -isSimp] -- working with `overEquiv` is useful enough that we don't want `simp` unfolding it
 def overEquiv {X : C} (Y : Over X) : Sieve Y ≃o Sieve Y.left where

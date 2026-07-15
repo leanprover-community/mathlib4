@@ -347,11 +347,8 @@ def equivOfNatIsoOfIso {F G : J ⥤ C} (α : F ≅ G) (c : Cone F) (d : Cone G)
     (w : (Cone.postcompose α.hom).obj c ≅ d) : IsLimit c ≃ IsLimit d :=
   (postcomposeHomEquiv α _).symm.trans (equivIsoLimit w)
 
-<<<<<<< HEAD
-=======
 set_option backward.defeqAttrib.useBackward true in
 set_option linter.translate.warnInvalid false in
->>>>>>> f34e762642b3470574f0117a100a8fc4eaeae651
 /-- The cone points of two limit cones for naturally isomorphic functors
 are themselves isomorphic.
 -/
