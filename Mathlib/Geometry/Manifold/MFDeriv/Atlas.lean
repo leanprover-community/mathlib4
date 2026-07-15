@@ -228,6 +228,23 @@ end OpenPartialHomeomorph.MDifferentiable
 
 /-! ### Differentiability of `extChartAt` -/
 
+section
+
+open IsManifold
+
+variable {e : OpenPartialHomeomorph M H}
+
+theorem OpenPartialHomeomorph.mdifferentiableAt_extend
+    {x : M} (he : e ∈ maximalAtlas I 1 M) (hx : x ∈ e.source) :
+    MDiffAt (e.extend I) x :=
+  e.contMDiffAt_extend he hx |>.mdifferentiableAt (by simp)
+
+theorem OpenPartialHomeomorph.mdifferentiableOn_extend (he : e ∈ maximalAtlas I 1 M) :
+    MDiff[e.source] (e.extend I) :=
+  e.contMDiffOn_extend he |>.mdifferentiableOn (by simp)
+
+end
+
 section extChartAt
 
 variable [IsManifold I 1 M] {s : Set M} {x y : M} {z : E}
@@ -351,6 +368,17 @@ lemma isInvertible_mfderiv_extChartAt {y : M} (hy : y ∈ (extChartAt I x).sourc
     (mfderivWithin_extChartAt_symm_comp_mfderiv_extChartAt h'y)
   have : (extChartAt I x).symm ((extChartAt I x) y) = y := (extChartAt I x).left_inv hy
   rwa [this] at Z
+
+variable {e : OpenPartialHomeomorph M H} (he : e ∈ IsManifold.maximalAtlas I 1 M)
+lemma isInvertible_mfderiv_extend {y : M} (hy : y ∈ (e.extend I).source) :
+    (mfderiv% (e.extend I) y).IsInvertible := by
+  have h'y : e.extend I y ∈ (e.extend I).target := (e.extend I).map_source hy
+  sorry -- TODO: generalise more basic lemmas!
+  -- have Z := ContinuousLinearMap.IsInvertible.of_inverse
+  --   (mfderiv_extChartAt_comp_mfderivWithin_extChartAt_symm h'y)
+  --   (mfderivWithin_extChartAt_symm_comp_mfderiv_extChartAt h'y)
+  -- have : (extChartAt I x).symm ((extChartAt I x) y) = y := (extChartAt I x).left_inv hy
+  -- rwa [this] at Z
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The trivialization of the tangent bundle at a point is the manifold derivative of the
