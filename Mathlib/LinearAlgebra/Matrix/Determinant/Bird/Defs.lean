@@ -267,9 +267,8 @@ theorem iterEntry_succ {n p : ℕ}
   by rw [iterEntry]
 
 theorem iterMatrix_zero {n : ℕ}
-    (A : Matrix (Fin n) (Fin n) R)
-    (i j : Fin n) :
-    iterMatrix A 0 i j = A i j := by
+    (A : Matrix (Fin n) (Fin n) R) :
+    iterMatrix A 0 = A := by
   rw [iterMatrix, iterEntry_zero]
 
 theorem iterMatrix_succ {n p : ℕ}
