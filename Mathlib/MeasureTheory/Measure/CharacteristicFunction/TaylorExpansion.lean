@@ -78,7 +78,7 @@ theorem iteratedFDeriv_charFun {n : ℕ} {t : E} (hint : MemLp id n μ) (x : Fin
   · rw [h]
     exact contDiff_fourierIntegral _ hint'
   simp only [mul_inv_rev, neg_smul]
-  erw [h, iteratedFDeriv_fourierIntegral _ hint' (by fun_prop) le_rfl]
+  rw [h, iteratedFDeriv_fourierIntegral _ hint' (by fun_prop) le_rfl]
   simp only [smul_apply, real_smul, ofReal_pow, ofReal_neg, ofReal_mul, ofReal_inv, ofReal_ofNat,
     ofReal_prod]
   rw [fourierIntegral_continuousMultilinearMap_apply Real.continuous_fourierChar]
