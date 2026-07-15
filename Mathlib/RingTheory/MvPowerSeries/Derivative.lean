@@ -81,11 +81,11 @@ theorem trunc_pderivFun [DecidableEq σ] {i : σ} (f : MvPowerSeries σ R) (n : 
 -- A special case of `pderivFun_mul`, used in its proof.
 private theorem pderivFun_coe_mul_coe {i : σ} (f g : MvPolynomial σ R) :
     pderivFun i (f * g : MvPowerSeries σ R) = f * pderiv i g + g * pderiv i f := by
-  rw [← coe_mul, pderivFun_coe, pderiv_mul, add_comm, mul_comm _ g, ← coe_mul,
-    ← coe_mul, MvPolynomial.coe_add]
+  rw [← coe_mul, pderivFun_coe, pderiv_mul, add_comm, mul_comm _ g, ← coe_mul, ← coe_mul,
+    MvPolynomial.coe_add]
 
 theorem pderivFun_mul {i : σ} (f g : MvPowerSeries σ R) :
-    pderivFun i (f * g) = f • g.pderivFun i + g • f.pderivFun i := by
+    pderivFun i (f * g) = f * g.pderivFun i + g * f.pderivFun i := by
   classical
   ext n
   have h₁ : n < n + single i 1 := lt_def.mpr ⟨self_le_add_right _ _, i, by simp⟩
@@ -93,7 +93,7 @@ theorem pderivFun_mul {i : σ} (f g : MvPowerSeries σ R) :
     lt_def.mpr ⟨self_le_add_right _ _, i, by simp⟩
   have h₃ : n < n + single i 1 + single i 1 := lt_trans h₁ h₂
   rw [coeff_pderivFun, map_add, ← coeff_trunc_mul_trunc_eq_coeff_mul _ _ _ h₂,
-    smul_eq_mul, smul_eq_mul, ← coeff_trunc_mul_trunc_eq_coeff_mul₂ _ _ g (f.pderivFun i) h₃ h₁,
+    ← coeff_trunc_mul_trunc_eq_coeff_mul₂ _ _ g (f.pderivFun i) h₃ h₁,
     ← coeff_trunc_mul_trunc_eq_coeff_mul₂ _ _ f (g.pderivFun i) h₃ h₁, trunc_pderivFun,
     trunc_pderivFun, ← coeff_coe, ← coeff_coe, ← coeff_coe, ← map_add, coe_mul, coe_mul, coe_mul,
     ← pderivFun_coe_mul_coe, coeff_pderivFun]
@@ -103,7 +103,7 @@ theorem pderivFun_one {i : σ} : pderivFun i (1 : MvPowerSeries σ R) = 0 := by
 
 theorem pderivFun_smul {i : σ} (r : R) (f : MvPowerSeries σ R) :
     pderivFun i (r • f) = r • pderivFun i f := by
-  rw [smul_eq_C_mul, smul_eq_C_mul, pderivFun_mul, pderivFun_C, smul_zero, add_zero, smul_eq_mul]
+  rw [smul_eq_C_mul, smul_eq_C_mul, pderivFun_mul, pderivFun_C, mul_zero, add_zero]
 
 variable (R) in
 /-- The formal partial derivative of a multivariate formal power series with respect to
@@ -140,8 +140,8 @@ theorem pderiv_X_of_ne {i j : σ} (h : j ≠ i) : pderiv R i (X j) = 0 := by
   simpa only [coeff_pderiv, coeff_X, boole_mul, coeff_zero] using
     if_neg (ne_iff.mpr ⟨i, by grind [Finsupp.add_apply]⟩)
 
-theorem pderiv_X [DecidableEq σ] {i j : σ} :
-    pderiv R i (X j) = Pi.single (M := fun _ => _) i 1 j := by
+theorem pderiv_X [DecidableEq σ] (i j : σ) :
+    pderiv R i (X j) = Pi.single (M := fun _ => MvPowerSeries σ R) i 1 j := by
   by_cases h : i = j
   · subst h; simp only [pderiv_X_self, Pi.single_eq_same]
   · grind [pderiv_X_of_ne]
@@ -176,14 +176,13 @@ theorem pderiv.ext [CommRing R] [IsAddTorsionFree R] {f g : MvPowerSeries σ R}
 
 @[simp]
 theorem pderiv_inv {i : σ} [CommRing R] (f : (MvPowerSeries σ R)ˣ) :
-    pderiv R i ↑f⁻¹ = -(↑f⁻¹ : MvPowerSeries σ R) ^ 2 * pderiv R i f := by
-  apply Derivation.leibniz_of_mul_eq_one
-  simp
+    pderiv R i ↑f⁻¹ = -(↑f⁻¹ : MvPowerSeries σ R) ^ 2 * pderiv R i f :=
+  (pderiv R i).leibniz_of_mul_eq_one f.inv_mul
 
 @[simp]
 theorem pderiv_invOf {i : σ} [CommRing R] (f : MvPowerSeries σ R) [Invertible f] :
-    pderiv R i ⅟f = -⅟f ^ 2 * pderiv R i f := by
-  rw [Derivation.leibniz_invOf, smul_eq_mul]
+    pderiv R i ⅟f = -⅟f ^ 2 * pderiv R i f :=
+  (pderiv R i).leibniz_invOf f
 
 /-
 The following theorem is stated only in the case that `R` is a field. This is because
