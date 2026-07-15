@@ -492,7 +492,7 @@ public theorem birdDetSpec_eq_det (A : Matrix (Fin n) (Fin n) R) :
     rw [Spec.birdDetSpec_zero]
     exact Matrix.det_fin_zero
   | succ k =>
-    rw [Spec.birdDetSpec_succ_iterMatrix, paper_eq1,
+    rw [Spec.birdDetSpec_succ, paper_eq1,
       Matrix.of_apply, sum_bminor_max_length_eq_det, smul_eq_mul,
       ← mul_assoc, ← pow_add, Even.neg_one_pow ⟨k, rfl⟩, one_mul]
 
@@ -503,7 +503,7 @@ theorem birdDet_eq_birdDetSpec (A : Array R) (hA : A.size = n * n) :
   cases n with
   | zero => rw [birdDet_zero, Spec.birdDetSpec_zero]
   | succ k =>
-    rw [birdDet_succ, Spec.birdDetSpec_succ_iterMatrix]
+    rw [birdDet_succ, Spec.birdDetSpec_succ]
     apply congrArg ((-1 : R) ^ k * ·)
     exact iter_get_eq_spec_iterMatrix A hA k 0 0
 
