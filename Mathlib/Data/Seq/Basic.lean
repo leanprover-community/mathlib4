@@ -37,9 +37,8 @@ theorem length'_of_not_terminates {s : Seq α} (h : ¬ s.Terminates) :
     s.length' = ⊤ := by
   simp [length', h]
 
-set_option linter.flexible false in -- simp followed by exact rfl
 @[simp]
-theorem length_nil : length (nil : Seq α) terminates_nil = 0 := by simp [length]; exact rfl
+theorem length_nil : length (nil : Seq α) terminates_nil = 0 := by simp [length, terminatedAt_nil]
 
 @[simp]
 theorem length'_nil : length' (nil : Seq α) = 0 := by
@@ -287,25 +286,21 @@ theorem append_nil (s : Seq α) : append s nil = s := by
     dsimp
     exact ⟨rfl, _, rfl, rfl⟩
 
-set_option linter.flexible false in -- TODO: fix non-terminal simp
 @[simp]
 theorem append_assoc (s t u : Seq α) : append (append s t) u = append s (append t u) := by
   apply eq_of_bisim fun s1 s2 => ∃ s t u, s1 = append (append s t) u ∧ s2 = append s (append t u)
-  · intro s1 s2 h
-    exact
-      match s1, s2, h with
-      | _, _, ⟨s, t, u, rfl, rfl⟩ => by
-        cases s <;> simp
-        case nil =>
-          cases t <;> simp
-          case nil =>
-            cases u <;> simp
-            case cons _ u => refine ⟨nil, nil, u, ?_, ?_⟩ <;> simp
-          case cons _ t => refine ⟨nil, t, u, ?_, ?_⟩ <;> simp
-        case cons _ s => exact ⟨s, t, u, rfl, rfl⟩
+  · rintro _ _ ⟨s, t, u, rfl, rfl⟩
+    cases s with
+    | nil =>
+      cases t with
+      | nil =>
+        cases u with
+        | nil => simp
+        | cons _ u => simpa using ⟨nil, nil, u, by simp, by simp⟩
+      | cons _ t => simpa using ⟨nil, t, u, by simp, by simp⟩
+    | cons _ s => simpa using ⟨s, t, u, rfl, rfl⟩
   · exact ⟨s, t, u, rfl, rfl⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem of_mem_append {s₁ s₂ : Seq α} {a : α} (h : a ∈ append s₁ s₂) : a ∈ s₁ ∨ a ∈ s₂ := by
   have := h; revert this
   generalize e : append s₁ s₂ = ss; intro h; revert s₁
@@ -322,7 +317,7 @@ theorem of_mem_append {s₁ s₂ : Seq α} {a : α} (h : a ∈ append s₁ s₂)
     rcases show a = c ∨ a ∈ append t₁ s₂ by simpa using m with e' | m
     · rw [e']
       exact Or.inl (mem_cons _ _)
-    · obtain ⟨i1, i2⟩ := show c = b ∧ append t₁ s₂ = s' by simpa
+    · obtain ⟨i1, i2⟩ := show c = b ∧ append t₁ s₂ = s' by simpa using e
       rcases o with e' | IH
       · simp [i1, e']
       · exact Or.imp_left (mem_cons_of_mem _) (IH m i2)
@@ -407,21 +402,17 @@ theorem exists_of_mem_map {f} {b : β} : ∀ {s : Seq α}, b ∈ map f s → ∃
     · injection oe
     · injection oe with h'; exact ⟨a, om, h'⟩
 
-set_option linter.flexible false in -- TODO: fix non-terminal simp
 @[simp]
 theorem map_append (f : α → β) (s t) : map f (append s t) = append (map f s) (map f t) := by
-  apply
-    eq_of_bisim (fun s1 s2 => ∃ s t, s1 = map f (append s t) ∧ s2 = append (map f s) (map f t)) _
-      ⟨s, t, rfl, rfl⟩
-  intro s1 s2 h
-  exact
-    match s1, s2, h with
-    | _, _, ⟨s, t, rfl, rfl⟩ => by
-      cases s <;> simp
-      case nil =>
-        cases t <;> simp
-        case cons _ t => refine ⟨nil, t, ?_, ?_⟩ <;> simp
-      case cons _ s => exact ⟨s, t, rfl, rfl⟩
+  refine eq_of_bisim (fun s1 s2 => ∃ s t, s1 = map f (append s t) ∧ s2 = append (map f s) (map f t))
+    ?_ ⟨s, t, rfl, rfl⟩
+  rintro s1 s2 ⟨s, t, rfl, rfl⟩
+  cases s with
+  | nil =>
+    cases t with
+    | nil => simp
+    | cons _ t => simpa using ⟨nil, t, by simp, by simp⟩
+  | cons _ s => simpa using ⟨s, t, rfl, rfl⟩
 
 end Map
 
@@ -460,30 +451,26 @@ theorem join_cons (a : α) (s S) : join (cons (a, s) S) = cons a (append s (join
       · simpa only [BisimO, join_cons_cons, destruct_cons, cons_append, true_and] using
           Or.inr ⟨_, _, S, rfl, rfl⟩
 
-set_option linter.flexible false in -- TODO: fix non-terminal simp
 @[simp]
 theorem join_append (S T : Seq (Seq1 α)) : join (append S T) = append (join S) (join T) := by
   apply
     eq_of_bisim fun s1 s2 =>
       ∃ s S T, s1 = append s (join (append S T)) ∧ s2 = append s (append (join S) (join T))
-  · intro s1 s2 h
-    exact
-      match s1, s2, h with
-      | _, _, ⟨s, S, T, rfl, rfl⟩ => by
-        cases s <;> simp
-        case nil =>
-          cases S <;> simp
-          case nil =>
-            cases T with
-            | nil => simp
-            | cons s T =>
-              obtain ⟨a, s⟩ := s; simp only [join_cons, destruct_cons, true_and]
-              refine ⟨s, nil, T, ?_, ?_⟩ <;> simp
-          case cons s S =>
-            obtain ⟨a, s⟩ := s
-            simpa using ⟨s, S, T, rfl, rfl⟩
-        case cons _ s => exact ⟨s, S, T, rfl, rfl⟩
-  · refine ⟨nil, S, T, ?_, ?_⟩ <;> simp
+  · rintro s1 s2 ⟨s, S, T, rfl, rfl⟩
+    cases s with
+    | nil =>
+      cases S with
+      | nil =>
+        cases T with
+        | nil => simp
+        | cons s T =>
+          obtain ⟨a, s⟩ := s
+          simpa using ⟨s, nil, T, by simp, by simp⟩
+      | cons s S =>
+        obtain ⟨a, s⟩ := s
+        simpa using ⟨s, S, T, rfl, rfl⟩
+    | cons _ s => simpa using ⟨s, S, T, rfl, rfl⟩
+  · exact ⟨nil, S, T, by simp, by simp⟩
 
 end Join
 
@@ -1018,31 +1005,27 @@ theorem ret_bind (a : α) (f : α → Seq1 β) : bind (ret a) f = f a := by
   obtain ⟨a, s⟩ := f a
   cases s <;> simp
 
-set_option linter.flexible false in -- TODO: fix non-terminal simp
 @[simp]
 theorem map_join' (f : α → β) (S) : Seq.map f (Seq.join S) = Seq.join (Seq.map (map f) S) := by
   apply
     Seq.eq_of_bisim fun s1 s2 =>
       ∃ s S,
         s1 = Seq.append s (Seq.map f (Seq.join S)) ∧ s2 = append s (Seq.join (Seq.map (map f) S))
-  · intro s1 s2 h
-    exact
-      match s1, s2, h with
-      | _, _, ⟨s, S, rfl, rfl⟩ => by
-        cases s <;> simp
-        case nil =>
-          cases S <;> simp
-          case cons x S =>
-            obtain ⟨a, s⟩ := x
-            simpa [map] using ⟨_, _, rfl, rfl⟩
-        case cons _ s => exact ⟨s, S, rfl, rfl⟩
-  · refine ⟨nil, S, ?_, ?_⟩ <;> simp
+  · rintro s1 s2 ⟨s, S, rfl, rfl⟩
+    cases s with
+    | nil =>
+      cases S with
+      | nil => simp
+      | cons x S =>
+        obtain ⟨a, s⟩ := x
+        simpa [map] using ⟨_, _, rfl, rfl⟩
+    | cons _ s => simpa using ⟨s, S, rfl, rfl⟩
+  · simpa using ⟨nil, S, by simp, by simp⟩
 
 @[simp]
 theorem map_join (f : α → β) : ∀ S, map f (join S) = join (map (map f) S)
   | ((a, s), S) => by cases s <;> simp [map]
 
-set_option linter.flexible false in -- TODO: fix non-terminal simp
 @[simp]
 theorem join_join (SS : Seq (Seq1 (Seq1 α))) :
     Seq.join (Seq.join SS) = Seq.join (Seq.map join SS) := by
@@ -1050,21 +1033,18 @@ theorem join_join (SS : Seq (Seq1 (Seq1 α))) :
     Seq.eq_of_bisim fun s1 s2 =>
       ∃ s SS,
         s1 = Seq.append s (Seq.join (Seq.join SS)) ∧ s2 = Seq.append s (Seq.join (Seq.map join SS))
-  · intro s1 s2 h
-    exact
-      match s1, s2, h with
-      | _, _, ⟨s, SS, rfl, rfl⟩ => by
-        cases s <;> simp
-        case nil =>
-          cases SS <;> simp
-          case cons S SS =>
-            obtain ⟨s, S⟩ := S; obtain ⟨x, s⟩ := s
-            simp only [Seq.join_cons, join_append, destruct_cons]
-            cases s <;> simp
-            case nil => exact ⟨_, _, rfl, rfl⟩
-            case cons x s => refine ⟨Seq.cons x (append s (Seq.join S)), SS, ?_, ?_⟩ <;> simp
-        case cons _ s => exact ⟨s, SS, rfl, rfl⟩
-  · refine ⟨nil, SS, ?_, ?_⟩ <;> simp
+  · rintro s1 s2 ⟨s, SS, rfl, rfl⟩
+    cases s with
+    | nil =>
+      cases SS with
+      | nil => simp
+      | cons S SS =>
+        obtain ⟨⟨x, s⟩, S⟩ := S
+        cases s with
+        | nil => simpa using ⟨_, _, rfl, rfl⟩
+        | cons x s => simpa using ⟨Seq.cons x (append s (Seq.join S)), SS, by simp, by simp⟩
+    | cons _ s => simpa using ⟨s, SS, rfl, rfl⟩
+  · simpa using ⟨nil, SS, by simp, by simp⟩
 
 @[simp]
 theorem bind_assoc (s : Seq1 α) (f : α → Seq1 β) (g : β → Seq1 γ) :

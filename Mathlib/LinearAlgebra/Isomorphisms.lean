@@ -37,6 +37,8 @@ section IsomorphismLaws
 /-- The **first isomorphism law for modules**. The quotient of `M` by the kernel of `f` is linearly
 equivalent to the range of `f`. -/
 noncomputable def quotKerEquivRange : (M ⧸ LinearMap.ker f) ≃ₗ[R] LinearMap.range f :=
+  -- TODO: We should fix this definition so that `fₗ.quotKerEquivRange.toAddEquiv` is definitionally
+  -- equal to `QuotientAddGroup.quotientKerEquivRange f.toAddMonoidHom`.
   (LinearEquiv.ofInjective ((LinearMap.ker f).liftQ f <| le_rfl) <|
         ker_eq_bot.mp <| Submodule.ker_liftQ_eq_bot _ _ _ (le_refl (LinearMap.ker f))).trans
     (LinearEquiv.ofEq _ _ <| Submodule.range_liftQ _ _ _)
