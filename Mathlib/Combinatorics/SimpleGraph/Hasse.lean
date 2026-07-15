@@ -198,7 +198,7 @@ theorem exists_path_iff_isContained_pathGraph :
     (∃ (u v : V) (p : G.Path u v), p.val.length = n) ↔ pathGraph (n + 1) ⊑ G := by
   classical
   refine ⟨fun ⟨u, v, p, hp⟩ ↦ hp ▸ ⟨p.isPath.pathGraphCopy⟩, fun ⟨f⟩ ↦ ?_⟩
-  refine ⟨_, _, ⟨_, map_isPath_of_injective f.injective <| .ofPathGraph n⟩, ?_⟩
+  refine ⟨_, _, ⟨_, IsPath.ofPathGraph n |>.map f.injective⟩, ?_⟩
   simp
 
 end Walk
