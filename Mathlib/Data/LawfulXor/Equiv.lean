@@ -29,7 +29,7 @@ variable {α β : Type*} [XorOp α] [Zero α] [LawfulXor α] {a b c : α}
 
 @[simp] theorem xor_symm : (Equiv.xor a).symm = Equiv.xor a := rfl
 
-theorem xor_involutive : Function.Involutive (Equiv.xor a) := xor_right_involutive a
+theorem xor_involutive (a : α) : Function.Involutive (Equiv.xor a) := xor_right_involutive a
 
 @[simp] theorem xor_zero : Equiv.xor (0 : α) = 1 := Equiv.ext zero_xor
 
