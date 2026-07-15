@@ -8,7 +8,6 @@ module
 public meta import Mathlib.Control.Basic
 public import Mathlib.Algebra.Order.Invertible
 public import Mathlib.Algebra.Order.Ring.Cast
-public import Mathlib.Tactic.HaveI
 public import Mathlib.Tactic.NormNum.Core
 
 /-!
