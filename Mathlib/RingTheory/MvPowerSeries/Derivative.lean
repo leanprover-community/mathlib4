@@ -43,9 +43,9 @@ open MvPolynomial Finsupp
 
 variable {σ R : Type*}
 
-section CommutativeSemiring
+section Semiring
 
-variable [CommSemiring R]
+variable [Semiring R]
 
 /-- The underlying function of the formal partial derivative with respect to variable `i`.
 This is packaged as a derivation in `MvPowerSeries.pderiv`. -/
@@ -56,11 +56,6 @@ theorem coeff_pderivFun {i : σ} (f : MvPowerSeries σ R) (d : σ →₀ ℕ) :
     coeff d (f.pderivFun i) = coeff (d + single i 1) f * (d i + 1) := by
   rfl
 
-theorem pderivFun_coe {i : σ} (f : MvPolynomial σ R) :
-    (f : MvPowerSeries σ R).pderivFun i = f.pderiv i := by
-  ext
-  rw [coeff_pderivFun, coeff_coe, coeff_coe, coeff_pderiv]
-
 theorem pderivFun_add {i : σ} (f g : MvPowerSeries σ R) :
     pderivFun i (f + g) = pderivFun i f + pderivFun i g := by
   ext
@@ -70,7 +65,21 @@ theorem pderivFun_C {i : σ} (r : R) : pderivFun i (C r) = 0 := by
   ext n
   rw [coeff_pderivFun, coeff_add_single_C, zero_mul, (coeff n).map_zero]
 
-theorem trunc_pderivFun [DecidableEq σ] {i : σ} (f : MvPowerSeries σ R) (n : σ →₀ ℕ) :
+theorem pderivFun_one {i : σ} : pderivFun i (1 : MvPowerSeries σ R) = 0 := by
+  rw [← map_one C, pderivFun_C (1 : R)]
+
+end Semiring
+
+section CommSemiring
+
+variable [CommSemiring R]
+
+private theorem pderivFun_coe {i : σ} (f : MvPolynomial σ R) :
+    (f : MvPowerSeries σ R).pderivFun i = f.pderiv i := by
+  ext
+  rw [coeff_pderivFun, coeff_coe, coeff_coe, coeff_pderiv]
+
+private theorem trunc_pderivFun [DecidableEq σ] {i : σ} (f : MvPowerSeries σ R) (n : σ →₀ ℕ) :
     trunc R n (pderivFun i f) = pderiv i (trunc R (n + single i 1) f) := by
   ext
   rw [coeff_trunc]
@@ -84,7 +93,7 @@ private theorem pderivFun_coe_mul_coe {i : σ} (f g : MvPolynomial σ R) :
   rw [← coe_mul, pderivFun_coe, pderiv_mul, add_comm, mul_comm _ g, ← coe_mul, ← coe_mul,
     MvPolynomial.coe_add]
 
-theorem pderivFun_mul {i : σ} (f g : MvPowerSeries σ R) :
+private theorem pderivFun_mul {i : σ} (f g : MvPowerSeries σ R) :
     pderivFun i (f * g) = f * g.pderivFun i + g * f.pderivFun i := by
   classical
   ext n
@@ -98,16 +107,14 @@ theorem pderivFun_mul {i : σ} (f g : MvPowerSeries σ R) :
     trunc_pderivFun, ← coeff_coe, ← coeff_coe, ← coeff_coe, ← map_add, coe_mul, coe_mul, coe_mul,
     ← pderivFun_coe_mul_coe, coeff_pderivFun]
 
-theorem pderivFun_one {i : σ} : pderivFun i (1 : MvPowerSeries σ R) = 0 := by
-  rw [← map_one C, pderivFun_C (1 : R)]
-
-theorem pderivFun_smul {i : σ} (r : R) (f : MvPowerSeries σ R) :
+private theorem pderivFun_smul {i : σ} (r : R) (f : MvPowerSeries σ R) :
     pderivFun i (r • f) = r • pderivFun i f := by
   rw [smul_eq_C_mul, smul_eq_C_mul, pderivFun_mul, pderivFun_C, mul_zero, add_zero]
 
 variable (R) in
 /-- The formal partial derivative of a multivariate formal power series with respect to
 variable `i`, as an `R`-derivation on `MvPowerSeries σ R`. -/
+@[no_expose]
 noncomputable def pderiv (i : σ) : Derivation R (MvPowerSeries σ R) (MvPowerSeries σ R) where
   toFun := pderivFun i
   map_add' := pderivFun_add
@@ -125,6 +132,10 @@ theorem coeff_pderiv {i : σ} (f : MvPowerSeries σ R) (n : σ →₀ ℕ) :
 
 theorem pderiv_coe {i : σ} (f : MvPolynomial σ R) :
     pderiv R i f = MvPolynomial.pderiv i f := pderivFun_coe f
+
+theorem pderiv_mul {i : σ} (f g : MvPowerSeries σ R) :
+    pderiv R i (f * g) = f * pderiv R i g + g * pderiv R i f :=
+  pderivFun_mul f g
 
 @[simp]
 theorem pderiv_X_self {i : σ} : pderiv R i (X i) = 1 := by
@@ -155,7 +166,7 @@ theorem pderiv_pow {i : σ} (g : MvPowerSeries σ R) (n : ℕ) :
     pderiv R i (g ^ n) = n * g ^ (n - 1) * pderiv R i g := by
   rw [Derivation.leibniz_pow, smul_eq_mul, nsmul_eq_mul, mul_assoc]
 
-end CommutativeSemiring
+end CommSemiring
 
 /-- If `f` and `g` have the same constant term and all partial derivatives, then they are equal.
 
