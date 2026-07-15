@@ -101,6 +101,7 @@ structure CommaMorphism (X Y : Comma L R) where
   w : L.map left ≫ Y.hom = X.hom ≫ R.map right := by cat_disch
 
 attribute [to_dual existing] CommaMorphism.left
+attribute [to_dual self (reorder := A B, 2 4, L R, X Y, 13 14)] CommaMorphism.ext
 
 @[to_dual existing w]
 theorem CommaMorphism.w' {X Y : Comma R L} (self : CommaMorphism Y X) :

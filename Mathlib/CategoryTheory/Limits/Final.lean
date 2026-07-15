@@ -564,13 +564,9 @@ def induction {d : D} (Z : ∀ (X : C) (_ : F.obj X ⟶ d), Sort*)
     @isPreconnected_induction _ _ _ (fun Y : CostructuredArrow F d => Z Y.left Y.hom) _ _
       (CostructuredArrow.mk k₀) z
   · intro j₁ j₂ f a
-    fapply h₁ _ _ _ _ f.left _ a
-    convert! f.w
-    simp
+    exact h₁ _ _ _ _ f.left f.w a
   · intro j₁ j₂ f a
-    fapply h₂ _ _ _ _ f.left _ a
-    convert! f.w
-    simp
+    exact h₂ _ _ _ _ f.left f.w a
 
 variable {F G}
 

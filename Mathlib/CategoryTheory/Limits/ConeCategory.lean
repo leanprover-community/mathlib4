@@ -145,9 +145,7 @@ def Cone.fromCostructuredArrow (F : J ⥤ C) : CostructuredArrow (const J) F ⥤
   obj c := ⟨c.left, c.hom⟩
   map f :=
     { hom := f.left
-      w := fun j => by
-        convert! congr_fun (congr_arg NatTrans.app f.w) j
-        simp }
+      w := congr_fun (congr_arg NatTrans.app f.w) }
 
 set_option backward.defeqAttrib.useBackward true in
 /-- The category of cones on `F` is just the comma category `(Δ ↓ F)`, where `Δ` is the constant

@@ -31,20 +31,29 @@ universe v₁ v₂ v₃ v₄ v₅ v₆ u₁ u₂ u₃ u₄ u₅ u₆
 
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 
+to_dual_name_hint Left Right, Mono Epi, S T
+
 /-- The category of `T`-structured arrows with domain `S : D` (here `T : C ⥤ D`),
 has as its objects `D`-morphisms of the form `S ⟶ T Y`, for some `Y : C`,
 and morphisms `C`-morphisms `Y ⟶ Y'` making the obvious triangle commute.
 -/
+@[to_dual (reorder := S T)
+/-- The category of `S`-costructured arrows with target `T : D` (here `S : C ⥤ D`),
+has as its objects `D`-morphisms of the form `S Y ⟶ T`, for some `Y : C`,
+and morphisms `C`-morphisms `Y ⟶ Y'` making the obvious triangle commute.
+-/]
 -- We explicitly come from `PUnit.{1}` here to obtain the correct universe for morphisms of
 -- structured arrows.
 def StructuredArrow (S : D) (T : C ⥤ D) :=
   Comma (Functor.fromPUnit.{0} S) T
 
 /-- The type of morphisms in the category `StructuredArrow`. -/
+@[to_dual (reorder := f g) /-- The type of morphisms in the category `CostructuredArrow`. -/]
 protected def StructuredArrow.Hom {S : D} {T : C ⥤ D}
     (f g : StructuredArrow S T) : Type v₁ :=
   CommaMorphism f g
 
+@[to_dual]
 instance {S : D} {T : C ⥤ D} : Category (StructuredArrow S T) where
   Hom := StructuredArrow.Hom
   __ := (inferInstance : Category (Comma _ _))
@@ -56,62 +65,73 @@ section
 variable {S : D} {T : C ⥤ D}
 
 /-- The right object of a structured arrow. -/
+@[to_dual /-- The left object of a costructured arrow. -/]
 abbrev right (X : StructuredArrow S T) : C := Comma.right X
 
 /-- The morphism that is part of a structured arrow. -/
+@[to_dual /-- The morphism that is part of a costructured arrow. -/]
 abbrev hom (X : StructuredArrow S T) : S ⟶ T.obj X.right := Comma.hom X
 
 variable {X Y : StructuredArrow S T} (f : X ⟶ Y)
 
 /-- The morphism that is part of a morphism of structured arrows. -/
+@[to_dual /-- The morphism that is part of a morphism of costructured arrows. -/]
 abbrev Hom.right : X.right ⟶ Y.right := CommaMorphism.right f
 
 set_option backward.defeqAttrib.useBackward true in
-@[reassoc (attr := simp)]
+@[to_dual (attr := reassoc (attr := simp))]
 theorem w : X.hom ≫ T.map f.right = Y.hom := by
   simpa using (CommaMorphism.w f).symm
 
-@[reassoc]
+@[to_dual (attr := reassoc)]
 lemma Hom.w : X.hom ≫ T.map f.right = Y.hom := StructuredArrow.w f
 
 end
 
+set_option linter.translate.warnInvalid false in
 /-- The obvious projection functor from structured arrows. -/
-@[simps!]
+@[to_dual (reorder := S T) (attr := simps!)
+/-- The obvious projection functor from costructured arrows. -/]
 def proj (S : D) (T : C ⥤ D) : StructuredArrow S T ⥤ C :=
   Comma.snd _ _
 
+attribute [to_dual existing] proj_map
+
 variable {S S' S'' : D} {Y Y' Y'' : C} {T T' : C ⥤ D}
 
-@[ext]
+@[to_dual (attr := ext)]
 lemma hom_ext {X Y : StructuredArrow S T} (f g : X ⟶ Y) (h : f.right = g.right) : f = g :=
   CommaMorphism.ext (Subsingleton.elim _ _) h
 
-@[simp]
-theorem hom_eq_iff {X Y : StructuredArrow S T} (f g : X ⟶ Y) : f = g ↔ f.right = g.right :=
-  ⟨fun h ↦ by rw [h], hom_ext _ _⟩
+attribute [simp] StructuredArrow.hom_ext_iff CostructuredArrow.hom_ext_iff
+
+@[to_dual] alias ext := hom_ext
+@[to_dual] alias ext_iff := StructuredArrow.hom_ext_iff
+
+@[to_dual (attr := deprecated (since := "2026-07-10"))] alias hom_eq_iff := StructuredArrow.ext_iff
 
 /-- Construct a structured arrow from a morphism. -/
+@[to_dual /-- Construct a costructured arrow from a morphism. -/]
 def mk (f : S ⟶ T.obj Y) : StructuredArrow S T :=
   ⟨⟨⟨⟩⟩, Y, f⟩
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem mk_left (f : S ⟶ T.obj Y) : (mk f).left = ⟨⟨⟩⟩ :=
   rfl
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem mk_right (f : S ⟶ T.obj Y) : (mk f).right = Y :=
   rfl
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem mk_hom_eq_self (f : S ⟶ T.obj Y) : (mk f).hom = f :=
   rfl
 
-@[simp, reassoc]
+@[to_dual (reorder := f g) (attr := simp, reassoc)]
 theorem comp_right {X Y Z : StructuredArrow S T} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (f ≫ g).right = f.right ≫ g.right := rfl
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem id_right (X : StructuredArrow S T) : (𝟙 X : X ⟶ X).right = 𝟙 X.right := rfl
 
 @[simp]
@@ -120,7 +140,7 @@ theorem eqToHom_right {X Y : StructuredArrow S T} (h : X = Y) :
   subst h
   simp only [eqToHom_refl, id_right]
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem left_eq_id {X Y : StructuredArrow S T} (f : X ⟶ Y) : f.left = 𝟙 X.left := rfl
 
 set_option backward.defeqAttrib.useBackward true in
@@ -128,23 +148,36 @@ set_option backward.defeqAttrib.useBackward true in
 we need a morphism of the objects underlying the target,
 and to check that the triangle commutes.
 -/
-@[simps right]
+@[simps right, to_dual
+/-- To construct a morphism of costructured arrows,
+we need a morphism of the objects underlying the source,
+and to check that the triangle commutes.
+-/]
 def homMk {f f' : StructuredArrow S T} (g : f.right ⟶ f'.right)
     (w : f.hom ≫ T.map g = f'.hom := by cat_disch) : f ⟶ f' where
   left := 𝟙 f.left
   right := g
 
+attribute [simps left] CostructuredArrow.homMk
+attribute [to_dual existing] homMk_right
+
+@[to_dual]
 theorem homMk_surjective {f f' : StructuredArrow S T} (φ : f ⟶ f') :
     ∃ (ψ : f.right ⟶ f'.right) (hψ : f.hom ≫ T.map ψ = f'.hom),
       φ = StructuredArrow.homMk ψ hψ :=
   ⟨φ.right, StructuredArrow.w φ, rfl⟩
 
+set_option linter.translate.warnInvalid false in
 /-- Given a structured arrow `X ⟶ T(Y)`, and an arrow `Y ⟶ Y'`, we can construct a morphism of
 structured arrows given by `(X ⟶ T(Y)) ⟶ (X ⟶ T(Y) ⟶ T(Y'))`. -/
-@[simps]
+@[to_dual (attr := simps)
+/-- Given a costructured arrow `S(Y) ⟶ X`, and an arrow `Y' ⟶ Y'`, we can construct a morphism of
+costructured arrows given by `(S(Y) ⟶ X) ⟶ (S(Y') ⟶ S(Y) ⟶ X)`. -/]
 def homMk' (f : StructuredArrow S T) (g : f.right ⟶ Y') : f ⟶ mk (f.hom ≫ T.map g) where
   left := 𝟙 _
   right := g
+
+attribute [to_dual existing] homMk'_left homMk'_right
 
 lemma homMk'_id (f : StructuredArrow S T) : homMk' f (𝟙 f.right) = eqToHom (by cat_disch) := by
   simp [eqToHom_right]
@@ -160,8 +193,9 @@ lemma homMk'_mk_comp (f : S ⟶ T.obj Y) (g : Y ⟶ Y') (g' : Y' ⟶ Y'') :
     homMk' (mk f) (g ≫ g') = homMk' (mk f) g ≫ homMk' (mk (f ≫ T.map g)) g' ≫ eqToHom (by simp) :=
   homMk'_comp _ _ _
 
+set_option linter.translate.warnInvalid false in
 /-- Variant of `homMk'` where both objects are applications of `mk`. -/
-@[simps]
+@[to_dual (attr := simps) /-- Variant of `homMk'` where both objects are applications of `mk`. -/]
 def mkPostcomp (f : S ⟶ T.obj Y) (g : Y ⟶ Y') : mk f ⟶ mk (f ≫ T.map g) where
   left := 𝟙 _
   right := g
@@ -170,6 +204,8 @@ lemma mkPostcomp_id (f : S ⟶ T.obj Y) : mkPostcomp f (𝟙 Y) = eqToHom (by si
 lemma mkPostcomp_comp (f : S ⟶ T.obj Y) (g : Y ⟶ Y') (g' : Y' ⟶ Y'') :
     mkPostcomp f (g ≫ g') = mkPostcomp f g ≫ mkPostcomp (f ≫ T.map g) g' ≫ eqToHom (by simp) := by
   simp
+
+attribute [to_dual existing] mkPostcomp_left mkPostcomp_right
 
 set_option backward.defeqAttrib.useBackward true in
 /-- To construct an isomorphism of structured arrows,
@@ -189,12 +225,7 @@ theorem obj_ext (x y : StructuredArrow S T) (hr : x.right = y.right)
   cases hr
   cat_disch
 
-theorem ext {A B : StructuredArrow S T} (f g : A ⟶ B) : f.right = g.right → f = g :=
-  CommaMorphism.ext (Subsingleton.elim _ _)
-
-theorem ext_iff {A B : StructuredArrow S T} (f g : A ⟶ B) : f = g ↔ f.right = g.right :=
-  ⟨fun h => h ▸ rfl, ext f g⟩
-
+@[to_dual]
 instance proj_faithful : (proj S T).Faithful where
   map_injective {_ _} := ext
 
@@ -312,7 +343,7 @@ def post (S : C) (F : B ⥤ C) (G : C ⥤ D) :
 
 set_option backward.defeqAttrib.useBackward true in
 instance (S : C) (F : B ⥤ C) (G : C ⥤ D) : (post S F G).Faithful where
-  map_injective {_ _} _ _ h := by simpa [ext_iff] using h
+  map_injective {_ _} _ _ h := by simpa using h
 
 set_option backward.defeqAttrib.useBackward true in
 instance (S : C) (F : B ⥤ C) (G : C ⥤ D) [G.Faithful] : (post S F G).Full where
@@ -490,122 +521,16 @@ end IsUniversal
 
 end StructuredArrow
 
-/-- The category of `S`-costructured arrows with target `T : D` (here `S : C ⥤ D`),
-has as its objects `D`-morphisms of the form `S Y ⟶ T`, for some `Y : C`,
-and morphisms `C`-morphisms `Y ⟶ Y'` making the obvious triangle commute.
--/
--- We explicitly come from `PUnit.{1}` here to obtain the correct universe for morphisms of
--- costructured arrows.
-def CostructuredArrow (S : C ⥤ D) (T : D) :=
-  Comma S (Functor.fromPUnit.{0} T)
-
-/-- The type of morphisms in the category `CostructuredArrow`. -/
-protected def CostructuredArrow.Hom {S : C ⥤ D} {T : D}
-    (f g : CostructuredArrow S T) := CommaMorphism f g
-
-instance {S : C ⥤ D} {T : D} : Category (CostructuredArrow S T) where
-  Hom := CostructuredArrow.Hom
-  __ := (inferInstance : Category (Comma _ _))
-
-instance (S : C ⥤ D) (T : D) : Category (CostructuredArrow S T) := commaCategory
 
 namespace CostructuredArrow
 
-section
-
-variable {S : C ⥤ D} {T : D}
-
-/-- The left object of a costructured arrow. -/
-abbrev left (X : CostructuredArrow S T) : C := Comma.left X
-
-/-- The morphism that is part of a costructured arrow. -/
-abbrev hom (X : CostructuredArrow S T) : S.obj X.left ⟶ T := Comma.hom X
-
-variable {X Y : CostructuredArrow S T} (f : X ⟶ Y)
-
-/-- The morphism that is part of a morphism of costructured arrows. -/
-abbrev Hom.left : X.left ⟶ Y.left := CommaMorphism.left f
-
-set_option backward.defeqAttrib.useBackward true in
-@[reassoc (attr := simp)]
-theorem w (f : X ⟶ Y) : S.map f.left ≫ Y.hom = X.hom := by
-  simpa using CommaMorphism.w f
-
-@[reassoc]
-theorem Hom.w (f : X ⟶ Y) : S.map f.left ≫ Y.hom = X.hom := CostructuredArrow.w f
-
-end
-
-
-/-- The obvious projection functor from costructured arrows. -/
-@[simps!]
-def proj (S : C ⥤ D) (T : D) : CostructuredArrow S T ⥤ C :=
-  Comma.fst _ _
-
 variable {T T' T'' : D} {Y Y' Y'' : C} {S S' : C ⥤ D}
-
-@[ext]
-lemma hom_ext {X Y : CostructuredArrow S T} (f g : X ⟶ Y) (h : f.left = g.left) : f = g :=
-  CommaMorphism.ext h (Subsingleton.elim _ _)
-
-@[simp]
-theorem hom_eq_iff {X Y : CostructuredArrow S T} (f g : X ⟶ Y) : f = g ↔ f.left = g.left :=
-  ⟨fun h ↦ by rw [h], hom_ext _ _⟩
-
-/-- Construct a costructured arrow from a morphism. -/
-def mk (f : S.obj Y ⟶ T) : CostructuredArrow S T :=
-  ⟨Y, ⟨⟨⟩⟩, f⟩
-
-@[simp]
-theorem mk_left (f : S.obj Y ⟶ T) : (mk f).left = Y :=
-  rfl
-
-@[simp]
-theorem mk_right (f : S.obj Y ⟶ T) : (mk f).right = ⟨⟨⟩⟩ :=
-  rfl
-
-@[simp]
-theorem mk_hom_eq_self (f : S.obj Y ⟶ T) : (mk f).hom = f :=
-  rfl
-
-@[simp, reassoc]
-theorem comp_left {X Y Z : CostructuredArrow S T} (f : X ⟶ Y) (g : Y ⟶ Z) :
-    (f ≫ g).left = f.left ≫ g.left := rfl
-
-@[simp]
-theorem id_left (X : CostructuredArrow S T) : (𝟙 X : X ⟶ X).left = 𝟙 X.left := rfl
 
 @[simp]
 theorem eqToHom_left {X Y : CostructuredArrow S T} (h : X = Y) :
     (eqToHom h).left = eqToHom (by rw [h]) := by
   subst h
   simp only [eqToHom_refl, id_left]
-
-@[simp]
-theorem right_eq_id {X Y : CostructuredArrow S T} (f : X ⟶ Y) : f.right = 𝟙 X.right := rfl
-
-set_option backward.defeqAttrib.useBackward true in
-/-- To construct a morphism of costructured arrows,
-we need a morphism of the objects underlying the source,
-and to check that the triangle commutes.
--/
-@[simps! left]
-def homMk {f f' : CostructuredArrow S T} (g : f.left ⟶ f'.left)
-    (w : S.map g ≫ f'.hom = f.hom := by cat_disch) : f ⟶ f' where
-  left := g
-  right := 𝟙 f.right
-
-theorem homMk_surjective {f f' : CostructuredArrow S T} (φ : f ⟶ f') :
-    ∃ (ψ : f.left ⟶ f'.left) (hψ : S.map ψ ≫ f'.hom = f.hom),
-      φ = CostructuredArrow.homMk ψ hψ :=
-  ⟨φ.left, CostructuredArrow.w φ, rfl⟩
-
-/-- Given a costructured arrow `S(Y) ⟶ X`, and an arrow `Y' ⟶ Y'`, we can construct a morphism of
-costructured arrows given by `(S(Y) ⟶ X) ⟶ (S(Y') ⟶ S(Y) ⟶ X)`. -/
-@[simps]
-def homMk' (f : CostructuredArrow S T) (g : Y' ⟶ f.left) : mk (S.map g ≫ f.hom) ⟶ f where
-  left := g
-  right := 𝟙 _
 
 lemma homMk'_id (f : CostructuredArrow S T) : homMk' f (𝟙 f.left) = eqToHom (by cat_disch) := by
   simp [eqToHom_left]
@@ -620,12 +545,6 @@ lemma homMk'_comp (f : CostructuredArrow S T) (g : Y' ⟶ f.left) (g' : Y'' ⟶ 
 lemma homMk'_mk_comp (f : S.obj Y ⟶ T) (g : Y' ⟶ Y) (g' : Y'' ⟶ Y') :
     homMk' (mk f) (g' ≫ g) = eqToHom (by simp) ≫ homMk' (mk (S.map g ≫ f)) g' ≫ homMk' (mk f) g :=
   homMk'_comp _ _ _
-
-/-- Variant of `homMk'` where both objects are applications of `mk`. -/
-@[simps]
-def mkPrecomp (f : S.obj Y ⟶ T) (g : Y' ⟶ Y) : mk (S.map g ≫ f) ⟶ mk f where
-  left := g
-  right := 𝟙 _
 
 lemma mkPrecomp_id (f : S.obj Y ⟶ T) : mkPrecomp f (𝟙 Y) = eqToHom (by simp) := by simp
 lemma mkPrecomp_comp (f : S.obj Y ⟶ T) (g : Y' ⟶ Y) (g' : Y'' ⟶ Y') :
@@ -648,14 +567,6 @@ theorem obj_ext (x y : CostructuredArrow S T) (hl : x.left = y.left)
   cases y
   cases hl
   cat_disch
-
-theorem ext {A B : CostructuredArrow S T} (f g : A ⟶ B) (h : f.left = g.left) : f = g :=
-  CommaMorphism.ext h (Subsingleton.elim _ _)
-
-theorem ext_iff {A B : CostructuredArrow S T} (f g : A ⟶ B) : f = g ↔ f.left = g.left :=
-  ⟨fun h => h ▸ rfl, ext f g⟩
-
-instance proj_faithful : (proj S T).Faithful where map_injective {_ _} := ext
 
 theorem mono_of_mono_left {A B : CostructuredArrow S T} (f : A ⟶ B) [h : Mono f.left] : Mono f :=
   (proj S T).mono_of_mono_map h
@@ -772,7 +683,7 @@ def post (F : B ⥤ C) (G : C ⥤ D) (S : C) :
 
 set_option backward.defeqAttrib.useBackward true in
 instance (F : B ⥤ C) (G : C ⥤ D) (S : C) : (post F G S).Faithful where
-  map_injective {_ _} _ _ h := by simpa [ext_iff] using h
+  map_injective {_ _} _ _ h := by simpa using h
 
 set_option backward.defeqAttrib.useBackward true in
 instance (F : B ⥤ C) (G : C ⥤ D) (S : C) [G.Faithful] : (post F G S).Full where
