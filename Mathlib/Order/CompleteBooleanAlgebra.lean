@@ -82,6 +82,7 @@ theorem inf_sSup_eq {α : Type*} [Order.Frame α] {s : Set α} {a : α} :
     a ⊓ sSup s = ⨆ b ∈ s, a ⊓ b :=
   gc_inf_himp.l_sSup
 
+set_option linter.translate.warnInvalid false in
 /-- A coframe, aka complete Brouwer algebra or complete co-Heyting algebra, is a complete lattice
 whose `⊔` distributes over `⨅`. -/
 @[to_dual]

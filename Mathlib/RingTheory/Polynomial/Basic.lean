@@ -772,7 +772,6 @@ end MvPolynomial
 
 end Prime
 
-set_option backward.isDefEq.respectTransparency false in
 /-- **Hilbert basis theorem**: a polynomial ring over a Noetherian ring is a Noetherian ring. -/
 protected theorem Polynomial.isNoetherianRing [inst : IsNoetherianRing R] : IsNoetherianRing R[X] :=
   isNoetherianRing_iff.2
@@ -784,7 +783,6 @@ protected theorem Polynomial.isNoetherianRing [inst : IsNoetherianRing R] : IsNo
       have hm2 : ∀ k, I.leadingCoeffNth k ≤ M := fun k =>
         Or.casesOn (le_or_gt k N) (fun h => HN ▸ I.leadingCoeffNth_mono h) fun h _ hx =>
           Classical.by_contradiction fun hxm =>
-            haveI : IsNoetherian R R := inst
             have : ¬M < I.leadingCoeffNth k := by
               refine WellFounded.not_lt_min inst.wf _ ?_; exact ⟨k, rfl⟩
             this ⟨HN ▸ I.leadingCoeffNth_mono (le_of_lt h), fun H => hxm (H hx)⟩

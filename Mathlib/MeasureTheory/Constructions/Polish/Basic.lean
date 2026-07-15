@@ -633,7 +633,12 @@ to `QuotientGroup` (the next `instance`).
 TODO: typeclass inference should normally find this, but currently doesn't.
 E.g., `MeasurableSMul G (G ⧸ Γ)` fails to synthesize, even though `G ⧸ Γ` is the quotient
 of `G` by the action of `Γ`; it seems unable to pick up the `BorelSpace` instance. -/
-@[to_additive AddCosetSpace.borelSpace]
+@[to_additive AddCosetSpace.borelSpace
+  /-- When the additive subgroup `N < G` is not necessarily `Normal`, we have an `AddCosetSpace` as
+opposed to `QuotientAddGroup` (the next `instance`).
+TODO: typeclass inference should normally find this, but currently doesn't.
+E.g., `MeasurableVAdd G (G ⧸ Γ)` fails to synthesize, even though `G ⧸ Γ` is the quotient
+of `G` by the action of `Γ`; it seems unable to pick up the `BorelSpace` instance. -/]
 instance CosetSpace.borelSpace {G : Type*} [TopologicalSpace G] [PolishSpace G] [Group G]
     [MeasurableSpace G] [BorelSpace G] {N : Subgroup G} [T2Space (G ⧸ N)]
     [SecondCountableTopology (G ⧸ N)] : BorelSpace (G ⧸ N) := Quotient.borelSpace

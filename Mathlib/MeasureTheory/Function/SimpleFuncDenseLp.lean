@@ -636,6 +636,7 @@ section CoeToLp
 
 variable [Fact (1 ≤ p)]
 
+@[fun_prop]
 protected theorem uniformContinuous : UniformContinuous ((↑) : Lp.simpleFunc E p μ → Lp E p μ) :=
   uniformContinuous_comap
 

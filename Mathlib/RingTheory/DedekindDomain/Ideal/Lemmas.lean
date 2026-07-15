@@ -323,8 +323,8 @@ theorem sup_mul_inf (I J : Ideal A) : (I ⊔ J) * (I ⊓ J) = I * J := by
 
 /-- Ideals in a Dedekind domain have gcd and lcm operators that (trivially) are compatible with
 the normalization operator. -/
-noncomputable instance : NormalizedGCDMonoid (Ideal A) :=
-  { normalizationMonoid with
+noncomputable instance : StrongNormalizedGCDMonoid (Ideal A) :=
+  { strongNormalizationMonoid with
     gcd := (· ⊔ ·)
     gcd_dvd_left := fun _ _ => by simpa only [dvd_iff_le] using le_sup_left
     gcd_dvd_right := fun _ _ => by simpa only [dvd_iff_le] using le_sup_right
