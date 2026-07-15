@@ -285,6 +285,9 @@ theorem mapDomain_notin_range {f : α → β} (x : α →₀ M) (a : β) (h : a 
     mapDomain f x a = 0 :=
   mapDomain_of_not_mem_image_support <| by grw [Set.image_subset_range]; exact h
 
+lemma mem_range_of_mapDomain_ne_zero {f : α → β} {x : α →₀ M} {b : β} (h : mapDomain f x b ≠ 0) :
+    b ∈ Set.range f := by contrapose! h; exact mapDomain_notin_range _ _ h
+
 @[simp]
 theorem mapDomain_id : mapDomain id v = v :=
   sum_single _
@@ -323,6 +326,16 @@ theorem mapDomain_equiv_apply {f : α ≃ β} (x : α →₀ M) (a : β) :
     mapDomain f x a = x (f.symm a) := by
   conv_lhs => rw [← f.apply_symm_apply a]
   exact mapDomain_apply f.injective _ _
+
+@[simp] lemma support_mapDomain_embedding (f : α ↪ β) (x : α →₀ M) :
+    (mapDomain f x).support = x.support.map f := by
+  ext b
+  simp only [mem_support_iff, ne_eq, mem_map]
+  refine ⟨fun h ↦ ?_, ?_⟩
+  · obtain ⟨a, rfl⟩ := mem_range_of_mapDomain_ne_zero h
+    exact ⟨a, by simpa [f.injective] using h⟩
+  · rintro ⟨a, ha, rfl⟩
+    simpa [f.injective]
 
 /-- `Finsupp.mapDomain` is an `AddMonoidHom`. -/
 @[simps]
@@ -672,7 +685,7 @@ theorem filter_apply_neg {a : α} (h : ¬p a) : f.filter p a = 0 := if_neg h
 theorem support_filter : (f.filter p).support = {x ∈ f.support | p x} := rfl
 
 theorem filter_zero : (0 : α →₀ M).filter p = 0 := by
-  classical rw [← support_eq_empty, support_filter, support_zero, Finset.filter_empty]
+  rw [← support_eq_empty, support_filter, support_zero, Finset.filter_empty]
 
 @[simp]
 theorem filter_single_of_pos {a : α} {b : M} (h : p a) : (single a b).filter p = single a b :=
@@ -1211,7 +1224,7 @@ theorem extendDomain_eq_embDomain_subtype (f : Subtype P →₀ M) :
   by_cases h : P a
   · refine Eq.trans ?_ (embDomain_apply_self (.subtype P) f (Subtype.mk a h)).symm
     simp [h]
-  · simp [embDomain, h]
+  · rw [embDomain_notin_range] <;> simp [*]
 
 theorem support_extendDomain_subset (f : Subtype P →₀ M) :
     ↑(f.extendDomain).support ⊆ {x | P x} := by

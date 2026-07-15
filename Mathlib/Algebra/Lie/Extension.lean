@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Lie.Cochain
 
 /-!
 # Extensions of Lie algebras
+
 This file defines extensions of Lie algebras, given by short exact sequences of Lie algebra
 homomorphisms. They are implemented in two ways: `IsExtension` is a `Prop`-valued class taking two
 homomorphisms as parameters, and `Extension` is a structure that includes the middle Lie algebra.
@@ -354,7 +355,7 @@ one extension. -/
 lemma lieModuleOf [IsLieAbelian M] (E : Extension R M L) :
     letI := E.ringModuleOf
     LieModule R L M := by
-  letI := E.ringModuleOf
+  let := E.ringModuleOf
   set h := E.proj_surjective.hasRightInverse
   exact
     { smul_lie r x m := by

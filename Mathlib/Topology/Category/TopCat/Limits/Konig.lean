@@ -73,7 +73,7 @@ theorem partialSections.nonempty [IsCofilteredOrEmpty J] [h : ∀ j : J, Nonempt
   classical
   cases isEmpty_or_nonempty J
   · exact ⟨isEmptyElim, fun {j} => IsEmpty.elim' inferInstance j.1⟩
-  haveI : IsCofiltered J := ⟨⟩
+  have : IsCofiltered J := ⟨⟩
   use fun j : J =>
     if hj : j ∈ G then F.map (IsCofiltered.infTo G H hj) (h (IsCofiltered.inf G H)).some
     else (h _).some
@@ -84,7 +84,7 @@ theorem partialSections.nonempty [IsCofilteredOrEmpty J] [h : ∀ j : J, Nonempt
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 theorem partialSections.directed :
-    Directed Superset fun G : FiniteDiagram J => partialSections F G.2 := by
+    Directed GE.ge fun G : FiniteDiagram J => partialSections F G.2 := by
   classical
   intro A B
   let ιA : FiniteDiagramArrow A.1 → FiniteDiagramArrow (A.1 ⊔ B.1) := fun f =>

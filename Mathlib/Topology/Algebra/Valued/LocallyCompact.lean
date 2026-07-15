@@ -258,7 +258,6 @@ lemma locallyFiniteOrder_units_mrange_of_isCompact_integer (hc : IsCompact (X :=
   -- there must be something in the cover that has the precise valuation of the element,
   -- because it must be outside the inner closed ball, and thus is covered by some sphere.
   obtain ⟨t, ht⟩ := this
-  classical
   refine (t.finite_toSet.dependent_image ?_).subset ?_
   · refine fun i hi ↦ if hi' : v i ≤ z then z else Units.mk0 ⟨(v i), by simp⟩ ?_
     push Not at hi'
