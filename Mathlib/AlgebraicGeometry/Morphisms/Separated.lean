@@ -101,7 +101,7 @@ instance (f : X ⟶ Y) (U : X.Opens) (V : Y.Opens) (e) [IsSeparated f] :
 
 instance (R S : CommRingCat.{u}) (f : R ⟶ S) : IsSeparated (Spec.map f) := by
   constructor
-  letI := f.hom.toAlgebra
+  let := f.hom.toAlgebra
   change IsClosedImmersion
     (Limits.pullback.diagonal (Spec.map (CommRingCat.ofHom (algebraMap R S))))
   rw [diagonal_SpecMap, MorphismProperty.cancel_right_of_respectsIso @IsClosedImmersion]
@@ -133,7 +133,7 @@ instance [IsSeparated g] :
   rw [← MorphismProperty.cancel_left_of_respectsIso @IsClosedImmersion (pullback.fst f (𝟙 Y))]
   rw [← MorphismProperty.cancel_right_of_respectsIso @IsClosedImmersion _
     (pullback.congrHom rfl (Category.id_comp g)).inv]
-  convert! (inferInstance : IsClosedImmersion (pullback.mapDesc f (𝟙 _) g)) using 1
+  convert (inferInstance : IsClosedImmersion (pullback.mapDesc f (𝟙 _) g))
   ext : 1 <;> simp [pullback.condition]
 
 end IsSeparated

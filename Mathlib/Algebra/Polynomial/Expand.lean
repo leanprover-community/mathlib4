@@ -257,7 +257,7 @@ theorem expand_contract' [NoZeroDivisors R] {f : R[X]} (hf : Polynomial.derivati
     expand R p (contract p f) = f := by
   obtain _ | @⟨_, hprime, hchar⟩ := ‹ExpChar R p›
   · rw [expand_one, contract_one]
-  · haveI := Fact.mk hchar; exact expand_contract p hf hprime.ne_zero
+  · have := Fact.mk hchar; exact expand_contract p hf hprime.ne_zero
 
 theorem map_frobenius_expand (f : R[X]) : map (frobenius R p) (expand R p f) = f ^ p := by
   refine f.induction_on' (fun a b ha hb => ?_) fun n a => ?_

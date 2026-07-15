@@ -138,7 +138,8 @@ open Lean Meta Qq
 
 /-- Extension for the `positivity` tactic: `Besicovitch.SatelliteConfig.r`. -/
 @[positivity Besicovitch.SatelliteConfig.r _ _]
-meta def evalBesicovitchSatelliteConfigR : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalBesicovitchSatelliteConfigR : PositivityExt where eval {u α} _zα pα? e :=
+  match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℝ), ~q(@Besicovitch.SatelliteConfig.r $β $inst $N $τ $self $i) =>
     assertInstancesCommute
@@ -589,11 +590,7 @@ theorem exist_finset_disjoint_balls_large_measure (μ : Measure α) [IsFiniteMea
     apply ENNReal.exists_le_of_sum_le _ S
     exact ⟨⟨0, bot_lt_iff_ne_bot.2 Npos⟩, Finset.mem_univ _⟩
   replace hi : μ s / (N + 1) < μ (s ∩ v i) := by
-    apply lt_of_lt_of_le _ hi
-    apply (ENNReal.mul_lt_mul_iff_right hμs.ne' (by finiteness)).2
-    rw [ENNReal.inv_lt_inv]
-    conv_lhs => rw [← add_zero (N : ℝ≥0∞)]
-    exact ENNReal.add_lt_add_left (by finiteness) zero_lt_one
+    grw [← hi, ← _root_.zero_lt_one, add_zero] <;> finiteness
   have B : μ (o ∩ v i) = ∑' x : u i, μ (o ∩ closedBall x (r x)) := by
     have : o ∩ v i = ⋃ (x : s) (_ : x ∈ u i), o ∩ closedBall x (r x) := by
       simp only [v, inter_iUnion]
@@ -967,7 +964,7 @@ theorem exists_closedBall_covering_tsum_measure_le (μ : Measure α) [SFinite μ
         (∑' x : t0, μ (closedBall x (r x))) = ∑' x : t0, μ (closedBall x (r0 x)) := by
           congr 1; ext x; rw [r_t0 x x.2]
         _ = μ (⋃ x : t0, closedBall x (r0 x)) := by
-          haveI : Encodable t0 := t0_count.toEncodable
+          have : Encodable t0 := t0_count.toEncodable
           rw [measure_iUnion]
           · exact (pairwise_subtype_iff_pairwise_set _ _).2 t0_disj
           · exact fun i => measurableSet_closedBall
@@ -989,7 +986,7 @@ theorem exists_closedBall_covering_tsum_measure_le (μ : Measure α) [SFinite μ
         _ = ∑' x : S i, μ (closedBall x (r1 x)) := by
           grind
         _ = μ (⋃ x : S i, closedBall x (r1 x)) := by
-          haveI : Encodable (S i) := (S_count i).toEncodable
+          have : Encodable (S i) := (S_count i).toEncodable
           rw [measure_iUnion]
           · exact (pairwise_subtype_iff_pairwise_set _ _).2 (S_disj i)
           · exact fun i => measurableSet_closedBall

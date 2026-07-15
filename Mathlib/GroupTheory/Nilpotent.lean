@@ -218,6 +218,14 @@ theorem mem_upperCentralSeries_succ_iff {n : ℕ} {x : G} :
     x ∈ upperCentralSeries G (n + 1) ↔ ∀ y : G, ⁅x, y⁆ ∈ upperCentralSeries G n :=
   Iff.rfl
 
+variable (G) in
+@[to_additive]
+theorem commutator_upperCentralSeries_top_le (n : ℕ) :
+    ⁅upperCentralSeries G (n + 1), ⊤⁆ ≤ upperCentralSeries G n := by
+  apply closure_le _ |>.mpr
+  rintro _ ⟨h, hh, g, _, rfl⟩
+  exact mem_upperCentralSeries_succ_iff.mp hh g
+
 @[to_additive (attr := simp)]
 lemma comap_upperCentralSeries {H : Type*} [Group H] (e : H ≃* G) :
     ∀ n, (upperCentralSeries G n).comap e = upperCentralSeries H n
@@ -904,7 +912,7 @@ theorem nilpotent_center_quotient_ind {P : ∀ (G) [Group G] [IsNilpotent G], Pr
   obtain ⟨n, h⟩ : ∃ n, Group.nilpotencyClass G = n := ⟨_, rfl⟩
   induction n generalizing G with
   | zero =>
-    haveI := nilpotencyClass_zero_iff_subsingleton.mp h
+    have := nilpotencyClass_zero_iff_subsingleton.mp h
     exact hbase _
   | succ n ih =>
     have hn : Group.nilpotencyClass (G ⧸ center G) = n := by
@@ -1227,7 +1235,7 @@ theorem Group.isNilpotent_of_product_of_sylow_group
     let ps := (Nat.card G).primeFactors
     have : ∀ (p : ps) (P : Sylow p G), IsNilpotent (↑P : Subgroup G) := by
       intro p P
-      haveI : Fact (Nat.Prime ↑p) := Fact.mk <| Nat.prime_of_mem_primeFactors p.2
+      have : Fact (Nat.Prime ↑p) := Fact.mk <| Nat.prime_of_mem_primeFactors p.2
       exact P.isPGroup'.isNilpotent
     exact nilpotent_of_mulEquiv e
 

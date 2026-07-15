@@ -708,7 +708,7 @@ abbrev invertibleFstOfInvertible (x : tsze R M) [Invertible x] : Invertible x.fs
   mul_invOf_self := by rw [← fst_mul, mul_invOf_self, fst_one]
 
 theorem fst_invOf (x : tsze R M) [Invertible x] [Invertible x.fst] : (⅟x).fst = ⅟(x.fst) := by
-  letI := invertibleFstOfInvertible x
+  let := invertibleFstOfInvertible x
   convert! (rfl : _ = ⅟x.fst)
 
 theorem mul_left_eq_one (r : R) (x : tsze R M) (h : r * x.fst = 1) :
@@ -738,7 +738,7 @@ abbrev invertibleOfInvertibleFst (x : tsze R M) [Invertible x.fst] : Invertible 
 
 theorem snd_invOf (x : tsze R M) [Invertible x] [Invertible x.fst] :
     (⅟x).snd = -(⅟x.fst •> x.snd <• ⅟x.fst) := by
-  letI := invertibleOfInvertibleFst x
+  let := invertibleOfInvertibleFst x
   convert! congr_arg (TrivSqZeroExt.snd (R := R) (M := M)) (_ : _ = ⅟x)
   convert! rfl
 
@@ -790,13 +790,13 @@ protected theorem inv_one : (1 : tsze R M)⁻¹ = (1 : tsze R M) := by
   rw [← inl_one, TrivSqZeroExt.inv_inl, inv_one]
 
 protected theorem inv_mul_cancel {x : tsze R M} (hx : fst x ≠ 0) : x⁻¹ * x = 1 := by
-  convert! mul_left_eq_one _ _ (_root_.inv_mul_cancel₀ hx) using 2
+  convert mul_left_eq_one _ _ (_root_.inv_mul_cancel₀ hx)
   ext <;> simp
 
 variable [SMulCommClass R Rᵐᵒᵖ M]
 
 @[simp] theorem invOf_eq_inv (x : tsze R M) [Invertible x] : ⅟x = x⁻¹ := by
-  letI := invertibleFstOfInvertible x
+  let := invertibleFstOfInvertible x
   ext <;> simp [fst_invOf, snd_invOf]
 
 protected theorem mul_inv_cancel {x : tsze R M} (hx : fst x ≠ 0) : x * x⁻¹ = 1 := by

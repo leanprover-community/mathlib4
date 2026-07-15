@@ -496,8 +496,8 @@ theorem LinearIndepOn.image {s : Set M} {f : M →ₗ[R] M'}
 @[stacks 0CKL]
 theorem linearIndependent_monoidHom (G : Type*) [MulOneClass G] (L : Type*) [CommRing L]
     [IsDomain L] : LinearIndependent L (M := G → L) (fun f => f : (G →* L) → G → L) := by
-  letI := Classical.decEq (G →* L)
-  letI : MulAction L L := DistribMulAction.toMulAction
+  let := Classical.decEq (G →* L)
+  let : MulAction L L := DistribMulAction.toMulAction
   -- We prove linear independence by showing that only the trivial linear combination vanishes.
   apply linearIndependent_iff'.2
   intro s
