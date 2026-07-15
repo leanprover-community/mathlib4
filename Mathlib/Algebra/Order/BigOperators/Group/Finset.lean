@@ -135,7 +135,7 @@ attribute [deprecated one_le_prod (since := "2026-05-22")] one_le_prod''
 theorem prod_le_one [MulLeftMono N] (h : ∀ i ∈ s, f i ≤ 1) : ∏ i ∈ s, f i ≤ 1 :=
   (prod_le_prod h).trans_eq (by rw [prod_const_one])
 
-@[deprecated (since := "2026-05-22")] alias prod_le_prod_of_subset_of_one_le' := prod_le_one
+@[deprecated (since := "2026-05-22")] alias prod_le_one' := prod_le_one
 
 @[to_additive (attr := gcongr)]
 theorem prod_le_prod_of_subset_of_one_le [MulLeftMono N] (h : s ⊆ t)
@@ -145,6 +145,9 @@ theorem prod_le_prod_of_subset_of_one_le [MulLeftMono N] (h : s ⊆ t)
         le_mul_of_one_le_left' <| one_le_prod <| by simpa only [mem_sdiff, and_imp]
       _ = ∏ i ∈ t \ s ∪ s, f i := (prod_union sdiff_disjoint).symm
       _ = ∏ i ∈ t, f i := by rw [sdiff_union_of_subset h]
+
+@[deprecated (since := "2026-05-22")]
+alias prod_le_prod_of_subset_of_one_le' := prod_le_prod_of_subset_of_one_le
 
 @[to_additive]
 lemma prod_le_prod_of_subset_of_le_one [MulLeftMono N] (h : s ⊆ t) (hf : ∀ i ∈ t, i ∉ s → f i ≤ 1) :
