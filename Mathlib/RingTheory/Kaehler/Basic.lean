@@ -155,7 +155,7 @@ def KaehlerDifferential : Type v :=
 deriving Inhabited
 
 -- The `SMul R'` instance exists to avoid a zsmul diamond.
-variable {R' : Type*} [CommRing R'] [Algebra R' S] [foo : SMulCommClass R R' S] in
+variable {R' : Type*} [CommRing R'] [Algebra R' S] [SMulCommClass R R' S] in
 deriving instance SMul R', AddCommGroup, Module R', Module (S ⊗[R] S), IsScalarTower S (S ⊗[R] S)
   for KaehlerDifferential R S
 

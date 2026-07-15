@@ -69,10 +69,8 @@ deriving Inhabited
 namespace TensorAlgebra
 
 -- This instance exists to avoid an nsmul diamond.
-@[nolint unusedArguments]
 instance {R A M} [CommSemiring R] [AddCommMonoid M] [CommSemiring A]
-    [Algebra R A] [Module R M] [Module A M]
-    [IsScalarTower R A M] :
+    [Algebra R A] [Module A M] :
     SMul R (TensorAlgebra A M) :=
   inferInstanceAs <| SMul R (RingCon.Quotient _)
 

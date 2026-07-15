@@ -165,9 +165,8 @@ theorem isEmbedding_coeFn [UniformSpace F] [IsUniformAddGroup F] (𝔖 : Set (Se
   IsUniformEmbedding.isEmbedding (isUniformEmbedding_coeFn _ _ _)
 
 -- This instance exists to avoid nsmul and zsmul diamonds.
-@[nolint unusedArguments]
 instance (M : Type*) [Monoid M] [DistribMulAction M F] [SMulCommClass 𝕜₂ M F]
-    [TopologicalSpace F] [IsTopologicalAddGroup F] [ContinuousConstSMul M F] (𝔖 : Set (Set E)) :
+    [TopologicalSpace F] [ContinuousConstSMul M F] (𝔖 : Set (Set E)) :
     SMul M (E →SLᵤ[σ, 𝔖] F) where
   smul c f := (ofFun σ F 𝔖) (c • (ofFun σ F 𝔖).symm f)
 
