@@ -210,19 +210,19 @@ def FredholmPackage.quasiInverse {u : E →L[𝕜] F} (pkg : FredholmPackage u) 
 
 /-- The data of a Fredholm package for `u` determines a canonical quasi-inverse of `u`. -/
 lemma FredholmPackage.isQuasiInverse {u : E →L[𝕜] F} (pkg : FredholmPackage u) :
-    u.IsQuasiInverse pkg.quasiInverse := by
-  nth_rw 1 [pkg.eq_equiv, quasiInverse]
+    pkg.quasiInverse.IsQuasiInverse u := by
+  nth_rw 2 [pkg.eq_equiv]
   have hdom : IsQuasiInverse pkg.decDom.X₁.subtype pkg.decDom.proj :=
     have := pkg.decDom.finite_X₀
     isQuasiInverse_subtype_projectionOnto _
   have hcodom : IsQuasiInverse pkg.decCodom.X₁.subtype pkg.decCodom.proj :=
     have := pkg.decCodom.finite_X₀
     isQuasiInverse_subtype_projectionOnto _
-  refine .of_comp_left hcodom.symm <| .of_comp_right hdom ?_
-  simp_rw [FredholmDecomposition.proj, toLinearMap_comp, toLinearMap_subtypeL,
-    toLinearMap_projectionOntoL, LinearMap.comp_assoc, projectionOnto_comp_subtype,
-    LinearMap.comp_id, ← LinearMap.comp_assoc, projectionOnto_comp_subtype, LinearMap.id_comp]
-  simp [IsQuasiInverse, IsLeftQuasiInverse, IsRightQuasiInverse]
+  have hequiv : IsQuasiInverse pkg.equiv.symm.toLinearMap
+      pkg.equiv.toLinearMap := by
+    simp [IsQuasiInverse, IsLeftQuasiInverse, IsRightQuasiInverse]
+  -- For some reason `exact` and `refine` are slow here!
+  apply hdom.comp (hequiv.comp hcodom.symm)
 
 end FredholmDecomposition
 
@@ -238,14 +238,14 @@ This statement is private because it is superseded by later results: using `isFr
 you can build a `FredholmPackage` for `u`, and then apply `FredholmPackage.isInvertible_restrict`.
 -/
 private theorem exists_restrict_isInvertible_of_isQuasiInverse {u : E →L[𝕜] F}
-    {v : F →L[𝕜] E} (huv : u.IsQuasiInverse v) :
+    {v : F →L[𝕜] E} (hvu : v.IsQuasiInverse u) :
     ∃ (E₁ : Submodule 𝕜 E) (F₁ : Submodule 𝕜 F),
       IsClosed (E₁ : Set E) ∧ IsClosed (F₁ : Set F) ∧
       E₁.CoFG ∧ F₁.CoFG ∧
       ∃ h : MapsTo u E₁ F₁, (u.restrict h).IsInvertible := by
-  obtain ⟨huv, hvu⟩ := huv
-  rw [IsLeftQuasiInverse, Setoid.comm, equiv_iff_eqLocus_coFG] at huv
-  rw [IsRightQuasiInverse, Setoid.comm, equiv_iff_eqLocus_coFG] at hvu
+  obtain ⟨hvu, huv⟩ := hvu
+  rw [IsRightQuasiInverse, Setoid.comm, equiv_iff_eqLocus_coFG] at huv
+  rw [IsLeftQuasiInverse, Setoid.comm, equiv_iff_eqLocus_coFG] at hvu
   set E₁ := (ContinuousLinearMap.id 𝕜 E).eqLocus (v ∘L u)
   set F₁ := (ContinuousLinearMap.id 𝕜 F).eqLocus (u ∘L v)
   have u_mapsto : MapsTo u E₁ F₁ := fun x hx ↦ congr(u $hx)
@@ -351,7 +351,7 @@ operator is Fredholm.
 theorem isFredholm_tfae (u : E →L[𝕜] F) : List.TFAE
     [
       IsFredholm u,
-      ∃ v : F →L[𝕜] E, u.IsQuasiInverse v,
+      ∃ v : F →L[𝕜] E, v.IsQuasiInverse u,
       ∃ (E₁ : Submodule 𝕜 E) (F₁ : Submodule 𝕜 F),
         IsClosed (E₁ : Set E) ∧ IsClosed (F₁ : Set F) ∧
         E₁.CoFG ∧ F₁.CoFG ∧
@@ -376,7 +376,7 @@ theorem FredholmPackage.isFredholm {u : E →L[𝕜] F} (pkg : FredholmPackage u
   isFredholm_tfae u |>.out 3 0 |>.mp (Nonempty.intro pkg)
 
 theorem isFredholm_iff_exists_isQuasiInverse {u : E →L[𝕜] F} :
-    IsFredholm u ↔ ∃ v : F →L[𝕜] E, u.IsQuasiInverse v :=
+    IsFredholm u ↔ ∃ v : F →L[𝕜] E, v.IsQuasiInverse u :=
   isFredholm_tfae u |>.out 0 1
 
 end DefTFAE
@@ -439,7 +439,7 @@ variable [CompleteSpace 𝕜] [IsTopologicalAddGroup E] [IsTopologicalAddGroup F
 theorem isFredholm_congr {u u' : E →L[𝕜] F} (h : u.toLinearMap ≈ u'.toLinearMap) :
     IsFredholm u ↔ IsFredholm u' := by
   simp_rw [isFredholm_iff_exists_isQuasiInverse]
-  refine exists_congr fun _ ↦ isQuasiInverse_congr (Setoid.symm h) (Setoid.refl _)
+  refine exists_congr fun _ ↦ isQuasiInverse_congr (Setoid.refl _) (Setoid.symm h)
 
 theorem IsFredholm.congr {u u' : E →L[𝕜] F} (hu : IsFredholm u)
     (h : u.toLinearMap ≈ u'.toLinearMap) :
@@ -451,7 +451,7 @@ theorem IsFredholm.comp {f' : F →L[𝕜] G} {f : E →L[𝕜] F} (hf' : IsFred
   rw [isFredholm_iff_exists_isQuasiInverse] at *
   rcases hf with ⟨g, hg⟩
   rcases hf' with ⟨g', hg'⟩
-  exact ⟨g ∘L g', hg'.comp hg⟩
+  exact ⟨g ∘L g', hg.comp hg'⟩
 
 theorem IsFredholm.comp_iff_left {f : E →L[𝕜] F} {f' : F →L[𝕜] G} (hf : IsFredholm f) :
     IsFredholm (f' ∘L f) ↔ IsFredholm f' := by
@@ -459,7 +459,7 @@ theorem IsFredholm.comp_iff_left {f : E →L[𝕜] F} {f' : F →L[𝕜] G} (hf 
   rw [isFredholm_iff_exists_isQuasiInverse, toLinearMap_comp] at *
   rcases hf with ⟨g, hg⟩
   rcases hcomp with ⟨w, hw⟩
-  exact ⟨f ∘L w, .symm <| hg.symm.of_comp_left hw.symm⟩
+  exact ⟨f ∘L w, hg.of_comp_left hw⟩
 
 theorem IsFredholm.comp_iff_right {f : E →L[𝕜] F} {f' : F →L[𝕜] G} (hf' : IsFredholm f') :
     IsFredholm (f' ∘L f) ↔ IsFredholm f := by
@@ -467,7 +467,7 @@ theorem IsFredholm.comp_iff_right {f : E →L[𝕜] F} {f' : F →L[𝕜] G} (hf
   rw [isFredholm_iff_exists_isQuasiInverse, toLinearMap_comp] at *
   rcases hf' with ⟨g', hg'⟩
   rcases hcomp with ⟨w, hw⟩
-  exact ⟨w ∘L f', .symm <| hg'.symm.of_comp_right hw.symm⟩
+  exact ⟨w ∘L f', hg'.of_comp_right hw⟩
 
 end Constructions
 
