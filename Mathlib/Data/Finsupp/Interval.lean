@@ -126,7 +126,7 @@ variable [AddCommMonoid α] [PartialOrder α] [IsBotZeroClass α]
 variable [DecidableEq ι] [DecidableEq α] (f : ι →₀ α)
 
 theorem card_Iic : #(Iic f) = ∏ i ∈ f.support, #(Iic (f i)) := by
-  classical simp [Iic_eq_Icc, card_Icc, bot_eq_zero]
+  simp [Iic_eq_Icc, card_Icc, bot_eq_zero]
 
 theorem card_Iio : #(Iio f) = ∏ i ∈ f.support, #(Iic (f i)) - 1 := by
   rw [card_Iio_eq_card_Iic_sub_one, card_Iic]

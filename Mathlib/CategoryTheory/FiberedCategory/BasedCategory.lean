@@ -38,7 +38,6 @@ variable {𝒮 : Type u₁} [Category.{v₁} 𝒮]
 
 set_option linter.checkUnivs false in
 /-- A based category over `𝒮` is a category `𝒳` together with a functor `p : 𝒳 ⥤ 𝒮`. -/
-@[nolint checkUnivs]
 structure BasedCategory (𝒮 : Type u₁) [Category.{v₁} 𝒮] where
   /-- The type of objects in a `BasedCategory` -/
   obj : Type u₂

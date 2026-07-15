@@ -48,7 +48,6 @@ theorem convexCombination_single (x : P) :
 
 theorem convexCombination_assoc (f : StdSimplex R (StdSimplex R P)) :
     convexCombination (f.map convexCombination) = convexCombination f.join := by
-  classical
   -- Choose a base point
   obtain ⟨b⟩ : Nonempty P := inferInstance
   -- Express both sides using weightedVSubOfPoint with base point b

@@ -79,7 +79,7 @@ variable (p : ℕ) [h_prime : Fact p.Prime] (n : ℕ)
 
 set_option backward.isDefEq.respectTransparency false in
 theorem finrank {n} (h : n ≠ 0) : Module.finrank (ZMod p) (GaloisField p n) = n := by
-  haveI : Fintype (GaloisField p n) := Fintype.ofFinite (GaloisField p n)
+  have : Fintype (GaloisField p n) := Fintype.ofFinite (GaloisField p n)
   set g_poly := (X ^ p ^ n - X : (ZMod p)[X])
   have hp : 1 < p := h_prime.out.one_lt
   have aux : g_poly ≠ 0 := FiniteField.X_pow_card_pow_sub_X_ne_zero _ h hp
@@ -130,7 +130,7 @@ theorem finrank {n} (h : n ≠ 0) : Module.finrank (ZMod p) (GaloisField p n) = 
 
 theorem card (h : n ≠ 0) : Nat.card (GaloisField p n) = p ^ n := by
   let b := IsNoetherian.finsetBasis (ZMod p) (GaloisField p n)
-  haveI : Fintype (GaloisField p n) := Fintype.ofFinite (GaloisField p n)
+  have : Fintype (GaloisField p n) := Fintype.ofFinite (GaloisField p n)
   rw [Nat.card_eq_fintype_card, Module.card_fintype b, ← Module.finrank_eq_card_basis b,
     ZMod.card, finrank p h]
 
@@ -175,14 +175,14 @@ variable {K : Type*} [Field K] [Algebra (ZMod p) K]
 
 theorem _root_.FiniteField.splits_X_pow_nat_card_sub_X [Finite K] :
     Splits (map (algebraMap (ZMod p) K) (X ^ Nat.card K - X)) := by
-  haveI : Fintype K := Fintype.ofFinite K
+  have : Fintype K := Fintype.ofFinite K
   rw [Nat.card_eq_fintype_card]
   exact (FiniteField.isSplittingField_sub K (ZMod p)).splits
 
 theorem _root_.FiniteField.isSplittingField_of_nat_card_eq (h : Nat.card K = p ^ n) :
     IsSplittingField (ZMod p) K (X ^ p ^ n - X) := by
-  haveI : Finite K := (Nat.card_pos_iff.mp (h ▸ pow_pos h_prime.1.pos n)).2
-  haveI : Fintype K := Fintype.ofFinite K
+  have : Finite K := (Nat.card_pos_iff.mp (h ▸ pow_pos h_prime.1.pos n)).2
+  have : Fintype K := Fintype.ofFinite K
   rw [← h, Nat.card_eq_fintype_card]
   exact FiniteField.isSplittingField_sub K (ZMod p)
 
@@ -198,8 +198,8 @@ instance (priority := 100) {K K' : Type*} [Field K] [Field K'] [Finite K'] [Alge
     IsGalois K K' := by
   cases nonempty_fintype K'
   obtain ⟨p, hp⟩ := CharP.exists K
-  haveI : CharP K p := hp
-  haveI : CharP K' p := charP_of_injective_algebraMap' K p
+  have : CharP K p := hp
+  have : CharP K' p := charP_of_injective_algebraMap' K p
   exact IsGalois.of_separable_splitting_field
     (galois_poly_separable p (Fintype.card K')
       (let ⟨n, _, hn⟩ := FiniteField.card K' p

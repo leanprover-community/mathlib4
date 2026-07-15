@@ -56,7 +56,7 @@ lemma ε_app (X₁ : C₁) :
     (ε adj L₁ W₁ L₂ G' F').app (L₁.obj X₁) =
       L₁.map (adj.unit.app X₁) ≫ (CatCommSq.iso F L₂ L₁ F').hom.app (G.obj X₁) ≫
         F'.map ((CatCommSq.iso G L₁ L₂ G').hom.app X₁) := by
-  letI : Lifting L₁ W₁ ((G ⋙ F) ⋙ L₁) (G' ⋙ F') :=
+  let : Lifting L₁ W₁ ((G ⋙ F) ⋙ L₁) (G' ⋙ F') :=
     Lifting.mk (CatCommSq.hComp G F L₁ L₂ L₁ G' F').iso.symm
   simp only [ε, liftNatTrans_app, Lifting.iso, Iso.symm,
     Functor.id_obj, Functor.comp_obj, Functor.rightUnitor_hom_app,
@@ -74,7 +74,7 @@ lemma η_app (X₂ : C₂) :
       G'.map ((CatCommSq.iso F L₂ L₁ F').inv.app X₂) ≫
         (CatCommSq.iso G L₁ L₂ G').inv.app (F.obj X₂) ≫
         L₂.map (adj.counit.app X₂) := by
-  letI : Lifting L₂ W₂ ((F ⋙ G) ⋙ L₂) (F' ⋙ G') :=
+  let : Lifting L₂ W₂ ((F ⋙ G) ⋙ L₂) (F' ⋙ G') :=
     Lifting.mk (CatCommSq.hComp F G L₂ L₁ L₂ F' G').iso.symm
   simp only [η, liftNatTrans_app, Lifting.iso, Iso.symm, CatCommSq.hComp_iso_inv_app,
     whiskerRight_app, Functor.rightUnitor_inv_app, comp_id, assoc]

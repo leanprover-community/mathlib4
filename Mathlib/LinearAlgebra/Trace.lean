@@ -12,6 +12,7 @@ public import Mathlib.RingTheory.TensorProduct.Finite
 public import Mathlib.RingTheory.TensorProduct.Free
 
 import Mathlib.LinearAlgebra.GeneralLinearGroup.AlgEquiv
+import Mathlib.RingTheory.SimpleRing.Matrix
 
 /-!
 # Trace of a linear map
@@ -69,12 +70,12 @@ theorem traceAux_eq : traceAux R b = traceAux R c :=
       _ = Matrix.trace (LinearMap.toMatrix c c f) := by rw [LinearMap.comp_id, LinearMap.comp_id]
 
 variable (M) in
-open Classical in
+open scoped Classical in
 /-- Trace of an endomorphism independent of basis. -/
 def trace : (M →ₗ[R] M) →ₗ[R] R :=
   if H : ∃ s : Finset M, Nonempty (Basis s R M) then traceAux R H.choose_spec.some else 0
 
-open Classical in
+open scoped Classical in
 /-- Auxiliary lemma for `trace_eq_matrix_trace`. -/
 theorem trace_eq_matrix_trace_of_finset {s : Finset M} (b : Basis s R M) (f : M →ₗ[R] M) :
     trace R M f = Matrix.trace (LinearMap.toMatrix b b f) := by
@@ -301,10 +302,10 @@ theorem trace_conj' (f : M →ₗ[R] M) (e : M ≃ₗ[R] N) : trace R N (e.conj 
   classical
   by_cases hM : ∃ s : Finset M, Nonempty (Basis s R M)
   · obtain ⟨s, ⟨b⟩⟩ := hM
-    haveI := Module.Finite.of_basis b
-    haveI := (Module.free_def R M).mpr ⟨_, ⟨b⟩⟩
-    haveI := Module.Finite.of_basis (b.map e)
-    haveI := (Module.free_def R N).mpr ⟨_, ⟨(b.map e).reindex (e.toEquiv.image _)⟩⟩
+    have := Module.Finite.of_basis b
+    have := (Module.free_def R M).mpr ⟨_, ⟨b⟩⟩
+    have := Module.Finite.of_basis (b.map e)
+    have := (Module.free_def R N).mpr ⟨_, ⟨(b.map e).reindex (e.toEquiv.image _)⟩⟩
     rw [e.conj_apply, trace_comp_comm', ← comp_assoc, LinearEquiv.comp_coe,
       LinearEquiv.self_trans_symm, LinearEquiv.refl_toLinearMap, id_comp]
   · rw [trace, trace, dif_neg hM, dif_neg ?_, zero_apply, zero_apply]
@@ -325,11 +326,12 @@ theorem trace_conj' (f : M →ₗ[R] M) (e : M ≃ₗ[R] N) : trace R N (e.conj 
     LinearMap.trace_map ((Matrix.toLinAlgEquiv'.symm.trans
       (AlgEquivClass.toAlgEquiv f)).trans Matrix.toLinAlgEquiv') x.toLin'
 
--- TODO: show `(f x).trace = x.trace` for when `f : Matrix m m K →ₐ[K] Matrix m m K`
--- (using Skolem-Noether)
-proof_wanted _root_.Matrix.trace_map' {K m F : Type*} [Field K] [Fintype m] [DecidableEq m]
+@[simp] theorem _root_.Matrix.trace_map' {K m F : Type*} [Field K] [Fintype m] [DecidableEq m]
     [FunLike F (Matrix m m K) (Matrix m m K)] [AlgHomClass F K _ _] (f : F) (x : Matrix m m K) :
-    (f x).trace = x.trace
+    (f x).trace = x.trace := by
+  by_cases! Nonempty m
+  · exact Matrix.trace_map (AlgEquiv.ofBijective _ (AlgHomClass.toAlgHom f).bijective) x
+  · simp
 
 theorem IsProj.trace {p : Submodule R M} {f : M →ₗ[R] M} (h : IsProj p f) [Module.Free R p]
     [Module.Finite R p] [Module.Free R (ker f)] [Module.Finite R (ker f)] :

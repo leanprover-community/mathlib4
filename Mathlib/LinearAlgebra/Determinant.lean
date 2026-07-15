@@ -17,6 +17,7 @@ public import Mathlib.RingTheory.Finiteness.Cardinality
 public import Mathlib.Tactic.FieldSimp
 
 import Mathlib.LinearAlgebra.GeneralLinearGroup.AlgEquiv
+import Mathlib.RingTheory.SimpleRing.Matrix
 
 /-!
 # Determinant of families of vectors
@@ -210,7 +211,7 @@ theorem det_eq_det_toMatrix_of_finset [DecidableEq M] {s : Finset M} (b : Basis 
 @[simp]
 theorem det_toMatrix (b : Basis ι A M) (f : M →ₗ[A] M) :
     Matrix.det (toMatrix b b f) = LinearMap.det f := by
-  haveI := Classical.decEq M
+  have := Classical.decEq M
   rw [det_eq_det_toMatrix_of_finset b.reindexFinsetRange,
     det_toMatrix_eq_det_toMatrix b b.reindexFinsetRange]
 
@@ -233,7 +234,6 @@ theorem det_toLin' (f : Matrix ι ι R) : LinearMap.det (Matrix.toLin' f) = Matr
 theorem det_cases [DecidableEq M] {P : A → Prop} (f : M →ₗ[A] M)
     (hb : ∀ (s : Finset M) (b : Basis s A M), P (Matrix.det (toMatrix b b f))) (h1 : P 1) :
     P (LinearMap.det f) := by
-  classical
   if H : ∃ s : Finset M, Nonempty (Basis s A M) then
     obtain ⟨s, ⟨b⟩⟩ := H
     rw [← det_toMatrix b]
@@ -266,9 +266,9 @@ theorem det_smul [Module.Free A M] (c : A) (f : M →ₗ[A] M) :
 
 theorem det_zero' {ι : Type*} [Finite ι] [Nonempty ι] (b : Basis ι A M) :
     LinearMap.det (0 : M →ₗ[A] M) = 0 := by
-  haveI := Classical.decEq ι
+  have := Classical.decEq ι
   cases nonempty_fintype ι
-  rwa [← det_toMatrix b, map_zero, det_zero]
+  rw [← det_toMatrix b, map_zero, det_zero]
 
 /-- In a finite-dimensional vector space, the zero map has determinant `1` in dimension `0`,
 and `0` otherwise. We give a formula that also works in infinite dimension, where we define
@@ -474,11 +474,12 @@ end LinearEquiv
     LinearMap.det_map ((Matrix.toLinAlgEquiv'.symm.trans
       (AlgEquivClass.toAlgEquiv f)).trans Matrix.toLinAlgEquiv') x.toLin'
 
--- TODO: show `(f x).det = x.det` for when `f : Matrix m m K →ₐ[K] Matrix m m K`
--- (using Skolem-Noether)
-proof_wanted Matrix.det_map' {K m F : Type*} [Field K] [Fintype m] [DecidableEq m]
+@[simp] theorem Matrix.det_map' {K m F : Type*} [Field K] [Fintype m] [DecidableEq m]
     [FunLike F (Matrix m m K) (Matrix m m K)] [AlgHomClass F K _ _] (f : F) (x : Matrix m m K) :
-    (f x).det = x.det
+    (f x).det = x.det := by
+  by_cases! Nonempty m
+  · exact det_map (AlgEquiv.ofBijective _ (AlgHomClass.toAlgHom f).bijective) x
+  · simp
 
 /-- The determinants of a `LinearEquiv` and its inverse multiply to 1. -/
 @[simp]
@@ -667,7 +668,7 @@ theorem AlternatingMap.map_basis_eq_zero_iff {ι : Type*} [Finite ι] (e : Basis
     (f : M [⋀^ι]→ₗ[R] R) : f e = 0 ↔ f = 0 :=
   ⟨fun h => by
     cases nonempty_fintype ι
-    letI := Classical.decEq ι
+    let := Classical.decEq ι
     simpa [h] using f.eq_smul_basis_det e,
    fun h => h.symm ▸ AlternatingMap.zero_apply _⟩
 
