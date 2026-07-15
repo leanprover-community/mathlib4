@@ -278,6 +278,19 @@ theorem coeToGL_det (g : SpecialLinearGroup n R) :
 @[simp]
 lemma coe_GL_coe_matrix (g : SpecialLinearGroup n R) : ((toGL g) : Matrix n n R) = g := rfl
 
+lemma toGL_range : (toGL : SpecialLinearGroup n R →* GL n R).range = GeneralLinearGroup.det.ker :=
+  SetLike.ext fun _ =>
+    ⟨fun h => MonoidHom.mem_ker.mpr <| (MonoidHom.mem_range.mp h).elim fun _ hB =>
+        ‹_› ▸ Units.ext (by simp only [coeToGL_det, Units.val_one]),
+      fun hA => MonoidHom.mem_range.mpr ⟨⟨_ ,
+        by simpa [GeneralLinearGroup.val_det_apply] using
+          congrArg Units.val (MonoidHom.mem_ker.mp hA)⟩, Units.ext rfl⟩⟩
+
+noncomputable def toGLKerEquiv :
+  SpecialLinearGroup n R ≃* (GeneralLinearGroup.det : GL n R →* Rˣ).ker :=
+  (MonoidHom.ofInjective toGL_injective).trans
+    (MulEquiv.subgroupCongr toGL_range)
+
 variable (S) in
 /-- `mapGL` is the map from the special linear group over `R` to the general linear group over
 `S`, where `S` is an `R`-algebra. -/
