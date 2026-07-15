@@ -88,7 +88,7 @@ include hf' hg
 
 lemma isScalarTower_of_section_of_ker_sqZero :
     letI := g.toRingHom.toAlgebra; IsScalarTower P S (RingHom.ker (algebraMap P S)) := by
-  letI := g.toRingHom.toAlgebra
+  let := g.toRingHom.toAlgebra
   constructor
   intro p s m
   ext
@@ -116,8 +116,8 @@ def retractionOfSectionOfKerSqZero : S ⊗[P] Ω[P⁄R] →ₗ[P] RingHom.ker (a
 lemma retractionOfSectionOfKerSqZero_tmul_D (s : S) (t : P) :
     retractionOfSectionOfKerSqZero g hf' hg (s ⊗ₜ .D _ _ t) =
       g s * t - g s * g (algebraMap _ _ t) := by
-  letI := g.toRingHom.toAlgebra
-  haveI := isScalarTower_of_section_of_ker_sqZero g hf' hg
+  let := g.toRingHom.toAlgebra
+  have := isScalarTower_of_section_of_ker_sqZero g hf' hg
   simp only [retractionOfSectionOfKerSqZero, LinearMap.coe_restrictScalars,
     LinearMap.liftBaseChange_tmul, SetLike.val_smul_of_tower]
   -- The issue is a mismatch between `RingHom.ker (algebraMap P S)` and
@@ -376,7 +376,7 @@ lemma CotangentSpace.map_toInfinitesimal_bijective (P : Extension.{u} R S) :
   suffices CotangentSpace.map P.toInfinitesimal =
       (tensorKaehlerQuotKerSqEquiv _ _ _).symm.toLinearMap by
     rw [this]; exact (tensorKaehlerQuotKerSqEquiv _ _ _).symm.bijective
-  letI : Algebra P.Ring P.infinitesimal.Ring := inferInstanceAs (Algebra P.Ring (P.Ring ⧸ _))
+  let : Algebra P.Ring P.infinitesimal.Ring := inferInstanceAs (Algebra P.Ring (P.Ring ⧸ _))
   have : IsScalarTower P.Ring P.infinitesimal.Ring S := .of_algebraMap_eq' rfl
   apply LinearMap.restrictScalars_injective P.Ring
   ext x a

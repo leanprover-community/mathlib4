@@ -588,7 +588,7 @@ theorem lintegral_iUnion [Countable β] {s : β → Set α} (hm : ∀ i, Measura
 theorem lintegral_biUnion₀ {t : Set β} {s : β → Set α} (ht : t.Countable)
     (hm : ∀ i ∈ t, NullMeasurableSet (s i) μ) (hd : t.Pairwise (AEDisjoint μ on s)) (f : α → ℝ≥0∞) :
     ∫⁻ a in ⋃ i ∈ t, s i, f a ∂μ = ∑' i : t, ∫⁻ a in s i, f a ∂μ := by
-  haveI := ht.toEncodable
+  have := ht.toEncodable
   rw [biUnion_eq_iUnion, lintegral_iUnion₀ (SetCoe.forall'.1 hm) (hd.subtype _ _)]
 
 theorem lintegral_biUnion {t : Set β} {s : β → Set α} (ht : t.Countable)

@@ -183,7 +183,7 @@ Note that in this case `HasSum f a` is satisfied for *every* element `a` of the 
 value assigned to the `tsum` is a question of conventions. -/]
 lemma tprod_bot (hL : ¬L.NeBot) (f : β → α) : ∏'[L] b, f b = ∏ᶠ b, f b := by
   simp only [tprod_def, dif_pos (multipliable_bot hL f)]
-  haveI : L.LeAtTop := L.leAtTop_of_not_NeBot hL
+  have : L.LeAtTop := L.leAtTop_of_not_NeBot hL
   rw [L.support_eq_univ, Set.inter_univ, Set.mulIndicator_univ]
   by_cases hf : (mulSupport f).Finite
   · rw [eq_true_intro hf, if_pos]

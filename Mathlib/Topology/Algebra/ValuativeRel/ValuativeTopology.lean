@@ -262,8 +262,8 @@ variable [_t : TopologicalSpace R] [IsValuativeTopology R] (v : Valuation R Γ�
 
 theorem toTopologicalSpace_eq :
     _t = v.subgroups_basis.topology := by
-  letI u := IsTopologicalAddGroup.rightUniformSpace R
-  letI := isUniformAddGroup_of_addCommGroup (G := R)
+  let u := IsTopologicalAddGroup.rightUniformSpace R
+  let := isUniformAddGroup_of_addCommGroup (G := R)
   exact congrArg (fun u ↦ @UniformSpace.toTopologicalSpace R u) v.toUniformSpace_eq
 
 instance (priority := low) _root_.IsValuativeTopology.isTopologicalRing : IsTopologicalRing R := by
