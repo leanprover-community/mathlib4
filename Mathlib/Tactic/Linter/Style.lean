@@ -628,7 +628,7 @@ public register_option linter.style.show : Bool := {
   descr := "enable the show linter"
 }
 
-namespace Style.show
+namespace Style
 
 open Tactic
 
@@ -649,6 +649,6 @@ def elabShow (newType : Term) : TacticM Unit := do
 @[tactic_alt Tactic.«show»]
 elab (name := «show») "show " newType:term : tactic => elabShow newType
 
-end Style.show
+end Style
 
 end Mathlib.Linter
