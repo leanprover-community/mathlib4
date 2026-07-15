@@ -330,6 +330,64 @@ instance [T1Space α] : T0Space (Set α) where
   t0 _ _ h :=
     subset_antisymm (subset_of_specializes h.specializes) (subset_of_specializes h.specializes')
 
+theorem isPreconnected_nonempty_finite_subsets {s : Set α} (hs : IsPreconnected s) :
+    IsPreconnected {t | t.Nonempty ∧ t.Finite ∧ t ⊆ s} := by
+  rcases eq_empty_or_nonempty s with rfl | ⟨x, hx⟩
+  · convert isPreconnected_empty
+    grind [Set.not_nonempty_empty]
+  suffices {t | t.Nonempty ∧ t.Finite ∧ t ⊆ s} =
+      ⋃ n : ℕ+, range (ι := Fin n) '' Set.pi univ fun _ => s by
+    rw [this]
+    /- The family of nonempty subsets of `s` with at most `n` elements is connected, since it is the
+    image of `sⁿ` under the continuous map `(x₁, …, xₙ) ↦ {x₁, …, xₙ}`. It follows that their union
+    over `n ≥ 1` is also connected. -/
+    exact isPreconnected_iUnion
+      ⟨{x}, mem_iInter_of_mem fun n => ⟨fun _ => x, by simpa⟩⟩
+      (fun n => .image (isPreconnected_univ_pi fun _ => hs) _ (by fun_prop))
+  refine subset_antisymm (fun t ht => ?_)
+    (iUnion_subset fun _ => image_subset_iff.mpr fun f hf =>
+      ⟨range_nonempty _, finite_range _, by grind⟩)
+  obtain ⟨ht₁, ht₂, hts⟩ := ht
+  obtain ⟨n, f, -, rfl⟩ := ht₂.fin_param
+  rw [range_subset_iff] at hts
+  rw [range_nonempty_iff_nonempty] at ht₁
+  lift n to ℕ+ using Fin.pos'
+  exact mem_iUnion_of_mem n <| mem_image_of_mem _ <| mem_univ_pi.mpr hts
+
+theorem isPreconnected_sUnion {s : Set (Set α)} (hs : IsPreconnected s)
+    (h : ∃ t ∈ s, IsPreconnected t) : IsPreconnected (⋃₀ s) := by
+  obtain ⟨t, hts, ht⟩ := h
+  have hts' := subset_sUnion_of_mem hts
+  /- Take open sets `U` and `V` covering `⋃₀ s`, and assume that they both intersect `⋃₀ s`. We have
+  to show that `U` and `V` intersect within `⋃₀ s` -/
+  intro U V hU hV hUV
+  by_cases! ht' : t ⊆ U ∨ t ⊆ V
+  · -- Consider the case when one of them covers `t`, say `U`.
+    wlog htU : t ⊆ U generalizing U V
+    · grind
+    -- There is also some `u ∈ s` that intersects `V`.
+    rintro - hV'
+    rw [sUnion_eq_biUnion, iUnion₂_inter, nonempty_biUnion] at hV'
+    obtain ⟨u, hus, huV⟩ := hV'
+    -- Every set in `s` either is in `U` or intersects `V`.
+    have : s ⊆ U.powerset ∪ {v | (v ∩ V).Nonempty} := by
+      grind [=_ sdiff_subset_iff, =_ not_disjoint_iff_nonempty_inter]
+    -- Since `s` connects `t` and `u`, there is some `v ∈ s` that is in `U` and intersects `V`.
+    obtain ⟨v, hvs, hvU, hvV⟩ :=
+      hs _ _ hU.powerset_vietoris (isOpen_inter_nonempty_of_isOpen hV) this
+        ⟨t, hts, htU⟩ ⟨u, hus, huV⟩
+    -- `U` intersects `V` within `v`, and therefore also within `⋃₀ s`.
+    apply hvV.mono
+    grind
+  · -- If neither `U` nor `V` covers `t`, then they both intersect `t`, since `t ⊆ U ∪ V`.
+    rintro - -
+    have htU : ¬ Disjoint t U := by grind
+    have htV : ¬ Disjoint t V := by grind
+    rw [not_disjoint_iff_nonempty_inter] at htU htV
+    -- By the connectedness of `t`, `U` and `V` intersect within `t`, and therefore within `⋃₀ s`.
+    grw [← hts'] at hUV ⊢
+    exact ht U V hU hV hUV htU htV
+
 end vietoris
 
 namespace Compacts
@@ -659,6 +717,59 @@ instance [LocallyCompactSpace α] : LocallyCompactSpace (Compacts α) := by
       vietoris.specializes_of_subset_closure ?_ ?_⟩ <;>
       grind [coe_mk, subset_closure]
 
+theorem isPreconnected_nonempty_finite_subsets {s : Set α} (hs : IsPreconnected s) :
+    IsPreconnected {K : Compacts α | (K : Set α).Nonempty ∧ (K : Set α).Finite ∧ ↑K ⊆ s} := by
+  rw [← isEmbedding_coe.isPreconnected_image]
+  convert vietoris.isPreconnected_nonempty_finite_subsets hs
+  exact subset_antisymm (image_subset_iff.mpr .rfl) (fun t ht => ⟨⟨t, ht.2.1.isCompact⟩, ht, rfl⟩)
+
+theorem isPreconnected_nonempty_subsets {s : Set α} (hs : IsPreconnected s) :
+    IsPreconnected {K : Compacts α | (K : Set α).Nonempty ∧ ↑K ⊆ s} := by
+  refine (isPreconnected_nonempty_finite_subsets hs).subset_closure (by grind) ?_
+  conv_lhs => rw [setOf_and]
+  conv_rhs => rw [setOf_and]
+  simp_rw [nonempty_iff_ne_empty, ← coe_bot, SetLike.coe_ne_coe, Ne, ← compl_singleton_eq]
+  grw [← isClopen_singleton_bot.compl.isOpen.inter_closure, closure_finite_subsets,
+    ← subset_closure]
+
+instance [LocallyConnectedSpace α] : LocallyConnectedSpace (Compacts α) := by
+  rw [locallyConnectedSpace_iff_isTopologicalBasis_isOpen_isPreconnected]
+  have basis := IsTopologicalBasis.isOpen_isPreconnected.compacts (α := α)
+  -- We show that the basic open sets induced by a connected basis are connected.
+  refine basis.of_isOpen_of_subset (by grind) (fun U hU => ⟨basis.isOpen hU, ?_⟩)
+  -- By density, it is enough to show connectedness for finite sets in the basic open set.
+  suffices IsPreconnected (U ∩ {K | (K : Set α).Finite}) by
+    refine this.subset_closure inter_subset_left ?_
+    grw [← (basis.isOpen hU).inter_closure, dense_setOf_finite.closure_eq, inter_univ]
+  obtain ⟨u, ⟨hu', hu⟩, rfl⟩ := hU
+  simp_rw [← setOf_and, and_assoc]
+  lift u to Finset (Set α) using hu'
+  /- The finite sets in the basic open set are can be written as the unions of finite sets from
+  each connected neighborhood. By the continuity of union, these form a connected set. -/
+  suffices {K : Compacts α | ↑K ⊆ ⋃₀ (u : Set (Set α)) ∧ (∀ U ∈ (u : Set (Set α)),
+      (↑K ∩ U).Nonempty) ∧ (K : Set α).Finite} = Finset.univ.sup '' Set.pi univ fun U : u =>
+        {K : Compacts α | (K : Set α).Nonempty ∧ (K : Set α).Finite ∧ (K : Set α) ⊆ U} by
+    rw [this]
+    exact .image
+      (isPreconnected_univ_pi fun U => isPreconnected_nonempty_finite_subsets (hu U.2).2)
+      _ (by fun_prop)
+  apply subset_antisymm
+  · refine fun K ⟨hK₁, hK₂, hK₃⟩ => ⟨fun U : u => ⟨K ∩ U, (hK₃.inter_of_left _).isCompact⟩,
+      fun U _ => ⟨hK₂ U U.2, hK₃.inter_of_left _, inter_subset_right⟩, ?_⟩
+    ext1
+    simp_rw [coe_finset_sup, Finset.sup_eq_iSup, iSup_eq_iUnion, Finset.mem_univ, iUnion_true,
+      coe_mk, ← inter_iUnion, iUnion_subtype, ← SetLike.mem_coe, ← sUnion_eq_biUnion,
+      inter_eq_left.mpr hK₁]
+  · simp_rw [image_subset_iff, preimage_setOf_eq, coe_finset_sup, Finset.sup_eq_iSup,
+      iSup_eq_iUnion, Finset.mem_univ, iUnion_true, iUnion_subset_iff]
+    refine fun f hf => ⟨
+      fun U => subset_sUnion_of_subset _ _ (hf U trivial).2.2 U.2, fun U hU => ?_,
+      finite_iUnion fun U => (hf U trivial).2.1⟩
+    lift U to u using hU
+    obtain ⟨h₁, -, h₂⟩ := hf U trivial
+    exact h₁.mono (subset_inter (subset_iUnion _ _) h₂)
+
+
 end Compacts
 
 namespace NonemptyCompacts
@@ -899,6 +1010,84 @@ theorem _root_.TopologicalSpace.Compacts.locallyCompactSpace_iff :
     LocallyCompactSpace (Compacts α) ↔ LocallyCompactSpace α :=
   ⟨fun _ => NonemptyCompacts.locallyCompactSpace_iff.mp
     isOpenEmbedding_toCompacts.locallyCompactSpace, fun _ => inferInstance⟩
+
+theorem isPreconnected_finite_subsets {s : Set α} (hs : IsPreconnected s) :
+    IsPreconnected {K : NonemptyCompacts α | (K : Set α).Finite ∧ ↑K ⊆ s} := by
+  rw [← isEmbedding_toCompacts.isPreconnected_image]
+  convert Compacts.isPreconnected_nonempty_finite_subsets hs
+  exact subset_antisymm
+    (image_subset_iff.mpr fun K hK => ⟨K.nonempty, hK⟩)
+    (fun K hK => ⟨⟨K, hK.1⟩, hK.2, rfl⟩)
+
+theorem isPreconnected_subsets {s : Set α} (hs : IsPreconnected s) :
+    IsPreconnected {K : NonemptyCompacts α | ↑K ⊆ s} := by
+  rw [← isEmbedding_toCompacts.isPreconnected_image]
+  convert Compacts.isPreconnected_nonempty_subsets hs
+  exact subset_antisymm
+    (image_subset_iff.mpr fun K hK => ⟨K.nonempty, hK⟩)
+    (fun K hK => ⟨⟨K, hK.1⟩, hK.2, rfl⟩)
+
+instance [PreconnectedSpace α] : PreconnectedSpace (NonemptyCompacts α) where
+  isPreconnected_univ := by
+    convert isPreconnected_subsets (α := α) isPreconnected_univ
+    simp
+
+@[simp]
+theorem preconnectedSpace_iff : PreconnectedSpace (NonemptyCompacts α) ↔ PreconnectedSpace α := by
+  refine ⟨fun h => ?_, fun h => inferInstance⟩
+  rw [preconnectedSpace_iff_clopen] at h ⊢
+  intro s hs
+  rcases (h {K | ↑K ⊆ s}
+    ⟨isClosed_subsets_of_isClosed hs.isClosed, isOpen_subsets_of_isOpen hs.isOpen⟩) with h | h
+  · left
+    rw [Set.eq_empty_iff_forall_notMem] at h ⊢
+    exact fun x hx => h {x} (Set.singleton_subset_iff.mpr hx)
+  · right
+    rw [Set.eq_univ_iff_forall] at h ⊢
+    exact fun x => Set.singleton_subset_iff.mp (h {x})
+
+instance [ConnectedSpace α] : ConnectedSpace (NonemptyCompacts α) where
+  toNonempty := inferInstance
+
+@[simp]
+theorem connectedSpace_iff : ConnectedSpace (NonemptyCompacts α) ↔ ConnectedSpace α := by
+  refine ⟨fun h => ?_, fun _ => inferInstance⟩
+  have := preconnectedSpace_iff.mp h.toPreconnectedSpace;
+  constructor
+  rw [← not_isEmpty_iff]
+  intro
+  absurd h.toNonempty
+  rw [not_nonempty_iff]
+  infer_instance
+
+instance [LocallyConnectedSpace α] : LocallyConnectedSpace (NonemptyCompacts α) :=
+  isOpenEmbedding_toCompacts.locallyConnectedSpace
+
+@[simp]
+theorem locallyConnectedSpace_iff :
+    LocallyConnectedSpace (NonemptyCompacts α) ↔ LocallyConnectedSpace α := by
+  refine ⟨fun h => ?_, fun _ => inferInstance⟩
+  rw [locallyConnectedSpace_iff_connected_basis]
+  intro x
+  refine (nhds_basis_opens x).to_hasBasis' (fun U ⟨hx, hU⟩ => ?_) (by grind)
+  obtain ⟨V, ⟨hV₁, hV₂⟩, hxV, hKV⟩ :=
+    IsTopologicalBasis.isOpen_isPreconnected.exists_subset_of_mem_open
+      (show {x} ∈ {K : NonemptyCompacts α | ↑K ⊆ U} by simpa)
+      (isOpen_subsets_of_isOpen hU)
+  refine ⟨⋃ L ∈ V, ↑L, ⟨?_, ?_⟩, ?_⟩
+  · filter_upwards [continuous_singleton.tendsto x (hV₁.mem_nhds hxV)] with y hy
+    exact mem_iUnion₂_of_mem hy rfl
+  · rw [← sUnion_image]
+    refine vietoris.isPreconnected_sUnion (hV₂.image _ (by fun_prop)) ?_
+    rw [exists_mem_image]
+    exact ⟨{x}, hxV, isPreconnected_singleton⟩
+  · rwa [id, iUnion₂_subset_iff]
+
+@[simp]
+theorem _root_.TopologicalSpace.Compacts.locallyConnectedSpace_iff :
+    LocallyConnectedSpace (Compacts α) ↔ LocallyConnectedSpace α :=
+  ⟨fun _ => NonemptyCompacts.locallyConnectedSpace_iff.mp
+    isOpenEmbedding_toCompacts.locallyConnectedSpace, fun _ => inferInstance⟩
 
 end NonemptyCompacts
 
