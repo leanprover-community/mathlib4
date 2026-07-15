@@ -1833,6 +1833,10 @@ public import Mathlib.Analysis.Calculus.LineDeriv.Basic
 public import Mathlib.Analysis.Calculus.LineDeriv.IntegrationByParts
 public import Mathlib.Analysis.Calculus.LineDeriv.Measurable
 public import Mathlib.Analysis.Calculus.LineDeriv.QuadraticMap
+public import Mathlib.Analysis.Calculus.LipschitzSmooth.Basic
+public import Mathlib.Analysis.Calculus.LipschitzSmooth.Deriv
+public import Mathlib.Analysis.Calculus.LipschitzSmooth.FDeriv
+public import Mathlib.Analysis.Calculus.LipschitzSmooth.Gradient
 public import Mathlib.Analysis.Calculus.LocalExtr.Basic
 public import Mathlib.Analysis.Calculus.LocalExtr.LineDeriv
 public import Mathlib.Analysis.Calculus.LocalExtr.Polynomial
@@ -1953,10 +1957,12 @@ public import Mathlib.Analysis.Convex.EGauge
 public import Mathlib.Analysis.Convex.Exposed
 public import Mathlib.Analysis.Convex.Extrema
 public import Mathlib.Analysis.Convex.Extreme
+public import Mathlib.Analysis.Convex.FDeriv
 public import Mathlib.Analysis.Convex.Function
 public import Mathlib.Analysis.Convex.FunctionTopology
 public import Mathlib.Analysis.Convex.Gauge
 public import Mathlib.Analysis.Convex.GaugeRescale
+public import Mathlib.Analysis.Convex.Gradient
 public import Mathlib.Analysis.Convex.Hull
 public import Mathlib.Analysis.Convex.Independent
 public import Mathlib.Analysis.Convex.Integral
@@ -1964,6 +1970,7 @@ public import Mathlib.Analysis.Convex.Intrinsic
 public import Mathlib.Analysis.Convex.Jensen
 public import Mathlib.Analysis.Convex.Join
 public import Mathlib.Analysis.Convex.KreinMilman
+public import Mathlib.Analysis.Convex.LineDeriv
 public import Mathlib.Analysis.Convex.LinearIsometry
 public import Mathlib.Analysis.Convex.Measure
 public import Mathlib.Analysis.Convex.MetricSpace
