@@ -13,10 +13,10 @@ public import Mathlib.CategoryTheory.Limits.MorphismProperty
 # Covers of schemes over a base
 
 In this file we define the typeclass `Cover.Over`. For a cover `𝒰` of an `S`-scheme `X`,
-the datum `𝒰.Over S` contains `S`-scheme structures on the components of `𝒰` and asserts
-that the component maps are morphisms of `S`-schemes.
+the datum `𝒰.Over S g` asserts that the components of `𝒰` are `S`-schemes with structure
+morphisms `g j` and that the component maps are morphisms of `S`-schemes.
 
-We provide instances of `𝒰.Over S` for standard constructions on covers.
+We provide instances of `𝒰.Over S g` for standard constructions on covers.
 
 -/
 
@@ -33,36 +33,43 @@ namespace AlgebraicGeometry.Scheme
 variable {P : MorphismProperty Scheme.{u}} (S : Scheme.{u})
 
 /-- Bundle an `S`-scheme with `P` into an object of `P.Over ⊤ S`. -/
-abbrev asOverProp (X : Scheme.{u}) (S : Scheme.{u}) [X.Over S] (h : P (X ↘ S)) : P.Over ⊤ S :=
+abbrev asOverProp (X : Scheme.{u}) (S : Scheme.{u}) {f : X ⟶ S} [X.Over S f] (h : P (X ↘ S)) :
+    P.Over ⊤ S :=
   ⟨X.asOver S, h⟩
 
 /-- Bundle an `S`-morphism of `S`-scheme with `P` into a morphism in `P.Over ⊤ S`. -/
-abbrev Hom.asOverProp {X Y : Scheme.{u}} (f : X.Hom Y) (S : Scheme.{u}) [X.Over S] [Y.Over S]
-    [f.IsOver S] {hX : P (X ↘ S)} {hY : P (Y ↘ S)} : X.asOverProp S hX ⟶ Y.asOverProp S hY :=
+abbrev Hom.asOverProp {X Y : Scheme.{u}} (f : X.Hom Y) (S : Scheme.{u}) {fX : X ⟶ S} {fY : Y ⟶ S}
+    [X.Over S fX] [Y.Over S fY] [f.IsOver S] {hX : P (X ↘ S)} {hY : P (Y ↘ S)} :
+    X.asOverProp S hX ⟶ Y.asOverProp S hY :=
   ⟨f.asOver S, trivial, trivial⟩
 
-/-- A `P`-cover of a scheme `X` over `S` is a cover, where the components are over `S` and the
-component maps commute with the structure morphisms. -/
+/-- A `P`-cover of a scheme `X` over `S` is a cover, where the components are over `S` with
+structure morphisms `g j` and the component maps commute with the structure morphisms. -/
 protected class Cover.Over {P : MorphismProperty Scheme.{u}} [P.IsStableUnderBaseChange]
-    [IsJointlySurjectivePreserving P] {X : Scheme.{u}} [X.Over S]
-    (𝒰 : X.Cover (precoverage P)) where
-  over (j : 𝒰.I₀) : (𝒰.X j).Over S := by infer_instance
-  isOver_map (j : 𝒰.I₀) : (𝒰.f j).IsOver S := by infer_instance
+    [IsJointlySurjectivePreserving P] {X : Scheme.{u}} {f : X ⟶ S} [X.Over S f]
+    (𝒰 : X.Cover (precoverage P)) (g : outParam <| ∀ j, 𝒰.X j ⟶ S) where
+  over (j : 𝒰.I₀) : (𝒰.X j).Over S (g j) := {}
+  comp_over (j : 𝒰.I₀) : 𝒰.f j ≫ f = g j := by simp
 
 attribute [instance_reducible] Cover.Over.over
-attribute [instance] Cover.Over.over Cover.Over.isOver_map
+attribute [instance] Cover.Over.over
 
 variable [P.IsStableUnderBaseChange] [IsJointlySurjectivePreserving P]
 
-instance [P.ContainsIdentities] [P.RespectsIso] {X Y : Scheme.{u}} (f : X ⟶ Y) [X.Over S] [Y.Over S]
-    [f.IsOver S] [IsIso f] : (coverOfIsIso (P := P) f).Over S where
-  over _ := inferInstanceAs <| X.Over S
-  isOver_map _ := inferInstanceAs <| f.IsOver S
+instance Cover.Over.isOver_map {X : Scheme.{u}} {f : X ⟶ S} [X.Over S f]
+    (𝒰 : X.Cover (precoverage P)) {g : ∀ j, 𝒰.X j ⟶ S} [𝒰.Over S g] (j : 𝒰.I₀) :
+    (𝒰.f j).IsOver S :=
+  ⟨Cover.Over.comp_over j⟩
+
+instance [P.ContainsIdentities] [P.RespectsIso] {X Y : Scheme.{u}} (f : X ⟶ Y) {fX : X ⟶ S}
+    {fY : Y ⟶ S} [X.Over S fX] [Y.Over S fY] [f.IsOver S] [IsIso f] :
+    (coverOfIsIso (P := P) f).Over S (fun _ ↦ fX) where
+  comp_over _ := comp_over f S
 
 section
 
-variable {X W : Scheme.{u}} (𝒰 : X.Cover (precoverage P)) (f : W ⟶ X) [W.Over S] [X.Over S]
-  [𝒰.Over S] [f.IsOver S]
+variable {X W : Scheme.{u}} (𝒰 : X.Cover (precoverage P)) (f : W ⟶ X) {fW : W ⟶ S} {fX : X ⟶ S}
+  {g𝒰 : ∀ j, 𝒰.X j ⟶ S} [W.Over S fW] [X.Over S fX] [𝒰.Over S g𝒰] [f.IsOver S]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The pullback of a cover of `S`-schemes along a morphism of `S`-schemes. This is not
@@ -86,11 +93,9 @@ def Cover.pullbackCoverOver : W.Cover (precoverage P) where
       rw [← Over.forget_map, ← PreservesPullback.iso_hom_fst, P.cancel_left_of_respectsIso]
       exact P.pullback_fst _ _ (𝒰.map_prop j)
 
-instance (j : 𝒰.I₀) : ((𝒰.pullbackCoverOver S f).X j).Over S where
-  hom := (pullback (f.asOver S) ((𝒰.f j).asOver S)).hom
-
-instance : (𝒰.pullbackCoverOver S f).Over S where
-  isOver_map j := { comp_over := by exact Over.w (pullback.fst (f.asOver S) ((𝒰.f j).asOver S)) }
+instance : (𝒰.pullbackCoverOver S f).Over S
+    (fun j ↦ (pullback (f.asOver S) ((𝒰.f j).asOver S)).hom) where
+  comp_over j := by exact Over.w (pullback.fst (f.asOver S) ((𝒰.f j).asOver S))
 
 set_option backward.isDefEq.respectTransparency false in
 /-- A variant of `AlgebraicGeometry.Scheme.Cover.pullbackCoverOver` with the arguments in the
@@ -112,11 +117,9 @@ def Cover.pullbackCoverOver' : W.Cover (precoverage P) where
       rw [← Over.forget_map, ← PreservesPullback.iso_hom_snd, P.cancel_left_of_respectsIso]
       exact P.pullback_snd _ _ (𝒰.map_prop j)
 
-instance (j : 𝒰.I₀) : ((𝒰.pullbackCoverOver' S f).X j).Over S where
-  hom := (pullback ((𝒰.f j).asOver S) (f.asOver S)).hom
-
-instance : (𝒰.pullbackCoverOver' S f).Over S where
-  isOver_map j := { comp_over := by exact Over.w (pullback.snd ((𝒰.f j).asOver S) (f.asOver S)) }
+instance : (𝒰.pullbackCoverOver' S f).Over S
+    (fun j ↦ (pullback ((𝒰.f j).asOver S) (f.asOver S)).hom) where
+  comp_over j := by exact Over.w (pullback.snd ((𝒰.f j).asOver S) (f.asOver S))
 
 variable {Q : MorphismProperty Scheme.{u}} [Q.HasOfPostcompProperty Q]
   [Q.IsStableUnderBaseChange] [Q.IsStableUnderComposition]
@@ -149,13 +152,10 @@ def Cover.pullbackCoverOverProp : W.Cover (precoverage P) where
       rw [← PreservesPullback.iso_hom_fst, P.cancel_left_of_respectsIso]
       exact P.pullback_fst _ _ (𝒰.map_prop j)
 
-instance (j : 𝒰.I₀) : ((𝒰.pullbackCoverOverProp S f hX hW hQ).X j).Over S where
-  hom := (pullback (f.asOverProp (hX := hW) (hY := hX) S)
-    ((𝒰.f j).asOverProp (hX := hQ j) (hY := hX) S)).hom
-
-instance : (𝒰.pullbackCoverOverProp S f hX hW hQ).Over S where
-  isOver_map j :=
-    { comp_over := by exact (pullback.fst (f.asOverProp S) ((𝒰.f j).asOverProp S)).w }
+instance : (𝒰.pullbackCoverOverProp S f hX hW hQ).Over S
+    (fun j ↦ (pullback (f.asOverProp (hX := hW) (hY := hX) S)
+      ((𝒰.f j).asOverProp (hX := hQ j) (hY := hX) S)).hom) where
+  comp_over j := by exact (pullback.fst (f.asOverProp S) ((𝒰.f j).asOverProp S)).w
 
 set_option backward.isDefEq.respectTransparency false in
 /-- A variant of `AlgebraicGeometry.Scheme.Cover.pullbackCoverOverProp` with the arguments in the
@@ -181,27 +181,21 @@ def Cover.pullbackCoverOverProp' : W.Cover (precoverage P) where
       rw [← PreservesPullback.iso_hom_snd, P.cancel_left_of_respectsIso]
       exact P.pullback_snd _ _ (𝒰.map_prop j)
 
-instance (j : 𝒰.I₀) : ((𝒰.pullbackCoverOverProp' S f hX hW hQ).X j).Over S where
-  hom := (pullback ((𝒰.f j).asOverProp (hX := hQ j) (hY := hX) S)
-    (f.asOverProp (hX := hW) (hY := hX) S)).hom
-
-instance : (𝒰.pullbackCoverOverProp' S f hX hW hQ).Over S where
-  isOver_map j :=
-    { comp_over := by exact (pullback.snd ((𝒰.f j).asOverProp S) (f.asOverProp S)).w }
+instance : (𝒰.pullbackCoverOverProp' S f hX hW hQ).Over S
+    (fun j ↦ (pullback ((𝒰.f j).asOverProp (hX := hQ j) (hY := hX) S)
+      (f.asOverProp (hX := hW) (hY := hX) S)).hom) where
+  comp_over j := by exact (pullback.snd ((𝒰.f j).asOverProp S) (f.asOverProp S)).w
 
 end
 
 variable [P.IsStableUnderComposition]
-variable {X : Scheme.{u}} (𝒰 : X.Cover (precoverage P)) (𝒱 : ∀ x, (𝒰.X x).Cover (precoverage P))
-  [X.Over S] [𝒰.Over S] [∀ x, (𝒱 x).Over S]
 
-instance (j : (𝒰.bind 𝒱).I₀) : ((𝒰.bind 𝒱).X j).Over S :=
-  inferInstanceAs <| ((𝒱 j.1).X j.2).Over S
-
-set_option backward.defeqAttrib.useBackward true in
 instance {X : Scheme.{u}} (𝒰 : X.Cover (precoverage P)) (𝒱 : ∀ x, (𝒰.X x).Cover (precoverage P))
-    [X.Over S] [𝒰.Over S] [∀ x, (𝒱 x).Over S] : Cover.Over S (𝒰.bind 𝒱) where
-  over := fun ⟨i, j⟩ ↦ inferInstanceAs <| ((𝒱 i).X j).Over S
-  isOver_map := fun ⟨i, j⟩ ↦ { comp_over := by simp; rfl }
+    {f : X ⟶ S} {g𝒰 : ∀ x, 𝒰.X x ⟶ S} {g𝒱 : ∀ x j, (𝒱 x).X j ⟶ S} [X.Over S f]
+    [𝒰.Over S g𝒰] [∀ x, (𝒱 x).Over S (g𝒱 x)] :
+    Cover.Over S (𝒰.bind 𝒱) (fun j ↦ g𝒱 j.1 j.2) where
+  comp_over j := by
+    change ((𝒱 j.1).f j.2 ≫ 𝒰.f j.1) ≫ f = g𝒱 j.1 j.2
+    rw [Category.assoc, comp_over (𝒰.f j.1) S, comp_over ((𝒱 j.1).f j.2) S]
 
 end AlgebraicGeometry.Scheme

@@ -451,9 +451,9 @@ nonrec theorem isClosedImmersion_of_comp_eq_id {X Y : Scheme.{u}} [Subsingleton 
 instance {X Y : Scheme.{u}} [Subsingleton X] (f : Retract X Y) : IsClosedImmersion f.i :=
   isClosedImmersion_of_comp_eq_id _ _ f.retract
 
-instance (priority := low) {X Y : Scheme.{u}} [Subsingleton Y] [X.Over Y] (f : Y ⟶ X) [f.IsOver Y] :
-    IsClosedImmersion f :=
-  isClosedImmersion_of_comp_eq_id (X ↘ Y) f (by simp)
+instance (priority := low) {X Y : Scheme.{u}} [Subsingleton Y] {g : X ⟶ Y} [X.Over Y g]
+    (f : Y ⟶ X) [f.IsOver Y] : IsClosedImmersion f :=
+  isClosedImmersion_of_comp_eq_id (X ↘ Y) f (comp_over f Y)
 
 end Section
 

@@ -65,12 +65,13 @@ instance : IsAffine (⊤_ Scheme.{u}) :=
 instance : HasFiniteLimits Scheme :=
   hasFiniteLimits_of_hasTerminal_and_pullbacks
 
-instance (X : Scheme.{u}) : X.Over (⊤_ _) := ⟨terminal.from _⟩
-instance {X Y : Scheme.{u}} [X.Over (⊤_ Scheme)] [Y.Over (⊤_ Scheme)] (f : X ⟶ Y) :
-    @Scheme.Hom.IsOver _ _ f (⊤_ Scheme) ‹_› ‹_› := ⟨Subsingleton.elim _ _⟩
+instance (X : Scheme.{u}) : X.Over (⊤_ _) (terminal.from X) := ⟨⟩
+instance {X Y : Scheme.{u}} [X.Over (⊤_ Scheme) (terminal.from X)]
+    [Y.Over (⊤_ Scheme) (terminal.from Y)] (f : X ⟶ Y) :
+    Scheme.Hom.IsOver f (⊤_ Scheme) := ⟨Subsingleton.elim _ _⟩
 
-instance {X : Scheme} : Subsingleton (X.Over (⊤_ Scheme)) :=
-  ⟨fun ⟨a⟩ ⟨b⟩ ↦ by simp [Subsingleton.elim a b]⟩
+instance {X : Scheme} : Subsingleton (X.Over (⊤_ Scheme) (terminal.from X)) :=
+  ⟨by simp⟩
 
 section Initial
 

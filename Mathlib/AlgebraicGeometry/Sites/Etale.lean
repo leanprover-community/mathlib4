@@ -62,7 +62,7 @@ lemma ofArrows_mem_smallEtaleTopology_iff
     Sieve.ofArrows _ f ∈ smallEtaleTopology _ _ ↔
       ⋃ i, Set.range (f i).left = .univ := by
   refine ⟨fun hf ↦ ?_, fun hf ↦ (mem_smallGrothendieckTopology _ _).2 ?_⟩
-  · obtain ⟨U, _, _, hU⟩ := (mem_smallGrothendieckTopology _ _).1 hf
+  · obtain ⟨U, _, _, _, hU⟩ := (mem_smallGrothendieckTopology _ _).1 hf
     ext y
     simp only [Set.mem_iUnion, Set.mem_range, Set.mem_univ, iff_true]
     obtain ⟨i, ⟨u, rfl⟩⟩ := ((ofArrows_mem_precoverage_iff _).1 U.mem₀).1 y
@@ -77,11 +77,10 @@ lemma ofArrows_mem_smallEtaleTopology_iff
     let V : Cover (precoverage @Etale) W.left :=
       Cover.mkOfCovers W.left (fun w ↦ (Z (i w)).left)
         (fun w ↦ (f (i w)).left) (fun w ↦ ⟨_, _, hz w⟩) inferInstance
-    let : Cover.Over X V :=
-      { over w := ⟨(Z (i w)).hom⟩
-        isOver_map w := by cat_disch }
+    letI : Cover.Over X V (fun w ↦ (Z (i w)).hom) :=
+      { comp_over w := by cat_disch }
     have (w : W.left) : Etale (V.X w ↘ X) := (Z (i w)).prop
-    refine ⟨V, inferInstance, inferInstance, ?_⟩
+    refine ⟨V, fun w ↦ (Z (i w)).hom, inferInstance, inferInstance, ?_⟩
     rintro _ _ ⟨w⟩
     refine ⟨_, 𝟙 _, _, ⟨i w⟩, by cat_disch⟩
 

@@ -43,19 +43,22 @@ abbrev CanonicallyOver (X S : Scheme.{u}) := CanonicallyOverClass X S
 
 /-- Given `X.Over S` and `Y.Over S` and `f : X ⟶ Y`,
 `f.IsOver S` is the typeclass asserting `f` commutes with the structure morphisms. -/
-abbrev Hom.IsOver (f : X.Hom Y) (S : Scheme.{u}) [X.Over S] [Y.Over S] := HomIsOver f S
+abbrev Hom.IsOver (f : X.Hom Y) (S : Scheme.{u})
+    {fX : X ⟶ S} {fY : Y ⟶ S} [X.Over S fX] [Y.Over S fY] := HomIsOver f S
 
 @[simp]
-lemma Hom.isOver_iff [X.Over S] [Y.Over S] {f : X ⟶ Y} : f.IsOver S ↔ f ≫ Y ↘ S = X ↘ S :=
+lemma Hom.isOver_iff {fX : X ⟶ S} {fY : Y ⟶ S} [X.Over S fX] [Y.Over S fY] :
+    f.IsOver S ↔ f ≫ Y ↘ S = X ↘ S :=
   ⟨fun H ↦ H.1, fun h ↦ ⟨h⟩⟩
 
 /-! Also note the existence of `CategoryTheory.IsOverTower X Y S`. -/
 
 /-- Given `X.Over S`, this is the bundled object of `Over S`. -/
-abbrev asOver (X S : Scheme.{u}) [X.Over S] := OverClass.asOver X S
+abbrev asOver (X S : Scheme.{u}) {f : X ⟶ S} [X.Over S f] := OverClass.asOver X S
 
 /-- Given a morphism `X ⟶ Y` with `f.IsOver S`, this is the bundled morphism in `Over S`. -/
-abbrev Hom.asOver (f : X.Hom Y) (S : Scheme.{u}) [X.Over S] [Y.Over S] [f.IsOver S] :=
+abbrev Hom.asOver (f : X.Hom Y) (S : Scheme.{u})
+    {fX : X ⟶ S} {fY : Y ⟶ S} [X.Over S fX] [Y.Over S fY] [f.IsOver S] :=
   OverClass.asOverHom S f
 
 end AlgebraicGeometry.Scheme
