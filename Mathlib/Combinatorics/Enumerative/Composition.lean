@@ -661,7 +661,6 @@ def recOnSingleAppend {motive : ∀ n, Composition n → Sort*} {n : ℕ} (c : C
     | (k + 1) :: l =>
       single_append k l.sum ⟨l, fun hi ↦ blocks_pos <| mem_cons_of_mem _ hi, rfl⟩ <|
         recOnSingleAppend _ zero single_append
-  decreasing_by simp
 
 /-- Induction (recursion) principle on `c : Composition _`
 that corresponds to the reverse induction on the list of blocks of `c`. -/

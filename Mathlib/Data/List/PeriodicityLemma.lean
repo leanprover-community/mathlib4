@@ -229,8 +229,5 @@ theorem HasPeriod.gcd {w : List α} {p q : ℕ} (per_p : HasPeriod w p) (per_q :
       · rw [take_eq, take_append_drop q w]
       · exact (gcd_stable ▸ IH).take_append (p.gcd q) q (drop q w)
           (gcd_dvd_right p q) drop_len
-  termination_by (q, p)
-  decreasing_by
-    all_goals grind
 
 end List
