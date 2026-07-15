@@ -258,6 +258,7 @@ def abbreviationDict : Std.HashMap String String := .ofList [
 
   ("neTop", "NeBot"),
   ("decidableSucc", "DecidablePred"),
+  ("maximalAxioms", "MinimalAxioms")
 ]
 
 @[inherit_doc GuessName.GuessNameExt]
