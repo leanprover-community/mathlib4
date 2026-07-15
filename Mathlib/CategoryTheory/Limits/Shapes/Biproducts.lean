@@ -296,11 +296,11 @@ def whiskerToCocone {f : J → C} (c : Bicone f) (g : K ≃ J) :
 noncomputable def whiskerIsBilimitIff {f : J → C} (c : Bicone f) (g : K ≃ J) :
     (c.whisker g).IsBilimit ≃ c.IsBilimit := by
   refine equivOfSubsingletonOfSubsingleton (fun hc => ⟨?_, ?_⟩) fun hc => ⟨?_, ?_⟩
-  · let this := IsLimit.ofIsoLimit hc.isLimit (Bicone.whiskerToCone c g)
-    let this := (IsLimit.postcomposeHomEquiv (Discrete.functorComp f g).symm _) this
+  · let := IsLimit.ofIsoLimit hc.isLimit (Bicone.whiskerToCone c g)
+    let := (IsLimit.postcomposeHomEquiv (Discrete.functorComp f g).symm _) this
     exact IsLimit.ofWhiskerEquivalence (Discrete.equivalence g) this
-  · let this := IsColimit.ofIsoColimit hc.isColimit (Bicone.whiskerToCocone c g)
-    let this := (IsColimit.precomposeHomEquiv (Discrete.functorComp f g) _) this
+  · let := IsColimit.ofIsoColimit hc.isColimit (Bicone.whiskerToCocone c g)
+    let := (IsColimit.precomposeHomEquiv (Discrete.functorComp f g) _) this
     exact IsColimit.ofWhiskerEquivalence (Discrete.equivalence g) this
   · apply IsLimit.ofIsoLimit _ (Bicone.whiskerToCone c g).symm
     apply (IsLimit.postcomposeHomEquiv (Discrete.functorComp f g).symm _).symm _
@@ -391,7 +391,7 @@ theorem hasBiproductsOfShape_of_equiv {K : Type w'} [HasBiproductsOfShape K C] (
 instance (priority := 100) hasBiproductsOfShape_finite [HasFiniteBiproducts C] [Finite J] :
     HasBiproductsOfShape J C := by
   rcases Finite.exists_equiv_fin J with ⟨n, ⟨e⟩⟩
-  haveI : HasBiproductsOfShape (Fin n) C := HasFiniteBiproducts.out n
+  have : HasBiproductsOfShape (Fin n) C := HasFiniteBiproducts.out n
   exact hasBiproductsOfShape_of_equiv C e
 
 instance (priority := 100) hasFiniteProducts_of_hasFiniteBiproducts [HasFiniteBiproducts C] :

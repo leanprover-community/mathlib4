@@ -202,15 +202,15 @@ lemma isRightAdjoint_triangle_lift_monadic (U : B ⥤ C) [MonadicRightAdjoint U]
     [HasReflexiveCoequalizers A] [(R ⋙ U).IsRightAdjoint] : R.IsRightAdjoint := by
   let R' : A ⥤ _ := R ⋙ Monad.comparison (monadicAdjunction U)
   rsuffices : R'.IsRightAdjoint
-  · let this : (R' ⋙ (Monad.comparison (monadicAdjunction U)).inv).IsRightAdjoint := by
+  · let : (R' ⋙ (Monad.comparison (monadicAdjunction U)).inv).IsRightAdjoint := by
       infer_instance
     refine ((Adjunction.ofIsRightAdjoint
       (R' ⋙ (Monad.comparison (monadicAdjunction U)).inv)).ofNatIsoRight ?_).isRightAdjoint
     exact Functor.isoWhiskerLeft R (Monad.comparison _).asEquivalence.unitIso.symm ≪≫ R.rightUnitor
-  let this : (R' ⋙ Monad.forget (monadicAdjunction U).toMonad).IsRightAdjoint := by
+  let : (R' ⋙ Monad.forget (monadicAdjunction U).toMonad).IsRightAdjoint := by
     refine ((Adjunction.ofIsRightAdjoint (R ⋙ U)).ofNatIsoRight ?_).isRightAdjoint
     exact Functor.isoWhiskerLeft R (Monad.comparisonForget (monadicAdjunction U)).symm
-  let this : ∀ X, RegularEpi ((Monad.adj (monadicAdjunction U).toMonad).counit.app X) := by
+  let : ∀ X, RegularEpi ((Monad.adj (monadicAdjunction U).toMonad).counit.app X) := by
     intro X
     simp only [Monad.adj_counit]
     exact ⟨_, _, _, _, Monad.beckAlgebraCoequalizer X⟩
