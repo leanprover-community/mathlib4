@@ -71,6 +71,9 @@ namespace ENNReal
 lemma rpow_eq_exp_mul_log (x : ℝ≥0∞) (y : ℝ) : x ^ y = exp (y * log x) := by
   rw [← log_rpow, exp_log]
 
+@[deprecated (since := "2026-07-15")] alias _root_.EReal.ENNReal.rpow_eq_exp_mul_log :=
+  rpow_eq_exp_mul_log
+
 section OrderIso
 
 /-- `ENNReal.log` and its inverse `EReal.exp` are an order isomorphism between `ℝ≥0∞` and
