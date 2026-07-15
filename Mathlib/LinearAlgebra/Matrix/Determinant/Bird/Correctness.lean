@@ -93,7 +93,7 @@ abbrev pminor (A : Matrix (Fin n) (Fin n) R) {p : ℕ} (α : Fin p → Fin n) : 
 
 /-- Bird's equation (1) : `x^(p)_ij = (-1)^p ∑ { f[iα, jα] | α ∈ S_p(βᵢ) }` -/
 abbrev Eq1 (A : Matrix (Fin n) (Fin n) R) (p : ℕ) : Prop :=
-  Spec.iterMatrix A p =
+  (Spec.stepEntry A)^[p] A =
     .of fun i j ↦ (-1 : R) ^ p • ∑ α ∈ S p i, bminor A i j α
 
 /-! ## Decomposition `S_{p+1}(βᵢ) = { kα | k ∈ βᵢ, α ∈ S_p(β_k) }` -/
@@ -127,10 +127,10 @@ variable (A : Matrix (Fin n) (Fin n) R) {p : ℕ}
 
 /-- Bird's equation (2), assuming equation (1) at `p` as the induction hypothesis. -/
 theorem paper_eq2 (i : Fin n) (hEq1 : Eq1 A p) :
-    -Spec.diagSum (Spec.iterMatrix A p) i =
+    -Spec.diagSum ((Spec.stepEntry A)^[p] A) i =
       (-1 : R) ^ (p + 1) • ∑ α ∈ S (p + 1) i, pminor A α := by
   calc
-    -Spec.diagSum (Spec.iterMatrix A p) i =
+    -Spec.diagSum ((Spec.stepEntry A)^[p] A) i =
       (-1 : R) ^ (p + 1) • ∑ k ∈ Finset.Ioi i, ∑ α ∈ S p k, bminor A k k α := by
       rw [Spec.diagSum_eq]
       rw [hEq1, ← sum_Ioi_eq_sum_ite]
@@ -159,15 +159,15 @@ theorem paper_eq2 (i : Fin n) (hEq1 : Eq1 A p) :
 
 /-- One step of Bird's scalar recurrence, split into diagonal and tail parts. -/
 theorem iter_succ_entry (i j : Fin n) :
-    Spec.iterMatrix A (p + 1) i j =
-      -Spec.diagSum (Spec.iterMatrix A p) i * A i j
-      + ∑ k ∈ Finset.Ioi i, Spec.iterMatrix A p i k * A k j := by
-  rw [Spec.iterMatrix_succ, Matrix.of_apply, Spec.stepEntry_eq, Matrix.of_apply,
-    Spec.diagSum_eq, sum_Ioi_eq_sum_ite]
+    ((Spec.stepEntry A)^[p + 1] A) i j =
+      -Spec.diagSum ((Spec.stepEntry A)^[p] A) i * A i j
+      + ∑ k ∈ Finset.Ioi i, ((Spec.stepEntry A)^[p] A) i k * A k j := by
+  rw [Function.iterate_succ_apply', Spec.stepEntry_eq, Matrix.of_apply, Spec.diagSum_eq,
+    sum_Ioi_eq_sum_ite]
 
 /-- Bird's equation (3), assuming equation (1) at `p` as the induction hypothesis. -/
 theorem paper_eq3 (i j : Fin n) (hEq1 : Eq1 A p) :
-    Spec.iterMatrix A (p + 1) i j
+    ((Spec.stepEntry A)^[p + 1] A) i j
       = (-1 : R) ^ (p + 1) • (∑ α ∈ S (p + 1) i, pminor A α * A i j
         - ∑ k ∈ Finset.Ioi i, ∑ α ∈ S p i, bminor A i k α * A k j) := by
   rw [iter_succ_entry, paper_eq2 _ _ hEq1, hEq1]
@@ -382,7 +382,7 @@ theorem paper_eq1 : Eq1 A p := by
   induction p with
   | zero =>
     ext i j
-    simp [Spec.iterMatrix_zero, S_zero, bminor]
+    simp [Function.iterate_zero_apply, S_zero, bminor]
   | succ p ih =>
     ext i j
     rw [Matrix.of_apply, paper_eq3 A i j ih, paper_eq4 A i j]
@@ -466,16 +466,18 @@ theorem sumFrom_fin_tail (i : Fin n) (f : ℕ → R) :
 
 /-- The scalar recurrence initialized by array lookup agrees pointwise
   with the matrix recurrence. -/
-theorem iter_get_eq_spec_iterMatrix (A : Array R) (hA : A.size = n * n) (t : ℕ) (i j : Fin n) :
+theorem iter_get_eq_iterate_stepEntry (A : Array R) (hA : A.size = n * n) (t : ℕ)
+    (i j : Fin n) :
     BirdDet.iter n A t (BirdDet.get n A) i.val j.val =
-      Spec.iterMatrix (Matrix.ofArray (m := n) (n := n) A hA) t i j := by
+      (Spec.stepEntry (Matrix.ofArray (m := n) (n := n) A hA))^[t]
+        (Matrix.ofArray A hA) i j := by
   induction t generalizing i j with
   | zero =>
-    rw [BirdDet.iter_zero, Spec.iterMatrix_zero]
+    rw [BirdDet.iter_zero, Function.iterate_zero_apply]
     exact get_eq_ofArray_apply A hA i j
   | succ t ih =>
-    rw [BirdDet.iter_succ, stepEntry_eq, Spec.iterMatrix_succ, Matrix.of_apply,
-      Spec.stepEntry_eq, Matrix.of_apply, sumFrom_fin_tail, sumFrom_fin_tail]
+    rw [BirdDet.iter_succ, stepEntry_eq, Function.iterate_succ_apply', Spec.stepEntry_eq,
+      Matrix.of_apply, sumFrom_fin_tail, sumFrom_fin_tail]
     simp only [ih, get_eq_ofArray_apply A hA, neg_mul]
 
 end FlatArrayProof
@@ -505,7 +507,7 @@ theorem birdDet_eq_birdDetSpec (A : Array R) (hA : A.size = n * n) :
   | succ k =>
     rw [birdDet_succ, Spec.birdDetSpec_succ]
     apply congrArg ((-1 : R) ^ k * ·)
-    exact iter_get_eq_spec_iterMatrix A hA k 0 0
+    exact iter_get_eq_iterate_stepEntry A hA k 0 0
 
 /-- `BirdDet.birdDet n A` computes the determinant of the `n × n` matrix whose
   entries are stored in row-major order in `A`. -/

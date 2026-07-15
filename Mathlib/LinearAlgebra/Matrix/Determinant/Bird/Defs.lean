@@ -30,7 +30,6 @@ This determinant algorithm comes from
 - `BirdDet.diagSum`, `BirdDet.diagTerm`, `BirdDet.tailSum`,
   `BirdDet.stepEntry`: Named pieces of one scalar recurrence step.
 - `BirdDet.iter`: The internal scalar recurrence for Bird's algorithm.
-- `BirdDet.Spec.iterMatrix`: The Matrix recurrence starting from the matrix entries.
 - `BirdDet.Spec.birdDet`: An implementation of Bird's algorithm using `Matrix`.
 
 ## Main lemmas
@@ -218,21 +217,12 @@ def stepEntry {n : ℕ}
     (A F : Matrix (Fin n) (Fin n) R) : Matrix (Fin n) (Fin n) R :=
   diagTerm A F + tailSum A F
 
-/--
-`iterMatrix A p i j` is Bird's `x^(p)_{ij}`: the `(i, j)` entry after starting
-the Bird recurrence from the matrix `A` itself.
--/
-def iterMatrix {n : ℕ}
-    (A : Matrix (Fin n) (Fin n) R)
-    (p : ℕ) : Matrix (Fin n) (Fin n) R :=
-  (stepEntry A)^[p] A
-
 /-- A version of the Bird determinant algorithm that is stated in terms of `Matrix`. -/
 def birdDet {n : ℕ}
     (A : Matrix (Fin n) (Fin n) R) : R :=
   match n with
   | 0 => 1
-  | k + 1 => (-1 : R) ^ k * iterMatrix A k 0 0
+  | k + 1 => (-1 : R) ^ k * (stepEntry A)^[k] A 0 0
 
 /-- Unfold the diagonal tail sum in the matrix specification. -/
 theorem diagSum_eq {n : ℕ} (F : Matrix (Fin n) (Fin n) R) (i : Fin n) :
@@ -248,16 +238,6 @@ theorem stepEntry_eq {n : ℕ}
   rw [stepEntry, diagTerm, tailSum]
   simp only [Matrix.add_apply, Matrix.of_apply, diagSum_eq]
 
-theorem iterMatrix_zero {n : ℕ}
-    (A : Matrix (Fin n) (Fin n) R) :
-    iterMatrix A 0 = A := by
-  rw [iterMatrix, Function.iterate_zero_apply]
-
-theorem iterMatrix_succ {n p : ℕ}
-    (A : Matrix (Fin n) (Fin n) R) :
-    iterMatrix A (p + 1) = .of stepEntry A (iterMatrix A p) := by
-  simp only [Matrix.of_apply, iterMatrix, Function.iterate_succ_apply']
-
 theorem birdDetSpec_zero
     (A : Matrix (Fin 0) (Fin 0) R) :
     birdDet A = 1 := by
@@ -266,7 +246,7 @@ theorem birdDetSpec_zero
 theorem birdDetSpec_succ {k : ℕ}
     (A : Matrix (Fin (k + 1)) (Fin (k + 1)) R) :
     birdDet A =
-      (-1 : R) ^ k * iterMatrix A k 0 0 :=
+      (-1 : R) ^ k * (stepEntry A)^[k] A 0 0 :=
   by rw [birdDet]
 
 end Spec
