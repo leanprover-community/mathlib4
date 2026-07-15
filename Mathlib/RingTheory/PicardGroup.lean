@@ -826,14 +826,6 @@ noncomputable def tensorSubmoduleAlgebraEquivMul (I : Submodule R A) :
 
 end Module.Flat
 
-namespace Module.Invertible
-
-@[deprecated (since := "2025-11-23")] alias embAlgebra := Flat.toAlgebra
-@[deprecated (since := "2025-11-23")] alias embAlgebra_injective := Flat.toAlgebra_injective
-@[deprecated (since := "2025-11-23")] alias toSubmodule := Flat.submoduleAlgebra
-
-end Module.Invertible
-
 section PicardGroup
 
 variable [CommSemiring A] [Algebra R A] [FaithfulSMul R A]

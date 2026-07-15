@@ -240,9 +240,6 @@ theorem cof_map_of_isNormal {f} (hf : IsNormal f) {a} (ha : IsSuccLimit a) : cof
 @[deprecated (since := "2026-03-19")]
 alias cof_eq_of_isNormal := cof_map_of_isNormal
 
-@[deprecated (since := "2025-12-25")]
-alias IsNormal.cof_eq := cof_eq_of_isNormal
-
 theorem le_cof_map_of_isNormal {f} (hf : IsNormal f) (a) : cof a ≤ cof (f a) := by
   cases a using limitRecOn with
   | zero => simp
@@ -253,9 +250,6 @@ theorem le_cof_map_of_isNormal {f} (hf : IsNormal f) (a) : cof a ≤ cof (f a) :
 
 @[deprecated (since := "2026-03-19")]
 alias cof_le_of_isNormal := le_cof_map_of_isNormal
-
-@[deprecated (since := "2025-12-25")]
-alias IsNormal.cof_le := le_cof_map_of_isNormal
 
 theorem sSup_add_one_lt_of_lt_cof {s : Set Ordinal.{u}} {a : Ordinal.{u}}
     (ha : #s < (lift.{u + 1} a).cof) (hs : ∀ i ∈ s, i < a) : sSup ((· + 1) '' s) < a := by

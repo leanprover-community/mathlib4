@@ -153,9 +153,6 @@ variable {F}
 
 variable {𝕜}
 
-@[deprecated (since := "2025-12-26")] alias sesqFormOfInner := innerₛₗ
-@[deprecated (since := "2025-12-26")] noncomputable alias bilinFormOfRealInner := innerₗ
-
 /-- An inner product with a sum on the left. -/
 theorem sum_inner {ι : Type*} (s : Finset ι) (f : ι → E) (x : E) :
     ⟪∑ i ∈ s, f i, x⟫ = ∑ i ∈ s, ⟪f i, x⟫ :=

@@ -953,7 +953,6 @@ public import Mathlib.Algebra.Order.CompleteField
 public import Mathlib.Algebra.Order.Disjointed
 public import Mathlib.Algebra.Order.Field.Basic
 public import Mathlib.Algebra.Order.Field.Canonical
-public import Mathlib.Algebra.Order.Field.Defs
 public import Mathlib.Algebra.Order.Field.GeomSum
 public import Mathlib.Algebra.Order.Field.Pi
 public import Mathlib.Algebra.Order.Field.Pointwise
