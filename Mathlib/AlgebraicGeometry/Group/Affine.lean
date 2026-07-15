@@ -175,9 +175,14 @@ instance hopfSpec.instFaithful : (hopfSpec R).Faithful := inferInstance
 def hopfSpec.fullyFaithful : (hopfSpec R).FullyFaithful :=
   (commHopfAlgCatEquivCogrpCommAlgCat R).fullyFaithfulFunctor.leftOp.comp
     algSpec.fullyFaithful.mapGrp
+
 section universe_polymorphic
 variable {R A : CommRingCat.{u}}
 
+-- Note that this creates a diamond with `instOverClass`. We keep it for convenience.
+-- Once `OverClass` is refactored (see https://github.com/leanprover-community/mathlib4/pull/41542),
+-- the diamond will be downgraded to the invariant about the `outParam` argument of `OverClass`
+-- being determined by the first two arguments being broken.
 @[simps -isSimp]
 instance specOverSpec [Algebra R A] : (Spec A).Over (Spec R) where
   hom := Spec.map <| CommRingCat.ofHom <| algebraMap ..
