@@ -130,7 +130,7 @@ theorem ker_codRestrict (f : M₁ →SL[σ₁₂] M₂) (p : Submodule R₂ M₂
 
 @[simp]
 theorem subtypeL_comp_codRestrict (f : M₁ →SL[σ₁₂] M₂) (p : Submodule R₂ M₂) (h : ∀ x, f x ∈ p) :
-    p.subtypeL ∘SL (f.codRestrict p h) = f :=
+    p.subtypeL ∘SL f.codRestrict p h = f :=
   rfl
 
 @[simp]
