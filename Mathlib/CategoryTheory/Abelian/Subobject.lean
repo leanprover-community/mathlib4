@@ -21,6 +21,10 @@ This file contains numerous results about subobjects which are unique to abelian
   an order-isomorphism between subobjects of `cokernel (Y ↪ X)` and subobjects of `X`
   containing `Y`.
 
+## Future work
+
+* connection to `Subobject.«exists»`, `Subobject.pullback`
+
 ## References
 
 * [N. Popescu, *Abelian Categories with Applications to Rings and Modules*][popescu1973]
@@ -84,48 +88,13 @@ instance wellPowered_opposite [LocallySmall.{w} C] [WellPowered.{w} C] :
 
 namespace Subobject
 
-section SupBiproductFactorization
-
-/-- If `C` is abelian and `f g : Subobject A`, then `f ⊞ g ⟶ A` factors as
-  `f ⊞ g ⟶ f ⊔ g ⟶ A` -/
-@[simps]
-noncomputable
-def supMonoFactorisation {A : C} (f g : Subobject A) : MonoFactorisation
-    (biprod.desc f.arrow g.arrow) where
-  I := underlying.obj (f ⊔ g)
-  m := (f ⊔ g).arrow
-  m_mono := inferInstance
-  e := biprod.desc (ofLE f (f ⊔ g) le_sup_left) (ofLE g (f ⊔ g) le_sup_right)
-  fac := by simp only [biprod.desc_eq, Preadditive.add_comp, Category.assoc, ofLE_arrow]
-
-/-- If `C` is abelian, then `f ⊔ g` is an image of `f ⊞ g ⟶ A`. -/
-@[simps]
-noncomputable
-def supIsImage {A : C} (f g : Subobject A) :
-    IsImage (supMonoFactorisation f g) where
-  lift F := by
-    refine (f ⊔ g).ofLEMk F.m (sup_le ?_ ?_)
-    · refine le_mk_of_comm (biprod.inl ≫ F.e) ?_
-      · simp only [Category.assoc, MonoFactorisation.fac, biprod.inl_desc]
-    · refine le_mk_of_comm (biprod.inr ≫ F.e) ?_
-      · simp only [Category.assoc, MonoFactorisation.fac, biprod.inr_desc]
-  lift_fac := by simp [supMonoFactorisation]
-
-/-- If `C` is abelian, then `f ⊔ g ≅ image (f ⊞ g ⟶ A)`. -/
-@[simps!]
-noncomputable
-def supIsoImage {A : C} (f g : Subobject A) : underlying.obj (f ⊔ g) ≅
-    Limits.image (biprod.desc f.arrow g.arrow) :=
-  IsImage.isoExt (supIsImage ..) <| Image.isImage _
-
 lemma sup_eq_imageSubobject {A : C} (X Y : Subobject A) :
     X ⊔ Y = imageSubobject (biprod.desc X.arrow Y.arrow) := by
-  refine eq_mk_of_comm (Limits.image.ι (biprod.desc X.arrow Y.arrow)) ?_ ?_
-  · exact (supIsoImage X Y)
-  · simp only [supIsoImage_hom]
-    apply ofLEMk_comp
-
-end SupBiproductFactorization
+  rw [CategoryTheory.Subobject.sup_eq_imageSubobject,
+    ← imageSubobject_iso_comp (biprod.isoCoprod _ _).hom (coprod.desc X.arrow Y.arrow)]
+  congr 1
+  ext <;> simp only [biprod_isoCoprod_hom, ← Category.assoc, biprod.inl_desc,
+    biprod.inr_desc, coprod.inl_desc, coprod.inr_desc]
 
 lemma le_iff_comp_cokernel_zero {X : C} (f g : Subobject X) :
     f ≤ g ↔ f.arrow ≫ cokernel.π (g.arrow) = 0 := by
@@ -166,12 +135,12 @@ lemma image_eq_imageSubobject {X' : Subobject X} :
 
 lemma image_mk_eq_imageSubobject {A : C} (g : A ⟶ X) [Mono g] :
     (image f).obj (Subobject.mk g) = imageSubobject (g ≫ f) := by
-  simp only [← underlyingIso_arrow g =≫ f, Category.assoc, image, imageSubobject_iso_comp]
-  exact mk_eq_mk_of_comm _ _ (imageIsoImage _) (imageIsoImage_hom_comp_image_ι _)
+  rw [image_eq_imageSubobject]
+  simp only [← underlyingIso_arrow g =≫ f, Category.assoc, imageSubobject_iso_comp]
 
 lemma image_mono [Mono f] {X' : Subobject X} :
-    (image f).obj X' = Subobject.mk (X'.arrow ≫ f) :=
-  mk_eq_mk_of_comm _ _ (isoKernelCokernel _).symm (by simp)
+    (image f).obj X' = Subobject.mk (X'.arrow ≫ f) := by
+  rw [image_eq_imageSubobject, imageSubobject_mono]
 
 lemma image_le {X' : Subobject X} {Y' : Subobject Y}
     (u : (X' : C) ⟶ Y') (h : u ≫ Y'.arrow = X'.arrow ≫ f) : (image f).obj X' ≤ Y' := by
@@ -208,20 +177,22 @@ lemma le_inverseImage {X' : Subobject X} {Y' : Subobject Y}
   rw [← Category.assoc]
   simp [← h]
 
-/-- For `f : X ⟶ Y`, the canonical map from `f⁻¹(Y') : Subobject X` to `Y' : Subobject X`. -/
+/-- For `f : X ⟶ Y`, the canonical map from `f⁻¹(Y') : Subobject X` to `Y' : Subobject Y`. -/
 @[simp]
 abbrev fromInverseImage {X Y : C} (Y' : Subobject Y) (f : X ⟶ Y) :
     (((inverseImage f).obj Y') : C) ⟶ Y' := (kernelSubobjectIso _).hom ≫
   kernel.lift (cokernel.π Y'.arrow) (kernel.ι (f ≫ cokernel.π Y'.arrow) ≫ f) (by simp) ≫
   (isoKernelCokernel _).inv
 
+theorem image_inverseImage_gc : GaloisConnection (image f).obj (inverseImage f).obj := fun X' Y' ↦
+  ⟨fun h ↦ le_inverseImage f (toImage X' f ≫ ofLE _ _ h) (by simp),
+    fun h ↦ image_le f (ofLE _ _ h ≫ fromInverseImage Y' f) (by simp)⟩
+
 lemma inverseImage_image_le (X' : Subobject X) :
-    X' ≤ (inverseImage f).obj ((image f).obj X') :=
-  le_inverseImage _ (toImage _ _) (by simp)
+    X' ≤ (inverseImage f).obj ((image f).obj X') := (image_inverseImage_gc f).le_u_l X'
 
 lemma image_inverseImage_le (Y' : Subobject Y) :
-    (image f).obj ((inverseImage f).obj Y') ≤ Y' :=
-  image_le _ (fromInverseImage _ _) (by simp)
+    (image f).obj ((inverseImage f).obj Y') ≤ Y' := (image_inverseImage_gc f).l_u_le Y'
 
 lemma image_le_image_iff_of_mono (X₁ X₂ : Subobject X) [Mono f] :
     (image f).obj X₁ ≤ (image f).obj X₂ ↔ X₁ ≤ X₂ := by
@@ -254,6 +225,19 @@ theorem epi_image_inverseImage (Y' : Subobject Y) [Epi f] :
   le_antisymm (image_inverseImage_le f Y')
     ((inverseImage_le_inverseImage_iff_of_epi f _ _).mp (inverseImage_image_le f _))
 
+theorem inverseImage_image_eq_self_of_epi [Epi f] (X' : Subobject X)
+    (h : kernelSubobject f ≤ X') : (inverseImage f).obj ((image f).obj X') = X' := by
+  let d := epiDesc f (cokernel.π X'.arrow) (by
+    rw [← kernelSubobject_arrow' f, ← ofLE_arrow h]
+    simp only [Category.assoc, cokernel.condition, comp_zero])
+  have : Epi d := epi_of_epi_fac (comp_epiDesc f (cokernel.π X'.arrow) _)
+  have hX' : (inverseImage f).obj (kernelSubobject d) = X' := by
+    rw [inverseImage_mk_eq_kernelSubobject, ← comp_isoCokernelKernel_hom d]
+    simp only [← Category.assoc, d, comp_epiDesc, kernelSubobject_comp_mono]
+    rw [← imageSubobject_eq_kernelSubobject, imageSubobject_mono]
+    exact mk_arrow X'
+  rw [← hX', epi_image_inverseImage]
+
 /-- Given a subobject `Y` of `X`, there is an order-isomorphism between subobjects
 of `X/Y := cokernel (Y ↪ X)` and subobjects of `X` containing `Y`. -/
 noncomputable
@@ -264,16 +248,9 @@ def cokernelOrderIso (Y : Subobject X) :
   left_inv p := epi_image_inverseImage (cokernel.π Y.arrow) p
   right_inv := by
     rintro ⟨q, hq : Y ≤ q⟩
-    let d := cokernel.desc Y.arrow (cokernel.π q.arrow) ((le_iff_comp_cokernel_zero Y q).mp hq)
-    have : Epi d := epi_of_epi_fac (cokernel.π_desc _ _ _)
-    have hq' : (inverseImage (cokernel.π Y.arrow)).obj (kernelSubobject d) = q := by
-      rw [inverseImage_mk_eq_kernelSubobject, ← comp_isoCokernelKernel_hom d]
-      simp only [← Category.assoc, d, cokernel.π_desc, kernelSubobject_comp_mono]
-      rw [← imageSubobject_eq_kernelSubobject, imageSubobject_mono]
-      exact mk_arrow q
-    simp only [Subtype.mk.injEq]
-    change (inverseImage (cokernel.π Y.arrow)).obj ((image (cokernel.π Y.arrow)).obj q) = q
-    rw [← hq', epi_image_inverseImage]
+    ext1
+    exact inverseImage_image_eq_self_of_epi _ _
+      (by rwa [← imageSubobject_eq_kernelSubobject, imageSubobject_mono, mk_arrow])
   map_rel_iff' := inverseImage_le_inverseImage_iff_of_epi _ _ _
 
 end
