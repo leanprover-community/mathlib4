@@ -536,6 +536,11 @@ private theorem bbT_smul : bbT = b • (1 : A ⊗[R] A) := by
 private theorem zero_smul_T (x : A ⊗[R] A) : (0 : R) • x = 0 := by
   simp
 
+-- TODO: `comulB` is too long.
+-- `simp [← pow_two, delta_relations.1]` changes the goal to
+-- ⊢ ((algebraMap R A) a ^ 2) ⊗ₜ[R] 1 * deltaV = a ^ 2 • deltaV
+-- which must be easier than the slop below.
+
 /-- First lift of the coproduct, sending `VB` to `deltaV`. -/
 noncomputable def comulB : B →ₐ[R] A ⊗[R] A :=
   QuadraticAlgebra.lift ⟨deltaV, by
