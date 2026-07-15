@@ -54,7 +54,6 @@ omit [IsSFiniteKernel κ] in
 @[fun_prop]
 theorem StronglyMeasurable.integral_kernel ⦃f : β → E⦄
     (hf : StronglyMeasurable f) : StronglyMeasurable fun x ↦ ∫ y, f y ∂κ x := by
-  classical
   by_cases hE : CompleteSpace E; swap
   · simp [integral, hE, stronglyMeasurable_const]
   borelize E

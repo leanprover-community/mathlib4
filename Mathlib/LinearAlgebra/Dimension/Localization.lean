@@ -217,7 +217,6 @@ variable {R} [Ring R] [IsDomain R]
 See [cohn_1995] Proposition 1.3.6 -/
 lemma aleph0_le_rank_of_isEmpty_oreSet (hS : IsEmpty (OreLocalization.OreSet R⁰)) :
     ℵ₀ ≤ Module.rank R R := by
-  classical
   rw [← not_nonempty_iff, OreLocalization.nonempty_oreSet_iff_of_noZeroDivisors] at hS
   push Not at hS
   obtain ⟨r, s, h⟩ := hS

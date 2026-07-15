@@ -275,7 +275,6 @@ attribute [local simp] UpperHalfPlane.coe_specialLinearGroup_apply
 
 /-- For `z : ℍ`, there is a `g : SL(2,ℤ)` maximizing `(g•z).im` -/
 theorem exists_max_im : ∃ g : SL(2, ℤ), ∀ g' : SL(2, ℤ), (g' • z).im ≤ (g • z).im := by
-  classical
   let s : Set (Fin 2 → ℤ) := {cd | IsCoprime (cd 0) (cd 1)}
   have hs : s.Nonempty := ⟨![1, 1], isCoprime_one_left⟩
   obtain ⟨p, hp_coprime, hp⟩ :=

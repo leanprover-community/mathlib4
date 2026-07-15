@@ -462,7 +462,6 @@ set_option backward.isDefEq.respectTransparency false in
 lemma cotangentSpaceBasis_repr_tmul (r x i) :
     P.cotangentSpaceBasis.repr (r ⊗ₜ[P.Ring] KaehlerDifferential.D R P.Ring x : _) i =
       r * aeval P.val (pderiv i x) := by
-  classical
   simp only [cotangentSpaceBasis, Basis.baseChange_repr_tmul, mvPolynomialBasis_repr_apply,
     Algebra.smul_def, mul_comm r, algebraMap_apply, toExtension]
 

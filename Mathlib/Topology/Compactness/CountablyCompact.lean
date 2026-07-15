@@ -154,7 +154,6 @@ theorem IsCountablyCompact.elim_finite_subcover_image (hA : IsCountablyCompact A
     (hAU : A ⊆ ⋃ i ∈ b, U i) : ∃ t ⊆ b, t.Finite ∧ A ⊆ ⋃ i ∈ t, U i := by
   have := hb.to_subtype
   obtain ⟨t, ht⟩ := hA.elim_finite_subcover (fun (i : b) ↦ hUo i i.prop) (by simpa using hAU)
-  classical
   simp only [Subtype.forall', biUnion_eq_iUnion] at hUo hAU
   replace hb := hb.to_subtype
   obtain ⟨d, hd⟩ := hA.elim_finite_subcover hUo hAU
