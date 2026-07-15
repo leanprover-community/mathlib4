@@ -423,7 +423,7 @@ theorem embDomain_eq_mapDomain (f : α ↪ β) (v : α →₀ M) : embDomain f v
   by_cases h : a ∈ Set.range f
   · rcases h with ⟨a, rfl⟩
     rw [mapDomain_apply f.injective, embDomain_apply_self]
-  · rw [mapDomain_of_notMem_range, embDomain_notin_range] <;> assumption
+  · rw [mapDomain_of_notMem_range, embDomain_of_notMem_range] <;> assumption
 
 @[to_additive]
 theorem prod_mapDomain_index_inj [CommMonoid N] {f : α → β} {s : α →₀ M} {h : β → M → N}
@@ -548,7 +548,7 @@ lemma embDomain_comapDomain {f : α ↪ β} {g : β →₀ M} (hg : ↑g.support
   · obtain ⟨a, rfl⟩ := hb
     rw [embDomain_apply_self, comapDomain_apply]
   · replace hg : g b = 0 := notMem_support_iff.mp <| mt (hg ·) hb
-    rw [embDomain_notin_range _ _ _ hb, hg]
+    rw [embDomain_of_notMem_range _ _ _ hb, hg]
 
 @[simp]
 theorem comapDomain_embDomain (f : α ↪ β) (l : α →₀ M) :
@@ -1226,7 +1226,7 @@ theorem extendDomain_eq_embDomain_subtype (f : Subtype P →₀ M) :
   by_cases h : P a
   · refine Eq.trans ?_ (embDomain_apply_self (.subtype P) f (Subtype.mk a h)).symm
     simp [h]
-  · rw [embDomain_notin_range] <;> simp [*]
+  · rw [embDomain_of_notMem_range] <;> simp [*]
 
 theorem support_extendDomain_subset (f : Subtype P →₀ M) :
     ↑(f.extendDomain).support ⊆ {x | P x} := by

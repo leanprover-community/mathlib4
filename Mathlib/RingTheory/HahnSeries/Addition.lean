@@ -298,7 +298,7 @@ theorem embDomain_add (f : Γ ↪o Γ') (x y : R⟦Γ⟧) :
   by_cases hg : g ∈ Set.range f
   · obtain ⟨a, rfl⟩ := hg
     simp
-  · simp [embDomain_notin_range hg]
+  · simp [embDomain_of_notMem_range hg]
 
 end Domain
 
@@ -538,7 +538,7 @@ theorem embDomain_smul (f : Γ ↪o Γ') (r : R) (x : R⟦Γ⟧) :
   by_cases hg : g ∈ Set.range f
   · obtain ⟨a, rfl⟩ := hg
     simp
-  · simp [embDomain_notin_range hg]
+  · simp [embDomain_of_notMem_range hg]
 
 /-- Extending the domain of Hahn series is a linear map. -/
 @[simps]
