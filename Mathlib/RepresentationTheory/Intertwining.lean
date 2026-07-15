@@ -202,8 +202,7 @@ def id : IntertwiningMap ρ ρ where
 lemma toLinearMap_id : (id ρ).toLinearMap = LinearMap.id := rfl
 
 @[simp] lemma coe_id : ⇑(id ρ) = _root_.id := rfl
-
-lemma id_apply (v : V) : id ρ v = v := rfl
+@[simp high] lemma id_apply (v : V) : id ρ v = v := rfl
 
 variable {ρ σ τ} in
 /-- Composition of intertwining maps.
