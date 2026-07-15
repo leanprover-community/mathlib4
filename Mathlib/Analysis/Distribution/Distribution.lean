@@ -37,14 +37,11 @@ The theory will be expanded in future PRs.
 * `Distribution.mapCLM`: any continuous linear map `A : F →L[ℝ] G` induces a continuous linear
   map `𝓓'(Ω, F) →L[ℝ] 𝓓'(Ω, G)`. On locally integrable functions, this corresponds to applying `A`
   pointwise.
-<<<<<<< HEAD
 * `Distribution.smulLeftCLM`: multiplication by a `C^n` function as a continuous linear map on
   `𝓓'^{n}(Ω, F)`. On locally integrable functions, this corresponds to pointwise multiplication.
-=======
 * `Distribution.toDistribution Ω n f μ`: the distribution induced by a function `f : E → F`,
   sending a test function `φ` to `∫ x, φ x • f x ∂μ`. This is the zero map if
   `f` is not locally integrable on `Ω`.
->>>>>>> LM_distrib_induced
 
 ## Notation
 
@@ -293,7 +290,6 @@ lemma lineDerivOpCLM_eq_lineDerivCLM {v : E} :
 
 end LineDerivCLM
 
-<<<<<<< HEAD
 section Multiplication
 
 variable (Ω F n) in
@@ -346,7 +342,6 @@ theorem smulLeftCLM_neg {g : E → ℝ} (hg : ContDiff ℝ n g) :
   simp [TestFunction.smulLeftCLM_neg hg]
 
 end Multiplication
-=======
 section toDistribution
 
 open MeasureTheory
@@ -428,8 +423,17 @@ theorem toDistribution_smul {f : E → F} {μ : Measure E} (c : ℝ) :
     · have hcf : ¬ LocallyIntegrableOn (c • f) Ω μ := by aesop
       rw [toDistribution_eq_zero hf, toDistribution_eq_zero hcf, smul_zero]
 
-variable [BorelSpace E] [FiniteDimensional ℝ E] [CompleteSpace F]
+theorem smulLeftCLM_toDistribution [LocallyCompactSpace E] {g : E → ℝ} (hg : ContDiff ℝ n g)
+    {f : E → F} {μ : Measure E} (hf : LocallyIntegrableOn f Ω μ) :
+    smulLeftCLM Ω F n g (toDistribution Ω f μ n) = toDistribution Ω (fun x ↦ g x • f x) μ n := by
+  have hgf : LocallyIntegrableOn (fun x ↦ g x • f x) Ω μ :=
+    hf.continuousOn_smul Ω.isOpen.isLocallyClosed hg.continuous.continuousOn
+  ext φ
+  rw [smulLeftCLM_apply_apply, toDistribution_apply hf, toDistribution_apply hgf]
+  refine integral_congr_ae (ae_of_all _ fun x ↦ ?_)
+  simp only [TestFunction.smulLeftCLM_apply_apply hg, smul_comm (φ x), smul_assoc]
 
+variable [BorelSpace E] [FiniteDimensional ℝ E] [CompleteSpace F]
 theorem toDistribution_injective {f f' : E → F} {μ : Measure E}
     (hf : LocallyIntegrableOn f Ω μ) (hf' : LocallyIntegrableOn f' Ω μ)
     (h : toDistribution Ω f μ n = toDistribution Ω f' μ n) :
@@ -447,6 +451,5 @@ theorem toDistribution_injective {f f' : E → F} {μ : Measure E}
   congr
 
 end toDistribution
->>>>>>> LM_distrib_induced
 
 end Distribution
