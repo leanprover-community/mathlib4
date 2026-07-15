@@ -158,7 +158,7 @@ lemma ProbabilityMeasure.tendsto_of_tight_of_separatesPoints (𝕜 : Type*) [RCL
     {A : StarSubalgebra 𝕜 (E →ᵇ 𝕜)} (hA : (A.map (toContinuousMapStarₐ 𝕜)).SeparatesPoints)
     (hμ : ∀ g ∈ A, Tendsto (fun n ↦ ∫ x, g x ∂(μ n)) 𝓕 (𝓝 (∫ x, g x ∂μ₀))) :
     Tendsto μ 𝓕 (𝓝 μ₀) := by
-  letI := TopologicalSpace.upgradeIsCompletelyMetrizable E
+  let := TopologicalSpace.upgradeIsCompletelyMetrizable E
   obtain rfl | _ := 𝓕.eq_or_neBot
   · simp
   refine (Filter.tendsto_iff_ultrafilter _ _ _).2 fun U hU ↦ ?_
@@ -182,8 +182,8 @@ lemma ProbabilityMeasure.tendsto_charPoly_of_tendsto_charFun {μ : ι → Probab
   rw [mem_charPoly] at hg
   obtain ⟨w, hw⟩ := hg
   have h_eq (μ : Measure E) (hμ : IsProbabilityMeasure μ) :
-      ∫ x, g x ∂μ = ∑ a ∈ w.support, w a * ∫ x, (probChar (innerₗ E x a) : ℂ) ∂μ := by
-    simp_rw [hw]
+      ∫ x, g x ∂μ = w.coeff.sum (fun a z ↦ z * ∫ x, (probChar (innerₗ E x a) : ℂ) ∂μ) := by
+    simp_rw [hw, Finsupp.sum]
     rw [integral_finsetSum]
     · congr with y
       rw [integral_const_mul]

@@ -5,10 +5,10 @@ Authors: Johannes Hölzl, Martin Zinkevich, Rémy Degenne
 -/
 module
 
-public import Mathlib.Data.Set.Dissipate
 public import Mathlib.Logic.Encodable.Lattice
 public import Mathlib.MeasureTheory.MeasurableSpace.Defs
 public import Mathlib.Order.Disjointed
+public import Mathlib.Order.SetDissipate
 
 /-!
 # Induction principles for measurable sets, related to π-systems and λ-systems.
@@ -144,7 +144,6 @@ lemma IsPiSystem.prod {C : Set (Set α)} {D : Set (Set β)} (hC : IsPiSystem C) 
 lemma IsPiSystem.biInter_mem {S : Set (Set α)} (h_pi : IsPiSystem S) {t : Finset (Set α)}
     (t_ne : t.Nonempty) (ht : ∀ s ∈ t, s ∈ S) (h' : (⋂ s ∈ t, s).Nonempty) :
     (⋂ s ∈ t, s) ∈ S := by
-  classical
   induction t_ne using Finset.Nonempty.cons_induction with
   | singleton a => simpa using ht
   | cons a t hat t_ne ih =>

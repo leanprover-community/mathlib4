@@ -64,8 +64,6 @@ corresponds to the shift by `-n` on `C`. -/
 scoped instance : HasShift Cᵒᵖ ℤ :=
   inferInstanceAs <| HasShift (OppositeShiftAux C) ℤ
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance [Preadditive C] [∀ (n : ℤ), (shiftFunctor C n).Additive] (n : ℤ) :
     (shiftFunctor Cᵒᵖ n).Additive :=
   inferInstanceAs <| (shiftFunctor (OppositeShiftAux C) n).Additive
@@ -74,8 +72,6 @@ end Opposite
 
 open Opposite
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- The shift functor on the opposite category identifies to the opposite functor
 of a shift functor on the original category. -/
 def shiftFunctorOpIso (n m : ℤ) (hnm : n + m = 0) :
@@ -85,8 +81,6 @@ def shiftFunctorOpIso (n m : ℤ) (hnm : n + m = 0) :
 
 variable {C}
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 lemma shiftFunctorZero_op_hom_app (X : Cᵒᵖ) :
     (shiftFunctorZero Cᵒᵖ ℤ).hom.app X = (shiftFunctorOpIso C 0 0 (zero_add 0)).hom.app X ≫
       ((shiftFunctorZero C ℤ).inv.app X.unop).op := rfl
@@ -277,11 +271,6 @@ lemma opShiftFunctorEquivalence_add_unitIso_inv_app_eq
   simp only [Category.assoc,
     ← unop_comp, Iso.inv_hom_id_app, Functor.comp_obj, Functor.op_obj, unop_id,
     Functor.map_id, id_comp, ← Functor.map_comp, Iso.hom_inv_id_app]
-
-@[deprecated (since := "2025-12-08")] alias opShiftFunctorEquivalence_unitIso_hom_app_eq :=
-  opShiftFunctorEquivalence_add_unitIso_hom_app_eq
-@[deprecated (since := "2025-12-08")] alias opShiftFunctorEquivalence_unitIso_inv_app_eq :=
-  opShiftFunctorEquivalence_add_unitIso_inv_app_eq
 
 lemma shift_unop_opShiftFunctorEquivalence_counitIso_inv_app (X : Cᵒᵖ) (n : ℤ) :
     ((opShiftFunctorEquivalence C n).counitIso.inv.app X).unop⟦n⟧' =

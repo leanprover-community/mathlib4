@@ -107,7 +107,7 @@ theorem repr_gen_pow_isIntegral (hB : IsIntegral R B.gen)
   have hlt : Q.natDegree < B.dim := by
     rw [← B.natDegree_minpoly, hmin, (minpoly.monic hB).natDegree_map,
       natDegree_lt_natDegree_iff hQ]
-    letI : Nontrivial R := Nontrivial.of_polynomial_ne hQ
+    let : Nontrivial R := Nontrivial.of_polynomial_ne hQ
     exact degree_modByMonic_lt _ (minpoly.monic hB)
   rw [this, aeval_eq_sum_range' hlt]
   simp only [map_sum, Finset.sum_apply']

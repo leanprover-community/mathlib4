@@ -605,21 +605,21 @@ lemma adjoint_one : (1 : E →ₗ[𝕜] E).adjoint = 1 := by simp
 /-- 7.6(b) from [axler2024].
 See `ContinuousLinearMap.orthogonal_ker` for the infinite-dimensional version. -/
 lemma orthogonal_ker (A : E →ₗ[𝕜] F) : A.kerᗮ = A.adjoint.range := by
-  haveI := FiniteDimensional.complete 𝕜 E
-  haveI := FiniteDimensional.complete 𝕜 F
+  have := FiniteDimensional.complete 𝕜 E
+  have := FiniteDimensional.complete 𝕜 F
   simpa using! A.toContinuousLinearMap.orthogonal_ker
 
 /-- 7.6(a) from [axler2024].
 See `ContinuousLinearMap.orthogonal_range` for the infinite-dimensional version. -/
 lemma orthogonal_range (A : E →ₗ[𝕜] F) : A.rangeᗮ = A.adjoint.ker := by
-  haveI := FiniteDimensional.complete 𝕜 E
-  haveI := FiniteDimensional.complete 𝕜 F
+  have := FiniteDimensional.complete 𝕜 E
+  have := FiniteDimensional.complete 𝕜 F
   simpa using! A.toContinuousLinearMap.orthogonal_range
 
 /-- 7.64(b) in [axler2024] -/
 lemma ker_adjoint_comp_self (A : E →ₗ[𝕜] F) : (A.adjoint ∘ₗ A).ker = A.ker := by
-  haveI := FiniteDimensional.complete 𝕜 E
-  haveI := FiniteDimensional.complete 𝕜 F
+  have := FiniteDimensional.complete 𝕜 E
+  have := FiniteDimensional.complete 𝕜 F
   simpa using! A.toContinuousLinearMap.ker_adjoint_comp_self
 
 lemma ker_self_comp_adjoint (A : E →ₗ[𝕜] F) : (A ∘ₗ A.adjoint).ker = A.adjoint.ker := by
@@ -894,7 +894,7 @@ lemma conjStarAlgEquiv_apply (e : H ≃ₗᵢ[𝕜] K) (x : H →L[𝕜] H) :
 @[simp] lemma symm_conjStarAlgEquiv (e : H ≃ₗᵢ[𝕜] K) :
     e.conjStarAlgEquiv.symm = e.symm.conjStarAlgEquiv := rfl
 
-@[simp] theorem conjStarAlgEquiv_refl : conjStarAlgEquiv (.refl 𝕜 H) = .refl := rfl
+@[simp] theorem conjStarAlgEquiv_refl : conjStarAlgEquiv (.refl 𝕜 H) = .refl _ _ := rfl
 
 theorem conjStarAlgEquiv_trans {G : Type*} [NormedAddCommGroup G] [InnerProductSpace 𝕜 G]
     [CompleteSpace G] (e : H ≃ₗᵢ[𝕜] K) (f : K ≃ₗᵢ[𝕜] G) :
@@ -965,16 +965,10 @@ lemma coe_linearIsometryEquiv_apply (u : unitary (H →L[𝕜] H)) :
     linearIsometryEquiv u = (u : H →L[𝕜] H) :=
   rfl
 
-@[deprecated (since := "2025-12-16")] alias linearIsometryEquiv_coe_apply :=
-  coe_linearIsometryEquiv_apply
-
 @[simp]
 lemma coe_symm_linearIsometryEquiv_apply (e : H ≃ₗᵢ[𝕜] H) :
     linearIsometryEquiv.symm e = (e : H →L[𝕜] H) :=
   rfl
-
-@[deprecated (since := "2025-12-16")] alias linearIsometryEquiv_coe_symm_apply :=
-  coe_symm_linearIsometryEquiv_apply
 
 theorem conjStarAlgEquiv_unitaryLinearIsometryEquiv (u : unitary (H →L[𝕜] H)) :
     (linearIsometryEquiv u).conjStarAlgEquiv = conjStarAlgAut 𝕜 _ u := rfl
@@ -1055,7 +1049,7 @@ theorem LinearIsometry.adjoint_comp_self' {E E' : Type*}
     [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] [FiniteDimensional 𝕜 E]
     [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E'] [FiniteDimensional 𝕜 E'] (f : E →ₗᵢ[𝕜] E') :
     f.adjoint ∘ₗ f.toLinearMap = LinearMap.id := by
-  haveI := FiniteDimensional.complete 𝕜 E
-  haveI := FiniteDimensional.complete 𝕜 E'
+  have := FiniteDimensional.complete 𝕜 E
+  have := FiniteDimensional.complete 𝕜 E'
   ext x
   exact congr($(f.adjoint_comp_self) x)

@@ -116,7 +116,7 @@ theorem _root_.LinearMap.BilinMap.toQuadraticMap_surjective [Module.Free R M] :
     Function.Surjective (LinearMap.BilinMap.toQuadraticMap : LinearMap.BilinMap R M N → _) := by
   intro Q
   obtain ⟨ι, b⟩ := Module.Free.exists_basis (R := R) (M := M)
-  letI : LinearOrder ι := IsWellOrder.linearOrder WellOrderingRel
+  let : LinearOrder ι := IsWellOrder.linearOrder WellOrderingRel
   exact ⟨_, toQuadraticMap_toBilin _ b⟩
 
 @[simp]

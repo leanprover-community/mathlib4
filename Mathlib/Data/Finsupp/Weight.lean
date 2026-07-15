@@ -31,9 +31,9 @@ as well as a function `w : σ → M`. (The important case is `R = ℕ`.)
 - `Finsupp.le_weight` says that `f s ≤ f.weight w` when `M = ℕ`
 
 - `Finsupp.le_weight_of_ne_zero` says that `w s ≤ f.weight w`
-  for `OrderedAddCommMonoid M`, when `f s ≠ 0` and all `w i` are nonnegative.
+  for `IsOrderedAddMonoid M`, when `f s ≠ 0` and all `w i` are nonnegative.
 
-- `Finsupp.le_weight_of_ne_zero'` is the same statement for `CanonicallyOrderedAddCommMonoid M`.
+- `Finsupp.le_weight_of_ne_zero'` is the same statement for `CanonicallyOrderedAdd M`.
 
 - `NonTorsionWeight`: all values `w s` are nontorsion in `M`.
 
@@ -172,7 +172,6 @@ theorem le_weight_of_ne_zero' {s : σ} {f : σ →₀ ℕ} (hs : f s ≠ 0) : w 
 theorem weight_eq_zero_iff_eq_zero
     (w : σ → M) [NonTorsionWeight ℕ w] {f : σ →₀ ℕ} :
     weight w f = 0 ↔ f = 0 := by
-  classical
   constructor
   · intro h
     ext s
@@ -200,6 +199,14 @@ theorem finite_of_nat_weight_le [Finite σ] (w : σ → ℕ) (hw : ∀ x, w x �
   grw [← le_weight _ (hw x)] at hd
   simp [*]
 
+theorem finite_of_nat_weight_lt [Finite σ] (w : σ → ℕ) (hw : ∀ x, w x ≠ 0) (n : ℕ) :
+    {d : σ →₀ ℕ | weight w d < n}.Finite :=
+  Set.Finite.subset (finite_of_nat_weight_le w hw n) (by grind)
+
+theorem finite_of_nat_weight_eq [Finite σ] (w : σ → ℕ) (hw : ∀ x, w x ≠ 0) (n : ℕ) :
+    {d : σ →₀ ℕ | weight w d = n}.Finite :=
+  Set.Finite.subset (finite_of_nat_weight_le w hw n) (by grind)
+
 end CanonicallyOrderedAddCommMonoid
 
 variable {R : Type*} [AddCommMonoid R]
@@ -210,14 +217,7 @@ def degree : (σ →₀ R) →+ R where
   map_zero' := by simp
   map_add' := fun _ _ => sum_add_index' (h := fun _ ↦ id) (congrFun rfl) fun _ _ ↦ congrFun rfl
 
-@[deprecated (since := "2025-12-09")] alias degree_add := map_add
-
-@[deprecated (since := "2025-12-09")] alias degree_zero := map_zero
-
 theorem degree_apply (d : σ →₀ R) : degree d = ∑ i ∈ d.support, d i := rfl
-
-@[deprecated (since := "2025-12-09")]
-alias degree_def := degree_apply
 
 theorem degree_eq_sum [Fintype σ] (f : σ →₀ R) : f.degree = ∑ i, f i := by
   rw [degree_apply, Finset.sum_subset] <;> simp
@@ -255,6 +255,9 @@ theorem finite_of_degree_le [Finite σ] (n : ℕ) :
   simp only [Function.const_apply, ne_eq, one_ne_zero, not_false_eq_true]
 
 lemma finite_of_degree_lt [Finite σ] (n : ℕ) : {f : σ →₀ ℕ | degree f < n}.Finite :=
+  Set.Finite.subset (finite_of_degree_le n) (by grind)
+
+lemma finite_of_degree_eq [Finite σ] (n : ℕ) : {f : σ →₀ ℕ | f.degree = n}.Finite :=
   Set.Finite.subset (finite_of_degree_le n) (by grind)
 
 lemma range_single_one :

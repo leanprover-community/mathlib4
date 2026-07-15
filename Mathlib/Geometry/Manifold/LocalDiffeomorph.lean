@@ -105,7 +105,7 @@ namespace PartialDiffeomorph
 variable (Φ : PartialDiffeomorph I J M N n)
 
 /-- A partial diffeomorphism is also a local homeomorphism. -/
-@[expose, simps toPartialEquiv]
+@[expose, simps toPartialHomeomorph_toPartialEquiv]
 def toOpenPartialHomeomorph : OpenPartialHomeomorph M N where
   toPartialEquiv := Φ.toPartialEquiv
   open_source := Φ.open_source
@@ -379,9 +379,6 @@ def IsLocalDiffeomorph.diffeomorphOfBijective
       apply ((Φ x).symm.contMDiffOn.congr (aux x)).contMDiffAt (((Φ x).open_target).mem_nhds ?_)
       have : y = (Φ x) x := ((hgInverse.2 y).congr (hfx hx)).mp rfl
       exact this ▸ (Φ x).map_source hx }
-
-@[deprecated (since := "2025-12-19")]
-alias IsLocalDiffeomorph.diffeomorph_of_bijective := IsLocalDiffeomorph.diffeomorphOfBijective
 
 end Basic
 
