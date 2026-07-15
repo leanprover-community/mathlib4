@@ -479,15 +479,21 @@ theorem isFredholm_restrict_iff {f : E →L[𝕜] F} {A : Submodule 𝕜 E} {B :
   rw [← (isFredholm_subtypeL hA).comp_iff_left, ← (isFredholm_subtypeL hB).comp_iff_right,
     subtypeL_comp_restrict, domRestrict]
 
+alias ⟨IsFredholm.of_restrict, IsFredholm.restrict⟩ := isFredholm_restrict_iff
+
 theorem isFredholm_domRestrict_iff {f : E →L[𝕜] F} {A : Submodule 𝕜 E}
     (hA : IsClosed (A : Set E)) [A.CoFG] :
     IsFredholm (f.domRestrict A) ↔ IsFredholm f := by
   rw [← (isFredholm_subtypeL hA).comp_iff_left, domRestrict]
 
+alias ⟨IsFredholm.of_domRestrict, IsFredholm.domRestrict⟩ := isFredholm_domRestrict_iff
+
 theorem isFredholm_codRestrict_iff {f : E →L[𝕜] F} {B : Submodule 𝕜 F}
     (hB : IsClosed (B : Set F)) [B.CoFG] (hf : ∀ x, f x ∈ B) :
     IsFredholm (f.codRestrict B hf) ↔ IsFredholm f := by
   rw [← (isFredholm_subtypeL hB).comp_iff_right, subtypeL_comp_codRestrict]
+
+alias ⟨IsFredholm.of_codRestrict, IsFredholm.codRestrict⟩ := isFredholm_codRestrict_iff
 
 end Constructions
 
