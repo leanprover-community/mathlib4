@@ -244,7 +244,6 @@ lemma pderiv_inl_universalFactorizationMap_X (i j) :
       (universalFactorizationMap R n m k hn (X j))) =
     if ↑j < (i : ℕ) then 0 else if h : ↑j - ↑i < k then X (.inr ⟨↑j - ↑i, h⟩)
       else if ↑j - ↑i = k then 1 else 0 := by
-  classical
   trans ∑ x ∈ Finset.antidiagonal ↑j,
     if h : x.2 < k then if x.1 < m ∧ x.1 = ↑i then X (Sum.inr ⟨x.2, h⟩) else 0
     else if x.2 = k ∧ x.1 < m ∧ x.1 = ↑i then 1 else 0
@@ -268,7 +267,6 @@ lemma pderiv_inr_universalFactorizationMap_X (i j) :
       (universalFactorizationMap R n m k hn (X j))) =
     if ↑j < (i : ℕ) then 0 else if h : ↑j - ↑i < m then
       X (.inl ⟨↑j - ↑i, h⟩) else if ↑j - ↑i = m then 1 else 0 := by
-  classical
   trans ∑ x ∈ Finset.antidiagonal ↑j, if x.2 < k then if h : x.1 < m then if x.2 = ↑i then
     X (Sum.inl ⟨x.1, h⟩) else 0 else if x.1 = m ∧ x.2 = ↑i then 1 else 0 else 0
   · simp [universalFactorizationMap, mapEquivMonic, Polynomial.coeff_mul, coeff_freeMonic,

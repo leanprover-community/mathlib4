@@ -176,7 +176,6 @@ lemma addOppositeEquiv_symm_orderTop (x : R⟦Γ⟧ᵃᵒᵖ) :
 @[simp]
 lemma addOppositeEquiv_leadingCoeff (x : Rᵃᵒᵖ⟦Γ⟧) :
     (addOppositeEquiv x).unop.leadingCoeff = x.leadingCoeff.unop := by
-  classical
   obtain rfl | hx := eq_or_ne x 0
   · simp
   simp only [ne_eq, AddOpposite.unop_eq_zero_iff, EmbeddingLike.map_eq_zero_iff, hx,
