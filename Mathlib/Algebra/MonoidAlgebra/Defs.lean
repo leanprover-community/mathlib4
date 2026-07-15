@@ -469,6 +469,9 @@ lemma one_def : (1 : R[M]) = single 1 1 := rfl
 @[to_additive (attr := simp) (dont_translate := R) coeff_one_zero]
 lemma coeff_one_one : (1 : R[M]).coeff 1 = 1 := by simp [one_def]
 
+@[deprecated (since := "2026-07-15")]
+alias _root_.AddMonoidAlgebra.coeff_one_one := AddMonoidAlgebra.coeff_one_zero
+
 end One
 
 section Mul
