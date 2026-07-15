@@ -22,13 +22,9 @@ integrability of the integrand.
 
 public section
 
-open Real Set Filter MeasureTheory intervalIntegral
-
-open scoped Topology
+open Real Set Filter MeasureTheory intervalIntegral Topology Metric
 
 namespace Frullani
-
-open Metric
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {f : ℝ → E}
          {a b c : ℝ} {L R : E}
