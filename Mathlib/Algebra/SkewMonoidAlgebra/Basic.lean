@@ -398,6 +398,8 @@ lemma coeff_finsuppSum {k' G' : Type*} [AddCommMonoid k'] (f : G →₀ k)
   map_finsuppSum coeffAddEquiv ..
 
 @[deprecated (since := "2026-07-04")] alias toFinsupp_sum' := coeff_finsuppSum
+@[deprecated (since := "2026-07-06")] alias coeff_sum' := coeff_finsuppSum
+@[deprecated (since := "2026-07-06")] alias coeff_sum := coeff_finsuppSum
 
 theorem ofCoeff_finsuppSum {k' G' : Type*} [AddCommMonoid k'] (f : G →₀ k)
     (g : G → k → G' →₀ k') :
@@ -405,6 +407,7 @@ theorem ofCoeff_finsuppSum {k' G' : Type*} [AddCommMonoid k'] (f : G →₀ k)
   apply coeff_injective; simp only [coeff_finsuppSum]
 
 @[deprecated (since := "2026-07-04")] alias ofFinsupp_sum := ofCoeff_finsuppSum
+@[deprecated (since := "2026-07-06")] alias ofCoeff_sum := ofCoeff_finsuppSum
 
 @[simp] lemma sum_single (f : G →₀ k) : f.sum single = ofCoeff f :=
   coeff_injective <| by simp [coeff_finsuppSum]
@@ -519,6 +522,8 @@ def mapDomain : SkewMonoidAlgebra k G →+ SkewMonoidAlgebra k G' where
   map_add' _ _ := by ext; simp [Finsupp.mapDomain_add]
 
 @[deprecated (since := "2026-07-04")] alias toFinsupp_mapDomain := coeff_mapDomain_apply
+@[deprecated (since := "2026-07-06")] alias coeff_mapDomain := coeff_mapDomain_apply
+@[deprecated (since := "2026-07-06")] alias mapDomain_apply := coeff_mapDomain_apply
 
 variable {f v}
 

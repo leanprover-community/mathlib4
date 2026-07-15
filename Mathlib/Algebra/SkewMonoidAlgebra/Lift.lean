@@ -99,6 +99,9 @@ def mapDomainAlgHom (k A : Type*) [CommSemiring k] [Semiring A] [Algebra k A] {H
   __ := mapDomainRingHom hf
   commutes' := by simp [mapDomainRingHom]
 
+@[deprecated (since := "2026-07-06")]
+alias mapDomainAlgHom_apply := coeff_mapDomainAlgHom_apply
+
 end lift
 
 section equivMapDomain
