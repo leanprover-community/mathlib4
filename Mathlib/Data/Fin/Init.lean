@@ -24,7 +24,7 @@ namespace Fin
 
 variable {n k : ℕ}
 
-theorem xor_assoc {n} (h : k = 2 ^ n) (a b c : Fin k) : (a ^^^ b) ^^^ c = a ^^^ (b ^^^ c) := by
+theorem xor_assoc (h : k = 2 ^ n) (a b c : Fin k) : (a ^^^ b) ^^^ c = a ^^^ (b ^^^ c) := by
   grind [Fin.xor_val, Nat.xor_mod_two_pow, Nat.mod_mod]
 theorem xor_comm (a b : Fin k) : a ^^^ b = b ^^^ a := by grind [Fin.xor_val]
 @[simp] theorem xor_self [NeZero k] {a : Fin k} : a ^^^ a = 0 := by
