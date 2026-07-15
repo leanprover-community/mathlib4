@@ -236,7 +236,7 @@ theorem lcm_orderOf_dvd_exponent [Fintype G] :
 @[to_additive exists_addOrderOf_eq_pow_padic_val_nat_add_exponent]
 theorem _root_.Nat.Prime.exists_orderOf_eq_pow_factorization_exponent {p : ℕ} (hp : p.Prime) :
     ∃ g : G, orderOf g = p ^ (exponent G).factorization p := by
-  haveI := Fact.mk hp
+  have := Fact.mk hp
   rcases eq_or_ne ((exponent G).factorization p) 0 with (h | h)
   · refine ⟨1, by rw [h, pow_zero, orderOf_one]⟩
   have he : 0 < exponent G :=
