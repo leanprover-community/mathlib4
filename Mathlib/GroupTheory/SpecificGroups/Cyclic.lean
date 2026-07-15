@@ -275,6 +275,39 @@ theorem CommGroup.is_simple_iff_prime_card [CommGroup α] : IsSimpleGroup α ↔
 @[deprecated (since := "2025-11-19")]
 alias CommGroup.is_simple_iff_isCyclic_and_prime_card := CommGroup.is_simple_iff_prime_card
 
+open Subgroup in
+/-- A group with at most one maximal subgroup is cyclic. Maximal subgroups are the coatoms
+`IsCoatom (· : Subgroup G)` of the subgroup lattice; only `IsCoatomic (Subgroup G)` is required
+(automatic for finite `G`), with no finiteness, commutativity, or `p`-group hypothesis. -/
+@[to_additive /-- An additive group with at most one maximal subgroup is cyclic. Maximal subgroups
+are the coatoms `IsCoatom (· : AddSubgroup G)` of the subgroup lattice; only
+`IsCoatomic (AddSubgroup G)` is required (automatic for finite `G`), with no finiteness,
+commutativity, or `p`-group hypothesis. -/]
+theorem isCyclic_of_isCoatom_subsingleton {G : Type*} [Group G] [IsCoatomic (Subgroup G)]
+    (h : ∀ M₁ M₂ : Subgroup G, IsCoatom M₁ → IsCoatom M₂ → M₁ = M₂) :
+    IsCyclic G := by
+  rw [isCyclic_iff_exists_zpowers_eq_top]
+  obtain hbot | ⟨M, hM, -⟩ := eq_top_or_exists_le_coatom (⊥ : Subgroup G)
+  · exact ⟨1, eq_top_of_bot_eq_top hbot _⟩
+  · obtain ⟨g, -, hg⟩ := SetLike.exists_of_lt hM.lt_top
+    refine ⟨g, ?_⟩
+    by_contra hne
+    obtain ⟨M', hM', hle⟩ := (eq_top_or_exists_le_coatom (zpowers g)).resolve_left hne
+    exact hg (h M' M hM' hM ▸ hle (mem_zpowers g))
+
+/-- A subgroup of a commutative group is maximal (a coatom in the subgroup lattice) iff the quotient
+by it is simple. Group analogue of `isSimpleModule_iff_isCoatom`. -/
+@[to_additive /-- A subgroup of an additive commutative group is maximal (a coatom in the subgroup
+lattice) iff the quotient by it is simple. Additive group analogue of
+`isSimpleModule_iff_isCoatom`. -/]
+theorem CommGroup.isSimpleGroup_iff_isCoatom {G : Type*} [CommGroup G] {M : Subgroup G} :
+    IsSimpleGroup (G ⧸ M) ↔ IsCoatom M := by
+  rw [← Set.isSimpleOrder_Ici_iff_isCoatom,
+    ← (QuotientGroup.comapMk'OrderIso' M).isSimpleOrder_iff, isSimpleGroup_iff, isSimpleOrder_iff]
+  by_cases hG : Nontrivial (G ⧸ M)
+  · simp [hG, Subgroup.normal_of_isMulCommutative]
+  · simp [hG]
+
 section SpecificInstances
 
 instance : IsAddCyclic ℤ := ⟨1, fun n ↦ ⟨n, by simp only [smul_eq_mul, mul_one]⟩⟩
