@@ -150,13 +150,13 @@ theorem revzip_powersetAux_lemma {α : Type*} [DecidableEq α] (l : List α) {l'
 
 theorem revzip_powersetAux_perm_aux' {l : List α} :
     revzip (powersetAux l) ~ revzip (powersetAux' l) := by
-  haveI := Classical.decEq α
+  have := Classical.decEq α
   rw [revzip_powersetAux_lemma l revzip_powersetAux, revzip_powersetAux_lemma l revzip_powersetAux']
   exact powersetAux_perm_powersetAux'.map _
 
 theorem revzip_powersetAux_perm {l₁ l₂ : List α} (p : l₁ ~ l₂) :
     revzip (powersetAux l₁) ~ revzip (powersetAux l₂) := by
-  haveI := Classical.decEq α
+  have := Classical.decEq α
   simp only [fun l : List α => revzip_powersetAux_lemma l revzip_powersetAux, coe_eq_coe.2 p]
   exact (powersetAux_perm p).map _
 

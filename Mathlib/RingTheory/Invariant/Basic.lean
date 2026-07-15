@@ -425,9 +425,9 @@ lemma Ideal.Quotient.exists_algHom_fixedPoint_quotient_under
   cases nonempty_fintype G
   algebraize [(algebraMap (A ⧸ P) k).comp (algebraMap A (A ⧸ P)),
     (algebraMap (B ⧸ Q) k).comp (algebraMap B (B ⧸ Q))]
-  haveI : IsScalarTower A (B ⧸ Q) k := .of_algebraMap_eq fun x ↦
+  have : IsScalarTower A (B ⧸ Q) k := .of_algebraMap_eq fun x ↦
     (IsScalarTower.algebraMap_apply (A ⧸ P) (B ⧸ Q) k (mk P x))
-  haveI : IsScalarTower A B k := .of_algebraMap_eq fun x ↦
+  have : IsScalarTower A B k := .of_algebraMap_eq fun x ↦
     (IsScalarTower.algebraMap_apply (A ⧸ P) (B ⧸ Q) k (mk P x))
   obtain ⟨P, hp⟩ := Algebra.IsInvariant.charpoly_mem_lifts A B G x
   have : Polynomial.aeval x P = 0 := by
