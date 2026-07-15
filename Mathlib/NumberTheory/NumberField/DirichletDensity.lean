@@ -10,13 +10,13 @@ public import Mathlib.NumberTheory.NumberField.DedekindZeta
 /-!
 # Dirichlet density of a set of prime ideals
 
-For a number field `K`, the Dirichlet density of a set `S` of prime ideals of `𝓞 K` is, when it
-exists,
+For a number field `K`, the Dirichlet density of a set `S` of nonzero prime ideals of `𝓞 K`,
+that is of elements of `IsDedekindDomain.HeightOneSpectrum (𝓞 K)`, is, when it exists,
 
   δ(S) = lim_{s → 1⁺} ( Σ_{𝔭 ∈ S} N𝔭^{-s} ) / ( Σ_𝔭 N𝔭^{-s} ),
 
-with both sums running over nonzero prime ideals. The denominator is asymptotic to
-`log (s - 1)⁻¹` as `s ↓ 1`.
+with the sum in the denominator running over all nonzero prime ideals. The denominator is
+asymptotic to `log (s - 1)⁻¹` as `s ↓ 1`.
 
 ## Main definitions
 
@@ -31,7 +31,7 @@ with both sums running over nonzero prime ideals. The denominator is asymptotic 
 * `NumberField.logDedekindZeta_sub_log_inv_sub_one_bounded` — `log ζ_K(s)` and `log (1 / (s - 1))`
   differ by a bounded amount as `s ↓ 1`.
 * `NumberField.primeIdealZetaSum_le_card_of_finite` — for a finite `S`, the partial sum is bounded
-  above by the number of qualifying primes.
+  above by the number of elements of `S`.
 
 -/
 
@@ -39,41 +39,39 @@ with both sums running over nonzero prime ideals. The denominator is asymptotic 
 
 noncomputable section
 
-open Filter Topology Set
+open Filter IsDedekindDomain Topology Set
 
 namespace NumberField
 
-variable {K : Type*} [Field K] [NumberField K] {S : Set (Ideal (𝓞 K))} {δ : ℝ}
+variable {K : Type*} [Field K] [NumberField K] {S : Set (HeightOneSpectrum (𝓞 K))} {δ : ℝ}
 
 /-- The partial Dirichlet series `∑_{𝔭 ∈ S} N𝔭 ^ (-s)`, summed over the nonzero prime ideals
 of `𝓞 K` lying in `S`. -/
-def primeIdealZetaSum (S : Set (Ideal (𝓞 K))) (s : ℝ) : ℝ :=
-  ∑' 𝔭 : {𝔭 : Ideal (𝓞 K) // 𝔭 ∈ S ∧ 𝔭.IsPrime ∧ 𝔭 ≠ ⊥}, (Ideal.absNorm 𝔭.1 : ℝ) ^ (-s)
+def primeIdealZetaSum (S : Set (HeightOneSpectrum (𝓞 K))) (s : ℝ) : ℝ :=
+  ∑' 𝔭 : S, (Ideal.absNorm 𝔭.1.asIdeal : ℝ) ^ (-s)
 
-theorem primeIdealZetaSum_def (S : Set (Ideal (𝓞 K))) (s : ℝ) :
-    primeIdealZetaSum S s = ∑' 𝔭 : {𝔭 : Ideal (𝓞 K) // 𝔭 ∈ S ∧ 𝔭.IsPrime ∧ 𝔭 ≠ ⊥},
-    (Ideal.absNorm 𝔭.1 : ℝ) ^ (-s) := rfl
+theorem primeIdealZetaSum_def (S : Set (HeightOneSpectrum (𝓞 K))) (s : ℝ) :
+    primeIdealZetaSum S s = ∑' 𝔭 : S, (Ideal.absNorm 𝔭.1.asIdeal : ℝ) ^ (-s) := rfl
 
 /-- The Dirichlet density of a set `S` of prime ideals of `𝓞 K` is `δ` when the ratio of partial
 sums tends to `δ` as `s ↓ 1`. -/
-def HasDirichletDensity (S : Set (Ideal (𝓞 K))) (δ : ℝ) : Prop :=
-  Tendsto (fun s : ℝ ↦ primeIdealZetaSum S s / primeIdealZetaSum (univ : Set (Ideal (𝓞 K))) s)
-    (𝓝[>] 1) (𝓝 δ)
+def HasDirichletDensity (S : Set (HeightOneSpectrum (𝓞 K))) (δ : ℝ) : Prop :=
+  Tendsto (fun s : ℝ ↦ primeIdealZetaSum S s /
+    primeIdealZetaSum (univ : Set (HeightOneSpectrum (𝓞 K))) s) (𝓝[>] 1) (𝓝 δ)
 
-/-- Upper Dirichlet density, defined as the`limsup` of the ratio. -/
-def HasUpperDirichletDensity (S : Set (Ideal (𝓞 K))) (δ : ℝ) : Prop :=
-  limsup (fun s : ℝ ↦ primeIdealZetaSum S s / primeIdealZetaSum (univ : Set (Ideal (𝓞 K))) s)
-    (𝓝[>] 1) = δ
+/-- Upper Dirichlet density, defined as the `limsup` of the ratio. -/
+def HasUpperDirichletDensity (S : Set (HeightOneSpectrum (𝓞 K))) (δ : ℝ) : Prop :=
+  limsup (fun s : ℝ ↦ primeIdealZetaSum S s /
+    primeIdealZetaSum (univ : Set (HeightOneSpectrum (𝓞 K))) s) (𝓝[>] 1) = δ
 
 /-- Lower Dirichlet density, defined as the `liminf` of the ratio. -/
-def HasLowerDirichletDensity (S : Set (Ideal (𝓞 K))) (δ : ℝ) : Prop :=
-  liminf (fun s : ℝ ↦ primeIdealZetaSum S s / primeIdealZetaSum (univ : Set (Ideal (𝓞 K))) s)
-    (𝓝[>] 1) = δ
+def HasLowerDirichletDensity (S : Set (HeightOneSpectrum (𝓞 K))) (δ : ℝ) : Prop :=
+  liminf (fun s : ℝ ↦ primeIdealZetaSum S s /
+    primeIdealZetaSum (univ : Set (HeightOneSpectrum (𝓞 K))) s) (𝓝[>] 1) = δ
 
 /-- The Dirichlet density of the empty set is `0`. -/
-theorem hasDirichletDensity_empty : HasDirichletDensity (∅ : Set (Ideal (𝓞 K))) 0 := by
-  have : IsEmpty {𝔭 : Ideal (𝓞 K) // 𝔭 ∈ (∅ : Set (Ideal (𝓞 K))) ∧
-      𝔭.IsPrime ∧ 𝔭 ≠ ⊥} := ⟨fun x ↦ x.2.1⟩
+theorem hasDirichletDensity_empty :
+    HasDirichletDensity (∅ : Set (HeightOneSpectrum (𝓞 K))) 0 := by
   simp [HasDirichletDensity, primeIdealZetaSum_def]
 
 theorem HasDirichletDensity.hasUpper (h : HasDirichletDensity S δ) :
@@ -110,19 +108,15 @@ theorem logDedekindZeta_sub_log_inv_sub_one_bounded : ∃ C : ℝ, ∀ᶠ (s : �
 
 variable {K}
 
-theorem primeIdealZetaSum_le_card_of_finite (hS : S.Finite) {s : ℝ} (hs : 0 < s) :
-    primeIdealZetaSum S s ≤ Nat.card {𝔭 : Ideal (𝓞 K) // 𝔭 ∈ S ∧ 𝔭.IsPrime ∧ 𝔭 ≠ ⊥} := by
-  have : Finite {𝔭 : Ideal (𝓞 K) // 𝔭 ∈ S ∧ 𝔭.IsPrime ∧ 𝔭 ≠ ⊥} :=
-    (hS.subset fun _ hx ↦ hx.1).to_subtype
-  let : Fintype {𝔭 : Ideal (𝓞 K) // 𝔭 ∈ S ∧ 𝔭.IsPrime ∧ 𝔭 ≠ ⊥} := Fintype.ofFinite _
-  rw [primeIdealZetaSum_def, tsum_fintype, Nat.card_eq_fintype_card]
-  calc ∑ 𝔭 : {𝔭 : Ideal (𝓞 K) // 𝔭 ∈ S ∧ 𝔭.IsPrime ∧ 𝔭 ≠ ⊥},
-        (Ideal.absNorm 𝔭.1 : ℝ) ^ (-s)
-      ≤ ∑ _𝔭 : {𝔭 : Ideal (𝓞 K) // 𝔭 ∈ S ∧ 𝔭.IsPrime ∧ 𝔭 ≠ ⊥}, 1 := by
+theorem primeIdealZetaSum_le_card_of_finite (hS : S.Finite) {s : ℝ} (hs : 0 ≤ s) :
+    primeIdealZetaSum S s ≤ S.ncard := by
+  let : Fintype S := @Fintype.ofFinite _ hS.to_subtype
+  rw [primeIdealZetaSum_def, tsum_fintype, ← Nat.card_coe_set_eq, Nat.card_eq_fintype_card]
+  calc ∑ 𝔭 : S, (Ideal.absNorm 𝔭.1.asIdeal : ℝ) ^ (-s)
+      ≤ ∑ _𝔭 : S, 1 := by
         refine Finset.sum_le_sum fun 𝔭 _ ↦ Real.rpow_le_one_of_one_le_of_nonpos ?_ (by linarith)
         exact_mod_cast Nat.one_le_iff_ne_zero.mpr
-          (by rw [Ne, Ideal.absNorm_eq_zero_iff]; exact 𝔭.2.2.2)
-    _ = Fintype.card {𝔭 : Ideal (𝓞 K) // 𝔭 ∈ S ∧ 𝔭.IsPrime ∧ 𝔭 ≠ ⊥} := by
-        rw [Finset.sum_const, Finset.card_univ, nsmul_eq_mul, mul_one]
+          (by rw [Ne, Ideal.absNorm_eq_zero_iff]; exact 𝔭.1.ne_bot)
+    _ = Fintype.card S := by rw [Finset.sum_const, Finset.card_univ, nsmul_eq_mul, mul_one]
 
 end NumberField
