@@ -149,7 +149,9 @@ class HImp (α : Type*) where
   /-- Heyting implication `⇨` -/
   himp : α → α → α
 
+set_option linter.translateOverwrite false in
 attribute [to_dual existing (reorder := 3 4) sdiff] HImp.himp
+set_option linter.translateOverwrite false in
 attribute [to_dual existing (reorder := himp (1 2))] HImp.mk
 
 /-- Syntax typeclass for Heyting negation `￢`.
