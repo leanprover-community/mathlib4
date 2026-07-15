@@ -1055,6 +1055,9 @@ public import Mathlib.Algebra.Order.Monoid.Lex
 public import Mathlib.Algebra.Order.Monoid.LocallyFiniteOrder
 public import Mathlib.Algebra.Order.Monoid.NatCast
 public import Mathlib.Algebra.Order.Monoid.OrderDual
+public import Mathlib.Algebra.Order.Monoid.Orderable
+public import Mathlib.Algebra.Order.Monoid.Orderable.Pi
+public import Mathlib.Algebra.Order.Monoid.Orderable.Prod
 public import Mathlib.Algebra.Order.Monoid.PNat
 public import Mathlib.Algebra.Order.Monoid.Prod
 public import Mathlib.Algebra.Order.Monoid.Submonoid
