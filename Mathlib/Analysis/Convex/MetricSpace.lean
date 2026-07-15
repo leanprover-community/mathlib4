@@ -240,7 +240,7 @@ lemma continuous_convexCombPair_of_isBounded
       (add_sub_cancel ..) (x t) (y j)), dist_convexCombPair_convexCombPair_le]
     simp only [dist_self, mul_zero, add_zero, dist_convexCombPair_left]
     grw [abs_sub_comm, ← le_abs_self] at hj'
-    grw [hj, hj', hf1, hD]
+    grw [hj.le, hj'.le, hf1, hD]
     · field_simp; norm_num
     · exact hf0 _
 
@@ -276,7 +276,7 @@ instance (priority := low) {V P : Type*}
 instance IsConvexDist.subtype (s : Set X) (hs : IsConvexSet ℝ s) :
     letI : ConvexSpace ℝ s := .subtype s hs
     IsConvexDist s := by
-  letI : ConvexSpace ℝ s := .subtype s hs
+  let : ConvexSpace ℝ s := .subtype s hs
   refine ⟨fun f ↦ ?_⟩
   convert dist_iConvexComb_fst_snd_le (X := X) (f.map fun x ↦ (x.1, x.2)) <;>
     simp [Subtype.dist_eq, Finsupp.sum_mapDomain_index, add_mul]

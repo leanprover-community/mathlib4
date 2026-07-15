@@ -192,7 +192,7 @@ theorem span_image_eq_map_linearCombination (s : Set α) :
   · refine map_le_iff_le_comap.2 fun z hz => ?_
     have : ∀ i, z i • v i ∈ span R (v '' s) := by
       intro c
-      haveI := Classical.decPred fun x => x ∈ s
+      have := Classical.decPred fun x => x ∈ s
       by_cases h : c ∈ s
       · exact smul_mem _ _ (subset_span (Set.mem_image_of_mem _ h))
       · simp [(Finsupp.mem_supported' R _).1 hz _ h]
@@ -253,7 +253,7 @@ theorem linearCombinationOn_range (s : Set α) :
 theorem linearCombination_restrict (s : Set α) :
     linearCombination R (s.restrict v) = Submodule.subtype _ ∘ₗ
       linearCombinationOn α M R v s ∘ₗ (supportedEquivFinsupp s).symm.toLinearMap := by
-  classical ext; simp [linearCombinationOn]
+  ext; simp [linearCombinationOn]
 
 theorem linearCombination_comp (f : α' → α) :
     linearCombination R (v ∘ f) = (linearCombination R v).comp (lmapDomain R R f) := by

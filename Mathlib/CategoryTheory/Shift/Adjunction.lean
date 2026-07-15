@@ -413,7 +413,7 @@ set_option backward.defeqAttrib.useBackward true in
 lemma commShift_of_leftAdjoint [F.CommShift A] :
     letI := adj.rightAdjointCommShift A
     adj.CommShift A := by
-  letI := adj.rightAdjointCommShift A
+  let := adj.rightAdjointCommShift A
   refine CommShift.mk' _ _ ⟨fun a ↦ ?_⟩
   ext X
   dsimp
@@ -502,7 +502,7 @@ set_option backward.defeqAttrib.useBackward true in
 lemma commShift_of_rightAdjoint [G.CommShift A] :
     letI := adj.leftAdjointCommShift A
     adj.CommShift A := by
-  letI := adj.leftAdjointCommShift A
+  let := adj.leftAdjointCommShift A
   refine CommShift.mk' _ _ ⟨fun a ↦ ?_⟩
   ext X
   dsimp
@@ -620,7 +620,7 @@ noncomputable def commShiftInverse [E.functor.CommShift A] : E.inverse.CommShift
 lemma commShift_of_functor [E.functor.CommShift A] :
     letI := E.commShiftInverse A
     E.CommShift A := by
-  letI := E.commShiftInverse A
+  let := E.commShiftInverse A
   exact CommShift.mk' _ _ (E.toAdjunction.commShift_of_leftAdjoint A).commShift_unit
 
 /--
@@ -635,7 +635,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma commShift_of_inverse [E.inverse.CommShift A] :
     letI := E.commShiftFunctor A
     E.CommShift A := by
-  letI := E.commShiftFunctor A
+  let := E.commShiftFunctor A
   have := E.symm.commShift_of_functor A
   exact inferInstanceAs (E.symm.symm.CommShift A)
 

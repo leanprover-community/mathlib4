@@ -688,12 +688,12 @@ theorem prodComparisonBifunctorNatTrans_comp : prodComparisonBifunctorNatTrans (
   ext; simp [prodComparison_comp]
 
 instance (A : C) [∀ B, IsIso (prodComparison F A B)] : IsIso (prodComparisonNatTrans F A) := by
-  letI : ∀ X, IsIso ((prodComparisonNatTrans F A).app X) := by assumption
+  let : ∀ X, IsIso ((prodComparisonNatTrans F A).app X) := by assumption
   apply NatIso.isIso_of_isIso_app
 
 set_option backward.defeqAttrib.useBackward true in
 instance [∀ A B, IsIso (prodComparison F A B)] : IsIso (prodComparisonBifunctorNatTrans F) := by
-  letI : ∀ X, IsIso ((prodComparisonBifunctorNatTrans F).app X) :=
+  let : ∀ X, IsIso ((prodComparisonBifunctorNatTrans F).app X) :=
     fun _ ↦ by dsimp; apply NatIso.isIso_of_isIso_app
   apply NatIso.isIso_of_isIso_app
 

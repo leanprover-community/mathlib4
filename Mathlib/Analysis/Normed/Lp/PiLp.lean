@@ -12,6 +12,7 @@ public import Mathlib.Analysis.Normed.Lp.ProdLp
 
 /-!
 # `L^p` distance on finite products of metric spaces
+
 Given finitely many metric spaces, one can put the max distance on their product, but there is also
 a whole family of natural distances, indexed by a parameter `p : ℝ≥0∞`, that also induce
 the product topology. We define them in this file. For `0 < p < ∞`, the distance on `Π i, α i`
@@ -565,10 +566,12 @@ instance secondCountableTopology [Countable ι] [∀ i, TopologicalSpace (β i)]
 instance uniformSpace [∀ i, UniformSpace (β i)] : UniformSpace (PiLp p β) :=
   (Pi.uniformSpace β).comap ofLp
 
+@[fun_prop]
 lemma uniformContinuous_ofLp [∀ i, UniformSpace (β i)] :
     UniformContinuous (@ofLp p (∀ i, β i)) :=
   uniformContinuous_comap
 
+@[fun_prop]
 lemma uniformContinuous_toLp [∀ i, UniformSpace (β i)] :
     UniformContinuous (@toLp p (∀ i, β i)) :=
   uniformContinuous_comap' uniformContinuous_id
@@ -1010,7 +1013,7 @@ variable [DecidableEq ι]
 
 @[simp]
 theorem nnnorm_single (i : ι) (b : β i) : ‖single p i b‖₊ = ‖b‖₊ := by
-  haveI : Nonempty ι := ⟨i⟩
+  have : Nonempty ι := ⟨i⟩
   induction p generalizing hp with
   | top =>
     simp_rw [nnnorm_eq_ciSup]
@@ -1259,7 +1262,7 @@ lemma isBoundedSMulSeminormedAddCommGroupToPi
     [∀ i, Module R (α i)] [∀ i, IsBoundedSMul R (α i)] :
     letI := pseudoMetricSpaceToPi p α
     IsBoundedSMul R (Π i, α i) := by
-  letI := pseudoMetricSpaceToPi p α
+  let := pseudoMetricSpaceToPi p α
   refine ⟨fun x y z ↦ ?_, fun x y z ↦ ?_⟩
   · simpa [dist_pseudoMetricSpaceToPi] using dist_smul_pair x (toLp p y) (toLp p z)
   · simpa [dist_pseudoMetricSpaceToPi] using dist_pair_smul x y (toLp p z)
@@ -1269,7 +1272,7 @@ lemma normSMulClassSeminormedAddCommGroupToPi
     [∀ i, Module R (α i)] [∀ i, NormSMulClass R (α i)] :
     letI := seminormedAddCommGroupToPi p α
     NormSMulClass R (Π i, α i) := by
-  letI := seminormedAddCommGroupToPi p α
+  let := seminormedAddCommGroupToPi p α
   refine ⟨fun x y ↦ ?_⟩
   simp [norm_seminormedAddCommGroupToPi, norm_smul]
 

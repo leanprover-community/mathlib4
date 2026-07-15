@@ -232,12 +232,12 @@ restriction to `ker(I/I² → ⊕ S dyᵢ)` is the connecting homomorphism in th
 noncomputable
 def δAux :
     Q.Ring →ₗ[R] T ⊗[S] Ω[S⁄R] :=
-  Finsupp.lsum R (R := R) fun f ↦
-    (TensorProduct.mk S T _ (f.prod (Q.val · ^ ·))).restrictScalars R ∘ₗ (D R S).toLinearMap
+  Finsupp.lsum R (R := R) (fun f ↦
+    (TensorProduct.mk S T _ (f.prod (Q.val · ^ ·))).restrictScalars R ∘ₗ (D R S).toLinearMap)
+    ∘ₗ (AddMonoidAlgebra.coeffLinearEquiv _).toLinearMap
 
 lemma δAux_monomial (n r) :
-    δAux R Q (monomial n r) = (n.prod (Q.val · ^ ·)) ⊗ₜ D R S r :=
-  Finsupp.lsum_single _ _ _ _
+    δAux R Q (monomial n r) = (n.prod (Q.val · ^ ·)) ⊗ₜ D R S r := by simp [δAux]
 
 @[simp]
 lemma δAux_X (i) :
@@ -267,7 +267,7 @@ variable {Q} {Q'} in
 lemma δAux_toAlgHom (f : Hom Q Q') (x) :
     δAux R Q' (f.toAlgHom x) = δAux R Q x + Finsupp.linearCombination _ (δAux R Q' ∘ f.val)
       (Q.cotangentSpaceBasis.repr ((1 : T) ⊗ₜ[Q.Ring] D S Q.Ring x :)) := by
-  letI : AddCommGroup (T ⊗[S] Ω[S⁄R]) := inferInstance
+  let : AddCommGroup (T ⊗[S] Ω[S⁄R]) := inferInstance
   have : IsScalarTower Q.Ring Q.Ring T := IsScalarTower.left _
   induction x using MvPolynomial.induction_on with
   | C s => simp [MvPolynomial.algebraMap_eq, δAux_C]
@@ -289,7 +289,7 @@ lemma δAux_ofComp (x : (Q.comp P).Ring) :
     δAux R Q ((Q.ofComp P).toAlgHom x) =
       P.toExtension.toKaehler.baseChange T (CotangentSpace.compEquiv Q P
         (1 ⊗ₜ[(Q.comp P).Ring] (D R (Q.comp P).Ring) x : _)).2 := by
-  letI : AddCommGroup (T ⊗[S] Ω[S⁄R]) := inferInstance
+  let : AddCommGroup (T ⊗[S] Ω[S⁄R]) := inferInstance
   have : IsScalarTower (Q.comp P).Ring (Q.comp P).Ring T := IsScalarTower.left _
   induction x using MvPolynomial.induction_on with
   | C s =>
@@ -437,7 +437,7 @@ lemma exact_map_δ :
 set_option backward.isDefEq.respectTransparency false in
 lemma δ_map (f : Hom Q' Q) (x) :
     δ Q P (Extension.H1Cotangent.map f.toExtensionHom x) = δ Q' P' x := by
-  letI : AddCommGroup (T ⊗[S] Ω[S⁄R]) := inferInstance
+  let : AddCommGroup (T ⊗[S] Ω[S⁄R]) := inferInstance
   obtain ⟨x, hx⟩ := x
   obtain ⟨⟨y, hy⟩, rfl⟩ := Extension.Cotangent.mk_surjective x
   change δ _ _ ⟨_, _⟩ = δ _ _ _

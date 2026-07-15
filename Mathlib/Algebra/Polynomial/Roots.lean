@@ -97,7 +97,6 @@ theorem card_roots_sub_C' {p : R[X]} {a : R} (hp0 : 0 < degree p) :
 
 @[simp]
 theorem count_roots [DecidableEq R] (p : R[X]) : p.roots.count a = rootMultiplicity a p := by
-  classical
   by_cases hp : p = 0
   · simp [hp]
   rw [roots_def, dif_neg hp]

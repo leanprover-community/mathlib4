@@ -82,7 +82,7 @@ structure IsTopologicalBasis (s : Set (Set α)) : Prop where
 subcollections of `s` form a topological basis. -/
 theorem isTopologicalBasis_of_subbasis {s : Set (Set α)} (hs : t = generateFrom s) :
     IsTopologicalBasis ((fun f => ⋂₀ f) '' { f : Set (Set α) | f.Finite ∧ f ⊆ s }) := by
-  subst t; letI := generateFrom s
+  subst t; let := generateFrom s
   refine ⟨?_, ?_, le_antisymm (le_generateFrom ?_) <| generateFrom_anti fun t ht => ?_⟩
   · rintro _ ⟨t₁, ⟨hft₁, ht₁b⟩, rfl⟩ _ ⟨t₂, ⟨hft₂, ht₂b⟩, rfl⟩ x h
     exact ⟨_, ⟨_, ⟨hft₁.union hft₂, union_subset ht₁b ht₂b⟩, sInter_union t₁ t₂⟩, h, Subset.rfl⟩
@@ -416,7 +416,7 @@ instance [TopologicalSpace β] [SeparableSpace α] [SeparableSpace β] : Separab
 instance {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ i, SeparableSpace (X i)]
     [Countable ι] : SeparableSpace (∀ i, X i) := by
   choose t htc htd using (exists_countable_dense <| X ·)
-  haveI := fun i ↦ (htc i).to_subtype
+  have := fun i ↦ (htc i).to_subtype
   nontriviality ∀ i, X i; inhabit ∀ i, X i
   classical
     set f : (Σ I : Finset ι, ∀ i : I, t i) → ∀ i, X i := fun ⟨I, g⟩ i ↦
@@ -528,7 +528,7 @@ theorem IsSeparable.univ_pi {ι : Type*} [Countable ι] {X : ι → Type*} {s : 
   · rw [he]
     exact countable_empty.isSeparable
   · choose c c_count hc using h
-    haveI := fun i ↦ (c_count i).to_subtype
+    have := fun i ↦ (c_count i).to_subtype
     set g : (I : Finset ι) × ((i : I) → c i) → (i : ι) → X i := fun ⟨I, f⟩ i ↦
       if hi : i ∈ I then f ⟨i, hi⟩ else f₀ i
     refine ⟨range g, countable_range g, fun f hf ↦ mem_closure_iff.2 fun o ho hfo ↦ ?_⟩
@@ -866,7 +866,7 @@ instance (priority := 100) [Countable α] [FirstCountableTopology α] :
 theorem secondCountableTopology_induced (α β) [t : TopologicalSpace β] [SecondCountableTopology β]
     (f : α → β) : @SecondCountableTopology α (t.induced f) := by
   rcases @SecondCountableTopology.is_open_generated_countable β _ _ with ⟨b, hb, eq⟩
-  letI := t.induced f
+  let := t.induced f
   refine { is_open_generated_countable := ⟨preimage f '' b, hb.image _, ?_⟩ }
   rw [eq, induced_generateFrom_eq]
 
@@ -915,7 +915,7 @@ theorem isOpen_iUnion_countable [SecondCountableTopology α] {ι} (s : ι → Se
     (H : ∀ i, IsOpen (s i)) : ∃ T : Set ι, T.Countable ∧ ⋃ i ∈ T, s i = ⋃ i, s i := by
   let B := { b ∈ countableBasis α | ∃ i, b ⊆ s i }
   choose f hf using fun b : B => b.2.2
-  haveI : Countable B := ((countable_countableBasis α).mono (sep_subset _ _)).to_subtype
+  have : Countable B := ((countable_countableBasis α).mono (sep_subset _ _)).to_subtype
   refine ⟨_, countable_range f, (iUnion₂_subset_iUnion _ _).antisymm (sUnion_subset ?_)⟩
   rintro _ ⟨i, rfl⟩ x xs
   rcases (isBasis_countableBasis α).exists_subset_of_mem_open xs (H _) with ⟨b, hb, xb, bs⟩
