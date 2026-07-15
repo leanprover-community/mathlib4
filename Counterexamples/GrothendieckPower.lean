@@ -297,11 +297,11 @@ open scoped QuadraticAlgebra
 /-- The intermediate quadratic algebra `B = R[V] / (V² - a²V)`. -/
 abbrev B := QuadraticAlgebra R 0 (a ^ 2)
 
-/-- The generator `V` of `B`, satisfying `V² = a²V`. -/
-abbrev V : B := QuadraticAlgebra.omega
+/-- The generator `VB` of `B`, satisfying `VB² = a²·VB`. -/
+abbrev VB : B := QuadraticAlgebra.omega
 
-@[simp] theorem V_relation : V ^ 2 = algebraMap R B (a ^ 2) * V := by
-  unfold V
+@[simp] theorem VB_relation : VB ^ 2 = algebraMap R B (a ^ 2) * VB := by
+  unfold VB
   rw [pow_two, QuadraticAlgebra.omega_mul_omega_eq_mk]
   ext <;> simp [pow_two]
 
@@ -313,24 +313,24 @@ abbrev bB : B := algebraMap R B b
 
 /-- The coordinate algebra `A = B[U] / (U² - abU + b²V)`, finite free of rank four over the
 base ring `R`. -/
-abbrev A := QuadraticAlgebra B (-(bB ^ 2) * V) (aB * bB)
+abbrev A := QuadraticAlgebra B (-(bB ^ 2) * VB) (aB * bB)
 
 /-- The generator `U` of `A`, satisfying `U² = abU - b²V`. -/
 abbrev U : A := QuadraticAlgebra.omega
 
-/-- The image of `V` in `A`. -/
-abbrev v : A := algebraMap B A V
+/-- The image of `VB` in `A`. -/
+abbrev V : A := algebraMap B A VB
 
 @[simp] theorem U_relation :
-    U ^ 2 = algebraMap R A (a * b) * U - algebraMap R A (b ^ 2) * v := by
+    U ^ 2 = algebraMap R A (a * b) * U - algebraMap R A (b ^ 2) * V := by
   rw [pow_two]
-  unfold U v
+  unfold U V
   rw [QuadraticAlgebra.omega_mul_omega_eq_mk]
-  ext <;> simp [V, aB, bB, pow_two, IsScalarTower.algebraMap_apply R B A]
+  ext <;> simp [VB, aB, bB, pow_two, IsScalarTower.algebraMap_apply R B A]
 
-@[simp] theorem v_relation : v ^ 2 = algebraMap R A (a ^ 2) * v := by
-  change (algebraMap B A V) ^ 2 = algebraMap R A (a ^ 2) * algebraMap B A V
-  rw [← map_pow, V_relation, map_mul, IsScalarTower.algebraMap_apply R B A]
+@[simp] theorem V_relation : V ^ 2 = algebraMap R A (a ^ 2) * V := by
+  change (algebraMap B A VB) ^ 2 = algebraMap R A (a ^ 2) * algebraMap B A VB
+  rw [← map_pow, VB_relation, map_mul, IsScalarTower.algebraMap_apply R B A]
 
 noncomputable instance : Module.Free R A :=
   Module.Free.trans (R := R) (S := B) (M := A)
@@ -342,7 +342,7 @@ theorem finrank_B : Module.finrank R B = 2 :=
   QuadraticAlgebra.finrank_eq_two (0 : R) (a ^ 2)
 
 theorem finrank_A_over_B : Module.finrank B A = 2 :=
-  QuadraticAlgebra.finrank_eq_two (-(bB ^ 2) * V) (aB * bB)
+  QuadraticAlgebra.finrank_eq_two (-(bB ^ 2) * VB) (aB * bB)
 
 theorem finrank_A : Module.finrank R A = 4 := by
   calc
@@ -444,14 +444,14 @@ abbrev aA : A := algebraMap R A a
 abbrev bA : A := algebraMap R A b
 
 /-- The group-like unit controlling the semidirect-product law. -/
-def lambda : A := (1 + aA * U) * (1 + bA * v)
+def lambda : A := (1 + aA * U) * (1 + bA * V)
 
 private theorem mapped_relations {S : Type*} [CommRing S] [Algebra R S]
     (f : A →ₐ[R] S) :
     let aa := f aA
     let bb := f bA
     let uu := f U
-    let vv := f v
+    let vv := f V
     aa ^ 3 = 0 ∧ bb ^ 3 = 0 ∧ aa ^ 2 * bb + 2 = 0 ∧
       vv ^ 2 = aa ^ 2 * vv ∧ uu ^ 2 = aa * bb * uu - bb ^ 2 * vv := by
   dsimp
@@ -472,9 +472,9 @@ private theorem mapped_relations {S : Type*} [CommRing S] [Algebra R S]
         _ = 0 := map_zero _
     simpa only [map_add, map_mul, map_pow, map_ofNat, map_zero] using congr_arg f h
   constructor
-  · rw [← map_pow, v_relation, map_mul]
+  · rw [← map_pow, V_relation, map_mul]
     simp [aA, ← map_pow]
-  · have h : U ^ 2 = aA * bA * U - bA ^ 2 * v := by
+  · have h : U ^ 2 = aA * bA * U - bA ^ 2 * V := by
       simp [aA, bA, map_pow, map_mul]
     simpa only [map_pow, map_sub, map_mul] using congr_arg f h
 
@@ -507,14 +507,14 @@ private theorem right_bA : right bA = bbT := by
 /-- The image of `U` in the left tensor factor. -/
 abbrev u₁ : A ⊗[R] A := left U
 
-/-- The image of `v` in the left tensor factor. -/
-abbrev v₁ : A ⊗[R] A := left v
+/-- The image of `V` in the left tensor factor. -/
+abbrev v₁ : A ⊗[R] A := left V
 
 /-- The image of `U` in the right tensor factor. -/
 abbrev u₂ : A ⊗[R] A := right U
 
-/-- The image of `v` in the right tensor factor. -/
-abbrev v₂ : A ⊗[R] A := right v
+/-- The image of `V` in the right tensor factor. -/
+abbrev v₂ : A ⊗[R] A := right V
 
 /-- The image of `lambda` in the left tensor factor. -/
 abbrev l₁ : A ⊗[R] A := (1 + aaT * u₁) * (1 + bbT * v₁)
@@ -565,7 +565,7 @@ private theorem zero_smul_T (x : A ⊗[R] A) : (0 : R) • x = 0 := by
   | add x y hx hy =>
       rw [TensorProduct.smul_add, hx, hy, add_zero]
 
-/-- First lift of the coproduct, sending `V` to `deltaV`. -/
+/-- First lift of the coproduct, sending `VB` to `deltaV`. -/
 noncomputable def comulB : B →ₐ[R] A ⊗[R] A :=
   QuadraticAlgebra.lift ⟨deltaV, by
     have hsquare : (a • (1 : A ⊗[R] A)) ^ 2 = (a ^ 2 : R) • (1 : A ⊗[R] A) := by
@@ -586,7 +586,7 @@ noncomputable def comulB : B →ₐ[R] A ⊗[R] A :=
           _ = (0 : R) • (1 : A ⊗[R] A) + (a ^ 2 : R) • deltaV := by
             rw [zero_smul_T, zero_add]⟩
 
-@[simp] theorem comulB_V : comulB V = deltaV :=
+@[simp] theorem comulB_VB : comulB VB = deltaV :=
   quadratic_lift_omega deltaV _
 
 theorem comulB_aB : comulB aB = aaT := by
@@ -615,17 +615,17 @@ noncomputable instance instAlgebraBT : Algebra B (A ⊗[R] A) :=
   comulB.toRingHom.toAlgebra' fun (c : B) (x : A ⊗[R] A) ↦ mul_comm (comulB c) x
 
 private theorem deltaU_root_mul :
-    deltaU * deltaU = comulB (-(bB ^ 2) * V) * 1 +
+    deltaU * deltaU = comulB (-(bB ^ 2) * VB) * 1 +
       comulB (aB * bB) * deltaU := by
-  have hc : comulB (-(bB ^ 2) * V) = -(bbT ^ 2) * deltaV := by
+  have hc : comulB (-(bB ^ 2) * VB) = -(bbT ^ 2) * deltaV := by
     have hn : comulB (-(bB ^ 2)) = -(comulB bB ^ 2) := by
       calc
         comulB (-(bB ^ 2)) = -comulB (bB ^ 2) := comulB_neg _
         _ = -(comulB bB ^ 2) := congr_arg Neg.neg comulB_bB_sq
     calc
-      comulB (-(bB ^ 2) * V) = comulB (-(bB ^ 2)) * comulB V := comulB.map_mul _ _
-      _ = -(comulB bB ^ 2) * comulB V := by rw [hn]
-      _ = -(bbT ^ 2) * deltaV := by rw [comulB_bB, comulB_V]
+      comulB (-(bB ^ 2) * VB) = comulB (-(bB ^ 2)) * comulB VB := comulB.map_mul _ _
+      _ = -(comulB bB ^ 2) * comulB VB := by rw [hn]
+      _ = -(bbT ^ 2) * deltaV := by rw [comulB_bB, comulB_VB]
   have hl : comulB (aB * bB) = aaT * bbT := by
     calc
       comulB (aB * bB) = comulB aB * comulB bB := comulB.map_mul _ _
@@ -639,7 +639,7 @@ private theorem deltaU_root_mul :
 /-- The outer quadratic lift defining the coproduct. -/
 noncomputable def comulOuter : A →ₐ[B] A ⊗[R] A :=
   QuadraticAlgebra.lift ⟨deltaU, by
-    change deltaU * deltaU = comulB (-(bB ^ 2) * V) * 1 +
+    change deltaU * deltaU = comulB (-(bB ^ 2) * VB) * 1 +
       comulB (aB * bB) * deltaU
     exact deltaU_root_mul⟩
 
@@ -656,12 +656,12 @@ noncomputable def comul : A →ₐ[R] A ⊗[R] A :=
         _ = comulB (algebraMap R B r) := rfl
         _ = algebraMap R (A ⊗[R] A) r := comulB.commutes r }
 
-theorem comul_v : comul v = deltaV := by
+theorem comul_V : comul V = deltaV := by
   calc
-    comul v = comulOuter (algebraMap B A V) := rfl
-    _ = algebraMap B (A ⊗[R] A) V := comulOuter.commutes V
-    _ = comulB V := rfl
-    _ = deltaV := comulB_V
+    comul V = comulOuter (algebraMap B A VB) := rfl
+    _ = algebraMap B (A ⊗[R] A) VB := comulOuter.commutes VB
+    _ = comulB VB := rfl
+    _ = deltaV := comulB_VB
 
 theorem comul_U : comul U = deltaU := by
   apply quadratic_lift_omega
@@ -695,7 +695,7 @@ theorem right_lambda : right lambda = l₂ := by
   have hone : comul (1 : A) = 1 := comul.map_one
   unfold lambda
   simp only [map_mul, map_add]
-  rw [hone, comul_aA, comul_bA, comul_U, comul_v]
+  rw [hone, comul_aA, comul_bA, comul_U, comul_V]
   exact delta_lambda
 
 @[simp] theorem comul_U_formula :
@@ -703,29 +703,29 @@ theorem right_lambda : right lambda = l₂ := by
   rw [comul_U, left_lambda]
   rfl
 
-@[simp] theorem comul_v_formula :
-    comul v = left v * right lambda + right v := by
-  rw [comul_v, right_lambda]
+@[simp] theorem comul_V_formula :
+    comul V = left V * right lambda + right V := by
+  rw [comul_V, right_lambda]
   rfl
 
 /-- Two `R`-algebra maps out of `A` agree if they agree on `U` and `V`. -/
 theorem algHom_ext {S : Type*} [Semiring S] [Algebra R S]
-    {f g : A →ₐ[R] S} (hU : f U = g U) (hv : f v = g v) : f = g := by
+    {f g : A →ₐ[R] S} (hU : f U = g U) (hv : f V = g V) : f = g := by
   apply DFunLike.ext _ _
   intro x
   have h_embed (z : B) :
-      algebraMap B A z = algebraMap R A z.re + algebraMap R A z.im * v := by
-    have hz : z = algebraMap R B z.re + algebraMap R B z.im * V := by
+      algebraMap B A z = algebraMap R A z.re + algebraMap R A z.im * V := by
+    have hz : z = algebraMap R B z.re + algebraMap R B z.im * VB := by
       calc
         z = ⟨z.re, z.im⟩ := rfl
-        _ = algebraMap R B z.re + z.im • V :=
+        _ = algebraMap R B z.re + z.im • VB :=
           QuadraticAlgebra.mk_eq_add_smul_omega z.re z.im
-        _ = algebraMap R B z.re + algebraMap R B z.im * V := by
-          apply QuadraticAlgebra.ext <;> simp [V]
+        _ = algebraMap R B z.re + algebraMap R B z.im * VB := by
+          apply QuadraticAlgebra.ext <;> simp [VB]
     calc
       algebraMap B A z = algebraMap B A
-          (algebraMap R B z.re + algebraMap R B z.im * V) := congr_arg _ hz
-      _ = algebraMap R A z.re + algebraMap R A z.im * v := by
+          (algebraMap R B z.re + algebraMap R B z.im * VB) := congr_arg _ hz
+      _ = algebraMap R A z.re + algebraMap R A z.im * V := by
         rw [map_add, map_mul, ← IsScalarTower.algebraMap_apply R B A,
           ← IsScalarTower.algebraMap_apply R B A]
   have hB (z : B) : f (algebraMap B A z) = g (algebraMap B A z) := by
@@ -740,11 +740,11 @@ theorem algHom_ext {S : Type*} [Semiring S] [Algebra R S]
 ### The counit and the bialgebra structure
 -/
 
-/-- The inner counit, sending `V` to zero. -/
+/-- The inner counit, sending `VB` to zero. -/
 noncomputable def counitB : B →ₐ[R] R :=
   QuadraticAlgebra.lift ⟨0, by simp⟩
 
-@[simp] theorem counitB_V : counitB V = 0 :=
+@[simp] theorem counitB_VB : counitB VB = 0 :=
   quadratic_lift_omega 0 _
 
 noncomputable instance instAlgebraBR : Algebra B R :=
@@ -753,7 +753,7 @@ noncomputable instance instAlgebraBR : Algebra B R :=
 /-- The outer counit, sending `U` to zero. -/
 noncomputable def counitOuter : A →ₐ[B] R :=
   QuadraticAlgebra.lift ⟨0, by
-    change (0 : R) * 0 = counitB (-(bB ^ 2) * V) * 1 +
+    change (0 : R) * 0 = counitB (-(bB ^ 2) * VB) * 1 +
       counitB (aB * bB) * 0
     simp⟩
 
@@ -770,12 +770,12 @@ noncomputable def counit : A →ₐ[R] R :=
         _ = counitB (algebraMap R B r) := rfl
         _ = r := counitB.commutes r }
 
-@[simp] theorem counit_v : counit v = 0 := by
+@[simp] theorem counit_V : counit V = 0 := by
   calc
-    counit v = counitOuter (algebraMap B A V) := rfl
-    _ = algebraMap B R V := counitOuter.commutes V
-    _ = counitB V := rfl
-    _ = 0 := counitB_V
+    counit V = counitOuter (algebraMap B A VB) := rfl
+    _ = algebraMap B R VB := counitOuter.commutes VB
+    _ = counitB VB := rfl
+    _ = 0 := counitB_VB
 
 @[simp] theorem counit_U : counit U = 0 := by
   apply quadratic_lift_omega
@@ -790,7 +790,7 @@ private theorem comul_coassoc :
   apply algHom_ext (S := TensorProduct R A (TensorProduct R A A))
   · simp [comul_U_formula, comul_lambda, Algebra.TensorProduct.one_def,
       TensorProduct.add_tmul, TensorProduct.tmul_add, add_assoc]
-  · simp [comul_v_formula, comul_lambda, Algebra.TensorProduct.one_def,
+  · simp [comul_V_formula, comul_lambda, Algebra.TensorProduct.one_def,
       TensorProduct.add_tmul, TensorProduct.tmul_add, add_assoc]
 
 private theorem counit_left :
@@ -871,7 +871,7 @@ theorem theta_sq : theta ^ 2 = 0 := by
   obtain ⟨ha, hb, hab, hv, hu⟩ := mapped_relations (AlgHom.id R A)
   exact (theta_identities_generic _ _ _ _ ha hb hab hv hu).1
 
-theorem two_theta : 2 * theta = 2 * bA * v := by
+theorem two_theta : 2 * theta = 2 * bA * V := by
   obtain ⟨ha, hb, hab, hv, hu⟩ := mapped_relations (AlgHom.id R A)
   exact (theta_identities_generic _ _ _ _ ha hb hab hv hu).2
 
@@ -906,15 +906,15 @@ theorem powerMap_succ_U (n : ℕ) :
       rw [← Bialgebra.comulAlgHom_apply, bialgebra_comulAlgHom, comul_U_formula]
       simp [universalPoint, powerMap]
 
-theorem powerMap_succ_v (n : ℕ) :
-    powerMap (n + 1) v = powerMap n v * lambda + v := by
+theorem powerMap_succ_V (n : ℕ) :
+    powerMap (n + 1) V = powerMap n V * lambda + V := by
   calc
-    powerMap (n + 1) v = (universalPoint ^ n * universalPoint).ofConv v :=
-      congr_arg (fun f : WithConv (A →ₐ[R] A) ↦ f.ofConv v)
+    powerMap (n + 1) V = (universalPoint ^ n * universalPoint).ofConv V :=
+      congr_arg (fun f : WithConv (A →ₐ[R] A) ↦ f.ofConv V)
         (pow_succ universalPoint n)
-    _ = powerMap n v * lambda + v := by
+    _ = powerMap n V * lambda + V := by
       rw [AlgHom.convMul_apply]
-      rw [← Bialgebra.comulAlgHom_apply, bialgebra_comulAlgHom, comul_v_formula]
+      rw [← Bialgebra.comulAlgHom_apply, bialgebra_comulAlgHom, comul_V_formula]
       simp [universalPoint, powerMap]
 
 theorem powerMap_succ_lambda (n : ℕ) :
@@ -994,17 +994,17 @@ theorem powerMap_U (n : ℕ) : powerMap n U = geomSum n * U := by
         _ = geomSum n * U + lambda ^ n * U := by rw [ih, powerMap_lambda]
         _ = geomSum (n + 1) * U := by rw [geomSum_succ, add_mul]
 
-theorem powerMap_v (n : ℕ) : powerMap n v = v * geomSum n := by
+theorem powerMap_V (n : ℕ) : powerMap n V = V * geomSum n := by
   induction n with
-  | zero => simp [powerMap_zero_apply, counit_v]
+  | zero => simp [powerMap_zero_apply, counit_V]
   | succ n ih =>
       calc
-        powerMap (n + 1) v = powerMap n v * lambda + v := powerMap_succ_v n
-        _ = v * geomSum n * lambda + v := by rw [ih]
-        _ = v * (geomSum n * lambda + 1) := by ring
-        _ = v * geomSum (n + 1) := by rw [geomSum_mul_lambda_add_one]
+        powerMap (n + 1) V = powerMap n V * lambda + V := powerMap_succ_V n
+        _ = V * geomSum n * lambda + V := by rw [ih]
+        _ = V * (geomSum n * lambda + 1) := by ring
+        _ = V * geomSum (n + 1) := by rw [geomSum_mul_lambda_add_one]
 
-theorem geomSum_four : geomSum 4 = 2 * bA * v := by
+theorem geomSum_four : geomSum 4 = 2 * bA * V := by
   norm_num [geomSum, Finset.sum_range_succ]
   rw [lambda_eq_one_add_theta]
   ring_nf
@@ -1016,30 +1016,30 @@ theorem geomSum_four : geomSum 4 = 2 * bA * v := by
   ring_nf
   linear_combination two_theta + theta * four_eq_zero
 
-theorem powerMap_four_U : powerMap 4 U = 2 * bA * U * v := by
+theorem powerMap_four_U : powerMap 4 U = 2 * bA * U * V := by
   rw [powerMap_U, geomSum_four]
   ring
 
-theorem two_b_U_v_ne_zero : 2 * bA * U * v ≠ 0 := by
+theorem two_b_U_V_ne_zero : 2 * bA * U * V ≠ 0 := by
   intro h
   have hOuter := congr_arg (fun x : A ↦ x.im) h
   have hInner := congr_arg (fun x : B ↦ x.im) hOuter
   apply two_b_ne_zero
-  simpa [bA, U, v, V, IsScalarTower.algebraMap_apply R B A] using hInner
+  simpa [bA, U, V, VB, IsScalarTower.algebraMap_apply R B A] using hInner
 
 theorem powerMap_four_U_ne_zero : powerMap 4 U ≠ 0 := by
   rw [powerMap_four_U]
-  exact two_b_U_v_ne_zero
+  exact two_b_U_V_ne_zero
 
-theorem powerMap_four_v : powerMap 4 v = 0 := by
-  rw [powerMap_v, geomSum_four]
-  have hv : v ^ 2 = aA ^ 2 * v := by
+theorem powerMap_four_V : powerMap 4 V = 0 := by
+  rw [powerMap_V, geomSum_four]
+  have hv : V ^ 2 = aA ^ 2 * V := by
     simp [aA, map_pow]
   have hab : aA ^ 2 * bA + 2 = 0 := by
     obtain ⟨_, _, hab, _, _⟩ := mapped_relations (AlgHom.id R A)
     exact hab
-  rw [show v * (2 * bA * v) = 2 * bA * v ^ 2 by ring, hv]
-  linear_combination 2 * v * hab - v * four_eq_zero
+  rw [show V * (2 * bA * V) = 2 * bA * V ^ 2 by ring, hv]
+  linear_combination 2 * V * hab - V * four_eq_zero
 
 theorem geomSum_eight : geomSum 8 = 0 := by
   norm_num [geomSum, Finset.sum_range_succ]
@@ -1067,13 +1067,13 @@ theorem geomSum_eight : geomSum 8 = 0 := by
 theorem powerMap_eight_U : powerMap 8 U = 0 := by
   rw [powerMap_U, geomSum_eight, zero_mul]
 
-theorem powerMap_eight_v : powerMap 8 v = 0 := by
-  rw [powerMap_v, geomSum_eight, mul_zero]
+theorem powerMap_eight_V : powerMap 8 V = 0 := by
+  rw [powerMap_V, geomSum_eight, mul_zero]
 
 theorem powerMap_eight : powerMap 8 = (Algebra.ofId R A).comp counit := by
   apply algHom_ext
   · simp [powerMap_eight_U]
-  · simp [powerMap_eight_v]
+  · simp [powerMap_eight_V]
 
 theorem universalPoint_pow_eight : universalPoint ^ 8 = 1 := by
   apply WithConv.ext
@@ -1196,13 +1196,13 @@ not cocommutative.  We verify this directly: the coefficient functional of `U` d
 `Δ(U)` from its swap.
 -/
 
-/-- The `R`-linear coefficient functional of `U` in the basis `1, v, U, U * v` of `A`. -/
+/-- The `R`-linear coefficient functional of `U` in the basis `1, V, U, U * V` of `A`. -/
 private def coeffU : A →ₗ[R] R where
   toFun x := x.im.re
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
-/-- The `R`-linear coefficient functional of `v` in the basis `1, v, U, U * v` of `A`. -/
+/-- The `R`-linear coefficient functional of `V` in the basis `1, V, U, U * V` of `A`. -/
 private def coeffV : A →ₗ[R] R where
   toFun x := x.re.im
   map_add' _ _ := rfl
@@ -1227,7 +1227,7 @@ theorem not_isCocomm : ¬Coalgebra.IsCocomm R A := by
   have hUU : coeffU U = 1 := rfl
   have hVlam : coeffV lambda = b := by
     change lambda.re.im = b
-    simp [lambda, aA, bA, U, v, V, IsScalarTower.algebraMap_apply R B A]
+    simp [lambda, aA, bA, U, V, VB, IsScalarTower.algebraMap_apply R B A]
   simp only [map_add, TensorProduct.map_tmul, TensorProduct.lid_tmul, hV1, hVU, hVlam, hU1,
     hUU, smul_eq_mul, one_mul, mul_zero, add_zero, zero_add] at h2
   exact two_b_ne_zero (by rw [h2, mul_zero])
