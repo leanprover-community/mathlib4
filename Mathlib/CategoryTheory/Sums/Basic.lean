@@ -43,7 +43,7 @@ namespace CategoryTheory
 universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 
 -- morphism levels before object levels. See note [category_theory universes].
-open Sum Functor
+open Sum CategoryTheory.Functor
 
 section
 

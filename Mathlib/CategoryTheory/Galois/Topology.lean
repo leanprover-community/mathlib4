@@ -34,7 +34,7 @@ namespace CategoryTheory
 
 namespace PreGaloisCategory
 
-open Functor
+open CategoryTheory.Functor
 
 variable {C : Type u₁} [Category.{u₂} C] (F : C ⥤ FintypeCat.{w})
 

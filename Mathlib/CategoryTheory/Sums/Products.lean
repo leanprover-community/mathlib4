@@ -22,9 +22,9 @@ the product side.
 
 namespace CategoryTheory
 
-open Functor
+open CategoryTheory.Functor
 
-open scoped Prod
+open scoped CategoryTheory.Prod
 
 universe v u
 

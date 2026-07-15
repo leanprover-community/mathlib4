@@ -27,7 +27,7 @@ namespace CategoryTheory
 
 variable {C : Type*} [Category* C] [MonoidalCategory C]
 
-open MonoidalCategory Functor
+open MonoidalCategory CategoryTheory.Functor
 
 namespace BraidedCategory
 

@@ -32,7 +32,7 @@ apply Day's reflection theorem to prove that `C` is also closed monoidal.
 
 namespace CategoryTheory.Monoidal.Reflective
 
-open Category MonoidalCategory MonoidalClosed BraidedCategory Functor
+open Category MonoidalCategory MonoidalClosed BraidedCategory CategoryTheory.Functor
 
 variable {C D : Type*} [Category* C] [Category* D]
 

@@ -280,7 +280,7 @@ noncomputable def mapCommGrpFunctor : (C ⥤ₗ D) ⥤ CommGrp C ⥤ CommGrp D w
 
 end Functor
 
-open Functor
+open CategoryTheory.Functor
 
 namespace Adjunction
 variable {F : C ⥤ D} {G : D ⥤ C} (a : F ⊣ G) [F.Braided] [G.Braided]

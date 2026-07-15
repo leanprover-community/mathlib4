@@ -24,7 +24,7 @@ universe v' v u
 
 namespace CategoryTheory.GrothendieckTopology
 
-open Opposite Functor
+open Opposite CategoryTheory.Functor
 
 variable {C : Type u} [Category.{v} C] (J : GrothendieckTopology C) [Subcanonical J]
 

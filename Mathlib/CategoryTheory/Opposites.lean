@@ -106,7 +106,7 @@ theorem op_comp_unop {X Y Z : Cᵒᵖ} (f : X ⟶ Y) (g : Y ⟶ Z) : (g.unop ≫
 
 end
 
-open Functor
+open CategoryTheory.Functor
 
 variable [Category.{v₁} C]
 

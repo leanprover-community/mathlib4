@@ -54,7 +54,7 @@ is just a variant of `limit_ext'`. -/
 
 variable (F : J × K ⥤ Type v)
 
-open Prod
+open CategoryTheory.Prod
 
 variable [IsFiltered K]
 

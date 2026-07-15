@@ -768,7 +768,7 @@ end
 
 section
 
-open Functor
+open CategoryTheory.Functor
 
 set_option backward.defeqAttrib.useBackward true in
 lemma isIso_app_coconePt_of_preservesColimit

@@ -41,7 +41,7 @@ universe u
 
 namespace CategoryTheory
 
-open MonoidalCategory Functor
+open MonoidalCategory CategoryTheory.Functor
 
 namespace FreeMonoidalCategory
 

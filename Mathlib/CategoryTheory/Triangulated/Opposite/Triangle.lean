@@ -29,7 +29,7 @@ between `(Triangle C)ᵒᵖ` and `Triangle Cᵒᵖ`, called
 
 namespace CategoryTheory.Pretriangulated
 
-open Category Limits Preadditive ZeroObject Opposite
+open Category Limits Preadditive ZeroObject Pretriangulated.Opposite
 
 variable (C : Type*) [Category* C] [HasShift C ℤ]
 

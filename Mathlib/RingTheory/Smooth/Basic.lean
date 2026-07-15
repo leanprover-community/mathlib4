@@ -453,7 +453,6 @@ end surjective
 
 section BaseChange
 
-open scoped TensorProduct
 
 variable {R : Type*} [CommRing R]
 variable {A : Type*} [CommRing A] [Algebra R A]

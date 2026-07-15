@@ -412,7 +412,6 @@ theorem Finsupp.multinomial_of_support_subset {σ : Type*} {d : σ →₀ ℕ} {
 
 namespace List
 
-open Nat
 
 lemma toFinsupp_sum {α : Type*} [AddCommMonoid α] [DecidableEq α] (l : List α) :
     l.toFinsupp.sum (fun _ a ↦ a) = l.sum := by

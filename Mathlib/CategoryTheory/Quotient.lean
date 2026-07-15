@@ -28,7 +28,7 @@ deriving Inhabited
 
 namespace CategoryTheory
 
-open Functor
+open CategoryTheory.Functor
 
 section
 

@@ -44,7 +44,7 @@ variable {C₁ C₂ D₁ D₂ : Type*} [Category* C₁] [Category* C₂] [Catego
 
 namespace Adjunction
 
-open Functor
+open CategoryTheory.Functor
 
 set_option backward.defeqAttrib.useBackward true in
 /-- Auxiliary definition for `Adjunction.derived`. -/

@@ -67,7 +67,7 @@ namespace CategoryTheory.Pseudofunctor
 
 universe w v₁ v₂ v₃ u₁ u₂ u₃
 
-open Functor Category Opposite Discrete Bicategory StrongTrans
+open CategoryTheory.Functor Category Opposite Discrete Bicategory StrongTrans
 
 variable {𝒮 : Type u₁} [Category.{v₁} 𝒮]
 

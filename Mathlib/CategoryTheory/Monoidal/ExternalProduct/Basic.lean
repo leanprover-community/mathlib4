@@ -21,7 +21,7 @@ The notation `- ⊠ -` is scoped to `MonoidalCategory.ExternalProduct`.
 universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 
 namespace CategoryTheory.MonoidalCategory
-open Functor
+open CategoryTheory.Functor
 
 variable (J₁ : Type u₁) (J₂ : Type u₂) (C : Type u₃)
     [Category.{v₁} J₁] [Category.{v₂} J₂] [Category.{v₃} C] [MonoidalCategory C]

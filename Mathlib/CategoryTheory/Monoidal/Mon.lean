@@ -1058,7 +1058,7 @@ def mapMonFunctor : LaxMonoidalFunctor C D ⥤ Mon C ⥤ Mon D where
 
 end Functor
 
-open Functor
+open CategoryTheory.Functor
 
 namespace Adjunction
 variable {F : C ⥤ D} {G : D ⥤ C} (a : F ⊣ G) [F.Monoidal] [G.LaxMonoidal] [a.IsMonoidal]

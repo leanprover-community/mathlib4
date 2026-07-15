@@ -348,7 +348,7 @@ example : module I = @Algebra.toModule (AdicCompletion I R)
 
 section liftRingHom
 
-open Ideal Quotient
+open Quotient
 
 variable {R S : Type*} [NonAssocSemiring R] [CommRing S] (I : Ideal S)
 

@@ -63,7 +63,7 @@ namespace CategoryTheory
 
 namespace PreGaloisCategory
 
-open Limits Functor
+open Limits CategoryTheory.Functor
 
 variable {C : Type u₁} [Category.{u₂} C] [GaloisCategory C]
 

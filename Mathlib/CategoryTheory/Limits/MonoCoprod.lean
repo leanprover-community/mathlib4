@@ -232,7 +232,7 @@ instance mono_ι [HasCoproduct X] (i : I)
 
 end
 
-open Functor
+open CategoryTheory.Functor
 
 section Preservation
 

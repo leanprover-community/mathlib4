@@ -155,7 +155,7 @@ lemma isLeftDerivabilityStructure_of_equivalences
   have := R.isLocalizedEquivalence_of_isInduced
   exact isLeftDerivabilityStructure_of_isLocalizedEquivalence iso
 
-open Functor in
+open CategoryTheory.Functor in
 lemma isLeftDerivabilityStructure_iff_of_equivalences
     (iso : T.functor ⋙ R.functor ≅ L.functor ⋙ B.functor) :
     T.IsLeftDerivabilityStructure ↔ B.IsLeftDerivabilityStructure :=
