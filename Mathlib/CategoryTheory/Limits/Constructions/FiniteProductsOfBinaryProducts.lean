@@ -126,17 +126,17 @@ set_option backward.defeqAttrib.useBackward true in
 lemma preservesFinOfPreservesBinaryAndTerminal :
     ∀ (n : ℕ) (f : Fin n → C), PreservesLimit (Discrete.functor f) F
   | 0 => fun f => by
-    letI : PreservesLimitsOfShape (Discrete (Fin 0)) F :=
+    let : PreservesLimitsOfShape (Discrete (Fin 0)) F :=
       preservesLimitsOfShape_of_equiv.{0, 0} (Discrete.equivalence finZeroEquiv'.symm) _
     infer_instance
   | n + 1 => by
-    haveI := preservesFinOfPreservesBinaryAndTerminal n
+    have := preservesFinOfPreservesBinaryAndTerminal n
     intro f
     apply
       preservesLimit_of_preserves_limit_cone
         (extendFanIsLimit f (limit.isLimit _) (limit.isLimit _)) _
     apply (isLimitMapConeFanMkEquiv _ _ _).symm _
-    let this :=
+    let :=
       extendFanIsLimit (fun i => F.obj (f i)) (isLimitOfHasProductOfPreservesLimit F _)
         (isLimitOfHasBinaryProductOfPreservesLimit F _ _)
     refine IsLimit.ofIsoLimit this ?_
@@ -157,7 +157,7 @@ lemma Limits.PreservesFiniteProducts.of_preserves_binary_and_terminal :
   preserves n := by
     refine ⟨fun {K} ↦ ?_⟩
     let that : (Discrete.functor fun n => K.obj ⟨n⟩) ≅ K := Discrete.natIso fun ⟨i⟩ => Iso.refl _
-    haveI := preservesFinOfPreservesBinaryAndTerminal F n fun n => K.obj ⟨n⟩
+    have := preservesFinOfPreservesBinaryAndTerminal F n fun n => K.obj ⟨n⟩
     apply preservesLimit_of_iso_diagram F that
 
 end Preserves
@@ -251,17 +251,17 @@ set_option backward.defeqAttrib.useBackward true in
 lemma preserves_fin_of_preserves_binary_and_initial :
     ∀ (n : ℕ) (f : Fin n → C), PreservesColimit (Discrete.functor f) F
   | 0 => fun f => by
-    letI : PreservesColimitsOfShape (Discrete (Fin 0)) F :=
+    let : PreservesColimitsOfShape (Discrete (Fin 0)) F :=
       preservesColimitsOfShape_of_equiv.{0, 0} (Discrete.equivalence finZeroEquiv'.symm) _
     infer_instance
   | n + 1 => by
-    haveI := preserves_fin_of_preserves_binary_and_initial n
+    have := preserves_fin_of_preserves_binary_and_initial n
     intro f
     apply
       preservesColimit_of_preserves_colimit_cocone
         (extendCofanIsColimit f (colimit.isColimit _) (colimit.isColimit _)) _
     apply (isColimitMapCoconeCofanMkEquiv _ _ _).symm _
-    let this :=
+    let :=
       extendCofanIsColimit (fun i => F.obj (f i))
         (isColimitOfHasCoproductOfPreservesColimit F _)
         (isColimitOfHasBinaryCoproductOfPreservesColimit F _ _)
@@ -282,7 +282,7 @@ lemma preservesShape_fin_of_preserves_binary_and_initial (n : ℕ) :
     PreservesColimitsOfShape (Discrete (Fin n)) F where
   preservesColimit {K} := by
     let that : (Discrete.functor fun n => K.obj ⟨n⟩) ≅ K := Discrete.natIso fun ⟨i⟩ => Iso.refl _
-    haveI := preserves_fin_of_preserves_binary_and_initial F n fun n => K.obj ⟨n⟩
+    have := preserves_fin_of_preserves_binary_and_initial F n fun n => K.obj ⟨n⟩
     apply preservesColimit_of_iso_diagram F that
 
 /-- If `F` preserves the initial object and binary coproducts then it preserves finite products. -/
