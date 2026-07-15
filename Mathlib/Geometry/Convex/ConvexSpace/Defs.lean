@@ -205,7 +205,7 @@ lemma support_weights_restrict (w : StdSimplex K X) (s : Set X) (hs) [DecidableP
   have : (w.weights.filter (· ∈ s)).sum (fun x k ↦ k) ≠ 0 :=
     (sum_pos (by simp +contextual [lt_iff_le_and_ne, eq_comm]) <| by
       simpa [ne_iff, filter_apply]).ne'
-  rw [weights_restrict, support_smul_eq (by exact inv_ne_zero this)]
+  rw [weights_restrict, support_smul_eq (inv_ne_zero this)]
   simp
 
 @[simp] lemma restrict_singleton (w : StdSimplex K X) (x : X) (hx) :

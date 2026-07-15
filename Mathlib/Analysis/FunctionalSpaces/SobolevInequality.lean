@@ -337,7 +337,7 @@ theorem lintegral_pow_le_pow_lintegral_fderiv_aux [Fintype ι]
   calc ‖u x‖ₑ
     _ ≤ ∫⁻ xᵢ in Iic (x i), ‖deriv (u ∘ update x i) xᵢ‖ₑ := by
         apply le_trans (by simp) (HasCompactSupport.enorm_le_lintegral_Ici_deriv _ _ _)
-        · exact hu.comp (by exact contDiff_update 1 x i)
+        · exact hu.comp (contDiff_update 1 x i)
         · exact h2u.comp_isClosedEmbedding (isClosedEmbedding_update x i)
     _ ≤ ∫⁻ xᵢ, ‖fderiv ℝ u (update x i xᵢ)‖ₑ := ?_
   gcongr with y

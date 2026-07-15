@@ -653,8 +653,8 @@ protected def openPartialHomeomorph (e : PartialEquiv M H) (he : e ∈ c.atlas) 
     @OpenPartialHomeomorph M H c.toTopologicalSpace _ :=
   { __ := c.toTopologicalSpace
     __ := e
-    open_source := by exact c.open_source' he
-    open_target := by exact c.open_target he
+    open_source := c.open_source' he
+    open_target := c.open_target he
     continuousOn_toFun := by
       let : TopologicalSpace M := c.toTopologicalSpace
       rw [continuousOn_open_iff (c.open_source' he)]

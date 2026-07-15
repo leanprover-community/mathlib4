@@ -562,7 +562,7 @@ lemma smul_measure_isMulInvariant_le_of_isCompact_closure [LocallyCompactSpace G
   obtain ⟨-, hf, ⟨f, f_cont, f_comp, rfl⟩, νf⟩ :
       ∃ K ⊆ s, (∃ f, Continuous f ∧ HasCompactSupport f ∧ K = f ⁻¹' {1}) ∧ r < ν K :=
     innerRegularWRT_preimage_one_hasCompactSupport_measure_ne_top_of_group ⟨hs, this⟩ r
-      (by exact hr)
+      (hr)
   calc
   r < ν (f ⁻¹' {1}) := νf
   _ = μ' (f ⁻¹' {1}) :=

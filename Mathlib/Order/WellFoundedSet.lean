@@ -794,7 +794,7 @@ noncomputable def minBadSeqOfBadSeq (r : α → α → Prop) (rk : α → ℕ) (
     have h : ∃ (k : ℕ) (g : ℕ → α), (∀ m, m < n → f m = g m) ∧ IsBadSeq r s g ∧ rk (g n) = k :=
       ⟨_, f, fun _ _ => rfl, hf, rfl⟩
     obtain ⟨h1, h2, h3⟩ := Classical.choose_spec (Nat.find_spec h)
-    refine ⟨Classical.choose (Nat.find_spec h), h1, by exact h2, fun g hg1 hg2 con => ?_⟩
+    refine ⟨Classical.choose (Nat.find_spec h), h1, h2, fun g hg1 hg2 con => ?_⟩
     refine Nat.find_min h ?_ ⟨g, fun m mn => (h1 m mn).trans (hg1 m mn), con, rfl⟩
     rwa [← h3]
 

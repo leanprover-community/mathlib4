@@ -503,8 +503,7 @@ theorem hasSum_fourier_series_of_summable (h : Summable (fourierCoeff f)) :
 converges everywhere pointwise to `f`. -/
 theorem has_pointwise_sum_fourier_series_of_summable (h : Summable (fourierCoeff f))
     (x : AddCircle T) : HasSum (fun i => fourierCoeff f i • fourier i x) (f x) := by
-  -- faster than `exact`
-  convert! (ContinuousMap.evalCLM ℂ x).hasSum (hasSum_fourier_series_of_summable h)
+  exact (ContinuousMap.evalCLM ℂ x).hasSum (hasSum_fourier_series_of_summable h)
 
 end Convergence
 

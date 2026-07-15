@@ -99,7 +99,7 @@ theorem inter_consecutive (n m l : ℕ) : Ico n m ∩ Ico m l = [] := by
 @[simp]
 theorem bagInter_consecutive (n m l : Nat) :
     @List.bagInter ℕ instBEqOfDecidableEq (Ico n m) (Ico m l) = [] :=
-  (bagInter_nil_iff_inter_nil _ _).2 (by exact inter_consecutive n m l)
+  (bagInter_nil_iff_inter_nil _ _).2 (inter_consecutive n m l)
 
 @[simp]
 theorem succ_singleton {n : ℕ} : Ico n (n + 1) = [n] := by
