@@ -88,7 +88,7 @@ lemma isCardinalAccessibleCategory [IsCardinalAccessibleCategory C κ]
     IsCardinalAccessibleCategory D κ where
   toHasCardinalFilteredColimits := ⟨fun J _ _ ↦
     let : Reflective G := ⟨_, adj⟩
-    have := HasCardinalFilteredColimits.hasColimitsOfShape κ J (C := C)
+    have := HasCardinalFilteredColimits.hasColimitsOfShape C κ J
     hasColimitsOfShape_of_reflective G⟩
   toHasCardinalFilteredGenerator := adj.hasCardinalFilteredGenerator κ
 
