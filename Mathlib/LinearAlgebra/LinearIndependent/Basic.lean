@@ -603,7 +603,7 @@ theorem LinearIndepOn.algebraMap_comp_iff {ι : Type*} {v : ι → S} {s : Set �
   LinearIndependent.algebraMap_comp_iff
 
 @[simp]
-theorem LinearIndepOn.image_algebraMap_iff {s : Set S} :
+theorem LinearIndepOn.id_image_algebraMap_iff {s : Set S} :
     LinearIndepOn R id (algebraMap S A '' s) ↔ LinearIndepOn R id s :=
   (linearIndepOn_iff_image (by simp)).symm.trans LinearIndepOn.algebraMap_comp_iff
 
