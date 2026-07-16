@@ -268,6 +268,7 @@ theorem exists_code.comp {m n} {f : List.Vector ℕ n →. ℕ} {g : Fin n → L
         simp [Vector.mOfFn, hg₁, hl]
         rfl⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem exists_code {n} {f : List.Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
     ∃ c : Code, ∀ v : List.Vector ℕ n, c.eval v.1 = pure <$> f v := by
   induction hf with
@@ -279,7 +280,7 @@ theorem exists_code {n} {f : List.Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
       refine Fin.succRec (fun n => ?_) (fun n i IH => ?_) i
       · exact ⟨head, fun ⟨List.cons a as, _⟩ => by simp; rfl⟩
       · obtain ⟨c, h⟩ := IH
-        exact ⟨c.comp tail, fun v => by simpa [← Vector.get_tail_succ, Bind.bind] using h v.tail⟩
+        exact ⟨c.comp tail, fun v => by simpa [← Vector.get_tail, Bind.bind] using h v.tail⟩
     | comp g hf hg IHf IHg =>
       simpa [Part.bind_eq_bind] using exists_code.comp IHf IHg
     | @prec n f g _ _ IHf IHg =>
