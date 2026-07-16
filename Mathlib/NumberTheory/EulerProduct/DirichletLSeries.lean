@@ -221,7 +221,7 @@ theorem DirichletCharacter.eulerProduct_log_eq_LSeries (hs : 1 < s.re) :
   have hpow_le (p : Primes) : ‖χ p * (p : ℂ) ^ (-s)‖ < 1 := by
     grw [norm_mul, norm_le_one, norm_natCast_cpow_of_pos (mod_cast p.prop.pos), neg_re, one_mul]
     apply rpow_lt_one_of_one_lt_of_neg (mod_cast p.prop.one_lt) (by linarith)
-  rw [tsum_congr (fun p ↦ (hasSum_taylorSeries_succ_neg_log (hpow_le p)).tsum_eq.symm),
+  rw [tsum_congr (fun p ↦ (hasSum_taylorSeries_neg_log' (hpow_le p)).tsum_eq.symm),
     LSeries_def₀ (by simp)]
   calc
     _ = ∑' (p : Primes) (k : ℕ), (χ (p ^ (k + 1)) * ((p ^ (k + 1) : ℕ) : ℂ) ^ (-s)) *
