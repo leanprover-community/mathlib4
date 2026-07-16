@@ -116,7 +116,7 @@ noncomputable abbrev d (b : B) : KaehlerDifferential f := (D f).d b
 
 set_option backward.isDefEq.respectTransparency false in
 @[ext]
-lemma ext {M : ModuleCat B} {α β : KaehlerDifferential f ⟶ M}
+lemma ext {M : ModuleCat.{u} B} {α β : KaehlerDifferential f ⟶ M}
     (h : ∀ (b : B), α (d b) = β (d b)) : α = β := by
   rw [← sub_eq_zero]
   have : ⊤ ≤ LinearMap.ker (α - β).hom := by

@@ -47,7 +47,7 @@ variable (cR) in
 functor `ModuleCat cR.pt ⥤ PresheafOfModules R` which sends a module `M`
 over `cR.pt` to a presheaf of modules whose underlying presheaf of
 abelian groups is the constant functor `Cᵒᵖ ⥤ AddCommGrpCat` with value `M`. -/
-noncomputable def constFunctor : ModuleCat cR.pt ⥤ PresheafOfModules.{w} R where
+noncomputable def constFunctor : ModuleCat.{w} cR.pt ⥤ PresheafOfModules.{w} R where
   obj M :=
     { obj X := (ModuleCat.restrictScalars (cR.ι.app X).hom).obj M
       map {X Y} f :=
@@ -380,7 +380,7 @@ noncomputable def colimitAdjunction :
 set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma colimitAdjunction_homEquiv
-    (F : PresheafOfModules R) (G : ModuleCat cR.pt) :
+    (F : PresheafOfModules R) (G : ModuleCat.{w} cR.pt) :
     dsimp% (colimitAdjunction.{w} hcR).homEquiv F G =
       (ModuleColimit.homEquiv hcR
         (colimit.isColimit F.presheaf)).toEquiv := by
@@ -389,7 +389,7 @@ lemma colimitAdjunction_homEquiv
 set_option backward.isDefEq.respectTransparency.types false in
 open ModuleColimit in
 lemma colimitAdjunction_homEquiv_symm_apply
-    {F : PresheafOfModules R} {G : ModuleCat cR.pt}
+    {F : PresheafOfModules R} {G : ModuleCat.{w} cR.pt}
     (β : F ⟶ (constFunctor cR).obj G) {X : Cᵒᵖ} (m : F.obj X) :
     ((colimitAdjunction.{w} hcR).homEquiv F G).symm β
       (ModuleColimit.ιM (hcR := hcR) (hcM := colimit.isColimit F.presheaf) m) =
