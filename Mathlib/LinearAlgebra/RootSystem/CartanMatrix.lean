@@ -8,8 +8,10 @@ module
 public import Mathlib.Algebra.CharZero.Infinite
 public import Mathlib.Algebra.Module.Submodule.Union
 public import Mathlib.Data.Int.Star
+public import Mathlib.LinearAlgebra.Determinant
 public import Mathlib.LinearAlgebra.Matrix.BilinearForm
 public import Mathlib.LinearAlgebra.Matrix.PosDef
+public import Mathlib.LinearAlgebra.Matrix.ZMatrix
 public import Mathlib.LinearAlgebra.RootSystem.Base
 public import Mathlib.LinearAlgebra.RootSystem.Finite.Lemmas
 public import Mathlib.LinearAlgebra.RootSystem.Finite.Nondegenerate
@@ -132,6 +134,7 @@ lemma cartanMatrix_le_zero_of_ne
     b.cartanMatrix i j ≤ 0 :=
   b.pairingIn_le_zero_of_ne (by rwa [ne_eq, ← Subtype.ext_iff]) i.property j.property
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma cartanMatrix_mem_of_ne {i j : b.support} (hij : i ≠ j) :
     b.cartanMatrix i j ∈ ({-3, -2, -1, 0} : Set ℤ) := by
   have : Module.IsReflexive R M := .of_isPerfPair P.toLinearMap
@@ -182,7 +185,7 @@ lemma cartanMatrix_mul_diagonal_eq [Fintype ι] [DecidableEq ι] [P.IsRootSystem
       (2 : ℤ) • (P.posRootForm ℤ).posForm.toMatrix b.toWeightBasisInt := by
   ext i j
   apply algebraMap_injective ℤ R
-  simp only [mul_diagonal, map_mul, algebraMap_rootFormIn, posRootForm_eq, smul_apply,
+  simp only [mul_diagonal, map_mul, algebraMap_rootFormIn, posRootForm_eq, Matrix.smul_apply,
     LinearMap.BilinForm.toMatrix_apply, Int.zsmul_eq_mul]
   simpa [← algebraMap_pairingIn P ℤ i j] using
     congr_fun₂ (cartanMatrixIn_mul_diagonal_eq ℤ P.toInvariantForm b) i j
@@ -206,6 +209,21 @@ lemma exists_cartanMatrix_diagaonal_mul_posDef [DecidableEq ι] [P.IsRootSystem]
   obtain ⟨d, hd, hd'⟩ := b.flip.exists_cartanMatrix_mul_diagaonal_posDef
   refine ⟨d, hd, ?_⟩
   rw [← PosDef.transpose_iff] at hd'
+  aesop
+
+open LinearMap Module.End in
+lemma det_four_sub_cartanMatrix_ne_zero [DecidableEq ι] [P.IsRootSystem] :
+    (4 - b.cartanMatrix).det ≠ 0 := by
+  suffices ¬ HasEigenvalue b.cartanMatrix.toLin' 4 by
+    have aux : (4 - b.cartanMatrix).toLin' = - (b.cartanMatrix.toLin' - (4 : ℤ) • 1) := by ext; simp
+    rwa [ne_eq, ← det_toLin', det_eq_zero_iff_ker_ne_bot, aux, ker_neg, ← eigenspace_def,
+      ← hasEigenvalue_iff]
+  obtain ⟨d, hd, hdS⟩ := b.exists_cartanMatrix_diagaonal_mul_posDef
+  have aux (i j : b.support) : b.cartanMatrix i j ≤ if i = j then 2 else 0 := by
+    rcases eq_or_ne i j with rfl | hij
+    · simp
+    · simpa [hij] using cartanMatrix_le_zero_of_ne b i j hij
+  have := b.cartanMatrix.lt_two_mul_of_mul_diagonal_posDef_of_for_le_of_hasEigen d hdS hd 2 4 aux
   aesop
 
 /-- A characterisation of the connectedness of the Dynkin diagram for irreducible root pairings. -/
@@ -246,6 +264,7 @@ lemma induction_on_cartanMatrix [P.IsReduced] [P.IsIrreducible]
   simp [← hq_mem, IsIrreducible.eq_top_of_invtSubmodule_reflection q hq hq₀]
 
 -- TODO Derive from `LinearIndependent.injective`
+set_option backward.isDefEq.respectTransparency.types false in
 open scoped Matrix in
 lemma injective_pairingIn {P : RootPairing ι R M N} [P.IsRootSystem] [P.IsCrystallographic]
     (b : P.Base) :
@@ -335,6 +354,7 @@ lemma apply_mem_range_root_of_cartanMatrixEq
     rw [root_reflectionPerm, this, ← hl, ← root_reflectionPerm]
     exact mem_range_self _
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- A root system is determined by its Cartan matrix. -/
 def equivOfCartanMatrixEq [Finite ι₂] [P₂.IsRootSystem] [P₂.IsReduced]
     (he : ∀ i j, b₂.cartanMatrix (e i) (e j) = b.cartanMatrix i j) :

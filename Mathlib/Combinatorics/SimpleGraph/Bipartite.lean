@@ -322,6 +322,7 @@ section Copy
 
 variable {α β : Type*} [Fintype α] [Fintype β]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- A "left" subset of `card α` vertices and a "right" subset of `card β` vertices such that every
 vertex in the "left" subset is adjacent to every vertex in the "right" subset gives rise to a copy
 of a complete bipartite graph. -/
@@ -487,13 +488,13 @@ theorem encard_edgeSet_completeBipartiteGraph :
 def IsBipartiteWith.edgeSetEmbeddingCompleteBipartiteGraph [DecidableRel (· ∈ · : V → Set V → _)]
     (hG : G.IsBipartiteWith s t) : G.edgeSet ↪ (completeBipartiteGraph s t).edgeSet where
   toFun := fun ⟨e, he⟩ ↦
-    e.hrec (fun u v h ↦ hG.mem_of_adj h |>.by_cases
+    e.fromRelNdrec he (sym := G.symm) (fun u v h ↦ hG.mem_of_adj h |>.by_cases
       (fun h ↦ ⟨s(.inl ⟨u, h.left⟩, .inr ⟨v, h.right⟩), .inl ⟨rfl, rfl⟩⟩)
       (fun h ↦ ⟨s(.inl ⟨v, h.right⟩, .inr ⟨u, h.left⟩), .inl ⟨rfl, rfl⟩⟩)
-    ) (fun _ _ ↦ Function.hfunext (by grind) <| by grind [Or.by_cases, hG.disjoint]) he
+    ) <| by grind [Or.by_cases, hG.disjoint]
   inj' := by
     rintro ⟨⟨⟩⟩ ⟨⟨⟩⟩
-    change (if _ : _ then _ else _) = (if _ : _ then _ else _) → _
+    change (dite ..) = (dite ..) → _
     grind
 
 end completeBipartiteGraph
@@ -541,6 +542,7 @@ theorem bipartiteDoubleCover_le : G.bipartiteDoubleCover ≤ completeBipartiteGr
   | .inl _, .inr _ | .inr _, .inl _ => by simp
   | .inl _, .inl _ | .inr _, .inr _ => by simp at hadj
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The bipartite double cover of `G` has twice the number of edges as `G`. -/
 theorem card_edgeFinset_bipartiteDoubleCover [Fintype V] [DecidableRel G.Adj] :
     #G.bipartiteDoubleCover.edgeFinset = 2 * #G.edgeFinset := by

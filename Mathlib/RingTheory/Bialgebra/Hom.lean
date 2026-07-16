@@ -65,6 +65,7 @@ variable [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
   [CoalgebraStruct R A] [CoalgebraStruct R B] [FunLike F A B]
   [BialgHomClass F R A B]
 
+set_option backward.isDefEq.respectTransparency false in
 instance (priority := 100) toAlgHomClass : AlgHomClass F R A B where
   map_mul := map_mul
   map_one := map_one
@@ -194,9 +195,11 @@ theorem coe_coalgHom_injective : Function.Injective ((↑) : (A →ₐc[R] B) �
   fun φ₁ φ₂ H => coe_fn_injective <|
     show ((φ₁ : A →ₗc[R] B) : A → B) = ((φ₂ : A →ₗc[R] B) : A → B) from congr_arg _ H
 
-theorem coe_algHom_injective : Function.Injective ((↑) : (A →ₐc[R] B) → A →ₐ[R] B) :=
+theorem coe_toAlgHom_injective : Function.Injective ((↑) : (A →ₐc[R] B) → A →ₐ[R] B) :=
   fun φ₁ φ₂ H => coe_fn_injective <|
     show ((φ₁ : A →ₐ[R] B) : A → B) = ((φ₂ : A →ₐ[R] B) : A → B) from congr_arg _ H
+
+@[deprecated (since := "2026-05-05")] alias coe_algHom_injective := coe_toAlgHom_injective
 
 theorem coe_linearMap_injective : Function.Injective ((↑) : (A →ₐc[R] B) → A →ₗ[R] B) :=
   CoalgHom.coe_linearMap_injective.comp coe_coalgHom_injective

@@ -40,7 +40,7 @@ variable {x y : ℝ}
 to `log |x|` for `x < 0`, and to `0` for `0`. We use this unconventional extension to
 `(-∞, 0]` as it gives the formula `log (x * y) = log x + log y` for all nonzero `x` and `y`, and
 the derivative of `log` is `1/x` away from `0`. -/
-@[pp_nodot]
+@[pp_nodot, wikidata Q11197]
 noncomputable def log (x : ℝ) : ℝ :=
   if hx : x = 0 then 0 else expOrderIso.symm ⟨|x|, abs_pos.2 hx⟩
 
@@ -52,6 +52,7 @@ theorem log_of_pos (hx : 0 < x) : log x = expOrderIso.symm ⟨x, hx⟩ := by
   congr
   exact abs_of_pos hx
 
+set_option backward.isDefEq.respectTransparency false in
 theorem exp_log_eq_abs (hx : x ≠ 0) : exp (log x) = |x| := by
   rw [log_of_ne_zero hx, ← coe_expOrderIso_apply, OrderIso.apply_symm_apply, Subtype.coe_mk]
 
@@ -470,6 +471,50 @@ theorem isLittleO_const_log_atTop {c : ℝ} : (fun _ => c) =o[atTop] log := by
   continuousOn_toFun := continuousOn_exp
   continuousOn_invFun x hx := (continuousAt_log (ne_of_gt hx)).continuousWithinAt
 
+@[simp]
+theorem image_log_Ioi {a : ℝ} (ha : 0 < a) : log '' Ioi a = Ioi (log a) :=
+  (continuousOn_log.mono fun _ hx ↦ (ha.trans_le hx).ne').image_Ioi_of_strictMonoOn
+    (strictMonoOn_log.mono fun _ hx ↦ ha.trans_le hx) tendsto_log_atTop
+
+@[simp]
+theorem image_log_Ici {a : ℝ} (ha : 0 < a) : log '' Ici a = Ici (log a) :=
+  (continuousOn_log.mono fun _ hx ↦ (ha.trans_le hx).ne').image_Ici_of_monotoneOn
+    (strictMonoOn_log.monotoneOn.mono fun _ hx ↦ ha.trans_le hx) tendsto_log_atTop
+
+@[simp]
+theorem image_log_Icc {a b : ℝ} (ha : 0 < a) (hab : a ≤ b) : log '' Icc a b = Icc (log a) (log b) :=
+  (continuousOn_log.mono fun _ hx ↦ (ha.trans_le hx.1).ne').image_Icc_of_monotoneOn hab
+    (strictMonoOn_log.monotoneOn.mono fun _ hx ↦ ha.trans_le hx.1)
+
+@[simp]
+theorem image_log_Ico {a b : ℝ} (ha : 0 < a) (hab : a ≤ b) : log '' Ico a b = Ico (log a) (log b) :=
+  (continuousOn_log.mono fun _ hx ↦ (ha.trans_le hx.1).ne').image_Ico_of_strictMonoOn hab
+    (strictMonoOn_log.mono fun _ hx ↦ ha.trans_le hx.1)
+
+@[simp]
+theorem image_log_Ioc {a b : ℝ} (ha : 0 < a) (hab : a ≤ b) : log '' Ioc a b = Ioc (log a) (log b) :=
+  (continuousOn_log.mono fun _ hx ↦ (ha.trans_le hx.1).ne').image_Ioc_of_strictMonoOn hab
+    (strictMonoOn_log.mono fun _ hx ↦ ha.trans_le hx.1)
+
+@[simp]
+theorem image_log_Ioo {a b : ℝ} (ha : 0 < a) (hab : a ≤ b) : log '' Ioo a b = Ioo (log a) (log b) :=
+  (continuousOn_log.mono fun _ hx ↦ (ha.trans_le hx.1).ne').image_Ioo_of_strictMonoOn hab
+    (strictMonoOn_log.mono fun _ hx ↦ ha.trans_le hx.1)
+
+@[simp]
+theorem image_log_uIcc {a b : ℝ} (ha : 0 < a) (hb : 0 < b) :
+    log '' uIcc a b = uIcc (log a) (log b) :=
+  (continuousOn_log.mono fun _ hx ↦ ((lt_min ha hb).trans_le hx.1).ne').image_uIcc_of_monotoneOn
+    (strictMonoOn_log.monotoneOn.mono fun _ hx ↦ (lt_min ha hb).trans_le hx.1)
+
+@[simp]
+theorem image_log_Ioo_zero {a : ℝ} (ha : 0 < a) : log '' Ioo 0 a = Iio (log a) := by
+  nth_rw 1 [← exp_log ha, ← image_exp_Iio, ← image_comp, log_comp_exp, image_id]
+
+@[simp]
+theorem image_log_Ioc_zero {a : ℝ} (ha : 0 < a) : log '' Ioc 0 a = Iic (log a) := by
+  nth_rw 1 [← exp_log ha, ← image_exp_Iic, ← image_comp, log_comp_exp, image_id]
+
 end Real
 
 namespace Nat.Prime
@@ -596,7 +641,8 @@ lemma log_nz_of_isRat_neg {n : ℤ} : (NormNum.IsRat e n d) → (decide (n / d <
 
 /-- Extension for the `positivity` tactic: `Real.log` of a natural number is always nonnegative. -/
 @[positivity Real.log (Nat.cast _)]
-meta def evalLogNatCast : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalLogNatCast : PositivityExt where eval {u α} _zα pα? e :=
+  match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℝ), ~q(Real.log (Nat.cast $a)) =>
     assertInstancesCommute
@@ -605,7 +651,8 @@ meta def evalLogNatCast : PositivityExt where eval {u α} _zα _pα e := do
 
 /-- Extension for the `positivity` tactic: `Real.log` of an integer is always nonnegative. -/
 @[positivity Real.log (Int.cast _)]
-meta def evalLogIntCast : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalLogIntCast : PositivityExt where eval {u α} _zα pα? e :=
+  match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℝ), ~q(Real.log (Int.cast $a)) =>
     assertInstancesCommute
@@ -614,7 +661,8 @@ meta def evalLogIntCast : PositivityExt where eval {u α} _zα _pα e := do
 
 /-- Extension for the `positivity` tactic: `Real.log` of a numeric literal. -/
 @[positivity Real.log _]
-meta def evalLogNatLit : PositivityExt where eval {u α} _ _ e := do
+meta def evalLogNatLit : PositivityExt where eval {u α} _ pα? e :=
+  match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℝ), ~q(Real.log $a) =>
     match ← NormNum.derive a with

@@ -10,6 +10,7 @@ public import Mathlib.RingTheory.PowerSeries.GaussNorm
 
 /-!
 # Gauss norm for polynomials
+
 This file defines the Gauss norm for polynomials. Given a polynomial `p` in `R[X]`, a function
 `v : R → ℝ` and a real number `c`, the Gauss norm is defined as the supremum of the set of all
 values of `v (p.coeff i) * c ^ i` for all `i` in the support of `p`.
@@ -150,6 +151,7 @@ lemma gaussNorm_zero_right : p.gaussNorm v 0 = v (p.coeff 0) := by
     · aesop (add norm (by simp [gaussNorm, Finset.sup'_le_iff]))
     · grind [p.le_gaussNorm v (le_refl 0) 0]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `v` is a nonnegative function with `v 0 = 0` and `c` is nonnegative, there exists a minimal
 index `i` such that the Gauss norm of `p` at `c` is attained at `i`. -/
 lemma exists_min_eq_gaussNorm (p : R[X]) (hc : 0 ≤ c) :
@@ -235,7 +237,7 @@ private theorem mul_gaussNorm_le_gaussNorm_mul (p q : R[X]) :
   apply le_of_eq_of_le _ <| (p * q).le_gaussNorm v hc0 (i + j)
   -- gaussNorm v c p * gaussNorm v c q is actually equal to v ((p * q).coeff (i + j)) * c ^ (i + j)
   rw [hi_p, hj_q, coeff_mul, Nat.sum_antidiagonal_eq_sum_range_succ_mk,
-    IsNonarchimedean.apply_sum_eq_of_lt hna (k := i) (by simp)]
+    IsNonarchimedean.apply_sum_eq_of_lt hna (k := i) (by simp) (by simp)]
   /- IsNonarchimedean.apply_sum_eq_of_lt makes the goal almost trivial so we are left to prove
   the hmax hypothesis -/
   · grind

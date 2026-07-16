@@ -553,17 +553,10 @@ def diagSet : Set (Sym2 α) := {z | z.IsDiag}
 
 @[simp] lemma mem_diagSet : z ∈ diagSet ↔ z.IsDiag := .rfl
 
-@[deprecated mem_diagSet (since := "2025-12-10")]
-theorem mem_diagSet_iff_isDiag (z : Sym2 α) : z ∈ diagSet ↔ z.IsDiag := .rfl
-
 @[simp] lemma range_diag : .range (diag : α → Sym2 α) = diagSet := by
   ext ⟨a, b⟩; simp [diag, eq_comm]
 
 theorem diagSet_eq_setOf_isDiag : diagSet = {z : Sym2 α | z.IsDiag} := rfl
-
-@[deprecated Set.compl_setOf (since := "2025-12-10")]
-theorem diagSet_compl_eq_setOf_not_isDiag : diagSetᶜ = {z : Sym2 α | ¬z.IsDiag} :=
-  congrArg _ diagSet_eq_setOf_isDiag
 
 theorem diagSet_eq_univ_of_subsingleton [Subsingleton α] : @diagSet α = Set.univ := by ext; simp
 
@@ -606,6 +599,12 @@ theorem fromRel_mono_iff (sym₁ : Std.Symm r₁) (sym₂ : Std.Symm r₂) :
 @[gcongr]
 alias ⟨_, fromRel_mono⟩ := fromRel_mono_iff
 
+theorem mem_fromRel_comap {r : β → β → Prop} (sym : Std.Symm r) (f : α → β) (z : Sym2 α) :
+    z ∈ fromRel (sym.comap f) ↔ z.map f ∈ fromRel sym := by
+  cases z
+  simp
+
+set_option backward.isDefEq.respectTransparency false in
 theorem fromRel_bot : fromRel (α := α) (r := ⊥) inferInstance = ∅ :=
   Set.eq_empty_of_forall_notMem <| Sym2.ind <| by simp
 
@@ -615,6 +614,7 @@ theorem fromRel_bot_iff {sym : Std.Symm r} : fromRel sym = ∅ ↔ r = ⊥ := by
   ext x y
   simpa [h] using fromRel_prop (sym := sym)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem fromRel_top : fromRel (α := α) (r := ⊤) inferInstance = .univ :=
   Set.eq_univ_of_forall <| Sym2.ind <| by simp
 
@@ -624,12 +624,14 @@ theorem fromRel_top_iff {sym : Std.Symm r} : fromRel sym = .univ ↔ r = ⊤ := 
   ext x y
   simpa [h] using fromRel_prop (sym := sym)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem fromRel_ne : fromRel (α := α) (r := Ne) inferInstance = {z | ¬IsDiag z} := by
   ext z; exact z.ind (by simp)
 
 lemma diagSet_eq_fromRel_eq : diagSet = fromRel (α := α) eq_equivalence.stdSymm := by
   ext ⟨a, b⟩; simp
 
+set_option backward.isDefEq.respectTransparency false in
 lemma diagSet_compl_eq_fromRel_ne : diagSetᶜ = fromRel (α := α) (r := Ne) inferInstance := by
   ext ⟨a, b⟩; simp
 
@@ -642,14 +644,6 @@ lemma diagSet_compl_eq_fromRel_ne : diagSetᶜ = fromRel (α := α) (r := Ne) in
 
 @[simp] lemma fromRel_subset_compl_diagSet (hr : Std.Symm r) :
     fromRel hr ⊆ diagSetᶜ ↔ Std.Irrefl r := by simp [Set.subset_compl_iff_disjoint_left]
-
-@[deprecated diagSet_subset_fromRel (since := "2025-12-10")]
-theorem reflexive_iff_diagSet_subset_fromRel (sym : Std.Symm r) :
-    Std.Refl r ↔ diagSet ⊆ fromRel sym := by simp
-
-@[deprecated fromRel_subset_compl_diagSet (since := "2025-12-10")]
-theorem irreflexive_iff_fromRel_subset_diagSet_compl (sym : Std.Symm r) :
-    Std.Irrefl r ↔ fromRel sym ⊆ diagSetᶜ := by simp
 
 theorem fromRel_irrefl {sym : Std.Symm r} : Std.Irrefl r ↔ ∀ {z}, z ∈ fromRel sym → ¬IsDiag z where
   mp := by intro ⟨h⟩; apply Sym2.ind; aesop
@@ -671,6 +665,52 @@ lemma fromRel_relationMap {r : α → α → Prop} (hr : Std.Symm r) (f : α →
     rel_iff', Prod.mk.injEq, Prod.swap_prod_mk, and_or_left, exists_or, iff_self_or,
     forall_exists_index, and_imp]
   exact fun c d hcd hc hd ↦ ⟨d, c, symm hcd, hd, hc⟩
+
+/-- Non-dependent recursor on members of a `fromRel` set -/
+def fromRelNdrec {motive : Sort*} {sym : Std.Symm r} (z : Sym2 α) (hz : z ∈ fromRel sym)
+    (f : (a b : α) → r a b → motive) (h : ∀ (a b : α) (h : r a b), f a b h = f b a (symm h)) :
+    motive :=
+  z.hrec f (fun _ _ ↦ Function.hfunext (sym.iff .. |>.eq) fun _ _ _ ↦ heq_of_eq <| h ..) hz
+
+@[simp]
+theorem fromRelNdrec_mk {motive : Sort*} {sym : Std.Symm r} {a b : α} (hz : r a b)
+    (f : (a b : α) → r a b → motive) (h : ∀ (a b : α) (h : r a b), f a b h = f b a (symm h)) :
+    fromRelNdrec (sym := sym) s(a, b) hz f h = f a b hz :=
+  rfl
+
+/-- The `fromRel` set of a symmetric relation `r` is equivalent to summing that set restricted to
+fibers of a function `f`, given that `f` agrees on elements related by `r`. -/
+@[simps]
+def _root_.Equiv.sigmaFiberFromRel (sym : Std.Symm r) {f : α → β} (hf : r ≤ Setoid.ker f) :
+    fromRel sym ≃ Σ b : β, fromRel (α := { a // f a = b }) <| sym.comap (↑) where
+  toFun z := z.val.fromRelNdrec z.prop
+    (fun a₁ a₂ h ↦ ⟨f a₁, s(⟨a₁, rfl⟩, ⟨a₂, hf a₁ a₂ h |>.symm⟩), h⟩)
+    fun a₁ a₂ h ↦ by
+      rw! [hf a₁ a₂ h, eq_swap]
+      rfl
+  invFun z := ⟨z.snd.val.map (↑), mem_fromRel_comap sym .. |>.mp z.snd.prop⟩
+  left_inv z := by
+    rcases z with ⟨⟨a₁, a₂⟩, h⟩
+    rfl
+  right_inv z := by
+    rcases z with ⟨b, ⟨⟨a₁, rfl⟩, ⟨a₂, ha₂⟩⟩, h⟩
+    rfl
+
+/-- For a relation homomorphism `r →r r'` where `r` is symmetric, the `fromRel` set of `r` is
+equivalent to summing that set restricted to equivalence classes of `r'` using a `Subtype`,
+`Quot` version -/
+@[simps!]
+def _root_.Equiv.sigmaQuotFromRel (sym : Std.Symm r) {r' : β → β → Prop} (f : r →r r') :
+    fromRel sym ≃ Σ q : Quot r', fromRel (α := { x // .mk r' (f x) = q }) <| sym.comap (↑) :=
+  .sigmaFiberFromRel sym fun _ _ h ↦ Quot.sound <| f.map_rel h
+
+/-- For a relation homomorphism `r →r r'` where `r` is symmetric, the `fromRel` set of `r` is
+equivalent to summing that set restricted to equivalence classes of `r'` using a `Subtype`,
+`Quotient` version -/
+@[simps!]
+def _root_.Equiv.sigmaQuotientFromRel (sym : Std.Symm r) {r' : Setoid β} (f : r →r r') :
+    fromRel sym ≃ Σ q : Quotient r', fromRel (α := { x // ⟦f x⟧ = q }) <| sym.comap (↑) :=
+  .sigmaFiberFromRel sym fun _ _ h ↦ Quotient.sound <| f.map_rel h
 
 /-- The inverse to `Sym2.fromRel`. Given a set on `Sym2 α`, give a symmetric relation on `α`
 (see `Sym2.toRel_symm`). -/
@@ -703,6 +743,7 @@ variable (α) in
 def toRelOrderEmbedding : Set (Sym2 α) ↪o (α → α → Prop) :=
   .ofMapLEIff ToRel toRel_mono_iff
 
+set_option backward.isDefEq.respectTransparency false in
 variable (α) in
 /-- `fromRel`/`ToRel` induce an order isomorphism between symmetric relations and `Sym2` sets -/
 @[simps]
@@ -798,7 +839,6 @@ section SymEquiv
 attribute [local instance] List.Vector.Perm.isSetoid
 
 set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 private def fromVector : List.Vector α 2 → α × α
   | ⟨[a, b], _⟩ => (a, b)
 

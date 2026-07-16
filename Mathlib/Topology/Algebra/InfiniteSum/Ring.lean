@@ -171,7 +171,7 @@ variable [TopologicalSpace α] [T3Space α] [NonUnitalNonAssocSemiring α] [IsTo
 theorem HasSum.mul_eq (hf : HasSum f s) (hg : HasSum g t)
     (hfg : HasSum (fun x : ι × κ ↦ f x.1 * g x.2) u) : s * t = u :=
   have key₁ : HasSum (fun i ↦ f i * t) (s * t) := hf.mul_right t
-  have this : ∀ i : ι, HasSum (fun c : κ ↦ f i * g c) (f i * t) := fun i ↦ hg.mul_left (f i)
+  have : ∀ i : ι, HasSum (fun c : κ ↦ f i * g c) (f i * t) := fun i ↦ hg.mul_left (f i)
   have key₂ : HasSum (fun i ↦ f i * t) u := HasSum.prod_fiberwise hfg this
   key₁.unique key₂
 
@@ -214,7 +214,7 @@ variable [TopologicalSpace α] [NonUnitalNonAssocSemiring α] {f g : A → α}
 theorem summable_mul_prod_iff_summable_mul_sigma_antidiagonal :
     (Summable fun x : A × A ↦ f x.1 * g x.2) ↔
       Summable fun x : Σ n : A, antidiagonal n ↦ f (x.2 : A × A).1 * g (x.2 : A × A).2 :=
-  Finset.sigmaAntidiagonalEquivProd.summable_iff.symm
+  Finset.HasAntidiagonal.sigmaAntidiagonalEquivProd.summable_iff.symm
 
 variable [T3Space α] [IsTopologicalSemiring α]
 
@@ -226,7 +226,7 @@ theorem summable_sum_mul_antidiagonal_of_summable_mul
   exact h.sigma' fun n ↦ (hasSum_fintype _).summable
 
 /-- The **Cauchy product formula** for the product of two infinite sums indexed by `ℕ`, expressed
-by summing on `Finset.antidiagonal`.
+by summing on `Finset.HasAntidiagonal.antidiagonal`.
 
 See also `tsum_mul_tsum_eq_tsum_sum_antidiagonal_of_summable_norm` if `f` and `g` are absolutely
 summable. -/
@@ -234,7 +234,7 @@ protected theorem Summable.tsum_mul_tsum_eq_tsum_sum_antidiagonal (hf : Summable
     (hg : Summable g) (hfg : Summable fun x : A × A ↦ f x.1 * g x.2) :
     ((∑' n, f n) * ∑' n, g n) = ∑' n, ∑ kl ∈ antidiagonal n, f kl.1 * g kl.2 := by
   conv_rhs => congr; ext; rw [← Finset.sum_finset_coe, ← tsum_fintype (L := .unconditional _)]
-  rw [hf.tsum_mul_tsum hg hfg, ← sigmaAntidiagonalEquivProd.tsum_eq (_ : A × A → α)]
+  rw [hf.tsum_mul_tsum hg hfg, ← HasAntidiagonal.sigmaAntidiagonalEquivProd.tsum_eq (_ : A × A → α)]
   exact (summable_mul_prod_iff_summable_mul_sigma_antidiagonal.mp hfg).tsum_sigma'
     (fun n ↦ (hasSum_fintype _).summable)
 
