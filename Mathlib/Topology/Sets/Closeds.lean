@@ -194,10 +194,6 @@ instance instCoframe : Coframe (Closeds α) := fast_instance% .ofMinimalAxioms c
 instance [T1Space α] : Singleton α (Closeds α) where
   singleton x := ⟨{x}, isClosed_singleton⟩
 
-/-- The term of `TopologicalSpace.Closeds α` corresponding to a singleton. -/
-@[deprecated "Use `{x}` instead" (since := "2025-11-23")]
-abbrev singleton [T1Space α] (x : α) : Closeds α := {x}
-
 @[simp]
 theorem mk_singleton [T1Space α] {x : α} :
     (⟨{x}, isClosed_singleton⟩ : Closeds α) = {x} :=
@@ -435,10 +431,6 @@ theorem coe_mk (s : Set α) (h : IsIrreducible s) (h' : IsClosed s) : (mk s h h'
 @[simps]
 instance [T1Space α] : Singleton α (IrreducibleCloseds α) where
   singleton x := ⟨{x}, isIrreducible_singleton, isClosed_singleton⟩
-
-/-- The term of `TopologicalSpace.IrreducibleCloseds α` corresponding to a singleton. -/
-@[deprecated "Use `{x}` instead" (since := "2025-11-23")]
-abbrev singleton [T1Space α] (x : α) : IrreducibleCloseds α := {x}
 
 @[simp]
 theorem mk_singleton [T1Space α] {x : α} :

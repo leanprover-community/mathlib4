@@ -262,8 +262,6 @@ noncomputable def normalClosureOperator : ClosureOperator (IntermediateField F L
   le_closure' := le_normalClosure
   idempotent' K := normalClosure_of_normal (normalClosure F K L)
 
-@[deprecated (since := "2025-11-21")] alias closureOperator := normalClosureOperator
-
 variable {K : IntermediateField F L} {F L}
 
 lemma normal_iff_normalClosure_eq : Normal F K ↔ normalClosure F K L = K :=

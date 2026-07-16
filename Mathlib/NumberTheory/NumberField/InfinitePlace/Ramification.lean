@@ -596,7 +596,7 @@ variable {K L : Type*} [Field K] [Field L] [Algebra K L]
 
 section LiesOver
 
-variable (w : InfinitePlace L) (v : InfinitePlace K) [w.1.LiesOver v.1]
+variable (w : InfinitePlace L) (v : InfinitePlace K) [w.LiesOver v]
 
 namespace LiesOver
 
@@ -651,13 +651,13 @@ section placesOver
 variable (v : InfinitePlace K) (L)
 
 /-- The set of infinite places of `L` that lie above a given infinite place of `K`. -/
-def placesOver : Set (InfinitePlace L) := { w | w.1.LiesOver v.1 }
+def placesOver : Set (InfinitePlace L) := { w | w.LiesOver v }
 
 /-- The set of infinite places of `L` that are unramified over a given infinite place of `K`. -/
-def unramifiedPlacesOver : Set (InfinitePlace L) := { w | w.1.LiesOver v.1 ∧ w.IsUnramified K }
+def unramifiedPlacesOver : Set (InfinitePlace L) := { w | w.LiesOver v ∧ w.IsUnramified K }
 
 /-- The set of infinite places of `L` that are ramified over a given infinite place of `K`. -/
-def ramifiedPlacesOver : Set (InfinitePlace L) := { w | w.1.LiesOver v.1 ∧ w.IsRamified K }
+def ramifiedPlacesOver : Set (InfinitePlace L) := { w | w.LiesOver v ∧ w.IsRamified K }
 
 variable {L} {v} {w : InfinitePlace L}
 
@@ -744,7 +744,6 @@ private theorem mapsTo_embeddingConjugateIte : (unramifiedPlacesOver L v).MapsTo
 
 private theorem surjOn_embeddingConjugateIte : (unramifiedPlacesOver L v).SurjOn
     (embeddingConjugateIte v) (unmixedEmbeddingsOver L v.embedding) := by
-  classical
   refine fun ψ h ↦ ⟨mk ψ, mk_mem_unramifiedPlacesOver h, ?_⟩
   rcases embedding_mk_eq ψ with (_ | hψ)
   · aesop (add simp [embeddingConjugateIte, unmixedEmbeddingsOver])

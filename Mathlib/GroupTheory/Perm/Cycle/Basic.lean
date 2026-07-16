@@ -123,13 +123,9 @@ theorem sameCycle_apply_right : SameCycle f x (f y) ↔ SameCycle f x y := by
 theorem sameCycle_symm_apply_left : SameCycle f (f.symm x) y ↔ SameCycle f x y := by
   rw [← sameCycle_apply_left, apply_symm_apply]
 
-@[deprecated (since := "2025-11-17")] alias sameCycle_inv_apply_left := sameCycle_symm_apply_left
-
 @[simp]
 theorem sameCycle_symm_apply_right : SameCycle f x (f.symm y) ↔ SameCycle f x y := by
   rw [← sameCycle_apply_right, apply_symm_apply]
-
-@[deprecated (since := "2025-11-17")] alias sameCycle_inv_apply_right := sameCycle_symm_apply_right
 
 @[simp]
 theorem sameCycle_zpow_left {n : ℤ} : SameCycle f ((f ^ n) x) y ↔ SameCycle f x y :=
@@ -289,7 +285,7 @@ variable [Finite α]
 theorem IsCycle.exists_pow_eq (hf : IsCycle f) (hx : f x ≠ x) (hy : f y ≠ y) :
     ∃ i : ℕ, (f ^ i) x = y := by
   let ⟨n, hn⟩ := hf.exists_zpow_eq hx hy
-  classical exact
+  exact
       ⟨(n % orderOf f).toNat, by
         {have := n.emod_nonneg (Int.natCast_ne_zero.mpr (ne_of_gt (orderOf_pos f)))
          rwa [← zpow_natCast, Int.toNat_of_nonneg this, zpow_mod_orderOf]}⟩
@@ -610,13 +606,12 @@ theorem IsCycle.pow_eq_pow_iff [Finite β] {f : Perm β} (hf : IsCycle f) {a b :
 
 theorem IsCycle.isCycle_pow_pos_of_lt_prime_order [Finite β] {f : Perm β} (hf : IsCycle f)
     (hf' : (orderOf f).Prime) (n : ℕ) (hn : 0 < n) (hn' : n < orderOf f) : IsCycle (f ^ n) := by
-  classical
-    cases nonempty_fintype β
-    have : n.Coprime (orderOf f) := by
-      refine Nat.Coprime.symm ?_
-      rw [Nat.Prime.coprime_iff_not_dvd hf']
-      exact Nat.not_dvd_of_pos_of_lt hn hn'
-    exact (pow_iff hf).mpr this
+  cases nonempty_fintype β
+  have : n.Coprime (orderOf f) := by
+    refine Nat.Coprime.symm ?_
+    rw [Nat.Prime.coprime_iff_not_dvd hf']
+    exact Nat.not_dvd_of_pos_of_lt hn hn'
+  exact (pow_iff hf).mpr this
 
 end IsCycle
 
@@ -780,15 +775,14 @@ theorem IsCycleOn.pow_card_apply {s : Finset α} (hf : f.IsCycleOn s) (ha : a �
 
 theorem IsCycleOn.exists_pow_eq {s : Finset α} (hf : f.IsCycleOn s) (ha : a ∈ s) (hb : b ∈ s) :
     ∃ n < #s, (f ^ n) a = b := by
-  classical
-    obtain ⟨n, rfl⟩ := hf.2 ha hb
-    obtain ⟨k, hk⟩ := (Int.mod_modEq n #s).symm.dvd
-    refine ⟨n.natMod #s, Int.natMod_lt (Nonempty.card_pos ⟨a, ha⟩).ne', ?_⟩
-    rw [← zpow_natCast, Int.natMod,
-      Int.toNat_of_nonneg (Int.emod_nonneg _ <| Nat.cast_ne_zero.2
-        (Nonempty.card_pos ⟨a, ha⟩).ne'), sub_eq_iff_eq_add'.1 hk, zpow_add, zpow_mul]
-    simp only [zpow_natCast, coe_mul, comp_apply, EmbeddingLike.apply_eq_iff_eq]
-    exact IsFixedPt.perm_zpow (hf.pow_card_apply ha) _
+  obtain ⟨n, rfl⟩ := hf.2 ha hb
+  obtain ⟨k, hk⟩ := (Int.mod_modEq n #s).symm.dvd
+  refine ⟨n.natMod #s, Int.natMod_lt (Nonempty.card_pos ⟨a, ha⟩).ne', ?_⟩
+  rw [← zpow_natCast, Int.natMod,
+    Int.toNat_of_nonneg (Int.emod_nonneg _ <| Nat.cast_ne_zero.2
+      (Nonempty.card_pos ⟨a, ha⟩).ne'), sub_eq_iff_eq_add'.1 hk, zpow_add, zpow_mul]
+  simp only [zpow_natCast, coe_mul, comp_apply, EmbeddingLike.apply_eq_iff_eq]
+  exact IsFixedPt.perm_zpow (hf.pow_card_apply ha) _
 
 theorem IsCycleOn.exists_pow_eq' (hs : s.Finite) (hf : f.IsCycleOn s) (ha : a ∈ s) (hb : b ∈ s) :
     ∃ n : ℕ, (f ^ n) a = b := by

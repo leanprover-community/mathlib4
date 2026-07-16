@@ -201,7 +201,6 @@ variable {R M N} (u : M ⊗[R] N)
 
 theorem TensorProduct.exists_of_fg :
     ∃ (P : Submodule R M), P.FG ∧ u ∈ range (rTensor N P.subtype) := by
-  classical
   let ⟨P, t, ht⟩ := Module.DirectLimit.exists_of ((Submodule.FG.rTensor.directLimit R M N).symm u)
   use P.val, P.property, t
   rw [← Submodule.FG.rTensor.directLimit_apply, ht, LinearEquiv.apply_symm_apply]
@@ -211,7 +210,6 @@ theorem TensorProduct.eq_of_fg_of_subtype_eq {t' : P ⊗[R] N}
     (h : rTensor N P.subtype t = rTensor N P.subtype t') :
     ∃ (Q : Submodule R M) (hPQ : P ≤ Q), Q.FG ∧
       rTensor N (inclusion hPQ) t = rTensor N (inclusion hPQ) t' := by
-  classical
   simp only [← Submodule.FG.rTensor.directLimit_apply' R M N hP, EmbeddingLike.apply_eq_iff_eq] at h
   obtain ⟨Q, hPQ, h⟩ := Module.DirectLimit.exists_eq_of_of_eq h
   use Q.val, Subtype.coe_le_coe.mpr hPQ, Q.property
@@ -330,7 +328,6 @@ theorem Submodule.exists_fg_of_baseChange_eq_zero
     (f : M →ₗ[R] N) {t : S ⊗[R] M} (ht : f.baseChange S t = 0) :
     ∃ (A : Subalgebra R S) (_ : A.FG) (u : A ⊗[R] M),
       f.baseChange A u = 0 ∧ A.val.toLinearMap.rTensor M u = t := by
-  classical
   obtain ⟨A, hA, ht_memA⟩ := TensorProduct.Algebra.exists_of_fg t
   obtain ⟨u, hu⟩ := _root_.id ht_memA
   have := TensorProduct.Algebra.eq_of_fg_of_subtype_eq hA (t := f.baseChange _ u) (t' := 0)

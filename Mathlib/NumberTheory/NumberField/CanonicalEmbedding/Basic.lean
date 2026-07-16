@@ -869,7 +869,6 @@ protected def integerLattice : Submodule ℤ (euclidean.mixedSpace K) :=
   ZLattice.comap ℝ (mixedEmbedding.integerLattice K) (toMixed K).toLinearMap
 
 instance : DiscreteTopology (euclidean.integerLattice K) := by
-  classical
   rw [euclidean.integerLattice]
   infer_instance
 

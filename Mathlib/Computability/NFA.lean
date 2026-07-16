@@ -119,11 +119,6 @@ theorem evalFrom_append (S : Set σ) (x y : List α) :
     M.evalFrom S (x ++ y) = M.evalFrom (M.evalFrom S x) y := by
   simp only [evalFrom, List.foldl_append]
 
-@[deprecated "Use evalFrom_append, evalFrom_cons, and evalFrom_nil" (since := "2025-11-17")]
-theorem evalFrom_append_singleton (S : Set σ) (x : List α) (a : α) :
-    M.evalFrom S (x ++ [a]) = M.stepSet (M.evalFrom S x) a := by
-  simp only [evalFrom_append, evalFrom_cons, evalFrom_nil]
-
 variable (M) in
 @[simp]
 theorem evalFrom_union (S T : Set σ) (x : List α) :
@@ -144,13 +139,6 @@ variable (M) in
 theorem evalFrom_iUnion₂ {ι : Sort*} {κ : ι → Sort*} (f : ∀ i, κ i → Set σ) (x : List α) :
     M.evalFrom (⋃ (i) (j), f i j) x = ⋃ (i) (j), M.evalFrom (f i j) x := by
   simp
-
-variable (M) in
-@[deprecated evalFrom_iUnion₂ (since := "2025-11-17")]
-theorem evalFrom_biUnion {ι : Type*} (t : Set ι) (f : ι → Set σ) :
-    ∀ (x : List α), M.evalFrom (⋃ i ∈ t, f i) x = ⋃ i ∈ t, M.evalFrom (f i) x
-  | [] => by simp
-  | a :: x => by simp [stepSet, evalFrom_biUnion _ _ x]
 
 variable (M) in
 theorem evalFrom_eq_biUnion_singleton (S : Set σ) (x : List α) :

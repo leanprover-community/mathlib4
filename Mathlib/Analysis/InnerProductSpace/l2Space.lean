@@ -192,15 +192,14 @@ protected def linearIsometry (hV : OrthogonalFamily 𝕜 G V) : lp G 2 →ₗᵢ
     simpa only [LinearIsometry.map_smul, Pi.smul_apply, lp.coeFn_smul] using!
       (hV.summable_of_lp f).tsum_const_smul c
   norm_map' f := by
-    classical
-      -- needed for lattice instance on `Finset ι`, for `Filter.atTop_neBot`
-      have H : 0 < (2 : ℝ≥0∞).toReal := by simp
-      suffices ‖∑' i : ι, V i (f i)‖ ^ (2 : ℝ≥0∞).toReal = ‖f‖ ^ (2 : ℝ≥0∞).toReal by
-        exact Real.rpow_left_injOn H.ne' (norm_nonneg _) (norm_nonneg _) this
-      refine tendsto_nhds_unique ?_ (lp.hasSum_norm H f)
-      convert! (hV.summable_of_lp f).hasSum.norm.rpow_const (Or.inr H.le) using 1
-      ext s
-      exact mod_cast (hV.norm_sum f s).symm
+    -- needed for lattice instance on `Finset ι`, for `Filter.atTop_neBot`
+    have H : 0 < (2 : ℝ≥0∞).toReal := by simp
+    suffices ‖∑' i : ι, V i (f i)‖ ^ (2 : ℝ≥0∞).toReal = ‖f‖ ^ (2 : ℝ≥0∞).toReal by
+      exact Real.rpow_left_injOn H.ne' (norm_nonneg _) (norm_nonneg _) this
+    refine tendsto_nhds_unique ?_ (lp.hasSum_norm H f)
+    convert! (hV.summable_of_lp f).hasSum.norm.rpow_const (Or.inr H.le) using 1
+    ext s
+    exact mod_cast (hV.norm_sum f s).symm
 
 protected theorem linearIsometry_apply (f : lp G 2) : hV.linearIsometry f = ∑' i, V i (f i) :=
   rfl
@@ -443,16 +442,15 @@ protected theorem hasSum_repr (b : HilbertBasis ι 𝕜 E) (x : E) :
 @[simp]
 protected theorem dense_span (b : HilbertBasis ι 𝕜 E) :
     (span 𝕜 (Set.range b)).topologicalClosure = ⊤ := by
-  classical
-    rw [eq_top_iff]
-    rintro x -
-    refine mem_closure_of_tendsto (b.hasSum_repr x) (Eventually.of_forall ?_)
-    intro s
-    simp only [SetLike.mem_coe]
-    refine sum_mem ?_
-    rintro i -
-    refine smul_mem _ _ ?_
-    exact subset_span ⟨i, rfl⟩
+  rw [eq_top_iff]
+  rintro x -
+  refine mem_closure_of_tendsto (b.hasSum_repr x) (Eventually.of_forall ?_)
+  intro s
+  simp only [SetLike.mem_coe]
+  refine sum_mem ?_
+  rintro i -
+  refine smul_mem _ _ ?_
+  exact subset_span ⟨i, rfl⟩
 
 protected theorem hasSum_inner_mul_inner (b : HilbertBasis ι 𝕜 E) (x y : E) :
     HasSum (fun i => ⟪x, b i⟫ * ⟪b i, y⟫) ⟪x, y⟫ := by

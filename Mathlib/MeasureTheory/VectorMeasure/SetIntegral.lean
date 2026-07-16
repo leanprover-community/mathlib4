@@ -281,7 +281,6 @@ theorem integral_singleton [MeasurableSingletonClass X] {a : X} [CompleteSpace G
 theorem setIntegral_union_eq_left_of_ae (hs : MeasurableSet s) (ht : MeasurableSet t)
     (ht_eq : ∀ᵐ x ∂μ.variation.restrict t, f x = 0) :
     ∫ᵛ x in s ∪ t, f x ∂[B; μ] = ∫ᵛ x in s, f x ∂[B; μ] := by
-  classical
   rw [← integral_indicator hs, ← integral_indicator (hs.union ht)]
   apply integral_congr_ae
   rw [ae_restrict_iff' ht] at ht_eq
@@ -518,7 +517,6 @@ theorem hasSum_setIntegral_iUnion {ι : Type*} [Countable ι] {s : ι → Set X}
     (hm : ∀ i, MeasurableSet (s i)) (hd : Pairwise (Disjoint on s))
     (hfi : μ.IntegrableOn f (⋃ i, s i)) :
     HasSum (fun n ↦ ∫ᵛ x in s n, f x ∂[B; μ]) (∫ᵛ x in ⋃ n, s n, f x ∂[B; μ]) := by
-  classical
   rcases finite_or_infinite ι with hι | hι
   · let : Fintype ι := Fintype.ofFinite ι
     have : ∫ᵛ x in ⋃ n, s n, f x ∂[B; μ] = ∑ i, ∫ᵛ x in s i, f x ∂[B; μ] := by

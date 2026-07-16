@@ -254,7 +254,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem linearCombination_restrict (s : Set α) :
     linearCombination R (s.restrict v) = Submodule.subtype _ ∘ₗ
       linearCombinationOn α M R v s ∘ₗ (supportedEquivFinsupp s).symm.toLinearMap := by
-  classical ext; simp [linearCombinationOn]
+  ext; simp [linearCombinationOn]
 
 theorem linearCombination_comp (f : α' → α) :
     linearCombination R (v ∘ f) = (linearCombination R v).comp (lmapDomain R R f) := by

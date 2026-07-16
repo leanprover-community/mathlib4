@@ -460,7 +460,6 @@ theorem adjoin_roots_cyclotomic_eq_adjoin_root_cyclotomic {n : ℕ} [NeZero n] [
 theorem adjoin_primitive_root_eq_top {n : ℕ} [NeZero n] [IsDomain B]
     [h : IsCyclotomicExtension {n} A B]
     {ζ : B} (hζ : IsPrimitiveRoot ζ n) : adjoin A ({ζ} : Set B) = ⊤ := by
-  classical
   rw [← adjoin_roots_cyclotomic_eq_adjoin_root_cyclotomic hζ]
   rw [adjoin_roots_cyclotomic_eq_adjoin_nth_roots hζ]
   exact ((iff_adjoin_eq_top {n} A B).mp h).2

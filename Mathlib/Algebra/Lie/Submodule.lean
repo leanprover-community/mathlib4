@@ -383,7 +383,6 @@ instance : SupSet (LieSubmodule R L M) where
         change ⁅x, m⁆ ∈ sSup {(p : Submodule R M) | p ∈ S}
         obtain ⟨s, hs, hsm⟩ := Submodule.mem_sSup_iff_exists_finset.mp hm
         clear hm
-        classical
         induction s using Finset.induction_on generalizing m with
         | empty =>
           replace hsm : m = 0 := by simpa using hsm

@@ -518,11 +518,11 @@ protected theorem map_smul (f : V →ₗ[K] V₂) (p : Submodule K V) (a : K) (h
 
 theorem comap_smul' (f : V →ₗ[K] V₂) (p : Submodule K V₂) (a : K) :
     p.comap (a • f) = ⨅ _ : a ≠ 0, p.comap f := by
-  classical by_cases h : a = 0 <;> simp [h, comap_smul]
+  by_cases h : a = 0 <;> simp [h, comap_smul]
 
 theorem map_smul' (f : V →ₗ[K] V₂) (p : Submodule K V) (a : K) :
     p.map (a • f) = ⨆ _ : a ≠ 0, map f p := by
-  classical by_cases h : a = 0 <;> simp [h, Submodule.map_smul]
+  by_cases h : a = 0 <;> simp [h, Submodule.map_smul]
 
 end Submodule
 

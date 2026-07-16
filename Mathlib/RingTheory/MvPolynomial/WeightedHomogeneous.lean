@@ -669,7 +669,6 @@ def weightedDecomposition [DecidableEq M] :
     conv_lhs => rw [← Subtype.coe_inj]
     rw [decompose'_apply, Submodule.coe_zero]
   right_inv x := by
-    classical
     apply DFinsupp.ext
     intro m
     rw [← Subtype.coe_inj, decompose'_apply]

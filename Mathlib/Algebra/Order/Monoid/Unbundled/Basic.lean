@@ -70,9 +70,6 @@ variable [LE α]
 theorem mul_le_mul_right [MulLeftMono α] {b c : α} (bc : b ≤ c) (a : α) : a * b ≤ a * c :=
   CovariantClass.elim _ bc
 
-@[deprecated (since := "2025-11-27")]
-alias mul_le_mul_left' := mul_le_mul_right
-
 @[to_additive le_of_add_le_add_left]
 theorem le_of_mul_le_mul_left' [MulLeftReflectLE α] {a b c : α} (bc : a * b ≤ a * c) : b ≤ c :=
   MulLeftReflectLE.le_of_mul_le_mul_left' bc
@@ -80,9 +77,6 @@ theorem le_of_mul_le_mul_left' [MulLeftReflectLE α] {a b c : α} (bc : a * b �
 @[to_additive (attr := gcongr high - 1)]
 theorem mul_le_mul_left [i : MulRightMono α] {b c : α} (bc : b ≤ c) (a : α) : b * a ≤ c * a :=
   i.elim a bc
-
-@[deprecated (since := "2025-11-27")]
-alias mul_le_mul_right' := mul_le_mul_left
 
 @[to_additive le_of_add_le_add_right]
 theorem le_of_mul_le_mul_right' [MulRightReflectLE α] {a b c : α} (bc : b * a ≤ c * a) :

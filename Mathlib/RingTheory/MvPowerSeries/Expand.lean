@@ -150,7 +150,6 @@ theorem support_expand_subset (φ : MvPowerSeries σ R) :
 set_option backward.isDefEq.respectTransparency.types false in
 theorem support_expand (φ : MvPowerSeries σ R) :
     (expand p hp φ).support = φ.support.image (p • ·) := by
-  classical
   refine (support_expand_subset p hp φ).antisymm ?_
   intro d hd
   obtain ⟨n, hn₁, hn₂⟩ := hd

@@ -116,10 +116,9 @@ function is. -/
 theorem continuousOn_tsum [TopologicalSpace β] {f : α → β → F} {s : Set β}
     (hf : ∀ i, ContinuousOn (f i) s) (hu : Summable u) (hfu : ∀ n x, x ∈ s → ‖f n x‖ ≤ u n) :
     ContinuousOn (fun x => ∑' n, f n x) s := by
-  classical
-    refine (tendstoUniformlyOn_tsum hu hfu).continuousOn (Frequently.of_forall ?_)
-    intro t
-    exact continuousOn_finsetSum _ fun i _ => hf i
+  refine (tendstoUniformlyOn_tsum hu hfu).continuousOn (Frequently.of_forall ?_)
+  intro t
+  exact continuousOn_finsetSum _ fun i _ => hf i
 
 /-- An infinite sum of functions with summable sup norm is continuous if each individual
 function is. -/

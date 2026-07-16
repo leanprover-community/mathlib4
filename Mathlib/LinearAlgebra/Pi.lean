@@ -732,7 +732,6 @@ lemma Module.pi_induction {ι : Type v} [Finite ι]
       [AddCommMonoid N'] [Module R N] [Module R N'], motive N → motive' N' → motive' (N × N'))
     (M : ι → Type u) [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)]
     (h : ∀ i, motive (M i)) : motive' (∀ i, M i) := by
-  classical
   cases nonempty_fintype ι
   revert M
   refine Fintype.induction_empty_option
@@ -781,7 +780,6 @@ lemma Module.pi_induction' {ι : Type v} [Finite ι] (R : Type*) [Ring R]
       [AddCommGroup N'] [Module R N] [Module R N'], motive N → motive' N' → motive' (N × N'))
     (M : ι → Type u) [∀ i, AddCommGroup (M i)] [∀ i, Module R (M i)]
     (h : ∀ i, motive (M i)) : motive' (∀ i, M i) := by
-  classical
   cases nonempty_fintype ι
   revert M
   refine Fintype.induction_empty_option

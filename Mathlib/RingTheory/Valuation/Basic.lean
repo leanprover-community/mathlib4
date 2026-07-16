@@ -481,7 +481,6 @@ lemma embedding_restrict (x : R) : embedding (v.restrict x) = v x :=
 set_option backward.isDefEq.respectTransparency false in
 lemma restrict_eq_mk {x : R} (hx : v x ≠ 0) : v.restrict x =
     (valueGroup.mk (.ofClass v) 1 x (by simp) hx : ValueGroup₀ (.ofClass v)) := by
-  classical
   simp [restrict_def, restrict₀_apply, dif_neg hx, valueGroup.mk]
 
 @[simp]

@@ -60,7 +60,6 @@ theorem subgroups_basis :
     RingSubgroupsBasis fun γ : (ValueGroup₀ (.ofClass v))ˣ ↦
       v.ltAddSubgroup <| Units.map (ValueGroup₀.embedding (f := (.ofClass v))) γ :=
   { inter := by
-      classical
       rintro γ₀ γ₁
       use min γ₀ γ₁
       have hmin : embedding (min γ₀.1 γ₁.1) = min (embedding γ₀.1) (embedding γ₁.1) :=

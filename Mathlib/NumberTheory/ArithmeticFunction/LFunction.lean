@@ -162,7 +162,6 @@ variable [CommRing R]
 to substituting `X` with `X ^ k` in the original power series. -/
 theorem ofPowerSeries_pow (q : ℕ) {k : ℕ} (hk : k ≠ 0) (f : PowerSeries R) :
     ofPowerSeries (q ^ k) f = ofPowerSeries q (f.subst (PowerSeries.X ^ k)) := by
-  classical
   by_cases hq : 1 < q
   · ext n
     by_cases hn : ∃ i, q ^ i = n

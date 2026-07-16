@@ -105,7 +105,6 @@ theorem quasiCompact_iff_forall_isAffineOpen :
 
 theorem isCompact_basicOpen (X : Scheme) {U : X.Opens} (hU : IsCompact (U : Set X))
     (f : Γ(X, U)) : IsCompact (X.basicOpen f : Set X) := by
-  classical
   refine isCompact_iff_finite_and_eq_biUnion_affineOpens.mpr ?_
   obtain ⟨s, hs, e⟩ := isCompact_iff_finite_and_eq_biUnion_affineOpens.mp hU
   let g : s → X.affineOpens := fun V ↦ ⟨V.1 ⊓ X.basicOpen f, by

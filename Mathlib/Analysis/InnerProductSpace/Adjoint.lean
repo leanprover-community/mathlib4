@@ -970,16 +970,10 @@ lemma coe_linearIsometryEquiv_apply (u : unitary (H →L[𝕜] H)) :
     linearIsometryEquiv u = (u : H →L[𝕜] H) :=
   rfl
 
-@[deprecated (since := "2025-12-16")] alias linearIsometryEquiv_coe_apply :=
-  coe_linearIsometryEquiv_apply
-
 @[simp]
 lemma coe_symm_linearIsometryEquiv_apply (e : H ≃ₗᵢ[𝕜] H) :
     linearIsometryEquiv.symm e = (e : H →L[𝕜] H) :=
   rfl
-
-@[deprecated (since := "2025-12-16")] alias linearIsometryEquiv_coe_symm_apply :=
-  coe_symm_linearIsometryEquiv_apply
 
 theorem conjStarAlgEquiv_unitaryLinearIsometryEquiv (u : unitary (H →L[𝕜] H)) :
     (linearIsometryEquiv u).conjStarAlgEquiv = conjStarAlgAut 𝕜 _ u := rfl

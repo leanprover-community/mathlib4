@@ -149,7 +149,6 @@ Note that the converse does not hold. -/
 lemma IsVisible.mem_convexHull_isVisible (hx : x ∉ convexHull ℝ s) (hy : y ∈ convexHull ℝ s)
     (hxy : IsVisible ℝ (convexHull ℝ s) x y) :
     y ∈ convexHull ℝ {z ∈ s | IsVisible ℝ (convexHull ℝ s) x z} := by
-  classical
   obtain ⟨ι, _, w, a, hw₀, hw₁, ha, rfl⟩ := mem_convexHull_iff_exists_fintype.1 hy
   rw [← Fintype.sum_subset (s := {i | w i ≠ 0})
     fun i hi ↦ mem_filter.2 ⟨mem_univ _, left_ne_zero_of_smul hi⟩]

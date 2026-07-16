@@ -273,7 +273,6 @@ def fixingSubgroupEquiv : fixingSubgroup K ≃* Gal(E/K) where
 
 theorem fixingSubgroup_fixedField [FiniteDimensional F E] : fixingSubgroup (fixedField H) = H := by
   have H_le : H ≤ fixingSubgroup (fixedField H) := (le_iff_le _ _).mp le_rfl
-  classical
   suffices Nat.card H = Nat.card (fixingSubgroup (fixedField H)) by
     exact SetLike.coe_injective (Set.eq_of_inclusion_surjective
       ((Nat.bijective_iff_injective_and_card (Set.inclusion H_le)).mpr
@@ -320,7 +319,6 @@ theorem fixedField_fixingSubgroup [FiniteDimensional F E] [h : IsGalois F E] :
   suffices
     finrank K E = finrank (IntermediateField.fixedField (IntermediateField.fixingSubgroup K)) E by
     exact (IntermediateField.eq_of_le_of_finrank_eq' K_le this).symm
-  classical
   rw [IntermediateField.finrank_fixedField_eq_card,
     Nat.card_congr (IntermediateField.fixingSubgroupEquiv K).toEquiv]
   exact (card_aut_eq_finrank K E).symm
@@ -485,7 +483,7 @@ theorem is_separable_splitting_field [FiniteDimensional F E] [IsGalois F E] :
 theorem of_fixedField_eq_bot [FiniteDimensional F E]
     (h : IntermediateField.fixedField (⊤ : Subgroup Gal(E/F)) = ⊥) : IsGalois F E := by
   rw [← isGalois_iff_isGalois_bot, ← h]
-  classical exact IsGalois.of_fixed_field E (⊤ : Subgroup Gal(E/F))
+  exact IsGalois.of_fixed_field E (⊤ : Subgroup Gal(E/F))
 
 /-- Let $E / F$ be a finite extension of fields. If $|\text{Aut}(E/F)| = [E : F]$, then
 $E$ is Galois over $F$. -/
@@ -494,7 +492,6 @@ theorem of_card_aut_eq_finrank [FiniteDimensional F E]
     (h : Nat.card Gal(E/F) = finrank F E) : IsGalois F E := by
   apply of_fixedField_eq_bot
   have p : 0 < finrank (IntermediateField.fixedField (⊤ : Subgroup Gal(E/F))) E := finrank_pos
-  classical
   rw [← IntermediateField.finrank_eq_one_iff, ← mul_left_inj' (ne_of_lt p).symm,
     finrank_mul_finrank, ← h, one_mul, IntermediateField.finrank_fixedField_eq_card]
   apply Nat.card_congr
@@ -615,7 +612,9 @@ noncomputable def restrictRestrictAlgEquivMapHom (F K L E : Type*) [Field F] [Fi
     Gal(E/L) →* Gal(K/F) :=
   (AlgEquiv.restrictNormalHom K).comp (MulSemiringAction.toAlgAut Gal(E/L) F E)
 
-variable {F E : Type*} [Field F] [Field E] [Algebra F E] (K L : IntermediateField F E) [Normal F K]
+variable {F E : Type*} (E' : Type*) [Field F] [Field E] [Field E']
+  [Algebra F E] [Algebra F E'] [Algebra E E'] [IsScalarTower F E E']
+  (K L : IntermediateField F E) [Normal F K]
 
 @[simp]
 theorem restrictRestrictAlgEquivMapHom_apply (φ : Gal(E/L)) (x : K) :
@@ -644,6 +643,62 @@ theorem restrictRestrictAlgEquivMapHom_surjective [FiniteDimensional F K] [Finit
     exact congr_arg ((↑) : K → E) <| hx₂ (restrictRestrictAlgEquivMapHom F K L E φ) ⟨φ, rfl⟩
   obtain ⟨z, rfl⟩ : y ∈ (⊥ : IntermediateField F E) := h ▸ mem_inf.mpr ⟨hx₁, hy⟩
   exact mem_bot.mp ⟨z, rfl⟩
+
+/-- If `K / E / k` is a field extension tower with `E / k` normal,
+`L` is an intermediate field of `E / k`, then the fixing subgroup of `L` viewed as an
+intermediate field of `K / k` is equal to the preimage of the fixing subgroup of `L` viewed as an
+intermediate field of `E / k` under the natural map `Aut(K / k) → Aut(E / k)`
+(`AlgEquiv.restrictNormalHom`). -/
+theorem map_fixingSubgroup [Normal F E] :
+    (L.map (IsScalarTower.toAlgHom F E E')).fixingSubgroup =
+      L.fixingSubgroup.comap (AlgEquiv.restrictNormalHom (F := F) (K₁ := E') E) := by
+  ext f
+  simp only [Subgroup.mem_comap, mem_fixingSubgroup_iff]
+  constructor
+  · rintro h x hx
+    change f.restrictNormal E x = x
+    apply_fun _ using (algebraMap E E').injective
+    rw [AlgEquiv.restrictNormal_commutes]
+    exact h _ ⟨x, hx, rfl⟩
+  · rintro h _ ⟨x, hx, rfl⟩
+    replace h := congr(algebraMap E E' $(show f.restrictNormal E x = x from h x hx))
+    rwa [AlgEquiv.restrictNormal_commutes] at h
+
+/-- If `K / E / k` is a field extension tower with `E / k` and `K / k` normal,
+`L` is an intermediate field of `E / k`, then the index of the fixing subgroup of `L` viewed as an
+intermediate field of `K / k` is equal to the index of the fixing subgroup of `L` viewed as an
+intermediate field of `E / k`. -/
+theorem map_fixingSubgroup_index [Normal F E] [Normal F E'] :
+    (L.map (IsScalarTower.toAlgHom F E E')).fixingSubgroup.index = L.fixingSubgroup.index := by
+  rw [L.map_fixingSubgroup E', L.fixingSubgroup.index_comap_of_surjective
+    (AlgEquiv.restrictNormalHom_surjective _)]
+
+variable {K} in
+/-- If `K / k` is a Galois extension, `L` is an intermediate field of `K / k`, then `[L : k]`
+as a natural number is equal to the index of the fixing subgroup of `L`. -/
+theorem finrank_eq_fixingSubgroup_index (L : IntermediateField F E') [IsGalois F E'] :
+    Module.finrank F L = L.fixingSubgroup.index := by
+  wlog hnfd : FiniteDimensional F L generalizing L
+  · rw [Module.finrank_of_infinite_dimensional hnfd]
+    by_contra! h
+    replace h : L.fixingSubgroup.FiniteIndex := ⟨h.symm⟩
+    obtain ⟨L', hfd, hL'⟩ :=
+      exists_lt_finrank_of_infinite_dimensional hnfd L.fixingSubgroup.index
+    let i := (liftAlgEquiv L').toLinearEquiv
+    replace hfd := i.finiteDimensional
+    rw [i.finrank_eq, this _ hfd] at hL'
+    exact (Subgroup.index_antitone <| fixingSubgroup_le <|
+      IntermediateField.lift_le L').not_gt hL'
+  let E := normalClosure F L E'
+  have hle : L ≤ E := by simpa only [fieldRange_val] using L.val.fieldRange_le_normalClosure
+  let L' := restrict hle
+  have h := Module.finrank_mul_finrank F ↥L' ↥E
+  classical
+  rw [← IsGalois.card_fixingSubgroup_eq_finrank L', ← IsGalois.card_aut_eq_finrank F E] at h
+  rw [← L'.fixingSubgroup.index_mul_card, Nat.mul_left_inj Finite.card_pos.ne'] at h
+  rw [(restrict_algEquiv hle).toLinearEquiv.finrank_eq, h, ← L'.map_fixingSubgroup_index E']
+  congr 2
+  exact lift_restrict hle
 
 end IntermediateField
 

@@ -779,7 +779,6 @@ theorem compactSet_eq_union_aux₂ {x : realSpace K} (hx₀ : x ≠ 0)
 
 theorem compactSet_eq_union :
     compactSet K = expMapBasis '' closure (paramSet K) ∪ {0} := by
-  classical
   ext x
   by_cases hx₀ : x = 0
   · simpa [hx₀] using zero_mem_compactSet K

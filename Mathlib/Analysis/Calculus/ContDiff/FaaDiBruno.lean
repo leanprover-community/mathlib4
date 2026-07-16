@@ -1063,7 +1063,6 @@ theorem HasFTaylorSeriesUpToOn.comp {n : WithTop ℕ∞} {g : F → G} {f : E �
   `faaDiBruno_aux1` and `faaDiBruno_aux2`, with terms of the same form at order `m+1`. Then, one
   needs to check that one gets each term once and exactly once, which is given by the bijection
   `OrderedFinpartition.extendEquiv m`. -/
-  classical
   constructor
   · intro x hx
     simp [FormalMultilinearSeries.taylorComp, default, HasFTaylorSeriesUpToOn.zero_eq' hg (h hx)]
