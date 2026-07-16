@@ -247,6 +247,7 @@ lemma isPrincipal_iff_exists_eq_setOf_valuation_le (hv : Integers v O) {I : Idea
     · simp [hx]
     · simp [hx, mem_upperBounds]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma not_denselyOrdered_of_isPrincipalIdealRing [IsPrincipalIdealRing O] (hv : Integers v O) :
     ¬ DenselyOrdered (range v) := by
   intro H
