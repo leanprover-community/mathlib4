@@ -20,19 +20,23 @@ Grothendieck asked whether a finite locally free group scheme of order `n` is ki
 Deligne proved that this holds for commutative group schemes.  This file formalizes a
 counterexample in the non-commutative case: an affine group scheme, finite free of rank four
 over the base ring `R = ℤ[a, b] / (a³, b³, a²b + 2)`, whose fourth power map is not trivial.
+Note that `R` is a finite ring of size `2^{10}` satisfying `4 = 0` but `2 ≠ 0`.
 
-The coordinate Hopf algebra is `A = R[U, V] / (U² - abU + b²V, V² - a²V)`, built as two
-nested `QuadraticAlgebra`s; it is finite free of rank four over `R`.  With
+The coordinate Hopf algebra of the counterexample is `A = R[U, V] / (U² - abU + b²V, V² - a²V)`,
+built as a `QuadraticAlgebra` over the `QuadraticAlgebra` `B := R[V] / (V² - a²V)`.
+It is finite free of rank four over `R`.  With
 `lambda = (1 + aU) * (1 + bV)`, the comultiplication is determined by
 
 * `Δ(U) = U ⊗ 1 + lambda ⊗ U`,
 * `Δ(V) = V ⊗ lambda + 1 ⊗ V`,
 
-and `lambda` is group-like.  The `n`-th convolution power of the identity — the coordinate
-map of the pointwise `n`-th power `x ↦ xⁿ` of the group scheme — sends `U` to
-`(1 + lambda + ⋯ + lambdaⁿ⁻¹) · U`.  For `n = 4` this is `2bUV ≠ 0`, while the eighth
-convolution power is the convolution unit (the composite of the counit with the unit map of
-`A`).  In particular the seventh convolution power supplies an antipode, so `A` is a Hopf
+and `lambda` is group-like (that is, `Δ(lambda) = lambda ⊗ lambda`).
+The counit sends both `U` and `V` to zero. The `n`th convolution power of
+the identity — the coordinate map of the pointwise `n`th power `x ↦ xⁿ` of the
+group scheme — sends `U` to `(1 + lambda + ⋯ + lambdaⁿ⁻¹) · U`.  For `n = 4` this
+is `2bUV ≠ 0`, while the eighth convolution power is the convolution unit
+(the composite of the counit with the unit map of `A`) and in particular sends `U` to `0`.
+In particular the seventh convolution power supplies an antipode, so `A` is a Hopf
 algebra, and the associated group scheme has order four but is not killed by four.
 
 ## Main definitions
@@ -49,7 +53,8 @@ algebra, and the associated group scheme has order four but is not killed by fou
 
 ## Main results
 
-* `Counterexample.GrothendieckPower.finrank_A`: `A` is free of rank four over `R`.
+* `Counterexample.GrothendieckPower.finrank_A`: `A` has rank four over `R`. Note that
+  `A` is also finite and free over `R`, so `A ≅ R⁴` as an `R`-module.
 * `Counterexample.GrothendieckPower.powerMap_four_U_ne_zero`: the fourth power map is not
   the convolution unit, since it sends `U` to `2bUV ≠ 0`.
 * `Counterexample.GrothendieckPower.powerMap_eight`: the eighth power map is the convolution
@@ -75,7 +80,8 @@ algebra, and the associated group scheme has order four but is not killed by fou
 
 Nontriviality of the base ring (concretely, `2b ≠ 0` in `R`) is certified by an explicit
 model: the regular representation of `R` on `M = ℤ/4 × ℤ/4 × (ℤ/2)⁵`, with the actions of
-`a` and `b` given by explicit additive endomorphisms and all relations checked by `decide`.
+`a` and `b` given by explicit additive endomorphisms and all relations checked
+by `decide +kernel`.
 
 The polynomial identities underlying the comultiplication and the power-map computations are
 proved once in an arbitrary commutative ring satisfying the relations of `R`
@@ -108,7 +114,7 @@ private theorem quadratic_lift_omega {C S : Type*} [CommSemiring C] [Ring S]
     {c l : C} [Algebra C S] (x : S) (hx : x * x = c • 1 + l • x) :
     QuadraticAlgebra.lift (R := C) ⟨x, hx⟩ QuadraticAlgebra.omega = x :=
   congr_arg Subtype.val
-    ((QuadraticAlgebra.lift (R := C) (A := S)).symm_apply_apply ⟨x, hx⟩)
+    (QuadraticAlgebra.lift.symm_apply_apply ⟨x, hx⟩)
 
 /-!
 ### An explicit faithful model of the base ring
@@ -132,7 +138,8 @@ def double : ZMod 2 →+ ZMod 4 := ZMod.lift 2 ⟨2 • Int.castAddHom (ZMod 4),
   fin_cases x <;> decide
 
 /-- The additive group `ℤ/4 × ℤ/4 × (ℤ/2)⁵`, carrier of the regular representation of the
-base ring `ℤ[a, b] / (a³, b³, a²b + 2)`. -/
+base ring `R := ℤ[a, b] / (a³, b³, a²b + 2)` (and in particular isomorphic to `R`
+as an additive group). -/
 abbrev M := ZMod 4 × ZMod 4 × (Fin 5 → ZMod 2)
 
 /-- The additive endomorphism of `M` realizing multiplication by the generator `a` (the class
@@ -155,8 +162,7 @@ def bEnd : AddMonoid.End M where
   map_zero' := by simp
   map_add' x y := by simp
 
-theorem aEnd_bEnd_comm : Commute aEnd bEnd :=
-  (by decide +kernel : aEnd * bEnd = bEnd * aEnd)
+theorem aEnd_bEnd_comm : aEnd * bEnd = bEnd * aEnd := by decide +kernel
 
 theorem aEnd_cube : aEnd ^ 3 = 0 := by decide +kernel
 
@@ -170,11 +176,7 @@ private theorem generators_commute {x y : AddMonoid.End M}
     (hx : x ∈ ({aEnd, bEnd} : Set (AddMonoid.End M)))
     (hy : y ∈ ({aEnd, bEnd} : Set (AddMonoid.End M))) : x * y = y * x := by
   simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at hx hy
-  rcases hx with rfl | rfl <;> rcases hy with rfl | rfl
-  · rfl
-  · exact aEnd_bEnd_comm
-  · exact aEnd_bEnd_comm.symm
-  · rfl
+  rcases hx with rfl | rfl <;> rcases hy with rfl | rfl <;> simp [aEnd_bEnd_comm]
 
 /-- The commutative subring of `AddMonoid.End M` generated by `aEnd` and `bEnd`. -/
 def WitnessRing := Subring.closure ({aEnd, bEnd} : Set (AddMonoid.End M))
@@ -233,21 +235,14 @@ def a : R := Ideal.Quotient.mk baseIdeal ap
 /-- The class of the variable `b` in the base ring `R`. -/
 def b : R := Ideal.Quotient.mk baseIdeal bp
 
-@[simp] theorem a_cube : a ^ 3 = 0 := by
-  rw [show a ^ 3 = Ideal.Quotient.mk baseIdeal (ap ^ 3) by simp [a],
-    Ideal.Quotient.eq_zero_iff_mem]
-  exact Ideal.subset_span (by simp)
+@[simp] theorem a_cube : a ^ 3 = 0 :=
+  Ideal.Quotient.eq_zero_iff_mem.2 <| Ideal.subset_span (by simp)
 
-@[simp] theorem b_cube : b ^ 3 = 0 := by
-  rw [show b ^ 3 = Ideal.Quotient.mk baseIdeal (bp ^ 3) by simp [b],
-    Ideal.Quotient.eq_zero_iff_mem]
-  exact Ideal.subset_span (by simp)
+@[simp] theorem b_cube : b ^ 3 = 0 :=
+  Ideal.Quotient.eq_zero_iff_mem.2 <| Ideal.subset_span (by simp)
 
-@[simp] theorem base_relation : a ^ 2 * b + 2 = 0 := by
-  rw [show a ^ 2 * b + 2 =
-      Ideal.Quotient.mk baseIdeal (ap ^ 2 * bp + C 2) by simp [a, b]; rfl,
-    Ideal.Quotient.eq_zero_iff_mem]
-  exact Ideal.subset_span (by simp)
+@[simp] theorem base_relation : a ^ 2 * b + 2 = 0 :=
+  Ideal.Quotient.eq_zero_iff_mem.2 <| Ideal.subset_span (by simp)
 
 /-- Evaluation of integer polynomials at `(aw, bw)` in `WitnessRing`. -/
 def evalWitness : P →+* WitnessRing :=
@@ -298,20 +293,20 @@ abbrev aB : B := algebraMap R B a
 /-- The image of `b` in `B`. -/
 abbrev bB : B := algebraMap R B b
 
-/-- The coordinate algebra `A = B[U] / (U² - abU + b²V)`, finite free of rank four over the
-base ring `R`. -/
+/-- The coordinate algebra `A = B[U] / (U² - abU + b²V) = R[U, V] / (U² - abU + b²V, V² - a²V)`,
+finite free of rank four over the base ring `R`. -/
 abbrev A := QuadraticAlgebra B (-(bB ^ 2) * VB) (aB * bB)
 
 /-- The generator `U` of `A`, satisfying `U² = abU - b²V`. -/
 abbrev U : A := ω
 
-/-- The image of `VB` in `A`. -/
+/-- The image `V` of `VB` in `A`. -/
 abbrev V : A := algebraMap B A VB
 
-/-- The image of `a` in `A`. -/
+/-- The image `aA` of `a` in `A`. -/
 abbrev aA : A := algebraMap R A a
 
-/-- The image of `b` in `A`. -/
+/-- The image `bA` of `b` in `A`. -/
 abbrev bA : A := algebraMap R A b
 
 @[simp] theorem U_relation :
@@ -326,7 +321,7 @@ abbrev bA : A := algebraMap R A b
   rw [← map_pow, VB_relation, map_mul, IsScalarTower.algebraMap_apply R B A]
 
 noncomputable instance : Module.Free R A :=
-  Module.Free.trans (S := B) -- TODO (buzzard) Module.Free.trans should have S explicit
+  Module.Free.trans (S := B)
 
 noncomputable instance : Module.Finite R A :=
   Module.Finite.trans B A
@@ -371,8 +366,8 @@ defining relations of `A`. -/
 noncomputable def mkAlgHom (u v : S) (hv : v ^ 2 = algebraMap R S (a ^ 2) * v)
     (hu : u ^ 2 = algebraMap R S (a * b) * u - algebraMap R S (b ^ 2) * v) :
     A →ₐ[R] S :=
-  letI : Algebra B S := (mkAlgHomB v hv).toRingHom.toAlgebra
-  letI : IsScalarTower R B S :=
+  let : Algebra B S := (mkAlgHomB v hv).toRingHom.toAlgebra
+  have : IsScalarTower R B S :=
     .of_algebraMap_eq fun r ↦ ((mkAlgHomB v hv).commutes r).symm
   AlgHom.restrictScalars R (QuadraticAlgebra.lift
     ⟨u, show u * u = mkAlgHomB v hv (-(bB ^ 2) * VB) * 1 + mkAlgHomB v hv (aB * bB) * u by
@@ -384,13 +379,13 @@ noncomputable def mkAlgHom (u v : S) (hv : v ^ 2 = algebraMap R S (a ^ 2) * v)
 theorem mkAlgHom_U (u v : S) (hv : v ^ 2 = algebraMap R S (a ^ 2) * v)
     (hu : u ^ 2 = algebraMap R S (a * b) * u - algebraMap R S (b ^ 2) * v) :
     mkAlgHom u v hv hu U = u := by
-  letI : Algebra B S := (mkAlgHomB v hv).toRingHom.toAlgebra
+  let : Algebra B S := (mkAlgHomB v hv).toRingHom.toAlgebra
   exact quadratic_lift_omega u _
 
 theorem mkAlgHom_V (u v : S) (hv : v ^ 2 = algebraMap R S (a ^ 2) * v)
     (hu : u ^ 2 = algebraMap R S (a * b) * u - algebraMap R S (b ^ 2) * v) :
     mkAlgHom u v hv hu V = v := by
-  letI : Algebra B S := (mkAlgHomB v hv).toRingHom.toAlgebra
+  let : Algebra B S := (mkAlgHomB v hv).toRingHom.toAlgebra
   exact ((QuadraticAlgebra.lift _ : A →ₐ[B] S).commutes VB).trans (mkAlgHomB_VB v hv)
 
 end UniversalProperty
@@ -498,13 +493,9 @@ private theorem mapped_relations {S : Type*} [CommRing S] [Algebra R S]
     aa ^ 3 = 0 ∧ bb ^ 3 = 0 ∧ aa ^ 2 * bb + 2 = 0 ∧
       vv ^ 2 = aa ^ 2 * vv ∧ uu ^ 2 = aa * bb * uu - bb ^ 2 * vv := by
   dsimp
-  constructor
-  · rw [← map_pow]
-    simp [aA, ← map_pow, a_cube]
-  constructor
-  · rw [← map_pow]
-    simp [bA, ← map_pow, b_cube]
-  constructor
+  split_ands
+  · simp [aA, ← map_pow, a_cube]
+  · simp [bA, ← map_pow, b_cube]
   · have h : aA ^ 2 * bA + 2 = 0 := by
       unfold aA bA
       calc
@@ -514,7 +505,6 @@ private theorem mapped_relations {S : Type*} [CommRing S] [Algebra R S]
         _ = algebraMap R A 0 := congr_arg (algebraMap R A) base_relation
         _ = 0 := map_zero _
     simpa only [map_add, map_mul, map_pow, map_ofNat, map_zero] using congr_arg f h
-  constructor
   · rw [← map_pow, V_relation, map_mul]
     simp [aA, ← map_pow]
   · have h : U ^ 2 = aA * bA * U - bA ^ 2 * V := by
@@ -771,8 +761,8 @@ open WithConv
 noncomputable def universalPoint : WithConv (A →ₐ[R] A) :=
   toConv (AlgHom.id R A)
 
-/-- The `n`-th convolution power of the identity of `A`: the coordinate-ring map of the
-pointwise `n`-th power map of the group scheme. -/
+/-- The `n`th convolution power of the identity of `A`: the coordinate ring map of the
+pointwise `n`th power map of the group scheme. -/
 noncomputable def powerMap (n : ℕ) : A →ₐ[R] A :=
   (universalPoint ^ n).ofConv
 
@@ -937,8 +927,7 @@ private theorem antipode_left_identity :
   rw [← AlgHom.comp_assoc, Algebra.TensorProduct.lmul'_comp_map] at h
   exact h
 
-/-- The Hopf algebra structure; its antipode is the seventh convolution power of the
-identity. -/
+/-- The Hopf `R`-algebra structure on `A`. -/
 noncomputable instance instHopfAlgebra : HopfAlgebra R A :=
   HopfAlgebra.ofAlgHom (powerMap 7) antipode_right_identity antipode_left_identity
 
@@ -958,8 +947,7 @@ theorem counterexample :
   refine ⟨inferInstance, inferInstance, inferInstance, finrank_A, ?_⟩
   intro h
   apply powerMap_four_U_ne_zero
-  have hU := DFunLike.congr_fun h U
-  simpa using hU
+  simp [h]
 
 /-- **Grothendieck's question has a negative answer.**  Grothendieck asked whether every finite
 locally free group scheme of order `n` is killed by `n` — equivalently, whether the `n`-th
