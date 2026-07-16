@@ -321,8 +321,7 @@ theorem paper_eq3_eq5_off_diag (i j : Fin n) :
     · -- The border column `k` is repeated among the columns indexed by `α` and
       -- so the bordered minor is 0.
       rw [bminor_eq_zero_of_mem_range A α i hoccurs, zero_mul]
-    · exfalso
-      apply hnotmem
+    · contrapose hnotmem
       obtain ⟨t, ht⟩ := exists_insertNth_mem_S hα hk hoccurs
       refine ⟨(t.insertNth k α, t), ?_, ?_⟩
       · simp only [Finset.coe_product, Finset.coe_univ, Set.mem_prod, Set.mem_univ, and_true]
