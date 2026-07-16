@@ -598,7 +598,7 @@ variable [IsScalarTower R A A] [SMulCommClass R A A]
 /-- The star operation on `NonUnitalSubalgebra` commutes with `NonUnitalAlgebra.adjoin`. -/
 theorem star_adjoin_comm (s : Set A) :
     star (NonUnitalAlgebra.adjoin R s) = NonUnitalAlgebra.adjoin R (star s) :=
-  have this :
+  have :
     ∀ t : Set A, NonUnitalAlgebra.adjoin R (star t) ≤ star (NonUnitalAlgebra.adjoin R t) := fun _ =>
     NonUnitalAlgebra.adjoin_le fun _ hx => NonUnitalAlgebra.subset_adjoin R hx
   le_antisymm (by simpa only [star_star] using NonUnitalSubalgebra.star_mono (this (star s)))
@@ -1049,6 +1049,7 @@ instance instIsMulCommutative_iSup [Nonempty ι] [Preorder ι] [IsDirectedOrder 
     IsMulCommutative (⨆ i, S i : NonUnitalStarSubalgebra R A) :=
   isMulCommutative_iSup S.monotone.directed_le
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Define a non-unital star algebra homomorphism on a directed supremum of non-unital star
 subalgebras by defining it on each non-unital star subalgebra, and proving that it agrees on the
 intersection of non-unital star subalgebras. -/

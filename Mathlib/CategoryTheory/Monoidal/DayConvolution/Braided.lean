@@ -157,7 +157,7 @@ lemma hexagon_forward (H : C ⥤ V)
     externalProductBifunctor_obj_obj, unit_app_map_app_assoc, NatTrans.id_app,
     id_tensorHom]
   rw [← BraidedCategory.hexagon_reverse, ← whiskerLeft_comp_assoc]
-  haveI := unit_app_braiding_hom_app F H x z =≫ (H ⊛ F).map (β_ z x).inv
+  have := unit_app_braiding_hom_app F H x z =≫ (H ⊛ F).map (β_ z x).inv
   dsimp at this
   simp only [Category.assoc, Iso.map_hom_inv_id, Category.comp_id] at this
   rw [← this, whiskerLeft_comp_assoc]
@@ -197,7 +197,7 @@ lemma hexagon_reverse (H : C ⥤ V)
     unit_app_map_app_assoc, NatTrans.id_app, tensorHom_id]
   congr 2
   rw [← BraidedCategory.hexagon_forward, ← comp_whiskerRight_assoc]
-  haveI := unit_app_braiding_hom_app F H x z =≫ (H ⊛ F).map (β_ z x).inv
+  have := unit_app_braiding_hom_app F H x z =≫ (H ⊛ F).map (β_ z x).inv
   dsimp at this
   simp only [Category.assoc, Iso.map_hom_inv_id, Category.comp_id] at this
   rw [← this, comp_whiskerRight_assoc]
