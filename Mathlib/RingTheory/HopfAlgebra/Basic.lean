@@ -244,7 +244,7 @@ theorem mul_antipode_rlTensor_comul_adjoin_top {X : Set A} (S : A →ₐ[R] Aᵐ
 If `A` is generated as an `R`-algebra by `X`, and `S : A →ₐ[R] Aᵐᵒᵖ` satisfies the two
 antipode identities on `X`, then the underlying linear map gives a Hopf algebra structure on `A`.
 -/
-abbrev ofAntipodeOfAdjoin
+noncomputable abbrev ofAntipodeOfAdjoin
     {R A : Type*} [CommSemiring R] [Semiring A] [Bialgebra R A] {X : Set A} (S : A →ₐ[R] Aᵐᵒᵖ)
     (hX : adjoin R X = ⊤)
     (hxr : ∀ x ∈ X,
@@ -254,8 +254,8 @@ abbrev ofAntipodeOfAdjoin
       mul' R A (((MulOpposite.opLinearEquiv R).symm.toLinearMap ∘ₗ S.toLinearMap).lTensor A
           (Coalgebra.comul x)) = algebraMap R A (Coalgebra.counit x)) : HopfAlgebra R A where
   antipode := (MulOpposite.opLinearEquiv R).symm.toLinearMap ∘ₗ S.toLinearMap
-  mul_antipode_rTensor_comul := mul_antipode_rTensor_comul_adjoin_top S hX hxr
-  mul_antipode_lTensor_comul := mul_antipode_rlTensor_comul_adjoin_top S hX hxl
+  mul_antipode_rTensor_comul := by exact mul_antipode_rTensor_comul_adjoin_top S hX hxr
+  mul_antipode_lTensor_comul := by exact mul_antipode_rlTensor_comul_adjoin_top S hX hxl
 
 end HopfAlgebra
 
