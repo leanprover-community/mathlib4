@@ -43,17 +43,6 @@ lemma Measure.integrable_toReal_rnDeriv [IsFiniteMeasure μ] :
   integrable_toReal_of_lintegral_ne_top (Measure.measurable_rnDeriv _ _).aemeasurable
     (Measure.lintegral_rnDeriv_lt_top _ _).ne
 
-lemma _root_.ConvexOn.continuousOn_Ici {y : ℝ} (hf_cvx : ConvexOn ℝ (Ici y) f)
-    (hf_cont : ContinuousWithinAt f (Ici y) y) :
-    ContinuousOn f (Ici y) := by
-  intro x hx
-  rcases eq_or_lt_of_le (α := ℝ) hx with rfl | hx_pos
-  · exact hf_cont
-  · have h := hf_cvx.continuousOn_interior x
-    simp only [nonempty_Iio, interior_Ici', mem_Ioi] at h
-    rw [continuousWithinAt_iff_continuousAt (Ioi_mem_nhds hx_pos)] at h
-    exact (h hx_pos).continuousWithinAt
-
 /-- For a convex continuous function `f` on `[0, ∞)`, if `μ` is absolutely continuous
 with respect to a probability measure `ν`, then
 `f μ.real univ ≤ ∫ x, f (μ.rnDeriv ν x).toReal ∂ν`. -/
