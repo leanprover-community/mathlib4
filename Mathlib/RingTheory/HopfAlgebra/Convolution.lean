@@ -216,9 +216,8 @@ theorem id_convMul_eq_one_of_adjoin_eq_top (hX : adjoin R X = ⊤)
       _ = ∑ i ∈ (ℛ R x).index, (ℛ R x).left i *
           (∑ j ∈ (ℛ R y).index, (ℛ R y).left j * 𝑺 ((ℛ R y).right j)) * 𝑺 ((ℛ R x).right i) := by
         rw [((ℛ R x).mul (ℛ R y)).convMul_apply]
-        simp only [id_coe, id_eq, Coalgebra.Repr.mul_index, Coalgebra.Repr.mul_left,
-          Coalgebra.Repr.mul_right, Finset.sum_product]
-        simp [Finset.mul_sum, Finset.sum_mul, mul_assoc]
+        simp [Finset.mul_sum, Finset.sum_mul, mul_assoc, id_coe, id_eq, Coalgebra.Repr.mul_index,
+          Coalgebra.Repr.mul_left, Coalgebra.Repr.mul_right, Finset.sum_product]
       _ = (∑ i ∈ (ℛ R x).index, (ℛ R x).left i * 𝑺 ((ℛ R x).right i)) *
           algebraMap R A (ε y) := by
         rw [hy, Finset.sum_mul]
