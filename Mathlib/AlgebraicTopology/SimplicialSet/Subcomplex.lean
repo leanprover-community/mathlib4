@@ -345,12 +345,14 @@ lemma image_preimage_le (B : X.Subcomplex) (f : Y ⟶ X) :
     (B.preimage f).image f ≤ B := by
   rw [image_le_iff]
 
+@[simp]
 lemma preimage_image (S : X.Subcomplex) (f : X ⟶ Y) [Mono f] :
     (S.image f).preimage f = S := by
   refine le_antisymm ?_ (by rw [← image_le_iff])
   intro n x ⟨y, hy, h⟩
   rwa [← injective_of_mono (f.app n) h]
 
+@[simp]
 lemma image_le_image_iff (f : X ⟶ Y) [Mono f] {S₁ S₂ : X.Subcomplex} :
     S₁.image f ≤ S₂.image f ↔ S₁ ≤ S₂ := by
   refine ⟨fun h ↦ ?_, fun h ↦ image_monotone f h⟩
