@@ -481,7 +481,7 @@ lemma tsum_choose_mul_geometric_of_norm_lt_one (k : ℕ) {r : 𝕜} (hr : ‖r�
 division instead of `Ring.inverse`, see `hasSum_descFactorial_mul_geometric_of_norm_lt_one`. -/
 theorem hasSum_descFactorial_mul_geometric_of_norm_lt_one' (j : ℕ) {r : R} (h : ‖r‖ < 1) :
     HasSum (fun n : ℕ ↦ n.descFactorial j * r ^ n)
-      (j.factorial * r ^ j * ((1 - r)⁻¹ʳ) ^ (j + 1)) := by
+      (j.factorial * r ^ j * (1 - r)⁻¹ʳ ^ (j + 1)) := by
   rw [← hasSum_nat_add_iff' j]
   convert! (hasSum_choose_mul_geometric_of_norm_lt_one' j h).mul_left (j.factorial * r ^ j) using 1
   · funext n
