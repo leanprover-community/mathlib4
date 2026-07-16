@@ -52,10 +52,11 @@ partial def getStructureDataProjections (cls : Name) (inst : Expr) (acc : Array 
 def compareWithSynthesized (e : Expr) : MetaM (Option MessageData) := do
   let type ← inferType e
   let .some inst ← trySynthInstance type | return none
-  if ← withReducibleAndInstances <| isDefEq e inst then
+  if ← withImplicit <| isDefEq e inst then
     return none
   if ← withDefault <| isDefEq e inst then
-    return m!"Projection {indentExpr e} : {← inferType e}\nis not defeq to the synthesized instance {indentExpr inst}"
+    return m!"\n  {indentExpr e} : {← inferType e}\n\
+      is, at implicit transparency, not definitionally equal to\n  {indentExpr inst}"
   else
     return none
 
