@@ -440,7 +440,7 @@ section Preorder
 variable [Preorder ι] {f : Filtration ι m} {τ π : Ω → WithTop ι}
 
 /-- The associated σ-algebra with a stopping time. -/
-@[implicit_reducible]
+@[instance_reducible]
 protected def measurableSpace (hτ : IsStoppingTime f τ) : MeasurableSpace Ω where
   MeasurableSet' s := MeasurableSet s ∧ ∀ i : ι, MeasurableSet[f i] (s ∩ {ω | τ ω ≤ i})
   measurableSet_empty := by simp
@@ -1078,6 +1078,7 @@ section StoppedValueOfMemFinset
 
 variable [Nonempty ι] {μ : Measure Ω} {τ : Ω → WithTop ι} {E : Type*} {p : ℝ≥0∞} {u : ι → Ω → E}
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem stoppedValue_eq_of_mem_finset [AddCommMonoid E] {s : Finset ι}
    (hbdd : ∀ ω, τ ω ∈ (WithTop.some '' s)) :
     stoppedValue u τ = ∑ i ∈ s, Set.indicator {ω | τ ω = i} (u i) := by
@@ -1299,7 +1300,7 @@ theorem stoppedValue_sub_eq_sum' [AddCommGroup β] (hle : τ ≤ π) {N : ℕ} (
   simp only [Finset.sum_apply, Finset.sum_indicator_eq_sum_filter]
   refine Finset.sum_congr ?_ fun _ _ => rfl
   ext i
-  simp only [Finset.mem_filter, Set.mem_setOf_eq, Finset.mem_range, Finset.mem_Ico]
+  simp only [Set.mem_setOf_eq, Finset.mem_Ico]
   specialize hbdd ω
   lift τ ω to ℕ using hτ_top ω with t ht
   lift π ω to ℕ using hπ_top ω with b hb
@@ -1318,9 +1319,10 @@ theorem stoppedValue_eq {N : ℕ} (hbdd : ∀ ω, τ ω ≤ N) : stoppedValue u 
   have h_top : τ ω ≠ ⊤ := fun h_contra ↦ by simp [h_contra] at hbdd
   lift τ ω to ℕ using h_top with t ht
   simp only [Nat.cast_le] at hbdd
-  simp only [ENat.some_eq_coe, Finset.coe_range, Set.mem_image, Set.mem_Iio]
+  simp only [ENat.some_eq_coe, Finset.coe_range]
   exact ⟨t, by simpa, Nat.cast_inj.mpr rfl⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem stoppedProcess_eq (n : ℕ) : stoppedProcess u τ n = Set.indicator {a | n ≤ τ a} (u n) +
     ∑ i ∈ Finset.range n, Set.indicator {ω | τ ω = i} (u i) := by
   rw [stoppedProcess_eq'' n]

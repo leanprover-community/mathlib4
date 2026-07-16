@@ -90,7 +90,7 @@ end
 
 namespace FirstOrder
 
-open MvPolynomial FreeCommRing Language Field Ring BoundedFormula
+open MvPolynomial FreeCommRing Language FirstOrder.Field FirstOrder.Ring BoundedFormula
 
 variable {ι α : Type*} [Finite α] {K : Type*} [Field K] [CompatibleRing K]
 

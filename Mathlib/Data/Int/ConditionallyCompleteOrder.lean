@@ -24,6 +24,7 @@ noncomputable section
 
 namespace Int
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 instance : ConditionallyCompleteLinearOrder ℤ where
   __ := instLinearOrder
@@ -45,6 +46,7 @@ instance : ConditionallyCompleteLinearOrder ℤ where
   csSup_of_not_bddAbove := fun s hs ↦ by simp [hs]
   csInf_of_not_bddBelow := fun s hs ↦ by simp [hs]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem csSup_eq_greatestOfBdd {s : Set ℤ} [DecidablePred (· ∈ s)] (b : ℤ) (Hb : ∀ z ∈ s, z ≤ b)
     (Hinh : ∃ z : ℤ, z ∈ s) : sSup s = greatestOfBdd b Hb Hinh := by
   have : s.Nonempty ∧ BddAbove s := ⟨Hinh, b, Hb⟩
@@ -58,6 +60,7 @@ theorem csSup_empty : sSup (∅ : Set ℤ) = 0 :=
 theorem csSup_of_not_bddAbove {s : Set ℤ} (h : ¬BddAbove s) : sSup s = 0 :=
   dif_neg (by simp [h])
 
+set_option backward.isDefEq.respectTransparency false in
 theorem csInf_eq_leastOfBdd {s : Set ℤ} [DecidablePred (· ∈ s)] (b : ℤ) (Hb : ∀ z ∈ s, b ≤ z)
     (Hinh : ∃ z : ℤ, z ∈ s) : sInf s = leastOfBdd b Hb Hinh := by
   have : s.Nonempty ∧ BddBelow s := ⟨Hinh, b, Hb⟩

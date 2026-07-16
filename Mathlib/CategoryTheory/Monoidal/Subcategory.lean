@@ -128,6 +128,7 @@ section
 
 variable {P} {P' : ObjectProperty C} [P'.IsMonoidal] (h : P ≤ P')
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- An inequality `P ≤ P'` between monoidal properties of objects induces
 a monoidal functor between full monoidal subcategories. -/
@@ -159,6 +160,7 @@ instance : P.ι.Braided where
 
 variable {P}
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- An inequality `P ≤ P'` between monoidal properties of objects induces
 a braided functor between full braided subcategories. -/

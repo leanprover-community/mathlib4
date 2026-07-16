@@ -345,7 +345,7 @@ lemma ext {X : C} (h₁ h₂ : GrpObj X) (H : h₁.toMonObj = h₂.toMonObj) : h
 
 -- Note: `Invertible` has no additive variant
 /-- A monoid object with invertible homs is a group object. -/
-@[implicit_reducible]
+@[instance_reducible]
 def ofInvertible (G : C) [MonObj G] (h : ∀ X (f : X ⟶ G), Invertible f) : GrpObj G where
   inv := Yoneda.fullyFaithful.preimage
     ⟨fun X ↦ ↾fun f ↦ (h X.unop f).invOf, fun X Y f ↦ by
@@ -530,6 +530,7 @@ instance instMonoidalCategory : MonoidalCategory (Grp C) where
   tensorHom_def := by intros; ext; simp [tensorHom_def]
   triangle _ _ := by ext; exact triangle _ _
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[to_additive]
 instance instCartesianMonoidalCategory : CartesianMonoidalCategory (Grp C) where
@@ -558,6 +559,7 @@ instance : (forget₂Mon C).Monoidal where
   «η» := 𝟙 _
   δ G H := 𝟙 _
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 attribute [local simp] MonObj.tensorObj.mul_def mul_eq_mul comp_mul in
 @[to_additive]
@@ -617,6 +619,7 @@ protected instance Faithful.mapGrp [F.Faithful] : F.mapGrp.Faithful where
     (Grp.forget₂Mon _).map_injective
       (F.mapMon.map_injective ((Grp.forget₂Mon _).congr_map hfg))
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- If `F : C ⥤ D` is a fully faithful monoidal functor, then
 `F.mapGrp : Grp C ⥤ Grp D` is fully faithful too. -/
 @[to_additive /-- If `F : C ⥤ D` is a fully faithful monoidal functor, then
@@ -624,6 +627,7 @@ protected instance Faithful.mapGrp [F.Faithful] : F.mapGrp.Faithful where
 protected def FullyFaithful.mapGrp (hF : F.FullyFaithful) : F.mapGrp.FullyFaithful where
   preimage f := Grp.homMk' (hF.mapMon.preimage f.hom)
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[to_additive]
 protected instance Full.mapGrp [F.Full] [F.Faithful] : F.mapGrp.Full :=
   ((FullyFaithful.ofFullyFaithful F).mapGrp).full
@@ -662,6 +666,7 @@ set_option backward.isDefEq.respectTransparency false in
 def mapGrpCompIso : (F ⋙ G).mapGrp ≅ F.mapGrp ⋙ G.mapGrp :=
   NatIso.ofComponents fun X ↦ Grp.mkIso (.refl _)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Natural transformations between functors lift to group objects. -/
 @[to_additive (attr := simps!)
@@ -669,6 +674,7 @@ set_option backward.defeqAttrib.useBackward true in
 def mapGrpNatTrans (f : F ⟶ F') : F.mapGrp ⟶ F'.mapGrp where
   app X := Grp.homMk' ((mapMonNatTrans f).app X.toMon)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Natural isomorphisms between functors lift to group objects. -/
 @[to_additive (attr := simps!)
@@ -676,6 +682,7 @@ set_option backward.defeqAttrib.useBackward true in
 def mapGrpNatIso (e : F ≅ F') : F.mapGrp ≅ F'.mapGrp :=
   NatIso.ofComponents fun X ↦ Grp.mkIso (e.app _)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 attribute [local instance] Monoidal.ofChosenFiniteProducts in
 /-- `mapGrp` is functorial in the left-exact functor. -/
@@ -744,11 +751,12 @@ noncomputable instance mapGrp.instBraided : F.mapGrp.Braided where
 end Braided
 end Functor
 
-open Functor
+open CategoryTheory.Functor
 
 namespace Adjunction
 variable {F : C ⥤ D} {G : D ⥤ C} (a : F ⊣ G) [F.Monoidal] [G.Monoidal]
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- An adjunction of monoidal functors lifts to an adjunction of their lifts to group objects. -/
 @[to_additive (attr := simps)
@@ -763,6 +771,7 @@ end Adjunction
 namespace Equivalence
 variable (e : C ≌ D) [e.functor.Monoidal] [e.inverse.Monoidal]
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- An equivalence of categories lifts to an equivalence of their group objects. -/
 @[to_additive (attr := simps)
