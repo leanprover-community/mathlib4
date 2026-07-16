@@ -6,6 +6,7 @@ Authors: Paul Cadman
 module
 
 public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+public import Mathlib.Order.Interval.Finset.Fin
 public import Mathlib.Algebra.Ring.Defs
 public import Mathlib.Data.Fintype.Basic
 public import Mathlib.LinearAlgebra.Matrix.Defs
@@ -163,12 +164,12 @@ open scoped BigOperators
 
 /-- The diagonal tail sum used in the Matrix/Fin specification. -/
 def diagSum {n : ℕ} (F : Matrix (Fin n) (Fin n) R) (i : Fin n) : R :=
-  ∑ k : Fin n, if i < k then F k k else 0
+  ∑ k ∈ Finset.Ioi i, F k k
 
 /-- One entry of one Matrix/Fin Bird recurrence step. -/
 def stepEntry {n : ℕ}
     (A F : Matrix (Fin n) (Fin n) R) : Matrix (Fin n) (Fin n) R :=
-  .of fun i j ↦ -(diagSum F i) * A i j + ∑ k : Fin n, if i < k then F i k * A k j else 0
+  .of fun i j ↦ -(diagSum F i) * A i j + ∑ k ∈ Finset.Ioi i, F i k * A k j
 
 /-- A version of the Bird determinant algorithm that is stated in terms of `Matrix`. -/
 def birdDet {n : ℕ}
@@ -179,14 +180,14 @@ def birdDet {n : ℕ}
 
 /-- Unfold the diagonal tail sum in the matrix specification. -/
 theorem diagSum_eq {n : ℕ} (F : Matrix (Fin n) (Fin n) R) (i : Fin n) :
-    diagSum F i = ∑ k : Fin n, if i < k then F k k else 0 := by
+    diagSum F i = ∑ k ∈ Finset.Ioi i, F k k := by
   rfl
 
 theorem stepEntry_eq {n : ℕ}
     (A F : Matrix (Fin n) (Fin n) R) :
     stepEntry A F =
-      .of fun i j ↦ (-∑ k : Fin n, if i < k then F k k else 0) * A i j
-        + ∑ k : Fin n, if i < k then F i k * A k j else 0 := by
+      .of fun i j ↦ (-∑ k ∈ Finset.Ioi i, F k k) * A i j
+        + ∑ k ∈ Finset.Ioi i, F i k * A k j := by
   rfl
 
 theorem birdDetSpec_zero

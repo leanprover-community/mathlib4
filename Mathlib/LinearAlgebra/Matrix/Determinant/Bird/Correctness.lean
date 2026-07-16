@@ -45,11 +45,6 @@ open scoped BigOperators
 
 variable {R : Type*} [CommRing R] {m n : ℕ}
 
-/-- `∑` over `Finset.Ioi i` as an `if`-guarded sum over all of `Fin n`. -/
-theorem sum_Ioi_eq_sum_ite {M : Type*} [AddCommMonoid M] (i : Fin n) (f : Fin n → M) :
-    ∑ k ∈ Finset.Ioi i, f k = ∑ k : Fin n, if i < k then f k else 0 := by
-  rw [← Finset.sum_filter, Finset.filter_lt_eq_Ioi]
-
 /-- `S p i` is Bird's `Sₚ(βᵢ)`: words `α` of length `p` over the alphabet `βᵢ`. -/
 def S (p : ℕ) (i : Fin n) : Finset (Fin p → Fin n) :=
   {α : Fin p → Fin n | StrictMono (Fin.cons i α)}
@@ -133,7 +128,7 @@ theorem paper_eq2 (i : Fin n) (hEq1 : Eq1 A p) :
     -Spec.diagSum ((Spec.stepEntry A)^[p] A) i =
       (-1 : R) ^ (p + 1) • ∑ k ∈ Finset.Ioi i, ∑ α ∈ S p k, bminor A k k α := by
       rw [Spec.diagSum_eq]
-      rw [hEq1, ← sum_Ioi_eq_sum_ite]
+      rw [hEq1]
       simp only [Matrix.of_apply, smul_eq_mul, ← Finset.mul_sum]
       ring
     _ = (-1 : R) ^ (p + 1) • ∑ α ∈ S (p + 1) i, pminor A α := by
@@ -162,8 +157,7 @@ theorem iter_succ_entry (i j : Fin n) :
     ((Spec.stepEntry A)^[p + 1] A) i j =
       -Spec.diagSum ((Spec.stepEntry A)^[p] A) i * A i j
       + ∑ k ∈ Finset.Ioi i, ((Spec.stepEntry A)^[p] A) i k * A k j := by
-  rw [Function.iterate_succ_apply', Spec.stepEntry_eq, Matrix.of_apply, Spec.diagSum_eq,
-    sum_Ioi_eq_sum_ite]
+  rw [Function.iterate_succ_apply', Spec.stepEntry_eq, Matrix.of_apply, Spec.diagSum_eq]
 
 /-- Bird's equation (3), assuming equation (1) at `p` as the induction hypothesis. -/
 theorem paper_eq3 (i j : Fin n) (hEq1 : Eq1 A p) :
@@ -445,10 +439,9 @@ theorem get_eq_ofArray_apply (A : Array R) (hA : A.size = rows * cols)
     exact rowMajorIndex_lt i j
   simp [BirdDet.get_eq, Matrix.ofArray, Array.getD, hidx]
 
-/-- A tail sum is the corresponding guarded sum over `Fin n`. -/
 theorem sumFrom_fin_tail (i : Fin n) (f : ℕ → R) :
     BirdDet.sumFrom n (i.val + 1) f =
-      ∑ k : Fin n, if i < k then f k.val else 0 := by
+      ∑ k ∈ Finset.Ioi i, f k.val := by
   rw [sumFrom_eq_sum_Ico]
   calc
     ∑ k ∈ Finset.Ico (i.val + 1) n, f k =
@@ -461,8 +454,8 @@ theorem sumFrom_fin_tail (i : Fin n) (f : ℕ → R) :
       rw [Finset.sum_filter]
     _ = ∑ k : Fin n, if i.val < k.val then f k.val else 0 := by
       rw [← Fin.sum_univ_eq_sum_range]
-    _ = ∑ k : Fin n, if i < k then f k.val else 0 := by
-      rfl
+    _ = ∑ k ∈ Finset.Ioi i, f k.val := by
+      simp only [Fin.val_fin_lt, ← Finset.sum_filter, Finset.filter_lt_eq_Ioi]
 
 /-- The scalar recurrence initialized by array lookup agrees pointwise
   with the matrix recurrence. -/
