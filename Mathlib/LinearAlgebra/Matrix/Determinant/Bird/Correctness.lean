@@ -58,18 +58,13 @@ theorem mem_S_iff_strictMono_cons {p : ℕ} {i : Fin n} {α : Fin p → Fin n} :
 theorem mem_S_iff {p : ℕ} {i : Fin n} {α : Fin p → Fin n} :
     α ∈ S p i ↔ StrictMono α ∧ ∀ j, i < α j := by
   rw [mem_S_iff_strictMono_cons]
-  constructor
-  · intro h
-    constructor
-    · exact h.comp Fin.strictMono_succ
-    · intro j
-      exact h (Fin.succ_pos j)
-  · rintro ⟨hmono, hbound⟩
-    cases p with
-    | zero =>
-      intro a b hab
-      omega
-    | succ p => exact hmono.vecCons (hbound 0)
+  refine ⟨fun h ↦ ⟨h.comp Fin.strictMono_succ, fun j ↦ h (Fin.succ_pos j)⟩, ?_⟩
+  rintro ⟨hmono, hbound⟩
+  cases p with
+  | zero =>
+    intro a b hab
+    grind
+  | succ p => exact hmono.vecCons (hbound 0)
 
 /-- The base case of equation (1): `S₀(α) = {ε}`, the singleton of the empty
 word `ε`. -/
