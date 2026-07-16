@@ -223,6 +223,7 @@ theorem DirichletCharacter.eulerProduct_log_eq_LSeries (hs : 1 < s.re) :
     apply rpow_lt_one_of_one_lt_of_neg (mod_cast p.prop.one_lt) (by linarith)
   rw [tsum_congr (fun p ↦ (hasSum_taylorSeries_neg_log' (hpow_le p)).tsum_eq.symm),
     LSeries_def₀ (by simp)]
+  let f : ℕ → ℂ := fun n ↦ χ n * Λ n / Real.log n * ((n : ℂ) ^ (-s))
   calc
     _ = ∑' (p : Primes) (k : ℕ), (χ (p ^ (k + 1)) * ((p ^ (k + 1) : ℕ) : ℂ) ^ (-s)) *
           Λ (p ^ (k + 1)) / Real.log (p ^ (k + 1)) := by
@@ -230,27 +231,26 @@ theorem DirichletCharacter.eulerProduct_log_eq_LSeries (hs : 1 < s.re) :
       have : Complex.log p ≠ 0 := mod_cast p.prop.log_ne_zero
       simp [mul_pow, ← cpow_nat_mul, ← natCast_cpow_natCast_mul, vonMangoldt_apply_pow,
         vonMangoldt_apply_prime p.2, field]
-    _ = ∑' n : {n : ℕ // IsPrimePow n}, χ n * Λ n / Real.log n * ((n : ℂ) ^ (-s)) := by
-      rw [← tsum_primes_pow_eq (f := fun n ↦ χ n * Λ n / Real.log n * (n : ℂ)^(-s))]
-      · exact tsum_congr fun p ↦ tsum_congr fun k ↦ (by simp; ring)
-      · apply comp_injective _ Subtype.coe_injective
-          (f := fun n : ℕ ↦ χ n * Λ n / Real.log n * (n : ℂ)^(-s))
+    _ = ∑' n : {n : ℕ // IsPrimePow n}, f n := by
+      rw [← tsum_primes_pow_eq]
+      · exact tsum_congr fun p ↦ tsum_congr fun k ↦ (by unfold f; simp; ring)
+      · apply comp_injective _ Subtype.coe_injective (f := f)
         apply of_norm_bounded_eventually_nat (g := (↑· ^ (-s.re)))
         · simp [hs]
         · filter_upwards [eventually_gt_atTop 1] with n hn
-          simp only [norm_mul, norm_div, norm_real, norm_eq_abs]
+          simp only [f, norm_mul, norm_div, norm_real, norm_eq_abs]
           grw [norm_le_one, vonMangoldt_le_log]
           have := log_pos (x := n) (mod_cast hn)
           field_simp
           rw [← ofReal_natCast n, norm_cpow_eq_rpow_re_of_nonneg (by simp) (by simp; grind)]
           simp
     _ = _ := by
-      simp only [cpow_neg]
-      suffices (Function.support fun (n : ℕ) ↦ χ n * Λ n / Real.log n / ((n : ℂ) ^ s))
-          ⊆ {n | IsPrimePow n} from tsum_subtype_eq_of_support_subset this
+      simp only [div_eq_mul_inv _ (_ ^ _), ← cpow_neg]
+      suffices (Function.support f) ⊆ {n | IsPrimePow n} from
+        tsum_subtype_eq_of_support_subset this
       intro n hn
       contrapose! hn
-      simp [vonMangoldt_eq_zero_iff.mpr hn]
+      simp [f, vonMangoldt_eq_zero_iff.mpr hn]
 
 /-- For `1 < s.re`, the Dirichlet L-function is the exponential of the `L`-series of
 `n ↦ χ n * Λ n / Real.log n`.
