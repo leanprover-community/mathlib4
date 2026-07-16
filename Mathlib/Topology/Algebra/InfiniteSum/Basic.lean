@@ -136,6 +136,7 @@ protected theorem Set.Finite.multipliable {s : Set β} (hs : s.Finite) (f : β �
   have := hs.toFinset.multipliable f
   rwa [hs.coe_toFinset] at this
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem multipliable_of_hasFiniteMulSupport [L.HasSupport] (h : HasFiniteMulSupport f) :
     Multipliable f L := by

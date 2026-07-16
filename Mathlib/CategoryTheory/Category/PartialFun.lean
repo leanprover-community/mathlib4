@@ -50,11 +50,13 @@ instance : Inhabited PartialFun.{u} :=
   ⟨PartialFun.of PUnit⟩
 
 -- TODO: wrap morphisms in this category into a one-field `PFun.Hom` structure
+set_option backward.isDefEq.respectTransparency.types false in
 instance largeCategory : LargeCategory.{u} PartialFun where
   Hom X Y := PFun X Y
   id X := PFun.id X
   comp f g := g.comp f
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Constructs a partial function isomorphism between types from an equivalence between them. -/
 @[simps]
 def Iso.mk {α β : PartialFun.{u}} (e : α ≃ β) : α ≅ β where
@@ -69,12 +71,14 @@ def Iso.mk {α β : PartialFun.{u}} (e : α ≃ β) : α ≅ β where
 
 end PartialFun
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The forgetful functor from `Type` to `PartialFun` which forgets that the maps are total. -/
 def typeToPartialFun : Type u ⥤ PartialFun where
   obj := id
   map f := PFun.lift (f : _ → _)
   map_comp _ _ := PFun.coe_comp _ _
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : typeToPartialFun.Faithful where
   map_injective h := by
     ext x
