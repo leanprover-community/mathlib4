@@ -111,11 +111,11 @@ theorem hom_inv_associator {M N K : QuadraticModuleCat.{u} R} :
     (X ⊗ Y).toModuleCat = X.toModuleCat ⊗ Y.toModuleCat := rfl
 
 theorem forget₂_map_associator_hom (X Y Z : QuadraticModuleCat.{u} R) :
-    (forget₂ (QuadraticModuleCat R) (ModuleCat R)).map (α_ X Y Z).hom =
+    (forget₂ (QuadraticModuleCat R) (ModuleCat.{u} R)).map (α_ X Y Z).hom =
       (α_ X.toModuleCat Y.toModuleCat Z.toModuleCat).hom := rfl
 
 theorem forget₂_map_associator_inv (X Y Z : QuadraticModuleCat.{u} R) :
-    (forget₂ (QuadraticModuleCat R) (ModuleCat R)).map (α_ X Y Z).inv =
+    (forget₂ (QuadraticModuleCat R) (ModuleCat.{u} R)).map (α_ X Y Z).inv =
       (α_ X.toModuleCat Y.toModuleCat Z.toModuleCat).inv := rfl
 
 instance instMonoidalCategory : MonoidalCategory (QuadraticModuleCat.{u} R) :=

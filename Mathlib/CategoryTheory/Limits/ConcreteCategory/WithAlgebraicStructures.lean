@@ -46,7 +46,7 @@ variable (R : Type*) [Ring R] {J : Type w} [Category.{r} J]
 section zero
 
 theorem colimit_rep_eq_zero
-    (F : J ⥤ ModuleCat.{max t w} R) [PreservesColimit F (forget (ModuleCat R))] [IsFiltered J]
+    (F : J ⥤ ModuleCat.{max t w} R) [PreservesColimit F (forget (ModuleCat.{max t w} R))] [IsFiltered J]
     [HasColimit F] (j : J) (x : F.obj j) (hx : colimit.ι F j x = 0) :
     ∃ (j' : J) (i : j ⟶ j'), (F.map i).hom x = 0 := by
   rw [show 0 = colimit.ι F j 0 by simp, colimit_rep_eq_iff_exists] at hx
@@ -62,7 +62,7 @@ If `r` has no zero smul divisors for all small-enough sections, then `r` has no 
 in the colimit.
 -/
 lemma colimit_no_zero_smul_divisor
-    (F : J ⥤ ModuleCat.{max t w} R) [PreservesColimit F (forget (ModuleCat R))]
+    (F : J ⥤ ModuleCat.{max t w} R) [PreservesColimit F (forget (ModuleCat.{max t w} R))]
     [IsFiltered J] [HasColimit F]
     (r : R) (H : ∃ (j' : J), ∀ (j : J) (_ : j' ⟶ j), ∀ (c : F.obj j), r • c = 0 → c = 0)
     (x : ToType (colimit F)) (hx : r • x = 0) : x = 0 := by

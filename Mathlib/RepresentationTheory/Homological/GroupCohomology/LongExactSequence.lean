@@ -189,7 +189,7 @@ theorem δ₁_apply
 
 /-- `S.map (cochainsFunctor k G)` is short exact in each degree. -/
 lemma map_cochainsFunctor_eval_shortExact (n : ℕ) :
-    ShortExact (X.map <| cochainsFunctor k G ⋙ HomologicalComplex.eval (ModuleCat k) (.up ℕ) n) :=
+    ShortExact (X.map <| cochainsFunctor k G ⋙ HomologicalComplex.eval (ModuleCat.{u} k) (.up ℕ) n) :=
   (map_cochainsFunctor_shortExact hX).map_of_exact (HomologicalComplex.eval ..)
 
 omit hX in

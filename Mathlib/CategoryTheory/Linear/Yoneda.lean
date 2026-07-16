@@ -36,7 +36,7 @@ variable (C)
 sending an object `X : C` to the `ModuleCat R`-valued presheaf on `C`,
 with value on `Y : Cᵒᵖ` given by `ModuleCat.of R (unop Y ⟶ X)`. -/
 @[simps]
-def linearYoneda : C ⥤ Cᵒᵖ ⥤ ModuleCat R where
+def linearYoneda : C ⥤ Cᵒᵖ ⥤ ModuleCat.{v} R where
   obj X :=
     { obj := fun Y => ModuleCat.of R (unop Y ⟶ X)
       map := fun f => ModuleCat.ofHom (Linear.leftComp R _ f.unop) }
@@ -48,7 +48,7 @@ def linearYoneda : C ⥤ Cᵒᵖ ⥤ ModuleCat R where
 sending an object `Y : Cᵒᵖ` to the `ModuleCat R`-valued copresheaf on `C`,
 with value on `X : C` given by `ModuleCat.of R (unop Y ⟶ X)`. -/
 @[simps]
-def linearCoyoneda : Cᵒᵖ ⥤ C ⥤ ModuleCat R where
+def linearCoyoneda : Cᵒᵖ ⥤ C ⥤ ModuleCat.{v} R where
   obj Y :=
     { obj := fun X => ModuleCat.of R (unop Y ⟶ X)
       map := fun f => ModuleCat.ofHom (Linear.rightComp R _ f) }

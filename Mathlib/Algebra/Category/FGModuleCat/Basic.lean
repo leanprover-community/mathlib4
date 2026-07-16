@@ -160,7 +160,7 @@ instance : (ModuleCat.isFG R).IsMonoidal where
 
 open MonoidalCategory
 
-@[simp] lemma tensorUnit_obj : (𝟙_ (FGModuleCat R)).obj = 𝟙_ (ModuleCat R) := rfl
+@[simp] lemma tensorUnit_obj : (𝟙_ (FGModuleCat R)).obj = 𝟙_ (ModuleCat.{u} R) := rfl
 @[simp] lemma tensorObj_obj (M N : FGModuleCat.{u} R) : (M ⊗ N).obj = (M.obj ⊗ N.obj) := rfl
 
 instance : (forget₂ (FGModuleCat.{u} R) (ModuleCat.{u} R)).Additive where
@@ -232,7 +232,7 @@ set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem FGModuleCatEvaluation_apply' (f : FGModuleCatDual K V) (x : V) :
     DFunLike.coe
-      (F := ((ModuleCat.of K (Module.Dual K V) ⊗ V.obj).carrier →ₗ[K] (𝟙_ (ModuleCat K))))
+      (F := ((ModuleCat.of K (Module.Dual K V) ⊗ V.obj).carrier →ₗ[K] (𝟙_ (ModuleCat.{u} K))))
       (FGModuleCatEvaluation K V).hom.hom (f ⊗ₜ x) = f.toFun x :=
   contractLeft_apply f x
 

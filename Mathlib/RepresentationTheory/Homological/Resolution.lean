@@ -248,7 +248,7 @@ def compForgetAugmentedIso :
 homotopy equivalent to the complex which is `k` at 0 and 0 elsewhere. -/
 def forget₂ToModuleCatHomotopyEquiv :
     HomotopyEquiv (standardComplex.forget₂ToModuleCat k G)
-      ((ChainComplex.single₀ (ModuleCat k)).obj ((forget₂ (Rep k G) _).obj <| Rep.trivial k G k)) :=
+      ((ChainComplex.single₀ (ModuleCat.{u} k)).obj ((forget₂ (Rep k G) _).obj <| Rep.trivial k G k)) :=
   (HomotopyEquiv.ofIso (compForgetAugmentedIso k G).symm).trans <|
     (SimplicialObject.Augmented.ExtraDegeneracy.homotopyEquiv
           (extraDegeneracyCompForgetAugmentedToModule k G)).trans

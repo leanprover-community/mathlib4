@@ -55,12 +55,12 @@ noncomputable instance (X : CoalgCat R) : ComonObj (ModuleCat.of R X) where
 
 /-- An `R`-coalgebra is a comonoid object in the category of `R`-modules. -/
 @[simps X]
-noncomputable def toComonObj (X : CoalgCat R) : Comon (ModuleCat R) := ⟨ModuleCat.of R X⟩
+noncomputable def toComonObj (X : CoalgCat R) : Comon (ModuleCat.{u} R) := ⟨ModuleCat.of R X⟩
 
 variable (R) in
 /-- The natural functor from `R`-coalgebras to comonoid objects in the category of `R`-modules. -/
 @[simps]
-def toComon : CoalgCat R ⥤ Comon (ModuleCat R) where
+def toComon : CoalgCat R ⥤ Comon (ModuleCat.{u} R) where
   obj X := toComonObj X
   map f :=
     { hom := ModuleCat.ofHom f.1
@@ -71,14 +71,14 @@ def toComon : CoalgCat R ⥤ Comon (ModuleCat R) where
 /-- A comonoid object in the category of `R`-modules has a natural comultiplication
 and counit. -/
 @[simps]
-noncomputable instance ofComonObjCoalgebraStruct (X : ModuleCat R) [ComonObj X] :
+noncomputable instance ofComonObjCoalgebraStruct (X : ModuleCat.{u} R) [ComonObj X] :
     CoalgebraStruct R X where
   comul := Δ[X].hom
   counit := ε[X].hom
 
 /-- A comonoid object in the category of `R`-modules has a natural `R`-coalgebra
 structure. -/
-noncomputable def ofComonObj (X : ModuleCat R) [ComonObj X] : CoalgCat R :=
+noncomputable def ofComonObj (X : ModuleCat.{u} R) [ComonObj X] : CoalgCat R :=
   { ModuleCat.of R X with
     instCoalgebra :=
       { ofComonObjCoalgebraStruct X with
@@ -89,7 +89,7 @@ noncomputable def ofComonObj (X : ModuleCat R) [ComonObj X] : CoalgCat R :=
 variable (R)
 
 /-- The natural functor from comonoid objects in the category of `R`-modules to `R`-coalgebras. -/
-noncomputable def ofComon : Comon (ModuleCat R) ⥤ CoalgCat R where
+noncomputable def ofComon : Comon (ModuleCat.{u} R) ⥤ CoalgCat R where
   obj X := ofComonObj X.X
   map f :=
     { toCoalgHom' :=
@@ -100,7 +100,7 @@ noncomputable def ofComon : Comon (ModuleCat R) ⥤ CoalgCat R where
 /-- The natural category equivalence between `R`-coalgebras and comonoid objects in the
 category of `R`-modules. -/
 @[simps]
-def comonEquivalence : CoalgCat R ≌ Comon (ModuleCat R) where
+def comonEquivalence : CoalgCat R ≌ Comon (ModuleCat.{u} R) where
   functor := toComon R
   inverse := ofComon R
   unitIso := NatIso.ofComponents (fun _ => Iso.refl _) fun _ => by rfl

@@ -210,7 +210,7 @@ variable (R M) in
 /-- The structure presheaf, valued in `ModuleCat`, constructed by dressing up the `Type`-valued
 structure presheaf. -/
 @[simps obj_carrier]
-def structurePresheafInModuleCat : Presheaf (ModuleCat R) (PrimeSpectrum.Top R) where
+def structurePresheafInModuleCat : Presheaf (ModuleCat.{u} R) (PrimeSpectrum.Top R) where
   obj U := ModuleCat.of R ((structureSheafInType R M).1.obj U)
   map i := ModuleCat.ofHom
     { toFun := (structureSheafInType R M).1.map i

@@ -307,17 +307,17 @@ open ShortComplex
 
 /-- The (exact) short complex `(G →₀ A) ⟶ A ⟶ A.ρ.coinvariants`. -/
 @[simps! -isSimp f g]
-def shortComplexH0 : ShortComplex (ModuleCat k) :=
+def shortComplexH0 : ShortComplex (ModuleCat.{u} k) :=
   mk _ _ (d₁₀_comp_coinvariantsMk A)
 
 /-- The short complex `(G² →₀ A) --d₂₁--> (G →₀ A) --d₁₀--> A`. -/
 @[simps! -isSimp f g]
-def shortComplexH1 : ShortComplex (ModuleCat k) :=
+def shortComplexH1 : ShortComplex (ModuleCat.{u} k) :=
   mk _ _ (d₂₁_comp_d₁₀ A)
 
 /-- The short complex `(G³ →₀ A) --d₃₂--> (G² →₀ A) --d₂₁--> (G →₀ A)`. -/
 @[simps! -isSimp f g]
-def shortComplexH2 : ShortComplex (ModuleCat k) :=
+def shortComplexH2 : ShortComplex (ModuleCat.{u} k) :=
   mk _ _ (d₃₂_comp_d₂₁ A)
 
 end Differentials
