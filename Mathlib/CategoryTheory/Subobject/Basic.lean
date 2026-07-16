@@ -761,23 +761,23 @@ theorem exists_le_exists_iff_of_mono (f : X ⟶ Y) [Mono f] (X₁ X₂ : Subobje
 /-- `exists f : Subobject X ⥤ Subobject Y` is
 left adjoint to `pullback f : Subobject Y ⥤ Subobject X`.
 -/
-def existsPullbackAdj [HasPullbacks C] (f : X ⟶ Y) : «exists» f ⊣ pullback f :=
+def existsPullbackAdj (f : X ⟶ Y) [HasPullbacks C] : «exists» f ⊣ pullback f :=
   lowerAdjunction (MonoOver.existsPullbackAdj f)
 
-theorem le_pullback_exists [HasPullbacks C] (f : X ⟶ Y) (X' : Subobject X) :
+theorem le_pullback_exists (f : X ⟶ Y) [HasPullbacks C] (X' : Subobject X) :
     X' ≤ (pullback f).obj ((«exists» f).obj X') :=
   (existsPullbackAdj f).gc.le_u_l X'
 
-theorem exists_pullback_le [HasPullbacks C] (f : X ⟶ Y) (Y' : Subobject Y) :
+theorem exists_pullback_le (f : X ⟶ Y) [HasPullbacks C] (Y' : Subobject Y) :
     («exists» f).obj ((pullback f).obj Y') ≤ Y' :=
   (existsPullbackAdj f).gc.l_u_le Y'
 
 @[simp]
-theorem pullback_exists_eq_self_of_mono [HasPullbacks C] (f : X ⟶ Y) [Mono f]
+theorem pullback_exists_eq_self_of_mono (f : X ⟶ Y) [Mono f] [HasPullbacks C]
     (X' : Subobject X) : (pullback f).obj ((«exists» f).obj X') = X' := by
   rw [exists_iso_map, pullback_map_self]
 
-theorem exists_comp [HasPullbacks C] (f : X ⟶ Y) (g : Y ⟶ Z) (x : Subobject X) :
+theorem exists_comp (f : X ⟶ Y) (g : Y ⟶ Z) (x : Subobject X) [HasPullbacks C] :
     («exists» (f ≫ g)).obj x = («exists» g).obj ((«exists» f).obj x) :=
   (existsPullbackAdj (f ≫ g)).gc.l_unique
     ((existsPullbackAdj f).gc.compose (existsPullbackAdj g).gc) (pullback_comp f g)
