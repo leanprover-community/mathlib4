@@ -144,19 +144,6 @@ theorem paper_eq3 (i j : Fin n) (hEq1 : Eq1 A p) :
 
 /-! ## Equation (5): first-column Laplace expansion -/
 
-/--
-Precomposing `Fin.cons i α` with the embedding that skips `s.succ` preserves the head `i`
-and removes the entry at position `s` from the tail `α`.
--/
-lemma fin_cons_succAbove (α : Fin (p + 1) → Fin n) (i : Fin n) (s : Fin (p + 1)) :
-    Fin.cons i α ∘ s.succ.succAbove = Fin.cons i (s.removeNth α) := by
-  funext q
-  cases q using Fin.cases with
-  | zero => rfl
-  | succ t =>
-    simp only [Function.comp_apply, Fin.succ_succAbove_succ, Fin.cons_succ]
-    rfl
-
 lemma det_submatrix_removeNth_eq_sign_mul_bminor
   (α : Fin (p + 1) → Fin n) (i : Fin n) (s : Fin (p + 1)) :
     (A.submatrix (Fin.cons i (s.removeNth α)) α).det =
@@ -198,7 +185,7 @@ theorem det_bordered_expand (α : Fin (p + 1) → Fin n) (i j : Fin n) :
       rw [bminor, Matrix.det_succ_column_zero, Fin.sum_univ_succ]
       simp only [Fin.val_zero, pow_zero, Matrix.submatrix_apply, Fin.cons_zero, one_mul,
         Fin.succAbove_zero, Matrix.submatrix_submatrix, Fin.val_succ, Fin.cons_succ,
-        Fin.cons_comp_succ, fin_cons_succAbove]
+        Fin.cons_comp_succ, Fin.cons_comp_succ_succAbove]
     _ = pminor A α * A i j +
         ∑ s : Fin (p + 1),
           ((-1 : R) ^ (s.val + 1) *

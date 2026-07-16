@@ -871,6 +871,11 @@ lemma removeNth_apply (p : Fin (n + 1)) (f : ∀ i, α i) (i : Fin n) :
     p.removeNth f i = f (p.succAbove i) :=
   rfl
 
+@[simp]
+theorem cons_comp_succ_succAbove (x : β) (p : Fin (n + 1) → β) (i : Fin (n + 1)) :
+    cons x p ∘ i.succ.succAbove = cons x (i.removeNth p) :=
+  funext (Fin.cases rfl fun _ ↦ by simp [removeNth])
+
 lemma removeNth_fun_const {α : Type*} {n : ℕ} (i : Fin (n + 1)) (a : α) :
     i.removeNth (fun _ ↦ a) = (fun _ ↦ a) :=
   rfl
