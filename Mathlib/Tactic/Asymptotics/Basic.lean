@@ -195,7 +195,7 @@ lemma exp_at_one' {l : Filter ℝ} {f : ℝ → ℝ} (hf : Filter.Tendsto f l (�
   rintro rfl
   use fun x ↦ exp (f x) - 1
   refine ⟨?_, by ring_nf⟩
-  simpa using (exp_sub_sum_range_isBigO_pow 1).comp_tendsto hf
+  simpa [Function.comp_def] using (exp_sub_sum_range_isBigO_pow 1).comp_tendsto hf
 
 section comp
 
@@ -424,14 +424,14 @@ public meta def _root_.Mathlib.Tactic.GCongr.exactAROfSubset :
     let (_, reflGoal) ← xs[6]!.mvarId!.intro `x
     reflGoal.applyRfl
 
-@[simp, gcongr]
+@[simp, gcongr only]
 lemma AsympRel.singleton_AR_singleton {Ω : Type*} (l : Filter Ω) {r : α → α → Prop} (a : Ω → α)
     (b : Ω → α) :
     ({a} AR[l, r] {b}) ↔ ∀ᶠ ω in l, r (a ω) (b ω) := by
   unfold AsympRel
   simp
 
-@[gcongr]
+@[gcongr only]
 lemma AsympRel.bigO_mono {s₁ s₂ : Set (α → ℝ)} (h : ∀ f₁ ∈ s₁, ∃ f₂ ∈ s₂, f₁ =O[l] f₂) :
     bigO l s₁ AR[l, Eq] bigO l s₂ := by
   apply asympRel_of_subset
@@ -492,14 +492,14 @@ lemma rightSerial_eq (a b : Set α) : (a RS[Eq] b) ↔ a ⊆ b := by
   unfold RightSerial
   grind
 
-@[simp, gcongr]
+@[simp, gcongr only]
 lemma RightSerial.singleton_RS_singleton {r : α → α → Prop} (a : α) (b : α) :
     ({a} RS[r] {b}) ↔ r a b := by
   unfold RightSerial
   simp
 
 /- Written by Claude -/
-@[gcongr]
+@[gcongr only]
 lemma RightSerial.iUnion_RS_iUnion {ι : Sort*} {r : α → β → Prop} {s : ι → Set α} {t : ι → Set β}
     (h : ∀ i, s i RS[r] t i) : (⋃ i, s i) RS[r] (⋃ i, t i) := by
   rintro x ⟨_, ⟨i, rfl⟩, hx⟩
