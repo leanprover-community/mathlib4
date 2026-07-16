@@ -6,8 +6,8 @@ Authors: Daniel Morrison, Antoine Chambert-Loir
 module
 
 public import Mathlib.Data.ENat.Lattice
-public import Mathlib.Data.Finite.Card
 public import Mathlib.Data.Set.Card
+public import Mathlib.SetTheory.Cardinal.NatCard
 
 /-! # Combinations
 
@@ -240,7 +240,6 @@ instance instInfinite [NeZero n] [Infinite α] : Infinite (powersetCard α n) :=
 
 protected theorem card :
     Nat.card (powersetCard α n) = (Nat.card α).choose n := by
-  classical
   cases fintypeOrInfinite α
   · simp [coe_finset]
   · rcases n with _ | n

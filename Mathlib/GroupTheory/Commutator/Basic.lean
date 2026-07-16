@@ -33,6 +33,10 @@ variable {G G' F : Type*} [Group G] [Group G'] [FunLike F G G'] [MonoidHomClass 
 variable (f : F) {g₁ g₂ g₃ g : G}
 
 @[to_additive]
+theorem conj_eq_commutatorElement_mul : MulAut.conj g₁ g₂ = ⁅g₁, g₂⁆ * g₂ := by
+  simp [commutatorElement_def]
+
+@[to_additive]
 theorem commutatorElement_eq_one_iff_mul_comm : ⁅g₁, g₂⁆ = 1 ↔ g₁ * g₂ = g₂ * g₁ := by
   rw [commutatorElement_def, mul_inv_eq_one, mul_inv_eq_iff_eq_mul]
 
@@ -78,6 +82,46 @@ theorem commutatorElement_mul_left_eq_conj_mul (a b c : G) :
 @[to_additive]
 theorem commutatorElement_mul_right_eq_mul_conj (a b c : G) :
     ⁅a, b * c⁆ = ⁅a, b⁆ * b * ⁅a, c⁆ * b⁻¹ := by
+  simp [mul_assoc, commutatorElement_def]
+
+@[to_additive]
+theorem commutatorElement_inv_left (a b : G) : ⁅a⁻¹, b⁆ = a⁻¹ * ⁅b, a⁆ * a := by
+  simp [mul_assoc, commutatorElement_def]
+
+@[to_additive]
+theorem commutatorElement_inv_right (a b : G) : ⁅a, b⁻¹⁆ = b⁻¹ * ⁅b, a⁆ * b := by
+  simp [mul_assoc, commutatorElement_def]
+
+/-- **The Hall-Witt identity** -/
+@[to_additive /-- **The Hall-Witt identity** -/]
+theorem conj_commutatorElement_left_commutatorElement_mul (a b c : G) :
+    a * ⁅⁅a⁻¹, b⁆, c⁆ * a⁻¹ * c * ⁅⁅c⁻¹, a⁆, b⁆ * c⁻¹ * b * ⁅⁅b⁻¹, c⁆, a⁆ * b⁻¹ = 1 := by
+  simp [mul_assoc, commutatorElement_def]
+
+/-- **The Hall-Witt identity** -/
+@[to_additive /-- **The Hall-Witt identity** -/]
+theorem conj_commutatorElement_right_commutatorElement_mul (a b c : G) :
+    b * ⁅a, ⁅b⁻¹, c⁆⁆ * b⁻¹ * c * ⁅b, ⁅c⁻¹, a⁆⁆ * c⁻¹ * a * ⁅c, ⁅a⁻¹, b⁆⁆ * a⁻¹ = 1 := by
+  simp [mul_assoc, commutatorElement_def]
+
+/-- **The Hall-Witt identity** -/
+@[to_additive /-- **The Hall-Witt identity** -/]
+theorem commutatorElement_commutatorElement_conj_mul (a b c : G) :
+    ⁅⁅a, b⁆, b * c * b⁻¹⁆ * ⁅⁅b, c⁆, c * a * c⁻¹⁆ * ⁅⁅c, a⁆, a * b * a⁻¹⁆ = 1 := by
+  simp [mul_assoc, commutatorElement_def]
+
+/-- **The Hall-Witt identity** -/
+@[to_additive /-- **The Hall-Witt identity** -/]
+theorem commutatorElement_conj_commutatorElement_mul (a b c : G) :
+    ⁅a * b * a⁻¹, ⁅c, a⁆⁆ * ⁅c * a * c⁻¹, ⁅b, c⁆⁆ * ⁅b * c * b⁻¹, ⁅a, b⁆⁆ = 1 := by
+  simp [mul_assoc, commutatorElement_def]
+
+@[to_additive]
+theorem commutatorElement_mul_left_mul (a b c : G) : ⁅a * b, c⁆ * ⁅c * a, b⁆ * ⁅b * c, a⁆ = 1 := by
+  simp [mul_assoc, commutatorElement_def]
+
+@[to_additive]
+theorem commutatorElement_mul_right_mul (a b c : G) : ⁅a, b * c⁆ * ⁅b, c * a⁆ * ⁅c, a * b⁆ = 1 := by
   simp [mul_assoc, commutatorElement_def]
 
 namespace Subgroup
@@ -139,6 +183,28 @@ theorem commutator_comm_le : ⁅H₁, H₂⁆ ≤ ⁅H₂, H₁⁆ :=
 theorem commutator_comm : ⁅H₁, H₂⁆ = ⁅H₂, H₁⁆ :=
   le_antisymm (commutator_comm_le H₁ H₂) (commutator_comm_le H₂ H₁)
 
+@[to_additive]
+theorem commutator_self_eq_bot_iff : ⁅H, H⁆ = ⊥ ↔ IsMulCommutative H := by
+  rw [commutator_eq_bot_iff_le_centralizer, le_centralizer_iff_isMulCommutative]
+
+@[to_additive (attr := simp)]
+theorem commutator_top_right_eq_bot_iff_le_center : ⁅H, (⊤ : Subgroup G)⁆ = ⊥ ↔ H ≤ center G := by
+  rw [commutator_eq_bot_iff_le_centralizer, coe_top, centralizer_univ]
+
+@[to_additive (attr := simp)]
+theorem commutator_top_left_eq_bot_iff_le_center : ⁅(⊤ : Subgroup G), H⁆ = ⊥ ↔ H ≤ center G := by
+  rw [commutator_comm, commutator_top_right_eq_bot_iff_le_center]
+
+variable (H) in
+@[to_additive (attr := simp)]
+theorem commutator_center_right : ⁅H, center G⁆ = ⊥ := by
+  simp [commutator_eq_bot_iff_le_centralizer]
+
+variable (H) in
+@[to_additive (attr := simp)]
+theorem commutator_center_left : ⁅center G, H⁆ = ⊥ :=
+  commutator_eq_bot_iff_le_centralizer.mpr <| center_le_centralizer _
+
 section Normal
 
 @[to_additive]
@@ -196,6 +262,11 @@ theorem commutator_bot_right : ⁅H₁, ⊥⁆ = (⊥ : Subgroup G) :=
 @[to_additive]
 theorem commutator_le_inf [Normal H₁] [Normal H₂] : ⁅H₁, H₂⁆ ≤ H₁ ⊓ H₂ :=
   le_inf (commutator_le_left H₁ H₂) (commutator_le_right H₁ H₂)
+
+variable {H₁ H₂} in
+theorem commutator_eq_bot_of_disjoint [H₁.Normal] [H₂.Normal] (h : Disjoint H₁ H₂) :
+    ⁅H₁, H₂⁆ = ⊥ := by
+  grw [eq_bot_iff, commutator_le_inf, h.eq_bot.le]
 
 end Normal
 

@@ -28,7 +28,7 @@ We introduce the following definitions.
 
 ## Main results
 
-The main result `BoxIntegral.Prepartition.exists_iUnion_eq_diff` says that any prepartition `π` of
+The main result `BoxIntegral.Prepartition.exists_iUnion_eq_sdiff` says that any prepartition `π` of
 `I` admits a prepartition `π'` of `I` that covers exactly `I \ π.iUnion`. One of these prepartitions
 is available as `BoxIntegral.Prepartition.compl`.
 
@@ -159,7 +159,7 @@ def split (I : Box ι) (i : ι) (x : ℝ) : Prepartition I :=
       exacts [Box.splitLower_le, Box.splitUpper_le])
     (by
       simp only [Finset.coe_insert, Finset.coe_singleton, true_and, Set.mem_singleton_iff,
-        pairwise_insert_of_symmetric symmetric_disjoint, pairwise_singleton]
+        pairwise_insert_of_symm, pairwise_singleton]
       rintro J rfl -
       exact I.disjoint_splitLower_splitUpper i x)
 
@@ -178,6 +178,7 @@ theorem iUnion_split (I : Box ι) (i : ι) (x : ℝ) : (split I i x).iUnion = I 
 theorem isPartitionSplit (I : Box ι) (i : ι) (x : ℝ) : IsPartition (split I i x) :=
   isPartition_iff_iUnion_eq.2 <| iUnion_split I i x
 
+set_option backward.isDefEq.respectTransparency false in
 theorem sum_split_boxes {M : Type*} [AddCommMonoid M] (I : Box ι) (i : ι) (x : ℝ) (f : Box ι → M) :
     (∑ J ∈ (split I i x).boxes, f J) =
       (I.splitLower i x).elim' 0 f + (I.splitUpper i x).elim' 0 f := by
@@ -324,20 +325,22 @@ theorem IsPartition.exists_splitMany_le {I : Box ι} {π : Prepartition I} (h : 
 
 /-- For every prepartition `π` of `I` there exists a prepartition that covers exactly
 `I \ π.iUnion`. -/
-theorem exists_iUnion_eq_diff (π : Prepartition I) :
+theorem exists_iUnion_eq_sdiff (π : Prepartition I) :
     ∃ π' : Prepartition I, π'.iUnion = ↑I \ π.iUnion := by
   rcases π.eventually_splitMany_inf_eq_filter.exists with ⟨s, hs⟩
   use (splitMany I s).filter fun J => ¬(J : Set (ι → ℝ)) ⊆ π.iUnion
   simp [← hs]
 
+@[deprecated (since := "2026-06-03")] alias exists_iUnion_eq_diff := exists_iUnion_eq_sdiff
+
 /-- If `π` is a prepartition of `I`, then `π.compl` is a prepartition of `I`
 such that `π.compl.iUnion = I \ π.iUnion`. -/
 def compl (π : Prepartition I) : Prepartition I :=
-  π.exists_iUnion_eq_diff.choose
+  π.exists_iUnion_eq_sdiff.choose
 
 @[simp]
 theorem iUnion_compl (π : Prepartition I) : π.compl.iUnion = ↑I \ π.iUnion :=
-  π.exists_iUnion_eq_diff.choose_spec
+  π.exists_iUnion_eq_sdiff.choose_spec
 
 /-- Since the definition of `BoxIntegral.Prepartition.compl` uses `Exists.choose`,
 the result depends only on `π.iUnion`. -/
@@ -347,7 +350,7 @@ theorem compl_congr {π₁ π₂ : Prepartition I} (h : π₁.iUnion = π₂.iUn
   rw [h]
 
 theorem IsPartition.compl_eq_bot {π : Prepartition I} (h : IsPartition π) : π.compl = ⊥ := by
-  rw [← iUnion_eq_empty, iUnion_compl, h.iUnion_eq, diff_self]
+  rw [← iUnion_eq_empty, iUnion_compl, h.iUnion_eq, sdiff_self]
 
 @[simp]
 theorem compl_top : (⊤ : Prepartition I).compl = ⊥ :=

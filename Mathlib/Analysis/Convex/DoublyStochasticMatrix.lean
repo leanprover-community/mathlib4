@@ -148,12 +148,11 @@ by nonnegative factors rather than positive ones only.
 lemma exists_mem_doublyStochastic_eq_smul_iff {M : Matrix n n R} {s : R} (hs : 0 ≤ s) :
     (∃ M' ∈ doublyStochastic R n, M = s • M') ↔
       (∀ i j, 0 ≤ M i j) ∧ (∀ i, ∑ j, M i j = s) ∧ (∀ j, ∑ i, M i j = s) := by
-  classical
   constructor
   case mp =>
     rintro ⟨M', hM', rfl⟩
     rw [mem_doublyStochastic_iff_sum] at hM'
-    simp only [smul_apply, smul_eq_mul, ← mul_sum]
+    simp only [Matrix.smul_apply, smul_eq_mul, ← mul_sum]
     exact ⟨fun i j => mul_nonneg hs (hM'.1 _ _), by simp [hM']⟩
   rcases eq_or_lt_of_le hs with rfl | hs
   case inl =>

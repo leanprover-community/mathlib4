@@ -7,7 +7,6 @@ module
 
 public import Mathlib.MeasureTheory.Measure.FiniteMeasure
 public import Mathlib.MeasureTheory.Integral.Average
-public import Mathlib.MeasureTheory.Measure.Prod
 
 /-!
 # Probability measures
@@ -131,7 +130,7 @@ theorem toMeasure_injective : Function.Injective ((↑) : ProbabilityMeasure Ω 
 
 instance instFunLike : FunLike (ProbabilityMeasure Ω) (Set Ω) ℝ≥0 where
   coe μ s := ((μ : Measure Ω) s).toNNReal
-  coe_injective' μ ν h := toMeasure_injective <| Measure.ext fun s _ ↦ by
+  coe_injective μ ν h := toMeasure_injective <| Measure.ext fun s _ ↦ by
     simpa [ENNReal.toNNReal_eq_toNNReal_iff, measure_ne_top] using congr_fun h s
 
 lemma coeFn_def (μ : ProbabilityMeasure Ω) : μ = fun s ↦ ((μ : Measure Ω) s).toNNReal := rfl
@@ -231,6 +230,7 @@ theorem eq_of_forall_apply_eq (μ ν : ProbabilityMeasure Ω)
 theorem mass_toFiniteMeasure (μ : ProbabilityMeasure Ω) : μ.toFiniteMeasure.mass = 1 :=
   μ.coeFn_univ
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma range_toFiniteMeasure :
     range toFiniteMeasure = {μ : FiniteMeasure Ω | μ.mass = 1} := by
   ext μ
@@ -309,13 +309,13 @@ theorem toWeakDualBCNN_apply (μ : ProbabilityMeasure Ω) (f : Ω →ᵇ ℝ≥0
 theorem toWeakDualBCNN_continuous : Continuous fun μ : ProbabilityMeasure Ω ↦ μ.toWeakDualBCNN :=
   FiniteMeasure.toWeakDualBCNN_continuous.comp toFiniteMeasure_continuous
 
-/- Integration of (nonnegative bounded continuous) test functions against Borel probability
+/-- Integration of (nonnegative bounded continuous) test functions against Borel probability
 measures depends continuously on the measure. -/
 theorem continuous_testAgainstNN_eval (f : Ω →ᵇ ℝ≥0) :
     Continuous fun μ : ProbabilityMeasure Ω ↦ μ.toFiniteMeasure.testAgainstNN f :=
   (FiniteMeasure.continuous_testAgainstNN_eval f).comp toFiniteMeasure_continuous
 
--- The canonical mapping from probability measures to finite measures is an embedding.
+/-- The canonical mapping from probability measures to finite measures is an embedding. -/
 theorem toFiniteMeasure_isEmbedding (Ω : Type*) [MeasurableSpace Ω] [TopologicalSpace Ω]
     [OpensMeasurableSpace Ω] :
     IsEmbedding (toFiniteMeasure : ProbabilityMeasure Ω → FiniteMeasure Ω) where
@@ -457,6 +457,7 @@ def normalize : ProbabilityMeasure Ω :=
         rw [← Ne, ← ENNReal.coe_ne_zero, ennreal_mass] at zero
         exact ENNReal.inv_mul_cancel zero μ.prop.measure_univ_lt_top.ne }
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem self_eq_mass_mul_normalize (s : Set Ω) : μ s = μ.mass * μ.normalize s := by
   obtain rfl | h := eq_or_ne μ 0

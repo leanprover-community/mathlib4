@@ -80,7 +80,7 @@ theorem supportDiscreteWithin_iff_locallyFiniteWithin [T1Space X] [Zero Y] {f : 
     f =ᶠ[codiscreteWithin U] 0 ↔ ∀ z ∈ U, ∃ t ∈ 𝓝 z, Set.Finite (t ∩ f.support) := by
   have : f.support = (U \ {x | f x = (0 : X → Y) x}) := by
     ext x
-    simp only [mem_support, ne_eq, Pi.zero_apply, mem_diff, mem_setOf_eq, iff_and_self]
+    simp only [mem_support, ne_eq, Pi.zero_apply, Set.mem_sdiff, mem_setOf_eq, iff_and_self]
     exact (h ·)
   rw [EventuallyEq, Filter.Eventually, codiscreteWithin_iff_locallyFiniteComplementWithin, this]
 
@@ -124,7 +124,15 @@ injective.
 -/
 instance [Zero Y] : FunLike (locallyFinsuppWithin U Y) X Y where
   coe D := D.toFun
-  coe_injective' := fun ⟨_, _, _⟩ ⟨_, _, _⟩ ↦ by simp
+  coe_injective := fun ⟨_, _, _⟩ ⟨_, _, _⟩ ↦ by simp
+
+@[simp]
+lemma toFun_eq_coe [Zero Y] (c : locallyFinsuppWithin U Y) : c.toFun = ⇑c := rfl
+
+@[simp]
+lemma coe_mk [Zero Y] (f : X → Y) (h : f.support ⊆ U)
+    (h' : ∀ z ∈ U, ∃ t ∈ 𝓝 z, Set.Finite (t ∩ f.support)) :
+    ⇑(Function.locallyFinsuppWithin.mk f h h') = f := rfl
 
 /-- This allows writing `D.support` instead of `Function.support D` -/
 abbrev support [Zero Y] (D : locallyFinsuppWithin U Y) := Function.support D
@@ -161,7 +169,6 @@ Simplifier lemma: `single x y` takes the value `y` at `x` and is zero otherwise.
 -/
 @[simp] lemma single_apply [DecidableEq X] [Zero Y] {x₁ x₂ : X} {y : Y} :
     single x₁ y x₂ = if x₂ = x₁ then y else 0 := by
-  classical
   simp_rw [DFunLike.coe, single, Pi.single_apply]
 
 /--
@@ -199,7 +206,7 @@ theorem eq_zero_codiscreteWithin [Zero Y] [T1Space X] (D : locallyFinsuppWithin 
   apply codiscreteWithin_iff_locallyFiniteComplementWithin.2
   have : D.support = (U \ {x | D x = (0 : X → Y) x}) := by
     ext x
-    simp only [mem_support, ne_eq, Pi.zero_apply, Set.mem_diff, Set.mem_setOf_eq, iff_and_self]
+    simp only [mem_support, ne_eq, Pi.zero_apply, Set.mem_sdiff, Set.mem_setOf_eq, iff_and_self]
     exact (support_subset_iff.1 D.supportWithinDomain) x
   rw [← this]
   exact D.supportLocallyFiniteWithinDomain
@@ -378,6 +385,13 @@ instance [AddCommMonoid Y] : AddCommMonoid (locallyFinsuppWithin U Y) :=
 instance [AddGroup Y] : AddGroup (locallyFinsuppWithin U Y) :=
   Injective.addGroup (M₁ := locallyFinsuppWithin U Y) (M₂ := X → Y)
     _ coe_injective coe_zero coe_add coe_neg coe_sub coe_nsmul coe_zsmul
+
+/--
+Simplifier lemma: Support does not change when replacing a function with locally finite support by
+its negative.
+-/
+@[simp] lemma support_neg [AddGroup Y] (D : locallyFinsuppWithin U Y) :
+    (-D).support = D.support := by rw [support, coe_neg, Function.support_neg]
 
 instance [AddCommGroup Y] : AddCommGroup (locallyFinsuppWithin U Y) :=
   Injective.addCommGroup (M₁ := locallyFinsuppWithin U Y) (M₂ := X → Y)
@@ -583,7 +597,7 @@ noncomputable def restrict [Zero Y] {V : Set X} (D : locallyFinsuppWithin U Y) (
     intro _ _
     simp_all
 
-open Classical in
+open scoped Classical in
 lemma restrict_apply [Zero Y] {V : Set X} (D : locallyFinsuppWithin U Y) (h : V ⊆ U) (z : X) :
     (D.restrict h) z = if z ∈ V then D z else 0 := rfl
 
@@ -676,5 +690,19 @@ lemma restrict_negPart {V : Set X} (D : locallyFinsuppWithin U ℤ) (h : V ⊆ U
   ext x
   simp only [locallyFinsuppWithin.restrict_apply, locallyFinsuppWithin.negPart_apply]
   aesop
+
+lemma disjoint_nhdsWithin_cofinite_of_mem [Zero Y]
+    (f : locallyFinsuppWithin U Y) (p : X) (hp : p ∈ U) :
+    Disjoint (𝓝[f.support] p) cofinite := by
+  rw [disjoint_cofinite_right]
+  obtain ⟨t, h₁t, h₂t⟩ := f.supportLocallyFiniteWithinDomain p hp
+  refine ⟨t ∩ f.support, ?_, h₂t⟩
+  rw [mem_nhdsWithin_iff_exists_mem_nhds_inter]
+  grind
+
+lemma _root_.Function.locallyFinsupp.disjoint_nhdsWithin_cofinite
+    [Zero Y] (f : locallyFinsupp X Y) (p : X) :
+    Disjoint (𝓝[f.support] p) cofinite :=
+  disjoint_nhdsWithin_cofinite_of_mem f p (mem_univ _)
 
 end Function.locallyFinsuppWithin

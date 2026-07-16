@@ -44,7 +44,7 @@ structure NonemptyChain (α : Type*) [LE α] where
 
 instance {α : Type*} [LE α] : SetLike (NonemptyChain α) α where
   coe := NonemptyChain.carrier
-  coe_injective' _ _ := NonemptyChain.ext
+  coe_injective _ _ := NonemptyChain.ext
 
 instance {α : Type*} [LE α] : PartialOrder (NonemptyChain α) := .ofSetLike (NonemptyChain α) α
 
@@ -214,7 +214,7 @@ end IsExtremePt
 
 open Function IsExtremePt
 
-/- **The Bourbaki-Witt Theorem**: If `α` is a chain complete partial order and `f : α → α` is
+/-- **The Bourbaki-Witt Theorem**: If `α` is a chain complete partial order and `f : α → α` is
 inflationary, then `f` has a fixed point -/
 theorem nonempty_fixedPoints_of_inflationary [Nonempty α] (le_map : ∀ x, x ≤ f x) :
     (fixedPoints f).Nonempty := by
@@ -251,6 +251,15 @@ lemma ωScottContinuous.sup (hf : ωScottContinuous f) (hg : ωScottContinuous g
   apply ωScottContinuous.sSup
   rintro f (rfl | rfl | _) <;> assumption
 
+#adaptation_note
+/--
+Why `respectTransparency.types false` here?
+The proof of this lemma involves a very subtle form of abuse of definitional equality.
+`monotone_const` is only applicable if `Top.top` (`⊤`) can be unfolded to see that it's constant.
+However, `Top.top` is semireducible.
+This mismatch is problematic because `simp` works at implicit transparency.
+-/
+set_option backward.isDefEq.respectTransparency.types false in
 lemma ωScottContinuous.top : ωScottContinuous (⊤ : α → β) :=
   ωScottContinuous.of_monotone_map_ωSup
     ⟨monotone_const, fun c ↦ eq_of_forall_ge_iff fun a ↦ by simp⟩

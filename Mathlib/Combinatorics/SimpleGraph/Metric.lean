@@ -319,16 +319,11 @@ theorem Adj.diff_dist_adj (hadj : G.Adj v w) :
   have : G.dist u v ≤ G.dist u w + G.dist w v := huw.dist_triangle_left v
   lia
 
-@[deprecated Adj.diff_dist_adj (since := "2025-12-11"), nolint unusedArguments]
-theorem Connected.diff_dist_adj (_ : G.Connected) (hadj : G.Adj v w) :
-    G.dist u w = G.dist u v ∨ G.dist u w = G.dist u v + 1 ∨ G.dist u w = G.dist u v - 1 := by
-  apply Adj.diff_dist_adj hadj
-
 theorem Walk.isPath_of_length_eq_dist (p : G.Walk u v) (hp : p.length = G.dist u v) :
     p.IsPath := by
   classical
   have : p.bypass = p := by
-    apply Walk.bypass_eq_self_of_length_le
+    apply bypass_eq_self_of_length_le_length_bypass
     calc p.length
       _ = G.dist u v := hp
       _ ≤ p.bypass.length := dist_le p.bypass

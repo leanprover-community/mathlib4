@@ -477,10 +477,12 @@ theorem Convex.smul_mem_of_zero_mem (hs : Convex 𝕜 s) {x : E} (zero_mem : (0 
     {t : 𝕜} (ht : t ∈ Icc (0 : 𝕜) 1) : t • x ∈ s := by
   simpa using hs.add_smul_mem zero_mem (by simpa using hx) ht
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Convex.mapsTo_lineMap (h : Convex 𝕜 s) {x y : E} (hx : x ∈ s) (hy : y ∈ s) :
     MapsTo (AffineMap.lineMap x y) (Icc (0 : 𝕜) 1) s := by
   simpa only [mapsTo_iff_image_subset, segment_eq_image_lineMap] using h.segment_subset hx hy
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Convex.lineMap_mem (h : Convex 𝕜 s) {x y : E} (hx : x ∈ s) (hy : y ∈ s) {t : 𝕜}
     (ht : t ∈ Icc 0 1) : AffineMap.lineMap x y t ∈ s :=
   h.mapsTo_lineMap hx hy ht
@@ -643,7 +645,7 @@ lemma convex_of_nonneg_surjective_algebraMap [FaithfulSMul R A] {s : Set M}
   intro u hu v hv a b ha hb hab
   obtain ⟨c, hc1, hc2⟩ := halg ha
   obtain ⟨d, hd1, hd2⟩ := halg hb
-  convert! hs hu hv hc1 hd1 _ using 2
+  convert hs hu hv hc1 hd1 _
   · rw [← hc2, algebraMap_smul]
   · rw [← hd2, algebraMap_smul]
   rw [← hc2, ← hd2, ← algebraMap.coe_add] at hab

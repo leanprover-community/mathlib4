@@ -101,8 +101,10 @@ theorem inter_mem_iff {s t : Set α} : s ∩ t ∈ f ↔ s ∈ f ∧ t ∈ f :=
   ⟨fun h => ⟨mem_of_superset h inter_subset_left, mem_of_superset h inter_subset_right⟩,
     and_imp.2 inter_mem⟩
 
-theorem diff_mem {s t : Set α} (hs : s ∈ f) (ht : tᶜ ∈ f) : s \ t ∈ f :=
+theorem sdiff_mem {s t : Set α} (hs : s ∈ f) (ht : tᶜ ∈ f) : s \ t ∈ f :=
   inter_mem hs ht
+
+@[deprecated (since := "2026-06-03")] alias diff_mem := sdiff_mem
 
 theorem congr_sets (h : { x | x ∈ s ↔ x ∈ t } ∈ f) : s ∈ f ↔ t ∈ f :=
   ⟨fun hs => mp_mem hs (mem_of_superset h fun _ => Iff.mp), fun hs =>
@@ -366,7 +368,7 @@ theorem principal_mono {s t : Set α} : 𝓟 s ≤ 𝓟 t ↔ s ⊆ t := by
 theorem monotone_principal : Monotone (𝓟 : Set α → Filter α) := fun _ _ => principal_mono.2
 
 @[simp] theorem principal_eq_iff_eq {s t : Set α} : 𝓟 s = 𝓟 t ↔ s = t := by
-  simp only [le_antisymm_iff, le_principal_iff, mem_principal]; rfl
+  simp only [le_antisymm_iff, le_principal_iff, mem_principal]
 
 @[simp] theorem join_principal_eq_sSup {s : Set (Filter α)} : join (𝓟 s) = sSup s := rfl
 
@@ -486,7 +488,7 @@ theorem mem_iInf_of_directed {f : ι → Filter α} (h : Directed (· ≥ ·) f)
 
 theorem mem_biInf_of_directed {f : β → Filter α} {s : Set β} (h : DirectedOn (f ⁻¹'o (· ≥ ·)) s)
     (ne : s.Nonempty) {t : Set α} : (t ∈ ⨅ i ∈ s, f i) ↔ ∃ i ∈ s, t ∈ f i := by
-  haveI := ne.to_subtype
+  have := ne.to_subtype
   simp_rw [iInf_subtype', mem_iInf_of_directed h.directed_val, Subtype.exists, exists_prop]
 
 theorem biInf_sets_eq {f : β → Filter α} {s : Set β} (h : DirectedOn (f ⁻¹'o (· ≥ ·)) s)
@@ -570,7 +572,7 @@ theorem principal_sdiff_principal {s t : Set α} : 𝓟 s \ 𝓟 t = 𝓟 (s \ t
 
 @[simp]
 theorem hnot_principal {s : Set α} : ￢𝓟 s = 𝓟 sᶜ := by
-  simpa [← compl_eq_univ_diff] using @principal_sdiff_principal _ univ s
+  simpa [← compl_eq_univ_sdiff] using @principal_sdiff_principal _ univ s
 
 @[simp]
 theorem principal_eq_bot_iff {s : Set α} : 𝓟 s = ⊥ ↔ s = ∅ :=
@@ -604,9 +606,12 @@ theorem inf_principal_eq_bot {f : Filter α} {s : Set α} : f ⊓ 𝓟 s = ⊥ �
 theorem mem_of_eq_bot {f : Filter α} {s : Set α} (h : f ⊓ 𝓟 sᶜ = ⊥) : s ∈ f := by
   rwa [inf_principal_eq_bot, compl_compl] at h
 
-theorem diff_mem_inf_principal_compl {f : Filter α} {s : Set α} (hs : s ∈ f) (t : Set α) :
+theorem sdiff_mem_inf_principal_compl {f : Filter α} {s : Set α} (hs : s ∈ f) (t : Set α) :
     s \ t ∈ f ⊓ 𝓟 tᶜ :=
   inter_mem_inf hs <| mem_principal_self tᶜ
+
+@[deprecated (since := "2026-06-03")]
+alias diff_mem_inf_principal_compl := sdiff_mem_inf_principal_compl
 
 theorem principal_le_iff {s : Set α} {f : Filter α} : 𝓟 s ≤ f ↔ ∀ V ∈ f, s ⊆ V := by
   simp_rw [le_def, mem_principal]
@@ -895,7 +900,7 @@ theorem frequently_iSup {p : α → Prop} {fs : β → Filter α} :
 
 theorem Eventually.choice {r : α → β → Prop} {l : Filter α} [l.NeBot] (h : ∀ᶠ x in l, ∃ y, r x y) :
     ∃ f : α → β, ∀ᶠ x in l, r x (f x) := by
-  haveI : Nonempty β := let ⟨_, hx⟩ := h.exists; hx.nonempty
+  have : Nonempty β := let ⟨_, hx⟩ := h.exists; hx.nonempty
   choose! f hf using fun x (hx : ∃ y, r x y) => hx
   exact ⟨f, h.mono hf⟩
 
@@ -1228,6 +1233,7 @@ theorem set_eventuallyLE_iff_inf_principal_le {s t : Set α} {l : Filter α} :
   set_eventuallyLE_iff_mem_inf_principal.trans <| by
     simp only [le_inf_iff, inf_le_left, true_and, le_principal_iff]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem set_eventuallyEq_iff_inf_principal {s t : Set α} {l : Filter α} :
     s =ᶠ[l] t ↔ l ⊓ 𝓟 s = l ⊓ 𝓟 t := by
   simp only [eventuallyLE_antisymm_iff, le_antisymm_iff, set_eventuallyLE_iff_inf_principal_le]
@@ -1268,8 +1274,10 @@ theorem Set.EqOn.eventuallyEq_of_mem {α β} {s : Set α} {l : Filter α} {f g :
     (hl : s ∈ l) : f =ᶠ[l] g :=
   h.eventuallyEq.filter_mono <| Filter.le_principal_iff.2 hl
 
-theorem HasSubset.Subset.eventuallyLE {α} {l : Filter α} {s t : Set α} (h : s ⊆ t) : s ≤ᶠ[l] t :=
+theorem LE.le.eventuallyLE {α} {l : Filter α} {s t : Set α} (h : s ⊆ t) : s ≤ᶠ[l] t :=
   Filter.Eventually.of_forall h
+
+@[deprecated (since := "2026-03-16")] alias HasSubset.Subset.eventuallyLE := LE.le.eventuallyLE
 
 variable {α β : Type*} {F : Filter α} {G : Filter β}
 

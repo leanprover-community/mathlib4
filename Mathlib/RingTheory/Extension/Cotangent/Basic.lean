@@ -68,6 +68,12 @@ def cotangentComplex : P.Cotangent →ₗ[S] P.CotangentSpace :=
 lemma cotangentComplex_mk (x) : P.cotangentComplex (.mk x) = 1 ⊗ₜ .D _ _ x :=
   rfl
 
+lemma Cotangent.mk_C_mem_ker_cotangentComplex {σ : Type*} (G : Generators R S σ)
+    {r : R} (hr : C r ∈ G.ker) :
+    Extension.Cotangent.mk ⟨C r, hr⟩ ∈ G.toExtension.cotangentComplex.ker := by
+  have : D R G.toExtension.Ring (C r) = 0 := Derivation.map_algebraMap ..
+  simp [this]
+
 section baseChange
 
 variable {A : Type*} [CommRing A] [Algebra S A] [Algebra P.Ring A] [IsScalarTower P.Ring S A]
@@ -212,7 +218,7 @@ lemma Hom.sub_aux (f g : Hom P P') (x y) :
         (P'.σ ((algebraMap P.Ring S') x) * (f.toAlgHom y - g.toAlgHom y) +
           P'.σ ((algebraMap P.Ring S') y) * (f.toAlgHom x - g.toAlgHom x)) ∈
       P'.ker ^ 2 := by
-  letI := ((algebraMap S S').comp (algebraMap P.Ring S)).toAlgebra
+  let := ((algebraMap S S').comp (algebraMap P.Ring S)).toAlgebra
   have :
       (f.toAlgHom x - P'.σ (algebraMap P.Ring S' x)) * (f.toAlgHom y - g.toAlgHom y) +
       (g.toAlgHom y - P'.σ (algebraMap P.Ring S' y)) * (f.toAlgHom x - g.toAlgHom x)
@@ -397,6 +403,7 @@ def H1Cotangent.map (f : Hom P P') : P.H1Cotangent →ₗ[S] P'.H1Cotangent := b
   rw [hx]
   exact LinearMap.map_zero _
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma H1Cotangent.map_eq (f g : Hom P P') : map f = map g := by
   ext x
   simp only [map_apply_coe]
@@ -404,8 +411,10 @@ lemma H1Cotangent.map_eq (f g : Hom P P') : map f = map g := by
   simp only [LinearMap.coe_comp, Function.comp_apply, LinearMap.map_coe_ker, map_zero,
     Cotangent.val_zero]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma H1Cotangent.map_id : map (.id P) = LinearMap.id := by ext; simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 omit [IsScalarTower R S S'] in
 lemma H1Cotangent.map_comp
     (f : Hom P P') (g : Hom P' P'') :
@@ -435,6 +444,11 @@ def H1Cotangent.equiv {P₁ P₂ : Extension R S} (f₁ : P₁.Hom P₂) (f₂ :
     rw [← Extension.H1Cotangent.map_id, eq_comm, map_eq _ (f₁.comp f₂),
       Extension.H1Cotangent.map_comp]; rfl
 
+omit [IsScalarTower R S S'] in
+lemma Cotangent.map_comp_h1Cotangentι (f : P.Hom P') :
+    Cotangent.map f ∘ₗ P.h1Cotangentι =
+      P'.h1Cotangentι.restrictScalars S ∘ₗ H1Cotangent.map f := rfl
+
 end Extension
 
 namespace Generators
@@ -451,7 +465,6 @@ set_option backward.isDefEq.respectTransparency false in
 lemma cotangentSpaceBasis_repr_tmul (r x i) :
     P.cotangentSpaceBasis.repr (r ⊗ₜ[P.Ring] KaehlerDifferential.D R P.Ring x : _) i =
       r * aeval P.val (pderiv i x) := by
-  classical
   simp only [cotangentSpaceBasis, Basis.baseChange_repr_tmul, mvPolynomialBasis_repr_apply,
     Algebra.smul_def, mul_comm r, algebraMap_apply, toExtension]
 

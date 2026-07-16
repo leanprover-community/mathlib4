@@ -505,8 +505,10 @@ theorem closure_union_one (s : Set G) : closure (s ∪ {1}) = closure s := by
   rw [union_singleton, closure_insert_one]
 
 @[to_additive (attr := simp)]
-theorem closure_diff_one (s : Set G) : closure (s \ {1}) = closure s := by
-  rw [← closure_union_one (s \ {1}), diff_union_self, closure_union_one]
+theorem closure_sdiff_one (s : Set G) : closure (s \ {1}) = closure s := by
+  rw [← closure_union_one (s \ {1}), sdiff_union_self, closure_union_one]
+
+@[deprecated (since := "2026-06-03")] alias closure_diff_one := closure_sdiff_one
 
 theorem toAddSubgroup_closure (S : Set G) :
     (Subgroup.closure S).toAddSubgroup = AddSubgroup.closure (Additive.toMul ⁻¹' S) :=
@@ -577,7 +579,7 @@ theorem coe_iSup_of_directed {ι} [Nonempty ι] {S : ι → Subgroup G} (hS : Di
 @[to_additive]
 theorem mem_sSup_of_directedOn {K : Set (Subgroup G)} (Kne : K.Nonempty) (hK : DirectedOn (· ≤ ·) K)
     {x : G} : x ∈ sSup K ↔ ∃ s ∈ K, x ∈ s := by
-  haveI : Nonempty K := Kne.to_subtype
+  have : Nonempty K := Kne.to_subtype
   simp only [sSup_eq_iSup', mem_iSup_of_directed hK.directed_val, SetCoe.exists, exists_prop]
 
 @[to_additive]

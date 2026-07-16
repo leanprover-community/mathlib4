@@ -87,6 +87,7 @@ namespace ExtraDegeneracy
 attribute [reassoc] s₀_comp_δ₁ s_comp_δ s_comp_σ
 attribute [reassoc (attr := simp)] s'_comp_ε s_comp_δ₀
 
+set_option backward.isDefEq.respectTransparency.types false in
 attribute [local simp←] Functor.map_comp in
 attribute [local simp] s₀_comp_δ₁ s_comp_δ s_comp_σ in
 /-- If `ed` is an extra degeneracy for `X : SimplicialObject.Augmented C` and
@@ -98,7 +99,6 @@ def map {D : Type*} [Category* D] {X : SimplicialObject.Augmented C} (ed : Extra
   s n := F.map (ed.s n)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- If `X` and `Y` are isomorphic augmented simplicial objects, then an extra
 degeneracy for `X` gives also an extra degeneracy for `Y` -/
 def ofIso {X Y : SimplicialObject.Augmented C} (e : X ≅ Y) (ed : ExtraDegeneracy X) :
@@ -106,9 +106,9 @@ def ofIso {X Y : SimplicialObject.Augmented C} (e : X ≅ Y) (ed : ExtraDegenera
   s' := (point.mapIso e).inv ≫ ed.s' ≫ (drop.mapIso e).hom.app (op ⦋0⦌)
   s n := (drop.mapIso e).inv.app (op ⦋n⦌) ≫ ed.s n ≫ (drop.mapIso e).hom.app (op ⦋n + 1⦌)
   s'_comp_ε := by
-    simpa [dsimp% w₀] using dsimp% (point.mapIso e).inv_hom_id
+    simpa [w₀] using dsimp% (point.mapIso e).inv_hom_id
   s₀_comp_δ₁ := by
-    simp [← SimplicialObject.δ_naturality, s₀_comp_δ₁_assoc, dsimp% w₀_assoc]
+    simp [← SimplicialObject.δ_naturality, s₀_comp_δ₁_assoc, w₀_assoc]
   s_comp_δ₀ n := by
     simpa [← SimplicialObject.δ_naturality] using
       congr_app (drop.mapIso e).inv_hom_id (op ⦋n⦌)

@@ -5,8 +5,8 @@ Authors: Leonardo de Moura
 -/
 module
 
-public import Mathlib.Init
 public import Batteries.Util.ExtendedBinder
+public import Mathlib.Tactic.SetNotationForOrder
 
 import Mathlib.Tactic.ToDual
 
@@ -46,6 +46,7 @@ Although `Set` is defined as `α → Prop`, this is an implementation detail whi
 relied on. Instead, `setOf` and membership of a set (`∈`) should be used to convert between sets
 and predicates.
 -/
+@[use_set_notation_for_order]
 def Set (α : Type u) := α → Prop
 
 /-
@@ -61,12 +62,14 @@ But we would like to dualize set intervals such that e.g. `Ico a b` is dual to `
 attribute [to_dual_dont_translate] Set
 
 /-- Turn a predicate `p : α → Prop` into a set, also written as `{x | p x}` -/
+@[implicit_reducible]
 def setOf {α : Type u} (p : α → Prop) : Set α :=
   p
 
 namespace Set
 
 /-- Membership in a set -/
+@[implicit_reducible]
 protected def Mem (s : Set α) (a : α) : Prop :=
   s a
 
@@ -87,9 +90,6 @@ protected def Subset (s₁ s₂ : Set α) :=
 to subset hypotheses. -/
 instance : LE (Set α) :=
   ⟨Set.Subset⟩
-
-instance : HasSubset (Set α) :=
-  ⟨(· ≤ ·)⟩
 
 instance : EmptyCollection (Set α) :=
   ⟨fun _ ↦ False⟩

@@ -69,6 +69,7 @@ section LocallyFinite
 
 variable [DecidableEq V] [LocallyFinite G]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The `Finset` of length-`n` walks from `u` to `v`.
 This is used to give `{p : G.walk u v | p.length = n}` a `Fintype` instance, and it
 can also be useful as a recursive description of this set when `V` is finite.
@@ -111,6 +112,7 @@ def finsetWalkLengthLT (n : ℕ) (u v : V) : Finset (G.Walk u v) :=
       have hl' : p.length = l' := mem_finsetWalkLength_iff.mp (hsl' hp)
       False.elim <| hne <| hl.symm.trans hl')
 
+set_option backward.isDefEq.respectTransparency.types false in
 open Finset in
 theorem coe_finsetWalkLengthLT_eq (n : ℕ) (u v : V) :
     (G.finsetWalkLengthLT n u v : Set (G.Walk u v)) = {p : G.Walk u v | p.length < n} := by
@@ -133,7 +135,7 @@ theorem set_walk_length_toFinset_eq (n : ℕ) (u v : V) :
     {p : G.Walk u v | p.length = n}.toFinset = G.finsetWalkLength n u v := by
   simp [← coe_finsetWalkLength_eq]
 
-/- See `SimpleGraph.adjMatrix_pow_apply_eq_card_walk` for the cardinality in terms of the `n`th
+/-- See `SimpleGraph.adjMatrix_pow_apply_eq_card_walk` for the cardinality in terms of the `n`th
 power of the adjacency matrix. -/
 theorem card_set_walk_length_eq (u v : V) (n : ℕ) :
     Fintype.card {p : G.Walk u v | p.length = n} = #(G.finsetWalkLength n u v) :=
