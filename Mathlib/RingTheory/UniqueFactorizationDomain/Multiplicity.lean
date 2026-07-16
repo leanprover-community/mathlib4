@@ -157,7 +157,7 @@ lemma dvd_iff_emultiplicity_le {a b : R} (ha : a ≠ 0) :
   refine ⟨fun h _ _ ↦ emultiplicity_le_emultiplicity_of_dvd_right h, fun h ↦ ?_⟩
   by_cases hb : b = 0
   · simp_all
-  letI : StrongNormalizationMonoid R := UniqueFactorizationMonoid.strongNormalizationMonoid
+  let : StrongNormalizationMonoid R := UniqueFactorizationMonoid.strongNormalizationMonoid
   rw [dvd_iff_normalizedFactors_le_normalizedFactors ha hb, Multiset.le_iff_count]
   intro q
   by_cases hq : q ∈ normalizedFactors a

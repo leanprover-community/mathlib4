@@ -443,6 +443,7 @@ theorem strictMono_valueGroupEquiv : StrictMono (valueGroupEquiv v) :=
 theorem strictMono_valueGroupEquiv_symm : StrictMono (valueGroupEquiv v).symm :=
   fun _ _ _ ↦ by simpa
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The order-preserving, multiplicative equivalence between the `ValueGroup₀` of the valuation
 on `WithVal v` and the valuation `v`. -/
 @[simps!]
@@ -637,12 +638,12 @@ theorem exists_div_eq_of_surjective {K : Type*} [DivisionRing K] {Γ₀ : Type*}
   obtain ⟨r, hr⟩ := hv γ
   exact ⟨r, 1, by simp [hr]⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem restrict_exists_div_eq {K : Type*} [DivisionRing K] {Γ₀ : Type*}
     [LinearOrderedCommGroupWithZero Γ₀] (v : Valuation K Γ₀)
     (γ : (ValueGroup₀ (.ofClass v))ˣ) :
     ∃ r s, 0 < v r ∧ 0 < v s ∧ v.restrict r / v.restrict s = γ.1 := by
   obtain ⟨r, hr⟩ := ValueGroup₀.restrict₀_surjective (.ofClass v) γ
-  classical
   exact ⟨r, 1, by
     simp only [map_one, zero_lt_one, restrict_def, hr, div_one, and_self, and_true]
     rw [← map_zero v]
@@ -687,6 +688,9 @@ def withValEquiv (R : Type*) [CommRing R] [Algebra R K] [IsIntegralClosure R ℤ
 
 end NumberField.RingOfIntegers
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 open scoped NumberField in
 /-- The ring of integers of `WithVal v`, when `v` is a valuation on `ℚ`, is
 equivalent to `ℤ`. -/
