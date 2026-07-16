@@ -479,7 +479,7 @@ theorem isFredholm_restrict_iff {f : E →L[𝕜] F} {A : Submodule 𝕜 E} {B :
     (hA : IsClosed (A : Set E)) [A.CoFG] (hB : IsClosed (B : Set F)) [B.CoFG] (hf : MapsTo f A B) :
     IsFredholm (f.restrict hf) ↔ IsFredholm f := by
   rw [← (isFredholm_subtypeL hA).comp_iff_left, ← (isFredholm_subtypeL hB).comp_iff_right,
-    subtypeL_comp_restrict, domRestrict]
+    subtypeL_comp_restrict hf, domRestrict]
 
 alias ⟨IsFredholm.of_restrict, IsFredholm.restrict⟩ := isFredholm_restrict_iff
 
