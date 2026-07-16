@@ -268,9 +268,10 @@ preserving strict monotonicity. -/
 lemma exists_insertNth_mem_S {i : Fin n} {α : Fin p → Fin n} {k : Fin n}
     (hα : α ∈ S p i) (hik : i < k) (hk : k ∉ Set.range α) :
     ∃ t : Fin (p + 1), t.insertNth k α ∈ S (p + 1) i := by
+  simp only [mem_S]
   induction p generalizing i with
   | zero =>
-    exact ⟨0, by simpa [Fin.insertNth_zero', mem_S, Fin.strictMono_iff_lt_succ] using hik⟩
+    exact ⟨0, by simpa [Fin.insertNth_zero', Fin.strictMono_iff_lt_succ] using hik⟩
   | succ p ih =>
     rw [mem_S_iff] at hα
     obtain ⟨hmono, hbound⟩ := hα
@@ -282,12 +283,11 @@ lemma exists_insertNth_mem_S {i : Fin n} {α : Fin p → Fin n} {k : Fin n}
       exact hk ⟨j.succ, hj⟩
     by_cases hhead : k < α 0
     · exists 0
-      simp only [Fin.insertNth_zero', mem_S]
+      simp only [Fin.insertNth_zero']
       exact (hmono.vecCons hhead).vecCons hik
     · obtain ⟨t, ht⟩ := ih htail (by grind) hk_tail
       exists t.succ
-      rw [← Fin.cons_self_tail α, Fin.insertNth_succ_cons, mem_S]
-      rw [mem_S] at ht
+      rw [← Fin.cons_self_tail α, Fin.insertNth_succ_cons]
       exact ht.vecCons (hbound 0)
 
 /-- The off-diagonal sums in Bird's equations (3) and (5) agree. -/
