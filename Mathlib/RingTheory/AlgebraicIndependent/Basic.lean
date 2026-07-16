@@ -412,7 +412,7 @@ theorem algebraicIndependent_iUnion_of_directed {η : Type*} [Nonempty η] {s : 
 theorem algebraicIndependent_sUnion_of_directed {s : Set (Set A)} (hsn : s.Nonempty)
     (hs : DirectedOn (· ⊆ ·) s) (h : ∀ a ∈ s, AlgebraicIndependent R ((↑) : a → A)) :
     AlgebraicIndependent R ((↑) : ⋃₀ s → A) := by
-  letI : Nonempty s := Nonempty.to_subtype hsn
+  let : Nonempty s := Nonempty.to_subtype hsn
   rw [sUnion_eq_iUnion]
   exact algebraicIndependent_iUnion_of_directed hs.directed_val (by simpa using h)
 
