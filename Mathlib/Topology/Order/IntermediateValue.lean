@@ -849,7 +849,7 @@ or antitone (increasing or decreasing). -/
 theorem ContinuousOn.strictMonoOn_of_injOn_Ioo {a b : α} {f : α → δ} (hab : a < b)
     (hf_c : ContinuousOn f (Ioo a b)) (hf_i : InjOn f (Ioo a b)) :
     StrictMonoOn f (Ioo a b) ∨ StrictAntiOn f (Ioo a b) := by
-  haveI : Inhabited (Ioo a b) := Classical.inhabited_of_nonempty (nonempty_Ioo_subtype hab)
+  have : Inhabited (Ioo a b) := Classical.inhabited_of_nonempty (nonempty_Ioo_subtype hab)
   let g : Ioo a b → δ := Set.restrict (Ioo a b) f
   have : StrictMono g ∨ StrictAnti g :=
     Continuous.strictMono_of_inj hf_c.restrict hf_i.injective

@@ -145,6 +145,7 @@ theorem id_c (X : PresheafedSpace C) :
     (𝟙 X : X ⟶ X).c = 𝟙 X.presheaf :=
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem id_c_app (X : PresheafedSpace C) (U) :
     (𝟙 X : X ⟶ X).c.app U = X.presheaf.map (𝟙 U) := by
@@ -177,6 +178,7 @@ theorem comp_c_app {X Y Z : PresheafedSpace C} (α : X ⟶ Y) (β : Y ⟶ Z) (U)
     (α ≫ β).c.app U = β.c.app U ≫ α.c.app (op ((Opens.map β.base).obj (unop U))) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 theorem congr_app {X Y : PresheafedSpace C} {α β : X ⟶ Y} (h : α = β) (U) :
     α.c.app U = β.c.app U ≫ X.presheaf.map (eqToHom (by subst h; rfl)) := by
@@ -286,7 +288,7 @@ def ofRestrict {U : TopCat} (X : PresheafedSpace C) {f : U ⟶ (X : TopCat)}
 set_option backward.isDefEq.respectTransparency false in
 instance ofRestrict_mono {U : TopCat} (X : PresheafedSpace C) (f : U ⟶ X.1)
     (hf : IsOpenEmbedding f) : Mono (X.ofRestrict hf) := by
-  haveI : Mono f := (TopCat.mono_iff_injective _).mpr hf.injective
+  have : Mono f := (TopCat.mono_iff_injective _).mpr hf.injective
   constructor
   intro Z g₁ g₂ eq
   ext1
@@ -298,7 +300,7 @@ instance ofRestrict_mono {U : TopCat} (X : PresheafedSpace C) (f : U ⟶ X.1)
     have hV : (Opens.map (X.ofRestrict hf).base).obj (hf.functor.obj V) = V := by
       ext1
       exact Set.preimage_image_eq _ hf.injective
-    haveI :
+    have :
       IsIso (hf.isOpenMap.adjunction.counit.app (unop (op (hf.functor.obj V)))) :=
         NatIso.isIso_app_of_isIso
           (whiskerLeft hf.functor hf.isOpenMap.adjunction.counit) V
