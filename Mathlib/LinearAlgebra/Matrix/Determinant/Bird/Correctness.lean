@@ -293,8 +293,7 @@ theorem paper_eq3_eq5_off_diag (i j : Fin n) :
   -- This map is injective, and every left-hand summand outside its image is zero,
   -- so `sum_of_injOn` applies.
   symm
-  refine Finset.sum_of_injOn ?_ ?_ ?_ ?_ ?_
-  · exact fun ⟨α, k⟩ ↦ ⟨k.removeNth α, α k⟩
+  refine Finset.sum_of_injOn (fun ⟨α, k⟩ ↦ ⟨k.removeNth α, α k⟩) ?_ ?_ ?_ ?_
   · unfold Set.InjOn
     simp only [Finset.coe_product, Finset.coe_univ, Set.mem_prod, Set.mem_univ, and_true,
       Finset.mem_coe, Prod.mk.injEq, and_imp, Prod.forall, mem_S_iff]
