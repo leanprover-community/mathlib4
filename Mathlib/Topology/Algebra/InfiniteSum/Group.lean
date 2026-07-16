@@ -202,7 +202,7 @@ variable [UniformSpace α]
 **Cauchy convergence test** -/]
 theorem multipliable_iff_cauchySeq_finset [CommMonoid α] [CompleteSpace α] {f : β → α} :
     Multipliable f ↔ CauchySeq fun s : Finset β ↦ ∏ b ∈ s, f b := by
-  classical exact cauchy_map_iff_exists_tendsto.symm
+  exact cauchy_map_iff_exists_tendsto.symm
 
 variable [CommGroup α] [IsUniformGroup α] {f g : β → α}
 
@@ -349,7 +349,6 @@ cover the whole space. This does not need a summability assumption, as otherwise
 zero. -/]
 theorem tendsto_tprod_compl_atTop_one (f : α → G) :
     Tendsto (fun s : Finset α ↦ ∏' a : { x // x ∉ s }, f a) atTop (𝓝 1) := by
-  classical
   by_cases H : Multipliable f
   · intro e he
     obtain ⟨s, hs⟩ := H.tprod_vanishing he
@@ -447,6 +446,7 @@ protected lemma Multipliable.tsum_congr_cofinite₀ [T2Space K] (hc : Multipliab
     ∏' i, g i = ((∏' i, f i) * ((∏ i ∈ s, g i) / ∏ i ∈ s, f i)) :=
   (hc.hasProd.congr_cofinite₀ hs hs').tprod_eq
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 See also `Multipliable.congr_cofinite`, which does not have a non-vanishing condition, but instead
 requires the target to be a group under multiplication (and hence fails for infinite products in a
@@ -455,7 +455,6 @@ ring).
 lemma Multipliable.congr_cofinite₀ (hf : Multipliable f) (hf' : ∀ a, f a ≠ 0)
     (hfg : ∀ᶠ a in cofinite, f a = g a) :
     Multipliable g := by
-  classical
   obtain ⟨c, hc⟩ := hf
   obtain ⟨s, hs⟩ : ∃ s : Finset α, ∀ i ∉ s, f i = g i := ⟨hfg.toFinset, by simp⟩
   exact (hc.congr_cofinite₀ (fun a _ ↦ hf' a) hs).multipliable

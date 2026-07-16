@@ -269,6 +269,7 @@ theorem Finset.hasProd_support (s : Finset β) (f : β → α) (L := uncondition
       (∏ b ∈ (L.support.toFinset.map <| Embedding.subtype _), f b) L := by
   simpa [prod_attach] using hasProd_fintype_support (f ∘ Subtype.val) L
 
+set_option backward.isDefEq.respectTransparency false in
 -- note this is not deduced from `Finset.hasProd_support` to avoid needing `[DecidableEq β]`
 @[to_additive]
 protected theorem Finset.hasProd (s : Finset β) (f : β → α)
@@ -325,7 +326,7 @@ variable [T2Space α] [L.NeBot]
 @[to_additive]
 theorem HasProd.unique {a₁ a₂ : α} :
     HasProd f a₁ L → HasProd f a₂ L → a₁ = a₂ := by
-  classical exact tendsto_nhds_unique
+  exact tendsto_nhds_unique
 
 @[to_additive]
 theorem HasProd.tprod_eq (ha : HasProd f a L) : ∏'[L] b, f b = a :=

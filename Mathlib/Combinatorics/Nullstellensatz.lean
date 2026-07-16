@@ -77,7 +77,6 @@ theorem eq_zero_of_eval_zero_at_prod_finset {σ : Type*} [Finite σ] [IsDomain R
       rwa [← RingHom.mem_ker, that] at this
     apply h _ (fun i ↦ S (e i))
     · intro i
-      classical
       convert! Hdeg (e i)
       conv_lhs => rw [← e.symm_apply_apply i, degreeOf_rename_of_injective e.symm.injective]
     · intro x hx
@@ -190,7 +189,7 @@ private lemma Alon.of_mem_P_support {ι : Type*} (i : ι) (S : Finset R) (m : ι
     ext j
     by_cases hj : j = i
     · rw [hj, mapDomain_apply (Function.injective_of_subsingleton _), single_eq_same]
-    · rw [mapDomain_notin_range, single_eq_of_ne hj]
+    · rw [mapDomain_of_notMem_range, single_eq_of_ne hj]
       simp [Set.range_const, Set.mem_singleton_iff, hj]
 
 variable [Finite σ]
@@ -245,7 +244,6 @@ theorem combinatorial_nullstellensatz_exists_eval_nonzero [IsDomain R]
     (S : σ → Finset R) (htS : ∀ i, t i < #(S i)) :
     ∃ s : σ → R, (∀ i, s i ∈ S i) ∧ eval s f ≠ 0 := by
   let _ : LinearOrder σ := WellOrderingRel.isWellOrder.linearOrder
-  classical
   by_contra! Heval
   apply ht
   obtain ⟨h, hh, hf⟩ := combinatorial_nullstellensatz_exists_linearCombination S

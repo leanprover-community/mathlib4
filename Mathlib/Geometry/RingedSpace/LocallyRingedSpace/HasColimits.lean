@@ -254,6 +254,7 @@ theorem coequalizer_π_stalk_isLocalHom (x : Y) :
 
 end HasCoequalizer
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The coequalizer of two locally ringed spaces in the category of sheafed spaces is a locally
 ringed space. -/
 noncomputable def coequalizer : LocallyRingedSpace where

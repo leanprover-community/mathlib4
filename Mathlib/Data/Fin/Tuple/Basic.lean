@@ -408,6 +408,7 @@ theorem append_comp_sumElim {xs : Fin m → α} {ys : Fin n → α} :
     Fin.append xs ys ∘ Sum.elim (Fin.castAdd _) (Fin.natAdd _) = Sum.elim xs ys := by
   ext (i | j) <;> simp
 
+set_option backward.isDefEq.respectTransparency false in
 theorem append_injective_iff {xs : Fin m → α} {ys : Fin n → α} :
     Function.Injective (Fin.append xs ys) ↔
       Function.Injective xs ∧ Function.Injective ys ∧ ∀ i j, xs i ≠ ys j := by
@@ -664,6 +665,7 @@ theorem append_right_cons {n m} {α : Sort*} (xs : Fin n → α) (y : α) (ys : 
       Fin.append (Fin.snoc xs y) ys ∘ Fin.cast (Nat.succ_add_eq_add_succ ..).symm := by
   rw [append_left_snoc]; rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem append_cons {α : Sort*} (a : α) (as : Fin n → α) (bs : Fin m → α) :
     Fin.append (cons a as) bs
     = cons a (Fin.append as bs) ∘ (Fin.cast <| Nat.add_right_comm n 1 m) := by
@@ -678,6 +680,7 @@ theorem append_cons {α : Sort*} (a : α) (as : Fin n → α) (bs : Fin m → α
     · have : ¬i < n := Nat.not_le_of_gt <| Nat.le_of_lt_succ <| Nat.gt_of_not_le h
       simp [addCases, this]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem append_snoc {α : Sort*} (as : Fin n → α) (bs : Fin m → α) (b : α) :
     Fin.append as (snoc bs b) = snoc (Fin.append as bs) b := by
   funext i
@@ -715,6 +718,7 @@ def snocCases {motive : (∀ i : Fin n.succ, α i) → Sort*}
     (x : ∀ i : Fin n.succ, α i) : motive x :=
   _root_.cast (by rw [Fin.snoc_init_self]) <| snoc (Fin.init x) (x <| Fin.last _)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma snocCases_snoc
     {motive : (∀ i : Fin (n + 1), α i) → Sort*} (snoc : ∀ x x₀, motive (Fin.snoc x x₀))
     (x : ∀ i : Fin n, (Fin.init α) i) (x₀ : α (Fin.last _)) :

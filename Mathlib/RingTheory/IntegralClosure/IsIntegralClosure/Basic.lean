@@ -574,6 +574,7 @@ theorem Algebra.IsIntegral.tower_top [Algebra R S] [Algebra R T] [Algebra S T] [
     rw [← IsScalarTower.algebraMap_eq R S T]
     exact h.isIntegral
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem RingHom.IsIntegral.quotient {I : Ideal S} (hf : f.IsIntegral) :
     (Ideal.quotientMap I f le_rfl).IsIntegral := by
   rintro ⟨x⟩

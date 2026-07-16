@@ -122,7 +122,6 @@ theorem exists_isCompact_closure_measure_compl_lt [TopologicalSpace α]
       · rw [← compl_iUnion, h_univ, compl_univ]
     choose! s' s'bound using h3
     rcases ENNReal.exists_pos_sum_of_countable' (ne_of_gt hε) ℕ with ⟨δ, hδ1, hδ2⟩
-    classical
     let u : ℕ → ℕ := fun n ↦ s' n (δ n)
     refine ⟨interUnionBalls seq u t, isCompact_closure_interUnionBalls h_basis.toHasBasis seq u, ?_⟩
     rw [interUnionBalls, Set.compl_iInter]
@@ -215,9 +214,5 @@ theorem innerRegular_isCompact_isClosed_measurableSet_of_finite [TopologicalSpac
     rw [sdiff_eq]
     exact ⟨hs_compact.inter_right ht_open.isClosed_compl,
       hs_closed.inter (isClosed_compl_iff.mpr ht_open)⟩
-
-@[deprecated (since := "2025-12-08")] alias
-PolishSpace.innerRegular_isCompact_isClosed_measurableSet :=
-innerRegular_isCompact_isClosed_measurableSet_of_finite
 
 end MeasureTheory

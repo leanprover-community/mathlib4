@@ -509,7 +509,7 @@ section Levy_Prokhorov_metrizes_convergence_in_distribution
 
 /-! ### On separable spaces the Lévy-Prokhorov distance metrizes convergence in distribution -/
 
-open BoundedContinuousFunction TopologicalSpace
+open TopologicalSpace
 
 variable {Ω : Type*} [PseudoMetricSpace Ω]
 variable [MeasurableSpace Ω] [OpensMeasurableSpace Ω]

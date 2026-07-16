@@ -55,7 +55,6 @@ lemma sfiniteSeq_zero (n : ℕ) : sfiniteSeq (0 : Measure α) n = 0 :=
 This lemma is superseded by the instance below. -/
 lemma sfinite_sum_of_countable [Countable ι]
     (m : ι → Measure α) [∀ n, IsFiniteMeasure (m n)] : SFinite (Measure.sum m) := by
-  classical
   obtain ⟨f, hf⟩ : ∃ f : ι → ℕ, Function.Injective f := Countable.exists_injective_nat ι
   refine ⟨_, fun n ↦ ?_, (sum_extend_zero hf m).symm⟩
   rcases em (n ∈ range f) with ⟨i, rfl⟩ | hn

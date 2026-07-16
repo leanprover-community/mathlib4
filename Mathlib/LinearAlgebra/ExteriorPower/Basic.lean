@@ -179,6 +179,7 @@ noncomputable def relationsSolutionEquiv {ι : Type*} [DecidableEq ι] {M : Type
         · simp
         · simpa using f.map_eq_zero_of_eq v hm hij }
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The universal property of the exterior power. -/
 noncomputable def isPresentationCore :
     (relationsSolutionEquiv.symm (ιMulti R n (M := M))).IsPresentationCore where

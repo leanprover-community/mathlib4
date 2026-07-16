@@ -33,6 +33,7 @@ namespace TStructure
 
 variable (t : TStructure C)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The functor `EInt ⥤ C ⥤ C` which sends `⊥` to the zero functor,
 `n : ℤ` to `t.truncLT n` and `⊤` to `𝟭 C`. -/
 noncomputable def eTruncLT : EInt ⥤ C ⥤ C where
@@ -78,6 +79,7 @@ instance (i : EInt) : (t.eTruncLT.obj i).Additive := by
   induction i using WithBotTop.rec
   all_goals dsimp; infer_instance
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The functor `EInt ⥤ C ⥤ C` which sends `⊥` to `𝟭 C`,
 `n : ℤ` to `t.truncGE n` and `⊤` to the zero functor. -/
 noncomputable def eTruncGE : EInt ⥤ C ⥤ C where
@@ -321,7 +323,6 @@ lemma isIso_eTruncLT_obj_map_truncLTπ_app (a b : EInt) (h : a ≤ b) (X : C) :
 instance (a : EInt) (X : C) : IsIso ((t.eTruncLT.obj a).map ((t.eTruncLTι a).app X)) :=
   isIso_eTruncLT_obj_map_truncLTπ_app t a a (by rfl) X
 
-set_option backward.isDefEq.respectTransparency false in
 instance (a : EInt) (X : C) : IsIso ((t.eTruncLTι a).app ((t.eTruncLT.obj a).obj X)) := by
   rw [← eTruncLT_obj_map_eTruncLTι_app]
   infer_instance
@@ -419,7 +420,6 @@ lemma eTruncLTLTIsoLT_inv_hom_id_app (X : C) :
     (t.eTruncLT.obj b).map ((t.eTruncLTι a).app X) = 𝟙 _ := by
   simpa using (t.eTruncLTLTIsoLT a b hab).inv_hom_id_app X
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma eTruncLTLTIsoLT_inv_hom_id_app_eTruncLT_obj (X : C) :
     (t.eTruncLTLTIsoLT a b hab).inv.app ((t.eTruncLT.obj a).obj X) ≫
@@ -516,7 +516,6 @@ lemma eTruncLTGEIsoGELT_hom_app_fac (a b : EInt) (X : C) :
     (t.eTruncLTι b).app ((t.eTruncGE.obj a).obj ((t.eTruncLT.obj b).obj X)) := by
   simp [eTruncLTGEIsoGELT]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma eTruncLTGEIsoGELT_hom_app_fac' (a b : EInt) (X : C) :
     (t.eTruncLTGEIsoGELT a b).hom.app X ≫ (t.eTruncGE.obj a).map ((t.eTruncLTι b).app X) =

@@ -192,7 +192,6 @@ instance [Countable β] : IsCountablyGenerated (unconditional β).filter :=
 `L.LeAtTop` and `L.NeBot`. -/
 lemma eq_unconditional_of_finite {β} [Finite β]
     (L : SummationFilter β) [L.LeAtTop] [L.NeBot] : L = unconditional β := by
-  classical
   have := Fintype.ofFinite β
   have hAtTop : (atTop : Filter (Finset β)) = pure Finset.univ := by
     rw [(isTop_iff_eq_top.mpr rfl).atTop_eq (a := Finset.univ), ← Finset.top_eq_univ,

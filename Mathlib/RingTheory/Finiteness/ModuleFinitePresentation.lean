@@ -80,7 +80,6 @@ it is finitely presented as a module over `R`. -/
 lemma Module.FinitePresentation.of_finite_of_finitePresentation
     [Module.Finite R S] [Algebra.FinitePresentation R S] :
     Module.FinitePresentation R S := by
-  classical
   obtain ⟨R', _, _, _, _, _, f, hf⟩ := Module.Finite.exists_free_surjective R S
   let := f.toRingHom.toAlgebra
   have : IsScalarTower R R' S := .of_algebraMap_eq' f.comp_algebraMap.symm

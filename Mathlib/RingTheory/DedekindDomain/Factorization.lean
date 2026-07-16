@@ -76,7 +76,6 @@ theorem IsDedekindDomain.HeightOneSpectrum.maxPowDividing_eq_pow_multiset_count
     {I : Ideal R} (hI : I ≠ 0) :
     maxPowDividing v I =
       v.asIdeal ^ Multiset.count v.asIdeal (normalizedFactors I) := by
-  classical
   rw [maxPowDividing, factors_mk _ hI, count_some (irreducible_mk.mpr v.irreducible),
     ← Multiset.count_map_eq_count' _ _ Subtype.val_injective, map_subtype_coe_factors',
     factors_eq_normalizedFactors, ← Multiset.count_map_eq_count' _ _ (mk_injective (M := Ideal R))]
@@ -197,7 +196,6 @@ theorem finprod_count (I : Ideal R) (hI : I ≠ 0) : (Associates.mk v.asIdeal).c
 theorem finprod_heightOneSpectrum_factorization {I : Ideal R} (hI : I ≠ 0) :
     ∏ᶠ v : HeightOneSpectrum R, v.maxPowDividing I = I := by
   rw [← associated_iff_eq, ← Associates.mk_eq_mk_iff_associated]
-  classical
   apply Associates.eq_of_eq_counts
   · apply Associates.finprod_ne_zero I
   · apply Associates.mk_ne_zero.mpr hI
@@ -208,6 +206,7 @@ theorem finprod_heightOneSpectrum_factorization {I : Ideal R} (hI : I ≠ 0) :
   apply Ideal.finprod_count
     ⟨J, Ideal.isPrime_of_prime (irreducible_iff_prime.mp hv), Irreducible.ne_zero hv⟩ I hI
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The ideal `I` equals the inf `⨅_v v^(val_v(I))`. -/
 theorem iInf_maxPowDividing_eq {I : Ideal R} (h0 : I ≠ 0) :
     ⨅ i : HeightOneSpectrum R, i.maxPowDividing I = I := by
@@ -363,7 +362,6 @@ theorem count_well_defined {I : FractionalIdeal R⁰ K} (hI : I ≠ 0) {a : R}
 /-- For nonzero `I, I'`, `val_v(I*I') = val_v(I) + val_v(I')`. -/
 theorem count_mul {I I' : FractionalIdeal R⁰ K} (hI : I ≠ 0) (hI' : I' ≠ 0) :
     count K v (I * I') = count K v I + count K v I' := by
-  classical
   have hv : Irreducible (Associates.mk v.asIdeal) := by apply v.associates_irreducible
   obtain ⟨a, J, ha, haJ⟩ := exists_eq_spanSingleton_mul I
   have ha_ne_zero : Associates.mk (Ideal.span {a} : Ideal R) ≠ 0 := by
@@ -434,7 +432,7 @@ theorem count_self : count K v (v.asIdeal : FractionalIdeal R⁰ K) = 1 := by
       spanSingleton R⁰ ((algebraMap R K) 1)⁻¹ * ↑v.asIdeal := by
     rw [(algebraMap R K).map_one, inv_one, spanSingleton_one, one_mul]
   have hv_irred : Irreducible (Associates.mk v.asIdeal) := by apply v.associates_irreducible
-  classical rw [count_well_defined K v hv h_self, Associates.count_self hv_irred,
+  rw [count_well_defined K v hv h_self, Associates.count_self hv_irred,
     Ideal.span_singleton_one, ← Ideal.one_eq_top, Associates.mk_one, Associates.factors_one,
     Associates.count_zero hv_irred, ofNat_zero, sub_zero, ofNat_one]
 
@@ -482,7 +480,6 @@ theorem count_maximal_coprime {w : HeightOneSpectrum R} (hw : w ≠ v) :
     coeIdeal_ne_zero.mpr w.ne_bot
   have hv : Irreducible (Associates.mk v.asIdeal) := by apply v.associates_irreducible
   have hw' : Irreducible (Associates.mk w.asIdeal) := by apply w.associates_irreducible
-  classical
   rw [count_well_defined K v hw_ne_zero hw_fact, Ideal.span_singleton_one, ← Ideal.one_eq_top,
     Associates.mk_one, Associates.factors_one, Associates.count_zero hv, ofNat_zero, sub_zero,
     natCast_eq_zero, ← pow_one (Associates.mk w.asIdeal), Associates.factors_prime_pow hw',
@@ -519,6 +516,7 @@ theorem count_finsuppProd (exps : HeightOneSpectrum R →₀ ℤ) :
       exps.mem_support_iff, ne_eq, ite_not, ite_eq_right_iff, @eq_comm ℤ 0, imp_self]
   · exact fun v hv ↦ zpow_ne_zero _ (coeIdeal_ne_zero.mpr v.ne_bot)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- If `exps` is finitely supported, then `val_v(∏_w w^{exps w}) = exps v`. -/
 theorem count_finprod (exps : HeightOneSpectrum R → ℤ)
     (h_exps : ∀ᶠ v : HeightOneSpectrum R in Filter.cofinite, exps v = 0) :
@@ -809,7 +807,6 @@ over `p` to the power the ramification index.
 -/
 theorem Ideal.map_algebraMap_eq_finsetProd_pow {p : Ideal S} [p.IsMaximal] (hp : p ≠ 0) :
     map (algebraMap S R) p = ∏ P ∈ p.primesOver R, P ^ P.ramificationIdx S := by
-  classical
   have h : map (algebraMap S R) p ≠ 0 := map_ne_bot_of_ne_bot hp
   rw [← finprod_heightOneSpectrum_factorization (I := p.map (algebraMap S R)) h]
   let hF : Fintype {v : HeightOneSpectrum R | v.asIdeal ∣ map (algebraMap S R) p} :=
@@ -862,7 +859,6 @@ lemma count_normalizedFactors_eq_multiplicity :
 as `multiplicity p.asIdeal I`. -/
 lemma maxPowDividing_eq_pow_multiplicity :
     p.maxPowDividing I = p.asIdeal ^ multiplicity p.asIdeal I := by
-  classical
   rw [maxPowDividing_eq_pow_multiset_count _ hI, count_normalizedFactors_eq_multiplicity hI]
 
 /-- Normalize the multiplicity of a prime ideal `p` in the factorization of `I`

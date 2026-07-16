@@ -87,7 +87,6 @@ set_option quotPrecheck false
 /-- Index a basis of E/F using the initial ordinal of the cardinal `Module.rank F E`. -/
 local notation "ι" => (Module.rank F E).ord.ToType
 
-set_option backward.privateInPublic true in
 local notation i "⁺" => succ i -- Note: conflicts with `PosPart` notation
 
 /-- A basis of E/F indexed by the initial ordinal. -/
@@ -280,6 +279,7 @@ lemma eq_bot_of_not_nonempty (hi : ¬ Nonempty (Iio i)) : filtration i = ⊥ := 
     rw [← range_coe] at hi; exact (hi inferInstance).elim
   · exact bot_unique <| adjoin_le_iff.mpr fun _ ⟨j, hj, _⟩ ↦ (hi ⟨j, coe_lt_coe.mpr hj⟩).elim
 
+set_option backward.isDefEq.respectTransparency.types false in
 open scoped Classical in
 /-- If `i` is a limit, the type of embeddings of `E⟮<i⟯` into `Ē` is
 the limit of the types of embeddings of `E⟮<j⟯` for `j < i`. -/

@@ -160,10 +160,12 @@ instance decidableMem [DecidableEq α] (a : α) (s : Sym α n) : Decidable (a �
 theorem mem_mk (a : α) (s : Multiset α) (h : Multiset.card s = n) : a ∈ mk s h ↔ a ∈ s :=
   Iff.rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma «forall» {p : Sym α n → Prop} :
     (∀ s : Sym α n, p s) ↔ ∀ (s : Multiset α) (hs : Multiset.card s = n), p (Sym.mk s hs) := by
   simp [Sym]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma «exists» {p : Sym α n → Prop} :
     (∃ s : Sym α n, p s) ↔ ∃ (s : Multiset α) (hs : Multiset.card s = n), p (Sym.mk s hs) := by
   simp [Sym]
@@ -345,11 +347,13 @@ theorem mem_map {n : ℕ} {f : α → β} {b : β} {l : Sym α n} :
     b ∈ Sym.map f l ↔ ∃ a, a ∈ l ∧ f a = b :=
   Multiset.mem_map
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Note: `Sym.map_id` is not simp-normal, as simp ends up unfolding `id` with `Sym.map_congr` -/
 @[simp]
 theorem map_id' {α : Type*} {n : ℕ} (s : Sym α n) : Sym.map (fun x : α => x) s = s := by
   ext; simp only [map, Multiset.map_id', ← val_eq_coe]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem map_id {α : Type*} {n : ℕ} (s : Sym α n) : Sym.map id s = s := by
   ext; simp only [map, id_eq, Multiset.map_id', ← val_eq_coe]
 
@@ -459,6 +463,7 @@ theorem append_inj_right (s : Sym α n) {t t' : Sym α n'} : s.append t = s.appe
 theorem append_inj_left {s s' : Sym α n} (t : Sym α n') : s.append t = s'.append t ↔ s = s' :=
   Subtype.ext_iff.trans <| (add_left_inj _).trans Subtype.ext_iff.symm
 
+set_option backward.isDefEq.respectTransparency false in
 theorem append_comm (s : Sym α n') (s' : Sym α n') :
     s.append s' = Sym.cast (add_comm _ _) (s'.append s) := by
   simp [append, add_comm]
@@ -470,6 +475,7 @@ theorem coe_append (s : Sym α n) (s' : Sym α n') : (s.append s' : Multiset α)
 theorem mem_append_iff {s' : Sym α m} : a ∈ s.append s' ↔ a ∈ s ∨ a ∈ s' :=
   Multiset.mem_add
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `a ↦ {a}` as an equivalence between `α` and `Sym α 1`. -/
 @[simps apply]
 def oneEquiv : α ≃ Sym α 1 where
