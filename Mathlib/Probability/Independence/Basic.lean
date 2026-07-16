@@ -841,7 +841,6 @@ theorem iIndepFun.map_fun_eq_pi_map [Fintype ι] {β : ι → Type*}
     {m : ∀ i, MeasurableSpace (β i)} {f : Π i, Ω → β i}
     (hf : ∀ i, AEMeasurable (f i) μ) (h : iIndepFun f μ) :
     μ.map (fun ω i ↦ f i ω) = Measure.pi (fun i ↦ μ.map (f i)) := by
-  classical
   have := h.isProbabilityMeasure
   rw [iIndepFun_iff_measure_inter_preimage_eq_mul] at h
   have h₀ {s : ∀ i, Set (β i)} (hm : ∀ (i : ι), MeasurableSet (s i)) :

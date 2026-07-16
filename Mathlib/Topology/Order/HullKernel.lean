@@ -181,6 +181,7 @@ def OrderGenerates := ∀ (a : α), ∃ (S : Set T), a = kernel S
 
 variable {T}
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 When `T` is order generating, the `kernel` and the `hull` form a Galois insertion
 -/

@@ -50,8 +50,8 @@ variable [Group α]
 theorem continuous_mul' (g : GroupTopology α) :
     haveI := g.toTopologicalSpace
     Continuous fun p : α × α => p.1 * p.2 := by
-  letI := g.toTopologicalSpace
-  haveI := g.toIsTopologicalGroup
+  let := g.toTopologicalSpace
+  have := g.toIsTopologicalGroup
   exact continuous_mul
 
 /-- A version of the global `continuous_inv` suitable for dot notation. -/
@@ -59,8 +59,8 @@ theorem continuous_mul' (g : GroupTopology α) :
 theorem continuous_inv' (g : GroupTopology α) :
     haveI := g.toTopologicalSpace
     Continuous (Inv.inv : α → α) := by
-  letI := g.toTopologicalSpace
-  haveI := g.toIsTopologicalGroup
+  let := g.toTopologicalSpace
+  have := g.toIsTopologicalGroup
   exact continuous_inv
 
 @[to_additive]
@@ -102,7 +102,7 @@ theorem toTopologicalSpace_top : (⊤ : GroupTopology α).toTopologicalSpace = �
 instance : Bot (GroupTopology α) :=
   let _t : TopologicalSpace α := ⊥
   ⟨{  continuous_mul := by
-        haveI := discreteTopology_bot α
+        have := discreteTopology_bot α
         fun_prop
       continuous_inv := continuous_bot }⟩
 

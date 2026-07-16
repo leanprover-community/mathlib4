@@ -323,6 +323,8 @@ end exchange
 
 section aesop
 
+-- This is necessary as `aesop` uses private lemmas for its proof terms: without this option,
+-- the aesop proofs will not work, and any `aesop` auto-params will not fire.
 set_option backward.privateInPublic true
 
 /-- The `aesop_mat` tactic attempts to prove a set is contained in the ground set of a matroid.
@@ -531,6 +533,7 @@ variable {B B' I J D X : Set α} {e f : α}
 theorem indep_iff : M.Indep I ↔ ∃ B, M.IsBase B ∧ I ⊆ B :=
   M.indep_iff' (I := I)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem setOf_indep_eq (M : Matroid α) : {I | M.Indep I} = lowerClosure ({B | M.IsBase B}) := by
   simp_rw [indep_iff, lowerClosure, LowerSet.coe_mk, mem_setOf]
 
