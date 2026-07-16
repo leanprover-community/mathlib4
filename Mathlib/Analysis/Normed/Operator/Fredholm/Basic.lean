@@ -401,7 +401,7 @@ theorem IsInvertible.isFredholm {f : E →L[𝕜] F} (hf : IsInvertible f) :
   rcases hf with ⟨e, rfl⟩
   exact e.isFredholm
 
-theorem _root_.Topology.IsClosedEmbedding.isFredholmStruct {f : E →L[𝕜] F}
+theorem _root_.Topology.IsClosedEmbedding.isFredholm {f : E →L[𝕜] F}
     (hf : IsClosedEmbedding f) (h_cofg : f.range.CoFG) :
     IsFredholm f where
   isStrictMap := hf.isStrictMap
@@ -417,7 +417,7 @@ theorem _root_.Topology.IsClosedEmbedding.isFredholmStruct {f : E →L[𝕜] F}
 theorem _root_.Submodule.isFredholm_subtypeL {p : Submodule 𝕜 E}
     (hp : IsClosed (p : Set E)) [p.CoFG] :
     IsFredholm p.subtypeL :=
-  (IsClosedEmbedding.subtypeVal hp).isFredholmStruct (by simpa)
+  (IsClosedEmbedding.subtypeVal hp).isFredholm (by simpa)
 
 theorem _root_.Topology.IsQuotientMap.isFredholm {f : E →L[𝕜] F} (hq : IsQuotientMap f)
     (hcompl : f.ker.ClosedComplemented) (hfg : FiniteDimensional 𝕜 f.ker) :
@@ -432,7 +432,7 @@ theorem _root_.Topology.IsQuotientMap.isFredholm {f : E →L[𝕜] F} (hq : IsQu
     exact Submodule.CoFG.top
   closedComplemented_ker := hcompl
 
-theorem _root_.Submodule.mkQL_isFredholmStruct {p : Submodule 𝕜 E} (hcompl : p.ClosedComplemented)
+theorem _root_.Submodule.mkQL_isFredholm {p : Submodule 𝕜 E} (hcompl : p.ClosedComplemented)
     [FiniteDimensional 𝕜 p] :
     IsFredholm p.mkQL :=
   p.isQuotientMap_mkQL.isFredholm (by simpa) (by rwa [toLinearMap_mkQL, ker_mkQ])
