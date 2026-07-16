@@ -517,7 +517,7 @@ def specOrderIsoPrimeSpectrum (R : CommRingCat) : Spec R ≃o (PrimeSpectrum R)�
 
 /-- `PrimeSpectrum R` with the inclusion order is order isomorphic to the dual of `Spec R`. -/
 @[simps]
-def primeSpectrumOrderIsoSpec (R : Type u) [CommRing R] : PrimeSpectrum R ≃o (Spec (.of R))ᵒᵈ where
+def primeSpectrumOrderIsoSpec (R : Type u) [CommRing R] : PrimeSpectrum R ≃o (Spec ↧R)ᵒᵈ where
   toFun x := .toDual x
   invFun x := OrderDual.ofDual x
   map_rel_iff' {a b} := (PrimeSpectrum.le_iff_specializes a b).symm
@@ -556,8 +556,8 @@ theorem isEmpty_of_commSq {W X Y S : Scheme.{u}} {f : X ⟶ S} {g : Y ⟶ S}
 /-- The empty scheme. -/
 @[simps]
 def empty : Scheme where
-  carrier := TopCat.of PEmpty
-  presheaf := (CategoryTheory.Functor.const _).obj (CommRingCat.of PUnit)
+  carrier := ↧PEmpty
+  presheaf := (CategoryTheory.Functor.const _).obj ↧PUnit
   IsSheaf := Presheaf.isSheaf_of_isTerminal _ CommRingCat.punitIsTerminal
   isLocalRing x := PEmpty.elim x
   local_affine x := PEmpty.elim x
@@ -624,7 +624,7 @@ instance {K} [Field K] : Unique <| Spec <| .of K :=
   inferInstanceAs <| Unique (PrimeSpectrum K)
 
 @[simp]
-lemma default_asIdeal {K} [Field K] : (default : Spec (.of K)).asIdeal = ⊥ := rfl
+lemma default_asIdeal {K} [Field K] : (default : Spec ↧K).asIdeal = ⊥ := rfl
 
 section BasicOpen
 

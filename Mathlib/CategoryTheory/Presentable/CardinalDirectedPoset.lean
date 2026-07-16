@@ -149,7 +149,7 @@ instance (J : CardinalDirectedPoset κ) (κ' : Cardinal.{u}) [Fact κ'.IsRegular
 /-- The map `CardinalDirectedPoset κ → CardinalDirectedPoset κ` which sends
 a partially ordered `κ`-filtered type `J` to `WithTop J`. -/
 abbrev withTop (J : CardinalDirectedPoset κ) : CardinalDirectedPoset κ :=
-  .of (.of (WithTop J.obj))
+  .of ↧(WithTop J.obj)
 
 section
 
@@ -461,7 +461,7 @@ instance : IsCardinalFiltered (SetCardinalLT κ X) κ :=
 partially ordered type of subsets of `X` of cardinality `< κ`,
 as an object of the category `CardinalDirectedPoset κ`. -/
 abbrev setCardinalLT : CardinalDirectedPoset κ :=
-  .of (PartOrdEmb.of (SetCardinalLT κ X))
+  ↧(PartOrdEmb.of (SetCardinalLT κ X))
 
 end CardinalDirectedPoset
 

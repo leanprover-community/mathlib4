@@ -47,7 +47,7 @@ def fromChosenTerminalEquiv {C : Type u} [Category.{v} C] : Cat.chosenTerminal �
 
 /-- The chosen product of categories `C × D` yields a product cone in `Cat`. -/
 def prodCone (C D : Cat.{v, u}) : BinaryFan C D :=
-  .mk (P := .of (C × D)) (Prod.fst _ _).toCatHom (Prod.snd _ _).toCatHom
+  .mk (P := ↧(C × D)) (Prod.fst _ _).toCatHom (Prod.snd _ _).toCatHom
 
 /-- The product cone in `Cat` is indeed a product. -/
 def isLimitProdCone (X Y : Cat) : IsLimit (prodCone X Y) := BinaryFan.isLimitMk

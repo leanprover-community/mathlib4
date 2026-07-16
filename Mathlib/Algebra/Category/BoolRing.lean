@@ -86,7 +86,7 @@ lemma hom_ext {R S : BoolRing} {f g : R ⟶ S} (hf : f.hom = g.hom) : f = g :=
 
 instance hasForgetToCommRing : HasForget₂ BoolRing CommRingCat where
   forget₂ :=
-    { obj := fun R ↦ CommRingCat.of R
+    { obj := fun R ↦ ↧R
       map := fun f ↦ CommRingCat.ofHom f.hom }
 
 set_option backward.privateInPublic true in
@@ -115,12 +115,12 @@ instance {R : Type u} [BooleanRing R] :
 
 @[simps]
 instance BoolRing.hasForgetToBoolAlg : HasForget₂ BoolRing BoolAlg where
-  forget₂.obj X := .of (AsBoolAlg X)
+  forget₂.obj X := ↧(AsBoolAlg X)
   forget₂.map f := BoolAlg.ofHom f.hom.asBoolAlg
 
 @[simps]
 instance BoolAlg.hasForgetToBoolRing : HasForget₂ BoolAlg BoolRing where
-  forget₂.obj X := .of (AsBoolRing X)
+  forget₂.obj X := ↧(AsBoolRing X)
   forget₂.map f := BoolRing.ofHom <| BoundedLatticeHom.asBoolRing f.hom
 
 /-- The equivalence between Boolean rings and Boolean algebras. This is actually an isomorphism. -/

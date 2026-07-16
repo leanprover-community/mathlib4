@@ -38,6 +38,11 @@ initialize_simps_projections Preord (carrier → coe, -str)
 
 namespace Preord
 
+open Lean.PrettyPrinter.Delaborator in
+/-- This prints `Preord.of X` as `↧X`. -/
+@[app_delab Preord.of]
+meta def delabOf : Delab := CategoryTheory.delabOf
+
 instance : CoeSort Preord (Type u) :=
   ⟨Preord.carrier⟩
 
@@ -167,7 +172,7 @@ end Preord
 -/
 @[simps]
 def preordToCat : Preord.{u} ⥤ Cat where
-  obj X := .of X.1
+  obj X := ↧X.1
   map f := f.hom.monotone.functor.toCatHom
 
 instance : preordToCat.{u}.Faithful where

@@ -427,7 +427,7 @@ end Compactum
 
 /-- The functor from Compactum to CompHaus. -/
 def compactumToCompHaus : Compactum ⥤ CompHaus where
-  obj X := { toTop := TopCat.of X, prop := trivial }
+  obj X := { toTop := ↧X, prop := trivial }
   map := fun f => CompHausLike.ofHom _
     { toFun := f
       continuous_toFun := Compactum.continuous_of_hom _ }

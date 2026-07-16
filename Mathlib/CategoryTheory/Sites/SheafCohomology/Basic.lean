@@ -153,7 +153,7 @@ variable (J) in
 /-- `H` as a functor. -/
 @[simps]
 noncomputable def functorH (n : ℕ) : Sheaf J AddCommGrpCat.{w} ⥤ AddCommGrpCat.{w'} where
-  obj F := .of (H F n)
+  obj F := ↧(H F n)
   map f := AddCommGrpCat.ofHom (H.map f n)
 
 instance (n : ℕ) : (functorH J n).Additive where
