@@ -29,6 +29,7 @@ open Finset
 open scoped ArithmeticFunction
 namespace PNat
 
+set_option backward.isDefEq.respectTransparency false in
 instance instHasAntidiagonal : Finset.HasAntidiagonal (Additive ℕ+) :=
   /- The set of divisors of a positive natural number.
 This is `Nat.divisorsAntidiagonal` without a special case for `n = 0`. -/
@@ -60,6 +61,7 @@ def finMulAntidiag (d : ℕ) (n : ℕ) : Finset (Fin d → ℕ) :=
   else
     ∅
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem mem_finMulAntidiag {d n : ℕ} {f : Fin d → ℕ} :
     f ∈ finMulAntidiag d n ↔ ∏ i, f i = n ∧ n ≠ 0 := by
@@ -155,7 +157,7 @@ lemma finMulAntidiag_existsUnique_prime_dvd {d n p : ℕ} (hn : Squarefree n)
     (hp : p ∈ n.primeFactorsList) (f : Fin d → ℕ) (hf : f ∈ finMulAntidiag d n) :
     ∃! i, p ∣ f i := by
   rw [mem_finMulAntidiag] at hf
-  rw [mem_primeFactorsList hf.2, ← hf.1, hp.1.prime.dvd_finset_prod_iff] at hp
+  rw [mem_primeFactorsList hf.2, ← hf.1, hp.1.prime.dvd_finsetProd_iff] at hp
   obtain ⟨i, his, hi⟩ := hp.2
   refine ⟨i, hi, ?_⟩
   intro j hj
@@ -192,10 +194,10 @@ private theorem primeFactorsPiBij_inj (d n : ℕ)
   dsimp only [Nat.primeFactorsPiBij]
   apply ne_of_mem_of_not_mem (s := {x | p ∣ x}) <;> simp_rw [Set.mem_setOf_eq]
   · rw [Finset.prod_filter]
-    convert Finset.dvd_prod_of_mem _ (mem_attach (n.primeFactors) ⟨p, hp⟩)
+    convert! Finset.dvd_prod_of_mem _ (mem_attach (n.primeFactors) ⟨p, hp⟩)
     rw [if_pos rfl]
   · rw [mem_primeFactors] at hp
-    rw [Prime.dvd_finset_prod_iff hp.1.prime]
+    rw [Prime.dvd_finsetProd_iff hp.1.prime]
     push Not
     intro q hq
     rw [Nat.prime_dvd_prime_iff_eq hp.1 (Nat.prime_of_mem_primeFactorsList

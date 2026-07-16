@@ -89,22 +89,23 @@ theorem FiniteMultiplicity.emultiplicity_eq_iff_multiplicity_eq {n : ℕ}
     (h : FiniteMultiplicity a b) : emultiplicity a b = n ↔ multiplicity a b = n := by
   simp [h.emultiplicity_eq_multiplicity]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem emultiplicity_eq_iff_multiplicity_eq_of_ne_one {n : ℕ} (h : n ≠ 1) :
     emultiplicity a b = n ↔ multiplicity a b = n := by
   constructor
   · exact multiplicity_eq_of_emultiplicity_eq_some
   · intro h₂
-    simpa [multiplicity, WithTop.untopD_eq_iff, h] using h₂
+    simpa [multiplicity, WithTop.untopD_eq_iff, h] using! h₂
 
 theorem emultiplicity_eq_zero_iff_multiplicity_eq_zero :
     emultiplicity a b = 0 ↔ multiplicity a b = 0 :=
   emultiplicity_eq_iff_multiplicity_eq_of_ne_one zero_ne_one
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem multiplicity_eq_one_of_not_finiteMultiplicity (h : ¬FiniteMultiplicity a b) :
     multiplicity a b = 1 := by
-  simp [multiplicity, emultiplicity_eq_top.2 h]
+  rw [multiplicity, emultiplicity_eq_top.mpr h]
+  decide
 
 @[simp]
 theorem multiplicity_le_emultiplicity :
@@ -357,12 +358,10 @@ theorem emultiplicity_le_emultiplicity_iff {c d : β} :
       simp_all only [not_exists, Decidable.not_not, not_true_eq_false, top_le_iff,
         dite_eq_right_iff, ENat.coe_ne_top, imp_false, not_false_eq_true, implies_true]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem FiniteMultiplicity.multiplicity_le_multiplicity_iff {c d : β} (hab : FiniteMultiplicity a b)
     (hcd : FiniteMultiplicity c d) :
     multiplicity a b ≤ multiplicity c d ↔ ∀ n : ℕ, a ^ n ∣ b → c ^ n ∣ d := by
-  rw [← WithTop.coe_le_coe, ENat.some_eq_coe, ← hab.emultiplicity_eq_multiplicity,
-    ← hcd.emultiplicity_eq_multiplicity]
+  rw [← ENat.coe_le_coe, ← hab.emultiplicity_eq_multiplicity, ← hcd.emultiplicity_eq_multiplicity]
   apply emultiplicity_le_emultiplicity_iff
 
 theorem emultiplicity_eq_emultiplicity_iff {c d : β} :
@@ -488,6 +487,9 @@ theorem FiniteMultiplicity.ne_zero {a b : α} (h : FiniteMultiplicity a b) : b �
 @[simp]
 theorem emultiplicity_zero (a : α) : emultiplicity a 0 = ⊤ :=
   emultiplicity_eq_top.2 (fun v ↦ v.ne_zero rfl)
+
+theorem multiplicity_zero (a : α) : multiplicity a 0 = 1 :=
+  multiplicity_eq_one_of_not_finiteMultiplicity fun h ↦ h.ne_zero rfl
 
 @[simp]
 theorem emultiplicity_zero_eq_zero_of_ne_zero (a : α) (ha : a ≠ 0) : emultiplicity 0 a = 0 :=
@@ -688,7 +690,6 @@ theorem multiplicity_mul {p a b : α} (hp : Prime p) (hfin : FiniteMultiplicity 
   rw [hfin.multiplicity_eq_iff]
   exact ⟨hdiv, hsucc⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem emultiplicity_mul {p a b : α} (hp : Prime p) :
     emultiplicity p (a * b) = emultiplicity p a + emultiplicity p b := by
   by_cases hfin : FiniteMultiplicity p (a * b)
@@ -696,7 +697,7 @@ theorem emultiplicity_mul {p a b : α} (hp : Prime p) :
       hfin.mul_right.emultiplicity_eq_multiplicity]
     norm_cast
     exact multiplicity_mul hp hfin
-  · rw [emultiplicity_eq_top.2 hfin, eq_comm, WithTop.add_eq_top, emultiplicity_eq_top,
+  · rw [emultiplicity_eq_top.mpr hfin, eq_comm, ENat.add_eq_top, emultiplicity_eq_top,
       emultiplicity_eq_top]
     simpa only [FiniteMultiplicity.mul_iff hp, not_and_or] using hfin
 

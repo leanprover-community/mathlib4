@@ -93,20 +93,20 @@ def decidableEqOfEncodable (α) [Encodable α] : DecidableEq α
   | _, _ => decidable_of_iff _ encode_inj
 
 /-- If `α` is encodable and there is an injection `f : β → α`, then `β` is encodable as well. -/
-@[implicit_reducible]
+@[instance_reducible]
 def ofLeftInjection [Encodable α] (f : β → α) (finv : α → Option β)
     (linv : ∀ b, finv (f b) = some b) : Encodable β :=
   ⟨fun b => encode (f b), fun n => (decode n).bind finv, fun b => by
     simp [Encodable.encodek, linv]⟩
 
 /-- If `α` is encodable and `f : β → α` is invertible, then `β` is encodable as well. -/
-@[implicit_reducible]
+@[instance_reducible]
 def ofLeftInverse [Encodable α] (f : β → α) (finv : α → β) (linv : ∀ b, finv (f b) = b) :
     Encodable β :=
   ofLeftInjection f (some ∘ finv) fun b => congr_arg some (linv b)
 
 /-- Encodability is preserved by equivalence. -/
-@[implicit_reducible]
+@[instance_reducible]
 def ofEquiv (α) [Encodable α] (e : β ≃ α) : Encodable β :=
   ofLeftInverse e e.symm e.left_inv
 
@@ -226,7 +226,7 @@ def equivRangeEncode (α : Type*) [Encodable α] : α ≃ Set.range (@encode α 
   right_inv _ := Subtype.ext <| decode₂_isPartialInv.get_eq _ _
 
 /-- A type with unique element is encodable. This is not an instance to avoid diamonds. -/
-@[implicit_reducible]
+@[instance_reducible]
 def _root_.Unique.encodable [Unique α] : Encodable α :=
   ⟨fun _ => 0, fun _ => some default, Unique.forall_iff.2 rfl⟩
 
@@ -241,9 +241,9 @@ def encodeSum : α ⊕ β → ℕ
 
 /-- Explicit decoding function for the sum of two encodable types. -/
 def decodeSum (n : ℕ) : Option (α ⊕ β) :=
-  match boddDiv2 n with
-  | (false, m) => (decode m : Option α).map Sum.inl
-  | (_, m) => (decode m : Option β).map Sum.inr
+  match bodd n, div2 n with
+  | false, m => (decode m : Option α).map Sum.inl
+  | _, m => (decode m : Option β).map Sum.inr
 
 /-- If `α` and `β` are encodable, then so is their sum. -/
 instance _root_.Sum.encodable : Encodable (α ⊕ β) :=
@@ -291,7 +291,7 @@ theorem decode_ge_two (n) (h : 2 ≤ n) : (decode n : Option Bool) = none := by
     rw [Nat.le_div_iff_mul_le]
     exacts [h, by decide]
   obtain ⟨m, e⟩ := exists_eq_succ_of_ne_zero (_root_.ne_of_gt this)
-  simp only [decodeSum, boddDiv2_eq, div2_val]; cases bodd n <;> simp [e]
+  simp only [decodeSum, div2_val]; cases bodd n <;> simp [e]
 
 noncomputable instance _root_.Prop.encodable : Encodable Prop :=
   ofEquiv Bool Equiv.propEquivBool
@@ -387,12 +387,12 @@ instance _root_.PLift.encodable [Encodable α] : Encodable (PLift α) :=
   ofEquiv _ Equiv.plift
 
 /-- If `β` is encodable and there is an injection `f : α → β`, then `α` is encodable as well. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def ofInj [Encodable β] (f : α → β) (hf : Injective f) : Encodable α :=
   ofLeftInjection f (partialInv f) hf.isPartialInv.eq
 
 /-- If `α` is countable, then it has a (non-canonical) `Encodable` structure. -/
-@[no_expose, implicit_reducible]
+@[no_expose, instance_reducible]
 noncomputable def ofCountable (α : Type*) [Countable α] : Encodable α :=
   Nonempty.some <|
     let ⟨f, hf⟩ := exists_injective_nat α
@@ -615,7 +615,7 @@ theorem Quotient.rep_spec (q : Quotient s) : ⟦q.rep⟧ = q :=
   choose_spec (exists_rep q)
 
 /-- The quotient of an encodable space by a decidable equivalence relation is encodable. -/
-@[implicit_reducible]
+@[instance_reducible]
 def encodableQuotient : Encodable (Quotient s) :=
   ⟨fun q => encode q.rep, fun n => Quotient.mk'' <$> decode n, by
     rintro ⟨l⟩; dsimp; rw [encodek]; exact congr_arg some ⟦l⟧.rep_spec⟩

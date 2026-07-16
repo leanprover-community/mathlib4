@@ -52,8 +52,16 @@ def FormalMultilinearSeries (𝕜 : Type*) (E : Type*) (F : Type*) [Semiring �
   ∀ n : ℕ, E [×n]→L[𝕜] F
 deriving Inhabited
 
-set_option backward.inferInstanceAs.wrap.data false in
-deriving instance AddCommMonoid for FormalMultilinearSeries
+section AddCommMonoid
+
+/-- Copy `Pi.addCommMonoid`, ensuring the pointwise operations hold by defeq. -/
+instance : AddCommMonoid (FormalMultilinearSeries 𝕜 E F) where
+  __ := Pi.addCommMonoid
+  zero _ := 0
+  add x y n := x n + y n
+  nsmul k x n := k • x n
+
+end AddCommMonoid
 
 section Module
 
@@ -271,8 +279,9 @@ theorem order_zero : (0 : FormalMultilinearSeries 𝕜 E F).order = 0 := by simp
 
 theorem ne_zero_of_order_ne_zero (hp : p.order ≠ 0) : p ≠ 0 := fun h => by simp [h] at hp
 
+set_option backward.isDefEq.respectTransparency false in
 theorem order_eq_find [DecidablePred fun n => p n ≠ 0] (hp : ∃ n, p n ≠ 0) :
-    p.order = Nat.find hp := by convert Nat.sInf_def hp
+    p.order = Nat.find hp := by convert! Nat.sInf_def hp
 
 theorem order_eq_find' [DecidablePred fun n => p n ≠ 0] (hp : p ≠ 0) :
     p.order = Nat.find (FormalMultilinearSeries.ne_iff.mp hp) :=
@@ -311,7 +320,7 @@ theorem mkPiRing_coeff_eq (p : FormalMultilinearSeries 𝕜 𝕜 E) (n : ℕ) :
 
 @[simp]
 theorem apply_eq_prod_smul_coeff : p n y = (∏ i, y i) • p.coeff n := by
-  convert (p n).toMultilinearMap.map_smul_univ y 1
+  convert! (p n).toMultilinearMap.map_smul_univ y 1
   simp only [Pi.one_apply, smul_eq_mul, mul_one]
 
 theorem coeff_eq_zero : p.coeff n = 0 ↔ p n = 0 := by
@@ -384,12 +393,8 @@ theorem constFormalMultilinearSeries_apply_of_nonzero [NontriviallyNormedField �
 lemma constFormalMultilinearSeries_zero [NontriviallyNormedField 𝕜] [NormedAddCommGroup E]
     [NormedAddCommGroup F] [NormedSpace 𝕜 E] [NormedSpace 𝕜 F] :
     constFormalMultilinearSeries 𝕜 E (0 : F) = 0 := by
-  ext n x
-  simp only [FormalMultilinearSeries.zero_apply, ContinuousMultilinearMap.zero_apply,
-    constFormalMultilinearSeries]
-  induction n
-  · simp only [ContinuousMultilinearMap.uncurry0_apply]
-  · simp only [constFormalMultilinearSeries.match_1.eq_2, ContinuousMultilinearMap.zero_apply]
+  ext n
+  induction n <;> simp
 
 @[simp]
 lemma compContinuousLinearMap_zero [NontriviallyNormedField 𝕜]
@@ -406,7 +411,7 @@ lemma compContinuousLinearMap_zero [NontriviallyNormedField 𝕜]
     congr
     apply Subsingleton.allEq
   | succ =>
-    simp [ContinuousLinearMap.coe_zero']
+    simp [FunLike.coe_zero]
 
 end Const
 

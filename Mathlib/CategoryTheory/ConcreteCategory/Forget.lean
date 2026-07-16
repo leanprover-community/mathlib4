@@ -6,7 +6,6 @@ Authors: Kim Morrison, Johannes Hölzl, Reid Barton, Sean Leather, Yury Kudryash
 -/
 module
 
-public import Mathlib.CategoryTheory.ConcreteCategory.Basic
 public import Mathlib.CategoryTheory.Types.Basic
 /-!
 # Forgetful functors
@@ -48,7 +47,7 @@ variable (C : Type*) [Category* C] {FC : outParam <| C → C → Type*} {CC : ou
 /-- The forgetful functor from a concrete category to the category of types. -/
 abbrev forget : C ⥤ Type w where
   obj X := ToType X
-  map f := TypeCat.ofHom f
+  map f := ↾f
 
 instance : (forget C).Faithful where
   map_injective h := ConcreteCategory.hom_ext _ _ fun x ↦ ConcreteCategory.congr_hom h x
@@ -57,7 +56,7 @@ variable {C}
 
 @[simp]
 lemma ConcreteCategory.forget_map_eq_ofHom {X Y : C} (f : X ⟶ Y) :
-    (forget C).map f = TypeCat.ofHom f :=
+    (forget C).map f = ↾f :=
   rfl
 
 @[deprecated (since := "2026-04-11")] alias ConcreteCategory.forget_map_eq_coe :=
@@ -107,6 +106,7 @@ lemma forget₂_comp_apply [HasForget₂ C D] {X Y Z : C}
 instance forget₂_faithful [HasForget₂ C D] : (forget₂ C D).Faithful :=
   HasForget₂.forget_comp.faithful_of_comp
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance InducedCategory.hasForget₂ (f : C → D) : HasForget₂ (InducedCategory D f) D where
   forget₂ := inducedFunctor f
   forget_comp := rfl
@@ -122,7 +122,7 @@ instance ObjectProperty.FullSubcategory.hasForget₂ (P : ObjectProperty C) :
 /-- In order to construct a “partially forgetting” functor, we do not need to verify functor laws;
 it suffices to ensure that compositions agree with `forget₂ C D ⋙ forget D = forget C`.
 -/
-@[implicit_reducible]
+@[instance_reducible]
 def HasForget₂.mk' (obj : C → D) (h_obj : ∀ X, (forget D).obj (obj X) = (forget C).obj X)
     (map : ∀ {X Y}, (X ⟶ Y) → (obj X ⟶ obj Y))
     (h_map : ∀ {X Y} {f : X ⟶ Y}, (forget D).map (map f) ≍ (forget C).map f) :
@@ -150,7 +150,7 @@ lemma ConcreteCategory.forget₂_comp_apply [HasForget₂ C D] {X Y Z : C}
   rw [Functor.map_comp, CategoryTheory.comp_apply]
 
 instance hom_isIso {X Y : C} (f : X ⟶ Y) [IsIso f] :
-    IsIso (C := Type _) (TypeCat.ofHom (ConcreteCategory.hom f)) :=
+    IsIso (C := Type _) (↾(ConcreteCategory.hom f)) :=
   ((forget C).mapIso (asIso f)).isIso_hom
 
 end CategoryTheory

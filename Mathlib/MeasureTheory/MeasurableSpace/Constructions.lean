@@ -54,7 +54,6 @@ theorem ENat.measurable_iff {α : Type*} [MeasurableSpace α] {f : α → ℕ∞
     exact .compl <| .iUnion h
   | coe n => exact h n
 
-@[measurability]
 theorem measurable_unit [MeasurableSpace α] (f : Unit → α) : Measurable f :=
   measurable_from_top
 
@@ -78,7 +77,6 @@ section Nat
 
 variable {mα : MeasurableSpace α}
 
-@[measurability]
 theorem measurable_from_nat {f : ℕ → α} : Measurable f :=
   measurable_from_top
 
@@ -88,7 +86,7 @@ theorem measurable_to_nat {f : α → ℕ} : (∀ y, MeasurableSet (f ⁻¹' {f 
 theorem measurable_to_bool {f : α → Bool} (h : MeasurableSet (f ⁻¹' {true})) : Measurable f := by
   apply measurable_to_countable'
   rintro (- | -)
-  · convert h.compl
+  · convert! h.compl
     rw [← preimage_compl, Bool.compl_singleton, Bool.not_true]
   exact h
 
@@ -247,7 +245,7 @@ theorem MeasurableSet.image_inclusion' {s t : Set α} (h : s ⊆ t) {u : Set s}
     (hs : MeasurableSet (Subtype.val ⁻¹' s : Set t)) (hu : MeasurableSet u) :
     MeasurableSet (inclusion h '' u) := by
   rcases hu with ⟨u, hu, rfl⟩
-  convert (measurable_subtype_coe hu).inter hs
+  convert! (measurable_subtype_coe hu).inter hs
   ext ⟨x, hx⟩
   simpa [@and_comm _ (_ = x)] using and_comm
 
@@ -259,7 +257,7 @@ theorem MeasurableSet.image_inclusion {s t : Set α} (h : s ⊆ t) {u : Set s}
 theorem MeasurableSet.of_union_cover {s t u : Set α} (hs : MeasurableSet s) (ht : MeasurableSet t)
     (h : univ ⊆ s ∪ t) (hsu : MeasurableSet (((↑) : s → α) ⁻¹' u))
     (htu : MeasurableSet (((↑) : t → α) ⁻¹' u)) : MeasurableSet u := by
-  convert (hs.subtype_image hsu).union (ht.subtype_image htu)
+  convert! (hs.subtype_image hsu).union (ht.subtype_image htu)
   simp [image_preimage_eq_inter_range, ← inter_union_distrib_left, univ_subset_iff.1 h]
 
 theorem measurable_of_measurable_union_cover {f : α → β} (s t : Set α) (hs : MeasurableSet s)
@@ -280,6 +278,11 @@ theorem measurable_of_measurable_on_compl_finite [MeasurableSingletonClass α] {
     (s : Set α) (hs : s.Finite) (hf : Measurable (sᶜ.restrict f)) : Measurable f :=
   have := hs.to_subtype
   measurable_of_restrict_of_restrict_compl hs.measurableSet (measurable_of_finite _) hf
+
+theorem measurable_of_measurable_on_compl_countable [MeasurableSingletonClass α] {f : α → β}
+    (s : Set α) (hs : s.Countable) (hf : Measurable (sᶜ.restrict f)) : Measurable f :=
+  have := hs.to_subtype
+  measurable_of_restrict_of_restrict_compl hs.measurableSet (measurable_of_countable _) hf
 
 theorem measurable_of_measurable_on_compl_singleton [MeasurableSingletonClass α] {f : α → β} (a : α)
     (hf : Measurable ({ x | x ≠ a }.restrict f)) : Measurable f :=
@@ -365,7 +368,7 @@ end Atoms
 section Prod
 
 /-- A `MeasurableSpace` structure on the product of two measurable spaces. -/
-@[implicit_reducible]
+@[instance_reducible]
 def MeasurableSpace.prod {α β} (m₁ : MeasurableSpace α) (m₂ : MeasurableSpace β) :
     MeasurableSpace (α × β) :=
   m₁.comap Prod.fst ⊔ m₂.comap Prod.snd
@@ -588,6 +591,12 @@ theorem measurable_pi_lambda (f : α → ∀ a, X a) (hf : ∀ a, Measurable fun
     Measurable f :=
   measurable_pi_iff.mpr hf
 
+lemma MeasurableSpace.comap_process_pi (X : (a : δ) → β → X a) :
+    MeasurableSpace.comap (fun b a ↦ X a b) inferInstance =
+      ⨆ a, MeasurableSpace.comap (X a) inferInstance := by
+  simp_rw [MeasurableSpace.pi, MeasurableSpace.comap_iSup, MeasurableSpace.comap_comp]
+  rfl
+
 /-- The function `(f, x) ↦ update f a x : (Π a, X a) × X a → Π a, X a` is measurable. -/
 @[fun_prop]
 theorem measurable_update' {a : δ} [DecidableEq δ] :
@@ -689,7 +698,7 @@ theorem measurable_piCongrLeft (f : δ' ≃ δ) : Measurable (Equiv.piCongrLeft 
   exact Measurable.eq_mp X (f.apply_symm_apply i) <| measurable_pi_apply <| f.symm i
 
 /- Even though we cannot use projection notation, we still keep a dot to be consistent with similar
-  lemmas, like `MeasurableSet.prod`. -/
+lemmas, like `MeasurableSet.prod`. -/
 @[measurability]
 protected theorem MeasurableSet.pi {s : Set δ} {t : ∀ i : δ, Set (X i)} (hs : s.Countable)
     (ht : ∀ i ∈ s, MeasurableSet (t i)) : MeasurableSet (s.pi t) := by
@@ -709,7 +718,7 @@ theorem measurableSet_pi_of_nonempty {s : Set δ} {t : ∀ i, Set (X i)} (hs : s
   classical
     rcases h with ⟨f, hf⟩
     refine ⟨fun hst i hi => ?_, MeasurableSet.pi hs⟩
-    convert measurable_update f (a := i) hst
+    convert! measurable_update f (a := i) hst
     rw [update_preimage_pi hi]
     exact fun j hj _ => hf j hj
 
@@ -763,6 +772,7 @@ theorem measurable_tProd_mk (l : List δ) : Measurable (@TProd.mk δ X l) := by
   | nil => exact measurable_const
   | cons i l ih => exact (measurable_pi_apply i).prodMk ih
 
+set_option backward.isDefEq.respectTransparency false in
 theorem measurable_tProd_elim [DecidableEq δ] :
     ∀ {l : List δ} {i : δ} (hi : i ∈ l), Measurable fun v : TProd X l => v.elim hi
   | i::is, j, hj => by
@@ -957,6 +967,46 @@ protected lemma Measurable.subset {s t : β → Set α} (hs : Measurable s) (hs 
   .forall fun i ↦ .imp (by fun_prop) (by fun_prop)
 
 end Set
+
+section Finset
+variable [MeasurableSpace β] {g : β → Finset α}
+
+/-- We give `Finset α` the measurable structure inherited from `Set α`.
+
+This is the smallest sigma-algebra generated by `(a ∈ ·)` for all `a : α`.
+See `measurable_finset_iff`. -/
+instance Finset.instMeasurableSpace : MeasurableSpace (Finset α) :=
+  .comap SetLike.coe inferInstance
+
+lemma measurable_finset_iff_measurable_set : Measurable g ↔ Measurable (fun x ↦ (g x : Set α)) :=
+  measurable_comap_iff
+
+lemma measurable_finset_iff : Measurable g ↔ ∀ a, Measurable (a ∈ g ·) := by
+  rw [measurable_finset_iff_measurable_set, measurable_set_iff]; rfl
+
+lemma measurableSet_finset_iff (S : Set (Finset α)) : MeasurableSet S ↔
+    ∃ S' : Set (Set α), MeasurableSet S' ∧ { s : Finset α | ↑s ∈ S'} = S :=
+  MeasurableSpace.measurableSet_comap
+
+@[fun_prop]
+lemma measurable_finset_mem (a : α) : Measurable fun s : Finset α ↦ a ∈ s :=
+  (measurable_set_mem a).comp (comap_measurable _)
+
+lemma measurable_finset_notMem (a : α) : Measurable fun s : Finset α ↦ a ∉ s :=
+  (measurable_set_notMem a).comp (comap_measurable _)
+
+lemma measurableSet_mem_finset (a : α) : MeasurableSet {s : Finset α | a ∈ s} :=
+  measurableSet_setOf.2 <| measurable_finset_mem _
+
+lemma measurableSet_notMem_finset (a : α) : MeasurableSet {s : Finset α | a ∉ s} :=
+  measurableSet_setOf.2 <| measurable_finset_notMem _
+
+variable [Countable α]
+
+instance Finset.instMeasurableSingletonClass : MeasurableSingletonClass (Finset α) :=
+  .mk fun S ↦ (measurableSet_finset_iff _).mpr ⟨{↑S}, by simp, by ext; simp⟩
+
+end Finset
 
 section curry
 

@@ -152,10 +152,10 @@ lemma coroot'_apply_apply_mem_of_mem_span [Module S M] [IsScalarTower S R M] [P.
   induction hx using Submodule.span_induction with
   | mem x hx =>
     obtain ⟨k, rfl⟩ := hx
-    simpa using RootPairing.exists_value k i
+    simpa using! RootPairing.exists_value k i
   | zero => simp
-  | add x y _ _ hx hy => simpa only [map_add] using add_mem hx hy
-  | smul t x _ hx => simpa only [LinearMap.map_smul_of_tower] using Submodule.smul_mem _ t hx
+  | add x y _ _ hx hy => simpa only [map_add] using! add_mem hx hy
+  | smul t x _ hx => simpa only [LinearMap.map_smul_of_tower] using! Submodule.smul_mem _ t hx
 
 lemma root'_apply_apply_mem_of_mem_span [Module S N] [IsScalarTower S R N] [P.IsValuedIn S]
     {x : N} (hx : x ∈ span S (range P.coroot)) (i : ι) :
@@ -201,6 +201,7 @@ def root'In [Module S N] [IsScalarTower S R N] [FaithfulSMul S R] [P.IsValuedIn 
     (FaithfulSMul.algebraMap_injective S R) (P.root' i)
     (fun m ↦ P.root'_apply_apply_mem_of_mem_span S m.2 i)
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma algebraMap_root'In_apply [Module S N] [IsScalarTower S R N] [FaithfulSMul S R]
     [P.IsValuedIn S] (i : ι) (x : P.corootSpan S) :

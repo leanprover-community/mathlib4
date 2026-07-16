@@ -57,6 +57,7 @@ theorem toDual_apply (i j : ι) : b.toDual (b i) (b j) = if i = j then 1 else 0 
   rw [toDual, constr_basis b, constr_basis b]
   simp only [eq_comm]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem toDual_linearCombination_left (f : ι →₀ R) (i : ι) :
     b.toDual (Finsupp.linearCombination R b f) (b i) = f i := by
@@ -64,6 +65,7 @@ theorem toDual_linearCombination_left (f : ι →₀ R) (i : ι) :
   simp_rw [map_smul, LinearMap.smul_apply, toDual_apply, smul_eq_mul, mul_boole,
     Finset.sum_ite_eq', Finsupp.if_mem_support]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem toDual_linearCombination_right (f : ι →₀ R) (i : ι) :
     b.toDual (b i) (Finsupp.linearCombination R b f) = f i := by
@@ -135,7 +137,7 @@ def dualBasis : Basis ι R (Dual R M) :=
 -- We use `j = i` to match `Basis.repr_self`
 theorem dualBasis_apply_self (i j : ι) : b.dualBasis i (b j) =
     if j = i then 1 else 0 := by
-  convert b.toDual_apply i j using 2
+  convert! b.toDual_apply i j using 2
   rw [@eq_comm _ j i]
 
 theorem linearCombination_dualBasis (f : ι →₀ R) (i : ι) :
@@ -197,7 +199,7 @@ omit [DecidableEq ι]
 @[simp]
 theorem linearCombination_coord [Finite ι] (b : Basis ι R M) (f : ι →₀ R) (i : ι) :
     Finsupp.linearCombination R b.coord f (b i) = f i := by
-  haveI := Classical.decEq ι
+  have := Classical.decEq ι
   rw [← coe_dualBasis, linearCombination_dualBasis]
 
 end CommSemiring

@@ -6,6 +6,7 @@ Authors: Kevin Buzzard
 module
 
 public import Mathlib.RingTheory.AdicCompletion.Basic
+public import Mathlib.RingTheory.Length
 public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 public import Mathlib.RingTheory.LocalRing.RingHom.Basic
 public import Mathlib.RingTheory.UniqueFactorizationDomain.Basic
@@ -131,7 +132,7 @@ theorem iff_pid_with_one_nonzero_prime (R : Type u) [CommRing R] [IsDomain R] :
       rw [irreducible_iff_uniformizer] at hQ2
       exact hQ2.symm
   · rintro ⟨RPID, Punique⟩
-    haveI : IsLocalRing R := IsLocalRing.of_unique_nonzero_prime Punique
+    have : IsLocalRing R := IsLocalRing.of_unique_nonzero_prime Punique
     refine { not_a_field' := ?_ }
     rcases Punique with ⟨P, ⟨hP1, hP2⟩, _⟩
     have hPM : P ≤ maximalIdeal R := le_maximalIdeal hP2.1
@@ -271,7 +272,7 @@ theorem of_ufd_of_unique_irreducible {R : Type u} [CommRing R] [IsDomain R]
     (h₂ : ∀ ⦃p q : R⦄, Irreducible p → Irreducible q → Associated p q) :
     IsDiscreteValuationRing R := by
   rw [iff_pid_with_one_nonzero_prime]
-  haveI PID : IsPrincipalIdealRing R := aux_pid_of_ufd_of_unique_irreducible R h₁ h₂
+  have PID : IsPrincipalIdealRing R := aux_pid_of_ufd_of_unique_irreducible R h₁ h₂
   obtain ⟨p, hp⟩ := h₁
   refine ⟨PID, ⟨Ideal.span {p}, ⟨?_, ?_⟩, ?_⟩⟩
   · rw [Submodule.ne_bot_iff]
@@ -291,12 +292,12 @@ is a discrete valuation ring.
 -/
 theorem ofHasUnitMulPowIrreducibleFactorization {R : Type u} [CommRing R] [IsDomain R]
     (hR : HasUnitMulPowIrreducibleFactorization R) : IsDiscreteValuationRing R := by
-  letI : UniqueFactorizationMonoid R := hR.toUniqueFactorizationMonoid
+  let : UniqueFactorizationMonoid R := hR.toUniqueFactorizationMonoid
   apply of_ufd_of_unique_irreducible _ hR.unique_irreducible
   obtain ⟨p, hp, H⟩ := hR
   exact ⟨p, hp⟩
 
-/- If a ring is equivalent to a DVR, it is itself a DVR. -/
+/-- If a ring is equivalent to a DVR, it is itself a DVR. -/
 theorem RingEquivClass.isDiscreteValuationRing {A B E : Type*} [CommRing A] [IsDomain A]
     [CommRing B] [IsDomain B] [IsDiscreteValuationRing A] [EquivLike E A B] [RingEquivClass E A B]
     (e : E) : IsDiscreteValuationRing B where
@@ -358,6 +359,8 @@ lemma exists_units_eq_smul_zpow_of_irreducible
 
 open Submodule.IsPrincipal
 
+/-- Every nonzero ideal in a DVR is a power of the maximal ideal.
+See `idealOrderIsoENat` for a precise classification of ideals in a DVR. -/
 theorem ideal_eq_span_pow_irreducible {s : Ideal R} (hs : s ≠ ⊥) {ϖ : R} (hirr : Irreducible ϖ) :
     ∃ n : ℕ, s = Ideal.span {ϖ ^ n} := by
   have gen_ne_zero : generator s ≠ 0 := by
@@ -398,7 +401,6 @@ theorem unit_mul_pow_congr_unit {ϖ : R} (hirr : Irreducible ϖ) (u v : Rˣ) (m 
 ## The additive valuation on a DVR
 -/
 
-open Classical in
 /-- The `ℕ∞`-valued additive valuation on a DVR. -/
 noncomputable def addVal (R : Type u) [CommRing R] [IsDomain R] [IsDiscreteValuationRing R] :
     AddValuation R ℕ∞ :=
@@ -406,7 +408,6 @@ noncomputable def addVal (R : Type u) [CommRing R] [IsDomain R] [IsDiscreteValua
 
 theorem addVal_def (r : R) (u : Rˣ) {ϖ : R} (hϖ : Irreducible ϖ) (n : ℕ) (hr : r = u * ϖ ^ n) :
     addVal R r = n := by
-  classical
   rw [addVal, multiplicity_addValuation_apply, hr, emultiplicity_eq_of_associated_left
       (associated_of_irreducible R hϖ (Classical.choose_spec (exists_prime R)).irreducible),
     emultiplicity_eq_of_associated_right (Associated.symm ⟨u, mul_comm _ _⟩),
@@ -452,7 +453,6 @@ theorem addVal_eq_top_iff {a : R} : addVal R a = ⊤ ↔ a = 0 := by
     exact addVal_zero
 
 theorem addVal_le_iff_dvd {a b : R} : addVal R a ≤ addVal R b ↔ a ∣ b := by
-  classical
   have hp := Classical.choose_spec (exists_prime R)
   constructor <;> intro h
   · by_cases ha0 : a = 0
@@ -506,16 +506,65 @@ lemma addVal_eq_iff_associated (x y : R) :
   · rintro ⟨u, rfl⟩
     simp_all
 
+variable (R)
+
+set_option backward.isDefEq.respectTransparency.types false in
+/-- The ideals of a discrete valuation ring are exactly the powers of the maximal ideal. -/
+@[simps apply]
+noncomputable def idealOrderIsoENat : Ideal R ≃o ENatᵒᵈ where
+  toFun I := .toDual (addVal R (generator I))
+  invFun n := n.ofDual.recTopCoe ⊥ (fun n ↦ maximalIdeal R ^ n)
+  left_inv I := by
+    let x := generator I
+    suffices (addVal R x).recTopCoe ⊥ (fun n ↦ maximalIdeal R ^ n) = span {x} by
+      rwa [Ideal.span_singleton_generator] at this
+    by_cases hx0 : x = 0
+    · simp [hx0]
+    · obtain ⟨ϖ, hϖ⟩ := exists_irreducible R
+      obtain ⟨n, u, hu⟩ := eq_unit_mul_pow_irreducible hx0 hϖ
+      rw [hu, addVal_def' u hϖ, span_singleton_mul_left_unit u.isUnit,
+        ENat.recTopCoe_coe, hϖ.maximalIdeal_eq, span_singleton_pow]
+  right_inv n := by
+    obtain ⟨k, rfl⟩ := OrderDual.toDual.surjective n
+    dsimp
+    induction k with
+    | top => simp
+    | coe k =>
+      obtain ⟨ϖ, hϖ⟩ := exists_irreducible R
+      rw [OrderDual.toDual_inj, ENat.recTopCoe_coe, hϖ.maximalIdeal_eq,
+        span_singleton_pow, ← hϖ.addVal_pow k, addVal_eq_iff_associated]
+      exact associated_generator_span_self (ϖ ^ k)
+  map_rel_iff' {I J} := by
+    simp [addVal_le_iff_dvd, ← span_singleton_le_span_singleton]
+
+@[simp]
+theorem idealOrderIsoENat_symm_apply_coe (n : ℕ) :
+    (idealOrderIsoENat R).symm n = maximalIdeal R ^ n :=
+  rfl
+
+variable {R} in
+theorem idealOrderIsoENat_symm_apply_coe_of_irreducible (n : ℕ) {ϖ : R} (hϖ : Irreducible ϖ) :
+    (idealOrderIsoENat R).symm n = Ideal.span {ϖ ^ n} := by
+  rw [idealOrderIsoENat_symm_apply_coe, hϖ.maximalIdeal_eq, span_singleton_pow]
+
+set_option backward.isDefEq.respectTransparency.types false in
+theorem coheight_pow_maximalIdeal (n : ℕ) : Order.coheight (maximalIdeal R ^ n) = n := by
+  simpa only [Order.coheight_toDual, Order.height_enat] using!
+    Order.coheight_orderIso (idealOrderIsoENat R).symm (.toDual n)
+
+theorem length_quotient_pow_maximalIdeal (n : ℕ) :
+    Module.length R (R ⧸ maximalIdeal R ^ n) = n := by
+  rw [Module.length_quotient, coheight_pow_maximalIdeal]
+
 end
 
-set_option backward.isDefEq.respectTransparency false in
 instance (R : Type*) [CommRing R] [IsDomain R] [IsDiscreteValuationRing R] :
     IsHausdorff (maximalIdeal R) R where
   haus' x hx := by
     obtain ⟨ϖ, hϖ⟩ := exists_irreducible R
     simp only [← Ideal.one_eq_top, smul_eq_mul, mul_one, SModEq.zero, hϖ.maximalIdeal_eq,
       Ideal.span_singleton_pow, Ideal.mem_span_singleton, ← addVal_le_iff_dvd, hϖ.addVal_pow] at hx
-    rwa [← addVal_eq_top_iff, WithTop.eq_top_iff_forall_ge]
+    rwa [← addVal_eq_top_iff, ENat.eq_top_iff_forall_ge]
 
 noncomputable section toEuclideanDomain
 variable {R : Type*} [CommRing R] [IsDomain R] [IsDiscreteValuationRing R]
@@ -524,13 +573,13 @@ variable {R : Type*} [CommRing R] [IsDomain R] [IsDiscreteValuationRing R]
 two steps to terminate. Given `GCD(x,y)`, if `x ∣ y` then `y%x = 0` so we're done in one step;
 otherwise `y%x = y` and then `GCD(x,y) = GCD(y,x)` which brings us back to the first case. -/
 def quotient (x y : R) : R :=
-  open Classical in if y = 0 then 0 else if h : y ∣ x then h.choose else 0
+  open scoped Classical in if y = 0 then 0 else if h : y ∣ x then h.choose else 0
 
 /-- A noncomputable remainder to define the Euclidean domain structure. The GCD algorithm only takes
 two steps to terminate. Given `GCD(x,y)`, if `x ∣ y` then `y%x = 0` so we're done in one step;
 otherwise `y%x = y` and then `GCD(x,y) = GCD(y,x)` which brings us back to the first case. -/
 def remainder (x y : R) : R :=
-  open Classical in if y ∣ x then 0 else x
+  open scoped Classical in if y ∣ x then 0 else x
 
 /-- A modification of the valuation, sending `0` to `⊥` instead of `⊤`. -/
 def toWithBotNat (x : R) : WithBot ℕ :=
@@ -570,7 +619,7 @@ variable (R) in
 only takes two steps to terminate. Given `GCD(x,y)`, if `x ∣ y` then `y%x = 0` so we're done in one
 step; otherwise `y%x = y` and then `GCD(x,y) = GCD(y,x)` which brings us back to the first case.
 See `EuclideanDomain.to_principal_ideal_domain` for EuclideanDomain ⇒ PID. -/
-@[implicit_reducible]
+@[instance_reducible]
 def toEuclideanDomain : EuclideanDomain R where
   quotient := quotient
   quotient_zero x := by simp [quotient]
@@ -620,7 +669,7 @@ lemma maximalIdeal_eq_setOf_le_v_algebraMap :
     ∀ [IsDiscreteValuationRing O] {ϖ : O} (_h : Irreducible ϖ),
     (IsLocalRing.maximalIdeal O : Set O) =
       {y : O | v (algebraMap O K y) ≤ v (algebraMap O K ϖ)} := by
-  letI : IsDomain O := hv.hom_inj.isDomain
+  let : IsDomain O := hv.hom_inj.isDomain
   intro _ _ h
   rw [← hv.coe_span_singleton_eq_setOf_le_v_algebraMap, ← h.maximalIdeal_eq]
 
@@ -629,7 +678,7 @@ lemma maximalIdeal_pow_eq_setOf_le_v_algebraMap_pow :
     ∀ [IsDiscreteValuationRing O] {ϖ : O} (_h : Irreducible ϖ) (n : ℕ),
     ((IsLocalRing.maximalIdeal O ^ n : Ideal O) : Set O) =
       {y : O | v (algebraMap O K y) ≤ v (algebraMap O K ϖ) ^ n} := by
-  letI : IsDomain O := hv.hom_inj.isDomain
+  let : IsDomain O := hv.hom_inj.isDomain
   intro _ ϖ h n
   have : (v (algebraMap O K ϖ)) ^ n = v (algebraMap O K (ϖ ^ n)) := by simp
   rw [this, ← hv.coe_span_singleton_eq_setOf_le_v_algebraMap,

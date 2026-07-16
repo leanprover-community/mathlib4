@@ -98,7 +98,6 @@ theorem prod_le_hasProd [L.NeBot] [L.LeAtTop] (s : Finset ι) (hs : ∀ i, i ∉
 @[to_additive]
 theorem isLUB_hasProd (h : ∀ i, 1 ≤ f i) (hf : HasProd f a) :
     IsLUB (Set.range fun s ↦ ∏ i ∈ s, f i) a := by
-  classical
   exact isLUB_of_tendsto_atTop (Finset.prod_mono_set_of_one_le' h) hf
 
 @[to_additive]
@@ -243,15 +242,15 @@ variable [CommMonoid α] [PartialOrder α] [IsOrderedMonoid α]
 
 @[to_additive]
 theorem le_hasProd' (hf : HasProd f a) (i : ι) : f i ≤ a :=
-  le_hasProd hf i fun _ _ ↦ one_le _
+  le_hasProd hf i fun _ _ ↦ one_le
 
 @[to_additive]
 protected theorem Multipliable.le_tprod' (hf : Multipliable f) (i : ι) : f i ≤ ∏' i, f i :=
-  hf.le_tprod i fun _ _ ↦ one_le _
+  hf.le_tprod i fun _ _ ↦ one_le
 
 @[to_additive]
 theorem hasProd_one_iff : HasProd f 1 ↔ ∀ x, f x = 1 :=
-  (hasProd_one_iff_of_one_le fun _ ↦ one_le _).trans funext_iff
+  (hasProd_one_iff_of_one_le fun _ ↦ one_le).trans funext_iff
 
 @[to_additive]
 protected theorem Multipliable.tprod_eq_one_iff (hf : Multipliable f) :
@@ -266,7 +265,6 @@ protected theorem Multipliable.tprod_ne_one_iff (hf : Multipliable f) :
 omit [IsOrderedMonoid α] in
 @[to_additive]
 theorem isLUB_hasProd' (hf : HasProd f a) : IsLUB (Set.range fun s ↦ ∏ i ∈ s, f i) a := by
-  classical
   exact isLUB_of_tendsto_atTop (Finset.prod_mono_set' f) hf
 
 end CanonicallyOrderedMul
@@ -371,7 +369,8 @@ attribute [local instance] monadLiftOptionMetaM in
 This extension only proves non-negativity, strict positivity is more delicate for infinite sums and
 requires more assumptions. -/
 @[positivity tsum _]
-meta def evalTsum : PositivityExt where eval {u α} zα pα e := do
+meta def evalTsum : PositivityExt where eval {u α} zα pα? e :=
+  match pα? with | none => pure .none | some pα => do
   match e with
   | ~q(@tsum _ $ι $instCommMonoid $instTopSpace $f $L) =>
     lambdaBoundedTelescope f 1 fun args (body : Q($α)) => do

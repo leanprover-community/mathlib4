@@ -71,7 +71,7 @@ theorem definable_iff_exists_formula_sum :
   refine exists_congr (fun φ => iff_iff_eq.2 (congr_arg (s = ·) ?_))
   ext
   simp only [BoundedFormula.constantsVarsEquiv, constantsOn,
-    BoundedFormula.mapTermRelEquiv_symm_apply, mem_setOf_eq, Formula.Realize]
+    mem_setOf_eq, Formula.Realize]
   refine BoundedFormula.realize_mapTermRel_id ?_ (fun _ _ _ => rfl)
   intros
   simp only [Term.constantsVarsEquivLeft_symm_apply, Term.realize_varsToConstants,
@@ -149,14 +149,14 @@ theorem definable_biUnion_finset {ι : Type*} {f : ι → Set (α → M)}
 
 theorem definable_iInter_of_finite {ι : Type*} [Finite ι] {f : ι → Set (α → M)}
     (hf : ∀ i, A.Definable L (f i)) : A.Definable L (⋂ i, f i) := by
-  haveI := Fintype.ofFinite ι
-  convert definable_finset_inf hf Finset.univ using 1
+  have := Fintype.ofFinite ι
+  convert! definable_finset_inf hf Finset.univ using 1
   simp
 
 theorem definable_iUnion_of_finite {ι : Type*} [Finite ι] {f : ι → Set (α → M)}
     (hf : ∀ i, A.Definable L (f i)) : A.Definable L (⋃ i, f i) := by
-  haveI := Fintype.ofFinite ι
-  convert definable_finset_sup hf Finset.univ using 1
+  have := Fintype.ofFinite ι
+  convert! definable_finset_sup hf Finset.univ using 1
   simp
 
 @[simp]
@@ -339,7 +339,7 @@ variable {s t : L.DefinableSet A α} {x : α → M}
 
 instance instSetLike : SetLike (L.DefinableSet A α) (α → M) where
   coe := Subtype.val
-  coe_injective' := Subtype.val_injective
+  coe_injective := Subtype.val_injective
 
 instance : PartialOrder (L.DefinableSet A α) := .ofSetLike (L.DefinableSet A α) (α → M)
 
@@ -519,11 +519,11 @@ lemma _root_.Set.Definable.preimage_map
   have h_graph : A.Definable L { w : α ⊕ β → M | ∀ i, F (w ∘ Sum.inl) i = w (Sum.inr i) } := by
     rw [setOf_forall]
     refine definable_iInter_of_finite fun i => ?_
-    simpa [tupleGraph] using
+    simpa [tupleGraph] using!
       (hF i).preimage_comp (fun | none => Sum.inr i | some j => Sum.inl j)
   have h_cyl : A.Definable L { w : α ⊕ β → M | w ∘ Sum.inr ∈ S } :=
     hS.preimage_comp Sum.inr
-  convert Definable.exists_of_finite (Definable.inter h_graph h_cyl) using 1
+  convert! Definable.exists_of_finite (Definable.inter h_graph h_cyl) using 1
   ext v
   simp [← funext_iff]
 
@@ -540,9 +540,9 @@ theorem DefinableFun.comp [Finite α] {g : (β → M) → α → M}
     cases i with
     | none => fun_prop
     | some j =>
-      simpa [tupleGraph] using
+      simpa [tupleGraph] using!
         ((hg j).preimage_comp fun | none => none | some i => some (some i))
-  simpa [DefinableFun, G, tupleGraph] using hf.preimage_map hG
+  simpa [DefinableFun, G, tupleGraph] using! hf.preimage_map hG
 
 @[fun_prop]
 theorem DefinableFun.ite {p : (α → M) → Prop} {g} [DecidablePred p]
@@ -551,7 +551,7 @@ theorem DefinableFun.ite {p : (α → M) → Prop} {g} [DecidablePred p]
   let P : Set (Option α → M) := {w | p (w ∘ some)}
   have hP : A.Definable L P := hp.preimage_comp some
   simp only [DefinableFun]
-  convert (hP.inter hf).union (hP.compl.inter hg)
+  convert! (hP.inter hf).union (hP.compl.inter hg)
   ext w
   by_cases h : p (w ∘ some) <;> simp [tupleGraph, P, h]
 
@@ -664,7 +664,7 @@ theorem TermDefinable₁.definable₂_graph {f : M → M} (h : A.TermDefinable�
   obtain ⟨t, h⟩ := h.termDefinable.definable_tupleGraph A L
   use t.relabel (Option.elim · 1 (fun _ ↦ 0))
   ext v
-  convert Set.ext_iff.1 h (v ∘ (Option.elim · 1 (fun _ ↦ 0)))
+  convert! Set.ext_iff.1 h (v ∘ (Option.elim · 1 (fun _ ↦ 0)))
   simp
 
 /-- The identity function is `TermDefinable₁` -/

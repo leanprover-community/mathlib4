@@ -38,22 +38,24 @@ variable [Fintype G] [Invertible (Fintype.card G : k)]
 /-- The average of all elements of the group `G`, considered as an element of `k[G]`. -/
 noncomputable def average : k[G] := ⅟(Fintype.card G : k) • ∑ g : G, of k G g
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- `average k G` is invariant under left multiplication by elements of `G`. -/
 @[simp]
-theorem mul_average_left (g : G) : ↑(Finsupp.single g 1) * average k G = average k G := by
+theorem mul_average_left (g : G) : .single g 1 * average k G = average k G := by
   simp only [mul_one, Finset.mul_sum, Algebra.mul_smul_comm, average, MonoidAlgebra.of_apply,
     MonoidAlgebra.single_mul_single]
-  set f : G → k[G] := fun x => Finsupp.single x 1
+  set f : G → k[G] := fun x => .single x 1
   change ⅟(Fintype.card G : k) • ∑ x : G, f (g * x) = ⅟(Fintype.card G : k) • ∑ x : G, f x
   rw [Function.Bijective.sum_comp (Group.mulLeft_bijective g) _]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- `average k G` is invariant under right multiplication by elements of `G`.
 -/
 @[simp]
-theorem mul_average_right (g : G) : average k G * ↑(Finsupp.single g 1) = average k G := by
+theorem mul_average_right (g : G) : average k G * .single g 1 = average k G := by
   simp only [mul_one, Finset.sum_mul, Algebra.smul_mul_assoc, average, MonoidAlgebra.of_apply,
     MonoidAlgebra.single_mul_single]
-  set f : G → k[G] := fun x => Finsupp.single x 1
+  set f : G → k[G] := fun x => .single x 1
   change ⅟(Fintype.card G : k) • ∑ x : G, f (x * g) = ⅟(Fintype.card G : k) • ∑ x : G, f x
   rw [Function.Bijective.sum_comp (Group.mulRight_bijective g) _]
 
@@ -106,7 +108,7 @@ variable {ρ σ} in
     simp [hf.isIntertwining]
 
 /-- The invariants of the representation `linHom ρ σ` correspond to intertwining maps
- from `ρ` to `σ`. -/
+from `ρ` to `σ`. -/
 def invariantsEquivIntertwiningMap : (linHom ρ σ).invariants ≃ₗ[k] IntertwiningMap ρ σ where
   toFun f := f.val.intertwiningMap_of_isIntertwiningMap ρ σ
     ((mem_linHom_invariants_iff_isIntertwining f.val).mp f.property).isIntertwining
@@ -211,7 +213,7 @@ end Rep
 
 section FDRep
 
-variable {k : Type u} [Field k] {G : Type u} [Group G]
+variable {k : Type u} [Field k] {G : Type v} [Group G]
 
 /-- The invariants of the representation `linHom X.ρ Y.ρ` correspond to the representation
 homomorphisms from `X` to `Y`. -/
@@ -246,7 +248,7 @@ abbrev quotientToInvariants : Rep k (G ⧸ S) := Rep.of (A.ρ.quotientToInvarian
 variable (k G)
 
 /-- The functor sending a representation to its submodule of invariants. -/
-@[simps! obj_carrier map_hom]
+@[implicit_reducible, simps! obj_carrier map_hom]
 noncomputable def invariantsFunctor : Rep.{w} k G ⥤ ModuleCat k where
   obj A := ModuleCat.of k A.ρ.invariants
   map {A B} f := ModuleCat.ofHom <| (f.hom ∘ₗ A.ρ.invariants.subtype).codRestrict
@@ -258,7 +260,6 @@ instance : (invariantsFunctor k G).PreservesZeroMorphisms where
 instance : (invariantsFunctor k G).Additive where
 instance : (invariantsFunctor k G).Linear k where
 
-set_option backward.isDefEq.respectTransparency false in
 variable {G} in
 /-- Given a normal subgroup S ≤ G, this is the functor sending a `G`-representation `A` to the
 `G ⧸ S`-representation it induces on `A^S`. -/
@@ -266,7 +267,7 @@ noncomputable def quotientToInvariantsFunctor (S : Subgroup G) [S.Normal] :
     Rep.{w} k G ⥤ Rep k (G ⧸ S) where
   obj X := X.quotientToInvariants S
   map {X Y} f := Rep.ofHom ⟨((invariantsFunctor k S).map ((Rep.resFunctor S.subtype).map f)).hom,
-    fun g ↦ QuotientGroup.induction_on g fun g ↦ by ext x; simp [hom_comm_apply]⟩
+    fun g ↦ QuotientGroup.induction_on g fun g ↦ by ext; simp [hom_comm_apply]⟩
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The adjunction between the functor equipping a module with the trivial representation, and

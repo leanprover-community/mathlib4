@@ -154,7 +154,7 @@ lemma spanRank_span_range_of_linearIndependent [RankCondition R] {ι : Type u} {
   rw [this]
   refine le_trans ?_ ((Module.Basis.span hs).le_span (R := R) (J := Subtype.val ⁻¹' x.1) ?_)
   · rw [mk_range_eq]
-    exact .of_comp (f := Subtype.val) (by convert hv; ext; simp [Module.Basis.span_apply])
+    exact .of_comp (f := Subtype.val) (by convert! hv; ext; simp [Module.Basis.span_apply])
   · apply map_injective_of_injective (f := (span R _).subtype) (injective_subtype _)
     simp [map_span, Set.image_preimage_eq_inter_range, Set.inter_eq_self_of_subset_left, ← x.2]
 
@@ -210,7 +210,7 @@ lemma lift_spanRank_le_iff_exists_span_set_card_le (p : Submodule R M) {a : Card
   if and only if there is a generating subset with cardinality less than or equal to `a`. -/
 lemma FG.spanRank_le_iff_exists_span_set_card_le (p : Submodule R M) {a : Cardinal} :
     p.spanRank ≤ a ↔ ∃ s : Set M, #s ≤ a ∧ span R s = p := by
-  convert lift_spanRank_le_iff_exists_span_set_card_le p (a := a) <;> simp
+  convert! lift_spanRank_le_iff_exists_span_set_card_le p (a := a) <;> simp
 
 @[simp]
 lemma spanRank_eq_zero_iff_eq_bot {I : Submodule R M} : I.spanRank = 0 ↔ I = ⊥ := by
@@ -283,6 +283,13 @@ lemma spanFinrank_singleton {m : M} (hm : m ≠ 0) : (span R {m}).spanFinrank = 
   · exact le_trans (Submodule.spanFinrank_span_le_ncard_of_finite (by simp)) (by simp)
   · by_contra!
     simp [Submodule.spanFinrank_eq_zero_iff_eq_bot (fg_span_singleton m), hm] at this
+
+lemma spanFinrank_eq_one_iff (p : Submodule R M) : p.spanFinrank = 1 ↔ p.IsPrincipal ∧ p ≠ ⊥ := by
+  refine ⟨fun h ↦ ⟨?_, (by grind [spanFinrank_bot])⟩,
+    fun ⟨⟨a, ha⟩, _⟩ ↦ ha ▸ spanFinrank_singleton (by simp_all)⟩
+  have fg : p.FG := spanRank_finite_iff_fg.1 (by simp_all [spanFinrank])
+  obtain ⟨a, ha⟩ : ∃ a, p.generators = {a} := by simpa [← fg.generators_ncard] using h
+  exact ⟨a, ha ▸ (p.span_generators).symm⟩
 
 end Defs
 
@@ -433,7 +440,7 @@ lemma Module.Basis.mk_eq_spanRank [RankCondition R] {ι : Type*} (v : Basis ι R
 
 theorem Submodule.rank_eq_spanRank_of_free [Module.Free R M] [StrongRankCondition R] :
     Module.rank R M = (⊤ : Submodule R M).spanRank := by
-  haveI := nontrivial_of_invariantBasisNumber R
+  have := nontrivial_of_invariantBasisNumber R
   obtain ⟨I, B⟩ := ‹Module.Free R M›
   rw [← Basis.mk_eq_rank'' B, ← Basis.mk_eq_spanRank B, ← Cardinal.lift_id #(Set.range B),
     Cardinal.mk_range_eq_of_injective B.injective, Cardinal.lift_id _]

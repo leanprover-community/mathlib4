@@ -205,7 +205,6 @@ open Set Formula
 /-- An elementary substructure, regarded as a subset of the ambient structure, meets definable
 sets. -/
 theorem meetsDefinable (S : L.ElementarySubstructure M) : L.MeetsDefinable (S : Set M) := by
-  classical
   rintro D ⟨x, hx⟩ ⟨φ, hφ⟩
   have hφx : φ.Realize ![x] := by
     simp [Set.ext_iff] at hφ
@@ -226,7 +225,7 @@ theorem meetsDefinable (S : L.ElementarySubstructure M) : L.MeetsDefinable (S : 
     simp only [Formula.Realize, ← BoundedFormula.realize_constantsVarsEquiv,
       ← S.subtype.map_boundedFormula] at hv'
     simp only [Formula.Realize, ← BoundedFormula.realize_constantsVarsEquiv]
-    convert hv' using 1
+    convert! hv' using 1
     funext i
     cases i <;> rfl
   change (Subtype.val ∘ v') ∈ {x | x 0 ∈ D}

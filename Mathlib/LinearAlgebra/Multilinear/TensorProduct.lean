@@ -42,12 +42,12 @@ def domCoprodDep (a : MultilinearMap R (fun i₁ ↦ N (.inl i₁)) N₁)
   toFun v := a (fun i₁ ↦ v (.inl i₁)) ⊗ₜ b (fun i₂ ↦ v (.inr i₂))
   map_update_add' := by
     rintro _ _ (_ | _) _ _
-    · letI := Classical.decEq ι₁; simp
-    · letI := Classical.decEq ι₂; simp
+    · let := Classical.decEq ι₁; simp
+    · let := Classical.decEq ι₂; simp
   map_update_smul' := by
     rintro _ m (i₁ | i₂) p q
-    · letI := Classical.decEq ι₁; simp
-    · letI := Classical.decEq ι₂; simp
+    · let := Classical.decEq ι₁; simp
+    · let := Classical.decEq ι₂; simp
 
 /-- A more bundled version of `MultilinearMap.domCoprodDep`, as a linear map
 from the tensor product of spaces of multilinear maps. -/
@@ -77,8 +77,8 @@ is not a `MultilinearMap`.
 
 While this can be generalized to work for dependent `Π i : ι₁, N'₁ i` instead of `ι₁ → N`, doing so
 introduces `Sum.elim N'₁ N'₂` types in the result which are difficult to work with and not defeq
-to the simple case defined here. See [this zulip thread](
-https://leanprover.zulipchat.com/#narrow/stream/217875-Is-there.20code.20for.20X.3F/topic/Instances.20on.20.60sum.2Eelim.20A.20B.20i.60/near/218484619).
+to the simple case defined here. See
+[this zulip thread](https://leanprover.zulipchat.com/#narrow/stream/217875-Is-there.20code.20for.20X.3F/topic/Instances.20on.20.60sum.2Eelim.20A.20B.20i.60/near/218484619).
 -/
 @[simps! apply]
 def domCoprod (a : MultilinearMap R (fun _ : ι₁ => N) N₁)

@@ -102,8 +102,7 @@ def Cover.mkOfCovers (J : Type*) (obj : J → Scheme.{u}) (map : (j : J) → obj
   f := map
   mem₀ := by
     simp_rw [presieve₀_mem_precoverage_iff, Set.mem_range]
-    #adaptation_note /-- This was `grind` before nightly-2026-02-05. -/
-    exact ⟨covers, map_prop⟩
+    grind
 
 /-- An isomorphism `X ⟶ Y` is a `P`-cover of `Y`. -/
 @[simps! I₀ X f]
@@ -152,8 +151,12 @@ def Cover.copy [P.RespectsIso] {X : Scheme.{u}} (𝒰 : X.Cover (precoverage P))
       intro i
       exact 𝒰.map_prop _
 
+-- `respectTransparency false` is needed for `simps!`.
+-- Consider making implicit-reducible:
+-- `Precoverage.ZeroHypercover.bind`, `Cover.mkOfCovers`, `coverOfIso`
+set_option backward.isDefEq.respectTransparency false in
 /-- The pushforward of a cover along an isomorphism. -/
-@[simps! I₀ X f]
+@[simps! I₀ X f, implicit_reducible]
 def Cover.pushforwardIso [P.RespectsIso] [P.ContainsIdentities] [P.IsStableUnderComposition]
     {X Y : Scheme.{u}} (𝒰 : Cover.{v} (precoverage P) X) (f : X ⟶ Y) [IsIso f] :
     Cover.{v} (precoverage P) Y :=

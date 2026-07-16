@@ -5,11 +5,11 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.Nat.Lattice
+public import Mathlib.Data.Set.Subsingleton
 public import Mathlib.Logic.Denumerable
 public import Mathlib.Logic.Function.Iterate
 public import Mathlib.Order.Hom.Basic
-public import Mathlib.Data.Set.Subsingleton
+public import Mathlib.Order.Lattice.Nat
 
 /-!
 # Relation embeddings from the naturals
@@ -21,6 +21,10 @@ defines the limit value of an eventually-constant sequence.
 
 * `natLT`/`natGT`: Make an order embedding `Nat ↪ α` from
   an increasing/decreasing function `Nat → α`.
+* `Infinite.exists_strictMono_or_strictAnti`: Every infinite linear order contains a strictly
+  increasing or strictly decreasing sequence indexed by `ℕ`.
+* `Finite.of_wellFoundedLT_wellFoundedGT`: A linear order that is well-founded in both directions
+  is finite.
 * `monotonicSequenceLimit`: The limit of an eventually-constant monotone sequence `Nat →o α`.
 * `monotonicSequenceLimitIndex`: The index of the first occurrence of `monotonicSequenceLimit`
   in the sequence.
@@ -45,7 +49,6 @@ theorem coe_natLT {f : ℕ → α} {H : ∀ n : ℕ, r (f n) (f (n + 1))} : ⇑(
 
 /-- If `f` is a strictly `r`-decreasing sequence, then this returns `f` as an order embedding. -/
 def natGT (f : ℕ → α) (H : ∀ n : ℕ, r (f (n + 1)) (f n)) : ((· > ·) : ℕ → ℕ → Prop) ↪r r :=
-  haveI := IsStrictOrder.swap r
   RelEmbedding.swap (natLT f H)
 
 @[simp]
@@ -118,6 +121,7 @@ theorem orderEmbeddingOfSet_apply [DecidablePred (· ∈ s)] {n : ℕ} :
     orderEmbeddingOfSet s n = Subtype.ofNat s n :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem Subtype.orderIsoOfNat_apply [dP : DecidablePred (· ∈ s)] {n : ℕ} :
     Subtype.orderIsoOfNat s n = Subtype.ofNat s n := by
@@ -167,7 +171,7 @@ theorem exists_increasing_or_nonincreasing_subseq' (r : α → α → Prop) (f :
         simp only [bad, exists_prop, not_not, Set.mem_setOf_eq, not_forall] at h
         obtain ⟨n', hn1, hn2⟩ := h
         refine ⟨n + n' - n - m, by lia, ?_⟩
-        convert hn2
+        convert! hn2
         lia
       let g' : ℕ → ℕ := @Nat.rec (fun _ => ℕ) m fun n gn => Nat.find (h gn)
       exact
@@ -189,6 +193,28 @@ theorem exists_increasing_or_nonincreasing_subseq (r : α → α → Prop) [IsTr
       apply IsTrans.trans _ _ _ _ (hr _)
       exact ih (lt_of_lt_of_le m.lt_succ_self (Nat.le_add_right _ _))
   · exact ⟨g, Or.intro_right _ hnr⟩
+
+/-- Every infinite linear order contains either a strictly increasing or a strictly decreasing
+sequence indexed by `ℕ`. -/
+theorem Infinite.exists_strictMono_or_strictAnti (α : Type*) [LinearOrder α] [Infinite α] :
+    ∃ f : ℕ → α, StrictMono f ∨ StrictAnti f := by
+  let f := Infinite.natEmbedding α
+  obtain ⟨g, hg⟩ := exists_increasing_or_nonincreasing_subseq (· < ·) f
+  refine ⟨f ∘ g, ?_⟩
+  rcases hg with hIncreasing | hNonincreasing
+  · exact Or.inl hIncreasing
+  · refine Or.inr <| fun m n hmn ↦ lt_of_le_of_ne ?_ ((f.injective.comp g.injective).ne ?_)
+    · grind
+    · grind
+
+/-- A linear order that is well-founded in both directions is finite. -/
+theorem Finite.of_wellFoundedLT_wellFoundedGT (α : Type*) [LinearOrder α]
+    [WellFoundedLT α] [WellFoundedGT α] : Finite α := by
+  apply Finite.of_not_infinite
+  intro
+  obtain ⟨f, hStrictMono | hStrictAnti⟩ := Infinite.exists_strictMono_or_strictAnti α
+  · exact not_strictMono_of_wellFoundedGT f hStrictMono
+  · exact not_strictAnti_of_wellFoundedLT f hStrictAnti
 
 /-- The **monotone chain condition**: a preorder is co-well-founded iff every increasing sequence
 contains two non-increasing indices.

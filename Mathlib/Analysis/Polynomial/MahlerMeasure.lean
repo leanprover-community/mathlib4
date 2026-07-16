@@ -155,9 +155,6 @@ theorem logMahlerMeasure_mul_eq_add_logMahlerMeasure {p q : ℂ[X]} (hpq : p * q
     (p * q).logMahlerMeasure = p.logMahlerMeasure + q.logMahlerMeasure := by
   simp_all [logMahlerMeasure_eq_log_MahlerMeasure, mahlerMeasure_mul, log_mul]
 
-@[deprecated (since := "2025-11-17")]
-alias logMahlerMeasure_mul_eq_add_logMahelerMeasure := logMahlerMeasure_mul_eq_add_logMahlerMeasure
-
 theorem logMahlerMeasure_C_mul {a : ℂ} (ha : a ≠ 0) {p : ℂ[X]} (hp : p ≠ 0) :
     (C a * p).logMahlerMeasure = log ‖a‖ + p.logMahlerMeasure := by
   rw [logMahlerMeasure_mul_eq_add_logMahlerMeasure (by simp [ha, hp]), logMahlerMeasure_const]
@@ -281,8 +278,8 @@ theorem mahlerMeasure_le_sum_norm_coeff (p : ℂ[X]) : p.mahlerMeasure ≤ p.sum
   use {x : ℝ | eval (circleMap 0 1 x) p ≠ 0}
   constructor
   · rw [mem_ae_iff, compl_def, Measure.restrict_apply' (by simp)]
-    apply (Finite.of_diff _ <| finite_singleton (2 * π)).measure_zero
-    simp only [ne_eq, mem_setOf_eq, Decidable.not_not, inter_diff_assoc, Icc_diff_right]
+    apply (Finite.of_sdiff _ <| finite_singleton (2 * π)).measure_zero
+    simp only [ne_eq, mem_setOf_eq, Decidable.not_not, inter_sdiff_assoc, Icc_sdiff_right]
     rw [setOf_inter_eq_sep]
     apply Finite.of_finite_image (f := circleMap 0 1) ((Multiset.finite_toSet p.roots).subset _)
       <| fun _ h _ k l ↦ injOn_circleMap_of_abs_sub_le' one_ne_zero (by linarith) h.1 k.1 l
@@ -293,7 +290,6 @@ theorem mahlerMeasure_le_sum_norm_coeff (p : ℂ[X]) : p.mahlerMeasure ≤ p.sum
     apply norm_sum_le_of_le p.support
     simp
 
-set_option linter.style.emptyLine false in
 open MeasureTheory Set in
 /-- **Landau's inequality**: the Mahler measure of a polynomial is at most the ℓ² norm
 of its coefficient vector, `√(∑ ‖coeff i‖²)`.
@@ -319,7 +315,7 @@ theorem mahlerMeasure_le_sqrt_sum_sq_norm_coeff (p : Polynomial ℂ) :
     refine Finite.of_finite_image (f := circleMap 0 1) (p.roots.finite_toSet.subset ?_) ?_
     · rintro z ⟨θ, ⟨_, heval⟩, rfl⟩
       exact (mem_roots hp).mpr heval
-    · apply InjOn.mono fun _ h ↦ h.1
+    · grw [setOf_and, inter_subset_left]
       exact injOn_circleMap_of_abs_sub_le one_ne_zero (by simp [abs_of_pos pi_pos])
   have hlogAe : ∀ᵐ (θ : ℝ) ∂volume.restrict (uIoc 0 (2 * π)),
       exp (log ‖p.eval (circleMap 0 1 θ)‖) = ‖p.eval (circleMap 0 1 θ)‖ := by
@@ -353,7 +349,7 @@ root of its degree plus one. -/
 theorem mahlerMeasure_le_sqrt_natDegree_add_one_mul_supNorm (p : Polynomial ℂ) :
     p.mahlerMeasure ≤ √(p.natDegree + 1) * p.supNorm :=
   (p.mahlerMeasure_le_sqrt_sum_sq_norm_coeff).trans <| by
-    rw [show √(↑(p.natDegree) + 1) * p.supNorm = √((p.natDegree + 1) * p.supNorm ^ 2) from by
+    rw [show √(↑(p.natDegree) + 1) * p.supNorm = √((p.natDegree + 1) * p.supNorm ^ 2) by
       rw [Real.sqrt_mul (by positivity), Real.sqrt_sq p.supNorm_nonneg]]
     gcongr
     refine (p.support.sum_le_card_nsmul _ (p.supNorm ^ 2) fun i _ ↦ ?_).trans ?_

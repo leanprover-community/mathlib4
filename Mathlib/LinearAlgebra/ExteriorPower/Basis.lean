@@ -19,8 +19,6 @@ public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 variable {R K M E : Type*} {n : ℕ}
   [CommRing R] [Field K] [AddCommGroup M] [Module R M] [AddCommGroup E] [Module K E]
 
-open BigOperators
-
 namespace exteriorPower
 
 /-! Finiteness of the exterior power. -/
@@ -151,7 +149,7 @@ lemma basis_repr {I : Type*} [LinearOrder I] (b : Basis I R M) (s : powersetCard
 instance instFree [Module.Free R M] : Module.Free R (⋀[R]^n M) := by
   classical
   have ⟨I, b⟩ := Module.Free.exists_basis R M
-  letI : LinearOrder I := linearOrderOfSTO WellOrderingRel
+  let : LinearOrder I := linearOrderOfSTO WellOrderingRel
   exact Module.Free.of_basis (b.exteriorPower n)
 
 variable [Nontrivial R]

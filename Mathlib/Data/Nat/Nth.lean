@@ -107,7 +107,7 @@ theorem nth_injOn (hf : (setOf p).Finite) : (Set.Iio #hf.toFinset).InjOn (nth p)
 
 theorem range_nth_of_finite (hf : (setOf p).Finite) : Set.range (nth p) = insert 0 (setOf p) := by
   simpa only [← List.getD_eq_getElem?_getD, ← nth_eq_getD_sort hf, mem_sort,
-    Set.Finite.mem_toFinset] using Set.range_list_getD (hf.toFinset.sort (· ≤ ·)) 0
+    Set.Finite.mem_toFinset] using! Set.range_list_getD (hf.toFinset.sort (· ≤ ·)) 0
 
 @[simp]
 theorem image_nth_Iio_card (hf : (setOf p).Finite) : nth p '' Set.Iio #hf.toFinset = setOf p :=
@@ -157,7 +157,7 @@ theorem nth_le_nth (hf : (setOf p).Infinite) {k n} : nth p k ≤ nth p n ↔ k �
 
 theorem range_nth_of_infinite (hf : (setOf p).Infinite) : Set.range (nth p) = setOf p := by
   rw [nth_eq_orderIsoOfNat hf]
-  haveI := hf.to_subtype
+  have := hf.to_subtype
   classical exact Nat.Subtype.coe_comp_ofNat_range
 
 theorem nth_mem_of_infinite (hf : (setOf p).Infinite) (n : ℕ) : p (nth p n) :=
@@ -235,8 +235,9 @@ theorem nth_zero : nth p 0 = sInf (setOf p) := by rw [nth_eq_sInf]; simp
 @[simp]
 theorem nth_zero_of_zero (h : p 0) : nth p 0 = 0 := by simp [nth_zero, h]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem nth_zero_of_exists [DecidablePred p] (h : ∃ n, p n) : nth p 0 = Nat.find h := by
-  rw [nth_zero]; convert Nat.sInf_def h
+  rw [nth_zero]; convert! Nat.sInf_def h
 
 theorem nth_eq_zero {n} :
     nth p n = 0 ↔ p 0 ∧ n = 0 ∨ ∃ hf : (setOf p).Finite, #hf.toFinset ≤ n := by
@@ -351,9 +352,9 @@ lemma nth_comp_of_strictMono {n : ℕ} {f : ℕ → ℕ} (hf : StrictMono f)
     repeat nth_rw 1 [nth_eq_sInf]
     have h0' : ∀ k', (p k' ∧ ∀ k < n + 1, nth p k < k') → k' ∈ Set.range f := fun _ h ↦ h0 _ h.1
     rw [← hs h0', ← hf.monotone.map_csInf]
-    · convert rfl using 8 with k m' hm
+    · convert! rfl using 8 with k m' hm
       nth_rw 2 [← hf.lt_iff_lt]
-      convert Iff.rfl using 2
+      convert! Iff.rfl using 2
       exact ih m' (Nat.lt_add_one_iff.mp hm) fun hfi ↦ hm.trans (h hfi)
     · rcases h0 _ (nth_mem _ h) with ⟨t, ht⟩
       exact ⟨t, ht ▸ (nth_mem _ h), fun _ hk ↦ ht ▸ nth_lt_nth' hk h⟩

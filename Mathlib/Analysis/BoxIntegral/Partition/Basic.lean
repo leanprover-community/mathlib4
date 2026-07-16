@@ -198,7 +198,7 @@ theorem iUnion_def' : π.iUnion = ⋃ J ∈ π.boxes, ↑J := rfl
 
 @[simp]
 theorem mem_iUnion : x ∈ π.iUnion ↔ ∃ J ∈ π, x ∈ J := by
-  convert Set.mem_iUnion₂
+  convert! Set.mem_iUnion₂
   rw [Box.mem_coe, exists_prop]
 
 @[simp]
@@ -221,7 +221,7 @@ theorem subset_iUnion (h : J ∈ π) : ↑J ⊆ π.iUnion :=
 theorem iUnion_subset : π.iUnion ⊆ I :=
   iUnion₂_subset π.le_of_mem'
 
-@[mono]
+@[gcongr, mono]
 theorem iUnion_mono (h : π₁ ≤ π₂) : π₁.iUnion ⊆ π₂.iUnion := fun _ hx =>
   let ⟨_, hJ₁, hx⟩ := π₁.mem_iUnion.1 hx
   let ⟨J₂, hJ₂, hle⟩ := h hJ₁
@@ -329,7 +329,7 @@ theorem biUnionIndex_le (πi : ∀ J, Prepartition J) (J : Box ι) : π.biUnionI
   · rw [biUnionIndex, dif_neg hJ]
 
 theorem mem_biUnionIndex (hJ : J ∈ π.biUnion πi) : J ∈ πi (π.biUnionIndex πi J) := by
-  convert (π.mem_biUnion.1 hJ).choose_spec.2 <;> exact dif_pos hJ
+  convert! (π.mem_biUnion.1 hJ).choose_spec.2 <;> exact dif_pos hJ
 
 theorem le_biUnionIndex (hJ : J ∈ π.biUnion πi) : J ≤ π.biUnionIndex πi J :=
   le_of_mem _ (π.mem_biUnionIndex hJ)
@@ -352,6 +352,7 @@ theorem biUnion_assoc (πi : ∀ J, Prepartition J) (πi' : Box ι → ∀ J : B
     refine ⟨J₂, hJ₂, J₁, hJ₁, ?_⟩
     rwa [π.biUnionIndex_of_mem hJ₂ hJ₁] at hJ
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Create a `BoxIntegral.Prepartition` from a collection of possibly empty boxes by filtering out
 the empty one if it exists. -/
 def ofWithBot (boxes : Finset (WithBot (Box ι)))
@@ -371,6 +372,7 @@ theorem mem_ofWithBot {boxes : Finset (WithBot (Box ι))} {h₁ h₂} :
     J ∈ (ofWithBot boxes h₁ h₂ : Prepartition I) ↔ (J : WithBot (Box ι)) ∈ boxes :=
   mem_eraseNone
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem iUnion_ofWithBot (boxes : Finset (WithBot (Box ι)))
     (le_of_mem : ∀ J ∈ boxes, (J : WithBot (Box ι)) ≤ I)
@@ -381,6 +383,7 @@ theorem iUnion_ofWithBot (boxes : Finset (WithBot (Box ι)))
   simp only [← Box.biUnion_coe_eq_coe, @iUnion_comm _ _ (Box ι), @iUnion_comm _ _ (@Eq _ _ _),
     iUnion_iUnion_eq_right]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ofWithBot_le {boxes : Finset (WithBot (Box ι))}
     {le_of_mem : ∀ J ∈ boxes, (J : WithBot (Box ι)) ≤ I}
     {pairwise_disjoint : Set.Pairwise (boxes : Set (WithBot (Box ι))) Disjoint}
@@ -438,7 +441,7 @@ theorem mem_restrict : J₁ ∈ π.restrict J ↔ ∃ J' ∈ π, (J₁ : WithBot
 theorem mem_restrict' : J₁ ∈ π.restrict J ↔ ∃ J' ∈ π, (J₁ : Set (ι → ℝ)) = ↑J ∩ ↑J' := by
   simp only [mem_restrict, ← Box.withBotCoe_inj, Box.coe_inf, Box.coe_coe]
 
-@[mono]
+@[gcongr, mono]
 theorem restrict_mono {π₁ π₂ : Prepartition I} (Hle : π₁ ≤ π₂) : π₁.restrict J ≤ π₂.restrict J := by
   classical
   refine ofWithBot_mono fun J₁ hJ₁ hne => ?_
@@ -449,6 +452,7 @@ theorem restrict_mono {π₁ π₂ : Prepartition I} (Hle : π₁ ≤ π₂) : �
 theorem monotone_restrict : Monotone fun π : Prepartition I => restrict π J :=
   fun _ _ => restrict_mono
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Restricting to a larger box does not change the set of boxes. We cannot claim equality
 of prepartitions because they have different types. -/
 theorem restrict_boxes_of_le (π : Prepartition I) (h : I ≤ J) : (π.restrict J).boxes = π.boxes := by
@@ -548,11 +552,11 @@ theorem filter_true : (π.filter fun _ => True) = π :=
 theorem iUnion_filter_not (π : Prepartition I) (p : Box ι → Prop) :
     (π.filter fun J => ¬p J).iUnion = π.iUnion \ (π.filter p).iUnion := by
   simp only [Prepartition.iUnion]
-  convert
-    (@Set.biUnion_diff_biUnion_eq (ι → ℝ) (Box ι) π.boxes (π.filter p).boxes (↑) _).symm using 4
+  convert!
+    (@Set.biUnion_sdiff_biUnion_eq (ι → ℝ) (Box ι) π.boxes (π.filter p).boxes (↑) _).symm using 4
   · simp +contextual
   · rw [Set.PairwiseDisjoint]
-    convert π.pairwiseDisjoint
+    convert! π.pairwiseDisjoint
     rw [Set.union_eq_left, filter_boxes, coe_filter]
     exact fun _ ⟨h, _⟩ => h
 
@@ -560,7 +564,7 @@ open scoped Classical in
 theorem sum_fiberwise {α M} [AddCommMonoid M] (π : Prepartition I) (f : Box ι → α) (g : Box ι → M) :
     (∑ y ∈ π.boxes.image f, ∑ J ∈ (π.filter fun J => f J = y).boxes, g J) =
       ∑ J ∈ π.boxes, g J := by
-  convert sum_fiberwise_of_maps_to (fun _ => Finset.mem_image_of_mem f) g
+  convert! sum_fiberwise_of_maps_to (fun _ => Finset.mem_image_of_mem f) g
 
 open scoped Classical in
 /-- Union of two disjoint prepartitions. -/
@@ -570,7 +574,7 @@ def disjUnion (π₁ π₂ : Prepartition I) (h : Disjoint π₁.iUnion π₂.iU
   le_of_mem' _ hJ := (Finset.mem_union.1 hJ).elim π₁.le_of_mem π₂.le_of_mem
   pairwiseDisjoint :=
     suffices ∀ J₁ ∈ π₁, ∀ J₂ ∈ π₂, J₁ ≠ J₂ → Disjoint (J₁ : Set (ι → ℝ)) J₂ by
-      simpa [pairwise_union_of_symmetric (symmetric_disjoint.comap _), pairwiseDisjoint]
+      simpa [pairwise_union_of_symm, pairwiseDisjoint]
     fun _ h₁ _ h₂ _ => h.mono (π₁.subset_iUnion h₁) (π₂.subset_iUnion h₂)
 
 @[simp]

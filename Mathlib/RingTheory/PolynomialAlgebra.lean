@@ -67,7 +67,7 @@ theorem toFunLinear_tmul_apply (a : A) (p : R[X]) :
 -- in order to successfully rewrite by this lemma.
 theorem toFunLinear_mul_tmul_mul_aux_1 (p : R[X]) (k : ℕ) (h : Decidable ¬p.coeff k = 0) (a : A) :
     ite (¬coeff p k = 0) (a * (algebraMap R A) (coeff p k)) 0 =
-    a * (algebraMap R A) (coeff p k) := by classical split_ifs <;> simp [*]
+    a * (algebraMap R A) (coeff p k) := by split_ifs <;> simp [*]
 
 theorem toFunLinear_mul_tmul_mul_aux_2 (k : ℕ) (a₁ a₂ : A) (p₁ p₂ : R[X]) :
     a₁ * a₂ * (algebraMap R A) ((p₁ * p₂).coeff k) =
@@ -85,7 +85,7 @@ theorem toFunLinear_mul_tmul_mul (a₁ a₂ : A) (p₁ p₂ : R[X]) :
     ext k
     simp_rw [coeff_sum, coeff_monomial, sum_def, Finset.sum_ite_eq', mem_support_iff, Ne]
     conv_rhs => rw [coeff_mul]
-    simp_rw [finset_sum_coeff, coeff_monomial, Finset.sum_ite_eq', mem_support_iff, Ne, mul_ite,
+    simp_rw [finsetSum_coeff, coeff_monomial, Finset.sum_ite_eq', mem_support_iff, Ne, mul_ite,
       mul_zero, ite_mul, zero_mul]
     simp_rw [← ite_zero_mul (¬coeff p₁ _ = 0) (a₁ * (algebraMap R A) (coeff p₁ _))]
     simp_rw [← mul_ite_zero (¬coeff p₂ _ = 0) _ (_ * _)]

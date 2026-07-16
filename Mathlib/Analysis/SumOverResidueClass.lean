@@ -19,7 +19,7 @@ decreasing, then the sum over `f` restricted to any residue class
 mod `m ≠ 0` converges if and only if the sum over all of `ℕ` converges.
 -/
 
-@[expose] public section
+public section
 
 
 lemma Finset.sum_indicator_mod {R : Type*} [AddCommMonoid R] (m : ℕ) [NeZero m] (f : ℕ → R) :
@@ -28,6 +28,7 @@ lemma Finset.sum_indicator_mod {R : Type*} [AddCommMonoid R] (m : ℕ) [NeZero m
   simp only [Finset.sum_apply, Set.indicator_apply, Set.mem_setOf_eq, Finset.sum_ite_eq,
     Finset.mem_univ, ↓reduceIte]
 
+set_option backward.isDefEq.respectTransparency false in
 open Set in
 /-- A sequence `f` with values in an additive topological group `R` is summable on the
 residue class of `k` mod `m` if and only if `f (m*n + k)` is summable. -/
@@ -44,7 +45,7 @@ lemma summable_indicator_mod_iff_summable {R : Type*} [AddCommGroup R] [Topologi
       intro n hn
       contrapose! hn
       exact (Nat.range_mul_add m k).symm ▸ mem_of_indicator_ne_zero hn
-    convert (Function.Injective.summable_iff hg hg').symm using 3
+    convert (Function.Injective.summable_iff hg hg').symm
     simp only [Function.comp_apply, mem_setOf_eq, Nat.cast_add, Nat.cast_mul, CharP.cast_eq_zero,
       zero_mul, zero_add, le_add_iff_nonneg_left, zero_le, and_self, indicator_of_mem, g]
 
@@ -92,12 +93,14 @@ lemma summable_indicator_mod_iff {m : ℕ} [NeZero m] {f : ℕ → ℝ} (hf : An
     Summable ({n : ℕ | (n : ZMod m) = k}.indicator f) ↔ Summable f := by
   refine ⟨fun H ↦ ?_, fun H ↦ Summable.indicator H _⟩
   rw [Finset.sum_indicator_mod m f]
-  convert summable_sum (s := Finset.univ)
-    fun a _ ↦ summable_indicator_mod_iff_summable_indicator_mod hf a H
+  convert!
+    summable_sum (s := Finset.univ) fun a _ ↦
+      summable_indicator_mod_iff_summable_indicator_mod hf a H
   simp only [Finset.sum_apply]
 
 open ZMod
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `f` is a summable function on `ℕ`, and `0 < N`, then we may compute `∑' n : ℕ, f n` by
 summing each residue class mod `N` separately. -/
 lemma Nat.sumByResidueClasses {R : Type*} [AddCommGroup R] [UniformSpace R] [IsUniformAddGroup R]

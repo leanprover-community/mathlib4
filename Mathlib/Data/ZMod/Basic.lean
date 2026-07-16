@@ -6,8 +6,8 @@ Authors: Chris Hughes
 module
 
 public import Mathlib.Algebra.CharP.Basic
+public import Mathlib.Algebra.GroupWithZero.Units.Fintype
 public import Mathlib.Algebra.Ring.Prod
-public import Mathlib.Data.Fintype.Units
 public import Mathlib.GroupTheory.GroupAction.SubMulAction
 public import Mathlib.GroupTheory.OrderOfElement
 public import Mathlib.Tactic.FinCases
@@ -249,6 +249,7 @@ theorem natCast_comp_val [NeZero n] : ((↑) : ℕ → R) ∘ (val : ZMod n → 
   · cases NeZero.ne 0 rfl
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The coercions are respectively `Int.cast`, `ZMod.cast`, and `ZMod.cast`. -/
 @[simp]
 theorem intCast_comp_cast : ((↑) : ℤ → R) ∘ (cast : ZMod n → ℤ) = cast := by
@@ -397,7 +398,7 @@ theorem castHom_injective : Function.Injective (ZMod.castHom (dvd_refl n) R) := 
 
 theorem castHom_bijective [Fintype R] (h : Fintype.card R = n) :
     Function.Bijective (ZMod.castHom (dvd_refl n) R) := by
-  haveI : NeZero n :=
+  have : NeZero n :=
     ⟨by
       intro hn
       rw [hn] at h
@@ -426,6 +427,7 @@ noncomputable def ringEquivOfPrime [Fintype R] {p : ℕ} (hp : p.Prime) (hR : Fi
 lemma ringEquivOfPrime_eq_ringEquiv [Fintype R] {p : ℕ} [CharP R p] (hp : p.Prime)
     (hR : Fintype.card R = p) : ringEquivOfPrime R hp hR = ringEquiv R hR := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The identity between `ZMod m` and `ZMod n` when `m = n`, as a ring isomorphism. -/
 def ringEquivCongr {m n : ℕ} (h : m = n) : ZMod m ≃+* ZMod n := by
@@ -665,8 +667,8 @@ theorem val_add_of_le {n : ℕ} [NeZero n] {a b : ZMod n} (h : n ≤ a.val + b.v
 
 theorem val_add_le {n : ℕ} (a b : ZMod n) : (a + b).val ≤ a.val + b.val := by
   cases n
-  · simpa [ZMod.val] using Int.natAbs_add_le _ _
-  · simpa [ZMod.val_add] using Nat.mod_le _ _
+  · simpa [ZMod.val] using! Int.natAbs_add_le _ _
+  · simpa [ZMod.val_add] using! Nat.mod_le _ _
 
 theorem val_mul {n : ℕ} (a b : ZMod n) : (a * b).val = a.val * b.val % n := by
   cases n
@@ -718,9 +720,7 @@ theorem inv_zero : ∀ n : ℕ, (0 : ZMod n)⁻¹ = 0
   | 0 => Int.sign_zero
   | n + 1 =>
     show (Nat.gcdA _ (n + 1) : ZMod (n + 1)) = 0 by
-      rw [val_zero]
-      unfold Nat.gcdA Nat.xgcd Nat.xgcdAux
-      rfl
+      simp [Nat.gcdA, Nat.xgcd, Nat.xgcdAux, Nat.strongRec_eq]
 
 theorem mul_inv_eq_gcd {n : ℕ} (a : ZMod n) : a * a⁻¹ = Nat.gcd a.val n := by
   rcases n with - | n
@@ -779,7 +779,7 @@ theorem coe_mul_inv_eq_one {n : ℕ} (x : ℕ) (h : Nat.Coprime x n) :
 lemma mul_val_inv (hmn : m.Coprime n) : (m * (m⁻¹ : ZMod n).val : ZMod n) = 1 := by
   obtain rfl | hn := eq_or_ne n 0
   · simp [m.coprime_zero_right.1 hmn]
-  haveI : NeZero n := ⟨hn⟩
+  have : NeZero n := ⟨hn⟩
   rw [ZMod.natCast_zmod_val, ZMod.coe_mul_inv_eq_one _ hmn]
 
 lemma val_inv_mul (hmn : m.Coprime n) : ((m⁻¹ : ZMod n).val * m : ZMod n) = 1 := by
@@ -824,6 +824,18 @@ lemma isUnit_prime_iff_not_dvd {n p : ℕ} (hp : p.Prime) : IsUnit (p : ZMod n) 
 lemma isUnit_prime_of_not_dvd {n p : ℕ} (hp : p.Prime) (h : ¬ p ∣ n) : IsUnit (p : ZMod n) :=
   (isUnit_prime_iff_not_dvd hp).mpr h
 
+/-- In `ZMod (p ^ d)` with `0 < d`, a natural number is a unit iff `p` does not divide it. -/
+theorem isUnit_natCast_iff_not_dvd_pow {p d a : ℕ} (hp : p.Prime) (hd : 0 < d) :
+    IsUnit (a : ZMod (p ^ d)) ↔ ¬ p ∣ a := by
+  rw [isUnit_iff_coprime, Nat.coprime_pow_right_iff hd, Nat.coprime_comm,
+    hp.coprime_iff_not_dvd]
+
+/-- In `ZMod (p ^ d)` with `0 < d`, the prime `p` is not a unit. -/
+theorem prime_natCast_not_isUnit_pow {p d : ℕ} (hp : p.Prime) (hd : 0 < d) :
+    ¬ IsUnit ((p : ℕ) : ZMod (p ^ d)) := by
+  simp [isUnit_prime_iff_not_dvd hp]
+  lia
+
 @[simp]
 theorem inv_coe_unit {n : ℕ} (u : (ZMod n)ˣ) : (u : ZMod n)⁻¹ = (u⁻¹ : (ZMod n)ˣ) := by
   have := congr_arg ((↑) : ℕ → ZMod n) (val_coe_unit_coprime u)
@@ -863,6 +875,7 @@ def unitsEquivCoprime {n : ℕ} [NeZero n] : (ZMod n)ˣ ≃ { x : ZMod n // Nat.
   left_inv := fun ⟨_, _, _, _⟩ => Units.ext (natCast_zmod_val _)
   right_inv := fun ⟨_, _⟩ => by simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The **Chinese remainder theorem**. For a pair of coprime natural numbers, `m` and `n`,
   the rings `ZMod (m * n)` and `ZMod m × ZMod n` are isomorphic.
 
@@ -890,9 +903,9 @@ def chineseRemainder {m n : ℕ} (h : m.Coprime n) : ZMod (m * n) ≃+* ZMod m �
           fin_cases x
           simp [to_fun, inv_fun, castHom, Prod.ext_iff, eq_iff_true_of_subsingleton]
     else by
-      haveI : NeZero (m * n) := ⟨hmn0⟩
-      haveI : NeZero m := ⟨left_ne_zero_of_mul hmn0⟩
-      haveI : NeZero n := ⟨right_ne_zero_of_mul hmn0⟩
+      have : NeZero (m * n) := ⟨hmn0⟩
+      have : NeZero m := ⟨left_ne_zero_of_mul hmn0⟩
+      have : NeZero n := ⟨right_ne_zero_of_mul hmn0⟩
       have left_inv : Function.LeftInverse inv_fun to_fun := by
         intro x
         dsimp only [to_fun, inv_fun, ZMod.castHom_apply]
@@ -1099,6 +1112,7 @@ instance subsingleton_ringEquiv [Semiring R] : Subsingleton (ZMod n ≃+* R) :=
     rw [RingEquiv.coe_ringHom_inj_iff]
     apply RingHom.ext_zmod _ _⟩
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem ringHom_map_cast [NonAssocRing R] (f : R →+* ZMod n) (k : ZMod n) : f (cast k) = k := by
   cases n
@@ -1225,7 +1239,7 @@ lemma ZModModule.two_le_char [NeZero n] [Nontrivial G] : 2 ≤ n := by
 
 lemma ZModModule.periodicPts_add_left [NeZero n] (x : G) : periodicPts (x + ·) = .univ :=
   Set.eq_univ_of_forall fun y ↦ ⟨n, NeZero.pos n, by
-    simpa [char_nsmul_eq_zero, IsPeriodicPt] using isFixedPt_id _⟩
+    simpa [char_nsmul_eq_zero, IsPeriodicPt] using! isFixedPt_id _⟩
 
 end general
 

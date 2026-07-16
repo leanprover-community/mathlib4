@@ -286,10 +286,12 @@ theorem wSameSide_smul_vsub_vadd_right {s : AffineSubspace R P} {p₁ p₂ : P} 
     (hp₂ : p₂ ∈ s) {t : R} (ht : 0 ≤ t) : s.WSameSide x (t • (x -ᵥ p₁) +ᵥ p₂) :=
   (wSameSide_smul_vsub_vadd_left x hp₁ hp₂ ht).symm
 
+set_option backward.isDefEq.respectTransparency false in
 theorem wSameSide_lineMap_left {s : AffineSubspace R P} {x : P} (y : P) (h : x ∈ s) {t : R}
     (ht : 0 ≤ t) : s.WSameSide (lineMap x y t) y :=
   wSameSide_smul_vsub_vadd_left y h h ht
 
+set_option backward.isDefEq.respectTransparency false in
 theorem wSameSide_lineMap_right {s : AffineSubspace R P} {x : P} (y : P) (h : x ∈ s) {t : R}
     (ht : 0 ≤ t) : s.WSameSide y (lineMap x y t) :=
   (wSameSide_lineMap_left y h ht).symm
@@ -304,10 +306,12 @@ theorem wOppSide_smul_vsub_vadd_right {s : AffineSubspace R P} {p₁ p₂ : P} (
     (hp₂ : p₂ ∈ s) {t : R} (ht : t ≤ 0) : s.WOppSide x (t • (x -ᵥ p₁) +ᵥ p₂) :=
   (wOppSide_smul_vsub_vadd_left x hp₁ hp₂ ht).symm
 
+set_option backward.isDefEq.respectTransparency false in
 theorem wOppSide_lineMap_left {s : AffineSubspace R P} {x : P} (y : P) (h : x ∈ s) {t : R}
     (ht : t ≤ 0) : s.WOppSide (lineMap x y t) y :=
   wOppSide_smul_vsub_vadd_left y h h ht
 
+set_option backward.isDefEq.respectTransparency false in
 theorem wOppSide_lineMap_right {s : AffineSubspace R P} {x : P} (y : P) (h : x ∈ s) {t : R}
     (ht : t ≤ 0) : s.WOppSide y (lineMap x y t) :=
   (wOppSide_lineMap_left y h ht).symm
@@ -346,6 +350,46 @@ theorem _root_.Wbtw.wOppSide₃₁ {s : AffineSubspace R P} {x y z : P} (h : Wbt
   h.symm.wOppSide₁₃ hy
 
 end StrictOrderedCommRing
+
+section LinearOrderedCommRing
+
+variable [CommRing R] [LinearOrder R] [IsStrictOrderedRing R]
+  [AddCommGroup V] [Module R V] [AddTorsor V P]
+
+/-- If `x` and `y` are displaced from points of `s` by multiples of a common vector whose
+coefficients have nonnegative product, they are weakly on the same side of `s`. -/
+theorem wSameSide_of_vsub_eq_smul {s : AffineSubspace R P} {x y p₁ p₂ : P} {m : V} {c₁ c₂ : R}
+    (hp₁ : p₁ ∈ s) (hp₂ : p₂ ∈ s) (h₁ : x -ᵥ p₁ = c₁ • m) (h₂ : y -ᵥ p₂ = c₂ • m)
+    (hc : 0 ≤ c₁ * c₂) : s.WSameSide x y := by
+  refine ⟨p₁, hp₁, p₂, hp₂, ?_⟩
+  rw [h₁, h₂]
+  exact sameRay_smul_smul_of_mul_nonneg hc
+
+/-- If `x` and `y` are displaced from points of `s` by multiples of a common vector whose
+coefficients have nonpositive product, they are weakly on opposite sides of `s`. -/
+theorem wOppSide_of_vsub_eq_smul {s : AffineSubspace R P} {x y p₁ p₂ : P} {m : V} {c₁ c₂ : R}
+    (hp₁ : p₁ ∈ s) (hp₂ : p₂ ∈ s) (h₁ : x -ᵥ p₁ = c₁ • m) (h₂ : y -ᵥ p₂ = c₂ • m)
+    (hc : c₁ * c₂ ≤ 0) : s.WOppSide x y := by
+  refine ⟨p₁, hp₁, p₂, hp₂, ?_⟩
+  have h₂' : p₂ -ᵥ y = (-c₂) • m := by rw [← neg_vsub_eq_vsub_rev, h₂, neg_smul]
+  rw [h₁, h₂']
+  exact sameRay_smul_smul_of_mul_nonneg (by rw [mul_neg]; exact neg_nonneg.2 hc)
+
+/-- If `x` and `y` lie off `s` and are displaced from points of `s` by multiples of a common
+vector whose coefficients have nonnegative product, they are strictly on the same side of `s`. -/
+theorem sSameSide_of_vsub_eq_smul {s : AffineSubspace R P} {x y p₁ p₂ : P} {m : V} {c₁ c₂ : R}
+    (hp₁ : p₁ ∈ s) (hp₂ : p₂ ∈ s) (h₁ : x -ᵥ p₁ = c₁ • m) (h₂ : y -ᵥ p₂ = c₂ • m)
+    (hc : 0 ≤ c₁ * c₂) (hx : x ∉ s) (hy : y ∉ s) : s.SSameSide x y :=
+  ⟨wSameSide_of_vsub_eq_smul hp₁ hp₂ h₁ h₂ hc, hx, hy⟩
+
+/-- If `x` and `y` lie off `s` and are displaced from points of `s` by multiples of a common
+vector whose coefficients have nonpositive product, they are strictly on opposite sides of `s`. -/
+theorem sOppSide_of_vsub_eq_smul {s : AffineSubspace R P} {x y p₁ p₂ : P} {m : V} {c₁ c₂ : R}
+    (hp₁ : p₁ ∈ s) (hp₂ : p₂ ∈ s) (h₁ : x -ᵥ p₁ = c₁ • m) (h₂ : y -ᵥ p₂ = c₂ • m)
+    (hc : c₁ * c₂ ≤ 0) (hx : x ∉ s) (hy : y ∉ s) : s.SOppSide x y :=
+  ⟨wOppSide_of_vsub_eq_smul hp₁ hp₂ h₁ h₂ hc, hx, hy⟩
+
+end LinearOrderedCommRing
 
 section LinearOrderedField
 
@@ -571,6 +615,7 @@ theorem SOppSide.not_sSameSide {s : AffineSubspace R P} {x y : P} (h : s.SOppSid
     ¬s.SSameSide x y :=
   fun hs => h.not_wSameSide hs.1
 
+set_option backward.isDefEq.respectTransparency false in
 theorem wOppSide_iff_exists_wbtw {s : AffineSubspace R P} {x y : P} :
     s.WOppSide x y ↔ ∃ p ∈ s, Wbtw R x p y := by
   refine ⟨fun h => ?_, fun ⟨p, hp, h⟩ => h.wOppSide₁₃ hp⟩
@@ -625,10 +670,12 @@ theorem sSameSide_smul_vsub_vadd_right {s : AffineSubspace R P} {x p₁ p₂ : P
     (hp₁ : p₁ ∈ s) (hp₂ : p₂ ∈ s) {t : R} (ht : 0 < t) : s.SSameSide x (t • (x -ᵥ p₁) +ᵥ p₂) :=
   (sSameSide_smul_vsub_vadd_left hx hp₁ hp₂ ht).symm
 
+set_option backward.isDefEq.respectTransparency false in
 theorem sSameSide_lineMap_left {s : AffineSubspace R P} {x y : P} (hx : x ∈ s) (hy : y ∉ s) {t : R}
     (ht : 0 < t) : s.SSameSide (lineMap x y t) y :=
   sSameSide_smul_vsub_vadd_left hy hx hx ht
 
+set_option backward.isDefEq.respectTransparency false in
 theorem sSameSide_lineMap_right {s : AffineSubspace R P} {x y : P} (hx : x ∈ s) (hy : y ∉ s) {t : R}
     (ht : 0 < t) : s.SSameSide y (lineMap x y t) :=
   (sSameSide_lineMap_left hx hy ht).symm
@@ -643,10 +690,12 @@ theorem sOppSide_smul_vsub_vadd_right {s : AffineSubspace R P} {x p₁ p₂ : P}
     (hp₁ : p₁ ∈ s) (hp₂ : p₂ ∈ s) {t : R} (ht : t < 0) : s.SOppSide x (t • (x -ᵥ p₁) +ᵥ p₂) :=
   (sOppSide_smul_vsub_vadd_left hx hp₁ hp₂ ht).symm
 
+set_option backward.isDefEq.respectTransparency false in
 theorem sOppSide_lineMap_left {s : AffineSubspace R P} {x y : P} (hx : x ∈ s) (hy : y ∉ s) {t : R}
     (ht : t < 0) : s.SOppSide (lineMap x y t) y :=
   sOppSide_smul_vsub_vadd_left hy hx hx ht
 
+set_option backward.isDefEq.respectTransparency false in
 theorem sOppSide_lineMap_right {s : AffineSubspace R P} {x y : P} (hx : x ∈ s) (hy : y ∉ s) {t : R}
     (ht : t < 0) : s.SOppSide y (lineMap x y t) :=
   (sOppSide_lineMap_left hx hy ht).symm
@@ -740,7 +789,7 @@ variable [NormedAddTorsor V P]
 theorem isConnected_setOf_wSameSide {s : AffineSubspace ℝ P} (x : P) (h : (s : Set P).Nonempty) :
     IsConnected { y | s.WSameSide x y } := by
   obtain ⟨p, hp⟩ := h
-  haveI : Nonempty s := ⟨⟨p, hp⟩⟩
+  have : Nonempty s := ⟨⟨p, hp⟩⟩
   by_cases hx : x ∈ s
   · simp only [wSameSide_of_left_mem, hx]
     have := AddTorsor.connectedSpace V P
@@ -748,7 +797,7 @@ theorem isConnected_setOf_wSameSide {s : AffineSubspace ℝ P} (x : P) (h : (s :
   · rw [setOf_wSameSide_eq_image2 hx hp, ← Set.image_prod]
     refine (isConnected_Ici.prod (isConnected_iff_connectedSpace.2 ?_)).image _
       ((continuous_fst.smul continuous_const).vadd continuous_snd).continuousOn
-    convert AddTorsor.connectedSpace s.direction s
+    convert! AddTorsor.connectedSpace s.direction s
 
 theorem isPreconnected_setOf_wSameSide (s : AffineSubspace ℝ P) (x : P) :
     IsPreconnected { y | s.WSameSide x y } := by
@@ -761,11 +810,11 @@ theorem isPreconnected_setOf_wSameSide (s : AffineSubspace ℝ P) (x : P) :
 theorem isConnected_setOf_sSameSide {s : AffineSubspace ℝ P} {x : P} (hx : x ∉ s)
     (h : (s : Set P).Nonempty) : IsConnected { y | s.SSameSide x y } := by
   obtain ⟨p, hp⟩ := h
-  haveI : Nonempty s := ⟨⟨p, hp⟩⟩
+  have : Nonempty s := ⟨⟨p, hp⟩⟩
   rw [setOf_sSameSide_eq_image2 hx hp, ← Set.image_prod]
   refine (isConnected_Ioi.prod (isConnected_iff_connectedSpace.2 ?_)).image _
     ((continuous_fst.smul continuous_const).vadd continuous_snd).continuousOn
-  convert AddTorsor.connectedSpace s.direction s
+  convert! AddTorsor.connectedSpace s.direction s
 
 theorem isPreconnected_setOf_sSameSide (s : AffineSubspace ℝ P) (x : P) :
     IsPreconnected { y | s.SSameSide x y } := by
@@ -781,7 +830,7 @@ theorem isPreconnected_setOf_sSameSide (s : AffineSubspace ℝ P) (x : P) :
 theorem isConnected_setOf_wOppSide {s : AffineSubspace ℝ P} (x : P) (h : (s : Set P).Nonempty) :
     IsConnected { y | s.WOppSide x y } := by
   obtain ⟨p, hp⟩ := h
-  haveI : Nonempty s := ⟨⟨p, hp⟩⟩
+  have : Nonempty s := ⟨⟨p, hp⟩⟩
   by_cases hx : x ∈ s
   · simp only [wOppSide_of_left_mem, hx]
     have := AddTorsor.connectedSpace V P
@@ -789,7 +838,7 @@ theorem isConnected_setOf_wOppSide {s : AffineSubspace ℝ P} (x : P) (h : (s : 
   · rw [setOf_wOppSide_eq_image2 hx hp, ← Set.image_prod]
     refine (isConnected_Iic.prod (isConnected_iff_connectedSpace.2 ?_)).image _
       ((continuous_fst.smul continuous_const).vadd continuous_snd).continuousOn
-    convert AddTorsor.connectedSpace s.direction s
+    convert! AddTorsor.connectedSpace s.direction s
 
 theorem isPreconnected_setOf_wOppSide (s : AffineSubspace ℝ P) (x : P) :
     IsPreconnected { y | s.WOppSide x y } := by
@@ -802,11 +851,11 @@ theorem isPreconnected_setOf_wOppSide (s : AffineSubspace ℝ P) (x : P) :
 theorem isConnected_setOf_sOppSide {s : AffineSubspace ℝ P} {x : P} (hx : x ∉ s)
     (h : (s : Set P).Nonempty) : IsConnected { y | s.SOppSide x y } := by
   obtain ⟨p, hp⟩ := h
-  haveI : Nonempty s := ⟨⟨p, hp⟩⟩
+  have : Nonempty s := ⟨⟨p, hp⟩⟩
   rw [setOf_sOppSide_eq_image2 hx hp, ← Set.image_prod]
   refine (isConnected_Iio.prod (isConnected_iff_connectedSpace.2 ?_)).image _
     ((continuous_fst.smul continuous_const).vadd continuous_snd).continuousOn
-  convert AddTorsor.connectedSpace s.direction s
+  convert! AddTorsor.connectedSpace s.direction s
 
 theorem isPreconnected_setOf_sOppSide (s : AffineSubspace ℝ P) (x : P) :
     IsPreconnected { y | s.SOppSide x y } := by
@@ -830,6 +879,7 @@ open AffineSubspace
 variable [Field R] [LinearOrder R] [IsStrictOrderedRing R] [AddCommGroup V] [Module R V]
 variable [AddTorsor V P] {n : ℕ} [NeZero n] (s : Simplex R P n)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma sSameSide_affineSpan_faceOpposite_of_sign_eq {w₁ w₂ : Fin (n + 1) → R} (hw₁ : ∑ j, w₁ j = 1)
     (hw₂ : ∑ j, w₂ j = 1) {i : Fin (n + 1)} (hs : SignType.sign (w₁ i) = SignType.sign (w₂ i))
     (h0 : w₁ i ≠ 0) :
@@ -843,10 +893,10 @@ lemma sSameSide_affineSpan_faceOpposite_of_sign_eq {w₁ w₂ : Fin (n + 1) → 
   have hj' : s.points j ∈ affineSpan R (Set.range (s.faceOpposite i).points) := by
     simpa using hj
   refine (wSameSide_iff_exists_left hj').2 (.inr ?_)
-  rw [← Finset.univ.affineCombination_affineCombinationSingleWeights R s.points
+  rw [← Finset.univ.affineCombination_piSingle R s.points
     (Finset.mem_univ j), Finset.affineCombination_vsub]
   let w₃ : Fin (n + 1) → R :=
-    w₂ - w₂ i • (w₁ i)⁻¹ • (w₁ - Finset.affineCombinationSingleWeights R j)
+    w₂ - w₂ i • (w₁ i)⁻¹ • (w₁ - Pi.single j 1)
   have hw₃1 : ∑ k, w₃ k = 1 := by simp [w₃, hw₂, ← Finset.mul_sum, hw₁]
   have hw₃i : w₃ i = 0 := by simp [w₃, hj.symm, h0]
   refine ⟨Finset.univ.affineCombination R s.points w₃,
@@ -860,6 +910,7 @@ lemma sSameSide_affineSpan_faceOpposite_of_sign_eq {w₁ w₂ : Fin (n + 1) → 
   · rw [sign_pos h, eq_comm, sign_eq_one_iff] at hs
     positivity
 
+set_option backward.isDefEq.respectTransparency false in
 lemma sOppSide_affineSpan_faceOpposite_of_pos_of_neg {w₁ w₂ : Fin (n + 1) → R}
     (hw₁ : ∑ j, w₁ j = 1) (hw₂ : ∑ j, w₂ j = 1) {i : Fin (n + 1)} (hs₁ : 0 < w₁ i)
     (hs₂ : w₂ i < 0) :
@@ -983,9 +1034,8 @@ lemma sSameSide_affineSpan_faceOpposite_point_left_iff {w : Fin (n + 1) → R}
     (hw : ∑ j, w j = 1) {i : Fin (n + 1)} :
     (affineSpan R (Set.range (s.faceOpposite i).points)).SSameSide (s.points i)
       (Finset.univ.affineCombination R s.points w) ↔ 0 < w i := by
-  rw [← Finset.univ.affineCombination_affineCombinationSingleWeights R s.points (Finset.mem_univ i),
-    s.sSameSide_affineSpan_faceOpposite_iff
-      (Finset.univ.sum_affineCombinationSingleWeights _ (Finset.mem_univ _)) hw, eq_comm]
+  rw [← Finset.univ.affineCombination_piSingle R s.points (Finset.mem_univ i),
+    s.sSameSide_affineSpan_faceOpposite_iff (Fintype.sum_pi_single' _ _) hw, eq_comm]
   simp [sign_eq_one_iff]
 
 lemma sSameSide_affineSpan_faceOpposite_point_right_iff {w : Fin (n + 1) → R}
@@ -998,9 +1048,8 @@ lemma sOppSide_affineSpan_faceOpposite_point_left_iff {w : Fin (n + 1) → R}
     (hw : ∑ j, w j = 1) {i : Fin (n + 1)} :
     (affineSpan R (Set.range (s.faceOpposite i).points)).SOppSide (s.points i)
       (Finset.univ.affineCombination R s.points w) ↔ w i < 0 := by
-  rw [← Finset.univ.affineCombination_affineCombinationSingleWeights R s.points (Finset.mem_univ i),
-    s.sOppSide_affineSpan_faceOpposite_iff
-      (Finset.univ.sum_affineCombinationSingleWeights _ (Finset.mem_univ _)) hw, eq_comm,
+  rw [← Finset.univ.affineCombination_piSingle R s.points (Finset.mem_univ i),
+    s.sOppSide_affineSpan_faceOpposite_iff (Fintype.sum_pi_single' _ _) hw, eq_comm,
     neg_eq_iff_eq_neg]
   simp [sign_eq_neg_one_iff]
 
@@ -1014,9 +1063,8 @@ lemma wSameSide_affineSpan_faceOpposite_point_left_iff {w : Fin (n + 1) → R}
     (hw : ∑ j, w j = 1) {i : Fin (n + 1)} :
     (affineSpan R (Set.range (s.faceOpposite i).points)).WSameSide (s.points i)
       (Finset.univ.affineCombination R s.points w) ↔ 0 ≤ w i := by
-  rw [← Finset.univ.affineCombination_affineCombinationSingleWeights R s.points (Finset.mem_univ i),
-    s.wSameSide_affineSpan_faceOpposite_iff
-      (Finset.univ.sum_affineCombinationSingleWeights _ (Finset.mem_univ _)) hw, eq_comm]
+  rw [← Finset.univ.affineCombination_piSingle R s.points (Finset.mem_univ i),
+    s.wSameSide_affineSpan_faceOpposite_iff (Fintype.sum_pi_single' _ _) hw, eq_comm]
   simp [sign_eq_one_iff, le_iff_eq_or_lt', or_comm]
 
 lemma wSameSide_affineSpan_faceOpposite_point_right_iff {w : Fin (n + 1) → R}
@@ -1029,9 +1077,8 @@ lemma wOppSide_affineSpan_faceOpposite_point_left_iff {w : Fin (n + 1) → R}
     (hw : ∑ j, w j = 1) {i : Fin (n + 1)} :
     (affineSpan R (Set.range (s.faceOpposite i).points)).WOppSide (s.points i)
       (Finset.univ.affineCombination R s.points w) ↔ w i ≤ 0 := by
-  rw [← Finset.univ.affineCombination_affineCombinationSingleWeights R s.points (Finset.mem_univ i),
-    s.wOppSide_affineSpan_faceOpposite_iff
-      (Finset.univ.sum_affineCombinationSingleWeights _ (Finset.mem_univ _)) hw, eq_comm,
+  rw [← Finset.univ.affineCombination_piSingle R s.points (Finset.mem_univ i),
+    s.wOppSide_affineSpan_faceOpposite_iff (Fintype.sum_pi_single' _ _) hw, eq_comm,
     neg_eq_iff_eq_neg]
   simp [sign_eq_neg_one_iff, le_iff_eq_or_lt, or_comm]
 

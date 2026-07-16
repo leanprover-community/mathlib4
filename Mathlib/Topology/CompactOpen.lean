@@ -130,6 +130,7 @@ lemma _root_.Filter.HasBasis.nhds_continuousMapConst {ι : Type*} {c : Y} {p : �
 section Functorial
 
 /-- `C(X, ·)` is a functor. -/
+@[fun_prop]
 theorem continuous_postcomp (g : C(Y, Z)) : Continuous (ContinuousMap.comp g : C(X, Y) → C(X, Z)) :=
   continuous_compactOpen.2 fun _K hK _U hU ↦ isOpen_setOf_mapsTo hK (hU.preimage g.2)
 
@@ -157,7 +158,7 @@ theorem isEmbedding_postcomp (g : C(Y, Z)) (hg : IsEmbedding g) :
 @[continuity, fun_prop]
 theorem continuous_precomp (f : C(X, Y)) : Continuous (fun g => g.comp f : C(Y, Z) → C(X, Z)) :=
   continuous_compactOpen.2 fun K hK U hU ↦ by
-    simpa only [mapsTo_image_iff] using isOpen_setOf_mapsTo (hK.image f.2) hU
+    simpa only [mapsTo_image_iff] using! isOpen_setOf_mapsTo (hK.image f.2) hU
 
 variable (Z) in
 /-- Precomposition by a continuous map is itself a continuous map between spaces of continuous maps.
@@ -244,7 +245,7 @@ instance [LocallyCompactPair X Y] : ContinuousEval C(X, Y) X Y where
 
 instance : ContinuousEvalConst C(X, Y) X Y where
   continuous_eval_const x :=
-    continuous_def.2 fun U hU ↦ by simpa using isOpen_setOf_mapsTo isCompact_singleton hU
+    continuous_def.2 fun U hU ↦ by simpa using! isOpen_setOf_mapsTo isCompact_singleton hU
 
 lemma isClosed_setOf_mapsTo {t : Set Y} (ht : IsClosed t) (s : Set X) :
     IsClosed {f : C(X, Y) | MapsTo f s t} :=
@@ -269,7 +270,7 @@ instance [T0Space Y] : T0Space C(X, Y) :=
   t0Space_of_injective_of_continuous DFunLike.coe_injective continuous_coeFun
 
 instance [R0Space Y] : R0Space C(X, Y) where
-  specializes_symmetric f g h := by
+  specializes_symm.symm f g h := by
     rw [← specializes_coe] at h ⊢
     exact h.symm
 
@@ -338,7 +339,7 @@ theorem compactOpen_eq_iInf_induced :
   refine le_antisymm (le_iInf₂ fun s _ ↦ compactOpen_le_induced s) ?_
   refine le_generateFrom <| forall_mem_image2.2 fun K (hK : IsCompact K) U hU ↦ ?_
   refine TopologicalSpace.le_def.1 (iInf₂_le K hK) _ ?_
-  convert isOpen_induced (isOpen_setOf_mapsTo (isCompact_iff_isCompact_univ.1 hK) hU)
+  convert! isOpen_induced (isOpen_setOf_mapsTo (isCompact_iff_isCompact_univ.1 hK) hU)
   simp [Subtype.forall, MapsTo]
 
 theorem nhds_compactOpen_eq_iInf_nhds_induced (f : C(X, Y)) :
@@ -357,6 +358,7 @@ theorem tendsto_compactOpen_iff_forall {ι : Type*} {l : Filter ι} (F : ι → 
   rw [compactOpen_eq_iInf_induced]
   simp [nhds_iInf, nhds_induced, Filter.tendsto_comap_iff, Function.comp_def]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A family `F` of functions in `C(X, Y)` converges in the compact-open topology, if and only if
 it converges in the compact-open topology on each compact subset of `X`. -/
 theorem exists_tendsto_compactOpen_iff_forall [WeaklyLocallyCompactSpace X] [T2Space Y]
@@ -374,8 +376,8 @@ theorem exists_tendsto_compactOpen_iff_forall [WeaklyLocallyCompactSpace X] [T2S
       ∀ (s₁) (hs₁ : IsCompact s₁) (s₂) (hs₂ : IsCompact s₂) (x : X) (hxs₁ : x ∈ s₁) (hxs₂ : x ∈ s₂),
         f s₁ hs₁ ⟨x, hxs₁⟩ = f s₂ hs₂ ⟨x, hxs₂⟩ := by
       rintro s₁ hs₁ s₂ hs₂ x hxs₁ hxs₂
-      haveI := isCompact_iff_compactSpace.mp hs₁
-      haveI := isCompact_iff_compactSpace.mp hs₂
+      have := isCompact_iff_compactSpace.mp hs₁
+      have := isCompact_iff_compactSpace.mp hs₂
       have h₁ := (continuous_eval_const (⟨x, hxs₁⟩ : s₁)).continuousAt.tendsto.comp (hf s₁ hs₁)
       have h₂ := (continuous_eval_const (⟨x, hxs₂⟩ : s₂)).continuousAt.tendsto.comp (hf s₂ hs₂)
       exact tendsto_nhds_unique h₁ h₂
@@ -454,6 +456,7 @@ function spaces, see `Homeomorph.curry`. -/
 def uncurry [LocallyCompactSpace Y] (f : C(X, C(Y, Z))) : C(X × Y, Z) :=
   ⟨_, continuous_uncurry_of_continuous f⟩
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The uncurrying process is a continuous map between function spaces. -/
 theorem continuous_uncurry [LocallyCompactSpace X] [LocallyCompactSpace Y] :
     Continuous (uncurry : C(X, C(Y, Z)) → C(X × Y, Z)) := by
@@ -470,6 +473,7 @@ def const' : C(Y, C(X, Y)) :=
 theorem coe_const' : (const' : Y → C(X, Y)) = const X :=
   rfl
 
+@[fun_prop]
 theorem continuous_const' : Continuous (const X : Y → C(X, Y)) :=
   const'.continuous
 

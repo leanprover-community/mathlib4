@@ -36,7 +36,7 @@ assert_not_exists MonoidWithZero
 /-! ### Monoids and submonoids -/
 
 
-open Pointwise
+open scoped Pointwise
 
 variable {M N : Type*} [Monoid M]
 
@@ -75,7 +75,7 @@ theorem Submonoid.fg_iff_add_fg (P : Submonoid M) : P.FG ↔ P.toAddSubmonoid.FG
 
 theorem AddSubmonoid.fg_iff_mul_fg {M : Type*} [AddMonoid M] (P : AddSubmonoid M) :
     P.FG ↔ P.toSubmonoid.FG := by
-  convert (Submonoid.fg_iff_add_fg (toSubmonoid P)).symm
+  convert! (Submonoid.fg_iff_add_fg (toSubmonoid P)).symm
 
 @[to_additive]
 theorem Submonoid.FG.bot : FG (⊥ : Submonoid M) :=
@@ -126,7 +126,7 @@ variable {ι : Type*} [Finite ι] {M : ι → Type*} [∀ i, Monoid (M i)] {P : 
 @[to_additive]
 theorem Submonoid.iSup_map_mulSingle [DecidableEq ι] :
     ⨆ i, map (MonoidHom.mulSingle M i) (P i) = pi Set.univ P := by
-  haveI := Fintype.ofFinite ι
+  have := Fintype.ofFinite ι
   refine iSup_map_mulSingle_le.antisymm fun x hx => ?_
   rw [← Finset.noncommProd_mulSingle x]
   exact noncommProd_mem _ _ _ _ fun i _ => mem_iSup_of_mem _ (mem_map_of_mem _ (hx i trivial))
@@ -136,7 +136,7 @@ theorem Submonoid.iSup_map_mulSingle [DecidableEq ι] :
 /-- Finite product of finitely generated additive submonoids is finitely generated. -/]
 theorem Submonoid.FG.pi (hP : ∀ i, (P i).FG) : (pi Set.univ P).FG := by
   classical
-  haveI := Fintype.ofFinite ι
+  have := Fintype.ofFinite ι
   choose s hs using hP
   refine ⟨Finset.univ.biUnion fun i => (s i).image (MonoidHom.mulSingle M i), ?_⟩
   simp_rw [Finset.coe_biUnion, Finset.coe_univ, Set.biUnion_univ, closure_iUnion, Finset.coe_image,

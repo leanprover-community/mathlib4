@@ -113,7 +113,7 @@ instance instAdd : Add 𝓜(𝕜, A) where
     { toProd := a.toProd + b.toProd
       central := fun x y =>
         show (a.snd + b.snd) x * y = x * (a.fst + b.fst) y by
-          simp only [ContinuousLinearMap.add_apply, mul_add, add_mul, central] }
+          simp only [add_apply, mul_add, add_mul, central] }
 
 instance instZero : Zero 𝓜(𝕜, A) where
   zero :=
@@ -132,7 +132,7 @@ instance instSub : Sub 𝓜(𝕜, A) where
     { toProd := a.toProd - b.toProd
       central := fun x y =>
         show (a.snd - b.snd) x * y = x * (a.fst - b.fst) y by
-          simp only [ContinuousLinearMap.sub_apply, _root_.sub_mul, _root_.mul_sub, central] }
+          simp only [sub_apply, _root_.sub_mul, _root_.mul_sub, central] }
 
 section Scalars
 
@@ -144,7 +144,7 @@ instance instSMul : SMul S 𝓜(𝕜, A) where
     { toProd := s • a.toProd
       central := fun x y =>
         show (s • a.snd) x * y = x * (s • a.fst) y by
-          simp only [ContinuousLinearMap.smul_apply, mul_smul_comm, smul_mul_assoc, central] }
+          simp only [smul_apply, mul_smul_comm, smul_mul_assoc, central] }
 
 @[simp]
 theorem smul_toProd (s : S) (a : 𝓜(𝕜, A)) : (s • a).toProd = s • a.toProd :=
@@ -184,13 +184,15 @@ instance instNatCast : NatCast 𝓜(𝕜, A) where
   natCast n :=
     ⟨n, fun x y => by
       rw [Prod.snd_natCast, Prod.fst_natCast]
-      simp only [← Nat.smul_one_eq_cast, smul_apply, one_apply, mul_smul_comm, smul_mul_assoc]⟩
+      simp only [← Nat.smul_one_eq_cast, smul_apply, one_apply_eq_self, mul_smul_comm,
+        smul_mul_assoc]⟩
 
 instance instIntCast : IntCast 𝓜(𝕜, A) where
   intCast n :=
     ⟨n, fun x y => by
       rw [Prod.snd_intCast, Prod.fst_intCast]
-      simp only [← Int.smul_one_eq_cast, smul_apply, one_apply, mul_smul_comm, smul_mul_assoc]⟩
+      simp only [← Int.smul_one_eq_cast, smul_apply, one_apply_eq_self, mul_smul_comm,
+        smul_mul_assoc]⟩
 
 instance instPow : Pow 𝓜(𝕜, A) ℕ where
   pow a n :=
@@ -199,7 +201,7 @@ instance instPow : Pow 𝓜(𝕜, A) ℕ where
       | zero => rfl
       | succ k hk =>
         rw [Prod.pow_snd, Prod.pow_fst] at hk ⊢
-        rw [pow_succ' a.snd, mul_apply, a.central, hk, pow_succ a.fst, mul_apply]⟩
+        rw [pow_succ' a.snd, mul_apply_eq_comp, a.central, hk, pow_succ a.fst, mul_apply_eq_comp]⟩
 
 instance instInhabited : Inhabited 𝓜(𝕜, A) :=
   ⟨0⟩
@@ -347,8 +349,8 @@ instance instAlgebra : Algebra 𝕜 𝓜(𝕜, A) where
   { toFun k :=
       { toProd := algebraMap 𝕜 ((A →L[𝕜] A) × (A →L[𝕜] A)) k
         central := fun x y => by
-          simp_rw [Prod.algebraMap_apply, Algebra.algebraMap_eq_smul_one, smul_apply, one_apply,
-            mul_smul_comm, smul_mul_assoc] }
+          simp_rw [Prod.algebraMap_apply, Algebra.algebraMap_eq_smul_one, smul_apply,
+            one_apply_eq_self, mul_smul_comm, smul_mul_assoc] }
     map_one' := ext (𝕜 := 𝕜) (A := A) _ _ <| map_one <| algebraMap 𝕜 ((A →L[𝕜] A) × (A →L[𝕜] A))
     map_mul' _ _ :=
       ext (𝕜 := 𝕜) (A := A) _ _ <|
@@ -392,7 +394,8 @@ instance instStar : Star 𝓜(𝕜, A) where
         (((starₗᵢ 𝕜 : A ≃ₗᵢ⋆[𝕜] A) : A →L⋆[𝕜] A).comp a.fst).comp
           ((starₗᵢ 𝕜 : A ≃ₗᵢ⋆[𝕜] A) : A →L⋆[𝕜] A)
       central := fun x y => by
-        simpa only [star_mul, star_star] using (congr_arg star (a.central (star y) (star x))).symm }
+        simpa only [star_mul, star_star]
+          using! (congr_arg star (a.central (star y) (star x))).symm }
 
 @[simp]
 theorem star_fst (a : 𝓜(𝕜, A)) (b : A) : (star a).fst b = star (a.snd (star b)) :=
@@ -489,7 +492,7 @@ that `𝓜(𝕜, A)` is also a C⋆-algebra. Moreover, in this case, for `a : �
 `DoubleCentralizer.toProdMulOppositeHom : 𝓜(𝕜, A) →+* (A →L[𝕜] A) × (A →L[𝕜] A)ᵐᵒᵖ`. -/
 noncomputable instance : NormedRing 𝓜(𝕜, A) :=
   NormedRing.induced _ _ (toProdMulOppositeHom : 𝓜(𝕜, A) →+* (A →L[𝕜] A) × (A →L[𝕜] A)ᵐᵒᵖ)
-    (by simpa using toProdMulOpposite_injective)
+    (by simpa using! toProdMulOpposite_injective)
 
 -- even though the definition is actually in terms of `DoubleCentralizer.toProdMulOpposite`, we
 -- choose to see through that here to avoid `MulOpposite.op` appearing.
@@ -533,7 +536,7 @@ theorem norm_fst_eq_snd (a : 𝓜(𝕜, A)) : ‖a.fst‖ = ‖a.snd‖ := by
     have h1 b : C * ‖f b‖₊ * ‖b‖₊ ≤ C * ‖f‖₊ * ‖b‖₊ ^ 2 := by grw [f.le_opNNNorm b]; ring_nf; rfl
     have := NNReal.div_le_of_le_mul <| f.opNNNorm_le_bound _ <| by
       simpa only [sqrt_sq, sqrt_mul] using fun b ↦ sqrt_le_sqrt.2 <| (h b).trans (h1 b)
-    convert NNReal.rpow_le_rpow this two_pos.le
+    convert! NNReal.rpow_le_rpow this two_pos.le
     · simp only [NNReal.rpow_two, div_pow, sq_sqrt]
       simp only [sq, mul_self_div_self]
     · simp only [NNReal.rpow_two, sq_sqrt]
@@ -610,7 +613,7 @@ instance instCStarRing : CStarRing 𝓜(𝕜, A) where
               (a.fst.le_opNorm_of_le hy))
           _ ≤ ‖a‖₊ * ‖a‖₊ := by simp only [mul_one, nnnorm_fst, le_rfl]
       rw [← nnnorm_snd]
-      simp only [mul_snd, ← sSup_unitClosedBall_eq_nnnorm, star_snd, mul_apply]
+      simp only [mul_snd, ← sSup_unitClosedBall_eq_nnnorm, star_snd, mul_apply_eq_comp]
       simp only [← @opNNNorm_mul_apply 𝕜 _ A]
       simp only [← sSup_unitClosedBall_eq_nnnorm, mul_apply']
       refine csSup_eq_of_forall_le_of_forall_lt_exists_gt (hball.image _) ?_ fun r hr => ?_
@@ -628,8 +631,8 @@ instance instCStarRing : CStarRing 𝓜(𝕜, A) where
         · refine ⟨‖a‖₊ * ‖a‖₊, ?_⟩
           rintro - ⟨y, hy, rfl⟩
           exact key (star x) y ((nnnorm_star x).trans_le hx') (mem_closedBall_zero_iff.1 hy)
-        · simpa only [a.central, star_star, CStarRing.nnnorm_star_mul_self, NNReal.sq_sqrt, ← sq]
-            using pow_lt_pow_left₀ hxr zero_le' two_ne_zero
+        · simpa [a.central, CStarRing.nnnorm_star_mul_self, ← sq]
+            using pow_lt_pow_left₀ hxr zero_le two_ne_zero
 
 end DenselyNormed
 
