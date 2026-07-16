@@ -504,9 +504,7 @@ lemma summable_descFactorial_mul_geometric_of_norm_lt_one (j : ℕ) {r : R} (hr 
     Summable (fun n : ℕ ↦ n.descFactorial j * r ^ n) :=
   (hasSum_descFactorial_mul_geometric_of_norm_lt_one' j hr).summable
 
-/-- If `‖r‖ < 1`, then `∑' n : ℕ, n.descFactorial j * r ^ n = j ! * r ^ j / (1 - r) ^ (j + 1)`.
-
-`HasSum` version. -/
+/-- If `‖r‖ < 1`, then `∑' n : ℕ, n.descFactorial j * r ^ n = j ! * r ^ j / (1 - r) ^ (j + 1)`. -/
 theorem hasSum_descFactorial_mul_geometric_of_norm_lt_one (j : ℕ) {r : 𝕜} (hr : ‖r‖ < 1) :
     HasSum (fun n : ℕ ↦ n.descFactorial j * r ^ n) (j.factorial * r ^ j / (1 - r) ^ (j + 1)) := by
   simpa [div_eq_mul_inv] using hasSum_descFactorial_mul_geometric_of_norm_lt_one' j hr
@@ -548,9 +546,7 @@ theorem summable_pow_mul_geometric_of_norm_lt_one (k : ℕ) {r : R} (hr : ‖r�
 
 /-- If `‖r‖ < 1`, then `∑' n : ℕ, n ^ k * r ^ n` is given by the finite sum
 `∑ j ∈ range (k + 1), S(k, j) * j ! * r ^ j / (1 - r) ^ (j + 1)`, where `S(k, j)` denotes the
-Stirling numbers of the second kind.
-
-`HasSum` version. -/
+Stirling numbers of the second kind. -/
 theorem hasSum_pow_mul_geometric_of_norm_lt_one (k : ℕ) {r : 𝕜} (hr : ‖r‖ < 1) :
     HasSum (fun n : ℕ ↦ n ^ k * r ^ n)
       (∑ j ∈ Finset.range (k + 1),
@@ -581,9 +577,7 @@ theorem tsum_coe_mul_geometric_of_norm_lt_one' {r : 𝕜} (hr : ‖r‖ < 1) :
     (∑' n : ℕ, n * r ^ n) = r * (1 - r)⁻¹ʳ ^ 2 :=
   (hasSum_coe_mul_geometric_of_norm_lt_one' hr).tsum_eq
 
-/-- If `‖r‖ < 1`, then `∑' n : ℕ, n * r ^ n = r / (1 - r) ^ 2`.
-
-`HasSum` version. -/
+/-- If `‖r‖ < 1`, then `∑' n : ℕ, n * r ^ n = r / (1 - r) ^ 2`. -/
 theorem hasSum_coe_mul_geometric_of_norm_lt_one {r : 𝕜} (hr : ‖r‖ < 1) :
     HasSum (fun n ↦ n * r ^ n : ℕ → 𝕜) (r / (1 - r) ^ 2) := by
   simpa [div_eq_mul_inv] using hasSum_coe_mul_geometric_of_norm_lt_one' hr
@@ -617,9 +611,7 @@ theorem tsum_sq_mul_geometric_of_norm_lt_one' {r : R} (h : ‖r‖ < 1) :
     ∑' n : ℕ, n ^ 2 * r ^ n = r * (1 + r) * ((1 - r)⁻¹ʳ) ^ 3 :=
   (hasSum_sq_mul_geometric_of_norm_lt_one' h).tsum_eq
 
-/-- If `‖r‖ < 1`, then `∑' n : ℕ, n ^ 2 * r ^ n = r * (1 + r) / (1 - r) ^ 3`.
-
-`HasSum` version. -/
+/-- If `‖r‖ < 1`, then `∑' n : ℕ, n ^ 2 * r ^ n = r * (1 + r) / (1 - r) ^ 3`. -/
 theorem hasSum_sq_mul_geometric_of_norm_lt_one {r : 𝕜} (hr : ‖r‖ < 1) :
     HasSum (fun n : ℕ ↦ n ^ 2 * r ^ n) (r * (1 + r) / (1 - r) ^ 3) := by
   simpa [div_eq_mul_inv] using hasSum_sq_mul_geometric_of_norm_lt_one' hr
