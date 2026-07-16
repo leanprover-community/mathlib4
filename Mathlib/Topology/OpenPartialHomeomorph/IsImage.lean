@@ -358,6 +358,21 @@ theorem Set.EqOn.restr_eqOn_source {e e' : OpenPartialHomeomorph X Y}
   · rw [e.restr_source' _ e'.open_source]
     refine (EqOn.trans ?_ h).trans ?_ <;> simp only [mfld_simps, eqOn_refl]
 
+theorem restr_eqOnSource_of_eqOn {e e' : OpenPartialHomeomorph X Y} {s : Set X}
+    (heq : (interior s).EqOn e e') (hsub : e.source ∩ interior s ⊆ e'.source) :
+    e.restr s ≈ e'.restr (e.source ∩ interior s) := by
+  refine ⟨?_, ?_⟩
+  · rw [e.restr_source s, e'.restr_source' _ (e.open_source.inter isOpen_interior),
+      inter_eq_right.mpr hsub]
+  · exact fun z hz ↦ heq (e.restr_source s ▸ hz).2
+
+theorem restr_eqOnSource_of_eqOn' {e e' : OpenPartialHomeomorph X Y} {s : Set X} (hs : IsOpen s)
+    (heq : s.EqOn e e') (hsub : e.source ∩ s ⊆ e'.source) :
+    e.restr s ≈ e'.restr (e.source ∩ s) := by
+  nth_rw 2 [← hs.interior_eq]
+  rw [← hs.interior_eq] at heq hsub
+  apply restr_eqOnSource_of_eqOn heq hsub
+
 theorem eq_of_eqOnSource_univ {e e' : OpenPartialHomeomorph X Y} (h : e ≈ e') (s : e.source = univ)
     (t : e.target = univ) : e = e' :=
   toPartialEquiv_injective <| PartialEquiv.eq_of_eqOnSource_univ _ _ h s t
