@@ -79,7 +79,7 @@ This is in a separate file from `Mathlib/Tactic/Attr/Register.lean` because attr
 new file to become functional.
 -/
 
-namespace Tactic.MfldSetTac
+namespace Mathlib.Tactic.MfldSetTac
 
 /-- A very basic tactic to show that sets showing up in manifolds coincide or are included
 in one another. -/
@@ -103,7 +103,7 @@ elab (name := mfldSetTac) "mfld_set_tac" : tactic => withMainContext do
 
 attribute [mfld_simps] and_true eq_self_iff_true Function.comp_apply
 
-end Tactic.MfldSetTac
+end Mathlib.Tactic.MfldSetTac
 
 open Function Set
 

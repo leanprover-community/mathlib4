@@ -171,7 +171,7 @@ variable [TopologicalSpace α] [T3Space α] [NonUnitalNonAssocSemiring α] [IsTo
 theorem HasSum.mul_eq (hf : HasSum f s) (hg : HasSum g t)
     (hfg : HasSum (fun x : ι × κ ↦ f x.1 * g x.2) u) : s * t = u :=
   have key₁ : HasSum (fun i ↦ f i * t) (s * t) := hf.mul_right t
-  have this : ∀ i : ι, HasSum (fun c : κ ↦ f i * g c) (f i * t) := fun i ↦ hg.mul_left (f i)
+  have : ∀ i : ι, HasSum (fun c : κ ↦ f i * g c) (f i * t) := fun i ↦ hg.mul_left (f i)
   have key₂ : HasSum (fun i ↦ f i * t) u := HasSum.prod_fiberwise hfg this
   key₁.unique key₂
 

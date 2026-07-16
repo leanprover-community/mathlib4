@@ -156,6 +156,7 @@ theorem genericPoint_specializes [QuasiSober α] [IrreducibleSpace α] (x : α) 
 
 attribute [local instance] specializationOrder
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The closed irreducible subsets of a sober space bijects with the points of the space. -/
 noncomputable def irreducibleSetEquivPoints [QuasiSober α] [T0Space α] :
     TopologicalSpace.IrreducibleCloseds α ≃o α where
