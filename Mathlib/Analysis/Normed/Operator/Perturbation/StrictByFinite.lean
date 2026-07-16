@@ -286,16 +286,17 @@ end FiniteCodimSubspace
 
 section FiniteRank
 
-/-- If two continuous linear maps `u, v : E → F` agree on a closed subspace `A` of `E` with finite
+/-- If two continuous linear maps `u, v : E → F` agree on a subspace `A` of `E` with finite
 codimension, then `u` is strict with closed range if and only if `v` is strict with closed range. -/
 public theorem ContinuousLinearMap.isStrictMap_isClosed_range_iff_of_eqOn [T2Space F]
-    (u v : E →L[𝕜] F) (A : Submodule 𝕜 E) (A_closed : IsClosed (A : Set E))
-    [A.CoFG] (h_eqOn : EqOn u v A) :
+    (u v : E →L[𝕜] F) (A : Submodule 𝕜 E) [A.CoFG] (h_eqOn : EqOn u v A) :
     (IsStrictMap u ∧ IsClosed (u.range : Set F)) ↔
       (IsStrictMap v ∧ IsClosed (v.range : Set F)) := by
-  simp_rw [u.isStrictMap_isClosed_range_iff_restrict A,
-    v.isStrictMap_isClosed_range_iff_restrict A, LinearMap.coe_range, ContinuousLinearMap.coe_coe,
-    ContinuousLinearMap.coe_domRestrict, restrict_eq_restrict_iff.mpr h_eqOn]
+  replace h_eqOn : EqOn u v A.topologicalClosure := h_eqOn.closure (by fun_prop) (by fun_prop)
+  simp_rw [u.isStrictMap_isClosed_range_iff_restrict _ A.isClosed_topologicalClosure,
+    v.isStrictMap_isClosed_range_iff_restrict _ A.isClosed_topologicalClosure,
+    LinearMap.coe_range, ContinuousLinearMap.coe_coe, ContinuousLinearMap.coe_domRestrict,
+    restrict_eq_restrict_iff.mpr h_eqOn]
 
 open LinearMap.FiniteRangeSetoid
 
@@ -309,9 +310,8 @@ public theorem ContinuousLinearMap.isStrictMap_isClosed_range_iff_of_finiteRange
     (IsStrictMap u ∧ IsClosed (u.range : Set F)) ↔
       (IsStrictMap v ∧ IsClosed (v.range : Set F)) := by
   let A := u.toLinearMap.eqLocus v.toLinearMap
-  have A_closed : IsClosed (A : Set E) := u.isClosed_eqLocus v
   have : A.CoFG := equiv_iff_eqLocus_coFG.mp h_equiv
-  exact ContinuousLinearMap.isStrictMap_isClosed_range_iff_of_eqOn u v A A_closed
+  exact ContinuousLinearMap.isStrictMap_isClosed_range_iff_of_eqOn u v A
     LinearMap.eqOn_eqLocus
 
 end FiniteRank
