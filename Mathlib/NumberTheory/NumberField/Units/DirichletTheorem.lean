@@ -5,12 +5,14 @@ Authors: Xavier Roblot
 -/
 module
 
+public import Mathlib.LinearAlgebra.Dimension.Torsion.Basic
 public import Mathlib.LinearAlgebra.Matrix.Gershgorin
 public import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.ConvexBody
 public import Mathlib.NumberTheory.NumberField.Units.Basic
 
 /-!
 # Dirichlet theorem on the group of units of a number field
+
 This file is devoted to the proof of Dirichlet unit theorem that states that the group of
 units `(𝓞 K)ˣ` of units of the ring of integers `𝓞 K` of a number field `K` modulo its torsion
 subgroup is a free `ℤ`-module of rank `card (InfinitePlace K) - 1`.
@@ -138,6 +140,7 @@ theorem logEmbedding_component_le {r : ℝ} {x : (𝓞 K)ˣ} (hr : 0 ≤ r) (h :
   simp_rw [Pi.norm_def, NNReal.coe_le_coe, Finset.sup_le_iff, ← NNReal.coe_le_coe] at h
   exact h w (mem_univ _)
 
+set_option backward.isDefEq.respectTransparency.types false in
 open scoped Classical in
 theorem log_le_of_logEmbedding_le {r : ℝ} {x : (𝓞 K)ˣ} (hr : 0 ≤ r)
     (h : ‖logEmbedding K (Additive.ofMul x)‖ ≤ r) (w : InfinitePlace K) :
@@ -311,6 +314,7 @@ theorem exists_unit (w₁ : InfinitePlace K) :
   rw [Set.mem_setOf_eq, Ideal.absNorm_span_singleton]
   exact seq_norm_le K w₁ hB n
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem unitLattice_span_eq_top :
     Submodule.span ℝ (unitLattice K : Set (logSpace K)) = ⊤ := by
   classical
@@ -406,6 +410,7 @@ theorem logEmbeddingQuot_injective :
     Function.comp_apply, EmbeddingLike.apply_eq_iff_eq] at h
   exact (EmbeddingLike.apply_eq_iff_eq _).mp <| (QuotientGroup.kerLift_injective _).eq_iff.mp h
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The linear equivalence between `(𝓞 K)ˣ ⧸ (torsion K)` as an additive `ℤ`-module and
 `unitLattice` . -/
 def logEmbeddingEquiv :
@@ -449,14 +454,18 @@ instance : Monoid.FG (𝓞 K)ˣ := by
   rw [Monoid.fg_iff_add_fg, ← AddGroup.fg_iff_addMonoid_fg, ← Module.Finite.iff_addGroup_fg]
   infer_instance
 
-theorem rank_modTorsion :
-    Module.finrank ℤ (Additive ((𝓞 K)ˣ ⧸ (torsion K))) = rank K := by
+theorem finrank_modTorsion : finrank ℤ (Additive ((𝓞 K)ˣ ⧸ (torsion K))) = rank K := by
   rw [← LinearEquiv.finrank_eq (logEmbeddingEquiv K).symm, unitLattice_rank]
+
+@[deprecated (since := "2026-06-05")] alias rank_modTorsion := finrank_modTorsion
+
+theorem finrank_eq : finrank ℤ (Additive (𝓞 K)ˣ) = rank K := by
+  simpa [← finrank_modTorsion] using! finrank_quotient_torsion_eq.symm
 
 /-- A basis of the quotient `(𝓞 K)ˣ ⧸ (torsion K)` seen as an additive ℤ-module. -/
 def basisModTorsion : Basis (Fin (rank K)) ℤ (Additive ((𝓞 K)ˣ ⧸ (torsion K))) :=
   Basis.reindex (Module.Free.chooseBasis ℤ _) (Fintype.equivOfCardEq <| by
-    rw [← Module.finrank_eq_card_chooseBasisIndex, rank_modTorsion, Fintype.card_fin])
+    rw [← Module.finrank_eq_card_chooseBasisIndex, finrank_modTorsion, Fintype.card_fin])
 
 /-- The basis of the `unitLattice` obtained by mapping `basisModTorsion` via `logEmbedding`. -/
 def basisUnitLattice : Basis (Fin (rank K)) ℤ (unitLattice K) :=

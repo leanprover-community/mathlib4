@@ -165,7 +165,7 @@ lemma ext_of_integral_prod_mul_prod_boundedContinuousFunction
     μ = ν := by
   refine ext_of_lintegral_prod_mul_prod_boundedContinuousFunction fun f g ↦ ?_
   rw [← toReal_eq_toReal_iff']
-  · simp only [coe_finsetProd]
+  · simp only [ofNNReal_finsetProd]
     have {μ : Measure ((Π i, X i) × Π j, Y j)} :
         (∫⁻ p, (∏ i, (f i (p.1 i) : ℝ≥0∞)) * ∏ j, (g j (p.2 j) : ℝ≥0∞) ∂μ).toReal =
           ∫ p, (∏ i, (f i (p.1 i)).toReal) * ∏ j, (g j (p.2 j)).toReal ∂μ := by
@@ -204,6 +204,7 @@ lemma eq_prod_of_integral_prod_mul_prod_boundedContinuousFunction {μ : Measure 
     ξ = μ.prod ν :=
   ext_of_integral_prod_mul_prod_boundedContinuousFunction fun f g ↦ by rw [h, ← integral_prod_mul]
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option linter.flexible false in -- simp followed by fun_prop
 lemma ext_of_integral_prod_mul_boundedContinuousFunction {μ ν : Measure ((Π i, X i) × T)}
     [IsFiniteMeasure μ] [IsFiniteMeasure ν]

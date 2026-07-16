@@ -147,7 +147,7 @@ variable {X Y : TopCat.{w}} {f : X ⟶ Y} {F : Y.Presheaf C}
 
 theorem Topology.IsOpenEmbedding.compatiblePreserving (hf : IsOpenEmbedding f) :
     CompatiblePreserving (Opens.grothendieckTopology Y) hf.functor := by
-  haveI : Mono f := (TopCat.mono_iff_injective f).mpr hf.injective
+  have : Mono f := (TopCat.mono_iff_injective f).mpr hf.injective
   apply compatiblePreservingOfDownwardsClosed
   intro U V i
   refine ⟨(Opens.map f).obj V, eqToIso <| Opens.ext <| Set.image_preimage_eq_of_subset fun x h ↦ ?_⟩
@@ -173,6 +173,15 @@ theorem TopCat.Presheaf.isSheaf_of_isOpenEmbedding (h : IsOpenEmbedding f) (hF :
     IsSheaf (h.functor.op ⋙ F) := by
   have := h.functor_isContinuous
   exact Functor.op_comp_isSheaf _ _ _ ⟨_, hF⟩
+
+/-- The restriction functor of a sheaf to an open subspace. -/
+@[simps!]
+def TopologicalSpace.Opens.sheafRestrict (U : Opens X) :
+    Sheaf (Opens.grothendieckTopology X) C ⥤ Sheaf (Opens.grothendieckTopology U) C :=
+  haveI H : IsOpenEmbedding (TopCat.Hom.hom (TopCat.ofHom ⟨_, continuous_subtype_val⟩)) :=
+    U.isOpenEmbedding
+  haveI := H.functor_isContinuous
+  H.isOpenMap.functor.sheafPushforwardContinuous C _ _
 
 variable (f)
 

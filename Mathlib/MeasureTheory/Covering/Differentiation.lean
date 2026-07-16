@@ -9,7 +9,6 @@ public import Mathlib.MeasureTheory.Covering.VitaliFamily
 public import Mathlib.MeasureTheory.Function.AEMeasurableOrder
 public import Mathlib.MeasureTheory.Integral.Average
 public import Mathlib.MeasureTheory.Measure.Decomposition.Lebesgue
-public import Mathlib.MeasureTheory.Measure.Regular
 
 /-!
 # Differentiation of measures
@@ -138,7 +137,7 @@ theorem measure_le_of_frequently_le [SecondCountableTopology α] [BorelSpace α]
     apply Frequently.mono this
     rintro a ⟨ρa, _, aU⟩
     exact ⟨ρa, aU⟩
-  haveI : Encodable h.index := h.index_countable.toEncodable
+  have : Encodable h.index := h.index_countable.toEncodable
   calc
     ρ s ≤ ∑' x : h.index, ρ (h.covering x) := h.measure_le_tsum_of_absolutelyContinuous hρ
     _ ≤ ∑' x : h.index, ν (h.covering x) := ENNReal.tsum_le_tsum fun x => (h.covering_mem x.2).1
@@ -201,9 +200,7 @@ theorem ae_eventually_measure_zero_of_singular (hρ : ρ ⟂ₘ μ) :
   obtain ⟨n, hn⟩ : ∃ n, u n < w := ((tendsto_order.1 u_lim).2 w (ENNReal.coe_pos.1 w_pos)).exists
   filter_upwards [hx n, h'x, v.eventually_measure_lt_top x]
   intro a ha μa_pos μa_lt_top
-  grw [ENNReal.div_lt_iff (.inl μa_pos.ne') (.inl μa_lt_top.ne), ha, hn]
-  gcongr
-  exact μa_lt_top.ne
+  grw [ENNReal.div_lt_iff (.inl μa_pos.ne') (.inl μa_lt_top.ne), ha, hn, w_lt]
 
 section AbsolutelyContinuous
 
@@ -711,7 +708,7 @@ almost every point of `s` is a Lebesgue density point for `s`. A version for non
 holds, but it only gives the first conclusion, see `ae_tendsto_measure_inter_div`. -/
 theorem ae_tendsto_measure_inter_div_of_measurableSet {s : Set α} (hs : MeasurableSet s) :
     ∀ᵐ x ∂μ, Tendsto (fun a => μ (s ∩ a) / μ a) (v.filterAt x) (𝓝 (s.indicator 1 x)) := by
-  haveI : IsLocallyFiniteMeasure (μ.restrict s) :=
+  have : IsLocallyFiniteMeasure (μ.restrict s) :=
     isLocallyFiniteMeasure_of_le restrict_le_self
   filter_upwards [ae_tendsto_rnDeriv v (μ.restrict s), rnDeriv_restrict_self μ hs]
   intro x hx h'x

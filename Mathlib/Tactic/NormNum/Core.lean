@@ -8,7 +8,8 @@ module
 public meta import Mathlib.Lean.Expr.Rat
 public import Mathlib.Tactic.Hint
 public import Mathlib.Tactic.NormNum.Result
-public import Mathlib.Util.Qq
+public meta import Mathlib.Util.Qq
+public import Lean.Elab.Tactic.Try
 
 /-!
 ## `norm_num` core functionality
@@ -150,7 +151,7 @@ and returning the truth or falsity of `p' : Prop` from an equivalence `p ↔ p'`
 def deriveBoolOfIff (p p' : Q(Prop)) (hp : Q($p ↔ $p')) :
     MetaM ((b : Bool) × BoolResult p' b) := do
   let ⟨b, pb⟩ ← deriveBool p
-  match b with
+  match (dependent := true) b with
   | true  => return ⟨true, q(Iff.mp $hp $pb)⟩
   | false => return ⟨false, q((Iff.not $hp).mp $pb)⟩
 
@@ -274,11 +275,11 @@ open Lean.Parser.Tactic Meta.NormNum
 `ℕ`, `ℤ`, `ℚ`, `ℝ`, `ℂ`. In addition to evaluating numerical expressions, `norm_num` will use `simp`
 to simplify the goal. If the goal has the form `A = B`, `A ≠ B`, `A < B` or `A ≤ B`, where `A` and
 `B` are numerical expressions, `norm_num` will try to close it. It also has a relatively simple
-primality prover.
+primality prover (available if you import `Mathlib.Tactic.NormNum.Prime`).
 
 This tactic is extensible. Extensions can allow `norm_num` to evaluate more kinds of expressions, or
-to prove more kinds of propositions. See the `@[norm_num]` attribute for further information on
-extending `norm_num`.
+to prove more kinds of propositions (such as, primality of natural numbers). See the `@[norm_num]`
+attribute for further information on extending `norm_num`.
 
 * `norm_num at l` normalizes at location(s) `l`.
 * `norm_num [h1, ...]` adds the arguments `h1, ...` to the `simp` set in addition to the default

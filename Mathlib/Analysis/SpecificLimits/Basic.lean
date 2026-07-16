@@ -294,7 +294,7 @@ protected theorem ENNReal.tendsto_pow_atTop_nhds_top_iff {r : ℝ≥0∞} :
   · contrapose!
     intro r_le_one h_tends
     specialize h_tends (Ioi_mem_nhds one_lt_top)
-    simp only [Filter.mem_map, mem_atTop_sets, ge_iff_le, Set.mem_preimage, Set.mem_Ioi] at h_tends
+    simp only [Filter.mem_map, mem_atTop_sets, Set.mem_preimage, Set.mem_Ioi] at h_tends
     obtain ⟨n, hn⟩ := h_tends
     exact lt_irrefl _ <| lt_of_lt_of_le (hn n le_rfl) <| pow_le_one₀ zero_le r_le_one
   · intro r_gt_one
@@ -604,7 +604,7 @@ def posSumOfEncodable {ε : ℝ} (hε : 0 < ε) (ι) [Encodable ι] :
 theorem Set.Countable.exists_pos_hasSum_le {ι : Type*} {s : Set ι} (hs : s.Countable) {ε : ℝ}
     (hε : 0 < ε) : ∃ ε' : ι → ℝ, (∀ i, 0 < ε' i) ∧ ∃ c, HasSum (fun i : s ↦ ε' i) c ∧ c ≤ ε := by
   classical
-  haveI := hs.toEncodable
+  have := hs.toEncodable
   rcases posSumOfEncodable hε s with ⟨f, hf0, ⟨c, hfc, hcε⟩⟩
   refine ⟨fun i ↦ if h : i ∈ s then f ⟨i, h⟩ else 1, fun i ↦ ?_, ⟨c, ?_, hcε⟩⟩
   · conv_rhs => simp

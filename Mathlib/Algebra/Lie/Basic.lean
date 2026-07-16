@@ -123,7 +123,7 @@ lemma lie_swap_lie [Bracket L₂ L₁] [AddCommGroup M] [IsLieTower L₁ L₂ M]
     (x : L₁) (y : L₂) (m : M) : ⁅⁅x, y⁆, m⁆ = -⁅⁅y, x⁆, m⁆ := by
   have h1 := leibniz_lie x y m
   have h2 := leibniz_lie y x m
-  convert! congr($h1.symm - $h2) using 1 <;> simp only [add_sub_cancel_right, sub_add_cancel_right]
+  convert congr($h1.symm - $h2) <;> simp only [add_sub_cancel_right, sub_add_cancel_right]
 
 end IsLieTower
 
@@ -247,6 +247,7 @@ instance : LieModule ℤ L M where
   smul_lie n x m := zsmul_lie x m n
   lie_smul n x m := lie_zsmul x m n
 
+set_option backward.isDefEq.respectTransparency false in
 instance LinearMap.instLieRingModule : LieRingModule L (M →ₗ[R] N) where
   bracket x f :=
     { toFun := fun m => ⁅x, f m⁆ - f ⁅x, m⁆
@@ -272,6 +273,7 @@ instance LinearMap.instLieRingModule : LieRingModule L (M →ₗ[R] N) where
 theorem LieHom.lie_apply (f : M →ₗ[R] N) (x : L) (m : M) : ⁅x, f⁆ m = ⁅x, f m⁆ - f ⁅x, m⁆ :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 instance LinearMap.instLieModule : LieModule R L (M →ₗ[R] N) where
   smul_lie t x f := by
     ext n
@@ -300,7 +302,7 @@ instance Module.Dual.instLieModule : LieModule R L (M →ₗ[R] R) where
 
 variable (L) in
 /-- It is sometimes useful to regard a `LieRing` as a `NonUnitalNonAssocRing`. -/
-@[implicit_reducible]
+@[instance_reducible]
 def LieRing.toNonUnitalNonAssocRing : NonUnitalNonAssocRing L :=
   { mul := Bracket.bracket
     left_distrib := lie_add
@@ -347,7 +349,7 @@ instance : Coe (L₁ →ₗ⁅R⁆ L₂) (L₁ →ₗ[R] L₂) :=
 
 instance : FunLike (L₁ →ₗ⁅R⁆ L₂) L₁ L₂ where
   coe f := f.toFun
-  coe_injective' x y h := by
+  coe_injective x y h := by
     cases x; cases y; simp at h; simp [h]
 
 initialize_simps_projections LieHom (toFun → apply)
@@ -474,7 +476,7 @@ variable (f : L₁ →ₗ⁅R⁆ L₂)
 /-- A Lie ring module may be pulled back along a morphism of Lie algebras.
 
 See note [reducible non-instances]. -/
-@[implicit_reducible]
+@[instance_reducible]
 def LieRingModule.compLieHom : LieRingModule L₁ M where
   bracket x m := ⁅f x, m⁆
   lie_add x := lie_add (f x)
@@ -486,6 +488,7 @@ theorem LieRingModule.compLieHom_apply (x : L₁) (m : M) :
     ⁅x, m⁆ = ⁅f x, m⁆ :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A Lie module may be pulled back along a morphism of Lie algebras. -/
 theorem LieModule.compLieHom [Module R M] [LieModule R L₂ M] :
     @LieModule R L₁ M _ _ _ _ _ (LieRingModule.compLieHom M f) :=
@@ -688,7 +691,7 @@ instance : CoeOut (M →ₗ⁅R,L⁆ N) (M →ₗ[R] N) :=
 
 instance : FunLike (M →ₗ⁅R,L⁆ N) M N where
   coe f := f.toFun
-  coe_injective' x y h := by cases x; cases y; simp at h; simp [h]
+  coe_injective x y h := by cases x; cases y; simp at h; simp [h]
 
 initialize_simps_projections LieModuleHom (toFun → apply)
 

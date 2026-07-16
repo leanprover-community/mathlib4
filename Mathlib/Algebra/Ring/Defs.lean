@@ -174,7 +174,7 @@ attribute [instance 150] Ring.toAddCommGroup
 instance [Semiring α] : Distrib α := inferInstance
 instance [Semiring α] : MulZeroClass α := inferInstance
 instance [Semiring α] : MulZeroOneClass α := inferInstance
-attribute [instance] Semiring.toMonoid
+attribute [instance] Semiring.toAddCommMonoid Semiring.toMonoid
 
 /-!
 ### Semirings
@@ -442,6 +442,7 @@ instance (priority := 100) NonUnitalCommRing.toNonUnitalCommSemiring [s : NonUni
   { s with }
 
 /-- A commutative ring is a ring with commutative multiplication. -/
+@[wikidata Q858656]
 class CommRing (α : Type u) extends Ring α, CommMonoid α
 
 attribute [instance 150] CommRing.toRing

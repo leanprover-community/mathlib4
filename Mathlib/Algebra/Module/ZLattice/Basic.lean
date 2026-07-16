@@ -171,12 +171,11 @@ theorem repr_fract_apply (m : E) (i : ι) : b.repr (fract b m) i = Int.fract (b.
 
 @[simp]
 theorem fract_fract (m : E) : fract b (fract b m) = fract b m :=
-  Basis.ext_elem b fun _ => by classical simp only [repr_fract_apply, Int.fract_fract]
+  Basis.ext_elem b fun _ => by simp only [repr_fract_apply, Int.fract_fract]
 
 @[simp]
 theorem fract_zSpan_add (m : E) {v : E} (h : v ∈ span ℤ (Set.range b)) :
     fract b (v + m) = fract b m := by
-  classical
   refine (Basis.ext_elem_iff b).mpr fun i => ?_
   simp_rw [repr_fract_apply, Int.fract_eq_fract]
   use (b.restrictScalars ℤ).repr ⟨v, h⟩ i
@@ -189,7 +188,7 @@ theorem fract_add_ZSpan (m : E) {v : E} (h : v ∈ span ℤ (Set.range b)) :
 
 variable {b} in
 theorem fract_eq_self {x : E} : fract b x = x ↔ x ∈ fundamentalDomain b := by
-  classical simp only [Basis.ext_elem_iff b, repr_fract_apply, Int.fract_eq_self,
+  simp only [Basis.ext_elem_iff b, repr_fract_apply, Int.fract_eq_self,
     mem_fundamentalDomain, Set.mem_Ico]
 
 theorem fract_mem_fundamentalDomain (x : E) : fract b x ∈ fundamentalDomain b :=
@@ -205,14 +204,12 @@ theorem fractRestrict_surjective : Function.Surjective (fractRestrict b) :=
 theorem fractRestrict_apply (x : E) : (fractRestrict b x : E) = fract b x := rfl
 
 theorem fract_eq_fract (m n : E) : fract b m = fract b n ↔ -m + n ∈ span ℤ (Set.range b) := by
-  classical
   rw [eq_comm, Basis.ext_elem_iff b]
   simp_rw [repr_fract_apply, Int.fract_eq_fract, eq_comm, Basis.mem_span_iff_repr_mem,
     sub_eq_neg_add, map_add, map_neg, Finsupp.coe_add, Finsupp.coe_neg, Pi.add_apply,
     Pi.neg_apply, ← eq_intCast (algebraMap ℤ K) _, Set.mem_range]
 
 theorem norm_fract_le [HasSolidNorm K] (m : E) : ‖fract b m‖ ≤ ∑ i, ‖b i‖ := by
-  classical
   calc
     ‖fract b m‖ = ‖∑ i, b.repr (fract b m) i • b i‖ := by rw [b.sum_repr]
     _ = ‖∑ i, Int.fract (b.repr m i) • b i‖ := by simp_rw [repr_fract_apply]
@@ -339,7 +336,7 @@ theorem setFinite_inter [ProperSpace E] [Finite ι] {s : Set E} (hs : Bornology.
 theorem fundamentalDomain_measurableSet [MeasurableSpace E] [OpensMeasurableSpace E] [Finite ι] :
     MeasurableSet (fundamentalDomain b) := by
   cases nonempty_fintype ι
-  haveI : FiniteDimensional ℝ E := b.finiteDimensional_of_finite
+  have : FiniteDimensional ℝ E := b.finiteDimensional_of_finite
   let D : Set (ι → ℝ) := Set.pi Set.univ fun _ : ι => Set.Ico (0 : ℝ) 1
   rw [(_ : fundamentalDomain b = b.equivFun.toLinearMap ⁻¹' D)]
   · refine measurableSet_preimage (LinearMap.continuous_of_finiteDimensional _).measurable ?_
@@ -412,14 +409,14 @@ theorem fundamentalDomain_ae_parallelepiped [Fintype ι] [MeasurableSpace E] (μ
     simp_rw [vsub_eq_sub, zero_sub, neg_mem_iff]
     exact linearIndependent_iff_notMem_span.mp b.linearIndependent i
   intro x hx
-  simp_rw [parallelepiped_basis_eq, Set.mem_Icc, Set.mem_diff, Set.mem_setOf_eq,
+  simp_rw [parallelepiped_basis_eq, Set.mem_Icc, Set.mem_sdiff, Set.mem_setOf_eq,
     mem_fundamentalDomain, Set.mem_Ico, not_forall, not_and, not_lt] at hx
   obtain ⟨i, hi⟩ := hx.2
   have : b.repr x i = 1 := le_antisymm (hx.1 i).2 (hi (hx.1 i).1)
   rw [← b.sum_repr x, ← Finset.sum_erase_add _ _ (Finset.mem_univ i), this, one_smul, ← vadd_eq_add]
   refine Set.mem_iUnion.mpr ⟨i, AffineSubspace.vadd_mem_mk' _
     (sum_smul_mem _ _ (fun i hi ↦ Submodule.subset_span ?_))⟩
-  exact ⟨i, Set.mem_diff_singleton.mpr ⟨trivial, Finset.ne_of_mem_erase hi⟩, rfl⟩
+  exact ⟨i, Set.mem_sdiff_singleton.mpr ⟨trivial, Finset.ne_of_mem_erase hi⟩, rfl⟩
 
 end Real
 
@@ -562,18 +559,18 @@ theorem ZLattice.rank [hs : IsZLattice K L] : finrank ℤ L = finrank K E := by
     obtain ⟨v, hv⟩ : (Set.range b \ Set.range e).Nonempty := by
       rw [Basis.coe_mk, Subtype.range_coe_subtype, Set.setOf_mem_eq, ← Set.toFinset_nonempty]
       contrapose! h
-      rw [Set.toFinset_diff, Finset.sdiff_eq_empty_iff_subset] at h
+      rw [Set.toFinset_sdiff, Finset.sdiff_eq_empty_iff_subset] at h
       replace h := Finset.card_le_card h
       rwa [h_card, ← topEquiv.finrank_eq, ← h_spanE, ← ht_span, finrank_span_set_eq_card ht_lin]
     -- Assume that `e ∪ {v}` is not `ℤ`-linear independent then we get the contradiction
     suffices ¬ LinearIndepOn ℤ id (insert v (Set.range e)) by
       contrapose this
       refine this.mono ?_
-      exact Set.insert_subset (Set.mem_of_mem_diff hv) (by simp [e, ht_inc])
+      exact Set.insert_subset (Set.mem_of_mem_sdiff hv) (by simp [e, ht_inc])
     -- We prove finally that `e ∪ {v}` is not ℤ-linear independent or, equivalently,
     -- not ℚ-linear independent by showing that `v ∈ span ℚ e`.
     rw [LinearIndepOn, LinearIndependent.iff_fractionRing ℤ ℚ, ← LinearIndepOn,
-      linearIndepOn_id_insert (Set.notMem_of_mem_diff hv), not_and, not_not]
+      linearIndepOn_id_insert (Set.notMem_of_mem_sdiff hv), not_and, not_not]
     intro _
     -- But that follows from the fact that there exist `n, m : ℕ`, `n ≠ m`
     -- such that `(n - m) • v ∈ span ℤ e` which is true since `n ↦ ZSpan.fract e (n • v)`
@@ -584,7 +581,7 @@ theorem ZLattice.rank [hs : IsZLattice K L] : finrank ℤ L = finrank K E := by
       refine ⟨fun _ ↦ mem_closedBall_zero_iff.mpr (norm_fract_le e _), fun _ => ?_⟩
       · rw [← h_spanL]
         refine sub_mem ?_ ?_
-        · exact zsmul_mem (subset_span (Set.diff_subset hv)) _
+        · exact zsmul_mem (subset_span (Set.sdiff_subset hv)) _
         · exact span_mono (by simp [e, ht_inc]) (coe_mem _)
     have h_finite : Set.Finite (Metric.closedBall 0 (∑ i, ‖e i‖) ∩ (L : Set E)) := by
       change ((_ : Set E) ∩ L.toAddSubgroup).Finite
@@ -594,7 +591,7 @@ theorem ZLattice.rank [hs : IsZLattice K L] : finrank ℤ L = finrank K E := by
     obtain ⟨n, -, m, -, h_ne, h_eq⟩ := Set.Infinite.exists_ne_map_eq_of_mapsTo
       Set.infinite_univ h_mapsto h_finite
     have h_nz : (-n + m : ℚ) ≠ 0 := by
-      rwa [Ne, add_eq_zero_iff_eq_neg.not, neg_inj, Rat.coe_int_inj, ← Ne]
+      rwa [Ne, add_eq_zero_iff_eq_neg.not, neg_inj, Rat.intCast_inj, ← Ne]
     apply (smul_mem_iff _ h_nz).mp
     refine span_subset_span ℤ ℚ _ ?_
     rwa [add_smul, neg_smul, SetLike.mem_coe, ← fract_eq_fract, Int.cast_smul_eq_zsmul ℚ,

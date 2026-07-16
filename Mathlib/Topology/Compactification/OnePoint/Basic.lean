@@ -135,9 +135,6 @@ theorem range_coe_union_infty : range ((↑) : X → OnePoint X) ∪ {∞} = uni
 theorem insert_infty_range_coe : insert ∞ (range (@some X)) = univ :=
   insert_none_range_some _
 
-@[deprecated "Use simp" (since := "2025-11-22")]
-theorem range_coe_inter_infty : range ((↑) : X → OnePoint X) ∩ {∞} = ∅ := by simp
-
 @[simp]
 theorem compl_range_coe : (range ((↑) : X → OnePoint X))ᶜ = {∞} :=
   compl_range_some X
@@ -304,7 +301,7 @@ theorem nhdsNE_infty_eq : 𝓝[≠] (∞ : OnePoint X) = map (↑) (coclosedComp
     simp
   · rintro s ⟨h₁, h₂⟩
     refine ⟨_, ⟨mem_compl infty_notMem_image_coe, isOpen_compl_image_coe.2 ⟨h₁, h₂⟩⟩, ?_⟩
-    simp [compl_image_coe, ← diff_eq]
+    simp [compl_image_coe, ← sdiff_eq]
 
 /-- If `X` is a non-compact space, then `∞` is not an isolated point of `OnePoint X`. -/
 instance nhdsNE_infty_neBot [NoncompactSpace X] : NeBot (𝓝[≠] (∞ : OnePoint X)) := by
@@ -589,7 +586,7 @@ noncomputable def equivOfIsEmbeddingOfRangeEq :
     exact (isClosed_compl_iff.mpr hU₂).isCompact
   let e : OnePoint X ≃ Y :=
     { toFun := fun p ↦ p.elim y f
-      invFun := fun q ↦ if hq : q = y then ∞ else ↑(show q ∈ range f from by simpa [hy]).choose
+      invFun := fun q ↦ if hq : q = y then ∞ else ↑(show q ∈ range f by simpa [hy]).choose
       left_inv := fun p ↦ by
         induction p using OnePoint.rec with
         | infty => simp

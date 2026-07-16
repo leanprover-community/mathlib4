@@ -151,7 +151,9 @@ theorem cof_omega0 : cof ω = ℵ₀ :=
 
 @[deprecated (since := "2026-02-18")] alias cof_eq_one_iff_is_succ := cof_eq_one_iff
 
-theorem exists_ord_cof_eq (α : Type*) [LinearOrder α] [WellFoundedLT α] :
+variable (α) in
+/-- Every well-order has a cofinal subset of order type `(cof α).ord`. -/
+theorem exists_ord_cof_eq [LinearOrder α] [WellFoundedLT α] :
     ∃ s : Set α, IsCofinal s ∧ typeLT s = (Order.cof α).ord := by
   obtain ⟨s, hs, hs'⟩ := exists_cof_eq α
   obtain ⟨r, hr, hr'⟩ := exists_ord_eq s
@@ -168,16 +170,21 @@ theorem exists_ord_cof_eq (α : Type*) [LinearOrder α] [WellFoundedLT α] :
 
 @[deprecated (since := "2026-05-25")] alias ord_cof_eq := exists_ord_cof_eq
 
+/-- Every cofinal set has a cofinal subset of order type `(cof α).ord`. -/
+theorem exists_ord_cof_eq_of_isCofinal [LinearOrder α] [WellFoundedLT α]
+    {s : Set α} (hs : IsCofinal s) : ∃ t ⊆ s, IsCofinal t ∧ typeLT t = (Order.cof α).ord := by
+  obtain ⟨t, ht, ht'⟩ := exists_ord_cof_eq s
+  rw [cof_eq_of_isCofinal hs] at ht'
+  refine ⟨t, ?_, hs.trans ht, ?_⟩
+  · simp
+  · rw [← ht']
+    exact ((Subtype.strictMono_coe _).strictMonoOn _).orderIso.ordinalType_congr.symm
+
 @[simp]
 theorem _root_.Order.cof_ord_cof (α : Type*) [LinearOrder α] [WellFoundedLT α] :
     (Order.cof α).ord.cof = Order.cof α := by
   obtain ⟨s, hs, hs'⟩ := exists_ord_cof_eq α
-  rw [← hs', cof_type]
-  apply le_antisymm
-  · rw [← card_ord (Order.cof α), ← hs', card_type]
-    exact cof_le_cardinalMk s
-  · rw [le_cof_iff]
-    exact fun t ht ↦ (cof_le (hs.trans ht)).trans_eq (mk_image_eq Subtype.val_injective)
+  rw [← hs', cof_type, cof_eq_of_isCofinal hs]
 
 @[simp]
 theorem cof_ord_cof (o : Ordinal) : o.cof.ord.cof = o.cof := by
@@ -233,9 +240,6 @@ theorem cof_map_of_isNormal {f} (hf : IsNormal f) {a} (ha : IsSuccLimit a) : cof
 @[deprecated (since := "2026-03-19")]
 alias cof_eq_of_isNormal := cof_map_of_isNormal
 
-@[deprecated (since := "2025-12-25")]
-alias IsNormal.cof_eq := cof_eq_of_isNormal
-
 theorem le_cof_map_of_isNormal {f} (hf : IsNormal f) (a) : cof a ≤ cof (f a) := by
   cases a using limitRecOn with
   | zero => simp
@@ -247,9 +251,7 @@ theorem le_cof_map_of_isNormal {f} (hf : IsNormal f) (a) : cof a ≤ cof (f a) :
 @[deprecated (since := "2026-03-19")]
 alias cof_le_of_isNormal := le_cof_map_of_isNormal
 
-@[deprecated (since := "2025-12-25")]
-alias IsNormal.cof_le := le_cof_map_of_isNormal
-
+set_option backward.isDefEq.respectTransparency false in
 theorem sSup_add_one_lt_of_lt_cof {s : Set Ordinal.{u}} {a : Ordinal.{u}}
     (ha : #s < (lift.{u + 1} a).cof) (hs : ∀ i ∈ s, i < a) : sSup ((· + 1) '' s) < a := by
   let f := OrderIso.ofRelIsoLT (enum (α := s) (· < ·))
@@ -551,7 +553,7 @@ theorem mk_bounded_subset {α : Type*} (h : IsStrongPrelimit #α) {r : α → α
     [IsWellOrder α r] (hr : (#α).ord = type r) : #{ s : Set α // Bounded r s } = #α := by
   rcases eq_or_ne #α 0 with (ha | ha)
   · rw [ha]
-    haveI := mk_eq_zero_iff.1 ha
+    have := mk_eq_zero_iff.1 ha
     rw [mk_eq_zero_iff]
     constructor
     rintro ⟨s, hs⟩
@@ -582,7 +584,7 @@ theorem mk_subset_mk_lt_cof {α : Type*} (h : IsStrongPrelimit #α) :
   have h' : IsStrongLimit #α := ⟨ha, @h⟩
   rcases exists_ord_eq α with ⟨r, wo, hr⟩
   classical
-  letI := linearOrderOfSTO r
+  let := linearOrderOfSTO r
   apply le_antisymm
   · conv_rhs => rw [← mk_bounded_subset h hr]
     apply mk_subtype_le_of_subset

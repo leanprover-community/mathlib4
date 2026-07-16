@@ -168,7 +168,7 @@ instance isCentralScalar [SMul α β] [SMul αᵐᵒᵖ β] [IsCentralScalar α 
 
 /-- A multiplicative action of a monoid `α` on a type `β` gives a multiplicative action of `Set α`
 on `Set β`. -/
-@[to_additive (attr := implicit_reducible)
+@[to_additive (attr := instance_reducible)
 /-- An additive action of an additive monoid `α` on a type `β` gives an additive action of `Set α`
 on `Set β` -/]
 protected noncomputable def mulAction [Monoid α] [MulAction α β] : MulAction (Set α) (Set β) where
@@ -176,7 +176,7 @@ protected noncomputable def mulAction [Monoid α] [MulAction α β] : MulAction 
   one_smul s := image2_singleton_left.trans <| by simp_rw [one_smul, image_id']
 
 /-- A multiplicative action of a monoid on a type `β` gives a multiplicative action on `Set β`. -/
-@[to_additive (attr := implicit_reducible)
+@[to_additive (attr := instance_reducible)
 /-- An additive action of an additive monoid on a type `β` gives an additive action on `Set β`. -/]
 protected def mulActionSet [Monoid α] [MulAction α β] : MulAction α (Set β) where
   mul_smul _ _ _ := by simp only [← image_smul, image_image, ← mul_smul]
@@ -238,7 +238,7 @@ theorem smul_set_iInter {ι : Sort*}
 
 @[to_additive]
 theorem smul_set_sdiff : a • (s \ t) = a • s \ a • t :=
-  image_diff (MulAction.injective a) _ _
+  image_sdiff (MulAction.injective a) _ _
 
 open scoped symmDiff in
 @[to_additive]
@@ -260,7 +260,7 @@ theorem smul_univ {s : Set α} (hs : s.Nonempty) : s • (univ : Set β) = univ 
 
 @[to_additive]
 theorem smul_set_compl : a • sᶜ = (a • s)ᶜ := by
-  simp_rw [Set.compl_eq_univ_diff, smul_set_sdiff, smul_set_univ]
+  simp_rw [Set.compl_eq_univ_sdiff, smul_set_sdiff, smul_set_univ]
 
 @[to_additive]
 theorem smul_inter_nonempty_iff {s t : Set α} {x : α} :
@@ -272,20 +272,10 @@ theorem smul_inter_nonempty_iff {s t : Set α} {x : α} :
   · rintro ⟨a, b, ⟨ha, hb⟩, rfl⟩
     exact ⟨a, mem_inter (mem_smul_set.mpr ⟨b, hb, by simp⟩) ha⟩
 
-@[to_additive (attr := deprecated smul_inter_nonempty_iff (since := "2025-12-10"))]
-theorem smul_inter_ne_empty_iff {s t : Set α} {x : α} :
-    x • s ∩ t ≠ ∅ ↔ ∃ a b, (a ∈ t ∧ b ∈ s) ∧ a * b⁻¹ = x := by
-  rw [← nonempty_iff_ne_empty, smul_inter_nonempty_iff]
-
 @[to_additive]
 theorem smul_inter_nonempty_iff' {s t : Set α} {x : α} :
     (x • s ∩ t).Nonempty ↔ ∃ a b, (a ∈ t ∧ b ∈ s) ∧ a / b = x := by
   simp_rw [smul_inter_nonempty_iff, div_eq_mul_inv]
-
-@[to_additive (attr := deprecated smul_inter_nonempty_iff' (since := "2025-12-10"))]
-theorem smul_inter_ne_empty_iff' {s t : Set α} {x : α} :
-    x • s ∩ t ≠ ∅ ↔ ∃ a b, (a ∈ t ∧ b ∈ s) ∧ a / b = x := by
-  rw [← nonempty_iff_ne_empty, smul_inter_nonempty_iff']
 
 @[to_additive]
 theorem op_smul_inter_nonempty_iff {s t : Set α} {x : αᵐᵒᵖ} :
@@ -297,11 +287,6 @@ theorem op_smul_inter_nonempty_iff {s t : Set α} {x : αᵐᵒᵖ} :
   · rintro ⟨a, b, ⟨ha, hb⟩, H⟩
     have : MulOpposite.op (a⁻¹ * b) = x := congr_arg MulOpposite.op H
     exact ⟨b, mem_inter (mem_smul_set.mpr ⟨a, ha, by simp [← this]⟩) hb⟩
-
-@[to_additive (attr := deprecated op_smul_inter_nonempty_iff (since := "2025-12-10"))]
-theorem op_smul_inter_ne_empty_iff {s t : Set α} {x : αᵐᵒᵖ} :
-    x • s ∩ t ≠ ∅ ↔ ∃ a b, (a ∈ s ∧ b ∈ t) ∧ a⁻¹ * b = MulOpposite.unop x := by
-  rw [← nonempty_iff_ne_empty, op_smul_inter_nonempty_iff]
 
 @[to_additive (attr := simp)]
 theorem iUnion_inv_smul : ⋃ g : α, g⁻¹ • s = ⋃ g : α, g • s :=
