@@ -24,7 +24,7 @@ Most results about `star` can be obtained by unfolding it via `CliffordAlgebra.s
 
 -/
 
-@[expose] public section
+public section
 
 
 variable {R : Type*} [CommRing R]

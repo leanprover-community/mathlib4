@@ -27,7 +27,7 @@ of the axioms is straightforward.)
 
 -/
 
-@[expose] public section
+public section
 
 universe v u
 

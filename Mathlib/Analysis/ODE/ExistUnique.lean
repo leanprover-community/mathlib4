@@ -37,7 +37,7 @@ normed spaces.
 integral curve, vector field, existence, uniqueness, Picard-Lindelöf, Gronwall
 -/
 
-@[expose] public section
+public section
 
 open Function intervalIntegral MeasureTheory Metric Set
 open scoped Nat NNReal Topology

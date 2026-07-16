@@ -27,7 +27,7 @@ In what follows, we consider a `A`-algebra `B` and a valuation `v` over `B` whic
   maximal ideal of `v.valuationSubring` is transcendental over `A`.
 -/
 
-@[expose] public section
+public section
 
 variable {Γ : Type*} [LinearOrderedCommGroupWithZero Γ]
 

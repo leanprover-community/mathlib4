@@ -17,7 +17,7 @@ The motivation for not including this in the same file as the definition of comp
 is that `Mathlib.Topology.Algebra.Module.FiniteDimension` is quite a heavy import to add there.
 -/
 
-@[expose] public section
+public section
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
   {E : Type*} [AddCommGroup E] [Module 𝕜 E]

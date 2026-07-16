@@ -42,7 +42,7 @@ https://kerodon.net/tag/0079 which is avoided in the mathlib implementation.
 
 -/
 
-@[expose] public section
+public section
 
 universe u
 

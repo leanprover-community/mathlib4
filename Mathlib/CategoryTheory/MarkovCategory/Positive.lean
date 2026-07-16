@@ -42,7 +42,7 @@ deterministic process.
 * [Moss and Perrone, *A category-theoretic proof of the ergodic decomposition theorem*][moss2023]
 -/
 
-@[expose] public section
+public section
 
 universe v u
 

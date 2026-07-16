@@ -26,7 +26,7 @@ casting lemmas showing the well-behavedness of this injection.
 rat, rationals, field, ℚ, numerator, denominator, num, denom, cast, coercion, casting
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists MulAction IsOrderedMonoid
 

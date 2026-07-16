@@ -27,7 +27,7 @@ for all `n : ℕ`.
 
 -/
 
-@[expose] public section
+public section
 
 universe u
 

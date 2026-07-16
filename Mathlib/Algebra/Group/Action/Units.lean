@@ -22,7 +22,7 @@ These instances use a primed name.
 The results are repeated for `AddUnits` and `VAdd` where relevant.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists MonoidWithZero
 

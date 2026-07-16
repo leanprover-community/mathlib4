@@ -21,7 +21,7 @@ TODO: add a version that assumes `ContDiffOn f (closedBall x (‖y‖))`
 
 -/
 
-@[expose] public section
+public section
 
 open Nat
 

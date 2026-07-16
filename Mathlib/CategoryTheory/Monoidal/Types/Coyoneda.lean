@@ -12,7 +12,7 @@ public import Mathlib.CategoryTheory.Monoidal.CoherenceLemmas
 # `(𝟙_ C ⟶ -)` is a lax monoidal functor to `Type`
 -/
 
-@[expose] public section
+public section
 
 universe v u
 

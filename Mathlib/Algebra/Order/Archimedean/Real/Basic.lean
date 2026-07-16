@@ -18,7 +18,7 @@ import Mathlib.Data.Int.LeastGreatest
 
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Finset
 
