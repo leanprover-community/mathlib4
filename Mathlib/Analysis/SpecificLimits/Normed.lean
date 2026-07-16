@@ -174,7 +174,7 @@ theorem isLittleO_pow_const_mul_const_pow_const_pow_of_norm_lt {R : Type*} [Norm
   · refine (isLittleO_zero _ _).congr' (mem_atTop_sets.2 <| ⟨1, fun n hn ↦ ?_⟩) EventuallyEq.rfl
     simp [zero_pow (one_le_iff_ne_zero.1 hn), h0]
   rw [← Ne, ← norm_pos_iff] at h0
-  have A : (fun n ↦ (n : R) ^ k : ℕ → R) =o[atTop] fun n ↦ (r₂ / ‖r₁‖) ^ n :=
+  have A : (fun n ↦ n ^ k : ℕ → R) =o[atTop] fun n ↦ (r₂ / ‖r₁‖) ^ n :=
     isLittleO_pow_const_const_pow_of_one_lt k ((one_lt_div h0).2 h)
   suffices (fun n ↦ r₁ ^ n) =O[atTop] fun n ↦ ‖r₁‖ ^ n by
     simpa [div_mul_cancel₀ _ (pow_pos h0 _).ne', div_pow] using A.mul_isBigO this
@@ -468,8 +468,7 @@ lemma tsum_choose_mul_geometric_of_norm_lt_one' (k : ℕ) {r : R} (hr : ‖r‖ 
     ∑' n, (n + k).choose k * r ^ n = ((1 - r)⁻¹ʳ) ^ (k + 1) :=
   (hasSum_choose_mul_geometric_of_norm_lt_one' k hr).tsum_eq
 
-lemma hasSum_choose_mul_geometric_of_norm_lt_one
-    (k : ℕ) {r : 𝕜} (hr : ‖r‖ < 1) :
+lemma hasSum_choose_mul_geometric_of_norm_lt_one (k : ℕ) {r : 𝕜} (hr : ‖r‖ < 1) :
     HasSum (fun n ↦ (n + k).choose k * r ^ n) (1 / (1 - r) ^ (k + 1)) := by
   convert! hasSum_choose_mul_geometric_of_norm_lt_one' k hr
   simp
@@ -566,8 +565,7 @@ theorem tsum_pow_mul_geometric_of_norm_lt_one (k : ℕ) {r : 𝕜} (hr : ‖r‖
 /-- If `‖r‖ < 1`, then `∑' n : ℕ, n * r ^ n = r / (1 - r) ^ 2`, `HasSum` version in a general ring
 with summable geometric series. For a version in a field, using division instead of `Ring.inverse`,
 see `hasSum_coe_mul_geometric_of_norm_lt_one`. -/
-theorem hasSum_coe_mul_geometric_of_norm_lt_one'
-    {x : R} (h : ‖x‖ < 1) :
+theorem hasSum_coe_mul_geometric_of_norm_lt_one' {x : R} (h : ‖x‖ < 1) :
     HasSum (fun n ↦ n * x ^ n : ℕ → R) (x * ((1 - x)⁻¹ʳ) ^ 2) := by
   convert! hasSum_pow_mul_geometric_of_norm_lt_one' 1 h using 1
   · simp
@@ -576,8 +574,8 @@ theorem hasSum_coe_mul_geometric_of_norm_lt_one'
 /-- If `‖r‖ < 1`, then `∑' n : ℕ, n * r ^ n = r / (1 - r) ^ 2`, version in a general ring with
 summable geometric series. For a version in a field, using division instead of `Ring.inverse`,
 see `tsum_coe_mul_geometric_of_norm_lt_one`. -/
-theorem tsum_coe_mul_geometric_of_norm_lt_one'
-    {r : 𝕜} (hr : ‖r‖ < 1) : (∑' n : ℕ, n * r ^ n) = r * (1 - r)⁻¹ʳ ^ 2 :=
+theorem tsum_coe_mul_geometric_of_norm_lt_one' {r : 𝕜} (hr : ‖r‖ < 1) :
+    (∑' n : ℕ, n * r ^ n) = r * (1 - r)⁻¹ʳ ^ 2 :=
   (hasSum_coe_mul_geometric_of_norm_lt_one' hr).tsum_eq
 
 /-- If `‖r‖ < 1`, then `∑' n : ℕ, n * r ^ n = r / (1 - r) ^ 2`, `HasSum` version. -/
