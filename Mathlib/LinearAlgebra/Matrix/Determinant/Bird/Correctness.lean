@@ -116,10 +116,8 @@ theorem paper_eq2 (i : Fin n) (hEq1 : Eq1 A p) :
       (-1) ^ (p + 1) * ∑ α ∈ S (p + 1) i, pminor A α := by
   calc
     -Spec.diagSum ((Spec.stepEntry A)^[p] A) i =
-      (-1) ^ (p + 1) * ∑ k ∈ Finset.Ioi i, ∑ α ∈ S p k, bminor A k k α := by
-      rw [Spec.diagSum_eq]
-      rw [hEq1]
-      simp only [Matrix.of_apply, ← Finset.mul_sum]
+        (-1) ^ (p + 1) * ∑ k ∈ Finset.Ioi i, ∑ α ∈ S p k, bminor A k k α := by
+      simp only [Spec.diagSum_eq, hEq1, Matrix.of_apply, ← Finset.mul_sum]
       ring
     _ = (-1) ^ (p + 1) * ∑ α ∈ S (p + 1) i, pminor A α := by
       rw [S_succ_eq_biUnion, Finset.sum_biUnion]
