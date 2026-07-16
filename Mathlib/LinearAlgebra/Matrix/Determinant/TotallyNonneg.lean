@@ -61,7 +61,7 @@ variable [IsStrictOrderedRing R]
   by_cases h_range : Set.range rows = Set.range cols
   · simp [hrows.eq_of_range_eq hcols h_range, submatrix_one cols hcols.injective]
   · obtain ⟨i, hi⟩ : ∃ i : Fin n, rows i ∉ Set.range cols :=
-      hrows.injective.exists_not_mem_range_of_range_ne hcols.injective h_range
+      hrows.injective.exists_not_mem_range_of_range_ne h_range
     have : ∀ j, rows i ≠ cols j := by grind
     simp [det_eq_zero_of_row_eq_zero i, this]
 
@@ -71,5 +71,13 @@ lemma IsTotallyNonneg.smul {M : Matrix ι ι R}
   intro _ rows cols hrows hcols
   change 0 ≤ (c • M.submatrix rows cols).det
   grind [det_smul, mul_nonneg, pow_nonneg, hM _]
+
+theorem IsTotallyNonneg.smul_iff {R : Type*} [CommRing R] [LinearOrder R] [IsStrictOrderedRing R]
+    {M : Matrix ι ι R} {c : R} (hc : 0 < c) :
+    (c • M).IsTotallyNonneg ↔ M.IsTotallyNonneg := by
+  constructor
+  · intro hM _ _ _ hrows hcols
+    simpa [submatrix_smul, hc] using hM hrows hcols
+  · exact (·.smul hc.le)
 
 end Matrix
