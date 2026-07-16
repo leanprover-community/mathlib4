@@ -306,22 +306,32 @@ In this section we prove that a closed interval (hence, any `OrdConnected` set) 
 conditionally complete linear order is preconnected.
 -/
 
+omit [TopologicalSpace α] [OrderTopology α] in
+/-- A version of the continuous induction principle `IsClosed.mem_of_ge_of_forall_exists_gt` where
+closedness is weakened to membership of the supremum: if `a ∈ s`, the supremum of `s ∩ [a, b]`
+belongs to `s`, and `s ∩ [a, b)` has no maximal point, then `b ∈ s`. -/
+theorem mem_of_csSup_mem_of_forall_exists_gt {a b : α} {s : Set α} (hs : sSup (s ∩ Icc a b) ∈ s)
+    (ha : a ∈ s) (hab : a ≤ b) (hgt : ∀ x ∈ s ∩ Ico a b, (s ∩ Ioc x b).Nonempty) : b ∈ s := by
+  set S := s ∩ Icc a b
+  replace ha : a ∈ S := ⟨ha, left_mem_Icc.2 hab⟩
+  have hbd : b ∈ upperBounds S := fun _ hx ↦ hx.2.2
+  have Sbd : BddAbove S := ⟨b, hbd⟩
+  let c := sSup S
+  have hac : a ≤ c := le_csSup Sbd ha
+  have c_mem : c ∈ S := ⟨hs, hac, csSup_le ⟨a, ha⟩ hbd⟩
+  obtain hc | hc := c_mem.2.2.eq_or_lt
+  · exact hc ▸ c_mem.1
+  exfalso
+  rcases hgt c ⟨c_mem.1, c_mem.2.1, hc⟩ with ⟨x, xs, cx, xb⟩
+  exact not_lt_of_ge (le_csSup Sbd ⟨xs, hac.trans cx.le, xb⟩) cx
 
 /-- A "continuous induction principle" for a closed interval: if a set `s` meets `[a, b]`
 on a closed subset, contains `a`, and the set `s ∩ [a, b)` has no maximal point, then `b ∈ s`. -/
 theorem IsClosed.mem_of_ge_of_forall_exists_gt {a b : α} {s : Set α} (hs : IsClosed (s ∩ Icc a b))
     (ha : a ∈ s) (hab : a ≤ b) (hgt : ∀ x ∈ s ∩ Ico a b, (s ∩ Ioc x b).Nonempty) : b ∈ s := by
-  let S := s ∩ Icc a b
-  replace ha : a ∈ S := ⟨ha, left_mem_Icc.2 hab⟩
-  have Sbd : BddAbove S := ⟨b, fun z hz => hz.2.2⟩
-  let c := sSup (s ∩ Icc a b)
-  have c_mem : c ∈ S := hs.csSup_mem ⟨_, ha⟩ Sbd
-  have c_le : c ≤ b := csSup_le ⟨_, ha⟩ fun x hx => hx.2.2
-  rcases eq_or_lt_of_le c_le with hc | hc
-  · exact hc ▸ c_mem.1
-  exfalso
-  rcases hgt c ⟨c_mem.1, c_mem.2.1, hc⟩ with ⟨x, xs, cx, xb⟩
-  exact not_lt_of_ge (le_csSup Sbd ⟨xs, le_trans (le_csSup Sbd ha) (le_of_lt cx), xb⟩) cx
+  replace hs : sSup (s ∩ Icc a b) ∈ s :=
+    (hs.csSup_mem ⟨_, ha, left_mem_Icc.2 hab⟩ ⟨b, fun _ hx ↦ hx.2.2⟩).1
+  exact mem_of_csSup_mem_of_forall_exists_gt hs ha hab hgt
 
 /-- A "continuous induction principle" for a closed interval: if a set `s` meets `[a, b]`
 on a closed subset, contains `a`, and for any `a ≤ x < y ≤ b`, `x ∈ s`, the set `s ∩ (x, y]`
