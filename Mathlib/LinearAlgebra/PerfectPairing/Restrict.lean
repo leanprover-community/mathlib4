@@ -83,6 +83,7 @@ variable {S M' N' : Type*}
   [AddCommGroup M'] [Module S M'] [AddCommGroup N'] [Module S N']
   (i : M' →ₗ[S] M) (j : N' →ₗ[S] N)
 
+set_option backward.isDefEq.respectTransparency false in
 private lemma restrictScalars_injective_aux
     (hi : Injective i)
     (hN : span R (LinearMap.range j : Set N) = ⊤)
@@ -106,6 +107,7 @@ private lemma restrictScalars_injective_aux
   ext n
   simpa using hx n
 
+set_option backward.isDefEq.respectTransparency false in
 private lemma restrictScalars_surjective_aux
     (h : ∀ g : Module.Dual S N', ∃ m,
       (p.toPerfPair (i m)).restrictScalars S ∘ₗ j = Algebra.linearMap S R ∘ₗ g)
