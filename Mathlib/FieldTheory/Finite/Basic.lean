@@ -278,16 +278,15 @@ theorem cast_card_eq_zero : (q : K) = 0 := by
   simp
 
 theorem forall_pow_eq_one_iff (i : ℕ) : (∀ x : Kˣ, x ^ i = 1) ↔ q - 1 ∣ i := by
-  classical
-    obtain ⟨x, hx⟩ := IsCyclic.exists_generator (α := Kˣ)
-    rw [← Nat.card_eq_fintype_card, ← Nat.card_units, ← orderOf_eq_card_of_forall_mem_zpowers hx,
-      orderOf_dvd_iff_pow_eq_one]
-    constructor
-    · intro h; apply h
-    · intro h y
-      simp_rw [← mem_powers_iff_mem_zpowers] at hx
-      rcases hx y with ⟨j, rfl⟩
-      rw [← pow_mul, mul_comm, pow_mul, h, one_pow]
+  obtain ⟨x, hx⟩ := IsCyclic.exists_generator (α := Kˣ)
+  rw [← Nat.card_eq_fintype_card, ← Nat.card_units, ← orderOf_eq_card_of_forall_mem_zpowers hx,
+    orderOf_dvd_iff_pow_eq_one]
+  constructor
+  · intro h; apply h
+  · intro h y
+    simp_rw [← mem_powers_iff_mem_zpowers] at hx
+    rcases hx y with ⟨j, rfl⟩
+    rw [← pow_mul, mul_comm, pow_mul, h, one_pow]
 
 /-- The sum of `x ^ i` as `x` ranges over the units of a finite field of cardinality `q`
 is equal to `0` unless `(q - 1) ∣ i`, in which case the sum is `q - 1`. -/
@@ -728,7 +727,7 @@ theorem Subfield.card_bot : Nat.card (⊥ : Subfield F) = p := by
     ← Nat.card_eq_of_bijective _ (RingHom.rangeRestrictField_bijective _), Nat.card_zmod]
 
 /-- The prime subfield is finite. -/
-@[implicit_reducible]
+@[instance_reducible]
 def Subfield.fintypeBot : Fintype (⊥ : Subfield F) :=
   Fintype.subtype (univ.map ⟨_, (ZMod.castHom (m := p) dvd_rfl F).injective⟩)
     fun _ ↦ by simp_rw [Finset.mem_map, mem_univ, true_and, ← fieldRange_castHom_eq_bot p]; rfl
@@ -804,27 +803,26 @@ theorem pow_dichotomy (hF : ringChar F ≠ 2) {a : F} (ha : a ≠ 0) :
 if and only if `a ^ (#F / 2) = 1`. -/
 theorem unit_isSquare_iff (hF : ringChar F ≠ 2) (a : Fˣ) :
     IsSquare a ↔ a ^ (Fintype.card F / 2) = 1 := by
-  classical
-    obtain ⟨g, hg⟩ := IsCyclic.exists_generator (α := Fˣ)
-    obtain ⟨n, hn⟩ : a ∈ Submonoid.powers g := by rw [mem_powers_iff_mem_zpowers]; apply hg
-    have hodd := Nat.two_mul_odd_div_two (FiniteField.odd_card_of_char_ne_two hF)
-    constructor
-    · rintro ⟨y, rfl⟩
-      rw [← pow_two, ← pow_mul, hodd]
-      apply_fun Units.val using Units.val_injective
-      push_cast
-      exact FiniteField.pow_card_sub_one_eq_one (y : F) (Units.ne_zero y)
-    · subst a; intro h
-      rw [← Nat.card_eq_fintype_card] at hodd h
-      have key : 2 * (Nat.card F / 2) ∣ n * (Nat.card F / 2) := by
-        rw [← pow_mul] at h
-        rw [hodd, ← Nat.card_units, ← orderOf_eq_card_of_forall_mem_zpowers hg]
-        apply orderOf_dvd_of_pow_eq_one h
-      have : 0 < Nat.card F / 2 := Nat.div_pos Finite.one_lt_card (by simp)
-      obtain ⟨m, rfl⟩ := Nat.dvd_of_mul_dvd_mul_right this key
-      refine ⟨g ^ m, ?_⟩
-      dsimp
-      rw [mul_comm, pow_mul, pow_two]
+  obtain ⟨g, hg⟩ := IsCyclic.exists_generator (α := Fˣ)
+  obtain ⟨n, hn⟩ : a ∈ Submonoid.powers g := by rw [mem_powers_iff_mem_zpowers]; apply hg
+  have hodd := Nat.two_mul_odd_div_two (FiniteField.odd_card_of_char_ne_two hF)
+  constructor
+  · rintro ⟨y, rfl⟩
+    rw [← pow_two, ← pow_mul, hodd]
+    apply_fun Units.val using Units.val_injective
+    push_cast
+    exact FiniteField.pow_card_sub_one_eq_one (y : F) (Units.ne_zero y)
+  · subst a; intro h
+    rw [← Nat.card_eq_fintype_card] at hodd h
+    have key : 2 * (Nat.card F / 2) ∣ n * (Nat.card F / 2) := by
+      rw [← pow_mul] at h
+      rw [hodd, ← Nat.card_units, ← orderOf_eq_card_of_forall_mem_zpowers hg]
+      apply orderOf_dvd_of_pow_eq_one h
+    have : 0 < Nat.card F / 2 := Nat.div_pos Finite.one_lt_card (by simp)
+    obtain ⟨m, rfl⟩ := Nat.dvd_of_mul_dvd_mul_right this key
+    refine ⟨g ^ m, ?_⟩
+    dsimp
+    rw [mul_comm, pow_mul, pow_two]
 
 /-- A non-zero `a : F` is a square if and only if `a ^ (#F / 2) = 1`. -/
 theorem isSquare_iff (hF : ringChar F ≠ 2) {a : F} (ha : a ≠ 0) :

@@ -423,6 +423,7 @@ theorem weightedHomogeneousComponent_finsupp :
 
 variable (w)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Every polynomial is the sum of its weighted homogeneous components. -/
 theorem sum_weightedHomogeneousComponent :
     (finsum fun m => weightedHomogeneousComponent w m φ) = φ := by
@@ -513,6 +514,7 @@ theorem DirectSum.coeAddMonoidHom_eq_support_sum [DecidableEq σ] [DecidableEq R
       DFinsupp.sum x (fun _ x => ↑x) :=
   DirectSum.coeLinearMap_eq_dfinsuppSum R w x
 
+set_option backward.isDefEq.respectTransparency false in
 theorem DirectSum.coeLinearMap_eq_finsum [DecidableEq M]
     (x : DirectSum M fun i : M => ↥(weightedHomogeneousSubmodule R w i)) :
     (DirectSum.coeLinearMap fun i : M => weightedHomogeneousSubmodule R w i) x =
@@ -521,6 +523,7 @@ theorem DirectSum.coeLinearMap_eq_finsum [DecidableEq M]
   rw [DirectSum.coeLinearMap_eq_dfinsuppSum, DFinsupp.sum, finsum_eq_sum_of_support_subset]
   apply DirectSum.support_subset
 
+set_option backward.isDefEq.respectTransparency false in
 theorem weightedHomogeneousComponent_directSum [DecidableEq M]
     (x : DirectSum M fun i : M => ↥(weightedHomogeneousSubmodule R w i)) (m : M) :
     (weightedHomogeneousComponent w m)
@@ -646,9 +649,10 @@ theorem decompose'_apply [DecidableEq M] (φ : MvPolynomial σ R) (m : M) :
   · rw [DirectSum.mk_apply_of_notMem hm, Submodule.coe_zero,
       weightedHomogeneousComponent_eq_zero_of_notMem w φ m hm]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a weight `w`, the decomposition of `MvPolynomial σ R` into weighted homogeneous
 submodules -/
-@[implicit_reducible]
+@[instance_reducible]
 def weightedDecomposition [DecidableEq M] :
     DirectSum.Decomposition (weightedHomogeneousSubmodule R w) where
   decompose' := decompose' R w
@@ -665,7 +669,6 @@ def weightedDecomposition [DecidableEq M] :
     conv_lhs => rw [← Subtype.coe_inj]
     rw [decompose'_apply, Submodule.coe_zero]
   right_inv x := by
-    classical
     apply DFinsupp.ext
     intro m
     rw [← Subtype.coe_inj, decompose'_apply]
@@ -674,18 +677,20 @@ def weightedDecomposition [DecidableEq M] :
 
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- Given a weight, `MvPolynomial` as a graded algebra -/
-@[implicit_reducible]
+@[instance_reducible]
 def weightedGradedAlgebra [DecidableEq M] :
     GradedAlgebra (weightedHomogeneousSubmodule R w) where
   toDecomposition := weightedDecomposition R w
   toGradedMonoid  := WeightedHomogeneousSubmodule.gradedMonoid
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem weightedDecomposition.decompose'_eq [DecidableEq M] :
     (weightedDecomposition R w).decompose' = fun φ : MvPolynomial σ R =>
       DirectSum.mk (fun i : M => ↥(weightedHomogeneousSubmodule R w i))
         (Finset.image (weight w) φ.support) fun m =>
           ⟨weightedHomogeneousComponent w m φ, weightedHomogeneousComponent_mem w φ m⟩ := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem weightedDecomposition.decompose'_apply [DecidableEq M]
     (φ : MvPolynomial σ R) (m : M) :
     ((weightedDecomposition R w).decompose' φ m : MvPolynomial σ R) =

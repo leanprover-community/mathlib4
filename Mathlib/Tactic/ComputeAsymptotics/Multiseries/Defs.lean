@@ -151,6 +151,7 @@ theorem FriendlyOperationClass.mk' {basis_hd basis_tl} {γ : Type*}
   suffices Seq.FriendlyOperationClass op by constructor
   exact ⟨h⟩
 
+set_option backward.isDefEq.respectTransparency false in
 private lemma destruct_eq_destruct_map {basis_hd basis_tl}
     (s : Stream'.Seq (ℝ × MultiseriesExpansion basis_tl)) :
     s.destruct = (Multiseries.destruct (basis_hd := basis_hd) s).map
@@ -158,6 +159,7 @@ private lemma destruct_eq_destruct_map {basis_hd basis_tl}
   simp only [destruct, Option.map_map]
   exact Option.map_id_apply.symm
 
+set_option backward.isDefEq.respectTransparency false in
 theorem FriendlyOperation.coind_comp_friend_left {basis_hd basis_tl}
     {op : Multiseries basis_hd basis_tl → Multiseries basis_hd basis_tl}
     (motive : (Multiseries basis_hd basis_tl → Multiseries basis_hd basis_tl) → Prop)
@@ -175,6 +177,7 @@ theorem FriendlyOperation.coind_comp_friend_left {basis_hd basis_tl}
   simp
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem FriendlyOperation.coind_comp_friend_right {basis_hd basis_tl}
     {op : Multiseries basis_hd basis_tl → Multiseries basis_hd basis_tl}
     (motive : (Multiseries basis_hd basis_tl → Multiseries basis_hd basis_tl) → Prop)
@@ -244,6 +247,7 @@ def FriendlyOperation.unfold {basis_hd basis_tl}
       @Multiseries.FriendlyOperation basis_hd basis_tl)) :=
   Seq.FriendlyOperation.unfold h hd? |>.map (fun ((exp, coef), op') ↦ (exp, coef, op'))
 
+set_option backward.isDefEq.respectTransparency false in
 theorem FriendlyOperation.destruct_apply_eq_unfold {basis_hd basis_tl}
     {op : Multiseries basis_hd basis_tl → Multiseries basis_hd basis_tl}
     (h : FriendlyOperation op) (ms : Multiseries basis_hd basis_tl) :
@@ -358,6 +362,7 @@ theorem corec_cons {β : Type*} {basis_hd} {basis_tl} {exp : ℝ}
   rw [Seq.corec_cons]
   simpa
 
+set_option backward.isDefEq.respectTransparency false in
 theorem gcorec_nil {β γ : Type*} {basis_hd} {basis_tl}
     {F : β → Option (ℝ × MultiseriesExpansion basis_tl × γ × β)}
     {op : γ → Multiseries basis_hd basis_tl → Multiseries basis_hd basis_tl}
@@ -369,6 +374,7 @@ theorem gcorec_nil {β γ : Type*} {basis_hd} {basis_tl}
   · simp [nil]
   · simpa
 
+set_option backward.isDefEq.respectTransparency false in
 theorem gcorec_some {β γ : Type*} {basis_hd} {basis_tl}
     {F : β → Option (ℝ × MultiseriesExpansion basis_tl × γ × β)}
     {op : γ → Multiseries basis_hd basis_tl → Multiseries basis_hd basis_tl}
@@ -400,6 +406,7 @@ theorem destruct_eq_none {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : Multi
   apply Stream'.Seq.destruct_eq_none
   simpa [destruct] using h
 
+set_option backward.isDefEq.respectTransparency false in
 theorem destruct_eq_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : Multiseries basis_hd basis_tl}
     {exp : ℝ} {coef : MultiseriesExpansion basis_tl} {tl : Multiseries basis_hd basis_tl}
     (h : destruct ms = some (exp, coef, tl)) : ms = cons exp coef tl := by
@@ -412,6 +419,7 @@ theorem head_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} :
     (nil : Multiseries basis_hd basis_tl).head = none := by
   simp [head, nil]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem head_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {exp : ℝ}
     {coef : MultiseriesExpansion basis_tl}
@@ -419,11 +427,13 @@ theorem head_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {exp : ℝ}
     (cons exp coef tl).head = some (exp, coef) := by
   simp [head, cons]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem tail_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} :
     (nil : Multiseries basis_hd basis_tl).tail = nil := by
   simp [tail, nil]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem tail_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {exp : ℝ}
     {coef : MultiseriesExpansion basis_tl}
@@ -431,12 +441,14 @@ theorem tail_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {exp : ℝ}
     (cons exp coef tl).tail = tl := by
   simp [tail, cons]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_nil {basis_hd basis_tl basis_hd' basis_tl'} (f : ℝ → ℝ)
     (g : MultiseriesExpansion basis_tl → MultiseriesExpansion basis_tl') :
     (nil : Multiseries basis_hd basis_tl).map f g = (nil : Multiseries basis_hd' basis_tl') := by
   simp [map, nil]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_cons {basis_hd basis_tl basis_hd' basis_tl'} (f : ℝ → ℝ)
     (g : MultiseriesExpansion basis_tl → MultiseriesExpansion basis_tl') {exp : ℝ}
@@ -450,6 +462,7 @@ theorem map_id {basis_hd basis_tl} (ms : Multiseries basis_hd basis_tl) :
     ms.map (fun exp => exp) (fun coef => coef) = ms :=
   Stream'.Seq.map_id ms
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp← ]
 theorem map_comp {b₁ b₂ b₃ bs₁ bs₂ bs₃}
     (f₁ : ℝ → ℝ) (g₁ : MultiseriesExpansion bs₁ → MultiseriesExpansion bs₂)
@@ -699,6 +712,7 @@ theorem cons {basis_hd basis_tl} {exp : ℝ} {coef : MultiseriesExpansion basis_
     · exact Seq.Pairwise_cons_nil
     · exact h_tl_tl.cons_cons_of_trans (by simpa [lt_iff_lt] using h_comp)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- If `cons (exp, coef) tl` is `Sorted`, then `coef` and `tl` are `Sorted`, and the
 leading exponent of `tl` is less than `exp`. -/
 theorem elim_cons {basis_hd basis_tl} {exp : ℝ} {coef : MultiseriesExpansion basis_tl}
