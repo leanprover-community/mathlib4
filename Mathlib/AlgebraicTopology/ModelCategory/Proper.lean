@@ -56,7 +56,7 @@ variable {E' B' E B : C}
 lemma weakEquivalence {t : E' ⟶ B'} {l : E' ⟶ E} {r : B' ⟶ B} {b : E ⟶ B}
     [WeakEquivalence r] [Fibration b] (sq : IsPullback t l r b) :
     WeakEquivalence l :=
-  (weakEquivalence_iff ..).2
+  (weakEquivalence_iff ..).mpr
     (MorphismProperty.IsStableUnderBaseChangeAlong.of_isPullback
       sq (mem_weakEquivalences r))
 
