@@ -30,7 +30,7 @@ theorem FiniteField.Matrix.charpoly_pow_card {K : Type*} [Field K] [Fintype K] (
   cases (isEmpty_or_nonempty n).symm
   · obtain ⟨p, hp⟩ := CharP.exists K
     rcases FiniteField.card K p with ⟨⟨k, kpos⟩, ⟨hp, hk⟩⟩
-    haveI : Fact p.Prime := ⟨hp⟩
+    have : Fact p.Prime := ⟨hp⟩
     dsimp at hk; rw [hk]
     apply (frobenius_inj K[X] p).iterate k
     repeat' rw [iterate_frobenius (R := K[X])]; rw [← hk]

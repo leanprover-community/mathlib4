@@ -48,6 +48,7 @@ def comapₗ [MeasurableSpace α] [MeasurableSpace β] (f : α → β) : Measure
       exact hf.2 s hs
   else 0
 
+set_option backward.isDefEq.respectTransparency false in
 theorem comapₗ_apply {_ : MeasurableSpace α} {_ : MeasurableSpace β} (f : α → β)
     (hfi : Injective f) (hf : ∀ s, MeasurableSet s → MeasurableSet (f '' s)) (μ : Measure β)
     (hs : MeasurableSet s) : comapₗ f μ s = μ (f '' s) := by
@@ -107,6 +108,7 @@ theorem measure_image_eq_zero_of_comap_eq_zero (f : α → β) (μ : Measure β)
   rw [← nonpos_iff_eq_zero]
   exact (le_comap_apply f μ hfi hf s).trans hs.le
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ae_eq_image_of_ae_eq_comap (f : α → β) (μ : Measure β) (hfi : Injective f)
     (hf : ∀ s, MeasurableSet s → NullMeasurableSet (f '' s) μ)
     {s t : Set α} (hst : s =ᵐ[comap f μ] t) : f '' s =ᵐ[μ] f '' t := by
