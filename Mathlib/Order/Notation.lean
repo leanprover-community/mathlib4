@@ -101,11 +101,12 @@ private meta def hasLinearOrder (u : Level) (α : Q(Type u)) (cls : Q(Type u →
   try
     withNewMCtxDepth do
     -- `isDefEq` may call type class search to instantiate `mvar`, so we need the local instances.
-    -- Unfortunately, we need to set the local instances manually.
+    -- Unfortunately, the local instances are not present in delaboration.
+    -- See https://leanprover.zulipchat.com/#narrow/channel/270676-lean4/topic/Bug.3F.20Local.20instances.20not.20populated.20during.20delaboration/with/545766705
     withLocalInstances (← getLCtx).decls.toList.reduceOption do
       let mvar ← mkFreshExprMVarQ q($(linearOrderExpr u) $α) (kind := .synthetic)
       let inst' : Q($cls $α) := q($toCls $α $mvar)
-      withReducibleAndInstances <| isDefEq inst inst'
+      withImplicit <| isDefEq inst inst'
   catch _ =>
     -- For instance, if `LinearOrder` is not yet imported.
     return false
