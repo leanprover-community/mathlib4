@@ -522,7 +522,7 @@ theorem sum_toPOUFun_eq (x : X) : ∑ᶠ i, f.toPOUFun i x = 1 - ∏ᶠ i, (1 - 
     rw [hs, mulSupport_one_sub]
     exact fun i => id
   classical
-  letI : LinearOrder ι := linearOrderOfSTO WellOrderingRel
+  let : LinearOrder ι := linearOrderOfSTO WellOrderingRel
   rw [finsum_eq_sum_of_support_subset _ A, finprod_eq_prod_of_mulSupport_subset _ B,
     Finset.prod_one_sub_ordered, sub_sub_cancel]
   refine Finset.sum_congr rfl fun i _ => ?_

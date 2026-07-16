@@ -34,7 +34,7 @@ namespace CategoryTheory
 
 namespace PreGaloisCategory
 
-open Functor
+open CategoryTheory.Functor
 
 variable {C : Type u₁} [Category.{u₂} C] (F : C ⥤ FintypeCat.{w})
 
@@ -47,6 +47,7 @@ def autEmbedding : Aut F →* ∀ X, Aut (F.obj X) :=
 lemma autEmbedding_apply (σ : Aut F) (X : C) : autEmbedding F σ X = σ.app X :=
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma autEmbedding_injective : Function.Injective (autEmbedding F) := by
   intro σ τ h
   ext X x
@@ -86,6 +87,7 @@ instance : TopologicalSpace (Aut F) :=
   · use NatIso.ofComponents a (fun {X Y} f ↦ h ⟨X, Y, f⟩)
     rfl-/
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The image of `Aut F` in `∀ X, Aut (F.obj X)` are precisely the compatible families of
 automorphisms. -/
 lemma autEmbedding_range :
@@ -209,8 +211,8 @@ lemma nhds_one_has_basis_stabilizers : (nhds (1 : Aut F)).HasBasis (fun _ ↦ Tr
       intro t (ht : t.hom.app A a = a)
       apply hU
       apply hmem
-      haveI (X : I) : IsConnected X.val := hc X.val X.property
-      haveI (X : I) : Nonempty (F.obj X.val) := nonempty_fiber_of_isConnected F X
+      have (X : I) : IsConnected X.val := hc X.val X.property
+      have (X : I) : Nonempty (F.obj X.val) := nonempty_fiber_of_isConnected F X
       intro X
       ext x
       simp only [FintypeCat.id_apply]

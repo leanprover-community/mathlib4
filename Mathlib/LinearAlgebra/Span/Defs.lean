@@ -679,6 +679,7 @@ theorem Module.isPrincipal_submodule_iff {p : Submodule R M} :
     have ⟨r, hr⟩ := mem_span_singleton.mp (ha.le x.2)
     exact mem_span_singleton.mpr ⟨r, Subtype.ext hr⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Module.IsPrincipal.of_surjective (f : M →ₗ[R] M₂) (hf : Function.Surjective f)
     [IsPrincipal R M] : IsPrincipal R M₂ where
   principal := by
