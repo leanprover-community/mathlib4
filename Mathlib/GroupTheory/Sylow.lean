@@ -522,6 +522,7 @@ theorem mapSurjective_surjective (p : ℕ) [Fact p.Prime] :
 
 end mapSurjective
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Frattini's Argument**: If `N` is a normal subgroup of `G`, and if `P` is a Sylow `p`-subgroup
   of `N`, then `N_G(P) ⊔ N = G`. -/
 theorem normalizer_sup_eq_top {p : ℕ} [Fact p.Prime] {N : Subgroup G} [N.Normal]
@@ -778,7 +779,7 @@ theorem _root_.Group.card_dvd_prod_orderOf [Fintype G] : Nat.card G ∣ ∏ g : 
   simp [Finset.card_sdiff, ← Nat.card_eq_fintype_card, hH]
 
 /-- If `G` has a normal Sylow `p`-subgroup, then it is the only Sylow `p`-subgroup. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def unique_of_normal {p : ℕ} [Fact p.Prime] [Finite (Sylow p G)] (P : Sylow p G)
     (h : P.Normal) : Unique (Sylow p G) := by
   refine { uniq := fun Q ↦ ?_ }

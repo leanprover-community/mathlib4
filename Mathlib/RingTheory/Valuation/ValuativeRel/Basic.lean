@@ -329,7 +329,7 @@ lemma val_posSubmonoid_ne_zero (x : posSubmonoid R) : (x : R) ≠ 0 := by
 
 variable (R) in
 /-- The setoid used to construct `ValueGroupWithZero R`. -/
-@[implicit_reducible]
+@[instance_reducible]
 def valueSetoid : Setoid (R × posSubmonoid R) where
   r := fun (x, s) (y, t) => x * t ≤ᵥ y * s ∧ y * s ≤ᵥ x * t
   iseqv := {
@@ -694,7 +694,7 @@ lemma ValueGroupWithZero.mk_eq_div (r : R) (s : posSubmonoid R) :
   simp [valuation, mk_eq_mk]
 
 /-- Construct a valuative relation on a ring using a valuation. -/
-@[implicit_reducible]
+@[instance_reducible]
 def ofValuation
     {S Γ : Type*} [Ring S]
     [LinearOrderedCommGroupWithZero Γ]
@@ -1149,6 +1149,7 @@ lemma embed_strictMono [v.Compatible] : StrictMono (embed v) := by
   · simp [restrict₀_apply, embed]
   · simp [restrict₀_apply, embed]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 When we have `h : w.IsEquiv v`, the image group (with zero) of `v` is
 isomorphic to that of `w` via `h.orderMonoidIso`. Then the following diagram is commutative:

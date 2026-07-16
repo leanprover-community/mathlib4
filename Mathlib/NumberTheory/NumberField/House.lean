@@ -84,6 +84,7 @@ lemma norm_embedding_le_house (α : K) (σ : K →+* ℂ) : ‖σ α‖ ≤ hous
   rw [house_eq_sup']
   exact Finset.le_sup' (f := (‖· α‖₊)) (Finset.mem_univ σ)
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma one_le_house_of_isIntegral {α : K} (hα : IsIntegral ℤ α) (hα0 : α ≠ 0) :
     1 ≤ house α := by
   have ⟨σ, hσ⟩ : ∃ σ : K →+* ℂ, 1 ≤ ‖σ α‖ := by
@@ -335,7 +336,6 @@ private theorem house_le_bound : ∀ l, house (ξ K x l).1 ≤ (c₁ K) *
     · exact asiegel_remark K a habs Apos
   · rw [mul_comm (q : ℝ) (c₁ K)]; rfl
 
-set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 include hpq h0p cardα cardβ ha habs in
 /-- There exists a "small" non-zero algebraic integral solution of an
