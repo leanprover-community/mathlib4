@@ -73,6 +73,7 @@ instance Associates.ufm [CommMonoidWithZero α] [UniqueFactorizationMonoid α] :
 theorem prime_factors_unique [CommMonoidWithZero α] [IsCancelMulZero α] :
     ∀ {f g : Multiset α},
       (∀ x ∈ f, Prime x) → (∀ x ∈ g, Prime x) → f.prod ~ᵤ g.prod → Multiset.Rel Associated f g := by
+  classical
   intro f
   induction f using Multiset.induction_on with
   | empty =>
