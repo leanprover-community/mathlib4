@@ -194,19 +194,28 @@ theorem isBiOrderable_iff_exists_linearOrder_mulLeftStrictMono_mulRightStrictMon
   exact ⟨‹LinearOrder G›, inferInstance, inferInstance⟩
 
 variable (G) in
-@[to_additive]
+/-- A left-cancellative, left-orderable monoid admits a linear order with strictly monotone left
+multiplication. -/
+@[to_additive /-- A left-cancellative, left-orderable additive monoid admits a linear order with
+strictly monotone left addition. -/]
 theorem exists_linearOrder_mulLeftStrictMono [IsLeftCancelMul G] [IsLeftOrderable G] :
     ∃ _ : LinearOrder G, MulLeftStrictMono G :=
   isLeftOrderable_iff_exists_linearOrder_mulLeftStrictMono.mp ‹_›
 
 variable (G) in
-@[to_additive]
+/-- A right-cancellative, right-orderable monoid admits a linear order with strictly monotone right
+multiplication. -/
+@[to_additive /-- A right-cancellative, right-orderable additive monoid admits a linear order with
+strictly monotone right addition. -/]
 theorem exists_linearOrder_mulRightStrictMono [IsRightCancelMul G] [IsRightOrderable G] :
     ∃ _ : LinearOrder G, MulRightStrictMono G :=
   isRightOrderable_iff_exists_linearOrder_mulRightStrictMono.mp ‹_›
 
 variable (G) in
-@[to_additive]
+/-- A cancellative, bi-orderable monoid admits a linear order that is strictly monotone under both
+left and right multiplication. -/
+@[to_additive /-- A cancellative, bi-orderable additive monoid admits a linear order that is
+strictly monotone under both left and right addition. -/]
 theorem exists_linearOrder_mulLeftStrictMono_mulRightStrictMono [IsCancelMul G] [IsBiOrderable G] :
     ∃ _ : LinearOrder G, MulLeftStrictMono G ∧ MulRightStrictMono G :=
   isBiOrderable_iff_exists_linearOrder_mulLeftStrictMono_mulRightStrictMono.mp ‹_›
@@ -214,7 +223,8 @@ theorem exists_linearOrder_mulLeftStrictMono_mulRightStrictMono [IsCancelMul G] 
 variable {H : Type*} [Monoid H]
 
 /-- Left-orderability transports along a monoid isomorphism `e : G ≃* H`. -/
-@[to_additive]
+@[to_additive /-- Left-orderability transports along an additive monoid isomorphism
+`e : G ≃+ H`. -/]
 theorem IsLeftOrderable.of_mulEquiv [IsLeftOrderable G] (e : G ≃* H) : IsLeftOrderable H := by
   obtain ⟨_, _⟩ := exists_linearOrder_mulLeftMono G
   let : LinearOrder H := LinearOrder.lift' e.symm e.symm.injective
@@ -225,7 +235,8 @@ theorem IsLeftOrderable.of_mulEquiv [IsLeftOrderable G] (e : G ≃* H) : IsLeftO
   exact hab
 
 /-- Right-orderability transports along a monoid isomorphism `e : G ≃* H`. -/
-@[to_additive]
+@[to_additive /-- Right-orderability transports along an additive monoid isomorphism
+`e : G ≃+ H`. -/]
 theorem IsRightOrderable.of_mulEquiv [IsRightOrderable G] (e : G ≃* H) : IsRightOrderable H := by
   obtain ⟨_, _⟩ := exists_linearOrder_mulRightMono G
   let : LinearOrder H := LinearOrder.lift' e.symm e.symm.injective
@@ -236,7 +247,8 @@ theorem IsRightOrderable.of_mulEquiv [IsRightOrderable G] (e : G ≃* H) : IsRig
   exact hab
 
 /-- Bi-orderability transports along a monoid isomorphism `e : G ≃* H`. -/
-@[to_additive]
+@[to_additive /-- Bi-orderability transports along an additive monoid isomorphism
+`e : G ≃+ H`. -/]
 theorem IsBiOrderable.of_mulEquiv [IsBiOrderable G] (e : G ≃* H) : IsBiOrderable H := by
   obtain ⟨_, _, _⟩ := exists_linearOrder_mulLeftMono_mulRightMono G
   let : LinearOrder H := LinearOrder.lift' e.symm e.symm.injective
@@ -251,23 +263,24 @@ theorem IsBiOrderable.of_mulEquiv [IsBiOrderable G] (e : G ≃* H) : IsBiOrderab
     exact hab
 
 /-- Left-orderability is invariant under monoid isomorphism. -/
-@[to_additive]
+@[to_additive /-- Left-orderability is invariant under additive monoid isomorphism. -/]
 theorem MulEquiv.isLeftOrderable_congr (e : G ≃* H) : IsLeftOrderable G ↔ IsLeftOrderable H :=
   ⟨fun _ ↦ .of_mulEquiv e, fun _ ↦ .of_mulEquiv e.symm⟩
 
 /-- Right-orderability is invariant under monoid isomorphism. -/
-@[to_additive]
+@[to_additive /-- Right-orderability is invariant under additive monoid isomorphism. -/]
 theorem MulEquiv.isRightOrderable_congr (e : G ≃* H) : IsRightOrderable G ↔ IsRightOrderable H :=
   ⟨fun _ ↦ .of_mulEquiv e, fun _ ↦ .of_mulEquiv e.symm⟩
 
 /-- Bi-orderability is invariant under monoid isomorphism. -/
-@[to_additive]
+@[to_additive /-- Bi-orderability is invariant under additive monoid isomorphism. -/]
 theorem MulEquiv.isBiOrderable_congr (e : G ≃* H) : IsBiOrderable G ↔ IsBiOrderable H :=
   ⟨fun _ ↦ .of_mulEquiv e, fun _ ↦ .of_mulEquiv e.symm⟩
 
 /-- Right-orderability of `G` is the same as left-orderability of the opposite monoid `Gᵐᵒᵖ`, since
 right multiplication on `G` is left multiplication on `Gᵐᵒᵖ`. -/
-@[to_additive]
+@[to_additive /-- Right-orderability of `G` is the same as left-orderability of the opposite
+additive monoid `Gᵃᵒᵖ`, since right addition on `G` is left addition on `Gᵃᵒᵖ`. -/]
 theorem isLeftOrderable_mulOpposite_iff_isRightOrderable :
     IsLeftOrderable Gᵐᵒᵖ ↔ IsRightOrderable G := by
   refine ⟨fun _ ↦ ?_, fun _ ↦ ?_⟩
@@ -286,7 +299,8 @@ theorem isLeftOrderable_mulOpposite_iff_isRightOrderable :
 
 /-- Left-orderability of `G` is the same as right-orderability of the opposite monoid `Gᵐᵒᵖ`, since
 left multiplication on `G` is right multiplication on `Gᵐᵒᵖ`. -/
-@[to_additive]
+@[to_additive /-- Left-orderability of `G` is the same as right-orderability of the opposite
+additive monoid `Gᵃᵒᵖ`, since left addition on `G` is right addition on `Gᵃᵒᵖ`. -/]
 theorem isRightOrderable_mulOpposite_iff_isLeftOrderable :
     IsRightOrderable Gᵐᵒᵖ ↔ IsLeftOrderable G := by
   refine ⟨fun _ ↦ ?_, fun _ ↦ ?_⟩
@@ -305,7 +319,8 @@ theorem isRightOrderable_mulOpposite_iff_isLeftOrderable :
 
 /-- Bi-orderability transfers to the opposite monoid `Gᵐᵒᵖ`, since left and right multiplication on
 `G` are respectively right and left multiplication on `Gᵐᵒᵖ`. -/
-@[to_additive]
+@[to_additive /-- Bi-orderability transfers to the opposite additive monoid `Gᵃᵒᵖ`, since left and
+right addition on `G` are respectively right and left addition on `Gᵃᵒᵖ`. -/]
 theorem isBiOrderable_mulOpposite_iff : IsBiOrderable Gᵐᵒᵖ ↔ IsBiOrderable G := by
   refine ⟨fun _ ↦ ?_, fun _ ↦ ?_⟩
   · obtain ⟨_, _, _⟩ := exists_linearOrder_mulLeftMono_mulRightMono Gᵐᵒᵖ
@@ -335,7 +350,7 @@ section Group
 variable {G : Type*} [Group G]
 
 /-- A group is left-orderable iff it is right-orderable. -/
-@[to_additive]
+@[to_additive /-- An additive group is left-orderable iff it is right-orderable. -/]
 theorem isLeftOrderable_iff_isRightOrderable : IsLeftOrderable G ↔ IsRightOrderable G := by
   refine ⟨fun _ ↦ ?_, fun _ ↦ ?_⟩
   · obtain ⟨_, _⟩ := exists_linearOrder_mulLeftMono G
