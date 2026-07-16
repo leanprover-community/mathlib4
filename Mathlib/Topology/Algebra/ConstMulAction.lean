@@ -232,7 +232,7 @@ def Homeomorph.smul (γ : G) : α ≃ₜ α where
 
 @[to_additive]
 lemma Homeomorph.smul_symm {g : G} : (Homeomorph.smul (α := α) g).symm = Homeomorph.smul g⁻¹ :=
-  Homeomorph.ext_iff.mpr fun x ↦ Homeomorph.smul_symm_apply g x
+  Homeomorph.ext_iff.mpr <| smul_symm_apply g
 
 /-- The homeomorphism given by affine-addition by an element of an additive group `Γ` acting on
   `T` is a homeomorphism from `T` to itself. -/
