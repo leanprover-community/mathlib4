@@ -167,12 +167,15 @@ private theorem mk_induction_of_point (p : P) {motive : Homogenization k P → P
     (x : Homogenization k P) (mk_mk : ∀ (v : V) (c : k), motive (.mk (.mk v c p))) :
     motive x := by
   rcases x with ⟨⟨v, c, q⟩ | v⟩
-  · convert mk_mk (v + c • (q -ᵥ p)) c using 1
+  · convert (transparency := .default) mk_mk (v + c • (q -ᵥ p)) c using 1
     refine Quot.sound <| .mk_mk ?_
     affine P
-  · convert mk_mk v 0 using 1
+  · convert (transparency := .default) mk_mk v 0 using 1
     exact Quot.sound .ofVector_mk
 
+set_option allowUnsafeReducibility true in
+set_option warn.classDefReducibility false in
+@[semireducible]
 instance [DecidableEq k] [DecidableEq V] : DecidableEq (Homogenization k P) :=
   Quotient.decidableEq
 
@@ -186,17 +189,22 @@ variable
 instance : Zero (Homogenization k P) where
   zero := mk (.ofVector 0)
 
--- We would like to mark these instances `@[semireducible]`, but the linter doesn't allow this,
--- so we wrap them in `id` instead.
+-- We mark this `@[semireducible]` because it is ill-typed at implicit transparency
+set_option allowUnsafeReducibility true in
+set_option warn.classDefReducibility false in
+@[semireducible]
 instance : Add (Homogenization k P) where
-  add := id <| Quotient.map₂ (· + ·) (fun _ _ h₁ _ _ h₂ => Pre.add_congr h₁ h₂)
+  add := Quotient.map₂ (· + ·) (fun _ _ h₁ _ _ h₂ => Pre.add_congr h₁ h₂)
 
 private theorem mk_add_mk {v₁ v₂ : V} {c₁ c₂ : k} {p : P} :
     mk (.mk v₁ c₁ p) + mk (.mk v₂ c₂ p) = mk (.mk (v₁ + v₂) (c₁ + c₂) p) :=
   Quot.sound <| .mk_mk <| by affine P
 
+set_option allowUnsafeReducibility true in
+set_option warn.classDefReducibility false in
+@[semireducible]
 instance : SMul R (Homogenization k P) where
-  smul r := id <| Quotient.map (r • ·) (fun _ _ => Pre.smul_congr r)
+  smul r := Quotient.map (r • ·) (fun _ _ => Pre.smul_congr r)
 
 private theorem smul_mk {r : R} {v : V} {c : k} {p : P} :
     r • mk (.mk v c p) = mk (.mk (r • v) (r • c) p) :=
@@ -538,7 +546,7 @@ def ofPointEquiv [Nontrivial k] :
       | @mk_mk c v p v' p' h =>
         simp only
         obtain ⟨q, _, h'⟩ := h'
-        apply_fun weight at h'
+        replace h' := congr(weight $h')
         change _ = (0 : k) + c • 1 at h'
         rw [smul_eq_mul, mul_one, zero_add, weight_ofPoint] at h'
         rw [← h', _root_.one_smul, ← vadd_eq_vadd_iff_sub_eq_vsub] at h
