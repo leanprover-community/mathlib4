@@ -745,6 +745,11 @@ left adjoint to `pullback f : Subobject Y ⥤ Subobject X`.
 def existsPullbackAdj (f : X ⟶ Y) [HasPullbacks C] : «exists» f ⊣ pullback f :=
   lowerAdjunction (MonoOver.existsPullbackAdj f)
 
+theorem exists_pullback_gc (f : X ⟶ Y) [HasPullbacks C] :
+    GaloisConnection (Subobject.«exists» f).obj (Subobject.pullback f).obj := fun _ _ ↦
+  ⟨fun h ↦ ((existsPullbackAdj f).homEquiv _ _ (homOfLE h)).le,
+    fun h ↦ ((existsPullbackAdj f).homEquiv _ _).symm (homOfLE h) |>.le⟩
+
 /--
 Taking representatives and then `MonoOver.exists` is isomorphic to taking `Subobject.exists`
 and then taking representatives.
