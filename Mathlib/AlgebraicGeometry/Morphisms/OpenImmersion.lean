@@ -59,7 +59,7 @@ lemma isOpenImmersion_SpecMap_iff_of_surjective {R S : CommRingCat}
       ← RingHom.ker_eq_comap_bot]
     simp [φ]
   · rintro ⟨e, he, he'⟩
-    letI := f.hom.toAlgebra
+    let := f.hom.toAlgebra
     have : IsLocalization.Away (1 - e) S :=
       IsLocalization.away_of_isIdempotentElem he.one_sub (by simpa using! he') hf
     exact IsOpenImmersion.of_isLocalization (1 - e)

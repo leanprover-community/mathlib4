@@ -20,7 +20,7 @@ public import Mathlib.Topology.Semicontinuity.Hemicontinuity
 
 This file contains the basic theory for the resolvent and spectrum of a Banach algebra.
 Theorems specific to *complex* Banach algebras, such as *Gelfand's formula* can be found in
- `Mathlib/Analysis/Normed/Algebra/GelfandFormula.lean`.
+`Mathlib/Analysis/Normed/Algebra/GelfandFormula.lean`.
 
 ## Main definitions
 
@@ -120,7 +120,7 @@ theorem mem_resolventSet_of_norm_lt_mul {a : A} {k : 𝕜} (h : ‖a‖ * ‖(1 
   nontriviality A
   have hk : k ≠ 0 :=
     ne_zero_of_norm_ne_zero ((mul_nonneg (norm_nonneg _) (norm_nonneg _)).trans_lt h).ne'
-  letI ku := Units.map ↑ₐ.toMonoidHom (Units.mk0 k hk)
+  let ku := Units.map ↑ₐ.toMonoidHom (Units.mk0 k hk)
   rw [← inv_inv ‖(1 : A)‖,
     mul_inv_lt_iff₀' (inv_pos.2 <| norm_pos_iff.2 (one_ne_zero : (1 : A) ≠ 0))] at h
   have hku : ‖-a‖ < ‖(↑ku⁻¹ : A)‖⁻¹ := by simpa [ku, norm_algebraMap] using h
@@ -254,7 +254,7 @@ theorem spectralRadius_le_pow_nnnorm_pow_one_div (a : A) (n : ℕ) :
       ENNReal.coe_mul] using coe_mono (Real.toNNReal_mono (norm_le_norm_mul_of_mem pow_mem))
   -- take (n + 1)ᵗʰ roots and clean up the left-hand side
   have hn : 0 < ((n + 1 : ℕ) : ℝ) := mod_cast Nat.succ_pos'
-  convert! monotone_rpow_of_nonneg (one_div_pos.mpr hn).le nnnorm_pow_le using 1
+  convert monotone_rpow_of_nonneg (one_div_pos.mpr hn).le nnnorm_pow_le
   all_goals dsimp
   · rw [one_div, pow_rpow_inv_natCast]
     positivity
@@ -491,6 +491,7 @@ section NormedField
 variable [NormedField 𝕜] [NormedAlgebra 𝕜 A] [instSMulMem : SMulMemClass SA 𝕜 A]
 variable (S : SA) [hS : IsClosed (S : Set A)] (x : S)
 
+set_option backward.isDefEq.respectTransparency.types false in
 open SubalgebraClass in
 include instSMulMem in
 /-- Let `S` be a closed subalgebra of a Banach algebra `A`. If `a : S` is invertible in `A`,
@@ -522,7 +523,7 @@ lemma _root_.Subalgebra.frontier_spectrum : frontier (σ 𝕜 x) ⊆ σ 𝕜 (x 
   intro μ hμ
   by_contra h
   rw [spectrum.notMem_iff] at h
-  rw [← frontier_compl, (spectrum.isClosed _).isOpen_compl.frontier_eq, mem_diff] at hμ
+  rw [← frontier_compl, (spectrum.isClosed _).isOpen_compl.frontier_eq, Set.mem_sdiff] at hμ
   obtain ⟨hμ₁, hμ₂⟩ := hμ
   rw [mem_closure_iff_clusterPt] at hμ₁
   apply hμ₂
@@ -555,19 +556,19 @@ is the spectrum of `↑x : A` along with the connected components of the complem
 lemma Subalgebra.spectrum_sUnion_connectedComponentIn :
     σ 𝕜 x = σ 𝕜 (x : A) ∪ (⋃ z ∈ (σ 𝕜 x \ σ 𝕜 (x : A)), connectedComponentIn (σ 𝕜 (x : A))ᶜ z) := by
   suffices IsClopen ((σ 𝕜 (x : A))ᶜ ↓∩ (σ 𝕜 x \ σ 𝕜 (x : A))) by
-    rw [← this.biUnion_connectedComponentIn (diff_subset_compl _ _),
-      union_diff_cancel (spectrum.subset_subalgebra x)]
+    rw [← this.biUnion_connectedComponentIn (sdiff_subset_compl _ _),
+      union_sdiff_cancel (spectrum.subset_subalgebra x)]
   have : CompleteSpace S := hS.completeSpace_coe
   have h_open : IsOpen (σ 𝕜 x \ σ 𝕜 (x : A)) := by
     rw [← (spectrum.isClosed (𝕜 := 𝕜) x).closure_eq, closure_eq_interior_union_frontier,
-      union_diff_distrib, diff_eq_empty.mpr (frontier_spectrum S x),
-      diff_eq_compl_inter, union_empty]
+      union_sdiff_distrib, sdiff_eq_empty.mpr (frontier_spectrum S x),
+      sdiff_eq_compl_inter, union_empty]
     exact (spectrum.isClosed _).isOpen_compl.inter isOpen_interior
   apply isClopen_preimage_val h_open
   suffices h_frontier : frontier (σ 𝕜 x \ σ 𝕜 (x : A)) ⊆ frontier (σ 𝕜 (x : A)) from
     disjoint_of_subset_left h_frontier <| disjoint_compl_right.frontier_left
       (spectrum.isClosed _).isOpen_compl
-  rw [diff_eq_compl_inter]
+  rw [sdiff_eq_compl_inter]
   apply (frontier_inter_subset _ _).trans
   rw [frontier_compl]
   apply union_subset <| inter_subset_left
@@ -584,7 +585,7 @@ lemma Subalgebra.spectrum_isBounded_connectedComponentIn {z : 𝕜} (hz : z ∈ 
   · have : CompleteSpace S := hS.completeSpace_coe
     suffices connectedComponentIn (σ 𝕜 (x : A))ᶜ z ⊆ σ 𝕜 x from spectrum.isBounded x |>.subset this
     rw [spectrum_sUnion_connectedComponentIn S]
-    exact subset_biUnion_of_mem (mem_diff_of_mem hz hz') |>.trans subset_union_right
+    exact subset_biUnion_of_mem (mem_sdiff_of_mem hz hz') |>.trans subset_union_right
 
 end NormedField
 
@@ -599,7 +600,7 @@ lemma Subalgebra.spectrum_eq_of_isPreconnected_compl (h : IsPreconnected (σ �
     rw [spectrum_sUnion_connectedComponentIn, this]
     simp
   refine eq_empty_of_forall_notMem fun z hz ↦ NormedSpace.unbounded_univ 𝕜 𝕜 ?_
-  obtain ⟨hz, hz'⟩ := mem_diff _ |>.mp hz
+  obtain ⟨hz, hz'⟩ := mem_sdiff _ |>.mp hz
   have := (spectrum.isBounded (x : A)).union <|
     h.connectedComponentIn hz' ▸ spectrum_isBounded_connectedComponentIn S x hz
   simpa

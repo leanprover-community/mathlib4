@@ -95,9 +95,6 @@ theorem coe_algebraMapCLM : ⇑(algebraMapCLM R A) = algebraMap R A :=
 theorem toLinearMap_algebraMapCLM : (algebraMapCLM R A).toLinearMap = Algebra.linearMap R A :=
   rfl
 
-@[deprecated (since := "2025-12-05")] alias algebraMapCLM_toLinearMap := toLinearMap_algebraMapCLM
-@[deprecated (since := "2025-12-05")] alias algebraMapCLM_coe := coe_algebraMapCLM
-
 lemma ContinuousLinearMap.toSpanSingleton_one_eq_algebraMapCLM :
     toSpanSingleton R (M₁ := A) 1 = algebraMapCLM R A := by
   ext; simp
@@ -146,7 +143,7 @@ variable {B : Type*} [Semiring B] [TopologicalSpace B] [Algebra R A] [Algebra R 
 
 instance : FunLike (A →A[R] B) A B where
   coe f := f.toAlgHom
-  coe_injective' f g h := by
+  coe_injective f g h := by
     cases f; cases g
     simp only [mk.injEq]
     exact AlgHom.ext (congrFun h)
@@ -416,12 +413,9 @@ theorem prod_apply (f₁ : A →A[R] B) (f₂ : A →A[R] C) (x : A) :
     f₁.prod f₂ x = (f₁ x, f₂ x) :=
   rfl
 
-variable {F : Type*}
-
 instance {D : Type*} [UniformSpace D] [CompleteSpace D]
     [Semiring D] [Algebra R D] [T2Space B]
-    [FunLike F D B] [AlgHomClass F R D B] [ContinuousMapClass F D B]
-    (f g : F) : CompleteSpace (AlgHom.equalizer f g) :=
+    (f g : D →A[R] B) : CompleteSpace (AlgHom.equalizer f.toAlgHom g.toAlgHom) :=
   isClosed_eq (map_continuous f) (map_continuous g) |>.completeSpace_coe
 
 variable (R A B)

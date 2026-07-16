@@ -6,8 +6,8 @@ Authors: Chris Hughes
 module
 
 public import Mathlib.Algebra.CharP.Basic
+public import Mathlib.Algebra.GroupWithZero.Units.Fintype
 public import Mathlib.Algebra.Ring.Prod
-public import Mathlib.Data.Fintype.Units
 public import Mathlib.GroupTheory.GroupAction.SubMulAction
 public import Mathlib.GroupTheory.OrderOfElement
 public import Mathlib.Tactic.FinCases
@@ -249,6 +249,7 @@ theorem natCast_comp_val [NeZero n] : ((↑) : ℕ → R) ∘ (val : ZMod n → 
   · cases NeZero.ne 0 rfl
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The coercions are respectively `Int.cast`, `ZMod.cast`, and `ZMod.cast`. -/
 @[simp]
 theorem intCast_comp_cast : ((↑) : ℤ → R) ∘ (cast : ZMod n → ℤ) = cast := by
@@ -397,7 +398,7 @@ theorem castHom_injective : Function.Injective (ZMod.castHom (dvd_refl n) R) := 
 
 theorem castHom_bijective [Fintype R] (h : Fintype.card R = n) :
     Function.Bijective (ZMod.castHom (dvd_refl n) R) := by
-  haveI : NeZero n :=
+  have : NeZero n :=
     ⟨by
       intro hn
       rw [hn] at h
@@ -778,7 +779,7 @@ theorem coe_mul_inv_eq_one {n : ℕ} (x : ℕ) (h : Nat.Coprime x n) :
 lemma mul_val_inv (hmn : m.Coprime n) : (m * (m⁻¹ : ZMod n).val : ZMod n) = 1 := by
   obtain rfl | hn := eq_or_ne n 0
   · simp [m.coprime_zero_right.1 hmn]
-  haveI : NeZero n := ⟨hn⟩
+  have : NeZero n := ⟨hn⟩
   rw [ZMod.natCast_zmod_val, ZMod.coe_mul_inv_eq_one _ hmn]
 
 lemma val_inv_mul (hmn : m.Coprime n) : ((m⁻¹ : ZMod n).val * m : ZMod n) = 1 := by
@@ -874,6 +875,7 @@ def unitsEquivCoprime {n : ℕ} [NeZero n] : (ZMod n)ˣ ≃ { x : ZMod n // Nat.
   left_inv := fun ⟨_, _, _, _⟩ => Units.ext (natCast_zmod_val _)
   right_inv := fun ⟨_, _⟩ => by simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The **Chinese remainder theorem**. For a pair of coprime natural numbers, `m` and `n`,
   the rings `ZMod (m * n)` and `ZMod m × ZMod n` are isomorphic.
 
@@ -901,9 +903,9 @@ def chineseRemainder {m n : ℕ} (h : m.Coprime n) : ZMod (m * n) ≃+* ZMod m �
           fin_cases x
           simp [to_fun, inv_fun, castHom, Prod.ext_iff, eq_iff_true_of_subsingleton]
     else by
-      haveI : NeZero (m * n) := ⟨hmn0⟩
-      haveI : NeZero m := ⟨left_ne_zero_of_mul hmn0⟩
-      haveI : NeZero n := ⟨right_ne_zero_of_mul hmn0⟩
+      have : NeZero (m * n) := ⟨hmn0⟩
+      have : NeZero m := ⟨left_ne_zero_of_mul hmn0⟩
+      have : NeZero n := ⟨right_ne_zero_of_mul hmn0⟩
       have left_inv : Function.LeftInverse inv_fun to_fun := by
         intro x
         dsimp only [to_fun, inv_fun, ZMod.castHom_apply]
@@ -1110,6 +1112,7 @@ instance subsingleton_ringEquiv [Semiring R] : Subsingleton (ZMod n ≃+* R) :=
     rw [RingEquiv.coe_ringHom_inj_iff]
     apply RingHom.ext_zmod _ _⟩
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem ringHom_map_cast [NonAssocRing R] (f : R →+* ZMod n) (k : ZMod n) : f (cast k) = k := by
   cases n

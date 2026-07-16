@@ -137,6 +137,7 @@ theorem comp.get_mk (x : P (fun i => Q i α)) : comp.get (comp.mk x) = x := by
 theorem comp.mk_get (x : comp P Q α) : comp.mk (comp.get x) = x := by
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-
 lifting predicates and relations
 -/
@@ -152,6 +153,7 @@ theorem liftP_iff {α : TypeVec n} (p : ∀ ⦃i⦄, α i → Prop) (x : P α) :
   use ⟨a, fun i j => ⟨f i j, pf i j⟩⟩
   rw [xeq]; rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem liftP_iff' {α : TypeVec n} (p : ∀ ⦃i⦄, α i → Prop) (a : P.A) (f : P.B a ⟹ α) :
     @LiftP.{u} _ P.Obj _ α p ⟨a, f⟩ ↔ ∀ i x, p (f i x) := by
   simp only [liftP_iff]; constructor

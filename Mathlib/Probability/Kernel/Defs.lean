@@ -75,7 +75,7 @@ namespace Kernel
 
 instance instFunLike : FunLike (Kernel α β) α (Measure β) where
   coe := toFun
-  coe_injective' f g h := by cases f; cases g; congr
+  coe_injective f g h := by cases f; cases g; congr
 
 @[fun_prop]
 lemma measurable (κ : Kernel α β) : Measurable κ := κ.measurable'
@@ -294,14 +294,10 @@ lemma apply_congr_of_mem_measurableAtom (κ : Kernel α β) {y' y : α} (hy' : y
   ext s hs
   exact mem_of_mem_measurableAtom hy' (κ.measurable_coe hs (measurableSet_singleton (κ y s))) rfl
 
-set_option warning.simp.varHead false in
-@[nontriviality]
 lemma eq_zero_of_isEmpty_left (κ : Kernel α β) [h : IsEmpty α] : κ = 0 := by
   ext a
   exact h.elim a
 
-set_option warning.simp.varHead false in
-@[nontriviality]
 lemma eq_zero_of_isEmpty_right (κ : Kernel α β) [IsEmpty β] : κ = 0 := by
   ext a
   simp [Measure.eq_zero_of_isEmpty (κ a)]
@@ -395,7 +391,7 @@ theorem IsSFiniteKernel.finsetSum {κs : ι → Kernel α β} (I : Finset ι)
   | empty => rw [Finset.sum_empty]; infer_instance
   | insert i I hi_notMem_I h_ind =>
     rw [Finset.sum_insert hi_notMem_I]
-    haveI : IsSFiniteKernel (κs i) := h i (Finset.mem_insert_self _ _)
+    have : IsSFiniteKernel (κs i) := h i (Finset.mem_insert_self _ _)
     have : IsSFiniteKernel (∑ x ∈ I, κs x) :=
       h_ind fun i hiI => h i (Finset.mem_insert_of_mem hiI)
     exact IsSFiniteKernel.add _ _
