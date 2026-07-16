@@ -9,7 +9,7 @@ namespace CategoryTheory
 
 variable {C : Type u} [Category.{v} C] [Abelian C]
 
-open Subobject Abelian.Subobject in
+open Abelian.Subobject in
 /-- The lattice of subobjects of an object in an abelian category is modular. -/
 instance (A : C) : IsModularLattice (Subobject A) where
   sup_inf_le_assoc_of_le := by
@@ -19,14 +19,32 @@ instance (A : C) : IsModularLattice (Subobject A) where
     suffices L = R by exact (congrArg Subtype.val this).le
     apply (cokernelOrderIso X).symm.injective
     let q := cokernel.π X.arrow
-    change (directImage q).obj ((X ⊔ Y) ⊓ Z) =
-      (directImage q).obj (X ⊔ Y ⊓ Z)
-    have hZ : (inverseImage q).obj ((directImage q).obj Z) = Z :=
+    change (Subobject.«exists» q).obj ((X ⊔ Y) ⊓ Z) =
+      (Subobject.«exists» q).obj (X ⊔ Y ⊓ Z)
+    have hZ : (Subobject.pullback q).obj ((Subobject.«exists» q).obj Z) = Z :=
       congrArg Subtype.val ((cokernelOrderIso X).apply_symm_apply ⟨Z, hXZ⟩)
-    have hqX : (directImage q).obj X = ⊥ := (cokernelOrderIso X).symm.map_bot
-    rw [← hZ, directImage_inf_inverseImage, (directImage_inverseImage_gc q).l_sup, hqX,
-      bot_sup_eq, ← directImage_inf_inverseImage, hZ, (directImage_inverseImage_gc q).l_sup, hqX,
-      bot_sup_eq]
+    have hqX : (Subobject.«exists» q).obj X = ⊥ := (cokernelOrderIso X).symm.map_bot
+    calc
+      (Subobject.«exists» q).obj ((X ⊔ Y) ⊓ Z) =
+          (Subobject.«exists» q).obj
+            ((X ⊔ Y) ⊓ (Subobject.pullback q).obj ((Subobject.«exists» q).obj Z)) := by
+        rw [hZ]
+      _ = (Subobject.«exists» q).obj (X ⊔ Y) ⊓ (Subobject.«exists» q).obj Z :=
+        Regular.exists_inf_pullback_eq_exists_inf q (X ⊔ Y) ((Subobject.«exists» q).obj Z)
+      _ = ((Subobject.«exists» q).obj X ⊔ (Subobject.«exists» q).obj Y) ⊓
+          (Subobject.«exists» q).obj Z := by
+        rw [(Subobject.existsPullbackAdj q).gc.l_sup]
+      _ = (Subobject.«exists» q).obj Y ⊓ (Subobject.«exists» q).obj Z := by
+        rw [hqX, bot_sup_eq]
+      _ = (Subobject.«exists» q).obj
+          (Y ⊓ (Subobject.pullback q).obj ((Subobject.«exists» q).obj Z)) :=
+        (Regular.exists_inf_pullback_eq_exists_inf q Y ((Subobject.«exists» q).obj Z)).symm
+      _ = (Subobject.«exists» q).obj (Y ⊓ Z) := by
+        rw [hZ]
+      _ = (Subobject.«exists» q).obj X ⊔ (Subobject.«exists» q).obj (Y ⊓ Z) := by
+        rw [hqX, bot_sup_eq]
+      _ = (Subobject.«exists» q).obj (X ⊔ Y ⊓ Z) :=
+        ((Subobject.existsPullbackAdj q).gc.l_sup (a₁ := X) (a₂ := Y ⊓ Z)).symm
 
 namespace Abelian.Subobject
 

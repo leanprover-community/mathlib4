@@ -23,7 +23,6 @@ particular, `exists_eq_kernelSubobject` and `pullback_eq_kernelSubobject` specia
 * a correspondence theorem: Given a subobject `Y` of `X`, `Abelian.Subobject.cokernelOrderIso` is
   an order-isomorphism between subobjects of `cokernel (Y ↪ X)` and subobjects of `X`
   containing `Y`.
-* `directImage_inf_inverseImage` expresses Frobenius reciprocity for direct and inverse image
 
 ## References
 
@@ -126,12 +125,6 @@ lemma pullback_eq_kernelSubobject (Y' : Subobject Y) :
 lemma pullback_mk_eq_kernelSubobject {A : C} (g : A ⟶ Y) [Mono g] :
     (Subobject.pullback f).obj (Subobject.mk g) = kernelSubobject (f ≫ cokernel.π g) := by
   rw [← imageSubobject_mono, imageSubobject_eq_kernelSubobject, pullback_kernelSubobject]
-
-/-- Direct image satisfies Frobenius reciprocity with inverse image in an abelian category. -/
-lemma directImage_inf_inverseImage (X' : Subobject X) (Y' : Subobject Y) :
-    (directImage f).obj (X' ⊓ (inverseImage f).obj Y') = (directImage f).obj X' ⊓ Y' := by
-  rw [directImage_eq_exists, inverseImage_eq_pullback, directImage_eq_exists]
-  exact Regular.exists_inf_pullback_eq_exists_inf f X' Y'
 
 theorem exists_pullback_eq_self_of_epi [Epi f] (Y' : Subobject Y) :
     («exists» f).obj ((Subobject.pullback f).obj Y') = Y' := by
