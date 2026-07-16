@@ -241,7 +241,7 @@ end IsAlgClosed
 which is algebraic, then `L` is equal to `k`. A corollary of
 `IsAlgClosed.algebraMap_surjective_of_isAlgebraic`. -/
 @[stacks 09GQ "The result is the definition of algebraically closedness in Stacks Project. \
-This statement is 09GR 4 ⟹ 1."]
+This statement is 09GR (4) ⟹ (1)."]
 theorem IntermediateField.eq_bot_of_isAlgClosed_of_isAlgebraic {k K : Type*} [Field k] [Field K]
     [IsAlgClosed k] [Algebra k K] (L : IntermediateField k K) [Algebra.IsAlgebraic k L] :
     L = ⊥ := bot_unique fun x hx ↦ by
