@@ -166,8 +166,8 @@ noncomputable instance : PartialOrder (ValueGroup A K) where
 noncomputable instance linearOrder : LinearOrder (ValueGroup A K) where
   le_total := ValuationRing.le_total _ _
   toDecidableLE := Classical.decRel _
-  toDecidableEq := @decidableEqOfDecidableLE _ _ <| Classical.decRel _
-  toDecidableLT := @decidableLTOfDecidableLE _ _ <| Classical.decRel _
+  toDecidableEq := Classical.decRel _
+  toDecidableLT := Classical.decRel _
 
 instance commGroupWithZero :
     CommGroupWithZero (ValueGroup A K) :=
