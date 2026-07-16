@@ -1040,16 +1040,14 @@ lemma eq_or_eq_or_eq_of_forall_not_lt_lt [LinearOrder α]
   rcases hne.2.2.lt_or_gt with h₃ | h₃
   exacts [h h₁ h₂, h h₂ h₃, h h₃ h₂, h h₃ h₁, h h₁ h₃, h h₂ h₃, h h₁ h₃, h h₂ h₁]
 
-instance {α : Type*} [Subsingleton α] : PartialOrder α where
+/-- Construct the trivial linear order on any type with at most one element. -/
+abbrev LinearOrder.ofSubsingleton {α : Type*} [Subsingleton α] : LinearOrder α where
   le _ _ := True
   lt _ _ := False
   le_refl _ := trivial
   le_trans x y z _ _ := trivial
   le_antisymm x y _ _ := Subsingleton.elim x y
   lt_iff_le_not_ge _ _ := by simp
-
-/-- Construct the trivial linear order on any type with at most one element. -/
-abbrev LinearOrder.ofSubsingleton {α : Type*} [Subsingleton α] : LinearOrder α where
   le_total _ _ := .inl trivial
   toDecidableLE _ _ := instDecidableTrue
   toDecidableEq := decidableEq_of_subsingleton
