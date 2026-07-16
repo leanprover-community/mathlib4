@@ -74,7 +74,7 @@ real part of the extended distance. -/
     rw [edist_comm]
     exact p.2.lt_top
 
-/-- The distance function `x ↦ (edist a x).toReal` is Lipschitz on any preconnected set `s` that
+/-- The distance function `x => (edist a x).toReal` is Lipschitz on any preconnected set `s` that
 contains `a`. -/
 theorem lipschitzOnWith_toReal_edist (hs : IsPreconnected s) (ha : a ∈ s) :
     LipschitzOnWith 1 (fun x => (edist a x).toReal) s := by
