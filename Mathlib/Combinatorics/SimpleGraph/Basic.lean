@@ -98,6 +98,7 @@ structure SimpleGraph (V : Type u) where
 
 initialize_simps_projections SimpleGraph (Adj → adj)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Constructor for simple graphs using a symmetric irreflexive Boolean function. -/
 @[simps]
 def SimpleGraph.mk' {V : Type u} :
@@ -484,13 +485,9 @@ alias _root_.Sym2.IsDiag.not_mem_edgeSet := not_mem_edgeSet_of_isDiag
 
 theorem edgeSet_inj : G₁.edgeSet = G₂.edgeSet ↔ G₁ = G₂ := (edgeSetEmbedding V).eq_iff_eq
 
-@[simp]
-theorem edgeSet_subset_edgeSet : edgeSet G₁ ⊆ edgeSet G₂ ↔ G₁ ≤ G₂ :=
-  (edgeSetEmbedding V).le_iff_le
+theorem edgeSet_subset_edgeSet : edgeSet G₁ ⊆ edgeSet G₂ ↔ G₁ ≤ G₂ := by simp
 
-@[simp]
-theorem edgeSet_ssubset_edgeSet : edgeSet G₁ ⊂ edgeSet G₂ ↔ G₁ < G₂ :=
-  (edgeSetEmbedding V).lt_iff_lt
+theorem edgeSet_ssubset_edgeSet : edgeSet G₁ ⊂ edgeSet G₂ ↔ G₁ < G₂ := by simp
 
 theorem edgeSet_injective : Injective (edgeSet : SimpleGraph V → Set (Sym2 V)) :=
   (edgeSetEmbedding V).injective
@@ -514,9 +511,6 @@ theorem edgeSet_top : (⊤ : SimpleGraph V).edgeSet = Sym2.diagSetᶜ :=
 @[simp]
 theorem edgeSet_subset_compl_diagSet : G.edgeSet ⊆ Sym2.diagSetᶜ := by
   simpa [Set.subset_compl_iff_disjoint_left, edgeSet, edgeSetEmbedding] using G.loopless
-
-@[deprecated (since := "2025-12-10")]
-alias edgeSet_subset_setOf_not_isDiag := edgeSet_subset_compl_diagSet
 
 @[simp]
 theorem edgeSet_sup : (G₁ ⊔ G₂).edgeSet = G₁.edgeSet ∪ G₂.edgeSet := by
@@ -557,8 +551,7 @@ theorem edgeSet_sdiff : (G₁ \ G₂).edgeSet = G₁.edgeSet \ G₂.edgeSet := b
 variable {G G₁ G₂}
 
 @[simp] lemma disjoint_edgeSet : Disjoint G₁.edgeSet G₂.edgeSet ↔ Disjoint G₁ G₂ := by
-  rw [Set.disjoint_iff, disjoint_iff_inf_le, ← edgeSet_inf, ← edgeSet_bot, ← Set.le_iff_subset,
-    OrderEmbedding.le_iff_le]
+  rw [Set.disjoint_iff, disjoint_iff_inf_le, ← edgeSet_inf, ← edgeSet_bot, OrderEmbedding.le_iff_le]
 
 @[simp] lemma edgeSet_eq_empty : G.edgeSet = ∅ ↔ G = ⊥ := by rw [← edgeSet_bot, edgeSet_inj]
 

@@ -51,6 +51,7 @@ theorem conj_comp (f g : End X) : α.conj (f ≫ g) = α.conj f ≫ α.conj g :=
 theorem conj_id : α.conj (𝟙 X) = 𝟙 Y :=
   map_one α.conj
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem refl_conj (f : End X) : (Iso.refl X).conj f = f := by
   rw [conj_apply, Iso.refl_inv, Iso.refl_hom, Category.id_comp, Category.comp_id]
@@ -82,6 +83,7 @@ theorem conjAut_apply (f : Aut X) : α.conjAut f = α.symm ≪≫ f ≪≫ α :=
 theorem conjAut_hom (f : Aut X) : (α.conjAut f).hom = α.conj f.hom :=
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem trans_conjAut {Z : C} (β : Y ≅ Z) (f : Aut X) :
     (α ≪≫ β).conjAut f = β.conjAut (α.conjAut f) := by
@@ -115,6 +117,7 @@ theorem map_conj {X Y : C} (α : X ≅ Y) (f : End X) :
     F.map (α.conj f) = (F.mapIso α).conj (F.map f) :=
   map_homCongr F α α f
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem map_conjAut (F : C ⥤ D) {X Y : C} (α : X ≅ Y) (f : Aut X) :
     F.mapIso (α.conjAut f) = (F.mapIso α).conjAut (F.mapIso f) := by
   ext; simp only [mapIso_hom, Iso.conjAut_hom, F.map_conj]

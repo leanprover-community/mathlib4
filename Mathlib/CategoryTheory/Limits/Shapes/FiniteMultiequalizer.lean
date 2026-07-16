@@ -24,6 +24,7 @@ variable {J : MulticospanShape} [Fintype J.L] [Fintype J.R]
 
 instance : Fintype (WalkingMulticospan J) := .ofEquiv _ (proxy_equiv% (WalkingMulticospan J))
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance [DecidableEq J.L] [DecidableEq J.R] : FinCategory (WalkingMulticospan J) where
   fintypeHom
     | .left a, .left b => ⟨if e : a = b then {eqToHom (e ▸ rfl)} else ∅, by rintro ⟨⟩; simp⟩
@@ -51,6 +52,7 @@ variable {J : MultispanShape} [Fintype J.L] [Fintype J.R]
 
 instance : Fintype (WalkingMultispan J) := .ofEquiv _ (proxy_equiv% (WalkingMultispan J))
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance [DecidableEq J.L] [DecidableEq J.R] : FinCategory (WalkingMultispan J) where
   fintypeHom
     | .left a, .left b => ⟨if e : a = b then {eqToHom (e ▸ rfl)} else ∅, by rintro ⟨⟩; simp⟩

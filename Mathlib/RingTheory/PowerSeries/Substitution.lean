@@ -540,7 +540,7 @@ lemma coeff_one_substInv : P.substInv.coeff 1 = ⅟(P.coeff 1) := by
 
 include hP in
 lemma subst_substInv_left : P.substInv.subst P = X := by
-  haveI : Invertible (P.substInv.coeff 1) := by simpa using invertibleInvOf
+  have : Invertible (P.substInv.coeff 1) := by simpa using invertibleInvOf
   let Q := P.substInv.substInv
   have hQ : HasSubst Q := HasSubst.substInv P.substInv
   have eq_aux : P.substInv.subst Q = X := subst_substInv_right P.substInv P.constantCoeff_substInv
@@ -580,18 +580,18 @@ lemma HasSubst.substInvOfIsUnit : HasSubst (P.substInvOfIsUnit hP') := by
 
 @[simp]
 lemma coeff_one_substInvOfIsUnit : (P.substInvOfIsUnit hP').coeff 1 = hP'.unit⁻¹ := by
-  letI := hP'.invertible
+  let := hP'.invertible
   rw [substInvOfIsUnit_eq_substInv, coeff_one_substInv]
   exact Units.mul_eq_one_iff_eq_inv.mp Invertible.invOf_mul_self
 
 include hP in
 lemma subst_substInvOfIsUnit_right : P.subst (substInvOfIsUnit P hP') = X := by
-  letI := hP'.invertible
+  let := hP'.invertible
   rw [P.substInvOfIsUnit_eq_substInv hP', P.subst_substInv_right hP]
 
 include hP in
 lemma subst_substInvOfIsUnit_left : (P.substInvOfIsUnit hP').subst P = X := by
-  letI := hP'.invertible
+  let := hP'.invertible
   rw [P.substInvOfIsUnit_eq_substInv hP', P.subst_substInv_left hP]
 
 end IsUnit
