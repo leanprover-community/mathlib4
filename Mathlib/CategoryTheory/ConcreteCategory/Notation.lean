@@ -17,8 +17,8 @@ the relevant typeclasses into an object of the category: `CommRingCat.of R`, `To
 
 This file introduces the notation `↧X` for `FooCat.of X`, where the category `FooCat` is read off
 from the expected type. The name `FooCat.of` is looked up in the environment rather than through a
-typeclass, so `↧X` is syntactically the same as `FooCat.of`. It also provides a corresponding delaborator
-`CategoryTheory.delabOf` that must be manually registered for every concrete category.
+typeclass, so `↧X` is syntactically the same as `FooCat.of`. It also provides a corresponding
+delaborator `CategoryTheory.delabOf` that must be manually registered for every concrete category.
 
 
 ## Implementation notes

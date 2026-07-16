@@ -94,11 +94,12 @@ example := ↧ℤ
 
 /-! ### Delaborator
 
-`CategoryTheory.delabOf` is opt-in per category. `CommRingCat` opts in in Mathlib itself, so the
-`↧` notation is used when printing.
+`CategoryTheory.delabOf` is opt-in per category.
 -/
 
 section Delab
+
+@[app_delab CommRingCat.of] public meta def CommRingCat.delabOf' := CategoryTheory.delabOf
 
 /-- info: ↧ℤ : CommRingCat -/
 #guard_msgs in
