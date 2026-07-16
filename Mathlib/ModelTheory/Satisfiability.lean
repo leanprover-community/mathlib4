@@ -100,23 +100,22 @@ finitely satisfiable. -/
 theorem isSatisfiable_iff_isFinitelySatisfiable {T : L.Theory} :
     T.IsSatisfiable ↔ T.IsFinitelySatisfiable :=
   ⟨Theory.IsSatisfiable.isFinitelySatisfiable, fun h => by
-    classical
-      set M : Finset T → Type max u v := fun T0 : Finset T =>
-        (h (T0.map (Function.Embedding.subtype fun x => x ∈ T)) T0.map_subtype_subset).some.Carrier
-      let M' := Filter.Product (Ultrafilter.of (Filter.atTop : Filter (Finset T))) M
-      have h' : M' ⊨ T := by
-        refine ⟨fun φ hφ => ?_⟩
-        rw [Ultraproduct.sentence_realize]
-        refine
-          Filter.Eventually.filter_mono (Ultrafilter.of_le _)
-            (Filter.eventually_atTop.2
-              ⟨{⟨φ, hφ⟩}, fun s h' =>
-                Theory.realize_sentence_of_mem (s.map (Function.Embedding.subtype fun x => x ∈ T))
-                  ?_⟩)
-        simp only [Finset.coe_map, Function.Embedding.coe_subtype, Set.mem_image, Finset.mem_coe,
-          Subtype.exists, exists_and_right, exists_eq_right]
-        exact ⟨hφ, h' (Finset.mem_singleton_self _)⟩
-      exact ⟨ModelType.of T M'⟩⟩
+    set M : Finset T → Type max u v := fun T0 : Finset T =>
+      (h (T0.map (Function.Embedding.subtype fun x => x ∈ T)) T0.map_subtype_subset).some.Carrier
+    let M' := Filter.Product (Ultrafilter.of (Filter.atTop : Filter (Finset T))) M
+    have h' : M' ⊨ T := by
+      refine ⟨fun φ hφ => ?_⟩
+      rw [Ultraproduct.sentence_realize]
+      refine
+        Filter.Eventually.filter_mono (Ultrafilter.of_le _)
+          (Filter.eventually_atTop.2
+            ⟨{⟨φ, hφ⟩}, fun s h' =>
+              Theory.realize_sentence_of_mem (s.map (Function.Embedding.subtype fun x => x ∈ T))
+                ?_⟩)
+      simp only [Finset.coe_map, Function.Embedding.coe_subtype, Set.mem_image, Finset.mem_coe,
+        Subtype.exists, exists_and_right, exists_eq_right]
+      exact ⟨hφ, h' (Finset.mem_singleton_self _)⟩
+    exact ⟨ModelType.of T M'⟩⟩
 
 theorem isSatisfiable_directed_union_iff {ι : Type*} [Nonempty ι] {T : ι → L.Theory}
     (h : Directed (· ⊆ ·) T) : Theory.IsSatisfiable (⋃ i, T i) ↔ ∀ i, (T i).IsSatisfiable := by
@@ -147,17 +146,16 @@ theorem isSatisfiable_union_distinctConstantsTheory_of_card_le (T : L.Theory) (s
 theorem isSatisfiable_union_distinctConstantsTheory_of_infinite (T : L.Theory) (s : Set α)
     (M : Type w') [L.Structure M] [M ⊨ T] [Infinite M] :
     ((L.lhomWithConstants α).onTheory T ∪ L.distinctConstantsTheory s).IsSatisfiable := by
-  classical
-    rw [distinctConstantsTheory_eq_iUnion, Set.union_iUnion, isSatisfiable_directed_union_iff]
-    · exact fun t =>
-        isSatisfiable_union_distinctConstantsTheory_of_card_le T _ M
-          ((lift_le_aleph0.2 (finset_card_lt_aleph0 _).le).trans
-            (aleph0_le_lift.2 (aleph0_le_mk M)))
-    · apply Monotone.directed_le
-      refine monotone_const.union (monotone_distinctConstantsTheory.comp ?_)
-      simp only [Finset.coe_map, Function.Embedding.coe_subtype]
-      exact Monotone.comp (g := Set.image ((↑) : s → α)) (f := ((↑) : Finset s → Set s))
-        Set.monotone_image fun _ _ => Finset.coe_subset.2
+  rw [distinctConstantsTheory_eq_iUnion, Set.union_iUnion, isSatisfiable_directed_union_iff]
+  · exact fun t =>
+      isSatisfiable_union_distinctConstantsTheory_of_card_le T _ M
+        ((lift_le_aleph0.2 (finset_card_lt_aleph0 _).le).trans
+          (aleph0_le_lift.2 (aleph0_le_mk M)))
+  · apply Monotone.directed_le
+    refine monotone_const.union (monotone_distinctConstantsTheory.comp ?_)
+    simp only [Finset.coe_map, Function.Embedding.coe_subtype]
+    exact Monotone.comp (g := Set.image ((↑) : s → α)) (f := ((↑) : Finset s → Set s))
+      Set.monotone_image fun _ _ => Finset.coe_subset.2
 
 /-- Any theory with an infinite model has arbitrarily large models. -/
 theorem exists_large_model_of_infinite_model (T : L.Theory) (κ : Cardinal.{w}) (M : Type w')
@@ -176,17 +174,16 @@ theorem exists_large_model_of_infinite_model (T : L.Theory) (κ : Cardinal.{w}) 
 
 theorem isSatisfiable_iUnion_iff_isSatisfiable_iUnion_finset {ι : Type*} (T : ι → L.Theory) :
     IsSatisfiable (⋃ i, T i) ↔ ∀ s : Finset ι, IsSatisfiable (⋃ i ∈ s, T i) := by
-  classical
-    refine
-      ⟨fun h s => h.mono (Set.iUnion_mono fun _ => Set.iUnion_subset_iff.2 fun _ => refl _),
-        fun h => ?_⟩
-    rw [isSatisfiable_iff_isFinitelySatisfiable]
-    intro s hs
-    rw [Set.iUnion_eq_iUnion_finset] at hs
-    obtain ⟨t, ht⟩ := Directed.exists_mem_subset_of_finset_subset_biUnion (by
-      exact Monotone.directed_le fun t1 t2 (h : ∀ ⦃x⦄, x ∈ t1 → x ∈ t2) =>
-        Set.iUnion_mono fun _ => Set.iUnion_mono' fun h1 => ⟨h h1, refl _⟩) hs
-    exact (h t).mono ht
+  refine
+    ⟨fun h s => h.mono (Set.iUnion_mono fun _ => Set.iUnion_subset_iff.2 fun _ => refl _),
+      fun h => ?_⟩
+  rw [isSatisfiable_iff_isFinitelySatisfiable]
+  intro s hs
+  rw [Set.iUnion_eq_iUnion_finset] at hs
+  obtain ⟨t, ht⟩ := Directed.exists_mem_subset_of_finset_subset_biUnion (by
+    exact Monotone.directed_le fun t1 t2 (h : ∀ ⦃x⦄, x ∈ t1 → x ∈ t2) =>
+      Set.iUnion_mono fun _ => Set.iUnion_mono' fun h1 => ⟨h h1, refl _⟩) hs
+  exact (h t).mono ht
 
 end Theory
 

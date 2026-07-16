@@ -25,7 +25,7 @@ universe u v w
 
 namespace CategoryTheory
 
-open Limits Functor PreGaloisCategory
+open Limits CategoryTheory.Functor PreGaloisCategory
 
 namespace FintypeCat
 

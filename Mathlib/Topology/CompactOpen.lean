@@ -358,6 +358,7 @@ theorem tendsto_compactOpen_iff_forall {ι : Type*} {l : Filter ι} (F : ι → 
   rw [compactOpen_eq_iInf_induced]
   simp [nhds_iInf, nhds_induced, Filter.tendsto_comap_iff, Function.comp_def]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A family `F` of functions in `C(X, Y)` converges in the compact-open topology, if and only if
 it converges in the compact-open topology on each compact subset of `X`. -/
 theorem exists_tendsto_compactOpen_iff_forall [WeaklyLocallyCompactSpace X] [T2Space Y]

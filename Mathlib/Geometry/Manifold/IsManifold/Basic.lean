@@ -203,9 +203,6 @@ def ModelWithCorners.ofTargetUniv (𝕜 : Type*) [NontriviallyNormedField 𝕜]
     have : range φ = φ.target := by rw [← φ.image_source_eq_target, hsource, image_univ.symm]
     simp [this, htarget]
 
-@[deprecated (since := "2025-12-19")]
-alias ModelWithCorners.of_target_univ := ModelWithCorners.ofTargetUniv
-
 attribute [simp, mfld_simps] ModelWithCorners.source_eq
 
 /-- A vector space is a model with corners, denoted as `𝓘(𝕜, E)` within the `Manifold` namespace. -/
@@ -334,9 +331,6 @@ def ofConvexRange
   nonempty_interior' := by
     have : range φ = φ.target := by rw [← φ.image_source_eq_target, hsource, image_univ.symm]
     simp [this, hint]
-
-@[deprecated (since := "2025-12-19")] noncomputable alias of_convex_range :=
-  ModelWithCorners.ofConvexRange
 
 theorem convex_range [NormedSpace ℝ E] : Convex ℝ (range I) := by
   by_cases h : IsRCLikeNormedField 𝕜
@@ -615,6 +609,7 @@ instance modelWithCornersSelf_boundaryless (𝕜 : Type*) [NontriviallyNormedFie
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] : (modelWithCornersSelf 𝕜 E).Boundaryless :=
   ⟨by simp⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If two model with corners are boundaryless, their product also is -/
 instance ModelWithCorners.range_eq_univ_prod {𝕜 : Type u} [NontriviallyNormedField 𝕜] {E : Type v}
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type w} [TopologicalSpace H]
@@ -745,6 +740,7 @@ theorem symm_trans_mem_contDiffGroupoid (e : OpenPartialHomeomorph M H) :
 
 variable {E' H' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] [TopologicalSpace H']
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The product of two `C^n` open partial homeomorphisms is `C^n`. -/
 theorem contDiffGroupoid_prod {I : ModelWithCorners 𝕜 E H} {I' : ModelWithCorners 𝕜 E' H'}
     {e : OpenPartialHomeomorph H H} {e' : OpenPartialHomeomorph H' H'}

@@ -208,6 +208,7 @@ theorem fac_lift {F : MonoFactorisation f} (hF : IsImage F) (F' : MonoFactorisat
 
 variable (f)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The trivial factorisation of a monomorphism satisfies the universal property. -/
 @[simps]
 def self [Mono f] : IsImage (MonoFactorisation.self f) where lift F' := F'.e
@@ -249,6 +250,7 @@ def ofArrowIso {f g : Arrow C} {F : MonoFactorisation f.hom} (hF : IsImage F) (s
     simpa only [MonoFactorisation.ofArrowIso_m, Arrow.inv_right, ← Category.assoc,
       IsIso.comp_inv_eq] using hF.lift_fac (F'.ofArrowIso (inv sq))
 
+set_option backward.isDefEq.respectTransparency.types false in
 /--
 Given a mono factorisation `X ⟶ I ⟶ Y` of an arrow `f` that is an image and an isomorphism `I ≅ I'`,
 the induced mono factorisation by the isomorphism is also an image.
@@ -351,6 +353,7 @@ def Image.isImage : IsImage (Image.monoFactorisation f) :=
   (Image.imageFactorisation f).isImage
 
 /-- The categorical image of a morphism. -/
+@[implicit_reducible]
 def image : C :=
   (Image.monoFactorisation f).I
 

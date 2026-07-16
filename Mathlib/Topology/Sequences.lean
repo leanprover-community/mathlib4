@@ -413,13 +413,7 @@ only if it is sequentially compact. -/
 theorem isCompact_iff_isSeqCompact : IsCompact s ↔ IsSeqCompact s :=
   ⟨fun H => H.isSeqCompact, fun H => H.isCompact⟩
 
-@[deprecated (since := "2025-12-23")]
-protected alias UniformSpace.isCompact_iff_isSeqCompact := isCompact_iff_isSeqCompact
-
 theorem compactSpace_iff_seqCompactSpace : CompactSpace X ↔ SeqCompactSpace X := by
   simp only [← isCompact_univ_iff, seqCompactSpace_iff, isCompact_iff_isSeqCompact]
-
-@[deprecated (since := "2025-12-23")]
-protected alias UniformSpace.compactSpace_iff_seqCompactSpace := compactSpace_iff_seqCompactSpace
 
 end MetrizableSpaceSeqCompact

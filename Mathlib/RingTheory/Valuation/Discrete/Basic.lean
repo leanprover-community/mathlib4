@@ -134,6 +134,7 @@ instance : IsCyclic <| valueGroup (.ofClass v) := by
   rw [← generator_zpowers_eq_valueGroup]
   exact isCyclic_zpowers (generator v)
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : v.IsNontrivial := by
   apply IsNontrivial.mk
   by_contra! h1
@@ -324,6 +325,7 @@ theorem IsUniformizer.of_associated {π₁ π₂ : K₀} (h1 : IsUniformizer v �
   have : v (u.1 : K) = 1 := (Integers.isUnit_iff_valuation_eq_one <| integer.integers v).mp u.isUnit
   rwa [IsUniformizer.iff, ← hu, Subring.coe_mul, map_mul, this, mul_one, ← IsUniformizer.iff]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- If two elements of `K₀` are uniformizers, then they are associated. -/
 theorem associated_of_isUniformizer {π₁ π₂ : K₀} (h1 : IsUniformizer v π₁)
     (h2 : IsUniformizer v π₂) : Associated π₁ π₂ := by

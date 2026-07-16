@@ -384,7 +384,7 @@ end SetToL1S
 
 end SimpleFunc
 
-open SimpleFunc
+open L1.SimpleFunc
 
 section SetToL1
 
