@@ -5,6 +5,7 @@ Authors: Chris Hughes, Thomas Browning, Snir Broshi
 -/
 module
 
+public import Mathlib.Data.Fintype.Lattice
 public import Mathlib.GroupTheory.Perm.Cycle.Type
 public import Mathlib.GroupTheory.SpecificGroups.Cyclic
 
@@ -54,11 +55,8 @@ theorem _root_.isPGroup_iff_exists_orderOf_dvd_pow [Finite G] :
     IsPGroup p G ↔ ∃ k, ∀ g : G, orderOf g ∣ p ^ k := by
   refine isPGroup_iff_orderOf_dvd_pow.trans ⟨fun h ↦ ?_, fun ⟨k, hk⟩ ↦ fun g ↦ ⟨k, hk g⟩⟩
   choose k hk using h
-  have := Fintype.ofFinite G
-  have ⟨g, _, hg⟩ := Finset.exists_max_image .univ k Finset.univ_nonempty
-  refine ⟨k g, fun g' ↦ ?_⟩
-  grw [← Nat.pow_dvd_pow p <| hg g' <| Finset.mem_univ g']
-  exact hk g'
+  obtain ⟨g₀, hg₀⟩ := Finite.exists_max k
+  exact ⟨k g₀, fun g ↦ (hk g).trans (pow_dvd_pow p (hg₀ g))⟩
 
 theorem _root_.isPGroup_iff_exists_pow_pow_eq_one [Finite G] :
     IsPGroup p G ↔ ∃ k, ∀ g : G, g ^ p ^ k = 1 := by
