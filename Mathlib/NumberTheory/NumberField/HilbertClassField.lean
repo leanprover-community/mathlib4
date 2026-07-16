@@ -58,7 +58,7 @@ instance_wanted : IsUnramifiedAtInfinitePlaces K (❰HilbertClassField❱ K)
 
 theorem_wanted eq_top (H : Type*) [Field H] [Algebra K H] [NumberField H]
       [IsAbelianGalois K H] [Unramified (𝓞 K) (𝓞 H)] [IsUnramifiedAtInfinitePlaces K (H)] :
-    Nonempty (H ≃ₐ[K] ❰HilbertClassField❱ K)
+    Nonempty (H →ₐ[K] ❰HilbertClassField❱ K)
 
 variable {K} in
 theorem_wanted principal (P : Ideal (𝓞 K)) :
