@@ -146,6 +146,7 @@ theorem IsEulerian.edgesFinset_eq [Fintype G.edgeSet] {u v : V} {p : G.Walk u v}
   ext e
   simp [h.mem_edges_iff]
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem IsEulerian.length_eq_card_edgeFinset [Fintype G.edgeSet] {u v : V} {p : G.Walk u v}
     (h : p.IsEulerian) : p.length = G.edgeFinset.card := by
   simp [← h.edgesFinset_eq]
