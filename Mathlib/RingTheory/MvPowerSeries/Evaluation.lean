@@ -113,6 +113,7 @@ def hasEvalIdeal : Ideal (σ → S) where
   zero_mem' := HasEval.zero
   smul_mem' := HasEval.mul_left
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mem_hasEvalIdeal_iff {a : σ → S} :
     a ∈ hasEvalIdeal ↔ HasEval a := by
   simp [hasEvalIdeal]
