@@ -361,9 +361,8 @@ lemma S_zero_eq_singleton : S p 0 = {Fin.succ} := by
 /-- The sum of the maximum-length bordered minors based at `0` equals `A.det` -/
 theorem sum_bminor_max_length_eq_det (A : Matrix (Fin (p + 1)) (Fin (p + 1)) R) :
     ∑ α ∈ S p 0, bminor A 0 0 α = A.det := by
-  rw [S_zero_eq_singleton, Finset.sum_singleton]
-  unfold bminor
-  rw [cons_zero_succ, Matrix.submatrix_id_id]
+  rw [S_zero_eq_singleton, Finset.sum_singleton, bminor, cons_zero_succ,
+    Matrix.submatrix_id_id]
 
 
 end MatrixProof
