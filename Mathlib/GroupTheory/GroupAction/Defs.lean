@@ -248,7 +248,16 @@ instance instMulAction (H : Subgroup G) : MulAction H α :=
   inferInstanceAs (MulAction H.toSubmonoid α)
 
 @[to_additive]
-lemma subgroup_smul_def {H : Subgroup G} (a : H) (b : α) : a • b = (a : G) • b := rfl
+lemma _root_.Subgroup.smul_def {H : Subgroup G} (g : H) (a : α) : g • a = (g : G) • a := rfl
+
+@[deprecated (since := "2026-07-16")] alias subgroup_smul_def := _root_.Subgroup.smul_def
+@[deprecated (since := "2026-07-16")] alias _root_.AddAction.addSubgroup_vadd_def :=
+  _root_.AddSubgroup.vadd_def
+
+@[to_additive (attr := simp)]
+lemma _root_.Subgroup.mk_smul {H : Subgroup G} (g : G) (hg : g ∈ H) (a : α) :
+    (⟨g, hg⟩ : H) • a = g • a :=
+  rfl
 
 @[to_additive]
 lemma orbit_subgroup_subset (H : Subgroup G) (a : α) : orbit H a ⊆ orbit G a :=
@@ -271,7 +280,7 @@ lemma mem_subgroup_orbit_iff {H : Subgroup G} {x : α} {a b : orbit G x} :
     exact MulAction.mem_orbit _ g
   · rcases h with ⟨g, h⟩
     dsimp at h
-    rw [subgroup_smul_def, ← orbit.coe_smul, ← Subtype.ext_iff] at h
+    rw [Subgroup.smul_def, ← orbit.coe_smul, ← Subtype.ext_iff] at h
     subst h
     exact MulAction.mem_orbit _ g
 

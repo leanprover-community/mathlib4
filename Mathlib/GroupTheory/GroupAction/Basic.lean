@@ -367,3 +367,10 @@ end
 @[simp] lemma Additive.mulAction_orbit {α β : Type*} [SMul α β] (b : β) :
     AddAction.orbit (Additive α) b = MulAction.orbit α b :=
   rfl
+
+variable {G α : Type*} [Group G] [MulAction G α] (H : Subgroup G) (a : α)
+
+theorem MulAction.stabilizer_subgroupOf
+    {G α : Type*} [Group G] [MulAction G α] (H : Subgroup G) (a : α) :
+    (MulAction.stabilizer G a).subgroupOf H = MulAction.stabilizer H a := by
+  simp [Subgroup.ext_iff, Subgroup.mem_subgroupOf, Subgroup.smul_def]
