@@ -13,6 +13,7 @@ public import Mathlib.Analysis.Complex.Arg
 
 /-!
 # Evaluating cyclotomic polynomials
+
 This file states some results about evaluating cyclotomic polynomials in various different ways.
 
 ## Main definitions
@@ -49,7 +50,7 @@ theorem eval₂_one_cyclotomic_prime_pow {R S : Type*} [CommRing R] [Semiring S]
 private theorem cyclotomic_neg_one_pos {n : ℕ} (hn : 2 < n) {R}
     [CommRing R] [PartialOrder R] [IsStrictOrderedRing R] :
     0 < eval (-1 : R) (cyclotomic n R) := by
-  haveI := NeZero.of_gt hn
+  have := NeZero.of_gt hn
   rw [← map_cyclotomic_int, ← Int.cast_one, ← Int.cast_neg, eval_intCast_map, Int.coe_castRingHom,
     Int.cast_pos]
   suffices 0 < eval (↑(-1 : ℤ)) (cyclotomic n ℝ) by
@@ -145,13 +146,13 @@ theorem eval_one_cyclotomic_not_prime_pow {R : Type*} [Ring R] {n : ℕ}
     linarith [cyclotomic_nonneg n (le_refl (1 : ℤ))]
   rw [← Int.natAbs_eq_natAbs_iff, Int.natAbs_one, Nat.eq_one_iff_not_exists_prime_dvd]
   intro p hp hpe
-  haveI := Fact.mk hp
+  have := Fact.mk hp
   have := prod_cyclotomic_eq_geom_sum hn' ℤ
   apply_fun eval 1 at this
   rw [eval_geom_sum, one_geom_sum, eval_prod, eq_comm, ←
     Finset.prod_sdiff <| @range_pow_padicValNat_subset_divisors' p _ _, Finset.prod_image] at this
   · simp_rw [eval_one_cyclotomic_prime_pow, Finset.prod_const, Finset.card_range, mul_comm] at this
-    rw [← Finset.prod_sdiff <| show {n} ⊆ _ from _] at this
+    rw [← Finset.prod_sdiff (s₁ := {n})] at this
     swap
     · simp only [singleton_subset_iff, mem_sdiff, mem_erase, Ne, mem_divisors, dvd_refl,
         true_and, mem_image, mem_range, not_exists, not_and]

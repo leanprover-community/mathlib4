@@ -77,6 +77,7 @@ protected theorem zero (f : Iio 0 → Iio 0) : IsFundamentalSeq f where
   le_ord_cof := by simp
   isCofinal_range := .of_isEmpty
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The length one sequence `(o)` is a fundamental sequence for `o + 1`. -/
 protected theorem add_one (o : Ordinal) :
     @IsFundamentalSeq 1 (o + 1) fun _ ↦ ⟨o, lt_add_one o⟩ where
@@ -206,7 +207,7 @@ theorem exists_fundamental_sequence (a : Ordinal.{u}) :
   rcases ord_eq ι with ⟨r, wo, hr⟩
   let r' := Subrel r fun i ↦ ∀ j, r j i → f j < f i
   let hrr' : r' ↪r r := Subrel.relEmbedding _ _
-  haveI := hrr'.isWellOrder
+  have := hrr'.isWellOrder
   refine
     ⟨_, _, hrr'.ordinal_type_le.trans ?_, @fun i j _ h _ => (enum r' ⟨j, h⟩).prop _ ?_,
       le_antisymm (blsub_le fun i hi => lsub_le_iff.1 hf.le _) ?_⟩
@@ -227,7 +228,6 @@ theorem exists_fundamental_sequence (a : Ordinal.{u}) :
         exact (wo.wf.not_lt_min {j | r j i ∧ f i ≤ f j} ⟨IsTrans.trans _ _ _ hkj hji, H⟩) hkj
       · rwa [bfamilyOfFamily'_typein]
 
-set_option linter.deprecated false in
 @[deprecated IsFundamentalSeq.comp_isNormal (since := "2026-03-23")]
 theorem IsFundamentalSequence.of_isNormal {f : Ordinal.{u} → Ordinal.{u}} (hf : IsNormal f)
     {a o} (ha : IsSuccLimit a) {g} (hg : IsFundamentalSequence a o g) :
@@ -237,8 +237,5 @@ theorem IsFundamentalSequence.of_isNormal {f : Ordinal.{u} → Ordinal.{u}} (hf 
   · rw [@blsub_comp.{u, u, u} a _ (fun b _ => f b) (@fun i j _ _ h => hf.strictMono.monotone h) g
         hg.2.2]
     exact IsNormal.blsub_eq.{u, u} hf ha
-
-@[deprecated (since := "2025-12-25")]
-alias IsNormal.isFundamentalSequence := IsFundamentalSequence.of_isNormal
 
 end Ordinal
