@@ -53,7 +53,7 @@ protected def graph : Language := ⟨fun _ => Empty, graphRel⟩
 abbrev adj : Language.graph.Relations 2 := .adj
 
 /-- Any simple graph can be thought of as a structure in the language of graphs. -/
-@[implicit_reducible]
+@[instance_reducible]
 def _root_.SimpleGraph.structure (G : SimpleGraph V) : Language.graph.Structure V where
   RelMap | .adj => (fun x => G.Adj (x 0) (x 1))
 
@@ -77,7 +77,7 @@ theorem Theory.simpleGraph_model_iff [Language.graph.Structure V] :
 
 instance simpleGraph_model (G : SimpleGraph V) :
     @Theory.Model _ V G.structure Theory.simpleGraph := by
-  letI := G.structure
+  let := G.structure
   rw [Theory.simpleGraph_model_iff]
   exact ⟨G.loopless, G.symm⟩
 
