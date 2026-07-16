@@ -264,8 +264,7 @@ lemma exists_insertNth_mem_S {i : Fin n} {α : Fin p → Fin n} {k : Fin n}
   | zero =>
     exact ⟨0, by simpa [Fin.insertNth_zero', Fin.strictMono_iff_lt_succ] using hik⟩
   | succ p ih =>
-    rw [mem_S_iff] at hα
-    obtain ⟨hmono, hbound⟩ := hα
+    obtain ⟨hmono, hbound⟩ := mem_S_iff.mp hα
     have htail : Fin.tail α ∈ S p (α 0) := by
       rw [mem_S_iff_strictMono_cons, Fin.cons_self_tail]
       assumption
