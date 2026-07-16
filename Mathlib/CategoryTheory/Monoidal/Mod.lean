@@ -64,6 +64,7 @@ class ModObj (X : D) where
   /-- The action map is compatible with multiplication. -/
   mul_smul (X) : μ ⊵ₗ X ≫ smul = (αₗ M M X).hom ≫ M ⊴ₗ smul ≫ smul := by cat_disch
 
+set_option linter.translateOverwrite false in
 attribute [to_additive existing (attr := reassoc (attr := simp))] ModObj.mul_smul ModObj.one_smul
 
 
@@ -107,7 +108,8 @@ lemma smul_eq_mul (M : C) [MonObj M] : γ[M,M] = μ[M] := rfl
 
 /-- If `C` acts monoidally on `D`, then every object of `D` is canonically a
 module over the trivial monoid. -/
-@[to_additive (attr := simps)]
+@[to_additive (attr := simps) /-- If `C` acts monoidally on `D`, then every object of `D` is
+canonically an additive module over the trivial additive monoid. -/]
 instance (X : D) : ModObj (𝟙_ C) X where
   smul := (λₗ _).hom
 
@@ -191,6 +193,7 @@ alias IsMod_Hom := IsModHom
 @[deprecated (since := "2026-04-21")]
 alias IsMod_Hom.smul_hom := IsModHom.smul_hom
 
+set_option linter.translateOverwrite false in
 attribute [to_additive existing (attr := reassoc (attr := simp))] IsModHom.smul_hom
 
 variable {M N O : D} [ModObj A M] [ModObj A N] [ModObj A O]
@@ -264,7 +267,6 @@ structure Hom (M N : Mod D A) where
   [isModHom : IsModHom A hom]
 
 attribute [instance] Hom.isModHom
-attribute [to_additive existing (attr := instance)] Hom.isModHom
 
 /-- An alternative constructor for `Hom`,
 taking a morphism without a `[IsModHom]` instance, as well as the relevant
@@ -354,7 +356,7 @@ open MonoidalLeftAction in
 /-- When `M` is a `B`-module in `D` and `f : A ⟶ B` is a morphism of internal
 monoid objects, `M` inherits an `A`-module structure via
 "restriction of scalars", i.e `γ[A, M] = f ⊵ₗ M ≫ γ[B, M]`. -/
-@[to_additive (attr := simps!, implicit_reducible)
+@[to_additive (attr := simps!, instance_reducible)
   /-- When `M` is a `B`-additive module in `D` and `f : A ⟶ B` is a morphism of internal
   additive monoid objects, `M` inherits an `A`-additive module structure via
   "restriction of scalars", i.e `δ[A, M] = f ⊵ₗ M ≫ δ[B, M]`. -/]

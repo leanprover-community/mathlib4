@@ -64,7 +64,6 @@ variable [Module.Free R S] {ι : Type*}
 
 theorem finrank_quotient_map :
     finrank (R ⧸ p) (S ⧸ pS) = finrank R S := by
-  classical
   have : Module.Finite (R ⧸ p) (S ⧸ pS) := Module.Finite.of_restrictScalars_finite R _ _
   apply le_antisymm
   · let b := Module.Free.chooseBasis R S

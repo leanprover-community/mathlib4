@@ -9,6 +9,7 @@ public import Mathlib.CategoryTheory.Functor.Category
 
 /-!
 # Thin categories
+
 A thin category (also known as a sparse category) is a category with at most one morphism between
 each pair of objects.
 Examples include posets, but also some indexing categories (diagrams) for special shapes of
@@ -35,7 +36,7 @@ variable [CategoryStruct.{v₁} C] [Quiver.IsThin C]
 
 /-- Construct a category instance from a `CategoryStruct`, using the fact that
     hom spaces are subsingletons to prove the axioms. -/
-@[implicit_reducible]
+@[instance_reducible]
 def thin_category : Category C where
 
 end

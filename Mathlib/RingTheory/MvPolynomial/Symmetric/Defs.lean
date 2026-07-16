@@ -173,8 +173,9 @@ end CommRing
 
 end IsSymmetric
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `MvPolynomial.rename` induces an isomorphism between the symmetric subalgebras. -/
-@[simps!]
+@[simps! apply_coe symm_apply_coe]
 def renameSymmetricSubalgebra [CommSemiring R] (e : σ ≃ τ) :
     symmetricSubalgebra σ R ≃ₐ[R] symmetricSubalgebra τ R :=
   AlgEquiv.ofAlgHom
@@ -253,8 +254,8 @@ theorem support_esymm'' [DecidableEq σ] [Nontrivial R] (n : ℕ) :
         (Finsupp.single (∑ i ∈ t, Finsupp.single i 1) (1 : R)).support := by
   rw [esymm_eq_sum_monomial]
   simp only [← single_eq_monomial]
-  refine Finsupp.support_sum_eq_biUnion (powersetCard n (univ : Finset σ)) ?_
-  intro s t hst
+  simp only [support, MvPolynomial, AddMonoidAlgebra.coeff_sum, AddMonoidAlgebra.coeff_single]
+  refine Finsupp.support_sum_eq_biUnion _ fun s t hst ↦ ?_
   rw [disjoint_left, Finsupp.support_single _ one_ne_zero]
   rw [Finsupp.support_single _ one_ne_zero]
   simp only [mem_singleton]

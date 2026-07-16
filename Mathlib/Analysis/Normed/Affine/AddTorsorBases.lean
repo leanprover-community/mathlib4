@@ -63,7 +63,7 @@ theorem AffineBasis.interior_convexHull {ι E : Type*} [Finite ι] [NormedAddCom
       AffineSubspace.eq_univ_of_subsingleton_span_eq_top (subsingleton_range _) b.tot
     simp [this]
   · -- The positive-dimensional case.
-    haveI : FiniteDimensional ℝ E := b.finiteDimensional
+    have : FiniteDimensional ℝ E := b.finiteDimensional
     have : convexHull ℝ (range b) = ⋂ i, b.coord i ⁻¹' Ici 0 := by
       rw [b.convexHull_eq_nonneg_coord, setOf_forall]; rfl
     ext
@@ -77,6 +77,7 @@ variable {V P : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V] [MetricSpace P
 
 open AffineMap
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a set `s` of affine-independent points belonging to an open set `u`, we may extend `s` to
 an affine basis, all of whose elements belong to `u`. -/
 theorem IsOpen.exists_between_affineIndependent_span_eq_top {s u : Set P} (hu : IsOpen u)
@@ -126,7 +127,7 @@ theorem affineSpan_eq_top_of_nonempty_interior {s : Set V}
 
 theorem AffineBasis.centroid_mem_interior_convexHull {ι} [Fintype ι] (b : AffineBasis ι ℝ V) :
     Finset.univ.centroid ℝ b ∈ interior (convexHull ℝ (range b)) := by
-  haveI := b.nonempty
+  have := b.nonempty
   simp only [b.interior_convexHull, mem_setOf_eq, b.coord_apply_centroid (Finset.mem_univ _),
     inv_pos, Nat.cast_pos, Finset.card_pos, Finset.univ_nonempty, forall_true_iff]
 
