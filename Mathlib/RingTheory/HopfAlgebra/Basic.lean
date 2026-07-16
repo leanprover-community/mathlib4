@@ -231,11 +231,11 @@ If `A` is generated as an `R`-algebra by `X`, and `S : A →ₐ[R] Aᵐᵒᵖ` s
 antipode identities on `X`, then the underlying linear map gives a Hopf algebra structure on `A`.
 -/
 noncomputable abbrev ofAntipodeOfAdjoin (hX : adjoin R X = ⊤)
-    (hxr : ∀ x ∈ X, μ (rTensor A 𝑺 (δ x)) = η[R] (ε x))
-    (hxl : ∀ x ∈ X, μ (lTensor A 𝑺 (δ x)) = η[R] (ε x)) : HopfAlgebra R A where
+    (hr : ∀ x ∈ X, μ (rTensor A 𝑺 (δ x)) = η[R] (ε x))
+    (hl : ∀ x ∈ X, μ (lTensor A 𝑺 (δ x)) = η[R] (ε x)) : HopfAlgebra R A where
   antipode := 𝑺
-  mul_antipode_rTensor_comul := mul_antipode_rTensor_comul_adjoin_top S hX hxr
-  mul_antipode_lTensor_comul := mul_antipode_lTensor_comul_adjoin_top S hX hxl
+  mul_antipode_rTensor_comul := mul_antipode_rTensor_comul_adjoin_top S hX hr
+  mul_antipode_lTensor_comul := mul_antipode_lTensor_comul_adjoin_top S hX hl
 
 end OfAntipodeOfAdjoin
 
