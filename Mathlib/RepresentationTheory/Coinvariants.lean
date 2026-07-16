@@ -357,7 +357,8 @@ noncomputable def coinvariantsFunctor : Rep.{w} k G ⥤ ModuleCat.{w} k where
 /-- The quotient map from a representation to its coinvariants induces a natural transformation
 from the forgetful functor `Rep k G ⥤ ModuleCat k` to the coinvariants functor. -/
 @[simps! app_hom]
-noncomputable def coinvariantsMk : forget₂ (Rep k G) (ModuleCat.{w} k) ⟶ coinvariantsFunctor k G where
+noncomputable def coinvariantsMk :
+    forget₂ (Rep k G) (ModuleCat.{w} k) ⟶ coinvariantsFunctor k G where
   app (X : Rep k G) := ModuleCat.ofHom <| Representation.Coinvariants.mk X.ρ
 
 instance (X : Rep k G) : Epi ((coinvariantsMk k G).app X) :=

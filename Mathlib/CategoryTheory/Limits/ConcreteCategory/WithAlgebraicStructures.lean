@@ -46,8 +46,8 @@ variable (R : Type*) [Ring R] {J : Type w} [Category.{r} J]
 section zero
 
 theorem colimit_rep_eq_zero
-    (F : J ⥤ ModuleCat.{max t w} R) [PreservesColimit F (forget (ModuleCat.{max t w} R))] [IsFiltered J]
-    [HasColimit F] (j : J) (x : F.obj j) (hx : colimit.ι F j x = 0) :
+    (F : J ⥤ ModuleCat.{max t w} R) [PreservesColimit F (forget (ModuleCat.{max t w} R))]
+    [IsFiltered J] [HasColimit F] (j : J) (x : F.obj j) (hx : colimit.ι F j x = 0) :
     ∃ (j' : J) (i : j ⟶ j'), (F.map i).hom x = 0 := by
   rw [show 0 = colimit.ι F j 0 by simp, colimit_rep_eq_iff_exists] at hx
   obtain ⟨j', i, y, g⟩ := hx

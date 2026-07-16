@@ -39,7 +39,8 @@ The functor from the category of `R`-modules to presheaves on `CompHausLike P` g
 constant maps.
 -/
 @[simps]
-def functorToPresheaves : ModuleCat.{max u w} R ⥤ ((CompHausLike.{u} P)ᵒᵖ ⥤ ModuleCat.{max u w} R) where
+def functorToPresheaves :
+    ModuleCat.{max u w} R ⥤ ((CompHausLike.{u} P)ᵒᵖ ⥤ ModuleCat.{max u w} R) where
   obj X := {
     obj := fun ⟨S⟩ ↦ ModuleCat.of R (LocallyConstant S X)
     map := fun f ↦ ModuleCat.ofHom (comapₗ R f.unop.hom.hom) }
@@ -268,7 +269,8 @@ instance : (functor R).Faithful := (fullyFaithfulFunctor R).faithful
 
 instance : (functor R).Full := (fullyFaithfulFunctor R).full
 
-instance : (discrete.{u} (ModuleCat.{u} R)).Faithful := Functor.Faithful.of_iso (functorIsoDiscrete R)
+instance : (discrete.{u} (ModuleCat.{u} R)).Faithful :=
+  Functor.Faithful.of_iso (functorIsoDiscrete R)
 
 instance : (constantSheaf (coherentTopology LightProfinite.{u}) (ModuleCat.{u} R)).Faithful :=
   inferInstanceAs (discrete.{u} (ModuleCat R)).Faithful

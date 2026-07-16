@@ -69,8 +69,8 @@ noncomputable def d {G A : C} {M : ModuleCat.{v} (End G)ᵐᵒᵖ}
 
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
-theorem ι_d {G A : C} {M : ModuleCat.{v} (End G)ᵐᵒᵖ} (g : M ⟶ ModuleCat.of (End G)ᵐᵒᵖ (G ⟶ A)) (m : M) :
-    Sigma.ι _ m ≫ d g = g.hom m := by
+theorem ι_d {G A : C} {M : ModuleCat.{v} (End G)ᵐᵒᵖ} (g : M ⟶ ModuleCat.of (End G)ᵐᵒᵖ (G ⟶ A))
+    (m : M) : Sigma.ι _ m ≫ d g = g.hom m := by
   simp [d]
 
 set_option backward.isDefEq.respectTransparency.types false in
