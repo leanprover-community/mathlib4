@@ -272,6 +272,7 @@ variable (hκ : κ₁ < κ₂)
 variable (κ₁ κ₂) in
 /-- Given a partially ordered type `J`, this is the type
 of subsets of `J` that are `κ₁`-directed and of cardinality `< κ₂`. -/
+@[implicit_reducible]
 def IsCardinalFilteredAndHasCardinalLT
     (J : Type w) [PartialOrder J] (A : Set J) : Prop :=
   IsCardinalFiltered A κ₁ ∧ HasCardinalLT A κ₂
@@ -312,13 +313,11 @@ abbrev pair {j j' : J} (h : j ≤ j') :
     apply isCardinalFiltered_of_hasTerminal,
     hasCardinalLT_of_finite _ _ (IsRegular.aleph0_le Fact.out)⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma le_pair {j j' : J} (h : j ≤ j') :
     singleton κ₁ κ₂ j ≤ pair κ₁ κ₂ h := by
   rw [Subtype.mk_le_mk]
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 lemma le_pair' {j j' : J} (h : j ≤ j') :
     singleton κ₁ κ₂ j' ≤ pair κ₁ κ₂ h := by
   rw [Subtype.mk_le_mk]
