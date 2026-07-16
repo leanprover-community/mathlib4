@@ -32,6 +32,9 @@ path-connected, in that each point has a basis of path-connected neighborhoods.
 * `Prod.locallyPathConnectedSpace` / `Pi.locallyPathConnectedSpace`: binary products of locally
   path-connected spaces are locally path-connected; likewise for pi types when the index type is
   finite or all factors are path-connected.
+* `Pi.locallyPathConnectedSpace_iff`: a product of spaces is locally path-connected iff it is
+  empty, or every factor is locally path-connected and all but finitely many factors are
+  path-connected.
 
 Abstractly, this also shows that locally path-connected spaces form a coreflective subcategory of
 the category of topological spaces, although we do not prove that in this form here.
@@ -351,6 +354,36 @@ instance Pi.locallyPathConnectedSpace {Z : ι → Type*} [∀ i, TopologicalSpac
     LocallyPathConnectedSpace (∀ i, Z i) :=
   locallyPathConnectedSpace_of_finite_nonpathconnected
     (Set.finite_empty.subset fun _ hi ↦ (hi inferInstance).elim)
+
+/-- A product of spaces is locally path-connected iff it is empty, or every factor is locally
+path-connected and all but finitely many factors are path-connected. -/
+theorem Pi.locallyPathConnectedSpace_iff {Z : ι → Type*} [∀ i, TopologicalSpace (Z i)] :
+    LocallyPathConnectedSpace (∀ i, Z i) ↔
+      IsEmpty (∀ i, Z i) ∨
+        (∀ i, LocallyPathConnectedSpace (Z i)) ∧ {i | ¬PathConnectedSpace (Z i)}.Finite := by
+  refine ⟨fun h ↦ ?_, ?_⟩
+  · rcases isEmpty_or_nonempty (∀ i, Z i) with he | hne
+    · exact .inl he
+    obtain ⟨x⟩ := hne
+    classical
+    haveI : ∀ i, Nonempty (Z i) := Classical.nonempty_pi.mp ⟨x⟩
+    refine .inr ⟨fun i ↦ ((isOpenMap_eval i).isQuotientMap (continuous_apply i)
+      (surjective_eval i)).locallyPathConnectedSpace, ?_⟩
+    have hVn : pathComponent x ∈ 𝓝 x :=
+      (IsOpen.pathComponent x).mem_nhds (mem_pathComponent_self x)
+    rw [nhds_pi, Filter.mem_pi] at hVn
+    obtain ⟨J, hJ, t, ht, htV⟩ := hVn
+    refine hJ.subset fun i hi ↦ by_contra fun hiJ ↦ hi ?_
+    suffices himg : eval i '' pathComponent x = univ by
+      rw [pathConnectedSpace_iff_univ, ← himg]
+      exact isPathConnected_pathComponent.image (continuous_apply i)
+    refine (subset_univ _).antisymm fun z _ ↦ ⟨update x i z, htV fun j hj ↦ ?_, by simp⟩
+    rw [update_of_ne (ne_of_mem_of_not_mem hj hiJ)]
+    exact mem_of_mem_nhds (ht j)
+  · rintro (he | ⟨hloc, hfin⟩)
+    · exact ⟨fun x ↦ he.elim x⟩
+    · haveI := hloc
+      exact Pi.locallyPathConnectedSpace_of_finite_nonpathconnected hfin
 
 instance AlexandrovDiscrete.locallyPathConnectedSpace [AlexandrovDiscrete X] :
     LocallyPathConnectedSpace X := by

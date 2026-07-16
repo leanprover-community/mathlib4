@@ -151,6 +151,22 @@ theorem IsOpen.locallyConnectedSpace [LocallyConnectedSpace α] {U : Set α} (hU
     LocallyConnectedSpace U :=
   hU.isOpenEmbedding_subtypeVal.locallyConnectedSpace
 
+/-- The image of a locally connected space under a quotient map (in particular, under an open
+continuous surjection) is locally connected. -/
+theorem Topology.IsQuotientMap.locallyConnectedSpace [LocallyConnectedSpace α]
+    [TopologicalSpace β] {f : α → β} (hf : IsQuotientMap f) : LocallyConnectedSpace β := by
+  rw [locallyConnectedSpace_iff_connectedComponentIn_open]
+  intro F hF y _
+  rw [← hf.isOpen_preimage, isOpen_iff_mem_nhds]
+  intro x hx
+  have hxF : x ∈ f ⁻¹' F := connectedComponentIn_subset F y hx
+  refine Filter.mem_of_superset
+    ((hF.preimage hf.continuous).connectedComponentIn.mem_nhds (mem_connectedComponentIn hxF))
+    fun z hz ↦ ?_
+  rw [mem_preimage, connectedComponentIn_eq hx]
+  exact connectedComponentIn_mono _ (image_preimage_subset f F)
+    (hf.continuous.mapsTo_connectedComponentIn hxF hz)
+
 /-- If a space is locally connected, the topology of its connected components is discrete. -/
 instance [LocallyConnectedSpace α] : DiscreteTopology <| ConnectedComponents α := by
   refine discreteTopology_iff_isOpen_singleton.mpr fun c ↦ ?_
@@ -210,5 +226,35 @@ instance Pi.locallyConnectedSpace [∀ i, TopologicalSpace (X i)]
     LocallyConnectedSpace (∀ i, X i) :=
   locallyConnectedSpace_of_finite_nonpreconnected
     (Set.finite_empty.subset fun _ hi ↦ (hi inferInstance).elim)
+
+/-- A product of spaces is locally connected iff it is empty, or every factor is locally
+connected and all but finitely many factors are preconnected. -/
+theorem Pi.locallyConnectedSpace_iff [∀ i, TopologicalSpace (X i)] :
+    LocallyConnectedSpace (∀ i, X i) ↔
+      IsEmpty (∀ i, X i) ∨
+        (∀ i, LocallyConnectedSpace (X i)) ∧ {i | ¬PreconnectedSpace (X i)}.Finite := by
+  refine ⟨fun h ↦ ?_, ?_⟩
+  · rcases isEmpty_or_nonempty (∀ i, X i) with he | hne
+    · exact .inl he
+    obtain ⟨x⟩ := hne
+    classical
+    haveI : ∀ i, Nonempty (X i) := Classical.nonempty_pi.mp ⟨x⟩
+    refine .inr ⟨fun i ↦ ((isOpenMap_eval i).isQuotientMap (continuous_apply i)
+      (Function.surjective_eval i)).locallyConnectedSpace, ?_⟩
+    have hVn : connectedComponent x ∈ 𝓝 x :=
+      isOpen_connectedComponent.mem_nhds mem_connectedComponent
+    rw [nhds_pi, Filter.mem_pi] at hVn
+    obtain ⟨J, hJ, t, ht, htV⟩ := hVn
+    refine hJ.subset fun i hi ↦ by_contra fun hiJ ↦ hi ?_
+    suffices himg : Function.eval i '' connectedComponent x = univ by
+      exact ⟨himg ▸ isPreconnected_connectedComponent.image _ (continuous_apply i).continuousOn⟩
+    refine (subset_univ _).antisymm fun z _ ↦
+      ⟨Function.update x i z, htV fun j hj ↦ ?_, by simp⟩
+    rw [Function.update_of_ne (ne_of_mem_of_not_mem hj hiJ)]
+    exact mem_of_mem_nhds (ht j)
+  · rintro (he | ⟨hloc, hfin⟩)
+    · exact ⟨fun x ↦ he.elim x⟩
+    · haveI := hloc
+      exact Pi.locallyConnectedSpace_of_finite_nonpreconnected hfin
 
 end LocallyConnectedSpace
