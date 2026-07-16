@@ -693,6 +693,7 @@ lemma coe_coroot_mem_corootSubmodule (α : Weight K H L) :
   (LieSubmodule.mem_map _).mpr
     ⟨⟨coroot α, (coroot α).property⟩, coroot_mem_corootSpace α, rfl⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 open Submodule in
 lemma sl2SubmoduleOfRoot_eq_sup (α : Weight K H L) (hα : α.IsNonZero) :
     sl2SubmoduleOfRoot hα = genWeightSpace L α ⊔ genWeightSpace L (-α) ⊔ corootSubmodule α := by

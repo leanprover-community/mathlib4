@@ -828,6 +828,7 @@ theorem domRestrict_mker (f : M →* N) :
 @[deprecated (since := "2026-02-10")]
 alias _root_.AddMonoidHom.restrict_mker := _root_.AddMonoidHom.domRestrict_mker
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem mrangeRestrict_mker (f : M →* N) : mker (mrangeRestrict f) = mker f := by
   ext x
@@ -1161,6 +1162,7 @@ section Units
 
 namespace Submonoid
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The multiplicative equivalence between the type of units of `M` and the submonoid of unit
 elements of `M`. -/
 @[to_additive (attr := simps!) /-- The additive equivalence between the type of additive units of
