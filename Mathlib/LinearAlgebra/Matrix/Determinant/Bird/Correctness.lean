@@ -50,14 +50,14 @@ def S (p : ℕ) (i : Fin n) : Finset (Fin p → Fin n) :=
   {α : Fin p → Fin n | StrictMono (Fin.cons i α)}
 
 /-- Membership in `S p i` is strict monotonicity of the bordered word. -/
-theorem mem_S {p : ℕ} {i : Fin n} {α : Fin p → Fin n} :
+theorem mem_S_iff_strictMono_cons {p : ℕ} {i : Fin n} {α : Fin p → Fin n} :
     α ∈ S p i ↔ StrictMono (Fin.cons i α) := by
   exact Finset.mem_filter_univ α
 
 /-- Membership in `S p i` means that the word is strictly monotone and lies above `i`. -/
 theorem mem_S_iff {p : ℕ} {i : Fin n} {α : Fin p → Fin n} :
     α ∈ S p i ↔ StrictMono α ∧ ∀ j, i < α j := by
-  rw [mem_S]
+  rw [mem_S_iff_strictMono_cons]
   constructor
   · intro h
     constructor
@@ -75,7 +75,8 @@ theorem mem_S_iff {p : ℕ} {i : Fin n} {α : Fin p → Fin n} :
 word `ε`. -/
 theorem S_zero (i : Fin n) : S 0 i = {![]} := by
   ext α
-  simp [mem_S, Fin.strictMono_iff_lt_succ, eq_iff_true_of_subsingleton]
+  simp [mem_S_iff_strictMono_cons, Fin.strictMono_iff_lt_succ,
+    eq_iff_true_of_subsingleton]
 
 /-- Bird's bordered minor `f[iα, jα]`. -/
 abbrev bminor (A : Matrix (Fin n) (Fin n) R) (i j : Fin n) {p : ℕ}
@@ -107,11 +108,11 @@ theorem S_succ_eq_biUnion {p : ℕ} (i : Fin n) :
       exact hbounded 0
     · exists Fin.tail α
       constructor
-      · simp only [mem_S, Fin.cons_self_tail] at hα ⊢
+      · simp only [mem_S_iff_strictMono_cons, Fin.cons_self_tail] at hα ⊢
         exact hα.comp Fin.strictMono_succ
       · exact Fin.cons_self_tail α
   · rintro ⟨k, hk, u, hu, rfl⟩
-    simp only [mem_S] at hu ⊢
+    simp only [mem_S_iff_strictMono_cons] at hu ⊢
     exact StrictMono.vecCons hu hk
 
 section MatrixProof
@@ -272,7 +273,7 @@ preserving strict monotonicity. -/
 lemma exists_insertNth_mem_S {i : Fin n} {α : Fin p → Fin n} {k : Fin n}
     (hα : α ∈ S p i) (hik : i < k) (hk : k ∉ Set.range α) :
     ∃ t : Fin (p + 1), t.insertNth k α ∈ S (p + 1) i := by
-  simp only [mem_S]
+  simp only [mem_S_iff_strictMono_cons]
   induction p generalizing i with
   | zero =>
     exact ⟨0, by simpa [Fin.insertNth_zero', Fin.strictMono_iff_lt_succ] using hik⟩
@@ -280,7 +281,7 @@ lemma exists_insertNth_mem_S {i : Fin n} {α : Fin p → Fin n} {k : Fin n}
     rw [mem_S_iff] at hα
     obtain ⟨hmono, hbound⟩ := hα
     have htail : Fin.tail α ∈ S p (α 0) := by
-      rw [mem_S, Fin.cons_self_tail]
+      rw [mem_S_iff_strictMono_cons, Fin.cons_self_tail]
       assumption
     have hk_tail : k ∉ Set.range (Fin.tail α) := by
       rintro ⟨j, hj⟩
@@ -373,7 +374,7 @@ lemma cons_zero_succ : (Fin.cons 0 Fin.succ : Fin (p + 1) → Fin (p + 1)) = id 
 /-- The unique maximum-length word over the symbols above `0` is `Fin.succ`. -/
 lemma S_max_length_eq_singleton : S p 0 = {Fin.succ} := by
   ext α
-  simp only [mem_S, Finset.mem_singleton]
+  simp only [mem_S_iff_strictMono_cons, Finset.mem_singleton]
   constructor
   · intro h
     funext x
