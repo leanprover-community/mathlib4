@@ -280,7 +280,7 @@ protected theorem LocallyFinite.countable_univ {f : ι → Set X} (hf : LocallyF
 
 /-- If `f : ι → Set X` is a locally finite covering of a σ-compact topological space by nonempty
 sets, then the index type `ι` is encodable. -/
-@[implicit_reducible]
+@[instance_reducible]
 protected noncomputable def LocallyFinite.encodable {ι : Type*} {f : ι → Set X}
     (hf : LocallyFinite f) (hne : ∀ i, (f i).Nonempty) : Encodable ι :=
   @Encodable.ofEquiv _ _ (hf.countable_univ hne).toEncodable (Equiv.Set.univ _).symm
@@ -378,7 +378,7 @@ theorem exists_superset_of_isCompact {s : Set X} (hs : IsCompact s) : ∃ n, s �
     exact mem_iUnion.2 ⟨k + 1, K.subset_interior_succ _ hk⟩
   · exact Monotone.directed_le fun _ _ h ↦ interior_mono <| K.subset h
 
-open Classical in
+open scoped Classical in
 /-- The minimal `n` such that `x ∈ K n`. -/
 protected noncomputable def find (x : X) : ℕ :=
   Nat.find (K.exists_mem x)

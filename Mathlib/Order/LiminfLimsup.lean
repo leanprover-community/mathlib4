@@ -444,6 +444,7 @@ theorem bliminf_congr' {f : Filter β} {p q : β → Prop} {u : β → α}
     (h : ∀ᶠ x in f, u x ≠ ⊤ → (p x ↔ q x)) : bliminf u f p = bliminf u f q :=
   blimsup_congr' (α := αᵒᵈ) h
 
+set_option backward.isDefEq.respectTransparency false in
 lemma HasBasis.blimsup_eq_iInf_iSup {p : ι → Prop} {s : ι → Set β} {f : Filter β} {u : β → α}
     (hf : f.HasBasis p s) {q : β → Prop} :
     blimsup u f q = ⨅ (i) (_ : p i), ⨆ a ∈ s i, ⨆ (_ : q a), u a := by
@@ -971,7 +972,7 @@ theorem gt_mem_sets_of_limsInf_gt : f.IsBounded (· ≥ ·) → b < f.limsInf �
 
 section Classical
 
-open Classical in
+open scoped Classical in
 /-- Given an indexed family of sets `s j` over `j : Subtype p` and a function `f`, then
 `liminf_reparam j` is equal to `j` if `f` is bounded below on `s j`, and otherwise to some
 index `k` such that `f` is bounded below on `s k` (if there exists one).
@@ -1031,7 +1032,7 @@ theorem HasBasis.liminf_eq_ciSup_ciInf {v : Filter ι}
       · exact (hZ j0 hj0).elim
   simp_rw [hv.liminf_eq_sSup_iUnion_iInter, A, B, sSup_iUnion_Iic]
 
-open Classical in
+open scoped Classical in
 /-- Writing a liminf as a supremum of infimum, in a (possibly non-complete) conditionally complete
 linear order. A reparametrization trick is needed to avoid taking the infimum of sets which are
 not bounded below. -/
@@ -1077,7 +1078,7 @@ theorem HasBasis.limsup_eq_ciInf_ciSup {v : Filter ι}
     limsup f v = ⨅ (j : Subtype p), ⨆ (i : s (limsup_reparam f s p j)), f i :=
   HasBasis.liminf_eq_ciSup_ciInf (α := αᵒᵈ) hv hs H
 
-open Classical in
+open scoped Classical in
 /-- Writing a limsup as an infimum of supremum, in a (possibly non-complete) conditionally complete
 linear order. A reparametrization trick is needed to avoid taking the supremum of sets which are
 not bounded below. -/
