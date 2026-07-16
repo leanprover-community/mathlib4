@@ -45,6 +45,7 @@ lemma hom_comp_singleFunctor_map_shift [HasDerivedCategory.{w'} C]
 
 variable {X : C} {S : ShortComplex C} (hS : S.ShortExact)
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma preadditiveCoyoneda_homologySequenceδ_singleTriangle_apply
     [HasDerivedCategory.{w'} C] {X : C} {n₀ : ℕ} (x : Ext X S.X₃ n₀)
     {n₁ : ℕ} (h : n₀ + 1 = n₁) :
@@ -185,6 +186,7 @@ lemma singleFunctor_map_comp_hom [HasDerivedCategory.{w'} C]
       ((mk₀ f).comp x (zero_add n)).hom := by
   simp only [comp_hom, mk₀_hom, ShiftedHom.mk₀_comp]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma preadditiveYoneda_homologySequenceδ_singleTriangle_apply
     [HasDerivedCategory.{w'} C] {Y : C} {n₀ : ℕ} (x : Ext S.X₁ Y n₀)
     {n₁ : ℕ} (h : 1 + n₀ = n₁) :

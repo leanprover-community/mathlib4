@@ -70,7 +70,6 @@ structure AddMonCat.Hom (A B : AddMonCat.{u}) where
   /-- The underlying monoid homomorphism. -/
   hom' : A →+ B
 
-set_option backward.privateInPublic true in
 /-- The type of morphisms in `MonCat`. -/
 @[to_additive, ext]
 structure MonCat.Hom (A B : MonCat.{u}) where
@@ -257,7 +256,6 @@ structure AddCommMonCat.Hom (A B : AddCommMonCat.{u}) where
   /-- The underlying monoid homomorphism. -/
   hom' : A →+ B
 
-set_option backward.privateInPublic true in
 /-- The type of morphisms in `CommMonCat`. -/
 @[to_additive, ext]
 structure CommMonCat.Hom (A B : CommMonCat.{u}) where

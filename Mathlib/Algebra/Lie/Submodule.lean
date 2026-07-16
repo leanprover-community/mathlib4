@@ -383,7 +383,6 @@ instance : SupSet (LieSubmodule R L M) where
         change ⁅x, m⁆ ∈ sSup {(p : Submodule R M) | p ∈ S}
         obtain ⟨s, hs, hsm⟩ := Submodule.mem_sSup_iff_exists_finset.mp hm
         clear hm
-        classical
         induction s using Finset.induction_on generalizing m with
         | empty =>
           replace hsm : m = 0 := by simpa using hsm
@@ -971,6 +970,7 @@ lemma map_le_range {M' : Type*}
   rw [← LieModuleHom.map_top]
   exact LieSubmodule.map_mono le_top
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma map_incl_lt_iff_lt_top {N' : LieSubmodule R L N} :
     N'.map (LieSubmodule.incl N) < N ↔ N' < ⊤ := by

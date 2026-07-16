@@ -332,16 +332,6 @@ theorem det_toContinuousLinearMap (f : E →ₗ[𝕜] E) :
     (LinearMap.toContinuousLinearMap f).det = LinearMap.det f :=
   rfl
 
-@[deprecated coe_toContinuousLinearMap (since := "2025-12-23")]
-theorem ker_toContinuousLinearMap (f : E →ₗ[𝕜] F') :
-    (LinearMap.toContinuousLinearMap f).ker = ker f := by
-  simp
-
-@[deprecated coe_toContinuousLinearMap (since := "2025-12-23")]
-theorem range_toContinuousLinearMap (f : E →ₗ[𝕜] F') :
-    (LinearMap.toContinuousLinearMap f).range = range f :=
-  rfl
-
 /-- A surjective linear map `f` with finite-dimensional codomain is an open map. -/
 theorem isOpenMap_of_finiteDimensional (f : F →ₗ[𝕜] E) (hf : Function.Surjective f) :
     IsOpenMap f :=

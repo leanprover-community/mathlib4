@@ -167,6 +167,7 @@ class PreservesBinaryBiproducts (F : C ⥤ D) [PreservesZeroMorphisms F] : Prop 
 
 attribute [inherit_doc PreservesBinaryBiproducts] PreservesBinaryBiproducts.preserves
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- A functor that preserves biproducts of a pair preserves binary biproducts. -/
 lemma preservesBinaryBiproduct_of_preservesBiproduct (F : C ⥤ D)

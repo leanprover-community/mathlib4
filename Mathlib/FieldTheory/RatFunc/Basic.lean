@@ -270,7 +270,7 @@ variable (K) [CommRing K]
 
 This is an intermediate step on the way to the full instance `RatFunc.instCommRing`.
 -/
-@[implicit_reducible]
+@[instance_reducible]
 def instCommMonoid : CommMonoid K⟮X⟯ where
   mul_assoc := by frac_tac
   mul_comm := by frac_tac
@@ -282,7 +282,7 @@ def instCommMonoid : CommMonoid K⟮X⟯ where
 
 This is an intermediate step on the way to the full instance `RatFunc.instCommRing`.
 -/
-@[implicit_reducible]
+@[instance_reducible]
 def instAddCommGroup : AddCommGroup K⟮X⟯ where
   add_assoc := by frac_tac
   add_comm := by frac_tac
@@ -361,6 +361,7 @@ theorem map_injective [MonoidHomClass F R[X] S[X]] (φ : F) (hφ : R[X]⁰ ≤ S
     Localization.mk_eq_mk_iff, Localization.r_iff_exists, mul_cancel_left_coe_nonZeroDivisors,
     exists_const, ← map_mul, hf.eq_iff] using h
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Lift a ring homomorphism that maps polynomials `φ : R[X] →+* S[X]`
 to a `R⟮X⟯ →+* S⟮X⟯`,
 on the condition that `φ` maps non-zero-divisors to non-zero-divisors,
@@ -430,6 +431,7 @@ theorem liftMonoidWithZeroHom_injective [Nontrivial R] (φ : R[X] →*₀ G₀) 
   · rwa [← map_mul, ← map_mul, hφ.eq_iff, mul_comm, mul_comm a'.fst] at this
   all_goals exact map_ne_zero_of_mem_nonZeroDivisors _ hφ (SetLike.coe_mem _)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Lift an injective ring homomorphism `R[X] →+* L` to a `R⟮X⟯ →+* L`
 by mapping both the numerator and denominator and quotienting them. -/
 def liftRingHom (φ : R[X] →+* L) (hφ : R[X]⁰ ≤ L⁰.comap φ) : R⟮X⟯ →+* L :=
@@ -454,10 +456,12 @@ def liftRingHom (φ : R[X] →+* L) (hφ : R[X]⁰ ≤ L⁰.comap φ) : R⟮X⟯
         try simp only [← map_mul, ← Submonoid.coe_mul]
         exact nonZeroDivisors.ne_zero (hφ (SetLike.coe_mem _)) }
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem liftRingHom_apply_ofFractionRing_mk (φ : R[X] →+* L) (hφ : R[X]⁰ ≤ L⁰.comap φ) (n : R[X])
     (d : R[X]⁰) : liftRingHom φ hφ (ofFractionRing (Localization.mk n d)) = φ n / φ d :=
   liftMonoidWithZeroHom_apply_ofFractionRing_mk _ hφ _ _
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma liftRingHom_ofFractionRing_algebraMap
     (φ : R[X] →+* L) (hφ : R[X]⁰ ≤ L⁰.comap φ) (x : R[X]) :
@@ -465,6 +469,7 @@ lemma liftRingHom_ofFractionRing_algebraMap
   rw [← Localization.mk_one_eq_algebraMap, liftRingHom_apply_ofFractionRing_mk]
   simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem liftRingHom_injective [Nontrivial R] (φ : R[X] →+* L) (hφ : Function.Injective φ)
     (hφ' : R[X]⁰ ≤ L⁰.comap φ := nonZeroDivisors_le_comap_nonZeroDivisors_of_injective _ hφ) :
     Function.Injective (liftRingHom φ hφ') :=
@@ -588,20 +593,24 @@ theorem liftMonoidWithZeroHom_apply_div' {L : Type*} [CommGroupWithZero L]
       φ p / φ q := by
   rw [← map_div₀, liftMonoidWithZeroHom_apply_div]
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem liftRingHom_apply_div {L : Type*} [Field L] (φ : K[X] →+* L) (hφ : K[X]⁰ ≤ L⁰.comap φ)
     (p q : K[X]) : liftRingHom φ hφ (algebraMap _ _ p / algebraMap _ _ q) = φ p / φ q :=
   liftMonoidWithZeroHom_apply_div _ hφ _ _
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem liftRingHom_apply_div' {L : Type*} [Field L] (φ : K[X] →+* L) (hφ : K[X]⁰ ≤ L⁰.comap φ)
     (p q : K[X]) : liftRingHom φ hφ (algebraMap _ _ p) / liftRingHom φ hφ (algebraMap _ _ q) =
       φ p / φ q :=
   liftMonoidWithZeroHom_apply_div' _ hφ _ _
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma liftRingHom_algebraMap {L : Type*} [Field L] (φ : K[X] →+* L) (hφ : K[X]⁰ ≤ L⁰.comap φ)
     (x : K[X]) : liftRingHom φ hφ (algebraMap K[X] _ x) = φ x := by
   simpa using liftRingHom_apply_div' φ hφ x 1
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma liftRingHom_comp_algebraMap {L : Type*} [Field L] (φ : K[X] →+* L) (hφ : K[X]⁰ ≤ L⁰.comap φ) :
     (liftRingHom φ hφ).comp (algebraMap K[X] _) = φ :=
@@ -638,6 +647,7 @@ theorem coe_mapAlgHom_eq_coe_map (φ : K[X] →ₐ[S] R[X]) (hφ : K[X]⁰ ≤ R
     (mapAlgHom φ hφ : K⟮X⟯ → R⟮X⟯) = map φ hφ :=
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Lift an injective algebra homomorphism `K[X] →ₐ[S] L` to a `K⟮X⟯ →ₐ[S] L`
 by mapping both the numerator and denominator and quotienting them. -/
 def liftAlgHom : K⟮X⟯ →ₐ[S] L :=
@@ -646,20 +656,24 @@ def liftAlgHom : K⟮X⟯ →ₐ[S] L :=
       simp_rw [RingHom.toFun_eq_coe, AlgHom.toRingHom_eq_coe, algebraMap_apply r,
         liftRingHom_apply_div, AlgHom.coe_toRingHom, map_one, div_one, AlgHom.commutes] }
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem liftAlgHom_apply_ofFractionRing_mk (n : K[X]) (d : K[X]⁰) :
     liftAlgHom φ hφ (ofFractionRing (Localization.mk n d)) = φ n / φ d :=
   liftMonoidWithZeroHom_apply_ofFractionRing_mk _ hφ _ _
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem liftAlgHom_injective (φ : K[X] →ₐ[S] L) (hφ : Function.Injective φ)
     (hφ' : K[X]⁰ ≤ L⁰.comap φ := nonZeroDivisors_le_comap_nonZeroDivisors_of_injective _ hφ) :
     Function.Injective (liftAlgHom φ hφ') :=
   liftMonoidWithZeroHom_injective _ hφ
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem liftAlgHom_apply_div' (p q : K[X]) :
     liftAlgHom φ hφ (algebraMap _ _ p) / liftAlgHom φ hφ (algebraMap _ _ q) = φ p / φ q :=
   liftMonoidWithZeroHom_apply_div' _ hφ _ _
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem liftAlgHom_apply_div (p q : K[X]) :
     liftAlgHom φ hφ (algebraMap _ _ p / algebraMap _ _ q) = φ p / φ q :=
   liftMonoidWithZeroHom_apply_div _ hφ _ _
@@ -721,6 +735,7 @@ theorem mk_eq_mk' (f : Polynomial K) {g : Polynomial K} (hg : g ≠ 0) :
       ⟨g, mem_nonZeroDivisors_iff_ne_zero.2 hg⟩ := by
   simp only [mk_eq_div, IsFractionRing.mk'_eq_div]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem ofFractionRing_eq :
     (ofFractionRing : FractionRing K[X] → K⟮X⟯) = IsLocalization.algEquiv K[X]⁰ _ _ :=
@@ -729,6 +744,7 @@ theorem ofFractionRing_eq :
       simp only [Localization.mk_eq_mk'_apply, ofFractionRing_mk', IsLocalization.algEquiv_apply,
         IsLocalization.map_mk', RingHom.id_apply]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem toFractionRing_eq :
     (toFractionRing : K⟮X⟯ → FractionRing K[X]) = IsLocalization.algEquiv K[X]⁰ _ _ :=
@@ -737,6 +753,7 @@ theorem toFractionRing_eq :
       simp only [Localization.mk_eq_mk'_apply, ofFractionRing_mk', IsLocalization.algEquiv_apply,
         IsLocalization.map_mk', RingHom.id_apply]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem toFractionRingRingEquiv_symm_eq :
     (toFractionRingRingEquiv K).symm = (IsLocalization.algEquiv K[X]⁰ _ _).toRingEquiv := by
@@ -1107,10 +1124,12 @@ theorem liftMonoidWithZeroHom_apply {L : Type*} [CommGroupWithZero L] (φ : K[X]
     liftMonoidWithZeroHom φ hφ f = φ f.num / φ f.denom := by
   rw [← num_div_denom f, liftMonoidWithZeroHom_apply_div, num_div_denom]
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem liftRingHom_apply {L : Type*} [Field L] (φ : K[X] →+* L) (hφ : K[X]⁰ ≤ L⁰.comap φ)
     (f : K⟮X⟯) : liftRingHom φ hφ f = φ f.num / φ f.denom :=
   liftMonoidWithZeroHom_apply _ hφ _
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem liftAlgHom_apply {L S : Type*} [Field L] [CommSemiring S] [Algebra S K[X]] [Algebra S L]
     (φ : K[X] →ₐ[S] L) (hφ : K[X]⁰ ≤ L⁰.comap φ) (f : K⟮X⟯) :
     liftAlgHom φ hφ f = φ f.num / φ f.denom :=
