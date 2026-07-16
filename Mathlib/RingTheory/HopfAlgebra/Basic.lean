@@ -131,10 +131,6 @@ set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma counit_comp_antipode : counit ∘ₗ antipode R = counit (A := A) := by
   ext; exact counit_antipode _
 
-end HopfAlgebra
-
-namespace HopfAlgebra
-
 section OfAntipodeOfAdjoin
 
 open Algebra Coalgebra LinearMap TensorProduct
