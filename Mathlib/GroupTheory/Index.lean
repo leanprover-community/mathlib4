@@ -871,19 +871,6 @@ variable (G : Type*) {X : Type*} [Group G] [MulAction G X] (x : X)
     (stabilizer G x).index = Nat.card X := by
   rw [index_stabilizer, orbit_eq_univ, Set.ncard_univ]
 
-theorem orbit_range_conj {G : Type*} [Group G] (g : G) :
-    MulAction.orbit (MulAut.conj : G →* MulAut G).range g = conjugatesOf g := by
-  simp [Set.ext_iff, conjugatesOf, MulAction.mem_orbit_iff]
-
-theorem stabilizer_comap_eq_centralizer {G : Type*} [Group G] (g : G) :
-    (MulAction.stabilizer (MulAut G) g).comap MulAut.conj = Subgroup.centralizer {g} := by
-  simp [Subgroup.ext_iff, Subgroup.mem_centralizer_singleton_iff, mul_inv_eq_iff_eq_mul]
-
-example {G : Type*} [Group G] (g : G) :
-    (Subgroup.centralizer {g}).index = (conjugatesOf g).ncard := by
-  rw [← MulAction.stabilizer_comap_eq_centralizer, Subgroup.index_comap, Subgroup.relIndex,
-    MulAction.stabilizer_subgroupOf, MulAction.index_stabilizer, MulAction.orbit_range_conj]
-
 end MulAction
 
 namespace MonoidHom
