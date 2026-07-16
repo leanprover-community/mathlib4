@@ -102,7 +102,6 @@ theorem leftInv_comp (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F)
     (h : p 1 = (continuousMultilinearCurryFin1 𝕜 E F).symm i) :
     (leftInv p i x).comp p = id 𝕜 E x := by
   ext n v
-  classical
   match n with
   | 0 =>
     simp only [comp_coeff_zero', leftInv_coeff_zero, ContinuousMultilinearMap.uncurry0_apply,
@@ -183,6 +182,7 @@ theorem rightInv_coeff_zero (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[�
 theorem rightInv_coeff_one (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F) (x : E) :
     p.rightInv i x 1 = (continuousMultilinearCurryFin1 𝕜 F E).symm i.symm := by rw [rightInv]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The right inverse does not depend on the zeroth coefficient of a formal multilinear
 series. -/
 theorem rightInv_removeZero (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F) (x : E) :
@@ -203,7 +203,6 @@ theorem comp_rightInv_aux1 {n : ℕ} (hn : 0 < n) (p : FormalMultilinearSeries �
     p.comp q n v =
       ∑ c ∈ {c : Composition n | 1 < c.length}.toFinset,
           p c.length (q.applyComposition c v) + p 1 fun _ => q n v := by
-  classical
   have A :
     (Finset.univ : Finset (Composition n)) =
       {c | 1 < Composition.length c}.toFinset ∪ {Composition.single n hn} := by
@@ -240,6 +239,7 @@ theorem comp_rightInv_aux2 (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[�
     simp [← Composition.ne_single_iff N, Composition.eq_single_iff_length, ne_of_gt hc]
   simp [applyComposition, this]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The right inverse to a formal multilinear series is indeed a right inverse, provided its linear
 term is invertible and its constant term vanishes. -/
 theorem comp_rightInv (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F) (x : E)
@@ -259,6 +259,7 @@ theorem comp_rightInv (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F
     have N : 0 < n + 2 := by simp
     simp [comp_rightInv_aux1 N, h, rightInv, comp_rightInv_aux2, -Set.toFinset_setOf]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem rightInv_coeff (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F) (x : E)
     (n : ℕ) (hn : 2 ≤ n) :
     p.rightInv i x n =

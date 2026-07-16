@@ -204,7 +204,7 @@ theorem commutative_of_cyclic_center_quotient [IsCyclic G'] (f : G →* G') (hf 
   f.isMulCommutative_of_isCyclic_of_ker_le_center hf |>.is_comm.comm a b
 
 /-- A group is commutative if the quotient by the center is cyclic. -/
-@[to_additive (attr := implicit_reducible)
+@[to_additive (attr := instance_reducible)
 /-- A group is commutative if the quotient by the center is cyclic. -/]
 def commGroupOfCyclicCenterQuotient [IsCyclic G'] (f : G →* G') (hf : f.ker ≤ center G) :
     CommGroup G where
@@ -272,9 +272,6 @@ theorem Group.is_simple_iff_prime_card [Group α] [IsMulCommutative α] :
 theorem CommGroup.is_simple_iff_prime_card [CommGroup α] : IsSimpleGroup α ↔ (Nat.card α).Prime :=
   Group.is_simple_iff_prime_card
 
-@[deprecated (since := "2025-11-19")]
-alias CommGroup.is_simple_iff_isCyclic_and_prime_card := CommGroup.is_simple_iff_prime_card
-
 open Subgroup in
 /-- A group with at most one maximal subgroup is cyclic. Maximal subgroups are the coatoms
 `IsCoatom (· : Subgroup G)` of the subgroup lattice; only `IsCoatomic (Subgroup G)` is required
@@ -341,6 +338,7 @@ lemma LinearOrderedAddCommGroup.isAddCyclic_iff_nonempty_equiv_int {A : Type*}
     map_add' := add_zsmul g
     map_le_map_iff' := zsmul_le_zsmul_iff_left hg' }⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A linearly-ordered abelian group is cyclic iff it is isomorphic to `Multiplicative ℤ` as an
 ordered monoid. -/
 lemma LinearOrderedCommGroup.isCyclic_iff_nonempty_equiv_int {G : Type*}
@@ -615,6 +613,9 @@ abbrev intCyclicAddEquiv [AddGroup G] [IsAddCyclic G] : ℤ ≃+ G :=
 
 end Infinite
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 variable (G) in
 /-- The automorphism group of a cyclic group is isomorphic to the multiplicative group of ZMod. -/
 @[simps!]
