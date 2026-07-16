@@ -466,19 +466,17 @@ theorem sumFrom_fin_tail (i : Fin n) (f : ℕ → R) :
 
 /-- The scalar recurrence initialized by array lookup agrees pointwise
   with the matrix recurrence. -/
-theorem iter_get_eq_iterate_stepEntry (A : Array R) (hA : A.size = n * n) (t : ℕ)
+theorem iterate_stepEntry_get_eq_spec (A : Array R) (hA : A.size = n * n) (t : ℕ)
     (i j : Fin n) :
-    BirdDet.iter n A t (BirdDet.get n A) i.val j.val =
+    ((stepEntry n A)^[t] (BirdDet.get n A)) i.val j.val =
       (Spec.stepEntry (Matrix.ofArray (m := n) (n := n) A hA))^[t]
         (Matrix.ofArray A hA) i j := by
   induction t generalizing i j with
   | zero =>
-    rw [BirdDet.iter_zero, Function.iterate_zero_apply]
     exact get_eq_ofArray_apply A hA i j
   | succ t ih =>
-    rw [BirdDet.iter_succ, stepEntry_eq, Function.iterate_succ_apply', Spec.stepEntry_eq,
-      Matrix.of_apply, sumFrom_fin_tail, sumFrom_fin_tail]
-    simp only [ih, get_eq_ofArray_apply A hA, neg_mul]
+    simp only [Function.iterate_succ_apply', stepEntry_eq, Spec.stepEntry_eq,
+      Matrix.of_apply, sumFrom_fin_tail, ih, get_eq_ofArray_apply A hA, neg_mul]
 
 end FlatArrayProof
 
@@ -507,7 +505,7 @@ theorem birdDet_eq_birdDetSpec (A : Array R) (hA : A.size = n * n) :
   | succ k =>
     rw [birdDet_succ, Spec.birdDetSpec_succ]
     apply congrArg ((-1 : R) ^ k * ·)
-    exact iter_get_eq_iterate_stepEntry A hA k 0 0
+    exact iterate_stepEntry_get_eq_spec A hA k 0 0
 
 /-- `BirdDet.birdDet n A` computes the determinant of the `n × n` matrix whose
   entries are stored in row-major order in `A`. -/

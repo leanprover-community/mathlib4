@@ -28,7 +28,6 @@ This determinant algorithm comes from
 - `BirdDet.get`: matrix entry lookup.
 - `BirdDet.sumFrom`: The sum `f lo + ... + f (n - 1)`.
 - `BirdDet.diagSum`, `BirdDet.stepEntry`: Named pieces of one scalar recurrence step.
-- `BirdDet.iter`: The internal scalar recurrence for Bird's algorithm.
 - `BirdDet.Spec.birdDet`: An implementation of Bird's algorithm using `Matrix`.
 
 ## Main lemmas
@@ -64,13 +63,8 @@ This is the sum of the diagonal entries of `F` strictly below row `i`.
 def diagSum (n : ℕ) (F : ℕ → ℕ → R) (i : ℕ) : R :=
   BirdDet.sumFrom n (i + 1) fun k => F k k
 
-/-- One entry of one scalar Bird recurrence step. -/
-def stepEntry (n : ℕ) (A : Array R) (F : ℕ → ℕ → R) (i j : ℕ) : R :=
-  -(diagSum n F i) * BirdDet.get n A i j +
-    BirdDet.sumFrom n (i + 1) fun k => F i k * BirdDet.get n A k j
-
 /--
-# Scalar recurrence for Bird's algorithm.
+One entry of one scalar Bird recurrence step.
 
 Bird's paper defines a matrix recursion for an `n × n` matrix `A`:
 
@@ -100,11 +94,9 @@ F_{t+1} i j =
   + ∑ k from i+1 to n-1, (F_t i k) * (A k j)
 ```
 -/
-protected def iter (n : ℕ) (A : Array R) (t : ℕ) (F : ℕ → ℕ → R) :
-    ℕ → ℕ → R :=
-  match t with
-  | 0 => F
-  | t + 1 => fun i j => stepEntry n A (BirdDet.iter n A t F) i j
+def stepEntry (n : ℕ) (A : Array R) (F : ℕ → ℕ → R) (i j : ℕ) : R :=
+  -(diagSum n F i) * BirdDet.get n A i j +
+    BirdDet.sumFrom n (i + 1) fun k => F i k * BirdDet.get n A k j
 
 /--
 `birdDet n A` computes the determinant of the `n × n` matrix whose entries are
@@ -113,7 +105,7 @@ stored in `A` in row-major order.
 def birdDet (n : ℕ) (A : Array R) : R :=
   match n with
   | 0 => 1
-  | k + 1 => (-1 : R) ^ k * BirdDet.iter n A k (BirdDet.get n A) 0 0
+  | k + 1 => (-1 : R) ^ k * (stepEntry n A)^[k] (BirdDet.get n A) 0 0
 
 /- Unfolding lemmas -/
 
@@ -151,26 +143,17 @@ theorem stepEntry_eq (n : ℕ) (A : Array R) (F : ℕ → ℕ → R) (i j : ℕ)
         + BirdDet.sumFrom n (i + 1) fun k => F i k * BirdDet.get n A k j := by
   rfl
 
-theorem iter_zero (n : ℕ) (A : Array R) (F : ℕ → ℕ → R) (i j : ℕ) :
-    BirdDet.iter n A 0 F i j = F i j := by
-  rfl
-
-theorem iter_succ (n : ℕ) (A : Array R) (t : ℕ) (F : ℕ → ℕ → R) (i j : ℕ) :
-    BirdDet.iter n A (t + 1) F i j =
-      stepEntry n A (BirdDet.iter n A t F) i j := by
-  rfl
-
 theorem birdDet_zero (A : Array R) : birdDet 0 A = 1 := by
   rfl
 
 /-- Unfold `birdDet` at a successor dimension. -/
 theorem birdDet_succ (k : ℕ) (A : Array R) :
     birdDet (k + 1) A =
-      (-1 : R) ^ k * BirdDet.iter (k + 1) A k (BirdDet.get (k + 1) A) 0 0 :=
+      (-1 : R) ^ k * (stepEntry (k + 1) A)^[k] (BirdDet.get (k + 1) A) 0 0 :=
   by rw [birdDet]
 
 theorem birdDet_eq (n k : ℕ) (A : Array R) (hn : n = k + 1) :
-    birdDet n A = (-1 : R) ^ k * BirdDet.iter n A k (BirdDet.get n A) 0 0 := by
+    birdDet n A = (-1 : R) ^ k * (stepEntry n A)^[k] (BirdDet.get n A) 0 0 := by
   subst hn
   exact birdDet_succ k A
 
