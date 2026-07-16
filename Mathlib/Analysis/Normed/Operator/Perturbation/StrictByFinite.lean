@@ -115,7 +115,7 @@ theorem step1 [T2Space F] (u : E →L[𝕜] F) (A : Submodule 𝕜 E)
   replace uS_compl_uA : IsTopCompl (map u.toLinearMap S) (map u.toLinearMap A) :=
     uS_compl_uA.symm.isTopCompl_of_isClosed_of_finiteDimensional
       (by simpa using range_u_restr) |>.symm
-  -- Thus, we have decomposed both the domain and the codomain into topopological complements,
+  -- Thus, we have decomposed both the domain and the codomain into topological complements,
   -- and `u` preserves this decomposition, inducing maps `uₛ : S → map u S` and `uₐ : A → map u A`.
   set uₛ : S →L[𝕜] map u.toLinearMap S := u.restrict (fun _ ↦ mem_map_of_mem)
   set uₐ : A →L[𝕜] map u.toLinearMap A := u.restrict (fun _ ↦ mem_map_of_mem)
@@ -211,7 +211,7 @@ theorem step4 [T2Space F] (u : E →L[𝕜] F) (A : Submodule 𝕜 E) (A_closed 
   simpa using u.toLinearMap.isClosed_range_of_isClosed_map_of_finiteDimensional_quotient
   -- Assume that `map u A` is closed, and fix `S` an algebraic complement of `A`.
   -- It has finite dimension. Then `u.range = map u A ⊔ map u S` is the supremum of
-  -- a closed subspace and a finite dimnsional subspace, hence it is closed.
+  -- a closed subspace and a finite dimensional subspace, hence it is closed.
 
 /-!
 ### Step 5
@@ -326,7 +326,7 @@ is strict with closed range.
 
 This is [N. Bourbaki, *Théories Spectrales*, Chapitre III, § 3, n° 1, Cor. 2][bourbaki2023]. -/
 public theorem ContinuousLinearMap.isStrictMap_isClosed_range_iff_quotient [T2Space F]
-    (u : E →L[𝕜] F) (A : Submodule 𝕜 F) [dim_A : FiniteDimensional 𝕜 A]
+    (u : E →L[𝕜] F) (A : Submodule 𝕜 F) [FiniteDimensional 𝕜 A]
     (A_compl : ClosedComplemented A) :
     (IsStrictMap u ∧ IsClosed (u.range : Set F)) ↔
       (IsStrictMap (A.mkQL ∘L u) ∧ IsClosed ((A.mkQL ∘L u).range : Set (F ⧸ A))) := by
