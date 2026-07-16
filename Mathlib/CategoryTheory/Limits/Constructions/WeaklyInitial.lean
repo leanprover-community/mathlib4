@@ -51,7 +51,7 @@ theorem hasInitial_of_weakly_initial_and_hasWideEqualizers [HasWideEqualizers.{w
     hasLimitsOfShape_of_equivalence
       (WalkingParallelFamily.equivalenceOfEquiv (equivShrink.{w} endos).symm)
   let i := wideEqualizer.ι (id : endos → endos)
-  haveI : Nonempty endos := ⟨𝟙 _⟩
+  have : Nonempty endos := ⟨𝟙 _⟩
   have : ∀ X : C, Unique (wideEqualizer (id : endos → endos) ⟶ X) := by
     intro X
     refine ⟨⟨i ≫ Classical.choice (hT X)⟩, fun a => ?_⟩
@@ -62,7 +62,7 @@ theorem hasInitial_of_weakly_initial_and_hasWideEqualizers [HasWideEqualizers.{w
       rw [Category.assoc, Category.assoc]
       apply wideEqualizer.condition (id : endos → endos) (h ≫ e ≫ i)
     rw [Category.comp_id, cancel_mono_id i] at this
-    haveI : IsSplitEpi e := IsSplitEpi.mk' ⟨i ≫ h, this⟩
+    have : IsSplitEpi e := IsSplitEpi.mk' ⟨i ≫ h, this⟩
     rw [← cancel_epi e]
     apply equalizer.condition
   exact hasInitial_of_unique (wideEqualizer (id : endos → endos))

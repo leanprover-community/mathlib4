@@ -281,8 +281,8 @@ theorem rightLim_eq_sInf [TopologicalSpace α] [OrderTopology α] [(𝓝[>] x).N
   rightLim_eq_of_tendsto (hf.tendsto_nhdsGT x)
 
 theorem leftLim_le (h : x ≤ y) : leftLim f x ≤ f y := by
-  letI : TopologicalSpace α := Preorder.topology α
-  haveI : OrderTopology α := ⟨rfl⟩
+  let : TopologicalSpace α := Preorder.topology α
+  have : OrderTopology α := ⟨rfl⟩
   rcases eq_or_neBot (𝓝[<] x) with h' | h'
   · simpa [leftLim, h'] using hf h
   rw [leftLim_eq_sSup hf]
@@ -294,8 +294,8 @@ theorem leftLim_le (h : x ≤ y) : leftLim f x ≤ f y := by
     exact hf (hz.le.trans h)
 
 theorem le_leftLim (h : x < y) : f x ≤ leftLim f y := by
-  letI : TopologicalSpace α := Preorder.topology α
-  haveI : OrderTopology α := ⟨rfl⟩
+  let : TopologicalSpace α := Preorder.topology α
+  have : OrderTopology α := ⟨rfl⟩
   rcases eq_or_neBot (𝓝[<] y) with h' | h'
   · rw [leftLim_eq_of_eq_bot _ h']
     exact hf h.le
@@ -326,8 +326,8 @@ theorem leftLim_le_rightLim (h : x ≤ y) : leftLim f x ≤ rightLim f y :=
   (hf.leftLim_le le_rfl).trans (hf.le_rightLim h)
 
 theorem rightLim_le_leftLim (h : x < y) : rightLim f x ≤ leftLim f y := by
-  letI : TopologicalSpace α := Preorder.topology α
-  haveI : OrderTopology α := ⟨rfl⟩
+  let : TopologicalSpace α := Preorder.topology α
+  have : OrderTopology α := ⟨rfl⟩
   rcases eq_or_neBot (𝓝[<] y) with (h' | h')
   · simpa [leftLim, h'] using rightLim_le hf h
   obtain ⟨a, ⟨xa, ay⟩⟩ : (Ioo x y).Nonempty := nonempty_of_mem (Ioo_mem_nhdsLT h)

@@ -222,6 +222,7 @@ instance instDistrib : Distrib (FreeAlgebra R X) where
     rintro ⟨⟩ ⟨⟩ ⟨⟩
     exact Quot.sound Rel.right_distrib
 
+set_option backward.isDefEq.respectTransparency false in
 instance instAddCommMonoid : AddCommMonoid (FreeAlgebra R X) where
   add_assoc := by
     rintro ⟨⟩ ⟨⟩ ⟨⟩
@@ -457,7 +458,7 @@ for example.
 noncomputable def equivMonoidAlgebraFreeMonoid : FreeAlgebra R X ≃ₐ[R] R[FreeMonoid X] :=
   .ofAlgHom (lift R fun x ↦ .of R (FreeMonoid X) (.of x))
     (MonoidAlgebra.lift R (FreeAlgebra R X) (FreeMonoid X) (FreeMonoid.lift (ι R)))
-    (by ext; simp) (by ext; simp)
+    (MonoidAlgebra.algHom_ext' (by ext; simp) (by ext)) (by ext; simp)
 
 /-- `FreeAlgebra R X` is nontrivial when `R` is. -/
 instance [Nontrivial R] : Nontrivial (FreeAlgebra R X) :=
@@ -535,6 +536,7 @@ end FreeAlgebra
 `CoeSort` below. Closing it and reopening it fixes it... -/
 namespace FreeAlgebra
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- An induction principle for the free algebra.
 
 If `C` holds for the `algebraMap` of `r : R` into `FreeAlgebra R X`, the `ι` of `x : X`, and is
