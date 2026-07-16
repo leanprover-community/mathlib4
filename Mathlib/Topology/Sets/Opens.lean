@@ -258,7 +258,7 @@ theorem mem_sSup {Us : Set (Opens α)} {x : α} : x ∈ sSup Us ↔ ∃ u ∈ Us
   simp_rw [sSup_eq_iSup, mem_iSup, exists_prop]
 
 /-- Open sets in a topological space form a frame. -/
-@[implicit_reducible]
+@[instance_reducible]
 def frameMinimalAxioms : Frame.MinimalAxioms (Opens α) where
   inf_sSup_le_iSup_inf a s :=
     (ext <| by simp only [coe_inf, coe_iSup, coe_sSup, Set.inter_iUnion₂]).le
@@ -392,7 +392,8 @@ lemma IsBasis.exists_finite_of_isCompact {B : Set (Opens α)} (hB : IsBasis B) {
   obtain ⟨Us', hsub, hsup⟩ := isBasis_iff_cover.mp hB U
   obtain ⟨t, ht⟩ := hU.elim_finite_subcover (fun s : Us' ↦ s.1) (fun s ↦ s.1.2) (by simp [hsup])
   refine ⟨Finset.image Subtype.val t, subset_trans (by simp) hsub, Finset.finite_toSet _, ?_⟩
-  exact le_antisymm (subset_trans ht (by simp)) (le_trans (sSup_le_sSup (by simp)) hsup.ge)
+  exact le_antisymm (subset_trans (a := U.carrier) ht (by simp))
+    (le_trans (sSup_le_sSup (by simp)) hsup.ge)
 
 lemma IsBasis.le_iff {α} {t₁ t₂ : TopologicalSpace α}
     {Us : Set (Opens α)} (hUs : @IsBasis α t₂ Us) :

@@ -158,10 +158,12 @@ theorem ae_le_set_union {s' t' : Set α} (h : s ≤ᵐ[μ] t) (h' : s' ≤ᵐ[μ
     (s ∪ s' : Set α) ≤ᵐ[μ] (t ∪ t' : Set α) :=
   h.union h'
 
+set_option backward.isDefEq.respectTransparency false in
 theorem union_ae_eq_right : (s ∪ t : Set α) =ᵐ[μ] t ↔ μ (s \ t) = 0 := by
   simp [eventuallyLE_antisymm_iff, ae_le_set, union_sdiff_right,
     sdiff_eq_empty.2 Set.subset_union_right]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem sdiff_ae_eq_self : (s \ t : Set α) =ᵐ[μ] s ↔ μ (s ∩ t) = 0 := by
   simp [eventuallyLE_antisymm_iff, ae_le_set]
 
@@ -172,6 +174,7 @@ theorem sdiff_null_ae_eq_self (ht : μ t = 0) : (s \ t : Set α) =ᵐ[μ] s :=
 
 @[deprecated (since := "2026-06-03")] alias diff_null_ae_eq_self := sdiff_null_ae_eq_self
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ae_eq_set {s t : Set α} : s =ᵐ[μ] t ↔ μ (s \ t) = 0 ∧ μ (t \ s) = 0 := by
   simp [eventuallyLE_antisymm_iff, ae_le_set]
 
@@ -185,6 +188,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem ae_eq_set_compl_compl {s t : Set α} : sᶜ =ᵐ[μ] tᶜ ↔ s =ᵐ[μ] t := by
   simp only [← measure_symmDiff_eq_zero_iff, compl_symmDiff_compl]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ae_eq_set_compl {s t : Set α} : sᶜ =ᵐ[μ] t ↔ s =ᵐ[μ] tᶜ := by
   rw [← ae_eq_set_compl_compl, compl_compl]
 
@@ -207,6 +211,7 @@ theorem ae_eq_set_symmDiff {s' t' : Set α} (h : s =ᵐ[μ] t) (h' : s' =ᵐ[μ]
     s ∆ s' =ᵐ[μ] t ∆ t' :=
   h.symmDiff h'
 
+set_option backward.isDefEq.respectTransparency false in
 theorem union_ae_eq_univ_of_ae_eq_univ_left (h : s =ᵐ[μ] univ) : (s ∪ t : Set α) =ᵐ[μ] univ :=
   (ae_eq_set_union h (ae_eq_refl t)).trans <| by rw [univ_union]
 
@@ -250,6 +255,7 @@ theorem ae_eq_set_biUnion {s : Set β} (hs : s.Countable) {t t' : β → Set α}
     (⋃ b ∈ s, t b : Set α) =ᵐ[μ] (⋃ b ∈ s, t' b : Set α) :=
   .countable_bUnion hs h
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem _root_.Set.mulIndicator_ae_eq_one {M : Type*} [One M] {f : α → M} {s : Set α} :
     s.mulIndicator f =ᵐ[μ] 1 ↔ μ (s ∩ f.mulSupport) = 0 := by
