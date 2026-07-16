@@ -191,6 +191,7 @@ lemma tendsto_defaultRatCDF_atBot : Tendsto defaultRatCDF atBot (𝓝 0) := by
   refine ⟨-1, fun q hq => (if_pos (hq.trans_lt ?_)).symm⟩
   linarith
 
+set_option backward.isDefEq.respectTransparency false in
 lemma iInf_rat_gt_defaultRatCDF (t : ℚ) :
     ⨅ r : Ioi t, defaultRatCDF r = defaultRatCDF t := by
   simp only [defaultRatCDF]
@@ -290,6 +291,7 @@ lemma IsMeasurableRatCDF.stieltjesFunctionAux_unit_prod {f : α → ℚ → ℝ}
 variable {f : α → ℚ → ℝ} [MeasurableSpace α] (hf : IsMeasurableRatCDF f)
 include hf
 
+set_option backward.isDefEq.respectTransparency false in
 lemma IsMeasurableRatCDF.stieltjesFunctionAux_eq (a : α) (r : ℚ) :
     IsMeasurableRatCDF.stieltjesFunctionAux f a r = f a r := by
   rw [← hf.iInf_rat_gt_eq a r, IsMeasurableRatCDF.stieltjesFunctionAux]

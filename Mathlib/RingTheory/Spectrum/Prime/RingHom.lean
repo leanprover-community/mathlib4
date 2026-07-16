@@ -242,6 +242,7 @@ theorem range_comap_of_surjective (hf : Surjective f) :
 
 variable {S}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Let `f : R →+* S` be a surjective ring homomorphism, then `Spec S` is order-isomorphic to `Z(I)`
   where `I = ker f`. -/
 noncomputable def Ideal.primeSpectrumOrderIsoZeroLocusOfSurj (hf : Surjective f) {I : Ideal R}

@@ -5,14 +5,9 @@ Authors: Kenny Lau
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.Expand
-public import Mathlib.Algebra.Polynomial.Splits
 public import Mathlib.Algebra.Squarefree.Basic
 public import Mathlib.FieldTheory.IntermediateField.Basic
-public import Mathlib.FieldTheory.Minpoly.Field
-public import Mathlib.RingTheory.Polynomial.Content
 public import Mathlib.RingTheory.PowerBasis
-public import Mathlib.Data.ENat.Lattice
 
 /-!
 

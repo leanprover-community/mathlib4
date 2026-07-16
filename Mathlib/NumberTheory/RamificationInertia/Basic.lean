@@ -363,6 +363,7 @@ theorem quotientToQuotientRangePowQuotSucc_mk {i : ℕ} {a : S} (a_mem : a ∈ P
       Submodule.Quotient.mk ⟨_, Ideal.mem_map_of_mem _ (Ideal.mul_mem_right x _ a_mem)⟩ :=
   quotientToQuotientRangePowQuotSuccAux_mk p P a_mem x
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem quotientToQuotientRangePowQuotSucc_injective [IsDedekindDomain S] [P.IsPrime]
     {i : ℕ} (hi : i < e) {a : S} (a_mem : a ∈ P ^ i) (a_notMem : a ∉ P ^ (i + 1)) :
     Function.Injective (quotientToQuotientRangePowQuotSucc p P a_mem) := fun x =>

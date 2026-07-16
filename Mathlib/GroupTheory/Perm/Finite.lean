@@ -114,6 +114,7 @@ theorem perm_mapsTo_inl_iff_mapsTo_inr {m n : Type*} [Finite m] [Finite n] (σ :
     obtain ⟨y, hy⟩ := h ⟨r, rfl⟩
     grind
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem mem_sumCongrHom_range_of_perm_mapsTo_inl {m n : Type*} [Finite m] [Finite n]
     {σ : Perm (m ⊕ n)} (h : Set.MapsTo σ (Set.range Sum.inl) (Set.range Sum.inl)) :
     σ ∈ (sumCongrHom m n).range := by
@@ -155,6 +156,7 @@ theorem Disjoint.extendDomain {p : β → Prop} [DecidablePred p] (f : α ≃ Su
   · left
     rw [extendDomain_apply_not_subtype _ _ pb]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Disjoint.isConj_mul [Finite α] {σ τ π ρ : Perm α} (hc1 : IsConj σ π)
     (hc2 : IsConj τ ρ) (hd1 : Disjoint σ τ) (hd2 : Disjoint π ρ) : IsConj (σ * τ) (π * ρ) := by
   classical
