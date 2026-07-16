@@ -355,7 +355,7 @@ instance one [DecidableEq M] : One R⟦M⟧ where one := single 1 1
 @[to_additive (dont_translate := R) one_def]
 lemma one_def [DecidableEq M] : (1 : R⟦M⟧) = single 1 1 := rfl
 
-@[to_additive (attr := simp) (dont_translate := R)]
+@[to_additive (attr := simp) (dont_translate := R) coeff_one_zero]
 lemma coeff_one_one [DecidableEq M] : (1 : R⟦M⟧).coeff 1 = 1 := by simp [one_def]
 
 end One
