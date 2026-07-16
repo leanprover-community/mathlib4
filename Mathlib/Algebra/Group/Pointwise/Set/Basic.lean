@@ -78,7 +78,7 @@ section One
 variable [One α] {s : Set α} {a : α}
 
 /-- The set `1 : Set α` is defined as `{1}` in scope `Pointwise`. -/
-@[to_additive (attr := implicit_reducible)
+@[to_additive (attr := instance_reducible)
   /-- The set `0 : Set α` is defined as `{0}` in scope `Pointwise`. -/]
 protected def one : One (Set α) :=
   ⟨{1}⟩
@@ -144,7 +144,7 @@ section Inv
 
 /-- The pointwise inversion of set `s⁻¹` is defined as `{x | x⁻¹ ∈ s}` in scope `Pointwise`. It is
 equal to `{x⁻¹ | x ∈ s}`, see `Set.image_inv_eq_inv`. -/
-@[to_additive (attr := implicit_reducible)
+@[to_additive (attr := instance_reducible)
       /-- The pointwise negation of set `-s` is defined as `{x | -x ∈ s}` in scope `Pointwise`.
       It is equal to `{-x | x ∈ s}`, see `Set.image_neg_eq_neg`. -/]
 protected def inv [Inv α] : Inv (Set α) :=
@@ -290,7 +290,7 @@ variable {ι : Sort*} {κ : ι → Sort*} [Mul α] {s s₁ s₂ t t₁ t₂ u : 
 
 /-- The pointwise multiplication of sets `s * t` and `t` is defined as `{x * y | x ∈ s, y ∈ t}` in
 scope `Pointwise`. -/
-@[to_additive (attr := implicit_reducible)
+@[to_additive (attr := instance_reducible)
       /-- The pointwise addition of sets `s + t` is defined as `{x + y | x ∈ s, y ∈ t}` in locale
       `Pointwise`. -/]
 protected def mul : Mul (Set α) :=
@@ -432,7 +432,7 @@ variable {ι : Sort*} {κ : ι → Sort*} [Div α] {s s₁ s₂ t t₁ t₂ u : 
 
 /-- The pointwise division of sets `s / t` is defined as `{x / y | x ∈ s, y ∈ t}` in locale
 `Pointwise`. -/
-@[to_additive (attr := implicit_reducible)
+@[to_additive (attr := instance_reducible)
       /-- The pointwise subtraction of sets `s - t` is defined as `{x - y | x ∈ s, y ∈ t}` in locale
       `Pointwise`. -/]
 protected def div : Div (Set α) :=
@@ -562,7 +562,7 @@ protected def ZPow [One α] [Mul α] [Inv α] : Pow (Set α) ℤ :=
 scoped[Pointwise] attribute [instance] Set.NSMul Set.NPow Set.ZSMul Set.ZPow
 
 /-- `Set α` is a `Semigroup` under pointwise operations if `α` is. -/
-@[to_additive (attr := implicit_reducible)
+@[to_additive (attr := instance_reducible)
   /-- `Set α` is an `AddSemigroup` under pointwise operations if `α` is. -/]
 protected def semigroup [Semigroup α] : Semigroup (Set α) :=
   { Set.mul with mul_assoc := fun _ _ _ => image2_assoc mul_assoc }
@@ -572,7 +572,7 @@ section CommSemigroup
 variable [CommSemigroup α] {s t : Set α}
 
 /-- `Set α` is a `CommSemigroup` under pointwise operations if `α` is. -/
-@[to_additive (attr := implicit_reducible)
+@[to_additive (attr := instance_reducible)
   /-- `Set α` is an `AddCommSemigroup` under pointwise operations if `α` is. -/]
 protected def commSemigroup : CommSemigroup (Set α) :=
   { Set.semigroup with mul_comm := fun _ _ => image2_comm mul_comm }
@@ -592,7 +592,7 @@ section MulOneClass
 variable [MulOneClass α]
 
 /-- `Set α` is a `MulOneClass` under pointwise operations if `α` is. -/
-@[to_additive (attr := implicit_reducible)
+@[to_additive (attr := instance_reducible)
   /-- `Set α` is an `AddZeroClass` under pointwise operations if `α` is. -/]
 protected def mulOneClass : MulOneClass (Set α) :=
   { Set.one, Set.mul with
@@ -632,7 +632,7 @@ section Monoid
 variable [Monoid α] {s t : Set α} {a : α} {m n : ℕ}
 
 /-- `Set α` is a `Monoid` under pointwise operations if `α` is. -/
-@[to_additive (attr := implicit_reducible)
+@[to_additive (attr := instance_reducible)
   /-- `Set α` is an `AddMonoid` under pointwise operations if `α` is. -/]
 protected def monoid : Monoid (Set α) :=
   { Set.semigroup, Set.mulOneClass, @Set.NPow α _ _ with }
@@ -759,7 +759,7 @@ lemma Nontrivial.pow (hs : s.Nontrivial) : ∀ {n}, n ≠ 0 → (s ^ n).Nontrivi
 end CancelMonoid
 
 /-- `Set α` is a `CommMonoid` under pointwise operations if `α` is. -/
-@[to_additive (attr := implicit_reducible)
+@[to_additive (attr := instance_reducible)
   /-- `Set α` is an `AddCommMonoid` under pointwise operations if `α` is. -/]
 protected def commMonoid [CommMonoid α] : CommMonoid (Set α) :=
   { Set.monoid, Set.commSemigroup with }
@@ -795,7 +795,7 @@ protected theorem mul_eq_one_iff : s * t = 1 ↔ ∃ a b, s = {a} ∧ t = {b} �
   rw [← nonempty_inv, inter_inv]; simp_rw [← image_inv_eq_inv, image_image, mul_inv_rev, inv_inv]
 
 /-- `Set α` is a division monoid under pointwise operations if `α` is. -/
-@[to_additive (attr := implicit_reducible)
+@[to_additive (attr := instance_reducible)
     /-- `Set α` is a subtraction monoid under pointwise operations if `α` is. -/]
 protected def divisionMonoid : DivisionMonoid (Set α) :=
   { Set.monoid, Set.involutiveInv, Set.div, @Set.ZPow α _ _ _ with
@@ -854,7 +854,7 @@ lemma singleton_zpow (a : α) (n : ℤ) : ({a} : Set α) ^ n = {a ^ n} := by cas
 end DivisionMonoid
 
 /-- `Set α` is a commutative division monoid under pointwise operations if `α` is. -/
-@[to_additive (attr := implicit_reducible) subtractionCommMonoid
+@[to_additive (attr := instance_reducible) subtractionCommMonoid
       /-- `Set α` is a commutative subtraction monoid under pointwise operations if `α` is. -/]
 protected def divisionCommMonoid [DivisionCommMonoid α] :
     DivisionCommMonoid (Set α) :=
@@ -915,6 +915,14 @@ theorem image_mul_left' : (a⁻¹ * ·) '' t = (a * ·) ⁻¹' t := by simp
 @[to_additive]
 theorem image_mul_right' : (· * b⁻¹) '' t = (· * b) ⁻¹' t := by simp
 
+@[to_additive]
+theorem image_div_left : (a / ·) '' t = (·⁻¹ * a) ⁻¹' t := by
+  rw [image_eq_preimage_of_inverse] <;> intro c <;> simp
+
+@[to_additive]
+theorem image_div_right : (· / b) '' t = (· * b) ⁻¹' t := by
+  rw [image_eq_preimage_of_inverse] <;> intro c <;> simp
+
 @[to_additive (attr := simp)]
 theorem preimage_mul_left_singleton : (a * ·) ⁻¹' {b} = {a⁻¹ * b} := by
   rw [← image_mul_left', image_singleton]
@@ -922,6 +930,10 @@ theorem preimage_mul_left_singleton : (a * ·) ⁻¹' {b} = {a⁻¹ * b} := by
 @[to_additive (attr := simp)]
 theorem preimage_mul_right_singleton : (· * a) ⁻¹' {b} = {b * a⁻¹} := by
   rw [← image_mul_right', image_singleton]
+
+@[to_additive (attr := simp)]
+theorem preimage_inv_mul_right_singleton : (·⁻¹ * a) ⁻¹' {b} = {a / b} := by
+  rw [← image_div_left, image_singleton]
 
 @[to_additive (attr := simp)]
 theorem preimage_mul_left_one : (a * ·) ⁻¹' 1 = {a⁻¹} := by

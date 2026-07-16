@@ -184,7 +184,7 @@ theorem linear_eq_sumCoords (i : ι) : (b.coord i).linear = -(b.basisOf i).sumCo
 @[simp]
 theorem coord_reindex (i : ι') : (b.reindex e).coord i = b.coord (e.symm i) := by
   ext
-  classical simp [AffineBasis.coord]
+  simp [AffineBasis.coord]
 
 @[simp]
 theorem coord_apply_eq (i : ι) : b.coord i (b i) = 1 := by
@@ -253,7 +253,7 @@ theorem coe_coord_of_subsingleton_eq_one [Subsingleton ι] (i : ι) : (b.coord i
     rw [← image_univ]
     apply Subsingleton.image
     apply subsingleton_of_subsingleton
-  haveI := AffineSubspace.subsingleton_of_subsingleton_span_eq_top hp b.tot
+  have := AffineSubspace.subsingleton_of_subsingleton_span_eq_top hp b.tot
   let s : Finset ι := {i}
   have hi : i ∈ s := by simp [s]
   have hw : s.sum (Function.const ι (1 : k)) = 1 := by simp [s]

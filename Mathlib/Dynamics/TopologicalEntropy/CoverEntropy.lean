@@ -218,25 +218,24 @@ lemma coverMincard_antitone (T : X → X) (F : Set X) (n : ℕ) :
     Antitone fun U : SetRel X X ↦ coverMincard T F U n :=
   fun _ _ U_V ↦ biInf_mono fun _ h ↦ h.of_entourage_subset U_V
 
-set_option backward.isDefEq.respectTransparency false in
 lemma coverMincard_finite_iff (T : X → X) (F : Set X) (U : SetRel X X) (n : ℕ) :
     coverMincard T F U n < ⊤ ↔
     ∃ s : Finset X, IsDynCoverOf T F U n s ∧ s.card = coverMincard T F U n := by
   refine ⟨fun h_fin ↦ ?_, fun ⟨s, _, s_coverMincard⟩ ↦ s_coverMincard ▸ WithTop.coe_lt_top s.card⟩
-  obtain ⟨k, k_min⟩ := WithTop.ne_top_iff_exists.1 h_fin.ne
+  obtain ⟨k, k_min⟩ := ENat.ne_top_iff_exists.mp h_fin.ne
   rw [← k_min]
-  simp only [ENat.some_eq_coe, Nat.cast_inj]
+  simp only [Nat.cast_inj]
   have : Nonempty {s : Finset X // IsDynCoverOf T F U n s} := by
     by_contra h
     apply ENat.coe_ne_top k
-    rw [← ENat.some_eq_coe, k_min, coverMincard, iInf₂_eq_top]
+    rw [k_min, coverMincard, iInf₂_eq_top]
     simp only [ENat.coe_ne_top, imp_false]
     rw [nonempty_subtype, not_exists] at h
     exact h
   have key := ciInf_mem fun s : {s : Finset X // IsDynCoverOf T F U n s} ↦ (s.val.card : ℕ∞)
   rw [coverMincard, iInf_subtype'] at k_min
   rw [← k_min, mem_range, Subtype.exists] at key
-  simp only [ENat.some_eq_coe, Nat.cast_inj, exists_prop] at key
+  simp only [Nat.cast_inj, exists_prop] at key
   exact key
 
 @[simp]
