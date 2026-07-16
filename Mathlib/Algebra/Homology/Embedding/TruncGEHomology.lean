@@ -80,6 +80,7 @@ lemma homologyι_truncGE'XIsoOpcycles_inv_d :
     homologyι_comp_fromOpcycles_assoc, zero_comp]
   · rw [shape _ _ _ hjk, comp_zero]
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Auxiliary definition for `truncGE'.homologyData`. -/
 noncomputable def isLimitKernelFork :
@@ -225,6 +226,11 @@ lemma acyclic_truncGE_iff_isSupportedOutside :
     · exact exactAt_of_isSupported _ e i' (by simpa using hi')
 
 variable {K L}
+
+lemma Acyclic.truncGE (hK : K.Acyclic) (e : c.Embedding c') [e.IsTruncGE] :
+    (K.truncGE e).Acyclic := by
+  rw [acyclic_truncGE_iff_isSupportedOutside]
+  exact ⟨fun _ ↦ hK _⟩
 
 lemma quasiIso_truncGEMap_iff :
     QuasiIso (truncGEMap φ e) ↔ ∀ (i : ι) (i' : ι') (_ : e.f i = i'), QuasiIsoAt φ i' := by
