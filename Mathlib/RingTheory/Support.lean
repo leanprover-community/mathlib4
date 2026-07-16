@@ -56,6 +56,7 @@ lemma Module.notMem_support_iff :
     p ∉ Module.support R M ↔ Subsingleton (LocalizedModule p.asIdeal.primeCompl M) :=
   not_nontrivial_iff_subsingleton
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma Module.notMem_support_iff' :
     p ∉ Module.support R M ↔ ∀ m : M, ∃ r ∉ p.asIdeal, r • m = 0 := by
   simp only [notMem_support_iff, Ideal.primeCompl, LocalizedModule.subsingleton_iff,
@@ -198,7 +199,6 @@ open PrimeSpectrum
 
 lemma Module.mem_support_iff_of_finite :
     p ∈ Module.support R M ↔ Module.annihilator R M ≤ p.asIdeal := by
-  classical
   obtain ⟨s, hs⟩ := ‹Module.Finite R M›
   refine ⟨annihilator_le_of_mem_support, fun H ↦ (mem_support_iff_of_span_eq_top hs).mpr ?_⟩
   simp only [SetLike.le_def, Submodule.mem_annihilator_span_singleton] at H ⊢

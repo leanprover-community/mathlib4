@@ -126,6 +126,9 @@ def smoothSheaf.evalAt (x : TopCat.of M) (U : OpenNhds x)
     (i : (smoothSheaf IM I M N).presheaf.obj (Opposite.op U.val)) : N :=
   i.1 ⟨x, U.2⟩
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp, reassoc, elementwise] lemma smoothSheaf.ι_evalHom (x : TopCat.of M) (U) :
     colimit.ι ((OpenNhds.inclusion x).op ⋙ (smoothSheaf IM I M N).obj) U ≫
     smoothSheaf.evalHom IM I N x =
@@ -153,6 +156,7 @@ lemma smoothSheaf.contMDiff_section {U : (Opens (TopCat.of M))ᵒᵖ}
     ContMDiff IM I ∞ f :=
   (contDiffWithinAt_localInvariantProp ∞).section_spec _ _ _ _
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- A smooth function `f : M → N` induces a morphism of sheaves (of types) `𝒪_N ⟶ f_* 𝒪_M`
 by pre-composing with `f`. -/
 @[simps! -isSimp hom_app_hom]
@@ -290,6 +294,7 @@ def smoothPresheafCommRing : TopCat.Presheaf CommRingCat.{u} (TopCat.of M) :=
 
 /-- The sheaf of smooth functions from `M` to `R`, for `R` a smooth commutative ring, as a sheaf of
 commutative rings. -/
+@[implicit_reducible]
 def smoothSheafCommRing : TopCat.Sheaf CommRingCat.{u} (TopCat.of M) where
   obj := smoothPresheafCommRing IM I M R
   property := by
@@ -315,12 +320,14 @@ def smoothSheafCommRing.forgetStalk (x : TopCat.of M) :
     (smoothSheaf IM I M R).presheaf.stalk x :=
   preservesColimitIso (forget CommRingCat) _
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp, reassoc, elementwise] lemma smoothSheafCommRing.ι_forgetStalk_hom (x : TopCat.of M) (U) :
     dsimp% ↾(colimit.ι ((OpenNhds.inclusion x).op ⋙
       (smoothSheafCommRing IM I M R).presheaf) U).hom ≫ (forgetStalk IM I M R x).hom =
     colimit.ι ((OpenNhds.inclusion x).op ⋙ (smoothSheaf IM I M R).presheaf) U :=
   ι_preservesColimitIso_hom (forget CommRingCat) _ _
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp, reassoc, elementwise] lemma smoothSheafCommRing.ι_forgetStalk_inv (x : TopCat.of M) (U) :
     colimit.ι ((OpenNhds.inclusion x).op ⋙ (smoothSheaf IM I M R).presheaf) U ≫
     (smoothSheafCommRing.forgetStalk IM I M R x).inv =
@@ -350,6 +357,9 @@ given by evaluating sections at `x`. -/
 def smoothSheafCommRing.eval (x : M) : (smoothSheafCommRing IM I M R).presheaf.stalk x →+* R :=
   (smoothSheafCommRing.evalHom IM I M R x).hom
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp, reassoc, elementwise] lemma smoothSheafCommRing.ι_evalHom (x : TopCat.of M) (U) :
     colimit.ι ((OpenNhds.inclusion x).op ⋙ _) U ≫ smoothSheafCommRing.evalHom IM I M R x =
     smoothSheafCommRing.evalAt _ _ _ _ _ _ :=
@@ -400,6 +410,7 @@ variable {IM I M R}
     = f ⟨x, hx⟩ :=
   smoothSheafCommRing.evalHom_germ IM I M R U x hx f
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- A smooth function `f : M → N` induces a morphism of sheaves (of rings) `𝒪_N ⟶ f_* 𝒪_M`,
 by pre-composing with `f`. -/
 @[simps! -isSimp hom_app_hom_apply]
