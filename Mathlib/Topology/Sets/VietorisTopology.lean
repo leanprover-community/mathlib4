@@ -164,8 +164,7 @@ theorem continuous_iff {f : α → Set β} :
   rintro _ (⟨U, hU, rfl⟩ | ⟨U, hU, rfl⟩)
   · exact h₁ U hU
   · simp_rw [preimage_ofPred_eq, ← not_disjoint_iff_nonempty_inter, ← compl_ofPred,
-      isOpen_compl_iff,
-      ← subset_compl_iff_disjoint_right]
+      isOpen_compl_iff, ← subset_compl_iff_disjoint_right]
     exact h₂ Uᶜ hU.isClosed_compl
 
 @[fun_prop]
