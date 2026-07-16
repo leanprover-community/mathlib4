@@ -1347,7 +1347,7 @@ def splitMonoOfIdempotentOfIsLimitFork {X : C} {f : X ⟶ X} (hf : f ≫ f = f) 
     (i : IsLimit c) : SplitMono c.ι where
   retraction := i.lift (Fork.ofι f (by simp [hf]))
   id := by
-    letI := mono_of_isLimit_fork i
+    let := mono_of_isLimit_fork i
     rw [← cancel_mono_id c.ι, Category.assoc, Fork.IsLimit.lift_ι, Fork.ι_ofι, ← c.condition]
     exact Category.comp_id c.ι
 
@@ -1427,7 +1427,7 @@ def splitEpiOfIdempotentOfIsColimitCofork {X : C} {f : X ⟶ X} (hf : f ≫ f = 
     (i : IsColimit c) : SplitEpi c.π where
   section_ := i.desc (Cofork.ofπ f (by simp [hf]))
   id := by
-    letI := epi_of_isColimit_cofork i
+    let := epi_of_isColimit_cofork i
     rw [← cancel_epi_id c.π, ← Category.assoc, Cofork.IsColimit.π_desc, Cofork.π_ofπ, ←
       c.condition]
     exact Category.id_comp _

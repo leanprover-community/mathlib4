@@ -418,7 +418,7 @@ def basis : Basis (Fin (natDegree f)) R S where
   repr.invFun g := h.map <| ofFinsupp <| .ofCoeff <| g.mapDomain Fin.val
   repr.left_inv x := by
     nontriviality R using Algebra.subsingleton R S
-    simp only [AddMonoidAlgebra.coeff, AddMonoidAlgebra.ofCoeff]
+    dsimp
     rw [Finsupp.mapDomain_comapDomain, Polynomial.eta, h.map_modByMonicHom x]
     · exact Fin.val_injective
     intro i hi
@@ -432,14 +432,13 @@ def basis : Basis (Fin (natDegree f)) R S where
   repr.right_inv g := by
     nontriviality R
     ext i
-    simp only [AddMonoidAlgebra.coeff, AddMonoidAlgebra.ofCoeff, h.modByMonicHom_map,
-      Finsupp.comapDomain_apply, Polynomial.toFinsupp_apply]
+    simp only [h.modByMonicHom_map, Finsupp.comapDomain_apply, Polynomial.toFinsupp_apply]
     rw [(Polynomial.modByMonic_eq_self_iff h.monic).mpr, Polynomial.coeff]
     · rw [Finsupp.mapDomain_apply Fin.val_injective]
     rw [degree_eq_natDegree h.monic.ne_zero, degree_lt_iff_coeff_zero]
     intro m hm
     rw [Polynomial.coeff]
-    rw [Finsupp.mapDomain_notin_range]
+    rw [Finsupp.mapDomain_of_notMem_range]
     rw [Set.mem_range, not_exists]
     rintro i rfl
     exact i.prop.not_ge hm
@@ -448,8 +447,7 @@ def basis : Basis (Fin (natDegree f)) R S where
 
 @[simp]
 theorem basis_apply (i) : h.basis i = h.root ^ (i : ℕ) :=
-  Basis.apply_eq_iff.mpr <| by
-    simp [AddMonoidAlgebra.coeff, AddMonoidAlgebra.ofCoeff, IsAdjoinRootMonic.basis]
+  Basis.apply_eq_iff.mpr <| by simp [IsAdjoinRootMonic.basis]
 
 include h in
 theorem deg_pos [Nontrivial S] : 0 < natDegree f := by
@@ -470,7 +468,7 @@ def powerBasis : PowerBasis R S where
 @[simp]
 theorem basis_repr (x : S) (i : Fin (natDegree f)) :
     h.basis.repr x i = (h.modByMonicHom x).coeff (i : ℕ) := by
-  simp [IsAdjoinRootMonic.basis, AddMonoidAlgebra.coeff, AddMonoidAlgebra.ofCoeff, toFinsupp_apply]
+  simp [IsAdjoinRootMonic.basis, toFinsupp_apply]
 
 theorem basis_one (hdeg : 1 < natDegree f) : h.basis ⟨1, hdeg⟩ = h.root := by
   rw [h.basis_apply, Fin.val_mk, pow_one]
@@ -649,30 +647,20 @@ theorem minpoly_eq [IsDomain R] [IsDomain S] [IsTorsionFree R S] [IsIntegrallyCl
 then `S` is given by adjoining a root of `minpoly R α`.
 Does not require that `R` is an integral domain, unlike `mkOfAdjoinEqTop`. -/
 @[simps]
-def mkOfAdjoinEqTop'
-    [Module.Finite R S] [Module.Free R S]
-    {α : S} (hα : Algebra.adjoin R {α} = ⊤) :
+def mkOfAdjoinEqTop' [Module.Finite R S] [Module.Free R S] {α : S} (hα : Algebra.adjoin R {α} = ⊤) :
     IsAdjoinRootMonic S (minpoly R α) where
   __ : IsAdjoinRoot S (minpoly R α) :=
-    let f := minpoly R α
-    have hf := minpoly.monic (Algebra.IsIntegral.isIntegral (R := R) α)
-    let φ : AdjoinRoot f →ₐ[R] S :=
-      AdjoinRoot.liftAlgHom f (Algebra.ofId R S) α (minpoly.aeval R α)
+    have monic := minpoly.monic (Algebra.IsIntegral.isIntegral (R := R) α)
+    haveI := monic.free_adjoinRoot
+    haveI := monic.finite_adjoinRoot
+    let φ := AdjoinRoot.liftAlgHom _ (Algebra.ofId R S) _ (minpoly.aeval R α)
     IsAdjoinRoot.ofAdjoinRootEquiv <| AlgEquiv.ofBijective φ <| by
-      have hφ : Function.Surjective φ := by
-        rw [Algebra.adjoin_singleton_eq_range_aeval, AlgHom.range_eq_top] at hα
-        intro s; obtain ⟨p, hp⟩ := hα s
-        exact ⟨AdjoinRoot.mk f p, by simp [φ, ← aeval_def, hp]⟩
-      haveI := hf.free_adjoinRoot; haveI := hf.finite_adjoinRoot
-      by_cases h : Nontrivial R
-      · letI e := LinearEquiv.ofFinrankEq (R := R) (AdjoinRoot f) S <|
-          le_antisymm (finrank_quotient_span_eq_natDegree' hf ▸ minpoly.natDegree_le α)
-          (LinearMap.finrank_le_finrank_of_surjective (f := φ.toLinearMap) hφ)
-        exact OrzechProperty.bijective_of_surjective_of_injective
-          e.toLinearMap φ e.injective hφ
-      · apply not_nontrivial_iff_subsingleton.mp at h
-        haveI := Module.subsingleton R (AdjoinRoot f)
-        exact ⟨Function.injective_of_subsingleton φ, hφ⟩
+      refine OrzechProperty.bijective_of_surjective_of_finrank_le φ.toLinearMap (fun s ↦ ?_) ?_
+      · rw [Algebra.adjoin_singleton_eq_range_aeval, AlgHom.range_eq_top] at hα
+        rcases hα s with ⟨p, hp⟩
+        exact ⟨AdjoinRoot.mk (minpoly R α) p, by simp [φ, ← aeval_def, hp]⟩
+      · nontriviality R
+        exact finrank_quotient_span_eq_natDegree' monic ▸ minpoly.natDegree_le α
   map := aeval α
   monic := minpoly.monic (Algebra.IsIntegral.isIntegral α)
 

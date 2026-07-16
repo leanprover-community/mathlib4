@@ -32,7 +32,7 @@ We take the following route from polynomials to L-functions:
 For example, the Riemann zeta function `ζ(s)` corresponds to taking `1 - T` at each prime `p`.
 
 For context, here is a diagram of the possible routes from polynomials to L-functions:
-
+```
                    T=q⁻ˢ                     s ∈ ℂ
 [polynomials in T] ----> [polynomials in q⁻ˢ] ----> [analytic function in s]
           |                           |                           |
@@ -43,6 +43,7 @@ For context, here is a diagram of the possible routes from polynomials to L-func
           | (product)                 | (product)                 | (product)
           v                 T=q⁻ˢ     V               s ∈ ℂ       V
 [multivariate power series] ----> [Dirichlet series] ----> [L-function in s] (the Euler product)
+```
 -/
 
 @[expose] public section
@@ -158,7 +159,6 @@ variable [CommRing R]
 to substituting `X` with `X ^ k` in the original power series. -/
 theorem ofPowerSeries_pow (q : ℕ) {k : ℕ} (hk : k ≠ 0) (f : PowerSeries R) :
     ofPowerSeries (q ^ k) f = ofPowerSeries q (f.subst (PowerSeries.X ^ k)) := by
-  classical
   by_cases hq : 1 < q
   · ext n
     by_cases hn : ∃ i, q ^ i = n

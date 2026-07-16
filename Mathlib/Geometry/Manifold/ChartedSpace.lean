@@ -6,7 +6,7 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Geometry.Manifold.StructureGroupoid
-public import Mathlib.Topology.Connected.LocPathConnected
+public import Mathlib.Topology.Connected.LocallyPathConnected
 public import Mathlib.Topology.IsLocalHomeomorph
 public import Mathlib.Topology.OpenPartialHomeomorph.Constructions
 
@@ -223,9 +223,9 @@ open TopologicalSpace
 theorem ChartedSpace.secondCountable_of_countable_cover [SecondCountableTopology H] {s : Set M}
     (hs : ⋃ (x) (_ : x ∈ s), (chartAt H x).source = univ) (hsc : s.Countable) :
     SecondCountableTopology M := by
-  haveI : ∀ x : M, SecondCountableTopology (chartAt H x).source :=
+  have : ∀ x : M, SecondCountableTopology (chartAt H x).source :=
     fun x ↦ (chartAt (H := H) x).secondCountableTopology_source
-  haveI := hsc.toEncodable
+  have := hsc.toEncodable
   rw [biUnion_eq_iUnion] at hs
   exact secondCountableTopology_of_countable_cover (fun x : s ↦ (chartAt H (x : M)).open_source) hs
 
@@ -265,7 +265,8 @@ theorem ChartedSpace.locallyConnectedSpace [LocallyConnectedSpace H] : LocallyCo
 
 /-- If a topological space `M` admits an atlas with locally path-connected charts,
 then `M` itself is locally path-connected. -/
-theorem ChartedSpace.locPathConnectedSpace [LocPathConnectedSpace H] : LocPathConnectedSpace M := by
+theorem ChartedSpace.locallyPathConnectedSpace [LocallyPathConnectedSpace H] :
+    LocallyPathConnectedSpace M := by
   refine ⟨fun x ↦ ⟨fun s ↦ ⟨fun hs ↦ ?_, fun ⟨u, hu⟩ ↦ Filter.mem_of_superset hu.1.1 hu.2⟩⟩⟩
   let e := chartAt H x
   let t := s ∩ e.source
@@ -279,6 +280,9 @@ theorem ChartedSpace.locPathConnectedSpace [LocPathConnectedSpace H] : LocPathCo
     exact (pathComponentIn_mono <| image_mono inter_subset_right).trans pathComponentIn_subset
   · exact (image_mono pathComponentIn_subset).trans
       (PartialEquiv.symm_image_image_of_subset_source _ inter_subset_right).subset
+
+@[deprecated (since := "2026-06-21")]
+alias ChartedSpace.locPathConnectedSpace := ChartedSpace.locallyPathConnectedSpace
 
 /-- If `M` is modelled on `H'` and `H'` is itself modelled on `H`, then we can consider `M` as being
 modelled on `H`. -/
@@ -519,7 +523,6 @@ def ChartedSpace.sum_of_nonempty [Nonempty H] : ChartedSpace H (M ⊕ M') where
       right
       use ChartedSpace.chartAt x, cm'.chart_mem_atlas x
 
-open scoped Classical in
 instance ChartedSpace.sum : ChartedSpace H (M ⊕ M') := by
   by_cases! h : Nonempty H
   · exact ChartedSpace.sum_of_nonempty
@@ -543,13 +546,13 @@ lemma ChartedSpace.sum_chartAt_inr (x' : M') :
 
 @[simp, mfld_simps] lemma sum_chartAt_inl_apply {x y : M} :
     (chartAt H (.inl x : M ⊕ M')) (Sum.inl y) = (chartAt H x) y := by
-  haveI : Nonempty H := nonempty_of_chartedSpace x
+  have : Nonempty H := nonempty_of_chartedSpace x
   rw [ChartedSpace.sum_chartAt_inl]
   exact OpenPartialHomeomorph.lift_openEmbedding_apply _ _
 
 @[simp, mfld_simps] lemma sum_chartAt_inr_apply {x y : M'} :
     (chartAt H (.inr x : M ⊕ M')) (Sum.inr y) = (chartAt H x) y := by
-  haveI : Nonempty H := nonempty_of_chartedSpace x
+  have : Nonempty H := nonempty_of_chartedSpace x
   rw [ChartedSpace.sum_chartAt_inr]
   exact OpenPartialHomeomorph.lift_openEmbedding_apply _ _
 
@@ -590,6 +593,12 @@ def IsLocalHomeomorph.chartedSpace
     {f : M → M'} (hf : IsLocalHomeomorph f) (hf' : Function.Surjective f) :
     ChartedSpace H M' :=
   hf.chartedSpaceOfRightInverse hf'.hasRightInverse.choose_spec
+
+/-- Given a homeomorphism `f : M ≃ₜ M'`, endow `M'` with a `ChartedSpace` structure by pushing
+forward the `ChartedSpace` structure from `M`. -/
+@[implicit_reducible]
+def Homeomorph.chartedSpace (f : M ≃ₜ M') : ChartedSpace H M' :=
+  f.isLocalHomeomorph.chartedSpace f.surjective
 
 end IsLocalHomeomorph
 
@@ -647,7 +656,7 @@ protected def openPartialHomeomorph (e : PartialEquiv M H) (he : e ∈ c.atlas) 
     open_source := by convert! c.open_source' he
     open_target := by convert! c.open_target he
     continuousOn_toFun := by
-      letI : TopologicalSpace M := c.toTopologicalSpace
+      let : TopologicalSpace M := c.toTopologicalSpace
       rw [continuousOn_open_iff (c.open_source' he)]
       intro s s_open
       rw [inter_comm]
@@ -655,7 +664,7 @@ protected def openPartialHomeomorph (e : PartialEquiv M H) (he : e ∈ c.atlas) 
       simp only [exists_prop, mem_iUnion, mem_singleton_iff]
       exact ⟨e, he, ⟨s, s_open, rfl⟩⟩
     continuousOn_invFun := by
-      letI : TopologicalSpace M := c.toTopologicalSpace
+      let : TopologicalSpace M := c.toTopologicalSpace
       apply continuousOn_isOpen_of_generateFrom
       intro t ht
       simp only [exists_prop, mem_iUnion, mem_singleton_iff] at ht

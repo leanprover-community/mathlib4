@@ -23,8 +23,8 @@ minor notational difference is that we write $\nu(n)$ in place of $\frac{\omega(
 ## Results
 * `siftedSum_le_mainSum_errSum_of_UpperBoundSieve` - Every upper bound sieve gives an upper bound
   on the size of the sifted set in terms of `mainSum` and `errSum`
- * `upperMoebius_of_lambda_sq` - Lambda squared weights produce upper bound sieves
- * `lambdaSquared_mainSum_eq_diag_quad_form` - The main sum of a Λ² sieve has a nice diagonalisation
+* `upperMoebius_of_lambda_sq` - Lambda squared weights produce upper bound sieves
+* `lambdaSquared_mainSum_eq_diag_quad_form` - The main sum of a Λ² sieve has a nice diagonalisation
 
 ## References
 
@@ -89,10 +89,10 @@ open Lean Meta Qq
 
 /-- Extension for the `positivity` tactic: `BoundingSieve.weights`. -/
 @[positivity BoundingSieve.weights _ _]
-meta def evalBoundingSieveWeights : PositivityExt where eval {u α} _zα pα? e := do
+meta def evalBoundingSieveWeights : PositivityExt where eval {u α} _zα pα? e :=
+  match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℝ), ~q(@BoundingSieve.weights $s $n) =>
-    let some _ := pα? | pure .none
     assertInstancesCommute
     pure (.nonnegative q(BoundingSieve.weights_nonneg $s $n))
   | _, _, _ => throwError "not BoundingSieve.weights"

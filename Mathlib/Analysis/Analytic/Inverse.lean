@@ -102,7 +102,6 @@ theorem leftInv_comp (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F)
     (h : p 1 = (continuousMultilinearCurryFin1 𝕜 E F).symm i) :
     (leftInv p i x).comp p = id 𝕜 E x := by
   ext n v
-  classical
   match n with
   | 0 =>
     simp only [comp_coeff_zero', leftInv_coeff_zero, ContinuousMultilinearMap.uncurry0_apply,
@@ -133,8 +132,7 @@ theorem leftInv_comp (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F)
       (p.leftInv i x (n + 2) fun j : Fin (n + 2) => p 1 fun _ => v j) =
         -∑ c ∈ {c : Composition (n + 2) | c.length < n + 2}.toFinset,
             (p.leftInv i x c.length) (p.applyComposition c v) := by
-      simp only [leftInv, ContinuousMultilinearMap.neg_apply, neg_inj,
-        ContinuousMultilinearMap.sum_apply]
+      simp only [leftInv, _root_.neg_apply, neg_inj, _root_.sum_apply]
       convert!
         (sum_toFinset_eq_subtype (fun c : Composition (n + 2) => c.length < n + 2)
               (fun c : Composition (n + 2) =>
@@ -204,7 +202,6 @@ theorem comp_rightInv_aux1 {n : ℕ} (hn : 0 < n) (p : FormalMultilinearSeries �
     p.comp q n v =
       ∑ c ∈ {c : Composition n | 1 < c.length}.toFinset,
           p c.length (q.applyComposition c v) + p 1 fun _ => q n v := by
-  classical
   have A :
     (Finset.univ : Finset (Composition n)) =
       {c | 1 < Composition.length c}.toFinset ∪ {Composition.single n hn} := by
