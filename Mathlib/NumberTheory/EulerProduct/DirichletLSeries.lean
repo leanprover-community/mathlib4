@@ -217,8 +217,7 @@ variable {N : ℕ} (χ : DirichletCharacter ℂ N) {s : ℂ}
 product — equals the `L`-series of `n ↦ χ n * Λ n / Real.log n`.
 -/
 theorem DirichletCharacter.eulerProduct_log_eq_LSeries (hs : 1 < s.re) :
-    ∑' p : Primes, -log (1 - χ p * p ^ (-s)) = LSeries (fun (n : ℕ) ↦ χ n * Λ n / Real.log n) s
-    := by
+    ∑' p : Primes, -log (1 - χ p * p ^ (-s)) = LSeries (fun n ↦ χ n * Λ n / Real.log n) s := by
   have hpow_le (p : Primes) : ‖χ p * (p : ℂ) ^ (-s)‖ < 1 := by
     grw [norm_mul, norm_le_one, norm_natCast_cpow_of_pos (mod_cast p.prop.pos), neg_re, one_mul]
     apply rpow_lt_one_of_one_lt_of_neg (mod_cast p.prop.one_lt) (by linarith)
