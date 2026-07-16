@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Analysis.Calculus.ContDiff.WithLp
 public import Mathlib.Analysis.InnerProductSpace.PiL2
-public import Mathlib.Geometry.Manifold.Orientation
 public import Mathlib.Geometry.Manifold.IsManifold.InteriorBoundary
+public import Mathlib.Geometry.Manifold.Orientation
 
 /-!
 # Constructing examples of manifolds over ℝ
@@ -109,11 +109,11 @@ instance EuclideanHalfSpace.pathConnectedSpace [NeZero n] :
 instance EuclideanQuadrant.pathConnectedSpace : PathConnectedSpace (EuclideanQuadrant n) :=
   isPathConnected_iff_pathConnectedSpace.mp <| convex.isPathConnected ⟨0, by simp⟩
 
-instance [NeZero n] : LocPathConnectedSpace (EuclideanHalfSpace n) :=
-  EuclideanHalfSpace.convex.locPathConnectedSpace
+instance [NeZero n] : LocallyPathConnectedSpace (EuclideanHalfSpace n) :=
+  EuclideanHalfSpace.convex.locallyPathConnectedSpace
 
-instance : LocPathConnectedSpace (EuclideanQuadrant n) :=
-  EuclideanQuadrant.convex.locPathConnectedSpace
+instance : LocallyPathConnectedSpace (EuclideanQuadrant n) :=
+  EuclideanQuadrant.convex.locallyPathConnectedSpace
 
 theorem range_euclideanHalfSpace (n : ℕ) [NeZero n] :
     range (Subtype.val : EuclideanHalfSpace n → _) = { y | 0 ≤ y 0 } :=
@@ -483,14 +483,15 @@ instance instIsManifoldIcc (x y : ℝ) [Fact (x < y)] {n : ℕ∞ω} :
   · -- `e = right chart`, `e' = right chart`
     exact (mem_groupoid_of_pregroupoid.mpr (symm_trans_mem_contDiffGroupoid _)).1
 
-/-- In the cross-chart case on `[x,y]`, the tangent coordinate change is `v ↦ -v`. -/
+/-- In the cross-chart case on `[x,y]`, the tangent coordinate change is `-id` (i.e. `v ↦ -v`). -/
 private theorem Icc_tangentCoordChange_neg (p q r : Set.Icc x y)
     (hr : r ∈ (chartAt (EuclideanHalfSpace 1) p).source ∩
       (chartAt (EuclideanHalfSpace 1) q).source)
-    (hpq : ¬((p : ℝ) < y ↔ (q : ℝ) < y))
-    (v : EuclideanSpace ℝ (Fin 1)) :
-    tangentCoordChange (𝓡∂ 1) p q r v = -v := by
-  rw [tangentCoordChange_def]
+    (hpq : ¬((p : ℝ) < y ↔ (q : ℝ) < y)) :
+    (tangentCoordChange (𝓡∂ 1) p q r).toLinearMap = (-1 : ℝ) • LinearMap.id := by
+  ext v : 1
+  rw [ContinuousLinearMap.coe_coe, LinearMap.smul_apply, LinearMap.id_apply, neg_one_smul,
+    tangentCoordChange_def]
   -- Decompose the cross-chart assumption into the two cases
   obtain ⟨hp', hq'⟩ | ⟨hp', hq'⟩ :
       ((p : ℝ) < y ∧ ¬(q : ℝ) < y) ∨ (¬(p : ℝ) < y ∧ (q : ℝ) < y) := by
@@ -559,27 +560,36 @@ private theorem Icc_zero_lt_det_tangentCoordChange_iff (p q r : Set.Icc x y)
     exact one_pos
   · -- Charts differ: the coordinate change is `-id`, with determinant `-1 < 0`.
     refine iff_of_false (not_lt.mpr (le_of_lt ?_)) hpq
-    have hmap : (tangentCoordChange (𝓡∂ 1) p q r).toLinearMap = (-1 : ℝ) • LinearMap.id := by
-      ext v : 1
-      rw [ContinuousLinearMap.coe_coe, Icc_tangentCoordChange_neg p q r hr hpq v,
-        LinearMap.smul_apply, LinearMap.id_apply, neg_one_smul]
-    rw [hmap, LinearMap.det_smul, LinearMap.det_id, finrank_euclideanSpace, Fintype.card_fin]
+    rw [Icc_tangentCoordChange_neg p q r hr hpq, LinearMap.det_smul, LinearMap.det_id,
+      finrank_euclideanSpace, Fintype.card_fin]
     norm_num
 
-open Classical in
-instance instOrientedManifoldIcc : Manifold.OrientedManifold (𝓡∂ 1) (Set.Icc x y) where
-  manifoldOrientation :=
-    { chartSign p z :=
+public instance instIccOrientationIndexCard :
+    Fact (Fintype.card (Fin 1) =
+      Module.finrank ℝ (EuclideanSpace ℝ (Fin 1))) :=
+  ⟨by simp only [finrank_euclideanSpace]⟩
+
+/-- The standard orientation of the model space for the interval. -/
+def iccModelOrientation :
+    _root_.Orientation ℝ (EuclideanSpace ℝ (Fin 1)) (Fin 1) :=
+  (EuclideanSpace.basisFun (Fin 1) ℝ).toBasis.orientation
+
+instance instOrientedManifoldIcc :
+    Manifold.OrientedManifold (𝓡∂ 1) (Set.Icc x y) (Fin 1) where
+  manifoldOrientation := Manifold.Orientation.mk
+    { modelOrientation := iccModelOrientation
+      chartSign p z := open scoped Classical in
         if z ∈ (chartAt (EuclideanHalfSpace 1) p).source then (if (p : ℝ) < y then 1 else -1) else 1
       continuousOn_chartSign p :=
         ContinuousOn.congr (continuousOn_const (c := if (p : ℝ) < y then (1 : ℤˣ) else -1))
-          (fun z hz => by simp only [if_pos hz])
-      chartSign_eq_one_of_not_mem p z hz := if_neg hz
+          (fun z hz ↦ by simp only [if_pos hz])
+      chartSign_eq_one_of_notMem p z hz := if_neg hz
       compatible p q z hzp hzq := by
-        simp only [if_pos hzp, if_pos hzq, Icc_zero_lt_det_tangentCoordChange_iff p q z ⟨hzp, hzq⟩]
+        simp only [if_pos hzp, if_pos hzq]
+        apply Manifold.OrientationLift.compatible_of_det
+        rw [tangentCoordChangeEquiv_toLinearMap hzp hzq,
+          Icc_zero_lt_det_tangentCoordChange_iff p q z ⟨hzp, hzq⟩]
         by_cases hp : (p : ℝ) < y <;> by_cases hq : (q : ℝ) < y <;> simp [hp, hq] }
-
-instance instOrientableIcc : Manifold.Orientable (𝓡∂ 1) (Set.Icc x y) := by infer_instance
 
 /-! Register the manifold structure on `Icc 0 1`. These are merely special cases of
 `instIccChartedSpace` and `instIsManifoldIcc`. -/

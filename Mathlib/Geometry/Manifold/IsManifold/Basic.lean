@@ -10,6 +10,7 @@ public import Mathlib.Analysis.Normed.Module.Convex
 public import Mathlib.Analysis.RCLike.TangentCone
 public import Mathlib.Data.Bundle
 public import Mathlib.Geometry.Manifold.HasGroupoid
+public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # `C^n` manifolds (possibly with boundary or corners)
@@ -374,6 +375,15 @@ protected theorem left_inv (x : H) : I.symm (I x) = x := by refine I.left_inv' ?
 
 protected theorem leftInverse : LeftInverse I.symm I :=
   I.left_inv
+
+include I in
+/-- A space with a charted-space structure modeled on a model with corners is locally connected. -/
+theorem locallyConnectedSpace [NormedSpace ℝ E] (M : Type*) [TopologicalSpace M]
+    [ChartedSpace H M] : LocallyConnectedSpace M := by
+  letI : LocallyPathConnectedSpace (range I) := I.convex_range.locallyPathConnectedSpace
+  letI : LocallyConnectedSpace H :=
+    (I.leftInverse.isEmbedding I.continuous_symm I.continuous).toHomeomorph.locallyConnectedSpace
+  exact ChartedSpace.locallyConnectedSpace H M
 
 theorem injective : Injective I :=
   I.leftInverse.injective
@@ -751,7 +761,7 @@ theorem contDiffGroupoid_prod {I : ModelWithCorners 𝕜 E H} {I' : ModelWithCor
     e.prod e' ∈ contDiffGroupoid n (I.prod I') := by
   obtain ⟨he, he_symm⟩ := he
   obtain ⟨he', he'_symm⟩ := he'
-  constructor <;> simp only [PartialEquiv.prod_source, OpenPartialHomeomorph.prod_toPartialEquiv,
+  constructor <;> simp only [OpenPartialHomeomorph.prod_toPartialHomeomorph,
     contDiffPregroupoid]
   · have h3 := ContDiffOn.prodMap he he'
     rw [← I.image_eq, ← I'.image_eq, prod_image_image_eq] at h3
@@ -1070,6 +1080,7 @@ variable (M) in
 -- is empty if the base manifold is empty
 /-- The tangent bundle to a manifold, as a Sigma type. Defined in terms of
 `Bundle.TotalSpace` to be able to put a suitable topology on it. -/
+@[wikidata Q746550]
 abbrev TangentBundle := Bundle.TotalSpace E (TangentSpace I : M → Type _)
 
 end TangentSpace
