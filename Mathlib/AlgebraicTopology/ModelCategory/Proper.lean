@@ -110,7 +110,7 @@ variable {X Y X' Y' : C}
 lemma weakEquivalence {t : X ⟶ Y} {l : X ⟶ X'} {r : Y ⟶ Y'} {b : X' ⟶ Y'}
     [WeakEquivalence l] [Cofibration t] (sq : IsPushout t l r b) :
     WeakEquivalence r :=
-  (weakEquivalence_iff ..).2
+  (weakEquivalence_iff ..).mpr
     (MorphismProperty.IsStableUnderCobaseChangeAlong.of_isPushout
         sq (mem_weakEquivalences l))
 
