@@ -300,26 +300,13 @@ theorem paper_eq3_eq5_off_diag (i j : Fin n) :
       ∑ α' ∈ S (p + 1) i, ∑ t : Fin (p + 1),
           bminor A i (α' t) (t.removeNth α') * A (α' t) j := by
   rw [Finset.sum_comm, ← Finset.sum_product', ← Finset.sum_product']
+  -- The right-hand summand is the left-hand summand composed with the deletion map
+  --
+  --   d (α, t) := (t.removeNth α, α t).
+  --
+  -- This map is injective, and every left-hand summand outside its image is zero,
+  -- so `sum_of_injOn` applies.
   symm
-  -- Let
-  --    `source := S (p + 1) i ×ˢ univ` indexes the right-hand sum, while
-  --    `target := S p i ×ˢ Ioi i` indexes the left-hand sum.
-  --
-  -- The functions being summed are
-  --    `f (α, t) := bminor A i (α t) (t.removeNth α) * A (α t) j` over `source` and
-  --    `g (α, k) := bminor A i k α * A k j` over `target`.
-  --
-  -- `sum_of_injOn` proves:
-  --    `∑ x ∈ source, f x = ∑ y ∈ target, g y`
-  --
-  -- The 'deletion map d' from source to target is:
-  --    `d (α, t) ↦ (t.removeNth α, α t)`
-  --
-  -- To apply `sum_of_injOn` we are required to prove :
-  --    1. `d` is injective
-  --    2. `source.image d ⊆ target`
-  --    3. `∀ x ∈ target, x ∉ source.image d → g x = 0`
-  --    4. `∀ x ∈ source, f x = g (d x)`
   refine Finset.sum_of_injOn ?_ ?_ ?_ ?_ ?_
   · exact fun ⟨α, k⟩ ↦ ⟨k.removeNth α, α k⟩
   · unfold Set.InjOn
