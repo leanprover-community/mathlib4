@@ -7,7 +7,6 @@ module
 
 public import Mathlib.FieldTheory.Finite.GaloisField
 public import Mathlib.NumberTheory.RamificationInertia.Galois
-public import Mathlib.RingTheory.Ideal.Galois
 public import Mathlib.RingTheory.Ideal.Quotient.HasFiniteQuotients
 
 /-!
