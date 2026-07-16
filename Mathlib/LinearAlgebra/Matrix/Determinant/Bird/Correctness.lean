@@ -141,15 +141,15 @@ theorem paper_eq2 (i : Fin n) (hEq1 : Eq1 A p) :
 /-- One step of Bird's scalar recurrence, split into diagonal and tail parts. -/
 theorem iter_succ_entry (i j : Fin n) :
     ((Spec.stepEntry A)^[p + 1] A) i j =
-      -Spec.diagSum ((Spec.stepEntry A)^[p] A) i * A i j
-      + ∑ k ∈ Finset.Ioi i, ((Spec.stepEntry A)^[p] A) i k * A k j := by
+      -Spec.diagSum ((Spec.stepEntry A)^[p] A) i * A i j +
+      ∑ k ∈ Finset.Ioi i, ((Spec.stepEntry A)^[p] A) i k * A k j := by
   rw [Function.iterate_succ_apply', Spec.stepEntry_eq, Matrix.of_apply, Spec.diagSum_eq]
 
 /-- Bird's equation (3), assuming equation (1) at `p` as the induction hypothesis. -/
 theorem paper_eq3 (i j : Fin n) (hEq1 : Eq1 A p) :
-    ((Spec.stepEntry A)^[p + 1] A) i j
-      = (-1 : R) ^ (p + 1) • (∑ α ∈ S (p + 1) i, pminor A α * A i j
-        - ∑ k ∈ Finset.Ioi i, ∑ α ∈ S p i, bminor A i k α * A k j) := by
+    ((Spec.stepEntry A)^[p + 1] A) i j =
+      (-1 : R) ^ (p + 1) • (∑ α ∈ S (p + 1) i, pminor A α * A i j -
+        ∑ k ∈ Finset.Ioi i, ∑ α ∈ S p i, bminor A i k α * A k j) := by
   rw [iter_succ_entry, paper_eq2 _ _ hEq1, hEq1]
   simp only [smul_eq_mul, Matrix.of_apply, mul_assoc, Finset.sum_mul, ← Finset.mul_sum]
   ring
@@ -292,8 +292,8 @@ lemma exists_insertNth_mem_S {i : Fin n} {α : Fin p → Fin n} {k : Fin n}
 
 /-- The off-diagonal sums in Bird's equations (3) and (5) agree. -/
 theorem paper_eq3_eq5_off_diag (i j : Fin n) :
-    ∑ k ∈ Finset.Ioi i, ∑ α ∈ S p i, bminor A i k α * A k j
-      = ∑ α' ∈ S (p + 1) i, ∑ t : Fin (p + 1),
+    ∑ k ∈ Finset.Ioi i, ∑ α ∈ S p i, bminor A i k α * A k j =
+      ∑ α' ∈ S (p + 1) i, ∑ t : Fin (p + 1),
           bminor A i (α' t) (t.removeNth α') * A (α' t) j := by
   rw [Finset.sum_comm, ← Finset.sum_product', ← Finset.sum_product']
   symm
@@ -358,9 +358,9 @@ theorem paper_eq3_eq5_off_diag (i j : Fin n) :
 
 /-- Bird's equation (4) -/
 theorem paper_eq4 (i j : Fin n) :
-    ∑ α ∈ S (p + 1) i, pminor A α * A i j
-      - ∑ k ∈ Finset.Ioi i, ∑ α ∈ S p i, bminor A i k α * A k j
-      = ∑ α ∈ S (p + 1) i, bminor A i j α := by
+    ∑ α ∈ S (p + 1) i, pminor A α * A i j -
+      ∑ k ∈ Finset.Ioi i, ∑ α ∈ S p i, bminor A i k α * A k j =
+      ∑ α ∈ S (p + 1) i, bminor A i j α := by
   rw [paper_eq5 A i j, paper_eq3_eq5_off_diag A i j]
 
 /-! ## Bird's Equation (1) -/
