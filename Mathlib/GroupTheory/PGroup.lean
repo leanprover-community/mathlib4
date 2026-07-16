@@ -94,7 +94,7 @@ protected theorem card : IsPGroup (Nat.card G) G :=
 @[gcongr]
 protected theorem mono {q : ℕ} (hpq : p ∣ q) (hp : IsPGroup p G) : IsPGroup q G := by
   rw [isPGroup_iff_orderOf_dvd_pow] at hp ⊢
-  exact fun g ↦ hp g |>.imp fun k hk ↦ hk.trans <| pow_dvd_pow_of_dvd hpq k
+  exact fun g ↦ (hp g).imp fun k hk ↦ hk.trans <| pow_dvd_pow_of_dvd hpq k
 
 theorem of_pow {n : ℕ} (h : IsPGroup (p ^ n) G) : IsPGroup p G :=
   fun g ↦ (h g).imp' (n * ·) <| by simp [pow_mul]
