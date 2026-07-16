@@ -32,6 +32,7 @@ variable {C : Type u} [Category.{v} C] [LocallySmall.{w} C]
   {D : Type u'} [Category.{v'} D] [LocallySmall.{w} D]
   {F : C ⥤ D} (hF : F.FullyFaithful)
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
 noncomputable def shrinkYonedaIso (X : C) :
     shrinkYoneda.{w}.obj X ≅ F.op ⋙ shrinkYoneda.{w}.obj (F.obj X) :=
@@ -65,6 +66,7 @@ namespace Presheaf
 variable {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
   [LocallySmall.{w} D] (F : C ⥤ D)
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
 noncomputable def shrinkYonedaCompWhiskeringRightUliftFunctorIso :
     shrinkYoneda.{w} (C := D) ⋙
@@ -82,7 +84,7 @@ noncomputable def shrinkYonedaCompWhiskeringRightUliftFunctorIso :
 noncomputable def restrictedShrinkYoneda : D ⥤ Cᵒᵖ ⥤ Type w :=
   shrinkYoneda ⋙ (Functor.whiskeringLeft _ _ _).obj F.op
 
-open Functor in
+open CategoryTheory.Functor in
 noncomputable def restrictedShrinkYonedaCompULiftIso :
     restrictedShrinkYoneda.{w} F ⋙
       (Functor.whiskeringRight _ _ _).obj (uliftFunctor.{v', w}) ≅
@@ -110,7 +112,7 @@ namespace IsCardinalLocallyPresentable
 variable (C : Type u) [Category.{v} C] (κ : Cardinal.{w}) [Fact κ.IsRegular]
   [IsCardinalLocallyPresentable C κ]
 
-open Functor in
+open CategoryTheory.Functor in
 set_option backward.defeqAttrib.useBackward true in
 noncomputable def toCardinalContinuous :
     C ⥤ (Functor.isCardinalContinuous

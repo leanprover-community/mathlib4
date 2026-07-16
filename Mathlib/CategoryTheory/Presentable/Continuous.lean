@@ -96,7 +96,7 @@ end Functor
 
 namespace Presheaf
 
-open Functor
+open CategoryTheory.Functor
 
 section Small
 
@@ -249,6 +249,7 @@ instance :
     ((isCardinalContinuousCongrLeft ((equivSmallModel.{w} Cᵒᵖ).op.symm.trans
       (opOpEquivalence C)) (Type w) κ).inverse)
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
 attribute [local simp] shrinkYoneda in
 @[simps!]
