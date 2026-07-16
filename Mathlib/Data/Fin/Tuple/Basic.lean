@@ -171,6 +171,10 @@ theorem cons_self_tail : cons (q 0) (tail q) = q := by
   ext j
   cases j using Fin.cases <;> simp [tail]
 
+@[simp]
+theorem cons_zero_succ : (cons 0 Fin.succ : Fin (n + 1) → Fin (n + 1)) = id :=
+  cons_self_tail id
+
 /-- Equivalence between tuples of length `n + 1` and pairs of an element and a tuple of length `n`
 given by separating out the first element of the tuple.
 

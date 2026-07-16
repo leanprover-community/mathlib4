@@ -320,13 +320,10 @@ theorem paper_eq1 : Eq1 A p := by
 
 /-! ## instantiating equation (1) to prove Theorem 1 -/
 
-/-- The bordered word of `Fin.succ` at `0` is the identity: Bird's `[1 .. n]`. -/
-lemma cons_zero_succ : (Fin.cons 0 Fin.succ : Fin (p + 1) → Fin (p + 1)) = id :=
-  Fin.cons_self_tail id
-
 /-- The unique maximum-length word over the symbols above `0` is `Fin.succ`. -/
 lemma S_zero_eq_singleton : S p 0 = {Fin.succ} := by
-  simp only [Finset.eq_singleton_iff_unique_mem, mem_S_iff_strictMono_cons, cons_zero_succ]
+  simp only [Finset.eq_singleton_iff_unique_mem, mem_S_iff_strictMono_cons,
+    Fin.cons_zero_succ]
   constructor
   · exact strictMono_id
   · intro α hα
@@ -336,7 +333,7 @@ lemma S_zero_eq_singleton : S p 0 = {Fin.succ} := by
 /-- The sum of the maximum-length bordered minors based at `0` equals `A.det` -/
 theorem sum_bminor_max_length_eq_det (A : Matrix (Fin (p + 1)) (Fin (p + 1)) R) :
     ∑ α ∈ S p 0, bminor A 0 0 α = A.det := by
-  rw [S_zero_eq_singleton, Finset.sum_singleton, bminor, cons_zero_succ,
+  rw [S_zero_eq_singleton, Finset.sum_singleton, bminor, Fin.cons_zero_succ,
     Matrix.submatrix_id_id]
 
 
