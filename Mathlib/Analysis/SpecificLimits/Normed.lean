@@ -529,7 +529,7 @@ theorem hasSum_pow_mul_geometric_of_norm_lt_one' (k : ℕ) {r : R} (h : ‖r‖ 
     hasSum_sum fun j _ ↦ (hasSum_descFactorial_mul_geometric_of_norm_lt_one' j h).mul_left _
 
 /-- If `‖r‖ < 1`, then `∑' n : ℕ, n ^ k * r ^ n` is given by the finite sum
-`∑ j ∈ range (k + 1), S(k, j) * j! * r ^ j * (1 - r)⁻¹ʳ ^ (j + 1)`, where `S(k, j)` denotes the
+`∑ j ∈ range (k + 1), S(k, j) * j ! * r ^ j * (1 - r)⁻¹ʳ ^ (j + 1)`, where `S(k, j)` denotes the
 Stirling numbers of the second kind.
 
 Version in a general ring with summable geometric series. For a version in a field, using division
