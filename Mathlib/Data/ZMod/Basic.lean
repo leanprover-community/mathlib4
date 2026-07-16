@@ -937,8 +937,9 @@ lemma subsingleton_iff {n : ℕ} : Subsingleton (ZMod n) ↔ n = 1 := by
 lemma nontrivial_iff {n : ℕ} : Nontrivial (ZMod n) ↔ n ≠ 1 := by
   rw [← not_subsingleton_iff_nontrivial, subsingleton_iff]
 
--- todo: this can be made a `Unique` instance.
-instance instSubsingletonUnits : Subsingleton (ZMod 2)ˣ := ⟨by decide⟩
+instance : Unique (ZMod 2)ˣ where
+  default := 1
+  uniq := by decide
 
 @[simp]
 theorem add_self_eq_zero_iff_eq_zero {n : ℕ} (hn : Odd n) {a : ZMod n} :
