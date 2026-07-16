@@ -216,20 +216,24 @@ theorem openSegment_eq_image' (x y : E) :
   simp only [smul_sub, sub_smul, one_smul]
   abel
 
+set_option backward.isDefEq.respectTransparency false in
 theorem segment_eq_image_lineMap (x y : E) : [x -[𝕜] y] =
     AffineMap.lineMap x y '' Icc (0 : 𝕜) 1 := by
-  convert! segment_eq_image 𝕜 x y using 2
+  convert segment_eq_image 𝕜 x y
   exact AffineMap.lineMap_apply_module _ _ _
 
+set_option backward.isDefEq.respectTransparency false in
 theorem openSegment_eq_image_lineMap (x y : E) :
     openSegment 𝕜 x y = AffineMap.lineMap x y '' Ioo (0 : 𝕜) 1 := by
-  convert! openSegment_eq_image 𝕜 x y using 2
+  convert openSegment_eq_image 𝕜 x y
   exact AffineMap.lineMap_apply_module _ _ _
 
+set_option backward.isDefEq.respectTransparency false in
 theorem lineMap_mem_openSegment (a b : E) {t : 𝕜} (ht : t ∈ Ioo 0 1) :
     AffineMap.lineMap a b t ∈ openSegment 𝕜 a b :=
   openSegment_eq_image_lineMap 𝕜 a b ▸ mem_image_of_mem _ ht
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem lineMap_mem_segment (a b : E) {t : 𝕜} (ht : t ∈ Icc 0 1) :
     AffineMap.lineMap a b t ∈ [a -[𝕜] b] :=
   segment_eq_image_lineMap 𝕜 a b ▸ mem_image_of_mem _ ht
@@ -251,7 +255,7 @@ theorem vadd_segment [AddTorsor G E] [VAddCommClass G E E] (a : G) (b c : E) :
     a +ᵥ [b -[𝕜] c] = [a +ᵥ b -[𝕜] a +ᵥ c] :=
   #adaptation_note /-- Prior to https://github.com/leanprover/lean4/pull/12286/
   we didn't need this `let` statement. -/
-  let : AddTorsor E E := addGroupIsAddTorsor E
+  let : AddTorsor E E := AddGroup.instAddTorsor E
   image_segment 𝕜 ⟨_, LinearMap.id, fun _ _ => vadd_comm _ _ _⟩ b c
 
 @[simp]
@@ -259,7 +263,7 @@ theorem vadd_openSegment [AddTorsor G E] [VAddCommClass G E E] (a : G) (b c : E)
     a +ᵥ openSegment 𝕜 b c = openSegment 𝕜 (a +ᵥ b) (a +ᵥ c) :=
   #adaptation_note /-- Prior to https://github.com/leanprover/lean4/pull/12286/
   we didn't need this `let` statement. -/
-  let : AddTorsor E E := addGroupIsAddTorsor E
+  let : AddTorsor E E := AddGroup.instAddTorsor E
   image_openSegment 𝕜 ⟨_, LinearMap.id, fun _ _ => vadd_comm _ _ _⟩ b c
 
 @[simp]
@@ -417,6 +421,7 @@ theorem mem_segment_iff_sameRay : x ∈ [y -[𝕜] z] ↔ SameRay 𝕜 (x - y) (
 
 open AffineMap
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `z = lineMap x y c` is a point on the line passing through `x` and `y`, then the open
 segment `openSegment 𝕜 x y` is included in the union of the open segments `openSegment 𝕜 x z`,
 `openSegment 𝕜 z y`, and the point `z`. Informally, `(x, y) ⊆ {z} ∪ (x, z) ∪ (z, y)`. -/

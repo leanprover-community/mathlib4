@@ -187,6 +187,7 @@ theorem gc :
       vanishingIdeal t :=
   fun I t => subset_zeroLocus_iff_le_vanishingIdeal t I
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `zeroLocus` and `vanishingIdeal` form a Galois connection. -/
 theorem gc_set :
     @GaloisConnection (Set R) (Set (PrimeSpectrum R))ᵒᵈ _ _ (fun s => zeroLocus s) fun t =>
@@ -376,8 +377,11 @@ lemma zeroLocus_insert_zero (s : Set R) : zeroLocus (insert 0 s) = zeroLocus s :
   rw [← Set.union_singleton, zeroLocus_union, zeroLocus_singleton_zero, Set.inter_univ]
 
 @[simp]
-lemma zeroLocus_diff_singleton_zero (s : Set R) : zeroLocus (s \ {0}) = zeroLocus s := by
+lemma zeroLocus_sdiff_singleton_zero (s : Set R) : zeroLocus (s \ {0}) = zeroLocus s := by
   rw [← zeroLocus_insert_zero, ← zeroLocus_insert_zero (s := s)]; simp
+
+@[deprecated (since := "2026-06-03")]
+alias zeroLocus_diff_singleton_zero := zeroLocus_sdiff_singleton_zero
 
 lemma zeroLocus_smul_of_isUnit {r : R} (hr : IsUnit r) (s : Set R) :
     zeroLocus (r • s) = zeroLocus s := by

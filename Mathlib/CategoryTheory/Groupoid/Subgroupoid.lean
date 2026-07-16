@@ -127,7 +127,7 @@ theorem id_mem_of_tgt {c d : C} {f : c ⟶ d} (h : f ∈ S.arrows c d) : 𝟙 d 
   id_mem_of_nonempty_isotropy S d (mem_objs_of_tgt S h)
 
 /-- A subgroupoid seen as a quiver on vertex set `C` -/
-@[implicit_reducible]
+@[instance_reducible]
 def asWideQuiver : Quiver C :=
   ⟨fun c d => S.arrows c d⟩
 
@@ -171,7 +171,7 @@ def vertexSubgroup {c : C} (hc : c ∈ S.objs) : Subgroup (c ⟶ c) where
 
 instance : SetLike (Subgroupoid C) (Σ c d : C, c ⟶ d) where
   coe := toSet
-  coe_injective' := fun ⟨S, _, _⟩ ⟨T, _, _⟩ h => by ext c d f; apply Set.ext_iff.1 h ⟨c, d, f⟩
+  coe_injective := fun ⟨S, _, _⟩ ⟨T, _, _⟩ h => by ext c d f; apply Set.ext_iff.1 h ⟨c, d, f⟩
 
 instance : PartialOrder (Subgroupoid C) := .ofSetLike (Subgroupoid C) (Σ c d : C, c ⟶ d)
 
@@ -250,6 +250,7 @@ theorem inclusion_inj_on_objects {S T : Subgroupoid C} (h : S ≤ T) :
     Function.Injective (inclusion h).obj := fun ⟨s, hs⟩ ⟨t, ht⟩ => by
   simpa only [inclusion, Subtype.mk_eq_mk] using id
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem inclusion_faithful {S T : Subgroupoid C} (h : S ≤ T) (s t : S.objs) :
     Function.Injective fun f : s ⟶ t => (inclusion h).map f := fun ⟨f, hf⟩ ⟨g, hg⟩ => by
   -- Porting note: was `...; simpa only [Subtype.mk_eq_mk] using id`
@@ -387,6 +388,7 @@ def comap (S : Subgroupoid D) : Subgroupoid C where
     simp only [mem_setOf, Functor.map_comp]
     apply S.mul <;> assumption
 
+@[gcongr]
 theorem comap_mono (S T : Subgroupoid D) : S ≤ T → comap φ S ≤ comap φ T := fun ST _ =>
   @ST ⟨_, _, _⟩
 

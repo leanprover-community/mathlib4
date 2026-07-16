@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.Pairing
+public import Mathlib.AlgebraicTopology.SimplicialSet.Nonsingular
 
 /-!
 # Helper structure in order to construct pairings
@@ -182,6 +183,13 @@ lemma isUniquelyCodimOneFace [h.IsProper] (s : h.ι) :
     S.IsUniquelyCodimOneFace (h.type₂ s).toS (h.type₁ s).toS :=
   IsProper.isUniquelyCodimOneFace _
 
+instance [X.Nonsingular] : h.IsProper where
+  isUniquelyCodimOneFace s :=
+    (S.IsUniquelyCodimOneFace.iff _ _).2
+      (existsUnique_of_exists_of_unique ⟨_, rfl⟩
+        (fun _ _ hi hj ↦ Nonsingular.δ_injective _
+          (h.nonDegenerate₁ s) _ _ (hi.trans hj.symm)))
+
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance [h.IsProper] : h.pairing.IsProper where
@@ -240,6 +248,7 @@ is regular. -/
 class IsRegular (h : A.PairingCore) extends h.IsProper where
   wf (h) : WellFounded h.AncestralRel
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance [h.IsRegular] : h.pairing.IsRegular where
   wf := by
     have := IsRegular.wf h

@@ -106,7 +106,7 @@ class CuspFormClass (F : Type*) (Γ : outParam <| Subgroup (GL (Fin 2) ℝ)) (k 
 instance (priority := 100) ModularForm.funLike :
     FunLike (ModularForm Γ k) ℍ ℂ where
   coe f := f.toFun
-  coe_injective' f g h := by cases f; cases g; congr; exact DFunLike.ext' h
+  coe_injective f g h := by cases f; cases g; congr; exact DFunLike.ext' h
 
 instance (priority := 100) ModularForm.instModularFormClass :
     ModularFormClass (ModularForm Γ k) Γ k where
@@ -122,7 +122,7 @@ lemma ModularFormClass.continuous {k : ℤ} {Γ : Subgroup (GL (Fin 2) ℝ)}
 
 instance (priority := 100) CuspForm.funLike : FunLike (CuspForm Γ k) ℍ ℂ where
   coe f := f.toFun
-  coe_injective' f g h := by cases f; cases g; congr; exact DFunLike.ext' h
+  coe_injective f g h := by cases f; cases g; congr; exact DFunLike.ext' h
 
 instance (priority := 100) CuspFormClass.cuspForm : CuspFormClass (CuspForm Γ k) Γ k where
   slash_action_eq f := f.slash_action_eq'
@@ -340,16 +340,12 @@ def mul {k_1 k_2 : ℤ} [Γ.HasDetPlusMinusOne] (f : ModularForm Γ k_1) (g : Mo
   bdd_at_cusps' hc γ hγ := by
     simpa [mul_slash] using! ((f.bdd_at_cusps' hc γ hγ).mul (g.bdd_at_cusps' hc γ hγ)).smul _
 
-@[deprecated (since := "2025-12-06")] alias mul_coe := coe_mul
-
 /-- The constant function with value `x : ℂ` as a modular form of weight 0 and any level. -/
 @[simps! -fullyApplied] def const (x : ℂ) [Γ.HasDetOne] : ModularForm Γ 0 where
   toSlashInvariantForm := .const x
   holo' _ := mdifferentiableAt_const
   bdd_at_cusps' hc g hg := by simpa only [coe_const, slash_def, SlashInvariantForm.toFun_eq_coe,
       Function.const_apply, neg_zero, zpow_zero] using! atImInfty.const_boundedAtFilter _
-
-@[deprecated (since := "2025-12-06")] alias const_toFun := coe_const
 
 @[simp]
 lemma const_apply [Γ.HasDetOne] (x : ℂ) (τ : ℍ) : (const x : ModularForm Γ 0) τ = x := rfl
@@ -360,8 +356,6 @@ lemma const_apply [Γ.HasDetOne] (x : ℂ) (τ : ℍ) : (const x : ModularForm �
   holo' _ := mdifferentiableAt_const
   bdd_at_cusps' hc g hg := by simpa only [coe_constℝ, slash_def, SlashInvariantForm.toFun_eq_coe,
       Function.const_apply, neg_zero, zpow_zero] using! atImInfty.const_boundedAtFilter _
-
-@[deprecated (since := "2025-12-06")] alias constℝ_toFun := coe_constℝ
 
 @[simp]
 lemma constℝ_apply [Γ.HasDetPlusMinusOne] (x : ℝ) (τ : ℍ) :

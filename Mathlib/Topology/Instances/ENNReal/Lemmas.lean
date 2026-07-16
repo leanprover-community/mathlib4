@@ -464,7 +464,7 @@ theorem inv_liminf {ι : Sort _} {x : ι → ℝ≥0∞} {l : Filter ι} :
 @[fun_prop]
 protected theorem continuous_zpow : ∀ n : ℤ, Continuous (· ^ n : ℝ≥0∞ → ℝ≥0∞)
   | (n : ℕ) => mod_cast ENNReal.continuous_pow n
-  | .negSucc n => by simpa using (ENNReal.continuous_pow _).inv
+  | .negSucc n => by simpa using (ENNReal.continuous_pow _).fun_inv
 
 @[deprecated (since := "2026-01-15")] protected alias tendsto_inv_iff := tendsto_inv_iff
 
@@ -569,7 +569,7 @@ theorem edist_ne_top_of_mem_ball {a : β} {r : ℝ≥0∞} (x y : eball a r) : e
 
 /-- Each ball in an extended metric space gives us a metric space, as the edist
 is everywhere finite. -/
-@[implicit_reducible]
+@[instance_reducible]
 def metricSpaceEMetricBall (a : β) (r : ℝ≥0∞) : MetricSpace (eball a r) :=
   EMetricSpace.toMetricSpace edist_ne_top_of_mem_ball
 

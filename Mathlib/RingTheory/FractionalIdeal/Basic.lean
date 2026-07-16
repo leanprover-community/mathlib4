@@ -79,6 +79,7 @@ More precisely, let `P` be a localization of `R` at some submonoid `S`,
 then a fractional ideal `I ⊆ P` is an `R`-submodule of `P`,
 such that there is an `a ∈ S` with `a I ⊆ R`.
 -/
+@[wikidata Q1497184]
 def FractionalIdeal :=
   { I : Submodule R P // IsFractional S I }
 
@@ -161,7 +162,7 @@ section SetLike
 
 instance : SetLike (FractionalIdeal S P) P where
   coe I := ↑(I : Submodule R P)
-  coe_injective' := SetLike.coe_injective.comp Subtype.coe_injective
+  coe_injective := SetLike.coe_injective.comp Subtype.coe_injective
 
 instance : PartialOrder (FractionalIdeal S P) := .ofSetLike (FractionalIdeal S P) P
 
@@ -182,8 +183,9 @@ theorem coe_ext_iff {I J : FractionalIdeal S P} :
 theorem ext {I J : FractionalIdeal S P} : (∀ x, x ∈ I ↔ x ∈ J) → I = J :=
   SetLike.ext
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
- theorem equivNum_apply [IsDomain R] [Module.IsTorsionFree R P] [Nontrivial P]
+theorem equivNum_apply [IsDomain R] [Module.IsTorsionFree R P] [Nontrivial P]
     {I : FractionalIdeal S P} (h_nz : (I.den : R) ≠ 0) (x : I) :
     algebraMap R P (equivNum h_nz x) = I.den • x := by
   change Algebra.linearMap R P _ = _
@@ -557,6 +559,7 @@ instance : Mul (FractionalIdeal S P) :=
 theorem mul_eq_mul (I J : FractionalIdeal S P) : mul I J = I * J :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mul_def (I J : FractionalIdeal S P) :
     I * J = ⟨I * J, I.isFractional.mul J.isFractional⟩ := by simp only [← mul_eq_mul, mul_def']
 

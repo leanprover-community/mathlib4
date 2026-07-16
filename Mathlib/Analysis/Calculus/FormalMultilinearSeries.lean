@@ -279,6 +279,7 @@ theorem order_zero : (0 : FormalMultilinearSeries 𝕜 E F).order = 0 := by simp
 
 theorem ne_zero_of_order_ne_zero (hp : p.order ≠ 0) : p ≠ 0 := fun h => by simp [h] at hp
 
+set_option backward.isDefEq.respectTransparency false in
 theorem order_eq_find [DecidablePred fun n => p n ≠ 0] (hp : ∃ n, p n ≠ 0) :
     p.order = Nat.find hp := by convert! Nat.sInf_def hp
 
@@ -388,17 +389,12 @@ theorem constFormalMultilinearSeries_apply_of_nonzero [NontriviallyNormedField �
     {n : ℕ} (hn : n ≠ 0) : constFormalMultilinearSeries 𝕜 E c n = 0 :=
   Nat.casesOn n (fun hn => (hn rfl).elim) (fun _ _ => rfl) hn
 
-set_option linter.auxLemma false in
 @[simp]
 lemma constFormalMultilinearSeries_zero [NontriviallyNormedField 𝕜] [NormedAddCommGroup E]
     [NormedAddCommGroup F] [NormedSpace 𝕜 E] [NormedSpace 𝕜 F] :
     constFormalMultilinearSeries 𝕜 E (0 : F) = 0 := by
-  ext n x
-  simp only [FormalMultilinearSeries.zero_apply, ContinuousMultilinearMap.zero_apply,
-    constFormalMultilinearSeries]
-  induction n
-  · simp only [ContinuousMultilinearMap.uncurry0_apply]
-  · simp only [constFormalMultilinearSeries.match_1.eq_2, ContinuousMultilinearMap.zero_apply]
+  ext n
+  induction n <;> simp
 
 @[simp]
 lemma compContinuousLinearMap_zero [NontriviallyNormedField 𝕜]
@@ -415,7 +411,7 @@ lemma compContinuousLinearMap_zero [NontriviallyNormedField 𝕜]
     congr
     apply Subsingleton.allEq
   | succ =>
-    simp [ContinuousLinearMap.coe_zero']
+    simp [FunLike.coe_zero]
 
 end Const
 

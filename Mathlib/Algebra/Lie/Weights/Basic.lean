@@ -214,7 +214,7 @@ namespace Weight
 
 instance instFunLike : FunLike (Weight R L M) L R where
   coe χ := χ.1
-  coe_injective' χ₁ χ₂ h := by cases χ₁; cases χ₂; simp_all
+  coe_injective χ₁ χ₂ h := by cases χ₁; cases χ₂; simp_all
 
 @[simp] lemma coe_weight_mk (χ : L → R) (h) :
     (↑(⟨χ, h⟩ : Weight R L M) : L → R) = χ :=
@@ -266,6 +266,7 @@ lemma isNonZero_iff_ne_zero [Nontrivial (genWeightSpace M (0 : L → R))] {χ : 
 
 noncomputable instance : DecidablePred (IsNonZero (R := R) (L := L) (M := M)) := Classical.decPred _
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable (R L M) in
 /-- The set of weights is equivalent to a subtype. -/
 def equivSetOf : Weight R L M ≃ {χ : L → R | genWeightSpace M χ ≠ ⊥} where
@@ -705,6 +706,8 @@ instance (L' : LieSubalgebra R L) [IsTriangularizable R L M] : IsTriangularizabl
 
 instance (I : LieIdeal R L) [IsTriangularizable R L M] : IsTriangularizable R I M where
   maxGenEigenspace_eq_top x := IsTriangularizable.maxGenEigenspace_eq_top (x : L)
+
+attribute [local instance 100] LieRing.ofAssociativeRing
 
 instance [IsTriangularizable R L M] : IsTriangularizable R (LieModule.toEnd R L M).range M where
   maxGenEigenspace_eq_top := by

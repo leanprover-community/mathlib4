@@ -72,7 +72,7 @@ theorem countable_iff_nonempty_encodable {s : Set α} : s.Countable ↔ Nonempty
 alias ⟨Countable.nonempty_encodable, _⟩ := countable_iff_nonempty_encodable
 
 /-- Convert `Set.Countable s` to `Encodable s` (noncomputable). -/
-@[implicit_reducible]
+@[instance_reducible]
 protected def Countable.toEncodable {s : Set α} (hs : s.Countable) : Encodable s :=
   Classical.choice hs.nonempty_encodable
 
@@ -195,7 +195,7 @@ theorem exists_seq_iSup_eq_top_iff_countable [CompleteLattice α] {p : α → Pr
   · rintro ⟨S, hSc, hps, hS⟩
     rcases eq_empty_or_nonempty S with (rfl | hne)
     · rw [sSup_empty] at hS
-      haveI := subsingleton_of_bot_eq_top hS
+      have := subsingleton_of_bot_eq_top hS
       rcases h with ⟨x, hx⟩
       exact ⟨fun _ => x, fun _ => hx, Subsingleton.elim _ _⟩
     · rcases (Set.countable_iff_exists_surjective hne).1 hSc with ⟨s, hs⟩
@@ -241,8 +241,10 @@ theorem countable_union {s t : Set α} : (s ∪ t).Countable ↔ s.Countable ∧
 theorem Countable.union {s t : Set α} (hs : s.Countable) (ht : t.Countable) : (s ∪ t).Countable :=
   countable_union.2 ⟨hs, ht⟩
 
-theorem Countable.of_diff {s t : Set α} (h : (s \ t).Countable) (ht : t.Countable) : s.Countable :=
-  (h.union ht).mono (subset_diff_union _ _)
+theorem Countable.of_sdiff {s t : Set α} (h : (s \ t).Countable) (ht : t.Countable) : s.Countable :=
+  (h.union ht).mono (subset_sdiff_union _ _)
+
+@[deprecated (since := "2026-06-03")] alias Countable.of_diff := Countable.of_sdiff
 
 @[simp]
 theorem countable_insert {s : Set α} {a : α} : (insert a s).Countable ↔ s.Countable := by

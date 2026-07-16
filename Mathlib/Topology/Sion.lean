@@ -143,7 +143,7 @@ theorem sublevelLeft_subset_union [AddCommGroup F] [Module ℝ F]
 
 The hypotheses imply that `sublevelLeft X f b z` is connected,
 and that the two other are disjoint. -/
- theorem sublevelLeft_subset_or [TopologicalSpace E] [AddCommGroup E]
+theorem sublevelLeft_subset_or [TopologicalSpace E] [AddCommGroup E]
     [IsTopologicalAddGroup E] [Module ℝ E] [ContinuousSMul ℝ E]
     [AddCommGroup F] [Module ℝ F]
     (hfx' : ∀ x ∈ X, QuasiconcaveOn ℝ Y fun y => f x y)
@@ -265,7 +265,7 @@ public theorem exists_lt_iInf_of_lt_iInf_of_sup
       (fun h1 ↦ ?_) (fun h2 ↦ ?_)
     · grw [mem_J1_iff, (monotone_sublevelLeft ⟨(z : F), h_mem_Y z⟩ htt'.le), h1]
     · grw [mem_J2_iff, (monotone_sublevelLeft ⟨(z : F), h_mem_Y z⟩ htt'.le), h2]
-  have this : IsPreconnected (Set.univ : Set (segment ℝ (y1 : F) y2)) := by
+  have : IsPreconnected (Set.univ : Set (segment ℝ (y1 : F) y2)) := by
     simpa [← Topology.IsInducing.subtypeVal.isPreconnected_image] using
       (convex_segment (y1 : F) y2).isPreconnected
   have hJ1 : IsClosed J1 := isClosed_setOf_sublevelLeft_subset ne_X kX hfy hfy'
@@ -486,9 +486,8 @@ variable [TopologicalSpace F] [AddCommGroup F] [Module ℝ F]
   (hfx : ∀ x ∈ X, UpperSemicontinuousOn (fun y : F => f x y) Y)
   (hfx' : ∀ x ∈ X, QuasiconcaveOn ℝ Y fun y => f x y)
 
-/- The following lines essentially assume that `β` has a Dedekind MacNeille completion,
-but this is not in mathlib yet.
-One could then take `ι` to be the embedding of `β` into its DM completion. -/
+/- The following lines essentially assume that `β` has a densely ordered completion.
+(The Dedekind MacNeille completion is not densely ordered unless `β` is.) -/
 variable [TopologicalSpace β] [OrderTopology β]
 variable {γ : Type*} [CompleteLinearOrder γ] [DenselyOrdered γ]
   [TopologicalSpace γ] [OrderTopology γ]

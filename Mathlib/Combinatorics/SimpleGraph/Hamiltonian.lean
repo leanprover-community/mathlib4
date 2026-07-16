@@ -65,7 +65,7 @@ theorem IsHamiltonian.of_subsingleton [Subsingleton α] : p.IsHamiltonian := by
   rw [nil_iff_support_eq.mp p.nil_of_subsingleton, Subsingleton.elim v a, List.count_singleton_self]
 
 /-- If a path `p` is Hamiltonian then the graph has finitely many vertices. -/
-@[implicit_reducible]
+@[instance_reducible]
 protected def IsHamiltonian.fintype (hp : p.IsHamiltonian) : Fintype α where
   elems := p.support.toFinset
   complete x := List.mem_toFinset.mpr (mem_support hp x)
@@ -278,7 +278,7 @@ theorem IsBridge.not_isHamiltonian {e : Sym2 α} (he : G.IsBridge e) : ¬G.IsHam
   intro hG
   obtain ⟨p, hp⟩ := hG.exists_isHamiltonianCycle u
   refine hp.isHamiltonian_tail.isPath.isTrail.not_mem_support_of_not_reachable
-    (fun huv ↦ he.2 <| .trans ?_ huv) he.2 (hp.isHamiltonian_tail.mem_support v)
+    (fun huv ↦ he <| .trans ?_ huv) he (hp.isHamiltonian_tail.mem_support v)
   apply hp.isTrail.isEdgeReachable_two <;> simp
 
 end SimpleGraph

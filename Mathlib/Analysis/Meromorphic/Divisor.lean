@@ -31,7 +31,7 @@ namespace MeromorphicOn
 ## Definition of the Divisor
 -/
 
-open Classical in
+open scoped Classical in
 /--
 The divisor of a meromorphic function `f`, mapping a point `z` to the order of `f` at `z`, and to
 zero if the order is infinite.
@@ -54,7 +54,7 @@ noncomputable def divisor (f : 𝕜 → E) (U : Set 𝕜) :
       tauto
     · simp [hf, Pi.zero_def]
 
-open Classical in
+open scoped Classical in
 /-- Definition of the divisor -/
 theorem divisor_def (f : 𝕜 → E) (U : Set 𝕜) :
     divisor f U z = if MeromorphicOn f U ∧ z ∈ U then (meromorphicOrderAt f z).untop₀ else 0 :=
@@ -71,6 +71,40 @@ lemma divisor_apply {f : 𝕜 → E} (hf : MeromorphicOn f U) (hz : z ∈ U) :
 lemma AnalyticOnNhd.divisor_apply {f : 𝕜 → E} (hf : AnalyticOnNhd 𝕜 f U) (hz : z ∈ U) :
     divisor f U z = ((analyticOrderAt f z).map (↑)).untop₀ := by
   rw [hf.meromorphicOn.divisor_apply hz, (hf z hz).meromorphicOrderAt_eq]
+
+/-!
+## Support Properties
+-/
+
+/--
+Special case of `Function.locallyFinsuppWithin.finiteSupport` that frequently shows in complex
+analysis: Divisors on spheres have finite support.
+-/
+lemma _root_.divisor_sphere_support_finite [ProperSpace 𝕜] {f : 𝕜 → E} {R : ℝ} {c : 𝕜} :
+    (divisor f (Metric.sphere c R)).support.Finite :=
+    (divisor f (Metric.sphere c R)).finiteSupport (isCompact_sphere c R)
+
+/--
+If `f` is meromorphic on a compact set `U` and `V ⊆ U`, then the divisor of `f` on `V` has finite
+support.
+-/
+lemma divisor_support_finite_of_subset {f : 𝕜 → E} {V : Set 𝕜} (hf : MeromorphicOn f U)
+    (hU : IsCompact U) (hV : V ⊆ U) :
+    (divisor f V).support.Finite := by
+  apply ((divisor f U).finiteSupport hU).subset
+  intro b hb
+  rw [Function.mem_support, ne_eq, divisor_apply hf (hV ((divisor f V).supportWithinDomain hb))]
+  rwa [Function.mem_support, ne_eq, divisor_apply (fun x hx ↦ hf x (hV hx))
+    ((divisor f V).supportWithinDomain hb)] at hb
+
+/--
+Special case of `MeromorphicOn.divisor_subset_finiteSupport` that frequently shows in complex
+analysis, where  `U` is a closed ball and `V` is its interior.
+-/
+lemma divisor_ball_support_finite [ProperSpace 𝕜] {f : 𝕜 → E} {R : ℝ} {c : 𝕜}
+    (hf : MeromorphicOn f (Metric.closedBall c R)) :
+    (divisor f (Metric.ball c R)).support.Finite :=
+  hf.divisor_support_finite_of_subset (isCompact_closedBall c R) Metric.ball_subset_closedBall
 
 /-!
 ## Congruence Lemmas
@@ -130,7 +164,7 @@ theorem divisor_congr_codiscreteWithin {f₁ f₂ : 𝕜 → E} (h₁ : f₁ =�
         apply mem_nhdsWithin.mpr
         use U, h₂, hx, Set.inter_subset_left
       filter_upwards [this, h₁ x hx] with a h₁a h₂a
-      simp only [Set.mem_compl_iff, Set.mem_diff, Set.mem_setOf_eq, not_and] at h₂a
+      simp only [Set.mem_compl_iff, Set.mem_sdiff, Set.mem_setOf_eq, not_and] at h₂a
       tauto
     · simp [hx]
   · simp [divisor, hf₁, (meromorphicOn_congr_codiscreteWithin h₁ h₂).not.1 hf₁]
@@ -339,7 +373,6 @@ If `f` is meromorphic, then the divisor of `f ^ n` is `n` times the divisor of `
 -/
 theorem divisor_pow {f : 𝕜 → 𝕜} (hf : MeromorphicOn f U) (n : ℕ) :
     divisor (f ^ n) U = n • divisor f U := by
-  classical
   ext z
   by_cases hn : n = 0
   · simp [hn]
@@ -358,7 +391,6 @@ If `f` is meromorphic, then the divisor of `f ^ n` is `n` times the divisor of `
 -/
 theorem divisor_zpow {f : 𝕜 → 𝕜} (hf : MeromorphicOn f U) (n : ℤ) :
     divisor (f ^ n) U = n • divisor f U := by
-  classical
   ext z
   by_cases hn : n = 0
   · simp [hn]

@@ -62,7 +62,7 @@ variable {L : CompleteSublattice α}
 
 instance instSetLike : SetLike (CompleteSublattice α) α where
   coe L := L.carrier
-  coe_injective' L M h := by cases L; cases M; congr; exact SetLike.coe_injective' h
+  coe_injective L M h := by cases L; cases M; congr; exact SetLike.coe_injective h
 
 instance : PartialOrder (CompleteSublattice α) := .ofSetLike (CompleteSublattice α) α
 

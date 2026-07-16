@@ -202,6 +202,7 @@ noncomputable def LinearOrderedAddCommGroup.int_orderAddMonoidIso_of_isLeast_pos
   let f := closure_equiv_closure x (1 : ℤ) (by simp [h.left.ne'])
   exact ((((e.trans e').trans f).trans g').trans g : G ≃+o ℤ)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If an element of a linearly ordered mul-archimedean group is the least element greater than 1,
 then the whole group is isomorphic (and order-isomorphic) to the multiplicative integers. -/
 noncomputable def LinearOrderedCommGroup.multiplicative_int_orderMonoidIso_of_isLeast_one_lt
@@ -266,6 +267,7 @@ lemma LinearOrderedAddCommGroup.isAddCyclic_iff_not_denselyOrdered {A : Type*}
     IsAddCyclic A ↔ ¬ DenselyOrdered A := by
   rw [← discrete_iff_not_denselyOrdered, isAddCyclic_iff_nonempty_equiv_int]
 
+set_option backward.isDefEq.respectTransparency false in
 variable (G) in
 /-- Any linearly ordered mul-archimedean group is either isomorphic (and order-isomorphic)
 to the multiplicative integers, or is densely ordered. -/
@@ -274,6 +276,7 @@ lemma LinearOrderedCommGroup.discrete_or_denselyOrdered :
   rw [← OrderAddMonoidIso.toMultiplicativeRight.nonempty_congr]
   exact LinearOrderedAddCommGroup.discrete_or_denselyOrdered (Additive G)
 
+set_option backward.isDefEq.respectTransparency false in
 variable (G) in
 /-- Any linearly ordered mul-archimedean group is either isomorphic (and order-isomorphic)
 to the multiplicative integers, or is densely ordered, exclusively.
@@ -286,6 +289,7 @@ lemma LinearOrderedCommGroup.discrete_iff_not_denselyOrdered :
     LinearOrderedAddCommGroup.discrete_iff_not_denselyOrdered,
     denselyOrdered_iff_of_orderIsoClass e]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Any non-trivial linearly ordered mul-archimedean group is either cyclic, or densely ordered,
 exclusively. -/
 @[to_additive existing]
@@ -299,12 +303,12 @@ either isomorphic (and order-isomorphic) to `ℤᵐ⁰`, or is densely ordered. 
 lemma LinearOrderedCommGroupWithZero.discrete_or_denselyOrdered (G : Type*)
     [LinearOrderedCommGroupWithZero G] [Nontrivial Gˣ] [MulArchimedean G] :
     Nonempty (G ≃*o ℤᵐ⁰) ∨ DenselyOrdered G := by
-  classical
   rw [← denselyOrdered_units_iff]
   refine (LinearOrderedCommGroup.discrete_or_denselyOrdered Gˣ).imp_left ?_
   intro ⟨f⟩
   exact ⟨OrderMonoidIso.withZeroUnits.symm.trans f.withZero⟩
 
+set_option backward.isDefEq.respectTransparency false in
 open WithZero in
 /-- Any nontrivial (has other than 0 and 1) linearly ordered mul-archimedean group with zero is
 either isomorphic (and order-isomorphic) to `ℤᵐ⁰`, or is densely ordered, exclusively -/
@@ -374,6 +378,7 @@ lemma LinearOrderedAddCommGroup.wellFoundedOn_setOf_ge_gt_iff_nonempty_discrete
   · intro
     simp [Function.onFun, neg_le]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma LinearOrderedCommGroup.wellFoundedOn_setOf_le_lt_iff_nonempty_discrete
     {G : Type*} [CommGroup G] [LinearOrder G] [IsOrderedMonoid G] [Nontrivial G] {g : G} :
     Set.WellFoundedOn {x : G | g ≤ x} (· < ·) ↔ Nonempty (G ≃*o Multiplicative ℤ) := by
@@ -393,6 +398,7 @@ lemma LinearOrderedCommGroup.wellFoundedOn_setOf_ge_gt_iff_nonempty_discrete
   · intro
     simp [Function.onFun, inv_le']
 
+set_option backward.isDefEq.respectTransparency false in
 lemma LinearOrderedCommGroupWithZero.wellFoundedOn_setOf_le_lt_iff_nonempty_discrete_of_ne_zero
     {G₀ : Type*} [LinearOrderedCommGroupWithZero G₀] [Nontrivial G₀ˣ] {g : G₀} (hg : g ≠ 0) :
     Set.WellFoundedOn {x : G₀ | g ≤ x} (· < ·) ↔ Nonempty (G₀ ≃*o ℤᵐ⁰) := by
@@ -419,7 +425,7 @@ lemma LinearOrderedCommGroupWithZero.wellFoundedOn_setOf_le_lt_iff_nonempty_disc
   · simp [Function.onFun]
   · exact fun x ↦ if h : x = 0 then 1 else Units.mk0 x h
   · simp +contextual [← Units.val_le_val, MapsTo]
-  · simp only [mem_diff, mem_setOf_eq, mem_singleton_iff, Function.onFun, and_imp]
+  · simp only [mem_sdiff, mem_setOf_eq, mem_singleton_iff, Function.onFun, and_imp]
     intro _ _ ha0 _ _ hb0 h
     simp [ha0, hb0, ← Units.val_lt_val, h]
 
@@ -433,7 +439,7 @@ lemma LinearOrderedCommGroupWithZero.wellFoundedOn_setOf_ge_gt_iff_nonempty_disc
   · intro x
     rcases eq_or_ne x 0 with rfl | hx
     · simp [hg]
-    simp only [mem_setOf_eq, mem_diff, mem_singleton_iff, inv_eq_zero, hx, not_false_eq_true,
+    simp only [mem_setOf_eq, mem_sdiff, mem_singleton_iff, inv_eq_zero, hx, not_false_eq_true,
       and_true]
     refine (inv_le_comm₀ ?_ ?_).mp <;>
     simp [zero_lt_iff, hg, hx]
@@ -444,11 +450,11 @@ lemma LinearOrderedCommGroupWithZero.wellFoundedOn_setOf_ge_gt_iff_nonempty_disc
     simp only [le_zero_iff] at ha
     simp [zero_lt_iff, ha, hg]
   · intro x
-    simp only [mem_diff, mem_setOf_eq, mem_singleton_iff, and_imp]
+    simp only [mem_sdiff, mem_setOf_eq, mem_singleton_iff, and_imp]
     intro hxg hx
     refine inv_anti₀ ?_ hxg
     simp [zero_lt_iff, hx]
-  · simp only [mem_diff, mem_setOf_eq, mem_singleton_iff, gt_iff_lt, Function.onFun, and_imp]
+  · simp only [mem_sdiff, mem_setOf_eq, mem_singleton_iff, gt_iff_lt, Function.onFun, and_imp]
     intro a _ _ b _ hb0
     refine inv_strictAnti₀ ?_
     simp [zero_lt_iff, hb0]
