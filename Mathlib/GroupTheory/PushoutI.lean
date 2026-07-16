@@ -168,6 +168,7 @@ theorem ofCoprodI_of (i : ι) (g : G i) :
     (ofCoprodI (CoprodI.of g) : PushoutI φ) = of i g := by
   simp [ofCoprodI]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem induction_on {motive : PushoutI φ → Prop}
     (x : PushoutI φ)
     (of : ∀ (i : ι) (g : G i), motive (of i g))

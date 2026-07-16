@@ -361,8 +361,10 @@ compatibility. See `MulOneClass` for the additional assumption that 1 is an iden
 @[to_additive (attr := ext)]
 class MulOne (M : Type*) extends One M, Mul M
 
-attribute [instance 150] AddZero.toAdd
-attribute [instance 150] MulOne.toMul
+attribute [instance 10] AddZero.toAdd
+attribute [instance 10] MulOne.toMul
+attribute [instance 10] AddZero.toZero
+attribute [instance 10] MulOne.toOne
 
 /-- An additive monoid is Dedekind-finite if every left inverse is also a right inverse.
 Also called von Neumann-finite or directly finite. -/
@@ -390,7 +392,7 @@ attribute [to_additive existing] isDedekindFiniteMonoid_iff
 
 /-- Typeclass for expressing that a type `M` with addition and a zero satisfies
 `0 + a = a` and `a + 0 = a` for all `a : M`. -/
-class AddZeroClass (M : Type u) extends AddZero M where
+class AddZeroClass (M : Type u) extends Zero M, Add M, AddZero M where
   /-- Zero is a left neutral element for addition -/
   protected zero_add : ∀ a : M, 0 + a = a
   /-- Zero is a right neutral element for addition -/
@@ -399,18 +401,20 @@ class AddZeroClass (M : Type u) extends AddZero M where
 /-- Typeclass for expressing that a type `M` with multiplication and a one satisfies
 `1 * a = a` and `a * 1 = a` for all `a : M`. -/
 @[to_additive]
-class MulOneClass (M : Type u) extends MulOne M where
+class MulOneClass (M : Type u) extends One M, Mul M, MulOne M where
   /-- One is a left neutral element for multiplication -/
   protected one_mul : ∀ a : M, 1 * a = a
   /-- One is a right neutral element for multiplication -/
   protected mul_one : ∀ a : M, a * 1 = a
 
-attribute [instance 150] AddZeroClass.toAddZero
-attribute [instance 150] MulOneClass.toMulOne
+attribute [instance 150] AddZeroClass.toAdd
+attribute [instance 150] MulOneClass.toMul
+attribute [instance 150] AddZeroClass.toZero
+attribute [instance 150] MulOneClass.toOne
 
 @[to_additive (attr := ext)]
 theorem MulOneClass.ext {M : Type u} : ∀ ⦃m₁ m₂ : MulOneClass M⦄, m₁.mul = m₂.mul → m₁ = m₂ := by
-  rintro @⟨@⟨⟨one₁⟩, ⟨mul₁⟩⟩, one_mul₁, mul_one₁⟩ @⟨@⟨⟨one₂⟩, ⟨mul₂⟩⟩, one_mul₂, mul_one₂⟩ ⟨rfl⟩
+  rintro @⟨⟨one₁⟩, ⟨mul₁⟩, one_mul₁, mul_one₁⟩ @⟨⟨one₂⟩, ⟨mul₂⟩, one_mul₂, mul_one₂⟩ ⟨rfl⟩
   -- FIXME (See https://github.com/leanprover/lean4/issues/1711)
   -- congr
   suffices one₁ = one₂ by cases this; rfl
@@ -816,7 +820,7 @@ class AddCommMonoid (M : Type u) extends AddMonoid M, AddCommSemigroup M
 @[to_additive]
 class CommMonoid (M : Type u) extends Monoid M, CommSemigroup M
 
-attribute [instance 90] AddCommMonoid.toAddMonoid
+attribute [instance 150] AddCommMonoid.toAddMonoid
 attribute [instance 90] CommMonoid.toMonoid
 
 /-- Shortcut instance for `IsCommutativeHMul M → IsDedekindFiniteMonoid M`.
