@@ -26,7 +26,9 @@ variable {G H : Type*} [Monoid G] [Monoid H]
 
 /-- The product of a left-cancellative left-orderable monoid `G` and a left-orderable monoid `H` is
 left-orderable, via the lexicographic order (strict on `G`, monotone on `H`). -/
-@[to_additive]
+@[to_additive /-- The product of a left-cancellative left-orderable additive monoid `G` and a
+left-orderable additive monoid `H` is left-orderable, via the lexicographic order
+(strict on `G`, monotone on `H`). -/]
 instance Prod.instIsLeftOrderable [IsLeftCancelMul G] [IsLeftOrderable G] [IsLeftOrderable H] :
     IsLeftOrderable (G × H) := by
   obtain ⟨_, _⟩ := exists_linearOrder_mulLeftStrictMono G
@@ -35,7 +37,9 @@ instance Prod.instIsLeftOrderable [IsLeftCancelMul G] [IsLeftOrderable G] [IsLef
 
 /-- The product of a right-cancellative right-orderable monoid `G` and a right-orderable monoid `H`
 is right-orderable, via the lexicographic order (strict on `G`, monotone on `H`). -/
-@[to_additive]
+@[to_additive /-- The product of a right-cancellative right-orderable additive monoid `G` and a
+right-orderable additive monoid `H` is right-orderable, via the lexicographic order
+(strict on `G`, monotone on `H`). -/]
 instance Prod.instIsRightOrderable [IsRightCancelMul G] [IsRightOrderable G] [IsRightOrderable H] :
     IsRightOrderable (G × H) := by
   obtain ⟨_, _⟩ := exists_linearOrder_mulRightStrictMono G
