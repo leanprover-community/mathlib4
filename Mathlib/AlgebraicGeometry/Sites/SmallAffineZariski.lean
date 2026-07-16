@@ -255,6 +255,7 @@ This is closely related to the notion of quasi-coherent `𝒪ₓ`-algebras, and 
 together once the theory of quasi-coherent `𝒪ₓ`-algebras are developed.
 -/
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 variable (X) in
 /-- `X` is the colimit of its affine opens. See `isColimit_cocone` below. -/
@@ -292,6 +293,7 @@ lemma coequifibered_iff_forall_isLocalizationAway {F : X.AffineZariskiSiteᵒᵖ
 
 @[deprecated (since := "2026-02-01")] alias PreservesLocalization := NatTrans.Coequifibered
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The relative gluing data associated to a quasi-coherent `𝒪ₓ` algebra. -/
 def relativeGluingData {F : X.AffineZariskiSiteᵒᵖ ⥤ CommRingCat}
     {α : (AffineZariskiSite.toOpensFunctor X).op ⋙ X.presheaf ⟶ F}
@@ -329,6 +331,7 @@ lemma opensRange_relativeGluingData_map (F : X.AffineZariskiSiteᵒᵖ ⥤ CommR
 @[deprecated (since := "2026-02-01")]
 alias PreservesLocalization.opensRange_map := opensRange_relativeGluingData_map
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[deprecated Cover.RelativeGluingData.toBase_preimage_eq_opensRange_ι (since := "2026-02-01")]
 lemma PreservesLocalization.colimitDesc_preimage (F : X.AffineZariskiSiteᵒᵖ ⥤ CommRingCat)
     (α : (AffineZariskiSite.toOpensFunctor X).op ⋙ X.presheaf ⟶ F)

@@ -198,7 +198,7 @@ theorem Submartingale.exists_ae_trim_tendsto_of_bdd [IsFiniteMeasure μ] (hf : S
     (hbdd : ∀ n, eLpNorm (f n) 1 μ ≤ R) :
     ∀ᵐ ω ∂μ.trim (sSup_le fun _ ⟨_, hn⟩ => hn ▸ ℱ.le _ : ⨆ n, ℱ n ≤ m0),
       ∃ c, Tendsto (fun n => f n ω) atTop (𝓝 c) := by
-  letI := (⨆ n, ℱ n)
+  let := (⨆ n, ℱ n)
   rw [ae_iff, trim_measurableSet_eq]
   · exact hf.exists_ae_tendsto_of_bdd hbdd
   · exact MeasurableSet.compl <| measurableSet_exists_tendsto
@@ -335,7 +335,7 @@ theorem Martingale.eq_condExp_of_tendsto_eLpNorm {μ : Measure Ω} (hf : Marting
   have ht : Tendsto (fun m => eLpNorm (μ[f m - g | ℱ n]) 1 μ) atTop (𝓝 0) :=
     haveI hint : ∀ m, Integrable (f m - g) μ := fun m => (hf.integrable m).sub hg
     tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds hgtends (fun m => zero_le)
-      fun m => eLpNorm_one_condExp_le_eLpNorm _
+      fun m => eLpNorm_condExp_le_eLpNorm _ le_rfl
   have hev : ∀ m ≥ n, eLpNorm (μ[f m - g | ℱ n]) 1 μ = eLpNorm (f n - μ[g | ℱ n]) 1 μ := by
     refine fun m hm => eLpNorm_congr_ae ((condExp_sub (hf.integrable m) hg _).trans ?_)
     filter_upwards [hf.2 n m hm] with x hx

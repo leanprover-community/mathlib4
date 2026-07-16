@@ -177,6 +177,7 @@ theorem tendstoUniformly_of_norm_kerFun_le {C : ℝ} (hC : ∀ x, ‖kerFun H x�
   rw [← tendstoUniformlyOn_univ]
   exact tendstoUniformlyOn_of_norm_kerFun_le (fun x _ => hC x) h
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The span of the kernel functions is dense. -/
 theorem kerFun_dense : topologicalClosure (span 𝕜 {kerFun H x v | (x) (v)}) = ⊤ := by
   refine (orthogonal_eq_bot_iff.mp ((Submodule.eq_bot_iff _).mpr fun f fin ↦ DFunLike.ext f 0 ?_))

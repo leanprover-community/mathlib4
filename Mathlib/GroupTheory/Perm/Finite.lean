@@ -61,9 +61,6 @@ theorem perm_symm_on_of_perm_on_finset {s : Finset α} {f : Perm α} (h : ∀ x 
   obtain ⟨y2, hy2, rfl⟩ := h0 y hy
   simpa using hy2
 
-@[deprecated (since := "2025-11-17")]
-alias perm_inv_on_of_perm_on_finset := perm_symm_on_of_perm_on_finset
-
 theorem perm_symm_mapsTo_of_mapsTo (f : Perm α) {s : Set α} [Finite s] (h : Set.MapsTo f s s) :
     Set.MapsTo f.symm s s := by
   cases nonempty_fintype s
@@ -73,23 +70,15 @@ theorem perm_symm_mapsTo_of_mapsTo (f : Perm α) {s : Set α} [Finite s] (h : Se
         (fun a ha => Set.mem_toFinset.mpr (h (Set.mem_toFinset.mp ha)))
         (Set.mem_toFinset.mpr hx)
 
-@[deprecated (since := "2025-11-17")] alias perm_inv_mapsTo_of_mapsTo := perm_symm_mapsTo_of_mapsTo
-
 @[simp]
 theorem perm_symm_mapsTo_iff_mapsTo {f : Perm α} {s : Set α} [Finite s] :
     Set.MapsTo f.symm s s ↔ Set.MapsTo f s s :=
   ⟨perm_symm_mapsTo_of_mapsTo f⁻¹, perm_symm_mapsTo_of_mapsTo f⟩
 
-@[deprecated (since := "2025-11-17")]
-alias perm_inv_mapsTo_iff_mapsTo := perm_symm_mapsTo_iff_mapsTo
-
 theorem perm_symm_on_of_perm_on_finite {f : Perm α} {p : α → Prop} [Finite { x // p x }]
     (h : ∀ x, p x → p (f x)) {x : α} (hx : p x) : p (f.symm x) := by
   have : Finite { x | p x } := by simpa
   simpa using perm_symm_mapsTo_of_mapsTo (s := {x | p x}) f h hx
-
-@[deprecated (since := "2025-11-17")]
-alias perm_inv_on_of_perm_on_finite := perm_symm_on_of_perm_on_finite
 
 /-- If the permutation `f` maps `{x // p x}` into itself, then this returns the permutation
   on `{x // p x}` induced by `f`. Note that the `h` hypothesis is weaker than for
@@ -125,10 +114,10 @@ theorem perm_mapsTo_inl_iff_mapsTo_inr {m n : Type*} [Finite m] [Finite n] (σ :
     obtain ⟨y, hy⟩ := h ⟨r, rfl⟩
     grind
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem mem_sumCongrHom_range_of_perm_mapsTo_inl {m n : Type*} [Finite m] [Finite n]
     {σ : Perm (m ⊕ n)} (h : Set.MapsTo σ (Set.range Sum.inl) (Set.range Sum.inl)) :
     σ ∈ (sumCongrHom m n).range := by
-  classical
   have h1 : ∀ x : m ⊕ n, (∃ a : m, Sum.inl a = x) → ∃ a : m, Sum.inl a = σ x := by
     rintro _ ⟨a, rfl⟩; exact h ⟨a, rfl⟩
   have h3 : ∀ x : m ⊕ n, (∃ b : n, Sum.inr b = x) → ∃ b : n, Sum.inr b = σ x := by
@@ -167,6 +156,7 @@ theorem Disjoint.extendDomain {p : β → Prop} [DecidablePred p] (f : α ≃ Su
   · left
     rw [extendDomain_apply_not_subtype _ _ pb]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Disjoint.isConj_mul [Finite α] {σ τ π ρ : Perm α} (hc1 : IsConj σ π)
     (hc2 : IsConj τ ρ) (hd1 : Disjoint σ τ) (hd2 : Disjoint π ρ) : IsConj (σ * τ) (π * ρ) := by
   classical
