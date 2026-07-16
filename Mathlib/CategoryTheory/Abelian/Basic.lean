@@ -11,6 +11,7 @@ public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
 public import Mathlib.CategoryTheory.Limits.Shapes.Images
 public import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
 public import Mathlib.CategoryTheory.Abelian.NonPreadditive
+public import Mathlib.CategoryTheory.RegularCategory.Basic
 
 /-!
 # Abelian categories
@@ -550,29 +551,25 @@ theorem monoLift_comp [Mono f] {T : C} (g : T ⟶ Y) (hg : g ≫ cokernel.π f =
 
 section PullbackKernel
 
-variable {P X' Y' Z : C} {fst : P ⟶ X'} {snd : P ⟶ Y'}
-  {i : X' ⟶ Z} {j : Y' ⟶ Z}
+variable {P X' Y' Z : C} {fst : P ⟶ X'} {snd : P ⟶ Y'} {i : X' ⟶ Z} {j : Y' ⟶ Z}
 
 /-- In an abelian category, the pullback of a monomorphism `i` along `j` is a kernel of
 `j ≫ cokernel.π i`. -/
 noncomputable def isLimitKernelForkOfIsPullback
     (sq : IsPullback fst snd i j) [Mono i] :
-    IsLimit (KernelFork.ofι (f := j ≫ cokernel.π i) snd (by
-      rw [← sq.w_assoc]
-      simp)) := by
-  letI : Mono snd := PullbackCone.mono_snd_of_is_pullback_of_mono sq.isLimit
+    IsLimit (KernelFork.ofι (f := j ≫ cokernel.π i) snd (by simp [← sq.w_assoc])) := by
+  let : Mono snd := PullbackCone.mono_snd_of_is_pullback_of_mono sq.isLimit
   apply KernelFork.IsLimit.ofι'
   intro T k hk
-  let x := monoLift i (k ≫ j) (by simpa only [Category.assoc] using hk)
-  exact ⟨sq.lift x k (by simp [x]), by simp⟩
+  exact ⟨sq.lift (monoLift i (k ≫ j) (by rwa [← Category.assoc] at hk)) k (by simp), by simp⟩
 
-/-- In an abelian category, the pullback of a monomorphism `i` along `j` is canonically
-isomorphic to the kernel of `j ≫ cokernel.π i`. -/
+/-- In an abelian category, the pullback of a monomorphism `i` along `j` is isomorphic to the
+kernel of `j ≫ cokernel.π i`. -/
 noncomputable def isoKernelOfIsPullback (sq : IsPullback fst snd i j) [Mono i] :
-    P ≅ kernel (j ≫ cokernel.π i) := by
-  have e := (isLimitKernelForkOfIsPullback sq).conePointUniqueUpToIso
-    (kernelIsKernel (j ≫ cokernel.π i))
-  exact e
+    P ≅ kernel (j ≫ cokernel.π i) :=
+  IsLimit.conePointUniqueUpToIso
+    (t := KernelFork.ofι (kernel.ι (j ≫ cokernel.π i)) (kernel.condition (j ≫ cokernel.π i)))
+    (isLimitKernelForkOfIsPullback sq) (kernelIsKernel (j ≫ cokernel.π i))
 
 @[simp]
 lemma isoKernelOfIsPullback_hom_comp (sq : IsPullback fst snd i j) [Mono i] :
@@ -813,6 +810,12 @@ theorem epi_fst_of_factor_thru_epi_mono_factorization (g₁ : Y ⟶ W) [Epi g₁
     (hg : g₁ ≫ g₂ = g) (f' : X ⟶ W) (hf : f' ≫ g₂ = f) (t : PullbackCone f g) (ht : IsLimit t) :
     Epi t.fst := by
   apply epi_fst_of_isLimit _ _ (PullbackCone.isLimitOfFactors f g g₂ f' g₁ hf hg t ht)
+
+instance (priority := 100) abelianRegular : Regular C where
+  hasCoequalizer_of_isKernelPair := inferInstance
+  regularEpiIsStableUnderBaseChange := .mk' (fun _ _ _ _ g _ hg ↦ by
+    rw [MorphismProperty.regularEpi_iff] at hg ⊢
+    exact IsRegularEpiCategory.regularEpiOfEpi _)
 
 end EpiPullback
 

@@ -5,7 +5,7 @@ Authors: Markus Himmel, Jack McKoen
 -/
 module
 
-public import Mathlib.CategoryTheory.Abelian.Regular
+public import Mathlib.CategoryTheory.Abelian.Basic
 public import Mathlib.CategoryTheory.Subobject.Limits
 public import Mathlib.Order.Atoms
 
