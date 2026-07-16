@@ -17,12 +17,6 @@ public import Mathlib.Data.Set.Card
 
 This file defines combinatorial designs.
 
-
-
-TODO:
-* Define regular (number of blocks containing a given point is fixed)
-* Define equidistance (pairwise intersections have a given size)
-
 ## Main definitions
 
 * `IncidenceSystem`
@@ -45,6 +39,11 @@ We place everything in the `IncidenceSystem` namespace, but this still allows fo
 
 * [F. Bar, *Quuxes*][bibkey]
 
+## TODO
+
+* Define regular (number of blocks containing a given point is fixed)
+* Define equidistance (pairwise intersections have a given size)
+
 ## Tags
 
 Foobars, barfoos
@@ -55,7 +54,9 @@ Foobars, barfoos
 
 variable (α β : Type*)
 
-/-- A combinatorial design consists of a carrier -/
+/-- A combinatorial design consists of a carrier set and subsets called blocks. We index our blocks
+by a subset of an indexing type `β` to make it easy to add and remove blocks if desired.
+Duplicate blocks are permitted unless `IncidenceSystem.IsSimple` is imposed. -/
 structure IncidenceSystem where
   carrier : Set α
   blockSet : Set β
@@ -76,7 +77,7 @@ theorem mem_of_mem_block (d : IncidenceSystem α β) {b : β} {x : α} (hx : x �
     (hb : b ∈ d.blockSet) : x ∈ d.carrier := by
   grind
 
-/-- docstring! -/
+/-- Every hypergraph can be viewed as an incidence system where the hyperedges become the blocks. -/
 @[simps]
 def ofHypergraph (H : Hypergraph α) : IncidenceSystem α (Set α) where
   carrier := H.vertexSet
@@ -84,7 +85,8 @@ def ofHypergraph (H : Hypergraph α) : IncidenceSystem α (Set α) where
   block x := x
   block_subset := H.subset_vertexSet_of_mem_edgeSet
 
-/-- docstring! -/
+/-- Every incidence system can be viewed as a hypergraph where the blocks become the hyperedges.
+Note that hypergraphs are simple in mathlib, so this function will collapse duplicate blocks. -/
 @[simps]
 def toHypergraph (d : IncidenceSystem α β) : Hypergraph α where
   vertexSet := d.carrier
@@ -95,21 +97,48 @@ def toHypergraph (d : IncidenceSystem α β) : Hypergraph α where
 theorem toHypergraph_ofHypergraph (H : Hypergraph α) : (ofHypergraph H).toHypergraph = H := by
   simp [Hypergraph.ext_iff]
 
-variable (α β)
+/-- The discrete incidence system consists of singleton blocks. -/
+@[simps]
+def discrete (s : Set α) : IncidenceSystem α α where
+  carrier := s
+  blockSet := s
+  block x := {x}
+  block_subset := Set.singleton_subset_iff.mpr
 
+/-- The indiscrete incidence system consists of the carrier as a single block. -/
+@[simps]
+def indiscrete (s : Set α) (b : β) : IncidenceSystem α β where
+  carrier := s
+  blockSet := {b}
+  block _ := s
+  block_subset _ := subset_rfl
 
-
-variable {α β}
-
+/-- An incidence system is simple if there are no duplicate blocks. -/
 @[mk_iff]
 class IsSimple (d : IncidenceSystem α β) : Prop where
   injOn : d.blockSet.InjOn d.block
 
+theorem isSimple_ofHypergraph (H : Hypergraph α) : (ofHypergraph H).IsSimple where
+  injOn := by simp
+
+theorem isSimple_discrete (s : Set α) : (discrete s).IsSimple where
+  injOn := by simp
+
+theorem isSimple_indiscrete (s : Set α) (b : β) : (indiscrete s b).IsSimple where
+  injOn := by simp
+
+/-- An incidence system is `k`-uniform if every block has cardinality `k`. -/
 @[mk_iff]
 structure IsUniform (d : IncidenceSystem α β) (k : ℕ) : Prop where
   uniform {b} (hb : b ∈ d.blockSet) : (d.block b).ncard = k
 
 attribute [grind .] IsUniform.uniform
+
+theorem isUniform_discrete (s : Set α) : (discrete s).IsUniform 1 where
+  uniform {x} _ := by simp
+
+theorem isUniform_indiscrete (s : Set α) (b : β) : (indiscrete s b).IsUniform s.ncard where
+  uniform _ := by simp
 
 theorem IsUniform.nonempty_block {d : IncidenceSystem α β}
     {k : ℕ} (hd : d.IsUniform k) (hk : k ≠ 0) {b : β} (hb : b ∈ d.blockSet) :
@@ -148,10 +177,16 @@ theorem IsDesign.finite {d : IncidenceSystem α β}
 
 def IsSteiner (d : IncidenceSystem α β) (t k n : ℕ) := d.IsDesign t n k 1
 
--- `t ≤ n` implies `k ≤ n`?
+-- PRed
+theorem _root_.Set.subsingleton_of_ncard_eq_one {s : Set α} (hs : s.ncard = 1) : s.Subsingleton := by
+  have : Finite s := Set.finite_of_ncard_pos (by grind)
+  rw [← Set.ncard_le_one_iff_subsingleton, hs]
+
 theorem IsSteiner.isSimple {d : IncidenceSystem α β} {t k n : ℕ} (hd : d.IsSteiner t k n)
-    (htn : t ≤ n) (hkn : k ≤ n) : d.IsSimple where
+    (htk : t ≤ k) : d.IsSimple where
   injOn b₁ hb₁ b₂ hb₂ h := by
-    sorry
+    obtain ⟨s, hs, hst⟩ := Set.exists_subset_card_eq (htk.trans (hd.uniform hb₁).ge)
+    exact Set.subsingleton_of_ncard_eq_one
+      (hd.balanced s (hs.trans (d.block_subset hb₁)) hst) ⟨hb₁, hs⟩ ⟨hb₂, hs.trans_eq h⟩
 
 end IncidenceSystem
