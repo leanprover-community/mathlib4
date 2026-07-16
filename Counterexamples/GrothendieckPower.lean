@@ -5,6 +5,7 @@ Authors: Akhil Mathew
 -/
 import Mathlib.Algebra.Category.CommHopfAlgCat
 import Mathlib.Algebra.QuadraticAlgebra.Basic
+import Mathlib.Algebra.Ring.GeomSum
 import Mathlib.Data.FunLike.Fintype
 import Mathlib.LinearAlgebra.Dimension.Free
 import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
@@ -64,10 +65,11 @@ algebra, and the associated group scheme has order four but is not killed by fou
   of the group scheme has order exactly eight.
 * `Counterexample.GrothendieckPower.not_isCocomm`: `A` is not cocommutative, i.e. the group
   scheme is noncommutative, as forced by Deligne's theorem for commutative group schemes.
-* `Counterexample.GrothendieckPower.monPowMap_affineGroupScheme_four_ne`: the group-scheme
+* `Counterexample.GrothendieckPower.id_pow_affineGroupScheme_four_ne_one`: the group-scheme
   formulation, through Mathlib's antiequivalence between commutative Hopf algebras and
-  affine group schemes: the pointwise fourth power map of the corresponding group object in
-  `(CommAlgCat R)ᵒᵖ` is not the constant-unit endomorphism.
+  affine group schemes: on the corresponding group object in `(CommAlgCat R)ᵒᵖ`, the
+  pointwise fourth power map — the fourth power `𝟙 _ ^ 4` of the identity in the convolution
+  monoid of endomorphisms — is not the constant-unit endomorphism.
 
 ## Implementation notes
 
@@ -339,6 +341,61 @@ theorem finrank_A : Module.finrank R A = 4 := by
   rw [← Module.finrank_mul_finrank R B A, finrank_B, finrank_A_over_B]
 
 /-!
+### The universal property of `A`
+
+An `R`-algebra map out of `A = R[U, V] / (U² - abU + b²V, V² - a²V)` amounts to a pair of
+elements of the target satisfying the two defining relations.  The construction goes through
+the tower `R → B → A`: the image of `V` determines an `R`-algebra map out of
+`B = R[V] / (V² - a²V)`, which makes the target a `B`-algebra, and the image of `U` then
+determines a quadratic lift out of `A`.  The `B`-algebra structure depends on the chosen
+image of `V`, so it is kept local to the construction and never becomes an instance: the
+coproduct below, for example, uses a `B`-algebra structure on `A ⊗[R] A` different from the
+canonical one through the left tensor factor.
+-/
+
+section UniversalProperty
+
+variable {S : Type*} [CommRing S] [Algebra R S]
+
+/-- The `R`-algebra map `B →ₐ[R] S` sending `VB` to a root of `X² - a²X`. -/
+private noncomputable def mkAlgHomB (v : S) (hv : v ^ 2 = algebraMap R S (a ^ 2) * v) :
+    B →ₐ[R] S :=
+  QuadraticAlgebra.lift ⟨v, by rw [zero_smul, zero_add, Algebra.smul_def, ← pow_two, hv]⟩
+
+private theorem mkAlgHomB_VB (v : S) (hv : v ^ 2 = algebraMap R S (a ^ 2) * v) :
+    mkAlgHomB v hv VB = v :=
+  quadratic_lift_omega v _
+
+/-- The `R`-algebra map `A →ₐ[R] S` sending `U` and `V` to a pair of elements satisfying the
+defining relations of `A`. -/
+noncomputable def mkAlgHom (u v : S) (hv : v ^ 2 = algebraMap R S (a ^ 2) * v)
+    (hu : u ^ 2 = algebraMap R S (a * b) * u - algebraMap R S (b ^ 2) * v) :
+    A →ₐ[R] S :=
+  letI : Algebra B S := (mkAlgHomB v hv).toRingHom.toAlgebra
+  letI : IsScalarTower R B S :=
+    .of_algebraMap_eq fun r ↦ ((mkAlgHomB v hv).commutes r).symm
+  AlgHom.restrictScalars R (QuadraticAlgebra.lift
+    ⟨u, show u * u = mkAlgHomB v hv (-(bB ^ 2) * VB) * 1 + mkAlgHomB v hv (aB * bB) * u by
+      rw [mul_one, map_mul, map_mul, map_neg, map_pow, mkAlgHomB_VB,
+        (mkAlgHomB v hv).commutes, (mkAlgHomB v hv).commutes]
+      linear_combination hu + u * map_mul (algebraMap R S) a b -
+        v * map_pow (algebraMap R S) b 2⟩ : A →ₐ[B] S)
+
+theorem mkAlgHom_U (u v : S) (hv : v ^ 2 = algebraMap R S (a ^ 2) * v)
+    (hu : u ^ 2 = algebraMap R S (a * b) * u - algebraMap R S (b ^ 2) * v) :
+    mkAlgHom u v hv hu U = u := by
+  letI : Algebra B S := (mkAlgHomB v hv).toRingHom.toAlgebra
+  exact quadratic_lift_omega u _
+
+theorem mkAlgHom_V (u v : S) (hv : v ^ 2 = algebraMap R S (a ^ 2) * v)
+    (hu : u ^ 2 = algebraMap R S (a * b) * u - algebraMap R S (b ^ 2) * v) :
+    mkAlgHom u v hv hu V = v := by
+  letI : Algebra B S := (mkAlgHomB v hv).toRingHom.toAlgebra
+  exact ((QuadraticAlgebra.lift _ : A →ₐ[B] S).commutes VB).trans (mkAlgHomB_VB v hv)
+
+end UniversalProperty
+
+/-!
 ### The comultiplication
 
 The polynomial identities behind the coproduct are proved once, in an arbitrary commutative
@@ -533,109 +590,19 @@ private theorem bbT_smul : bbT = b • (1 : A ⊗[R] A) := by
   rw [show bA = b • (1 : A) from Algebra.algebraMap_eq_smul_one b]
   exact TensorProduct.smul_tmul' b 1 1
 
-private theorem zero_smul_T (x : A ⊗[R] A) : (0 : R) • x = 0 := by
-  simp
-
--- TODO: `comulB` is too long.
--- `simp [← pow_two, delta_relations.1]` changes the goal to
--- ⊢ ((algebraMap R A) a ^ 2) ⊗ₜ[R] 1 * deltaV = a ^ 2 • deltaV
--- which must be easier than the slop below.
-
-/-- First lift of the coproduct, sending `VB` to `deltaV`. -/
-noncomputable def comulB : B →ₐ[R] A ⊗[R] A :=
-  QuadraticAlgebra.lift ⟨deltaV, by
-    have hsquare : (a • (1 : A ⊗[R] A)) ^ 2 = (a ^ 2 : R) • (1 : A ⊗[R] A) := by
-      calc
-        (a • (1 : A ⊗[R] A)) ^ 2 = (a * a) • ((1 : A ⊗[R] A) * (1 : A ⊗[R] A)) :=
-          (pow_two _).trans (smul_mul_smul_comm a (1 : A ⊗[R] A) a (1 : A ⊗[R] A))
-        _ = (a * a) • (1 : A ⊗[R] A) :=
-          congr_arg ((a * a) • ·) (mul_one (1 : A ⊗[R] A))
-        _ = (a ^ 2 : R) • (1 : A ⊗[R] A) :=
-          congr_arg (fun r : R ↦ r • (1 : A ⊗[R] A)) (pow_two a).symm
-    calc
-      deltaV * deltaV = aaT ^ 2 * deltaV := by simpa only [pow_two] using delta_relations.1
-      _ = (0 : R) • (1 : A ⊗[R] A) + (a ^ 2 : R) • deltaV := by
-        calc
-          aaT ^ 2 * deltaV = ((a ^ 2 : R) • (1 : A ⊗[R] A)) * deltaV := by rw [aaT_smul, hsquare]
-          _ = (a ^ 2 : R) • ((1 : A ⊗[R] A) * deltaV) := smul_mul_assoc _ _ _
-          _ = (a ^ 2 : R) • deltaV := congr_arg ((a ^ 2 : R) • ·) (one_mul deltaV)
-          _ = (0 : R) • (1 : A ⊗[R] A) + (a ^ 2 : R) • deltaV := by
-            rw [zero_smul_T, zero_add]⟩
-
-@[simp] theorem comulB_VB : comulB VB = deltaV :=
-  quadratic_lift_omega deltaV _
-
-theorem comulB_aB : comulB aB = aaT := by
-  rw [comulB.commutes, Algebra.algebraMap_eq_smul_one, ← aaT_smul]
-
-theorem comulB_bB : comulB bB = bbT := by
-  rw [comulB.commutes, Algebra.algebraMap_eq_smul_one, ← bbT_smul]
-
-private theorem comulB_neg (x : B) : comulB (-x) = -comulB x := by simp
-
-private theorem comulB_bB_sq : comulB (bB ^ 2) = comulB bB ^ 2 := by simp
-
--- TODO (buzzard): this causes a diamond I believe
-noncomputable instance instAlgebraBT : Algebra B (A ⊗[R] A) :=
-  comulB.toRingHom.toAlgebra' fun (c : B) (x : A ⊗[R] A) ↦ mul_comm (comulB c) x
-
-private theorem deltaU_root_mul :
-    deltaU * deltaU = comulB (-(bB ^ 2) * VB) * 1 +
-      comulB (aB * bB) * deltaU := by
-  have hc : comulB (-(bB ^ 2) * VB) = -(bbT ^ 2) * deltaV := by
-    have hn : comulB (-(bB ^ 2)) = -(comulB bB ^ 2) := by
-      calc
-        comulB (-(bB ^ 2)) = -comulB (bB ^ 2) := comulB_neg _
-        _ = -(comulB bB ^ 2) := congr_arg Neg.neg comulB_bB_sq
-    calc
-      comulB (-(bB ^ 2) * VB) = comulB (-(bB ^ 2)) * comulB VB := comulB.map_mul _ _
-      _ = -(comulB bB ^ 2) * comulB VB := by rw [hn]
-      _ = -(bbT ^ 2) * deltaV := by rw [comulB_bB, comulB_VB]
-  have hl : comulB (aB * bB) = aaT * bbT := by
-    calc
-      comulB (aB * bB) = comulB aB * comulB bB := comulB.map_mul _ _
-      _ = aaT * bbT := by rw [comulB_aB, comulB_bB]
-  rw [hc, hl]
-  calc
-    deltaU * deltaU = aaT * bbT * deltaU - bbT ^ 2 * deltaV := by
-      simpa only [pow_two] using delta_relations.2
-    _ = -(bbT ^ 2) * deltaV * 1 + aaT * bbT * deltaU := by ring
-
-/-- The outer quadratic lift defining the coproduct. -/
-noncomputable def comulOuter : A →ₐ[B] A ⊗[R] A :=
-  QuadraticAlgebra.lift ⟨deltaU, by
-    change deltaU * deltaU = comulB (-(bB ^ 2) * VB) * 1 +
-      comulB (aB * bB) * deltaU
-    exact deltaU_root_mul⟩
-
-/-- The coproduct algebra homomorphism. -/
+/-- The coproduct algebra homomorphism, sending `U` to `deltaU` and `V` to `deltaV`. -/
 noncomputable def comul : A →ₐ[R] A ⊗[R] A :=
-  { comulOuter.toRingHom with
-    commutes' := fun r ↦ by
-      change comulOuter (algebraMap R A r) = algebraMap R (A ⊗[R] A) r
-      calc
-        comulOuter (algebraMap R A r) =
-            comulOuter (algebraMap B A (algebraMap R B r)) := by
-              rw [IsScalarTower.algebraMap_apply R B A]
-        _ = algebraMap B (A ⊗[R] A) (algebraMap R B r) := comulOuter.commutes _
-        _ = comulB (algebraMap R B r) := rfl
-        _ = algebraMap R (A ⊗[R] A) r := comulB.commutes r }
+  mkAlgHom deltaU deltaV
+    (by rw [← left.commutes (a ^ 2), map_pow, map_pow]; exact delta_relations.1)
+    (by rw [← left.commutes (a * b), ← left.commutes (b ^ 2), map_mul, map_mul, map_pow,
+      map_pow]; exact delta_relations.2)
 
-theorem comul_V : comul V = deltaV := by
-  calc
-    comul V = comulOuter (algebraMap B A VB) := rfl
-    _ = algebraMap B (A ⊗[R] A) VB := comulOuter.commutes VB
-    _ = comulB VB := rfl
-    _ = deltaV := comulB_VB
+theorem comul_U : comul U = deltaU := mkAlgHom_U _ _ _ _
 
-theorem comul_U : comul U = deltaU := by
-  apply quadratic_lift_omega
+theorem comul_V : comul V = deltaV := mkAlgHom_V _ _ _ _
 
 theorem comul_aA : comul aA = aaT := by
-  calc
-    comul aA = algebraMap R (A ⊗[R] A) a := comul.commutes a
-    _ = a • (1 : A ⊗[R] A) := Algebra.algebraMap_eq_smul_one a
-    _ = aaT := aaT_smul.symm
+  rw [comul.commutes, Algebra.algebraMap_eq_smul_one, ← aaT_smul]
 
 theorem comul_bA : comul bA = bbT := by
   rw [comul.commutes, Algebra.algebraMap_eq_smul_one, ← bbT_smul]
@@ -648,11 +615,7 @@ theorem right_lambda : right lambda = l₂ := by
 
 @[simp] theorem comul_lambda : comul lambda = left lambda * right lambda := by
   rw [left_lambda, right_lambda]
-  have hone : comul (1 : A) = 1 := comul.map_one
-  unfold lambda
-  simp only [map_mul, map_add]
-  rw [hone, comul_aA, comul_bA, comul_U, comul_V]
-  exact delta_lambda
+  simpa [lambda, map_mul, map_add, comul_aA, comul_bA, comul_U, comul_V] using delta_lambda
 
 @[simp] theorem comul_U_formula :
     comul U = left U + left lambda * right U := by
@@ -696,45 +659,13 @@ theorem algHom_ext {S : Type*} [Semiring S] [Algebra R S]
 ### The counit and the bialgebra structure
 -/
 
-/-- The inner counit, sending `VB` to zero. -/
-noncomputable def counitB : B →ₐ[R] R :=
-  QuadraticAlgebra.lift ⟨0, by simp⟩
-
-@[simp] theorem counitB_VB : counitB VB = 0 :=
-  quadratic_lift_omega 0 _
-
-noncomputable instance instAlgebraBR : Algebra B R :=
-  counitB.toRingHom.toAlgebra' fun (c : B) (r : R) ↦ mul_comm (counitB c) r
-
-/-- The outer counit, sending `U` to zero. -/
-noncomputable def counitOuter : A →ₐ[B] R :=
-  QuadraticAlgebra.lift ⟨0, by
-    change (0 : R) * 0 = counitB (-(bB ^ 2) * VB) * 1 +
-      counitB (aB * bB) * 0
-    simp⟩
-
-/-- The counit algebra homomorphism. -/
+/-- The counit algebra homomorphism, sending `U` and `V` to zero. -/
 noncomputable def counit : A →ₐ[R] R :=
-  { counitOuter.toRingHom with
-    commutes' := fun r ↦ by
-      change counitOuter (algebraMap R A r) = r
-      calc
-        counitOuter (algebraMap R A r) =
-            counitOuter (algebraMap B A (algebraMap R B r)) := by
-              rw [IsScalarTower.algebraMap_apply R B A]
-        _ = algebraMap B R (algebraMap R B r) := counitOuter.commutes _
-        _ = counitB (algebraMap R B r) := rfl
-        _ = r := counitB.commutes r }
+  mkAlgHom 0 0 (by simp) (by simp)
 
-@[simp] theorem counit_V : counit V = 0 := by
-  calc
-    counit V = counitOuter (algebraMap B A VB) := rfl
-    _ = algebraMap B R VB := counitOuter.commutes VB
-    _ = counitB VB := rfl
-    _ = 0 := counitB_VB
+@[simp] theorem counit_V : counit V = 0 := mkAlgHom_V _ _ _ _
 
-@[simp] theorem counit_U : counit U = 0 := by
-  apply quadratic_lift_omega
+@[simp] theorem counit_U : counit U = 0 := mkAlgHom_U _ _ _ _
 
 @[simp] theorem counit_lambda : counit lambda = 1 := by
   simp [lambda]
@@ -845,44 +776,29 @@ noncomputable def powerMap (n : ℕ) : A →ₐ[R] A :=
 @[simp] theorem powerMap_zero_apply (x : A) : powerMap 0 x = algebraMap R A (counit x) := by
   rfl
 
-@[simp] theorem powerMap_one_apply (x : A) : powerMap 1 x = x := by
-  calc
-    powerMap 1 x = universalPoint.ofConv x :=
-      congr_arg (fun f : WithConv (A →ₐ[R] A) ↦ f.ofConv x) (pow_one universalPoint)
-    _ = x := rfl
+@[simp] theorem powerMap_one_apply (x : A) : powerMap 1 x = x :=
+  congr_arg (fun f : WithConv (A →ₐ[R] A) ↦ f.ofConv x) (pow_one universalPoint)
 
 theorem powerMap_succ_U (n : ℕ) :
     powerMap (n + 1) U = powerMap n U + powerMap n lambda * U := by
-  calc
-    powerMap (n + 1) U = (universalPoint ^ n * universalPoint).ofConv U :=
-      congr_arg (fun f : WithConv (A →ₐ[R] A) ↦ f.ofConv U)
-        (pow_succ universalPoint n)
-    _ = powerMap n U + powerMap n lambda * U := by
-      rw [AlgHom.convMul_apply]
-      rw [← Bialgebra.comulAlgHom_apply, bialgebra_comulAlgHom, comul_U_formula]
-      simp [universalPoint, powerMap]
+  change (universalPoint ^ (n + 1)).ofConv U = _
+  rw [pow_succ universalPoint n, AlgHom.convMul_apply, ← Bialgebra.comulAlgHom_apply,
+    bialgebra_comulAlgHom, comul_U_formula]
+  simp [universalPoint, powerMap]
 
 theorem powerMap_succ_V (n : ℕ) :
     powerMap (n + 1) V = powerMap n V * lambda + V := by
-  calc
-    powerMap (n + 1) V = (universalPoint ^ n * universalPoint).ofConv V :=
-      congr_arg (fun f : WithConv (A →ₐ[R] A) ↦ f.ofConv V)
-        (pow_succ universalPoint n)
-    _ = powerMap n V * lambda + V := by
-      rw [AlgHom.convMul_apply]
-      rw [← Bialgebra.comulAlgHom_apply, bialgebra_comulAlgHom, comul_V_formula]
-      simp [universalPoint, powerMap]
+  change (universalPoint ^ (n + 1)).ofConv V = _
+  rw [pow_succ universalPoint n, AlgHom.convMul_apply, ← Bialgebra.comulAlgHom_apply,
+    bialgebra_comulAlgHom, comul_V_formula]
+  simp [universalPoint, powerMap]
 
 theorem powerMap_succ_lambda (n : ℕ) :
     powerMap (n + 1) lambda = powerMap n lambda * lambda := by
-  calc
-    powerMap (n + 1) lambda = (universalPoint ^ n * universalPoint).ofConv lambda :=
-      congr_arg (fun f : WithConv (A →ₐ[R] A) ↦ f.ofConv lambda)
-        (pow_succ universalPoint n)
-    _ = powerMap n lambda * lambda := by
-      rw [AlgHom.convMul_apply]
-      rw [← Bialgebra.comulAlgHom_apply, bialgebra_comulAlgHom, comul_lambda]
-      simp [universalPoint, powerMap]
+  change (universalPoint ^ (n + 1)).ofConv lambda = _
+  rw [pow_succ universalPoint n, AlgHom.convMul_apply, ← Bialgebra.comulAlgHom_apply,
+    bialgebra_comulAlgHom, comul_lambda]
+  simp [universalPoint, powerMap]
 
 theorem four_eq_zero : (4 : A) = 0 := by
   obtain ⟨ha, _, hab, _, _⟩ := mapped_relations (AlgHom.id R A)
@@ -895,85 +811,33 @@ theorem lambda_eq_one_add_theta : lambda = 1 + theta := by
   ring
 
 theorem lambda_pow_four : lambda ^ 4 = 1 := by
+  have ht (k : ℕ) (hk : 2 ≤ k) : theta ^ k = 0 := pow_eq_zero_of_le hk theta_sq
   rw [lambda_eq_one_add_theta]
-  ring_nf
-  have ht3 : theta ^ 3 = 0 := by
-    calc
-      theta ^ 3 = theta ^ 2 * theta := by ring
-      _ = 0 := by rw [theta_sq, zero_mul]
-  have ht4 : theta ^ 4 = 0 := by
-    calc
-      theta ^ 4 = (theta ^ 2) ^ 2 := by ring
-      _ = 0 := by rw [theta_sq, zero_pow]; norm_num
-  linear_combination theta * four_eq_zero + 6 * theta_sq + 4 * ht3 + ht4
-
-/-- The geometric sum controlling powers in both skew-primitive coordinates. -/
-def geomSum (n : ℕ) : A := ∑ i ∈ Finset.range n, lambda ^ i
-
-@[simp] theorem geomSum_zero : geomSum 0 = 0 := by
-  simp [geomSum]
-
-theorem geomSum_succ (n : ℕ) : geomSum (n + 1) = geomSum n + lambda ^ n := by
-  simpa [geomSum] using Finset.sum_range_succ (fun i ↦ lambda ^ i) n
-
-theorem geomSum_mul_lambda_add_one (n : ℕ) :
-    geomSum n * lambda + 1 = geomSum (n + 1) := by
-  induction n with
-  | zero => norm_num [geomSum, Finset.sum_range_succ]
-  | succ n ih =>
-      calc
-        geomSum (n + 1) * lambda + 1 =
-            (geomSum n + lambda ^ n) * lambda + 1 :=
-          congr_arg (fun x : A ↦ x * lambda + 1) (geomSum_succ n)
-        _ = (geomSum n * lambda + 1) + lambda ^ n * lambda := by ring
-        _ = geomSum (n + 1) + lambda ^ n * lambda :=
-          congr_arg (fun x : A ↦ x + lambda ^ n * lambda) ih
-        _ = geomSum (n + 1) + lambda ^ (n + 1) :=
-          congr_arg (fun x : A ↦ geomSum (n + 1) + x) (pow_succ lambda n).symm
-        _ = geomSum (n + 1 + 1) := (geomSum_succ (n + 1)).symm
+  linear_combination theta * four_eq_zero + 6 * theta_sq + 4 * ht 3 (by norm_num) +
+    ht 4 (by norm_num)
 
 theorem powerMap_lambda (n : ℕ) : powerMap n lambda = lambda ^ n := by
   induction n with
   | zero => simp [powerMap_zero_apply, counit_lambda]
-  | succ n ih =>
-      calc
-        powerMap (n + 1) lambda = powerMap n lambda * lambda := powerMap_succ_lambda n
-        _ = lambda ^ n * lambda := congr_arg (fun x : A ↦ x * lambda) ih
-        _ = lambda ^ (n + 1) := (pow_succ lambda n).symm
+  | succ n ih => rw [powerMap_succ_lambda, ih, pow_succ lambda n]
 
-theorem powerMap_U (n : ℕ) : powerMap n U = geomSum n * U := by
+theorem powerMap_U (n : ℕ) : powerMap n U = (∑ i ∈ Finset.range n, lambda ^ i) * U := by
   induction n with
   | zero => simp [powerMap_zero_apply, counit_U]
-  | succ n ih =>
-      calc
-        powerMap (n + 1) U = powerMap n U + powerMap n lambda * U := powerMap_succ_U n
-        _ = geomSum n * U + lambda ^ n * U := by rw [ih, powerMap_lambda]
-        _ = geomSum (n + 1) * U := by rw [geomSum_succ, add_mul]
+  | succ n ih => rw [powerMap_succ_U, ih, powerMap_lambda, geom_sum_succ']; ring
 
-theorem powerMap_V (n : ℕ) : powerMap n V = V * geomSum n := by
+theorem powerMap_V (n : ℕ) : powerMap n V = V * ∑ i ∈ Finset.range n, lambda ^ i := by
   induction n with
   | zero => simp [powerMap_zero_apply, counit_V]
-  | succ n ih =>
-      calc
-        powerMap (n + 1) V = powerMap n V * lambda + V := powerMap_succ_V n
-        _ = V * geomSum n * lambda + V := by rw [ih]
-        _ = V * (geomSum n * lambda + 1) := by ring
-        _ = V * geomSum (n + 1) := by rw [geomSum_mul_lambda_add_one]
+  | succ n ih => rw [powerMap_succ_V, ih, geom_sum_succ]; ring
 
-theorem geomSum_four : geomSum 4 = 2 * bA * V := by
-  norm_num [geomSum, Finset.sum_range_succ]
-  rw [lambda_eq_one_add_theta]
-  ring_nf
-  have ht3 : theta ^ 3 = 0 := by
-    calc
-      theta ^ 3 = theta ^ 2 * theta := by ring
-      _ = 0 := by rw [theta_sq, zero_mul]
-  rw [theta_sq, ht3, four_eq_zero]
-  ring_nf
-  linear_combination two_theta + theta * four_eq_zero
+theorem geom_sum_four : ∑ i ∈ Finset.range 4, lambda ^ i = 2 * bA * V := by
+  have ht (k : ℕ) (hk : 2 ≤ k) : theta ^ k = 0 := pow_eq_zero_of_le hk theta_sq
+  simp only [Finset.sum_range_succ, Finset.sum_range_zero, zero_add, lambda_eq_one_add_theta]
+  linear_combination two_theta + (1 + theta) * four_eq_zero + 4 * theta_sq + ht 3 (by norm_num)
 
 theorem powerMap_four_U : powerMap 4 U = 2 * bA * U * V := by
-  rw [powerMap_U, geomSum_four]
+  rw [powerMap_U, geom_sum_four]
   ring
 
 theorem two_b_U_V_ne_zero : 2 * bA * U * V ≠ 0 := by
@@ -988,7 +852,7 @@ theorem powerMap_four_U_ne_zero : powerMap 4 U ≠ 0 := by
   exact two_b_U_V_ne_zero
 
 theorem powerMap_four_V : powerMap 4 V = 0 := by
-  rw [powerMap_V, geomSum_four]
+  rw [powerMap_V, geom_sum_four]
   have hv : V ^ 2 = aA ^ 2 * V := by
     simp [aA, map_pow]
   have hab : aA ^ 2 * bA + 2 = 0 := by
@@ -997,45 +861,26 @@ theorem powerMap_four_V : powerMap 4 V = 0 := by
   rw [show V * (2 * bA * V) = 2 * bA * V ^ 2 by ring, hv]
   linear_combination 2 * V * hab - V * four_eq_zero
 
-theorem geomSum_eight : geomSum 8 = 0 := by
-  norm_num [geomSum, Finset.sum_range_succ]
-  rw [lambda_eq_one_add_theta]
-  ring_nf
-  have ht3 : theta ^ 3 = 0 := by
-    calc theta ^ 3 = theta ^ 2 * theta := by ring
-         _ = 0 := by rw [theta_sq, zero_mul]
-  have ht4 : theta ^ 4 = 0 := by
-    calc theta ^ 4 = theta ^ 2 * theta ^ 2 := by ring
-         _ = 0 := by rw [theta_sq, zero_mul]
-  have ht5 : theta ^ 5 = 0 := by
-    calc theta ^ 5 = theta ^ 4 * theta := by ring
-         _ = 0 := by rw [ht4, zero_mul]
-  have ht6 : theta ^ 6 = 0 := by
-    calc theta ^ 6 = theta ^ 4 * theta ^ 2 := by ring
-         _ = 0 := by rw [ht4, zero_mul]
-  have ht7 : theta ^ 7 = 0 := by
-    calc theta ^ 7 = theta ^ 6 * theta := by ring
-         _ = 0 := by rw [ht6, zero_mul]
-  rw [theta_sq, ht3, ht4, ht5, ht6, ht7]
-  ring_nf
-  linear_combination 2 * four_eq_zero + 7 * theta * four_eq_zero
+theorem geom_sum_eight : ∑ i ∈ Finset.range 8, lambda ^ i = 0 := by
+  have ht (k : ℕ) (hk : 2 ≤ k) : theta ^ k = 0 := pow_eq_zero_of_le hk theta_sq
+  simp only [Finset.sum_range_succ, Finset.sum_range_zero, zero_add, lambda_eq_one_add_theta]
+  linear_combination (2 + 7 * theta) * four_eq_zero + 56 * theta_sq +
+    70 * ht 3 (by norm_num) + 56 * ht 4 (by norm_num) + 28 * ht 5 (by norm_num) +
+    8 * ht 6 (by norm_num) + ht 7 (by norm_num)
 
 theorem powerMap_eight_U : powerMap 8 U = 0 := by
-  rw [powerMap_U, geomSum_eight, zero_mul]
+  rw [powerMap_U, geom_sum_eight, zero_mul]
 
 theorem powerMap_eight_V : powerMap 8 V = 0 := by
-  rw [powerMap_V, geomSum_eight, mul_zero]
+  rw [powerMap_V, geom_sum_eight, mul_zero]
 
 theorem powerMap_eight : powerMap 8 = (Algebra.ofId R A).comp counit := by
   apply algHom_ext
   · simp [powerMap_eight_U]
   · simp [powerMap_eight_V]
 
-theorem universalPoint_pow_eight : universalPoint ^ 8 = 1 := by
-  apply WithConv.ext
-  change powerMap 8 = (Algebra.ofId R A).comp (Bialgebra.counitAlgHom R A)
-  rw [bialgebra_counitAlgHom]
-  exact powerMap_eight
+theorem universalPoint_pow_eight : universalPoint ^ 8 = 1 :=
+  WithConv.ext powerMap_eight
 
 theorem universalPoint_pow_four_ne_one : universalPoint ^ 4 ≠ 1 := by
   intro h
@@ -1045,10 +890,8 @@ theorem universalPoint_pow_four_ne_one : universalPoint ^ 4 ≠ 1 := by
 /-- In the group of `A`-valued points of the group scheme, the universal point has order
 exactly eight: an element of order eight on a group scheme of order four. -/
 theorem orderOf_universalPoint : orderOf universalPoint = 8 := by
-  have h := orderOf_eq_prime_pow (p := 2) (n := 2) universalPoint_pow_four_ne_one
+  simpa using orderOf_eq_prime_pow (p := 2) (n := 2) universalPoint_pow_four_ne_one
     universalPoint_pow_eight
-  norm_num at h
-  exact h
 
 /-!
 ### The Hopf algebra structure and the main statement
@@ -1059,19 +902,11 @@ convolution power is a two-sided convolution inverse of the identity, that is, a
 
 private theorem powerMap_seven_mul_universalPoint :
     toConv (powerMap 7) * universalPoint = 1 := by
-  calc
-    toConv (powerMap 7) * universalPoint = universalPoint ^ 7 * universalPoint := by
-      simp [powerMap]
-    _ = universalPoint ^ 8 := (pow_succ universalPoint 7).symm
-    _ = 1 := universalPoint_pow_eight
+  simpa [powerMap, ← pow_succ] using universalPoint_pow_eight
 
 private theorem universalPoint_mul_powerMap_seven :
     universalPoint * toConv (powerMap 7) = 1 := by
-  calc
-    universalPoint * toConv (powerMap 7) = universalPoint * universalPoint ^ 7 := by
-      simp [powerMap]
-    _ = universalPoint ^ 8 := (pow_succ' universalPoint 7).symm
-    _ = 1 := universalPoint_pow_eight
+  simpa [powerMap, ← pow_succ'] using universalPoint_pow_eight
 
 private theorem antipode_right_identity :
     ((Algebra.TensorProduct.lift (powerMap 7) (.id R A) fun _ ↦ Commute.all _).comp
@@ -1204,39 +1039,32 @@ of the resulting group object is not the constant-unit endomorphism.
 
 open CategoryTheory CartesianMonoidalCategory MonObj Opposite
 
-/-- The pointwise `n`-th power map of a monoid object in a cartesian monoidal category.  For
-a group scheme, this is the morphism `x ↦ xⁿ`, which is not in general a homomorphism. -/
-def monPowMap {C : Type*} [Category C] [CartesianMonoidalCategory C] (M : C) [MonObj M] :
-    ℕ → (M ⟶ M)
-  | 0 => toUnit M ≫ η[M]
-  | n + 1 => lift (monPowMap M n) (𝟙 M) ≫ μ[M]
-
 /-- On the group object `op A` in `(CommAlgCat R)ᵒᵖ` — the affine group scheme corresponding
-to `A` — the pointwise `n`-th power map corresponds to the `n`-th convolution power of the
-identity of `A`. -/
-theorem monPowMap_op_unop_hom (n : ℕ) :
-    (monPowMap (op (CommAlgCat.of R A)) n).unop.hom = powerMap n := by
+to `A` — the pointwise `n`-th power map `𝟙 _ ^ n` (the `n`-th power of the identity in the
+convolution monoid `CategoryTheory.Hom.monoid` of endomorphisms; for a group scheme, the
+morphism `x ↦ xⁿ`, which is not in general a homomorphism) corresponds to the `n`-th
+convolution power of the identity of `A`. -/
+theorem id_pow_op_unop_hom (n : ℕ) :
+    (𝟙 (op (CommAlgCat.of R A)) ^ n).unop.hom = powerMap n := by
   induction n with
   | zero => rfl
   | succ n ih =>
-      have h : (monPowMap (op (CommAlgCat.of R A)) (n + 1)).unop.hom =
+      have h : (𝟙 (op (CommAlgCat.of R A)) ^ (n + 1)).unop.hom =
           (Algebra.TensorProduct.lift (powerMap n) (AlgHom.id R A)
               fun _ _ ↦ Commute.all _ _).comp
             (Bialgebra.comulAlgHom R A) := by
-        simp only [monPowMap, unop_comp, CommAlgCat.hom_comp, CommAlgCat.mul_op_of_unop_hom,
-          CommAlgCat.lift_unop_hom, unop_id, CommAlgCat.hom_id, ih]
+        simp only [pow_succ, Hom.mul_def, unop_comp, CommAlgCat.hom_comp,
+          CommAlgCat.mul_op_of_unop_hom, CommAlgCat.lift_unop_hom, unop_id, CommAlgCat.hom_id,
+          ih]
       rw [h, ← Algebra.TensorProduct.lmul'_comp_map, AlgHom.comp_assoc]
       rfl
 
 /-- The pointwise fourth power map of the group object `op A` in `(CommAlgCat R)ᵒᵖ` — the
-affine group scheme corresponding to `A` — is not the constant-unit endomorphism. -/
-theorem monPowMap_op_four_ne :
-    monPowMap (op (CommAlgCat.of R A)) 4 ≠
-      toUnit (op (CommAlgCat.of R A)) ≫ η[op (CommAlgCat.of R A)] := by
+affine group scheme corresponding to `A` — is not the constant-unit endomorphism `1`. -/
+theorem id_pow_op_four_ne_one : 𝟙 (op (CommAlgCat.of R A)) ^ 4 ≠ 1 := by
   intro h
-  replace h : monPowMap (op (CommAlgCat.of R A)) 4 = monPowMap (op (CommAlgCat.of R A)) 0 := h
   have h' : powerMap 4 = powerMap 0 := by
-    rw [← monPowMap_op_unop_hom, ← monPowMap_op_unop_hom, h]
+    rw [← id_pow_op_unop_hom, ← id_pow_op_unop_hom, pow_zero, h]
   exact powerMap_four_U_ne_zero (by simpa using DFunLike.congr_fun h' U)
 
 /-- The rank-four counterexample as an affine group scheme: the group object in the opposite
@@ -1248,12 +1076,11 @@ noncomputable def affineGroupScheme : Grp (CommAlgCat R)ᵒᵖ :=
 theorem affineGroupScheme_X : affineGroupScheme.X = op (CommAlgCat.of R A) := rfl
 
 /-- The order-four affine group scheme corresponding to `A` (the group object in
-`(CommAlgCat R)ᵒᵖ`) is not killed by four: its pointwise fourth power map is not the
-constant-unit endomorphism. -/
-theorem monPowMap_affineGroupScheme_four_ne :
-    monPowMap affineGroupScheme.X 4 ≠
-      toUnit affineGroupScheme.X ≫ η[affineGroupScheme.X] :=
-  monPowMap_op_four_ne
+`(CommAlgCat R)ᵒᵖ`) is not killed by four: its pointwise fourth power map — the fourth power
+of the identity in the convolution monoid of endomorphisms — is not the constant-unit
+endomorphism `1`. -/
+theorem id_pow_affineGroupScheme_four_ne_one : 𝟙 affineGroupScheme.X ^ 4 ≠ 1 :=
+  id_pow_op_four_ne_one
 
 end
 
