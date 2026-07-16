@@ -136,6 +136,7 @@ def polynomialQuotientEquivQuotientPolynomial (I : Ideal R) :
         coe_eval₂RingHom, map_pow, eval₂_C, RingHom.coe_comp, map_mul, eval₂_X,
         Function.comp_apply]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem polynomialQuotientEquivQuotientPolynomial_symm_mk (I : Ideal R) (f : R[X]) :
     I.polynomialQuotientEquivQuotientPolynomial.symm (Quotient.mk _ f) = f.map (Quotient.mk I) := by

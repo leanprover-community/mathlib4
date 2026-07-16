@@ -174,7 +174,7 @@ lemma hasCardinalLT_transfiniteIterate_φ (j : κ₁.ord.ToType) :
   induction j using SuccOrder.limitRecOn with
   | isMin j hj =>
     have := Cardinal.nonempty_ord_toType (c := κ₁) (IsRegular.ne_zero Fact.out)
-    letI := WellFoundedLT.toOrderBot κ₁.ord.ToType
+    let := WellFoundedLT.toOrderBot κ₁.ord.ToType
     simpa [hj.eq_bot]
   | succ j hj hj' =>
     have hκ₂ : κ₂.IsRegular := Fact.out
@@ -204,7 +204,7 @@ lemma monotone_transfiniteIterate_φ :
 omit [PartialOrder X] [Fact κ₂.IsRegular] in
 lemma subset_iUnion : A ⊆ ⋃ (j : κ₁.ord.ToType), transfiniteIterate (φ Y m) j A := by
   have := Cardinal.nonempty_ord_toType (c := κ₁) (IsRegular.ne_zero Fact.out)
-  letI := WellFoundedLT.toOrderBot κ₁.ord.ToType
+  let := WellFoundedLT.toOrderBot κ₁.ord.ToType
   exact subset_trans (by simp) (Set.subset_iUnion _ ⊥)
 
 include h₀ hY hY' hm hA in
