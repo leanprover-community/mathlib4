@@ -45,8 +45,8 @@ instance {x : ConjClasses α} : Fintype (carrier x) :=
 
 section Group
 
-variable {G H : Type*} [Group G] [Fintype G] [DecidableEq G] [CommMonoid H]
-  (c : ConjClasses G) (g : G) (f : G → H)
+variable {G M : Type*} [Group G] [Fintype G] [DecidableEq G] [CommMonoid M]
+  (c : ConjClasses G) (g : G) (f : G → M)
 
 /-- Multiplying `f (g * h * g⁻¹)` over `h` in any conjugacy class of `G` equals multiplying
 `f h` over `h`. -/
