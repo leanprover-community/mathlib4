@@ -207,6 +207,7 @@ theorem isSemilinearSet_image_iff {F : Type*} [EquivLike F M N] [AddEquivClass F
     simp [image_image]
   · exact h.image f
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Semilinear sets are closed under projection (from `ι ⊕ κ → M` to `ι → M` by taking `Sum.inl` on
 the index). It is a special case of `IsSemilinearSet.image`. -/
 theorem IsSemilinearSet.proj {s : Set (ι ⊕ κ → M)} (hs : IsSemilinearSet s) :

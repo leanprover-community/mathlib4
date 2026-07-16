@@ -340,6 +340,7 @@ theorem attach_map_val' (s : Multiset α) (f : α → β) : (s.attach.map fun i 
 theorem attach_map_val (s : Multiset α) : s.attach.map Subtype.val = s :=
   (attach_map_val' _ _).trans s.map_id
 
+set_option backward.isDefEq.respectTransparency false in
 theorem attach_cons (a : α) (m : Multiset α) :
     (a ::ₘ m).attach =
       ⟨a, mem_cons_self a m⟩ ::ₘ m.attach.map fun p => ⟨p.1, mem_cons_of_mem p.2⟩ :=

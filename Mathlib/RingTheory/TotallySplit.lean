@@ -96,6 +96,7 @@ lemma bijective_algebraMap_quotient [IsFiniteSplit k R] (p : Ideal R) [p.IsPrime
       (Function.surjective_eval _)
   simpa [← g.symm.toAlgHom.comp_algebraMap] using g.symm.bijective
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable (k R) in
 /-- If `R` is finite split over a field `k`, the `k`-rational points of `R`
 are in one-to-one correspondence with its prime spectrum. -/
