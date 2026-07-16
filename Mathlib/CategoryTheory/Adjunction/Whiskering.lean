@@ -21,7 +21,7 @@ and the functor categories `E ⥤ C` and `D ⥤ C`.
 
 namespace CategoryTheory.Adjunction
 
-open CategoryTheory Functor
+open CategoryTheory CategoryTheory.Functor
 
 variable (C : Type*) {D E : Type*} [Category* C] [Category* D] [Category* E] {F : D ⥤ E} {G : E ⥤ D}
 
