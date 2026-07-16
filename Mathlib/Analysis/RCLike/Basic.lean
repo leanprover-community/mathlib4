@@ -1301,7 +1301,7 @@ instance (priority := 100) (𝕜 : Type*) [h : RCLike 𝕜] : IsRCLikeNormedFiel
 
 /-- A copy of an `RCLike` field in which the `NormedField` field is adjusted to be become defeq
 to a propeq one. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def RCLike.copy_of_normedField {𝕜 : Type*} (h : RCLike 𝕜) (hk : NormedField 𝕜)
     (h'' : hk = h.toNormedField) : RCLike 𝕜 where
   __ := hk
@@ -1345,7 +1345,7 @@ noncomputable def RCLike.copy_of_normedField {𝕜 : Type*} (h : RCLike 𝕜) (h
 
 /-- Given a normed field `𝕜` satisfying `IsRCLikeNormedField 𝕜`, build an associated `RCLike 𝕜`
 structure on `𝕜` which is definitionally compatible with the given normed field structure. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def IsRCLikeNormedField.rclike (𝕜 : Type*)
     [hk : NormedField 𝕜] [h : IsRCLikeNormedField 𝕜] : RCLike 𝕜 := by
   choose p hp using h.out
@@ -1378,6 +1378,7 @@ theorem symm_smul_apply (e : V ≃ₗᵢ[𝕜] W) (α : unitary 𝕜) (x : W) :
 @[simp] theorem toContinuousLinearEquiv_smul (e : G ≃ₗᵢ[𝕜] W) (α : unitary 𝕜) :
     (α • e).toContinuousLinearEquiv = Unitary.toUnits α • e.toContinuousLinearEquiv := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem smul_trans (α : unitary 𝕜) (e : V ≃ₗᵢ[𝕜] G) (f : G ≃ₗᵢ[𝕜] W) :
     (α • e).trans f = α • (e.trans f) := by ext; simp
 

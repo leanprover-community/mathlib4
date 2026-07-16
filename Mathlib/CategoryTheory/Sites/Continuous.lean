@@ -94,6 +94,7 @@ section
 
 variable {E} {W : C} {i₁ i₂ : E.I₀} (p₁ : W ⟶ E.X i₁) (p₂ : W ⟶ E.X i₂)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma functorPushforward_sieve₁_map_le :
     Sieve.functorPushforward F (E.sieve₁ p₁ p₂) ≤ (E.map F).sieve₁ (F.map p₁) (F.map p₂) := by
@@ -237,7 +238,6 @@ private lemma isSheaf_of_isContinuous_aux (F : C ⥤ D) [Functor.IsContinuous F 
           Iso.trans_hom, Iso.symm_hom, Functor.mapIso_inv, Iso.app_inv, Category.assoc]
         rw [← Functor.map_comp_assoc, ← dsimp% e.inv.naturality, ← Functor.map_comp_assoc,
           Sieve.shrinkFunctorUliftFunctorIso_inv_ι]
-        rfl
   rw [K.W.arrow_mk_iso_iff iso]
   apply GrothendieckTopology.W_of_preservesSheafification
   exact F.W_map_of_adjunction_of_isContinuous_aux J K H adj
@@ -385,6 +385,7 @@ def sheafPushforwardContinuousComp [IsContinuous G K L] :
     sheafPushforwardContinuous G A K L ⋙ sheafPushforwardContinuous F A J K ≅
     sheafPushforwardContinuous (F ⋙ G) A J L := Iso.refl _
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 variable {F F'} in
 /-- The action of a natural transformation on pushforward functors of sheaves. -/
@@ -393,6 +394,7 @@ def sheafPushforwardContinuousNatTrans [IsContinuous F' J K] :
     sheafPushforwardContinuous F' A J K ⟶ sheafPushforwardContinuous F A J K where
   app M := ⟨whiskerRight (NatTrans.op τ) _⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 variable {F F'} in
 /-- The action of a natural isomorphism on pushforward functors of sheaves. -/
@@ -404,6 +406,7 @@ def sheafPushforwardContinuousIso [IsContinuous F' J K] :
   hom_inv_id := by ext; simp [← Functor.map_comp, ← op_comp]
   inv_hom_id := by ext; simp [← Functor.map_comp, ← op_comp]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- If a continuous functor between sites is isomorphic to the identity functor,
 then the corresponding pushforward functor on sheaves identifies to the
 identity functor. -/
@@ -412,6 +415,7 @@ def sheafPushforwardContinuousId' [IsContinuous F'' J J] :
     sheafPushforwardContinuous F'' A J J ≅ 𝟭 _ :=
   sheafPushforwardContinuousIso eF'' _ _ _ ≪≫ sheafPushforwardContinuousId _ _
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable {F G} in
 /-- When we have an isomorphism `F ⋙ G ≅ FG` between continuous functors
 between sites, the composition of the pushforward functors for
@@ -426,6 +430,7 @@ def sheafPushforwardContinuousComp'
 
 end Functor
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- If `F ⊣ G` is an adjunction between continuous functors, the associated
 pushforwards on sheaves are adjoint. -/
