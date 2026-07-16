@@ -216,7 +216,7 @@ lemma exists_continuous_add_one_of_isCompact_nnreal
         hx
     rw [union_subset_iff] at hst
     rw [← sum_one_x x (mem_of_subset_of_mem hst.2 hx), this]
-    exact Eq.symm (AddMonoid.add_zero ((f 0) x))
+    exact Eq.symm (add_zero ((f 0) x))
   · intro x hx
     simp only [Fin.isValue, Pi.add_apply, nnrealPart_apply,
       CompactlySupportedContinuousMap.coe_mk, Pi.one_apply]

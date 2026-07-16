@@ -385,8 +385,6 @@ lemma supDegree_sum_lt (hs : s.Nonempty) {b : B}
   refine supDegree_sum_le.trans_lt ((Finset.sup_lt_iff ?_).mpr h)
   obtain ⟨i, hi⟩ := hs; exact bot_le.trans_lt (h i hi)
 
-variable [AddZeroClass A]
-
 set_option backward.isDefEq.respectTransparency false in
 open Finsupp in
 lemma supDegree_add_eq_left (h : q.supDegree D < p.supDegree D) :
@@ -401,6 +399,8 @@ lemma supDegree_add_eq_left (h : q.supDegree D < p.supDegree D) :
 lemma supDegree_add_eq_right (h : p.supDegree D < q.supDegree D) :
     (p + q).supDegree D = q.supDegree D := by
   rw [add_comm, supDegree_add_eq_left h]
+
+variable [AddZeroClass A]
 
 set_option backward.isDefEq.respectTransparency false in
 lemma leadingCoeff_add_eq_left (h : q.supDegree D < p.supDegree D) :

@@ -55,7 +55,7 @@ instance hasForgetToSemigroup : HasForget₂ MonCat Semigrp where
 def adjoinOneAdj : adjoinOne ⊣ forget₂ MonCat.{u} Semigrp.{u} :=
   Adjunction.mkOfHomEquiv
     { homEquiv X Y :=
-        ConcreteCategory.homEquiv.trans (WithOne.lift.symm.trans
+        ConcreteCategory.homEquiv.trans ((WithOne.lift (β := Y)).symm.trans
           (ConcreteCategory.homEquiv (X := X) (Y := (forget₂ _ _).obj Y)).symm)
       homEquiv_naturality_left_symm := by
         intros

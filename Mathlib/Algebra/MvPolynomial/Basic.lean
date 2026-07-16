@@ -323,8 +323,7 @@ theorem induction_on_monomial {motive : MvPolynomial σ R → Prop}
     (mul_X : ∀ p n, motive p → motive (p * X n)) : ∀ s a, motive (monomial s a) := by
   intro s a
   apply @Finsupp.induction σ ℕ _ _ s
-  · change motive (monomial 0 a)
-    exact C a
+  · exact C a
   · intro n e p _hpn _he ih
     have : ∀ e : ℕ, motive (monomial p a * X n ^ e) := by
       intro e

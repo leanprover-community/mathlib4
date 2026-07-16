@@ -185,6 +185,9 @@ class AddSemigroup (G : Type u) extends Add G where
 
 attribute [to_additive] Semigroup
 
+attribute [instance 50] Semigroup.toMul
+attribute [instance 50] AddSemigroup.toAdd
+
 section Semigroup
 
 variable [Semigroup G]
@@ -241,6 +244,9 @@ class CommMagma (G : Type u) extends Mul G where
   protected mul_comm : ∀ a b : G, a * b = b * a
 
 attribute [to_additive] CommMagma
+
+attribute [instance 90] AddCommMagma.toAdd
+attribute [instance 90] CommMagma.toMul
 
 /-- A commutative semigroup is a type with an associative commutative `(*)`. -/
 @[ext]
@@ -355,6 +361,9 @@ compatibility. See `MulOneClass` for the additional assumption that 1 is an iden
 @[to_additive (attr := ext)]
 class MulOne (M : Type*) extends One M, Mul M
 
+attribute [instance 150] AddZero.toAdd
+attribute [instance 150] MulOne.toMul
+
 /-- An additive monoid is Dedekind-finite if every left inverse is also a right inverse.
 Also called von Neumann-finite or directly finite. -/
 class IsDedekindFiniteAddMonoid (M : Type*) [AddZero M] : Prop where
@@ -395,6 +404,9 @@ class MulOneClass (M : Type u) extends MulOne M where
   protected one_mul : ∀ a : M, 1 * a = a
   /-- One is a right neutral element for multiplication -/
   protected mul_one : ∀ a : M, a * 1 = a
+
+attribute [instance 150] AddZeroClass.toAddZero
+attribute [instance 150] MulOneClass.toMulOne
 
 @[to_additive (attr := ext)]
 theorem MulOneClass.ext {M : Type u} : ∀ ⦃m₁ m₂ : MulOneClass M⦄, m₁.mul = m₂.mul → m₁ = m₂ := by
@@ -638,7 +650,7 @@ theorem npowRec_eq_npowBinRec : @npowRecAuto = @npowBinRecAuto := by
   rfl
 
 /-- An `AddMonoid` is an `AddSemigroup` with an element `0` such that `0 + a = a + 0 = a`. -/
-class AddMonoid (M : Type u) extends AddSemigroup M, AddZeroClass M where
+class AddMonoid (M : Type u) extends AddZeroClass M, AddSemigroup M where
   /-- Multiplication by a natural number.
   Set this to `nsmulRec` unless `Module` diamonds are possible. -/
   protected nsmul : ℕ → M → M
@@ -647,18 +659,18 @@ class AddMonoid (M : Type u) extends AddSemigroup M, AddZeroClass M where
   /-- Multiplication by `(n + 1 : ℕ)` behaves as expected. -/
   protected nsmul_succ : ∀ (n : ℕ) (x), nsmul (n + 1) x = nsmul n x + x := by intros; rfl
 
-attribute [instance 150] AddSemigroup.toAdd
-attribute [instance 50] AddZero.toAdd
-
 /-- A `Monoid` is a `Semigroup` with an element `1` such that `1 * a = a * 1 = a`. -/
 @[to_additive]
-class Monoid (M : Type u) extends Semigroup M, MulOneClass M where
+class Monoid (M : Type u) extends MulOneClass M, Semigroup M where
   /-- Raising to the power of a natural number. -/
   protected npow : ℕ → M → M := npowRecAuto
   /-- Raising to the power `(0 : ℕ)` gives `1`. -/
   protected npow_zero : ∀ x, npow 0 x = 1 := by intros; rfl
   /-- Raising to the power `(n + 1 : ℕ)` behaves as expected. -/
   protected npow_succ : ∀ (n : ℕ) (x), npow (n + 1) x = npow n x * x := by intros; rfl
+
+attribute [instance 150] AddMonoid.toAddZeroClass
+attribute [instance 150] Monoid.toMulOneClass
 
 @[default_instance high, to_additive]
 instance Monoid.toPow {M : Type*} [Monoid M] : Pow M ℕ :=
@@ -790,6 +802,9 @@ class AddCommMonoid (M : Type u) extends AddMonoid M, AddCommSemigroup M
 /-- A commutative monoid is a monoid with commutative `(*)`. -/
 @[to_additive]
 class CommMonoid (M : Type u) extends Monoid M, CommSemigroup M
+
+attribute [instance 90] AddCommMonoid.toAddMonoid
+attribute [instance 90] CommMonoid.toMonoid
 
 /-- Shortcut instance for `IsCommutativeHMul M → IsDedekindFiniteMonoid M`.
 
@@ -1016,6 +1031,9 @@ class SubNegMonoid (G : Type u) extends AddMonoid G, Neg G, Sub G where
 
 attribute [to_additive SubNegMonoid] DivInvMonoid
 
+attribute [instance 100] DivInvMonoid.toMonoid
+attribute [instance 100] SubNegMonoid.toAddMonoid
+
 instance DivInvMonoid.toZPow {M} [DivInvMonoid M] : Pow M ℤ :=
   ⟨fun x n ↦ DivInvMonoid.zpow n x⟩
 
@@ -1124,9 +1142,15 @@ class SubNegZeroMonoid (G : Type*) extends SubNegMonoid G, NegZeroClass G
 class InvOneClass (G : Type*) extends One G, Inv G where
   protected inv_one : (1 : G)⁻¹ = 1
 
+attribute [instance 50] NegZeroClass.toZero
+attribute [instance 50] InvOneClass.toOne
+
 /-- A `DivInvMonoid` where `1⁻¹ = 1`. -/
 @[to_additive]
 class DivInvOneMonoid (G : Type*) extends DivInvMonoid G, InvOneClass G
+
+attribute [instance 100] SubNegZeroMonoid.toSubNegMonoid
+attribute [instance 100] DivInvOneMonoid.toDivInvMonoid
 
 variable [InvOneClass G]
 
@@ -1154,6 +1178,9 @@ class DivisionMonoid (G : Type u) extends DivInvMonoid G, InvolutiveInv G where
   /-- Despite the asymmetry of `inv_eq_of_mul`, the symmetric version is true thanks to the
   involutivity of inversion. -/
   protected inv_eq_of_mul (a b : G) : a * b = 1 → a⁻¹ = b
+
+attribute [instance 100] SubtractionMonoid.toSubNegMonoid
+attribute [instance 100] DivisionMonoid.toDivInvMonoid
 
 section DivisionMonoid
 
@@ -1186,6 +1213,11 @@ This is the immediate common ancestor of `CommGroup` and `CommGroupWithZero`. -/
 @[to_additive SubtractionCommMonoid]
 class DivisionCommMonoid (G : Type u) extends DivisionMonoid G, CommMonoid G
 
+attribute [instance 90] SubtractionCommMonoid.toSubtractionMonoid
+attribute [instance 50] SubtractionCommMonoid.toAddCommMonoid
+attribute [instance 90] DivisionCommMonoid.toDivisionMonoid
+attribute [instance 50] DivisionCommMonoid.toCommMonoid
+
 /-- A `Group` is a `Monoid` with an operation `⁻¹` satisfying `a⁻¹ * a = 1`.
 
 There is also a division operation `/` such that `a / b = a * b⁻¹`,
@@ -1209,6 +1241,9 @@ class AddGroup (A : Type u) extends SubNegMonoid A where
   protected neg_add_cancel : ∀ a : A, -a + a = 0
 
 attribute [to_additive (attr := wikidata Q83478)] Group
+
+attribute [instance 150] Group.toDivInvMonoid
+attribute [instance 150] AddGroup.toSubNegMonoid
 
 section Group
 
@@ -1278,6 +1313,11 @@ class AddCommGroup (G : Type u) extends AddGroup G, AddCommMonoid G
 -- There is intentionally no `IsMulCommutative` for `CommGroup` instance for performance reasons.
 @[to_additive]
 class CommGroup (G : Type u) extends Group G, CommMonoid G
+
+attribute [instance 90] AddCommGroup.toAddGroup
+attribute [instance 100] AddCommGroup.toAddCommMonoid
+attribute [instance 90] CommGroup.toGroup
+attribute [instance 100] CommGroup.toCommMonoid
 
 section CommGroup
 

@@ -51,6 +51,9 @@ class LinearOrderedAddCommGroupWithTop (α : Type*)
   neg_top : -(⊤ : α) = ⊤
   add_neg_cancel_of_ne_top ⦃x : α⦄ : x ≠ ⊤ → x + -x = 0
 
+attribute [instance 10] LinearOrderedAddCommGroupWithTop.toAddCommMonoid
+attribute [instance 10] LinearOrderedAddCommGroupWithTop.toSubNegMonoid
+
 section LinearOrderedAddCommMonoidWithTop
 variable [LinearOrderedAddCommMonoidWithTop α] {a b c : α}
 

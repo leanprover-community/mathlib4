@@ -137,6 +137,9 @@ instance : Min ℝ≥0∞ := SemilatticeInf.toMin
 
 instance : Max ℝ≥0∞ := SemilatticeSup.toMax
 
+instance : AddCommMonoid ℝ≥0∞ :=
+  inferInstanceAs (AddCommMonoid (WithTop ℝ≥0))
+
 noncomputable instance : CommSemiring ℝ≥0∞ :=
   inferInstanceAs (CommSemiring (WithTop ℝ≥0))
 
@@ -153,9 +156,6 @@ noncomputable instance : CompleteLinearOrder ℝ≥0∞ :=
   inferInstanceAs (CompleteLinearOrder (WithTop ℝ≥0))
 
 instance : DenselyOrdered ℝ≥0∞ := inferInstanceAs (DenselyOrdered (WithTop ℝ≥0))
-
-noncomputable instance : AddCommMonoid ℝ≥0∞ :=
-  inferInstanceAs (AddCommMonoid (WithTop ℝ≥0))
 
 noncomputable instance : LinearOrder ℝ≥0∞ :=
   inferInstanceAs (LinearOrder (WithTop ℝ≥0))

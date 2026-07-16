@@ -179,9 +179,9 @@ instance involutiveNeg [InvolutiveNeg α] : InvolutiveNeg (Matrix m n α) :=
 instance sub [Sub α] : Sub (Matrix m n α) :=
   inferInstanceAs <| Sub (m → n → α)
 
-instance addGroup [AddGroup α] : AddGroup (Matrix m n α) where
-  __ : AddGroup (Matrix m n α) := inferInstanceAs <| AddGroup (m → n → α)
-  zsmul a b := fun i ↦ a • b i
+instance addGroup [AddGroup α] : AddGroup (Matrix m n α) := fast_instance%
+  { __ : AddGroup (Matrix m n α) := inferInstanceAs <| AddGroup (m → n → α)
+    zsmul a b := fun i ↦ a • b i }
 
 instance addCommGroup [AddCommGroup α] : AddCommGroup (Matrix m n α) :=
   inferInstanceAs <| AddCommGroup (m → n → α)

@@ -146,13 +146,13 @@ def uniqueAlgEquiv [Unique M] : A[M] ≃ₐ[R] A where
   commutes' r := by simp [Unique.eq_default]
 
 variable (R M) in
-@[to_additive (attr := simp)]
+@[to_additive (dont_translate := R A) (attr := simp)]
 lemma toRingEquiv_uniqueAlgEquiv [Unique M] :
     RingEquivClass.toRingEquiv (uniqueAlgEquiv R (A := A) M) =
       uniqueRingEquiv (R := A) M := rfl
 
 variable (R M) in
-@[to_additive (attr := simp)]
+@[to_additive (dont_translate := R A) (attr := simp)]
 lemma toRingEquiv_symm_uniqueAlgEquiv [Unique M] :
     RingEquivClass.toRingEquiv (uniqueAlgEquiv R (A := A) M).symm =
       (uniqueRingEquiv (R := A) M).symm := rfl
