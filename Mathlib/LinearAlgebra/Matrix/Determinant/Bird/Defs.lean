@@ -150,34 +150,28 @@ namespace Spec
 open scoped BigOperators
 
 /-- One entry of one Matrix/Fin Bird recurrence step. -/
-def stepEntry {n : ℕ}
-    (A F : Matrix (Fin n) (Fin n) R) : Matrix (Fin n) (Fin n) R :=
+def stepEntry {n : ℕ} (A F : Matrix (Fin n) (Fin n) R) : Matrix (Fin n) (Fin n) R :=
   .of fun i j ↦ (-∑ k ∈ Finset.Ioi i, F k k) * A i j +
     ∑ k ∈ Finset.Ioi i, F i k * A k j
 
 /-- A version of the Bird determinant algorithm that is stated in terms of `Matrix`. -/
-def birdDet {n : ℕ}
-    (A : Matrix (Fin n) (Fin n) R) : R :=
+def birdDet {n : ℕ} (A : Matrix (Fin n) (Fin n) R) : R :=
   match n with
   | 0 => 1
   | k + 1 => (-1 : R) ^ k * (stepEntry A)^[k] A 0 0
 
-theorem stepEntry_eq {n : ℕ}
-    (A F : Matrix (Fin n) (Fin n) R) :
+theorem stepEntry_eq {n : ℕ} (A F : Matrix (Fin n) (Fin n) R) :
     stepEntry A F =
       .of fun i j ↦ (-∑ k ∈ Finset.Ioi i, F k k) * A i j
         + ∑ k ∈ Finset.Ioi i, F i k * A k j := by
   rfl
 
-theorem birdDetSpec_zero
-    (A : Matrix (Fin 0) (Fin 0) R) :
+theorem birdDetSpec_zero (A : Matrix (Fin 0) (Fin 0) R) :
     birdDet A = 1 := by
   rfl
 
-theorem birdDetSpec_succ {k : ℕ}
-    (A : Matrix (Fin (k + 1)) (Fin (k + 1)) R) :
-    birdDet A =
-      (-1 : R) ^ k * (stepEntry A)^[k] A 0 0 := by
+theorem birdDetSpec_succ {k : ℕ} (A : Matrix (Fin (k + 1)) (Fin (k + 1)) R) :
+    birdDet A = (-1 : R) ^ k * (stepEntry A)^[k] A 0 0 := by
   rw [birdDet]
 
 end Spec
