@@ -72,6 +72,7 @@ end Exp
 namespace ENNReal
 section OrderIso
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `ENNReal.log` and its inverse `EReal.exp` are an order isomorphism between `ℝ≥0∞` and
 `EReal`. -/
 noncomputable
