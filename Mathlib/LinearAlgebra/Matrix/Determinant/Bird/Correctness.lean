@@ -89,7 +89,7 @@ abbrev pminor (A : Matrix (Fin n) (Fin n) R) {p : ℕ} (α : Fin p → Fin n) : 
 /-- Bird's equation (1) : `x^(p)_ij = (-1)^p ∑ { f[iα, jα] | α ∈ S_p(βᵢ) }` -/
 abbrev Eq1 (A : Matrix (Fin n) (Fin n) R) (p : ℕ) : Prop :=
   (Spec.stepEntry A)^[p] A =
-    .of fun i j ↦ (-1 : R) ^ p • ∑ α ∈ S p i, bminor A i j α
+    .of fun i j ↦ (-1) ^ p * ∑ α ∈ S p i, bminor A i j α
 
 /-! ## Decomposition `S_{p+1}(βᵢ) = { kα | k ∈ βᵢ, α ∈ S_p(β_k) }` -/
 
@@ -123,17 +123,17 @@ variable (A : Matrix (Fin n) (Fin n) R) {p : ℕ}
 /-- Bird's equation (2), assuming equation (1) at `p` as the induction hypothesis. -/
 theorem paper_eq2 (i : Fin n) (hEq1 : Eq1 A p) :
     -Spec.diagSum ((Spec.stepEntry A)^[p] A) i =
-      (-1 : R) ^ (p + 1) • ∑ α ∈ S (p + 1) i, pminor A α := by
+      (-1) ^ (p + 1) * ∑ α ∈ S (p + 1) i, pminor A α := by
   calc
     -Spec.diagSum ((Spec.stepEntry A)^[p] A) i =
-      (-1 : R) ^ (p + 1) • ∑ k ∈ Finset.Ioi i, ∑ α ∈ S p k, bminor A k k α := by
+      (-1) ^ (p + 1) * ∑ k ∈ Finset.Ioi i, ∑ α ∈ S p k, bminor A k k α := by
       rw [Spec.diagSum_eq]
       rw [hEq1]
-      simp only [Matrix.of_apply, smul_eq_mul, ← Finset.mul_sum]
+      simp only [Matrix.of_apply, ← Finset.mul_sum]
       ring
-    _ = (-1 : R) ^ (p + 1) • ∑ α ∈ S (p + 1) i, pminor A α := by
+    _ = (-1) ^ (p + 1) * ∑ α ∈ S (p + 1) i, pminor A α := by
       rw [S_succ_eq_biUnion, Finset.sum_biUnion]
-      · congrm (((-1 : R) ^ (p + 1) * ∑ k ∈ Finset.Ioi i, ?_))
+      · congrm (((-1) ^ (p + 1) * ∑ k ∈ Finset.Ioi i, ?_))
         symm
         exact Finset.sum_image fun _ _ _ _ hαβ => (Fin.cons_inj.mp hαβ).2
       · grind [Set.PairwiseDisjoint, Set.Pairwise, Finset.disjoint_left, Fin.cons_inj]
@@ -148,10 +148,10 @@ theorem iter_succ_entry (i j : Fin n) :
 /-- Bird's equation (3), assuming equation (1) at `p` as the induction hypothesis. -/
 theorem paper_eq3 (i j : Fin n) (hEq1 : Eq1 A p) :
     ((Spec.stepEntry A)^[p + 1] A) i j =
-      (-1 : R) ^ (p + 1) • (∑ α ∈ S (p + 1) i, pminor A α * A i j -
+      (-1) ^ (p + 1) * (∑ α ∈ S (p + 1) i, pminor A α * A i j -
         ∑ k ∈ Finset.Ioi i, ∑ α ∈ S p i, bminor A i k α * A k j) := by
   rw [iter_succ_entry, paper_eq2 _ _ hEq1, hEq1]
-  simp only [smul_eq_mul, Matrix.of_apply, mul_assoc, Finset.sum_mul, ← Finset.mul_sum]
+  simp only [Matrix.of_apply, mul_assoc, Finset.sum_mul, ← Finset.mul_sum]
   ring
 
 /-! ## Equation (5): first-column Laplace expansion -/
@@ -478,7 +478,7 @@ public theorem birdDetSpec_eq_det (A : Matrix (Fin n) (Fin n) R) :
     exact Matrix.det_fin_zero
   | succ k =>
     rw [Spec.birdDetSpec_succ, paper_eq1,
-      Matrix.of_apply, sum_bminor_max_length_eq_det, smul_eq_mul,
+      Matrix.of_apply, sum_bminor_max_length_eq_det,
       ← mul_assoc, ← pow_add, Even.neg_one_pow ⟨k, rfl⟩, one_mul]
 
 /-- The flat-array algorithm `BirdDet.birdDet` computes the same determinant as
