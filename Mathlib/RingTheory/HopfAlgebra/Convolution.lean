@@ -23,6 +23,9 @@ f * g = f g
          |
 ```
 diagrammatically, where `μ` stands for multiplication and `δ` for comultiplication.
+
+We also provide `HopfAlgebra.ofAntipodeOfAdjoin`, which upgrades a bialgebra `A` to a Hopf algebra
+given an algebra hom `S : A →ₐ[R] Aᵐᵒᵖ` satisfying the antipode identities on a generating set.
 -/
 
 public section
@@ -158,3 +161,84 @@ lemma counitAlgHom_comp_antipodeAlgHom :
   AlgHom.toLinearMap_injective <| by simp
 
 end AlgHom
+
+namespace HopfAlgebra
+
+section OfAntipodeOfAdjoin
+
+open LinearMap
+
+variable [Semiring A] [Bialgebra R A] {X : Set A} (S : A →ₐ[R] Aᵐᵒᵖ)
+
+/-- `𝑺` denotes the candidate antipode `A →ₗ[R] A` induced by the algebra hom
+`S : A →ₐ[R] Aᵐᵒᵖ`. -/
+local notation "𝑺" =>
+  LinearEquiv.toLinearMap (LinearEquiv.symm (MulOpposite.opLinearEquiv R (M := A))) ∘ₗ
+    AlgHom.toLinearMap S
+
+theorem convMul_id_eq_one_of_adjoin_eq_top (hX : adjoin R X = ⊤)
+    (h : ∀ x ∈ X, μ (rTensor A 𝑺 (δ x)) = η[R] (ε x)) :
+    toConv 𝑺 * toConv .id = 1 := by
+  ext t
+  have ht : t ∈ adjoin R X := hX.ge trivial
+  induction ht using adjoin_induction with
+  | mem x hx => exact h x hx
+  | algebraMap r => simp [comul_algebraMap, Algebra.TensorProduct.algebraMap_apply]
+  | add x y _ _ hx hy => simp [map_add, hx, hy]
+  | mul x y _ _ hx hy =>
+    rw [(ℛ R x).convMul_apply] at hx
+    rw [(ℛ R y).convMul_apply] at hy
+    simp only [id_coe, id_eq, convOne_apply] at hx hy
+    calc
+      _ = ∑ j ∈ (ℛ R y).index, 𝑺 ((ℛ R y).left j) *
+          (∑ i ∈ (ℛ R x).index, 𝑺 ((ℛ R x).left i) * (ℛ R x).right i) * (ℛ R y).right j := by
+        rw [((ℛ R x).mul (ℛ R y)).convMul_apply]
+        simp only [id_coe, id_eq, Coalgebra.Repr.mul_index, Coalgebra.Repr.mul_left,
+          Coalgebra.Repr.mul_right, Finset.sum_product]
+        rw [Finset.sum_comm]
+        simp [Finset.mul_sum, Finset.sum_mul, mul_assoc]
+      _ = algebraMap R A (ε x) *
+          ∑ j ∈ (ℛ R y).index, 𝑺 ((ℛ R y).left j) * (ℛ R y).right j := by
+        rw [hx, Finset.mul_sum]
+        exact Finset.sum_congr rfl fun j _ ↦ by rw [← mul_assoc, Algebra.commutes, mul_assoc]
+      _ = algebraMap R A (ε (x * y)) := by rw [hy, counit_mul, map_mul]
+
+theorem id_convMul_eq_one_of_adjoin_eq_top (hX : adjoin R X = ⊤)
+    (h : ∀ x ∈ X, μ (lTensor A 𝑺 (δ x)) = η[R] (ε x)) :
+    toConv .id * toConv 𝑺 = 1 := by
+  ext t
+  have ht : t ∈ adjoin R X := hX.ge trivial
+  induction ht using adjoin_induction with
+  | mem x hx => exact h x hx
+  | algebraMap r => simp [comul_algebraMap, Algebra.TensorProduct.algebraMap_apply]
+  | add x y _ _ hx hy => simp [map_add, hx, hy]
+  | mul x y _ _ hx hy =>
+    rw [(ℛ R x).convMul_apply] at hx
+    rw [(ℛ R y).convMul_apply] at hy
+    simp only [id_coe, id_eq, convOne_apply] at hx hy
+    calc
+      _ = ∑ i ∈ (ℛ R x).index, (ℛ R x).left i *
+          (∑ j ∈ (ℛ R y).index, (ℛ R y).left j * 𝑺 ((ℛ R y).right j)) * 𝑺 ((ℛ R x).right i) := by
+        rw [((ℛ R x).mul (ℛ R y)).convMul_apply]
+        simp only [id_coe, id_eq, Coalgebra.Repr.mul_index, Coalgebra.Repr.mul_left,
+          Coalgebra.Repr.mul_right, Finset.sum_product]
+        simp [Finset.mul_sum, Finset.sum_mul, mul_assoc]
+      _ = (∑ i ∈ (ℛ R x).index, (ℛ R x).left i * 𝑺 ((ℛ R x).right i)) *
+          algebraMap R A (ε y) := by
+        rw [hy, Finset.sum_mul]
+        exact Finset.sum_congr rfl fun i _ ↦ by rw [mul_assoc, Algebra.commutes, mul_assoc]
+      _ = algebraMap R A (ε (x * y)) := by rw [hx, counit_mul, map_mul]
+
+/--
+If `A` is generated as an `R`-algebra by `X`, and `S : A →ₐ[R] Aᵐᵒᵖ` satisfies the two
+antipode identities on `X`, then the underlying linear map gives a Hopf algebra structure on `A`.
+-/
+noncomputable abbrev ofAntipodeOfAdjoin (hX : adjoin R X = ⊤)
+    (hxr : ∀ x ∈ X, μ (rTensor A 𝑺 (δ x)) = η[R] (ε x))
+    (hxl : ∀ x ∈ X, μ (lTensor A 𝑺 (δ x)) = η[R] (ε x)) : HopfAlgebra R A :=
+  ofConvInverse 𝑺 (convMul_id_eq_one_of_adjoin_eq_top S hX hxr)
+    (id_convMul_eq_one_of_adjoin_eq_top S hX hxl)
+
+end OfAntipodeOfAdjoin
+
+end HopfAlgebra
