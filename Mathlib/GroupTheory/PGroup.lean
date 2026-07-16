@@ -76,16 +76,11 @@ theorem _root_.isPGroup_iff_exponent_eq_pow [Finite G] [Fact p.Prime] :
 
 alias ⟨exists_exponent_eq_pow, _⟩ := isPGroup_iff_exponent_eq_pow
 
-theorem _root_.foo (G : Type*) [Group G] [Finite G] : ∃ k, Nat.card G ∣ Monoid.exponent G ^ k := by
-  sorry
-
 theorem _root_.isPGroup_iff_card_dvd_pow [Finite G] : IsPGroup p G ↔ ∃ n, Nat.card G ∣ p ^ n := by
   simp_rw [isPGroup_iff_exponent_dvd_pow]
   refine ⟨fun ⟨n, h⟩ ↦ ?_, fun ⟨n, h⟩ ↦ ⟨n, Group.exponent_dvd_nat_card.trans h⟩⟩
-  obtain ⟨k, hk⟩ := foo G
-  use n * k
-  rw [pow_mul]
-  exact hk.trans (pow_dvd_pow_of_dvd h k)
+  use n * Nat.card G
+  grw [Group.card_dvd_exponent_pow G, h, pow_mul]
 
 alias ⟨exists_card_dvd_pow, _⟩ := isPGroup_iff_card_dvd_pow
 
