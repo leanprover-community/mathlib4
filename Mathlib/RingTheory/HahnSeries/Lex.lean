@@ -292,6 +292,7 @@ noncomputable def finiteArchimedeanClassOrderHomInvLex :
       exact .inl (by simpa [ha, hb] using! h)
     · exact OrderHom.monotone _ hle
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable (Γ R) in
 /-- The correspondence between finite archimedean classes of `Lex R⟦Γ⟧`
 and lexicographical pairs of `HahnSeries.orderTop` and the finite archimedean class of

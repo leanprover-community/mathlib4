@@ -769,6 +769,7 @@ theorem prod_nnnorm_eq_sup (f : WithLp ∞ (α × β)) : ‖f‖₊ = ‖f.fst�
 
 section L1
 
+set_option backward.isDefEq.respectTransparency false in
 theorem prod_norm_eq_of_L1 (x : WithLp 1 (α × β)) :
     ‖x‖ = ‖x.fst‖ + ‖x.snd‖ := by
   simp [prod_norm_eq_add]
@@ -789,6 +790,7 @@ theorem prod_nndist_eq_of_L1 (x y : WithLp 1 (α × β)) :
     push_cast
     exact prod_dist_eq_of_L1 _ _
 
+set_option backward.isDefEq.respectTransparency false in
 theorem prod_edist_eq_of_L1 (x y : WithLp 1 (α × β)) :
     edist x y = edist x.fst y.fst + edist x.snd y.snd := by
   simp [prod_edist_eq_add]

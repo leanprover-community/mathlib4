@@ -37,6 +37,7 @@ namespace AlgebraicGeometry
 
 open _root_.PrimeSpectrum
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The forgetful functor from `𝒪_{Spec R}` modules to sheaves of `R`-modules. -/
 def modulesSpecToSheaf :
     (Spec R).Modules ⥤ TopCat.Sheaf (ModuleCat R) (Spec R) :=
@@ -103,6 +104,7 @@ lemma map_smul_Spec (hUV : .op V ⟶ .op U) (f : R) (x : Γ(M, V)) :
     dsimp% M.presheaf.map hUV (f • x) = f • M.presheaf.map hUV x :=
   ((modulesSpecToSheaf.obj M).obj.map hUV).hom.map_smul f x
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma isUnit_algebraMap_end_of_le_basicOpen (f : R) (hf : U ≤ PrimeSpectrum.basicOpen f) :
     IsUnit (algebraMap R (Module.End R Γ(M, U)) f) := by
   rw [Module.End.isUnit_iff]
@@ -168,6 +170,7 @@ def modulesSpecToSheafIso :
 def toOpen (U : (Spec R).Opens) : M ⟶ (modulesSpecToSheaf.obj (tilde M)).presheaf.obj (.op U) :=
   ModuleCat.ofHom (StructureSheaf.toOpenₗ R M U) ≫ ((modulesSpecToSheafIso M).app _).inv
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 theorem toOpen_res (U V : Opens (PrimeSpectrum.Top R)) (i : V ⟶ U) :
     toOpen M U ≫ (modulesSpecToSheaf.obj (tilde M)).presheaf.map i.op = toOpen M V :=
@@ -189,21 +192,25 @@ noncomputable def toStalk (x : PrimeSpectrum.Top R) :
     ModuleCat.of R M ⟶ ModuleCat.of R ((tilde M).presheaf.stalk x) :=
   ModuleCat.ofHom (StructureSheaf.toStalkₗ ..)
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance (x : PrimeSpectrum.Top R) :
     IsLocalizedModule x.asIdeal.primeCompl (toStalk M x).hom :=
   inferInstanceAs (IsLocalizedModule x.asIdeal.primeCompl (StructureSheaf.toStalkₗ ..))
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The tilde construction is functorial. -/
 protected noncomputable def map {M N : ModuleCat R} (f : M ⟶ N) : tilde M ⟶ tilde N :=
   SpecModulesToSheafFullyFaithful.preimage ⟨(modulesSpecToSheafIso M).hom ≫
     { app U := ModuleCat.ofHom (StructureSheaf.comapₗ f.hom _ _ .rfl) } ≫
     (modulesSpecToSheafIso N).inv⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp, reassoc]
 protected lemma map_id {M : ModuleCat R} : tilde.map (𝟙 M) = 𝟙 _ := by
   ext p x
   exact Subtype.ext (funext fun y ↦ DFunLike.congr_fun (LocalizedModule.map_id _) _)
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp, reassoc]
 protected lemma map_comp {M N P : ModuleCat R} (f : M ⟶ N) (g : N ⟶ P) :
     tilde.map (f ≫ g) = tilde.map f ≫ tilde.map g := by
@@ -214,6 +221,7 @@ protected lemma map_comp {M N P : ModuleCat R} (f : M ⟶ N) (g : N ⟶ P) :
       (LocalizedModule.mkLinearMap y.1.asIdeal.primeCompl N)
       (LocalizedModule.mkLinearMap y.1.asIdeal.primeCompl P) _ _) _)
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 lemma toOpen_map_app {M N : ModuleCat R} (f : M ⟶ N)
     (U : TopologicalSpace.Opens (PrimeSpectrum R)) :
@@ -229,6 +237,7 @@ variable (R) in
   obj := tilde
   map := tilde.map
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance isIso_toOpen_top {M : ModuleCat R} : IsIso (toOpen M ⊤) := by
   rw [toOpen, isIso_comp_right_iff, ConcreteCategory.isIso_iff_bijective]
   exact StructureSheaf.toOpenₗ_top_bijective
@@ -291,8 +300,8 @@ lemma Scheme.Modules.toOpen_fromTildeΓ_app (M : (Spec (.of R)).Modules) (U) :
       NatTrans.naturality, ← Category.assoc, this, ← Functor.map_comp, ← op_comp, homOfLE_comp]
     simp
   subst hU
-  simp only [fromTildeΓ,
-    homOfLE_leOfHom, Functor.FullyFaithful.map_preimage, TopCat.Sheaf.extend_hom_app]
+  simp only [fromTildeΓ, inducedFunctor_obj, homOfLE_leOfHom, Functor.FullyFaithful.map_preimage,
+    TopCat.Sheaf.extend_hom_app]
   ext x
   refine (IsLocalizedModule.lift_apply (.powers (M := R) 1)
     (tilde.toOpen _ (PrimeSpectrum.basicOpen (R := R) 1)).hom
@@ -361,6 +370,7 @@ def tilde.adjunction : tilde.functor R ⊣ moduleSpecΓFunctor where
     rw [toOpen_fromTildeΓ_app]
     exact (modulesSpecToSheaf.obj M).obj.map_id _
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : IsIso (tilde.adjunction (R := R)).unit := by
   dsimp [tilde.adjunction]; infer_instance
 
@@ -383,17 +393,21 @@ variable {M N : ModuleCat R} (f g : M ⟶ N)
 @[simp] lemma tilde.map_zero : tilde.map (0 : M ⟶ N) = 0 :=
   (tilde.functor R).map_zero _ _
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma tilde.map_add : tilde.map (f + g) = tilde.map f + tilde.map g :=
   (tilde.functor R).map_add
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma tilde.map_sub : tilde.map (f - g) = tilde.map f - tilde.map g :=
   (tilde.functor R).map_sub
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma tilde.map_neg : tilde.map (-f) = - tilde.map f :=
   (tilde.functor R).map_neg
 
 end
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma isIso_fromTildeΓ_iff {M : (Spec R).Modules} :
     IsIso M.fromTildeΓ ↔ (tilde.functor R).essImage M :=
   tilde.adjunction.isIso_counit_app_iff_mem_essImage
@@ -478,6 +492,7 @@ from `M(⊤)` to `M(D(f))` is localization with respect to `f`. -/
 abbrev IsLocalizing (M : TopCat.Sheaf (ModuleCat R) (Spec R)) : Prop :=
   ∀ f : R, IsLocalizedModule (.powers f) (M.obj.map (basicOpen f).leTop.op).hom
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem isLocalizing_of_iso {M N : TopCat.Sheaf (ModuleCat R) (Spec R)} (φ : M ≅ N)
     (hM : IsLocalizing M) :
     IsLocalizing N := by
@@ -605,6 +620,7 @@ lemma Scheme.Modules.exists_isOpenCover_presentation {X : Scheme.{u}} (M : X.Mod
   · intro j
     exact hsub _ j.2.2
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma Scheme.Modules.exists_affineOpenCover_presentation {X : Scheme.{u}} (M : X.Modules)
     [M.IsQuasicoherent] :
     ∃ (𝒰 : Scheme.AffineOpenCover.{u} X),
@@ -618,6 +634,7 @@ namespace QuasicoherentTilde
 
 variable (M : (Spec R).Modules)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Auxiliary structure used in the proof of `Scheme.Modules.isIso_fromTildeΓ_of_isQuasicoherent`.
 These are conditions d1) and d2) from [Theoreme 1.4.1, grothendieck-1971]. -/
 -- TODO: Generalise this to a general scheme, replacing `f : R` by sections over a suitable set.
