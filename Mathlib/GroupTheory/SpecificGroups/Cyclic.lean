@@ -273,13 +273,8 @@ theorem CommGroup.is_simple_iff_prime_card [CommGroup α] : IsSimpleGroup α ↔
   Group.is_simple_iff_prime_card
 
 open Subgroup in
-/-- A group with at most one maximal subgroup is cyclic. Maximal subgroups are the coatoms
-`IsCoatom (· : Subgroup G)` of the subgroup lattice; only `IsCoatomic (Subgroup G)` is required
-(automatic for finite `G`), with no finiteness, commutativity, or `p`-group hypothesis. -/
-@[to_additive /-- An additive group with at most one maximal subgroup is cyclic. Maximal subgroups
-are the coatoms `IsCoatom (· : AddSubgroup G)` of the subgroup lattice; only
-`IsCoatomic (AddSubgroup G)` is required (automatic for finite `G`), with no finiteness,
-commutativity, or `p`-group hypothesis. -/]
+/-- A group with at most one maximal subgroup is cyclic. -/
+@[to_additive /-- An additive group with at most one maximal subgroup is cyclic. -/]
 theorem isCyclic_of_isCoatom_subsingleton {G : Type*} [Group G] [IsCoatomic (Subgroup G)]
     (h : ∀ M₁ M₂ : Subgroup G, IsCoatom M₁ → IsCoatom M₂ → M₁ = M₂) :
     IsCyclic G := by
