@@ -58,9 +58,13 @@ variable (α β : Type*)
 by a subset of an indexing type `β` to make it easy to add and remove blocks if desired.
 Duplicate blocks are permitted unless `IncidenceSystem.IsSimple` is imposed. -/
 structure IncidenceSystem where
+  /-- The ambient set for the combinatorial design. -/
   carrier : Set α
+  /-- The indexing set for the blocks. -/
   blockSet : Set β
+  /-- The function from the indexing type `β` to the blocks in `α`. -/
   block (b : β) : Set α
+  /-- The blocks must be subsets of the ambient set. -/
   block_subset {b} (hb : b ∈ blockSet) : block b ⊆ carrier
 
 attribute [grind →] IncidenceSystem.block_subset
