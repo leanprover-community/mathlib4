@@ -771,8 +771,8 @@ lemma integrable_count_iff :
   have hs' : (Function.support f).Countable := by
     simpa only [Ne, Pi.zero_apply, eq_comm, Function.support, norm_eq_zero]
       using hs.countable_support
-  letI : MeasurableSpace β := borel β
-  haveI : BorelSpace β := ⟨rfl⟩
+  let : MeasurableSpace β := borel β
+  have : BorelSpace β := ⟨rfl⟩
   refine aestronglyMeasurable_iff_aemeasurable_separable.mpr ⟨?_, ?_⟩
   · refine (measurable_zero.measurable_of_countable_ne ?_).aemeasurable
     simpa only [Ne, Pi.zero_apply, eq_comm, Function.support] using hs'
@@ -1066,8 +1066,6 @@ theorem Integrable.bdd_mul {f g : α → 𝕜} {c : ℝ} (hg : Integrable g μ)
     (hf : AEStronglyMeasurable f μ) (hf_bound : ∀ᵐ x ∂μ, ‖f x‖ ≤ c) :
     Integrable (fun x => f x * g x) μ :=
   hg.bdd_smul c hf hf_bound
-
-@[deprecated (since := "2025-11-26")] alias Integrable.bdd_mul' := Integrable.bdd_mul
 
 theorem Integrable.mul_bdd {f g : α → 𝕜} {c : ℝ} (hf : Integrable f μ)
     (hg : AEStronglyMeasurable g μ) (hg_bound : ∀ᵐ x ∂μ, ‖g x‖ ≤ c) :

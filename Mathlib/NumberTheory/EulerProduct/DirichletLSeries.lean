@@ -184,7 +184,7 @@ lemma DirichletCharacter.LSeries_changeLevel {M N : ℕ} [NeZero N]
   · exact multipliable_subtype_iff_mulIndicator.mp Multipliable.of_finite
   · congr 1 with p
     simp only [Set.mulIndicator_apply, Set.mem_setOf_eq, Finset.mem_coe, Nat.mem_primeFactors,
-      ne_eq, mul_ite, ite_mul, one_mul, mul_one]
+      ne_eq, mul_ite, mul_one]
     by_cases h : p.Prime; swap
     · simp only [h, false_and, if_false]
     simp only [h, true_and, if_true]

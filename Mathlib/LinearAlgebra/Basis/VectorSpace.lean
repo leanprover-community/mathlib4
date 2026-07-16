@@ -247,7 +247,7 @@ theorem LinearMap.exists_leftInverse_of_injective (f : V →ₗ[K] V') (hf_inj :
   let C := this.extend (subset_univ _)
   have BC := this.subset_extend (subset_univ _)
   let hC := Basis.extend this
-  haveI Vinh : Inhabited V := ⟨0⟩
+  have Vinh : Inhabited V := ⟨0⟩
   refine ⟨(hC.constr ℕ : _ → _) (C.restrict (invFun f)), hB.ext fun b => ?_⟩
   rw [image_subset_iff] at BC
   have fb_eq : f b = hC ⟨f b, BC b.2⟩ := by
@@ -340,6 +340,7 @@ variable {K : Type*} {V : Type*} [Field K] [AddCommGroup V] [Module K V]
 
 variable {f : V →ₗ[K] K} {v : V}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- In a vector space, given a nonzero linear form `f`,
 a nonzero vector `v` such that `f v ≠ 0`,
 there exists a basis `b` with an index `i`
@@ -424,7 +425,7 @@ theorem exists_basis_of_pairing_eq_zero
   · apply b.ext
     intro i
     rw [Basis.coord_apply, Basis.repr_self]
-    simp only [b, Basis.mk_apply]
+    simp only [b]
     rcases i with ⟨x, rfl | ⟨x, hx, rfl⟩⟩
     · simp [hw]
     · suffices x ≠ w by simp [this]
