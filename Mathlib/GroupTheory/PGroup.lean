@@ -46,6 +46,10 @@ theorem iff_orderOf [Fact p.Prime] : IsPGroup p G ↔ ∀ g : G, ∃ k, orderOf 
 
 alias ⟨exists_orderOf_eq_pow, _⟩ := iff_orderOf
 
+theorem of_card_dvd_pow {n : ℕ} (hG : Nat.card G ∣ p ^ n) : IsPGroup p G := by
+  refine fun g ↦ ⟨n, ?_⟩
+  grw [← orderOf_dvd_iff_pow_eq_one, ← hG, orderOf_dvd_natCard]
+
 theorem _root_.isPGroup_iff_exists_orderOf_dvd_pow [Finite G] :
     IsPGroup p G ↔ ∃ k, ∀ g : G, orderOf g ∣ p ^ k := by
   refine isPGroup_iff_orderOf_dvd_pow.trans ⟨fun h ↦ ?_, fun ⟨k, hk⟩ ↦ fun g ↦ ⟨k, hk g⟩⟩
@@ -84,16 +88,6 @@ theorem _root_.isPGroup_iff_card_dvd_pow [Finite G] : IsPGroup p G ↔ ∃ n, Na
 
 alias ⟨exists_card_dvd_pow, _⟩ := isPGroup_iff_card_dvd_pow
 
-theorem iff_card [Fact p.Prime] [Finite G] : IsPGroup p G ↔ ∃ n : ℕ, Nat.card G = p ^ n := by
-  simp_rw [isPGroup_iff_card_dvd_pow, Nat.dvd_prime_pow Fact.out]
-  exact ⟨fun ⟨n, k, _, hk⟩ ↦ ⟨k, hk⟩, fun ⟨n, hn⟩ ↦ ⟨n, n, le_rfl, hn⟩⟩
-
-alias ⟨exists_card_eq, _⟩ := iff_card
-
-theorem of_card_dvd_pow {n : ℕ} (hG : Nat.card G ∣ p ^ n) : IsPGroup p G := by
-  refine fun g ↦ ⟨n, ?_⟩
-  grw [← orderOf_dvd_iff_pow_eq_one, ← hG, orderOf_dvd_natCard]
-
 theorem dvd_orderOf [Fact p.Prime] (hG : IsPGroup p G) {g : G} (hg : g ≠ 1) : p ∣ orderOf g := by
   have ⟨k, hk⟩ := hG.exists_orderOf_eq_pow g
   rw [hk]
@@ -130,6 +124,12 @@ protected theorem mono {q : ℕ} (hpq : p ∣ q) (hp : IsPGroup p G) : IsPGroup 
 
 theorem of_pow {n : ℕ} (h : IsPGroup (p ^ n) G) : IsPGroup p G :=
   fun g ↦ (h g).imp' (n * ·) <| by simp [pow_mul]
+
+theorem iff_card [Fact p.Prime] [Finite G] : IsPGroup p G ↔ ∃ n : ℕ, Nat.card G = p ^ n := by
+  simp_rw [isPGroup_iff_card_dvd_pow, Nat.dvd_prime_pow Fact.out]
+  exact ⟨fun ⟨n, k, _, hk⟩ ↦ ⟨k, hk⟩, fun ⟨n, hn⟩ ↦ ⟨n, n, le_rfl, hn⟩⟩
+
+alias ⟨exists_card_eq, _⟩ := iff_card
 
 theorem _root_.isPGroup_iff_isPGroup_prod_primeFactors (h : p ≠ 0) :
     IsPGroup p G ↔ IsPGroup (p.primeFactors.prod id) G :=
