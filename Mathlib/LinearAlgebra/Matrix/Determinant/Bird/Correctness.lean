@@ -144,11 +144,6 @@ theorem paper_eq3 (i j : Fin n) (hEq1 : Eq1 A p) :
 
 /-! ## Equation (5): first-column Laplace expansion -/
 
-lemma fin_cons_succ (α : Fin (p + 1) → Fin n) (i : Fin n) :
-    Fin.cons i α ∘ Fin.succ = α := by
-  funext q
-  simp only [Function.comp_apply, Fin.cons_succ]
-
 /--
 Precomposing `Fin.cons i α` with the embedding that skips `s.succ` preserves the head `i`
 and removes the entry at position `s` from the tail `α`.
@@ -203,7 +198,7 @@ theorem det_bordered_expand (α : Fin (p + 1) → Fin n) (i j : Fin n) :
       rw [bminor, Matrix.det_succ_column_zero, Fin.sum_univ_succ]
       simp only [Fin.val_zero, pow_zero, Matrix.submatrix_apply, Fin.cons_zero, one_mul,
         Fin.succAbove_zero, Matrix.submatrix_submatrix, Fin.val_succ, Fin.cons_succ,
-        fin_cons_succ, fin_cons_succAbove]
+        Fin.cons_comp_succ, fin_cons_succAbove]
     _ = pminor A α * A i j +
         ∑ s : Fin (p + 1),
           ((-1 : R) ^ (s.val + 1) *

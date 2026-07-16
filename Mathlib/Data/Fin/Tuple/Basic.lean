@@ -120,6 +120,11 @@ theorem tail_cons : tail (cons x p) = p := by
 theorem cons_succ : cons x p i.succ = p i := by simp [cons]
 
 @[simp]
+theorem cons_comp_succ {α : Sort*} (x : α) (p : Fin n → α) :
+    cons x p ∘ Fin.succ = p :=
+  funext fun _ ↦ Fin.cons_succ ..
+
+@[simp]
 theorem cons_zero : cons x p 0 = x := by simp [cons]
 
 @[simp]
