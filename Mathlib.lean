@@ -3544,10 +3544,10 @@ public import Mathlib.Combinatorics.Additive.VerySmallDoubling
 public import Mathlib.Combinatorics.Colex
 public import Mathlib.Combinatorics.Compactness
 public import Mathlib.Combinatorics.Configuration
-public import Mathlib.Combinatorics.Design.Defs
 public import Mathlib.Combinatorics.Derangements.Basic
 public import Mathlib.Combinatorics.Derangements.Exponential
 public import Mathlib.Combinatorics.Derangements.Finite
+public import Mathlib.Combinatorics.Design.Defs
 public import Mathlib.Combinatorics.Digraph.Basic
 public import Mathlib.Combinatorics.Digraph.Orientation
 public import Mathlib.Combinatorics.Enumerative.Bell
