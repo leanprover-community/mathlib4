@@ -145,13 +145,13 @@ theorem TFAE_exists_lt_isLittleO_pow (f : ℕ → ℝ) (R : ℝ) :
 
 /-- For any natural `k` and a real `r > 1` we have `n ^ k = o(r ^ n)` as `n → ∞`. -/
 theorem isLittleO_pow_const_const_pow_of_one_lt {R : Type*} [NormedRing R] (k : ℕ) {r : ℝ}
-    (hr : 1 < r) : (fun n ↦ (n : R) ^ k : ℕ → R) =o[atTop] fun n ↦ r ^ n := by
+    (hr : 1 < r) : (fun n ↦ n ^ k : ℕ → R) =o[atTop] fun n ↦ r ^ n := by
   have : Tendsto (fun x : ℝ ↦ x ^ k) (𝓝[>] 1) (𝓝 1) :=
     ((continuous_id.pow k).tendsto' (1 : ℝ) 1 (one_pow _)).mono_left inf_le_left
-  obtain ⟨r' : ℝ, hr' : r' ^ k < r, h1 : 1 < r'⟩ :=
+  obtain ⟨r', hr' : r' ^ k < r, h1 : 1 < r'⟩ :=
     ((this.eventually (gt_mem_nhds hr)).and self_mem_nhdsWithin).exists
   have h0 : 0 ≤ r' := zero_le_one.trans h1.le
-  suffices (fun n ↦ (n : R) ^ k : ℕ → R) =O[atTop] fun n : ℕ ↦ (r' ^ k) ^ n from
+  suffices (fun n ↦ n ^ k : ℕ → R) =O[atTop] fun n : ℕ ↦ (r' ^ k) ^ n from
     this.trans_isLittleO (isLittleO_pow_pow_of_lt_left (pow_nonneg h0 _) hr')
   conv in (r' ^ _) ^ _ => rw [← pow_mul, mul_comm, pow_mul]
   suffices ∀ n : ℕ, ‖(n : R)‖ ≤ (r' - 1)⁻¹ * ‖(1 : R)‖ * ‖r' ^ n‖ from
@@ -402,7 +402,7 @@ variable {R : Type*} [NormedRing R] {𝕜 : Type*} [NormedDivisionRing 𝕜]
 
 theorem summable_norm_mul_geometric_of_norm_lt_one {k : ℕ} {r : R}
     (hr : ‖r‖ < 1) {u : ℕ → ℕ} (hu : (fun n ↦ (u n : ℝ)) =O[atTop] (fun n ↦ (↑(n ^ k) : ℝ))) :
-    Summable fun n : ℕ ↦ ‖(u n * r ^ n : R)‖ := by
+    Summable fun n : ℕ ↦ ‖u n * r ^ n‖ := by
   rcases exists_between hr with ⟨r', hrr', h⟩
   rw [← norm_norm] at hrr'
   apply summable_of_isBigO_nat (summable_geometric_of_lt_one ((norm_nonneg _).trans hrr'.le) h)
@@ -422,19 +422,18 @@ theorem summable_norm_mul_geometric_of_norm_lt_one {k : ℕ} {r : R}
       exact (isLittleO_pow_const_mul_const_pow_const_pow_of_norm_lt k hrr').isBigO
 
 theorem summable_norm_pow_mul_geometric_of_norm_lt_one (k : ℕ) {r : R}
-    (hr : ‖r‖ < 1) : Summable fun n : ℕ ↦ ‖(n ^ k * r ^ n : R)‖ := by
+    (hr : ‖r‖ < 1) : Summable fun n : ℕ ↦ ‖n ^ k * r ^ n‖ := by
   simp only [← cast_pow]
   exact summable_norm_mul_geometric_of_norm_lt_one (k := k) (u := fun n ↦ n ^ k) hr
     (isBigO_refl _ _)
 
 theorem summable_norm_geometric_of_norm_lt_one {r : R}
-    (hr : ‖r‖ < 1) : Summable fun n : ℕ ↦ ‖(r ^ n : R)‖ := by
+    (hr : ‖r‖ < 1) : Summable fun n : ℕ ↦ ‖r ^ n‖ := by
   simpa using summable_norm_pow_mul_geometric_of_norm_lt_one 0 hr
 
 variable [HasSummableGeomSeries R]
 
-lemma hasSum_choose_mul_geometric_of_norm_lt_one'
-    (k : ℕ) {r : R} (hr : ‖r‖ < 1) :
+lemma hasSum_choose_mul_geometric_of_norm_lt_one' (k : ℕ) {r : R} (hr : ‖r‖ < 1) :
     HasSum (fun n ↦ (n + k).choose k * r ^ n) ((1 - r)⁻¹ʳ ^ (k + 1)) := by
   induction k with
   | zero => simpa using hasSum_geom_series_inverse r hr
