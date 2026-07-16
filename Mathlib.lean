@@ -2632,6 +2632,7 @@ public import Mathlib.CategoryTheory.ConcreteCategory.BundledHom
 public import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 public import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
 public import Mathlib.CategoryTheory.ConcreteCategory.Forget
+public import Mathlib.CategoryTheory.ConcreteCategory.Notation
 public import Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso
 public import Mathlib.CategoryTheory.ConcreteCategory.Representable
 public import Mathlib.CategoryTheory.ConcreteCategory.UnbundledHom
