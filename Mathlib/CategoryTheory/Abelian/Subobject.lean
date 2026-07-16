@@ -7,7 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.Abelian.Basic
 public import Mathlib.CategoryTheory.Subobject.Limits
-public import Mathlib.CategoryTheory.Category.GaloisConnection
 
 /-!
 # Subobjects in abelian categories

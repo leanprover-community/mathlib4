@@ -12,7 +12,7 @@ public import Mathlib.CategoryTheory.ConcreteCategory.Basic
 public import Mathlib.Tactic.ApplyFun
 public import Mathlib.Tactic.CategoryTheory.Elementwise
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
-import Mathlib.CategoryTheory.Category.GaloisConnection
+public import Mathlib.CategoryTheory.Category.GaloisConnection
 
 /-!
 # Subobjects
