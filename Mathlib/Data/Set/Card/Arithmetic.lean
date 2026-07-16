@@ -118,7 +118,6 @@ lemma ncard_iUnion_of_finite [Finite ι] {s : ι → Set α} (hs : ∀ i, (s i).
 
 lemma Finite.encard_biUnion {t : Set ι} (ht : t.Finite) {s : ι → Set α}
     (hs : t.PairwiseDisjoint s) : (⋃ i ∈ t, s i).encard = ∑ᶠ i ∈ t, (s i).encard := by
-  classical
   by_cases! h : ∀ i ∈ t, (s i).Finite
   · have : (⋃ i ∈ t, s i).Finite := ht.biUnion (fun i hi ↦ h i hi)
     rw [← this.cast_ncard_eq, ncard_biUnion ht h hs,
