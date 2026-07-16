@@ -228,6 +228,7 @@ lemma tendsto_untopA [Nonempty ι] {a : WithTop ι} (ha : a ≠ ⊤) :
 lemma continuousOn_untopA [Nonempty ι] : ContinuousOn untopA { a : WithTop ι | a ≠ ⊤ } :=
   continuousOn_untopD _
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_dual]
 lemma tendsto_untop (a : {a : WithTop ι | a ≠ ⊤}) :
     Tendsto (fun x ↦ untop x.1 x.2) (𝓝 a) (𝓝 (untop a.1 a.2)) := by

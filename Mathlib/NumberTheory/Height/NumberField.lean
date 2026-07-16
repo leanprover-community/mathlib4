@@ -63,6 +63,7 @@ lemma count_multisetInfinitePlace_eq_mult [DecidableEq (AbsoluteValue K ℝ)] (v
   simpa only [multisetInfinitePlace, Multiset.count_bind, Finset.sum_map_val,
     Multiset.count_replicate, ← Subtype.ext_iff] using Fintype.sum_ite_eq' v ..
 
+set_option backward.isDefEq.respectTransparency.types false in
 -- For the user-facing version, see `prod_archAbsVal_eq` below.
 private lemma prod_multisetInfinitePlace_eq {M : Type*} [CommMonoid M] (f : AbsoluteValue K ℝ → M) :
     ((multisetInfinitePlace K).map f).prod = ∏ v : InfinitePlace K, f v.val ^ v.mult := by
@@ -90,6 +91,7 @@ lemma prod_nonarchAbsVal_eq {M : Type*} [CommMonoid M] (f : AbsoluteValue K ℝ 
     (∏ᶠ v : nonarchAbsVal, f v.val) = ∏ᶠ v : FinitePlace K, f v.val :=
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 open Finset Multiset in
 lemma sum_archAbsVal_eq {M : Type*} [AddCommMonoid M] (f : AbsoluteValue K ℝ → M) :
     (archAbsVal.map f).sum = ∑ v : InfinitePlace K, v.mult • f v.val := by
@@ -175,7 +177,7 @@ private lemma absNorm_mul_finprod_finitePlace_eq_one_aux [Nonempty ι] (hx : ∀
   exact apply_mul_absNorm_pow_eq_one v (hx i)
 
 -- TODO: Generalize the following to integral closures of `ℤ` in `K` in place of `𝓞 K`.
-open Ideal RingOfIntegers in
+open Ideal in
 /-- This statement is equivalent to the fact that the "finite part" of the multiplicative
 height of a (non-zero) tuple `x` is the inverse of the absolute norm of the ideal generated
 by the values of `x`. We state it in a way that avoids taking an inverse. -/

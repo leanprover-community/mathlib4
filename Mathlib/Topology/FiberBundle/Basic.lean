@@ -272,6 +272,7 @@ theorem totalSpaceMk_isClosedEmbedding [T1Space B] (x : B) :
     rw [TotalSpace.range_mk]
     exact isClosed_singleton.preimage <| continuous_proj F E⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An arbitrary homeomorphism between any fiber and the model fiber.
 This is useful to transfer topological properties of the model fiber. -/
 noncomputable def homeomorphAt (b : B) : E b ≃ₜ F :=
@@ -491,6 +492,7 @@ theorem mem_trivChange_source (i j : ι) (p : B × F) :
   rw [trivChange, mem_prod]
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Associate to a trivialization index `i : ι` the corresponding trivialization, i.e., a bijection
 between `proj ⁻¹ (baseSet i)` and `baseSet i × F`. As the fiber above `x` is `F` but read in the
 chart with index `index_at x`, the trivialization in the fiber above x is by definition the
@@ -661,6 +663,7 @@ theorem localTriv_apply (p : Z.TotalSpace) :
     (Z.localTriv i) p = ⟨p.1, Z.coordChange (Z.indexAt p.1) i p.1 p.2⟩ :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, mfld_simps]
 theorem localTrivAt_apply (p : Z.TotalSpace) : (Z.localTrivAt p.1) p = ⟨p.1, p.2⟩ := by
   rw [localTrivAt, localTriv_apply, coordChange_self]
@@ -762,7 +765,7 @@ variable {F E}
 variable (a : FiberPrebundle F E) {e : Pretrivialization F (π F E)}
 
 /-- Topology on the total space that will make the prebundle into a bundle. -/
-@[implicit_reducible]
+@[instance_reducible]
 def totalSpaceTopology (a : FiberPrebundle F E) : TopologicalSpace (TotalSpace F E) :=
   ⨆ (e : Pretrivialization F (π F E)) (_ : e ∈ a.pretrivializationAtlas),
     coinduced e.setSymm instTopologicalSpaceSubtype
@@ -844,7 +847,7 @@ number of "pretrivializations" identifying parts of `E` with product spaces `U �
 establishes that for the topology constructed on the sigma-type using
 `FiberPrebundle.totalSpaceTopology`, these "pretrivializations" are actually
 "trivializations" (i.e., homeomorphisms with respect to the constructed topology). -/
-@[implicit_reducible]
+@[instance_reducible]
 def toFiberBundle : @FiberBundle B F _ _ E a.totalSpaceTopology _ :=
   let _ := a.totalSpaceTopology
   { totalSpaceMk_isInducing' := fun b ↦ a.inducing_totalSpaceMk_of_inducing_comp b

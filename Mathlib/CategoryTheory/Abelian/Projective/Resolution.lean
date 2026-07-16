@@ -94,6 +94,7 @@ def lift {Y Z : C} (f : Y ⟶ Z) (P : ProjectiveResolution Y) (Q : ProjectiveRes
   ChainComplex.mkHom _ _ (liftFZero f _ _) (liftFOne f _ _) (liftFOne_zero_comm f P Q)
     fun n ⟨g, g', w⟩ => ⟨(liftFSucc P Q n g g' w).1, (liftFSucc P Q n g g' w).2⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The resolution maps intertwine the lift of a morphism and that morphism. -/
 @[reassoc (attr := simp)]
 theorem lift_commutes {Y Z : C} (f : Y ⟶ Z) (P : ProjectiveResolution Y)
@@ -288,6 +289,7 @@ variable (Z : C)
 -- The construction of the projective resolution `of` would be very, very slow
 -- if it were not broken into separate definitions and lemmas
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Auxiliary definition for `ProjectiveResolution.of`. -/
 def ofComplex : ChainComplex C ℕ :=
   ChainComplex.mk' (Projective.over Z) (Projective.syzygies (Projective.π Z))
@@ -297,6 +299,7 @@ lemma ofComplex_d_1_0 :
     (ofComplex Z).d 1 0 = d (Projective.π Z) := by
   simp [ofComplex]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma ofComplex_exactAt_succ (n : ℕ) :
     (ofComplex Z).ExactAt (n + 1) := by
   rw [HomologicalComplex.exactAt_iff' _ (n + 1 + 1) (n + 1) n (by simp) (by simp)]
@@ -307,6 +310,7 @@ lemma ofComplex_exactAt_succ (n : ℕ) :
   | 0 => apply exact_d_f
   | n + 1 => apply exact_d_f
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance (n : ℕ) : Projective ((ofComplex Z).X n) := by
   obtain (_ | _ | _ | n) := n <;> apply Projective.projective_over
 

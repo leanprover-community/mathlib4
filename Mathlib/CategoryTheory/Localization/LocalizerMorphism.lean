@@ -33,7 +33,7 @@ universe v₁ v₂ v₃ v₄ v₄' v₅ v₅' v₆ u₁ u₂ u₃ u₄ u₄' u�
 
 namespace CategoryTheory
 
-open Localization Functor
+open Localization CategoryTheory.Functor
 
 variable {C₁ : Type u₁} {C₂ : Type u₂} {C₃ : Type u₃} {D₁ : Type u₄} {D₂ : Type u₅}
   [Category.{v₁} C₁] [Category.{v₂} C₂] [Category.{v₃} C₃] [Category.{v₄} D₁] [Category.{v₅} D₂]
@@ -384,6 +384,7 @@ section
 
 variable [Φ.functor.IsEquivalence] [Φ.IsInduced] [W₂.RespectsIso]
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 attribute [local simp] Functor.asEquivalence_counitIso_hom_app
   Functor.asEquivalence_counitIso_inv_app in
@@ -405,6 +406,7 @@ instance : Φ.inv.functor.IsEquivalence := by
   dsimp
   infer_instance
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 attribute [local simp] Functor.asEquivalence_inverse
   Functor.asEquivalence_counitIso_hom_app Functor.asEquivalence_counitIso_inv_app in
