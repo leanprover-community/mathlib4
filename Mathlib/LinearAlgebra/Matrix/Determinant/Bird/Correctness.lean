@@ -318,7 +318,9 @@ theorem paper_eq3_eq5_off_diag (i j : Fin n) :
     simp only [Finset.mem_product, Finset.mem_Ioi] at htarget
     obtain ⟨hα, hk⟩ := htarget
     by_cases hoccurs : k ∈ Set.range α
-    · rw [bminor_eq_zero_of_mem_range A α i hoccurs, zero_mul]
+    · -- The border column `k` is repeated among the columns indexed by `α` and
+      -- so the bordered minor is 0.
+      rw [bminor_eq_zero_of_mem_range A α i hoccurs, zero_mul]
     · exfalso
       apply hnotmem
       obtain ⟨t, ht⟩ := exists_insertNth_mem_S hα hk hoccurs
