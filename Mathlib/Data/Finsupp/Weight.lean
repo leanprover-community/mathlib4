@@ -172,7 +172,6 @@ theorem le_weight_of_ne_zero' {s : σ} {f : σ →₀ ℕ} (hs : f s ≠ 0) : w 
 theorem weight_eq_zero_iff_eq_zero
     (w : σ → M) [NonTorsionWeight ℕ w] {f : σ →₀ ℕ} :
     weight w f = 0 ↔ f = 0 := by
-  classical
   constructor
   · intro h
     ext s
@@ -218,14 +217,7 @@ def degree : (σ →₀ R) →+ R where
   map_zero' := by simp
   map_add' := fun _ _ => sum_add_index' (h := fun _ ↦ id) (congrFun rfl) fun _ _ ↦ congrFun rfl
 
-@[deprecated (since := "2025-12-09")] alias degree_add := map_add
-
-@[deprecated (since := "2025-12-09")] alias degree_zero := map_zero
-
 theorem degree_apply (d : σ →₀ R) : degree d = ∑ i ∈ d.support, d i := rfl
-
-@[deprecated (since := "2025-12-09")]
-alias degree_def := degree_apply
 
 theorem degree_eq_sum [Fintype σ] (f : σ →₀ R) : f.degree = ∑ i, f i := by
   rw [degree_apply, Finset.sum_subset] <;> simp

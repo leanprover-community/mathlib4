@@ -655,7 +655,6 @@ lemma infinite_powers : (powers a : Set G).Infinite ↔ ¬ IsOfFinOrder a := fin
 /-- See also `orderOf_eq_card_powers`. -/
 @[to_additive /-- See also `addOrder_eq_card_multiples`. -/]
 lemma Nat.card_submonoidPowers : Nat.card (powers a) = orderOf a := by
-  classical
   by_cases ha : IsOfFinOrder a
   · exact (Nat.card_congr (finEquivPowers ha).symm).trans <| by simp
   · have := (infinite_powers.2 ha).to_subtype
@@ -742,7 +741,6 @@ lemma infinite_powers : (powers a : Set G).Infinite ↔ ¬ IsOfFinOrder a := fin
 /-- See also `orderOf_eq_card_powers`. -/
 @[to_additive /-- See also `addOrder_eq_card_multiples`. -/]
 lemma Nat.card_submonoidPowers : Nat.card (powers a) = orderOf a := by
-  classical
   by_cases ha : IsOfFinOrder a
   · exact (Nat.card_congr (finEquivPowers ha).symm).trans <| by simp
   · have := (infinite_powers.2 ha).to_subtype
@@ -1190,9 +1188,6 @@ theorem pow_card_eq_one' {G : Type*} [Group G] {x : G} : x ^ Nat.card G = 1 :=
 @[to_additive (attr := simp) card_nsmul_eq_zero]
 theorem pow_card_eq_one : x ^ Fintype.card G = 1 := by
   rw [← Nat.card_eq_fintype_card, pow_card_eq_one']
-
-@[deprecated "Use simp" (since := "2025-12-05")]
-theorem pow_gcd_card_eq_one_iff : x ^ n.gcd (Fintype.card G) = 1 ↔ x ^ n = 1 := by simp
 
 @[to_additive]
 theorem Subgroup.pow_index_mem {G : Type*} [Group G] (H : Subgroup G) [Normal H] (g : G) :

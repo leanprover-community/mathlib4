@@ -497,9 +497,6 @@ theorem support_mul_subset [NonUnitalNonAssocSemiring R] {x y : R⟦Γ⟧} :
   rw [← of_symm_smul_of_eq_mul, ← vadd_eq_add]
   exact HahnModule.support_smul_subset_vadd_support
 
-@[deprecated (since := "2025-12-09")]
-alias support_mul_subset_add_support := support_mul_subset
-
 instance [NonUnitalNonAssocSemiring R] : NonUnitalNonAssocSemiring R⟦Γ⟧ where
   zero_mul _ := by
     ext
@@ -883,7 +880,7 @@ theorem embDomain_mul [NonUnitalNonAssocSemiring R] (f : Γ ↪o Γ')
       simp only [mem_antidiagonal, embDomain_coeff, mem_support, ← hf,
         OrderEmbedding.eq_iff_eq] at h1
       exact ⟨i, j, h1, rfl⟩
-  · rw [embDomain_notin_range hg, eq_comm]
+  · rw [embDomain_of_notMem_range hg, eq_comm]
     contrapose! hg
     obtain ⟨_, hi, _, hj, rfl⟩ := support_mul_subset ((mem_support _ _).2 hg)
     obtain ⟨i, _, rfl⟩ := support_embDomain_subset hi

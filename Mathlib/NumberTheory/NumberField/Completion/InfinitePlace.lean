@@ -397,7 +397,7 @@ namespace LiesOver
 
 open Completion
 
-variable [w.1.LiesOver v.1]
+variable [w.LiesOver v]
 
 theorem isometry_algebraMap : Isometry (algebraMap (WithAbs v.1) (WithAbs w.1)) :=
   AddMonoidHomClass.isometry_of_norm _ fun x ↦ by

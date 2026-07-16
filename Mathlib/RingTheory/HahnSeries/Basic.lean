@@ -375,10 +375,6 @@ theorem coeff_order_eq_zero {x : R⟦Γ⟧} : x.coeff x.order = 0 ↔ x = 0 := b
   rw [order_of_ne hx]
   exact x.isWF_support.min_mem (support_nonempty_iff.2 hx)
 
-@[deprecated coeff_order_eq_zero (since := "2025-12-09")]
-theorem coeff_order_ne_zero {x : R⟦Γ⟧} (hx : x ≠ 0) : x.coeff x.order ≠ 0 :=
-  coeff_order_eq_zero.not.2 hx
-
 theorem order_le_of_coeff_ne_zero {Γ} [Zero Γ] [LinearOrder Γ] {x : R⟦Γ⟧}
     {g : Γ} (h : x.coeff g ≠ 0) : x.order ≤ g :=
   le_trans (le_of_eq (order_of_ne (ne_zero_of_coeff_ne_zero h)))
@@ -473,9 +469,11 @@ theorem support_embDomain_subset {f : Γ ↪o Γ'} {x : R⟦Γ⟧} :
   contrapose hg
   rw [mem_support, embDomain_notin_image_support hg, Classical.not_not]
 
-theorem embDomain_notin_range {f : Γ ↪o Γ'} {x : R⟦Γ⟧} {b : Γ'} (hb : b ∉ Set.range f) :
+theorem embDomain_of_notMem_range {f : Γ ↪o Γ'} {x : R⟦Γ⟧} {b : Γ'} (hb : b ∉ Set.range f) :
     (embDomain f x).coeff b = 0 :=
   embDomain_notin_image_support fun con => hb (Set.image_subset_range _ _ con)
+
+@[deprecated (since := "2026-07-15")] alias embDomain_notin_range := embDomain_of_notMem_range
 
 @[simp]
 theorem embDomain_zero {f : Γ ↪o Γ'} : embDomain f (0 : R⟦Γ⟧) = 0 := by

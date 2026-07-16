@@ -274,7 +274,6 @@ private theorem fixed_of_fixed1_aux3 [NoZeroDivisors B] {b : B} {i j : ℕ} {p :
 private theorem fixed_of_fixed1 [Module.IsTorsionFree (B ⧸ Q) L] (f : Gal(L/K)) (b : B ⧸ Q)
     (hx : ∀ g : MulAction.stabilizer G Q, Ideal.Quotient.stabilizerHom Q P G g b = b) :
     f (algebraMap (B ⧸ Q) L b) = (algebraMap (B ⧸ Q) L b) := by
-  classical
   cases nonempty_fintype G
   obtain ⟨b₀, rfl⟩ := Ideal.Quotient.mk_surjective b
   rw [← Ideal.Quotient.algebraMap_eq]

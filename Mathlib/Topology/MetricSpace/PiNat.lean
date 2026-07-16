@@ -846,7 +846,6 @@ protected def pseudoEMetricSpace : PseudoEMetricSpace (∀ i, F i) where
       PseudoEMetricSpace.uniformity_edist, le_antisymm_iff, le_iInf_iff, le_principal_iff]
     constructor
     · intro ε hε
-      classical
       obtain ⟨K, hK⟩ : ∃ K : Finset ι, ∑' i : {j // j ∉ K}, 2⁻¹ ^ encode (i : ι) < ε / 2 :=
         ((tendsto_order.1 <| ENNReal.tendsto_tsum_compl_atTop_zero
           (tsum_geometric_encode_lt_top ENNReal.one_half_lt_one).ne).2 _
@@ -1163,10 +1162,6 @@ theorem exists_embedding_to_hilbert_cube : ∃ F : X → ℕ → I, IsEmbedding 
   let isEmbedding_secondstep : IsEmbedding secondstep :=
       (isUniformEmbedding_embed injective_distDenseSeq).isEmbedding
   exact ⟨_, isEmbedding_secondstep.comp firststep.isEmbedding⟩
-
-@[deprecated "This version is more general as compact metric spaces are separable"
-(since := "2025-11-27")] alias
-exists_closed_embedding_to_hilbert_cube := Metric.PiNatEmbed.exists_embedding_to_hilbert_cube
 
 end MetricSpace
 end PiNatEmbed
