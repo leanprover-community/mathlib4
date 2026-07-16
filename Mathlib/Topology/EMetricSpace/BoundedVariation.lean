@@ -6,6 +6,7 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Order.Interval.Set.ProjIcc
+public import Mathlib.Data.Finset.Sort
 public import Mathlib.Tactic.Finiteness
 public import Mathlib.Topology.UniformSpace.UniformConvergenceTopology
 public import Mathlib.Topology.Instances.ENNReal.Lemmas
@@ -247,6 +248,7 @@ protected theorem lowerSemicontinuous (s : Set α) :
   simpa only [UniformOnFun.tendsto_iff_tendstoUniformlyOn, mem_image, forall_exists_index, and_imp,
     forall_apply_eq_imp_iff₂, tendstoUniformlyOn_singleton_iff_tendsto] using! @tendsto_id _ (𝓝 f)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The map `(eVariationOn · s)` is lower semicontinuous for uniform convergence on `s`. -/
 theorem lowerSemicontinuous_uniformOn (s : Set α) :
     LowerSemicontinuous fun f : α →ᵤ[{s}] E => eVariationOn f s := fun f ↦ by
@@ -411,7 +413,7 @@ theorem sum (f : α → E) {s : Set α} {E : ℕ → α} (hE : Monotone E) {n : 
     ∑ i ∈ Finset.range n, eVariationOn f (s ∩ Icc (E i) (E (i + 1))) =
       eVariationOn f (s ∩ Icc (E 0) (E n)) := by
   induction n with
-  | zero => simp [eVariationOn.subsingleton f Subsingleton.inter_singleton]
+  | zero => simp [Subsingleton.inter_singleton]
   | succ n ih =>
     by_cases hn₀ : n = 0
     · simp [hn₀]
@@ -431,6 +433,64 @@ theorem sum' (f : α → E) {I : ℕ → α} (hI : Monotone I) {n : ℕ} :
   · simp only [right_eq_inter]
     gcongr <;> (apply hI; rw [Finset.mem_range] at hi; lia)
   · simp
+
+/-- The variation of `f` on a two-point set `{a, b}` is the distance between its two values. -/
+@[simp]
+theorem pair (f : α → E) (a b : α) : eVariationOn f {a, b} = edist (f a) (f b) := by
+  wlog hab : a ≤ b generalizing a b
+  · simpa [edist_comm, pair_comm] using this b a (le_of_not_ge hab)
+  · apply le_antisymm _ (edist_le f (by simp) (by simp))
+    simp only [eVariationOn_eq_strictMonoOn, iSup_le_iff]
+    rintro ⟨n, u, hmono, hi⟩
+    rcases (by omega : n = 0 ∨ n = 1 ∨ 2 ≤ n) with rfl | rfl | hn
+    · simp
+    · have := hmono (by simp) (by simp) zero_lt_one
+      simp [(by grind : u 0 = a), (by grind : u 1 = b), edist_comm]
+    · have := hmono (by simp) (by grind) zero_lt_one
+      have := hmono (by grind) (by grind) one_lt_two
+      grind
+
+/-- A generalization of `eVariationOn.union` in which the greatest element of `s` is allowed to lie
+to the left of the least element of `t`. -/
+theorem union' (f : α → E) {s t : Set α} {x y : α} (hs : IsGreatest s x) (ht : IsLeast t y)
+    (hxy : x ≤ y) :
+    eVariationOn f (s ∪ t) = eVariationOn f s + edist (f x) (f y) + eVariationOn f t := by
+  rw [(by grind [hs.1, ht.1] : s ∪ t = (s ∪ {x, y}) ∪ t), union f _ ht, union f hs]
+  <;> simp [IsLeast, IsGreatest, hxy, upperBounds_mono_mem hxy hs.2]
+
+/-- The variation of `f` along the image of `{0, …, n}` under a monotone sequence `u` is the sum of
+the distances between consecutive values. -/
+theorem image_range_of_monotone (f : α → E) {u : ℕ → α} (hu : Monotone u) (n : ℕ) :
+    eVariationOn f (u '' Iic n) = ∑ i ∈ .range n, edist (f (u i)) (f (u (i + 1))) := by
+  induction n with
+  | zero => simp [Iic]
+  | succ n ih =>
+    rw [(by grind : u '' Iic (n + 1) = u '' Iic n ∪ {u n, u (n + 1)}), union f]
+    · simp [Finset.sum_range_succ, ih]
+    · simpa [IsGreatest, upperBounds] using ⟨⟨n, by simp⟩, fun a ha ↦ hu ha⟩
+    · simp [IsLeast, hu n.le_succ]
+
+private theorem _root_.BoundedVariationOn.of_finset {E} [PseudoMetricSpace E] (f : α → E)
+    (s : Finset α) : BoundedVariationOn f s := by
+  obtain rfl | hne := s.eq_empty_or_nonempty
+  · simp [BoundedVariationOn]
+  have := s.card_pos.2 hne
+  let u : ℕ → α := fun n ↦ s.orderEmbOfFin rfl ⟨min n (s.card - 1), by grind⟩
+  have : s = u '' Iic (s.card - 1) := by
+    ext
+    simp only [← s.range_orderEmbOfFin rfl, mem_image, mem_Iic, mem_range, u]
+    constructor
+    · rintro ⟨i, rfl⟩; exact ⟨i.val, by grind⟩
+    · rintro ⟨i, hi, rfl⟩; use ⟨i, by omega⟩; congr; omega
+  have hmono : Monotone u := fun _ _ _ ↦ OrderEmbedding.monotone _ (by grind)
+  simp [BoundedVariationOn, this, image_range_of_monotone f hmono _]
+
+/-- A function valued in a metric space has bounded variation on any `Finset` (the finiteness of
+the space's distances makes the total variation finite). -/
+@[simp]
+theorem _root_.BoundedVariationOn.of_finite {E} [PseudoMetricSpace E] (f : α → E) (s : Set α)
+[Finite s] : BoundedVariationOn f s := by
+  simpa using BoundedVariationOn.of_finset f s.toFinite.toFinset
 
 /-! ### Composition of bounded variation functions with monotone functions -/
 
@@ -1096,42 +1156,73 @@ theorem _root_.BoundedVariationOn.tendsto_atBot_limUnder [CompleteSpace E] [hE :
 
 end eVariationOn
 
+section Monotone
+
 /-! ### Variation of monotone functions -/
 
-theorem MonotoneOn.eVariationOn_le {f : α → ℝ} {s : Set α} (hf : MonotoneOn f s) {a b : α}
-    (as : a ∈ s) (bs : b ∈ s) : eVariationOn f (s ∩ Icc a b) ≤ ENNReal.ofReal (f b - f a) := by
-  apply iSup_le _
-  rintro ⟨n, ⟨u, hu, us⟩⟩
-  calc
-    (∑ i ∈ Finset.range n, edist (f (u (i + 1))) (f (u i))) =
-        ∑ i ∈ Finset.range n, ENNReal.ofReal (f (u (i + 1)) - f (u i)) := by
-      refine Finset.sum_congr rfl fun i hi => ?_
-      simp only [Finset.mem_range] at hi
-      rw [edist_dist, Real.dist_eq, abs_of_nonneg]
-      exact sub_nonneg_of_le (hf (us i).1 (us (i + 1)).1 (hu (Nat.le_succ _)))
-    _ = ENNReal.ofReal (∑ i ∈ Finset.range n, (f (u (i + 1)) - f (u i))) := by
-      rw [ENNReal.ofReal_sum_of_nonneg]
-      intro i _
-      exact sub_nonneg_of_le (hf (us i).1 (us (i + 1)).1 (hu (Nat.le_succ _)))
-    _ = ENNReal.ofReal (f (u n) - f (u 0)) := by rw [Finset.sum_range_sub fun i => f (u i)]
-    _ ≤ ENNReal.ofReal (f b - f a) := by
-      apply ENNReal.ofReal_le_ofReal
-      exact sub_le_sub (hf (us n).1 bs (us n).2.2) (hf as (us 0).1 (us 0).2.1)
+open ENNReal Finset
 
-theorem MonotoneOn.locallyBoundedVariationOn {f : α → ℝ} {s : Set α} (hf : MonotoneOn f s) :
+variable {f : α → ℝ} {s : Set α} {C : ℝ} {a b : α}
+
+/-- The variation of a monotone real-valued function on `s ∩ Icc a b` equals its increment
+`f b - f a`. -/
+theorem MonotoneOn.eVariationOn_eq (hf : MonotoneOn f s) (as : a ∈ s) (bs : b ∈ s) :
+    eVariationOn f (s ∩ Icc a b) = .ofReal (f b - f a) := by
+  rcases le_or_gt a b with hab | hab
+  · have hle : eVariationOn f (s ∩ Icc a b) ≤ .ofReal (f b - f a) := by
+      apply iSup_le _
+      rintro ⟨n, ⟨u, hu, us⟩⟩
+      calc
+        _ = ∑ i ∈ range n, .ofReal (f (u (i + 1)) - f (u i)) := by
+          refine sum_congr rfl fun i hi => ?_
+          simp only [Finset.mem_range] at hi
+          rw [edist_dist, Real.dist_eq, abs_of_nonneg]
+          exact sub_nonneg_of_le (hf (us i).1 (us (i + 1)).1 (hu (Nat.le_succ _)))
+        _ = .ofReal (∑ i ∈ range n, (f (u (i + 1)) - f (u i))) := by
+          rw [ofReal_sum_of_nonneg]
+          exact fun i _ ↦ sub_nonneg_of_le (hf (us i).1 (us (i + 1)).1 (hu (Nat.le_succ _)))
+        _ = .ofReal (f (u n) - f (u 0)) := by rw [sum_range_sub (f <| u ·)]
+        _ ≤ _ :=
+          ofReal_le_ofReal (sub_le_sub (hf (us n).1 bs (us n).2.2) (hf as (us 0).1 (us 0).2.1))
+    have h : BoundedVariationOn f (s ∩ Icc a b) := (hle.trans_lt ofReal_lt_top).ne
+    apply eq_of_le_of_ge hle (ofReal_le_of_le_toReal _)
+    grw [← h.dist_le (x := a) (y := b)] <;> grind [Real.dist_eq]
+  · simp [hab, hf bs as hab.le]
+
+@[deprecated MonotoneOn.eVariationOn_eq (since := "2026-07-08")]
+theorem MonotoneOn.eVariationOn_le (hf : MonotoneOn f s) (as : a ∈ s) (bs : b ∈ s) :
+    eVariationOn f (s ∩ Icc a b) ≤ .ofReal (f b - f a) := (hf.eVariationOn_eq as bs).le
+
+theorem MonotoneOn.locallyBoundedVariationOn (hf : MonotoneOn f s) :
     LocallyBoundedVariationOn f s := fun _ _ as bs =>
-  ((hf.eVariationOn_le as bs).trans_lt ENNReal.ofReal_lt_top).ne
+  ((hf.eVariationOn_eq as bs) ▸ ofReal_lt_top).ne
 
-theorem MonotoneOn.boundedVariationOn
-    {f : α → ℝ} {s : Set α} {C : ℝ} (hf : MonotoneOn f s) (h : ∀ x ∈ s, |f x| ≤ C) :
+theorem MonotoneOn.boundedVariationOn (hf : MonotoneOn f s) (h : ∀ x ∈ s, |f x| ≤ C) :
     BoundedVariationOn f s := by
-  suffices eVariationOn f s ≤ ENNReal.ofReal (2 * C) from
-    ne_of_lt (this.trans_lt (by simp [ENNReal.mul_lt_top]))
+  suffices eVariationOn f s ≤ .ofReal (2 * C) from
+    ne_of_lt (this.trans_lt (by simp [mul_lt_top]))
   rw [eVariationOn.eq_biSup_inter_Icc]
   simp only [mem_setOf_eq, iSup_le_iff, and_imp, Prod.forall]
   intro a b as bs hab
-  grw [hf.eVariationOn_le as bs]
-  exact ENNReal.ofReal_mono (by grind)
+  grw [hf.eVariationOn_eq as bs]
+  exact ofReal_mono (by grind)
+
+/-- The variation of the identity on `s ∩ Icc a b` is `b - a`. -/
+lemma eVariationOn_id {a b : ℝ} {s : Set ℝ} (as : a ∈ s) (bs : b ∈ s) :
+    eVariationOn id (s ∩ Icc a b) = .ofReal (b - a) :=
+  (monotone_id.monotoneOn _).eVariationOn_eq as bs
+
+/-- The variation of the identity on `Icc a b` is `b - a`. -/
+@[simp]
+lemma eVariationOn_id_Icc (a b : ℝ) : eVariationOn id (Icc a b) = .ofReal (b - a) := by
+  simpa using eVariationOn_id (s := univ) (by simp) (by simp)
+
+/-- The identity function has bounded variation on every interval `Icc a b`. -/
+@[simp]
+lemma BoundedVariationOn.id_Icc (a b : ℝ) : BoundedVariationOn id (Icc a b) := by
+  simp [BoundedVariationOn]
+
+end Monotone
 
 /-! ### Lipschitz functions and bounded variation -/
 

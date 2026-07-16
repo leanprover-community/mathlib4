@@ -153,6 +153,7 @@ lemma prod_filter_not_mul_prod_filter (s : Finset ι) (p : ι → Prop) [Decidab
     (∏ x ∈ s with ¬p x, f x) * ∏ x ∈ s with p x, f x = ∏ x ∈ s, f x := by
   rw [mul_comm, prod_filter_mul_prod_filter_not]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[to_additive]
 theorem prod_filter_xor (p q : ι → Prop) [DecidablePred p] [DecidablePred q] :
     (∏ x ∈ s with (Xor (p x) (q x)), f x) =
@@ -310,9 +311,8 @@ lemma prod_mul_prod_comm (f g h i : ι → M) :
 theorem prod_filter_of_ne {p : ι → Prop} [DecidablePred p] (hp : ∀ x ∈ s, f x ≠ 1 → p x) :
     ∏ x ∈ s with p x, f x = ∏ x ∈ s, f x :=
   (prod_subset (filter_subset _ _)) fun x => by
-    classical
-      rw [not_imp_comm, mem_filter]
-      exact fun h₁ h₂ => ⟨h₁, by simpa using hp _ h₁ h₂⟩
+    rw [not_imp_comm, mem_filter]
+    exact fun h₁ h₂ => ⟨h₁, by simpa using hp _ h₁ h₂⟩
 
 -- If we use `[DecidableEq M]` here, some rewrites fail because they find a wrong `Decidable`
 -- instance first; `{∀ x, Decidable (f x ≠ 1)}` doesn't work with `rw ← prod_filter_ne_one`

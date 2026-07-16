@@ -374,6 +374,7 @@ variable {f : M →ₗ[R] N} {g : N →ₗ[R] P}
 
 open LinearMap
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Given an exact sequence `0 → M → N → P`, giving a section `P → N` is equivalent to giving a
 splitting `N ≃ M × P`. -/
 noncomputable
@@ -410,6 +411,7 @@ def Exact.splitSurjectiveEquiv (h : Function.Exact f g) (hf : Function.Injective
     apply e.injective
     ext <;> simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Given an exact sequence `M → N → P → 0`, giving a retraction `N → M` is equivalent to giving a
 splitting `N ≃ M × P`. -/
 noncomputable
@@ -560,6 +562,7 @@ lemma ker_eq_bot_range_liftQ_iff (h : range f ≤ ker g) :
     obtain ⟨x, rfl⟩ := Submodule.Quotient.mk_surjective _ x
     simpa using hfg x
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma injective_range_liftQ_of_exact (h : Function.Exact f g) :
     Function.Injective ((range f).liftQ g (h · |>.mpr)) := by
   simpa only [← LinearMap.ker_eq_bot, ker_eq_bot_range_liftQ_iff, exact_iff] using h
@@ -582,6 +585,7 @@ noncomputable def Function.Exact.linearEquivOfSurjective (h : Function.Exact f g
   LinearEquiv.ofBijective ((LinearMap.range f).liftQ g (h · |>.mpr))
     ⟨LinearMap.injective_range_liftQ_of_exact h, LinearMap.surjective_range_liftQ _ hg⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma Function.Exact.linearEquivOfSurjective_symm_apply (h : Function.Exact f g)
     (hg : Function.Surjective g) (x : N) :

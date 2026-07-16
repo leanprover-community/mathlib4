@@ -5,8 +5,6 @@ Authors: Oliver Nash
 -/
 module
 
-public import Mathlib.Algebra.CharP.Basic
-public import Mathlib.Algebra.CharP.Reduced
 public import Mathlib.FieldTheory.KummerPolynomial
 public import Mathlib.FieldTheory.Separable
 
@@ -314,6 +312,7 @@ instance ofFinite [Finite K] : PerfectField K := by
 
 variable [PerfectField K]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- A perfect field of characteristic `p` (prime) is a perfect ring. -/
 instance toPerfectRing (p : ℕ) [hp : ExpChar K p] : PerfectRing K p := by
   refine PerfectRing.ofSurjective _ _ fun y ↦ ?_
