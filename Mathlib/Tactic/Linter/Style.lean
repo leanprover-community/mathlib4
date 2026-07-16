@@ -637,16 +637,17 @@ def elabShow (newType : Term) : TacticM Unit := do
   let goal :: goals ← getGoals | throwNoGoalsToBeSolved
   let before ← instantiateMVars (← goal.getType)
   evalTactic (← `(tactic| show $newType))
-  let goal' :: goals' ← getGoals | return
-  if goals != goals' then return -- `show` didn't act on first goal -> can't replace with `change`
-  let after ← instantiateMVars (← goal'.getType)
-  if before != after then
-    logLintIf linter.style.show (← getRef) m!"\
-      The `show` tactic should only be used to indicate intermediate goal states for \
-      readability.\nHowever, this tactic invocation changed the goal. Please use `change` \
-      instead for these purposes."
+  if getLinterValue linter.style.show (← getLinterOptions) then
+    let goal' :: goals' ← getGoals | return
+    if goals != goals' then return -- `show` didn't act on first goal -> can't replace with `change`
+    let after ← instantiateMVars (← goal'.getType)
+    if before != after then
+      logLint linter.style.show (← getRef) m!"\
+        The `show` tactic should only be used to indicate intermediate goal states for \
+        readability.\nHowever, this tactic invocation changed the goal. Please use `change` \
+        instead for these purposes."
 
-@[tactic_alt Tactic.«show»]
+@[tactic_alt Tactic.show]
 elab (name := «show») "show " newType:term : tactic => elabShow newType
 
 end Style
