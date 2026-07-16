@@ -55,6 +55,7 @@ theorem disjoint_preimage {f : α → β} {s t : Finset β}
     Disjoint (s.preimage f hs) (t.preimage f ht) := by
   grind [not_disjoint_iff, mem_preimage]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem preimage_inter [DecidableEq α] [DecidableEq β] {f : α → β} {s t : Finset β}
     (hs : Set.InjOn f (f ⁻¹' ↑s)) (ht : Set.InjOn f (f ⁻¹' ↑t)) :
@@ -63,6 +64,7 @@ theorem preimage_inter [DecidableEq α] [DecidableEq β] {f : α → β} {s t : 
       preimage s f hs ∩ preimage t f ht :=
   Finset.coe_injective (by simp)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem preimage_union [DecidableEq α] [DecidableEq β] {f : α → β} {s t : Finset β} (hst) :
     preimage (s ∪ t) f hst =

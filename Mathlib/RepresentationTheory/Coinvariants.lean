@@ -248,7 +248,7 @@ end Finsupp
 
 section TensorProduct
 
-open TensorProduct Coinvariants Finsupp
+open Coinvariants Finsupp
 
 variable {k G V W : Type*} [CommRing k] [Group G] [AddCommGroup V] [Module k V]
   [AddCommGroup W] [Module k W] (ρ : Representation k G V) (τ : Representation k G W)
@@ -321,6 +321,7 @@ abbrev toCoinvariantsMkQ : A ⟶ toCoinvariants A S :=
 the coinvariants of `ρ|_S`. -/
 abbrev quotientToCoinvariants : Rep k (G ⧸ S) := Rep.ofQuotient (Rep.toCoinvariants A S) S
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Given a normal subgroup `S ≤ G`, a `G`-representation `A` induces a short exact sequence of
 `G`-representations `0 ⟶ Ker(mk) ⟶ A ⟶ A_S ⟶ 0` where `mk` is the quotient map to the
 `S`-coinvariants `A_S`. -/

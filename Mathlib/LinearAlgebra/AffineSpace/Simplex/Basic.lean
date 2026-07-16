@@ -275,6 +275,7 @@ theorem reindex_map {m n : ℕ} (s : Simplex k P m) (e : Fin (m + 1) ≃ Fin (n 
     (s.map f hf).reindex e = (s.reindex e).map f hf :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma range_face_reindex {m n : ℕ} (s : Simplex k P m) (e : Fin (m + 1) ≃ Fin (n + 1))
     {fs : Finset (Fin (n + 1))} {n' : ℕ} (h : #fs = n' + 1) :
     Set.range ((s.reindex e).face h).points =

@@ -113,6 +113,7 @@ def complexInvo : Function.End (zagierSet k) := fun ⟨⟨x, y, z⟩, h⟩ =>
 
 variable [hk : Fact (4 * k + 1).Prime]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `complexInvo k` is indeed an involution. -/
 theorem complexInvo_sq : complexInvo k ^ 2 = 1 := by
   change complexInvo k ∘ complexInvo k = id
@@ -139,6 +140,7 @@ theorem complexInvo_sq : complexInvo k ^ 2 = 1 := by
       ← Nat.add_sub_assoc less, ← add_assoc, Nat.sub_add_cancel more, Nat.sub_sub _ _ y,
       ← two_mul, add_comm, Nat.add_sub_cancel]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Any fixed point of `complexInvo k` must be `(1, 1, k)`. -/
 theorem eq_of_mem_fixedPoints {t : zagierSet k} (mem : t ∈ fixedPoints (complexInvo k)) :
     t.val = (1, 1, k) := by
@@ -169,6 +171,7 @@ theorem eq_of_mem_fixedPoints {t : zagierSet k} (mem : t ∈ fixedPoints (comple
 def singletonFixedPoint : Finset (zagierSet k) :=
   {⟨(1, 1, k), (by simp only [zagierSet, Set.mem_setOf_eq]; linarith)⟩}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `complexInvo k` has exactly one fixed point. -/
 theorem card_fixedPoints_eq_one : Fintype.card (fixedPoints (complexInvo k)) = 1 := by
   rw [show 1 = Finset.card (singletonFixedPoint k) by rfl, ← Set.toFinset_card]
