@@ -270,6 +270,7 @@ open Multiplicative
 
 variable {A : Type*} [AddMonoid A] [HasAntidiagonal A]
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : HasMulAntidiagonal (Multiplicative A) where
   mulAntidiagonal a :=
     (antidiagonal (toAdd a)).map ⟨fun p ↦ (ofAdd p.1 , ofAdd p.2), fun _ _ h ↦ by aesop⟩

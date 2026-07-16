@@ -34,6 +34,7 @@ variable {𝕜 V W : Type*} [NontriviallyNormedField 𝕜] [SeminormedAddCommGro
   [SeminormedAddCommGroup W] [NormedSpace 𝕜 V] [NormedSpace 𝕜 W] [SeparatingDual 𝕜 V]
   [SeparatingDual 𝕜 W]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- This is the continuous version of `AlgEquiv.eq_linearEquivConjAlgEquiv`. -/
 public theorem ContinuousAlgEquiv.eq_continuousLinearEquivConjContinuousAlgEquiv
     (f : (V →L[𝕜] V) ≃A[𝕜] (W →L[𝕜] W)) :
@@ -151,6 +152,7 @@ end auxiliaryDefs
 
 open ComplexOrder
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The ⋆-algebra equivalence version of
 `ContinuousAlgEquiv.eq_continuousLinearEquivConjContinuousAlgEquiv`.
 

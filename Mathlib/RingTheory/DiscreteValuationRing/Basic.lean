@@ -508,6 +508,7 @@ lemma addVal_eq_iff_associated (x y : R) :
 
 variable (R)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The ideals of a discrete valuation ring are exactly the powers of the maximal ideal. -/
 @[simps apply]
 noncomputable def idealOrderIsoENat : Ideal R ≃o ENatᵒᵈ where
@@ -546,6 +547,7 @@ theorem idealOrderIsoENat_symm_apply_coe_of_irreducible (n : ℕ) {ϖ : R} (hϖ 
     (idealOrderIsoENat R).symm n = Ideal.span {ϖ ^ n} := by
   rw [idealOrderIsoENat_symm_apply_coe, hϖ.maximalIdeal_eq, span_singleton_pow]
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem coheight_pow_maximalIdeal (n : ℕ) : Order.coheight (maximalIdeal R ^ n) = n := by
   simpa only [Order.coheight_toDual, Order.height_enat] using!
     Order.coheight_orderIso (idealOrderIsoENat R).symm (.toDual n)
@@ -617,7 +619,7 @@ variable (R) in
 only takes two steps to terminate. Given `GCD(x,y)`, if `x ∣ y` then `y%x = 0` so we're done in one
 step; otherwise `y%x = y` and then `GCD(x,y) = GCD(y,x)` which brings us back to the first case.
 See `EuclideanDomain.to_principal_ideal_domain` for EuclideanDomain ⇒ PID. -/
-@[implicit_reducible]
+@[instance_reducible]
 def toEuclideanDomain : EuclideanDomain R where
   quotient := quotient
   quotient_zero x := by simp [quotient]

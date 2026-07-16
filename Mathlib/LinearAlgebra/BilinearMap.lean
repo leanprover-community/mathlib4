@@ -569,6 +569,7 @@ noncomputable def restrictScalarsRange :
     M' →ₗ[S] P' :=
   ((f.restrictScalars S).comp i).codLift k hk hf
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma restrictScalarsRange_apply (m : M') :
     k (restrictScalarsRange i k hk f hf m) = f (i m) := by
@@ -608,6 +609,7 @@ noncomputable def restrictScalarsRange₂ :
   (((LinearMap.restrictScalarsₗ S R _ _ _).comp
     (B.restrictScalars S)).compl₁₂ i j).codRestrict₂ k hk hB
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma restrictScalarsRange₂_apply (m : M') (n : N') :
     k (restrictScalarsRange₂ i j k hk B hB m n) = B (i m) (j n) := by
   simp [restrictScalarsRange₂]
