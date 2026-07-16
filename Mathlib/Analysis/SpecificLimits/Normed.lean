@@ -299,8 +299,7 @@ theorem tsum_geometric_le_of_norm_lt_one (x : R) (h : ‖x‖ < 1) :
     refine le_trans (norm_add_le _ _) ?_
     have : ‖∑' b : ℕ, (fun n ↦ x ^ (n + 1)) b‖ ≤ (1 - ‖x‖)⁻¹ - 1 := by
       refine tsum_of_norm_bounded ?_ fun b ↦ norm_pow_le' _ (Nat.succ_pos b)
-      convert! (hasSum_nat_add_iff' 1).mpr (hasSum_geometric_of_lt_one (norm_nonneg x) h)
-      simp
+      simpa using (hasSum_nat_add_iff' 1).mpr (hasSum_geometric_of_lt_one (norm_nonneg x) h)
     linarith
   · simp only [tsum_eq_zero_of_not_summable hx, norm_zero]
     nontriviality R
@@ -470,8 +469,7 @@ lemma tsum_choose_mul_geometric_of_norm_lt_one' (k : ℕ) {r : R} (hr : ‖r‖ 
 
 lemma hasSum_choose_mul_geometric_of_norm_lt_one (k : ℕ) {r : 𝕜} (hr : ‖r‖ < 1) :
     HasSum (fun n ↦ (n + k).choose k * r ^ n) (1 / (1 - r) ^ (k + 1)) := by
-  convert! hasSum_choose_mul_geometric_of_norm_lt_one' k hr
-  simp
+  simpa using hasSum_choose_mul_geometric_of_norm_lt_one' k hr
 
 lemma tsum_choose_mul_geometric_of_norm_lt_one (k : ℕ) {r : 𝕜} (hr : ‖r‖ < 1) :
     ∑' n, (n + k).choose k * r ^ n = 1 / (1 - r) ^ (k + 1) :=
@@ -508,8 +506,7 @@ lemma summable_descFactorial_mul_geometric_of_norm_lt_one (j : ℕ) {r : R} (hr 
 `HasSum` version. -/
 theorem hasSum_descFactorial_mul_geometric_of_norm_lt_one (j : ℕ) {r : 𝕜} (hr : ‖r‖ < 1) :
     HasSum (fun n : ℕ ↦ n.descFactorial j * r ^ n) (j.factorial * r ^ j / (1 - r) ^ (j + 1)) := by
-  convert! hasSum_descFactorial_mul_geometric_of_norm_lt_one' j hr using 1
-  simp [div_eq_mul_inv]
+  simpa [div_eq_mul_inv] using hasSum_descFactorial_mul_geometric_of_norm_lt_one' j hr
 
 /-- If `‖r‖ < 1`, then `∑' n : ℕ, n.descFactorial j * r ^ n = j ! * r ^ j / (1 - r) ^ (j + 1)`. -/
 theorem tsum_descFactorial_mul_geometric_of_norm_lt_one (j : ℕ) {r : 𝕜} (hr : ‖r‖ < 1) :
@@ -550,8 +547,7 @@ theorem hasSum_pow_mul_geometric_of_norm_lt_one (k : ℕ) {r : 𝕜} (hr : ‖r�
     HasSum (fun n : ℕ ↦ n ^ k * r ^ n)
       (∑ j ∈ Finset.range (k + 1),
         stirlingSecond k j * j.factorial * r ^ j / (1 - r) ^ (j + 1)) := by
-  convert! hasSum_pow_mul_geometric_of_norm_lt_one' k hr using 1
-  simp [div_eq_mul_inv]
+  simpa [div_eq_mul_inv] using hasSum_pow_mul_geometric_of_norm_lt_one' k hr
 
 /-- If `‖r‖ < 1`, then `∑' n : ℕ, n ^ k * r ^ n` is given by the finite sum
 `∑ j ∈ range (k + 1), S(k, j) * j ! * r ^ j / (1 - r) ^ (j + 1)`, where `S(k, j)` denotes the
@@ -566,9 +562,7 @@ with summable geometric series. For a version in a field, using division instead
 see `hasSum_coe_mul_geometric_of_norm_lt_one`. -/
 theorem hasSum_coe_mul_geometric_of_norm_lt_one' {x : R} (h : ‖x‖ < 1) :
     HasSum (fun n ↦ n * x ^ n : ℕ → R) (x * ((1 - x)⁻¹ʳ) ^ 2) := by
-  convert! hasSum_pow_mul_geometric_of_norm_lt_one' 1 h using 1
-  · simp
-  · simp [Finset.sum_range_succ, stirlingSecond_self]
+  simpa [sum_range_succ, stirlingSecond_self] using hasSum_pow_mul_geometric_of_norm_lt_one' 1 h
 
 /-- If `‖r‖ < 1`, then `∑' n : ℕ, n * r ^ n = r / (1 - r) ^ 2`. This is the version in a general
 ring with summable geometric series. For a version in a field, using division instead of
@@ -580,8 +574,7 @@ theorem tsum_coe_mul_geometric_of_norm_lt_one' {r : 𝕜} (hr : ‖r‖ < 1) :
 /-- If `‖r‖ < 1`, then `∑' n : ℕ, n * r ^ n = r / (1 - r) ^ 2`, `HasSum` version. -/
 theorem hasSum_coe_mul_geometric_of_norm_lt_one {r : 𝕜} (hr : ‖r‖ < 1) :
     HasSum (fun n ↦ n * r ^ n : ℕ → 𝕜) (r / (1 - r) ^ 2) := by
-  convert! hasSum_coe_mul_geometric_of_norm_lt_one' hr using 1
-  simp [div_eq_mul_inv]
+  simpa [div_eq_mul_inv] using hasSum_coe_mul_geometric_of_norm_lt_one' hr
 
 /-- If `‖r‖ < 1`, then `∑' n : ℕ, n * r ^ n = r / (1 - r) ^ 2`. -/
 theorem tsum_coe_mul_geometric_of_norm_lt_one {r : 𝕜} (hr : ‖r‖ < 1) :
@@ -613,8 +606,7 @@ theorem tsum_sq_mul_geometric_of_norm_lt_one' {r : R} (h : ‖r‖ < 1) :
 /-- If `‖r‖ < 1`, then `∑' n : ℕ, n ^ 2 * r ^ n = r * (1 + r) / (1 - r) ^ 3`, `HasSum` version. -/
 theorem hasSum_sq_mul_geometric_of_norm_lt_one {r : 𝕜} (hr : ‖r‖ < 1) :
     HasSum (fun n : ℕ ↦ n ^ 2 * r ^ n) (r * (1 + r) / (1 - r) ^ 3) := by
-  convert! hasSum_sq_mul_geometric_of_norm_lt_one' hr using 1
-  simp [div_eq_mul_inv]
+  simpa [div_eq_mul_inv] using hasSum_sq_mul_geometric_of_norm_lt_one' hr
 
 /-- If `‖r‖ < 1`, then `∑' n : ℕ, n ^ 2 * r ^ n = r * (1 + r) / (1 - r) ^ 3`. -/
 theorem tsum_sq_mul_geometric_of_norm_lt_one {r : 𝕜} (hr : ‖r‖ < 1) :
@@ -816,8 +808,7 @@ theorem Antitone.cauchySeq_series_mul_of_tendsto_zero_of_bounded (hfa : Antitone
     CauchySeq fun n ↦ ∑ i ∈ range n, f i • z i := by
   have hfa' : Monotone fun n ↦ -f n := fun _ _ hab ↦ neg_le_neg <| hfa hab
   have hf0' : Tendsto (fun n ↦ -f n) atTop (𝓝 0) := by
-    convert! hf0.neg
-    simp
+    simpa using hf0.neg
   convert! (hfa'.cauchySeq_series_mul_of_tendsto_zero_of_bounded hf0' hzb).neg
   simp
 
