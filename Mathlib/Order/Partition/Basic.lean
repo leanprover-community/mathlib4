@@ -426,6 +426,10 @@ lemma rel_iff_partOf_eq_partOf_of_mem (P : Partition u) (hx : x ∈ u) (hy : y �
     fun h ↦ ⟨P.partOf x, P.partOf_mem hx, P.mem_partOf hx, h ▸ mem_partOf hy⟩⟩
   rwa [← eq_partOf_of_mem htP hxt]
 
+lemma rel_iff_partOf_eq_partOf (P : Partition u) :
+    P.Rel x y ↔ ∃ (_ : x ∈ u) (_ : y ∈ u), P.partOf x = P.partOf y := by
+  grind [rel_iff_partOf_eq_partOf_of_mem, Rel.left_mem, Rel.right_mem]
+
 end partOf
 
 section ofRel
