@@ -71,6 +71,7 @@ noncomputable def coneOfPreserves [PreservesLimit (F ⋙ snd L R) R] (c₁ : Con
         · simp [← c₁.w t]
         · simp [← c₂.w t] }
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Let `F : J ⥤ Comma L R`. If `R` preserves the limit of
 `F ⋙ snd _ _`, then `Comma.fst L R` and `Comma.snd L R` jointly
@@ -134,6 +135,7 @@ noncomputable def coconeOfPreserves [PreservesColimit (F ⋙ fst L R) L] {c₁ :
         · simp [← c₁.w t]
         · simp [← c₂.w t] }
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Let `F : J ⥤ Comma L R`. If `L` preserves the colimit of
 `F ⋙ fst _ _`, then `Comma.fst L R` and `Comma.snd L R` jointly
