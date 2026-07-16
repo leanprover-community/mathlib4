@@ -128,6 +128,7 @@ def MonsterData.reflect (m : MonsterData N) : MonsterData N where
   toFun := Fin.rev ∘ m
   inj' := fun i j hij ↦ by simpa using hij
 
+set_option backward.isDefEq.respectTransparency false in
 lemma MonsterData.reflect_reflect (m : MonsterData N) : m.reflect.reflect = m := by
   ext i
   simp [MonsterData.reflect]
@@ -149,7 +150,7 @@ lemma MonsterData.mk_mem_monsterCells_iff_of_le {m : MonsterData N} {r : Fin (N 
   simp only [monsterCells, Set.mem_range, Prod.mk.injEq]
   refine ⟨?_, ?_⟩
   · rintro ⟨r', rfl, rfl⟩
-    simp only [Subtype.coe_eta]
+    simp only
   · rintro rfl
     exact ⟨⟨r, hr1, hrN⟩, rfl, rfl⟩
 
@@ -449,6 +450,7 @@ def Path.reflect (p : Path N) : Path N where
     simp_rw [Adjacent, Nat.dist, Cell.reflect, Fin.rev] at h ⊢
     lia
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Path.firstMonster_reflect (p : Path N) (m : MonsterData N) :
     p.reflect.firstMonster m.reflect = (p.firstMonster m).map Cell.reflect := by
   simp_rw [firstMonster, reflect, List.find?_map]
@@ -524,6 +526,7 @@ lemma Strategy.ForcesWinIn.mono (s : Strategy N) {k₁ k₂ : ℕ} (h : s.Forces
 
 /-! ### Proof of lower bound with constructions used therein -/
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An arbitrary choice of monster positions, which is modified to put selected monsters in
 desired places. -/
 def baseMonsterData (N : ℕ) : MonsterData N where
@@ -539,6 +542,7 @@ def baseMonsterData (N : ℕ) : MonsterData N where
 def monsterData12 (hN : 2 ≤ N) (c₁ c₂ : Fin (N + 1)) : MonsterData N :=
   ((baseMonsterData N).setValue (row2 hN) c₂).setValue (row1 hN) c₁
 
+set_option backward.isDefEq.respectTransparency false in
 lemma monsterData12_apply_row2 (hN : 2 ≤ N) {c₁ c₂ : Fin (N + 1)} (h : c₁ ≠ c₂) :
     monsterData12 hN c₁ c₂ (row2 hN) = c₂ := by
   rw [monsterData12, Function.Embedding.setValue_eq_of_ne]
@@ -729,6 +733,7 @@ def winningStrategy (hN : 2 ≤ N) : Strategy N
   | 1 => fun r => path1 hN ((r 0).getD 0).2
   | _ + 2 => fun r => path2 hN ((r 0).getD 0).2 ((r 1).getD 0).1
 
+set_option backward.isDefEq.respectTransparency false in
 lemma path0_firstMonster_eq_apply_row1 (hN : 2 ≤ N) (m : MonsterData N) :
     (path0 hN).firstMonster m = some (1, m (row1 hN)) := by
   simp_rw [path0, Path.firstMonster, Path.ofFn]
@@ -958,6 +963,7 @@ lemma winningStrategy_play_one_eq_none_or_play_two_eq_none_of_edge_zero (hN : 2 
   exact path2OfEdge0_firstMonster_eq_none_of_path1OfEdge0_firstMonster_eq_some hN hx2N.1
     hx2N.2 hc₁0 hx.symm
 
+set_option backward.isDefEq.respectTransparency false in
 lemma winningStrategy_play_one_of_edge_N (hN : 2 ≤ N) {m : MonsterData N}
     (hc₁N : (m (row1 hN) : ℕ) = N) : (winningStrategy hN).play m 3 ⟨1, by simp⟩ =
       ((winningStrategy hN).play m.reflect 3 ⟨1, by simp⟩).map Cell.reflect := by
@@ -972,6 +978,7 @@ lemma winningStrategy_play_one_of_edge_N (hN : 2 ≤ N) {m : MonsterData N}
   simp_rw [winningStrategy_play_one hN, path1, path1OfEdgeN, dif_neg hc₁0, if_pos hc₁N,
     dif_pos hc₁r0, ← Path.firstMonster_reflect, MonsterData.reflect_reflect]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma winningStrategy_play_two_of_edge_N (hN : 2 ≤ N) {m : MonsterData N}
     (hc₁N : (m (row1 hN) : ℕ) = N) : (winningStrategy hN).play m 3 ⟨2, by simp⟩ =
       ((winningStrategy hN).play m.reflect 3 ⟨2, by simp⟩).map Cell.reflect := by
@@ -994,6 +1001,7 @@ lemma winningStrategy_play_two_of_edge_N (hN : 2 ≤ N) {m : MonsterData N}
   · rcases h with ⟨x, hx⟩
     simp [hx, Cell.reflect]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma winningStrategy_play_one_eq_none_or_play_two_eq_none_of_edge_N (hN : 2 ≤ N)
     {m : MonsterData N} (hc₁N : (m (row1 hN) : ℕ) = N) :
     (winningStrategy hN).play m 3 ⟨1, by simp⟩ = none ∨

@@ -471,6 +471,7 @@ lemma contMDiffWithinAt_vectorSpace_iff_contDiffWithinAt
     convert! h.contMDiffWithinAt with y
     simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A vector field on a vector space is `C^n` in the manifold sense iff it is `C^n` in the vector
 space sense. -/
 lemma contMDiffAt_vectorSpace_iff_contDiffAt
@@ -486,6 +487,7 @@ lemma contMDiffOn_vectorSpace_iff_contDiffOn
     CMDiff[s] n (T% V) ↔ ContDiffOn 𝕜 n V s := by
   simp only [ContMDiffOn, ContDiffOn, contMDiffWithinAt_vectorSpace_iff_contDiffWithinAt]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A vector field on a vector space is `C^n` in the manifold sense iff it is `C^n` in the vector
 space sense. -/
 lemma contMDiff_vectorSpace_iff_contDiff {V : Π (x : E), TangentSpace 𝓘(𝕜, E) x} :

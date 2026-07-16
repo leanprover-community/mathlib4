@@ -90,8 +90,9 @@ theorem IsEulerian.mem_edges_iff {u v : V} {p : G.Walk u v} (h : p.IsEulerian) {
   ⟨fun h => p.edges_subset_edgeSet h,
    fun he => by simpa [Nat.succ_le_iff] using (h e he).ge⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The edge set of an Eulerian graph is finite. -/
-@[implicit_reducible]
+@[instance_reducible]
 def IsEulerian.fintypeEdgeSet {u v : V} {p : G.Walk u v} (h : p.IsEulerian) :
     Fintype G.edgeSet :=
   Fintype.ofFinset h.isTrail.edgesFinset fun e => by
@@ -139,6 +140,7 @@ theorem IsEulerian.length_eq_ncard_edgeSet {u v : V} {p : G.Walk u v} (h : p.IsE
     p.length = G.edgeSet.ncard := by
   rw [← h.isTrail.ncard_edgeSet, h.edgeSet_eq]
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem IsEulerian.edgesFinset_eq [Fintype G.edgeSet] {u v : V} {p : G.Walk u v}
     (h : p.IsEulerian) : h.isTrail.edgesFinset = G.edgeFinset := by
   ext e

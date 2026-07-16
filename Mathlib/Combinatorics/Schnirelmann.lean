@@ -220,6 +220,7 @@ lemma schnirelmannDensity_setOf_even : schnirelmannDensity (setOf Even) = 0 :=
 lemma schnirelmannDensity_setOf_prime : schnirelmannDensity (setOf Nat.Prime) = 0 :=
   schnirelmannDensity_eq_zero_of_one_notMem <| by simp [Nat.not_prime_one]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 The Schnirelmann density of the set of naturals which are `1 mod m` is `m⁻¹`, for any `m ≠ 1`.
 
