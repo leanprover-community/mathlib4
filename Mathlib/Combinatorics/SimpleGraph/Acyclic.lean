@@ -510,7 +510,7 @@ lemma IsTree.exists_vert_degree_one_of_nontrivial [Fintype V] [Nontrivial V] [De
   grind [G.exists_minimal_degree_vertex, minDegree_eq_one_of_nontrivial]
 
 /-- A nontrivial finite tree has at least two leaves. -/
-theorem IsTree.exists_ne_and_degree_eq_one [Fintype V] [Nontrivial V] [DecidableRel G.Adj]
+theorem IsTree.exists_ne_and_degree_eq_one [Nontrivial V] [Finite G.edgeSet] [G.LocallyFinite]
     (h : G.IsTree) : ∃ u v, u ≠ v ∧ G.degree u = 1 ∧ G.degree v = 1 := by
   have ⟨u, v, p, hp, hmax⟩ := exists_isPath_forall_isPath_length_le_length G
   have ⟨u', v', hne⟩ := exists_pair_ne V
