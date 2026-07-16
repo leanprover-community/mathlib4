@@ -576,9 +576,8 @@ namespace IsLocalization
 
 section NormalizedGCDMonoid
 
-variable {R S : Type*} [CommRing R] [NormalizedGCDMonoid R]
-(M : Submonoid R) [CommRing S] [Algebra R S] [IsLocalization M S]
-(p : Polynomial S)
+variable {R S : Type*} [CommRing R] [NormalizedGCDMonoid R] (M : Submonoid R) [CommRing S]
+variable [Algebra R S] [IsLocalization M S] (p : Polynomial S)
 
 private lemma aux_ne_zero [Nontrivial R] :
     normalize (integerNormalization M p).primPart ≠ 0 := by
@@ -624,8 +623,9 @@ theorem normalizedPrimPartIntegerNormalization_C_mul_eq [IsDomain R] (hM : M ≤
 variable {p} in
 theorem normalizedPrimPartIntegerNormalization_IsPrimtive (hp : p ≠ 0) :
     (normalizedPrimPartIntegerNormalization M p).IsPrimitive := by
-  simp [normalizedPrimPartIntegerNormalization, hp, isPrimitive_iff_content_eq_one, normalize_apply,
-    content_primPart]
+  rw [normalizedPrimPartIntegerNormalization, if_neg hp, normalize_apply]
+  apply (integerNormalization M p).isPrimitive_primPart.mul
+  simpa [isPrimitive_iff_content_eq_one] using normalize_eq_one.mpr (normUnit _).isUnit
 
 theorem normalizedPrimPartIntegerNormalization_dvd' [IsDomain R] :
     ∃ c : S, p = C c * (normalizedPrimPartIntegerNormalization M p).map (algebraMap R S) := by
