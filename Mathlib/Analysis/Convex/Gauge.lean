@@ -153,7 +153,7 @@ alias setOf_gauge_le_eq := setOfPred_gauge_le_eq
 
 @[deprecated (since := "2026-06-17")] alias gauge_le_eq := setOfPred_gauge_le_eq
 
-theorem setOf_gauge_lt_eq' (absorbs : Absorbent ℝ s) (a : ℝ) :
+theorem setOfPred_gauge_lt_eq' (absorbs : Absorbent ℝ s) (a : ℝ) :
     { x | gauge s x < a } = ⋃ (r : ℝ) (_ : 0 < r) (_ : r < a), r • s := by
   ext
   simp_rw [mem_ofPred, mem_iUnion, exists_prop]
@@ -161,7 +161,10 @@ theorem setOf_gauge_lt_eq' (absorbs : Absorbent ℝ s) (a : ℝ) :
     ⟨exists_lt_of_gauge_lt absorbs, fun ⟨r, hr₀, hr₁, hx⟩ =>
       (gauge_le_of_mem hr₀.le hx).trans_lt hr₁⟩
 
-@[deprecated (since := "2026-06-17")] alias gauge_lt_eq' := setOf_gauge_lt_eq'
+@[deprecated (since := "2026-07-09")]
+alias setOf_gauge_lt_eq' := setOfPred_gauge_lt_eq'
+
+@[deprecated (since := "2026-06-17")] alias gauge_lt_eq' := setOfPred_gauge_lt_eq'
 
 theorem setOfPred_gauge_lt_eq (absorbs : Absorbent ℝ s) (a : ℝ) :
     { x | gauge s x < a } = ⋃ r ∈ Set.Ioo 0 (a : ℝ), r • s := by

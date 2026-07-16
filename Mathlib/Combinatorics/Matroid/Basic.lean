@@ -1131,8 +1131,11 @@ theorem finite_setOfPred_matroid {E : Set α} (hE : E.Finite) :
 alias finite_setOf_matroid := finite_setOfPred_matroid
 
 /-- For finite `E`, finitely many matroids have ground set `E`. -/
-theorem finite_setOf_matroid' {E : Set α} (hE : E.Finite) : {M : Matroid α | M.E = E}.Finite :=
+theorem finite_setOfPred_matroid' {E : Set α} (hE : E.Finite) : {M : Matroid α | M.E = E}.Finite :=
   (finite_setOfPred_matroid hE).subset (fun M ↦ by rintro rfl; exact subset_refl M.E)
+
+@[deprecated (since := "2026-07-09")]
+alias finite_setOf_matroid' := finite_setOfPred_matroid'
 
 end Finite
 

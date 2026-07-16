@@ -369,7 +369,7 @@ theorem isClopen_singleton_bot : IsClopen {(⊥ : Compacts α)} := by
   convert! vietoris.isClopen_singleton_empty.preimage continuous_coe
   rw [← coe_bot, ← image_singleton (f := SetLike.coe), SetLike.coe_injective.preimage_image]
 
-theorem isOpen_setOf_disjoint_coe [T2Space α] :
+theorem isOpen_setOfPred_disjoint_coe [T2Space α] :
     IsOpen {p : Compacts α × Compacts α | Disjoint (p.1 : Set α) p.2} := by
   rw [isOpen_iff_forall_mem_open]
   intro ⟨K, L⟩ hKL
@@ -378,9 +378,15 @@ theorem isOpen_setOf_disjoint_coe [T2Space α] :
   exact ⟨{K' : Compacts α | ↑K' ⊆ U} ×ˢ {L' : Compacts α | ↑L' ⊆ V}, by grind,
     (isOpen_subsets_of_isOpen hU).prod (isOpen_subsets_of_isOpen hV), hKU, hLV⟩
 
-theorem isOpen_setOf_disjoint [T2Space α] :
+@[deprecated (since := "2026-07-09")]
+alias isOpen_setOf_disjoint_coe := isOpen_setOfPred_disjoint_coe
+
+theorem isOpen_setOfPred_disjoint [T2Space α] :
     IsOpen {p : Compacts α × Compacts α | Disjoint p.1 p.2} := by
-  simpa only [disjoint_coe_iff] using isOpen_setOf_disjoint_coe
+  simpa only [disjoint_coe_iff] using isOpen_setOfPred_disjoint_coe
+
+@[deprecated (since := "2026-07-09")]
+alias isOpen_setOf_disjoint := isOpen_setOfPred_disjoint
 
 theorem closure_finite_subsets (s : Set α) :
     closure {K : Compacts α | (K : Set α).Finite ∧ ↑K ⊆ s} = {K : Compacts α | ↑K ⊆ closure s} := by
@@ -736,9 +742,13 @@ theorem isClosed_inter_nonempty_of_isClosed {F : Set α} (h : IsClosed F) :
     IsClosed {K : NonemptyCompacts α | (↑K ∩ F).Nonempty} :=
   (vietoris.isClosed_inter_nonempty_of_isClosed h).preimage continuous_coe
 
-theorem isOpen_setOf_disjoint_coe [T2Space α] :
+theorem isOpen_setOfPred_disjoint_coe [T2Space α] :
     IsOpen {p : NonemptyCompacts α × NonemptyCompacts α | Disjoint (p.1 : Set α) p.2} :=
-  Compacts.isOpen_setOf_disjoint_coe.preimage <| continuous_toCompacts.prodMap continuous_toCompacts
+  Compacts.isOpen_setOfPred_disjoint_coe.preimage <|
+    continuous_toCompacts.prodMap continuous_toCompacts
+
+@[deprecated (since := "2026-07-09")]
+alias isOpen_setOf_disjoint_coe := isOpen_setOfPred_disjoint_coe
 
 theorem closure_finite_subsets (s : Set α) :
     closure {K : NonemptyCompacts α | (K : Set α).Finite ∧ ↑K ⊆ s} =
