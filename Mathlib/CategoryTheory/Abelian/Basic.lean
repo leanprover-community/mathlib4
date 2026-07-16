@@ -487,17 +487,21 @@ def monoIsKernelOfCokernel [Mono f] (s : Cofork f 0) (h : IsColimit s) :
 
 /-- If `f : X ⟶ Y` is a monomorphism in an abelian category, then `X ≅ kernel (cokernel.π f)`. -/
 def isoKernelCokernel {X Y : C} (f : X ⟶ Y) [Mono f] :
-    X ≅ kernel (cokernel.π f) := by
-  have := ((monoIsKernelOfCokernel _ (cokernelIsCokernel f)).conePointUniqueUpToIso
-    (kernelIsKernel (cokernel.π f)))
-  exact this
+    X ≅ kernel (cokernel.π f) :=
+  IsLimit.conePointUniqueUpToIso
+    (t := KernelFork.ofι (kernel.ι (cokernel.π f)) (kernel.condition (cokernel.π f)))
+    (monoIsKernelOfCokernel
+      (CokernelCofork.ofπ (cokernel.π f) (cokernel.condition f)) (cokernelIsCokernel f))
+    (kernelIsKernel (cokernel.π f))
 
 /-- If `f : X ⟶ Y` is an epimorphism in an abelian category, then `X ≅ cokernel (kernel.ι f)`. -/
 def isoCokernelKernel {X Y : C} (f : X ⟶ Y) [Epi f] :
-    Y ≅ cokernel (kernel.ι f) := by
-  have := ((epiIsCokernelOfKernel _ (kernelIsKernel f)).coconePointUniqueUpToIso
-    (cokernelIsCokernel (kernel.ι f)))
-  exact this
+    Y ≅ cokernel (kernel.ι f) :=
+  IsColimit.coconePointUniqueUpToIso
+    (t := CokernelCofork.ofπ (cokernel.π (kernel.ι f)) (cokernel.condition (kernel.ι f)))
+    (epiIsCokernelOfKernel
+      (KernelFork.ofι (kernel.ι f) (kernel.condition f)) (kernelIsKernel f))
+    (cokernelIsCokernel (kernel.ι f))
 
 @[simp]
 lemma isoKernelCokernel_hom_comp {X Y : C} (f : X ⟶ Y) [Mono f] :

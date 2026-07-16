@@ -160,7 +160,7 @@ lemma pullback_exists_eq_sup_of_epi [Epi f] (X' : Subobject X) :
   · rw [← pullback_exists_eq_self_of_epi f (X' ⊔ kernelSubobject f) le_sup_right]
     exact (Subobject.pullback f).monotone ((«exists» f).monotone le_sup_left)
   · apply sup_le
-    · exact (exists_pullback_gc f).le_u_l X'
+    · exact (existsPullbackAdj f).gc.le_u_l X'
     · rw [pullback_eq_kernelSubobject]
       exact kernelSubobject_comp_le f _
 
