@@ -487,7 +487,7 @@ theorem hasSum_descFactorial_mul_geometric_of_norm_lt_one' (j : ℕ) {r : R} (h 
   · funext n
     symm
     push_cast [Nat.descFactorial_eq_factorial_mul_choose]
-    rw [mul_assoc, ((Nat.cast_commute ((n + j).choose j) (r ^ j)).symm).left_comm, ← pow_add,
+    rw [mul_assoc, (Nat.cast_commute ((n + j).choose j) (r ^ j)).symm.left_comm, ← pow_add,
       add_comm j n, mul_assoc]
   · exact sub_eq_self.2 <| Finset.sum_eq_zero fun i hi ↦ by
       simp [descFactorial_eq_zero_iff_lt.2 (Finset.mem_range.1 hi)]
@@ -497,7 +497,7 @@ theorem hasSum_descFactorial_mul_geometric_of_norm_lt_one' (j : ℕ) {r : R} (h 
 This is the version in a general ring with summable geometric series. For a version in a field,
 using division instead of `Ring.inverse`, see `tsum_descFactorial_mul_geometric_of_norm_lt_one`. -/
 theorem tsum_descFactorial_mul_geometric_of_norm_lt_one' (j : ℕ) {r : R} (h : ‖r‖ < 1) :
-    ∑' n : ℕ, n.descFactorial j * r ^ n = j.factorial * r ^ j * ((1 - r)⁻¹ʳ) ^ (j + 1) :=
+    ∑' n : ℕ, n.descFactorial j * r ^ n = j.factorial * r ^ j * (1 - r)⁻¹ʳ ^ (j + 1) :=
   (hasSum_descFactorial_mul_geometric_of_norm_lt_one' j h).tsum_eq
 
 lemma summable_descFactorial_mul_geometric_of_norm_lt_one (j : ℕ) {r : R} (hr : ‖r‖ < 1) :
@@ -515,7 +515,7 @@ theorem tsum_descFactorial_mul_geometric_of_norm_lt_one (j : ℕ) {r : 𝕜} (hr
   (hasSum_descFactorial_mul_geometric_of_norm_lt_one j hr).tsum_eq
 
 /-- If `‖r‖ < 1`, then `∑' n : ℕ, n ^ k * r ^ n` is given by the finite sum
-`∑ j ∈ range (k + 1), S(k, j) * j ! * r ^ j * ((1 - r)⁻¹ʳ) ^ (j + 1)`, where `S(k, j)` denotes the
+`∑ j ∈ range (k + 1), S(k, j) * j ! * r ^ j * (1 - r)⁻¹ʳ ^ (j + 1)`, where `S(k, j)` denotes the
 Stirling numbers of the second kind.
 
 `HasSum` version in a general ring with summable geometric series. For a version in a field, using
@@ -523,21 +523,21 @@ division instead of `Ring.inverse`, see `hasSum_pow_mul_geometric_of_norm_lt_one
 theorem hasSum_pow_mul_geometric_of_norm_lt_one' (k : ℕ) {r : R} (h : ‖r‖ < 1) :
     HasSum (fun n : ℕ ↦ n ^ k * r ^ n)
       (∑ j ∈ Finset.range (k + 1),
-        stirlingSecond k j * j.factorial * r ^ j * ((1 - r)⁻¹ʳ) ^ (j + 1)) := by
+        stirlingSecond k j * j.factorial * r ^ j * (1 - r)⁻¹ʳ ^ (j + 1)) := by
   simpa only [← Nat.cast_pow, Nat.pow_eq_sum_stirlingSecond_mul_descFactorial, Nat.cast_sum,
     Nat.cast_mul, Finset.sum_mul, mul_assoc] using
     hasSum_sum fun j _ ↦ (hasSum_descFactorial_mul_geometric_of_norm_lt_one' j h).mul_left _
 
 /-- If `‖r‖ < 1`, then `∑' n : ℕ, n ^ k * r ^ n` is given by the finite sum
-`∑ j ∈ range (k + 1), S(k, j) * j ! * r ^ j * ((1 - r)⁻¹ʳ) ^ (j + 1)`, where `S(k, j)` denotes the
+`∑ j ∈ range (k + 1), S(k, j) * j! * r ^ j * (1 - r)⁻¹ʳ ^ (j + 1)`, where `S(k, j)` denotes the
 Stirling numbers of the second kind.
 
 Version in a general ring with summable geometric series. For a version in a field, using division
 instead of `Ring.inverse`, see
 `tsum_pow_mul_geometric_of_norm_lt_one`. -/
 theorem tsum_pow_mul_geometric_of_norm_lt_one' (k : ℕ) {r : R} (h : ‖r‖ < 1) :
-    ∑' n : ℕ, n ^ k * r ^ n = (∑ j ∈ Finset.range (k + 1),
-      stirlingSecond k j * j.factorial * r ^ j * ((1 - r)⁻¹ʳ) ^ (j + 1)) :=
+    ∑' n : ℕ, n ^ k * r ^ n = ∑ j ∈ Finset.range (k + 1),
+      stirlingSecond k j * j.factorial * r ^ j * (1 - r)⁻¹ʳ ^ (j + 1) :=
   (hasSum_pow_mul_geometric_of_norm_lt_one' k h).tsum_eq
 
 theorem summable_pow_mul_geometric_of_norm_lt_one (k : ℕ) {r : R} (hr : ‖r‖ < 1) :
@@ -557,8 +557,8 @@ theorem hasSum_pow_mul_geometric_of_norm_lt_one (k : ℕ) {r : 𝕜} (hr : ‖r�
 `∑ j ∈ range (k + 1), S(k, j) * j ! * r ^ j / (1 - r) ^ (j + 1)`, where `S(k, j)` denotes the
 Stirling numbers of the second kind. -/
 theorem tsum_pow_mul_geometric_of_norm_lt_one (k : ℕ) {r : 𝕜} (hr : ‖r‖ < 1) :
-    ∑' n : ℕ, n ^ k * r ^ n = (∑ j ∈ Finset.range (k + 1),
-      stirlingSecond k j * j.factorial * r ^ j / (1 - r) ^ (j + 1)) :=
+    ∑' n : ℕ, n ^ k * r ^ n = ∑ j ∈ Finset.range (k + 1),
+      stirlingSecond k j * j.factorial * r ^ j / (1 - r) ^ (j + 1) :=
   (hasSum_pow_mul_geometric_of_norm_lt_one k hr).tsum_eq
 
 /-- If `‖r‖ < 1`, then `∑' n : ℕ, n * r ^ n = r / (1 - r) ^ 2`.
@@ -566,7 +566,7 @@ theorem tsum_pow_mul_geometric_of_norm_lt_one (k : ℕ) {r : 𝕜} (hr : ‖r‖
 `HasSum` version in a general ring with summable geometric series. For a version in a field, using
 division instead of `Ring.inverse`, see `hasSum_coe_mul_geometric_of_norm_lt_one`. -/
 theorem hasSum_coe_mul_geometric_of_norm_lt_one' {x : R} (h : ‖x‖ < 1) :
-    HasSum (fun n ↦ n * x ^ n : ℕ → R) (x * ((1 - x)⁻¹ʳ) ^ 2) := by
+    HasSum (fun n ↦ n * x ^ n : ℕ → R) (x * (1 - x)⁻¹ʳ ^ 2) := by
   simpa [sum_range_succ, stirlingSecond_self] using hasSum_pow_mul_geometric_of_norm_lt_one' 1 h
 
 /-- If `‖r‖ < 1`, then `∑' n : ℕ, n * r ^ n = r / (1 - r) ^ 2`.
@@ -574,7 +574,7 @@ theorem hasSum_coe_mul_geometric_of_norm_lt_one' {x : R} (h : ‖x‖ < 1) :
 This is the version in a general ring with summable geometric series. For a version in a field,
 using division instead of `Ring.inverse`, see `tsum_coe_mul_geometric_of_norm_lt_one`. -/
 theorem tsum_coe_mul_geometric_of_norm_lt_one' {r : 𝕜} (hr : ‖r‖ < 1) :
-    (∑' n : ℕ, n * r ^ n) = r * (1 - r)⁻¹ʳ ^ 2 :=
+    ∑' n : ℕ, n * r ^ n = r * (1 - r)⁻¹ʳ ^ 2 :=
   (hasSum_coe_mul_geometric_of_norm_lt_one' hr).tsum_eq
 
 /-- If `‖r‖ < 1`, then `∑' n : ℕ, n * r ^ n = r / (1 - r) ^ 2`. -/
@@ -584,7 +584,7 @@ theorem hasSum_coe_mul_geometric_of_norm_lt_one {r : 𝕜} (hr : ‖r‖ < 1) :
 
 /-- If `‖r‖ < 1`, then `∑' n : ℕ, n * r ^ n = r / (1 - r) ^ 2`. -/
 theorem tsum_coe_mul_geometric_of_norm_lt_one {r : 𝕜} (hr : ‖r‖ < 1) :
-    (∑' n : ℕ, n * r ^ n) = r / (1 - r) ^ 2 :=
+    ∑' n : ℕ, n * r ^ n = r / (1 - r) ^ 2 :=
   (hasSum_coe_mul_geometric_of_norm_lt_one hr).tsum_eq
 
 /-- If `‖r‖ < 1`, then `∑' n : ℕ, n ^ 2 * r ^ n = r * (1 + r) / (1 - r) ^ 3`.
@@ -592,12 +592,11 @@ theorem tsum_coe_mul_geometric_of_norm_lt_one {r : 𝕜} (hr : ‖r‖ < 1) :
 `HasSum` version in a general ring with summable geometric series. For a version in a field, using
 division instead of `Ring.inverse`, see `hasSum_sq_mul_geometric_of_norm_lt_one`. -/
 theorem hasSum_sq_mul_geometric_of_norm_lt_one' {r : R} (h : ‖r‖ < 1) :
-    HasSum (fun n : ℕ ↦ n ^ 2 * r ^ n) (r * (1 + r) * ((1 - r)⁻¹ʳ) ^ 3) := by
-  have h1 : ((1 - r)⁻¹ʳ) ^ 2 = (1 - r) * ((1 - r)⁻¹ʳ) ^ 3 := by
+    HasSum (fun n : ℕ ↦ n ^ 2 * r ^ n) (r * (1 + r) * (1 - r)⁻¹ʳ ^ 3) := by
+  have h1 : (1 - r)⁻¹ʳ ^ 2 = (1 - r) * (1 - r)⁻¹ʳ ^ 3 := by
     rw [pow_succ' _ 2, ← mul_assoc,
       Ring.mul_inverse_cancel _ (isUnit_one_sub_of_norm_lt_one h), one_mul]
-  have h2 : r * (1 + r) * ((1 - r)⁻¹ʳ) ^ 3
-      = r * ((1 - r)⁻¹ʳ) ^ 2 + 2 * r ^ 2 * ((1 - r)⁻¹ʳ) ^ 3 := by
+  have h2 : r * (1 + r) * (1 - r)⁻¹ʳ ^ 3 = r * (1 - r)⁻¹ʳ ^ 2 + 2 * r ^ 2 * (1 - r)⁻¹ʳ ^ 3 := by
     rw [h1]
     noncomm_ring
   simpa [h2, Finset.sum_range_succ, stirlingSecond_one_right, stirlingSecond_self] using
@@ -608,7 +607,7 @@ theorem hasSum_sq_mul_geometric_of_norm_lt_one' {r : R} (h : ‖r‖ < 1) :
 This is the version in a general ring with summable geometric series. For a version in a field,
 using division instead of `Ring.inverse`, see `tsum_sq_mul_geometric_of_norm_lt_one`. -/
 theorem tsum_sq_mul_geometric_of_norm_lt_one' {r : R} (h : ‖r‖ < 1) :
-    ∑' n : ℕ, n ^ 2 * r ^ n = r * (1 + r) * ((1 - r)⁻¹ʳ) ^ 3 :=
+    ∑' n : ℕ, n ^ 2 * r ^ n = r * (1 + r) * (1 - r)⁻¹ʳ ^ 3 :=
   (hasSum_sq_mul_geometric_of_norm_lt_one' h).tsum_eq
 
 /-- If `‖r‖ < 1`, then `∑' n : ℕ, n ^ 2 * r ^ n = r * (1 + r) / (1 - r) ^ 3`. -/
