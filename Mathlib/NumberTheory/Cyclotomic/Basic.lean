@@ -653,12 +653,13 @@ splitting field of `cyclotomic n K`. If `n` is nonzero in `K`, it has
 the instance `IsCyclotomicExtension {n} K (CyclotomicField n K)`. -/
 def CyclotomicField : Type w :=
   (cyclotomic n K).SplittingField
-deriving Field, Inhabited
+deriving Inhabited
 
 namespace CyclotomicField
 
+-- The `SMul` instance exists to avoid a zsmul diamond.
 variable [Algebra A K] in
-deriving instance Algebra A, IsScalarTower A K for CyclotomicField n K
+deriving instance SMul A, Field, Algebra A, IsScalarTower A K for CyclotomicField n K
 
 instance algebra : Algebra K (CyclotomicField n K) := inferInstance
 
