@@ -230,12 +230,6 @@ theorem bminor_eq_zero_of_mem_range
   simp only [Matrix.submatrix_apply, Fin.cons_succ, Fin.cons_zero]
   rw [hq]
 
-/-- Inserting an entry into a tuple adds that entry to its range. -/
-lemma range_insertNth {β : Type*} (q : Fin (p + 1)) (x : β) (f : Fin p → β) :
-    Set.range (q.insertNth x f) = Set.insert x (Set.range f) := by
-  ext y
-  simp [Fin.exists_iff_succAbove q, Set.insert, eq_comm]
-
 /-- A symbol above `i` that does not occur in a word in `S p i` can be inserted while
 preserving strict monotonicity. -/
 lemma exists_insertNth_mem_S {i : Fin n} {α : Fin p → Fin n} {k : Fin n}
@@ -285,11 +279,11 @@ theorem paper_eq3_eq5_off_diag (i j : Fin n) :
       exact ⟨rfl, hiα.injective hvalue⟩
     calc
       Set.range α = Set.insert (α k) (Set.range (k.removeNth α)) := by
-        rw [← range_insertNth, Fin.insertNth_self_removeNth]
+        rw [← Fin.range_insertNth, Fin.insertNth_self_removeNth]
       _ = Set.insert (α' k') (Set.range (k'.removeNth α')) := by
         rw [hvalue, hremove]
       _ = Set.range α' := by
-        rw [← range_insertNth, Fin.insertNth_self_removeNth]
+        rw [← Fin.range_insertNth, Fin.insertNth_self_removeNth]
   · rintro ⟨α, t⟩ hα
     simp only [Finset.coe_product, Finset.coe_univ, Set.mem_prod, Set.mem_univ, and_true,
       Finset.mem_coe, Finset.coe_Ioi, Set.mem_Ioi, mem_S_iff] at hα ⊢

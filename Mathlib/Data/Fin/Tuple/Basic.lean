@@ -1034,6 +1034,12 @@ lemma insertNth_self_removeNth (p : Fin (n + 1)) (f : ∀ j, α j) :
     insertNth p (f p) (removeNth p f) = f := by simp
 
 @[simp]
+lemma range_insertNth {α : Type*} (p : Fin (n + 1)) (x : α) (f : Fin n → α) :
+    Set.range (p.insertNth x f) = Set.insert x (Set.range f) := by
+  ext y
+  simp [Fin.exists_iff_succAbove p, Set.insert, eq_comm]
+
+@[simp]
 theorem update_insertNth (p : Fin (n + 1)) (x y : α p) (f : ∀ i, α (p.succAbove i)) :
     update (p.insertNth x f) p y = p.insertNth y f := by
   simp [eq_insertNth_iff]
