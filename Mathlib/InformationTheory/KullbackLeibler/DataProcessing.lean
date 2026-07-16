@@ -47,16 +47,16 @@ variable {𝓧 𝓨 : Type*} {m m𝓧 : MeasurableSpace 𝓧} {m𝓨 : Measurabl
 lemma map_condExp_rnDeriv_le (hm : m ≤ m𝓧) (hf : StronglyMeasurable f)
     (hf_cvx : ConvexOn ℝ (Ici 0) f) (hf_cont_at : ContinuousWithinAt f (Ici 0) 0)
     (h_int : Integrable (fun x ↦ f (μ.rnDeriv ν x).toReal) ν) :
-    (fun x ↦ f ((ν[fun x ↦ (μ.rnDeriv ν x).toReal | m]) x))
-      ≤ᵐ[ν.trim hm] ν[fun x ↦ f (μ.rnDeriv ν x).toReal | m] :=
+    (fun x ↦ f ((ν[fun x ↦ (μ.rnDeriv ν x).toReal | m]) x)) ≤ᵐ[ν.trim hm]
+      ν[fun x ↦ f (μ.rnDeriv ν x).toReal | m] :=
   hf_cvx.map_condExp_le_trim hm (hf_cvx.continuousOn_Ici hf_cont_at).lowerSemicontinuousOn hf
     (ae_of_all _ fun _ ↦ ENNReal.toReal_nonneg) isClosed_Ici Measure.integrable_toReal_rnDeriv h_int
 
 lemma comp_rnDeriv_map_le (hμν : μ ≪ ν) (hg : Measurable g) (hf : StronglyMeasurable f)
     (hf_cvx : ConvexOn ℝ (Ici 0) f) (hf_cont_at : ContinuousWithinAt f (Ici 0) 0)
     (h_int : Integrable (fun x ↦ f (μ.rnDeriv ν x).toReal) ν) :
-    (fun x ↦ f ((μ.map g).rnDeriv (ν.map g) (g x)).toReal)
-      ≤ᵐ[ν] ν[fun x ↦ f (μ.rnDeriv ν x).toReal | m𝓨.comap g] := by
+    (fun x ↦ f ((μ.map g).rnDeriv (ν.map g) (g x)).toReal) ≤ᵐ[ν]
+      ν[fun x ↦ f (μ.rnDeriv ν x).toReal | m𝓨.comap g] := by
   filter_upwards [toReal_rnDeriv_map hμν hg,
     ae_of_ae_trim _ <| hf_cvx.map_condExp_rnDeriv_le hg.comap_le hf hf_cont_at h_int] with a ha1 ha2
   calc f ((μ.map g).rnDeriv (ν.map g) (g a)).toReal
@@ -71,7 +71,7 @@ lemma integrable_comp_rnDeriv_map (hμν : μ ≪ ν) (hg : Measurable g) (hf : 
   obtain ⟨c, c', h⟩ : ∃ c c', ∀ x, 0 ≤ x → c * x + c' ≤ f x :=
     hf_cvx.exists_affine_le_real isClosed_Ici hf_cont.lowerSemicontinuousOn
   rw [integrable_map_measure (StronglyMeasurable.aestronglyMeasurable (by fun_prop))
-    hg.aemeasurable]
+      hg.aemeasurable]
   refine integrable_of_le_of_le (f := fun x ↦ f ((∂μ.map g/∂ν.map g) (g x)).toReal)
     (g₁ := fun x ↦ c * ((∂μ.map g/∂ν.map g) (g x)).toReal + c')
     (g₂ := fun x ↦ (ν[fun x ↦ f (μ.rnDeriv ν x).toReal | m𝓨.comap g]) x)
@@ -86,8 +86,8 @@ lemma integrable_comp_rnDeriv_map (hμν : μ ≪ ν) (hg : Measurable g) (hf : 
 lemma comp_rnDeriv_trim_le (hm : m ≤ m𝓧) (hμν : μ ≪ ν) (hf : StronglyMeasurable f)
     (hf_cvx : ConvexOn ℝ (Ici 0) f) (hf_cont_at : ContinuousWithinAt f (Ici 0) 0)
     (h_int : Integrable (fun x ↦ f (μ.rnDeriv ν x).toReal) ν) :
-    (fun x ↦ f ((∂μ.trim hm/∂ν.trim hm) x).toReal)
-      ≤ᵐ[ν.trim hm] ν[fun x ↦ f (μ.rnDeriv ν x).toReal | m] := by
+    (fun x ↦ f ((∂μ.trim hm/∂ν.trim hm) x).toReal) ≤ᵐ[ν.trim hm]
+      ν[fun x ↦ f (μ.rnDeriv ν x).toReal | m] := by
   filter_upwards [toReal_rnDeriv_trim hm hμν,
     hf_cvx.map_condExp_rnDeriv_le hm hf hf_cont_at h_int] with a ha1 ha2
   calc f ((∂μ.trim hm/∂ν.trim hm) a).toReal
@@ -138,7 +138,7 @@ lemma toReal_klDiv_map_of_ac (hμν : μ ≪ ν) (hg : Measurable g) :
     (klDiv (μ.map g) (ν.map g)).toReal =
       ∫ x, klFun ((ν[fun x ↦ (μ.rnDeriv ν x).toReal | m𝓨.comap g]) x) ∂ν := by
   rw [toReal_klDiv_eq_integral_klFun (hμν.map hg), integral_map hg.aemeasurable
-    (StronglyMeasurable.aestronglyMeasurable (by fun_prop))]
+      (StronglyMeasurable.aestronglyMeasurable (by fun_prop))]
   refine integral_congr_ae ?_
   filter_upwards [toReal_rnDeriv_map hμν hg] with a ha using by rw [ha]
 
