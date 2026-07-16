@@ -234,7 +234,7 @@ instance instDistribMulAction (M : Type*) [Monoid M] [DistribMulAction M F] [SMu
   inferInstanceAs <| DistribMulAction M (E →SL[σ] F)
 
 instance {M : Type*} [Monoid M] [DistribMulAction M F] [SMulCommClass 𝕜₂ M F]
-    [TopologicalSpace F] [IsTopologicalAddGroup F] [ContinuousConstSMul M F] (𝔖 : Set (Set E)) :
+    [TopologicalSpace F] [ContinuousConstSMul M F] (𝔖 : Set (Set E)) :
     IsSMulApply M (E →SLᵤ[σ, 𝔖] F) E F where
   smul_apply _ _ _ := rfl
 
