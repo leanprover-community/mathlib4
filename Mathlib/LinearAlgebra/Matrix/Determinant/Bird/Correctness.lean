@@ -351,15 +351,12 @@ lemma cons_zero_succ : (Fin.cons 0 Fin.succ : Fin (p + 1) → Fin (p + 1)) = id 
 
 /-- The unique maximum-length word over the symbols above `0` is `Fin.succ`. -/
 lemma S_zero_eq_singleton : S p 0 = {Fin.succ} := by
-  ext α
-  simp only [mem_S_iff_strictMono_cons, Finset.mem_singleton]
+  simp only [Finset.eq_singleton_iff_unique_mem, mem_S_iff_strictMono_cons, cons_zero_succ]
   constructor
-  · intro h
+  · exact strictMono_id
+  · intro α hα
     funext x
-    simpa only [Fin.cons_succ, id_eq] using congrFun h.eq_id x.succ
-  · intro hα
-    rw [hα, cons_zero_succ]
-    exact strictMono_id
+    simpa only [Fin.cons_succ, id_eq] using congrFun hα.eq_id x.succ
 
 /-- The sum of the maximum-length bordered minors based at `0` equals `A.det` -/
 theorem sum_bminor_max_length_eq_det (A : Matrix (Fin (p + 1)) (Fin (p + 1)) R) :
