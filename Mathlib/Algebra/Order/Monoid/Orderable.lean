@@ -19,7 +19,7 @@ and *bi-orderable* if a single order is invariant under both — stronger than b
 right-orderable, since those may need different orders. This file defines the `Prop`-valued classes
 `IsLeftOrderable`, `IsRightOrderable` and `IsBiOrderable`, and the instances producing them from a
 compatible `LinearOrder`. Their richer theory over a *group*, where the two one-sided notions
-coincide, is developed in `Mathlib/GroupTheory/Orderable.lean`.
+coincide, is developed in the final section.
 
 ## Implementation notes
 
@@ -330,3 +330,25 @@ theorem isBiOrderable_mulOpposite_iff : IsBiOrderable Gᵐᵒᵖ ↔ IsBiOrderab
       rw [MulOpposite.unop_mul, MulOpposite.unop_mul]
       gcongr
       exact hab
+
+section Group
+variable {G : Type*} [Group G]
+
+/-- A group is left-orderable iff it is right-orderable. -/
+@[to_additive]
+theorem isLeftOrderable_iff_isRightOrderable : IsLeftOrderable G ↔ IsRightOrderable G := by
+  refine ⟨fun _ ↦ ?_, fun _ ↦ ?_⟩
+  · obtain ⟨_, _⟩ := exists_linearOrder_mulLeftMono G
+    refine ⟨LinearOrder.lift' (·⁻¹) inv_injective, ⟨fun c a b hab ↦ ?_⟩⟩
+    change (a * c)⁻¹ ≤ (b * c)⁻¹
+    rw [mul_inv_rev, mul_inv_rev]
+    gcongr
+    exact hab
+  · obtain ⟨_, _⟩ := exists_linearOrder_mulRightMono G
+    refine ⟨LinearOrder.lift' (·⁻¹) inv_injective, ⟨fun c a b hab ↦ ?_⟩⟩
+    change (c * a)⁻¹ ≤ (c * b)⁻¹
+    rw [mul_inv_rev, mul_inv_rev]
+    gcongr
+    exact hab
+
+end Group
