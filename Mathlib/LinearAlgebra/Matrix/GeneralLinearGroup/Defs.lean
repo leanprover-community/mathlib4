@@ -278,13 +278,12 @@ theorem coeToGL_det (g : SpecialLinearGroup n R) :
 @[simp]
 lemma coe_GL_coe_matrix (g : SpecialLinearGroup n R) : ((toGL g) : Matrix n n R) = g := rfl
 
-lemma toGL_range : (toGL : SpecialLinearGroup n R →* GL n R).range = GeneralLinearGroup.det.ker :=
-  SetLike.ext fun _ =>
-    ⟨fun h => MonoidHom.mem_ker.mpr <| (MonoidHom.mem_range.mp h).elim fun _ hB =>
-        ‹_› ▸ Units.ext (by simp only [coeToGL_det, Units.val_one]),
-      fun hA => MonoidHom.mem_range.mpr ⟨⟨_ ,
-        by simpa [GeneralLinearGroup.val_det_apply] using
-          congrArg Units.val (MonoidHom.mem_ker.mp hA)⟩, Units.ext rfl⟩⟩
+lemma toGL_range :
+  (toGL : SpecialLinearGroup n R →* GL n R).range = GeneralLinearGroup.det.ker := by
+  ext A
+  exact ⟨by rintro ⟨_, rfl⟩; simp, fun hA => ⟨⟨_,
+    (by simpa [GeneralLinearGroup.val_det_apply] using congrArg Units.val hA)⟩,
+      Units.ext rfl⟩⟩
 
 /-- `Matrix.SpecialLinearGroup` is eqquivalent to `GeneralLinearGroup.det.ker` -/
 noncomputable def toGLKerEquiv :
