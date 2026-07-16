@@ -128,7 +128,6 @@ def leastExt : ι → ι :=
       rw [adjoin_basis_eq_top, ← eq_top_iff] at this
       apply_fun Module.rank F at this
       refine ne_of_lt ?_ this
-      let _ : AddCommMonoid (⊤ : IntermediateField F E) := inferInstance
       conv_rhs => rw [topEquiv.toLinearEquiv.rank_eq]
       have := mk_Iio_lt i (by simp)
       rw [mk_toType, card_ord] at this
@@ -327,7 +326,7 @@ variable {F E}
 
 theorem cardinal_eq_two_pow_rank [Algebra.IsSeparable F E]
     (rank_inf : ℵ₀ ≤ Module.rank F E) : #(Field.Emb F E) = 2 ^ Module.rank F E := by
-  haveI := Fact.mk rank_inf
+  have := Fact.mk rank_inf
   rw [Emb.Cardinal.embEquivPi.cardinal_eq, mk_pi]
   apply le_antisymm
   · rw [← power_eq_two_power rank_inf natCast_le_aleph0 rank_inf]
