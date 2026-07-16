@@ -133,24 +133,10 @@ theorem paper_eq2 (i : Fin n) (hEq1 : Eq1 A p) :
       ring
     _ = (-1 : R) ^ (p + 1) • ∑ α ∈ S (p + 1) i, pminor A α := by
       rw [S_succ_eq_biUnion, Finset.sum_biUnion]
-      · apply congrArg ((-1) ^ (p + 1) • ·)
-        apply Finset.sum_congr
-        · rfl
-        · intros
-          symm
-          apply Finset.sum_image
-          intro _ _ _ _ hαβ
-          rw [Fin.cons_inj] at hαβ
-          obtain ⟨_, hαβ⟩ := hαβ
-          assumption
-      · intro k _ k' _ hne
-        simp only [Function.onFun, Finset.disjoint_left, Finset.mem_image]
-        rintro _ ⟨α, _, rfl⟩ ⟨β, _, hαβ⟩
-        apply hne
-        rw [Fin.cons_inj] at hαβ
-        obtain ⟨hkk', _⟩ := hαβ
+      · congrm (((-1 : R) ^ (p + 1) * ∑ k ∈ Finset.Ioi i, ?_))
         symm
-        exact hkk'
+        exact Finset.sum_image fun _ _ _ _ hαβ => (Fin.cons_inj.mp hαβ).2
+      · grind [Set.PairwiseDisjoint, Set.Pairwise, Finset.disjoint_left, Fin.cons_inj]
 
 /-- One step of Bird's scalar recurrence, split into diagonal and tail parts. -/
 theorem iter_succ_entry (i j : Fin n) :
