@@ -186,9 +186,7 @@ theorem convMul_id_eq_one_of_adjoin_eq_top (hX : adjoin R X = ⊤)
   | algebraMap r => simp [comul_algebraMap, Algebra.TensorProduct.algebraMap_apply]
   | add x y _ _ hx hy => simp [map_add, hx, hy]
   | mul x y _ _ hx hy =>
-    rw [(ℛ R x).convMul_apply] at hx
-    rw [(ℛ R y).convMul_apply] at hy
-    simp only [id_coe, id_eq, convOne_apply] at hx hy
+    simp only [id_coe, id_eq, convOne_apply, (ℛ R x).convMul_apply, (ℛ R y).convMul_apply] at hx hy
     calc
       _ = ∑ j ∈ (ℛ R y).index, 𝑺 ((ℛ R y).left j) *
           (∑ i ∈ (ℛ R x).index, 𝑺 ((ℛ R x).left i) * (ℛ R x).right i) * (ℛ R y).right j := by
@@ -213,9 +211,7 @@ theorem id_convMul_eq_one_of_adjoin_eq_top (hX : adjoin R X = ⊤)
   | algebraMap r => simp [comul_algebraMap, Algebra.TensorProduct.algebraMap_apply]
   | add x y _ _ hx hy => simp [map_add, hx, hy]
   | mul x y _ _ hx hy =>
-    rw [(ℛ R x).convMul_apply] at hx
-    rw [(ℛ R y).convMul_apply] at hy
-    simp only [id_coe, id_eq, convOne_apply] at hx hy
+    simp only [id_coe, id_eq, convOne_apply, (ℛ R x).convMul_apply, (ℛ R y).convMul_apply] at hx hy
     calc
       _ = ∑ i ∈ (ℛ R x).index, (ℛ R x).left i *
           (∑ j ∈ (ℛ R y).index, (ℛ R y).left j * 𝑺 ((ℛ R y).right j)) * 𝑺 ((ℛ R x).right i) := by
