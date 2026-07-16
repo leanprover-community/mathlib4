@@ -137,7 +137,6 @@ namespace IsMonoidal
 variable [F.Monoidal] [G.LaxMonoidal] [adj.IsMonoidal]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 instance : NatTrans.IsMonoidal adj.unit where
   unit := by
     dsimp
@@ -148,7 +147,6 @@ instance : NatTrans.IsMonoidal adj.unit where
     dsimp
     rw [← unit_app_tensor_comp_map_δ_assoc, id_comp, Monoidal.map_δ_μ, comp_id]
 
-set_option backward.isDefEq.respectTransparency false in
 instance : NatTrans.IsMonoidal adj.counit where
   unit := by
     dsimp
@@ -236,7 +234,7 @@ a monoidal natural transformation.
 lemma natTransIsMonoidal_of_transport {F G : C ⥤ D} [F.Monoidal] (e : F ≅ G) :
     letI : G.Monoidal := transport e
     e.hom.IsMonoidal := by
-  letI : G.Monoidal := transport e
+  let : G.Monoidal := transport e
   refine ⟨rfl, fun X Y ↦ ?_⟩
   simp [transport_μ, tensorHom_comp_tensorHom_assoc]
 

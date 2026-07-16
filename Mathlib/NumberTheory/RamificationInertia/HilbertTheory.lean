@@ -283,7 +283,6 @@ private lemma instances (hp : p ≠ ⊥) :
   exact ⟨inst₁, inst₂, inst₃, inst₄, inst₅, Ideal.ne_bot_of_liesOver_of_ne_bot hp 𝓟D⟩
 
 variable [FiniteDimensional K L] [Ring.HasFiniteQuotients A] [𝓟D.IsMaximal] [P.IsMaximal]
-  [p.IsMaximal]
 
 include K L D P in
 private lemma ramificationIdxIn_eq_and_inertiaDegIn_eq (hp : p ≠ ⊥) :
@@ -294,11 +293,10 @@ private lemma ramificationIdxIn_eq_and_inertiaDegIn_eq (hp : p ≠ ⊥) :
   · exact Nat.pos_of_ne_zero <| inertiaDegIn_ne_zero (stabilizer Gal(L/K) P)
   · rw [ramificationIdxIn_eq_ramificationIdx p P Gal(L/K),
       ramificationIdxIn_eq_ramificationIdx _ P (stabilizer Gal(L/K) P)]
-    exact 𝓟D.ramificationIdx'_above_le P
+    exact 𝓟D.ramificationIdx_above_le P
   · rw [inertiaDegIn_eq_inertiaDeg p P Gal(L/K),
       inertiaDegIn_eq_inertiaDeg _ P (stabilizer Gal(L/K) P)]
-    rw [← inertiaDeg_eq_inertiaDeg' p, ← inertiaDeg_eq_inertiaDeg' 𝓟D]
-    exact inertiaDeg_le_inertiaDeg p 𝓟D P
+    exact inertiaDeg_above_le 𝓟D P
   · have := ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn 𝓟D B (stabilizer Gal(L/K) P)
     rw [primesOver_eq_singleton K L P D 𝓞D, Set.ncard_singleton, one_mul] at this
     rw [this, IsGaloisGroup.card_eq_finrank (stabilizer Gal(L/K) P) D L,
@@ -328,12 +326,12 @@ Let `D` be the decomposition field of `P` in `L/K`. Let `𝓟D` be a prime ideal
 then `𝓟D` is unramified over `K`.
 -/
 theorem ramificationIdx_eq (hp : p ≠ ⊥) :
-    𝓟D.ramificationIdx' A = 1 := by
+    𝓟D.ramificationIdx A = 1 := by
   obtain ⟨_, _, _, _, _, h𝓟⟩ := instances A K L P D 𝓞D 𝓟D hp
-  have := ramificationIdx'_tower (R := A) 𝓟D P
+  have := ramificationIdx_tower (R := A) 𝓟D P
   rwa [← ramificationIdxIn_eq_ramificationIdx 𝓟D P (stabilizer Gal(L/K) P),
     ramificationIdxIn_eq A K L P D 𝓞D 𝓟D hp, ramificationIdxIn_eq_ramificationIdx p P Gal(L/K),
-    right_eq_mul₀ <| (ramificationIdx'_pos P A).ne'] at this
+    right_eq_mul₀ <| (ramificationIdx_pos P A).ne'] at this
 
 include K L D P in
 /--
@@ -341,9 +339,9 @@ Let `D` be the decomposition field of `P` in `L/K`. Let `𝓟D` be a prime ideal
 then the inertia degree of `𝓟D` over `K` is equal to `1`.
 -/
 theorem inertiaDeg_eq (hp : p ≠ ⊥) :
-    𝓟D.inertiaDeg' A = 1 := by
+    𝓟D.inertiaDeg A = 1 := by
   obtain ⟨_, _, _, _, _, _⟩ := instances A K L P D 𝓞D 𝓟D hp
-  have := inertiaDeg'_tower (R := A) 𝓟D P
+  have := inertiaDeg_tower (R := A) 𝓟D P
   rwa [← inertiaDegIn_eq_inertiaDeg p P Gal(L/K), ← inertiaDegIn_eq A K L P D 𝓞D 𝓟D hp,
     ← inertiaDegIn_eq_inertiaDeg 𝓟D P (stabilizer Gal(L/K) P),
     right_eq_mul₀ <| inertiaDegIn_ne_zero (stabilizer Gal(L/K) P)] at this

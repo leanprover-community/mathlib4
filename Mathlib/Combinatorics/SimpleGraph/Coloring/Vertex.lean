@@ -336,10 +336,9 @@ theorem chromaticNumber_ne_top_iff_exists : G.chromaticNumber ≠ ⊤ ↔ ∃ n,
   rw [chromaticNumber]
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 theorem chromaticNumber_le_iff_colorable {n : ℕ} : G.chromaticNumber ≤ n ↔ G.Colorable n := by
   refine ⟨fun h ↦ ?_, Colorable.chromaticNumber_le⟩
-  have : G.chromaticNumber ≠ ⊤ := (trans h (WithTop.coe_lt_top n)).ne
+  have : G.chromaticNumber ≠ ⊤ := (trans h (ENat.coe_lt_top n)).ne
   rw [chromaticNumber_ne_top_iff_exists] at this
   obtain ⟨m, hm⟩ := this
   rw [hm.chromaticNumber_eq_sInf, Nat.cast_le] at h

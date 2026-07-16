@@ -383,12 +383,14 @@ theorem rightCosetEquivalence_equiv_snd (g : G) :
   -- This used to be `simp [...]` before https://github.com/leanprover/lean4/pull/2644
   rw [RightCosetEquivalence, rightCoset_eq_iff, equiv_snd_eq_inv_mul]; simp
 
+set_option backward.isDefEq.respectTransparency false in
 theorem equiv_fst_eq_self_of_mem_of_one_mem {g : G} (h1 : 1 ∈ T) (hg : g ∈ S) :
     (hST.equiv g).fst = ⟨g, hg⟩ := by
   have : hST.equiv.symm (⟨g, hg⟩, ⟨1, h1⟩) = g := by
     rw [equiv, Equiv.ofBijective]; simp
   conv_lhs => rw [← this, Equiv.apply_symm_apply]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem equiv_snd_eq_self_of_mem_of_one_mem {g : G} (h1 : 1 ∈ S) (hg : g ∈ T) :
     (hST.equiv g).snd = ⟨g, hg⟩ := by
   have : hST.equiv.symm (⟨1, h1⟩, ⟨g, hg⟩) = g := by
@@ -430,6 +432,7 @@ theorem equiv_mul_left_of_mem {h g : G} (hh : h ∈ H) :
     hHT.equiv (h * g) = (⟨h, hh⟩ * (hHT.equiv g).fst, (hHT.equiv g).snd) :=
   equiv_mul_left _ ⟨h, hh⟩ g
 
+set_option backward.isDefEq.respectTransparency false in
 theorem equiv_one (hs1 : 1 ∈ S) (ht1 : 1 ∈ T) :
     hST.equiv 1 = (⟨1, hs1⟩, ⟨1, ht1⟩) := by
   rw [Equiv.apply_eq_iff_eq_symm_apply]; simp [equiv]
@@ -635,6 +638,9 @@ theorem IsComplement'.disjoint (h : IsComplement' H K) : Disjoint H K :=
 theorem IsComplement'.index_eq_card (h : IsComplement' H K) : K.index = Nat.card H :=
   h.card_left.symm
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- If `H` and `K` are complementary with `K` normal, then `G ⧸ K` is isomorphic to `H`. -/
 @[simps!]
 noncomputable def IsComplement'.QuotientMulEquiv [K.Normal] (h : H.IsComplement' K) :
