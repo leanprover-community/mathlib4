@@ -57,6 +57,7 @@ theorem map₂_le {f : M →ₗ[R] N →ₗ[R] P} {p : Submodule R M} {q : Submo
   ⟨fun H _m hm _n hn => H <| apply_mem_map₂ _ hm hn, fun H =>
     iSup_le fun ⟨m, hm⟩ => map_le_iff_le_comap.2 fun n hn => H m hm n hn⟩
 
+set_option backward.isDefEq.respectTransparency false in
 variable (R) in
 theorem map₂_span_span (f : M →ₗ[R] N →ₗ[R] P) (s : Set M) (t : Set N) :
     map₂ f (span R s) (span R t) = span R (Set.image2 (fun m n => f m n) s t) := by

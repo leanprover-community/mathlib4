@@ -32,9 +32,6 @@ complete field). In the planned file `Mathlib/Geometry/Manifold/VectorBundle/Ort
 metric. This includes bundles of finite rank, modelled on a Hilbert space or on a Banach space which
 has smooth partitions of unity.
 
-We will use this to construct local extensions of a vector to a section which is smooth on the
-trivialisation domain.
-
 ## Main definitions and results
 
 * `IsLocalFrameOn`: a family of sections `s i` of `V → M` is called a **C^k local frame** on a set
@@ -172,7 +169,7 @@ lemma toBasisAt_coe (hs : IsLocalFrameOn I F n s u) (hx : x ∈ u) (i : ι) :
 
 /-- If `{sᵢ}` is a local frame on a vector bundle, `F` being finite-dimensional implies the
 indexing set being finite. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def fintypeOfFiniteDimensional [VectorBundle 𝕜 F V] [FiniteDimensional 𝕜 F]
     (hs : IsLocalFrameOn I F n s u) (hx : x ∈ u) : Fintype ι := by
   have : FiniteDimensional 𝕜 (V x) := by
@@ -180,9 +177,6 @@ noncomputable def fintypeOfFiniteDimensional [VectorBundle 𝕜 F V] [FiniteDime
       (FiberBundle.mem_baseSet_trivializationAt' x)
     exact Finite.equiv phi.symm
   exact FiniteDimensional.fintypeBasisIndex (hs.toBasisAt hx)
-
-@[deprecated (since := "2025-12-19")]
-alias fintype_of_finiteDimensional := fintypeOfFiniteDimensional
 
 open scoped Classical in
 /-- Coefficients of a section `s` of `V` w.r.t. a local frame `{s i}` on `u`.
@@ -451,12 +445,12 @@ variable [VectorBundle 𝕜 F V] [ContMDiffVectorBundle 1 F V I]
   {ι : Type*} (b : Basis ι 𝕜 F) {s : Π x : M, V x} {t : Set M} {k : ℕ∞ω} {x x' : M}
   [FiniteDimensional 𝕜 F] [CompleteSpace 𝕜] [ContMDiffVectorBundle k F V I]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `s` is `C^k` at `x`, so is its coefficient `b.localFrame_coeff e i` in the local frame
 near `x` induced by `e` and `b` -/
 lemma contMDiffAt_localFrame_coeff (hxe : x ∈ e.baseSet) (hs : CMDiffAt k (T% s) x) (i : ι) :
     CMDiffAt k ((LinearMap.piApply (e.localFrame_coeff I b i)) s) x := by
   -- This boils down to computing the frame coefficients in a local trivialisation.
-  classical
   -- step 1: on e.baseSet, we know compute the coefficient very well
   let aux := fun x ↦ b.repr (e ((T% s) x)).2 i
   -- Since `e.baseSet` is open, this is sufficient.
@@ -518,13 +512,13 @@ lemma contMDiffOn_baseSet_iff_localFrame_coeff :
 -- Differentiability of a section can be checked in terms of its local frame coefficients
 section MDifferentiable
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `s` is differentiable at `x`, so is its coefficient `b.localFrame_coeff e i` in the local
 frame near `x` induced by `e` and `b` -/
 lemma mdifferentiableAt_localFrame_coeff
     (hxe : x ∈ e.baseSet) (hs : MDiffAt (T% s) x) (i : ι) :
     MDiffAt ((LinearMap.piApply (e.localFrame_coeff I b i)) s) x := by
   -- This boils down to computing the frame coefficients in a local trivialisation.
-  classical
   -- step 1: on `e.baseSet`, we know the coefficient very well
   let aux := fun x ↦ b.repr (e ((T% s) x)).2 i
   -- Since `e.baseSet` is open, this is sufficient.

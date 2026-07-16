@@ -185,6 +185,7 @@ theorem hasBasis_nhds_zero :
       fun γ : (ValueGroup₀ (.ofClass v))ˣ ↦ { x | v.restrict x < γ.val } := by
   simp [Filter.hasBasis_iff, v.is_topological_valuation]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The set `{ y : R | v y = v x }` is a neighbourhood of `x`.
 This does not imply that `v` is locally constant everywhere (since `v ⁻¹' {0}` is not open),
 but it is equivalent to the restriction of `v` to the complement of its support being
@@ -262,8 +263,8 @@ variable [_t : TopologicalSpace R] [IsValuativeTopology R] (v : Valuation R Γ�
 
 theorem toTopologicalSpace_eq :
     _t = v.subgroups_basis.topology := by
-  letI u := IsTopologicalAddGroup.rightUniformSpace R
-  letI := isUniformAddGroup_of_addCommGroup (G := R)
+  let u := IsTopologicalAddGroup.rightUniformSpace R
+  let := isUniformAddGroup_of_addCommGroup (G := R)
   exact congrArg (fun u ↦ @UniformSpace.toTopologicalSpace R u) v.toUniformSpace_eq
 
 instance (priority := low) _root_.IsValuativeTopology.isTopologicalRing : IsTopologicalRing R := by
@@ -328,6 +329,7 @@ theorem isOpen_closedBall {r : ValueGroup₀ (.ofClass v)} (hr : r ≠ 0) :
   exact ⟨Units.mk0 _ hr, fun y hy ↦
     (sub_add_cancel y x).symm ▸ le_trans (v.restrict.map_add _ _) (max_le (le_of_lt hy) hx)⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- For any valuation `v` compatible with the valuative relation on `R`, the closed `r`-ball
 around zero `{x | v.restrict x ≤ r}` is closed in the valuative topology. -/
 theorem isClosed_closedBall (r : ValueGroup₀ (.ofClass v)) :
@@ -346,6 +348,7 @@ theorem isClopen_closedBall {r : ValueGroup₀ (.ofClass v)} (hr : r ≠ 0) :
     IsClopen {x | v.restrict x ≤ r} :=
   ⟨isClosed_closedBall _, isOpen_closedBall hr⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- For any valuation `v` compatible with the valuative relation on `R`, the sphere of radius `r`
 around zero `{x | v.restrict x = r}` is clopen in the valuative topology. -/
 theorem isClopen_sphere {r : ValueGroup₀ (.ofClass v)} (hr : r ≠ 0) :

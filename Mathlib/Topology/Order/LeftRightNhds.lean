@@ -368,7 +368,7 @@ theorem orderTopology_of_nhds_mabs {α : Type*} [TopologicalSpace α] [CommGroup
     (h_nhds : ∀ a : α, 𝓝 a = ⨅ r > 1, 𝓟 { b | |a / b|ₘ < r }) : OrderTopology α := by
   refine ⟨TopologicalSpace.ext_nhds fun a => ?_⟩
   rw [h_nhds]
-  letI := Preorder.topology α; letI : OrderTopology α := ⟨rfl⟩
+  let := Preorder.topology α; let : OrderTopology α := ⟨rfl⟩
   exact (nhds_eq_iInf_mabs_div a).symm
 
 @[to_additive]

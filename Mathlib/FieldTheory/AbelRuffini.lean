@@ -7,8 +7,6 @@ module
 
 public import Mathlib.FieldTheory.AlgebraicClosure
 public import Mathlib.FieldTheory.PolynomialGaloisGroup
-public import Mathlib.GroupTheory.Solvable
-public import Mathlib.RingTheory.RootsOfUnity.Basic
 
 /-!
 # The Abel-Ruffini Theorem
@@ -68,12 +66,12 @@ theorem gal_isSolvable_tower (p q : F[X]) (hpq : (p.map (algebraMap F q.Splittin
     Group.IsSolvable q.Gal := by
   let K := p.SplittingField
   let L := q.SplittingField
-  haveI : Fact ((p.map (algebraMap F L)).Splits) := ⟨hpq⟩
+  have : Fact ((p.map (algebraMap F L)).Splits) := ⟨hpq⟩
   let ϕ : Gal(L/K) ≃* (q.map (algebraMap F K)).Gal :=
     (IsSplittingField.algEquiv L (q.map (algebraMap F K))).autCongr
   have ϕ_inj : Function.Injective ϕ.toMonoidHom := ϕ.injective
-  haveI : Group.IsSolvable Gal(K/F) := hp
-  haveI : Group.IsSolvable Gal(L/K) := Group.isSolvable_of_isSolvable_injective ϕ_inj
+  have : Group.IsSolvable Gal(K/F) := hp
+  have : Group.IsSolvable Gal(L/K) := Group.isSolvable_of_isSolvable_injective ϕ_inj
   exact isSolvable_of_isScalarTower F p.SplittingField q.SplittingField
 
 section GalXPowSubC
