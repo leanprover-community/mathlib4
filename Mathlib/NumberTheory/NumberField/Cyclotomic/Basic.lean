@@ -233,6 +233,7 @@ theorem integralPowerBasisOfPrimePow_dim [hcycl : IsCyclotomicExtension {p ^ k} 
   simp [integralPowerBasisOfPrimePow, ← cyclotomic_eq_minpoly hζ (NeZero.pos _),
     natDegree_cyclotomic]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The integral `PowerBasis` of `𝓞 K` given by `ζ - 1`, where `K` is a `p ^ k` cyclotomic
 extension of `ℚ`. -/
 noncomputable def subOneIntegralPowerBasisOfPrimePow [IsCyclotomicExtension {p ^ k} ℚ K]
@@ -243,6 +244,7 @@ noncomputable def subOneIntegralPowerBasisOfPrimePow [IsCyclotomicExtension {p ^
     convert! Subalgebra.add_mem _ (self_mem_adjoin_singleton ℤ _) (Subalgebra.one_mem _)
     simp [RingOfIntegers.ext_iff, integralPowerBasisOfPrimePow_gen, toInteger])
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem subOneIntegralPowerBasisOfPrimePow_gen [IsCyclotomicExtension {p ^ k} ℚ K]
     (hζ : IsPrimitiveRoot ζ (p ^ k)) :
@@ -250,6 +252,7 @@ theorem subOneIntegralPowerBasisOfPrimePow_gen [IsCyclotomicExtension {p ^ k} �
       ⟨ζ - 1, Subalgebra.sub_mem _ (hζ.isIntegral (NeZero.pos _)) (Subalgebra.one_mem _)⟩ := by
   simp [subOneIntegralPowerBasisOfPrimePow]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- `ζ - 1` is prime if `p ≠ 2` and `ζ` is a primitive `p ^ (k + 1)`-th root of unity.
   See `zeta_sub_one_prime` for a general statement. -/
 theorem zeta_sub_one_prime_of_ne_two [IsCyclotomicExtension {p ^ (k + 1)} ℚ K]
@@ -268,6 +271,7 @@ theorem zeta_sub_one_prime_of_ne_two [IsCyclotomicExtension {p ^ (k + 1)} ℚ K]
   simp only [algebraMap_int_eq, map_natCast]
   exact hζ.norm_sub_one_of_prime_ne_two (Polynomial.cyclotomic.irreducible_rat (NeZero.pos _)) hodd
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- `ζ - 1` is prime if `ζ` is a primitive `2 ^ (k + 1)`-th root of unity.
   See `zeta_sub_one_prime` for a general statement. -/
 theorem zeta_sub_one_prime_of_two_pow [IsCyclotomicExtension {2 ^ (k + 1)} ℚ K]
@@ -313,6 +317,7 @@ theorem subOneIntegralPowerBasisOfPrimePow_gen_prime [IsCyclotomicExtension {p ^
     Prime hζ.subOneIntegralPowerBasisOfPrimePow.gen := by
   simpa only [subOneIntegralPowerBasisOfPrimePow_gen] using! hζ.zeta_sub_one_prime
 
+set_option backward.isDefEq.respectTransparency.types false in
 /--
 The norm, relative to `ℤ`, of `ζ - 1` in an `n`-th cyclotomic extension of `ℚ` where `n` is not a
 power of a prime number is `1`.
@@ -328,6 +333,7 @@ theorem norm_toInteger_sub_one_eq_one {n : ℕ} [IsCyclotomicExtension {n} ℚ K
     sub_one_norm_eq_eval_cyclotomic hζ h₁ (cyclotomic.irreducible_rat (NeZero.pos _)),
     eval_one_cyclotomic_not_prime_pow h₂, Int.cast_one]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The norm, relative to `ℤ`, of `ζ ^ p ^ s - 1` in a `p ^ (k + 1)`-th cyclotomic extension of `ℚ`
 is `p ^ p ^ s` if `s ≤ k` and `p ^ (k - s + 1) ≠ 2`. -/
 lemma norm_toInteger_pow_sub_one_of_prime_pow_ne_two [IsCyclotomicExtension {p ^ (k + 1)} ℚ K]
@@ -337,6 +343,7 @@ lemma norm_toInteger_pow_sub_one_of_prime_pow_ne_two [IsCyclotomicExtension {p ^
   rw [Algebra.norm_eq_iff ℤ (Sₘ := K) (Rₘ := ℚ) le_rfl]
   simp [hζ.norm_pow_sub_one_of_prime_pow_ne_two (cyclotomic.irreducible_rat (NeZero.pos _)) hs htwo]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The norm, relative to `ℤ`, of `ζ ^ 2 ^ k - 1` in a `2 ^ (k + 1)`-th cyclotomic extension of `ℚ`
 is `(-2) ^ 2 ^ k`. -/
 lemma norm_toInteger_pow_sub_one_of_two [IsCyclotomicExtension {2 ^ (k + 1)} ℚ K]
@@ -355,6 +362,7 @@ lemma norm_toInteger_pow_sub_one_of_prime_ne_two [IsCyclotomicExtension {p ^ (k 
   apply eq_of_prime_pow_eq hp.out.prime Nat.prime_two.prime (k - s).succ_pos
   rwa [pow_one]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /--
 The norm, relative to `ℤ`, of `ζ - 1` in a `2 ^ (k + 2)`-th cyclotomic extension of `ℚ` is `2`.
 -/
@@ -537,6 +545,7 @@ lemma toInteger_sub_one_not_dvd_two [IsCyclotomicExtension {p ^ (k + 1)} ℚ K]
   · rw [hζ.norm_toInteger_sub_one_of_prime_ne_two hodd]
     exact Nat.prime_iff_prime_int.1 hp.1
 
+set_option backward.isDefEq.respectTransparency.types false in
 open IntermediateField in
 /--
 Let `ζ` be a primitive root of unity of order `n` with `2 ≤ n`. Any prime number that divides the
@@ -629,8 +638,6 @@ theorem discr_prime_pow [IsCyclotomicExtension {p ^ k} ℚ K] :
     convert! ← ((IsPrimitiveRoot.powerBasis ℚ hζ).basis_eq_pow i).symm using 1
   · simp_rw [algebraMap_int_eq, map_mul, map_pow, map_neg, map_one, map_natCast]
 
-@[deprecated (since := "2025-11-24")] alias absdiscr_prime_pow := discr_prime_pow
-
 open Nat in
 /-- We compute the absolute discriminant of a `p ^ (k + 1)`-th cyclotomic field.
   Beware that in the case `p ^ k = 2` the formula uses `1 / 2 = 0`. See also the results below. -/
@@ -639,8 +646,6 @@ theorem discr_prime_pow_succ [IsCyclotomicExtension {p ^ (k + 1)} ℚ K] :
     NumberField.discr K =
     (-1) ^ (p ^ k * (p - 1) / 2) * p ^ (p ^ k * ((p - 1) * (k + 1) - 1)) := by
   simpa [totient_prime_pow hp.out (succ_pos k)] using discr_prime_pow p (k + 1) K
-
-@[deprecated (since := "2025-11-19")] alias absdiscr_prime_pow_succ := discr_prime_pow_succ
 
 /-- We compute the absolute discriminant of a `p`-th cyclotomic field where `p` is prime. -/
 theorem discr_prime [IsCyclotomicExtension {p} ℚ K] :
@@ -651,8 +656,6 @@ theorem discr_prime [IsCyclotomicExtension {p} ℚ K] :
     infer_instance
   rw [discr_prime_pow_succ p 0 K]
   simp [Nat.sub_sub]
-
-@[deprecated (since := "2025-11-19")] alias absdiscr_prime := discr_prime
 
 variable (n) [hn : NeZero n]
 
@@ -795,6 +798,7 @@ theorem adjoin_singleton_eq_top [hK : IsCyclotomicExtension {n} ℚ K]
       exact isCyclotomicExtension_eq {n₁ * n₂} ℚ K _ _
     exact adjoin_singleton_eq_top_aux K ℚ⟮ζ ^ n₂⟯ ℚ⟮ζ ^ n₁⟯ hζ₁ hK₁ hζ₂ hK₂ h h_top hζ
 
+set_option backward.isDefEq.respectTransparency.types false in
 open Algebra in
 theorem isIntegralClosure_adjoin_singleton {ζ : K} [hcycl : IsCyclotomicExtension {n} ℚ K]
     (hζ : IsPrimitiveRoot ζ n) :
@@ -844,9 +848,6 @@ instance _root_.IsCyclotomicExtension.ringOfIntegers [IsCyclotomicExtension {n} 
   let _ := (zeta_spec n ℚ K).adjoin_isCyclotomicExtension ℤ
   IsCyclotomicExtension.equiv _ ℤ _ (zeta_spec n ℚ K).adjoinEquivRingOfIntegers
 
-@[deprecated (since := "2025-11-26")] alias _root_.IsCyclotomicExtension.ring_of_integers' :=
-  _root_.IsCyclotomicExtension.ringOfIntegers
-
 /-- The integral `PowerBasis` of `𝓞 K` given by a primitive root of unity, where `K` is an `n`-th
 cyclotomic extension of `ℚ`. -/
 noncomputable def integralPowerBasis [IsCyclotomicExtension {n} ℚ K]
@@ -865,6 +866,7 @@ theorem integralPowerBasis_dim [IsCyclotomicExtension {n} ℚ K] (hζ : IsPrimit
     hζ.integralPowerBasis.dim = φ n := by
   simp [integralPowerBasis, ← cyclotomic_eq_minpoly hζ (NeZero.pos _), natDegree_cyclotomic]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The integral `PowerBasis` of `𝓞 K` given by `ζ - 1`, where `K` is a cyclotomic
 extension of `ℚ`. -/
 noncomputable def subOneIntegralPowerBasis [IsCyclotomicExtension {n} ℚ K]
@@ -875,23 +877,13 @@ noncomputable def subOneIntegralPowerBasis [IsCyclotomicExtension {n} ℚ K]
     convert! Subalgebra.add_mem _ (self_mem_adjoin_singleton ℤ _) (Subalgebra.one_mem _)
     simp [RingOfIntegers.ext_iff, integralPowerBasis_gen, toInteger])
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem subOneIntegralPowerBasis_gen [IsCyclotomicExtension {n} ℚ K]
     (hζ : IsPrimitiveRoot ζ n) :
     hζ.subOneIntegralPowerBasis.gen =
       ⟨ζ - 1, Subalgebra.sub_mem _ (hζ.isIntegral (NeZero.pos _)) (Subalgebra.one_mem _)⟩ := by
   simp [subOneIntegralPowerBasis]
-
-@[deprecated (since := "2025-11-26")] alias integralPowerBasis' := integralPowerBasis
-@[deprecated (since := "2025-11-26")] alias integralPowerBasis'_gen := integralPowerBasis_gen
-@[deprecated (since := "2025-11-26")] alias power_basis_int'_dim := integralPowerBasis_dim
-@[deprecated (since := "2025-11-26")] alias subOneIntegralPowerBasis' := subOneIntegralPowerBasis
-@[deprecated (since := "2025-11-26")] alias subOneIntegralPowerBasis'_gen :=
-  subOneIntegralPowerBasis_gen
-@[deprecated (since := "2025-11-26")] alias subOneIntegralPowerBasis'_gen_prime :=
-  subOneIntegralPowerBasis_gen
-@[deprecated (since := "2025-11-26")] alias subOneIntegralPowerBasis_gen_prime :=
-  subOneIntegralPowerBasis_gen
 
 end IsPrimitiveRoot
 

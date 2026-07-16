@@ -196,6 +196,7 @@ theorem qsmul_of_nonpos {a : ℚ} (h : a ≤ 0) (x : DivisibleHull M) :
   have := h.eq_or_lt
   aesop (add simp [qsmul_def, abs_of_neg])
 
+set_option backward.isDefEq.respectTransparency false in
 theorem qsmul_mk (a : ℚ) (m : M) (s : ℕ+) :
     a • mk m s = mk (a.num • m) (⟨a.den, a.den_pos⟩ * s) := by
   obtain h | h := le_total 0 a
@@ -209,6 +210,7 @@ theorem qsmul_mk (a : ℚ) (m : M) (s : ℕ+) :
       simpa using h
     simp [nnqsmul_mk, this, ← neg_mk]
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable
 instance : Module ℚ (DivisibleHull M) where
   one_smul x := by
@@ -268,6 +270,7 @@ instance : LE (DivisibleHull M) where
 theorem mk_le_mk {m m' : M} {s s' : ℕ+} :
     mk m s ≤ mk m' s' ↔ s'.val • m ≤ s.val • m' := by rfl
 
+set_option backward.isDefEq.respectTransparency false in
 instance : LinearOrder (DivisibleHull M) where
   le_refl a := by
     induction a with | mk m s
@@ -312,6 +315,7 @@ instance : IsOrderedCancelAddMonoid (DivisibleHull M) :=
     simp_rw [PNat.mul_coe, smul_smul] at this
     convert! this using 3 <;> ring)
 
+set_option backward.isDefEq.respectTransparency false in
 instance : IsStrictOrderedModule ℚ≥0 (DivisibleHull M) where
   smul_lt_smul_of_pos_left a ha b c h := by
     induction b with | mk mb sb
@@ -333,6 +337,7 @@ end LinearOrder
 section OrderedGroup
 variable {M : Type*} [AddCommGroup M] [LinearOrder M] [IsOrderedAddMonoid M]
 
+set_option backward.isDefEq.respectTransparency false in
 instance : IsStrictOrderedModule ℚ (DivisibleHull M) where
   smul_lt_smul_of_pos_left a ha b c h := by
     simp_rw [qsmul_of_nonneg ha.le]

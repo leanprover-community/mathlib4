@@ -63,6 +63,7 @@ namespace IsLocalHomeomorphOn
 
 variable {f s}
 
+set_option backward.isDefEq.respectTransparency false in
 theorem discreteTopology_of_image (h : IsLocalHomeomorphOn f s)
     [DiscreteTopology (f '' s)] : DiscreteTopology s :=
   discreteTopology_iff_isOpen_singleton.mpr fun x ↦ by
@@ -253,8 +254,6 @@ theorem isOpenEmbedding_of_injective (hf : IsLocalHomeomorph f) (hi : f.Injectiv
 noncomputable def toHomeomorphOfBijective (hf : IsLocalHomeomorph f) (hb : f.Bijective) :
     X ≃ₜ Y :=
   (Equiv.ofBijective f hb).toHomeomorphOfContinuousOpen hf.continuous hf.isOpenMap
-
-@[deprecated (since := "2025-12-19")] alias toHomeomorph_of_bijective := toHomeomorphOfBijective
 
 /-- Continuous local sections of a local homeomorphism are open embeddings. -/
 theorem isOpenEmbedding_of_comp (hf : IsLocalHomeomorph g) (hgf : IsOpenEmbedding (g ∘ f))

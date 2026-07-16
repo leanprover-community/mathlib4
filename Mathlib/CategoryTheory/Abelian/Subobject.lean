@@ -42,6 +42,7 @@ namespace CategoryTheory.Abelian
 
 variable {C : Type u} [Category.{v} C] [Abelian C]
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- In an abelian category, the subobjects and quotient objects of an object `X` are
 order-isomorphic via taking kernels and cokernels.

@@ -211,7 +211,8 @@ private lemma instIsIrreducible_aux₀ {U : LieSubmodule K H (b.support ⊕ ι �
     replace hdx : x = diagonal d := by simpa using! hdx
     have this (d : b.support ⊕ ι → K) (μ : K) :
         (diagonal d).toLin' - μ • 1 = (diagonal (d - μ • 1)).toLin' := by
-      aesop (add simp Pi.single_apply)
+      ext i j
+      simp [Pi.single_apply, ite_sub_ite]
     simp [mem_genWeightSpaceOf, hdx, this, ← toLin'_pow, diagonal_pow]
   obtain ⟨i, hi⟩ : ∃ i, w (Sum.inr i) ≠ 0 := by
     obtain ⟨l, hl⟩ : ∃ l, χ (h' l) ≠ 0 := by
