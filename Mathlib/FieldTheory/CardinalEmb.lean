@@ -87,7 +87,6 @@ set_option quotPrecheck false
 /-- Index a basis of E/F using the initial ordinal of the cardinal `Module.rank F E`. -/
 local notation "ι" => (Module.rank F E).ord.ToType
 
-set_option backward.privateInPublic true in
 local notation i "⁺" => succ i -- Note: conflicts with `PosPart` notation
 
 /-- A basis of E/F indexed by the initial ordinal. -/
