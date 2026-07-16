@@ -286,6 +286,7 @@ lemma toGL_range : (toGL : SpecialLinearGroup n R →* GL n R).range = GeneralLi
         by simpa [GeneralLinearGroup.val_det_apply] using
           congrArg Units.val (MonoidHom.mem_ker.mp hA)⟩, Units.ext rfl⟩⟩
 
+/-- `Matrix.SpecialLinearGroup` is eqquivalent to `GeneralLinearGroup.det.ker` -/
 noncomputable def toGLKerEquiv :
   SpecialLinearGroup n R ≃* (GeneralLinearGroup.det : GL n R →* Rˣ).ker :=
   (MonoidHom.ofInjective toGL_injective).trans
