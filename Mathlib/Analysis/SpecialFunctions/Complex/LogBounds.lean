@@ -288,14 +288,9 @@ lemma hasSum_taylorSeries_neg_log {z : ℂ} (hz : ‖z‖ < 1) :
   simp [field, pow_add, ← mul_pow]
 
 lemma hasSum_taylorSeries_neg_log' {z : ℂ} (hz : ‖z‖ < 1) :
-    HasSum (fun (n : ℕ) => z ^ (n + 1) / (n + 1)) (-log (1 - z)) := by
-  rw [← hasSum_extend_zero (add_left_injective 1)]
-  convert hasSum_taylorSeries_neg_log hz
-  classical
-  rw [Function.extend_def]
-  split_ifs
-  · aesop
-  simp_all
+    HasSum (fun n : ℕ ↦ z ^ (n + 1) / (n + 1)) (-log (1 - z)) := by
+  rw_mod_cast [hasSum_nat_add_iff 1 (f := fun n ↦ z ^ n / n) (g := -log (1 - z))]
+  simpa using hasSum_taylorSeries_neg_log hz
 
 end Complex
 

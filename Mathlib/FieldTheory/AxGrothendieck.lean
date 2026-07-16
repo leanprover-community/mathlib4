@@ -5,11 +5,8 @@ Authors: Chris Hughes
 -/
 module
 
-public import Mathlib.RingTheory.Algebraic.Basic
-public import Mathlib.Data.Fintype.Pigeonhole
 public import Mathlib.ModelTheory.Algebra.Field.IsAlgClosed
 public import Mathlib.ModelTheory.Algebra.Ring.Definability
-public import Mathlib.RingTheory.Polynomial.Basic
 
 /-!
 # Ax-Grothendieck
@@ -90,7 +87,7 @@ end
 
 namespace FirstOrder
 
-open MvPolynomial FreeCommRing Language Field Ring BoundedFormula
+open MvPolynomial FreeCommRing Language FirstOrder.Field FirstOrder.Ring BoundedFormula
 
 variable {ι α : Type*} [Finite α] {K : Type*} [Field K] [CompatibleRing K]
 
@@ -171,7 +168,6 @@ theorem realize_genericPolyMapSurjOnOfInjOn
 theorem ACF_models_genericPolyMapSurjOnOfInjOn_of_prime [Finite ι]
     {p : ℕ} (hp : p.Prime) (φ : ring.Formula (α ⊕ ι)) (mons : ι → Finset (ι →₀ ℕ)) :
     Theory.ACF p ⊨ᵇ genericPolyMapSurjOnOfInjOn φ mons := by
-  classical
   have : Fact p.Prime := ⟨hp⟩
   let := compatibleRingOfRing (AlgebraicClosure (ZMod p))
   rw [← (ACF_isComplete (Or.inl hp)).realize_sentence_iff _

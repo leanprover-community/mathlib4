@@ -191,7 +191,6 @@ theorem Directed.finite_set_le (D : Directed r f) {s : Set γ} (hs : s.Finite) :
 
 lemma Directed.finite_le {ι κ : Sort*} [Nonempty ι] [Finite κ] {f : ι → α} (hf : Directed r f)
     (g : κ → ι) : ∃ z, ∀ i, r (f (g i)) (f z) := by
-  classical
   simpa using
     (hf.comp_of_surjective PLift.down_surjective).finite_set_le (Set.finite_range (PLift.up ∘ g))
 

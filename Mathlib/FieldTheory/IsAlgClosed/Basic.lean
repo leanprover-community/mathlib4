@@ -5,11 +5,11 @@ Authors: Kenny Lau
 -/
 module
 
+public import Mathlib.Algebra.Ring.Hom.InjSurj
+public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 public import Mathlib.FieldTheory.Extension
-public import Mathlib.FieldTheory.Normal.Defs
 public import Mathlib.FieldTheory.Perfect
 public import Mathlib.RingTheory.Localization.Integral
-public import Mathlib.Algebra.Ring.Hom.InjSurj
 
 /-!
 # Algebraically Closed Field
@@ -61,18 +61,6 @@ non-constant polynomials have a root. See `IsAlgClosed.exists_root` and
 @[stacks 09GR "The definition of `IsAlgClosed` in mathlib is 09GR (4)"]
 class IsAlgClosed : Prop where
   splits : ∀ p : k[X], p.Splits
-
-@[deprecated (since := "2025-12-09")]
-alias IsAlgClosed.factors := IsAlgClosed.splits
-
-/-- Every polynomial splits in the field extension `f : K →+* k` if `k` is algebraically closed.
-
-See also `IsAlgClosed.splits_domain` for the case where `K` is algebraically closed.
--/
-@[deprecated "This is a special case of `IsAlgClosed.splits`." (since := "2025-12-09")]
-theorem IsAlgClosed.splits_codomain {k K : Type*} [Field k] [IsAlgClosed k] [CommRing K]
-    {f : K →+* k} (p : K[X]) : (p.map f).Splits :=
-  IsAlgClosed.splits (p.map f)
 
 /-- Every polynomial splits in the field extension `f : K →+* k` if `K` is algebraically closed. -/
 theorem IsAlgClosed.splits_domain {k K : Type*} [Field k] [IsAlgClosed k] [Field K] {f : k →+* K}
