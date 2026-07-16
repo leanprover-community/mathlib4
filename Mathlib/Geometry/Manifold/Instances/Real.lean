@@ -483,14 +483,15 @@ instance instIsManifoldIcc (x y : ℝ) [Fact (x < y)] {n : ℕ∞ω} :
   · -- `e = right chart`, `e' = right chart`
     exact (mem_groupoid_of_pregroupoid.mpr (symm_trans_mem_contDiffGroupoid _)).1
 
-/-- In the cross-chart case on `[x,y]`, the tangent coordinate change is `v ↦ -v`. -/
+/-- In the cross-chart case on `[x,y]`, the tangent coordinate change is `-id` (i.e. `v ↦ -v`). -/
 private theorem Icc_tangentCoordChange_neg (p q r : Set.Icc x y)
     (hr : r ∈ (chartAt (EuclideanHalfSpace 1) p).source ∩
       (chartAt (EuclideanHalfSpace 1) q).source)
-    (hpq : ¬((p : ℝ) < y ↔ (q : ℝ) < y))
-    (v : EuclideanSpace ℝ (Fin 1)) :
-    tangentCoordChange (𝓡∂ 1) p q r v = -v := by
-  rw [tangentCoordChange_def]
+    (hpq : ¬((p : ℝ) < y ↔ (q : ℝ) < y)) :
+    (tangentCoordChange (𝓡∂ 1) p q r).toLinearMap = (-1 : ℝ) • LinearMap.id := by
+  ext v : 1
+  rw [ContinuousLinearMap.coe_coe, LinearMap.smul_apply, LinearMap.id_apply, neg_one_smul,
+    tangentCoordChange_def]
   -- Decompose the cross-chart assumption into the two cases
   obtain ⟨hp', hq'⟩ | ⟨hp', hq'⟩ :
       ((p : ℝ) < y ∧ ¬(q : ℝ) < y) ∨ (¬(p : ℝ) < y ∧ (q : ℝ) < y) := by
@@ -559,11 +560,8 @@ private theorem Icc_zero_lt_det_tangentCoordChange_iff (p q r : Set.Icc x y)
     exact one_pos
   · -- Charts differ: the coordinate change is `-id`, with determinant `-1 < 0`.
     refine iff_of_false (not_lt.mpr (le_of_lt ?_)) hpq
-    have hmap : (tangentCoordChange (𝓡∂ 1) p q r).toLinearMap = (-1 : ℝ) • LinearMap.id := by
-      ext v : 1
-      rw [ContinuousLinearMap.coe_coe, Icc_tangentCoordChange_neg p q r hr hpq v,
-        LinearMap.smul_apply, LinearMap.id_apply, neg_one_smul]
-    rw [hmap, LinearMap.det_smul, LinearMap.det_id, finrank_euclideanSpace, Fintype.card_fin]
+    rw [Icc_tangentCoordChange_neg p q r hr hpq, LinearMap.det_smul, LinearMap.det_id,
+      finrank_euclideanSpace, Fintype.card_fin]
     norm_num
 
 public instance instIccOrientationIndexCard :
