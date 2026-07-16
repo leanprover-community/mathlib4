@@ -5,8 +5,6 @@ Authors: Jz Pan
 -/
 module
 
-public import Mathlib.Algebra.CharP.Lemmas
-public import Mathlib.Algebra.CharP.IntermediateField
 public import Mathlib.FieldTheory.PurelyInseparable.Basic
 public import Mathlib.LinearAlgebra.Dimension.OrzechProperty
 
