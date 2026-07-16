@@ -81,7 +81,7 @@ section Preorder
 variable [Preorder α]
 
 /-- A constructor for `SuccOrder α` usable when `α` has no maximal element. -/
-@[to_dual (attr := implicit_reducible)
+@[to_dual (attr := instance_reducible)
 /-- A constructor for `PredOrder α` usable when `α` has no minimal element. -/]
 def SuccOrder.ofSuccLeIff (succ : α → α) (hsucc_le_iff : ∀ {a b}, succ a ≤ b ↔ a < b) :
     SuccOrder α where
@@ -97,7 +97,7 @@ section LinearOrder
 variable [LinearOrder α]
 
 /-- A constructor for `SuccOrder α` for `α` a linear order. -/
-@[to_dual (attr := simps, implicit_reducible)
+@[to_dual (attr := simps, instance_reducible)
 /-- A constructor for `PredOrder α` for `α` a linear order. -/]
 def SuccOrder.ofCore (succ : α → α) (hn : ∀ {a}, ¬IsMax a → ∀ b, a < b ↔ succ a ≤ b)
     (hm : ∀ a, IsMax a → succ a = a) : SuccOrder α where
@@ -108,9 +108,10 @@ def SuccOrder.ofCore (succ : α → α) (hn : ∀ {a}, ¬IsMax a → ∀ b, a < 
 
 variable (α)
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 /-- A well-order is a `SuccOrder`. -/
-@[to_dual (attr := implicit_reducible)
+@[to_dual (attr := instance_reducible)
 /-- A linear order with well-founded greater-than relation is a `PredOrder`. -/]
 noncomputable def SuccOrder.ofLinearWellFoundedLT [WellFoundedLT α] : SuccOrder α :=
   ofCore (fun a ↦ if h : (Ioi a).Nonempty then wellFounded_lt.min _ h else a)
@@ -893,12 +894,14 @@ noncomputable instance Set.OrdConnected.succOrder [SuccOrder α] :
   letI : PredOrder sᵒᵈ := inferInstanceAs (PredOrder (OrderDual.ofDual ⁻¹' s))
   inferInstanceAs (SuccOrder sᵒᵈᵒᵈ)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 lemma coe_succ_of_mem [SuccOrder α] {a : s} (h : succ ↑a ∈ s) :
     (succ a).1 = succ ↑a := by classical
   change Subtype.val (dite ..) = _
   split_ifs <;> trivial
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isMax_of_succ_notMem [SuccOrder α] {a : s} (h : succ ↑a ∉ s) : IsMax a := by
   classical
   rw [← succ_eq_iff_isMax]

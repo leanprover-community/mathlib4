@@ -147,7 +147,7 @@ namespace Classical
 open PSet ZFSet
 
 /-- All functions are classically definable. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def allZFSetDefinable {n} (F : (Fin n → ZFSet.{u}) → ZFSet.{u}) : Definable n F where
   out xs := (F (mk <| xs ·)).out
 
@@ -639,6 +639,7 @@ variable {α : Type*} [Small.{u} α]
 noncomputable def range (f : α → ZFSet.{u}) : ZFSet.{u} :=
   ⟦⟨_, Quotient.out ∘ f ∘ (equivShrink α).symm⟩⟧
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem mem_range {f : α → ZFSet.{u}} {x : ZFSet.{u}} : x ∈ range f ↔ ∃ i, f i = x :=
   Quotient.inductionOn x fun y => by

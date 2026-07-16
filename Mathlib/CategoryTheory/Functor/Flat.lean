@@ -180,6 +180,7 @@ open StructuredArrow
 variable {J : Type v₁} [SmallCategory J] [FinCategory J] {K : J ⥤ C}
 variable (F : C ⥤ D) [RepresentablyFlat F] {c : Cone K} (hc : IsLimit c) (s : Cone (K ⋙ F))
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- (Implementation).
 Given a limit cone `c : cone K` and a cone `s : cone (K ⋙ F)` with `F` representably flat,

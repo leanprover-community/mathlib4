@@ -185,6 +185,7 @@ theorem hom_refl (C : G.ComponentCompl L) : C.hom (subset_refl L) = C := by
   change C.map _ = C
   rw [induceHom_id G Lᶜ, ConnectedComponent.map_id]
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem hom_trans (C : G.ComponentCompl L) (h : K ⊆ L) (h' : M ⊆ K) :
     C.hom (h'.trans h) = (C.hom h).hom h' := by
   change C.map _ = (C.map _).map _
@@ -251,6 +252,7 @@ variable (G)
 
 open CategoryTheory
 
+set_option backward.isDefEq.respectTransparency.types false in
 /--
 The functor assigning, to a finite set in `V`, the set of connected components in its complement.
 -/

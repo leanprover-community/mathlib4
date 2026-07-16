@@ -83,6 +83,7 @@ theorem toMatrix_update [DecidableEq ι'] (x : M) :
   · rw [h, update_self j x v]
   · rw [update_of_ne h]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The basis constructed by `unitsSMul` has vectors given by a diagonal matrix. -/
 @[simp]
 theorem toMatrix_unitsSMul [DecidableEq ι] (e : Basis ι R₂ M₂) (w : ι → R₂ˣ) :
@@ -255,7 +256,7 @@ theorem toMatrix_mul_toMatrix_flip [DecidableEq ι] [Fintype ι'] :
     b.toMatrix b' * b'.toMatrix b = 1 := by rw [toMatrix_mul_toMatrix, toMatrix_self]
 
 /-- A matrix whose columns form a basis `b'`, expressed w.r.t. a basis `b`, is invertible. -/
-@[implicit_reducible]
+@[instance_reducible]
 def invertibleToMatrix [DecidableEq ι] [Fintype ι] (b b' : Basis ι R₂ M₂) :
     Invertible (b.toMatrix b') :=
   ⟨b'.toMatrix b, toMatrix_mul_toMatrix_flip _ _, toMatrix_mul_toMatrix_flip _ _⟩

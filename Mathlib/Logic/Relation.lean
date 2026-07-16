@@ -804,7 +804,7 @@ instance : IsEquiv α (EqvGen r) := is_equivalence _ |>.isEquiv
 
 The motivation for this definition is that `Quot r` behaves like `Quotient (EqvGen.setoid r)`,
 see for example `Quot.eqvGen_exact` and `Quot.eqvGen_sound`. -/
-@[implicit_reducible]
+@[instance_reducible]
 def setoid : Setoid α :=
   Setoid.mk _ (EqvGen.is_equivalence r)
 

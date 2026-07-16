@@ -35,7 +35,7 @@ open Limits
 
 variable {C D E : Type*} [Category* C] [Category* D] [Category* E]
 
-open Opposite Presieve Functor
+open Opposite Presieve CategoryTheory.Functor
 
 /-- A presieve is *regular* if it consists of a single effective epimorphism. -/
 class Presieve.regular {X : C} (R : Presieve X) : Prop where
@@ -214,6 +214,7 @@ theorem parallelPair_pullback_initial {X B : C} (π : X ⟶ B)
     refine ⟨Quiver.Hom.op (ObjectProperty.homMk (Over.homMk ij)), ?_, ?_⟩
     all_goals congr; aesop
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /--
 Given a limiting pullback cone, the fork in `SingleEqualizerCondition` is limiting iff the diagram
