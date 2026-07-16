@@ -45,7 +45,7 @@ class IsAddLeftOrderable (G : Type*) [AddMonoid G] : Prop where
 
 /-- A monoid is left-orderable if it admits a linear order invariant under left multiplication,
 i.e. `a ≤ b → c * a ≤ c * b`. -/
-@[to_additive existing IsAddLeftOrderable, mk_iff]
+@[to_additive existing, mk_iff]
 class IsLeftOrderable (G : Type*) [Monoid G] : Prop where
   exists_linearOrder_mulLeftMono (G) : ∃ _ : LinearOrder G, MulLeftMono G
 
@@ -57,7 +57,7 @@ class IsAddRightOrderable (G : Type*) [AddMonoid G] : Prop where
 
 /-- A monoid is right-orderable if it admits a linear order invariant under right multiplication,
 i.e. `a ≤ b → a * c ≤ b * c`. -/
-@[to_additive existing IsAddRightOrderable, mk_iff]
+@[to_additive existing, mk_iff]
 class IsRightOrderable (G : Type*) [Monoid G] : Prop where
   exists_linearOrder_mulRightMono (G) : ∃ _ : LinearOrder G, MulRightMono G
 
@@ -70,7 +70,7 @@ class IsAddBiOrderable (G : Type*) [AddMonoid G] : Prop where
 
 /-- A monoid is bi-orderable if it admits a linear order invariant under both left and right
 multiplication. -/
-@[to_additive existing IsAddBiOrderable, mk_iff]
+@[to_additive existing, mk_iff]
 class IsBiOrderable (G : Type*) [Monoid G] : Prop where
   exists_linearOrder_mulLeftMono_mulRightMono (G) :
     ∃ _ : LinearOrder G, MulLeftMono G ∧ MulRightMono G
@@ -83,16 +83,6 @@ export IsRightOrderable (exists_linearOrder_mulRightMono)
 export IsBiOrderable (exists_linearOrder_mulLeftMono_mulRightMono)
 
 variable {G : Type*} [Monoid G]
-
--- `to_additive` builds additive names by string-replacing `Mul → Add`. A declaration whose name
--- mentions these classes but no multiplicative operation — such as the `IsBiOrderable` forgetful
--- instances below — therefore has no token to translate, and cannot be additivized while it is
--- anonymous. These file-local hints supply the missing translations, so every instance below can
--- stay unnamed. If there is consensus, they could instead be added to `to_additive`'s global
--- `abbreviationDict` (beside the analogous `isRegular` entries), serving all four files at once.
-to_additive_name_hint IsLeftOrderable IsAddLeftOrderable
-to_additive_name_hint IsRightOrderable IsAddRightOrderable
-to_additive_name_hint IsBiOrderable IsAddBiOrderable
 
 /-- A linear order with monotone left multiplication makes a monoid left-orderable. -/
 @[to_additive /-- A linear order with monotone left addition makes an additive monoid

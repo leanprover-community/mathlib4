@@ -28,7 +28,7 @@ variable {ι : Type*} {G : ι → Type*}
 
 /-- An indexed product of left-cancellative left-orderable monoids is left-orderable, via the
 lexicographic order along a well-ordering of the index (strict on every factor). -/
-@[to_additive Pi.instIsAddLeftOrderable]
+@[to_additive]
 instance Pi.instIsLeftOrderable [∀ i, Monoid (G i)] [∀ i, IsLeftCancelMul (G i)]
     [∀ i, IsLeftOrderable (G i)] : IsLeftOrderable (∀ i, G i) := by
   choose l hl using fun i ↦ exists_linearOrder_mulLeftStrictMono (G i)
@@ -37,7 +37,7 @@ instance Pi.instIsLeftOrderable [∀ i, Monoid (G i)] [∀ i, IsLeftCancelMul (G
 
 /-- An indexed product of right-cancellative right-orderable monoids is right-orderable, via the
 lexicographic order along a well-ordering of the index (strict on every factor). -/
-@[to_additive Pi.instIsAddRightOrderable]
+@[to_additive]
 instance Pi.instIsRightOrderable [∀ i, Monoid (G i)] [∀ i, IsRightCancelMul (G i)]
     [∀ i, IsRightOrderable (G i)] : IsRightOrderable (∀ i, G i) := by
   choose l hl using fun i ↦ exists_linearOrder_mulRightStrictMono (G i)
