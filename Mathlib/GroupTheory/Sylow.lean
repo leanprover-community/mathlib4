@@ -944,6 +944,7 @@ variable {p G} in
 theorem pCore_eq_of_normal (H : Sylow p G) [H.Normal] : pCore p G = H := by
   rw [pCore_eq_normalCore H, normalCore_eq_self]
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem pCore_eq_iInf : pCore p G = ⨅ H : Sylow p G, (H : Subgroup G) := by
   have K : Sylow p G := Sylow.nonempty.some
   suffices (⨅ H : Sylow p G, (H : Subgroup G)).Normal from
