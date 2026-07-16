@@ -178,7 +178,7 @@ instance (priority := high) CWComplex.instRelCWComplex {X : Type*} [TopologicalS
   union' := by simpa only [empty_union] using CWComplex.union'
 
 /-- A relative CW complex with an empty base is an absolute CW complex. -/
-@[simps -isSimp, implicit_reducible]
+@[simps -isSimp, instance_reducible]
 def RelCWComplex.toCWComplex {X : Type*} [TopologicalSpace X] (C : Set X) [RelCWComplex C ∅] :
     CWComplex C where
   cell := cell C
@@ -407,7 +407,7 @@ lemma RelCWComplex.cellFrontier_zero_eq_empty [RelCWComplex C D] {j : cell C 0} 
 @[alias_in CWComplex]
 lemma RelCWComplex.nonempty_cellFrontier [CWComplex C] {n : ℕ} (hn : n ≠ 0) (j : cell C n) :
     (cellFrontier n j).Nonempty := by
-  letI : NeZero n := ⟨hn⟩
+  let : NeZero n := ⟨hn⟩
   use map n j (Pi.single 0 1)
   simp only [cellFrontier, mem_image, mem_sphere_iff_norm, sub_zero]
   use Pi.single 0 1, by simp [Pi.norm_single]
@@ -1075,6 +1075,7 @@ lemma RelCWComplex.disjoint_interior_base_iUnion_closedCell [T2Space X] [RelCWCo
   simp_rw [disjoint_iff_inter_eq_empty, inter_iUnion, disjoint_interior_base_closedCell.inter_eq,
     iUnion_empty]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- A closed discrete subset of a space is a CW complex. -/
 @[reducible, simps -isSimp]
 def CWComplex.OfDiscreteClosed (hD : IsDiscrete D) (Dc : IsClosed D) : CWComplex D where
