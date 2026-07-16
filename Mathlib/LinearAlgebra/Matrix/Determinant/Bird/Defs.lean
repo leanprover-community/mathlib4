@@ -28,7 +28,7 @@ This determinant algorithm comes from
 - `BirdDet.birdDet`: The entrypoint for the determinant calculation.
 - `BirdDet.get`: matrix entry lookup.
 - `BirdDet.sumFrom`: The sum `f lo + ... + f (n - 1)`.
-- `BirdDet.diagSum`, `BirdDet.stepEntry`: Named pieces of one scalar recurrence step.
+- `BirdDet.stepEntry`: One scalar recurrence step.
 - `BirdDet.Spec.birdDet`: An implementation of Bird's algorithm using `Matrix`.
 
 ## Main lemmas
@@ -55,14 +55,6 @@ protected def get (n : ℕ) (A : Array R) (i j : ℕ) : R :=
 /-- Sum `f lo + ... + f (n - 1)`. Returns zero when `n <= lo`. -/
 protected def sumFrom (n lo : ℕ) (f : ℕ → R) : R :=
   if lo < n then f lo + BirdDet.sumFrom n (lo + 1) f else 0
-
-/--
-The diagonal tail sum used in the scalar Bird recurrence at row `i`.
-
-This is the sum of the diagonal entries of `F` strictly below row `i`.
--/
-def diagSum (n : ℕ) (F : ℕ → ℕ → R) (i : ℕ) : R :=
-  BirdDet.sumFrom n (i + 1) fun k => F k k
 
 /--
 One entry of one scalar Bird recurrence step.
@@ -96,7 +88,7 @@ F_{t+1} i j =
 ```
 -/
 def stepEntry (n : ℕ) (A : Array R) (F : ℕ → ℕ → R) (i j : ℕ) : R :=
-  -(diagSum n F i) * BirdDet.get n A i j +
+  -(BirdDet.sumFrom n (i + 1) fun k => F k k) * BirdDet.get n A i j +
     BirdDet.sumFrom n (i + 1) fun k => F i k * BirdDet.get n A k j
 
 /--
@@ -132,11 +124,6 @@ theorem sumFrom_induct (n : ℕ) (motive : ℕ → Prop)
     (stop : ∀ lo, ¬lo < n → motive lo) (lo : ℕ) : motive lo :=
   BirdDet.sumFrom.induct n motive step stop lo
 
-/-- Unfold `diagSum` to the corresponding `sumFrom`. -/
-theorem diagSum_eq (n : ℕ) (F : ℕ → ℕ → R) (i : ℕ) :
-    diagSum n F i = BirdDet.sumFrom n (i + 1) fun k => F k k := by
-  rfl
-
 /-- Unfold one scalar Bird recurrence step to the entry-wise formula. -/
 theorem stepEntry_eq (n : ℕ) (A : Array R) (F : ℕ → ℕ → R) (i j : ℕ) :
     stepEntry n A F i j =
@@ -162,14 +149,11 @@ namespace Spec
 
 open scoped BigOperators
 
-/-- The diagonal tail sum used in the Matrix/Fin specification. -/
-def diagSum {n : ℕ} (F : Matrix (Fin n) (Fin n) R) (i : Fin n) : R :=
-  ∑ k ∈ Finset.Ioi i, F k k
-
 /-- One entry of one Matrix/Fin Bird recurrence step. -/
 def stepEntry {n : ℕ}
     (A F : Matrix (Fin n) (Fin n) R) : Matrix (Fin n) (Fin n) R :=
-  .of fun i j ↦ -(diagSum F i) * A i j + ∑ k ∈ Finset.Ioi i, F i k * A k j
+  .of fun i j ↦ (-∑ k ∈ Finset.Ioi i, F k k) * A i j +
+    ∑ k ∈ Finset.Ioi i, F i k * A k j
 
 /-- A version of the Bird determinant algorithm that is stated in terms of `Matrix`. -/
 def birdDet {n : ℕ}
@@ -177,11 +161,6 @@ def birdDet {n : ℕ}
   match n with
   | 0 => 1
   | k + 1 => (-1 : R) ^ k * (stepEntry A)^[k] A 0 0
-
-/-- Unfold the diagonal tail sum in the matrix specification. -/
-theorem diagSum_eq {n : ℕ} (F : Matrix (Fin n) (Fin n) R) (i : Fin n) :
-    diagSum F i = ∑ k ∈ Finset.Ioi i, F k k := by
-  rfl
 
 theorem stepEntry_eq {n : ℕ}
     (A F : Matrix (Fin n) (Fin n) R) :

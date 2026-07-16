@@ -112,12 +112,12 @@ variable (A : Matrix (Fin n) (Fin n) R) {p : ℕ}
 
 /-- Bird's equation (2), assuming equation (1) at `p` as the induction hypothesis. -/
 theorem paper_eq2 (i : Fin n) (hEq1 : Eq1 A p) :
-    -Spec.diagSum ((Spec.stepEntry A)^[p] A) i =
+    (-∑ k ∈ Finset.Ioi i, ((Spec.stepEntry A)^[p] A) k k) =
       (-1) ^ (p + 1) * ∑ α ∈ S (p + 1) i, pminor A α := by
   calc
-    -Spec.diagSum ((Spec.stepEntry A)^[p] A) i =
+    (-∑ k ∈ Finset.Ioi i, ((Spec.stepEntry A)^[p] A) k k) =
         (-1) ^ (p + 1) * ∑ k ∈ Finset.Ioi i, ∑ α ∈ S p k, bminor A k k α := by
-      simp only [Spec.diagSum_eq, hEq1, Matrix.of_apply, ← Finset.mul_sum]
+      simp only [hEq1, Matrix.of_apply, ← Finset.mul_sum]
       ring
     _ = (-1) ^ (p + 1) * ∑ α ∈ S (p + 1) i, pminor A α := by
       rw [S_succ_eq_biUnion, Finset.sum_biUnion]
@@ -129,9 +129,9 @@ theorem paper_eq2 (i : Fin n) (hEq1 : Eq1 A p) :
 /-- One step of Bird's scalar recurrence, split into diagonal and tail parts. -/
 theorem iter_succ_entry (i j : Fin n) :
     ((Spec.stepEntry A)^[p + 1] A) i j =
-      -Spec.diagSum ((Spec.stepEntry A)^[p] A) i * A i j +
+      (-∑ k ∈ Finset.Ioi i, ((Spec.stepEntry A)^[p] A) k k) * A i j +
       ∑ k ∈ Finset.Ioi i, ((Spec.stepEntry A)^[p] A) i k * A k j := by
-  rw [Function.iterate_succ_apply', Spec.stepEntry_eq, Matrix.of_apply, Spec.diagSum_eq]
+  rw [Function.iterate_succ_apply', Spec.stepEntry_eq, Matrix.of_apply]
 
 /-- Bird's equation (3), assuming equation (1) at `p` as the induction hypothesis. -/
 theorem paper_eq3 (i j : Fin n) (hEq1 : Eq1 A p) :
