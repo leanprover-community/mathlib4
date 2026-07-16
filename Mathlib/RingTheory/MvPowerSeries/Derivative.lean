@@ -94,22 +94,22 @@ private theorem pderivFun_coe_mul_coe {i : σ} (f g : MvPolynomial σ R) :
     MvPolynomial.coe_add]
 
 private theorem pderivFun_mul {i : σ} (f g : MvPowerSeries σ R) :
-    pderivFun i (f * g) = f * g.pderivFun i + g * f.pderivFun i := by
+    pderivFun i (f * g) = f • g.pderivFun i + g • f.pderivFun i := by
   classical
   ext n
   have h₁ : n < n + single i 1 := lt_def.mpr ⟨self_le_add_right _ _, i, by simp⟩
   have h₂ : n + single i 1 < n + single i 1 + single i 1 :=
     lt_def.mpr ⟨self_le_add_right _ _, i, by simp⟩
   have h₃ : n < n + single i 1 + single i 1 := lt_trans h₁ h₂
-  rw [coeff_pderivFun, map_add, ← coeff_trunc_mul_trunc_eq_coeff_mul _ _ _ h₂,
-    ← coeff_trunc_mul_trunc_eq_coeff_mul₂ _ _ g (f.pderivFun i) h₃ h₁,
+  rw [coeff_pderivFun, map_add, ← coeff_trunc_mul_trunc_eq_coeff_mul _ _ _ h₂, smul_eq_mul,
+    smul_eq_mul, ← coeff_trunc_mul_trunc_eq_coeff_mul₂ _ _ g (f.pderivFun i) h₃ h₁,
     ← coeff_trunc_mul_trunc_eq_coeff_mul₂ _ _ f (g.pderivFun i) h₃ h₁, trunc_pderivFun,
     trunc_pderivFun, ← coeff_coe, ← coeff_coe, ← coeff_coe, ← map_add, coe_mul, coe_mul, coe_mul,
     ← pderivFun_coe_mul_coe, coeff_pderivFun]
 
 private theorem pderivFun_smul {i : σ} (r : R) (f : MvPowerSeries σ R) :
     pderivFun i (r • f) = r • pderivFun i f := by
-  rw [smul_eq_C_mul, smul_eq_C_mul, pderivFun_mul, pderivFun_C, mul_zero, add_zero]
+  rw [smul_eq_C_mul, smul_eq_C_mul, pderivFun_mul, pderivFun_C, smul_zero, add_zero, smul_eq_mul]
 
 variable (R) in
 /-- The formal partial derivative of a multivariate formal power series with respect to
@@ -132,10 +132,6 @@ theorem coeff_pderiv {i : σ} (f : MvPowerSeries σ R) (n : σ →₀ ℕ) :
 
 theorem pderiv_coe {i : σ} (f : MvPolynomial σ R) :
     pderiv R i f = MvPolynomial.pderiv i f := pderivFun_coe f
-
-theorem pderiv_mul {i : σ} (f g : MvPowerSeries σ R) :
-    pderiv R i (f * g) = f * pderiv R i g + g * pderiv R i f :=
-  pderivFun_mul f g
 
 @[simp]
 theorem pderiv_X_self {i : σ} : pderiv R i (X i) = 1 := by
