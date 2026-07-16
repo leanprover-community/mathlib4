@@ -61,10 +61,14 @@ example (R : Type) [CommRing R] (M : Type) [AddCommGroup M] [Module R M] [Coalge
 example : CommRingCat.{7} := ↧(ULift.{7} ℤ)
 example (R : Type) [Ring R] (M : Type 5) [AddCommGroup M] [Module R M] : ModuleCat.{5} R := ↧M
 
-/-! ### `↧X` is syntactically `C.of X` -/
+/-! ### `↧X` is syntactically `FooCat.of X`
 
-example : (↧ℤ : CommRingCat) = CommRingCat.of ℤ := rfl
-example : (↧ℤ : ModuleCat ℤ) = ModuleCat.of ℤ ℤ := rfl
+`=ₛ` checks equality of the elaborated terms up to syntax, unlike `rfl`, which would only witness
+definitional equality.
+-/
+
+#guard_expr (↧ℤ : CommRingCat) =ₛ CommRingCat.of ℤ
+#guard_expr (↧ℤ : ModuleCat ℤ) =ₛ ModuleCat.of ℤ ℤ
 
 -- `rw` needs the term to match `FooCat.of` syntactically.
 example : ((↧ℤ : CommRingCat) : Type) = ℤ := by rw [CommRingCat.coe_of]
