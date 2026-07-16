@@ -215,7 +215,7 @@ lemma Unitary.norm_expUnitary_smul_argSelfAdjoint_sub_one_le (u : unitary A)
 lemma Unitary.continuousOn_argSelfAdjoint :
     ContinuousOn (argSelfAdjoint : unitary A → selfAdjoint A) (ball (1 : unitary A) 2) := by
   rw [Topology.IsInducing.subtypeVal.continuousOn_iff]
-  simp only [SetLike.coe_sort_coe, Function.comp_def, argSelfAdjoint_coe]
+  simp only [Function.comp_def, argSelfAdjoint_coe]
   rw [isOpen_ball.continuousOn_iff]
   intro u (hu : dist u 1 < 2)
   obtain ⟨ε, huε, hε2⟩ := exists_between (sq_lt_sq₀ (by positivity) (by positivity) |>.mpr hu)
@@ -350,6 +350,3 @@ lemma Unitary.mem_pathComponentOne_iff {u : unitary A} :
     induction l with
     | nil => simp
     | cons x xs ih => simpa using! (joined_one_expUnitary x).mul ih
-
-@[deprecated (since := "2025-10-29")] alias unitary.mem_pathComponentOne_iff :=
-  Unitary.mem_pathComponentOne_iff

@@ -48,8 +48,8 @@ example (h₁ : c ≤ b) (h₂ : a + 5 < c + 6) : a + 5 < b + 6 := by
 
 example (h₁ : a + e ≤ b + e) (h₂ : b < c) (h₃ : c ≤ d) : a + e ≤ d + e := by
   grw [h₂, h₃] at h₁
-  guard_hyp h₁ :ₛ a + e ≤ d + e
-  exact h₁
+  guard_hyp h₁ :ₛ a + e < d + e
+  exact le_of_lt h₁
 
 example (f g : α → α) (h : ∀ x : α, f x ≤ g x) (h₂ : g a + g b ≤ 5) : f a + f b ≤ 5 := by
   grw [h]
@@ -84,15 +84,9 @@ example (h₁ : a ≤ b) : a * c ≤ b * c := by
   guard_target =ₛ 0 ≤ c
   exact test_sorry
 
-/- This example has behaviour which might be weaker than some users would desire: it would be
-mathematically sound to transform the goal here to `2 * y ≤ z`, not `2 * y < z`.
-
-However, the current behavior is easier to implement, and preserves the form of the goal (`?_ < z`),
-which is a useful invariant. -/
 example {x y z : ℤ} (hx : x < y) : 2 * x < z := by
   grw [hx]
-  fail_if_success guard_target =ₛ 2 * y < z
-  guard_target = 2 * y < z
+  guard_target = 2 * y ≤ z
   exact test_sorry
 
 end inequalities
@@ -118,7 +112,7 @@ example (h₁ : W ⊂ Y) (h₂ : X ⊂ (W ∪ Z)) : X ⊂ (Y ∪ Z) := by
   guard_target =ₛ X ⊂ (W ∪ Z)
   exact h₂
 
--- binder names are not preserved:
+-- Binder names are preserved:
 /--
 trace: α : Type ?u.3
 X Y Z W : Set α
@@ -126,14 +120,25 @@ a b : ℕ
 h : a < b
 f : ℕ → ℕ
 hf : ∀ (i : ℕ), 0 ≤ f i
-⊢ ∑ i ∈ {a | a ≤ b}.toFinset, f i ≤ ∑ i ∈ {x | x ≤ b}.toFinset, f i
+⊢ ∑ j ∈ {z | z < b}.toFinset, f j ≤ ∑ i ∈ {x | x < b}.toFinset, f i
 -/
 #guard_msgs in
 example {a b : Nat} (h : a < b) (f : Nat → Nat) (hf : ∀ i, 0 ≤ f i) :
-   ∑ j ∈ ({z | z ≤ a} : Set Nat), f j ≤ ∑ i ∈ ({x | x ≤ b} : Set Nat), f i := by
+    ∑ j ∈ ({z | z ≤ a} : Set Nat), f j ≤ ∑ i ∈ ({x | x < b} : Set Nat), f i := by
   grewrite [h]
   trace_state
   rfl
+
+/--
+trace: α : Type ?u.3
+X Y Z W : Set α
+⊢ ∀ {α : Type u_1} [inst : LinearOrder α] (a b : α), max a b ≤ max a b
+-/
+#guard_msgs in
+example : ∀ {α : Type*} [LinearOrder α] (a b : α), min a b ≤ max a b := by
+  grw [@inf_le_sup]
+  trace_state
+  intros; rfl
 
 end subsets
 
@@ -142,7 +147,7 @@ section rationals
 example (x x' y z w : ℚ) (h0 : x' = x) (h₁ : x < z) (h₂ : w ≤ y + 4) (h₃ : z + 1 < 5 * w) :
     x' + 1 < 5 * (y + 4) := by
   grw [h0, h₁, ← h₂]
-  exact h₃
+  exact le_of_lt h₃
 
 example {x y z : ℚ} (f g : ℚ → ℚ) (h : ∀ t, f t = g t) : 2 * f x * f y * f x ≤ z := by
   grw [h]
@@ -201,7 +206,7 @@ example {a b : ℤ} (h1 : a ≡ 3 [ZMOD 5]) (h2 : b ≡ a ^ 2 + 1 [ZMOD 5]) :
 example {x y a b : ℚ} (h : x < y) (h1 : a ≤ 3 * x) : 2 * x ≤ b := by
   grw [h] at *
   guard_hyp h :ₛ x < y -- `grw [h] at *` does not rewrite at `h`
-  guard_hyp h1 : a ≤ 3 * y
+  guard_hyp h1 : a < 3 * y
   guard_target = 2 * y ≤ b
   exact test_sorry
 
@@ -344,7 +349,7 @@ example : ∃ n, n < 2 := by
   refine ⟨?_, ?_⟩
   on_goal 2 => grw [← one_lt_two]
   exact 0
-  refine zero_lt_one
+  refine zero_le_one
 
 section zmod
 
@@ -454,3 +459,97 @@ example {a b c d e f g h i j k : Rat} : a * b * c * d * e * f * g * h * i * j * 
   exact test_sorry
 
 end cache
+
+section strict
+
+variable {α : Type u} [LinearOrder α] {a b c d : α}
+
+example (h₁ : a < b) (h₂ : b ≤ c) : a < c := by
+  grw [h₁, h₂]
+
+example (h₁ : a < b) (h₂ : b ≤ c) : a < c := by
+  grw [← h₂, ← h₁]
+
+example (h₁ : a ≤ b) (h₂ : b < c) : a < c := by
+  grw [h₁, h₂]
+
+example (h₁ : a ≤ b) (h₂ : b < c) : a < c := by
+  grw [← h₂, ← h₁]
+
+example (h₁ : a < b) (h₂ : b ≤ c) : a < c := by
+  by_contra!; grw [h₁, h₂] at this; contrapose! this; rfl
+
+example (h₁ : a < b) (h₂ : b ≤ c) : a < c := by
+  by_contra!; grw [← h₂, ← h₁] at this; contrapose! this; rfl
+
+example (h₁ : a ≤ b) (h₂ : b < c) : a < c := by
+  by_contra!; grw [h₁, h₂] at this; contrapose! this; rfl
+
+example (h₁ : a ≤ b) (h₂ : b < c) : a < c := by
+  by_contra!; grw [← h₂, ← h₁] at this; contrapose! this; rfl
+
+-- Strict inequalities can also be used as non-strict ones:
+example (h₁ : a < b) (h₂ : b < c) : a ≤ c := by
+  grw [h₁, h₂]
+
+variable [CommRing α] [IsStrictOrderedRing α] in
+example (h : a < b) (_ : 0 ≤ a) : 1 + 2 * a ^ 2 < 9 := by
+  grw [h]
+  guard_target = 1 + 2 * b ^ 2 ≤ 9
+  exact test_sorry
+
+example (h₁ : a < b) (h₂ : c < d) : Set.Icc b c ⊆ Set.Ioo a d := by
+  grw [h₁, h₂]
+
+example (h₁ : a < b) (h₂ : c < d) : Set.Icc b c ⊆ Set.Ioo a d := by
+  grw [h₂, h₁]
+
+example (h₁ : a < b) : Set.Iic a ⊆ Set.Iio b := by
+  grw [h₁]
+
+example (h₁ : a < b) : Set.Ici b ⊆ Set.Ioi a := by
+  grw [h₁]
+
+end strict
+
+section universePolymorphic
+
+universe u v w w'
+
+axiom Cardinal : Type u
+
+axiom liftEq : Cardinal.{u} → Cardinal.{v} → Prop
+axiom liftLE : Cardinal.{u} → Cardinal.{v} → Prop
+
+variable {a : Cardinal.{u}} {b : Cardinal.{v}} {c : Cardinal.{w}} {d : Cardinal.{w'}}
+
+@[gcongr]
+axiom liftLE_imp_liftLE_of_liftLE_of_liftLE (h₁ : liftLE a b) (h₂ : liftLE c d) :
+    liftLE b c → liftLE a d
+
+@[refl]
+axiom liftEq_rfl : liftEq a a
+
+@[symm]
+axiom liftEq.comm (h : liftEq a b) : liftEq b a
+
+axiom liftLE_of_liftEq (h : liftEq a b) : liftLE a b
+
+@[refl]
+theorem liftLE_rfl : liftLE a a := liftLE_of_liftEq liftEq_rfl
+namespace Mathlib.Tactic.GCongr
+
+/-- See if the term is `AntisymmRel r a b` and the goal is `r a b`. -/
+@[gcongr_forward]
+public meta def exactLiftLEOfLiftEq : ForwardExt where
+  eval h goal := do goal.assignIfDefEq (← Lean.Meta.mkAppM ``liftLE_of_liftEq #[h])
+
+end Mathlib.Tactic.GCongr
+
+example (h : liftEq a b) (h' : liftLE b c) : liftLE a c := by
+  grw [h, h']
+
+example (h : liftEq b a) (h' : liftLE b c) : liftLE a c := by
+  grw [← h, ← h']
+
+end universePolymorphic

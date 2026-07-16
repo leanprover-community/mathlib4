@@ -73,7 +73,6 @@ instance Associates.ufm [CommMonoidWithZero α] [UniqueFactorizationMonoid α] :
 theorem prime_factors_unique [CommMonoidWithZero α] [IsCancelMulZero α] :
     ∀ {f g : Multiset α},
       (∀ x ∈ f, Prime x) → (∀ x ∈ g, Prime x) → f.prod ~ᵤ g.prod → Multiset.Rel Associated f g := by
-  classical
   intro f
   induction f using Multiset.induction_on with
   | empty =>
@@ -88,7 +87,7 @@ theorem prime_factors_unique [CommMonoidWithZero α] [IsCancelMulZero α] :
     let ⟨b, hbg, hb⟩ :=
       (exists_associated_mem_of_dvd_prod (hf p (by simp)) fun q hq => hg _ hq) <|
         hfg.dvd_iff_dvd_right.1 (show p ∣ (p ::ₘ f).prod by simp)
-    haveI := Classical.decEq α
+    have := Classical.decEq α
     rw [← Multiset.cons_erase hbg]
     exact
       Multiset.Rel.cons hb
@@ -122,7 +121,7 @@ end UniqueFactorizationMonoid
   then it is an associate of one of its prime factors. -/
 theorem prime_factors_irreducible [CommMonoidWithZero α] {a : α} {f : Multiset α}
     (ha : Irreducible a) (pfa : (∀ b ∈ f, Prime b) ∧ f.prod ~ᵤ a) : ∃ p, a ~ᵤ p ∧ f = {p} := by
-  haveI := Classical.decEq α
+  have := Classical.decEq α
   refine @Multiset.induction_on _
     (fun g => (g.prod ~ᵤ a) → (∀ b ∈ g, Prime b) → ∃ p, a ~ᵤ p ∧ g = {p}) f ?_ ?_ pfa.2 pfa.1
   · intro h; exact (ha.not_isUnit (associated_one_iff_isUnit.1 (Associated.symm h))).elim
@@ -221,9 +220,9 @@ theorem factors_eq_singleton_of_irreducible {a : α} (ha : Irreducible a) :
   exact ⟨b, hab, .symm <| Multiset.eq_of_le_of_card_le (Multiset.singleton_le.mpr hbmem)
     (by rw [card_factors_of_irreducible ha, Multiset.card_singleton])⟩
 
-open Classical in
 theorem factors_mul {x y : α} (hx : x ≠ 0) (hy : y ≠ 0) :
     Rel Associated (factors (x * y)) (factors x + factors y) := by
+  classical
   refine
     factors_unique irreducible_of_factor
       (fun a ha =>
@@ -317,41 +316,40 @@ include pf
 
 theorem WfDvdMonoid.of_exists_prime_factors : WfDvdMonoid α :=
   ⟨by
-    classical
-      refine RelHomClass.wellFounded
-        (RelHom.mk ?_ ?_ : (DvdNotUnit : α → α → Prop) →r ((· < ·) : ℕ∞ → ℕ∞ → Prop)) wellFounded_lt
-      · intro a
-        by_cases h : a = 0
-        · exact ⊤
-        exact ↑(Multiset.card (Classical.choose (pf a h)))
-      rintro a b ⟨ane0, ⟨c, hc, b_eq⟩⟩
-      rw [dif_neg ane0]
-      by_cases h : b = 0
-      · simp [h, lt_top_iff_ne_top]
-      · rw [dif_neg h, Nat.cast_lt]
-        have cne0 : c ≠ 0 := by
-          refine mt (fun con => ?_) h
-          rw [b_eq, con, mul_zero]
-        calc
-          Multiset.card (Classical.choose (pf a ane0)) <
-              _ + Multiset.card (Classical.choose (pf c cne0)) :=
-            lt_add_of_pos_right _
-              (Multiset.card_pos.mpr fun con => hc (associated_one_iff_isUnit.mp ?_))
-          _ = Multiset.card (Classical.choose (pf a ane0) + Classical.choose (pf c cne0)) :=
-            (Multiset.card_add _ _).symm
-          _ = Multiset.card (Classical.choose (pf b h)) :=
-            Multiset.card_eq_card_of_rel
-            (prime_factors_unique ?_ (Classical.choose_spec (pf _ h)).1 ?_)
-        · convert! (Classical.choose_spec (pf c cne0)).2.symm
-          rw [con, Multiset.prod_zero]
-        · intro x hadd
-          rw [Multiset.mem_add] at hadd
-          rcases hadd with h | h <;> apply (Classical.choose_spec (pf _ _)).1 _ h <;> assumption
-        · rw [Multiset.prod_add]
-          trans a * c
-          · apply Associated.mul_mul <;> apply (Classical.choose_spec (pf _ _)).2 <;> assumption
-          · rw [← b_eq]
-            apply (Classical.choose_spec (pf _ _)).2.symm; assumption⟩
+    refine RelHomClass.wellFounded
+      (RelHom.mk ?_ ?_ : (DvdNotUnit : α → α → Prop) →r ((· < ·) : ℕ∞ → ℕ∞ → Prop)) wellFounded_lt
+    · intro a
+      by_cases h : a = 0
+      · exact ⊤
+      exact ↑(Multiset.card (Classical.choose (pf a h)))
+    rintro a b ⟨ane0, ⟨c, hc, b_eq⟩⟩
+    rw [dif_neg ane0]
+    by_cases h : b = 0
+    · simp [h, lt_top_iff_ne_top]
+    · rw [dif_neg h, Nat.cast_lt]
+      have cne0 : c ≠ 0 := by
+        refine mt (fun con => ?_) h
+        rw [b_eq, con, mul_zero]
+      calc
+        Multiset.card (Classical.choose (pf a ane0)) <
+            _ + Multiset.card (Classical.choose (pf c cne0)) :=
+          lt_add_of_pos_right _
+            (Multiset.card_pos.mpr fun con => hc (associated_one_iff_isUnit.mp ?_))
+        _ = Multiset.card (Classical.choose (pf a ane0) + Classical.choose (pf c cne0)) :=
+          (Multiset.card_add _ _).symm
+        _ = Multiset.card (Classical.choose (pf b h)) :=
+          Multiset.card_eq_card_of_rel
+          (prime_factors_unique ?_ (Classical.choose_spec (pf _ h)).1 ?_)
+      · convert! (Classical.choose_spec (pf c cne0)).2.symm
+        rw [con, Multiset.prod_zero]
+      · intro x hadd
+        rw [Multiset.mem_add] at hadd
+        rcases hadd with h | h <;> apply (Classical.choose_spec (pf _ _)).1 _ h <;> assumption
+      · rw [Multiset.prod_add]
+        trans a * c
+        · apply Associated.mul_mul <;> apply (Classical.choose_spec (pf _ _)).2 <;> assumption
+        · rw [← b_eq]
+          apply (Classical.choose_spec (pf _ _)).2.symm; assumption⟩
 
 theorem irreducible_iff_prime_of_exists_prime_factors {p : α} : Irreducible p ↔ Prime p := by
   by_cases hp0 : p = 0

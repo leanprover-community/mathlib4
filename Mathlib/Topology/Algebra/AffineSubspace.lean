@@ -100,6 +100,7 @@ instance {s : AffineSubspace R P} [Nonempty s] : IsTopologicalAddTorsor s where
     rw [Topology.IsEmbedding.subtypeVal.continuous_iff]
     fun_prop
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isClosed_direction_iff [T1Space V] (s : AffineSubspace R P) :
     IsClosed (s.direction : Set V) ↔ IsClosed (s : Set P) := by
   rcases s.eq_bot_or_nonempty with (rfl | ⟨x, hx⟩); · simp
