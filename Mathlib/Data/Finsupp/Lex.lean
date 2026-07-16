@@ -57,6 +57,7 @@ theorem Lex.lt_iff [LT α] [LT N] {a b : Lex (α →₀ N)} :
     a < b ↔ ∃ i, (∀ j, j < i → a j = b j) ∧ a i < b i :=
   .rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Colex.lt_iff [LT α] [LT N] {a b : Colex (α →₀ N)} :
     a < b ↔ ∃ i, (∀ j, i < j → a j = b j) ∧ a i < b i :=
   .rfl
@@ -78,6 +79,7 @@ theorem Lex.lt_iff_of_unique [Unique α] [LT N] [Preorder α] {x y : Lex (α →
     x < y ↔ x default < y default :=
   lex_iff_of_unique
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Colex.lt_iff_of_unique [Unique α] [LT N] [Preorder α] {x y : Colex (α →₀ N)} :
     x < y ↔ x default < y default :=
   Lex.lt_iff_of_unique (α := αᵒᵈ)
@@ -123,6 +125,7 @@ theorem Lex.le_iff_of_unique [Unique α] [PartialOrder N] {x y : Lex (α →₀ 
     x ≤ y ↔ x default ≤ y default :=
   Pi.lex_le_iff_of_unique
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Colex.le_iff_of_unique [Unique α] [PartialOrder N] {x y : Colex (α →₀ N)} :
     x ≤ y ↔ x default ≤ y default :=
   Lex.le_iff_of_unique (α := αᵒᵈ)

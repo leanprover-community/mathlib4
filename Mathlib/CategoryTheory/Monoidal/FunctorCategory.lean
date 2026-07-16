@@ -227,6 +227,7 @@ instance {C D E : Type*} [Category* C] [Category* D] [Category* E] [MonoidalCate
     [MonoidalCategory E] (L : D ⥤ E) [L.Monoidal] :
     ((Functor.whiskeringRight C D E).obj L).Monoidal where
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
 @[simps!]
 instance Functor.Monoidal.whiskeringLeft
@@ -234,10 +235,12 @@ instance Functor.Monoidal.whiskeringLeft
     ((whiskeringLeft _ _ E).obj F).Monoidal :=
   CoreMonoidal.toMonoidal { εIso := Iso.refl _, μIso _ _ := Iso.refl _ }
 
+set_option backward.isDefEq.respectTransparency false in
 instance (E : Type*) [Category* E] [MonoidalCategory E] (e : C ≌ D) :
     (e.congrLeft (E := E)).functor.Monoidal :=
   inferInstanceAs ((Functor.whiskeringLeft _ _ E).obj e.inverse).Monoidal
 
+set_option backward.isDefEq.respectTransparency false in
 instance (E : Type*) [Category* E] [MonoidalCategory E] (e : C ≌ D) :
     (e.congrLeft (E := E)).inverse.Monoidal :=
   inferInstanceAs ((Functor.whiskeringLeft _ _ E).obj e.functor).Monoidal

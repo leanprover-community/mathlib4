@@ -1326,6 +1326,7 @@ def compUliftYonedaCompWhiskeringLeft {D : Type u₂} [Category.{v₂} D] {F : C
   NatIso.ofComponents (fun X => hF.homNatIso _) fun f => by
     ext; exact Equiv.ulift.injective (hF.map_injective (by simp))
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- `FullyFaithful.homEquiv` as a natural isomorphism, using coyoneda. -/
 @[simps! hom_app inv_app]
 def homNatIso' {D : Type u₂} [Category.{v₂} D] {F : C ⥤ D} (hF : F.FullyFaithful) (X : C) :
