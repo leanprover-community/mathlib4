@@ -259,8 +259,7 @@ variable {V : Type*} {M : Type*} [Group M] [MulAction M V] {S : Type*} (ι : S �
 A pair `(s, true)` contributes a forward edge for `ι s`; `(s, false)` contributes a backward
 edge, representing motion along `(ι s)⁻¹`. -/
 def pathFromWord (x : SchreierGraph V ι) : ∀ w : List (S × Bool),
-    @Path (Symmetrify (SchreierGraph V ι)) _ (Symmetrify.of.obj x)
-      (Symmetrify.of.obj (evalWord ι w • x))
+    Path (Symmetrify.of.obj x) (Symmetrify.of.obj (evalWord ι w • x))
   | [] => Path.nil.cast rfl (by
       change x = evalWord ι [] • x
       simp)
@@ -299,7 +298,7 @@ theorem nonempty_path_of_mem_closure {g : M} (hg : g ∈ Subgroup.closure (Set.r
 `ι` that carries the source to the target. -/
 theorem exists_mem_closure_of_path {x : SchreierGraph V ι}
     {y : Symmetrify (SchreierGraph V ι)}
-    (p : @Path (Symmetrify (SchreierGraph V ι)) _ x y) :
+    (p : Path (Symmetrify.of.obj x) y) :
     ∃ g ∈ Subgroup.closure (Set.range ι), g • x = y := by
   induction p with
   | nil => exact ⟨1, Subgroup.one_mem _, one_smul M x⟩
