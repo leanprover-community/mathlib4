@@ -7844,6 +7844,7 @@ public import Mathlib.Topology.Compactness.SigmaCompact
 public import Mathlib.Topology.Connected.Basic
 public import Mathlib.Topology.Connected.CardComponents
 public import Mathlib.Topology.Connected.Clopen
+public import Mathlib.Topology.Connected.HausdorffMeasure
 public import Mathlib.Topology.Connected.LocPathConnected
 public import Mathlib.Topology.Connected.LocallyConnected
 public import Mathlib.Topology.Connected.LocallyPathConnected
