@@ -32,8 +32,8 @@ instance (priority := 100) reflectsIsomorphisms_of_reflectsMonomorphisms_of_refl
     [Balanced C] (F : C ⥤ D) [ReflectsMonomorphisms F] [ReflectsEpimorphisms F] :
     F.ReflectsIsomorphisms where
   reflects f hf := by
-    haveI : Epi f := epi_of_epi_map F inferInstance
-    haveI : Mono f := mono_of_mono_map F inferInstance
+    have : Epi f := epi_of_epi_map F inferInstance
+    have : Mono f := mono_of_mono_map F inferInstance
     exact isIso_of_mono_of_epi f
 
 lemma Functor.balanced_of_preserves (F : C ⥤ D)

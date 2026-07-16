@@ -26,7 +26,6 @@ universe w w' u u' v v'
 open CategoryTheory
 open scoped MonoidAlgebra
 
-set_option backward.privateInPublic true in
 /-- The category of representations of monoid `G` and their morphisms. -/
 structure Rep (k : Type u) (G : Type v) [Semiring k] [Monoid G] where
   private mk ::
@@ -68,7 +67,6 @@ lemma of_V : (of ρ).V = X := by with_reducible rfl
 variable (X ρ) in
 lemma of_ρ : (of ρ).ρ = ρ := by with_reducible rfl
 
-set_option backward.privateInPublic true in
 /-- The type of morphisms in `Rep.{w} k G`. -/
 @[ext]
 structure Hom where
@@ -483,6 +481,7 @@ section Action
 
 variable (k G)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Every object in `Rep k G` naturally correspond to an object in `Action`. -/
 @[simps]
 def RepToAction : Rep.{w} k G ⥤ Action (ModuleCat.{w} k) G where
@@ -925,7 +924,7 @@ abbrev freeLiftLEquiv :
 
 lemma free_ext (f g : free k G α ⟶ A)
     (h : ∀ i : α, f.hom (single i (.single 1 1)) = g.hom (single i (.single 1 1))) : f = g := by
-  classical exact (freeLiftLEquiv k G α A).injective (funext_iff.2 h)
+  exact (freeLiftLEquiv k G α A).injective (funext_iff.2 h)
 
 variable {A}
 section
@@ -1042,6 +1041,7 @@ representation morphisms `Hom(k[G], A)` and `A`. -/
 abbrev leftRegularHomEquiv (A : Rep k G) : (leftRegular k G ⟶ A) ≃ₗ[k] A :=
   homLinearEquiv _ _ ≪≫ₗ Representation.leftRegularMapEquiv A.ρ
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem leftRegularHomEquiv_symm_single {A : Rep k G} (x : A) (g : G) :
     ((leftRegularHomEquiv A).symm x).hom (.single g 1) = A.ρ g x := by
   simp [homEquiv]

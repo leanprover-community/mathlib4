@@ -402,7 +402,7 @@ protected def metricSpace : MetricSpace (∀ n, E n) :=
 /-- Metric space structure on `Π (n : ℕ), E n` when the spaces `E n` have the discrete uniformity,
 where the distance is given by `dist x y = (1/2)^n`, where `n` is the smallest index where `x` and
 `y` differ. Not registered as a global instance by default. -/
-@[implicit_reducible]
+@[instance_reducible]
 protected def metricSpaceOfDiscreteUniformity {E : ℕ → Type*} [∀ n, UniformSpace (E n)]
     (h : ∀ n, uniformity (E n) = 𝓟 SetRel.id) : MetricSpace (∀ n, E n) :=
   haveI : ∀ n, DiscreteTopology (E n) := fun n => discreteTopology_of_discrete_uniformity (h n)
@@ -438,7 +438,7 @@ protected def metricSpaceOfDiscreteUniformity {E : ℕ → Type*} [∀ n, Unifor
 /-- Metric space structure on `ℕ → ℕ` where the distance is given by `dist x y = (1/2)^n`,
 where `n` is the smallest index where `x` and `y` differ.
 Not registered as a global instance by default. -/
-@[implicit_reducible]
+@[instance_reducible]
 def metricSpaceNatNat : MetricSpace (ℕ → ℕ) :=
   PiNat.metricSpaceOfDiscreteUniformity fun _ => rfl
 
@@ -702,7 +702,7 @@ theorem exists_nat_nat_continuous_surjective_of_completeSpace (α : Type*) [Metr
     balls `closedBall (u xₙ) (1/2^n)` have a nonempty intersection. This set is closed,
     and we define `f x` there to be the unique point in the intersection.
     This function is continuous and surjective by design. -/
-  letI : MetricSpace (ℕ → ℕ) := PiNat.metricSpaceNatNat
+  let : MetricSpace (ℕ → ℕ) := PiNat.metricSpaceNatNat
   have I0 : (0 : ℝ) < 1 / 2 := by simp
   have I1 : (1 / 2 : ℝ) < 1 := by norm_num
   rcases exists_dense_seq α with ⟨u, hu⟩
@@ -846,7 +846,6 @@ protected def pseudoEMetricSpace : PseudoEMetricSpace (∀ i, F i) where
       PseudoEMetricSpace.uniformity_edist, le_antisymm_iff, le_iInf_iff, le_principal_iff]
     constructor
     · intro ε hε
-      classical
       obtain ⟨K, hK⟩ : ∃ K : Finset ι, ∑' i : {j // j ∉ K}, 2⁻¹ ^ encode (i : ι) < ε / 2 :=
         ((tendsto_order.1 <| ENNReal.tendsto_tsum_compl_atTop_zero
           (tsum_geometric_encode_lt_top ENNReal.one_half_lt_one).ne).2 _
@@ -956,7 +955,7 @@ variable [∀ i, MetricSpace (F i)]
 
 It is highly non-canonical, though, and therefore not registered as a global instance.
 The distance we use here is `edist x y = ∑' i, min (1/2)^(encode i) (edist (x i) (y i))`. -/
-@[implicit_reducible]
+@[instance_reducible]
 protected def metricSpace : MetricSpace (∀ i, F i) :=
   EMetricSpace.toMetricSpaceOfDist dist (by simp) (by simp [edist_dist])
 
@@ -1075,7 +1074,7 @@ variable [TopologicalSpace X] [CompactSpace X]
 lemma isHomeomorph_toPiNat (continuous_f : ∀ i, Continuous (f i))
     (separating_f : Pairwise fun x y ↦ ∃ i, f i x ≠ f i y) :
     IsHomeomorph (toPiNat : X → PiNatEmbed X Y f) := by
-  letI := emetricSpace separating_f
+  let := emetricSpace separating_f
   rw [isHomeomorph_iff_continuous_bijective]
   exact ⟨continuous_toPiNat continuous_f, (toPiNatEquiv X Y f).bijective⟩
 
@@ -1163,10 +1162,6 @@ theorem exists_embedding_to_hilbert_cube : ∃ F : X → ℕ → I, IsEmbedding 
   let isEmbedding_secondstep : IsEmbedding secondstep :=
       (isUniformEmbedding_embed injective_distDenseSeq).isEmbedding
   exact ⟨_, isEmbedding_secondstep.comp firststep.isEmbedding⟩
-
-@[deprecated "This version is more general as compact metric spaces are separable"
-(since := "2025-11-27")] alias
-exists_closed_embedding_to_hilbert_cube := Metric.PiNatEmbed.exists_embedding_to_hilbert_cube
 
 end MetricSpace
 end PiNatEmbed
