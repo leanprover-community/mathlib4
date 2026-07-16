@@ -344,6 +344,13 @@ lemma _root_.CategoryTheory.Subobject.exists_eq_imageSubobject [HasImages C]
     Over.w ((Subobject.existsCompRepresentativeIso f).app X').hom.hom
   simp only [Iso.trans_hom, Iso.symm_hom, Category.assoc, imageSubobject_arrow', h]
 
+/-- The existential image of a subobject represented by `g` is the image subobject of the
+composite `g ≫ f`. -/
+lemma _root_.CategoryTheory.Subobject.exists_mk_eq_imageSubobject [HasImages C]
+    {A : C} (g : A ⟶ X) [Mono g] (f : X ⟶ Y) :
+    (Subobject.«exists» f).obj (Subobject.mk g) = imageSubobject (g ≫ f) := by
+  rfl
+
 /-- A factorisation of `f : X ⟶ Y` through `imageSubobject f`. -/
 def factorThruImageSubobject : X ⟶ imageSubobject f :=
   factorThruImage f ≫ (imageSubobjectIso f).inv

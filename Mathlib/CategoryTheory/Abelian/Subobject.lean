@@ -17,8 +17,6 @@ This file contains numerous results about subobjects which are unique to abelian
 
 * subobjects and quotient objects of an object `X` are order-isomorphic via taking kernels and
   cokernels
-* `pullback_exists_eq_sup` and `exists_pullback_eq_inf` describe the closure and interior operators
-  induced by existential image and pullback
 * a correspondence theorem: Given a subobject `Y` of `X`, `Abelian.Subobject.cokernelOrderIso` is
   an order-isomorphism between subobjects of `cokernel (Y ↪ X)` and subobjects of `X`
   containing `Y`.
@@ -117,49 +115,34 @@ section
 
 variable {X Y : C} (f : X ⟶ Y)
 
-/-- In an abelian category, pulling back a subobject is the kernel of the composite with its
-cokernel projection. -/
 lemma pullback_eq_kernelSubobject (Y' : Subobject Y) :
     (Subobject.pullback f).obj Y' = kernelSubobject (f ≫ cokernel.π Y'.arrow) := by
-  conv_lhs =>
-    rw [show Y' = kernelSubobject (cokernel.π Y'.arrow) by
-      rw [← imageSubobject_eq_kernelSubobject, imageSubobject_mono, mk_arrow]]
-  rw [Subobject.pullback_kernelSubobject]
+  slice_lhs 0 1 => rw [← mk_arrow Y', ← imageSubobject_mono Y'.arrow,
+    imageSubobject_eq_kernelSubobject, pullback_kernelSubobject]
 
-/-- In an abelian category, the pullback of a subobject represented by `g` is the kernel of the
-composite with the cokernel projection of `g`. -/
 lemma pullback_mk_eq_kernelSubobject {A : C} (g : A ⟶ Y) [Mono g] :
     (Subobject.pullback f).obj (Subobject.mk g) = kernelSubobject (f ≫ cokernel.π g) := by
-  conv_lhs =>
-    rw [show Subobject.mk g = kernelSubobject (cokernel.π g) by
-      rw [← imageSubobject_eq_kernelSubobject, imageSubobject_mono]]
-  rw [Subobject.pullback_kernelSubobject]
+  rw [← imageSubobject_mono, imageSubobject_eq_kernelSubobject, pullback_kernelSubobject]
 
-/-- If `f : X ⟶ Y` is an epimorphism, then taking pullback and then existential image along `f`
-returns the original subobject. -/
-theorem exists_pullback_eq_self_of_epi (Y' : Subobject Y) [Epi f] :
+theorem exists_pullback_eq_self_of_epi [Epi f] (Y' : Subobject Y) :
     (Subobject.«exists» f).obj ((Subobject.pullback f).obj Y') = Y' := by
-  rw [Subobject.exists_eq_imageSubobject, ← (Subobject.isPullback f Y').w]
-  letI : Epi (Subobject.pullbackπ f Y') :=
-    Abelian.epi_fst_of_isLimit Y'.arrow f (Subobject.isPullback f Y').isLimit
-  letI : StrongEpi (Subobject.pullbackπ f Y') := strongEpi_of_epi _
+  rw [exists_eq_imageSubobject, ← (isPullback f Y').w]
+  let : Epi (Subobject.pullbackπ f Y') :=
+    Abelian.epi_fst_of_isLimit _ _ (isPullback f Y').isLimit
+  let : StrongEpi (Subobject.pullbackπ f Y') := strongEpi_of_epi _
   rw [imageSubobject_epi_comp, imageSubobject_mono, mk_arrow]
 
-/-- Pullback along an epimorphism reflects the order on subobjects. -/
 lemma pullback_le_pullback_iff_of_epi (Y₁ Y₂ : Subobject Y) [Epi f] :
     (Subobject.pullback f).obj Y₁ ≤ (Subobject.pullback f).obj Y₂ ↔ Y₁ ≤ Y₂ := by
   constructor
   · intro h
     rw [← exists_pullback_eq_self_of_epi f Y₁, ← exists_pullback_eq_self_of_epi f Y₂]
-    exact (Subobject.«exists» f).monotone h
+    exact («exists» f).monotone h
   · intro h
     exact (Subobject.pullback f).monotone h
 
-/-- If `f : X ⟶ Y` is an epimorphism and a subobject contains its kernel, pulling back its
-existential image along `f` returns the original subobject. -/
-theorem pullback_exists_eq_self_of_epi [Epi f] (X' : Subobject X)
-    (h : kernelSubobject f ≤ X') :
-    (Subobject.pullback f).obj ((Subobject.«exists» f).obj X') = X' := by
+theorem pullback_exists_eq_self_of_epi [Epi f] (X' : Subobject X) (h : kernelSubobject f ≤ X') :
+    (Subobject.pullback f).obj ((«exists» f).obj X') = X' := by
   let d := epiDesc f (cokernel.π X'.arrow) (by
     rw [← kernelSubobject_arrow' f, ← ofLE_arrow h]
     simp only [Category.assoc, cokernel.condition, comp_zero])
@@ -171,30 +154,24 @@ theorem pullback_exists_eq_self_of_epi [Epi f] (X' : Subobject X)
     exact mk_arrow X'
   rw [← hX', exists_pullback_eq_self_of_epi]
 
-/-- For an epimorphism, pulling back an existential image adds the kernel. -/
 lemma pullback_exists_eq_sup_of_epi [Epi f] (X' : Subobject X) :
-    (Subobject.pullback f).obj ((Subobject.«exists» f).obj X') =
-      X' ⊔ kernelSubobject f := by
+    (Subobject.pullback f).obj ((«exists» f).obj X') = X' ⊔ kernelSubobject f := by
   apply le_antisymm
   · rw [← pullback_exists_eq_self_of_epi f (X' ⊔ kernelSubobject f) le_sup_right]
-    exact (Subobject.pullback f).monotone ((Subobject.«exists» f).monotone le_sup_left)
+    exact (Subobject.pullback f).monotone ((«exists» f).monotone le_sup_left)
   · apply sup_le
-    · exact (Subobject.exists_pullback_gc f).le_u_l X'
+    · exact (exists_pullback_gc f).le_u_l X'
     · rw [pullback_eq_kernelSubobject]
       exact kernelSubobject_comp_le f _
 
-/-- Pulling back an existential image adds the kernel of the morphism. -/
 lemma pullback_exists_eq_sup (X' : Subobject X) :
-    (Subobject.pullback f).obj ((Subobject.«exists» f).obj X') =
-      X' ⊔ kernelSubobject f := by
+    (Subobject.pullback f).obj ((«exists» f).obj X') = X' ⊔ kernelSubobject f := by
   rw [← imageSubobject_arrow_comp f, Subobject.exists_comp, Subobject.pullback_comp,
     Subobject.exists_iso_map, Subobject.pullback_map_self, pullback_exists_eq_sup_of_epi,
     kernelSubobject_comp_mono]
 
-/-- Taking existential image after pullback intersects with the image of the morphism. -/
 lemma exists_pullback_eq_inf (Y' : Subobject Y) :
-    (Subobject.«exists» f).obj ((Subobject.pullback f).obj Y') =
-      Y' ⊓ imageSubobject f := by
+    («exists» f).obj ((Subobject.pullback f).obj Y') = Y' ⊓ imageSubobject f := by
   rw [← imageSubobject_arrow_comp f, Subobject.exists_comp, Subobject.pullback_comp,
     exists_pullback_eq_self_of_epi, Subobject.exists_pullback_eq_inf_of_mono,
     mk_arrow, imageSubobject_arrow_comp]

@@ -633,6 +633,14 @@ theorem isPullback (f : X ⟶ Y) (y : Subobject Y) :
     IsPullback (pullbackπ f y) ((pullback f).obj y).arrow y.arrow f :=
   (isPullback_aux f y).choose_spec
 
+/-- A commuting triangle from a subobject `X'` to a subobject `Y'` induces the corresponding
+inequality from `X'` to the pullback of `Y'`. -/
+lemma le_pullback_of_comm (f : X ⟶ Y) {X' : Subobject X} {Y' : Subobject Y}
+    (u : (X' : C) ⟶ (Y' : C)) (h : u ≫ Y'.arrow = X'.arrow ≫ f) :
+    X' ≤ (pullback f).obj Y' :=
+  le_of_comm ((isPullback f Y').lift u X'.arrow h)
+    ((isPullback f Y').lift_snd u X'.arrow h)
+
 end Pullback
 
 section Map
@@ -740,6 +748,23 @@ def «exists» (f : X ⟶ Y) : Subobject X ⥤ Subobject Y :=
 theorem exists_iso_map (f : X ⟶ Y) [Mono f] : «exists» f = map f :=
   lower_iso _ _ (MonoOver.existsIsoMap f)
 
+/-- Existential image along a monomorphism is represented by postcomposing the subobject arrow. -/
+lemma exists_eq_mk_of_mono (f : X ⟶ Y) [Mono f] (X' : Subobject X) :
+    (Subobject.«exists» f).obj X' = Subobject.mk (X'.arrow ≫ f) := by
+  conv_lhs => rw [exists_iso_map, ← mk_arrow X']
+  rw [map_mk]
+
+/-- Existential image along a monomorphism reflects the order on subobjects. -/
+theorem exists_le_exists_iff_of_mono (f : X ⟶ Y) [Mono f] (X₁ X₂ : Subobject X) :
+    (Subobject.«exists» f).obj X₁ ≤ (Subobject.«exists» f).obj X₂ ↔ X₁ ≤ X₂ := by
+  constructor
+  · intro h
+    simp only [exists_eq_mk_of_mono] at h
+    exact le_of_comm (ofMkLEMk (X₁.arrow ≫ f) (X₂.arrow ≫ f) h)
+      (by rw [← cancel_mono f, Category.assoc, ofMkLEMk_comp])
+  · intro h
+    exact (Subobject.«exists» f).monotone h
+
 /-- `exists f : Subobject X ⥤ Subobject Y` is
 left adjoint to `pullback f : Subobject Y ⥤ Subobject X`.
 -/
@@ -751,6 +776,23 @@ pullback. -/
 theorem exists_pullback_gc (f : X ⟶ Y) [HasPullbacks C] :
     GaloisConnection (Subobject.«exists» f).obj (Subobject.pullback f).obj :=
   (existsPullbackAdj f).gc
+
+/-- A subobject is contained in the pullback of its existential image. -/
+theorem le_pullback_exists [HasPullbacks C] (f : X ⟶ Y) (X' : Subobject X) :
+    X' ≤ (Subobject.pullback f).obj ((Subobject.«exists» f).obj X') :=
+  (exists_pullback_gc f).le_u_l X'
+
+/-- The existential image of a pullback is contained in the original subobject. -/
+theorem exists_pullback_le [HasPullbacks C] (f : X ⟶ Y) (Y' : Subobject Y) :
+    (Subobject.«exists» f).obj ((Subobject.pullback f).obj Y') ≤ Y' :=
+  (exists_pullback_gc f).l_u_le Y'
+
+/-- Pulling back the existential image along a monomorphism returns the original subobject. -/
+@[simp]
+theorem pullback_exists_eq_self_of_mono [HasPullbacks C] (f : X ⟶ Y) [Mono f]
+    (X' : Subobject X) :
+    (Subobject.pullback f).obj ((Subobject.«exists» f).obj X') = X' := by
+  rw [exists_iso_map, pullback_map_self]
 
 /-- Taking the image of a subobject along a composite is the same as taking its image along
 each morphism in turn. -/
@@ -783,6 +825,19 @@ def imageFactorisation (f : X ⟶ Y) (x : Subobject X) :
       (existsIsoImage f x).symm
   ImageFactorisation.copy this ((«exists» f).obj x).arrow this.F.e (by
     simpa [this, -Over.w] using! (Over.w ((existsCompRepresentativeIso f).app x).hom.hom).symm)
+
+/-- A commuting morphism from `X'` to `Y'` shows that the existential image of `X'` is
+contained in `Y'`. -/
+lemma exists_le_of_comm (f : X ⟶ Y) {X' : Subobject X} {Y' : Subobject Y}
+    (u : (X' : C) ⟶ Y') (h : u ≫ Y'.arrow = X'.arrow ≫ f) :
+    (Subobject.«exists» f).obj X' ≤ Y' := by
+  apply le_of_comm
+    ((imageFactorisation f X').isImage.lift
+      { I := Y'
+        e := u
+        m := Y'.arrow
+        fac := h })
+  exact (imageFactorisation f X').isImage.lift_fac _
 
 end Exists
 
