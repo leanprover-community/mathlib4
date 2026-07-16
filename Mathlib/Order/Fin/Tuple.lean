@@ -92,6 +92,9 @@ lemma monotone_vecCons : Monotone (vecCons a f) ↔ a ≤ f 0 ∧ Monotone f := 
 lemma StrictMono.vecCons (hf : StrictMono f) (ha : a < f 0) : StrictMono (vecCons a f) :=
   strictMono_vecCons.2 ⟨ha, hf⟩
 
+lemma StrictMono.removeNth (hf : StrictMono f) (i : Fin (n + 1)) : StrictMono (i.removeNth f) :=
+  hf.comp (Fin.strictMono_succAbove i)
+
 lemma StrictAnti.vecCons (hf : StrictAnti f) (ha : f 0 < a) : StrictAnti (vecCons a f) :=
   strictAnti_vecCons.2 ⟨ha, hf⟩
 

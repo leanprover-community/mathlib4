@@ -288,8 +288,7 @@ theorem paper_eq3_eq5_off_diag (i j : Fin n) :
     simp only [Finset.coe_product, Finset.coe_univ, Set.mem_prod, Set.mem_univ, and_true,
       Finset.mem_coe, Finset.coe_Ioi, Set.mem_Ioi, mem_S_iff] at hα ⊢
     obtain ⟨hmono, hbound⟩ := hα
-    exact ⟨⟨hmono.comp (Fin.strictMono_succAbove t), fun q => hbound (t.succAbove q)⟩,
-      hbound t⟩
+    exact ⟨⟨hmono.removeNth t, fun q => hbound (t.succAbove q)⟩, hbound t⟩
   · rintro ⟨α, k⟩ htarget hnotmem
     simp only [Finset.mem_product, Finset.mem_Ioi] at htarget
     obtain ⟨hα, hk⟩ := htarget
