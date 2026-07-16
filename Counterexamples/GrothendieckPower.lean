@@ -414,6 +414,10 @@ private theorem law_relations_generic {S : Type*} [CommRing S]
     let du := u₁ + l₁ * u₂
     dv ^ 2 = a ^ 2 * dv ∧ du ^ 2 = a * b * du - b ^ 2 * dv := by
   dsimp only
+  /-
+  TODO `grind` gives
+  `grind` internal error, `NoNatZeroDivisors` instance is needed, but it is not available for
+  S  -/
   have hab' : a ^ 2 * b = -2 := eq_neg_of_add_eq_zero_left hab
   have h2a : 2 * a = 0 := by
     linear_combination a * hab - b * ha
@@ -630,8 +634,7 @@ theorem right_lambda : right lambda = l₂ := by
 /-- Two `R`-algebra maps out of `A` agree if they agree on `U` and `V`. -/
 theorem algHom_ext {S : Type*} [Semiring S] [Algebra R S]
     {f g : A →ₐ[R] S} (hU : f U = g U) (hv : f V = g V) : f = g := by
-  apply DFunLike.ext _ _
-  intro x
+  ext x
   have h_embed (z : B) :
       algebraMap B A z = algebraMap R A z.re + algebraMap R A z.im * V := by
     have hz : z = algebraMap R B z.re + algebraMap R B z.im * VB := by
@@ -674,7 +677,7 @@ private theorem comul_coassoc :
     (Algebra.TensorProduct.assoc R R R A A A).toAlgHom.comp
         ((Algebra.TensorProduct.map comul (.id R A)).comp comul) =
       (Algebra.TensorProduct.map (.id R A) comul).comp comul := by
-  apply algHom_ext (S := TensorProduct R A (TensorProduct R A A))
+  apply algHom_ext
   · simp [comul_U_formula, comul_lambda, Algebra.TensorProduct.one_def,
       TensorProduct.add_tmul, TensorProduct.tmul_add, add_assoc]
   · simp [comul_V_formula, comul_lambda, Algebra.TensorProduct.one_def,
@@ -683,14 +686,14 @@ private theorem comul_coassoc :
 private theorem counit_left :
     (Algebra.TensorProduct.map counit (.id R A)).comp comul =
       (Algebra.TensorProduct.lid R A).symm := by
-  apply algHom_ext (S := TensorProduct R R A)
+  apply algHom_ext
   · simp [counit_lambda]
   · simp
 
 private theorem counit_right :
     (Algebra.TensorProduct.map (.id R A) counit).comp comul =
       (Algebra.TensorProduct.rid R R A).symm := by
-  apply algHom_ext (S := TensorProduct R A R)
+  apply algHom_ext
   · simp
   · simp [counit_lambda]
 
@@ -1037,7 +1040,7 @@ section transports the counterexample across that equivalence: the pointwise fou
 of the resulting group object is not the constant-unit endomorphism.
 -/
 
-open CategoryTheory CartesianMonoidalCategory MonObj Opposite
+open CategoryTheory MonObj Opposite
 
 /-- On the group object `op A` in `(CommAlgCat R)ᵒᵖ` — the affine group scheme corresponding
 to `A` — the pointwise `n`-th power map `𝟙 _ ^ n` (the `n`-th power of the identity in the
