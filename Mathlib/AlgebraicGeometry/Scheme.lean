@@ -466,32 +466,10 @@ end Hom
 
 end Scheme
 
-/-- The spectrum of a commutative ring, as a scheme.
-
-The notation `Spec(R)` for `(R : Type*) [CommRing R]` to mean `Spec (CommRingCat.of R)` is
-enabled in the scope `SpecOfNotation`. Please do not use it within Mathlib, but it can be
-used in downstream projects if desired. To use this, do:
-```lean
-import Mathlib.AlgebraicGeometry.Scheme
-
-variable (R : Type*) [CommRing R]
-
-open scoped SpecOfNotation
-
-#check Spec(R)
-```
--/
+/-- The spectrum of a commutative ring, as a scheme. -/
 def Spec (R : CommRingCat) : Scheme where
   local_affine _ := ⟨⟨⊤, trivial⟩, R, ⟨(Spec.toLocallyRingedSpace.obj (op R)).restrictTopIso⟩⟩
   toLocallyRingedSpace := Spec.locallyRingedSpaceObj R
-
-/-- The spectrum of an unbundled ring as a scheme.
-WARNING: This is potentially confusing as `Spec (R)` and `Spec(R)` have different meanings.
-Hence we avoid using it in mathlib but leave it as a scoped instance for downstream projects.
-
-WARNING: If `R` is already an element of `CommRingCat`, you should use `Spec R` instead of
-`Spec(R)`, which is secretly `Spec(↑R)`. -/
-scoped[SpecOfNotation] notation3 "Spec("R")" => AlgebraicGeometry.Spec <| .of R
 
 theorem Spec_toLocallyRingedSpace (R : CommRingCat) :
     (Spec R).toLocallyRingedSpace = Spec.locallyRingedSpaceObj R :=
