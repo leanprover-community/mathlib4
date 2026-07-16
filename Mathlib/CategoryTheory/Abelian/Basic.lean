@@ -311,6 +311,18 @@ instance : Mono (Abelian.factorThruCoimage f) := by infer_instance
 
 instance isIso_factorThruCoimage [Epi f] : IsIso (Abelian.factorThruCoimage f) := by infer_instance
 
+@[simp]
+lemma inv_factorThruImage_comp [Mono f] :
+    inv (Abelian.factorThruImage f) ≫ f = kernel.ι (cokernel.π f) := by
+  rw [← cancel_epi (Abelian.factorThruImage f)]
+  simp
+
+@[simp]
+lemma comp_inv_factorThruCoimage [Epi f] :
+    f ≫ inv (Abelian.factorThruCoimage f) = cokernel.π (kernel.ι f) := by
+  rw [← cancel_mono (Abelian.factorThruCoimage f)]
+  simp
+
 end
 
 section Factor
@@ -482,46 +494,6 @@ def epiIsCokernelOfKernel [Epi f] (s : Fork f 0) (h : IsLimit s) :
 def monoIsKernelOfCokernel [Mono f] (s : Cofork f 0) (h : IsColimit s) :
     IsLimit (KernelFork.ofι f (CokernelCofork.condition s)) :=
   NonPreadditiveAbelian.monoIsKernelOfCokernel s h
-
-/-- If `f : X ⟶ Y` is a monomorphism in an abelian category, then `X ≅ kernel (cokernel.π f)`. -/
-def isoKernelCokernel {X Y : C} (f : X ⟶ Y) [Mono f] :
-    X ≅ kernel (cokernel.π f) :=
-  IsLimit.conePointUniqueUpToIso
-    (t := KernelFork.ofι (kernel.ι (cokernel.π f)) (kernel.condition (cokernel.π f)))
-    (monoIsKernelOfCokernel
-      (CokernelCofork.ofπ (cokernel.π f) (cokernel.condition f)) (cokernelIsCokernel f))
-    (kernelIsKernel (cokernel.π f))
-
-/-- If `f : X ⟶ Y` is an epimorphism in an abelian category, then `X ≅ cokernel (kernel.ι f)`. -/
-def isoCokernelKernel {X Y : C} (f : X ⟶ Y) [Epi f] :
-    Y ≅ cokernel (kernel.ι f) :=
-  IsColimit.coconePointUniqueUpToIso
-    (t := CokernelCofork.ofπ (cokernel.π (kernel.ι f)) (cokernel.condition (kernel.ι f)))
-    (epiIsCokernelOfKernel
-      (KernelFork.ofι (kernel.ι f) (kernel.condition f)) (kernelIsKernel f))
-    (cokernelIsCokernel (kernel.ι f))
-
-@[simp]
-lemma isoKernelCokernel_hom_comp {X Y : C} (f : X ⟶ Y) [Mono f] :
-    (isoKernelCokernel f).hom ≫ kernel.ι (cokernel.π f) = f :=
-  (IsLimit.conePointUniqueUpToIso_hom_comp _ _) WalkingParallelPair.zero
-
-@[simp]
-lemma isoKernelCokernel_inv_comp {X Y : C} (f : X ⟶ Y) [Mono f] :
-    (isoKernelCokernel f).inv ≫ f = kernel.ι (cokernel.π f) :=
-  (IsLimit.conePointUniqueUpToIso_inv_comp _ _) WalkingParallelPair.zero
-
-@[simp]
-lemma comp_isoCokernelKernel_hom {X Y : C} (f : X ⟶ Y) [Epi f] :
-    f ≫ (isoCokernelKernel f).hom = cokernel.π (kernel.ι f) :=
-  (IsColimit.comp_coconePointUniqueUpToIso_hom
-    (epiIsCokernelOfKernel _ (kernelIsKernel f)) (cokernelIsCokernel _)) WalkingParallelPair.one
-
-@[simp]
-lemma comp_isoCokernelKernel_inv {X Y : C} (f : X ⟶ Y) [Epi f] :
-    cokernel.π (kernel.ι f) ≫ (isoCokernelKernel f).inv = f :=
-  (IsColimit.comp_coconePointUniqueUpToIso_inv
-    (epiIsCokernelOfKernel _ (kernelIsKernel f)) (cokernelIsCokernel _)) WalkingParallelPair.one
 
 variable (f)
 

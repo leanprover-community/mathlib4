@@ -102,7 +102,8 @@ lemma le_iff_comp_cokernel_zero {X : C} (f g : Subobject X) :
     rw [← ofLE_arrow h, Category.assoc, cokernel.condition, comp_zero]
   · intro h
     exact le_of_comm
-      (kernel.lift (cokernel.π g.arrow) f.arrow h ≫ (isoKernelCokernel g.arrow).inv) (by simp)
+      (kernel.lift (cokernel.π g.arrow) f.arrow h ≫
+        (asIso (Abelian.factorThruImage g.arrow)).inv) (by simp)
 
 lemma imageSubobject_eq_kernelSubobject {X Y : C} (f : X ⟶ Y) :
     imageSubobject f = kernelSubobject (cokernel.π f) :=
@@ -149,7 +150,7 @@ lemma pullback_exists_eq_self_of_epi [Epi f] (X' : Subobject X) (h : kernelSubob
     simp only [Category.assoc, cokernel.condition, comp_zero])
   have : Epi d := epi_of_epi_fac (comp_epiDesc f (cokernel.π X'.arrow) _)
   have hX' : (Subobject.pullback f).obj (kernelSubobject d) = X' := by
-    rw [pullback_mk_eq_kernelSubobject, ← comp_isoCokernelKernel_hom d]
+    rw [pullback_mk_eq_kernelSubobject, ← comp_inv_factorThruCoimage d]
     simp only [← Category.assoc, d, comp_epiDesc, kernelSubobject_comp_mono]
     rw [← imageSubobject_eq_kernelSubobject, imageSubobject_mono]
     exact mk_arrow X'
