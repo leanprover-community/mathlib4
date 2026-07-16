@@ -24,6 +24,21 @@ subgroup, subgroups
 namespace Subgroup
 variable {G α β : Type*} [Group G]
 
+section MulAction
+variable [MulAction G α] {S : Subgroup G}
+
+/-- The action by a subgroup is the action by the underlying group. -/
+@[to_additive
+/-- The additive action by an `AddSubgroup` is the action by the underlying `AddGroup`. -/]
+instance instMulAction : MulAction S α := inferInstanceAs (MulAction S.toSubmonoid α)
+
+@[to_additive] lemma smul_def (g : S) (m : α) : g • m = (g : G) • m := rfl
+
+@[to_additive (attr := simp)]
+lemma mk_smul (g : G) (hg : g ∈ S) (a : α) : (⟨g, hg⟩ : S) • a = g • a := rfl
+
+end MulAction
+
 @[to_additive]
 instance smulCommClass_left [MulAction G β] [SMul α β] [SMulCommClass G α β] (S : Subgroup G) :
     SMulCommClass S α β :=
