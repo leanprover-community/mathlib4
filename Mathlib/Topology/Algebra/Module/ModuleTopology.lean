@@ -387,10 +387,10 @@ theorem isQuotientMap_of_surjectiveₛₗ [τB : TopologicalSpace B'] [IsModuleT
   eq_coinduced := by
     -- We need to prove that the topology on B is coinduced from that on A.
     -- First tell the typeclass inference system that A and B are topological groups.
-    haveI := IsModuleTopology.toContinuousAdd R A
-    haveI := IsModuleTopology.toContinuousAdd S B'
+    have := IsModuleTopology.toContinuousAdd R A
+    have := IsModuleTopology.toContinuousAdd S B'
     -- Because φ is linear, it's continuous for the module topologies (by a previous result).
-    have this : Continuous φ := continuous_of_linearMapₛₗ hσ.continuous φ
+    have : Continuous φ := continuous_of_linearMapₛₗ hσ.continuous φ
     -- So the coinduced topology is finer than the module topology on B.
     rw [continuous_iff_coinduced_le] at this
     -- So STP the module topology on B is ≤ the topology coinduced from A
@@ -400,7 +400,7 @@ theorem isQuotientMap_of_surjectiveₛₗ [τB : TopologicalSpace B'] [IsModuleT
     clear! τB
     -- and replace it with the coinduced topology (which will be the same, but that's what we're
     -- trying to prove). This means we don't have to fight with the typeclass system.
-    letI : TopologicalSpace B' := .coinduced φ inferInstance
+    let : TopologicalSpace B' := .coinduced φ inferInstance
     -- With this new topology on `B`, φ is a quotient map by definition,
     -- and hence an open quotient map by a result in the library.
     have hφo : IsOpenQuotientMap φ := AddMonoidHom.isOpenQuotientMap_of_isQuotientMap ⟨⟨rfl⟩, hφ⟩
@@ -494,8 +494,8 @@ theorem isOpenMap_of_surjective [TopologicalSpace B] [IsModuleTopology R B]
 lemma _root_.ModuleTopology.eq_coinduced_of_surjectiveₛₗ
     {σ : R →+* S} (hσ : IsOpenQuotientMap σ) (φ : A →ₛₗ[σ] B') (hφ : Function.Surjective φ) :
     moduleTopology S B' = TopologicalSpace.coinduced φ inferInstance := by
-  letI : TopologicalSpace B' := moduleTopology S B'
-  haveI : IsModuleTopology S B' := ⟨rfl⟩
+  let : TopologicalSpace B' := moduleTopology S B'
+  have : IsModuleTopology S B' := ⟨rfl⟩
   exact (isQuotientMap_of_surjectiveₛₗ hσ φ hφ).eq_coinduced
 
 lemma _root_.ModuleTopology.eq_coinduced_of_surjective
@@ -627,7 +627,7 @@ theorem continuous_bilinear_of_pi_fintype (ι : Type*) [Finite ι]
   rw [h]
   -- But this map is obviously continuous, because for a fixed `i`, `bil (single i 1)` is
   -- linear and thus continuous, and scalar multiplication and finite sums are continuous
-  haveI : ContinuousAdd C := toContinuousAdd R C
+  have : ContinuousAdd C := toContinuousAdd R C
   fun_prop
 
 end semiring

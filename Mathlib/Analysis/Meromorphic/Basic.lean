@@ -386,11 +386,6 @@ protected theorem deriv [CompleteSpace E] {f : 𝕜 → E} {x : 𝕜} (h : Merom
     MeromorphicAt.meromorphicAt_congr this]
   fun_prop
 
-@[deprecated MeromorphicAt.deriv (since := "2025-12-21")]
-theorem fun_deriv [CompleteSpace E] {f : 𝕜 → E} {x : 𝕜} (h : MeromorphicAt f x) :
-    MeromorphicAt (fun z ↦ _root_.deriv f z) x :=
-  h.deriv
-
 /--
 Iterated derivatives of meromorphic functions are meromorphic.
 -/
@@ -400,12 +395,6 @@ Iterated derivatives of meromorphic functions are meromorphic.
   induction n with
   | zero => exact h
   | succ n IH => simpa only [Function.iterate_succ', Function.comp_apply] using IH.deriv
-
-@[deprecated MeromorphicAt.iterated_deriv (since := "2025-12-21")]
-theorem fun_iterated_deriv [CompleteSpace E] {n : ℕ} {f : 𝕜 → E} {x : 𝕜}
-    (h : MeromorphicAt f x) :
-    MeromorphicAt (fun z ↦ _root_.deriv^[n] f z) x :=
-  h.iterated_deriv
 
 end MeromorphicAt
 
@@ -632,19 +621,9 @@ include hf in
 protected theorem deriv [CompleteSpace E] : MeromorphicOn (deriv f) U := fun z hz ↦ (hf z hz).deriv
 
 include hf in
-@[deprecated MeromorphicOn.deriv (since := "2025-12-21")]
-theorem fun_deriv [CompleteSpace E] : MeromorphicOn (fun z ↦ _root_.deriv f z) U := hf.deriv
-
-include hf in
 /-- Iterated derivatives of meromorphic functions are meromorphic. -/
 theorem iterated_deriv [CompleteSpace E] {n : ℕ} : MeromorphicOn (_root_.deriv^[n] f) U :=
   fun z hz ↦ (hf z hz).iterated_deriv
-
-include hf in
-@[deprecated MeromorphicOn.iterated_deriv (since := "2025-12-21")]
-theorem fun_iterated_deriv [CompleteSpace E] {n : ℕ} :
-    MeromorphicOn (fun z ↦ _root_.deriv^[n] f z) U :=
-  hf.iterated_deriv
 
 /-- `MeromorphicOn` is invariant under translation. -/
 @[to_fun meromorphicOn_fun_comp_add_const_iff_meromorphicOn]
@@ -817,11 +796,6 @@ theorem countable_compl_analyticAt [SecondCountableTopology 𝕜] [CompleteSpace
     {z | AnalyticAt 𝕜 f z}ᶜ.Countable := by
   simpa using (h.meromorphicOn (s := univ)).countable_compl_analyticAt_inter
 
-@[deprecated (since := "2025-12-21")] alias MeromorphicOn.countable_compl_analyticAt :=
-  countable_compl_analyticAt
-@[deprecated (since := "2025-12-21")] alias _root_.MeromorphicOn.countable_compl_analyticAt :=
-  countable_compl_analyticAt
-
 /--
 Meromorphic functions are measurable.
 -/
@@ -835,9 +809,6 @@ Meromorphic functions are measurable.
   have h₃ : ContinuousOn f s := fun z hz ↦ hz.continuousAt.continuousWithinAt
   exact .of_union_range_cover (.subtype_coe h₂.measurableSet) (.subtype_coe h₁.measurableSet)
     (by simp [-mem_compl_iff]) h₃.restrict.measurable (measurable_of_countable _)
-
-@[deprecated (since := "2025-12-21")] alias MeromorphicOn.measurable := measurable
-@[deprecated (since := "2025-12-21")] alias _root_.MeromorphicOn.measurable := measurable
 
 /-- `Meromorphic` is invariant under translation. -/
 @[simp] theorem meromorphic_comp_add_const_iff_meromorphic {c : 𝕜} :

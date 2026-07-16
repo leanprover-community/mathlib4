@@ -642,11 +642,13 @@ theorem _root_.ContinuousLinearMap.lTensor_eq_mapL (g : G →L[𝕜] H) :
   apply ContinuousLinearMap.coe_inj.mp <| ext' ?_
   simp [TensorProduct.ext_iff_inner_right, ContinuousLinearMap.adjoint_inner_left]
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable (G) in
 @[simp] theorem _root_.ContinuousLinearMap.adjoint_rTensor [CompleteSpace E] [CompleteSpace G]
     [CompleteSpace (E ⊗[𝕜] G)] [CompleteSpace (F ⊗[𝕜] G)] [CompleteSpace F] (f : E →L[𝕜] F) :
     (f.rTensor G).adjoint = f.adjoint.rTensor G := by simp [ContinuousLinearMap.rTensor_eq_mapL]
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable (E) in
 @[simp] theorem _root_.ContinuousLinearMap.adjoint_lTensor [CompleteSpace E] [CompleteSpace G]
     [CompleteSpace (E ⊗[𝕜] H)] [CompleteSpace (E ⊗[𝕜] G)] [CompleteSpace H] (g : G →L[𝕜] H) :
