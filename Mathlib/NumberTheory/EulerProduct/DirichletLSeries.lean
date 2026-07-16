@@ -251,8 +251,8 @@ theorem DirichletCharacter.eulerProduct_log_eq_LSeries (hs : 1 < s.re) :
           grw [norm_le_one, vonMangoldt_le_log]
           have := log_pos (x := n) (mod_cast hn)
           field_simp
-          rw [(by norm_cast : (n : ℂ) = (n : ℝ)), norm_cpow_eq_rpow_re_of_nonneg] <;> simp
-          grind
+          rw [← ofReal_natCast n, norm_cpow_eq_rpow_re_of_nonneg (by simp) (by simp; grind)]
+          simp
     _ = _ := by
       simp only [cpow_neg]
       suffices (Function.support fun (n : ℕ) ↦ χ n * Λ n / Real.log n / ((n : ℂ) ^ s))
