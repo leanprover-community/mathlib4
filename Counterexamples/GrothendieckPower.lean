@@ -376,13 +376,13 @@ noncomputable def mkAlgHom (u v : S) (hv : v ^ 2 = algebraMap R S (a ^ 2) * v)
       linear_combination hu + u * map_mul (algebraMap R S) a b -
         v * map_pow (algebraMap R S) b 2⟩ : A →ₐ[B] S)
 
-theorem mkAlgHom_U (u v : S) (hv : v ^ 2 = algebraMap R S (a ^ 2) * v)
+theorem mkAlgHom_U {u v : S} (hv : v ^ 2 = algebraMap R S (a ^ 2) * v)
     (hu : u ^ 2 = algebraMap R S (a * b) * u - algebraMap R S (b ^ 2) * v) :
     mkAlgHom u v hv hu U = u := by
   let : Algebra B S := (mkAlgHomB v hv).toRingHom.toAlgebra
   exact quadratic_lift_omega u _
 
-theorem mkAlgHom_V (u v : S) (hv : v ^ 2 = algebraMap R S (a ^ 2) * v)
+theorem mkAlgHom_V {u v : S} (hv : v ^ 2 = algebraMap R S (a ^ 2) * v)
     (hu : u ^ 2 = algebraMap R S (a * b) * u - algebraMap R S (b ^ 2) * v) :
     mkAlgHom u v hv hu V = v := by
   let : Algebra B S := (mkAlgHomB v hv).toRingHom.toAlgebra
@@ -399,7 +399,7 @@ certificates; they are then transported to the tensor square along the two inclu
 -/
 
 private theorem law_relations_generic {S : Type*} [CommRing S]
-    (a b u₁ v₁ u₂ v₂ : S)
+    {a b u₁ v₁ u₂ v₂ : S}
     (ha : a ^ 3 = 0) (hb : b ^ 3 = 0) (hab : a ^ 2 * b + 2 = 0)
     (hv₁ : v₁ ^ 2 = a ^ 2 * v₁) (hu₁ : u₁ ^ 2 = a * b * u₁ - b ^ 2 * v₁)
     (hv₂ : v₂ ^ 2 = a ^ 2 * v₂) (hu₂ : u₂ ^ 2 = a * b * u₂ - b ^ 2 * v₂) :
@@ -450,16 +450,15 @@ private theorem law_relations_generic {S : Type*} [CommRing S]
       (a ^ 4 * b ^ 5 * u₂ * v₁) * ha
 
 private theorem law_lambda_generic {S : Type*} [CommRing S]
-    (a b u₁ v₁ u₂ v₂ : S)
+    {a b u₁ v₁ u₂ v₂ : S}
     (ha : a ^ 3 = 0) (hb : b ^ 3 = 0) (hab : a ^ 2 * b + 2 = 0)
     (hv₁ : v₁ ^ 2 = a ^ 2 * v₁)
     (hv₂ : v₂ ^ 2 = a ^ 2 * v₂) (hu₂ : u₂ ^ 2 = a * b * u₂ - b ^ 2 * v₂) :
-    let l₁ := (1 + a * u₁) * (1 + b * v₁)
-    let l₂ := (1 + a * u₂) * (1 + b * v₂)
-    let dv := v₁ * l₂ + v₂
-    let du := u₁ + l₁ * u₂
+    letI l₁ := (1 + a * u₁) * (1 + b * v₁)
+    letI l₂ := (1 + a * u₂) * (1 + b * v₂)
+    letI dv := v₁ * l₂ + v₂
+    letI du := u₁ + l₁ * u₂
     (1 + a * du) * (1 + b * dv) = l₁ * l₂ := by
-  dsimp
   have hab' : a ^ 2 * b = -2 := eq_neg_of_add_eq_zero_left hab
   have h2a : 2 * a = 0 := by
     linear_combination a * hab - b * ha
@@ -486,13 +485,12 @@ def lambda : A := (1 + aA * U) * (1 + bA * V)
 
 private theorem mapped_relations {S : Type*} [CommRing S] [Algebra R S]
     (f : A →ₐ[R] S) :
-    let aa := f aA
-    let bb := f bA
-    let uu := f U
-    let vv := f V
+    letI aa := f aA
+    letI bb := f bA
+    letI uu := f U
+    letI vv := f V
     aa ^ 3 = 0 ∧ bb ^ 3 = 0 ∧ aa ^ 2 * bb + 2 = 0 ∧
       vv ^ 2 = aa ^ 2 * vv ∧ uu ^ 2 = aa * bb * uu - bb ^ 2 * vv := by
-  dsimp
   split_ands
   · simp [aA, ← map_pow, a_cube]
   · simp [bA, ← map_pow, b_cube]
@@ -565,22 +563,22 @@ private theorem delta_relations :
   obtain ⟨ha₁, hb₁, hab₁, hv₁', hu₁'⟩ := mapped_relations (S := A ⊗[R] A) left
   obtain ⟨_, _, _, hv₂', hu₂'⟩ := mapped_relations (S := A ⊗[R] A) right
   simp only [right_aA, right_bA] at hv₂' hu₂'
-  exact law_relations_generic _ _ _ _ _ _ ha₁ hb₁ hab₁ hv₁' hu₁' hv₂' hu₂'
+  exact law_relations_generic ha₁ hb₁ hab₁ hv₁' hu₁' hv₂' hu₂'
 
 private theorem delta_lambda :
     (1 + a₁ * deltaU) * (1 + b₁ * deltaV) = l₁ * l₂ := by
   obtain ⟨ha₁, hb₁, hab₁, hv₁', -⟩ := mapped_relations (S := A ⊗[R] A) left
   obtain ⟨-, -, -, hv₂', hu₂'⟩ := mapped_relations (S := A ⊗[R] A) right
   simp only [right_aA, right_bA] at hv₂' hu₂'
-  exact law_lambda_generic _ _ _ _ _ _ ha₁ hb₁ hab₁ hv₁' hv₂' hu₂'
+  exact law_lambda_generic ha₁ hb₁ hab₁ hv₁' hv₂' hu₂'
 
-private theorem a₁_smul : a₁ = a • (1 : A ⊗[R] A) := by
-  change (aA ⊗ₜ[R] (1 : A)) = a • (1 : A ⊗[R] A)
+private theorem a₁_smul : a₁ = a • 1 := by
+  change (aA ⊗ₜ[R] (1 : A)) = a • 1
   rw [show aA = a • (1 : A) from Algebra.algebraMap_eq_smul_one a]
   exact TensorProduct.smul_tmul' a 1 1
 
-private theorem b₁_smul : b₁ = b • (1 : A ⊗[R] A) := by
-  change (bA ⊗ₜ[R] (1 : A)) = b • (1 : A ⊗[R] A)
+private theorem b₁_smul : b₁ = b • 1 := by
+  change (bA ⊗ₜ[R] (1 : A)) = b • 1
   rw [show bA = b • (1 : A) from Algebra.algebraMap_eq_smul_one b]
   exact TensorProduct.smul_tmul' b 1 1
 
@@ -591,9 +589,9 @@ noncomputable def comul : A →ₐ[R] A ⊗[R] A :=
     (by rw [← left.commutes (a * b), ← left.commutes (b ^ 2), map_mul, map_mul, map_pow,
       map_pow]; exact delta_relations.2)
 
-theorem comul_U : comul U = deltaU := mkAlgHom_U _ _ _ _
+theorem comul_U : comul U = deltaU := mkAlgHom_U _ _
 
-theorem comul_V : comul V = deltaV := mkAlgHom_V _ _ _ _
+theorem comul_V : comul V = deltaV := mkAlgHom_V _ _
 
 theorem comul_aA : comul aA = a₁ := by
   rw [comul.commutes, Algebra.algebraMap_eq_smul_one, ← a₁_smul]
@@ -656,9 +654,9 @@ theorem algHom_ext {S : Type*} [Semiring S] [Algebra R S]
 noncomputable def counit : A →ₐ[R] R :=
   mkAlgHom 0 0 (by simp) (by simp)
 
-@[simp] theorem counit_V : counit V = 0 := mkAlgHom_V _ _ _ _
+@[simp] theorem counit_V : counit V = 0 := mkAlgHom_V _ _
 
-@[simp] theorem counit_U : counit U = 0 := mkAlgHom_U _ _ _ _
+@[simp] theorem counit_U : counit U = 0 := mkAlgHom_U _ _
 
 @[simp] theorem counit_lambda : counit lambda = 1 := by
   simp [lambda]
@@ -707,7 +705,7 @@ theorem isGroupLikeElem_lambda : IsGroupLikeElem R lambda where
 ### The convolution power maps
 
 The `n`-th power map of the group scheme (pointwise `x ↦ xⁿ`) corresponds, on coordinate
-rings, to the `n`-th convolution power of the identity of `A`.  On the skew-primitive
+rings, to the `n`th convolution power of the identity of `A`.  On the skew-primitive
 coordinates it is controlled by the geometric sum
 `1 + lambda + ⋯ + lambdaⁿ⁻¹`, which we compute from the square-zero element
 `theta = lambda - 1`.
@@ -717,13 +715,12 @@ coordinates it is controlled by the geometric sum
 def theta : A := lambda - 1
 
 private theorem theta_identities_generic {S : Type*} [CommRing S]
-    (aa bb uu vv : S)
+    {aa bb uu vv : S}
     (ha : aa ^ 3 = 0) (hb : bb ^ 3 = 0) (hab : aa ^ 2 * bb + 2 = 0)
     (hv : vv ^ 2 = aa ^ 2 * vv)
     (hu : uu ^ 2 = aa * bb * uu - bb ^ 2 * vv) :
-    let th := (1 + aa * uu) * (1 + bb * vv) - 1
+    letI th := (1 + aa * uu) * (1 + bb * vv) - 1
     th ^ 2 = 0 ∧ 2 * th = 2 * bb * vv := by
-  dsimp
   have hab' : aa ^ 2 * bb = -2 := eq_neg_of_add_eq_zero_left hab
   have h2a : 2 * aa = 0 := by
     linear_combination aa * hab - bb * ha
@@ -749,11 +746,11 @@ private theorem theta_identities_generic {S : Type*} [CommRing S]
 
 theorem theta_sq : theta ^ 2 = 0 := by
   obtain ⟨ha, hb, hab, hv, hu⟩ := mapped_relations (AlgHom.id R A)
-  exact (theta_identities_generic _ _ _ _ ha hb hab hv hu).1
+  exact (theta_identities_generic ha hb hab hv hu).1
 
 theorem two_theta : 2 * theta = 2 * bA * V := by
   obtain ⟨ha, hb, hab, hv, hu⟩ := mapped_relations (AlgHom.id R A)
-  exact (theta_identities_generic _ _ _ _ ha hb hab hv hu).2
+  exact (theta_identities_generic ha hb hab hv hu).2
 
 open WithConv
 
@@ -850,7 +847,7 @@ theorem powerMap_four_V : powerMap 4 V = 0 := by
     simp [aA, map_pow]
   have hab : aA ^ 2 * bA + 2 = 0 := by
     obtain ⟨_, _, hab, _, _⟩ := mapped_relations (AlgHom.id R A)
-    exact hab
+    simpa using hab
   rw [show V * (2 * bA * V) = 2 * bA * V ^ 2 by ring, hv]
   linear_combination 2 * V * hab - V * four_eq_zero
 
