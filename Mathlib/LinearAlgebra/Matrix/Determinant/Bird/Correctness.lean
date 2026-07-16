@@ -181,20 +181,24 @@ lemma det_submatrix_removeNth_eq_sign_mul_bminor
       (-1 : R) ^ s.val * bminor A i (α s) (s.removeNth α) := by
   calc
     (A.submatrix (Fin.cons i (s.removeNth α)) α).det =
-        (A.submatrix (Fin.cons i (s.removeNth α))
-          (s.insertNth (α s) (s.removeNth α))).det := by
-      rw [Fin.insertNth_self_removeNth]
-    _ =
-        ((A.submatrix (Fin.cons i (s.removeNth α))
-          (Fin.cons (α s) (s.removeNth α))).submatrix id (Fin.cycleRange s)).det := by
+        ((A.submatrix (Function.update α s i) α).submatrix
+          (Fin.cycleRange s).symm id).det := by
       apply congrArg Matrix.det
-      ext q r
-      simp only [Matrix.submatrix_apply, id_eq]
-      rw [Fin.cons_apply_cycleRange]
+      rw [Matrix.submatrix_submatrix, Function.comp_id, ← Fin.insertNth_removeNth,
+        Fin.insertNth_comp_cycleRange_symm]
     _ = Equiv.Perm.sign (Fin.cycleRange s) *
-        (A.submatrix (Fin.cons i (s.removeNth α))
-          (Fin.cons (α s) (s.removeNth α))).det := by
-      apply Matrix.det_permute'
+        (A.submatrix (Function.update α s i) α).det := by
+      rw [Matrix.det_permute, Equiv.Perm.sign_symm]
+    _ = Equiv.Perm.sign (Fin.cycleRange s) *
+        ((A.submatrix (Fin.cons i (s.removeNth α))
+          (Fin.cons (α s) (s.removeNth α))).submatrix
+            (Fin.cycleRange s) (Fin.cycleRange s)).det := by
+      congrm Equiv.Perm.sign (Fin.cycleRange s) * Matrix.det ?_
+      simp only [Matrix.submatrix_submatrix, Fin.cons_comp_cycleRange,
+        Fin.insertNth_self_removeNth, Fin.insertNth_removeNth]
+    _ = Equiv.Perm.sign (Fin.cycleRange s) *
+        bminor A i (α s) (s.removeNth α) := by
+      rw [Matrix.det_submatrix_equiv_self]
     _ = (-1 : R) ^ s.val * bminor A i (α s) (s.removeNth α) := by
       rw [Fin.sign_cycleRange]
       simp
