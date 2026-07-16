@@ -139,7 +139,7 @@ instance colimitModule : Module R (M F) :=
 
 /-- The bundled `R`-module giving the filtered colimit of a diagram. -/
 def colimit : ModuleCat.{max v u, u} R :=
-  ModuleCat.of R (M F)
+  ↧(M F)
 
 /-- The linear map from a given `R`-module in the diagram to the colimit module. -/
 def coconeMorphism (j : J) : F.obj j ⟶ colimit F :=

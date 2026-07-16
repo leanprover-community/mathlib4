@@ -261,11 +261,11 @@ lemma aux {S T : LightProfinite} (π : T ⟶ S ⊗ ℕ∪{∞}) [Epi π] :
   -- Construct the space `S'` space which has functions `σ'` we can plug into
   -- `fibres`.
   have := S'_compactSpace π (by fun_prop)
-  let S'π (n : ℕ∪{∞}) : LightProfinite.of (S' π) ⟶ LightProfinite.fibre n (π ≫ snd _ _) :=
+  let S'π (n : ℕ∪{∞}) : ↧(S' π) ⟶ LightProfinite.fibre n (π ≫ snd _ _) :=
     ⟨TopCat.ofHom {
       toFun x := x.val n,
       continuous_toFun := by refine (continuous_apply _).comp ?_; fun_prop }⟩
-  let y' : LightProfinite.of (S' π) ⟶ S := ConcreteCategory.ofHom ⟨y π, y_continuous π⟩
+  let y' : ↧(S' π) ⟶ S := ConcreteCategory.ofHom ⟨y π, y_continuous π⟩
   let π' := pullback.snd π (y' ▷ ℕ∪{∞})
   let σ' : ℕ∪{∞} → LightProfinite.of (S' π) → pullback π (y' ▷ ℕ∪{∞}) := fun n ↦
     pullback.lift _ _ (S'π n ≫ LightProfinite.fibreIncl _ _) (lift (𝟙 _) (const _ n)) <| by
@@ -277,7 +277,7 @@ lemma aux {S T : LightProfinite} (π : T ⟶ S ⊗ ℕ∪{∞}) [Epi π] :
   -- because the projection is an isomorphism away from the fibre at `∞`.
   have : CompactSpace (fibres π' σ') := isCompact_iff_compactSpace.mp
     (fibres_closed π' (by fun_prop) σ' (by fun_prop) hσ').isCompact
-  refine ⟨LightProfinite.of (S' π), LightProfinite.of (fibres π' σ'), y',
+  refine ⟨↧(S' π), ↧(fibres π' σ'), y',
     ⟨TopCat.ofHom ⟨Subtype.val, by fun_prop⟩⟩ ≫ π',
     ⟨TopCat.ofHom ⟨Subtype.val, by fun_prop⟩⟩ ≫ pullback.fst _ _, ?_, ?_, ?_, ?_, ?_⟩
   · rw [LightProfinite.epi_iff_surjective]
