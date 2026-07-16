@@ -444,6 +444,16 @@ theorem inf_eq_map_pullback' {A : C} (f₁ : MonoOver A) (f₂ : Subobject A) :
   induction f₂ using Quotient.inductionOn'
   rfl
 
+/-- Existential image along a monomorphism, after pulling back, is intersection with its image. -/
+theorem exists_pullback_eq_inf_of_mono [HasImages C] (f : X ⟶ Y) [Mono f]
+    (Y' : Subobject Y) :
+    (Subobject.«exists» f).obj ((Subobject.pullback f).obj Y') = Y' ⊓ Subobject.mk f := by
+  rw [exists_iso_map]
+  change (Subobject.map (MonoOver.mk f).arrow).obj
+      ((Subobject.pullback (MonoOver.mk f).arrow).obj Y') = _
+  rw [← inf_eq_map_pullback' (MonoOver.mk f) Y', inf_comm]
+  rfl
+
 theorem inf_eq_map_pullback {A : C} (f₁ : Subobject A) (f₂ : Subobject A) :
     (f₁ ⊓ f₂ : Subobject A) = (map f₁.arrow).obj ((pullback f₁.arrow).obj f₂) := by
   convert! inf_eq_map_pullback' (representative.obj f₁) f₂

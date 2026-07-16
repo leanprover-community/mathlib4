@@ -12,6 +12,7 @@ public import Mathlib.CategoryTheory.ConcreteCategory.Basic
 public import Mathlib.Tactic.ApplyFun
 public import Mathlib.Tactic.CategoryTheory.Elementwise
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
+import Mathlib.CategoryTheory.Category.GaloisConnection
 
 /-!
 # Subobjects
@@ -745,10 +746,19 @@ left adjoint to `pullback f : Subobject Y ⥤ Subobject X`.
 def existsPullbackAdj (f : X ⟶ Y) [HasPullbacks C] : «exists» f ⊣ pullback f :=
   lowerAdjunction (MonoOver.existsPullbackAdj f)
 
+/-- The Galois connection on subobjects underlying the adjunction between existential image and
+pullback. -/
 theorem exists_pullback_gc (f : X ⟶ Y) [HasPullbacks C] :
-    GaloisConnection (Subobject.«exists» f).obj (Subobject.pullback f).obj := fun _ _ ↦
-  ⟨fun h ↦ ((existsPullbackAdj f).homEquiv _ _ (homOfLE h)).le,
-    fun h ↦ ((existsPullbackAdj f).homEquiv _ _).symm (homOfLE h) |>.le⟩
+    GaloisConnection (Subobject.«exists» f).obj (Subobject.pullback f).obj :=
+  (existsPullbackAdj f).gc
+
+/-- Taking the image of a subobject along a composite is the same as taking its image along
+each morphism in turn. -/
+theorem exists_comp (f : X ⟶ Y) (g : Y ⟶ Z) [HasPullbacks C] (x : Subobject X) :
+    (Subobject.«exists» (f ≫ g)).obj x =
+      (Subobject.«exists» g).obj ((Subobject.«exists» f).obj x) :=
+  (exists_pullback_gc (f ≫ g)).l_unique
+    ((exists_pullback_gc f).compose (exists_pullback_gc g)) (pullback_comp f g)
 
 /--
 Taking representatives and then `MonoOver.exists` is isomorphic to taking `Subobject.exists`

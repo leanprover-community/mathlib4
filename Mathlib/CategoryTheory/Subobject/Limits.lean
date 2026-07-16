@@ -121,6 +121,14 @@ variable [HasZeroMorphisms C] (f : X ⟶ Y) [HasKernel f]
 abbrev kernelSubobject : Subobject X :=
   Subobject.mk (kernel.ι f)
 
+/-- Pulling back a kernel subobject gives the kernel subobject of the composite. -/
+@[simp, nolint simpNF] -- `kernelSubobject` is an abbreviation for an equalizer subobject.
+lemma _root_.CategoryTheory.Subobject.pullback_kernelSubobject {W : C} (h : W ⟶ X)
+    [HasPullbacks C]
+    [HasKernel (h ≫ f)] :
+    (Subobject.pullback h).obj (kernelSubobject f) = kernelSubobject (h ≫ f) := by
+  simpa only [kernelSubobject, comp_zero] using pullback_equalizer f 0 h
+
 /-- The underlying object of `kernelSubobject f` is (up to isomorphism!)
 the same as the chosen object `kernel f`. -/
 def kernelSubobjectIso : (kernelSubobject f : C) ≅ kernel f :=
@@ -324,6 +332,17 @@ theorem imageSubobject_arrow :
 @[reassoc (attr := simp)]
 theorem imageSubobject_arrow' :
     (imageSubobjectIso f).inv ≫ (imageSubobject f).arrow = image.ι f := by simp [imageSubobjectIso]
+
+/-- `Subobject.exists f` applied to `X'` is the image subobject of `X'.arrow ≫ f`. -/
+lemma _root_.CategoryTheory.Subobject.exists_eq_imageSubobject [HasImages C]
+    (f : X ⟶ Y) (X' : Subobject X) :
+    (Subobject.«exists» f).obj X' = imageSubobject (X'.arrow ≫ f) := by
+  apply Subobject.eq_of_comm
+    ((Subobject.existsIsoImage f X').trans (imageSubobjectIso (X'.arrow ≫ f)).symm)
+  have h : (Subobject.existsIsoImage f X').hom ≫ image.ι (X'.arrow ≫ f) =
+      ((Subobject.«exists» f).obj X').arrow :=
+    Over.w ((Subobject.existsCompRepresentativeIso f).app X').hom.hom
+  simp only [Iso.trans_hom, Iso.symm_hom, Category.assoc, imageSubobject_arrow', h]
 
 /-- A factorisation of `f : X ⟶ Y` through `imageSubobject f`. -/
 def factorThruImageSubobject : X ⟶ imageSubobject f :=
