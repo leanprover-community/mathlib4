@@ -227,7 +227,11 @@ theorem DirichletCharacter.eulerProduct_log_eq_LSeries (hs : 1 < s.re) :
   calc
     _ = ∑' (p : Primes) (k : ℕ), (χ (p ^ (k + 1)) * ((p ^ (k + 1) : ℕ) : ℂ) ^ (-s)) *
           Λ (p ^ (k + 1)) / Real.log (p ^ (k + 1)) := by
-      congr! 4 with p k
+      suffices ∀ (p : Primes) (k : ℕ),
+          (χ p * p ^ (-s)) ^ (k + 1) / (k + 1) =
+            χ (p ^ (k + 1)) * (p ^ (k + 1)) ^ (-s) * Λ (p ^ (k + 1)) / Real.log (p ^ (k + 1)) by
+        aesop
+      intro p k
       have : Complex.log p ≠ 0 := mod_cast p.prop.log_ne_zero
       simp [mul_pow, ← cpow_nat_mul, ← natCast_cpow_natCast_mul, vonMangoldt_apply_pow,
         vonMangoldt_apply_prime p.2]
