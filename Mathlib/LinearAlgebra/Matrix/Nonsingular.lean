@@ -125,6 +125,10 @@ lemma nonsingular_mul_iff {A B : Matrix n n R} :
     isLeftRegular_iff_nonsingular.mp <| .of_mul <| isLeftRegular_iff_nonsingular.mpr h⟩
   mpr h := h.1.mul h.2
 
+lemma Nonsingular.pow (hA : A.Nonsingular) : ∀ k, (A ^ k).Nonsingular
+  | 0 => by simp
+  | k + 1 => by simp [pow_succ, (hA.pow k).mul hA]
+
 omit [DecidableEq n] in
 theorem isLeftRegular_iff_isRightRegular : IsLeftRegular A ↔ IsRightRegular A := by
   classical rw [isLeftRegular_iff_nonsingular, isRightRegular_iff_nonsingular]

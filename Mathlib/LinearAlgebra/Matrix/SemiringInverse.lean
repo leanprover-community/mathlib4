@@ -37,6 +37,8 @@ def detp : R := ∑ σ ∈ ofSign s, ∏ k, A k (σ k)
 @[simp] lemma detp_transpose : A.transpose.detp s = A.detp s :=
   sum_equiv (.inv _) (by simp) fun σ _ ↦ prod_equiv σ (by simp) (by simp)
 
+@[simp] lemma detp_zero [Nonempty n] : (0 : Matrix n n R).detp s = 0 := by simp [detp]
+
 @[simp]
 lemma detp_one_diagonal (d : n → R) : detp 1 (diagonal d) = ∏ i, d i := by
   rw [detp, sum_eq_single_of_mem 1]
@@ -79,6 +81,12 @@ lemma detp_neg_one_one : detp (-1) (1 : Matrix n n R) = 0 := by
 
 lemma detp_submatrix_equiv_self (e : m ≃ n) : (A.submatrix e e).detp s = A.detp s := by
   simp
+
+lemma detp_smul (c : R) : (c • A).detp s = c ^ Fintype.card n * A.detp s := by
+  simp [detp, Finset.mul_sum, Finset.prod_mul_distrib]
+
+lemma detp_map {S : Type*} [CommSemiring S] (f : R →+* S) :
+    (A.map f).detp s = f (A.detp s) := by simp [detp]
 
 /-- A square matrix `A` over a commutative semiring `R` is "determinant balanced"
 with respect to `a b : R` if `a|A|⁺ + b|A|⁻ = b|A|⁺ + a|A|⁻`. Over a commutative ring,
@@ -126,10 +134,25 @@ lemma DetpBalanced.submatrix_equiv (e₁ e₂ : m ≃ n) (h : A.DetpBalanced a b
   mp h := by simpa using h.submatrix_equiv e₁.symm e₂.symm
   mpr := (·.submatrix_equiv ..)
 
+lemma DetpBalanced.scalar_mul (h : A.DetpBalanced a b) (c : R) :
+    A.DetpBalanced (c * a) (c * b) := by
+  simp [DetpBalanced, mul_assoc, ← mul_add, h.mul_add_mul_eq]
+
+lemma DetpBalanced.smul (h : A.DetpBalanced a b) (c : R) :
+    (c • A).DetpBalanced a b := by
+  simp_rw [DetpBalanced, detp_smul, ← mul_assoc, mul_comm _ (c ^ _), mul_assoc,
+    ← mul_add, h.mul_add_mul_eq]
+
 variable (A) in
 /-- A square matrix `A` over a commutative semiring `R` is called nonsingular if it is
 only determinant balanced with respect to equal elements. -/
 def Nonsingular : Prop := ∀ a b : R, A.DetpBalanced a b → a = b
+
+lemma Nonsingular.eq_of_detpBalanced (hA : A.Nonsingular) (hAd : A.DetpBalanced a b) :
+    a = b := hA a b hAd
+
+lemma DetpBalanced.eq_of_nonsingular (hA : A.DetpBalanced a b) (hAn : A.Nonsingular) :
+    a = b := hAn.eq_of_detpBalanced hA
 
 @[simp] lemma nonsingular_one : (1 : Matrix n n R).Nonsingular :=
   fun a b h ↦ by simpa [DetpBalanced] using h
