@@ -161,6 +161,7 @@ theorem transfer_eq_mapLe (hp) (GH : G ≤ H) : p.transfer H hp = p.mapLe GH := 
 
 @[deprecated (since := "2026-07-14")] alias transfer_eq_map_ofLE := transfer_eq_mapLe
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem nil_transfer {G H : SimpleGraph V} {u v : V} {p : G.Walk u v} {h} :
     (p.transfer H h).Nil ↔ p.Nil := by
