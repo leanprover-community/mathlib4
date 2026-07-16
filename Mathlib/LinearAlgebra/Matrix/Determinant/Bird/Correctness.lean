@@ -323,10 +323,7 @@ theorem paper_eq3_eq5_off_diag (i j : Fin n) :
       rw [bminor_eq_zero_of_mem_range A α i hoccurs, zero_mul]
     · contrapose hnotmem
       obtain ⟨t, ht⟩ := exists_insertNth_mem_S hα hk hoccurs
-      refine ⟨(t.insertNth k α, t), ?_, ?_⟩
-      · simp only [Finset.coe_product, Finset.coe_univ, Set.mem_prod, Set.mem_univ, and_true]
-        exact ht
-      · simp only [Fin.removeNth_insertNth, Fin.insertNth_apply_same]
+      exact ⟨(t.insertNth k α, t), by simpa, by simp⟩
   · simp
 
 /-- Bird's equation (4) -/
