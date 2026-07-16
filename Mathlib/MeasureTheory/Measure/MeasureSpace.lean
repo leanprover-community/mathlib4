@@ -160,7 +160,7 @@ theorem measure_add_measure_compl (h : MeasurableSet s) : μ s + μ sᶜ = μ un
 theorem measure_biUnion₀ {s : Set β} {f : β → Set α} (hs : s.Countable)
     (hd : s.Pairwise (AEDisjoint μ on f)) (h : ∀ b ∈ s, NullMeasurableSet (f b) μ) :
     μ (⋃ b ∈ s, f b) = ∑' p : s, μ (f p) := by
-  haveI := hs.toEncodable
+  have := hs.toEncodable
   rw [biUnion_eq_iUnion]
   exact measure_iUnion₀ (hd.on_injective Subtype.coe_injective fun x => x.2) fun x => h x x.2
 
@@ -411,7 +411,7 @@ theorem measure_iUnion_toMeasurable {ι : Sort*} [Countable ι] (s : ι → Set 
 
 theorem measure_biUnion_toMeasurable {I : Set β} (hc : I.Countable) (s : β → Set α) :
     μ (⋃ b ∈ I, toMeasurable μ (s b)) = μ (⋃ b ∈ I, s b) := by
-  haveI := hc.toEncodable
+  have := hc.toEncodable
   simp only [biUnion_eq_iUnion, measure_iUnion_toMeasurable]
 
 @[simp]
@@ -542,7 +542,7 @@ theorem measure_iUnion_eq_iSup_accumulate [Preorder ι] [IsDirectedOrder ι]
 
 theorem measure_biUnion_eq_iSup {s : ι → Set α} {t : Set ι} (ht : t.Countable)
     (hd : DirectedOn ((· ⊆ ·) on s) t) : μ (⋃ i ∈ t, s i) = ⨆ i ∈ t, μ (s i) := by
-  haveI := ht.to_subtype
+  have := ht.to_subtype
   rw [biUnion_eq_iUnion, hd.directed_val.measure_iUnion, ← iSup_subtype'']
 
 /-- **Continuity from above**:

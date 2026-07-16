@@ -864,9 +864,11 @@ partial def transformDeclRec (t : TranslateData) (cfg : Config) (rootSrc rootTgt
 def copyInstanceAttribute (src tgt : Name) : CoreM Unit := do
   if let some prio ← getInstancePriority? src then
     let attr_kind := (← getInstanceAttrKind? src).getD .global
-    -- Copy implicit_reducible status before adding instance attribute
-    if (← getReducibilityStatus src) matches .implicitReducible then
-      setReducibilityStatus tgt .implicitReducible
+    -- Copy `instance_reducible` / `instance_reducible` status before adding instance attribute
+    match (← getReducibilityStatus src) with
+    | .implicitReducible => setReducibilityStatus tgt .implicitReducible
+    | .instanceReducible => setReducibilityStatus tgt .instanceReducible
+    | _ => pure ()
     trace[translate_detail] "Making {tgt} an instance with priority {prio}."
     addInstance tgt attr_kind prio |>.run'
 
@@ -956,6 +958,8 @@ where
 Also try to autogenerate the `reorder` and `relevant_arg` options for this translation. -/
 partial def checkExistingType (t : TranslateData) (src tgt : Name) (cfg : Config) (lint := true) :
     MetaM (Reorder × RelevantArg) := withoutExporting do
+  withTraceNode `translate_detail (fun _ =>
+    return m!"checking translation `{.ofConstName src}` → `{.ofConstName tgt}`") do
   let srcDecl ← getConstInfo src
   let tgtDecl ← getConstInfo tgt
   unless srcDecl.numLevelParams == tgtDecl.numLevelParams do
@@ -967,7 +971,9 @@ partial def checkExistingType (t : TranslateData) (src tgt : Name) (cfg : Config
     srcType ← b.insertBoundaries srcType t.attrName
   let (srcType', relevantArg?) ← applyReplacementForall t cfg.dontTranslate srcType
   srcType := srcType'
-  let reorder' ← guessReorder srcType tgtDecl.type
+  let reorder' ← withTraceNode `translate_detail (fun _ =>
+    return m!"guessing the reorder between `{srcType}` and `{tgtDecl.type}`") do
+    guessReorder srcType tgtDecl.type
   trace[translate_detail] "The guessed reorder is {reorder'}"
   let reorder ←
     if let some reorder := cfg.reorder? then

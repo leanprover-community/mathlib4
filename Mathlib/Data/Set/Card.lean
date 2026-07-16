@@ -541,6 +541,7 @@ open Notation in
 lemma encard_preimage_val_le_encard_left (P Q : Set α) : (P ↓∩ Q).encard ≤ P.encard :=
   (Function.Embedding.subtype _).encard_le
 
+set_option backward.isDefEq.respectTransparency false in
 open Notation in
 lemma encard_preimage_val_le_encard_right (P Q : Set α) : (P ↓∩ Q).encard ≤ Q.encard :=
   Function.Embedding.encard_le ⟨fun ⟨⟨x, _⟩, hx⟩ ↦ ⟨x, hx⟩, fun _ _ h ↦ by
@@ -593,8 +594,6 @@ lemma exists_ne_map_eq_of_encard_lt_of_maps_to (hc : t.encard < s.encard) (hf : 
 end Function
 
 section ncard
-
-open Nat
 
 /-- A tactic (for use in default params) that applies `Set.toFinite` to synthesize a `Set.Finite`
   term. -/
@@ -983,8 +982,8 @@ theorem inj_on_of_surj_on_of_ncard_le {t : Set β} (f : ∀ a ∈ s, β) (hf : �
     obtain ⟨a, ha, rfl⟩ := hsurj y hy
     simp only [Subtype.exists]
     exact ⟨_, ha, rfl⟩
-  haveI := hs.fintype
-  haveI := Fintype.ofSurjective _ hsurj
+  have := hs.fintype
+  have := Fintype.ofSurjective _ hsurj
   set f'' : ∀ a, a ∈ s.toFinset → β := fun a h ↦ f a (by simpa using h)
   exact
     @Finset.inj_on_of_surj_on_of_card_le _ _ _ t.toFinset f''
