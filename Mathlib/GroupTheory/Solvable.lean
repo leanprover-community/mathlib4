@@ -172,12 +172,6 @@ instance isSolvable_quotient_of_isSolvable (H : Subgroup G) [H.Normal] [IsSolvab
     IsSolvable (G ⧸ H) :=
   isSolvable_of_surjective (QuotientGroup.mk'_surjective H)
 
-theorem isSolvable_iff_subgroup_quotient (H : Subgroup G) [H.Normal] :
-    IsSolvable G ↔ IsSolvable H ∧ IsSolvable (G ⧸ H) :=
-  ⟨fun _ => ⟨isSolvable_subgroup_of_isSolvable H, isSolvable_quotient_of_isSolvable H⟩,
-    and_imp.2 fun _ _ => isSolvable_of_ker_le_range H.subtype (QuotientGroup.mk' H)
-      ((QuotientGroup.ker_mk' H).trans H.range_subtype.symm).le⟩
-
 instance isSolvable_prod {G' : Type*} [Group G'] [IsSolvable G] [IsSolvable G'] :
     IsSolvable (G × G') :=
   isSolvable_of_ker_le_range (MonoidHom.inl G G') (MonoidHom.snd G G') fun x hx =>
