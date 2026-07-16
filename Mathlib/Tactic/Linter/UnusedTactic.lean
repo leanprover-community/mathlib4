@@ -152,10 +152,10 @@ partial def eraseUsedTactics (exceptions : Std.HashSet SyntaxNodeKind)
   let ranges := trees.foldl (init := #[]) <| InfoTree.foldInfo fun _ i ranges => Id.run do
     let .ofTacticInfo i := i | return ranges
     let stx := i.stx
-    let kind := stx.getKind
     let some r := stx.getRange? true | return ranges
-    if exceptions.contains kind then
+    let kind := stx.getKind
     -- if the tactic is allowed to not change the goals
+    if exceptions.contains kind then
       return ranges.push r
     -- if the goals have changed
     if i.goalsAfter != i.goalsBefore then
