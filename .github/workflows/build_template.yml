@@ -690,7 +690,7 @@ jobs:
       # below compares it against the PR branch's `Cache/` to classify a cache
       # miss. `github.workflow_sha` is the base ref the workflow runs from,
       # master for fork PRs, whose `cache` binary wrote the cache.
-      - name: Checkout local actions
+      - name: Checkout local actions and Cache baseline
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           ref: ${{ github.workflow_sha }}
@@ -768,20 +768,26 @@ jobs:
             exit 1
           fi
 
-          # `workflow-actions/Cache` is the tool that wrote the cache (master,
-          # at github.workflow_sha); `Cache` is the PR branch's. Matching source
+          # `workflow-actions/Cache` is master's cache tool at
+          # `github.workflow_sha`; `Cache` is the PR branch's. Matching source
           # means the key spaces agree, so the miss is a real gap. Differing
           # source means the PR changed the key space, so the miss is expected.
-          diff -rq workflow-actions/Cache Cache >/dev/null 2>&1
+          # The cache writer is master's binary at upload time, which can be
+          # newer than `workflow_sha` when a `Cache/` change lands on master
+          # mid-build; that skew can only hard-fail like an unguarded verify
+          # or soft-pass a key space that genuinely diverged.
+          dout=$(diff -rq workflow-actions/Cache Cache 2>&1)
           dstat=$?
           if [ "${dstat}" -eq 0 ]; then
-            echo "::error::Cache verification failed and this PR does not modify Cache/, so the key space matches master: the uploaded cache is incomplete."
+            echo "::error::Cache verification failed and this PR's Cache/ matches master's, so the key spaces agree: the uploaded cache is incomplete."
             exit 1
           elif [ "${dstat}" -eq 1 ]; then
-            echo "::warning::Cache verification incomplete, but this PR changes Cache/. CI wrote the cache with master's binary and this job reads it with the PR branch's, so a changed key space (such as a rootHashGeneration bump) misses as expected. Continuing; the cache repopulates once this lands on master."
+            echo "::warning::Cache verification incomplete, but this PR's Cache/ differs from master's. CI wrote the cache with master's binary and this job reads it with the PR branch's, so a changed key space (such as a rootHashGeneration bump) misses as expected. Continuing; the cache repopulates once this lands on master."
+            echo "${dout}"
             exit 0
           else
             echo "::error::Cache verification failed and master's Cache/ baseline could not be compared (diff status ${dstat}); treating as a failure."
+            echo "${dout}"
             exit 1
           fi
 
