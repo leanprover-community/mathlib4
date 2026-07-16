@@ -32,7 +32,7 @@ structure FinTopCat where
 namespace FinTopCat
 
 instance : Inhabited FinTopCat :=
-  ⟨{ toTop := TopCat.of PEmpty }⟩
+  ⟨{ toTop := ↧PEmpty }⟩
 
 instance : CoeSort FinTopCat (Type u) :=
   ⟨fun X => X.toTop⟩
@@ -47,7 +47,7 @@ instance : ConcreteCategory FinTopCat (C(·, ·)) :=
 
 /-- Construct a bundled `FinTopCat` from the underlying type and the appropriate typeclasses. -/
 def of (X : Type u) [Fintype X] [TopologicalSpace X] : FinTopCat where
-  toTop := TopCat.of X
+  toTop := ↧X
   fintype := ‹_›
 
 @[simp]
@@ -57,7 +57,7 @@ theorem coe_of (X : Type u) [Fintype X] [TopologicalSpace X] :
 
 /-- The forgetful functor to `FintypeCat`. -/
 instance : HasForget₂ FinTopCat FintypeCat :=
-  HasForget₂.mk' (fun X ↦ .of X) (fun _ ↦ rfl)
+  HasForget₂.mk' (fun X ↦ ↧X) (fun _ ↦ rfl)
     (fun f ↦ FintypeCat.homMk f) HEq.rfl
 
 instance (X : FinTopCat) : TopologicalSpace ((forget₂ FinTopCat FintypeCat).obj X) :=
@@ -82,7 +82,7 @@ scoped instance (X : FintypeCat) : DiscreteTopology X := ⟨rfl⟩
 /-- The forgetful functor from finite types to topological spaces, forgetting discreteness.
 This is a scoped instance. -/
 scoped instance : HasForget₂ FintypeCat TopCat where
-  forget₂.obj X := TopCat.of X
+  forget₂.obj X := ↧X
   forget₂.map f := TopCat.ofHom ⟨f, continuous_of_discreteTopology⟩
 
 end FintypeCatDiscrete

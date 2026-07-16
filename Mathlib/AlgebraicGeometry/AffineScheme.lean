@@ -614,7 +614,7 @@ theorem basicOpen :
 
 lemma Spec_basicOpen {R : CommRingCat} (f : R) :
     IsAffineOpen (X := Spec R) (PrimeSpectrum.basicOpen f) :=
-  basicOpen_eq_of_affine f ▸ (isAffineOpen_top (Spec <| .of R)).basicOpen _
+  basicOpen_eq_of_affine f ▸ (isAffineOpen_top (Spec ↧R)).basicOpen _
 
 instance [IsAffine X] (r : Γ(X, ⊤)) : IsAffine (X.basicOpen r) :=
   (isAffineOpen_top X).basicOpen _
@@ -1247,7 +1247,7 @@ scheme-theoretic image of `f` and `f` factors as
 `specTargetImageFactorization f ≫ Spec.map (specTargetImageRingHom f)`
 (see `specTargetImageFactorization_comp`). -/
 def specTargetImage (f : X ⟶ Spec A) : CommRingCat :=
-  CommRingCat.of (A ⧸ specTargetImageIdeal f)
+  ↧(A ⧸ specTargetImageIdeal f)
 
 /-- If `f : X ⟶ Spec A` is a morphism of schemes, then `f` factors via
 the inclusion of `Spec (specTargetImage f)` into `X`. -/

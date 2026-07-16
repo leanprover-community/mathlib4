@@ -178,7 +178,7 @@ instance : HasForget₂ (TopModuleCat R) (ModuleCat R) where
 
 instance : HasForget₂ (TopModuleCat R) TopCat where
   forget₂ :=
-  { obj M := .of M
+  { obj M := ↧M
     map φ := TopCat.ofHom ⟨φ, φ.1.2⟩ }
 
 instance : (forget₂ (TopModuleCat R) TopCat).ReflectsIsomorphisms where

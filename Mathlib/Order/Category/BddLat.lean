@@ -45,6 +45,11 @@ attribute [instance] BddLat.isBoundedOrder
 abbrev of (α : Type*) [Lattice α] [BoundedOrder α] : BddLat where
   carrier := α
 
+open Lean.PrettyPrinter.Delaborator in
+/-- This prints `BddLat.of X` as `↧X`. -/
+@[app_delab BddLat.of]
+meta def delabOf : Delab := CategoryTheory.delabOf
+
 theorem coe_of (α : Type*) [Lattice α] [BoundedOrder α] : ↥(of α) = α :=
   rfl
 
@@ -111,19 +116,19 @@ lemma hom_ext {X Y : BddLat} {f g : X ⟶ Y} (hf : f.hom = g.hom) : f = g :=
   Hom.ext hf
 
 instance hasForgetToBddOrd : HasForget₂ BddLat BddOrd where
-  forget₂.obj X := .of X
+  forget₂.obj X := ↧X
   forget₂.map f := BddOrd.ofHom f.hom.toBoundedOrderHom
 
 instance hasForgetToLat : HasForget₂ BddLat Lat where
-  forget₂.obj X := .of X
+  forget₂.obj X := ↧X
   forget₂.map f := Lat.ofHom f.hom.toLatticeHom
 
 instance hasForgetToSemilatSup : HasForget₂ BddLat SemilatSupCat where
-  forget₂.obj X := .of X
+  forget₂.obj X := ↧X
   forget₂.map f := f.hom.toSupBotHom
 
 instance hasForgetToSemilatInf : HasForget₂ BddLat SemilatInfCat where
-  forget₂.obj X := .of X
+  forget₂.obj X := ↧X
   forget₂.map f := f.hom.toInfTopHom
 
 @[simp]

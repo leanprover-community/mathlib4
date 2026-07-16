@@ -44,6 +44,11 @@ attribute [coe] DistLat.carrier
 /-- Construct a bundled `DistLat` from the underlying type and typeclass. -/
 abbrev of (X : Type*) [DistribLattice X] : DistLat := ⟨X⟩
 
+open Lean.PrettyPrinter.Delaborator in
+/-- This prints `DistLat.of X` as `↧X`. -/
+@[app_delab DistLat.of]
+meta def delabOf : Delab := CategoryTheory.delabOf
+
 /-- The type of morphisms in `DistLat R`. -/
 @[ext]
 structure Hom (X Y : DistLat.{u}) where
@@ -149,7 +154,7 @@ lemma hom_inv_apply {X Y : DistLat} (e : X ≅ Y) (s : Y) : e.hom (e.inv s) = s 
   simp
 
 instance hasForgetToLat : HasForget₂ DistLat Lat where
-  forget₂.obj X := .of X
+  forget₂.obj X := ↧X
   forget₂.map f := Lat.ofHom f.hom
 
 /-- Constructs an equivalence between distributive lattices from an order isomorphism between them.

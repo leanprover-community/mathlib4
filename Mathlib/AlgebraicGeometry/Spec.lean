@@ -56,7 +56,7 @@ open Spec (structureSheaf)
 /-- The spectrum of a commutative ring, as a topological space.
 -/
 def Spec.topObj (R : CommRingCat.{u}) : TopCat :=
-  TopCat.of (PrimeSpectrum R)
+  ↧(PrimeSpectrum R)
 
 @[simp] theorem Spec.topObj_forget {R} : ToType (Spec.topObj R) = PrimeSpectrum R :=
   rfl
@@ -193,17 +193,17 @@ lemma Spec.locallyRingedSpaceObj_sheaf (R : CommRingCat.{u}) :
     (Spec.locallyRingedSpaceObj R).sheaf = structureSheaf R := rfl
 
 lemma Spec.locallyRingedSpaceObj_sheaf' (R : Type u) [CommRing R] :
-    (Spec.locallyRingedSpaceObj <| CommRingCat.of R).sheaf = structureSheaf R := rfl
+    (Spec.locallyRingedSpaceObj ↧R).sheaf = structureSheaf R := rfl
 
 lemma Spec.locallyRingedSpaceObj_presheaf_map (R : CommRingCat.{u}) {U V} (i : U ⟶ V) :
     (Spec.locallyRingedSpaceObj R).presheaf.map i =
     (structureSheaf R).1.map i := rfl
 
 lemma Spec.locallyRingedSpaceObj_presheaf' (R : Type u) [CommRing R] :
-    (Spec.locallyRingedSpaceObj <| CommRingCat.of R).presheaf = (structureSheaf R).1 := rfl
+    (Spec.locallyRingedSpaceObj ↧R).presheaf = (structureSheaf R).1 := rfl
 
 lemma Spec.locallyRingedSpaceObj_presheaf_map' (R : Type u) [CommRing R] {U V} (i : U ⟶ V) :
-    (Spec.locallyRingedSpaceObj <| CommRingCat.of R).presheaf.map i =
+    (Spec.locallyRingedSpaceObj ↧R).presheaf.map i =
     (structureSheaf R).1.map i := rfl
 
 set_option backward.isDefEq.respectTransparency.types false in

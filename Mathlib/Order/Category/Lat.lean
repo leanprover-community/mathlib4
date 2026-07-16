@@ -48,6 +48,11 @@ attribute [coe] Lat.carrier
 /-- Construct a bundled `Lat` from the underlying type and typeclass. -/
 abbrev of (X : Type*) [Lattice X] : Lat := ⟨X⟩
 
+open Lean.PrettyPrinter.Delaborator in
+/-- This prints `Lat.of X` as `↧X`. -/
+@[app_delab Lat.of]
+meta def delabOf : Delab := CategoryTheory.delabOf
+
 /-- The type of morphisms in `Lat R`. -/
 @[ext]
 structure Hom (X Y : Lat.{u}) where
@@ -150,7 +155,7 @@ lemma hom_inv_apply {X Y : Lat} (e : X ≅ Y) (s : Y) : e.hom (e.inv s) = s := b
   simp
 
 instance hasForgetToPartOrd : HasForget₂ Lat PartOrd where
-  forget₂.obj X := .of X
+  forget₂.obj X := ↧X
   forget₂.map f := PartOrd.ofHom f.hom
 
 /-- Constructs an isomorphism of lattices from an order isomorphism between them. -/

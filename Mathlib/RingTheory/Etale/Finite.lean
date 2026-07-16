@@ -117,14 +117,14 @@ functor sending `S` to `R`-algebra homomorphisms `S →ₐ[R] Ω`. -/
 @[expose, simps]
 def FiniteEtale.fiber (R : Type u) [CommRing R] (Ω : Type w) [Field Ω] [Algebra R Ω] :
     (FiniteEtale.{v} R)ᵒᵖ ⥤ FintypeCat.{max v w} where
-  obj S := .of (S.unop →ₐ[R] Ω)
+  obj S := ↧(S.unop →ₐ[R] Ω)
   map {S T} f := FintypeCat.homMk (·.comp f.unop.hom.hom)
 
 /-- If `k` is a field, this is the `Spec` functor sending a finite étale `k`-algebra `R`
 to its finite prime spectrum. -/
 @[expose, simps]
 def FiniteEtale.finiteSpec (k : Type u) [Field k] : (FiniteEtale.{v} k)ᵒᵖ ⥤ FintypeCat.{v} where
-  obj R := .of (PrimeSpectrum R.unop.obj)
+  obj R := ↧(PrimeSpectrum R.unop.obj)
   map f := FintypeCat.homMk (PrimeSpectrum.comap f.unop.hom.hom)
 
 set_option backward.defeqAttrib.useBackward true in

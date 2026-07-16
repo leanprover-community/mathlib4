@@ -40,6 +40,11 @@ initialize_simps_projections Frm (carrier → coe, -str)
 
 namespace Frm
 
+open Lean.PrettyPrinter.Delaborator in
+/-- This prints `Frm.of X` as `↧X`. -/
+@[app_delab Frm.of]
+meta def delabOf : Delab := CategoryTheory.delabOf
+
 instance : CoeSort Frm (Type _) :=
   ⟨Frm.carrier⟩
 
@@ -149,7 +154,7 @@ instance : Inhabited Frm :=
   ⟨of PUnit⟩
 
 instance hasForgetToLat : HasForget₂ Frm Lat where
-  forget₂.obj X := .of X
+  forget₂.obj X := ↧X
   forget₂.map f := Lat.ofHom f.hom
 
 /-- Constructs an isomorphism of frames from an order isomorphism between them. -/
