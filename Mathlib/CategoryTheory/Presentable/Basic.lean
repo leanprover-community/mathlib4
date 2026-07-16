@@ -342,19 +342,15 @@ section
 
 /-- A category has `κ`-filtered colimits if it has colimits of shape `J`
 for any `κ`-filtered category `J`. -/
-class HasCardinalFilteredColimits
-    (C : Type u₁) [Category.{v₁} C] (κ : Cardinal.{w}) [Fact κ.IsRegular] : Prop where
-  hasColimitsOfShape (C) (κ) (J : Type w) [SmallCategory J] [IsCardinalFiltered J κ] :
+class HasCardinalFilteredColimits (C : Type u₁) [Category.{v₁} C]
+    (κ : Cardinal.{w}) [Fact κ.IsRegular] : Prop where
+  hasColimitsOfShape (C) (J : Type w) [SmallCategory J] [IsCardinalFiltered J κ] :
     HasColimitsOfShape J C := by intros; infer_instance
 
-attribute [instance] HasCardinalFilteredColimits.hasColimitsOfShape
+instance (κ : Cardinal.{w}) [Fact κ.IsRegular] [HasColimitsOfSize.{w, w} C] :
+    HasCardinalFilteredColimits.{w} C κ where
 
-variable (C) (κ : Cardinal.{w}) [Fact κ.IsRegular]
-
-instance [HasColimitsOfSize.{w, w} C] : HasCardinalFilteredColimits.{w} C κ where
-
-variable {κ} in
-lemma HasCardinalFilteredColimits.of_le
+lemma HasCardinalFilteredColimits.of_le {κ : Cardinal.{w}} [Fact κ.IsRegular]
     [HasCardinalFilteredColimits C κ] {κ' : Cardinal.{w}} [Fact κ'.IsRegular] (h : κ ≤ κ') :
     HasCardinalFilteredColimits C κ' where
   hasColimitsOfShape J _ _ := by

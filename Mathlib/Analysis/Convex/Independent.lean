@@ -87,6 +87,7 @@ protected theorem ConvexIndependent.subtype {p : ι → E} (hc : ConvexIndepende
     ConvexIndependent 𝕜 fun i : s => p i :=
   hc.comp_embedding (Embedding.subtype _)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If an indexed family of points is convex independent, so is the corresponding set of points. -/
 protected theorem ConvexIndependent.range {p : ι → E} (hc : ConvexIndependent 𝕜 p) :
     ConvexIndependent 𝕜 ((↑) : Set.range p → E) := by

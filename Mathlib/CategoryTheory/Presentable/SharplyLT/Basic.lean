@@ -144,7 +144,7 @@ lemma hφ₀ (B : Set X) (hB : HasCardinalLT B κ₂) {T : Type w} (f : T → B)
   exact ⟨⟨m B hB C hC, Set.subset_iUnion _ ⟨C, hC⟩ (Or.inr (by simp))⟩,
     fun t ↦ hm B hB C hC (f t) (hC' (by simp [C₀]))⟩
 
-open Classical in
+open scoped Classical in
 /-- This coincides with `φ₀` when `HasCardinalLT B κ₂` holds. -/
 def φ (B : Set X) : Set X :=
   if hB : HasCardinalLT B κ₂ then φ₀ Y m B hB else B
@@ -175,7 +175,7 @@ lemma hasCardinalLT_transfiniteIterate_φ (j : κ₁.ord.ToType) :
   induction j using SuccOrder.limitRecOn with
   | isMin j hj =>
     have := Cardinal.nonempty_ord_toType (c := κ₁) (IsRegular.ne_zero Fact.out)
-    letI := WellFoundedLT.toOrderBot κ₁.ord.ToType
+    let := WellFoundedLT.toOrderBot κ₁.ord.ToType
     simpa [hj.eq_bot]
   | succ j hj hj' =>
     have hκ₂ : κ₂.IsRegular := Fact.out
@@ -205,7 +205,7 @@ lemma monotone_transfiniteIterate_φ :
 omit [PartialOrder X] [Fact κ₂.IsRegular] in
 lemma subset_iUnion : A ⊆ ⋃ (j : κ₁.ord.ToType), transfiniteIterate (φ Y m) j A := by
   have := Cardinal.nonempty_ord_toType (c := κ₁) (IsRegular.ne_zero Fact.out)
-  letI := WellFoundedLT.toOrderBot κ₁.ord.ToType
+  let := WellFoundedLT.toOrderBot κ₁.ord.ToType
   exact subset_trans (by simp) (Set.subset_iUnion _ ⊥)
 
 include h₀ hY hY' hm hA in
@@ -284,9 +284,11 @@ variable (κ₁ κ₂) {C : Type u} [Category.{v} C] {X : C}
 
 variable [IsCardinalAccessibleCategory C κ₁]
 
+set_option backward.isDefEq.respectTransparency false in
 instance (A : Subtype (IsCardinalFilteredAndHasCardinalLT κ₁ κ₂ J)) :
     HasColimit ((Subtype.mono_coe A.val).functor ⋙ p.diag) := by
   have : IsCardinalFiltered (Subtype A.val) κ₁ := A.prop.1
+  have := HasCardinalFilteredColimits.hasColimitsOfShape  C κ₁
   infer_instance
 
 /-- The singleton `{j}`, as a term in
@@ -310,16 +312,19 @@ abbrev pair {j j' : J} (h : j ≤ j') :
     apply isCardinalFiltered_of_hasTerminal,
     hasCardinalLT_of_finite _ _ (IsRegular.aleph0_le Fact.out)⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma le_pair {j j' : J} (h : j ≤ j') :
     singleton κ₁ κ₂ j ≤ pair κ₁ κ₂ h := by
   rw [Subtype.mk_le_mk]
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 lemma le_pair' {j j' : J} (h : j ≤ j') :
     singleton κ₁ κ₂ j' ≤ pair κ₁ κ₂ h := by
   rw [Subtype.mk_le_mk]
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a presentation `p` of `X : C` as a colimit indexed by a partially
 ordered type `J` of `κ₁`-presentable objects and `A` a subset of `J`
 that is `κ₁`-directed and of cardinality `< κ₂`, this is
@@ -328,12 +333,14 @@ noncomputable abbrev colimit
     (A : Subtype (IsCardinalFilteredAndHasCardinalLT κ₁ κ₂ J)) : C :=
     Limits.colimit ((Subtype.mono_coe A.val).functor ⋙ p.diag)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The inclusions in `colimit`. -/
 noncomputable abbrev colimit.ι
     (A : Subtype (IsCardinalFilteredAndHasCardinalLT κ₁ κ₂ J)) (a : J) (ha : a ∈ A.val) :
     p.diag.obj a ⟶ colimit κ₁ κ₂ p A :=
   Limits.colimit.ι ((Subtype.mono_coe A.val).functor ⋙ p.diag) ⟨a, ha⟩
 
+set_option backward.isDefEq.respectTransparency false in
 omit [Fact κ₂.IsRegular] in
 @[reassoc (attr := simp)]
 lemma colimit.w (A : Subtype (IsCardinalFilteredAndHasCardinalLT κ₁ κ₂ J))
@@ -342,6 +349,7 @@ lemma colimit.w (A : Subtype (IsCardinalFilteredAndHasCardinalLT κ₁ κ₂ J))
   Limits.colimit.w ((Subtype.mono_coe A.val).functor ⋙ p.diag)
     (j := ⟨a, ha⟩) (j' := ⟨b, hb⟩) (homOfLE hab)
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The functoriality of `colimit` with respect to the subset `A`. -/
 noncomputable def colimit.map
@@ -352,6 +360,7 @@ noncomputable def colimit.map
       naturality j₁ j₂ f := by
         simpa using! colimit.w κ₁ κ₂ p A₂ (leOfHom f) (hA j₁.prop) (hA j₂.prop) })
 
+set_option backward.isDefEq.respectTransparency false in
 omit [Fact κ₂.IsRegular] in
 @[reassoc (attr := simp)]
 lemma colimit.ι_map {A₁ A₂ : Subtype (IsCardinalFilteredAndHasCardinalLT κ₁ κ₂ J)}
@@ -359,6 +368,7 @@ lemma colimit.ι_map {A₁ A₂ : Subtype (IsCardinalFilteredAndHasCardinalLT κ
     colimit.ι κ₁ κ₂ p A₁ j hj ≫ colimit.map κ₁ κ₂ p hA = colimit.ι κ₁ κ₂ p A₂ j (hA hj) :=
   colimit.ι_desc ..
 
+set_option backward.isDefEq.respectTransparency false in
 omit [Fact κ₂.IsRegular] in
 @[ext]
 lemma colimit.hom_ext
@@ -370,15 +380,15 @@ lemma colimit.hom_ext
   ext
   apply h
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
 /-- As `X` is the colimit of a diagram `p.diag`, this is the induced morphism
 `colimit κ₁ κ₂ p A ⟶ X` from the colimit of the restriction of this diagram to `A`. -/
 noncomputable def colimit.π
     (A : Subtype (IsCardinalFilteredAndHasCardinalLT κ₁ κ₂ J)) : colimit κ₁ κ₂ p A ⟶ X :=
-  colimit.desc _ (Cocone.mk _
-    { app a := by exact p.ι.app a
-      naturality _ _ _ := by simpa using p.ι.naturality _ })
+  colimit.desc _ (Cocone.mk _ { app a := by exact p.ι.app a })
 
+set_option backward.isDefEq.respectTransparency false in
 omit [Fact κ₂.IsRegular] in
 @[reassoc (attr := simp)]
 lemma colimit.ι_π
@@ -416,6 +426,7 @@ namespace isColimit
 
 variable {κ₁ κ₂ p} (s : Cocone (functor κ₁ κ₂ p))
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Auxiliary definition for `isColimit`. -/
 @[simps]
@@ -437,6 +448,7 @@ lemma fac (j : J) :
       colimit.ι _ _ _ _ _ (by simp) ≫ s.ι.app (singleton κ₁ κ₂ j) :=
   p.isColimit.fac (coconeDesc s) j
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma fac' (A : Subtype (IsCardinalFilteredAndHasCardinalLT κ₁ κ₂ J)) :
@@ -450,6 +462,7 @@ lemma fac' (A : Subtype (IsCardinalFilteredAndHasCardinalLT κ₁ κ₂ J)) :
 end isColimit
 
 open isColimit in
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Given a presentation `p` of `X : C` as a colimit indexed by a partially
 ordered type `J` of `κ₁`-presentable objects, `X` is also the colimit
@@ -491,6 +504,7 @@ lemma generator_le_isCardinalPresentable [LocallySmall.{w} C] :
     (fun _ _ hJ ↦ isClosedUnderColimitsOfShape_isCardinalPresentable C hJ)
     (isCardinalPresentable_monotone _ hκ.le)
 
+set_option backward.isDefEq.respectTransparency false in
 open IsCardinalFilteredAndHasCardinalLT in
 include hκ hκ' in
 /-- This is part of the proof of the implication (iv) → (ii) in the
@@ -530,7 +544,7 @@ instead of the condition (iv). -/
 lemma isCardinalAccessibleCategory'
     (C : Type u) [Category.{v} C] [IsCardinalAccessibleCategory C κ₁] :
     IsCardinalAccessibleCategory C κ₂ where
-  toHasCardinalFilteredColimits := .of_le C hκ.le
+  toHasCardinalFilteredColimits := .of_le hκ.le
   exists_generator := ⟨_, inferInstance, isCardinalFilteredGenerator' hκ hκ' C⟩
 
 end
@@ -584,7 +598,7 @@ public lemma isCardinalFilteredGenerator (h : SharplyLT κ₁ κ₂)
 public lemma isCardinalAccessibleCategory (h : SharplyLT κ₁ κ₂)
     (C : Type u) [Category.{v} C] [IsCardinalAccessibleCategory C κ₁] :
     IsCardinalAccessibleCategory C κ₂ where
-  toHasCardinalFilteredColimits := .of_le C h.le
+  toHasCardinalFilteredColimits := .of_le h.le
   exists_generator := ⟨_, inferInstance, h.isCardinalFilteredGenerator C⟩
 
 public lemma trans (h₁₂ : SharplyLT κ₁ κ₂) {κ₃ : Cardinal.{w}} [Fact κ₃.IsRegular]

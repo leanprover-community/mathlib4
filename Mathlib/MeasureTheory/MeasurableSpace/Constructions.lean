@@ -279,6 +279,11 @@ theorem measurable_of_measurable_on_compl_finite [MeasurableSingletonClass α] {
   have := hs.to_subtype
   measurable_of_restrict_of_restrict_compl hs.measurableSet (measurable_of_finite _) hf
 
+theorem measurable_of_measurable_on_compl_countable [MeasurableSingletonClass α] {f : α → β}
+    (s : Set α) (hs : s.Countable) (hf : Measurable (sᶜ.restrict f)) : Measurable f :=
+  have := hs.to_subtype
+  measurable_of_restrict_of_restrict_compl hs.measurableSet (measurable_of_countable _) hf
+
 theorem measurable_of_measurable_on_compl_singleton [MeasurableSingletonClass α] {f : α → β} (a : α)
     (hf : Measurable ({ x | x ≠ a }.restrict f)) : Measurable f :=
   measurable_of_measurable_on_compl_finite {a} (finite_singleton a) hf
@@ -363,7 +368,7 @@ end Atoms
 section Prod
 
 /-- A `MeasurableSpace` structure on the product of two measurable spaces. -/
-@[implicit_reducible]
+@[instance_reducible]
 def MeasurableSpace.prod {α β} (m₁ : MeasurableSpace α) (m₂ : MeasurableSpace β) :
     MeasurableSpace (α × β) :=
   m₁.comap Prod.fst ⊔ m₂.comap Prod.snd
@@ -767,6 +772,7 @@ theorem measurable_tProd_mk (l : List δ) : Measurable (@TProd.mk δ X l) := by
   | nil => exact measurable_const
   | cons i l ih => exact (measurable_pi_apply i).prodMk ih
 
+set_option backward.isDefEq.respectTransparency false in
 theorem measurable_tProd_elim [DecidableEq δ] :
     ∀ {l : List δ} {i : δ} (hi : i ∈ l), Measurable fun v : TProd X l => v.elim hi
   | i::is, j, hj => by

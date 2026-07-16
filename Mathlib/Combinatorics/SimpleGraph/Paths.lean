@@ -990,7 +990,7 @@ alias map_isTrail_iff_of_injective := isTrail_map_iff_of_injective
 
 alias ⟨_, IsTrail.map⟩ := isTrail_map_iff_of_injective
 
-@[deprecated (since := "2026-06-16")] alias isTrmap_ail_of_injective := IsTrail.map
+@[deprecated (since := "2026-06-16")] alias map_isTrail_of_injective := IsTrail.map
 
 protected theorem IsPath.of_map (hp : (p.map f).IsPath) : p.IsPath := by
   rw [isPath_def]
@@ -1006,7 +1006,7 @@ alias map_isPath_iff_of_injective := isPath_map_iff_of_injective
 
 alias ⟨_, IsPath.map⟩ := isPath_map_iff_of_injective
 
-@[deprecated (since := "2026-06-16")] alias isPmap_ath_of_injective := IsPath.map
+@[deprecated (since := "2026-06-16")] alias map_isPath_of_injective := IsPath.map
 
 protected theorem IsCircuit.of_map {p : G.Walk u u} (hp : (p.map f).IsCircuit) : p.IsCircuit := by
   rw [isCircuit_def, ne_eq, eq_nil_iff_nil]
@@ -1105,6 +1105,7 @@ namespace Walk
 variable {G} {u v : V} {H : SimpleGraph V}
 variable {p : G.Walk u v}
 
+set_option backward.isDefEq.respectTransparency.types false in
 protected theorem IsPath.transfer (hp) (pp : p.IsPath) :
     (p.transfer H hp).IsPath := by
   induction p with
@@ -1113,6 +1114,7 @@ protected theorem IsPath.transfer (hp) (pp : p.IsPath) :
     simp only [Walk.transfer, cons_isPath_iff, support_transfer _] at pp ⊢
     exact ⟨ih _ pp.1, pp.2⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 protected theorem IsCycle.transfer {q : G.Walk u u} (qc : q.IsCycle) (hq) :
     (q.transfer H hq).IsCycle := by
   cases q with

@@ -221,6 +221,19 @@ protected theorem HasFPowerSeriesOnBall.fderiv [CompleteSpace F]
   rw [← h.fderiv_eq, add_sub_cancel]
   simpa only [edist_eq_enorm_sub, Metric.mem_eball] using! hz
 
+protected theorem FormalMultilinearSeries.fderiv_sum [CompleteSpace F] (h : ‖x‖ₑ < p.radius) :
+    fderiv 𝕜 p.sum x = p.derivSeries.sum x := by
+  have h := p.hasFPowerSeriesOnBall (zero_le.trans_lt h) |>.fderiv.hasSum
+    (show x ∈ Metric.eball 0 p.radius by simpa using h) |>.tsum_eq
+  rw [zero_add] at h
+  rw [← h, FormalMultilinearSeries.sum]
+
+protected theorem FormalMultilinearSeries.hasFDerivAt_sum [CompleteSpace F] (h : ‖x‖ₑ < p.radius) :
+    HasFDerivAt p.sum (p.derivSeries.sum x) x := by
+  rw [← FormalMultilinearSeries.fderiv_sum h]
+  exact p.hasFPowerSeriesOnBall (zero_le.trans_lt h)
+    |>.analyticAt_of_mem (by simpa using h) |>.differentiableAt.hasFDerivAt
+
 /-- If a function has a power series within a set on a ball, then so does its derivative. -/
 protected theorem HasFPowerSeriesWithinOnBall.fderivWithin [CompleteSpace F]
     (h : HasFPowerSeriesWithinOnBall f p s x r) (hu : UniqueDiffOn 𝕜 (insert x s)) :
@@ -722,6 +735,7 @@ private lemma _root_.Equiv.succ_embeddingFinSucc_fst_symm_apply {ι : Type*} [De
   simp_rw [this]
   simp [-Equiv.embeddingFinSucc_fst]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A continuous multilinear function `f` admits a Taylor series, whose successive terms are given
 by `f.iteratedFDeriv n`. This is the point of the definition of `f.iteratedFDeriv`. -/
 theorem hasFTaylorSeriesUpTo_iteratedFDeriv :
