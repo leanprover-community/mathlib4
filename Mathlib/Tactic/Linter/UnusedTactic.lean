@@ -149,27 +149,25 @@ def getNames (mctx : MetavarContext) : List Name :=
 changed something. -/
 partial def eraseUsedTactics (exceptions : Std.HashSet SyntaxNodeKind)
     (trees : PersistentArray InfoTree) : M Unit :=
-  let infos := trees.foldl (init := #[]) <|
-    InfoTree.foldInfo fun _ info infos => match info with
-      | .ofTacticInfo info => infos.push info
-      | _ => infos
-  for i in infos do
+  let ranges := trees.foldl (init := #[]) <| InfoTree.foldInfo fun _ i ranges => Id.run do
+    let .ofTacticInfo i := i | return ranges
     let stx := i.stx
     let kind := stx.getKind
-    let some r := stx.getRange? true | pure ()
-    if exceptions.contains kind
+    let some r := stx.getRange? true | return ranges
+    if exceptions.contains kind then
     -- if the tactic is allowed to not change the goals
-    then modify (·.erase r)
-    else
+      return ranges.push r
     -- if the goals have changed
-    if i.goalsAfter != i.goalsBefore
-    then modify (·.erase r)
+    if i.goalsAfter != i.goalsBefore then
+      return ranges.push r
     -- bespoke check for `swap_var`: the only change that it does is
     -- in the usernames of local declarations, so we check the names before and after
-    else
     if (kind == `Mathlib.Tactic.«tacticSwap_var__,,») &&
-            (getNames i.mctxBefore != getNames i.mctxAfter)
-    then modify (·.erase r)
+            (getNames i.mctxBefore != getNames i.mctxAfter) then
+      return ranges.push r
+    return ranges
+  for r in ranges do
+    modify (·.erase r)
 
 /-- The main entry point to the unused tactic linter. -/
 def unusedTacticLinter : Linter where run := withSetOptionIn fun stx => do
