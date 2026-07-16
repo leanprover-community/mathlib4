@@ -150,43 +150,4 @@ theorem IsUniform.finite_block {d : IncidenceSystem α β}
     (d.block b).Finite := by
   grind [Set.finite_of_ncard_ne_zero]
 
---------------------------------------------- CUT
-
--- todo: find better letter for `Λ`
-@[mk_iff]
-structure IsBalanced (d : IncidenceSystem α β) (t Λ : ℕ) where
-  balanced (s : Set α) (hs : s ⊆ d.carrier) (hs : s.ncard = t) :
-    {b ∈ d.blockSet | s ⊆ d.block b}.ncard = Λ
-
-@[mk_iff]
-structure IsDesign (d : IncidenceSystem α β) (t n k Λ : ℕ) extends
-    d.IsUniform k, d.IsBalanced t Λ where
-  card_carrier : d.carrier.ncard = n
-
-attribute [grind .] IsDesign.card_carrier
-
-theorem IsDesign.nonempty {d : IncidenceSystem α β}
-    {t n k Λ : ℕ} (hd : d.IsDesign t n k Λ) (hk : n ≠ 0) :
-    d.carrier.Nonempty := by
-  grind [Set.nonempty_of_ncard_ne_zero]
-
-theorem IsDesign.finite {d : IncidenceSystem α β}
-    {t n k Λ : ℕ} (hd : d.IsDesign t n k Λ) (hk : n ≠ 0) :
-    d.carrier.Finite := by
-  grind [Set.finite_of_ncard_ne_zero]
-
-def IsSteiner (d : IncidenceSystem α β) (t k n : ℕ) := d.IsDesign t n k 1
-
--- PRed
-theorem _root_.Set.subsingleton_of_ncard_eq_one {s : Set α} (hs : s.ncard = 1) : s.Subsingleton := by
-  have : Finite s := Set.finite_of_ncard_pos (by grind)
-  rw [← Set.ncard_le_one_iff_subsingleton, hs]
-
-theorem IsSteiner.isSimple {d : IncidenceSystem α β} {t k n : ℕ} (hd : d.IsSteiner t k n)
-    (htk : t ≤ k) : d.IsSimple where
-  injOn b₁ hb₁ b₂ hb₂ h := by
-    obtain ⟨s, hs, hst⟩ := Set.exists_subset_card_eq (htk.trans (hd.uniform hb₁).ge)
-    exact Set.subsingleton_of_ncard_eq_one
-      (hd.balanced s (hs.trans (d.block_subset hb₁)) hst) ⟨hb₁, hs⟩ ⟨hb₂, hs.trans_eq h⟩
-
 end IncidenceSystem
