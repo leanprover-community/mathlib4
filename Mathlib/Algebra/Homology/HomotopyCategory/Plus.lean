@@ -280,7 +280,7 @@ noncomputable instance :
 
 set_option backward.isDefEq.respectTransparency false in
 instance [HasZeroObject C] [HasBinaryBiproducts C] [HasZeroObject D] [HasBinaryBiproducts D] :
-    (F.mapHomotopyCategoryPlus).IsTriangulated := by
+    F.mapHomotopyCategoryPlus.IsTriangulated := by
   dsimp only [mapHomotopyCategoryPlus]
   infer_instance
 

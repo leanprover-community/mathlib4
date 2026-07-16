@@ -196,7 +196,7 @@ theorem AbsConvex.closure {s : Set E} (hs : AbsConvex 𝕜 s) : AbsConvex 𝕜 (
 
 theorem closedAbsConvexHull_eq_closure_absConvexHull {s : Set E} :
     closedAbsConvexHull 𝕜 s = closure (absConvexHull 𝕜 s) := subset_antisymm
-  (closedAbsConvexHull_min (subset_trans (subset_absConvexHull) subset_closure)
+  (closedAbsConvexHull_min (subset_trans subset_absConvexHull subset_closure)
     (AbsConvex.closure absConvex_absConvexHull) isClosed_closure)
   (closure_minimal absConvexHull_subset_closedAbsConvexHull isClosed_closedAbsConvexHull)
 

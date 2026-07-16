@@ -214,7 +214,7 @@ theorem not_differentiableWithinAt_of_deriv_tendsto_atTop_Ioi (f : ℝ → ℝ) 
           exact hcont_at_a.mono Icc_subset_Ici_self
         · exact hcont_Ioc z ⟨lt_of_le_of_ne hz.1 (Ne.symm hz'), hz.2⟩
       obtain ⟨x, hx₁, hx₂⟩ :=
-        exists_deriv_eq_slope' f hab hcont (hdiff'.mono (Ioo_subset_Ioc_self))
+        exists_deriv_eq_slope' f hab hcont (hdiff'.mono Ioo_subset_Ioc_self)
       specialize hb x ⟨hx₁.1, le_of_lt hx₁.2⟩
       replace hx₂ : derivWithin f (Ioi a) x = slope f a b := by
         have : Ioi a ∈ 𝓝 x := by simp [← mem_interior_iff_mem_nhds, hx₁.1]

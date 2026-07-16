@@ -534,7 +534,7 @@ lemma smul_mem_trW_iff {X Y : C} (f : X ⟶ Y) (n : ℤˣ) :
 variable {P} in
 lemma trW.shift [P.IsStableUnderShift ℤ]
     {X₁ X₂ : C} {f : X₁ ⟶ X₂} (hf : P.trW f) (n : ℤ) : P.trW (f⟦n⟧') := by
-  rw [← smul_mem_trW_iff _ _ (n.negOnePow)]
+  rw [← smul_mem_trW_iff _ _ n.negOnePow]
   obtain ⟨X₃, g, h, hT, mem⟩ := hf
   exact ⟨_, _, _, Pretriangulated.Triangle.shift_distinguished _ hT n, P.le_shift _ _ mem⟩
 

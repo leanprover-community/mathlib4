@@ -88,7 +88,7 @@ theorem ninePointCircle_restrict {n : ℕ} (s : Simplex ℝ P n) (S : AffineSubs
     haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
     (s.restrict S hS).ninePointCircle =
     { center := ⟨s.ninePointCircle.center,
-      Set.mem_of_mem_of_subset (s.ninePointCircle_center_mem_affineSpan) hS⟩,
+      Set.mem_of_mem_of_subset s.ninePointCircle_center_mem_affineSpan hS⟩,
       radius := s.ninePointCircle.radius } := by
   ext
   · simp [ninePointCircle_center, centroid_restrict]
@@ -224,7 +224,7 @@ theorem altitudeFoot_mem_ninePointCircle (s : Triangle ℝ P) (i : Fin 3) :
     Simplex.points_vsub_eulerPoint, Submodule.smul_mem_iff _ (by norm_num),
     ← orthocenter_eq_mongePoint, direction_affineSpan, Simplex.range_faceOpposite_points]
   refine Set.mem_of_mem_of_subset ?_ (s.vectorSpan_isOrtho_altitude_direction i).ge
-  exact vsub_mem_direction (s.mem_altitude i) (s.orthocenter_mem_altitude)
+  exact vsub_mem_direction (s.mem_altitude i) s.orthocenter_mem_altitude
 
 end Affine.Triangle
 

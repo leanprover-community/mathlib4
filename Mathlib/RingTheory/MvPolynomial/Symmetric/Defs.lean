@@ -241,7 +241,7 @@ theorem rename_esymm (n : ℕ) (e : σ ≃ τ) : rename e (esymm σ R n) = esymm
     rename e (esymm σ R n) = ∑ x ∈ powersetCard n univ, ∏ i ∈ x, X (e i) := by
       simp_rw [esymm, map_sum, map_prod, rename_X]
     _ = ∑ t ∈ powersetCard n (univ.map e.toEmbedding), ∏ i ∈ t, X i := by
-      simp [powersetCard_map, -map_univ_equiv, (mapEmbedding_apply)]
+      simp [powersetCard_map, -map_univ_equiv, mapEmbedding_apply]
     _ = ∑ t ∈ powersetCard n univ, ∏ i ∈ t, X i := by rw [map_univ_equiv]
 
 theorem esymm_isSymmetric (n : ℕ) : IsSymmetric (esymm σ R n) := by

@@ -72,7 +72,7 @@ def finAntidiagonal.aux (d : ℕ) (n : μ) : {s : Finset (Fin d → μ) // ∀ f
   | d + 1 =>
     { val := (antidiagonal n).disjiUnion
         (fun ab => (aux d ab.2).1.map {
-            toFun := Fin.cons (ab.1)
+            toFun := Fin.cons ab.1
             inj' := Fin.cons_right_injective _ })
         (fun i _hi j _hj hij => Finset.disjoint_left.2 fun t hti htj => hij <| by
           simp_rw [Finset.mem_map, Embedding.coeFn_mk] at hti htj

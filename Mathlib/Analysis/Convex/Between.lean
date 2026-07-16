@@ -739,7 +739,7 @@ variable [CommRing R] [PartialOrder R] [IsStrictOrderedRing R]
 variable {R}
 
 theorem Wbtw.sameRay_vsub {x y z : P} (h : Wbtw R x y z) : SameRay R (y -ᵥ x) (z -ᵥ y) := by
-  simpa using sameRay_of_mem_segment ((mem_segment_iff_wbtw).2 (h.vsub_const x))
+  simpa using sameRay_of_mem_segment (mem_segment_iff_wbtw.2 (h.vsub_const x))
 
 theorem Wbtw.sameRay_vsub_left {x y z : P} (h : Wbtw R x y z) : SameRay R (y -ᵥ x) (z -ᵥ x) := by
   rcases h with ⟨t, ⟨ht0, _⟩, rfl⟩

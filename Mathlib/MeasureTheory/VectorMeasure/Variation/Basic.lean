@@ -293,7 +293,7 @@ variable [NormedAddCommGroup V] {μ ν : VectorMeasure X V}
 
 theorem norm_measure_le_variation {E : Set X} (hE : μ.variation E ≠ ∞ := by finiteness) :
     ‖μ E‖ ≤ μ.variation.real E := by
-  rw [measureReal_def, ← toReal_enorm, ENNReal.toReal_le_toReal (enorm_ne_top) hE]
+  rw [measureReal_def, ← toReal_enorm, ENNReal.toReal_le_toReal enorm_ne_top hE]
   exact enorm_measure_le_variation μ E
 
 variable (μ) in

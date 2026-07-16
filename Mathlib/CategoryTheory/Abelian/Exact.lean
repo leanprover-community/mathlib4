@@ -305,7 +305,7 @@ lemma preservesHomology_of_preservesMonos_and_cokernels [PreservesZeroMorphisms 
         rw [Category.id_comp, ← L.map_comp, cokernel.π_desc] }
   apply (ShortComplex.exact_iff_of_epi_of_isIso_of_mono φ).1
   apply ShortComplex.exact_of_g_is_cokernel
-  exact CokernelCofork.mapIsColimit _ ((S.exact_iff_exact_coimage_π).1 hS).gIsCokernel L
+  exact CokernelCofork.mapIsColimit _ (S.exact_iff_exact_coimage_π.1 hS).gIsCokernel L
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
@@ -324,7 +324,7 @@ lemma preservesHomology_of_preservesEpis_and_kernels [PreservesZeroMorphisms L]
         rw [Category.comp_id, ← L.map_comp, kernel.lift_ι] }
   apply (ShortComplex.exact_iff_of_epi_of_isIso_of_mono φ).2
   apply ShortComplex.exact_of_f_is_kernel
-  exact KernelFork.mapIsLimit _ ((S.exact_iff_exact_image_ι).1 hS).fIsKernel L
+  exact KernelFork.mapIsLimit _ (S.exact_iff_exact_image_ι.1 hS).fIsKernel L
 
 end
 

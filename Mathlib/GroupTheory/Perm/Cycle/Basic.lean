@@ -642,7 +642,7 @@ theorem IsCycle.isConj (hσ : IsCycle σ) (hτ : IsCycle τ) (h : #σ.support = 
 theorem IsCycle.isConj_iff (hσ : IsCycle σ) (hτ : IsCycle τ) :
     IsConj σ τ ↔ #σ.support = #τ.support where
   mp h := by
-    obtain ⟨π, rfl⟩ := (_root_.isConj_iff).1 h
+    obtain ⟨π, rfl⟩ := _root_.isConj_iff.1 h
     exact card_support_conj.symm
   mpr := hσ.isConj hτ
 

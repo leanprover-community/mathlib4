@@ -307,7 +307,7 @@ def compactNhdsMkOfOpens {K : Compacts α} (L : Compacts α) (U : Opens α)
     K.compactNhds :=
   ⟨L, fun _ ↦ Filter.mem_of_superset (IsOpen.mem_nhds U.is_open' (h1 (Subtype.coe_prop _))) h2⟩
 
-instance [T2Space α] (K : Compacts α) : SemilatticeInf (K.compactNhds) where
+instance [T2Space α] (K : Compacts α) : SemilatticeInf K.compactNhds where
   inf L M := ⟨L.1 ⊓ M.1, fun x ↦ Filter.inter_mem_iff.2 ⟨L.2 x, M.2 x⟩⟩
   inf_le_right _ _ := Subtype.coe_le_coe.mp inf_le_right
   inf_le_left _ _:= Subtype.coe_le_coe.mp inf_le_left
@@ -380,13 +380,13 @@ def compactsInside (U : Opens α) : Set (Compacts α) := {K | (K : Set α) ⊆ U
 
 /-- For `K` a compact subset insde an open subset `U`, `U` has a structure of open neighbourhood
 of `K` -/
-def openNhdsOfCompactsInside {U : Opens α} (K : U.compactsInside) : (K.val).openNhds :=
+def openNhdsOfCompactsInside {U : Opens α} (K : U.compactsInside) : K.val.openNhds :=
   ⟨U, K.property⟩
 
 end Opens
 
 /-- For `U` an open neighbourhood of `K`, `K` has a structure of compact insde `U` -/
-def Compacts.compactsInsideOfOpenNhds {K : Compacts α} (U : K.openNhds) : (U.val).compactsInside :=
+def Compacts.compactsInsideOfOpenNhds {K : Compacts α} (U : K.openNhds) : U.val.compactsInside :=
   ⟨K, U.property⟩
 
 /-! ### Nonempty compact sets -/

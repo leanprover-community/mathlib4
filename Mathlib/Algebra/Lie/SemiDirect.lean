@@ -64,7 +64,7 @@ def toProd : K ⋊⁅ψ⁆ L ≃ K × L where
   left_inv _ := rfl
   right_inv _ := rfl
 
-@[simp] lemma toProd_apply (x : K ⋊⁅ψ⁆ L) : toProd (x) = ⟨x.left, x.right⟩ := rfl
+@[simp] lemma toProd_apply (x : K ⋊⁅ψ⁆ L) : toProd x = ⟨x.left, x.right⟩ := rfl
 
 instance : AddCommGroup (K ⋊⁅ψ⁆ L) := toProd.addCommGroup
 

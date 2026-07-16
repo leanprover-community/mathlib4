@@ -145,7 +145,7 @@ theorem cRk_restrict (M : Matroid α) (X Y : Set α) : (M ↾ X).cRk Y = M.cRk (
     inter_comm]
 
 theorem Indep.cRk_eq_cardinalMk (hI : M.Indep I) : #I = M.cRk I :=
-  (M.cRk_le_cardinalMk I).antisymm' (hI.isBasis_self.cardinalMk_le_cRk)
+  (M.cRk_le_cardinalMk I).antisymm' hI.isBasis_self.cardinalMk_le_cRk
 
 @[simp] theorem cRk_map_image_lift (M : Matroid α) (hf : InjOn f M.E) (X : Set α)
     (hX : X ⊆ M.E := by aesop_mat) : lift.{u, v} ((M.map f hf).cRk (f '' X)) = lift (M.cRk X) := by
@@ -277,7 +277,7 @@ theorem cRk_closure_congr (hXY : M.closure X = M.closure Y) : M.cRk X = M.cRk Y 
 
 theorem Spanning.cRank_le_cardinalMk (h : M.Spanning X) : M.cRank ≤ #X :=
   have ⟨_B, hB, hBX⟩ := h.exists_isBase_subset
-  (hB.cardinalMk_eq_cRank).symm.trans_le (mk_le_mk_of_subset hBX)
+  hB.cardinalMk_eq_cRank.symm.trans_le (mk_le_mk_of_subset hBX)
 
 variable (M : Matroid α) [InvariantCardinalRank M] (e : α) (X Y : Set α)
 

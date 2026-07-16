@@ -1407,10 +1407,10 @@ variable [LinearOrder ι] {μ : Measure Ω} {ℱ : Filtration ι m} {τ σ : Ω 
 
 theorem condExp_stopping_time_ae_eq_restrict_eq_of_countable_range [SigmaFiniteFiltration μ ℱ]
     (hτ : IsStoppingTime ℱ τ) (h_countable : (Set.range τ).Countable)
-    [SigmaFinite (μ.trim (hτ.measurableSpace_le))] (i : ι) :
+    [SigmaFinite (μ.trim hτ.measurableSpace_le)] (i : ι) :
     μ[f | hτ.measurableSpace] =ᵐ[μ.restrict {x | τ x = i}] μ[f | ℱ i] := by
   refine condExp_ae_eq_restrict_of_measurableSpace_eq_on
-    (hτ.measurableSpace_le) (ℱ.le i)
+    hτ.measurableSpace_le (ℱ.le i)
     (hτ.measurableSet_eq_of_countable_range' h_countable i) fun t => ?_
   rw [Set.inter_comm _ t, IsStoppingTime.measurableSet_inter_eq_iff]
 

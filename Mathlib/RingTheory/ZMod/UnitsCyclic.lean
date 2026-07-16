@@ -75,7 +75,7 @@ theorem isCyclic_units_four :
 /-- The multiplicative group of `ZMod p` is cyclic. -/
 theorem isCyclic_units_prime {p : ℕ} (hp : p.Prime) :
     IsCyclic (ZMod p)ˣ :=
-  have : Fact (p.Prime) := ⟨hp⟩
+  have : Fact p.Prime := ⟨hp⟩
   inferInstance
 
 theorem not_isCyclic_units_eight :
@@ -335,7 +335,7 @@ theorem isCyclic_units_iff (n : ℕ) :
   by_cases h4 : n = 4
   · rw [h4]; simp [isCyclic_units_four]
   simp only [h0, h1, h2, h4, false_or, and_or_left, exists_or]
-  rcases (n.even_or_odd).symm with hn | hn
+  rcases n.even_or_odd.symm with hn | hn
   · rw [isCyclic_units_iff_of_odd hn, or_iff_left]
     · congr! with p m
       rw [and_iff_right_of_imp]
@@ -346,7 +346,7 @@ theorem isCyclic_units_iff (n : ℕ) :
     · rintro ⟨p, m, -, -, -, rfl⟩
       simp [← Nat.not_even_iff_odd] at hn
   obtain ⟨n, rfl⟩ := hn.two_dvd
-  rcases (n.even_or_odd).symm with hn | hn
+  rcases n.even_or_odd.symm with hn | hn
   · rw [isCyclic_units_two_mul_iff_of_odd _ hn, isCyclic_units_iff_of_odd hn, or_iff_right]
     · congr! with p m
       rw [Nat.mul_left_cancel_iff zero_lt_two, and_iff_right_of_imp]

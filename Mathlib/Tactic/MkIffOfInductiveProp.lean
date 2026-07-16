@@ -139,7 +139,7 @@ while proving the iff theorem, and a proposition representing the constructor.
 def constrToProp (univs : List Level) (params : List Expr) (idxs : List Expr) (c : Name) :
     MetaM (Shape × Expr) := do
   let type := (← getConstInfo c).instantiateTypeLevelParams univs
-  let type' ← Meta.forallBoundedTelescope type (params.length) fun fvars ty ↦ do
+  let type' ← Meta.forallBoundedTelescope type params.length fun fvars ty ↦ do
     pure <| ty.replaceFVars fvars params.toArray
   Meta.forallTelescope type' fun fvars ty ↦ do
     let idxs_inst := ty.getAppArgs.toList.drop params.length

@@ -249,7 +249,7 @@ private abbrev smul'' (r : R) (s : S) : X[S⁻¹] → X[S⁻¹] :=
     rw [smul'_char _ _ _ _ _ _ h₁]
     rcases oreCondition r ⟨_, hs⟩ with ⟨r₂', s₂', h₂⟩
     rw [smul'_char _ _ _ _ _ _ h₂]
-    rcases oreCondition (s₁' : R) (s₂') with ⟨r₃', s₃', h₃⟩
+    rcases oreCondition (s₁' : R) s₂' with ⟨r₃', s₃', h₃⟩
     have : s₃' * r₁' * s' = (r₃' * r₂' * r₂) * s' := by
       rw [mul_assoc, ← h₁, ← mul_assoc, h₃, mul_assoc, h₂]
       simp [mul_assoc]
@@ -276,7 +276,7 @@ protected abbrev smul (y : R[S⁻¹]) (x : X[S⁻¹]) : X[S⁻¹] :=
     rw [smul'_char _ _ _ _ _ _ h₁]
     rcases oreCondition (r₂ * r₁) s₂ with ⟨r₂', s₂', h₂⟩
     rw [smul'_char _ _ _ _ _ _ h₂]
-    rcases oreCondition (s₂' * r₂) (s₁') with ⟨r₃', s₃', h₃⟩
+    rcases oreCondition (s₂' * r₂) s₁' with ⟨r₃', s₃', h₃⟩
     have : s₃' * r₂' * s₂ = r₃' * r₁' * s₂ := by
       rw [mul_assoc, ← h₂, ← mul_assoc _ r₂, ← mul_assoc, h₃, mul_assoc, h₁, mul_assoc]
     rcases ore_right_cancel _ _ _ this with ⟨s₄', h₄⟩

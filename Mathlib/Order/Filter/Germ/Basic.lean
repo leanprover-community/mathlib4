@@ -126,7 +126,7 @@ def IsConstant {l : Filter α} (P : Germ l β) : Prop :=
   P.liftOn (fun f ↦ ∃ b : β, f =ᶠ[l] (fun _ ↦ b)) <| by
     suffices ∀ f g : α → β, ∀ b : β, f =ᶠ[l] g → (f =ᶠ[l] fun _ ↦ b) → (g =ᶠ[l] fun _ ↦ b) from
       fun f g h ↦ propext ⟨fun ⟨b, hb⟩ ↦ ⟨b, this f g b h hb⟩, fun ⟨b, hb⟩ ↦ ⟨b, h.trans hb⟩⟩
-    exact fun f g b hfg hf ↦ (hfg.symm).trans hf
+    exact fun f g b hfg hf ↦ hfg.symm.trans hf
 
 theorem isConstant_coe {l : Filter α} {b} (h : ∀ x', f x' = b) : (↑f : Germ l β).IsConstant :=
   ⟨b, Eventually.of_forall h⟩

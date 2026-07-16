@@ -223,7 +223,7 @@ without additional integrability assumptions, see the module docstring for detai
 instance : Inhabited IntegrationParams :=
   ⟨⊥⟩
 
-instance : DecidableLE (IntegrationParams) :=
+instance : DecidableLE IntegrationParams :=
   fun _ _ => inferInstanceAs (Decidable (_ ∧ _))
 
 instance : DecidableEq IntegrationParams :=

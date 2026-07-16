@@ -157,7 +157,7 @@ set_option backward.defeqAttrib.useBackward true in
 /-- The isomorphism between left extensions induced by a right unitor. -/
 @[simps! hom_right inv_right]
 def whiskerOfCompIdIsoSelf (t : LeftExtension f g) : (t.whisker (𝟙 c)).ofCompId ≅ t :=
-  StructuredArrow.isoMk (ρ_ (t.extension))
+  StructuredArrow.isoMk (ρ_ t.extension)
 
 end LeftExtension
 

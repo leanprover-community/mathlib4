@@ -36,7 +36,7 @@ variable {C : Type u} [Category.{v} C] [Abelian C] [HasDerivedCategory.{w} C]
 in the derived category when `S` is a short exact short complex of
 cochain complexes in an abelian category. -/
 noncomputable def triangleOfSESδ :
-    Q.obj (S.X₃) ⟶ (Q.obj S.X₁)⟦(1 : ℤ)⟧ :=
+    Q.obj S.X₃ ⟶ (Q.obj S.X₁)⟦(1 : ℤ)⟧ :=
   have := CochainComplex.mappingCone.quasiIso_descShortComplex hS
   inv (Q.map (CochainComplex.mappingCone.descShortComplex S)) ≫
     Q.map (CochainComplex.mappingCone.triangle S.f).mor₃ ≫

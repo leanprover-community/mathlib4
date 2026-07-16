@@ -84,7 +84,7 @@ lemma IsDense.comp_left_iff_of_isEquivalence (G : C' ⥤ C) [G.IsEquivalence] :
     (G ⋙ F).IsDense ↔ F.IsDense := by
   refine ⟨fun _ ↦ ?_, fun _ ↦ inferInstance⟩
   let e : G.inv ⋙ G ⋙ F ≅ F := (associator _ _ _).symm ≪≫
-    isoWhiskerRight (G.asEquivalence.counitIso) _ ≪≫ F.leftUnitor
+    isoWhiskerRight G.asEquivalence.counitIso _ ≪≫ F.leftUnitor
   exact of_iso e
 
 instance (G : D ⥤ C') [F.IsDense] [G.IsEquivalence] :

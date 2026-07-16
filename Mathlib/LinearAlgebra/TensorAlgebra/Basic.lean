@@ -126,7 +126,7 @@ of `f` to a morphism of `R`-algebras `TensorAlgebra R M → A`.
 @[simps symm_apply]
 def lift {A : Type*} [Semiring A] [Algebra R A] : (M →ₗ[R] A) ≃ (TensorAlgebra R M →ₐ[R] A) :=
   { toFun f :=
-      RingCon.liftₐ (ringCon R M) (FreeAlgebra.lift R (f)) <| by
+      RingCon.liftₐ (ringCon R M) (FreeAlgebra.lift R f) <| by
         grw [ringCon, RingCon.ringConGen_le]
         intro x y h
         induction h <;>

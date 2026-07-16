@@ -310,13 +310,13 @@ variable [TopologicalSpace G₀] [GroupWithZero G₀] [SeparatelyContinuousMul G
 theorem map_mul_left_nhds₀ (ha : a ≠ 0) (b : G₀) : map (a * ·) (𝓝 b) = 𝓝 (a * b) :=
   (Homeomorph.mulLeft₀ a ha).map_nhds_eq b
 
-theorem map_mul_left_nhds_one₀ (ha : a ≠ 0) : map (a * ·) (𝓝 1) = 𝓝 (a) := by
+theorem map_mul_left_nhds_one₀ (ha : a ≠ 0) : map (a * ·) (𝓝 1) = 𝓝 a := by
   rw [map_mul_left_nhds₀ ha, mul_one]
 
 theorem map_mul_right_nhds₀ (ha : a ≠ 0) (b : G₀) : map (· * a) (𝓝 b) = 𝓝 (b * a) :=
   (Homeomorph.mulRight₀ a ha).map_nhds_eq b
 
-theorem map_mul_right_nhds_one₀ (ha : a ≠ 0) : map (· * a) (𝓝 1) = 𝓝 (a) := by
+theorem map_mul_right_nhds_one₀ (ha : a ≠ 0) : map (· * a) (𝓝 1) = 𝓝 a := by
   rw [map_mul_right_nhds₀ ha, one_mul]
 
 theorem nhds_translation_mul_inv₀ (ha : a ≠ 0) : comap (· * a⁻¹) (𝓝 1) = 𝓝 a :=

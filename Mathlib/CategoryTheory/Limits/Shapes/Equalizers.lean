@@ -1413,7 +1413,7 @@ def isCoequalizerEpiComp {c : Cofork f g} (i : IsColimit c) {W : C} (h : W ⟶ X
     have : (h ≫ f) ≫ Cofork.π c = (h ≫ g) ≫ Cofork.π c := by
       simp only [Category.assoc]
       exact congrArg (h ≫ ·) c.condition
-    IsColimit (Cofork.ofπ c.π (this) : Cofork (h ≫ f) (h ≫ g)) :=
+    IsColimit (Cofork.ofπ c.π this : Cofork (h ≫ f) (h ≫ g)) :=
   Cofork.IsColimit.mk' _ fun s =>
     let s' : Cofork f g :=
       Cofork.ofπ s.π (by apply hm.left_cancellation; simp_rw [← Category.assoc, s.condition])

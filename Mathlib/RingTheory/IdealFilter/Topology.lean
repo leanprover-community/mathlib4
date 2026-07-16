@@ -112,11 +112,11 @@ lemma mem_nhds_iff {a : (WithIdealFilter F)} {s : Set (WithIdealFilter F)} :
     s ∈ 𝓝 a ↔ ∃ I ∈ F, a +ᵥ idealSet I ⊆ s := by
   constructor
   · intro hs
-    rcases ((F.addGroupFilterBasis).nhds_hasBasis a).mem_iff.1 hs with ⟨t, ht, hts⟩
+    rcases (F.addGroupFilterBasis.nhds_hasBasis a).mem_iff.1 hs with ⟨t, ht, hts⟩
     rcases ht with ⟨I, hI, rfl⟩
     exact ⟨I, hI, hts⟩
   · rintro ⟨I, hI, hIs⟩
-    refine ((F.addGroupFilterBasis).nhds_hasBasis a).mem_iff.2 ?_
+    refine (F.addGroupFilterBasis.nhds_hasBasis a).mem_iff.2 ?_
     exact ⟨I, ⟨I, hI, rfl⟩, hIs⟩
 
 /-- A set `s` is a neighbourhood of `0` iff it contains an ideal belonging to `F`. -/

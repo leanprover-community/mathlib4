@@ -310,7 +310,7 @@ variable (G : Type*) [Group G] [TopologicalSpace G] [IsTopologicalGroup G]
   change comap (fun (x : G × G) ↦ (MulOpposite.op x.1, MulOpposite.op x.2))
       (comap (fun p : Gᵐᵒᵖ × Gᵐᵒᵖ => p.2 * p.1⁻¹) (𝓝 1))
     = comap (fun p : G × G => p.1⁻¹ * p.2) (𝓝 1)
-  have : 𝓝 (1 : G) = comap (MulOpposite.opHomeomorph) (𝓝 (1 : Gᵐᵒᵖ)) := by
+  have : 𝓝 (1 : G) = comap MulOpposite.opHomeomorph (𝓝 (1 : Gᵐᵒᵖ)) := by
     simp [Homeomorph.comap_nhds_eq]
   simp_rw [comap_comap, this, comap_comap]
   rfl
@@ -322,7 +322,7 @@ variable (G : Type*) [Group G] [TopologicalSpace G] [IsTopologicalGroup G]
   change comap (fun (x : G × G) ↦ (MulOpposite.op x.1, MulOpposite.op x.2))
       (comap (fun p : Gᵐᵒᵖ × Gᵐᵒᵖ => p.1⁻¹ * p.2) (𝓝 1))
     = comap (fun p : G × G => p.2 * p.1⁻¹) (𝓝 1)
-  have : 𝓝 (1 : G) = comap (MulOpposite.opHomeomorph) (𝓝 (1 : Gᵐᵒᵖ)) := by
+  have : 𝓝 (1 : G) = comap MulOpposite.opHomeomorph (𝓝 (1 : Gᵐᵒᵖ)) := by
     simp [Homeomorph.comap_nhds_eq]
   simp_rw [comap_comap, this, comap_comap]
   rfl

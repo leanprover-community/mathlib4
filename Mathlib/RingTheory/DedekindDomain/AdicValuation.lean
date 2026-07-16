@@ -494,8 +494,8 @@ instance : IsDedekindDomain (valuationSubringAtPrime K v) :=
 instance : Ring.KrullDimLE 1 (valuationSubringAtPrime K v) :=
   Ring.KrullDimLE.mk₁' (fun _ a _ ↦ IsPrime.to_maximal_ideal a)
 
-instance : IsLocalization (v.asIdeal.primeCompl) (valuationSubringAtPrime K v) :=
-  Localization.subalgebra.isLocalization_ofField K (v.asIdeal.primeCompl) _
+instance : IsLocalization v.asIdeal.primeCompl (valuationSubringAtPrime K v) :=
+  Localization.subalgebra.isLocalization_ofField K v.asIdeal.primeCompl _
 
 end Localization
 

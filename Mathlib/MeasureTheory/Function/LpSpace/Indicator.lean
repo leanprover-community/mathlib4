@@ -67,7 +67,7 @@ theorem _root_.HasCompactSupport.memLp_of_bound {f : X → E} (hf : HasCompactSu
     (h2f : AEStronglyMeasurable f μ) (C : ℝ) (hfC : ∀ᵐ x ∂μ, ‖f x‖ ≤ C) : MemLp f p μ := by
   have := memLp_top_of_bound h2f C hfC
   exact this.mono_exponent_of_measure_support_ne_top
-    (fun x ↦ image_eq_zero_of_notMem_tsupport) (hf.measure_lt_top.ne) le_top
+    (fun x ↦ image_eq_zero_of_notMem_tsupport) hf.measure_lt_top.ne le_top
 
 /-- A bounded measurable function with compact support is in L^p.
 This is the `ENNReal`-valued version of `HasCompactSupport.memLp_of_bound`. -/
@@ -84,7 +84,7 @@ theorem _root_.Continuous.memLp_of_hasCompactSupport [OpensMeasurableSpace X]
     {f : X → E} (hf : Continuous f) (h'f : HasCompactSupport f) : MemLp f p μ := by
   have := hf.memLp_top_of_hasCompactSupport h'f μ
   exact this.mono_exponent_of_measure_support_ne_top
-    (fun x ↦ image_eq_zero_of_notMem_tsupport) (h'f.measure_lt_top.ne) le_top
+    (fun x ↦ image_eq_zero_of_notMem_tsupport) h'f.measure_lt_top.ne le_top
 
 end Topology
 

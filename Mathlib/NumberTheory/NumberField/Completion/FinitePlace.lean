@@ -67,7 +67,7 @@ instance : IsDiscreteValuationRing (v.valuation K).integer :=
 
 instance : IsPrincipalIdealRing (v.adicCompletionIntegers K) := by
   unfold HeightOneSpectrum.adicCompletionIntegers
-  rw [(Valuation.valuationSubring.integers (Valued.v)).isPrincipalIdealRing_iff_not_denselyOrdered,
+  rw [(Valuation.valuationSubring.integers Valued.v).isPrincipalIdealRing_iff_not_denselyOrdered,
     WithZero.denselyOrdered_set_iff_subsingleton]
   simpa using Valued.v.range_nontrivial
 

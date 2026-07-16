@@ -258,10 +258,10 @@ theorem IndepFun.comp₀ {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
   have hφ_ae := ae_of_ae_map hf hφ.ae_eq_mk
   have hψ_ae := ae_of_ae_map hg hψ.ae_eq_mk
   refine IndepFun.congr' h ?_ ?_
-  · filter_upwards [Measure.ae_ae_of_ae_comp (hφ_ae)] with a haφ
+  · filter_upwards [Measure.ae_ae_of_ae_comp hφ_ae] with a haφ
     filter_upwards [haφ] with ω hωφ
     simp [hωφ]
-  · filter_upwards [Measure.ae_ae_of_ae_comp (hψ_ae)] with a haψ
+  · filter_upwards [Measure.ae_ae_of_ae_comp hψ_ae] with a haψ
     filter_upwards [haψ] with ω hωψ
     simp [hωψ]
 

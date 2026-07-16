@@ -34,7 +34,7 @@ def div2 : ℤ → ℤ
 /-- `bodd n` returns `true` if `n` is odd -/
 def bodd : ℤ → Bool
   | (n : ℕ) => n.bodd
-  | -[n+1] => not (n.bodd)
+  | -[n+1] => not n.bodd
 
 /-- `bit b` appends the digit `b` to the binary representation of
   its integer input. -/

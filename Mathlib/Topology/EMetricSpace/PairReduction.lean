@@ -440,8 +440,8 @@ lemma iSup_edist_pairSet {E : Type*} [PseudoEMetricSpace E] (ha : 1 < a) (f : T 
     nth_rw 3 [← one_mul c]
     rw [← add_mul]
     congr
-    rw [ENNReal.sub_add_eq_add_sub _ (ENNReal.one_ne_top),
-      ENNReal.add_sub_cancel_right (ENNReal.one_ne_top)]
+    rw [ENNReal.sub_add_eq_add_sub _ ENNReal.one_ne_top,
+      ENNReal.add_sub_cancel_right ENNReal.one_ne_top]
     rw [← Nat.cast_one]
     gcongr
     exact one_le_radius_logSizeBallSeq hJ ha l

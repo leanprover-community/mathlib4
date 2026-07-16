@@ -682,7 +682,7 @@ lemma reachable_toSimpleGraph {G : SimpleGraph V} (C : G.ConnectedComponent) {u 
     (hu : u ∈ C) (hv : v ∈ C) : C.toSimpleGraph.Reachable ⟨u, hu⟩ ⟨v, hv⟩ :=
   Walk.reachable (C.walk_toSimpleGraph hu hv (C.reachable_of_mem_supp hu hv).some)
 
-lemma connected_toSimpleGraph (C : ConnectedComponent G) : (C.toSimpleGraph).Connected where
+lemma connected_toSimpleGraph (C : ConnectedComponent G) : C.toSimpleGraph.Connected where
   preconnected := by
     intro ⟨u, hu⟩ ⟨v, hv⟩
     exact C.reachable_toSimpleGraph hu hv

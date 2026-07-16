@@ -94,7 +94,7 @@ theorem stratum_ne_bot : u.stratum c ≠ ⊥ :=
   fun eq ↦ (eq ▸ u.ball_sup_stratum_eq c).not_lt <| by simpa using ball_lt_closedBall _
 
 instance nontrivial_stratum : Nontrivial (u.stratum c) :=
-  (Submodule.nontrivial_iff_ne_bot).mpr (stratum_ne_bot _)
+  Submodule.nontrivial_iff_ne_bot.mpr (stratum_ne_bot _)
 
 theorem archimedeanClassMk_of_mem_stratum {a : M}
     (ha : a ∈ u.stratum c) (h0 : a ≠ 0) : ArchimedeanClass.mk a = c := by
@@ -171,7 +171,7 @@ theorem isInternal_stratum' : DirectSum.IsInternal u.stratum' := by
   simpa using! le_iSup _ _
 
 noncomputable
-instance : DirectSum.Decomposition u.stratum' := (u.isInternal_stratum').chooseDecomposition _
+instance : DirectSum.Decomposition u.stratum' := u.isInternal_stratum'.chooseDecomposition _
 
 end ArchimedeanStrata
 

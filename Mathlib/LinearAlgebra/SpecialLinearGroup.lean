@@ -230,7 +230,7 @@ lemma mem_range_toGeneralLinearGroup_iff {u : LinearMap.GeneralLinearGroup R V} 
 
 /-- The natural action of `SpecialLinearGroup R V` on `V`. -/
 instance : DistribMulAction (SpecialLinearGroup R V) V :=
-  DistribMulAction.compHom  _ (SpecialLinearGroup.toLinearEquiv)
+  DistribMulAction.compHom  _ SpecialLinearGroup.toLinearEquiv
 
 theorem _root_.SpecialLinearGroup.smul_def (g : SpecialLinearGroup R V) (v : V) :
     g • v = g.toLinearEquiv • v := rfl

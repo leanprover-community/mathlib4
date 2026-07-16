@@ -135,7 +135,7 @@ considered as an object of `ContinuousGeneratedByCat X`. -/
 @[simps! +dsimpLhs forget₂_obj forget₂_map_hom_apply]
 instance : HasForget₂ TopCat.{v} (ContinuousGeneratedByCat.{v} X) where
   forget₂.obj Y := .of Y
-  forget₂.map f := ContinuousGeneratedByCat.homMk f (f.hom.continuous.continuousGeneratedBy)
+  forget₂.map f := ContinuousGeneratedByCat.homMk f f.hom.continuous.continuousGeneratedBy
 
 end ContinuousGeneratedByCat
 
@@ -155,7 +155,7 @@ the topological space `WithGeneratedByTopology X Y`. -/
 @[simps obj]
 def toTopCat : ContinuousGeneratedByCat.{v} X ⥤ TopCat where
   obj Y := TopCat.of (WithGeneratedByTopology X Y)
-  map f := TopCat.ofHom (f.hom.prop.continuousMap)
+  map f := TopCat.ofHom f.hom.prop.continuousMap
 
 variable {X} in
 lemma toTopCat_map_apply {Y Z : ContinuousGeneratedByCat.{v} X}

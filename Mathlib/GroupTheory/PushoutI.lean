@@ -294,7 +294,7 @@ theorem base_smul_def' (h : H) (w : NormalWord d) :
 /-- Take the product of a normal word as an element of the `PushoutI`. We show that this is
 bijective, in `NormalWord.equiv`. -/
 def prod (w : NormalWord d) : PushoutI φ :=
-  base φ w.head * ofCoprodI (w.toWord).prod
+  base φ w.head * ofCoprodI w.toWord.prod
 
 @[simp]
 theorem prod_base_smul (h : H) (w : NormalWord d) :

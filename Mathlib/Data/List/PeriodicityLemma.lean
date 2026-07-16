@@ -143,7 +143,7 @@ lemma HasPeriod.take_append (p n : ℕ) (w : List α) (dvd : p ∣ n)
   rcases Nat.eq_zero_or_pos n with rfl | pos
   · simp_all
   rw [hasPeriod_iff_forall_getElem?_mod]
-  have mod_w : ∀ i < w.length, w[i % p]? = w[i]? := (per.getElem?_mod)
+  have mod_w : ∀ i < w.length, w[i % p]? = w[i]? := per.getElem?_mod
   suffices ∀ i < n + w.length, (take n w ++ w)[i]? = (take n w ++ w)[i % p]? by simp_all
   intro i less_i
   have mod_p : ∀ j < n + length w, (take n w ++ w)[j]? = w[j % p]? := by
@@ -198,7 +198,7 @@ theorem HasPeriod.gcd {w : List α} {p q : ℕ} (per_p : HasPeriod w p) (per_q :
   | lt => -- if `p` is less than `q`, switch the two periods
       have p_lt_q := Nat.compare_eq_lt.mp hyp
       exact (gcd_comm q p ▸ per_q.gcd) per_p (add_comm p q ▸ len)
-  | eq => simpa [(Nat.compare_eq_eq).mp hyp]
+  | eq => simpa [Nat.compare_eq_eq.mp hyp]
   | gt =>
       have q_lt_p : q < p := Nat.compare_eq_gt.mp hyp
       have gcd_lt_p : p.gcd q < p := by

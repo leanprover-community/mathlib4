@@ -169,7 +169,7 @@ theorem _root_.MvPolynomial.toMvPowerSeries_uniformContinuous
     rcases ha.hpow s |>.eventually_mem hI |>.exists_forall_of_atTop with ⟨n, hn⟩
     use n
     simpa using hn n.succ n.le_succ
-  have hn : Set.Finite (n.support) := by
+  have hn : Set.Finite n.support := by
     change n =ᶠ[cofinite] 0
     filter_upwards [ha.tendsto_zero.eventually_mem hI] with s has
     simpa [n, Pi.zero_apply, Nat.sInf_eq_zero, or_iff_left (hn_ne s).ne_empty] using has

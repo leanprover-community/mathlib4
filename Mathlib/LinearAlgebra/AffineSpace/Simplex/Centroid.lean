@@ -199,7 +199,7 @@ theorem affineIndependent_points_update_centroid [CharZero k] (s : Simplex k P n
 theorem centroid_map [CharZero k] {V₂ P₂ : Type*} [AddCommGroup V₂] [Module k V₂]
     [AffineSpace V₂ P₂] {n : ℕ} (s : Simplex k P n) (f : P →ᵃ[k] P₂)
     (hf : Function.Injective f) :
-    (s.map f hf).centroid = f (s.centroid) := by
+    (s.map f hf).centroid = f s.centroid := by
   rw [centroid, map_points, centroid_eq_affineCombination, Finset.map_affineCombination]
   · rw [Finset.centroid]
   · rw [sum_centroidWeights_eq_one_of_card_ne_zero]
@@ -221,7 +221,7 @@ theorem centroid_restrict [CharZero k] {n : ℕ} (s : Simplex k P n) (S : Affine
     (s.restrict S hS).centroid = s.centroid := by
   rw [eq_comm]
   have := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
-  have hf : Function.Injective (S.subtype) := by
+  have hf : Function.Injective S.subtype := by
     simp only [coe_subtype, Subtype.val_injective]
   exact (s.restrict S hS).centroid_map S.subtype hf
 
@@ -323,7 +323,7 @@ theorem faceOppositeCentroid_vsub_point_eq_smul_vsub [CharZero k] (s : Simplex k
     (i : Fin (n + 1)) :
     s.faceOppositeCentroid i -ᵥ s.points i =
     (n + 1 : k) • (s.faceOppositeCentroid i -ᵥ s.centroid) := by
-  rw [← vsub_sub_vsub_cancel_right _ (s.centroid) (s.points i),
+  rw [← vsub_sub_vsub_cancel_right _ s.centroid (s.points i),
     faceOppositeCentroid_vsub_point_eq_smul_sum_vsub, centroid_vsub_eq,
     ← sub_smul, smul_smul]
   congr
@@ -404,7 +404,7 @@ theorem faceOppositeCentroid_eq_smul_vsub_vadd_point [CharZero k] (s : Simplex k
     (s.restrict S hS).faceOppositeCentroid i = s.faceOppositeCentroid i := by
   rw [eq_comm]
   have := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
-  have hf : Function.Injective (S.subtype) := by
+  have hf : Function.Injective S.subtype := by
     simp only [coe_subtype, Subtype.val_injective]
   exact (s.restrict S hS).faceOppositeCentroid_map S.subtype hf (i := i)
 
@@ -561,7 +561,7 @@ theorem medial_map {V₂ P₂ : Type*} [AddCommGroup V₂] [Module k V₂] [Affi
 open scoped Pointwise in
 @[simp]
 theorem affineSpan_range_medial [CharZero k] (s : Simplex k P n) :
-    affineSpan k (Set.range (s.medial.points)) = affineSpan k (Set.range (s.points)) := by
+    affineSpan k (Set.range s.medial.points) = affineSpan k (Set.range s.points) := by
   have hmem1 : s.medial.points 0 ∈ affineSpan k (Set.range s.medial.points) :=
     mem_affineSpan _ (by simp)
   have hmem2 : s.medial.points 0 ∈ affineSpan k (Set.range s.points) := by

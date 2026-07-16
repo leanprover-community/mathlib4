@@ -43,8 +43,8 @@ variable {α : Type u} {β : α → Type v}
 @[instance_reducible]
 def ofEquiv (α) {β} [FinEnum α] (h : β ≃ α) : FinEnum β where
   card := card α
-  equiv := h.trans (equiv)
-  decEq := (h.trans (equiv)).decidableEq
+  equiv := h.trans equiv
+  decEq := (h.trans equiv).decidableEq
 
 /-- create a `FinEnum` instance from an exhaustive list without duplicates -/
 @[instance_reducible]

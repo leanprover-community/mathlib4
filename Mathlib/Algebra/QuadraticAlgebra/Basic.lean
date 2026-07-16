@@ -229,7 +229,7 @@ theorem norm_star (x : QuadraticAlgebra R a b) : (star x).norm = x.norm := by
   ring
 
 theorem isUnit_iff_norm_isUnit {x : QuadraticAlgebra R a b} :
-    IsUnit x ↔ IsUnit (x.norm) := by
+    IsUnit x ↔ IsUnit x.norm := by
   constructor
   · exact IsUnit.map norm
   · simp only [isUnit_iff_exists]

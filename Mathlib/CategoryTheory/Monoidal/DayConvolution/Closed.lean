@@ -172,7 +172,7 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma unit_app_ev_app_app (x y : C) :
-    ((DayConvolution.unit F H).app (x, y) ≫ (ℌ.ev_app).app (x ⊗ y)) =
+    ((DayConvolution.unit F H).app (x, y) ≫ ℌ.ev_app.app (x ⊗ y)) =
     MonoidalClosed.uncurry (ℌ.π y x) := by
   have := Functor.descOfIsLeftKanExtension_fac_app (F ⊛ H)
     (DayConvolution.unit F H) G

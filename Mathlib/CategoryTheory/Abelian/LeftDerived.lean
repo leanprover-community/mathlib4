@@ -348,7 +348,7 @@ instance {X : C} (P : ProjectiveResolution X) :
     IsIso (P.fromLeftDerivedZero' F) := by
   dsimp [ProjectiveResolution.fromLeftDerivedZero']
   rw [ChainComplex.isIso_descOpcycles_iff, ShortComplex.exact_and_epi_g_iff_g_is_cokernel]
-  exact ⟨CokernelCofork.mapIsColimit _ (P.isColimitCokernelCofork) F⟩
+  exact ⟨CokernelCofork.mapIsColimit _ P.isColimitCokernelCofork F⟩
 
 set_option backward.isDefEq.respectTransparency false in
 instance (X : C) : IsIso (F.fromLeftDerivedZero.app X) := by

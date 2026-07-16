@@ -887,7 +887,7 @@ variable (T) in
   obj X := Cat.of (Under X.unop)
   map f := (map f.unop).toCatHom
   map_id X := congr($(mapId_eq X.unop).toCatHom)
-  map_comp f g := congr($(mapComp_eq (g.unop) (f.unop)).toCatHom)
+  map_comp f g := congr($(mapComp_eq g.unop f.unop).toCatHom)
 
 end coherences
 
@@ -1453,7 +1453,7 @@ set_option backward.defeqAttrib.useBackward true in
 @[simps]
 def Over.opEquivOpUnder : Over (op X) ≌ (Under X)ᵒᵖ where
   functor.obj Y := ⟨Under.mk Y.hom.unop⟩
-  functor.map {Z Y} f := ⟨Under.homMk (f.left.unop) (by dsimp; rw [← unop_comp, Over.w])⟩
+  functor.map {Z Y} f := ⟨Under.homMk f.left.unop (by dsimp; rw [← unop_comp, Over.w])⟩
   inverse.obj Y := Over.mk (Y.unop.hom.op)
   inverse.map {Z Y} f := Over.homMk f.unop.right.op <| by dsimp; rw [← Under.w f.unop, op_comp]
   unitIso := Iso.refl _
@@ -1464,7 +1464,7 @@ set_option backward.defeqAttrib.useBackward true in
 @[simps]
 def Under.opEquivOpOver : Under (op X) ≌ (Over X)ᵒᵖ where
   functor.obj Y := ⟨Over.mk Y.hom.unop⟩
-  functor.map {Z Y} f := ⟨Over.homMk (f.right.unop) (by dsimp; rw [← unop_comp, Under.w])⟩
+  functor.map {Z Y} f := ⟨Over.homMk f.right.unop (by dsimp; rw [← unop_comp, Under.w])⟩
   inverse.obj Y := Under.mk (Y.unop.hom.op)
   inverse.map {Z Y} f := Under.homMk f.unop.left.op <| by dsimp; rw [← Over.w f.unop, op_comp]
   unitIso := Iso.refl _

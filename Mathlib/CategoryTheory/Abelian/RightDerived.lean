@@ -358,7 +358,7 @@ instance {X : C} (P : InjectiveResolution X) :
     IsIso (P.toRightDerivedZero' F) := by
   dsimp [InjectiveResolution.toRightDerivedZero']
   rw [CochainComplex.isIso_liftCycles_iff, ShortComplex.exact_and_mono_f_iff_f_is_kernel]
-  exact ⟨KernelFork.mapIsLimit _ (P.isLimitKernelFork) F⟩
+  exact ⟨KernelFork.mapIsLimit _ P.isLimitKernelFork F⟩
 
 set_option backward.isDefEq.respectTransparency false in
 instance (X : C) : IsIso (F.toRightDerivedZero.app X) := by

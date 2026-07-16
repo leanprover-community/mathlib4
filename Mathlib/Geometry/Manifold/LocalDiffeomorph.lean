@@ -125,7 +125,7 @@ protected def symm : PartialDiffeomorph J I N M n where
 protected theorem contMDiffOn : CMDiff[Φ.source] n Φ := Φ.contMDiffOn_toFun
 
 protected theorem mdifferentiableOn (hn : n ≠ 0) : MDiff[Φ.source] Φ :=
-  (Φ.contMDiffOn).mdifferentiableOn hn
+  Φ.contMDiffOn.mdifferentiableOn hn
 
 protected theorem mdifferentiableAt (hn : n ≠ 0) {x : M} (hx : x ∈ Φ.source) :
     MDiffAt Φ x :=
@@ -220,7 +220,7 @@ lemma localInverse_eventuallyEq_left (hf : IsLocalDiffeomorphAt I J n f x) :
     (hf.localInverse.open_target.mem_nhds hf.localInverse_mem_target) hf.localInverse_eqOn_left
 
 lemma localInverse_isLocalDiffeomorphAt (hf : IsLocalDiffeomorphAt I J n f x) :
-    IsLocalDiffeomorphAt J I n (hf.localInverse) (f x) :=
+    IsLocalDiffeomorphAt J I n hf.localInverse (f x) :=
   hf.localInverse.isLocalDiffeomorphAt _ _ _ hf.localInverse_mem_source
 
 lemma localInverse_contMDiffOn (hf : IsLocalDiffeomorphAt I J n f x) :
@@ -286,7 +286,7 @@ lemma IsLocalDiffeomorphAt.contMDiffAt (hf : IsLocalDiffeomorphAt I J n f x) :
     CMDiffAt n f x := by
   choose Φ hx heq using hf
   -- In fact, even `CMDiff[Φ.source] n f`.
-  exact ((Φ.contMDiffOn_toFun).congr heq).contMDiffAt (Φ.open_source.mem_nhds hx)
+  exact (Φ.contMDiffOn_toFun.congr heq).contMDiffAt (Φ.open_source.mem_nhds hx)
 
 /-- A local diffeomorphism at `x` is differentiable at `x`. -/
 lemma IsLocalDiffeomorphAt.mdifferentiableAt (hf : IsLocalDiffeomorphAt I J n f x) (hn : n ≠ 0) :
@@ -335,11 +335,11 @@ theorem IsLocalDiffeomorph.isLocalHomeomorph (hf : IsLocalDiffeomorph I J n f) :
 
 /-- A local diffeomorphism is an open map. -/
 lemma IsLocalDiffeomorph.isOpenMap (hf : IsLocalDiffeomorph I J n f) : IsOpenMap f :=
-  (hf.isLocalHomeomorph).isOpenMap
+  hf.isLocalHomeomorph.isOpenMap
 
 /-- A local diffeomorphism has open range. -/
 lemma IsLocalDiffeomorph.isOpen_range (hf : IsLocalDiffeomorph I J n f) : IsOpen (range f) :=
-  (hf.isOpenMap).isOpen_range
+  hf.isOpenMap.isOpen_range
 
 /-- The image of a local diffeomorphism is open. -/
 @[expose] def IsLocalDiffeomorph.image (hf : IsLocalDiffeomorph I J n f) : Opens N :=
@@ -355,7 +355,7 @@ lemma IsLocalDiffeomorph.image_coe (hf : IsLocalDiffeomorph I J n f) : hf.image.
 def IsLocalDiffeomorph.diffeomorphOfBijective
     (hf : IsLocalDiffeomorph I J n f) (hf' : Function.Bijective f) : Diffeomorph I J M N n := by
   -- Choose a right inverse `g` of `f`.
-  choose g hgInverse using (Function.bijective_iff_has_inverse).mp hf'
+  choose g hgInverse using Function.bijective_iff_has_inverse.mp hf'
   -- Choose diffeomorphisms φ_x which coincide with `f` near `x`.
   choose Φ hyp using (fun x ↦ hf x)
   -- Two such diffeomorphisms (and their inverses!) coincide on their sources:

@@ -286,7 +286,7 @@ We prove several different statements of this formula. -/
 /-- Euler's product formula for the totient function. -/
 theorem totient_eq_prod_factorization {n : ℕ} (hn : n ≠ 0) :
     φ n = n.factorization.prod fun p k => p ^ (k - 1) * (p - 1) := by
-  rw [multiplicative_factorization φ (@totient_mul) totient_one hn]
+  rw [multiplicative_factorization φ @totient_mul totient_one hn]
   apply Finsupp.prod_congr _
   intro p hp
   have h := zero_lt_iff.mpr (Finsupp.mem_support_iff.mp hp)
@@ -413,7 +413,7 @@ theorem _root_.Even.eq_of_totient_eq_totient {a b : ℕ} (h : a ∣ b) (ha : Eve
   · rw [ha', totient_zero, eq_comm, totient_eq_zero] at h'
     rw [h', ha']
   refine (eq_or_eq_of_totient_eq_totient h h').resolve_right fun h ↦ ?_
-  rw [← h, totient_mul_of_prime_of_dvd (prime_two) (even_iff_two_dvd.mp ha), eq_comm,
+  rw [← h, totient_mul_of_prime_of_dvd prime_two (even_iff_two_dvd.mp ha), eq_comm,
     mul_eq_right (totient_eq_zero.not.mpr ha')] at h'
   lia
 

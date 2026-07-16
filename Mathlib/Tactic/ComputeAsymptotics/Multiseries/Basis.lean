@@ -167,7 +167,7 @@ theorem pow_isLittleO_pow_of_log {f g : ℝ → ℝ} (a b : ℝ) (hf : ∀ᶠ x 
   apply Real.tendsto_exp_atTop.comp
   have h' : (b • Real.log ∘ g - a • Real.log ∘ f) ~[atTop] b • Real.log ∘ g := by
     replace h : (a • Real.log ∘ f) =o[atTop] (b • Real.log ∘ g) :=
-      (h.const_mul_left a).const_mul_right (hb.ne')
+      (h.const_mul_left a).const_mul_right hb.ne'
     grind only [IsEquivalent.sub_isLittleO, IsEquivalent.refl]
   rw [h'.tendsto_atTop_iff]
   apply Filter.Tendsto.const_mul_atTop hb

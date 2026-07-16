@@ -521,7 +521,7 @@ lemma IsIntegralClosure.tower_top {B C : Type*} [CommSemiring C] [CommRing B]
     [IsIntegralClosure C R B] [Algebra.IsIntegral R A] :
     IsIntegralClosure C A B :=
   ⟨IsIntegralClosure.algebraMap_injective _ R _,
-   fun hx => (IsIntegralClosure.isIntegral_iff).mp (isIntegral_trans (R := R) _ hx),
+   fun hx => IsIntegralClosure.isIntegral_iff.mp (isIntegral_trans (R := R) _ hx),
    fun hx => ((IsIntegralClosure.isIntegral_iff (R := R)).mpr hx).tower_top⟩
 
 theorem RingHom.isIntegral_of_surjective (hf : Function.Surjective f) : f.IsIntegral :=

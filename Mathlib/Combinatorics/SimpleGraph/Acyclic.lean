@@ -232,7 +232,7 @@ lemma IsAcyclic.ne_mem_support_of_support_of_adj_of_isPath (hG : G.IsAcyclic) {u
   obtain ⟨p₀, p₁, hp₀, hp₁, happend⟩ := hp.mem_support_iff_exists_append.mp hw
   rw [← Subtype.mk.inj <| hG.subsingleton_path u w |>.elim ⟨p₀, hp₀⟩ ⟨q, hq⟩]
   exact fun hxp => (happend ▸ hp).ne_of_mem_support_of_append hadj.symm.ne' hxp
-    (p₁.end_mem_support) rfl
+    p₁.end_mem_support rfl
 
 lemma IsAcyclic.path_concat (hG : G.IsAcyclic) {u v w : V} {p : G.Walk u v} {q : G.Walk u w}
     (hp : p.IsPath) (hq : q.IsPath) (hadj : G.Adj v w) (hv : v ∈ q.support) :

@@ -392,7 +392,7 @@ lemma IsClopen.biUnion_connectedComponentIn {X : Type*} [TopologicalSpace X] {u 
 
 lemma IsClopen.connectedComponentIn_eq {U : Set α} (hU : IsClopen U) {x : α} (hx : x ∈ U) :
     connectedComponentIn U x = connectedComponent x :=
-  subset_antisymm ((isPreconnected_connectedComponentIn).subset_connectedComponent
+  subset_antisymm (isPreconnected_connectedComponentIn.subset_connectedComponent
     (mem_connectedComponentIn hx)) <|
     (isPreconnected_connectedComponent).subset_connectedComponentIn (mem_connectedComponent)
     (hU.connectedComponent_subset hx)
@@ -613,7 +613,7 @@ components of `α`. -/
 noncomputable def equivOfIsClopenOfIsConnected (hconn : ∀ i, IsConnected (U i)) :
     ConnectedComponents α ≃ ι :=
   have _ (i) : ConnectedSpace (U i) := isConnected_iff_connectedSpace.mp (hconn i)
-  letI _ (i) : Unique (ConnectedComponents <| U i) := (nonempty_unique _).some
+  letI _ i : Unique (ConnectedComponents <| U i) := (nonempty_unique _).some
   (equivOfIsClopen hclopen hdisj hunion).trans (.sigmaUnique _ _)
 
 lemma equivOfIsClopenOfIsConnected_mk (hconn : ∀ i, IsConnected (U i)) {i : ι} (x : α)

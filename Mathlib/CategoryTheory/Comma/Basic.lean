@@ -199,7 +199,7 @@ lemma inv_left [IsIso e] : (inv e).left = inv e.left := by
   rw [← Comma.comp_left, IsIso.hom_inv_id, id_left]
 
 @[to_dual inv_left_hom_right]
-lemma left_hom_inv_right [IsIso e] : L.map (e.left) ≫ Y.hom ≫ R.map (inv e.right) = X.hom := by
+lemma left_hom_inv_right [IsIso e] : L.map e.left ≫ Y.hom ≫ R.map (inv e.right) = X.hom := by
   simp
 
 end

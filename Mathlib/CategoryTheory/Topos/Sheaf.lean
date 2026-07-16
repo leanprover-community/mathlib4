@@ -87,7 +87,7 @@ lemma Presheaf.isPullback_χ_truth (m : F ⟶ G) [Mono m] :
   refine IsPullback.of_forall_isPullback_app fun X => ?_
   rw [Types.isPullback_iff]
   refine ⟨congr(($(comp_χ_eq m)).app X), ?_, ?_⟩
-  · simpa using! (mono_iff_injective (m.app X)).mp (inferInstance)
+  · simpa using! (mono_iff_injective (m.app X)).mp inferInstance
   · simp only [Functor.const_obj_obj, Functor.sieves_obj, χ_app, Opposite.op_unop,
       TypeCat.hom_ofHom, TypeCat.Fun.coe_mk, truth_app, Functor.isTerminalConst_from_app,
       Types.isTerminalPUnit_from_apply, and_true, forall_const]
@@ -109,7 +109,7 @@ lemma Presheaf.χ_unique (m : F ⟶ G) (χ' : G ⟶ Functor.sieves C)
   simp only [χ_app, Opposite.op_unop]
   rw [Sieve.mem_iff_pullback_eq_top, ← Quiver.Hom.unop_op f]
   dsimp
-  have := ConcreteCategory.congr_hom (Functor.sieves_map C (f.op)) (χ'.app X x)
+  have := ConcreteCategory.congr_hom (Functor.sieves_map C f.op) (χ'.app X x)
   rw [← dsimp% this, ← dsimp% NatTrans.naturality_apply χ' f.op x]
   constructor
   · intro h
@@ -124,7 +124,7 @@ variable (C) in
 @[simps! Ω truth Ω₀ χ χ₀]
 def Presheaf.classifier : Subobject.Classifier (Cᵒᵖ ⥤ Type (max u v)) :=
   .mkOfTerminalΩ₀ ((Functor.const Cᵒᵖ).obj PUnit)
-    (Functor.isTerminalConst _ (Types.isTerminalPUnit)) (Functor.sieves C) (Presheaf.truth C)
+    (Functor.isTerminalConst _ Types.isTerminalPUnit) (Functor.sieves C) (Presheaf.truth C)
     (Presheaf.χ ·) Presheaf.isPullback_χ_truth (Presheaf.χ_unique ·)
 
 /-- Presheaf categories on an essentially small domain have a subobject classifier. -/
@@ -170,7 +170,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 /-- The morphism `t : 1 ⟶ Ω` which picks out the maximal sieve -/
 @[simps]
 def truth (J : GrothendieckTopology C) :
-    Sheaf.terminal J (Types.isTerminalPUnit) ⟶ Sheaf.Ω J where
+    Sheaf.terminal J Types.isTerminalPUnit ⟶ Sheaf.Ω J where
   hom := (Functor.closedSieves J).lift (Presheaf.truth C) fun {X} x => by cat_disch
 
 /--

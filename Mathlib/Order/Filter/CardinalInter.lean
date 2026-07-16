@@ -87,7 +87,7 @@ theorem CardinalInterFilter.of_cardinalInterFilter_of_le (l : Filter α) [Cardin
 
 theorem CardinalInterFilter.of_cardinalInterFilter_of_lt (l : Filter α) [CardinalInterFilter l c]
     {a : Cardinal.{u}} (hac : a < c) : CardinalInterFilter l a :=
-  CardinalInterFilter.of_cardinalInterFilter_of_le l (hac.le)
+  CardinalInterFilter.of_cardinalInterFilter_of_le l hac.le
 
 namespace Filter
 

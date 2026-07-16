@@ -185,7 +185,7 @@ def addProperties (t : Array Expr) : TacticM Unit := withMainContext do
     | some p =>
       let cinfo ← try getConstInfo p catch _ =>
         logWarning m!"Hypothesis {decl.toExpr} has type{indentD decl.type}.\n\
-          Its head symbol {.ofConstName nm} is (effectively) tagged with `@[algebraize {p}]`, \
+          Its head symbol {.ofConstName nm} is effectively tagged with `@[algebraize {p}]`, \
           but no constant{indentD p}\nhas been found.\n\
           Check for missing imports, missing namespaces or typos."
         return

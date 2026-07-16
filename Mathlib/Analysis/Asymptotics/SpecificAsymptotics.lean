@@ -115,7 +115,7 @@ theorem Asymptotics.IsEquivalent.rpow {α : Type*} {u v : α → ℝ} {l : Filte
     exact Tendsto.comp (Real.continuousAt_rpow_const _ _ (by left; norm_num)) hφ
   use (· ^ r) ∘ φ, hφr
   conv => enter [3]; change fun x ↦ φ x ^ r * v x ^ r
-  filter_upwards [Tendsto.eventually_const_lt (zero_lt_one) hφ, huφv] with x hφ_pos huv'
+  filter_upwards [Tendsto.eventually_const_lt zero_lt_one hφ, huφv] with x hφ_pos huv'
   simp [← Real.mul_rpow (le_of_lt hφ_pos) (hv x), huv']
 
 theorem Asymptotics.IsEquivalent.log {α : Type*} {l : Filter α} {f g : α → ℝ} (hfg : f ~[l] g)

@@ -178,13 +178,13 @@ lemma charpoly_map (M : Matrix n n R) (f : R →+* S) :
 @[simp]
 lemma charpoly_fromBlocks_zero₁₂ :
     (fromBlocks M₁₁ 0 M₂₁ M₂₂).charpoly = (M₁₁.charpoly * M₂₂.charpoly) := by
-  simp only [charpoly, charmatrix_fromBlocks, Matrix.map_zero _ (Polynomial.C_0), neg_zero,
+  simp only [charpoly, charmatrix_fromBlocks, Matrix.map_zero _ Polynomial.C_0, neg_zero,
     det_fromBlocks_zero₁₂]
 
 @[simp]
 lemma charpoly_fromBlocks_zero₂₁ :
     (fromBlocks M₁₁ M₁₂ 0 M₂₂).charpoly = (M₁₁.charpoly * M₂₂.charpoly) := by
-  simp only [charpoly, charmatrix_fromBlocks, Matrix.map_zero _ (Polynomial.C_0), neg_zero,
+  simp only [charpoly, charmatrix_fromBlocks, Matrix.map_zero _ Polynomial.C_0, neg_zero,
     det_fromBlocks_zero₂₁]
 
 lemma charmatrix_toSquareBlock {α : Type*} [DecidableEq α] {b : n → α} {a : α} :

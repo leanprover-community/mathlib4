@@ -311,7 +311,7 @@ theorem changeLevel_primitiveCharacter :
     (changeLevel χ.conductor_dvd_level) χ.primitiveCharacter = χ :=
   (factorsThrough_conductor χ).choose_spec.choose_spec.symm
 
-lemma primitiveCharacter_isPrimitive : IsPrimitive (χ.primitiveCharacter) := by
+lemma primitiveCharacter_isPrimitive : IsPrimitive χ.primitiveCharacter := by
   by_cases h : χ.conductor = 0
   · rw [isPrimitive_def]
     convert! conductor_eq_zero_iff_level_eq_zero.mpr h

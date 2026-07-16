@@ -49,7 +49,7 @@ theorem Fintype.nonempty_field_iff {α} [Fintype α] : Nonempty (Field α) ↔ I
   have := Fact.mk hp.nat_prime
   have : Fintype (GaloisField p n) := Fintype.ofFinite (GaloisField p n)
   exact ⟨(Fintype.equivOfCardEq
-    (((Fintype.card_eq_nat_card).trans (GaloisField.card p n hn.ne')).trans hα)).symm.field⟩
+    ((Fintype.card_eq_nat_card.trans (GaloisField.card p n hn.ne')).trans hα)).symm.field⟩
 
 theorem Fintype.not_isField_of_card_not_prime_pow {α} [Fintype α] [Ring α] :
     ¬IsPrimePow ‖α‖ → ¬IsField α :=

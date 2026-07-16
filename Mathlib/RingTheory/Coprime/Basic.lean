@@ -165,7 +165,7 @@ theorem IsCoprime.isUnit_of_dvd (H : IsCoprime x y) (d : x ∣ y) : IsUnit x :=
 
 theorem IsCoprime.isUnit_of_associated {x y : R} (h₁ : IsCoprime x y) (h₂ : Associated x y) :
     IsUnit x ∧ IsUnit y :=
-  ⟨h₁.isUnit_of_dvd (h₂.dvd), h₁.symm.isUnit_of_dvd (h₂.dvd')⟩
+  ⟨h₁.isUnit_of_dvd h₂.dvd, h₁.symm.isUnit_of_dvd h₂.dvd'⟩
 
 theorem IsCoprime.isUnit_of_dvd' {a b x : R} (h : IsCoprime a b) (ha : x ∣ a) (hb : x ∣ b) :
     IsUnit x :=

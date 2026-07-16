@@ -47,7 +47,7 @@ lemma isIntegral_iff_v_le_one {x : R} :
     simp only [map_neg, map_pow] at hf
     contrapose! hf
     refine ne_of_lt (v.map_sum_lt ?_ ?_)
-    · simp [hn, (hf.trans' (zero_lt_one)).ne']
+    · simp [hn, (hf.trans' zero_lt_one).ne']
     · simp only [Finset.mem_range, map_mul, map_pow]
       intro _ hi
       exact mul_lt_of_le_one_of_lt (hv.map_le_one _) <| pow_lt_pow_right₀ hf hi

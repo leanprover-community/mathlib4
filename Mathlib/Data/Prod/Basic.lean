@@ -198,7 +198,7 @@ instance trichotomous [Std.Trichotomous r] [Std.Trichotomous s] :
     intro ⟨i, a⟩ ⟨j, b⟩
     obtain hij | rfl | hji := trichotomous_of r i j
     { exact Or.inl (Lex.left _ _ hij) }
-    { exact (trichotomous_of (s) a b).imp3 (Lex.right _) (congr_arg _) (Lex.right _) }
+    { exact (trichotomous_of s a b).imp3 (Lex.right _) (congr_arg _) (Lex.right _) }
     { exact Or.inr (Or.inr <| Lex.left _ _ hji) }
 
 instance [Std.Asymm r] [Std.Asymm s] :

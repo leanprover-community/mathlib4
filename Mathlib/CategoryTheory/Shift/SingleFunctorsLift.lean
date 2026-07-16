@@ -92,7 +92,7 @@ set_option backward.defeqAttrib.useBackward true in
 `lift F G Φ hΦ` becomes isomorphic to `F`. -/
 @[simps!]
 noncomputable def liftPostcompIso : (lift F G Φ hΦ).postcomp G ≅ F :=
-  isoMk (hΦ) (fun n a a' ha' ↦ by
+  isoMk hΦ (fun n a a' ha' ↦ by
     ext X
     have := (hΦ a).inv_hom_id_app X
     dsimp at this

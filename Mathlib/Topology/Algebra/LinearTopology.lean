@@ -306,7 +306,7 @@ lemma hasBasis_twoSidedIdeal [IsLinearTopology R R] [IsLinearTopology Rᵐᵒᵖ
     (fun I ⟨hI, hRI, hRI'⟩ ↦ ⟨.mk' I (zero_mem _) add_mem neg_mem (hRI _ _) (hRI' _ _),
       by simpa using hI, by simp⟩)
     (fun I hI ↦ ⟨I.asIdeal.toAddSubgroup,
-      ⟨hI, I.mul_mem_left, fun r x hx ↦ I.mul_mem_right x (r.unop) hx⟩, subset_rfl⟩)
+      ⟨hI, I.mul_mem_left, fun r x hx ↦ I.mul_mem_right x r.unop hx⟩, subset_rfl⟩)
 
 lemma hasBasis_open_twoSidedIdeal [ContinuousAdd R]
     [IsLinearTopology R R] [IsLinearTopology Rᵐᵒᵖ R] :

@@ -506,7 +506,7 @@ theorem coeff_zero_of_lt_intValuation {n d : ℕ} {f : K⟦X⟧}
     (H : Valued.v (f : K⸨X⸩) ≤ exp (-d : ℤ)) :
     n < d → coeff n f = 0 := by
   intro hnd
-  apply (PowerSeries.X_pow_dvd_iff).mp _ n hnd
+  apply PowerSeries.X_pow_dvd_iff.mp _ n hnd
   rwa [← LaurentSeries.coe_algebraMap, valuation_def, valuation_of_algebraMap,
     intValuation_le_pow_iff_dvd (PowerSeries.idealX K) f d, PowerSeries.idealX,
     Ideal.span_singleton_pow, Ideal.span_singleton_dvd_span_singleton_iff_dvd] at H
@@ -686,7 +686,7 @@ lemma Cauchy.exists_lb_eventual_support {ℱ : Filter K⸨X⸩} (hℱ : Cauchy �
     ∃ N, ∀ᶠ f : K⸨X⸩ in ℱ, ∀ n < N, f.coeff n = (0 : K) := by
   let entourage : Set (K⸨X⸩ × K⸨X⸩) := {P : K⸨X⸩ × K⸨X⸩ | Valued.v.restrict (P.snd - P.fst) < 1}
   let ζ : (MonoidWithZeroHom.ValueGroup₀ <| .ofClass (Valued.v (R := K⸨X⸩)))ˣ :=
-    Units.mk0 1 (zero_ne_one.symm)
+    Units.mk0 1 zero_ne_one.symm
   obtain ⟨S, ⟨hS, ⟨T, ⟨hT, H⟩⟩⟩⟩ := mem_prod_iff.mp <| Filter.le_def.mp hℱ.2 entourage
     <| (Valued.hasBasis_uniformity K⸨X⸩ ℤᵐ⁰).mem_of_mem (i := ζ) (by tauto)
   obtain ⟨f, hf⟩ := forall_mem_nonempty_iff_neBot.mpr hℱ.1 (S ∩ T) (inter_mem_iff.mpr ⟨hS, hT⟩)
@@ -950,10 +950,10 @@ theorem inducing_coe : IsUniformInducing ((↑) : K⟮X⟯ → K⸨X⸩) := by
 
 theorem uniformContinuous_withVal_equiv :
     UniformContinuous (WithVal.equiv (polynomialValuationX K)) :=
-  (Valuation.IsEquiv.refl).uniformContinuous_equiv rfl
+  Valuation.IsEquiv.refl.uniformContinuous_equiv rfl
 
 theorem continuous_coe : Continuous ((↑) : K⟮X⟯ → K⸨X⸩) :=
-  (isUniformInducing_iff'.1 (inducing_coe)).1.continuous
+  (isUniformInducing_iff'.1 inducing_coe).1.continuous
 
 variable (K) in
 /-- An abbreviation for the `X`-adic completion of `K⟮X⟯` -/
@@ -1134,7 +1134,7 @@ abbrev powerSeries_as_subring : Subring K⸨X⸩ :=
 
 /-- The ring `K⟦X⟧` is isomorphic to the subring `powerSeries_as_subring K` -/
 abbrev powerSeriesEquivSubring : K⟦X⟧ ≃+* powerSeries_as_subring K :=
-  ((Subring.topEquiv).symm).trans (Subring.equivMapOfInjective ⊤ (ofPowerSeries ℤ K)
+  (Subring.topEquiv.symm).trans (Subring.equivMapOfInjective ⊤ (ofPowerSeries ℤ K)
     ofPowerSeries_injective)
 
 lemma powerSeriesEquivSubring_apply (f : K⟦X⟧) :

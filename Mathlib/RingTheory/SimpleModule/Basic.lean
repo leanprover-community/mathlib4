@@ -290,7 +290,7 @@ theorem exists_sSupIndep_sSup_simples_eq_top :
 theorem annihilator_isRadical (R) [CommRing R] [Module R M] [IsSemisimpleModule R M] :
     (Module.annihilator R M).IsRadical := by
   rw [← Submodule.annihilator_top, ← sSup_simples_eq_top, sSup_eq_iSup', Submodule.annihilator_iSup]
-  exact Ideal.isRadical_iInf _ fun i ↦ (i.2.annihilator_isMaximal).isPrime.isRadical
+  exact Ideal.isRadical_iInf _ fun i ↦ i.2.annihilator_isMaximal.isPrime.isRadical
 
 instance submodule {m : Submodule R M} : IsSemisimpleModule R m where
   __ := m.mapIic.complementedLattice_iff.2 IsModularLattice.complementedLattice_Iic
@@ -403,7 +403,7 @@ theorem IsSemisimpleModule.exists_linearEquiv_fin_dfinsupp [IsSemisimpleModule R
       (_ : M ≃ₗ[R] Π₀ i : Fin n, S i), ∀ i, IsSimpleModule R (S i) :=
   have ⟨s, e, h, simple⟩ := IsSemisimpleModule.exists_linearEquiv_dfinsupp R M
   have := WellFoundedGT.finite_of_iSupIndep ((sSupIndep_iff _).mp h)
-    fun S ↦ (S.1.nontrivial_iff_ne_bot).mp <| IsSimpleModule.nontrivial R S
+    fun S ↦ S.1.nontrivial_iff_ne_bot.mp <| IsSimpleModule.nontrivial R S
   ⟨_, _, e.trans <| DirectSum.lequivCongrLeft R (Finite.equivFin s), fun _ ↦ simple _⟩
 
 open LinearMap in

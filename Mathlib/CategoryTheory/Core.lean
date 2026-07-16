@@ -186,7 +186,7 @@ lemma coreLeftUnitor {F : C ⥤ D} :
 set_option backward.isDefEq.respectTransparency.types false in
 lemma coreRightUnitor {F : C ⥤ D} :
     F.rightUnitor.core =
-    (F).coreComp (𝟭 D) ≪≫ isoWhiskerLeft _ (Functor.coreId D) ≪≫ F.core.rightUnitor := by
+    F.coreComp (𝟭 D) ≪≫ isoWhiskerLeft _ (Functor.coreId D) ≪≫ F.core.rightUnitor := by
   cat_disch
 
 set_option backward.isDefEq.respectTransparency.types false in

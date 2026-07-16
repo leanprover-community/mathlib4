@@ -200,7 +200,7 @@ abbrev diagram' : StructuredArrow S toProfinite ⥤ Profinite :=
   S.fintypeDiagram' ⋙ toProfinite
 
 /-- A cone over `S.diagram'` whose cone point is `S`. -/
-abbrev asLimitCone' : Cone (S.diagram') := cone (𝟭 _) S
+abbrev asLimitCone' : Cone S.diagram' := cone (𝟭 _) S
 
 instance (i : DiscreteQuotient S) : Epi (S.asLimitCone.π.app i) :=
   (epi_iff_surjective _).mpr i.proj_surjective

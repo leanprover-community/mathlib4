@@ -1237,9 +1237,9 @@ lemma Scheme.exists_π_app_comp_eq_of_locallyOfFinitePresentation
     ∃ (i : I) (g : D.obj i ⟶ X), c.π.app i ≫ g = a ∧ g ≫ f = t.app i := by
   -- The open cover of `c := lim Dᵢ` indexed by triplets of affine opens `(U, V, W)` with
   -- `U ⊆ c`, `V ⊆ X`, `W ⊆ S` such that `U` maps to `V` maps to `W`.
-  have 𝒰 := (c.pt.isBasis_affineOpens).isOpenCover_mem_and_le
-    (((X.isBasis_affineOpens).isOpenCover_mem_and_le
-    ((S.isBasis_affineOpens).isOpenCover.comap f.base.hom)).comap a.base.hom)
+  have 𝒰 := c.pt.isBasis_affineOpens.isOpenCover_mem_and_le
+    ((X.isBasis_affineOpens.isOpenCover_mem_and_le
+    (S.isBasis_affineOpens.isOpenCover.comap f.base.hom)).comap a.base.hom)
   -- By qcqs, this cover descends to some finite affine open cover `𝒱` of `Dᵢ`.
   obtain ⟨i, s, 𝒱, h𝒱, h𝒱𝒰⟩ := Scheme.exists_isOpenCover_and_isAffine D c hc _ 𝒰 fun U ↦ U.2.1
   obtain ⟨i', fi'i, hi'⟩ : ∃ (i' : I) (fi'i : i' ⟶ i),

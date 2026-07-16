@@ -246,7 +246,7 @@ theorem mdifferentiableWithinAt_totalSpace_iff
   apply and_congr_right
   intro hf
   rw [Trivialization.mdifferentiableWithinAt_snd_comp_iff₂ IB
-    (FiberBundle.mem_trivializationAt_proj_source) he hf]
+    FiberBundle.mem_trivializationAt_proj_source he hf]
 
 /-- Characterization of differentiable functions into a vector bundle in terms
 of any trivialization. Version at a point. -/
@@ -259,7 +259,7 @@ theorem mdifferentiableAt_totalSpace_iff
   apply and_congr_right
   intro hf
   rw [Trivialization.mdifferentiableAt_snd_comp_iff₂ IB
-    (FiberBundle.mem_trivializationAt_proj_source) he hf]
+    FiberBundle.mem_trivializationAt_proj_source he hf]
 
 /-- Characterization of differentiable functions into a vector bundle in terms
 of any trivialization. Version at a point within a set. -/
@@ -462,7 +462,7 @@ lemma MDifferentiableWithinAt.sum_section {ι : Type*} {s : Finset ι} {t : ι �
   | empty => simpa using! (contMDiffWithinAt_zeroSection 𝕜 E).mdifferentiableWithinAt one_ne_zero
   | insert i s hi h =>
     simp only [Finset.mem_insert, forall_eq_or_imp] at hs
-    simpa [Finset.sum_insert hi] using mdifferentiableWithinAt_add_section (hs.1) (h hs.2)
+    simpa [Finset.sum_insert hi] using mdifferentiableWithinAt_add_section hs.1 (h hs.2)
 
 lemma MDifferentiableAt.sum_section {ι : Type*} {s : Finset ι} {t : ι → (x : B) → E x} {x₀ : B}
     (hs : ∀ i ∈ s, MDiffAt (T% (t i ·)) x₀) :

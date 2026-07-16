@@ -816,7 +816,7 @@ lemma ker_comp_of_injective [Semiring T] (g : T →+* R) {f : R →+* S} (hf : F
 @[simp] theorem _root_.AlgHom.ker_coe_equiv {R A B : Type*} [CommSemiring R] [Semiring A]
     [Semiring B] [Algebra R A] [Algebra R B] (e : A ≃ₐ[R] B) :
     RingHom.ker (e : A →+* B) = ⊥ :=
-  RingHom.ker_coe_equiv (e.toRingEquiv)
+  RingHom.ker_coe_equiv e.toRingEquiv
 
 end Ring
 

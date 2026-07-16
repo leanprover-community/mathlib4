@@ -253,7 +253,7 @@ lemma ProjectiveResolution.iso_hom_naturality {X Y : C} (f : X ⟶ Y)
     (φ : P.complex ⟶ Q.complex) (comm : φ.f 0 ≫ Q.π.f 0 = P.π.f 0 ≫ f) :
     (projectiveResolutions C).map f ≫ Q.iso.hom =
       P.iso.hom ≫ (HomotopyCategory.quotient _ _).map φ := by
-  rw [← cancel_epi (P.iso).inv, iso_inv_naturality_assoc f P Q φ comm,
+  rw [← cancel_epi P.iso.inv, iso_inv_naturality_assoc f P Q φ comm,
     Iso.inv_hom_id_assoc, Iso.inv_hom_id, comp_id]
 
 end

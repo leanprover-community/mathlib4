@@ -286,7 +286,7 @@ theorem comp_left (hf : HasCompactMulSupport f) (hg : g 1 = 1) :
 @[to_additive]
 theorem _root_.hasCompactMulSupport_comp_left (hg : ∀ {x}, g x = 1 ↔ x = 1) :
     HasCompactMulSupport (g ∘ f) ↔ HasCompactMulSupport f := by
-  simp_rw [hasCompactMulSupport_def, mulSupport_comp_eq g (@hg) f]
+  simp_rw [hasCompactMulSupport_def, mulSupport_comp_eq g @hg f]
 
 @[to_additive]
 theorem comp_isClosedEmbedding (hf : HasCompactMulSupport f) {g : α' → α}
@@ -346,7 +346,7 @@ theorem continuous_extend_one [TopologicalSpace β] {U : Set α'} (hU : IsOpen U
   continuous_of_mulTSupport fun x h ↦ by
     rw [show x = ↑(⟨x, Subtype.coe_image_subset _ _
       (supp.mulTSupport_extend_one_subset continuous_subtype_val h)⟩ : U) by rfl,
-      ← (hU.isOpenEmbedding_subtypeVal).continuousAt_iff, extend_comp Subtype.val_injective]
+      ← hU.isOpenEmbedding_subtypeVal.continuousAt_iff, extend_comp Subtype.val_injective]
     exact cont.continuousAt
 
 /-- If `f` has compact multiplicative support, then `f` tends to 1 at infinity. -/

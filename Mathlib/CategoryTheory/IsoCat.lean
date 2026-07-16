@@ -101,7 +101,7 @@ instance : (𝟭 C).IsIso where
 variable [F.IsIso] [G.IsIso]
 
 /-- The bijection on objects induced by a functor that is an isomorphism of categories. -/
-noncomputable def objEquiv : C ≃ D := .ofBijective _ (F.bijective_obj)
+noncomputable def objEquiv : C ≃ D := .ofBijective _ F.bijective_obj
 
 @[simp]
 lemma objEquiv_symm_apply_apply (X : C) :

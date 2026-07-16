@@ -400,7 +400,7 @@ theorem isSheaf_iff_isSheaf_of_type (P : Cᵒᵖ ⥤ Type w) :
     Presheaf.IsSheaf J P ↔ Presieve.IsSheaf J P := by
   constructor
   · intro hP
-    refine Presieve.isSheaf_iso J ?_ (hP (PUnit))
+    refine Presieve.isSheaf_iso J ?_ (hP PUnit)
     exact Functor.isoWhiskerLeft _ Coyoneda.punitIso ≪≫ P.rightUnitor
   · intro hP X Y S hS z hz
     refine ⟨↾fun x => (hP S hS).amalgamate (fun Z f hf ↦

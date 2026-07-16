@@ -212,8 +212,8 @@ lemma leRecOn_succ' {C : ℕ → Sort*} {n} {h : n ≤ n + 1} {next : ∀ {k}, C
   leRec_succ' _ _
 
 lemma leRecOn_trans {C : ℕ → Sort*} {n m k} (hnm : n ≤ m) (hmk : m ≤ k) {next} (x : C n) :
-    (leRecOn (Nat.le_trans hnm hmk) (@next) x : C k) =
-      leRecOn hmk (@next) (leRecOn hnm (@next) x) :=
+    (leRecOn (Nat.le_trans hnm hmk) @next x : C k) =
+      leRecOn hmk @next (leRecOn hnm @next x) :=
   leRec_trans _ _ _ _
 
 lemma leRecOn_succ_left {C : ℕ → Sort*} {n m}

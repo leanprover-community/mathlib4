@@ -53,7 +53,7 @@ initialize_simps_projections TopCat (-str)
 
 namespace TopCat
 
-instance : CoeSort (TopCat) (Type u) :=
+instance : CoeSort TopCat (Type u) :=
   ⟨TopCat.carrier⟩
 
 attribute [coe] TopCat.carrier

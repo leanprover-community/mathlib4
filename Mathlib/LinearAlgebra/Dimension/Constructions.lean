@@ -72,7 +72,7 @@ theorem LinearIndepOn.union_id_of_quotient {M' : Submodule R M}
     (ht : LinearIndepOn R (mkQ M') t) : LinearIndepOn R id (s ∪ t) :=
   hs'.union_of_quotient <| by
     rw [image_id]
-    exact ht.of_comp ((span R s).mapQ M' (LinearMap.id) (span_le.2 hs))
+    exact ht.of_comp ((span R s).mapQ M' LinearMap.id (span_le.2 hs))
 
 theorem linearIndepOn_union_iff_quotient {s t : Set ι} {f : ι → M} (hst : Disjoint s t) :
     LinearIndepOn R f (s ∪ t) ↔

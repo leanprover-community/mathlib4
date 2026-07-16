@@ -723,34 +723,34 @@ theorem ContDiffWithinAt.sin {n} (hf : ContDiffWithinAt ℝ n f s x) :
 section LogDeriv
 
 @[simp]
-theorem Complex.logDeriv_sin : logDeriv (Complex.sin) = Complex.cot := by
+theorem Complex.logDeriv_sin : logDeriv Complex.sin = Complex.cot := by
   ext
   rw [logDeriv, Complex.deriv_sin, Pi.div_apply, Complex.cot]
 
 @[simp]
-theorem Real.logDeriv_sin : logDeriv (Real.sin) = Real.cot := by
+theorem Real.logDeriv_sin : logDeriv Real.sin = Real.cot := by
   ext
   rw [logDeriv, Real.deriv_sin, Pi.div_apply, Real.cot_eq_cos_div_sin]
 
 @[simp]
-theorem Complex.logDeriv_cos : logDeriv (Complex.cos) = -Complex.tan := by
+theorem Complex.logDeriv_cos : logDeriv Complex.cos = -Complex.tan := by
   ext
   rw [logDeriv, Complex.deriv_cos', Pi.div_apply, Pi.neg_apply, Complex.tan, neg_div]
 
 @[simp]
-theorem Real.logDeriv_cos : logDeriv (Real.cos) = -Real.tan := by
+theorem Real.logDeriv_cos : logDeriv Real.cos = -Real.tan := by
   ext
   rw [logDeriv, Real.deriv_cos', Pi.div_apply, Pi.neg_apply, neg_div, Real.tan_eq_sin_div_cos]
 
 @[simp]
-theorem Complex.logDeriv_exp : logDeriv (Complex.exp) = 1 := by
+theorem Complex.logDeriv_exp : logDeriv Complex.exp = 1 := by
   ext
   rw [logDeriv, Complex.deriv_exp, Pi.div_apply, ← exp_sub, sub_self, exp_zero, Pi.one_apply]
 
 @[deprecated (since := "2026-02-05")] alias Complex.LogDeriv_exp := Complex.logDeriv_exp
 
 @[simp]
-theorem Real.logDeriv_exp : logDeriv (Real.exp) = 1 := by
+theorem Real.logDeriv_exp : logDeriv Real.exp = 1 := by
   ext
   rw [logDeriv, Real.deriv_exp, Pi.div_apply, ← exp_sub, sub_self, exp_zero, Pi.one_apply]
 

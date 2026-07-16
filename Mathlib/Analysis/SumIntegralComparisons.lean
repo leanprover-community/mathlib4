@@ -189,7 +189,7 @@ lemma AntitoneOn.sum_Ico_le_integral {a b : ℕ} (anti : AntitoneOn f (Icc a b))
   by_cases! hab : b < a
   · simpa [Finset.Ico_eq_empty_of_le hab.le] using setIntegral_nonneg measurableSet_Ioi nonneg
   grw [anti.sum_le_integral_Ico hab, integral_of_le (mod_cast hab)]
-  apply setIntegral_mono_set integrable _ (Ioc_subset_Ioi_self.eventuallyLE)
+  apply setIntegral_mono_set integrable _ Ioc_subset_Ioi_self.eventuallyLE
   exact ae_restrict_of_forall_mem measurableSet_Ioi nonneg
 
 /-- The partial sums of a nonnegative function are bounded by the integral over `(0, ∞)`. -/

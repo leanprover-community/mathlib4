@@ -675,7 +675,7 @@ def toEnvelGroup.map {R : Type*} [Rack R] {G : Type*} [Group G] :
         | mul x y ih_x ih_y =>
           have hm : ⟦x.mul y⟧ = @Mul.mul (EnvelGroup R) _ ⟦x⟧ ⟦y⟧ := rfl
           simp only [MonoidHom.coe_mk, OneHom.coe_mk, Quotient.lift_mk]
-          suffices ∀ x y, F (Mul.mul x y) = F (x) * F (y) by
+          suffices ∀ x y, F (Mul.mul x y) = F x * F y by
             simp_all only [MonoidHom.coe_mk, OneHom.coe_mk, Quotient.lift_mk]
             rw [← ih_x, ← ih_y, mapAux]
           exact F.map_mul

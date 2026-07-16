@@ -666,7 +666,7 @@ instance ι_isOpenImmersion (i : D.J) : IsOpenImmersion (𝖣.ι i) := by
   rw [← D.ι_isoSheafedSpace_inv]
   -- Porting note: the next lines were a single `apply_instance`
   apply +allowSynthFailures PresheafedSpace.IsOpenImmersion.comp
-  exact (D.toSheafedSpaceGlueData).ιIsOpenImmersion i
+  exact D.toSheafedSpaceGlueData.ιIsOpenImmersion i
 
 instance (i j k : D.J) : PreservesLimit (cospan (𝖣.f i j) (𝖣.f i k)) forgetToSheafedSpace :=
   inferInstance

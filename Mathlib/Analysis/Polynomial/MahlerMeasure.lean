@@ -78,11 +78,11 @@ theorem logMahlerMeasure_monomial (n : ℕ) (z : ℂ) : (monomial n z).logMahler
 
 /-- The Mahler measure of a polynomial `p` defined as `e ^ (logMahlerMeasure p)` if `p` is nonzero
 and `0` otherwise -/
-noncomputable def mahlerMeasure : ℝ := if p ≠ 0 then exp (p.logMahlerMeasure) else 0
+noncomputable def mahlerMeasure : ℝ := if p ≠ 0 then exp p.logMahlerMeasure else 0
 
 variable {p} in
 theorem mahlerMeasure_def_of_ne_zero (hp : p ≠ 0) : p.mahlerMeasure =
-    exp ((2 * π)⁻¹ * ∫ (x : ℝ) in (0)..(2 * π), log ‖eval (circleMap 0 1 x) p‖) := by
+    exp ((2 * π)⁻¹ * ∫ (x : ℝ) in 0..(2 * π), log ‖eval (circleMap 0 1 x) p‖) := by
   simp [mahlerMeasure, hp, logMahlerMeasure_def, circleAverage_def]
 
 variable {p} in
@@ -146,7 +146,7 @@ theorem mahlerMeasure_mul (p q : ℂ[X]) :
 
 @[simp]
 theorem prod_mahlerMeasure_eq_mahlerMeasure_prod (s : Multiset ℂ[X]) :
-    (s.prod).mahlerMeasure = (s.map (fun p ↦ p.mahlerMeasure)).prod := by
+    s.prod.mahlerMeasure = (s.map (fun p ↦ p.mahlerMeasure)).prod := by
   induction s using Multiset.induction_on with
   | empty => simp
   | cons _ _ ih => simp [mahlerMeasure_mul, ih]
@@ -348,8 +348,8 @@ theorem mahlerMeasure_le_sqrt_sum_sq_norm_coeff (p : Polynomial ℂ) :
 root of its degree plus one. -/
 theorem mahlerMeasure_le_sqrt_natDegree_add_one_mul_supNorm (p : Polynomial ℂ) :
     p.mahlerMeasure ≤ √(p.natDegree + 1) * p.supNorm :=
-  (p.mahlerMeasure_le_sqrt_sum_sq_norm_coeff).trans <| by
-    rw [show √(↑(p.natDegree) + 1) * p.supNorm = √((p.natDegree + 1) * p.supNorm ^ 2) by
+  p.mahlerMeasure_le_sqrt_sum_sq_norm_coeff.trans <| by
+    rw [show √(↑p.natDegree + 1) * p.supNorm = √((p.natDegree + 1) * p.supNorm ^ 2) by
       rw [Real.sqrt_mul (by positivity), Real.sqrt_sq p.supNorm_nonneg]]
     gcongr
     refine (p.support.sum_le_card_nsmul _ (p.supNorm ^ 2) fun i _ ↦ ?_).trans ?_
@@ -360,7 +360,7 @@ theorem mahlerMeasure_le_sqrt_natDegree_add_one_mul_supNorm (p : Polynomial ℂ)
 
 open Multiset in
 theorem norm_coeff_le_choose_mul_mahlerMeasure (n : ℕ) (p : ℂ[X]) :
-    ‖p.coeff n‖ ≤ (p.natDegree).choose n * p.mahlerMeasure := by
+    ‖p.coeff n‖ ≤ p.natDegree.choose n * p.mahlerMeasure := by
   by_cases hp : p = 0
   · simp [hp]
   rcases lt_or_ge p.natDegree n with hlt | hn
@@ -393,7 +393,7 @@ theorem norm_coeff_le_choose_mul_mahlerMeasure (n : ℕ) (p : ℂ[X]) :
       · exact hx.1
   --final calc block:
   calc ∑ x ∈ S.toFinset, count x S * ‖x.prod‖
-    _ ≤ ∑ x ∈ S.toFinset, count x S * ((p.roots).map (fun a ↦ max 1 ‖a‖)).prod := by
+    _ ≤ ∑ x ∈ S.toFinset, count x S * (p.roots.map (fun a ↦ max 1 ‖a‖)).prod := by
       gcongr with x hx
       rw [Finset.prod_multiset_map_count, Finset.prod_multiset_count, norm_prod]
       simp_rw [norm_pow]
@@ -511,7 +511,7 @@ theorem mapMahlerMeasure_le_sum_norm_coeff (hv : Isometry v) :
     simp [hv.norm_map_of_map_zero (map_zero _)]
 
 theorem norm_coeff_le_choose_mul_mapMahlerMeasure (hv : Isometry v) (n : ℕ) (p : A[X]) :
-    ‖p.coeff n‖ ≤ (p.natDegree).choose n * p.mapMahlerMeasure v := by
+    ‖p.coeff n‖ ≤ p.natDegree.choose n * p.mapMahlerMeasure v := by
   have hv_norm : ‖p.coeff n‖ = ‖v (p.coeff n)‖ :=
     (hv.norm_map_of_map_zero (map_zero _) _).symm
   have hcoeff : ‖v (p.coeff n)‖ = ‖(p.map v).coeff n‖ := by simp

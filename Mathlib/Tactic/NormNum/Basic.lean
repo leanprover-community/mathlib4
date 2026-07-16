@@ -635,7 +635,7 @@ theorem eq_of_false {a b : Prop} (ha : ¬a) (hb : ¬b) : a = b := propext (iff_o
 /-! ### Nat operations -/
 
 theorem isNat_natSucc : {a : ℕ} → {a' c : ℕ} →
-    IsNat a a' → Nat.succ a' = c → IsNat (a.succ) c
+    IsNat a a' → Nat.succ a' = c → IsNat a.succ c
   | _, _,_, ⟨rfl⟩, rfl => ⟨by simp⟩
 
 /-- The `norm_num` extension which identifies expressions of the form `Nat.succ a`,
@@ -647,7 +647,7 @@ such that `norm_num` successfully recognises `a`. -/
   haveI' : $e =Q Nat.succ $a := ⟨⟩
   let sℕ : Q(AddMonoidWithOne ℕ) := q(Nat.instAddMonoidWithOne)
   let ⟨na, pa⟩ ← deriveNat a sℕ
-  have nc : Q(ℕ) := mkRawNatLit (na.natLit!.succ)
+  have nc : Q(ℕ) := mkRawNatLit na.natLit!.succ
   haveI' : $nc =Q ($na).succ := ⟨⟩
   return .isNat sℕ nc q(isNat_natSucc $pa (.refl $nc))
 

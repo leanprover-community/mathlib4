@@ -101,7 +101,7 @@ def ofOrderIso {J' : Type w'} [LinearOrder J'] [OrderBot J']
   F := e.equivalence.functor ⋙ c.F
   isoBot := c.F.mapIso (eqToIso e.map_bot) ≪≫ c.isoBot
   incl := Functor.whiskerLeft e.equivalence.functor c.incl
-  isColimit := IsColimit.whiskerEquivalence (c.isColimit) e.equivalence
+  isColimit := IsColimit.whiskerEquivalence c.isColimit e.equivalence
 
 set_option backward.isDefEq.respectTransparency false in
 /-- If `f` is a transfinite composition of shape `J`, then `F.map f` also is

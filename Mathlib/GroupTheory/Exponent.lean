@@ -605,9 +605,9 @@ theorem Monoid.exponent_prod {M₁ M₂ : Type*} [Monoid M₁] [Monoid M₂] :
   · refine exponent_dvd_of_forall_pow_eq_one fun g ↦ ?_
     ext1
     · rw [Prod.pow_fst, Prod.fst_one, ← orderOf_dvd_iff_pow_eq_one]
-      exact dvd_trans (Monoid.order_dvd_exponent (g.1)) <| dvd_lcm_left _ _
+      exact dvd_trans (Monoid.order_dvd_exponent g.1) <| dvd_lcm_left _ _
     · rw [Prod.pow_snd, Prod.snd_one, ← orderOf_dvd_iff_pow_eq_one]
-      exact dvd_trans (Monoid.order_dvd_exponent (g.2)) <| dvd_lcm_right _ _
+      exact dvd_trans (Monoid.order_dvd_exponent g.2) <| dvd_lcm_right _ _
   · exact MonoidHom.exponent_dvd (f := MonoidHom.fst M₁ M₂) Prod.fst_surjective
   · exact MonoidHom.exponent_dvd (f := MonoidHom.snd M₁ M₂) Prod.snd_surjective
 

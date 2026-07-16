@@ -42,7 +42,7 @@ theorem IsPrimitiveRoot.not_coprime_norm_of_mk_eq_one [NumberField K] (hI : absN
   intro h₁
   rw [← map_one (Ideal.Quotient.mk I), Ideal.Quotient.eq] at h
   obtain ⟨p, hp, h₂⟩ := Nat.exists_prime_and_dvd hI
-  have : Fact (p.Prime) := ⟨hp⟩
+  have : Fact p.Prime := ⟨hp⟩
   refine hp.not_dvd_one <| h₁ ▸ Nat.dvd_gcd h₂ ?_
   exact hζ.prime_dvd_of_dvd_norm_sub_one hn <|
     Int.dvd_trans (Int.natCast_dvd_natCast.mpr h₂) (absNorm_dvd_norm_of_mem h)

@@ -545,7 +545,7 @@ theorem liftPropAt_iff_comp_subtype_val (hG : LocalInvariantProp G G' P) {U : Op
   congrm ?_ ∧ ?_
   · simp_rw [continuousWithinAt_univ, U.isOpenEmbedding'.continuousAt_iff]
   · apply hG.congr_iff
-    exact (U.chartAt_subtype_val_symm_eventuallyEq).fun_comp (chartAt H' (f x) ∘ f)
+    exact U.chartAt_subtype_val_symm_eventuallyEq.fun_comp (chartAt H' (f x) ∘ f)
 
 theorem liftPropAt_iff_comp_inclusion (hG : LocalInvariantProp G G' P) {U V : Opens M} (hUV : U ≤ V)
     (f : V → M') (x : U) :

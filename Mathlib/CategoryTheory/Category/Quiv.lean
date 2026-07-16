@@ -208,7 +208,7 @@ set_option backward.defeqAttrib.useBackward true in
 /-- Naturality of `pathComposition`. -/
 def pathCompositionNaturality {C : Type u} {D : Type u₁}
     [Category.{v} C] [Category.{v₁} D] (F : C ⥤ D) :
-    Cat.freeMap (F.toPrefunctor) ⋙ pathComposition D ≅ pathComposition C ⋙ F :=
+    Cat.freeMap F.toPrefunctor ⋙ pathComposition D ≅ pathComposition C ⋙ F :=
   Paths.liftNatIso (fun _ ↦ Iso.refl _) (by simp)
 
 set_option backward.isDefEq.respectTransparency.types false in
@@ -217,7 +217,7 @@ set_option backward.defeqAttrib.useBackward true in
 `Quiv.forget ⋙ Cat.free ⟶ 𝟭 _`. -/
 theorem pathComposition_naturality {C : Type u} {D : Type u₁}
     [Category.{v} C] [Category.{v₁} D]
-    (F : C ⥤ D) : Cat.freeMap (F.toPrefunctor) ⋙ pathComposition D = pathComposition C ⋙ F :=
+    (F : C ⥤ D) : Cat.freeMap F.toPrefunctor ⋙ pathComposition D = pathComposition C ⋙ F :=
   Paths.ext_functor rfl (by simp)
 
 /-- Naturality of `Paths.of`, which defines a natural transformation

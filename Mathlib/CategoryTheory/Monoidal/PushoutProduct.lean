@@ -308,7 +308,7 @@ def isTerminalIso [MonoidalCategory C] [MonoidalClosed C]
   haveI : IsPullback (𝟙 _) ((IsTerminal.isTerminalObj (ihom _) _ t).from _)
       ((ihom X.left).map (t.from W)) ((MonoidalClosed.pre X.hom).app T) :=
     .of_horiz_isIso (sq := ⟨(IsTerminal.isTerminalObj (ihom _) _ t).hom_ext ..⟩)
-  Arrow.isoMk' _ _ (Iso.refl _) this.isoPullback.symm ((this.isoPullback).eq_comp_inv.2
+  Arrow.isoMk' _ _ (Iso.refl _) this.isoPullback.symm (this.isoPullback.eq_comp_inv.2
     (pullback.hom_ext (by simp) ((IsTerminal.isTerminalObj (ihom _) _ t).hom_ext ..)))
 
 open CartesianMonoidalCategory in
@@ -326,7 +326,7 @@ def isInitialIso [CartesianMonoidalCategory C] [MonoidalClosed C] [BraidedCatego
   haveI : IsPullback ((isTerminalTensorUnit.ofIso (powZero i).symm).from _) (𝟙 _)
       ((ihom I).map X.hom) ((MonoidalClosed.pre (i.to W)).app X.right) :=
     .of_vert_isIso (sq := ⟨(isTerminalTensorUnit.ofIso (powZero i).symm).hom_ext ..⟩)
-  Arrow.isoMk' _ _ (Iso.refl _) this.isoPullback.symm ((this.isoPullback).eq_comp_inv.2
+  Arrow.isoMk' _ _ (Iso.refl _) this.isoPullback.symm (this.isoPullback.eq_comp_inv.2
     (pullback.hom_ext ((isTerminalTensorUnit.ofIso (powZero i).symm).hom_ext ..) (by simp)))
 
 end

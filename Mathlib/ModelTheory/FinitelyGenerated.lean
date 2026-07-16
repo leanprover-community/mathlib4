@@ -229,7 +229,7 @@ theorem FG.countable_hom (N : Type*) [L.Structure N] [Countable N] (h : FG L M) 
     apply Hom.eq_of_eqOn_dense closure_S
     intro x x_in_S
     exact congr_fun h ⟨x, x_in_S⟩
-  have : Finite ↑S := (S.finite_coe_iff).2 finite_S
+  have : Finite ↑S := S.finite_coe_iff.2 finite_S
   exact Function.Embedding.countable ⟨g, g_inj⟩
 
 instance FG.instCountable_hom (N : Type*) [L.Structure N] [Countable N] [h : FG L M] :

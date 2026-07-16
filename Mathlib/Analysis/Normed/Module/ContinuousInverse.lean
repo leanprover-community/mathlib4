@@ -224,7 +224,7 @@ lemma isClosed_range (hf : f.HasLeftInverse) [IsTopologicalAddGroup F] :
     IsClosed (range f) := by
   -- `range f = ker (f ∘ g - id)` is closed since `f ∘ g - id` is continuous.
   rw [← f.range_toLinearMap, ← f.coe_range,
-    f.range_eq_ker_of_leftInverse (hf.leftInverse_leftInverse)]
+    f.range_eq_ker_of_leftInverse hf.leftInverse_leftInverse]
   exact ((f.comp hf.leftInverse) - (ContinuousLinearMap.id R F)).isClosed_ker
 
 /-- Choice of a closed complement of `range f` -/
@@ -253,7 +253,7 @@ has closed range and its range has a closed complement. -/
 lemma of_injective_of_isClosed_range_of_closedComplement_range {f : E →L[R] F}
     (hf : Injective f) (hf' : IsClosed (range f)) (hf'' : Submodule.ClosedComplemented f.range) :
     f.HasLeftInverse := by
-  have : (f.rangeRestrict).ker = ⊥ := by
+  have : f.rangeRestrict.ker = ⊥ := by
     rw [ker_codRestrict]; exact LinearMap.ker_eq_bot.mpr hf
   -- We compose the continuous inverse of `f : E → range f` with the projection `p : F → range f`.
   obtain ⟨p, hp⟩ := hf''

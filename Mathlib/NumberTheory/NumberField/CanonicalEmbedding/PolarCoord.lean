@@ -126,7 +126,7 @@ open scoped Classical in
 theorem det_fderivPolarCoordRealSymm (x : realMixedSpace K) :
     (FDerivPolarCoordRealSymm K x).det = ∏ w : {w // IsComplex w}, (x.2 w).1 := by
   have : (FDerivPolarCoordRealSymm K x).toLinearMap =
-      LinearMap.prodMap (LinearMap.id) (fderivPiPolarCoordSymm x.2).toLinearMap := rfl
+      LinearMap.prodMap LinearMap.id (fderivPiPolarCoordSymm x.2).toLinearMap := rfl
   rw [ContinuousLinearMap.det, this, LinearMap.det_prodMap, LinearMap.det_id, one_mul,
     ← ContinuousLinearMap.det, det_fderivPiPolarCoordSymm]
 

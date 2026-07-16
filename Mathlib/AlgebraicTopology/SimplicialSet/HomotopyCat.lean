@@ -469,7 +469,7 @@ instance (X : Truncated.{u} 2) [Unique (X _⦋0⦌₂)] : Unique X.HomotopyCateg
 then `X.HomotopyCategory` is a terminal object in `Cat`. -/
 def isTerminal (X : Truncated.{u} 2) [Unique (X _⦋0⦌₂)] [Subsingleton (X _⦋1⦌₂)] :
     IsTerminal (Cat.of X.HomotopyCategory) :=
-  letI : IsDiscrete (X.HomotopyCategory) := { eq_of_hom := by subsingleton }
+  letI : IsDiscrete X.HomotopyCategory := { eq_of_hom := by subsingleton }
   Cat.isTerminalOfUniqueOfIsDiscrete
 
 end HomotopyCategory

@@ -129,7 +129,7 @@ lemma exists_lift_of_finite_of_mono_of_epi {X Y S T : Profinite.{u}} [Finite S]
 
 /-- Finite sets are injective objects in `Profinite`. -/
 instance injective_of_finite (S : Profinite.{u}) [Nonempty S] [Finite S] :
-    Injective (S) where
+    Injective S where
   factors {X Y} g f _ := by
     have (T : Profinite.{u}) [Nonempty T] : IsSplitEpi (CompHausLike.isTerminalPUnit.from T) :=
       IsSplitEpi.mk' { section_ := CompHausLike.const _ (Nonempty.some inferInstance) }

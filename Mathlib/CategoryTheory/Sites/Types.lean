@@ -121,7 +121,7 @@ theorem typesGlue_eval {S hs α} (s) : typesGlue.{u} S hs α (eval S α s) = s :
 @[simps]
 noncomputable def evalEquiv (S : Type uᵒᵖ ⥤ Type u)
     (hs : Presheaf.IsSheaf typesGrothendieckTopology S)
-    (α : Type u) : S.obj (op α) ≃ (α ⟶ S.obj (op (PUnit))) where
+    (α : Type u) : S.obj (op α) ≃ (α ⟶ S.obj (op PUnit)) where
   toFun := eval S α
   invFun f := typesGlue S ((isSheaf_iff_isSheaf_of_type _ _).1 hs) α f
   left_inv := typesGlue_eval
@@ -137,7 +137,7 @@ set_option backward.defeqAttrib.useBackward true in
 @[simps!]
 noncomputable def equivYoneda (S : Type uᵒᵖ ⥤ Type u)
     (hs : Presheaf.IsSheaf typesGrothendieckTopology S) :
-    S ≅ yoneda.obj (S.obj (op (PUnit))) :=
+    S ≅ yoneda.obj (S.obj (op PUnit)) :=
   NatIso.ofComponents
     (fun α ↦ (evalEquiv S hs <| unop α).toIso) fun {α β} f => by
       dsimp
@@ -147,7 +147,7 @@ noncomputable def equivYoneda (S : Type uᵒᵖ ⥤ Type u)
 /-- Given a sheaf `S`, construct an isomorphism `S ≅ [-, S(*)]`. -/
 @[simps]
 noncomputable def equivYoneda' (S : Sheaf typesGrothendieckTopology (Type u)) :
-    S ≅ yoneda'.obj (S.1.obj (op (PUnit))) where
+    S ≅ yoneda'.obj (S.1.obj (op PUnit)) where
   hom := ⟨(equivYoneda S.1 S.2).hom⟩
   inv := ⟨(equivYoneda S.1 S.2).inv⟩
   hom_inv_id := by ext1; apply (equivYoneda S.1 S.2).hom_inv_id
@@ -165,7 +165,7 @@ set_option backward.isDefEq.respectTransparency false in
 @[simps!]
 noncomputable def typeEquiv : Type u ≌ Sheaf typesGrothendieckTopology (Type u) where
   functor := yoneda'
-  inverse := sheafToPresheaf _ _ ⋙ (evaluation _ _).obj (op (PUnit))
+  inverse := sheafToPresheaf _ _ ⋙ (evaluation _ _).obj (op PUnit)
   unitIso := dsimp% NatIso.ofComponents
       (fun _α => -- α ≅ PUnit ⟶ α
         { hom := ↾fun x => ↾fun _ => x

@@ -106,7 +106,7 @@ noncomputable def cokernelCofork : CokernelCofork (P.complex.d 1 0) :=
 set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- `Z` is the cokernel of `P.complex.X 1 ⟶ P.complex.X 0` when `P : ProjectiveResolution Z`. -/
-noncomputable def isColimitCokernelCofork : IsColimit (P.cokernelCofork) := by
+noncomputable def isColimitCokernelCofork : IsColimit P.cokernelCofork := by
   refine IsColimit.ofIsoColimit (P.complex.opcyclesIsCokernel 1 0 (by simp)) ?_
   refine Cofork.ext (P.complex.isoHomologyι₀.symm ≪≫ isoOfQuasiIsoAt P.π 0 ≪≫
     singleObjHomologySelfIso _ _ _) ?_

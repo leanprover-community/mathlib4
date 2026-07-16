@@ -187,7 +187,7 @@ theorem has_good_supp_iff {α : TypeVec n} (x : F α) :
     exact (mem_supp x _ u).mp hh _ _ hu
   rintro ⟨a, f, xeq, h⟩ p; rw [liftP_iff]; constructor
   · rintro ⟨a', f', xeq', h'⟩ i u usuppx
-    rcases (mem_supp x _ u).mp (@usuppx) a' f' xeq'.symm with ⟨i, _, f'ieq⟩
+    rcases (mem_supp x _ u).mp @usuppx a' f' xeq'.symm with ⟨i, _, f'ieq⟩
     rw [← f'ieq]
     apply h'
   intro h'

@@ -162,7 +162,7 @@ lemma summand_bound_of_mem_verticalStrip {k : ℝ} (hk : 0 ≤ k) (x : Fin 2 →
 lemma linear_isTheta_right_add (c e : ℤ) (z : ℂ) :
     (fun d : ℤ ↦ c * z + d + e) =Θ[cofinite] fun n ↦ (n : ℝ) := by
   apply IsTheta.add_isLittleO <;>
-  [refine Asymptotics.IsLittleO.add_isTheta ?_ (Int.cast_complex_isTheta_cast_real); skip] <;>
+  [refine Asymptotics.IsLittleO.add_isTheta ?_ Int.cast_complex_isTheta_cast_real; skip] <;>
   simpa [-Int.cofinite_eq] using
     .inr <| tendsto_norm_comp_cofinite_atTop_of_isClosedEmbedding Int.isClosedEmbedding_coe_real
 

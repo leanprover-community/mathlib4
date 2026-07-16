@@ -55,23 +55,23 @@ variable [GaloisCategory C] [FiberFunctor F]
 
 variable {G : Type*} [Group G] [TopologicalSpace G] [IsTopologicalGroup G] [CompactSpace G]
 
-private local instance fintypeQuotient (H : OpenSubgroup (G)) :
-    Fintype (G ⧸ (H : Subgroup (G))) :=
+private local instance fintypeQuotient (H : OpenSubgroup G) :
+    Fintype (G ⧸ (H : Subgroup G)) :=
   have : Finite (G ⧸ H.toSubgroup) := H.toSubgroup.quotient_finite_of_isOpen H.isOpen'
   Fintype.ofFinite _
 
 set_option backward.privateInPublic true in
 private local instance fintypeQuotientStabilizer {X : Type*} [MulAction G X]
     [TopologicalSpace X] [ContinuousSMul G X] [DiscreteTopology X] (x : X) :
-    Fintype (G ⧸ (MulAction.stabilizer (G) x)) :=
-  fintypeQuotient ⟨MulAction.stabilizer (G) x, stabilizer_isOpen (G) x⟩
+    Fintype (G ⧸ (MulAction.stabilizer G x)) :=
+  fintypeQuotient ⟨MulAction.stabilizer G x, stabilizer_isOpen G x⟩
 
 /-- If `X` is a finite discrete `G`-set, it can be written as the finite disjoint union
 of quotients of the form `G ⧸ Uᵢ` for open subgroups `(Uᵢ)`. Note that this
 is simply the decomposition into orbits. -/
 lemma has_decomp_quotients (X : Action FintypeCat G)
     [TopologicalSpace X.V] [DiscreteTopology X.V] [ContinuousSMul G X.V] :
-    ∃ (ι : Type) (_ : Finite ι) (f : ι → OpenSubgroup (G)),
+    ∃ (ι : Type) (_ : Finite ι) (f : ι → OpenSubgroup G),
       Nonempty ((∐ fun i ↦ G ⧸ₐ (f i).toSubgroup) ≅ X) := by
   obtain ⟨ι, hf, f, u, hc⟩ := has_decomp_connected_components' X
   let (i : ι) : TopologicalSpace (f i).V := ⊥
@@ -93,9 +93,9 @@ lemma has_decomp_quotients (X : Action FintypeCat G)
       exact fun s _ ↦ ⟨r.hom '' s, ⟨isOpen_discrete (r.hom '' s), Set.preimage_image_eq s hrinj⟩⟩
     rw [← this, continuous_induced_rng, ← heq]
     exact Continuous.comp continuous_smul (by fun_prop)
-  have (i : ι) : ∃ (U : OpenSubgroup (G)), (Nonempty ((f i) ≅ G ⧸ₐ U.toSubgroup)) := by
+  have (i : ι) : ∃ (U : OpenSubgroup G), (Nonempty ((f i) ≅ G ⧸ₐ U.toSubgroup)) := by
     obtain ⟨(x : (f i).V)⟩ := nonempty_fiber_of_isConnected (forget₂ _ _) (f i)
-    let U : OpenSubgroup (G) := ⟨MulAction.stabilizer (G) x, stabilizer_isOpen (G) x⟩
+    let U : OpenSubgroup G := ⟨MulAction.stabilizer G x, stabilizer_isOpen G x⟩
     exact ⟨U, ⟨FintypeCat.isoQuotientStabilizerOfIsConnected (f i) x⟩⟩
   choose g ui using this
   exact ⟨ι, hf, g, ⟨(Sigma.mapIso (fun i ↦ (ui i).some)).symm ≪≫ u⟩⟩
@@ -158,7 +158,7 @@ private def coconeQuotientDiag :
   ι := SingleObj.natTrans (u.hom ≫ quotientToQuotientOfLE V.toSubgroup U.toSubgroup hUinV) <| by
     intro (m : V ⧸ Subgroup.subgroupOf U V)
     simp only [const_obj_obj, Functor.comp_map, const_obj_map, Category.comp_id]
-    rw [← cancel_epi (u.inv), Iso.inv_hom_id_assoc]
+    rw [← cancel_epi u.inv, Iso.inv_hom_id_assoc]
     apply Action.hom_ext
     ext (x : Aut F ⧸ U.toSubgroup)
     induction m, x using Quotient.inductionOn₂ with | _ σ μ
@@ -167,7 +167,7 @@ private def coconeQuotientDiag :
         functorToAction_map_quotientToEndObjectHom V _ u]
       simpa
     apply Quotient.sound
-    apply (QuotientGroup.leftRel_apply).mpr
+    apply QuotientGroup.leftRel_apply.mpr
     simp
 
 set_option backward.defeqAttrib.useBackward true in
@@ -180,7 +180,7 @@ private def coconeQuotientDiagDesc
     (Quotient.lift (fun σ ↦ (u.inv ≫ s.ι.app (SingleObj.star _)).hom ⟦σ⟧) <| fun σ τ hst ↦ by
       let J' := quotientDiag V h u ⋙ functorToAction F
       let m : End (SingleObj.star (V.toSubgroup ⧸ Subgroup.subgroupOf U V)) :=
-        ⟦⟨σ⁻¹ * τ, (QuotientGroup.leftRel_apply).mp hst⟩⟧
+        ⟦⟨σ⁻¹ * τ, QuotientGroup.leftRel_apply.mp hst⟩⟧
       have h1 : J'.map m ≫ s.ι.app (SingleObj.star _) = s.ι.app (SingleObj.star _) :=
         s.ι.naturality m
       conv_rhs => rw [← h1]
@@ -240,7 +240,7 @@ lemma exists_lift_of_quotient_openSubgroup (V : OpenSubgroup (Aut F)) :
       induction x using Quotient.inductionOn with | _ τ
       change ⟦σ * τ⟧ = ⟦τ⟧
       apply Quotient.sound
-      apply (QuotientGroup.leftRel_apply).mpr
+      apply QuotientGroup.leftRel_apply.mpr
       simp only [mul_inv_rev]
       exact Subgroup.Normal.conj_mem hUnormal _ (Subgroup.inv_mem U.toSubgroup σinU) _
     simp [← cancel_mono u.hom.hom, show σ.hom.app A ≫ u.hom.hom = _ from u.hom.comm σ, hi]

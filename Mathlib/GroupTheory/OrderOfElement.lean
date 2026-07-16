@@ -1075,7 +1075,7 @@ lemma Subgroup.zpowers_eq_zpowers_iff {x y : G} (hx : ¬IsOfFinOrder x) :
   rw [← zpow_mul] at hl
   nth_rewrite 2 [← zpow_one x] at hl
   have h1 := (injective_zpow_iff_not_isOfFinOrder.mpr hx) hl
-  rcases (Int.mul_eq_one_iff_eq_one_or_neg_one).mp h1 with (h | h) <;> simp [h.1]
+  rcases Int.mul_eq_one_iff_eq_one_or_neg_one.mp h1 with (h | h) <;> simp [h.1]
 
 @[to_additive]
 theorem mem_zpowers_zpow_iff {g : G} {k : ℤ} :

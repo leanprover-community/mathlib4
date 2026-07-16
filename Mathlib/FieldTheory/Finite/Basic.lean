@@ -124,7 +124,7 @@ theorem card_cast_subgroup_card_ne_zero [Ring K] [NoZeroDivisors K] [Nontrivial 
   have hd : p ∣ n := (CharP.cast_eq_zero_iff K p n).mp nzero
   cases CharP.char_is_prime_or_zero K p with
   | inr pzero =>
-    exact (Fintype.card_pos).ne' <| Nat.eq_zero_of_zero_dvd <| pzero ▸ hd
+    exact Fintype.card_pos.ne' <| Nat.eq_zero_of_zero_dvd <| pzero ▸ hd
   | inl pprime =>
     have fact_pprime := Fact.mk pprime
     -- G has an element x of order p by Cauchy's theorem

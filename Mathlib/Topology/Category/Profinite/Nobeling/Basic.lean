@@ -628,7 +628,7 @@ theorem eval_πs_image' {l : Products I} {o₁ o₂ : Ordinal} (h : o₁ ≤ o�
   rw [eval_πs' C h (lt_ord_of_lt hm hl)]
 
 theorem head_lt_ord_of_isGood [Inhabited I] {l : Products I} {o : Ordinal}
-    (h : l.isGood (π C (ord I · < o))) (hn : l.val ≠ []) : ord I (l.val.head!) < o :=
+    (h : l.isGood (π C (ord I · < o))) (hn : l.val ≠ []) : ord I l.val.head! < o :=
   prop_of_isGood C (ord I · < o) h l.val.head! (List.head!_mem_self hn)
 
 /--

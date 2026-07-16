@@ -175,7 +175,7 @@ lemma free_internallyProjective_iff_tensor_condition (P : LightCondSet.{u}) :
       ∀ {A B : LightCondMod R} (e : A ⟶ B) [Epi e], (∀ (S : LightProfinite)
         (g : (free R).obj (P ⊗ S.toCondensed) ⟶ B), ∃ (S' : LightProfinite)
           (π : S' ⟶ S) (_ : Function.Surjective π) (g' : (free R).obj (P ⊗ S'.toCondensed) ⟶ A),
-            ((free R).map (P ◁ ((lightProfiniteToLightCondSet).map π))) ≫ g = g' ≫ e) := by
+            ((free R).map (P ◁ (lightProfiniteToLightCondSet.map π))) ≫ g = g' ≫ e) := by
   rw [internallyProjective_iff_tensor_condition]
   refine ⟨fun h A B e he S g ↦ ?_, fun h A B e he S g ↦ ?_⟩
   · specialize h e S ((μIso (free R) _ _).hom ≫ g)
@@ -213,7 +213,7 @@ lemma free_internallyProjective_iff_tensor_condition' (P : LightCondSet.{u}) :
       ∀ {A B : LightCondMod R} (e : A ⟶ B) [Epi e], (∀ (S : LightProfinite)
         (g : (free R).obj (S.toCondensed ⊗ P) ⟶ B), ∃ (S' : LightProfinite)
           (π : S' ⟶ S) (_ : Function.Surjective π) (g' : (free R).obj (S'.toCondensed ⊗ P) ⟶ A),
-            ((free R).map (((lightProfiniteToLightCondSet).map π) ▷ P)) ≫ g = g' ≫ e) := by
+            ((free R).map ((lightProfiniteToLightCondSet.map π) ▷ P)) ≫ g = g' ≫ e) := by
   rw [internallyProjective_iff_tensor_condition']
   refine ⟨fun h A B e he S g ↦ ?_, fun h A B e he S g ↦ ?_⟩
   · specialize h e S ((μIso (free R) _ _).hom ≫ g)

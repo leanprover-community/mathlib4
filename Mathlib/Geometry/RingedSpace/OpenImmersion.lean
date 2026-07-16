@@ -874,7 +874,7 @@ theorem ofRestrict_invApp {C : Type*} [Category* C] (X : SheafedSpace C) {Y : To
 /-- An open immersion is an iso if the underlying continuous map is epi. -/
 theorem to_iso [h' : Epi f.hom.base] : IsIso f := by
   have : IsIso (forgetToPresheafedSpace.map f) := PresheafedSpace.IsOpenImmersion.to_iso f.hom
-  apply isIso_of_reflects_iso _ (SheafedSpace.forgetToPresheafedSpace)
+  apply isIso_of_reflects_iso _ SheafedSpace.forgetToPresheafedSpace
 
 instance stalk_iso [HasColimits C] (x : X) :
     IsIso (f.hom.stalkMap x) :=

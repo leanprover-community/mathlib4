@@ -97,7 +97,7 @@ def evalCast (cR : Algebra.Cache q($sR)) (cA : Algebra.Cache q($sA)):
     assumeInstancesCommute
     let ⟨r, vr⟩ := Ring.ExProd.mkNat sR lit.natLit!
     -- Lift the literal to the base ring as a scalar multiple of 1
-    pure ⟨_, (Common.ExProd.const ⟨_, (vr.toSum)⟩).toSum,
+    pure ⟨_, (Common.ExProd.const ⟨_, vr.toSum⟩).toSum,
       have : $r =Q Nat.rawCast $lit := ⟨⟩
       (q(isNat_eq_rawCast $p))⟩
   | .isNegNat rA lit p => do

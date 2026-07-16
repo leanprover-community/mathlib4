@@ -395,7 +395,7 @@ theorem isLindelof_open_iff_eq_countable_iUnion_of_isTopologicalBasis (b : ι �
     subst this
     obtain ⟨t, ht⟩ :=
       h₁.elim_countable_subcover (b ∘ f') (fun i => hb.isOpen (Set.mem_range_self _)) Subset.rfl
-    refine ⟨t.image f', Countable.image (ht.1) f', le_antisymm ?_ ?_⟩
+    refine ⟨t.image f', Countable.image ht.1 f', le_antisymm ?_ ?_⟩
     · refine Set.Subset.trans ht.2 ?_
       simp only [Set.iUnion_subset_iff]
       intro i hi
@@ -623,7 +623,7 @@ theorem Topology.IsInducing.isLindelof_preimage {f : X → Y} (hf : IsInducing f
 /-- The preimage of a Lindelöf set under a closed embedding is a Lindelöf set. -/
 theorem Topology.IsClosedEmbedding.isLindelof_preimage {f : X → Y} (hf : IsClosedEmbedding f)
     {K : Set Y} (hK : IsLindelof K) : IsLindelof (f ⁻¹' K) :=
-  hf.isInducing.isLindelof_preimage (hf.isClosed_range) hK
+  hf.isInducing.isLindelof_preimage hf.isClosed_range hK
 
 /-- A closed embedding is proper, i.e., inverse images of Lindelöf sets are contained in Lindelöf.
 Moreover, the preimage of a Lindelöf set is Lindelöf, see

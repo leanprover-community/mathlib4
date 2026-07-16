@@ -208,7 +208,7 @@ theorem duplicate_iff_exists_distinct_get {l : List α} {x : α} :
       sublist_iff_exists_fin_orderEmbedding_get_eq]
     constructor
     · rintro ⟨f, hf⟩
-      refine ⟨f ⟨0, by simp⟩, f ⟨1, by simp⟩, f.lt_iff_lt.2 (Nat.zero_lt_one), ?_⟩
+      refine ⟨f ⟨0, by simp⟩, f ⟨1, by simp⟩, f.lt_iff_lt.2 Nat.zero_lt_one, ?_⟩
       rw [← hf, ← hf]; simp
     · rintro ⟨n, m, hnm, h, h'⟩
       refine ⟨OrderEmbedding.ofStrictMono (fun i => if (i : ℕ) = 0 then n else m) ?_, ?_⟩

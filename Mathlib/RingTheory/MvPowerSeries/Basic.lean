@@ -368,7 +368,7 @@ theorem C_injective : Function.Injective (C : R → MvPowerSeries σ R) := by
 theorem C_surjective [IsEmpty σ] : Function.Surjective (C : R → MvPowerSeries σ R) :=
   fun p => ⟨p 0, by ext n; simpa [coeff_C, Subsingleton.eq_zero n] using! coeff_apply _ _⟩
 
-@[simp] theorem C_inj (r s : R) : (C r : MvPowerSeries σ R) = C s ↔ r = s := (C_injective).eq_iff
+@[simp] theorem C_inj (r s : R) : (C r : MvPowerSeries σ R) = C s ↔ r = s := C_injective.eq_iff
 
 /-- The variables of the multivariate formal power series ring. -/
 def X (s : σ) : MvPowerSeries σ R :=
@@ -757,7 +757,7 @@ theorem coeff_eq_zero_of_constantCoeff_nilpotent {f : MvPowerSeries σ R} {m : �
     Finset.card_sdiff_add_card_eq_card (filter_subset _ _), card_range]
   apply le_trans _ hn
   simp only [add_comm m, Nat.add_le_add_iff_right, ← hk.1,
-    ← sum_sdiff (hs), sum_eq_zero (s := s) hs'', add_zero]
+    ← sum_sdiff hs, sum_eq_zero (s := s) hs'', add_zero]
   rw [← hs_def]
   convert! Finset.card_nsmul_le_sum (range n \ s) (fun x ↦ degree (k x)) 1 _
   · simp only [smul_eq_mul, mul_one]

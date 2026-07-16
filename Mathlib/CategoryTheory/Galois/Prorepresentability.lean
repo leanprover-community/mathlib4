@@ -256,7 +256,7 @@ variable [FiberFunctor F]
 theorem AutGalois.π_surjective (A : PointedGaloisObject F) :
     Function.Surjective (AutGalois.π F A) := fun (σ : Aut A.obj) ↦ by
   have (i : PointedGaloisObject F) : Finite ((autGaloisSystem F ⋙ forget _).obj i) :=
-    inferInstanceAs <| Finite (Aut (i.obj))
+    inferInstanceAs <| Finite (Aut i.obj)
   exact eval_section_surjective_of_surjective
     (autGaloisSystem F ⋙ forget _) (autGaloisSystem_map_surjective F) A σ
 

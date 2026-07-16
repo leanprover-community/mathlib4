@@ -213,7 +213,7 @@ open stdSimplex in
 /-- Auxiliary definition for `horn.IsCompatible.desc`. -/
 private def multicofork (hf : horn.IsCompatible f) :
     Multicofork ((multicoequalizerDiagram i).multispanIndex.toLinearOrder.map
-      (Subcomplex.toSSetFunctor)) :=
+      Subcomplex.toSSetFunctor) :=
   Multicofork.ofπ _ X (fun ⟨j, hj⟩ ↦ (stdSimplex.faceSingletonComplIso j).inv ≫ f j hj) (by
     obtain _ | n := n
     · rintro ⟨⟨a, b⟩, hab⟩

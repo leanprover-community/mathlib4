@@ -117,7 +117,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma map_opShiftFunctorEquivalence_unitIso_hom_app_unop (X : Cᵒᵖ) (n : ℤ) :
     F.map ((opShiftFunctorEquivalence C n).unitIso.hom.app X).unop =
       (F.commShiftIso n).hom.app _ ≫
-        (((F.op).commShiftIso n).inv.app X).unop⟦n⟧' ≫
+        ((F.op.commShiftIso n).inv.app X).unop⟦n⟧' ≫
         ((opShiftFunctorEquivalence D n).unitIso.hom.app (op _)).unop := by
   dsimp [opShiftFunctorEquivalence]
   simp only [map_comp, unop_comp, Quiver.Hom.unop_op, assoc,
@@ -135,7 +135,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma map_opShiftFunctorEquivalence_unitIso_inv_app_unop (X : Cᵒᵖ) (n : ℤ) :
     F.map ((opShiftFunctorEquivalence C n).unitIso.inv.app X).unop =
       ((opShiftFunctorEquivalence D n).unitIso.inv.app (op (F.obj X.unop))).unop ≫
-        (((F.op).commShiftIso n).hom.app X).unop⟦n⟧' ≫
+        ((F.op.commShiftIso n).hom.app X).unop⟦n⟧' ≫
         ((F.commShiftIso n).inv.app _) := by
   rw [← cancel_mono (F.map ((opShiftFunctorEquivalence C n).unitIso.hom.app X).unop),
     ← F.map_comp, ← unop_comp, Iso.hom_inv_id_app,
@@ -212,7 +212,7 @@ If `F : C ⥤ D` commutes with shifts, this is the 2-commutative square of categ
 `CategoryTheory.Functor.mapTriangleOpCompTriangleOpEquivalenceFunctor`.
 -/
 noncomputable instance :
-    CatCommSq (F.mapTriangle.op) (triangleOpEquivalence C).functor
+    CatCommSq F.mapTriangle.op (triangleOpEquivalence C).functor
       (triangleOpEquivalence D).functor F.op.mapTriangle :=
   ⟨F.mapTriangleOpCompTriangleOpEquivalenceFunctor⟩
 
@@ -221,9 +221,9 @@ Vertical inverse of the 2-commutative square of
 `CategoryTheory.Functor.mapTriangleOpCompTriangleOpEquivalenceFunctor`.
 -/
 noncomputable instance :
-    CatCommSq (F.op.mapTriangle) (triangleOpEquivalence C).inverse
+    CatCommSq F.op.mapTriangle (triangleOpEquivalence C).inverse
       (triangleOpEquivalence D).inverse F.mapTriangle.op :=
-  CatCommSq.vInv (F.mapTriangle.op) (triangleOpEquivalence C)
+  CatCommSq.vInv F.mapTriangle.op (triangleOpEquivalence C)
       (triangleOpEquivalence D) F.op.mapTriangle inferInstance
 
 /--
@@ -233,7 +233,7 @@ with the equivalences `Pretriangulated.triangleOpEquivalence` on `C` and `D`.
 noncomputable def opMapTriangleCompTriangleOpEquivalenceInverse :
     F.op.mapTriangle ⋙ (triangleOpEquivalence D).inverse ≅
       (triangleOpEquivalence C).inverse ⋙ F.mapTriangle.op :=
-  CatCommSq.iso (F.op.mapTriangle) (triangleOpEquivalence C).inverse
+  CatCommSq.iso F.op.mapTriangle (triangleOpEquivalence C).inverse
       (triangleOpEquivalence D).inverse F.mapTriangle.op
 
 end Functor

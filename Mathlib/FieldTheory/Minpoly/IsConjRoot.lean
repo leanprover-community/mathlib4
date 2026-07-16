@@ -206,7 +206,7 @@ group.
 -/
 theorem isConjRoot_iff_orbitRel [Normal K L] {x y : L} :
     IsConjRoot K x y ↔ MulAction.orbitRel Gal(L/K) L x y :=
-  (isConjRoot_iff_exists_algEquiv)
+  isConjRoot_iff_exists_algEquiv
 
 variable [IsDomain S]
 

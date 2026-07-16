@@ -308,7 +308,7 @@ omit [IsManifold I 1 M] in
 lemma tangentBundleCore.isContMDiff [h : IsManifold I (n + 1) M] :
     haveI : IsManifold I 1 M := .of_le (n := n + 1) le_add_self
     (tangentBundleCore I M).IsContMDiff I n := by
-  have : IsManifold I n M := .of_le (n := n + 1) (le_self_add)
+  have : IsManifold I n M := .of_le (n := n + 1) le_self_add
   refine ⟨fun i j => ?_⟩
   rw [contMDiffOn_iff_source_of_mem_maximalAtlas (subset_maximalAtlas i.2),
     contMDiffOn_iff_contDiffOn]

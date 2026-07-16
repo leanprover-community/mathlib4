@@ -325,7 +325,7 @@ theorem exists_mem_subalgebra_near_continuous_of_isCompact_of_separatesPoints
     (f : C(X, ℝ)) {K : Set X} (hK : IsCompact K) {ε : ℝ} (pos : 0 < ε) :
     ∃ g ∈ A, ∀ x ∈ K, ‖(g : X → ℝ) x - f x‖ < ε := by
   let restrict_on_K : C(X, ℝ) →⋆ₐ[ℝ] C(K, ℝ) :=
-    ContinuousMap.compStarAlgHom' ℝ ℝ ⟨(Subtype.val), continuous_subtype_val⟩
+    ContinuousMap.compStarAlgHom' ℝ ℝ ⟨Subtype.val, continuous_subtype_val⟩
   --consider the subalgebra AK of functions with domain K
   let AK : Subalgebra ℝ C(K, ℝ) := Subalgebra.map restrict_on_K A
   have hsep : AK.SeparatesPoints := by

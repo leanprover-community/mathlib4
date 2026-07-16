@@ -926,7 +926,7 @@ lemma meromorphicOrderAt_deriv_eq_sub_one [CompleteSpace E] {f : 𝕜 → E} {x 
   rw [meromorphicOrderAt_eq_int_iff hmero.deriv]
   obtain ⟨g, hga, hg0, (hg : f =ᶠ[𝓝[≠] x] fun z ↦ (z - x) ^ n • g z)⟩ := hf
   refine ⟨fun z ↦ (n : 𝕜) • g z + (z - x) • deriv g z, by fun_prop, by simpa using ⟨hn, hg0⟩, ?_⟩
-  filter_upwards [hga.eventually_analyticAt.filter_mono (nhdsWithin_le_nhds),
+  filter_upwards [hga.eventually_analyticAt.filter_mono nhdsWithin_le_nhds,
     eventually_mem_nhdsWithin, hg.nhdsNE_deriv] with z hgz hmem hz
   have hzx : z - x ≠ 0 := by simpa [sub_eq_zero] using hmem
   calc

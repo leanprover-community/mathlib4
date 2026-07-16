@@ -195,7 +195,7 @@ protected theorem trans {s t u : Subtype p} (h₁ : s ≈ t) (h₂ : t ≈ u) : 
   Setoid.trans h₁ h₂
 
 theorem equivalence (p : α → Prop) : Equivalence (@HasEquiv.Equiv (Subtype p) _) :=
-  .mk (Subtype.refl) (@Subtype.symm _ p _) (@Subtype.trans _ p _)
+  .mk Subtype.refl (@Subtype.symm _ p _) (@Subtype.trans _ p _)
 
 instance (p : α → Prop) : Setoid (Subtype p) :=
   Setoid.mk (· ≈ ·) (equivalence p)

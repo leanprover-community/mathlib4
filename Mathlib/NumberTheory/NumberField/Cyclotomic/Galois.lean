@@ -129,7 +129,7 @@ theorem mem_zpowers_galEquivZMod_of_mem_stabilizer {σ : Gal(K/ℚ)} (hσ : σ �
   simp only [Algebra.algebraMap_self, RingHomCompTriple.comp_apply] at h₁
   specialize hi (Ideal.Quotient.mk P hζ.toInteger)
   rwa [h₁, Int.card_ideal_quot, galEquivZMod_smul_of_pow_eq n _ _
-    (hζ.toInteger_isPrimitiveRoot.pow_eq_one), map_pow, (h₀.isOfFinOrder (NeZero.ne _)).pow_inj_mod,
+    hζ.toInteger_isPrimitiveRoot.pow_eq_one, map_pow, (h₀.isOfFinOrder (NeZero.ne _)).pow_inj_mod,
     ← h₀.eq_orderOf, ← ZMod.natCast_eq_natCast_iff', Nat.cast_pow, ← ZMod.coe_unitOfCoprime p hn,
     ← Units.val_pow_eq_pow_val, ZMod.natCast_zmod_val, ← Units.ext_iff, eq_comm] at hi
 

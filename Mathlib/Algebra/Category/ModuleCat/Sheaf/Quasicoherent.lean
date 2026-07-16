@@ -187,7 +187,7 @@ def Presentation.map : Presentation (F.obj M) :=
       <;> simp [Presentation.mapRelations, GeneratingSections.mapFreeHom, ← Functor.map_comp])
 
 theorem Presentation.map_π_eq :
-    (P.map F η).generators.π = (mapFreeIso F _ η).hom ≫ F.map (P.generators.π) :=
+    (P.map F η).generators.π = (mapFreeIso F _ η).hom ≫ F.map P.generators.π :=
   (F.obj M).freeHomEquiv.symm_apply_eq.mpr rfl
 
 end

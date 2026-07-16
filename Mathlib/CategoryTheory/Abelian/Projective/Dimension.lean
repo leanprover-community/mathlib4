@@ -320,7 +320,7 @@ lemma projectiveDimension_ne_top_iff (X : C) :
       simp only [WithBot.coe_top, ne_eq, not_true_eq_false, false_and, true_and, false_or] at this
       obtain ⟨n, hn⟩ := this
       rw [← projectiveDimension_le_iff, hd, WithBot.coe_top, top_le_iff] at hn
-      exact ENat.coe_ne_top _ ((WithBot.coe_eq_coe).1 hn)
+      exact ENat.coe_ne_top _ (WithBot.coe_eq_coe.1 hn)
     | coe d =>
       simp only [ne_eq, WithBot.coe_eq_top, ENat.coe_ne_top, not_false_eq_true, true_iff]
       exact ⟨d, by simpa only [← projectiveDimension_le_iff] using! hd.le⟩

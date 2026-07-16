@@ -104,7 +104,7 @@ variable [NonnegHomClass F R ℝ]
 polynomial is equal to its Gauss norm as a power series. -/
 @[simp]
 theorem gaussNorm_coe_powerSeries (hc : 0 ≤ c) :
-    (p.toPowerSeries).gaussNorm v c = p.gaussNorm v c := by
+    p.toPowerSeries.gaussNorm v c = p.gaussNorm v c := by
   by_cases hp : p = 0
   · simp [hp]
   · simp only [PowerSeries.gaussNorm_eq, coeff_coe, gaussNorm, support_nonempty, ne_eq, hp,

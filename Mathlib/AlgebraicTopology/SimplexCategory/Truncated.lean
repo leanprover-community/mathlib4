@@ -73,7 +73,7 @@ abbrev σ₂ {n} (i : Fin (n + 1)) (hn := by decide) (hn' := by decide) := σ 2 
 @[reassoc (attr := simp)]
 lemma δ₂_zero_comp_σ₂_zero {n} (hn := by decide) (hn' := by decide) :
     δ₂ (n := n) 0 hn hn' ≫ σ₂ 0 hn' hn = 𝟙 _ :=
-  ObjectProperty.hom_ext _ (SimplexCategory.δ_comp_σ_self)
+  ObjectProperty.hom_ext _ SimplexCategory.δ_comp_σ_self
 
 @[reassoc]
 lemma δ₂_zero_comp_σ₂_one : δ₂ (0 : Fin 3) ≫ σ₂ 1 = σ₂ 0 ≫ δ₂ 0 :=
@@ -82,7 +82,7 @@ lemma δ₂_zero_comp_σ₂_one : δ₂ (0 : Fin 3) ≫ σ₂ 1 = σ₂ 0 ≫ δ
 @[reassoc (attr := simp)]
 lemma δ₂_one_comp_σ₂_zero {n} (hn := by decide) (hn' := by decide) :
     δ₂ (n := n) 1 hn hn' ≫ σ₂ 0 hn' hn = 𝟙 _ :=
-  ObjectProperty.hom_ext _ (SimplexCategory.δ_comp_σ_succ)
+  ObjectProperty.hom_ext _ SimplexCategory.δ_comp_σ_succ
 
 @[reassoc (attr := simp)]
 lemma δ₂_one_comp_σ₂_one {n} (hn := by decide) (hn' := by decide) :

@@ -221,7 +221,7 @@ theorem constSMul_mul (v₁ v₂ : G) : constSMul P (v₁ * v₂) = constSMul P 
 /-- `Equiv.constVAdd` as a homomorphism from `Multiplicative G` to `Equiv.perm P` -/
 def constVAddHom (G : Type*) (P : Type*) [AddGroup G] [AddTorsor G P] :
     Multiplicative G →* Equiv.Perm P where
-  toFun v := constVAdd P (v.toAdd)
+  toFun v := constVAdd P v.toAdd
   map_one' := constVAdd_zero G P
   map_mul' v v' := constVAdd_add P v.toAdd v'.toAdd
 

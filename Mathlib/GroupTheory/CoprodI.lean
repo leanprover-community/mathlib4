@@ -904,7 +904,7 @@ condition is only needed if `# ι = 2`, and we accept `3 ≤ # ι` as an alterna
 theorem lift_injective_of_ping_pong : Function.Injective (lift f) := by
   classical
     apply (injective_iff_map_eq_one (lift f)).mpr
-    rw [(CoprodI.Word.equiv).forall_congr_left]
+    rw [CoprodI.Word.equiv.forall_congr_left]
     intro w Heq
     dsimp [Word.equiv] at *
     rw [empty_of_word_prod_eq_one f hcard X hXnonempty hXdisj hpp Heq, Word.prod_empty]

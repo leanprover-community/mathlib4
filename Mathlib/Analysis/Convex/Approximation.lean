@@ -55,7 +55,7 @@ theorem _root_.LowerSemicontinuousOn.isClosed_re_epigraph (hsc : IsClosed s)
   refine hC.symm ▸ IsClosed.preimage ?_ ?_
   · exact continuous_id.prodMap <| continuous_coe_real_ereal.comp reCLM.cont
   · exact (lowerSemicontinuousOn_iff_isClosed_epigraph hsc).1
-      (continuous_coe_real_ereal.comp_lowerSemicontinuousOn hφ_cont (EReal.coe_strictMono.monotone))
+      (continuous_coe_real_ereal.comp_lowerSemicontinuousOn hφ_cont EReal.coe_strictMono.monotone)
 
 section RCLike
 

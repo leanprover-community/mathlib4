@@ -577,7 +577,7 @@ lemma measurableSet_enumerateCountable_countableGeneratingSet
     (α : Type*) [MeasurableSpace α] [CountablyGenerated α] (n : ℕ) :
     MeasurableSet (enumerateCountable (countable_countableGeneratingSet (α := α)) ∅ n) :=
   measurableSet_countableGeneratingSet
-    (enumerateCountable_mem _ (empty_mem_countableGeneratingSet) n)
+    (enumerateCountable_mem _ empty_mem_countableGeneratingSet n)
 
 lemma finite_countablePartition (α : Type*) [MeasurableSpace α] [CountablyGenerated α] (n : ℕ) :
     Set.Finite (countablePartition α n) :=

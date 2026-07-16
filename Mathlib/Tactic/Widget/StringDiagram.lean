@@ -215,7 +215,7 @@ def NormalExpr.nodes (e : NormalExpr) : CoherenceM ρ (List (List Node)) :=
 /-- The list of strands associated with a 2-morphism. -/
 def NormalExpr.strands (e : NormalExpr) : CoherenceM ρ (List (List Strand)) := do
   let l ← e.nodes
-  (l.consecutivePairs).mapM fun (x, y) ↦ do
+  l.consecutivePairs.mapM fun (x, y) ↦ do
     let xs := (x.map (fun n ↦ n.tarList)).flatten
     let ys := (y.map (fun n ↦ n.srcList)).flatten
     -- sanity check

@@ -73,7 +73,7 @@ set_option backward.defeqAttrib.useBackward true in
 def binaryFanIsBinaryProduct [ChosenPullbacksAlong Z.hom] :
     IsLimit (binaryFan Y Z) :=
   BinaryFan.IsLimit.mk (binaryFan Y Z)
-    (fun u v => Over.homMk (lift (u.left) (v.left) (by rw [Over.w u, Over.w v])) (by simp))
+    (fun u v => Over.homMk (lift u.left v.left (by rw [Over.w u, Over.w v])) (by simp))
     (by cat_disch) (by cat_disch)
     (fun a b m h₁ h₂ => by
       ext
@@ -327,7 +327,7 @@ set_option backward.defeqAttrib.useBackward true in
 /-- The functor `toOver X` is the right adjoint to the functor `Over.forget X`. -/
 @[simps! unit_app counit_app]
 def forgetAdjToOver (X : C) : Over.forget X ⊣ toOver X where
-  unit.app Z := Over.homMk (lift (𝟙 Z.left) (Z.hom))
+  unit.app Z := Over.homMk (lift (𝟙 Z.left) Z.hom)
   counit.app Z := fst Z X
 
 theorem forgetAdjToOver.homEquiv_symm {X : C} (Z : Over X) (A : C) (f : Z ⟶ (toOver X).obj A) :

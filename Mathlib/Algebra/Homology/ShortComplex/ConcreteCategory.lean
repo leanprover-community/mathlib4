@@ -60,7 +60,7 @@ lemma Preadditive.mono_iff_injective' {X Y : C} (f : X ⟶ Y) :
     Mono f ↔ Function.Injective f := by
   simp only [mono_iff_injective, ← CategoryTheory.ofHom_mono_iff_injective]
   apply (MorphismProperty.monomorphisms (Type w)).arrow_mk_iso_iff
-  have e : forget₂ C Ab ⋙ forget Ab ≅ forget C := eqToIso (HasForget₂.forget_comp)
+  have e : forget₂ C Ab ⋙ forget Ab ≅ forget C := eqToIso HasForget₂.forget_comp
   exact Arrow.isoOfNatIso e (Arrow.mk f)
 
 lemma Preadditive.epi_iff_surjective {X Y : C} (f : X ⟶ Y) :
@@ -75,7 +75,7 @@ lemma Preadditive.epi_iff_surjective' {X Y : C} (f : X ⟶ Y) :
     Epi f ↔ Function.Surjective f := by
   simp only [epi_iff_surjective, ← CategoryTheory.ofHom_epi_iff_surjective]
   apply (MorphismProperty.epimorphisms (Type w)).arrow_mk_iso_iff
-  have e : forget₂ C Ab ⋙ forget Ab ≅ forget C := eqToIso (HasForget₂.forget_comp)
+  have e : forget₂ C Ab ⋙ forget Ab ≅ forget C := eqToIso HasForget₂.forget_comp
   exact Arrow.isoOfNatIso e (Arrow.mk f)
 
 end
@@ -146,20 +146,20 @@ variable (D : SnakeInput C)
 set_option backward.isDefEq.respectTransparency false in
 /-- This lemma allows the computation of the connecting homomorphism
 `D.δ` when `D : SnakeInput C` and `C` is a concrete category. -/
-lemma δ_apply (x₃ : ToType (D.L₀.X₃)) (x₂ : ToType (D.L₁.X₂)) (x₁ : ToType (D.L₂.X₁))
+lemma δ_apply (x₃ : ToType D.L₀.X₃) (x₂ : ToType D.L₁.X₂) (x₁ : ToType D.L₂.X₁)
     (h₂ : D.L₁.g x₂ = D.v₀₁.τ₃ x₃) (h₁ : D.L₂.f x₁ = D.v₁₂.τ₂ x₂) :
     D.δ x₃ = D.v₂₃.τ₁ x₁ := by
   have := (forget₂ C Ab).preservesFiniteLimits_of_preservesHomology
   have : PreservesFiniteLimits (forget C) := by
     have : forget₂ C Ab ⋙ forget Ab = forget C := HasForget₂.forget_comp
     simpa only [← this] using comp_preservesFiniteLimits _ _
-  have eq := CategoryTheory.congr_fun (D.snd_δ)
+  have eq := CategoryTheory.congr_fun D.snd_δ
     (Limits.Concrete.pullbackMk D.L₁.g D.v₀₁.τ₃ x₂ x₃ h₂)
   have eq₁ := Concrete.pullbackMk_fst D.L₁.g D.v₀₁.τ₃ x₂ x₃ h₂
   have eq₂ := Concrete.pullbackMk_snd D.L₁.g D.v₀₁.τ₃ x₂ x₃ h₂
   rw [ConcreteCategory.comp_apply, ConcreteCategory.comp_apply] at eq
   rw [eq₂] at eq
-  refine eq.trans (CategoryTheory.congr_arg (D.v₂₃.τ₁) ?_)
+  refine eq.trans (CategoryTheory.congr_arg D.v₂₃.τ₁ ?_)
   apply (Preadditive.mono_iff_injective' D.L₂.f).1 inferInstance
   rw [← ConcreteCategory.comp_apply, φ₁_L₂_f]
   dsimp [φ₂]
@@ -173,7 +173,7 @@ lemma δ_apply' (x₃ : (forget₂ C Ab).obj D.L₀.X₃)
     (h₂ : (forget₂ C Ab).map D.L₁.g x₂ = (forget₂ C Ab).map D.v₀₁.τ₃ x₃)
     (h₁ : (forget₂ C Ab).map D.L₂.f x₁ = (forget₂ C Ab).map D.v₁₂.τ₂ x₂) :
     (forget₂ C Ab).map D.δ x₃ = (forget₂ C Ab).map D.v₂₃.τ₁ x₁ := by
-  have e : forget₂ C Ab ⋙ forget Ab ≅ forget C := eqToIso (HasForget₂.forget_comp)
+  have e : forget₂ C Ab ⋙ forget Ab ≅ forget C := eqToIso HasForget₂.forget_comp
   apply (ofHom_mono_iff_injective (e.hom.app _)).1 inferInstance
   refine ((ConcreteCategory.congr_hom (e.hom.naturality D.δ) x₃).trans ?_).trans
     (ConcreteCategory.congr_hom (e.hom.naturality D.v₂₃.τ₁).symm x₁)

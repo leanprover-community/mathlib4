@@ -80,7 +80,7 @@ def swapFactorsAux :
       ⟨swap x (f x)::m.1, by
         rw [List.prod_cons, m.2.1, ← mul_assoc, mul_def (swap x (f x)), swap_swap, ← one_def,
           one_mul],
-        fun {_} hg => ((List.mem_cons).1 hg).elim (fun h => ⟨x, f x, hfx, h⟩) (m.2.2 _)⟩
+        fun {_} hg => (List.mem_cons.1 hg).elim (fun h => ⟨x, f x, hfx, h⟩) (m.2.2 _)⟩
 
 /-- `swapFactors` represents a permutation as a product of a list of transpositions.
 The representation is nonunique and depends on the linear order structure.
@@ -518,7 +518,7 @@ theorem prod_prodExtendRight {α : Type*} [DecidableEq α] (σ : α → Perm β)
     · rw [← ha'] at *
       refine Or.inl ⟨l.mem_cons_self, ?_⟩
       rw [prodExtendRight_apply_eq]
-    · refine Or.inr ⟨fun h => not_or_intro ha' notMem_l ((List.mem_cons).mp h), ?_⟩
+    · refine Or.inr ⟨fun h => not_or_intro ha' notMem_l (List.mem_cons.mp h), ?_⟩
       rw [prodExtendRight_apply_ne _ ha']
 
 section congr

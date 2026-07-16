@@ -897,7 +897,7 @@ theorem Finset.continuous_restrict₂_apply {s t : Finset X} (hst : s ⊆ t)
     Continuous (restrict₂ (π := fun _ ↦ Z) hst f) := hf.comp (continuous_inclusion hst)
 
 lemma Pi.induced_restrict (S : Set ι) :
-    induced (S.restrict) Pi.topologicalSpace =
+    induced S.restrict Pi.topologicalSpace =
     ⨅ i ∈ S, induced (eval i) (T i) := by
   simp +unfoldPartialApp [← iInf_subtype'', ← induced_precomp' ((↑) : S → ι),
     restrict]

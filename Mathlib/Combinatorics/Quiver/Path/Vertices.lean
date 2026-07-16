@@ -34,7 +34,7 @@ lemma end_cons {a b c : V} (p : Path a b) (e : b ⟶ c) : (p.cons e).end = c := 
 /-- The list of vertices in a path, including the start and end vertices. -/
 def vertices {a : V} : ∀ {b : V}, Path a b → List V
   | _, nil => [a]
-  | _, cons p e => (p.vertices).concat (p.cons e).end
+  | _, cons p e => p.vertices.concat (p.cons e).end
 
 @[simp]
 lemma vertices_nil (a : V) : (nil : Path a a).vertices = [a] := rfl
@@ -184,7 +184,7 @@ theorem exists_eq_comp_of_le_length {n : ℕ} (hn : n ≤ p.length) :
     exact ⟨a, Path.nil, Path.nil, by simp, rfl⟩
   | @cons _ c p' e ih =>
     rw [length_cons] at hn
-    rcases (Nat.le_succ_iff).1 hn with h | rfl
+    rcases Nat.le_succ_iff.1 hn with h | rfl
     · obtain ⟨d, p₁, p₂, hp, hl⟩ := ih h
       exact ⟨d, p₁, p₂.cons e, by simp [hp], hl⟩
     · exact ⟨c, p'.cons e, Path.nil, by simp, by simp⟩

@@ -1305,7 +1305,7 @@ noncomputable def ofHasDayConvolutions
       isPointwiseLeftKanExtensionCan :=
         Functor.LeftExtension.isPointwiseLeftKanExtensionEquivOfIso
         (StructuredArrow.isoMk
-          (essImageDayConvolutionUnit.getIso).symm)
+          essImageDayConvolutionUnit.getIso.symm)
         (Functor.pointwiseLeftKanExtensionIsPointwiseLeftKanExtension
           (Functor.fromPUnit.{0} <| 𝟙_ C)
           (Functor.fromPUnit.{0} <| 𝟙_ V)) }

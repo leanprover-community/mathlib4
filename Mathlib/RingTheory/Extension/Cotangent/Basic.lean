@@ -633,7 +633,7 @@ instance [FinitePresentation R S] [Module.Projective S Ω[S⁄R]] :
   have : Module.FinitePresentation S (LinearMap.range P.toExtension.cotangentComplex) := by
     rw [← LinearMap.exact_iff.mp P.toExtension.exact_cotangentComplex_toKaehler]
     exact Module.finitePresentation_of_projective_of_exact
-      _ _ (Subtype.val_injective) P.toExtension.toKaehler_surjective
+      _ _ Subtype.val_injective P.toExtension.toKaehler_surjective
       (LinearMap.exact_subtype_ker_map _)
   exact Module.FinitePresentation.fg_ker (N := LinearMap.range P.toExtension.cotangentComplex)
     _ P.toExtension.cotangentComplex.surjective_rangeRestrict

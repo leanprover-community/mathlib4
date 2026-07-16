@@ -279,7 +279,7 @@ initialize registerDerivingHandler ``Functor functorDeriveHandler
 
 /-- Prove the functor laws and derive `LawfulFunctor`. -/
 def deriveLawfulFunctor (m : MVarId) : TermElabM Unit := do
-  let rules (l₁ : List (Name × Bool)) (l₂ : List (Name)) (b : Bool) : MetaM Simp.Context := do
+  let rules (l₁ : List (Name × Bool)) (l₂ : List Name) (b : Bool) : MetaM Simp.Context := do
     let mut s : SimpTheorems := {}
     s ← l₁.foldlM (fun s (n, b) => s.addConst n (inv := b)) s
     s ← l₂.foldlM (fun s n => s.addDeclToUnfold n) s
@@ -474,7 +474,7 @@ def traversableLawStarter (m : MVarId) (n : Name) (s : MetaM Simp.Context)
 
 /-- Prove the traversable laws and derive `LawfulTraversable`. -/
 def deriveLawfulTraversable (m : MVarId) : TermElabM Unit := do
-  let rules (l₁ : List (Name × Bool)) (l₂ : List (Name)) (b : Bool) : MetaM Simp.Context := do
+  let rules (l₁ : List (Name × Bool)) (l₂ : List Name) (b : Bool) : MetaM Simp.Context := do
     let mut s : SimpTheorems := {}
     s ← l₁.foldlM (fun s (n, b) => s.addConst n (inv := b)) s
     s ← l₂.foldlM (fun s n => s.addDeclToUnfold n) s

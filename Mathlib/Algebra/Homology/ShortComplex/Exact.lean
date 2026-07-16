@@ -796,7 +796,7 @@ noncomputable def desc (hS : S.Exact) {A : C} (k : S.X₂ ⟶ A) (hk : S.f ≫ k
 @[reassoc (attr := simp)]
 lemma g_desc (hS : S.Exact) {A : C} (k : S.X₂ ⟶ A) (hk : S.f ≫ k = 0) [Epi S.g] :
     S.g ≫ hS.desc k hk = k :=
-  Cofork.IsColimit.π_desc (hS.gIsCokernel)
+  Cofork.IsColimit.π_desc hS.gIsCokernel
 
 lemma desc' (hS : S.Exact) {A : C} (k : S.X₂ ⟶ A) (hk : S.f ≫ k = 0) [Epi S.g] :
     ∃ (l : S.X₃ ⟶ A), S.g ≫ l = k :=

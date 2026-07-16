@@ -291,7 +291,7 @@ theorem degree_eq_zero_iff_totalDegree_eq_zero {f : MvPolynomial σ R} :
   rw [totalDegree_eq_zero_iff]
   apply forall_congr'
   intro d
-  apply imp_congr (rfl.to_iff)
+  apply imp_congr rfl.to_iff
   rw [map_zero, ← m.bot_eq_zero, ← eq_bot_iff, m.bot_eq_zero]
   simp only [EmbeddingLike.map_eq_zero_iff]
   exact Finsupp.ext_iff

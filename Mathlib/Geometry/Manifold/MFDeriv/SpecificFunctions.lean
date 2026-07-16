@@ -868,7 +868,7 @@ theorem hasMFDerivAt_neg : HasMFDerivAt% (-f) z (-f') ↔ HasMFDerivAt% f z f' :
   ⟨fun hf ↦ by convert! hf.neg <;> rw [neg_neg], fun hf ↦ hf.neg⟩
 
 theorem MDifferentiableWithinAt.neg {s : Set M} (hf : MDiffAt[s] f z) : MDiffAt[s] (-f) z :=
-  (hf.hasMFDerivWithinAt.neg).mdifferentiableWithinAt
+  hf.hasMFDerivWithinAt.neg.mdifferentiableWithinAt
 
 theorem MDifferentiableAt.neg (hf : MDiffAt f z) : MDiffAt (-f) z :=
   hf.hasMFDerivAt.neg.mdifferentiableAt

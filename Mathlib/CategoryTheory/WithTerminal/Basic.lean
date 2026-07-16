@@ -257,7 +257,7 @@ instance : Limits.HasTerminal (WithTerminal C) := Limits.hasTerminal_of_unique s
 /-- The isomorphism between star and an abstract terminal object of `WithTerminal C` -/
 @[simps!]
 noncomputable def starIsoTerminal : star ≅ ⊤_ (WithTerminal C) :=
-  starTerminal.uniqueUpToIso (Limits.terminalIsTerminal)
+  starTerminal.uniqueUpToIso Limits.terminalIsTerminal
 
 set_option backward.isDefEq.respectTransparency.types false in
 /-- Lift a functor `F : C ⥤ D` to `WithTerminal C ⥤ D`. -/
@@ -695,7 +695,7 @@ instance : Limits.HasInitial (WithInitial C) := Limits.hasInitial_of_unique star
 /-- The isomorphism between star and an abstract initial object of `WithInitial C` -/
 @[simps!]
 noncomputable def starIsoInitial : star ≅ ⊥_ (WithInitial C) :=
-  starInitial.uniqueUpToIso (Limits.initialIsInitial)
+  starInitial.uniqueUpToIso Limits.initialIsInitial
 
 set_option backward.isDefEq.respectTransparency.types false in
 /-- Lift a functor `F : C ⥤ D` to `WithInitial C ⥤ D`. -/

@@ -265,7 +265,7 @@ class HasFunctorialFactorization : Prop where
 axiom `HasFunctorialFactorization W₁ W₂` holds. -/
 noncomputable def functorialFactorizationData [HasFunctorialFactorization W₁ W₂] :
     FunctorialFactorizationData W₁ W₂ :=
-  Nonempty.some (HasFunctorialFactorization.nonempty_functorialFactorizationData)
+  Nonempty.some HasFunctorialFactorization.nonempty_functorialFactorizationData
 
 instance [HasFunctorialFactorization W₁ W₂] : HasFactorization W₁ W₂ where
   nonempty_mapFactorizationData f := ⟨(functorialFactorizationData W₁ W₂).factorizationData f⟩

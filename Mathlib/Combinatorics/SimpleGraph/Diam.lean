@@ -105,7 +105,7 @@ lemma eccent_le_one_iff (u : α) : G.eccent u ≤ 1 ↔ ∀ v, u ≠ v → G.Adj
   · intro h v huv
     have hd : G.edist u v ≤ 1 := edist_le_eccent.trans h
     have hd' : 1 ≤ G.edist u v := Order.one_le_iff_pos.mpr (G.edist_pos_of_ne huv)
-    exact edist_eq_one_iff_adj.mp (le_antisymm (hd') hd).symm
+    exact edist_eq_one_iff_adj.mp (le_antisymm hd' hd).symm
   · intro hall
     rw [eccent_le_iff]
     intro v

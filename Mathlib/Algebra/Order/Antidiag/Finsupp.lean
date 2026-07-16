@@ -131,7 +131,7 @@ lemma mapRange_finsuppAntidiag_subset {e : μ ≃+ μ'} {s : Finset ι} {n : μ}
     mapRange.equiv_apply, EquivLike.coe_coe]
   constructor
   · rw [sum_mapRange_index (fun _ ↦ rfl), ← hsum, _root_.map_finsuppSum]
-  · exact subset_trans (support_mapRange) hsupp
+  · exact subset_trans support_mapRange hsupp
 
 lemma mapRange_finsuppAntidiag_eq {e : μ ≃+ μ'} {s : Finset ι} {n : μ} :
     (finsuppAntidiag s n).map (mapRange.addEquiv e).toEmbedding = finsuppAntidiag s (e n) := by

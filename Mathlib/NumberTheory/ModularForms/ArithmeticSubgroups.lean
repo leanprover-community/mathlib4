@@ -244,6 +244,6 @@ end CommRing
 
 instance Subgroup.instIsArithmeticAdjoinNegOne {𝒢 : Subgroup (GL (Fin 2) ℝ)} [𝒢.IsArithmetic] :
     𝒢.adjoinNegOne.IsArithmetic :=
-  ⟨(𝒢.commensurable_adjoinNegOne_self).trans IsArithmetic.is_commensurable⟩
+  ⟨𝒢.commensurable_adjoinNegOne_self.trans IsArithmetic.is_commensurable⟩
 
 end adjoinNeg

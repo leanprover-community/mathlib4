@@ -207,7 +207,7 @@ theorem rel_mem (hr : BiUnique R) : (R ⇒ Forall₂ R ⇒ Iff) (· ∈ ·) (· 
 
 theorem rel_map : ((R ⇒ P) ⇒ Forall₂ R ⇒ Forall₂ P) map map
   | _, _, _, [], [], Forall₂.nil => Forall₂.nil
-  | _, _, h, _ :: _, _ :: _, Forall₂.cons h₁ h₂ => Forall₂.cons (h h₁) (rel_map (@h) h₂)
+  | _, _, h, _ :: _, _ :: _, Forall₂.cons h₁ h₂ => Forall₂.cons (h h₁) (rel_map @h h₂)
 
 theorem rel_append : (Forall₂ R ⇒ Forall₂ R ⇒ Forall₂ R) (· ++ ·) (· ++ ·)
   | [], [], _, _, _, hl => hl
@@ -233,15 +233,15 @@ theorem rel_flatten : (Forall₂ (Forall₂ R) ⇒ Forall₂ R) flatten flatten
 
 theorem rel_flatMap : (Forall₂ R ⇒ (R ⇒ Forall₂ P) ⇒ Forall₂ P)
     (Function.swap List.flatMap) (Function.swap List.flatMap) :=
-  fun _ _ h₁ _ _ h₂ => rel_flatten (rel_map (@h₂) h₁)
+  fun _ _ h₁ _ _ h₂ => rel_flatten (rel_map @h₂ h₁)
 
 theorem rel_foldl : ((P ⇒ R ⇒ P) ⇒ P ⇒ Forall₂ R ⇒ P) foldl foldl
   | _, _, _, _, _, h, _, _, Forall₂.nil => h
-  | _, _, hfg, _, _, hxy, _, _, Forall₂.cons hab hs => rel_foldl (@hfg) (hfg hxy hab) hs
+  | _, _, hfg, _, _, hxy, _, _, Forall₂.cons hab hs => rel_foldl @hfg (hfg hxy hab) hs
 
 theorem rel_foldr : ((R ⇒ P ⇒ P) ⇒ P ⇒ Forall₂ R ⇒ P) foldr foldr
   | _, _, _, _, _, h, _, _, Forall₂.nil => h
-  | _, _, hfg, _, _, hxy, _, _, Forall₂.cons hab hs => hfg hab (rel_foldr (@hfg) hxy hs)
+  | _, _, hfg, _, _, hxy, _, _, Forall₂.cons hab hs => hfg hab (rel_foldr @hfg hxy hs)
 
 theorem rel_filter {p : α → Bool} {q : β → Bool}
     (hpq : (R ⇒ (· ↔ ·)) (fun x => p x) (fun x => q x)) :
@@ -262,8 +262,8 @@ theorem rel_filterMap : ((R ⇒ Option.Rel P) ⇒ Forall₂ R ⇒ Forall₂ P) f
     rw [filterMap_cons, filterMap_cons]
     exact
       match f a, g b, hfg h₁ with
-      | _, _, Option.Rel.none => rel_filterMap (@hfg) h₂
-      | _, _, Option.Rel.some h => Forall₂.cons h (rel_filterMap (@hfg) h₂)
+      | _, _, Option.Rel.none => rel_filterMap @hfg h₂
+      | _, _, Option.Rel.some h => Forall₂.cons h (rel_filterMap @hfg h₂)
 
 /-- Given a relation `R`, `sublist_forall₂ r l₁ l₂` indicates that there is a sublist of `l₂` such
   that `forall₂ r l₁ l₂`. -/

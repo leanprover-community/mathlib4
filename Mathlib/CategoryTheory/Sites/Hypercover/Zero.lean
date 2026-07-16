@@ -949,9 +949,9 @@ lemma Small.inf {J K : Precoverage C} [Small.{w} J]
     (of_le : ∀ ⦃X : C⦄ ⦃R S : Presieve X⦄, R ≤ S → S ∈ K X → R ∈ K X) :
     Small.{w} (J ⊓ K) where
   zeroHypercoverSmall {S} E := by
-    refine ⟨(E.weaken (inf_le_left)).restrictIndexOfSmall.I₀,
+    refine ⟨(E.weaken inf_le_left).restrictIndexOfSmall.I₀,
         ZeroHypercover.Small.restrictFun _, ⟨?_, ?_⟩⟩
-    · exact (E.weaken (inf_le_left)).restrictIndexOfSmall.mem₀
+    · exact (E.weaken inf_le_left).restrictIndexOfSmall.mem₀
     · exact of_le (by simp) E.mem₀.2
 
 instance [IsStableUnderBaseChange J] : RespectsIso J where

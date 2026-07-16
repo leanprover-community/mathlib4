@@ -94,7 +94,7 @@ noncomputable abbrev mulI (S : ClosedSubmodule ℝ H) := S.mapEquiv (scalarSMulC
 /-- The symplectic complement of a closed submodule with respect to `⟪⬝, ⬝⟫.im`, defined as the
 image of `mulI` and `orthogonal`. The proof that this is the symplectic complement is given by
 `mem_symplComp_iff`. -/
-noncomputable abbrev symplComp (S : ClosedSubmodule ℝ H) := (S.mulI)ᗮ
+noncomputable abbrev symplComp (S : ClosedSubmodule ℝ H) := S.mulIᗮ
 
 lemma mem_iff (S : ClosedSubmodule ℝ H) {x : H} : x ∈ S ↔ x ∈ S.toSubmodule.carrier := by
   exact Eq.to_iff rfl

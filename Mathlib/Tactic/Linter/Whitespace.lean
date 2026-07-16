@@ -370,7 +370,7 @@ def whitespaceLinter : Linter where run := withSetOptionIn fun stx ↦ do
 
       let ctx := 4 -- the number of characters after the mismatch that linter prints
       let srcWindow := mkWindow orig s.srcNat (ctx + s.length)
-      let expectedWindow := mkWindow st s.fmtPos (ctx + (1))
+      let expectedWindow := mkWindow st s.fmtPos (ctx + 1)
       Linter.logLint linter.style.whitespace (.ofRange rg)
         m!"{s.msg} in the source\n\n\
           This part of the code\n  '{srcWindow}'\n\

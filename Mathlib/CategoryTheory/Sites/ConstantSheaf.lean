@@ -129,7 +129,7 @@ end Sheaf
 
 section Equivalence
 variable {C' : Type*} [Category* C'] (K : GrothendieckTopology C') [HasWeakSheafify K D]
-variable (G : C ⥤ C') [∀ (X : (C')ᵒᵖ), HasLimitsOfShape (StructuredArrow X G.op) D]
+variable (G : C ⥤ C') [∀ (X : C'ᵒᵖ), HasLimitsOfShape (StructuredArrow X G.op) D]
   [G.IsDenseSubsite J K] {T : C} (hT : IsTerminal T) (hT' : IsTerminal (G.obj T))
 
 open IsDenseSubsite

@@ -267,7 +267,7 @@ lemma RingHom.HoldsForLocalization.isLocalizationMap
   have heq : IsLocalization.map (S := R') S' f hy =
       (algebraMap _ _).comp
         (IsLocalization.map (M := M) (T := M.map f) (S := R') (Localization (M.map f)) f
-          (M.le_comap_map)) := by
+          M.le_comap_map) := by
     apply IsLocalization.ringHom_ext M
     ext
     simp [← IsScalarTower.algebraMap_apply]

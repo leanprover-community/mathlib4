@@ -861,7 +861,7 @@ lemma coeffs_one_of_nontrivial [Nontrivial R] : coeffs (1 : MvPolynomial σ R) =
 
 lemma mem_coeffs_iff {p : MvPolynomial σ R} {c : R} :
     c ∈ p.coeffs ↔ ∃ n ∈ p.support, c = p.coeff n := by
-  simp [coeffs, eq_comm, (Finset.mem_image)]
+  simp [coeffs, eq_comm, Finset.mem_image]
 
 lemma coeff_mem_coeffs {p : MvPolynomial σ R} (m : σ →₀ ℕ)
     (h : p.coeff m ≠ 0) : p.coeff m ∈ p.coeffs :=

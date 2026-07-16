@@ -189,7 +189,7 @@ lemma isCompact_setOf_finiteMeasure_le_of_isCompact
       simp only [toMeasure_map, F]
       rw [Measure.map_apply measurable_subtype_coe hs]
       simp only [toMeasure_comap]
-      rw [Measure.comap_apply _ (Subtype.val_injective), image_preimage_eq_inter_range]
+      rw [Measure.comap_apply _ Subtype.val_injective, image_preimage_eq_inter_range]
       · rw [← Measure.restrict_apply hs, Measure.restrict_eq_self_of_ae_mem]
         apply (null_iff_toMeasure_null (↑μ) (range f)ᶜ).mp
         rw [rf]

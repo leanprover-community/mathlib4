@@ -196,7 +196,7 @@ although many usages of `lift_on'` assume `f p 0 = f 0 1`.
 protected irreducible_def liftOn' {P : Sort v} (x : K⟮X⟯) (f : K[X] → K[X] → P)
   (H : ∀ {p q a} (_hq : q ≠ 0) (_ha : a ≠ 0), f (a * p) (a * q) = f p q) : P :=
   x.liftOn f fun {_p _q _p' _q'} hq hq' =>
-    liftOn_condition_of_liftOn'_condition (@H) (nonZeroDivisors.ne_zero hq)
+    liftOn_condition_of_liftOn'_condition @H (nonZeroDivisors.ne_zero hq)
       (nonZeroDivisors.ne_zero hq')
 
 theorem liftOn'_mk {P : Sort v} (p q : K[X]) (f : K[X] → K[X] → P) (f0 : ∀ p, f p 0 = f 0 1)

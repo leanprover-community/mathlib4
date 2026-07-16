@@ -201,7 +201,7 @@ lemma locallyFiniteOrder_units_mrange_of_isCompact_integer (hc : IsCompact (X :=
     · simp
     wlog! h : x ≤ 1 generalizing x y
     · specialize this y⁻¹ x⁻¹ (inv_lt_inv' hxy) (inv_le_one_of_one_le (h.trans hxy).le)
-      refine (this.inv).subset ?_
+      refine this.inv.subset ?_
       rw [Set.inv_Icc]
       intro
       simp +contextual

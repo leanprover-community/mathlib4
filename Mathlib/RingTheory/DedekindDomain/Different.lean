@@ -213,7 +213,7 @@ lemma isIntegral_discr_mul_of_mem_traceDual
     apply hx
     have ⟨y, hy⟩ := (IsIntegralClosure.isIntegral_iff (A := B)).mp (hb j)
     rw [mul_comm, ← hy, ← Algebra.smul_def]
-    exact I.smul_mem _ (ha)
+    exact I.smul_mem _ ha
   · exact isIntegral_trace (RingHom.IsIntegralElem.mul _ (hb j) (hb k))
 
 variable (A K)
@@ -594,7 +594,7 @@ lemma traceForm_dualSubmodule_adjoin
         (Subalgebra.toSubmodule (Algebra.adjoin A {x})) := by
   have hKx : IsIntegral K x := Algebra.IsIntegral.isIntegral x
   let pb := (Algebra.adjoin.powerBasis' hKx).map
-    ((Subalgebra.equivOfEq _ _ hx).trans (Subalgebra.topEquiv))
+    ((Subalgebra.equivOfEq _ _ hx).trans Subalgebra.topEquiv)
   have pbgen : pb.gen = x := by simp [pb]
   have hnondeg : (traceForm K L).Nondegenerate := traceForm_nondegenerate K L
   have hpb : ⇑(LinearMap.BilinForm.dualBasis (traceForm K L) hnondeg pb.basis) = _ :=

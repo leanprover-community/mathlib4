@@ -219,10 +219,10 @@ def parse?_errorContext (line : String) : Option ErrorContext := Id.run do
       let err : Option StyleError := match errorCode with
         -- Use default values for parameters which are ignored for comparing style exceptions.
         -- NB: keep this in sync with `compare` above!
-        | "ERR_ADN" => some (StyleError.adaptationNote)
-        | "ERR_SEM" => some (StyleError.semicolon)
-        | "ERR_TWS" => some (StyleError.trailingWhitespace)
-        | "ERR_WIN" => some (StyleError.windowsLineEnding)
+        | "ERR_ADN" => some StyleError.adaptationNote
+        | "ERR_SEM" => some StyleError.semicolon
+        | "ERR_TWS" => some StyleError.trailingWhitespace
+        | "ERR_WIN" => some StyleError.windowsLineEnding
         | "ERR_UNICODE" => do
           -- extract the offending unicode character from `errorMessage`
           -- (if the offending character is 'C', `errorMessage[7] == "'C'"` )

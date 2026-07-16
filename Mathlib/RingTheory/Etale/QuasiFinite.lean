@@ -310,7 +310,7 @@ lemma Algebra.exists_etale_isIdempotentElem_forall_liesOver_eq_aux₂
     ∃ f ∉ P, Module.Finite (Localization.Away f) (Localization.Away
       ((Algebra.TensorProduct.map (Algebra.ofId R' (Localization.Away f)) (AlgHom.id R S)) e)) := by
   have : Algebra.IsIntegral R' (Localization.Away e₀) :=
-    .of_surjective (IsScalarTower.toAlgHom R' (R' ⊗[R] (R'')) _)
+    .of_surjective (IsScalarTower.toAlgHom R' (R' ⊗[R] R'') _)
       (IsLocalization.Away.algebraMap_surjective_of_isIdempotentElem e₀ he₀)
   obtain ⟨f, hfP, hf⟩ := Localization.exists_finite_awayMapₐ_of_surjective_awayMapₐ
     (Localization.awayMapₐ (Algebra.TensorProduct.map (.id R' R')

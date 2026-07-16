@@ -218,7 +218,7 @@ lemma Rat.norm_infinitePlace_completion (v : InfinitePlace ℚ) (x : ℚ) :
     Rat.infinitePlace_apply]
 
 /-- The completion of a number field at an infinite place is locally compact. -/
-instance locallyCompactSpace : LocallyCompactSpace (v.Completion) :=
+instance locallyCompactSpace : LocallyCompactSpace v.Completion :=
   letI := AbsoluteValue.Completion.locallyCompactSpace v.isometry_embedding
   (isometryEquivCompletion v).toHomeomorph.isClosedEmbedding.locallyCompactSpace
 

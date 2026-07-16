@@ -100,7 +100,7 @@ lemma le_add_right (a b : σ →₀ ℕ) :
   rw [← map_add]
   exact m.toSyn_monotone le_self_add
 
-instance orderBot : OrderBot (m.syn) where
+instance orderBot : OrderBot m.syn where
   bot := 0
   bot_le a := by
     have := m.le_add_right 0 (m.toSyn.symm a)
@@ -120,7 +120,7 @@ lemma toSyn_eq_zero_iff (a : σ →₀ ℕ) :
 lemma toSyn_lt_iff_ne_zero {a : m.syn} :
     0 < a ↔ a ≠ 0 := bot_lt_iff_ne_bot
 
-lemma toSyn_strictMono : StrictMono (m.toSyn) := by
+lemma toSyn_strictMono : StrictMono m.toSyn := by
   apply m.toSyn_monotone.strictMono_of_injective m.toSyn.injective
 
 /-- Given a monomial order, notation for the corresponding strict order relation on `σ →₀ ℕ` -/

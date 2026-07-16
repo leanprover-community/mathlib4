@@ -79,7 +79,7 @@ See `isDiscrete_iff_forall_mem_exists_isOpen` for a similar version of this with
 theorem isDiscrete_iff_forall_subset_exists_isOpen {s : Set X} :
     IsDiscrete s ↔ ∀ t ⊆ s, ∃ u, IsOpen u ∧ u ∩ s = t := by
   simp_rw [isDiscrete_iff_discreteTopology, discreteTopology_iff_forall_isOpen,
-    isOpen_induced_iff, ← image_eq_image (Subtype.val_injective), Subtype.image_preimage_coe,
+    isOpen_induced_iff, ← image_eq_image Subtype.val_injective, Subtype.image_preimage_coe,
     Subtype.forall_set_subtype (p := fun t ↦ ∃ u, IsOpen u ∧ s ∩ u = t), inter_comm]
 
 /-- A set `s` is discrete iff for every `t ⊆ s` there is a closed `u` with `u ∩ s = t`. -/

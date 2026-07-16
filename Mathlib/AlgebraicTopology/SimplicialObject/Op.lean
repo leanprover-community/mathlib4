@@ -67,7 +67,7 @@ is a covariant involution. -/
 def opFunctorCompOpFunctorIso : opFunctor (C := C) ⋙ opFunctor ≅ 𝟭 _ :=
   (Functor.whiskeringLeftObjCompIso _ _).symm ≪≫
     (Functor.whiskeringLeft _ _ _).mapIso
-    ((Functor.opHom _ _).mapIso (SimplexCategory.revCompRevIso).symm.op) ≪≫
+    ((Functor.opHom _ _).mapIso SimplexCategory.revCompRevIso.symm.op) ≪≫
     Functor.whiskeringLeftObjIdIso
 
 set_option backward.isDefEq.respectTransparency.types false in

@@ -346,7 +346,7 @@ B  → Z                 B → Z
 @[simps!]
 def squareToSnd {X Y Z : C} {i : Arrow C} {f : X ⟶ Y} {g : Y ⟶ Z} (sq : i ⟶ Arrow.mk (f ≫ g)) :
     i ⟶ Arrow.mk g :=
-  Arrow.homMk (sq.left ≫ f) (sq.right) (by simp [w_mk sq])
+  Arrow.homMk (sq.left ≫ f) sq.right (by simp [w_mk sq])
 
 /-- The functor sending an arrow to its source. -/
 @[to_dual (attr := simps!) /-- The functor sending an arrow to its target. -/]

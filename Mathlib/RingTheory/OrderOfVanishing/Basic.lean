@@ -132,7 +132,7 @@ of `ord` to avoid annoyances of working with `R ⧸ Ideal.span {0}` instead of `
 -/
 lemma ord_zero : ord R 0 = Module.length R R := by
   simp only [ord]
-  let m := (Submodule.quotEquivOfEqBot (Ideal.span {0} : Submodule R R) (span_singleton_zero))
+  let m := (Submodule.quotEquivOfEqBot (Ideal.span {0} : Submodule R R) span_singleton_zero)
   exact le_antisymm (Module.length_le_of_injective m m.injective)
       (Module.length_le_of_surjective m m.surjective)
 

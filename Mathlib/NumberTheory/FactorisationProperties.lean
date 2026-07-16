@@ -159,7 +159,7 @@ theorem Prime.deficient_pow (h : Prime n) : Deficient (n ^ m) := by
         = ∑ i ∈ range m, n ^ i := by simp
       _ = (n ^ m - 1) / (n - 1) := (Nat.geomSum_eq (Prime.two_le h) _)
       _ ≤ (n ^ m - 1) := Nat.div_le_self (n ^ m - 1) (n - 1)
-      _ < n ^ m := sub_lt (pow_pos (Prime.pos h) m) (Nat.one_pos)
+      _ < n ^ m := sub_lt (pow_pos (Prime.pos h) m) Nat.one_pos
 
 theorem _root_.IsPrimePow.deficient (h : IsPrimePow n) : Deficient n := by
   obtain ⟨p, k, hp, -, rfl⟩ := h
@@ -183,7 +183,7 @@ theorem infinite_even_deficient : {n : ℕ | Even n ∧ n.Deficient}.Infinite :=
   · exact ⟨⟨2 ^ n, by rw [pow_succ, mul_two]⟩, prime_two.deficient_pow⟩
   · calc
       n ≤ 2 ^ n := Nat.le_of_lt n.lt_two_pow_self
-      _ < 2 ^ (n + 1) := (Nat.pow_lt_pow_iff_right (Nat.one_lt_two)).mpr (lt_add_one n)
+      _ < 2 ^ (n + 1) := (Nat.pow_lt_pow_iff_right Nat.one_lt_two).mpr (lt_add_one n)
 
 theorem infinite_odd_deficient : {n : ℕ | Odd n ∧ n.Deficient}.Infinite := by
   rw [Set.infinite_iff_exists_gt]

@@ -244,7 +244,7 @@ variable (f s) in
 theorem image_restrictPreimage :
     t.restrictPreimage f '' Subtype.val ⁻¹' s = Subtype.val ⁻¹' f '' s := by
   delta Set.restrictPreimage
-  rw [← (Subtype.coe_injective).image_injective.eq_iff, ← image_comp, MapsTo.restrict_commutes,
+  rw [← Subtype.coe_injective.image_injective.eq_iff, ← image_comp, MapsTo.restrict_commutes,
     image_comp, Subtype.image_preimage_coe, Subtype.image_preimage_coe, image_preimage_inter]
 
 variable (f) in

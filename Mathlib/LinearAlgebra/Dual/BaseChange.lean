@@ -136,7 +136,7 @@ theorem toDualBaseChange_tmul (a : A) (f : Dual R V) (v : V) :
   toDualBaseChangeAux_tmul ibc a f v
 
 set_option backward.isDefEq.respectTransparency false in
-theorem dual : IsBaseChange A (ibc.toDual) := by
+theorem dual : IsBaseChange A ibc.toDual := by
   apply of_equiv (toDualBaseChange ibc)
   intro f
   simp [toDualBaseChange, toDualBaseChangeAux]

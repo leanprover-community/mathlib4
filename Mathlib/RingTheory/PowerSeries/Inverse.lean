@@ -354,7 +354,7 @@ theorem ker_coeff_eq_max_ideal : RingHom.ker (constantCoeff (R := k)) = maximalI
 /-- The ring isomorphism between the residue field of the ring of power series valued in a field `K`
 and `K` itself. -/
 def residueFieldOfPowerSeries : ResidueField k⟦X⟧ ≃+* k :=
-  Ideal.quotEquivOfEq (ker_coeff_eq_max_ideal).symm |>.trans
+  Ideal.quotEquivOfEq ker_coeff_eq_max_ideal.symm |>.trans
     (RingHom.quotientKerEquivOfSurjective constantCoeff_surj)
 
 end IsDiscreteValuationRing

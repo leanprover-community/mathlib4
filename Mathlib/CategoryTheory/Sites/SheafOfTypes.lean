@@ -179,7 +179,7 @@ Note: This is related to `CategoryTheory.Presheaf.conesEquivSieveCompatibleFamil
 -/
 def compatibleYonedaFamily_toCocone (R : Presieve X) (W : C) (x : FamilyOfElements (yoneda.obj W) R)
     (hx : FamilyOfElements.Compatible x) :
-    Cocone (R.diagram) where
+    Cocone R.diagram where
   pt := W
   ι :=
     { app := fun f => x f.obj.hom f.property

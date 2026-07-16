@@ -45,7 +45,7 @@ using the braiding in `V`. -/
 instance EnrichedCategory.opposite : EnrichedCategory V Cᵒᵖ where
   Hom y x := EnrichedCategory.Hom x.unop y.unop
   id x := EnrichedCategory.id x.unop
-  comp z y x := (β_ _ _).hom ≫ EnrichedCategory.comp (x.unop) (y.unop) (z.unop)
+  comp z y x := (β_ _ _).hom ≫ EnrichedCategory.comp x.unop y.unop z.unop
   id_comp _ _ := by
     simp only [braiding_naturality_left_assoc, braiding_tensorUnit_left,
       Category.assoc, Iso.inv_hom_id_assoc]
@@ -129,7 +129,7 @@ def forgetEnrichmentOppositeEquivalence : ForgetEnrichment V Cᵒᵖ ≌ (Forget
 instance EnrichedOrdinaryCategory.opposite {D : Type u} [Category.{v} D]
     [EnrichedOrdinaryCategory V D] : EnrichedOrdinaryCategory V Dᵒᵖ where
   homEquiv := Quiver.Hom.opEquiv.symm.trans homEquiv
-  homEquiv_id x := homEquiv_id (x.unop)
+  homEquiv_id x := homEquiv_id x.unop
   homEquiv_comp f g := by
     simp only [tensorHom_eComp_op_eq, leftUnitor_inv_braiding_assoc, ← unitors_inv_equal]
     exact homEquiv_comp g.unop f.unop

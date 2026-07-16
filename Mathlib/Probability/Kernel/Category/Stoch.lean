@@ -109,6 +109,6 @@ noncomputable instance : PositiveCategory Stoch.{u} where
     dsimp
     simp only [id_parallelComp_id, id_comp, id_parallelComp_comp_parallelComp_id]
     have : IsDeterministic (κ ≫ η).hom.hom := inferInstance
-    exact (comp_parallelComp_comp_copy).symm
+    exact comp_parallelComp_comp_copy.symm
 
 end PositiveCategory

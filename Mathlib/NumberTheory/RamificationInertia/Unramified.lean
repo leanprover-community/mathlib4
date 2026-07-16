@@ -56,7 +56,7 @@ lemma IsUnramifiedAt.of_liesOver_of_ne_bot
   by_cases hp : p = ⊥
   · have : p₀.map (algebraMap R S) = p := by
       subst hp
-      exact le_bot_iff.mp (Ideal.map_comap_le)
+      exact le_bot_iff.mp Ideal.map_comap_le
     rw [IsScalarTower.algebraMap_eq _ S, ← Ideal.map_map, this,
       Localization.AtPrime.map_eq_maximalIdeal]
   rw [← Ideal.IsDedekindDomain.ramificationIdx'_eq_one_iff hp Ideal.map_comap_le,

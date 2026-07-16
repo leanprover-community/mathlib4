@@ -52,7 +52,7 @@ theorem nonempty_algHom_of_exists_root (h : ∀ x : E, ∃ y : K, aeval y (minpo
   let K₀ := (⊥ : IntermediateField K K').restrictScalars F
   let FS := adjoin F (S : Set E)
   let Ω := FS →ₐ[F] K'
-  have := finiteDimensional_adjoin (S := (S : Set E)) fun _ _ ↦ (alg.isIntegral).1 _
+  have := finiteDimensional_adjoin (S := (S : Set E)) fun _ _ ↦ alg.isIntegral.1 _
   let M (ω : Ω) := Subalgebra.toSubmodule (K₀.comap ω).toSubalgebra
   have : ⋃ ω : Ω, (M ω : Set FS) = Set.univ :=
     Set.eq_univ_of_forall fun ⟨α, hα⟩ ↦ Set.mem_iUnion.mpr <| by
@@ -61,7 +61,7 @@ theorem nonempty_algHom_of_exists_root (h : ∀ x : E, ∃ y : K, aeval y (minpo
         ((AdjoinRoot.liftAlgHom _ _ _ hβ).comp
         (adjoinRootEquivAdjoin F <| (alg.isIntegral).1 _).symm.toAlgHom)
       have ⟨ω, hω⟩ := exists_algHom_adjoin_of_splits
-        (fun s hs ↦ ⟨(alg.isIntegral).1 _, splits s hs⟩) ϕ (adjoin_simple_le_iff.mpr hα)
+        (fun s hs ↦ ⟨alg.isIntegral.1 _, splits s hs⟩) ϕ (adjoin_simple_le_iff.mpr hα)
       refine ⟨ω, β, ((DFunLike.congr_fun hω <| AdjoinSimple.gen F α).trans ?_).symm⟩
       rw [AlgHom.comp_apply, AlgHom.comp_apply, AlgEquiv.coe_toAlgHom,
         adjoinRootEquivAdjoin_symm_apply_gen, AdjoinRoot.liftAlgHom_root]
@@ -96,7 +96,7 @@ theorem nonempty_algEquiv_of_range_minpoly_eq
     by_contra hy
     have ⟨x, hx⟩ := h.ge ⟨y, rfl⟩
     rw [minpoly.eq_zero hy] at hx
-    exact minpoly.ne_zero ((alg.isIntegral).1 x) hx⟩
+    exact minpoly.ne_zero (alg.isIntegral.1 x) hx⟩
   have ⟨τ⟩ := nonempty_algHom_of_range_minpoly_subset h.ge
   ⟨.ofBijective _ (Algebra.IsAlgebraic.algHom_bijective₂ σ τ).1⟩
 

@@ -362,7 +362,7 @@ theorem OpenPartialHomeomorph.contDiffOn_univUnitBall_symm :
   have h : (0 : ℝ) < (1 : ℝ) - ‖(y : E)‖ ^ 2 := by
     rwa [mem_ball_zero_iff, ← _root_.abs_one, ← abs_norm, ← sq_lt_sq, one_pow, ← sub_pos] at hy
   refine ContDiffAt.inv ?_ (Real.sqrt_ne_zero'.mpr h)
-  change ContDiffAt ℝ n ((fun y ↦ √(y)) ∘ fun y ↦ (1 - ‖y‖ ^ 2)) y
+  change ContDiffAt ℝ n ((fun y ↦ √y) ∘ fun y ↦ (1 - ‖y‖ ^ 2)) y
   refine (contDiffAt_sqrt h.ne').comp y ?_
   exact contDiffAt_const.sub (contDiff_norm_sq ℝ).contDiffAt
 

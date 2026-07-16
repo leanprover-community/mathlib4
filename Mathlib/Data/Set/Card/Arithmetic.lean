@@ -95,7 +95,7 @@ theorem exists_union_disjoint_ncard_eq_of_even (he : Even s.ncard) :
   exact ⟨t, u, hutu, hdtu, congrArg Cardinal.toNat hctu⟩
 
 theorem exists_union_disjoint_cardinal_eq_iff (s : Set α) :
-    Even (s.ncard) ↔ ∃ (t u : Set α), t ∪ u = s ∧ Disjoint t u ∧ #t = #u := by
+    Even s.ncard ↔ ∃ (t u : Set α), t ∪ u = s ∧ Disjoint t u ∧ #t = #u := by
   use exists_union_disjoint_cardinal_eq_of_even
   rintro ⟨t, u, rfl, hdtu, hctu⟩
   obtain hfin | hnfin := (t ∪ u).finite_or_infinite

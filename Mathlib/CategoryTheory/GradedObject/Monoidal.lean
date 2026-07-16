@@ -509,7 +509,7 @@ variable {X X'}
 
 @[reassoc (attr := simp)]
 lemma leftUnitor_naturality (φ : X ⟶ X') :
-    tensorHom (𝟙 (tensorUnit)) φ ≫ (leftUnitor X').hom =
+    tensorHom (𝟙 tensorUnit) φ ≫ (leftUnitor X').hom =
       (leftUnitor X).hom ≫ φ := by
   apply mapBifunctorLeftUnitor_naturality
 
@@ -542,7 +542,7 @@ variable {X X'}
 
 @[reassoc (attr := simp)]
 lemma rightUnitor_naturality (φ : X ⟶ X') :
-    tensorHom φ (𝟙 (tensorUnit)) ≫ (rightUnitor X').hom =
+    tensorHom φ (𝟙 tensorUnit) ≫ (rightUnitor X').hom =
       (rightUnitor X).hom ≫ φ := by
   apply mapBifunctorRightUnitor_naturality
 

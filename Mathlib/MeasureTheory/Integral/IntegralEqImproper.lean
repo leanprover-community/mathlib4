@@ -966,7 +966,7 @@ theorem tendsto_zero_of_hasDerivAt_of_integrableOn_Iic
     apply IntegrableAtFilter.eq_zero_of_tendsto this ?_ A
     intro s hs
     rcases mem_atBot_sets.1 hs with ⟨b, hb⟩
-    apply le_antisymm (le_top)
+    apply le_antisymm le_top
     rw [← volume_Iic (a := b)]
     exact measure_mono hb
   rwa [B, ← IsEmbedding.tendsto_nhds_iff] at A

@@ -278,7 +278,7 @@ noncomputable def Scheme.Modules.fromTildeΓ (M : (Spec (.of R)).Modules) :
           simp only [Submonoid.powers_le, Submonoid.mem_comap, IsUnit.mem_submonoid_iff]
           obtain ⟨n, a, e⟩ : ∃ n, f.unop ∣ g.unop ^ n := by
             simpa only [Ideal.mem_radical_iff, Ideal.mem_span_singleton] using
-              (basicOpen_le_basicOpen_iff _ _).mp (i.1.hom.le)
+              (basicOpen_le_basicOpen_iff _ _).mp i.1.hom.le
           refine ((Commute.isUnit_mul_iff (b := algebraMap R _ a) (.map (.all _ _) _)).mp ?_).1
           rw [← map_mul, ← e, map_pow]
           exact (M.isUnit_algebraMap_end_of_le_basicOpen g.unop le_rfl).pow n

@@ -364,7 +364,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- If two morphisms are exact on pseudoelements, they are exact. -/
 theorem exact_of_pseudo_exact (S : ShortComplex C)
     (hS : ∀ b, S.g b = 0 → ∃ a, S.f a = b) : S.Exact :=
-  (S.exact_iff_kernel_ι_comp_cokernel_π_zero).2 (by
+  S.exact_iff_kernel_ι_comp_cokernel_π_zero.2 (by
       -- If we apply `g` to the pseudoelement induced by its kernel, we get 0 (of course!).
       have : S.g (kernel.ι S.g) = 0 := apply_eq_zero_of_comp_eq_zero _ _ (kernel.condition _)
       -- By pseudo-exactness, we get a preimage.

@@ -240,7 +240,7 @@ instance : MonoCoprod Scheme.{u} :=
 @[simps!]
 noncomputable def sigmaOpenCover [Small.{u} σ] : (∐ g).OpenCover :=
   (Scheme.IsLocallyDirected.openCover (Discrete.functor g)).copy σ g (Sigma.ι _)
-  (discreteEquiv.symm) (fun _ ↦ Iso.refl _) (fun _ ↦ rfl)
+  discreteEquiv.symm (fun _ ↦ Iso.refl _) (fun _ ↦ rfl)
 
 /-- The underlying topological space of the coproduct is homeomorphic to the disjoint union. -/
 noncomputable

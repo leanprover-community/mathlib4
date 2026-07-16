@@ -207,7 +207,7 @@ lemma CotangentSpace.map_toComp_injective :
 lemma CotangentSpace.map_ofComp_surjective :
     Function.Surjective (Extension.CotangentSpace.map (Q.ofComp P).toExtensionHom) := by
   rw [← fst_compEquiv]
-  exact (Prod.fst_surjective).comp (compEquiv Q P).surjective
+  exact Prod.fst_surjective.comp (compEquiv Q P).surjective
 
 /-!
 Given representations `R[X] → S` and `S[Y] → T`, the sequence

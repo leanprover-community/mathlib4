@@ -496,7 +496,7 @@ lemma Ideal.sup_height_eq_ringKrullDim [Nontrivial R] :
       apply le_trans (b := ⨆ (_ : p.last ≤ p.last), ↑p.length)
       · exact le_iSup (fun _ => (↑p.length : ℕ∞)) le_rfl
       · exact le_iSup (fun p' => (⨆ _, p'.length : ℕ∞)) p
-    · apply le_trans (b := ⨆ (_ : (p.last).asIdeal ≠ ⊤), p.last.asIdeal.height)
+    · apply le_trans (b := ⨆ (_ : p.last.asIdeal ≠ ⊤), p.last.asIdeal.height)
       · exact le_iSup_of_le p.last.isPrime.ne_top' le_rfl
       · exact le_iSup (fun I => ⨆ _, I.height) p.last.asIdeal
 
@@ -511,7 +511,7 @@ lemma Ideal.sup_isPrime_height_eq_ringKrullDim [Nontrivial R] :
     by_cases I_top : I = ⊤
     · exact ⟨⊥, by simp [I_top]⟩
     · obtain ⟨P, hP⟩ := Set.nonempty_coe_sort.mp (nonempty_minimalPrimes I_top)
-      refine ⟨P, iSup_pos (α := ℕ∞) I_top ▸ le_iSup_of_le (hP.left.left) ?_⟩
+      refine ⟨P, iSup_pos (α := ℕ∞) I_top ▸ le_iSup_of_le hP.left.left ?_⟩
       have := hP.isPrime
       exact iInf_le_of_le P (iInf_le_of_le hP (ge_of_eq (Ideal.height_eq_primeHeight P)))
 
@@ -552,7 +552,7 @@ lemma Ring.krullDimLE_of_isLocalization_maximal {n : ℕ}
   simp_rw [Ring.krullDimLE_iff] at h ⊢
   nontriviality R
   rw [← Ideal.sup_isMaximal_height_eq_ringKrullDim]
-  refine (WithBot.coe_le_coe).mpr (iSup₂_le_iff.mpr fun P hP ↦ ?_)
+  refine WithBot.coe_le_coe.mpr (iSup₂_le_iff.mpr fun P hP ↦ ?_)
   rw [← WithBot.coe_le_coe, ← IsLocalization.AtPrime.ringKrullDim_eq_height P (Rₚ P)]
   exact h P
 

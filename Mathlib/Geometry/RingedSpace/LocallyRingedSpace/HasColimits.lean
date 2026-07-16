@@ -97,7 +97,7 @@ noncomputable def coproductCofanIsColimit : IsColimit (coproductCofan F) where
         simp only [← IsIso.comp_inv_eq,
           ← InducedCategory.comp_hom,
           PresheafedSpace.stalkMap.congr_hom _ _
-            (congr_arg (InducedCategory.Hom.hom) (colimit.ι_desc
+            (congr_arg InducedCategory.Hom.hom (colimit.ι_desc
               (forgetToSheafedSpace.mapCocone s) i))] at this
         rw [← this]
         dsimp

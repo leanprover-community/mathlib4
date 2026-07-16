@@ -216,7 +216,7 @@ theorem isPrime_iff_isPrime_disjoint (J : Ideal S) :
       obtain ⟨b, t, hb⟩ := exists_mk'_eq M y
       have : mk' S (a * b) (s * t) ∈ J := by rwa [mk'_mul, ha, hb]
       rw [mk'_mem_iff, ← Ideal.mem_comap] at this
-      have this₂ := (h.1).mul_mem_iff_mem_or_mem.1 this
+      have this₂ := h.1.mul_mem_iff_mem_or_mem.1 this
       rw [Ideal.mem_comap, Ideal.mem_comap] at this₂
       rwa [← ha, ← hb, mk'_mem_iff, mk'_mem_iff]
 

@@ -209,22 +209,22 @@ def uliftYonedaCompSheafToPresheaf :
   Iso.refl _
 
 /-- The yoneda functor into the sheaf category is fully faithful -/
-def yonedaFullyFaithful : (J.yoneda).FullyFaithful :=
+def yonedaFullyFaithful : J.yoneda.FullyFaithful :=
   Functor.FullyFaithful.ofCompFaithful (G := sheafToPresheaf J (Type v)) Yoneda.fullyFaithful
 
-instance : (J.yoneda).Full := (J.yonedaFullyFaithful).full
+instance : J.yoneda.Full := J.yonedaFullyFaithful.full
 
-instance : (J.yoneda).Faithful := (J.yonedaFullyFaithful).faithful
+instance : J.yoneda.Faithful := J.yonedaFullyFaithful.faithful
 
 /-- A variant of `yonedaFullyFaithful` with a raise in the universe level. -/
 def fullyFaithfulUliftYoneda : (GrothendieckTopology.uliftYoneda.{w} J).FullyFaithful :=
   J.yonedaFullyFaithful.comp (fullyFaithfulSheafCompose J fullyFaithfulULiftFunctor)
 
 instance : (GrothendieckTopology.uliftYoneda.{w} J).Full :=
-  (J.fullyFaithfulUliftYoneda).full
+  J.fullyFaithfulUliftYoneda.full
 
 instance : (GrothendieckTopology.uliftYoneda.{w} J).Faithful :=
-  (J.fullyFaithfulUliftYoneda).faithful
+  J.fullyFaithfulUliftYoneda.faithful
 
 end GrothendieckTopology
 

@@ -288,7 +288,7 @@ lemma compl_mul_closure_one_eq_iff {t : Set G} :
 @[to_additive]
 lemma IsOpen.mul_closure_one_eq {U : Set G} (hU : IsOpen U) :
     U * (closure {1} : Set G) = U :=
-  compl_mul_closure_one_eq_iff.1 (hU.isClosed_compl.mul_closure_one_eq)
+  compl_mul_closure_one_eq_iff.1 hU.isClosed_compl.mul_closure_one_eq
 
 @[to_additive]
 theorem closure_subset_mul_self_of_mem_nhds_one {U : Set G} (hU : U ∈ 𝓝 1) :
