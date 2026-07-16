@@ -38,6 +38,7 @@ section Braided
 
 variable [BraidedCategory C]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The braiding `tensorObj X Y ≅ tensorObj Y X` when `X` and `Y` are graded objects
 indexed by a commutative additive monoid. -/
 noncomputable def braiding [HasTensor X Y] [HasTensor Y X] : tensorObj X Y ≅ tensorObj Y X where
@@ -46,6 +47,7 @@ noncomputable def braiding [HasTensor X Y] [HasTensor Y X] : tensorObj X Y ≅ t
   inv k := tensorObjDesc (fun i j hij => (β_ _ _).inv ≫
     ιTensorObj X Y j i k (by simpa only [add_comm j i] using hij))
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable {Y Z} in
 lemma braiding_naturality_right [HasTensor X Y] [HasTensor Y X] [HasTensor X Z] [HasTensor Z X]
     (f : Y ⟶ Z) :
@@ -53,6 +55,7 @@ lemma braiding_naturality_right [HasTensor X Y] [HasTensor Y X] [HasTensor X Z] 
   dsimp [braiding]
   cat_disch
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable {X Y} in
 lemma braiding_naturality_left [HasTensor Y Z] [HasTensor Z Y] [HasTensor X Z] [HasTensor Z X]
     (f : X ⟶ Y) :
@@ -60,6 +63,7 @@ lemma braiding_naturality_left [HasTensor Y Z] [HasTensor Z Y] [HasTensor X Z] [
   dsimp [braiding]
   cat_disch
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma hexagon_forward [HasTensor X Y] [HasTensor Y X] [HasTensor Y Z]
     [HasTensor Z X] [HasTensor X Z]
     [HasTensor (tensorObj X Y) Z] [HasTensor X (tensorObj Y Z)]
@@ -98,6 +102,7 @@ lemma hexagon_forward [HasTensor X Y] [HasTensor Y X] [HasTensor Y Z]
     ← ιTensorObj₃_eq Y Z X i₂ i₃ i₁ k (by rw [add_comm _ i₁, ← add_assoc, h])
       (i₁ + i₃) (add_comm _ _)]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma hexagon_reverse [HasTensor X Y] [HasTensor Y Z] [HasTensor Z X]
     [HasTensor Z Y] [HasTensor X Z]
     [HasTensor (tensorObj X Y) Z] [HasTensor X (tensorObj Y Z)]
@@ -136,6 +141,7 @@ lemma hexagon_reverse [HasTensor X Y] [HasTensor Y Z] [HasTensor Z X]
 
 end Braided
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 lemma symmetry [SymmetricCategory C] [HasTensor X Y] [HasTensor Y X] :
     (braiding X Y).hom ≫ (braiding Y X).hom = 𝟙 _ := by

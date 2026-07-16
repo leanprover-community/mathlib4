@@ -11,6 +11,7 @@ public import Mathlib.Data.Rat.Cast.Lemmas
 
 /-!
 # Summable families of Hahn Series
+
 We introduce a notion of formal summability for families of Hahn series, and define a formal sum
 function. This theory is applied to characterize invertible Hahn series whose coefficients are in a
 commutative domain.
@@ -167,6 +168,7 @@ end SMul
 instance : AddCommMonoid (SummableFamily Γ R α) := fast_instance%
   DFunLike.coe_injective.addCommMonoid _ coe_zero coe_add (fun _ _ => coe_smul' _ _)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The coefficient function of a summable family, as a finsupp on the parameter type. -/
 @[simps]
 def coeff (s : SummableFamily Γ R α) (g : Γ) : α →₀ R where
@@ -211,6 +213,7 @@ theorem hsum_add {s t : SummableFamily Γ R α} : (s + t).hsum = s.hsum + t.hsum
   simp only [coeff_hsum, coeff_add, add_apply]
   exact finsum_add_distrib (s.finite_co_support _) (t.finite_co_support _)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem coeff_hsum_eq_sum_of_subset {s : SummableFamily Γ R α} {g : Γ} {t : Finset α}
     (h : { a | (s a).coeff g ≠ 0 } ⊆ t) : s.hsum.coeff g = ∑ i ∈ t, (s i).coeff g := by
   simp only [coeff_hsum, finsum_eq_sum _ (s.finite_co_support _)]
@@ -463,6 +466,7 @@ theorem coeff_smul {R} {V} [Semiring R] [AddCommMonoid V] [Module R V]
     Set.mem_setOf_eq, Prod.forall, coeff_support, mem_product]
   exact hsupp ab.1 ab.2 hab
 
+set_option backward.isDefEq.respectTransparency false in
 theorem smul_hsum {R} {V} [Semiring R] [AddCommMonoid V] [Module R V]
     (s : SummableFamily Γ R α) (t : SummableFamily Γ' V β) :
     (smul s t).hsum = (of R).symm (s.hsum • (of R) (t.hsum)) := by
@@ -608,7 +612,7 @@ section EmbDomain
 
 variable [PartialOrder Γ] [AddCommMonoid R]
 
-open Classical in
+open scoped Classical in
 /-- A summable family can be reindexed by an embedding without changing its sum. -/
 def embDomain (s : SummableFamily Γ R α) (f : α ↪ β) : SummableFamily Γ R β where
   toFun b := if h : b ∈ Set.range f then s (Classical.choose h) else 0
@@ -629,7 +633,7 @@ def embDomain (s : SummableFamily Γ R α) (f : α ↪ β) : SummableFamily Γ R
 
 variable (s : SummableFamily Γ R α) (f : α ↪ β) {a : α} {b : β}
 
-open Classical in
+open scoped Classical in
 theorem embDomain_apply :
     s.embDomain f b = if h : b ∈ Set.range f then s (Classical.choose h) else 0 :=
   rfl
@@ -640,8 +644,10 @@ theorem embDomain_image : s.embDomain f (f a) = s a := by
   exact congr rfl (f.injective (Classical.choose_spec (Set.mem_range_self a)))
 
 @[simp]
-theorem embDomain_notin_range (h : b ∉ Set.range f) : s.embDomain f b = 0 := by
+theorem embDomain_of_notMem_range (h : b ∉ Set.range f) : s.embDomain f b = 0 := by
   rw [embDomain_apply, dif_neg h]
+
+@[deprecated (since := "2026-07-15")] alias embDomain_notin_range := embDomain_of_notMem_range
 
 @[simp]
 theorem hsum_embDomain : (s.embDomain f).hsum = s.hsum := by

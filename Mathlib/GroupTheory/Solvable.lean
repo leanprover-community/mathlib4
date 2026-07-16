@@ -113,7 +113,7 @@ instance (priority := 100) CommGroup.isSolvable {G : Type*} [CommGroup G] : IsSo
 
 theorem isSolvable_of_comm {G : Type*} [hG : Group G] (h : ∀ a b : G, a * b = b * a) :
     IsSolvable G := by
-  letI hG' : CommGroup G := { hG with mul_comm := h }
+  let hG' : CommGroup G := { hG with mul_comm := h }
   cases hG
   exact CommGroup.isSolvable
 
