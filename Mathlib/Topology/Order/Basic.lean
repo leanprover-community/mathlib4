@@ -66,7 +66,7 @@ variable {α : Type u} {β : Type v} {γ : Type w}
 `(a, ∞) = { x ∣ a < x }, (-∞, b) = {x ∣ x < b}` for all `a, b` in `α`. We do not register it as an
 instance as many ordered sets are already endowed with the same topology, most often in a non-defeq
 way though. Register as a local instance when necessary. -/
-@[implicit_reducible]
+@[instance_reducible]
 def Preorder.topology (α : Type*) [Preorder α] : TopologicalSpace α :=
   generateFrom { s | ∃ a, s = Ioi a ∨ s = Iio a }
 
@@ -806,5 +806,12 @@ the function is between conditionally complete linear orders with order topologi
 @[to_dual existing]
 lemma RightOrdContinuous.continuousWithinAt_Ici (hf : RightOrdContinuous f) :
     ContinuousWithinAt f (Ici x) x := hf.dual.continuousWithinAt_Iic
+
+/-- A function that is order-theoretically both left- and right-continuous is continuous, assuming
+the function is between conditionally complete linear orders with order topologies. -/
+lemma Continuous.of_ordContinuous (hl : LeftOrdContinuous f) (hr : RightOrdContinuous f) :
+    Continuous f :=
+  continuous_iff_continuousAt.mpr fun _ ↦ continuousAt_iff_continuous_left_right.mpr
+    ⟨hl.continuousWithinAt_Iic, hr.continuousWithinAt_Ici⟩
 
 end ConditionallyCompleteLinearOrder

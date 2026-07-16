@@ -325,7 +325,7 @@ variable (X) in
 /-- In an R₀ space, relatively compact sets form a bornology.
 Its cobounded filter is `Filter.coclosedCompact`.
 See also `Bornology.inCompact` the bornology of sets contained in a compact set. -/
-@[implicit_reducible]
+@[instance_reducible]
 def Bornology.relativelyCompact : Bornology X where
   cobounded := Filter.coclosedCompact X
   le_cofinite := Filter.coclosedCompact_le_cofinite
@@ -585,6 +585,7 @@ theorem Set.Subsingleton.closure [T1Space X] {s : Set X} (hs : s.Subsingleton) :
 theorem subsingleton_closure [T1Space X] {s : Set X} : (closure s).Subsingleton ↔ s.Subsingleton :=
   ⟨fun h => h.anti subset_closure, fun h => h.closure⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isClosedMap_const {X Y} [TopologicalSpace X] [TopologicalSpace Y] [T1Space Y] {y : Y} :
     IsClosedMap (Function.const X y) :=
   IsClosedMap.of_nonempty fun s _ h2s => by simp_rw [const, h2s.image_const, isClosed_singleton]

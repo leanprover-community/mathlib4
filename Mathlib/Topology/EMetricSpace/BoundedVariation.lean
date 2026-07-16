@@ -219,6 +219,11 @@ protected theorem subsingleton (f : α → E) {s : Set α} (hs : s.Subsingleton)
     eVariationOn f s = 0 :=
   constant_on (hs.image f)
 
+@[simp]
+theorem _root_.BoundedVariationOn.of_subsingleton {f : α → E} {s : Set α} (hs : s.Subsingleton) :
+    BoundedVariationOn f s := by
+  simp [BoundedVariationOn, hs]
+
 theorem lowerSemicontinuous_aux {ι : Type*} {F : ι → α → E} {p : Filter ι} {f : α → E} {s : Set α}
     (Ffs : ∀ x ∈ s, Tendsto (fun i => F i x) p (𝓝 (f x))) {v : ℝ≥0∞} (hv : v < eVariationOn f s) :
     ∀ᶠ n : ι in p, v < eVariationOn (F n) s := by
@@ -242,6 +247,7 @@ protected theorem lowerSemicontinuous (s : Set α) :
   simpa only [UniformOnFun.tendsto_iff_tendstoUniformlyOn, mem_image, forall_exists_index, and_imp,
     forall_apply_eq_imp_iff₂, tendstoUniformlyOn_singleton_iff_tendsto] using! @tendsto_id _ (𝓝 f)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The map `(eVariationOn · s)` is lower semicontinuous for uniform convergence on `s`. -/
 theorem lowerSemicontinuous_uniformOn (s : Set α) :
     LowerSemicontinuous fun f : α →ᵤ[{s}] E => eVariationOn f s := fun f ↦ by
