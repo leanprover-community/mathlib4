@@ -6,47 +6,30 @@ Authors: Thomas Browning, Bhavik Mehta
 module
 
 public import Mathlib.Combinatorics.Hypergraph.Basic
-public import Mathlib.Data.Finset.Density
-public import Mathlib.Data.Fintype.Prod
-public import Mathlib.Data.Fintype.Perm
-public import Mathlib.Data.Nat.Choose.Cast
-public import Mathlib.Data.Set.Card
 
 /-!
 # Combinatorial Designs
 
-This file defines combinatorial designs.
+This file defines incidence systems and combinatorial designs.
 
 ## Main definitions
 
-* `IncidenceSystem`
-* `IncidenceSystem.IsSimple`
-* `IncidenceSystem.IsUniform`
-* `IncidenceSystem.IsBalanced`
-* `IncidenceSystem.IsDesign`
-* `IncidenceSystem.IsSteiner`
-
-## Main statements
-
-* `fooBar_unique`
+* `IncidenceSystem`: An incidence system consists of a carrier set and subsets called blocks.
+* `IncidenceSystem.IsSimple`: An incidence system is simple if there are no duplicate blocks.
+* `IncidenceSystem.IsUniform`: An incidence system is `k`-uniform if every block has size `k`.
 
 ## Implementation details
 
-We place everything in the `IncidenceSystem` namespace, but this still allows for
+We place everything in the `IncidenceSystem` namespace, because this still allows one to write
 `{α β : Type*} (d : Design α β) [d.IsSimple] [d.IsUniform]`.
 
-## References
-
-* [F. Bar, *Quuxes*][bibkey]
+We index our blocks by a subset of an indexing type `β` to make it easy to add and remove blocks
+if desired. Duplicate blocks are permitted unless `IncidenceSystem.IsSimple` is imposed.
 
 ## TODO
 
 * Define regular (number of blocks containing a given point is fixed)
 * Define equidistance (pairwise intersections have a given size)
-
-## Tags
-
-Foobars, barfoos
 -/
 
 
@@ -54,11 +37,11 @@ Foobars, barfoos
 
 variable (α β : Type*)
 
-/-- A combinatorial design consists of a carrier set and subsets called blocks. We index our blocks
+/-- An incidence system consists of a carrier set and subsets called blocks. We index our blocks
 by a subset of an indexing type `β` to make it easy to add and remove blocks if desired.
 Duplicate blocks are permitted unless `IncidenceSystem.IsSimple` is imposed. -/
 structure IncidenceSystem where
-  /-- The ambient set for the combinatorial design. -/
+  /-- The ambient set for the incidence system. -/
   carrier : Set α
   /-- The indexing set for the blocks. -/
   blockSet : Set β
@@ -131,7 +114,7 @@ theorem isSimple_discrete (s : Set α) : (discrete s).IsSimple where
 theorem isSimple_indiscrete (s : Set α) (b : β) : (indiscrete s b).IsSimple where
   injOn := by simp
 
-/-- An incidence system is `k`-uniform if every block has cardinality `k`. -/
+/-- An incidence system is `k`-uniform if every block has size `k`. -/
 @[mk_iff]
 structure IsUniform (d : IncidenceSystem α β) (k : ℕ) : Prop where
   uniform {b} (hb : b ∈ d.blockSet) : (d.block b).ncard = k
