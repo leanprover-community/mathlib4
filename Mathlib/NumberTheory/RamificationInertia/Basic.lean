@@ -10,8 +10,6 @@ public import Mathlib.NumberTheory.RamificationInertia.Inertia
 public import Mathlib.NumberTheory.RamificationInertia.Ramification
 public import Mathlib.RingTheory.Ideal.Norm.AbsNorm
 
-deprecated_module "Use RingTheory.RamificationInertia.Basic" (since := "2026-07-01")
-
 /-!
 # Ramification index and inertia degree
 
@@ -44,6 +42,8 @@ In this file, `e` stands for the ramification index and `f` for the inertia degr
 leaving `p` and `P` implicit.
 
 -/
+
+deprecated_module "Use RingTheory.RamificationInertia.Basic" (since := "2026-07-01")
 
 @[expose] public section
 
