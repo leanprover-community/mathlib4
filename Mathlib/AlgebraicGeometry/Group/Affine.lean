@@ -48,7 +48,6 @@ suppress_compilation
 open AlgebraicGeometry Coalgebra Scheme CategoryTheory MonoidalCategory CartesianMonoidalCategory
   Functor Monoidal Opposite TensorProduct MonObj GrpObj
 open Limits hiding prodComparison
-open scoped SpecOfNotation
 
 universe w v u
 variable {R : CommRingCat.{u}}
@@ -84,18 +83,25 @@ instance preservesLimitsOfSize_algSpec : PreservesLimitsOfSize.{w, v} (algSpec R
   inferInstanceAs <| PreservesLimitsOfSize.{w, v} <|
     (commAlgCatEquivUnder R).op.functor ⋙ (Over.opEquivOpUnder R).inverse ⋙ Over.post Scheme.Spec
 
+set_option backward.isDefEq.respectTransparency false in
 instance preservesColimitsOfSize_algΓ : PreservesColimitsOfSize.{w, v} (algΓ R) := inferInstance
 
 @[simp] lemma algSpec_obj_hom (X : (CommAlgCat R)ᵒᵖ) :
     ((algSpec R).obj X).hom = Spec.map (CommRingCat.ofHom (algebraMap R X.unop)) := rfl
 
 lemma preservesTerminalIso_algSpec :
-    preservesTerminalIso (algSpec R) = Over.isoMk (.refl (Spec R)) := by
+    preservesTerminalIso (algSpec R) =
+      Over.isoMk (.refl (Spec R))
+        (by rw [algSpec_obj_hom]
+            simp only [comp_obj, Over.tensorUnit_left, Iso.refl_hom, Over.tensorUnit_hom,
+              unop_tensorUnit, CommAlgCat.coe_tensorUnit, Algebra.algebraMap_self,
+              CommRingCat.ofHom_id, Spec.map_id]
+            exact Category.comp_id _) := by
   ext : 1; exact toUnit_unique ..
 
 @[simp] lemma left_inv_preservesTerminalIso_algSpec :
     (preservesTerminalIso (algSpec R)).inv.left = 𝟙 (Spec R) := by
-  simp [preservesTerminalIso_algSpec]
+  rw [preservesTerminalIso_algSpec]; rfl
 
 @[simp]
 lemma left_prodComparison_algSpec (X Y : (CommAlgCat R)ᵒᵖ) :
@@ -104,10 +110,13 @@ lemma left_prodComparison_algSpec (X Y : (CommAlgCat R)ᵒᵖ) :
 @[simp]
 lemma left_inv_prodComparisonIso_algSpec (X Y : (CommAlgCat R)ᵒᵖ) :
     (prodComparisonIso (algSpec R) X Y).inv.left = (pullbackSpecIso R X.unop Y.unop).hom := by
-  rw [← Iso.comp_inv_eq_id, ← left_prodComparison_algSpec, ← Over.comp_left,
-    ← prodComparisonIso_hom, Iso.inv_hom_id, Over.id_left]
+  have : (Over.forget (Spec R)).mapIso (prodComparisonIso (algSpec R) X Y) =
+      (pullbackSpecIso R X.unop Y.unop).symm :=
+    Iso.ext (left_prodComparison_algSpec X Y)
+  exact congrArg Iso.inv this
 
 attribute [local simp] ε_of_cartesianMonoidalCategory μ_of_cartesianMonoidalCategory in
+set_option backward.isDefEq.respectTransparency false in
 /-- `Spec` as a functor from `R`-algebras to schemes over `Spec R` is braided.
 
 The monoidal data is copied from `Functor.Braided.ofChosenFiniteProducts` so that `ε`, `η` are
@@ -117,9 +126,20 @@ instance braidedAlgSpec : (algSpec R).Braided :=
     (Over.homMk (𝟙 (Spec R)) <| by simpa using Over.w (preservesTerminalIso (algSpec R)).inv)
     (fun X Y ↦ Over.homMk (pullbackSpecIso R X.unop Y.unop).hom <| by
       simpa using Over.w (prodComparisonIso (algSpec R) X Y).inv)
-    (Over.homMk (𝟙 (Spec R)) <| by simp [CommRingCat.of_carrier])
+    (Over.homMk (𝟙 (Spec R)) <| by
+      rw [algSpec_obj_hom]
+      simp only [comp_obj, Over.tensorUnit_left, Over.tensorUnit_hom, unop_tensorUnit,
+        CommAlgCat.coe_tensorUnit, Algebra.algebraMap_self, CommRingCat.ofHom_id, Spec.map_id]
+      exact Category.comp_id _)
     (fun X Y ↦ Over.homMk (pullbackSpecIso R X.unop Y.unop).inv <| by
       simpa using Over.w (prodComparison (algSpec R) X Y))
+    (Over.OverMorphism.ext (by simp))
+    (funext fun X ↦ funext fun Y ↦ Over.OverMorphism.ext (by simp))
+    (Over.OverMorphism.ext (by
+      rw [Functor.OplaxMonoidal.η_of_cartesianMonoidalCategory, ← preservesTerminalIso_hom,
+        preservesTerminalIso_algSpec]; rfl))
+    (funext fun X ↦ funext fun Y ↦ Over.OverMorphism.ext (by
+      rw [Functor.OplaxMonoidal.δ_of_cartesianMonoidalCategory, left_prodComparison_algSpec]; rfl))
 
 @[simp] lemma left_ε_algSpec : (LaxMonoidal.ε (algSpec R)).left = 𝟙 (Spec R) := rfl
 @[simp] lemma left_η_algSpec : (OplaxMonoidal.η (algSpec R)).left = 𝟙 (Spec R) := rfl
@@ -244,7 +264,7 @@ instance instCommGrpObjSpecAsOverSpec [HopfAlgebra R A] [IsCocomm R A] :
     CommGrpObj ((Spec A).asOver (Spec R)) where
 
 instance {R S T : Type u} [CommRing R] [CommRing S] [CommRing T] [Algebra R S] [Algebra R T]
-    (f : S →ₐ[R] T) : (Spec.map (CommRingCat.ofHom f.toRingHom)).IsOver Spec(R) where
+    (f : S →ₐ[R] T) : (Spec.map (CommRingCat.ofHom f.toRingHom)).IsOver (Spec (.of R)) where
   comp_over := by simp [specOverSpec_over, ← Spec.map_comp, ← CommRingCat.ofHom_comp]
 
 set_option backward.defeqAttrib.useBackward true in
@@ -252,7 +272,8 @@ set_option backward.isDefEq.respectTransparency false in
 /-- `Spec.map` as a `MulEquiv` on hom-sets. -/
 def Spec.mapMulEquiv {R S T : Type u} [CommRing R] [CommRing S] [CommRing T] [Bialgebra R S]
     [Algebra R T] :
-    WithConv (S →ₐ[R] T) ≃* (Spec(T).asOver Spec(R) ⟶ Spec(S).asOver Spec(R)) where
+    WithConv (S →ₐ[R] T) ≃*
+      ((Spec (.of T)).asOver (Spec (.of R)) ⟶ (Spec (.of S)).asOver (Spec (.of R))) where
   toFun f := (Spec.map (CommRingCat.ofHom f.ofConv.toRingHom)).asOver _
   invFun f := ⟨(Spec.preimage f.left).hom, by
     suffices CommRingCat.ofHom (algebraMap R S) ≫ Spec.preimage f.left =
@@ -332,7 +353,8 @@ variable (R S T) in
 /-- The isomorphism between the fiber product of two schemes `Spec S` and `Spec T`
 over a scheme `Spec R` and the `Spec` of the tensor product `S ⊗[R] T`. -/
 def pullbackSpecIso' [Algebra R T] :
-    pullback (Spec(S) ↘ Spec(R)) (Spec(T) ↘ Spec(R)) ≅ Spec (.of <| S ⊗[R] T) := pullbackSpecIso ..
+    pullback (Spec (.of S) ↘ Spec (.of R)) (Spec (.of T) ↘ Spec (.of R)) ≅
+      Spec (.of <| S ⊗[R] T) := pullbackSpecIso ..
 
 set_option backward.defeqAttrib.useBackward true in
 lemma pullbackSpecIso'_symmetry [Algebra R T] :
@@ -342,19 +364,26 @@ lemma pullbackSpecIso'_symmetry [Algebra R T] :
   simp_rw [Iso.trans_hom, ← Iso.eq_comp_inv, Category.assoc, ← Iso.inv_comp_eq]
   ext
   · have : (RingHomClass.toRingHom (Algebra.TensorProduct.comm R S T)).comp
-      Algebra.TensorProduct.includeLeftRingHom = Algebra.TensorProduct.includeRight.toRingHom := rfl
-    simp [specOverSpec_over, pullbackSpecIso', ← Spec.map_comp, ← CommRingCat.ofHom_comp, this]
+      Algebra.TensorProduct.includeLeftRingHom =
+      RingHomClass.toRingHom Algebra.TensorProduct.includeRight := rfl
+    rw [Category.assoc, pullbackSymmetry_hom_comp_fst]
+    simp only [pullbackSpecIso', specOverSpec_over, pullbackSpecIso_inv_snd, Category.assoc,
+      pullbackSpecIso_inv_fst, ← Spec.map_comp, ← CommRingCat.ofHom_comp, this]
   have : (RingHomClass.toRingHom (Algebra.TensorProduct.comm R S T)).comp
       (RingHomClass.toRingHom Algebra.TensorProduct.includeRight) =
       Algebra.TensorProduct.includeLeftRingHom := rfl
-  simp [specOverSpec_over, pullbackSpecIso', ← Spec.map_comp, ← CommRingCat.ofHom_comp, this]
+  rw [Category.assoc, pullbackSymmetry_hom_comp_snd]
+  simp only [pullbackSpecIso', specOverSpec_over, pullbackSpecIso_inv_fst, Category.assoc,
+    pullbackSpecIso_inv_snd, ← Spec.map_comp, ← CommRingCat.ofHom_comp, this]
 
 set_option backward.defeqAttrib.useBackward true in
-instance [Algebra R T] : (pullbackSymmetry .. ≪≫ pullbackSpecIso' R S T).hom.IsOver Spec(S) where
+instance [Algebra R T] :
+    (pullbackSymmetry .. ≪≫ pullbackSpecIso' R S T).hom.IsOver (Spec (.of S)) where
   comp_over := by
     rw [← cancel_epi (pullbackSymmetry .. ≪≫ pullbackSpecIso' ..).inv,
-      Scheme.canonicallyOverPullback_over]
-    simp [specOverSpec_over, pullbackSpecIso']
+      Scheme.canonicallyOverPullback_over, Iso.inv_hom_id_assoc, Iso.trans_inv, Category.assoc,
+      pullbackSymmetry_inv_comp_snd]
+    exact (pullbackSpecIso_inv_fst ..).symm
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
@@ -368,8 +397,8 @@ lemma μ_pullback_left_fst [Algebra R T] :
       (Over.mk (Spec.map (CommRingCat.ofHom (algebraMap R T))))
       (Over.mk (Spec.map (CommRingCat.ofHom (algebraMap R T))))).left ≫
         pullback.fst _ _ =
-    (((pullbackSymmetry .. ≪≫ pullbackSpecIso' R S T).hom.asOver Spec(S) ⊗ₘ
-        ((pullbackSymmetry .. ≪≫ pullbackSpecIso' R S T).hom.asOver Spec(S))).left) ≫
+    (((pullbackSymmetry .. ≪≫ pullbackSpecIso' R S T).hom.asOver (Spec (.of S)) ⊗ₘ
+        ((pullbackSymmetry .. ≪≫ pullbackSpecIso' R S T).hom.asOver (Spec (.of S)))).left) ≫
           (pullbackSpecIso S (S ⊗[R] T) (S ⊗[R] T)).hom ≫
             Spec.map (CommRingCat.ofHom (Algebra.TensorProduct.mapRingHom (algebraMap _ _)
               Algebra.TensorProduct.includeRight.toRingHom
@@ -394,7 +423,7 @@ lemma μ_pullback_left_fst [Algebra R T] :
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance [Bialgebra R T] :
-    IsMonHom <| (pullbackSymmetry .. ≪≫ pullbackSpecIso' R S T).hom.asOver Spec(S) where
+    IsMonHom <| (pullbackSymmetry .. ≪≫ pullbackSpecIso' R S T).hom.asOver (Spec (.of S)) where
   one_hom := by
     ext
     rw [← cancel_mono (pullbackSpecIso' ..).inv]
