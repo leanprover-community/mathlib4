@@ -218,21 +218,27 @@ theorem det_bordered_expand (α : Fin (p + 1) → Fin n) (i j : Fin n) :
     bminor A i j α =
       pminor A α * A i j -
       ∑ s : Fin (p + 1), bminor A i (α s) (s.removeNth α) * A (α s) j := by
-  unfold pminor bminor
-  rw [Matrix.det_succ_column_zero, Fin.sum_univ_succ, sub_eq_add_neg, ← Finset.sum_neg_distrib]
-  simp only [Nat.succ_eq_add_one, Fin.coe_ofNat_eq_mod, Nat.zero_mod, pow_zero,
-    Matrix.submatrix_apply, Fin.cons_zero, one_mul, Fin.succAbove_zero, Matrix.submatrix_submatrix,
-    Fin.val_succ, Fin.cons_succ, Finset.sum_neg_distrib]
-  rw [fin_cons_succ, fin_cons_succ, mul_comm (A i j)]
-  apply congrArg ((A.submatrix α α).det * A i j + ·)
-  rw [← Finset.sum_neg_distrib]
-  apply Finset.sum_congr
-  · rfl
-  · intro x _
-    rw [mul_right_comm, ← neg_mul]
-    congr
-    rw [fin_cons_succAbove, det_submatrix_removeNth_eq_sign_mul_bminor, ← mul_assoc, ← pow_add]
-    simp
+  calc
+    bminor A i j α =
+        A i j * pminor A α +
+        ∑ s : Fin (p + 1), (-1 : R) ^ (s.val + 1) * A (α s) j *
+          (A.submatrix (Fin.cons i (s.removeNth α)) α).det := by
+      rw [bminor, Matrix.det_succ_column_zero, Fin.sum_univ_succ]
+      simp only [Fin.val_zero, pow_zero, Matrix.submatrix_apply, Fin.cons_zero, one_mul,
+        Fin.succAbove_zero, Matrix.submatrix_submatrix, Fin.val_succ, Fin.cons_succ,
+        fin_cons_succ, fin_cons_succAbove]
+    _ = pminor A α * A i j +
+        ∑ s : Fin (p + 1),
+          ((-1 : R) ^ (s.val + 1) *
+            (A.submatrix (Fin.cons i (s.removeNth α)) α).det) * A (α s) j := by
+      simp only [mul_comm (A i j), mul_right_comm]
+    _ = pminor A α * A i j +
+        ∑ s : Fin (p + 1), -(bminor A i (α s) (s.removeNth α) * A (α s) j) := by
+      simp only [det_submatrix_removeNth_eq_sign_mul_bminor, ← mul_assoc, ← pow_add,
+        odd_add_one_self, Odd.neg_one_pow, neg_mul, one_mul]
+    _ = pminor A α * A i j -
+        ∑ s : Fin (p + 1), bminor A i (α s) (s.removeNth α) * A (α s) j := by
+      simp only [Finset.sum_neg_distrib, sub_eq_add_neg]
 
 /-- Bird's equation (5) -/
 theorem paper_eq5 (i j : Fin n) :
