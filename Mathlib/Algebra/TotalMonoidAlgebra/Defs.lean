@@ -601,7 +601,7 @@ def uniqueRingEquiv [Unique M] : R⟦M⟧ ≃+* R where
 variable (M) in
 @[to_additive (dont_translate := R) (attr := simp)]
 lemma uniqueRingEquiv_symm_apply [Unique M] (r : R) : (uniqueRingEquiv M).symm r = single 1 r := by
-  ext m; simp [uniqueRingEquiv, Subsingleton.elim m 1]
+  simp [RingEquiv.symm_apply_eq, Subsingleton.elim (default : M) 1]
 
 -- We want this lemma to fire before `uniqueRingEquiv_symm_apply`.
 @[to_additive (dont_translate := R) (attr := simp↓ high)]
@@ -648,7 +648,7 @@ lemma curryRingEquiv_single [DecidableEq M] [DecidableEq N] (m : M) (n : N) (r :
 @[to_additive (attr := simp)]
 lemma curryRingEquiv_symm_single [DecidableEq M] [DecidableEq N] (m : M) (n : N) (r : R) :
     curryRingEquiv.symm (single m <| single n r) = (single (m, n) r) := by
-  simp [curryRingEquiv]
+  simp [RingEquiv.symm_apply_eq]
 
 @[to_additive (dont_translate := R) (attr := simp) coeff_mul_single_add]
 lemma coeff_mul_single_mul [IsCancelMul M] [DecidableEq M] (x : R⟦M⟧) (r : R) (m m' : M) :
