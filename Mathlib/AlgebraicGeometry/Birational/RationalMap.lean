@@ -301,6 +301,7 @@ lemma restrict_equiv (f : X.PartialMap Y) (U : X.Opens)
     (hU : Dense (U : Set X)) (hU' : U ≤ f.domain) : (f.restrict U hU hU').equiv f :=
   ⟨U, hU, le_rfl, hU', by simp⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma equiv_id_iff (f : X.PartialMap X) :
     f.equiv (PartialMap.id X) ↔ ∃ (U : Opens X) (hU₁ : Dense (U : Set X)) (hU₂ : U ≤ f.domain),
       (f.restrict U hU₁ hU₂).hom = U.ι := by

@@ -145,6 +145,7 @@ def birationalAutOver (S : Scheme.{u}) [X.Over S] : Subgroup (X.BirationalMap X)
   mul_mem' {f g} (_ : f.IsOver S) (_ : g.IsOver S) := inferInstanceAs ((f.hom.comp g.hom).IsOver S)
   inv_mem' {f} (_ : f.IsOver S) := inferInstanceAs (f.inv.IsOver S)
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma PartialIso.toPartialMap_comp_symm (f : X.PartialIso Y) :
     f.toPartialMap.comp f.symm.toPartialMap =
       (PartialMap.id X).restrict f.source f.dense_source le_top := by
@@ -160,6 +161,7 @@ lemma PartialIso.toPartialMap_comp_symm (f : X.PartialIso Y) :
       PartialMap.restrict_hom, PartialMap.id_domain, PartialMap.id_hom, topIso_hom, homOfLE_ι]
     exact (X.homOfLE_ι _).symm
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma PartialIso.symm_toPartialMap_comp (f : X.PartialIso Y) :
     f.symm.toPartialMap.comp f.toPartialMap =
       (PartialMap.id Y).restrict f.target f.dense_target le_top := by
