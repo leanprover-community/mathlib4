@@ -156,7 +156,7 @@ structure _root_.FredholmDecomposition where
   isTopCompl : IsTopCompl X₁ X₀
   finite_X₀ : FiniteDimensional 𝕜 X₀
 
-/-- Given a fredhom decomposition `dec` of the space `E`, `dec.proj` is the (continuous linear)
+/-- Given a Fredholm decomposition `dec` of the space `E`, `dec.proj` is the (continuous linear)
 projection onto the "essential part" `dec.X₁` along the "inessential part" `dec.X₀`.
 This is a Fredholm operator. -/
 abbrev _root_.FredholmDecomposition.proj (dec : FredholmDecomposition 𝕜 E) :
@@ -261,7 +261,6 @@ variable [CompleteSpace 𝕜]
   [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E]
   [IsTopologicalAddGroup F] [ContinuousSMul 𝕜 F]
 
-variable [T2Space F] in
 /-- Assume that `u : E →L[𝕜] F` restricts to an isomorphism between closed finite co-dimension
 subspaces `E₁` and `F₁`. Then `u` is Fredholm.
 
