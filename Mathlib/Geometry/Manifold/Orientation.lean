@@ -229,43 +229,43 @@ def diagonalSMul (ε : ℤˣ) (o : OrientationLift I M ι) : OrientationLift I M
     rw [signedOrientation_diagonal, signedOrientation_diagonal]
     exact o.compatible x y z hx hy
 
-instance : SMul ℤˣ (OrientationLift I M ι) := ⟨diagonalSMul⟩
-
-instance : MulAction ℤˣ (OrientationLift I M ι) where
-  one_smul o := by
-    classical
-    apply OrientationLift.ext
-    · change signedOrientation 1 o.modelOrientation = o.modelOrientation
-      simp
-    · funext x z
-      change (if z ∈ (chartAt H x).source then 1 * o.chartSign x z else 1) = o.chartSign x z
-      by_cases hz : z ∈ (chartAt H x).source
-      · simp [hz]
-      · simp [hz, o.chartSign_eq_one_of_notMem x z hz]
-  mul_smul ε η o := by
-    classical
-    apply OrientationLift.ext
-    · change signedOrientation (ε * η) o.modelOrientation =
-        signedOrientation ε (signedOrientation η o.modelOrientation)
-      exact (signedOrientation_mul ε η o.modelOrientation).symm
-    · funext x z
-      change (if z ∈ (chartAt H x).source then (ε * η) * o.chartSign x z else 1) =
-        if z ∈ (chartAt H x).source then
-          ε * (if z ∈ (chartAt H x).source then η * o.chartSign x z else 1) else 1
-      by_cases hz : z ∈ (chartAt H x).source <;> simp [hz, mul_assoc]
+instance instSMul : SMul ℤˣ (OrientationLift I M ι) := ⟨diagonalSMul⟩
 
 @[simp]
 theorem smul_modelOrientation (ε : ℤˣ) (o : OrientationLift I M ι) :
     (ε • o).modelOrientation = signedOrientation ε o.modelOrientation := rfl
 
+open scoped Classical in
+/-- The chart sign of a diagonally rescaled orientation lift. -/
+theorem smul_chartSign (ε : ℤˣ) (o : OrientationLift I M ι) (x z : M) :
+    (ε • o).chartSign x z =
+      if z ∈ (chartAt H x).source then ε * o.chartSign x z else 1 := rfl
+
 @[simp]
 theorem smul_chartSign_of_mem (ε : ℤˣ) (o : OrientationLift I M ι) {x z : M}
     (hz : z ∈ (chartAt H x).source) :
     (ε • o).chartSign x z = ε * o.chartSign x z := by
-  classical
-  change (if z ∈ (chartAt H x).source then ε * o.chartSign x z else 1) =
-    ε * o.chartSign x z
-  rw [if_pos hz]
+  rw [smul_chartSign, if_pos hz]
+
+instance : MulAction ℤˣ (OrientationLift I M ι) where
+  one_smul o := by
+    apply OrientationLift.ext
+    · rw [smul_modelOrientation, signedOrientation_one]
+    · funext x z
+      by_cases hz : z ∈ (chartAt H x).source
+      · rw [smul_chartSign_of_mem 1 o hz, one_mul]
+      · rw [(1 • o).chartSign_eq_one_of_notMem x z hz,
+          o.chartSign_eq_one_of_notMem x z hz]
+  mul_smul ε η o := by
+    apply OrientationLift.ext
+    · rw [smul_modelOrientation, smul_modelOrientation, smul_modelOrientation,
+        signedOrientation_mul]
+    · funext x z
+      by_cases hz : z ∈ (chartAt H x).source
+      · rw [smul_chartSign_of_mem (ε * η) o hz,
+          smul_chartSign_of_mem ε (η • o) hz, smul_chartSign_of_mem η o hz, mul_assoc]
+      · rw [((ε * η) • o).chartSign_eq_one_of_notMem x z hz,
+          (ε • η • o).chartSign_eq_one_of_notMem x z hz]
 
 @[simp]
 theorem orientationAt_smul (ε : ℤˣ) (o : OrientationLift I M ι) (z : M) :
