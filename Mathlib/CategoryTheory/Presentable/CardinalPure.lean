@@ -94,6 +94,7 @@ lemma IsCardinalAccessibleCategory.mono_iff [IsCardinalAccessibleCategory C κ]
     fun hf ↦ ⟨fun {Z} g₁ g₂ h ↦ ((isCardinalPresentable C κ).ι.denseAt Z).hom_ext
       (by cat_disch)⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
 /-- In a `κ`-accessible category, `κ`-pure morphisms are monomorphisms.
 (This is proposition 2.29 in [Adamek_Rosicky_1994].) -/
