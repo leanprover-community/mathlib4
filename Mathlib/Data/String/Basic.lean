@@ -53,6 +53,7 @@ def ltb (s₁ s₂ : Legacy.Iterator) : Bool :=
     else base₁ it₁.s it₂.s it₁.i it₂.i h₂ h₁
   else base₂ it₁.s it₂.s it₁.i it₂.i h₂
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ltb_cons_addChar' (c : Char) (s₁ s₂ : Legacy.Iterator) :
     ltb ⟨ofList (c :: s₁.s.toList), s₁.i + c⟩ ⟨ofList (c :: s₂.s.toList), s₂.i + c⟩ =
       ltb s₁ s₂ := by
@@ -66,7 +67,7 @@ theorem ltb_cons_addChar' (c : Char) (s₁ s₂ : Legacy.Iterator) :
   | case2 s₁ s₂ h₁ h₂ h =>
     rw [ltb, Legacy.Iterator.hasNext_cons_addChar, Legacy.Iterator.hasNext_cons_addChar,
       if_pos (by simpa using h₁), if_pos (by simpa using h₂), if_neg]
-    · simp only [Legacy.Iterator.curr, get_cons_addChar, ofList_toList, decide_eq_decide]
+    · simp only [Legacy.Iterator.curr, get_cons_addChar, ofList_toList]
     · simpa only [Legacy.Iterator.curr, get_cons_addChar, ofList_toList] using h
   | case3 s₁ s₂ h₁ h₂ =>
     rw [ltb, Legacy.Iterator.hasNext_cons_addChar, Legacy.Iterator.hasNext_cons_addChar,

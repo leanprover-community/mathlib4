@@ -217,6 +217,7 @@ def isoEquiv {X Y : C} : (X ≅ Y) ≃ (F.obj X ≅ F.obj Y) where
   left_inv := by cat_disch
   right_inv := by cat_disch
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Fully faithful functors are stable by composition. -/
 @[simps]
 def comp {G : D ⥤ E} (hG : G.FullyFaithful) : (F ⋙ G).FullyFaithful where
@@ -350,6 +351,7 @@ theorem Faithful.div_faithful (F : C ⥤ E) [F.Faithful] (G : D ⥤ E) [G.Faithf
     Functor.Faithful (Faithful.div F G obj @h_obj @map @h_map) :=
   (Faithful.div_comp F G _ h_obj _ @h_map).faithful_of_comp
 
+set_option backward.isDefEq.respectTransparency false in
 instance Full.comp [Full F] [Full G] : Full (F ⋙ G) where
   map_surjective f := ⟨F.preimage (G.preimage f), by simp⟩
 
@@ -363,6 +365,7 @@ lemma Full.of_comp_faithful_iso {F : C ⥤ D} {G : D ⥤ E} {H : C ⥤ E} [Full 
   have := Full.of_iso h.symm
   exact Full.of_comp_faithful F G
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a natural isomorphism between `F ⋙ H` and `G ⋙ H` for a fully faithful functor `H`, we
 can 'cancel' it to give a natural iso between `F` and `G`.
 -/

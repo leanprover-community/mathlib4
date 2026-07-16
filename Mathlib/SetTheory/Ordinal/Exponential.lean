@@ -432,8 +432,7 @@ theorem log_opow_mul_add {b u v w : Ordinal} (hb : 1 < b) (hv : v ≠ 0) (hw : w
   rw [log_eq_iff hb]
   · constructor
     · grw [opow_add, opow_log_le_self b hv, ← le_self_add]
-    · apply (add_lt_add_right hw _).trans_le
-      rw [← mul_add_one, add_assoc, opow_add]
+    · grw [hw, ← mul_add_one, add_assoc, opow_add]
       gcongr
       rw [add_one_le_iff]
       exact lt_opow_succ_log_self hb _
@@ -534,9 +533,6 @@ theorem iSup_pow_natCast {o : Ordinal} (ho : 0 < o) : ⨆ n : ℕ, o ^ n = o ^ �
   rcases (one_le_iff_pos.2 ho).lt_or_eq with ho₁ | rfl
   · simpa using apply_omega0_of_isNormal (isNormal_opow ho₁)
   · simp
-
-@[deprecated (since := "2025-12-25")]
-alias iSup_pow := iSup_pow_natCast
 
 @[simp, norm_cast]
 lemma natCast_log (m n : ℕ) : ↑(Nat.log m n) = Ordinal.log ↑m ↑n := by

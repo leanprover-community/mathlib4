@@ -370,19 +370,18 @@ theorem mem_range_embedding_iff {j : Fin n} {i : Fin c.length} :
 /-- The embeddings of different blocks of a composition are disjoint. -/
 theorem disjoint_range {i₁ i₂ : Fin c.length} (h : i₁ ≠ i₂) :
     Disjoint (Set.range (c.embedding i₁)) (Set.range (c.embedding i₂)) := by
-  classical
-    wlog h' : i₁ < i₂
-    · exact (this c h.symm (h.lt_or_gt.resolve_left h')).symm
-    by_contra d
-    obtain ⟨x, hx₁, hx₂⟩ :
-      ∃ x : Fin n, x ∈ Set.range (c.embedding i₁) ∧ x ∈ Set.range (c.embedding i₂) :=
-      Set.not_disjoint_iff.1 d
-    have A : (i₁ : ℕ).succ ≤ i₂ := Nat.succ_le_of_lt h'
-    apply lt_irrefl (x : ℕ)
-    calc
-      (x : ℕ) < c.sizeUpTo (i₁ : ℕ).succ := (c.mem_range_embedding_iff.1 hx₁).2
-      _ ≤ c.sizeUpTo (i₂ : ℕ) := monotone_sum_take _ A
-      _ ≤ x := (c.mem_range_embedding_iff.1 hx₂).1
+  wlog h' : i₁ < i₂
+  · exact (this c h.symm (h.lt_or_gt.resolve_left h')).symm
+  by_contra d
+  obtain ⟨x, hx₁, hx₂⟩ :
+    ∃ x : Fin n, x ∈ Set.range (c.embedding i₁) ∧ x ∈ Set.range (c.embedding i₂) :=
+    Set.not_disjoint_iff.1 d
+  have A : (i₁ : ℕ).succ ≤ i₂ := Nat.succ_le_of_lt h'
+  apply lt_irrefl (x : ℕ)
+  calc
+    (x : ℕ) < c.sizeUpTo (i₁ : ℕ).succ := (c.mem_range_embedding_iff.1 hx₁).2
+    _ ≤ c.sizeUpTo (i₂ : ℕ) := monotone_sum_take _ A
+    _ ≤ x := (c.mem_range_embedding_iff.1 hx₂).1
 
 theorem mem_range_embedding (j : Fin n) : j ∈ Set.range (c.embedding (c.index j)) := by
   have : c.embedding (c.index j) (c.invEmbedding j) ∈ Set.range (c.embedding (c.index j)) :=
@@ -469,6 +468,7 @@ theorem ones_length (n : ℕ) : (ones n).length = n :=
 theorem ones_blocks (n : ℕ) : (ones n).blocks = replicate n (1 : ℕ) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem ones_blocksFun (n : ℕ) (i : Fin (ones n).length) : (ones n).blocksFun i = 1 := by
   simp only [blocksFun, ones, get_eq_getElem, getElem_replicate]
@@ -536,10 +536,12 @@ theorem single_length {n : ℕ} (h : 0 < n) : (single n h).length = 1 :=
 theorem single_blocks {n : ℕ} (h : 0 < n) : (single n h).blocks = [n] :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem single_blocksFun {n : ℕ} (h : 0 < n) (i : Fin (single n h).length) :
     (single n h).blocksFun i = n := by simp [blocksFun, single]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem single_embedding {n : ℕ} (h : 0 < n) (i : Fin n) :
     ((single n h).embedding (0 : Fin 1)) i = i := by
@@ -559,6 +561,7 @@ theorem eq_single_iff_length {n : ℕ} (h : 0 < n) {c : Composition n} :
     rw [eq_cons_of_length_one A] at B ⊢
     simpa [single_blocks] using B
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ne_single_iff {n : ℕ} (hn : 0 < n) {c : Composition n} :
     c ≠ single n hn ↔ ∀ i, c.blocksFun i < n := by
   contrapose!
@@ -661,7 +664,6 @@ def recOnSingleAppend {motive : ∀ n, Composition n → Sort*} {n : ℕ} (c : C
     | (k + 1) :: l =>
       single_append k l.sum ⟨l, fun hi ↦ blocks_pos <| mem_cons_of_mem _ hi, rfl⟩ <|
         recOnSingleAppend _ zero single_append
-  decreasing_by simp
 
 /-- Induction (recursion) principle on `c : Composition _`
 that corresponds to the reverse induction on the list of blocks of `c`. -/
@@ -810,6 +812,7 @@ Combinatorial viewpoints on compositions, seen as finite subsets of `Fin (n+1)` 
 -/
 
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Bijection between compositions of `n` and subsets of `{0, ..., n-2}`, defined by
 considering the restriction of the subset to `{1, ..., n-1}` and shifting to the left by one. -/
 def compositionAsSetEquiv (n : ℕ) : CompositionAsSet n ≃ Finset (Fin (n - 1)) where
@@ -913,6 +916,7 @@ def blocks (c : CompositionAsSet n) : List ℕ :=
 theorem blocks_length : c.blocks.length = c.length :=
   length_ofFn
 
+set_option backward.isDefEq.respectTransparency false in
 theorem blocks_partial_sum {i : ℕ} (h : i < c.boundaries.card) :
     (c.blocks.take i).sum = c.boundary ⟨i, h⟩ := by
   induction i with
