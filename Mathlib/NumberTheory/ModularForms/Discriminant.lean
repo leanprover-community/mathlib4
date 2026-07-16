@@ -123,6 +123,7 @@ lemma discriminant_eq_q_prod (z : ℍ) : Δ z = 𝕢 1 z * ∏' n, (1 - eta_q n 
 lemma discriminant_ne_zero (z : ℍ) : Δ z ≠ 0 := by
   simpa [discriminant] using eta_ne_zero z.2
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The discriminant is invariant under `T : z ↦ z + 1`, i.e., `Δ(z + 1) = Δ(z)`. -/
 lemma discriminant_T_invariant : (Δ ∣[(12 : ℤ)] ModularGroup.T) = Δ := by
   ext z
@@ -138,6 +139,7 @@ lemma eta_comp_eq_csqrt_I_inv : upperHalfPlaneSet.EqOn
   have h3 : η I = z * sqrt I * η I := by simpa [← mul_assoc] using h (show I ∈ _ by simp)
   grind [sqrt, eta_ne_zero (show 0 < I.im by simp)]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The discriminant satisfies the modular transformation for `S : z ↦ -1 / z`:
 we have `Δ(-1 / z) = z ^ 12 · Δ(z)`. -/
 lemma discriminant_S_invariant : (Δ ∣[(12 : ℤ)] ModularGroup.S) = Δ := by
@@ -164,7 +166,7 @@ lemma tendsto_atImInfty_tprod_one_sub_eta_q_pow :
     exact pow_le_pow_left₀ (norm_nonneg _) (mem_ball_zero_iff.mp hq).le _
   have := (htprod.comp (UpperHalfPlane.qParam_tendsto_atImInfty zero_lt_one)).pow 24
   simp only [Periodic.qParam, ofReal_one, div_one, comp_apply, one_pow, eta_q] at *
-  convert this using 2 with τ
+  convert! this using 2 with τ
   rw [Multipliable.tprod_pow]
   apply (multipliableLocallyUniformlyOn_eta.multipliable τ.2).congr
   simp [eta_q, Periodic.qParam, ← exp_nat_mul]
@@ -198,7 +200,7 @@ lemma discriminant_cuspFunction_eqOn : Set.EqOn (cuspFunction 1 Δ)
     (fun q ↦ q * ∏' i, (1 - q ^ (i + 1)) ^ 24) (Metric.ball 0 1) := by
   intro q hq
   by_cases hq0 : q = 0
-  · simpa [hq0] using Periodic.cuspFunction_zero_of_zero_at_inf one_pos
+  · simpa [hq0] using! Periodic.cuspFunction_zero_of_zero_at_inf one_pos
       discriminant_isZeroAtImInfty.zero_at_infty_comp_ofComplex
   · have him := Periodic.im_invQParam_pos_of_norm_lt_one one_pos
       (by simpa [dist_zero_right] using hq) hq0
@@ -215,7 +217,7 @@ lemma discriminant_qExpansion_coeff_one : (qExpansion 1 Δ).coeff 1 = 1 := by
     _ = derivWithin (fun q ↦ q * ∏' i, (1 - q ^ (i + 1)) ^ 24) (Metric.ball 0 1) 0 :=
         derivWithin_congr discriminant_cuspFunction_eqOn (discriminant_cuspFunction_eqOn hmem)
     _ = 1 := by
-        simp [derivWithin_fun_mul differentiableWithinAt_id'
+        simp [derivWithin_fun_mul differentiableWithinAt_fun_id
           (differentiableOn_tprod_one_sub_pow_pow 24 _ hmem),
           derivWithin_id' _ _ (Metric.isOpen_ball.uniqueDiffWithinAt hmem)]
 

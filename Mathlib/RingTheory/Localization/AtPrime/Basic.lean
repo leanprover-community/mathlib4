@@ -139,6 +139,7 @@ namespace AtPrime
 
 variable (I : Ideal R) [hI : I.IsPrime] [IsLocalization.AtPrime S I]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The prime ideals in the localization of a commutative ring at a prime ideal I are in
 order-preserving bijection with the prime ideals contained in I. -/
 @[simps!]
@@ -163,7 +164,7 @@ theorem isUnit_to_map_iff (x : R) : IsUnit ((algebraMap R S) x) ↔ x ∈ I.prim
 theorem to_map_mem_maximal_iff (x : R) (h : IsLocalRing S := isLocalRing S I) :
     algebraMap R S x ∈ IsLocalRing.maximalIdeal S ↔ x ∈ I :=
   not_iff_not.mp <| by
-    simpa only [IsLocalRing.mem_maximalIdeal, mem_nonunits_iff, Classical.not_not] using
+    simpa only [IsLocalRing.mem_maximalIdeal, mem_nonunits_iff, Classical.not_not] using!
       isUnit_to_map_iff S I x
 
 theorem under_maximalIdeal (h : IsLocalRing S := isLocalRing S I) :
@@ -183,7 +184,7 @@ theorem isUnit_mk'_iff (x : R) (y : I.primeCompl) : IsUnit (mk' S x y) ↔ x ∈
 theorem mk'_mem_maximal_iff (x : R) (y : I.primeCompl) (h : IsLocalRing S := isLocalRing S I) :
     mk' S x y ∈ IsLocalRing.maximalIdeal S ↔ x ∈ I :=
   not_iff_not.mp <| by
-    simpa only [IsLocalRing.mem_maximalIdeal, mem_nonunits_iff, Classical.not_not] using
+    simpa only [IsLocalRing.mem_maximalIdeal, mem_nonunits_iff, Classical.not_not] using!
       isUnit_mk'_iff S I x y
 
 end AtPrime
@@ -209,7 +210,7 @@ it is the unique maximal ideal given by the local ring structure `AtPrime.isLoca
 theorem AtPrime.map_eq_maximalIdeal :
     Ideal.map (algebraMap R (Localization.AtPrime I)) I =
       IsLocalRing.maximalIdeal (Localization I.primeCompl) := by
-  convert congr_arg (Ideal.map _) AtPrime.under_maximalIdeal.symm
+  convert! congr_arg (Ideal.map _) AtPrime.under_maximalIdeal.symm
   rw [map_under I.primeCompl]
 
 lemma AtPrime.eq_maximalIdeal_iff_under_eq {J : Ideal (Localization.AtPrime I)} :
@@ -296,8 +297,10 @@ noncomputable def localRingEquiv (J : Ideal P) [J.IsPrime] (f : R ≃+* P) (hIJ 
   right_inv x := by simp [localRingHom, map_map]
 
 variable {S} in
-/-- For an algebra hom `f : S →ₐ[R] P` and a prime ideal `J` in `P`, the induced ring hom from the
-localization of `R` at `J ∩ S` to the localization of `P` at `J`. -/
+/-- For an `R`-algebra homomorphism `f : S →ₐ[R] P` and prime ideals `I = f⁻¹(J)`, the induced
+`R`-algebra homomorphism from the localization of `S` at `I` to the localization of `P` at `J`.
+
+See `localAlgHom'` for a variant where the base ring `R` is also localized. -/
 noncomputable def localAlgHom [Algebra R P] (I : Ideal S) [I.IsPrime] (J : Ideal P) [J.IsPrime]
     (f : S →ₐ[R] P) (hIJ : I = J.comap f) :
     Localization.AtPrime I →ₐ[R] Localization.AtPrime J where
@@ -312,7 +315,9 @@ variable {S} in
     localAlgHom I J f hIJ x = localRingHom I J f.toRingHom hIJ x := rfl
 
 variable {S} in
-/-- Isomorphic algebras have isomorphic localizations. -/
+/-- Isomorphic algebras have isomorphic localizations.
+
+See `localAlgEquiv'` for a variant where the base ring is also localized. -/
 @[simps]
 noncomputable def localAlgEquiv [Algebra R P] (I : Ideal S) [I.IsPrime] (J : Ideal P) [J.IsPrime]
     (f : S ≃ₐ[R] P) (hIJ : I = J.comap f) :
@@ -349,13 +354,13 @@ namespace AtPrime
 
 section
 
-variable {A B C : Type*} [CommRing A] [CommRing B] [CommRing C] [Algebra A B] [Algebra A C]
-  [Algebra R A] [Algebra R B] [IsScalarTower R A B] [Algebra B C] [IsScalarTower A B C]
+variable {A B C : Type*} [CommSemiring A] [CommSemiring B] [Algebra R A] [Algebra R B] [Algebra A B]
+  [IsScalarTower R A B] [CommSemiring C] [Algebra A C] [Algebra B C] [IsScalarTower A B C]
 
 /-- If `P` lies over `p`, then `Localization.AtPrime P` is an algebra over `Localization.AtPrime p`.
 This is not an instance for performance reasons and to avoid diamonds in the situation where the top
 ring is already an algebra over `Localization.AtPrime p` (e.g., this happens for `Ideal.Fiber`). -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def algebraOfLiesOver
     (p : Ideal A) [p.IsPrime] (P : Ideal B) [P.IsPrime] [P.LiesOver p] :
     Algebra (Localization.AtPrime p) (Localization.AtPrime P) :=
@@ -414,6 +419,37 @@ theorem mapPiEvalRingHom_algebraMap_apply {r : Π i, R i} :
 
 end AtPrime
 
+section localAlg
+
+open AtPrime
+
+variable {S} [Algebra R P] (J : Ideal S) (K : Ideal P) [J.IsPrime] [K.IsPrime]
+  [J.LiesOver I] [Algebra (Localization.AtPrime I) (Localization.AtPrime J)] [IsLiesOverAlgebra I J]
+  [K.LiesOver I] [Algebra (Localization.AtPrime I) (Localization.AtPrime K)] [IsLiesOverAlgebra I K]
+
+/-- For an `R`-algebra homomorphism `f : S →ₐ[R] P` and prime ideals `J = f⁻¹(K)` lying over `I`,
+the induced algebra homomorphism from the localization of `S` at `J` to the localization of `P` at
+`K` over the localization of `R` at `I`.
+
+See `localAlgHom` for a variant where the base ring `R` is not localized. -/
+@[simps!]
+noncomputable def localAlgHom' (f : S →ₐ[R] P) (h : J = K.comap f) :
+    Localization.AtPrime J →ₐ[Localization.AtPrime I] Localization.AtPrime K :=
+  (localAlgHom J K f h).extendScalarsOfIsLocalization (Localization.AtPrime I) I.primeCompl
+
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
+/-- Isomorphic algebras have isomorphic localizations.
+
+See `localAlgEquiv` for a variant where the base ring is not localized. -/
+@[simps!]
+noncomputable def localAlgEquiv' (f : S ≃ₐ[R] P) (h : J = K.comap f) :
+    Localization.AtPrime J ≃ₐ[Localization.AtPrime I] Localization.AtPrime K :=
+  (localAlgEquiv J K f h).extendScalarsOfIsLocalization (Localization.AtPrime I) I.primeCompl
+
+end localAlg
+
 end Localization
 
 section
@@ -421,12 +457,14 @@ section
 variable (q : Ideal R) [q.IsPrime] (M : Submonoid R) {S : Type*} [CommSemiring S] [Algebra R S]
   [IsLocalization.AtPrime S q]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Ideal.isPrime_map_of_isLocalizationAtPrime {p : Ideal R} [p.IsPrime] (hpq : p ≤ q) :
     (p.map (algebraMap R S)).IsPrime := by
   have disj : Disjoint (q.primeCompl : Set R) p := by
     simp [Ideal.primeCompl, ← le_compl_iff_disjoint_left, hpq]
   apply IsLocalization.isPrime_of_isPrime_disjoint q.primeCompl _ p (by simpa) disj
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Ideal.under_map_of_isLocalizationAtPrime {p : Ideal R} [p.IsPrime] (hpq : p ≤ q) :
     (p.map (algebraMap R S)).under R = p := by
   have disj : Disjoint (q.primeCompl : Set R) p := by
@@ -483,7 +521,7 @@ theorem isPrime_map_of_liesOver [P.IsPrime] [P.LiesOver p] : (P.map (algebraMap 
   isPrime_of_isPrime_disjoint _ _ _ inferInstance (Ideal.disjoint_primeCompl_of_liesOver P p)
 
 theorem map_eq_maximalIdeal : p.map (algebraMap R Rₚ) = maximalIdeal Rₚ := by
-  convert congr_arg (Ideal.map (algebraMap R Rₚ)) (under_maximalIdeal Rₚ p).symm
+  convert! congr_arg (Ideal.map (algebraMap R Rₚ)) (under_maximalIdeal Rₚ p).symm
   rw [map_under p.primeCompl]
 
 instance isMaximal_map : (p.map (algebraMap R Rₚ)).IsMaximal := by
@@ -560,9 +598,7 @@ theorem equivQuotMaximalIdeal_symm_apply_mk (x : R) (s : p.primeCompl) :
     mk'_spec, Ideal.Quotient.mk_algebraMap, equivQuotMaximalIdeal_apply_mk,
     Ideal.Quotient.mk_algebraMap]
 
-@[deprecated (since := "2025-11-13")] alias _root_.equivQuotMaximalIdealOfIsLocalization :=
-  equivQuotMaximalIdeal
-
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The isomorphism `R ⧸ p ^ n ≃ₐ[R] Rₚ ⧸ maximalIdeal Rₚ ^ n`, where `Rₚ` satisfies
 `IsLocalization.AtPrime Rₚ p`. -/
 noncomputable
@@ -588,6 +624,7 @@ theorem equivQuotMaximalIdealPow_apply_mk (n : ℕ) (x : R) :
       Ideal.Quotient.mk _ (algebraMap R Rₚ x) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem equivQuotMaximalIdealPow_symm_apply_mk_mul (n : ℕ) (x : R) (s : p.primeCompl) :
     (equivQuotMaximalIdealPow p Rₚ n).symm (Ideal.Quotient.mk _ (IsLocalization.mk' Rₚ x s)) *

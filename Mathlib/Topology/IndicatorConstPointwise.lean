@@ -19,11 +19,11 @@ functions of sets converge pointwise.
 For `A` a set, `(Asᵢ)` an indexed collection of sets, under mild conditions, the following are
 equivalent:
 
- (a) the indicator functions of `Asᵢ` tend to the indicator function of `A` pointwise;
+(a) the indicator functions of `Asᵢ` tend to the indicator function of `A` pointwise;
 
- (b) for every `x`, we eventually have that `x ∈ Asᵢ` holds iff `x ∈ A` holds;
+(b) for every `x`, we eventually have that `x ∈ Asᵢ` holds iff `x ∈ A` holds;
 
- (c) `Tendsto As _ <| Filter.pi (pure <| · ∈ A)`.
+(c) `Tendsto As _ <| Filter.pi (pure <| · ∈ A)`.
 
 The results stating these in the case when the indicators take values in a Fréchet space are:
 * `tendsto_indicator_const_iff_forall_eventually` is the equivalence (a) ↔ (b);
@@ -76,7 +76,7 @@ lemma tendsto_indicator_const_apply_iff_eventually' (b : β)
   classical
   have heart := @tendsto_ite ι L β (fun i ↦ x ∈ As i) _ (x ∈ A) _ b 0 (𝓝 b) (𝓝 (0 : β))
                 nhds_o nhds_b ?_ ?_
-  · convert heart
+  · convert! heart
     by_cases hxA : x ∈ A <;> simp [hxA]
   · simp only [principal_singleton, le_def, mem_pure]
     exact fun s s_nhds ↦ mem_of_mem_nhds s_nhds

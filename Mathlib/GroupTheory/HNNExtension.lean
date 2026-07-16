@@ -96,7 +96,7 @@ theorem of_mul_inv_t (a : A) :
 /-- Define a function `HNNExtension G A B φ →* H`, by defining it on `G` and `t` -/
 def lift (f : G →* H) (x : H) (hx : ∀ a : A, x * f ↑a = f (φ a : G) * x) :
     HNNExtension G A B φ →* H :=
-  Con.lift _ (Coprod.lift f (zpowersHom H x)) (Con.conGen_le <| by
+  Con.lift _ (Coprod.lift f (zpowersHom H x)) (Con.conGen_le.2 <| by
     rintro _ _ ⟨a, rfl, rfl⟩
     simp [hx])
 
@@ -118,6 +118,7 @@ theorem hom_ext {f g : HNNExtension G A B φ →* M}
   (MonoidHom.cancel_right Con.mk'_surjective).mp <|
     Coprod.hom_ext hg (MonoidHom.ext_mint ht)
 
+set_option backward.isDefEq.respectTransparency false in
 @[elab_as_elim]
 theorem induction_on {motive : HNNExtension G A B φ → Prop}
     (x : HNNExtension G A B φ) (of : ∀ g, motive (of g))
@@ -160,7 +161,7 @@ and `toSubgroupEquiv` is the group isomorphism from `toSubgroup A B u` to `toSub
 It is defined to be `φ` when `u = 1` and `φ⁻¹` when `u = -1`. -/
 def toSubgroupEquiv (u : ℤˣ) : toSubgroup A B u ≃* toSubgroup A B (-u) :=
   if hu : u = 1 then hu ▸ φ else by
-    convert φ.symm <;>
+    convert! φ.symm <;>
     cases Int.units_eq_one_or u <;> simp_all
 
 @[simp]
@@ -401,6 +402,7 @@ theorem not_cancels_of_cons_hyp (u : ℤˣ) (w : NormalWord d)
   rw [hx] at h2
   simpa using h2 (-u) rfl hw
 
+set_option backward.isDefEq.respectTransparency false in
 theorem unitsSMul_cancels_iff (u : ℤˣ) (w : NormalWord d) :
     Cancels (-u) (unitsSMul φ u w) ↔ ¬ Cancels u w := by
   by_cases h : Cancels u w
@@ -422,7 +424,8 @@ theorem unitsSMul_neg (u : ℤˣ) (w : NormalWord d) :
     unitsSMul φ (-u) (unitsSMul φ u w) = w := by
   rw [unitsSMul]
   split_ifs with hcan
-  · have hncan : ¬ Cancels u w := (unitsSMul_cancels_iff _ _ _).1 hcan
+  · set_option backward.isDefEq.respectTransparency false in
+    have hncan : ¬ Cancels u w := (unitsSMul_cancels_iff _ _ _).1 hcan
     unfold unitsSMul
     simp only [dif_neg hncan]
     simp [unitsSMulWithCancel, unitsSMulGroup, (d.compl u).equiv_snd_eq_inv_mul,
@@ -434,7 +437,7 @@ theorem unitsSMul_neg (u : ℤˣ) (w : NormalWord d) :
     | ofGroup => simp [Cancels] at hcan2
     | cons g u' w h1 h2 ih =>
       clear ih
-      simp only [unitsSMulGroup, SetLike.coe_sort_coe, unitsSMulWithCancel, id_eq, consRecOn_cons,
+      simp only [unitsSMulGroup, SetLike.coe_sort_coe, unitsSMulWithCancel, consRecOn_cons,
         group_smul_head,
         mul_inv_rev]
       cases hcan2.2
@@ -449,7 +452,7 @@ noncomputable def unitsSMulEquiv : NormalWord d ≃ NormalWord d :=
   { toFun := unitsSMul φ 1
     invFun := unitsSMul φ (-1),
     left_inv := fun _ => by rw [unitsSMul_neg]
-    right_inv := fun w => by convert unitsSMul_neg _ _ w; simp }
+    right_inv := fun w => by convert! unitsSMul_neg _ _ w; simp }
 
 set_option backward.isDefEq.respectTransparency false in
 theorem unitsSMul_one_group_smul (g : A) (w : NormalWord d) :
@@ -491,14 +494,17 @@ theorem prod_group_smul (g : G) (w : NormalWord d) :
     (g • w).prod φ = of g * (w.prod φ) := by
   simp [ReducedWord.prod, mul_assoc]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem of_smul_eq_smul (g : G) (w : NormalWord d) :
     (of g : HNNExtension G A B φ) • w = g • w := by
   simp +instances [instHSMul, SMul.smul, MulAction.toEndHom]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem t_smul_eq_unitsSMul (w : NormalWord d) :
     (t : HNNExtension G A B φ) • w = unitsSMul φ 1 w := by
   simp +instances [instHSMul, SMul.smul, MulAction.toEndHom]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem t_pow_smul_eq_unitsSMul (u : ℤˣ) (w : NormalWord d) :
     (t ^ (u : ℤ) : HNNExtension G A B φ) • w = unitsSMul φ u w := by
   rcases Int.units_eq_one_or u with (rfl | rfl) <;>

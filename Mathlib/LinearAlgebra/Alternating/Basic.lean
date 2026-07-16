@@ -93,7 +93,7 @@ section Coercions
 
 instance instFunLike : FunLike (M [⋀^ι]→ₗ[R] N) (ι → M) N where
   coe f := f.toFun
-  coe_injective' f g h := by
+  coe_injective f g h := by
     rcases f with ⟨⟨_, _, _⟩, _⟩
     rcases g with ⟨⟨_, _, _⟩, _⟩
     congr
@@ -473,10 +473,14 @@ def compAlternatingMapₗ [Semiring S] [Module S N] [Module S N₂]
   map_add' := g.compAlternatingMap_add
   map_smul' := g.compAlternatingMap_smul
 
-theorem smulRight_eq_comp {R M₁ M₂ ι : Type*} [CommSemiring R] [AddCommMonoid M₁]
+theorem _root_.AlternatingMap.smulRight_eq_comp
+    {R M₁ M₂ ι : Type*} [CommSemiring R] [AddCommMonoid M₁]
     [AddCommMonoid M₂] [Module R M₁] [Module R M₂] (f : M₁ [⋀^ι]→ₗ[R] R) (z : M₂) :
     f.smulRight z = (LinearMap.id.smulRight z).compAlternatingMap f :=
   rfl
+
+@[deprecated (since := "2026-05-14")]
+alias smulRight_eq_comp := AlternatingMap.smulRight_eq_comp
 
 @[simp]
 theorem subtype_compAlternatingMap_codRestrict (f : M [⋀^ι]→ₗ[R] N) (p : Submodule R N)
@@ -653,7 +657,7 @@ theorem map_update_update [DecidableEq ι] {i j : ι} (hij : i ≠ j) (m : M) :
 theorem map_swap_add [DecidableEq ι] {i j : ι} (hij : i ≠ j) :
     f (v ∘ Equiv.swap i j) + f v = 0 := by
   rw [Equiv.comp_swap_eq_update]
-  convert f.map_update_update v hij (v i + v j)
+  convert! f.map_update_update v hij (v i + v j)
   simp [f.map_update_self _ hij, f.map_update_self _ hij.symm,
     Function.update_comm hij (v i + v j) (v _) v, Function.update_comm hij.symm (v i) (v i) v]
 
@@ -781,7 +785,7 @@ theorem map_linearDependent {K M N : Type*} [Ring K] [IsDomain K] [AddCommGroup 
     [AddCommGroup N] [Module K N] [IsTorsionFree K N] (f : M [⋀^ι]→ₗ[K] N)
     (v : ι → M) (h : ¬LinearIndependent K v) : f v = 0 := by
   obtain ⟨s, g, h, i, hi, hz⟩ := not_linearIndependent_iff.mp h
-  letI := Classical.decEq ι
+  let := Classical.decEq ι
   suffices f (update v i (g i • v i)) = 0 by
     rw [f.map_update_smul, Function.update_eq_self, smul_eq_zero] at this
     exact Or.resolve_left this hz

@@ -73,7 +73,7 @@ theorem minpolyX_eq_zero_iff : (f.minpolyX K⟮f⟯) = 0 ↔ ∃ c, f = C c :=
   ⟨fun h ↦ f.eq_C_of_minpolyX_coeff_eq_zero (by simp [h]), by rintro ⟨c, rfl⟩; simp⟩
 
 theorem isAlgebraic_adjoin_simple_X (hf : ¬∃ c, f = C c) : IsAlgebraic K⟮f⟯ (X : K⟮X⟯) :=
-   ⟨f.minpolyX K⟮f⟯, fun H ↦ hf (f.minpolyX_eq_zero_iff.mp H), f.minpolyX_aeval_X⟩
+  ⟨f.minpolyX K⟮f⟯, fun H ↦ hf (f.minpolyX_eq_zero_iff.mp H), f.minpolyX_aeval_X⟩
 
 theorem isAlgebraic_adjoin_simple_X' (hf : ¬∃ c, f = C c) :
     Algebra.IsAlgebraic K⟮f⟯ K⟮X⟯ := by
@@ -122,6 +122,7 @@ theorem transcendental_of_ne_C (hf : ¬∃ c, f = C c) : Transcendental K f := b
   rw [Algebra.transcendental_iff_not_isAlgebraic] at tr
   exact tr <| Algebra.IsAlgebraic.trans _ _ _ (alg := f.isAlgebraic_adjoin_simple_X' hf)
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem irreducible_minpolyX' (hf : ¬∃ c, f = C c) : Irreducible (f.minpolyX K[f]) := by
   let e := Polynomial.algEquivOfTranscendental K f (f.transcendental_of_ne_C hf)
   let φ : K[X][X] := f.num.map (algebraMap ..) -
@@ -141,13 +142,14 @@ theorem irreducible_minpolyX' (hf : ¬∃ c, f = C c) : Irreducible (f.minpolyX 
     rw [mul_comm]
     rfl
   rw [this, MulEquiv.irreducible_iff]
-  convert irreducible_C_mul_X_add_C (neg_ne_zero.mpr f.denom_ne_zero)
-    ((IsCoprime.neg_right_iff _ _).mpr f.isCoprime_num_denom).symm.isRelPrime using 1
+  convert!
+    irreducible_C_mul_X_add_C (neg_ne_zero.mpr f.denom_ne_zero)
+      ((IsCoprime.neg_right_iff _ _).mpr f.isCoprime_num_denom).symm.isRelPrime using 1
   rw [add_comm, X_mul_C, map_neg, neg_mul]
   exact sub_eq_add_neg (Polynomial.C f.num) (Polynomial.C f.denom * Polynomial.X)
 
 theorem irreducible_minpolyX (hf : ¬∃ c, f = C c) : Irreducible (f.minpolyX K⟮f⟯) := by
-  haveI : UniqueFactorizationMonoid K[f] :=
+  have : UniqueFactorizationMonoid K[f] :=
     (f.transcendental_of_ne_C hf).uniqueFactorizationMonoid_adjoin
   rw [← f.minpolyX_map K[f] K⟮f⟯,
     ← IsPrimitive.irreducible_iff_irreducible_map_fraction_map]

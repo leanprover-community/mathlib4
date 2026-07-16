@@ -80,7 +80,8 @@ open Lean Meta Qq Function
 
 /-- Extension of the `positivity` tactic for Bernstein polynomials: they are always non-negative. -/
 @[positivity DFunLike.coe (bernstein _ _) _]
-meta def evalBernstein : PositivityExt where eval {_ _} _zα _pα e := do
+meta def evalBernstein : PositivityExt where eval {_ _} _zα pα? e :=
+  match pα? with | none => pure .none | some _ => do
   let .app (.app _coe (.app (.app _ n) ν)) x ← whnfR e | throwError "not bernstein polynomial"
   let p ← mkAppOptM ``bernstein_nonneg #[n, ν, x]
   pure (.nonnegative p)
@@ -112,7 +113,7 @@ theorem probability (n : ℕ) (x : I) : (∑ k : Fin (n + 1), bernstein n k x) =
 
 theorem variance {n : ℕ} (hn : n ≠ 0) (x : I) :
     (∑ k : Fin (n + 1), (x - k/ₙ : ℝ) ^ 2 * bernstein n k x) = (x : ℝ) * (1 - x) / n := by
-  convert congr(Polynomial.aeval (x : ℝ) $(bernsteinPolynomial.variance ℝ n) / n ^ 2) using 1
+  convert! congr(Polynomial.aeval (x : ℝ) $(bernsteinPolynomial.variance ℝ n) / n ^ 2) using 1
   · simp only [z, bernstein_apply, nsmul_eq_mul, bernsteinPolynomial, Finset.sum_range, map_sum,
       Polynomial.coe_aeval_eq_eval, Polynomial.eval_mul, Polynomial.eval_pow, Polynomial.eval_sub,
       Polynomial.eval_natCast, Polynomial.eval_X, Polynomial.eval_one]
@@ -180,7 +181,7 @@ and reproduced on wikipedia.
 -/
 theorem bernsteinApproximation_uniform [LocallyConvexSpace ℝ E] (f : C(I, E)) :
     Tendsto (fun n : ℕ => bernsteinApproximation n f) atTop (𝓝 f) := by
-  letI : UniformSpace E := IsTopologicalAddGroup.rightUniformSpace E
+  let : UniformSpace E := IsTopologicalAddGroup.rightUniformSpace E
   have : IsUniformAddGroup E := isUniformAddGroup_of_addCommGroup
   /- Topology on a locally convex TVS is given by a family of seminorms `‖x‖_U = gauge U x`,
   where the open symmetric convex sets `U` form a basis of neighborhoods in this topology,
@@ -192,7 +193,7 @@ theorem bernsteinApproximation_uniform [LocallyConvexSpace ℝ E] (f : C(I, E)) 
       |>.compactConvergenceUniformity_of_compact |> nhds_basis_uniformity |>.tendsto_right_iff]
     rintro U ⟨hU₀, hcU⟩
     filter_upwards [this U hU₀ hcU] with n hn x
-    exact gauge_lt_one_subset_self hcU (mem_of_mem_nhds hU₀) (absorbent_nhds_zero hU₀) (hn x)
+    exact setOf_gauge_lt_one_subset_self hcU (mem_of_mem_nhds hU₀) (absorbent_nhds_zero hU₀) (hn x)
   intro U hU₀ hUc
   /- Choose a constant `C` such that `‖f x - f y‖_U ≤ C` for all `x`, `y`.
   For a normed space, this would be twice the norm of `f`. -/
@@ -256,7 +257,7 @@ theorem bernsteinApproximation_uniform [LocallyConvexSpace ℝ E] (f : C(I, E)) 
         conv_lhs => rw [← one_mul (bernstein _ _ _)]
         gcongr
         simpa [one_le_div₀, hδ₀, sq_le_sq, S, abs_of_pos, ← Real.dist_eq, dist_comm (x : ℝ)]
-          using hk
+          using! hk
       -- Again enlarging the sum from `Sᶜ` to all of `Fin (n+1)`
       _ ≤ C * ∑ k : Fin (n + 1), ((x : ℝ) - k/ₙ) ^ 2 / δ ^ 2 * bernstein n k x := by
         gcongr; exact Sᶜ.subset_univ

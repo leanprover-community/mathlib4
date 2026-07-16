@@ -257,7 +257,7 @@ theorem IsVonNBounded.extend_scalars [NontriviallyNormedField 𝕜]
     [Module 𝕝 E] [TopologicalSpace E] [ContinuousSMul 𝕝 E] [IsScalarTower 𝕜 𝕝 E]
     {s : Set E} (h : IsVonNBounded 𝕜 s) : IsVonNBounded 𝕝 s := by
   obtain ⟨ε, hε, hε₀⟩ : ∃ ε : ℕ → 𝕜, Tendsto ε atTop (𝓝 0) ∧ ∀ᶠ n in atTop, ε n ≠ 0 := by
-    simpa only [tendsto_nhdsWithin_iff] using exists_seq_tendsto (𝓝[≠] (0 : 𝕜))
+    simpa only [tendsto_nhdsWithin_iff] using! exists_seq_tendsto (𝓝[≠] (0 : 𝕜))
   refine isVonNBounded_of_smul_tendsto_zero (ε := (ε · • 1)) (by simpa) fun x hx ↦ ?_
   have := h.smul_tendsto_zero (.of_forall hx) hε
   simpa only [Pi.smul_def', smul_one_smul]
@@ -360,9 +360,6 @@ theorem sUnion_isVonNBounded_eq_univ : ⋃₀ setOf (IsVonNBounded 𝕜) = (Set.
   Set.eq_univ_iff_forall.mpr fun x =>
     Set.mem_sUnion.mpr ⟨{x}, isVonNBounded_singleton _, Set.mem_singleton _⟩
 
-@[deprecated (since := "2025-11-14")]
-alias isVonNBounded_covers := sUnion_isVonNBounded_eq_univ
-
 variable (𝕜 E)
 
 -- See note [reducible non-instances]
@@ -393,7 +390,7 @@ variable [UniformSpace E] [IsUniformAddGroup E] [ContinuousSMul 𝕜 E]
 theorem TotallyBounded.isVonNBounded {s : Set E} (hs : TotallyBounded s) :
     Bornology.IsVonNBounded 𝕜 s := by
   if h : ∃ x : 𝕜, 1 < ‖x‖ then
-    letI : NontriviallyNormedField 𝕜 := ⟨h⟩
+    let : NontriviallyNormedField 𝕜 := ⟨h⟩
     rw [totallyBounded_iff_subset_finite_iUnion_nhds_zero] at hs
     intro U hU
     have h : Filter.Tendsto (fun x : E × E => x.fst + x.snd) (𝓝 0) (𝓝 0) :=
@@ -409,7 +406,7 @@ theorem TotallyBounded.isVonNBounded {s : Set E} (hs : TotallyBounded s) :
     refine fun y _ => Absorbs.mono_left ?_ hx_fstsnd
     exact (absorbent_nhds_zero hx.1.1).vadd_absorbs hx.2.2.absorbs_self
   else
-    haveI : BoundedSpace 𝕜 := ⟨Metric.isBounded_iff.2 ⟨1, by simp_all [dist_eq_norm]⟩⟩
+    have : BoundedSpace 𝕜 := ⟨Metric.isBounded_iff.2 ⟨1, by simp_all [dist_eq_norm]⟩⟩
     exact Bornology.IsVonNBounded.of_boundedSpace
 
 end IsUniformAddGroup

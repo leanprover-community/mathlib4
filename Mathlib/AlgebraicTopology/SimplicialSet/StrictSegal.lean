@@ -57,8 +57,6 @@ class IsStrictSegal (X : SSet.Truncated.{u} (n + 1)) : Prop where
 
 export IsStrictSegal (spine_bijective)
 
-@[deprecated (since := "2025-11-04")] alias IsStrictSegal.segal := spine_bijective
-
 lemma spine_injective (X : SSet.Truncated.{u} (n + 1)) [X.IsStrictSegal]
     {m : ℕ} {h : m ≤ n + 1} :
     Function.Injective (X.spine m) :=
@@ -161,6 +159,7 @@ theorem spineToSimplex_arrow (i : Fin m) (f : Path X m) :
     X.map (tr (mkOfSucc i)).op (sx.spineToSimplex m h f) = f.arrow i := by
   rw [← spine_arrow, spine_spineToSimplex_apply]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem spineToSimplex_interval (f : Path X m) (j l : ℕ) (hjl : j + l ≤ m) :
     X.map (tr (subinterval j l hjl)).op (sx.spineToSimplex m h f) =
@@ -168,7 +167,7 @@ theorem spineToSimplex_interval (f : Path X m) (j l : ℕ) (hjl : j + l ≤ m) :
   apply sx.spineInjective l
   dsimp only [spineEquiv, Equiv.coe_fn_mk]
   rw [spine_spineToSimplex_apply]
-  convert spine_map_subinterval X m h j l hjl <| sx.spineToSimplex m h f
+  convert! spine_map_subinterval X m h j l hjl <| sx.spineToSimplex m h f
   exact sx.spine_spineToSimplex_apply m h f |>.symm
 
 theorem spineToSimplex_edge (f : Path X m) (j l : ℕ) (hjl : j + l ≤ m) :
@@ -180,6 +179,7 @@ theorem spineToSimplex_edge (f : Path X m) (j l : ℕ) (hjl : j + l ≤ m) :
 
 end spineToSimplex
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- For any `σ : X ⟶ Y` between `n + 1`-truncated `StrictSegal` simplicial sets,
 `spineToSimplex` commutes with `Path.map`. -/
 lemma spineToSimplex_map {X Y : SSet.Truncated.{u} (n + 1)} (sx : StrictSegal X)
@@ -197,6 +197,7 @@ section spine_δ
 variable (m : ℕ) (h : m ≤ n) (f : Path X (m + 1))
 variable {i : Fin (m + 1)} {j : Fin (m + 2)}
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If we take the path along the spine of the `j`th face of a `spineToSimplex`,
 the common vertices will agree with those of the original path `f`. In particular,
 a vertex `i` with `i < j` can be identified with the same vertex in `f`. -/
@@ -209,6 +210,7 @@ lemma spine_δ_vertex_lt (hij : i.castSucc < j) :
     Fin.succAboveOrderEmb_apply, OrderEmbedding.toOrderHom_coe]
   rw [Fin.succAbove_of_castSucc_lt j i hij]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If we take the path along the spine of the `j`th face of a `spineToSimplex`,
 a vertex `i` with `j ≤ i` can be identified with vertex `i + 1` in the original
 path. -/
@@ -346,6 +348,7 @@ section interval
 
 variable (f : Path X n) (j l : ℕ) (hjl : j + l ≤ n)
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem spineToSimplex_interval :
     X.map (subinterval j l hjl).op (sx.spineToSimplex f) =
@@ -364,6 +367,7 @@ theorem spineToSimplex_edge :
 
 end interval
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- For any `σ : X ⟶ Y` between `StrictSegal` simplicial sets, `spineToSimplex`
 commutes with `Path.map`. -/
 lemma spineToSimplex_map {X Y : SSet.{u}} (sx : StrictSegal X)

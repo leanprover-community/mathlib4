@@ -129,6 +129,21 @@ theorem range_extend {f : α → β} (hf : Injective f) (g : α → γ) (g' : β
   rintro z (⟨x, rfl⟩ | ⟨y, hy, rfl⟩)
   exacts [⟨f x, hf.extend_apply _ _ _⟩, ⟨y, extend_apply' _ _ _ hy⟩]
 
+/-- If `g` factors through `f` and `g` is injective, then `extend f g j` is injective on the
+range of `f`. -/
+lemma _root_.Function.FactorsThrough.extend_injOn {f : α → β} {g : α → γ} {j : β → γ}
+    (hf : g.FactorsThrough f) (hg : g.Injective) :
+    (range f).InjOn (extend f g j) := by
+  rintro _ ⟨x, rfl⟩ _ ⟨y, rfl⟩ heq
+  rw [hf.extend_apply, hf.extend_apply] at heq
+  rw [hg heq]
+
+/-- If `f` and `g` are injective, then `extend f g j` is injective on the range of `f`. -/
+lemma _root_.Function.Injective.extend_injOn {f : α → β} {g : α → γ} {j : β → γ}
+    (hf : f.Injective) (hg : g.Injective) :
+    (range f).InjOn (extend f g j) :=
+  (hf.factorsThrough g).extend_injOn hg
+
 /-- Restrict codomain of a function `f` to a set `s`. Same as `Subtype.coind` but this version
 has codomain `↥s` instead of `Subtype s`. -/
 def codRestrict (f : ι → α) (s : Set α) (h : ∀ x, f x ∈ s) : ι → s := fun x => ⟨f x, h x⟩
@@ -273,6 +288,7 @@ theorem injOn_iff_injective : InjOn f s ↔ Injective (s.restrict f) :=
 
 alias ⟨InjOn.injective, _⟩ := Set.injOn_iff_injective
 
+set_option backward.isDefEq.respectTransparency false in
 theorem MapsTo.restrict_inj (h : MapsTo f s t) : Injective (h.restrict f s t) ↔ InjOn f s := by
   rw [h.restrict_eq_codRestrict, injective_codRestrict, injOn_iff_injective]
 

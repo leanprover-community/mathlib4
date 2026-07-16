@@ -6,8 +6,10 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Data.Fintype.Powerset
-public import Mathlib.Topology.GDelta.Basic
 public import Mathlib.Topology.Constructions
+public import Mathlib.Topology.GDelta.Basic
+public import Mathlib.Topology.Maps.OpenQuotient
+public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Baire spaces
@@ -110,6 +112,15 @@ theorem Topology.IsOpenEmbedding.baireSpace {Y : Type*} [TopologicalSpace Y] {p 
 theorem IsOpen.baireSpace {s : Set X} (hO : IsOpen s) : BaireSpace s :=
   hO.isOpenEmbedding_subtypeVal.baireSpace
 
+/-- If `f` is an open quotient map and `X` is Baire, then `Y` is Baire. -/
+theorem IsOpenQuotientMap.baireSpace {Y : Type*} [TopologicalSpace Y] {f : X → Y}
+    (hf : IsOpenQuotientMap f) : BaireSpace Y := by
+  constructor
+  intro u hou hdu
+  have := dense_iInter_of_isOpen_nat (fun n => hf.continuous.isOpen_preimage (u n) (hou n))
+    (fun n => (IsOpenQuotientMap.dense_preimage_iff hf).mpr (hdu n))
+  simp_all [← preimage_iInter, IsOpenQuotientMap.dense_preimage_iff]
+
 /-- Baire theorem: a countable intersection of dense open sets is dense. Formulated here with ⋂₀. -/
 theorem dense_sInter_of_isOpen {S : Set (Set X)} (ho : ∀ s ∈ S, IsOpen s) (hS : S.Countable)
     (hd : ∀ s ∈ S, Dense s) : Dense (⋂₀ S) := by
@@ -127,6 +138,7 @@ theorem dense_biInter_of_isOpen {S : Set α} {f : α → Set X} (ho : ∀ s ∈ 
 
 /-- Baire theorem: a countable intersection of dense open sets is dense. Formulated here with
 an index set which is a countable type. -/
+@[wikidata Q1052678]
 theorem dense_iInter_of_isOpen [Countable ι] {f : ι → Set X} (ho : ∀ i, IsOpen (f i))
     (hd : ∀ i, Dense (f i)) : Dense (⋂ s, f s) :=
   dense_sInter_of_isOpen (forall_mem_range.2 ho) (countable_range _) (forall_mem_range.2 hd)
@@ -178,7 +190,7 @@ an index set which is a countable set in any type. -/
 theorem dense_biInter_of_Gδ {S : Set α} {f : ∀ x ∈ S, Set X} (ho : ∀ s (H : s ∈ S), IsGδ (f s H))
     (hS : S.Countable) (hd : ∀ s (H : s ∈ S), Dense (f s H)) : Dense (⋂ s ∈ S, f s ‹_›) := by
   rw [biInter_eq_iInter]
-  haveI := hS.to_subtype
+  have := hS.to_subtype
   exact dense_iInter_of_Gδ (fun s => ho s s.2) fun s => hd s s.2
 
 /-- Baire theorem: the intersection of two dense Gδ sets is dense. -/
@@ -202,14 +214,14 @@ theorem IsGδ.dense_iUnion_interior_of_closed [Countable ι] {s : Set X} (hs : I
   rintro x ⟨hxs, hxg⟩
   rw [mem_iInter] at hxg
   rcases mem_iUnion.1 (hU hxs) with ⟨i, hi⟩
-  exact mem_iUnion.2 ⟨i, self_diff_frontier (f i) ▸ ⟨hi, hxg _⟩⟩
+  exact mem_iUnion.2 ⟨i, self_sdiff_frontier (f i) ▸ ⟨hi, hxg _⟩⟩
 
 /-- If a countable family of closed sets cover a dense `Gδ` set, then the union of their interiors
 is dense. Formulated here with a union over a countable set in any type. -/
 theorem IsGδ.dense_biUnion_interior_of_closed {t : Set α} {s : Set X} (hs : IsGδ s) (hd : Dense s)
     (ht : t.Countable) {f : α → Set X} (hc : ∀ i ∈ t, IsClosed (f i)) (hU : s ⊆ ⋃ i ∈ t, f i) :
     Dense (⋃ i ∈ t, interior (f i)) := by
-  haveI := ht.to_subtype
+  have := ht.to_subtype
   simp only [biUnion_eq_iUnion, SetCoe.forall'] at *
   exact hs.dense_iUnion_interior_of_closed hd hc hU
 

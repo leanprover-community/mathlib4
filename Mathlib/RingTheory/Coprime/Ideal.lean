@@ -34,7 +34,7 @@ When ideals are all of the form `I i = R ∙ s i`, this is equivalent to the
 theorem iSup_iInf_eq_top_iff_pairwise {t : Finset ι} (h : t.Nonempty) (I : ι → Ideal R) :
     (⨆ i ∈ t, ⨅ (j) (_ : j ∈ t) (_ : j ≠ i), I j) = ⊤ ↔
       (t : Set ι).Pairwise fun i j => I i ⊔ I j = ⊤ := by
-  haveI : DecidableEq ι := Classical.decEq ι
+  have : DecidableEq ι := Classical.decEq ι
   rw [eq_top_iff_one, Submodule.mem_iSup_finset_iff_exists_sum]
   refine h.cons_induction ?_ ?_ <;> clear t h
   · simp only [Finset.sum_singleton, Finset.coe_singleton, Set.pairwise_singleton, iff_true]
@@ -42,8 +42,8 @@ theorem iSup_iInf_eq_top_iff_pairwise {t : Finset ι} (h : t.Nonempty) (I : ι �
     · simp [h]
     · simp only [dif_pos, Submodule.coe_mk]
   intro a t hat h ih
-  rw [Finset.coe_cons,
-    Set.pairwise_insert_of_symmetric fun i j (h : I i ⊔ I j = ⊤) ↦ (sup_comm _ _).trans h]
+  have : Std.Symm (I · ⊔ I · = ⊤) := { symm i j := sup_comm .. |>.trans }
+  rw [Finset.coe_cons, Set.pairwise_insert_of_symm]
   constructor
   · rintro ⟨μ, hμ⟩
     rw [Finset.sum_cons] at hμ
@@ -67,7 +67,7 @@ theorem iSup_iInf_eq_top_iff_pairwise {t : Finset ι} (h : t.Nonempty) (I : ι �
     case a3 =>
       rw [← @if_pos _ _ h.choose_spec R (μ a) 0, ← Finset.sum_pi_single', ← Finset.sum_add_distrib]
         at hμ
-      convert hμ
+      convert! hμ
       rename_i i _
       rw [Pi.add_apply, Submodule.coe_add, Submodule.coe_mk]
       by_cases hi : i = h.choose

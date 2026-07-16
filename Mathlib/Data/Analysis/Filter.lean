@@ -214,6 +214,7 @@ protected def comap (m : α → β) {f : Filter β} (F : f.Realizer) : (comap m 
       exact ⟨fun ⟨s, h⟩ ↦ ⟨_, ⟨s, Subset.refl _⟩, h⟩,
         fun ⟨_, ⟨s, h⟩, h₂⟩ ↦ ⟨s, Subset.trans (preimage_mono h) h₂⟩⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Construct a realizer for the sup of two filters -/
 protected def sup {f g : Filter α} (F : f.Realizer) (G : g.Realizer) : (f ⊔ g).Realizer :=
   ⟨F.σ × G.σ,
@@ -222,7 +223,7 @@ protected def sup {f g : Filter α} (F : f.Realizer) (G : g.Realizer) : (f ⊔ g
       inf := fun ⟨a, a'⟩ ⟨b, b'⟩ ↦ (F.F.inf a b, G.F.inf a' b')
       inf_le_left := fun _ _ ↦ union_subset_union (F.F.inf_le_left _ _) (G.F.inf_le_left _ _)
       inf_le_right := fun _ _ ↦ union_subset_union (F.F.inf_le_right _ _) (G.F.inf_le_right _ _) },
-    filter_eq <| Set.ext fun _ ↦ by cases F; cases G; substs f g; simp [CFilter.toFilter]⟩
+    filter_eq <| Set.ext fun _ ↦ by cases F; cases G; subst f g; simp [CFilter.toFilter]⟩
 
 /-- Construct a realizer for the inf of two filters -/
 protected def inf {f g : Filter α} (F : f.Realizer) (G : g.Realizer) : (f ⊓ g).Realizer :=
@@ -233,7 +234,7 @@ protected def inf {f g : Filter α} (F : f.Realizer) (G : g.Realizer) : (f ⊓ g
       inf_le_left := fun _ _ ↦ inter_subset_inter (F.F.inf_le_left _ _) (G.F.inf_le_left _ _)
       inf_le_right := fun _ _ ↦ inter_subset_inter (F.F.inf_le_right _ _) (G.F.inf_le_right _ _) },
     by
-      cases F; cases G; substs f g; simp only [CFilter.toFilter, Prod.exists]; ext
+      cases F; cases G; subst f g; simp only [CFilter.toFilter, Prod.exists]; ext
       constructor
       · rintro ⟨s, t, h⟩
         apply mem_inf_of_inter _ _ h
@@ -242,6 +243,7 @@ protected def inf {f g : Filter α} (F : f.Realizer) (G : g.Realizer) : (f ⊓ g
       · rintro ⟨_, ⟨a, ha⟩, _, ⟨b, hb⟩, rfl⟩
         exact ⟨a, b, inter_subset_inter ha hb⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Construct a realizer for the cofinite filter -/
 protected def cofinite [DecidableEq α] : (@cofinite α).Realizer :=
   ⟨Finset α,

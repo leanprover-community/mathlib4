@@ -111,7 +111,7 @@ protected theorem IsGδ.iInter [Countable ι'] {s : ι' → Set X} (hs : ∀ i, 
 theorem IsGδ.biInter {s : Set ι} (hs : s.Countable) {t : ∀ i ∈ s, Set X}
     (ht : ∀ (i) (hi : i ∈ s), IsGδ (t i hi)) : IsGδ (⋂ i ∈ s, t i ‹_›) := by
   rw [biInter_eq_iInter]
-  haveI := hs.to_subtype
+  have := hs.to_subtype
   exact .iInter fun x => ht x x.2
 
 
@@ -151,12 +151,14 @@ theorem IsGδ.biUnion {s : Set ι} (hs : s.Finite) {f : ι → Set X} (h : ∀ i
 theorem IsGδ.iUnion [Finite ι'] {f : ι' → Set X} (h : ∀ i, IsGδ (f i)) : IsGδ (⋃ i, f i) :=
   .sUnion (finite_range _) <| forall_mem_range.2 h
 
-/- The preimage of a Gδ set under a continuous map is Gδ. -/
-theorem isGδ_induced [TopologicalSpace Y] {f : X → Y} {s : Set Y} (hf : Continuous f)
+/-- The preimage of a Gδ set under a continuous map is Gδ. -/
+theorem IsGδ.preimage [TopologicalSpace Y] {f : X → Y} {s : Set Y} (hf : Continuous f)
     (hs : IsGδ s) : IsGδ (f ⁻¹' s) := by
   obtain ⟨U, hU1, hU2⟩ := hs.eq_iInter_nat
   simp_all only [preimage_iInter]
   exact IsGδ.iInter_of_isOpen (fun i => hf.isOpen_preimage (U i) (hU1 i))
+
+@[deprecated (since := "2026-05-19")] alias isGδ_induced := IsGδ.preimage
 
 end IsGδ
 

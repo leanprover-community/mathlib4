@@ -104,7 +104,7 @@ theorem OneOneReducible.of_equiv {α β} [Primcodable α] [Primcodable β] {e : 
 
 theorem OneOneReducible.of_equiv_symm {α β} [Primcodable α] [Primcodable β] {e : α ≃ β}
     (q : β → Prop) (h : Computable e.symm) : q ≤₁ (q ∘ e) := by
-  convert OneOneReducible.of_equiv _ h; funext; simp
+  convert! OneOneReducible.of_equiv _ h; funext; simp
 
 instance stdRefl_oneOneReducible {α} [Primcodable α] : Std.Refl (@OneOneReducible α α _ _) where
   refl := oneOneReducible_refl
@@ -369,10 +369,12 @@ instance instLE : LE ManyOneDegree :=
 theorem of_le_of {p : α → Prop} {q : β → Prop} : of p ≤ of q ↔ p ≤₀ q :=
   manyOneReducible_toNat_toNat
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 private theorem le_refl (d : ManyOneDegree) : d ≤ d := by
   induction d using ManyOneDegree.ind_on; simp; rfl
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 private theorem le_antisymm {d₁ d₂ : ManyOneDegree} : d₁ ≤ d₂ → d₂ ≤ d₁ → d₁ = d₂ := by
   induction d₁ using ManyOneDegree.ind_on
@@ -417,6 +419,7 @@ theorem add_of (p : Set α) (q : Set β) : of (p ⊕' q) = of p + of q :=
         (toNat_manyOneReducible.trans OneOneReducible.disjoin_left.to_many_one)
         (toNat_manyOneReducible.trans OneOneReducible.disjoin_right.to_many_one)⟩
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 protected theorem add_le {d₁ d₂ d₃ : ManyOneDegree} : d₁ + d₂ ≤ d₃ ↔ d₁ ≤ d₃ ∧ d₂ ≤ d₃ := by
   induction d₁ using ManyOneDegree.ind_on

@@ -177,6 +177,7 @@ If we do not assume that the codomain is a strictly convex space, then we can on
 Finally, we generalize the theorem from a disk in `ℂ` to a closed ball in any normed space.
 -/
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- **Maximum modulus principle** on a closed ball: if `f : E → F` is continuous on a closed ball,
 is complex differentiable on the corresponding open ball, and the norm `‖f w‖` takes its maximum
 value on the open ball at its center, then the norm `‖f w‖` is constant on the closed ball. -/
@@ -395,6 +396,7 @@ theorem exists_mem_frontier_isMaxOn_norm [FiniteDimensional ℂ E] {f : E → F}
   rw [dist_comm, ← hzw]
   exact ball_infDist_compl_subset.trans interior_subset
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- **Maximum modulus principle**: if `f : E → F` is complex differentiable on a bounded set `U` and
 `‖f z‖ ≤ C` for any `z ∈ frontier U`, then the same is true for any `z ∈ closure U`. -/
 theorem norm_le_of_forall_mem_frontier_norm_le {f : E → F} {U : Set E} (hU : IsBounded U)
@@ -423,7 +425,7 @@ theorem norm_le_of_forall_mem_frontier_norm_le {f : E → F} {U : Set E} (hU : I
 theorem eqOn_closure_of_eqOn_frontier {f g : E → F} {U : Set E} (hU : IsBounded U)
     (hf : DiffContOnCl ℂ f U) (hg : DiffContOnCl ℂ g U) (hfg : EqOn f g (frontier U)) :
     EqOn f g (closure U) := by
-  suffices H : ∀ z ∈ closure U, ‖(f - g) z‖ ≤ 0 by simpa [sub_eq_zero] using H
+  suffices H : ∀ z ∈ closure U, ‖(f - g) z‖ ≤ 0 by simpa [sub_eq_zero] using! H
   refine fun z hz => norm_le_of_forall_mem_frontier_norm_le hU (hf.sub hg) (fun w hw => ?_) hz
   simp [hfg hw]
 

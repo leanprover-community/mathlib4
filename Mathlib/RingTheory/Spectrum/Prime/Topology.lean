@@ -157,6 +157,7 @@ theorem isClosed_zeroLocus (s : Set R) : IsClosed (zeroLocus s) := by
   rw [isClosed_iff_zeroLocus]
   exact ⟨s, rfl⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem zeroLocus_vanishingIdeal_eq_closure (t : Set (PrimeSpectrum R)) :
     zeroLocus (vanishingIdeal t : Set R) = closure t := by
   rcases isClosed_iff_zeroLocus (closure t) |>.mp isClosed_closure with ⟨I, hI⟩
@@ -196,7 +197,7 @@ theorem vanishingIdeal_anti_mono_iff {s t : Set (PrimeSpectrum R)} (ht : IsClose
     s ⊆ t ↔ vanishingIdeal t ≤ vanishingIdeal s :=
   ⟨vanishingIdeal_anti_mono, fun h => by
     rw [← ht.closure_subset_iff, ← ht.closure_eq]
-    convert ← zeroLocus_anti_mono_ideal h <;> apply zeroLocus_vanishingIdeal_eq_closure⟩
+    convert! ← zeroLocus_anti_mono_ideal h <;> apply zeroLocus_vanishingIdeal_eq_closure⟩
 
 theorem vanishingIdeal_strict_anti_mono_iff {s t : Set (PrimeSpectrum R)} (hs : IsClosed s)
     (ht : IsClosed t) : s ⊂ t ↔ vanishingIdeal t < vanishingIdeal s := by
@@ -220,7 +221,7 @@ theorem t1Space_iff_isField [IsDomain R] : T1Space (PrimeSpectrum R) ↔ IsField
           (by simp))
   · refine ⟨fun x => (isClosed_singleton_iff_isMaximal x).2 ?_⟩
     by_cases hx : x.asIdeal = ⊥
-    · letI := h.toSemifield
+    · let := h.toSemifield
       exact hx.symm ▸ Ideal.bot_isMaximal
     · exact absurd h (Ring.not_isField_iff_exists_prime.2 ⟨x.asIdeal, ⟨hx, x.2⟩⟩)
 
@@ -336,10 +337,6 @@ lemma continuous_comap (f : R →+* S) : Continuous (comap f) := by
   rintro _ ⟨s, rfl⟩
   exact ⟨_, preimage_comap_zeroLocus_aux f s⟩
 
-@[deprecated "RingHom.specComap and PrimeSpectrum.comap were unified,\
-so this lemma is now a no-op." (since := "2025-12-10"), nolint synTaut]
-lemma comap_apply (f : R →+* S) (x : PrimeSpectrum S) : comap f x = comap f x := rfl
-
 variable (f : R →+* S)
 
 variable (S)
@@ -353,9 +350,6 @@ theorem localization_comap_injective [Algebra R S] (M : Submonoid R) [IsLocaliza
   ext1
   exact h
 
-@[deprecated (since := "2025-12-10")]
-alias localization_specComap_injective := localization_comap_injective
-
 theorem localization_comap_range [Algebra R S] (M : Submonoid R) [IsLocalization M S] :
     Set.range (comap (algebraMap R S)) = { p | Disjoint (M : Set R) p.asIdeal } := by
   refine Set.ext fun x ↦ ⟨?_, fun h ↦ ?_⟩
@@ -364,8 +358,6 @@ theorem localization_comap_range [Algebra R S] (M : Submonoid R) [IsLocalization
   · use ⟨x.asIdeal.map (algebraMap R S), IsLocalization.isPrime_of_isPrime_disjoint M S _ x.2 h⟩
     ext1
     exact IsLocalization.under_map_of_isPrime_disjoint M S x.2 h
-
-@[deprecated (since := "2025-12-10")] alias localization_specComap_range := localization_comap_range
 
 theorem localization_comap_isInducing [Algebra R S] (M : Submonoid R) [IsLocalization M S] :
     IsInducing (comap (algebraMap R S)) := by
@@ -586,7 +578,7 @@ theorem eq_biUnion_of_isOpen {s : Set (PrimeSpectrum R)} (hs : IsOpen s) :
 
 theorem isBasis_basic_opens : TopologicalSpace.Opens.IsBasis (Set.range (@basicOpen R _)) := by
   unfold TopologicalSpace.Opens.IsBasis
-  convert isTopologicalBasis_basic_opens (R := R)
+  convert! isTopologicalBasis_basic_opens (R := R)
   rw [← Set.range_comp]
   rfl
 
@@ -660,7 +652,7 @@ lemma range_comap_algebraMap_localization_compl_eq_range_comap_quotientMk
     letI := (mapRingHom (algebraMap R (Away c))).toAlgebra
     (range (comap (algebraMap R[X] (Away c)[X])))ᶜ
       = range (comap (mapRingHom (Ideal.Quotient.mk (.span {c})))) := by
-  letI := (mapRingHom (algebraMap R (Away c))).toAlgebra
+  let := (mapRingHom (algebraMap R (Away c))).toAlgebra
   have := Polynomial.isLocalization (.powers c) (Away c)
   rw [Submonoid.map_powers] at this
   have surj : Function.Surjective (mapRingHom (Ideal.Quotient.mk (.span {c}))) :=
@@ -738,6 +730,7 @@ section DiscreteTopology
 
 variable (R) [DiscreteTopology (PrimeSpectrum R)]
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem toPiLocalization_surjective_of_discreteTopology :
     Function.Surjective (toPiLocalization R) := fun x ↦ by
   have (p : PrimeSpectrum R) : ∃ f, (basicOpen f : Set _) = {p} :=
@@ -925,7 +918,7 @@ lemma isQuotientMap_of_generalizingMap (h₂ : GeneralizingMap (comap f)) :
     fun hsc ↦ Set.image_preimage_eq s h₁ ▸ ?_⟩⟩
   apply isClosed_image_of_stableUnderSpecialization _ _ hsc
   rw [Set.image_preimage_eq s h₁, ← stableUnderGeneralization_compl_iff]
-  convert h₂.stableUnderGeneralization_image hsc.isOpen_compl.stableUnderGeneralization
+  convert! h₂.stableUnderGeneralization_image hsc.isOpen_compl.stableUnderGeneralization
   rw [← Set.preimage_compl, Set.image_preimage_eq _ h₁]
 
 end IsQuotientMap
@@ -959,7 +952,7 @@ lemma denseRange_comap_iff_minimalPrimes :
     have : I ∈ (RingHom.ker f).minimalPrimes := by
       rw [denseRange_comap_iff_ker_le_nilRadical] at H
       simp only [Set.mem_setOf, Ideal.IsMinimalPrime] at hI ⊢
-      convert hI using 2 with p
+      convert! hI using 2 with p
       exact ⟨fun h ↦ ⟨h.1, bot_le⟩, fun h ↦ ⟨h.1, H.trans (h.1.radical_le_iff.mpr bot_le)⟩⟩
     obtain ⟨p, hp, _, rfl⟩ := Ideal.exists_comap_eq_of_mem_minimalPrimes f (I := ⊥) I this
     exact ⟨⟨p, hp⟩, rfl⟩
@@ -1203,16 +1196,16 @@ lemma isIntegral_of_isClosedMap_comap_mapRingHom (h : IsClosedMap (comap (mapRin
     suffices ∀ (a : PrimeSpectrum S[X]), p ∈ a.asIdeal → X ∉ a.asIdeal by
       simpa [Set.eq_empty_iff_forall_notMem]
     intro q hpq hXq
-    have : 1 ∈ q.asIdeal := by simpa [p] using (sub_mem (q.asIdeal.mul_mem_left (C r) hXq) hpq)
+    have : 1 ∈ q.asIdeal := by simpa [p] using! (sub_mem (q.asIdeal.mul_mem_left (C r) hXq) hpq)
     exact q.2.ne_top (q.asIdeal.eq_top_iff_one.mpr this)
   obtain ⟨a, b, hb, e⟩ := Ideal.mem_span_singleton_sup.mp this
   obtain ⟨c, hc : b.map (algebraMap R S) = _⟩ := Ideal.mem_span_singleton.mp hb
   refine ⟨b.reverse * X ^ (1 + c.natDegree), ?_, ?_⟩
   · refine Monic.mul ?_ (by simp)
-    have h : b.coeff 0 = 1 := by simpa using congr(($e).coeff 0)
+    have h : b.coeff 0 = 1 := by simpa using! congr(($e).coeff 0)
     have : b.natTrailingDegree = 0 := by simp [h]
     rw [Monic.def, reverse_leadingCoeff, trailingCoeff, this, h]
-  · have : p.natDegree ≤ 1 := by simpa using natDegree_linear_le (a := r) (b := -1)
+  · have : p.natDegree ≤ 1 := by simpa using! natDegree_linear_le (a := r) (b := -1)
     rw [eval₂_eq_eval_map, reverse, Polynomial.map_mul, ← reflect_map, Polynomial.map_pow,
       map_X, ← revAt_zero (1 + _), ← reflect_monomial,
       ← reflect_mul _ _ natDegree_map_le (by simp), pow_zero, mul_one, hc,
@@ -1235,9 +1228,6 @@ lemma _root_.RingHom.IsIntegral.comap_surjective {f : R →+* S} (hf : f.IsInteg
   algebraize [f]
   have : FaithfulSMul R S := (faithfulSMul_iff_algebraMap_injective R S).mpr hinj
   exact Algebra.IsIntegral.comap_surjective _ _
-
-@[deprecated (since := "2025-12-10")]
-alias _root_.RingHom.IsIntegral.specComap_surjective := _root_.RingHom.IsIntegral.comap_surjective
 
 end IsIntegral
 

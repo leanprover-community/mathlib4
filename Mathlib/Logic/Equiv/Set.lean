@@ -52,21 +52,10 @@ lemma image_symm_eq_preimage (e : α ≃ β) (s : Set β) : e.symm '' s = e ⁻�
 lemma image_eq_preimage_symm (e : α ≃ β) (s : Set α) : e '' s = e.symm ⁻¹' s :=
   e.symm.image_symm_eq_preimage _
 
-@[deprecated (since := "2025-11-05")]
-protected alias image_eq_preimage := image_eq_preimage_symm
-
 @[simp 1001]
 theorem _root_.Set.mem_image_equiv {α β} {S : Set α} {f : α ≃ β} {x : β} :
     x ∈ f '' S ↔ f.symm x ∈ S :=
   Set.ext_iff.mp (image_eq_preimage_symm ..) x
-
-@[deprecated image_eq_preimage_symm (since := "2025-10-31")]
-theorem _root_.Set.image_equiv_eq_preimage_symm {α β} (S : Set α) (f : α ≃ β) :
-    f '' S = f.symm ⁻¹' S := image_eq_preimage_symm ..
-
-@[deprecated Equiv.image_symm_eq_preimage (since := "2025-10-31")]
-theorem _root_.Set.preimage_equiv_eq_image_symm {α β} (S : Set α) (f : β ≃ α) :
-    f ⁻¹' S = f.symm '' S := (f.image_symm_eq_preimage S).symm
 
 -- Increased priority so this fires before `image_subset_iff`
 @[simp high]
@@ -152,7 +141,7 @@ theorem prod_assoc_image {α β γ} {s : Set α} {t : Set β} {u : Set γ} :
 
 theorem prod_assoc_symm_image {α β γ} {s : Set α} {t : Set β} {u : Set γ} :
     (Equiv.prodAssoc α β γ).symm '' s ×ˢ t ×ˢ u = (s ×ˢ t) ×ˢ u := by
-  simpa only [Equiv.image_eq_preimage_symm] using prod_assoc_preimage
+  simpa only [Equiv.image_eq_preimage_symm] using! prod_assoc_preimage
 
 /-- A set `s` in `α × β` is equivalent to the sigma-type `Σ x, {y | (x, y) ∈ s}`. -/
 def setProdEquivSigma {α β : Type*} (s : Set (α × β)) :
@@ -257,8 +246,11 @@ protected def singleton {α} (a : α) : ({a} : Set α) ≃ PUnit.{u} :=
     subst x
     rfl, fun ⟨⟩ => rfl⟩
 
-lemma Equiv.strictMono_setCongr {α : Type*} [Preorder α] {S T : Set α} (h : S = T) :
+lemma _root_.Equiv.strictMono_setCongr {α : Type*} [Preorder α] {S T : Set α} (h : S = T) :
     StrictMono (setCongr h) := fun _ _ ↦ id
+
+set_option linter.dupNamespace false in
+@[deprecated (since := "2026-05-24")] alias Equiv.strictMono_setCongr := Equiv.strictMono_setCongr
 
 /-- If `a ∉ s`, then `insert a s` is equivalent to `s ⊕ PUnit`. -/
 protected def insert {α} {s : Set.{u} α} [DecidablePred (· ∈ s)] {a : α} (H : a ∉ s) :
@@ -329,7 +321,7 @@ protected def sumDiffSubset {α} {s t : Set α} (h : s ⊆ t) [DecidablePred (·
   calc
     s ⊕ (t \ s : Set α) ≃ (s ∪ t \ s : Set α) :=
       (Equiv.Set.union disjoint_sdiff_self_right).symm
-    _ ≃ t := Equiv.setCongr (by simp [union_diff_self, union_eq_self_of_subset_left h])
+    _ ≃ t := Equiv.setCongr (by simp [union_sdiff_self, union_eq_self_of_subset_left h])
 
 @[simp]
 theorem sumDiffSubset_apply_inl {α} {s t : Set α} (h : s ⊆ t) [DecidablePred (· ∈ s)] (x : s) :
@@ -338,7 +330,7 @@ theorem sumDiffSubset_apply_inl {α} {s t : Set α} (h : s ⊆ t) [DecidablePred
 
 @[simp]
 theorem sumDiffSubset_apply_inr {α} {s t : Set α} (h : s ⊆ t) [DecidablePred (· ∈ s)]
-    (x : (t \ s : Set α)) : Equiv.Set.sumDiffSubset h (Sum.inr x) = inclusion diff_subset x :=
+    (x : (t \ s : Set α)) : Equiv.Set.sumDiffSubset h (Sum.inr x) = inclusion sdiff_subset x :=
   rfl
 
 theorem sumDiffSubset_symm_apply_of_mem {α} {s t : Set α} (h : s ⊆ t) [DecidablePred (· ∈ s)]
@@ -349,7 +341,7 @@ theorem sumDiffSubset_symm_apply_of_mem {α} {s t : Set α} (h : s ⊆ t) [Decid
 theorem sumDiffSubset_symm_apply_of_notMem {α} {s t : Set α} (h : s ⊆ t) [DecidablePred (· ∈ s)]
     {x : t} (hx : x.1 ∉ s) : (Equiv.Set.sumDiffSubset h).symm x = Sum.inr ⟨x, ⟨x.2, hx⟩⟩ := by
   apply (Equiv.Set.sumDiffSubset h).injective
-  simp only [apply_symm_apply, sumDiffSubset_apply_inr, Set.inclusion_mk]
+  simp only [apply_symm_apply, sumDiffSubset_apply_inr]
 
 /-- If `s` is a set with decidable membership, then the sum of `s ∪ t` and `s ∩ t` is equivalent
 to `s ⊕ t`. -/
@@ -357,7 +349,7 @@ protected def unionSumInter {α : Type u} (s t : Set α) [DecidablePred (· ∈ 
     (s ∪ t : Set α) ⊕ (s ∩ t : Set α) ≃ s ⊕ t :=
   calc
     (s ∪ t : Set α) ⊕ (s ∩ t : Set α)
-      ≃ (s ∪ t \ s : Set α) ⊕ (s ∩ t : Set α) := by rw [union_diff_self]
+      ≃ (s ∪ t \ s : Set α) ⊕ (s ∩ t : Set α) := by rw [union_sdiff_self]
     _ ≃ (s ⊕ (t \ s : Set α)) ⊕ (s ∩ t : Set α) :=
       sumCongr (Set.union disjoint_sdiff_self_right) (Equiv.refl _)
     _ ≃ s ⊕ ((t \ s : Set α) ⊕ (s ∩ t : Set α)) := sumAssoc _ _ _
@@ -368,8 +360,9 @@ protected def unionSumInter {α : Type u} (s t : Set α) [DecidablePred (· ∈ 
           exacts [fun x hx => hx.2, fun x hx => not_not_intro hx.1])
     _ ≃ s ⊕ t := by
       { rw [(_ : t \ s ∪ s ∩ t = t)]
-        rw [union_comm, inter_comm, inter_union_diff] }
+        rw [union_comm, inter_comm, inter_union_sdiff] }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given an equivalence `e₀` between sets `s : Set α` and `t : Set β`, the set of equivalences
 `e : α ≃ β` such that `e ↑x = ↑(e₀ x)` for each `x : s` is equivalent to the set of equivalences
 between `sᶜ` and `tᶜ`. -/
@@ -437,6 +430,7 @@ protected theorem image_symm_apply {α β} (f : α → β) (s : Set α) (H : Inj
     (h : f x ∈ f '' s) : (Set.image f s H).symm ⟨f x, h⟩ = ⟨x, H.mem_set_image.1 h⟩ :=
   (Equiv.symm_apply_eq _).2 rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem image_symm_preimage {α β} {f : α → β} (hf : Injective f) (u s : Set α) :
     (fun x => (Set.image f s hf).symm x : f '' s → α) ⁻¹' u = Subtype.val ⁻¹' f '' u := by
   ext ⟨b, a, has, rfl⟩
@@ -579,7 +573,6 @@ theorem preimage_piEquivPiSubtypeProd_symm_pi {α : Type*} {β : α → Type*} (
   ext ⟨f, g⟩
   simp only [mem_preimage, mem_univ_pi, prodMk_mem_set_prod_eq, Subtype.forall, ← forall_and]
   refine forall_congr' fun i => ?_
-  dsimp only [Subtype.coe_mk]
   by_cases hi : p i <;> simp [hi]
 
 -- See also `Equiv.sigmaFiberEquiv`.
@@ -590,6 +583,9 @@ def sigmaPreimageEquiv {α β} (f : α → β) : (Σ b, f ⁻¹' {b}) ≃ α :=
   sigmaFiberEquiv f
 
 -- See also `Equiv.ofFiberEquiv`.
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- A family of equivalences between preimages of points gives an equivalence between domains. -/
 @[simps!]
 def ofPreimageEquiv {α β γ} {f : α → γ} {g : β → γ} (e : ∀ c, f ⁻¹' {c} ≃ g ⁻¹' {c}) : α ≃ β :=

@@ -86,16 +86,14 @@ theorem ite_eq_mem_stdSimplex (i : ι) : (if i = · then (1 : 𝕜) else 0) ∈ 
 
 variable [IsOrderedRing 𝕜]
 
-#adaptation_note /-- nightly-2024-03-11
-we need a type annotation on the segment in the following two lemmas. -/
-
+set_option linter.overlappingInstances false
 /-- The edges are contained in the simplex. -/
 lemma segment_single_subset_stdSimplex (i j : ι) :
-    ([Pi.single i 1 -[𝕜] Pi.single j 1] : Set (ι → 𝕜)) ⊆ stdSimplex 𝕜 ι :=
+    [Pi.single i 1 -[𝕜] Pi.single j 1] ⊆ stdSimplex 𝕜 ι :=
   (convex_stdSimplex 𝕜 ι).segment_subset (single_mem_stdSimplex _ _) (single_mem_stdSimplex _ _)
 
 lemma stdSimplex_fin_two :
-    stdSimplex 𝕜 (Fin 2) = ([Pi.single 0 1 -[𝕜] Pi.single 1 1] : Set (Fin 2 → 𝕜)) := by
+    stdSimplex 𝕜 (Fin 2) = [Pi.single 0 1 -[𝕜] Pi.single 1 1] := by
   refine Subset.antisymm ?_ (segment_single_subset_stdSimplex 𝕜 (0 : Fin 2) 1)
   rintro f ⟨hf₀, hf₁⟩
   rw [Fin.sum_univ_two] at hf₁
@@ -148,7 +146,7 @@ theorem convexHull_basis_eq_stdSimplex [DecidableEq ι] :
 /-- `stdSimplex 𝕜 ι` is the convex hull of the points `Pi.single i 1` for `i : ι`. -/
 theorem convexHull_rangle_single_eq_stdSimplex [DecidableEq ι] :
     convexHull R (range fun i : ι ↦ Pi.single i 1) = stdSimplex R ι := by
-  convert convexHull_basis_eq_stdSimplex R ι
+  convert! convexHull_basis_eq_stdSimplex R ι
   aesop
 
 variable {ι R}
@@ -164,7 +162,7 @@ theorem Set.Finite.convexHull_eq_image {E : Type*} [AddCommGroup E] [Module R E]
     haveI := hs.fintype
     (⇑(∑ x : s, (LinearMap.proj (R := R) x).smulRight x.1)) '' stdSimplex R s := by
   classical
-  letI := hs.fintype
+  let := hs.fintype
   rw [← convexHull_basis_eq_stdSimplex, LinearMap.image_convexHull, ← Set.range_comp]
   apply congr_arg
   aesop
@@ -279,7 +277,7 @@ variable {S : Type*} [Semiring S] [PartialOrder S]
 
 instance : FunLike (stdSimplex S X) X S where
   coe s := s.val
-  coe_injective' := by aesop
+  coe_injective := by aesop
 
 @[ext high]
 lemma ext {s t : stdSimplex S X} (h : (s : X → S) = t) : s = t := by

@@ -355,7 +355,7 @@ theorem exists_of_not_isSquare (h₀ : 0 < d) (hd : ¬IsSquare d) :
     obtain ⟨a, ha⟩ := (Int.pow_dvd_pow_iff two_ne_zero).mp ⟨d, hq⟩
     rw [ha, mul_pow, mul_right_inj' (pow_pos (Int.natCast_pos.mpr q.pos) 2).ne'] at hq
     exact hd ⟨a, sq a ▸ hq.symm⟩
-  haveI := neZero_iff.mpr (Int.natAbs_ne_zero.mpr hm₀)
+  have := neZero_iff.mpr (Int.natAbs_ne_zero.mpr hm₀)
   let f : ℚ → ZMod m.natAbs × ZMod m.natAbs := fun q => (q.num, q.den)
   obtain ⟨q₁, h₁ : q₁.num ^ 2 - d * (q₁.den : ℤ) ^ 2 = m,
       q₂, h₂ : q₂.num ^ 2 - d * (q₂.den : ℤ) ^ 2 = m, hne, hqf⟩ :=
@@ -550,7 +550,7 @@ theorem x_mul_y_le_y_mul_x {a₁ : Solution₁ d} (h : IsFundamental a₁) {a : 
 the `y`-coordinate remains nonnegative. -/
 theorem mul_inv_y_nonneg {a₁ : Solution₁ d} (h : IsFundamental a₁) {a : Solution₁ d} (hax : 1 < a.x)
     (hay : 0 < a.y) : 0 ≤ (a * a₁⁻¹).y := by
-  simpa only [y_inv, mul_neg, y_mul, le_neg_add_iff_add_le, add_zero] using
+  simpa only [y_inv, mul_neg, y_mul, le_neg_add_iff_add_le, add_zero] using!
     h.x_mul_y_le_y_mul_x hax hay
 
 /-- If we multiply a positive solution with the inverse of a fundamental solution,
@@ -575,7 +575,7 @@ theorem mul_inv_x_lt_x {a₁ : Solution₁ d} (h : IsFundamental a₁) {a : Solu
     _ = a.x * a₁.y * a₁.x := by ring
     _ ≤ a.y * a₁.x * a₁.x := by have := h.1; have := x_mul_y_le_y_mul_x h hax hay; gcongr
   rw [mul_assoc, ← sq, a₁.prop_x, ← sub_neg]
-  suffices a.y - a.x * a₁.y < 0 by convert this using 1; ring
+  suffices a.y - a.x * a₁.y < 0 by convert! this using 1; ring
   rw [sub_neg, ← abs_of_pos hay, ← abs_of_pos h.2.1, ← abs_of_pos <| zero_lt_one.trans hax, ←
     abs_mul, ← sq_lt_sq, mul_pow, a.prop_x]
   calc
@@ -594,15 +594,9 @@ theorem eq_pow_of_nonneg {a₁ : Solution₁ d} (h : IsFundamental a₁) {a : So
   rcases hay.eq_or_lt with hy | hy
   · -- case 1: `a = 1`
     refine ⟨0, ?_⟩
-    simp only [pow_zero]
-    ext <;> simp only [x_one, y_one]
-    · have prop := a.prop
-      rw [← hy, sq (0 : ℤ), zero_mul, mul_zero, sub_zero,
-        sq_eq_one_iff] at prop
-      refine prop.resolve_right fun hf => ?_
-      have := (hax.trans_eq hax').le.trans_eq hf
-      norm_num at this
-    · exact hy.symm
+    rcases eq_one_or_neg_one_iff_y_eq_zero.2 hy.symm with rfl | rfl
+    · simp
+    · simp at hax'
   · -- case 2: `a ≥ a₁`
     have hx₁ : 1 < a.x := by nlinarith [a.prop, h.d_pos]
     have hxx₁ := h.mul_inv_x_pos hx₁ hy

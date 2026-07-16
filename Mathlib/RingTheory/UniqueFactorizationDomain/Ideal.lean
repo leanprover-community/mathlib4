@@ -26,7 +26,6 @@ open UniqueFactorizationMonoid in
 theorem Ideal.IsPrime.exists_mem_prime_of_ne_bot {R : Type*} [CommSemiring R]
     [UniqueFactorizationMonoid R] {I : Ideal R} (hI₂ : I.IsPrime) (hI : I ≠ ⊥) :
     ∃ x ∈ I, Prime x := by
-  classical
   obtain ⟨a : R, ha₁ : a ∈ I, ha₂ : a ≠ 0⟩ := Submodule.exists_mem_ne_zero_of_ne_bot hI
   replace ha₁ : (factors a).prod ∈ I := by
     obtain ⟨u : Rˣ, hu : (factors a).prod * u = a⟩ := factors_prod ha₂
@@ -44,7 +43,7 @@ lemma Ideal.setOf_isPrincipal_wellFoundedOn_gt [CommSemiring α] [WfDvdMonoid α
     ext
     simp [Submodule.isPrincipal_iff, eq_comm]
   rw [this, Set.wellFoundedOn_image, Set.wellFoundedOn_univ]
-  convert wellFounded_dvdNotUnit (α := α)
+  convert! wellFounded_dvdNotUnit (α := α)
   ext
   exact Ideal.span_singleton_lt_span_singleton
 
@@ -55,7 +54,7 @@ lemma WfDvdMonoid.of_setOf_isPrincipal_wellFoundedOn_gt [CommSemiring α] [IsDom
     WfDvdMonoid α := by
   have : WellFounded (α := {I : Ideal α // I.IsPrincipal}) (· > ·) := h
   constructor
-  convert InvImage.wf (fun a => ⟨Ideal.span ({a} : Set α), _, rfl⟩) this
+  convert! InvImage.wf (fun a => ⟨Ideal.span ({ a } : Set α), _, rfl⟩) this
   ext
   exact Ideal.span_singleton_lt_span_singleton.symm
 

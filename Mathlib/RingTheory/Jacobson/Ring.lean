@@ -173,7 +173,7 @@ theorem IsLocalization.isMaximal_iff_isMaximal_disjoint [H : IsJacobsonRing R] (
     rw [← H.out hJ.left.isRadical, jacobson, Submodule.mem_toAddSubmonoid, Ideal.mem_sInf] at this
     push Not at this
     rcases this with ⟨I, ⟨hJI, hIm⟩, hI'⟩
-    convert hIm
+    convert! hIm
     by_cases hJ : J = I.map (algebraMap R S)
     · rw [hJ, under_map_of_isPrime_disjoint (powers y) S hIm.isPrime]
       rwa [disjoint_powers_iff_notMem_of_isPrime]
@@ -329,7 +329,7 @@ theorem jacobson_bot_of_integral_localization
     (⊥ : Ideal S).jacobson = (⊥ : Ideal S) := by
   have hM : ((Submonoid.powers x).map φ : Submonoid S) ≤ nonZeroDivisors S :=
     map_le_nonZeroDivisors_of_injective φ hφ (powers_le_nonZeroDivisors_of_noZeroDivisors hx)
-  letI : IsDomain Sₘ := IsLocalization.isDomain_of_le_nonZeroDivisors _ hM
+  let : IsDomain Sₘ := IsLocalization.isDomain_of_le_nonZeroDivisors _ hM
   let φ' : Rₘ →+* Sₘ := IsLocalization.map _ φ (Submonoid.powers x).le_comap_map
   suffices ∀ I : Ideal Sₘ, I.IsMaximal → (I.comap (algebraMap S Sₘ)).IsMaximal by
     have hϕ' : comap (algebraMap S Sₘ) (⊥ : Ideal Sₘ) = (⊥ : Ideal S) := by
@@ -524,7 +524,7 @@ theorem quotient_mk_comp_C_isIntegral_of_isJacobsonRing :
     refine le_antisymm (le_sup_of_le_left le_rfl) (sup_le le_rfl ?_)
     refine fun p hp =>
       polynomial_mem_ideal_of_coeff_mem_ideal P p fun n => Quotient.eq_zero_iff_mem.mp ?_
-    simpa only [f, coeff_map, coe_mapRingHom] using (Polynomial.ext_iff.mp hp) n
+    simpa only [f, coeff_map, coe_mapRingHom] using! (Polynomial.ext_iff.mp hp) n
   refine RingHom.IsIntegral.tower_bot
     (T := (R ⧸ comap C P)[X] ⧸ _) _ _ (injective_quotient_le_comap_map P) ?_
   rw [← quotient_mk_maps_eq]
@@ -657,7 +657,7 @@ theorem comp_C_integral_of_surjective_of_isJacobsonRing {R : Type*} [CommRing R]
     rw [← hfg, coe_comp] at hf'
     exact Function.Surjective.of_comp hf'
   rw [RingHom.comp_assoc] at this
-  convert this
+  convert! this
   refine RingHom.ext fun x => ?_
   exact ((renameEquiv R e).commutes' x).symm
 
@@ -703,7 +703,7 @@ theorem finite_of_algHom_finiteType_of_isJacobsonRing
     [Algebra.FiniteType K A] (f : L →ₐ[K] A) :
     Module.Finite K L := by
   obtain ⟨m, hm⟩ := Ideal.exists_maximal A
-  letI := Ideal.Quotient.field m
+  let := Ideal.Quotient.field m
   have := finite_of_finite_type_of_isJacobsonRing K (A ⧸ m)
   exact Module.Finite.of_injective ((Ideal.Quotient.mkₐ K m).comp f).toLinearMap
     (RingHom.injective _)

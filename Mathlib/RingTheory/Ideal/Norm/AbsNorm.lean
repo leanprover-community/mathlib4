@@ -105,7 +105,7 @@ theorem Ideal.mul_add_mem_pow_succ_inj (P : Ideal S) {i : ℕ} (a d d' e e' : S)
   have : a * d - a * d' ∈ P ^ (i + 1) := by
     simp only [← mul_sub]
     exact Ideal.mul_mem_mul a_mem h
-  convert Ideal.add_mem _ this (Ideal.sub_mem _ e_mem e'_mem) using 1
+  convert! Ideal.add_mem _ this (Ideal.sub_mem _ e_mem e'_mem) using 1
   ring
 
 section PPrime
@@ -144,7 +144,7 @@ theorem Ideal.mul_add_mem_pow_succ_unique [IsDedekindDomain S] (hP : P ≠ ⊥)
     (a_notMem : a ∉ P ^ (i + 1)) (e_mem : e ∈ P ^ (i + 1)) (e'_mem : e' ∈ P ^ (i + 1))
     (h : a * d + e - (a * d' + e') ∈ P ^ (i + 1)) : d - d' ∈ P := by
   have h' : a * (d - d') ∈ P ^ (i + 1) := by
-    convert Ideal.add_mem _ h (Ideal.sub_mem _ e'_mem e_mem) using 1
+    convert! Ideal.add_mem _ h (Ideal.sub_mem _ e'_mem e_mem) using 1
     ring
   exact Ideal.mem_prime_of_mul_mem_pow hP a_notMem h'
 
@@ -187,7 +187,7 @@ end PPrime
 theorem cardQuot_mul [IsDedekindDomain S] [Module.Free ℤ S] (I J : Ideal S) :
     cardQuot (I * J) = cardQuot I * cardQuot J := by
   let b := Module.Free.chooseBasis ℤ S
-  haveI : Infinite S := Infinite.of_surjective _ b.repr.toEquiv.surjective
+  have : Infinite S := Infinite.of_surjective _ b.repr.toEquiv.surjective
   exact UniqueFactorizationMonoid.multiplicative_of_coprime cardQuot I J (cardQuot_bot _ _)
       (fun {I J} hI => by simp [Ideal.isUnit_iff.mp hI, Ideal.mul_top])
       (fun {I} i hI =>
@@ -198,7 +198,7 @@ theorem cardQuot_mul [IsDedekindDomain S] [Module.Free ℤ S] (I J : Ideal S) :
           (hIJ (Ideal.dvd_iff_le.mpr le_sup_left) (Ideal.dvd_iff_le.mpr le_sup_right)))
 
 /-- The absolute norm of the ideal `I : Ideal R` is the cardinality of the quotient `R ⧸ I`. -/
-noncomputable def Ideal.absNorm [Nontrivial S] [IsDedekindDomain S] [Module.Free ℤ S] :
+noncomputable def Ideal.absNorm [IsDedekindDomain S] [Module.Free ℤ S] :
     Ideal S →*₀ ℕ where
   toFun := Submodule.cardQuot
   map_mul' I J := by rw [cardQuot_mul]
@@ -209,7 +209,7 @@ noncomputable def Ideal.absNorm [Nontrivial S] [IsDedekindDomain S] [Module.Free
 
 namespace Ideal
 
-variable [Nontrivial S] [IsDedekindDomain S] [Module.Free ℤ S]
+variable [IsDedekindDomain S] [Module.Free ℤ S]
 
 theorem absNorm_apply (I : Ideal S) : absNorm I = cardQuot I := rfl
 
@@ -371,7 +371,7 @@ lemma exists_prime_and_absNorm_eq_pow (P : Ideal S) [P.IsMaximal] :
     (Ideal.finrank_eq_finrank (Module.Free.chooseBasis _ _) _
       (Ideal.IsMaximal.ne_bot_of_isIntegral_int P))
   cases nonempty_fintype (S ⧸ P)
-  letI := Ideal.Quotient.field P
+  let := Ideal.Quotient.field P
   obtain ⟨p, hpR⟩ := CharP.exists (S ⧸ P)
   obtain ⟨n, hp, e⟩ := FiniteField.card (S ⧸ P) p
   have hP : P.absNorm = p ^ (n : ℕ) := (Nat.card_eq_fintype_card.trans e:)

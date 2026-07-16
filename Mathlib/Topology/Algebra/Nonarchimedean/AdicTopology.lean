@@ -60,32 +60,32 @@ namespace Ideal
 theorem adic_basis (I : Ideal R) : SubmodulesRingBasis fun n : ℕ => (I ^ n • ⊤ : Ideal R) :=
   { inter := by
       suffices ∀ i j : ℕ, ∃ k, I ^ k ≤ I ^ i ∧ I ^ k ≤ I ^ j by
-        simpa only [smul_eq_mul, mul_top, Algebra.algebraMap_self, map_id, le_inf_iff] using this
+        simpa only [smul_eq_mul, mul_top, Algebra.algebraMap_self, map_id, le_inf_iff] using! this
       intro i j
       exact ⟨max i j, pow_le_pow_right (le_max_left i j), pow_le_pow_right (le_max_right i j)⟩
     leftMul := by
       suffices ∀ (a : R) (i : ℕ), ∃ j : ℕ, a • I ^ j ≤ I ^ i by
-        simpa only [smul_top_eq_map, Algebra.algebraMap_self, map_id] using this
+        simpa only [smul_top_eq_map, Algebra.algebraMap_self, map_id] using! this
       intro r n
       use n
       rintro a ⟨x, hx, rfl⟩
       exact (I ^ n).smul_mem r hx
     mul := by
       suffices ∀ i : ℕ, ∃ j : ℕ, (↑(I ^ j) * ↑(I ^ j) : Set R) ⊆ (↑(I ^ i) : Set R) by
-        simpa only [smul_top_eq_map, Algebra.algebraMap_self, map_id] using this
+        simpa only [smul_top_eq_map, Algebra.algebraMap_self, map_id] using! this
       intro n
       use n
       rintro a ⟨x, _hx, b, hb, rfl⟩
       exact (I ^ n).smul_mem x hb }
 
 /-- The adic ring filter basis associated to an ideal `I` is made of powers of `I`. -/
-@[implicit_reducible]
+@[instance_reducible]
 def ringFilterBasis (I : Ideal R) :=
   I.adic_basis.toRing_subgroups_basis.toRingFilterBasis
 
 /-- The adic topology associated to an ideal `I`. This topology admits powers of `I` as a basis of
 neighborhoods of zero. It is compatible with the ring structure and is non-archimedean. -/
-@[implicit_reducible]
+@[instance_reducible]
 def adicTopology (I : Ideal R) : TopologicalSpace R :=
   (adic_basis I).topology
 
@@ -109,7 +109,7 @@ theorem hasBasis_nhds_zero_adic (I : Ideal R) :
 theorem hasBasis_nhds_adic (I : Ideal R) (x : R) :
     HasBasis (@nhds R I.adicTopology x) (fun _n : ℕ => True) fun n =>
       (fun y => x + y) '' (I ^ n : Ideal R) := by
-  letI := I.adicTopology
+  let := I.adicTopology
   have := I.hasBasis_nhds_zero_adic.map fun y => x + y
   rwa [map_add_left_nhds_zero x] at this
 
@@ -133,7 +133,7 @@ theorem adic_module_basis :
 
 /-- The topology on an `R`-module `M` associated to an ideal `M`. Submodules $I^n M$,
 written `I^n • ⊤` form a basis of neighborhoods of zero. -/
-@[implicit_reducible]
+@[instance_reducible]
 def adicModuleTopology : TopologicalSpace M :=
   @ModuleFilterBasis.topology R M _ I.adic_basis.topology _ _
     (I.ringFilterBasis.moduleFilterBasis (I.adic_module_basis M))
@@ -143,7 +143,7 @@ on an `R`-module `M`, seen as open additive subgroups of `M`. -/
 def openAddSubgroup (n : ℕ) : @OpenAddSubgroup R _ I.adicTopology := by
   letI := I.adicTopology
   refine ⟨(I ^ n).toAddSubgroup, ?_⟩
-  convert (I.adic_basis.toRing_subgroups_basis.openAddSubgroup n).isOpen
+  convert! (I.adic_basis.toRing_subgroups_basis.openAddSubgroup n).isOpen
   change (↑(I ^ n) : Set R) = ↑(I ^ n • (⊤ : Ideal R))
   simp
 
@@ -166,7 +166,7 @@ theorem isAdic_iff [top : TopologicalSpace R] [IsTopologicalRing R] {J : Ideal R
   · intro H
     change _ = _ at H
     rw [H]
-    letI := J.adicTopology
+    let := J.adicTopology
     constructor
     · intro n
       exact (J.openAddSubgroup n).isOpen'
@@ -177,7 +177,7 @@ theorem isAdic_iff [top : TopologicalSpace R] [IsTopologicalRing R] {J : Ideal R
     · apply @IsTopologicalRing.to_topologicalAddGroup
     · apply (RingSubgroupsBasis.toRingFilterBasis _).toAddGroupFilterBasis.isTopologicalAddGroup
     · ext s
-      letI := Ideal.adic_basis J
+      let := Ideal.adic_basis J
       rw [J.hasBasis_nhds_zero_adic.mem_iff]
       constructor <;> intro H
       · rcases H₂ s H with ⟨n, h⟩
@@ -278,7 +278,7 @@ lemma isTopologicallyNilpotent_of_mem {a : R} (ha : a ∈ i) : IsTopologicallyNi
 
 /-- The adic topology on an `R` module coming from the ideal `WithIdeal.I`.
 This cannot be an instance because `R` cannot be inferred from `M`. -/
-@[implicit_reducible]
+@[instance_reducible]
 def topologicalSpaceModule (M : Type*) [AddCommGroup M] [Module R M] : TopologicalSpace M :=
   (i : Ideal R).adicModuleTopology M
 

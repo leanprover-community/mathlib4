@@ -7,7 +7,7 @@ module
 
 public import Mathlib.RingTheory.Ideal.IsPrincipal
 public import Mathlib.NumberTheory.NumberField.Units.DirichletTheorem
-public import Mathlib.RingTheory.ClassGroup
+public import Mathlib.RingTheory.ClassGroup.Basic
 
 /-!
 # Fundamental Cone
@@ -93,7 +93,6 @@ open NumberField.Units NumberField.Units.dirichletUnitTheorem Module
 
 variable [NumberField K] {K}
 
-open Classical in
 /-- The map from the mixed space to `logSpace K` defined in such way that: 1) it factors the map
 `logEmbedding`, see `logMap_eq_logEmbedding`; 2) it is constant on the sets
 `{c • x | c ∈ ℝ, c ≠ 0}` if `norm x ≠ 0`, see `logMap_real_smul`. -/
@@ -129,8 +128,6 @@ theorem logMap_apply_of_norm_eq_one (hx : mixedEmbedding.norm x = 1)
     (w : {w : InfinitePlace K // w ≠ w₀}) :
     logMap x w = mult w.val * Real.log (normAtPlace w x) := by
   rw [logMap_apply, hx, Real.log_one, zero_mul, sub_zero]
-
-@[deprecated (since := "2025-11-15")] alias logMap_apply_of_norm_one := logMap_apply_of_norm_eq_one
 
 @[simp]
 theorem logMap_eq_logEmbedding (u : (𝓞 K)ˣ) :
@@ -175,7 +172,7 @@ open NumberField.Units NumberField.Units.dirichletUnitTheorem
 
 variable [NumberField K]
 
-open Classical in
+open scoped Classical in
 /-- The fundamental cone is a cone in the mixed space, i.e. a subset fixed by multiplication by
 a nonzero real number, see `smul_mem_of_mem`, that is also a fundamental domain for the action
 of `(𝓞 K)ˣ` modulo torsion, see `exists_unit_smul_mem` and `torsion_smul_mem_of_mem`. -/
@@ -225,9 +222,10 @@ theorem smul_mem_of_mem (hx : x ∈ fundamentalCone K) (hc : c ≠ 0) :
 theorem smul_mem_iff_mem (hc : c ≠ 0) :
     c • x ∈ fundamentalCone K ↔ x ∈ fundamentalCone K := by
   refine ⟨fun h ↦ ?_, fun h ↦ smul_mem_of_mem h hc⟩
-  convert smul_mem_of_mem h (inv_ne_zero hc)
+  convert! smul_mem_of_mem h (inv_ne_zero hc)
   rw [eq_inv_smul_iff₀ hc]
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem exists_unit_smul_mem (hx : mixedEmbedding.norm x ≠ 0) :
     ∃ u : (𝓞 K)ˣ, u • x ∈ fundamentalCone K := by
   classical
@@ -472,7 +470,7 @@ theorem card_isPrincipal_norm_eq_mul_torsion (n : ℕ) :
     Nat.card {I : (Ideal (𝓞 K))⁰ | IsPrincipal (I : Ideal (𝓞 K)) ∧
       absNorm (I : Ideal (𝓞 K)) = n} * torsionOrder K =
         Nat.card {a : integerSet K | mixedEmbedding.norm (a : mixedSpace K) = n} := by
-  rw [torsionOrder, ← Nat.card_eq_fintype_card, ← Nat.card_prod]
+  rw [torsionOrder, ← Nat.card_prod]
   exact Nat.card_congr (integerSetEquivNorm K n).symm
 
 variable (J : (Ideal (𝓞 K))⁰)
@@ -482,6 +480,7 @@ the integral ideal `J`. -/
 def idealSet : Set (mixedSpace K) :=
   fundamentalCone K ∩ (mixedEmbedding.idealLattice K (FractionalIdeal.mk0 K J))
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable {K J} in
 theorem mem_idealSet :
     x ∈ idealSet K J ↔ x ∈ fundamentalCone K ∧ ∃ a : (𝓞 K), (a : 𝓞 K) ∈ (J : Set (𝓞 K)) ∧
@@ -523,6 +522,7 @@ variable {K J}
 theorem idealSetEquiv_apply (a : idealSet K J) :
     (idealSetEquiv K J a : mixedSpace K) = a := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem idealSetEquiv_symm_apply
     (a : {a : integerSet K // (preimageOfMemIntegerSet a : 𝓞 K) ∈ (J : Set (𝓞 K)) }) :
     ((idealSetEquiv K J).symm a : mixedSpace K) = a := by
@@ -545,7 +545,7 @@ def idealSetEquivNorm (n : ℕ) :
   calc
     _ ≃ {a : {a : integerSet K // (preimageOfMemIntegerSet a).1 ∈ J.1} //
             mixedEmbedding.norm a.1.1 = n} := by
-        convert (Equiv.subtypeEquivOfSubtype (idealSetEquiv K J).symm).symm using 3
+        convert! (Equiv.subtypeEquivOfSubtype (idealSetEquiv K J).symm).symm using 3
         rw [idealSetEquiv_symm_apply]
     _ ≃ {a : integerSet K // (preimageOfMemIntegerSet a).1 ∈ J.1 ∧
           mixedEmbedding.norm a.1 = n} := Equiv.subtypeSubtypeEquivSubtypeInter
@@ -558,7 +558,7 @@ def idealSetEquivNorm (n : ℕ) :
         (Equiv.subtypeEquivRight (fun _ ↦ by simp [and_comm]))).symm
     _ ≃ {I : {I : (Ideal (𝓞 K))⁰ // IsPrincipal I.1 ∧ absNorm I.1 = n} × (torsion K) //
           J.1 ∣ I.1.1} := by
-      convert Equiv.subtypeEquivOfSubtype (p := fun I ↦ J.1 ∣ I.1) (integerSetEquivNorm K n)
+      convert! Equiv.subtypeEquivOfSubtype (p := fun I ↦ J.1 ∣ I.1) (integerSetEquivNorm K n)
       rw [integerSetEquivNorm_apply_fst, dvd_span_singleton]
     _ ≃ {I : {I : (Ideal (𝓞 K))⁰ // IsPrincipal I.1 ∧ absNorm I.1 = n} // J.1 ∣ I.1} ×
         (torsion K) := Equiv.prodSubtypeFstEquivSubtypeProd
@@ -580,7 +580,7 @@ theorem card_isPrincipal_dvd_norm_le (s : ℝ) :
         Nat.card {a : idealSet K J // mixedEmbedding.norm (a : mixedSpace K) ≤ s} := by
   obtain hs | hs := le_or_gt 0 s
   · simp_rw [← intNorm_idealSetEquiv_apply, ← Nat.le_floor_iff hs]
-    rw [torsionOrder, ← Nat.card_eq_fintype_card, ← Nat.card_prod]
+    rw [torsionOrder, ← Nat.card_prod]
     refine Nat.card_congr <| @Equiv.ofFiberEquiv _ (γ := Finset.Iic ⌊s⌋₊) _
       (fun I ↦ ⟨absNorm I.1.val.1, Finset.mem_Iic.mpr I.1.prop.2.2⟩)
       (fun a ↦ ⟨intNorm (idealSetEquiv K J a.1).1, Finset.mem_Iic.mpr a.prop⟩) fun ⟨i, hi⟩ ↦ ?_

@@ -8,7 +8,6 @@ module
 public import Mathlib.MeasureTheory.Integral.Bochner.Set
 public import Mathlib.MeasureTheory.Integral.CompactlySupported
 public import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Basic
-public import Mathlib.MeasureTheory.Measure.Regular
 public import Mathlib.Order.Interval.Set.Union
 
 /-!
@@ -64,6 +63,7 @@ and the `NNReal`-version of `rieszContent`. This is under the namespace `RealRMK
 `rieszMeasure` without namespace is for `NNReal`-linear `Λ`. -/
 noncomputable def rieszMeasure := (rieszContent (toNNRealLinear Λ)).measure
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- If `f` assumes values between `0` and `1` and the support is contained in `V`, then
 `Λ f ≤ rieszMeasure V`. -/
 lemma le_rieszMeasure_tsupport_subset {f : C_c(X, ℝ)} (hf : ∀ (x : X), 0 ≤ f x ∧ f x ≤ 1)
@@ -481,7 +481,7 @@ lemma _root_.MeasureTheory.Measure.exists_innerRegular_eq_of_isCompact
     by infer_instance, ?_, fun g ↦ ?_⟩
   · rw [Measure.map_apply (by fun_prop) hK.measurableSet.compl]
     simp
-  convert hν' (g.compContinuous ⟨Subtype.val, by fun_prop⟩)
+  convert! hν' (g.compContinuous ⟨Subtype.val, by fun_prop⟩)
   · simp only [BoundedContinuousFunction.compContinuous_apply, ContinuousMap.coe_mk]
     rw [← integral_map (φ := Subtype.val) (by fun_prop) (by fun_prop)]
     simp only [map_comap_subtype_coe hK.measurableSet, μ', Measure.restrict_eq_self_of_ae_mem h]

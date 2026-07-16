@@ -138,7 +138,7 @@ theorem eq_centroid_iff_sum_vsub_eq_zero [CharZero k] {s : Simplex k P n} {p : P
 the points. -/
 theorem face_centroid_eq_centroid {n : ℕ} (s : Simplex k P n) {fs : Finset (Fin (n + 1))} {m : ℕ}
     (h : #fs = m + 1) : Finset.univ.centroid k (s.face h).points = fs.centroid k s.points := by
-  convert (Finset.univ.centroid_map k (fs.orderEmbOfFin h).toEmbedding s.points).symm
+  convert! (Finset.univ.centroid_map k (fs.orderEmbOfFin h).toEmbedding s.points).symm
   rw [← Finset.coe_inj, Finset.coe_map, Finset.coe_univ, Set.image_univ]
   simp
 
@@ -213,14 +213,14 @@ theorem centroid_reindex {m n : ℕ} (s : Simplex k P m)
   simp only [reindex]
   have h_eq : m = n := by simpa using Fintype.card_eq.2 ⟨e⟩
   subst h_eq
-  convert Finset.univ.affineCombination_map e.toEmbedding _ _ <;> simp [Function.comp_assoc]
+  convert! Finset.univ.affineCombination_map e.toEmbedding _ _ <;> simp [Function.comp_assoc]
 
 theorem centroid_restrict [CharZero k] {n : ℕ} (s : Simplex k P n) (S : AffineSubspace k P)
     (hS : affineSpan k (Set.range s.points) ≤ S) :
     haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
     (s.restrict S hS).centroid = s.centroid := by
   rw [eq_comm]
-  haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
+  have := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
   have hf : Function.Injective (S.subtype) := by
     simp only [coe_subtype, Subtype.val_injective]
   exact (s.restrict S hS).centroid_map S.subtype hf
@@ -403,7 +403,7 @@ theorem faceOppositeCentroid_eq_smul_vsub_vadd_point [CharZero k] (s : Simplex k
     haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
     (s.restrict S hS).faceOppositeCentroid i = s.faceOppositeCentroid i := by
   rw [eq_comm]
-  haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
+  have := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
   have hf : Function.Injective (S.subtype) := by
     simp only [coe_subtype, Subtype.val_injective]
   exact (s.restrict S hS).faceOppositeCentroid_map S.subtype hf (i := i)
@@ -515,7 +515,7 @@ theorem eq_centroid_of_forall_mem_median [CharZero k] (s : Simplex k P n) {hn : 
       fun x => ⟨x.val, h x⟩
     have f_inj : Function.Injective f := by intro x y hxy; grind
     have h2 := h1.comp f f_inj
-    convert h2 using 1
+    convert! h2 using 1
     grind only [mem_compl, Finset.notMem_singleton]
   have he : ∃ i j : s', i ≠ j := by
     simp only [ne_eq, Subtype.exists, Subtype.mk.injEq, exists_prop]
@@ -539,7 +539,7 @@ def medial [CharZero k] (s : Simplex k P n) : Simplex k P n where
     obtain h := s.independent
     rw [affineIndependent_iff_linearIndependent_vsub k _ 0] at h ⊢
     simp_rw [faceOppositeCentroid_vsub_faceOppositeCentroid]
-    convert h.units_smul fun _ ↦ Units.mk0 (-n)⁻¹ (by simpa using NeZero.ne n) with i
+    convert! h.units_smul fun _ ↦ Units.mk0 (-n)⁻¹ (by simpa using NeZero.ne n) with i
     simp [← smul_neg]
 
 theorem medial_points [CharZero k] (s : Simplex k P n) (i : Fin (n + 1)) :
@@ -585,7 +585,7 @@ theorem medial_restrict [CharZero k] (s : Simplex k P n) (S : AffineSubspace k P
     (hS : affineSpan k (Set.range s.points) ≤ S) :
     haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
     (s.restrict S hS).medial = s.medial.restrict S (s.affineSpan_range_medial ▸ hS) := by
-  haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
+  have := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
   ext i
   simp [medial_points]
 

@@ -107,8 +107,6 @@ theorem toFinset_subset [Fintype s] {t : Finset α} : s.toFinset ⊆ t ↔ s ⊆
 @[gcongr]
 alias ⟨_, toFinset_mono⟩ := toFinset_subset_toFinset
 
-@[deprecated (since := "2025-10-25")] alias toFinset_subset_toFinset_of_subset := toFinset_mono
-
 alias ⟨_, toFinset_strict_mono⟩ := toFinset_ssubset_toFinset
 
 @[simp]
@@ -137,9 +135,11 @@ theorem toFinset_union [Fintype (s ∪ t : Set _)] : (s ∪ t).toFinset = s.toFi
   simp
 
 @[simp]
-theorem toFinset_diff [Fintype (s \ t : Set _)] : (s \ t).toFinset = s.toFinset \ t.toFinset := by
+theorem toFinset_sdiff [Fintype (s \ t : Set _)] : (s \ t).toFinset = s.toFinset \ t.toFinset := by
   ext
   simp
+
+@[deprecated (since := "2026-06-03")] alias toFinset_diff := toFinset_sdiff
 
 open scoped symmDiff in
 @[simp]
@@ -155,15 +155,11 @@ theorem toFinset_compl [Fintype α] [Fintype (sᶜ : Set _)] : sᶜ.toFinset = s
 
 end DecidableEq
 
--- TODO The `↥` circumvents an elaboration bug. See comment on `Set.toFinset_univ`.
 @[simp]
 theorem toFinset_empty [Fintype (∅ : Set α)] : (∅ : Set α).toFinset = ∅ := by
   ext
   simp
 
-/- TODO Without the coercion arrow (`↥`) there is an elaboration bug in the following two;
-it essentially infers `Fintype.{v} (Set.univ.{u} : Set α)` with `v` and `u` distinct.
-Reported in https://github.com/leanprover-community/lean/issues/672 -/
 @[simp]
 theorem toFinset_univ [Fintype α] [Fintype (Set.univ : Set α)] :
     (Set.univ : Set α).toFinset = Finset.univ := by
@@ -254,6 +250,7 @@ instance FinsetCoe.fintype (s : Finset α) : Fintype (↑s : Set α) :=
 theorem Finset.attach_eq_univ {s : Finset α} : s.attach = Finset.univ :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 instance Prop.fintype : Fintype Prop :=
   ⟨⟨{True, False}, by simp⟩, by simpa using em⟩
 
@@ -265,7 +262,7 @@ instance Subtype.fintype (p : α → Prop) [DecidablePred p] [Fintype α] : Fint
   Fintype.subtype (univ.filter p) (by simp)
 
 /-- A set on a fintype, when coerced to a type, is a fintype. -/
-@[implicit_reducible]
+@[instance_reducible]
 def setFintype [Fintype α] (s : Set α) [DecidablePred (· ∈ s)] : Fintype s :=
   Subtype.fintype fun x => x ∈ s
 
@@ -277,13 +274,14 @@ sets on a finite type are finite.) -/
 noncomputable def finsetEquivSet : Finset α ≃ Set α where
   toFun := (↑)
   invFun := by classical exact fun s => s.toFinset
-  left_inv s := by convert Finset.toFinset_coe s
+  left_inv s := by convert! Finset.toFinset_coe s
   right_inv s := by classical exact s.coe_toFinset
 
 @[simp, norm_cast] lemma coe_finsetEquivSet : ⇑finsetEquivSet = ((↑) : Finset α → Set α) := rfl
 
 @[simp] lemma finsetEquivSet_apply (s : Finset α) : finsetEquivSet s = s := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma finsetEquivSet_symm_apply (s : Set α) [Fintype s] :
     finsetEquivSet.symm s = s.toFinset := by simp [finsetEquivSet]
 

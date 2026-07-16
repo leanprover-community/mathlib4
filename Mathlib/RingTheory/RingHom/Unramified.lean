@@ -85,7 +85,7 @@ lemma ofLocalizationPrime :
   intro x
   let Rₓ := Localization.AtPrime (x.asIdeal.comap f)
   let Sₓ := Localization.AtPrime x.asIdeal
-  letI : Algebra Rₓ Sₓ := (Localization.localRingHom _ _ _ rfl).toAlgebra
+  let : Algebra Rₓ Sₓ := (Localization.localRingHom _ _ _ rfl).toAlgebra
   have : IsScalarTower R Rₓ Sₓ := .of_algebraMap_eq
     fun x ↦ (Localization.localRingHom_to_map _ _ _ rfl x).symm
   have : Algebra.FormallyUnramified Rₓ Sₓ := H _ _
@@ -101,7 +101,7 @@ lemma ofLocalizationSpanTarget :
     simpa using (PrimeSpectrum.iSup_basicOpen_eq_top_iff'.mpr hs).ge
       (TopologicalSpace.Opens.mem_top x)
   refine Algebra.basicOpen_subset_unramifiedLocus_iff.mpr ?_ hrx
-  convert H ⟨r, hr⟩
+  convert! H ⟨r, hr⟩
   dsimp
   rw [← algebraMap_toAlgebra f, ← IsScalarTower.algebraMap_eq,
     formallyUnramified_algebraMap]

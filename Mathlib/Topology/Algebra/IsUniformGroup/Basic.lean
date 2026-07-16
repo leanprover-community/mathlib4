@@ -138,7 +138,7 @@ theorem totallyBounded_iff_subset_finite_iUnion_nhds_one {s : Set α} :
 
 @[to_additive]
 theorem totallyBounded_inv {s : Set α} (hs : TotallyBounded s) : TotallyBounded (s⁻¹) := by
-  convert TotallyBounded.image hs uniformContinuous_inv
+  convert! TotallyBounded.image hs uniformContinuous_inv
   aesop
 
 section UniformConvergence
@@ -287,8 +287,8 @@ instance Subgroup.isClosed_of_discrete [T2Space G] {H : Subgroup G} [DiscreteTop
 @[to_additive]
 lemma Subgroup.tendsto_coe_cofinite_of_discrete [T2Space G] (H : Subgroup G)
     (hH : IsDiscrete (H : Set G)) : Tendsto ((↑) : H → G) cofinite (cocompact _) :=
- haveI : DiscreteTopology H := isDiscrete_iff_discreteTopology.mp hH
- IsClosed.tendsto_coe_cofinite_of_isDiscrete isClosed_of_discrete hH
+  haveI : DiscreteTopology H := isDiscrete_iff_discreteTopology.mp hH
+  IsClosed.tendsto_coe_cofinite_of_isDiscrete isClosed_of_discrete hH
 
 @[to_additive]
 lemma MonoidHom.tendsto_coe_cofinite_of_discrete [T2Space G] {H : Type*} [Group H] {f : H →* G}
@@ -338,8 +338,8 @@ def opUniformEquivRight
   letI : UniformSpace G := IsTopologicalGroup.rightUniformSpace G
   letI : UniformSpace Gᵐᵒᵖ := IsTopologicalGroup.leftUniformSpace Gᵐᵒᵖ
   refine ⟨MulOpposite.opEquiv, ?_, ?_⟩
-  · simp [uniformContinuous_iff, ← comap_op_leftUniformSpace]
-  · simp [uniformContinuous_iff, ← comap_op_leftUniformSpace, ← UniformSpace.comap_comap]
+  · simp [uniformContinuous_iff_le_comap, ← comap_op_leftUniformSpace]
+  · simp [uniformContinuous_iff_le_comap, ← comap_op_leftUniformSpace, ← UniformSpace.comap_comap]
 
 /-- The equivalence between a topological group `G` and `Gᵐᵒᵖ` as a uniform equivalence when `G`
 is equipped with the left uniformity and `Gᵐᵒᵖ` with the right uniformity. -/
@@ -352,8 +352,8 @@ def opUniformEquivLeft
   letI : UniformSpace G := IsTopologicalGroup.leftUniformSpace G
   letI : UniformSpace Gᵐᵒᵖ := IsTopologicalGroup.rightUniformSpace Gᵐᵒᵖ
   refine ⟨MulOpposite.opEquiv, ?_, ?_⟩
-  · simp [uniformContinuous_iff, ← comap_op_rightUniformSpace]
-  · simp [uniformContinuous_iff, ← comap_op_rightUniformSpace, ← UniformSpace.comap_comap]
+  · simp [uniformContinuous_iff_le_comap, ← comap_op_rightUniformSpace]
+  · simp [uniformContinuous_iff_le_comap, ← comap_op_rightUniformSpace, ← UniformSpace.comap_comap]
 
 end MulOpposite
 
@@ -381,11 +381,11 @@ def UniformEquiv.inv : @UniformEquiv G G (IsTopologicalGroup.rightUniformSpace G
     (IsTopologicalGroup.leftUniformSpace G) := by
   have A : @UniformContinuous G G (IsTopologicalGroup.rightUniformSpace G)
       (IsTopologicalGroup.leftUniformSpace G) (Equiv.inv G) := by
-    apply uniformContinuous_iff.2
+    apply uniformContinuous_iff_le_comap.2
     rw [← comap_inv_leftUniformSpace]
   have B : @UniformContinuous G G (IsTopologicalGroup.leftUniformSpace G)
       (IsTopologicalGroup.rightUniformSpace G) (Equiv.inv G) := by
-    apply uniformContinuous_iff.2
+    apply uniformContinuous_iff_le_comap.2
     rw [← comap_inv_leftUniformSpace, ← UniformSpace.comap_comap]
     simp
   exact @UniformEquiv.mk G G (IsTopologicalGroup.rightUniformSpace G)
@@ -470,8 +470,8 @@ theorem tendsto_div_comap_self (de : IsDenseInducing e) (x₀ : α) :
     ext t
     simp
   have lim : Tendsto (fun x : α × α => x.2 / x.1) (𝓝 (x₀, x₀)) (𝓝 (e 1)) := by
-    simpa using (continuous_div'.comp (@continuous_swap α α _ _)).tendsto (x₀, x₀)
-  simpa using de.tendsto_comap_nhds_nhds lim comm
+    simpa using! (continuous_div'.comp (@continuous_swap α α _ _)).tendsto (x₀, x₀)
+  simpa using! de.tendsto_comap_nhds_nhds lim comm
 
 end
 
@@ -629,9 +629,9 @@ instance QuotientGroup.completeSpace_right' (G : Type u) [Group G] [TopologicalS
     sequential antitone neighborhood basis `u` for `𝓝 (1 : G)` so that `(u (n + 1)) ^ 2 ⊆ u n`, and
     this descends to an antitone neighborhood basis `v` for `𝓝 (1 : G ⧸ N)`. Since `𝓤 (G ⧸ N)` is
     countably generated, it suffices to show any Cauchy sequence `x` converges. -/
-  letI : UniformSpace (G ⧸ N) := IsTopologicalGroup.rightUniformSpace (G ⧸ N)
-  letI : UniformSpace G := IsTopologicalGroup.rightUniformSpace G
-  haveI : (𝓤 (G ⧸ N)).IsCountablyGenerated := comap.isCountablyGenerated _ _
+  let : UniformSpace (G ⧸ N) := IsTopologicalGroup.rightUniformSpace (G ⧸ N)
+  let : UniformSpace G := IsTopologicalGroup.rightUniformSpace G
+  have : (𝓤 (G ⧸ N)).IsCountablyGenerated := comap.isCountablyGenerated _ _
   obtain ⟨u, hu, u_mul⟩ := IsTopologicalGroup.exists_antitone_basis_nhds_one G
   obtain ⟨hv, v_anti⟩ := hu.map ((↑) : G → G ⧸ N)
   rw [← QuotientGroup.nhds_eq N 1, QuotientGroup.mk_one] at hv
@@ -641,7 +641,7 @@ instance QuotientGroup.completeSpace_right' (G : Type u) [Group G] [TopologicalS
   have key₀ : ∀ i j : ℕ, ∃ M : ℕ, j < M ∧ ∀ a b : ℕ, M ≤ a → M ≤ b →
       ∀ g : G, x b = g → ∃ g' : G, g / g' ∈ u i ∧ x a = g' := by
     have h𝓤GN : (𝓤 (G ⧸ N)).HasBasis (fun _ ↦ True) fun i ↦ { x | x.snd / x.fst ∈ (↑) '' u i } := by
-      simpa [uniformity_eq_comap_nhds_one', div_eq_mul_inv] using hv.comap _
+      simpa [uniformity_eq_comap_nhds_one', div_eq_mul_inv] using! hv.comap _
     rw [h𝓤GN.cauchySeq_iff] at hx
     simp only [mem_setOf_eq, forall_true_left, mem_image] at hx
     intro i j
@@ -681,7 +681,7 @@ instance QuotientGroup.completeSpace_right' (G : Type u) [Group G] [TopologicalS
     is to show by decreasing induction that `x' m / x' n ∈ u m` if `m ≤ n`. -/
   have x'_cauchy : CauchySeq fun n => (x' n).fst := by
     have h𝓤G : (𝓤 G).HasBasis (fun _ => True) fun i => { x | x.snd / x.fst ∈ u i } := by
-      simpa [uniformity_eq_comap_nhds_one', div_eq_mul_inv] using hu.toHasBasis.comap _
+      simpa [uniformity_eq_comap_nhds_one', div_eq_mul_inv] using! hu.toHasBasis.comap _
     rw [h𝓤G.cauchySeq_iff']
     simp only [mem_setOf_eq, forall_true_left]
     exact fun m =>
@@ -697,7 +697,7 @@ instance QuotientGroup.completeSpace_right' (G : Type u) [Group G] [TopologicalS
     ⟨↑x₀,
       tendsto_nhds_of_cauchySeq_of_subseq hx
         (strictMono_nat_of_lt_succ fun n => (hφ (n + 1)).1).tendsto_atTop ?_⟩
-  convert ((continuous_coinduced_rng : Continuous ((↑) : G → G ⧸ N)).tendsto x₀).comp hx₀
+  convert! ((continuous_coinduced_rng : Continuous ((↑) : G → G ⧸ N)).tendsto x₀).comp hx₀
   exact funext fun n => (x' n).snd
 
 /-- The quotient `G ⧸ N` of a complete first countable uniform group `G` by a normal subgroup

@@ -77,7 +77,7 @@ A set `u` is open in the Scott-Hausdorff topology iff when the least upper bound
 
 For mild conditions on `D`, this is equivalent to saying that open sets are `DirSupInaccOn D`,
 and closed sets are `DirSupClosedOn D`. -/
-@[implicit_reducible]
+@[instance_reducible]
 def scottHausdorff (α : Type*) (D : Set (Set α)) [Preorder α] : TopologicalSpace α where
   IsOpen u := ∀ ⦃d : Set α⦄, d ∈ D → d.Nonempty → DirectedOn (· ≤ ·) d → ∀ ⦃a : α⦄, IsLUB d a →
     a ∈ u → ∃ b ∈ d, Ici b ∩ d ⊆ u
@@ -101,8 +101,7 @@ and closed sets are `DirSupClosedOn D`. -/
 class IsScottHausdorff (α) (D : Set (Set α)) [Preorder α] [TopologicalSpace α] : Prop where
   topology_eq_scottHausdorff : ‹TopologicalSpace α› = scottHausdorff α D
 
-instance (α) (D : Set (Set α)) [Preorder α] [TopologicalSpace α] :
-    @IsScottHausdorff α D _ (scottHausdorff α D) :=
+instance (α) (D : Set (Set α)) [Preorder α] : @IsScottHausdorff α D _ (scottHausdorff α D) :=
   @IsScottHausdorff.mk _ _ _ (scottHausdorff α D) rfl
 
 namespace IsScottHausdorff
@@ -162,7 +161,7 @@ section Preorder
 /-- The Scott topology.
 
 It is defined as the join of the topology of upper sets and the Scott-Hausdorff topology. -/
-@[implicit_reducible]
+@[instance_reducible]
 def scott (α : Type*) (D : Set (Set α)) [Preorder α] : TopologicalSpace α :=
   upperSet α ⊔ scottHausdorff α D
 
@@ -216,7 +215,7 @@ lemma dirSupClosed_of_isClosed [IsScott α univ] : IsClosed s → DirSupClosed s
   (isClosed_iff_isLowerSet_and_dirSupClosed.mp h).right
 
 lemma lowerClosure_subset_closure [IsScott α univ] : ↑(lowerClosure s) ⊆ closure s := by
-  convert closure.mono (@upperSet_le_scott α _)
+  convert! closure.mono (@upperSet_le_scott α _)
   · rw [@IsUpperSet.closure_eq_lowerClosure α _ (upperSet α) ?_ s]
     infer_instance
   · exact topology_eq α univ
@@ -299,14 +298,14 @@ lemma isOpen_iff_Iic_compl_or_univ [TopologicalSpace α] [Topology.IsScott α un
 -- N.B. A number of conditions equivalent to `scott α = upper α` are given in Gierz _et al_,
 -- Chapter III, Exercise 3.23.
 lemma scott_eq_upper_of_completeLinearOrder : scott α univ = upper α := by
-  letI := upper α
+  let := upper α
   ext U
   rw [@Topology.IsUpper.isTopologicalSpace_basis _ _ (upper α)
     ({ topology_eq_upperTopology := rfl }) U]
-  letI := scott α univ
+  let := scott α univ
   rw [@isOpen_iff_Iic_compl_or_univ _ _ (scott α univ) ({ topology_eq_scott := rfl }) U]
 
-/- The upper topology on a complete linear order is the Scott topology -/
+/-- The upper topology on a complete linear order is the Scott topology -/
 instance [TopologicalSpace α] [IsUpper α] : IsScott α univ where
   topology_eq_scott := by
     rw [scott_eq_upper_of_completeLinearOrder]

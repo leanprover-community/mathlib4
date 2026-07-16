@@ -48,6 +48,8 @@ see their statements.
 * `le_of_tendsto`, `ge_of_tendsto` : if `f` converges to `a` and eventually `f x ≤ b`
   (resp., `b ≤ f x`), then `a ≤ b` (resp., `b ≤ a`); we also provide primed versions
   that assume the inequalities to hold for all `x`.
+* `monotone_of_frequently_monotone_of_tendsto`, `antitone_of_frequently_antitone_of_tendsto` : the
+  pointwise limit of frequently monotone or antitone functions is monotone or antitone.
 
 ### Min, max, `sSup` and `sInf`
 
@@ -128,12 +130,12 @@ theorem le_of_tendsto_of_frequently {x : Filter β} (lim : Tendsto f x (𝓝 a))
   isClosed_Iic.mem_of_frequently_of_tendsto h lim
 
 @[to_dual ge_of_tendsto]
-theorem le_of_tendsto {x : Filter β} [NeBot x] (lim : Tendsto f x (𝓝 a))
+theorem le_of_tendsto {x : Filter β} [hx : NeBot x] (lim : Tendsto f x (𝓝 a))
     (h : ∀ᶠ c in x, f c ≤ b) : a ≤ b :=
   isClosed_Iic.mem_of_tendsto lim h
 
 @[to_dual ge_of_tendsto']
-theorem le_of_tendsto' {x : Filter β} [NeBot x] (lim : Tendsto f x (𝓝 a))
+theorem le_of_tendsto' {x : Filter β} [hx : NeBot x] (lim : Tendsto f x (𝓝 a))
     (h : ∀ c, f c ≤ b) : a ≤ b :=
   le_of_tendsto lim (Eventually.of_forall h)
 
@@ -425,7 +427,7 @@ namespace Subtype
 
 -- todo: add `OrderEmbedding.orderClosedTopology`
 instance {p : α → Prop} : OrderClosedTopology (Subtype p) :=
-  have this : Continuous fun p : Subtype p × Subtype p => ((p.fst : α), (p.snd : α)) :=
+  have : Continuous fun p : Subtype p × Subtype p => ((p.fst : α), (p.snd : α)) :=
     continuous_subtype_val.prodMap continuous_subtype_val
   OrderClosedTopology.mk (t.isClosed_le'.preimage this)
 
@@ -466,7 +468,7 @@ theorem le_of_tendsto_of_tendsto_of_frequently {f g : β → α} {b : Filter β}
   t.isClosed_le'.mem_of_frequently_of_tendsto h (hf.prodMk_nhds hg)
 
 @[to_dual self (reorder := f g, a₁ a₂, hf hg)]
-theorem le_of_tendsto_of_tendsto {f g : β → α} {b : Filter β} {a₁ a₂ : α} [NeBot b]
+theorem le_of_tendsto_of_tendsto {f g : β → α} {b : Filter β} {a₁ a₂ : α} [hb : NeBot b]
     (hf : Tendsto f b (𝓝 a₁)) (hg : Tendsto g b (𝓝 a₂)) (h : f ≤ᶠ[b] g) : a₁ ≤ a₂ :=
   le_of_tendsto_of_tendsto_of_frequently hf hg <| Eventually.frequently h
 
@@ -474,7 +476,7 @@ theorem le_of_tendsto_of_tendsto {f g : β → α} {b : Filter β} {a₁ a₂ : 
 alias tendsto_le_of_eventuallyLE := le_of_tendsto_of_tendsto
 
 @[to_dual self (reorder := f g, a₁ a₂, hf hg)]
-theorem le_of_tendsto_of_tendsto' {f g : β → α} {b : Filter β} {a₁ a₂ : α} [NeBot b]
+theorem le_of_tendsto_of_tendsto' {f g : β → α} {b : Filter β} {a₁ a₂ : α} [hb : NeBot b]
     (hf : Tendsto f b (𝓝 a₁)) (hg : Tendsto g b (𝓝 a₂)) (h : ∀ x, f x ≤ g x) : a₁ ≤ a₂ :=
   le_of_tendsto_of_tendsto hf hg (Eventually.of_forall h)
 
@@ -514,25 +516,54 @@ theorem IsClosed.epigraph [TopologicalSpace β] {f : β → α} {s : Set β} (hs
     (hf : ContinuousOn f s) : IsClosed { p : β × α | p.1 ∈ s ∧ f p.1 ≤ p.2 } :=
   (hs.preimage continuous_fst).isClosed_le (hf.comp continuousOn_fst Subset.rfl) continuousOn_snd
 
+section Tendsto
+
+variable {ι : Type*} {l : Filter ι} [Preorder β] {F : ι → β → α} {f : β → α} {s : Set β}
+
+/-- The limit of a collection of functions that is frequently monotone on a set is monotone on
+that set. -/
+lemma monotoneOn_of_frequently_monotoneOn_of_tendsto (hF : ∃ᶠ i in l, MonotoneOn (F i) s)
+    (hlim : ∀ x ∈ s, Tendsto (fun i ↦ F i x) l (𝓝 (f x))) : MonotoneOn f s :=
+  fun a ha b hb hab ↦ le_of_tendsto_of_tendsto_of_frequently (hlim a ha) (hlim b hb) <|
+    hF.mono fun _ hi ↦ hi ha hb hab
+
+/-- The limit of a collection of functions that is frequently monotone is monotone. -/
+lemma monotone_of_frequently_monotone_of_tendsto (hF : ∃ᶠ i in l, Monotone (F i))
+    (hlim : ∀ x, Tendsto (fun i ↦ F i x) l (𝓝 (f x))) : Monotone f :=
+  monotoneOn_univ.1 <| monotoneOn_of_frequently_monotoneOn_of_tendsto
+    (hF.mono fun _ hi ↦ hi.monotoneOn _) fun x _ ↦ hlim x
+
+/-- The limit of a collection of functions that is frequently antitone on a set is antitone on
+that set. -/
+lemma antitoneOn_of_frequently_antitoneOn_of_tendsto (hF : ∃ᶠ i in l, AntitoneOn (F i) s)
+    (hlim : ∀ x ∈ s, Tendsto (fun i ↦ F i x) l (𝓝 (f x))) : AntitoneOn f s :=
+  monotoneOn_of_frequently_monotoneOn_of_tendsto (α := αᵒᵈ) hF hlim
+
+/-- The limit of a collection of functions that is frequently antitone is antitone. -/
+lemma antitone_of_frequently_antitone_of_tendsto (hF : ∃ᶠ i in l, Antitone (F i))
+    (hlim : ∀ x, Tendsto (fun i ↦ F i x) l (𝓝 (f x))) : Antitone f :=
+  monotone_of_frequently_monotone_of_tendsto (α := αᵒᵈ) hF hlim
+
 /-- The set of monotone functions on a set is closed. -/
-theorem isClosed_monotoneOn [Preorder β] {s : Set β} : IsClosed {f : β → α | MonotoneOn f s} := by
+theorem isClosed_monotoneOn : IsClosed {f : β → α | MonotoneOn f s} := by
   simp only [isClosed_iff_clusterPt, clusterPt_principal_iff_frequently]
-  intro g hg a ha b hb hab
-  have hmain (x) : Tendsto (fun f' ↦ f' x) (𝓝 g) (𝓝 (g x)) := continuousAt_apply x _
-  exact le_of_tendsto_of_tendsto_of_frequently (hmain a) (hmain b) (hg.mono fun g h ↦ h ha hb hab)
+  exact fun g hg => monotoneOn_of_frequently_monotoneOn_of_tendsto hg
+    fun x _ ↦ continuousAt_apply x g
 
 /-- The set of monotone functions is closed. -/
-theorem isClosed_monotone [Preorder β] : IsClosed {f : β → α | Monotone f} := by
+theorem isClosed_monotone : IsClosed {f : β → α | Monotone f} := by
   simp_rw [← monotoneOn_univ]
   exact isClosed_monotoneOn
 
 /-- The set of antitone functions on a set is closed. -/
-theorem isClosed_antitoneOn [Preorder β] {s : Set β} : IsClosed {f : β → α | AntitoneOn f s} :=
-  isClosed_monotoneOn (α := αᵒᵈ) (β := β)
+theorem isClosed_antitoneOn : IsClosed {f : β → α | AntitoneOn f s} :=
+  isClosed_monotoneOn (α := αᵒᵈ)
 
 /-- The set of antitone functions is closed. -/
-theorem isClosed_antitone [Preorder β] : IsClosed {f : β → α | Antitone f} :=
-  isClosed_monotone (α := αᵒᵈ) (β := β)
+theorem isClosed_antitone : IsClosed {f : β → α | Antitone f} :=
+  isClosed_monotone (α := αᵒᵈ)
+
+end Tendsto
 
 end Preorder
 
@@ -543,7 +574,7 @@ variable [TopologicalSpace α] [PartialOrder α] [t : OrderClosedTopology α]
 -- see Note [lower instance priority]
 instance (priority := 90) OrderClosedTopology.to_t2Space : T2Space α :=
   t2_iff_isClosed_diagonal.2 <| by
-    simpa only [diagonal, le_antisymm_iff] using
+    simpa only [diagonal, le_antisymm_iff] using!
       t.isClosed_le'.inter (isClosed_le continuous_snd continuous_fst)
 
 end PartialOrder
@@ -555,7 +586,7 @@ variable [TopologicalSpace α] [LinearOrder α] [OrderClosedTopology α]
 @[to_dual self (reorder := f g, hf hg)]
 theorem isOpen_lt [TopologicalSpace β] {f g : β → α} (hf : Continuous f) (hg : Continuous g) :
     IsOpen { b | f b < g b } := by
-  simpa only [lt_iff_not_ge] using (isClosed_le hg hf).isOpen_compl
+  simpa only [lt_iff_not_ge] using! (isClosed_le hg hf).isOpen_compl
 
 @[to_dual isOpen_lt_prod']
 theorem isOpen_lt_prod : IsOpen { p : α × α | p.1 < p.2 } :=
@@ -621,7 +652,7 @@ theorem frontier_le_subset_eq (hf : Continuous f) (hg : Continuous g) :
   rw [frontier_eq_closure_inter_closure, closure_le_eq hf hg]
   rintro b ⟨hb₁, hb₂⟩
   refine le_antisymm hb₁ (closure_lt_subset_le hg hf ?_)
-  convert hb₂ using 2; simp only [not_le.symm]; rfl
+  convert! hb₂ using 2; simp only [not_le.symm]; rfl
 
 @[to_dual]
 theorem frontier_Iic_subset (a : α) : frontier (Iic a) ⊆ {a} :=

@@ -211,7 +211,7 @@ theorem dickson_one_one_zmod_p (p : ℕ) [Fact p.Prime] : dickson 1 (1 : ZMod p)
     have : CharP K p := by
       rw [← f.charP_iff_charP]
       infer_instance
-    haveI : Infinite K :=
+    have : Infinite K :=
       Infinite.of_injective (algebraMap (Polynomial (ZMod p)) (FractionRing (Polynomial (ZMod p))))
         (IsFractionRing.injective _ _)
     refine ⟨K, ?_, ?_, ?_⟩ <;> infer_instance
@@ -245,7 +245,7 @@ theorem dickson_one_one_zmod_p (p : ℕ) [Fact p.Prime] : dickson 1 (1 : ZMod p)
         simpa [φ, eval_X, eval_one, eval_pow, eval_sub, sub_zero, eval_add, eval_mul,
           mul_zero, sq, zero_add, one_ne_zero]
       classical
-        convert (φ.roots ∪ {0}).toFinset.finite_toSet using 1
+        convert! (φ.roots ∪ {0}).toFinset.finite_toSet using 1
         ext1 y
         simp only [φ, Multiset.mem_toFinset, Set.mem_setOf_eq, Finset.mem_coe, Multiset.mem_union,
           mem_roots hφ, IsRoot, eval_add, eval_sub, eval_pow, eval_mul, eval_X, eval_C, eval_one,

@@ -19,7 +19,7 @@ This module defines the Laplacian matrix of a graph, and proves some of its elem
 * `SimpleGraph.degMatrix`: The degree matrix of a simple graph
 * `SimpleGraph.lapMatrix`: The Laplacian matrix of a simple graph, defined as the difference
   between the degree matrix and the adjacency matrix.
-* `isPosSemidef_lapMatrix`: The Laplacian matrix is positive semidefinite.
+* `posSemidef_lapMatrix`: The Laplacian matrix is positive semidefinite.
 * `card_connectedComponent_eq_finrank_ker_toLin'_lapMatrix`:
   The number of connected components in a graph
   is the dimension of the nullspace of its Laplacian matrix.
@@ -196,6 +196,7 @@ lemma linearIndependent_lapMatrix_ker_basis_aux :
   obtain ⟨i, h'⟩ : ∃ i : V, G.connectedComponentMk i = c := Quot.exists_rep c
   exact h' ▸ congrFun h0 i
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma top_le_span_range_lapMatrix_ker_basis_aux :
     ⊤ ≤ Submodule.span ℝ (Set.range (lapMatrix_ker_basis_aux G)) := by
   intro x _
