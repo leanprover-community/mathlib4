@@ -128,7 +128,7 @@ theorem induction_on {motive : Homogenization k P → Prop} (x : Homogenization 
     (h : ∀ (v : V) (c : k) (p : P), motive (ofVector v + c • ofPoint p)) : motive x := by
   specialize h x.1 x.2 (Classical.arbitrary P)
   change motive (x.1 + x.2 • (Classical.arbitrary P -ᵥ Classical.arbitrary P), 0 + x.2 * 1) at h
-  simpa using h
+  simpa using! h
 
 /-- Every element of the homogenization can be written in the form `ofVector v + c • ofPoint p`,
 where `p` can be chosen arbitrarily. -/
