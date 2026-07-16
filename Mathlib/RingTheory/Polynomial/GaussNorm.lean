@@ -10,6 +10,7 @@ public import Mathlib.RingTheory.PowerSeries.GaussNorm
 
 /-!
 # Gauss norm for polynomials
+
 This file defines the Gauss norm for polynomials. Given a polynomial `p` in `R[X]`, a function
 `v : R → ℝ` and a real number `c`, the Gauss norm is defined as the supremum of the set of all
 values of `v (p.coeff i) * c ^ i` for all `i` in the support of `p`.
@@ -150,6 +151,7 @@ lemma gaussNorm_zero_right : p.gaussNorm v 0 = v (p.coeff 0) := by
     · aesop (add norm (by simp [gaussNorm, Finset.sup'_le_iff]))
     · grind [p.le_gaussNorm v (le_refl 0) 0]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `v` is a nonnegative function with `v 0 = 0` and `c` is nonnegative, there exists a minimal
 index `i` such that the Gauss norm of `p` at `c` is attained at `i`. -/
 lemma exists_min_eq_gaussNorm (p : R[X]) (hc : 0 ≤ c) :

@@ -176,7 +176,7 @@ theorem indiscreteTopology [IndiscreteTopology Y] {f : X → Y} (hf : IsInducing
     IndiscreteTopology X where
   eq_top := by
     cases IndiscreteTopology.eq_top Y
-    letI : TopologicalSpace Y := ⊤
+    let : TopologicalSpace Y := ⊤
     rw [hf.eq_induced, induced_top]
 
 theorem nontrivialTopology [NontrivialTopology X] {f : X → Y} (hf : IsInducing f) :

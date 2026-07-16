@@ -303,6 +303,7 @@ lemma isPushout : IsPushout (S.ι ▷ (T : SSet)) ((S : SSet) ◁ T.ι)
     (prodIso _ _ ≪≫ whiskerLeftIso _ (topIso Y))
     (Iso.refl _) rfl rfl rfl rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma preimage_β_hom : (unionProd S T).preimage (β_ _ _).hom = unionProd T S := by
   ext n ⟨x, y⟩
