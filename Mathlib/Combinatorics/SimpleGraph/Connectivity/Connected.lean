@@ -241,7 +241,7 @@ theorem Reachable.exists_isPath_forall_isPath_length_le_length [Finite G.edgeSet
     (fun u' v' p hp ↦ u' = u ∧ v' = v ∧ p.IsPath) ⟨u, v, p₀, hp₀.isTrail, rfl, rfl, hp₀⟩]
 
 /-- The equivalence relation on vertices given by `SimpleGraph.Reachable`. -/
-@[implicit_reducible]
+@[instance_reducible]
 def reachableSetoid : Setoid V := Setoid.mk _ G.reachable_is_equivalence
 
 /-- A graph is preconnected if every pair of vertices is reachable from one another. -/

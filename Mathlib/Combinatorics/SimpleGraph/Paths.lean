@@ -366,6 +366,19 @@ theorem IsCycle.isPath_dropLast {p : G.Walk u u} (h : p.IsCycle) : p.dropLast.Is
 theorem IsPath.dropLast (hp : p.IsPath) : p.dropLast.IsPath :=
   hp.take _
 
+theorem IsCycle.isPath_drop {u n} {p : G.Walk u u} (h : p.IsCycle) (hn : 0 < n) :
+    (p.drop n).IsPath := by
+  replace h : (p.drop 1).IsPath := h.isPath_tail
+  rw [← Nat.add_sub_of_le hn, drop_add_eq]
+  simp [h.drop (n - 1)]
+
+theorem IsCycle.isPath_take {u n} {p : G.Walk u u} (h : p.IsCycle) (hn : n < p.length) :
+    (p.take n).IsPath := by
+  replace h : (p.take (p.length - 1)).IsPath := h.isPath_dropLast
+  suffices ((p.take (p.length - 1)).take n).IsPath by
+    rwa [take_take, isPath_copy, show min (p.length - 1) n = n by omega] at this
+  exact h.take n
+
 variable (G) in
 /-- In a graph with finitely-many edges, for a satisfiable property of trails there exists a longest
 trail satisfying that property. -/
@@ -1159,6 +1172,7 @@ namespace Walk
 variable {G} {u v : V} {H : SimpleGraph V}
 variable {p : G.Walk u v}
 
+set_option backward.isDefEq.respectTransparency.types false in
 protected theorem IsPath.transfer (hp) (pp : p.IsPath) :
     (p.transfer H hp).IsPath := by
   induction p with
@@ -1167,6 +1181,7 @@ protected theorem IsPath.transfer (hp) (pp : p.IsPath) :
     simp only [Walk.transfer, cons_isPath_iff, support_transfer _] at pp ⊢
     exact ⟨ih _ pp.1, pp.2⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 protected theorem IsCycle.transfer {q : G.Walk u u} (qc : q.IsCycle) (hq) :
     (q.transfer H hq).IsCycle := by
   cases q with

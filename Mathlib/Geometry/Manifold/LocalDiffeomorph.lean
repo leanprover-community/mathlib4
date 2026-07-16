@@ -380,9 +380,6 @@ def IsLocalDiffeomorph.diffeomorphOfBijective
       have : y = (Φ x) x := ((hgInverse.2 y).congr (hfx hx)).mp rfl
       exact this ▸ (Φ x).map_source hx }
 
-@[deprecated (since := "2025-12-19")]
-alias IsLocalDiffeomorph.diffeomorph_of_bijective := IsLocalDiffeomorph.diffeomorphOfBijective
-
 end Basic
 
 section Differential
