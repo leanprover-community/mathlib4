@@ -613,9 +613,8 @@ include hf in
 theorem iterated_deriv [CompleteSpace E] {n : ℕ} : MeromorphicOn (_root_.deriv^[n] f) U :=
   fun z hz ↦ (hf z hz).iterated_deriv
 
-include hf in
 /-- If `f` is meromorphic on a set, then so is its logarithmic derivative. -/
-protected theorem logDeriv [CompleteSpace 𝕜'] {f : 𝕜 → 𝕜'} :
+protected theorem logDeriv [CompleteSpace 𝕜'] {f : 𝕜 → 𝕜'} {hf : MeromorphicOn f U} :
     MeromorphicOn (logDeriv f) U := hf.deriv.div hf
 
 end arithmetic
