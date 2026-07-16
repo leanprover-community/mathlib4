@@ -366,6 +366,19 @@ theorem IsCycle.isPath_dropLast {p : G.Walk u u} (h : p.IsCycle) : p.dropLast.Is
 theorem IsPath.dropLast (hp : p.IsPath) : p.dropLast.IsPath :=
   hp.take _
 
+theorem IsCycle.isPath_drop {u n} {p : G.Walk u u} (h : p.IsCycle) (hn : 0 < n) :
+    (p.drop n).IsPath := by
+  replace h : (p.drop 1).IsPath := h.isPath_tail
+  rw [← Nat.add_sub_of_le hn, drop_add_eq]
+  simp [h.drop (n - 1)]
+
+theorem IsCycle.isPath_take {u n} {p : G.Walk u u} (h : p.IsCycle) (hn : n < p.length) :
+    (p.take n).IsPath := by
+  replace h : (p.take (p.length - 1)).IsPath := h.isPath_dropLast
+  suffices ((p.take (p.length - 1)).take n).IsPath by
+    rwa [take_take, isPath_copy, show min (p.length - 1) n = n by omega] at this
+  exact h.take n
+
 /-- There exists a trail of maximal length in a non-empty graph on finite edges. -/
 lemma exists_isTrail_forall_isTrail_length_le_length (G : SimpleGraph V) [N : Nonempty V]
     [Finite G.edgeSet] :
