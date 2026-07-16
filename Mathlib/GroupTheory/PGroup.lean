@@ -73,7 +73,7 @@ theorem of_card {n : ℕ} (hG : Nat.card G = p ^ n) : IsPGroup p G :=
 
 variable (p G) in
 theorem of_subsingleton [Subsingleton G] : IsPGroup p G :=
-  of_card (n := 0) <| by simp
+  of_card (n := 0) (by simp)
 
 theorem of_bot : IsPGroup p (⊥ : Subgroup G) :=
   .of_subsingleton p _
@@ -97,7 +97,7 @@ protected theorem mono {q : ℕ} (hpq : p ∣ q) (hp : IsPGroup p G) : IsPGroup 
   exact fun g ↦ hp g |>.imp fun k hk ↦ hk.trans <| pow_dvd_pow_of_dvd hpq k
 
 theorem of_pow {n : ℕ} (h : IsPGroup (p ^ n) G) : IsPGroup p G :=
-  fun g ↦ h g |>.imp' (n * ·) <| by simp [pow_mul]
+  fun g ↦ (h g).imp' (n * ·) <| by simp [pow_mul]
 
 theorem iff_card [Fact p.Prime] [Finite G] : IsPGroup p G ↔ ∃ n : ℕ, Nat.card G = p ^ n := by
   simp_rw [isPGroup_iff_card_dvd_pow, Nat.dvd_prime_pow Fact.out]

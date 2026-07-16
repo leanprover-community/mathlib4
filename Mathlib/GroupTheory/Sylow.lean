@@ -121,7 +121,7 @@ theorem coe_ofCard [Finite G] {p : ℕ} [Fact p.Prime] (H : Subgroup G)
   rfl
 
 theorem eq_top_of_zero (H : Sylow 0 G) : (H : Subgroup G) = ⊤ :=
-  H.is_maximal' (.zero _) le_top |>.symm
+  (H.is_maximal' (.zero _) le_top).symm
 
 theorem eq_bot_of_one (H : Sylow 1 G) : (H : Subgroup G) = ⊥ :=
   have := isPGroup_one_iff_subsingleton.mp H.isPGroup'
