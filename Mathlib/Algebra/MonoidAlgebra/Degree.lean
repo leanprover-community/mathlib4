@@ -378,7 +378,6 @@ variable {D}
 @[simp]
 theorem leadingCoeff_single [Nonempty A] (hD : D.Injective) (a : A) (r : R) :
     (single a r).leadingCoeff D = r := by
-  classical
   rw [leadingCoeff, supDegree_single]
   split_ifs with hr
   · simp [hr]
@@ -441,6 +440,7 @@ lemma supDegree_mem_support (hD : D.Injective) (hp : p ≠ 0) :
   obtain ⟨a, ha, he⟩ := exists_supDegree_mem_support D hp
   rwa [he, Function.leftInverse_invFun hD]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma leadingCoeff_eq_zero (hD : D.Injective) : p.leadingCoeff D = 0 ↔ p = 0 := by
   refine ⟨(fun h => ?_).mtr, fun h => h ▸ leadingCoeff_zero⟩
@@ -513,6 +513,7 @@ lemma coeff_supDegree_add_supDegree (hD : D.Injective) (hadd : ∀ a1 a2, D (a1 
 @[deprecated (since := "2026-06-18")]
 alias apply_supDegree_add_supDegree := coeff_supDegree_add_supDegree
 
+set_option backward.isDefEq.respectTransparency false in
 lemma supDegree_mul
     (hD : D.Injective) (hadd : ∀ a1 a2, D (a1 + a2) = D a1 + D a2)
     (hpq : leadingCoeff D p * leadingCoeff D q ≠ 0)

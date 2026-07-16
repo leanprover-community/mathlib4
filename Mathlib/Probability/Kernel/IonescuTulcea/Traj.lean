@@ -594,6 +594,7 @@ theorem traj_eq_prod (a : ℕ) :
     all_goals fun_prop
   all_goals fun_prop
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem traj_map_updateFinset {n : ℕ} (x : Π i : Iic n, X i) :
     (traj κ n x).map (updateFinset · (Iic n) x) = traj κ n x := by
   nth_rw 2 [traj_eq_prod]
