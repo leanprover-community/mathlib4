@@ -89,7 +89,7 @@ proved once in an arbitrary commutative ring satisfying the relations of `R`
 `linear_combination`, and then transported along algebra maps.
 
 The generators are given short names in each successive algebra (`aB`, `bB`, `aA`, `bA`) and
-in the tensor square (`aaT`, `bbT`, `u₁`, `v₁`, `u₂`, `v₂`, `l₁`, `l₂`).  These are `abbrev`s,
+in the tensor square (`a₁`, `b₁`, `u₁`, `v₁`, `u₂`, `v₂`, `l₁`, `l₂`).  These are `abbrev`s,
 so that they unfold definitionally; their only purpose is to keep the statements of the
 polynomial certificates and of the coproduct construction readable.
 
@@ -520,17 +520,17 @@ abbrev left : A →ₐ[R] A ⊗[R] A := Algebra.TensorProduct.includeLeft
 abbrev right : A →ₐ[R] A ⊗[R] A := Algebra.TensorProduct.includeRight
 
 /-- The image of `a` in `A ⊗[R] A`. -/
-abbrev aaT : A ⊗[R] A := left aA
+abbrev a₁ : A ⊗[R] A := left aA
 
 /-- The image of `b` in `A ⊗[R] A`. -/
-abbrev bbT : A ⊗[R] A := left bA
+abbrev b₁ : A ⊗[R] A := left bA
 
-private theorem right_aA : right aA = aaT := by
+private theorem right_aA : right aA = a₁ := by
   change (1 : A) ⊗ₜ[R] aA = aA ⊗ₜ[R] (1 : A)
   rw [show aA = a • (1 : A) from Algebra.algebraMap_eq_smul_one a]
   exact (TensorProduct.tmul_smul a 1 1).trans (TensorProduct.smul_tmul' a 1 1).symm
 
-private theorem right_bA : right bA = bbT := by
+private theorem right_bA : right bA = b₁ := by
   change (1 : A) ⊗ₜ[R] bA = bA ⊗ₜ[R] (1 : A)
   rw [show bA = b • (1 : A) from Algebra.algebraMap_eq_smul_one b]
   exact (TensorProduct.tmul_smul b 1 1).trans (TensorProduct.smul_tmul' b 1 1).symm
@@ -548,10 +548,10 @@ abbrev u₂ : A ⊗[R] A := right U
 abbrev v₂ : A ⊗[R] A := right V
 
 /-- The image of `lambda` in the left tensor factor. -/
-abbrev l₁ : A ⊗[R] A := (1 + aaT * u₁) * (1 + bbT * v₁)
+abbrev l₁ : A ⊗[R] A := (1 + a₁ * u₁) * (1 + b₁ * v₁)
 
 /-- The image of `lambda` in the right tensor factor. -/
-abbrev l₂ : A ⊗[R] A := (1 + aaT * u₂) * (1 + bbT * v₂)
+abbrev l₂ : A ⊗[R] A := (1 + a₁ * u₂) * (1 + b₁ * v₂)
 
 /-- The proposed coproduct of `V`. -/
 def deltaV : A ⊗[R] A := v₁ * l₂ + v₂
@@ -560,26 +560,26 @@ def deltaV : A ⊗[R] A := v₁ * l₂ + v₂
 def deltaU : A ⊗[R] A := u₁ + l₁ * u₂
 
 private theorem delta_relations :
-    deltaV ^ 2 = aaT ^ 2 * deltaV ∧
-      deltaU ^ 2 = aaT * bbT * deltaU - bbT ^ 2 * deltaV := by
+    deltaV ^ 2 = a₁ ^ 2 * deltaV ∧
+      deltaU ^ 2 = a₁ * b₁ * deltaU - b₁ ^ 2 * deltaV := by
   obtain ⟨ha₁, hb₁, hab₁, hv₁', hu₁'⟩ := mapped_relations (S := A ⊗[R] A) left
   obtain ⟨_, _, _, hv₂', hu₂'⟩ := mapped_relations (S := A ⊗[R] A) right
   simp only [right_aA, right_bA] at hv₂' hu₂'
   exact law_relations_generic _ _ _ _ _ _ ha₁ hb₁ hab₁ hv₁' hu₁' hv₂' hu₂'
 
 private theorem delta_lambda :
-    (1 + aaT * deltaU) * (1 + bbT * deltaV) = l₁ * l₂ := by
+    (1 + a₁ * deltaU) * (1 + b₁ * deltaV) = l₁ * l₂ := by
   obtain ⟨ha₁, hb₁, hab₁, hv₁', -⟩ := mapped_relations (S := A ⊗[R] A) left
   obtain ⟨-, -, -, hv₂', hu₂'⟩ := mapped_relations (S := A ⊗[R] A) right
   simp only [right_aA, right_bA] at hv₂' hu₂'
   exact law_lambda_generic _ _ _ _ _ _ ha₁ hb₁ hab₁ hv₁' hv₂' hu₂'
 
-private theorem aaT_smul : aaT = a • (1 : A ⊗[R] A) := by
+private theorem a₁_smul : a₁ = a • (1 : A ⊗[R] A) := by
   change (aA ⊗ₜ[R] (1 : A)) = a • (1 : A ⊗[R] A)
   rw [show aA = a • (1 : A) from Algebra.algebraMap_eq_smul_one a]
   exact TensorProduct.smul_tmul' a 1 1
 
-private theorem bbT_smul : bbT = b • (1 : A ⊗[R] A) := by
+private theorem b₁_smul : b₁ = b • (1 : A ⊗[R] A) := by
   change (bA ⊗ₜ[R] (1 : A)) = b • (1 : A ⊗[R] A)
   rw [show bA = b • (1 : A) from Algebra.algebraMap_eq_smul_one b]
   exact TensorProduct.smul_tmul' b 1 1
@@ -595,11 +595,11 @@ theorem comul_U : comul U = deltaU := mkAlgHom_U _ _ _ _
 
 theorem comul_V : comul V = deltaV := mkAlgHom_V _ _ _ _
 
-theorem comul_aA : comul aA = aaT := by
-  rw [comul.commutes, Algebra.algebraMap_eq_smul_one, ← aaT_smul]
+theorem comul_aA : comul aA = a₁ := by
+  rw [comul.commutes, Algebra.algebraMap_eq_smul_one, ← a₁_smul]
 
-theorem comul_bA : comul bA = bbT := by
-  rw [comul.commutes, Algebra.algebraMap_eq_smul_one, ← bbT_smul]
+theorem comul_bA : comul bA = b₁ := by
+  rw [comul.commutes, Algebra.algebraMap_eq_smul_one, ← b₁_smul]
 
 theorem left_lambda : left lambda = l₁ := by
   simp only [lambda, map_mul, map_add, map_one]
