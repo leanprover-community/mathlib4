@@ -162,7 +162,7 @@ theorem Set.Finite.convexHull_eq_image {E : Type*} [AddCommGroup E] [Module R E]
     haveI := hs.fintype
     (⇑(∑ x : s, (LinearMap.proj (R := R) x).smulRight x.1)) '' stdSimplex R s := by
   classical
-  letI := hs.fintype
+  let := hs.fintype
   rw [← convexHull_basis_eq_stdSimplex, LinearMap.image_convexHull, ← Set.range_comp]
   apply congr_arg
   aesop

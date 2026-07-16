@@ -171,11 +171,11 @@ theorem LieAlgebra.isEngelian_of_subsingleton [Subsingleton L] : LieAlgebra.IsEn
 theorem Function.Surjective.isEngelian {f : L →ₗ⁅R⁆ L₂} (hf : Function.Surjective f)
     (h : LieAlgebra.IsEngelian.{u₁, u₂, u₄} R L) : LieAlgebra.IsEngelian.{u₁, u₃, u₄} R L₂ := by
   intro M _i1 _i2 _i3 _i4 h'
-  letI : LieRingModule L M := LieRingModule.compLieHom M f
-  letI : LieModule R L M := compLieHom M f
+  let : LieRingModule L M := LieRingModule.compLieHom M f
+  let : LieModule R L M := compLieHom M f
   have hnp : ∀ x, IsNilpotent (toEnd R L M x) := fun x => h' (f x)
   have surj_id : Function.Surjective (LinearMap.id : M →ₗ[R] M) := Function.surjective_id
-  haveI : LieModule.IsNilpotent L M := h M hnp
+  have : LieModule.IsNilpotent L M := h M hnp
   apply hf.lieModuleIsNilpotent _ surj_id
   aesop
 
@@ -250,7 +250,7 @@ theorem LieAlgebra.isEngelian_of_isNoetherian [IsNoetherian R L] : LieAlgebra.Is
         LieSubalgebra.mem_toSubmodule]
       exact LieSubalgebra.lie_mem K x.prop HX
     exact nontrivial_max_triv_of_isNilpotent R K (L' ⧸ K.toLieSubmodule)
-  haveI _i5 : IsNoetherian R L' := by
+  have _i5 : IsNoetherian R L' := by
     refine isNoetherian_of_surjective (LieHom.rangeRestrict (toEnd R L M)).toLinearMap ?_
     simp only [LinearMap.range_eq_top]
     exact LieHom.surjective_rangeRestrict (toEnd R L M)

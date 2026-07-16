@@ -80,6 +80,7 @@ instance vectorBundle : VectorBundle 𝕜 F (Bundle.Trivial B F) where
     (trivialization B F).symmL 𝕜 x = ContinuousLinearMap.id 𝕜 F := by
   ext; simp [trivialization_symm_apply B F]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma continuousLinearEquivAt_trivialization (x : B) :
     (trivialization B F).continuousLinearEquivAt 𝕜 x (mem_univ _) =
       ContinuousLinearEquiv.refl 𝕜 F := by

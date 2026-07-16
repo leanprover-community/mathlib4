@@ -18,8 +18,8 @@ variable {α β : Type*}
 namespace Finite
 
 instance [Finite α] [Finite β] : Finite (α ⊕ β) := by
-  haveI := Fintype.ofFinite α
-  haveI := Fintype.ofFinite β
+  have := Fintype.ofFinite α
+  have := Fintype.ofFinite β
   infer_instance
 
 theorem sum_left (β) [Finite (α ⊕ β)] : Finite α :=

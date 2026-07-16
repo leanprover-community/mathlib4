@@ -69,10 +69,8 @@ deriving Inhabited
 namespace TensorAlgebra
 
 -- This instance exists to avoid an nsmul diamond.
-@[nolint unusedArguments]
 instance {R A M} [CommSemiring R] [AddCommMonoid M] [CommSemiring A]
-    [Algebra R A] [Module R M] [Module A M]
-    [IsScalarTower R A M] :
+    [Algebra R A] [Module A M] :
     SMul R (TensorAlgebra A M) :=
   inferInstanceAs <| SMul R (RingCon.Quotient _)
 
@@ -91,14 +89,12 @@ instance instAlgebra {R A M} [CommSemiring R] [AddCommMonoid M] [CommSemiring A]
 example : (Semiring.toNatAlgebra : Algebra ℕ (TensorAlgebra R M)) = instAlgebra := rfl
 
 instance {R S A M} [CommSemiring R] [CommSemiring S] [AddCommMonoid M] [CommSemiring A]
-    [Algebra R A] [Algebra S A] [Module R M] [Module S M] [Module A M]
-    [IsScalarTower R A M] [IsScalarTower S A M] :
+    [Algebra R A] [Algebra S A] [Module A M] :
     SMulCommClass R S (TensorAlgebra A M) :=
   inferInstanceAs <| SMulCommClass R S (RingCon.Quotient _)
 
 instance {R S A M} [CommSemiring R] [CommSemiring S] [AddCommMonoid M] [CommSemiring A]
-    [SMul R S] [Algebra R A] [Algebra S A] [Module R M] [Module S M] [Module A M]
-    [IsScalarTower R A M] [IsScalarTower S A M] [IsScalarTower R S A] :
+    [SMul R S] [Algebra R A] [Algebra S A] [Module A M] [IsScalarTower R S A] :
     IsScalarTower R S (TensorAlgebra A M) :=
   inferInstanceAs <| IsScalarTower R S (RingCon.Quotient _)
 
@@ -129,6 +125,7 @@ theorem ringQuot_mkAlgHom_freeAlgebra_ι_eq_ι (m : M) :
   rw [ι]
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Given a linear map `f : M → A` where `A` is an `R`-algebra, `lift R f` is the unique lift
 of `f` to a morphism of `R`-algebras `TensorAlgebra R M → A`.
 -/
@@ -168,6 +165,7 @@ theorem lift_ι_apply {A : Type*} [Semiring A] [Algebra R A] (f : M →ₗ[R] A)
   conv_rhs => rw [← ι_comp_lift f]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem lift_unique {A : Type*} [Semiring A] [Algebra R A] (f : M →ₗ[R] A)
     (g : TensorAlgebra R M →ₐ[R] A) : g.toLinearMap.comp (ι R) = f ↔ g = lift R f := by
@@ -296,8 +294,8 @@ variable {R}
 @[simp]
 theorem ι_eq_algebraMap_iff (x : M) (r : R) : ι R x = algebraMap R _ r ↔ x = 0 ∧ r = 0 := by
   refine ⟨fun h => ?_, ?_⟩
-  · letI : Module Rᵐᵒᵖ M := Module.compHom _ ((RingHom.id R).fromOpposite mul_comm)
-    haveI : IsCentralScalar R M := ⟨fun r m => rfl⟩
+  · let : Module Rᵐᵒᵖ M := Module.compHom _ ((RingHom.id R).fromOpposite mul_comm)
+    have : IsCentralScalar R M := ⟨fun r m => rfl⟩
     have hf0 : toTrivSqZeroExt (ι R x) = (0, x) := lift_ι_apply _ _
     rw [h, AlgHom.commutes] at hf0
     have : r = 0 ∧ 0 = x := Prod.ext_iff.1 hf0

@@ -120,29 +120,28 @@ lemma UniformOnFun.ofFun_div [Div β] (f g : α → β) : ofFun 𝔖 (f / g) = o
 @[to_additive]
 instance {M : Type*} [Pow β M] : Pow (α →ᵤ β) M := inferInstanceAs <| Pow (α → β) M
 
-@[to_additive (attr := simp)]
-lemma UniformFun.toFun_smul {M : Type*} [Pow β M] (c : M) (f : α →ᵤ β) :
+@[to_additive (attr := simp) toFun_smul]
+lemma UniformFun.toFun_pow {M : Type*} [Pow β M] (c : M) (f : α →ᵤ β) :
     toFun (f ^ c) = toFun f ^ c :=
   rfl
 
-@[to_additive (attr := simp)]
-lemma UniformFun.ofFun_smul {M : Type*} [Pow β M] (c : M) (f : α → β) :
+@[to_additive (attr := simp) ofFun_smul]
+lemma UniformFun.ofFun_pow {M : Type*} [Pow β M] (c : M) (f : α → β) :
     ofFun (f ^ c) = ofFun f ^ c :=
   rfl
 
 @[to_additive]
 instance {M : Type*} [Pow β M] : Pow (α →ᵤ[𝔖] β) M := inferInstanceAs <| Pow (α → β) M
 
-@[to_additive (attr := simp)]
-lemma UniformOnFun.toFun_smul {M : Type*} [Pow β M] (c : M) (f : α →ᵤ[𝔖] β) :
+@[to_additive (attr := simp) toFun_smul]
+lemma UniformOnFun.toFun_pow {M : Type*} [Pow β M] (c : M) (f : α →ᵤ[𝔖] β) :
     toFun 𝔖 (f ^ c) = toFun 𝔖 f ^ c :=
   rfl
 
-@[to_additive (attr := simp)]
-lemma UniformOnFun.ofFun_smul {M : Type*} [Pow β M] (c : M) (f : α → β) :
+@[to_additive (attr := simp) ofFun_smul]
+lemma UniformOnFun.ofFun_pow {M : Type*} [Pow β M] (c : M) (f : α → β) :
     ofFun 𝔖 (f ^ c) = ofFun 𝔖 f ^ c :=
   rfl
-
 
 @[to_additive]
 instance [Monoid β] : Monoid (α →ᵤ β) := inferInstanceAs <| Monoid (α → β)

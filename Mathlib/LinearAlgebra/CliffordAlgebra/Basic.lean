@@ -82,7 +82,7 @@ instance {R A M} [CommSemiring R] [AddCommGroup M] [CommRing A]
     [IsScalarTower R A M] : SMul R (CliffordAlgebra Q) :=
   inferInstanceAs <| SMul R (RingCon.Quotient _)
 
-deriving instance Ring for CliffordAlgebra Q
+deriving instance Ring for CliffordAlgebra
 
 instance (priority := 900) instAlgebra' {R A M} [CommSemiring R] [AddCommGroup M] [CommRing A]
     [Algebra R A] [Module R M] [Module A M] (Q : QuadraticForm A M)
@@ -129,6 +129,7 @@ theorem comp_ι_sq_scalar (g : CliffordAlgebra Q →ₐ[R] A) (m : M) :
     g (ι Q m) * g (ι Q m) = algebraMap _ _ (Q m) := by
   rw [← map_mul, ι_sq_scalar, AlgHom.commutes]
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable (Q) in
 /-- Given a linear map `f : M →ₗ[R] A` into an `R`-algebra `A`, which satisfies the condition:
 `cond : ∀ m : M, f m * f m = Q(m)`, this is the canonical lift of `f` to a morphism of `R`-algebras

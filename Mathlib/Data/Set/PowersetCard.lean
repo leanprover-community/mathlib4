@@ -240,7 +240,6 @@ instance instInfinite [NeZero n] [Infinite α] : Infinite (powersetCard α n) :=
 
 protected theorem card :
     Nat.card (powersetCard α n) = (Nat.card α).choose n := by
-  classical
   cases fintypeOrInfinite α
   · simp [coe_finset]
   · rcases n with _ | n
