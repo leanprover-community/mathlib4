@@ -205,11 +205,6 @@ theorem restrictScalars_toSpanSingleton (x : ℂ) :
   dsimp
   apply mul_comm
 
-@[deprecated (since := "2025-12-18")] alias restrictScalars_one_smulRight' :=
-  restrictScalars_toSpanSingleton'
-@[deprecated (since := "2025-12-18")] alias restrictScalars_one_smulRight :=
-  restrictScalars_toSpanSingleton
-
 /-- The complex-conjugation function from `ℂ` to itself is an isometric linear equivalence. -/
 def conjLIE : ℂ ≃ₗᵢ[ℝ] ℂ :=
   ⟨conjAe.toLinearEquiv, norm_conj⟩
