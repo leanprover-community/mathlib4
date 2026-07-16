@@ -243,6 +243,7 @@ lemma partialTraj_eq_prod [∀ n, IsSFiniteKernel (κ n)] (a b : ℕ) :
 
 variable [∀ n, IsMarkovKernel (κ n)]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The pushforward of `partialTraj κ a (a + 1)` along the the point at time `a + 1` is `κ a`. -/
 lemma map_partialTraj_succ_self (a : ℕ) :
     (partialTraj κ a (a + 1)).map (fun x ↦ x ⟨a + 1, mem_Iic.2 le_rfl⟩) = κ a := by
@@ -346,7 +347,7 @@ lemma lmarginalPartialTraj_succ [∀ n, IsSFiniteKernel (κ n)] (a : ℕ)
   rw [lmarginalPartialTraj, partialTraj_succ_self, lintegral_map, lintegral_id_prod, lintegral_map]
   · congrm ∫⁻ x, f (fun i ↦ ?_) ∂_
     simp only [updateFinset, mem_Iic, IicProdIoc_def, frestrictLe_apply, piSingleton,
-      MeasurableEquiv.coe_mk, Equiv.coe_fn_mk, update]
+      MeasurableEquiv.coe_mk, update]
     split_ifs with h1 h2 h3 <;> try rfl
     all_goals lia
   all_goals fun_prop

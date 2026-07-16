@@ -301,7 +301,7 @@ instance [hm : Fact (m ≤ m0)] [CompleteSpace F] [hp : Fact (1 ≤ p)] :
 theorem isComplete_aestronglyMeasurable [hp : Fact (1 ≤ p)] [CompleteSpace F] (hm : m ≤ m0) :
     IsComplete {f : Lp F p μ | AEStronglyMeasurable[m] f μ} := by
   rw [← completeSpace_coe_iff_isComplete]
-  haveI : Fact (m ≤ m0) := ⟨hm⟩
+  have : Fact (m ≤ m0) := ⟨hm⟩
   change CompleteSpace (lpMeasSubgroup F m p μ)
   infer_instance
 

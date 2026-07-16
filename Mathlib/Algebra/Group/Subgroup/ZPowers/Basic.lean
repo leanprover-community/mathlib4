@@ -111,6 +111,7 @@ namespace Subgroup
 
 variable {s : Set G} {g : G}
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 instance zpowers_isMulCommutative (g : G) : IsMulCommutative (zpowers g) :=
   ⟨⟨fun ⟨_, _, h₁⟩ ⟨_, _, h₂⟩ ↦ by simp [← h₁, ← h₂, zpow_mul_comm]⟩⟩

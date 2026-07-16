@@ -66,8 +66,9 @@ theorem ext {σ τ : p.Gal} (h : ∀ x ∈ p.rootSet p.SplittingField, σ x = τ
         ((SetLike.ext_iff.mp ?_ x).mpr Algebra.mem_top)
   rwa [eq_top_iff, ← SplittingField.adjoin_rootSet, Algebra.adjoin_le_iff]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- If `p` splits in `F` then the `p.gal` is trivial. -/
-@[implicit_reducible]
+@[instance_reducible]
 def uniqueGalOfSplits (h : p.Splits) : Unique p.Gal where
   default := 1
   uniq f :=
@@ -77,24 +78,31 @@ def uniqueGalOfSplits (h : p.Splits) : Unique p.Gal where
           ((SetLike.ext_iff.mp ((IsSplittingField.splits_iff _ p).mp h) x).mp Algebra.mem_top)
       rw [AlgEquiv.commutes, AlgEquiv.commutes]
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance [h : Fact p.Splits] : Unique p.Gal :=
   uniqueGalOfSplits _ h.1
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance uniqueGalZero : Unique (0 : F[X]).Gal :=
   uniqueGalOfSplits _ (by simp)
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance uniqueGalOne : Unique (1 : F[X]).Gal :=
   uniqueGalOfSplits _ Splits.one
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance uniqueGalC (x : F) : Unique (C x).Gal :=
   uniqueGalOfSplits _ (by simp)
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance uniqueGalX : Unique (X : F[X]).Gal :=
   uniqueGalOfSplits _ Splits.X
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance uniqueGalXSubC (x : F) : Unique (X - C x).Gal :=
   uniqueGalOfSplits _ (Splits.X_sub_C _)
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance uniqueGalXPow (n : ℕ) : Unique (X ^ n : F[X]).Gal :=
   uniqueGalOfSplits _ (Splits.X_pow _)
 
@@ -230,7 +238,7 @@ theorem restrictDvd_def [Decidable (q = 0)] (hpq : p ∣ q) :
 theorem restrictDvd_surjective (hpq : p ∣ q) (hq : q ≠ 0) :
     Function.Surjective (restrictDvd hpq) := by
   classical
-  haveI := Fact.mk <|
+  have := Fact.mk <|
     (SplittingField.splits q).of_dvd (map_ne_zero hq) ((map_dvd_map' _).mpr hpq)
   simpa only [restrictDvd_def, dif_neg hq] using! restrict_surjective _ _
 
@@ -253,7 +261,7 @@ theorem restrictProd_injective : Function.Injective (restrictProd p q) := by
   ext (x hx)
   rw [rootSet_def, aroots_mul hpq] at hx
   rcases Multiset.mem_add.mp (Multiset.mem_toFinset.mp hx) with h | h
-  · haveI : Fact ((p.map (algebraMap F (p * q).SplittingField)).Splits) :=
+  · have : Fact ((p.map (algebraMap F (p * q).SplittingField)).Splits) :=
       ⟨(SplittingField.splits (p * q)).of_dvd (map_ne_zero hpq)
         ((map_dvd_map' _).mpr (dvd_mul_right p q))⟩
     have key :
@@ -264,7 +272,7 @@ theorem restrictProd_injective : Function.Injective (restrictProd p q) := by
       Subtype.ext_iff.mp (Equiv.apply_symm_apply (rootsEquivRoots p _) ⟨x, _⟩).symm
     rw [key, ← AlgEquiv.restrictNormal_commutes, ← AlgEquiv.restrictNormal_commutes]
     exact congr_arg _ (AlgEquiv.ext_iff.mp hfg.1 _)
-  · haveI : Fact ((q.map (algebraMap F (p * q).SplittingField)).Splits) :=
+  · have : Fact ((q.map (algebraMap F (p * q).SplittingField)).Splits) :=
       ⟨(SplittingField.splits (p * q)).of_dvd (map_ne_zero hpq)
         ((map_dvd_map' _).mpr (dvd_mul_left q p))⟩
     have key :
@@ -335,7 +343,7 @@ def restrictComp (hq : q.natDegree ≠ 0) : (p.comp q).Gal →* p.Gal :=
 
 theorem restrictComp_surjective (hq : q.natDegree ≠ 0) :
     Function.Surjective (restrictComp p q hq) := by
-  haveI : Fact (Splits (p.map (algebraMap F (SplittingField (comp p q))))) :=
+  have : Fact (Splits (p.map (algebraMap F (SplittingField (comp p q))))) :=
     ⟨splits_in_splittingField_of_comp p q hq⟩
   simpa only [restrictComp] using! restrict_surjective _ _
 
@@ -359,7 +367,7 @@ theorem prime_degree_dvd_card [CharZero F] (p_irr : Irreducible p) (p_deg : p.na
   have hα : IsIntegral F α := .of_finite F α
   use Module.finrank F⟮α⟯ p.SplittingField
   suffices (minpoly F α).natDegree = p.natDegree by
-    letI _ : AddCommGroup F⟮α⟯ := Ring.toAddCommGroup
+    let _ : AddCommGroup F⟮α⟯ := Ring.toAddCommGroup
     rw [← Module.finrank_mul_finrank F F⟮α⟯ p.SplittingField,
       IntermediateField.adjoin.finrank hα, this]
   suffices minpoly F α ∣ p by

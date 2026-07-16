@@ -195,7 +195,7 @@ lemma iSup_add [Nonempty ι] (f : ι → ℕ∞) : (⨆ i, f i) + a = ⨆ i, f i
 
 lemma add_biSup' {p : ι → Prop} (h : ∃ i, p i) (f : ι → ℕ∞) :
     a + ⨆ i, ⨆ _ : p i, f i = ⨆ i, ⨆ _ : p i, a + f i := by
-  haveI : Nonempty {i // p i} := nonempty_subtype.2 h
+  have : Nonempty {i // p i} := nonempty_subtype.2 h
   simp only [iSup_subtype', add_iSup]
 
 lemma biSup_add' {p : ι → Prop} (h : ∃ i, p i) (f : ι → ℕ∞) :
