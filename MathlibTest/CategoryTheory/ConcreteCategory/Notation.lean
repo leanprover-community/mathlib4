@@ -48,7 +48,7 @@ The parameters are recovered from the expected type.
 -/
 
 example : ModuleCat ℤ := ↧ℤ
-example (R : Type) [Ring R] (M : Type) [AddCommGroup M] [Module R M] : ModuleCat R := ↧M
+example {R M : Type*} [Ring R] [AddCommGroup M] [Module R M] : ModuleCat R := ↧M
 example (R : Type) [CommRing R] (A : Type) [CommRing A] [Algebra R A] : CommAlgCat R := ↧A
 example (R : Type) [CommRing R] (A : Type) [Ring A] [Algebra R A] : AlgCat R := ↧A
 example (R : Type) [Ring R] (M : Type) [AddCommGroup M] [Module R M] [Module.Finite R M] :
