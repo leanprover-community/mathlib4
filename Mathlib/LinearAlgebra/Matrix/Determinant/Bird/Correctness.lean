@@ -144,7 +144,6 @@ theorem paper_eq3 (i j : Fin n) (hEq1 : Eq1 A p) :
 
 /-! ## Equation (5): first-column Laplace expansion -/
 
-/-- Restricting Fin.cons i α to its successor indices recovers its tail α -/
 lemma fin_cons_succ (α : Fin (p + 1) → Fin n) (i : Fin n) :
     Fin.cons i α ∘ Fin.succ = α := by
   funext q
