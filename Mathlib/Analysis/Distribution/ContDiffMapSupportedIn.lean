@@ -939,8 +939,7 @@ noncomputable def integralAgainstBilinLM (B : F₁ →L[𝕜] F₂ →L[𝕜] F�
 lemma integralAgainstBilinLM_apply {B : F₁ →L[𝕜] F₂ →L[𝕜] F₃} {μ : Measure E} {φ : E → F₂}
     {f : 𝓓^{n}_{K}(E, F₁)} :
     integralAgainstBilinLM B μ φ f = open scoped Classical in
-      if IntegrableOn φ K μ then ∫ x, B (f x) (φ x) ∂μ else 0 := by
-  rfl
+      if IntegrableOn φ K μ then ∫ x, B (f x) (φ x) ∂μ else 0 := rfl
 
 lemma integralAgainstBilinLM_eq_integral {B : F₁ →L[𝕜] F₂ →L[𝕜] F₃} {μ : Measure E} {φ : E → F₂}
     (hφ : IntegrableOn φ K μ) {f : 𝓓^{n}_{K}(E, F₁)} :

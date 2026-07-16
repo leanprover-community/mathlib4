@@ -503,8 +503,7 @@ end CommShift
 lemma shiftFunctorIso_ofHasShiftOfFullyFaithful (a : A) :
     letI := hF.hasShift s i
     letI := CommShift.ofHasShiftOfFullyFaithful hF s i
-    F.commShiftIso a = i a := by
-  rfl
+    F.commShiftIso a = i a := rfl
 
 end hasShiftOfFullyFaithful
 

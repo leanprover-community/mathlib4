@@ -236,8 +236,6 @@ def uliftFunctor : GrpCat.{v} ⥤ GrpCat.{max v u} where
   obj X := GrpCat.of (ULift.{u, v} X)
   map {_ _} f := GrpCat.ofHom <|
     MulEquiv.ulift.symm.toMonoidHom.comp <| f.hom.comp MulEquiv.ulift.toMonoidHom
-  map_id X := by rfl
-  map_comp {X Y Z} f g := by rfl
 
 end GrpCat
 
@@ -464,8 +462,6 @@ def uliftFunctor : CommGrpCat.{v} ⥤ CommGrpCat.{max v u} where
   obj X := CommGrpCat.of (ULift.{u, v} X)
   map {_ _} f := CommGrpCat.ofHom <|
     MulEquiv.ulift.symm.toMonoidHom.comp <| f.hom.comp MulEquiv.ulift.toMonoidHom
-  map_id X := by rfl
-  map_comp {X Y Z} f g := by rfl
 
 end CommGrpCat
 

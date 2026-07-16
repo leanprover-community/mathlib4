@@ -332,8 +332,7 @@ lemma isNilpotent_toEnd_sub_algebraMap [IsNoetherian R M] (χ : L → R) (x : L)
     _root_.IsNilpotent <| toEnd R L (genWeightSpace M χ) x - algebraMap R _ (χ x) := by
   have : toEnd R L (genWeightSpace M χ) x - algebraMap R _ (χ x) =
       (toEnd R L M x - algebraMap R _ (χ x)).restrict
-        (fun m hm ↦ sub_mem (LieSubmodule.lie_mem _ hm) (Submodule.smul_mem _ _ hm)) := by
-    rfl
+        (fun m hm ↦ sub_mem (LieSubmodule.lie_mem _ hm) (Submodule.smul_mem _ _ hm)) := rfl
   obtain ⟨k, hk⟩ := exists_genWeightSpace_le_ker_of_isNoetherian M χ x
   use k
   ext ⟨m, hm⟩

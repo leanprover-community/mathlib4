@@ -437,8 +437,7 @@ noncomputable def ofAlgEquiv : S ≃ₐ[S] AdicCompletion I S where
   commutes' _ := rfl
 
 @[simp]
-theorem ofAlgEquiv_apply (x : S) : ofAlgEquiv I x = of I S x := by
-  rfl
+theorem ofAlgEquiv_apply (x : S) : ofAlgEquiv I x = of I S x := rfl
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]

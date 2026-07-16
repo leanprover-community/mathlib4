@@ -78,8 +78,7 @@ theorem stirlingFirst_succ_right (n k : ℕ) (hn : n ≠ 0) :
   rfl
 
 theorem stirlingFirst_succ_succ (n k : ℕ) :
-    stirlingFirst (n + 1) (k + 1) = n * stirlingFirst n (k + 1) + stirlingFirst n k := by
-  rfl
+    stirlingFirst (n + 1) (k + 1) = n * stirlingFirst n (k + 1) + stirlingFirst n k := rfl
 
 theorem stirlingFirst_eq_zero_of_lt : ∀ {n k : ℕ}, n < k → stirlingFirst n k = 0
   | _, 0, hk => absurd hk (Nat.not_lt_zero _)

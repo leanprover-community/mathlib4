@@ -242,7 +242,7 @@ noncomputable def coinvariantsFinsuppLEquiv :
 
 @[simp]
 lemma coinvariantsFinsuppLEquiv_apply (x : Coinvariants (ρ.finsupp α)) :
-    coinvariantsFinsuppLEquiv ρ α x = coinvariantsToFinsupp ρ α x := by rfl
+    coinvariantsFinsuppLEquiv ρ α x = coinvariantsToFinsupp ρ α x := rfl
 
 end Finsupp
 
@@ -289,8 +289,7 @@ noncomputable def coinvariantsTprodLeftRegularLEquiv :
 
 @[simp]
 lemma coinvariantsTprodLeftRegularLEquiv_apply (x : (ρ.tprod (leftRegular k G)).Coinvariants) :
-    coinvariantsTprodLeftRegularLEquiv ρ x = ofCoinvariantsTprodLeftRegular ρ x := by
-  rfl
+    coinvariantsTprodLeftRegularLEquiv ρ x = ofCoinvariantsTprodLeftRegular ρ x := rfl
 
 end TensorProduct
 end Representation
@@ -393,8 +392,7 @@ noncomputable def coinvariantsAdjunction : coinvariantsFunctor.{w} k G ⊣ trivi
 theorem coinvariantsAdjunction_homEquiv_apply_hom {X : Rep.{w} k G} {Y : ModuleCat k}
     (f : (coinvariantsFunctor k G).obj X ⟶ Y) :
     ((coinvariantsAdjunction k G).homEquiv X Y f).hom.toLinearMap =
-    ((coinvariantsMk k G).app X ≫ f).hom := by
-  rfl
+    ((coinvariantsMk k G).app X ≫ f).hom := rfl
 
 set_option backward.defeqAttrib.useBackward true in
 @[simp]
@@ -514,8 +512,7 @@ noncomputable abbrev coinvariantsTensorFreeLEquiv :
 @[simp]
 lemma coinvariantsTensorFreeLEquiv_apply (x : (A ⊗ free k G α).ρ.Coinvariants) :
     DFunLike.coe (F := (A.ρ.tprod (Representation.free k G α)).Coinvariants →ₗ[k] α →₀ A)
-      (A.coinvariantsTensorFreeToFinsupp α) x = coinvariantsTensorFreeToFinsupp A α x := by
-  rfl
+      (A.coinvariantsTensorFreeToFinsupp α) x = coinvariantsTensorFreeToFinsupp A α x := rfl
 
 end Finsupp
 

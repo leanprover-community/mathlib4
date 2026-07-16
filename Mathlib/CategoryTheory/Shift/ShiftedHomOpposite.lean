@@ -92,8 +92,7 @@ lemma opEquiv'_symm_apply {n a : ℤ} (f : Opposite.op (Y⟦a⟧) ⟶ (Opposite.
 
 lemma opEquiv'_apply {a' : ℤ} (f : ShiftedHom X Y a') (n a : ℤ) (h : n + a = a') :
     opEquiv' n a a' h f =
-      opEquiv n (f ≫ (shiftFunctorAdd' C a n a' (by lia)).hom.app Y) := by
-  rfl
+      opEquiv n (f ≫ (shiftFunctorAdd' C a n a' (by lia)).hom.app Y) := rfl
 
 set_option backward.isDefEq.respectTransparency false in
 lemma opEquiv'_symm_op_opShiftFunctorEquivalence_counitIso_inv_app_op_shift

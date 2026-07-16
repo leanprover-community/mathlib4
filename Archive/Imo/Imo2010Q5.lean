@@ -230,7 +230,7 @@ theorem result : Reachable (single 5 (2010 ^ 2010 ^ 2010)) := by
   -- `m` is defined to avoid deep recursion in the kernel.
   -- See https://github.com/leanprover/lean4/issues/11713
   set m : ℕ := 2010
-  have hm : m = 2010 := by rfl
+  have hm : m = 2010 := rfl
   convert! ((quarter_target hm).push (show 3 < 5 by decide)).push (show 4 < 5 by decide)
   simp only [single_eq_same, tsub_self, Fin.reduceAdd, zero_add, single_inj]
   rw [← mul_assoc, show 2 * 2 = 4 by rfl, mul_comm, Nat.div_mul_cancel]

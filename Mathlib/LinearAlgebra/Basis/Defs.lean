@@ -536,8 +536,7 @@ theorem constr_apply (f : ι → M') (x : M) :
   rw [Finsupp.sum_mapDomain_index] <;> simp [add_smul]
 
 @[simp] theorem constr_symm_apply (f : M →ₗ[R] M') (i) :
-    (b.constr S).symm f i = f (b i) := by
-  rfl
+    (b.constr S).symm f i = f (b i) := rfl
 
 @[simp]
 theorem constr_basis (f : ι → M') (i : ι) : (constr (M' := M') b S f : M → M') (b i) = f i := by

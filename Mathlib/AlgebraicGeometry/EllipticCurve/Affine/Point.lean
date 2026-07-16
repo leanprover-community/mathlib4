@@ -517,8 +517,7 @@ lemma nonsingularPointEquiv_zero : nonsingularPointEquiv W' .zero = none :=
 
 @[simp]
 lemma nonsingularPointEquiv_some {x y : R} (h : W'.Nonsingular x y) :
-    W'.nonsingularPointEquiv (.some _ _ h) = .some ⟨⟨x, y⟩, h⟩ := by
-  rfl
+    W'.nonsingularPointEquiv (.some _ _ h) = .some ⟨⟨x, y⟩, h⟩ := rfl
 
 @[simp]
 lemma nonsingularPointEquiv_symm_none : W'.nonsingularPointEquiv.symm none = .zero :=
@@ -578,8 +577,7 @@ lemma pointEquiv_zero : W'.pointEquiv .zero = none :=
 
 @[simp]
 lemma pointEquiv_some {x y : R} (h : W'.Equation x y) :
-    pointEquiv W' (.mk h) = .some ⟨⟨x, y⟩, h⟩ := by
-  rfl
+    pointEquiv W' (.mk h) = .some ⟨⟨x, y⟩, h⟩ := rfl
 
 @[simp]
 lemma pointEquiv_symm_none : (pointEquiv W').symm none = .zero :=

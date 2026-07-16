@@ -87,7 +87,7 @@ def toAdicCompletion (σ R : Type*) [Finite σ] [CommRing R] :
         truncTotal_sub_truncTotal_mem_pow_idealOfVars h (le_refl _) _)
 
 lemma toAdicCompletion_apply_eq_mk_truncTotal {n : ℕ} {p : MvPowerSeries σ R} :
-    (toAdicCompletion σ R p).val n = truncTotal n p := by rfl
+    (toAdicCompletion σ R p).val n = truncTotal n p := rfl
 
 theorem coeff_toAdicCompletion_val_apply_out {x : σ →₀ ℕ} {p : MvPowerSeries σ R} {n : ℕ}
     (hx : degree x < n) : (Quotient.out (((toAdicCompletion σ R) p).val n)).coeff x =
@@ -116,7 +116,7 @@ def toAdicCompletionInv (σ R : Type*) [CommRing R]
 omit [Finite σ] in
 lemma coeff_toAdicCompletionInv {x : σ →₀ ℕ}
     {f : AdicCompletion (MvPolynomial.idealOfVars σ R) (MvPolynomial σ R)} :
-      coeff x (toAdicCompletionInv σ R f) = (f.val (degree x + 1)).out.coeff x := by rfl
+      coeff x (toAdicCompletionInv σ R f) = (f.val (degree x + 1)).out.coeff x := rfl
 
 theorem mk_truncTotal_toAdicCompletionInv {n : ℕ}
     {f : AdicCompletion (MvPolynomial.idealOfVars σ R) (MvPolynomial σ R)} :
@@ -149,13 +149,12 @@ def toAdicCompletionAlgEquiv (σ R : Type*) [Finite σ] [CommRing R] :
 
 @[simp]
 lemma toAdicCompletionAlgEquiv_apply (p : MvPowerSeries σ R) :
-    toAdicCompletionAlgEquiv σ R p = toAdicCompletion σ R p := by rfl
+    toAdicCompletionAlgEquiv σ R p = toAdicCompletion σ R p := rfl
 
 @[simp]
 lemma toAdicCompletionAlgEquiv_symm_apply
     (x : AdicCompletion (MvPolynomial.idealOfVars σ R) (MvPolynomial σ R)) :
-      (toAdicCompletionAlgEquiv σ R).symm x = toAdicCompletionInv σ R x := by
-  rfl
+      (toAdicCompletionAlgEquiv σ R).symm x = toAdicCompletionInv σ R x := rfl
 
 end toAdicCompletion
 

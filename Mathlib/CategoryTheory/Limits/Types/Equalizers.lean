@@ -79,8 +79,7 @@ noncomputable def equalizerIso : equalizer g h ≅ { x : Y // g x = h x } :=
 
 @[elementwise (attr := simp)]
 theorem equalizerIso_hom_comp_subtype :
-    (equalizerIso g h).hom ≫ ↾Subtype.val = equalizer.ι g h := by
-  rfl
+    (equalizerIso g h).hom ≫ ↾Subtype.val = equalizer.ι g h := rfl
 
 @[elementwise (attr := simp)]
 theorem equalizerIso_inv_comp_ι : (equalizerIso g h).inv ≫ equalizer.ι g h =

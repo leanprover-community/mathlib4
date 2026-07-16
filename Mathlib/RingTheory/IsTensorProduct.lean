@@ -846,8 +846,7 @@ noncomputable def IsPushout.cancelBaseChangeAlg : B ⊗[A] C ≃ₐ[S] S ⊗[R] 
 @[simp]
 lemma IsPushout.toLinearEquiv_cancelBaseChangeAlg :
     (IsPushout.cancelBaseChangeAlg R S A B C).toLinearEquiv =
-      IsPushout.cancelBaseChange R S A B C := by
-  rfl
+      IsPushout.cancelBaseChange R S A B C := rfl
 
 @[simp]
 lemma IsPushout.cancelBaseChangeAlg_tmul (c : C) :

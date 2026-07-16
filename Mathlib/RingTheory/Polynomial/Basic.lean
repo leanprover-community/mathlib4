@@ -122,8 +122,6 @@ def degreeLTEquiv (R) [Semiring R] (n : ℕ) : degreeLT R n ≃ₗ[R] Fin n → 
   map_smul' x p := by
     ext
     dsimp
-    rw [coeff_smul]
-    rfl
   left_inv := by
     rintro ⟨p, hp⟩
     ext1

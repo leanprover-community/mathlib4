@@ -635,7 +635,7 @@ noncomputable def restrictMonoidHom [AddCommGroup Y] {V : Set X} (h : V ⊆ U) :
 @[simp]
 lemma restrictMonoidHom_apply [AddCommGroup Y] {V : Set X} (D : locallyFinsuppWithin U Y)
     (h : V ⊆ U) :
-    restrictMonoidHom h D = D.restrict h := by rfl
+    restrictMonoidHom h D = D.restrict h := rfl
 
 /--
 Present a function with with finite support as a finsum of singleton indicator functions.
@@ -672,7 +672,7 @@ noncomputable def restrictLatticeHom [AddCommGroup Y] [Lattice Y] {V : Set X} (h
 @[simp]
 lemma restrictLatticeHom_apply [AddCommGroup Y] [Lattice Y] {V : Set X}
     (D : locallyFinsuppWithin U Y) (h : V ⊆ U) :
-    restrictLatticeHom h D = D.restrict h := by rfl
+    restrictLatticeHom h D = D.restrict h := rfl
 /--
 Restriction commutes with taking positive parts.
 -/

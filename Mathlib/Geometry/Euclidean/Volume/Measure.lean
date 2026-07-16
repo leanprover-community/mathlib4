@@ -347,6 +347,6 @@ theorem EuclideanGeometry.euclideanHausdorffMeasure_eq_lintegral (p : P) {v : V}
     let v' : (AffineSubspace.mk' p (ℝ ∙ v)).direction := ⟨v, by simp⟩
     suffices volume = ‖v'‖ₑ • volume.map f by simpa [v']
     exact volume_eq_of_finrank_eq_one hrank (by simpa [v'] using hv)
-  have hx (x : ℝ) : x • v +ᵥ p = g x := by rfl
+  have hx (x : ℝ) : x • v +ᵥ p = g x := rfl
   simp_rw [(AffineSubspace.mk' p (ℝ ∙ v)).euclideanHausdorffMeasure_eq_lintegral ht, hx,
     hm, lintegral_smul_measure, hg.lintegral_map, smul_eq_mul, hrank', AffineSubspace.direction_mk']

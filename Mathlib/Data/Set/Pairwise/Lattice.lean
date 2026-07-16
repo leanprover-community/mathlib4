@@ -148,8 +148,7 @@ noncomputable def biUnionEqSigmaOfDisjoint {s : Set ι} {f : ι → Set α} (h :
 @[simp]
 lemma coe_biUnionEqSigmaOfDisjoint_symm_apply {α ι : Type*} {s : Set ι}
     {f : ι → Set α} (h : s.PairwiseDisjoint f) (x : (i : s) × f i) :
-    ((Set.biUnionEqSigmaOfDisjoint h).symm x : α) = x.2 := by
-  rfl
+    ((Set.biUnionEqSigmaOfDisjoint h).symm x : α) = x.2 := rfl
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]

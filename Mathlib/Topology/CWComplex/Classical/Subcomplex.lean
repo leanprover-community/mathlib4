@@ -133,18 +133,15 @@ lemma CWComplex.Subcomplex.map_def [T2Space X] [CWComplex C] (E : Subcomplex C) 
 
 @[simp]
 lemma RelCWComplex.Subcomplex.openCell_eq [T2Space X] [RelCWComplex C D] (E : Subcomplex C) (n : ℕ)
-    (i : E.I n) : openCell (C := E) n i = openCell n (i : cell C n) := by
-  rfl
+    (i : E.I n) : openCell (C := E) n i = openCell n (i : cell C n) := rfl
 
 @[simp]
 lemma RelCWComplex.Subcomplex.closedCell_eq [T2Space X] [RelCWComplex C D] (E : Subcomplex C)
-    (n : ℕ) (i : E.I n) : closedCell (C := E) n i = closedCell n (i : cell C n) := by
-  rfl
+    (n : ℕ) (i : E.I n) : closedCell (C := E) n i = closedCell n (i : cell C n) := rfl
 
 @[simp]
 lemma RelCWComplex.Subcomplex.cellFrontier_eq [T2Space X] [RelCWComplex C D] (E : Subcomplex C)
-    (n : ℕ) (i : E.I n) : cellFrontier (C := E) n i = cellFrontier n (i : cell C n) := by
-  rfl
+    (n : ℕ) (i : E.I n) : cellFrontier (C := E) n i = cellFrontier n (i : cell C n) := rfl
 
 @[alias_in CWComplex.Subcomplex]
 instance RelCWComplex.Subcomplex.finiteType_subcomplex_of_finiteType [T2Space X]

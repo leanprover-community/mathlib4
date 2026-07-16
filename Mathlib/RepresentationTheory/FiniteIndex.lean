@@ -264,8 +264,7 @@ lemma coindResAdjunction_unit_app (A : Rep.{max w u v} k S) :
 lemma coindResAdjunction_homEquiv_apply (A : Rep.{max w u v} k S)
     {B : Rep k G} (f : coind S.subtype A ⟶ B) :
     (coindResAdjunction k S).homEquiv _ _ f =
-      indResHomEquiv S.subtype A B ((indCoindIso.{max w u v} A).hom ≫ f) := by
-  rfl
+      indResHomEquiv S.subtype A B ((indCoindIso.{max w u v} A).hom ≫ f) := rfl
 
 lemma coindResAdjunction_homEquiv_symm_apply (A : Rep.{max w u v} k S)
     {B : Rep k G} (f : A ⟶ res S.subtype B) :

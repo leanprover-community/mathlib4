@@ -774,8 +774,7 @@ protected lemma induce_refl (G : SimpleGraph V) (s : Set V) :
 
 @[simp]
 protected lemma induce_comp_induce :
-    (ψ.induce ψtr).comp (φ.induce φst) = (ψ.comp φ).induce (ψtr.comp φst) := by
-  rfl
+    (ψ.induce ψtr).comp (φ.induce φst) = (ψ.comp φ).induce (ψtr.comp φst) := rfl
 
 end induce
 

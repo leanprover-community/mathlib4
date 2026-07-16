@@ -375,8 +375,7 @@ lemma map_restrictAppIso_hom (M : Y.Modules) {U V : X.Opens}
     (hUV : Opposite.op V ⟶ .op U) :
     (M.restrict f).presheaf.map hUV ≫ (M.restrictAppIso f U).hom =
       (M.restrictAppIso f V).hom ≫
-      M.presheaf.map (.op <| homOfLE <| Scheme.Hom.image_mono _ (leOfHom hUV.unop)) := by
-  rfl
+      M.presheaf.map (.op <| homOfLE <| Scheme.Hom.image_mono _ (leOfHom hUV.unop)) := rfl
 
 @[elementwise (attr := simp), reassoc (attr := simp)]
 lemma restrictAppIso_inv_map (M : Y.Modules) {U V : X.Opens} (hUV : .op V ⟶ .op U) :

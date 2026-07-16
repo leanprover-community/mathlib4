@@ -144,13 +144,11 @@ theorem comap_mono (f : G →* H) {K L : FiniteIndexNormalSubgroup H} (h : K ≤
   fun _ hx ↦ h hx
 
 @[to_additive (attr := simp)]
-theorem comap_id (K : FiniteIndexNormalSubgroup G) : comap (MonoidHom.id G) K = K := by
-  rfl
+theorem comap_id (K : FiniteIndexNormalSubgroup G) : comap (MonoidHom.id G) K = K := rfl
 
 @[to_additive (attr := simp)]
 theorem comap_comp (f : G →* H) (g : H →* N) (K : FiniteIndexNormalSubgroup N) :
-    comap (g.comp f) K = comap f (comap g K) := by
-  rfl
+    comap (g.comp f) K = comap f (comap g K) := rfl
 
 end Comap
 

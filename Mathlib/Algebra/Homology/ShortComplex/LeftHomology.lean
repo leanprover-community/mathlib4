@@ -160,8 +160,7 @@ def ofIsColimitCokernelCofork (hg : S.g = 0) (c : CokernelCofork S.f) (hc : IsCo
   hπ := IsColimit.ofIsoColimit hc (Cofork.ext (Iso.refl _))
 
 @[simp] lemma ofIsColimitCokernelCofork_f' (hg : S.g = 0) (c : CokernelCofork S.f)
-    (hc : IsColimit c) : (ofIsColimitCokernelCofork S hg c hc).f' = S.f := by
-  rfl
+    (hc : IsColimit c) : (ofIsColimitCokernelCofork S hg c hc).f' = S.f := rfl
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in

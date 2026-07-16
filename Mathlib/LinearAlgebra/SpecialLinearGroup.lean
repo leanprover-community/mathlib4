@@ -288,12 +288,10 @@ theorem congr_linearEquiv_symm (e : V ≃ₗ[R] W) :
   rfl
 
 theorem congr_linearEquiv_trans (e : V ≃ₗ[R] W) (f : W ≃ₗ[R] X) :
-    (congr_linearEquiv e).trans (congr_linearEquiv f) = congr_linearEquiv (e.trans f) := by
-  rfl
+    (congr_linearEquiv e).trans (congr_linearEquiv f) = congr_linearEquiv (e.trans f) := rfl
 
 theorem congr_linearEquiv_refl :
-    congr_linearEquiv (LinearEquiv.refl R V) = MulEquiv.refl _ := by
-  rfl
+    congr_linearEquiv (LinearEquiv.refl R V) = MulEquiv.refl _ := rfl
 
 end SpecialLinearGroup
 
