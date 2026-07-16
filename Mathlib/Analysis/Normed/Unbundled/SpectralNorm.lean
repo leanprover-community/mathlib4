@@ -310,8 +310,9 @@ theorem max_norm_root_eq_spectralValue [DecidableEq L] {f : AlgebraNorm K L} (hf
     by_cases hm : m < p.natDegree
     · rw [spectralValueTerms_of_lt_natDegree _ hm]
       have h : 0 < (p.natDegree - m : ℝ) := by rw [sub_pos, Nat.cast_lt]; exact hm
-      rw [← rpow_le_rpow_iff (rpow_nonneg (norm_nonneg _) _) h_le h, ← rpow_mul (norm_nonneg _),
-        one_div_mul_cancel (ne_of_gt h), rpow_one, ← Nat.cast_sub (le_of_lt hm), rpow_natCast]
+      rw [← rpow_le_rpow_iff_left (rpow_nonneg (norm_nonneg _) _) h_le h,
+        ← rpow_mul (norm_nonneg _), one_div_mul_cancel (ne_of_gt h), rpow_one,
+        ← Nat.cast_sub (le_of_lt hm), rpow_natCast]
       have hps : card s = p.natDegree := by
         rw [← natDegree_map (algebraMap K L), ← mapAlg_eq_map, hp,
           natDegree_multiset_prod_X_sub_C_eq_card]

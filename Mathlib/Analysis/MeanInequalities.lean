@@ -903,9 +903,9 @@ theorem Lp_add_le (hp : 1 ≤ p) :
   have := NNReal.coe_le_coe.2
     (NNReal.Lp_add_le s (fun i => .mk _ (abs_nonneg (f i))) (fun i => .mk _ (abs_nonneg (g i))) hp)
   push_cast at this
-  refine le_trans (rpow_le_rpow ?_ (sum_le_sum fun i _ => ?_) ?_) this <;>
+  refine le_trans (rpow_le_rpow_left ?_ (sum_le_sum fun i _ => ?_) ?_) this <;>
     simp [sum_nonneg, rpow_nonneg, abs_nonneg, le_trans zero_le_one hp, abs_add_le,
-      rpow_le_rpow]
+      rpow_le_rpow_left]
 
 variable {f g}
 
@@ -1000,7 +1000,7 @@ theorem Lr_le_Lp_mul_Lq_tsum_of_nonneg (hpqr : p.HolderTriple q r) (hf : ∀ i, 
   have hg' : 0 ≤ ∑' i, g i ^ q := tsum_nonneg fun i ↦ rpow_nonneg (hg i) q
   have hr := hpqr.pos'
   convert
-    rpow_le_rpow_iff (tsum_nonneg fun i ↦ by positivity [hf i, hg i]) (by positivity)
+    rpow_le_rpow_iff_left (tsum_nonneg fun i ↦ by positivity [hf i, hg i]) (by positivity)
           (inv_eq_one_div r ▸ inv_pos.mpr hr) |>.mpr <|
       Lr_rpow_le_Lp_mul_Lq_tsum_of_nonneg hpqr hf hg hf_sum hg_sum
   rw [mul_rpow (rpow_nonneg hf' _) (rpow_nonneg hg' _), ← Real.rpow_mul hg', ← Real.rpow_mul hf']
