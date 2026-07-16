@@ -72,7 +72,7 @@ lemma IsTotallyNonneg.smul {M : Matrix ι ι R}
   change 0 ≤ (c • M.submatrix rows cols).det
   grind [det_smul, mul_nonneg, pow_nonneg, hM _]
 
-theorem IsTotallyNonneg.smul_iff {R : Type*} [CommRing R] [LinearOrder R] [IsStrictOrderedRing R]
+theorem IsTotallyNonneg_smul_iff {R : Type*} [CommRing R] [LinearOrder R] [IsStrictOrderedRing R]
     {M : Matrix ι ι R} {c : R} (hc : 0 < c) :
     (c • M).IsTotallyNonneg ↔ M.IsTotallyNonneg := by
   constructor
