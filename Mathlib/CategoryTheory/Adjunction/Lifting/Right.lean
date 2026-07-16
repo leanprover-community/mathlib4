@@ -108,7 +108,6 @@ We will show that this equalizer exists and that it forms the object map for a r
 def otherMap (X : B) : U'.obj (F.obj X) ⟶ U'.obj (F.obj (U.obj (F.obj X))) :=
   adj₂.unit.app _ ≫ U'.map (F.map (adj₁.unit.app _ ≫ (U.map (adj₂.counit.app _))))
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `(U'Fη_X, otherMap X)` is a coreflexive pair: in particular if `C` has coreflexive equalizers
 then this pair has an equalizer.
 -/

@@ -68,10 +68,6 @@ lemma isTightMeasureSet_iff_exists_isCompact_measure_compl_le :
   · obtain ⟨K, h1, h2⟩ := h ε hε
     exact ⟨Kᶜ, ⟨K, h1, subset_rfl⟩, fun A hA μ hμS ↦ (μ.mono hA).trans (h2 μ hμS)⟩
 
-@[deprecated (since := "2025-12-13")] alias
-IsTightMeasureSet_iff_exists_isCompact_measure_compl_le :=
-isTightMeasureSet_iff_exists_isCompact_measure_compl_le
-
 /-- Finite measures that are inner regular with respect to closed compact sets are tight. -/
 theorem isTightMeasureSet_singleton_of_innerRegularWRT [OpensMeasurableSpace 𝓧] [IsFiniteMeasure μ]
     (h : μ.InnerRegularWRT (fun s ↦ IsCompact s ∧ IsClosed s) MeasurableSet) :
