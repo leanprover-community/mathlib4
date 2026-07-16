@@ -294,24 +294,20 @@ theorem paper_eq3_eq5_off_diag (i j : Fin n) :
   -- so `sum_of_injOn` applies.
   symm
   refine Finset.sum_of_injOn (fun ⟨α, k⟩ ↦ ⟨k.removeNth α, α k⟩) ?_ ?_ ?_ ?_
-  · unfold Set.InjOn
-    simp only [Finset.coe_product, Finset.coe_univ, Set.mem_prod, Set.mem_univ, and_true,
-      Finset.mem_coe, Prod.mk.injEq, and_imp, Prod.forall, mem_S_iff]
+  · simp only [Set.InjOn, Finset.coe_product, Finset.coe_univ, Set.mem_prod, Set.mem_univ,
+      and_true, Finset.mem_coe, Prod.mk.injEq, and_imp, Prod.forall, mem_S_iff]
     intros α k hiα hi α' k' hiα' hj hremove hvalue
-    have hrange : Set.range α = Set.range α' := calc
-      Set.range α = Set.range (k.insertNth (α k) (k.removeNth α)) := by
-        rw [Fin.insertNth_self_removeNth]
-      _ = Set.insert (α k) (Set.range (k.removeNth α)) := by
-        rw [range_insertNth]
+    suffices hrange : Set.range α = Set.range α' by
+      rw [hiα.range_inj hiα'] at hrange
+      subst α'
+      exact ⟨rfl, hiα.injective hvalue⟩
+    calc
+      Set.range α = Set.insert (α k) (Set.range (k.removeNth α)) := by
+        rw [← range_insertNth, Fin.insertNth_self_removeNth]
       _ = Set.insert (α' k') (Set.range (k'.removeNth α')) := by
         rw [hvalue, hremove]
-      _ = Set.range (k'.insertNth (α' k') (k'.removeNth α')) := by
-        rw [range_insertNth]
       _ = Set.range α' := by
-        rw [Fin.insertNth_self_removeNth]
-    have hαα' := (hiα.range_inj hiα').mp hrange
-    subst α'
-    exact ⟨rfl, hiα.injective hvalue⟩
+        rw [← range_insertNth, Fin.insertNth_self_removeNth]
   · rintro ⟨α, t⟩ hα
     simp only [Finset.coe_product, Finset.coe_univ, Set.mem_prod, Set.mem_univ, and_true,
       Finset.mem_coe, Finset.coe_Ioi, Set.mem_Ioi, mem_S_iff] at hα ⊢
