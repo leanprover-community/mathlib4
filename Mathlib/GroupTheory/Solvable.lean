@@ -125,7 +125,7 @@ instance (priority := 100) isSolvable_of_subsingleton [Subsingleton G] : IsSolva
 
 variable {G}
 
-theorem solvable_of_ker_le_range {G' G'' : Type*} [Group G'] [Group G''] (f : G' →* G)
+theorem isSolvable_of_ker_le_range {G' G'' : Type*} [Group G'] [Group G''] (f : G' →* G)
     (g : G →* G'') (hfg : g.ker ≤ f.range) [hG' : IsSolvable G'] [hG'' : IsSolvable G''] :
     IsSolvable G := by
   obtain ⟨n, hn⟩ := id hG''
@@ -138,23 +138,32 @@ theorem solvable_of_ker_le_range {G' G'' : Type*} [Group G'] [Group G''] (f : G'
       (le_bot_iff.mp ((map_derivedSeries_le_derivedSeries g n).trans hn.le))).trans hfg
   | succ m hm => exact commutator_le_map_commutator hm hm
 
-theorem solvable_of_solvable_injective (hf : Function.Injective f) [IsSolvable G'] :
+@[deprecated (since := "2026-07-16")]
+alias solvable_of_ker_le_range := isSolvable_of_ker_le_range
+
+theorem isSolvable_of_isSolvable_injective (hf : Function.Injective f) [IsSolvable G'] :
     IsSolvable G :=
-  solvable_of_ker_le_range (1 : G' →* G) f ((f.ker_eq_bot hf).symm ▸ bot_le)
+  isSolvable_of_ker_le_range (1 : G' →* G) f ((f.ker_eq_bot hf).symm ▸ bot_le)
 
-instance subgroup_solvable_of_solvable (H : Subgroup G) [IsSolvable G] : IsSolvable H :=
-  solvable_of_solvable_injective H.subtype_injective
+@[deprecated (since := "2026-07-16")]
+alias solvable_of_solvable_injective := isSolvable_of_isSolvable_injective
 
-theorem solvable_of_surjective (hf : Function.Surjective f) [IsSolvable G] : IsSolvable G' :=
-  solvable_of_ker_le_range f (1 : G' →* G) (f.range_eq_top_of_surjective hf ▸ le_top)
+instance isSolvable_subgroup_of_isSolvable (H : Subgroup G) [IsSolvable G] : IsSolvable H :=
+  isSolvable_of_isSolvable_injective H.subtype_injective
 
-instance solvable_quotient_of_solvable (H : Subgroup G) [H.Normal] [IsSolvable G] :
+theorem isSolvable_of_surjective (hf : Function.Surjective f) [IsSolvable G] : IsSolvable G' :=
+  isSolvable_of_ker_le_range f (1 : G' →* G) (f.range_eq_top_of_surjective hf ▸ le_top)
+
+@[deprecated (since := "2026-07-16")]
+alias solvable_of_surjective := isSolvable_of_surjective
+
+instance isSolvable_quotient_of_isSolvable (H : Subgroup G) [H.Normal] [IsSolvable G] :
     IsSolvable (G ⧸ H) :=
-  solvable_of_surjective (QuotientGroup.mk'_surjective H)
+  isSolvable_of_surjective (QuotientGroup.mk'_surjective H)
 
-instance solvable_prod {G' : Type*} [Group G'] [IsSolvable G] [IsSolvable G'] :
+instance isSolvable_prod {G' : Type*} [Group G'] [IsSolvable G] [IsSolvable G'] :
     IsSolvable (G × G') :=
-  solvable_of_ker_le_range (MonoidHom.inl G G') (MonoidHom.snd G G') fun x hx =>
+  isSolvable_of_ker_le_range (MonoidHom.inl G G') (MonoidHom.snd G G') fun x hx =>
     ⟨x.1, Prod.ext rfl hx.symm⟩
 
 variable (G) in
@@ -178,7 +187,7 @@ theorem isSolvable_iff_commutator_lt [WellFoundedLT (Subgroup G)] :
     IsSolvable G ↔ ∀ H : Subgroup G, H ≠ ⊥ → ⁅H, H⁆ < H := by
   refine ⟨fun _ _ ↦ IsSolvable.commutator_lt_of_ne_bot, fun h ↦ ?_⟩
   suffices h : IsSolvable (⊤ : Subgroup G) from
-    solvable_of_surjective (MonoidHom.range_eq_top.mp (range_subtype ⊤))
+    isSolvable_of_surjective (MonoidHom.range_eq_top.mp (range_subtype ⊤))
   induction (⊤ : Subgroup G) using WellFoundedLT.induction with | ind H hH
   rcases eq_or_ne H ⊥ with rfl | h'
   · infer_instance
@@ -224,31 +233,40 @@ end IsSimpleGroup
 
 section PermNotSolvable
 
-theorem not_solvable_of_mem_derivedSeries {g : G} (h1 : g ≠ 1)
+theorem not_isSolvable_of_mem_derivedSeries {g : G} (h1 : g ≠ 1)
     (h2 : ∀ n : ℕ, g ∈ derivedSeries G n) : ¬IsSolvable G :=
   mt (isSolvable_def _).mp
     (not_exists_of_forall_not fun n h =>
       h1 (Subgroup.mem_bot.mp ((congr_arg (g ∈ ·) h).mp (h2 n))))
 
-theorem Equiv.Perm.fin_5_not_solvable : ¬IsSolvable (Equiv.Perm (Fin 5)) := by
+@[deprecated (since := "2026-07-16")]
+alias not_solvable_of_mem_derivedSeries := not_isSolvable_of_mem_derivedSeries
+
+theorem Equiv.Perm.not_isSolvable_fin_5 : ¬IsSolvable (Equiv.Perm (Fin 5)) := by
   let x : Equiv.Perm (Fin 5) := ⟨![1, 2, 0, 3, 4], ![2, 0, 1, 3, 4], by decide, by decide⟩
   let y : Equiv.Perm (Fin 5) := ⟨![3, 4, 2, 0, 1], ![3, 4, 2, 0, 1], by decide, by decide⟩
   let z : Equiv.Perm (Fin 5) := ⟨![0, 3, 2, 1, 4], ![0, 3, 2, 1, 4], by decide, by decide⟩
   have key : x = z * ⁅x, y * x * y⁻¹⁆ * z⁻¹ := by unfold x y z; decide
-  refine not_solvable_of_mem_derivedSeries (show x ≠ 1 by decide) fun n => ?_
+  refine not_isSolvable_of_mem_derivedSeries (show x ≠ 1 by decide) fun n => ?_
   induction n with
   | zero => exact mem_top x
   | succ n ih =>
     rw [key, (derivedSeries_normal _ _).mem_comm_iff, inv_mul_cancel_left]
     exact commutator_mem_commutator ih ((derivedSeries_normal _ _).conj_mem _ ih _)
 
-theorem Equiv.Perm.not_solvable (X : Type*) (hX : 5 ≤ Cardinal.mk X) :
+@[deprecated (since := "2026-07-16")]
+alias Equiv.Perm.fin_5_not_solvable := Equiv.Perm.not_isSolvable_fin_5
+
+theorem Equiv.Perm.not_isSolvable (X : Type*) (hX : 5 ≤ Cardinal.mk X) :
     ¬IsSolvable (Equiv.Perm X) := by
   intro h
   have key : Nonempty (Fin 5 ↪ X) := by
     rwa [← Cardinal.lift_mk_le, Cardinal.mk_fin, Cardinal.lift_natCast, Cardinal.lift_id]
   exact
-    Equiv.Perm.fin_5_not_solvable
-      (solvable_of_solvable_injective (Equiv.Perm.viaEmbeddingHom_injective (Nonempty.some key)))
+    Equiv.Perm.not_isSolvable_fin_5 (isSolvable_of_isSolvable_injective
+      (Equiv.Perm.viaEmbeddingHom_injective (Nonempty.some key)))
+
+@[deprecated (since := "2026-07-16")]
+alias Equiv.Perm.not_solvable := Equiv.Perm.not_isSolvable
 
 end PermNotSolvable
