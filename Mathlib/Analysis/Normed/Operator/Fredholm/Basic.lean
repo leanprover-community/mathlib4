@@ -252,8 +252,10 @@ private theorem exists_restrict_isInvertible_of_isQuasiInverse {u : E →L[𝕜]
   have v_mapsto : MapsTo v F₁ E₁ := fun x hx ↦ congr(v $hx)
   refine ⟨E₁, F₁, isClosed_eqLocus _ _, isClosed_eqLocus _ _, hvu, huv, u_mapsto, ?_⟩
   refine .of_inverse (g := v.restrict v_mapsto) ?_ ?_
-  · ext ⟨x, hx : x = u (v x)⟩; simp [← hx]
-  · ext ⟨x, hx : x = v (u x)⟩; simp [← hx]
+  · ext ⟨x, hx : x = u (v x)⟩
+    simp [coe_restrict_apply u_mapsto, coe_restrict_apply v_mapsto, ← hx]
+  · ext ⟨x, hx : x = v (u x)⟩
+    simp [coe_restrict_apply u_mapsto, coe_restrict_apply v_mapsto, ← hx]
 
 variable [CompleteSpace 𝕜]
   [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E]

@@ -408,7 +408,6 @@ noncomputable def addVal (R : Type u) [CommRing R] [IsDomain R] [IsDiscreteValua
 
 theorem addVal_def (r : R) (u : Rˣ) {ϖ : R} (hϖ : Irreducible ϖ) (n : ℕ) (hr : r = u * ϖ ^ n) :
     addVal R r = n := by
-  classical
   rw [addVal, multiplicity_addValuation_apply, hr, emultiplicity_eq_of_associated_left
       (associated_of_irreducible R hϖ (Classical.choose_spec (exists_prime R)).irreducible),
     emultiplicity_eq_of_associated_right (Associated.symm ⟨u, mul_comm _ _⟩),
@@ -454,7 +453,6 @@ theorem addVal_eq_top_iff {a : R} : addVal R a = ⊤ ↔ a = 0 := by
     exact addVal_zero
 
 theorem addVal_le_iff_dvd {a b : R} : addVal R a ≤ addVal R b ↔ a ∣ b := by
-  classical
   have hp := Classical.choose_spec (exists_prime R)
   constructor <;> intro h
   · by_cases ha0 : a = 0
@@ -510,6 +508,7 @@ lemma addVal_eq_iff_associated (x y : R) :
 
 variable (R)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The ideals of a discrete valuation ring are exactly the powers of the maximal ideal. -/
 @[simps apply]
 noncomputable def idealOrderIsoENat : Ideal R ≃o ENatᵒᵈ where
@@ -548,6 +547,7 @@ theorem idealOrderIsoENat_symm_apply_coe_of_irreducible (n : ℕ) {ϖ : R} (hϖ 
     (idealOrderIsoENat R).symm n = Ideal.span {ϖ ^ n} := by
   rw [idealOrderIsoENat_symm_apply_coe, hϖ.maximalIdeal_eq, span_singleton_pow]
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem coheight_pow_maximalIdeal (n : ℕ) : Order.coheight (maximalIdeal R ^ n) = n := by
   simpa only [Order.coheight_toDual, Order.height_enat] using!
     Order.coheight_orderIso (idealOrderIsoENat R).symm (.toDual n)
@@ -619,7 +619,7 @@ variable (R) in
 only takes two steps to terminate. Given `GCD(x,y)`, if `x ∣ y` then `y%x = 0` so we're done in one
 step; otherwise `y%x = y` and then `GCD(x,y) = GCD(y,x)` which brings us back to the first case.
 See `EuclideanDomain.to_principal_ideal_domain` for EuclideanDomain ⇒ PID. -/
-@[implicit_reducible]
+@[instance_reducible]
 def toEuclideanDomain : EuclideanDomain R where
   quotient := quotient
   quotient_zero x := by simp [quotient]

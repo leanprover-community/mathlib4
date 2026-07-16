@@ -26,6 +26,7 @@ namespace MvPolynomial
 
 variable {σ : Type*} (R : Type*) [CommRing R]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem transcendental_supported_polynomial_aeval_X {i : σ} {s : Set σ} (h : i ∉ s)
     {f : R[X]} (hf : Transcendental R f) :
     Transcendental (supported R s) (Polynomial.aeval (X i : MvPolynomial σ R) f) := by

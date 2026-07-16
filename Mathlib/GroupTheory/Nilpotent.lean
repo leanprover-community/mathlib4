@@ -962,7 +962,7 @@ theorem CommGroup.nilpotencyClass_le_one {G : Type*} [CommGroup G] :
 
 /-- Groups with nilpotency class at most one are abelian. -/
 @[to_additive /-- Additive groups with nilpotency class at most one are abelian. -/,
-  implicit_reducible]
+  instance_reducible]
 def commGroupOfNilpotencyClass [IsNilpotent G] (h : Group.nilpotencyClass G ≤ 1) : CommGroup G :=
   Group.commGroupOfCenterEqTop <| by
     rw [← upperCentralSeries_one]
@@ -1231,13 +1231,12 @@ variable [Finite G]
 theorem Group.isNilpotent_of_product_of_sylow_group
     (e : (∀ p : (Nat.card G).primeFactors, ∀ P : Sylow p G, (↑P : Subgroup G)) ≃* G) :
     IsNilpotent G := by
-  classical
-    let ps := (Nat.card G).primeFactors
-    have : ∀ (p : ps) (P : Sylow p G), IsNilpotent (↑P : Subgroup G) := by
-      intro p P
-      have : Fact (Nat.Prime ↑p) := Fact.mk <| Nat.prime_of_mem_primeFactors p.2
-      exact P.isPGroup'.isNilpotent
-    exact nilpotent_of_mulEquiv e
+  let ps := (Nat.card G).primeFactors
+  have : ∀ (p : ps) (P : Sylow p G), IsNilpotent (↑P : Subgroup G) := by
+    intro p P
+    have : Fact (Nat.Prime ↑p) := Fact.mk <| Nat.prime_of_mem_primeFactors p.2
+    exact P.isPGroup'.isNilpotent
+  exact nilpotent_of_mulEquiv e
 
 /-- A finite group is nilpotent iff the normalizer condition holds, and iff all maximal groups are
 normal and iff all Sylow groups are normal and iff the group is the direct product of its Sylow

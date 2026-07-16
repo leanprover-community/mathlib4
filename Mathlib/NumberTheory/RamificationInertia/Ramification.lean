@@ -68,6 +68,7 @@ noncomputable def ramificationIdx' : ℕ := sSup {n | map f p ≤ P ^ n}
 
 variable {p P}
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem ramificationIdx'_eq_find [DecidablePred fun n ↦ ∀ (k : ℕ), map f p ≤ P ^ k → k ≤ n]
     (h : ∃ n, ∀ k, map f p ≤ P ^ k → k ≤ n) :
     ramificationIdx' p P = Nat.find h := by
@@ -266,7 +267,6 @@ theorem ramificationIdx'_eq_normalizedFactors_count
 
 theorem ramificationIdx'_eq_multiplicity (hp : map f p ≠ ⊥) (hP : P.IsPrime) :
     ramificationIdx' p P = multiplicity P (Ideal.map f p) := by
-  classical
   by_cases hP₂ : P = ⊥
   · rw [hP₂, ← Ideal.zero_eq_bot, multiplicity_zero_eq_zero_of_ne_zero _ hp]
     exact Ideal.ramificationIdx'_of_not_le (mt le_bot_iff.mp hp)
@@ -283,7 +283,6 @@ theorem ramificationIdx'_eq_factors_count
 
 theorem ramificationIdx'_ne_zero (hp0 : map f p ≠ ⊥) (hP : P.IsPrime) (le : map f p ≤ P) :
     ramificationIdx' p P ≠ 0 := by
-  classical
   have hP0 : P ≠ ⊥ := by
     rintro rfl
     exact hp0 (le_bot_iff.mp le)
@@ -304,6 +303,7 @@ theorem ramificationIdx'_ne_zero_of_liesOver [IsDomain R] [IsTorsionFree R S]
 @[deprecated (since := "2026-07-01")] alias ramificationIdx_ne_zero_of_liesOver :=
   ramificationIdx'_ne_zero_of_liesOver
 
+set_option backward.isDefEq.respectTransparency.types false in
 open IsLocalRing in
 lemma ramificationIdx'_eq_one_iff
     {p : Ideal R} {P : Ideal S} [P.IsPrime]
@@ -397,7 +397,6 @@ theorem ramificationIdx'_algebra_tower [IsDedekindDomain S] [IsDedekindDomain T]
     (hfg : map (algebraMap R T) p ≠ ⊥) (hg : map (algebraMap S T) P ≤ Q) :
     ramificationIdx' p Q =
     ramificationIdx' p P * ramificationIdx' P Q := by
-  classical
   have hf0 : map (algebraMap R S) p ≠ ⊥ := by
     rw [IsScalarTower.algebraMap_eq R S T, ← map_map] at hfg
     exact ne_bot_of_map_ne_bot hfg

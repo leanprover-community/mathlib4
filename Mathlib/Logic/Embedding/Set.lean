@@ -45,6 +45,7 @@ namespace Embedding
 def optionElim {α β} (f : α ↪ β) (x : β) (h : x ∉ Set.range f) : Option α ↪ β :=
   ⟨Option.elim' x f, Option.injective_iff.2 ⟨f.2, h⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Equivalence between embeddings of `Option α` and a sigma type over the embeddings of `α`. -/
 @[simps]
 def optionEmbeddingEquiv (α β) : (Option α ↪ β) ≃ Σ f : α ↪ β, ↥(Set.range f)ᶜ where

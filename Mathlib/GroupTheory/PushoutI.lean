@@ -330,6 +330,7 @@ theorem prod_cons {i} (g : G i) (w : NormalWord d) (hmw : w.fstIdx ≠ some i)
 
 variable [DecidableEq ι] [∀ i, DecidableEq (G i)]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Given a word in `CoprodI`, if every letter is in the transversal and when
 we multiply by an element of the base group it still has this property,
 then the element of the base group we multiplied by was one. -/
@@ -453,6 +454,7 @@ theorem summand_smul_def' {i : ι} (g : G i) (w : NormalWord d) :
       { equivPair i w with
         head := g * (equivPair i w).head } := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable instance mulAction : MulAction (PushoutI φ) (NormalWord d) :=
   MulAction.ofEndHom <|
     lift
@@ -517,6 +519,7 @@ noncomputable def consRecOn {motive : NormalWord d → Sort _} (w : NormalWord d
           (h3 _ _ List.mem_cons_self)]
 
 
+set_option backward.isDefEq.respectTransparency false in
 theorem cons_eq_smul {i : ι} (g : G i)
     (w : NormalWord d) (hmw : w.fstIdx ≠ some i)
     (hgr : g ∉ (φ i).range) : cons g w hmw hgr = of (φ := φ) i g • w := by
@@ -563,7 +566,7 @@ theorem prod_injective {ι : Type*} {G : ι → Type*} [(i : ι) → Group (G i)
     {d : Transversal φ} : Function.Injective (prod : NormalWord d → PushoutI φ) := by
   let := Classical.decEq ι
   let := fun i => Classical.decEq (G i)
-  classical exact equiv.symm.injective
+  exact equiv.symm.injective
 
 instance : FaithfulSMul (PushoutI φ) (NormalWord d) :=
   ⟨fun h => by simpa using congr_arg prod (h empty)⟩
@@ -614,7 +617,6 @@ def Reduced (w : Word G) : Prop :=
 theorem Reduced.exists_normalWord_prod_eq (d : Transversal φ) {w : Word G} (hw : Reduced φ w) :
     ∃ w' : NormalWord d, w'.prod = ofCoprodI w.prod ∧
       w'.toList.map Sigma.fst = w.toList.map Sigma.fst := by
-  classical
   induction w using Word.consRecOn with
   | empty => exact ⟨empty, by simp, rfl⟩
   | cons i g w hIdx hg1 ih =>
