@@ -185,7 +185,7 @@ theorem map_jacobson_of_surjective {f : R →+* S} (hf : Function.Surjective f) 
   · refine
       sInf_le_sInf fun J hJ =>
         ⟨comap f J, ⟨⟨le_comap_of_map_le hJ.1, ?_⟩, map_comap_of_surjective f hf J⟩⟩
-    haveI : J.IsMaximal := hJ.right
+    have : J.IsMaximal := hJ.right
     exact comap_isMaximal_of_surjective f hf
   · refine sInf_le_sInf_of_subset_insert_top fun j hj => hj.recOn fun J hJ => ?_
     rw [← hJ.2]
@@ -218,7 +218,7 @@ theorem comap_jacobson_of_surjective {f : R →+* S} (hf : Function.Surjective f
         this⟩
   · simp_rw [comap_sInf, le_iInf_iff]
     intro J hJ
-    haveI : J.IsMaximal := hJ.right
+    have : J.IsMaximal := hJ.right
     exact sInf_le ⟨comap_mono hJ.left, comap_isMaximal_of_surjective _ hf⟩
 
 @[gcongr, mono]

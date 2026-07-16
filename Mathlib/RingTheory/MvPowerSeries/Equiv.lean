@@ -99,6 +99,7 @@ theorem coeff_toAdicCompletion_val_apply_out {x : σ →₀ ℕ} {p : MvPowerSer
       Ideal.Quotient.mk_out]
   exact hx
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem toAdicCompletion_coe (p : MvPolynomial σ R) :
     toAdicCompletion σ R p = .of (MvPolynomial.idealOfVars σ R) (MvPolynomial σ R) p := by
   symm; ext n

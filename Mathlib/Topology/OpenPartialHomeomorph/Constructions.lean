@@ -111,10 +111,10 @@ theorem prod_eq_prod_of_nonempty {eX eX' : OpenPartialHomeomorph X X'}
     {eY eY' : OpenPartialHomeomorph Y Y'} (h : (eX.prod eY).source.Nonempty) :
     eX.prod eY = eX'.prod eY' ↔ eX = eX' ∧ eY = eY' := by
   obtain ⟨⟨x, y⟩, -⟩ := id h
-  haveI : Nonempty X := ⟨x⟩
-  haveI : Nonempty X' := ⟨eX x⟩
-  haveI : Nonempty Y := ⟨y⟩
-  haveI : Nonempty Y' := ⟨eY y⟩
+  have : Nonempty X := ⟨x⟩
+  have : Nonempty X' := ⟨eX x⟩
+  have : Nonempty Y := ⟨y⟩
+  have : Nonempty Y' := ⟨eY y⟩
   simp_rw [OpenPartialHomeomorph.ext_iff, prod_apply, prod_symm_apply, prod_source, Prod.ext_iff,
     Set.prod_eq_prod_iff_of_nonempty h, forall_and, Prod.forall, forall_const,
     and_assoc, and_left_comm]
