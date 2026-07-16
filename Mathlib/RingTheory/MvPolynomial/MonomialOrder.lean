@@ -612,8 +612,6 @@ theorem degree_smul_of_isRegular {r : R} (hr : IsRegular r) {f : MvPolynomial σ
     m.degree (r • f) = m.degree f :=
   m.degree_smul_of_mem_nonZeroDivisors hr.mem_nonZeroDivisors
 
-@[deprecated (since := "2025-12-12")] alias degree_smul := degree_smul_of_isRegular
-
 theorem degree_prod_le {ι : Type*} {P : ι → MvPolynomial σ R} {s : Finset ι} :
     m.degree (∏ i ∈ s, P i) ≼[m] ∑ i ∈ s, m.degree (P i) := by
   classical
@@ -1021,8 +1019,6 @@ lemma sPolynomial_monomial_mul [NoZeroDivisors R] (p₁ p₂ : MvPolynomial σ R
     tsub_add_tsub_cancel (sup_le_sup (self_le_add_left _ _) (self_le_add_left _ _)) (by simp),
     tsub_add_eq_add_tsub le_sup_left, tsub_add_eq_add_tsub le_sup_right,
     add_comm d₁, add_comm d₂, add_tsub_add_eq_tsub_right, add_tsub_add_eq_tsub_right]
-
-@[deprecated (since := "2025-12-15")] alias sPolynomial_mul_monomial := sPolynomial_monomial_mul
 
 lemma sPolynomial_monomial_mul' [NoZeroDivisors R] (p₁ p₂ : MvPolynomial σ R) (d₁ d₂ : σ →₀ ℕ)
     (c₁ c₂ : R) :
