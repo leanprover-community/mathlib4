@@ -6,7 +6,7 @@ Authors: Hang Lu Su, Yaël Dillies
 module
 
 public import Mathlib.Algebra.Order.Group.Equiv
-public import Mathlib.Algebra.Order.Monoid.Orderable
+public import Mathlib.Algebra.Order.Monoid.Orderable.Defs
 public import Mathlib.Algebra.Order.Monoid.Prod
 
 /-!

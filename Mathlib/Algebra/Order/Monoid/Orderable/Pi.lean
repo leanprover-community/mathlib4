@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Order.Group.Equiv
 public import Mathlib.Algebra.Order.Group.PiLex
-public import Mathlib.Algebra.Order.Monoid.Orderable
+public import Mathlib.Algebra.Order.Monoid.Orderable.Defs
 public import Mathlib.SetTheory.Cardinal.Order
 
 /-!
