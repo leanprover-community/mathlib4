@@ -53,3 +53,26 @@ meta def isNonemptyDoc (doc : TacticDoc) : Bool :=
         return none
 
     return m!"tactic `{name}` missing documentation string"
+
+/-- Check tactics with the same user-facing name (usually: first syntax token) get a `@[tactic_alt]`
+attribute. -/
+@[env_linter] public meta def tacticAlt : Batteries.Tactic.Lint.Linter where
+  noErrorsFound := "No tactics sharing the same user-facing name."
+  errorsFound := "TACTICS ARE MISSING `@[tactic_alt]` ATTRIBUTES:"
+  test tac := do
+    let env ← getEnv
+    if !isTactic env tac || (alternativeOfTactic env tac).isSome then
+      return none
+    -- Find duplicates, those with the same user-facing name but that aren't declared
+    -- to be alternatives.
+    let docs ← Tactic.Doc.allTacticDocs
+    let some doc := docs.find? fun doc => doc.internalName == tac | return none
+    let name := doc.userName
+    let tacs := docs.filter
+      (·.userName == name && (alternativeOfTactic env doc.internalName).isNone)
+    -- If we have duplicates, complain.
+    if tacs.size <= 1 then return none
+    let tacNames := tacs.map (·.internalName)
+    return m!"tactic `{doc.userName}` has multiple declarations {tacNames} one of which should \
+    be marked as `@[tactic_alt]` of the other(s).\n\
+    Hint: you can use the `tactic_extension` command to extend the documentation."
