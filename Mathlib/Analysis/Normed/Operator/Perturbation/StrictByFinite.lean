@@ -75,7 +75,8 @@ Let `u : E → F` be a continuous linear map, and `A` a finite codimension close
 subspace of `E`. We want to show that `u` is strict with closed range if and only if
 its restriction `u.domRestrict A : A → F` is strict with closed range.
 
-We do the proof in five steps.
+We do the proof in five steps. Note that we have commented the whole proof, so hopefully
+you can follow the argument by reading the source code.
 -/
 
 /-!
