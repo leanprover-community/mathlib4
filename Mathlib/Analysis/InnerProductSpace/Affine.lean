@@ -62,6 +62,7 @@ theorem inner_vsub_vsub_right_eq_dist_sq_right_iff {a b c : P} :
     ⟪a -ᵥ c, b -ᵥ c⟫ = dist b c ^ 2 ↔ ⟪a -ᵥ b, b -ᵥ c⟫ = 0 := by
   rw [real_inner_comm, inner_vsub_vsub_right_eq_dist_sq_left_iff, real_inner_comm]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Squared distance between two points on lines from a common origin,
 given orthogonality of the direction vectors. -/
 theorem dist_sq_lineMap_lineMap_of_inner_eq_zero {a b c : P} (t₁ t₂ : ℝ)
@@ -75,6 +76,7 @@ theorem dist_sq_lineMap_lineMap_of_inner_eq_zero {a b c : P} (t₁ t₂ : ℝ)
       Real.norm_eq_abs, Real.norm_eq_abs, inner_smul_left, inner_smul_right, h_inner]
   simp only [mul_zero, sub_zero, mul_pow, sq_abs, ← dist_eq_norm_vsub' V]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Squared distance from `p` to a point on the line from `a` to `b`,
 given that `p -ᵥ a` is orthogonal to `b -ᵥ a`. -/
 theorem dist_sq_lineMap_of_inner_eq_zero {a b p : P} (t : ℝ)

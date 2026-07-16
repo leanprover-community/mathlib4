@@ -265,7 +265,7 @@ public theorem exists_lt_iInf_of_lt_iInf_of_sup
       (fun h1 ↦ ?_) (fun h2 ↦ ?_)
     · grw [mem_J1_iff, (monotone_sublevelLeft ⟨(z : F), h_mem_Y z⟩ htt'.le), h1]
     · grw [mem_J2_iff, (monotone_sublevelLeft ⟨(z : F), h_mem_Y z⟩ htt'.le), h2]
-  have this : IsPreconnected (Set.univ : Set (segment ℝ (y1 : F) y2)) := by
+  have : IsPreconnected (Set.univ : Set (segment ℝ (y1 : F) y2)) := by
     simpa [← Topology.IsInducing.subtypeVal.isPreconnected_image] using
       (convex_segment (y1 : F) y2).isPreconnected
   have hJ1 : IsClosed J1 := isClosed_setOf_sublevelLeft_subset ne_X kX hfy hfy'

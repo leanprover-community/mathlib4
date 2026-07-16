@@ -70,7 +70,7 @@ theorem infinite_prod : Infinite (α × β) ↔ Infinite α ∧ Nonempty β ∨ 
       H.elim (and_imp.2 <| @Prod.infinite_of_left α β) (and_imp.2 <| @Prod.infinite_of_right α β)⟩
   rw [and_comm]
   rcases Infinite.nonempty (α × β) with ⟨a, b⟩
-  contrapose! H; haveI := H.1 ⟨b⟩; haveI := H.2 ⟨a⟩
+  contrapose! H; have := H.1 ⟨b⟩; have := H.2 ⟨a⟩
   infer_instance
 
 instance Pi.infinite_of_left {ι : Sort*} {π : ι → Type*} [∀ i, Nontrivial <| π i] [Infinite ι] :
