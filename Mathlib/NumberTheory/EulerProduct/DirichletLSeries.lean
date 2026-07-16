@@ -233,8 +233,7 @@ theorem DirichletCharacter.eulerProduct_log_eq_LSeries (hs : 1 < s.re) :
       field_simp
     _ = ∑' n : {n : ℕ // IsPrimePow n}, χ n * Λ n / Real.log n * ((n : ℂ) ^ (-s)) := by
       rw [← tsum_primes_pow_eq (f := fun n ↦ χ n * Λ n / Real.log n * (n : ℂ)^(-s))]
-      · refine tsum_congr fun p ↦ tsum_congr fun k ↦ ?_
-        simp; ring
+      · exact tsum_congr fun p ↦ tsum_congr fun k ↦ (by simp; ring)
       · apply comp_injective _ Subtype.coe_injective
           (f := fun n : ℕ ↦ χ n * Λ n / Real.log n * (n : ℂ)^(-s))
         apply of_norm_bounded_eventually_nat (g := (↑· ^ (-s.re)))
