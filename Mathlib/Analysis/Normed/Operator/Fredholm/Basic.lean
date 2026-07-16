@@ -259,7 +259,6 @@ variable [CompleteSpace 𝕜]
   [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E]
   [IsTopologicalAddGroup F] [ContinuousSMul 𝕜 F]
 
-variable [T2Space F] in
 /-- Assume that `u : E →L[𝕜] F` restricts to an isomorphism between closed finite co-dimension
 subspaces `E₁` and `F₁`. Then `u` is Fredholm.
 
