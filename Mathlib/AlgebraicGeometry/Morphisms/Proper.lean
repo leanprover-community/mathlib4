@@ -49,14 +49,17 @@ lemma isProper_eq : @IsProper =
 
 namespace IsProper
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : MorphismProperty.RespectsIso @IsProper := by
   rw [isProper_eq]
   infer_instance
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance stableUnderComposition : MorphismProperty.IsStableUnderComposition @IsProper := by
   rw [isProper_eq]
   infer_instance
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : MorphismProperty.IsMultiplicative @IsProper := by
   rw [isProper_eq]
   infer_instance
@@ -65,10 +68,12 @@ instance [IsProper f] [IsProper g] : IsProper (f ≫ g) where
 
 instance (priority := 900) [IsFinite f] : IsProper f where
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance isStableUnderBaseChange : MorphismProperty.IsStableUnderBaseChange @IsProper := by
   rw [isProper_eq]
   infer_instance
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : IsZariskiLocalAtTarget @IsProper := by
   rw [isProper_eq]
   infer_instance
@@ -81,6 +86,7 @@ instance (f : X ⟶ Y) (V : Y.Opens) [IsProper f] : IsProper (f ∣_ V) where
 
 end IsProper
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma IsFinite.eq_isProper_inf_isAffineHom :
     @IsFinite = (@IsProper ⊓ @IsAffineHom : MorphismProperty _) := by
   have : (@IsAffineHom ⊓ @IsSeparated : MorphismProperty _) = @IsAffineHom :=
@@ -126,6 +132,7 @@ section GlobalSection
 
 variable (K : Type u) [Field K]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- If `f : X ⟶ Y` is universally closed and `Y` is affine,
 then the map on global sections is integral. -/
 theorem isIntegral_appTop_of_universallyClosed (f : X ⟶ Y) [UniversallyClosed f] [IsAffine Y] :
@@ -157,9 +164,9 @@ theorem finite_appTop_of_universallyClosed (f : X ⟶ (Spec <| .of K))
   have x : X := Nonempty.some inferInstance
   obtain ⟨_, ⟨U, hU, rfl⟩, hxU, -⟩ :=
     X.isBasis_affineOpens.exists_subset_of_mem_open (Set.mem_univ x) isOpen_univ
-  letI := ((Scheme.ΓSpecIso (.of K)).commRingCatIsoToRingEquiv.toMulEquiv.isField
+  let := ((Scheme.ΓSpecIso (.of K)).commRingCatIsoToRingEquiv.toMulEquiv.isField
     (Field.toIsField K)).toField
-  letI := (isField_of_universallyClosed K f).toField
+  let := (isField_of_universallyClosed K f).toField
   have : Nonempty U := ⟨⟨x, hxU⟩⟩
   apply RingHom.finite_of_algHom_finiteType_of_isJacobsonRing (A := Γ(X, U))
     (g := (X.presheaf.map (homOfLE le_top).op).hom)
