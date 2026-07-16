@@ -97,11 +97,11 @@ variable (M : Type u)
 theorem finite_of_fg_torsion [AddCommGroup M] [Module ℤ M] [Module.Finite ℤ M]
     (hM : Module.IsTorsion ℤ M) : _root_.Finite M := by
   rcases Module.equiv_directSum_of_isTorsion hM with ⟨ι, _, p, h, e, ⟨l⟩⟩
-  haveI : ∀ i : ι, NeZero (p i ^ e i).natAbs := fun i =>
+  have : ∀ i : ι, NeZero (p i ^ e i).natAbs := fun i =>
     ⟨Int.natAbs_ne_zero.mpr <| pow_ne_zero (e i) (h i).ne_zero⟩
-  haveI : ∀ i : ι, _root_.Finite <| ℤ ⧸ Submodule.span ℤ {p i ^ e i} := fun i =>
+  have : ∀ i : ι, _root_.Finite <| ℤ ⧸ Submodule.span ℤ {p i ^ e i} := fun i =>
     Finite.of_equiv _ (p i ^ e i).quotientSpanEquivZMod.symm.toEquiv
-  haveI : _root_.Finite (⨁ i, ℤ ⧸ (Submodule.span ℤ {p i ^ e i} : Submodule ℤ ℤ)) :=
+  have : _root_.Finite (⨁ i, ℤ ⧸ (Submodule.span ℤ {p i ^ e i} : Submodule ℤ ℤ)) :=
     Finite.of_equiv _ DFinsupp.equivFunOnFintype.symm
   exact Finite.of_equiv _ l.symm.toEquiv
 
@@ -141,7 +141,7 @@ theorem equiv_directSum_zmod_of_finite [Finite G] :
   · have : Unique (Fin Nat.zero →₀ ℤ) :=
       { uniq := by subsingleton }
     exact ⟨ι, fι, p, hp, e, ⟨f.trans AddEquiv.uniqueProd⟩⟩
-  · haveI := @Fintype.prodLeft _ _ _ (Fintype.ofEquiv G f.toEquiv) _
+  · have := @Fintype.prodLeft _ _ _ (Fintype.ofEquiv G f.toEquiv) _
     exact
       (Fintype.ofSurjective (fun f : Fin n.succ →₀ ℤ => f 0) fun a =>
             ⟨Finsupp.single 0 a, Finsupp.single_eq_same⟩).false.elim

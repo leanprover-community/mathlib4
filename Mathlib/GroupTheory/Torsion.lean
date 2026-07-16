@@ -73,7 +73,7 @@ end
 open Monoid
 
 /-- Torsion monoids are really groups. -/
-@[to_additive (attr := implicit_reducible)
+@[to_additive (attr := instance_reducible)
 /-- Torsion additive monoids are really additive groups. -/]
 noncomputable def IsMulTorsion.group [Monoid G] (tG : IsMulTorsion G) : Group G :=
   { ‹Monoid G› with
@@ -241,6 +241,7 @@ lemma torsion_prod : torsion (G × H) = (torsion G).prod (torsion H) := by
 
 variable {G}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Torsion submonoids are torsion. -/
 @[to_additive /-- Torsion additive submonoids are torsion. -/]
 theorem torsion.isMulTorsion : IsMulTorsion <| torsion G := fun ⟨x, n, npos, hn⟩ ↦

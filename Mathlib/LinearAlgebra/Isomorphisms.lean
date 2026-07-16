@@ -37,6 +37,8 @@ section IsomorphismLaws
 /-- The **first isomorphism law for modules**. The quotient of `M` by the kernel of `f` is linearly
 equivalent to the range of `f`. -/
 noncomputable def quotKerEquivRange : (M ⧸ LinearMap.ker f) ≃ₗ[R] LinearMap.range f :=
+  -- TODO: We should fix this definition so that `fₗ.quotKerEquivRange.toAddEquiv` is definitionally
+  -- equal to `QuotientAddGroup.quotientKerEquivRange f.toAddMonoidHom`.
   (LinearEquiv.ofInjective ((LinearMap.ker f).liftQ f <| le_rfl) <|
         ker_eq_bot.mp <| Submodule.ker_liftQ_eq_bot _ _ _ (le_refl (LinearMap.ker f))).trans
     (LinearEquiv.ofEq _ _ <| Submodule.range_liftQ _ _ _)
@@ -155,6 +157,7 @@ namespace Submodule
 
 variable (S T : Submodule R M) (h : S ≤ T)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The map from the third isomorphism theorem for modules: `(M / S) / (T / S) → M / T`. -/
 def quotientQuotientEquivQuotientAux (h : S ≤ T) : (M ⧸ S) ⧸ T.map S.mkQ →ₗ[R] M ⧸ T :=
   liftQ _ (mapQ S T LinearMap.id h)
@@ -173,6 +176,7 @@ theorem quotientQuotientEquivQuotientAux_mk (x : M ⧸ S) :
 theorem quotientQuotientEquivQuotientAux_mk_mk (x : M) :
     quotientQuotientEquivQuotientAux S T h (Quotient.mk (Quotient.mk x)) = Quotient.mk x := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Noether's third isomorphism theorem** for modules: `(M / S) / (T / S) ≃ M / T`. -/
 def quotientQuotientEquivQuotient : ((M ⧸ S) ⧸ T.map S.mkQ) ≃ₗ[R] M ⧸ T :=
   { quotientQuotientEquivQuotientAux S T h with

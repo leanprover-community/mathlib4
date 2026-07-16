@@ -61,7 +61,7 @@ instance functor_category_isIdempotentComplete [IsIdempotentComplete C] :
     IsIdempotentComplete (J ⥤ C) := by
   refine ⟨fun F p hp => ?_⟩
   have hC := (isIdempotentComplete_iff_hasEqualizer_of_id_and_idempotent C).mp inferInstance
-  haveI : ∀ j : J, HasEqualizer (𝟙 _) (p.app j) := fun j => hC _ _ (congr_app hp j)
+  have : ∀ j : J, HasEqualizer (𝟙 _) (p.app j) := fun j => hC _ _ (congr_app hp j)
   /- We construct the direct factor `Y` associated to `p : F ⟶ F` by computing
       the equalizer of the identity and `p.app j` on each object `(j : J)`. -/
   let Y : J ⥤ C :=
@@ -87,6 +87,7 @@ namespace KaroubiFunctorCategoryEmbedding
 
 variable {J C}
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- On objects, the functor which sends a formal direct factor `P` of a
 functor `F : J ⥤ C` to the functor `J ⥤ Karoubi C` which sends `(j : J)` to
 the corresponding direct factor of `F.obj j`. -/
@@ -101,6 +102,7 @@ def obj (P : Karoubi (J ⥤ C)) : J ⥤ Karoubi C where
         rw [NatTrans.comp_app] at h
         rw [reassoc_of% h, reassoc_of% h] }
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Tautological action on maps of the functor `Karoubi (J ⥤ C) ⥤ (J ⥤ Karoubi C)`. -/
 @[simps]
@@ -138,6 +140,7 @@ instance : (karoubiFunctorCategoryEmbedding J C).Faithful where
     ext j
     exact hom_ext_iff.mp (congr_app h j)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The composition of `(J ⥤ C) ⥤ Karoubi (J ⥤ C)` and `Karoubi (J ⥤ C) ⥤ (J ⥤ Karoubi C)`
 equals the functor `(J ⥤ C) ⥤ (J ⥤ Karoubi C)` given by the composition with
