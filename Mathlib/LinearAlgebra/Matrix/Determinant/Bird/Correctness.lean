@@ -94,18 +94,12 @@ theorem S_succ_eq_biUnion {p : ℕ} (i : Fin n) :
     S (p + 1) i = (Finset.Ioi i).biUnion fun k ↦ (S p k).image (Fin.cons k) := by
   ext α
   simp only [Finset.mem_biUnion, Finset.mem_image, Finset.mem_Ioi]
-  constructor
-  · intro hα
-    exists α 0
-    constructor
-    · rw [mem_S_iff] at hα
-      obtain ⟨_, hbounded⟩ := hα
-      exact hbounded 0
-    · exists Fin.tail α
-      constructor
-      · simp only [mem_S_iff_strictMono_cons, Fin.cons_self_tail] at hα ⊢
-        exact hα.comp Fin.strictMono_succ
-      · exact Fin.cons_self_tail α
+  refine ⟨fun hα ↦ ⟨α 0, ?_, Fin.tail α, ?_, Fin.cons_self_tail α⟩, ?_⟩
+  · rw [mem_S_iff] at hα
+    obtain ⟨_, hbound⟩ := hα
+    exact hbound 0
+  · simp only [mem_S_iff_strictMono_cons, Fin.cons_self_tail] at hα ⊢
+    exact hα.comp Fin.strictMono_succ
   · rintro ⟨k, hk, u, hu, rfl⟩
     simp only [mem_S_iff_strictMono_cons] at hu ⊢
     exact StrictMono.vecCons hu hk
