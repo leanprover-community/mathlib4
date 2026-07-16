@@ -347,7 +347,7 @@ instance Pi.locallyPathConnectedSpace_of_finite [Finite ι] {Z : ι → Type*}
 
 /-- A product of path-connected, locally path-connected spaces is locally path-connected. Note
 that an arbitrary product of locally path-connected spaces need not be locally path-connected, so
-the path-connectedness assumption cannot be dropped entirely (though it can be dropped for all but
+the path-connectedness assumption cannot be dropped entirely (though it can be dropped for
 finitely many factors, see `Pi.locallyPathConnectedSpace_of_finite_nonpathconnected`). -/
 instance Pi.locallyPathConnectedSpace {Z : ι → Type*} [∀ i, TopologicalSpace (Z i)]
     [∀ i, LocallyPathConnectedSpace (Z i)] [∀ i, PathConnectedSpace (Z i)] :

@@ -219,8 +219,8 @@ instance Pi.locallyConnectedSpace_of_finite [Finite ι] [∀ i, TopologicalSpace
 
 /-- A product of preconnected, locally connected spaces is locally connected. Note that an
 arbitrary product of locally connected spaces need not be locally connected, so the
-preconnectedness assumption cannot be dropped entirely (though it can be dropped for all but
-finitely many factors, see `Pi.locallyConnectedSpace_of_finite_nonpreconnected`). -/
+preconnectedness assumption cannot be dropped entirely (though it can be dropped for finitely
+many factors, see `Pi.locallyConnectedSpace_of_finite_nonpreconnected`). -/
 instance Pi.locallyConnectedSpace [∀ i, TopologicalSpace (X i)]
     [∀ i, LocallyConnectedSpace (X i)] [∀ i, PreconnectedSpace (X i)] :
     LocallyConnectedSpace (∀ i, X i) :=
