@@ -36,15 +36,12 @@ jobs:
       - name: Reconcile
         # Temporarily pinned to the head of leanprover-community/mathlib-ci#61
         # (GraphQL resource-limits fix); repoint to master once that merges.
-        uses: leanprover-community/mathlib-ci/.github/actions/zulip-emoji-reconcile@6a999d54f9138f23edab24c55109ee80948ccef2
+        uses: leanprover-community/mathlib-ci/.github/actions/zulip-emoji-reconcile@d90ed839d8da02c283936ae6de6664368640edc3
         with:
           config: .github/zulip-emoji-config.json
           sweep: true
-          # Bounded windows: the defaults (5000/5000) pull ~12k messages and
-          # ~3k PRs per sweep on this realm, costing ~1,000 GraphQL points --
-          # the entire hourly GITHUB_TOKEN budget of the repo.
-          sweep-messages: 2000
-          sweep-private-messages: 1000
+          # Sweep windows use the action defaults (2000 public / 1000 per
+          # private channel), sized from this realm's measured sweep cost.
           dry-run: ${{ inputs.dry-run }}
           zulip-api-key: ${{ secrets.ZULIP_API_KEY }}
           github-token: ${{ github.token }}
