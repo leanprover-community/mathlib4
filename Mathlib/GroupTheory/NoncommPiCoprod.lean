@@ -98,6 +98,7 @@ variable (hcomm : Pairwise fun i j => ∀ x y, Commute (ϕ i x) (ϕ j y))
 
 namespace MonoidHom
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The canonical homomorphism from a family of monoids. -/
 @[to_additive /-- The canonical homomorphism from a family of additive monoids. See also
 `LinearMap.lsum` for a linear version without the commutativity assumption. -/]
@@ -107,7 +108,6 @@ def noncommPiCoprod : (∀ i : ι, N i) →* M where
     apply (Finset.noncommProd_eq_pow_card _ _ _ _ _).trans (one_pow _)
     simp
   map_mul' f g := by
-    classical
     convert! @Finset.noncommProd_mul_distrib _ _ _ _ (fun i => ϕ i (f i)) (fun i => ϕ i (g i)) _ _ _
     · exact map_mul _ _ _
     · rintro i - j - h
@@ -115,6 +115,7 @@ def noncommPiCoprod : (∀ i : ι, N i) →* M where
 
 variable {hcomm}
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)]
 theorem noncommPiCoprod_mulSingle [DecidableEq ι] (i : ι) (y : N i) :
     noncommPiCoprod ϕ hcomm (Pi.mulSingle i y) = ϕ i y := by
@@ -184,6 +185,7 @@ lemma noncommPiCoprod_apply (h : (i : ι) → N i) :
       (Pairwise.set_pairwise (fun ⦃i j⦄ a ↦ hcomm a (h i) (h j)) _) := by
   dsimp only [MonoidHom.noncommPiCoprod, MonoidHom.coe_mk, OneHom.coe_mk]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Given monoid morphisms `φᵢ : Nᵢ → M` and `f : M → P`, if we have sufficient commutativity, then
 `f ∘ (∐ᵢ φᵢ) = ∐ᵢ (f ∘ φᵢ)` -/
@@ -232,16 +234,15 @@ theorem injective_noncommPiCoprod_of_iSupIndep [Fintype ι]
     {hcomm : Pairwise fun i j : ι => ∀ (x : H i) (y : H j), Commute (ϕ i x) (ϕ j y)}
     (hind : iSupIndep fun i => (ϕ i).range)
     (hinj : ∀ i, Function.Injective (ϕ i)) : Function.Injective (noncommPiCoprod ϕ hcomm) := by
-  classical
-    apply (MonoidHom.ker_eq_bot_iff _).mp
-    rw [eq_bot_iff]
-    intro f heq1
-    have : ∀ i, i ∈ Finset.univ → ϕ i (f i) = 1 :=
-      Subgroup.eq_one_of_noncommProd_eq_one_of_iSupIndep _ _ (fun _ _ _ _ h => hcomm h _ _)
-        _ hind (by simp) heq1
-    ext i
-    apply hinj
-    simp [this i (Finset.mem_univ i)]
+  apply (MonoidHom.ker_eq_bot_iff _).mp
+  rw [eq_bot_iff]
+  intro f heq1
+  have : ∀ i, i ∈ Finset.univ → ϕ i (f i) = 1 :=
+    Subgroup.eq_one_of_noncommProd_eq_one_of_iSupIndep _ _ (fun _ _ _ _ h => hcomm h _ _)
+      _ hind (by simp) heq1
+  ext i
+  apply hinj
+  simp [this i (Finset.mem_univ i)]
 
 @[to_additive]
 theorem independent_range_of_coprime_order
@@ -326,6 +327,7 @@ theorem noncommPiCoprod_mulSingle [DecidableEq ι]
     {hcomm : Pairwise fun i j : ι => ∀ x y : G, x ∈ H i → y ∈ H j → Commute x y} (i : ι) (y : H i) :
     noncommPiCoprod hcomm (Pi.mulSingle i y) = y := by apply MonoidHom.noncommPiCoprod_mulSingle
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem noncommPiCoprod_range
     {hcomm : Pairwise fun i j : ι => ∀ x y : G, x ∈ H i → y ∈ H j → Commute x y} :
