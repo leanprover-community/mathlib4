@@ -225,6 +225,14 @@ theorem IsIntegral.pow {x : B} (h : IsIntegral R x) (n : ℕ) : IsIntegral R (x 
   .of_mem_of_fg _ h.fg_adjoin_singleton _ <|
     Subalgebra.pow_mem _ (by exact Algebra.subset_adjoin rfl) _
 
+/-- An integer power of an integral element of a division ring over a field is integral;
+this generalizes `IsIntegral.inv` (the case `n = -1`) to all integer exponents. -/
+theorem IsIntegral.zpow {F D : Type*} [Field F] [DivisionRing D] [Algebra F D] {x : D}
+    (int : IsIntegral F x) (n : ℤ) : IsIntegral F (x ^ n) := by
+  obtain ⟨m, rfl | rfl⟩ := n.eq_nat_or_neg
+  · rw [zpow_natCast]; exact int.pow m
+  · rw [zpow_neg, zpow_natCast]; exact (int.pow m).inv
+
 theorem IsIntegral.nsmul {x : B} (h : IsIntegral R x) (n : ℕ) : IsIntegral R (n • x) :=
   h.smul n
 
