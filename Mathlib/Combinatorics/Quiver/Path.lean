@@ -336,6 +336,10 @@ protected theorem Reachable.rfl : Reachable a a := Reachable.refl _
 protected theorem Reachable.trans (hab : Reachable a b) (hbc : Reachable b c) : Reachable a c :=
   hab.elim fun p => hbc.elim fun q => ⟨p.comp q⟩
 
+instance : IsPreorder V Reachable where
+  refl := Reachable.refl
+  trans _ _ _ := Reachable.trans
+
 /-- A path witnesses that its target is reachable from its source. -/
 protected theorem Path.reachable (p : Path a b) : Reachable a b := ⟨p⟩
 
