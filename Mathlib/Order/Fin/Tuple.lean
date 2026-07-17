@@ -96,14 +96,8 @@ lemma Fin.strictMono_insertNth_iff (q : Fin (n + 1)) (x : α) (f : Fin n → α)
     · simpa using h <| (strictMono_succAbove _).lt_iff_lt.mp hab
 
 lemma Fin.strictMono_cons {f : Fin n → α} {a : α} :
-    StrictMono (Fin.cons a f) ↔ (∀ j, a < f j) ∧ StrictMono f := by
-  refine ⟨fun h ↦ ⟨fun j ↦ h (Fin.succ_pos j), h.comp Fin.strictMono_succ⟩, fun ⟨ha, hf⟩ ↦ ?_⟩
-  simp only [strictMono_iff_lt_succ, cons_succ]
-  cases n with
-  | zero => simp
-  | succ n =>
-    rw [forall_iff_succ]
-    aesop
+    StrictMono (Fin.cons a f) ↔ (∀ j, a < f j) ∧ StrictMono f :=
+  liftFun_cons (· < ·)
 
 @[simp] lemma Fin.strictMono_cons_zero_succ {f : Fin n → Fin (n + 1)} :
     StrictMono (Fin.cons 0 f) ↔ f = Fin.succ := by
