@@ -303,6 +303,8 @@ public register_option linter.style.header : Bool := {
   descr := "enable the header style linter"
 }
 
+/-- The text required by the `linter.style.header` linter as the second line of the copyright
+header. Defaults to the Apache LICENSE line used throughout Mathlib. -/
 public register_option linter.style.header.license : String := {
   defValue := "Released under Apache 2.0 license as described in the file LICENSE."
   descr := "The text required as the second line of the copyright header."
