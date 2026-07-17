@@ -86,21 +86,18 @@ export IsBiOrderable (exists_linearOrder_mulLeftMono_mulRightMono)
 
 variable {G : Type*} [Monoid G]
 
-/-- A linear order with monotone left multiplication makes a monoid left-orderable. -/
-@[to_additive /-- A linear order with monotone left addition makes an additive monoid
-left-orderable. -/]
+/-- A left-ordered monoid is left-orderable. -/
+@[to_additive /-- A left-ordered additive monoid is left-orderable. -/]
 instance [LinearOrder G] [MulLeftMono G] :
     IsLeftOrderable G := ⟨⟨‹_›, ‹_›⟩⟩
 
-/-- A linear order with monotone right multiplication makes a monoid right-orderable. -/
-@[to_additive /-- A linear order with monotone right addition makes an additive monoid
-right-orderable. -/]
+/-- A right-ordered monoid is right-orderable. -/
+@[to_additive /-- A right-ordered additive monoid is right-orderable. -/]
 instance [LinearOrder G] [MulRightMono G] :
     IsRightOrderable G := ⟨⟨‹_›, ‹_›⟩⟩
 
-/-- A linear order monotone under both multiplications makes a monoid bi-orderable. -/
-@[to_additive /-- A linear order monotone under both additions makes an additive monoid
-bi-orderable. -/]
+/-- A bi-ordered monoid is bi-orderable. -/
+@[to_additive /-- A bi-ordered additive monoid is bi-orderable. -/]
 instance [LinearOrder G] [MulLeftMono G] [MulRightMono G] :
     IsBiOrderable G := ⟨⟨‹_›, ‹_›, ‹_›⟩⟩
 
@@ -134,20 +131,20 @@ instance [IsBiOrderable G] : IsRightOrderable G := by
   obtain ⟨_, _, _⟩ := exists_linearOrder_mulLeftMono_mulRightMono G
   infer_instance
 
-/-- On a linearly ordered monoid with monotone left multiplication, strict monotonicity of left
-multiplication is equivalent to left-cancellativity. This is the precise sense in which the
-non-strict `MulLeftMono` used by `IsLeftOrderable` agrees with the strict `MulLeftStrictMono` on
-cancellative structures such as groups. -/
-@[to_additive /-- On a linearly ordered additive monoid with monotone left addition, strict
-monotonicity of left addition is equivalent to left-cancellativity. -/]
+/-- On a left-ordered monoid, strict monotonicity of left multiplication is equivalent to
+left-cancellativity. This is the precise sense in which the non-strict `MulLeftMono` used by
+`IsLeftOrderable` agrees with the strict `MulLeftStrictMono` on cancellative structures such as
+groups. -/
+@[to_additive /-- On a left-ordered additive monoid, strict monotonicity of left addition is
+equivalent to left-cancellativity. -/]
 theorem mulLeftStrictMono_iff_isLeftCancelMul [LinearOrder G] [MulLeftMono G] :
     MulLeftStrictMono G ↔ IsLeftCancelMul G :=
   ⟨fun _ ↦ MulLeftStrictMono.toIsLeftCancelMul, fun _ ↦ inferInstance⟩
 
-/-- On a linearly ordered monoid with monotone right multiplication, strict monotonicity of right
-multiplication is equivalent to right-cancellativity. -/
-@[to_additive /-- On a linearly ordered additive monoid with monotone right addition, strict
-monotonicity of right addition is equivalent to right-cancellativity. -/]
+/-- On a right-ordered monoid, strict monotonicity of right multiplication is equivalent to
+right-cancellativity. -/
+@[to_additive /-- On a right-ordered additive monoid, strict monotonicity of right addition is
+equivalent to right-cancellativity. -/]
 theorem mulRightStrictMono_iff_isRightCancelMul [LinearOrder G] [MulRightMono G] :
     MulRightStrictMono G ↔ IsRightCancelMul G :=
   ⟨fun _ ↦ MulRightStrictMono.toIsRightCancelMul, fun _ ↦ inferInstance⟩
