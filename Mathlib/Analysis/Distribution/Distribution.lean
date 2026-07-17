@@ -399,9 +399,6 @@ variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
 noncomputable instance instCoeToDistribution : Coe (E → F) 𝓓'^{n}(Ω, F) where
   coe f := toDistribution Ω f volume n
 
-theorem coe_def (f : E → F) : (f : 𝓓'^{n}(Ω, F)) = toDistribution Ω f volume n := rfl
-
-@[simp]
 theorem coe_apply {f : E → F} (hf : LocallyIntegrableOn f Ω volume) {φ : 𝓓^{n}(Ω, ℝ)} :
     (f : 𝓓'^{n}(Ω, F)) φ = ∫ x, φ x • f x :=
   toDistribution_apply hf
@@ -410,11 +407,9 @@ theorem coe_eq_zero {f : E → F} (hf : ¬ LocallyIntegrableOn f Ω volume) :
     (f : 𝓓'^{n}(Ω, F)) = 0 :=
   toDistribution_eq_zero hf
 
-@[simp]
 theorem coe_zero : ((0 : E → F) : 𝓓'^{n}(Ω, F)) = 0 :=
   toDistribution_zero
 
-@[simp]
 theorem coe_add {f g : E → F} (hf : LocallyIntegrableOn f Ω volume)
     (hg : LocallyIntegrableOn g Ω volume) :
     ((f + g : E → F) : 𝓓'^{n}(Ω, F)) = (f : 𝓓'^{n}(Ω, F)) + (g : 𝓓'^{n}(Ω, F)) :=
@@ -424,7 +419,6 @@ theorem coe_neg {f : E → F} :
     ((-f : E → F) : 𝓓'^{n}(Ω, F)) = -(f : 𝓓'^{n}(Ω, F)) :=
   toDistribution_neg
 
-@[simp]
 theorem coe_smul {f : E → F} (c : ℝ) :
     ((c • f : E → F) : 𝓓'^{n}(Ω, F)) = c • (f : 𝓓'^{n}(Ω, F)) :=
   toDistribution_smul c
