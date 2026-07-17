@@ -212,7 +212,7 @@ theorem integral_prod_swap (f : X × Y → H) {A : E →L[ℝ] F →L[ℝ] G} {B
   congr
   by_cases h : HasProd μ ν A; swap
   · simp [prod_eq_zero_of_not_hasProd, h, hasProd_flip_iff]
-  have : HasProd ν μ A.flip := hasProd_flip
+  have : HasProd ν μ A.flip := h.flip
   apply (prod_eq_of_forall_apply_prod (fun s t hs ht ↦ ?_)).symm
   rw [map_apply _ MeasurableEquiv.prodComm.measurable (hs.prod ht)]
   simp [MeasurableEquiv.prodComm]
@@ -323,8 +323,8 @@ theorem integral_prod {B : G →L[ℝ] F →L[ℝ] J} {C : J →L[ℝ] E →L[�
       integral_indicator (measurable_prodMk_left hs), setIntegral_const]
     rw [integral_continuousLinearMap_comp (integrable_vectorMeasure_prodMk_left hs),
       ← prod_flip_apply_eq_integral hs]
-    suffices (μ.prod ν A).mapRange (D c) (D c).continuous = μ.prod ν (C ∘SL B c).flip by
-      simp [← this]
+    have CD : Continuous (D c : H →+ I) := (D c).continuous
+    suffices (μ.prod ν A).mapRange (D c) CD = μ.prod ν (C ∘SL B c).flip by simp [← this]
     apply (prod_eq_of_forall_apply_prod _).symm
     intro s t hs ht
     simp [h]
