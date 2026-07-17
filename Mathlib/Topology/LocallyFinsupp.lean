@@ -648,8 +648,7 @@ lemma restrictMonoidHom_apply [AddCommGroup Y] {V : Set X} (D : locallyFinsuppWi
     restrictMonoidHom h D = D.restrict h := by rfl
 
 /-- Restriction as an ordered group morphism -/
-noncomputable def restrictOrderMonoidHom [AddCommGroup Y] [LinearOrder Y] [IsOrderedAddMonoid Y]
-    {V : Set X} (h : V ⊆ U) :
+noncomputable def restrictOrderMonoidHom [AddCommGroup Y] [LinearOrder Y] {V : Set X} (h : V ⊆ U) :
     locallyFinsuppWithin U Y →+o locallyFinsuppWithin V Y where
   toFun D := D.restrict h
   map_zero' := by
