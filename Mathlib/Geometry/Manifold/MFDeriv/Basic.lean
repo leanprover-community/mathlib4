@@ -1012,8 +1012,9 @@ theorem MDifferentiableWithinAt.mfderivWithin_mono
     mfderiv[t] f x = mfderiv[s] f x :=
   h.mfderivWithin_congr_mono (fun _ _ ↦ rfl) rfl hxt h₁
 
-theorem MDifferentiableWithinAt.mfderivWithin_mono_of_mem_nhdsWithin (h : MDiffAt[s] f x)
-    (hxt : UniqueMDiffAt[t] x) (h₁ : s ∈ 𝓝[t] x) : mfderiv[t] f x = mfderiv[s] f x :=
+theorem MDifferentiableWithinAt.mfderivWithin_mono_of_mem_nhdsWithin
+    (h : MDiffAt[s] f x) (hxt : UniqueMDiffAt[t] x) (h₁ : s ∈ 𝓝[t] x) :
+    mfderiv[t] f x = mfderiv[s] f x :=
   (HasMFDerivWithinAt.mono_of_mem_nhdsWithin h.hasMFDerivWithinAt h₁).mfderivWithin hxt
 
 set_option backward.isDefEq.respectTransparency false in
