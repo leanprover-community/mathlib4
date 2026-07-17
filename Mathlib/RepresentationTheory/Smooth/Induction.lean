@@ -26,10 +26,10 @@ categories of smooth representations, and also proves the adjunctions.
 The restriction functor `SmRep.res` is defined for continuous group morphisms `H →ₜ* G`, fitting
 into a strictly commutative diagram of functors
   Rep k G   --- Rep.res --->  Rep k H
-     ∧                           ∧ 
+     ∧                           ∧
      |                           |
      ι (natural inclusion)       ι (natural inclusion)
-     |                           | 
+     |                           |
   SmRep k G -- SmRep.res --> SmRep k H.
 
 The coinduced functor `SmRep.coind` is defined for arbitary group morphisms `H →* G`, by cutting out
@@ -40,10 +40,10 @@ This is also called the "smooth induction functor" in literature.
 The induced functor `SmRep.ind` is defined for group morphism `H →* G` which is an open map, fitting
 into a strictly commutative diagram of functors
   Rep k H   --- Rep.ind --->  Rep k G
-     ∧                           ∧ 
+     ∧                           ∧
      |                           |
      ι (natural inclusion)       ι (natural inclusion)
-     |                           | 
+     |                           |
   SmRep k H -- SmRep.ind --> SmRep k G.
 When `H` is a compact open subgroup of `G`, this functor is also called the "compact induction
 functor" in literature.
