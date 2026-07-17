@@ -246,6 +246,90 @@ theorem logCounting_eventuallyLE {E : Type*} [NormedAddCommGroup E] [ProperSpace
     logCounting f₁ ≤ᶠ[atTop] logCounting f₂ := by
   filter_upwards [eventually_ge_atTop 1] using fun _ hr ↦ logCounting_le h hr
 
+/--
+**Counting estimate**: for a nonnegative function `D` on `ℂ` with locally finite support and for
+radii `1 ≤ ρ < r`, the total mass of `D` on the closed ball of radius `ρ`, weighted by
+`log (r / ρ)`, is bounded by the logarithmic counting function of `D` at radius `r`.
+-/
+theorem sum_toClosedBall_le_logCounting {D : Function.locallyFinsupp ℂ ℤ} {ρ r : ℝ}
+    (hD : 0 ≤ D) (hρ : 1 ≤ ρ) (hρr : ρ < r) :
+    (∑ᶠ z, (D.toClosedBall ρ z : ℝ)) * Real.log (r / ρ) ≤ D.logCounting r := by
+  have hr₀ : (0 : ℝ) < r := by linarith
+  have habsρ : |ρ| = ρ := abs_of_pos (by linarith)
+  have habsr : |r| = r := abs_of_pos hr₀
+  have hD' : ∀ z, 0 ≤ D z := (by simpa using (le_def.1 hD) ·)
+  -- `toClosedBall` inherits nonnegativity
+  have hpos {s : ℝ} {z : ℂ} : 0 ≤ D.toClosedBall s z := by
+    simpa using le_def.1 (map_nonneg (toClosedBall s) hD) z
+  -- The common finite index set
+  have hfin : ((D.toClosedBall r).support).Finite :=
+    finiteSupport _ (isCompact_closedBall 0 |r|)
+  set t : Finset ℂ := insert 0 hfin.toFinset with ht_def
+  have hmem {z : ℂ} : D.toClosedBall r z ≠ 0 → z ∈ t :=
+    fun hz ↦ Finset.mem_insert_of_mem (hfin.mem_toFinset.2 hz)
+  have hmemρ : ∀ z : ℂ, D.toClosedBall ρ z ≠ 0 → z ∈ t := by
+    intro z hz
+    by_cases h : z ∈ closedBall (0 : ℂ) |ρ|
+    · apply hmem
+      rw [toClosedBall_eval_within _ (by
+        rw [mem_closedBall_zero_iff, habsr]
+        exact le_trans (by rwa [mem_closedBall_zero_iff, habsρ] at h) hρr.le)]
+      rwa [toClosedBall_eval_within _ h] at hz
+    · exact absurd (apply_eq_zero_of_notMem _ h) hz
+  -- Rewrite both sides as finite sums over `t`
+  have hRHS : D.logCounting r
+      = (∑ z ∈ t, (D.toClosedBall r z : ℝ) * Real.log (r * ‖z‖⁻¹)) + (D 0 : ℝ) * Real.log r := by
+    simp only [logCounting, AddMonoidHom.coe_mk, ZeroHom.coe_mk]
+    congr 1
+    apply finsum_eq_sum_of_support_subset
+    intro z hz
+    simp only [mem_support, ne_eq] at hz
+    apply hmem
+    intro h
+    simp [h] at hz
+  rw [finsum_eq_sum_of_support_subset _ (by aesop), hRHS, Finset.sum_mul]
+  -- Compare the sums term by term
+  have key : ∀ z ∈ t, (D.toClosedBall ρ z : ℝ) * Real.log (r / ρ)
+      ≤ (D.toClosedBall r z : ℝ) * Real.log (r * ‖z‖⁻¹)
+        + (if z = 0 then (D 0 : ℝ) * Real.log r else 0) := by
+    intro z hz
+    by_cases hz0 : z = 0
+    · subst hz0
+      rw [if_pos rfl, toClosedBall_eval_within _ (by simp),
+        toClosedBall_eval_within _ (by simp)]
+      simp only [norm_zero, inv_zero, mul_zero, log_zero, mul_zero, zero_add]
+      apply mul_le_mul_of_nonneg_left _ (by exact_mod_cast hD' 0)
+      apply Real.log_le_log (by positivity)
+      exact div_le_self hr₀.le hρ
+    · rw [if_neg hz0, add_zero]
+      by_cases hzρ : z ∈ closedBall (0 : ℂ) |ρ|
+      · have hz_norm : ‖z‖ ≤ ρ := by rwa [mem_closedBall_zero_iff, habsρ] at hzρ
+        have hz_pos : (0 : ℝ) < ‖z‖ := norm_pos_iff.2 hz0
+        have : z ∈ closedBall 0 |r| := by
+          rw [mem_closedBall_zero_iff, habsr]
+          exact hz_norm.trans hρr.le
+        rw [toClosedBall_eval_within _ hzρ, toClosedBall_eval_within _ this]
+        apply mul_le_mul_of_nonneg_left _ (by exact_mod_cast hD' z)
+        rw [div_eq_mul_inv]
+        apply Real.log_le_log (by positivity)
+        gcongr
+      · rw [locallyFinsuppWithin.apply_eq_zero_of_notMem _ hzρ, Int.cast_zero, zero_mul]
+        by_cases hzr : D.toClosedBall r z = 0
+        · simp [hzr]
+        · apply mul_nonneg (by exact_mod_cast hpos)
+          have hz_le : ‖z‖ ≤ r := by
+            rw [← mem_closedBall_zero_iff, ← habsr]
+            exact toClosedBall_support_subset_closedBall (r := r) D (mem_support.2 hzr)
+          apply Real.log_nonneg
+          rw [← div_eq_mul_inv, le_div_iff₀ (norm_pos_iff.2 hz0)]
+          simpa using hz_le
+  calc ∑ z ∈ t, (D.toClosedBall ρ z : ℝ) * Real.log (r / ρ)
+      ≤ ∑ z ∈ t, ((D.toClosedBall r z : ℝ) * Real.log (r * ‖z‖⁻¹)
+          + (if z = 0 then (D 0 : ℝ) * Real.log r else 0)) := Finset.sum_le_sum key
+    _ = (∑ z ∈ t, (D.toClosedBall r z : ℝ) * Real.log (r * ‖z‖⁻¹)) + (D 0 : ℝ) * Real.log r := by
+        rw [Finset.sum_add_distrib, Finset.sum_ite_eq' t 0 (fun _ ↦ (D 0 : ℝ) * Real.log r),
+          if_pos (Finset.mem_insert_self 0 hfin.toFinset)]
+
 end Function.locallyFinsuppWithin
 
 /-!
