@@ -305,7 +305,7 @@ def toLinearMap₁₂ : (E →SL[σ₁₃] F →SL[σ₂₃] G) →ₗ[𝕜₃] 
   map_add' _ _ := by ext; rfl
   map_smul' _ _ := by ext; rfl
 
-@[simp] lemma toLinearMap₁₂_apply_apply_apply (L : E →SL[σ₁₃] F →SL[σ₂₃] G) (v : E) (w : F) :
+lemma toLinearMap₁₂_apply_apply_apply (L : E →SL[σ₁₃] F →SL[σ₂₃] G) (v : E) (w : F) :
     L.toLinearMap₁₂ v w = L v w := rfl
 
 lemma toLinearMap₁₂_injective :
