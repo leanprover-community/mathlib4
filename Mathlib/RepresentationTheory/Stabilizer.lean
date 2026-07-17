@@ -27,10 +27,10 @@ variable {V V' : Type*} [AddCommMonoid V] [Module k V] [AddCommMonoid V'] [Modul
 def stabilizer (ρ : Representation k G V) (v : V) : Subgroup G where
   carrier := {g : G | ρ g v = v}
   mul_mem' {a b} ha hb := by
-    rw [Set.mem_setOf_eq, map_mul, Module.End.mul_apply, hb, ha]
+    rw [Set.mem_ofPred_eq, map_mul, Module.End.mul_apply, hb, ha]
   one_mem' := by simp
   inv_mem' {g} hg := by
-    rw [Set.mem_setOf_eq, ← hg, inv_self_apply, hg]
+    rw [Set.mem_ofPred_eq, ← hg, inv_self_apply, hg]
 
 @[simp]
 lemma mem_stabilizer {ρ : Representation k G V} {v : V} {g : G} :
