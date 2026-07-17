@@ -57,7 +57,8 @@ In this file we define various operations on `Submonoid`s and `MonoidHom`s.
 
 * `MonoidHom.mrange`: range of a monoid homomorphism as a submonoid of the codomain;
 * `MonoidHom.mker`: kernel of a monoid homomorphism as a submonoid of the domain;
-* `MonoidHom.restrict`: restrict a monoid homomorphism to a submonoid;
+* `MonoidHom.domRestrict`: restrict a monoid homomorphism to a submonoid of its domain;
+* `MonoidHom.restrict`: restrict the domain and codomain of a monoid homomorphism;
 * `MonoidHom.codRestrict`: restrict the codomain of a monoid homomorphism to a submonoid;
 * `MonoidHom.mrangeRestrict`: restrict a monoid homomorphism to its range;
 

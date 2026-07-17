@@ -445,6 +445,9 @@ theorem _root_.MonoidHom.domRestrictHomKerEquiv_symm_coe_apply (A : Type*) [Comm
 alias _root_.MonoidHom.restrictHomKerEquiv := _root_.MonoidHom.domRestrictHomKerEquiv
 
 @[deprecated (since := "2026-02-10")]
+alias _root_.AddMonoidHom.restrictHomKerEquiv := _root_.AddMonoidHom.domRestrictHomKerEquiv
+
+@[deprecated (since := "2026-02-10")]
 alias _root_.MonoidHom.restrictHomKerEquiv_apply_coe :=
   _root_.MonoidHom.domRestrictHomKerEquiv_apply_coe
 
