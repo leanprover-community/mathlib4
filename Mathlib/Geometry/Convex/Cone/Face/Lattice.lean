@@ -21,6 +21,12 @@ of a pointed cone `C`.
 * `Face.prodOrderIso`: proves that the face lattices of a product cone is the product of the face
   lattices of the individual cones.
 
+## Implementation notes
+
+This is separate from faces of general convex sets in affine spaces, since the empty set is not a
+face of a convex cone, but of the corresponding convex set. The notion we use here allows a clean
+correspondence between the face lattice of convex sets and their homogenization cones.
+
 -/
 
 public section
