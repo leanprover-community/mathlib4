@@ -81,7 +81,7 @@ lemma isSmooth_directSum {I : Type*} {V : I → Type*} [(i : I) → AddCommMonoi
   intro v
   have heq : {g | ∀ i, ρ i g (v i) = v i} = ⋂ i ∈ DFinsupp.support v, {g | ρ i g (v i) = v i} := by
     ext g
-    simp only [Set.mem_setOf_eq, Set.mem_iInter]
+    simp only [Set.mem_iInter]
     constructor
     · exact fun h_stab i _ => h_stab i
     · intro h_stab i
