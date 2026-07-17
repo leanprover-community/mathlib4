@@ -227,7 +227,7 @@ theorem one_toProd : (1 : 𝓜(𝕜, A)).toProd = 1 :=
   rfl
 
 @[simp]
-theorem coe_toprod (n : ℕ) : (n : 𝓜(𝕜, A)).toProd = n :=
+theorem natCast_toProd (n : ℕ) : (n : 𝓜(𝕜, A)).toProd = n :=
   rfl
 
 @[simp]
