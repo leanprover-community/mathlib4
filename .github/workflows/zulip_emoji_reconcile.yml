@@ -32,7 +32,7 @@ jobs:
           sparse-checkout-cone-mode: false
 
       - name: Reconcile
-        uses: leanprover-community/mathlib-ci/.github/actions/zulip-emoji-reconcile@20a1db8d1e1017676558fe4f5bbea77ee9f0a257
+        uses: leanprover-community/mathlib-ci/.github/actions/zulip-emoji-reconcile@5668fbbccf0fecefdfcddf539b8406db197dfc59
         with:
           config: .github/zulip-emoji-config.json
           sweep: true
