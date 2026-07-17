@@ -629,6 +629,7 @@ theorem coeff_X_same (i : σ) :
     (X i : MvPolynomial σ R).coeff (Finsupp.single i 1) = 1 := by
   classical rw [coeff_X, if_pos rfl]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem coeff_C_mul (m) (a : R) (p : MvPolynomial σ R) : (C a * p).coeff m = a * p.coeff m := by
   classical

@@ -236,6 +236,7 @@ section EvalVars
 
 variable [CommSemiring S]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem eval₂Hom_eq_constantCoeff_of_vars (f : R →+* S) {g : σ → S} {p : MvPolynomial σ R}
     (hp : ∀ i ∈ p.vars, g i = 0) : eval₂Hom f g p = f (constantCoeff p) := by
   conv_lhs => rw [p.as_sum]

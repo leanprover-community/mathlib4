@@ -250,6 +250,7 @@ theorem linearCombinationOn_range (s : Set α) :
     range_subtype]
   exact (span_image_eq_map_linearCombination _ _).le
 
+set_option backward.isDefEq.respectTransparency false in
 theorem linearCombination_restrict (s : Set α) :
     linearCombination R (s.restrict v) = Submodule.subtype _ ∘ₗ
       linearCombinationOn α M R v s ∘ₗ (supportedEquivFinsupp s).symm.toLinearMap := by

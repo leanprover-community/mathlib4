@@ -306,10 +306,6 @@ theorem support_finsetSum [DecidableEq β] [AddCommMonoid M] {s : Finset α} {f 
 
 @[deprecated (since := "2026-04-08")] alias support_finset_sum := support_finsetSum
 
-@[deprecated sum_fun_zero (since := "2025-12-19")]
-theorem sum_zero [Zero M] [AddCommMonoid N] {f : α →₀ M} : (f.sum fun _ _ => (0 : N)) = 0 :=
-  Finset.sum_const_zero
-
 theorem sum_eq_one_iff (d : α →₀ ℕ) : sum d (fun _ n ↦ n) = 1 ↔ ∃ a, d = single a 1 := by
   classical
   refine ⟨fun h1 ↦ ?_, ?_⟩
