@@ -960,7 +960,7 @@ theorem Weight.prime_M_eq : prime.M = eulerMascheroniConstant
     · have : ∑' p : Primes, Λ p / (p ^ s * log p)
           = ∑' n : ℕ, (log n)⁻¹ * prime n * (n : ℝ) ^ (1 - s) := by
         rw [Primes.tsum_eq_tsum_ite (fun p ↦ Λ p / (p ^ s * log p))]
-        congr! 2 with n
+        refine tsum_congr fun n ↦ ?_
         split_ifs with h <;> simp [vonMangoldt_apply_prime, h]
         have := h.pos
         have := h.log_pos
@@ -968,8 +968,9 @@ theorem Weight.prime_M_eq : prime.M = eulerMascheroniConstant
       have :  ∑' (p : Primes) (k : ℕ),
           Λ (p ^ (k + 2)) / ((p ^ (k + 2) : ℕ) ^ s * log (p ^ (k + 2) : ℕ))
           = ∑' (p : Primes) (k : ℕ), 1 / ((k + 2) * (p : ℝ) ^ ((k + 2 : ℝ) * s)) := by
-        congr! 4 with p k
+        refine tsum_congr fun p ↦ tsum_congr fun k ↦ ?_
         simp [ArithmeticFunction.vonMangoldt, p.prop.isPrimePow.pow, p.prop.pow_minFac]
+        have : 0 < log p := p.prop.log_pos
         field_simp (disch := positivity)
         rw [rpow_mul (by positivity)]
         norm_cast

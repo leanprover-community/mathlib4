@@ -1184,49 +1184,6 @@ theorem integrableOn_comp_log_Ioi (g : ℝ → E) {a : ℝ} (ha : 0 < a) :
   symm
   simpa  [exp_log ha] using integrableOn_comp_exp_Ioi (fun x ↦ x⁻¹ • g (log x)) (log a)
 
-theorem integral_comp_rpow_Ioi_of_pos' {g : ℝ → E} {p : ℝ} (hp : 0 < p) {c : ℝ} (hc : 0 ≤ c) :
-    ∫ x in Ioi (c ^ p⁻¹), (p * x ^ (p - 1)) • g (x ^ p) = ∫ y in Ioi c, g y := by
-  have : 0 ≤ c ^ p⁻¹ := by positivity
-  have : Ioi c = (· ^ p) '' Ioi (c ^ p⁻¹) := by
-    rw [(continuous_rpow_const hp.le).continuousOn.image_Ioi_of_strictMonoOn
-          ((strictMonoOn_rpow_Ici_of_exponent_pos hp).mono (by grind)) (tendsto_rpow_atTop hp)]
-    simp [← rpow_mul hc, hp.ne.symm]
-  rw [this, integral_image_eq_integral_abs_deriv_smul (measurableSet_Ioi (a := c ^ p⁻¹))
-      (fun _ _ ↦ (hasDerivAt_rpow_const (by grind)).hasDerivWithinAt)
-      ((rpow_left_injOn hp.ne.symm).mono (Set.Ioi_subset_Ici (by positivity)))]
-  refine setIntegral_congr_fun measurableSet_Ioi (fun x _ ↦ ?_)
-  have : 0 ≤ x := by grind
-  rw [abs_of_nonneg (by positivity)]
-
-/-- Substitution `y = exp x` in integrals over `Ioi a` -/
-theorem integral_comp_exp_Ioi (g : ℝ → E) (a : ℝ) :
-    ∫ x in Ioi a, exp x • g (exp x) = ∫ y in Ioi (exp a), g y := by
-  symm; rw [← image_exp_Ioi]
-  convert! integral_image_eq_integral_abs_deriv_smul (measurableSet_Ioi (a := a))
-      (fun x _ ↦ (hasDerivAt_exp x).hasDerivWithinAt)
-      (fun x _ y _ hxy ↦ exp_injective hxy) g using 4 with x
-  rw [abs_of_pos (exp_pos x)]
-
-theorem integrableOn_comp_exp_Ioi (g : ℝ → E) (a : ℝ) :
-    IntegrableOn (fun x ↦ exp x • g (exp x)) (Ioi a) ↔ IntegrableOn g (Ioi (exp a)) := by
-  symm; rw [← image_exp_Ioi]
-  convert integrableOn_image_iff_integrableOn_abs_deriv_smul (measurableSet_Ioi (a := a))
-      (fun x _ ↦ (hasDerivAt_exp x).hasDerivWithinAt)
-      (fun x _ y _ hxy ↦ exp_injective hxy) g using 4 with x
-  rw [abs_of_pos (exp_pos x)]
-
-/-- Substitution `y = log x` in integrals over `Ioi a` -/
-theorem integral_comp_log_Ioi (g : ℝ → E) {a : ℝ} (ha : 0 < a) :
-    ∫ x in Ioi a, x⁻¹ • g (log x) = ∫ y in Ioi (log a), g y := by
-  convert (integral_comp_exp_Ioi (fun x ↦ x⁻¹ • g (log x)) (log a)).symm with x
-  <;> simp [exp_log ha]
-
-theorem integrableOn_comp_log_Ioi (g : ℝ → E) {a : ℝ} (ha : 0 < a) :
-    IntegrableOn (fun x ↦ x⁻¹ • g (log x)) (Ioi a) ↔ IntegrableOn g (Ioi (log a)) := by
-  symm
-  convert integrableOn_comp_exp_Ioi (fun x ↦ x⁻¹ • g (log x)) (log a) with x
-  <;> simp [exp_log ha]
-
 theorem integral_comp_mul_left_Ioi (g : ℝ → E) (a : ℝ) {b : ℝ} (hb : 0 < b) :
     ∫ x in Ioi a, g (b * x) = b⁻¹ • ∫ x in Ioi (b * a), g x := by
   have : ∀ c : ℝ, MeasurableSet (Ioi c) := fun c => measurableSet_Ioi

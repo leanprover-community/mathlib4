@@ -649,49 +649,6 @@ meta def evalLogNatCast : PositivityExt where eval {u α} _zα pα? e :=
     pure (.nonnegative q(Real.log_natCast_nonneg $a))
   | _, _, _ => throwError "not Real.log"
 
-/-- Extension for the `positivity` tactic: the coercion `(p : ℕ)` of a term `p : Nat.Primes` is
-positive. -/
-@[positivity @Subtype.val ℕ Nat.Prime _]
-meta def evalNatPrimesVal : PositivityExt where eval {u α} _zα pα? e :=
-  match pα? with | none => pure .none | some _ => do
-  match u, α, e with
-  | 0, ~q(ℕ), ~q(@Subtype.val ℕ Nat.Prime $p) =>
-    assertInstancesCommute
-    pure (.positive q(($p).property.pos))
-  | _, _, _ => throwError "not a `Nat.Primes` coercion"
-
-/-- Extension for the `positivity` tactic: the cast `(p : α)` of a term `p : Nat.Primes` is positive
-when `α` is an ordered semiring, and nonzero when `α` merely has characteristic zero (such as `ℂ`
-without `open scoped ComplexOrder`). -/
-@[positivity Nat.cast (@Subtype.val ℕ Nat.Prime _)]
-meta def evalNatPrimesCast : PositivityExt where eval {u α} _zα pα? e := do
-  let ~q(@Nat.cast _ (_) (@Subtype.val ℕ Nat.Prime $p)) := e | throwError "not a `Nat.Primes` cast"
-  let _i1 : Q(AddMonoidWithOne $α) ← synthInstanceQ q(AddMonoidWithOne $α)
-  -- With an order on `α` we obtain the stronger `0 < ↑p`; otherwise (e.g. `ℂ` without
-  -- `open scoped ComplexOrder`) we fall back to `↑p ≠ 0`, which only needs `CharZero`.
-  match (dependent := true) pα? with
-  | some _pα =>
-    let _i2 : Q(AddLeftMono $α) ← synthInstanceQ q(AddLeftMono $α)
-    let _i3 : Q(ZeroLEOneClass $α) ← synthInstanceQ q(ZeroLEOneClass $α)
-    let _nz : Q(NeZero (1 : $α)) ← synthInstanceQ q(NeZero (1 : $α))
-    assumeInstancesCommute
-    pure (.positive q(Nat.cast_pos'.2 ($p).property.pos))
-  | none =>
-    let _cz : Q(CharZero $α) ← synthInstanceQ q(CharZero $α)
-    assumeInstancesCommute
-    pure (.nonzero q(Nat.cast_ne_zero.mpr ($p).property.ne_zero))
-
-/-- Extension for the `positivity` tactic: `Real.log (p : ℝ)` for a term `p : Nat.Primes` is
-positive. -/
-@[positivity Real.log (Nat.cast (@Subtype.val ℕ Nat.Prime _))]
-meta def evalLogNatPrimesCast : PositivityExt where eval {u α} _zα pα? e :=
-  match pα? with | none => pure .none | some _ => do
-  match u, α, e with
-  | 0, ~q(ℝ), ~q(Real.log (Nat.cast (@Subtype.val ℕ Nat.Prime $p))) =>
-    assertInstancesCommute
-    pure (.positive q(($p).property.log_pos))
-  | _, _, _ => throwError "not `Real.log` of a `Nat.Primes` cast"
-
 /-- Extension for the `positivity` tactic: `Real.log` of an integer is always nonnegative. -/
 @[positivity Real.log (Int.cast _)]
 meta def evalLogIntCast : PositivityExt where eval {u α} _zα pα? e :=
