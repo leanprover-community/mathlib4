@@ -7,8 +7,6 @@ module
 
 public import Mathlib.RepresentationTheory.Intertwining
 
-import Mathlib.Tactic.Group
-
 /-!
 # Stabilizers in representations
 
@@ -65,5 +63,21 @@ lemma stabilizer_conj (ρ : Representation k G V) (g : G) (v : V) :
   simp only [mem_stabilizer, Subgroup.mem_map, MonoidHom.coe_coe, MulAut.conj_apply,
     ← Module.End.mul_apply, ← inv_apply_eq_iff, ← map_mul, ← mul_assoc]
   exact ⟨fun h ↦ ⟨_, h, by simp [mul_assoc]⟩, by rintro ⟨y, hy1, rfl⟩; simp [mul_assoc, hy1]⟩
+
+variable {H : Type*} [Group H] (f : H →* G) in
+lemma stabilizer_comap_le_stabilizer (ρ : Representation k G V) (v : V) :
+    (stabilizer ρ v).comap f ≤ stabilizer (ρ.comp f) v := by
+  simp +contextual [SetLike.le_def]
+
+section tmul
+
+variable {k : Type*} [CommSemiring k]
+variable {V V' : Type*} [AddCommMonoid V] [Module k V] [AddCommMonoid V'] [Module k V']
+
+lemma le_stabilizer_tmul (ρ : Representation k G V) (ρ' : Representation k G V') (v : V) (v' : V') :
+    ρ.stabilizer v ⊓ ρ'.stabilizer v' ≤ (ρ.tprod ρ').stabilizer (v ⊗ₜ[k] v') := by
+  simp +contextual [SetLike.le_def]
+
+end tmul
 
 end Representation
