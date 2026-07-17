@@ -133,11 +133,15 @@ theorem nonempty_of_nonempty_iUnion_eq_univ
     {s : ι → Set α} [Nonempty α] (h_Union : ⋃ i, s i = univ) : Nonempty ι :=
   nonempty_of_nonempty_iUnion (s := s) (by simpa only [h_Union] using univ_nonempty)
 
-theorem setOf_exists (p : ι → β → Prop) : { x | ∃ i, p i x } = ⋃ i, { x | p i x } :=
+theorem ofPred_exists (p : ι → β → Prop) : { x | ∃ i, p i x } = ⋃ i, { x | p i x } :=
   ext fun _ => .symm <| mem_iUnion
 
-theorem setOf_forall (p : ι → β → Prop) : { x | ∀ i, p i x } = ⋂ i, { x | p i x } :=
+@[deprecated (since := "2026-07-09")] alias setOf_exists := ofPred_exists
+
+theorem ofPred_forall (p : ι → β → Prop) : { x | ∀ i, p i x } = ⋂ i, { x | p i x } :=
   ext fun _ => .symm <| mem_iInter
+
+@[deprecated (since := "2026-07-09")] alias setOf_forall := ofPred_forall
 
 theorem iUnion_subset {s : ι → Set α} {t : Set α} (h : ∀ i, s i ⊆ t) : ⋃ i, s i ⊆ t :=
   iSup_le h
@@ -254,13 +258,17 @@ theorem iInter_subset_iInter₂ (κ : ι → Sort*) (s : ι → Set α) :
     ⋂ i, s i ⊆ ⋂ (i) (_ : κ i), s i :=
   iInter_mono fun _ => subset_iInter fun _ => Subset.rfl
 
-theorem iUnion_setOf (P : ι → α → Prop) : ⋃ i, { x : α | P i x } = { x : α | ∃ i, P i x } := by
+theorem iUnion_ofPred (P : ι → α → Prop) : ⋃ i, { x : α | P i x } = { x : α | ∃ i, P i x } := by
   ext
   exact mem_iUnion
 
-theorem iInter_setOf (P : ι → α → Prop) : ⋂ i, { x : α | P i x } = { x : α | ∀ i, P i x } := by
+@[deprecated (since := "2026-07-09")] alias iUnion_setOf := iUnion_ofPred
+
+theorem iInter_ofPred (P : ι → α → Prop) : ⋂ i, { x : α | P i x } = { x : α | ∀ i, P i x } := by
   ext
   exact mem_iInter
+
+@[deprecated (since := "2026-07-09")] alias iInter_setOf := iInter_ofPred
 
 theorem iUnion_congr_of_surjective {f : ι → Set α} {g : ι₂ → Set α} (h : ι → ι₂) (h1 : Surjective h)
     (h2 : ∀ x, g (h x) = f x) : ⋃ x, f x = ⋃ y, g y :=
@@ -1435,7 +1443,7 @@ theorem inter_iInter_nat_succ (u : ℕ → Set α) : (u 0 ∩ ⋂ i, u (i + 1)) 
 
 theorem iUnion_le_nat : ⋃ n : ℕ, {i | i ≤ n} = Set.univ :=
   subset_antisymm (Set.subset_univ _)
-    (fun i _ ↦ Set.mem_iUnion_of_mem i (Set.mem_setOf.mpr (le_refl _)))
+    (fun i _ ↦ Set.mem_iUnion_of_mem i (Set.mem_ofPred.mpr (le_refl _)))
 
 end Set
 

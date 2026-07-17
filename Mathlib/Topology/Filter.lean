@@ -53,8 +53,10 @@ instance : TopologicalSpace (Filter α) :=
 theorem isOpen_Iic_principal {s : Set α} : IsOpen (Iic (𝓟 s)) :=
   GenerateOpen.basic _ (mem_range_self _)
 
-theorem isOpen_setOf_mem {s : Set α} : IsOpen { l : Filter α | s ∈ l } := by
+theorem isOpen_setOfPred_mem {s : Set α} : IsOpen { l : Filter α | s ∈ l } := by
   simpa only [Iic_principal] using isOpen_Iic_principal
+
+@[deprecated (since := "2026-07-09")] alias isOpen_setOf_mem := isOpen_setOfPred_mem
 
 theorem isTopologicalBasis_Iic_principal :
     IsTopologicalBasis (range (Iic ∘ 𝓟 : Set α → Set (Filter α))) :=
@@ -72,7 +74,7 @@ theorem isOpen_iff {s : Set (Filter α)} : IsOpen s ↔ ∃ T : Set (Set α), s 
 set_option backward.isDefEq.respectTransparency false in
 theorem nhds_eq (l : Filter α) : 𝓝 l = l.lift' (Iic ∘ 𝓟) :=
   nhds_generateFrom.trans <| by
-    simp only [mem_setOf_eq, @and_comm (l ∈ _), iInf_and, iInf_range, Filter.lift', Filter.lift,
+    simp only [mem_ofPred_eq, @and_comm (l ∈ _), iInf_and, iInf_range, Filter.lift', Filter.lift,
       (· ∘ ·), mem_Iic, le_principal_iff]
 
 theorem nhds_eq' (l : Filter α) : 𝓝 l = l.lift' fun s => { l' | s ∈ l' } := by
@@ -80,7 +82,7 @@ theorem nhds_eq' (l : Filter α) : 𝓝 l = l.lift' fun s => { l' | s ∈ l' } :
 
 protected theorem tendsto_nhds {la : Filter α} {lb : Filter β} {f : α → Filter β} :
     Tendsto f la (𝓝 lb) ↔ ∀ s ∈ lb, ∀ᶠ a in la, s ∈ f a := by
-  simp only [nhds_eq', tendsto_lift', mem_setOf_eq]
+  simp only [nhds_eq', tendsto_lift', mem_ofPred_eq]
 
 protected theorem HasBasis.nhds {l : Filter α} {p : ι → Prop} {s : ι → Set α} (h : HasBasis l p s) :
     HasBasis (𝓝 l) p fun i => Iic (𝓟 (s i)) := by
@@ -137,7 +139,7 @@ theorem monotone_nhds : Monotone (𝓝 : Filter α → Filter (Filter α)) :=
 
 theorem sInter_nhds (l : Filter α) : ⋂₀ { s | s ∈ 𝓝 l } = Iic l := by
   simp_rw [nhds_eq, Function.comp_def, sInter_lift'_sets monotone_principal.Iic, Iic,
-    le_principal_iff, ← setOf_forall, ← Filter.le_def]
+    le_principal_iff, ← ofPred_forall, ← Filter.le_def]
 
 @[simp]
 theorem nhds_mono {l₁ l₂ : Filter α} : 𝓝 l₁ ≤ 𝓝 l₂ ↔ l₁ ≤ l₂ := by
@@ -192,7 +194,7 @@ theorem isInducing_nhds : IsInducing (𝓝 : X → Filter X) :=
   isInducing_iff_nhds.2 fun x =>
     (nhds_def' _).trans <| by
       simp +contextual only [nhds_nhds, comap_iInf, comap_principal,
-        Iic_principal, preimage_setOf_eq, ← mem_interior_iff_mem_nhds, setOf_mem_eq,
+        Iic_principal, preimage_ofPred_eq, ← mem_interior_iff_mem_nhds, ofPred_mem_eq,
         IsOpen.interior_eq]
 
 @[continuity]
