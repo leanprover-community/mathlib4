@@ -825,7 +825,7 @@ theorem contDiffOn_succ_of_fderivWithin (hf : DifferentiableOn 𝕜 f s)
     (h' : n = ω → AnalyticOn 𝕜 f s)
     (h : ContDiffOn 𝕜 n (fun y => fderivWithin 𝕜 f s y) s) : ContDiffOn 𝕜 (n + 1) f s := by
   rcases eq_or_ne n ∞ with rfl | hn
-  · rw [ENat.natCast_top_add_one, contDiffOn_infty]
+  · rw [ENat.coe_top_add_one, contDiffOn_infty]
     intro m x hx
     apply ContDiffWithinAt.of_le _ (show (m : ℕ∞ω) ≤ m + 1 from le_self_add)
     rw [contDiffWithinAt_succ_iff_hasFDerivWithinAt (by simp),
@@ -884,7 +884,7 @@ theorem contDiffOn_succ_iff_hasFDerivWithinAt_of_uniqueDiffOn (hs : UniqueDiffOn
 
 theorem contDiffOn_infty_iff_fderivWithin (hs : UniqueDiffOn 𝕜 s) :
     ContDiffOn 𝕜 ∞ f s ↔ DifferentiableOn 𝕜 f s ∧ ContDiffOn 𝕜 ∞ (fderivWithin 𝕜 f s) s := by
-  rw [← ENat.natCast_top_add_one, contDiffOn_succ_iff_fderivWithin hs]
+  rw [← ENat.coe_top_add_one, contDiffOn_succ_iff_fderivWithin hs]
   simp
 
 /-- A function is `C^(n + 1)` on an open domain if and only if it is
@@ -898,7 +898,7 @@ theorem contDiffOn_succ_iff_fderiv_of_isOpen (hs : IsOpen s) :
 
 theorem contDiffOn_infty_iff_fderiv_of_isOpen (hs : IsOpen s) :
     ContDiffOn 𝕜 ∞ f s ↔ DifferentiableOn 𝕜 f s ∧ ContDiffOn 𝕜 ∞ (fderiv 𝕜 f) s := by
-  rw [← ENat.natCast_top_add_one, contDiffOn_succ_iff_fderiv_of_isOpen hs]
+  rw [← ENat.coe_top_add_one, contDiffOn_succ_iff_fderiv_of_isOpen hs]
   simp
 
 protected theorem ContDiffOn.fderivWithin (hf : ContDiffOn 𝕜 n f s) (hs : UniqueDiffOn 𝕜 s)
@@ -1266,7 +1266,7 @@ theorem contDiff_one_iff_fderiv :
 
 theorem contDiff_infty_iff_fderiv :
     ContDiff 𝕜 ∞ f ↔ Differentiable 𝕜 f ∧ ContDiff 𝕜 ∞ (fderiv 𝕜 f) := by
-  rw [← ENat.natCast_top_add_one, contDiff_succ_iff_fderiv]
+  rw [← ENat.coe_top_add_one, contDiff_succ_iff_fderiv]
   simp
 
 theorem ContDiff.continuous_fderiv (h : ContDiff 𝕜 n f) (hn : n ≠ 0) :

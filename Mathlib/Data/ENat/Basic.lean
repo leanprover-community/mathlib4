@@ -532,11 +532,9 @@ lemma add_one_natCast_le_withTop_of_lt {m : ℕ} {n : WithTop ℕ∞} (h : m < n
   | (⊤ : ℕ∞) => exact WithTop.coe_le_coe.2 (OrderTop.le_top _)
   | (n : ℕ) => simpa only [Nat.cast_le, ge_iff_le, Nat.cast_lt] using! h
 
-@[simp] lemma natCast_top_add_one : ((⊤ : ℕ∞) : WithTop ℕ∞) + 1 = (⊤ : ℕ∞) := rfl
+@[simp] lemma coe_top_add_one : ((⊤ : ℕ∞) : WithTop ℕ∞) + 1 = (⊤ : ℕ∞) := rfl
 
-@[deprecated (since := "2026-06-29")] alias coe_top_add_one := natCast_top_add_one
-
-@[simp] lemma add_one_eq_natCast_top_iff {n : WithTop ℕ∞} : n + 1 = (⊤ : ℕ∞) ↔ n = (⊤ : ℕ∞) := by
+@[simp] lemma add_one_eq_coe_top_iff {n : WithTop ℕ∞} : n + 1 = (⊤ : ℕ∞) ↔ n = (⊤ : ℕ∞) := by
   match n with
   | ⊤ => exact Iff.rfl
   | (⊤ : ℕ∞) => simp
@@ -544,11 +542,7 @@ lemma add_one_natCast_le_withTop_of_lt {m : ℕ} {n : WithTop ℕ∞} (h : m < n
     norm_cast
     simp only [natCast_ne_top]
 
-@[deprecated (since := "2026-06-29")] alias add_one_eq_coe_top_iff := add_one_eq_natCast_top_iff
-
-@[simp] lemma natCast_ne_natCast_top (n : ℕ) : (n : WithTop ℕ∞) ≠ (⊤ : ℕ∞) := nofun
-
-@[deprecated (since := "2026-06-29")] alias natCast_ne_coe_top := natCast_ne_natCast_top
+@[simp] lemma natCast_ne_coe_top (n : ℕ) : (n : WithTop ℕ∞) ≠ (⊤ : ℕ∞) := nofun
 
 lemma one_le_iff_ne_zero_withTop {n : WithTop ℕ∞} : 1 ≤ n ↔ n ≠ 0 :=
   ⟨fun h ↦ (zero_lt_one.trans_le h).ne',
