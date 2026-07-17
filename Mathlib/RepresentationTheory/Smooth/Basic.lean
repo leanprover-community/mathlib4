@@ -29,7 +29,7 @@ smooth vectors from the naive `linHom` and `dual`.
 
 ## Main theorems
 
-* `isSmooth_smoothVectors`
+* `Representation.Smooth.instIsSmooth_smoothVectors`
 
 -/
 
@@ -74,7 +74,7 @@ lemma isSmooth_subrepresentation {ρ : Representation k G V} (φ : Subrepresenta
 
 /-- An arbitrary direct sum of smooth representations is smooth. -/
 lemma isSmooth_directSum {I : Type*} {V : I → Type*} [(i : I) → AddCommMonoid (V i)]
-    [(i : I) → Module k (V i)] (ρ : (i : I) → Representation k G (V i)) (h : ∀ i, IsSmooth (ρ i)) :
+    [(i : I) → Module k (V i)] (ρ : (i : I) → Representation k G (V i)) [h : ∀ i, IsSmooth (ρ i)] :
     IsSmooth (Representation.directSum ρ) := by
   classical
   simp only [isSmooth_iff, directSum_apply, DirectSum.ext_iff, DirectSum.lmap_apply]
@@ -94,8 +94,8 @@ lemma isSmooth_directSum {I : Type*} {V : I → Type*} [(i : I) → AddCommMonoi
 
 variable {V' : Type*} [AddCommMonoid V'] [Module k V'] in
 /-- Any biproduct of two smooth representations is smooth. -/
-lemma isSmooth_prod {ρ : Representation k G V} {ρ' : Representation k G V'} (h1 : IsSmooth ρ)
-    (h2 : IsSmooth ρ') :
+lemma isSmooth_prod (ρ : Representation k G V) (ρ' : Representation k G V') [h1 : IsSmooth ρ]
+    [h2 : IsSmooth ρ'] :
     IsSmooth (ρ.prod ρ') := by
   rw [isSmooth_iff]
   rintro ⟨v, v'⟩
@@ -161,7 +161,7 @@ lemma mem_smoothSubmodule {ρ : Representation k G V} {v : V} :
   rfl
 
 /-- Taking smooth vectors gives a smooth representation. -/
-theorem isSmooth_smoothVectors {ρ : Representation k G V} :
+instance instIsSmooth_smoothVectors {ρ : Representation k G V} :
     IsSmooth (smoothVectors ρ).toRepresentation := by
   simp [isSmooth_iff, isSmoothVector_iff]
 
@@ -176,10 +176,10 @@ def IntertwiningMap.smoothVectors {ρ : Representation k G V} {ρ' : Representat
 
 omit [IsTopologicalGroup G] in
 lemma IntertwiningMap.isSmooth_injective {ρ : Representation k G V} {ρ' : Representation k G V'}
-    {f : ρ.IntertwiningMap ρ'} (hf : Function.Injective f) [h : IsSmooth ρ'] : IsSmooth ρ := by
+    {f : ρ.IntertwiningMap ρ'} (hf : Function.Injective f) [h' : IsSmooth ρ'] : IsSmooth ρ := by
   rw [isSmooth_iff]
   intro v
-  convert isSmoothVector_iff.mp (h.smooth (f v))
+  convert isSmoothVector_iff.mp (h'.smooth (f v))
   rw [← IntertwiningMap.isIntertwining, hf.eq_iff]
 
 lemma IntertwiningMap.isSmooth_surjective {ρ : Representation k G V} {ρ' : Representation k G V'}
@@ -217,7 +217,7 @@ lemma isSmoothVector_tmul {ρ : Representation k G V} {ρ' : Representation k G 
   Subgroup.isOpen_mono (le_stabilizer_tmul ρ ρ' v v') (h.inter h')
 
 /-- The tensor product of two smooth representations is smooth. -/
-lemma isSmooth_tprod {ρ : Representation k G V} {ρ' : Representation k G V'}
+lemma isSmooth_tprod (ρ : Representation k G V) (ρ' : Representation k G V')
     [h : IsSmooth ρ] [h' : IsSmooth ρ'] : IsSmooth (tprod ρ ρ') := by
   refine ⟨fun v => ?_⟩
   induction v with
@@ -226,22 +226,16 @@ lemma isSmooth_tprod {ρ : Representation k G V} {ρ' : Representation k G V'}
   | add _ _ h1 h2 => exact isSmoothVector_add h1 h2
 
 /-- The maximal smooth subrepresentation of the `linHom` representation. -/
+@[reducible]
 def smoothHom (ρ : Representation k G V) (ρ' : Representation k G V') :
     Representation k G (smoothVectors (linHom ρ ρ')).toSubmodule :=
   (smoothVectors (linHom ρ ρ')).toRepresentation
 
-lemma isSmooth_smoothHom {ρ : Representation k G V} {ρ' : Representation k G V'} :
-    IsSmooth (smoothHom ρ ρ') :=
-  isSmooth_smoothVectors
-
 /-- The maximal smooth subrepresentation of the dual representation. -/
+@[reducible]
 def contragredient (ρ : Representation k G V) :
     Representation k G (smoothVectors ρ.dual).toSubmodule :=
   (smoothVectors ρ.dual).toRepresentation
-
-lemma isSmooth_contragredient {ρ : Representation k G V} :
-    IsSmooth (contragredient ρ) :=
-  isSmooth_smoothVectors
 
 end tensorHomContragredient
 
