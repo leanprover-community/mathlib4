@@ -175,7 +175,7 @@ lemma exists_insertNth_mem_S {p : ℕ} {i : Fin n} {α : Fin p → Fin n} {k : F
   use t
   simp only [mem_S_iff, Fin.strictMono_cons] at ⊢ hα
   refine ⟨fun j ↦ Fin.succAboveCases t ?_ ?_ j, ?_⟩
-  · simp only [t_eq, Set.mem_setOf_eq, Fin.strictMono_insertNth_iff, hα.2, lt_iInf_iff,
+  · simp only [t_eq, Set.mem_ofPred_eq, Fin.strictMono_insertNth_iff, hα.2, lt_iInf_iff,
       le_iInf_iff, forall_exists_index, and_imp, iInf_le_iff_forall_lt, iInf_lt_iff,
       exists_prop, true_and]
     refine ⟨fun j x hjx h ↦ ?_, fun j h ↦ ?_⟩
