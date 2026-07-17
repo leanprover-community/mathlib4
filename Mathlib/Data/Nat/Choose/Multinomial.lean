@@ -510,8 +510,7 @@ theorem multinomial_pos (m : Multiset ℕ) : 0 < m.multinomial := by
 
 section PositivityExtension
 
-open Lean Meta Mathlib Meta Positivity Qq
-
+open Mathlib.Meta.Positivity Qq in
 /--
 Positivity extension for `Multiset.multinomial`.
 -/
