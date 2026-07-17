@@ -53,13 +53,13 @@ attribute [simp] IsPrimitiveElem.counit_eq_zero IsPrimitiveElem.comul_eq_tmul_ad
 /-- In a bialgebra, `0` is a primitive element. -/
 lemma IsPrimitiveElem.zero : IsPrimitiveElem R (0 : A) := by simp [isPrimitiveElem_iff]
 
-lemma IsPrimitiveElem.ne_one [Nontrivial R] (ha : IsPrimitiveElem R a) : a ≠ 1 := by
-  rintro rfl; simpa using ha.counit_eq_zero
+/-- In a bialgebra over a nontrivial semiring, primitive elements are not `1`. -/
+lemma IsPrimitiveElem.ne_one [Nontrivial R] (ha : IsPrimitiveElem R a) : a ≠ 1 :=
+  ne_of_apply_ne (counit (R := R)) (by simp [ha])
 
 /-- Primitive elements in a bialgebra are stable under addition. -/
 lemma IsPrimitiveElem.add (ha : IsPrimitiveElem R a) (hb : IsPrimitiveElem R b) :
-    IsPrimitiveElem R (a + b) :=
-  ⟨by simp [ha, hb], by simp [ha, hb, add_tmul, tmul_add]; abel⟩
+    IsPrimitiveElem R (a + b) := ⟨by simp [ha, hb], by simp [ha, hb, add_tmul, tmul_add]; abel⟩
 
 /-- Primitive elements in a bialgebra are stable under scalar multiplication. -/
 lemma IsPrimitiveElem.smul (ha : IsPrimitiveElem R a) (r : R) : IsPrimitiveElem R (r • a) :=
