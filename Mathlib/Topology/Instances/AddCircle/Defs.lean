@@ -177,7 +177,7 @@ theorem toIcoMod_eventuallyEq_toIocMod (hx : ¬x ≡ a [PMOD p]) :
   refine IsOpen.mem_nhds ?_ ?_
   · rw [Ico_eq_locus_Ioc_eq_iUnion_Ioo]
     exact isOpen_iUnion fun i => isOpen_Ioo
-  · rwa [mem_setOf_eq, ← not_modEq_iff_toIcoMod_eq_toIocMod hp, AddCommGroup.modEq_comm]
+  · rwa [mem_ofPred_eq, ← not_modEq_iff_toIcoMod_eq_toIocMod hp, AddCommGroup.modEq_comm]
 
 theorem continuousAt_toIcoMod (hx : ¬x ≡ a [PMOD p]) : ContinuousAt (toIcoMod hp a) x :=
   continuousAt_id.sub <| tendsto_nhds_of_eventually_eq <|
@@ -241,7 +241,7 @@ theorem card_torsion_le_of_isSMulRegular (n : ℕ) (h0 : n ≠ 0) (hn : IsSMulRe
   have (x : {x : AddCircle p | n • x = 0}) : ∃ (k : Fin n) (y : 𝕜), y = x.1 ∧ n • y = k.1 • p := by
     obtain ⟨x, hx⟩ := x
     obtain ⟨y, rfl⟩ := mk_surjective x
-    rw [Set.mem_setOf, ← mk_nsmul, eq_zero_iff] at hx
+    rw [Set.mem_ofPred, ← mk_nsmul, eq_zero_iff] at hx
     have ⟨m', hm⟩ := hx
     have : NeZero n := ⟨h0⟩
     rw [← (Int.divModEquiv n).symm_apply_apply m', Int.divModEquiv_symm_apply] at hm
@@ -262,7 +262,7 @@ theorem finite_torsion_of_isSMulRegular (n : ℕ) (hn : IsSMulRegular 𝕜 n) :
   nontriviality 𝕜
   obtain rfl | h0 := eq_or_ne n 0
   exacts [hn.not_zero.elim, ENat.card_lt_top.mp <|
-    (card_torsion_le_of_isSMulRegular p n h0 hn).trans_lt <| ENat.coe_lt_top n]
+    (card_torsion_le_of_isSMulRegular p n h0 hn).trans_lt <| ENat.natCast_lt_top n]
 
 theorem card_torsion_le_of_isSMulRegular_int (n : ℤ) (h0 : n ≠ 0) (hn : IsSMulRegular 𝕜 n) :
     {x : AddCircle p | n • x = 0}.encard ≤ n.natAbs := by
@@ -276,7 +276,7 @@ theorem finite_torsion_of_isSMulRegular_int (n : ℤ) (hn : IsSMulRegular 𝕜 n
   nontriviality 𝕜
   obtain rfl | h0 := eq_or_ne n 0
   exacts [hn.not_zero.elim, ENat.card_lt_top.mp <|
-    (card_torsion_le_of_isSMulRegular_int p n h0 hn).trans_lt <| ENat.coe_lt_top _]
+    (card_torsion_le_of_isSMulRegular_int p n h0 hn).trans_lt <| ENat.natCast_lt_top _]
 
 end Torsion
 
@@ -285,9 +285,12 @@ variable [LinearOrder 𝕜] [IsOrderedAddMonoid 𝕜]
 theorem finite_torsion {n : ℕ} (hn : 0 < n) : { u : AddCircle p | n • u = 0 }.Finite :=
   finite_torsion_of_isSMulRegular _ _ <| .of_right_eq_zero_of_smul fun _ ↦ by simp [hn.ne']
 
-theorem finite_setOf_addOrderOf_eq {n : ℕ} (hn : 0 < n) :
+theorem finite_setOfPred_addOrderOf_eq {n : ℕ} (hn : 0 < n) :
     {u : AddCircle p | addOrderOf u = n}.Finite :=
   (finite_torsion p hn).subset fun _ h ↦ ((addOrderOf_eq_iff hn).mp h).1
+
+@[deprecated (since := "2026-07-09")]
+alias finite_setOf_addOrderOf_eq := finite_setOfPred_addOrderOf_eq
 
 theorem coe_eq_zero_of_pos_iff (hp : 0 < p) {x : 𝕜} (hx : 0 < x) :
     (x : AddCircle p) = 0 ↔ ∃ n : ℕ, n • p = x := by
@@ -681,12 +684,12 @@ theorem card_addOrderOf_eq_totient {n : ℕ} :
   · simp only [Nat.totient_zero, addOrderOf_eq_zero_iff]
     rcases em (∃ u : AddCircle p, ¬IsOfFinAddOrder u) with (⟨u, hu⟩ | h)
     · have : Infinite { u : AddCircle p // ¬IsOfFinAddOrder u } := by
-        rw [← coe_setOf, infinite_coe_iff]
+        rw [← coe_ofPred, infinite_coe_iff]
         exact infinite_not_isOfFinAddOrder hu
       exact Nat.card_eq_zero_of_infinite
     · have : IsEmpty { u : AddCircle p // ¬IsOfFinAddOrder u } := by simpa [isEmpty_subtype] using h
       exact Nat.card_of_isEmpty
-  · rw [← coe_setOf, Nat.card_congr (setAddOrderOfEquiv p hn),
+  · rw [← coe_ofPred, Nat.card_congr (setAddOrderOfEquiv p hn),
       n.totient_eq_card_lt_and_coprime]
     simp only [Nat.gcd_comm]
 
