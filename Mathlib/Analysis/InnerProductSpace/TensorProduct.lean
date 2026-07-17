@@ -207,6 +207,9 @@ noncomputable def mkL : E →L[𝕜] F →L[𝕜] E ⊗[𝕜] F := (mk 𝕜 E F)
 @[simp] lemma toLinearMap_mkL_apply (x : E) : (mkL 𝕜 E F x).toLinearMap = mk 𝕜 E F x := rfl
 lemma mkL_apply_apply (x : E) (y : F) : mkL 𝕜 E F x y = x ⊗ₜ y := rfl
 
+@[fun_prop] lemma continuous_tmul : Continuous fun x : E × F ↦ x.1 ⊗ₜ[𝕜] x.2 :=
+  (mkL 𝕜 E F).continuous₂
+
 section isometry
 
 /-- The tensor product map of two linear isometries is a linear isometry. In particular, this is
