@@ -164,9 +164,8 @@ The monotone analogue is `Part.Fix.mem_iff`. -/
 theorem exists_mem_approx_of_mem_fix {x} {y : β x}
     (h : y ∈ Part.fix g x) : ∃ n, y ∈ Fix.approx g n x := by
   by_cases h' : ∃ i, (Fix.approx g i x).Dom
-  · exact ⟨_, (Part.fix_def g h') ▸ h⟩
-  · rw [Part.fix_def' g h'] at h
-    exact absurd h (Part.notMem_none _)
+  · exact ⟨_, Part.fix_def g h' ▸ h⟩
+  · simp [Part.fix_def' g h'] at h
 
 theorem fix_eq_ωSup_of_ωScottContinuous (hc : ωScottContinuous g) : Part.fix g =
     ωSup (approxChain (⟨g,hc.monotone⟩ : ((a : _) → Part <| β a) →o (a : _) → Part <| β a)) := by
@@ -207,17 +206,14 @@ pointwise, `g f` still satisfies `P` pointwise. -/
 theorem fix_induction_mem {P : ∀ a, β a → Prop} (hc : ωScottContinuous g)
     (h_step : ∀ f, (∀ x y, y ∈ f x → P x y) → ∀ x y, y ∈ g f x → P x y)
     {x} {y : β x} (h : y ∈ Part.fix g x) : P x y := by
-  have key : ∀ x y, y ∈ Part.fix g x → P x y := by
-    apply fix_scott_induction (p := fun f => ∀ x y, y ∈ f x → P x y) hc
-    · exact fun _ _ hy => absurd hy (Part.notMem_none _)
-    · exact h_step
-    · intro c ih x y hy
-      have hy' : y ∈ ωSup (c.map (Pi.evalOrderHom x)) := hy
-      rw [Part.mem_ωSup] at hy'
-      obtain ⟨n, hn⟩ := hy'
-      have hcn : c n x = Part.some y := hn.symm
-      exact ih n x y (hcn ▸ Part.mem_some y)
-  exact key x y h
+  apply fix_scott_induction (p := fun f => ∀ x y, y ∈ f x → P x y) hc _ h_step _ _ _ h
+  · exact fun _ _ hy => absurd hy (Part.notMem_none _)
+  intro c ih x y hy
+  have hy' : y ∈ ωSup (c.map (Pi.evalOrderHom x)) := hy
+  rw [Part.mem_ωSup] at hy'
+  obtain ⟨n, hn⟩ := hy'
+  have hcn : c n x = Part.some y := hn.symm
+  exact ih n x y (hcn ▸ Part.mem_some y)
 
 end Part
 
