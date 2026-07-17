@@ -40,7 +40,7 @@ end Nat
 
 namespace Nat.Partrec'
 
-open List.Vector Partrec Computable
+open List.Vector Computable
 
 open Nat.Partrec'
 
@@ -63,12 +63,14 @@ theorem of_prim {n} {f : List.Vector ℕ n → ℕ} (hf : Primrec f) : @Partrec'
 theorem head {n : ℕ} : @Partrec' n.succ (@head ℕ n) :=
   prim Nat.Primrec'.head
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem tail {n f} (hf : @Partrec' n f) : @Partrec' n.succ (PFun.mk fun v => f v.tail) :=
   (hf.comp _ fun i => @prim _ _ <| Nat.Primrec'.get i.succ).of_eq fun v => by
     have h_vec : List.Vector.ofFn (fun i => v.get i.succ) = v.tail := by
       ext i; rw [List.Vector.get_ofFn]; exact (List.Vector.get_tail v i).symm
     ext b; simp [h_vec]
 
+set_option backward.isDefEq.respectTransparency.types false in
 protected theorem bind {n f g} (hf : @Partrec' n f) (hg : @Partrec' (n + 1) g) :
     @Partrec' n (PFun.mk fun v => (f v).bind fun a => g (a ::ᵥ v)) :=
   (@comp n (n + 1) g (Fin.cases f (fun i => PFun.lift fun v => v.get i)) hg <|
@@ -96,6 +98,7 @@ protected theorem cons {n m} {f : List.Vector ℕ n → ℕ} {g} (hf : @Partrec'
 theorem idv {n} : @Vec n n id :=
   Vec.prim Nat.Primrec'.idv
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem comp' {n m f g} (hf : @Partrec' m f) (hg : @Vec n m g) :
     Partrec' (PFun.mk fun v => f (g v)) :=
   (hf.comp _ hg).of_eq fun v => by simp

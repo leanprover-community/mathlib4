@@ -50,11 +50,13 @@ instance : Inhabited PartialFun.{u} :=
   ⟨PartialFun.of PUnit⟩
 
 -- TODO: wrap morphisms in this category into a one-field `PFun.Hom` structure
+set_option backward.isDefEq.respectTransparency.types false in
 instance largeCategory : LargeCategory.{u} PartialFun where
   Hom X Y := PFun X Y
   id X := PFun.id X
   comp f g := g.comp f
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Constructs a partial function isomorphism between types from an equivalence between them. -/
 @[simps]
 def Iso.mk {α β : PartialFun.{u}} (e : α ≃ β) : α ≅ β where
@@ -69,12 +71,14 @@ def Iso.mk {α β : PartialFun.{u}} (e : α ≃ β) : α ≅ β where
 
 end PartialFun
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The forgetful functor from `Type` to `PartialFun` which forgets that the maps are total. -/
 def typeToPartialFun : Type u ⥤ PartialFun where
   obj := id
   map f := PFun.lift (f : _ → _)
   map_comp _ _ := PFun.coe_comp _ _
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : typeToPartialFun.Faithful where
   map_injective h := by
     ext x
@@ -97,6 +101,8 @@ def pointedToPartialFun : Pointed.{u} ⥤ PartialFun where
     refine ⟨fun h => ⟨⟨f.toFun a, fun heq => hc ((heq ▸ h).trans g.map_point)⟩, rfl, h⟩,
       fun ⟨_, hb, h⟩ => hb ▸ h⟩
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 open Classical in
 /-- The functor which maps undefined values to a new point. This makes the maps total and creates
 pointed types. This is the noncomputable part of the equivalence `PartialFunEquivPointed`. It can't
@@ -112,6 +118,7 @@ noncomputable def partialFunToPointed : PartialFun ⥤ Pointed where
   map_comp f g := Pointed.Hom.ext <| funext fun o => Option.recOn o rfl fun a => by
     simp [CategoryStruct.comp, Pointed.Hom.comp, Option.elim'_eq_elim, Part.bind_toOption]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The equivalence induced by `PartialFunToPointed` and `PointedToPartialFun`.
 `Part.equivOption` made functorial. -/
 @[simps! functor inverse]
@@ -140,7 +147,7 @@ noncomputable def partialFunEquivPointed : PartialFun.{u} ≌ Pointed where
           exact (Part.mem_toOption.mpr hw).symm
   counitIso :=
     NatIso.ofComponents
-      (fun X ↦ Pointed.Iso.mk (by classical exact Equiv.optionSubtypeNe X.point) (by rfl))
+      (fun X ↦ Pointed.Iso.mk (by classical exact Equiv.optionSubtypeNe X.point) rfl)
       fun {X Y} f ↦ Pointed.Hom.ext <| funext fun a ↦ by
         classical
         obtain _ | ⟨a, ha⟩ := a
@@ -154,8 +161,9 @@ noncomputable def partialFunEquivPointed : PartialFun.{u} ≌ Pointed where
     · classical
       change Equiv.optionSubtypeNe (none : Option X) ((PFun.lift _ x).toOption) = some x
       simp
-      rfl
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- Forgetting that maps are total and making them total again by adding a point is the same as just
 adding a point. -/
 @[simps!]

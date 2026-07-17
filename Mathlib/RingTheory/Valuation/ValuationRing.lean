@@ -145,6 +145,7 @@ protected theorem le_total (a b : ValueGroup A K) : a ≤ b ∨ b ≤ a := by
     field_simp
     simp only [← map_mul]; congr 1; linear_combination h
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable instance linearOrder : LinearOrder (ValueGroup A K) where
   le_refl := by rintro ⟨⟩; use 1; rw [one_smul]
   le_trans := by rintro ⟨a⟩ ⟨b⟩ ⟨c⟩ ⟨e, rfl⟩ ⟨f, rfl⟩; use e * f; rw [mul_smul]
@@ -286,7 +287,7 @@ instance le_total_ideal : @Std.Total (Ideal A) (· ≤ ·) := by
   · exfalso; apply h₂; rw [← h]
     apply Ideal.mul_mem_right _ _ hb
 
-open Classical in
+open scoped Classical in
 /- Todo: get rid of the `DecidableLE` argument.
 Currently, this argument causes this instance to not be called often,
 which hides a loop in simp-lemmas. See
@@ -304,7 +305,6 @@ variable {R : Type*}
 
 theorem _root_.PreValuationRing.iff_dvd_total [Semigroup R] :
     PreValuationRing R ↔ @Std.Total R (· ∣ ·) := by
-  classical
   refine ⟨fun H => ⟨fun a b => ?_⟩, fun H => ⟨fun a b => ?_⟩⟩
   · obtain ⟨c, rfl | rfl⟩ := PreValuationRing.cond a b <;> simp
   · obtain ⟨c, rfl⟩ | ⟨c, rfl⟩ := H.total a b <;> use c <;> simp
@@ -386,7 +386,6 @@ instance (priority := 100) [ValuationRing R] : IsBezout R := by
   · rw [sup_eq_left.mpr h]; exact ⟨⟨_, rfl⟩⟩
 
 instance (priority := 100) [IsLocalRing R] [IsBezout R] : ValuationRing R := by
-  classical
   refine iff_dvd_total.mpr ⟨fun a b => ?_⟩
   obtain ⟨g, e : _ = Ideal.span _⟩ := IsBezout.span_pair_isPrincipal a b
   obtain ⟨a, rfl⟩ := Ideal.mem_span_singleton'.mp
@@ -468,7 +467,7 @@ is a valuation ring. -/
 theorem of_integers (v : Valuation K Γ) (hh : v.Integers 𝒪) :
     haveI := hh.hom_inj.isDomain
     ValuationRing 𝒪 := by
-  haveI := hh.hom_inj.isDomain
+  have := hh.hom_inj.isDomain
   suffices PreValuationRing 𝒪 from .mk
   constructor
   intro a b

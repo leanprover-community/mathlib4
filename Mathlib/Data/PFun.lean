@@ -75,7 +75,7 @@ instance inhabited : Inhabited (α →. β) :=
 
 instance : FunLike (α →. β) α (Part β) where
   coe := PFun.toFun
-  coe_injective' _ _ := congrArg PFun.mk
+  coe_injective _ _ := congrArg PFun.mk
 
 initialize_simps_projections PFun (toFun → apply)
 
@@ -179,6 +179,7 @@ def ran (f : α →. β) : Set β :=
 def restrict (f : α →. β) {p : Set α} (H : p ⊆ f.Dom) : α →. β :=
   PFun.mk fun x => (f x).restrict (x ∈ p) (@H x)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem mem_restrict {f : α →. β} {s : Set α} (h : s ⊆ f.Dom) (a : α) (b : β) :
     b ∈ f.restrict h a ↔ a ∈ s ∧ b ∈ f a := by simp [restrict]
@@ -187,6 +188,7 @@ theorem mem_restrict {f : α →. β} {s : Set α} (h : s ⊆ f.Dom) (a : α) (b
 def res (f : α → β) (s : Set α) : α →. β :=
   (PFun.lift f).restrict s.subset_univ
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mem_res (f : α → β) (s : Set α) (a : α) (b : β) : b ∈ res f s a ↔ a ∈ s ∧ f a = b := by
   simp [res, @eq_comm _ b]
 
@@ -503,14 +505,17 @@ def comp (f : β →. γ) (g : α →. β) : α →. γ := PFun.mk fun a => (g a
 theorem comp_apply (f : β →. γ) (g : α →. β) (a : α) : f.comp g a = (g a).bind f :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem id_comp (f : α →. β) : (PFun.id β).comp f = f :=
   ext fun _ _ => by simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem comp_id (f : α →. β) : f.comp (PFun.id α) = f :=
   ext fun _ _ => by simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem dom_comp (f : β →. γ) (g : α →. β) : (f.comp g).Dom = g.preimage f.Dom := by
   ext
@@ -532,6 +537,7 @@ theorem Part.bind_comp (f : β →. γ) (g : α →. β) (a : Part α) :
 theorem comp_assoc (f : γ →. δ) (g : β →. γ) (h : α →. β) : (f.comp g).comp h = f.comp (g.comp h) :=
   ext fun _ _ => by simp only [comp_apply, Part.bind_comp]
 
+set_option backward.isDefEq.respectTransparency false in
 -- This can't be `simp`
 theorem coe_comp (g : β → γ) (f : α → β) : ((g ∘ f : α → γ) : α →. γ) = (g : β →. γ).comp f :=
   ext fun _ _ => by simp only [coe_val, comp_apply, Function.comp, Part.bind_some]
@@ -584,6 +590,7 @@ theorem mem_prodMap {f : α →. γ} {g : β →. δ} {x : α × β} {y : γ × 
   · simp only [prodMap, Part.mem_mk_iff, And.exists, Prod.ext_iff, coe_mk]
   · simp only [exists_and_left, exists_and_right, Membership.mem, Part.Mem]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem prodLift_fst_comp_snd_comp (f : α →. γ) (g : β →. δ) :
     prodLift (f.comp ((Prod.fst : α × β → α) : α × β →. α))

@@ -89,7 +89,7 @@ variable [PseudoEMetricSpace α] [PseudoEMetricSpace β]
 
 instance funLike : FunLike (α →ᵈ β) α β where
   coe := toFun
-  coe_injective' f g h := by cases f; cases g; congr
+  coe_injective f g h := by cases f; cases g; congr
 
 instance toDilationClass : DilationClass (α →ᵈ β) α β where
   edist_eq' f := edist_eq' f
@@ -128,7 +128,7 @@ theorem copy_eq_self (f : α →ᵈ β) {f' : α → β} (h : f' = f) : f.copy f
 
 variable [FunLike F α β]
 
-open Classical in
+open scoped Classical in
 /-- The ratio of a dilation `f`. If the ratio is undefined (i.e., the distance between any two
 points in `α` is either zero or infinity), then we choose one as the ratio. -/
 def ratio [DilationClass F α β] (f : F) : ℝ≥0 :=

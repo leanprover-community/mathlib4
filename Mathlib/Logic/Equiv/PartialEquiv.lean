@@ -79,7 +79,7 @@ This is in a separate file from `Mathlib/Tactic/Attr/Register.lean` because attr
 new file to become functional.
 -/
 
-namespace Tactic.MfldSetTac
+namespace Mathlib.Tactic.MfldSetTac
 
 /-- A very basic tactic to show that sets showing up in manifolds coincide or are included
 in one another. -/
@@ -94,7 +94,7 @@ elab (name := mfldSetTac) "mfld_set_tac" : tactic => withMainContext do
         · intro h_my_y
           try simp only [*, mfld_simps] at h_my_y
           try simp only [*, mfld_simps])))
-  | (``Subset, #[_ty, _inst, _e₁, _e₂]) =>
+  | (``LE.le, #[_ty, _inst, _e₁, _e₂]) =>
     evalTactic (← `(tactic| (
       intro my_y h_my_y
       try simp only [*, mfld_simps] at h_my_y
@@ -103,7 +103,7 @@ elab (name := mfldSetTac) "mfld_set_tac" : tactic => withMainContext do
 
 attribute [mfld_simps] and_true eq_self_iff_true Function.comp_apply
 
-end Tactic.MfldSetTac
+end Mathlib.Tactic.MfldSetTac
 
 open Function Set
 
@@ -180,8 +180,10 @@ theorem map_source {x : α} (h : x ∈ e.source) : e x ∈ e.target :=
   e.map_source' h
 
 /-- Variant of `e.map_source` and `map_source'`, stated for images of subsets of `source`. -/
-lemma map_source'' : e '' e.source ⊆ e.target :=
+lemma image_source_subset : e '' e.source ⊆ e.target :=
   fun _ ⟨_, hx, hex⟩ ↦ mem_of_eq_of_mem (id hex.symm) (e.map_source' hx)
+
+@[deprecated (since := "2026-06-17")] alias map_source'' := image_source_subset
 
 @[simp, mfld_simps]
 theorem map_target {x : β} (h : x ∈ e.target) : e.symm x ∈ e.source :=

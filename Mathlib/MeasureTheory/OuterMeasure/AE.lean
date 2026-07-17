@@ -158,16 +158,23 @@ theorem ae_le_set_union {s' t' : Set α} (h : s ≤ᵐ[μ] t) (h' : s' ≤ᵐ[μ
     (s ∪ s' : Set α) ≤ᵐ[μ] (t ∪ t' : Set α) :=
   h.union h'
 
+set_option backward.isDefEq.respectTransparency false in
 theorem union_ae_eq_right : (s ∪ t : Set α) =ᵐ[μ] t ↔ μ (s \ t) = 0 := by
-  simp [eventuallyLE_antisymm_iff, ae_le_set, union_diff_right,
-    diff_eq_empty.2 Set.subset_union_right]
+  simp [eventuallyLE_antisymm_iff, ae_le_set, union_sdiff_right,
+    sdiff_eq_empty.2 Set.subset_union_right]
 
-theorem diff_ae_eq_self : (s \ t : Set α) =ᵐ[μ] s ↔ μ (s ∩ t) = 0 := by
+set_option backward.isDefEq.respectTransparency false in
+theorem sdiff_ae_eq_self : (s \ t : Set α) =ᵐ[μ] s ↔ μ (s ∩ t) = 0 := by
   simp [eventuallyLE_antisymm_iff, ae_le_set]
 
-theorem diff_null_ae_eq_self (ht : μ t = 0) : (s \ t : Set α) =ᵐ[μ] s :=
-  diff_ae_eq_self.mpr (measure_mono_null inter_subset_right ht)
+@[deprecated (since := "2026-06-03")] alias diff_ae_eq_self := sdiff_ae_eq_self
 
+theorem sdiff_null_ae_eq_self (ht : μ t = 0) : (s \ t : Set α) =ᵐ[μ] s :=
+  sdiff_ae_eq_self.mpr (measure_mono_null inter_subset_right ht)
+
+@[deprecated (since := "2026-06-03")] alias diff_null_ae_eq_self := sdiff_null_ae_eq_self
+
+set_option backward.isDefEq.respectTransparency false in
 theorem ae_eq_set {s t : Set α} : s =ᵐ[μ] t ↔ μ (s \ t) = 0 ∧ μ (t \ s) = 0 := by
   simp [eventuallyLE_antisymm_iff, ae_le_set]
 
@@ -181,6 +188,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem ae_eq_set_compl_compl {s t : Set α} : sᶜ =ᵐ[μ] tᶜ ↔ s =ᵐ[μ] t := by
   simp only [← measure_symmDiff_eq_zero_iff, compl_symmDiff_compl]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ae_eq_set_compl {s t : Set α} : sᶜ =ᵐ[μ] t ↔ s =ᵐ[μ] tᶜ := by
   rw [← ae_eq_set_compl_compl, compl_compl]
 
@@ -192,15 +200,18 @@ theorem ae_eq_set_union {s' t' : Set α} (h : s =ᵐ[μ] t) (h' : s' =ᵐ[μ] t'
     (s ∪ s' : Set α) =ᵐ[μ] (t ∪ t' : Set α) :=
   h.union h'
 
-theorem ae_eq_set_diff {s' t' : Set α} (h : s =ᵐ[μ] t) (h' : s' =ᵐ[μ] t') :
+theorem ae_eq_set_sdiff {s' t' : Set α} (h : s =ᵐ[μ] t) (h' : s' =ᵐ[μ] t') :
     s \ s' =ᵐ[μ] t \ t' :=
   h.diff h'
+
+@[deprecated (since := "2026-06-03")] alias ae_eq_set_diff := ae_eq_set_sdiff
 
 open scoped symmDiff in
 theorem ae_eq_set_symmDiff {s' t' : Set α} (h : s =ᵐ[μ] t) (h' : s' =ᵐ[μ] t') :
     s ∆ s' =ᵐ[μ] t ∆ t' :=
   h.symmDiff h'
 
+set_option backward.isDefEq.respectTransparency false in
 theorem union_ae_eq_univ_of_ae_eq_univ_left (h : s =ᵐ[μ] univ) : (s ∪ t : Set α) =ᵐ[μ] univ :=
   (ae_eq_set_union h (ae_eq_refl t)).trans <| by rw [univ_union]
 
@@ -244,6 +255,7 @@ theorem ae_eq_set_biUnion {s : Set β} (hs : s.Countable) {t t' : β → Set α}
     (⋃ b ∈ s, t b : Set α) =ᵐ[μ] (⋃ b ∈ s, t' b : Set α) :=
   .countable_bUnion hs h
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem _root_.Set.mulIndicator_ae_eq_one {M : Type*} [One M] {f : α → M} {s : Set α} :
     s.mulIndicator f =ᵐ[μ] 1 ↔ μ (s ∩ f.mulSupport) = 0 := by
@@ -254,7 +266,7 @@ theorem _root_.Set.mulIndicator_ae_eq_one {M : Type*} [One M] {f : α → M} {s 
 theorem measure_mono_ae (H : s ≤ᵐ[μ] t) : μ s ≤ μ t :=
   calc
     μ s ≤ μ (s ∪ t) := measure_mono subset_union_left
-    _ = μ (t ∪ s \ t) := by rw [union_diff_self, Set.union_comm]
+    _ = μ (t ∪ s \ t) := by rw [union_sdiff_self, Set.union_comm]
     _ ≤ μ t + μ (s \ t) := measure_union_le _ _
     _ = μ t := by rw [ae_le_set.1 H, add_zero]
 

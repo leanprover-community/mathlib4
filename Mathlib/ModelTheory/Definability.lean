@@ -71,7 +71,7 @@ theorem definable_iff_exists_formula_sum :
   refine exists_congr (fun φ => iff_iff_eq.2 (congr_arg (s = ·) ?_))
   ext
   simp only [BoundedFormula.constantsVarsEquiv, constantsOn,
-    BoundedFormula.mapTermRelEquiv_symm_apply, mem_setOf_eq, Formula.Realize]
+    mem_setOf_eq, Formula.Realize]
   refine BoundedFormula.realize_mapTermRel_id ?_ (fun _ _ _ => rfl)
   intros
   simp only [Term.constantsVarsEquivLeft_symm_apply, Term.realize_varsToConstants,
@@ -149,13 +149,13 @@ theorem definable_biUnion_finset {ι : Type*} {f : ι → Set (α → M)}
 
 theorem definable_iInter_of_finite {ι : Type*} [Finite ι] {f : ι → Set (α → M)}
     (hf : ∀ i, A.Definable L (f i)) : A.Definable L (⋂ i, f i) := by
-  haveI := Fintype.ofFinite ι
+  have := Fintype.ofFinite ι
   convert! definable_finset_inf hf Finset.univ using 1
   simp
 
 theorem definable_iUnion_of_finite {ι : Type*} [Finite ι] {f : ι → Set (α → M)}
     (hf : ∀ i, A.Definable L (f i)) : A.Definable L (⋃ i, f i) := by
-  haveI := Fintype.ofFinite ι
+  have := Fintype.ofFinite ι
   convert! definable_finset_sup hf Finset.univ using 1
   simp
 
@@ -339,7 +339,7 @@ variable {s t : L.DefinableSet A α} {x : α → M}
 
 instance instSetLike : SetLike (L.DefinableSet A α) (α → M) where
   coe := Subtype.val
-  coe_injective' := Subtype.val_injective
+  coe_injective := Subtype.val_injective
 
 instance : PartialOrder (L.DefinableSet A α) := .ofSetLike (L.DefinableSet A α) (α → M)
 

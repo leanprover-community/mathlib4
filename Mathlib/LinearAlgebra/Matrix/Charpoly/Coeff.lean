@@ -188,7 +188,7 @@ lemma derivative_det_one_add_X_smul (M : Matrix n n R) :
   · ext; simp [map_add, e]
   · delta trace
     rw [← (Fintype.equivFin n).symm.sum_comp]
-    simp_rw [e, reindexLinearEquiv_apply, reindex_apply, diag_apply, submatrix_apply]
+    simp_rw [e, coe_reindexLinearEquiv, reindex_apply, diag_apply, submatrix_apply]
 
 lemma coeff_det_one_add_X_smul_one (M : Matrix n n R) :
     (det (1 + (X : R[X]) • M.map C)).coeff 1 = trace M := by
@@ -393,6 +393,7 @@ lemma det_piecewise_one_eq_submatrix_det
     · simp only [Finset.piecewise, if_neg i.prop, Matrix.one_apply, Subtype.ext_iff]
   rw [h_blocks, Matrix.det_fromBlocks_zero₂₁, Matrix.det_one, mul_one]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The k-th coefficient of `det (1 + X • M)` equals the sum of all k×k principal minors of M.
 This generalizes `coeff_det_one_add_X_smul_one` (the k = 1 case, which gives the trace)
 and `det_eq_sign_charpoly_coeff` (the k = n case, which gives the determinant). -/

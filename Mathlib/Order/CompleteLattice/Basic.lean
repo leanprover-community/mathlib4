@@ -98,9 +98,11 @@ theorem sSup_le_sSup_of_subset_insert_bot (h : s ⊆ insert ⊥ t) : sSup s ≤ 
   (sSup_le_sSup h).trans_eq (sSup_insert.trans (bot_sup_eq _))
 
 @[to_dual (attr := simp)]
-theorem sSup_diff_singleton_bot (s : Set α) : sSup (s \ {⊥}) = sSup s :=
-  (sSup_le_sSup diff_subset).antisymm <|
-    sSup_le_sSup_of_subset_insert_bot <| subset_insert_diff_singleton _ _
+theorem sSup_sdiff_singleton_bot (s : Set α) : sSup (s \ {⊥}) = sSup s :=
+  (sSup_le_sSup sdiff_subset).antisymm <|
+    sSup_le_sSup_of_subset_insert_bot <| subset_insert_sdiff_singleton _ _
+
+@[deprecated (since := "2026-06-03")] alias sSup_diff_singleton_bot := sSup_sdiff_singleton_bot
 
 @[to_dual]
 theorem sSup_pair {a b : α} : sSup {a, b} = a ⊔ b :=
@@ -468,7 +470,7 @@ theorem iSup_subtype'' {ι} (s : Set ι) (f : ι → α) : ⨆ i : s, f i = ⨆ 
 
 @[to_dual]
 theorem biSup_const {a : α} {s : Set β} (hs : s.Nonempty) : ⨆ i ∈ s, a = a := by
-  haveI : Nonempty s := Set.nonempty_coe_sort.mpr hs
+  have : Nonempty s := Set.nonempty_coe_sort.mpr hs
   rw [← iSup_subtype'', iSup_const]
 
 @[to_dual]
@@ -500,7 +502,7 @@ theorem sup_iSup [Nonempty ι] {f : ι → α} {a : α} : (a ⊔ ⨆ x, f x) = �
 @[to_dual]
 theorem biSup_sup {p : ι → Prop} {f : ∀ i, p i → α} {a : α} (h : ∃ i, p i) :
     (⨆ (i) (h : p i), f i h) ⊔ a = ⨆ (i) (h : p i), f i h ⊔ a := by
-  haveI : Nonempty { i // p i } :=
+  have : Nonempty { i // p i } :=
     let ⟨i, hi⟩ := h
     ⟨⟨i, hi⟩⟩
   rw [iSup_subtype', iSup_subtype', iSup_sup]

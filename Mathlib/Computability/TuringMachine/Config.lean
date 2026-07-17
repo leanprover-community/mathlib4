@@ -125,23 +125,29 @@ def Code.eval : Code → List ℕ →. List ℕ
 
 namespace Code
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem zero'_eval (v) : zero'.eval v = pure (0 :: v) := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem succ_eval (v) : succ.eval v = pure [v.headI.succ] := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem tail_eval (v) : tail.eval v = pure v.tail := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem cons_eval (f fs v) :
     (cons f fs).eval v = (f.eval v >>= fun n => fs.eval v >>= fun ns => pure (n.headI :: ns)) := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem comp_eval (f g v) :
     (comp f g).eval v = (g.eval v >>= fun x => f.eval x) := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem case_eval (f g v) :
     (case f g).eval v = v.headI.rec (f.eval v.tail) (fun y _ => g.eval (y::v.tail)) := rfl
@@ -236,6 +242,7 @@ def prec (f g : Code) : Code :=
 
 attribute [-simp] Part.bind_eq_bind Part.map_eq_map Part.pure_eq_some
 
+set_option backward.isDefEq.respectTransparency false in
 theorem exists_code.comp {m n} {f : List.Vector ℕ n →. ℕ} {g : Fin n → List.Vector ℕ m →. ℕ}
     (hf : ∃ c : Code, ∀ v : List.Vector ℕ n, c.eval v.1 = pure <$> f v)
     (hg : ∀ i, ∃ c : Code, ∀ v : List.Vector ℕ m, c.eval v.1 = pure <$> g i v) :
@@ -260,6 +267,9 @@ theorem exists_code.comp {m n} {f : List.Vector ℕ n →. ℕ} {g : Fin n → L
         simp [Vector.mOfFn, hg₁, hl]
         rfl⟩
 
+set_option backward.isDefEq.respectTransparency false in
+-- TODO: fix non-terminal simp (operates on two goals, with long simp sets)
+set_option linter.flexible false in
 theorem exists_code {n} {f : List.Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
     ∃ c : Code, ∀ v : List.Vector ℕ n, c.eval v.1 = pure <$> f v := by
   induction hf with
@@ -271,8 +281,7 @@ theorem exists_code {n} {f : List.Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
       refine Fin.succRec (fun n => ?_) (fun n i IH => ?_) i
       · exact ⟨head, fun ⟨List.cons a as, _⟩ => by simp; rfl⟩
       · obtain ⟨c, h⟩ := IH
-        exact ⟨c.comp tail, fun v => by
-          simpa [Bind.bind, Fin.succ, ← Vector.get_tail] using h v.tail⟩
+        exact ⟨c.comp tail, fun v => by simpa [← Vector.get_tail, Bind.bind] using h v.tail⟩
     | comp g hf hg IHf IHg =>
       simpa [Part.bind_eq_bind] using exists_code.comp IHf IHg
     | @prec n' f g _ _ IHf IHg =>
@@ -519,6 +528,7 @@ def Cont.then : Cont → Cont → Cont
   | Cont.comp f k => fun k' => Cont.comp f (k.then k')
   | Cont.fix f k => fun k' => Cont.fix f (k.then k')
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Cont.then_eval {k k' : Cont} {v} : (k.then k').eval v = k.eval v >>= k'.eval := by
   induction k generalizing v with
   | halt => simp only [Cont.eval, Cont.then, PFun.id_apply, Part.bind_eq_bind, Part.bind_some]
@@ -667,6 +677,7 @@ theorem cont_eval_fix {f k v} (fok : Code.Ok f) :
       rw [stepRet, if_neg h]
       exact IH v₁.tail ((Part.mem_map_iff _).2 ⟨_, he₁, if_neg h⟩)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem code_is_ok (c) : Code.Ok c := by
   induction c with (intro k v; rw [stepNormal])
   | cons f fs IHf IHfs =>
@@ -693,6 +704,7 @@ theorem code_is_ok (c) : Code.Ok c := by
 theorem stepNormal_eval (c v) : eval step (stepNormal c Cont.halt v) = Cfg.halt <$> c.eval v :=
   (code_is_ok c).zero
 
+set_option backward.isDefEq.respectTransparency false in
 theorem stepRet_eval {k v} : eval step (stepRet k v) = Cfg.halt <$> k.eval v := by
   induction k generalizing v with
   | halt =>
