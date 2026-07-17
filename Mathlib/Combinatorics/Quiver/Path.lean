@@ -327,18 +327,18 @@ protected theorem Reachable.elim {p : Prop} (h : Reachable a b) (hp : Path a b �
   Nonempty.elim h hp
 
 @[refl]
-protected theorem Reachable.refl (a : V) : Reachable a a := ⟨Path.nil⟩
+protected theorem Reachable.refl (a : V) : Reachable a a := ⟨.nil⟩
 
 @[simp]
-protected theorem Reachable.rfl : Reachable a a := Reachable.refl _
+protected theorem Reachable.rfl : Reachable a a := .refl _
 
 @[trans]
 protected theorem Reachable.trans (hab : Reachable a b) (hbc : Reachable b c) : Reachable a c :=
   hab.elim fun p => hbc.elim fun q => ⟨p.comp q⟩
 
 instance : IsPreorder V Reachable where
-  refl := Reachable.refl
-  trans _ _ _ := Reachable.trans
+  refl := .refl
+  trans _ _ _ := .trans
 
 /-- A path witnesses that its target is reachable from its source. -/
 protected theorem Path.reachable (p : Path a b) : Reachable a b := ⟨p⟩
