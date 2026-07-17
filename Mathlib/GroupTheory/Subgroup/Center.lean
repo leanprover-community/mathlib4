@@ -88,7 +88,7 @@ theorem center_eq_top [hG : IsMulCommutative G] : center G = ⊤ :=
 
 /-- A group is commutative if the center is the whole group. -/
 @[to_additive /-- An additive group is commutative if the center is the whole group. -/,
-  implicit_reducible]
+  instance_reducible]
 def _root_.Group.commGroupOfCenterEqTop (h : center G = ⊤) : CommGroup G :=
   { ‹Group G› with
     mul_comm := by
@@ -138,6 +138,7 @@ end IsConj
 
 namespace ConjClasses
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mk_bijOn (G : Type*) [Group G] :
     Set.BijOn ConjClasses.mk (↑(Subgroup.center G)) (noncenter G)ᶜ := by
   refine ⟨fun g hg ↦ ?_, fun x hx y _ H ↦ ?_, ?_⟩

@@ -105,6 +105,7 @@ theorem gaugeSeminormFamily_ball (s : AbsConvexOpenSets 𝕜 E) :
 variable [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E]
 variable [LocallyConvexSpace 𝕜 E]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The topology of a locally convex space is induced by the gauge seminorm family. -/
 theorem with_gaugeSeminormFamily : WithSeminorms (gaugeSeminormFamily 𝕜 E) := by
   refine SeminormFamily.withSeminorms_of_hasBasis _ ?_

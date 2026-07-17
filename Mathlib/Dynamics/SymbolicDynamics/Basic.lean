@@ -370,7 +370,6 @@ Uniqueness (and the usual equations such as `Pattern.shift p v (v + w) = p.confi
 require a left-cancellation hypothesis and are proved in separate lemmas.
 -/]
 protected noncomputable def Pattern.mulShift (p : Pattern A G) (v : G) : G → A := by
-  classical
   intro h
   if hmem : h ∈ p.support.image (v * ·) then
     -- package existence of a preimage under (v * ·)
