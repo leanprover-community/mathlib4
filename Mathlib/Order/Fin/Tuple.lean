@@ -9,7 +9,6 @@ public import Mathlib.Data.Fin.VecNotation
 public import Mathlib.Logic.Equiv.Fin.Basic
 public import Mathlib.Order.Fin.Basic
 public import Mathlib.Order.PiLex
-public import Mathlib.Order.Preorder.Finite
 public import Mathlib.Order.Interval.Set.Defs
 
 /-!
@@ -96,9 +95,13 @@ lemma Fin.strictMono_cons {f : Fin n → α} {a : α} :
     aesop
 
 @[simp] lemma Fin.strictMono_cons_zero_succ {f : Fin n → Fin (n + 1)} :
-    StrictMono (Fin.cons 0 f) ↔ f = Fin.succ :=
-  ⟨fun h ↦ funext fun i ↦ by simpa using congrFun h.eq_id i.succ,
-    fun h ↦ by simp [h, strictMono_id]⟩
+    StrictMono (Fin.cons 0 f) ↔ f = Fin.succ := by
+  refine ⟨fun h ↦ funext fun i ↦ ?_, fun h ↦ by simp [h, strictMono_id]⟩
+  have key (g : Fin (n + 1) → Fin (n + 1)) (hg : StrictMono g) : g = id := by
+    -- Import restrictions prevent us using `StrictMono.eq_id`: hence this manual proof.
+    refine funext fun x ↦ le_antisymm ?_ (hg.id_le x)
+    simpa using ((Fin.rev_strictAnti.comp_strictMono hg).comp Fin.rev_strictAnti).id_le (Fin.rev x)
+  simpa using congrFun (key _ h) i.succ
 
 variable {f : Fin (n + 1) → α} {a : α}
 

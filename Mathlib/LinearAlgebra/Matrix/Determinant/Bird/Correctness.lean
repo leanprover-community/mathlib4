@@ -215,8 +215,8 @@ theorem paper_eq3 (i j : Fin n) (hEq1 : Eq1 A p) :
     ((Spec.stepEntry A)^[p + 1] A) i j =
       (-1) ^ (p + 1) * (∑ α ∈ S (p + 1) i, pminor A α * A i j -
         ∑ k ∈ Finset.Ioi i, ∑ α ∈ S p i, bminor A i k α * A k j) := by
-  rw [iterate_succ_apply', Spec.stepEntry_eq, Matrix.of_apply, paper_eq2 _ _ hEq1, hEq1]
-  simp only [Matrix.of_apply, mul_assoc, Finset.sum_mul, ← Finset.mul_sum]
+  simp_rw [iterate_succ_apply', Spec.stepEntry_eq, Matrix.of_apply, paper_eq2 _ _ hEq1, hEq1,
+    Matrix.of_apply, mul_assoc, Finset.sum_mul, ← Finset.mul_sum]
   ring
 
 /-! ## Equation (5): first-column Laplace expansion -/
