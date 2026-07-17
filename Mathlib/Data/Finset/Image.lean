@@ -178,6 +178,7 @@ lemma map_filter' (p : α → Prop) [DecidablePred p] (f : α ↪ β) (s : Finse
     (s.filter p).map f = (s.map f).filter fun b => ∃ a, p a ∧ f a = b := by
   simp [filter_map]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma filter_attach' [DecidableEq α] (s : Finset α) (p : s → Prop) [DecidablePred p] :
     s.attach.filter p =
       (s.filter fun x => ∃ h, p ⟨x, h⟩).attach.map
@@ -217,7 +218,7 @@ theorem map_inter [DecidableEq α] [DecidableEq β] {f : α ↪ β} (s₁ s₂ :
 
 theorem map_sdiff [DecidableEq α] [DecidableEq β] {f : α ↪ β} (s₁ s₂ : Finset α) :
     (s₁ \ s₂).map f = s₁.map f \ s₂.map f :=
-  mod_cast Set.image_diff f.injective (s := s₁) (t := s₂)
+  mod_cast Set.image_sdiff f.injective (s := s₁) (t := s₂)
 
 @[simp]
 theorem map_singleton (f : α ↪ β) (a : α) : map f {a} = {f a} :=
@@ -253,8 +254,17 @@ theorem map_nontrivial : (s.map f).Nontrivial ↔ s.Nontrivial :=
 theorem attach_map_val {s : Finset α} : s.attach.map (Embedding.subtype _) = s :=
   eq_of_veq <| by rw [map_val, attach_val]; exact Multiset.attach_map_val _
 
+variable (f s) in
+/-- A `Finset` is in bijection with its image under an `Embedding`. -/
+@[simps!]
+noncomputable def equivMap : s ≃ s.map f :=
+  .ofBijective (fun x ↦ ⟨f x, s.mem_map_of_mem f x.2⟩) (⟨fun x y ↦ by simp, fun ⟨x, hx⟩ ↦ by
+    obtain ⟨x, hxs, rfl⟩ := mem_map.mp hx
+    exact ⟨⟨x, hxs⟩, rfl⟩⟩)
+
 end Map
 
+set_option backward.isDefEq.respectTransparency false in
 theorem range_add_one' (n : ℕ) :
     range (n + 1) = insert 0 ((range n).map ⟨fun i => i + 1, fun i j => by simp⟩) := by
   ext (⟨⟩ | ⟨n⟩) <;> simp [Nat.zero_lt_succ n]
@@ -300,6 +310,7 @@ theorem mem_image_const : c ∈ s.image (const α b) ↔ s.Nonempty ∧ b = c :=
 theorem mem_image_const_self : b ∈ s.image (const α b) ↔ s.Nonempty :=
   mem_image_const.trans <| and_iff_left rfl
 
+set_option backward.isDefEq.respectTransparency false in
 instance canLift (c) (p) [CanLift β α c p] :
     CanLift (Finset β) (Finset α) (image c) fun s => ∀ x ∈ s, p x where
   prf := by
@@ -440,7 +451,6 @@ theorem image_eq_image_iff_of_injOn {s₁ s₂ : Finset α} (ht : (s : Set α).I
   exact_mod_cast ht.image_eq_image_iff (mod_cast h₁) (mod_cast h₂)
 
 lemma image_ssubset_image {t : Finset α} (hf : Injective f) : s.image f ⊂ t.image f ↔ s ⊂ t := by
-  simp_rw [← lt_iff_ssubset]
   exact lt_iff_lt_of_le_iff_le' (image_subset_image_iff hf) (image_subset_image_iff hf)
 
 theorem coe_image_subset_range : ↑(s.image f) ⊆ Set.range f :=
@@ -494,11 +504,11 @@ theorem empty_eq_image : ∅ = s.image f ↔ s = ∅ := by rw [eq_comm, image_eq
 
 theorem image_sdiff [DecidableEq α] {f : α → β} (s t : Finset α) (hf : Injective f) :
     (s \ t).image f = s.image f \ t.image f :=
-  mod_cast Set.image_diff hf s t
+  mod_cast Set.image_sdiff hf s t
 
 lemma image_sdiff_of_injOn [DecidableEq α] {t : Finset α} (hf : Set.InjOn f s) (hts : t ⊆ s) :
     (s \ t).image f = s.image f \ t.image f :=
-  mod_cast Set.image_diff_of_injOn hf <| coe_subset.2 hts
+  mod_cast Set.image_sdiff_of_injOn hf <| coe_subset.2 hts
 
 theorem _root_.Disjoint.of_image_finset {s t : Finset α} {f : α → β}
     (h : Disjoint (s.image f) (t.image f)) : Disjoint s t :=
@@ -535,6 +545,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem attach_image_val [DecidableEq α] {s : Finset α} : s.attach.image Subtype.val = s :=
   eq_of_veq <| by rw [image_val, attach_val, Multiset.attach_map_val, dedup_eq_self]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma attach_cons (a : α) (s : Finset α) (ha) :
     attach (cons a s ha) =
@@ -600,7 +611,7 @@ theorem mem_filterMap {b : β} : b ∈ s.filterMap f f_inj ↔ ∃ a ∈ s, f a 
 
 @[simp, norm_cast]
 theorem coe_filterMap : (s.filterMap f f_inj : Set β) = {b | ∃ a ∈ s, f a = some b} :=
-  Set.ext (by simp only [mem_coe, mem_filterMap, Set.mem_setOf_eq, implies_true])
+  Set.ext (by simp only [mem_coe, mem_filterMap, Set.mem_ofPred_eq, implies_true])
 
 @[simp]
 theorem filterMap_some : s.filterMap some (by simp) = s :=
@@ -628,6 +639,7 @@ protected def subtype {α} (p : α → Prop) [DecidablePred p] (s : Finset α) :
     ⟨fun x => ⟨x.1, by simpa using (Finset.mem_filter.1 x.2).2⟩,
      fun _ _ H => Subtype.ext <| Subtype.mk.inj H⟩
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, grind =]
 theorem mem_subtype {p : α → Prop} [DecidablePred p] {s : Finset α} :
     ∀ {a : Subtype p}, a ∈ s.subtype p ↔ (a : α) ∈ s
@@ -689,7 +701,7 @@ theorem subset_set_image_iff [DecidableEq β] {s : Set α} {t : Finset β} {f : 
     ↑t ⊆ f '' s ↔ ∃ s' : Finset α, ↑s' ⊆ s ∧ s'.image f = t := by
   constructor
   · intro h
-    letI : CanLift β s (f ∘ (↑)) fun y => y ∈ f '' s := ⟨fun y ⟨x, hxt, hy⟩ => ⟨⟨x, hxt⟩, hy⟩⟩
+    let : CanLift β s (f ∘ (↑)) fun y => y ∈ f '' s := ⟨fun y ⟨x, hxt, hy⟩ => ⟨⟨x, hxt⟩, hy⟩⟩
     lift t to Finset s using h
     refine ⟨t.map (Embedding.subtype _), map_subtype_subset _, ?_⟩
     ext y; simp
@@ -758,6 +770,7 @@ theorem finsetCongr_toEmbedding (e : α ≃ β) :
     e.finsetCongr.toEmbedding = (Finset.mapEmbedding e.toEmbedding).toEmbedding :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a predicate `p : α → Prop`, produces an equivalence between
   `Finset {a : α // p a}` and `{s : Finset α // ∀ a ∈ s, p a}`. -/
 @[simps]

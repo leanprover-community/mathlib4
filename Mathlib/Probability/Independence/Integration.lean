@@ -95,8 +95,8 @@ theorem lintegral_mul_eq_lintegral_mul_lintegral_of_independent_measurableSpace
   · intro f' g _ h_measMg_f' _ h_ind_f' h_ind_g'
     have h_measM_f' : Measurable f' := h_measMg_f'.mono hMg le_rfl
     simp_rw [Pi.add_apply, left_distrib]
-    rw [lintegral_add_left h_measM_f', lintegral_add_left (h_measM_f.mul h_measM_f'), left_distrib,
-      h_ind_f', h_ind_g']
+    rw [lintegral_add_left h_measM_f',
+      lintegral_add_left (h_measM_f.fun_mul h_measM_f'), left_distrib, h_ind_f', h_ind_g']
   · intro f' h_meas_f' h_mono_f' h_ind_f'
     have h_measM_f' : ∀ n, Measurable (f' n) := fun n => (h_meas_f' n).mono hMg le_rfl
     simp_rw [mul_iSup]
@@ -312,11 +312,11 @@ theorem IndepFun.integral_bilin_comp_comp'
 /-- If `X` and `Y` are independent and integrable random variables and `B`
 is a continuous bilinear map, then `∫ ω, B (X ω) (Y ω) ∂μ = B μ[X] μ[Y].` -/
 theorem IndepFun.integral_bilin
-    [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedSpace 𝕜 E] [CompleteSpace E]
+    [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
     [MeasurableSpace E] [BorelSpace E]
-    [NormedAddCommGroup F] [NormedSpace ℝ F] [NormedSpace 𝕜 F] [CompleteSpace F]
+    [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F]
     [MeasurableSpace F] [BorelSpace F]
-    [NormedAddCommGroup G] [NormedSpace ℝ G] [NormedSpace 𝕜 G] [CompleteSpace G]
+    [NormedAddCommGroup G] [NormedSpace ℝ G] [CompleteSpace G]
     {X : Ω → E} {Y : Ω → F} (hXY : X ⟂ᵢ[μ] Y) (hX : Integrable X μ) (hY : Integrable Y μ)
     (B : E →L[ℝ] F →L[ℝ] G) :
     ∫ ω, B (X ω) (Y ω) ∂μ = B μ[X] μ[Y] :=
@@ -333,11 +333,11 @@ The assumption on `B` allows to drop the integrability condition in
 `IndepFun.integral_bilin'`, which is useful for the versions where `B` is the scalar
 multiplication or the multiplication. -/
 theorem IndepFun.integral_bilin'
-    [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedSpace 𝕜 E] [CompleteSpace E]
+    [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
     [MeasurableSpace E] [BorelSpace E]
-    [NormedAddCommGroup F] [NormedSpace ℝ F] [NormedSpace 𝕜 F] [CompleteSpace F]
+    [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F]
     [MeasurableSpace F] [BorelSpace F]
-    [NormedAddCommGroup G] [NormedSpace ℝ G] [NormedSpace 𝕜 G] [CompleteSpace G]
+    [NormedAddCommGroup G] [NormedSpace ℝ G] [CompleteSpace G]
     {X : Ω → E} {Y : Ω → F} (hXY : X ⟂ᵢ[μ] Y) (hX : AEStronglyMeasurable X μ)
     (hY : AEStronglyMeasurable Y μ)
     (B : E →L[ℝ] F →L[ℝ] G) (c : ℝ≥0) (hc : c ≠ 0) (hB : ∀ x y, c * ‖x‖ * ‖y‖ ≤ ‖B x y‖) :
@@ -405,7 +405,7 @@ lemma IndepFun.integral_smul_eq_smul_integral
     (hX : AEStronglyMeasurable X μ) (hY : AEStronglyMeasurable Y μ) :
     μ[X • Y] = μ[X] • μ[Y] := by
   by_cases hE : CompleteSpace E
-  · exact hXY.integral_bilin' (𝕜 := 𝕜) hX hY (.lsmul ℝ 𝕜) 1 (by simp) (by simp [norm_smul])
+  · exact hXY.integral_bilin' hX hY (.lsmul ℝ 𝕜) 1 (by simp) (by simp [norm_smul])
   · simp [integral, hE]
 
 lemma IndepFun.integral_mul_eq_mul_integral

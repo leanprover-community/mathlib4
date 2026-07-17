@@ -404,7 +404,7 @@ theorem exists_null_frontier_thickening (μ : Measure Ω) [SFinite μ] (s : Set 
     fun r ↦ isClosed_frontier.measurableSet
   have disjs := Metric.frontier_thickening_disjoint s
   have key := Measure.countable_meas_pos_of_disjoint_iUnion (μ := μ) mbles disjs
-  have aux := measure_diff_null (s := Ioo a b) (Set.Countable.measure_zero key volume)
+  have aux := measure_sdiff_null (s := Ioo a b) (Set.Countable.measure_zero key volume)
   have len_pos : 0 < ENNReal.ofReal (b - a) := by simp only [hab, ENNReal.ofReal_pos, sub_pos]
   rw [← Real.volume_Ioo, ← aux] at len_pos
   simpa [Set.Nonempty] using nonempty_of_measure_ne_zero len_pos.ne'
@@ -435,7 +435,7 @@ lemma limsup_measure_closed_le_of_forall_tendsto_measure
             Tendsto (fun i ↦ μs i E) L (𝓝 (μ E)))
     (F : Set Ω) (F_closed : IsClosed F) :
     L.limsup (fun i ↦ μs i F) ≤ μ F := by
-  letI : PseudoMetricSpace Ω := TopologicalSpace.pseudoMetrizableSpacePseudoMetric Ω
+  let : PseudoMetricSpace Ω := TopologicalSpace.pseudoMetrizableSpacePseudoMetric Ω
   rcases L.eq_or_neBot with rfl | _
   · simp only [limsup_bot, bot_eq_zero', zero_le]
   have ex := exists_null_frontiers_thickening μ F
@@ -454,7 +454,7 @@ lemma limsup_measure_closed_le_of_forall_tendsto_measure
   have nhds : Iio (μ F + ε) ∈ 𝓝 (μ F) :=
     Iio_mem_nhds <| ENNReal.lt_add_right μF_finite.ne (ENNReal.coe_pos.mpr ε_pos).ne'
   specialize rs_lim (keyB nhds)
-  simp only [mem_map, mem_atTop_sets, ge_iff_le, mem_preimage, mem_Iio] at rs_lim
+  simp only [mem_map, mem_atTop_sets, mem_preimage, mem_Iio] at rs_lim
   obtain ⟨m, hm⟩ := rs_lim
   have aux : (fun i ↦ (μs i F)) ≤ᶠ[L] (fun i ↦ μs i (Metric.thickening (rs m) F)) :=
     .of_forall <| fun i ↦ measure_mono (Metric.self_subset_thickening (rs_pos m) F)
@@ -797,7 +797,6 @@ lemma ProbabilityMeasure.exists_lt_measure_biUnion_of_isOpen
     (h : ∀ (u : Set Ω), IsOpen u → ∀ x ∈ u, ∃ s ∈ S, s ∈ 𝓝 x ∧ s ⊆ u)
     {G : Set Ω} (hG : IsOpen G) {r : ℝ≥0} (hr : r < ν G) :
     ∃ T : Finset (Set Ω), (∀ t ∈ T, t ∈ S) ∧ (r < ν (⋃ t ∈ T, t)) ∧ (⋃ t ∈ T, t) ⊆ G := by
-  classical
   obtain ⟨T, TS, T_count, hT⟩ : ∃ T : Set (Set Ω), T ⊆ S ∧ T.Countable ∧ ⋃ t ∈ T, t = G := by
     have : ∀ (x : G), ∃ s ∈ S, s ∈ 𝓝 (x : Ω) ∧ s ⊆ G := fun x ↦ h G hG x x.2
     choose! s hsS hs_nhds hsG using this

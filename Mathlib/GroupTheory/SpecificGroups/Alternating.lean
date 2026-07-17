@@ -5,7 +5,7 @@ Authors: Aaron Anderson, Antoine Chambert-Loir
 -/
 module
 
-public import Mathlib.Data.Fintype.Units
+public import Mathlib.Algebra.GroupWithZero.Units.Fintype
 public import Mathlib.GroupTheory.IndexNormal
 public import Mathlib.GroupTheory.Perm.ConjAct
 public import Mathlib.GroupTheory.Perm.Fin
@@ -240,7 +240,7 @@ theorem closure_cycleType_eq_two_two_eq_alternatingGroup (h5 : 5 ≤ Nat.card α
   apply le_antisymm
   · rw [Subgroup.closure_le]
     intro g hg
-    simp only [Set.mem_setOf_eq] at hg
+    simp only [Set.mem_ofPred_eq] at hg
     simp [mem_alternatingGroup, sign_of_cycleType, hg, ← Units.val_inj]
   · rw [← Equiv.Perm.closure_three_cycles_eq_alternating, Subgroup.closure_le]
     intro g hg3
@@ -263,7 +263,7 @@ alias closure_cycleType_eq_2_2_eq_alternatingGroup :=
 theorem cycleType_eq_two_two_subset_alternatingGroup :
     {g : Perm α | g.cycleType = {2, 2}} ⊆ alternatingGroup α := by
   intro g hg
-  rw [Set.mem_setOf_eq] at hg
+  rw [Set.mem_ofPred_eq] at hg
   simp [sign_of_cycleType, hg, ← Units.val_inj]
 
 theorem _root_.alternatingGroup.closure_cycleType_eq_two_two_eq_top (h5 : 5 ≤ Nat.card α) :

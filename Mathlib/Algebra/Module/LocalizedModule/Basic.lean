@@ -49,6 +49,7 @@ universe u v
 variable {R : Type u} [CommSemiring R] (S : Submonoid R)
 variable (M : Type v) [AddCommMonoid M] [Module R M]
 variable (T : Type*) [CommSemiring T] [Algebra R T] [IsLocalization S T]
+variable (T' : Type*) [CommSemiring T'] [Algebra R T'] [IsLocalization S T']
 
 /-- The equivalence relation on `M × S` where `(m1, s1) ≈ (m2, s2)` if and only if
 for some (u : S), u * (s2 • m1 - s1 • m2) = 0 -/
@@ -198,6 +199,14 @@ theorem mk_mul_mk' {A : Type*} [Semiring A] [Algebra R A] {a₁ a₂ : A} {s₁ 
 theorem mk_mul_mk {A : Type*} [Semiring A] [Algebra R A] {a₁ a₂ : A} {s₁ s₂ : S} :
     mk a₁ s₁ * mk a₂ s₂ = mk (a₁ * a₂) (s₁ * s₂) := by rw [mk_mul_mk', mul_comm s₁ s₂]
 
+theorem mk_pow {A : Type*} [Semiring A] [Algebra R A] {S : Submonoid R} (n : ℕ) (a : A) (s : S) :
+    mk a s ^ n = mk (a ^ n) (s ^ n) := by
+  induction n with
+  | zero =>
+    rw [pow_zero, pow_zero, pow_zero, OreLocalization.one_def]
+  | succ n ih =>
+    simp only [pow_succ', ih, LocalizedModule.mk_mul_mk]
+
 -- For the instance on `Localization S`, we prefer `OreLocalization.instSemiring`.
 -- They are defeq but Lean needs to unfold a bunch to verify it.
 instance (priority := 900) {A : Type*} [Semiring A] [Algebra R A] {S : Submonoid R} :
@@ -259,6 +268,18 @@ private lemma example_oreLocalizationInstCommRing_eq_localizedModuleInstCommRing
     OreLocalization.instCommRing = (LocalizedModule.instCommRing : CommRing R[S⁻¹]) := by
   with_reducible_and_instances rfl
 
+theorem smul'_mk
+    {R₀ : Type*} [SMul R₀ R] [SMul R₀ M] [IsScalarTower R₀ R R] [IsScalarTower R₀ R M]
+    (r : R₀) (m : M) (s : S) :
+    r • LocalizedModule.mk m s = LocalizedModule.mk (r • m) s := by
+  rw [OreLocalization.smul_oreDiv]
+  simp
+
+theorem prod_mk {ι A : Type*} [CommSemiring A] [Algebra R A] {S : Submonoid R}
+    (t : Finset ι) (a : ι → A) (s : ι → S) :
+    ∏ i ∈ t, mk (a i) (s i) = mk (∏ i ∈ t, a i) (∏ i ∈ t, s i) := by
+  induction t using Finset.cons_induction <;> simp [OreLocalization.one_def, *, mk_mul_mk]
+
 /-- If `IsLocalization S T`, then `M[S⁻¹]` has a `T`-action.
 This should eventually be replaced with `IsLocalizedModule f N` and `SMul T N`. -/
 noncomputable abbrev smulOfIsLocalization : SMul T (LocalizedModule S M) where
@@ -291,6 +312,11 @@ theorem mk'_smul_mk (r : R) (m : M) (s s' : S) :
 theorem mk_smul_mk (r : R) (m : M) (s t : S) :
     Localization.mk r s • mk m t = mk (r • m) (s * t) :=
   (OreLocalization.oreDiv_smul_char _ _ _ _ _ _ (mul_comm _ _)).trans (by rw [mul_comm])
+
+instance : SMulCommClass T T' (LocalizedModule S M) where
+  smul_comm t t' p := by
+    induction p with | _ m s
+    simp_rw [smul_def, smul_smul, mul_left_comm, mul_comm]
 
 variable {T}
 
@@ -367,10 +393,6 @@ theorem mk_cancel (s : S) (m : M) : mk (s • m) s = mk m 1 :=
 @[simp]
 theorem mk_cancel_common_right (s s' : S) (m : M) : mk (s' • m) (s * s') = mk m s :=
   mk_eq.mpr ⟨1, by simp [mul_smul]⟩
-
-theorem smul'_mk (r : R) (s : S) (m : M) : r • mk m s = mk (r • m) s := by
-  refine (OreLocalization.smul_oreDiv _ _ _).trans ?_
-  simp
 
 lemma smul_eq_iff_of_mem
     (r : R) (hr : r ∈ S) (x y : LocalizedModule S M) :
@@ -541,6 +563,7 @@ lemma IsLocalizedModule.injective_iff_isRegular [IsLocalizedModule S f] :
     Function.Injective f ↔ ∀ c : S, IsSMulRegular M c := by
   simp_rw [IsSMulRegular, Function.Injective, eq_iff_exists S, exists_imp, forall_comm (α := S)]
 
+set_option backward.isDefEq.respectTransparency false in
 instance IsLocalizedModule.of_linearEquiv (e : M' ≃ₗ[R] M'') [hf : IsLocalizedModule S f] :
     IsLocalizedModule S (e ∘ₗ f : M →ₗ[R] M'') where
   map_units s := by
@@ -557,6 +580,7 @@ instance IsLocalizedModule.of_linearEquiv (e : M' ≃ₗ[R] M'') [hf : IsLocaliz
       EmbeddingLike.apply_eq_iff_eq] at h
     exact hf.exists_of_eq h
 
+set_option backward.isDefEq.respectTransparency false in
 instance IsLocalizedModule.of_linearEquiv_right (e : M'' ≃ₗ[R] M) [hf : IsLocalizedModule S f] :
     IsLocalizedModule S (f ∘ₗ e : M'' →ₗ[R] M') where
   map_units s := hf.map_units s
@@ -1008,9 +1032,11 @@ lemma isRegular_of_smul_left_injective {m : M'} (inj : Function.Injective fun r 
 noncomputable def mk' (m : M) (s : S) : M' :=
   fromLocalizedModule S f (LocalizedModule.mk m s)
 
-theorem mk'_smul (r : R) (m : M) (s : S) : mk' f (r • m) s = r • mk' f m s := by
+theorem mk'_smul {R₀ : Type*} [SMul R₀ R] [SMul R₀ M] [SMul R₀ M']
+    [IsScalarTower R₀ R R] [IsScalarTower R₀ R M] [IsScalarTower R₀ R M']
+    (r : R₀) (m : M) (s : S) : mk' f (r • m) s = r • mk' f m s := by
   delta mk'
-  rw [← LocalizedModule.smul'_mk, map_smul]
+  rw [← LocalizedModule.smul'_mk, LinearMap.map_smul_of_tower]
 
 theorem mk'_add_mk' (m₁ m₂ : M) (s₁ s₂ : S) :
     mk' f m₁ s₁ + mk' f m₂ s₂ = mk' f (s₂ • m₁ + s₁ • m₂) (s₁ * s₂) := by
@@ -1105,6 +1131,7 @@ theorem mk_eq_mk' (s : S) (m : M) :
   rw [eq_comm, mk'_eq_iff, Submonoid.smul_def, LocalizedModule.smul'_mk, ← Submonoid.smul_def,
     LocalizedModule.mk_cancel, LocalizedModule.mkLinearMap_apply]
 
+set_option backward.isDefEq.respectTransparency false in
 variable (A) in
 lemma mk'_smul_mk' (x : R) (m : M) (s t : S) :
     IsLocalization.mk' A x s • mk' f m t = mk' f (x • m) (s * t) := by
@@ -1144,6 +1171,7 @@ lemma liftOfLE_comp : (liftOfLE S₁ S₂ h f₁ f₂).comp f₁ = f₂ := lift_
 
 @[simp] lemma liftOfLE_apply (x) : liftOfLE S₁ S₂ h f₁ f₂ (f₁ x) = f₂ x := lift_apply ..
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The image of `m/s` under `liftOfLE` is `m/s`. -/
 @[simp]
 lemma liftOfLE_mk' (m : M) (s : S₁) :
@@ -1298,6 +1326,7 @@ theorem map_comp' (g : M₀ →ₗ[R] M₁) (h : M₁ →ₗ[R] M₂) :
 
 section Algebra
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mkOfAlgebra {R S S' : Type*} [CommSemiring R] [Ring S] [Ring S'] [Algebra R S]
     [Algebra R S'] (M : Submonoid R) (f : S →ₐ[R] S') (h₁ : ∀ x ∈ M, IsUnit (algebraMap R S' x))
     (h₂ : ∀ y, ∃ x : S × M, x.2 • y = f x.1) (h₃ : ∀ x, f x = 0 → ∃ m : M, m • x = 0) :

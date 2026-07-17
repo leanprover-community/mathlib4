@@ -77,7 +77,6 @@ theorem eq_zero_of_eval_zero_at_prod_finset {σ : Type*} [Finite σ] [IsDomain R
       rwa [← RingHom.mem_ker, that] at this
     apply h _ (fun i ↦ S (e i))
     · intro i
-      classical
       convert! Hdeg (e i)
       conv_lhs => rw [← e.symm_apply_apply i, degreeOf_rename_of_injective e.symm.injective]
     · intro x hx
@@ -164,7 +163,7 @@ private theorem Alon.degree_P [Nontrivial R] (m : MonomialOrder σ) (S : Finset 
     exact isRegular_one
 
 /-- The leading coefficient of `Alon.P S i` is `1`. -/
-private theorem Alon.monic_P [Nontrivial R] (m : MonomialOrder σ) (S : Finset R) (i : σ) :
+private theorem Alon.monic_P (m : MonomialOrder σ) (S : Finset R) (i : σ) :
     m.Monic (P S i) :=
   Monic.prod (fun r _ ↦ m.monic_X_sub_C i r)
 
@@ -178,7 +177,7 @@ private lemma Alon.of_mem_P_support {ι : Type*} (i : ι) (S : Finset R) (m : ι
   rw [hP, support_rename_of_injective (Function.injective_of_subsingleton _)] at hm
   simp only [Finset.mem_image, mem_support_iff, ne_eq] at hm
   obtain ⟨e, he, hm⟩ := hm
-  haveI : Nontrivial R := nontrivial_of_ne _ _ he
+  have : Nontrivial R := nontrivial_of_ne _ _ he
   refine ⟨e (), ?_, ?_⟩
   · suffices e ≼[lex] single () #S by
       simpa [MonomialOrder.lex_le_iff_of_unique] using this
@@ -190,7 +189,7 @@ private lemma Alon.of_mem_P_support {ι : Type*} (i : ι) (S : Finset R) (m : ι
     ext j
     by_cases hj : j = i
     · rw [hj, mapDomain_apply (Function.injective_of_subsingleton _), single_eq_same]
-    · rw [mapDomain_notin_range, single_eq_of_ne hj]
+    · rw [mapDomain_of_notMem_range, single_eq_of_ne hj]
       simp [Set.range_const, Set.mem_singleton_iff, hj]
 
 variable [Finite σ]
@@ -210,7 +209,7 @@ theorem combinatorial_nullstellensatz_exists_linearCombination
     ∃ (h : σ →₀ MvPolynomial σ R),
       (∀ i, ((∏ s ∈ S i, (X i - C s)) * h i).totalDegree ≤ f.totalDegree) ∧
       f = linearCombination (MvPolynomial σ R) (fun i ↦ ∏ r ∈ S i, (X i - C r)) h := by
-  letI : LinearOrder σ := WellOrderingRel.isWellOrder.linearOrder
+  let : LinearOrder σ := WellOrderingRel.isWellOrder.linearOrder
   obtain ⟨h, r, hf, hh, hr⟩ := degLex.div (b := fun i ↦ Alon.P (S i) i)
       (fun i ↦ by simp only [(Alon.monic_P ..).leadingCoeff_eq_one, isUnit_one]) f
   use h
@@ -245,7 +244,6 @@ theorem combinatorial_nullstellensatz_exists_eval_nonzero [IsDomain R]
     (S : σ → Finset R) (htS : ∀ i, t i < #(S i)) :
     ∃ s : σ → R, (∀ i, s i ∈ S i) ∧ eval s f ≠ 0 := by
   let _ : LinearOrder σ := WellOrderingRel.isWellOrder.linearOrder
-  classical
   by_contra! Heval
   apply ht
   obtain ⟨h, hh, hf⟩ := combinatorial_nullstellensatz_exists_linearCombination S
