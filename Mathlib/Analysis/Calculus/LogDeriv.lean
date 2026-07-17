@@ -133,7 +133,7 @@ lemma logDeriv_eqOn_iff [IsRCLikeNormedField 𝕜] {f g : 𝕜 → 𝕜'} {s : S
         simp only [Pi.sub_apply, Pi.mul_apply, Pi.inv_apply, Pi.div_apply, Pi.pow_apply,
           Pi.zero_apply]
         grind [logDeriv_apply, Pi.div_apply]
-      letI := IsRCLikeNormedField.rclike 𝕜
+      let := IsRCLikeNormedField.rclike 𝕜
       obtain ⟨a, ha⟩ := hs2.exists_is_const_of_deriv_eq_zero hsc (hf.mul (hg.inv hgn)) hfg
       grind [Pi.mul_apply, Pi.inv_apply, Pi.smul_apply, smul_eq_mul]
     · rintro ⟨z, hz0, hz⟩ x hx
