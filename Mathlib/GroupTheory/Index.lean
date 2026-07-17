@@ -873,17 +873,10 @@ variable (G : Type*) {X : Type*} [Group G] [MulAction G X] (x : X)
 
 variable {G}
 
-theorem orbit_range_conj (g : G) : orbit (MulAut.conj (G := G)).range g = conjugatesOf g := by
-  simp [Set.ext_iff, conjugatesOf, mem_orbit_iff]
-
-theorem stabilizer_comap_eq_centralizer (g : G) :
-    (stabilizer (MulAut G) g).comap MulAut.conj = Subgroup.centralizer {g} := by
-  simp [Subgroup.ext_iff, Subgroup.mem_centralizer_singleton_iff, mul_inv_eq_iff_eq_mul]
-
 theorem index_centralizer_eq_ncard (g : G) :
     (Subgroup.centralizer {g}).index = (conjugatesOf g).ncard := by
-  rw [← stabilizer_comap_eq_centralizer, Subgroup.index_comap, Subgroup.relIndex,
-    stabilizer_subgroupOf, index_stabilizer, orbit_range_conj]
+  rw [← stabilizer_comap_conj_eq_centralizer_singleton, Subgroup.index_comap, Subgroup.relIndex,
+    stabilizer_subgroupOf, index_stabilizer, orbit_range_conj_eq_conjugatesOf]
 
 end MulAction
 
