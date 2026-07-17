@@ -28,6 +28,7 @@ lemma Finset.sum_indicator_mod {R : Type*} [AddCommMonoid R] (m : ℕ) [NeZero m
   simp only [Finset.sum_apply, Set.indicator_apply, Set.mem_setOf_eq, Finset.sum_ite_eq,
     Finset.mem_univ, ↓reduceIte]
 
+set_option backward.isDefEq.respectTransparency false in
 open Set in
 /-- A sequence `f` with values in an additive topological group `R` is summable on the
 residue class of `k` mod `m` if and only if `f (m*n + k)` is summable. -/
@@ -99,6 +100,7 @@ lemma summable_indicator_mod_iff {m : ℕ} [NeZero m] {f : ℕ → ℝ} (hf : An
 
 open ZMod
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `f` is a summable function on `ℕ`, and `0 < N`, then we may compute `∑' n : ℕ, f n` by
 summing each residue class mod `N` separately. -/
 lemma Nat.sumByResidueClasses {R : Type*} [AddCommGroup R] [UniformSpace R] [IsUniformAddGroup R]

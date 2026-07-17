@@ -64,7 +64,7 @@ def cokernelIsColimit : IsColimit (cokernelCocone f) :=
     (fun s => ofHom <| (LinearMap.range f.hom).liftQ (Cofork.π s).hom <|
       LinearMap.range_le_ker_iff.2 <| ModuleCat.hom_ext_iff.mp <| CokernelCofork.condition s)
     (fun s => hom_ext <| (LinearMap.range f.hom).liftQ_mkQ (Cofork.π s).hom _) fun s m h => by
-    haveI : Epi (ofHom f.hom.range.mkQ) :=
+    have : Epi (ofHom f.hom.range.mkQ) :=
       (epi_iff_range_eq_top _).mpr (Submodule.range_mkQ _)
     apply (cancel_epi (ofHom f.hom.range.mkQ)).1
     exact h
