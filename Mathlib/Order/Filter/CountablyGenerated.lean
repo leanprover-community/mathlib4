@@ -18,7 +18,7 @@ We also define predicates `Filter.IsCountableBasis` and `Filter.HasCountableBasi
 saying that a specific family of sets is a countable basis.
 -/
 
-@[expose] public section
+public section
 
 open Set
 
@@ -34,7 +34,7 @@ class IsCountablyGenerated (f : Filter α) : Prop where
 /-- `IsCountableBasis p s` means the image of `s` bounded by `p` is a countable filter basis. -/
 structure IsCountableBasis (p : ι → Prop) (s : ι → Set α) : Prop extends IsBasis p s where
   /-- The set of `i` that satisfy the predicate `p` is countable. -/
-  countable : (setOf p).Countable
+  countable : (Set.ofPred p).Countable
 
 /-- We say that a filter `l` has a countable basis `s : ι → Set α` bounded by `p : ι → Prop`,
 if `t ∈ l` if and only if `t` includes `s i` for some `i` such that `p i`, and the set
@@ -42,7 +42,7 @@ defined by `p` is countable. -/
 structure HasCountableBasis (l : Filter α) (p : ι → Prop) (s : ι → Set α) : Prop
     extends HasBasis l p s where
   /-- The set of `i` that satisfy the predicate `p` is countable. -/
-  countable : (setOf p).Countable
+  countable : (Set.ofPred p).Countable
 
 /-- A countable filter basis `B` on a type `α` is a nonempty countable collection of sets of `α`
 such that the intersection of two elements of this collection contains some element
@@ -128,7 +128,7 @@ theorem HasBasis.exists_antitone_subbasis {f : Filter α} [h : f.IsCountablyGene
     exacts [hs.set_index_subset _, (hs.set_index_subset _).trans inter_subset_left]
   refine ⟨fun i => (x i).1, fun i => (x i).2, ?_⟩
   have : (⨅ i, 𝓟 (s (x i).1)).HasAntitoneBasis fun i => s (x i).1 := .iInf_principal x_anti
-  convert this
+  convert! this
   exact
     le_antisymm (le_iInf fun i => le_principal_iff.2 <| by cases i <;> apply hs.set_index_mem)
       (hx'.symm ▸

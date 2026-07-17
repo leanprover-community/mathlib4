@@ -141,9 +141,9 @@ universal property of the free product, characterizing it as a categorical copro
 def lift : (∀ i, M i →* N) ≃ (CoprodI M →* N) where
   toFun fi :=
     Con.lift _ (FreeMonoid.lift fun p : Σ i, M i => fi p.fst p.snd) <|
-      Con.conGen_le <| by
+      Con.conGen_le.2 <| fun _ _ => by
         simp_rw [Con.ker_rel]
-        rintro _ _ (i | ⟨x, y⟩) <;> simp
+        rintro (i | ⟨x, y⟩) <;> simp
   invFun f _ := f.comp of
   left_inv := by
     intro fi
@@ -458,6 +458,8 @@ theorem mem_of_mem_equivPair_tail {i j : ι} {w : Word M} (m : M i) :
   · exact List.mem_of_mem_tail h
   · revert h; cases w.toList <;> simp +contextual
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 theorem equivPair_head {i : ι} {w : Word M} :
     (equivPair i w).head =
       if h : ∃ (h : w.toList ≠ []), (w.toList.head h).1 = i
@@ -791,11 +793,9 @@ end NeWord
 
 section PingPongLemma
 
-open Pointwise
-
 open Cardinal
-
 open scoped Function -- required for scoped `on` notation
+open scoped Pointwise
 
 variable {G : Type*} [Group G]
 variable {H : ι → Type*} [∀ i, Group (H i)]
@@ -857,28 +857,27 @@ theorem lift_word_prod_nontrivial_of_head_card {i j} (w : NeWord H i j)
 include hcard in
 theorem lift_word_prod_nontrivial_of_not_empty {i j} (w : NeWord H i j) :
     lift f w.prod ≠ 1 := by
-  classical
-    rcases hcard with hcard | hcard
-    · obtain ⟨i, h1, h2⟩ := Cardinal.exists_ne_ne_of_three_le hcard i j
-      exact lift_word_prod_nontrivial_of_other_i f X hXnonempty hXdisj hpp w h1 h2
-    · obtain ⟨k, hcard⟩ := hcard
-      by_cases hh : i = k <;> by_cases hl : j = k
-      · subst hh
-        subst hl
-        exact lift_word_prod_nontrivial_of_head_eq_last f X hXnonempty hXdisj hpp w
-      · subst hh
-        change j ≠ i at hl
-        exact lift_word_prod_nontrivial_of_head_card f X hXnonempty hXdisj hpp w hcard hl.symm
-      · subst hl
-        change i ≠ j at hh
-        have : lift f w.inv.prod ≠ 1 :=
-          lift_word_prod_nontrivial_of_head_card f X hXnonempty hXdisj hpp w.inv hcard hh.symm
-        intro heq
-        apply this
-        simpa using heq
-      · change i ≠ k at hh
-        change j ≠ k at hl
-        exact lift_word_prod_nontrivial_of_other_i f X hXnonempty hXdisj hpp w hh.symm hl.symm
+  rcases hcard with hcard | hcard
+  · obtain ⟨i, h1, h2⟩ := Cardinal.exists_ne_ne_of_three_le hcard i j
+    exact lift_word_prod_nontrivial_of_other_i f X hXnonempty hXdisj hpp w h1 h2
+  · obtain ⟨k, hcard⟩ := hcard
+    by_cases hh : i = k <;> by_cases hl : j = k
+    · subst hh
+      subst hl
+      exact lift_word_prod_nontrivial_of_head_eq_last f X hXnonempty hXdisj hpp w
+    · subst hh
+      change j ≠ i at hl
+      exact lift_word_prod_nontrivial_of_head_card f X hXnonempty hXdisj hpp w hcard hl.symm
+    · subst hl
+      change i ≠ j at hh
+      have : lift f w.inv.prod ≠ 1 :=
+        lift_word_prod_nontrivial_of_head_card f X hXnonempty hXdisj hpp w.inv hcard hh.symm
+      intro heq
+      apply this
+      simpa using heq
+    · change i ≠ k at hh
+      change j ≠ k at hl
+      exact lift_word_prod_nontrivial_of_other_i f X hXnonempty hXdisj hpp w hh.symm hl.symm
 
 include hcard in
 theorem empty_of_word_prod_eq_one {w : Word H} (h : lift f w.prod = 1) :
@@ -887,6 +886,7 @@ theorem empty_of_word_prod_eq_one {w : Word H} (h : lift f w.prod = 1) :
   obtain ⟨i, j, w, rfl⟩ := NeWord.of_word w hnotempty
   exact lift_word_prod_nontrivial_of_not_empty f hcard X hXnonempty hXdisj hpp w h
 
+set_option backward.isDefEq.respectTransparency false in
 include hcard in
 /-- The **Ping-Pong-Lemma**.
 
@@ -942,9 +942,9 @@ def _root_.freeGroupEquivCoprodI {ι : Type u_1} :
 
 section PingPongLemma
 
-open Pointwise Cardinal
-
+open Cardinal
 open scoped Function -- required for scoped `on` notation
+open scoped Pointwise
 
 variable [Nontrivial ι]
 variable {G : Type u_1} [Group G] (a : ι → G)
@@ -959,6 +959,7 @@ variable (hXYdisj : ∀ i j, Disjoint (X i) (Y j))
 variable (hX : ∀ i, a i • (Y i)ᶜ ⊆ X i)
 variable (hY : ∀ i, a⁻¹ i • (X i)ᶜ ⊆ Y i)
 
+set_option backward.isDefEq.respectTransparency false in
 include hXnonempty hXdisj hYdisj hXYdisj hX hY in
 /-- The Ping-Pong-Lemma.
 
@@ -1019,7 +1020,7 @@ theorem _root_.FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeG
           smul_set_mono ((hXYdisj j i).union_left <| hYdisj hij.symm).subset_compl_right
         _ ⊆ X i := by
           clear hnne0 hlt
-          induction n, h1n using Int.le_induction with
+          induction n, h1n using Int.leInduction with
           | base => rw [zpow_one]; exact hX i
           | succ n _hle hi =>
             calc
@@ -1037,7 +1038,7 @@ theorem _root_.FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeG
           smul_set_mono ((hXdisj hij.symm).union_left (hXYdisj i j).symm).subset_compl_right
         _ ⊆ Y i := by
           clear hnne0 hgt
-          induction n, h1n using Int.le_induction_down with
+          induction n, h1n using Int.leInductionDown with
           | base => rw [zpow_neg, zpow_one]; exact hY i
           | pred n hle hi =>
             calc

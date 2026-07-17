@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Alexander Bentkamp
 module
 
 public import Mathlib.LinearAlgebra.Finsupp.LinearCombination
+public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Bases
@@ -85,6 +86,7 @@ To turn a linear independent family of vectors spanning `M` into a basis, use `B
 They are internally represented as linear equivs `M ≃ₗ[R] (ι →₀ R)`,
 available as `Basis.repr`.
 -/
+@[wikidata Q189569]
 structure Basis where
   /-- `Basis.ofRepr` constructs a basis given an assignment of coordinates to each vector. -/
   ofRepr ::
@@ -107,7 +109,7 @@ theorem repr_injective : Injective (repr : Basis ι R M → M ≃ₗ[R] ι →�
 /-- `b i` is the `i`th basis vector. -/
 instance instFunLike : FunLike (Basis ι R M) ι M where
   coe b i := b.repr.symm (Finsupp.single i 1)
-  coe_injective' f g h := repr_injective <| LinearEquiv.symm_bijective.injective <|
+  coe_injective f g h := repr_injective <| LinearEquiv.symm_bijective.injective <|
     LinearEquiv.toLinearMap_injective <| by ext; exact congr_fun h _
 
 @[simp]
@@ -229,11 +231,12 @@ def Basis.equivFun [Finite ι] (b : Basis ι R M) : M ≃ₗ[R] ι → R :=
       (ι →₀ R) ≃ₗ[R] ι → R)
 
 /-- A module over a finite ring that admits a finite basis is finite. -/
-@[implicit_reducible]
+@[instance_reducible]
 def fintypeOfFintype [Fintype ι] (b : Basis ι R M) [Fintype R] : Fintype M :=
   haveI := Classical.decEq ι
   Fintype.ofEquiv _ b.equivFun.toEquiv.symm
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a basis `v` indexed by `ι`, the canonical linear equivalence between `ι → R` and `M` maps
 a function `x : ι → R` to the linear combination `∑_i x i • v i`. -/
 @[simp]
@@ -431,6 +434,7 @@ theorem reindexRange_apply (x : range b) : b.reindexRange x = x := by
   rcases x with ⟨bi, ⟨i, rfl⟩⟩
   exact b.reindexRange_self i
 
+set_option backward.isDefEq.respectTransparency false in
 theorem reindexRange_repr' (x : M) {bi : M} {i : ι} (h : b i = bi) :
     b.reindexRange.repr x ⟨bi, ⟨i, h⟩⟩ = b.repr x i := by
   nontriviality
@@ -441,7 +445,7 @@ theorem reindexRange_repr' (x : M) {bi : M} {i : ι} (h : b i = bi) :
     simp only [Pi.add_apply, map_add, Finsupp.coe_add]
   · intro c x
     ext i
-    simp only [Pi.smul_apply, map_smul, Finsupp.coe_smul]
+    simp
   · intro i
     ext j
     simp only [reindexRange_repr_self]
@@ -640,6 +644,7 @@ theorem equiv'_symm_apply (f : M → M') (g : M' → M) (hf hg hgf hfg) (i : ι'
     (b.equiv' b' f g hf hg hgf hfg).symm (b' i) = g (b' i) :=
   b'.constr_basis R _ _
 
+set_option backward.isDefEq.respectTransparency false in
 theorem sum_repr_mul_repr {ι'} [Fintype ι'] (b' : Basis ι' R M) (x : M) (i : ι) :
     (∑ j : ι', b.repr (b' j) i * b'.repr x j) = b.repr x i := by
   conv_rhs => rw [← b'.sum_repr x]

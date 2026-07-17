@@ -75,7 +75,6 @@ structure AddMagmaCat.Hom (A B : AddMagmaCat.{u}) where
   /-- The underlying `AddHom`. -/
   hom' : A →ₙ+ B
 
-set_option backward.privateInPublic true in
 /-- The type of morphisms in `MagmaCat R`. -/
 @[to_additive, ext]
 structure MagmaCat.Hom (A B : MagmaCat.{u}) where
@@ -237,7 +236,6 @@ structure AddSemigrp.Hom (A B : AddSemigrp.{u}) where
   /-- The underlying `AddHom`. -/
   hom' : A →ₙ+ B
 
-set_option backward.privateInPublic true in
 /-- The type of morphisms in `Semigrp R`. -/
 @[to_additive, ext]
 structure Semigrp.Hom (A B : Semigrp.{u}) where
@@ -419,8 +417,8 @@ in `MagmaCat` -/
     as (isomorphic to) isomorphisms in `AddMagmaCat` -/]
 def mulEquivIsoMagmaIso {X Y : Type u} [Mul X] [Mul Y] :
     (X ≃* Y) ≅ (MagmaCat.of X ≅ MagmaCat.of Y) where
-  hom := TypeCat.ofHom (fun e ↦ e.toMagmaCatIso)
-  inv := TypeCat.ofHom (fun i ↦ i.magmaCatIsoToMulEquiv)
+  hom := ↾fun e ↦ e.toMagmaCatIso
+  inv := ↾fun i ↦ i.magmaCatIsoToMulEquiv
 
 /-- multiplicative equivalences between `Semigroup`s are the same as (isomorphic to) isomorphisms
 in `Semigroup` -/
@@ -429,8 +427,8 @@ in `Semigroup` -/
   the same as (isomorphic to) isomorphisms in `AddSemigroup` -/]
 def mulEquivIsoSemigrpIso {X Y : Type u} [Semigroup X] [Semigroup Y] :
     (X ≃* Y) ≅ (Semigrp.of X ≅ Semigrp.of Y) where
-  hom := TypeCat.ofHom (fun e ↦ e.toSemigrpIso)
-  inv := TypeCat.ofHom (fun i ↦ i.semigrpIsoToMulEquiv)
+  hom := ↾fun e ↦ e.toSemigrpIso
+  inv := ↾fun i ↦ i.semigrpIsoToMulEquiv
 
 @[to_additive]
 instance MagmaCat.forgetReflectsIsos : (forget MagmaCat.{u}).ReflectsIsomorphisms where
@@ -447,7 +445,8 @@ instance Semigrp.forgetReflectsIsos : (forget Semigrp.{u}).ReflectsIsomorphisms 
     exact e.toSemigrpIso.isIso_hom
 
 /-- Ensure that `forget₂ CommMonCat MonCat` automatically reflects isomorphisms. -/
-@[to_additive]
+@[to_additive /-- Ensure that `forget₂ AddCommMonCat AddMonCat` automatically reflects
+isomorphisms. -/]
 instance Semigrp.forget₂_full : (forget₂ Semigrp MagmaCat).Full where
   map_surjective f := ⟨ofHom f.hom, rfl⟩
 

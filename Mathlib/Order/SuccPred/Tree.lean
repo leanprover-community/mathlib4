@@ -147,7 +147,7 @@ lemma SubRootedTree.ext {t : RootedTree} {v₁ v₂ : SubRootedTree t}
 
 instance (t : RootedTree) : SetLike (SubRootedTree t) t where
   coe v := Set.Ici v.root
-  coe_injective' a₁ a₂ h := by
+  coe_injective a₁ a₂ h := by
     simpa only [Set.Ici_inj, ← SubRootedTree.ext_iff] using h
 
 lemma SubRootedTree.mem_iff {t : RootedTree} {r : SubRootedTree t} {v : t} :
@@ -179,7 +179,7 @@ variable {t : RootedTree}
 
 lemma SubRootedTree.root_ne_bot_of_mem_subtrees (r : SubRootedTree t) (hr : r ∈ t.subtrees) :
     r.root ≠ ⊥ := by
-  simp only [RootedTree.subtrees, Set.mem_setOf_eq] at hr
+  simp only [RootedTree.subtrees, Set.mem_ofPred_eq] at hr
   exact hr.1
 
 lemma RootedTree.mem_subtrees_disjoint_iff {t₁ t₂ : SubRootedTree t}

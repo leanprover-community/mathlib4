@@ -90,14 +90,15 @@ theorem fst_surjective : Function.Surjective (fst R M M₂) := fun x => ⟨(x, 0
 
 theorem snd_surjective : Function.Surjective (snd R M M₂) := fun x => ⟨(0, x), rfl⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The prod of two linear maps is a linear map. -/
 @[simps]
 def prod (f : M →ₗ[R] M₂) (g : M →ₗ[R] M₃) : M →ₗ[R] M₂ × M₃ where
-  toFun := Pi.prod f g
-  map_add' x y := by simp only [Pi.prod, Prod.mk_add_mk, map_add]
-  map_smul' c x := by simp only [Pi.prod, Prod.smul_mk, map_smul, RingHom.id_apply]
+  toFun := Function.prod f g
+  map_add' x y := by simp only [Function.prod_apply, Prod.mk_add_mk, map_add]
+  map_smul' c x := by simp only [Function.prod_apply, Prod.smul_mk, map_smul, RingHom.id_apply]
 
-theorem coe_prod (f : M →ₗ[R] M₂) (g : M →ₗ[R] M₃) : ⇑(f.prod g) = Pi.prod f g :=
+theorem coe_prod (f : M →ₗ[R] M₂) (g : M →ₗ[R] M₃) : ⇑(f.prod g) = Function.prod f g :=
   rfl
 
 @[simp]
@@ -477,6 +478,7 @@ theorem ker_coprod_of_disjoint_range {M₂ : Type*} [AddCommGroup M₂] [Module 
   rw [this] at h
   simpa [this] using h
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a linear map `f : E →ₗ[R] F` and a complement `C` of its kernel, we get a linear
 equivalence between `C` and `range f`. -/
 @[simps!]
@@ -640,6 +642,13 @@ theorem prod_eq_top_iff {p₁ : Submodule R M} {p₂ : Submodule R M₂} :
     p₁.prod p₂ = ⊤ ↔ p₁ = ⊤ ∧ p₂ = ⊤ := by
   simp only [eq_top_iff, le_prod_iff, map_top, range_fst, range_snd]
 
+variable {M M₂} in
+theorem span_prod_eq {s : Set M} {t : Set M₂} (hs : 0 ∈ s) (ht : 0 ∈ t) :
+    span R (s ×ˢ t) = (span R s).prod (span R t) := by
+  refine le_antisymm (span_prod_le s t) ?_
+  simp [Submodule.prod_le_iff, map_span]
+  grind [span_mono]
+
 end Submodule
 
 namespace LinearEquiv
@@ -765,6 +774,7 @@ protected def prodCongr : (M × M₃) ≃ₗ[R] M₂ × M₄ :=
   { e₁.toAddEquiv.prodCongr e₂.toAddEquiv with
     map_smul' := fun c _x => Prod.ext (e₁.map_smulₛₗ c _) (e₂.map_smulₛₗ c _) }
 
+@[simp]
 theorem prodCongr_symm : (e₁.prodCongr e₂).symm = e₁.symm.prodCongr e₂.symm :=
   rfl
 
@@ -814,6 +824,7 @@ variable [Semiring R]
 variable [AddCommMonoid M] [AddCommMonoid M₂]
 variable [Module R M] [Module R M₂] [Unique M₂]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Multiplying by the trivial module from the left does not change the structure.
 This is the `LinearEquiv` version of `AddEquiv.uniqueProd`. -/
 @[simps!]
@@ -823,6 +834,7 @@ def uniqueProd : (M₂ × M) ≃ₗ[R] M :=
 lemma coe_uniqueProd :
     (uniqueProd (R := R) (M := M) (M₂ := M₂) : (M₂ × M) ≃ M) = Equiv.uniqueProd M M₂ := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Multiplying by the trivial module from the right does not change the structure.
 This is the `LinearEquiv` version of `AddEquiv.prodUnique`. -/
 @[simps!]
@@ -850,7 +862,7 @@ theorem range_prod_eq {f : M →ₗ[R] M₂} {g : M →ₗ[R] M₃} (h : ker f �
     range (prod f g) = (range f).prod (range g) := by
   refine le_antisymm (f.range_prod_le g) ?_
   simp only [SetLike.le_def, prod_apply, mem_range, mem_prod, exists_imp, and_imp,
-    Prod.forall, Pi.prod]
+    Prod.forall, Function.prod_apply]
   rintro _ _ x rfl y rfl
   -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 had to specify `(f := f)`
   simp only [Prod.mk_inj, ← sub_mem_ker_iff (f := f)]

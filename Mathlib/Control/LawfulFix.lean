@@ -124,7 +124,7 @@ theorem approxChain_eq_iterateChain :
 
 end Fix
 
-open Fix
+open Part.Fix
 
 variable {α : Type*}
 variable (f : ((a : _) → Part <| β a) →o (a : _) → Part <| β a)
@@ -151,7 +151,7 @@ theorem fix_le {X : (a : _) → Part <| β a} (hX : f X ≤ X) : Part.fix f ≤ 
   simp only [Fix.approxChain]
   intro i
   induction i with
-  | zero => dsimp [Fix.approx]; apply bot_le
+  | zero => apply bot_le
   | succ _ i_ih =>
     trans f X
     · apply f.monotone i_ih
@@ -225,6 +225,7 @@ def toUnitMono (f : Part α →o Part α) : (Unit → Part α) →o Unit → Par
   toFun x u := f (x u)
   monotone' x y (h : x ≤ y) u := f.monotone <| h u
 
+set_option backward.defeqAttrib.useBackward true in
 theorem ωScottContinuous_toUnitMono (f : Part α → Part α) (hc : ωScottContinuous f) :
     ωScottContinuous (toUnitMono ⟨f,hc.monotone⟩) := .of_map_ωSup_of_orderHom fun _ => by
   ext ⟨⟩ : 1
@@ -278,6 +279,7 @@ theorem ωScottContinuous_curry :
     rw [map_comp, map_comp]
     rfl
 
+set_option backward.defeqAttrib.useBackward true in
 theorem ωScottContinuous_uncurry :
     ωScottContinuous (monotoneUncurry α β γ) :=
     .of_map_ωSup_of_orderHom fun c ↦ by

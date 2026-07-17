@@ -145,7 +145,7 @@ theorem coe_mul_apply [AddMonoid ι] [SetLike.GradedMonoid A]
     [∀ (i : ι) (x : A i), Decidable (x ≠ 0)] (r r' : ⨁ i, A i) (n : ι) :
     ((r * r') n : R) =
       ∑ ij ∈ r.support ×ˢ r'.support with ij.1 + ij.2 = n, (r ij.1 * r' ij.2 : R) := by
-  rw [mul_eq_sum_support_ghas_mul, DFinsupp.finset_sum_apply, AddSubmonoidClass.coe_finset_sum]
+  rw [mul_eq_sum_support_ghas_mul, DFinsupp.finsetSum_apply, AddSubmonoidClass.coe_finsetSum]
   simp_rw [coe_of_apply, apply_ite, ZeroMemClass.coe_zero, ← Finset.sum_filter, SetLike.coe_gMul]
 
 set_option backward.isDefEq.respectTransparency false in
@@ -154,7 +154,7 @@ theorem coe_mul_apply_eq_dfinsuppSum [AddMonoid ι] [SetLike.GradedMonoid A]
     ((r * r') n : R) = r.sum fun i ri => r'.sum fun j rj => if i + j = n then (ri * rj : R)
       else 0 := by
   rw [mul_eq_dfinsuppSum]
-  iterate 2 rw [DFinsupp.sum_apply, DFinsupp.sum, AddSubmonoidClass.coe_finset_sum]; congr; ext
+  iterate 2 rw [DFinsupp.sum_apply, DFinsupp.sum, AddSubmonoidClass.coe_finsetSum]; congr; ext
   dsimp only
   split_ifs with h
   · subst h
@@ -163,6 +163,7 @@ theorem coe_mul_apply_eq_dfinsuppSum [AddMonoid ι] [SetLike.GradedMonoid A]
   · rw [of_eq_of_ne _ _ _ (Ne.symm h)]
     rfl
 
+set_option backward.isDefEq.respectTransparency false in
 open Finset in
 theorem coe_mul_apply_eq_sum_antidiagonal [AddMonoid ι] [HasAntidiagonal ι]
     [SetLike.GradedMonoid A] (r r' : ⨁ i, A i) (n : ι) :
@@ -172,6 +173,7 @@ theorem coe_mul_apply_eq_sum_antidiagonal [AddMonoid ι] [HasAntidiagonal ι]
   apply Finset.sum_subset (fun _ ↦ by simp)
   aesop (erase simp not_and) (add simp not_and_or)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem coe_of_mul_apply_aux [AddMonoid ι] [SetLike.GradedMonoid A] {i : ι} (r : A i)
     (r' : ⨁ i, A i) {j n : ι} (H : ∀ x : ι, i + x = n ↔ x = j) :
     ((of (fun i => A i) i r * r') n : R) = r * r' j := by
@@ -186,6 +188,7 @@ theorem coe_of_mul_apply_aux [AddMonoid ι] [SetLike.GradedMonoid A] {i : ι} (r
     · rfl
     rw [DFinsupp.notMem_support_iff.mp h, ZeroMemClass.coe_zero, mul_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem coe_mul_of_apply_aux [AddMonoid ι] [SetLike.GradedMonoid A] (r : ⨁ i, A i) {i : ι}
     (r' : A i) {j n : ι} (H : ∀ x : ι, x + i = n ↔ x = j) :
     ((r * of (fun i => A i) i r') n : R) = r j * r' := by
@@ -223,6 +226,7 @@ section CanonicallyOrderedAddCommMonoid
 variable [Semiring R] [SetLike σ R] [AddSubmonoidClass σ R] (A : ι → σ)
 variable [AddCommMonoid ι] [PartialOrder ι] [CanonicallyOrderedAdd ι] [SetLike.GradedMonoid A]
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem coe_of_mul_apply_of_not_le {i : ι} (r : A i) (r' : ⨁ i, A i) (n : ι) (h : ¬i ≤ n) :
     ((of (fun i => A i) i r * r') n : R) = 0 := by
   classical
@@ -234,6 +238,7 @@ theorem coe_of_mul_apply_of_not_le {i : ι} (r : A i) (r' : ⨁ i, A i) (n : ι)
     · rw [DFinsupp.sum, Finset.sum_ite_of_false, Finset.sum_const_zero]
       exact fun x _ H => h ((self_le_add_right i x).trans_eq H)
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem coe_mul_of_apply_of_not_le (r : ⨁ i, A i) {i : ι} (r' : A i) (n : ι) (h : ¬i ≤ n) :
     ((r * of (fun i => A i) i r') n : R) = 0 := by
   classical
@@ -247,8 +252,9 @@ theorem coe_mul_of_apply_of_not_le (r : ⨁ i, A i) {i : ι} (r' : A i) (n : ι)
 
 variable [Sub ι] [OrderedSub ι] [AddLeftReflectLE ι]
 
-/- The following two lemmas only require the same hypotheses as `eq_tsub_iff_add_eq_of_le`, but we
-  state them for the above typeclasses for convenience. -/
+/-! The following two lemmas only require the same hypotheses as `eq_tsub_iff_add_eq_of_le`, but we
+state them for the above typeclasses for convenience. -/
+
 theorem coe_mul_of_apply_of_le (r : ⨁ i, A i) {i : ι} (r' : A i) (n : ι) (h : i ≤ n) :
     ((r * of (fun i => A i) i r') n : R) = r (n - i) * r' :=
   coe_mul_of_apply_aux _ _ _ fun _x => (eq_tsub_iff_add_eq_of_le h).symm
@@ -319,7 +325,7 @@ theorem Submodule.iSup_eq_toSubmodule_range [AddMonoid ι] [CommSemiring S] [Sem
 theorem DirectSum.coeAlgHom_of [AddMonoid ι] [CommSemiring S] [Semiring R] [Algebra S R]
     (A : ι → Submodule S R) [SetLike.GradedMonoid A] (i : ι) (x : A i) :
     DirectSum.coeAlgHom A (DirectSum.of (fun i => A i) i x) = x :=
-  DirectSum.toSemiring_of _ (by rfl) (fun _ _ => (by rfl)) _ _
+  DirectSum.toSemiring_of _ rfl (fun _ _ => rfl) _ _
 
 end DirectSum
 
@@ -435,6 +441,7 @@ section Semiring
 variable [Semiring R] [SetLike σ R] [AddSubmonoidClass σ R]
 variable {A : ι → σ} [SetLike.GradedMonoid A]
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem mul_apply_eq_zero {r r' : ⨁ i, A i} {m n : ι}
     (hr : ∀ i < m, r i = 0) (hr' : ∀ i < n, r' i = 0) ⦃k : ι⦄ (hk : k < m + n) :
     (r * r') k = 0 := by
@@ -455,7 +462,7 @@ theorem listProd_apply_eq_zero' {l : List ((⨁ i, A i) × ι)}
     (hl : ∀ xn ∈ l, ∀ k < xn.2, xn.1 k = 0) ⦃n : ι⦄ (hn : n < (l.map Prod.snd).sum) :
     (l.map Prod.fst).prod n = 0 := by
   induction l generalizing n with
-  | nil => simp [(zero_le n).not_gt] at hn
+  | nil => simp at hn
   | cons head tail ih =>
     simp only [List.mem_cons, forall_eq_or_imp, List.map_cons, List.sum_cons,
       List.prod_cons] at hl hn ⊢
@@ -466,7 +473,7 @@ theorem listProd_apply_eq_zero {l : List (⨁ i, A i)} {m : ι}
     l.prod n = 0 := by
   -- a proof which uses `DirectSum.listProd_apply_eq_zero'` is actually more work
   induction l generalizing n with
-  | nil => simp [(zero_le n).not_gt] at hn
+  | nil => simp at hn
   | cons head tail ih =>
     simp only [List.mem_cons, forall_eq_or_imp, List.length_cons, List.prod_cons] at hl hn ⊢
     refine mul_apply_eq_zero hl.1 (ih hl.2) ?_

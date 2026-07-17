@@ -68,6 +68,7 @@ lemma Ideal.exists_ideal_lt_liesOver_of_lt [Algebra.HasGoingDown R S]
   subst this
   simp [P.over_def p, P.over_def q] at hpq
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma Ideal.exists_ltSeries_of_hasGoingDown [Algebra.HasGoingDown R S]
     (l : LTSeries (PrimeSpectrum R)) (P : Ideal S) [P.IsPrime] [lo : P.LiesOver l.last.asIdeal] :
     ∃ (L : LTSeries (PrimeSpectrum S)),
@@ -144,7 +145,8 @@ lemma of_comap_localRingHom_surjective
     obtain ⟨⟨Pl, _⟩, hl⟩ := H Q ⟨pl, inferInstance⟩
     refine ⟨Pl.under S, ?_, Ideal.IsPrime.under S Pl, ⟨?_⟩⟩
     · exact (IsLocalization.AtPrime.orderIsoOfPrime _ Q ⟨Pl, inferInstance⟩).2.2
-    · replace hl : Pl.under _ = pl := by simpa [PrimeSpectrum.ext_iff] using hl
+    · let := Localization.AtPrime.algebraOfLiesOver (Q.under R) Q
+      replace hl : Pl.under _ = pl := by simpa [PrimeSpectrum.ext_iff] using! hl
       rw [Ideal.under_under, ← Ideal.under_under (B := (Localization.AtPrime <| Q.under R)) Pl, hl,
         Ideal.under_map_of_isLocalizationAtPrime (Q.under R) hlt.le]
 
@@ -153,6 +155,7 @@ lemma of_comap_localRingHom_surjective
 instance of_flat [Module.Flat R S] : Algebra.HasGoingDown R S := by
   apply of_comap_localRingHom_surjective
   intro P hP
+  let := Localization.AtPrime.algebraOfLiesOver (P.under R) P
   have : IsLocalHom (algebraMap (Localization.AtPrime <| P.under R) (Localization.AtPrime P)) := by
     rw [RingHom.algebraMap_toAlgebra]
     exact Localization.isLocalHom_localRingHom (P.under R) P (algebraMap R S) Ideal.LiesOver.over

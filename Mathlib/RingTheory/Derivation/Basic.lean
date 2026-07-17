@@ -65,7 +65,7 @@ variable (D : Derivation R A M) {D1 D2 : Derivation R A M} (r : R) (a b : A)
 
 instance : FunLike (Derivation R A M) A M where
   coe D := D.toFun
-  coe_injective' D1 D2 h := by cases D1; cases D2; congr; exact DFunLike.coe_injective h
+  coe_injective D1 D2 h := by cases D1; cases D2; congr; exact DFunLike.coe_injective h
 
 instance : AddMonoidHomClass (Derivation R A M) A M where
   map_add D := D.toLinearMap.map_add'
@@ -139,7 +139,7 @@ theorem leibniz_pow (n : ℕ) : D (a ^ n) = n • a ^ (n - 1) • D a := by
   induction n with
   | zero => rw [pow_zero, map_one_eq_zero, zero_smul]
   | succ n ihn =>
-    rcases (zero_le n).eq_or_lt with (rfl | hpos)
+    rcases eq_zero_or_pos n with (rfl | hpos)
     · simp
     · have : a * a ^ (n - 1) = a ^ n := by rw [← pow_succ', Nat.sub_add_cancel hpos]
       simp only [pow_succ', leibniz, ihn, smul_comm a n (_ : M), smul_smul a, add_smul, this,
@@ -264,6 +264,7 @@ variable {N : Type*} [AddCommMonoid N] [Module A N] [Module R N] [IsScalarTower 
 
 variable (f : M →ₗ[A] N) (e : M ≃ₗ[A] N)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- We can push forward derivations using linear maps, i.e., the composition of a derivation with a
 linear map is a derivation. Furthermore, this operation is linear on the spaces of derivations. -/
 def _root_.LinearMap.compDer : Derivation R A M →ₗ[A] Derivation R A N where
@@ -360,6 +361,7 @@ variable [CommSemiring R] [CommRing A] [CommRing M]
 variable [Algebra R A] [Algebra R M]
 variable {F : Type*} [FunLike F A M] [AlgHomClass F R A M]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Lift a derivation via an algebra homomorphism `f` with a right inverse such that
 `f(x) = 0 → f(d(x)) = 0`. This gives the derivation `f ∘ d ∘ f⁻¹`.

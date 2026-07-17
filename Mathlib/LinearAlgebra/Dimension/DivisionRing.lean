@@ -28,7 +28,7 @@ See also `Mathlib/LinearAlgebra/Dimension/ErdosKaplansky.lean` for the Erdős-Ka
 
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section
@@ -56,9 +56,8 @@ theorem Module.Basis.finite_ofVectorSpaceIndex_of_rank_lt_aleph0 (h : Module.ran
 /-- Also see `rank_quotient_add_rank`. -/
 theorem rank_quotient_add_rank_of_divisionRing (p : Submodule K V) :
     Module.rank K (V ⧸ p) + Module.rank K p = Module.rank K V := by
-  classical
-    let ⟨f⟩ := quotient_prod_linearEquiv p
-    exact rank_prod'.symm.trans f.rank_eq
+  let ⟨f⟩ := quotient_prod_linearEquiv p
+  exact rank_prod'.symm.trans f.rank_eq
 
 instance DivisionRing.hasRankNullity : HasRankNullity.{u₀} K where
   rank_quotient_add_rank := rank_quotient_add_rank_of_divisionRing
@@ -97,7 +96,8 @@ theorem rank_add_rank_split (db : V₂ →ₗ[K] V) (eb : V₃ →ₗ[K] V) (cd 
     rintro ⟨d, e⟩
     have h := eq₂ d (-e)
     simp only [add_eq_zero_iff_eq_neg, LinearMap.prod_apply, mem_ker,
-      Prod.mk_inj, coprod_apply, map_neg, neg_apply, LinearMap.mem_range, Pi.prod] at h ⊢
+      Prod.mk_inj, coprod_apply, map_neg, neg_apply, LinearMap.mem_range,
+      Function.prod_apply] at h ⊢
     grind
 
 end
