@@ -508,7 +508,7 @@ theorem projIcc_eq_zero {x : ℝ} : projIcc (0 : ℝ) 1 zero_le_one x = 0 ↔ x 
 theorem projIcc_eq_one {x : ℝ} : projIcc (0 : ℝ) 1 zero_le_one x = 1 ↔ 1 ≤ x :=
   projIcc_eq_right zero_lt_one
 
-namespace Tactic.Interactive
+namespace Mathlib.Tactic.Interactive
 
 /--
 `unit_interval` solves the goals `0 ≤ ↑x`, `0 ≤ 1 - ↑x`, `↑x ≤ 1`, and `1 - ↑x ≤ 1` for
@@ -523,13 +523,14 @@ macro "unit_interval" : tactic =>
 
 example (x : unitInterval) : 0 ≤ (x : ℝ) := by unit_interval
 
-end Tactic.Interactive
+end Mathlib.Tactic.Interactive
 
 section
 
 variable {𝕜 : Type*} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
   [TopologicalSpace 𝕜] [IsTopologicalRing 𝕜]
 
+set_option backward.isDefEq.respectTransparency false in
 -- We only need the ordering on `𝕜` here to avoid talking about flipping the interval over.
 -- At the end of the day I only care about `ℝ`, so I'm hesitant to put work into generalizing.
 /-- The image of `[0,1]` under the homeomorphism `fun x ↦ a * x + b` is `[b, a+b]`.
