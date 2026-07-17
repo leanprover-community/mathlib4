@@ -164,7 +164,7 @@ theorem equivalence_not_adj : Equivalence (¬G.Adj · ·) where
 
 /-- The non-adjacency setoid over the vertices of a Turán-maximal graph
 induced by `equivalence_not_adj`. -/
-@[implicit_reducible]
+@[instance_reducible]
 def setoid : Setoid V := ⟨_, h.equivalence_not_adj⟩
 
 instance : DecidableRel h.setoid.r :=
@@ -247,6 +247,7 @@ theorem card_parts [DecidableEq V] : #h.finpartition.parts = min (card V) r := b
   convert! G.card_edgeFinset_sup_edge _ hn
   rwa [h.not_adj_iff_part_eq]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- **Turán's theorem**, forward direction.
 
 Any `r + 1`-cliquefree Turán-maximal graph on `n` vertices is isomorphic to `turanGraph n r`. -/

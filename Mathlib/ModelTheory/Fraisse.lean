@@ -327,6 +327,7 @@ theorem isUltrahomogeneous_iff_IsExtensionPair (M_CG : CG L M) : L.IsUltrahomoge
     ext
     rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem IsUltrahomogeneous.amalgamation_age (h : L.IsUltrahomogeneous M) :
     Amalgamation (L.age M) := by
   rintro N P Q NP NQ ⟨Nfg, ⟨-⟩⟩ ⟨Pfg, ⟨PM⟩⟩ ⟨Qfg, ⟨QM⟩⟩
@@ -376,7 +377,7 @@ protected theorem isExtensionPair : L.IsExtensionPair M N := by
   have S_in_age_N : ⟨S, inferInstance⟩ ∈ L.age N := by
     rw [hN.age, ← hM.age]
     exact ⟨(fg_iff_structure_fg S).1 S_FG, ⟨subtype _⟩⟩
-  haveI nonempty_S_N : Nonempty (S ↪[L] N) := S_in_age_N.2
+  have nonempty_S_N : Nonempty (S ↪[L] N) := S_in_age_N.2
   let ⟨g, g_eq⟩ := hN.ultrahomogeneous.extend_embedding (f.dom.fg_iff_structure_fg.1 f_FG)
     ((subtype f.cod).comp f.toEquiv.toEmbedding) (inclusion (le_sup_left : _ ≤ S))
   refine ⟨⟨⟨S, g.toHom.range, g.equivRange⟩, S_FG⟩,
@@ -404,6 +405,7 @@ end IsFraisseLimit
 
 namespace empty
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Any countable infinite structure in the empty language is a Fraïssé limit of the class of finite
 structures. -/
 theorem isFraisseLimit_of_countable_infinite

@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.Normed.Ring.InfiniteSum
 public import Mathlib.Analysis.SpecificLimits.Normed
+public import Mathlib.Data.Nat.Factorization.PrimePow
 public import Mathlib.NumberTheory.ArithmeticFunction.Defs
 public import Mathlib.NumberTheory.SmoothNumbers
 
@@ -379,3 +380,42 @@ theorem eulerProduct_completely_multiplicative {f : ℕ →*₀ F} (hsum : Summa
 end EulerProduct
 
 end CompletelyMultiplicative
+
+section PrimePow
+
+/-! ### Reindexing infinite sums and products over prime powers -/
+
+open Nat.Primes
+
+variable {α : Type*} [CommGroup α] [UniformSpace α] [IsUniformGroup α] [CompleteSpace α] [T0Space α]
+variable {f : ℕ → α}
+
+@[to_additive tsum_primes_pow_eq]
+theorem tprod_primes_pow_eq (hf : Multipliable fun n : {n // IsPrimePow n} ↦ f n.1) :
+    ∏' (p : Nat.Primes) (n : ℕ), f (p ^ (n + 1)) = ∏' n : {n : ℕ // IsPrimePow n}, f n := calc
+  _ = ∏' p : Nat.Primes × ℕ, f (prodNatEquiv p) := by
+    simpa using (hf.comp_injective prodNatEquiv.injective).tprod_prod.symm
+  _ = _ := by rw [← Equiv.tprod_eq prodNatEquiv]
+
+@[to_additive tsum_eq_tsum_primes_of_support_subset_prime_powers]
+lemma tprod_eq_tprod_primes_of_mulSupport_subset_prime_powers
+    (hfm : Multipliable f) (hf : Function.mulSupport f ⊆ {n | IsPrimePow n}) :
+    ∏' n : ℕ, f n = ∏' (p : Nat.Primes) (k : ℕ), f (p ^ (k + 1)) := by
+  rw [tprod_primes_pow_eq (hfm.subtype _)]
+  exact (tprod_subtype_eq_of_mulSupport_subset hf).symm
+
+@[to_additive tsum_eq_tsum_primes_add_tsum_primes_of_support_subset_prime_powers]
+lemma tprod_eq_tprod_primes_mul_tprod_primes_of_mulSupport_subset_prime_powers
+    (hfm : Multipliable f) (hf : Function.mulSupport f ⊆ {n | IsPrimePow n}) :
+    ∏' n : ℕ, f n = (∏' p : Nat.Primes, f p) * ∏' (p : Nat.Primes) (k : ℕ), f (p ^ (k + 2)) := by
+  rw [tprod_eq_tprod_primes_of_mulSupport_subset_prime_powers hfm hf]
+  have hfs' (p : Nat.Primes) : Multipliable fun k ↦ f (p ^ (k + 1)) :=
+    hfm.comp_injective <| (strictMono_nat_of_lt_succ
+      (pow_lt_pow_right₀ p.prop.one_lt <| lt_add_one <| · + 1)).injective
+  simp only [(hfs' _).tprod_eq_zero_mul, zero_add, pow_one]
+  apply (Multipliable.subtype hfm _).tprod_mul
+  refine (hfm.comp_injective ?_).prod (f := fun (pk : Nat.Primes × ℕ) ↦ f (pk.1 ^ (pk.2 + 2)))
+  exact Subtype.val_injective.comp prodNatEquiv.injective |>.comp <|
+    Function.Injective.prodMap (fun ⦃_ _⦄ ↦ id) <| add_left_injective 1
+
+end PrimePow

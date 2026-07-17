@@ -87,11 +87,13 @@ lemma isEmbedding_toUniformOnFun :
       ((Π i, E i) →ᵤ[{s | IsVonNBounded 𝕜 s}] F)) :=
   isUniformEmbedding_toUniformOnFun.isEmbedding
 
+@[fun_prop]
 theorem uniformContinuous_coe_fun [∀ i, ContinuousSMul 𝕜 (E i)] :
     UniformContinuous (DFunLike.coe : ContinuousMultilinearMap 𝕜 E F → (Π i, E i) → F) :=
   (UniformOnFun.uniformContinuous_toFun sUnion_isVonNBounded_eq_univ).comp
     isUniformEmbedding_toUniformOnFun.uniformContinuous
 
+@[fun_prop]
 theorem uniformContinuous_eval_const [∀ i, ContinuousSMul 𝕜 (E i)] (x : Π i, E i) :
     UniformContinuous fun f : ContinuousMultilinearMap 𝕜 E F ↦ f x :=
   uniformContinuous_pi.1 uniformContinuous_coe_fun x
@@ -107,6 +109,7 @@ instance instUniformContinuousConstSMul {M : Type*}
   haveI := uniformContinuousConstSMul_of_continuousConstSMul M F
   isUniformEmbedding_toUniformOnFun.uniformContinuousConstSMul fun _ _ ↦ rfl
 
+@[fun_prop]
 theorem isUniformInducing_postcomp
     {G : Type*} [AddCommGroup G] [UniformSpace G] [IsUniformAddGroup G] [Module 𝕜 G]
     (g : F →L[𝕜] G) (hg : IsUniformInducing g) :
@@ -155,15 +158,17 @@ variable (𝕜' : Type*) [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜' �
   [∀ i, ContinuousSMul 𝕜 (E i)]
 
 set_option backward.isDefEq.respectTransparency false in
+@[fun_prop]
 theorem isUniformEmbedding_restrictScalars :
     IsUniformEmbedding
       (restrictScalars 𝕜' : ContinuousMultilinearMap 𝕜 E F → ContinuousMultilinearMap 𝕜' E F) := by
-  letI : NontriviallyNormedField 𝕜 :=
+  let : NontriviallyNormedField 𝕜 :=
     ⟨let ⟨x, hx⟩ := @NontriviallyNormedField.non_trivial 𝕜' _; ⟨algebraMap 𝕜' 𝕜 x, by simpa⟩⟩
   rw [← isUniformEmbedding_toUniformOnFun.of_comp_iff]
   convert! isUniformEmbedding_toUniformOnFun using 4 with s
   exact ⟨fun h ↦ h.extend_scalars _, fun h ↦ h.restrict_scalars _⟩
 
+@[fun_prop]
 theorem uniformContinuous_restrictScalars :
     UniformContinuous
       (restrictScalars 𝕜' : ContinuousMultilinearMap 𝕜 E F → ContinuousMultilinearMap 𝕜' E F) :=
@@ -183,8 +188,8 @@ instance instIsTopologicalAddGroup : IsTopologicalAddGroup (ContinuousMultilinea
 instance instContinuousConstSMul
     {M : Type*} [Monoid M] [DistribMulAction M F] [SMulCommClass 𝕜 M F] [ContinuousConstSMul M F] :
     ContinuousConstSMul M (ContinuousMultilinearMap 𝕜 E F) := by
-  letI := IsTopologicalAddGroup.rightUniformSpace F
-  haveI := isUniformAddGroup_of_addCommGroup (G := F)
+  let := IsTopologicalAddGroup.rightUniformSpace F
+  have := isUniformAddGroup_of_addCommGroup (G := F)
   infer_instance
 
 instance instContinuousSMul [ContinuousSMul 𝕜 F] :
@@ -201,8 +206,8 @@ theorem hasBasis_nhds_zero_of_basis {ι : Type*} {p : ι → Prop} {b : ι → S
     (𝓝 (0 : ContinuousMultilinearMap 𝕜 E F)).HasBasis
       (fun Si : Set (Π i, E i) × ι => IsVonNBounded 𝕜 Si.1 ∧ p Si.2)
       fun Si => { f | MapsTo f Si.1 (b Si.2) } := by
-  letI : UniformSpace F := IsTopologicalAddGroup.rightUniformSpace F
-  haveI : IsUniformAddGroup F := isUniformAddGroup_of_addCommGroup
+  let : UniformSpace F := IsTopologicalAddGroup.rightUniformSpace F
+  have : IsUniformAddGroup F := isUniformAddGroup_of_addCommGroup
   rw [nhds_induced]
   refine (UniformOnFun.hasBasis_nhds_zero_of_basis _ ?_ ?_ h).comap DFunLike.coe
   · exact ⟨∅, isVonNBounded_empty _ _⟩
