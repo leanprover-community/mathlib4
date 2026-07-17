@@ -544,7 +544,7 @@ lemma copyCount_eq_card_image_copyToSubgraph [Fintype {f : H →g G // Injective
   congr 1
   ext G'
   simp only [Finset.mem_filter, Finset.mem_univ, true_and, Finset.mem_image]
-  rw [← Set.mem_range, Copy.range_toSubgraph, Set.mem_setOf_eq]
+  rw [← Set.mem_range, Copy.range_toSubgraph, Set.mem_ofPred_eq]
 
 @[simp] lemma copyCount_eq_zero : G.copyCount H = 0 ↔ H.Free G := by
   simp [copyCount, Free, -nonempty_subtype, isContained_iff_exists_iso_subgraph,
