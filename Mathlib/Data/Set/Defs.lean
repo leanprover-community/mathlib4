@@ -95,7 +95,7 @@ instance : LE (Set α) :=
   ⟨Set.Subset⟩
 
 instance : EmptyCollection (Set α) where
-  emptyCollection := setOf fun _ ↦ False
+  emptyCollection := ofPred fun _ ↦ False
 
 end Set
 
