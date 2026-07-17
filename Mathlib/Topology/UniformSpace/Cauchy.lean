@@ -57,7 +57,7 @@ lemma cauchy_iff_le {l : Filter α} [hl : l.NeBot] :
 
 theorem Cauchy.ultrafilter_of {l : Filter α} (h : Cauchy l) :
     Cauchy (@Ultrafilter.of _ l h.1 : Filter α) := by
-  haveI := h.1
+  have := h.1
   have := Ultrafilter.of_le l
   exact ⟨Ultrafilter.neBot _, (Filter.prod_mono this this).trans h.2⟩
 
@@ -195,7 +195,7 @@ theorem CauchySeq.nonempty [Preorder β] {u : β → α} (hu : CauchySeq u) : No
 
 theorem CauchySeq.mem_entourage {β : Type*} [SemilatticeSup β] {u : β → α} (h : CauchySeq u)
     {V : SetRel α α} (hV : V ∈ 𝓤 α) : ∃ k₀, ∀ i j, k₀ ≤ i → k₀ ≤ j → (u i, u j) ∈ V := by
-  haveI := h.nonempty
+  have := h.nonempty
   have := h.tendsto_uniformity; rw [← prod_atTop_atTop_eq] at this
   simpa [MapsTo] using atTop_basis.prod_self.tendsto_left_iff.1 this V hV
 
@@ -329,7 +329,7 @@ theorem isComplete_iff_clusterPt {s : Set α} :
 theorem isComplete_iff_ultrafilter {s : Set α} :
     IsComplete s ↔ ∀ l : Ultrafilter α, Cauchy (l : Filter α) → ↑l ≤ 𝓟 s → ∃ x ∈ s, ↑l ≤ 𝓝 x := by
   refine ⟨fun h l => h l, fun H => isComplete_iff_clusterPt.2 fun l hl hls => ?_⟩
-  haveI := hl.1
+  have := hl.1
   rcases H (Ultrafilter.of l) hl.ultrafilter_of ((Ultrafilter.of_le l).trans hls) with ⟨x, hxs, hxl⟩
   exact ⟨x, hxs, (ClusterPt.of_le_nhds hxl).mono (Ultrafilter.of_le l)⟩
 
@@ -505,7 +505,7 @@ theorem Filter.TotallyBounded.exists_subset_of_mem {f : Filter α} (hf : f.Total
   choose g hgs hgr using fun x : u => x.coe_prop.2
   refine ⟨range g, ?_, ?_, ?_⟩
   · exact range_subset_iff.2 hgs
-  · haveI : Fintype u := (fk.inter_of_left _).fintype
+  · have : Fintype u := (fk.inter_of_left _).fintype
     exact finite_range g
   · filter_upwards [hs, ks] with x xs ⟨y, hy, xy⟩
     simp_rw [SetRel.preimage, exists_range_iff]

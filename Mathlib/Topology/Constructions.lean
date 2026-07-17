@@ -299,6 +299,7 @@ def of : X ≃ CofiniteTopology X := (WithTopology.equiv _ _).symm
 
 instance [Inhabited X] : Inhabited (CofiniteTopology X) where default := of default
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isOpen_iff {s : Set (CofiniteTopology X)} : IsOpen s ↔ s.Nonempty → sᶜ.Finite := by
   simp_rw [isOpen_coinduced, TopologicalSpace.cofinite, isOpen_mk, ← Set.preimage_compl,
     WithTopology.preimage_toTopology, image_nonempty,
@@ -1130,7 +1131,7 @@ theorem pi_generateFrom_eq {A : ι → Type*} {g : ∀ a, Set (Set (A a))} :
   refine le_antisymm ?_ ?_
   · apply le_generateFrom
     rintro _ ⟨s, i, hi, rfl⟩
-    letI := fun a => generateFrom (g a)
+    let := fun a => generateFrom (g a)
     exact isOpen_set_pi i.finite_toSet (fun a ha => GenerateOpen.basic _ (hi a ha))
   · classical
     refine le_iInf fun i => coinduced_le_iff_le_induced.1 <| le_generateFrom fun s hs => ?_
@@ -1155,7 +1156,7 @@ theorem pi_generateFrom_eq_finite {X : ι → Type*} {g : ∀ a, Set (Set (X a))
   refine le_antisymm (generateFrom_anti ?_) (le_generateFrom ?_)
   · exact fun s ⟨t, ht, Eq⟩ => ⟨t, Finset.univ, by simp [ht, Eq]⟩
   · rintro s ⟨t, i, ht, rfl⟩
-    letI := generateFrom { t | ∃ s : ∀ a, Set (X a), (∀ a, s a ∈ g a) ∧ t = pi univ s }
+    let := generateFrom { t | ∃ s : ∀ a, Set (X a), (∀ a, s a ∈ g a) ∧ t = pi univ s }
     refine isOpen_iff_forall_mem_open.2 fun f hf => ?_
     choose c hcg hfc using fun a => sUnion_eq_univ_iff.1 (hg a) (f a)
     refine ⟨pi i t ∩ pi ((↑i)ᶜ : Set ι) c, inter_subset_left, ?_, ⟨hf, fun a _ => hfc a⟩⟩

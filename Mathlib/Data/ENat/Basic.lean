@@ -118,6 +118,7 @@ def lift (x : ℕ∞) (h : x < ⊤) : ℕ := WithTop.untop x (WithTop.lt_top_iff
     lift ofNat(n) (WithTop.coe_lt_top n) = OfNat.ofNat n := rfl
 
 @[simp] theorem add_lt_top {a b : ℕ∞} : a + b < ⊤ ↔ a < ⊤ ∧ b < ⊤ := WithTop.add_lt_top
+@[simp] theorem add_eq_top {a b : ℕ∞} : a + b = ⊤ ↔ a = ⊤ ∨ b = ⊤ := WithTop.add_eq_top
 
 @[simp] theorem lift_add (a b : ℕ∞) (h : a + b < ⊤) :
     lift (a + b) h = lift a (add_lt_top.1 h).1 + lift b (add_lt_top.1 h).2 := by
@@ -329,9 +330,6 @@ theorem coe_lt_add_one_iff {m : ℕ} {n : ℕ∞} : m < n + 1 ↔ m ≤ n :=
 
 theorem le_coe_iff {n : ℕ∞} {k : ℕ} : n ≤ ↑k ↔ ∃ (n₀ : ℕ), n = n₀ ∧ n₀ ≤ k :=
   WithTop.le_coe_iff
-
-@[deprecated not_lt_zero (since := "2025-12-03")]
-protected lemma not_lt_zero (n : ℕ∞) : ¬ n < 0 := not_lt_zero
 
 @[simp]
 lemma coe_lt_top (n : ℕ) : (n : ℕ∞) < ⊤ :=
@@ -632,6 +630,9 @@ namespace ENat.WithBot
 
 @[simp]
 lemma coe_eq_natCast (n : ℕ) : (n : ℕ∞) = (n : WithBot ℕ∞) := rfl
+
+lemma eq_top_iff_forall_ge {n : WithBot ℕ∞} : n = ⊤ ↔ ∀ m : ℕ, m ≤ n :=
+  _root_.WithBot.eq_top_iff_forall_ge
 
 lemma lt_add_one_iff {n : WithBot ℕ∞} {m : ℕ} : n < m + 1 ↔ n ≤ m := by
   rw [← WithBot.coe_one, ← ENat.coe_one, WithBot.coe_natCast, ← Nat.cast_add, ← WithBot.coe_natCast]
