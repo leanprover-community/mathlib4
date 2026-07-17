@@ -10,13 +10,12 @@ public import Mathlib.Algebra.Order.Nonneg.Ring
 public import Mathlib.Data.NNRat.Defs
 
 /-!
-# The nonnegative rational numbers form a linear ordered semiring
+# The nonnegative rational numbers form a linear ordered commutative semiring
 
-This file constructs the order on `ℚ≥0` and proves that `ℚ` is a linearly ordered commutative
-semiring.
+This file proves that the linear order on `ℚ≥0` makes it into an ordered semiring.
 
-`ℚ≥0` is in fact a linearly ordered field, but this fact is located in `Data.Rat.Field` instead of
-here because we need the order on `ℚ` to define `ℚ≥0`, which we itself need to define `Field`.
+`ℚ≥0` is in fact a linearly ordered semifield. To access this fact, one must also import
+`Mathlib/Algebra/Field/Rat.lean`.
 
 ## Tags
 
