@@ -79,7 +79,7 @@ theorem meromorphicNFAt_iff_analyticAt_or :
       · right
         use analyticOrderNatAt f x
         have : analyticOrderAt f x ≠ ⊤ := h₂f
-        rw [← ENat.coe_toNat_eq_self, eq_comm, h.analyticOrderAt_eq_natCast] at this
+        rw [← ENat.natCast_toNat_eq_self, eq_comm, h.analyticOrderAt_eq_natCast] at this
         obtain ⟨g, h₁g, h₂g, h₃g⟩ := this
         use g, h₁g, h₂g
         simpa

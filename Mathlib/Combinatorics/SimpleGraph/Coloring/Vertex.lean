@@ -238,7 +238,7 @@ lemma chromaticNumber_eq_iInf : G.chromaticNumber = ⨅ n : {m | G.Colorable m},
 
 lemma Colorable.chromaticNumber_eq_sInf (h : G.Colorable n) :
     G.chromaticNumber = sInf {n' : ℕ | G.Colorable n'} := by
-  rw [ENat.coe_sInf, chromaticNumber]
+  rw [ENat.natCast_sInf, chromaticNumber]
   exact ⟨_, h⟩
 
 variable (G) in
@@ -338,7 +338,7 @@ theorem chromaticNumber_ne_top_iff_exists : G.chromaticNumber ≠ ⊤ ↔ ∃ n,
 
 theorem chromaticNumber_le_iff_colorable {n : ℕ} : G.chromaticNumber ≤ n ↔ G.Colorable n := by
   refine ⟨fun h ↦ ?_, Colorable.chromaticNumber_le⟩
-  have : G.chromaticNumber ≠ ⊤ := (trans h (ENat.coe_lt_top n)).ne
+  have : G.chromaticNumber ≠ ⊤ := (trans h (ENat.natCast_lt_top n)).ne
   rw [chromaticNumber_ne_top_iff_exists] at this
   obtain ⟨m, hm⟩ := this
   rw [hm.chromaticNumber_eq_sInf, Nat.cast_le] at h
@@ -350,7 +350,7 @@ theorem chromaticNumber_le_iff_colorable {n : ℕ} : G.chromaticNumber ≤ n ↔
 colors. -/
 theorem chromaticNumber_eq_iff_colorable_not_colorable :
     G.chromaticNumber = n + 1 ↔ G.Colorable (n + 1) ∧ ¬G.Colorable n := by
-  rw [eq_iff_le_not_lt, not_lt, ENat.add_one_le_iff (ENat.coe_ne_top n), ← not_le,
+  rw [eq_iff_le_not_lt, not_lt, ENat.add_one_le_iff (ENat.natCast_ne_top n), ← not_le,
     chromaticNumber_le_iff_colorable, ← Nat.cast_add_one, chromaticNumber_le_iff_colorable]
 
 theorem colorable_chromaticNumber {m : ℕ} (hc : G.Colorable m) :
@@ -479,7 +479,7 @@ theorem eq_top_of_chromaticNumber_eq_card [Fintype V]
     suffices G.Coloring (Finset.univ.erase b) by simpa using Coloring.colorable this
     apply Coloring.mk (fun x ↦ if h' : x ≠ b then ⟨x, by simp [h']⟩ else ⟨a, by simp [hne]⟩)
     grind [Adj.ne', adj_symm]
-  rw [h, ← ENat.coe_one, ← ENat.coe_sub, ENat.coe_le_coe] at this
+  rw [h, ← ENat.natCast_one, ← ENat.natCast_sub, ENat.natCast_le_natCast] at this
   have := Fintype.one_lt_card_iff_nontrivial.mpr <| SimpleGraph.nontrivial_iff.mp ⟨_, _, hh⟩
   grind
 
@@ -573,7 +573,7 @@ theorem cliqueFree_of_chromaticNumber_lt {n : ℕ} (hc : G.chromaticNumber < n) 
   obtain ⟨m, hc'⟩ := chromaticNumber_ne_top_iff_exists.mp hne
   have := colorable_chromaticNumber hc'
   refine this.cliqueFree ?_
-  rw [← ENat.coe_toNat_eq_self] at hne
+  rw [← ENat.natCast_toNat_eq_self] at hne
   rw [← hne] at hc
   simpa using hc
 

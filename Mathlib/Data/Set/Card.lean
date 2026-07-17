@@ -144,7 +144,7 @@ theorem Finite.encard_lt_top (h : s.Finite) : s.encard < ⊤ := by
     exact lt_tsub_iff_right.1 ht'
 
 theorem Finite.encard_eq_coe (h : s.Finite) : s.encard = ENat.toNat s.encard :=
-  (ENat.coe_toNat h.encard_lt_top.ne).symm
+  (ENat.natCast_toNat h.encard_lt_top.ne).symm
 
 theorem Finite.exists_encard_eq_coe (h : s.Finite) : ∃ (n : ℕ), s.encard = n :=
   ⟨_, h.encard_eq_coe⟩
@@ -168,7 +168,7 @@ theorem finite_of_encard_eq_coe {k : ℕ} (h : s.encard = k) : s.Finite :=
   finite_of_encard_le_coe h.le
 
 theorem encard_le_coe_iff {k : ℕ} : s.encard ≤ k ↔ s.Finite ∧ ∃ (n₀ : ℕ), s.encard = n₀ ∧ n₀ ≤ k :=
-  ⟨fun h ↦ ⟨finite_of_encard_le_coe h, by rwa [ENat.le_coe_iff] at h⟩,
+  ⟨fun h ↦ ⟨finite_of_encard_le_coe h, by rwa [ENat.le_natCast_iff] at h⟩,
     fun ⟨_,⟨n₀,hs, hle⟩⟩ ↦ by rwa [hs, Nat.cast_le]⟩
 
 @[simp]
@@ -616,14 +616,14 @@ noncomputable def ncard (s : Set α) : ℕ := ENat.toNat s.encard
 theorem ncard_def (s : Set α) : s.ncard = ENat.toNat s.encard := rfl
 
 theorem Finite.cast_ncard_eq (hs : s.Finite) : s.ncard = s.encard := by
-  rwa [ncard, ENat.coe_toNat_eq_self, ne_eq, encard_eq_top_iff, Set.Infinite, not_not]
+  rwa [ncard, ENat.natCast_toNat_eq_self, ne_eq, encard_eq_top_iff, Set.Infinite, not_not]
 
 variable (s) in
 @[simp]
 theorem coe_ncard_eq_encard [Finite s] : s.ncard = s.encard :=
   s.toFinite.cast_ncard_eq
 
-lemma ncard_le_encard (s : Set α) : s.ncard ≤ s.encard := ENat.coe_toNat_le_self _
+lemma ncard_le_encard (s : Set α) : s.ncard ≤ s.encard := ENat.natCast_toNat_le_self _
 
 @[simp] theorem _root_.Nat.card_coe_set_eq (s : Set α) : Nat.card s = s.ncard := rfl
 
@@ -646,7 +646,7 @@ lemma cast_ncard {s : Set α} (hs : s.Finite) :
 
 theorem encard_le_coe_iff_finite_ncard_le {k : ℕ} : s.encard ≤ k ↔ s.Finite ∧ s.ncard ≤ k := by
   rw [encard_le_coe_iff, and_congr_right_iff]
-  exact fun hfin ↦ ⟨fun ⟨n₀, hn₀, hle⟩ ↦ by rwa [ncard_def, hn₀, ENat.toNat_coe],
+  exact fun hfin ↦ ⟨fun ⟨n₀, hn₀, hle⟩ ↦ by rwa [ncard_def, hn₀, ENat.toNat_natCast],
     fun h ↦ ⟨s.ncard, by rw [hfin.cast_ncard_eq], h⟩⟩
 
 theorem Infinite.ncard (hs : s.Infinite) : s.ncard = 0 := by

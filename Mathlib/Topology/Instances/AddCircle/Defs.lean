@@ -262,7 +262,7 @@ theorem finite_torsion_of_isSMulRegular (n : ℕ) (hn : IsSMulRegular 𝕜 n) :
   nontriviality 𝕜
   obtain rfl | h0 := eq_or_ne n 0
   exacts [hn.not_zero.elim, ENat.card_lt_top.mp <|
-    (card_torsion_le_of_isSMulRegular p n h0 hn).trans_lt <| ENat.coe_lt_top n]
+    (card_torsion_le_of_isSMulRegular p n h0 hn).trans_lt <| ENat.natCast_lt_top n]
 
 theorem card_torsion_le_of_isSMulRegular_int (n : ℤ) (h0 : n ≠ 0) (hn : IsSMulRegular 𝕜 n) :
     {x : AddCircle p | n • x = 0}.encard ≤ n.natAbs := by
@@ -276,7 +276,7 @@ theorem finite_torsion_of_isSMulRegular_int (n : ℤ) (hn : IsSMulRegular 𝕜 n
   nontriviality 𝕜
   obtain rfl | h0 := eq_or_ne n 0
   exacts [hn.not_zero.elim, ENat.card_lt_top.mp <|
-    (card_torsion_le_of_isSMulRegular_int p n h0 hn).trans_lt <| ENat.coe_lt_top _]
+    (card_torsion_le_of_isSMulRegular_int p n h0 hn).trans_lt <| ENat.natCast_lt_top _]
 
 end Torsion
 
