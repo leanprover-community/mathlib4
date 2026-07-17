@@ -343,6 +343,16 @@ theorem IsTopologicalGroup.t2Space_of_one_sep (H : ∀ x : G, x ≠ 1 → ∃ U 
   rcases H (x * y⁻¹) (by rwa [Ne, mul_inv_eq_one]) with ⟨U, hU₁, hU⟩
   exact hU <| mem_of_mem_nhds <| hspec.map (continuous_mul_const y⁻¹) (by rwa [mul_inv_cancel])
 
+@[to_additive]
+theorem IsTopologicalGroup.one_sep_iff_t2space : (∀ x : G, x ≠ 1 → ∃ U ∈ 𝓝 (1 : G), x ∉ U) ↔
+    T2Space G := by
+  refine ⟨IsTopologicalGroup.t2Space_of_one_sep, ?_⟩
+  intro h x
+  have ht1 : T1Space G := inferInstance
+  contrapose!
+  simp_rw [t1Space_iff_specializes_imp_eq, specializes_iff_pure, Filter.pure_le_iff] at ht1
+  apply ht1
+
 /-- Given a neighborhood `U` of the identity, one may find a neighborhood `V` of the identity which
 is closed, symmetric, and satisfies `V * V ⊆ U`. -/
 @[to_additive /-- Given a neighborhood `U` of the identity, one may find a neighborhood `V` of the
