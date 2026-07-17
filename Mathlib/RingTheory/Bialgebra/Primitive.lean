@@ -23,8 +23,8 @@ This file defines primitive elements in a bialgebra, i.e. elements `a` such that
 * `primitiveSubmodule` is a `LieSubalgebra` with bracket `[a, b] = a * b - b * a`.
   (`IsPrimitiveElem.commutator` is stated with `a * b - b * a` rather than `⁅a, b⁆` to avoid
   importing Lie theory into this file.)
-* In characteristic 0 over a field, the primitive elements of a cocommutative connected
-  bialgebra generate it as the universal enveloping of a Lie algebra.
+* (Cartier–Milnor–Moore) In characteristic 0 over a field, the primitive elements of a
+  cocommutative connected bialgebra generate it as the universal enveloping of a Lie algebra.
 * Generalize to `(g, h)`-skew-primitive elements `Δ a = a ⊗ₜ g + h ⊗ₜ a` for group-like `g`, `h`
   over a plain coalgebra, of which primitivity is the `(1, 1)` case over a bialgebra.
 -/

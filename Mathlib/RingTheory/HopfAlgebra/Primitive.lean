@@ -61,8 +61,7 @@ theorem eq_antipode_of_primitives [Ring A] [HopfAlgebra R A] (S : A →ₐ[R] A�
     (adjoin_eq_top : Algebra.adjoin R s = ⊤) (prim : ∀ p ∈ s, IsPrimitiveElem R p)
     (S_apply : ∀ p ∈ s, S p = op (-p)) :
     (opLinearEquiv R).symm.toLinearMap ∘ₗ S.toLinearMap = antipode R :=
-  eq_antipode_of_adjoin_eq_top ((opLinearEquiv R).symm.toLinearMap ∘ₗ S.toLinearMap)
-    (by simp) (fun _ _ => by simp) adjoin_eq_top
+  eq_antipode_of_adjoin_eq_top_left (by simp) (fun _ _ => by simp) adjoin_eq_top
     (fun p hp => by simp [convMul_apply, prim p hp, S_apply p hp])
 
 end HopfAlgebra
