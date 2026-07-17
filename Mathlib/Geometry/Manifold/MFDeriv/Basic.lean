@@ -516,10 +516,12 @@ theorem mfderivWithin_univ : mfderiv[univ] f = mfderiv% f := by
   simp only [mfderivWithin, mfderiv, mfld_simps]
   rw [mdifferentiableWithinAt_univ]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mfderivWithin_zero_of_not_mdifferentiableWithinAt (h : ¬MDiffAt[s] f x) :
     mfderiv[s] f x = 0 := by
   simp only [mfderivWithin, h, if_neg, not_false_iff]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mfderiv_zero_of_not_mdifferentiableAt (h : ¬MDiffAt f x) :
     mfderiv% f x = 0 := by simp only [mfderiv, h, if_neg, not_false_iff]
 
@@ -583,12 +585,14 @@ theorem hasMFDerivAt_unique (h₀ : HasMFDerivAt% f x f₀') (h₁ : HasMFDerivA
   rw [← hasMFDerivWithinAt_univ] at h₀ h₁
   exact (uniqueMDiffWithinAt_univ I).eq h₀ h₁
 
+set_option backward.isDefEq.respectTransparency false in
 theorem hasMFDerivWithinAt_inter' (h : t ∈ 𝓝[s] x) :
     HasMFDerivAt[s ∩ t] f x f' ↔ HasMFDerivAt[s] f x f' := by
   rw [HasMFDerivWithinAt, HasMFDerivWithinAt, extChartAt_preimage_inter_eq,
     hasFDerivWithinAt_inter', continuousWithinAt_inter' h]
   exact extChartAt_preimage_mem_nhdsWithin h
 
+set_option backward.isDefEq.respectTransparency false in
 theorem hasMFDerivWithinAt_inter (h : t ∈ 𝓝 x) :
     HasMFDerivAt[s ∩ t] f x f' ↔ HasMFDerivAt[s] f x f' := by
   rw [HasMFDerivWithinAt, HasMFDerivWithinAt, extChartAt_preimage_inter_eq, hasFDerivWithinAt_inter,
@@ -613,7 +617,7 @@ theorem HasMFDerivWithinAt.hasMFDerivAt (h : HasMFDerivAt[s] f x f') (hs : s ∈
 theorem MDifferentiableWithinAt.hasMFDerivWithinAt (h : MDiffAt[s] f x) :
     HasMFDerivAt[s] f x (mfderiv[s] f x) := by
   refine ⟨h.1, ?_⟩
-  simp only [mfderivWithin, h, if_pos, mfld_simps]
+  simp only [mfderivWithin, h, mfld_simps]
   exact DifferentiableWithinAt.hasFDerivWithinAt h.2
 
 theorem mdifferentiableWithinAt_iff_exists_hasMFDerivWithinAt :
@@ -634,6 +638,7 @@ theorem mdifferentiableWithinAt_congr_nhds {t : Set M} (hst : 𝓝[s] x = 𝓝[t
     MDiffAt[s] f x ↔ MDiffAt[t] f x :=
   ⟨fun h => h.congr_nhds hst, fun h => h.congr_nhds hst.symm⟩
 
+set_option backward.isDefEq.respectTransparency false in
 protected theorem MDifferentiableWithinAt.mfderivWithin (h : MDiffAt[s] f x) :
     mfderiv[s] f x =
       fderivWithin 𝕜 (writtenInExtChartAt I I' x f :) ((extChartAt I x).symm ⁻¹' s ∩ range I)
@@ -642,9 +647,10 @@ protected theorem MDifferentiableWithinAt.mfderivWithin (h : MDiffAt[s] f x) :
 
 theorem MDifferentiableAt.hasMFDerivAt (h : MDiffAt f x) : HasMFDerivAt% f x (mfderiv% f x) := by
   refine ⟨h.continuousAt, ?_⟩
-  simp only [mfderiv, h, if_pos, mfld_simps]
+  simp only [mfderiv, h, mfld_simps]
   exact DifferentiableWithinAt.hasFDerivWithinAt h.differentiableWithinAt_writtenInExtChartAt
 
+set_option backward.isDefEq.respectTransparency false in
 protected theorem MDifferentiableAt.mfderiv (h : MDiffAt f x) :
     mfderiv% f x =
       fderivWithin 𝕜 (writtenInExtChartAt I I' x f :) (range I) ((extChartAt I x) x) := by
@@ -930,6 +936,7 @@ theorem HasMFDerivWithinAt.congr_mono
     HasMFDerivAt[t] f₁ x f' :=
   (h.mono h₁).congr_of_eventuallyEq (Filter.mem_inf_of_right ht) hx
 
+set_option backward.isDefEq.respectTransparency false in
 theorem HasMFDerivAt.congr_of_eventuallyEq (h : HasMFDerivAt% f x f') (h₁ : f₁ =ᶠ[𝓝 x] f) :
     HasMFDerivAt% f₁ x f' := by
   rw [← hasMFDerivWithinAt_univ] at h ⊢

@@ -65,8 +65,7 @@ private lemma concatFn_injective_of_uniquelyDecodable {S : Finset (List α)}
   have := List.ofFn_injective (h _ _ (by simp) (by simp) hflat)
   exact Subtype.ext (congrArg (fun f => f i) this)
 
-private lemma sum_pow_length_filter_eq_le_card_mul [Fintype α] [Nonempty α]
-    {T : Finset (List α)} {s : ℕ} :
+private lemma sum_pow_length_filter_eq_le_card_mul [Fintype α] {T : Finset (List α)} {s : ℕ} :
     (∑ x ∈ T.filter (fun x => x.length = s), (1 / (Fintype.card α : ℝ)) ^ x.length)
       ≤ ((Fintype.card α) ^ s) * (1 / Fintype.card α) ^ s := by
   calc
