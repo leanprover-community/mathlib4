@@ -223,7 +223,7 @@ instance PseudoEMetricSpace.toWeakPseudoEMetricSpace (α : Type u) [inst : Pseud
     intro y hy
     refine ⟨r - edist x y, by simp_all [edist_comm], ?_⟩
     unfold Metric.eball at hy ⊢
-    simp only [mem_setOf_eq, setOf_subset_setOf] at hy ⊢
+    simp only [mem_ofPred_eq, ofPred_subset_ofPred] at hy ⊢
     intro a ha
     rw [edist_comm] at hy
     have : edist x y ≠ ∞ := by
