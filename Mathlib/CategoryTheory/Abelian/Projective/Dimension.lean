@@ -276,7 +276,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 lemma Retract.projectiveDimension_le {X Y : C} (h : Retract X Y) :
     projectiveDimension X ≤ projectiveDimension Y :=
   sInf_le_sInf_of_subset_insert_top (fun n hn ↦ by
-    simp only [Set.mem_setOf_eq, not_top_lt, IsEmpty.forall_iff, implies_true,
+    simp only [Set.mem_ofPred_eq, not_top_lt, IsEmpty.forall_iff, implies_true,
       Set.insert_eq_of_mem] at hn ⊢
     intro i hi
     have := hn i hi
@@ -286,7 +286,7 @@ lemma projectiveDimension_lt_iff {X : C} {n : ℕ} :
     projectiveDimension X < n ↔ HasProjectiveDimensionLT X n := by
   refine ⟨fun h ↦ ?_, fun h ↦ sInf_lt_iff.2 ?_⟩
   · have : projectiveDimension X ∈ _ := csInf_mem ⟨⊤, by simp⟩
-    simp only [Set.mem_setOf_eq] at this
+    simp only [Set.mem_ofPred_eq] at this
     exact this _ h
   · obtain _ | n := n
     · exact ⟨⊥, fun _ _ ↦ hasProjectiveDimensionLT_of_ge _ 0 _ (by simp), by decide⟩

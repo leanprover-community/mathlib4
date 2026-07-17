@@ -664,16 +664,19 @@ variable {K Γ₀ O : Type*} [Field K] [LinearOrderedCommGroupWithZero Γ₀] [C
     [Algebra O K] {v : Valuation K Γ₀} (hv : v.Integers O)
 include hv
 
-lemma maximalIdeal_eq_setOf_le_v_algebraMap :
+lemma maximalIdeal_eq_setOfPred_le_v_algebraMap :
     letI : IsDomain O := hv.hom_inj.isDomain
     ∀ [IsDiscreteValuationRing O] {ϖ : O} (_h : Irreducible ϖ),
     (IsLocalRing.maximalIdeal O : Set O) =
       {y : O | v (algebraMap O K y) ≤ v (algebraMap O K ϖ)} := by
   let : IsDomain O := hv.hom_inj.isDomain
   intro _ _ h
-  rw [← hv.coe_span_singleton_eq_setOf_le_v_algebraMap, ← h.maximalIdeal_eq]
+  rw [← hv.coe_span_singleton_eq_setOfPred_le_v_algebraMap, ← h.maximalIdeal_eq]
 
-lemma maximalIdeal_pow_eq_setOf_le_v_algebraMap_pow :
+@[deprecated (since := "2026-07-09")]
+alias maximalIdeal_eq_setOf_le_v_algebraMap := maximalIdeal_eq_setOfPred_le_v_algebraMap
+
+lemma maximalIdeal_pow_eq_setOfPred_le_v_algebraMap_pow :
     letI : IsDomain O := hv.hom_inj.isDomain
     ∀ [IsDiscreteValuationRing O] {ϖ : O} (_h : Irreducible ϖ) (n : ℕ),
     ((IsLocalRing.maximalIdeal O ^ n : Ideal O) : Set O) =
@@ -681,8 +684,12 @@ lemma maximalIdeal_pow_eq_setOf_le_v_algebraMap_pow :
   let : IsDomain O := hv.hom_inj.isDomain
   intro _ ϖ h n
   have : (v (algebraMap O K ϖ)) ^ n = v (algebraMap O K (ϖ ^ n)) := by simp
-  rw [this, ← hv.coe_span_singleton_eq_setOf_le_v_algebraMap,
+  rw [this, ← hv.coe_span_singleton_eq_setOfPred_le_v_algebraMap,
       ← Ideal.span_singleton_pow, ← h.maximalIdeal_eq]
+
+@[deprecated (since := "2026-07-09")]
+alias maximalIdeal_pow_eq_setOf_le_v_algebraMap_pow :=
+  maximalIdeal_pow_eq_setOfPred_le_v_algebraMap_pow
 
 end Valuation.Integers
 
@@ -690,15 +697,23 @@ section Valuation.integer
 
 variable {K Γ₀ : Type*} [Field K] [LinearOrderedCommGroupWithZero Γ₀] (v : Valuation K Γ₀)
 
-lemma _root_.Irreducible.maximalIdeal_eq_setOf_le_v_coe
+lemma _root_.Irreducible.maximalIdeal_eq_setOfPred_le_v_coe
     [IsDiscreteValuationRing v.integer] {ϖ : v.integer} (h : Irreducible ϖ) :
     (IsLocalRing.maximalIdeal v.integer : Set v.integer) = {y : v.integer | v y ≤ v ϖ} :=
-  (Valuation.integer.integers v).maximalIdeal_eq_setOf_le_v_algebraMap h
+  (Valuation.integer.integers v).maximalIdeal_eq_setOfPred_le_v_algebraMap h
 
-lemma _root_.Irreducible.maximalIdeal_pow_eq_setOf_le_v_coe_pow
+@[deprecated (since := "2026-07-09")]
+alias _root_.Irreducible.maximalIdeal_eq_setOf_le_v_coe :=
+  _root_.Irreducible.maximalIdeal_eq_setOfPred_le_v_coe
+
+lemma _root_.Irreducible.maximalIdeal_pow_eq_setOfPred_le_v_coe_pow
     [IsDiscreteValuationRing v.integer] {ϖ : v.integer} (h : Irreducible ϖ) (n : ℕ) :
     ((IsLocalRing.maximalIdeal v.integer ^ n : Ideal v.integer) : Set v.integer) =
       {y : v.integer | v y ≤ v (ϖ : K) ^ n} :=
-  (Valuation.integer.integers v).maximalIdeal_pow_eq_setOf_le_v_algebraMap_pow h _
+  (Valuation.integer.integers v).maximalIdeal_pow_eq_setOfPred_le_v_algebraMap_pow h _
+
+@[deprecated (since := "2026-07-09")]
+alias _root_.Irreducible.maximalIdeal_pow_eq_setOf_le_v_coe_pow :=
+  _root_.Irreducible.maximalIdeal_pow_eq_setOfPred_le_v_coe_pow
 
 end Valuation.integer

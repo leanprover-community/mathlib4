@@ -892,7 +892,7 @@ theorem preimage_extChartAt_eventuallyEq_compl_singleton (y : M) (h : s =ᶠ[�
   apply mem_nhdsWithin_iff_exists_mem_nhds_inter.2
     ⟨_, Filter.inter_mem ((continuousAt_extChartAt_symm x).preimage_mem_nhds u_mem) B, ?_⟩
   rintro z ⟨hz, h'z⟩
-  simp only [eq_iff_iff, mem_setOf_eq]
+  simp only [eq_iff_iff, mem_ofPred_eq]
   change z ∈ (extChartAt I x).symm ⁻¹' s ∩ range I ↔ z ∈ (extChartAt I x).symm ⁻¹' t ∩ range I
   by_cases hIz : z ∈ range I
   · simp only [mem_inter_iff, mem_preimage, mem_union, mem_compl_iff, hIz, not_true_eq_false,
@@ -1085,7 +1085,7 @@ theorem Filter.EventuallyEq.mfderivWithin_eq (hL : f₁ =ᶠ[𝓝[s] x] f) (hx :
     apply Filter.EventuallyEq.fderivWithin_eq; swap
     · simp [hx]
     filter_upwards [extChartAt_preimage_mem_nhdsWithin (I := I) hL] with y hy
-    simp only [preimage_setOf_eq, mem_setOf_eq] at hy
+    simp only [preimage_ofPred_eq, mem_ofPred_eq] at hy
     simp [-extChartAt, hy, hx]
   · unfold mfderivWithin
     rw [if_neg h, if_neg]

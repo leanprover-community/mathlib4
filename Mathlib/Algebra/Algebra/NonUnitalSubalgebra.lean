@@ -507,12 +507,12 @@ abbrev rangeRestrict (f : F) : A →ₙₐ[R] (NonUnitalAlgHom.range f : NonUnit
 /-- The equalizer of two non-unital `R`-algebra homomorphisms -/
 def equalizer (ϕ ψ : F) : NonUnitalSubalgebra R A where
   carrier := {a | (ϕ a : B) = ψ a}
-  zero_mem' := by rw [Set.mem_setOf_eq, map_zero, map_zero]
+  zero_mem' := by rw [Set.mem_ofPred_eq, map_zero, map_zero]
   add_mem' {x y} (hx : ϕ x = ψ x) (hy : ϕ y = ψ y) := by
-    rw [Set.mem_setOf_eq, map_add, map_add, hx, hy]
+    rw [Set.mem_ofPred_eq, map_add, map_add, hx, hy]
   mul_mem' {x y} (hx : ϕ x = ψ x) (hy : ϕ y = ψ y) := by
-    rw [Set.mem_setOf_eq, map_mul, map_mul, hx, hy]
-  smul_mem' r x (hx : ϕ x = ψ x) := by rw [Set.mem_setOf_eq, map_smul, map_smul, hx]
+    rw [Set.mem_ofPred_eq, map_mul, map_mul, hx, hy]
+  smul_mem' r x (hx : ϕ x = ψ x) := by rw [Set.mem_ofPred_eq, map_smul, map_smul, hx]
 
 @[simp]
 theorem mem_equalizer (φ ψ : F) (x : A) :

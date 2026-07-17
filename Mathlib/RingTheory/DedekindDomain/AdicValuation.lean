@@ -713,13 +713,13 @@ noncomputable instance : Valued (adicCompletion K v) ℤᵐ⁰ where
     refine ⟨fun ⟨t, ht, hts⟩ ↦ ?_, fun ⟨γ, hγ⟩ ↦ ?_⟩
     · obtain ⟨δ, hδ⟩ := Valued.mem_nhds_zero.1 ht
       refine ⟨Units.mapEquiv (valueGroupOrderIso K v).symm.toMulEquiv δ, fun x hx ↦ hts (hδ ?_)⟩
-      rw [Set.mem_setOf_eq] at hx ⊢
+      rw [Set.mem_ofPred_eq] at hx ⊢
       simpa [← map_lt_map_iff (valueGroupOrderIso K v), valueGroupOrderIso_restrict] using hx
     · refine ⟨{y | Valued.v.restrict y < ↑(Units.mapEquiv (valueGroupOrderIso K v).toMulEquiv γ)},
         ?_, fun x hx ↦ hγ ?_⟩
       · rw [Valued.mem_nhds_zero]
         exact ⟨Units.mapEquiv (valueGroupOrderIso K v).toMulEquiv γ, subset_rfl⟩
-      · rw [Set.mem_setOf_eq, ← map_lt_map_iff (valueGroupOrderIso K v),
+      · rw [Set.mem_ofPred_eq, ← map_lt_map_iff (valueGroupOrderIso K v),
           valueGroupOrderIso_restrict]
         simpa using hx
 

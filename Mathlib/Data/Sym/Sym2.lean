@@ -324,7 +324,7 @@ theorem mem_iff' {a b c : α} : Sym2.Mem a s(b, c) ↔ a = b ∨ a = c :=
 instance : SetLike (Sym2 α) α where
   coe z := { x | z.Mem x }
   coe_injective z z' h := by
-    simp only [Set.ext_iff, Set.mem_setOf_eq] at h
+    simp only [Set.ext_iff, Set.mem_ofPred_eq] at h
     obtain ⟨x, y⟩ := z
     obtain ⟨x', y'⟩ := z'
     have hx := h x; have hy := h y; have hx' := h x'; have hy' := h y'
@@ -556,7 +556,10 @@ def diagSet : Set (Sym2 α) := {z | z.IsDiag}
 @[simp] lemma range_diag : .range (diag : α → Sym2 α) = diagSet := by
   ext ⟨a, b⟩; simp [diag, eq_comm]
 
-theorem diagSet_eq_setOf_isDiag : diagSet = {z : Sym2 α | z.IsDiag} := rfl
+theorem diagSet_eq_setOfPred_isDiag : diagSet = {z : Sym2 α | z.IsDiag} := rfl
+
+@[deprecated (since := "2026-07-09")]
+alias diagSet_eq_setOf_isDiag := diagSet_eq_setOfPred_isDiag
 
 theorem diagSet_eq_univ_of_subsingleton [Subsingleton α] : @diagSet α = Set.univ := by ext; simp
 
@@ -584,7 +587,7 @@ variable {r r₁ r₂ : α → α → Prop}
 of elements that are related.
 -/
 def fromRel (sym : Std.Symm r) : Set (Sym2 α) :=
-  setOf <| lift ⟨r, fun _ _ ↦ propext ⟨symm, symm⟩⟩
+  Set.ofPred <| lift ⟨r, fun _ _ ↦ propext ⟨symm, symm⟩⟩
 
 @[simp]
 theorem fromRel_prop {sym : Std.Symm r} {a b : α} : s(a, b) ∈ fromRel sym ↔ r a b :=

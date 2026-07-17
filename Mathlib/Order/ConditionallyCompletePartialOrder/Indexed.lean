@@ -203,7 +203,7 @@ theorem l_csSup_of_directedOn' (gc : GaloisConnection l u) {s : Set α}
 
 theorem l_csSup_of_directedOn (gc : GaloisConnection l u) {s : Set α} (hd : DirectedOn (· ≤ ·) s)
     (hne : s.Nonempty) (hbdd : BddAbove s) : l (sSup s) = ⨆ x : s, l x := by
-  simpa only [← comp_def, ← sSup_range, range_comp, Subtype.range_coe_subtype, setOf_mem_eq]
+  simpa only [← comp_def, ← sSup_range, range_comp, Subtype.range_coe_subtype, ofPred_mem_eq]
     using gc.l_csSup_of_directedOn' hd hne hbdd
 
 theorem l_ciSup_of_directed (gc : GaloisConnection l u) {f : ι → α} (hd : Directed (· ≤ ·) f)

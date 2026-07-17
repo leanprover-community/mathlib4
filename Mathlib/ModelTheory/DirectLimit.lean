@@ -323,7 +323,7 @@ theorem exists_fg_substructure_in_Sigma (S : L.Substructure (DirectLimit G f)) (
   rw [Substructure.map_closure]
   simp only [Embedding.coe_toHom, of_apply]
   rw [← image_univ, image_image, image_univ, ← eq_y,
-    Subtype.range_coe_subtype, Finset.setOf_mem, A_closure]
+    Subtype.range_coe_subtype, Finset.setOfPred_mem, A_closure]
 
 variable {P : Type u₁} [L.Structure P]
 
