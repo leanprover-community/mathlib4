@@ -86,7 +86,7 @@ theorem exists_integer_multiple (a : S) : ∃ b : M, IsInteger R ((b : R) • a)
 /-- We can clear the denominators of a `Finset`-indexed family of fractions. -/
 theorem exist_integer_multiples {ι : Type*} (s : Finset ι) (f : ι → S) :
     ∃ b : M, ∀ i ∈ s, IsLocalization.IsInteger R ((b : R) • f i) := by
-  haveI := Classical.propDecidable
+  have := Classical.propDecidable
   refine ⟨∏ i ∈ s, (sec M (f i)).2, fun i hi => ⟨?_, ?_⟩⟩
   · exact (∏ j ∈ s.erase i, (sec M (f j)).2) * (sec M (f i)).1
   rw [map_mul, sec_spec', ← mul_assoc, ← (algebraMap R S).map_mul, ← Algebra.smul_def]

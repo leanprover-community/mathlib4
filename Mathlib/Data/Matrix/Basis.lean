@@ -267,6 +267,7 @@ theorem liftLinear_apply (f : m → n → α →ₗ[R] β) (M : Matrix m n α) :
   simp [liftLinear, map_sum, LinearEquiv.congrLeft]
 
 set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem liftLinear_single (f : m → n → α →ₗ[R] β) (i : m) (j : n) (a : α) :
     liftLinear S f (Matrix.single i j a) = f i j a := by
