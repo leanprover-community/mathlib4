@@ -196,7 +196,7 @@ private theorem esymm_summand_to_weight (k : ℕ) (A : Finset σ) (h : A ∈ pow
 
 private theorem esymm_to_weight [DecidableEq σ] (k : ℕ) : k * esymm σ R k =
     (-1) ^ k * ∑ t ∈ pairs σ k with #t.1 = k, weight σ R k t := by
-  rw [esymm, sum_filter_pairs_eq_sum_powersetCard_sum σ R k (fun t ↦ weight σ R k t),
+  rw [esymm, sum_filter_pairs_eq_sum_powersetCard_sum σ R k (weight σ R k),
     sum_congr rfl (esymm_summand_to_weight σ R k), mul_comm (k : MvPolynomial σ R) ((-1) ^ k),
     ← mul_sum, ← mul_assoc, ← mul_assoc, ← pow_add, Even.neg_one_pow ⟨k, rfl⟩, one_mul]
 

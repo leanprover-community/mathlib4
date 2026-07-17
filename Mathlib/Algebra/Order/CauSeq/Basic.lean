@@ -217,7 +217,7 @@ theorem const_apply (x : β) (i : ℕ) : (const x : ℕ → β) i = x :=
   rfl
 
 theorem const_inj {x y : β} : (const x : CauSeq β abv) = const y ↔ x = y :=
-  ⟨fun h => congr_arg (fun f : CauSeq β abv => (f : ℕ → β) 0) h, congr_arg _⟩
+  ⟨congr_arg (fun f : CauSeq β abv => (f : ℕ → β) 0), congr_arg _⟩
 
 instance : Zero (CauSeq β abv) :=
   ⟨const 0⟩
@@ -666,7 +666,7 @@ theorem le_antisymm {f g : CauSeq α abs} (fg : f ≤ g) (gf : g ≤ f) : f ≈ 
 
 theorem lt_total (f g : CauSeq α abs) : f < g ∨ f ≈ g ∨ g < f :=
   (trichotomy (g - f)).imp_right fun h =>
-    h.imp (fun h => Setoid.symm h) fun h => by rwa [neg_sub] at h
+    h.imp Setoid.symm fun h => by rwa [neg_sub] at h
 
 theorem le_total (f g : CauSeq α abs) : f ≤ g ∨ g ≤ f :=
   (or_assoc.2 (lt_total f g)).imp_right Or.inl

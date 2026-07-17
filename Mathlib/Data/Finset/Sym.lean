@@ -200,7 +200,7 @@ lemma sym_map [DecidableEq β] {n : ℕ} (g : α ↪ β) (s : Finset α) :
   simp only [mem_sym_iff, mem_map, Function.Embedding.coeFn_mk]
   refine ⟨fun hd ↦ ?_, fun ⟨b, hb, hd'⟩ d' hd ↦ ?_⟩
   · let g' : {x // x ∈ d} → α := fun ⟨x, hx⟩ ↦ (hd x hx).choose
-    refine ⟨(fun p ↦ Sym.map g' p) d.attach, ?_, ?_⟩
+    refine ⟨(Sym.map g') d.attach, ?_, ?_⟩
     · simp only [Sym.mem_map, Sym.mem_attach, true_and, Subtype.exists, forall_exists_index, g']
       intro i e he hi
       rw [← hi]

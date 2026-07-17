@@ -376,7 +376,7 @@ lemma cfc_cases (P : A → Prop) (a : A) (f : R → R) (h₀ : P 0)
 
 lemma cfc_commute_cfc (f g : R → R) (a : A) : Commute (cfc f a) (cfc g a) := by
   refine cfc_cases (fun x ↦ Commute x (cfc g a)) a f (by simp) fun hf ha ↦ ?_
-  refine cfc_cases (fun x ↦ Commute _ x) a g (by simp) fun hg _ ↦ ?_
+  refine cfc_cases (Commute _) a g (by simp) fun hg _ ↦ ?_
   exact Commute.all _ _ |>.map _
 
 variable (R) in

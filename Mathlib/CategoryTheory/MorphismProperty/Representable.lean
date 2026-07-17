@@ -382,7 +382,7 @@ lemma of_relative_map {a b : C} {f : a ⟶ b} (hf : P.relative F (F.map f)) : P 
 lemma relative_map_iff [F.Faithful] [F.Full] [PreservesLimitsOfShape WalkingCospan F]
     [HasPullbacks C] [IsStableUnderBaseChange P] {X Y : C} {f : X ⟶ Y} :
     P.relative F (F.map f) ↔ P f :=
-  ⟨fun hf ↦ of_relative_map hf, fun hf ↦ relative_map hf⟩
+  ⟨of_relative_map, fun hf ↦ relative_map hf⟩
 
 /-- If `P' : MorphismProperty C` is satisfied whenever `P` is, then also `P'.relative` is
 satisfied whenever `P.relative` is. -/

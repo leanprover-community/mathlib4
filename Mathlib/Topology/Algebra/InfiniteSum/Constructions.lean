@@ -249,7 +249,7 @@ variable [T0Space α]
 @[to_additive]
 protected theorem Multipliable.tprod_sigma {γ : β → Type*} {f : (Σ b : β, γ b) → α}
     (ha : Multipliable f) : ∏' p, f p = ∏' (b) (c), f ⟨b, c⟩ :=
-  Multipliable.tprod_sigma' (fun b ↦ ha.sigma_factor b) ha
+  Multipliable.tprod_sigma' ha.sigma_factor ha
 
 @[to_additive Summable.tsum_prod]
 protected theorem Multipliable.tprod_prod {f : β × γ → α} (h : Multipliable f) :

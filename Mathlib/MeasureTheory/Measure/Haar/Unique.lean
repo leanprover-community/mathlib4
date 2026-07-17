@@ -527,7 +527,7 @@ lemma measure_preimage_isMulLeftInvariant_eq_smul_of_hasCompactSupport
   have J2 : μ'.real (f ⁻¹' {1})
       = (haarScalarFactor μ' μ • μ).real (f ⁻¹' {1}) := by
     have : (fun x ↦ indicator {1} (fun _ ↦ (1 : ℝ)) (f x)) =
-        (fun x ↦ indicator (f ⁻¹' {1}) (fun _ ↦ (1 : ℝ)) x) := by
+        (indicator (f ⁻¹' {1}) (fun _ ↦ (1 : ℝ))) := by
       ext x
       exact (indicator_comp_right f (s := ({1} : Set ℝ)) (g := (fun _ ↦ (1 : ℝ))) (x := x)).symm
     have mf : MeasurableSet (f ⁻¹' {1}) := (isClosed_singleton.preimage hf).measurableSet

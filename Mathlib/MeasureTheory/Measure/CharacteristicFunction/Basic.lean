@@ -455,7 +455,7 @@ theorem Measure.ext_of_charFunDual [CompleteSpace E]
     (h : charFunDual μ = charFunDual ν) :
     μ = ν := by
   refine ext_of_integral_char_eq continuous_probChar probChar_ne_one
-    ?_ ?_ (fun L ↦ funext_iff.mp h L)
+    ?_ ?_ (funext_iff.mp h)
   · exact fun v hv ↦ DFunLike.ne_iff.mpr <| SeparatingDual.exists_ne_zero hv
   · exact isBoundedBilinearMap_apply.symm.continuous
 

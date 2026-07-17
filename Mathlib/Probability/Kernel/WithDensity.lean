@@ -169,7 +169,7 @@ theorem withDensity_tsum [Countable ι] (κ : Kernel α β) [IsSFiniteKernel κ]
       exact Pi.summable.mpr fun p => ENNReal.summable
     rw [this]
     fun_prop
-  have : ∫⁻ b in s, (∑' n, f n) a b ∂κ a = ∫⁻ b in s, ∑' n, (fun b => f n a b) b ∂κ a := by
+  have : ∫⁻ b in s, (∑' n, f n) a b ∂κ a = ∫⁻ b in s, ∑' n, (f n a) b ∂κ a := by
     congr with b
     rw [tsum_apply h_sum, tsum_apply (h_sum_a a)]
   rw [this, lintegral_tsum fun n => by fun_prop]

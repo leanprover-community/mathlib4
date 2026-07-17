@@ -163,7 +163,7 @@ lemma comp_mem_coverings {J : Precoverage C} [IsStableUnderComposition J] {ι : 
   let α : Type (max u v) :=
     (Presieve.ofArrows (fun p : Σ i, σ i ↦ Y _ p.2) (fun _ ↦ g _ _ ≫ f _)).uncurry
   let τ' (a : α) : Type (max u v) := (Presieve.ofArrows (Y a.2.idx.1) (g a.2.idx.1)).uncurry
-  let fib (i : ι' ⊕ α) := i.elim (fun i ↦ σ' i) (fun i ↦ Unit ⊕ τ' i)
+  let fib (i : ι' ⊕ α) := i.elim σ' (fun i ↦ Unit ⊕ τ' i)
   let incl (p : ι' ⊕ α) : ι := p.elim (fun i ↦ i.2.idx) (fun i ↦ i.2.idx.1)
   let fibincl (i : ι' ⊕ α) (j : fib i) : σ (incl i) := match i with
     | .inl i => j.2.idx

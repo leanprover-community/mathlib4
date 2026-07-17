@@ -551,7 +551,7 @@ theorem ghDist_le_of_approx_subsets {s : Set X} (Φ : s → Y) {ε₁ ε₂ ε�
       _ ≤ 2 * (ε₂ / 2 + δ) := by linarith
   -- glue `X` and `Y` along the almost matching subsets
   let _ : MetricSpace (X ⊕ Y) :=
-    glueMetricApprox (fun x : s => (x : X)) (fun x => Φ x) (ε₂ / 2 + δ) (by linarith) this
+    glueMetricApprox (fun x : s => (x : X)) Φ (ε₂ / 2 + δ) (by linarith) this
   let Fl := @Sum.inl X Y
   let Fr := @Sum.inr X Y
   have Il : Isometry Fl := Isometry.of_dist_eq fun x y => rfl

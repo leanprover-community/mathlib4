@@ -178,7 +178,7 @@ instance [P.Nonempty] [IsTriangulated C] : P.triangEnvelope.IsTriangulated where
 
 lemma triangEnvelope_le_iff {Q : ObjectProperty C} [Q.IsStableUnderRetracts] [Q.IsTriangulated] :
     P.triangEnvelope ≤ Q ↔ P ≤ Q := by
-  refine ⟨fun h ↦ le_trans P.le_triangEnvelope h, fun h ↦ ?_⟩
+  refine ⟨le_trans P.le_triangEnvelope, fun h ↦ ?_⟩
   rw [triangEnvelope, iSup_le_iff]
   intro n
   rw [triangEnvelopeIter, retractClosure_le_iff]

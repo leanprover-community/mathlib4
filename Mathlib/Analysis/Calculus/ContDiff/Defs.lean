@@ -853,7 +853,7 @@ theorem contDiffOn_succ_iff_fderivWithin (hs : UniqueDiffOn 𝕜 s) :
   refine ⟨H.differentiableOn (by simp), ?_, fun x hx => ?_⟩
   · rintro rfl
     exact H.analyticOn
-  have A (m : ℕ) (hm : m ≤ n) : ContDiffWithinAt 𝕜 m (fun y => fderivWithin 𝕜 f s y) s x := by
+  have A (m : ℕ) (hm : m ≤ n) : ContDiffWithinAt 𝕜 m (fderivWithin 𝕜 f s) s x := by
     rcases (contDiffWithinAt_succ_iff_hasFDerivWithinAt (n := m) (ne_of_beq_false rfl)).1
       (H.of_le (by gcongr) x hx) with ⟨u, hu, -, f', hff', hf'⟩
     rcases mem_nhdsWithin.1 hu with ⟨o, o_open, xo, ho⟩

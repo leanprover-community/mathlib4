@@ -325,7 +325,7 @@ alias infinite_setOf_apply_eq_k := infinite_setOfPred_apply_eq_k
 
 lemma infinite_setOfPred_apply_eq_iff_small {j : ℕ} (hj : 0 < j) :
     {i | a i = j}.Infinite ↔ Small a j :=
-  ⟨fun h ↦ le_csSup hc.bddAbove_setOfPred_infinite_setOfPred_apply_eq h,
+  ⟨le_csSup hc.bddAbove_setOfPred_infinite_setOfPred_apply_eq,
    fun h ↦ hc.infinite_setOfPred_apply_eq_anti hj hc.infinite_setOfPred_apply_eq_k h⟩
 
 @[deprecated (since := "2026-07-09")]

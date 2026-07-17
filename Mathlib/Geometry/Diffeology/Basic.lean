@@ -507,7 +507,7 @@ lemma le_iff' {d₁ d₂ : DiffeologicalSpace X} : d₁ ≤ d₂ ↔
 
 lemma generateFrom_le_iff_subset_toPlots {g : Set ((n : ℕ) × (𝔼ⁿ → X))}
     {d : DiffeologicalSpace X} : generateFrom g ≤ d ↔ g ⊆ d.toPlots :=
-  ⟨fun h ↦ (self_subset_toPlots_generateFrom g).trans h, fun h _ hp ↦ hp _ h⟩
+  ⟨(self_subset_toPlots_generateFrom g).trans, fun h _ hp ↦ hp _ h⟩
 
 /-- Version of `generateFrom_le_iff_subset_toPlots` that is stated in terms of `IsPlot` instead
 of `toPlots`. -/

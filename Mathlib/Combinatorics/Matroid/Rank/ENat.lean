@@ -349,7 +349,7 @@ end Basic
 lemma eRank_ne_top_iff (M : Matroid α) : M.eRank ≠ ⊤ ↔ M.RankFinite := by
   obtain ⟨B, hB⟩ := M.exists_isBase
   rw [← hB.encard_eq_eRank, encard_ne_top_iff]
-  exact ⟨fun h ↦ hB.rankFinite_of_finite h, fun h ↦ hB.finite⟩
+  exact ⟨hB.rankFinite_of_finite, fun h ↦ hB.finite⟩
 
 @[simp]
 lemma eRank_eq_top_iff (M : Matroid α) : M.eRank = ⊤ ↔ M.RankInfinite := by

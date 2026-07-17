@@ -179,7 +179,7 @@ theorem prime_seven : Prime 7 := by decide
 theorem prime_eleven : Prime 11 := by decide
 
 theorem dvd_prime {p m : ℕ} (pp : Prime p) : m ∣ p ↔ m = 1 ∨ m = p :=
-  ⟨fun d => pp.eq_one_or_self_of_dvd m d, fun h =>
+  ⟨pp.eq_one_or_self_of_dvd m, fun h =>
     h.elim (fun e => e.symm ▸ one_dvd _) fun e => e.symm ▸ dvd_rfl⟩
 
 theorem dvd_prime_two_le {p m : ℕ} (pp : Prime p) (H : 2 ≤ m) : m ∣ p ↔ m = p :=

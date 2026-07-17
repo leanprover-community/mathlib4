@@ -270,7 +270,7 @@ There are four types of theorems that are used a bit differently.
     continuous linear function is indeed continuous:
     ```lean
     @[fun_prop]
-    theorem continuous_clm_eval (f : X →L[𝕜] Y) : Continuous 𝕜 (fun x ↦ f x) := ...
+    theorem continuous_clm_eval (f : X →L[𝕜] Y) : Continuous 𝕜 f := ...
     ```
     In this case, the head of the function body `f x` is `DFunLike.coe`. This function is
     treated differently and its theorems are tracked separately.

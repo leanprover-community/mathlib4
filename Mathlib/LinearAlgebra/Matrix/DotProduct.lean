@@ -42,13 +42,13 @@ theorem dotProduct_eq (v w : n → R) (h : ∀ u, v ⬝ᵥ u = w ⬝ᵥ u) : v =
   classical rw [← dotProduct_single_one v x, ← dotProduct_single_one w x, h]
 
 theorem dotProduct_eq_iff {v w : n → R} : (∀ u, v ⬝ᵥ u = w ⬝ᵥ u) ↔ v = w :=
-  ⟨fun h => dotProduct_eq v w h, fun h _ => h ▸ rfl⟩
+  ⟨dotProduct_eq v w, fun h _ => h ▸ rfl⟩
 
 theorem dotProduct_eq_zero (v : n → R) (h : ∀ w, v ⬝ᵥ w = 0) : v = 0 :=
   dotProduct_eq _ _ fun u => (h u).symm ▸ (zero_dotProduct u).symm
 
 theorem dotProduct_eq_zero_iff {v : n → R} : (∀ w, v ⬝ᵥ w = 0) ↔ v = 0 :=
-  ⟨fun h => dotProduct_eq_zero v h, fun h w => h.symm ▸ zero_dotProduct w⟩
+  ⟨dotProduct_eq_zero v, fun h w => h.symm ▸ zero_dotProduct w⟩
 
 end Semiring
 

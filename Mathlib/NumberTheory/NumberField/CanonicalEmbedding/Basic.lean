@@ -146,7 +146,7 @@ theorem mem_span_latticeBasis [NumberField K] {x : (K →+* ℂ) → ℂ} :
       x ∈ ((canonicalEmbedding K).comp (algebraMap (𝓞 K) K)).range := by
   rw [show Set.range (latticeBasis K) =
       (canonicalEmbedding K).toIntAlgHom.toLinearMap '' (Set.range (integralBasis K)) by
-    rw [← Set.range_comp]; exact congrArg Set.range (funext (fun i => latticeBasis_apply K i))]
+    rw [← Set.range_comp]; exact congrArg Set.range (funext (latticeBasis_apply K))]
   rw [← Submodule.map_span, ← SetLike.mem_coe, Submodule.map_coe]
   rw [← RingHom.map_range, Subring.mem_map, Set.mem_image]
   simp only [SetLike.mem_coe, mem_span_integralBasis K]
@@ -166,7 +166,7 @@ theorem integralBasis_repr_apply [NumberField K] (x : K) (i : Free.ChooseBasisIn
   rw [← Basis.restrictScalars_repr_apply ℚ _ ⟨_, mem_rat_span_latticeBasis K x⟩, eq_ratCast,
     Rat.cast_inj]
   let f := (canonicalEmbedding K).toRatAlgHom.toLinearMap.codRestrict _
-    (fun x ↦ mem_rat_span_latticeBasis K x)
+    (mem_rat_span_latticeBasis K)
   suffices ((latticeBasis K).restrictScalars ℚ).repr.toLinearMap ∘ₗ f =
     (integralBasis K).repr.toLinearMap from DFunLike.congr_fun (LinearMap.congr_fun this x) i
   refine Basis.ext (integralBasis K) (fun i ↦ ?_)
@@ -662,7 +662,7 @@ theorem mem_span_latticeBasis {x : (mixedSpace K)} :
       x ∈ mixedEmbedding.integerLattice K := by
   rw [show Set.range (latticeBasis K) =
       (mixedEmbedding K).toIntAlgHom.toLinearMap '' (Set.range (integralBasis K)) by
-    rw [← Set.range_comp]; exact congrArg Set.range (funext (fun i => latticeBasis_apply K i))]
+    rw [← Set.range_comp]; exact congrArg Set.range (funext (latticeBasis_apply K))]
   rw [← Submodule.map_span, ← SetLike.mem_coe, Submodule.map_coe]
   simp only [Set.mem_image, SetLike.mem_coe, mem_span_integralBasis K,
     RingHom.mem_range, exists_exists_eq_and]
@@ -703,7 +703,7 @@ theorem latticeBasis_repr_apply (x : K) (i : ChooseBasisIndex ℤ (𝓞 K)) :
   rw [← Basis.restrictScalars_repr_apply ℚ _ ⟨_, mem_rat_span_latticeBasis K x⟩, eq_ratCast,
     Rat.cast_inj]
   let f := (mixedEmbedding K).toRatAlgHom.toLinearMap.codRestrict _
-    (fun x ↦ mem_rat_span_latticeBasis K x)
+    (mem_rat_span_latticeBasis K)
   suffices ((latticeBasis K).restrictScalars ℚ).repr.toLinearMap ∘ₗ f =
     (integralBasis K).repr.toLinearMap from DFunLike.congr_fun (LinearMap.congr_fun this x) i
   refine Basis.ext (integralBasis K) (fun i ↦ ?_)
@@ -774,7 +774,7 @@ theorem mem_span_fractionalIdealLatticeBasis {x : (mixedSpace K)} :
   rw [show Set.range (fractionalIdealLatticeBasis K I) =
         (mixedEmbedding K).toIntAlgHom.toLinearMap '' (Set.range (basisOfFractionalIdeal K I)) by
       rw [← Set.range_comp]
-      exact congr_arg Set.range (funext (fun i ↦ fractionalIdealLatticeBasis_apply K I i))]
+      exact congr_arg Set.range (funext (fractionalIdealLatticeBasis_apply K I))]
   rw [← Submodule.map_span, ← SetLike.mem_coe, Submodule.map_coe]
   rw [show Submodule.span ℤ (Set.range (basisOfFractionalIdeal K I)) = (I : Set K) by
         ext; simp [mem_span_basisOfFractionalIdeal]]
@@ -945,7 +945,7 @@ theorem normAtPlace_negAt (x : mixedSpace K) (w : InfinitePlace K) :
 @[simp]
 theorem norm_negAt [NumberField K] (x : mixedSpace K) :
     mixedEmbedding.norm (negAt s x) = mixedEmbedding.norm x :=
-  norm_eq_of_normAtPlace_eq (fun w ↦ normAtPlace_negAt _ _ w)
+  norm_eq_of_normAtPlace_eq (normAtPlace_negAt _ _)
 
 /-- `negAt` is its own inverse. -/
 @[simp]

@@ -240,7 +240,7 @@ theorem MeasureTheory.QuotientMeasureEqMeasurePreimage.haarMeasure_quotient [Loc
     · exact isOpen_interior
     · exact K.interior_nonempty
     refine measure_mono_null (interior_subset.trans ?_) <|
-      fund_dom_s.measure_zero_of_invariant _ (fun g ↦ QuotientGroup.sound _ _ g) h
+      fund_dom_s.measure_zero_of_invariant _ (QuotientGroup.sound _ _) h
     rw [QuotientGroup.coe_mk']
     change (K : Set G) ⊆ π ⁻¹' π '' K
     exact subset_preimage_image π K

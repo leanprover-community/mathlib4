@@ -1135,7 +1135,7 @@ lemma Scheme.OpenCover.exists_of_isCofiltered_of_finite [IsCofiltered I]
   refine ⟨i, fun k ↦ Γ(_, V k), fun k ↦ (hV' k).left.isoSpec.inv ≫ (V k).ι, ?_, ?_, ?_⟩
   · simp only [IsAffineOpen.isoSpec_inv_ι, ofArrows_mem_precoverage_iff,
       IsAffineOpen.range_fromSpec, SetLike.mem_coe]
-    exact ⟨fun x ↦ hV.exists_mem x, inferInstance⟩
+    exact ⟨hV.exists_mem, inferInstance⟩
   · intro k
     exact IsOpenImmersion.lift (V k).ι (𝒰.f _ ≫ c.π.app i) (by simp [hV'', Set.range_comp]) ≫
       (hV' k).left.isoSpec.hom

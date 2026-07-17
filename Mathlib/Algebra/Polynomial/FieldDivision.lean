@@ -577,7 +577,7 @@ lemma C_div : C (a / b) = C a / C b := by
   rw [div_C, ← C_mul, div_eq_mul_inv]
 
 theorem C_mul_dvd (ha : a ≠ 0) : C a * p ∣ q ↔ p ∣ q :=
-  ⟨fun h => dvd_trans (dvd_mul_left _ _) h, fun ⟨r, hr⟩ =>
+  ⟨dvd_trans (dvd_mul_left _ _), fun ⟨r, hr⟩ =>
     ⟨C a⁻¹ * r, by
       rw [mul_assoc, mul_left_comm p, ← mul_assoc, ← C.map_mul, mul_inv_cancel₀ ha, C.map_one,
         one_mul, hr]⟩⟩

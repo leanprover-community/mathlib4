@@ -423,7 +423,7 @@ lemma isIso_of_isClosedImmersion_of_surjective {X Y : Scheme.{u}} (f : X ⟶ Y)
 lemma isClosed_singleton_iff_isClosedImmersion {X : Scheme} {x : X} :
     IsClosed {x} ↔ IsClosedImmersion (X.fromSpecResidueField x) := by
   rw [← Scheme.range_fromSpecResidueField]
-  exact ⟨fun H ↦ .of_isPreimmersion _ H,
+  exact ⟨.of_isPreimmersion _,
     fun _ ↦ (X.fromSpecResidueField x).isClosedEmbedding.isClosed_range⟩
 
 section Section

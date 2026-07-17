@@ -237,7 +237,7 @@ theorem Icc_union_Ici' (h₁ : c ≤ b) : Icc a b ∪ Ici c = Ici (min a c) :=
 /-! ### An infinite and a finite interval -/
 
 theorem Iic_subset_Iio_union_Icc : Iic b ⊆ Iio a ∪ Icc a b := fun x hx =>
-  (lt_or_ge x a).elim (fun hxa => Or.inl hxa) fun hxa => Or.inr ⟨hxa, hx⟩
+  (lt_or_ge x a).elim Or.inl fun hxa => Or.inr ⟨hxa, hx⟩
 
 @[simp]
 theorem Iio_union_Icc_eq_Iic (h : a ≤ b) : Iio a ∪ Icc a b = Iic b :=
@@ -245,7 +245,7 @@ theorem Iio_union_Icc_eq_Iic (h : a ≤ b) : Iio a ∪ Icc a b = Iic b :=
     Iic_subset_Iio_union_Icc
 
 theorem Iio_subset_Iio_union_Ico : Iio b ⊆ Iio a ∪ Ico a b := fun x hx =>
-  (lt_or_ge x a).elim (fun hxa => Or.inl hxa) fun hxa => Or.inr ⟨hxa, hx⟩
+  (lt_or_ge x a).elim Or.inl fun hxa => Or.inr ⟨hxa, hx⟩
 
 @[simp]
 theorem Iio_union_Ico_eq_Iio (h : a ≤ b) : Iio a ∪ Ico a b = Iio b :=
@@ -260,7 +260,7 @@ theorem Iio_union_Ico' (h₁ : c ≤ b) : Iio b ∪ Ico c d = Iio (max b d) :=
   Iio_union_Ico ((min_le_left ..).trans h₁)
 
 theorem Iic_subset_Iic_union_Ioc : Iic b ⊆ Iic a ∪ Ioc a b := fun x hx =>
-  (le_or_gt x a).elim (fun hxa => Or.inl hxa) fun hxa => Or.inr ⟨hxa, hx⟩
+  (le_or_gt x a).elim Or.inl fun hxa => Or.inr ⟨hxa, hx⟩
 
 @[simp]
 theorem Iic_union_Ioc_eq_Iic (h : a ≤ b) : Iic a ∪ Ioc a b = Iic b :=
@@ -275,7 +275,7 @@ theorem Iic_union_Ioc' (h₁ : c < b) : Iic b ∪ Ioc c d = Iic (max b d) :=
   Iic_union_Ioc ((min_le_left ..).trans_lt h₁)
 
 theorem Iio_subset_Iic_union_Ioo : Iio b ⊆ Iic a ∪ Ioo a b := fun x hx =>
-  (le_or_gt x a).elim (fun hxa => Or.inl hxa) fun hxa => Or.inr ⟨hxa, hx⟩
+  (le_or_gt x a).elim Or.inl fun hxa => Or.inr ⟨hxa, hx⟩
 
 @[simp]
 theorem Iic_union_Ioo_eq_Iio (h : a < b) : Iic a ∪ Ioo a b = Iio b :=

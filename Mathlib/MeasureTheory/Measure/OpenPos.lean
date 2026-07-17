@@ -76,7 +76,7 @@ theorem _root_.LE.le.isOpenPosMeasure (h : μ ≤ ν) : IsOpenPosMeasure ν :=
 
 theorem _root_.IsOpen.measure_zero_iff_eq_empty (hU : IsOpen U) :
     μ U = 0 ↔ U = ∅ :=
-  ⟨fun h ↦ (hU.measure_eq_zero_iff μ).mp h, fun h ↦ by simp [h]⟩
+  ⟨(hU.measure_eq_zero_iff μ).mp, fun h ↦ by simp [h]⟩
 
 theorem _root_.IsOpen.ae_eq_empty_iff_eq (hU : IsOpen U) :
     U =ᵐ[μ] (∅ : Set X) ↔ U = ∅ := by

@@ -152,7 +152,7 @@ lemma exists_isPathGraph3Compl_of_not_isCompleteMultipartite (h : ¬ IsCompleteM
 
 lemma not_isCompleteMultipartite_iff_exists_isPathGraph3Compl :
     ¬ IsCompleteMultipartite G ↔ ∃ v w₁ w₂, G.IsPathGraph3Compl v w₁ w₂ :=
-  ⟨fun h ↦ G.exists_isPathGraph3Compl_of_not_isCompleteMultipartite h,
+  ⟨G.exists_isPathGraph3Compl_of_not_isCompleteMultipartite,
    fun ⟨_, _, _, h1, h2, h3⟩ ↦ fun h ↦ h.trans _ _ _ (by rwa [adj_comm] at h2) h3 h1⟩
 
 /--

@@ -363,7 +363,7 @@ theorem det_eq_zero_iff_ker_ne_bot [IsDomain R] [Free R M] [Module.Finite R M] {
   · let b := Module.finBasis R M
     obtain ⟨v, ⟨_, hv_ne_zero⟩⟩ := (ker f).ne_bot_iff.mp h
     rw [← det_toMatrix b, ← Matrix.exists_mulVec_eq_zero_iff]
-    refine ⟨fun i => b.repr v i, by simpa, by simpa [toMatrix_mulVec_repr]⟩
+    refine ⟨b.repr v, by simpa, by simpa [toMatrix_mulVec_repr]⟩
 
 /--
 If the determinant of a map vanishes, then the map is not onto.

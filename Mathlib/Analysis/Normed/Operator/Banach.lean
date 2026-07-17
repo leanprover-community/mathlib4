@@ -399,7 +399,7 @@ lemma antilipschitz_antiLipschitzConstant_of_injective_of_isClosed_range (f : E 
 iff it is anti-Lipschitz. -/
 lemma isClosed_range_iff_antilipschitz_of_injective (f : E →L[𝕜] F)
     (hf : Injective f) : IsClosed (Set.range f) ↔ ∃ K, AntilipschitzWith K f := by
-  refine ⟨fun h ↦ f.antilipschitz_of_injective_of_isClosed_range hf h, fun h ↦ ?_⟩
+  refine ⟨f.antilipschitz_of_injective_of_isClosed_range hf, fun h ↦ ?_⟩
   choose K hf' using h
   exact hf'.isClosed_range f.uniformContinuous
 

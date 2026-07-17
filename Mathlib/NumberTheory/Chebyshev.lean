@@ -690,7 +690,7 @@ theorem theta_eq_primeCounting_mul_log_sub_integral {x : ℝ} (hx : 2 ≤ x) :
   -- Rewrite the derivative inside the integral
   simp only [primeCounting, primeCounting', count_eq_card_filter_range]
   have int_deriv (f : ℝ → ℝ) :
-      ∫ u in 2..x, deriv (fun x ↦ log x) u * f u =
+      ∫ u in 2..x, deriv log u * f u =
       ∫ u in 2..x, f u / u :=
     intervalIntegral.integral_congr fun u _ ↦ by rw [deriv_log, mul_comm, div_eq_mul_inv]
   rw [int_deriv]

@@ -191,7 +191,7 @@ lemma continuous_iff (g : Y → Z) :
 
 lemma equiv_symm_comp_continuous_iff (g : Y → Z) :
     Continuous ((WithGeneratedByTopology.equiv (X := X)).symm ∘ g) ↔ Continuous g := by
-  refine ⟨fun hg ↦ WithGeneratedByTopology.continuous_equiv.comp hg, fun hg ↦ ?_⟩
+  refine ⟨WithGeneratedByTopology.continuous_equiv.comp, fun hg ↦ ?_⟩
   rw [continuous_iff (X := X)]
   intro i f
   rw [continuous_def]

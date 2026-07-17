@@ -1034,7 +1034,7 @@ theorem IsBasis.iUnion_isBasis_iUnion {ι : Type _} (X I : ι → Set α)
 
 theorem IsBasis.isBasis_iUnion {ι : Type _} [Nonempty ι] (X : ι → Set α)
     (hI : ∀ i, M.IsBasis I (X i)) : M.IsBasis I (⋃ i, X i) := by
-  convert! IsBasis.iUnion_isBasis_iUnion X (fun _ ↦ I) (fun i ↦ hI i) _ <;> rw [iUnion_const]
+  convert! IsBasis.iUnion_isBasis_iUnion X (fun _ ↦ I) hI _ <;> rw [iUnion_const]
   exact (hI (Classical.arbitrary ι)).indep
 
 theorem IsBasis.isBasis_sUnion {Xs : Set (Set α)} (hne : Xs.Nonempty)

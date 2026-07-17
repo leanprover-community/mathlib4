@@ -110,7 +110,7 @@ a covering in the restricted topology on `C` if its image generates a `K`-cover.
 @[simp]
 lemma mem_restrictedTopology_iff {X : C} {S : Sieve X} :
     S ∈ G.restrictedTopology K X ↔ S.functorPushforward G ∈ K (G.obj X) :=
-  ⟨fun hS ↦ (G.coverPreserving_restrictedTopology K).cover_preserve hS,
+  ⟨(G.coverPreserving_restrictedTopology K).cover_preserve,
     G.mem_restrictedTopology_of_functorPushforward_mem⟩
 
 @[deprecated (since := "2026-05-28")]

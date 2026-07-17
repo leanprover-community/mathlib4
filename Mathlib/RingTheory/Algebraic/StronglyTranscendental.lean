@@ -101,7 +101,7 @@ lemma IsStronglyTranscendental.of_surjective_left [Algebra S T] [IsScalarTower R
 lemma IsStronglyTranscendental.iff_of_isLocalization [Algebra S T] {M : Submonoid S}
     (hM : M ≤ S⁰) [IsLocalization M T] [IsScalarTower R S T]
     {x : S} : IsStronglyTranscendental R (algebraMap S T x) ↔ IsStronglyTranscendental R x :=
-  ⟨fun h ↦ .of_map (f := IsScalarTower.toAlgHom R S T) (IsLocalization.injective _ hM) h,
+  ⟨.of_map (f := IsScalarTower.toAlgHom R S T) (IsLocalization.injective _ hM),
     fun h ↦ .of_isLocalization M h⟩
 
 lemma IsStronglyTranscendental.iff_of_isFractionRing (K : Type*) [Field K] [Algebra R K]

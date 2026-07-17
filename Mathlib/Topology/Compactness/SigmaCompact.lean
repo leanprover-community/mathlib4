@@ -389,7 +389,7 @@ theorem mem_find (x : X) : x ∈ K (K.find x) := by
 
 theorem mem_iff_find_le {x : X} {n : ℕ} : x ∈ K n ↔ K.find x ≤ n := by
   classical
-  exact ⟨fun h => Nat.find_min' (K.exists_mem x) h, fun h => K.subset h <| K.mem_find x⟩
+  exact ⟨Nat.find_min' (K.exists_mem x), fun h => K.subset h <| K.mem_find x⟩
 
 /-- Prepend the empty set to a compact exhaustion `K n`. -/
 def shiftr : CompactExhaustion X where

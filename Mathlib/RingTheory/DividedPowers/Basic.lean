@@ -305,7 +305,7 @@ theorem dpow_sum' {M : Type*} [AddCommMonoid M] {I : AddSubmonoid M} (dpow : ℕ
         simp only [succ_eq_add_one, mem_sym_iff, mem_insert, Sym.mem_fill_iff]
         simp only [mem_sigma, mem_univ, mem_sym_iff, true_and] at hm
         intro b
-        apply Or.imp (fun h ↦ h.2) (fun h ↦ hm b h))
+        apply Or.imp (fun h ↦ h.2) (hm b))
       (fun m _ ↦ m.fill_filterNe a)
     · intro m hm
       simp only [mem_sigma, mem_univ, mem_sym_iff, true_and] at hm

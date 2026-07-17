@@ -403,12 +403,12 @@ theorem Normal.map_conj_eq [H.Normal] (g : G) : H.map (MulAut.conj g) = H :=
 @[to_additive]
 theorem le_set_normalizer_iff {s : Set G} :
     H ≤ normalizer s ↔ ∀ h ∈ H, ∀ g ∈ s, h * g * h⁻¹ ∈ s := by
-  refine ⟨fun hH h hh g hg ↦ hH hh g |>.mp hg, fun hH h hh k ↦ ⟨fun hk ↦ hH h hh k hk, fun hk ↦ ?_⟩⟩
+  refine ⟨fun hH h hh g hg ↦ hH hh g |>.mp hg, fun hH h hh k ↦ ⟨hH h hh k, fun hk ↦ ?_⟩⟩
   simpa [mul_assoc] using hH h⁻¹ (inv_mem hh) _ hk
 
 @[to_additive]
 theorem le_normalizer_iff : H ≤ normalizer K ↔ ∀ h ∈ H, ∀ k ∈ K, h * k * h⁻¹ ∈ K := by
-  refine ⟨fun hH h hh g hg ↦ hH hh g |>.mp hg, fun hH h hh k ↦ ⟨fun hk ↦ hH h hh k hk, fun hk ↦ ?_⟩⟩
+  refine ⟨fun hH h hh g hg ↦ hH hh g |>.mp hg, fun hH h hh k ↦ ⟨hH h hh k, fun hk ↦ ?_⟩⟩
   simpa [mul_assoc] using hH h⁻¹ (inv_mem hh) _ hk
 
 @[to_additive]

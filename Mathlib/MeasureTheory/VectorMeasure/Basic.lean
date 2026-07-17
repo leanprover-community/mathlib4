@@ -226,7 +226,7 @@ theorem tendsto_vectorMeasure_iUnion_atTop_nat
     {s : ℕ → Set α} (hm : Monotone s) (hs : ∀ i, MeasurableSet (s i)) :
     Tendsto (fun n ↦ v (s n)) atTop (𝓝 (v (⋃ n, s n))) := by
   set t : ℕ → Set α := disjointed s
-  have ht n : MeasurableSet (t n) := .disjointed (fun n ↦ hs n) n
+  have ht n : MeasurableSet (t n) := .disjointed hs n
   have : HasSum (fun n ↦ v (t n)) (v (⋃ n, s n)) := by
     rw [← iUnion_disjointed]
     apply m_iUnion _ ht (disjoint_disjointed _)

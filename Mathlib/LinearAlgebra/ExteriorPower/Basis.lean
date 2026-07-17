@@ -87,7 +87,7 @@ lemma ιMultiDual_apply_nondiag {I : Type*} [LinearOrder I] (b : Basis I R M)
 independent in the `n`th exterior power of `M`. -/
 lemma ιMulti_family_linearIndependent_ofBasis {I : Type*} [LinearOrder I] (b : Basis I R M) :
     LinearIndependent R (ιMulti_family R n b) :=
-  LinearIndependent.of_pairwise_dual_eq_zero_one _ (fun s ↦ ιMultiDual R n b s)
+  LinearIndependent.of_pairwise_dual_eq_zero_one _ (ιMultiDual R n b)
     (fun _ _ h => ιMultiDual_apply_nondiag R n b _ _ h)
     (fun _ => ιMultiDual_apply_diag _ _ _ _)
 

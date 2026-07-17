@@ -343,7 +343,7 @@ example {α β : Type} (f : β → α) {p : α → Prop} :
   refine And.intro ?_ ?_
   -- outside the path goal must coincide with `h_eq ▸ h'`
   · replace h' := h'.left
-    exact Eq.mp (congrArg (fun t ↦ p t) h_eq) h'
+    exact Eq.mp (congrArg p h_eq) h'
   -- inside the path:
   · replace h' := h'.right
     -- when `h'` starts with existential quantifier we replace it with next hypothesis from `hs`.

@@ -555,7 +555,7 @@ lemma _root_.exists_continuousLinearEquiv_fderivWithin_symm_eq
     simpa only [hy, ↓reduceDIte, N] using Exists.choose_spec hy
   have e'N : N x = fderivWithin 𝕜 f s x := by apply mem_of_mem_nhdsWithin hx eN
   have hN : ContDiffWithinAt 𝕜 1 (fun y ↦ (N y : E →L[𝕜] F)) s x := by
-    have : ContDiffWithinAt 𝕜 1 (fun y ↦ fderivWithin 𝕜 f s y) s x :=
+    have : ContDiffWithinAt 𝕜 1 (fderivWithin 𝕜 f s) s x :=
       h'f.fderivWithin_right (m := 1) hs le_rfl hx
     apply this.congr_of_eventuallyEq eN e'N
   have hN' : ContDiffWithinAt 𝕜 1 (fun y ↦ ((N y).symm : F →L[𝕜] E)) s x := by

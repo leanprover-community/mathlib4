@@ -129,7 +129,7 @@ theorem IsOpen.exists_contDiff_support_eq {n : ℕ∞} {s : Set E} (hs : IsOpen 
     NNReal.exists_pos_sum_of_countable one_ne_zero ℕ
   have : ∀ n : ℕ, ∃ r : ℝ, 0 < r ∧ ∀ i ≤ n, ∀ x, ‖iteratedFDeriv ℝ i (r • g n) x‖ ≤ δ n := by
     intro n
-    have : ∀ i, ∃ R, ∀ x, ‖iteratedFDeriv ℝ i (fun x => g n x) x‖ ≤ R := by
+    have : ∀ i, ∃ R, ∀ x, ‖iteratedFDeriv ℝ i (g n) x‖ ≤ R := by
       intro i
       have : BddAbove (range fun x => ‖iteratedFDeriv ℝ i (fun x : E => g n x) x‖) := by
         apply ((g_smooth n).continuous_iteratedFDeriv

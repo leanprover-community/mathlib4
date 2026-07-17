@@ -87,7 +87,7 @@ theorem Multipliable.update [L.LeAtTop] (hf : Multipliable f L) (b : β) [Decida
 @[to_additive]
 theorem HasProd.hasProd_compl_iff {s : Set β} (hf : HasProd (f ∘ (↑) : s → α) a₁) :
     HasProd (f ∘ (↑) : ↑sᶜ → α) a₂ ↔ HasProd f (a₁ * a₂) := by
-  refine ⟨fun h ↦ hf.mul_compl h, fun h ↦ ?_⟩
+  refine ⟨hf.mul_compl, fun h ↦ ?_⟩
   rw [hasProd_subtype_iff_mulIndicator] at hf ⊢
   rw [Set.mulIndicator_compl]
   simpa only [div_eq_mul_inv, mul_inv_cancel_comm] using! h.div hf

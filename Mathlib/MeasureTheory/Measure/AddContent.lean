@@ -663,7 +663,7 @@ theorem addContent_iUnion_eq_tsum_of_addContent_iUnion_eq_iSup
   calc
     m (⋃ i, s i) = m (⋃ i, accumulate s i) := by simp
     _ = ⨆ i, m (accumulate s i) :=
-      hm_iSup (fun n ↦ IsSetRing.accumulate_mem hC hs n) monotone_accumulate
+      hm_iSup (IsSetRing.accumulate_mem hC hs) monotone_accumulate
     _ = ⨆ i, ∑ j ∈ range (i + 1), m (s j) :=
       iSup_congr fun i ↦ addContent_accumulate m hC hd hs i
     _ = ∑' i, m (s i) :=

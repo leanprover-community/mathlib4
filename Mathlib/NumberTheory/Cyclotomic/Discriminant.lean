@@ -95,7 +95,7 @@ theorem discr_prime_pow_ne_two [IsCyclotomicExtension {p ^ (k + 1)} K L] [hp : F
     rw [derivative_mul, derivative_sub, derivative_one, sub_zero, derivative_X_pow, C_eq_natCast,
       derivative_sub, derivative_one, sub_zero, derivative_X_pow, C_eq_natCast,
       hζ.minpoly_eq_cyclotomic_of_irreducible hirr] at H
-    replace H := congr_arg (fun P => aeval ζ P) H
+    replace H := congr_arg (aeval ζ) H
     simp only [aeval_add, aeval_mul, minpoly.aeval, zero_mul, add_zero, aeval_natCast,
       map_sub, aeval_one, aeval_X_pow] at H
     replace H := congr_arg (Algebra.norm K) H

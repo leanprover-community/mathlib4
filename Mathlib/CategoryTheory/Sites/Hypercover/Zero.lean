@@ -411,7 +411,7 @@ lemma mem_of_iso {K : Precoverage C} [K.IsStableUnderComposition] [K.HasIsos] {X
 lemma mem_iff_of_iso {K : Precoverage C} [K.IsStableUnderComposition] [K.HasIsos] {X : C}
     {E F : PreZeroHypercover.{w} X} (e : E ≅ F) :
     E.presieve₀ ∈ K X ↔ F.presieve₀ ∈ K X :=
-  ⟨fun h ↦ PreZeroHypercover.mem_of_iso e h, fun h ↦ PreZeroHypercover.mem_of_iso e.symm h⟩
+  ⟨PreZeroHypercover.mem_of_iso e, fun h ↦ PreZeroHypercover.mem_of_iso e.symm h⟩
 
 /-- Compose a pre-`0`-hypercover with a morphism on the right. -/
 @[simps]
@@ -607,7 +607,7 @@ lemma PreZeroHypercover.shrink_eq_shrink_of_presieve₀_eq_presieve₀ {S : C}
 
 lemma PreZeroHypercover.presieve₀_eq_presieve₀_iff {S : C} {E F : PreZeroHypercover.{w} S} :
     E.presieve₀ = F.presieve₀ ↔ E.shrink = F.shrink := by
-  refine ⟨fun h ↦ shrink_eq_shrink_of_presieve₀_eq_presieve₀ h, fun h ↦ ?_⟩
+  refine ⟨shrink_eq_shrink_of_presieve₀_eq_presieve₀, fun h ↦ ?_⟩
   rw [← E.presieve₀_shrink, ← F.presieve₀_shrink, h]
 
 set_option backward.isDefEq.respectTransparency false in
@@ -690,7 +690,7 @@ lemma PreZeroHypercover.presieve₀_mem_of_iso [J.RespectsIso] {S : C} {E F : Pr
 lemma PreZeroHypercover.presieve₀_mem_iff_of_iso [J.RespectsIso] {S : C}
     {E F : PreZeroHypercover.{w} S} (e : E ≅ F) :
     E.presieve₀ ∈ J S ↔ F.presieve₀ ∈ J S :=
-  ⟨fun h ↦ E.presieve₀_mem_of_iso e h, fun h ↦ F.presieve₀_mem_of_iso e.symm h⟩
+  ⟨E.presieve₀_mem_of_iso e, fun h ↦ F.presieve₀_mem_of_iso e.symm h⟩
 
 end
 

@@ -583,7 +583,7 @@ variable {R}
 
 protected theorem gc : GaloisConnection (adjoin R : Set A → NonUnitalSubalgebra R A) (↑) :=
   fun s S =>
-  ⟨fun H => (NonUnitalSubsemiring.subset_closure.trans Submodule.subset_span).trans H,
+  ⟨(NonUnitalSubsemiring.subset_closure.trans Submodule.subset_span).trans,
     fun H => show Submodule.span R _ ≤ S.toSubmodule from Submodule.span_le.mpr <|
       show NonUnitalSubsemiring.closure s ≤ S.toNonUnitalSubsemiring from
         NonUnitalSubsemiring.closure_le.2 H⟩

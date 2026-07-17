@@ -89,7 +89,7 @@ is left-regular. -/
 left an add-left-regular element is add-left-regular. -/]
 theorem mul_isLeftRegular_iff (b : R) (ha : IsLeftRegular a) :
     IsLeftRegular (a * b) ↔ IsLeftRegular b :=
-  ⟨fun ab => IsLeftRegular.of_mul ab, fun ab => IsLeftRegular.mul ha ab⟩
+  ⟨IsLeftRegular.of_mul, fun ab => IsLeftRegular.mul ha ab⟩
 
 /-- If an element `b` becomes right-regular after multiplying it on the right by a right-regular
 element, then `b` is right-regular. -/
@@ -107,7 +107,7 @@ element is right-regular. -/
 an add-right-regular element is add-right-regular. -/]
 theorem mul_isRightRegular_iff (b : R) (ha : IsRightRegular a) :
     IsRightRegular (b * a) ↔ IsRightRegular b :=
-  ⟨fun ab => IsRightRegular.of_mul ab, fun ab => IsRightRegular.mul ab ha⟩
+  ⟨IsRightRegular.of_mul, fun ab => IsRightRegular.mul ab ha⟩
 
 /-- Two elements `a` and `b` are regular if and only if both products `a * b` and `b * a`
 are regular. -/

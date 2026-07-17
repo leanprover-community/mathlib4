@@ -726,7 +726,7 @@ theorem stronglyMeasurable_derivWithin_Ici :
   suffices H : range (fun x ↦ derivWithin f (Ici x) x) ⊆ closure (Submodule.span ℝ (f '' t)) from
     IsSeparable.mono (t_count.image f).isSeparable.span.closure H
   rintro - ⟨x, rfl⟩
-  suffices H' : range (fun y ↦ derivWithin f (Ici x) y) ⊆ closure (Submodule.span ℝ (f '' t)) from
+  suffices H' : range (derivWithin f (Ici x)) ⊆ closure (Submodule.span ℝ (f '' t)) from
     H' (mem_range_self _)
   apply range_derivWithin_subset_closure_span_image
   calc Ici x

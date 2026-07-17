@@ -43,7 +43,7 @@ lemma isUnit_eq_or_eq_neg (hu : IsUnit u) (hv : IsUnit v) : u = v ∨ u = -v :=
   or_iff_not_imp_left.2 (isUnit_ne_iff_eq_neg hu hv).1
 
 lemma isUnit_iff : IsUnit u ↔ u = 1 ∨ u = -1 := by
-  refine ⟨fun h ↦ isUnit_eq_one_or h, fun h ↦ ?_⟩
+  refine ⟨isUnit_eq_one_or, fun h ↦ ?_⟩
   rcases h with (rfl | rfl)
   · exact isUnit_one
   · exact ⟨⟨-1, -1, by decide, by decide⟩, rfl⟩

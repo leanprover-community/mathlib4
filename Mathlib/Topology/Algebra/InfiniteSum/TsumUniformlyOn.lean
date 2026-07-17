@@ -77,7 +77,7 @@ theorem derivWithin_tsum {f : ι → 𝕜 → F} (hs : IsOpen s) {x : 𝕜} (hx 
   apply HasDerivWithinAt.derivWithin ?_ (hs.uniqueDiffWithinAt hx)
   apply HasDerivAt.hasDerivWithinAt
   apply hasDerivAt_of_tendstoLocallyUniformlyOn hs _ _ (fun y hy ↦ (hf y hy).hasSum) hx
-    (f' := fun n : Finset ι ↦ fun a ↦ ∑ i ∈ n, derivWithin (fun z ↦ f i z) s a)
+    (f' := fun n : Finset ι ↦ fun a ↦ ∑ i ∈ n, derivWithin (f i) s a)
   · obtain ⟨g, hg⟩ := h
     apply (hasSumLocallyUniformlyOn_iff_tendstoLocallyUniformlyOn.mp hg).congr_right
     exact fun _ hb ↦ (hg.tsum_eqOn hb).symm

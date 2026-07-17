@@ -647,7 +647,7 @@ open IsBaseChange
   let _ : Module S V := compHom V γ
   have _ : IsScalarTower S R V := IsScalarTower.of_compHom S R V
   have ibc := IsBaseChange.of_fintype_basis S b
-  set ε := Fintype.linearCombination S (fun i ↦ b i)
+  set ε := Fintype.linearCombination S b
   set M := Fin n → S
   have hε (i) : ε (Pi.single i 1) = b i := by
     rw [Fintype.linearCombination_apply_single, one_smul]

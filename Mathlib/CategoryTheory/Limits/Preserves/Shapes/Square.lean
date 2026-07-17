@@ -51,7 +51,7 @@ variable (sq) in
 lemma IsPullback.map_iff (F : C ⥤ D) [PreservesLimit (cospan sq.f₂₄ sq.f₃₄) F]
     [ReflectsLimit (cospan sq.f₂₄ sq.f₃₄) F] :
     (sq.map F).IsPullback ↔ sq.IsPullback :=
-  ⟨fun h ↦ of_map F h, fun h ↦ h.map F⟩
+  ⟨of_map F, fun h ↦ h.map F⟩
 
 lemma IsPushout.map (h : sq.IsPushout) (F : C ⥤ D) [PreservesColimit (span sq.f₁₂ sq.f₁₃) F] :
     (sq.map F).IsPushout :=
@@ -65,7 +65,7 @@ variable (sq) in
 lemma IsPushout.map_iff (F : C ⥤ D) [PreservesColimit (span sq.f₁₂ sq.f₁₃) F]
     [ReflectsColimit (span sq.f₁₂ sq.f₁₃) F] :
     (sq.map F).IsPushout ↔ sq.IsPushout :=
-  ⟨fun h ↦ of_map F h, fun h ↦ h.map F⟩
+  ⟨of_map F, fun h ↦ h.map F⟩
 
 variable (sq)
 

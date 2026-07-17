@@ -156,7 +156,7 @@ theorem eq_jacobson_iff_sInf_maximal' :
       let ⟨M, hM⟩ := h
       ⟨M,
         ⟨fun J hJ =>
-          Or.recOn (Classical.em (J = ⊤)) (fun h => Or.inr h) fun h => Or.inl ⟨⟨h, hM.1 J hJ⟩⟩,
+          Or.recOn (Classical.em (J = ⊤)) Or.inr fun h => Or.inl ⟨⟨h, hM.1 J hJ⟩⟩,
           hM.2⟩⟩⟩
 
 /-- An ideal `I` equals its Jacobson radical if and only if every element outside `I`

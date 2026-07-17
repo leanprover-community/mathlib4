@@ -388,8 +388,8 @@ lemma d_comp_diagonalSuccIsoFree_inv_eq :
         (Action.diagonalSuccIsoTensorTrivial G m).inv (g, f) ((1 : k) * r)
       have key₂ := Representation.LinearizeMonoidal.μ_apply_single_single (k := k)
         (X := Action.leftRegular G) (Y := Action.trivial G (Fin m → G)) g f 1 r
-      exact ((congrArg (fun z => (Representation.linearizeMap
-        (Action.diagonalSuccIsoTensorTrivial G m).inv) z) key₂).trans key₁).trans (by simp)
+      exact ((congrArg (Representation.linearizeMap
+        (Action.diagonalSuccIsoTensorTrivial G m).inv) key₂).trans key₁).trans (by simp)
     simp only [H, one_smul]
     simp [d_apply (k := k), Fin.partialProd_contractNth, Fin.sum_univ_succ, eq3]
 

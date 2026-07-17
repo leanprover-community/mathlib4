@@ -257,7 +257,7 @@ theorem mem_conjugatesOf_self {a : α} : a ∈ conjugatesOf a :=
 
 @[to_additive]
 theorem IsConj.conjugatesOf_eq {a b : α} (ab : IsConj a b) : conjugatesOf a = conjugatesOf b :=
-  Set.ext fun _ => ⟨fun ag => ab.symm.trans ag, fun bg => ab.trans bg⟩
+  Set.ext fun _ => ⟨ab.symm.trans, fun bg => ab.trans bg⟩
 
 @[to_additive]
 theorem isConj_iff_conjugatesOf_eq {a b : α} : IsConj a b ↔ conjugatesOf a = conjugatesOf b :=

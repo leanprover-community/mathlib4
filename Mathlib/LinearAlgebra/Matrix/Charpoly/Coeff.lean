@@ -410,28 +410,28 @@ theorem coeff_det_one_add_X_smul_eq_sum_minors
       (fun i => ((X : R[X]) • M.map C) i) + (fun i => (1 : Matrix n n R[X]) i) from rfl]
   conv_lhs => rw [D.map_add_univ]
   have h_map : ∀ s : Finset n,
-        (s.piecewise (fun i ↦ (M.map C) i)
-          (fun i ↦ (1 : Matrix n n R[X]) i) : Matrix n n R[X]) =
+        (s.piecewise (M.map C)
+          (1 : Matrix n n R[X]) : Matrix n n R[X]) =
         Matrix.map (s.piecewise M (1 : Matrix n n R)) C := by
       intro s; ext i j
       simp only [Finset.piecewise, Matrix.map_apply]
       split_ifs with h <;> simp [Matrix.one_apply]
   have h_det : ∀ s : Finset n,
-      D (s.piecewise (fun i ↦ (M.map C) i)
-        (fun i ↦ (1 : Matrix n n R[X]) i)) =
+      D (s.piecewise (M.map C)
+        (1 : Matrix n n R[X])) =
       C (det (s.piecewise M (1 : Matrix n n R))) := by
     intro s; change det _ = _
     rw [h_map]; exact (RingHom.map_det C _).symm
-  calc (∑ s : Finset n, D (Finset.piecewise s (fun i ↦ ((X : R[X]) • M.map C) i)
-            (fun i ↦ (1 : Matrix n n R[X]) i))).coeff k
+  calc (∑ s : Finset n, D (Finset.piecewise s ((X : R[X]) • M.map C)
+            (1 : Matrix n n R[X]))).coeff k
       _ = (∑ s : Finset n, (X : R[X]) ^ s.card •
-            D (s.piecewise (fun i ↦ (M.map C) i)
-              (fun i ↦ (1 : Matrix n n R[X]) i))).coeff k := by
+            D (s.piecewise (M.map C)
+              (1 : Matrix n n R[X]))).coeff k := by
         congr 2 with s
-        have h_smul : s.piecewise (fun i ↦ ((X : R[X]) • M.map C) i)
-            (fun i ↦ (1 : Matrix n n R[X]) i) =
+        have h_smul : s.piecewise ((X : R[X]) • M.map C)
+            (1 : Matrix n n R[X]) =
             fun i => (if i ∈ s then (X : R[X]) else 1) •
-              s.piecewise (fun i ↦ (M.map C) i) (fun i ↦ (1 : Matrix n n R[X]) i) i := by
+              s.piecewise (M.map C) (1 : Matrix n n R[X]) i := by
           funext i j
           simp only [piecewise, Pi.smul_apply, smul_eq_mul, ite_mul, one_mul]
           split_ifs <;> rfl
@@ -439,8 +439,8 @@ theorem coeff_det_one_add_X_smul_eq_sum_minors
         congr 1
         simp only [Finset.prod_ite_mem, Finset.univ_inter, Finset.prod_const]
       _ = ∑ s : Finset n, ((X : R[X]) ^ s.card •
-            D (Finset.piecewise s (fun i ↦ (M.map C) i)
-              (fun i ↦ (1 : Matrix n n R[X]) i))).coeff k := by
+            D (Finset.piecewise s (M.map C)
+              (1 : Matrix n n R[X]))).coeff k := by
         simp only [Polynomial.finsetSum_coeff]
       _ = _ := by
         simp_rw [h_det, smul_eq_mul, mul_comm (X ^ _) (C _)]

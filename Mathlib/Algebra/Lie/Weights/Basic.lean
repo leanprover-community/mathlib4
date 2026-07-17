@@ -379,7 +379,7 @@ lemma iSup_ucs_eq_genWeightSpace_zero [IsNoetherian R M] :
   obtain ⟨k, hk⟩ := (LieSubmodule.isNilpotent_iff_exists_self_le_ucs
     <| genWeightSpace M (0 : L → R)).mp inferInstance
   refine le_antisymm (iSup_ucs_le_genWeightSpace_zero R L M) (le_trans hk ?_)
-  exact le_iSup (fun k ↦ (⊥ : LieSubmodule R L M).ucs k) k
+  exact le_iSup (⊥ : LieSubmodule R L M).ucs k
 
 variable {L}
 

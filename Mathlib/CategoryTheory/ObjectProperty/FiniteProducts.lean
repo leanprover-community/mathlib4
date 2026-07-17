@@ -78,7 +78,7 @@ abbrev binaryProductsClosure (P : ObjectProperty C) : ObjectProperty C :=
 lemma binaryProductsClosure_le_iff [HasTerminal C] {P Q : ObjectProperty C}
     [Q.IsClosedUnderBinaryProducts] [Q.IsClosedUnderLimitsOfShape (Discrete.{0} PEmpty)] :
     P.binaryProductsClosure ≤ Q ↔ P ≤ Q := by
-  refine ⟨fun h ↦ (P.le_limitsClosure _).trans h, fun h ↦ ?_⟩
+  refine ⟨(P.le_limitsClosure _).trans, fun h ↦ ?_⟩
   let : Q.IsClosedUnderIsomorphisms := IsClosedUnderBinaryProducts.closedUnderIsomorphisms Q
   exact limitsClosure_le h
 
@@ -183,7 +183,7 @@ abbrev binaryCoproductsClosure (P : ObjectProperty C) : ObjectProperty C :=
 lemma binaryCoproductsClosure_le_iff [HasInitial C] {P Q : ObjectProperty C}
     [Q.IsClosedUnderBinaryCoproducts] [Q.IsClosedUnderColimitsOfShape (Discrete.{0} PEmpty)] :
     P.binaryCoproductsClosure ≤ Q ↔ P ≤ Q := by
-  refine ⟨fun h ↦ (P.le_colimitsClosure _).trans h, fun h ↦ ?_⟩
+  refine ⟨(P.le_colimitsClosure _).trans, fun h ↦ ?_⟩
   let : Q.IsClosedUnderIsomorphisms := IsClosedUnderBinaryCoproducts.closedUnderIsomorphisms Q
   exact colimitsClosure_le h
 

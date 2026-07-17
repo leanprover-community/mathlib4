@@ -299,7 +299,7 @@ lemma cfcₙ_cases (P : A → Prop) (a : A) (f : R → R) (h₀ : P 0)
 
 lemma cfcₙ_commute_cfcₙ (f g : R → R) (a : A) : Commute (cfcₙ f a) (cfcₙ g a) := by
   refine cfcₙ_cases (fun x ↦ Commute x (cfcₙ g a)) a f (by simp) fun hf hf0 ha ↦ ?_
-  refine cfcₙ_cases (fun x ↦ Commute _ x) a g (by simp) fun hg hg0 _ ↦ ?_
+  refine cfcₙ_cases (Commute _) a g (by simp) fun hg hg0 _ ↦ ?_
   exact Commute.all _ _ |>.map _
 
 set_option backward.privateInPublic true in

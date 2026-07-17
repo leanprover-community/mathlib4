@@ -250,7 +250,7 @@ theorem IntermediateField.eq_bot_of_isAlgClosed_of_isAlgebraic {k K : Type*} [Fi
 
 lemma Polynomial.isCoprime_iff_aeval_ne_zero_of_isAlgClosed (K : Type v) [Field K] [IsAlgClosed K]
     [Algebra k K] (p q : k[X]) : IsCoprime p q ↔ ∀ a : K, aeval a p ≠ 0 ∨ aeval a q ≠ 0 := by
-  refine ⟨fun h => aeval_ne_zero_of_isCoprime h, fun h => isCoprime_of_dvd _ _ ?_ fun x hu h0 => ?_⟩
+  refine ⟨aeval_ne_zero_of_isCoprime, fun h => isCoprime_of_dvd _ _ ?_ fun x hu h0 => ?_⟩
   · replace h := h 0
     contrapose! h
     rw [h.left, h.right, map_zero, and_self]

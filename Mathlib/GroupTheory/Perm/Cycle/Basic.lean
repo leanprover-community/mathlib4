@@ -677,7 +677,7 @@ theorem isCycleOn_of_subsingleton [Subsingleton α] (f : Perm α) (s : Set α) :
 @[simp]
 theorem isCycleOn_inv : f⁻¹.IsCycleOn s ↔ f.IsCycleOn s := by
   simp only [IsCycleOn, sameCycle_inv, and_congr_left_iff]
-  exact fun _ ↦ ⟨fun h ↦ Set.BijOn.perm_inv h, fun h ↦ Set.BijOn.perm_inv h⟩
+  exact fun _ ↦ ⟨Set.BijOn.perm_inv, fun h ↦ Set.BijOn.perm_inv h⟩
 
 alias ⟨IsCycleOn.of_inv, IsCycleOn.inv⟩ := isCycleOn_inv
 

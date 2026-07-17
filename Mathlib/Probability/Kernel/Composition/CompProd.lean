@@ -269,7 +269,7 @@ lemma ae_compProd_of_ae_ae {κ : Kernel α β} {η : Kernel (α × β) γ}
 
 lemma ae_compProd_iff {p : β × γ → Prop} (hp : MeasurableSet {x | p x}) :
     (∀ᵐ bc ∂(κ ⊗ₖ η) a, p bc) ↔ ∀ᵐ b ∂κ a, ∀ᵐ c ∂η (a, b), p (b, c) :=
-  ⟨fun h ↦ ae_ae_of_ae_compProd h, fun h ↦ ae_compProd_of_ae_ae hp h⟩
+  ⟨ae_ae_of_ae_compProd, fun h ↦ ae_compProd_of_ae_ae hp h⟩
 
 end Ae
 

@@ -234,7 +234,7 @@ theory of algebraically closed fields of characteristic `p` for all but finitely
 -/
 theorem ACF_zero_realize_iff_finite_ACF_prime_not_realize {φ : Language.ring.Sentence} :
     Theory.ACF 0 ⊨ᵇ φ ↔ Set.Finite { p : Nat.Primes | Theory.ACF p ⊨ᵇ φ }ᶜ :=
-  ⟨fun h => finite_ACF_prime_not_realize_of_ACF_zero_realize φ h,
+  ⟨finite_ACF_prime_not_realize_of_ACF_zero_realize φ,
     fun h => ACF_zero_realize_iff_infinite_ACF_prime_realize.2
       (Set.infinite_of_finite_compl h)⟩
 

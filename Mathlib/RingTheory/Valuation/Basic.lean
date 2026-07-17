@@ -789,7 +789,7 @@ theorem isNontrivial_of_isEquiv (h : v.IsEquiv v') (hv : v.IsNontrivial) : v'.Is
 
 theorem IsEquiv.isNontrivial_iff (h : v.IsEquiv v') :
     v.IsNontrivial ↔ v'.IsNontrivial :=
-  ⟨fun hv ↦ isNontrivial_of_isEquiv h hv, fun hv ↦ isNontrivial_of_isEquiv h.symm hv⟩
+  ⟨isNontrivial_of_isEquiv h, fun hv ↦ isNontrivial_of_isEquiv h.symm hv⟩
 
 end LinearOrderedCommMonoidWithZero
 

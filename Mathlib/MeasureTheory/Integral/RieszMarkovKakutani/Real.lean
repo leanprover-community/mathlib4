@@ -277,7 +277,7 @@ private lemma integral_riesz_aux (f : C_c(X, ℝ)) : Λ f ≤ ∫ x, f x ∂(rie
     · calc
         _ ≤ μ.real (V n) := by
           apply (ENNReal.ofReal_le_iff_le_toReal _).mp
-          · exact le_rieszMeasure_tsupport_subset Λ (fun x ↦ hg.2.2.1 n x) (hg.1 n)
+          · exact le_rieszMeasure_tsupport_subset Λ (hg.2.2.1 n) (hg.1 n)
           · rw [← lt_top_iff_ne_top]
             apply lt_of_le_of_lt (hV n).2.2
             rw [WithTop.add_lt_top]
@@ -291,7 +291,7 @@ private lemma integral_riesz_aux (f : C_c(X, ℝ)) : Λ f ≤ ∫ x, f x ∂(rie
     rw [← map_sum Λ g _]
     have h x : 0 ≤ (∑ n, g n) x := by simpa using Fintype.sum_nonneg fun n ↦ (hg.2.2.1 n x).1
     apply ENNReal.toReal_le_of_le_ofReal
-    · exact Λ.map_nonneg (fun x ↦ h x)
+    · exact Λ.map_nonneg h
     · have h' x (hx : x ∈ K) : (∑ n, g n) x = 1 := by simp [hg.2.1 hx]
       refine rieszMeasure_le_of_eq_one Λ h f.2 h'
   · -- Rearrange the sums

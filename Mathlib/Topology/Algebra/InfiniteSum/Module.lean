@@ -165,7 +165,7 @@ theorem ContinuousLinearEquiv.tsum_eq_iff [T2Space M] [T2Space M₂]
     refine ⟨?_, fun H ↦ ?_⟩
     · rintro rfl
       simp
-    · simpa using congr_arg (fun z ↦ e z) H
+    · simpa using congr_arg e H
 
 protected theorem ContinuousLinearEquiv.map_tsum [T2Space M] [T2Space M₂]
     {f : ι → M} (e : M ≃SL[σ] M₂) : e (∑'[L] z, f z) = ∑'[L] z, e (f z) := by

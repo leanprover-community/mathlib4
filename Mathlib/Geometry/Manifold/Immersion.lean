@@ -353,7 +353,7 @@ lemma trans_F (h : IsImmersionAtOfComplement F I J n f x) (e : F ≃L[𝕜] F') 
 /-- Being an immersion at `x` w.r.t. `F` is stable under replacing `F` by an isomorphic copy. -/
 lemma congr_F (e : F ≃L[𝕜] F') :
     IsImmersionAtOfComplement F I J n f x ↔ IsImmersionAtOfComplement F' I J n f x :=
-  ⟨fun h ↦ trans_F (e := e) h, fun h ↦ trans_F (e := e.symm) h⟩
+  ⟨trans_F (e := e), fun h ↦ trans_F (e := e.symm) h⟩
 
 /- The set of points where `IsImmersionAtOfComplement` holds is open. -/
 lemma _root_.IsOpen.isImmersionAtOfComplement :
@@ -744,7 +744,7 @@ lemma trans_F (h : IsImmersionOfComplement F I J n f) (e : F ≃L[𝕜] F') :
 /-- Being an immersion w.r.t. `F` is stable under replacing `F` by an isomorphic copy. -/
 lemma congr_F (e : F ≃L[𝕜] F') :
     IsImmersionOfComplement F I J n f ↔ IsImmersionOfComplement F' I J n f :=
-  ⟨fun h ↦ trans_F (e := e) h, fun h ↦ trans_F (e := e.symm) h⟩
+  ⟨trans_F (e := e), fun h ↦ trans_F (e := e.symm) h⟩
 
 /-- If `f: M → N` and `g: M' × N'` are immersions at `x` and `x'` (w.r.t. `F` and `F'`),
 respectively, then `f × g: M × N → M' × N'` is an immersion at `(x, x')` w.r.t. `F × F'`. -/

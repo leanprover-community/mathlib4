@@ -42,7 +42,7 @@ lemma of_isPullback_of_descendsAlong [P.DescendsAlong Q] (h : IsPullback fst snd
 
 lemma iff_of_isPullback [P.IsStableUnderBaseChange] [P.DescendsAlong Q] (h : IsPullback fst snd f g)
     (hf : Q f) : P fst ↔ P g :=
-  ⟨fun hfst ↦ of_isPullback_of_descendsAlong h hf hfst, fun hf ↦ P.of_isPullback h.flip hf⟩
+  ⟨of_isPullback_of_descendsAlong h hf, fun hf ↦ P.of_isPullback h.flip hf⟩
 
 lemma of_pullback_fst_of_descendsAlong [P.DescendsAlong Q] [HasPullback f g] (hf : Q f)
     (hfst : P (pullback.fst f g)) : P g :=
@@ -157,7 +157,7 @@ lemma of_isPushout_of_codescendsAlong [P.CodescendsAlong Q] (h : IsPushout f g i
 
 lemma iff_of_isPushout [P.IsStableUnderCobaseChange] [P.CodescendsAlong Q]
     (h : IsPushout f g inl inr) (hg : Q f) : P inl ↔ P g :=
-  ⟨fun hinl ↦ of_isPushout_of_codescendsAlong h hg hinl, fun hf ↦ P.of_isPushout h hf⟩
+  ⟨of_isPushout_of_codescendsAlong h hg, fun hf ↦ P.of_isPushout h hf⟩
 
 lemma of_pushout_inl_of_codescendsAlong [P.CodescendsAlong Q] [HasPushout f g] (hf : Q f)
     (hinl : P (pushout.inl f g)) : P g :=

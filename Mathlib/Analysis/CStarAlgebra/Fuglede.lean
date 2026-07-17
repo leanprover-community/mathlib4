@@ -158,7 +158,7 @@ public lemma isStarNormal_iff_forall_exp_mul_exp_mem_unitary {a : A} :
       exact (hasDerivAt_exp_smul_const a y).mul_const c |>.mul
         (hasDerivAt_exp_smul_const' b y) |>.deriv
     have h_deriv₂ (a b : A) :
-        deriv (fun y ↦ deriv (fun x : ℝ ↦ exp (x • a) * exp (x • b)) y) 0 =
+        deriv (deriv (fun x : ℝ ↦ exp (x • a) * exp (x • b))) 0 =
           a ^ 2 + 2 • (a * b) + b ^ 2 := by
       conv => enter [1, 1, y, 1, x, 1]; rw [← mul_one (exp (x • a))]
       simp_rw [h_deriv, zero_smul, NormedSpace.exp_zero, mul_one, one_mul]

@@ -250,7 +250,7 @@ lemma surjective_of_dual_injective (f : A →ₗ[R] A') (hf : Function.Injective
 
 lemma dual_injective_iff_surjective {f : A →ₗ[R] A'} :
     Function.Injective (dual f) ↔ Function.Surjective f :=
-  ⟨fun h ↦ surjective_of_dual_injective f h, fun h ↦ dual_injective_of_surjective f h⟩
+  ⟨surjective_of_dual_injective f, fun h ↦ dual_injective_of_surjective f h⟩
 
 lemma dual_bijective_iff_bijective {f : A →ₗ[R] A'} :
     Function.Bijective (dual f) ↔ Function.Bijective f :=

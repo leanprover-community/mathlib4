@@ -715,7 +715,7 @@ protected theorem gc : GaloisConnection (adjoin R : Set A → NonUnitalStarSubal
   intro s S
   rw [← toNonUnitalSubalgebra_le_iff, adjoin_toNonUnitalSubalgebra,
     NonUnitalAlgebra.adjoin_le_iff, coe_toNonUnitalSubalgebra]
-  exact ⟨fun h => Set.subset_union_left.trans h,
+  exact ⟨Set.subset_union_left.trans,
     fun h => Set.union_subset h fun x hx => star_star x ▸ star_mem (show star x ∈ S from h hx)⟩
 
 /-- Galois insertion between `adjoin` and `SetLike.coe`. -/

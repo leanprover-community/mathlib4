@@ -212,8 +212,8 @@ lemma ext_of_integral_prod_mul_boundedContinuousFunction {μ ν : Measure ((Π i
       ∫ p, (∏ i, f i (p.1 i)) * g p.2 ∂μ = ∫ p, (∏ i, f i (p.1 i)) * g p.2 ∂ν) :
     μ = ν := by
   let e : ((Π i, X i) × T) ≃ᵐ ((Π i, X i) × (Unit → T)) :=
-    { toFun p := ⟨fun i ↦ p.1 i, fun _ ↦ p.2⟩
-      invFun p := ⟨fun i ↦ p.1 i, p.2 ()⟩
+    { toFun p := ⟨p.1, fun _ ↦ p.2⟩
+      invFun p := ⟨p.1, p.2 ()⟩
       left_inv p := by simp
       right_inv p := by simp }
   rw [← e.map_measurableEquiv_injective.eq_iff]
