@@ -10,7 +10,7 @@ public import Mathlib.Algebra.Order.Ring.Unbundled.Rat
 public import Mathlib.Algebra.Ring.Rat
 
 /-!
-# The rational numbers form a linear ordered field
+# The rational numbers form a linear ordered commutative ring
 
 This file constructs the order on `ℚ` and proves that `ℚ` is a discrete, linearly ordered
 commutative ring.
