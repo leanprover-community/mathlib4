@@ -55,9 +55,8 @@ Shorthand notation for the restriction of a function with locally finite support
 ball of radius `r`.
 -/
 noncomputable def toClosedBall (r : ℝ) :
-    locallyFinsupp E ℤ →+ locallyFinsuppWithin (closedBall (0 : E) |r|) ℤ := by
-  apply restrictMonoidHom
-  tauto
+    locallyFinsupp E ℤ →+o locallyFinsuppWithin (closedBall (0 : E) |r|) ℤ :=
+  restrictOrderMonoidHom (subset_univ _)
 
 set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
