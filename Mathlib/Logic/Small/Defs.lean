@@ -118,6 +118,7 @@ instance small_sigma {α} (β : α → Type*) [Small.{w} α] [∀ a, Small.{w} (
   ⟨⟨Σ a' : Shrink α, Shrink (β ((equivShrink α).symm a')),
       ⟨Equiv.sigmaCongr (equivShrink α) fun a => by simpa using equivShrink (β a)⟩⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem not_small_type : ¬Small.{u} (Type max u v)
   | ⟨⟨S, ⟨e⟩⟩⟩ =>
     @Function.cantor_injective (Σ α, e.symm α) (fun a => ⟨_, cast (e.3 _).symm a⟩) fun a b e => by

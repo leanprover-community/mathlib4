@@ -29,7 +29,7 @@ strict maps. Namely, we provide:
 
 @[expose] public section
 
-open Function Set Topology QuotientGroup
+open Topology QuotientGroup
 
 namespace MonoidHom
 
@@ -80,10 +80,10 @@ protected lemma isStrictMap_iff_isOpenQuotientMap_rangeRestrict :
 
 variable [TopologicalSpace G'] [IsTopologicalGroup G'] [TopologicalSpace H']
 
-/-- The product (in the sense of `Prod.map`) of group homomorphisms is strict if and only if each
-of the homomorphisms is strict. -/
-@[to_additive isStrictMap_prodMap_iff /-- The product (in the sense of `Prod.map`) of additive group
-homomorphisms is strict if and only if each of the homomorphisms is strict. -/]
+/-- The product (in the sense of `MonoidHom.prodMap`) of group homomorphisms is strict if and only
+if both homomorphisms are strict. -/
+@[to_additive isStrictMap_prodMap_iff /-- The product (in the sense of `AddMonoidHom.prodMap`) of
+additive group homomorphisms is strict if and only if both homomorphisms are strict. -/]
 protected lemma isStrictMap_prodMap_iff :
     IsStrictMap (f.prodMap g) ↔ IsStrictMap f ∧ IsStrictMap g := by
   simp_rw [MonoidHom.isStrictMap_iff_isOpenQuotientMap_rangeRestrict]
@@ -92,9 +92,9 @@ protected lemma isStrictMap_prodMap_iff :
   have eq : Φ ∘ (f.prodMap g).rangeRestrict = f.rangeRestrict.prodMap g.rangeRestrict := rfl
   rw [← Φ.comp_isOpenQuotientMap_iff, eq, MonoidHom.coe_prodMap, isOpenQuotientMap_prodMap_iff]
 
-/-- The product (in the sense of `Prod.map`) of strict group homomorphisms is strict. -/
-@[to_additive isStrictMap_prodMap /-- The product (in the sense of `Prod.map`) of strict additive
-group homomorphisms is strict. -/]
+/-- The product (in the sense of `MonoidHom.prodMap`) of strict group homomorphisms is strict. -/
+@[to_additive isStrictMap_prodMap /-- The product (in the sense of `AddMonoidHom.prodMap`) of strict
+additive group homomorphisms is strict. -/]
 protected lemma isStrictMap_prodMap (hf : IsStrictMap f)
     (hg : IsStrictMap g) : IsStrictMap (f.prodMap g) :=
   MonoidHom.isStrictMap_prodMap_iff.mpr ⟨hf, hg⟩
