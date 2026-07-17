@@ -265,6 +265,7 @@ variable [FunLike F A B] [NonUnitalAlgHomClass F ℂ A B] [StarHomClass F A B]
 
 open Unitization
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- A non-unital star algebra homomorphism of complex C⋆-algebras is norm contractive. -/
 lemma nnnorm_apply_le (φ : F) (a : A) : ‖φ a‖₊ ≤ ‖a‖₊ := by
   have h (ψ : Unitization ℂ A →⋆ₐ[ℂ] Unitization ℂ B) (x : Unitization ℂ A) :

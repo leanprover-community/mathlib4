@@ -119,7 +119,6 @@ end CompleteLattice
 -- Constructing Galois connections
 section Constructions
 
-@[to_dual self]
 protected theorem compl [BooleanAlgebra α] [BooleanAlgebra β] {l : α → β} {u : β → α}
     (gc : GaloisConnection l u) :
     GaloisConnection (compl ∘ u ∘ compl) (compl ∘ l ∘ compl) := fun a b ↦ by
