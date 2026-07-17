@@ -277,6 +277,7 @@ def baseSupp (i : ι) : Dual R b.cartan :=
     simp [f, this, Finsupp.single_apply]
   simp [this]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma symm_baseSupp :
     b.symm.baseSupp = -b.baseSupp := by
   let b₁ : Module.Basis ι R b.cartan :=
@@ -331,6 +332,7 @@ lemma linearIndependent_baseSupp [IsDomain R] [CharZero R] :
 
 variable [IsDomain R] [CharZero R]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Lemma 4.4 from [Geck](Geck2017). -/
 lemma borelUpper_le_biSup :
     b.borelUpper ≤ ⨆ (n : ι → ℕ) (_ : n ≠ 0), rootSpace b.cartan (∑ i, n i • b.baseSupp i) := by
@@ -390,6 +392,7 @@ private lemma cartan_borelLower_borelUpper_le :
 
 variable [IsTorsionFree R L]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma iSupIndep_rootSpace :
     letI U := ⨆ (n : ι → ℕ) (_ : n ≠ 0), rootSpace b.cartan (∑ i, n i • (-b.baseSupp) i)
     letI V := ⨆ (n : ι → ℕ) (_ : n ≠ 0), rootSpace b.cartan (∑ i, n i • b.baseSupp i)
@@ -401,10 +404,10 @@ lemma iSupIndep_rootSpace :
   set sV : Set (b.cartan → R) := {f | ∃ n : ι → ℕ, n ≠ 0 ∧ f = ∑ i, n i • b.baseSupp i} with hsV
   have hs0' : rootSpace b.cartan 0 = ⨆ i ∈ s0, LieModule.genWeightSpace L i := by simp [hs0]
   have hsU' : U = ⨆ i ∈ sU, LieModule.genWeightSpace L i := by
-    simp only [hU, hsU, mem_setOf_eq, iSup_exists, iSup_and, iSup_comm (ι := b.cartan → R),
+    simp only [hU, hsU, mem_ofPred_eq, iSup_exists, iSup_and, iSup_comm (ι := b.cartan → R),
       iSup_iSup_eq_left, LinearMap.coe_sum, LinearMap.coe_smul]
   have hsV' : V = ⨆ i ∈ sV, LieModule.genWeightSpace L i := by
-    simp only [hV, hsV, mem_setOf_eq, iSup_exists, iSup_and, iSup_comm (ι := b.cartan → R),
+    simp only [hV, hsV, mem_ofPred_eq, iSup_exists, iSup_and, iSup_comm (ι := b.cartan → R),
       iSup_iSup_eq_left, LinearMap.coe_sum, LinearMap.coe_smul]
   have hU0 : Disjoint s0 sU := by
     suffices ∀ g ∈ sU, g ≠ 0 by
@@ -528,7 +531,7 @@ lemma root_mem_or_mem_neg (χ : b.cartan.root) :
                (∃ n : ι → ℕ, n ≠ 0 ∧ χ.toLinear = ∑ i, n i • b.baseSupp i) := by
     have hχ' : ¬ χ.IsZero := by simpa using hχ
     simp only [hχ', s, singleton_union, mem_union, mem_insert_iff, Weight.coe_eq_zero_iff,
-      mem_setOf_eq, false_or] at hs
+      mem_ofPred_eq, false_or] at hs
     simpa only [← LinearMap.coe_neg, ← Weight.coe_coe, LinearMap.coe_injective.eq_iff] using hs
   refine hs.symm.imp (fun ⟨n, hn₀, hn⟩ ↦ ?_) (fun ⟨n, hn₀, hn⟩ ↦ ?_) <;> simpa [hn] using this n
 

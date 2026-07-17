@@ -77,7 +77,7 @@ abbrev toSubgraph (f : Embedding G H) : H.Subgraph := f.toCopy.toSubgraph
     Set.range (toSubgraph : (Embedding G H) → H.Subgraph) =
       {H' : H.Subgraph | H'.IsInduced ∧ Nonempty (G ≃g H'.coe)} := by
   ext H'
-  simp only [Set.mem_range, Set.mem_setOf_eq]
+  simp only [Set.mem_range, Set.mem_ofPred_eq]
   constructor
   · rintro ⟨f, rfl⟩
     exact ⟨toSubgraph_isInduced f, ⟨f.toCopy.isoToSubgraph⟩⟩
@@ -275,7 +275,7 @@ section UnlabeledEmbeddingCount
 /-- `G.UnlabeledEmbedding H` is the type of induced `SimpleGraph.Subgraph`s of `H` isomorphic
 to `G`. The
 corresponding count is `SimpleGraph.unlabeledEmbeddingCount`. -/
-abbrev UnlabeledEmbedding (G : SimpleGraph V) (H : SimpleGraph W) : Type _ :=
+@[expose] def UnlabeledEmbedding (G : SimpleGraph V) (H : SimpleGraph W) : Type _ :=
   {H' : H.Subgraph // H'.IsInduced ∧ Nonempty (G ≃g H'.coe)}
 
 instance [Finite W] : Finite (G.UnlabeledEmbedding H) := Subtype.finite
@@ -293,7 +293,7 @@ lemma unlabeledEmbeddingCount_eq_nat_card (H : SimpleGraph W) (G : SimpleGraph V
 @[simp] lemma unlabeledEmbeddingCount_eq_zero [Finite W] :
     H.unlabeledEmbeddingCount G = 0 ↔ G.IndFree H := by
   rw [unlabeledEmbeddingCount, Nat.card_eq_zero, or_iff_left (Finite.not_infinite inferInstance),
-    isEmpty_subtype]
+    UnlabeledEmbedding, isEmpty_subtype]
   simp [IndFree, isIndContained_iff_exists_iso_subgraph]
 
 @[simp] lemma unlabeledEmbeddingCount_pos [Finite W] : 0 < H.unlabeledEmbeddingCount G ↔ G ⊴ H := by
