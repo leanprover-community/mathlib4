@@ -59,7 +59,7 @@ protected theorem Commute.cfcHom {a b : A} (ha : p a) (hb₁ : Commute a b)
   | add f g hf hg => rw [map_add]; exact hf.add_left hg
   | mul f g hf hg => rw [map_mul]; exact mul_left hf hg
   | frequently f hf =>
-    rw [commute_iff_eq, ← Set.mem_setOf (p := fun x => x * b = b * x),
+    rw [commute_iff_eq, ← Set.mem_ofPred (p := fun x => x * b = b * x),
       ← (isClosed_eq (by fun_prop) (by fun_prop)).closure_eq]
     apply mem_closure_of_frequently_of_tendsto hf
     exact cfcHom_continuous ha |>.tendsto _
@@ -144,7 +144,7 @@ protected theorem Commute.cfcₙHom {a b : A} (ha : p a) (hb₁ : Commute a b)
   | add f g hf hg => rw [map_add]; exact hf.add_left hg
   | mul f g hf hg => rw [map_mul]; exact mul_left hf hg
   | frequently f hf =>
-    rw [commute_iff_eq, ← Set.mem_setOf (p := fun x => x * b = b * x),
+    rw [commute_iff_eq, ← Set.mem_ofPred (p := fun x => x * b = b * x),
       ← (isClosed_eq (by fun_prop) (by fun_prop)).closure_eq]
     apply mem_closure_of_frequently_of_tendsto hf
     exact cfcₙHom_continuous ha |>.tendsto _
