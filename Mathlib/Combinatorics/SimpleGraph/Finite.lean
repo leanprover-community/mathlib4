@@ -208,7 +208,11 @@ theorem card_neighborSet_eq_degree : Fintype.card (G.neighborSet v) = G.degree v
 
 @[simp]
 theorem ncard_neighborSet : (G.neighborSet v).ncard = G.degree v := by
-  simp [Set.ncard_eq_toFinset_card', card_neighborSet_eq_degree, -Set.fintypeCard_eq_ncard]
+  simp [← Set.fintypeCard_eq_ncard, card_neighborSet_eq_degree]
+
+@[simp]
+theorem encard_neighborSet : (G.neighborSet v).encard = G.degree v := by
+  simp [← Set.coe_fintypeCard]
 
 lemma degree_eq_zero : G.degree v = 0 ↔ G.IsIsolated v := by simp [← card_neighborFinset_eq_degree]
 lemma degree_pos : 0 < G.degree v ↔ ¬ G.IsIsolated v := by simp [← card_neighborFinset_eq_degree]
@@ -267,6 +271,16 @@ def incidenceFinset [DecidableEq V] : Finset (Sym2 V) :=
 theorem card_incidenceSet_eq_degree [DecidableEq V] :
     Fintype.card (G.incidenceSet v) = G.degree v := by
   rw [Fintype.card_congr (G.incidenceSetEquivNeighborSet v), card_neighborSet_eq_degree]
+
+@[simp]
+theorem ncard_incidenceSet : (G.incidenceSet v).ncard = G.degree v := by
+  classical
+  simp [← Set.fintypeCard_eq_ncard, card_incidenceSet_eq_degree]
+
+@[simp]
+theorem encard_incidenceSet : (G.incidenceSet v).encard = G.degree v := by
+  classical
+  simp [← Set.coe_fintypeCard]
 
 @[simp, norm_cast]
 theorem coe_incidenceFinset [DecidableEq V] :
