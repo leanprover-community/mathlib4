@@ -535,7 +535,7 @@ theorem Continuous.codRestrict {f : X → Y} {s : Set Y} (hf : Continuous f) (hs
 
 theorem continuous_codRestrict_iff {f : X → Y} {s : Set Y} (hs : ∀ a, f a ∈ s) :
     Continuous (codRestrict f s hs) ↔ Continuous f := by
-  refine ⟨?_, fun hf ↦ Continuous.codRestrict hf hs⟩
+  refine ⟨?_, fun hf ↦ hf.codRestrict hs⟩
   simp_rw [continuous_def]
   intro hf t ht
   exact hf (Subtype.val ⁻¹' t) (isOpen_induced ht)

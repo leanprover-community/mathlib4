@@ -284,7 +284,7 @@ lemma toEquiv_eq_codRestrict_restrict :
     e.toEquiv = codRestrict (e.source.restrict e) e.target (by simp) :=
   rfl
 
-lemma toEquiv_eq_codRestrict_restrict_invFun :
+lemma toEquiv_symm_eq_codRestrict_restrict :
     e.toEquiv.symm = codRestrict (e.target.restrict e.invFun) e.source (by simp) := by
   rfl
 

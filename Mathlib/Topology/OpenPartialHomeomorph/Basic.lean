@@ -120,16 +120,14 @@ theorem isOpen_image_iff_of_subset_source {s : Set X} (hs : s ⊆ e.source) :
     IsOpen (e '' s) ↔ IsOpen s := by
   rw [← e.symm.isOpen_symm_image_iff_of_subset_target hs, e.symm_symm]
 
-/-- A `PartialEquiv` with continuous open forward map and open source is a
-`OpenPartialHomeomorph`. -/
+/-- A `PartialEquiv` which is continuous on its source and has open forward map (on its source)
+and open source is an `OpenPartialHomeomorph`. -/
 @[simps! toPartialHomeomorph]
 def ofContinuousOpenRestrict (e : PartialEquiv X Y) (hc : ContinuousOn e e.source)
     (ho : IsOpenMap (e.source.restrict e)) (hs : IsOpen e.source) : OpenPartialHomeomorph X Y where
   toPartialHomeomorph := PartialHomeomorph.ofContinuousOpenRestrict e hc ho
   open_source := hs
-  open_target := by
-    simpa only [PartialHomeomorph.ofContinuousOpenRestrict_toPartialEquiv, range_restrict,
-      e.image_source_eq_target] using ho.isOpen_range
+  open_target := by simpa [e.image_source_eq_target] using ho.isOpen_range
 
 @[simp]
 theorem coe_ofContinuousOpenRestrict (e : PartialEquiv X Y) (hc : ContinuousOn e e.source)
@@ -143,8 +141,8 @@ theorem coe_ofContinuousOpenRestrict_symm (e : PartialEquiv X Y) (hc : Continuou
     ⇑(ofContinuousOpenRestrict e hc ho hs).symm = e.symm :=
   rfl
 
-/-- A `PartialEquiv` with continuous open forward map and open source is a
-`OpenPartialHomeomorph`. -/
+/-- A `PartialEquiv` which is continuous on its source and has open forward map (on its source) and
+open source is an `OpenPartialHomeomorph`. -/
 @[simps! toPartialHomeomorph]
 def ofContinuousOpen (e : PartialEquiv X Y) (hc : ContinuousOn e e.source) (ho : IsOpenMap e)
     (hs : IsOpen e.source) : OpenPartialHomeomorph X Y :=
@@ -193,12 +191,11 @@ def toHomeomorphOfSourceEqUnivTargetEqUniv (h : e.source = (univ : Set X)) (h' :
     X ≃ₜ Y :=
   e.toPartialHomeomorph.toHomeomorphOfSourceEqUnivTargetEqUniv h h'
 
-theorem isOpenEmbedding_restrict : IsOpenEmbedding (e.source.restrict e) := by
-  refine .of_continuous_injective_isOpenMap (e.continuousOn.comp_continuous
-    continuous_subtype_val Subtype.prop) e.injOn.injective fun V hV ↦ ?_
-  rw [Set.restrict_eq, Set.image_comp]
-  exact e.isOpen_image_of_subset_source (e.open_source.isOpenMap_subtype_val V hV)
-    fun _ ⟨x, _, h⟩ ↦ h ▸ x.2
+theorem isOpenEmbedding_restrict : IsOpenEmbedding (e.source.restrict e) where
+  toIsEmbedding := e.isEmbedding_restrict
+  isOpen_range := by
+    rw [range_restrict, image_source_eq_target]
+    exact e.open_target
 
 /-- An open partial homeomorphism whose source is all of `X` defines an open embedding of `X` into
 `Y`. The converse is also true; see `IsOpenEmbedding.toOpenPartialHomeomorph`. -/
@@ -262,7 +259,6 @@ theorem openPartialHomeomorphSubtypeCoe_source :
 @[simp, mfld_simps]
 theorem openPartialHomeomorphSubtypeCoe_target :
     (s.openPartialHomeomorphSubtypeCoe hs).target = s := by
-  simp only [openPartialHomeomorphSubtypeCoe, Subtype.range_coe_subtype, mfld_simps]
-  rfl
+  simp [openPartialHomeomorphSubtypeCoe]
 
 end TopologicalSpace.Opens
