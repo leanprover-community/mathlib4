@@ -170,15 +170,15 @@ theorem RingEquiv.isIntegral_iff {R S T : Type*} [CommRing R] [Ring S] [CommRing
     (h : (algebraMap T S).comp φ.toRingHom = algebraMap R S) (a : S) :
     IsIntegral R a ↔ IsIntegral T a := by
   constructor <;> intro ha
-  · letI : Algebra R T := φ.toRingHom.toAlgebra
-    letI : IsScalarTower R T S :=
+  · let : Algebra R T := φ.toRingHom.toAlgebra
+    let : IsScalarTower R T S :=
       ⟨fun r t s ↦ by simp only [Algebra.smul_def, map_mul, ← h, mul_assoc]; rfl⟩
     exact IsIntegral.tower_top ha
   · have h' : (algebraMap T S) = (algebraMap R S).comp φ.symm.toRingHom := by
       have : RingHomInvPair (φ : R →+* T) φ.symm := RingHomInvPair.of_ringEquiv _
       simp only [← h, RingHom.comp_assoc, RingEquiv.toRingHom_eq_coe, RingHomCompTriple.comp_eq]
-    letI : Algebra T R := φ.symm.toRingHom.toAlgebra
-    letI : IsScalarTower T R S :=
+    let : Algebra T R := φ.symm.toRingHom.toAlgebra
+    let : IsScalarTower T R S :=
       ⟨fun r t s ↦ by simp only [Algebra.smul_def, map_mul, h', mul_assoc]; rfl⟩
     exact IsIntegral.tower_top ha
 

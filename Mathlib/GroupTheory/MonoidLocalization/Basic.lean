@@ -885,6 +885,17 @@ variable {M N : Type*} [CommMonoid M] {S : Submonoid M} [CommMonoid N]
 @[to_additive] instance [IsCancelMul M] [Nontrivial M] : Nontrivial (Localization S) :=
   (injective_iff <| Localization.monoidOf S).mpr (fun _ _ ↦ .all _) |>.nontrivial
 
+/-- Any localization of a cancellative commutative monoid is cancellative. -/
+@[to_additive
+/-- Any localization of a cancellative commutative additive monoid is cancellative. -/]
+abbrev cancelCommMonoid {M N} [CancelCommMonoid M] {S : Submonoid M}
+    [CommMonoid N] (f : S.LocalizationMap N) : CancelCommMonoid N where
+  mul_left_cancel := f.isCancelMul.mul_left_cancel
+
+@[to_additive] instance {M} [CancelCommMonoid M] (S : Submonoid M) :
+    CancelCommMonoid (Localization S) :=
+  (Localization.monoidOf S).cancelCommMonoid
+
 @[to_additive] theorem subsingleton_of_subsingleton (f : LocalizationMap S N) [Subsingleton M] :
     Subsingleton N where
   allEq x y := by

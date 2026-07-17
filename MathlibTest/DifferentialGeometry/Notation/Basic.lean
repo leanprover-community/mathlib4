@@ -1004,32 +1004,32 @@ variable {EM' : Type*} [NormedAddCommGroup EM']
   {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
   {f : M → M'} {s : Set M}
 
-/-- info: setOf fun x ↦ MDifferentiableAt I I' f x : Set M -/
+/-- info: Set.ofPred fun x ↦ MDifferentiableAt I I' f x : Set M -/
 #guard_msgs in
 #check {x | MDiffAt f x}
 
-/-- info: setOf fun x ↦ MDifferentiableWithinAt I I' f s x : Set M -/
+/-- info: Set.ofPred fun x ↦ MDifferentiableWithinAt I I' f s x : Set M -/
 #guard_msgs in
 #check {x | MDiffAt[s] f x}
 
-/-- info: setOf fun x ↦ ContMDiffAt I I' Top.top f x : Set M -/
+/-- info: Set.ofPred fun x ↦ ContMDiffAt I I' Top.top f x : Set M -/
 #guard_msgs in
 #check {x | CMDiffAt ⊤ f x}
 
-/-- info: setOf fun x ↦ ContMDiffWithinAt I I' 2 f s x : Set M -/
+/-- info: Set.ofPred fun x ↦ ContMDiffWithinAt I I' 2 f s x : Set M -/
 #guard_msgs in
 #check {x | CMDiffAt[s] 2 f x}
 
 open ContDiff in -- for the ∞ notation
-/-- info: setOf fun x ↦ ContMDiffAt I I' (↑Top.top) f x : Set M -/
+/-- info: Set.ofPred fun x ↦ ContMDiffAt I I' (↑Top.top) f x : Set M -/
 #guard_msgs in
 #check {x | CMDiffAt ∞ f x}
 
-/-- info: setOf fun x ↦ Injective ⇑(mfderiv I I' f x) : Set M -/
+/-- info: Set.ofPred fun x ↦ Injective ⇑(mfderiv I I' f x) : Set M -/
 #guard_msgs in
 #check {x | Function.Injective (mfderiv% f x) }
 
-/-- info: setOf fun x ↦ Surjective ⇑(mfderivWithin I I' f s x) : Set M -/
+/-- info: Set.ofPred fun x ↦ Surjective ⇑(mfderivWithin I I' f s x) : Set M -/
 #guard_msgs in
 #check {x | Function.Surjective (mfderiv[s] f x) }
 
